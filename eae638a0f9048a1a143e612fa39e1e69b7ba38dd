@@ -3,6 +3,29 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "c42ff5a0_dbd97d7f",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1132414
+      },
+      "writtenOn": "2020-10-29T20:04:16Z",
+      "side": 1,
+      "message": "does an unprefixed number really work? TIL!\n\nThe only docs I\u0027ve seen spell it \"chromium:2499506\".\n\nAlso, this isn\u0027t really necessary to land together.",
+      "range": {
+        "startLine": 18,
+        "startChar": 11,
+        "endLine": 18,
+        "endChar": 18
+      },
+      "revId": "eae638a0f9048a1a143e612fa39e1e69b7ba38dd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "dd0b0b72_4383c4c0",
         "filename": "/PATCHSET_LEVEL",
         "patchSetId": 3
@@ -14,6 +37,52 @@
       "writtenOn": "2020-10-26T20:46:08Z",
       "side": 1,
       "message": "Thanks Dean! I\u0027ve updated this with your suggestions, and I added the CL from the tast-test repo where I\u0027m using this call. I still don\u0027t have my unit test finished, but that should be ready by tomorrow. If you prefer me to add that before these get submitted, let me know.",
+      "revId": "eae638a0f9048a1a143e612fa39e1e69b7ba38dd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "157c1897_6649b21a",
+        "filename": "src/chromiumos/tast/dut/dut.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 286,
+      "author": {
+        "id": 1132414
+      },
+      "writtenOn": "2020-10-29T20:04:16Z",
+      "side": 1,
+      "message": "is there any way of determining a limit on this? It\u0027s understandable if the test itself can\u0027t necessarily figure these things out (e.g., it may not have access to the appropriate DBs), but is that going to be baked *somewhere*, or do tests just have to try and fail?",
+      "range": {
+        "startLine": 286,
+        "startChar": 51,
+        "endLine": 286,
+        "endChar": 60
+      },
+      "revId": "eae638a0f9048a1a143e612fa39e1e69b7ba38dd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2a73ce2b_6512d1fc",
+        "filename": "src/chromiumos/tast/dut/dut.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 286,
+      "author": {
+        "id": 1132414
+      },
+      "writtenOn": "2020-10-29T20:04:16Z",
+      "side": 1,
+      "message": "totally subjective opinion here, but \"Ith\" seems really awkward to me. I think a parameterized \"WifiPeerHost(..., index)\" is clear enough.",
+      "range": {
+        "startLine": 286,
+        "startChar": 14,
+        "endLine": 286,
+        "endChar": 17
+      },
       "revId": "eae638a0f9048a1a143e612fa39e1e69b7ba38dd",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },

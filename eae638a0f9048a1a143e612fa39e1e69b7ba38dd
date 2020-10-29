@@ -16,6 +16,46 @@
       "message": "Thanks Dean! I\u0027ve updated this with your suggestions, and I added the CL from the tast-test repo where I\u0027m using this call. I still don\u0027t have my unit test finished, but that should be ready by tomorrow. If you prefer me to add that before these get submitted, let me know.",
       "revId": "eae638a0f9048a1a143e612fa39e1e69b7ba38dd",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "70ef4d04_bbbdd243",
+        "filename": "src/chromiumos/tast/dut/dut.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 287,
+      "author": {
+        "id": 1358595
+      },
+      "writtenOn": "2020-10-29T19:09:06Z",
+      "side": 1,
+      "message": "nit: remove blank line",
+      "revId": "eae638a0f9048a1a143e612fa39e1e69b7ba38dd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4f0e8825_0841427b",
+        "filename": "src/chromiumos/tast/dut/dut.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 288,
+      "author": {
+        "id": 1358595
+      },
+      "writtenOn": "2020-10-29T19:09:06Z",
+      "side": 1,
+      "message": "super nit: use fmt.Sprintf(\"-wifipeer%d\", index)",
+      "range": {
+        "startLine": 288,
+        "startChar": 38,
+        "endLine": 288,
+        "endChar": 69
+      },
+      "revId": "eae638a0f9048a1a143e612fa39e1e69b7ba38dd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

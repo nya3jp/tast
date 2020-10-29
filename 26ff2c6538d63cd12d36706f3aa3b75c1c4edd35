@@ -18,6 +18,23 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "1de60334_32542ab9",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-29T04:30:27Z",
+      "side": 1,
+      "message": "After thinking again, I\u0027m abandoning this change.\n\nThere are already many infra that consumes results.json from Tast, including first-party ones to third-party ones, so I can\u0027t check all infra. Introducing incompatible changes to results.json is not worth doing.\n\nIn 2021 hopefully we can define a well-defined, backward-compatible result format.\n",
+      "revId": "26ff2c6538d63cd12d36706f3aa3b75c1c4edd35",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "eda65f73_5a4ff050",

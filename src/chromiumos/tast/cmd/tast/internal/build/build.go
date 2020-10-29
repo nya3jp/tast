@@ -40,7 +40,7 @@ func Build(ctx context.Context, cfg *Config, tgts []*Target) error {
 
 	if cfg.TastWorkspace != "" {
 		if err := checkSourceCompat(cfg.TastWorkspace); err != nil {
-			return fmt.Errorf("tast is too old: %v; please run: sudo emerge --jobs=16 chromeos-base/tast-cmd", err)
+			return fmt.Errorf("tast is too old: %v; please run: sudo emerge --update --deep --jobs=16 chromeos-base/tast-cmd", err)
 		}
 	}
 

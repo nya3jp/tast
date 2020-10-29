@@ -35,6 +35,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "c12eac3c_57d731a9",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1414348
+      },
+      "writtenOn": "2020-10-29T10:57:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ecdbe2de_f7d6bcc1",
+      "revId": "9258a3326914981652f1e78bfe270aed95e840df",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "3ac5b2b7_67f2ce68",
@@ -48,6 +66,30 @@
       "writtenOn": "2020-10-28T19:41:55Z",
       "side": 1,
       "message": "optional:\n\nsince findSOC and findArchitecture are very similar and called just once, what about having just one function that collects the related CPU info?\n\n  // \"cpuInfo\" or the name that you like\n  func cpuInfo() (device.Config_Architecture, device.Config_SOC, err) {\n    // pseudo code\n    out \u003d exec.Command(\"lscpu\", \"--json\").Output()\n    parsed \u003d json.Unmarshal(b, \u0026parsed)\n    arch \u003d findArchitecture(parsed)\n    soc \u003d findSoc(parsed)\n\n    // It could also return a cpuInfo struct if more data is needed.\n    return arch, soc\n  }",
+      "range": {
+        "startLine": 217,
+        "startChar": 1,
+        "endLine": 217,
+        "endChar": 22
+      },
+      "revId": "9258a3326914981652f1e78bfe270aed95e840df",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8c1c91f3_4038627f",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 217,
+      "author": {
+        "id": 1414348
+      },
+      "writtenOn": "2020-10-29T10:57:20Z",
+      "side": 1,
+      "message": "Good suggestion and updated.",
+      "parentUuid": "3ac5b2b7_67f2ce68",
       "range": {
         "startLine": 217,
         "startChar": 1,
@@ -105,6 +147,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "40b675b1_9ebcb9c0",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 232,
+      "author": {
+        "id": 1414348
+      },
+      "writtenOn": "2020-10-29T10:57:20Z",
+      "side": 1,
+      "message": "Thanks for noting hidehiko@-san, I originally created separate refactoring bug (https://crbug.com/1143419) for this but as noted these struct vars are from protobuf (e.g. config.pb.go) and thus we can keep capitalization as is.",
+      "parentUuid": "f2b6c7f4_0a2be3ca",
+      "range": {
+        "startLine": 232,
+        "startChar": 1,
+        "endLine": 232,
+        "endChar": 2
+      },
+      "revId": "9258a3326914981652f1e78bfe270aed95e840df",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "9d843ae6_1ab04317",
@@ -118,6 +184,30 @@
       "writtenOn": "2020-10-28T19:41:55Z",
       "side": 1,
       "message": "nit: add docstring for this func",
+      "range": {
+        "startLine": 375,
+        "startChar": 5,
+        "endLine": 375,
+        "endChar": 21
+      },
+      "revId": "9258a3326914981652f1e78bfe270aed95e840df",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ba817ac3_b7243c78",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 375,
+      "author": {
+        "id": 1414348
+      },
+      "writtenOn": "2020-10-29T10:57:20Z",
+      "side": 1,
+      "message": "Done and added for other functions.",
+      "parentUuid": "9d843ae6_1ab04317",
       "range": {
         "startLine": 375,
         "startChar": 5,
@@ -151,6 +241,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "a6637933_e932e777",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 386,
+      "author": {
+        "id": 1414348
+      },
+      "writtenOn": "2020-10-29T10:57:20Z",
+      "side": 1,
+      "message": "Reworded and kept Architecture to match lscpu output field capitalization format.",
+      "parentUuid": "a89f4f9e_522167b6",
+      "range": {
+        "startLine": 386,
+        "startChar": 59,
+        "endLine": 386,
+        "endChar": 60
+      },
+      "revId": "9258a3326914981652f1e78bfe270aed95e840df",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "ab042582_f7d8b6ee",
@@ -174,6 +288,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "cb2afc5a_2827054f",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 399,
+      "author": {
+        "id": 1414348
+      },
+      "writtenOn": "2020-10-29T10:57:20Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ab042582_f7d8b6ee",
+      "range": {
+        "startLine": 399,
+        "startChar": 70,
+        "endLine": 399,
+        "endChar": 71
+      },
+      "revId": "9258a3326914981652f1e78bfe270aed95e840df",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "07ae2620_dc8212bb",
@@ -187,6 +325,30 @@
       "writtenOn": "2020-10-28T19:41:55Z",
       "side": 1,
       "message": "nit: old message was ok. returned errors should not be capitalized.",
+      "range": {
+        "startLine": 414,
+        "startChar": 52,
+        "endLine": 414,
+        "endChar": 53
+      },
+      "revId": "9258a3326914981652f1e78bfe270aed95e840df",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8aa35063_776ffd7c",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 414,
+      "author": {
+        "id": 1414348
+      },
+      "writtenOn": "2020-10-29T10:57:20Z",
+      "side": 1,
+      "message": "I did this because other error messages in this file start with capitalized letters like Intel.  \n\"Vendor ID\" / \"Architecture\" is exactly what the lscpu command output shows so I left it that way to match the exact field not found.  But I can make all errors start with lower case for consistency.",
+      "parentUuid": "07ae2620_dc8212bb",
       "range": {
         "startLine": 414,
         "startChar": 52,

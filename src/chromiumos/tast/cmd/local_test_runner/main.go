@@ -76,6 +76,7 @@ func main() {
 			// daisy variants' cameras don't support 1280x720.
 			"camera_720p":             "!snow && !skate && !spring && !grunt",
 			"camera_legacy":           `!"arc-camera1" && !"arc-camera3"`,
+			"cert_provision":          "cert_provision",
 			"chrome":                  "!chromeless_tty && !rialto",
 			"chrome_internal":         "chrome_internal",
 			"coresched":               "coresched",

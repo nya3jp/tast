@@ -16,6 +16,63 @@
       "message": "Thanks Shuhei. It was a good exercise addressing your comments.",
       "revId": "af95c4845f93683242aeea0c2fff8a1cf2e50f07",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b9213277_055ca3fb",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 8
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-29T02:03:58Z",
+      "side": 1,
+      "message": "Good! We\u0027re close to finish...",
+      "revId": "af95c4845f93683242aeea0c2fff8a1cf2e50f07",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "16091464_1aee11d4",
+        "filename": "src/chromiumos/tast/rpc/client.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-29T02:03:58Z",
+      "side": 1,
+      "message": "We don\u0027t need to call clean here; in error cases it\u0027s called by the deferred statement above.",
+      "range": {
+        "startLine": 104,
+        "startChar": 2,
+        "endLine": 104,
+        "endChar": 12
+      },
+      "revId": "af95c4845f93683242aeea0c2fff8a1cf2e50f07",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8446722c_0d4d62d8",
+        "filename": "src/chromiumos/tast/rpc/rpc_test.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-29T02:03:58Z",
+      "side": 1,
+      "message": "Let us add a test which checks that runtime variables are forwarded to gRPC services.\n\nExisting TestRPCForward* tests are good starting points to write a new test.",
+      "revId": "af95c4845f93683242aeea0c2fff8a1cf2e50f07",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

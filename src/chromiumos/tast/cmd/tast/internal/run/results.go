@@ -31,6 +31,7 @@ const (
 	systemLogsDir           = "system_logs"            // dir containing DUT's system logs
 	crashesDir              = "crashes"                // dir containing DUT's crashes
 	testLogsDir             = "tests"                  // dir containing dirs with details about individual tests
+	fixtureLogsDir          = "fixtures"               // dir containins dirs with details about individual fixtures
 
 	testLogFilename         = "log.txt"      // file in testLogsDir/<test> containing test-specific log messages
 	testOutputTimeFmt       = "15:04:05.000" // format for timestamps attached to test output
@@ -286,7 +287,11 @@ func (r *resultsHandler) handleTestStart(ctx context.Context, msg *control.Entit
 	}
 	ctx, r.stage = timing.Start(ctx, msg.Info.Name)
 
-	finalOutDir := filepath.Join(r.cfg.ResDir, testLogsDir, msg.Info.Name)
+	relDir := testLogsDir
+	if msg.Info.Type == testing.EntityFixture {
+		relDir = fixtureLogsDir
+	}
+	finalOutDir := filepath.Join(r.cfg.ResDir, relDir, msg.Info.Name)
 
 	// Add a number suffix to the output directory name in case of conflict.
 	seenCnt := r.seenTimes[msg.Info.Name]

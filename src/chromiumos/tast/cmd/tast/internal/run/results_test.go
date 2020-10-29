@@ -280,11 +280,11 @@ func TestReadTestOutputSameEntity(t *gotesting.T) {
 		t.Errorf("%v mismatch (-got +want):\n%s", resultsFilename, diff)
 	}
 
-	fixt1OutPath := filepath.Join(testLogsDir, fixtName, fixt1OutFile)
+	fixt1OutPath := filepath.Join(fixtureLogsDir, fixtName, fixt1OutFile)
 	if files[fixt1OutPath] != fixt1OutData {
 		t.Errorf("%s contains %q; want %q", fixt1OutPath, files[fixt1OutPath], fixt1OutData)
 	}
-	fixt2OutPath := filepath.Join(testLogsDir, fixtName+".1", fixt2OutFile)
+	fixt2OutPath := filepath.Join(fixtureLogsDir, fixtName+".1", fixt2OutFile)
 	if files[fixt2OutPath] != fixt2OutData {
 		t.Errorf("%s contains %q; want %q", fixt2OutPath, files[fixt2OutPath], fixt2OutData)
 	}
@@ -355,11 +355,11 @@ func TestReadTestOutputConcurrentEntity(t *gotesting.T) {
 		t.Errorf("%v mismatch (-got +want):\n%s", resultsFilename, diff)
 	}
 
-	fixt1OutPath := filepath.Join(testLogsDir, fixt1Name, fixt1OutFile)
+	fixt1OutPath := filepath.Join(fixtureLogsDir, fixt1Name, fixt1OutFile)
 	if files[fixt1OutPath] != fixt1OutData {
 		t.Errorf("%s contains %q; want %q", fixt1OutPath, files[fixt1OutPath], fixt1OutData)
 	}
-	fixt2OutPath := filepath.Join(testLogsDir, fixt2Name, fixt2OutFile)
+	fixt2OutPath := filepath.Join(fixtureLogsDir, fixt2Name, fixt2OutFile)
 	if files[fixt2OutPath] != fixt2OutData {
 		t.Errorf("%s contains %q; want %q", fixt2OutPath, files[fixt2OutPath], fixt2OutData)
 	}

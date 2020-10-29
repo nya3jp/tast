@@ -1,0 +1,84 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6e787eaa_43411ae9",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-10-29T14:29:30Z",
+      "side": 1,
+      "message": "LGTM with minor fix requests.",
+      "revId": "5c907ac3e0f17740a6f1e55009cc75302f7a81f5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6089d50a_4b8ca62e",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 378,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-10-29T14:29:30Z",
+      "side": 1,
+      "message": "could you remove \"get\" prefix? In golang, we do not use common prefixes, like \"is\", \"has\", \"get\" etc.",
+      "range": {
+        "startLine": 378,
+        "startChar": 5,
+        "endLine": 378,
+        "endChar": 8
+      },
+      "revId": "5c907ac3e0f17740a6f1e55009cc75302f7a81f5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1c9d0cb7_7566ca83",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 379,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-10-29T14:29:30Z",
+      "side": 1,
+      "message": "maybe errInfo to be clearer?",
+      "revId": "5c907ac3e0f17740a6f1e55009cc75302f7a81f5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8e1303f3_a600d770",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 397,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-10-29T14:29:30Z",
+      "side": 1,
+      "message": "nit: return cpuInfo{arch, soc}, nil",
+      "range": {
+        "startLine": 396,
+        "startChar": 1,
+        "endLine": 397,
+        "endChar": 17
+      },
+      "revId": "5c907ac3e0f17740a6f1e55009cc75302f7a81f5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

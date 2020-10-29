@@ -81,7 +81,7 @@ type RealClientOptions struct {
 
 var defaultOptions = &RealClientOptions{
 	HTTPClient:      defaultHTTPClient,
-	StageRetryWaits: []time.Duration{3 * time.Second},
+	StageRetryWaits: []time.Duration{2 * time.Second, 4 * time.Second, 8 * time.Second},
 }
 
 // NewRealClient creates a RealClient.

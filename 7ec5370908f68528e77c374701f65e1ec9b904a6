@@ -33,6 +33,23 @@
       "message": "Retrying again, because the last error was provisioning failure.",
       "revId": "7ec5370908f68528e77c374701f65e1ec9b904a6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6e96e024_e5dafcbc",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-10-30T14:39:12Z",
+      "side": 1,
+      "message": "\u003e SpecialTaskActionException\n\u003e 10/30 11:57:53.210 ERROR|        server_job:0852| Exception escaped control file, job aborting:\npossibly an infra issue.",
+      "revId": "7ec5370908f68528e77c374701f65e1ec9b904a6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

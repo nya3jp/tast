@@ -87,6 +87,7 @@ The following software features are defined:
 *    igt  - Boards that can run igt-gpu-tools tests
 *   `iwlwifi_rescan` - Ability to remove/rescan WiFi PCI device when the
     hardware becomes non-responsive.
+*   `lacros` - Whether the system supports running [lacros].
 *   `legacy_video_decoder` - Whether the [media::VideoDecoder]-based video decoder
     implementation is not supported/enabled, hence using the legacy one.
 *   `lock_core_pattern` - Ability to lock down |core_pattern| from further
@@ -172,6 +173,7 @@ The following software features are defined:
 [DRM/KMS]: https://www.kernel.org/doc/Documentation/gpu/drm-kms.rst
 [hardware overlays]: https://en.wikipedia.org/wiki/Hardware_overlay
 [Intel Dynamic Platform and Thermal Framework]: https://01.org/intel%C2%AE-dynamic-platform-and-thermal-framework-dptf-chromium-os
+[lacros]: https://chromium.googlesource.com/chromium/src.git/+/master/docs/lacros.md
 [sandboxed]: https://chromium.googlesource.com/chromium/src/+/HEAD/docs/linux_sandboxing.md
 [Memory stats collection daemon]: https://chromium.googlesource.com/chromiumos/platform2/+/master/metrics/memd/
 [OCI]: https://www.opencontainers.org/

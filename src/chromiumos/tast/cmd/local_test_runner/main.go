@@ -108,6 +108,7 @@ func main() {
 			"hostap_hwsim":            "wifi_hostap_test",
 			"igt":                     `("video_cards_amdgpu" || "video_cards_intel") && ("kernel-5_4" || "kernel-4_19" || "kernel-4_14")`,
 			"iwlwifi_rescan":          "iwlwifi_rescan",
+			"lacros":                  "!arm", // TODO(crbug.com/1144013): Expand this to include arm as well.
 			"legacy_video_decoder":    "disable_cros_video_decoder",
 			"lock_core_pattern":       `"kernel-3_10" || "kernel-3_14" || "kernel-3_18"`,
 			// QEMU has implemented memfd_create, but we haven't updated

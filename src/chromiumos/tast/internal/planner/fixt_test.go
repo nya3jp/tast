@@ -15,6 +15,7 @@ import (
 
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/control"
+	"chromiumos/tast/internal/entity"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/testutil"
@@ -260,15 +261,15 @@ func TestFixtureStackContext(t *gotesting.T) {
 
 	verifyContext := func(t *gotesting.T, ctx context.Context) {
 		t.Helper()
-		if svcs, ok := testing.ContextServiceDeps(ctx); !ok {
+		if svcs, ok := entity.ContextServiceDeps(ctx); !ok {
 			t.Error("ServiceDeps not available")
 		} else if diff := cmp.Diff(svcs, serviceDeps); diff != "" {
 			t.Errorf("ServiceDeps mismatch (-got +want):\n%s", diff)
 		}
-		if _, ok := testing.ContextSoftwareDeps(ctx); ok {
+		if _, ok := entity.ContextSoftwareDeps(ctx); ok {
 			t.Error("SoftwareDeps unexpectedly available")
 		}
-		outDir, ok := testing.ContextOutDir(ctx)
+		outDir, ok := entity.ContextOutDir(ctx)
 		if !ok {
 			t.Error("OutDir not available")
 		} else if want := filepath.Join(baseOutDir, fixtureName); outDir != want {

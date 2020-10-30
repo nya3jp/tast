@@ -9,6 +9,7 @@ import (
 	"errors"
 	"fmt"
 
+	"chromiumos/tast/internal/entity"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/timing"
 )
@@ -177,7 +178,7 @@ func (st *fixtureStack) Push(ctx context.Context, fixt *testing.Fixture) error {
 		outDir = dir
 	}
 
-	ce := &testing.CurrentEntity{
+	ce := &entity.CurrentEntity{
 		OutDir:      outDir,
 		ServiceDeps: fixt.ServiceDeps,
 	}

@@ -15,6 +15,7 @@ import (
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/reflection"
 
+	"chromiumos/tast/internal/entity"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testing"
@@ -68,7 +69,7 @@ func serverOpts(logger logging.SinkFunc) []grpc.ServerOption {
 			return nil, errors.New("metadata not available")
 		}
 		ctx = logging.NewContext(ctx, logger)
-		ctx = testing.WithCurrentEntity(ctx, incomingCurrentContext(md))
+		ctx = entity.WithCurrentEntity(ctx, incomingCurrentContext(md))
 		tl = timing.NewLog()
 		ctx = timing.NewContext(ctx, tl)
 		return ctx, nil

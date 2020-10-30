@@ -16,6 +16,23 @@
       "message": "Hi!\nPlease help me to review this.",
       "revId": "a5a0415dca4264735c5a2489d23429deb126d299",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "94f6db8c_e02abbbc",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-30T03:48:30Z",
+      "side": 1,
+      "message": "Can you also update go/tast-deps doc?",
+      "revId": "a5a0415dca4264735c5a2489d23429deb126d299",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

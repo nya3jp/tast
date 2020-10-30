@@ -18,6 +18,23 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "4e071a01_33dd038e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1408947
+      },
+      "writtenOn": "2020-10-30T15:09:10Z",
+      "side": 1,
+      "message": "https://chromium-review.googlesource.com/c/chromiumos/platform/tast-tests/+/2508070",
+      "revId": "908589ed0fb7ac8df02b83efacf2a968fdb0716a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "75d9c419_d5927ad7",
@@ -31,6 +48,30 @@
       "writtenOn": "2020-10-30T15:04:30Z",
       "side": 1,
       "message": "Maybe define a string type for that?",
+      "range": {
+        "startLine": 33,
+        "startChar": 0,
+        "endLine": 33,
+        "endChar": 30
+      },
+      "revId": "908589ed0fb7ac8df02b83efacf2a968fdb0716a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "df5ea6b9_0e641bae",
+        "filename": "src/chromiumos/tast/dut/dut.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1408947
+      },
+      "writtenOn": "2020-10-30T15:09:10Z",
+      "side": 1,
+      "message": "I thought about it, but I\u0027d like to keep string interface to CompanionDeviceHostname(), in order to include e.g. \"-attenuator.cros\" suffix for attenuator (which is not a full companion).",
+      "parentUuid": "75d9c419_d5927ad7",
       "range": {
         "startLine": 33,
         "startChar": 0,

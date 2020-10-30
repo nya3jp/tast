@@ -16,6 +16,86 @@
       "message": "Hi Everybody:\n\nI used a new approach suggested by Shuhei which will retrieve the test names that would match the user specified test pattern. Then, I calculate the actual tests within the specified shard. Then, I only send those test to bundles.go.\n\nI have added a few unit tests. Please review.\n\nThanks.\n\nSeewai\n",
       "revId": "2f2cedfcfc068a5049aafe9e0376cc1a1935519a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b42359c8_56b1fbb4",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-30T10:13:28Z",
+      "side": 1,
+      "message": "Sorry for delay. Nice to see the change is very simple at this point!\n\nLet me start from higher level comments...\n",
+      "revId": "2f2cedfcfc068a5049aafe9e0376cc1a1935519a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9aa48f16_95e6c214",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-30T10:13:28Z",
+      "side": 1,
+      "message": "I\u0027d like to minimize rewriting fields of Config.\n\nCan you introduce a new field that contains concrete test names, and rewrite references to cfg.Patterns to the new field?",
+      "range": {
+        "startLine": 32,
+        "startChar": 1,
+        "endLine": 32,
+        "endChar": 25
+      },
+      "revId": "2f2cedfcfc068a5049aafe9e0376cc1a1935519a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6ea5e3bd_1fc67ee0",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-30T10:13:28Z",
+      "side": 1,
+      "message": "Can you make sure a list of tests returned here are suitable for sharding, e.g. skipped tests are excluded?",
+      "range": {
+        "startLine": 76,
+        "startChar": 15,
+        "endLine": 76,
+        "endChar": 24
+      },
+      "revId": "2f2cedfcfc068a5049aafe9e0376cc1a1935519a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "25d4437e_89fb4cd8",
+        "filename": "src/chromiumos/tast/internal/runner/bundles.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 129,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-30T10:13:28Z",
+      "side": 1,
+      "message": "Change is empty :)",
+      "revId": "2f2cedfcfc068a5049aafe9e0376cc1a1935519a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

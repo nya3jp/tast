@@ -188,6 +188,15 @@ func main() {
 			"wifi":        "!betty && !tast_vm && !nyan_kitty",
 			"wilco":       "wilco",
 			"wired_8021x": "wired_8021x",
+			// TODO(crbug.com/1070299): Remove the below hard-coded devices and use
+			// Intel WiFi dependency when wifi hardware dependencies are implemented.
+			// TODO(crbug.com/1115620): remove "Elm" and "Hana" after unibuild migration
+			// completed. Also, volteer is normally using Intel WiFi (HrP2), but the
+			// devices in the lab are incorrectly equipped with Realtek RTL8822 chips.
+			// This test should skip volteer devices until this is fixed (see b:171754540).
+			// The list of boards with Intel WiFi chips is long, so instead of listing all
+			// the boards that have Intel WiFi chips, skip the ones that don't have it.
+			"intel_wifi_chip": `!("board:bob" || "board:elm" || "board:grunt" || "board:hana" || "board:jacuzzi" || "board:kevin" || "board:kukui" || "board:oak" || "board:scarlet" || "board:trogdor" || "board:volteer" || "board:veyron_fievel" || "board:veyron_mickey" || "board:veyron_tiger")`,
 		},
 		// The autotest-capability package tries to install this to /etc but it's diverted to /usr/local.
 		AutotestCapabilityDir:   autocaps.DefaultCapabilityDir,

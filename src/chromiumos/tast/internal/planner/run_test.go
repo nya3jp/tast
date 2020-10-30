@@ -25,6 +25,7 @@ import (
 	"chromiumos/tast/internal/devserver/devservertest"
 	"chromiumos/tast/internal/extdata"
 	"chromiumos/tast/internal/logging"
+	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/testutil"
 )
@@ -1023,10 +1024,10 @@ func TestRunPreconditionContext(t *gotesting.T) {
 
 		logging.ContextLog(pctx, "Log via PreCtx")
 
-		if _, ok := testing.ContextSoftwareDeps(pctx); !ok {
+		if _, ok := testcontext.SoftwareDeps(pctx); !ok {
 			t.Error("ContextSoftwareDeps unavailable")
 		}
-		if _, ok := testing.ContextOutDir(pctx); ok {
+		if _, ok := testcontext.OutDir(pctx); ok {
 			t.Error("ContextOutDir available")
 		}
 		return nil

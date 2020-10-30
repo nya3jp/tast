@@ -2,17 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package testing
+// Package testcontext provides logic to extract information from context.
+package testcontext
 
 import (
 	"context"
 )
 
-// contextKeyType is the key type for objects attached to context.Context.
-type contextKeyType string
+// keyType is the key type for objects attached to context.Context.
+type keyType string
 
 // currentEntityKey is the key used for attaching a CurrentEntity to a context.Context.
-const currentEntityKey contextKeyType = "CurrentEntity"
+const currentEntityKey keyType = "CurrentEntity"
 
 // CurrentEntity contains information about the currently running entity.
 //
@@ -37,9 +38,9 @@ func WithCurrentEntity(ctx context.Context, ec *CurrentEntity) context.Context {
 	return context.WithValue(ctx, currentEntityKey, ec)
 }
 
-// ContextOutDir is similar to OutDir but takes context instead. It is intended to be
+// OutDir is similar to testing.State.OutDir but takes context instead. It is intended to be
 // used by packages providing support for tests that need to write files.
-func ContextOutDir(ctx context.Context) (dir string, ok bool) {
+func OutDir(ctx context.Context) (dir string, ok bool) {
 	ec, ok := ctx.Value(currentEntityKey).(*CurrentEntity)
 	if !ok || ec.OutDir == "" {
 		return "", false
@@ -47,10 +48,10 @@ func ContextOutDir(ctx context.Context) (dir string, ok bool) {
 	return ec.OutDir, true
 }
 
-// ContextSoftwareDeps is similar to SoftwareDeps but takes context instead.
+// SoftwareDeps is similar to testing.State.SoftwareDeps but takes context instead.
 // It is intended to be used by packages providing support for tests that want to
 // make sure tests declare proper dependencies.
-func ContextSoftwareDeps(ctx context.Context) ([]string, bool) {
+func SoftwareDeps(ctx context.Context) ([]string, bool) {
 	ec, ok := ctx.Value(currentEntityKey).(*CurrentEntity)
 	if !ok {
 		return nil, false
@@ -61,10 +62,10 @@ func ContextSoftwareDeps(ctx context.Context) ([]string, bool) {
 	return append([]string(nil), ec.SoftwareDeps...), true
 }
 
-// ContextServiceDeps is similar to ServiceDeps but takes context instead.
+// ServiceDeps is similar to testing.State.ServiceDeps but takes context instead.
 // It is intended to be used by packages providing support for tests that want to
 // make sure tests declare proper dependencies.
-func ContextServiceDeps(ctx context.Context) ([]string, bool) {
+func ServiceDeps(ctx context.Context) ([]string, bool) {
 	ec, ok := ctx.Value(currentEntityKey).(*CurrentEntity)
 	if !ok {
 		return nil, false

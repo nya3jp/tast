@@ -34,7 +34,7 @@
 // context.Context passed to a gRPC service method is associated with a test or
 // a fixture calling into the method, not the service implementing the method.
 // One can call testing.Context* functions with a given context to query
-// an entity metadata (e.g. testing.ContextServiceDeps), or emit logs for an
+// an entity metadata (e.g. testcontext.ServiceDeps), or emit logs for an
 // entity (testing.ContextLog).
 //
 // A new State object is created by the framework every time on calling into
@@ -65,6 +65,7 @@ import (
 	"chromiumos/tast/errors"
 	"chromiumos/tast/errors/stack"
 	"chromiumos/tast/internal/logging"
+	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/timing"
 )
 
@@ -193,16 +194,16 @@ func NewError(err error, fullMsg, lastMsg string, skipFrames int) *Error {
 // objects for an entity from the same EntityRoot.
 // EntityRoot must be kept private to the framework.
 type EntityRoot struct {
-	ce  *CurrentEntity // current entity info to be available via context.Context
-	cfg *RuntimeConfig // details about how to run an entity
-	out OutputStream   // stream to which logging messages and errors are reported
+	ce  *testcontext.CurrentEntity // current entity info to be available via context.Context
+	cfg *RuntimeConfig             // details about how to run an entity
+	out OutputStream               // stream to which logging messages and errors are reported
 
 	mu       sync.Mutex // protects hasError
 	hasError bool       // true if any error was reported from any associated State object
 }
 
 // NewEntityRoot returns a new EntityRoot object.
-func NewEntityRoot(ce *CurrentEntity, cfg *RuntimeConfig, out OutputStream) *EntityRoot {
+func NewEntityRoot(ce *testcontext.CurrentEntity, cfg *RuntimeConfig, out OutputStream) *EntityRoot {
 	return &EntityRoot{
 		ce:  ce,
 		cfg: cfg,
@@ -257,7 +258,7 @@ type TestEntityRoot struct {
 
 // NewTestEntityRoot returns a new TestEntityRoot object.
 func NewTestEntityRoot(test *TestInstance, cfg *RuntimeConfig, out OutputStream) *TestEntityRoot {
-	ce := &CurrentEntity{
+	ce := &testcontext.CurrentEntity{
 		OutDir:          cfg.OutDir,
 		HasSoftwareDeps: true,
 		SoftwareDeps:    test.SoftwareDeps,
@@ -316,9 +317,9 @@ func (r *TestEntityRoot) SetPreValue(val interface{}) {
 }
 
 // NewContext returns a context.Context to be used for the entity.
-func NewContext(ctx context.Context, ec *CurrentEntity, log func(msg string)) context.Context {
+func NewContext(ctx context.Context, ec *testcontext.CurrentEntity, log func(msg string)) context.Context {
 	ctx = logging.NewContext(ctx, log)
-	ctx = WithCurrentEntity(ctx, ec)
+	ctx = testcontext.WithCurrentEntity(ctx, ec)
 	return ctx
 }
 

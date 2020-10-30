@@ -16,6 +16,23 @@
       "message": "Hi!\nPlease help me to review this.",
       "revId": "e2ce5dc7bc5e055977f7d3a2c5f465ca3655f5c6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1762d37c_6b3e4991",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-30T03:49:52Z",
+      "side": 1,
+      "message": "Rebooting VM was flaky before, but I hope it\u0027s more stable today...\n",
+      "revId": "e2ce5dc7bc5e055977f7d3a2c5f465ca3655f5c6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

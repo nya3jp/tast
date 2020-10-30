@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ee15ae42_1db47d60",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 9
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-10-30T03:45:36Z",
+      "side": 1,
+      "message": "Thanks Xibin! LGTM.\n",
+      "revId": "e5f46d450660a41d6ac930592d5569fdd248a609",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

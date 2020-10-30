@@ -33,6 +33,24 @@
       "message": "Can you also update go/tast-deps doc?",
       "revId": "a5a0415dca4264735c5a2489d23429deb126d299",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "31cb03ee_b6b55f96",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1293547
+      },
+      "writtenOn": "2020-10-30T05:49:14Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "94f6db8c_e02abbbc",
+      "revId": "a5a0415dca4264735c5a2489d23429deb126d299",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

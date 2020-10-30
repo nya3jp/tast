@@ -17,6 +17,7 @@ import (
 
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/protocol"
+	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/timing"
 )
@@ -68,7 +69,7 @@ func serverOpts(logger logging.SinkFunc) []grpc.ServerOption {
 			return nil, errors.New("metadata not available")
 		}
 		ctx = logging.NewContext(ctx, logger)
-		ctx = testing.WithCurrentEntity(ctx, incomingCurrentContext(md))
+		ctx = testcontext.WithCurrentEntity(ctx, incomingCurrentContext(md))
 		tl = timing.NewLog()
 		ctx = timing.NewContext(ctx, tl)
 		return ctx, nil

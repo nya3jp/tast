@@ -9,7 +9,7 @@ import (
 
 	"google.golang.org/grpc/metadata"
 
-	"chromiumos/tast/internal/testing"
+	"chromiumos/tast/internal/testcontext"
 )
 
 // Keys of metadata.MD. Allowed characters are [a-z0-9._-].
@@ -22,7 +22,7 @@ const (
 // outgoingMetadata extracts CurrentEntity from ctx and converts it to metadata.MD.
 // It is called on gRPC clients to forward CurrentEntity over gRPC.
 func outgoingMetadata(ctx context.Context) metadata.MD {
-	swDeps, hasSwDeps := testing.ContextSoftwareDeps(ctx)
+	swDeps, hasSwDeps := testcontext.SoftwareDeps(ctx)
 	md := metadata.MD{
 		metadataSoftwareDeps: swDeps,
 	}
@@ -34,10 +34,10 @@ func outgoingMetadata(ctx context.Context) metadata.MD {
 
 // incomingCurrentContext creates CurrentEntity from metadata.MD.
 // It is called on gRPC servers to forward CurrentEntity over gRPC.
-func incomingCurrentContext(md metadata.MD) *testing.CurrentEntity {
+func incomingCurrentContext(md metadata.MD) *testcontext.CurrentEntity {
 	hasSoftwareDeps := len(md[metadataHasSoftwareDeps]) > 0
 	softwareDeps := md[metadataSoftwareDeps]
-	return &testing.CurrentEntity{
+	return &testcontext.CurrentEntity{
 		// TODO(crbug.com/969627): Support OutDir.
 		HasSoftwareDeps: hasSoftwareDeps,
 		SoftwareDeps:    softwareDeps,

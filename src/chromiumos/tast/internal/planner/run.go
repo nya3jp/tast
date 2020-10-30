@@ -22,6 +22,7 @@ import (
 	"chromiumos/tast/internal/dep"
 	"chromiumos/tast/internal/devserver"
 	"chromiumos/tast/internal/extdata"
+	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/timing"
 )
@@ -407,7 +408,7 @@ func buildPrePlan(tests []*testing.TestInstance, pcfg *Config) *prePlan {
 
 func (p *prePlan) run(ctx context.Context, out OutputStream, dl *downloader) error {
 	// Create a precondition-scoped context.
-	ec := &testing.CurrentEntity{
+	ec := &testcontext.CurrentEntity{
 		// OutDir is not available for a precondition-scoped context.
 		HasSoftwareDeps: true,
 		SoftwareDeps:    append([]string(nil), p.tests[0].SoftwareDeps...),

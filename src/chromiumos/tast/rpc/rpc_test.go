@@ -16,6 +16,7 @@ import (
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/protocol"
+	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/timing"
 )
@@ -106,7 +107,7 @@ func newPingPair(ctx context.Context, t *gotesting.T, onPing func(context.Contex
 }
 
 func TestRPCSuccess(t *gotesting.T) {
-	ctx := testing.WithCurrentEntity(context.Background(), &testing.CurrentEntity{})
+	ctx := testcontext.WithCurrentEntity(context.Background(), &testcontext.CurrentEntity{})
 	called := false
 	pp := newPingPair(ctx, t, func(context.Context, *testing.ServiceState) error {
 		called = true
@@ -114,7 +115,7 @@ func TestRPCSuccess(t *gotesting.T) {
 	})
 	defer pp.Close(ctx)
 
-	callCtx := testing.WithCurrentEntity(ctx, &testing.CurrentEntity{
+	callCtx := testcontext.WithCurrentEntity(ctx, &testcontext.CurrentEntity{
 		ServiceDeps: []string{pingServiceName},
 	})
 	if _, err := pp.Client.Ping(callCtx, &protocol.PingRequest{}); err != nil {
@@ -126,7 +127,7 @@ func TestRPCSuccess(t *gotesting.T) {
 }
 
 func TestRPCFailure(t *gotesting.T) {
-	ctx := testing.WithCurrentEntity(context.Background(), &testing.CurrentEntity{})
+	ctx := testcontext.WithCurrentEntity(context.Background(), &testcontext.CurrentEntity{})
 	called := false
 	pp := newPingPair(ctx, t, func(context.Context, *testing.ServiceState) error {
 		called = true
@@ -134,7 +135,7 @@ func TestRPCFailure(t *gotesting.T) {
 	})
 	defer pp.Close(ctx)
 
-	callCtx := testing.WithCurrentEntity(ctx, &testing.CurrentEntity{
+	callCtx := testcontext.WithCurrentEntity(ctx, &testcontext.CurrentEntity{
 		ServiceDeps: []string{pingServiceName},
 	})
 	if _, err := pp.Client.Ping(callCtx, &protocol.PingRequest{}); err == nil {
@@ -146,7 +147,7 @@ func TestRPCFailure(t *gotesting.T) {
 }
 
 func TestRPCNoCurrentEntity(t *gotesting.T) {
-	ctx := testing.WithCurrentEntity(context.Background(), &testing.CurrentEntity{})
+	ctx := testcontext.WithCurrentEntity(context.Background(), &testcontext.CurrentEntity{})
 	called := false
 	pp := newPingPair(ctx, t, func(context.Context, *testing.ServiceState) error {
 		called = true
@@ -163,11 +164,11 @@ func TestRPCNoCurrentEntity(t *gotesting.T) {
 }
 
 func TestRPCRejectUndeclaredServices(t *gotesting.T) {
-	ctx := testing.WithCurrentEntity(context.Background(), &testing.CurrentEntity{})
+	ctx := testcontext.WithCurrentEntity(context.Background(), &testcontext.CurrentEntity{})
 	pp := newPingPair(ctx, t, func(context.Context, *testing.ServiceState) error { return nil })
 	defer pp.Close(ctx)
 
-	callCtx := testing.WithCurrentEntity(ctx, &testing.CurrentEntity{
+	callCtx := testcontext.WithCurrentEntity(ctx, &testcontext.CurrentEntity{
 		ServiceDeps: []string{"foo.Bar"},
 	})
 	if _, err := pp.Client.Ping(callCtx, &protocol.PingRequest{}); err == nil {
@@ -178,13 +179,13 @@ func TestRPCRejectUndeclaredServices(t *gotesting.T) {
 func TestRPCForwardCurrentEntity(t *gotesting.T) {
 	expectedDeps := []string{"chrome", "android_p"}
 
-	ctx := testing.WithCurrentEntity(context.Background(), &testing.CurrentEntity{})
+	ctx := testcontext.WithCurrentEntity(context.Background(), &testcontext.CurrentEntity{})
 	called := false
 	var deps []string
 	var depsOK bool
 	pp := newPingPair(ctx, t, func(ctx context.Context, s *testing.ServiceState) error {
 		called = true
-		deps, depsOK = testing.ContextSoftwareDeps(ctx)
+		deps, depsOK = testcontext.SoftwareDeps(ctx)
 		return nil
 	})
 	defer pp.Close(ctx)
@@ -193,7 +194,7 @@ func TestRPCForwardCurrentEntity(t *gotesting.T) {
 		t.Error("Ping unexpectedly succeeded for a context without CurrentEntity")
 	}
 
-	callCtx := testing.WithCurrentEntity(ctx, &testing.CurrentEntity{
+	callCtx := testcontext.WithCurrentEntity(ctx, &testcontext.CurrentEntity{
 		ServiceDeps:     []string{pingServiceName},
 		HasSoftwareDeps: true,
 		SoftwareDeps:    expectedDeps,
@@ -216,7 +217,7 @@ func TestRPCForwardLogs(t *gotesting.T) {
 	logs := make(chan string, 1)
 	ctx := context.Background()
 	ctx = logging.NewContext(ctx, func(msg string) { logs <- msg })
-	ctx = testing.WithCurrentEntity(ctx, &testing.CurrentEntity{})
+	ctx = testcontext.WithCurrentEntity(ctx, &testcontext.CurrentEntity{})
 
 	called := false
 	pp := newPingPair(ctx, t, func(ctx context.Context, s *testing.ServiceState) error {
@@ -226,7 +227,7 @@ func TestRPCForwardLogs(t *gotesting.T) {
 	})
 	defer pp.Close(ctx)
 
-	callCtx := testing.WithCurrentEntity(ctx, &testing.CurrentEntity{
+	callCtx := testcontext.WithCurrentEntity(ctx, &testcontext.CurrentEntity{
 		ServiceDeps: []string{pingServiceName},
 	})
 	if _, err := pp.Client.Ping(callCtx, &protocol.PingRequest{}); err != nil {
@@ -245,7 +246,7 @@ func TestRPCForwardTiming(t *gotesting.T) {
 	const stageName = "hello"
 
 	ctx := context.Background()
-	ctx = testing.WithCurrentEntity(ctx, &testing.CurrentEntity{})
+	ctx = testcontext.WithCurrentEntity(ctx, &testcontext.CurrentEntity{})
 	log := timing.NewLog()
 	ctx = timing.NewContext(ctx, log)
 
@@ -258,7 +259,7 @@ func TestRPCForwardTiming(t *gotesting.T) {
 	})
 	defer pp.Close(ctx)
 
-	callCtx := testing.WithCurrentEntity(ctx, &testing.CurrentEntity{
+	callCtx := testcontext.WithCurrentEntity(ctx, &testcontext.CurrentEntity{
 		ServiceDeps: []string{pingServiceName},
 	})
 	if _, err := pp.Client.Ping(callCtx, &protocol.PingRequest{}); err != nil {
@@ -283,7 +284,7 @@ func TestRPCServiceScopedContext(t *gotesting.T) {
 	logs := make(chan string, 1)
 	ctx := context.Background()
 	ctx = logging.NewContext(ctx, func(msg string) { logs <- msg })
-	ctx = testing.WithCurrentEntity(ctx, &testing.CurrentEntity{})
+	ctx = testcontext.WithCurrentEntity(ctx, &testcontext.CurrentEntity{})
 
 	called := false
 	pp := newPingPair(ctx, t, func(ctx context.Context, s *testing.ServiceState) error {
@@ -293,7 +294,7 @@ func TestRPCServiceScopedContext(t *gotesting.T) {
 	})
 	defer pp.Close(ctx)
 
-	callCtx := testing.WithCurrentEntity(ctx, &testing.CurrentEntity{
+	callCtx := testcontext.WithCurrentEntity(ctx, &testcontext.CurrentEntity{
 		ServiceDeps: []string{pingServiceName},
 	})
 	if _, err := pp.Client.Ping(callCtx, &protocol.PingRequest{}); err != nil {

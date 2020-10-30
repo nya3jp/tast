@@ -19,6 +19,7 @@ import (
 
 	"chromiumos/tast/dut"
 	"chromiumos/tast/errors"
+	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/timing"
 )
@@ -130,7 +131,7 @@ var alwaysAllowedServices = []string{
 func clientOpts() []grpc.DialOption {
 	before := func(ctx context.Context, method string) (context.Context, error) {
 		// Reject an outgoing RPC call if its service is not declared in ServiceDeps.
-		svcs, ok := testing.ContextServiceDeps(ctx)
+		svcs, ok := testcontext.ServiceDeps(ctx)
 		if !ok {
 			return nil, status.Errorf(codes.FailedPrecondition, "refusing to call %s because ServiceDeps is unavailable (using a wrong context?)", method)
 		}

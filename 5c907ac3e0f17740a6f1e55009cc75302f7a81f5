@@ -58,6 +58,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "14c2bb78_bb171fc7",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 378,
+      "author": {
+        "id": 1414348
+      },
+      "writtenOn": "2020-10-30T08:30:19Z",
+      "side": 1,
+      "message": "Fixed but wondering if there\u0027s any reason getSoftwareFeatures() in this file has \"get\" prefix?",
+      "parentUuid": "6089d50a_4b8ca62e",
+      "range": {
+        "startLine": 378,
+        "startChar": 5,
+        "endLine": 378,
+        "endChar": 8
+      },
+      "revId": "5c907ac3e0f17740a6f1e55009cc75302f7a81f5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "1c9d0cb7_7566ca83",
@@ -75,6 +99,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "f7cc348c_bbb473e8",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 379,
+      "author": {
+        "id": 1414348
+      },
+      "writtenOn": "2020-10-30T08:30:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1c9d0cb7_7566ca83",
+      "revId": "5c907ac3e0f17740a6f1e55009cc75302f7a81f5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "8e1303f3_a600d770",
@@ -88,6 +130,30 @@
       "writtenOn": "2020-10-29T14:29:30Z",
       "side": 1,
       "message": "nit: return cpuInfo{arch, soc}, nil",
+      "range": {
+        "startLine": 396,
+        "startChar": 1,
+        "endLine": 397,
+        "endChar": 17
+      },
+      "revId": "5c907ac3e0f17740a6f1e55009cc75302f7a81f5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ac251ec1_9810f07e",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 397,
+      "author": {
+        "id": 1414348
+      },
+      "writtenOn": "2020-10-30T08:30:19Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8e1303f3_a600d770",
       "range": {
         "startLine": 396,
         "startChar": 1,

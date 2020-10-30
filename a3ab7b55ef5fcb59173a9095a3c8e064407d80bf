@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3f53d696_6ad430f2",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1414348
+      },
+      "writtenOn": "2020-10-30T08:30:19Z",
+      "side": 1,
+      "message": "TY! Updated with one styling question for reviewers in comment.",
+      "revId": "a3ab7b55ef5fcb59173a9095a3c8e064407d80bf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

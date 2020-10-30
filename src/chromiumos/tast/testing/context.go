@@ -9,8 +9,8 @@ import (
 	"context"
 	"fmt"
 
+	"chromiumos/tast/internal/entity"
 	"chromiumos/tast/internal/logging"
-	"chromiumos/tast/internal/testing"
 )
 
 // ContextLog formats its arguments using default formatting and logs them via
@@ -53,12 +53,12 @@ func ContextLogger(ctx context.Context) (*Logger, bool) {
 // ContextOutDir is similar to OutDir but takes context instead. It is intended to be
 // used by packages providing support for tests that need to write files.
 func ContextOutDir(ctx context.Context) (dir string, ok bool) {
-	return testing.ContextOutDir(ctx)
+	return entity.ContextOutDir(ctx)
 }
 
 // ContextSoftwareDeps is similar to SoftwareDeps but takes context instead.
 // It is intended to be used by packages providing support for tests that want to
 // make sure tests declare proper dependencies.
 func ContextSoftwareDeps(ctx context.Context) ([]string, bool) {
-	return testing.ContextSoftwareDeps(ctx)
+	return entity.ContextSoftwareDeps(ctx)
 }

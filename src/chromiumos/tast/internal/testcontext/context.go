@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package testing
+// Package testcontext provides logic to extract information from context.
+package testcontext
 
 import (
 	"context"

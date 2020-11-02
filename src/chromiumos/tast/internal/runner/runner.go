@@ -154,8 +154,9 @@ func runTestsAndReport(ctx context.Context, args *Args, cfg *Config, stdout io.W
 		hbw.Stop()
 
 		for _, bundle := range bundles {
+			logKillSyscall := cfg.Type == LocalRunner
 			// Copy each bundle's output (consisting of control messages) directly to stdout.
-			if err := runBundle(bundle, bundleArgs, stdout); err != nil {
+			if err := runBundle(bundle, bundleArgs, logKillSyscall, stdout); err != nil {
 				// TODO(derat): The tast command currently aborts the run as soon as it sees a RunError
 				// message, but consider changing that and continuing to run other bundles here.
 				// If we execute additional bundles, be sure to return immediately for statusInterrupted.

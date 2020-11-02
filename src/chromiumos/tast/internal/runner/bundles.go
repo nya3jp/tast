@@ -16,6 +16,7 @@ import (
 	"os/signal"
 	"path/filepath"
 	"sort"
+	"strconv"
 	"strings"
 	"sync"
 	"syscall"
@@ -95,7 +96,7 @@ func getTests(args *Args, bundles []string) (tests []*testing.EntityInfo,
 		bundle := b
 		go func() {
 			out := bytes.Buffer{}
-			if err := runBundle(bundle, bundleArgs, &out); err != nil {
+			if err := runBundle(bundle, bundleArgs, false, &out); err != nil {
 				ch <- testsOrError{bundle, nil, err}
 				return
 			}
@@ -160,9 +161,50 @@ func startBundleCmd(path string, bundleArgs *bundle.Args, stdout, stderr io.Writ
 	return cmd, nil
 }
 
+// enableKillSyscallLogging configures auditd so that the process sending SIGKILL
+// to the bundle process is recorded in audit.log (b/169712138).
+func enableKillSyscallLogging(pid int) error {
+	cmd := exec.Command("auditctl", "-D")
+	if err := cmd.Run(); err != nil {
+		return err
+	}
+	for _, arch := range []string{"b32", "b64"} {
+		cmd = exec.Command("auditctl",
+			"-a", "always,exit", "-F", "arch="+arch, "-S", "kill",
+			"-F", "a0="+strconv.Itoa(pid))
+		if err := cmd.Run(); err != nil {
+			return err
+		}
+	}
+	cmd = exec.Command("auditctl", "-a", "never,exit")
+	if err := cmd.Run(); err != nil {
+		return err
+	}
+	cmd = exec.Command("auditctl", "-a", "never,exclude", "-F", "msgtype!=AVC",
+		"-F", "msgtype!=SELINUX_ERR", "-F", "msgtype!=SECCOMP", "-F", "msgtype!=SYSCALL")
+	if err := cmd.Run(); err != nil {
+		return err
+	}
+	return nil
+}
+
+// disableKillSyscallLogging restores auditd settings.
+func disableKillSyscallLogging() error {
+	cmd := exec.Command("auditctl", "-D")
+	if err := cmd.Run(); err != nil {
+		return err
+	}
+	cmd = exec.Command("auditctl", "-a", "never,exclude", "-F", "msgtype!=AVC",
+		"-F", "msgtype!=SELINUX_ERR", "-F", "msgtype!=SECCOMP")
+	if err := cmd.Run(); err != nil {
+		return err
+	}
+	return nil
+}
+
 // runBundle runs the bundle at path to completion, passing bundleArgs.
 // The bundle's stdout is copied to the stdout arg.
-func runBundle(path string, bundleArgs *bundle.Args, stdout io.Writer) *command.StatusError {
+func runBundle(path string, bundleArgs *bundle.Args, logKillSyscall bool, stdout io.Writer) *command.StatusError {
 	// Watch for stdout being closed so we can abort the bundle and clean up: https://crbug.com/945626
 	// Otherwise, the runner, bundle, and processes started by tests may run indefinitely.
 	// When stdout is closed, it's important that we clean up before writing anything to it, as Go will
@@ -184,6 +226,13 @@ func runBundle(path string, bundleArgs *bundle.Args, stdout io.Writer) *command.
 	cmd, err := startBundleCmd(path, bundleArgs, stdout, &stderr)
 	if err != nil {
 		return command.NewStatusErrorf(statusBundleFailed, "%v", err)
+	}
+
+	if logKillSyscall {
+		if err := enableKillSyscallLogging(cmd.Process.Pid); err != nil {
+			return command.NewStatusErrorf(statusError, "failed adding auditctl rules: %v", err)
+		}
+		defer disableKillSyscallLogging()
 	}
 
 	// When we return, kill the bundle process and any other processes in its session.

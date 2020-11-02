@@ -35,6 +35,23 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "f7c1db2b_b73e6fa6",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1001853
+      },
+      "writtenOn": "2020-11-02T09:38:16Z",
+      "side": 1,
+      "message": "A nit.",
+      "revId": "908589ed0fb7ac8df02b83efacf2a968fdb0716a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "75d9c419_d5927ad7",
@@ -102,6 +119,23 @@
         "endLine": 33,
         "endChar": 30
       },
+      "revId": "908589ed0fb7ac8df02b83efacf2a968fdb0716a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "33344b8a_6dd1c9fe",
+        "filename": "src/chromiumos/tast/dut/dut.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 244,
+      "author": {
+        "id": 1001853
+      },
+      "writtenOn": "2020-11-02T09:38:16Z",
+      "side": 1,
+      "message": "How about merging this and companionDeviceHostname?\n\nfunc (d *DUT) CompanionDeviceHostname(suffix) (string, error) {\n  // Move the code of companionDeviceHostname to here.\n}\n\nAnd on the caller side, eg. line 275:\nhostname, err :\"\u003d d.CompanionDeviceHostname(suffix)",
       "revId": "908589ed0fb7ac8df02b83efacf2a968fdb0716a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }

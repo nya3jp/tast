@@ -80,6 +80,30 @@
       },
       "revId": "908589ed0fb7ac8df02b83efacf2a968fdb0716a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d84a8923_2f5527ab",
+        "filename": "src/chromiumos/tast/dut/dut.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1431109
+      },
+      "writtenOn": "2020-11-02T08:41:20Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "df5ea6b9_0e641bae",
+      "range": {
+        "startLine": 33,
+        "startChar": 0,
+        "endLine": 33,
+        "endChar": 30
+      },
+      "revId": "908589ed0fb7ac8df02b83efacf2a968fdb0716a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

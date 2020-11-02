@@ -26,6 +26,10 @@ type LocalDelegate struct {
 	// If an error is returned, none of the bundle's tests will run.
 	Ready func(ctx context.Context) error
 
+	// RunHook is called at the beginning of a bundle execution if it is not nil.
+	// The returned closure is executed at the end if it is not nil.
+	RunHook func(ctx context.Context) (func(ctx context.Context) error, error)
+
 	// TestHook is called before each test run if it is not nil. The returned closure is executed
 	// after the test if not nil.
 	TestHook func(ctx context.Context, s *testing.TestHookState) func(ctx context.Context, s *testing.TestHookState)
@@ -49,13 +53,16 @@ func Local(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, delegate 
 		defaultTestTimeout: localTestTimeout,
 		testHook:           delegate.TestHook,
 	}
-	if delegate.Ready != nil {
-		cfg.runHook = func(ctx context.Context) (func(context.Context) error, error) {
-			if !args.RunTests.WaitUntilReady {
-				return nil, nil
+	cfg.runHook = func(ctx context.Context) (func(context.Context) error, error) {
+		if delegate.Ready != nil && args.RunTests.WaitUntilReady {
+			if err := delegate.Ready(ctx); err != nil {
+				return nil, err
 			}
-			return nil, delegate.Ready(ctx)
 		}
+		if delegate.RunHook == nil {
+			return nil, nil
+		}
+		return delegate.RunHook(ctx)
 	}
 	return run(context.Background(), clArgs, stdin, stdout, stderr, &args, &cfg, localBundle)
 }

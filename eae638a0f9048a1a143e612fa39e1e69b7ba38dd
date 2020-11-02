@@ -41,6 +41,23 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "800eb245_4ea21056",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1001853
+      },
+      "writtenOn": "2020-11-02T09:10:23Z",
+      "side": 1,
+      "message": "Sorry for missing the review reply. Please resolve comments before submitting.",
+      "revId": "eae638a0f9048a1a143e612fa39e1e69b7ba38dd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "157c1897_6649b21a",
@@ -77,6 +94,30 @@
       "writtenOn": "2020-10-29T20:04:16Z",
       "side": 1,
       "message": "totally subjective opinion here, but \"Ith\" seems really awkward to me. I think a parameterized \"WifiPeerHost(..., index)\" is clear enough.",
+      "range": {
+        "startLine": 286,
+        "startChar": 14,
+        "endLine": 286,
+        "endChar": 17
+      },
+      "revId": "eae638a0f9048a1a143e612fa39e1e69b7ba38dd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3e18ca72_ffabefd7",
+        "filename": "src/chromiumos/tast/dut/dut.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 286,
+      "author": {
+        "id": 1001853
+      },
+      "writtenOn": "2020-11-02T09:10:23Z",
+      "side": 1,
+      "message": "I second the comment. Please rename it.",
+      "parentUuid": "2a73ce2b_6512d1fc",
       "range": {
         "startLine": 286,
         "startChar": 14,

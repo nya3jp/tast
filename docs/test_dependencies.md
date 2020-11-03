@@ -65,6 +65,8 @@ The following software features are defined:
 *   `crosvm_gpu` - Boards that use hardware GPU acceleration in the guest VM environment.
 *   `crosvm_no_gpu` - Boards that use software GPU emulation in the guest VM environment.
 *   `cups` - CUPS daemon.
+*   `device_crash` - Boards that can recover gracefully after a hard crash (e.g.
+    kernel crash)
 *   `diagnostics` - Boards that contain generic cross-platform
     [Diagnostic utilities].
 *   `display_backlight` - An internal display backlight.
@@ -72,6 +74,8 @@ The following software features are defined:
 *   `dptf` - Support of [Intel Dynamic Platform and Thermal Framework] (DPTF).
 *   `drivefs` - Google Drive support enabled.
 *   `drm_atomic` - The [DRM/KMS] kernel subsystem supports atomic commits.
+*   `ec_crash` - Boards that have EC firmware, implement the `crash` EC command,
+    and produce a panicinfo file after a crash.
 *   `encrypted_reboot_vault` - Whether the system can setup an encrypted reboot vault in the stateful partition.
 *   `firewall` - Standard Chrome OS network firewall rules.
 *   `flashrom` - Userspace utility to update firmware.

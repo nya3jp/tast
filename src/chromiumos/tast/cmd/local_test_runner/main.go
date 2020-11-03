@@ -140,6 +140,7 @@ func main() {
 			"proprietary_codecs":     "chrome_internal || chrome_media",
 			"pstore":                 "!betty && !tast_vm", // These boards don't support pstore: https://crbug.com/971899
 			"qemu":                   "betty || tast_vm",
+			"racc":                   "racc",
 			"reboot":                 "!tast_vm",                     // weird missing-runner-after-reboot bug: https://crbug.com/909955
 			"screenshot":             "display_backlight && !rk3399", // screenshot command broken on RK3399: https://crbug.com/880597
 			"selinux":                "selinux",

@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0bb86b9b_994dfe7b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-11-03T00:59:59Z",
+      "side": 1,
+      "message": "Hi Everybody:\n\nIn this version, I introduced a new field called TestNames in run.Config which specify what test to run. I have written unit tests for two new functions findPatternsForShard and findShardIndices. Please let me know if more unit tests are needed.\n\nThanks.\n\nSeewai\n",
+      "revId": "c5983aa575823cbbe0123405c56358b9dc0e3a61",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

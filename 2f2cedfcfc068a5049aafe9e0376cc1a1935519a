@@ -58,6 +58,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "4125af35_2375268b",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-11-03T00:59:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9aa48f16_95e6c214",
+      "range": {
+        "startLine": 32,
+        "startChar": 1,
+        "endLine": 32,
+        "endChar": 25
+      },
+      "revId": "2f2cedfcfc068a5049aafe9e0376cc1a1935519a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "6ea5e3bd_1fc67ee0",
@@ -81,6 +105,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "0a07cf62_ea606349",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-11-03T00:59:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6ea5e3bd_1fc67ee0",
+      "range": {
+        "startLine": 76,
+        "startChar": 15,
+        "endLine": 76,
+        "endChar": 24
+      },
+      "revId": "2f2cedfcfc068a5049aafe9e0376cc1a1935519a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "25d4437e_89fb4cd8",
@@ -94,6 +142,24 @@
       "writtenOn": "2020-10-30T10:13:28Z",
       "side": 1,
       "message": "Change is empty :)",
+      "revId": "2f2cedfcfc068a5049aafe9e0376cc1a1935519a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e8eb6af2_c1f56cc5",
+        "filename": "src/chromiumos/tast/internal/runner/bundles.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 129,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-11-03T00:59:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "25d4437e_89fb4cd8",
       "revId": "2f2cedfcfc068a5049aafe9e0376cc1a1935519a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }

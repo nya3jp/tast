@@ -124,6 +124,7 @@ The following software features are defined:
     codecs (e.g. H.264). This is supported by Chrome official builds and Chromium
     builds with the |propietary_codecs| build flag set.
 *   `qemu` - For tests exclusive to Chrome OS QEMU images.
+*   `racc` - Whether [Runtime AVL Compliance Check] is available.
 *   `reboot` - The ability to reboot reliably during a remote test.
 *   `screenshot` - The [screenshot command] can save screenshots.
 *   `selinux` - An SELinux-enabled board. All Android boards are
@@ -182,6 +183,7 @@ The following software features are defined:
 [Memory stats collection daemon]: https://chromium.googlesource.com/chromiumos/platform2/+/master/metrics/memd/
 [OCI]: https://www.opencontainers.org/
 [Optical Character Recognition Service]: https://chromium.googlesource.com/chromiumos/platform2/+/HEAD/ocr/README.md
+[Runtime AVL Compliance Check]: https://chromium.googlesource.com/chromiumos/platform2/+/refs/heads/master/runtime_probe/README.md
 [screenshot command]: https://chromium.googlesource.com/chromiumos/platform2/+/master/screenshot/
 [Trusted Platform Module]: https://en.wikipedia.org/wiki/Trusted_Platform_Module
 [Transparent Hugepage]: https://www.kernel.org/doc/Documentation/vm/transhuge.txt

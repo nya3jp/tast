@@ -147,6 +147,7 @@ func main() {
 			"proprietary_codecs": "chrome_internal || chrome_media",
 			"pstore":             "!betty && !tast_vm", // These boards don't support pstore: https://crbug.com/971899
 			"qemu":               "betty || tast_vm",
+			"racc":               "racc",
 			// weird missing-runner-after-reboot bug: https://crbug.com/909955
 			// TODO(yich): This is a workaround to enable reboot flag on all boards.
 			// We should disable this flag if the weird missing-runner-after-reboot bug still happening.

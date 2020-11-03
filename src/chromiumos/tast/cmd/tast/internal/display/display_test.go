@@ -441,7 +441,7 @@ func TestClose(t *testing.T) {
 		t.Errorf("Term left in raw mode (%d open handle(s))", tm.openHandles)
 	}
 	if tm.reverse || !tm.cursorVisible || !tm.lineWrap {
-		t.Errorf("Term not returned to sane state (reverse=%v, visible=%v, wrap=%v)",
+		t.Errorf("Term not returned to valid state (reverse=%v, visible=%v, wrap=%v)",
 			tm.reverse, tm.cursorVisible, tm.lineWrap)
 	}
 }

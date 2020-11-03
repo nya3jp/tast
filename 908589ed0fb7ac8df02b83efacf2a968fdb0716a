@@ -1,6 +1,23 @@
 {
   "comments": [
     {
+      "unresolved": true,
+      "key": {
+        "uuid": "9e358052_e64d266d",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1371981
+      },
+      "writtenOn": "2020-11-03T03:49:23Z",
+      "side": 1,
+      "message": "nit: might need to elaborate more why hostname is needed. e.g.\n1. we\u0027ll pass these as \"default value\" of optional Var.\n2. devices like attenuator is not accessed via SSH.",
+      "revId": "908589ed0fb7ac8df02b83efacf2a968fdb0716a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": false,
       "key": {
         "uuid": "9f58a0d6_cff89b0e",
@@ -48,6 +65,23 @@
       "writtenOn": "2020-11-02T09:38:16Z",
       "side": 1,
       "message": "A nit.",
+      "revId": "908589ed0fb7ac8df02b83efacf2a968fdb0716a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "26d602fe_7fa7078b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1371981
+      },
+      "writtenOn": "2020-11-03T03:49:23Z",
+      "side": 1,
+      "message": "LGTM % nits. Also add tast-owners to review the change in framework.",
       "revId": "908589ed0fb7ac8df02b83efacf2a968fdb0716a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -125,6 +159,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "794e37ee_ccb3bb8d",
+        "filename": "src/chromiumos/tast/dut/dut.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1371981
+      },
+      "writtenOn": "2020-11-03T03:49:23Z",
+      "side": 1,
+      "message": "I remember tast-owners had a thought that these companion information should be provided by the lab setting instead of mangling, so allowing arbitrary suffix might conflict with their plan. (e.g. these might need to be fixed fields in lab setting)\n\nRe-open this thread for some attention from tast-owners@.",
+      "parentUuid": "d84a8923_2f5527ab",
+      "range": {
+        "startLine": 33,
+        "startChar": 0,
+        "endLine": 33,
+        "endChar": 30
+      },
+      "revId": "908589ed0fb7ac8df02b83efacf2a968fdb0716a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "33344b8a_6dd1c9fe",
         "filename": "src/chromiumos/tast/dut/dut.go",
         "patchSetId": 1
@@ -136,6 +194,41 @@
       "writtenOn": "2020-11-02T09:38:16Z",
       "side": 1,
       "message": "How about merging this and companionDeviceHostname?\n\nfunc (d *DUT) CompanionDeviceHostname(suffix) (string, error) {\n  // Move the code of companionDeviceHostname to here.\n}\n\nAnd on the caller side, eg. line 275:\nhostname, err :\"\u003d d.CompanionDeviceHostname(suffix)",
+      "revId": "908589ed0fb7ac8df02b83efacf2a968fdb0716a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "913198ba_7256bd99",
+        "filename": "src/chromiumos/tast/dut/dut.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 244,
+      "author": {
+        "id": 1371981
+      },
+      "writtenOn": "2020-11-03T03:49:23Z",
+      "side": 1,
+      "message": "+1",
+      "parentUuid": "33344b8a_6dd1c9fe",
+      "revId": "908589ed0fb7ac8df02b83efacf2a968fdb0716a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b165ce21_a3e25c9c",
+        "filename": "src/chromiumos/tast/dut/dut.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 291,
+      "author": {
+        "id": 1371981
+      },
+      "writtenOn": "2020-11-03T03:49:23Z",
+      "side": 1,
+      "message": "nit: IIUC, all usages of DefaultWifi* functions will be dropped in the next CL. I think probably no code other than wificell package will use these and we can comment DEPRECATED in this CL and remove them after this CL chain merged?",
       "revId": "908589ed0fb7ac8df02b83efacf2a968fdb0716a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }

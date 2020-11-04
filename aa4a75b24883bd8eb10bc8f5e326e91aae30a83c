@@ -71,6 +71,75 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "efe447c1_bb422c76",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 1306673
+      },
+      "writtenOn": "2020-11-04T09:42:15Z",
+      "side": 1,
+      "message": "maybe keep TODO as it was before in kernel_crash.go or watchdog.go? you just remove TODO and replace it by comment.",
+      "range": {
+        "startLine": 95,
+        "startChar": 38,
+        "endLine": 95,
+        "endChar": 125
+      },
+      "revId": "aa4a75b24883bd8eb10bc8f5e326e91aae30a83c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8a2ccc94_ceff7b4c",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 1306673
+      },
+      "writtenOn": "2020-11-04T09:42:15Z",
+      "side": 1,
+      "message": "it can be just b/172228823",
+      "range": {
+        "startLine": 100,
+        "startChar": 173,
+        "endLine": 100,
+        "endChar": 221
+      },
+      "revId": "aa4a75b24883bd8eb10bc8f5e326e91aae30a83c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "558569cc_ce3a6bf1",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 1306673
+      },
+      "writtenOn": "2020-11-04T09:42:15Z",
+      "side": 1,
+      "message": "I think we may skip https scheme",
+      "range": {
+        "startLine": 102,
+        "startChar": 116,
+        "endLine": 102,
+        "endChar": 124
+      },
+      "revId": "aa4a75b24883bd8eb10bc8f5e326e91aae30a83c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "9fec314e_f04c55ee",
         "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
         "patchSetId": 2

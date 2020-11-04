@@ -16,6 +16,29 @@
       "message": "Just added a new unit test that will check for missing dependency in tests.\n",
       "revId": "c3076da989ffeebc67716f006eca339dd2b3e4a1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cf6fa4ac_58a6518e",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 128,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-11-04T08:36:12Z",
+      "side": 1,
+      "message": "It\u0027s impossible to construct TestInstance from TestInfo (e.g. HardwareDeps is unavailable). In other words, it\u0027s only test bundles, not Tast CLI / runners, that can decide skips.\n\nSo we have to extend the protocol a bit. I guess the easiest way is to add a field to TestInfo indicating whether it will be skipped or not.",
+      "range": {
+        "startLine": 128,
+        "startChar": 2,
+        "endLine": 128,
+        "endChar": 39
+      },
+      "revId": "c3076da989ffeebc67716f006eca339dd2b3e4a1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

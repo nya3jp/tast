@@ -33,6 +33,24 @@
       "message": "Hi Tetsui,\n\nThanks for investigating the issue!\n\nRegarding where to put this logic, we\u0027re trying to move as much Chrome OS specific logic from the framework (platform/tast) to test bundles (platform/tast-tests) for better separation between the framework and test bundles, as well as better availability of support libraries (framework code can\u0027t import rich support libraries available in tast-tests).\n\nIn this case I think we can run the logic as pre/post-run hooks. I know that it\u0027s best if we can enable audit before running a bundle, but I hope it\u0027s practically okay since SIGKILL is sent in the middle of bundle execution.\n\nSince pre/post-run hooks are not well supported in Tast yet, I\u0027ve sent a framework change to add support of it: crrev.com/c/2513683. Can you take a look to see if it fits your use case?\n\nThank you!\n",
       "revId": "cc17e718363bab847827f7868d2cc8b15e487301",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4e7bc212_d3829f16",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1195459
+      },
+      "writtenOn": "2020-11-04T08:53:17Z",
+      "side": 1,
+      "message": "Thank you for creating pre/post-run hooks! The updated version here: https://crrev.com/c/2517264",
+      "parentUuid": "a5ba15b0_4d720129",
+      "revId": "cc17e718363bab847827f7868d2cc8b15e487301",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

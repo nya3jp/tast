@@ -90,6 +90,29 @@
       },
       "revId": "aa4a75b24883bd8eb10bc8f5e326e91aae30a83c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f3d3a782_92870979",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 1306673
+      },
+      "writtenOn": "2020-11-04T09:35:59Z",
+      "side": 1,
+      "message": "not sorted\n\nMaybe it makes sense to group boards and sort within the group?\n\nFor example, \n\n```\n\"ec_crash\": (! (asuka || banon || ...) || (drallion || sarien) || (...))\n\n```",
+      "range": {
+        "startLine": 104,
+        "startChar": 170,
+        "endLine": 104,
+        "endChar": 178
+      },
+      "revId": "aa4a75b24883bd8eb10bc8f5e326e91aae30a83c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

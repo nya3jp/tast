@@ -10,10 +10,12 @@ import (
 	"context"
 	"fmt"
 	"net"
+	"path/filepath"
 	"strings"
 	"time"
 
 	"chromiumos/tast/errors"
+	"chromiumos/tast/internal/entity"
 	"chromiumos/tast/internal/linuxssh"
 	"chromiumos/tast/internal/testingutil"
 	"chromiumos/tast/ssh"
@@ -166,6 +168,18 @@ func (d *DUT) WaitConnect(ctx context.Context) error {
 
 // Reboot reboots the DUT.
 func (d *DUT) Reboot(ctx context.Context) error {
+	outDir, ok := entity.ContextOutDir(ctx)
+	if !ok {
+		return errors.New("failed to get outdir before reboot")
+	}
+	dateString := time.Now().Format(time.RFC3339)
+	if err := d.GetFile(ctx, "/var/log/messages", filepath.Join(outDir, "messages-"+dateString)); err != nil {
+		return errors.Wrap(err, "failed to copy syslog")
+	}
+	if err := d.GetFile(ctx, "/var/log/chrome/", filepath.Join(outDir, "chrome-"+dateString)); err != nil {
+		return errors.Wrap(err, "failed to copy chrome logs")
+	}
+
 	readBootID := func(ctx context.Context) (string, error) {
 		out, err := d.Command("cat", "/proc/sys/kernel/random/boot_id").Output(ctx)
 		if err != nil {

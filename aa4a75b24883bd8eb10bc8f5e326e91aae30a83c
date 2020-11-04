@@ -33,6 +33,63 @@
       "message": "thanks, Ian!",
       "revId": "aa4a75b24883bd8eb10bc8f5e326e91aae30a83c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0d74b82d_b10b5315",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-11-04T07:43:14Z",
+      "side": 1,
+      "message": "Thanks for working on the fix.\n\nLGTM but please make sure to update some other files.\n",
+      "revId": "aa4a75b24883bd8eb10bc8f5e326e91aae30a83c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5977d5ad_36cc5d4a",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-11-04T07:43:14Z",
+      "side": 1,
+      "message": "Can you also update go/tast-deps?",
+      "revId": "aa4a75b24883bd8eb10bc8f5e326e91aae30a83c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9fec314e_f04c55ee",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-11-04T07:43:14Z",
+      "side": 1,
+      "message": "USE flags appearing here have to be listed in tast-use-flags-9999.ebuild.",
+      "range": {
+        "startLine": 104,
+        "startChar": 31,
+        "endLine": 104,
+        "endChar": 261
+      },
+      "revId": "aa4a75b24883bd8eb10bc8f5e326e91aae30a83c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

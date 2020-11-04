@@ -69,6 +69,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "7a393e2e_ae2b0c83",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1305461
+      },
+      "writtenOn": "2020-11-04T19:16:55Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5977d5ad_36cc5d4a",
+      "revId": "aa4a75b24883bd8eb10bc8f5e326e91aae30a83c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "efe447c1_bb422c76",
@@ -82,6 +100,30 @@
       "writtenOn": "2020-11-04T09:42:15Z",
       "side": 1,
       "message": "maybe keep TODO as it was before in kernel_crash.go or watchdog.go? you just remove TODO and replace it by comment.",
+      "range": {
+        "startLine": 95,
+        "startChar": 38,
+        "endLine": 95,
+        "endChar": 125
+      },
+      "revId": "aa4a75b24883bd8eb10bc8f5e326e91aae30a83c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a2d819be_3ce18079",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 1305461
+      },
+      "writtenOn": "2020-11-04T19:16:55Z",
+      "side": 1,
+      "message": "Yeah, that was intentional -- the linked bug was closed as infeasible to fix, so there\u0027s no longer any TODO to do.",
+      "parentUuid": "efe447c1_bb422c76",
       "range": {
         "startLine": 95,
         "startChar": 38,
@@ -115,6 +157,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "8c4bce60_177038b1",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 1305461
+      },
+      "writtenOn": "2020-11-04T19:16:55Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8a2ccc94_ceff7b4c",
+      "range": {
+        "startLine": 100,
+        "startChar": 173,
+        "endLine": 100,
+        "endChar": 221
+      },
+      "revId": "aa4a75b24883bd8eb10bc8f5e326e91aae30a83c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "558569cc_ce3a6bf1",
@@ -128,6 +194,30 @@
       "writtenOn": "2020-11-04T09:42:15Z",
       "side": 1,
       "message": "I think we may skip https scheme",
+      "range": {
+        "startLine": 102,
+        "startChar": 116,
+        "endLine": 102,
+        "endChar": 124
+      },
+      "revId": "aa4a75b24883bd8eb10bc8f5e326e91aae30a83c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e2b60b76_ad0d92c4",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 1305461
+      },
+      "writtenOn": "2020-11-04T19:16:55Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "558569cc_ce3a6bf1",
       "range": {
         "startLine": 102,
         "startChar": 116,
@@ -179,6 +269,54 @@
         "startChar": 170,
         "endLine": 104,
         "endChar": 178
+      },
+      "revId": "aa4a75b24883bd8eb10bc8f5e326e91aae30a83c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b91d8f40_69a80132",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 1305461
+      },
+      "writtenOn": "2020-11-04T19:16:55Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f3d3a782_92870979",
+      "range": {
+        "startLine": 104,
+        "startChar": 170,
+        "endLine": 104,
+        "endChar": 178
+      },
+      "revId": "aa4a75b24883bd8eb10bc8f5e326e91aae30a83c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "da40032a_8133cb12",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 1305461
+      },
+      "writtenOn": "2020-11-04T19:16:55Z",
+      "side": 1,
+      "message": "Rewrote to use \"board:\" instead.",
+      "parentUuid": "9fec314e_f04c55ee",
+      "range": {
+        "startLine": 104,
+        "startChar": 31,
+        "endLine": 104,
+        "endChar": 261
       },
       "revId": "aa4a75b24883bd8eb10bc8f5e326e91aae30a83c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"

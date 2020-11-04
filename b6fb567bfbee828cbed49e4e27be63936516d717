@@ -1,0 +1,67 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "44b86f44_594ec8c5",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-11-04T07:37:48Z",
+      "side": 1,
+      "message": "Thanks for the change! Logic-wise LGTM.\n",
+      "revId": "b6fb567bfbee828cbed49e4e27be63936516d717",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4284aae0_637d6f4f",
+        "filename": "src/chromiumos/tast/internal/entity/entity_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-11-04T07:37:48Z",
+      "side": 1,
+      "message": "nit: Can you add this doc to entity.go, not in entity_test.go?",
+      "range": {
+        "startLine": 5,
+        "startChar": 3,
+        "endLine": 5,
+        "endChar": 10
+      },
+      "revId": "b6fb567bfbee828cbed49e4e27be63936516d717",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "78186d8f_653c435a",
+        "filename": "src/chromiumos/tast/internal/entity/entity_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-11-04T07:37:48Z",
+      "side": 1,
+      "message": "This naming \"entity\" sounds a bit broad. For example, testing.Test is also about an entity, but I don\u0027t think we\u0027ll move it to this package.\n\nI think it\u0027s good to scope this package to providing exclusive utilities to access Tast-related values in context.Context. Some information in context.Context are related to the current entity, but not all. So can you include \"context\" in the package name? Maybe \"testcontext\"?\n\nAlso, if you have cycles, it\u0027s nice if you can merge chromiumos/tast/internal/logging to the new package, since it\u0027s also about context.Context.",
+      "range": {
+        "startLine": 7,
+        "startChar": 8,
+        "endLine": 7,
+        "endChar": 14
+      },
+      "revId": "b6fb567bfbee828cbed49e4e27be63936516d717",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

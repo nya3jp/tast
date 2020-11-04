@@ -16,6 +16,24 @@
       "message": "I want Tetsui to see if this mechanism is suitable for crrev.com/c/2513678.\n",
       "revId": "96442ce1627db2d7d4589a99920258fe2773e1c5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6e04a6ed_57bbc4ad",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1195459
+      },
+      "writtenOn": "2020-11-04T08:57:16Z",
+      "side": 1,
+      "message": "Confirmed that it satisfies the requirement. A newer CL which uses runhook is here: https://crrev.com/c/2517264\n\nOne minor issue for my use case is that when the issue happens the bundle itself is killed so post-hook will not run, but it should be fine as auditctl will be reset next time the bundle runs.",
+      "parentUuid": "7a463a47_77dd4cce",
+      "revId": "96442ce1627db2d7d4589a99920258fe2773e1c5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

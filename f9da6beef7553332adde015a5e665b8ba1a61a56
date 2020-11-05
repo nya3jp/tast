@@ -16,6 +16,69 @@
       "message": "I just added a unit test for bundle.run. Please review.",
       "revId": "f9da6beef7553332adde015a5e665b8ba1a61a56",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0a5be828_e96359c2",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 8
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-11-05T08:33:49Z",
+      "side": 1,
+      "message": "Looking nicer. I think we can go into details from the next iteration...",
+      "revId": "f9da6beef7553332adde015a5e665b8ba1a61a56",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a1906951_f7d37ac3",
+        "filename": "src/chromiumos/tast/bundle/bundle.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-11-05T08:33:49Z",
+      "side": 1,
+      "message": "args.RunTests can be referenced only in RunTestsMode.\n\nPlease copy necessary fields (e.g. CheckSoftwareDeps) from RunTestsArgs to ListTestsArgs, as well as Features method. Two Features methods would be almost identical, so it\u0027s nice to introduce a common function that is called from the two.",
+      "range": {
+        "startLine": 67,
+        "startChar": 5,
+        "endLine": 67,
+        "endChar": 18
+      },
+      "revId": "f9da6beef7553332adde015a5e665b8ba1a61a56",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8dee75f3_6df28027",
+        "filename": "src/chromiumos/tast/internal/testing/test_instance.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 499,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-11-05T08:33:49Z",
+      "side": 1,
+      "message": "Previously all fields are filled by TestInstance.EntityInfo(), but new SkipReason field is filled externally. Therefore, throughout the code, we have two kinds of EntityInfo, one of which has SkipReason filled and the other not.\n\nTo make the difference statically distinguishable, let us introduce a new type that contains EntityInfo + SkipReason.\n\nMy recommendation is to introduce a new type RuntimeTestInfo, which embeds EntityInfo.\n\n type RuntimeTestInfo struct {\n   EntityInfo\n   SkipReason string `...`\n }\n\nI tentatively named it RuntimeTestInfo because it contains runtime (non-static) information, and it\u0027s for tests only (EntityInfo exists for fixtures as well, but fixtures are never skipped).\n\nThis new type would be returned by TestInstance.RuntimeTestInfo() (i.e. no external code filling SkipReason).",
+      "range": {
+        "startLine": 499,
+        "startChar": 5,
+        "endLine": 499,
+        "endChar": 15
+      },
+      "revId": "f9da6beef7553332adde015a5e665b8ba1a61a56",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

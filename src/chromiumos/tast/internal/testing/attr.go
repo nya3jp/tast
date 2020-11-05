@@ -259,6 +259,21 @@ third_party/autotest/files/server/site_tests/tast/control.runtime-probe
 		},
 	},
 	{
+		Name:     "wificell_roam",
+		Contacts: []string{"chromeos-kernel-wifi@google.com"},
+		Desc:     `The group of WiFi roaming tests to be run with Grover fixture.`,
+		Subattrs: []*attr{
+			{
+				Name: "wificell_roam_func",
+				Desc: `Tests basic WiFi roaming functionalities using Grover fixture.`,
+			},
+			{
+				Name: "wificell_roam_perf",
+				Desc: `Measures WiFi performance using Grover fixture.`,
+			},
+		},
+	},
+	{
 		Name:     "meta",
 		Contacts: []string{"tast-owners@google.com"},
 		Desc: `A group of functional tests of the Tast framework itself.

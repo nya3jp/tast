@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "033554d3_a9ddba19",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 7
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-11-05T01:28:08Z",
+      "side": 1,
+      "message": "I need SkipReasons to print out appropriate message to log file. Therefore, I moved SkipReasons from TestInstance to TestInfo. I also added RunTests argument for list test. Please check if it is ok. \n\nI am still working the unit test for run.run. Please review what I have changed so far.\n\nThanks.\n",
+      "revId": "2bd89745271244b7c462e782587a5507a1f460e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

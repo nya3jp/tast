@@ -39,6 +39,30 @@
       },
       "revId": "c3076da989ffeebc67716f006eca339dd2b3e4a1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ff5dd734_3cf65d03",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 128,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-11-05T01:28:08Z",
+      "side": 1,
+      "message": "I need SkipReasons to print out appropriate message to log. Therefore, I move SkipReasons from TestInstance to TestInfo. I add RunTests argument for list test. Please check if it is ok. Thanks.",
+      "parentUuid": "cf6fa4ac_58a6518e",
+      "range": {
+        "startLine": 128,
+        "startChar": 2,
+        "endLine": 128,
+        "endChar": 39
+      },
+      "revId": "c3076da989ffeebc67716f006eca339dd2b3e4a1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

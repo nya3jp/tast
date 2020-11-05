@@ -42,6 +42,11 @@ Below is the list of most popular groups and their associated extra attributes:
        *  `wificell_stress`: Stress test the WiFi functionalities.
     *  Stability (optional): if `wificell_unstable` is present, the test is yet
        to be verified as stable; otherwise, the test is stable.
+*   `group:wificell_roam` - Tests that depends on [grover] fixture to run.
+    Its sub-attributes can be classified into two types:
+    *  Role (required): specify the role of the test:
+       *  `wificell_func`: verify basic WiFi roaming functionalities.
+       *  `wificell_perf`: measure WiFi roaming performance.
 *   `group:labqual` - Tests that must pass for devices to go to a low-touch lab.
 
 See [attr.go] for the full list of valid attributes.
@@ -62,6 +67,7 @@ select which tests to run.
 [testing.Test]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#Test
 [crosbolt]: https://crosbolt.teams.x20web.corp.google.com/prod/crosbolt/index.html
 [wificell]: https://chromium.googlesource.com/chromiumos/third_party/autotest/+/master/docs/wificell.md
+[grover]: https://docs.google.com/document/d/1klnkcEpbG6_0BKeLXEN9ST13-w8gcNYG1xH80dlvt7U/edit#heading=h.5qbjna8vt4qu
 [attr.go]: https://chromium.googlesource.com/chromiumos/platform/tast/+/refs/heads/master/src/chromiumos/tast/internal/testing/attr.go
 [bundle]: overview.md#Test-bundles
 [software dependency]: test_dependencies.md

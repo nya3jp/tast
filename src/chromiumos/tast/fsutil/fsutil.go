@@ -12,6 +12,8 @@ import (
 	"os"
 	"path/filepath"
 	"syscall"
+
+	"chromiumos/tast/errors"
 )
 
 // CopyFile copies the regular file at path src to dst.
@@ -20,13 +22,13 @@ import (
 func CopyFile(src, dst string) error {
 	sf, err := os.Open(src)
 	if err != nil {
-		return err
+		return errors.Wrap(err, "failed to open src file")
 	}
 	defer sf.Close()
 
 	fi, err := sf.Stat()
 	if err != nil {
-		return err
+		return errors.Wrap(err, "failed to stat src file")
 	} else if !fi.Mode().IsRegular() {
 		return fmt.Errorf("source not regular file (mode %s)", fi.Mode())
 	}
@@ -34,33 +36,33 @@ func CopyFile(src, dst string) error {
 	// Copy to a temp file.
 	df, err := ioutil.TempFile(filepath.Dir(dst), "."+filepath.Base(dst)+".")
 	if err != nil {
-		return err
+		return errors.Wrap(err, "failed to create tmp file")
 	}
 	if _, err := io.Copy(df, sf); err != nil {
 		df.Close()
 		os.Remove(df.Name())
-		return err
+		return errors.Wrap(err, "failed to copy data from src file to tmp file")
 	}
 	if err := df.Close(); err != nil {
 		os.Remove(df.Name())
-		return err
+		return errors.Wrap(err, "failed to close tmp file")
 	}
 
 	// Finally, set the mode and ownership and rename to the requested name.
 	if err := os.Chmod(df.Name(), fi.Mode()); err != nil {
 		os.Remove(df.Name())
-		return err
+		return errors.Wrap(err, "failed to change permissions of tmp file")
 	}
 	if os.Geteuid() == 0 {
 		st := fi.Sys().(*syscall.Stat_t)
 		if err := os.Chown(df.Name(), int(st.Uid), int(st.Gid)); err != nil {
 			os.Remove(df.Name())
-			return err
+			return errors.Wrap(err, "failed to change owner of tmp file")
 		}
 	}
 	if err := os.Rename(df.Name(), dst); err != nil {
 		os.Remove(df.Name())
-		return err
+		return errors.Wrap(err, "failed to rename tmp file to dst file")
 	}
 	return nil
 }
@@ -72,7 +74,7 @@ func CopyFile(src, dst string) error {
 func MoveFile(src, dst string) error {
 	fi, err := os.Stat(src)
 	if err != nil {
-		return err
+		return errors.Wrap(err, "failed to open src file")
 	} else if !fi.Mode().IsRegular() {
 		return fmt.Errorf("source not regular file (mode %s)", fi.Mode())
 	}
@@ -81,12 +83,12 @@ func MoveFile(src, dst string) error {
 	if err := os.Rename(src, dst); err == nil {
 		return nil
 	} else if lerr, ok := err.(*os.LinkError); !ok || lerr.Err != syscall.EXDEV {
-		return err
+		return errors.Wrap(err, "failed to rename src to dst file")
 	}
 
 	// Otherwise, copy before deleting src.
 	if err := CopyFile(src, dst); err != nil {
-		return err
+		return errors.Wrap(err, "failed to copy src to dst file")
 	}
 	return os.Remove(src)
 }

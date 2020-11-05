@@ -16,6 +16,23 @@
       "message": "Hi!\nPlease help me to review this CL!",
       "revId": "d659b7fa3873cbd0fc865170351a6360108b7012",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e38f3ec9_a2b5c6c2",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-11-05T01:26:20Z",
+      "side": 1,
+      "message": "Thanks, I hope everything goes well.\n",
+      "revId": "d659b7fa3873cbd0fc865170351a6360108b7012",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

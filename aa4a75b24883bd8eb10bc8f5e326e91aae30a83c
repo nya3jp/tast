@@ -320,6 +320,30 @@
       },
       "revId": "aa4a75b24883bd8eb10bc8f5e326e91aae30a83c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0ec2ddf6_1d9946a8",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-11-05T02:27:30Z",
+      "side": 1,
+      "message": "Oh I have forgotten board:. Nice!",
+      "parentUuid": "da40032a_8133cb12",
+      "range": {
+        "startLine": 104,
+        "startChar": 31,
+        "endLine": 104,
+        "endChar": 261
+      },
+      "revId": "aa4a75b24883bd8eb10bc8f5e326e91aae30a83c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

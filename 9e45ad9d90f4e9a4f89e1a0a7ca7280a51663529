@@ -16,6 +16,47 @@
       "message": "Now that the package name contains \"context\", can you rename symbols to remove \"context\" from their names? It\u0027s fine to do this in a separate CL.\n\n- contextKeyType -\u003e keyType\n- ContextOutDir -\u003e OutDir\n- ContextSoftwareDeps -\u003e SoftwareDeps\n- ContextServiceDeps -\u003e ServiceDeps",
       "revId": "9e45ad9d90f4e9a4f89e1a0a7ca7280a51663529",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0fa764ef_fb4584e2",
+        "filename": "src/chromiumos/tast/internal/testcontext/context.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-11-05T07:42:44Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "17e0f66f_0283b3f1",
+      "revId": "9e45ad9d90f4e9a4f89e1a0a7ca7280a51663529",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "94f833db_b26ccdcf",
+        "filename": "src/chromiumos/tast/internal/testcontext/context.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-11-05T07:42:44Z",
+      "side": 1,
+      "message": "nya@, would you tell me what this refers to?\n(maybe TestingState.OutDir(), or testcontext.CurrentEntity.OutDir?)",
+      "range": {
+        "startLine": 41,
+        "startChar": 30,
+        "endLine": 41,
+        "endChar": 38
+      },
+      "revId": "9e45ad9d90f4e9a4f89e1a0a7ca7280a51663529",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

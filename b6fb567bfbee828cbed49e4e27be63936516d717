@@ -110,6 +110,30 @@
       },
       "revId": "b6fb567bfbee828cbed49e4e27be63936516d717",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7e9d18d6_75e9ad73",
+        "filename": "src/chromiumos/tast/internal/entity/entity_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-11-05T01:21:18Z",
+      "side": 1,
+      "message": "Thanks! Yes, it\u0027s nice to do the merge in a separate change.",
+      "parentUuid": "8384c8c6_f745d662",
+      "range": {
+        "startLine": 7,
+        "startChar": 8,
+        "endLine": 7,
+        "endChar": 14
+      },
+      "revId": "b6fb567bfbee828cbed49e4e27be63936516d717",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

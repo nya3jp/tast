@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "376f841b_cb5aec9e",
+        "filename": "src/chromiumos/tast/internal/testing/attr.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 263,
+      "author": {
+        "id": 1371981
+      },
+      "writtenOn": "2020-11-06T04:38:01Z",
+      "side": 1,
+      "message": "I see b/171949862 saying weekly for wifi.RoamNatural. So I expect either this one or wificell_roam_perf should be weekly?",
+      "range": {
+        "startLine": 263,
+        "startChar": 73,
+        "endLine": 263,
+        "endChar": 80
+      },
+      "revId": "87ca358420368f33e113bef16cfe66988262f0e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3ce188a4_d138cd67",
+        "filename": "src/chromiumos/tast/internal/testing/attr.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 266,
+      "author": {
+        "id": 1371981
+      },
+      "writtenOn": "2020-11-06T04:38:01Z",
+      "side": 1,
+      "message": "nit: I\u0027m not so sure if we need this or not because:\n1. grover pool might not be able to handle the traffic from CQ.\n2. existing tests with attenuation all take long time, and not really suitable for CQ.",
+      "revId": "87ca358420368f33e113bef16cfe66988262f0e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

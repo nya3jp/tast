@@ -50,6 +50,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "743e5073_4656fd37",
+        "filename": "src/chromiumos/tast/internal/testing/attr.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 263,
+      "author": {
+        "id": 1371981
+      },
+      "writtenOn": "2020-11-06T10:44:58Z",
+      "side": 1,
+      "message": "SGTM.",
+      "parentUuid": "b8475cf5_e773bcae",
+      "range": {
+        "startLine": 263,
+        "startChar": 73,
+        "endLine": 263,
+        "endChar": 80
+      },
+      "revId": "87ca358420368f33e113bef16cfe66988262f0e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "3ce188a4_d138cd67",
         "filename": "src/chromiumos/tast/internal/testing/attr.go",
         "patchSetId": 2
@@ -79,6 +103,24 @@
       "side": 1,
       "message": "Right, I have added all these attributes for future use. Actually only the _perf is used currently. Do you think it\u0027s better to strip to what is going to be used soon?",
       "parentUuid": "3ce188a4_d138cd67",
+      "revId": "87ca358420368f33e113bef16cfe66988262f0e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "939f9cab_02f43dfa",
+        "filename": "src/chromiumos/tast/internal/testing/attr.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 266,
+      "author": {
+        "id": 1371981
+      },
+      "writtenOn": "2020-11-06T10:44:58Z",
+      "side": 1,
+      "message": "I slightly prefer adding new attributes when we need, but I don\u0027t have strong opinion. Also, I think it makes sense to allocate _func and _perf even if not used immediately (but we will in near future, I think)",
+      "parentUuid": "0032b028_94918f00",
       "revId": "87ca358420368f33e113bef16cfe66988262f0e7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }

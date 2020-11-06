@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "dc0a62b4_d1d52ab9",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1112100
+      },
+      "writtenOn": "2020-11-06T22:13:14Z",
+      "side": 1,
+      "message": "I rolled my changes from https://chromium-review.googlesource.com/c/chromiumos/platform/tast-tests/+/2499506 into here. I thought they were in separate repos, but they\u0027re not. I won\u0027t abandon that CL until we this gets fully reviewed so we don\u0027t lost comment history. Sorry for the confusion, I\u0027m a big jerk.",
+      "revId": "5cee46c2b1d51459b888c555e5537ed34d3d361c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

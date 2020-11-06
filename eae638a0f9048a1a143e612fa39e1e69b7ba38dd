@@ -130,6 +130,54 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "88ec5740_6375ec8d",
+        "filename": "src/chromiumos/tast/dut/dut.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 286,
+      "author": {
+        "id": 1112100
+      },
+      "writtenOn": "2020-11-06T22:13:14Z",
+      "side": 1,
+      "message": "The only way I can think of to have the actual limit listed here, would be to hard-code them in each test, or have a struct that has a list of DUTS and their associated peer counts.  Or set a n expectation and hard-limit to 6. Most of that seems more restrictive than needed, but I plan on using the first option, where the test sets the peer limit.\n\nYou can easily convince me to do it another way, though, if you feel strongly.",
+      "parentUuid": "157c1897_6649b21a",
+      "range": {
+        "startLine": 286,
+        "startChar": 51,
+        "endLine": 286,
+        "endChar": 60
+      },
+      "revId": "eae638a0f9048a1a143e612fa39e1e69b7ba38dd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b02b8d19_1bfb30e7",
+        "filename": "src/chromiumos/tast/dut/dut.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 286,
+      "author": {
+        "id": 1112100
+      },
+      "writtenOn": "2020-11-06T22:13:14Z",
+      "side": 1,
+      "message": "Renamed to WifiPeerHost",
+      "parentUuid": "3e18ca72_ffabefd7",
+      "range": {
+        "startLine": 286,
+        "startChar": 14,
+        "endLine": 286,
+        "endChar": 17
+      },
+      "revId": "eae638a0f9048a1a143e612fa39e1e69b7ba38dd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "70ef4d04_bbbdd243",
         "filename": "src/chromiumos/tast/dut/dut.go",
         "patchSetId": 3
@@ -141,6 +189,24 @@
       "writtenOn": "2020-10-29T19:09:06Z",
       "side": 1,
       "message": "nit: remove blank line",
+      "revId": "eae638a0f9048a1a143e612fa39e1e69b7ba38dd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "42be2727_45a31334",
+        "filename": "src/chromiumos/tast/dut/dut.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 287,
+      "author": {
+        "id": 1112100
+      },
+      "writtenOn": "2020-11-06T22:13:14Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "70ef4d04_bbbdd243",
       "revId": "eae638a0f9048a1a143e612fa39e1e69b7ba38dd",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -158,6 +224,30 @@
       "writtenOn": "2020-10-29T19:09:06Z",
       "side": 1,
       "message": "super nit: use fmt.Sprintf(\"-wifipeer%d\", index)",
+      "range": {
+        "startLine": 288,
+        "startChar": 38,
+        "endLine": 288,
+        "endChar": 69
+      },
+      "revId": "eae638a0f9048a1a143e612fa39e1e69b7ba38dd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f0cac1e9_fe55ffc6",
+        "filename": "src/chromiumos/tast/dut/dut.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 288,
+      "author": {
+        "id": 1112100
+      },
+      "writtenOn": "2020-11-06T22:13:14Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4f0e8825_0841427b",
       "range": {
         "startLine": 288,
         "startChar": 38,

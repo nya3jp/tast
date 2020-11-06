@@ -183,7 +183,7 @@ func (d *DUT) Reboot(ctx context.Context) error {
 	// if the network interface of the DUT goes down before the SSH command finishes.
 	rebootCtx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
-	d.Command("reboot").Run(rebootCtx) // ignore the error
+	d.Command("initctl", "emit", "--no-wait", "runlevel", "RUNLEVEL=6", "SHUTDOWN_REASON=integration_test").Run(rebootCtx) // ignore the error
 
 	if err := testingutil.Poll(ctx, func(ctx context.Context) error {
 		// Set a short timeout to the iteration in case of any SSH operations

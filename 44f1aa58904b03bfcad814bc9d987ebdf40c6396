@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "80ac240a_687fece8",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 9
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-11-06T19:51:06Z",
+      "side": 1,
+      "message": "I created a new struct FeatureArgs for both RunTestsArgs and ListTestArgs. Please check if it is ok.\n\nI have not address the review comment regarding RuntimeTestInfo yet. I will address it later.",
+      "revId": "44f1aa58904b03bfcad814bc9d987ebdf40c6396",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

@@ -103,6 +103,30 @@
       },
       "revId": "f9da6beef7553332adde015a5e665b8ba1a61a56",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "650d40a6_cd394aeb",
+        "filename": "src/chromiumos/tast/internal/testing/test_instance.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 499,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-11-07T00:44:57Z",
+      "side": 1,
+      "message": "I used the name EntityListTestInfo instead because it is solely used for list test operation. Please let me know if you still prefer RuntimeTestInfo. It would be an easy change. Also, I didn\u0027t add TestInstance.RuntimeTestInfo() because it is doing the similar thing as TestInstance.EntityInfo(). I used it this way\n\n\t\tinfo :\u003d testing.EntityListTestInfo{EntityInfo: *test.EntityInfo()}\n\t\tinfos \u003d append(infos, \u0026info)\n\nIf you think it would better to add TestInstance.RuntimeTestInfo(), please let me know. It should be an easy change.\n\nThanks.",
+      "parentUuid": "8dee75f3_6df28027",
+      "range": {
+        "startLine": 499,
+        "startChar": 5,
+        "endLine": 499,
+        "endChar": 15
+      },
+      "revId": "f9da6beef7553332adde015a5e665b8ba1a61a56",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

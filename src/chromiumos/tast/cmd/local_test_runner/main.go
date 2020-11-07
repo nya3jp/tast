@@ -58,19 +58,23 @@ func main() {
 			"amd64":       "amd64",
 			// ARC USE flags are defined here:
 			// http://cs/chromeos_public/src/third_party/chromiumos-overlay/eclass/arc-build-constants.eclass
-			"android_vm":        `arc && arcvm && !"android-vm-pi"`,
-			"android_vm_r":      `arc && arcvm && "android-vm-rvc"`,
-			"android_p":         `arc && "android-container-pi"`,
-			"arc":               `arc`,
-			"arc_camera1":       `"arc-camera1"`,
-			"arc_camera3":       `"arc-camera3"`,
-			"arm":               `"arm" || "arm64"`,
-			"aslr":              "!asan",                        // ASan instrumentation breaks ASLR
-			"audio_play":        "internal_speaker && !tast_vm", // VMs and some boards don't have a speaker
-			"audio_record":      "internal_mic && !tast_vm",     // VMs don't have a mic
-			"biometrics_daemon": "biod",
-			"borealis_host":     "borealis_host",
-			"breakpad":          "force_breakpad",
+			"android_vm":         `arc && arcvm && !"android-vm-pi"`,
+			"android_vm_r":       `arc && arcvm && "android-vm-rvc"`,
+			"android_p":          `arc && "android-container-pi"`,
+			"arc":                `arc`,
+			"arc32":              `"cheets_user" || "cheets_userdebug"`,
+			"arc64":              `"cheets_user_64" || "cheets_userdebug_64"`,
+			"arc_camera1":        `"arc-camera1"`,
+			"arc_camera3":        `"arc-camera3"`,
+			"arc_launched_32bit": `"arc-launched-32bit-abi"`,
+			"arc_launched_64bit": `"!arc-launched-32bit-abi"`,
+			"arm":                `"arm" || "arm64"`,
+			"aslr":               "!asan",                        // ASan instrumentation breaks ASLR
+			"audio_play":         "internal_speaker && !tast_vm", // VMs and some boards don't have a speaker
+			"audio_record":       "internal_mic && !tast_vm",     // VMs don't have a mic
+			"biometrics_daemon":  "biod",
+			"borealis_host":      "borealis_host",
+			"breakpad":           "force_breakpad",
 			// TODO(b/73436929) Grunt cannot run 720p due to performance issue,
 			// we should remove grunt after hardware encoding supported.
 			// daisy variants' cameras don't support 1280x720.

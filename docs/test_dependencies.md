@@ -24,6 +24,10 @@ The following software features are defined:
 *   `arc` - The ability to [run Android apps] in any way, in VM or container,
     with any Android version. This is intended to be used to run non-ARC tests
     only when ARC is supported on the board.
+*   `arc32` - Runs 32-bit Android primary ABI.
+*   `arc64` - Runs 64-bit Android primary ABI, may or may not have 32-bit support.
+*   `arc32to64` - Runs 64-bit Android primary ABI but migrated from 32-bit.
+*   `arcno32to64` - Did not migrate from 32-bit. (May simply still run 32-bit.)
 *   `arc_camera1` - Using [Camera HAL3] in Chrome and [Camera HAL1] in Android.
 *   `arc_camera3` - Using [Camera HAL3] interface in Chrome and Android.
 *   `arm` - The [arm] 32 and 64 bit processor architecture.

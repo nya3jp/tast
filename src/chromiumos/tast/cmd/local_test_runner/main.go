@@ -58,10 +58,19 @@ func main() {
 			"amd64":       "amd64",
 			// ARC USE flags are defined here:
 			// http://cs/chromeos_public/src/third_party/chromiumos-overlay/eclass/arc-build-constants.eclass
-			"android_vm":        `arc && arcvm && !"android-vm-pi"`,
-			"android_vm_r":      `arc && arcvm && "android-vm-rvc"`,
-			"android_p":         `arc && "android-container-pi"`,
-			"arc":               `arc`,
+			"android_vm":   `arc && arcvm && !"android-vm-pi"`,
+			"android_vm_r": `arc && arcvm && "android-vm-rvc"`,
+			"android_p":    `arc && "android-container-pi"`,
+			"arc":          `arc`,
+			"arc32":        `"cheets_user" || "cheets_userdebug"`,
+			"arc64":        `"cheets_user_64" || "cheets_userdebug_64"`,
+			"arc32to64": `("cheets_user_64" || "cheets_userdebug_64") && ("board:kukui" || ` +
+				`"board:kukui-arc64" || "board:kukui-arc-r" || "board:elm" || "board:hana" || ` +
+				`"board:jacuzzi" || "board:sarien" || "board:grunt" || "board:reef" || ` +
+				`"board:snappy" || "board:pyro" || "board:sand" || "board:coral" || ` +
+				`"board:kevin" || "board:kevin-arc64" || "board:bob" || "board:dru" || ` +
+				`"board:scarlet" || "board:caroline" || "board:cave" || "board:chell" || ` +
+				`"board:sentry" || "board:asuka")`,
 			"arc_camera1":       `"arc-camera1"`,
 			"arc_camera3":       `"arc-camera3"`,
 			"arm":               `"arm" || "arm64"`,

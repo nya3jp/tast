@@ -24,8 +24,12 @@ The following software features are defined:
 *   `arc` - The ability to [run Android apps] in any way, in VM or container,
     with any Android version. This is intended to be used to run non-ARC tests
     only when ARC is supported on the board.
+*   `arc32` - Runs 32-bit Android primary ABI.
+*   `arc64` - Runs 64-bit Android primary ABI, may or may not have 32-bit support.
 *   `arc_camera1` - Using [Camera HAL3] in Chrome and [Camera HAL1] in Android.
 *   `arc_camera3` - Using [Camera HAL3] interface in Chrome and Android.
+*   `arc_launched_32bit` - This platform originally launched with 32-bit Android.
+*   `arc_launched_64bit` - This platform originally launched with 64-bit Android.
 *   `arm` - The [arm] 32 and 64 bit processor architecture.
 *   `aslr` - Address space layout randomization, which mitigates buffer-overflow
     attacks, is functional (this is not true for builds with [AddressSanitizer]

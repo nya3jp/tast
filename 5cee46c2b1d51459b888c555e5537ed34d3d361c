@@ -20,6 +20,29 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "8f28090c_86892fde",
+        "filename": "src/chromiumos/tast/remote/wificell/wifipeer/wifipeer.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1358595
+      },
+      "writtenOn": "2020-11-07T00:05:12Z",
+      "side": 1,
+      "message": "super nit, just noticed this, generally in go, we don\u0027t like name repetitions. So in this case, the repetition comes the call wifipeer.MakePeers() where peer is repeated twice. Potentially something like wifipeer.MakeAll() or wifipeer.ConnectAll()",
+      "range": {
+        "startLine": 21,
+        "startChar": 5,
+        "endLine": 21,
+        "endChar": 14
+      },
+      "revId": "5cee46c2b1d51459b888c555e5537ed34d3d361c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "4311c310_65890730",
         "filename": "src/chromiumos/tast/remote/wificell/wifipeer/wifipeer.go",
         "patchSetId": 4

@@ -20,6 +20,29 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "0b545033_92b200f9",
+        "filename": "src/chromiumos/tast/remote/wificell/wifipeer/wifipeer.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1001853
+      },
+      "writtenOn": "2020-11-09T05:14:32Z",
+      "side": 1,
+      "message": "Remove if you don\u0027t need this for now.",
+      "range": {
+        "startLine": 15,
+        "startChar": 0,
+        "endLine": 18,
+        "endChar": 3
+      },
+      "revId": "5cee46c2b1d51459b888c555e5537ed34d3d361c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "8f28090c_86892fde",
         "filename": "src/chromiumos/tast/remote/wificell/wifipeer/wifipeer.go",
         "patchSetId": 4
@@ -43,6 +66,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "ddc7ecb8_eed9d876",
+        "filename": "src/chromiumos/tast/remote/wificell/wifipeer/wifipeer.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1001853
+      },
+      "writtenOn": "2020-11-09T05:14:32Z",
+      "side": 1,
+      "message": "Not sure if there\u0027s anything in wifipeer package that needs a constructor , MakeSomething().\n\nwifipeer.MakePeers() sounds reasonable to me.",
+      "parentUuid": "8f28090c_86892fde",
+      "range": {
+        "startLine": 21,
+        "startChar": 5,
+        "endLine": 21,
+        "endChar": 14
+      },
+      "revId": "5cee46c2b1d51459b888c555e5537ed34d3d361c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "4311c310_65890730",
         "filename": "src/chromiumos/tast/remote/wificell/wifipeer/wifipeer.go",
         "patchSetId": 4
@@ -54,6 +101,30 @@
       "writtenOn": "2020-11-07T00:02:10Z",
       "side": 1,
       "message": "Looks like you mixed something up here. You return and then try to append.",
+      "range": {
+        "startLine": 31,
+        "startChar": 3,
+        "endLine": 32,
+        "endChar": 32
+      },
+      "revId": "5cee46c2b1d51459b888c555e5537ed34d3d361c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "85e44416_f6f74529",
+        "filename": "src/chromiumos/tast/remote/wificell/wifipeer/wifipeer.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1001853
+      },
+      "writtenOn": "2020-11-09T05:14:32Z",
+      "side": 1,
+      "message": "This line should be in else{} part.",
+      "parentUuid": "4311c310_65890730",
       "range": {
         "startLine": 31,
         "startChar": 3,

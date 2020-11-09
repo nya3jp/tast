@@ -164,9 +164,14 @@ Tests in this group are not used for build verification.
 		Desc:     `A group of tests performing enrollment and will clobber the stateful partition.`,
 	},
 	{
-		Name:     "essential-inputs",
+		Name:     "input-tools",
 		Contacts: []string{"essential-inputs-team@google.com"},
 		Desc:     `A group of essential inputs IME and Virtual Keyboard tests.`,
+	},
+	{
+		Name:     "input-tools-upstream",
+		Contacts: []string{"essential-inputs-team@google.com"},
+		Desc:     `A group of essential inputs IME and Virtual Keyboard tests running in google3.`,
 	},
 	{
 		Name:     "firmware",

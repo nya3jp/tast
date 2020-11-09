@@ -12,6 +12,7 @@ import (
 	"os"
 	gotesting "testing"
 
+	"chromiumos/tast/dut"
 	"chromiumos/tast/internal/sshtest"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/testutil"
@@ -163,7 +164,7 @@ func TestRemoteTestHooks(t *gotesting.T) {
 
 	// Add two test instances.
 	testing.AddTestInstance(&testing.TestInstance{Name: "pkg.Test1", Func: func(context.Context, *testing.State) {}})
-	testing.AddTestInstance(&testing.TestInstance{Name: "pkg.Test2", Func: func(context.Context, *testing.State) {}})
+	testing.AddTestInstance(&testing.TestInstance{Name: "pkg.Test2", Func: func(ctx context.Context, s *testing.State) { s.DUT().Reboot(ctx) }})
 
 	// Set up test argument.
 	outDir := testutil.TempDir(t)
@@ -183,7 +184,7 @@ func TestRemoteTestHooks(t *gotesting.T) {
 
 	// ranPreHookCount keeps the number of times prehook function was called.
 	// ranPostHookCount keepts the number of times posthoook functions was called.
-	var ranPreHookCount, ranPostHookCount int
+	var ranPreHookCount, ranPostHookCount, ranPreRebootHookCount int
 
 	// Test Remote function.
 	if status := Remote(nil, stdin, &bytes.Buffer{}, &stderr, RemoteDelegate{
@@ -192,6 +193,10 @@ func TestRemoteTestHooks(t *gotesting.T) {
 			return func(context.Context, *testing.TestHookState) {
 				ranPostHookCount++
 			}
+		},
+		RebootHook: func(context.Context, *dut.DUT) error {
+			ranPreRebootHookCount++
+			return nil
 		},
 	}); status != statusSuccess {
 		t.Errorf("Remote(%+v) = %v; want %v", args, status, statusSuccess)
@@ -204,6 +209,10 @@ func TestRemoteTestHooks(t *gotesting.T) {
 	// Make sure posthook function was called twice.
 	if ranPostHookCount != 2 {
 		t.Errorf("Remote(%+v) test post hook was called %v times; want 2 times", args, ranPostHookCount)
+	}
+	// Make sure pre-reboot function was called once.
+	if ranPreRebootHookCount != 1 {
+		t.Errorf("Remote(%+v) pre-reboot hook was called %v times; want 1 times", args, ranPreRebootHookCount)
 	}
 	// Make sure there are no unexpected errors from test functions.
 	if stderr.String() != "" {

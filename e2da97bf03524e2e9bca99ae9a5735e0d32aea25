@@ -39,6 +39,30 @@
       },
       "revId": "e2da97bf03524e2e9bca99ae9a5735e0d32aea25",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3bab7279_52ad7850",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 184,
+      "author": {
+        "id": 1373754
+      },
+      "writtenOn": "2020-11-09T22:03:07Z",
+      "side": 1,
+      "message": "My intention is to make use of it. I just didn\u0027t know that I had to add the prefix \"board:\"\nThanks for showing me this :)",
+      "parentUuid": "4fbd0816_c008c6c2",
+      "range": {
+        "startLine": 184,
+        "startChar": 24,
+        "endLine": 184,
+        "endChar": 172
+      },
+      "revId": "e2da97bf03524e2e9bca99ae9a5735e0d32aea25",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

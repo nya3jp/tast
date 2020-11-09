@@ -41,6 +41,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "de32c10f_2e2a2379",
+        "filename": "src/chromiumos/tast/remote/wificell/wifipeer/wifipeer.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1112100
+      },
+      "writtenOn": "2020-11-09T20:27:37Z",
+      "side": 1,
+      "message": "of course.",
+      "parentUuid": "0b545033_92b200f9",
+      "range": {
+        "startLine": 15,
+        "startChar": 0,
+        "endLine": 18,
+        "endChar": 3
+      },
+      "revId": "5cee46c2b1d51459b888c555e5537ed34d3d361c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "8f28090c_86892fde",
@@ -88,6 +112,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "44939020_8577028b",
+        "filename": "src/chromiumos/tast/remote/wificell/wifipeer/wifipeer.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1112100
+      },
+      "writtenOn": "2020-11-09T20:27:37Z",
+      "side": 1,
+      "message": "I\u0027ll keep it MakePeers for now, but I\u0027ll keep it in mind to rename and avoid repetition as this code grows.",
+      "parentUuid": "ddc7ecb8_eed9d876",
+      "range": {
+        "startLine": 21,
+        "startChar": 5,
+        "endLine": 21,
+        "endChar": 14
+      },
+      "revId": "5cee46c2b1d51459b888c555e5537ed34d3d361c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "4311c310_65890730",
@@ -125,6 +173,30 @@
       "side": 1,
       "message": "This line should be in else{} part.",
       "parentUuid": "4311c310_65890730",
+      "range": {
+        "startLine": 31,
+        "startChar": 3,
+        "endLine": 32,
+        "endChar": 32
+      },
+      "revId": "5cee46c2b1d51459b888c555e5537ed34d3d361c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "85d96a94_cf2084e0",
+        "filename": "src/chromiumos/tast/remote/wificell/wifipeer/wifipeer.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1112100
+      },
+      "writtenOn": "2020-11-09T20:27:37Z",
+      "side": 1,
+      "message": "Yeah, that was an interim step. Sorry. the Go Linter wanted my if on a separate line and no else. You should see this correctly now, yes?",
+      "parentUuid": "85e44416_f6f74529",
       "range": {
         "startLine": 31,
         "startChar": 3,

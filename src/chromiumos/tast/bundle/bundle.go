@@ -131,6 +131,8 @@ type runConfig struct {
 	// will not be prepared and the test function will not run.
 	// The returned closure is executed after a test if not nil.
 	testHook func(context.Context, *testing.TestHookState) func(context.Context, *testing.TestHookState)
+	// rebootHook is run before every reboot.
+	rebootHook func(context.Context, *dut.DUT) error
 	// defaultTestTimeout contains the default maximum time allotted to each test.
 	// It is only used if testing.Test.Timeout is unset.
 	defaultTestTimeout time.Duration
@@ -244,7 +246,7 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 	var rd *testing.RemoteData
 	if bt == remoteBundle {
 		logging.ContextLog(ctx, "Connecting to DUT")
-		dt, err := connectToTarget(ctx, args)
+		dt, err := connectToTarget(ctx, args, cfg.rebootHook)
 		if err != nil {
 			return command.NewStatusErrorf(statusError, "failed to connect to DUT: %v", err)
 		}
@@ -295,12 +297,12 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 }
 
 // connectToTarget connects to the target DUT and returns its connection.
-func connectToTarget(ctx context.Context, args *Args) (_ *dut.DUT, retErr error) {
+func connectToTarget(ctx context.Context, args *Args, rebootHook func(context.Context, *dut.DUT) error) (_ *dut.DUT, retErr error) {
 	if args.RunTests.Target == "" {
 		return nil, errors.New("target not supplied")
 	}
 
-	dt, err := dut.New(args.RunTests.Target, args.RunTests.KeyFile, args.RunTests.KeyDir)
+	dt, err := dut.New(args.RunTests.Target, args.RunTests.KeyFile, args.RunTests.KeyDir, rebootHook)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create connection: %v", err)
 	}

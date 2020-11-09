@@ -104,7 +104,7 @@ func TestRunTests(t *gotesting.T) {
 
 	stdout := bytes.Buffer{}
 	tests := reg.AllTests()
-	var preRunCalls, postRunCalls, preTestCalls, postTestCalls int
+	var preRunCalls, postRunCalls, preTestCalls, postTestCalls, preRebootCalls int
 	args := Args{
 		RunTests: &RunTestsArgs{
 			OutDir:  tmpDir,
@@ -131,6 +131,10 @@ func TestRunTests(t *gotesting.T) {
 				s.Log(postTestMsg)
 			}
 		},
+		rebootHook: func(ctx context.Context, d *dut.DUT) error {
+			preRebootCalls++
+			return nil
+		},
 	}
 
 	sig := fmt.Sprintf("runTests(..., %+v, %+v)", args, cfg)
@@ -149,6 +153,9 @@ func TestRunTests(t *gotesting.T) {
 	}
 	if postTestCalls != len(tests) {
 		t.Errorf("%v called post-test function %d time(s); want %d", sig, postTestCalls, len(tests))
+	}
+	if preRebootCalls != 1 {
+		t.Errorf("%v called run pre-reboot function %d time(s); want 1", sig, preRebootCalls)
 	}
 
 	// Just check some basic details of the control messages.

@@ -16,6 +16,345 @@
       "message": "I have addressed the other comment, but I called it EntityListTestInfo instead. Please let me know if you still prefer RuntimeTestInfo. It would be an easy change.\n\nThanks.",
       "revId": "0ca5f5ed57639db3130aa3b283843d9672fb98e0",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f95c41fc_0fcf2d34",
+        "filename": "src/chromiumos/tast/bundle/args.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-11-09T09:37:06Z",
+      "side": 1,
+      "message": "As the comment says, those fields are treated specially with MarshalJSON/UnmarshalJSON overrides. Please update them.",
+      "range": {
+        "startLine": 89,
+        "startChar": 0,
+        "endLine": 97,
+        "endChar": 50
+      },
+      "revId": "0ca5f5ed57639db3130aa3b283843d9672fb98e0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5fd91dc3_580e6872",
+        "filename": "src/chromiumos/tast/bundle/args.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 186,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-11-09T09:37:06Z",
+      "side": 1,
+      "message": "FYI, these methods",
+      "range": {
+        "startLine": 186,
+        "startChar": 23,
+        "endLine": 186,
+        "endChar": 34
+      },
+      "revId": "0ca5f5ed57639db3130aa3b283843d9672fb98e0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c6381432_8312b944",
+        "filename": "src/chromiumos/tast/bundle/bundle.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-11-09T09:37:06Z",
+      "side": 1,
+      "message": "CheckSoftwareDeps is checked in RunTestsArgs.Features. Please remove this check so that we check it at one place.",
+      "range": {
+        "startLine": 68,
+        "startChar": 20,
+        "endLine": 68,
+        "endChar": 37
+      },
+      "revId": "0ca5f5ed57639db3130aa3b283843d9672fb98e0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "34a525d4_c9709339",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/deps.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-11-09T09:37:06Z",
+      "side": 1,
+      "message": "nice!",
+      "range": {
+        "startLine": 86,
+        "startChar": 0,
+        "endLine": 86,
+        "endChar": 67
+      },
+      "revId": "0ca5f5ed57639db3130aa3b283843d9672fb98e0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9b9abc94_1baa2739",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/list_tests.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-11-09T09:37:06Z",
+      "side": 1,
+      "message": "Note to myself: setRunnerTestDepsArgs is new here, but it\u0027s no-op in the case of \"tast list\" because cfg.checkTestDeps \u003d false.",
+      "range": {
+        "startLine": 66,
+        "startChar": 1,
+        "endLine": 66,
+        "endChar": 22
+      },
+      "revId": "0ca5f5ed57639db3130aa3b283843d9672fb98e0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "129a29e0_8f2f4b2d",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-11-09T09:37:06Z",
+      "side": 1,
+      "message": "General comment: Please try to handle all cases generally without special condition checks.\n\nWhy? With more special condition checks we get more code paths, which is harder to test.\n\nCiting from Zen of Python:\n\u003e Special cases aren\u0027t special enough to break the rules.\nhttps://www.python.org/dev/peps/pep-0020/#id2\n\nThough it\u0027s for Python, I believe this rule is not a \"special case\" for Python :)",
+      "revId": "0ca5f5ed57639db3130aa3b283843d9672fb98e0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "006c00df_826b8ebf",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-11-09T09:37:06Z",
+      "side": 1,
+      "message": "Assigning cfg.Patterns to cfg.TestNames is wrong because the documentation of TestNames says that it contains test names, not patterns. Since we assign to cfg.TestNames soon I think we can just drop this line.",
+      "range": {
+        "startLine": 28,
+        "startChar": 1,
+        "endLine": 28,
+        "endChar": 29
+      },
+      "revId": "0ca5f5ed57639db3130aa3b283843d9672fb98e0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f9ddc77e_08c26a0a",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-11-09T09:37:06Z",
+      "side": 1,
+      "message": "I believe we don\u0027t need this special check.",
+      "range": {
+        "startLine": 35,
+        "startChar": 0,
+        "endLine": 41,
+        "endChar": 2
+      },
+      "revId": "0ca5f5ed57639db3130aa3b283843d9672fb98e0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9e9bb05b_3bb49c6e",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-11-09T09:37:06Z",
+      "side": 1,
+      "message": "You can initialize this with testsNotInShards; then we don\u0027t need to append them to results in all \"return\".\n\nOf course it means skipped results come first. But it\u0027s rather preferable because it\u0027s consistent with Tast\u0027s current behavior to report tests skipped by software/hardware deps first.",
+      "range": {
+        "startLine": 46,
+        "startChar": 1,
+        "endLine": 46,
+        "endChar": 28
+      },
+      "revId": "0ca5f5ed57639db3130aa3b283843d9672fb98e0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "31c6746b_1fcc1e9c",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-11-09T09:37:06Z",
+      "side": 1,
+      "message": "Please avoid introducing special cases just to make unit tests pass. If existing unit tests fail because of this, we have to update tests instead.",
+      "range": {
+        "startLine": 76,
+        "startChar": 2,
+        "endLine": 76,
+        "endChar": 61
+      },
+      "revId": "0ca5f5ed57639db3130aa3b283843d9672fb98e0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ad6943b6_5504e527",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-11-09T09:37:06Z",
+      "side": 1,
+      "message": "I don\u0027t think we want to treat totalShards \u003d -283 as 1 silently. Can you return an error instead?",
+      "range": {
+        "startLine": 79,
+        "startChar": 0,
+        "endLine": 82,
+        "endChar": 2
+      },
+      "revId": "0ca5f5ed57639db3130aa3b283843d9672fb98e0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f8b6264e_7f1bc7a1",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 146,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-11-09T09:37:06Z",
+      "side": 1,
+      "message": "Since users may not know the number of tests before running Tast, we should allow this case, i.e. empty shards.",
+      "range": {
+        "startLine": 145,
+        "startChar": 2,
+        "endLine": 146,
+        "endChar": 37
+      },
+      "revId": "0ca5f5ed57639db3130aa3b283843d9672fb98e0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2f16b332_5abf83ba",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 171,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-11-09T09:37:06Z",
+      "side": 1,
+      "message": "This function can be written in two lines:\n\n startIndex :\u003d numTests * shardIndex / totalShards\n endIndex :\u003d numTests * (shardIndex + 1) / totalShards",
+      "range": {
+        "startLine": 133,
+        "startChar": 0,
+        "endLine": 171,
+        "endChar": 1
+      },
+      "revId": "0ca5f5ed57639db3130aa3b283843d9672fb98e0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e00231ed_b22de107",
+        "filename": "src/chromiumos/tast/internal/runner/args.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 106,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-11-09T09:37:06Z",
+      "side": 1,
+      "message": "Can we remove this now?",
+      "range": {
+        "startLine": 104,
+        "startChar": 3,
+        "endLine": 106,
+        "endChar": 4
+      },
+      "revId": "0ca5f5ed57639db3130aa3b283843d9672fb98e0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "314dd589_31cddb3a",
+        "filename": "src/chromiumos/tast/internal/testing/test_instance.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 536,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-11-09T09:37:06Z",
+      "side": 1,
+      "message": "Let\u0027s consider the following two candidates:\n\n1. EntityInfoWithExtraFieldsForListingTests (longer version of EntityListTestInfo)\n2. EntityInfoWithExtraFieldsComputedAtRunTime (longer version of RuntimeTestInfo)\n\nIf we were to choose 1, since it\u0027s very specific to the use case of listing tests, I\u0027d want it to be declared near to the use case. Maybe the bundle package?\n\nIf we were to choose 2, it\u0027s okay to keep it here, but I want the constructor to be in the same package.",
+      "range": {
+        "startLine": 536,
+        "startChar": 5,
+        "endLine": 536,
+        "endChar": 23
+      },
+      "revId": "0ca5f5ed57639db3130aa3b283843d9672fb98e0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

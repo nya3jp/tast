@@ -82,6 +82,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "31332878_cbb8b203",
+        "filename": "src/chromiumos/tast/bundle/bundle.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-11-09T09:37:06Z",
+      "side": 1,
+      "message": "That\u0027s nice!",
+      "parentUuid": "761c9351_a92e2656",
+      "range": {
+        "startLine": 67,
+        "startChar": 5,
+        "endLine": 67,
+        "endChar": 18
+      },
+      "revId": "f9da6beef7553332adde015a5e665b8ba1a61a56",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "8dee75f3_6df28027",

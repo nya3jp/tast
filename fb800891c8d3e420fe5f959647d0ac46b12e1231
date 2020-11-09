@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7c07e8d6_14371630",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1371981
+      },
+      "writtenOn": "2020-11-09T08:06:24Z",
+      "side": 1,
+      "message": "Oh, sorry that I forgot in previous reply: You should also update the document in docs/test_attributes.md for the new attributes.",
+      "revId": "fb800891c8d3e420fe5f959647d0ac46b12e1231",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

@@ -52,6 +52,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "af2b5cca_c2c58fcf",
+        "filename": "docs/test_attributes.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1431109
+      },
+      "writtenOn": "2020-11-09T10:25:48Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2d63da3f_bd79f8dd",
+      "revId": "9d652064b2c811860bea3c22c66b1f0000c61a0f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "dc0bd470_5f718529",
@@ -65,6 +83,30 @@
       "writtenOn": "2020-11-09T08:37:27Z",
       "side": 1,
       "message": "nit: not sure if the heading part is necessary. Also, it might be nice to add something like \"(Googler only)\" as I believe the google doc is not publicly accessible while the Tast documentation is.",
+      "range": {
+        "startLine": 70,
+        "startChar": 94,
+        "endLine": 70,
+        "endChar": 117
+      },
+      "revId": "9d652064b2c811860bea3c22c66b1f0000c61a0f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d2e2a75e_064e3b7a",
+        "filename": "docs/test_attributes.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1431109
+      },
+      "writtenOn": "2020-11-09T10:25:48Z",
+      "side": 1,
+      "message": "Done. Not sure of proper implementation/formatting, though.",
+      "parentUuid": "dc0bd470_5f718529",
       "range": {
         "startLine": 70,
         "startChar": 94,

@@ -29,16 +29,17 @@ const (
 
 // DUT represents a "Device Under Test" against which remote tests are run.
 type DUT struct {
-	sopt ssh.Options
-	hst  *ssh.Conn
+	sopt         ssh.Options
+	hst          *ssh.Conn
+	beforeReboot func(context.Context, *DUT) error
 }
 
 // New returns a new DUT usable for communication with target
 // (of the form "[<user>@]host[:<port>]") using the SSH key at keyFile or
 // keys located in keyDir.
 // The DUT does not start out in a connected state; Connect must be called.
-func New(target, keyFile, keyDir string) (*DUT, error) {
-	d := DUT{}
+func New(target, keyFile, keyDir string, beforeReboot func(context.Context, *DUT) error) (*DUT, error) {
+	d := DUT{beforeReboot: beforeReboot}
 	if err := ssh.ParseTarget(target, &d.sopt); err != nil {
 		return nil, err
 	}
@@ -166,6 +167,11 @@ func (d *DUT) WaitConnect(ctx context.Context) error {
 
 // Reboot reboots the DUT.
 func (d *DUT) Reboot(ctx context.Context) error {
+	if d.beforeReboot != nil {
+		if err := d.beforeReboot(ctx, d); err != nil {
+			return errors.Wrap(err, "failed while running pre-reboot function")
+		}
+	}
 	readBootID := func(ctx context.Context) (string, error) {
 		out, err := d.Command("cat", "/proc/sys/kernel/random/boot_id").Output(ctx)
 		if err != nil {

@@ -10,6 +10,7 @@ import (
 	"os"
 	"time"
 
+	"chromiumos/tast/dut"
 	"chromiumos/tast/internal/testing"
 )
 
@@ -22,6 +23,9 @@ type RemoteDelegate struct {
 	// TestHook is called before each test run if it is not nil. The returned closure is executed
 	// after the test if not nil.
 	TestHook func(ctx context.Context, s *testing.TestHookState) func(ctx context.Context, s *testing.TestHookState)
+
+	// RebootHook is called before every rebooting if it is not nil.
+	RebootHook func(ctx context.Context, d *dut.DUT) error
 }
 
 // RemoteDefault implements the main function for remote test bundles.
@@ -41,6 +45,7 @@ func Remote(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, delegate
 	cfg := runConfig{
 		defaultTestTimeout: remoteTestTimeout,
 		testHook:           delegate.TestHook,
+		beforeReboot:       delegate.RebootHook,
 	}
 	return run(context.Background(), clArgs, stdin, stdout, stderr, &args, &cfg, remoteBundle)
 }

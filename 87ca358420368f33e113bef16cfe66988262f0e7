@@ -123,6 +123,64 @@
       "parentUuid": "0032b028_94918f00",
       "revId": "87ca358420368f33e113bef16cfe66988262f0e7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a04805e8_d4d8b25e",
+        "filename": "src/chromiumos/tast/internal/testing/attr.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 266,
+      "author": {
+        "id": 1001853
+      },
+      "writtenOn": "2020-11-09T07:41:06Z",
+      "side": 1,
+      "message": "Let\u0027s remove this attribute for now.",
+      "parentUuid": "939f9cab_02f43dfa",
+      "revId": "87ca358420368f33e113bef16cfe66988262f0e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bd41431c_9e166447",
+        "filename": "src/chromiumos/tast/internal/testing/attr.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 271,
+      "author": {
+        "id": 1001853
+      },
+      "writtenOn": "2020-11-09T07:41:06Z",
+      "side": 1,
+      "message": "Remove this",
+      "range": {
+        "startLine": 271,
+        "startChar": 58,
+        "endLine": 271,
+        "endChar": 65
+      },
+      "revId": "87ca358420368f33e113bef16cfe66988262f0e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b67790e5_00f530c0",
+        "filename": "src/chromiumos/tast/internal/testing/attr.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 274,
+      "author": {
+        "id": 1001853
+      },
+      "writtenOn": "2020-11-09T07:41:06Z",
+      "side": 1,
+      "message": "Is this going to be used soon? If not, let\u0027s remove it.",
+      "revId": "87ca358420368f33e113bef16cfe66988262f0e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

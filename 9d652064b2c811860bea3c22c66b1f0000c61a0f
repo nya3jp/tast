@@ -16,6 +16,63 @@
       "message": "Updated the attributes doc.",
       "revId": "9d652064b2c811860bea3c22c66b1f0000c61a0f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0a9ee75b_f7b10c3f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1371981
+      },
+      "writtenOn": "2020-11-09T08:37:27Z",
+      "side": 1,
+      "message": "Thanks. Only two nits. Dean@ would you like to take another look?",
+      "revId": "9d652064b2c811860bea3c22c66b1f0000c61a0f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2d63da3f_bd79f8dd",
+        "filename": "docs/test_attributes.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1371981
+      },
+      "writtenOn": "2020-11-09T08:37:27Z",
+      "side": 1,
+      "message": "nit: I guess this is not (yet) true? as we don\u0027t have the stability (_unstable) one now.",
+      "revId": "9d652064b2c811860bea3c22c66b1f0000c61a0f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "dc0bd470_5f718529",
+        "filename": "docs/test_attributes.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1371981
+      },
+      "writtenOn": "2020-11-09T08:37:27Z",
+      "side": 1,
+      "message": "nit: not sure if the heading part is necessary. Also, it might be nice to add something like \"(Googler only)\" as I believe the google doc is not publicly accessible while the Tast documentation is.",
+      "range": {
+        "startLine": 70,
+        "startChar": 94,
+        "endLine": 70,
+        "endChar": 117
+      },
+      "revId": "9d652064b2c811860bea3c22c66b1f0000c61a0f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

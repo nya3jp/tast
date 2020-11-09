@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "741ac2d2_72ff8353",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1335267
+      },
+      "writtenOn": "2020-11-09T09:40:53Z",
+      "side": 1,
+      "message": "Notified the Sheriff and green light for chump.",
+      "revId": "73a65b04e6b6cd9b0c656c31adabe1f2c24bc8b8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

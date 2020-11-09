@@ -16,6 +16,24 @@
       "message": "ptal",
       "revId": "07b8fa22cac72790d765779bf93372370bc430a1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f5ce21c7_58f3f84b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1108259
+      },
+      "writtenOn": "2020-11-09T01:12:35Z",
+      "side": 1,
+      "message": "Just curious, does this change behavior ? (I was wondering if the data corruption issues were real and if this improves the situation)",
+      "parentUuid": "32505fe9_da862b23",
+      "revId": "07b8fa22cac72790d765779bf93372370bc430a1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

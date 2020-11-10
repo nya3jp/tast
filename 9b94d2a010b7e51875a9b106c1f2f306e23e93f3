@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "616cfd03_8e26f370",
+        "filename": "src/chromiumos/tast/bundle/bundle.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 134,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-11-10T08:23:09Z",
+      "side": 1,
+      "message": "Can you describe the behavior when it is nil?\n\nAlso, it would be nice to mention that it should not call DUT.Reboot since it would cause infinite recursion.",
+      "range": {
+        "startLine": 134,
+        "startChar": 32,
+        "endLine": 134,
+        "endChar": 42
+      },
+      "revId": "9b94d2a010b7e51875a9b106c1f2f306e23e93f3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "defda6ab_9f06e827",
+        "filename": "src/chromiumos/tast/bundle/bundle.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 135,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-11-10T08:23:09Z",
+      "side": 1,
+      "message": "nit\u0026optional: How about beforeReboot to make it clear that it\u0027s called before reboot?\n\nI also thought about renaming runHook/testHook to beforeRun/beforeTest, but I didn\u0027t do so because they can return closures that are called after run/test as well.",
+      "range": {
+        "startLine": 134,
+        "startChar": 1,
+        "endLine": 135,
+        "endChar": 49
+      },
+      "revId": "9b94d2a010b7e51875a9b106c1f2f306e23e93f3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2da8d164_3e003f81",
+        "filename": "src/chromiumos/tast/bundle/remote_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 167,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-11-10T08:23:09Z",
+      "side": 1,
+      "message": "Reboot hooks are a bit different from test/run hooks. Can you introduce a new test case rather than piggybacking on TestRemoteTestHooks?",
+      "range": {
+        "startLine": 166,
+        "startChar": 0,
+        "endLine": 167,
+        "endChar": 141
+      },
+      "revId": "9b94d2a010b7e51875a9b106c1f2f306e23e93f3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

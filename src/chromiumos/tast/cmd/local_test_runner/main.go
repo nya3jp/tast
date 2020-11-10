@@ -78,28 +78,28 @@ func main() {
 			// TODO(b/73436929) Grunt cannot run 720p due to performance issue,
 			// we should remove grunt after hardware encoding supported.
 			// daisy variants' cameras don't support 1280x720.
-			"camera_720p":        "!snow && !skate && !spring && !grunt",
-			"camera_legacy":      `!"arc-camera1" && !"arc-camera3"`,
-			"cert_provision":     "cert_provision",
-			"chrome":             "!chromeless_tty && !rialto",
-			"chrome_internal":    "chrome_internal",
-			"coresched":          "coresched",
-			"crashpad":           "!force_breakpad",
-			"cros_config":        "unibuild",
-			"cros_internal":      "internal",
-			"crosvm_gpu":         `"crosvm-gpu" && "virtio_gpu"`,
-			"crosvm_no_gpu":      `!"crosvm-gpu" || !"virtio_gpu"`,
-			"crossystem":         "!betty && !tast_vm", // VMs don't support few crossystem sub-commands: https://crbug.com/974615
-			"cups":               "cups",
-			"diagnostics":        "diagnostics && !betty && !tast_vm", // VMs do not have hardware to diagnose. https://crbug.com/1126619
-			"display_backlight":  "display_backlight",
-			"dlc":                "dlc && dlc_test",
-			"dptf":               "dptf",
-			"device_crash":       `!("board:samus")`, // Samus devices do not reliably come back after kernel crashes. crbug.com/1045821
-			"dmverity_stable":    `"kernel-3_8" || "kernel-3_10" || "kernel-3_14" || "kernel-3_18" || "kernel-4_4" || "kernel-4_14"`,
-			"dmverity_unstable":  `!("kernel-3_8" || "kernel-3_10" || "kernel-3_14" || "kernel-3_18" || "kernel-4_4" || "kernel-4_14")`,
-			"drivefs":            "drivefs",
-			"drm_atomic":         "drm_atomic",
+			"camera_720p":       "!snow && !skate && !spring && !grunt",
+			"camera_legacy":     `!"arc-camera1" && !"arc-camera3"`,
+			"cert_provision":    "cert_provision",
+			"chrome":            "!chromeless_tty && !rialto",
+			"chrome_internal":   "chrome_internal",
+			"coresched":         "coresched",
+			"crashpad":          "!force_breakpad",
+			"cros_config":       "unibuild",
+			"cros_internal":     "internal",
+			"crosvm_gpu":        `"crosvm-gpu" && "virtio_gpu"`,
+			"crosvm_no_gpu":     `!"crosvm-gpu" || !"virtio_gpu"`,
+			"crossystem":        "!betty && !tast_vm", // VMs don't support few crossystem sub-commands: https://crbug.com/974615
+			"cups":              "cups",
+			"diagnostics":       "diagnostics && !betty && !tast_vm", // VMs do not have hardware to diagnose. https://crbug.com/1126619
+			"display_backlight": "display_backlight",
+			"dlc":               "dlc && dlc_test",
+			"dptf":              "dptf",
+			"device_crash":      `!("board:samus")`, // Samus devices do not reliably come back after kernel crashes. crbug.com/1045821
+			"dmverity_stable":   `"kernel-3_8" || "kernel-3_10" || "kernel-3_14" || "kernel-3_18" || "kernel-4_4" || "kernel-4_14"`,
+			"dmverity_unstable": `!("kernel-3_8" || "kernel-3_10" || "kernel-3_14" || "kernel-3_18" || "kernel-4_4" || "kernel-4_14")`,
+			"drivefs":           "drivefs",
+			"drm_atomic":        "drm_atomic",
 			// asuka, banon, caroline, cave, celes, chell, cyan, edgar, kefka, reks, relm, sentry, terra, ultima, and wizpig have buggy EC firmware and cannot capture crash reports. b/172228823
 			// drallion and sarien have do not support the "crash" EC command. crbug.com/1123716
 			// guado, tidus, rikku, veyron_fievel, and veyron_tiger do not have EC firmware. crbug.com/1123716. TODO(crbug.com/1124554) Use an EC hardware dep for these rather than a software dep.
@@ -189,10 +189,10 @@ func main() {
 			// But we haven't enable this feature on builders. For now, just disable
 			// vm_host feature for VM builds. The kvm_transition flag indicates the
 			// board may not work with VMs without a cold reboot b/134764918.
-			"vm_host":    "kvm_host && !tast_vm && !kvm_transition",
-			"vp9_sanity": "!rk3399", // RK3399 crashes on playing unsupported VP9 profile: https://crbug.com/971032
-			"vulkan":     "vulkan",
-			"watchdog":   `watchdog`,
+			"vm_host":   "kvm_host && !tast_vm && !kvm_transition",
+			"vp9_smoke": "!rk3399", // RK3399 crashes on playing unsupported VP9 profile: https://crbug.com/971032
+			"vulkan":    "vulkan",
+			"watchdog":  `watchdog`,
 			// nyan_kitty is skipped as its WiFi device is unresolvably flaky (crrev.com/c/944502),
 			// exhibiting very similar symptoms to crbug.com/693724, b/65858242, b/36264732.
 			"wifi":        "!betty && !tast_vm && !nyan_kitty",

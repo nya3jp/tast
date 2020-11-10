@@ -180,7 +180,7 @@ func (c *RealClient) Open(ctx context.Context, gsURL string) (io.ReadCloser, err
 		return nil, fmt.Errorf("failed to stage on %s: %v", dsURL, err)
 	}
 
-	// Do a sanity check that the file has been staged successfully.
+	// Do a validity check that the file has been staged successfully.
 	if err := c.checkStaged(ctx, dsURL, bucket, path); err != nil {
 		return nil, fmt.Errorf("failed to stage on %s: %v", dsURL, err)
 	}

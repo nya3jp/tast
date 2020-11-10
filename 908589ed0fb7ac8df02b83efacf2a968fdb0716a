@@ -20,6 +20,24 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "0c3ecf13_e38d5c21",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1445297
+      },
+      "writtenOn": "2020-11-10T20:57:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9e358052_e64d266d",
+      "revId": "908589ed0fb7ac8df02b83efacf2a968fdb0716a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "9f58a0d6_cff89b0e",
         "filename": "/PATCHSET_LEVEL",
         "patchSetId": 1
@@ -198,6 +216,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "c9257313_d14e5b6f",
+        "filename": "src/chromiumos/tast/dut/dut.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1445297
+      },
+      "writtenOn": "2020-11-10T20:57:34Z",
+      "side": 1,
+      "message": "As they +2\u0027ed CL I assume they are fine. Back to Resolved.",
+      "parentUuid": "794e37ee_ccb3bb8d",
+      "range": {
+        "startLine": 33,
+        "startChar": 0,
+        "endLine": 33,
+        "endChar": 30
+      },
+      "revId": "908589ed0fb7ac8df02b83efacf2a968fdb0716a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "33344b8a_6dd1c9fe",
@@ -233,6 +275,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "4e707812_3c73c507",
+        "filename": "src/chromiumos/tast/dut/dut.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 244,
+      "author": {
+        "id": 1445297
+      },
+      "writtenOn": "2020-11-10T20:57:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "913198ba_7256bd99",
+      "revId": "908589ed0fb7ac8df02b83efacf2a968fdb0716a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "b165ce21_a3e25c9c",
@@ -246,6 +306,24 @@
       "writtenOn": "2020-11-03T03:49:23Z",
       "side": 1,
       "message": "nit: IIUC, all usages of DefaultWifi* functions will be dropped in the next CL. I think probably no code other than wificell package will use these and we can comment DEPRECATED in this CL and remove them after this CL chain merged?",
+      "revId": "908589ed0fb7ac8df02b83efacf2a968fdb0716a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3f831a42_95e7a112",
+        "filename": "src/chromiumos/tast/dut/dut.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 291,
+      "author": {
+        "id": 1445297
+      },
+      "writtenOn": "2020-11-10T20:57:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b165ce21_a3e25c9c",
       "revId": "908589ed0fb7ac8df02b83efacf2a968fdb0716a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }

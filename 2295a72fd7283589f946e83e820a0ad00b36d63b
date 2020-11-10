@@ -1,6 +1,23 @@
 {
   "comments": [
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "2c84c648_37e9a08a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1112100
+      },
+      "writtenOn": "2020-11-10T20:25:52Z",
+      "side": 1,
+      "message": "Cleaned up my error reporting and comment capitalizations. Renamed newDut to peers, as per Dean\u0027s suggestion. ",
+      "revId": "2295a72fd7283589f946e83e820a0ad00b36d63b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "071019f4_b8dced93",
@@ -47,6 +64,54 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "b5525e0c_e6178c94",
+        "filename": "src/chromiumos/tast/remote/wificell/wifipeer/wifipeer.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1112100
+      },
+      "writtenOn": "2020-11-10T20:25:52Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f3b8bba7_c5efd8d5",
+      "range": {
+        "startLine": 5,
+        "startChar": 45,
+        "endLine": 5,
+        "endChar": 51
+      },
+      "revId": "2295a72fd7283589f946e83e820a0ad00b36d63b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "987ddea8_c41c1ea1",
+        "filename": "src/chromiumos/tast/remote/wificell/wifipeer/wifipeer.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1112100
+      },
+      "writtenOn": "2020-11-10T20:25:52Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "071019f4_b8dced93",
+      "range": {
+        "startLine": 5,
+        "startChar": 67,
+        "endLine": 5,
+        "endChar": 71
+      },
+      "revId": "2295a72fd7283589f946e83e820a0ad00b36d63b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "9dd18bfc_3f091064",
@@ -60,6 +125,30 @@
       "writtenOn": "2020-11-10T05:50:49Z",
       "side": 1,
       "message": "Wi-Fi",
+      "range": {
+        "startLine": 15,
+        "startChar": 63,
+        "endLine": 15,
+        "endChar": 67
+      },
+      "revId": "2295a72fd7283589f946e83e820a0ad00b36d63b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "61ea32e5_f6c5b302",
+        "filename": "src/chromiumos/tast/remote/wificell/wifipeer/wifipeer.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1112100
+      },
+      "writtenOn": "2020-11-10T20:25:52Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "9dd18bfc_3f091064",
       "range": {
         "startLine": 15,
         "startChar": 63,
@@ -116,6 +205,54 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "76ad0a75_dcfe6b95",
+        "filename": "src/chromiumos/tast/remote/wificell/wifipeer/wifipeer.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1112100
+      },
+      "writtenOn": "2020-11-10T20:25:52Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f9339658_6ceba643",
+      "range": {
+        "startLine": 21,
+        "startChar": 22,
+        "endLine": 21,
+        "endChar": 31
+      },
+      "revId": "2295a72fd7283589f946e83e820a0ad00b36d63b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c2dacc21_bdfeea88",
+        "filename": "src/chromiumos/tast/remote/wificell/wifipeer/wifipeer.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1112100
+      },
+      "writtenOn": "2020-11-10T20:25:52Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "091887d5_cd26a642",
+      "range": {
+        "startLine": 21,
+        "startChar": 6,
+        "endLine": 21,
+        "endChar": 10
+      },
+      "revId": "2295a72fd7283589f946e83e820a0ad00b36d63b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "b3e9ac5f_d567b7e0",
@@ -139,6 +276,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "9724ff2d_2b906761",
+        "filename": "src/chromiumos/tast/remote/wificell/wifipeer/wifipeer.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1112100
+      },
+      "writtenOn": "2020-11-10T20:25:52Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b3e9ac5f_d567b7e0",
+      "range": {
+        "startLine": 22,
+        "startChar": 13,
+        "endLine": 22,
+        "endChar": 41
+      },
+      "revId": "2295a72fd7283589f946e83e820a0ad00b36d63b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "f8049386_f0d8be6c",
@@ -152,6 +313,30 @@
       "writtenOn": "2020-11-10T05:50:49Z",
       "side": 1,
       "message": "peer",
+      "range": {
+        "startLine": 24,
+        "startChar": 2,
+        "endLine": 24,
+        "endChar": 8
+      },
+      "revId": "2295a72fd7283589f946e83e820a0ad00b36d63b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5af458ad_6e95165d",
+        "filename": "src/chromiumos/tast/remote/wificell/wifipeer/wifipeer.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1112100
+      },
+      "writtenOn": "2020-11-10T20:25:52Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f8049386_f0d8be6c",
       "range": {
         "startLine": 24,
         "startChar": 2,

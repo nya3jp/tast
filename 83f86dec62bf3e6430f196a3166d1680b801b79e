@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2a4b85f8_c5beccba",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1371981
+      },
+      "writtenOn": "2020-11-10T02:19:05Z",
+      "side": 1,
+      "message": "Add tast-owners for reviewing the change in framework repo.",
+      "revId": "83f86dec62bf3e6430f196a3166d1680b801b79e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

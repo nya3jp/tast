@@ -16,6 +16,29 @@
       "message": "Please also see crrev.com/c/2523526 for the associated use flags in the tast-use-flags ebuild.",
       "revId": "c2c840e5796f32243364ff1dcef44db676b12de9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c480fc4d_e2c474c1",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-11-10T14:31:19Z",
+      "side": 1,
+      "message": "1) It\u0027s a bit hard to maintain this variations.\nDoes it make sense to introduce some use flag, that is true only when the board is originally arc32 bits?\n2) If it would take time, I\u0027m ok to introduce this temporarily, but could you add TODO to switch to USE flag eventually? Also, could you introduce the constant, so that it can be shared between arc32to64 and arcno32to64.\n\n(optional): BTW, what do you think to split the SoftwareDep concept? E.g. arc_orig_32 meaning ARC is enabled on 32 bit originally (regardless of the current status), so that it can be combine with arc64?",
+      "range": {
+        "startLine": 67,
+        "startChar": 25,
+        "endLine": 67,
+        "endChar": 478
+      },
+      "revId": "c2c840e5796f32243364ff1dcef44db676b12de9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

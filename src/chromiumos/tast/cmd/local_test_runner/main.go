@@ -104,7 +104,8 @@ func main() {
 			// TODO(https://crbug.com/1122066): remove guado-cfm and rikku-cfm when they're no longer necessary
 			"ec_crash":                `!(("board:asuka" || "board:banon" || "board:caroline" || "board:cave" || "board:celes" || "board:chell" || "board:cyan" || "board:edgar" || "board:kefka" || "board:reks" || "board:relm" || "board:sentry" || "board:terra" || "board:ultima" || "board:wizpig") || ("board:drallion" || "board:sarien") || ("board:guado" || "board:guado-cfm" || "board:tidus" || "board:rikku" || "board:rikku-cfm" || "board:veyron_fievel" || "board:veyron_tiger") || "board:nocturne")`,
 			"encrypted_reboot_vault":  `!("kernel-3_8" || "kernel-3_10" || "kernel-3_14")`,
-			"firewall":                "!moblab", // Moblab has relaxed iptables rules
+			"endorsement":             "!betty && !tast_vm", // VMs don't have valid endorsement certificate.
+			"firewall":                "!moblab",            // Moblab has relaxed iptables rules
 			"flashrom":                "!betty && !tast_vm",
 			"google_virtual_keyboard": "chrome_internal && internal && !moblab", // doesn't work on Moblab: https://crbug.com/949912
 			"gpu_sandboxing":          "!betty && !tast_vm",                     // no GPU sandboxing on VMs: https://crbug.com/914688

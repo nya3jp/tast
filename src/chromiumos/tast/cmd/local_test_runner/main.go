@@ -170,6 +170,7 @@ func main() {
 			"untrusted_vm":           `"kernel-4_19" || "kernel-5_4"`,
 			"usbguard":               "usbguard",
 			"vaapi":                  "vaapi",
+			"video_alt_decoder_supported": `!("board:trogdor")`,
 			// drm_atomic is a necessary but not sufficient condition to support
 			// video_overlays; in practice, they tend to be enabled at the same time.
 			// TODO(mcasas): query in advance for NV12 format DRM Plane support.

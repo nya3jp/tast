@@ -146,6 +146,7 @@ The following software features are defined:
 *   `untrusted_vm` - The ability to run an untrusted VM.
 *   `usbguard` - The ability to allow or block USB devices based on policy.
 *   `vaapi` - Whether or not VA-API is supported by this DUT.
+*   `video_alt_decoder_supported` - Not all boards support VDA and VD
 *   `video_overlays` - The kernel [DRM/KMS] version atomic commits and the underlying hardware display controller support the NV12 DRM Plane format needed to promote videos to [hardware overlays].
 *   `virtual_usb_printer` - Whether or not the device can run tests that
     use [virtual USB printing][virtual-usb-printer-readme]. Note that

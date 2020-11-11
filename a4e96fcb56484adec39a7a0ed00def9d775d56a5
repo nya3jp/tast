@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7664b319_6f4ec0d1",
+        "filename": "src/chromiumos/tast/remote/wificell/wifipeer/wifipeer.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1001853
+      },
+      "writtenOn": "2020-11-11T03:41:58Z",
+      "side": 1,
+      "message": "Use testing.ContextLog() instead of fmt.Printf().\n\nAlso it should be logged before the for loop to avoid logging flooding.\n\ntesting.ContextLog(\"Error creating a peer connection: \", retErr)",
+      "revId": "a4e96fcb56484adec39a7a0ed00def9d775d56a5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

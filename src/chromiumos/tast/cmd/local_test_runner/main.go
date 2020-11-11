@@ -170,6 +170,13 @@ func main() {
 			"untrusted_vm":           `"kernel-4_19" || "kernel-5_4"`,
 			"usbguard":               "usbguard",
 			"vaapi":                  "vaapi",
+			// As the direct video decoder is transitioned in there is the need
+			// to run the legacy decoder to make sure it isn't broken and can be
+			// rolled back to if the direct decoder is having problems.  On some
+			// newer platforms there will not be a legacy decoder to run.
+			"video_decoder_direct":           "!disable_cros_video_decoder",
+			"video_decoder_legacy":           "disable_cros_video_decoder",
+			"video_decoder_legacy_supported": "!board:trogdor",
 			// drm_atomic is a necessary but not sufficient condition to support
 			// video_overlays; in practice, they tend to be enabled at the same time.
 			// TODO(mcasas): query in advance for NV12 format DRM Plane support.

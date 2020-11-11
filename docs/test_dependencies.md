@@ -57,8 +57,6 @@ The following software features are defined:
 *   `cros_config` - `cros_config` utility is available.
 *   `cros_internal` - Functionality that is only available in internal builds of
     Chrome OS (i.e. ones built using `chromeos-overlay`).
-*   `cros_video_decoder` - Whether the [media::VideoDecoder]-based video decoder
-    is supported and enabled.
 *   `crossystem` - Chrome OS firmware/system interface utility.
 *   `crostini_stable` - Boards that can run Crostini tests reliably.
 *   `crostini_unstable` - Boards that cannot run Crostini tests reliably.
@@ -92,7 +90,6 @@ The following software features are defined:
 *   `iwlwifi_rescan` - Ability to remove/rescan WiFi PCI device when the
     hardware becomes non-responsive.
 *   `lacros` - Whether the system supports running [lacros].
-*   `legacy_video_decoder` - Whether the [media::VideoDecoder]-based video decoder
     implementation is not supported/enabled, hence using the legacy one.
 *   `lock_core_pattern` - Ability to lock down |core_pattern| from further
     modifications.
@@ -146,6 +143,10 @@ The following software features are defined:
 *   `untrusted_vm` - The ability to run an untrusted VM.
 *   `usbguard` - The ability to allow or block USB devices based on policy.
 *   `vaapi` - Whether or not VA-API is supported by this DUT.
+*   `video_decoder_direct` - the direct video decoder (VD)
+*   `video_decoder_legacy` - the video decoder accelerator (VDA)
+*   `video_decoder_legacy_supported` - the video accelerator is *not* supported on this platform
+*   `video_alt_decoder_supported` - Not all boards support VDA and VD
 *   `video_overlays` - The kernel [DRM/KMS] version atomic commits and the underlying hardware display controller support the NV12 DRM Plane format needed to promote videos to [hardware overlays].
 *   `virtual_usb_printer` - Whether or not the device can run tests that
     use [virtual USB printing][virtual-usb-printer-readme]. Note that

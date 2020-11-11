@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": true,
+      "key": {
+        "uuid": "cf210893_5e0762fa",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-11-11T02:22:16Z",
+      "side": 1,
+      "message": "Thanks, I\u0027ve had found that powerd_setuid_helper does the same. If we want to have extra checks that powerd is probably doing, we should issue a dbus call to powerd if there is difference and need to do so.",
+      "parentUuid": "8c473e6c_b5e91e4f",
+      "range": {
+        "startLine": 7,
+        "startChar": 0,
+        "endLine": 7,
+        "endChar": 59
+      },
+      "revId": "07b8fa22cac72790d765779bf93372370bc430a1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": false,
       "key": {
         "uuid": "32505fe9_da862b23",

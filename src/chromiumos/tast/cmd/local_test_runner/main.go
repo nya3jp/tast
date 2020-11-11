@@ -87,7 +87,6 @@ func main() {
 			"crashpad":           "!force_breakpad",
 			"cros_config":        "unibuild",
 			"cros_internal":      "internal",
-			"cros_video_decoder": "!disable_cros_video_decoder",
 			"crosvm_gpu":         `"crosvm-gpu" && "virtio_gpu"`,
 			"crosvm_no_gpu":      `!"crosvm-gpu" || !"virtio_gpu"`,
 			"crossystem":         "!betty && !tast_vm", // VMs don't support few crossystem sub-commands: https://crbug.com/974615
@@ -121,7 +120,6 @@ func main() {
 			"igt":                     `("video_cards_amdgpu" || "video_cards_intel") && ("kernel-5_4" || "kernel-4_19" || "kernel-4_14")`,
 			"iwlwifi_rescan":          "iwlwifi_rescan",
 			"lacros":                  "!arm", // TODO(crbug.com/1144013): Expand this to include arm as well.
-			"legacy_video_decoder":    "disable_cros_video_decoder",
 			"lock_core_pattern":       `"kernel-3_10" || "kernel-3_14" || "kernel-3_18"`,
 			// QEMU has implemented memfd_create, but we haven't updated
 			// to a release with the change (https://bugs.launchpad.net/qemu/+bug/1734792).
@@ -175,6 +173,13 @@ func main() {
 			"untrusted_vm":           `"kernel-4_19" || "kernel-5_4"`,
 			"usbguard":               "usbguard",
 			"vaapi":                  "vaapi",
+			// As the direct video decoder is transitioned in there is the need
+			// to run the legacy decoder to make sure it isn't broken and can be
+			// rolled back to if the direct decoder is having problems.  On some
+			// newer platforms there will not be a legacy decoder to run.
+			"video_decoder_direct":           "!disable_cros_video_decoder",
+			"video_decoder_legacy":           "disable_cros_video_decoder",
+			"video_decoder_legacy_supported": `!("board:trogdor")`,
 			// drm_atomic is a necessary but not sufficient condition to support
 			// video_overlays; in practice, they tend to be enabled at the same time.
 			// TODO(mcasas): query in advance for NV12 format DRM Plane support.

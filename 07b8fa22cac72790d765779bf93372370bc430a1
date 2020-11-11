@@ -1,6 +1,29 @@
 {
   "comments": [
     {
+      "unresolved": true,
+      "key": {
+        "uuid": "8c473e6c_b5e91e4f",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1108259
+      },
+      "writtenOn": "2020-11-11T01:08:18Z",
+      "side": 1,
+      "message": "I think this comment is not correct; here we are just requesting init to do the reboot just like powerd does through powerd_setuid_helper.\n\nwe can call powerd_setuid_helper or alternatively directly call what it does (like in this CL).",
+      "range": {
+        "startLine": 7,
+        "startChar": 0,
+        "endLine": 7,
+        "endChar": 59
+      },
+      "revId": "07b8fa22cac72790d765779bf93372370bc430a1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": false,
       "key": {
         "uuid": "32505fe9_da862b23",
@@ -50,6 +73,29 @@
       "side": 1,
       "message": "I need help on this from someone else.\n\nI haven\u0027t observed an actual case like data corruption caused by reboot.\n\nAdditionally I am not 100% sure what difference this makes.\nAs far as I read from the document, in theory, this is different from \"reboot --force\". However not yet sure if this is different from \"reboot\".\n\nAs far as I get from the document, the call chain is:\npowerd --\u003e powerd_setuid_helper --\u003e initctl emit --\u003e upstart reboot job --\u003e cascade of toher jobs in /etc/init --\u003e halt/reboot --force\n\nIn order to literally invoke powerd, we might need to make a DBus call to powerd.\n\nThis change is equivalent to \"initctl emit\" layer, but I am not sure the simple \"reboot\" is different. (it may also simply set the runlevel.)",
       "parentUuid": "f5ce21c7_58f3f84b",
+      "revId": "07b8fa22cac72790d765779bf93372370bc430a1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "272a905f_ef6544c8",
+        "filename": "src/chromiumos/tast/dut/dut.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 186,
+      "author": {
+        "id": 1108259
+      },
+      "writtenOn": "2020-11-11T01:08:18Z",
+      "side": 1,
+      "message": "this just is doing reboot through upstart; in the same way as powerd does.",
+      "range": {
+        "startLine": 186,
+        "startChar": 0,
+        "endLine": 186,
+        "endChar": 139
+      },
       "revId": "07b8fa22cac72790d765779bf93372370bc430a1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }

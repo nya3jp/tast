@@ -77,6 +77,7 @@ The following software features are defined:
 *   `ec_crash` - Boards that have EC firmware, implement the `crash` EC command,
     and produce a panicinfo file after a crash.
 *   `encrypted_reboot_vault` - Whether the system can setup an encrypted reboot vault in the stateful partition.
+*   `endorsement` - Whether the system have a valid endorsement certificate.
 *   `firewall` - Standard Chrome OS network firewall rules.
 *   `flashrom` - Userspace utility to update firmware.
 *   `google_virtual_keyboard` - The proprietary Google onscreen virtual keyboard

@@ -1,0 +1,119 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9c273ca6_c9b3d9fc",
+        "filename": "src/chromiumos/tast/bundle/remote.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-11-12T10:06:30Z",
+      "side": 1,
+      "message": "BeforeReboot to align with the other field?",
+      "range": {
+        "startLine": 28,
+        "startChar": 1,
+        "endLine": 28,
+        "endChar": 11
+      },
+      "revId": "cb90d2262ac3bd8e6bce817a9834bdc6f7543c39",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d1c30d29_1c1509db",
+        "filename": "src/chromiumos/tast/bundle/remote_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 167,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-11-12T10:06:30Z",
+      "side": 1,
+      "message": "Looks failed to revert...",
+      "range": {
+        "startLine": 167,
+        "startChar": 77,
+        "endLine": 167,
+        "endChar": 80
+      },
+      "revId": "cb90d2262ac3bd8e6bce817a9834bdc6f7543c39",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "05bd04e3_199efc60",
+        "filename": "src/chromiumos/tast/bundle/remote_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 217,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-11-12T10:06:30Z",
+      "side": 1,
+      "message": "TestBeforeReboot",
+      "range": {
+        "startLine": 217,
+        "startChar": 5,
+        "endLine": 217,
+        "endChar": 22
+      },
+      "revId": "cb90d2262ac3bd8e6bce817a9834bdc6f7543c39",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "00fac57a_77c30684",
+        "filename": "src/chromiumos/tast/bundle/remote_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 224,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-11-12T10:06:30Z",
+      "side": 1,
+      "message": "nit: In this test only test is needed. TestRemoteTestHooks needs two tests to ensure hooks are called per test.",
+      "range": {
+        "startLine": 224,
+        "startChar": 1,
+        "endLine": 224,
+        "endChar": 11
+      },
+      "revId": "cb90d2262ac3bd8e6bce817a9834bdc6f7543c39",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "36c514e4_842a986a",
+        "filename": "src/chromiumos/tast/bundle/remote_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 245,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-11-12T10:06:30Z",
+      "side": 1,
+      "message": "ranBeforeRebootCount",
+      "range": {
+        "startLine": 245,
+        "startChar": 5,
+        "endLine": 245,
+        "endChar": 26
+      },
+      "revId": "cb90d2262ac3bd8e6bce817a9834bdc6f7543c39",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

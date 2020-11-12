@@ -10,8 +10,8 @@ import (
 
 	"google.golang.org/grpc"
 
-	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/protocol"
+	"chromiumos/tast/internal/testcontext"
 )
 
 // remoteLoggingClient is a client of the tast.core.Logging gRPC service that
@@ -58,7 +58,7 @@ func newRemoteLoggingClient(ctx context.Context, conn *grpc.ClientConn) (*remote
 					}
 					return err
 				}
-				logging.ContextLog(ctx, res.Entry.Msg)
+				testcontext.Log(ctx, res.Entry.Msg)
 			}
 		}()
 	}()

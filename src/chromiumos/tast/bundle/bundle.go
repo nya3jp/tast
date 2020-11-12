@@ -20,9 +20,9 @@ import (
 	"chromiumos/tast/dut"
 	"chromiumos/tast/internal/command"
 	"chromiumos/tast/internal/control"
-	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/planner"
 	"chromiumos/tast/internal/rpc"
+	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/timing"
 )
@@ -204,7 +204,7 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 	defer hbw.Stop()
 
 	ew := newEventWriter(mw)
-	ctx = logging.NewContext(ctx, func(msg string) {
+	ctx = testcontext.WithLogger(ctx, func(msg string) {
 		ew.RunLog(msg)
 	})
 
@@ -243,13 +243,13 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 
 	var rd *testing.RemoteData
 	if bt == remoteBundle {
-		logging.ContextLog(ctx, "Connecting to DUT")
+		testcontext.Log(ctx, "Connecting to DUT")
 		dt, err := connectToTarget(ctx, args)
 		if err != nil {
 			return command.NewStatusErrorf(statusError, "failed to connect to DUT: %v", err)
 		}
 		defer func() {
-			logging.ContextLog(ctx, "Disconnecting from DUT")
+			testcontext.Log(ctx, "Disconnecting from DUT")
 			// It is okay to ignore the error since we've finished testing at this point.
 			dt.Close(ctx)
 		}()

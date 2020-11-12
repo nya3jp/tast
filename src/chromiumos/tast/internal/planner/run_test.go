@@ -24,7 +24,6 @@ import (
 	"chromiumos/tast/internal/dep"
 	"chromiumos/tast/internal/devserver/devservertest"
 	"chromiumos/tast/internal/extdata"
-	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/testutil"
@@ -775,14 +774,14 @@ func TestRunFixtureResetFailure(t *gotesting.T) {
 	fixt1 := &testing.Fixture{
 		Name: "fixt1",
 		Impl: newFakeFixture(withReset(func(ctx context.Context) error {
-			logging.ContextLog(ctx, "Reset 1")
+			testcontext.Log(ctx, "Reset 1")
 			return errors.New("failure")
 		})),
 	}
 	fixt2 := &testing.Fixture{
 		Name: "fixt2",
 		Impl: newFakeFixture(withReset(func(ctx context.Context) error {
-			logging.ContextLog(ctx, "Reset 2")
+			testcontext.Log(ctx, "Reset 2")
 			return nil
 		})),
 		Parent: "fixt1",
@@ -853,14 +852,14 @@ func TestRunFixtureMinimumReset(t *gotesting.T) {
 	fixt1 := &testing.Fixture{
 		Name: "fixt1",
 		Impl: newFakeFixture(withReset(func(ctx context.Context) error {
-			logging.ContextLog(ctx, "Reset 1")
+			testcontext.Log(ctx, "Reset 1")
 			return nil
 		})),
 	}
 	fixt2 := &testing.Fixture{
 		Name: "fixt2",
 		Impl: newFakeFixture(withReset(func(ctx context.Context) error {
-			logging.ContextLog(ctx, "Reset 2")
+			testcontext.Log(ctx, "Reset 2")
 			return nil
 		})),
 		Parent: "fixt1",
@@ -868,7 +867,7 @@ func TestRunFixtureMinimumReset(t *gotesting.T) {
 	fixt3 := &testing.Fixture{
 		Name: "fixt3",
 		Impl: newFakeFixture(withReset(func(ctx context.Context) error {
-			logging.ContextLog(ctx, "Reset 3")
+			testcontext.Log(ctx, "Reset 3")
 			return nil
 		})),
 		Parent: "fixt1",
@@ -1022,7 +1021,7 @@ func TestRunPreconditionContext(t *gotesting.T) {
 			}
 		}
 
-		logging.ContextLog(pctx, "Log via PreCtx")
+		testcontext.Log(pctx, "Log via PreCtx")
 
 		if _, ok := testcontext.SoftwareDeps(pctx); !ok {
 			t.Error("ContextSoftwareDeps unavailable")
@@ -1171,8 +1170,8 @@ func TestAttachStateToContext(t *gotesting.T) {
 	tests := []*testing.TestInstance{{
 		Name: "pkg.Test",
 		Func: func(ctx context.Context, s *testing.State) {
-			logging.ContextLog(ctx, "msg ", 1)
-			logging.ContextLogf(ctx, "msg %d", 2)
+			testcontext.Log(ctx, "msg ", 1)
+			testcontext.Logf(ctx, "msg %d", 2)
 		},
 		Timeout: time.Minute,
 	}}

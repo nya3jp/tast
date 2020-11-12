@@ -28,7 +28,7 @@ import (
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/command"
 	"chromiumos/tast/internal/devserver"
-	"chromiumos/tast/internal/logging"
+	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/testing"
 )
 
@@ -263,7 +263,7 @@ func handleDownloadPrivateBundles(ctx context.Context, args *Args, cfg *Config, 
 
 	var logs []string
 	var mu sync.Mutex
-	ctx = logging.NewContext(ctx, func(msg string) {
+	ctx = testcontext.WithLogger(ctx, func(msg string) {
 		mu.Lock()
 		defer mu.Unlock()
 		logs = append(logs, fmt.Sprintf("[%s] %s", time.Now().Format("15:04:05.000"), msg))
@@ -281,7 +281,7 @@ func handleDownloadPrivateBundles(ctx context.Context, args *Args, cfg *Config, 
 
 	// Download the archive via devserver.
 	archiveURL := args.DownloadPrivateBundles.BuildArtifactsURL + "tast_bundles.tar.bz2"
-	logging.ContextLogf(ctx, "Downloading private bundles from %s", archiveURL)
+	testcontext.Logf(ctx, "Downloading private bundles from %s", archiveURL)
 	cl, err := devserver.NewClient(ctx, args.DownloadPrivateBundles.Devservers,
 		args.DownloadPrivateBundles.TLWServer,
 		args.DownloadPrivateBundles.DUTName)
@@ -316,9 +316,9 @@ func handleDownloadPrivateBundles(ctx context.Context, args *Args, cfg *Config, 
 		if err := cmd.Run(); err != nil {
 			return fmt.Errorf("failed to extract %s: %v", strings.Join(cmd.Args, " "), err)
 		}
-		logging.ContextLog(ctx, "Download finished successfully")
+		testcontext.Log(ctx, "Download finished successfully")
 	} else if os.IsNotExist(err) {
-		logging.ContextLog(ctx, "Private bundles not found")
+		testcontext.Log(ctx, "Private bundles not found")
 	} else {
 		return fmt.Errorf("failed to download %s: %v", archiveURL, err)
 	}

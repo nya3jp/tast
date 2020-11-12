@@ -10,7 +10,7 @@ import (
 
 	"google.golang.org/grpc"
 
-	"chromiumos/tast/internal/logging"
+	"chromiumos/tast/internal/testcontext"
 )
 
 // Service contains information about a gRPC service exported for remote tests.
@@ -56,13 +56,13 @@ func NewServiceState(ctx context.Context, root *ServiceRoot) *ServiceState {
 // Log formats its arguments using default formatting and logs them.
 // Logs are sent to the currently connected remote bundle.
 func (s *ServiceState) Log(args ...interface{}) {
-	logging.ContextLog(s.ctx, args...)
+	testcontext.Log(s.ctx, args...)
 }
 
 // Logf is similar to Log but formats its arguments using fmt.Sprintf.
 // Logs are sent to the currently connected remote bundle.
 func (s *ServiceState) Logf(format string, args ...interface{}) {
-	logging.ContextLogf(s.ctx, format, args...)
+	testcontext.Logf(s.ctx, format, args...)
 }
 
 // ServiceContext returns a service-scoped context. A service-scoped context is

@@ -64,7 +64,6 @@ import (
 	"chromiumos/tast/dut"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/errors/stack"
-	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/timing"
 )
@@ -338,7 +337,7 @@ func (r *TestEntityRoot) SetPreValue(val interface{}) {
 
 // NewContext returns a context.Context to be used for the entity.
 func NewContext(ctx context.Context, ec *testcontext.CurrentEntity, log func(msg string)) context.Context {
-	ctx = logging.NewContext(ctx, log)
+	ctx = testcontext.WithLogger(ctx, log)
 	ctx = testcontext.WithCurrentEntity(ctx, ec)
 	return ctx
 }

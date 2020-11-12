@@ -2,6 +2,5 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Package logging provides the standard logging mechanism for Tast framework
-// and Tast tests.
-package logging
+// Package testcontext provides logic to extract information from context.
+package testcontext

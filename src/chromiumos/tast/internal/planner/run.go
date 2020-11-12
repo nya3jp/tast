@@ -555,7 +555,7 @@ func runTest(ctx context.Context, t *testing.TestInstance, tout *entityOutputStr
 	}
 	root := testing.NewTestEntityRoot(t, rcfg, tout)
 
-	if err := runTestWithRoot(ctx, t, root, pcfg, precfg); err != nil {
+	if err := runTestWithRoot(ctx, t, root, pcfg, stack, precfg); err != nil {
 		// If runTestWithRoot reported that the test didn't finish, print diagnostic messages.
 		msg := fmt.Sprintf("%v (see log for goroutine dump)", err)
 		tout.Error(testing.NewError(nil, msg, msg, 0))
@@ -657,7 +657,7 @@ func createEntityOutDir(baseDir, name string) (string, error) {
 //
 // The time allotted to the test is generally the sum of t.Timeout and t.ExitTimeout, but
 // additional time may be allotted for preconditions and pre/post-test hooks.
-func runTestWithRoot(ctx context.Context, t *testing.TestInstance, root *testing.TestEntityRoot, pcfg *Config, precfg *preConfig) error {
+func runTestWithRoot(ctx context.Context, t *testing.TestInstance, root *testing.TestEntityRoot, pcfg *Config, stack *fixtureStack, precfg *preConfig) error {
 	// codeName is included in error messages if the user code ignores the timeout.
 	// For compatibility, the same fixed name is used for tests, preconditions and test hooks.
 	const codeName = "Test"
@@ -711,8 +711,6 @@ func runTestWithRoot(ctx context.Context, t *testing.TestInstance, root *testing
 		return err
 	}
 
-	// TODO(crbug.com/1035940): Support fixture pre-test hooks.
-
 	// Prepare the test's precondition (if any) if setup was successful.
 	if !root.HasError() && t.Pre != nil {
 		preState := root.NewPreState()
@@ -724,11 +722,21 @@ func runTestWithRoot(ctx context.Context, t *testing.TestInstance, root *testing
 		}
 	}
 
-	// Next, run the test function itself if no errors have been reported so far.
 	if !root.HasError() {
+		// Run fixture pre-test hooks.
+		if err := stack.PreTest(ctx, root); err != nil {
+			return err
+		}
+
+		// Run the test function itself.
 		if err := safeCall(ctx, codeName, t.Timeout, timeoutOrDefault(t.ExitTimeout, defaultGracePeriod), errorOnPanic(testState), func(ctx context.Context) {
 			t.Func(ctx, testState)
 		}); err != nil {
+			return err
+		}
+
+		// Run fixture post-test hooks.
+		if err := stack.PostTest(ctx, root); err != nil {
 			return err
 		}
 	}
@@ -744,8 +752,6 @@ func runTestWithRoot(ctx context.Context, t *testing.TestInstance, root *testing
 			return err
 		}
 	}
-
-	// TODO(crbug.com/1035940): Support fixture post-test hooks.
 
 	// Finally, run the post-test functions unconditionally.
 	if postTestFunc != nil {

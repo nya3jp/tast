@@ -47,6 +47,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "b8020f45_54ea49f7",
+        "filename": "src/chromiumos/tast/bundle/remote_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 167,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-11-12T14:28:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d1c30d29_1c1509db",
+      "range": {
+        "startLine": 167,
+        "startChar": 77,
+        "endLine": 167,
+        "endChar": 80
+      },
+      "revId": "cb90d2262ac3bd8e6bce817a9834bdc6f7543c39",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "05bd04e3_199efc60",
@@ -60,6 +84,30 @@
       "writtenOn": "2020-11-12T10:06:30Z",
       "side": 1,
       "message": "TestBeforeReboot",
+      "range": {
+        "startLine": 217,
+        "startChar": 5,
+        "endLine": 217,
+        "endChar": 22
+      },
+      "revId": "cb90d2262ac3bd8e6bce817a9834bdc6f7543c39",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f1224569_103c1b46",
+        "filename": "src/chromiumos/tast/bundle/remote_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 217,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-11-12T14:28:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "05bd04e3_199efc60",
       "range": {
         "startLine": 217,
         "startChar": 5,
@@ -93,6 +141,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "8051d359_696beb47",
+        "filename": "src/chromiumos/tast/bundle/remote_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 224,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-11-12T14:28:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "00fac57a_77c30684",
+      "range": {
+        "startLine": 224,
+        "startChar": 1,
+        "endLine": 224,
+        "endChar": 11
+      },
+      "revId": "cb90d2262ac3bd8e6bce817a9834bdc6f7543c39",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "36c514e4_842a986a",
@@ -116,6 +188,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "854b9c95_2c6c57b3",
+        "filename": "src/chromiumos/tast/bundle/remote_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 245,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-11-12T14:28:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "36c514e4_842a986a",
+      "range": {
+        "startLine": 245,
+        "startChar": 5,
+        "endLine": 245,
+        "endChar": 26
+      },
+      "revId": "cb90d2262ac3bd8e6bce817a9834bdc6f7543c39",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "7c708884_c5b8342a",
@@ -129,6 +225,30 @@
       "writtenOn": "2020-11-12T10:06:53Z",
       "side": 1,
       "message": "beforeReboot",
+      "range": {
+        "startLine": 34,
+        "startChar": 1,
+        "endLine": 34,
+        "endChar": 11
+      },
+      "revId": "cb90d2262ac3bd8e6bce817a9834bdc6f7543c39",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "33126039_61692c5a",
+        "filename": "src/chromiumos/tast/dut/dut.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-11-12T14:28:13Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7c708884_c5b8342a",
       "range": {
         "startLine": 34,
         "startChar": 1,

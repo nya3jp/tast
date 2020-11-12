@@ -39,6 +39,30 @@
       },
       "revId": "c2c840e5796f32243364ff1dcef44db676b12de9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "918eb126_49b4e6ec",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1308136
+      },
+      "writtenOn": "2020-11-12T10:23:21Z",
+      "side": 1,
+      "message": "I have moved this to a USE flag. It will now drive both the migration logic and the tests for single source of truth.\n\nI like the idea of separating the current and original 32/64-bit status. Done.",
+      "parentUuid": "c480fc4d_e2c474c1",
+      "range": {
+        "startLine": 67,
+        "startChar": 25,
+        "endLine": 67,
+        "endChar": 478
+      },
+      "revId": "c2c840e5796f32243364ff1dcef44db676b12de9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

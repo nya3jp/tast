@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c0f956fb_79f806d6",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 173,
+      "author": {
+        "id": 1113991
+      },
+      "writtenOn": "2020-11-12T00:01:04Z",
+      "side": 1,
+      "message": "s/alt/alternate/ ? Oh but this is Go, so making cryptical short\nnames is encouraged... Whichever you decide. I\u0027d leave a minor\ncomment ?\n\n  # Not all boards support both VDA and VD, e.g. Trogdor only supports VD.",
+      "range": {
+        "startLine": 173,
+        "startChar": 10,
+        "endLine": 173,
+        "endChar": 13
+      },
+      "revId": "aa4e056441aaf3814ee4014dcf5448c4b81f30c3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

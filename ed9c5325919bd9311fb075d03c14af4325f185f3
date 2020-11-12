@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2d8fabe2_57b2d346",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1001853
+      },
+      "writtenOn": "2020-11-12T08:45:23Z",
+      "side": 1,
+      "message": "Sorry I overlooked the repo in my previous review.",
+      "revId": "ed9c5325919bd9311fb075d03c14af4325f185f3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c4a6fc77_061287f2",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1112100
+      },
+      "writtenOn": "2020-11-12T21:17:40Z",
+      "side": 1,
+      "message": "Adding back the DUT.WifiPeerHost function.  Now I remember why I had two Cls in the first place.   Sorry about that.  My last CL added the wifipeer.go to the wrong repo.  \n(See: http://crrev/c/2532342)",
+      "revId": "f86f2619c1f6fbdfe85959980b597802e044dbe8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

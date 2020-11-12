@@ -16,6 +16,23 @@
       "message": "Sorry I overlooked the repo in my previous review.",
       "revId": "ed9c5325919bd9311fb075d03c14af4325f185f3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1563e309_0f8ee273",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-11-12T08:48:39Z",
+      "side": 1,
+      "message": "No worries, thanks for your quick response.",
+      "revId": "ed9c5325919bd9311fb075d03c14af4325f185f3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

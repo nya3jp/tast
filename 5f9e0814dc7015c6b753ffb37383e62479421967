@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "13579915_d6ea9144",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-11-12T09:31:18Z",
+      "side": 1,
+      "message": "lgtm with a nit",
+      "revId": "5f9e0814dc7015c6b753ffb37383e62479421967",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c40aac0e_72999399",
+        "filename": "src/chromiumos/tast/internal/testcontext/logging.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-11-12T09:31:18Z",
+      "side": 1,
+      "message": "can this be changed to like:\n return ctx.Value(....",
+      "revId": "5f9e0814dc7015c6b753ffb37383e62479421967",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

@@ -281,11 +281,6 @@ func (d *DUT) DefaultWifiPcapHost(ctx context.Context) (*ssh.Conn, error) {
 	return d.connectCompanionDevice(ctx, "-pcap")
 }
 
-// WifiPeerHost connects to the WiFi peer (specified by index) and returns SSH object.
-func (d *DUT) WifiPeerHost(ctx context.Context, index int) (*ssh.Conn, error) {
-	return d.connectCompanionDevice(ctx, fmt.Sprintf("-wifipeer%d", index))
-}
-
 // DefaultCameraboxChart connects to paired chart tablet in camerabox setup and returns SSH object.
 func (d *DUT) DefaultCameraboxChart(ctx context.Context) (*ssh.Conn, error) {
 	return d.connectCompanionDevice(ctx, "-tablet")

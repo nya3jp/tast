@@ -49,6 +49,14 @@ type Fixture struct {
 	// Even if fixtures are nested, the timeout is applied only to this stage.
 	ResetTimeout time.Duration
 
+	// PreTestTimeout is the timeout applied to PreTest.
+	// Even if fixtures are nested, the timeout is applied only to this stage.
+	PreTestTimeout time.Duration
+
+	// PostTestTimeout is the timeout applied to PostTest.
+	// Even if fixtures are nested, the timeout is applied only to this stage.
+	PostTestTimeout time.Duration
+
 	// TearDownTimeout is the timeout applied to TearDown.
 	// Even if fixtures are nested, the timeout is applied only to this stage.
 	TearDownTimeout time.Duration
@@ -148,6 +156,51 @@ type FixtureImpl interface {
 	// This method is the best place to do a light-weight cleanup of the system environment to the
 	// original one when the fixture was set up, e.g. closing open Chrome tabs.
 	Reset(ctx context.Context) error
+
+	// PreTest is called by the framework before each test to do a light-weight set up for the test.
+	//
+	// The context and state passed to PreTest are associated with the test metadata. For example,
+	// testing.ContextOutDir(ctx) and s.OutDir() return the output directory allocated to the test.
+	//
+	// PreTest is called in descending order (parents to children) when fixtures are nested.
+	//
+	// s.Error or s.Fatal can be used to report errors in PreTest. When s.Fatal is called PreTest
+	// immediately aborts. The error is marked as the test failure.
+	//
+	// This method is always called if fixture is successfully reset by SetUp or Reset.
+	//
+	// In any case, PostTest is called in a pair with a successful PreTest call.
+	//
+	// If errors are reported in PreTest, it is reported as the test failure.
+	//
+	// If errors are reported in PreTest, the test and PostTest are not run.
+	//
+	// This method is the best place to do a setup for the test runs next. e.g. redirect logs to a
+	// file in the test's output directory.
+	PreTest(ctx context.Context, s *FixtTestState)
+
+	// PostTest is called by the framework after each test to tear down changes PreTest made.
+	//
+	// The context and state passed to PostTest are associated with the test metadata. For example,
+	// testing.ContextOutDir(ctx) and s.OutDir() return the output directory allocated to the test.
+	//
+	// PostTest is called in ascending order (children to parent) when fixtures are nested.
+	//
+	// s.Error or s.Fatal can be used to report errors in PostTest. When s.Fatal is called PostTest
+	// immediately aborts. The error is marked as the test failure.
+	//
+	// This method is always called if PreTest succeeds.
+	//
+	// PostTest is always called in a pair with a successful PreTest call.
+	//
+	// If errors are reported in PostTest, it is reported as the test failure.
+	//
+	// The errors PostTest reports don't affect the order of the fixture methods the framework
+	// calls.
+	//
+	// This method is the best place to tear down changes PreTest made. e.g. close log files in the
+	// test output directory.
+	PostTest(ctx context.Context, s *FixtTestState)
 
 	// TearDown is called by the framework to tear down the environment SetUp set up.
 	//

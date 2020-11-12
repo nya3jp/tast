@@ -114,6 +114,29 @@
       },
       "revId": "cb90d2262ac3bd8e6bce817a9834bdc6f7543c39",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7c708884_c5b8342a",
+        "filename": "src/chromiumos/tast/dut/dut.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-11-12T10:06:53Z",
+      "side": 1,
+      "message": "beforeReboot",
+      "range": {
+        "startLine": 34,
+        "startChar": 1,
+        "endLine": 34,
+        "endChar": 11
+      },
+      "revId": "cb90d2262ac3bd8e6bce817a9834bdc6f7543c39",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

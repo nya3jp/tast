@@ -262,6 +262,33 @@ func (st *fixtureStack) Reset(ctx context.Context) error {
 	return nil
 }
 
+func (st *fixtureStack) PreTest(ctx context.Context, troot *testing.TestEntityRoot) error {
+	if status := st.Status(); status != statusGreen {
+		return fmt.Errorf("BUG: PreTest called for a %v fixture", status)
+	}
+
+	for _, f := range st.stack {
+		if err := f.RunPreTest(ctx, troot); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (st *fixtureStack) PostTest(ctx context.Context, troot *testing.TestEntityRoot) error {
+	if status := st.Status(); status != statusGreen {
+		return fmt.Errorf("BUG: PostTest called for a %v fixture", status)
+	}
+
+	for i := len(st.stack) - 1; i >= 0; i-- {
+		f := st.stack[i]
+		if err := f.RunPostTest(ctx, troot); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // MarkDirty marks the fixture stack dirty. It returns an error if the stack is
 // already dirty.
 //
@@ -400,4 +427,46 @@ func (f *statefulFixture) RunReset(ctx context.Context) error {
 		f.fout.Log(fmt.Sprintf("Fixture failed to reset: %v; recovering", resetErr))
 	}
 	return nil
+}
+
+func (f *statefulFixture) RunPreTest(ctx context.Context, troot *testing.TestEntityRoot) error {
+	if status := f.Status(); status != statusGreen {
+		return fmt.Errorf("BUG: RunPreTest called for a %v fixture", status)
+	}
+
+	s := troot.NewFixtTestState()
+	ctx = f.newTestContext(ctx, troot, s)
+	name := fmt.Sprintf("%s:PreTest", f.fixt.Name)
+
+	return safeCall(ctx, name, f.fixt.PreTestTimeout, defaultGracePeriod, errorOnPanic(s), func(ctx context.Context) {
+		f.fixt.Impl.PreTest(ctx, s)
+	})
+}
+
+func (f *statefulFixture) RunPostTest(ctx context.Context, troot *testing.TestEntityRoot) error {
+	if status := f.Status(); status != statusGreen {
+		return fmt.Errorf("BUG: RunPostTest called for a %v fixture", status)
+	}
+
+	s := troot.NewFixtTestState()
+	ctx = f.newTestContext(ctx, troot, s)
+	name := fmt.Sprintf("%s:PostTest", f.fixt.Name)
+
+	return safeCall(ctx, name, f.fixt.PostTestTimeout, defaultGracePeriod, errorOnPanic(s), func(ctx context.Context) {
+		f.fixt.Impl.PostTest(ctx, s)
+	})
+}
+
+// newTestContext returns a Context to be passed to PreTest/PostTest of a fixture.
+func (f *statefulFixture) newTestContext(ctx context.Context, troot *testing.TestEntityRoot, s *testing.FixtTestState) context.Context {
+	ce := &testcontext.CurrentEntity{
+		// OutDir is from the test so that test hooks can save files just like tests.
+		OutDir: troot.OutDir(),
+		// ServiceDeps is from the fixture so that test hooks can call gRPC services
+		// without relying on what tests declare in ServiceDeps.
+		ServiceDeps: f.fixt.ServiceDeps,
+		// SoftwareDeps is unavailable because fixtures can't declare software dependencies.
+		HasSoftwareDeps: false,
+	}
+	return testing.NewContext(ctx, ce, func(msg string) { s.Log(msg) })
 }

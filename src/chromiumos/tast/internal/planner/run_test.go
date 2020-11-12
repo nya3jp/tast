@@ -633,15 +633,45 @@ func TestRunFixture(t *gotesting.T) {
 	)
 	fixt1 := &testing.Fixture{
 		Name: "fixt1",
-		Impl: newFakeFixture(withSetUp(func(ctx context.Context, s *testing.FixtState) interface{} {
-			return val1
-		})),
+		Impl: newFakeFixture(
+			withSetUp(func(ctx context.Context, s *testing.FixtState) interface{} {
+				testcontext.Log(ctx, "fixt1 SetUp")
+				return val1
+			}),
+			withReset(func(ctx context.Context) error {
+				testcontext.Log(ctx, "fixt1 Reset")
+				return nil
+			}),
+			withPreTest(func(ctx context.Context, s *testing.FixtTestState) {
+				testcontext.Log(ctx, "fixt1 PreTest")
+			}),
+			withPostTest(func(ctx context.Context, s *testing.FixtTestState) {
+				testcontext.Log(ctx, "fixt1 PostTest")
+			}),
+			withTearDown(func(ctx context.Context, s *testing.FixtState) {
+				testcontext.Log(ctx, "fixt1 TearDown")
+			})),
 	}
 	fixt2 := &testing.Fixture{
 		Name: "fixt2",
-		Impl: newFakeFixture(withSetUp(func(ctx context.Context, s *testing.FixtState) interface{} {
-			return val2
-		})),
+		Impl: newFakeFixture(
+			withSetUp(func(ctx context.Context, s *testing.FixtState) interface{} {
+				testcontext.Log(ctx, "fixt2 SetUp")
+				return val2
+			}),
+			withReset(func(ctx context.Context) error {
+				testcontext.Log(ctx, "fixt2 Reset")
+				return nil
+			}),
+			withPreTest(func(ctx context.Context, s *testing.FixtTestState) {
+				testcontext.Log(ctx, "fixt2 PreTest")
+			}),
+			withPostTest(func(ctx context.Context, s *testing.FixtTestState) {
+				testcontext.Log(ctx, "fixt2 PostTest")
+			}),
+			withTearDown(func(ctx context.Context, s *testing.FixtState) {
+				testcontext.Log(ctx, "fixt2 TearDown")
+			})),
 		Parent: "fixt1",
 	}
 	cfg := &Config{
@@ -685,18 +715,34 @@ func TestRunFixture(t *gotesting.T) {
 	msgs := runTestsAndReadAll(t, tests, cfg)
 
 	want := []control.Msg{
+		// pkg.Test0 simply runs.
 		&control.EntityStart{Info: *tests[0].EntityInfo()},
 		&control.EntityLog{Name: tests[0].Name, Text: "Test 0"},
 		&control.EntityEnd{Name: tests[0].Name},
 		&control.EntityStart{Info: *fixt1.EntityInfo()},
+		// pkg.Test1 depends on fixt1.
+		&control.EntityLog{Name: fixt1.Name, Text: "fixt1 SetUp"},
 		&control.EntityStart{Info: *tests[1].EntityInfo()},
+		&control.EntityLog{Name: tests[1].Name, Text: "fixt1 PreTest"},
 		&control.EntityLog{Name: tests[1].Name, Text: "Test 1"},
+		&control.EntityLog{Name: tests[1].Name, Text: "fixt1 PostTest"},
 		&control.EntityEnd{Name: tests[1].Name},
+		// fixt1 is reset.
+		&control.EntityLog{Name: fixt1.Name, Text: "fixt1 Reset"},
+		// pkg.Test2 depends on fixt2, which in turn depends on fixt1.
 		&control.EntityStart{Info: *fixt2.EntityInfo()},
+		&control.EntityLog{Name: fixt2.Name, Text: "fixt2 SetUp"},
 		&control.EntityStart{Info: *tests[2].EntityInfo()},
+		&control.EntityLog{Name: tests[2].Name, Text: "fixt1 PreTest"},
+		&control.EntityLog{Name: tests[2].Name, Text: "fixt2 PreTest"},
 		&control.EntityLog{Name: tests[2].Name, Text: "Test 2"},
+		&control.EntityLog{Name: tests[2].Name, Text: "fixt2 PostTest"},
+		&control.EntityLog{Name: tests[2].Name, Text: "fixt1 PostTest"},
 		&control.EntityEnd{Name: tests[2].Name},
+		// fixt1 and fixt2 are torn down.
+		&control.EntityLog{Name: fixt2.Name, Text: "fixt2 TearDown"},
 		&control.EntityEnd{Name: fixt2.Name},
+		&control.EntityLog{Name: fixt1.Name, Text: "fixt1 TearDown"},
 		&control.EntityEnd{Name: fixt1.Name},
 	}
 	if diff := cmp.Diff(msgs, want); diff != "" {
@@ -707,14 +753,45 @@ func TestRunFixture(t *gotesting.T) {
 func TestRunFixtureSetUpFailure(t *gotesting.T) {
 	fixt1 := &testing.Fixture{
 		Name: "fixt1",
-		Impl: newFakeFixture(withSetUp(func(ctx context.Context, s *testing.FixtState) interface{} {
-			s.Error("Setup failure")
-			return nil
-		})),
+		Impl: newFakeFixture(
+			withSetUp(func(ctx context.Context, s *testing.FixtState) interface{} {
+				s.Error("Setup failure")
+				return nil
+			}),
+			withReset(func(ctx context.Context) error {
+				testcontext.Log(ctx, "fixt1 Reset")
+				return nil
+			}),
+			withPreTest(func(ctx context.Context, s *testing.FixtTestState) {
+				testcontext.Log(ctx, "fixt1 PreTest")
+			}),
+			withPostTest(func(ctx context.Context, s *testing.FixtTestState) {
+				testcontext.Log(ctx, "fixt1 PostTest")
+			}),
+			withTearDown(func(ctx context.Context, s *testing.FixtState) {
+				testcontext.Log(ctx, "fixt1 TearDown")
+			})),
 	}
 	fixt2 := &testing.Fixture{
-		Name:   "fixt2",
-		Impl:   newFakeFixture(),
+		Name: "fixt2",
+		Impl: newFakeFixture(
+			withSetUp(func(ctx context.Context, s *testing.FixtState) interface{} {
+				testcontext.Log(ctx, "fixt2 SetUp")
+				return nil
+			}),
+			withReset(func(ctx context.Context) error {
+				testcontext.Log(ctx, "fixt2 Reset")
+				return nil
+			}),
+			withPreTest(func(ctx context.Context, s *testing.FixtTestState) {
+				testcontext.Log(ctx, "fixt2 PreTest")
+			}),
+			withPostTest(func(ctx context.Context, s *testing.FixtTestState) {
+				testcontext.Log(ctx, "fixt2 PostTest")
+			}),
+			withTearDown(func(ctx context.Context, s *testing.FixtState) {
+				testcontext.Log(ctx, "fixt2 TearDown")
+			})),
 		Parent: "fixt1",
 	}
 	cfg := &Config{

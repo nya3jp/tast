@@ -15,7 +15,6 @@ import (
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/reflection"
 
-	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/testing"
@@ -42,7 +41,7 @@ func RunServer(r io.Reader, w io.Writer, svcs []*testing.Service) error {
 	// Create a service-scoped context.
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-	ctx = logging.NewContext(ctx, ls.Log)
+	ctx = testcontext.WithLogger(ctx, ls.Log)
 
 	for _, svc := range svcs {
 		svc.Register(srv, testing.NewServiceState(ctx, testing.NewServiceRoot(svc, vars)))
@@ -68,14 +67,14 @@ func (s *serverStreamWithContext) Context() context.Context {
 var _ grpc.ServerStream = (*serverStreamWithContext)(nil)
 
 // serverOpts returns gRPC server-side interceptors to manipulate context.
-func serverOpts(logger logging.SinkFunc) []grpc.ServerOption {
+func serverOpts(logger testcontext.LoggerFunc) []grpc.ServerOption {
 	var tl *timing.Log
 	before := func(ctx context.Context) (context.Context, error) {
 		md, ok := metadata.FromIncomingContext(ctx)
 		if !ok {
 			return nil, errors.New("metadata not available")
 		}
-		ctx = logging.NewContext(ctx, logger)
+		ctx = testcontext.WithLogger(ctx, logger)
 		ctx = testcontext.WithCurrentEntity(ctx, incomingCurrentContext(md))
 		tl = timing.NewLog()
 		ctx = timing.NewContext(ctx, tl)

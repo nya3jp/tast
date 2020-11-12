@@ -14,7 +14,6 @@ import (
 	"google.golang.org/grpc"
 
 	"chromiumos/tast/errors"
-	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/testing"
@@ -237,14 +236,14 @@ func TestRPCForwardLogs(t *gotesting.T) {
 
 	logs := make(chan string, 1)
 	ctx := context.Background()
-	ctx = logging.NewContext(ctx, func(msg string) { logs <- msg })
+	ctx = testcontext.WithLogger(ctx, func(msg string) { logs <- msg })
 	ctx = testcontext.WithCurrentEntity(ctx, &testcontext.CurrentEntity{})
 	h := testing.NewRPCHint("", nil)
 
 	called := false
 	svc := newPingService(func(ctx context.Context, s *testing.ServiceState) error {
 		called = true
-		logging.ContextLog(ctx, exp)
+		testcontext.Log(ctx, exp)
 		return nil
 	})
 
@@ -344,14 +343,14 @@ func TestRPCServiceScopedContext(t *gotesting.T) {
 
 	logs := make(chan string, 1)
 	ctx := context.Background()
-	ctx = logging.NewContext(ctx, func(msg string) { logs <- msg })
+	ctx = testcontext.WithLogger(ctx, func(msg string) { logs <- msg })
 	ctx = testcontext.WithCurrentEntity(ctx, &testcontext.CurrentEntity{})
 	h := testing.NewRPCHint("", nil)
 
 	called := false
 	svc := newPingService(func(ctx context.Context, s *testing.ServiceState) error {
 		called = true
-		logging.ContextLog(s.ServiceContext(), exp)
+		testcontext.Log(s.ServiceContext(), exp)
 		return nil
 	})
 

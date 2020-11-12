@@ -12,8 +12,8 @@ import (
 
 	"google.golang.org/grpc"
 
-	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/protocol"
+	"chromiumos/tast/internal/testcontext"
 )
 
 func TestRemoteLogging(t *testing.T) {
@@ -41,7 +41,7 @@ func TestRemoteLogging(t *testing.T) {
 	sv.Log("foo") // logs before ReadLogs should be discarded
 
 	logs := make(chan string)
-	ctx := logging.NewContext(context.Background(), func(msg string) {
+	ctx := testcontext.WithLogger(context.Background(), func(msg string) {
 		logs <- msg
 	})
 	cl, err := newRemoteLoggingClient(ctx, conn)

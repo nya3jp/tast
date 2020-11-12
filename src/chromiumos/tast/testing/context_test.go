@@ -9,7 +9,7 @@ import (
 	"reflect"
 	"testing"
 
-	"chromiumos/tast/internal/logging"
+	"chromiumos/tast/internal/testcontext"
 )
 
 func TestContextLogger(t *testing.T) {
@@ -23,7 +23,7 @@ func TestContextLogger(t *testing.T) {
 	sink := func(msg string) {
 		logs = append(logs, msg)
 	}
-	ctx = logging.NewContext(ctx, sink)
+	ctx = testcontext.WithLogger(ctx, sink)
 
 	logger, ok := ContextLogger(ctx)
 	if !ok {

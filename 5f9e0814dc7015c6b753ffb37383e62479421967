@@ -33,6 +33,24 @@
       "message": "can this be changed to like:\n return ctx.Value(....",
       "revId": "5f9e0814dc7015c6b753ffb37383e62479421967",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "383df1b2_fb27a7af",
+        "filename": "src/chromiumos/tast/internal/testcontext/logging.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-11-12T10:00:58Z",
+      "side": 1,
+      "message": "Actually no... IIUC in non-assignment contexts type assertions are always single-valued.\nhttps://play.golang.org/p/v2IuG3cNu4D",
+      "parentUuid": "c40aac0e_72999399",
+      "revId": "5f9e0814dc7015c6b753ffb37383e62479421967",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

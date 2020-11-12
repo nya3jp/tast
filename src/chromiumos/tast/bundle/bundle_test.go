@@ -26,8 +26,8 @@ import (
 	"chromiumos/tast/internal/control"
 	"chromiumos/tast/internal/devserver/devservertest"
 	"chromiumos/tast/internal/extdata"
-	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/sshtest"
+	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/testutil"
 )
@@ -115,10 +115,10 @@ func TestRunTests(t *gotesting.T) {
 	cfg := runConfig{
 		runHook: func(ctx context.Context) (func(context.Context) error, error) {
 			preRunCalls++
-			logging.ContextLog(ctx, preRunMsg)
+			testcontext.Log(ctx, preRunMsg)
 			return func(ctx context.Context) error {
 				postRunCalls++
-				logging.ContextLog(ctx, postRunMsg)
+				testcontext.Log(ctx, postRunMsg)
 				return nil
 			}, nil
 		},

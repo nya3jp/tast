@@ -9,7 +9,7 @@ import (
 	"reflect"
 	"testing"
 
-	"chromiumos/tast/internal/logging"
+	"chromiumos/tast/internal/testcontext"
 )
 
 func TestContextLogger(t *testing.T) {
@@ -20,18 +20,18 @@ func TestContextLogger(t *testing.T) {
 	}
 
 	var logs []string
-	sink := func(msg string) {
+	logger := func(msg string) {
 		logs = append(logs, msg)
 	}
-	ctx = logging.NewContext(ctx, sink)
+	ctx = testcontext.WithLogger(ctx, logger)
 
-	logger, ok := ContextLogger(ctx)
+	logger2, ok := ContextLogger(ctx)
 	if !ok {
 		t.Errorf("Expected logger to be available")
 	}
 
 	const testLog = "foo"
-	logger.Print(testLog)
+	logger2.Print(testLog)
 	if exp := []string{testLog}; !reflect.DeepEqual(logs, exp) {
 		t.Errorf("Print did not work as expected: got %v, want %v", logs, exp)
 	}

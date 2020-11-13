@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "379a812b_e6670ca8",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 975,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-11-13T15:51:28Z",
+      "side": 1,
+      "message": "It is wrong to overwrite data files uploaded to Chrome OS cloud storage buckets.\n\n- Tast caches cloud storage files as you find out\n- Chrome OS infra (devserver) also caches cloud storage files\n- Google Cloud Storage itself caches files\n- It is possible that ~years old Chrome OS images are tested, so overwriting data files would cause unreproducible test behavior",
+      "range": {
+        "startLine": 974,
+        "startChar": 56,
+        "endLine": 975,
+        "endChar": 18
+      },
+      "revId": "40e92c359b094582ffa2c3dd75b817bf5cecea2d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

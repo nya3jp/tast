@@ -16,6 +16,23 @@
       "message": "merge conflict resolved.",
       "revId": "8986a63bdf66bdf05be87499e10d25872e366722",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e936ea05_ef9c091d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-11-13T08:52:06Z",
+      "side": 1,
+      "message": "Looks not related to this change. retrying.\n\u003e crosvm-0.1.0-r1089: 22:58:06 \u003e\u003e\u003e Compiling source in /build/amd64-generic/tmp/portage/chromeos-base/crosvm-0.1.0-r1089/work/crosvm-0.1.0 ...\n\u003e crosvm-0.1.0-r1089: \u001b[0m\u001b[0m\u001b[1m\u001b[31merror\u001b[0m\u001b[1m:\u001b[0m no matching package named `gdbstub` found\n",
+      "revId": "8986a63bdf66bdf05be87499e10d25872e366722",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

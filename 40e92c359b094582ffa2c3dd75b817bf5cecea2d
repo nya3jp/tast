@@ -1,6 +1,23 @@
 {
   "comments": [
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "836ad77e_6c567c10",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-11-13T17:16:37Z",
+      "side": 1,
+      "message": "The comment I wanted to say is covered by nya@ :-).",
+      "revId": "40e92c359b094582ffa2c3dd75b817bf5cecea2d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "379a812b_e6670ca8",

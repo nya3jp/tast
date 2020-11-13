@@ -18,6 +18,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"chromiumos/tast/autocaps"
 	"chromiumos/tast/bundle"
@@ -90,16 +91,16 @@ func main() {
 			"crosvm_gpu":         `"crosvm-gpu" && "virtio_gpu"`,
 			"crosvm_no_gpu":      `!"crosvm-gpu" || !"virtio_gpu"`,
 			"crossystem":         "!betty && !tast_vm", // VMs don't support few crossystem sub-commands: https://crbug.com/974615
-			"cups":               "cups",
-			"diagnostics":        "diagnostics && !betty && !tast_vm", // VMs do not have hardware to diagnose. https://crbug.com/1126619
-			"display_backlight":  "display_backlight",
-			"dlc":                "dlc && dlc_test",
-			"dptf":               "dptf",
-			"device_crash":       `!("board:samus")`, // Samus devices do not reliably come back after kernel crashes. crbug.com/1045821
-			"dmverity_stable":    `"kernel-3_8" || "kernel-3_10" || "kernel-3_14" || "kernel-3_18" || "kernel-4_4" || "kernel-4_14"`,
-			"dmverity_unstable":  `!("kernel-3_8" || "kernel-3_10" || "kernel-3_14" || "kernel-3_18" || "kernel-4_4" || "kernel-4_14")`,
-			"drivefs":            "drivefs",
-			"drm_atomic":         "drm_atomic",
+			"cups":              "cups",
+			"diagnostics":       "diagnostics && !betty && !tast_vm", // VMs do not have hardware to diagnose. https://crbug.com/1126619
+			"display_backlight": "display_backlight",
+			"dlc":               "dlc && dlc_test",
+			"dptf":              "dptf",
+			"device_crash":      `!("board:samus")`, // Samus devices do not reliably come back after kernel crashes. crbug.com/1045821
+			"dmverity_stable":   `"kernel-3_8" || "kernel-3_10" || "kernel-3_14" || "kernel-3_18" || "kernel-4_4" || "kernel-4_14"`,
+			"dmverity_unstable": `!("kernel-3_8" || "kernel-3_10" || "kernel-3_14" || "kernel-3_18" || "kernel-4_4" || "kernel-4_14")`,
+			"drivefs":           "drivefs",
+			"drm_atomic":        "drm_atomic",
 			// asuka, banon, caroline, cave, celes, chell, cyan, edgar, kefka, reks, relm, sentry, terra, ultima, and wizpig have buggy EC firmware and cannot capture crash reports. b/172228823
 			// drallion and sarien have do not support the "crash" EC command. crbug.com/1123716
 			// guado, tidus, rikku, veyron_fievel, and veyron_tiger do not have EC firmware. crbug.com/1123716. TODO(crbug.com/1124554) Use an EC hardware dep for these rather than a software dep.
@@ -247,25 +248,29 @@ func writeSystemInfo(ctx context.Context, dir string) error {
 	}
 
 	var errs []string
-	cmds := map[string]*exec.Cmd{
-		"upstart_jobs.txt": exec.CommandContext(ctx, "initctl", "list"),
-		"ps.txt":           exec.CommandContext(ctx, "ps", "auxwwf"),
-		"du_stateful.txt":  exec.CommandContext(ctx, "du", "-m", "/mnt/stateful_partition"),
-		"mount.txt":        exec.CommandContext(ctx, "mount"),
-		"hostname.txt":     exec.CommandContext(ctx, "hostname"),
-		"uptime.txt":       exec.CommandContext(ctx, "uptime"),
-		"losetup.txt":      exec.CommandContext(ctx, "losetup"),
-		"df.txt":           exec.CommandContext(ctx, "df", "-mP"),
-		"dmesg.txt":        exec.CommandContext(ctx, "dmesg"),
+	cmds := map[string][]string{
+		"upstart_jobs.txt": {"initctl", "list"},
+		"ps.txt":           {"ps", "auxwwf"},
+		"du_stateful.txt":  {"du", "-m", "/mnt/stateful_partition"},
+		"mount.txt":        {"mount"},
+		"hostname.txt":     {"hostname"},
+		"uptime.txt":       {"uptime"},
+		"losetup.txt":      {"losetup"},
+		"df.txt":           {"df", "-mP"},
+		"dmesg.txt":        {"dmesg"},
 	}
 	if _, err := os.Stat("/proc/bus/pci"); !os.IsNotExist(err) {
-		cmds["lspci.txt"] = exec.CommandContext(ctx, "lspci", "-vvn")
+		cmds["lspci.txt"] = []string{"lspci", "-vvn"}
 	}
 
 	for fn, cmd := range cmds {
+		// Set timeout in case some commands take long time unexpectedly. (crbug.com/1147723)
+		cmdCtx, cancel := context.WithTimeout(ctx, 1*time.Minute)
+		cmd := exec.CommandContext(cmdCtx, cmd[0], cmd[1:len(cmd)]...)
 		if err := runCmd(cmd, fn); err != nil {
 			errs = append(errs, fmt.Sprintf("failed running %q: %v", shutil.EscapeSlice(cmd.Args), err))
 		}
+		cancel()
 	}
 
 	// Also copy crash-related system info (e.g. /etc/lsb-release) to aid in debugging.

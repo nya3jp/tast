@@ -18,6 +18,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"chromiumos/tast/autocaps"
 	"chromiumos/tast/bundle"
@@ -237,20 +238,22 @@ func writeSystemInfo(ctx context.Context, dir string) error {
 		return cmd.Run()
 	}
 
+	// Set timeout in case some commands take long time unexpectedly. (crbug.com/1147723)
+	cmdCtx := context.WithTimeout(ctx, 1*time.Minute)
 	var errs []string
 	cmds := map[string]*exec.Cmd{
-		"upstart_jobs.txt": exec.CommandContext(ctx, "initctl", "list"),
-		"ps.txt":           exec.CommandContext(ctx, "ps", "auxwwf"),
-		"du_stateful.txt":  exec.CommandContext(ctx, "du", "-m", "/mnt/stateful_partition"),
-		"mount.txt":        exec.CommandContext(ctx, "mount"),
-		"hostname.txt":     exec.CommandContext(ctx, "hostname"),
-		"uptime.txt":       exec.CommandContext(ctx, "uptime"),
-		"losetup.txt":      exec.CommandContext(ctx, "losetup"),
-		"df.txt":           exec.CommandContext(ctx, "df", "-mP"),
-		"dmesg.txt":        exec.CommandContext(ctx, "dmesg"),
+		"upstart_jobs.txt": exec.CommandContext(cmdCtx, "initctl", "list"),
+		"ps.txt":           exec.CommandContext(cmdCtx, "ps", "auxwwf"),
+		"du_stateful.txt":  exec.CommandContext(cmdCtx, "du", "-m", "/mnt/stateful_partition"),
+		"mount.txt":        exec.CommandContext(cmdCtx, "mount"),
+		"hostname.txt":     exec.CommandContext(cmdCtx, "hostname"),
+		"uptime.txt":       exec.CommandContext(cmdCtx, "uptime"),
+		"losetup.txt":      exec.CommandContext(cmdCtx, "losetup"),
+		"df.txt":           exec.CommandContext(cmdCtx, "df", "-mP"),
+		"dmesg.txt":        exec.CommandContext(cmdCtx, "dmesg"),
 	}
 	if _, err := os.Stat("/proc/bus/pci"); !os.IsNotExist(err) {
-		cmds["lspci.txt"] = exec.CommandContext(ctx, "lspci", "-vvn")
+		cmds["lspci.txt"] = exec.CommandContext(cmdCtx, "lspci", "-vvn")
 	}
 
 	for fn, cmd := range cmds {

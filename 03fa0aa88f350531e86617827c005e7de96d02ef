@@ -16,6 +16,24 @@
       "message": "LGTM this CL, but it looks like the new USE flags are not yet added to each board?\nI assume you\u0027ll make the change in board, and these Deps are not used until ready.\n",
       "revId": "03fa0aa88f350531e86617827c005e7de96d02ef",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "eadb072f_c95d65f1",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1308136
+      },
+      "writtenOn": "2020-11-13T03:08:44Z",
+      "side": 1,
+      "message": "Yup. Use flag is going into kukui first (crrev.com/i/3399424). We are holding back rolling out the flag on other boards until proven out on kukui because this acts as a fail-safe to prevent migration codepaths from activating in the wrong places. (b/170889574)",
+      "parentUuid": "b944526d_cbc9f775",
+      "revId": "03fa0aa88f350531e86617827c005e7de96d02ef",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

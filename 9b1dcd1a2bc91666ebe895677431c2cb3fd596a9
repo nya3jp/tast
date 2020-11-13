@@ -1,0 +1,90 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e9c86bea_510ca38b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1113991
+      },
+      "writtenOn": "2020-11-13T01:47:27Z",
+      "side": 1,
+      "message": "Idea is good, just have a suggestion on the wording from\na fresh pair of eyes. +1 since I\u0027m not an owner here.",
+      "revId": "9b1dcd1a2bc91666ebe895677431c2cb3fd596a9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bafa8e32_ce6d2a1f",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 6
+      },
+      "lineNbr": 146,
+      "author": {
+        "id": 1113991
+      },
+      "writtenOn": "2020-11-13T01:47:27Z",
+      "side": 1,
+      "message": "nit: \"The platform uses the direct video decoder by default\" ?",
+      "range": {
+        "startLine": 146,
+        "startChar": 29,
+        "endLine": 146,
+        "endChar": 30
+      },
+      "revId": "9b1dcd1a2bc91666ebe895677431c2cb3fd596a9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8c9c1eb7_19b06e30",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 6
+      },
+      "lineNbr": 147,
+      "author": {
+        "id": 1113991
+      },
+      "writtenOn": "2020-11-13T01:47:27Z",
+      "side": 1,
+      "message": "nit: \"The platform uses the legacy video decode accelerator (VDA) by default\" ?",
+      "range": {
+        "startLine": 147,
+        "startChar": 29,
+        "endLine": 147,
+        "endChar": 32
+      },
+      "revId": "9b1dcd1a2bc91666ebe895677431c2cb3fd596a9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9f0c6a62_4c754144",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 6
+      },
+      "lineNbr": 148,
+      "author": {
+        "id": 1113991
+      },
+      "writtenOn": "2020-11-13T01:47:27Z",
+      "side": 1,
+      "message": "s/video accelerator/legacy video decode accelerator/\n\nYou can also use VideoDecodeAcelerator and VideoDecoder which are\nthe Chrome classes names.",
+      "range": {
+        "startLine": 148,
+        "startChar": 43,
+        "endLine": 148,
+        "endChar": 60
+      },
+      "revId": "9b1dcd1a2bc91666ebe895677431c2cb3fd596a9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

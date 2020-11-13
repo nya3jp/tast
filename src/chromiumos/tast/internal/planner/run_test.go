@@ -969,6 +969,59 @@ func TestRunFixtureMinimumReset(t *gotesting.T) {
 	}
 }
 
+func TestRunFixtureMissing(t *gotesting.T) {
+	fixt1 := &testing.Fixture{
+		Name:   "fixt1",
+		Impl:   newFakeFixture(),
+		Parent: "fixt0", // no such fixture
+	}
+	fixt2 := &testing.Fixture{
+		Name:   "fixt2",
+		Impl:   newFakeFixture(),
+		Parent: "fixt1",
+	}
+	cfg := &Config{
+		Fixtures: map[string]*testing.Fixture{
+			fixt1.Name: fixt1,
+			fixt2.Name: fixt2,
+		},
+	}
+
+	tests := []*testing.TestInstance{{
+		Name:    "pkg.Test0",
+		Func:    func(ctx context.Context, s *testing.State) {},
+		Timeout: time.Minute,
+	}, {
+		Name:    "pkg.Test1",
+		Fixture: "fixt1",
+		Func:    func(ctx context.Context, s *testing.State) {},
+		Timeout: time.Minute,
+	}, {
+		Name:    "pkg.Test2",
+		Fixture: "fixt2",
+		Func:    func(ctx context.Context, s *testing.State) {},
+		Timeout: time.Minute,
+	}}
+
+	msgs := runTestsAndReadAll(t, tests, cfg)
+
+	want := []control.Msg{
+		// Orphan tests are reported first, sorted by name.
+		&control.EntityStart{Info: *tests[1].EntityInfo()},
+		&control.EntityError{Name: tests[1].Name, Error: testing.Error{Reason: "Fixture \"fixt0\" not found"}},
+		&control.EntityEnd{Name: tests[1].Name},
+		&control.EntityStart{Info: *tests[2].EntityInfo()},
+		&control.EntityError{Name: tests[2].Name, Error: testing.Error{Reason: "Fixture \"fixt0\" not found"}},
+		&control.EntityEnd{Name: tests[2].Name},
+		// Valid tests are run.
+		&control.EntityStart{Info: *tests[0].EntityInfo()},
+		&control.EntityEnd{Name: tests[0].Name},
+	}
+	if diff := cmp.Diff(msgs, want); diff != "" {
+		t.Error("Output mismatch (-got +want):\n", diff)
+	}
+}
+
 func TestRunPrecondition(t *gotesting.T) {
 	type data struct{}
 	preData := &data{}

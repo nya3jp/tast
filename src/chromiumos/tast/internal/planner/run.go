@@ -227,10 +227,18 @@ func (t *fixtTree) Clone() *fixtTree {
 	}
 }
 
+// orphanTest represents a test that depends on a missing fixture directly or
+// indirectly.
+type orphanTest struct {
+	test            *testing.TestInstance
+	missingFixtName string
+}
+
 // fixtPlan holds an execution plan of fixture-ready tests.
 type fixtPlan struct {
-	pcfg *Config
-	tree *fixtTree // original fixture tree; must not be modified
+	pcfg    *Config
+	tree    *fixtTree // original fixture tree; must not be modified
+	orphans []*orphanTest
 }
 
 // buildFixtPlan builds an execution plan of fixture-ready tests. Tests passed
@@ -238,28 +246,32 @@ type fixtPlan struct {
 func buildFixtPlan(tests []*testing.TestInstance, pcfg *Config) (*fixtPlan, error) {
 	// Build a graph of fixtures relevant to the given tests.
 	graph := make(map[string][]string) // fixture name to its child names
-	seen := make(map[string]struct{})  // set of fixture names seen so far
+	added := make(map[string]struct{}) // set of fixtures added to graph as children
+	var orphans []*orphanTest
 	for _, t := range tests {
 		cur := t.Fixture
 		for cur != pcfg.StartFixtureName {
 			if cur == "" {
 				return nil, fmt.Errorf("cannot run test %q because it does not depend on start fixture %q", t.Name, pcfg.StartFixtureName)
 			}
-			if _, ok := seen[cur]; ok {
-				break
-			}
-			seen[cur] = struct{}{}
 			f, ok := pcfg.Fixtures[cur]
 			if !ok {
-				return nil, fmt.Errorf("fixture %q not found", cur)
+				orphans = append(orphans, &orphanTest{test: t, missingFixtName: cur})
+				break
 			}
-			graph[f.Parent] = append(graph[f.Parent], cur)
+			if _, ok := added[cur]; !ok {
+				graph[f.Parent] = append(graph[f.Parent], cur)
+				added[cur] = struct{}{}
+			}
 			cur = f.Parent
 		}
 	}
 	for _, children := range graph {
 		sort.Strings(children)
 	}
+	sort.Slice(orphans, func(i, j int) bool {
+		return orphans[i].test.Name < orphans[j].test.Name
+	})
 
 	// Build a map from fixture names to tests.
 	testMap := make(map[string][]*testing.TestInstance)
@@ -302,10 +314,15 @@ func buildFixtPlan(tests []*testing.TestInstance, pcfg *Config) (*fixtPlan, erro
 		// TODO(crbug.com/1035940): Set timeouts of a start fixture.
 	}
 
-	return &fixtPlan{pcfg: pcfg, tree: tree}, nil
+	return &fixtPlan{pcfg: pcfg, tree: tree, orphans: orphans}, nil
 }
 
 func (p *fixtPlan) run(ctx context.Context, out OutputStream, dl *downloader) error {
+	for _, o := range p.orphans {
+		tout := newEntityOutputStream(out, o.test.EntityInfo())
+		reportOrphanTest(tout, o.missingFixtName)
+	}
+
 	tree := p.tree.Clone()
 	stack := newFixtureStack(p.pcfg, out)
 	return runFixtTree(ctx, tree, stack, p.pcfg, out, dl)
@@ -313,6 +330,10 @@ func (p *fixtPlan) run(ctx context.Context, out OutputStream, dl *downloader) er
 
 func (p *fixtPlan) testsToRun() []*testing.TestInstance {
 	var tests []*testing.TestInstance
+
+	for _, o := range p.orphans {
+		tests = append(tests, o.test)
+	}
 
 	var traverse func(tree *fixtTree)
 	traverse = func(tree *fixtTree) {
@@ -744,6 +765,19 @@ func timeoutOrDefault(timeout, def time.Duration) time.Duration {
 		return timeout
 	}
 	return def
+}
+
+// reportOrphanTest is called instead of runTest for a test that depends on
+// a missing fixture directly or indirectly.
+func reportOrphanTest(tout *entityOutputStream, missingFixtName string) {
+	tout.Start("")
+	_, fn, ln, _ := runtime.Caller(0)
+	tout.Error(&testing.Error{
+		Reason: fmt.Sprintf("Fixture %q not found", missingFixtName),
+		File:   fn,
+		Line:   ln,
+	})
+	tout.End(nil, nil)
 }
 
 // reportSkippedTest is called instead of runTest for a test that is skipped due to

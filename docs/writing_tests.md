@@ -933,7 +933,7 @@ to test images but are downloaded at run time by `local_test_runner` on DUT.
 
 To add external data files, put _external link files_ named
 `<original-name>.external` in `data/` subdirectory whose content is JSON in the
-[external link format].
+external link format.
 
 For example, a data file belonging to a test named `ui.UserLogin` in the default
 `cros` bundle might be declared in `user_login_some_image.jpg.external` with the
@@ -968,7 +968,13 @@ An example external link file to reference a build artifact is below:
 
 To upload a file to Google Cloud Storage you can use the [`gsutil cp`] command.
 
-[external link format]: https://chromium.googlesource.com/chromiumos/platform/tast/+/master/src/chromiumos/tast/internal/runner/external.go
+To list all uploaded versions of the file, use the `gsutil ls -a` command.
+
+External files are cached in two locations: /usr/local/share/tast/data_pushed
+on the DUT and /tmp/tast/devserver on the host machine. When overwriting a
+cloud storage file, remember to manually clear the cache folders before running
+Tast tests to prevent stale files from being served.
+
 [example.DataFiles]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/master/src/chromiumos/tast/local/bundles/cros/example/data_files.go
 [build artifacts of Chrome OS]: https://goto.google.com/cros-build/google-storage
 [`gsutil cp`]: https://cloud.google.com/storage/docs/gsutil/commands/cp

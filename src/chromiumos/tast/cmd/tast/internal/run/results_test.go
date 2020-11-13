@@ -280,6 +280,11 @@ func TestReadTestOutputSameEntity(t *gotesting.T) {
 		t.Errorf("%v mismatch (-got +want):\n%s", resultsFilename, diff)
 	}
 
+	streamRes := readStreamedResults(t, bytes.NewBufferString(files[streamedResultsFilename]))
+	if diff := cmp.Diff(streamRes, expRes); diff != "" {
+		t.Errorf("%v mismatch (-got +want):\n%s", streamedResultsFilename, diff)
+	}
+
 	fixt1OutPath := filepath.Join(fixtureLogsDir, fixtName, fixt1OutFile)
 	if files[fixt1OutPath] != fixt1OutData {
 		t.Errorf("%s contains %q; want %q", fixt1OutPath, files[fixt1OutPath], fixt1OutData)

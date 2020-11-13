@@ -18,6 +18,23 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "9cc3cbcc_df824b71",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 10
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-11-13T23:03:45Z",
+      "side": 1,
+      "message": "Hi Shuhei:\n\nI have addressed the feedback and added a new unit test. Please take a look.\n\nThanks.\n\nSeewai",
+      "revId": "0ca5f5ed57639db3130aa3b283843d9672fb98e0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "f95c41fc_0fcf2d34",
@@ -31,6 +48,30 @@
       "writtenOn": "2020-11-09T09:37:06Z",
       "side": 1,
       "message": "As the comment says, those fields are treated specially with MarshalJSON/UnmarshalJSON overrides. Please update them.",
+      "range": {
+        "startLine": 89,
+        "startChar": 0,
+        "endLine": 97,
+        "endChar": 50
+      },
+      "revId": "0ca5f5ed57639db3130aa3b283843d9672fb98e0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "89cd09c8_51f86e98",
+        "filename": "src/chromiumos/tast/bundle/args.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-11-13T23:03:45Z",
+      "side": 1,
+      "message": "It looks like it is quite complicate to marshal/unmarshal an embedded field. Therefore, I changed it to field with name: FeatureRelatedArgs.",
+      "parentUuid": "f95c41fc_0fcf2d34",
       "range": {
         "startLine": 89,
         "startChar": 0,
@@ -77,6 +118,30 @@
       "writtenOn": "2020-11-09T09:37:06Z",
       "side": 1,
       "message": "CheckSoftwareDeps is checked in RunTestsArgs.Features. Please remove this check so that we check it at one place.",
+      "range": {
+        "startLine": 68,
+        "startChar": 20,
+        "endLine": 68,
+        "endChar": 37
+      },
+      "revId": "0ca5f5ed57639db3130aa3b283843d9672fb98e0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9ee3b4c2_7302beb8",
+        "filename": "src/chromiumos/tast/bundle/bundle.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-11-13T23:03:45Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c6381432_8312b944",
       "range": {
         "startLine": 68,
         "startChar": 20,
@@ -173,6 +238,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "5f368fdc_987d17f4",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-11-13T23:03:45Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "006c00df_826b8ebf",
+      "range": {
+        "startLine": 28,
+        "startChar": 1,
+        "endLine": 28,
+        "endChar": 29
+      },
+      "revId": "0ca5f5ed57639db3130aa3b283843d9672fb98e0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "f9ddc77e_08c26a0a",
@@ -186,6 +275,30 @@
       "writtenOn": "2020-11-09T09:37:06Z",
       "side": 1,
       "message": "I believe we don\u0027t need this special check.",
+      "range": {
+        "startLine": 35,
+        "startChar": 0,
+        "endLine": 41,
+        "endChar": 2
+      },
+      "revId": "0ca5f5ed57639db3130aa3b283843d9672fb98e0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7390ee24_346daa61",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-11-13T23:03:45Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f9ddc77e_08c26a0a",
       "range": {
         "startLine": 35,
         "startChar": 0,
@@ -219,6 +332,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "b8193dfd_e8b071d0",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-11-13T23:03:45Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9e9bb05b_3bb49c6e",
+      "range": {
+        "startLine": 46,
+        "startChar": 1,
+        "endLine": 46,
+        "endChar": 28
+      },
+      "revId": "0ca5f5ed57639db3130aa3b283843d9672fb98e0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "31c6746b_1fcc1e9c",
@@ -232,6 +369,30 @@
       "writtenOn": "2020-11-09T09:37:06Z",
       "side": 1,
       "message": "Please avoid introducing special cases just to make unit tests pass. If existing unit tests fail because of this, we have to update tests instead.",
+      "range": {
+        "startLine": 76,
+        "startChar": 2,
+        "endLine": 76,
+        "endChar": 61
+      },
+      "revId": "0ca5f5ed57639db3130aa3b283843d9672fb98e0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "127de4e7_f54ba8e4",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-11-13T23:03:45Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "31c6746b_1fcc1e9c",
       "range": {
         "startLine": 76,
         "startChar": 2,
@@ -265,6 +426,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "2155f4ec_d986c59e",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-11-13T23:03:45Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ad6943b6_5504e527",
+      "range": {
+        "startLine": 79,
+        "startChar": 0,
+        "endLine": 82,
+        "endChar": 2
+      },
+      "revId": "0ca5f5ed57639db3130aa3b283843d9672fb98e0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "f8b6264e_7f1bc7a1",
@@ -288,6 +473,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "b5e5e292_12bcab49",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 146,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-11-13T23:03:45Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f8b6264e_7f1bc7a1",
+      "range": {
+        "startLine": 145,
+        "startChar": 2,
+        "endLine": 146,
+        "endChar": 37
+      },
+      "revId": "0ca5f5ed57639db3130aa3b283843d9672fb98e0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "2f16b332_5abf83ba",
@@ -301,6 +510,30 @@
       "writtenOn": "2020-11-09T09:37:06Z",
       "side": 1,
       "message": "This function can be written in two lines:\n\n startIndex :\u003d numTests * shardIndex / totalShards\n endIndex :\u003d numTests * (shardIndex + 1) / totalShards",
+      "range": {
+        "startLine": 133,
+        "startChar": 0,
+        "endLine": 171,
+        "endChar": 1
+      },
+      "revId": "0ca5f5ed57639db3130aa3b283843d9672fb98e0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "71d1e4ce_b8e2570a",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 171,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-11-13T23:03:45Z",
+      "side": 1,
+      "message": "I was trying to make the first few tests has one extra test when the number of tests is not divisible by the number of shards. I did that way because I think it is easier for the user to figure out the number of tests for each shard.\n\nLet\u0027s look at the the case that the number of tests is 10 and the number of shards is 4. \n\nFor the current implementation, the start and end index for each index:\n\nShard Index    Start Index    End Index\n     0             0             3\n     1             3             6\n     2             6             8\n     3             8            10\n\nThe first and second shard have 3 tests each. The third and fourth shard have 2 tests each.\n\nWith the formula:\n startIndex :\u003d numTests * shardIndex / totalShards\n endIndex :\u003d numTests * (shardIndex + 1) / totalShards\n\nThis would be the values:\nShard Index    Start Index    End Index\n     0             0             2 \u003d 10 * (0 + 1) / 4\n     1             2             5 \u003d 10 * (1 + 1) / 4\n     2             5             7 \u003d 10 * (2 + 1) / 4\n     3             7            10 \u003d 10 * (3 + 1) / 4\n\nThe first and third test have 2 tests each. The second and the fourth have 3 tests each.\n\nPlease let me know if you still want the change. Thanks.",
+      "parentUuid": "2f16b332_5abf83ba",
       "range": {
         "startLine": 133,
         "startChar": 0,
@@ -347,6 +580,30 @@
       "writtenOn": "2020-11-09T09:37:06Z",
       "side": 1,
       "message": "Let\u0027s consider the following two candidates:\n\n1. EntityInfoWithExtraFieldsForListingTests (longer version of EntityListTestInfo)\n2. EntityInfoWithExtraFieldsComputedAtRunTime (longer version of RuntimeTestInfo)\n\nIf we were to choose 1, since it\u0027s very specific to the use case of listing tests, I\u0027d want it to be declared near to the use case. Maybe the bundle package?\n\nIf we were to choose 2, it\u0027s okay to keep it here, but I want the constructor to be in the same package.",
+      "range": {
+        "startLine": 536,
+        "startChar": 5,
+        "endLine": 536,
+        "endChar": 23
+      },
+      "revId": "0ca5f5ed57639db3130aa3b283843d9672fb98e0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ac36686e_54f4ecc2",
+        "filename": "src/chromiumos/tast/internal/testing/test_instance.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 536,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-11-13T23:03:45Z",
+      "side": 1,
+      "message": "I called it EntityWithRunnabilityInfo. Please let me know if it is ok. I chose that because I don\u0027t run time information included whether there is an error and I don\u0027t have an error message at that moment.",
+      "parentUuid": "314dd589_31cddb3a",
       "range": {
         "startLine": 536,
         "startChar": 5,

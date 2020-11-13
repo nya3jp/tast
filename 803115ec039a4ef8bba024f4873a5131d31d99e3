@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bb6c21a6_c95c4fd2",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 971,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-11-13T15:56:06Z",
+      "side": 0,
+      "message": "Thanks for catching this, the current URL is:\nhttps://chromium.googlesource.com/chromiumos/platform/tast/+/master/src/chromiumos/tast/internal/extdata/extdata.go",
+      "range": {
+        "startLine": 971,
+        "startChar": 0,
+        "endLine": 971,
+        "endChar": 139
+      },
+      "revId": "803115ec039a4ef8bba024f4873a5131d31d99e3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

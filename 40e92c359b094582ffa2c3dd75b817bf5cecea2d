@@ -22,6 +22,30 @@
       },
       "revId": "40e92c359b094582ffa2c3dd75b817bf5cecea2d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b517199e_1db9d407",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 975,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-11-13T15:56:06Z",
+      "side": 1,
+      "message": "I happened to send my comment prematurely...\n\nSo, can you please mention that we should not overwrite cloud storage files, rather than mentioning how to clear cache?\n\nThanks for updating the doc!",
+      "parentUuid": "379a812b_e6670ca8",
+      "range": {
+        "startLine": 974,
+        "startChar": 56,
+        "endLine": 975,
+        "endChar": 18
+      },
+      "revId": "40e92c359b094582ffa2c3dd75b817bf5cecea2d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

@@ -18,6 +18,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"chromiumos/tast/autocaps"
 	"chromiumos/tast/bundle"
@@ -249,25 +250,29 @@ func writeSystemInfo(ctx context.Context, dir string) error {
 	}
 
 	var errs []string
-	cmds := map[string]*exec.Cmd{
-		"upstart_jobs.txt": exec.CommandContext(ctx, "initctl", "list"),
-		"ps.txt":           exec.CommandContext(ctx, "ps", "auxwwf"),
-		"du_stateful.txt":  exec.CommandContext(ctx, "du", "-m", "/mnt/stateful_partition"),
-		"mount.txt":        exec.CommandContext(ctx, "mount"),
-		"hostname.txt":     exec.CommandContext(ctx, "hostname"),
-		"uptime.txt":       exec.CommandContext(ctx, "uptime"),
-		"losetup.txt":      exec.CommandContext(ctx, "losetup"),
-		"df.txt":           exec.CommandContext(ctx, "df", "-mP"),
-		"dmesg.txt":        exec.CommandContext(ctx, "dmesg"),
+	cmds := map[string][]string{
+		"upstart_jobs.txt": {"initctl", "list"},
+		"ps.txt":           {"ps", "auxwwf"},
+		"du_stateful.txt":  {"du", "-m", "/mnt/stateful_partition"},
+		"mount.txt":        {"mount"},
+		"hostname.txt":     {"hostname"},
+		"uptime.txt":       {"uptime"},
+		"losetup.txt":      {"losetup"},
+		"df.txt":           {"df", "-mP"},
+		"dmesg.txt":        {"dmesg"},
 	}
 	if _, err := os.Stat("/proc/bus/pci"); !os.IsNotExist(err) {
-		cmds["lspci.txt"] = exec.CommandContext(ctx, "lspci", "-vvn")
+		cmds["lspci.txt"] = []string{"lspci", "-vvn"}
 	}
 
 	for fn, cmd := range cmds {
+		// Set timeout in case some commands take long time unexpectedly. (crbug.com/1147723)
+		cmdCtx, cancel := context.WithTimeout(ctx, 1*time.Minute)
+		cmd := exec.CommandContext(cmdCtx, cmd[0], cmd[1:len(cmd)]...)
 		if err := runCmd(cmd, fn); err != nil {
 			errs = append(errs, fmt.Sprintf("failed running %q: %v", shutil.EscapeSlice(cmd.Args), err))
 		}
+		cancel()
 	}
 
 	// Also copy crash-related system info (e.g. /etc/lsb-release) to aid in debugging.

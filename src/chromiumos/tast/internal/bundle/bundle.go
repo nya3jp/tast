@@ -36,6 +36,10 @@ const (
 	statusNoTests     = 5 // no tests were matched by the supplied patterns
 )
 
+// defaultTempBaseDir is the base directory under os.TempDir(), where a temporary
+// directory for tests is created when RunTests.TempDir is unspecified.
+const defaultTempBaseDir = "tast/run_tmp"
+
 // run reads a JSON-marshaled Args struct from stdin and performs the requested action.
 // Default arguments may be specified via args, which will also be updated from stdin.
 // The caller should exit with the returned status code.
@@ -217,13 +221,8 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 	}
 
 	if args.RunTests.TempDir == "" {
-		tempBaseDir := filepath.Join(os.TempDir(), "tast/run_tmp")
-		if err := os.MkdirAll(tempBaseDir, 0755); err != nil {
-			return err
-		}
-
 		var err error
-		args.RunTests.TempDir, err = ioutil.TempDir(tempBaseDir, "")
+		args.RunTests.TempDir, err = defaultTempDir()
 		if err != nil {
 			return err
 		}
@@ -248,7 +247,7 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 	var rd *testing.RemoteData
 	if bt == remoteBundle {
 		testcontext.Log(ctx, "Connecting to DUT")
-		dt, err := connectToTarget(ctx, args, cfg.beforeReboot)
+		dt, err := connectToTarget(ctx, args.RunTests.Target, args.RunTests.KeyFile, args.RunTests.KeyDir, cfg.beforeReboot)
 		if err != nil {
 			return command.NewStatusErrorf(statusError, "failed to connect to DUT: %v", err)
 		}
@@ -297,12 +296,12 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 }
 
 // connectToTarget connects to the target DUT and returns its connection.
-func connectToTarget(ctx context.Context, args *Args, beforeReboot func(context.Context, *dut.DUT) error) (_ *dut.DUT, retErr error) {
-	if args.RunTests.Target == "" {
+func connectToTarget(ctx context.Context, target, keyFile, keyDir string, beforeReboot func(context.Context, *dut.DUT) error) (_ *dut.DUT, retErr error) {
+	if target == "" {
 		return nil, errors.New("target not supplied")
 	}
 
-	dt, err := dut.New(args.RunTests.Target, args.RunTests.KeyFile, args.RunTests.KeyDir, beforeReboot)
+	dt, err := dut.New(target, keyFile, keyDir, beforeReboot)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create connection: %v", err)
 	}
@@ -317,6 +316,14 @@ func connectToTarget(ctx context.Context, args *Args, beforeReboot func(context.
 	}
 
 	return dt, nil
+}
+
+func defaultTempDir() (string, error) {
+	tempBaseDir := filepath.Join(os.TempDir(), "tast/run_tmp")
+	if err := os.MkdirAll(tempBaseDir, 0755); err != nil {
+		return "", err
+	}
+	return ioutil.TempDir(tempBaseDir, "")
 }
 
 // prepareTempDir sets up tempDir to be used for the base temporary directory,

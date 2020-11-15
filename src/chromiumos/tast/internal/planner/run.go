@@ -81,6 +81,9 @@ type Config struct {
 	// Config.Fixtures. Instead, StartFixtureImpl gives an implementation of
 	// a start fixture.
 	StartFixtureName string
+	// SetUpErrors contains error messages happened on test setup (e.g. remote fixture SetUp). If its
+	// length is non-zero, tests shouldn't run.
+	SetUpErrors []string
 	// StartFixtureImpl gives an implementation of a start fixture.
 	// If it is nil, a default stub implementation is used.
 	StartFixtureImpl testing.FixtureImpl

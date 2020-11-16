@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "42c1992b_0f972c4a",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 975,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-11-16T09:08:08Z",
+      "side": 1,
+      "message": "It is important to say we don\u0027t want to break *reproducility* of tests. I don\u0027t want people to think that it\u0027s fine to overwrite files as long as new files don\u0027t break tests.",
+      "range": {
+        "startLine": 975,
+        "startChar": 42,
+        "endLine": 975,
+        "endChar": 76
+      },
+      "revId": "522f77cfeb78d27249385ff74c8468ea0d91c696",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0def4be4_ee75e515",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 975,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-11-16T09:08:08Z",
+      "side": 1,
+      "message": "Let us make it clear that the grand rule is to NOT overwrite data files. In fact, even while in development, once you upload a CL to Gerrit and trigger CQ dry-run, we must not overwrite data files used by the test because Chrome OS infra will cache those files for unspecified lifetime. It\u0027s nice to clarify that clobbering local cache works only before a file is used in Chrome OS infra.",
+      "range": {
+        "startLine": 973,
+        "startChar": 0,
+        "endLine": 975,
+        "endChar": 18
+      },
+      "revId": "522f77cfeb78d27249385ff74c8468ea0d91c696",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

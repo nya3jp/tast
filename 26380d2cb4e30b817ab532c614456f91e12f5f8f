@@ -1,0 +1,67 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "60e76cad_1e19fca8",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 11
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-11-16T09:53:15Z",
+      "side": 1,
+      "message": "This change is getting larger. Can you try to split it into a few CLs? See go/small-cls for why we split CLs, and guidance on how to split CLs.\n\nI would split this CL into four:\n\n1. Update RunTestsArgs to use JSON wrapper fields (see my another comment)\n2. Introduce FeatureArgs and embed it in RunTestsArgs/ListTestsArgs (but bundles don\u0027t use the new field yet)\n3. Update ListTests to return tests as EntityWithRunnabilityInfo (but Tast CLI doesn\u0027t read the new field yet)\n4. Support sharding using the new EntityWithRunnabilityInfo data.\n\nPlease note that CL 1,2,3 will introduce no observable change to Tast\u0027s behavior. It is very common that, in order to make an observable change, we have to make multiple non-observable refactoring changes.",
+      "revId": "26380d2cb4e30b817ab532c614456f91e12f5f8f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e475f7f5_a9426f3a",
+        "filename": "src/chromiumos/tast/bundle/args.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-11-16T09:53:15Z",
+      "side": 1,
+      "message": "We want to avoid introducing protocol incompatibility as far as possible. In user local environments, Tast CLI and test bundles are usually not in sync (typically Tast CLI is older than test bundles). The last resort is to force updating Tast CLI by incrementing sourceCompatVersion defined here, but it\u0027s nice to avoid this if we can.\nhttps://source.corp.google.com/chromeos_public/src/platform/tast/src/chromiumos/tast/cmd/tast/internal/build/compat.go;l\u003d25\n\nSo, can you try to avoid changing the protocol by embedding FeatureArgs to RunTestsArgs/ListTestsArgs?\n\nI agree that it\u0027s difficult to handle customize JSON serialization of embedded fields. I have a different idea: how about introducing new types wrapping protocol buffer messages and overriding their serialization?\n\nFor example:\n\n type HardwareFeaturesJSON struct {\n   Proto *api.HardwareFeatures\n }\n\n func (f *HardwareFeaturesJSON) MarshalJSON() ([]byte, error) {\n   // customized serialization here...\n }\n\n type FeatureArgs struct {\n   ...\n   HardwareFeatures *HardwareFeaturesJSON `json:\"hardwareFeatures\"`\n }\n\nOf course we have to rewrite users of DeviceConfig/HardwareFeatures in advance. It\u0027s likely you want to do this in a separate refactoring CL.",
+      "range": {
+        "startLine": 103,
+        "startChar": 39,
+        "endLine": 103,
+        "endChar": 57
+      },
+      "revId": "26380d2cb4e30b817ab532c614456f91e12f5f8f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6a403218_d9b79588",
+        "filename": "src/chromiumos/tast/internal/testing/test_instance.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 543,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-11-16T09:53:15Z",
+      "side": 1,
+      "message": "Can you pass dep.Features to this method and fill SkipReason?\n\nImmutability counts, and that\u0027s the exact reason we introduced EntityWithRunnabilityInfo instead of reusing EntityInfo.",
+      "range": {
+        "startLine": 543,
+        "startChar": 23,
+        "endLine": 543,
+        "endChar": 48
+      },
+      "revId": "26380d2cb4e30b817ab532c614456f91e12f5f8f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

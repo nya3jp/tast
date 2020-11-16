@@ -84,6 +84,7 @@ func main() {
 			"chrome":            "!chromeless_tty && !rialto",
 			"chrome_internal":   "chrome_internal",
 			"coresched":         "coresched",
+			"cpu_vuln_sysfs":    `!("kernel-3_8" || "kernel-3_10" || "kernel-3_14")`,
 			"crashpad":          "!force_breakpad",
 			"cros_config":       "unibuild",
 			"cros_internal":     "internal",

@@ -16,6 +16,24 @@
       "message": "Had to run gofmt on the src/chromiumos/tast/cmd/local_test_runner/main.go to \npass the pre-submit tests.",
       "revId": "26c1e4450d661176105626833f2a4f9ca69732cb",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "af3c030e_d5f8762e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1337146
+      },
+      "writtenOn": "2020-11-16T01:41:57Z",
+      "side": 1,
+      "message": "Uploaded changed to match comments from ihf@ about using vp9_smoke in place of\nvp9_validity.",
+      "parentUuid": "96805273_f3a50abf",
+      "revId": "26c1e4450d661176105626833f2a4f9ca69732cb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

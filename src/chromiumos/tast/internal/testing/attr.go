@@ -180,12 +180,16 @@ Tests in this group are not used for build verification.
 	},
 	{
 		Name:     "firmware",
-		Contacts: []string{"chromeos-engprod@google.com"},
+		Contacts: []string{"chromeos-engprod@google.com", "cros-fw-engprod@google.com"},
 		Desc:     `A group of tests for firmware (AP, EC, GSC)`,
 		Subattrs: []*attr{
 			{
 				Name: "firmware_cr50",
 				Desc: `Indicates that this is a test of the Google Security Chip firmware (Cr50).`,
+			},
+			{
+				Name: "firmware_smoke",
+				Desc: `A group of tests that exercise the basic firmware testing libraries.`,
 			},
 		},
 	},

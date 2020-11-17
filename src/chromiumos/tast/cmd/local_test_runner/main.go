@@ -119,7 +119,7 @@ func main() {
 			"hostap_hwsim":            "wifi_hostap_test",
 			"igt":                     `("video_cards_amdgpu" || "video_cards_intel") && ("kernel-5_4" || "kernel-4_19" || "kernel-4_14")`,
 			"iwlwifi_rescan":          "iwlwifi_rescan",
-			"lacros":                  "!arm", // TODO(crbug.com/1144013): Expand this to include arm as well.
+			"lacros":                  "!arm && !arm64", // TODO(crbug.com/1144013): Expand this to include arm as well.
 			"lock_core_pattern":       `"kernel-3_10" || "kernel-3_14" || "kernel-3_18"`,
 			// QEMU has implemented memfd_create, but we haven't updated
 			// to a release with the change (https://bugs.launchpad.net/qemu/+bug/1734792).

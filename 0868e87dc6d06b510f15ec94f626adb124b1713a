@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "bc321b8f_305bb238",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 12
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-11-17T23:28:46Z",
+      "side": 1,
+      "message": "Hi Shuhei:\n\nI have addressed some of your comments. Please see my latest code for marshall/unmarshall. I will work on splitting the CL. \n\nThanks.\n\nSeewai\n",
+      "revId": "0868e87dc6d06b510f15ec94f626adb124b1713a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

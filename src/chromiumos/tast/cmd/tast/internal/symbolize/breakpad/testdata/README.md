@@ -21,7 +21,7 @@ i686-pc-linux-gnu-gcc.real (4.9.2_cos_gg_4.9.2-r175-0c5a656a1322e137fa4a251f2ccc
 `abort.debug` was then copied to `abort`, and `strip abort` was executed to
 remove debugging symbols. The program was then copied to a lumpy device and
 executed at `/usr/local/bin/abort` to produce
-`/var/spool/crash/abort.20180103.145440.20827.dmp`.
+`/var/spool/crash/abort.20180103.145440.12345.20827.dmp`.
 
 ## chrome\_crash\_report.dmp
 

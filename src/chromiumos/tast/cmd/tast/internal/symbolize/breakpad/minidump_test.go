@@ -18,7 +18,7 @@ import (
 
 const (
 	// Relative path to checked-in minidump file used for testing.
-	minidumpPath = "testdata/abort.20180103.145440.20827.dmp"
+	minidumpPath = "testdata/abort.20180103.145440.12345.20827.dmp"
 
 	// Relative path to checked-in executable with debugging symbols.
 	abortDebugPath = "testdata/abort.debug"

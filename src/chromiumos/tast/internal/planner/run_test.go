@@ -119,10 +119,10 @@ func TestRunDeadline(t *gotesting.T) {
 			<-ctx.Done()
 			s.Error("Saw timeout within test")
 		},
-		Timeout:     time.Millisecond,
-		ExitTimeout: 10 * time.Second,
+		Timeout: time.Millisecond,
 	}}
-	msgs := runTestsAndReadAll(t, tests, &Config{})
+	gracePeriod := 10 * time.Second
+	msgs := runTestsAndReadAll(t, tests, &Config{CustomGracePeriod: &gracePeriod})
 	// The error that was reported by the test after its deadline was hit
 	// but within the exit delay should be available.
 	want := []control.Msg{
@@ -151,11 +151,11 @@ func TestRunLogAfterTimeout(t *gotesting.T) {
 			s.Log("Done waiting")
 			completed = true
 		},
-		Timeout:     time.Millisecond,
-		ExitTimeout: time.Millisecond,
+		Timeout: time.Millisecond,
 	}}
 
-	msgs := runTestsAndReadAll(t, tests, &Config{})
+	gracePeriod := time.Millisecond
+	msgs := runTestsAndReadAll(t, tests, &Config{CustomGracePeriod: &gracePeriod})
 
 	// Tell the test to continue even though Run has already returned. The output stream should
 	// still be writable so as to avoid a panic when the test writes to it (https://crbug.com/853406),

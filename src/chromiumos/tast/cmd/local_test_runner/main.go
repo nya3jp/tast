@@ -158,7 +158,8 @@ func main() {
 			// We should disable this flag if the weird missing-runner-after-reboot bug still happening.
 			// Or cleanup all reboot dependency in tast-tests.
 			// Notice: The flag would be false when a board didn't have any attributes.
-			"reboot":                 `"*"`,
+			// TODO(crbug.com/1148527): This feature may cause amd64-generic-full builder failed.
+			"reboot":                 "!tast_vm",
 			"screenshot":             "display_backlight && !rk3399", // screenshot command broken on RK3399: https://crbug.com/880597
 			"selinux":                "selinux",
 			"selinux_current":        "selinux && !selinux_experimental",

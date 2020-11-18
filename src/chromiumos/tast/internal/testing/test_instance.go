@@ -54,6 +54,7 @@ type TestInstance struct {
 	// sees that its context has expired before an additional error is added about the timeout.
 	// This is exposed for unit tests and should almost always be omitted when defining tests;
 	// a reasonable default will be used.
+	// TODO(oka): Remove ExitTimeout using CustomGracePeriod in planner.Config .
 	ExitTimeout time.Duration
 
 	// Val contains the value inherited from the expanded Param struct for a parameterized test case.

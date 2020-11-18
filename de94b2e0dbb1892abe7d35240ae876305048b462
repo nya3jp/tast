@@ -16,6 +16,23 @@
       "message": "+CC MTV time zone gardener",
       "revId": "de94b2e0dbb1892abe7d35240ae876305048b462",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f1a7025e_69e7a055",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1293547
+      },
+      "writtenOn": "2020-11-18T06:19:07Z",
+      "side": 1,
+      "message": "Given the urgency of this issue, I\u0027m submitting this partial revert now. Please remove the CQ+2 if you find this inappropriate.",
+      "revId": "de94b2e0dbb1892abe7d35240ae876305048b462",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

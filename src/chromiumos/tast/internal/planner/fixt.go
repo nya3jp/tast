@@ -8,6 +8,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/testing"
@@ -198,7 +199,7 @@ func (st *fixtureStack) Push(ctx context.Context, fixt *testing.Fixture) error {
 	}
 
 	root := testing.NewEntityRoot(ce, ei, rcfg, fout)
-	f := newStatefulFixture(fixt, root, fout, st.top())
+	f := newStatefulFixture(fixt, root, fout, st.top(), st.cfg.GracePeriod())
 	st.stack = append(st.stack, f)
 
 	if status == statusGreen {
@@ -314,6 +315,8 @@ func (st *fixtureStack) top() *statefulFixture {
 
 // statefulFixture holds a fixture and some extra variables tracking its states.
 type statefulFixture struct {
+	gracePeriod time.Duration
+
 	fixt   *testing.Fixture
 	root   *testing.EntityRoot
 	fout   *entityOutputStream
@@ -324,13 +327,14 @@ type statefulFixture struct {
 }
 
 // newStatefulFixture creates a new statefulFixture.
-func newStatefulFixture(fixt *testing.Fixture, root *testing.EntityRoot, fout *entityOutputStream, parent *statefulFixture) *statefulFixture {
+func newStatefulFixture(fixt *testing.Fixture, root *testing.EntityRoot, fout *entityOutputStream, parent *statefulFixture, gracePeriod time.Duration) *statefulFixture {
 	return &statefulFixture{
-		fixt:   fixt,
-		root:   root,
-		fout:   fout,
-		parent: parent,
-		status: statusRed,
+		gracePeriod: gracePeriod,
+		fixt:        fixt,
+		root:        root,
+		fout:        fout,
+		parent:      parent,
+		status:      statusRed,
 	}
 }
 
@@ -362,7 +366,7 @@ func (f *statefulFixture) RunSetUp(ctx context.Context) error {
 	f.fout.Start(s.OutDir())
 
 	var val interface{}
-	if err := safeCall(ctx, name, f.fixt.SetUpTimeout, defaultGracePeriod, errorOnPanic(s), func(ctx context.Context) {
+	if err := safeCall(ctx, name, f.fixt.SetUpTimeout, f.gracePeriod, errorOnPanic(s), func(ctx context.Context) {
 		val = f.fixt.Impl.SetUp(ctx, s)
 	}); err != nil {
 		return err
@@ -389,7 +393,7 @@ func (f *statefulFixture) RunTearDown(ctx context.Context) error {
 	s := f.root.NewFixtState()
 	name := fmt.Sprintf("%s:TearDown", f.fixt.Name)
 
-	if err := safeCall(ctx, name, f.fixt.TearDownTimeout, defaultGracePeriod, errorOnPanic(s), func(ctx context.Context) {
+	if err := safeCall(ctx, name, f.fixt.TearDownTimeout, f.gracePeriod, errorOnPanic(s), func(ctx context.Context) {
 		f.fixt.Impl.TearDown(ctx, s)
 	}); err != nil {
 		return err
@@ -417,7 +421,7 @@ func (f *statefulFixture) RunReset(ctx context.Context) error {
 		resetErr = fmt.Errorf("panic: %v", val)
 	}
 
-	if err := safeCall(ctx, name, f.fixt.ResetTimeout, defaultGracePeriod, onPanic, func(ctx context.Context) {
+	if err := safeCall(ctx, name, f.fixt.ResetTimeout, f.gracePeriod, onPanic, func(ctx context.Context) {
 		resetErr = f.fixt.Impl.Reset(ctx)
 	}); err != nil {
 		return err

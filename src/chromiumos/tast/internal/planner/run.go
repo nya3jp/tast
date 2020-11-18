@@ -84,6 +84,16 @@ type Config struct {
 	// StartFixtureImpl gives an implementation of a start fixture.
 	// If it is nil, a default stub implementation is used.
 	StartFixtureImpl testing.FixtureImpl
+	// CustomGracePeriod is custom grace period for safeCall. If zero-value reasonable default will be
+	// used. This field exists for unit testing.
+	CustomGracePeriod time.Duration
+}
+
+func (c *Config) gracePeriod() time.Duration {
+	if c.CustomGracePeriod != 0 {
+		return c.CustomGracePeriod
+	}
+	return defaultGracePeriod
 }
 
 // RunTests runs a set of tests, writing outputs to out.
@@ -668,7 +678,7 @@ func runTestWithRoot(ctx context.Context, t *testing.TestInstance, root *testing
 	testState := root.NewTestState()
 
 	// First, perform setup and run the pre-test function.
-	if err := safeCall(ctx, codeName, preTestTimeout, defaultGracePeriod, errorOnPanic(testState), func(ctx context.Context) {
+	if err := safeCall(ctx, codeName, preTestTimeout, pcfg.gracePeriod(), errorOnPanic(testState), func(ctx context.Context) {
 		// The test bundle is responsible for ensuring t.Timeout is nonzero before calling Run,
 		// but we call s.Fatal instead of panicking since it's arguably nicer to report individual
 		// test failures instead of aborting the entire run.
@@ -716,7 +726,7 @@ func runTestWithRoot(ctx context.Context, t *testing.TestInstance, root *testing
 	// Prepare the test's precondition (if any) if setup was successful.
 	if !root.HasError() && t.Pre != nil {
 		preState := root.NewPreState()
-		if err := safeCall(ctx, codeName, t.Pre.Timeout(), defaultGracePeriod, errorOnPanic(preState), func(ctx context.Context) {
+		if err := safeCall(ctx, codeName, t.Pre.Timeout(), pcfg.gracePeriod(), errorOnPanic(preState), func(ctx context.Context) {
 			preState.Logf("Preparing precondition %q", t.Pre)
 			root.SetPreValue(t.Pre.Prepare(ctx, preState))
 		}); err != nil {
@@ -726,7 +736,7 @@ func runTestWithRoot(ctx context.Context, t *testing.TestInstance, root *testing
 
 	// Next, run the test function itself if no errors have been reported so far.
 	if !root.HasError() {
-		if err := safeCall(ctx, codeName, t.Timeout, timeoutOrDefault(t.ExitTimeout, defaultGracePeriod), errorOnPanic(testState), func(ctx context.Context) {
+		if err := safeCall(ctx, codeName, t.Timeout, timeoutOrDefault(t.ExitTimeout, pcfg.gracePeriod()), errorOnPanic(testState), func(ctx context.Context) {
 			t.Func(ctx, testState)
 		}); err != nil {
 			return err
@@ -737,7 +747,7 @@ func runTestWithRoot(ctx context.Context, t *testing.TestInstance, root *testing
 	// (even if setup, t.Pre.Prepare, or t.Func failed).
 	if precfg.close {
 		preState := root.NewPreState()
-		if err := safeCall(ctx, codeName, t.Pre.Timeout(), defaultGracePeriod, errorOnPanic(preState), func(ctx context.Context) {
+		if err := safeCall(ctx, codeName, t.Pre.Timeout(), pcfg.gracePeriod(), errorOnPanic(preState), func(ctx context.Context) {
 			preState.Logf("Closing precondition %q", t.Pre.String())
 			t.Pre.Close(ctx, preState)
 		}); err != nil {
@@ -749,7 +759,7 @@ func runTestWithRoot(ctx context.Context, t *testing.TestInstance, root *testing
 
 	// Finally, run the post-test functions unconditionally.
 	if postTestFunc != nil {
-		if err := safeCall(ctx, codeName, postTestTimeout, defaultGracePeriod, errorOnPanic(testState), func(ctx context.Context) {
+		if err := safeCall(ctx, codeName, postTestTimeout, pcfg.gracePeriod(), errorOnPanic(testState), func(ctx context.Context) {
 			postTestFunc(ctx, root.NewTestHookState())
 		}); err != nil {
 			return err

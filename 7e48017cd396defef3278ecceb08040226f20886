@@ -22,6 +22,30 @@
       },
       "revId": "7e48017cd396defef3278ecceb08040226f20886",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d9c58d4e_d7e73361",
+        "filename": "src/chromiumos/tast/internal/planner/run.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 770,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-11-18T09:33:24Z",
+      "side": 1,
+      "message": "Good catch, fixed.",
+      "parentUuid": "0829435a_4631fab4",
+      "range": {
+        "startLine": 770,
+        "startChar": 49,
+        "endLine": 770,
+        "endChar": 53
+      },
+      "revId": "7e48017cd396defef3278ecceb08040226f20886",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

@@ -3,6 +3,23 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "7abe69a2_c708feba",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1182889
+      },
+      "writtenOn": "2020-11-18T05:20:50Z",
+      "side": 1,
+      "message": "Include a mention like \"This is a partial revert of crrev.com/c/blabla\"",
+      "revId": "feddd1e3ef8244b48d51553157de566fd53e346c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "8d97b509_0fe73892",
         "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
         "patchSetId": 3

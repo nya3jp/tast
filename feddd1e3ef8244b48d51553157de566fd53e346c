@@ -75,6 +75,30 @@
       },
       "revId": "feddd1e3ef8244b48d51553157de566fd53e346c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "48b727b5_a98630a7",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 1293547
+      },
+      "writtenOn": "2020-11-18T05:38:46Z",
+      "side": 1,
+      "message": "The formatting change is caused by the pre-submit-check.",
+      "parentUuid": "8d97b509_0fe73892",
+      "range": {
+        "startLine": 81,
+        "startChar": 23,
+        "endLine": 102,
+        "endChar": 37
+      },
+      "revId": "feddd1e3ef8244b48d51553157de566fd53e346c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

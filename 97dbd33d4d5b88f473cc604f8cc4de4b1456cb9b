@@ -22,6 +22,30 @@
       },
       "revId": "97dbd33d4d5b88f473cc604f8cc4de4b1456cb9b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a578c40e_7c92850b",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 298,
+      "author": {
+        "id": 1326157
+      },
+      "writtenOn": "2020-11-18T22:11:55Z",
+      "side": 1,
+      "message": "That\u0027s a really good question. The EmbeddedController hardware property is already defined in Boxster. For coral/nasher, we can see it here: https://chrome-internal.googlesource.com/chromeos/project/coral/nasher/+/refs/heads/master/generated/joined.jsonproto#714. The backfill was tracked at https://crbug.com/1139017.\n\nHowever, Tast doesn\u0027t seem to be pulling the data from Boxster. You can test this yourself by running https://crrev.com/c/2525748 on a coral/nasher, without checking out crrev/c/2547567: the HardwareDep is not fulfilled.\n\nI\u0027m not sure why that happens, because I\u0027m not sure what data source Tast uses to determine hardware properties. Hidehiko or Tatsuhisa, perhaps you can shed some light here.\n\nIn the meantime, this is the same approach used to determine whether a DUT has a fingerprint sensor, so there is precedent for runtime detection.",
+      "parentUuid": "68fd8105_0ce9d3a3",
+      "range": {
+        "startLine": 298,
+        "startChar": 1,
+        "endLine": 298,
+        "endChar": 51
+      },
+      "revId": "97dbd33d4d5b88f473cc604f8cc4de4b1456cb9b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

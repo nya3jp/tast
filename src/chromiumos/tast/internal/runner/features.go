@@ -294,6 +294,13 @@ func newDeviceConfigAndHardwareFeatures() (dc *device.Config, retFeatures *confi
 		config.HardwareFeatures = append(config.HardwareFeatures, device.Config_HARDWARE_FEATURE_FINGERPRINT)
 	}
 
+	// Device has ChromeEC if /dev/cros_ec exists.
+	// TODO(b/173741162): Pull EmbeddedController data directly from Boxster.
+	if _, err := os.Stat("/dev/cros_ec"); err == nil {
+		features.EmbeddedController.Present = configpb.HardwareFeatures_PRESENT
+		features.EmbeddedController.EcType = configpb.HardwareFeatures_EmbeddedController_EC_CHROME
+	}
+
 	func() {
 		// This function determines DUT's power supply type and stores it to config.Power.
 		// If DUT has a battery, config.Power is Config_POWER_SUPPLY_BATTERY.

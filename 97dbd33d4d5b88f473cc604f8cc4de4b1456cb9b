@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "68fd8105_0ce9d3a3",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 298,
+      "author": {
+        "id": 1202834
+      },
+      "writtenOn": "2020-11-18T20:31:46Z",
+      "side": 1,
+      "message": "I am not sure on this approach. There could be a kernel bug or fault condition that causes /dev/cros_ec not exist.  I think we should try to be avoiding runtime detection of hardware properties, is it not possible in this case?",
+      "range": {
+        "startLine": 298,
+        "startChar": 1,
+        "endLine": 298,
+        "endChar": 51
+      },
+      "revId": "97dbd33d4d5b88f473cc604f8cc4de4b1456cb9b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

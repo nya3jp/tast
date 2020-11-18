@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5e08d4bc_f5e20011",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1001886
+      },
+      "writtenOn": "2020-11-18T10:13:28Z",
+      "side": 1,
+      "message": "Defer +2 to Tast Owners",
+      "revId": "3687c0e5fb4d694f33d352ffc7cd7d89fba3f00a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

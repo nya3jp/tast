@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0829435a_4631fab4",
+        "filename": "src/chromiumos/tast/internal/planner/run.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 770,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-11-18T06:16:52Z",
+      "side": 1,
+      "message": "typo: for ?",
+      "range": {
+        "startLine": 770,
+        "startChar": 49,
+        "endLine": 770,
+        "endChar": 53
+      },
+      "revId": "7e48017cd396defef3278ecceb08040226f20886",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

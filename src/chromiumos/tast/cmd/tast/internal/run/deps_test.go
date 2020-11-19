@@ -53,8 +53,12 @@ func checkRunnerTestDepsArgs(t *testing.T, cfg *Config, checkDeps bool,
 			CheckSoftwareDeps:           checkDeps,
 			AvailableSoftwareFeatures:   avail,
 			UnavailableSoftwareFeatures: unavail,
-			DeviceConfig:                dc,
-			HardwareFeatures:            hf,
+			DeviceConfig: bundle.DeviceConfigJSON{
+				Proto: dc,
+			},
+			HardwareFeatures: bundle.HardwareFeaturesJSON{
+				Proto: hf,
+			},
 		},
 	}
 	if !cmp.Equal(*args.RunTests, exp, cmp.Comparer(proto.Equal)) {

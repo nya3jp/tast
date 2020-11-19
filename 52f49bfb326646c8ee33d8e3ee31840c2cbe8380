@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "22d806a7_0e855357",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-11-19T00:58:20Z",
+      "side": 1,
+      "message": "It is the first CL in preparation for a larger CL. Two new wrapper structures are added for hardware and software dependency. ",
+      "revId": "52f49bfb326646c8ee33d8e3ee31840c2cbe8380",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

@@ -74,6 +74,77 @@ func (a *Args) PromoteDeprecated() {
 	// We don't have any deprecated fields right now.
 }
 
+// DeviceConfigJSON is a wrapper class for device.Config to facilitate marshalling/unmarshalling.
+type DeviceConfigJSON struct {
+	// Proto contains the device configuration info about DUT.
+	// Marshaling and unmarshaling of this field is handled in MarshalJSON/UnmarshalJSON
+	// respectively.
+	Proto *device.Config `json:"-"`
+}
+
+// MarshalJSON marshals the *device.Config struct into JSON.
+func (a *DeviceConfigJSON) MarshalJSON() ([]byte, error) {
+	if a.Proto == nil {
+		return []byte(`null`), nil
+	}
+	bin, err := proto.Marshal(a.Proto)
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(bin)
+}
+
+// UnmarshalJSON unmarshals JSON blob for device.Config.
+func (a *DeviceConfigJSON) UnmarshalJSON(b []byte) error {
+	var aux []byte
+	if err := json.Unmarshal(b, &aux); err != nil {
+		return err
+	}
+	if len(aux) == 0 {
+		return nil
+	}
+	var dc device.Config
+	if err := proto.Unmarshal(aux, &dc); err != nil {
+		return err
+	}
+	a.Proto = &dc
+	return nil
+}
+
+// HardwareFeaturesJSON is a wrapper class for api.HardwareFeatures to facilitate marshalling/unmarshalling.
+type HardwareFeaturesJSON struct {
+	// Proto contains the hardware info about DUT.
+	// Marshaling and unmarshaling of this field is handled in MarshalJSON/UnmarshalJSON
+	// respectively.
+	Proto *api.HardwareFeatures `json:"-"`
+}
+
+// MarshalJSON marshals the api.HardwareFeatures struct into JSON.
+func (a *HardwareFeaturesJSON) MarshalJSON() ([]byte, error) {
+	if a.Proto == nil {
+		return []byte(`null`), nil
+	}
+	bin, err := proto.Marshal(a.Proto)
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(bin)
+}
+
+// UnmarshalJSON unmarshals JSON blob for api.HardwareFeatures.
+func (a *HardwareFeaturesJSON) UnmarshalJSON(b []byte) error {
+	var aux []byte
+	if err := json.Unmarshal(b, &aux); err != nil || len(aux) == 0 {
+		return err
+	}
+	var hw api.HardwareFeatures
+	if err := proto.Unmarshal(aux, &hw); err != nil {
+		return err
+	}
+	a.Proto = &hw
+	return nil
+}
+
 // RunTestsArgs is nested within Args and contains arguments used by RunTestsMode.
 type RunTestsArgs struct {
 	// Patterns contains patterns (either empty to run all tests, exactly one attribute expression,
@@ -124,11 +195,11 @@ type RunTestsArgs struct {
 	// Marshaling and unmarshaling of this field is handled in MarshalJSON/UnmarshalJSON
 	// respectively.
 	// Deprecated. Use HardwareFeatures instead.
-	DeviceConfig *device.Config `json:"-"`
+	DeviceConfig DeviceConfigJSON
 	// HardwareFeatures contains the hardware info about DUT.
 	// Marshaling and unmarshaling of this field is handled in MarshalJSON/UnmarshalJSON
 	// respectively.
-	HardwareFeatures *api.HardwareFeatures `json:"-"`
+	HardwareFeatures HardwareFeaturesJSON
 
 	// Devservers contains URLs of devservers that can be used to download files.
 	Devservers []string `json:"devservers,omitempty"`
@@ -170,74 +241,11 @@ func (a *RunTestsArgs) Features() *dep.Features {
 			Unavailable: a.UnavailableSoftwareFeatures,
 		}
 		f.Hardware = &dep.HardwareFeatures{
-			DC:       a.DeviceConfig,
-			Features: a.HardwareFeatures,
+			DC:       a.DeviceConfig.Proto,
+			Features: a.HardwareFeatures.Proto,
 		}
 	}
 	return &f
-}
-
-// MarshalJSON marshals the RunTestsArgs struct into JSON.
-func (a *RunTestsArgs) MarshalJSON() ([]byte, error) {
-	var dc []byte
-	if a.DeviceConfig != nil {
-		var err error
-		dc, err = proto.Marshal(a.DeviceConfig)
-		if err != nil {
-			return nil, err
-		}
-	}
-	var features []byte
-	if a.HardwareFeatures != nil {
-		var err error
-		features, err = proto.Marshal(a.HardwareFeatures)
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	// Use alias to break the infinite recursion in json.Marshal.
-	type Alias RunTestsArgs
-	return json.Marshal(struct {
-		DeviceConfig     []byte `json:"deviceConfig"`
-		HardwareFeatures []byte `json:"hardwareFeatures"`
-		*Alias
-	}{
-		DeviceConfig:     dc,
-		HardwareFeatures: features,
-		Alias:            (*Alias)(a),
-	})
-}
-
-// UnmarshalJSON unmarshals JSON blob.
-func (a *RunTestsArgs) UnmarshalJSON(b []byte) error {
-	// Use alias to break the infinite recursion in json.Unmarshal.
-	type Alias RunTestsArgs
-	aux := struct {
-		DeviceConfig     []byte `json:"deviceConfig"`
-		HardwareFeatures []byte `json:"hardwareFeatures"`
-		*Alias
-	}{
-		Alias: (*Alias)(a),
-	}
-	if err := json.Unmarshal(b, &aux); err != nil {
-		return err
-	}
-	if len(aux.DeviceConfig) > 0 {
-		var dc device.Config
-		if err := proto.Unmarshal(aux.DeviceConfig, &dc); err != nil {
-			return err
-		}
-		a.DeviceConfig = &dc
-	}
-	if len(aux.HardwareFeatures) > 0 {
-		var hw api.HardwareFeatures
-		if err := proto.Unmarshal(aux.HardwareFeatures, &hw); err != nil {
-			return err
-		}
-		a.HardwareFeatures = &hw
-	}
-	return nil
 }
 
 // ListTestsArgs is nested within Args and contains arguments used by ListTestsMode.

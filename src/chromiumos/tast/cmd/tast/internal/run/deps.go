@@ -87,7 +87,7 @@ func setRunnerTestDepsArgs(cfg *Config, args *runner.Args) {
 	if cfg.softwareFeatures != nil {
 		args.RunTests.BundleArgs.AvailableSoftwareFeatures = cfg.softwareFeatures.Available
 		args.RunTests.BundleArgs.UnavailableSoftwareFeatures = cfg.softwareFeatures.Unavailable
-		args.RunTests.BundleArgs.DeviceConfig = cfg.deviceConfig
-		args.RunTests.BundleArgs.HardwareFeatures = cfg.hardwareFeatures
+		args.RunTests.BundleArgs.DeviceConfig.Proto = cfg.deviceConfig
+		args.RunTests.BundleArgs.HardwareFeatures.Proto = cfg.hardwareFeatures
 	}
 }

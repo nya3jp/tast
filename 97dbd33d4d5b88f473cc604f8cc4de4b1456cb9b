@@ -118,6 +118,30 @@
       },
       "revId": "97dbd33d4d5b88f473cc604f8cc4de4b1456cb9b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "258ffb25_37b8360e",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 298,
+      "author": {
+        "id": 1326157
+      },
+      "writtenOn": "2020-11-19T23:48:29Z",
+      "side": 1,
+      "message": "Hmm. It looks like that bug and attached docs are specific to HWID. As far as I know, the EmbeddedController backfill is not in HWID. Hence, I have filed a separate bug, http://b/173741162. I\u0027m not sure what the path forward is to address this, so I\u0027ve left it unassigned. Tatsuhisa, if you are able to assign this to somebody, I would be grateful.\n\n\u003e I don\u0027t think we gain much by adding a temporary runtime check, unless that interface is a long (\u003e ~1 month ways out)\n\nConsidering that crbug/1133669 has been open for more than two months and currently has an unreviewed design doc, I feel safe assuming that this will take more than 1 month to finish connecting the dots. I can think of two alternatives to the temporary runtime check:\n\n1. Use hwdep.Platform to skip all ChromeEC tests on sarien+drallion+tidus+rikku+guado. This would introduce duplicated code across all ChromeEC tests, which we would have to replace later, and which goes against go/tast-deps guidance\n2. Don\u0027t do anything, just wait it out. This would impede our P1 Q4 OKR to stabilize the firmware.ECVersion test.\n\nHence, I have added a TODO line referencing http://b/173741162.",
+      "parentUuid": "9dec59af_f1b125df",
+      "range": {
+        "startLine": 298,
+        "startChar": 1,
+        "endLine": 298,
+        "endChar": 51
+      },
+      "revId": "97dbd33d4d5b88f473cc604f8cc4de4b1456cb9b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

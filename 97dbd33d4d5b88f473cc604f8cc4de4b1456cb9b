@@ -70,6 +70,30 @@
       },
       "revId": "97dbd33d4d5b88f473cc604f8cc4de4b1456cb9b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0c6fc7f6_e512ad55",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 298,
+      "author": {
+        "id": 1202834
+      },
+      "writtenOn": "2020-11-19T07:05:14Z",
+      "side": 1,
+      "message": "Is there an issue id tracking the tast-boxtster interface implementation?  I don\u0027t think we gain much by adding a temporary runtime check, unless that interface is a long (\u003e ~1 month ways out).  TODO referencing the issue id for tast being able to get the data from boxster may be the best path.",
+      "parentUuid": "2e9d14d1_edf60bad",
+      "range": {
+        "startLine": 298,
+        "startChar": 1,
+        "endLine": 298,
+        "endChar": 51
+      },
+      "revId": "97dbd33d4d5b88f473cc604f8cc4de4b1456cb9b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

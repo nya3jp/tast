@@ -291,3 +291,16 @@ func (d *DUT) DefaultWifiPcapHost(ctx context.Context) (*ssh.Conn, error) {
 func (d *DUT) DefaultCameraboxChart(ctx context.Context) (*ssh.Conn, error) {
 	return d.connectCompanionDevice(ctx, "-tablet")
 }
+
+// NewSecondaryDevice creates a DUT for a secondary target, sharing the same SSH info.
+func (d *DUT) NewSecondaryDevice(target string) (*DUT, error) {
+	d2 := DUT{beforeReboot: d.beforeReboot}
+	if err := ssh.ParseTarget(target, &d2.sopt); err != nil {
+		return nil, err
+	}
+	d2.sopt.ConnectTimeout = connectTimeout
+	d2.sopt.KeyFile = d.sopt.KeyFile
+	d2.sopt.KeyDir = d.sopt.KeyDir
+
+	return &d2, nil
+}

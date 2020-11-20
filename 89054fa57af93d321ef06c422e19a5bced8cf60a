@@ -34,6 +34,24 @@
       "parentUuid": "9c3784f5_56e57e3c",
       "revId": "89054fa57af93d321ef06c422e19a5bced8cf60a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9ea38a9e_28dd1c1c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-11-20T17:04:32Z",
+      "side": 1,
+      "message": "I meant, in some cases it is necessary to bind a context to a closure.\nE.g., a callback does not take any argument, but we\u0027d like to run a function taking a context inside the callback.",
+      "parentUuid": "f540d606_4ed7fe40",
+      "revId": "89054fa57af93d321ef06c422e19a5bced8cf60a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

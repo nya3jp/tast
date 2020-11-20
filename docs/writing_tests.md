@@ -326,11 +326,11 @@ statement to keep the two function calls close together (see the
 [Startup and shutdown](#startup-and-shutdown) section for detail):
 ```go
 a := pkga.NewA(ctx, ...)
-defer func() {
+defer func(ctx context.Context) {
   if err := a.CleanUp(ctx); err != nil {
     // ...
   }
-}
+}(ctx)
 ```
 Before creating `A`, make sure that the clean-up function has sufficient time to
 run:
@@ -339,11 +339,11 @@ ctxForCleanUpA := ctx
 ctx, cancel := ctxutil.Shorten(ctx, pkga.TimeForCleanUpA)
 defer cancel()
 a := pkga.NewA(ctx, ...)
-defer func() {
-  if err := a.CleanUp(ctxForCleanUpA); err != nil {
+defer func(ctx context.Context) {
+  if err := a.CleanUp(ctx); err != nil {
     // ...
   }
-}()
+}(ctxForCleanUpA)
 ```
 
 It [ctxutil.Shorten]s `ctx` before calling `pkga.NewA` to ensure that after

@@ -52,6 +52,23 @@
       "parentUuid": "f540d606_4ed7fe40",
       "revId": "89054fa57af93d321ef06c422e19a5bced8cf60a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9181b92c_e02ae2cc",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1358595
+      },
+      "writtenOn": "2020-11-20T18:20:10Z",
+      "side": 1,
+      "message": "This definitely sounds like a good idea to show as the default.\n\nI have seen a number of times where people implicitly bind the context by reference and then run into bugs when changing something farther down the line.",
+      "revId": "89054fa57af93d321ef06c422e19a5bced8cf60a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

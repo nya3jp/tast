@@ -166,6 +166,30 @@
       },
       "revId": "97dbd33d4d5b88f473cc604f8cc4de4b1456cb9b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8682cabf_aae062cd",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 298,
+      "author": {
+        "id": 1326157
+      },
+      "writtenOn": "2020-11-20T17:56:35Z",
+      "side": 1,
+      "message": "It is not a common scenario, just a possibility. Thank you for the review.",
+      "parentUuid": "cf22204b_cbc66313",
+      "range": {
+        "startLine": 298,
+        "startChar": 1,
+        "endLine": 298,
+        "endChar": 51
+      },
+      "revId": "97dbd33d4d5b88f473cc604f8cc4de4b1456cb9b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

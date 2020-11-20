@@ -142,6 +142,30 @@
       },
       "revId": "97dbd33d4d5b88f473cc604f8cc4de4b1456cb9b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "cf22204b_cbc66313",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 298,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-11-20T06:05:52Z",
+      "side": 1,
+      "message": "Use of /dev/cros_ec sounds OK to me for now.\nIf the situation like \"/dev/cros_ec not exist due to kernel bug / any other error\" happens frequently, using the board name list sounds a better option.",
+      "parentUuid": "258ffb25_37b8360e",
+      "range": {
+        "startLine": 298,
+        "startChar": 1,
+        "endLine": 298,
+        "endChar": 51
+      },
+      "revId": "97dbd33d4d5b88f473cc604f8cc4de4b1456cb9b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

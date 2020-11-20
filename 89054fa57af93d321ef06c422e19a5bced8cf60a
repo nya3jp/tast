@@ -16,6 +16,24 @@
       "message": "Defer to Brendan.\n\nI think it\u0027s case by case, but indeed, I agreed passing ctx may be less error prone so nice to be used in example codes.",
       "revId": "89054fa57af93d321ef06c422e19a5bced8cf60a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f540d606_4ed7fe40",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1306673
+      },
+      "writtenOn": "2020-11-20T16:18:27Z",
+      "side": 1,
+      "message": "Can you give some example when we shouldn\u0027t pass context by value to function?",
+      "parentUuid": "9c3784f5_56e57e3c",
+      "revId": "89054fa57af93d321ef06c422e19a5bced8cf60a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

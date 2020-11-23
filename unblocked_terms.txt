@@ -1,0 +1,62 @@
+# This is the local list of words which are still too commonly used in the
+# codebase to be blocked outright. This list will continue to shrink as the
+# codebase moves away from the use of these terms.
+#
+#
+# Don't delete this file if you want to keep keyword_check enabled even if it's
+# empty.
+#
+# See repohooks/README.md for more details.
+
+# black.?hat            - clean
+# black.?list           - clean
+# build.?cop            - clean
+# crazy                 - clean
+# cripple               - clean
+
+dummy
+#    - see crbug/1135039
+
+# first.?class.?citizen - clean
+# grandfathered         - clean
+# gr[ae]y.?hat          - clean
+# gr[ae]y.?list         - clean
+# insane                - clean
+
+\bhe\b
+#    - see crbug/1135040
+
+# \bshe\b               - clean
+# \bhim\b               - clean
+# \bher\b               - clean
+# \bhis\b               - clean
+# \bhers\b              - clean
+# man.?in.?the.?middle  - clean
+
+master
+#    - see crbug/1122372
+
+# \bmitm\b              - clean
+
+\bnative
+#    - see crbug/1135046
+
+# \bred.?line           - clean
+# rtfm                  - clean
+# \b(in)?sane(\b|\d)    - clean
+# sanity                - clean
+
+slave
+#    - see crbug/1126921
+
+# white.?glove          - clean
+# white.?hat            - clean
+# white.?label          - clean
+
+white.?list
+#    - see crbug/1101928
+#    - see crbug/1125493
+#    - see crbug/1113099
+
+# \bwtf                 - clean
+

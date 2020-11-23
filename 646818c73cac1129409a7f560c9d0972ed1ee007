@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6b5751c3_8b74b40e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1326157
+      },
+      "writtenOn": "2020-11-23T18:15:49Z",
+      "side": 1,
+      "message": "Rebased to get past the buggy, now-demoted test security.SELinuxProcesses",
+      "revId": "646818c73cac1129409a7f560c9d0972ed1ee007",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

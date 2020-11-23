@@ -145,7 +145,7 @@ func TestGetDUTInfoNoDeviceConfig(t *testing.T) {
 		})
 
 		// Note: if both avail/unavail are empty, it is handled as an error.
-		// Add dummy here to avoid it.
+		// Add fake here to avoid it.
 		writeGetDUTInfoResult(stdout, []string{"dep1"}, nil, nil, nil, "")
 		return 0
 	}

@@ -17,8 +17,8 @@ import (
 )
 
 var (
-	// dummyAddr is a dummy IPv4 address.
-	dummyAddr = &net.IPAddr{IP: net.IPv4zero}
+	// fakeAddr is a fake IPv4 address.
+	fakeAddr = &net.IPAddr{IP: net.IPv4zero}
 
 	// errNotImpl is returned from unimplemented methods in pipeConn.
 	errNotImpl = errors.New("not implemented")
@@ -62,14 +62,14 @@ func (c *pipeConn) Close() error {
 	return c.c()
 }
 
-// LocalAddr returns a dummy IPv4 address.
+// LocalAddr returns a fake IPv4 address.
 func (c *pipeConn) LocalAddr() net.Addr {
-	return dummyAddr
+	return fakeAddr
 }
 
-// RemoteAddr returns a dummy IPv4 address.
+// RemoteAddr returns a fake IPv4 address.
 func (c *pipeConn) RemoteAddr() net.Addr {
-	return dummyAddr
+	return fakeAddr
 }
 
 // SetDeadline always returns not implemented error.
@@ -129,9 +129,9 @@ func (l *pipeListener) Close() error {
 	return nil
 }
 
-// Addr returns a dummy IPv4 address.
+// Addr returns a fake IPv4 address.
 func (l *pipeListener) Addr() net.Addr {
-	return dummyAddr
+	return fakeAddr
 }
 
 var _ net.Listener = (*pipeListener)(nil)

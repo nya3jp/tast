@@ -151,7 +151,7 @@ func TestTouchscreen(t *testing.T) {
 			&device.Config{
 				Id: &device.ConfigId{
 					PlatformId: &device.PlatformId{
-						Value: "dummy_platform",
+						Value: "fake_platform",
 					},
 				},
 			},
@@ -168,7 +168,7 @@ func TestTouchscreen(t *testing.T) {
 		&device.Config{
 			Id: &device.ConfigId{
 				PlatformId: &device.PlatformId{
-					Value: "dummy_platform",
+					Value: "fake_platform",
 				},
 			},
 			HardwareFeatures: []device.Config_HardwareFeature{
@@ -219,7 +219,7 @@ func TestChromeEC(t *testing.T) {
 			&device.Config{
 				Id: &device.ConfigId{
 					PlatformId: &device.PlatformId{
-						Value: "dummy_platform",
+						Value: "fake_platform",
 					},
 				},
 			},
@@ -248,7 +248,7 @@ func TestFingerprint(t *testing.T) {
 			&device.Config{
 				Id: &device.ConfigId{
 					PlatformId: &device.PlatformId{
-						Value: "dummy_platform",
+						Value: "fake_platform",
 					},
 				},
 			},
@@ -265,7 +265,7 @@ func TestFingerprint(t *testing.T) {
 		&device.Config{
 			Id: &device.ConfigId{
 				PlatformId: &device.PlatformId{
-					Value: "dummy_platform",
+					Value: "fake_platform",
 				},
 			},
 			HardwareFeatures: []device.Config_HardwareFeature{
@@ -291,7 +291,7 @@ func TestInternalDisplay(t *testing.T) {
 			&device.Config{
 				Id: &device.ConfigId{
 					PlatformId: &device.PlatformId{
-						Value: "dummy_platform",
+						Value: "fake_platform",
 					},
 				},
 			},
@@ -308,7 +308,7 @@ func TestInternalDisplay(t *testing.T) {
 		&device.Config{
 			Id: &device.ConfigId{
 				PlatformId: &device.PlatformId{
-					Value: "dummy_platform",
+					Value: "fake_platform",
 				},
 			},
 			HardwareFeatures: []device.Config_HardwareFeature{

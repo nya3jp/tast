@@ -16,6 +16,23 @@
       "message": "The last error is not related to this change. Retrying.\n\u003e 2020/11/19 06:32:57 crostini.BackupRestore.buster_amd64_stable                         [ FAIL ] Failed to exit Terminal window: context deadline exceeded; last error follows: node still exists\n",
       "revId": "8d38466f7f78f1b772e501af564c6c70f029afa7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e3780250_840518e0",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-11-24T01:17:20Z",
+      "side": 1,
+      "message": "Last CQ errors says:\n\u003e Failed to exit Terminal window: context deadline exceeded; last error follows: node still exists\n\nhttps://bugs.chromium.org/p/chromium/issues/detail?id\u003d1151074\nmight be related to this.",
+      "revId": "8d38466f7f78f1b772e501af564c6c70f029afa7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

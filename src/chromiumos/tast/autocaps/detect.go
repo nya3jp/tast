@@ -32,6 +32,8 @@ type SysInfo struct {
 	HasUsbCamera bool
 	// HasMipiCamera is true iff there's built-in MIPI camera.
 	HasMipiCamera bool
+	// ProductName contains the value from the DMI product name
+	ProductName string
 }
 
 // loadSysInfo returns a SysInfo struct describing the system where this code is running.
@@ -51,6 +53,10 @@ func loadSysInfo() (*SysInfo, error) {
 	// The lspci command can fail if the device doesn't have a PCI bus: https://crbug.com/888883
 	if out, err = exec.Command("lspci", "-n", "-d", keplerID).Output(); err == nil {
 		info.HasKepler = strings.TrimSpace(string(out)) != ""
+	}
+
+	if out, err = exec.Command("dmidecode", "-s", "system-product-name").Output(); err == nil {
+		info.ProductName = strings.TrimSpace(string(out))
 	}
 
 	// Queries camera configuration from CrOS config. For each built-in camera, the
@@ -111,6 +117,8 @@ func runDetector(rule *detectRule, info *SysInfo) (directives []string, err erro
 		if info.HasUsbCamera {
 			val = "usb_camera"
 		}
+	case "product_name":
+		val = info.ProductName
 	default:
 		return nil, fmt.Errorf("unknown detector %q", rule.Detector)
 	}

@@ -16,6 +16,24 @@
       "message": "Please use tab for indentation and use gofmt (usually integrated in the editor) to format the code.\n\nref: https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#coding-style-and-best-practices",
       "revId": "5e80aa30e44ee4d15879c96eb78bbfdb916bf92a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e6465f6d_19e1ea73",
+        "filename": "src/chromiumos/tast/internal/testing/attr.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 167,
+      "author": {
+        "id": 1459272
+      },
+      "writtenOn": "2020-11-24T05:22:38Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fd24869a_4ed420b5",
+      "revId": "5e80aa30e44ee4d15879c96eb78bbfdb916bf92a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

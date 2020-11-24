@@ -164,6 +164,11 @@ Tests in this group are not used for build verification.
 		Desc:     `A group of camera tests for libcamera build.`,
 	},
 	{
+		Name:     "camera-postsubmit",
+		Contacts: []string{"chromeos-camera-eng@google.com"},
+		Desc:     `A group of camera tests for postsubmit runs.`,
+	},
+	{
 		Name:     "enrollment",
 		Contacts: []string{"vsavu@google.com", "enterprise-policy-support-rotation@google.com"},
 		Desc:     `A group of tests performing enrollment and will clobber the stateful partition.`,

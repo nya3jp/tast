@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "22435d9c_1cf9a295",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-11-24T06:50:59Z",
+      "side": 1,
+      "message": "I think \"fake\" sounds more fitting to the all use cases in this CL?",
+      "range": {
+        "startLine": 7,
+        "startChar": 26,
+        "endLine": 7,
+        "endChar": 37
+      },
+      "revId": "a3171475bb9c480b4ab00868ae2da77f609120c6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b3e55832_ad9957b7",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-11-24T06:50:59Z",
+      "side": 1,
+      "message": "LGTM with a comment.",
+      "revId": "a3171475bb9c480b4ab00868ae2da77f609120c6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

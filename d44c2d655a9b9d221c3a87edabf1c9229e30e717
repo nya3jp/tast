@@ -106,6 +106,24 @@
       "parentUuid": "370ca3f9_af5d276c",
       "revId": "d44c2d655a9b9d221c3a87edabf1c9229e30e717",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ad90c078_a71357c0",
+        "filename": "src/chromiumos/tast/autocaps/detect.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1459152
+      },
+      "writtenOn": "2020-11-25T12:55:24Z",
+      "side": 1,
+      "message": "Probably a stupid question (noogler here sorry). How can I \"connect\" CrOS config to HardwareDeps or SoftwareDeps. Because I want to skip the test completely if the hardware does not support the privacy_switch.",
+      "parentUuid": "39f4d86b_971d2dcd",
+      "revId": "d44c2d655a9b9d221c3a87edabf1c9229e30e717",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

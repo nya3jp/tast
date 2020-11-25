@@ -16,6 +16,24 @@
       "message": "For model name, IIRC we generally use the name from `cros_config / name` and it already has built-in support in Tast as hwdep: https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/test_dependencies.md#hardware-dependencies\n\nDo we have any specific reason to use the DMI product name? Is there a way to query whether privacy camera switch exists directly? Or maybe we should add this into the camera config section in cros_config. +kamesan@ for vis.",
       "revId": "d44c2d655a9b9d221c3a87edabf1c9229e30e717",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1a9b5139_53d569a7",
+        "filename": "src/chromiumos/tast/autocaps/detect.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1459152
+      },
+      "writtenOn": "2020-11-25T08:35:07Z",
+      "side": 1,
+      "message": "I am not sure that I follow you. \n\nI want to avoid declaring the board name in the unit test. Unfortunately not all the products in hatch support the privacy switch, so I need a way to enable/disable based on product name, this is why I need the detector.",
+      "parentUuid": "802d8d16_f391b228",
+      "revId": "d44c2d655a9b9d221c3a87edabf1c9229e30e717",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

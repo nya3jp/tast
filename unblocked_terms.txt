@@ -22,10 +22,7 @@ dummy
 # gr[ae]y.?hat          - clean
 # gr[ae]y.?list         - clean
 # insane                - clean
-
-\bhe\b
-#    - see crbug/1135040
-
+# \bhe\b                - clean
 # \bshe\b               - clean
 # \bhim\b               - clean
 # \bher\b               - clean

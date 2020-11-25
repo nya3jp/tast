@@ -34,6 +34,24 @@
       "parentUuid": "802d8d16_f391b228",
       "revId": "d44c2d655a9b9d221c3a87edabf1c9229e30e717",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ced9b8c8_40100739",
+        "filename": "src/chromiumos/tast/autocaps/detect.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1459152
+      },
+      "writtenOn": "2020-11-25T08:40:45Z",
+      "side": 1,
+      "message": "Or if the issue is that I should not use dmidecode. How can I get the productname from go ;)?",
+      "parentUuid": "1a9b5139_53d569a7",
+      "revId": "d44c2d655a9b9d221c3a87edabf1c9229e30e717",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

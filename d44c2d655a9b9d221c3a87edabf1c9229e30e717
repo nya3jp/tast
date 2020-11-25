@@ -142,6 +142,24 @@
       "parentUuid": "ad90c078_a71357c0",
       "revId": "d44c2d655a9b9d221c3a87edabf1c9229e30e717",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "09740bb3_0511949f",
+        "filename": "src/chromiumos/tast/autocaps/detect.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1459152
+      },
+      "writtenOn": "2020-11-25T14:55:43Z",
+      "side": 1,
+      "message": "That means back to the drawing board I guess :).\n\nI have pushed  new version of this patches that uses crosconfig instead of dmidecode. Not exactly what you are proposing, but something in the better direction I hope.\n\nOn thing that I like from the current setup is that it does not test on hardware that does not have the privacy_switch, and I still catch the non-defined errors with avtest_label_detect: https://chromium-review.googlesource.com/c/chromiumos/platform2/+/2558239\n\nWith your proposal, the test will run in all the boards.\n\nA non-related question. What is the benefit of using crosconfig vs HardwareDeps. Is there a document of when to use crosconfig vs HardwareDeps vs Autocaps ?\n\n\nThanks :)",
+      "parentUuid": "873342f3_526b77a6",
+      "revId": "d44c2d655a9b9d221c3a87edabf1c9229e30e717",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

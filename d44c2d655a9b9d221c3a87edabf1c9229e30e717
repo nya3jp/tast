@@ -124,6 +124,24 @@
       "parentUuid": "39f4d86b_971d2dcd",
       "revId": "d44c2d655a9b9d221c3a87edabf1c9229e30e717",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "873342f3_526b77a6",
+        "filename": "src/chromiumos/tast/autocaps/detect.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1318626
+      },
+      "writtenOn": "2020-11-25T13:17:24Z",
+      "side": 1,
+      "message": "The cros_config CLI is used to query it. For example \"cros_config / name\" returns the product name. We also query usb/mipi camera existence in autocaps here:\nhttps://source.corp.google.com/chromeos_public/src/platform/tast/src/chromiumos/tast/autocaps/detect.go;l\u003d59\n\nThe configs for each board is put in model.yaml files based on the schema. Hatch for example:\n(public) https://source.corp.google.com/chromeos_public/src/overlays/overlay-hatch/chromeos-base/chromeos-config-bsp-hatch/files/model.yaml\n(private) https://source.corp.google.com/chromeos_internal/src/private-overlays/overlay-hatch-private/chromeos-base/chromeos-config-bsp-hatch-private/files/model.yaml\n\nOr in newer platforms, they are being migrated to use src/project/\u003cboard\u003e/\u003cmodel\u003e/config.star to generate the configs.\n\nBtw, do you want to skip boards without hardware switch? I think we should also test the negative cases.",
+      "parentUuid": "ad90c078_a71357c0",
+      "revId": "d44c2d655a9b9d221c3a87edabf1c9229e30e717",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

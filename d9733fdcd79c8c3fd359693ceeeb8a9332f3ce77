@@ -16,6 +16,23 @@
       "message": "Defer +2 to Tast Owners",
       "revId": "d9733fdcd79c8c3fd359693ceeeb8a9332f3ce77",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "03e507bc_f71cd360",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1370239
+      },
+      "writtenOn": "2020-11-25T03:16:15Z",
+      "side": 1,
+      "message": "looks ok to me but deferring to nya as I am not aware of any requirements around these groups.",
+      "revId": "d9733fdcd79c8c3fd359693ceeeb8a9332f3ce77",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

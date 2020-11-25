@@ -70,6 +70,24 @@
       "parentUuid": "ced9b8c8_40100739",
       "revId": "d44c2d655a9b9d221c3a87edabf1c9229e30e717",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "370ca3f9_af5d276c",
+        "filename": "src/chromiumos/tast/autocaps/detect.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1459152
+      },
+      "writtenOn": "2020-11-25T11:42:20Z",
+      "side": 1,
+      "message": "The problem is that what I want to test is if the driver is showing the privacy_switch properly.\n\nIn an ideal world, all the products from the same board would have it, but it is not the case. So this patch works with this change: https://chromium-review.googlesource.com/c/chromiumos/overlays/board-overlays/+/2558440/4/overlay-hatch/chromeos-base/autotest-capability-hatch/files/20-hatch-capabilities.yaml\n\nTo describe the capability of that specific product, similar to the intel_cpu detector.",
+      "parentUuid": "ef56196b_dc098ec6",
+      "revId": "d44c2d655a9b9d221c3a87edabf1c9229e30e717",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

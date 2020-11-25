@@ -206,7 +206,7 @@ func Test(ctx context.Context, s *testing.State) {
 	testing.ContextLog(ctx, "found lower letter and end with ! instead of colon!", err)
 
 	errors.Errorf("should use Wrap: %v", err)
-	errors.Errorf("should use Wrapf %s%s: %v", "he", "re", err)
+	errors.Errorf("should use Wrapf %s%s: %v", "h", "ere", err)
 	errors.Errorf("Found use Errorf and upper letter: %v", err)
 	errors.Errorf("Found use Errorf, \"%s\" letter and %s: %v", "upper", "invalid quate", err)
 
@@ -269,7 +269,7 @@ func Test(ctx context.Context, s *testing.State) {
 	testing.ContextLog(ctx, "Found lower letter and end with ! instead of colon: ", err)
 
 	errors.Wrap(err, "should use Wrap")
-	errors.Wrapf(err, "should use Wrapf %s%s", "he", "re")
+	errors.Wrapf(err, "should use Wrapf %s%s", "h", "ere")
 	errors.Wrap(err, "found use Errorf and upper letter")
 	errors.Wrapf(err, "found use Errorf, %q letter and %s", "upper", "invalid quate")
 
@@ -303,7 +303,7 @@ func Test(ctx context.Context, s *testing.State) {
 import "chromiumos/tast/errors"
 
 func main() {
-	return errors.Errorf("should use Wrapf %s%s: %v", "he", "re", err)
+	return errors.Errorf("should use Wrapf %s%s: %v", "h", "ere", err)
 }
 `
 	expects[filename2] = `package new
@@ -311,7 +311,7 @@ func main() {
 import "chromiumos/tast/errors"
 
 func main() {
-	return errors.Wrapf(err, "should use Wrapf %s%s", "he", "re")
+	return errors.Wrapf(err, "should use Wrapf %s%s", "h", "ere")
 }
 `
 	verifyAutoFix(t, Messages, files, expects)

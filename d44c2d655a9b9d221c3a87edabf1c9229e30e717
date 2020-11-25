@@ -88,6 +88,24 @@
       "parentUuid": "ef56196b_dc098ec6",
       "revId": "d44c2d655a9b9d221c3a87edabf1c9229e30e717",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "39f4d86b_971d2dcd",
+        "filename": "src/chromiumos/tast/autocaps/detect.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1318626
+      },
+      "writtenOn": "2020-11-25T12:20:54Z",
+      "side": 1,
+      "message": "I see. I think this is similar to checking the number of cameras (statically defined vs. dynamically detected) on a device. We have been moving static camera configuration into CrOS config:\nhttps://source.corp.google.com/chromeos_public/src/platform2/chromeos-config/cros_config_host/cros_config_schema.yaml\n\nHow about formalize the hardware switch definition there? It\u0027s more documented, and configurable by us and ODMs.",
+      "parentUuid": "370ca3f9_af5d276c",
+      "revId": "d44c2d655a9b9d221c3a87edabf1c9229e30e717",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

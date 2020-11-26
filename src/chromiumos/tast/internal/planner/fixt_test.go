@@ -105,7 +105,7 @@ func (f *fakeFixture) TearDown(ctx context.Context, s *testing.FixtState) {
 
 // TestFixtureStackInitStatus checks the initial status of a fixture stack.
 func TestFixtureStackInitStatus(t *gotesting.T) {
-	stack := newFixtureStack(&Config{}, newOutputSink())
+	stack := NewFixtureStack(&Config{}, newOutputSink())
 
 	if got := stack.Status(); got != statusGreen {
 		t.Fatalf("Initial status is %v; want %v", got, statusGreen)
@@ -116,7 +116,7 @@ func TestFixtureStackInitStatus(t *gotesting.T) {
 // stack on pushing healthy fixtures.
 func TestFixtureStackStatusTransitionGreen(t *gotesting.T) {
 	ctx := context.Background()
-	stack := newFixtureStack(&Config{}, newOutputSink())
+	stack := NewFixtureStack(&Config{}, newOutputSink())
 
 	pushGreen := func() error {
 		return stack.Push(ctx, &testing.Fixture{Impl: newFakeFixture()})
@@ -153,7 +153,7 @@ func TestFixtureStackStatusTransitionGreen(t *gotesting.T) {
 // stack on pushing a fixture that fails to set up.
 func TestFixtureStackStatusTransitionRed(t *gotesting.T) {
 	ctx := context.Background()
-	stack := newFixtureStack(&Config{}, newOutputSink())
+	stack := NewFixtureStack(&Config{}, newOutputSink())
 
 	pushGreen := func() error {
 		return stack.Push(ctx, &testing.Fixture{Impl: newFakeFixture()})
@@ -202,7 +202,7 @@ func TestFixtureStackStatusTransitionRed(t *gotesting.T) {
 // stack on pushing a fixture that fails to reset.
 func TestFixtureStackStatusTransitionYellow(t *gotesting.T) {
 	ctx := context.Background()
-	stack := newFixtureStack(&Config{}, newOutputSink())
+	stack := NewFixtureStack(&Config{}, newOutputSink())
 
 	pushGreen := func() error {
 		return stack.Push(ctx, &testing.Fixture{Impl: newFakeFixture()})
@@ -245,7 +245,7 @@ func TestFixtureStackStatusTransitionYellow(t *gotesting.T) {
 // TestFixtureStackMarkDirty tests dirtiness check of fixture stacks.
 func TestFixtureStackMarkDirty(t *gotesting.T) {
 	ctx := context.Background()
-	stack := newFixtureStack(&Config{}, newOutputSink())
+	stack := NewFixtureStack(&Config{}, newOutputSink())
 
 	if err := stack.MarkDirty(); err != nil {
 		t.Errorf("MarkDirty failed for initial stack: %v", err)
@@ -276,7 +276,7 @@ func TestFixtureStackContext(t *gotesting.T) {
 	baseOutDir := testutil.TempDir(t)
 	defer os.RemoveAll(baseOutDir)
 
-	stack := newFixtureStack(&Config{OutDir: baseOutDir}, newOutputSink())
+	stack := NewFixtureStack(&Config{OutDir: baseOutDir}, newOutputSink())
 
 	fixtureOutDir := filepath.Join(baseOutDir, fixtureName)
 	testOutDir := filepath.Join(baseOutDir, "pkg.Test")
@@ -364,7 +364,7 @@ func TestFixtureStackState(t *gotesting.T) {
 	}
 
 	ctx := context.Background()
-	stack := newFixtureStack(&Config{RemoteData: rd}, newOutputSink())
+	stack := NewFixtureStack(&Config{RemoteData: rd}, newOutputSink())
 
 	type stateLike interface {
 		RPCHint() *testing.RPCHint
@@ -426,7 +426,7 @@ func TestFixtureStackVal(t *gotesting.T) {
 	)
 
 	ctx := context.Background()
-	stack := newFixtureStack(&Config{}, newOutputSink())
+	stack := NewFixtureStack(&Config{}, newOutputSink())
 
 	if val := stack.Val(); val != nil {
 		t.Errorf("Init: Val() = %v; want nil", val)
@@ -497,7 +497,7 @@ func TestFixtureStackVal(t *gotesting.T) {
 // TestFixtureStackRedFixtureName tests RedFixtureName method.
 func TestFixtureStackRedFixtureName(t *gotesting.T) {
 	ctx := context.Background()
-	stack := newFixtureStack(&Config{}, newOutputSink())
+	stack := NewFixtureStack(&Config{}, newOutputSink())
 
 	id := 0
 	pushGreen := func() error {
@@ -550,7 +550,7 @@ func TestFixtureStackOutputGreen(t *gotesting.T) {
 	sink := newOutputSink()
 	ti := &testing.TestInstance{Name: "pkg.Test"}
 	troot := testing.NewTestEntityRoot(ti, &testing.RuntimeConfig{}, newEntityOutputStream(sink, ti.EntityInfo()))
-	stack := newFixtureStack(&Config{}, sink)
+	stack := NewFixtureStack(&Config{}, sink)
 
 	newLoggingFixture := func(id int) *testing.Fixture {
 		return &testing.Fixture{
@@ -647,7 +647,7 @@ func TestFixtureStackOutputGreen(t *gotesting.T) {
 func TestFixtureStackOutputRed(t *gotesting.T) {
 	ctx := context.Background()
 	sink := newOutputSink()
-	stack := newFixtureStack(&Config{}, sink)
+	stack := NewFixtureStack(&Config{}, sink)
 
 	newLoggingFixture := func(id int, setUp bool) *testing.Fixture {
 		return &testing.Fixture{
@@ -718,7 +718,7 @@ func TestFixtureStackOutputRed(t *gotesting.T) {
 func TestFixtureStackOutputYellow(t *gotesting.T) {
 	ctx := context.Background()
 	sink := newOutputSink()
-	stack := newFixtureStack(&Config{}, sink)
+	stack := NewFixtureStack(&Config{}, sink)
 
 	newLoggingFixture := func(id int, reset bool) *testing.Fixture {
 		return &testing.Fixture{

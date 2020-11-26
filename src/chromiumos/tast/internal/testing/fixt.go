@@ -74,6 +74,8 @@ func (f *Fixture) EntityInfo() *EntityInfo {
 		ServiceDeps: append([]string(nil), f.ServiceDeps...),
 		Fixture:     f.Parent,
 		Type:        EntityFixture,
+
+		Bundle: executablePath,
 	}
 }
 

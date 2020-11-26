@@ -7,6 +7,7 @@ package planner
 import (
 	"context"
 	"fmt"
+	"log"
 	"os"
 	"path/filepath"
 	gotesting "testing"
@@ -543,6 +544,14 @@ func TestFixtureStackRedFixtureName(t *gotesting.T) {
 	}
 }
 
+var executablePath = func() string {
+	p, err := os.Executable()
+	if err != nil {
+		log.Fatalf("os.Executable(): %v", err)
+	}
+	return p
+}()
+
 // TestFixtureStackOutputGreen tests control message outputs when all fixtures
 // are healthy.
 func TestFixtureStackOutputGreen(t *gotesting.T) {
@@ -610,11 +619,11 @@ func TestFixtureStackOutputGreen(t *gotesting.T) {
 	}
 
 	want := []control.Msg{
-		&control.EntityStart{Info: testing.EntityInfo{Name: "fixt1", Type: testing.EntityFixture}},
+		&control.EntityStart{Info: testing.EntityInfo{Name: "fixt1", Type: testing.EntityFixture, Bundle: executablePath}},
 		&control.EntityLog{Name: "fixt1", Text: "SetUp 1 via Context"},
 		&control.EntityLog{Name: "fixt1", Text: "SetUp 1 via Fixture-scoped Context"},
 		&control.EntityLog{Name: "fixt1", Text: "SetUp 1 via State"},
-		&control.EntityStart{Info: testing.EntityInfo{Name: "fixt2", Type: testing.EntityFixture}},
+		&control.EntityStart{Info: testing.EntityInfo{Name: "fixt2", Type: testing.EntityFixture, Bundle: executablePath}},
 		&control.EntityLog{Name: "fixt2", Text: "SetUp 2 via Context"},
 		&control.EntityLog{Name: "fixt2", Text: "SetUp 2 via Fixture-scoped Context"},
 		&control.EntityLog{Name: "fixt2", Text: "SetUp 2 via State"},
@@ -699,9 +708,9 @@ func TestFixtureStackOutputRed(t *gotesting.T) {
 	}
 
 	want := []control.Msg{
-		&control.EntityStart{Info: testing.EntityInfo{Name: "fixt1", Type: testing.EntityFixture}},
+		&control.EntityStart{Info: testing.EntityInfo{Name: "fixt1", Type: testing.EntityFixture, Bundle: executablePath}},
 		&control.EntityLog{Name: "fixt1", Text: "SetUp 1"},
-		&control.EntityStart{Info: testing.EntityInfo{Name: "fixt2", Type: testing.EntityFixture}},
+		&control.EntityStart{Info: testing.EntityInfo{Name: "fixt2", Type: testing.EntityFixture, Bundle: executablePath}},
 		&control.EntityLog{Name: "fixt2", Text: "SetUp 2"},
 		&control.EntityError{Name: "fixt2", Error: testing.Error{Reason: "SetUp 2 failure"}},
 		&control.EntityEnd{Name: "fixt2"},
@@ -770,11 +779,11 @@ func TestFixtureStackOutputYellow(t *gotesting.T) {
 	}
 
 	want := []control.Msg{
-		&control.EntityStart{Info: testing.EntityInfo{Name: "fixt1", Type: testing.EntityFixture}},
+		&control.EntityStart{Info: testing.EntityInfo{Name: "fixt1", Type: testing.EntityFixture, Bundle: executablePath}},
 		&control.EntityLog{Name: "fixt1", Text: "SetUp 1"},
-		&control.EntityStart{Info: testing.EntityInfo{Name: "fixt2", Type: testing.EntityFixture}},
+		&control.EntityStart{Info: testing.EntityInfo{Name: "fixt2", Type: testing.EntityFixture, Bundle: executablePath}},
 		&control.EntityLog{Name: "fixt2", Text: "SetUp 2"},
-		&control.EntityStart{Info: testing.EntityInfo{Name: "fixt3", Type: testing.EntityFixture}},
+		&control.EntityStart{Info: testing.EntityInfo{Name: "fixt3", Type: testing.EntityFixture, Bundle: executablePath}},
 		&control.EntityLog{Name: "fixt3", Text: "SetUp 3"},
 		&control.EntityLog{Name: "fixt1", Text: "Reset 1"},
 		&control.EntityLog{Name: "fixt2", Text: "Reset 2"},

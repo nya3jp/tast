@@ -27,6 +27,7 @@ func TestFixtureEntityInfo(t *testing.T) {
 		ServiceDeps: []string{"chrome.Service"},
 		Fixture:     "system.Booted",
 		Type:        EntityFixture,
+		Bundle:      executablePath,
 	}
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("EntityInfo(%#v) mismatch (-got +want):\n%s", fixt, diff)

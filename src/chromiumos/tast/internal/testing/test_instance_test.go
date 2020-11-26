@@ -712,6 +712,7 @@ func TestTestInfo(t *gotesting.T) {
 		ServiceDeps:  []string{"svc1", "svc2"},
 		Fixture:      "fixt",
 		Timeout:      time.Hour,
+		Bundle:       executablePath,
 	}
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Got unexpected EntityInfo (-got +want):\n%s", diff)

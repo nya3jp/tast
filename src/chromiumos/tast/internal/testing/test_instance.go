@@ -8,6 +8,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
+	"os"
 	"path/filepath"
 	"reflect"
 	"regexp"
@@ -499,7 +501,6 @@ func (t EntityType) String() string {
 // EntityInfo is a JSON-serializable description of an entity.
 type EntityInfo struct {
 	// See TestInstance for details of the fields.
-
 	Name         string           `json:"name"`
 	Pkg          string           `json:"pkg"`
 	Desc         string           `json:"desc"`
@@ -513,7 +514,18 @@ type EntityInfo struct {
 	Fixture      string           `json:"fixture,omitempty"`
 	Timeout      time.Duration    `json:"timeout"`
 	Type         EntityType       `json:"entityType,omitempty"`
+
+	// Bundle is the bundle path.
+	Bundle string `json:"bundle,omitempty"`
 }
+
+var executablePath = func() string {
+	path, err := os.Executable()
+	if err != nil {
+		log.Fatalf("os.Executable(): %v", err)
+	}
+	return path
+}()
 
 // EntityInfo converts TestInstance to EntityInfo.
 func (t *TestInstance) EntityInfo() *EntityInfo {
@@ -530,6 +542,8 @@ func (t *TestInstance) EntityInfo() *EntityInfo {
 		ServiceDeps:  append([]string(nil), t.ServiceDeps...),
 		Fixture:      t.Fixture,
 		Timeout:      t.Timeout,
+
+		Bundle: executablePath,
 	}
 }
 

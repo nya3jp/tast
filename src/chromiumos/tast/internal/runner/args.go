@@ -184,7 +184,7 @@ type ListFixturesArgs struct {
 // ListFixturesResult holds the result of a ListFixturesMode command.
 type ListFixturesResult struct {
 	// Fixtures maps bundle path to the fixtures it contains.
-	Fixtures map[string][]*testing.FixtureInfo `json:"fixtures,omitempty"`
+	Fixtures map[string][]*testing.EntityInfo `json:"fixtures,omitempty"`
 }
 
 // GetSysInfoStateResult holds the result of a GetSysInfoStateMode command.
@@ -505,7 +505,8 @@ errors, including the failure of an individual test.
 		(args.Mode == ListTestsMode && args.ListTests == nil) ||
 		(args.Mode == CollectSysInfoMode && args.CollectSysInfo == nil) ||
 		(args.Mode == GetDUTInfoMode && args.GetDUTInfo == nil) ||
-		(args.Mode == DownloadPrivateBundlesMode && args.DownloadPrivateBundles == nil) {
+		(args.Mode == DownloadPrivateBundlesMode && args.DownloadPrivateBundles == nil) ||
+		(args.Mode == ListFixturesMode && args.ListFixtures == nil) {
 		return command.NewStatusErrorf(statusBadArgs, "args not set for mode %v", args.Mode)
 	}
 

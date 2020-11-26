@@ -694,6 +694,40 @@ func TestRunList(t *gotesting.T) {
 	}
 }
 
+func TestRunListFixtures(t *gotesting.T) {
+	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
+	defer restore()
+
+	fixts := []*testing.Fixture{
+		{Name: "foo"},
+		{Name: "bar", Parent: "foo"},
+	}
+
+	for _, f := range fixts {
+		testing.AddFixture(f)
+	}
+
+	var infos []*testing.EntityInfo
+	for _, f := range fixts {
+		infos = append(infos, f.EntityInfo())
+	}
+	var exp bytes.Buffer
+	if err := testing.WriteEntitiesAsJSON(&exp, infos); err != nil {
+		t.Fatal(err)
+	}
+
+	// ListFixturesMode should result in tests being JSON-marshaled to stdout.
+	stdin := newBufferWithArgs(t, &Args{Mode: ListFixturesMode})
+	stdout := &bytes.Buffer{}
+	if status := run(context.Background(), nil, stdin, stdout, &bytes.Buffer{},
+		&Args{}, &runConfig{}, localBundle); status != statusSuccess {
+		t.Fatalf("run() returned status %v; want %v", status, statusSuccess)
+	}
+	if stdout.String() != exp.String() {
+		t.Errorf("run() wrote %q; want %q", stdout.String(), exp.String())
+	}
+}
+
 func TestRunRegistrationError(t *gotesting.T) {
 	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
 	defer restore()

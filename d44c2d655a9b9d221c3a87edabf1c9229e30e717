@@ -160,6 +160,24 @@
       "parentUuid": "873342f3_526b77a6",
       "revId": "d44c2d655a9b9d221c3a87edabf1c9229e30e717",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "54c9e981_b9aab4fa",
+        "filename": "src/chromiumos/tast/autocaps/detect.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1318626
+      },
+      "writtenOn": "2020-11-26T08:02:19Z",
+      "side": 1,
+      "message": "Using cros_config instead of dmidecode looks good to me. We can temporarily use this product_name approach for development, but in order to scale, I think we want to have privacy switch info in cros_config and ask ODMs to provide the info for their designs. We should also consider the case that the device have one camera with privacy switch and one without. It\u0027s not representable by just one cap flag.\n\nFor your question, I think they are quite different things. Autotest-capability is introduced by old Autotest test infrastructure, and as you have seen, it\u0027s limited to board-level files and relies you to implement detectors over other tools (like cros_config) for model-level things. I\u0027m not familiar with HardwareDeps.",
+      "parentUuid": "09740bb3_0511949f",
+      "revId": "d44c2d655a9b9d221c3a87edabf1c9229e30e717",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

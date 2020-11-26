@@ -20,6 +20,8 @@ import (
 	"strings"
 	gotesting "testing"
 
+	"github.com/google/go-cmp/cmp"
+
 	"chromiumos/tast/internal/bundle"
 	"chromiumos/tast/internal/control"
 	"chromiumos/tast/internal/testing"
@@ -32,6 +34,12 @@ const (
 
 	// Message written to stderr by runFakeBundle when no tests were registered.
 	noTestsError = "no tests in bundle"
+)
+
+var (
+	// fakeFixture1 and fakeFixture2 are fake fixtures which fake bundles have.
+	fakeFixture1 *testing.Fixture = &testing.Fixture{Name: "fake1"}
+	fakeFixture2 *testing.Fixture = &testing.Fixture{Name: "fake2", Parent: "fake1"}
 )
 
 func init() {
@@ -101,6 +109,10 @@ func runFakeBundle() int {
 
 	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
 	defer restore()
+
+	testing.AddFixture(fakeFixture1)
+	testing.AddFixture(fakeFixture2)
+
 	for i, res := range parts[2] {
 		var f testing.TestFunc
 		if res == 'p' {
@@ -206,6 +218,46 @@ func TestRunListTests(t *gotesting.T) {
 	sort.Ints(counts)
 	if want := []int{1, 2, 3}; !reflect.DeepEqual(counts, want) {
 		t.Errorf("counts = %v, want %v", counts, want)
+	}
+}
+
+func TestRunListFixtures(t *gotesting.T) {
+	dir := createBundleSymlinks(t, []bool{true})
+	defer os.RemoveAll(dir)
+
+	args := Args{
+		Mode: ListFixturesMode,
+		ListFixtures: &ListFixturesArgs{
+			BundleGlob: filepath.Join(dir, "*"),
+		},
+	}
+	status, stdout, _, sig := callRun(t, nil, &args, nil, &Config{Type: LocalRunner})
+	if status != statusSuccess {
+		t.Fatalf("%s = %v; want %v", sig, status, statusSuccess)
+	}
+
+	var got ListFixturesResult
+	if err := json.Unmarshal(stdout.Bytes(), &got); err != nil {
+		t.Fatalf("%s printed unparsable output %q", sig, stdout.String())
+	}
+
+	bundle := fmt.Sprintf("%s-0-p", bundlePrefix)
+	bundlePath := filepath.Join(dir, bundle)
+	want := ListFixturesResult{Fixtures: map[string][]*testing.EntityInfo{
+		bundlePath: {
+			{Name: "fake1", Type: testing.EntityFixture, Bundle: bundle},
+			{Name: "fake2", Fixture: "fake1", Type: testing.EntityFixture, Bundle: bundle},
+		},
+	}}
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Fatal("Result mismatch (-want +got): ", diff)
+	}
+
+	// Test errors
+	status, _, _, sig = callRun(t, nil, &Args{Mode: ListFixturesMode /* ListFixtures is nil */}, nil, &Config{Type: LocalRunner})
+	if status != statusBadArgs {
+		t.Fatalf("%s = %v; want %v", sig, status, statusBadArgs)
 	}
 }
 

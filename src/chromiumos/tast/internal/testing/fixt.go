@@ -14,14 +14,6 @@ import (
 	"chromiumos/tast/errors"
 )
 
-// FixtureInfo is a JSON-serializable fixture information other processes need.
-type FixtureInfo struct {
-	// Name is the name of the fixture.
-	Name string `json:"name,omitempty"`
-	// Parent is the name of the parent fixture or empty if it has no parent.
-	Parent string `json:"parent,omitempty"`
-}
-
 // Fixture represents fixtures to register to the framework.
 type Fixture struct {
 	// Name is the name of the fixture.

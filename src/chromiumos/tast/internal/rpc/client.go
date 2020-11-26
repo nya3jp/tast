@@ -105,7 +105,7 @@ func newClient(ctx context.Context, r io.Reader, w io.Writer, h *testing.RPCHint
 		return nil, errors.Wrap(err, "failed to set bundle parameters")
 	}
 
-	conn, err := newPipeClientConn(ctx, r, w, clientOpts()...)
+	conn, err := NewPipeClientConn(ctx, r, w, clientOpts()...)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to establish RPC connection")
 	}

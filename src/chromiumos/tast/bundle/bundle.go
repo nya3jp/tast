@@ -69,8 +69,15 @@ func run(ctx context.Context, clArgs []string, stdin io.Reader, stdout, stderr i
 		}
 		return statusSuccess
 	case ListFixturesMode:
-		// TODO(oka): Implement ListFixturesMode.
-		panic("to be implemented")
+		fixts := testing.GlobalRegistry().AllFixtures()
+		var infos []*testing.EntityInfo
+		for _, f := range fixts {
+			infos = append(infos, f.EntityInfo())
+		}
+		if err := testing.WriteEntitiesAsJSON(stdout, infos); err != nil {
+			return command.WriteError(stderr, err)
+		}
+		return statusSuccess
 	case ExportMetadataMode:
 		tests, err := testsToRun(cfg, nil)
 		if err != nil {

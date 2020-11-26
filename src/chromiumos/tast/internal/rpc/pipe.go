@@ -99,8 +99,8 @@ type pipeListener struct {
 	ch chan *pipeConn
 }
 
-// newPipeListener constructs a new pipeListener based on r and w.
-func newPipeListener(r io.Reader, w io.Writer) *pipeListener {
+// NewPipeListener constructs a new pipeListener based on r and w.
+func NewPipeListener(r io.Reader, w io.Writer) *pipeListener {
 	connCh := make(chan *pipeConn, 1)
 	lis := &pipeListener{ch: connCh}
 	conn := &pipeConn{
@@ -136,11 +136,11 @@ func (l *pipeListener) Addr() net.Addr {
 
 var _ net.Listener = (*pipeListener)(nil)
 
-// newPipeClientConn constructs ClientConn based on r and w.
+// NewPipeClientConn constructs ClientConn based on r and w.
 //
 // The returned ClientConn is suitable for talking with a gRPC server over a
 // bidirectional pipe.
-func newPipeClientConn(ctx context.Context, r io.Reader, w io.Writer, extraOpts ...grpc.DialOption) (*grpc.ClientConn, error) {
+func NewPipeClientConn(ctx context.Context, r io.Reader, w io.Writer, extraOpts ...grpc.DialOption) (*grpc.ClientConn, error) {
 	opts := append([]grpc.DialOption{
 		grpc.WithInsecure(),
 		// TODO(crbug.com/989419): Use grpc.WithContextDialer after updating grpc-go.

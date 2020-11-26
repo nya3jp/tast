@@ -116,6 +116,9 @@ func getTests(args *Args, bundles []string) (tests []*testing.EntityWithRunnabil
 		if toe.err != nil {
 			return nil, nil, toe.err
 		}
+		for _, t := range toe.tests {
+			t.Bundle = toe.bundle
+		}
 		if len(toe.tests) > 0 {
 			bundleTests[toe.bundle] = toe.tests
 		}

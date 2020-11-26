@@ -16,7 +16,7 @@ import (
 )
 
 // fixtureStatus represents a status of a fixture, as well as that of a fixture
-// stack. See comments around fixtureStack for details.
+// stack. See comments around FixtureStack for details.
 type fixtureStatus int
 
 const (
@@ -39,7 +39,7 @@ func (s fixtureStatus) String() string {
 	}
 }
 
-// fixtureStack maintains a stack of fixtures and their states.
+// FixtureStack maintains a stack of fixtures and their states.
 //
 // A fixture stack corresponds to a path from the root of a fixture tree. As we
 // traverse a fixture tree, a new child fixture is pushed to the stack by Push,
@@ -67,7 +67,7 @@ func (s fixtureStatus) String() string {
 //   | +-----------------------+                          |
 //   +----------------------------------------------------+
 //
-// fixtureStack maintains the following invariants about fixture statuses:
+// FixtureStack maintains the following invariants about fixture statuses:
 //
 //  1. When there is a yellow fixture in the stack, no other fixtures are red.
 //  2. When there is no yellow fixture in the stack, there is an integer k
@@ -108,7 +108,7 @@ func (s fixtureStatus) String() string {
 // can be marked dirty with MarkDirty. It is an error to call MarkDirty on a
 // dirty stack. The dirty flag can be cleared by Reset. MarkDirty can be called
 // before running a test to make sure Reset is called for sure between tests.
-type fixtureStack struct {
+type FixtureStack struct {
 	cfg *Config
 	out OutputStream
 
@@ -116,13 +116,13 @@ type fixtureStack struct {
 	dirty bool
 }
 
-// newFixtureStack creates a new empty fixture stack.
-func newFixtureStack(cfg *Config, out OutputStream) *fixtureStack {
-	return &fixtureStack{cfg: cfg, out: out}
+// NewFixtureStack creates a new empty fixture stack.
+func NewFixtureStack(cfg *Config, out OutputStream) *FixtureStack {
+	return &FixtureStack{cfg: cfg, out: out}
 }
 
 // Status returns the current status of the fixture stack.
-func (st *fixtureStack) Status() fixtureStatus {
+func (st *FixtureStack) Status() fixtureStatus {
 	for _, f := range st.stack {
 		if s := f.Status(); s != statusGreen {
 			return s
@@ -135,7 +135,7 @@ func (st *fixtureStack) Status() fixtureStatus {
 // stack.
 //
 // If there is no red fixture in the stack, an empty string is returned.
-func (st *fixtureStack) RedFixtureName() string {
+func (st *FixtureStack) RedFixtureName() string {
 	for _, f := range st.stack {
 		if f.Status() == statusRed {
 			return f.Name()
@@ -147,7 +147,7 @@ func (st *fixtureStack) RedFixtureName() string {
 // Val returns the fixture value of the top fixture.
 //
 // If the fixture stack is empty or red, it returns nil.
-func (st *fixtureStack) Val() interface{} {
+func (st *FixtureStack) Val() interface{} {
 	f := st.top()
 	if f == nil || f.Status() == statusRed {
 		return nil
@@ -164,7 +164,7 @@ func (st *fixtureStack) Val() interface{} {
 // and the resulting fixture stack is red.
 //
 // It is an error to call Push for a yellow fixture stack.
-func (st *fixtureStack) Push(ctx context.Context, fixt *testing.Fixture) error {
+func (st *FixtureStack) Push(ctx context.Context, fixt *testing.Fixture) error {
 	status := st.Status()
 	if status == statusYellow {
 		return errors.New("BUG: fixture must not be pushed to a yellow stack")
@@ -213,7 +213,7 @@ func (st *fixtureStack) Push(ctx context.Context, fixt *testing.Fixture) error {
 // Pop removes the top-most fixture from the fixture stack.
 //
 // If the top-most fixture is green or yellow, its TearDown method is called.
-func (st *fixtureStack) Pop(ctx context.Context) error {
+func (st *FixtureStack) Pop(ctx context.Context) error {
 	f := st.top()
 	st.stack = st.stack[:len(st.stack)-1]
 	if f.Status() != statusRed {
@@ -238,7 +238,7 @@ func (st *fixtureStack) Pop(ctx context.Context) error {
 //
 // If the stack is red, Reset does nothing. If the stack is yellow, it is an
 // error to call this method.
-func (st *fixtureStack) Reset(ctx context.Context) error {
+func (st *FixtureStack) Reset(ctx context.Context) error {
 	st.dirty = false
 
 	switch st.Status() {
@@ -264,7 +264,8 @@ func (st *fixtureStack) Reset(ctx context.Context) error {
 	return nil
 }
 
-func (st *fixtureStack) PreTest(ctx context.Context, troot *testing.TestEntityRoot) error {
+// PreTest runs PreTests on the fixtures.
+func (st *FixtureStack) PreTest(ctx context.Context, troot *testing.TestEntityRoot) error {
 	if status := st.Status(); status != statusGreen {
 		return fmt.Errorf("BUG: PreTest called for a %v fixture", status)
 	}
@@ -277,7 +278,8 @@ func (st *fixtureStack) PreTest(ctx context.Context, troot *testing.TestEntityRo
 	return nil
 }
 
-func (st *fixtureStack) PostTest(ctx context.Context, troot *testing.TestEntityRoot) error {
+// PostTest runs PostTests on the fixtures.
+func (st *FixtureStack) PostTest(ctx context.Context, troot *testing.TestEntityRoot) error {
 	if status := st.Status(); status != statusGreen {
 		return fmt.Errorf("BUG: PostTest called for a %v fixture", status)
 	}
@@ -296,7 +298,7 @@ func (st *fixtureStack) PostTest(ctx context.Context, troot *testing.TestEntityR
 //
 // The dirty flag can be cleared by calling Reset. MarkDirty can be called
 // before running a test to make sure Reset is called for sure between tests.
-func (st *fixtureStack) MarkDirty() error {
+func (st *FixtureStack) MarkDirty() error {
 	if st.dirty {
 		return errors.New("BUG: MarkDirty called for a dirty stack")
 	}
@@ -306,7 +308,7 @@ func (st *fixtureStack) MarkDirty() error {
 
 // top returns the stateful fixture at the top of the stack. If the stack is
 // empty, nil is returned.
-func (st *fixtureStack) top() *statefulFixture {
+func (st *FixtureStack) top() *statefulFixture {
 	if len(st.stack) == 0 {
 		return nil
 	}

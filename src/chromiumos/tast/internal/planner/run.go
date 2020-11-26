@@ -336,7 +336,7 @@ func (p *fixtPlan) run(ctx context.Context, out OutputStream, dl *downloader) er
 	}
 
 	tree := p.tree.Clone()
-	stack := newFixtureStack(p.pcfg, out)
+	stack := NewFixtureStack(p.pcfg, out)
 	return runFixtTree(ctx, tree, stack, p.pcfg, out, dl)
 }
 
@@ -361,7 +361,7 @@ func (p *fixtPlan) testsToRun() []*testing.TestInstance {
 
 // runFixtTree runs tests in a fixture tree.
 // tree is modified as tests are run.
-func runFixtTree(ctx context.Context, tree *fixtTree, stack *fixtureStack, pcfg *Config, out OutputStream, dl *downloader) error {
+func runFixtTree(ctx context.Context, tree *fixtTree, stack *FixtureStack, pcfg *Config, out OutputStream, dl *downloader) error {
 	// Note about invariants:
 	// On entering this function, if the fixture stack is green, it is clean.
 	// Thus we don't need to reset fixtures before running a next test.
@@ -453,7 +453,7 @@ func (p *prePlan) run(ctx context.Context, out OutputStream, dl *downloader) err
 
 	// Create an empty fixture stack. Tests using preconditions can't depend on
 	// fixtures.
-	stack := newFixtureStack(p.pcfg, out)
+	stack := NewFixtureStack(p.pcfg, out)
 
 	for i, t := range p.tests {
 		ti := t.EntityInfo()
@@ -523,7 +523,7 @@ type preConfig struct {
 //
 // runTest runs a test on a goroutine. If a test does not finish after reaching
 // its timeout, this function returns with an error without waiting for its finish.
-func runTest(ctx context.Context, t *testing.TestInstance, tout *entityOutputStream, pcfg *Config, precfg *preConfig, stack *fixtureStack, dl *downloader) error {
+func runTest(ctx context.Context, t *testing.TestInstance, tout *entityOutputStream, pcfg *Config, precfg *preConfig, stack *FixtureStack, dl *downloader) error {
 	fixtCtx := ctx
 
 	// Attach a log that the test can use to report timing events.
@@ -669,7 +669,7 @@ func createEntityOutDir(baseDir, name string) (string, error) {
 //
 // The time allotted to the test is generally the sum of t.Timeout and t.ExitTimeout, but
 // additional time may be allotted for preconditions and pre/post-test hooks.
-func runTestWithRoot(ctx context.Context, t *testing.TestInstance, root *testing.TestEntityRoot, pcfg *Config, stack *fixtureStack, precfg *preConfig) error {
+func runTestWithRoot(ctx context.Context, t *testing.TestInstance, root *testing.TestEntityRoot, pcfg *Config, stack *FixtureStack, precfg *preConfig) error {
 	// codeName is included in error messages if the user code ignores the timeout.
 	// For compatibility, the same fixed name is used for tests, preconditions and test hooks.
 	const codeName = "Test"

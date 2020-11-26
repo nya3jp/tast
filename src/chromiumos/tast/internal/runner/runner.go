@@ -72,7 +72,7 @@ func Run(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, args *Args,
 		if err != nil {
 			return command.WriteError(stderr, err)
 		}
-		if err := testing.WriteTestsAsJSON(stdout, tests); err != nil {
+		if err := testing.WriteEntitiesAsJSON(stdout, tests); err != nil {
 			return command.WriteError(stderr, err)
 		}
 		return statusSuccess

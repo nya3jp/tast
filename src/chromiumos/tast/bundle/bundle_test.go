@@ -667,7 +667,7 @@ func TestRunList(t *gotesting.T) {
 	}
 
 	var exp bytes.Buffer
-	if err := testing.WriteTestsAsJSON(&exp, infos); err != nil {
+	if err := testing.WriteEntitiesAsJSON(&exp, infos); err != nil {
 		t.Fatal(err)
 	}
 

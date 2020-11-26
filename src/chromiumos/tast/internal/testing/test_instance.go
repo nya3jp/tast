@@ -533,9 +533,9 @@ func (t *TestInstance) EntityInfo() *EntityInfo {
 	}
 }
 
-// WriteTestsAsJSON marshals ts to JSON and writes the resulting data to w.
-func WriteTestsAsJSON(w io.Writer, ts []*EntityInfo) error {
-	b, err := json.Marshal(ts)
+// WriteEntitiesAsJSON marshals es to JSON and writes the resulting data to w.
+func WriteEntitiesAsJSON(w io.Writer, es []*EntityInfo) error {
+	b, err := json.Marshal(es)
 	if err != nil {
 		return err
 	}

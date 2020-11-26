@@ -6,6 +6,8 @@ package testing
 
 import (
 	"context"
+	"os"
+	"path/filepath"
 	"regexp"
 	"time"
 
@@ -82,6 +84,8 @@ func (f *Fixture) EntityInfo() *EntityInfo {
 		ServiceDeps: append([]string(nil), f.ServiceDeps...),
 		Fixture:     f.Parent,
 		Type:        EntityFixture,
+
+		Bundle: filepath.Base(os.Args[0]),
 	}
 }
 

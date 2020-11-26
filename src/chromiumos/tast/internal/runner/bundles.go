@@ -109,12 +109,23 @@ func getTests(args *Args, bundles []string) (tests []*testing.EntityWithRunnabil
 		}()
 	}
 
+<<<<<<< HEAD
 	// Read results into a map from bundle to that bundle's tests.
 	bundleTests := make(map[string][]*testing.EntityWithRunnabilityInfo)
+||||||| parent of 172a3ba9 (runner: set bundle path on listing tests)
+	// Read results into a map from bundle to that bundle's tests.
+	bundleTests := make(map[string][]*testing.EntityInfo)
+=======
+	// Read results into a map from bundle to that bundle's tests, setting the bundle path.
+	bundleTests := make(map[string][]*testing.EntityInfo)
+>>>>>>> 172a3ba9 (runner: set bundle path on listing tests)
 	for i := 0; i < len(bundles); i++ {
 		toe := <-ch
 		if toe.err != nil {
 			return nil, nil, toe.err
+		}
+		for _, t := range toe.tests {
+			t.Bundle = toe.bundle
 		}
 		if len(toe.tests) > 0 {
 			bundleTests[toe.bundle] = toe.tests

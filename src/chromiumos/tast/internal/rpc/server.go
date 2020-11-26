@@ -50,7 +50,7 @@ func RunServer(r io.Reader, w io.Writer, svcs []*testing.Service) error {
 		svc.Register(srv, testing.NewServiceState(ctx, testing.NewServiceRoot(svc, vars)))
 	}
 
-	if err := srv.Serve(newPipeListener(r, w)); err != nil && err != io.EOF {
+	if err := srv.Serve(NewPipeListener(r, w)); err != nil && err != io.EOF {
 		return err
 	}
 	return nil

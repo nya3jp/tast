@@ -65,7 +65,7 @@ func run(ctx context.Context, clArgs []string, stdin io.Reader, stdout, stderr i
 		for _, test := range tests {
 			infos = append(infos, test.EntityInfo())
 		}
-		if err := testing.WriteTestsAsJSON(stdout, infos); err != nil {
+		if err := testing.WriteEntitiesAsJSON(stdout, infos); err != nil {
 			return command.WriteError(stderr, err)
 		}
 		return statusSuccess

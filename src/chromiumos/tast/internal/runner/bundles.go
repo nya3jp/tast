@@ -73,9 +73,9 @@ func getBundles(glob string) ([]string, *command.StatusError) {
 	return bundles, nil
 }
 
-type testsOrError struct {
+type entitiesOrError struct {
 	bundle string
-	tests  []*testing.EntityInfo
+	es     []*testing.EntityInfo
 	err    *command.StatusError
 }
 
@@ -91,22 +91,22 @@ func getTests(args *Args, bundles []string) (tests []*testing.EntityInfo,
 	}
 
 	// Run all bundles in parallel.
-	ch := make(chan testsOrError, len(bundles))
+	ch := make(chan entitiesOrError, len(bundles))
 	for _, b := range bundles {
 		bundle := b
 		go func() {
 			out := bytes.Buffer{}
 			if err := runBundle(bundle, bundleArgs, &out); err != nil {
-				ch <- testsOrError{bundle, nil, err}
+				ch <- entitiesOrError{bundle, nil, err}
 				return
 			}
 			ts := make([]*testing.EntityInfo, 0)
 			if err := json.Unmarshal(out.Bytes(), &ts); err != nil {
-				ch <- testsOrError{bundle, nil,
+				ch <- entitiesOrError{bundle, nil,
 					command.NewStatusErrorf(statusBundleFailed, "bundle %v gave bad output: %v", bundle, err)}
 				return
 			}
-			ch <- testsOrError{bundle, ts, nil}
+			ch <- entitiesOrError{bundle, ts, nil}
 		}()
 	}
 
@@ -117,11 +117,11 @@ func getTests(args *Args, bundles []string) (tests []*testing.EntityInfo,
 		if toe.err != nil {
 			return nil, nil, toe.err
 		}
-		for _, t := range toe.tests {
+		for _, t := range toe.es {
 			t.Bundle = toe.bundle
 		}
-		if len(toe.tests) > 0 {
-			bundleTests[toe.bundle] = toe.tests
+		if len(toe.es) > 0 {
+			bundleTests[toe.bundle] = toe.es
 		}
 	}
 
@@ -134,6 +134,50 @@ func getTests(args *Args, bundles []string) (tests []*testing.EntityInfo,
 		tests = append(tests, bundleTests[b]...)
 	}
 	return tests, bundlesWithTests, nil
+}
+
+// getFixtures returns mapping from bundle paths to fixtures.
+func getFixtures(bundleGlob string) (map[string][]*testing.EntityInfo, *command.StatusError) {
+	bundles, err := getBundles(bundleGlob)
+	if err != nil {
+		return nil, err
+	}
+
+	bundleArgs := &bundle.Args{
+		Mode: bundle.ListFixturesMode,
+	}
+	// Run all bundles in parallel.
+	ch := make(chan *entitiesOrError, len(bundles))
+	for _, bundle := range bundles {
+		bundle := bundle
+		go func() {
+			out := bytes.Buffer{}
+			if err := runBundle(bundle, bundleArgs, &out); err != nil {
+				ch <- &entitiesOrError{bundle, nil, err}
+				return
+			}
+			b := out.Bytes()
+			fs := make([]*testing.EntityInfo, 0)
+			if err := json.Unmarshal(b, &fs); err != nil {
+				ch <- &entitiesOrError{bundle, nil,
+					command.NewStatusErrorf(statusBundleFailed, "bundle %v gave bad output: %v", bundle, err)}
+				return
+			}
+			ch <- &entitiesOrError{bundle, fs, nil}
+		}()
+	}
+
+	bundleFixts := make(map[string][]*testing.EntityInfo)
+	for i := 0; i < len(bundles); i++ {
+		foe := <-ch
+		if foe.err != nil {
+			return nil, foe.err
+		}
+		if len(foe.es) > 0 {
+			bundleFixts[foe.bundle] = foe.es
+		}
+	}
+	return bundleFixts, nil
 }
 
 // startBundleCmd creates and returns a new command running the test bundle at path using args.

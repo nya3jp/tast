@@ -5,6 +5,8 @@
 package testing
 
 import (
+	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -27,6 +29,7 @@ func TestFixtureEntityInfo(t *testing.T) {
 		ServiceDeps: []string{"chrome.Service"},
 		Fixture:     "system.Booted",
 		Type:        EntityFixture,
+		Bundle:      filepath.Base(os.Args[0]),
 	}
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("EntityInfo(%#v) mismatch (-got +want):\n%s", fixt, diff)

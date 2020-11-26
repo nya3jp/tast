@@ -184,7 +184,7 @@ type ListFixturesArgs struct {
 // ListFixturesResult holds the result of a ListFixturesMode command.
 type ListFixturesResult struct {
 	// Fixtures maps bundle path to the fixtures it contains.
-	Fixtures map[string][]*testing.FixtureInfo `json:"fixtures,omitempty"`
+	Fixtures map[string][]*testing.EntityInfo `json:"fixtures,omitempty"`
 }
 
 // GetSysInfoStateResult holds the result of a GetSysInfoStateMode command.

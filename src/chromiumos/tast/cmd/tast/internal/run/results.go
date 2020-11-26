@@ -31,6 +31,7 @@ const (
 	systemLogsDir           = "system_logs"            // dir containing DUT's system logs
 	crashesDir              = "crashes"                // dir containing DUT's crashes
 	testLogsDir             = "tests"                  // dir containing dirs with details about individual tests
+	fixtureLogsDir          = "fixtures"               // dir containins dirs with details about individual fixtures
 
 	testLogFilename         = "log.txt"      // file in testLogsDir/<test> containing test-specific log messages
 	testOutputTimeFmt       = "15:04:05.000" // format for timestamps attached to test output
@@ -286,7 +287,11 @@ func (r *resultsHandler) handleTestStart(ctx context.Context, msg *control.Entit
 	}
 	ctx, r.stage = timing.Start(ctx, msg.Info.Name)
 
-	finalOutDir := filepath.Join(r.cfg.ResDir, testLogsDir, msg.Info.Name)
+	relDir := testLogsDir
+	if msg.Info.Type == testing.EntityFixture {
+		relDir = fixtureLogsDir
+	}
+	finalOutDir := filepath.Join(r.cfg.ResDir, relDir, msg.Info.Name)
 
 	// Add a number suffix to the output directory name in case of conflict.
 	seenCnt := r.seenTimes[msg.Info.Name]
@@ -309,22 +314,22 @@ func (r *resultsHandler) handleTestStart(ctx context.Context, msg *control.Entit
 	// TODO(crbug.com/1135078): Consider reporting fixture results.
 	if state.result.Type == testing.EntityTest {
 		r.results = append(r.results, &state.result)
+
+		// Write a partial EntityResult object to record that we started the test.
+		if err := r.streamWriter.write(&state.result, false); err != nil {
+			return err
+		}
 	}
 
-	// Write a partial EntityResult object to record that we started the test.
-	var err error
-	if err = r.streamWriter.write(&state.result, false); err != nil {
+	if err := os.MkdirAll(state.result.OutDir, 0755); err != nil {
 		return err
 	}
-
-	if err = os.MkdirAll(state.result.OutDir, 0755); err != nil {
+	f, err := os.Create(filepath.Join(state.result.OutDir, testLogFilename))
+	if err != nil {
 		return err
 	}
-	if state.logFile, err = os.Create(
-		filepath.Join(state.result.OutDir, testLogFilename)); err != nil {
-		return err
-	}
-	if err = r.cfg.Logger.AddWriter(state.logFile, log.LstdFlags); err != nil {
+	state.logFile = f
+	if err := r.cfg.Logger.AddWriter(state.logFile, log.LstdFlags); err != nil {
 		return err
 	}
 
@@ -390,8 +395,10 @@ func (r *resultsHandler) handleTestEnd(ctx context.Context, msg *control.EntityE
 	state.result.End = msg.Time
 
 	// Replace the earlier partial TestResult object with the now-complete version.
-	if err := r.streamWriter.write(&state.result, true); err != nil {
-		return err
+	if state.result.Type == testing.EntityTest {
+		if err := r.streamWriter.write(&state.result, true); err != nil {
+			return err
+		}
 	}
 
 	if err := r.cfg.Logger.RemoveWriter(state.logFile); err != nil {

@@ -151,7 +151,7 @@ func TestTouchscreen(t *testing.T) {
 			&device.Config{
 				Id: &device.ConfigId{
 					PlatformId: &device.PlatformId{
-						Value: "dummy_platform",
+						Value: "fake_platform",
 					},
 				},
 			},
@@ -168,7 +168,7 @@ func TestTouchscreen(t *testing.T) {
 		&device.Config{
 			Id: &device.ConfigId{
 				PlatformId: &device.PlatformId{
-					Value: "dummy_platform",
+					Value: "fake_platform",
 				},
 			},
 			HardwareFeatures: []device.Config_HardwareFeature{
@@ -177,6 +177,60 @@ func TestTouchscreen(t *testing.T) {
 		},
 		nil,
 		true)
+}
+
+func TestChromeEC(t *testing.T) {
+	c := ChromeEC()
+
+	// Verify ECType defined with Boxster.
+	for _, tc := range []struct {
+		ECPresent       configpb.HardwareFeatures_Present
+		ECType          configpb.HardwareFeatures_EmbeddedController_EmbeddedControllerType
+		expectSatisfied bool
+	}{
+		{
+			configpb.HardwareFeatures_PRESENT,
+			configpb.HardwareFeatures_EmbeddedController_EC_CHROME,
+			true,
+		},
+		{
+			configpb.HardwareFeatures_PRESENT_UNKNOWN,
+			configpb.HardwareFeatures_EmbeddedController_EC_CHROME,
+			false,
+		},
+		{
+			configpb.HardwareFeatures_NOT_PRESENT,
+			configpb.HardwareFeatures_EmbeddedController_EC_CHROME,
+			false,
+		},
+		{
+			configpb.HardwareFeatures_PRESENT,
+			configpb.HardwareFeatures_EmbeddedController_EC_TYPE_UNKNOWN,
+			false,
+		},
+		{
+			configpb.HardwareFeatures_PRESENT,
+			configpb.HardwareFeatures_EmbeddedController_EC_WILCO,
+			false,
+		},
+	} {
+		verifyCondition(
+			t, c,
+			&device.Config{
+				Id: &device.ConfigId{
+					PlatformId: &device.PlatformId{
+						Value: "fake_platform",
+					},
+				},
+			},
+			&configpb.HardwareFeatures{
+				EmbeddedController: &configpb.HardwareFeatures_EmbeddedController{
+					Present: tc.ECPresent,
+					EcType:  tc.ECType,
+				},
+			},
+			tc.expectSatisfied)
+	}
 }
 
 func TestFingerprint(t *testing.T) {
@@ -194,7 +248,7 @@ func TestFingerprint(t *testing.T) {
 			&device.Config{
 				Id: &device.ConfigId{
 					PlatformId: &device.PlatformId{
-						Value: "dummy_platform",
+						Value: "fake_platform",
 					},
 				},
 			},
@@ -211,7 +265,7 @@ func TestFingerprint(t *testing.T) {
 		&device.Config{
 			Id: &device.ConfigId{
 				PlatformId: &device.PlatformId{
-					Value: "dummy_platform",
+					Value: "fake_platform",
 				},
 			},
 			HardwareFeatures: []device.Config_HardwareFeature{
@@ -237,7 +291,7 @@ func TestInternalDisplay(t *testing.T) {
 			&device.Config{
 				Id: &device.ConfigId{
 					PlatformId: &device.PlatformId{
-						Value: "dummy_platform",
+						Value: "fake_platform",
 					},
 				},
 			},
@@ -254,7 +308,7 @@ func TestInternalDisplay(t *testing.T) {
 		&device.Config{
 			Id: &device.ConfigId{
 				PlatformId: &device.PlatformId{
-					Value: "dummy_platform",
+					Value: "fake_platform",
 				},
 			},
 			HardwareFeatures: []device.Config_HardwareFeature{
@@ -278,6 +332,7 @@ func TestCEL(t *testing.T) {
 		{D(Fingerprint()), "dut.hardware_features.fingerprint.location != api.HardwareFeatures.Fingerprint.Location.NOT_PRESENT"},
 		{D(InternalDisplay()), "dut.hardware_features.screen.panel_properties.diagonal_milliinch != 0"},
 		{D(Wifi80211ac()), "dut.hardware_features.wifi.supported_wlan_protocols.exists(x, x == api.Component.Wifi.WLANProtocol.IEEE_802_11_AC)"},
+		{D(Wifi80211ax()), "dut.hardware_features.wifi.supported_wlan_protocols.exists(x, x == api.Component.Wifi.WLANProtocol.IEEE_802_11_AX)"},
 		{D(WifiMACAddrRandomize()), "not_implemented"},
 		{D(WifiNotMarvell()), "not_implemented"},
 

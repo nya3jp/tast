@@ -26,8 +26,8 @@ import (
 	"chromiumos/tast/internal/control"
 	"chromiumos/tast/internal/devserver/devservertest"
 	"chromiumos/tast/internal/extdata"
-	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/sshtest"
+	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/testutil"
 )
@@ -115,10 +115,10 @@ func TestRunTests(t *gotesting.T) {
 	cfg := runConfig{
 		runHook: func(ctx context.Context) (func(context.Context) error, error) {
 			preRunCalls++
-			logging.ContextLog(ctx, preRunMsg)
+			testcontext.Log(ctx, preRunMsg)
 			return func(ctx context.Context) error {
 				postRunCalls++
-				logging.ContextLog(ctx, postRunMsg)
+				testcontext.Log(ctx, postRunMsg)
 				return nil
 			}, nil
 		},
@@ -482,6 +482,7 @@ func TestRunRemoteData(t *gotesting.T) {
 			KeyFile:        td.UserKeyFile,
 			RunFlags:       []string{"-flag1", "-flag2"},
 			LocalBundleDir: "/mock/local/bundles",
+			TestVars:       map[string]string{"var1": "value1"},
 		},
 	}
 	stdin := newBufferWithArgs(t, &args)
@@ -499,9 +500,7 @@ func TestRunRemoteData(t *gotesting.T) {
 	if !reflect.DeepEqual(meta, expMeta) {
 		t.Errorf("Test got Meta %+v; want %+v", *meta, *expMeta)
 	}
-	expHint := &testing.RPCHint{
-		LocalBundleDir: args.RunTests.LocalBundleDir,
-	}
+	expHint := testing.NewRPCHint(args.RunTests.LocalBundleDir, args.RunTests.TestVars)
 	if !reflect.DeepEqual(hint, expHint) {
 		t.Errorf("Test got RPCHint %+v; want %+v", *hint, *expHint)
 	}

@@ -228,8 +228,9 @@ func newDeviceConfigAndHardwareFeatures() (dc *device.Config, retFeatures *confi
 		Cpu: info.cpuArch,
 	}
 	features := &configpb.HardwareFeatures{
-		Screen:      &configpb.HardwareFeatures_Screen{},
-		Fingerprint: &configpb.HardwareFeatures_Fingerprint{},
+		Screen:             &configpb.HardwareFeatures_Screen{},
+		Fingerprint:        &configpb.HardwareFeatures_Fingerprint{},
+		EmbeddedController: &configpb.HardwareFeatures_EmbeddedController{},
 	}
 
 	hasInternalDisplay := func() bool {
@@ -291,6 +292,13 @@ func newDeviceConfigAndHardwareFeatures() (dc *device.Config, retFeatures *confi
 	if hasFingerprint {
 		features.Fingerprint.Location = configpb.HardwareFeatures_Fingerprint_LOCATION_UNKNOWN
 		config.HardwareFeatures = append(config.HardwareFeatures, device.Config_HARDWARE_FEATURE_FINGERPRINT)
+	}
+
+	// Device has ChromeEC if /dev/cros_ec exists.
+	// TODO(b/173741162): Pull EmbeddedController data directly from Boxster.
+	if _, err := os.Stat("/dev/cros_ec"); err == nil {
+		features.EmbeddedController.Present = configpb.HardwareFeatures_PRESENT
+		features.EmbeddedController.EcType = configpb.HardwareFeatures_EmbeddedController_EC_CHROME
 	}
 
 	func() {

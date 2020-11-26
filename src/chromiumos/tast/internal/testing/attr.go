@@ -159,6 +159,11 @@ Tests in this group are not used for build verification.
 		},
 	},
 	{
+		Name:     "camera-libcamera",
+		Contacts: []string{"chromeos-camera-eng@google.com"},
+		Desc:     `A group of camera tests for libcamera build.`,
+	},
+	{
 		Name:     "enrollment",
 		Contacts: []string{"vsavu@google.com", "enterprise-policy-support-rotation@google.com"},
 		Desc:     `A group of tests performing enrollment and will clobber the stateful partition.`,
@@ -175,12 +180,16 @@ Tests in this group are not used for build verification.
 	},
 	{
 		Name:     "firmware",
-		Contacts: []string{"chromeos-engprod@google.com"},
+		Contacts: []string{"chromeos-engprod@google.com", "cros-fw-engprod@google.com"},
 		Desc:     `A group of tests for firmware (AP, EC, GSC)`,
 		Subattrs: []*attr{
 			{
 				Name: "firmware_cr50",
 				Desc: `Indicates that this is a test of the Google Security Chip firmware (Cr50).`,
+			},
+			{
+				Name: "firmware_smoke",
+				Desc: `A group of tests that exercise the basic firmware testing libraries.`,
 			},
 		},
 	},
@@ -255,6 +264,21 @@ third_party/autotest/files/server/site_tests/tast/control.runtime-probe
 			{
 				Name: "wificell_unstable",
 				Desc: `Indicates that this test is yet to be verified as stable.`,
+			},
+		},
+	},
+	{
+		Name:     "wificell_roam",
+		Contacts: []string{"chromeos-kernel-wifi@google.com"},
+		Desc:     `The group of WiFi roaming tests to be run with Grover fixture.`,
+		Subattrs: []*attr{
+			{
+				Name: "wificell_roam_func",
+				Desc: `Tests basic WiFi roaming functionalities using Grover fixture.`,
+			},
+			{
+				Name: "wificell_roam_perf",
+				Desc: `Measures WiFi performance using Grover fixture.`,
 			},
 		},
 	},

@@ -20,10 +20,10 @@ import (
 	"chromiumos/tast/dut"
 	"chromiumos/tast/internal/command"
 	"chromiumos/tast/internal/control"
-	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/planner"
+	"chromiumos/tast/internal/rpc"
+	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/testing"
-	"chromiumos/tast/rpc"
 	"chromiumos/tast/timing"
 )
 
@@ -131,6 +131,9 @@ type runConfig struct {
 	// will not be prepared and the test function will not run.
 	// The returned closure is executed after a test if not nil.
 	testHook func(context.Context, *testing.TestHookState) func(context.Context, *testing.TestHookState)
+	// beforeReboot is run before every reboot if non-nil.
+	// The function must not call DUT.Reboot() or it will cause infinite recursion.
+	beforeReboot func(context.Context, *dut.DUT) error
 	// defaultTestTimeout contains the default maximum time allotted to each test.
 	// It is only used if testing.Test.Timeout is unset.
 	defaultTestTimeout time.Duration
@@ -204,7 +207,7 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 	defer hbw.Stop()
 
 	ew := newEventWriter(mw)
-	ctx = logging.NewContext(ctx, func(msg string) {
+	ctx = testcontext.WithLogger(ctx, func(msg string) {
 		ew.RunLog(msg)
 	})
 
@@ -243,13 +246,13 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 
 	var rd *testing.RemoteData
 	if bt == remoteBundle {
-		logging.ContextLog(ctx, "Connecting to DUT")
-		dt, err := connectToTarget(ctx, args)
+		testcontext.Log(ctx, "Connecting to DUT")
+		dt, err := connectToTarget(ctx, args, cfg.beforeReboot)
 		if err != nil {
 			return command.NewStatusErrorf(statusError, "failed to connect to DUT: %v", err)
 		}
 		defer func() {
-			logging.ContextLog(ctx, "Disconnecting from DUT")
+			testcontext.Log(ctx, "Disconnecting from DUT")
 			// It is okay to ignore the error since we've finished testing at this point.
 			dt.Close(ctx)
 		}()
@@ -260,10 +263,8 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 				Target:   args.RunTests.Target,
 				RunFlags: args.RunTests.RunFlags,
 			},
-			RPCHint: &testing.RPCHint{
-				LocalBundleDir: args.RunTests.LocalBundleDir,
-			},
-			DUT: dt,
+			RPCHint: testing.NewRPCHint(args.RunTests.LocalBundleDir, args.RunTests.TestVars),
+			DUT:     dt,
 		}
 	}
 
@@ -295,12 +296,12 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 }
 
 // connectToTarget connects to the target DUT and returns its connection.
-func connectToTarget(ctx context.Context, args *Args) (_ *dut.DUT, retErr error) {
+func connectToTarget(ctx context.Context, args *Args, beforeReboot func(context.Context, *dut.DUT) error) (_ *dut.DUT, retErr error) {
 	if args.RunTests.Target == "" {
 		return nil, errors.New("target not supplied")
 	}
 
-	dt, err := dut.New(args.RunTests.Target, args.RunTests.KeyFile, args.RunTests.KeyDir)
+	dt, err := dut.New(args.RunTests.Target, args.RunTests.KeyFile, args.RunTests.KeyDir, beforeReboot)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create connection: %v", err)
 	}

@@ -24,7 +24,6 @@ import (
 	"chromiumos/tast/internal/dep"
 	"chromiumos/tast/internal/devserver/devservertest"
 	"chromiumos/tast/internal/extdata"
-	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/testutil"
@@ -775,14 +774,14 @@ func TestRunFixtureResetFailure(t *gotesting.T) {
 	fixt1 := &testing.Fixture{
 		Name: "fixt1",
 		Impl: newFakeFixture(withReset(func(ctx context.Context) error {
-			logging.ContextLog(ctx, "Reset 1")
+			testcontext.Log(ctx, "Reset 1")
 			return errors.New("failure")
 		})),
 	}
 	fixt2 := &testing.Fixture{
 		Name: "fixt2",
 		Impl: newFakeFixture(withReset(func(ctx context.Context) error {
-			logging.ContextLog(ctx, "Reset 2")
+			testcontext.Log(ctx, "Reset 2")
 			return nil
 		})),
 		Parent: "fixt1",
@@ -853,14 +852,14 @@ func TestRunFixtureMinimumReset(t *gotesting.T) {
 	fixt1 := &testing.Fixture{
 		Name: "fixt1",
 		Impl: newFakeFixture(withReset(func(ctx context.Context) error {
-			logging.ContextLog(ctx, "Reset 1")
+			testcontext.Log(ctx, "Reset 1")
 			return nil
 		})),
 	}
 	fixt2 := &testing.Fixture{
 		Name: "fixt2",
 		Impl: newFakeFixture(withReset(func(ctx context.Context) error {
-			logging.ContextLog(ctx, "Reset 2")
+			testcontext.Log(ctx, "Reset 2")
 			return nil
 		})),
 		Parent: "fixt1",
@@ -868,7 +867,7 @@ func TestRunFixtureMinimumReset(t *gotesting.T) {
 	fixt3 := &testing.Fixture{
 		Name: "fixt3",
 		Impl: newFakeFixture(withReset(func(ctx context.Context) error {
-			logging.ContextLog(ctx, "Reset 3")
+			testcontext.Log(ctx, "Reset 3")
 			return nil
 		})),
 		Parent: "fixt1",
@@ -970,6 +969,59 @@ func TestRunFixtureMinimumReset(t *gotesting.T) {
 	}
 }
 
+func TestRunFixtureMissing(t *gotesting.T) {
+	fixt1 := &testing.Fixture{
+		Name:   "fixt1",
+		Impl:   newFakeFixture(),
+		Parent: "fixt0", // no such fixture
+	}
+	fixt2 := &testing.Fixture{
+		Name:   "fixt2",
+		Impl:   newFakeFixture(),
+		Parent: "fixt1",
+	}
+	cfg := &Config{
+		Fixtures: map[string]*testing.Fixture{
+			fixt1.Name: fixt1,
+			fixt2.Name: fixt2,
+		},
+	}
+
+	tests := []*testing.TestInstance{{
+		Name:    "pkg.Test0",
+		Func:    func(ctx context.Context, s *testing.State) {},
+		Timeout: time.Minute,
+	}, {
+		Name:    "pkg.Test1",
+		Fixture: "fixt1",
+		Func:    func(ctx context.Context, s *testing.State) {},
+		Timeout: time.Minute,
+	}, {
+		Name:    "pkg.Test2",
+		Fixture: "fixt2",
+		Func:    func(ctx context.Context, s *testing.State) {},
+		Timeout: time.Minute,
+	}}
+
+	msgs := runTestsAndReadAll(t, tests, cfg)
+
+	want := []control.Msg{
+		// Orphan tests are reported first, sorted by name.
+		&control.EntityStart{Info: *tests[1].EntityInfo()},
+		&control.EntityError{Name: tests[1].Name, Error: testing.Error{Reason: "Fixture \"fixt0\" not found"}},
+		&control.EntityEnd{Name: tests[1].Name},
+		&control.EntityStart{Info: *tests[2].EntityInfo()},
+		&control.EntityError{Name: tests[2].Name, Error: testing.Error{Reason: "Fixture \"fixt0\" not found"}},
+		&control.EntityEnd{Name: tests[2].Name},
+		// Valid tests are run.
+		&control.EntityStart{Info: *tests[0].EntityInfo()},
+		&control.EntityEnd{Name: tests[0].Name},
+	}
+	if diff := cmp.Diff(msgs, want); diff != "" {
+		t.Error("Output mismatch (-got +want):\n", diff)
+	}
+}
+
 func TestRunPrecondition(t *gotesting.T) {
 	type data struct{}
 	preData := &data{}
@@ -1022,7 +1074,7 @@ func TestRunPreconditionContext(t *gotesting.T) {
 			}
 		}
 
-		logging.ContextLog(pctx, "Log via PreCtx")
+		testcontext.Log(pctx, "Log via PreCtx")
 
 		if _, ok := testcontext.SoftwareDeps(pctx); !ok {
 			t.Error("ContextSoftwareDeps unavailable")
@@ -1171,8 +1223,8 @@ func TestAttachStateToContext(t *gotesting.T) {
 	tests := []*testing.TestInstance{{
 		Name: "pkg.Test",
 		Func: func(ctx context.Context, s *testing.State) {
-			logging.ContextLog(ctx, "msg ", 1)
-			logging.ContextLogf(ctx, "msg %d", 2)
+			testcontext.Log(ctx, "msg ", 1)
+			testcontext.Logf(ctx, "msg %d", 2)
 		},
 		Timeout: time.Minute,
 	}}

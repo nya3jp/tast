@@ -326,11 +326,11 @@ statement to keep the two function calls close together (see the
 [Startup and shutdown](#startup-and-shutdown) section for detail):
 ```go
 a := pkga.NewA(ctx, ...)
-defer func() {
+defer func(ctx context.Context) {
   if err := a.CleanUp(ctx); err != nil {
     // ...
   }
-}
+}(ctx)
 ```
 Before creating `A`, make sure that the clean-up function has sufficient time to
 run:
@@ -339,11 +339,11 @@ ctxForCleanUpA := ctx
 ctx, cancel := ctxutil.Shorten(ctx, pkga.TimeForCleanUpA)
 defer cancel()
 a := pkga.NewA(ctx, ...)
-defer func() {
-  if err := a.CleanUp(ctxForCleanUpA); err != nil {
+defer func(ctx context.Context) {
+  if err := a.CleanUp(ctx); err != nil {
     // ...
   }
-}()
+}(ctxForCleanUpA)
 ```
 
 It [ctxutil.Shorten]s `ctx` before calling `pkga.NewA` to ensure that after
@@ -968,7 +968,16 @@ An example external link file to reference a build artifact is below:
 
 To upload a file to Google Cloud Storage you can use the [`gsutil cp`] command.
 
-[external link format]: https://chromium.googlesource.com/chromiumos/platform/tast/+/master/src/chromiumos/tast/internal/runner/external.go
+To list all uploaded versions of the file, use the `gsutil ls -a` command.
+
+External files are cached in two locations: /usr/local/share/tast/data_pushed on
+the DUT and /tmp/tast/devserver on the host machine. To ensure the reproducibility
+of tests and prevent stale cache data from being served, cloud storage files should
+never be overwritten once they have been used in a CQ run or dry-run. If
+overwriting a cloud storage file, remember to manually clear the cache folders
+before running Tast tests to prevent stale files from being served.
+
+[external link format]: https://chromium.googlesource.com/chromiumos/platform/tast/+/master/src/chromiumos/tast/internal/extdata/extdata.go
 [example.DataFiles]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/master/src/chromiumos/tast/local/bundles/cros/example/data_files.go
 [build artifacts of Chrome OS]: https://goto.google.com/cros-build/google-storage
 [`gsutil cp`]: https://cloud.google.com/storage/docs/gsutil/commands/cp

@@ -64,7 +64,6 @@ import (
 	"chromiumos/tast/dut"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/errors/stack"
-	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/timing"
 )
@@ -132,15 +131,35 @@ func (m *Meta) clone() *Meta {
 
 // RPCHint contains information needed to establish gRPC connections.
 type RPCHint struct {
-	// LocalBundleDir is the directory on the DUT where local test bundle executables are located.
+	// localBundleDir is the directory on the DUT where local test bundle executables are located.
 	// This path is used by remote entities to invoke gRPC services in local test bundles.
-	LocalBundleDir string
+	localBundleDir string
+	// testVars holds all test variables and will pass to local bundle services.
+	testVars map[string]string
+}
+
+// NewRPCHint create a new RPCHint struct.
+func NewRPCHint(localBundleDir string, testVars map[string]string) *RPCHint {
+	return &RPCHint{
+		localBundleDir: localBundleDir,
+		testVars:       testVars,
+	}
 }
 
 // clone returns a deep copy of h.
 func (h *RPCHint) clone() *RPCHint {
 	hc := *h
 	return &hc
+}
+
+// ExtractLocalBundleDir extracts localBundleDir from RPCHint.
+func ExtractLocalBundleDir(h *RPCHint) string {
+	return h.localBundleDir
+}
+
+// ExtractTestVars extracts test vars from RPCHint.
+func ExtractTestVars(h *RPCHint) map[string]string {
+	return h.testVars
 }
 
 // OutputStream is an interface to report streamed outputs of an entity.
@@ -318,7 +337,7 @@ func (r *TestEntityRoot) SetPreValue(val interface{}) {
 
 // NewContext returns a context.Context to be used for the entity.
 func NewContext(ctx context.Context, ec *testcontext.CurrentEntity, log func(msg string)) context.Context {
-	ctx = logging.NewContext(ctx, log)
+	ctx = testcontext.WithLogger(ctx, log)
 	ctx = testcontext.WithCurrentEntity(ctx, ec)
 	return ctx
 }

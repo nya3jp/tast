@@ -22,7 +22,7 @@ import (
 	"time"
 
 	"chromiumos/tast/internal/devserver"
-	"chromiumos/tast/internal/logging"
+	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/testing"
 )
 
@@ -164,7 +164,7 @@ func prepareDownloads(ctx context.Context, dataDir, artifactsURL string, tests [
 		purgeableSet[destPath] = struct{}{}
 		return nil
 	}); err != nil && !os.IsNotExist(err) {
-		logging.ContextLog(ctx, "Failed to walk data directory: ", err)
+		testcontext.Log(ctx, "Failed to walk data directory: ", err)
 	}
 
 	// Process tests.
@@ -176,7 +176,7 @@ func prepareDownloads(ctx context.Context, dataDir, artifactsURL string, tests [
 
 			reportErr := func(format string, args ...interface{}) {
 				msg := fmt.Sprintf("failed to prepare downloading %s: %s", name, fmt.Sprintf(format, args...))
-				logging.ContextLog(ctx, strings.ToUpper(msg[:1])+msg[1:])
+				testcontext.Log(ctx, strings.ToUpper(msg[:1])+msg[1:])
 				ioutil.WriteFile(errorPath, []byte(msg), 0666)
 				hasErr = true
 			}
@@ -264,9 +264,9 @@ func prepareDownloads(ctx context.Context, dataDir, artifactsURL string, tests [
 	}
 	sort.Strings(purgeable)
 
-	logging.ContextLogf(ctx, "Found %d external linked data file(s), need to download %d", len(urlToJob), len(jobs))
+	testcontext.Logf(ctx, "Found %d external linked data file(s), need to download %d", len(urlToJob), len(jobs))
 	if hasErr {
-		logging.ContextLog(ctx, "Encountered some errors on scanning external data link files, but continuing anyway; corresponding tests will fail")
+		testcontext.Log(ctx, "Encountered some errors on scanning external data link files, but continuing anyway; corresponding tests will fail")
 	}
 	return jobs, purgeable
 }
@@ -319,26 +319,26 @@ func runDownloads(ctx context.Context, dataDir string, jobs []*downloadJob, cl d
 		case res := <-resCh:
 			if res.err != nil {
 				msg := fmt.Sprintf("failed to download %s: %v", res.job.link.ComputedURL, res.err)
-				logging.ContextLog(ctx, strings.ToUpper(msg[:1])+msg[1:])
+				testcontext.Log(ctx, strings.ToUpper(msg[:1])+msg[1:])
 				for _, dest := range res.job.dests {
 					ioutil.WriteFile(dest+testing.ExternalErrorSuffix, []byte(msg), 0666)
 				}
 				hasErr = true
 			} else {
 				mbs := float64(res.size) / res.duration.Seconds() / 1024 / 1024
-				logging.ContextLogf(ctx, "Finished downloading %s (%d bytes, %v, %.1fMB/s)",
+				testcontext.Logf(ctx, "Finished downloading %s (%d bytes, %v, %.1fMB/s)",
 					res.job.link.ComputedURL, res.size, res.duration.Round(time.Millisecond), mbs)
 			}
 			finished++
 		case <-time.After(30 * time.Second):
 			// Without this keep-alive message, the tast command may think that the SSH connection was lost.
 			// TODO(nya): Remove this keep-alive logic after 20190701.
-			logging.ContextLog(ctx, "Still downloading...")
+			testcontext.Log(ctx, "Still downloading...")
 		}
 	}
 
 	if hasErr {
-		logging.ContextLog(ctx, "Failed to download some external data files, but continuing anyway; corresponding tests will fail")
+		testcontext.Log(ctx, "Failed to download some external data files, but continuing anyway; corresponding tests will fail")
 	}
 }
 

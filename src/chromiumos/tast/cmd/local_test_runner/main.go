@@ -18,6 +18,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"chromiumos/tast/autocaps"
 	"chromiumos/tast/bundle"
@@ -58,52 +59,58 @@ func main() {
 			"amd64":       "amd64",
 			// ARC USE flags are defined here:
 			// http://cs/chromeos_public/src/third_party/chromiumos-overlay/eclass/arc-build-constants.eclass
-			"android_vm":        `arc && arcvm && !"android-vm-pi"`,
-			"android_vm_r":      `arc && arcvm && "android-vm-rvc"`,
-			"android_p":         `arc && "android-container-pi"`,
-			"arc":               `arc`,
-			"arc_camera1":       `"arc-camera1"`,
-			"arc_camera3":       `"arc-camera3"`,
-			"arm":               `"arm" || "arm64"`,
-			"aslr":              "!asan",                        // ASan instrumentation breaks ASLR
-			"audio_play":        "internal_speaker && !tast_vm", // VMs and some boards don't have a speaker
-			"audio_record":      "internal_mic && !tast_vm",     // VMs don't have a mic
-			"biometrics_daemon": "biod",
-			"borealis_host":     "borealis_host",
-			"breakpad":          "force_breakpad",
+			"android_vm":         `arc && arcvm && !"android-vm-pi"`,
+			"android_vm_r":       `arc && arcvm && "android-vm-rvc"`,
+			"android_p":          `arc && "android-container-pi"`,
+			"arc":                `arc`,
+			"arc32":              `"cheets_user" || "cheets_userdebug"`,
+			"arc64":              `"cheets_user_64" || "cheets_userdebug_64"`,
+			"arc_camera1":        `"arc-camera1"`,
+			"arc_camera3":        `"arc-camera3"`,
+			"arc_launched_32bit": `"arc-launched-32bit-abi"`,
+			"arc_launched_64bit": `"!arc-launched-32bit-abi"`,
+			"arm":                `"arm" || "arm64"`,
+			"aslr":               "!asan",                        // ASan instrumentation breaks ASLR
+			"audio_play":         "internal_speaker && !tast_vm", // VMs and some boards don't have a speaker
+			"audio_record":       "internal_mic && !tast_vm",     // VMs don't have a mic
+			"biometrics_daemon":  "biod",
+			"borealis_host":      "borealis_host",
+			"breakpad":           "force_breakpad",
 			// TODO(b/73436929) Grunt cannot run 720p due to performance issue,
 			// we should remove grunt after hardware encoding supported.
 			// daisy variants' cameras don't support 1280x720.
-			"camera_720p":        "!snow && !skate && !spring && !grunt",
-			"camera_legacy":      `!"arc-camera1" && !"arc-camera3"`,
-			"cert_provision":     "cert_provision",
-			"chrome":             "!chromeless_tty && !rialto",
-			"chrome_internal":    "chrome_internal",
-			"coresched":          "coresched",
-			"crashpad":           "!force_breakpad",
-			"cros_config":        "unibuild",
-			"cros_internal":      "internal",
-			"cros_video_decoder": "!disable_cros_video_decoder",
-			"crosvm_gpu":         `"crosvm-gpu" && "virtio_gpu"`,
-			"crosvm_no_gpu":      `!"crosvm-gpu" || !"virtio_gpu"`,
-			"crossystem":         "!betty && !tast_vm", // VMs don't support few crossystem sub-commands: https://crbug.com/974615
-			"cups":               "cups",
-			"diagnostics":        "diagnostics && !betty && !tast_vm", // VMs do not have hardware to diagnose. https://crbug.com/1126619
-			"display_backlight":  "display_backlight",
-			"dlc":                "dlc && dlc_test",
-			"dptf":               "dptf",
-			"device_crash":       `!("board:samus")`, // Samus devices do not reliably come back after kernel crashes. crbug.com/1045821
-			"dmverity_stable":    `"kernel-3_8" || "kernel-3_10" || "kernel-3_14" || "kernel-3_18" || "kernel-4_4" || "kernel-4_14"`,
-			"dmverity_unstable":  `!("kernel-3_8" || "kernel-3_10" || "kernel-3_14" || "kernel-3_18" || "kernel-4_4" || "kernel-4_14")`,
-			"drivefs":            "drivefs",
-			"drm_atomic":         "drm_atomic",
+			"camera_720p":       "!snow && !skate && !spring && !grunt",
+			"camera_legacy":     `!"arc-camera1" && !"arc-camera3"`,
+			"cert_provision":    "cert_provision",
+			"chrome":            "!chromeless_tty && !rialto",
+			"chrome_internal":   "chrome_internal",
+			"coresched":         "coresched",
+			"cpu_vuln_sysfs":    `!("kernel-3_8" || "kernel-3_10" || "kernel-3_14")`,
+			"crashpad":          "!force_breakpad",
+			"cros_config":       "unibuild",
+			"cros_internal":     "internal",
+			"crosvm_gpu":        `"crosvm-gpu" && "virtio_gpu"`,
+			"crosvm_no_gpu":     `!"crosvm-gpu" || !"virtio_gpu"`,
+			"crossystem":        "!betty && !tast_vm", // VMs don't support few crossystem sub-commands: https://crbug.com/974615
+			"cups":              "cups",
+			"diagnostics":       "diagnostics && !betty && !tast_vm", // VMs do not have hardware to diagnose. https://crbug.com/1126619
+			"display_backlight": "display_backlight",
+			"dlc":               "dlc && dlc_test",
+			"dptf":              "dptf",
+			"device_crash":      `!("board:samus")`, // Samus devices do not reliably come back after kernel crashes. crbug.com/1045821
+			"dmverity_stable":   `"kernel-3_8" || "kernel-3_10" || "kernel-3_14" || "kernel-3_18" || "kernel-4_4" || "kernel-4_14"`,
+			"dmverity_unstable": `!("kernel-3_8" || "kernel-3_10" || "kernel-3_14" || "kernel-3_18" || "kernel-4_4" || "kernel-4_14")`,
+			"drivefs":           "drivefs",
+			"drm_atomic":        "drm_atomic",
 			// asuka, banon, caroline, cave, celes, chell, cyan, edgar, kefka, reks, relm, sentry, terra, ultima, and wizpig have buggy EC firmware and cannot capture crash reports. b/172228823
 			// drallion and sarien have do not support the "crash" EC command. crbug.com/1123716
 			// guado, tidus, rikku, veyron_fievel, and veyron_tiger do not have EC firmware. crbug.com/1123716. TODO(crbug.com/1124554) Use an EC hardware dep for these rather than a software dep.
 			// nocturne only sporadically captures EC panics. crbug.com/1135798
-			"ec_crash":                `!(("board:asuka" || "board:banon" || "board:caroline" || "board:cave" || "board:celes" || "board:chell" || "board:cyan" || "board:edgar" || "board:kefka" || "board:reks" || "board:relm" || "board:sentry" || "board:terra" || "board:ultima" || "board:wizpig") || ("board:drallion" || "board:sarien") || ("board:guado" || "board:tidus" || "board:rikku" || "board:veyron_fievel" || "board:veyron_tiger") || "board:nocturne")`,
+			// TODO(https://crbug.com/1122066): remove guado-cfm and rikku-cfm when they're no longer necessary
+			"ec_crash":                `!(("board:asuka" || "board:banon" || "board:caroline" || "board:cave" || "board:celes" || "board:chell" || "board:cyan" || "board:edgar" || "board:kefka" || "board:reks" || "board:relm" || "board:sentry" || "board:terra" || "board:ultima" || "board:wizpig") || ("board:drallion" || "board:sarien") || ("board:guado" || "board:guado-cfm" || "board:tidus" || "board:rikku" || "board:rikku-cfm" || "board:veyron_fievel" || "board:veyron_tiger") || "board:nocturne")`,
 			"encrypted_reboot_vault":  `!("kernel-3_8" || "kernel-3_10" || "kernel-3_14")`,
-			"firewall":                "!moblab", // Moblab has relaxed iptables rules
+			"endorsement":             "!betty && !tast_vm", // VMs don't have valid endorsement certificate.
+			"firewall":                "!moblab",            // Moblab has relaxed iptables rules
 			"flashrom":                "!betty && !tast_vm",
 			"google_virtual_keyboard": "chrome_internal && internal && !moblab", // doesn't work on Moblab: https://crbug.com/949912
 			"gpu_sandboxing":          "!betty && !tast_vm",                     // no GPU sandboxing on VMs: https://crbug.com/914688
@@ -114,8 +121,7 @@ func main() {
 			"hostap_hwsim":            "wifi_hostap_test",
 			"igt":                     `("video_cards_amdgpu" || "video_cards_intel") && ("kernel-5_4" || "kernel-4_19" || "kernel-4_14")`,
 			"iwlwifi_rescan":          "iwlwifi_rescan",
-			"lacros":                  "!arm", // TODO(crbug.com/1144013): Expand this to include arm as well.
-			"legacy_video_decoder":    "disable_cros_video_decoder",
+			"lacros":                  "!arm && !arm64", // TODO(crbug.com/1144013): Expand this to include arm as well.
 			"lock_core_pattern":       `"kernel-3_10" || "kernel-3_14" || "kernel-3_18"`,
 			// QEMU has implemented memfd_create, but we haven't updated
 			// to a release with the change (https://bugs.launchpad.net/qemu/+bug/1734792).
@@ -147,12 +153,14 @@ func main() {
 			"proprietary_codecs": "chrome_internal || chrome_media",
 			"pstore":             "!betty && !tast_vm", // These boards don't support pstore: https://crbug.com/971899
 			"qemu":               "betty || tast_vm",
+			"racc":               "racc",
 			// weird missing-runner-after-reboot bug: https://crbug.com/909955
 			// TODO(yich): This is a workaround to enable reboot flag on all boards.
 			// We should disable this flag if the weird missing-runner-after-reboot bug still happening.
 			// Or cleanup all reboot dependency in tast-tests.
 			// Notice: The flag would be false when a board didn't have any attributes.
-			"reboot":                 `"*"`,
+			// TODO(crbug.com/1148527): This feature may cause amd64-generic-full builder failed.
+			"reboot":                 "!tast_vm",
 			"screenshot":             "display_backlight && !rk3399", // screenshot command broken on RK3399: https://crbug.com/880597
 			"selinux":                "selinux",
 			"selinux_current":        "selinux && !selinux_experimental",
@@ -168,6 +176,13 @@ func main() {
 			"untrusted_vm":           `"kernel-4_19" || "kernel-5_4"`,
 			"usbguard":               "usbguard",
 			"vaapi":                  "vaapi",
+			// As the direct video decoder is transitioned in there is the need
+			// to run the legacy decoder to make sure it isn't broken and can be
+			// rolled back to if the direct decoder is having problems.  On some
+			// newer platforms there will not be a legacy decoder to run.
+			"video_decoder_direct":           "!disable_cros_video_decoder",
+			"video_decoder_legacy":           "disable_cros_video_decoder",
+			"video_decoder_legacy_supported": `!("board:trogdor")`,
 			// drm_atomic is a necessary but not sufficient condition to support
 			// video_overlays; in practice, they tend to be enabled at the same time.
 			// TODO(mcasas): query in advance for NV12 format DRM Plane support.
@@ -177,15 +192,24 @@ func main() {
 			// But we haven't enable this feature on builders. For now, just disable
 			// vm_host feature for VM builds. The kvm_transition flag indicates the
 			// board may not work with VMs without a cold reboot b/134764918.
-			"vm_host":    "kvm_host && !tast_vm && !kvm_transition",
-			"vp9_sanity": "!rk3399", // RK3399 crashes on playing unsupported VP9 profile: https://crbug.com/971032
-			"vulkan":     "vulkan",
-			"watchdog":   `watchdog`,
+			"vm_host":   "kvm_host && !tast_vm && !kvm_transition",
+			"vp9_smoke": "!rk3399", // RK3399 crashes on playing unsupported VP9 profile: https://crbug.com/971032
+			"vulkan":    "vulkan",
+			"watchdog":  `watchdog`,
 			// nyan_kitty is skipped as its WiFi device is unresolvably flaky (crrev.com/c/944502),
 			// exhibiting very similar symptoms to crbug.com/693724, b/65858242, b/36264732.
 			"wifi":        "!betty && !tast_vm && !nyan_kitty",
 			"wilco":       "wilco",
 			"wired_8021x": "wired_8021x",
+			// TODO(crbug.com/1070299): Remove the below hard-coded devices and use
+			// Intel WiFi dependency when wifi hardware dependencies are implemented.
+			// TODO(crbug.com/1115620): remove "Elm" and "Hana" after unibuild migration
+			// completed. Also, volteer is normally using Intel WiFi (HrP2), but the
+			// devices in the lab are incorrectly equipped with Realtek RTL8822 chips.
+			// This test should skip volteer devices until this is fixed (see b:171754540).
+			// The list of boards with Intel WiFi chips is long, so instead of listing all
+			// the boards that have Intel WiFi chips, skip the ones that don't have it.
+			"intel_wifi_chip": `!("board:bob" || "board:elm" || "board:grunt" || "board:hana" || "board:jacuzzi" || "board:kevin" || "board:kukui" || "board:oak" || "board:scarlet" || "board:trogdor" || "board:volteer" || "board:veyron_fievel" || "board:veyron_mickey" || "board:veyron_tiger")`,
 		},
 		// The autotest-capability package tries to install this to /etc but it's diverted to /usr/local.
 		AutotestCapabilityDir:   autocaps.DefaultCapabilityDir,
@@ -226,25 +250,29 @@ func writeSystemInfo(ctx context.Context, dir string) error {
 	}
 
 	var errs []string
-	cmds := map[string]*exec.Cmd{
-		"upstart_jobs.txt": exec.CommandContext(ctx, "initctl", "list"),
-		"ps.txt":           exec.CommandContext(ctx, "ps", "auxwwf"),
-		"du_stateful.txt":  exec.CommandContext(ctx, "du", "-m", "/mnt/stateful_partition"),
-		"mount.txt":        exec.CommandContext(ctx, "mount"),
-		"hostname.txt":     exec.CommandContext(ctx, "hostname"),
-		"uptime.txt":       exec.CommandContext(ctx, "uptime"),
-		"losetup.txt":      exec.CommandContext(ctx, "losetup"),
-		"df.txt":           exec.CommandContext(ctx, "df", "-mP"),
-		"dmesg.txt":        exec.CommandContext(ctx, "dmesg"),
+	cmds := map[string][]string{
+		"upstart_jobs.txt": {"initctl", "list"},
+		"ps.txt":           {"ps", "auxwwf"},
+		"du_stateful.txt":  {"du", "-m", "/mnt/stateful_partition"},
+		"mount.txt":        {"mount"},
+		"hostname.txt":     {"hostname"},
+		"uptime.txt":       {"uptime"},
+		"losetup.txt":      {"losetup"},
+		"df.txt":           {"df", "-mP"},
+		"dmesg.txt":        {"dmesg"},
 	}
 	if _, err := os.Stat("/proc/bus/pci"); !os.IsNotExist(err) {
-		cmds["lspci.txt"] = exec.CommandContext(ctx, "lspci", "-vvn")
+		cmds["lspci.txt"] = []string{"lspci", "-vvn"}
 	}
 
 	for fn, cmd := range cmds {
+		// Set timeout in case some commands take long time unexpectedly. (crbug.com/1147723)
+		cmdCtx, cancel := context.WithTimeout(ctx, 1*time.Minute)
+		cmd := exec.CommandContext(cmdCtx, cmd[0], cmd[1:len(cmd)]...)
 		if err := runCmd(cmd, fn); err != nil {
 			errs = append(errs, fmt.Sprintf("failed running %q: %v", shutil.EscapeSlice(cmd.Args), err))
 		}
+		cancel()
 	}
 
 	// Also copy crash-related system info (e.g. /etc/lsb-release) to aid in debugging.

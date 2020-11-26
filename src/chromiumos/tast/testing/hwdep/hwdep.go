@@ -183,6 +183,23 @@ func TouchScreen() Condition {
 	}
 }
 
+// ChromeEC returns a hardware dependency condition that is satisfied
+// iff the DUT has a present EC of the "Chrome EC" type.
+func ChromeEC() Condition {
+	return Condition{Satisfied: func(f *dep.HardwareFeatures) error {
+		if f.Features == nil {
+			return errors.New("Did not find hardware features")
+		}
+		ecIsPresent := f.Features.EmbeddedController.Present == configpb.HardwareFeatures_PRESENT
+		ecIsChrome := f.Features.EmbeddedController.EcType == configpb.HardwareFeatures_EmbeddedController_EC_CHROME
+		if ecIsPresent && ecIsChrome {
+			return nil
+		}
+		return errors.New("DUT does not have chrome EC")
+	}, CEL: "dut.hardware_features.embedded_controller.present == api.HardwareFeatures.Present.PRESENT && dut.hardware_features.embedded_controller.ec_type == api.HardwareFeatures.EmbeddedController.EmbeddedControllerType.EC_CHROME",
+	}
+}
+
 // Fingerprint returns a hardware dependency condition that is satisfied
 // iff the DUT has fingerprint sensor.
 func Fingerprint() Condition {
@@ -245,7 +262,9 @@ func Wifi80211ax() Condition {
 	// Note: this is currently an allowlist. We can consider switching this to a
 	// blocklist/skiplist if we start adding too many relevant devices.
 	// TODO(crbug.com/1070299): replace this when we have hwdep for WiFi chips.
-	return Platform("hatch")
+	c := Platform("hatch")
+	c.CEL = "dut.hardware_features.wifi.supported_wlan_protocols.exists(x, x == api.Component.Wifi.WLANProtocol.IEEE_802_11_AX)"
+	return c
 }
 
 // WifiMACAddrRandomize returns a hardware dependency condition that is satisfied

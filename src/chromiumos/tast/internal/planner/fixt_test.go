@@ -15,7 +15,6 @@ import (
 
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/control"
-	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/testutil"
@@ -322,16 +321,14 @@ func TestFixtureStackState(t *gotesting.T) {
 	ctx := context.Background()
 	cfg := &Config{
 		RemoteData: &testing.RemoteData{
-			RPCHint: &testing.RPCHint{
-				LocalBundleDir: localBundleDir,
-			},
+			RPCHint: testing.NewRPCHint(localBundleDir, nil),
 		},
 	}
 	stack := newFixtureStack(cfg, newOutputSink())
 
 	verifyState := func(t *gotesting.T, s *testing.FixtState) {
-		if dir := s.RPCHint().LocalBundleDir; dir != localBundleDir {
-			t.Errorf("RPCHint.LocalBundleDir = %q; want %q", dir, localBundleDir)
+		if dir := testing.ExtractLocalBundleDir(s.RPCHint()); dir != localBundleDir {
+			t.Errorf("localBundleDir of RPCHint = %q; want %q", dir, localBundleDir)
 		}
 	}
 
@@ -497,18 +494,18 @@ func TestFixtureStackOutputGreen(t *gotesting.T) {
 			Name: fmt.Sprintf("fixt%d", id),
 			Impl: newFakeFixture(
 				withSetUp(func(ctx context.Context, s *testing.FixtState) interface{} {
-					logging.ContextLogf(ctx, "SetUp %d via Context", id)
-					logging.ContextLogf(s.FixtContext(), "SetUp %d via Fixture-scoped Context", id)
+					testcontext.Logf(ctx, "SetUp %d via Context", id)
+					testcontext.Logf(s.FixtContext(), "SetUp %d via Fixture-scoped Context", id)
 					s.Logf("SetUp %d via State", id)
 					return nil
 				}),
 				withReset(func(ctx context.Context) error {
-					logging.ContextLogf(ctx, "Reset %d via Context", id)
+					testcontext.Logf(ctx, "Reset %d via Context", id)
 					return nil
 				}),
 				withTearDown(func(ctx context.Context, s *testing.FixtState) {
-					logging.ContextLogf(ctx, "TearDown %d via Context", id)
-					logging.ContextLogf(s.FixtContext(), "TearDown %d via Fixture-scoped Context", id)
+					testcontext.Logf(ctx, "TearDown %d via Context", id)
+					testcontext.Logf(s.FixtContext(), "TearDown %d via Fixture-scoped Context", id)
 					s.Logf("TearDown %d via State", id)
 				})),
 		}
@@ -572,18 +569,18 @@ func TestFixtureStackOutputRed(t *gotesting.T) {
 			Name: fmt.Sprintf("fixt%d", id),
 			Impl: newFakeFixture(
 				withSetUp(func(ctx context.Context, s *testing.FixtState) interface{} {
-					logging.ContextLogf(ctx, "SetUp %d", id)
+					testcontext.Logf(ctx, "SetUp %d", id)
 					if !setUp {
 						s.Errorf("SetUp %d failure", id)
 					}
 					return nil
 				}),
 				withReset(func(ctx context.Context) error {
-					logging.ContextLogf(ctx, "Reset %d", id)
+					testcontext.Logf(ctx, "Reset %d", id)
 					return nil
 				}),
 				withTearDown(func(ctx context.Context, s *testing.FixtState) {
-					logging.ContextLogf(ctx, "TearDown %d", id)
+					testcontext.Logf(ctx, "TearDown %d", id)
 				})),
 		}
 	}
@@ -643,18 +640,18 @@ func TestFixtureStackOutputYellow(t *gotesting.T) {
 			Name: fmt.Sprintf("fixt%d", id),
 			Impl: newFakeFixture(
 				withSetUp(func(ctx context.Context, s *testing.FixtState) interface{} {
-					logging.ContextLogf(ctx, "SetUp %d", id)
+					testcontext.Logf(ctx, "SetUp %d", id)
 					return nil
 				}),
 				withReset(func(ctx context.Context) error {
-					logging.ContextLogf(ctx, "Reset %d", id)
+					testcontext.Logf(ctx, "Reset %d", id)
 					if !reset {
 						return errors.New("failure")
 					}
 					return nil
 				}),
 				withTearDown(func(ctx context.Context, s *testing.FixtState) {
-					logging.ContextLogf(ctx, "TearDown %d", id)
+					testcontext.Logf(ctx, "TearDown %d", id)
 				})),
 		}
 	}

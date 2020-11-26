@@ -85,6 +85,10 @@ func TestGetDUTInfo(t *testing.T) {
 		Fingerprint: &configpb.HardwareFeatures_Fingerprint{
 			Location: configpb.HardwareFeatures_Fingerprint_NOT_PRESENT,
 		},
+		EmbeddedController: &configpb.HardwareFeatures_EmbeddedController{
+			Present: configpb.HardwareFeatures_PRESENT,
+			EcType:  configpb.HardwareFeatures_EmbeddedController_EC_CHROME,
+		},
 	}
 	osVersion := "octopus-release/R86-13312.0.2020_07_02_1108"
 	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
@@ -141,7 +145,7 @@ func TestGetDUTInfoNoDeviceConfig(t *testing.T) {
 		})
 
 		// Note: if both avail/unavail are empty, it is handled as an error.
-		// Add dummy here to avoid it.
+		// Add fake here to avoid it.
 		writeGetDUTInfoResult(stdout, []string{"dep1"}, nil, nil, nil, "")
 		return 0
 	}

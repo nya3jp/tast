@@ -24,8 +24,12 @@ The following software features are defined:
 *   `arc` - The ability to [run Android apps] in any way, in VM or container,
     with any Android version. This is intended to be used to run non-ARC tests
     only when ARC is supported on the board.
+*   `arc32` - Runs 32-bit Android primary ABI.
+*   `arc64` - Runs 64-bit Android primary ABI, may or may not have 32-bit support.
 *   `arc_camera1` - Using [Camera HAL3] in Chrome and [Camera HAL1] in Android.
 *   `arc_camera3` - Using [Camera HAL3] interface in Chrome and Android.
+*   `arc_launched_32bit` - This platform originally launched with 32-bit Android.
+*   `arc_launched_64bit` - This platform originally launched with 64-bit Android.
 *   `arm` - The [arm] 32 and 64 bit processor architecture.
 *   `aslr` - Address space layout randomization, which mitigates buffer-overflow
     attacks, is functional (this is not true for builds with [AddressSanitizer]
@@ -52,13 +56,12 @@ The following software features are defined:
     of Chrome (e.g. official branding). Any test that specifies this dependency
     should also explicitly specify a `chrome` dependency.
 *   `coresched` - Whether device supports core scheduling feature for secure HT.
+*   `cpu_vuln_sysfs` - Whether the platform has /sys/devices/system/cpu/vulnerabilities sysfs files
 *   `crashpad` - Whether the platform supports the crashpad crash handler for
     Chrome.
 *   `cros_config` - `cros_config` utility is available.
 *   `cros_internal` - Functionality that is only available in internal builds of
     Chrome OS (i.e. ones built using `chromeos-overlay`).
-*   `cros_video_decoder` - Whether the [media::VideoDecoder]-based video decoder
-    is supported and enabled.
 *   `crossystem` - Chrome OS firmware/system interface utility.
 *   `crostini_stable` - Boards that can run Crostini tests reliably.
 *   `crostini_unstable` - Boards that cannot run Crostini tests reliably.
@@ -77,6 +80,7 @@ The following software features are defined:
 *   `ec_crash` - Boards that have EC firmware, implement the `crash` EC command,
     and produce a panicinfo file after a crash.
 *   `encrypted_reboot_vault` - Whether the system can setup an encrypted reboot vault in the stateful partition.
+*   `endorsement` - Whether the system have a valid endorsement certificate.
 *   `firewall` - Standard Chrome OS network firewall rules.
 *   `flashrom` - Userspace utility to update firmware.
 *   `google_virtual_keyboard` - The proprietary Google onscreen virtual keyboard
@@ -92,7 +96,6 @@ The following software features are defined:
 *   `iwlwifi_rescan` - Ability to remove/rescan WiFi PCI device when the
     hardware becomes non-responsive.
 *   `lacros` - Whether the system supports running [lacros].
-*   `legacy_video_decoder` - Whether the [media::VideoDecoder]-based video decoder
     implementation is not supported/enabled, hence using the legacy one.
 *   `lock_core_pattern` - Ability to lock down |core_pattern| from further
     modifications.
@@ -124,6 +127,7 @@ The following software features are defined:
     codecs (e.g. H.264). This is supported by Chrome official builds and Chromium
     builds with the |propietary_codecs| build flag set.
 *   `qemu` - For tests exclusive to Chrome OS QEMU images.
+*   `racc` - Whether [Runtime AVL Compliance Check] is available.
 *   `reboot` - The ability to reboot reliably during a remote test.
 *   `screenshot` - The [screenshot command] can save screenshots.
 *   `selinux` - An SELinux-enabled board. All Android boards are
@@ -145,6 +149,9 @@ The following software features are defined:
 *   `untrusted_vm` - The ability to run an untrusted VM.
 *   `usbguard` - The ability to allow or block USB devices based on policy.
 *   `vaapi` - Whether or not VA-API is supported by this DUT.
+*   `video_decoder_direct` - The platform uses the VideoDecoder (VD) by default.
+*   `video_decoder_legacy` - The platform used the VideoDecodeAccelerator (VDA) by default.
+*   `video_decoder_legacy_supported` - Is the VDA is supported on this platform.
 *   `video_overlays` - The kernel [DRM/KMS] version atomic commits and the underlying hardware display controller support the NV12 DRM Plane format needed to promote videos to [hardware overlays].
 *   `virtual_usb_printer` - Whether or not the device can run tests that
     use [virtual USB printing][virtual-usb-printer-readme]. Note that
@@ -152,7 +159,7 @@ The following software features are defined:
     this feature excludes that version for known flakiness. See
     [this bug](https://crbug.com/1083421#c10) for context.
 *   `vm_host` - The ability to [run virtual machines].
-*   `vp9_sanity` - The ability to stay alive playing a VP9 video with hardware
+*   `vp9_smoke` - The ability to stay alive playing a VP9 video with hardware
     acceleration even for a profile which the driver doesn't support.
 *   `vulkan` - Whether [Vulkan] is enabled.
 *   `watchdog` - watchdog daemon
@@ -161,6 +168,7 @@ The following software features are defined:
     the DTC (Diagnostic and Telemetry Controller) VM, a special EC interface,
     and a dock firmware updater.
 *   `wired_8021x` - The ability to use 802.1X for authentication over Ethernet.
+*   `intel_wifi_chip` - If the DUT has Intel WiFi device.
 
 [amd64]: https://en.wikipedia.org/wiki/X86-64
 [arm]: https://en.wikipedia.org/wiki/ARM_architecture
@@ -182,6 +190,7 @@ The following software features are defined:
 [Memory stats collection daemon]: https://chromium.googlesource.com/chromiumos/platform2/+/master/metrics/memd/
 [OCI]: https://www.opencontainers.org/
 [Optical Character Recognition Service]: https://chromium.googlesource.com/chromiumos/platform2/+/HEAD/ocr/README.md
+[Runtime AVL Compliance Check]: https://chromium.googlesource.com/chromiumos/platform2/+/refs/heads/master/runtime_probe/README.md
 [screenshot command]: https://chromium.googlesource.com/chromiumos/platform2/+/master/screenshot/
 [Trusted Platform Module]: https://en.wikipedia.org/wiki/Trusted_Platform_Module
 [Transparent Hugepage]: https://www.kernel.org/doc/Documentation/vm/transhuge.txt

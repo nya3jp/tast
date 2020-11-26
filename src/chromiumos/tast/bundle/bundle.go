@@ -6,6 +6,7 @@ package bundle
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -69,8 +70,23 @@ func run(ctx context.Context, clArgs []string, stdin io.Reader, stdout, stderr i
 		}
 		return statusSuccess
 	case ListFixturesMode:
-		// TODO(oka): Implement ListFixturesMode.
-		panic("to be implemented")
+		fixts := testing.GlobalRegistry().AllFixtures()
+		var info []*testing.FixtureInfo
+		for name, f := range fixts {
+			info = append(info, &testing.FixtureInfo{
+				Name:   name,
+				Parent: f.Parent,
+			})
+		}
+		b, err := json.Marshal(info)
+		if err != nil {
+			return command.WriteError(stderr, err)
+		}
+		_, err = stdout.Write(b)
+		if err != nil {
+			return command.WriteError(stderr, err)
+		}
+		return statusSuccess
 	case ExportMetadataMode:
 		tests, err := testsToRun(cfg, nil)
 		if err != nil {

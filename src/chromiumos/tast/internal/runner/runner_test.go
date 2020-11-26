@@ -15,6 +15,7 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
+	"sort"
 	"strconv"
 	"strings"
 	gotesting "testing"
@@ -192,6 +193,19 @@ func TestRunListTests(t *gotesting.T) {
 	}
 	if stderr.Len() != 0 {
 		t.Errorf("%s wrote to stderr: %q", sig, stderr.String())
+	}
+
+	bundleCounts := make(map[string]int)
+	for _, test := range tests {
+		bundleCounts[test.Bundle]++
+	}
+	var counts []int
+	for _, v := range bundleCounts {
+		counts = append(counts, v)
+	}
+	sort.Ints(counts)
+	if want := []int{1, 2, 3}; !reflect.DeepEqual(counts, want) {
+		t.Errorf("counts = %v, want %v", counts, want)
 	}
 }
 

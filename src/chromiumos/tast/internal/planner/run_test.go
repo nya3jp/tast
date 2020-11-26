@@ -209,6 +209,8 @@ func TestRunLateWriteFromGoroutine(t *gotesting.T) {
 	}
 }
 
+var bundleName = filepath.Base(os.Args[0])
+
 func TestRunSkipStages(t *gotesting.T) {
 	// action specifies an action performed in a stage.
 	type action int
@@ -246,7 +248,7 @@ func TestRunSkipStages(t *gotesting.T) {
 				{nil, pass, noCall, pass, noCall, pass},
 			},
 			want: []control.Msg{
-				&control.EntityStart{Info: testing.EntityInfo{Name: "0", Timeout: time.Minute}},
+				&control.EntityStart{Info: testing.EntityInfo{Name: "0", Timeout: time.Minute, Bundle: bundleName}},
 				&control.EntityLog{Name: "0", Text: "preTest: OK"},
 				&control.EntityLog{Name: "0", Text: "test: OK"},
 				&control.EntityLog{Name: "0", Text: "postTest: OK"},
@@ -259,7 +261,7 @@ func TestRunSkipStages(t *gotesting.T) {
 				{pre1, pass, pass, pass, pass, pass},
 			},
 			want: []control.Msg{
-				&control.EntityStart{Info: testing.EntityInfo{Name: "0", Timeout: time.Minute}},
+				&control.EntityStart{Info: testing.EntityInfo{Name: "0", Timeout: time.Minute, Bundle: bundleName}},
 				&control.EntityLog{Name: "0", Text: "preTest: OK"},
 				&control.EntityLog{Name: "0", Text: `Preparing precondition "pre1"`},
 				&control.EntityLog{Name: "0", Text: "prepare: OK"},
@@ -276,7 +278,7 @@ func TestRunSkipStages(t *gotesting.T) {
 				{pre1, doError, noCall, noCall, pass, pass},
 			},
 			want: []control.Msg{
-				&control.EntityStart{Info: testing.EntityInfo{Name: "0", Timeout: time.Minute}},
+				&control.EntityStart{Info: testing.EntityInfo{Name: "0", Timeout: time.Minute, Bundle: bundleName}},
 				&control.EntityError{Name: "0", Error: testing.Error{Reason: "preTest: Intentional error"}},
 				&control.EntityLog{Name: "0", Text: `Closing precondition "pre1"`},
 				&control.EntityLog{Name: "0", Text: "close: OK"},
@@ -290,7 +292,7 @@ func TestRunSkipStages(t *gotesting.T) {
 				{pre1, doPanic, noCall, noCall, pass, pass},
 			},
 			want: []control.Msg{
-				&control.EntityStart{Info: testing.EntityInfo{Name: "0", Timeout: time.Minute}},
+				&control.EntityStart{Info: testing.EntityInfo{Name: "0", Timeout: time.Minute, Bundle: bundleName}},
 				&control.EntityError{Name: "0", Error: testing.Error{Reason: "Panic: preTest: Intentional panic"}},
 				&control.EntityLog{Name: "0", Text: `Closing precondition "pre1"`},
 				&control.EntityLog{Name: "0", Text: "close: OK"},
@@ -303,7 +305,7 @@ func TestRunSkipStages(t *gotesting.T) {
 				{pre1, pass, doError, noCall, pass, pass},
 			},
 			want: []control.Msg{
-				&control.EntityStart{Info: testing.EntityInfo{Name: "0", Timeout: time.Minute}},
+				&control.EntityStart{Info: testing.EntityInfo{Name: "0", Timeout: time.Minute, Bundle: bundleName}},
 				&control.EntityLog{Name: "0", Text: "preTest: OK"},
 				&control.EntityLog{Name: "0", Text: `Preparing precondition "pre1"`},
 				&control.EntityError{Name: "0", Error: testing.Error{Reason: "[Precondition failure] prepare: Intentional error"}},
@@ -319,7 +321,7 @@ func TestRunSkipStages(t *gotesting.T) {
 				{pre1, pass, doPanic, noCall, pass, pass},
 			},
 			want: []control.Msg{
-				&control.EntityStart{Info: testing.EntityInfo{Name: "0", Timeout: time.Minute}},
+				&control.EntityStart{Info: testing.EntityInfo{Name: "0", Timeout: time.Minute, Bundle: bundleName}},
 				&control.EntityLog{Name: "0", Text: "preTest: OK"},
 				&control.EntityLog{Name: "0", Text: `Preparing precondition "pre1"`},
 				&control.EntityError{Name: "0", Error: testing.Error{Reason: "[Precondition failure] Panic: prepare: Intentional panic"}},
@@ -336,14 +338,14 @@ func TestRunSkipStages(t *gotesting.T) {
 				{pre1, pass, pass, pass, pass, pass},
 			},
 			want: []control.Msg{
-				&control.EntityStart{Info: testing.EntityInfo{Name: "0", Timeout: time.Minute}},
+				&control.EntityStart{Info: testing.EntityInfo{Name: "0", Timeout: time.Minute, Bundle: bundleName}},
 				&control.EntityLog{Name: "0", Text: "preTest: OK"},
 				&control.EntityLog{Name: "0", Text: `Preparing precondition "pre1"`},
 				&control.EntityLog{Name: "0", Text: "prepare: OK"},
 				&control.EntityLog{Name: "0", Text: "test: OK"},
 				&control.EntityLog{Name: "0", Text: "postTest: OK"},
 				&control.EntityEnd{Name: "0"},
-				&control.EntityStart{Info: testing.EntityInfo{Name: "1", Timeout: time.Minute}},
+				&control.EntityStart{Info: testing.EntityInfo{Name: "1", Timeout: time.Minute, Bundle: bundleName}},
 				&control.EntityLog{Name: "1", Text: "preTest: OK"},
 				&control.EntityLog{Name: "1", Text: `Preparing precondition "pre1"`},
 				&control.EntityLog{Name: "1", Text: "prepare: OK"},
@@ -361,7 +363,7 @@ func TestRunSkipStages(t *gotesting.T) {
 				{pre2, pass, pass, pass, pass, pass},
 			},
 			want: []control.Msg{
-				&control.EntityStart{Info: testing.EntityInfo{Name: "0", Timeout: time.Minute}},
+				&control.EntityStart{Info: testing.EntityInfo{Name: "0", Timeout: time.Minute, Bundle: bundleName}},
 				&control.EntityLog{Name: "0", Text: "preTest: OK"},
 				&control.EntityLog{Name: "0", Text: `Preparing precondition "pre1"`},
 				&control.EntityLog{Name: "0", Text: "prepare: OK"},
@@ -370,7 +372,7 @@ func TestRunSkipStages(t *gotesting.T) {
 				&control.EntityLog{Name: "0", Text: "close: OK"},
 				&control.EntityLog{Name: "0", Text: "postTest: OK"},
 				&control.EntityEnd{Name: "0"},
-				&control.EntityStart{Info: testing.EntityInfo{Name: "1", Timeout: time.Minute}},
+				&control.EntityStart{Info: testing.EntityInfo{Name: "1", Timeout: time.Minute, Bundle: bundleName}},
 				&control.EntityLog{Name: "1", Text: "preTest: OK"},
 				&control.EntityLog{Name: "1", Text: `Preparing precondition "pre2"`},
 				&control.EntityLog{Name: "1", Text: "prepare: OK"},
@@ -388,13 +390,13 @@ func TestRunSkipStages(t *gotesting.T) {
 				{pre1, pass, pass, pass, pass, pass},
 			},
 			want: []control.Msg{
-				&control.EntityStart{Info: testing.EntityInfo{Name: "0", Timeout: time.Minute}},
+				&control.EntityStart{Info: testing.EntityInfo{Name: "0", Timeout: time.Minute, Bundle: bundleName}},
 				&control.EntityLog{Name: "0", Text: "preTest: OK"},
 				&control.EntityLog{Name: "0", Text: `Preparing precondition "pre1"`},
 				&control.EntityError{Name: "0", Error: testing.Error{Reason: "[Precondition failure] prepare: Intentional error"}},
 				&control.EntityLog{Name: "0", Text: "postTest: OK"},
 				&control.EntityEnd{Name: "0"},
-				&control.EntityStart{Info: testing.EntityInfo{Name: "1", Timeout: time.Minute}},
+				&control.EntityStart{Info: testing.EntityInfo{Name: "1", Timeout: time.Minute, Bundle: bundleName}},
 				&control.EntityLog{Name: "1", Text: "preTest: OK"},
 				&control.EntityLog{Name: "1", Text: `Preparing precondition "pre1"`},
 				&control.EntityLog{Name: "1", Text: "prepare: OK"},

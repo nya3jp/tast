@@ -132,6 +132,56 @@ func getTests(args *Args, bundles []string) (tests []*testing.EntityWithRunnabil
 	return tests, bundlesWithTests, nil
 }
 
+// fixtures returns mapping from bundle paths to fixtures.
+func fixtures(bundleGlob string) (map[string][]*testing.EntityInfo, *command.StatusError) {
+	type fixturesOrError struct {
+		bundle string
+		fs     []*testing.EntityInfo
+		err    *command.StatusError
+	}
+
+	bundles, err := getBundles(bundleGlob)
+	if err != nil {
+		return nil, err
+	}
+
+	bundleArgs := &bundle.Args{
+		Mode: bundle.ListFixturesMode,
+	}
+	// Run all the bundles in parallel.
+	ch := make(chan *fixturesOrError, len(bundles))
+	for _, bundle := range bundles {
+		bundle := bundle
+		go func() {
+			out := bytes.Buffer{}
+			if err := runBundle(bundle, bundleArgs, &out); err != nil {
+				ch <- &fixturesOrError{bundle, nil, err}
+				return
+			}
+			b := out.Bytes()
+			fs := make([]*testing.EntityInfo, 0)
+			if err := json.Unmarshal(b, &fs); err != nil {
+				ch <- &fixturesOrError{bundle, nil,
+					command.NewStatusErrorf(statusBundleFailed, "bundle %v gave bad output: %v", bundle, err)}
+				return
+			}
+			ch <- &fixturesOrError{bundle, fs, nil}
+		}()
+	}
+
+	bundleFixts := make(map[string][]*testing.EntityInfo)
+	for i := 0; i < len(bundles); i++ {
+		foe := <-ch
+		if foe.err != nil {
+			return nil, foe.err
+		}
+		if len(foe.fs) > 0 {
+			bundleFixts[foe.bundle] = foe.fs
+		}
+	}
+	return bundleFixts, nil
+}
+
 // startBundleCmd creates and returns a new command running the test bundle at path using args.
 // cmd's Start method has already been called, and the caller is responsible for calling Wait.
 // A new session is created for the bundle process.

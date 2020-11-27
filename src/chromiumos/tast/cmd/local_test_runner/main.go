@@ -112,6 +112,7 @@ func main() {
 			"endorsement":             "!betty && !tast_vm", // VMs don't have valid endorsement certificate.
 			"firewall":                "!moblab",            // Moblab has relaxed iptables rules
 			"flashrom":                "!betty && !tast_vm",
+			"gboard_decoder":          "gboard_decoder",                         // have IME mojo service installed.
 			"google_virtual_keyboard": "chrome_internal && internal && !moblab", // doesn't work on Moblab: https://crbug.com/949912
 			"gpu_sandboxing":          "!betty && !tast_vm",                     // no GPU sandboxing on VMs: https://crbug.com/914688
 			"graphics_debugfs":        `!("kernel-3_8" || "kernel-3_10" || "kernel-3_14" || "kernel-3_18")`,

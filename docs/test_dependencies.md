@@ -83,6 +83,7 @@ The following software features are defined:
 *   `endorsement` - Whether the system have a valid endorsement certificate.
 *   `firewall` - Standard Chrome OS network firewall rules.
 *   `flashrom` - Userspace utility to update firmware.
+*   `gboard_decoder` - Whether Gboard built-in decoder is installed.
 *   `google_virtual_keyboard` - The proprietary Google onscreen virtual keyboard
     (as opposed to the builtin open-source virtual keyboard).
 *   `gpu_sandboxing` - Chrome's GPU process is [sandboxed].

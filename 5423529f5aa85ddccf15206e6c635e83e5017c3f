@@ -16,6 +16,23 @@
       "message": "As discussed with Shuhei and CUJ team, the Multi DUT support was implement to support video chat. This is the basic support to support initial tests and some more features - logging identification, file configuration, etc - to be added.",
       "revId": "5423529f5aa85ddccf15206e6c635e83e5017c3f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "aef5eb3e_e80dd85c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-11-27T02:30:46Z",
+      "side": 1,
+      "message": "I\u0027m offline this week for sickness, my reviews will be delayed, sorry.",
+      "revId": "5423529f5aa85ddccf15206e6c635e83e5017c3f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

@@ -1,6 +1,23 @@
 {
   "comments": [
     {
+      "unresolved": true,
+      "key": {
+        "uuid": "efe54922_aef38020",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1000101
+      },
+      "writtenOn": "2020-11-30T17:56:03Z",
+      "side": 1,
+      "message": "nit: Wrap at 72 chars, here and L10 below.",
+      "revId": "5423529f5aa85ddccf15206e6c635e83e5017c3f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": false,
       "key": {
         "uuid": "f31c891c_77f9ed0e",
@@ -31,6 +48,165 @@
       "writtenOn": "2020-11-27T02:30:46Z",
       "side": 1,
       "message": "I\u0027m offline this week for sickness, my reviews will be delayed, sorry.",
+      "revId": "5423529f5aa85ddccf15206e6c635e83e5017c3f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9d7d2267_3f722410",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000101
+      },
+      "writtenOn": "2020-11-30T17:56:03Z",
+      "side": 1,
+      "message": "Not tast experts, but:\n1. What do we use companion DUTs for?\n2. Why do we need the support in tast infra? Should it be part of a test that needs multiple DUTs rather than in infra?",
+      "revId": "5423529f5aa85ddccf15206e6c635e83e5017c3f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "95e935c8_064e7999",
+        "filename": "src/chromiumos/tast/bundle/bundle.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 329,
+      "author": {
+        "id": 1000101
+      },
+      "writtenOn": "2020-11-30T17:56:03Z",
+      "side": 1,
+      "message": "Would this and L332 make connectToCompanionTargets to ignore errors and always succeed?",
+      "revId": "5423529f5aa85ddccf15206e6c635e83e5017c3f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7bfa5287_fac73981",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/local.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 1000101
+      },
+      "writtenOn": "2020-11-30T17:56:03Z",
+      "side": 1,
+      "message": "We should clean up `hsts` instead of returning it with an error.",
+      "revId": "5423529f5aa85ddccf15206e6c635e83e5017c3f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "21c58148_96befad6",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 242,
+      "author": {
+        "id": 1000101
+      },
+      "writtenOn": "2020-11-30T17:56:03Z",
+      "side": 1,
+      "message": "Why calling \"wg.Done()\" here? Wouldn\u0027t \"defer wg.Done()\" in L240 take care of it already?",
+      "revId": "5423529f5aa85ddccf15206e6c635e83e5017c3f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1660034f_19815be5",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 252,
+      "author": {
+        "id": 1000101
+      },
+      "writtenOn": "2020-11-30T17:56:03Z",
+      "side": 1,
+      "message": "ditto, would \"defer iwg.Done()\" in L250 do it for us already?",
+      "revId": "5423529f5aa85ddccf15206e6c635e83e5017c3f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c171a19e_0a2cf65b",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 262,
+      "author": {
+        "id": 1000101
+      },
+      "writtenOn": "2020-11-30T17:56:03Z",
+      "side": 1,
+      "message": "Do we need to deal with errors?",
+      "revId": "5423529f5aa85ddccf15206e6c635e83e5017c3f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d0ec4b9e_91f1f38f",
+        "filename": "src/chromiumos/tast/internal/testing/state.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 112,
+      "author": {
+        "id": 1000101
+      },
+      "writtenOn": "2020-11-30T17:56:03Z",
+      "side": 1,
+      "message": "nit: Could you also document what is the key of the map?",
+      "revId": "5423529f5aa85ddccf15206e6c635e83e5017c3f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b27447fd_ea0b7dc9",
+        "filename": "src/chromiumos/tast/internal/testing/state.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 123,
+      "author": {
+        "id": 1000101
+      },
+      "writtenOn": "2020-11-30T17:56:03Z",
+      "side": 1,
+      "message": "nit: Document the key of the map.",
+      "revId": "5423529f5aa85ddccf15206e6c635e83e5017c3f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fe9f4712_528d5720",
+        "filename": "src/chromiumos/tast/internal/testing/state.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 392,
+      "author": {
+        "id": 1000101
+      },
+      "writtenOn": "2020-11-30T17:56:03Z",
+      "side": 1,
+      "message": "nit: specific role -\u003e a specific role.\n\nAnd could you give an example of what a role could be.",
+      "range": {
+        "startLine": 392,
+        "startChar": 60,
+        "endLine": 392,
+        "endChar": 73
+      },
       "revId": "5423529f5aa85ddccf15206e6c635e83e5017c3f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }

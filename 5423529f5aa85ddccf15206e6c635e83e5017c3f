@@ -69,6 +69,23 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "8777d74b_5b207676",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1400778
+      },
+      "writtenOn": "2020-11-30T19:29:10Z",
+      "side": 1,
+      "message": "Is the intention here to run on multiple DUTs simultaneously? So we run tests across our DUTs in lab using the Target parameter, so I\u0027m unclear if we want to build this into Tast as it adds complexity. What happens if one of the DUT runs fail? Is the test marked as failed? If so, do we automatically abort all the other test runs remotely to free up resources? How are you handling the responses from each of the test runs? It didn\u0027t stand out to me how the results are being compiled in Tast.\n\nI will defer to the Tast owners to decide.",
+      "revId": "5423529f5aa85ddccf15206e6c635e83e5017c3f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "95e935c8_064e7999",

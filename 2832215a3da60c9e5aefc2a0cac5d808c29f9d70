@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e4c4e48f_8bfbd80f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-11-30T10:09:19Z",
+      "side": 1,
+      "message": "Sorry for delay. Back from sick OOO.",
+      "revId": "2832215a3da60c9e5aefc2a0cac5d808c29f9d70",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

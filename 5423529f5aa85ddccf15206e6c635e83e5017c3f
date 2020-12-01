@@ -86,6 +86,23 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "62c53cca_3bb5a180",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-12-01T08:01:38Z",
+      "side": 1,
+      "message": "Hi Septem,\n\nThanks for making the change! I think the change brought an important design question to our attention: how should we handle errors of companion DUTs?\n\nFor example, let\u0027s say Tast is requested to run three remote tests, remote.Pass, remote.A and remote.B, where remote.Pass is a simple test that doesn\u0027t use accompanied DUTs and remote.A/B use accompanied DUTs.\n\nIf the main DUT is down, Tast marks remote tests as errors before actually running them, because it\u0027s no use to run them when the main DUT is down. It sounds a reasonable decision because all remote tests should work with the main DUT.\n\nBut what if accompanied DUTs are down? In the example above, it may make sense to mark remote.A and remote.B errors. But it does not apply to remote.Pass; it sounds wrong to skip the test, because it does not need accompanied DUTs.\n\nSo I think we rather should not check health of accompanied DUTs before running remote tests. If some of accompanied DUTs are down, corresponding tests will fail, and that\u0027s expected.\n\nIf we treat accompanied DUT errors in this way, actually we don\u0027t need a framework change --- you can introduce a precondition (or a fixture) that constructs multiple ssh.Conn from DUT addresses given via runtime variables, and shares them to remote tests as precondition/fixture values. Does this approach work for your use case?\n",
+      "revId": "5423529f5aa85ddccf15206e6c635e83e5017c3f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "95e935c8_064e7999",

@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "37349a2d_41668bc0",
+        "filename": "src/chromiumos/tast/internal/runner/args.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 187,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-12-01T10:39:31Z",
+      "side": 1,
+      "message": "Reminder: This will introduce a protocol incompatibility. We have to make sure to update Tast CLI before people start using remote fixtures...",
+      "range": {
+        "startLine": 187,
+        "startChar": 44,
+        "endLine": 187,
+        "endChar": 70
+      },
+      "revId": "fff51aa2d69ac67381247e604a7e01967aad9a1d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

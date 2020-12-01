@@ -8,15 +8,18 @@ import (
 	"context"
 	"encoding/json"
 	"io"
+	"os"
 	"reflect"
 	gotesting "testing"
 
+	"github.com/google/go-cmp/cmp"
 	"google.golang.org/grpc"
 
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/testing"
+	"chromiumos/tast/testutil"
 	"chromiumos/tast/timing"
 )
 
@@ -301,6 +304,50 @@ func TestRPCForwardTiming(t *gotesting.T) {
 			t.Fatal("Failed to marshal timing JSON: ", err)
 		}
 		t.Errorf("Unexpected timing log: got %s, want a single %q entry", string(b), stageName)
+	}
+}
+
+func TestRPCPullOutDir(t *gotesting.T) {
+	outDir := testutil.TempDir(t)
+	defer os.RemoveAll(outDir)
+
+	want := map[string]string{
+		"a.txt":     "abc",
+		"dir/b.txt": "def",
+	}
+
+	ctx := context.Background()
+	ctx = testcontext.WithCurrentEntity(ctx, &testcontext.CurrentEntity{})
+	h := testing.NewRPCHint("", nil)
+
+	svc := newPingService(func(ctx context.Context, s *testing.ServiceState) error {
+		od, ok := testcontext.OutDir(ctx)
+		if !ok {
+			return errors.New("OutDir unavailable")
+		}
+		if od == outDir {
+			return errors.Errorf("OutDir given to service must not be that on the host: %s", od)
+		}
+		return testutil.WriteFiles(od, want)
+	})
+
+	pp := newPingPair(ctx, t, h, svc)
+	defer pp.Close(ctx)
+
+	callCtx := testcontext.WithCurrentEntity(ctx, &testcontext.CurrentEntity{
+		ServiceDeps: []string{pingServiceName},
+		OutDir:      outDir,
+	})
+	if _, err := pp.Client.Ping(callCtx, &protocol.PingRequest{}); err != nil {
+		t.Error("Ping failed: ", err)
+	}
+
+	got, err := testutil.ReadFiles(outDir)
+	if err != nil {
+		t.Fatal("Failed to read output dir: ", err)
+	}
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Directory contents mismatch (-got +want):\n%s", diff)
 	}
 }
 

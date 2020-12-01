@@ -147,6 +147,7 @@ func initBundleServer(r io.Reader, w io.Writer, h *testing.RPCHint) error {
 
 var alwaysAllowedServices = []string{
 	"tast.core.Logging",
+	"tast.core.FileTransfer",
 	"tast.cros.baserpc.FaillogService",
 }
 
@@ -174,23 +175,13 @@ func clientOpts() []grpc.DialOption {
 		return metadata.NewOutgoingContext(ctx, md), nil
 	}
 
-	after := func(ctx context.Context, trailer metadata.MD) error {
-		tts := trailer.Get(metadataTiming)
-		if len(tts) == 0 {
-			return nil
+	after := func(ctx context.Context, cc *grpc.ClientConn, trailer metadata.MD) error {
+		var firstErr error
+		if err := processTimingTrailer(ctx, trailer.Get(metadataTiming)); err != nil && firstErr == nil {
+			firstErr = err
 		}
-		if len(tts) >= 2 {
-			return errors.Errorf("gRPC trailer %s contains %d values", metadataTiming, len(tts))
-		}
-
-		var tl timing.Log
-		if err := json.Unmarshal([]byte(tts[0]), &tl); err != nil {
-			return errors.Wrapf(err, "failed to parse gRPC trailer %s", metadataTiming)
-		}
-		if _, stg, ok := timing.FromContext(ctx); ok {
-			if err := stg.Import(&tl); err != nil {
-				return errors.Wrap(err, "failed to import gRPC timing log")
-			}
+		if err := processOutDirTrailer(ctx, cc, trailer.Get(metadataOutDir)); err != nil && firstErr == nil {
+			firstErr = err
 		}
 		return nil
 	}
@@ -206,7 +197,7 @@ func clientOpts() []grpc.DialOption {
 			var trailer metadata.MD
 			opts = append([]grpc.CallOption{grpc.Trailer(&trailer)}, opts...)
 			retErr := invoker(ctx, method, req, reply, cc, opts...)
-			if err := after(ctx, trailer); err != nil && retErr == nil {
+			if err := after(ctx, cc, trailer); err != nil && retErr == nil {
 				retErr = err
 			}
 			return retErr
@@ -218,16 +209,57 @@ func clientOpts() []grpc.DialOption {
 				return nil, err
 			}
 			stream, err := streamer(ctx, desc, cc, method, opts...)
-			return &clientStreamWithAfter{ClientStream: stream, after: after}, err
+			return &clientStreamWithAfter{ClientStream: stream, cc: cc, after: after}, err
 		}),
 	}
+}
+
+func processTimingTrailer(ctx context.Context, values []string) error {
+	if len(values) == 0 {
+		return nil
+	}
+	if len(values) >= 2 {
+		return errors.Errorf("gRPC trailer %s contains %d values", metadataTiming, len(values))
+	}
+
+	var tl timing.Log
+	if err := json.Unmarshal([]byte(values[0]), &tl); err != nil {
+		return errors.Wrapf(err, "failed to parse gRPC trailer %s", metadataTiming)
+	}
+	if _, stg, ok := timing.FromContext(ctx); ok {
+		if err := stg.Import(&tl); err != nil {
+			return errors.Wrap(err, "failed to import gRPC timing log")
+		}
+	}
+	return nil
+}
+
+func processOutDirTrailer(ctx context.Context, cc *grpc.ClientConn, values []string) error {
+	if len(values) == 0 {
+		return nil
+	}
+	if len(values) >= 2 {
+		return errors.Errorf("gRPC trailer %s contains %d values", metadataOutDir, len(values))
+	}
+
+	src := values[0]
+	dst, ok := testcontext.OutDir(ctx)
+	if !ok {
+		return errors.New("output directory not associated to the context")
+	}
+
+	if err := pullDirectory(ctx, protocol.NewFileTransferClient(cc), src, dst); err != nil {
+		return errors.Wrap(err, "failed to pull output files from gRPC service")
+	}
+	return nil
 }
 
 // clientStreamWithAfter wraps grpc.ClientStream with a function to be called
 // on the end of the streaming call.
 type clientStreamWithAfter struct {
 	grpc.ClientStream
-	after func(ctx context.Context, trailer metadata.MD) error
+	cc    *grpc.ClientConn
+	after func(ctx context.Context, cc *grpc.ClientConn, trailer metadata.MD) error
 	done  bool
 }
 
@@ -242,7 +274,7 @@ func (s *clientStreamWithAfter) RecvMsg(m interface{}) error {
 	}
 	s.done = true
 
-	if err := s.after(s.Context(), s.Trailer()); err != nil && retErr == io.EOF {
+	if err := s.after(s.Context(), s.cc, s.Trailer()); err != nil && retErr == io.EOF {
 		retErr = err
 	}
 	return retErr

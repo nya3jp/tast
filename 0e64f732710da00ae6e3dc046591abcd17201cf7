@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "808a5a71_3aebbbb0",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1400377
+      },
+      "writtenOn": "2020-12-01T18:34:30Z",
+      "side": 1,
+      "message": "Thanks Shuhei for this implementation. It helps a lot.",
+      "revId": "0e64f732710da00ae6e3dc046591abcd17201cf7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b8bbc1f0_a79b3228",
+        "filename": "src/chromiumos/tast/internal/rpc/file_transfer.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 1400377
+      },
+      "writtenOn": "2020-12-01T18:34:30Z",
+      "side": 1,
+      "message": "No sure about the performance on large files of using GRPC stream versus using SSH directly (the faillog approach).",
+      "revId": "0e64f732710da00ae6e3dc046591abcd17201cf7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "291bf55f_f6d9c8df",
+        "filename": "src/chromiumos/tast/internal/rpc/server.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 1400377
+      },
+      "writtenOn": "2020-12-01T18:34:30Z",
+      "side": 1,
+      "message": "Will all services use the same outDir? There might be file name conflict between services. Can we add a subdirectory for each service on the service logic?",
+      "revId": "0e64f732710da00ae6e3dc046591abcd17201cf7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

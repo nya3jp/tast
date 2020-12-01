@@ -121,6 +121,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "2d111d01_fccceecc",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1400377
+      },
+      "writtenOn": "2020-12-01T20:34:26Z",
+      "side": 1,
+      "message": "Hey Mike, thanks for the comments. The use case is we can test video chat from two or multiple DUTs, one as a meeting host and the others as participants. \n\nAs for error handling, the main DUT\u0027s error should be handled same as before. But for companion DUTs, whichever test cases use it should handle the DUT failure as test case failure, but not tast run failure.\n\nWe understand the test log from multiple DUTs should be identified differently, probably with the DUT name. This will be further addressed if this initial change is aligned among stake holders.",
+      "parentUuid": "8777d74b_5b207676",
+      "revId": "5423529f5aa85ddccf15206e6c635e83e5017c3f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "95e935c8_064e7999",

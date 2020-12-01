@@ -1195,14 +1195,6 @@ All `Val` in a parameterized test must have the same type.
 `testing.Test`. They can be set only if the corresponding fields in the base
 test are not set.
 
-If `Pre` is set in more than one parameters of the same base test, these
-`Precondition` types should return the same value type. For example, it is fine
-to use the `arc.Booted` precondition in a test parameter and the
-`arc.BootedInTabletMode` precondition in another test parameter as long as they
-return the same `arc.PreData` type. However we should not add a test parameter
-with the `chrome.LoggedIn` precondition since it returns an incompatible
-`*chrome.Chrome` type.
-
 `Extra*` in [`testing.Param`] (such as `ExtraAttr`) contains items added to
 their corresponding base test properties (such as `Attr`) to obtain the test
 properties.

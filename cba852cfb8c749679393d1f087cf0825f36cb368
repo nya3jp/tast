@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7ef9f44a_73da026e",
+        "filename": "src/chromiumos/tast/internal/planner/run.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-12-01T10:36:20Z",
+      "side": 1,
+      "message": "Hmm, using non-zero default value is sometimes tricky - we have to be careful not to access CustomGracePeriod directly.\n\nI rather recommend setting the field in all struct initialization. I know there are plenty of them in unit tests, but I guess it\u0027s less error-prone. WDYT?",
+      "range": {
+        "startLine": 87,
+        "startChar": 1,
+        "endLine": 89,
+        "endChar": 32
+      },
+      "revId": "cba852cfb8c749679393d1f087cf0825f36cb368",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

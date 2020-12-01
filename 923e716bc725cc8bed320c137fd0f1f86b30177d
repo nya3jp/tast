@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3029af88_75336a05",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1358595
+      },
+      "writtenOn": "2020-12-01T00:34:59Z",
+      "side": 1,
+      "message": "I debated adding new information related how to switch on type, and potentially trying to keep precondition mixing simple, but I think it is better to just remove this completely and let users decide when/how they want to mix preconditions. Also, since type switching in Go is easy to lookup, I don\u0027t think it is necessary to add here.",
+      "revId": "923e716bc725cc8bed320c137fd0f1f86b30177d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

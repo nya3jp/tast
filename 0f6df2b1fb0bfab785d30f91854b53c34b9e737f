@@ -1,0 +1,113 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8ffb41ee_d5e87a9e",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-12-01T10:22:49Z",
+      "side": 1,
+      "message": "Please refer go/cl-descriptions for guidance on good commit messages.\n\n\nSome my recommendations:\n\nLet\u0027s update the subject to clearly mention what we did specifically in this patch. For example:\n\n Introduce proto-wrapping types for better JSON customization\n\nAfter the subject, it\u0027s nice to mention that this patch is a part of the series of patches for sharding support. But the subject should concentrate on this patch, not on its context.\n\nAlso it\u0027s nice to mention that this is a pure refactoring change and no functional change is expected.",
+      "range": {
+        "startLine": 7,
+        "startChar": 0,
+        "endLine": 7,
+        "endChar": 51
+      },
+      "revId": "0f6df2b1fb0bfab785d30f91854b53c34b9e737f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7a06591d_46e78ece",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-12-01T10:22:49Z",
+      "side": 1,
+      "message": "Hi, finally I\u0027m resuming code reviews. This change looks quite nice, I don\u0027t have any significant comments.",
+      "revId": "0f6df2b1fb0bfab785d30f91854b53c34b9e737f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6e7b5161_af38a13a",
+        "filename": "src/chromiumos/tast/bundle/args.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-12-01T10:22:49Z",
+      "side": 1,
+      "message": "qq: Is it an error to pass nil to proto.Marshal? I wondered if we can omit (a.Proto !\u003d nil) check.",
+      "range": {
+        "startLine": 89,
+        "startChar": 14,
+        "endLine": 89,
+        "endChar": 36
+      },
+      "revId": "0f6df2b1fb0bfab785d30f91854b53c34b9e737f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6181e559_e3470565",
+        "filename": "src/chromiumos/tast/bundle/args.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-12-01T10:22:49Z",
+      "side": 1,
+      "message": "nit:\n\n return []byte(\"null\"), nil",
+      "range": {
+        "startLine": 95,
+        "startChar": 1,
+        "endLine": 97,
+        "endChar": 24
+      },
+      "revId": "0f6df2b1fb0bfab785d30f91854b53c34b9e737f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7a3b256c_8969ae27",
+        "filename": "src/chromiumos/tast/bundle/args.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-12-01T10:22:49Z",
+      "side": 1,
+      "message": "Let us handle this case separately for better readability.",
+      "range": {
+        "startLine": 103,
+        "startChar": 46,
+        "endLine": 103,
+        "endChar": 65
+      },
+      "revId": "0f6df2b1fb0bfab785d30f91854b53c34b9e737f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

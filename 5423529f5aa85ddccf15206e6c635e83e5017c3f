@@ -105,6 +105,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "b40730c4_340712b0",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1400377
+      },
+      "writtenOn": "2020-12-01T20:24:17Z",
+      "side": 1,
+      "message": "Hi Shuhei,\n\nI agree companion DUT failure should be handled by test cases, not by framework. \n\nIn the current CL implementation, the CompDUTs only maintained a list of connected companion DUTs. It\u0027s up to the test case to fail if it could not find an available companion DUT (by \"role\"), or cannot do rpc.Dial() to the DUT.\n\nMaking CompDUTs managed by tast can leverage some common DUT tasks before and after tests - download local runners / bundles / data files (future), collect logs, and other potential features. It seems there are no easy way to do this by test itself.",
+      "parentUuid": "62c53cca_3bb5a180",
+      "revId": "5423529f5aa85ddccf15206e6c635e83e5017c3f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "95e935c8_064e7999",
         "filename": "src/chromiumos/tast/bundle/bundle.go",
         "patchSetId": 1

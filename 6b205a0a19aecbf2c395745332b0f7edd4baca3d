@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6a5f892a_07c0df7d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-01T21:09:30Z",
+      "side": 1,
+      "message": "Hi Shuhei:\n\nI have addressed the review comments. Please check. Thanks.\n\nSeewai\n",
+      "revId": "6b205a0a19aecbf2c395745332b0f7edd4baca3d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

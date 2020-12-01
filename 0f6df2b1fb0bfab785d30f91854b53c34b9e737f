@@ -64,6 +64,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "f2b67b08_e5e82152",
+        "filename": "src/chromiumos/tast/bundle/args.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-01T21:09:30Z",
+      "side": 1,
+      "message": "I will get an error like this if I don\u0027t check for nil:\n\n    runner_test.go:126: json: error calling MarshalJSON for type bundle.DeviceConfigJSON: proto: Marshal called with nil\n\nI do think that it is not necessary to have three level of scopes here. I modified the code to reduce the number of scope. Please review the new changes. Thanks.",
+      "parentUuid": "6e7b5161_af38a13a",
+      "range": {
+        "startLine": 89,
+        "startChar": 14,
+        "endLine": 89,
+        "endChar": 36
+      },
+      "revId": "0f6df2b1fb0bfab785d30f91854b53c34b9e737f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "6181e559_e3470565",
@@ -87,6 +111,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "ef7e4c42_88252776",
+        "filename": "src/chromiumos/tast/bundle/args.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-01T21:09:30Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6181e559_e3470565",
+      "range": {
+        "startLine": 95,
+        "startChar": 1,
+        "endLine": 97,
+        "endChar": 24
+      },
+      "revId": "0f6df2b1fb0bfab785d30f91854b53c34b9e737f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "7a3b256c_8969ae27",
@@ -100,6 +148,30 @@
       "writtenOn": "2020-12-01T10:22:49Z",
       "side": 1,
       "message": "Let us handle this case separately for better readability.",
+      "range": {
+        "startLine": 103,
+        "startChar": 46,
+        "endLine": 103,
+        "endChar": 65
+      },
+      "revId": "0f6df2b1fb0bfab785d30f91854b53c34b9e737f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8fd68ed6_cfcd636d",
+        "filename": "src/chromiumos/tast/bundle/args.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 103,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-01T21:09:30Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7a3b256c_8969ae27",
       "range": {
         "startLine": 103,
         "startChar": 46,

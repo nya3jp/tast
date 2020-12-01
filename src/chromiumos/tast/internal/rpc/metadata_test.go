@@ -52,14 +52,16 @@ func TestOutgoingMetadataNoSoftwareDeps(t *gotesting.T) {
 }
 
 func TestIncomingCurrentEntity(t *gotesting.T) {
+	const outDir = "/path/to/out"
 	md := metadata.MD{
 		metadataHasSoftwareDeps: []string{"1"},
 		metadataSoftwareDeps:    []string{"chrome", "android_p"},
 	}
 
-	ec := incomingCurrentContext(md)
+	ec := incomingCurrentContext(md, outDir)
 
 	exp := &testcontext.CurrentEntity{
+		OutDir:          outDir,
 		HasSoftwareDeps: true,
 		SoftwareDeps:    md[metadataSoftwareDeps],
 	}
@@ -69,13 +71,16 @@ func TestIncomingCurrentEntity(t *gotesting.T) {
 }
 
 func TestIncomingCurrentEntityNoSoftwareDeps(t *gotesting.T) {
+	const outDir = "/path/to/out"
 	md := metadata.MD{
 		metadataSoftwareDeps: nil,
 	}
 
-	ec := incomingCurrentContext(md)
+	ec := incomingCurrentContext(md, outDir)
 
-	exp := &testcontext.CurrentEntity{}
+	exp := &testcontext.CurrentEntity{
+		OutDir: outDir,
+	}
 	if diff := cmp.Diff(ec, exp); diff != "" {
 		t.Errorf("incomingCurrentContext returned unexpected CurrentEntity (-got +want):\n%s", diff)
 	}

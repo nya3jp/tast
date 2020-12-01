@@ -17,6 +17,7 @@ const (
 	metadataSoftwareDeps    = "tast-testcontext-softwaredeps"
 	metadataHasSoftwareDeps = "tast-testcontext-hassoftwaredeps"
 	metadataTiming          = "tast-timing"
+	metadataOutDir          = "tast-outdir"
 )
 
 // outgoingMetadata extracts CurrentEntity from ctx and converts it to metadata.MD.
@@ -34,11 +35,11 @@ func outgoingMetadata(ctx context.Context) metadata.MD {
 
 // incomingCurrentContext creates CurrentEntity from metadata.MD.
 // It is called on gRPC servers to forward CurrentEntity over gRPC.
-func incomingCurrentContext(md metadata.MD) *testcontext.CurrentEntity {
+func incomingCurrentContext(md metadata.MD, outDir string) *testcontext.CurrentEntity {
 	hasSoftwareDeps := len(md[metadataHasSoftwareDeps]) > 0
 	softwareDeps := md[metadataSoftwareDeps]
 	return &testcontext.CurrentEntity{
-		// TODO(crbug.com/969627): Support OutDir.
+		OutDir:          outDir,
 		HasSoftwareDeps: hasSoftwareDeps,
 		SoftwareDeps:    softwareDeps,
 		// ServiceDeps is not forwarded.

@@ -10,6 +10,8 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"io/ioutil"
+	"os"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
@@ -34,6 +36,7 @@ func RunServer(r io.Reader, w io.Writer, svcs []*testing.Service) error {
 	ls := newRemoteLoggingServer()
 	srv := grpc.NewServer(serverOpts(ls.Log)...)
 	protocol.RegisterLoggingServer(srv, ls)
+	protocol.RegisterFileTransferServer(srv, newFileTransferServer())
 
 	// Register the reflection service for easier debugging.
 	reflection.Register(srv)
@@ -73,8 +76,12 @@ func serverOpts(logger testcontext.LoggerFunc) []grpc.ServerOption {
 		if !ok {
 			return nil, errors.New("metadata not available")
 		}
+		outDir, err := ioutil.TempDir("", "rpc-outdir.")
+		if err != nil {
+			return nil, err
+		}
 		ctx = testcontext.WithLogger(ctx, logger)
-		ctx = testcontext.WithCurrentEntity(ctx, incomingCurrentContext(md))
+		ctx = testcontext.WithCurrentEntity(ctx, incomingCurrentContext(md, outDir))
 		ctx = timing.NewContext(ctx, timing.NewLog())
 		return ctx, nil
 	}
@@ -83,12 +90,25 @@ func serverOpts(logger testcontext.LoggerFunc) []grpc.ServerOption {
 		// assume that functions to extract values from the context always
 		// succeed.
 		md := make(metadata.MD)
+
 		tl, _, _ := timing.FromContext(ctx)
 		b, err := json.Marshal(tl)
 		if err != nil {
 			logger(fmt.Sprint("Failed to marshal timing JSON: ", err))
 		} else {
 			md[metadataTiming] = []string{string(b)}
+		}
+
+		outDir, _ := testcontext.OutDir(ctx)
+		// Send metadataOutDir only if some files were saved in order to avoid extra round-trips.
+		if fis, err := ioutil.ReadDir(outDir); err != nil {
+			logger(fmt.Sprint("gRPC output directory is corrupted: ", err))
+		} else if len(fis) == 0 {
+			if err := os.RemoveAll(outDir); err != nil {
+				logger(fmt.Sprint("Failed to remove gRPC output directory: ", err))
+			}
+		} else {
+			md[metadataOutDir] = []string{outDir}
 		}
 		return md
 	}

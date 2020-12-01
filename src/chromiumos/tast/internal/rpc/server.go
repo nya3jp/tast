@@ -68,7 +68,6 @@ var _ grpc.ServerStream = (*serverStreamWithContext)(nil)
 
 // serverOpts returns gRPC server-side interceptors to manipulate context.
 func serverOpts(logger testcontext.LoggerFunc) []grpc.ServerOption {
-	var tl *timing.Log
 	before := func(ctx context.Context) (context.Context, error) {
 		md, ok := metadata.FromIncomingContext(ctx)
 		if !ok {
@@ -76,17 +75,22 @@ func serverOpts(logger testcontext.LoggerFunc) []grpc.ServerOption {
 		}
 		ctx = testcontext.WithLogger(ctx, logger)
 		ctx = testcontext.WithCurrentEntity(ctx, incomingCurrentContext(md))
-		tl = timing.NewLog()
-		ctx = timing.NewContext(ctx, tl)
+		ctx = timing.NewContext(ctx, timing.NewLog())
 		return ctx, nil
 	}
-	trailer := func() metadata.MD {
+	trailer := func(ctx context.Context) metadata.MD {
+		// Note: ctx passed here is one created by "before" above. Thus we can
+		// assume that functions to extract values from the context always
+		// succeed.
+		md := make(metadata.MD)
+		tl, _, _ := timing.FromContext(ctx)
 		b, err := json.Marshal(tl)
 		if err != nil {
 			logger(fmt.Sprint("Failed to marshal timing JSON: ", err))
-			return nil
+		} else {
+			md[metadataTiming] = []string{string(b)}
 		}
-		return metadata.Pairs(metadataTiming, string(b))
+		return md
 	}
 
 	return []grpc.ServerOption{
@@ -96,7 +100,7 @@ func serverOpts(logger testcontext.LoggerFunc) []grpc.ServerOption {
 				return nil, err
 			}
 			defer func() {
-				grpc.SetTrailer(ctx, trailer())
+				grpc.SetTrailer(ctx, trailer(ctx))
 			}()
 			return handler(ctx, req)
 		}),
@@ -107,7 +111,7 @@ func serverOpts(logger testcontext.LoggerFunc) []grpc.ServerOption {
 			}
 			stream = &serverStreamWithContext{stream, ctx}
 			defer func() {
-				stream.SetTrailer(trailer())
+				stream.SetTrailer(trailer(ctx))
 			}()
 			return handler(srv, stream)
 		}),

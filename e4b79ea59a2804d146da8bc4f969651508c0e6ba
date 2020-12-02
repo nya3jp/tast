@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ec4226be_5b1a80a8",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-02T19:00:30Z",
+      "side": 1,
+      "message": "This is the second CL for the shading support. This CL introduce new embedded FeatureArgs for all feature related argument. Please review. Thanks.",
+      "revId": "e4b79ea59a2804d146da8bc4f969651508c0e6ba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

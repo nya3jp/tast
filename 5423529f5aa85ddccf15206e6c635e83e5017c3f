@@ -159,6 +159,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "e51137c2_31f4357b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-12-02T01:42:39Z",
+      "side": 1,
+      "message": "Thanks for pointing out pushing binaries to the DUT, yes that\u0027s reasonable.\n\nThen can we update the CL to:\n\n- Call dut.New before running tests, and fail if any error is encountered (it means that address specification was incorrect, which is worth aborting all tests)\n- Do not call DUT.Connect in the framework, and just ask tests to call them.",
+      "parentUuid": "b40730c4_340712b0",
+      "revId": "5423529f5aa85ddccf15206e6c635e83e5017c3f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "dee04688_47ab8c77",
         "filename": "src/chromiumos/tast/bundle/args.go",
         "patchSetId": 1

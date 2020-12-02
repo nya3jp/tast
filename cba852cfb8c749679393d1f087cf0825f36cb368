@@ -72,6 +72,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "8e741f83_b1506cb5",
+        "filename": "src/chromiumos/tast/internal/planner/run.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-12-02T04:52:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f8ae167d_aae48eec",
+      "range": {
+        "startLine": 87,
+        "startChar": 1,
+        "endLine": 89,
+        "endChar": 32
+      },
+      "revId": "cba852cfb8c749679393d1f087cf0825f36cb368",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "f0e3da70_3d7202af",
@@ -85,6 +109,30 @@
       "writtenOn": "2020-12-02T02:54:14Z",
       "side": 1,
       "message": "huge nit: Can you export this method? Given that every field in this struct is exported, I think it makes sense to export this method as well.",
+      "range": {
+        "startLine": 92,
+        "startChar": 17,
+        "endLine": 92,
+        "endChar": 28
+      },
+      "revId": "cba852cfb8c749679393d1f087cf0825f36cb368",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "72f32ee4_ab4b2d19",
+        "filename": "src/chromiumos/tast/internal/planner/run.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-12-02T04:52:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f0e3da70_3d7202af",
       "range": {
         "startLine": 92,
         "startChar": 17,

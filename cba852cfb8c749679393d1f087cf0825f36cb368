@@ -22,6 +22,30 @@
       },
       "revId": "cba852cfb8c749679393d1f087cf0825f36cb368",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f513eebc_da0c1a48",
+        "filename": "src/chromiumos/tast/internal/planner/run.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-12-02T00:02:04Z",
+      "side": 1,
+      "message": "I understand treating the zero value specially can be error prone. However I also feel it a bit strange that every caller should fill a field which is just for unit tests.\nAnother point is as you said there are a lot of unit tests that need be updated. I think forgetting to update a test means specifying zero to CustomGracePeriod is also error-prone.\n\nHow about making the type of CustomGracePeriod *time.Duration ?",
+      "parentUuid": "7ef9f44a_73da026e",
+      "range": {
+        "startLine": 87,
+        "startChar": 1,
+        "endLine": 89,
+        "endChar": 32
+      },
+      "revId": "cba852cfb8c749679393d1f087cf0825f36cb368",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

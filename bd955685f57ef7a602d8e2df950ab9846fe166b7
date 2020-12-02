@@ -33,6 +33,24 @@
       "message": "How about describing why it must succeed?\ne.g. timing.FromContext succeeds because before() above makes it with logger\nor   timing.FromContext succeeds for a Context made by WithLogger",
       "revId": "bd955685f57ef7a602d8e2df950ab9846fe166b7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9d184507_cc452844",
+        "filename": "src/chromiumos/tast/internal/rpc/server.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-12-02T02:46:08Z",
+      "side": 1,
+      "message": "Makes sense, let me add a more detailed comment.",
+      "parentUuid": "03079ab6_93aa9e6d",
+      "revId": "bd955685f57ef7a602d8e2df950ab9846fe166b7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

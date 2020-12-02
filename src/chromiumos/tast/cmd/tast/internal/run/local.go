@@ -213,6 +213,13 @@ func runLocalTestsOnce(ctx context.Context, cfg *Config, hst *ssh.Conn, patterns
 	stderrReader := newFirstLineReader(handle.stderr)
 
 	crf := func(src, dst string) error {
+		path := filepath.Join(cfg.hstCopyBasePath, src)
+		files, err := hst.Command("ls", "-alr", path).Output(ctx)
+		if err != nil {
+			cfg.Logger.Logf("Failed to get remote file list: ", err)
+		} else {
+			cfg.Logger.Logf("Copying files from %s:\n%s", path, string(files))
+		}
 		return moveFromHost(ctx, cfg, hst, src, dst)
 	}
 	df := func(ctx context.Context, outDir string) string {

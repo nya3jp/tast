@@ -330,12 +330,14 @@ func TestRunTestsMissingDeps(t *gotesting.T) {
 	args := Args{
 		Mode: RunTestsMode,
 		RunTests: &RunTestsArgs{
-			OutDir:                      tmpDir,
-			DataDir:                     tmpDir,
-			CheckSoftwareDeps:           true,
-			TestVars:                    map[string]string{},
-			AvailableSoftwareFeatures:   []string{validDep},
-			UnavailableSoftwareFeatures: []string{missingDep},
+			OutDir:  tmpDir,
+			DataDir: tmpDir,
+			FeatureArgs: FeatureArgs{
+				CheckSoftwareDeps:           true,
+				TestVars:                    map[string]string{},
+				AvailableSoftwareFeatures:   []string{validDep},
+				UnavailableSoftwareFeatures: []string{missingDep},
+			},
 		},
 	}
 	stdin := newBufferWithArgs(t, &args)
@@ -428,10 +430,12 @@ func TestRunTestsSkipTestWithPrecondition(t *gotesting.T) {
 	args := Args{
 		Mode: RunTestsMode,
 		RunTests: &RunTestsArgs{
-			OutDir:                      tmpDir,
-			DataDir:                     tmpDir,
-			CheckSoftwareDeps:           true,
-			UnavailableSoftwareFeatures: []string{"dep"},
+			OutDir:  tmpDir,
+			DataDir: tmpDir,
+			FeatureArgs: FeatureArgs{
+				CheckSoftwareDeps:           true,
+				UnavailableSoftwareFeatures: []string{"dep"},
+			},
 		},
 	}
 	stdin := newBufferWithArgs(t, &args)
@@ -482,7 +486,9 @@ func TestRunRemoteData(t *gotesting.T) {
 			KeyFile:        td.UserKeyFile,
 			RunFlags:       []string{"-flag1", "-flag2"},
 			LocalBundleDir: "/mock/local/bundles",
-			TestVars:       map[string]string{"var1": "value1"},
+			FeatureArgs: FeatureArgs{
+				TestVars: map[string]string{"var1": "value1"},
+			},
 		},
 	}
 	stdin := newBufferWithArgs(t, &args)
@@ -616,14 +622,16 @@ func TestRunExternalDataFiles(t *gotesting.T) {
 	args := Args{
 		Mode: RunTestsMode,
 		RunTests: &RunTestsArgs{
-			OutDir:                      filepath.Join(tmpDir, "out"),
-			DataDir:                     dataDir,
-			Target:                      td.Srv.Addr().String(),
-			KeyFile:                     td.UserKeyFile,
-			CheckSoftwareDeps:           true,
-			AvailableSoftwareFeatures:   []string{"dep1"},
-			UnavailableSoftwareFeatures: []string{"dep2"},
-			Devservers:                  []string{ds.URL},
+			OutDir:  filepath.Join(tmpDir, "out"),
+			DataDir: dataDir,
+			Target:  td.Srv.Addr().String(),
+			KeyFile: td.UserKeyFile,
+			FeatureArgs: FeatureArgs{
+				CheckSoftwareDeps:           true,
+				AvailableSoftwareFeatures:   []string{"dep1"},
+				UnavailableSoftwareFeatures: []string{"dep2"},
+			},
+			Devservers: []string{ds.URL},
 		},
 	}
 	stdin := newBufferWithArgs(t, &args)

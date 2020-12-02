@@ -60,8 +60,10 @@ func runRemoteTestsOnce(ctx context.Context, cfg *Config, patterns []string) (re
 		Mode: runner.RunTestsMode,
 		RunTests: &runner.RunTestsArgs{
 			BundleArgs: bundle.RunTestsArgs{
+				FeatureArgs: bundle.FeatureArgs{
+					TestVars: cfg.testVars,
+				},
 				Patterns: patterns,
-				TestVars: cfg.testVars,
 				DataDir:  cfg.remoteDataDir,
 				OutDir:   cfg.remoteOutDir,
 				Target:   cfg.Target,
@@ -89,7 +91,7 @@ func runRemoteTestsOnce(ctx context.Context, cfg *Config, patterns []string) (re
 			BundleGlob: cfg.remoteBundleGlob(),
 		},
 	}
-	setRunnerTestDepsArgs(cfg, &args)
+	setRunnerTestDepsArgs(cfg, &args.RunTests.BundleArgs.FeatureArgs)
 
 	// Backfill deprecated fields in case we're executing an old test runner.
 	args.FillDeprecated()

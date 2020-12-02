@@ -46,18 +46,20 @@ func checkRunnerTestDepsArgs(t *testing.T, cfg *Config, checkDeps bool,
 		Mode:     runner.RunTestsMode,
 		RunTests: &runner.RunTestsArgs{},
 	}
-	setRunnerTestDepsArgs(cfg, &args)
+	setRunnerTestDepsArgs(cfg, &args.RunTests.BundleArgs.FeatureArgs)
 
 	exp := runner.RunTestsArgs{
 		BundleArgs: bundle.RunTestsArgs{
-			CheckSoftwareDeps:           checkDeps,
-			AvailableSoftwareFeatures:   avail,
-			UnavailableSoftwareFeatures: unavail,
-			DeviceConfig: bundle.DeviceConfigJSON{
-				Proto: dc,
-			},
-			HardwareFeatures: bundle.HardwareFeaturesJSON{
-				Proto: hf,
+			FeatureArgs: bundle.FeatureArgs{
+				CheckSoftwareDeps:           checkDeps,
+				AvailableSoftwareFeatures:   avail,
+				UnavailableSoftwareFeatures: unavail,
+				DeviceConfig: bundle.DeviceConfigJSON{
+					Proto: dc,
+				},
+				HardwareFeatures: bundle.HardwareFeaturesJSON{
+					Proto: hf,
+				},
 			},
 		},
 	}

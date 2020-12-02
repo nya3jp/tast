@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a5856002_b416ff34",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-12-02T01:44:55Z",
+      "side": 1,
+      "message": "LGTM with a nit",
+      "revId": "bd955685f57ef7a602d8e2df950ab9846fe166b7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "03079ab6_93aa9e6d",
+        "filename": "src/chromiumos/tast/internal/rpc/server.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-12-02T01:44:55Z",
+      "side": 1,
+      "message": "How about describing why it must succeed?\ne.g. timing.FromContext succeeds because before() above makes it with logger\nor   timing.FromContext succeeds for a Context made by WithLogger",
+      "revId": "bd955685f57ef7a602d8e2df950ab9846fe166b7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

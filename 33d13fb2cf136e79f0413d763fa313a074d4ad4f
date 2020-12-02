@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "11c930b4_3245face",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-12-02T10:21:27Z",
+      "side": 1,
+      "message": "Hmm, I\u0027m hesitant to put logging code there because crf is called asynchronously and may mess up unrelated test logs.\n\nI think we first want to see if the issue is caused by Tast\u0027s output file collection or Autotest\u0027s artifact uploading. How about modifying tast.py to run \"ls -laR $resultsdir\" at the end of tests? Then we can compare the file list and actual uploaded files to see which is the culprit.\n",
+      "revId": "33d13fb2cf136e79f0413d763fa313a074d4ad4f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1af95f5f_55a92844",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/local.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 217,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-12-02T10:21:27Z",
+      "side": 1,
+      "message": "-r is for reverse. Do you mean -R?",
+      "range": {
+        "startLine": 217,
+        "startChar": 38,
+        "endLine": 217,
+        "endChar": 39
+      },
+      "revId": "33d13fb2cf136e79f0413d763fa313a074d4ad4f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

@@ -139,6 +139,70 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "0a84d963_12ddeceb",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1400778
+      },
+      "writtenOn": "2020-12-02T01:14:34Z",
+      "side": 1,
+      "message": "Thanks for the clarification. This is an interesting mechanism to provide this functionality that differs from using bots. I think that the variables used should be updated to reflect how this is intended to be used. \"Companion\" is a bit too vague and the comments/documentation don\u0027t give enough background.\n\nIn the case of video chat clients, I would say that either 1. (strict) the test should fail if one of the companion DUTs cannot connect because it\u0027s not measuring the performance as expected (a 2 person call may have different performance characteristics from a 3 person call) or 2. (flexible) we should add a conditional to allow the test owner to determine whether the test should pass or fail when a companion DUT cannot connect.",
+      "parentUuid": "2d111d01_fccceecc",
+      "revId": "5423529f5aa85ddccf15206e6c635e83e5017c3f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "dee04688_47ab8c77",
+        "filename": "src/chromiumos/tast/bundle/args.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 1400778
+      },
+      "writtenOn": "2020-12-02T01:14:34Z",
+      "side": 1,
+      "message": "Something like: \"These targets are used to enable performance testing on the Target device when handling multi-participant scenarios, such as a Meet or Zoom call, by using them to connect to the same meeting instance as the Target device.\"",
+      "range": {
+        "startLine": 98,
+        "startChar": 4,
+        "endLine": 98,
+        "endChar": 55
+      },
+      "revId": "5423529f5aa85ddccf15206e6c635e83e5017c3f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0733a837_b083ecc6",
+        "filename": "src/chromiumos/tast/bundle/args.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 99,
+      "author": {
+        "id": 1400778
+      },
+      "writtenOn": "2020-12-02T01:14:34Z",
+      "side": 1,
+      "message": "SupplementalTargets or MultiUserTargets ?",
+      "range": {
+        "startLine": 99,
+        "startChar": 1,
+        "endLine": 99,
+        "endChar": 12
+      },
+      "revId": "5423529f5aa85ddccf15206e6c635e83e5017c3f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "95e935c8_064e7999",

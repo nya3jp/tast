@@ -88,6 +88,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "d53149d1_5db50585",
+        "filename": "src/chromiumos/tast/bundle/args.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-12-02T02:17:49Z",
+      "side": 1,
+      "message": "I see, thanks for confirming.",
+      "parentUuid": "f2b67b08_e5e82152",
+      "range": {
+        "startLine": 89,
+        "startChar": 14,
+        "endLine": 89,
+        "endChar": 36
+      },
+      "revId": "0f6df2b1fb0bfab785d30f91854b53c34b9e737f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "6181e559_e3470565",

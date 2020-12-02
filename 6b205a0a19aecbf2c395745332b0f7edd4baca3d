@@ -16,6 +16,46 @@
       "message": "Hi Shuhei:\n\nI have addressed the review comments. Please check. Thanks.\n\nSeewai\n",
       "revId": "6b205a0a19aecbf2c395745332b0f7edd4baca3d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "af9b7baa_4d553c6f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-12-02T02:17:49Z",
+      "side": 1,
+      "message": "Perfect, thank you!\n",
+      "revId": "6b205a0a19aecbf2c395745332b0f7edd4baca3d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1e479197_1ec128dd",
+        "filename": "src/chromiumos/tast/bundle/args.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-12-02T02:17:49Z",
+      "side": 1,
+      "message": "Yes, less indentation is nicer. :)",
+      "range": {
+        "startLine": 87,
+        "startChar": 0,
+        "endLine": 89,
+        "endChar": 2
+      },
+      "revId": "6b205a0a19aecbf2c395745332b0f7edd4baca3d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

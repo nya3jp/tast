@@ -37,6 +37,23 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "492879a4_ff377971",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-02T02:36:57Z",
+      "side": 1,
+      "message": "Submit to CQ",
+      "revId": "6b205a0a19aecbf2c395745332b0f7edd4baca3d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "1e479197_1ec128dd",
         "filename": "src/chromiumos/tast/bundle/args.go",
         "patchSetId": 3

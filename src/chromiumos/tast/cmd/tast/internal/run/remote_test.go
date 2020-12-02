@@ -210,13 +210,15 @@ func TestRemoteRun(t *gotesting.T) {
 		RunTests: &runner.RunTestsArgs{
 			BundleGlob: glob,
 			BundleArgs: bundle.RunTestsArgs{
-				DataDir:           td.cfg.remoteDataDir,
-				OutDir:            td.cfg.remoteOutDir,
-				KeyFile:           td.cfg.KeyFile,
-				TastPath:          exe,
-				RunFlags:          runFlags,
-				LocalBundleDir:    mockLocalBundleDir,
-				CheckSoftwareDeps: false,
+				DataDir:        td.cfg.remoteDataDir,
+				OutDir:         td.cfg.remoteOutDir,
+				KeyFile:        td.cfg.KeyFile,
+				TastPath:       exe,
+				RunFlags:       runFlags,
+				LocalBundleDir: mockLocalBundleDir,
+				FeatureArgs: bundle.FeatureArgs{
+					CheckSoftwareDeps: false,
+				},
 				Devservers:        mockDevservers,
 				DownloadMode:      planner.DownloadLazy,
 				HeartbeatInterval: heartbeatInterval,
@@ -276,6 +278,7 @@ func TestRemoteRunCopyOutput(t *gotesting.T) {
 	}
 }
 
+// disabledTestRemoteFailure is temporarily disabled.
 // TODO(crbug.com/1003952): Re-enable this test after fixing a race condition.
 func disabledTestRemoteFailure(t *gotesting.T) {
 	// Make the test runner print a message to stderr and fail.

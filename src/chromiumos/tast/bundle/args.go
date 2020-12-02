@@ -145,15 +145,37 @@ func (a *HardwareFeaturesJSON) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
-// RunTestsArgs is nested within Args and contains arguments used by RunTestsMode.
-type RunTestsArgs struct {
-	// Patterns contains patterns (either empty to run all tests, exactly one attribute expression,
-	// or one or more globs) describing which tests to run.
-	Patterns []string `json:"patterns,omitempty"`
-
+// FeatureArgs includes all the feature related arguments.
+type FeatureArgs struct {
 	// TestVars contains names and values of runtime variables used to pass out-of-band data to tests.
 	// Names correspond to testing.Test.Vars and values are accessed using testing.State.Var.
 	TestVars map[string]string `json:"testVars,omitempty"`
+	// CheckSoftwareDeps is true if each test's SoftwareDeps field should be checked against
+	// AvailableSoftwareFeatures and UnavailableSoftwareFeatures.
+	CheckSoftwareDeps bool `json:"checkSoftwareDeps,omitempty"`
+	// AvailableSoftwareFeatures contains a list of software features supported by the DUT.
+	AvailableSoftwareFeatures []string `json:"availableSoftwareFeatures,omitempty"`
+	// UnavailableSoftwareFeatures contains a list of software features supported by the DUT.
+	UnavailableSoftwareFeatures []string `json:"unavailableSoftwareFeatures,omitempty"`
+	// DeviceConfig contains the hardware info about the DUT.
+	// Marshaling and unmarshaling of this field is handled in MarshalJSON/UnmarshalJSON
+	// respectively.
+	// Deprecated. Use HardwareFeatures instead.
+	DeviceConfig DeviceConfigJSON
+	// HardwareFeatures contains the hardware info about DUT.
+	// Marshaling and unmarshaling of this field is handled in MarshalJSON/UnmarshalJSON
+	// respectively.
+	HardwareFeatures HardwareFeaturesJSON
+}
+
+// RunTestsArgs is nested within Args and contains arguments used by RunTestsMode.
+type RunTestsArgs struct {
+	// FeatureArgs includes all the feature related arguments.
+	FeatureArgs
+
+	// Patterns contains patterns (either empty to run all tests, exactly one attribute expression,
+	// or one or more globs) describing which tests to run.
+	Patterns []string `json:"patterns,omitempty"`
 
 	// DataDir is the path to the directory containing test data files.
 	DataDir string `json:"dataDir,omitempty"`
@@ -183,23 +205,6 @@ type RunTestsArgs struct {
 	// This path is used by remote tests to invoke gRPC services in local test bundles.
 	// It is only relevant for remote tests.
 	LocalBundleDir string `json:"localBundleDir,omitempty"`
-
-	// CheckSoftwareDeps is true if each test's SoftwareDeps field should be checked against
-	// AvailableSoftwareFeatures and UnavailableSoftwareFeatures.
-	CheckSoftwareDeps bool `json:"checkSoftwareDeps,omitempty"`
-	// AvailableSoftwareFeatures contains a list of software features supported by the DUT.
-	AvailableSoftwareFeatures []string `json:"availableSoftwareFeatures,omitempty"`
-	// UnavailableSoftwareFeatures contains a list of software features supported by the DUT.
-	UnavailableSoftwareFeatures []string `json:"unavailableSoftwareFeatures,omitempty"`
-	// DeviceConfig contains the hardware info about the DUT.
-	// Marshaling and unmarshaling of this field is handled in MarshalJSON/UnmarshalJSON
-	// respectively.
-	// Deprecated. Use HardwareFeatures instead.
-	DeviceConfig DeviceConfigJSON
-	// HardwareFeatures contains the hardware info about DUT.
-	// Marshaling and unmarshaling of this field is handled in MarshalJSON/UnmarshalJSON
-	// respectively.
-	HardwareFeatures HardwareFeaturesJSON
 
 	// Devservers contains URLs of devservers that can be used to download files.
 	Devservers []string `json:"devservers,omitempty"`
@@ -250,6 +255,8 @@ func (a *RunTestsArgs) Features() *dep.Features {
 
 // ListTestsArgs is nested within Args and contains arguments used by ListTestsMode.
 type ListTestsArgs struct {
+	// FeatureArgs includes all the feature related arguments.
+	FeatureArgs
 	// Patterns contains patterns (either empty to list all tests, exactly one attribute expression,
 	// or one or more globs) describing which tests to list.
 	Patterns []string `json:"patterns,omitempty"`

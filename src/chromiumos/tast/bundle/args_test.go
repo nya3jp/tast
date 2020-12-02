@@ -95,30 +95,34 @@ func TestMarshal(t *testing.T) {
 	// 0-bytes data after marshal is treated as nil.
 	// Fill some fields to test non-nil case here.
 	in := &RunTestsArgs{
-		DeviceConfig: DeviceConfigJSON{
-			Proto: &device.Config{
-				Id: &device.ConfigId{
-					PlatformId: &device.PlatformId{Value: "platformId"},
-					ModelId:    &device.ModelId{Value: "modelId"},
-					BrandId:    &device.BrandId{Value: "brandId"},
-				},
-			},
-		},
-		HardwareFeatures: HardwareFeaturesJSON{
-			Proto: &configpb.HardwareFeatures{
-				Screen: &configpb.HardwareFeatures_Screen{
-					TouchSupport: configpb.HardwareFeatures_PRESENT,
-					PanelProperties: &configpb.Component_DisplayPanel_Properties{
-						DiagonalMilliinch: 11000,
+		FeatureArgs: FeatureArgs{
+			AvailableSoftwareFeatures:   []string{"feature1"},
+			UnavailableSoftwareFeatures: []string{"feature2"},
+			DeviceConfig: DeviceConfigJSON{
+				Proto: &device.Config{
+					Id: &device.ConfigId{
+						PlatformId: &device.PlatformId{Value: "platformId"},
+						ModelId:    &device.ModelId{Value: "modelId"},
+						BrandId:    &device.BrandId{Value: "brandId"},
 					},
 				},
-				Fingerprint: &configpb.HardwareFeatures_Fingerprint{
-					Location: configpb.HardwareFeatures_Fingerprint_NOT_PRESENT,
-				},
-				EmbeddedController: &configpb.HardwareFeatures_EmbeddedController{
-					Present: configpb.HardwareFeatures_NOT_PRESENT,
-					EcType:  configpb.HardwareFeatures_EmbeddedController_EC_TYPE_UNKNOWN,
-					Part:    &configpb.Component_EmbeddedController{PartNumber: "my_part_number"},
+			},
+			HardwareFeatures: HardwareFeaturesJSON{
+				Proto: &configpb.HardwareFeatures{
+					Screen: &configpb.HardwareFeatures_Screen{
+						TouchSupport: configpb.HardwareFeatures_PRESENT,
+						PanelProperties: &configpb.Component_DisplayPanel_Properties{
+							DiagonalMilliinch: 11000,
+						},
+					},
+					Fingerprint: &configpb.HardwareFeatures_Fingerprint{
+						Location: configpb.HardwareFeatures_Fingerprint_NOT_PRESENT,
+					},
+					EmbeddedController: &configpb.HardwareFeatures_EmbeddedController{
+						Present: configpb.HardwareFeatures_NOT_PRESENT,
+						EcType:  configpb.HardwareFeatures_EmbeddedController_EC_TYPE_UNKNOWN,
+						Part:    &configpb.Component_EmbeddedController{PartNumber: "my_part_number"},
+					},
 				},
 			},
 		},

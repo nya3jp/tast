@@ -185,8 +185,10 @@ func runLocalTestsOnce(ctx context.Context, cfg *Config, hst *ssh.Conn, patterns
 		Mode: runner.RunTestsMode,
 		RunTests: &runner.RunTestsArgs{
 			BundleArgs: bundle.RunTestsArgs{
+				FeatureArgs: bundle.FeatureArgs{
+					TestVars: cfg.testVars,
+				},
 				Patterns:          patterns,
-				TestVars:          cfg.testVars,
 				DataDir:           cfg.localDataDir,
 				OutDir:            cfg.localOutDir,
 				Devservers:        cfg.devservers,
@@ -201,7 +203,7 @@ func runLocalTestsOnce(ctx context.Context, cfg *Config, hst *ssh.Conn, patterns
 			Devservers: cfg.devservers,
 		},
 	}
-	setRunnerTestDepsArgs(cfg, &args)
+	setRunnerTestDepsArgs(cfg, &args.RunTests.BundleArgs.FeatureArgs)
 
 	handle, err := startLocalRunner(ctx, cfg, hst, &args)
 	if err != nil {

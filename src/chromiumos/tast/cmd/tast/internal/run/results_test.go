@@ -868,6 +868,9 @@ func TestWriteResultsUnmatchedGlobs(t *gotesting.T) {
 		out := &bytes.Buffer{}
 		cfg.Logger = logging.NewSimple(out, 0, false)
 		cfg.Patterns = tc.patterns
+		for _, r := range results {
+			cfg.testNames = append(cfg.testNames, r.Name)
+		}
 		if err := WriteResults(context.Background(), &cfg, results, tc.complete); err != nil {
 			t.Errorf("WriteResults() failed for %v: %v", cfg.Patterns, err)
 			continue

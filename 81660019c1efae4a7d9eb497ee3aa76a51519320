@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6a829950_3491affc",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-03T22:30:36Z",
+      "side": 1,
+      "message": "This is the final CL for the sharding supporting. I have run manual tests. It also passed the unit tests. Please review. Thanks.",
+      "revId": "81660019c1efae4a7d9eb497ee3aa76a51519320",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

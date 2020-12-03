@@ -669,37 +669,65 @@ func TestRunList(t *gotesting.T) {
 		testing.AddTestInstance(test)
 	}
 
-	var infos []*testing.EntityWithRunnabilityInfo
+	var infos []testing.EntityWithRunnabilityInfo
 	for _, test := range tests {
-		infos = append(infos, test.EntityWithRunnabilityInfo(nil))
-	}
-
-	var exp bytes.Buffer
-	if err := testing.WriteTestsAsJSON(&exp, infos); err != nil {
-		t.Fatal(err)
+		infos = append(infos, *test.EntityWithRunnabilityInfo(nil))
 	}
 
 	// ListTestsMode should result in tests being JSON-marshaled to stdout.
 	stdin := newBufferWithArgs(t, &Args{Mode: ListTestsMode, ListTests: &ListTestsArgs{}})
 	stdout := &bytes.Buffer{}
+	startTime := time.Now()
 	if status := run(context.Background(), nil, stdin, stdout, &bytes.Buffer{},
 		&Args{}, &runConfig{}, localBundle); status != statusSuccess {
 		t.Fatalf("run() returned status %v; want %v", status, statusSuccess)
 	}
-	if stdout.String() != exp.String() {
-		t.Errorf("run() wrote %q; want %q", stdout.String(), exp.String())
+	endTime := time.Now()
+	var ts []testing.EntityWithRunnabilityInfo
+	if err := json.Unmarshal(stdout.Bytes(), &ts); err != nil {
+		t.Fatalf("unmarshal output %q: %v", stdout.String(), err)
+	}
+	if err := validateEntityWithRunnabilityInfos(ts, infos, startTime, endTime); err != nil {
+		t.Error("Unexpected list of tests: ", err)
 	}
 
 	// The -dumptests command-line flag should do the same thing.
 	clArgs := []string{"-dumptests"}
 	stdout.Reset()
+	startTime = time.Now()
 	if status := run(context.Background(), clArgs, &bytes.Buffer{}, stdout, &bytes.Buffer{},
 		&Args{}, &runConfig{}, localBundle); status != statusSuccess {
 		t.Fatalf("run(%v) returned status %v; want %v", clArgs, status, statusSuccess)
 	}
-	if stdout.String() != exp.String() {
-		t.Errorf("run(%v) wrote %q; want %q", clArgs, stdout.String(), exp.String())
+	endTime = time.Now()
+	if err := json.Unmarshal(stdout.Bytes(), &ts); err != nil {
+		t.Fatalf("unmarshal output %q: %v", stdout.String(), err)
 	}
+	if err := validateEntityWithRunnabilityInfos(ts, infos, startTime, endTime); err != nil {
+		t.Error("Unexpected result from dumptests: ", err)
+	}
+}
+
+// validateEntityWithRunnabilityInfos checks if information of an array of EntityWithRunnabilityInfo is correct.
+func validateEntityWithRunnabilityInfos(results, expected []testing.EntityWithRunnabilityInfo, startTime, endTime time.Time) error {
+	if len(results) != len(expected) {
+		return fmt.Errorf("Unexpected number of local tests: got %+v; want %+v", len(results), len(expected))
+	}
+	for i, r := range results {
+		if !reflect.DeepEqual(r.EntityInfo, expected[i].EntityInfo) {
+			return fmt.Errorf("Unexpected list local test EntityInfo: got %+v; want %+v", r.EntityInfo, expected[i].EntityInfo)
+		}
+		if r.SkipReason != expected[i].SkipReason {
+			return fmt.Errorf("Unexpected list local test SkipReason: got %q; want %q", r.SkipReason, expected[i].SkipReason)
+		}
+		if r.Time.Before(startTime) {
+			return fmt.Errorf("Unexpected list local test Time: got %v; want time after %v", r.Time, startTime)
+		}
+		if r.Time.After(endTime) {
+			return fmt.Errorf("Unexpected list local test Time: got %v; want time before %v", r.Time, endTime)
+		}
+	}
+	return nil
 }
 
 // TestRunListWithDep tests run.run for listing test with dependency check.

@@ -712,3 +712,56 @@ func unmatchedTestPatterns(patterns []string, results []*EntityResult) []string 
 	}
 	return unmatched
 }
+
+// handleSkippedTests handles operation such as writing log for skipped tests.
+func handleSkippedTests(cfg *Config, skippedTests []*EntityResult) error {
+	if len(skippedTests) < 0 {
+		return nil
+	}
+	streamedResultsFullPath := filepath.Join(cfg.ResDir, streamedResultsFilename)
+	streamWriter, err := newStreamedResultsWriter(streamedResultsFullPath)
+	if err != nil {
+		return err
+	}
+	defer streamWriter.close()
+
+	for _, t := range skippedTests {
+		if err := handleSkippedTest(cfg, t, streamWriter); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// handleSkippedTest handles operation such as writing log for a skipped test.
+func handleSkippedTest(cfg *Config, skippedTest *EntityResult, streamWriter *streamedResultsWriter) error {
+	finalOutDir := filepath.Join(cfg.ResDir, testLogsDir, skippedTest.Name)
+
+	if err := os.MkdirAll(finalOutDir, 0755); err != nil {
+		return err
+	}
+	f, err := os.Create(filepath.Join(finalOutDir, testLogFilename))
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	if err := cfg.Logger.AddWriter(f, log.LstdFlags); err != nil {
+		return err
+	}
+	defer cfg.Logger.RemoveWriter(f)
+
+	// Set OutDir so that it will be shown in results.json and streamed_results.jsonl.
+	skippedTest.OutDir = finalOutDir
+
+	if err := streamWriter.write(skippedTest, false); err != nil {
+		return err
+	}
+	cfg.Logger.Logf("Started %v %s", skippedTest.Type, skippedTest.Name)
+	if strings.HasPrefix(skippedTest.SkipReason, "missing") {
+		cfg.Logger.Logf("Skipped test %s due to missing dependencies: %s", skippedTest.Name, skippedTest.SkipReason)
+	} else {
+		cfg.Logger.Logf("Skipped test %s due to reason: %s", skippedTest.Name, skippedTest.SkipReason)
+	}
+	return nil
+}

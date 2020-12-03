@@ -149,8 +149,11 @@ func WriteResults(ctx context.Context, cfg *Config, results []*EntityResult, com
 	}
 
 	if complete {
+		var matchedTestNames []string
+		matchedTestNames = append(matchedTestNames, cfg.testNames...)
+		matchedTestNames = append(matchedTestNames, cfg.TestNamesToSkip...)
 		// Let the user know if one or more of the globs that they supplied didn't match any tests.
-		if pats := unmatchedTestPatterns(cfg.Patterns, results); len(pats) > 0 {
+		if pats := unmatchedTestPatterns(cfg.Patterns, matchedTestNames); len(pats) > 0 {
 			cfg.Logger.Log("")
 			cfg.Logger.Log("One or more test patterns did not match any tests:")
 			for _, p := range pats {
@@ -684,8 +687,8 @@ func readTestOutput(ctx context.Context, cfg *Config, r io.Reader, crf copyAndRe
 }
 
 // unmatchedTestPatterns returns any glob test patterns in the supplied slice
-// that failed to match any tests in results.
-func unmatchedTestPatterns(patterns []string, results []*EntityResult) []string {
+// that failed to match any tests.
+func unmatchedTestPatterns(patterns, testNames []string) []string {
 	// TODO(derat): Consider also checking attribute expressions.
 	if testing.GetTestPatternType(patterns) != testing.TestPatternGlobs {
 		return nil
@@ -700,8 +703,8 @@ func unmatchedTestPatterns(patterns []string, results []*EntityResult) []string 
 		}
 
 		matched := false
-		for _, res := range results {
-			if re.MatchString(res.Name) {
+		for _, name := range testNames {
+			if re.MatchString(name) {
 				matched = true
 				break
 			}

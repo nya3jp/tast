@@ -36,7 +36,7 @@ func runRemoteTests(ctx context.Context, cfg *Config) ([]*EntityResult, error) {
 	beforeRetry := func(ctx context.Context) bool { return true }
 
 	start := time.Now()
-	results, err := runTestsWithRetry(ctx, cfg, cfg.Patterns, runTests, beforeRetry)
+	results, err := runTestsWithRetry(ctx, cfg, cfg.testNames, runTests, beforeRetry)
 	elapsed := time.Since(start)
 	cfg.Logger.Logf("Ran %v remote test(s) in %v", len(results), elapsed.Round(time.Millisecond))
 	return results, err

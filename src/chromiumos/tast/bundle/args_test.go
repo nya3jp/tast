@@ -8,6 +8,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"io/ioutil"
+	"reflect"
 	"testing"
 
 	"github.com/golang/protobuf/proto"
@@ -140,5 +141,11 @@ func TestMarshal(t *testing.T) {
 	}
 	if !proto.Equal(in.HardwareFeatures.Proto, out.HardwareFeatures.Proto) {
 		t.Errorf("HardwareFeatures did not match: want %v, got %v", in.HardwareFeatures.Proto, out.HardwareFeatures.Proto)
+	}
+	if !reflect.DeepEqual(in.AvailableSoftwareFeatures, out.AvailableSoftwareFeatures) {
+		t.Errorf("AvailableSoftwareFeatures did not match: want %v, got %v", in.AvailableSoftwareFeatures, out.AvailableSoftwareFeatures)
+	}
+	if !reflect.DeepEqual(in.UnavailableSoftwareFeatures, out.UnavailableSoftwareFeatures) {
+		t.Errorf("UnavailableSoftwareFeatures did not match: want %v, got %v", in.UnavailableSoftwareFeatures, out.UnavailableSoftwareFeatures)
 	}
 }

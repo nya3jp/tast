@@ -97,6 +97,8 @@ func newLocalTestData(t *gotesting.T) *localTestData {
 	td.cfg.devservers = mockDevservers
 	td.cfg.buildArtifactsURL = mockBuildArtifactsURL
 	td.cfg.downloadMode = planner.DownloadLazy
+	td.cfg.totalShards = 1
+	td.cfg.shardIndex = 0
 
 	// Avoid checking test dependencies, which causes an extra local_test_runner call.
 	td.cfg.checkTestDeps = false

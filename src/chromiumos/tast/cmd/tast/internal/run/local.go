@@ -120,7 +120,7 @@ func runLocalTests(ctx context.Context, cfg *Config) ([]*EntityResult, error) {
 	}
 
 	start := time.Now()
-	results, err := runTestsWithRetry(ctx, cfg, cfg.Patterns, runTests, beforeRetry)
+	results, err := runTestsWithRetry(ctx, cfg, cfg.testNames, runTests, beforeRetry)
 	elapsed := time.Since(start)
 	cfg.Logger.Logf("Ran %v local test(s) in %v", len(results), elapsed.Round(time.Millisecond))
 	return results, err

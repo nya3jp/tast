@@ -7,12 +7,17 @@ package run
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"io"
 	"strings"
 	gotesting "testing"
+	"time"
 
+	"chromiumos/tast/internal/control"
 	"chromiumos/tast/internal/dep"
 	"chromiumos/tast/internal/runner"
+	"chromiumos/tast/internal/testing"
+	internal_testing "chromiumos/tast/internal/testing"
 )
 
 func TestRunTestsFailureBeforeRun(t *gotesting.T) {
@@ -97,5 +102,193 @@ func TestRunTestsGetInitialSysInfo(t *gotesting.T) {
 	}
 	if !called {
 		t.Errorf("runTests did not call getInitialSysInfo")
+	}
+}
+
+// TestRunTestsSkipTests check if runTests skipping testings correctly.
+func TestRunTestsSkipTests(t *gotesting.T) {
+	tests := []internal_testing.EntityWithRunnabilityInfo{
+		{
+			EntityInfo: internal_testing.EntityInfo{
+				Name:         "unsupported.Test0",
+				Desc:         "This is test 0",
+				SoftwareDeps: []string{"has_dep"},
+			},
+			SkipReason: "dependency not available",
+		},
+		{
+			EntityInfo: internal_testing.EntityInfo{Name: "pkg.Test1", Desc: "This is test 1"},
+		},
+		{
+			EntityInfo: internal_testing.EntityInfo{Name: "pkg.Test2", Desc: "This is test 2"},
+		},
+		{
+			EntityInfo: internal_testing.EntityInfo{Name: "pkg.Test3", Desc: "This is test 3"},
+		},
+		{
+			EntityInfo: internal_testing.EntityInfo{Name: "pkg.Test4", Desc: "This is test 4"},
+		},
+		{
+			EntityInfo: internal_testing.EntityInfo{
+				Name:         "unsupported.Test5",
+				Desc:         "This is test 5",
+				SoftwareDeps: []string{"has_dep"},
+			},
+			SkipReason: "dependency not available",
+		},
+		{
+			EntityInfo: internal_testing.EntityInfo{Name: "pkg.Test6", Desc: "This is test 6"},
+		},
+	}
+
+	td := newLocalTestData(t)
+	defer td.close()
+
+	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+		switch args.Mode {
+		case runner.GetDUTInfoMode:
+			// Just check that getDUTInfo is called; details of args are
+			// tested in deps_test.go.
+			json.NewEncoder(stdout).Encode(&runner.GetDUTInfoResult{
+				SoftwareFeatures: &dep.SoftwareFeatures{
+					Available: []string{"a_feature"},
+				},
+			})
+		case runner.ListTestsMode:
+			json.NewEncoder(stdout).Encode(tests)
+		case runner.RunTestsMode:
+			testNames := args.RunTests.BundleArgs.Patterns
+			mw := control.NewMessageWriter(stdout)
+			mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: len(testNames)})
+			count := int64(2)
+			for _, t := range testNames {
+				mw.WriteMessage(&control.EntityStart{Time: time.Unix(count, 0), Info: testing.EntityInfo{Name: t}})
+				count++
+				var skipReasons []string
+				if strings.HasPrefix(t, "unsupported") {
+					skipReasons = append(skipReasons, "dependency not available")
+				}
+				mw.WriteMessage(&control.EntityEnd{Time: time.Unix(count, 0), Name: t, SkipReasons: skipReasons})
+				count++
+			}
+			mw.WriteMessage(&control.RunEnd{Time: time.Unix(count, 0)})
+		default:
+			t.Errorf("Unexpected args.Mode = %v", args.Mode)
+		}
+		return 0
+	}
+
+	// List matching tests instead of running them.
+	td.cfg.localDataDir = "/tmp/data"
+	td.cfg.Patterns = []string{"*Test*"}
+	td.cfg.runLocal = true
+	td.cfg.totalShards = 2
+	td.cfg.checkTestDeps = true
+
+	expectedPassed := 5
+	expectedSkipped := len(tests) - 5
+	passed := 0
+	skipped := 0
+	for shardIndex := 0; shardIndex < td.cfg.totalShards; shardIndex++ {
+		td.cfg.softwareFeatures = nil
+		td.cfg.shardIndex = shardIndex
+		testResults, err := runTests(context.Background(), &td.cfg)
+		if err != nil {
+			t.Fatal("Failed to run tests: ", err)
+		}
+		for _, t := range testResults {
+			if t.SkipReason == "" {
+				passed++
+			} else {
+				skipped++
+			}
+		}
+	}
+	if passed != expectedPassed {
+		t.Fatalf("runTests returned %d passed tests; want %d", passed, expectedPassed)
+	}
+	if skipped != expectedSkipped {
+		t.Fatalf("runTests returned %d skipped tests; want %d", skipped, expectedSkipped)
+	}
+}
+
+func TestFindPatternsForShard(t *gotesting.T) {
+	tests := []internal_testing.EntityInfo{
+		{Name: "pkg.Test0", Desc: "This is test 0"},
+		{Name: "pkg.Test1", Desc: "This is test 1"},
+		{Name: "pkg.Test2", Desc: "This is test 2"},
+		{Name: "pkg.Test3", Desc: "This is test 3"},
+		{Name: "pkg.Test4", Desc: "This is test 4"},
+		{Name: "pkg.Test5", Desc: "This is test 5"},
+		{Name: "pkg.Test6", Desc: "This is test 6"},
+	}
+	// Make the runner print serialized tests.
+	b, err := json.Marshal(&tests)
+	if err != nil {
+		t.Fatal(err)
+	}
+	td := newRemoteTestData(t, string(b), "", 0)
+	defer td.close()
+
+	// List matching tests instead of running them.
+	td.cfg.remoteDataDir = "/tmp/data"
+	td.cfg.Patterns = []string{"*Test*"}
+	td.cfg.runRemote = true
+	td.cfg.totalShards = 3
+	processed := make(map[string]bool)
+	for shardIndex := 0; shardIndex < td.cfg.totalShards; shardIndex++ {
+		td.cfg.shardIndex = shardIndex
+		testsToRun, testsToSkip, testsNotInShard, err := findTestsForShard(context.Background(), &td.cfg)
+		if err != nil {
+			t.Fatal("Failed to find tests for shard: ", err)
+		}
+		if len(testsToRun)+len(testsNotInShard)+len(testsToSkip) != len(tests) {
+			t.Fatalf("The sum of numbers of tests in the shard (%v), outside the shard (%v) and skipped tests(%v) does not match the number of tests (%v)",
+				len(testsToRun), len(testsNotInShard), len(testsToSkip), len(tests))
+		}
+		for _, tr := range testsToRun {
+			name := tr.Name
+			if processed[name] {
+				t.Fatalf("Test %q is in more than one shard", name)
+			}
+			processed[name] = true
+		}
+	}
+	if len(processed) != len(tests) {
+		t.Fatal("Some tests are missing")
+	}
+}
+
+// testFindShardIndices tests whether the function findShardIndices returning the correct indices.
+func testFindShardIndices(numTests, totalShards, shardIndex, wantedStartIndex, wantedEndIndex int) (err error) {
+	startIndex, endIndex := findShardIndices(numTests, totalShards, shardIndex)
+	if startIndex != wantedStartIndex || endIndex != wantedEndIndex {
+		return fmt.Errorf("findShardIndices(%v, %v, %v)=(%v, %v); want (%v, %v)",
+			numTests, totalShards, shardIndex, startIndex, endIndex, wantedStartIndex, wantedEndIndex)
+	}
+	return nil
+}
+
+// TestFindShardIndices makes sure findShardIndices return expected indices.
+func TestFindShardIndices(t *gotesting.T) {
+	t.Parallel()
+	tests := []struct {
+		purpose                                                               string
+		totalTests, totalShards, shardIndex, wantedStartIndex, wantedEndIndex int
+	}{
+		{"the last shard of an evenly distributed shards", 9, 3, 0, 0, 3},
+		{"the middle shard of an evenly distributed shards", 9, 3, 1, 3, 6},
+		{"the last shard of an evenly distributed shards", 9, 3, 2, 6, 9},
+		{"the first shard of an unevenly distributed shards", 11, 3, 0, 0, 4},
+		{"the middle shard of an unevenly distributed shards", 11, 3, 1, 4, 8},
+		{"the last shard of an unevenly distributed shards", 11, 3, 2, 8, 11},
+		{"the case that there are more shards than tests and specified shard has a test", 9, 10, 0, 0, 1},
+		{"the case that there are more shards than tests and specified shard has no test", 9, 10, 9, 9, 9},
+		{"the case that the shard index is greater than the number of tests", 9, 12, 11, 9, 9},
+	}
+	for _, tt := range tests {
+		if err := testFindShardIndices(tt.totalTests, tt.totalShards, tt.shardIndex, tt.wantedStartIndex, tt.wantedEndIndex); err != nil {
+			t.Errorf("Failed in testing for %v: %v", tt.purpose, err)
+		}
 	}
 }

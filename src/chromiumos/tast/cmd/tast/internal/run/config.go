@@ -64,11 +64,15 @@ type Config struct {
 	KeyDir string
 	// Target is the target device for testing, in the form "[<user>@]host[:<port>]".
 	Target string
-	// Patterns specifies which tests to operate against.
+	// Patterns specifies the patterns of tests to operate against.
 	Patterns []string
 	// ResDir is the path to the directory where test results should be written.
 	// It is only used for RunTestsMode.
 	ResDir string
+	// TestNamesToSkip are tests that match patterns but are not sent to runners to run.
+	TestNamesToSkip []string
+
+	testNames []string // testNames specifies the names of the tests to be run.
 
 	mode     Mode   // action to perform
 	tastDir  string // base directory under which files are written
@@ -103,6 +107,9 @@ type Config struct {
 	remoteBundleDir string // dir where packaged remote test bundles are installed
 	remoteDataDir   string // dir containing packaged remote test data
 	remoteOutDir    string // dir where intermediate outputs of remote tests are written
+
+	totalShards int // total number of shards to be used in a test run
+	shardIndex  int // specifies the index of shard to used in the current run
 
 	sshRetries           int       // number of SSH connect retries
 	continueAfterFailure bool      // try to run remaining local tests after bundle/DUT crash or lost SSH connection
@@ -188,6 +195,9 @@ func (c *Config) SetFlags(f *flag.FlagSet) {
 	f.BoolVar(&c.continueAfterFailure, "continueafterfailure", true, "try to run remaining tests after bundle/DUT crash or lost SSH connection")
 	f.IntVar(&c.sshRetries, "sshretries", 0, "number of SSH connect retries")
 	f.StringVar(&c.tlwServer, "tlwserver", "", "TLW server address")
+
+	f.IntVar(&c.totalShards, "totalshards", 1, "total number of shards to be used in a test run")
+	f.IntVar(&c.shardIndex, "shardindex", 0, "the index of shard to used in the current run")
 
 	f.StringVar(&c.localRunner, "localrunner", "", "executable that runs local test bundles")
 	f.StringVar(&c.localBundleDir, "localbundledir", "", "directory containing builtin local test bundles")
@@ -371,6 +381,12 @@ func (c *Config) DeriveDefaults() error {
 			return errors.New("invalid -buildartifactsurl: not a gs:// URL")
 		}
 		c.extraAllowedBuckets = append(c.extraAllowedBuckets, u.Host)
+	}
+	if c.totalShards < 1 {
+		return fmt.Errorf("%v is an invalid number of shards", c.shardIndex)
+	}
+	if c.shardIndex < 0 || c.shardIndex >= c.totalShards {
+		return fmt.Errorf("shard index %v is out of range", c.shardIndex)
 	}
 
 	return nil

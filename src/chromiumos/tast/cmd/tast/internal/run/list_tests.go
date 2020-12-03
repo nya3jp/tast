@@ -37,7 +37,12 @@ func listTests(ctx context.Context, cfg *Config) ([]*EntityResult, error) {
 
 	results := make([]*EntityResult, len(tests))
 	for i := 0; i < len(tests); i++ {
-		results[i] = &EntityResult{EntityInfo: tests[i].EntityInfo, SkipReason: tests[i].SkipReason}
+		results[i] = &EntityResult{
+			EntityInfo: tests[i].EntityInfo,
+			SkipReason: tests[i].SkipReason,
+			Start:      tests[i].Time,
+			End:        tests[i].Time,
+		}
 	}
 	return results, nil
 }

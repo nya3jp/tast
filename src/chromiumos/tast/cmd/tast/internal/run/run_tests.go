@@ -24,9 +24,25 @@ func runTests(ctx context.Context, cfg *Config) ([]*EntityResult, error) {
 	if err := getInitialSysInfo(ctx, cfg); err != nil {
 		return nil, errors.Wrap(err, "failed to get initial sysinfo")
 	}
+
+	testNames, testsNotInShard, testsToSkip, err := findTestsForShard(ctx, cfg)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get test patterns for specified shard")
+	}
+	cfg.testNames = testNames
+	if len(cfg.testNames) == 0 {
+		// No tests to run.
+		return testsNotInShard, nil
+	}
+
 	cfg.startedRun = true
 
 	var results []*EntityResult
+	results = append(results, testsToSkip...)
+	results = append(results, testsNotInShard...)
+	if err := handleSkippedTests(cfg, results); err != nil {
+		return nil, errors.Wrap(err, "failed to handle skipped tests")
+	}
 	if cfg.runLocal {
 		lres, err := runLocalTests(ctx, cfg)
 		results = append(results, lres...)
@@ -47,7 +63,66 @@ func runTests(ctx context.Context, cfg *Config) ([]*EntityResult, error) {
 		return results, nil
 	}
 
+	// Run remote tests and merge the results.
 	rres, err := runRemoteTests(ctx, cfg)
 	results = append(results, rres...)
 	return results, err
+}
+
+// findTestsForShard finds the pattern for a subset of tests based on shard index.
+func findTestsForShard(ctx context.Context, cfg *Config) (testNames []string, testsNotInShard, testsToSkip []*EntityResult, err error) {
+	tests, testsToSkip, err := listRunnableTests(ctx, cfg)
+	if err != nil {
+		return nil, nil, nil, errors.Wrapf(err, "fails to find runnable tests for patterns %q", cfg.Patterns)
+	}
+
+	startIndex, endIndex := findShardIndices(len(tests), cfg.totalShards, cfg.shardIndex)
+	for i := startIndex; i < endIndex; i++ {
+		testNames = append(testNames, tests[i].Name)
+	}
+
+	const skipReason = "test is not in the specified shard"
+	for i := 0; i < startIndex; i++ {
+		tests[i].SkipReason = skipReason
+		testsNotInShard = append(testsNotInShard, tests[i])
+	}
+	for i := endIndex; i < len(tests); i++ {
+		tests[i].SkipReason = skipReason
+		testsNotInShard = append(testsNotInShard, tests[i])
+	}
+	return testNames, testsNotInShard, testsToSkip, nil
+}
+
+// listRunnableTests finds runnable tests that fit the cfg.Patterns.
+func listRunnableTests(ctx context.Context, cfg *Config) (testsToInclude, testsToSkip []*EntityResult, err error) {
+	tests, err := listTests(ctx, cfg)
+	if err != nil {
+		return nil, nil, errors.Wrapf(err, "cannot list tests for patterns %q", cfg.Patterns)
+	}
+	for _, t := range tests {
+		if t.SkipReason == "" {
+			testsToInclude = append(testsToInclude, t)
+		} else {
+			testsToSkip = append(testsToSkip, t)
+		}
+	}
+	return testsToInclude, testsToSkip, nil
+}
+
+// findShardIndices find the start and end index of a shard.
+func findShardIndices(numTests, totalShards, shardIndex int) (startIndex, endIndex int) {
+	numTestsPerShard := numTests / totalShards
+	extraTests := numTests % totalShards
+
+	// The number of tests would be different for different shard index.
+	if shardIndex < extraTests {
+		// First few shards will have one extra test.
+		numTestsPerShard++
+		startIndex = shardIndex * numTestsPerShard
+	} else {
+		startIndex = shardIndex*numTestsPerShard + extraTests
+	}
+
+	endIndex = startIndex + numTestsPerShard
+	return startIndex, endIndex
 }

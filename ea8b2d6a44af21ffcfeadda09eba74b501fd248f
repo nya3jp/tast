@@ -33,6 +33,23 @@
       "message": "Submit to CQ",
       "revId": "ea8b2d6a44af21ffcfeadda09eba74b501fd248f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0e78f9b7_ae29f2d3",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-03T19:20:07Z",
+      "side": 1,
+      "message": "Retry",
+      "revId": "ea8b2d6a44af21ffcfeadda09eba74b501fd248f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

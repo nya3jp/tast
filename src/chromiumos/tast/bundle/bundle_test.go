@@ -669,9 +669,9 @@ func TestRunList(t *gotesting.T) {
 		testing.AddTestInstance(test)
 	}
 
-	var infos []*testing.EntityInfo
+	var infos []*testing.EntityWithRunnabilityInfo
 	for _, test := range tests {
-		infos = append(infos, test.EntityInfo())
+		infos = append(infos, test.EntityWithRunnabilityInfo(nil))
 	}
 
 	var exp bytes.Buffer
@@ -699,6 +699,69 @@ func TestRunList(t *gotesting.T) {
 	}
 	if stdout.String() != exp.String() {
 		t.Errorf("run(%v) wrote %q; want %q", clArgs, stdout.String(), exp.String())
+	}
+}
+
+// TestRunListWithDep tests run.run for listing test with dependency check.
+func TestRunListWithDep(t *gotesting.T) {
+	const (
+		validDep   = "valid"
+		missingDep = "missing"
+	)
+
+	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
+	defer restore()
+
+	f := func(context.Context, *testing.State) {}
+	tests := []*testing.TestInstance{
+		{Name: "pkg.Test", Func: f, SoftwareDeps: []string{validDep}},
+		{Name: "pkg.Test2", Func: f, SoftwareDeps: []string{missingDep}},
+	}
+
+	expectedPassTests := map[string]struct{}{tests[0].Name: struct{}{}}
+	expectedSkipTests := map[string]struct{}{tests[1].Name: struct{}{}}
+
+	for _, test := range tests {
+		testing.AddTestInstance(test)
+	}
+
+	args := Args{
+		Mode: ListTestsMode,
+		ListTests: &ListTestsArgs{
+			FeatureArgs: FeatureArgs{
+				CheckSoftwareDeps:           true,
+				TestVars:                    map[string]string{},
+				AvailableSoftwareFeatures:   []string{validDep},
+				UnavailableSoftwareFeatures: []string{missingDep},
+			},
+		},
+	}
+
+	// ListTestsMode should result in tests being JSON-marshaled to stdout.
+	stdin := newBufferWithArgs(t, &args)
+	stdout := &bytes.Buffer{}
+	if status := run(context.Background(), nil, stdin, stdout, &bytes.Buffer{},
+		&Args{}, &runConfig{}, localBundle); status != statusSuccess {
+		t.Fatalf("run() returned status %v; want %v", status, statusSuccess)
+	}
+	var ts []testing.EntityWithRunnabilityInfo
+	if err := json.Unmarshal(stdout.Bytes(), &ts); err != nil {
+		t.Fatalf("unmarshal output %q: %v", stdout.String(), err)
+	}
+	if len(ts) != len(tests) {
+		t.Fatalf("run() returned %v entities; want %v", len(ts), len(tests))
+	}
+	for _, test := range ts {
+		if _, ok := expectedPassTests[test.Name]; ok {
+			if test.SkipReason != "" {
+				t.Fatalf("run() returned test %q with skip reason %q; want none", test.Name, test.SkipReason)
+			}
+		}
+		if _, ok := expectedSkipTests[test.Name]; ok {
+			if test.SkipReason == "" {
+				t.Fatalf("run() returned test %q with no skip reason; want %q", test.Name, test.SkipReason)
+			}
+		}
 	}
 }
 

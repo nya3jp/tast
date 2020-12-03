@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ba6c9f0b_d5a5d438",
+        "filename": "src/chromiumos/tast/internal/rpc/server.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 117,
+      "author": {
+        "id": 1400377
+      },
+      "writtenOn": "2020-12-03T18:12:49Z",
+      "side": 1,
+      "message": "Can we get the service name, or even method name, from the \"info\" parameter, and add to the TempDir path. Performance output will be named \"results-chart.json\" by the support library and we cannot change it in the tests so it will conflict with each other.",
+      "revId": "66265733c84c5a225a07c6593cd4ebd8479ea740",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

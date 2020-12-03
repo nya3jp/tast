@@ -182,7 +182,8 @@ func (st *fixtureStack) Push(ctx context.Context, fixt *testing.Fixture) error {
 		OutDir:      outDir,
 		ServiceDeps: fixt.ServiceDeps,
 	}
-	fout := newEntityOutputStream(st.out, fixt.EntityInfo())
+	ei := fixt.EntityInfo()
+	fout := newEntityOutputStream(st.out, ei)
 
 	ctx = testing.NewContext(ctx, ce, func(msg string) { fout.Log(msg) })
 
@@ -196,7 +197,7 @@ func (st *fixtureStack) Push(ctx context.Context, fixt *testing.Fixture) error {
 		FixtCtx:      ctx,
 	}
 
-	root := testing.NewEntityRoot(ce, rcfg, fout)
+	root := testing.NewEntityRoot(ce, ei, rcfg, fout)
 	f := newStatefulFixture(fixt, root, fout, st.top())
 	st.stack = append(st.stack, f)
 

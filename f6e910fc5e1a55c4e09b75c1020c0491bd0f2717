@@ -1,0 +1,90 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "64d5adb3_03be1120",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-12-03T08:27:50Z",
+      "side": 1,
+      "message": "Only a few minor comments. Thanks!\n",
+      "revId": "f6e910fc5e1a55c4e09b75c1020c0491bd0f2717",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8dfe9572_45806cc4",
+        "filename": "src/chromiumos/tast/internal/runner/bundles.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 160,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-12-03T08:27:50Z",
+      "side": 1,
+      "message": "style: var fs []*testing.EntityInfo\n\nI know it\u0027s copied from getTests though :)",
+      "range": {
+        "startLine": 160,
+        "startChar": 3,
+        "endLine": 160,
+        "endChar": 39
+      },
+      "revId": "f6e910fc5e1a55c4e09b75c1020c0491bd0f2717",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "64b5b772_971210d9",
+        "filename": "src/chromiumos/tast/internal/runner/runner.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-12-03T08:27:50Z",
+      "side": 1,
+      "message": "We check this in readArgs for all other modes.",
+      "range": {
+        "startLine": 81,
+        "startChar": 2,
+        "endLine": 83,
+        "endChar": 3
+      },
+      "revId": "f6e910fc5e1a55c4e09b75c1020c0491bd0f2717",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6ca5f090_c6f33b6c",
+        "filename": "src/chromiumos/tast/internal/runner/runner.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-12-03T08:27:50Z",
+      "side": 1,
+      "message": "nit: We can do this without marshaling to memory:\n\n json.NewEncoder(stdout).Encode(res)",
+      "range": {
+        "startLine": 89,
+        "startChar": 2,
+        "endLine": 95,
+        "endChar": 3
+      },
+      "revId": "f6e910fc5e1a55c4e09b75c1020c0491bd0f2717",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

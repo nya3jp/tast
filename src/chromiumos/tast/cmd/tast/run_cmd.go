@@ -168,7 +168,7 @@ func (r *runCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{})
 
 	status, results := r.wrapper.run(rctx, r.cfg)
 	allTestsRun := status.ExitCode == subcommands.ExitSuccess
-	if len(results) == 0 && allTestsRun {
+	if len(results) == 0 && len(r.cfg.TestNamesToSkip) == 0 && allTestsRun {
 		lg.Logf("No tests matched by pattern(s) %v", r.cfg.Patterns)
 		return subcommands.ExitFailure
 	}

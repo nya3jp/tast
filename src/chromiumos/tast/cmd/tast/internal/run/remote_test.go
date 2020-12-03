@@ -113,6 +113,8 @@ func newRemoteTestData(t *gotesting.T, stdout, stderr string, status int) *remot
 	td.cfg.localBundleDir = mockLocalBundleDir
 	td.cfg.localDataDir = mockLocalDataDir
 	td.cfg.remoteOutDir = filepath.Join(td.cfg.ResDir, "out.tmp")
+	td.cfg.totalShards = 1
+	td.cfg.shardIndex = 0
 
 	// Create a symlink to ourselves that can be executed as a fake test runner.
 	td.cfg.remoteRunner = filepath.Join(td.dir, fakeRunnerName)

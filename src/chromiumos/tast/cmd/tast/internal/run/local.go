@@ -120,7 +120,7 @@ func runLocalTests(ctx context.Context, cfg *Config) ([]*EntityResult, error) {
 	}
 
 	start := time.Now()
-	results, err := runTestsWithRetry(ctx, cfg, cfg.Patterns, runTests, beforeRetry)
+	results, err := runTestsWithRetry(ctx, cfg, cfg.TestNames, runTests, beforeRetry)
 	elapsed := time.Since(start)
 	cfg.Logger.Logf("Ran %v local test(s) in %v", len(results), elapsed.Round(time.Millisecond))
 	return results, err
@@ -185,9 +185,6 @@ func runLocalTestsOnce(ctx context.Context, cfg *Config, hst *ssh.Conn, patterns
 		Mode: runner.RunTestsMode,
 		RunTests: &runner.RunTestsArgs{
 			BundleArgs: bundle.RunTestsArgs{
-				FeatureArgs: bundle.FeatureArgs{
-					TestVars: cfg.testVars,
-				},
 				Patterns:          patterns,
 				DataDir:           cfg.localDataDir,
 				OutDir:            cfg.localOutDir,
@@ -203,7 +200,7 @@ func runLocalTestsOnce(ctx context.Context, cfg *Config, hst *ssh.Conn, patterns
 			Devservers: cfg.devservers,
 		},
 	}
-	setRunnerTestDepsArgs(cfg, &args.RunTests.BundleArgs.FeatureArgs)
+	args.RunTests.BundleArgs.FeatureArgs = featureArgsFromConfig(cfg)
 
 	handle, err := startLocalRunner(ctx, cfg, hst, &args)
 	if err != nil {

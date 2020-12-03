@@ -19,9 +19,20 @@ func TestListLocalTests(t *gotesting.T) {
 	td := newLocalTestData(t)
 	defer td.close()
 
-	tests := []testing.EntityInfo{
-		{Name: "pkg.Test", Desc: "This is a test", Attr: []string{"attr1", "attr2"}},
-		{Name: "pkg.AnotherTest", Desc: "Another test"},
+	tests := []testing.EntityWithRunnabilityInfo{
+		{
+			EntityInfo: testing.EntityInfo{
+				Name: "pkg.Test",
+				Desc: "This is a test",
+				Attr: []string{"attr1", "attr2"},
+			},
+		},
+		{
+			EntityInfo: testing.EntityInfo{
+				Name: "pkg.AnotherTest",
+				Desc: "Another test",
+			},
+		},
 	}
 
 	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
@@ -51,9 +62,23 @@ func TestListLocalTests(t *gotesting.T) {
 
 func TestListRemoteList(t *gotesting.T) {
 	// Make the runner print serialized tests.
-	tests := []testing.EntityInfo{
-		{Name: "pkg.Test1", Desc: "First description", Attr: []string{"attr1", "attr2"}, Pkg: "pkg"},
-		{Name: "pkg2.Test2", Desc: "Second description", Attr: []string{"attr3"}, Pkg: "pkg2"},
+	tests := []testing.EntityWithRunnabilityInfo{
+		{
+			EntityInfo: testing.EntityInfo{
+				Name: "pkg.Test1",
+				Desc: "First description",
+				Attr: []string{"attr1", "attr2"},
+				Pkg:  "pkg",
+			},
+		},
+		{
+			EntityInfo: testing.EntityInfo{
+				Name: "pkg2.Test2",
+				Desc: "Second description",
+				Attr: []string{"attr3"},
+				Pkg:  "pkg2",
+			},
+		},
 	}
 	b, err := json.Marshal(&tests)
 	if err != nil {

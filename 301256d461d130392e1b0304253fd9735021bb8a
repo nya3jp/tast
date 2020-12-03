@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "febeb62a_f4601a12",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-12-03T08:23:37Z",
+      "side": 1,
+      "message": "I guess you didn\u0027t remove ExitTimeout from TestInstance because it\u0027s not trivial to update bundle_test.go. Can you please add a TODO comment in TestInstance to replace use of ExitTimeout with planner.Config.CustomGracePeriod?",
+      "revId": "301256d461d130392e1b0304253fd9735021bb8a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

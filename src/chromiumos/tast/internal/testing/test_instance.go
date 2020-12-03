@@ -536,7 +536,7 @@ func (t *TestInstance) EntityInfo() *EntityInfo {
 type EntityWithRunnabilityInfo struct {
 	// See TestInstance for details of the fields.
 	EntityInfo
-	SkipReason string `json:"skipReason"`
+	SkipReason string `json:"skipReason"` // The reason for the test to be skipped.
 }
 
 // EntityWithRunnabilityInfo converts TestInstance to EntityWithRunnabilityInfo.

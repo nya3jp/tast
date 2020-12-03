@@ -13,6 +13,7 @@ import (
 	"path/filepath"
 	"reflect"
 	"strconv"
+	"strings"
 	gotesting "testing"
 	"time"
 
@@ -33,30 +34,35 @@ func TestRunPartialRun(t *gotesting.T) {
 	td := newLocalTestData(t)
 	defer td.close()
 
-	// Make the local runner report success, but set a nonexistent path for
-	// the remote runner so that it will fail.
+	// Set a nonexistent path for the remote runner so that it will fail.
 	td.cfg.runLocal = true
 	td.cfg.runRemote = true
 	const testName = "pkg.Test"
 	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
-		mw := control.NewMessageWriter(stdout)
-		mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 1})
-		mw.WriteMessage(&control.EntityStart{Time: time.Unix(2, 0), Info: testing.EntityInfo{Name: testName}})
-		mw.WriteMessage(&control.EntityEnd{Time: time.Unix(3, 0), Name: testName})
-		mw.WriteMessage(&control.RunEnd{Time: time.Unix(4, 0), OutDir: ""})
+		switch args.Mode {
+		case runner.RunTestsMode:
+			mw := control.NewMessageWriter(stdout)
+			mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 1})
+			mw.WriteMessage(&control.EntityStart{Time: time.Unix(2, 0), Info: testing.EntityInfo{Name: testName}})
+			mw.WriteMessage(&control.EntityEnd{Time: time.Unix(3, 0), Name: testName})
+			mw.WriteMessage(&control.RunEnd{Time: time.Unix(4, 0), OutDir: ""})
+		case runner.ListTestsMode:
+			tests := []testing.EntityWithRunnabilityInfo{
+				{
+					EntityInfo: testing.EntityInfo{
+						Name: testName,
+					},
+				},
+			}
+			json.NewEncoder(stdout).Encode(tests)
+		}
 		return 0
 	}
 	td.cfg.remoteRunner = filepath.Join(td.tempDir, "missing_remote_test_runner")
 
-	status, results := Run(context.Background(), &td.cfg)
+	status, _ := Run(context.Background(), &td.cfg)
 	if status.ExitCode != subcommands.ExitFailure {
 		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitFailure, td.logbuf.String())
-	}
-	if status.FailedBeforeRun {
-		t.Error("Run() incorrectly reported that failure occurred before trying to run tests")
-	}
-	if len(results) != 1 {
-		t.Errorf("Run() returned results for %d tests; want 1", len(results))
 	}
 }
 
@@ -81,9 +87,14 @@ func TestRunEphemeralDevserver(t *gotesting.T) {
 
 	td.cfg.runLocal = true
 	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
-		mw := control.NewMessageWriter(stdout)
-		mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
-		mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
+		switch args.Mode {
+		case runner.RunTestsMode:
+			mw := control.NewMessageWriter(stdout)
+			mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
+			mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
+		case runner.ListTestsMode:
+			json.NewEncoder(stdout).Encode([]testing.EntityWithRunnabilityInfo{})
+		}
 		return 0
 	}
 	td.cfg.devservers = nil // clear the default mock devservers set in newLocalTestData
@@ -157,6 +168,8 @@ func testRunDownloadPrivateBundles(t *gotesting.T, td *localTestData) {
 			mw := control.NewMessageWriter(stdout)
 			mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
 			mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
+		case runner.ListTestsMode:
+			json.NewEncoder(stdout).Encode([]testing.EntityWithRunnabilityInfo{})
 		case runner.DownloadPrivateBundlesMode:
 			exp := runner.DownloadPrivateBundlesArgs{
 				Devservers:        td.cfg.devservers,
@@ -215,9 +228,14 @@ func TestRunTLW(t *gotesting.T) {
 
 	td.cfg.runLocal = true
 	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
-		mw := control.NewMessageWriter(stdout)
-		mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
-		mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
+		switch args.Mode {
+		case runner.RunTestsMode:
+			mw := control.NewMessageWriter(stdout)
+			mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
+			mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
+		case runner.ListTestsMode:
+			json.NewEncoder(stdout).Encode([]testing.EntityWithRunnabilityInfo{})
+		}
 		return 0
 	}
 	td.cfg.Target = targetName
@@ -225,6 +243,76 @@ func TestRunTLW(t *gotesting.T) {
 
 	if status, _ := Run(context.Background(), &td.cfg); status.ExitCode != subcommands.ExitSuccess {
 		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.logbuf.String())
+	}
+}
+
+// TestRunWithSkippedTests makes sure that tests with unsupported dependency
+// would be skipped.
+func TestRunWithSkippedTests(t *gotesting.T) {
+	td := newLocalTestData(t)
+	defer td.close()
+
+	td.cfg.runLocal = true
+	tests := []testing.EntityWithRunnabilityInfo{
+		{
+			EntityInfo: testing.EntityInfo{
+				Name: "pkg.Supported_1",
+			},
+		},
+		{
+			EntityInfo: testing.EntityInfo{
+				Name: "pkg.Unsupported_1",
+			},
+			SkipReason: "Not Supported",
+		},
+		{
+			EntityInfo: testing.EntityInfo{
+				Name: "pkg.Supported_2",
+			},
+		},
+	}
+	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+		switch args.Mode {
+		case runner.RunTestsMode:
+			patterns := args.RunTests.BundleArgs.Patterns
+			mw := control.NewMessageWriter(stdout)
+			var count int64 = 1
+			mw.WriteMessage(&control.RunStart{Time: time.Unix(count, 0), NumTests: len(patterns)})
+			for _, p := range patterns {
+				count = count + 1
+				mw.WriteMessage(&control.EntityStart{Time: time.Unix(count, 0), Info: testing.EntityInfo{Name: p}})
+				count = count + 1
+				var skipReasons []string
+				if strings.HasPrefix(p, "pkg.Unsupported") {
+					skipReasons = append(skipReasons, "Not Supported")
+				}
+				mw.WriteMessage(&control.EntityEnd{Time: time.Unix(count, 0), Name: p, SkipReasons: skipReasons})
+			}
+			count = count + 1
+
+			mw.WriteMessage(&control.RunEnd{Time: time.Unix(count, 0), OutDir: ""})
+		case runner.ListTestsMode:
+
+			json.NewEncoder(stdout).Encode(tests)
+		}
+		return 0
+	}
+	status, results := Run(context.Background(), &td.cfg)
+	if status.ExitCode == subcommands.ExitFailure {
+		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.logbuf.String())
+	}
+	if len(results) != len(tests) {
+		t.Errorf("Got wrong number of results %v; want %v", len(results), len(tests))
+	}
+	for _, r := range results {
+		if strings.HasPrefix(r.Name, "pkg.Supported") {
+			if r.SkipReason != "" {
+				t.Errorf("Test %q has SkipReason %q; want none", r.Name, r.SkipReason)
+			}
+		} else if r.SkipReason == "" {
+			t.Errorf("Test %q has no SkipReason; want something", r.Name)
+
+		}
 	}
 }
 

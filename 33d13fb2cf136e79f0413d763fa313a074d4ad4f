@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "06db58ec_8e080cb8",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-12-03T12:18:25Z",
+      "side": 1,
+      "message": "I agree.\nCreated https://chromium-review.googlesource.com/c/chromiumos/third_party/autotest/+/2571132",
+      "parentUuid": "11c930b4_3245face",
+      "revId": "33d13fb2cf136e79f0413d763fa313a074d4ad4f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "1af95f5f_55a92844",

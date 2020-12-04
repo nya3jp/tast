@@ -201,6 +201,7 @@ func main() {
 			"wifi":        "!betty && !tast_vm && !nyan_kitty",
 			"wilco":       "wilco",
 			"wired_8021x": "wired_8021x",
+			"wpa3_sae":    "wpa3_sae",
 			// TODO(crbug.com/1070299): Remove the below hard-coded devices and use
 			// Intel WiFi dependency when wifi hardware dependencies are implemented.
 			// TODO(crbug.com/1115620): remove "Elm" and "Hana" after unibuild migration

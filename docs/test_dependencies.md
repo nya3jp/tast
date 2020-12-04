@@ -165,6 +165,7 @@ The following software features are defined:
 *   `vulkan` - Whether [Vulkan] is enabled.
 *   `watchdog` - watchdog daemon
 *   `wifi` - If this DUT has WiFi device.
+*   `wpa3_sae` - The ability to use WPA3-SAE authentication for WiFi.
 *   `wilco` - If this DUT is a [wilco] device. These features include
     the DTC (Diagnostic and Telemetry Controller) VM, a special EC interface,
     and a dock firmware updater.

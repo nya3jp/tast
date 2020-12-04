@@ -229,6 +229,24 @@
       "parentUuid": "7d2f2f6d_3b2406f8",
       "revId": "0e64f732710da00ae6e3dc046591abcd17201cf7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b63c949a_9c33c96f",
+        "filename": "src/chromiumos/tast/internal/rpc/server.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-12-04T03:17:25Z",
+      "side": 1,
+      "message": "Thanks for your understanding. I know the current approach needs a bit more work in your use case, but I really want to design it to be consistent with current support library use cases.",
+      "parentUuid": "86fe8f8d_5e2265b3",
+      "revId": "0e64f732710da00ae6e3dc046591abcd17201cf7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

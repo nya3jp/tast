@@ -193,6 +193,24 @@
       "parentUuid": "8b1f6875_67478b72",
       "revId": "0e64f732710da00ae6e3dc046591abcd17201cf7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7d2f2f6d_3b2406f8",
+        "filename": "src/chromiumos/tast/internal/rpc/server.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-12-04T03:03:47Z",
+      "side": 1,
+      "message": "Basically we should merge all performance results into one top-level results-chart.json because it\u0027s an established protocol between Tast and Chrome OS infra. Of course you can write your own infra that collects results-chart.json from subdirectories, but it\u0027s not standard.\n\nI recommend modifying gRPC services to return performance results in a mergeable format. For example, we should be able to support serializing/deserializing perf.Values as protocol buffer messages. Then, a remote test can call multiple gRPC methods to collect performance results, merge them into one perf.Value, and finally save it to results-chart.json.\n\nI expect this is not a lot of work, since you have to refactor existing local tests to be callable from gRPC services anyway.",
+      "parentUuid": "aa222d4f_f2f2aa55",
+      "revId": "0e64f732710da00ae6e3dc046591abcd17201cf7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

@@ -118,6 +118,23 @@
       "message": "Retry",
       "revId": "ea8b2d6a44af21ffcfeadda09eba74b501fd248f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "592847ee_748ba7fd",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-04T16:58:42Z",
+      "side": 1,
+      "message": "Retry",
+      "revId": "ea8b2d6a44af21ffcfeadda09eba74b501fd248f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

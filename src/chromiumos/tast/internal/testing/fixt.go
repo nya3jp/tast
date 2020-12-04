@@ -65,7 +65,11 @@ type Fixture struct {
 	// will access. This field is valid only for remote fixtures.
 	ServiceDeps []string
 
-	// TODO(oka): Add Data, Vars and Param fields.
+	// Vars contains the names of runtime variables used to pass out-of-band data to tests.
+	// Values are supplied using "tast run -var=name=value", and tests can access values via State.Var.
+	Vars []string
+
+	// TODO(oka): Add Data and Param fields.
 }
 
 // EntityInfo returns EntityInfo for the fixture.
@@ -74,6 +78,7 @@ func (f *Fixture) EntityInfo() *EntityInfo {
 		Name:        f.Name,
 		Desc:        f.Desc,
 		Contacts:    append([]string(nil), f.Contacts...),
+		Vars:        append([]string(nil), f.Vars...),
 		ServiceDeps: append([]string(nil), f.ServiceDeps...),
 		Fixture:     f.Parent,
 		Type:        EntityFixture,

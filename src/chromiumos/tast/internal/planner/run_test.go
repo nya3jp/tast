@@ -1099,6 +1099,59 @@ func TestRunFixtureMissing(t *gotesting.T) {
 	}
 }
 
+func TestRunFixtureVars(t *gotesting.T) {
+	const (
+		declaredVarName   = "declared"
+		declaredVarValue  = "foo"
+		undeclaredVarName = "undeclared"
+	)
+
+	fixt := &testing.Fixture{
+		Name: "fixt",
+		Impl: newFakeFixture(withSetUp(func(ctx context.Context, s *testing.FixtState) interface{} {
+			func() {
+				defer func() {
+					if recover() != nil {
+						t.Errorf("Failed to access variable %q", declaredVarName)
+					}
+				}()
+				if value, ok := s.Var(declaredVarName); !ok {
+					t.Errorf("Variable %q not found", declaredVarName)
+				} else if value != declaredVarValue {
+					t.Errorf("Variable %q = %q; want %q", declaredVarName, value, declaredVarValue)
+				}
+			}()
+			func() {
+				// Brace for panic.
+				defer func() {
+					recover()
+				}()
+				s.Var(undeclaredVarName)
+				t.Errorf("Variable %q could be accessed unexpectedly", undeclaredVarName)
+			}()
+			return nil
+		})),
+		Vars: []string{declaredVarName},
+	}
+
+	tests := []*testing.TestInstance{{
+		Name:    "pkg.Test",
+		Fixture: "fixt",
+		Func:    func(ctx context.Context, s *testing.State) {},
+		Timeout: time.Minute,
+	}}
+
+	cfg := &Config{
+		Fixtures: map[string]*testing.Fixture{fixt.Name: fixt},
+		Vars: map[string]string{
+			declaredVarName:   declaredVarValue,
+			undeclaredVarName: "forbidden",
+		},
+	}
+
+	runTestsAndReadAll(t, tests, cfg)
+}
+
 func TestRunPrecondition(t *gotesting.T) {
 	type data struct{}
 	preData := &data{}

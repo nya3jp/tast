@@ -250,6 +250,8 @@ func (r *EntityRoot) newVarMixin() *varMixin {
 func (r *EntityRoot) NewFixtState() *FixtState {
 	return &FixtState{
 		globalMixin: r.newGlobalMixin("", r.HasError()),
+		varMixin:    r.newVarMixin(),
+		entityRoot:  r,
 	}
 }
 
@@ -767,6 +769,9 @@ func (s *TestHookState) Purgeable() []string {
 // FixtState is the state the framework passes to Fixture.SetUp and Fixture.TearDown.
 type FixtState struct {
 	*globalMixin
+	*varMixin
+
+	entityRoot *EntityRoot
 }
 
 // FixtContext returns fixture-scoped context. i.e. the context is alive until TearDown returns.

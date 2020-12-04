@@ -16,6 +16,24 @@
       "message": "Can we get the service name, or even method name, from the \"info\" parameter, and add to the TempDir path. Performance output will be named \"results-chart.json\" by the support library and we cannot change it in the tests so it will conflict with each other.",
       "revId": "66265733c84c5a225a07c6593cd4ebd8479ea740",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ec4c090b_ab161d58",
+        "filename": "src/chromiumos/tast/internal/rpc/server.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 117,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-12-04T01:00:42Z",
+      "side": 1,
+      "message": "I recommend modifying support libraries to accept options to customize where to save results-chart.json.\n\nI also considered introducing a framework API that modifies output dir contained in context.Context, like:\n\n // ContextJoinOutDir creates a new Context which returns a new path for ContextOutDir\n // which is a join of the original output directory path and subdir.\n func ContextJoinOutDir(ctx context.Context, subdir string) context.Context\n\nBut I\u0027m hesitant to do this since we lose immutability of context values, which makes output-related code harder to reason about.",
+      "parentUuid": "ba6c9f0b_d5a5d438",
+      "revId": "66265733c84c5a225a07c6593cd4ebd8479ea740",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

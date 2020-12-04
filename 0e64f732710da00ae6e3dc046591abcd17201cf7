@@ -157,6 +157,24 @@
       "parentUuid": "40e7841f_6c9d5206",
       "revId": "0e64f732710da00ae6e3dc046591abcd17201cf7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8b1f6875_67478b72",
+        "filename": "src/chromiumos/tast/internal/rpc/server.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-12-04T01:00:42Z",
+      "side": 1,
+      "message": "Actually I think results-chart.json is a good example showing that we should not create subdirectories for services. If a remote test wants to invoke a gRPC service that saves results-chart.json, it should save the file to the top-level directory of the remote test output directory, because results-chart.json in subdirectories are not collected by crosbolt infra.\n\nIn other words, while we can avoid file conflicts by creating subdirectory per service, it also means that services lose control of exact location where their output files are saved, which is problematic when test result consumers (like crosbolt) expects some specific file layout.\n\nRather I think gRPC services should create subdirectories by themselves if file conflicts is a problem. The same argument applies to support libraries, and I don\u0027t see a reason to treat support libraries and gRPC services differently.",
+      "parentUuid": "58a25afc_a6dc1b3a",
+      "revId": "0e64f732710da00ae6e3dc046591abcd17201cf7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

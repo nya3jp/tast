@@ -88,6 +88,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "7b03dbad_34f7f274",
+        "filename": "src/chromiumos/tast/internal/rpc/file_transfer.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-12-04T03:55:42Z",
+      "side": 1,
+      "message": "Oh I missed this comment, sorry!\n\nI also first considered using the direct SSH command invocation, but then we have to tightly couple the rpc package with the SSH protocol (currently the rpc package does not depend on the ssh package). The dependency will forbid us from using the rpc package over non-SSH connection, particularly in unit tests.\n\nSo until we find out that the performance is an issue, I want to do everything within gRPC protocol.",
+      "parentUuid": "b8bbc1f0_a79b3228",
+      "revId": "0e64f732710da00ae6e3dc046591abcd17201cf7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "291bf55f_f6d9c8df",

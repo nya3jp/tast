@@ -189,8 +189,8 @@ func (st *fixtureStack) Push(ctx context.Context, fixt *testing.Fixture) error {
 
 	rcfg := &testing.RuntimeConfig{
 		// TODO(crbug.com/1127165): Support DataDir.
-		// TODO(crbug.com/1127166): Support Vars.
 		OutDir:       outDir,
+		Vars:         st.cfg.Vars,
 		CloudStorage: testing.NewCloudStorage(st.cfg.Devservers, st.cfg.TLWServer, st.cfg.DUTName),
 		RemoteData:   st.cfg.RemoteData,
 		FixtValue:    st.Val(),

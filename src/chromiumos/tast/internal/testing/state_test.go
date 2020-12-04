@@ -873,7 +873,8 @@ func TestStateExports(t *gotesting.T) {
 				"Param",
 				"ParentValue",
 				"RPCHint",
-				// TODO(crbug.com/1035940): Provide access to runtime variables.
+				"RequiredVar",
+				"Var",
 				// TODO(crbug.com/1035940): Provide access to services.
 			},
 		},

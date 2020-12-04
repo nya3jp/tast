@@ -211,6 +211,24 @@
       "parentUuid": "aa222d4f_f2f2aa55",
       "revId": "0e64f732710da00ae6e3dc046591abcd17201cf7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "86fe8f8d_5e2265b3",
+        "filename": "src/chromiumos/tast/internal/rpc/server.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 1400377
+      },
+      "writtenOn": "2020-12-04T03:13:06Z",
+      "side": 1,
+      "message": "Thanks Shuhei. We can do merge on the remote side, ether by GRPC, or just merge the collected results-chart.json before it is overwritten. We just need to mention this somewhere so developers know this situation.",
+      "parentUuid": "7d2f2f6d_3b2406f8",
+      "revId": "0e64f732710da00ae6e3dc046591abcd17201cf7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

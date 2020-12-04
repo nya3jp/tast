@@ -175,6 +175,24 @@
       "parentUuid": "58a25afc_a6dc1b3a",
       "revId": "0e64f732710da00ae6e3dc046591abcd17201cf7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "aa222d4f_f2f2aa55",
+        "filename": "src/chromiumos/tast/internal/rpc/server.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 79,
+      "author": {
+        "id": 1400377
+      },
+      "writtenOn": "2020-12-04T02:45:49Z",
+      "side": 1,
+      "message": "I think results-chart.json is only used by local tests now, and we wanted to use it in services. The file will be saved in local OutDir, and we need to transfer it back from service OutDir to remote OutDir. But if we have two services to collect metrics in a single test, the results-chart.json will be overwritten. This is my concern. I didn\u0027t think about how results-chart.json is collected by crosbolt because I haven\u0027t used it, but just wanted all results-chart.json to be kept. Hope this makes sense.",
+      "parentUuid": "8b1f6875_67478b72",
+      "revId": "0e64f732710da00ae6e3dc046591abcd17201cf7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

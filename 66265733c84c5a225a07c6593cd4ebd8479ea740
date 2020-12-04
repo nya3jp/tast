@@ -34,6 +34,24 @@
       "parentUuid": "ba6c9f0b_d5a5d438",
       "revId": "66265733c84c5a225a07c6593cd4ebd8479ea740",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "09f8153b_5bb92a62",
+        "filename": "src/chromiumos/tast/internal/rpc/server.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 117,
+      "author": {
+        "id": 1400377
+      },
+      "writtenOn": "2020-12-04T02:45:49Z",
+      "side": 1,
+      "message": "Yes modifying support library to customize the output dir or file name can solve the problem.",
+      "parentUuid": "ec4c090b_ab161d58",
+      "revId": "66265733c84c5a225a07c6593cd4ebd8479ea740",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

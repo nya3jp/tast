@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f4db5cf0_0354150a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1132414
+      },
+      "writtenOn": "2020-12-04T00:45:51Z",
+      "side": 1,
+      "message": "related to CL:2573599 but not strictly CQ-dependent on it",
+      "revId": "70402850e304feac5b74fc4b0c395d407e395ef5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

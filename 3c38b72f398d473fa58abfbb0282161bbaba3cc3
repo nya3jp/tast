@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0984f88f_623a0bb1",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-05T01:37:57Z",
+      "side": 1,
+      "message": "It is the initial version of tast_rtd. It simply checks if the input protobuf file is readable. It is not doing anything useful yet.",
+      "revId": "3c38b72f398d473fa58abfbb0282161bbaba3cc3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

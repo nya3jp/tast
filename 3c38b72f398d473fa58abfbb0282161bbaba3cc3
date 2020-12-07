@@ -16,6 +16,75 @@
       "message": "It is the initial version of tast_rtd. It simply checks if the input protobuf file is readable. It is not doing anything useful yet.",
       "revId": "3c38b72f398d473fa58abfbb0282161bbaba3cc3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e6e734bf_946ec959",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-12-07T06:13:47Z",
+      "side": 1,
+      "message": "File names containing timestamps are a bit harder to locate. It\u0027s nice to avoid it unless we create many of them in the same directory.\n\nInstead I recommend creating a top directory whose name contains a timestamp, and creating a fixed-name file underneath it, just like Tast CLI do (e.g. /tmp/tast/results/YYYYMMDD-HHMMSS/full.txt)",
+      "range": {
+        "startLine": 29,
+        "startChar": 32,
+        "endLine": 29,
+        "endChar": 47
+      },
+      "revId": "3c38b72f398d473fa58abfbb0282161bbaba3cc3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "10d4c11d_38cad439",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-12-07T06:13:47Z",
+      "side": 1,
+      "message": "fullLog is leaked (log.New does not close it). Also it\u0027s a bit difficult to debug if logs are not printed to stderr.\n\nI recommend using the default configuration (printing to stderr) for now. Later we can extend it to print logs to both stderr and a file. For example, you can use io.MultiWriter for this purpose.\nhttps://godoc.org/io#MultiWriter",
+      "range": {
+        "startLine": 32,
+        "startChar": 1,
+        "endLine": 32,
+        "endChar": 8
+      },
+      "revId": "3c38b72f398d473fa58abfbb0282161bbaba3cc3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1d0fcd24_78c973ba",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-12-07T06:13:47Z",
+      "side": 1,
+      "message": "doMain always return 0 at this moment (except when log.Fatal is called), so we can inline it to \"main\".\n\nIf we want to introduce an inner function like doMain, I\u0027d recommend making it return error instead of int, since it\u0027s very usual that Go functions return error.\n\nFor example:\n\n func main() {\n   if err :\u003d func() error {\n     // main body here\n   }(); err !\u003d nil {\n     log.Fatalf(\"ERROR: %v\", err)\n   }\n }",
+      "range": {
+        "startLine": 51,
+        "startChar": 5,
+        "endLine": 51,
+        "endChar": 11
+      },
+      "revId": "3c38b72f398d473fa58abfbb0282161bbaba3cc3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

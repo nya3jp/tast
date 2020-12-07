@@ -41,6 +41,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "099880e8_e8619c09",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-07T22:36:50Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e6e734bf_946ec959",
+      "range": {
+        "startLine": 29,
+        "startChar": 32,
+        "endLine": 29,
+        "endChar": 47
+      },
+      "revId": "3c38b72f398d473fa58abfbb0282161bbaba3cc3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "10d4c11d_38cad439",
@@ -64,6 +88,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "26873111_f39978dd",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-07T22:36:50Z",
+      "side": 1,
+      "message": "I have added a defer to close the file and I have also used a io.MultiWriter to write to both stderr and a log file. Please check.",
+      "parentUuid": "10d4c11d_38cad439",
+      "range": {
+        "startLine": 32,
+        "startChar": 1,
+        "endLine": 32,
+        "endChar": 8
+      },
+      "revId": "3c38b72f398d473fa58abfbb0282161bbaba3cc3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "1d0fcd24_78c973ba",
@@ -77,6 +125,30 @@
       "writtenOn": "2020-12-07T06:13:47Z",
       "side": 1,
       "message": "doMain always return 0 at this moment (except when log.Fatal is called), so we can inline it to \"main\".\n\nIf we want to introduce an inner function like doMain, I\u0027d recommend making it return error instead of int, since it\u0027s very usual that Go functions return error.\n\nFor example:\n\n func main() {\n   if err :\u003d func() error {\n     // main body here\n   }(); err !\u003d nil {\n     log.Fatalf(\"ERROR: %v\", err)\n   }\n }",
+      "range": {
+        "startLine": 51,
+        "startChar": 5,
+        "endLine": 51,
+        "endChar": 11
+      },
+      "revId": "3c38b72f398d473fa58abfbb0282161bbaba3cc3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "dded10b9_62c309da",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-07T22:36:50Z",
+      "side": 1,
+      "message": "Since I need to close the log file in a defer, I think I still should use a function to return 0 or 1. Please see latest change. We can discuss if you think otherwise. Thanks.",
+      "parentUuid": "1d0fcd24_78c973ba",
       "range": {
         "startLine": 51,
         "startChar": 5,

@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2cbef39d_f480b977",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-07T22:36:50Z",
+      "side": 1,
+      "message": "I think I have addressed all the concerns. Please take a look. Thanks.",
+      "revId": "2c00753919ee3de0237d60be938abde01e9a3c7b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

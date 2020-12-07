@@ -16,6 +16,69 @@
       "message": "This is the third CL for the sharding supporting. I have tested it manually. It also passed the unit tests. Please review. Thanks.",
       "revId": "fac402ca92abbcf40b70fc60ee37db935b824fe1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a8054a2c_4a7910c8",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-12-07T05:35:21Z",
+      "side": 1,
+      "message": "LGTM with nits, thanks for this change!\n",
+      "revId": "fac402ca92abbcf40b70fc60ee37db935b824fe1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a12c6aed_9c7fbff1",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/list_tests.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-12-07T05:35:21Z",
+      "side": 1,
+      "message": "Sorry I missed this in crrev.com/c/2569366, but I think we can improve setRunnerTestDepsArgs to return FeatureArgs instead of taking it as an output argument. That is,\n\n func setRunnerTestDepsArgs(cfg *Config, args *bundle.FeatureArgs)\n\ncan be changed to\n\n func featureArgsFromConfig(cfg *Config) *bundle.FeatureArgs\n\nThen constructing runner.Args above is more straightforward:\n\n args :\u003d \u0026runner.Args{\n   Mode: runner.ListTestsMode,\n   ListTests: \u0026runner.ListTestsArgs{\n     BundleArgs: bundle.ListTestsArgs{\n       Patterns: cfg.Patterns,\n       FeatureArgs: featureArgsFromConfig(cfg),\n     },\n     BundleGlob: glob,\n   },\n }\n\nYou don\u0027t have to do it in this change, but I\u0027d appreciate if you could create a follow-up cleanup CL to do it.",
+      "range": {
+        "startLine": 66,
+        "startChar": 1,
+        "endLine": 66,
+        "endChar": 22
+      },
+      "revId": "fac402ca92abbcf40b70fc60ee37db935b824fe1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8c756dfc_9a5f5cc5",
+        "filename": "src/chromiumos/tast/internal/testing/test_instance.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 544,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-12-07T05:35:21Z",
+      "side": 1,
+      "message": "nit: Go tends to prefer shorter names for short-scoped variables. In this case \"info\" would be sufficient.",
+      "range": {
+        "startLine": 544,
+        "startChar": 1,
+        "endLine": 544,
+        "endChar": 26
+      },
+      "revId": "fac402ca92abbcf40b70fc60ee37db935b824fe1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

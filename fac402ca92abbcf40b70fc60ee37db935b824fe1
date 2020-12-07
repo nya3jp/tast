@@ -35,6 +35,23 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "a071f6c4_f6e96d85",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-07T19:37:05Z",
+      "side": 1,
+      "message": "I will take care the two comments in the next CL. Thanks.",
+      "revId": "fac402ca92abbcf40b70fc60ee37db935b824fe1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "a12c6aed_9c7fbff1",
@@ -58,6 +75,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "895cb13a_45294b2e",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/list_tests.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-07T19:37:05Z",
+      "side": 1,
+      "message": "I will take care of it in the next CL. Thanks.",
+      "parentUuid": "a12c6aed_9c7fbff1",
+      "range": {
+        "startLine": 66,
+        "startChar": 1,
+        "endLine": 66,
+        "endChar": 22
+      },
+      "revId": "fac402ca92abbcf40b70fc60ee37db935b824fe1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "8c756dfc_9a5f5cc5",
@@ -71,6 +112,30 @@
       "writtenOn": "2020-12-07T05:35:21Z",
       "side": 1,
       "message": "nit: Go tends to prefer shorter names for short-scoped variables. In this case \"info\" would be sufficient.",
+      "range": {
+        "startLine": 544,
+        "startChar": 1,
+        "endLine": 544,
+        "endChar": 26
+      },
+      "revId": "fac402ca92abbcf40b70fc60ee37db935b824fe1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "fa9bf800_5efad7d2",
+        "filename": "src/chromiumos/tast/internal/testing/test_instance.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 544,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-07T19:37:05Z",
+      "side": 1,
+      "message": "I will take care of it in next CL. Thanks.",
+      "parentUuid": "8c756dfc_9a5f5cc5",
       "range": {
         "startLine": 544,
         "startChar": 1,

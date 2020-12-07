@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "911d4a74_a353adbc",
+        "filename": "src/chromiumos/tast/internal/planner/run_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 1126,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-12-07T23:34:21Z",
+      "side": 1,
+      "message": "declaredVarName is not declared ?",
+      "range": {
+        "startLine": 1126,
+        "startChar": 0,
+        "endLine": 1126,
+        "endChar": 6
+      },
+      "revId": "9565415f0ceedbaabdd6ffb06fc17a8c638cda1c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

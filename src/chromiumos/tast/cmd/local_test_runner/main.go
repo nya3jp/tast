@@ -69,6 +69,7 @@ func main() {
 			"arc_camera3":        `"arc-camera3"`,
 			"arc_launched_32bit": `"arc-launched-32bit-abi"`,
 			"arc_launched_64bit": `"!arc-launched-32bit-abi"`,
+			"arc_pstore":         "arc && arcvm && amd64",
 			"arm":                `"arm" || "arm64"`,
 			"aslr":               "!asan",                        // ASan instrumentation breaks ASLR
 			"audio_play":         "internal_speaker && !tast_vm", // VMs and some boards don't have a speaker

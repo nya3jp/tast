@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "19e01d85_9626973e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-08T02:56:30Z",
+      "side": 1,
+      "message": "I have undone the refactor change in this CL. I will file a different CL for the refactor changes. Please review this CL. Thanks.",
+      "revId": "880b7f8d6882b84d45f89c752032278a6e206685",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

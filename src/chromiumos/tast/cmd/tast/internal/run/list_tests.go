@@ -63,7 +63,7 @@ func runListTestsCommand(r runnerCmd, cfg *Config, glob string) ([]testing.Entit
 			BundleGlob: glob,
 		},
 	}
-	setRunnerTestDepsArgs(cfg, &args.ListTests.BundleArgs.FeatureArgs)
+	args.ListTests.BundleArgs.FeatureArgs = featureArgsFromConfig(cfg)
 	if err := runTestRunnerCommand(
 		r,
 		args,

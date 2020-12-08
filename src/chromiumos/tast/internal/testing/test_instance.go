@@ -542,20 +542,20 @@ type EntityWithRunnabilityInfo struct {
 
 // EntityWithRunnabilityInfo converts TestInstance to EntityWithRunnabilityInfo.
 func (t *TestInstance) EntityWithRunnabilityInfo(features *dep.Features) *EntityWithRunnabilityInfo {
-	entityWithRunnabilityInfo := EntityWithRunnabilityInfo{
+	info := EntityWithRunnabilityInfo{
 		EntityInfo: *t.EntityInfo(),
 	}
 	if features == nil {
-		return &entityWithRunnabilityInfo
+		return &info
 	}
 	r := t.ShouldRun(features)
 	if !r.OK() {
 		var reasons []string
 		reasons = append(reasons, r.SkipReasons...)
 		reasons = append(reasons, r.Errors...)
-		entityWithRunnabilityInfo.SkipReason = strings.Join(reasons, ", ")
+		info.SkipReason = strings.Join(reasons, ", ")
 	}
-	return &entityWithRunnabilityInfo
+	return &info
 }
 
 // WriteTestsAsJSON marshals ts to JSON and writes the resulting data to w.

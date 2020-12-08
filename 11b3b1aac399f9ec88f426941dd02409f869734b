@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f6135574_5632c0bf",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-08T00:14:55Z",
+      "side": 1,
+      "message": "I have addressed the two comments in the CL: https://chromium-review.googlesource.com/c/chromiumos/platform/tast/+/2571967\n\nPlease review. Thanks.\n",
+      "revId": "11b3b1aac399f9ec88f426941dd02409f869734b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

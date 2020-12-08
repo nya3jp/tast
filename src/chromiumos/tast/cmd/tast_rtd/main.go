@@ -48,11 +48,15 @@ func newLogger(logFile *os.File) *log.Logger {
 // readInput reads an invocation protobuf file and returns a pointer to rtd.Invocation.
 // TODO: Populate rtd.Invocation.
 func readInput(fileName string) (*rtd.Invocation, error) {
-	_, err := ioutil.ReadFile(fileName)
+	data, err := ioutil.ReadFile(fileName)
 	if err != nil {
 		return nil, fmt.Errorf("fail to read file %v: %v", fileName, err)
 	}
-	return nil, nil
+	inv, err := unmarshalInvocation(data)
+	if err != nil {
+		return nil, fmt.Errorf("fail to unmarshal file %v: %v", fileName, err)
+	}
+	return inv, nil
 }
 
 func main() {

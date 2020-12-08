@@ -54,6 +54,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "b81d0ffa_0d797931",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-12-08T02:00:46Z",
+      "side": 1,
+      "message": "Hi,\n\nTo recap go/small-cls, the most important point is to split CLs so that each CL does just one thing. Those two changes are completely irrelevant to crrev.com/c/2572806, so we should not merge them.",
+      "parentUuid": "a071f6c4_f6e96d85",
+      "revId": "fac402ca92abbcf40b70fc60ee37db935b824fe1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "a12c6aed_9c7fbff1",
         "filename": "src/chromiumos/tast/cmd/tast/internal/run/list_tests.go",
         "patchSetId": 1
@@ -101,6 +119,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "23dec303_8ee9c871",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/list_tests.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-12-08T02:00:46Z",
+      "side": 1,
+      "message": "This should be a change separated from both crrev.com/c/2571967 and crrev.com/c/2572806.",
+      "parentUuid": "895cb13a_45294b2e",
+      "range": {
+        "startLine": 66,
+        "startChar": 1,
+        "endLine": 66,
+        "endChar": 22
+      },
+      "revId": "fac402ca92abbcf40b70fc60ee37db935b824fe1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "8c756dfc_9a5f5cc5",
         "filename": "src/chromiumos/tast/internal/testing/test_instance.go",
         "patchSetId": 1
@@ -136,6 +178,30 @@
       "side": 1,
       "message": "I will take care of it in next CL. Thanks.",
       "parentUuid": "8c756dfc_9a5f5cc5",
+      "range": {
+        "startLine": 544,
+        "startChar": 1,
+        "endLine": 544,
+        "endChar": 26
+      },
+      "revId": "fac402ca92abbcf40b70fc60ee37db935b824fe1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "82b9d6ce_9766834c",
+        "filename": "src/chromiumos/tast/internal/testing/test_instance.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 544,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-12-08T02:00:46Z",
+      "side": 1,
+      "message": "This can be done in this CL (since this is the CL that introduces the variable). Otherwise we should do it separately from crrev.com/c/2572806.",
+      "parentUuid": "fa9bf800_5efad7d2",
       "range": {
         "startLine": 544,
         "startChar": 1,

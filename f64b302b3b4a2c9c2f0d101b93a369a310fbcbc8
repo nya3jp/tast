@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "090c22bf_7b1c923c",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/deps.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 87,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-12-08T10:19:33Z",
+      "side": 1,
+      "message": "Can we return *bundle.FeatureArgs to avoid unnecessary copies?",
+      "range": {
+        "startLine": 87,
+        "startChar": 40,
+        "endLine": 87,
+        "endChar": 64
+      },
+      "revId": "f64b302b3b4a2c9c2f0d101b93a369a310fbcbc8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d49a41a1_89590070",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/deps_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-12-08T10:19:33Z",
+      "side": 1,
+      "message": "You can inline featureArgsFromConfig call in the struct initialization, which is easier to read. Same for others.",
+      "range": {
+        "startLine": 47,
+        "startChar": 2,
+        "endLine": 47,
+        "endChar": 35
+      },
+      "revId": "f64b302b3b4a2c9c2f0d101b93a369a310fbcbc8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

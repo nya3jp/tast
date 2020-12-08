@@ -72,6 +72,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "3d38e317_5e6a32bb",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-08T02:58:27Z",
+      "side": 1,
+      "message": "I have undone refactor change for crrev.com/c/2572806. Please review crrev.com/c/2572806. Thanks.",
+      "parentUuid": "b81d0ffa_0d797931",
+      "revId": "fac402ca92abbcf40b70fc60ee37db935b824fe1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "a12c6aed_9c7fbff1",
         "filename": "src/chromiumos/tast/cmd/tast/internal/run/list_tests.go",
         "patchSetId": 1
@@ -131,6 +149,30 @@
       "side": 1,
       "message": "This should be a change separated from both crrev.com/c/2571967 and crrev.com/c/2572806.",
       "parentUuid": "895cb13a_45294b2e",
+      "range": {
+        "startLine": 66,
+        "startChar": 1,
+        "endLine": 66,
+        "endChar": 22
+      },
+      "revId": "fac402ca92abbcf40b70fc60ee37db935b824fe1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9ce4a665_f9452930",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/list_tests.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-08T02:58:27Z",
+      "side": 1,
+      "message": "I have undone refactor change for crrev.com/c/2572806. Please review crrev.com/c/2572806. Thanks.",
+      "parentUuid": "23dec303_8ee9c871",
       "range": {
         "startLine": 66,
         "startChar": 1,
@@ -202,6 +244,30 @@
       "side": 1,
       "message": "This can be done in this CL (since this is the CL that introduces the variable). Otherwise we should do it separately from crrev.com/c/2572806.",
       "parentUuid": "fa9bf800_5efad7d2",
+      "range": {
+        "startLine": 544,
+        "startChar": 1,
+        "endLine": 544,
+        "endChar": 26
+      },
+      "revId": "fac402ca92abbcf40b70fc60ee37db935b824fe1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8ae92ecf_3de53aa6",
+        "filename": "src/chromiumos/tast/internal/testing/test_instance.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 544,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-08T02:58:27Z",
+      "side": 1,
+      "message": "I have undone refactor change for crrev.com/c/2572806. Please review crrev.com/c/2572806. Thanks.",
+      "parentUuid": "82b9d6ce_9766834c",
       "range": {
         "startLine": 544,
         "startChar": 1,

@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "421242ca_9dfdaab9",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-08T02:58:27Z",
+      "side": 1,
+      "message": "I have undone refactor change for crrev.com/c/2572806. Please review crrev.com/c/2572806. Thanks.",
+      "revId": "9b7cd69a3a0b93883f9e22ddf4bfb6f00122112c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

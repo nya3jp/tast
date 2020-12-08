@@ -83,13 +83,17 @@ func getDUTInfo(ctx context.Context, cfg *Config) error {
 	return nil
 }
 
-// setRunnerTestDepsArgs set the feature arguments from configuration.
-func setRunnerTestDepsArgs(cfg *Config, args *bundle.FeatureArgs) {
-	args.CheckSoftwareDeps = cfg.checkTestDeps
+// featureArgsFromConfig returns feature arguments based on the configuration parameter.
+func featureArgsFromConfig(cfg *Config) *bundle.FeatureArgs {
+	args := bundle.FeatureArgs{
+		CheckSoftwareDeps: cfg.checkTestDeps,
+		TestVars:          cfg.testVars,
+	}
 	if cfg.softwareFeatures != nil {
 		args.AvailableSoftwareFeatures = cfg.softwareFeatures.Available
 		args.UnavailableSoftwareFeatures = cfg.softwareFeatures.Unavailable
 		args.DeviceConfig.Proto = cfg.deviceConfig
 		args.HardwareFeatures.Proto = cfg.hardwareFeatures
 	}
+	return &args
 }

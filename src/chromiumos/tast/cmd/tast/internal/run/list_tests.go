@@ -59,11 +59,13 @@ func runListTestsCommand(r runnerCmd, cfg *Config, glob string) ([]testing.Entit
 	args := &runner.Args{
 		Mode: runner.ListTestsMode,
 		ListTests: &runner.ListTestsArgs{
-			BundleArgs: bundle.ListTestsArgs{Patterns: cfg.Patterns},
+			BundleArgs: bundle.ListTestsArgs{
+				FeatureArgs: *featureArgsFromConfig(cfg),
+				Patterns:    cfg.Patterns,
+			},
 			BundleGlob: glob,
 		},
 	}
-	setRunnerTestDepsArgs(cfg, &args.ListTests.BundleArgs.FeatureArgs)
 	if err := runTestRunnerCommand(
 		r,
 		args,

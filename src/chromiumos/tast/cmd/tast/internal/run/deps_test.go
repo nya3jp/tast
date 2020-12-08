@@ -37,7 +37,7 @@ func writeGetDUTInfoResult(w io.Writer, avail, unavail []string, dc *device.Conf
 	return json.NewEncoder(w).Encode(&res)
 }
 
-// checkRunnerTestDepsArgs calls setRunnerTestDepsArgs using cfg and verifies
+// checkRunnerTestDepsArgs calls featureArgsFromConfig using cfg and verifies
 // that it sets runner args as specified per checkDeps, avail, and unavail.
 func checkRunnerTestDepsArgs(t *testing.T, cfg *Config, checkDeps bool,
 	avail, unavail []string, dc *device.Config, hf *configpb.HardwareFeatures, osVersion string) {
@@ -46,7 +46,7 @@ func checkRunnerTestDepsArgs(t *testing.T, cfg *Config, checkDeps bool,
 		Mode:     runner.RunTestsMode,
 		RunTests: &runner.RunTestsArgs{},
 	}
-	setRunnerTestDepsArgs(cfg, &args.RunTests.BundleArgs.FeatureArgs)
+	args.RunTests.BundleArgs.FeatureArgs = featureArgsFromConfig(cfg)
 
 	exp := runner.RunTestsArgs{
 		BundleArgs: bundle.RunTestsArgs{
@@ -64,7 +64,7 @@ func checkRunnerTestDepsArgs(t *testing.T, cfg *Config, checkDeps bool,
 		},
 	}
 	if !cmp.Equal(*args.RunTests, exp, cmp.Comparer(proto.Equal)) {
-		t.Errorf("setRunnerTestDepsArgs(%+v) set %+v; want %+v", cfg, *args.RunTests, exp)
+		t.Errorf("featureArgsFromConfig(%+v) set %+v; want %+v", cfg, *args.RunTests, exp)
 	}
 }
 

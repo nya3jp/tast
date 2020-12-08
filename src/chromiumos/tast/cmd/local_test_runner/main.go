@@ -107,7 +107,7 @@ func main() {
 			// guado, tidus, rikku, veyron_fievel, and veyron_tiger do not have EC firmware. crbug.com/1123716. TODO(crbug.com/1124554) Use an EC hardware dep for these rather than a software dep.
 			// nocturne only sporadically captures EC panics. crbug.com/1135798
 			// TODO(https://crbug.com/1122066): remove guado-cfm and rikku-cfm when they're no longer necessary
-			"ec_crash":                `!(("board:asuka" || "board:banon" || "board:caroline" || "board:cave" || "board:celes" || "board:chell" || "board:cyan" || "board:edgar" || "board:kefka" || "board:reks" || "board:relm" || "board:sentry" || "board:terra" || "board:ultima" || "board:wizpig") || ("board:drallion" || "board:sarien") || ("board:guado" || "board:guado-cfm" || "board:tidus" || "board:rikku" || "board:rikku-cfm" || "board:veyron_fievel" || "board:veyron_tiger") || "board:nocturne")`,
+			"ec_crash":                `!(("board:asuka" || "board:banon" || "board:caroline" || "board:caroline-kernelnext" || "board:cave" || "board:celes" || "board:chell" || "board:cyan" || "board:edgar" || "board:kefka" || "board:reks" || "board:relm" || "board:sentry" || "board:terra" || "board:ultima" || "board:wizpig") || ("board:drallion" || "board:sarien") || ("board:guado" || "board:guado-cfm" || "board:tidus" || "board:rikku" || "board:rikku-cfm" || "board:veyron_fievel" || "board:veyron_tiger") || "board:nocturne")`,
 			"encrypted_reboot_vault":  `!("kernel-3_8" || "kernel-3_10" || "kernel-3_14")`,
 			"endorsement":             "!betty && !tast_vm", // VMs don't have valid endorsement certificate.
 			"firewall":                "!moblab",            // Moblab has relaxed iptables rules

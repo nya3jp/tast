@@ -16,6 +16,29 @@
       "message": "slgtm",
       "revId": "248ad17f3d3d0daeea490ceafd610fcc1ffe4974",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f9056536_96543f5e",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1305461
+      },
+      "writtenOn": "2020-12-08T17:34:56Z",
+      "side": 1,
+      "message": "Does x86 not have this feature?",
+      "range": {
+        "startLine": 72,
+        "startChar": 42,
+        "endLine": 72,
+        "endChar": 47
+      },
+      "revId": "248ad17f3d3d0daeea490ceafd610fcc1ffe4974",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e2e69c7d_e066747f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-08T22:15:27Z",
+      "side": 1,
+      "message": "This CL enhances tast_rtd to read read an invocation protobuf file and populate the structure rtd.Invocation. Please review. Thanks. ",
+      "revId": "a28467e630024d2dd91a45280455ef7b053ff4e2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

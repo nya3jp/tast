@@ -16,6 +16,46 @@
       "message": "I think I have addressed all the concerns. Please take a look. Thanks.",
       "revId": "2c00753919ee3de0237d60be938abde01e9a3c7b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d21d1603_ebef042a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-12-08T02:15:18Z",
+      "side": 1,
+      "message": "LGTM, I\u0027ll defer to Tatsuhisa.\n",
+      "revId": "2c00753919ee3de0237d60be938abde01e9a3c7b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "08c3dafe_74f11403",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/main.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-12-08T02:15:18Z",
+      "side": 1,
+      "message": "huge nit: This function never returns an error. We can return *log.Logger only.",
+      "range": {
+        "startLine": 43,
+        "startChar": 5,
+        "endLine": 43,
+        "endChar": 14
+      },
+      "revId": "2c00753919ee3de0237d60be938abde01e9a3c7b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

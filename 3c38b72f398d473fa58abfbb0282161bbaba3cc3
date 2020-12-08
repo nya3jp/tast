@@ -157,6 +157,30 @@
       },
       "revId": "3c38b72f398d473fa58abfbb0282161bbaba3cc3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1c297e96_867aa539",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-12-08T02:15:18Z",
+      "side": 1,
+      "message": "I\u0027m not sure why closing the log file in a defer is related here, but the current form also looks good to me.",
+      "parentUuid": "dded10b9_62c309da",
+      "range": {
+        "startLine": 51,
+        "startChar": 5,
+        "endLine": 51,
+        "endChar": 11
+      },
+      "revId": "3c38b72f398d473fa58abfbb0282161bbaba3cc3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

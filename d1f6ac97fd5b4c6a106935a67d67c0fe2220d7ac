@@ -16,6 +16,46 @@
       "message": "This is the CL for https://chromium-review.googlesource.com/c/chromiumos/platform/tast-tests/+/2577145/4#message-fc5a9ac2ddbefd6ff3bc355c3dad546a91a045f0",
       "revId": "d1f6ac97fd5b4c6a106935a67d67c0fe2220d7ac",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4d51cc2b_1dbfb8c5",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-12-08T10:07:23Z",
+      "side": 1,
+      "message": "LGTM with a fix request.",
+      "revId": "d1f6ac97fd5b4c6a106935a67d67c0fe2220d7ac",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5c3038de_71415597",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-12-08T10:07:23Z",
+      "side": 1,
+      "message": "according to the explanation, \"arc \u0026\u0026 arcvm \u0026\u0026 amd64\" ?",
+      "range": {
+        "startLine": 72,
+        "startChar": 26,
+        "endLine": 72,
+        "endChar": 32
+      },
+      "revId": "d1f6ac97fd5b4c6a106935a67d67c0fe2220d7ac",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

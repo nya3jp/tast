@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0b6f2acb_aac3bf4f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-08T03:36:49Z",
+      "side": 1,
+      "message": "This CL change the variable name entityWithRunnabilityInfo to a shorter name. Please review. Thanks.",
+      "revId": "94b4bd0c73c13140a71d5b5240c156ffe41b5c8d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

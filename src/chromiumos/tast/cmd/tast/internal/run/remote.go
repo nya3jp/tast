@@ -60,16 +60,14 @@ func runRemoteTestsOnce(ctx context.Context, cfg *Config, patterns []string) (re
 		Mode: runner.RunTestsMode,
 		RunTests: &runner.RunTestsArgs{
 			BundleArgs: bundle.RunTestsArgs{
-				FeatureArgs: bundle.FeatureArgs{
-					TestVars: cfg.testVars,
-				},
-				Patterns: patterns,
-				DataDir:  cfg.remoteDataDir,
-				OutDir:   cfg.remoteOutDir,
-				Target:   cfg.Target,
-				KeyFile:  cfg.KeyFile,
-				KeyDir:   cfg.KeyDir,
-				TastPath: exe,
+				FeatureArgs: *featureArgsFromConfig(cfg),
+				Patterns:    patterns,
+				DataDir:     cfg.remoteDataDir,
+				OutDir:      cfg.remoteOutDir,
+				Target:      cfg.Target,
+				KeyFile:     cfg.KeyFile,
+				KeyDir:      cfg.KeyDir,
+				TastPath:    exe,
 				RunFlags: []string{
 					"-build=false",
 					"-keyfile=" + cfg.KeyFile,
@@ -91,7 +89,6 @@ func runRemoteTestsOnce(ctx context.Context, cfg *Config, patterns []string) (re
 			BundleGlob: cfg.remoteBundleGlob(),
 		},
 	}
-	setRunnerTestDepsArgs(cfg, &args.RunTests.BundleArgs.FeatureArgs)
 
 	// Backfill deprecated fields in case we're executing an old test runner.
 	args.FillDeprecated()

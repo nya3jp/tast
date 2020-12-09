@@ -1,0 +1,186 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5df4931e_efe7ac79",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 124,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-12-09T12:11:49Z",
+      "side": 1,
+      "message": "Can this be treated as error or totally ignored, because findPatternsForShard already filters such illegal argument?",
+      "revId": "6027218e4ded256e746c3dd8f03cc1bc7462b3b5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3f8e6d8f_3fa2fde5",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 137,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-12-09T12:11:49Z",
+      "side": 1,
+      "message": "I think this outer if statement is not needed because when this condition is false, extraTests is 0 (assuming all args are non-negative), line 139 is also false, and then line 144 gives the same value as line 135.",
+      "revId": "6027218e4ded256e746c3dd8f03cc1bc7462b3b5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "56416d30_e7d95253",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 137,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-12-09T12:11:49Z",
+      "side": 1,
+      "message": "As a different approach, how about:\n\n start \u003d ceil(numTests / totalShards * shardIndex)\n end \u003d ceil(numTests / totalShards * (shardIndex + 1))\n\nwhich would also work for shards\u003ctests case?\nIt will distribute residuals differently from your algorighm, though.",
+      "range": {
+        "startLine": 133,
+        "startChar": 0,
+        "endLine": 137,
+        "endChar": 0
+      },
+      "revId": "6027218e4ded256e746c3dd8f03cc1bc7462b3b5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1dc40bc2_1dfe6b9d",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests_test.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 164,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-12-09T12:11:49Z",
+      "side": 1,
+      "message": "nit:\ncount :\u003d int64(2)",
+      "range": {
+        "startLine": 163,
+        "startChar": 3,
+        "endLine": 164,
+        "endChar": 12
+      },
+      "revId": "6027218e4ded256e746c3dd8f03cc1bc7462b3b5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7e438793_9e454ff5",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests_test.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 167,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-12-09T12:11:49Z",
+      "side": 1,
+      "message": "+\u003d 1 or ++",
+      "revId": "6027218e4ded256e746c3dd8f03cc1bc7462b3b5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "34a8aab2_cd42aeb1",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests_test.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 169,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-12-09T12:11:49Z",
+      "side": 1,
+      "message": "ditto",
+      "revId": "6027218e4ded256e746c3dd8f03cc1bc7462b3b5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4a6baffd_1cf06867",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests_test.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 187,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-12-09T12:11:49Z",
+      "side": 1,
+      "message": "Can these be renamed as \"passed\" and \"skipped\"?\ngo/go-style/decisions#repetitive-with-type",
+      "revId": "6027218e4ded256e746c3dd8f03cc1bc7462b3b5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f97db768_00169d6c",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests_test.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 201,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-12-09T12:11:49Z",
+      "side": 1,
+      "message": "++",
+      "revId": "6027218e4ded256e746c3dd8f03cc1bc7462b3b5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8f447bcb_90528e9b",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests_test.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 238,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-12-09T12:11:49Z",
+      "side": 1,
+      "message": "How about using map[string]bool instead, if we just need to detect an overlap and size?\nAlso, other word like \"done\" or \"processed\" might be more suited to the meaning because this map indicates the set of tests that ran.",
+      "revId": "6027218e4ded256e746c3dd8f03cc1bc7462b3b5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "47895fac_b1f8e50d",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests_test.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 329,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-12-09T12:11:49Z",
+      "side": 1,
+      "message": "https://github.com/golang/go/wiki/TableDrivenTests\ngo/go-style/decisions#table-driven-tests\n\nGolang and we recommend table-driven test style. Would you rewrite these test cases in such way?",
+      "revId": "6027218e4ded256e746c3dd8f03cc1bc7462b3b5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

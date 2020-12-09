@@ -39,6 +39,30 @@
       },
       "revId": "248ad17f3d3d0daeea490ceafd610fcc1ffe4974",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2834e330_52158619",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1411497
+      },
+      "writtenOn": "2020-12-09T05:12:41Z",
+      "side": 1,
+      "message": "No, x86 doesn\u0027t have this feature.\nIt seems there are no x86 devices which ARCVM works on.\n\nThe pstore is enabled on x86_64/src/lib.rs of crosvm, but files like x86/src/lib.rs or i386/src/lib.rs don\u0027t exist.\nhttps://source.corp.google.com/chromeos_public/src/platform/crosvm/x86_64/src/lib.rs;l\u003d431-437;rcl\u003d62e2e2e8de5895b8647cde161c048e5643e4be8f",
+      "parentUuid": "f9056536_96543f5e",
+      "range": {
+        "startLine": 72,
+        "startChar": 42,
+        "endLine": 72,
+        "endChar": 47
+      },
+      "revId": "248ad17f3d3d0daeea490ceafd610fcc1ffe4974",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

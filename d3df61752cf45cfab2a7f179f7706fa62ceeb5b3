@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ef717f46_3400f04d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 8
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-09T20:28:46Z",
+      "side": 1,
+      "message": "Hi Tatsuhisa:\n\nI have modified the code to address all your comments except two. Please take a look. For two comments that I have not addressed, I prefer to keep the current implementation, but I am okay to making changes if you think it would be better. Please see my comments for them.\n\nThanks.\n\nSeewai\n",
+      "revId": "d3df61752cf45cfab2a7f179f7706fa62ceeb5b3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

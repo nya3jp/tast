@@ -20,6 +20,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "1271c901_e93d024b",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 124,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-09T20:28:46Z",
+      "side": 1,
+      "message": "Yes, it is not necessary if we consider that it would be only called by findPatternsForShard. I intentionally put a check here because I am worried about divide-by-zero issue in\n\nnumTestsPerShard :\u003d numTests / totalShards\n\nMy preference is to keep the check because I do not like to rely too much on correct parameter.\n\nHowever, if you think it is not necessary, I can remove it. Please let me know. \n\nThanks.\n\nSeewai",
+      "parentUuid": "5df4931e_efe7ac79",
+      "revId": "6027218e4ded256e746c3dd8f03cc1bc7462b3b5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "3f8e6d8f_3fa2fde5",
         "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests.go",
         "patchSetId": 7
@@ -60,6 +78,48 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "19a66622_bf7ad8f6",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 137,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-09T20:28:46Z",
+      "side": 1,
+      "message": "I was trying to make the first few tests has one extra test when the number of tests is not divisible by the number of shards. I did that way because I think it is easier for the user to figure out the number of tests for each shard.\n\nLet\u0027s look at the the case that the number of tests is 10 and the number of shards is 4. \n\nFor the current implementation, the start and end index for each index:\n\nShard Index    Start Index    End Index\n\n     0             0             3\n     1             3             6\n     2             6             8\n     3             8            10\nThe first and second shard have 3 tests each. The third and fourth shard have 2 tests each.\n\nWith the formula:\n\n startIndex :\u003d ceil(numTests / totalShards * shardIndex)\n endIndex :\u003d ceil(numTests / totalShards * (shardIndex + 1))\nThis would be the values:\nShard Index    Start Index    End Index\n\n     0             0             3\n     1             3             5\n     2             5             8\n     3             8            10\nThe first and fourth test have 2 tests each. The second and third have 3 tests each. The number of each test may be hard for user to figure out. I think it is easier to explain to user if there are support questions in future.\n\nPlease let me know if you still want the change. Thanks.",
+      "parentUuid": "56416d30_e7d95253",
+      "range": {
+        "startLine": 133,
+        "startChar": 0,
+        "endLine": 137,
+        "endChar": 0
+      },
+      "revId": "6027218e4ded256e746c3dd8f03cc1bc7462b3b5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f6be73d0_ec0ed182",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 137,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-09T20:28:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3f8e6d8f_3fa2fde5",
+      "revId": "6027218e4ded256e746c3dd8f03cc1bc7462b3b5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "1dc40bc2_1dfe6b9d",
         "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests_test.go",
         "patchSetId": 7
@@ -71,6 +131,30 @@
       "writtenOn": "2020-12-09T12:11:49Z",
       "side": 1,
       "message": "nit:\ncount :\u003d int64(2)",
+      "range": {
+        "startLine": 163,
+        "startChar": 3,
+        "endLine": 164,
+        "endChar": 12
+      },
+      "revId": "6027218e4ded256e746c3dd8f03cc1bc7462b3b5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e8ef3c17_81323e61",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests_test.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 164,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-09T20:28:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1dc40bc2_1dfe6b9d",
       "range": {
         "startLine": 163,
         "startChar": 3,
@@ -98,6 +182,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "d1fe54fd_8ee5da24",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests_test.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 167,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-09T20:28:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7e438793_9e454ff5",
+      "revId": "6027218e4ded256e746c3dd8f03cc1bc7462b3b5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "34a8aab2_cd42aeb1",
@@ -111,6 +213,24 @@
       "writtenOn": "2020-12-09T12:11:49Z",
       "side": 1,
       "message": "ditto",
+      "revId": "6027218e4ded256e746c3dd8f03cc1bc7462b3b5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ff2917ae_0dbbdb3d",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests_test.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 169,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-09T20:28:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "34a8aab2_cd42aeb1",
       "revId": "6027218e4ded256e746c3dd8f03cc1bc7462b3b5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -132,6 +252,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "8679dafc_60462be3",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests_test.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 187,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-09T20:28:46Z",
+      "side": 1,
+      "message": "Thanks for the link. It is helpful.",
+      "parentUuid": "4a6baffd_1cf06867",
+      "revId": "6027218e4ded256e746c3dd8f03cc1bc7462b3b5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "f97db768_00169d6c",
@@ -145,6 +283,24 @@
       "writtenOn": "2020-12-09T12:11:49Z",
       "side": 1,
       "message": "++",
+      "revId": "6027218e4ded256e746c3dd8f03cc1bc7462b3b5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b8d9142c_3a168bed",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests_test.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 201,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-09T20:28:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f97db768_00169d6c",
       "revId": "6027218e4ded256e746c3dd8f03cc1bc7462b3b5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -166,6 +322,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "958c10f0_02aaf2c7",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests_test.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 238,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-09T20:28:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8f447bcb_90528e9b",
+      "revId": "6027218e4ded256e746c3dd8f03cc1bc7462b3b5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "47895fac_b1f8e50d",
@@ -179,6 +353,24 @@
       "writtenOn": "2020-12-09T12:11:49Z",
       "side": 1,
       "message": "https://github.com/golang/go/wiki/TableDrivenTests\ngo/go-style/decisions#table-driven-tests\n\nGolang and we recommend table-driven test style. Would you rewrite these test cases in such way?",
+      "revId": "6027218e4ded256e746c3dd8f03cc1bc7462b3b5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "962b4e5d_feb4e8ab",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests_test.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 329,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-09T20:28:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "47895fac_b1f8e50d",
       "revId": "6027218e4ded256e746c3dd8f03cc1bc7462b3b5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }

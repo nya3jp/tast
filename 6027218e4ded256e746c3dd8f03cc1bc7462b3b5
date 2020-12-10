@@ -168,6 +168,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "81083053_a095016e",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 137,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-12-10T09:24:19Z",
+      "side": 1,
+      "message": "I\u0027m okay with either algorithm, but honestly I think Tatsuhisa\u0027s one is much easier to ensure correctness.",
+      "parentUuid": "081856d7_7911cb23",
+      "range": {
+        "startLine": 133,
+        "startChar": 0,
+        "endLine": 137,
+        "endChar": 0
+      },
+      "revId": "6027218e4ded256e746c3dd8f03cc1bc7462b3b5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "1dc40bc2_1dfe6b9d",
         "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests_test.go",
         "patchSetId": 7

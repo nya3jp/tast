@@ -16,6 +16,316 @@
       "message": "I have removed parallel running for the findShardIndices test and changed the error reporting format. For the calculation of the start and end indices, I do understand the simplicity of your suggestion which is good. If you think we should don\u0027t need to maintain the the first few indices has one additional test, just let me know. I can make the change. It is not a big change and I can get it done quick.\n\nThanks.\n",
       "revId": "4b3afd73800f9ba2c448ed5c48afcf15621fc86e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e48b34fb_264136bf",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 9
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-12-10T09:24:19Z",
+      "side": 1,
+      "message": "Sorry for delayed review!",
+      "revId": "4b3afd73800f9ba2c448ed5c48afcf15621fc86e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "530378fe_4c7ac1b1",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/config.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-12-10T09:24:19Z",
+      "side": 1,
+      "message": "Can you unexport this field? It should not be accessed from outside of this package.",
+      "range": {
+        "startLine": 70,
+        "startChar": 1,
+        "endLine": 70,
+        "endChar": 10
+      },
+      "revId": "4b3afd73800f9ba2c448ed5c48afcf15621fc86e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "182e4283_92c0340c",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-12-10T09:24:19Z",
+      "side": 1,
+      "message": "testsNotInShard contains tests that are in shards but skipped for dependencies. Can we rename it to reflect the reality?",
+      "revId": "4b3afd73800f9ba2c448ed5c48afcf15621fc86e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "80cbe513_708d62cb",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-12-10T09:24:19Z",
+      "side": 1,
+      "message": "FYI: This special handling is perfectly fine as logic below has significant runtime costs.",
+      "range": {
+        "startLine": 33,
+        "startChar": 0,
+        "endLine": 36,
+        "endChar": 2
+      },
+      "revId": "4b3afd73800f9ba2c448ed5c48afcf15621fc86e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7c3dc575_4b350c2a",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-12-10T09:24:19Z",
+      "side": 1,
+      "message": "This function returns concrete test names, not patterns. Can you try updating the name?",
+      "range": {
+        "startLine": 69,
+        "startChar": 5,
+        "endLine": 69,
+        "endChar": 25
+      },
+      "revId": "4b3afd73800f9ba2c448ed5c48afcf15621fc86e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fb77b98f_39177e54",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-12-10T09:24:19Z",
+      "side": 1,
+      "message": "I believe we don\u0027t need to treat totalShards \u003d\u003d 0 specially. Its default value is 1, so usually it\u0027s not zero. When it happens, we can report an error.",
+      "range": {
+        "startLine": 70,
+        "startChar": 0,
+        "endLine": 72,
+        "endChar": 2
+      },
+      "revId": "4b3afd73800f9ba2c448ed5c48afcf15621fc86e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6126345e_49330f9f",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-12-10T09:24:19Z",
+      "side": 1,
+      "message": "I recommend moving these checks to DeriveDefaults, which is called in very early stage of the tast command. Then users can know mistakes earlier.",
+      "range": {
+        "startLine": 73,
+        "startChar": 0,
+        "endLine": 78,
+        "endChar": 2
+      },
+      "revId": "4b3afd73800f9ba2c448ed5c48afcf15621fc86e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "83cdd2e2_afc020e8",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-12-10T09:24:19Z",
+      "side": 1,
+      "message": "General comment: Please avoid special handling as long as they don\u0027t have significant runtime cost. The more special case we have, the harder it is to reason about correctness of logic.",
+      "range": {
+        "startLine": 120,
+        "startChar": 5,
+        "endLine": 120,
+        "endChar": 21
+      },
+      "revId": "4b3afd73800f9ba2c448ed5c48afcf15621fc86e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "21fa700f_85d9fc8e",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 123,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-12-10T09:24:19Z",
+      "side": 1,
+      "message": "Please drop this special handling.",
+      "range": {
+        "startLine": 121,
+        "startChar": 0,
+        "endLine": 123,
+        "endChar": 2
+      },
+      "revId": "4b3afd73800f9ba2c448ed5c48afcf15621fc86e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fc26e635_a9fd85b3",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 126,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-12-10T09:24:19Z",
+      "side": 1,
+      "message": "Please drop this; prior functions should have ensured that it\u0027s no less than 1. If you\u0027re still concerned, please return an error instead of silently defaulting to 1.",
+      "range": {
+        "startLine": 124,
+        "startChar": 0,
+        "endLine": 126,
+        "endChar": 2
+      },
+      "revId": "4b3afd73800f9ba2c448ed5c48afcf15621fc86e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b6a9c3be_cf765f85",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 132,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-12-10T09:24:19Z",
+      "side": 1,
+      "message": "Same here; this special handling should be unnecessary.",
+      "range": {
+        "startLine": 127,
+        "startChar": 0,
+        "endLine": 132,
+        "endChar": 2
+      },
+      "revId": "4b3afd73800f9ba2c448ed5c48afcf15621fc86e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "dde0626a_c91a48c5",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 135,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-12-10T09:24:19Z",
+      "side": 1,
+      "message": "Can you inline this assignment to startIndex\u0027s reassignment below? It\u0027s slightly confusing that startIndex assigned here is used in some cases but not in other cases.",
+      "range": {
+        "startLine": 135,
+        "startChar": 1,
+        "endLine": 135,
+        "endChar": 43
+      },
+      "revId": "4b3afd73800f9ba2c448ed5c48afcf15621fc86e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ac91b1f9_689fb8e1",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 148,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-12-10T09:24:19Z",
+      "side": 1,
+      "message": "I believe this special case is not necessary.",
+      "range": {
+        "startLine": 146,
+        "startChar": 0,
+        "endLine": 148,
+        "endChar": 2
+      },
+      "revId": "4b3afd73800f9ba2c448ed5c48afcf15621fc86e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e369879c_62254cd1",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 152,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-12-10T09:24:19Z",
+      "side": 1,
+      "message": "I believe this special case is not necessary.",
+      "range": {
+        "startLine": 150,
+        "startChar": 0,
+        "endLine": 152,
+        "endChar": 2
+      },
+      "revId": "4b3afd73800f9ba2c448ed5c48afcf15621fc86e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

@@ -36,6 +36,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "cbe16629_8a74f5c6",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 124,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-12-10T09:49:37Z",
+      "side": 1,
+      "message": "If this is \u003c1, it indicates mistake in another part of the code rather than runtime input. Therefore I think panic or returning error is better than continuing running in an unintended way. (nya@ has written the similar comment)",
+      "parentUuid": "1271c901_e93d024b",
+      "revId": "6027218e4ded256e746c3dd8f03cc1bc7462b3b5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "3f8e6d8f_3fa2fde5",
@@ -179,6 +197,30 @@
       "writtenOn": "2020-12-10T09:24:19Z",
       "side": 1,
       "message": "I\u0027m okay with either algorithm, but honestly I think Tatsuhisa\u0027s one is much easier to ensure correctness.",
+      "parentUuid": "081856d7_7911cb23",
+      "range": {
+        "startLine": 133,
+        "startChar": 0,
+        "endLine": 137,
+        "endChar": 0
+      },
+      "revId": "6027218e4ded256e746c3dd8f03cc1bc7462b3b5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "bf09fa30_05c85d51",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 137,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-12-10T09:49:37Z",
+      "side": 1,
+      "message": "Thanks. Please go ahead with the current code.\nI was assuming sharding request is done by someone like a scheduler hiden to users, but if this is surfaced to users, assigning the remainder to lower ID first may have some advantage.",
       "parentUuid": "081856d7_7911cb23",
       "range": {
         "startLine": 133,

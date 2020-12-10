@@ -326,6 +326,23 @@
       },
       "revId": "4b3afd73800f9ba2c448ed5c48afcf15621fc86e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5c96b079_41d7e230",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests_test.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 289,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-12-10T09:49:37Z",
+      "side": 1,
+      "message": "Use of sub-test is no longer needed after removing parallel.",
+      "revId": "4b3afd73800f9ba2c448ed5c48afcf15621fc86e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

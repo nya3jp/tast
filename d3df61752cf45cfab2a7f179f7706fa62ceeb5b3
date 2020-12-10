@@ -50,6 +50,24 @@
       "message": "I am not sure if we have guideline about these, but I noticed:\n1. some of our existing code adopt simpler error message pattern like\n\"testedFunction(%v, %v, %v)\u003d(%v, %v); want (%v, %v)\"\nFor example, https://source.chromium.org/chromiumos/chromiumos/codesearch/+/master:src/platform/tast-tests/src/chromiumos/tast/local/testexec/testexec_test.go;l\u003d210\n2. benefit of parallelizing would be limited in this case because the tested function is a simple computation function.\n\nI would like to ask nya@ give suggestions on this.",
       "revId": "d3df61752cf45cfab2a7f179f7706fa62ceeb5b3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f6160288_e7c0c02a",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests_test.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 294,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-10T02:45:55Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "29565540_89228937",
+      "revId": "d3df61752cf45cfab2a7f179f7706fa62ceeb5b3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

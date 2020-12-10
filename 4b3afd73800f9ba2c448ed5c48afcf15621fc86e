@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5c5be28a_429ea4d5",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 9
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-10T02:45:55Z",
+      "side": 1,
+      "message": "I have removed parallel running for the findShardIndices test and changed the error reporting format. For the calculation of the start and end indices, I do understand the simplicity of your suggestion which is good. If you think we should don\u0027t need to maintain the the first few indices has one additional test, just let me know. I can make the change. It is not a big change and I can get it done quick.\n\nThanks.\n",
+      "revId": "4b3afd73800f9ba2c448ed5c48afcf15621fc86e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

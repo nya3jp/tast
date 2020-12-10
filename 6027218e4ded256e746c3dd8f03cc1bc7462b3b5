@@ -144,6 +144,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "081856d7_7911cb23",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 137,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-10T02:45:55Z",
+      "side": 1,
+      "message": "I was thinking that users may ask why certain tests are not ran when they specify a particular shard index. I can easily tell which tests will be included when the question is asked. Otherwise, I need to do a bit more calculation first before I can answer. It is not really a big deal. I do understand the simplicity of your suggestion which is good. If you think we should don\u0027t need to maintain the the first few indices has one additional test, just let me know. I can make the change. Thanks.",
+      "parentUuid": "4682cf5b_c39b9853",
+      "range": {
+        "startLine": 133,
+        "startChar": 0,
+        "endLine": 137,
+        "endChar": 0
+      },
+      "revId": "6027218e4ded256e746c3dd8f03cc1bc7462b3b5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "1dc40bc2_1dfe6b9d",
         "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests_test.go",
         "patchSetId": 7

@@ -115,6 +115,7 @@ The following software features are defined:
 *   `no_asan` - Build was not built with Address Sanitizer. Similar to `aslr`.
 *   `no_elm_hana_3_18` - Skip boards elm and hana with kernel-3.18 as they have
     issue performing WiFi scan. See [crbug.com/1015719](https://crbug.com/1015719).
+*   `no_kepler` - This board does not have a video acceleration companion chip called "Kepler".
 *   `no_msan` - Build was not built with Memory Sanitizer.
 *   `no_qemu` - For tests not for Chrome OS QEMU images.
 *   `no_symlink_mount` - Symlink mounting is disabled via the

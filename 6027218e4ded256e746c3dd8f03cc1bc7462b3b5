@@ -120,6 +120,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "4682cf5b_c39b9853",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 137,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-12-10T01:41:43Z",
+      "side": 1,
+      "message": "\u003e I did that way because I think it is easier for the user to figure out the number of tests for each shard.\nThanks for explanation, that\u0027s been what I needed to know.\nWhat is the scenario where test users need to know or control the number of tests run on each shard? I was thinking giving \"which test ran on which device\" after run would be needed and suffice for debugging tests (in case there were problem related to sharding).",
+      "parentUuid": "19a66622_bf7ad8f6",
+      "range": {
+        "startLine": 133,
+        "startChar": 0,
+        "endLine": 137,
+        "endChar": 0
+      },
+      "revId": "6027218e4ded256e746c3dd8f03cc1bc7462b3b5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "1dc40bc2_1dfe6b9d",
         "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests_test.go",
         "patchSetId": 7

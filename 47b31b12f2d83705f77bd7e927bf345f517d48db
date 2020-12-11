@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9a2d7487_910e1ba6",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 10
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-11T02:00:04Z",
+      "side": 1,
+      "message": "I have addressed all the review comments. Please take a look if it is ok now. Also, I am still investigating the failures happened during CQ+1. I will provide an upload later. Please review the latest for now. Thanks.",
+      "revId": "47b31b12f2d83705f77bd7e927bf345f517d48db",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

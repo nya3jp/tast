@@ -58,6 +58,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "de50e0c7_eef4df26",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/config.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-11T02:00:04Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "530378fe_4c7ac1b1",
+      "range": {
+        "startLine": 70,
+        "startChar": 1,
+        "endLine": 70,
+        "endChar": 10
+      },
+      "revId": "4b3afd73800f9ba2c448ed5c48afcf15621fc86e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "182e4283_92c0340c",
@@ -71,6 +95,24 @@
       "writtenOn": "2020-12-10T09:24:19Z",
       "side": 1,
       "message": "testsNotInShard contains tests that are in shards but skipped for dependencies. Can we rename it to reflect the reality?",
+      "revId": "4b3afd73800f9ba2c448ed5c48afcf15621fc86e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "cad097a0_ebf1af97",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-11T02:00:04Z",
+      "side": 1,
+      "message": "Actually, the skipped tests are not part of the shard calculation. For example, there are 10 tests and 2 of them will be skipped. Let\u0027s say the total number of shard is 4 and shard index is 0. The first two tests which are not to be skipped will be in the shard 0. The 2 skipped tests are never considered to be in the shard. Therefore, I think the name is accurate. One thing that I can make it more accurate is to return test to skip separately. I have made the change. please see if it is ok. Thanks.",
+      "parentUuid": "182e4283_92c0340c",
       "revId": "4b3afd73800f9ba2c448ed5c48afcf15621fc86e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -121,6 +163,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "19158b82_ab3e4ddb",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-11T02:00:04Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7c3dc575_4b350c2a",
+      "range": {
+        "startLine": 69,
+        "startChar": 5,
+        "endLine": 69,
+        "endChar": 25
+      },
+      "revId": "4b3afd73800f9ba2c448ed5c48afcf15621fc86e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "fb77b98f_39177e54",
@@ -134,6 +200,30 @@
       "writtenOn": "2020-12-10T09:24:19Z",
       "side": 1,
       "message": "I believe we don\u0027t need to treat totalShards \u003d\u003d 0 specially. Its default value is 1, so usually it\u0027s not zero. When it happens, we can report an error.",
+      "range": {
+        "startLine": 70,
+        "startChar": 0,
+        "endLine": 72,
+        "endChar": 2
+      },
+      "revId": "4b3afd73800f9ba2c448ed5c48afcf15621fc86e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "af010df3_001ca808",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-11T02:00:04Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fb77b98f_39177e54",
       "range": {
         "startLine": 70,
         "startChar": 0,
@@ -167,6 +257,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "7649f1d4_e3c0157b",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-11T02:00:04Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6126345e_49330f9f",
+      "range": {
+        "startLine": 73,
+        "startChar": 0,
+        "endLine": 78,
+        "endChar": 2
+      },
+      "revId": "4b3afd73800f9ba2c448ed5c48afcf15621fc86e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "83cdd2e2_afc020e8",
@@ -180,6 +294,30 @@
       "writtenOn": "2020-12-10T09:24:19Z",
       "side": 1,
       "message": "General comment: Please avoid special handling as long as they don\u0027t have significant runtime cost. The more special case we have, the harder it is to reason about correctness of logic.",
+      "range": {
+        "startLine": 120,
+        "startChar": 5,
+        "endLine": 120,
+        "endChar": 21
+      },
+      "revId": "4b3afd73800f9ba2c448ed5c48afcf15621fc86e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3e5fee81_11b71e2b",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-11T02:00:04Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "83cdd2e2_afc020e8",
       "range": {
         "startLine": 120,
         "startChar": 5,
@@ -213,6 +351,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "51b74542_3383562e",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 123,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-11T02:00:04Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "21fa700f_85d9fc8e",
+      "range": {
+        "startLine": 121,
+        "startChar": 0,
+        "endLine": 123,
+        "endChar": 2
+      },
+      "revId": "4b3afd73800f9ba2c448ed5c48afcf15621fc86e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "fc26e635_a9fd85b3",
@@ -226,6 +388,30 @@
       "writtenOn": "2020-12-10T09:24:19Z",
       "side": 1,
       "message": "Please drop this; prior functions should have ensured that it\u0027s no less than 1. If you\u0027re still concerned, please return an error instead of silently defaulting to 1.",
+      "range": {
+        "startLine": 124,
+        "startChar": 0,
+        "endLine": 126,
+        "endChar": 2
+      },
+      "revId": "4b3afd73800f9ba2c448ed5c48afcf15621fc86e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "94a31040_f1de4438",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 126,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-11T02:00:04Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fc26e635_a9fd85b3",
       "range": {
         "startLine": 124,
         "startChar": 0,
@@ -259,6 +445,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "52f4e6fc_db761228",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 132,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-11T02:00:04Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b6a9c3be_cf765f85",
+      "range": {
+        "startLine": 127,
+        "startChar": 0,
+        "endLine": 132,
+        "endChar": 2
+      },
+      "revId": "4b3afd73800f9ba2c448ed5c48afcf15621fc86e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "dde0626a_c91a48c5",
@@ -272,6 +482,30 @@
       "writtenOn": "2020-12-10T09:24:19Z",
       "side": 1,
       "message": "Can you inline this assignment to startIndex\u0027s reassignment below? It\u0027s slightly confusing that startIndex assigned here is used in some cases but not in other cases.",
+      "range": {
+        "startLine": 135,
+        "startChar": 1,
+        "endLine": 135,
+        "endChar": 43
+      },
+      "revId": "4b3afd73800f9ba2c448ed5c48afcf15621fc86e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "841be804_47fa160d",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 135,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-11T02:00:04Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "dde0626a_c91a48c5",
       "range": {
         "startLine": 135,
         "startChar": 1,
@@ -305,6 +539,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "24693b01_05f76a53",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 148,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-11T02:00:04Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ac91b1f9_689fb8e1",
+      "range": {
+        "startLine": 146,
+        "startChar": 0,
+        "endLine": 148,
+        "endChar": 2
+      },
+      "revId": "4b3afd73800f9ba2c448ed5c48afcf15621fc86e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "e369879c_62254cd1",
@@ -328,6 +586,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "b52e95dd_31b85921",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 152,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-11T02:00:04Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e369879c_62254cd1",
+      "range": {
+        "startLine": 150,
+        "startChar": 0,
+        "endLine": 152,
+        "endChar": 2
+      },
+      "revId": "4b3afd73800f9ba2c448ed5c48afcf15621fc86e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "5c96b079_41d7e230",
@@ -341,6 +623,24 @@
       "writtenOn": "2020-12-10T09:49:37Z",
       "side": 1,
       "message": "Use of sub-test is no longer needed after removing parallel.",
+      "revId": "4b3afd73800f9ba2c448ed5c48afcf15621fc86e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d67b7276_8e101568",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests_test.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 289,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-11T02:00:04Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5c96b079_41d7e230",
       "revId": "4b3afd73800f9ba2c448ed5c48afcf15621fc86e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }

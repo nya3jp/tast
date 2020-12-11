@@ -193,6 +193,10 @@ Tests in this group are not used for build verification.
 				Desc: `Indicates that this is a test of the Google Security Chip firmware (Cr50).`,
 			},
 			{
+				Name: "firmware_experimental",
+				Desc: `Firmware tests that are not yet stabilized.`,
+			},
+			{
 				Name: "firmware_smoke",
 				Desc: `A group of tests that exercise the basic firmware testing libraries.`,
 			},

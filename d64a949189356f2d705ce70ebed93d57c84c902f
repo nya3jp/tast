@@ -16,6 +16,23 @@
       "message": "Thanks for reviewing!",
       "revId": "d64a949189356f2d705ce70ebed93d57c84c902f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f74e6b35_7756f7a2",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-12-11T07:30:26Z",
+      "side": 1,
+      "message": "Hmm, CR+2 disappeared after branch switch... Tatsuhisa, would you mind taking a look again?",
+      "revId": "d64a949189356f2d705ce70ebed93d57c84c902f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

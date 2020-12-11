@@ -80,13 +80,17 @@ func main() {
 			// TODO(b/73436929) Grunt cannot run 720p due to performance issue,
 			// we should remove grunt after hardware encoding supported.
 			// daisy variants' cameras don't support 1280x720.
-			"camera_720p":       "!snow && !skate && !spring && !grunt",
-			"camera_legacy":     `!"arc-camera1" && !"arc-camera3"`,
-			"cert_provision":    "cert_provision",
-			"chrome":            "!chromeless_tty && !rialto",
-			"chrome_internal":   "chrome_internal",
-			"coresched":         "coresched",
-			"cpu_vuln_sysfs":    `!("kernel-3_8" || "kernel-3_10" || "kernel-3_14")`,
+			"camera_720p":     "!snow && !skate && !spring && !grunt",
+			"camera_legacy":   `!"arc-camera1" && !"arc-camera3"`,
+			"cert_provision":  "cert_provision",
+			"chrome":          "!chromeless_tty && !rialto",
+			"chrome_internal": "chrome_internal",
+			"coresched":       "coresched",
+			// TODO(b/174890060) Remove asuka, caroline, cave, chell, lars, sentry
+			// TODO(b/174888780) Remove kernel-4_4 once arm64 kernel reporting is fixed
+			// TODO(b/174889440) Remove hana, elm
+			// Per b/175345642 veryon_fievel/veyron_tiger are safe but arm32 doesn't report anything in sysfs so just ignore these boards
+			"cpu_vuln_sysfs":    `!("kernel-3_8" || "kernel-3_10" || "kernel-3_14" || ("kernel-3_18" && ("board:asuka" || "board:caroline" || "board:cave" || "board:chell" || "board:lars" || "board:sentry")) || ("kernel-4_4" && ("arm" || "arm64")) || "board:hana" || "board:elm" || "board:hana-kernelnext" || "board:elm-kernelnext" || "board:veyron_fievel" || "board:veyron_tiger")`,
 			"crashpad":          "!force_breakpad",
 			"cros_config":       "unibuild",
 			"cros_internal":     "internal",

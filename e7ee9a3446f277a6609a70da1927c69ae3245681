@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5a0253d8_e3d2bae2",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1319142
+      },
+      "writtenOn": "2020-12-11T18:59:44Z",
+      "side": 1,
+      "message": "Here is my attempt at a hardware condition hwdep.Stylus(), but when I try to use it in a Tast test, I get [1]. Can you help please?\n[1] https://paste.googleplex.com/6754944519503872",
+      "revId": "e7ee9a3446f277a6609a70da1927c69ae3245681",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

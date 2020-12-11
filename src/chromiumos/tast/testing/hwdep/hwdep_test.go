@@ -319,6 +319,36 @@ func TestInternalDisplay(t *testing.T) {
 		true)
 }
 
+func TestStylus(t *testing.T) {
+	c := Stylus()
+
+	for _, tc := range []struct {
+		Stylus          configpb.HardwareFeatures_Stylus_StylusType
+		expectSatisfied bool
+	}{
+		{configpb.HardwareFeatures_Stylus_STYLUS_UNKNOWN, true},
+		{configpb.HardwareFeatures_Stylus_NONE, false},
+		{configpb.HardwareFeatures_Stylus_INTERNAL, true},
+		{configpb.HardwareFeatures_Stylus_EXTERNAL, true},
+	} {
+		verifyCondition(
+			t, c,
+			&device.Config{
+				Id: &device.ConfigId{
+					PlatformId: &device.PlatformId{
+						Value: "fake_platform",
+					},
+				},
+			},
+			&configpb.HardwareFeatures{
+				Stylus: &configpb.HardwareFeatures_Stylus{
+					Stylus: tc.Stylus,
+				},
+			},
+			tc.expectSatisfied)
+	}
+}
+
 func TestCEL(t *testing.T) {
 	for i, c := range []struct {
 		input    Deps

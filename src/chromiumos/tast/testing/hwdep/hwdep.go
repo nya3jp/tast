@@ -246,6 +246,21 @@ func InternalDisplay() Condition {
 	}
 }
 
+// Stylus returns a hardware dependency condition that is satisfied iff the
+// DUT has a stylus.
+func Stylus() Condition {
+	return Condition{Satisfied: func(f *dep.HardwareFeatures) error {
+		if f.Features == nil {
+			return errors.New("Did not find hardware features")
+		}
+		if f.Features.Stylus.Stylus != configpb.HardwareFeatures_Stylus_NONE {
+			return nil
+		}
+		return errors.New("DUT does not have a stylus")
+	}, CEL: "dut.hardware_features.stylus.stylus != api.HardwareFeatures.Stylus.StylusType.NONE",
+	}
+}
+
 // Wifi80211ac returns a hardware dependency condition that is satisfied
 // iff the DUT's WiFi module supports 802.11ac.
 func Wifi80211ac() Condition {

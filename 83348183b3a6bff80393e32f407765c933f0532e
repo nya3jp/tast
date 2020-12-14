@@ -39,6 +39,30 @@
       },
       "revId": "83348183b3a6bff80393e32f407765c933f0532e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9b46ea04_e4daf73b",
+        "filename": "src/chromiumos/tast/internal/testing/attr.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 1366225
+      },
+      "writtenOn": "2020-12-14T09:11:33Z",
+      "side": 1,
+      "message": "Could you please elaborate more? I am not sure what and how to hack.\n\nI am just following Ilja\u0027s suggestions in b/175175101#comment8.",
+      "parentUuid": "a36a9be3_a9f35899",
+      "range": {
+        "startLine": 95,
+        "startChar": 0,
+        "endLine": 98,
+        "endChar": 5
+      },
+      "revId": "83348183b3a6bff80393e32f407765c933f0532e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

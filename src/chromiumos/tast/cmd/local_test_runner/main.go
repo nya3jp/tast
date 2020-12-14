@@ -98,15 +98,18 @@ func main() {
 			"crosvm_no_gpu":     `!"crosvm-gpu" || !"virtio_gpu"`,
 			"crossystem":        "!betty && !tast_vm", // VMs don't support few crossystem sub-commands: https://crbug.com/974615
 			"cups":              "cups",
+			"device_crash":      `!("board:samus")`,                  // Samus devices do not reliably come back after kernel crashes. crbug.com/1045821
 			"diagnostics":       "diagnostics && !betty && !tast_vm", // VMs do not have hardware to diagnose. https://crbug.com/1126619
 			"display_backlight": "display_backlight",
 			"dlc":               "dlc && dlc_test",
-			"dptf":              "dptf",
-			"device_crash":      `!("board:samus")`, // Samus devices do not reliably come back after kernel crashes. crbug.com/1045821
 			"dmverity_stable":   `"kernel-3_8" || "kernel-3_10" || "kernel-3_14" || "kernel-3_18" || "kernel-4_4" || "kernel-4_14"`,
 			"dmverity_unstable": `!("kernel-3_8" || "kernel-3_10" || "kernel-3_14" || "kernel-3_18" || "kernel-4_4" || "kernel-4_14")`,
-			"drivefs":           "drivefs",
-			"drm_atomic":        "drm_atomic",
+			// asuka, caroline, cave, chell, dedede, drallion, fizz, guado, kalista, lars, nami, nautilus, nocturne, octopus, puff, rammus, rikku, sarien, sentry, soraka, tidus, volteer has dp plus configuration in the bios setting.
+			// TODO(b:161190931): Remove dedede from the list.
+			"dpplus":     `"board:asuka" || "board:caroline" || "board:cave" || "board:chell" || "board:dedede" || "board:drallion" || "board:fizz" || "board:guado" || "board:kalista" || "board:lars" || "board:nami" || "board:nautilus" || "board:nocturne" || "board:octopus" || "board:puff" || "board:rammus" || "board:rikku" || "board:sarien" || "board:sentry" || "board:soraka" || "board:tidus" || "board:volteer"`,
+			"dptf":       "dptf",
+			"drivefs":    "drivefs",
+			"drm_atomic": "drm_atomic",
 			// asuka, banon, caroline, cave, celes, chell, cyan, edgar, kefka, reks, relm, sentry, terra, ultima, and wizpig have buggy EC firmware and cannot capture crash reports. b/172228823
 			// drallion and sarien have do not support the "crash" EC command. crbug.com/1123716
 			// guado, tidus, rikku, veyron_fievel, and veyron_tiger do not have EC firmware. crbug.com/1123716. TODO(crbug.com/1124554) Use an EC hardware dep for these rather than a software dep.
@@ -148,6 +151,7 @@ func main() {
 			"no_android":         "!arc",
 			"no_arm":             "!arm",
 			"no_asan":            "!asan",
+			"no_dpplus":          `!("board:asuka" || "board:caroline" || "board:cave" || "board:chell" || "board:dedede" || "board:drallion" || "board:fizz" || "board:guado" || "board:kalista" || "board:lars" || "board:nami" || "board:nautilus" || "board:nocturne" || "board:octopus" || "board:puff" || "board:rammus" || "board:rikku" || "board:sarien" || "board:sentry" || "board:soraka" || "board:tidus" || "board:volteer")`,
 			"no_elm_hana_3_18":   `!((elm || hana) && "kernel-3_18")`, // board elm/hana with kernel-3.18 has issue performing WiFi scan: https://crbug.com/1015719
 			"no_msan":            "!msan",
 			"no_qemu":            "!betty && !tast_vm",

@@ -75,6 +75,7 @@ The following software features are defined:
     [Diagnostic utilities].
 *   `display_backlight` - An internal display backlight.
 *   `dlc` - Support of [Downloadable Content] (DLC).
+*   `dpplus` - Board with dp plus support.
 *   `dptf` - Support of [Intel Dynamic Platform and Thermal Framework] (DPTF).
 *   `drivefs` - Google Drive support enabled.
 *   `drm_atomic` - The [DRM/KMS] kernel subsystem supports atomic commits.
@@ -114,6 +115,7 @@ The following software features are defined:
 *   `no_android` - The inability to run Android apps. This is the opposite of
     the `android` feature; DUTs will have exactly one of these two features.
 *   `no_asan` - Build was not built with Address Sanitizer. Similar to `aslr`.
+*   `no_dpplus` - Boards without dpplus configuration.
 *   `no_elm_hana_3_18` - Skip boards elm and hana with kernel-3.18 as they have
     issue performing WiFi scan. See [crbug.com/1015719](https://crbug.com/1015719).
 *   `no_msan` - Build was not built with Memory Sanitizer.

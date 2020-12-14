@@ -18,6 +18,23 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "48b5f99a_11defcb8",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 14
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-14T18:38:13Z",
+      "side": 1,
+      "message": "Hi Shuhei:\n\nI think we need to have a meeting to discuss the approach to write the skip tests information to stream_results.jsonl. I will set up a meeting. If the time is not convenient for you, please propose a new one.\n\nThansk.\n\nSeewai",
+      "revId": "973b06a445db8a4caa04f1c2fef97b17a96450d4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "d73f69c6_7af317c2",
@@ -31,6 +48,30 @@
       "writtenOn": "2020-12-14T09:05:49Z",
       "side": 1,
       "message": "In theory, this patch should not alter Tast\u0027s behavior observed by tast.py unless sharding flags are specified. Setting Start/End fields alters the behavior of \"tast list\", so this looks a wrong way to fix the issue.",
+      "range": {
+        "startLine": 43,
+        "startChar": 0,
+        "endLine": 44,
+        "endChar": 29
+      },
+      "revId": "973b06a445db8a4caa04f1c2fef97b17a96450d4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b03537c8_446026b2",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/list_tests.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-14T18:38:13Z",
+      "side": 1,
+      "message": "However, it did change the Tast\u0027s behavior. In the previous version, we will send the skipped tests to the localTestRunner and remoteTestRunner. The new one does not. That\u0027s why skipped tests did not show up in the stream_results.jsonl.\n\nSure, I could combined the skipped list and the keep list before I send it to test runners but it would seems inefficient because we knows the tests are going to be skipped. That\u0027s why I chose the current approach which would write out skipped tests information to stream_results.jsonl. \n\nAlso, I am not sure how \"Setting Start/End fields\" alters the behavior of \"tast list\". The subcommand list does not sure Start/End so it not relevant. The two fields would be used by run_tests.go.\n\nLet\u0027s have a discussion on this.\n\nThanks.\n\nSeewai",
+      "parentUuid": "d73f69c6_7af317c2",
       "range": {
         "startLine": 43,
         "startChar": 0,

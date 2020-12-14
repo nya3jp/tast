@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "69569b88_f230f71b",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 154,
+      "author": {
+        "id": 1000221
+      },
+      "writtenOn": "2020-12-14T08:57:47Z",
+      "side": 1,
+      "message": "Would it be possible not to duplicate the list of boards?",
+      "range": {
+        "startLine": 154,
+        "startChar": 28,
+        "endLine": 154,
+        "endChar": 417
+      },
+      "revId": "98773a0944031f9c6f84e86877f1bce26a0b3740",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a4ab6345_e0b2a4a2",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-12-14T07:47:25Z",
+      "side": 1,
+      "message": "Adding an attribute is okay, but I want to ensure this attribute is necessary for sure...\n",
+      "revId": "83348183b3a6bff80393e32f407765c933f0532e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a36a9be3_a9f35899",
+        "filename": "src/chromiumos/tast/internal/testing/attr.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-12-14T07:47:25Z",
+      "side": 1,
+      "message": "Adding this attribute is okay. But if the purpose is to manually shard crosbolt tests for longer timeouts, you can avoid introducing the attribute and rewriting all ARC performance tests by hacking attribute expressions in Autotest control files. c.f.\nhttps://source.corp.google.com/chromeos_public/src/third_party/autotest/files/server/site_tests/tast/control.critical-android",
+      "range": {
+        "startLine": 95,
+        "startChar": 0,
+        "endLine": 98,
+        "endChar": 5
+      },
+      "revId": "83348183b3a6bff80393e32f407765c933f0532e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

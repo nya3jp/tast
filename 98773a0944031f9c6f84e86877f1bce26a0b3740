@@ -26,6 +26,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "9ee4daf0_a0adf051",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 107,
+      "author": {
+        "id": 1197299
+      },
+      "writtenOn": "2020-12-14T18:30:51Z",
+      "side": 1,
+      "message": "Ideally, all future board shouldn\u0027t have dpplus support. I\u0027m not too leaning on adding a USE flag that no future board would use. It\u0027s good to have USE flag that would be actively used by future board but not the opposite. WDYT?\n\nI filed crbug.com/1157618 to request negation support for SoftwareDeps.",
+      "parentUuid": "7ddfd85d_a849f5ae",
+      "range": {
+        "startLine": 107,
+        "startChar": 6,
+        "endLine": 107,
+        "endChar": 176
+      },
+      "revId": "98773a0944031f9c6f84e86877f1bce26a0b3740",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "69569b88_f230f71b",
         "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
         "patchSetId": 2
@@ -37,6 +61,30 @@
       "writtenOn": "2020-12-14T08:57:47Z",
       "side": 1,
       "message": "Would it be possible not to duplicate the list of boards?",
+      "range": {
+        "startLine": 154,
+        "startChar": 28,
+        "endLine": 154,
+        "endChar": 417
+      },
+      "revId": "98773a0944031f9c6f84e86877f1bce26a0b3740",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ae69ee41_80404d7d",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 154,
+      "author": {
+        "id": 1197299
+      },
+      "writtenOn": "2020-12-14T18:30:51Z",
+      "side": 1,
+      "message": "Agree, filed crbug.com/1157618 to have negation support for SoftwareDeps.\nAs for now, 2 softwaredeps is still needed.",
+      "parentUuid": "69569b88_f230f71b",
       "range": {
         "startLine": 154,
         "startChar": 28,

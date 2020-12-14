@@ -16,6 +16,29 @@
       "message": "Just want to give you all a status update. I have resolved the issues with missing and failing tests. \n\nThe reason for missing tests is that tast.py looks at all tests inside streamed_results.jsonl. If it could not find the tests from \"tast list\", it will consider the test as missing. In this CL, we don\u0027t send tests which are gong to be skipped to local_test_runner or remote_test_runner. Therefore, those tests did not show up in the streamed_results.jsonl. To resolve this issue, I added skipped test to streamed_results.jsonl. \n\nThe reason for failing tests is that tast.py looked at the end time for each test. If the end time is less than or equal to zero, it will consider the test has an error. In order to add end time for those skipped test, I added a field \"Time\" in EntityWithRunnabilityInfo so that host machine can use it to set the start/end time. I decided not to use the host time because host time may be different from DUT time.\n\nHowever, I encountered a new issue that autoserv crashed.\n\nPlease see\nhttps://ci.chromium.org/p/chromeos/builders/test_runner/test_runner/b8861006320303097008 and look for the link to autoserv.ERROR.\n\nI am not sure how this related to my change because I think that tast was not even invoked in this case. I may need some help here because I don\u0027t really know how autoserv works.\n\nI will continue investigate the issue. \n\nIn the meantime, please review the latest changes. \n\nThanks.\n\nSeewai\n\n\n\n\n",
       "revId": "973b06a445db8a4caa04f1c2fef97b17a96450d4",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d73f69c6_7af317c2",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/list_tests.go",
+        "patchSetId": 14
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-12-14T09:05:49Z",
+      "side": 1,
+      "message": "In theory, this patch should not alter Tast\u0027s behavior observed by tast.py unless sharding flags are specified. Setting Start/End fields alters the behavior of \"tast list\", so this looks a wrong way to fix the issue.",
+      "range": {
+        "startLine": 43,
+        "startChar": 0,
+        "endLine": 44,
+        "endChar": 29
+      },
+      "revId": "973b06a445db8a4caa04f1c2fef97b17a96450d4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

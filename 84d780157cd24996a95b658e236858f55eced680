@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "619c65e1_7064b8ed",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-14T22:56:07Z",
+      "side": 1,
+      "message": "Hi Shuhei \u0026 Tatsuhisa:\n\nThis CL is for tast_rtd to invoke tast based on the input protobuf file. Please review.\n\nThanks.\n\nSeewai\n",
+      "revId": "84d780157cd24996a95b658e236858f55eced680",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

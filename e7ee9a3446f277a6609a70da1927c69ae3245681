@@ -16,6 +16,23 @@
       "message": "Here is my attempt at a hardware condition hwdep.Stylus(), but when I try to use it in a Tast test, I get [1]. Can you help please?\n[1] https://paste.googleplex.com/6754944519503872",
       "revId": "e7ee9a3446f277a6609a70da1927c69ae3245681",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "68e2d799_f6a8fde5",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1357359
+      },
+      "writtenOn": "2020-12-14T23:10:35Z",
+      "side": 1,
+      "message": "Hi, please ask Kenneth to review this, I\u0027m not an engineer.\nI\u0027m not sure what this CL is, is this to track stylus capability for active devices in the field?",
+      "revId": "e7ee9a3446f277a6609a70da1927c69ae3245681",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

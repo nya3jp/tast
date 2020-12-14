@@ -80,9 +80,13 @@ func main() {
 
 		logger.Println("Input File:", *input)
 
-		_, err = readInput(*input)
+		inv, err := readInput(*input)
 		if err != nil {
 			logger.Printf("Failed to read invocation protobuf file %v: %v", *input, err)
+			return 1
+		}
+		if err := invokeTast(logger, inv); err != nil {
+			logger.Printf("Failed to invoke tast: %v", err)
 			return 1
 		}
 		return 0

@@ -63,6 +63,30 @@
       },
       "revId": "83348183b3a6bff80393e32f407765c933f0532e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "61d5b599_0723f514",
+        "filename": "src/chromiumos/tast/internal/testing/attr.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-12-14T09:30:03Z",
+      "side": 1,
+      "message": "Currently control.crosbolt-perbuild runs tests with the following attribute expression:\n\n (\"group:crosbolt\" \u0026\u0026 crosbolt_perbuild)\n\nhttps://source.corp.google.com/chromeos_public/src/third_party/autotest/files/server/site_tests/tast/control.crosbolt-perbuild\n\nWe can modify the attribute expression to filter by android deps, i.e.\n\n (\"group:crosbolt\" \u0026\u0026 crosbolt_perbuild \u0026\u0026 !\"dep:android*\")\n\nand introduce another control file (e.g. control.crosbolt-perbuild-android) that triggers Android-related perf tests\n\n (\"group:crosbolt\" \u0026\u0026 crosbolt_perbuild \u0026\u0026 \"dep:android*\")\n\nThen we don\u0027t need to introduce the new attribute crosbolt_arc_perf_perbuild. I believe it\u0027s easier for test authors to maintain tests, because running Android perf tests separately from other perf tests are scheduling details.",
+      "parentUuid": "9b46ea04_e4daf73b",
+      "range": {
+        "startLine": 95,
+        "startChar": 0,
+        "endLine": 98,
+        "endChar": 5
+      },
+      "revId": "83348183b3a6bff80393e32f407765c933f0532e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

@@ -92,6 +92,10 @@ Tests in this group are not used for build verification.
 				Name: "crosbolt_memory_nightly",
 				Desc: `Indicates that this test is a memory test and should run nightly.`,
 			},
+			{
+				Name: "crosbolt_arc_perf_perbuild",
+				Desc: `Indicates that this test should run for every Chrome OS build. ARC performance tests.`,
+			},
 		},
 	},
 	{

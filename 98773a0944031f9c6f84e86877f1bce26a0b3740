@@ -3,6 +3,29 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "7ddfd85d_a849f5ae",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 107,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-12-14T14:54:29Z",
+      "side": 1,
+      "message": "Let\u0027s avoid having the list multiple times. They will be easily out-of-sync.\nInstead, it\u0027s nice to link to the reference for the future maintenance. Where does the list come from? \n\nIs this a temporarily workaround or a kind of permanent solution?\nSpecifically if latter, instead, could you introduce a new USE flag for the feature, and maintain in the board configuration rather than in Tast? Or, if there already exists a USE flag representing the feature, could you use it?",
+      "range": {
+        "startLine": 107,
+        "startChar": 6,
+        "endLine": 107,
+        "endChar": 176
+      },
+      "revId": "98773a0944031f9c6f84e86877f1bce26a0b3740",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "69569b88_f230f71b",
         "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
         "patchSetId": 2

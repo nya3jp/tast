@@ -1,6 +1,23 @@
 {
   "comments": [
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "6a1b786c_576745a9",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000221
+      },
+      "writtenOn": "2020-12-14T20:33:53Z",
+      "side": 1,
+      "message": "I am not sure about this change. It tries to convert a hardware specific problem (model) into its umbrella board. This would work around the issue. The problem though is that new hardware models are used in the lab/CQ without testing them first.",
+      "revId": "98773a0944031f9c6f84e86877f1bce26a0b3740",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "7ddfd85d_a849f5ae",

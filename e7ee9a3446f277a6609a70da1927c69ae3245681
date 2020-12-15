@@ -50,6 +50,24 @@
       "message": "Let me forward this to yamaguchi@ who is an expert of hwdeps.\n",
       "revId": "e7ee9a3446f277a6609a70da1927c69ae3245681",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cfddbb81_2753de4f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-12-15T02:54:27Z",
+      "side": 1,
+      "message": "Please add a logic to populate the field of the hardware features protobuf object in src/platform/tast/src/chromiumos/tast/internal/runner/features.go.\nhttps://source.chromium.org/chromiumos/chromiumos/codesearch/+/master:src/platform/tast/src/chromiumos/tast/internal/runner/features.go;l\u003d277;drc\u003d970dce09ed3083e4ca0474aeb13f0974ec5e6d72\n\n\nRegarding the error message, I think it is because absent fields are nil in go-protobuf. If parent node is nil, an attempt to access its child node under it would cause a panic.\n---\n2020/12/11 10:49:56 Got global error: runner.go:162: Bundle /usr/local/libexec/tast/bundles/local_pushed/cros failed: exit status 2 (panic: runtime error: invalid memory address or nil pointer dereference\n[signal SIGSEGV: segmentation violation code\u003d0x1 addr\u003d0x0 pc\u003d0x946ee3]\n \ngoroutine 1 [running]:\nchromiumos/tast/testing/hwdep.Stylus.func1(0xc0006645d0, 0x0, 0x31f2820)\n        /home/amusbach/trunk/src/platform/tast/src/chromiumos/tast/testing/hwdep/hwdep.go:256 +0x33",
+      "parentUuid": "5a0253d8_e3d2bae2",
+      "revId": "e7ee9a3446f277a6609a70da1927c69ae3245681",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

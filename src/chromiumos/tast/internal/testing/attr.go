@@ -300,6 +300,11 @@ Meta tests should be a subset of mainline critical tests.
 `,
 	},
 	{
+		Name:     "fingerprint-mcu",
+		Contacts: []string{"chromeos-fingerprint@google.com"},
+		Desc:     `The group of tests to be run on a standalone Fingerprint MCU board.`,
+	},
+	{
 		Name:     "storage-qual",
 		Contacts: []string{"chromeos-engprod-platform-syd@google.com"},
 		Desc:     `A group of tests for internal and external storage qualification and testing.`,

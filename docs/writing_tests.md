@@ -1371,14 +1371,24 @@ For consistency, please follow these guidelines on implementing gRPC services:
     If the file gets too long, please consider introducing a subpackage just
     like tests.
 
-`context.Context` given to gRPC methods can be passed to `testing.Context*`
-functions. Notably, gRPC services can emit logs with `testing.ContextLog`.
-Emitted messages are recorded in the log of the remote test calling the gRPC
-method.
+`context.Context` passed to a gRPC method can be used to call some of
+`testing.Context*` functions:
+
+*   `testing.ContextLog`, `testing.ContextLogf`, `testing.ContextLogger` work
+    fine. Emitted logs are recorded as if they were emitted by a remote test
+    that called into a gRPC method.
+*   `testing.ContextOutDir` returns a path to a temporary directory. Files saved
+    in the directory during a gRPC method call are copied back to the host
+    machine's test output directory, as if they were saved by a remote test that
+    called into a gRPC method. Note that this function does not allow gRPC
+    methods to read output files from a remote test nor previous gRPC method
+    calls. Files are overwritten in the case of name conflicts.
+*   `testing.ContextSoftwareDeps` does not work. This function is planned to be
+    deprecated ([crbug.com/1135996]).
 
 `Register` function receives [`testing.ServiceState`] which you can keep in
 a field of the struct type implementing the gRPC service. It allows the service
-to access service-specific information, such as data files
+to access service-specific information, such as runtime variables and data files
 (not implemented yet: [crbug.com/1027381]).
 
 [`testing.AddService`]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#AddService
@@ -1386,6 +1396,7 @@ to access service-specific information, such as data files
 [`grpc.Server`]: https://godoc.org/google.golang.org/grpc#Server
 [test `.go` files]: https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#code-location
 [`testing.ServiceState`]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#ServiceState
+[crbug.com/1135996]: https://crbug.com/1135996
 [crbug.com/1027381]: https://crbug.com/1027381
 
 ### Calling gRPC services

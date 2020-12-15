@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5ae70ec2_71fae2f9",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-15T22:30:12Z",
+      "side": 1,
+      "message": "Hi Tatsuhisa:\n\nI have addressed all the comments except one. Please see my comments regarding the unaddressed feedback.\n\nThanks.\n\nSeewai\n",
+      "revId": "f44aeafedab8669244b50f742c4231fa3e271494",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

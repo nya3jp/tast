@@ -26,6 +26,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "e7a77106_e618cd88",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/invocation.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-15T22:30:12Z",
+      "side": 1,
+      "message": "I have a question here. Is it valid to not specify TlwPort? For ssh, port will be 22 if the port is specified. TlwPort will be 0 if it is not specified. That\u0027s why I have a check here. Please let me know if TlsPort must be specified. Thanks.",
+      "parentUuid": "32b7b6c0_f3082ee9",
+      "range": {
+        "startLine": 48,
+        "startChar": 2,
+        "endLine": 50,
+        "endChar": 3
+      },
+      "revId": "222e48f320a63990353bc78cc036616444c49fb0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "85e148d0_babf6df4",
         "filename": "src/chromiumos/tast/cmd/tast_rtd/invocation.go",
         "patchSetId": 2
@@ -37,6 +61,24 @@
       "writtenOn": "2020-12-15T09:01:01Z",
       "side": 1,
       "message": "Use errors.Wrapf() in src/platform/tast/src/chromiumos/tast/errors/errors.go",
+      "revId": "222e48f320a63990353bc78cc036616444c49fb0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1ff57526_1d374f3b",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/invocation.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-15T22:30:12Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "85e148d0_babf6df4",
       "revId": "222e48f320a63990353bc78cc036616444c49fb0",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -58,6 +100,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "6abb27b8_bd311d76",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/invocation.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 107,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-15T22:30:12Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d0274a96_9e38ec65",
+      "revId": "222e48f320a63990353bc78cc036616444c49fb0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "9507da09_d2c84b9c",
@@ -71,6 +131,24 @@
       "writtenOn": "2020-12-15T09:01:01Z",
       "side": 1,
       "message": "ditto",
+      "revId": "222e48f320a63990353bc78cc036616444c49fb0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d9885685_3e4490f0",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/invocation.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 114,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-15T22:30:12Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9507da09_d2c84b9c",
       "revId": "222e48f320a63990353bc78cc036616444c49fb0",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -92,6 +170,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "18162dc7_7a964fce",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/invocation.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 118,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-15T22:30:12Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "68cefbb2_c6f05362",
+      "revId": "222e48f320a63990353bc78cc036616444c49fb0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "11b2e739_7f2a11a1",
@@ -105,6 +201,24 @@
       "writtenOn": "2020-12-15T09:01:01Z",
       "side": 1,
       "message": "Maybe it\u0027s better to use a different address from tls for detecting difference.",
+      "revId": "222e48f320a63990353bc78cc036616444c49fb0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4cec4a25_63b8bda2",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/invocation_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-15T22:30:12Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "11b2e739_7f2a11a1",
       "revId": "222e48f320a63990353bc78cc036616444c49fb0",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -132,6 +246,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "8f459445_925b25ad",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/invocation_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-15T22:30:12Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1377482f_8518acd3",
+      "range": {
+        "startLine": 78,
+        "startChar": 0,
+        "endLine": 81,
+        "endChar": 2
+      },
+      "revId": "222e48f320a63990353bc78cc036616444c49fb0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "765136bf_42b3dfc0",
@@ -145,6 +283,24 @@
       "writtenOn": "2020-12-15T09:01:01Z",
       "side": 1,
       "message": "Can we use cmd.Diff instead?\ngo/go-style/decisions#types-of-equality",
+      "revId": "222e48f320a63990353bc78cc036616444c49fb0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6be13d56_c4a2cadd",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/invocation_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-15T22:30:12Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "765136bf_42b3dfc0",
       "revId": "222e48f320a63990353bc78cc036616444c49fb0",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }

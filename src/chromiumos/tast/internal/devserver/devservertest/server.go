@@ -24,8 +24,9 @@ import (
 // Server is a fake devserver implementation.
 type Server struct {
 	*httptest.Server
-	down      bool
-	stageHook func(gsURL string) error
+	down               bool
+	stageHook          func(gsURL string) error
+	abortDownloadAfter int
 
 	mu    sync.Mutex
 	files map[string]*File
@@ -52,9 +53,10 @@ func (f *File) Copy() *File {
 }
 
 type options struct {
-	down      bool
-	files     []*File
-	stageHook func(gsURL string) error
+	down               bool
+	files              []*File
+	stageHook          func(gsURL string) error
+	abortDownloadAfter int
 }
 
 // Option is an option accepted by NewServer to configure Server initialization.
@@ -82,11 +84,19 @@ func StageHook(f func(gsURL string) error) Option {
 	}
 }
 
+// AbortDownloadAfter returns an option to make download requests fail after specified bytes.
+func AbortDownloadAfter(bytes int) Option {
+	return func(o *options) {
+		o.abortDownloadAfter = bytes
+	}
+}
+
 // NewServer starts a fake devserver using specified options.
 func NewServer(opts ...Option) (*Server, error) {
 	mux := http.NewServeMux()
 	o := &options{
-		stageHook: func(gsURL string) error { return nil },
+		stageHook:          func(gsURL string) error { return nil },
+		abortDownloadAfter: -1,
 	}
 	for _, opt := range opts {
 		opt(o)
@@ -105,10 +115,11 @@ func NewServer(opts ...Option) (*Server, error) {
 	}
 
 	s := &Server{
-		Server:    httptest.NewServer(mux),
-		down:      o.down,
-		stageHook: o.stageHook,
-		files:     files,
+		Server:             httptest.NewServer(mux),
+		down:               o.down,
+		stageHook:          o.stageHook,
+		abortDownloadAfter: o.abortDownloadAfter,
+		files:              files,
 	}
 
 	mux.Handle("/check_health", http.HandlerFunc(s.handleCheckHealth))
@@ -214,7 +225,28 @@ func (s *Server) handleStatic(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if s.abortDownloadAfter >= 0 {
+		w = newCappedResponseWriter(w, s.abortDownloadAfter)
+	}
 	http.ServeContent(w, r, path, time.Unix(0, 0), bytes.NewReader(f.Data))
+}
+
+// cappedResponseWriter wraps http.ResponseWriter with response size limit.
+type cappedResponseWriter struct {
+	http.ResponseWriter
+	remaining int
+}
+
+func newCappedResponseWriter(w http.ResponseWriter, cap int) *cappedResponseWriter {
+	return &cappedResponseWriter{ResponseWriter: w, remaining: cap}
+}
+
+func (w *cappedResponseWriter) Write(p []byte) (int, error) {
+	if len(p) > w.remaining {
+		p = p[:w.remaining]
+	}
+	w.remaining -= len(p)
+	return w.ResponseWriter.Write(p)
 }
 
 func respondError(w http.ResponseWriter, err error) {

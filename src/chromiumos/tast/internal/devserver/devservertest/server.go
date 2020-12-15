@@ -6,6 +6,7 @@
 package devservertest
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"html"
@@ -15,6 +16,7 @@ import (
 	"net/url"
 	"strings"
 	"sync"
+	"time"
 
 	"chromiumos/tast/internal/devserver"
 )
@@ -212,11 +214,7 @@ func (s *Server) handleStatic(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if r.Method == http.MethodHead {
-		return
-	}
-
-	w.Write(f.Data)
+	http.ServeContent(w, r, path, time.Unix(0, 0), bytes.NewReader(f.Data))
 }
 
 func respondError(w http.ResponseWriter, err error) {

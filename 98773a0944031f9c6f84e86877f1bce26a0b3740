@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "3090893e_80618017",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-12-15T02:57:30Z",
+      "side": 1,
+      "message": "Clarification: is \"dpplus\" hardware characteristic? Or software characteristic configured (maybe on some specific hardware requirements)?\n\nIf the former, translate it to HWDeps is the eventual way. If the latter, USE flag sounds like a way to go.\nIn either case, if the work needs huge amount of work (mostly discussion I guess) like a few quoters, Tast can accept a way to use boardname/modelname for short term. This kind of short term workaround with future planning another designed use case of the boardname for SoftwareDeps, IIUC.",
+      "parentUuid": "6a1b786c_576745a9",
+      "revId": "98773a0944031f9c6f84e86877f1bce26a0b3740",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "7ddfd85d_a849f5ae",
@@ -67,6 +85,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "5939574e_3e4740ab",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 107,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-12-15T02:57:30Z",
+      "side": 1,
+      "message": "In general, conceptually, Tast should not be a source of truth of features.\nTast is testing framework, which respects the existing board features/configurations.\nSo, maintaining boardnames does not sound a long term support.\n\nWe implemented boardnames for SoftwareDeps, and we expect it is used for short term workaround in general, e.g., in some cases some features are unstable due to unknown reasons on specific boards. In such a case, Boardname support of SoftwareDeps allows developers to split the test into two, without adding USE flags representing each board that does not help actual development.",
+      "parentUuid": "9ee4daf0_a0adf051",
+      "range": {
+        "startLine": 107,
+        "startChar": 6,
+        "endLine": 107,
+        "endChar": 176
+      },
+      "revId": "98773a0944031f9c6f84e86877f1bce26a0b3740",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "69569b88_f230f71b",
         "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
         "patchSetId": 2
@@ -102,6 +144,30 @@
       "side": 1,
       "message": "Agree, filed crbug.com/1157618 to have negation support for SoftwareDeps.\nAs for now, 2 softwaredeps is still needed.",
       "parentUuid": "69569b88_f230f71b",
+      "range": {
+        "startLine": 154,
+        "startChar": 28,
+        "endLine": 154,
+        "endChar": 417
+      },
+      "revId": "98773a0944031f9c6f84e86877f1bce26a0b3740",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "88c155c9_fcff3309",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 154,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2020-12-15T02:57:30Z",
+      "side": 1,
+      "message": "ihf@\u0027s point is not to duplicate the list of boards.\nThat can be done by introducing a constant.\n\nconst dpplusBoards \u003d `\"board:asuka\" || \"board:caroline\" || ...`\n\n...\n\"dpplus\": dpplusBoards,\n...\n\"no_dpplus\": \"!(\" + dpplusBoards + \")\",",
+      "parentUuid": "ae69ee41_80404d7d",
       "range": {
         "startLine": 154,
         "startChar": 28,

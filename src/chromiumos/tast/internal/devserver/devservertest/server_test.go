@@ -7,9 +7,11 @@ package devservertest
 import (
 	"bytes"
 	"errors"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"strings"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -277,6 +279,49 @@ func TestDownloadPartialContent(t *testing.T) {
 
 	got := string(b)
 	const want = "klmno"
+	if got != want {
+		t.Errorf("Content = %q; want %q", got, want)
+	}
+}
+
+func TestAbortDownloadAfter(t *testing.T) {
+	const (
+		fullSize = 1000
+		capSize  = 123
+	)
+
+	files := []*File{{
+		URL:    "gs://bucket/file",
+		Data:   bytes.Repeat([]byte{'a'}, fullSize),
+		Staged: true,
+	}}
+	s, err := NewServer(Files(files), AbortDownloadAfter(capSize))
+	if err != nil {
+		t.Fatal("NewServer: ", err)
+	}
+	defer s.Close()
+
+	req, err := http.NewRequest(http.MethodGet, s.URL+"/static/file?gs_bucket=bucket", nil)
+	if err != nil {
+		t.Fatal("http.NewRequest: ", err)
+	}
+	req.Header.Add("Negotiate", "vlist")
+
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		t.Fatal("http.Get: ", err)
+	}
+	defer res.Body.Close()
+
+	b, err := ioutil.ReadAll(res.Body)
+	if err == nil {
+		t.Error("ReadAll succeeded unexpectedly")
+	} else if err != io.ErrUnexpectedEOF {
+		t.Errorf("ReadAll: %v; want %v", err, io.ErrUnexpectedEOF)
+	}
+
+	got := string(b)
+	want := strings.Repeat("a", capSize)
 	if got != want {
 		t.Errorf("Content = %q; want %q", got, want)
 	}

@@ -612,6 +612,9 @@ func (d *dataFS) Open(name string) (http.File, error) {
 	return os.Open(path)
 }
 
+// DataDir returns the directory in which the test's data files are located.
+func (s *testMixin) DataDir() string { return s.testRoot.entityRoot.cfg.DataDir }
+
 // OutDir returns a directory into which the entity may place arbitrary files
 // that should be included with the entity results.
 func (s *testMixin) OutDir() string { return s.testRoot.entityRoot.cfg.OutDir }

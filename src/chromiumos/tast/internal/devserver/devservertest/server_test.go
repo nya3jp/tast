@@ -243,6 +243,45 @@ func TestStageHook(t *testing.T) {
 	}
 }
 
+func TestDownloadPartialContent(t *testing.T) {
+	const data = "abcdefghijklmnopqrstuvwxyz"
+
+	files := []*File{{
+		URL:    "gs://bucket/file",
+		Data:   []byte(data),
+		Staged: true,
+	}}
+	s, err := NewServer(Files(files))
+	if err != nil {
+		t.Fatal("NewServer: ", err)
+	}
+	defer s.Close()
+
+	req, err := http.NewRequest(http.MethodGet, s.URL+"/static/file?gs_bucket=bucket", nil)
+	if err != nil {
+		t.Fatal("http.NewRequest: ", err)
+	}
+	req.Header.Add("Negotiate", "vlist")
+	req.Header.Add("Range", "bytes=10-14")
+
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		t.Fatal("http.Get: ", err)
+	}
+	defer res.Body.Close()
+
+	b, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		t.Error("ReadAll: ", err)
+	}
+
+	got := string(b)
+	const want = "klmno"
+	if got != want {
+		t.Errorf("Content = %q; want %q", got, want)
+	}
+}
+
 func TestNegotiate(t *testing.T) {
 	files := []*File{{URL: "gs://bucket/file.txt", Staged: true}}
 	s, err := NewServer(Files(files))

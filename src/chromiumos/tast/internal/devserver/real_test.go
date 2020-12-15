@@ -7,6 +7,7 @@ package devserver_test
 import (
 	"context"
 	"errors"
+	"io"
 	"io/ioutil"
 	"os"
 	"reflect"
@@ -158,6 +159,57 @@ func TestRealClientRetryStageFail(t *testing.T) {
 	if r, err := cl.Open(context.Background(), fakeFileURL); err == nil {
 		r.Close()
 		t.Error("Open succeeded despite too many failures")
+	}
+}
+
+// TestRealClientRetryDownload tests that interrupted download sessions are retried.
+func TestRealClientRetryDownload(t *testing.T) {
+	files := []*devservertest.File{{URL: fakeFileURL, Data: []byte(fakeFileData)}}
+	// This fake server closes the connection after sending 3 bytes, so
+	// we need to retry downloading to get the full content.
+	s := newFakeServer(t, devservertest.Files(files), devservertest.AbortDownloadAfter(3))
+	defer s.Close()
+
+	cl := devserver.NewRealClient(context.Background(), []string{s.URL}, &devserver.RealClientOptions{})
+
+	r, err := cl.Open(context.Background(), fakeFileURL)
+	if err != nil {
+		t.Error("Open failed despite retries: ", err)
+	}
+	defer r.Close()
+
+	b, err := ioutil.ReadAll(r)
+	if err != nil {
+		t.Error("Error during downloading file: ", err)
+	}
+
+	data := string(b)
+	if data != fakeFileData {
+		t.Errorf("Content mismatch: got %q, want %q", data, fakeFileData)
+	}
+}
+
+// TestRealClientRetryDownloadSuccessiveResumableErrors tests that download
+// aborts after successive resumable failures.
+func TestRealClientRetryDownloadSuccessiveResumableErrors(t *testing.T) {
+	files := []*devservertest.File{{URL: fakeFileURL, Data: []byte(fakeFileData)}}
+	// This fake server closes the connection before sending any data.
+	s := newFakeServer(t, devservertest.Files(files), devservertest.AbortDownloadAfter(0))
+	defer s.Close()
+
+	cl := devserver.NewRealClient(context.Background(), []string{s.URL}, &devserver.RealClientOptions{})
+
+	r, err := cl.Open(context.Background(), fakeFileURL)
+	if err != nil {
+		t.Error("Open failed despite retries: ", err)
+	}
+	defer r.Close()
+
+	_, err = ioutil.ReadAll(r)
+	if err == nil {
+		t.Error("ReadAll succeeded unexpectedly")
+	} else if err != io.ErrUnexpectedEOF {
+		t.Errorf("ReadAll: %v; want %v", err, io.ErrUnexpectedEOF)
 	}
 }
 

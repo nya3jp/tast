@@ -346,33 +346,129 @@ func (c *RealClient) openStaged(ctx context.Context, dsURL, bucket, path string)
 	query := make(url.Values)
 	query.Set("gs_bucket", bucket)
 	staticURL.RawQuery = query.Encode()
-	req, err := http.NewRequest("GET", staticURL.String(), nil)
+
+	open := func(offset int64) (io.ReadCloser, error) {
+		req, err := http.NewRequest("GET", staticURL.String(), nil)
+		if err != nil {
+			return nil, err
+		}
+		// Negotiate header disables automatic content negotiation. See:
+		// https://crbug.com/967305
+		// https://tools.ietf.org/html/rfc2295#section-8.4
+		req.Header.Set("Negotiate", "vlist")
+		if offset > 0 {
+			req.Header.Set("Range", fmt.Sprintf("bytes=%d-", offset))
+		}
+		req = req.WithContext(ctx)
+
+		res, err := c.cl.Do(req)
+		if err != nil {
+			return nil, err
+		}
+
+		switch res.StatusCode {
+		case http.StatusOK, http.StatusPartialContent:
+			return res.Body, nil
+		case http.StatusInternalServerError:
+			defer res.Body.Close()
+			out, _ := ioutil.ReadAll(res.Body)
+			s := scrapeInternalError(out)
+			return nil, fmt.Errorf("got status %d: %s", res.StatusCode, s)
+		default:
+			res.Body.Close()
+			return nil, fmt.Errorf("got status %d", res.StatusCode)
+		}
+	}
+
+	return newResumingReader(open)
+}
+
+// resumingReader is io.ReadCloser that tries to reopen when it encounters
+// resumable errors.
+type resumingReader struct {
+	// open is a function to open a reader with an offset. It is immutable.
+	open func(offset int64) (io.ReadCloser, error)
+
+	// reader is a current underlying ReadCloser. It can be updated on Read
+	// if we encounter resumable errors. It can never be nil.
+	reader io.ReadCloser
+	// pos is the number of bytes read so far.
+	pos int64
+	// err is set when we encounter a non-resumable error on Read.
+	err error
+}
+
+var _ io.ReadCloser = &resumingReader{}
+
+// newResumingReader creates a new resumingReader from a function open that
+// returns io.ReadCloser with a specified offset.
+// open is called immediately in this function, and also can be called multiple
+// times in resumingReader.Read when errors are seen.
+func newResumingReader(open func(offset int64) (io.ReadCloser, error)) (*resumingReader, error) {
+	reader, err := open(0)
 	if err != nil {
 		return nil, err
 	}
-	// Negotiate header disables automatic content negotiation. See:
-	// https://crbug.com/967305
-	// https://tools.ietf.org/html/rfc2295#section-8.4
-	req.Header.Set("Negotiate", "vlist")
-	req = req.WithContext(ctx)
+	return &resumingReader{
+		open:   open,
+		reader: reader,
+	}, nil
+}
 
-	res, err := c.cl.Do(req)
-	if err != nil {
-		return nil, err
+func (r *resumingReader) Read(p []byte) (int, error) {
+	// Return immediately if we have encountered a non-resumable error.
+	if r.err != nil {
+		return 0, r.err
 	}
 
-	switch res.StatusCode {
-	case http.StatusOK:
-		return res.Body, nil
-	case http.StatusInternalServerError:
-		defer res.Body.Close()
-		out, _ := ioutil.ReadAll(res.Body)
-		s := scrapeInternalError(out)
-		return nil, fmt.Errorf("got status %d: %s", res.StatusCode, s)
-	default:
-		res.Body.Close()
-		return nil, fmt.Errorf("got status %d", res.StatusCode)
+	reopened := false
+	for {
+		// Attempt a read.
+		n, err := r.reader.Read(p)
+		r.pos += int64(n)
+		if err == nil {
+			return n, nil
+		}
+
+		// If the error is non-resumable, save it and return.
+		if !isResumable(err) {
+			r.err = err
+			return n, err
+		}
+
+		// If we've just reopened the stream and we still can't read any data,
+		// do not reopen it again to avoid entering an infinite loop of retries.
+		if reopened && n == 0 {
+			r.err = err
+			return n, err
+		}
+
+		// The error is resumable, try reopening.
+		reader, err := r.open(r.pos)
+		if err != nil {
+			// Errors from open are always non-resumable.
+			r.err = err
+			return n, err
+		}
+
+		r.reader.Close()
+		r.reader = reader
+
+		// Return if we read some bytes. Otherwise, retry immediately after
+		// setting the reopened flag.
+		if n > 0 {
+			return n, nil
+		}
+		reopened = true
 	}
+}
+
+func (r *resumingReader) Close() error {
+	return r.reader.Close()
+}
+
+func isResumable(err error) bool {
+	return err == io.ErrUnexpectedEOF
 }
 
 var internalErrorRegexp = regexp.MustCompile(`(?m)^(.*)\n\s*</pre>`)

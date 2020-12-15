@@ -33,6 +33,23 @@
       "message": "Hi, please ask Kenneth to review this, I\u0027m not an engineer.\nI\u0027m not sure what this CL is, is this to track stylus capability for active devices in the field?",
       "revId": "e7ee9a3446f277a6609a70da1927c69ae3245681",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "bcfc2a46_b0906883",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-12-15T02:09:27Z",
+      "side": 1,
+      "message": "Let me forward this to yamaguchi@ who is an expert of hwdeps.\n",
+      "revId": "e7ee9a3446f277a6609a70da1927c69ae3245681",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

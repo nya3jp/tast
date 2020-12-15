@@ -309,6 +309,11 @@ Meta tests should be a subset of mainline critical tests.
 		Contacts: []string{"zsm@google.com", "chromeos-kernel@google.com"},
 		Desc:     `A group of tests that utilize Syzkaller to fuzz the kernel.`,
 	},
+	{
+		Name:     "nearby-share",
+		Contacts: []string{"chromeos-sw-engprod@google.com"},
+		Desc:     `A group of tests that test Nearby Share functionality.`,
+	},
 }
 
 // validGroupMap is the name-keyed map of validGroups.

@@ -16,6 +16,69 @@
       "message": "Hi Shuhei \u0026 Tatsuhisa:\n\nThe CQ+1 for this CL has passed with the latest patch. I still printed the skipped tests (dependency or out of shard) in full.txt. The reason is to avoid the warning message for unused patterns. However, I don\u0027t put them in results.json and stream_results.json. For skipped tests dependency, I include them in results.json and stream_results.json. \n\nPlease review the latest changes.\n\nThanks.\n\nSeewai",
       "revId": "e7a8d4953662bcf5bf703206cfa77a1d9e9d5adc",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4e9cc0da_99b45a21",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 15
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-12-16T13:40:32Z",
+      "side": 1,
+      "message": "lgtm",
+      "revId": "e7a8d4953662bcf5bf703206cfa77a1d9e9d5adc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3c8661db_e814fc26",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests_test.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 246,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-12-16T13:40:32Z",
+      "side": 1,
+      "message": "nit: tests?",
+      "range": {
+        "startLine": 246,
+        "startChar": 27,
+        "endLine": 246,
+        "endChar": 35
+      },
+      "revId": "e7a8d4953662bcf5bf703206cfa77a1d9e9d5adc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f0495f77_305462ed",
+        "filename": "src/chromiumos/tast/internal/testing/test_instance.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 539,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-12-16T13:40:32Z",
+      "side": 1,
+      "message": "I felt this comment may be redundant. \"Entity\" is basically equivalent to \"the test\" here, therefore it would not be very hard to intepret this field name like described by the comment.",
+      "range": {
+        "startLine": 539,
+        "startChar": 38,
+        "endLine": 539,
+        "endChar": 80
+      },
+      "revId": "e7a8d4953662bcf5bf703206cfa77a1d9e9d5adc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

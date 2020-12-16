@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "64a2fcb0_9816ed9c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-16T06:19:30Z",
+      "side": 1,
+      "message": "Hi Tatsuhisa:\n\nI have addressed your comment regarding port number. Please review.\n\nThanks.\n\nSeewai\n",
+      "revId": "2b2969497df8b8d66c36c2ff106891e3eb8eadb4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

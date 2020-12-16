@@ -50,6 +50,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "e62f9593_6ec9a8c8",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/invocation.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-12-16T02:19:58Z",
+      "side": 1,
+      "message": "Now I have found it is actually valid to have no port number.\nTast passes the TLW address string as-is from the commandline to grpc.Dial(), and it is finally interpreted by GRPC library.\nAccording to the document, when [:port] is ommitted, it defaults to either HTTP or HTTPS depending on the channel.\nhttps://github.com/grpc/grpc/blob/master/doc/naming.md\n\nAnd it may be still better not to hide error when negative number were wrongly given. If we don\u0027t return error here, how about checking by !\u003d 0 here so as to let GRPC library produce an error later?",
+      "parentUuid": "e7a77106_e618cd88",
+      "range": {
+        "startLine": 48,
+        "startChar": 2,
+        "endLine": 50,
+        "endChar": 3
+      },
+      "revId": "222e48f320a63990353bc78cc036616444c49fb0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "85e148d0_babf6df4",
         "filename": "src/chromiumos/tast/cmd/tast_rtd/invocation.go",
         "patchSetId": 2

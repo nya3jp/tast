@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0efffe76_a2b32ede",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 15
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-16T03:36:55Z",
+      "side": 1,
+      "message": "Hi Shuhei \u0026 Tatsuhisa:\n\nThe CQ+1 for this CL has passed with the latest patch. I still printed the skipped tests (dependency or out of shard) in full.txt. The reason is to avoid the warning message for unused patterns. However, I don\u0027t put them in results.json and stream_results.json. For skipped tests dependency, I include them in results.json and stream_results.json. \n\nPlease review the latest changes.\n\nThanks.\n\nSeewai",
+      "revId": "e7a8d4953662bcf5bf703206cfa77a1d9e9d5adc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

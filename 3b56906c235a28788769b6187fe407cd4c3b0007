@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "69d92a13_c9283ec3",
+        "filename": "src/chromiumos/tast/internal/testing/attr.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 299,
+      "author": {
+        "id": 1345639
+      },
+      "writtenOn": "2020-12-16T02:21:15Z",
+      "side": 1,
+      "message": "I am not sure about the name. I am avoiding \"fingerprint\" because there\u0027s an autotest suite called \"fingerprint\" for some flaky autotests that don\u0027t run in CQ. I don\u0027t want to mix up those autotests with our Tast tests.\n\nAlternatively this can be called \"fingerprint-tast\".",
+      "range": {
+        "startLine": 299,
+        "startChar": 12,
+        "endLine": 299,
+        "endChar": 28
+      },
+      "revId": "3b56906c235a28788769b6187fe407cd4c3b0007",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

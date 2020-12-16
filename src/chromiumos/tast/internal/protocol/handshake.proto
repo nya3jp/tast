@@ -1,0 +1,35 @@
+// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package tast.core;
+option go_package = "chromiumos/tast/internal/protocol";
+
+// HandshakeRequest contains parameters needed to initialize a gRPC server.
+// The message is sent in a raw format since gRPC connection is not ready before
+// handshake.
+message HandshakeRequest {
+  UserServiceInitParams user_service_init_params = 1;
+}
+
+// UserServiceInitParams contains parameters needed to initialize user-defined
+// gRPC services.
+message UserServiceInitParams {
+  // Runtime variables.
+  map<string, string> vars = 1;
+}
+
+// HandshakeResponse is a response to an HandshakeRequest message.
+// The message is sent in a raw format since gRPC connection is not ready before
+// handshake.
+message HandshakeResponse {
+  // Set if an error occurred.
+  HandshakeError error = 1;
+}
+
+// HandshakeError describes a failed handshake result.
+message HandshakeError {
+  string reason = 1;
+}

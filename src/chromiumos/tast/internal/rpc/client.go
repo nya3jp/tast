@@ -130,17 +130,21 @@ func newClient(ctx context.Context, r io.Reader, w io.Writer, h *testing.RPCHint
 // initBundleServer initializes the bundle server by sending raw protobuf message
 // to bundle process, and waits for response message.
 func initBundleServer(r io.Reader, w io.Writer, h *testing.RPCHint) error {
-	req := &protocol.InitBundleServerRequest{Vars: testing.ExtractTestVars(h)}
+	req := &protocol.HandshakeRequest{
+		UserServiceInitParams: &protocol.UserServiceInitParams{
+			Vars: testing.ExtractTestVars(h),
+		},
+	}
 	if err := sendRawMessage(w, req); err != nil {
 		return err
 	}
-	rsp := &protocol.InitBundleServerResponse{}
-	if err := receiveRawMessage(r, rsp); err != nil {
+	res := &protocol.HandshakeResponse{}
+	if err := receiveRawMessage(r, res); err != nil {
 		return err
 	}
 	// Server returns error.
-	if !rsp.Success {
-		return errors.Errorf("bundle returned error: %s", rsp.GetErrorMessage())
+	if res.Error != nil {
+		return errors.Errorf("bundle returned error: %s", res.Error.GetReason())
 	}
 	return nil
 }

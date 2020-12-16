@@ -17,12 +17,15 @@ func TestProtobufRaw(t *testing.T) {
 	var buf bytes.Buffer
 
 	// Send two messages.
-	msgSent1 := &protocol.InitBundleServerRequest{
-		Vars: map[string]string{"key1": "value1"},
+	msgSent1 := &protocol.HandshakeRequest{
+		UserServiceInitParams: &protocol.UserServiceInitParams{
+			Vars: map[string]string{"key1": "value1"},
+		},
 	}
-	msgSent2 := &protocol.InitBundleServerResponse{
-		Success:      false,
-		ErrorMessage: "error happened",
+	msgSent2 := &protocol.HandshakeResponse{
+		Error: &protocol.HandshakeError{
+			Reason: "error happened",
+		},
 	}
 	for _, req := range []proto.Message{msgSent1, msgSent2} {
 		if err := sendRawMessage(&buf, req); err != nil {
@@ -31,8 +34,8 @@ func TestProtobufRaw(t *testing.T) {
 	}
 
 	// Receive messages and compare.
-	msgReceived1 := &protocol.InitBundleServerRequest{}
-	msgReceived2 := &protocol.InitBundleServerResponse{}
+	msgReceived1 := &protocol.HandshakeRequest{}
+	msgReceived2 := &protocol.HandshakeResponse{}
 	for _, reqRead := range []proto.Message{msgReceived1, msgReceived2} {
 		if err := receiveRawMessage(&buf, reqRead); err != nil {
 			t.Fatalf("Failed to receive message from stream: %v", err)

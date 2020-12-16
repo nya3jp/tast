@@ -16,6 +16,23 @@
       "message": "Hi Tatsuhisa:\n\nI have addressed your comment regarding port number. Please review.\n\nThanks.\n\nSeewai\n",
       "revId": "2b2969497df8b8d66c36c2ff106891e3eb8eadb4",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2af54348_c43fe2b4",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-16T06:45:45Z",
+      "side": 1,
+      "message": "Submit to CQ.",
+      "revId": "2b2969497df8b8d66c36c2ff106891e3eb8eadb4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

@@ -58,6 +58,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "bbdcb8a6_f3d5ccce",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests_test.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 246,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-16T17:33:36Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3c8661db_e814fc26",
+      "range": {
+        "startLine": 246,
+        "startChar": 27,
+        "endLine": 246,
+        "endChar": 35
+      },
+      "revId": "e7a8d4953662bcf5bf703206cfa77a1d9e9d5adc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "f0495f77_305462ed",
@@ -71,6 +95,30 @@
       "writtenOn": "2020-12-16T13:40:32Z",
       "side": 1,
       "message": "I felt this comment may be redundant. \"Entity\" is basically equivalent to \"the test\" here, therefore it would not be very hard to intepret this field name like described by the comment.",
+      "range": {
+        "startLine": 539,
+        "startChar": 38,
+        "endLine": 539,
+        "endChar": 80
+      },
+      "revId": "e7a8d4953662bcf5bf703206cfa77a1d9e9d5adc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "45681e39_dc8dd747",
+        "filename": "src/chromiumos/tast/internal/testing/test_instance.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 539,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-16T17:33:36Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f0495f77_305462ed",
       "range": {
         "startLine": 539,
         "startChar": 38,

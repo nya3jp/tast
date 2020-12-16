@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "fa2036dd_d0e01f2d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 16
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-16T17:33:36Z",
+      "side": 1,
+      "message": "Hi Everybody:\n\nI have addressed the latest comments. Please review.\n\nThanks.\n\nSeewai\n",
+      "revId": "7556836d8d0ece65627f632b53fed35567f7e61e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

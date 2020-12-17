@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ce33b02b_81a37174",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 9
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-12-17T01:30:24Z",
+      "side": 1,
+      "message": "This change can be splitted from the relation chain, and then submitted in parallel, because the touched file is not touched by the ancestor nor the descendant CLs.",
+      "revId": "0997afe3a2f682c47b776cc521c24c3ce55c1923",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

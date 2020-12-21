@@ -79,67 +79,70 @@ var _ grpc.ServerStream = (*serverStreamWithContext)(nil)
 
 // serverOpts returns gRPC server-side interceptors to manipulate context.
 func serverOpts(logger testcontext.LoggerFunc) []grpc.ServerOption {
-	before := func(ctx context.Context) (context.Context, error) {
+	// hook is called on every gRPC method call.
+	// It returns a Context to be passed to a gRPC method, a function to be
+	// called on the end of the gRPC method call to compute trailers, and
+	// possibly an error.
+	hook := func(ctx context.Context, method string) (context.Context, func() metadata.MD, error) {
 		md, ok := metadata.FromIncomingContext(ctx)
 		if !ok {
-			return nil, errors.New("metadata not available")
+			return nil, nil, errors.New("metadata not available")
 		}
+
 		outDir, err := ioutil.TempDir("", "rpc-outdir.")
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
+
 		ctx = testcontext.WithLogger(ctx, logger)
 		ctx = testcontext.WithCurrentEntity(ctx, incomingCurrentContext(md, outDir))
-		ctx = timing.NewContext(ctx, timing.NewLog())
-		return ctx, nil
-	}
-	trailer := func(ctx context.Context) metadata.MD {
-		// Note: ctx passed here is one created by "before" above. Thus we can
-		// assume that functions to extract values from the context always
-		// succeed.
-		md := make(metadata.MD)
+		tl := timing.NewLog()
+		ctx = timing.NewContext(ctx, tl)
 
-		tl, _, _ := timing.FromContext(ctx)
-		b, err := json.Marshal(tl)
-		if err != nil {
-			logger(fmt.Sprint("Failed to marshal timing JSON: ", err))
-		} else {
-			md[metadataTiming] = []string{string(b)}
-		}
+		trailer := func() metadata.MD {
+			md := make(metadata.MD)
 
-		outDir, _ := testcontext.OutDir(ctx)
-		// Send metadataOutDir only if some files were saved in order to avoid extra round-trips.
-		if fis, err := ioutil.ReadDir(outDir); err != nil {
-			logger(fmt.Sprint("gRPC output directory is corrupted: ", err))
-		} else if len(fis) == 0 {
-			if err := os.RemoveAll(outDir); err != nil {
-				logger(fmt.Sprint("Failed to remove gRPC output directory: ", err))
+			b, err := json.Marshal(tl)
+			if err != nil {
+				logger(fmt.Sprint("Failed to marshal timing JSON: ", err))
+			} else {
+				md[metadataTiming] = []string{string(b)}
 			}
-		} else {
-			md[metadataOutDir] = []string{outDir}
+
+			// Send metadataOutDir only if some files were saved in order to avoid extra round-trips.
+			if fis, err := ioutil.ReadDir(outDir); err != nil {
+				logger(fmt.Sprint("gRPC output directory is corrupted: ", err))
+			} else if len(fis) == 0 {
+				if err := os.RemoveAll(outDir); err != nil {
+					logger(fmt.Sprint("Failed to remove gRPC output directory: ", err))
+				}
+			} else {
+				md[metadataOutDir] = []string{outDir}
+			}
+			return md
 		}
-		return md
+		return ctx, trailer, nil
 	}
 
 	return []grpc.ServerOption{
 		grpc.UnaryInterceptor(func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (res interface{}, err error) {
-			ctx, err = before(ctx)
+			ctx, trailer, err := hook(ctx, info.FullMethod)
 			if err != nil {
 				return nil, err
 			}
 			defer func() {
-				grpc.SetTrailer(ctx, trailer(ctx))
+				grpc.SetTrailer(ctx, trailer())
 			}()
 			return handler(ctx, req)
 		}),
 		grpc.StreamInterceptor(func(srv interface{}, stream grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
-			ctx, err := before(stream.Context())
+			ctx, trailer, err := hook(stream.Context(), info.FullMethod)
 			if err != nil {
 				return err
 			}
 			stream = &serverStreamWithContext{stream, ctx}
 			defer func() {
-				stream.SetTrailer(trailer(ctx))
+				stream.SetTrailer(trailer())
 			}()
 			return handler(srv, stream)
 		}),

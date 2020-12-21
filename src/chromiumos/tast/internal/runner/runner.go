@@ -20,7 +20,7 @@ import (
 
 	"github.com/shirou/gopsutil/process"
 
-	"chromiumos/tast/bundle"
+	"chromiumos/tast/internal/bundle"
 	"chromiumos/tast/internal/command"
 	"chromiumos/tast/internal/control"
 	"chromiumos/tast/internal/testcontext"

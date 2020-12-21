@@ -14,9 +14,9 @@ import (
 	"path/filepath"
 	"time"
 
-	"chromiumos/tast/bundle"
 	"chromiumos/tast/ctxutil"
 	"chromiumos/tast/errors"
+	"chromiumos/tast/internal/bundle"
 	"chromiumos/tast/internal/runner"
 	"chromiumos/tast/ssh"
 	"chromiumos/tast/timing"

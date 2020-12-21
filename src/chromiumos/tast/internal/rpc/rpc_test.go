@@ -23,7 +23,7 @@ import (
 	"chromiumos/tast/timing"
 )
 
-const pingServiceName = "tast.core.Ping"
+const pingServiceName = "tast.coretest.Ping"
 
 // pingServer is an implementation of the Ping gRPC service.
 type pingServer struct {

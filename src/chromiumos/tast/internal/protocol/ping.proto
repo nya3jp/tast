@@ -4,7 +4,7 @@
 
 syntax = "proto3";
 
-package tast.core;
+package tast.coretest;
 option go_package = "chromiumos/tast/internal/protocol";
 
 // Ping is a simple service for unit tests.

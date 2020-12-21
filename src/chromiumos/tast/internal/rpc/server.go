@@ -84,6 +84,10 @@ func serverOpts(logger testcontext.LoggerFunc) []grpc.ServerOption {
 	// called on the end of the gRPC method call to compute trailers, and
 	// possibly an error.
 	hook := func(ctx context.Context, method string) (context.Context, func() metadata.MD, error) {
+		if !isUserMethod(method) {
+			return ctx, func() metadata.MD { return nil }, nil
+		}
+
 		md, ok := metadata.FromIncomingContext(ctx)
 		if !ok {
 			return nil, nil, errors.New("metadata not available")

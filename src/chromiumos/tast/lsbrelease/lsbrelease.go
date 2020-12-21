@@ -65,7 +65,7 @@ var allowedPkgs = []string{
 	"chromiumos/tast/local/arc",              // For SDKVersion.
 	"chromiumos/tast/local/bundles/cros/arc", // For Version.
 	"chromiumos/tast/local/bundles/cros/platform/updateserver",
-	"chromiumos/tast/local/bundles/cros/platform", // To confirm OS version can be parsed.
+	"chromiumos/tast/local/bundles/cros/health", // To confirm OS version can be parsed.
 	"chromiumos/tast/local/crash",
 	"chromiumos/tast/local/graphics/trace",
 	"chromiumos/tast/local/rialto",

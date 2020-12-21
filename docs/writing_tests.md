@@ -1045,17 +1045,19 @@ To use runtime variables, in your test's `testing.AddTest` call, set the
 The `Vars` field should be an array literal of string literals.
 The test can later access the values by calling `s.Var` or `s.RequiredVar` methods.
 
+To set runtime variables, add (possibly repeated) `-var=name=value` flags to `tast run`.
+
 For variables only used in a single test, prefix them with the test name
 (e.g. `arc.Boot.foo` for a variable used only in `arc.Boot`).
-
-To set runtime variables, add (possibly repeated) `-var=name=value` flags to `tast run`.
+For variables used from multiple tests, prefix them with the category name which mainly uses the variable
+(e.g. `arc.foo`). Such variables can be used from any tests, not only ones in the same category.
 
 Variables without a dot in its name are called global variables. They are set by the framework, and individual tests don't have control over them.
 Other variables should follow these rules:
 
 * Variable name should have the form of `foo.Bar.something` or `foo.something`, where `something` matches `[A-Za-z][A-Za-z0-9_]*`
 * Only the test `foo.Bar` can access `foo.Bar.something`
-* Only tests in `foo` category can access `foo.something`
+* Any tests can access `foo.something`
 
 If one violates this convention, runtime error will happen.
 
@@ -1080,7 +1082,7 @@ foo.Bar.user: someone@something.com
 foo.Bar.password: whatever
 ```
 
-If the values are shared among the `foo` category, create `foo.yaml` file instead.
+If the values are shared among tests, create `foo.yaml` file instead.
 
 ```Yaml
 foo.user: someone@something.com

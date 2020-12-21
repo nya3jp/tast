@@ -180,6 +180,7 @@ func main() {
 			"transparent_hugepage":   "transparent_hugepage",
 			"untrusted_vm":           `"kernel-4_19" || "kernel-5_4"`,
 			"usbguard":               "usbguard",
+			"v4l2_codec":             "v4l2_codec",
 			"vaapi":                  "vaapi",
 			// As the direct video decoder is transitioned in there is the need
 			// to run the legacy decoder to make sure it isn't broken and can be

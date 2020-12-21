@@ -116,8 +116,6 @@ func newClient(ctx context.Context, r io.Reader, w io.Writer, req *protocol.Hand
 }
 
 var alwaysAllowedServices = []string{
-	"tast.core.Logging",
-	"tast.core.FileTransfer",
 	"tast.cros.baserpc.FaillogService",
 }
 
@@ -128,6 +126,10 @@ func clientOpts() []grpc.DialOption {
 	// called on the end of the gRPC method call to process trailers, and
 	// possibly an error.
 	hook := func(ctx context.Context, cc *grpc.ClientConn, method string) (context.Context, func(metadata.MD) error, error) {
+		if !isUserMethod(method) {
+			return ctx, func(metadata.MD) error { return nil }, nil
+		}
+
 		// Reject an outgoing RPC call if its service is not declared in ServiceDeps.
 		svcs, ok := testcontext.ServiceDeps(ctx)
 		if !ok {

@@ -23,9 +23,13 @@ import (
 	"chromiumos/tast/timing"
 )
 
-// RunServer runs a gRPC server providing svcs on r/w channels.
-// It blocks until the client connection is closed or it encounters an error.
-func RunServer(r io.Reader, w io.Writer, svcs []*testing.Service) error {
+// RunServer runs a gRPC server on r/w channels.
+// register is called back to register core services. svcs is a list of
+// user-defined gRPC services to be registered if the client requests them in
+// HandshakeRequest.
+// RunServer blocks until the client connection is closed or it encounters an
+// error.
+func RunServer(r io.Reader, w io.Writer, svcs []*testing.Service, register func(srv *grpc.Server)) error {
 	var req protocol.HandshakeRequest
 	if err := receiveRawMessage(r, &req); err != nil {
 		return err
@@ -40,6 +44,7 @@ func RunServer(r io.Reader, w io.Writer, svcs []*testing.Service) error {
 	reflection.Register(srv)
 	protocol.RegisterLoggingServer(srv, ls)
 	protocol.RegisterFileTransferServer(srv, newFileTransferServer())
+	register(srv)
 
 	// Create a server-scoped context.
 	ctx, cancel := context.WithCancel(context.Background())

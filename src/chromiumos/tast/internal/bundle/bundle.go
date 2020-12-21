@@ -21,7 +21,6 @@ import (
 	"chromiumos/tast/internal/command"
 	"chromiumos/tast/internal/control"
 	"chromiumos/tast/internal/planner"
-	"chromiumos/tast/internal/rpc"
 	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/timing"
@@ -91,7 +90,7 @@ func run(ctx context.Context, clArgs []string, stdin io.Reader, stdout, stderr i
 		}
 		return statusSuccess
 	case RPCMode:
-		if err := rpc.RunServer(stdin, stdout, testing.GlobalRegistry().AllServices()); err != nil {
+		if err := runRPCServer(stdin, stdout, testing.GlobalRegistry().AllServices()); err != nil {
 			return command.WriteError(stderr, err)
 		}
 		return statusSuccess

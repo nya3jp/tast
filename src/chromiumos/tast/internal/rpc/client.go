@@ -9,7 +9,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"path/filepath"
 	"strings"
 
 	"google.golang.org/grpc"
@@ -17,11 +16,10 @@ import (
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 
-	"chromiumos/tast/dut"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testcontext"
-	"chromiumos/tast/internal/testing"
+	"chromiumos/tast/ssh"
 	"chromiumos/tast/timing"
 )
 
@@ -52,26 +50,9 @@ func (c *Client) Close(ctx context.Context) error {
 	return firstErr
 }
 
-// Dial establishes a gRPC connection to the test bundle executable named
-// bundleName using d and h.
-//
-// Example:
-//
-//  cl, err := rpc.Dial(ctx, d, s.RPCHint(), "cros")
-//  if err != nil {
-//  	return err
-//  }
-//  defer cl.Close(ctx)
-//
-//  fs := base.NewFileSystemClient(cl.Conn)
-//
-//  res, err := fs.ReadDir(ctx, &base.ReadDirRequest{Dir: "/mnt/stateful_partition"})
-//  if err != nil {
-//  	return err
-//  }
-func Dial(ctx context.Context, d *dut.DUT, h *testing.RPCHint, bundleName string) (*Client, error) {
-	bundlePath := filepath.Join(testing.ExtractLocalBundleDir(h), bundleName)
-	cmd := d.Command(bundlePath, "-rpc")
+// Dial establishes a gRPC connection to an executable on a remote machine.
+func Dial(ctx context.Context, conn *ssh.Conn, path string, req *protocol.HandshakeRequest) (*Client, error) {
+	cmd := conn.Command(path, "-rpc")
 	stdin, err := cmd.StdinPipe()
 	if err != nil {
 		return nil, err
@@ -84,7 +65,7 @@ func Dial(ctx context.Context, d *dut.DUT, h *testing.RPCHint, bundleName string
 		return nil, errors.Wrap(err, "failed to connect to RPC service on DUT")
 	}
 
-	return newClient(ctx, stdout, stdin, h, func(ctx context.Context) error {
+	return newClient(ctx, stdout, stdin, req, func(ctx context.Context) error {
 		cmd.Abort()
 		return cmd.Wait(ctx)
 	})
@@ -94,15 +75,22 @@ func Dial(ctx context.Context, d *dut.DUT, h *testing.RPCHint, bundleName string
 //
 // When this function succeeds, clean is called in Client.Close. Otherwise it is called
 // before this function returns.
-func newClient(ctx context.Context, r io.Reader, w io.Writer, h *testing.RPCHint, clean func(context.Context) error) (_ *Client, retErr error) {
+func newClient(ctx context.Context, r io.Reader, w io.Writer, req *protocol.HandshakeRequest, clean func(context.Context) error) (_ *Client, retErr error) {
 	defer func() {
 		if retErr != nil {
 			clean(ctx)
 		}
 	}()
 
-	if err := initBundleServer(r, w, h); err != nil {
-		return nil, errors.Wrap(err, "failed to set bundle parameters")
+	if err := sendRawMessage(w, req); err != nil {
+		return nil, err
+	}
+	res := &protocol.HandshakeResponse{}
+	if err := receiveRawMessage(r, res); err != nil {
+		return nil, err
+	}
+	if res.Error != nil {
+		return nil, errors.Errorf("bundle returned error: %s", res.Error.GetReason())
 	}
 
 	conn, err := NewPipeClientConn(ctx, r, w, clientOpts()...)
@@ -125,28 +113,6 @@ func newClient(ctx context.Context, r io.Reader, w io.Writer, h *testing.RPCHint
 		log:   log,
 		clean: clean,
 	}, nil
-}
-
-// initBundleServer initializes the bundle server by sending raw protobuf message
-// to bundle process, and waits for response message.
-func initBundleServer(r io.Reader, w io.Writer, h *testing.RPCHint) error {
-	req := &protocol.HandshakeRequest{
-		UserServiceInitParams: &protocol.UserServiceInitParams{
-			Vars: testing.ExtractTestVars(h),
-		},
-	}
-	if err := sendRawMessage(w, req); err != nil {
-		return err
-	}
-	res := &protocol.HandshakeResponse{}
-	if err := receiveRawMessage(r, res); err != nil {
-		return err
-	}
-	// Server returns error.
-	if res.Error != nil {
-		return errors.Errorf("bundle returned error: %s", res.Error.GetReason())
-	}
-	return nil
 }
 
 var alwaysAllowedServices = []string{

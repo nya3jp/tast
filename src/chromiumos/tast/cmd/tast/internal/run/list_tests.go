@@ -7,7 +7,7 @@ package run
 import (
 	"context"
 
-	"chromiumos/tast/bundle"
+	"chromiumos/tast/internal/bundle"
 	"chromiumos/tast/internal/runner"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/ssh"

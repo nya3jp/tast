@@ -24,8 +24,8 @@ import (
 	"github.com/shirou/gopsutil/process"
 	"golang.org/x/sys/unix"
 
-	"chromiumos/tast/bundle"
 	"chromiumos/tast/errors"
+	"chromiumos/tast/internal/bundle"
 	"chromiumos/tast/internal/command"
 	"chromiumos/tast/internal/devserver"
 	"chromiumos/tast/internal/testcontext"

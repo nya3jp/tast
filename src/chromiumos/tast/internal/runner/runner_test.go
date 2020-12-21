@@ -19,7 +19,7 @@ import (
 	"strings"
 	gotesting "testing"
 
-	"chromiumos/tast/bundle"
+	"chromiumos/tast/internal/bundle"
 	"chromiumos/tast/internal/control"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/testutil"

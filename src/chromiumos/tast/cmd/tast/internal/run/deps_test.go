@@ -18,7 +18,7 @@ import (
 	configpb "go.chromium.org/chromiumos/config/go/api"
 	"go.chromium.org/chromiumos/infra/proto/go/device"
 
-	"chromiumos/tast/bundle"
+	"chromiumos/tast/internal/bundle"
 	"chromiumos/tast/internal/dep"
 	"chromiumos/tast/internal/runner"
 )

@@ -31,22 +31,27 @@ func RunServer(r io.Reader, w io.Writer, svcs []*testing.Service) error {
 		return err
 	}
 
+	// Start a remote logging server. It is used to forward logs from
+	// user-defined gRPC services via side channels.
 	ls := newRemoteLoggingServer()
 	srv := grpc.NewServer(serverOpts(ls.Log)...)
+
+	// Register core services.
+	reflection.Register(srv)
 	protocol.RegisterLoggingServer(srv, ls)
 	protocol.RegisterFileTransferServer(srv, newFileTransferServer())
 
-	// Register the reflection service for easier debugging.
-	reflection.Register(srv)
-
-	// Create a service-scoped context.
+	// Create a server-scoped context.
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
-	ctx = testcontext.WithLogger(ctx, ls.Log)
 
-	vars := req.GetUserServiceInitParams().GetVars()
-	for _, svc := range svcs {
-		svc.Register(srv, testing.NewServiceState(ctx, testing.NewServiceRoot(svc, vars)))
+	// Register user-defined gRPC services if requested.
+	if req.GetNeedUserServices() {
+		ctx := testcontext.WithLogger(ctx, ls.Log)
+		vars := req.GetUserServiceInitParams().GetVars()
+		for _, svc := range svcs {
+			svc.Register(srv, testing.NewServiceState(ctx, testing.NewServiceRoot(svc, vars)))
+		}
 	}
 
 	if err := sendRawMessage(w, &protocol.HandshakeResponse{}); err != nil {

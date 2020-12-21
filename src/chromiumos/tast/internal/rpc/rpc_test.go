@@ -82,7 +82,7 @@ func newPingPair(ctx context.Context, t *gotesting.T, req *protocol.HandshakeReq
 
 	stopped := make(chan error, 1)
 	go func() {
-		stopped <- RunServer(sr, sw, []*testing.Service{pingSvc})
+		stopped <- RunServer(sr, sw, []*testing.Service{pingSvc}, func(*grpc.Server) {})
 	}()
 	stopServer := func() error {
 		// Close the client pipes. This will let the gRPC server close the singleton

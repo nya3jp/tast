@@ -7,8 +7,10 @@ package rpc
 
 import (
 	"context"
+	"path/filepath"
 
 	"chromiumos/tast/dut"
+	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/rpc"
 	"chromiumos/tast/internal/testing"
 )
@@ -34,5 +36,12 @@ type Client = rpc.Client
 //  	return err
 //  }
 func Dial(ctx context.Context, d *dut.DUT, h *testing.RPCHint, bundleName string) (*Client, error) {
-	return rpc.Dial(ctx, d, h, bundleName)
+	bundlePath := filepath.Join(testing.ExtractLocalBundleDir(h), bundleName)
+	req := &protocol.HandshakeRequest{
+		NeedUserServices: true,
+		UserServiceInitParams: &protocol.UserServiceInitParams{
+			Vars: testing.ExtractTestVars(h),
+		},
+	}
+	return rpc.Dial(ctx, d.Conn(), bundlePath, req)
 }

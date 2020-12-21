@@ -74,7 +74,7 @@ func newPingService(onPing func(context.Context, *testing.ServiceState) error) *
 //
 // It panics if it fails to start a local client/server pair. Returned pingPair
 // should be closed with pingPair.Close after its use.
-func newPingPair(ctx context.Context, t *gotesting.T, h *testing.RPCHint, pingSvc *testing.Service) *pingPair {
+func newPingPair(ctx context.Context, t *gotesting.T, req *protocol.HandshakeRequest, pingSvc *testing.Service) *pingPair {
 	t.Helper()
 
 	sr, cw := io.Pipe()
@@ -98,7 +98,7 @@ func newPingPair(ctx context.Context, t *gotesting.T, h *testing.RPCHint, pingSv
 		}
 	}()
 
-	cl, err := newClient(ctx, cr, cw, h, func(context.Context) error { return nil })
+	cl, err := newClient(ctx, cr, cw, req, func(context.Context) error { return nil })
 	if err != nil {
 		t.Fatal("newClient failed: ", err)
 	}
@@ -113,7 +113,7 @@ func newPingPair(ctx context.Context, t *gotesting.T, h *testing.RPCHint, pingSv
 
 func TestRPCSuccess(t *gotesting.T) {
 	ctx := testcontext.WithCurrentEntity(context.Background(), &testcontext.CurrentEntity{})
-	h := testing.NewRPCHint("", nil)
+	req := &protocol.HandshakeRequest{NeedUserServices: true}
 
 	called := false
 	svc := newPingService(func(context.Context, *testing.ServiceState) error {
@@ -121,7 +121,7 @@ func TestRPCSuccess(t *gotesting.T) {
 		return nil
 	})
 
-	pp := newPingPair(ctx, t, h, svc)
+	pp := newPingPair(ctx, t, req, svc)
 	defer pp.Close(ctx)
 
 	callCtx := testcontext.WithCurrentEntity(ctx, &testcontext.CurrentEntity{
@@ -137,7 +137,7 @@ func TestRPCSuccess(t *gotesting.T) {
 
 func TestRPCFailure(t *gotesting.T) {
 	ctx := testcontext.WithCurrentEntity(context.Background(), &testcontext.CurrentEntity{})
-	h := testing.NewRPCHint("", nil)
+	req := &protocol.HandshakeRequest{NeedUserServices: true}
 
 	called := false
 	svc := newPingService(func(context.Context, *testing.ServiceState) error {
@@ -145,7 +145,7 @@ func TestRPCFailure(t *gotesting.T) {
 		return errors.New("failure")
 	})
 
-	pp := newPingPair(ctx, t, h, svc)
+	pp := newPingPair(ctx, t, req, svc)
 	defer pp.Close(ctx)
 
 	callCtx := testcontext.WithCurrentEntity(ctx, &testcontext.CurrentEntity{
@@ -159,9 +159,9 @@ func TestRPCFailure(t *gotesting.T) {
 	}
 }
 
-func TestRPCNoCurrentEntity(t *gotesting.T) {
+func TestRPCNotRequested(t *gotesting.T) {
 	ctx := testcontext.WithCurrentEntity(context.Background(), &testcontext.CurrentEntity{})
-	h := testing.NewRPCHint("", nil)
+	req := &protocol.HandshakeRequest{} // user-defined gRPC services not requested
 
 	called := false
 	svc := newPingService(func(context.Context, *testing.ServiceState) error {
@@ -169,7 +169,31 @@ func TestRPCNoCurrentEntity(t *gotesting.T) {
 		return nil
 	})
 
-	pp := newPingPair(ctx, t, h, svc)
+	pp := newPingPair(ctx, t, req, svc)
+	defer pp.Close(ctx)
+
+	callCtx := testcontext.WithCurrentEntity(ctx, &testcontext.CurrentEntity{
+		ServiceDeps: []string{pingServiceName},
+	})
+	if _, err := pp.Client.Ping(callCtx, &protocol.PingRequest{}); err == nil {
+		t.Error("Ping unexpectedly succeeded")
+	}
+	if called {
+		t.Error("onPing unexpectedly called")
+	}
+}
+
+func TestRPCNoCurrentEntity(t *gotesting.T) {
+	ctx := testcontext.WithCurrentEntity(context.Background(), &testcontext.CurrentEntity{})
+	req := &protocol.HandshakeRequest{NeedUserServices: true}
+
+	called := false
+	svc := newPingService(func(context.Context, *testing.ServiceState) error {
+		called = true
+		return nil
+	})
+
+	pp := newPingPair(ctx, t, req, svc)
 	defer pp.Close(ctx)
 
 	if _, err := pp.Client.Ping(context.Background(), &protocol.PingRequest{}); err == nil {
@@ -182,9 +206,9 @@ func TestRPCNoCurrentEntity(t *gotesting.T) {
 
 func TestRPCRejectUndeclaredServices(t *gotesting.T) {
 	ctx := testcontext.WithCurrentEntity(context.Background(), &testcontext.CurrentEntity{})
-	h := testing.NewRPCHint("", nil)
+	req := &protocol.HandshakeRequest{NeedUserServices: true}
 	svc := newPingService(func(context.Context, *testing.ServiceState) error { return nil })
-	pp := newPingPair(ctx, t, h, svc)
+	pp := newPingPair(ctx, t, req, svc)
 	defer pp.Close(ctx)
 
 	callCtx := testcontext.WithCurrentEntity(ctx, &testcontext.CurrentEntity{
@@ -199,7 +223,7 @@ func TestRPCForwardCurrentEntity(t *gotesting.T) {
 	expectedDeps := []string{"chrome", "android_p"}
 
 	ctx := testcontext.WithCurrentEntity(context.Background(), &testcontext.CurrentEntity{})
-	h := testing.NewRPCHint("", nil)
+	req := &protocol.HandshakeRequest{NeedUserServices: true}
 
 	called := false
 	var deps []string
@@ -210,7 +234,7 @@ func TestRPCForwardCurrentEntity(t *gotesting.T) {
 		return nil
 	})
 
-	pp := newPingPair(ctx, t, h, svc)
+	pp := newPingPair(ctx, t, req, svc)
 	defer pp.Close(ctx)
 
 	if _, err := pp.Client.Ping(ctx, &protocol.PingRequest{}); err == nil {
@@ -241,7 +265,7 @@ func TestRPCForwardLogs(t *gotesting.T) {
 	ctx := context.Background()
 	ctx = testcontext.WithLogger(ctx, func(msg string) { logs <- msg })
 	ctx = testcontext.WithCurrentEntity(ctx, &testcontext.CurrentEntity{})
-	h := testing.NewRPCHint("", nil)
+	req := &protocol.HandshakeRequest{NeedUserServices: true}
 
 	called := false
 	svc := newPingService(func(ctx context.Context, s *testing.ServiceState) error {
@@ -250,7 +274,7 @@ func TestRPCForwardLogs(t *gotesting.T) {
 		return nil
 	})
 
-	pp := newPingPair(ctx, t, h, svc)
+	pp := newPingPair(ctx, t, req, svc)
 	defer pp.Close(ctx)
 
 	callCtx := testcontext.WithCurrentEntity(ctx, &testcontext.CurrentEntity{
@@ -275,7 +299,7 @@ func TestRPCForwardTiming(t *gotesting.T) {
 	ctx = testcontext.WithCurrentEntity(ctx, &testcontext.CurrentEntity{})
 	log := timing.NewLog()
 	ctx = timing.NewContext(ctx, log)
-	h := testing.NewRPCHint("", nil)
+	req := &protocol.HandshakeRequest{NeedUserServices: true}
 
 	called := false
 	svc := newPingService(func(ctx context.Context, s *testing.ServiceState) error {
@@ -285,7 +309,7 @@ func TestRPCForwardTiming(t *gotesting.T) {
 		return nil
 	})
 
-	pp := newPingPair(ctx, t, h, svc)
+	pp := newPingPair(ctx, t, req, svc)
 	defer pp.Close(ctx)
 
 	callCtx := testcontext.WithCurrentEntity(ctx, &testcontext.CurrentEntity{
@@ -318,7 +342,7 @@ func TestRPCPullOutDir(t *gotesting.T) {
 
 	ctx := context.Background()
 	ctx = testcontext.WithCurrentEntity(ctx, &testcontext.CurrentEntity{})
-	h := testing.NewRPCHint("", nil)
+	req := &protocol.HandshakeRequest{NeedUserServices: true}
 
 	svc := newPingService(func(ctx context.Context, s *testing.ServiceState) error {
 		od, ok := testcontext.OutDir(ctx)
@@ -331,7 +355,7 @@ func TestRPCPullOutDir(t *gotesting.T) {
 		return testutil.WriteFiles(od, want)
 	})
 
-	pp := newPingPair(ctx, t, h, svc)
+	pp := newPingPair(ctx, t, req, svc)
 	defer pp.Close(ctx)
 
 	callCtx := testcontext.WithCurrentEntity(ctx, &testcontext.CurrentEntity{
@@ -355,7 +379,12 @@ func TestRPCSetVars(t *gotesting.T) {
 	ctx := testcontext.WithCurrentEntity(context.Background(), &testcontext.CurrentEntity{})
 	key := "var1"
 	exp := "value1"
-	h := testing.NewRPCHint("", map[string]string{key: exp})
+	req := &protocol.HandshakeRequest{
+		NeedUserServices: true,
+		UserServiceInitParams: &protocol.UserServiceInitParams{
+			Vars: map[string]string{key: exp},
+		},
+	}
 
 	called := false
 	var value string
@@ -368,7 +397,7 @@ func TestRPCSetVars(t *gotesting.T) {
 	// Set service vars in service definition.
 	svc.Vars = []string{key}
 
-	pp := newPingPair(ctx, t, h, svc)
+	pp := newPingPair(ctx, t, req, svc)
 	defer pp.Close(ctx)
 
 	callCtx := testcontext.WithCurrentEntity(ctx, &testcontext.CurrentEntity{
@@ -392,7 +421,7 @@ func TestRPCServiceScopedContext(t *gotesting.T) {
 	ctx := context.Background()
 	ctx = testcontext.WithLogger(ctx, func(msg string) { logs <- msg })
 	ctx = testcontext.WithCurrentEntity(ctx, &testcontext.CurrentEntity{})
-	h := testing.NewRPCHint("", nil)
+	req := &protocol.HandshakeRequest{NeedUserServices: true}
 
 	called := false
 	svc := newPingService(func(ctx context.Context, s *testing.ServiceState) error {
@@ -401,7 +430,7 @@ func TestRPCServiceScopedContext(t *gotesting.T) {
 		return nil
 	})
 
-	pp := newPingPair(ctx, t, h, svc)
+	pp := newPingPair(ctx, t, req, svc)
 	defer pp.Close(ctx)
 
 	callCtx := testcontext.WithCurrentEntity(ctx, &testcontext.CurrentEntity{

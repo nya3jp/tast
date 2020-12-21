@@ -11,7 +11,9 @@ option go_package = "chromiumos/tast/internal/protocol";
 // The message is sent in a raw format since gRPC connection is not ready before
 // handshake.
 message HandshakeRequest {
-  UserServiceInitParams user_service_init_params = 1;
+  // Whether to initialize user-defined gRPC services.
+  bool need_user_services = 1;
+  UserServiceInitParams user_service_init_params = 2;
 }
 
 // UserServiceInitParams contains parameters needed to initialize user-defined

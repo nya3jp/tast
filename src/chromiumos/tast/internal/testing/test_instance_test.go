@@ -521,6 +521,7 @@ func TestValidateVars_OK(t *gotesting.T) {
 	)
 	for _, vars := range [][]string{
 		{"x"},
+		{"x.c"},
 		{"a.B.c", "a.c"},
 		{"a.B.cC1_"},
 	} {
@@ -539,7 +540,6 @@ func TestValidateVars_Error(t *gotesting.T) {
 		{"a."},
 		{"a.c", "a."},
 		{"a.B."},
-		{"x.c"},
 		{"a.X.c"},
 		{"a.B.c."},
 		{"a.B._"},

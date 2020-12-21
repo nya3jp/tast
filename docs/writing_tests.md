@@ -1055,7 +1055,7 @@ Other variables should follow these rules:
 
 * Variable name should have the form of `foo.Bar.something` or `foo.something`, where `something` matches `[A-Za-z][A-Za-z0-9_]*`
 * Only the test `foo.Bar` can access `foo.Bar.something`
-* Only tests in `foo` category can access `foo.something`
+* Any tests can access `foo.something`
 
 If one violates this convention, runtime error will happen.
 
@@ -1080,7 +1080,7 @@ foo.Bar.user: someone@something.com
 foo.Bar.password: whatever
 ```
 
-If the values are shared among the `foo` category, create `foo.yaml` file instead.
+If the values are shared among tests, create `foo.yaml` file instead.
 
 ```Yaml
 foo.user: someone@something.com

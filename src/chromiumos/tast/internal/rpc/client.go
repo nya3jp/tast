@@ -123,11 +123,15 @@ var alwaysAllowedServices = []string{
 
 // clientOpts returns gRPC client-side interceptors to manipulate context.
 func clientOpts() []grpc.DialOption {
-	before := func(ctx context.Context, method string) (context.Context, error) {
+	// hook is called on every gRPC method call.
+	// It returns a Context to be passed to a gRPC invocation, a function to be
+	// called on the end of the gRPC method call to process trailers, and
+	// possibly an error.
+	hook := func(ctx context.Context, cc *grpc.ClientConn, method string) (context.Context, func(metadata.MD) error, error) {
 		// Reject an outgoing RPC call if its service is not declared in ServiceDeps.
 		svcs, ok := testcontext.ServiceDeps(ctx)
 		if !ok {
-			return nil, status.Errorf(codes.FailedPrecondition, "refusing to call %s because ServiceDeps is unavailable (using a wrong context?)", method)
+			return nil, nil, status.Errorf(codes.FailedPrecondition, "refusing to call %s because ServiceDeps is unavailable (using a wrong context?)", method)
 		}
 		svcs = append(svcs, alwaysAllowedServices...)
 		matched := false
@@ -138,28 +142,26 @@ func clientOpts() []grpc.DialOption {
 			}
 		}
 		if !matched {
-			return nil, status.Errorf(codes.FailedPrecondition, "refusing to call %s because it is not declared in ServiceDeps", method)
+			return nil, nil, status.Errorf(codes.FailedPrecondition, "refusing to call %s because it is not declared in ServiceDeps", method)
 		}
 
-		md := outgoingMetadata(ctx)
-		return metadata.NewOutgoingContext(ctx, md), nil
-	}
-
-	after := func(ctx context.Context, cc *grpc.ClientConn, trailer metadata.MD) error {
-		var firstErr error
-		if err := processTimingTrailer(ctx, trailer.Get(metadataTiming)); err != nil && firstErr == nil {
-			firstErr = err
+		after := func(trailer metadata.MD) error {
+			var firstErr error
+			if err := processTimingTrailer(ctx, trailer.Get(metadataTiming)); err != nil && firstErr == nil {
+				firstErr = err
+			}
+			if err := processOutDirTrailer(ctx, cc, trailer.Get(metadataOutDir)); err != nil && firstErr == nil {
+				firstErr = err
+			}
+			return nil
 		}
-		if err := processOutDirTrailer(ctx, cc, trailer.Get(metadataOutDir)); err != nil && firstErr == nil {
-			firstErr = err
-		}
-		return nil
+		return metadata.NewOutgoingContext(ctx, outgoingMetadata(ctx)), after, nil
 	}
 
 	return []grpc.DialOption{
 		grpc.WithUnaryInterceptor(func(ctx context.Context, method string, req, reply interface{},
 			cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
-			ctx, err := before(ctx, method)
+			ctx, after, err := hook(ctx, cc, method)
 			if err != nil {
 				return err
 			}
@@ -167,19 +169,19 @@ func clientOpts() []grpc.DialOption {
 			var trailer metadata.MD
 			opts = append([]grpc.CallOption{grpc.Trailer(&trailer)}, opts...)
 			retErr := invoker(ctx, method, req, reply, cc, opts...)
-			if err := after(ctx, cc, trailer); err != nil && retErr == nil {
+			if err := after(trailer); err != nil && retErr == nil {
 				retErr = err
 			}
 			return retErr
 		}),
 		grpc.WithStreamInterceptor(func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn,
 			method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
-			ctx, err := before(ctx, method)
+			ctx, after, err := hook(ctx, cc, method)
 			if err != nil {
 				return nil, err
 			}
 			stream, err := streamer(ctx, desc, cc, method, opts...)
-			return &clientStreamWithAfter{ClientStream: stream, cc: cc, after: after}, err
+			return &clientStreamWithAfter{ClientStream: stream, after: after}, err
 		}),
 	}
 }
@@ -228,8 +230,7 @@ func processOutDirTrailer(ctx context.Context, cc *grpc.ClientConn, values []str
 // on the end of the streaming call.
 type clientStreamWithAfter struct {
 	grpc.ClientStream
-	cc    *grpc.ClientConn
-	after func(ctx context.Context, cc *grpc.ClientConn, trailer metadata.MD) error
+	after func(trailer metadata.MD) error
 	done  bool
 }
 
@@ -244,7 +245,7 @@ func (s *clientStreamWithAfter) RecvMsg(m interface{}) error {
 	}
 	s.done = true
 
-	if err := s.after(s.Context(), s.cc, s.Trailer()); err != nil && retErr == io.EOF {
+	if err := s.after(s.Trailer()); err != nil && retErr == io.EOF {
 		retErr = err
 	}
 	return retErr

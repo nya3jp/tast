@@ -1,6 +1,46 @@
 {
   "comments": [
     {
+      "unresolved": true,
+      "key": {
+        "uuid": "598512b8_d58935b0",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1113991
+      },
+      "writtenOn": "2020-12-21T22:08:55Z",
+      "side": 1,
+      "message": "nit: s/add/adds/",
+      "range": {
+        "startLine": 9,
+        "startChar": 8,
+        "endLine": 9,
+        "endChar": 11
+      },
+      "revId": "81684fbea8c40ac0543762927a1f015daf0292a6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "32dde494_e25237d9",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1113991
+      },
+      "writtenOn": "2020-12-21T22:08:55Z",
+      "side": 1,
+      "message": "You still need to modify the markdown document:\nhttps://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform/tast/docs/test_dependencies.md?q\u003dvaapi%20platform%2Ftast%2F",
+      "revId": "81684fbea8c40ac0543762927a1f015daf0292a6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": false,
       "key": {
         "uuid": "03165a65_e1ce8597",
@@ -14,6 +54,23 @@
       "writtenOn": "2020-12-21T22:05:29Z",
       "side": 1,
       "message": "@Miguel PTAL",
+      "revId": "81684fbea8c40ac0543762927a1f015daf0292a6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f4f0936a_2a5dc540",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1113991
+      },
+      "writtenOn": "2020-12-21T22:08:55Z",
+      "side": 1,
+      "message": "+1 modulo comments.",
       "revId": "81684fbea8c40ac0543762927a1f015daf0292a6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }

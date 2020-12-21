@@ -17,8 +17,8 @@ import (
 	gotesting "testing"
 	"time"
 
-	"chromiumos/tast/bundle"
 	"chromiumos/tast/cmd/tast/internal/logging"
+	"chromiumos/tast/internal/bundle"
 	"chromiumos/tast/internal/control"
 	"chromiumos/tast/internal/planner"
 	"chromiumos/tast/internal/runner"

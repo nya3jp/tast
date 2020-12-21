@@ -16,6 +16,63 @@
       "message": "Hi Shuhei \u0026 Tatshuhisa:\n\nI have this CL has passed CQ+1 twice. I think it should be ok now. Please take a look and let me know what else needs to be done. I need a CR+2 in order to do a CQ+2.\n\nThanks.\n\nSeewai\n",
       "revId": "64e7c43ce13220c7da335aa1b937637e2a729e26",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "79f1a895_5444ce4d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 17
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-12-21T05:06:19Z",
+      "side": 1,
+      "message": "I think comments from nya@ in PS14 has been resolved.\nIt would be better if nya@ could take another look.",
+      "revId": "64e7c43ce13220c7da335aa1b937637e2a729e26",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3d962d8c_ed10d686",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests.go",
+        "patchSetId": 17
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-12-21T05:06:19Z",
+      "side": 1,
+      "message": "nit: \"include\"",
+      "range": {
+        "startLine": 33,
+        "startChar": 7,
+        "endLine": 33,
+        "endChar": 15
+      },
+      "revId": "64e7c43ce13220c7da335aa1b937637e2a729e26",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c89d304d_321d79af",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests.go",
+        "patchSetId": 17
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-12-21T05:06:19Z",
+      "side": 1,
+      "message": "This looks duplicate of line 70.",
+      "revId": "64e7c43ce13220c7da335aa1b937637e2a729e26",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

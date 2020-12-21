@@ -406,7 +406,7 @@ func validateVars(category, name string, vars []string) error {
 		if len(parts) == 1 {
 			continue
 		}
-		if len(parts) == 2 && parts[0] == category && validVarLastPartRE.MatchString(parts[1]) {
+		if len(parts) == 2 && validVarLastPartRE.MatchString(parts[1]) {
 			continue
 		}
 		if len(parts) == 3 && parts[0] == category && parts[1] == name && validVarLastPartRE.MatchString(parts[2]) {

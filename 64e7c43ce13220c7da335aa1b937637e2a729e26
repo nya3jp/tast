@@ -58,6 +58,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "8111c2f4_88730f96",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests.go",
+        "patchSetId": 17
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-22T00:23:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3d962d8c_ed10d686",
+      "range": {
+        "startLine": 33,
+        "startChar": 7,
+        "endLine": 33,
+        "endChar": 15
+      },
+      "revId": "64e7c43ce13220c7da335aa1b937637e2a729e26",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "c89d304d_321d79af",
@@ -71,6 +95,24 @@
       "writtenOn": "2020-12-21T05:06:19Z",
       "side": 1,
       "message": "This looks duplicate of line 70.",
+      "revId": "64e7c43ce13220c7da335aa1b937637e2a729e26",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "18a177d9_9d558447",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests.go",
+        "patchSetId": 17
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-22T00:23:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c89d304d_321d79af",
       "revId": "64e7c43ce13220c7da335aa1b937637e2a729e26",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }

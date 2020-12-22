@@ -16,6 +16,24 @@
       "message": "This name should not be a fully qualified URL although it may be a part of a URL.\n\nhttps://chromium.googlesource.com/chromiumos/config/+/refs/heads/master/proto/chromiumos/config/api/test/rtd/v1/progress.proto?autodive\u003d0%2F#78\n\n\"name may be interpreted as a local file path or part of a URL. name MUST be a valid resource name per https://aip.dev/122 and MUST be a valid POSIX file path.\"",
       "revId": "26986db0387cbdb6bdc51de6fa38ef9969099cd1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e918d518_a01aa621",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/internal/fakerts/fakerts_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-12-22T07:12:50Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f619a772_a469cd5a",
+      "revId": "26986db0387cbdb6bdc51de6fa38ef9969099cd1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

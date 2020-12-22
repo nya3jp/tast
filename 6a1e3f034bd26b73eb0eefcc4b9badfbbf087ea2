@@ -16,6 +16,52 @@
       "message": "@Miguel PTAL\n  uploaded changes after reflecting comments",
       "revId": "6a1e3f034bd26b73eb0eefcc4b9badfbbf087ea2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1b4de071_b77efaa6",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 153,
+      "author": {
+        "id": 1113991
+      },
+      "writtenOn": "2020-12-22T02:07:04Z",
+      "side": 1,
+      "message": "Note that V4L2 can refer to multiple APIs. In this particular case,\n\"v4l2_codec\" refers to video acceleration.",
+      "range": {
+        "startLine": 153,
+        "startChar": 34,
+        "endLine": 153,
+        "endChar": 38
+      },
+      "revId": "6a1e3f034bd26b73eb0eefcc4b9badfbbf087ea2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3ea155af_bfda269f",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 183,
+      "author": {
+        "id": 1113991
+      },
+      "writtenOn": "2020-12-22T02:07:04Z",
+      "side": 1,
+      "message": "I\u0027d leave this comment out because is prescriptive of something that\nwe have no control from this file\u0027s perspective. For reference, \"vaapi\"\nin the next line also leaves no explanations.",
+      "range": {
+        "startLine": 183,
+        "startChar": 46,
+        "endLine": 183,
+        "endChar": 50
+      },
+      "revId": "6a1e3f034bd26b73eb0eefcc4b9badfbbf087ea2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

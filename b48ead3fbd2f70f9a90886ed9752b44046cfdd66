@@ -33,6 +33,52 @@
       "message": "Hmm, somehow I was not added to the attention set and missed updates, sorry. I will review this change today.\n",
       "revId": "b48ead3fbd2f70f9a90886ed9752b44046cfdd66",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bc0df0c0_4832d3b5",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests.go",
+        "patchSetId": 18
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-12-22T03:32:22Z",
+      "side": 1,
+      "message": "I know you added testsToSkip/testsNotInShard to results to avoid \"One or more test patterns did not match any tests\" error. However, this results in inconsistency between results.json and streamed_results.jsonl. For example:\n\n $ ~/trunk/src/platform/tast/fast_build.sh \u0026\u0026 ~/go/bin/tast run -totalshards\u003d2 -shardindex\u003d0 localhost:2222 meta.LocalPass meta.RemotePass\n ...\n 2020/12/22 03:25:45 --------------------------------------------------------------------------------\n 2020/12/22 03:25:45 meta.RemotePass  [ SKIP ] test is not in the specified shard\n 2020/12/22 03:25:45 meta.LocalPass   [ PASS ]\n 2020/12/22 03:25:45 --------------------------------------------------------------------------------\n\n $ cat /tmp/tast/results/latest/results.json\n \u003d\u003e contains results for meta.RemotePass and meta.LocalPass\n\n $ cat /tmp/tast/results/latest/streamed_results.jsonl\n \u003d\u003e contains results for meta.LocalPass only!\n\n\nI guess we can update unmatchedTestPatterns to compare results with cfg.testNames, not with cfg.Patterns, to resolve the error.",
+      "range": {
+        "startLine": 40,
+        "startChar": 0,
+        "endLine": 41,
+        "endChar": 46
+      },
+      "revId": "b48ead3fbd2f70f9a90886ed9752b44046cfdd66",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "61b276f3_30a1ef65",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests.go",
+        "patchSetId": 18
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-12-22T03:32:22Z",
+      "side": 1,
+      "message": "nit: nil",
+      "range": {
+        "startLine": 48,
+        "startChar": 17,
+        "endLine": 48,
+        "endChar": 27
+      },
+      "revId": "b48ead3fbd2f70f9a90886ed9752b44046cfdd66",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

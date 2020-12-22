@@ -34,6 +34,24 @@
       "parentUuid": "f619a772_a469cd5a",
       "revId": "26986db0387cbdb6bdc51de6fa38ef9969099cd1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6a6c61a5_0a65d1d9",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/internal/fakerts/fakerts_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-12-22T08:17:47Z",
+      "side": 1,
+      "message": "Thanks!",
+      "parentUuid": "e918d518_a01aa621",
+      "revId": "26986db0387cbdb6bdc51de6fa38ef9969099cd1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

@@ -41,6 +41,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "47fccae3_b5b1fa91",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 153,
+      "author": {
+        "id": 1469347
+      },
+      "writtenOn": "2020-12-22T05:11:11Z",
+      "side": 1,
+      "message": "Thank you. Updated.",
+      "parentUuid": "1b4de071_b77efaa6",
+      "range": {
+        "startLine": 153,
+        "startChar": 34,
+        "endLine": 153,
+        "endChar": 38
+      },
+      "revId": "6a1e3f034bd26b73eb0eefcc4b9badfbbf087ea2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "3ea155af_bfda269f",
@@ -54,6 +78,30 @@
       "writtenOn": "2020-12-22T02:07:04Z",
       "side": 1,
       "message": "I\u0027d leave this comment out because is prescriptive of something that\nwe have no control from this file\u0027s perspective. For reference, \"vaapi\"\nin the next line also leaves no explanations.",
+      "range": {
+        "startLine": 183,
+        "startChar": 46,
+        "endLine": 183,
+        "endChar": 50
+      },
+      "revId": "6a1e3f034bd26b73eb0eefcc4b9badfbbf087ea2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "cf36fb5b_f2f540c9",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 183,
+      "author": {
+        "id": 1469347
+      },
+      "writtenOn": "2020-12-22T05:11:11Z",
+      "side": 1,
+      "message": "I thought you were suggesting to leave some comments here: \"+1 modulo comments\".\nLooks like I mis-understood. Let me remove this.",
+      "parentUuid": "3ea155af_bfda269f",
       "range": {
         "startLine": 183,
         "startChar": 46,

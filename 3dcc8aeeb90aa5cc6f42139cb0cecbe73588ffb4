@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1b0ddcd5_2ef11ebf",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1158184
+      },
+      "writtenOn": "2020-12-22T18:05:18Z",
+      "side": 1,
+      "message": "Failure on platform.DLCService is a ToT bug, https://crbug.com/1160494\n\nFailure on mock_consent also looks like a ToT bug https://crbug.com/1142081\n\nEither way, this CL would not interact with HW tests on novato-arc64 or drallion.\n\nChumping.",
+      "revId": "3dcc8aeeb90aa5cc6f42139cb0cecbe73588ffb4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

@@ -33,6 +33,24 @@
       "message": "could you find my comment in the other CL?",
       "revId": "6e5059f1b1ddf069b2f73886734dee48c58caf93",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4375019c_4fec2435",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2020-12-22T19:19:21Z",
+      "side": 1,
+      "message": "sg! Thank you for the suggestion! I\u0027ll abandon this CL.",
+      "parentUuid": "49a4894f_c698c606",
+      "revId": "6e5059f1b1ddf069b2f73886734dee48c58caf93",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

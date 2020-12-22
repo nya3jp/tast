@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d94da0e8_1f81ca01",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 19
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-22T21:45:54Z",
+      "side": 1,
+      "message": "Hi Shuhei:\n\nIn the latest patch, I added a new exported variable TestNamesToSkip to handle the warning due to skipped tests. I also tested new code with the scenarios that you mentioned.\n\n2020/12/22 13:31:45 Command line: tast run -totalshards\u003d2 -shardindex\u003d0 chromeos6-row8-rack22-host14.cros.corp.google.com meta.LocalPass meta.RemotePass\n...\n2020/12/22 13:31:51 Test meta.RemotePass will be skipped because test is not in the specified shard\n...\n2020/12/22 13:31:54 --------------------------------------------------------------------------------\n2020/12/22 13:31:54 meta.LocalPass  [ PASS ]\n2020/12/22 13:31:54 --------------------------------------------------------------------------------\n2020/12/22 13:31:54 Results saved to /tmp/tast/results/20201222-133145\n\n$ wc -l /tmp/tast/results/20201222-133145/streamed_results.jsonl\n1 /tmp/tast/results/20201222-133145/streamed_results.jsonl\n$ fgrep name /tmp/tast/results/20201222-133145/results.json\n    \"name\": \"meta.LocalPass\",\n      \"name:meta.LocalPass\",\n\nI think it is ok now. Please review.\n\nThanks.\n\nSeewai\n",
+      "revId": "dda2aa4c7987080fc5d38e91dec3e0d7816ed53d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

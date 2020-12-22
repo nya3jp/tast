@@ -58,6 +58,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "4fefab19_85c3e7a7",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests.go",
+        "patchSetId": 18
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-22T21:45:54Z",
+      "side": 1,
+      "message": "Checking for cfg.testNames will always passed because unmatched patterns are ignored while constructing the cfg.testNames. I added a new variable TestNamesToSkip to be used for checking unmatched patterns. Also,the variable needs to be exported because tast main executable would exit with error if there were no test results. In case of sharding, it is possible tast has no test cases to run. Therefore, I used TestNamesToSkip to check if it should exit with errors. Please check the latest changes. Thanks.",
+      "parentUuid": "bc0df0c0_4832d3b5",
+      "range": {
+        "startLine": 40,
+        "startChar": 0,
+        "endLine": 41,
+        "endChar": 46
+      },
+      "revId": "b48ead3fbd2f70f9a90886ed9752b44046cfdd66",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "61b276f3_30a1ef65",
@@ -71,6 +95,30 @@
       "writtenOn": "2020-12-22T03:32:22Z",
       "side": 1,
       "message": "nit: nil",
+      "range": {
+        "startLine": 48,
+        "startChar": 17,
+        "endLine": 48,
+        "endChar": 27
+      },
+      "revId": "b48ead3fbd2f70f9a90886ed9752b44046cfdd66",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b90593a6_cf4320ea",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests.go",
+        "patchSetId": 18
+      },
+      "lineNbr": 48,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-22T21:45:54Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "61b276f3_30a1ef65",
       "range": {
         "startLine": 48,
         "startChar": 17,

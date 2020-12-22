@@ -22,6 +22,30 @@
       },
       "revId": "1312155adaa7b8802c371dcfd1ae7fa0edf2098b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "dc63e2fc_27126cdc",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 216,
+      "author": {
+        "id": 1373754
+      },
+      "writtenOn": "2020-12-22T22:23:59Z",
+      "side": 1,
+      "message": "Actually, this should not be here. I didn\u0027t sync before submitting this CL. veyron_mickey is EOL.",
+      "parentUuid": "afbf5346_b2ddc3c6",
+      "range": {
+        "startLine": 216,
+        "startChar": 220,
+        "endLine": 216,
+        "endChar": 239
+      },
+      "revId": "1312155adaa7b8802c371dcfd1ae7fa0edf2098b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

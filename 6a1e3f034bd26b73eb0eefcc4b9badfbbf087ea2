@@ -134,6 +134,30 @@
       },
       "revId": "6a1e3f034bd26b73eb0eefcc4b9badfbbf087ea2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "87dc841c_4e728aea",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 183,
+      "author": {
+        "id": 1469347
+      },
+      "writtenOn": "2020-12-22T18:02:49Z",
+      "side": 1,
+      "message": "Great. Thanks for explanation. \nI know from previous review I need to be extra careful also with comments as well. :)",
+      "parentUuid": "a5b5f2ed_adcdf476",
+      "range": {
+        "startLine": 183,
+        "startChar": 46,
+        "endLine": 183,
+        "endChar": 50
+      },
+      "revId": "6a1e3f034bd26b73eb0eefcc4b9badfbbf087ea2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

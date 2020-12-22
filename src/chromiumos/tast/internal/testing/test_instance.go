@@ -133,11 +133,12 @@ func newTestInstance(t *Test, p *Param) (*TestInstance, error) {
 		return nil, err
 	}
 
-	if err := validateVars(info.category, info.name, t.Vars); err != nil {
+	vars := append(append([]string(nil), t.Vars...), p.ExtraVars...)
+	if err := validateVars(info.category, info.name, vars); err != nil {
 		return nil, err
 	}
 
-	if err := validateVarDeps(t.VarDeps, t.Vars); err != nil {
+	if err := validateVarDeps(t.VarDeps, vars); err != nil {
 		return nil, err
 	}
 
@@ -196,7 +197,7 @@ func newTestInstance(t *Test, p *Param) (*TestInstance, error) {
 		Contacts:     append([]string(nil), t.Contacts...),
 		Attr:         attrs,
 		Data:         data,
-		Vars:         append([]string(nil), t.Vars...),
+		Vars:         append([]string(nil), vars...),
 		VarDeps:      append([]string(nil), t.VarDeps...),
 		SoftwareDeps: swDeps,
 		HardwareDeps: hwDeps,

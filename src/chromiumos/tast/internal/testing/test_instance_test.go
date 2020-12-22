@@ -139,12 +139,14 @@ func TestInstantiateParams(t *gotesting.T) {
 		Data:         []string{"data0.txt"},
 		SoftwareDeps: []string{"dep0"},
 		HardwareDeps: hwdep.D(hwdep.Model("model1", "model2")),
+		Vars:         []string{"var0"},
 		Params: []Param{{
 			Val:               123,
 			ExtraAttr:         []string{"crosbolt_nightly"},
 			ExtraData:         []string{"data1.txt"},
 			ExtraSoftwareDeps: []string{"dep1"},
 			ExtraHardwareDeps: hwdep.D(hwdep.SkipOnModel("model2")),
+			ExtraVars:         []string{"var1"},
 		}, {
 			Name:              "foo",
 			Val:               456,
@@ -152,6 +154,7 @@ func TestInstantiateParams(t *gotesting.T) {
 			ExtraData:         []string{"data2.txt"},
 			ExtraSoftwareDeps: []string{"dep2"},
 			ExtraHardwareDeps: hwdep.D(hwdep.SkipOnModel("model1")),
+			ExtraVars:         []string{"var2"},
 		}},
 	})
 	if err != nil {
@@ -174,6 +177,7 @@ func TestInstantiateParams(t *gotesting.T) {
 			},
 			Data:         []string{"data0.txt", "data1.txt"},
 			SoftwareDeps: []string{"dep0", "dep1"},
+			Vars:         []string{"var0", "var1"},
 		},
 		{
 			Name: "testing.TESTINSTANCETEST.foo",
@@ -190,6 +194,7 @@ func TestInstantiateParams(t *gotesting.T) {
 			},
 			Data:         []string{"data0.txt", "data2.txt"},
 			SoftwareDeps: []string{"dep0", "dep2"},
+			Vars:         []string{"var0", "var2"},
 		},
 	}
 	if diff := cmp.Diff(got, want, cmpopts.IgnoreFields(TestInstance{}, "Func", "HardwareDeps", "Pre")); diff != "" {

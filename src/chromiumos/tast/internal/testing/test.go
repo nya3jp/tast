@@ -122,6 +122,10 @@ type Param struct {
 	// param, in addition to HardwareDeps in the enclosing Test.
 	ExtraHardwareDeps hwdep.Deps
 
+	// ExtraVars contains Vars needed by the test case for this param, in addition to Vars in the
+	// enclosing Test.
+	ExtraVars []string
+
 	// Pre contains a precondition that must be met before the test is run.
 	// Can only be set if the enclosing test doesn't have one already set.
 	Pre Precondition

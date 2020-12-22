@@ -16,6 +16,24 @@
       "message": "Can you try placing this package in src/chromiumos/tast/cmd/tast_rtd/internal/fakerts? It\u0027s nice to start isolating F20 dependencies to tast_rtd.",
       "revId": "54b9230d741035ad3e0b75e22455224d9e01fd0c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a93b830f_b59714ee",
+        "filename": "src/chromiumos/tast/internal/fakerts/fakerts.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-12-22T06:58:36Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8f87d945_383869db",
+      "revId": "54b9230d741035ad3e0b75e22455224d9e01fd0c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

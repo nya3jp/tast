@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "afbf5346_b2ddc3c6",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 216,
+      "author": {
+        "id": 1305461
+      },
+      "writtenOn": "2020-12-22T22:03:31Z",
+      "side": 1,
+      "message": "Can you please add this to the commit message?",
+      "range": {
+        "startLine": 216,
+        "startChar": 220,
+        "endLine": 216,
+        "endChar": 239
+      },
+      "revId": "1312155adaa7b8802c371dcfd1ae7fa0edf2098b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

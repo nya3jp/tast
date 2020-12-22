@@ -1,0 +1,67 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f0ec64e7_52f8bc3e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-12-22T02:36:39Z",
+      "side": 1,
+      "message": "+bhansknecht for doc review.\n\nCode LGTM, but I think it\u0027s nicer to add more explanation to the documentation.\n",
+      "revId": "4c78448a124a52490dcc3a49543b368ace8a614c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b95f91f3_81f08bf3",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 1049,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-12-22T02:36:39Z",
+      "side": 1,
+      "message": "I think it\u0027s nice to mention here the case of variables used by multiple tests.",
+      "range": {
+        "startLine": 1048,
+        "startChar": 0,
+        "endLine": 1049,
+        "endChar": 61
+      },
+      "revId": "4c78448a124a52490dcc3a49543b368ace8a614c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ea0bf86b_3f1c57d0",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 1051,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-12-22T02:36:39Z",
+      "side": 1,
+      "message": "nit: Can we move this paragraph to above \"For variables only ...\"? I thought it\u0027s better to put the paragraph \"For variables only ...\" next to the paragraph \"Variables without a dot ...\" since they\u0027re both about naming conventions.",
+      "range": {
+        "startLine": 1051,
+        "startChar": 0,
+        "endLine": 1051,
+        "endChar": 88
+      },
+      "revId": "4c78448a124a52490dcc3a49543b368ace8a614c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

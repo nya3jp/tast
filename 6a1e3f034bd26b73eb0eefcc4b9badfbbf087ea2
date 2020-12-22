@@ -110,6 +110,30 @@
       },
       "revId": "6a1e3f034bd26b73eb0eefcc4b9badfbbf087ea2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a5b5f2ed_adcdf476",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 183,
+      "author": {
+        "id": 1113991
+      },
+      "writtenOn": "2020-12-22T17:45:33Z",
+      "side": 1,
+      "message": "Ah yes, \"+1 modulo comments\" means \"LGTM but first please address\nthe comments I left in the review\".",
+      "parentUuid": "cf36fb5b_f2f540c9",
+      "range": {
+        "startLine": 183,
+        "startChar": 46,
+        "endLine": 183,
+        "endChar": 50
+      },
+      "revId": "6a1e3f034bd26b73eb0eefcc4b9badfbbf087ea2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

@@ -16,6 +16,23 @@
       "message": "@miguel PTAL\n  uploaded changes after reflecting comments",
       "revId": "49b20e6d60a8ce9600111a635477281f0c2ebdec",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "23346cbf_0ffc3348",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1113991
+      },
+      "writtenOn": "2020-12-22T17:45:33Z",
+      "side": 1,
+      "message": "Still LGTM.\n\noka@ PTAL",
+      "revId": "49b20e6d60a8ce9600111a635477281f0c2ebdec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

@@ -40,8 +40,8 @@ func createLogFile() (*os.File, error) {
 }
 
 // newLogger creates a logger.
-func newLogger(logFile *os.File) *log.Logger {
-	mw := io.MultiWriter(logFile, os.Stderr)
+func newLogger(logFile *os.File, strm io.Writer) *log.Logger {
+	mw := io.MultiWriter(logFile, strm, os.Stderr)
 	return log.New(mw, "", log.LstdFlags)
 }
 
@@ -63,6 +63,7 @@ func main() {
 	os.Exit(func() int {
 		version := flag.Bool("version", false, "print version and exit")
 		input := flag.String("input", "", "specify the test invocation request protobuf input file")
+		rtsServer := flag.String("rtsserver", "", "the address of the RTS server")
 		flag.Parse()
 
 		if *version {
@@ -76,7 +77,17 @@ func main() {
 		}
 		defer logFile.Close()
 
-		logger := newLogger(logFile)
+		if *rtsServer == "" {
+			log.Fatalf("rtsserver is not specified.")
+		}
+		workDir := filepath.Dir(logFile.Name())
+		remoteLog, err := newReportLogStream(*rtsServer, workDir, "req001")
+		if err != nil {
+			log.Fatalf("Failed to establish connection to ProgressSink RPC service")
+		}
+		defer remoteLog.Close()
+
+		logger := newLogger(logFile, remoteLog)
 
 		logger.Println("Input File:", *input)
 

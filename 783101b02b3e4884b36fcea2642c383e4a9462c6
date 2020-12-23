@@ -16,6 +16,24 @@
       "message": "LGTM. I only have a one question. Is the reason to use ServeContent is to handle partial content? Thansk.",
       "revId": "783101b02b3e4884b36fcea2642c383e4a9462c6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "20b936a0_1d26a282",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-12-23T04:02:08Z",
+      "side": 1,
+      "message": "Yes that\u0027s right.\nhttps://godoc.org/net/http#ServeContent",
+      "parentUuid": "bf361b7b_f9d13997",
+      "revId": "783101b02b3e4884b36fcea2642c383e4a9462c6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

@@ -9,54 +9,7 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	"github.com/google/go-cmp/cmp"
-	rtd "go.chromium.org/chromiumos/config/go/api/test/rtd/v1"
 )
-
-const reqName1 = "Name1"
-const reqName2 = "Name2"
-const test1 = "launcher.PinAppToShelf.clamshell_mode"
-const test2 = "launcher.PinAppToShelf.tablet_mode"
-const workDir1 = "/tmp/tast/result1"
-const workDir2 = "/tmp/tast/result2"
-const sinkPort = 22
-const tlsAddress = "192.168.86.81"
-const tlsPort = 2227
-const tlwAddress = "192.168.86.109"
-const tlwPort = 2228
-const dut1 = "127.0.0.1:2222"
-
-var inv = rtd.Invocation{
-	Requests: []*rtd.Request{
-		{
-			Name: reqName1,
-			Test: test1,
-			Environment: &rtd.Request_Environment{
-				WorkDir: workDir1,
-			},
-		},
-		{
-			Name: reqName2,
-			Test: test2,
-			Environment: &rtd.Request_Environment{
-				WorkDir: workDir2,
-			},
-		},
-	},
-	ProgressSinkClientConfig: &rtd.ProgressSinkClientConfig{
-		Port: sinkPort,
-	},
-	TestLabServicesConfig: &rtd.TLSClientConfig{
-		TlsAddress: tlsAddress,
-		TlsPort:    tlsPort,
-		TlwAddress: tlwAddress,
-		TlwPort:    tlwPort,
-	},
-	Duts: []*rtd.DUT{
-		{
-			TlsDutName: dut1,
-		},
-	},
-}
 
 // TestUnmarshalInvocation makes sure unmarshalInvocation able to unmarshal invocation data.
 func TestUnmarshalInvocation(t *testing.T) {
@@ -77,7 +30,7 @@ func TestUnmarshalInvocation(t *testing.T) {
 func TestNewArgs(t *testing.T) {
 	expectedArgs := runArgs{
 		target:    dut1,
-		patterns:  []string{test1, test2},
+		patterns:  []string{test1, test2, test3, test4, test5},
 		tlwServer: fmt.Sprintf("%v:%v", tlwAddress, tlwPort),
 		resultDir: workDir1,
 	}

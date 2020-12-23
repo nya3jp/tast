@@ -6,16 +6,20 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
+	"net"
 	"os"
 	"path/filepath"
+	"strconv"
 	"time"
 
 	rtd "go.chromium.org/chromiumos/config/go/api/test/rtd/v1"
+	"google.golang.org/grpc"
 )
 
 // Version is the version info of this command. It is filled in during emerge.
@@ -85,10 +89,28 @@ func main() {
 			logger.Printf("Failed to read invocation protobuf file %v: %v", *input, err)
 			return 1
 		}
-		if err := invokeTast(logger, inv); err != nil {
+		resultDir, err := invokeTast(logger, inv)
+		if err != nil {
 			logger.Printf("Failed to invoke tast: %v", err)
 			return 1
 		}
+
+		// Set up connection with ProgressSink
+		psAddr := net.JoinHostPort("127.0.0.1", strconv.Itoa(int(inv.ProgressSinkClientConfig.Port)))
+		conn, err := grpc.DialContext(context.Background(), psAddr, grpc.WithBlock())
+		if err != nil {
+			logger.Printf("Failed to connect to progress sink %v: %v", psAddr, err)
+			return 1
+		}
+		defer conn.Close()
+
+		psClient := rtd.NewProgressSinkClient(conn)
+
+		if err := sendTestResults(psClient, inv, resultDir); err != nil {
+			logger.Printf("Failed in reading tast test results: %v", err)
+			return 1
+		}
+
 		return 0
 	}())
 }

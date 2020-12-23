@@ -11,8 +11,10 @@ import (
 	"net"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strconv"
 	"sync"
+	"time"
 
 	"github.com/golang/protobuf/proto"
 	rtd "go.chromium.org/chromiumos/config/go/api/test/rtd/v1"
@@ -56,6 +58,10 @@ func newArgs(inv *rtd.Invocation) *runArgs {
 			args.resultDir = r.Environment.WorkDir
 		}
 	}
+	if args.resultDir == "" {
+		t := time.Now()
+		args.resultDir = filepath.Join("/tmp/tast/results", t.Format("20060102-150405"))
+	}
 	return &args
 }
 
@@ -79,14 +85,14 @@ func genArgList(args *runArgs) []string {
 }
 
 // invokeTast invoke tast with the parameters based on rtd.Invocation.
-func invokeTast(logger *log.Logger, inv *rtd.Invocation) error {
+func invokeTast(logger *log.Logger, inv *rtd.Invocation) (resultDir string, err error) {
 	const path = "/usr/bin/tast"
 
 	if len(inv.Duts) == 0 {
-		return errors.New("no DUT is specified")
+		return "", errors.New("no DUT is specified")
 	}
 	if len(inv.Requests) == 0 {
-		return errors.New("No test is specified")
+		return "", errors.New("No test is specified")
 	}
 
 	args := newArgs(inv)
@@ -101,24 +107,25 @@ func invokeTast(logger *log.Logger, inv *rtd.Invocation) error {
 			continue
 		}
 		if err := os.RemoveAll(workDir); err != nil {
-			return errors.Wrapf(err, "failed to remove working directory %v", workDir)
+			return "", errors.Wrapf(err, "failed to remove working directory %v", workDir)
 		}
 		if err := os.Symlink(args.resultDir, workDir); err != nil {
-			return errors.Wrapf(err, "failed to create symbolic link %v", workDir)
+			return "", errors.Wrapf(err, "failed to create symbolic link %v", workDir)
 		}
 	}
+
 	// Run tast.
 	cmd := exec.Command(path, genArgList(args)...)
 	stderr, err := cmd.StderrPipe()
 	if err != nil {
-		return errors.Wrap(err, "StderrPipe failed")
+		return "", errors.Wrap(err, "StderrPipe failed")
 	}
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
-		return errors.Wrap(err, "StdoutPipe failed")
+		return "", errors.Wrap(err, "StdoutPipe failed")
 	}
 	if err := cmd.Start(); err != nil {
-		return err
+		return "", err
 	}
 	var wg sync.WaitGroup
 	wg.Add(2)
@@ -141,5 +148,5 @@ func invokeTast(logger *log.Logger, inv *rtd.Invocation) error {
 
 	wg.Wait()
 
-	return cmd.Wait()
+	return args.resultDir, cmd.Wait()
 }

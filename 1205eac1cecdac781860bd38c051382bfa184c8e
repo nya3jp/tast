@@ -16,6 +16,40 @@
       "message": "Should we test this by using the protoype-rts?",
       "revId": "1205eac1cecdac781860bd38c051382bfa184c8e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7ab6414f_e49c1db7",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-23T01:32:42Z",
+      "side": 1,
+      "message": "I think rtsServer is from the protobuf file, and not from command line. Let\u0027s discuss. Thanks.",
+      "revId": "1205eac1cecdac781860bd38c051382bfa184c8e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5064d073_9040c481",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-23T01:32:42Z",
+      "side": 1,
+      "message": "If I understand it correctly, rtsServer is specified in the input protobuf file. We should access it from the invocation API: inv.ProgressSinkClientConfig.Port. I think the host is always local host.",
+      "revId": "1205eac1cecdac781860bd38c051382bfa184c8e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

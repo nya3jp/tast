@@ -16,6 +16,46 @@
       "message": "Hi Shuhei:\n\nIn the latest patch, I added a new exported variable TestNamesToSkip to handle the warning due to skipped tests. I also tested new code with the scenarios that you mentioned.\n\n2020/12/22 13:31:45 Command line: tast run -totalshards\u003d2 -shardindex\u003d0 chromeos6-row8-rack22-host14.cros.corp.google.com meta.LocalPass meta.RemotePass\n...\n2020/12/22 13:31:51 Test meta.RemotePass will be skipped because test is not in the specified shard\n...\n2020/12/22 13:31:54 --------------------------------------------------------------------------------\n2020/12/22 13:31:54 meta.LocalPass  [ PASS ]\n2020/12/22 13:31:54 --------------------------------------------------------------------------------\n2020/12/22 13:31:54 Results saved to /tmp/tast/results/20201222-133145\n\n$ wc -l /tmp/tast/results/20201222-133145/streamed_results.jsonl\n1 /tmp/tast/results/20201222-133145/streamed_results.jsonl\n$ fgrep name /tmp/tast/results/20201222-133145/results.json\n    \"name\": \"meta.LocalPass\",\n      \"name:meta.LocalPass\",\n\nI think it is ok now. Please review.\n\nThanks.\n\nSeewai\n",
       "revId": "dda2aa4c7987080fc5d38e91dec3e0d7816ed53d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d3583563_7fc2af8b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 19
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-12-23T02:36:46Z",
+      "side": 1,
+      "message": "Thanks for the hard work!\n",
+      "revId": "dda2aa4c7987080fc5d38e91dec3e0d7816ed53d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a2d329b8_3c654cbf",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests.go",
+        "patchSetId": 19
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-12-23T02:36:46Z",
+      "side": 1,
+      "message": "Can we remove this logging? I\u0027m afraid that it might be a bit confusing to users. For example, if a test is skipped for hardware deps, the skip message is printed in all shards.\n\nIf we want to make it clear that we\u0027re skipping some tests due to sharding, I think it\u0027s nice to print a short log message like this:\n\n Running shard %d/%d (tests %d/%d)",
+      "range": {
+        "startLine": 46,
+        "startChar": 2,
+        "endLine": 46,
+        "endChar": 77
+      },
+      "revId": "dda2aa4c7987080fc5d38e91dec3e0d7816ed53d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

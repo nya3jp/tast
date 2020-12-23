@@ -82,6 +82,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "0d2c58cc_d0ec0443",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_tests.go",
+        "patchSetId": 18
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2020-12-23T02:36:46Z",
+      "side": 1,
+      "message": "Thanks for pointing out that checking with cfg.testNames always pass, you\u0027re right.\n\nHmm... actually I personally think that we can make it an error if a concrete test specified in the command line does not exist (though we still want to allow attribute expressions matching no test). In this way, resolving the issue would be very simple. But I also think that it\u0027s not good to make the behavior change a blocker for the sharding feature. So I\u0027ve just filed crbug.com/1161381 to track this issue.",
+      "parentUuid": "4fefab19_85c3e7a7",
+      "range": {
+        "startLine": 40,
+        "startChar": 0,
+        "endLine": 41,
+        "endChar": 46
+      },
+      "revId": "b48ead3fbd2f70f9a90886ed9752b44046cfdd66",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "61b276f3_30a1ef65",

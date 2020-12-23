@@ -890,7 +890,7 @@ func TestStateExports(t *gotesting.T) {
 				"HasError",
 				"Log",
 				"Logf",
-				// TODO(crbug.com/1035940): Provide access to the output directory.
+				"OutDir",
 				"RPCHint",
 			},
 		},

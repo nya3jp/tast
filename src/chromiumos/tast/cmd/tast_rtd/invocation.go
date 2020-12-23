@@ -15,6 +15,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"sync"
+	"time"
 
 	"github.com/golang/protobuf/proto"
 	rtd "go.chromium.org/chromiumos/config/go/api/test/rtd/v1"
@@ -101,7 +102,13 @@ func newArgs(inv *rtd.Invocation, rtdPath string) *runArgs {
 			resultsDir = r.Environment.WorkDir
 		}
 	}
+
+	if resultsDir == "" {
+		t := time.Now()
+		resultsDir = filepath.Join("/tmp/tast/results", t.Format("20060102-150405"))
+	}
 	args.runFlags[resultsDirFlag] = resultsDir
+
 	return &args
 }
 
@@ -120,21 +127,28 @@ func genArgList(args *runArgs) (argList []string) {
 }
 
 // invokeTast invoke tast with the parameters based on rtd.Invocation.
-func invokeTast(logger *log.Logger, inv *rtd.Invocation, rtdPath string) error {
+func invokeTast(logger *log.Logger, inv *rtd.Invocation, rtdPath string) (resultsDir string, err error) {
+	// The path to the tast executable in chroot is /usr/bin/tast.
 	path := "/usr/bin/tast"
-	// Default path to tast executable in rtd is /usr/src/rtd/tast/bin/tast.
+	// The path to the tast executable in RTD is /usr/src/rtd/tast/bin/tast.
 	if rtdPath != "" {
 		path = filepath.Join(rtdPath, "tast", "bin", "tast")
 	}
 
 	if len(inv.Duts) == 0 {
-		return errors.New("no DUT is specified")
+		return "", errors.New("input invocation.duts is empty")
 	}
 	if len(inv.Requests) == 0 {
-		return errors.New("No test is specified")
+		return "", errors.New("input invocation.requests is empty")
 	}
 
 	args := newArgs(inv, rtdPath)
+
+	// Make sure the result directory exists.
+	resultsDir = args.runFlags[resultsDirFlag]
+	if err := os.MkdirAll(resultsDir, 0755); err != nil {
+		return resultsDir, errors.Wrapf(err, "failed to create result directory %v", resultsDir)
+	}
 
 	// Create symbolic links to the the first result directory.
 	for _, r := range inv.Requests[1:] {
@@ -142,37 +156,33 @@ func invokeTast(logger *log.Logger, inv *rtd.Invocation, rtdPath string) error {
 		if workDir == "" {
 			continue
 		}
-		resultsDir := args.runFlags[resultsDirFlag]
 		if workDir == resultsDir {
 			continue
 		}
-		// Make sure the result directory exists.
-		if err := os.MkdirAll(resultsDir, 0755); err != nil {
-			return errors.Wrapf(err, "failed to create result directory %v", resultsDir)
-		}
 		if err := os.RemoveAll(workDir); err != nil {
-			return errors.Wrapf(err, "failed to remove working directory %v", workDir)
+			return "", errors.Wrapf(err, "failed to remove working directory %v", workDir)
 		}
 		// Make sure the parent directory of the symbolic link exists.
 		if err := os.MkdirAll(filepath.Dir(workDir), 0755); err != nil {
-			return errors.Wrapf(err, "failed to create parent directory of symbolic link %v", workDir)
+			return resultsDir, errors.Wrapf(err, "failed to create parent directory of symbolic link %v", workDir)
 		}
 		if err := os.Symlink(resultsDir, workDir); err != nil {
-			return errors.Wrapf(err, "failed to create symbolic link %v", workDir)
+			return resultsDir, errors.Wrapf(err, "failed to create symbolic link %v", workDir)
 		}
 	}
+
 	// Run tast.
 	cmd := exec.Command(path, genArgList(args)...)
 	stderr, err := cmd.StderrPipe()
 	if err != nil {
-		return errors.Wrap(err, "StderrPipe failed")
+		return "", errors.Wrap(err, "StderrPipe failed")
 	}
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
-		return errors.Wrap(err, "StdoutPipe failed")
+		return "", errors.Wrap(err, "StdoutPipe failed")
 	}
 	if err := cmd.Start(); err != nil {
-		return err
+		return "", err
 	}
 	var wg sync.WaitGroup
 	wg.Add(2)
@@ -195,5 +205,5 @@ func invokeTast(logger *log.Logger, inv *rtd.Invocation, rtdPath string) error {
 
 	wg.Wait()
 
-	return cmd.Wait()
+	return resultsDir, cmd.Wait()
 }

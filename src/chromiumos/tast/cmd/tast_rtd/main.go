@@ -6,6 +6,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"io"
@@ -16,6 +17,7 @@ import (
 	"time"
 
 	rtd "go.chromium.org/chromiumos/config/go/api/test/rtd/v1"
+	"google.golang.org/grpc"
 )
 
 // Version is the version info of this command. It is filled in during emerge.
@@ -61,6 +63,7 @@ func readInput(fileName string) (*rtd.Invocation, error) {
 
 func main() {
 	os.Exit(func() int {
+		ctx := context.Background()
 		version := flag.Bool("version", false, "print version and exit")
 		input := flag.String("input", "", "specify the test invocation request protobuf input file")
 		rtdPath := flag.String("rtd", "/usr/src/rtd", "specify the root directory of rtd files and executables.")
@@ -86,10 +89,28 @@ func main() {
 			logger.Printf("Failed to read invocation protobuf file %v: %v", *input, err)
 			return 1
 		}
-		if err := invokeTast(logger, inv, *rtdPath); err != nil {
+		resultDir, err := invokeTast(logger, inv, *rtdPath)
+		if err != nil {
 			logger.Printf("Failed to invoke tast: %v", err)
 			return 1
 		}
+
+		// Set up connection with ProgressSink
+		psAddr := fmt.Sprintf(":%d", inv.GetProgressSinkClientConfig().GetPort())
+		conn, err := grpc.DialContext(ctx, psAddr, grpc.WithBlock(), grpc.WithInsecure())
+		if err != nil {
+			logger.Printf("Failed to connect to progress sink %v: %v", psAddr, err)
+			return 1
+		}
+		defer conn.Close()
+
+		psClient := rtd.NewProgressSinkClient(conn)
+
+		if err := sendTestResults(ctx, logger, psClient, inv, resultDir); err != nil {
+			logger.Printf("Failed in reading tast test results: %v", err)
+			return 1
+		}
+
 		return 0
 	}())
 }

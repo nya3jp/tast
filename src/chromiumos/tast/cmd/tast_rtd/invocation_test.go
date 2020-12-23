@@ -11,54 +11,7 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	"github.com/google/go-cmp/cmp"
-	rtd "go.chromium.org/chromiumos/config/go/api/test/rtd/v1"
 )
-
-const reqName1 = "Name1"
-const reqName2 = "Name2"
-const test1 = "launcher.PinAppToShelf.clamshell_mode"
-const test2 = "launcher.PinAppToShelf.tablet_mode"
-const workDir1 = "/tmp/tast/result1"
-const workDir2 = "/tmp/tast/result2"
-const sinkPort = 22
-const tlsAddress = "192.168.86.81"
-const tlsPort = 2227
-const tlwAddress = "192.168.86.109"
-const tlwPort = 2228
-const dut1 = "127.0.0.1:2222"
-
-var inv = rtd.Invocation{
-	Requests: []*rtd.Request{
-		{
-			Name: reqName1,
-			Test: test1,
-			Environment: &rtd.Request_Environment{
-				WorkDir: workDir1,
-			},
-		},
-		{
-			Name: reqName2,
-			Test: test2,
-			Environment: &rtd.Request_Environment{
-				WorkDir: workDir2,
-			},
-		},
-	},
-	ProgressSinkClientConfig: &rtd.ProgressSinkClientConfig{
-		Port: sinkPort,
-	},
-	TestLabServicesConfig: &rtd.TLSClientConfig{
-		TlsAddress: tlsAddress,
-		TlsPort:    tlsPort,
-		TlwAddress: tlwAddress,
-		TlwPort:    tlwPort,
-	},
-	Duts: []*rtd.DUT{
-		{
-			TlsDutName: dut1,
-		},
-	},
-}
 
 // TestUnmarshalInvocation makes sure unmarshalInvocation able to unmarshal invocation data.
 func TestUnmarshalInvocation(t *testing.T) {
@@ -70,8 +23,8 @@ func TestUnmarshalInvocation(t *testing.T) {
 	if err != nil {
 		t.Fatal("Failed to unmarshal invocation data:", err)
 	}
-	if !proto.Equal(&inv, result) {
-		t.Errorf("Invocation did not match: want %v, got %v", inv, result)
+	if !proto.Equal(result, &inv) {
+		t.Errorf("Invocation did not match: got %v, want %v", result, inv)
 	}
 }
 
@@ -80,7 +33,7 @@ func TestNewArgs(t *testing.T) {
 	rtdPath := "/usr/src/rtd"
 	expectedArgs := runArgs{
 		target:   dut1,
-		patterns: []string{test1, test2},
+		patterns: []string{test1, test2, test3, test4, test5},
 		tastFlags: map[string]string{
 			verboseFlag: "true",
 			logTimeFlag: "false",
@@ -102,8 +55,8 @@ func TestNewArgs(t *testing.T) {
 	}
 
 	args := newArgs(&inv, rtdPath)
-	if diff := cmp.Diff(&expectedArgs, args, cmp.AllowUnexported(runArgs{})); diff != "" {
-		t.Errorf("Got unexpected argument from newArgs (-want +got):\n%s", diff)
+	if diff := cmp.Diff(args, &expectedArgs, cmp.AllowUnexported(runArgs{})); diff != "" {
+		t.Errorf("Got unexpected argument from newArgs (-got +want):\n%s", diff)
 	}
 }
 

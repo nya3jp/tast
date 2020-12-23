@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "dddc6c4f_f38e6c68",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 20
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-23T18:31:46Z",
+      "side": 1,
+      "message": "The last comment has been addressed. Submit code to CQ+2.",
+      "revId": "f7fc600a95ebf9943941ff17530a2dffaa1a1546",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

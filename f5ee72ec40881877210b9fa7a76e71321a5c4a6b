@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "20cbbd4c_b031a4cc",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-23T01:58:42Z",
+      "side": 1,
+      "message": "Should we have one grpc for all requests? Also, I think we both need to a mapping between the test names and requests. We probably need to discuss and put it in one place. Thanks.",
+      "revId": "f5ee72ec40881877210b9fa7a76e71321a5c4a6b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "562e6b89_855c949a",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/reporting.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-23T01:58:42Z",
+      "side": 1,
+      "message": "Should we have one grpc connection for all requests?",
+      "revId": "f5ee72ec40881877210b9fa7a76e71321a5c4a6b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

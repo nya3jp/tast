@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e85839bd_86684e3b",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-12-23T01:24:46Z",
+      "side": 1,
+      "message": "Should we test this by using the protoype-rts?",
+      "revId": "1205eac1cecdac781860bd38c051382bfa184c8e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "67565ba4_e41b6a0a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-12-23T08:20:14Z",
+      "side": 1,
+      "message": "I agree.\nLet\u0027s discuss it on the other place.",
+      "parentUuid": "20cbbd4c_b031a4cc",
+      "revId": "f5ee72ec40881877210b9fa7a76e71321a5c4a6b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "562e6b89_855c949a",
@@ -31,6 +49,24 @@
       "writtenOn": "2020-12-23T01:58:42Z",
       "side": 1,
       "message": "Should we have one grpc connection for all requests?",
+      "revId": "f5ee72ec40881877210b9fa7a76e71321a5c4a6b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "acb79030_ec8e658a",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/reporting.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-12-23T08:20:14Z",
+      "side": 1,
+      "message": "Changed to specify request name at Write().",
+      "parentUuid": "562e6b89_855c949a",
       "revId": "f5ee72ec40881877210b9fa7a76e71321a5c4a6b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }

@@ -50,6 +50,47 @@
       "message": "If I understand it correctly, rtsServer is specified in the input protobuf file. We should access it from the invocation API: inv.ProgressSinkClientConfig.Port. I think the host is always local host.",
       "revId": "1205eac1cecdac781860bd38c051382bfa184c8e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "09e6f0e2_7eb60b35",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-12-23T01:59:08Z",
+      "side": 1,
+      "message": "I think that is right, and we should also take the invocation request name from there. Let me revise and ask review again later.",
+      "parentUuid": "5064d073_9040c481",
+      "revId": "1205eac1cecdac781860bd38c051382bfa184c8e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "94f241a9_6c71ad96",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-12-23T01:59:08Z",
+      "side": 1,
+      "message": "this identifier should also taken from the input.",
+      "range": {
+        "startLine": 84,
+        "startChar": 60,
+        "endLine": 84,
+        "endChar": 68
+      },
+      "revId": "1205eac1cecdac781860bd38c051382bfa184c8e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

@@ -16,6 +16,23 @@
       "message": "related CL: https://chromium-review.googlesource.com/c/chromiumos/platform/tast/+/2455329",
       "revId": "c2405cc0f1463e19225f9a9de7bf040e53bcc27d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "bfaf0aa8_dde14f1d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-23T17:36:04Z",
+      "side": 1,
+      "message": "LGTM. However, I don\u0027t have permission to give CR+2 yet. Please ask another reviewer to approve it. Thanks.",
+      "revId": "c2405cc0f1463e19225f9a9de7bf040e53bcc27d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

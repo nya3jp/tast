@@ -803,3 +803,9 @@ func (s *FixtState) OutDir() string {
 type FixtTestState struct {
 	*globalMixin
 }
+
+// OutDir returns a directory into which the entity may place arbitrary files
+// that should be included with the entity results.
+func (s *FixtTestState) OutDir() string {
+	return s.entityRoot.cfg.OutDir
+}

@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "fef8cbc4_91f24c19",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-23T00:53:45Z",
+      "side": 1,
+      "message": "I have created a unit test and it passed. I still need to test the code with a RTS. Please review. Thanks.",
+      "revId": "4c983c27b1db5c3fc7a6593db4463549dc0a538b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

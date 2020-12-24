@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8302bbaf_5f7ca0c7",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-24T23:47:24Z",
+      "side": 1,
+      "message": "I have addressed all the comments, but I have not had a chance to test it out with a RTS yet.\n\nThanks.\n\nSeewai\n",
+      "revId": "fc19dace639767d4eafdcc8e103708d50310ae7d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

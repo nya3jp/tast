@@ -35,6 +35,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "5607434f_141e2f6d",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/result.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-24T23:47:24Z",
+      "side": 1,
+      "message": "Done. BTW, I used _struct because that was how it was referenced in result.pb.go.",
+      "parentUuid": "816a8d27_bfb328ce",
+      "revId": "57fe7f5bbc8845442720554559f195ce13e8f3b5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "4a567300_4c030dd4",
@@ -52,6 +70,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "b6be7105_23c64dcd",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/result.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-24T23:47:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4a567300_4c030dd4",
+      "revId": "57fe7f5bbc8845442720554559f195ce13e8f3b5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "b0792ce1_e454bdee",
@@ -65,6 +101,30 @@
       "writtenOn": "2020-12-24T06:31:59Z",
       "side": 1,
       "message": "https://golang.org/ref/spec#Composite_literals\n\u003e Similarly, elements or keys that are addresses of composite literals may elide the \u0026T when the element or key type is *T.",
+      "range": {
+        "startLine": 121,
+        "startChar": 4,
+        "endLine": 121,
+        "endChar": 20
+      },
+      "revId": "57fe7f5bbc8845442720554559f195ce13e8f3b5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "869df2d0_9967c718",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/result.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-24T23:47:24Z",
+      "side": 1,
+      "message": "I didn\u0027t know that. Thanks.",
+      "parentUuid": "b0792ce1_e454bdee",
       "range": {
         "startLine": 121,
         "startChar": 4,
@@ -98,6 +158,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "8bbcb864_22f2f907",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/result.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 126,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-24T23:47:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9b1b8354_a61aa827",
+      "range": {
+        "startLine": 126,
+        "startChar": 22,
+        "endLine": 126,
+        "endChar": 36
+      },
+      "revId": "57fe7f5bbc8845442720554559f195ce13e8f3b5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "db979321_0790f8d6",
@@ -115,6 +199,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "210b46fd_ac925034",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/result_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 184,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-24T23:47:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "db979321_0790f8d6",
+      "revId": "57fe7f5bbc8845442720554559f195ce13e8f3b5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "63b7ea19_65106e4f",
@@ -128,6 +230,24 @@
       "writtenOn": "2020-12-24T06:31:59Z",
       "side": 1,
       "message": "Place the actual value before the expected one.\ngo/go-style/decisions#got-before-want",
+      "revId": "57fe7f5bbc8845442720554559f195ce13e8f3b5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4dcc651b_60c3ebbb",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/result_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 188,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-24T23:47:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "63b7ea19_65106e4f",
       "revId": "57fe7f5bbc8845442720554559f195ce13e8f3b5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }

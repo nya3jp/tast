@@ -319,11 +319,23 @@ func buildFixtPlan(tests []*testing.TestInstance, pcfg *Config) (*fixtPlan, erro
 	if impl == nil {
 		impl = &stubFixture{}
 	}
+	const infinite = 24 * time.Hour // a day is considered infinite
 	tree.fixt = &testing.Fixture{
 		// Do not set Name of a start fixture. entityOutputStream do not emit
 		// EntityStart/EntityEnd for unnamed entities.
 		Impl: impl,
-		// TODO(crbug.com/1035940): Set timeouts of a start fixture.
+		// Set infinite timeouts to all lifecycle methods. In production, the
+		// start fixture may communicate with the host machine to trigger remote
+		// fixtures, which would take quite some time but timeouts are responsibly
+		// handled by the host binary. In unit tests, we may set the custom grace
+		// period to very small values (like a millisecond) to test the behavior
+		// when user code ignore timeouts, where we need long timeouts to avoid
+		// hitting timeouts in the start fixture.
+		SetUpTimeout:    infinite,
+		TearDownTimeout: infinite,
+		ResetTimeout:    infinite,
+		PreTestTimeout:  infinite,
+		PostTestTimeout: infinite,
 	}
 
 	return &fixtPlan{pcfg: pcfg, tree: tree, orphans: orphans}, nil

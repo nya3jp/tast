@@ -16,6 +16,120 @@
       "message": "I just reorganized the code a little bit. Please review. Thanks.",
       "revId": "57fe7f5bbc8845442720554559f195ce13e8f3b5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "816a8d27_bfb328ce",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/result.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-12-24T06:31:59Z",
+      "side": 1,
+      "message": "I think renamed package name should also follow the style guide.\nhttps://golang.org/doc/effective_go.html#package-names\n\n\"structpb\" and \"stpb\" looks popular in our existing codebase.\nhttps://source.chromium.org/search?q\u003d%22github.com%2Fgolang%2Fprotobuf%2Fptypes%2Fstruct%22%20file:%5C.go$%20-file:%5C.pb%5C.go$",
+      "revId": "57fe7f5bbc8845442720554559f195ce13e8f3b5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4a567300_4c030dd4",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/result.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-12-24T06:31:59Z",
+      "side": 1,
+      "message": "maybe \"sendTestRestults\" because this function sends the results thorough RPC?",
+      "revId": "57fe7f5bbc8845442720554559f195ce13e8f3b5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b0792ce1_e454bdee",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/result.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-12-24T06:31:59Z",
+      "side": 1,
+      "message": "https://golang.org/ref/spec#Composite_literals\n\u003e Similarly, elements or keys that are addresses of composite literals may elide the \u0026T when the element or key type is *T.",
+      "range": {
+        "startLine": 121,
+        "startChar": 4,
+        "endLine": 121,
+        "endChar": 20
+      },
+      "revId": "57fe7f5bbc8845442720554559f195ce13e8f3b5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9b1b8354_a61aa827",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/result.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 126,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-12-24T06:31:59Z",
+      "side": 1,
+      "message": "ditto\n\nSame for the same patterns in the other 2 functions below.",
+      "range": {
+        "startLine": 126,
+        "startChar": 22,
+        "endLine": 126,
+        "endChar": 36
+      },
+      "revId": "57fe7f5bbc8845442720554559f195ce13e8f3b5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "db979321_0790f8d6",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/result_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 184,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-12-24T06:31:59Z",
+      "side": 1,
+      "message": "nit: add one space after colon.",
+      "revId": "57fe7f5bbc8845442720554559f195ce13e8f3b5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "63b7ea19_65106e4f",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/result_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 188,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2020-12-24T06:31:59Z",
+      "side": 1,
+      "message": "Place the actual value before the expected one.\ngo/go-style/decisions#got-before-want",
+      "revId": "57fe7f5bbc8845442720554559f195ce13e8f3b5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

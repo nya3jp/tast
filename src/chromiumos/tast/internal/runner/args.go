@@ -52,6 +52,8 @@ const (
 	// ListFixturesMode indicates that the runner should write information about fixtures to stdout
 	// as a JSON serialized ListFixturesResult.
 	ListFixturesMode = 7
+	// hogehoge
+	RPCMode = 8
 )
 
 // Args provides a backward- and forward-compatible way to pass arguments from the tast executable to test runners.
@@ -441,6 +443,8 @@ func readArgs(clArgs []string, stdin io.Reader, stderr io.Writer, args *Args, cf
 			return command.NewStatusErrorf(statusBadArgs, "failed to decode args from stdin: %v", err)
 		}
 		args.report = true
+	} else if len(clArgs) == 1 && clArgs[0] == "-rpc" {
+		args.Mode = RPCMode
 	} else {
 		// Expose a limited amount of configurability via command-line flags to support running test runners manually.
 		args.Mode = RunTestsMode

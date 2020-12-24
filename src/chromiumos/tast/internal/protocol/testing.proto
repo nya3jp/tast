@@ -1,0 +1,144 @@
+// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package tast.core;
+
+option go_package = "chromiumos/tast/internal/protocol";
+
+import "google/protobuf/timestamp.proto";
+
+service TestService {
+  rpc ListEntities(ListEntitiesRequest) returns (ListEntitiesResponse) {}
+  rpc RunTests(RunTestsRequest) returns (stream ControlMessage) {}
+}
+
+message ListEntitiesRequest {
+  DeviceConfig device_config = 1;
+}
+
+message ListEntitiesResponse {
+  repeated Entity entities = 1;
+}
+
+message RunTestsRequest {
+  DeviceConfig device_config = 1;
+  repeated string tests = 2;
+}
+
+message DeviceConfig {
+  string runner_path = 1;
+  string bundle_path_glob = 2;
+  TargetDevice target_device = 3;
+}
+
+message TargetDevice {
+  SSHConfig ssh_config = 1;
+  DeviceConfig device_config = 2;
+}
+
+message SSHConfig {
+  // Target connection spec as [<user>@]host[:<port>].
+  string target = 1;
+  // Path to the SSH private key to use to connect to the target.
+  string key_file = 2;
+  // Path to the directory containing SSH private keys (typically $HOME/.ssh).
+  string key_dir = 3;
+}
+
+enum Disposition {
+  REMOTE = 0;
+  LOCAL = 1;
+}
+
+enum EntityType {
+  TEST = 0;
+  FIXTURE = 1;
+}
+
+message Entity {
+  Disposition disposition = 1;
+  EntityType type = 2;
+  string name = 3;
+  string package = 4;
+  repeated string attributes = 5;
+  TestDependencies dependencies = 6;
+}
+
+message TestDependencies {
+  repeated string data_files = 1;
+  repeated string services = 2;
+  repeated string variables = 3;
+  repeated string softwares = 4;
+}
+
+// ControlMessage represents an event occurred during testing.
+// Control messages are sent over a streaming response channel to notify the
+// client test events in real time.
+message ControlMessage {
+  oneof message {
+    RunLogMessage run_log = 1;
+    RunErrorMessage run_error = 2;
+    EntityStartMessage entity_start = 3;
+    EntityLogMessage entity_log = 4;
+    EntityErrorMessage entity_error = 5;
+    EntityEndMessage entity_end = 6;
+  }
+}
+
+message RunLogMessage {
+  google.protobuf.Timestamp time = 1;
+  string text = 2;
+}
+
+message RunErrorMessage {
+  google.protobuf.Timestamp time = 1;
+  ErrorDetails error_details = 2;
+  int32 exit_code = 3;
+}
+
+message EntityStartMessage {
+  google.protobuf.Timestamp time = 1;
+  string entity_name = 2;
+}
+
+message EntityLogMessage {
+  google.protobuf.Timestamp time = 1;
+  string entity_name = 2;
+  string text = 3;
+}
+
+message EntityErrorMessage {
+  google.protobuf.Timestamp time = 1;
+  string entity_name = 2;
+  ErrorDetails error_details = 3;
+}
+
+message EntityEndMessage {
+  google.protobuf.Timestamp time = 1;
+  string entity_name = 2;
+  oneof result {
+    EntityFinished finished = 3;
+    EntitySkipped skipped = 4;
+  }
+}
+
+message EntityFinished {
+}
+
+message EntitySkipped {
+  repeated string reasons = 1;
+}
+
+message ErrorDetails {
+  string reason = 1;
+  ErrorLocation location = 2;
+}
+
+message ErrorLocation {
+  string file = 1;
+  int64 line = 2;
+  string stack = 3;
+}

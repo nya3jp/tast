@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "126fff4d_cdb4d3f8",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2020-12-24T00:58:51Z",
+      "side": 1,
+      "message": "I just reorganized the code a little bit. Please review. Thanks.",
+      "revId": "57fe7f5bbc8845442720554559f195ce13e8f3b5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

@@ -19,7 +19,9 @@ import (
 	"chromiumos/tast/cmd/tast/internal/logging"
 	"chromiumos/tast/cmd/tast/internal/run"
 	"chromiumos/tast/ctxutil"
+	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/command"
+	"chromiumos/tast/internal/xcontext"
 	"chromiumos/tast/timing"
 )
 
@@ -78,8 +80,8 @@ func (r *runCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{})
 		panic("logger not attached to context")
 	}
 
-	ctx, cancel := context.WithTimeout(ctx, r.timeout)
-	defer cancel()
+	ctx, cancel := xcontext.WithTimeout(ctx, r.timeout, errors.Errorf("%v: global timeout reached (%v)", context.DeadlineExceeded, r.timeout))
+	defer cancel(context.Canceled)
 
 	defer r.cfg.Close(ctx)
 
@@ -163,8 +165,9 @@ func (r *runCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{})
 	if r.timeout > 2*writeResultsTimeout {
 		wrt = writeResultsTimeout
 	}
-	rctx, rcancel := ctxutil.Shorten(ctx, wrt)
-	defer rcancel()
+	dl, _ := ctx.Deadline() // deadline is always set above
+	rctx, rcancel := xcontext.WithDeadline(ctx, dl.Add(-wrt), errors.Errorf("%v: global timeout reached (%v)", context.DeadlineExceeded, r.timeout-wrt))
+	defer rcancel(context.Canceled)
 
 	status, results := r.wrapper.run(rctx, r.cfg)
 	allTestsRun := status.ExitCode == subcommands.ExitSuccess

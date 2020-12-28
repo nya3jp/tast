@@ -19,7 +19,9 @@ import (
 	"chromiumos/tast/cmd/tast/internal/logging"
 	"chromiumos/tast/cmd/tast/internal/run"
 	"chromiumos/tast/ctxutil"
+	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/command"
+	"chromiumos/tast/internal/xcontext"
 	"chromiumos/tast/timing"
 )
 
@@ -78,8 +80,8 @@ func (r *runCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{})
 		panic("logger not attached to context")
 	}
 
-	ctx, cancel := context.WithTimeout(ctx, r.timeout)
-	defer cancel()
+	ctx, cancel := xcontext.WithTimeout(ctx, r.timeout, errors.Errorf("%v: global timeout reached (%v)", context.DeadlineExceeded, r.timeout))
+	defer cancel(context.Canceled)
 
 	defer r.cfg.Close(ctx)
 

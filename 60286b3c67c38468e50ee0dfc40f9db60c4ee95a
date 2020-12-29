@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "01a0b94a_e4a4e35a",
+        "filename": "src/chromiumos/tast/internal/rpc/server.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-12-29T04:52:16Z",
+      "side": 1,
+      "message": "Could you have a unit test to register core framework?",
+      "range": {
+        "startLine": 47,
+        "startChar": 1,
+        "endLine": 47,
+        "endChar": 9
+      },
+      "revId": "60286b3c67c38468e50ee0dfc40f9db60c4ee95a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2a1cb87a_5f82b1c3",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-12-29T06:48:05Z",
+      "side": 1,
+      "message": "\u003e \"detemined\" is a possible misspelling of \"determined\".\n\nPlease fix.",
+      "parentUuid": "09de398b_217b754d",
+      "range": {
+        "startLine": 17,
+        "startChar": 43,
+        "endLine": 17,
+        "endChar": 52
+      },
+      "revId": "074412d660ab03440cfe97ea56cc2fbce6499d2d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a055017d_8c6b4fcd",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2020-12-29T06:48:05Z",
+      "side": 1,
+      "message": "Thanks!",
+      "revId": "074412d660ab03440cfe97ea56cc2fbce6499d2d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

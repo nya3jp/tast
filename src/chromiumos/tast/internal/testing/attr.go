@@ -305,9 +305,14 @@ Meta tests should be a subset of mainline critical tests.
 		Desc:     `The group of tests to be run in CQ for integrated fingerprint functionality.`,
 	},
 	{
-		Name:     "fingerprint-mcu",
+		Name:     "fingerprint-dragonclaw",
 		Contacts: []string{"chromeos-fingerprint@google.com"},
-		Desc:     `The group of tests to be run on a standalone Fingerprint MCU board.`,
+		Desc:     `The group of tests to be run on a standalone Dragonclaw board.`,
+	},
+	{
+		Name:     "fingerprint-icetower",
+		Contacts: []string{"chromeos-fingerprint@google.com"},
+		Desc:     `The group of tests to be run on a standalone Icetower board.`,
 	},
 	{
 		Name:     "storage-qual",

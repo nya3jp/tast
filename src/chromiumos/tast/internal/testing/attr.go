@@ -308,6 +308,16 @@ Meta tests should be a subset of mainline critical tests.
 		Name:     "fingerprint-mcu",
 		Contacts: []string{"chromeos-fingerprint@google.com"},
 		Desc:     `The group of tests to be run on a standalone Fingerprint MCU board.`,
+		Subattrs: []*attr{
+			{
+				Name: "fingerprint-mcu_dragonclaw",
+				Desc: `Tests to be run on Dragonclaw board (a standalone MCU board, not a Chrome OS board).`,
+			},
+			{
+				Name: "fingerprint-mcu_icetower",
+				Desc: `Tests to be run on Icetower board (a standalone MCU board, not a Chrome OS board).`,
+			},
+		},
 	},
 	{
 		Name:     "storage-qual",

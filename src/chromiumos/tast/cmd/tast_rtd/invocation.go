@@ -7,10 +7,12 @@ package main
 
 import (
 	"bufio"
+	"fmt"
 	"log"
 	"net"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strconv"
 	"sync"
 
@@ -29,49 +31,88 @@ func unmarshalInvocation(req []byte) (*rtd.Invocation, error) {
 	return inv, nil
 }
 
+// Command name and flag names.
+const (
+	runSubcommand              = "run"
+	verboseFlag                = "-verbose"
+	logTimeFlag                = "-logtime"
+	sshRetriesFlag             = "-sshretries"
+	downloadDataFlag           = "-downloaddata"
+	buildFlag                  = "-build"
+	remoteBundlerDirFlag       = "-remotebundledir"
+	remoteDataDirFlag          = "-remotedatadir"
+	remoteRunnerFlag           = "-remoterunner"
+	defaultVarsDirFlag         = "-defaultvarsdir"
+	downloadPrivateBundlesFlag = "-downloadprivatebundles"
+	devServerFlag              = "-devservers"
+	resultsDirFlag             = "-resultsdir"
+	tlwServerFlag              = "-tlwserver"
+	waitUntilReadyFlag         = "-waituntilready"
+	timeOutFlag                = "-timeout"
+	keyfile                    = "-keyfile"
+)
+
 // runArgs stores arguments to invoke Tast
 type runArgs struct {
-	target    string   // the url for the target machine.
-	patterns  []string // the names of test to be run.
-	tlwServer string   // a string consisting tlw address and port.
-	resultDir string   // the result directory of the tast run.
+	target    string            // The url for the target machine.
+	patterns  []string          // The names of test to be run.
+	tastFlags map[string]string // The flags for tast.
+	runFlags  map[string]string // The flags for tast run command.
 }
 
 // newArgs created an argument structure for invoking tast
-func newArgs(inv *rtd.Invocation) *runArgs {
+func newArgs(inv *rtd.Invocation, rtdPath string) *runArgs {
+
 	args := runArgs{
 		target: inv.Duts[0].TlsDutName, // TODO: Support multiple DUTs for sharding.
+		tastFlags: map[string]string{
+			verboseFlag: "true",
+			logTimeFlag: "false",
+		},
+		runFlags: map[string]string{
+			sshRetriesFlag:             "2",
+			downloadDataFlag:           "batch",
+			buildFlag:                  "false",
+			downloadPrivateBundlesFlag: "true",
+			timeOutFlag:                "3000",
+		},
 	}
-
+	// If it is running inside a RTD, change default path for tast related directories.
+	if rtdPath != "" {
+		rtdTastPath := filepath.Join(rtdPath, "tast")
+		args.runFlags[remoteBundlerDirFlag] = filepath.Join(rtdTastPath, "bundles", "remote")
+		args.runFlags[remoteDataDirFlag] = filepath.Join(rtdTastPath, "bundles", "data")
+		args.runFlags[remoteRunnerFlag] = filepath.Join(rtdTastPath, "bin", "remote_test_runner")
+		args.runFlags[defaultVarsDirFlag] = filepath.Join(rtdTastPath, "vars")
+		args.runFlags[keyfile] = filepath.Join(rtdTastPath, "ssh_keys", "testing_rsa")
+	}
 	if inv.TestLabServicesConfig != nil && inv.TestLabServicesConfig.TlwAddress != "" {
-		args.tlwServer = inv.TestLabServicesConfig.TlwAddress
+		tlwServer := inv.TestLabServicesConfig.TlwAddress
 		if inv.TestLabServicesConfig.TlwPort != 0 {
-			args.tlwServer = net.JoinHostPort(args.tlwServer, strconv.Itoa(int(inv.TestLabServicesConfig.TlwPort)))
+			tlwServer = net.JoinHostPort(tlwServer, strconv.Itoa(int(inv.TestLabServicesConfig.TlwPort)))
 		}
+		args.runFlags[tlwServerFlag] = tlwServer
 	}
 
+	resultsDir := args.runFlags[resultsDirFlag]
 	for _, r := range inv.Requests {
 		args.patterns = append(args.patterns, r.Test)
-		if args.resultDir == "" {
-			args.resultDir = r.Environment.WorkDir
+		if resultsDir == "" {
+			resultsDir = r.Environment.WorkDir
 		}
 	}
+	args.runFlags[resultsDirFlag] = resultsDir
 	return &args
 }
 
 // genArgList generates argument list for invoking tast
-func genArgList(args *runArgs) []string {
-	const runSubcommand = "run"
-	const tlwFlag = "-tlwserver"
-	const resultDirFlag = "-resultsdir"
-	argList := []string{runSubcommand}
-	if args.tlwServer != "" {
-		argList = append(argList, tlwFlag)
-		argList = append(argList, args.tlwServer)
+func genArgList(args *runArgs) (argList []string) {
+	for flag, value := range args.tastFlags {
+		argList = append(argList, fmt.Sprintf("%v=%v", flag, value))
 	}
-	if args.resultDir != "" {
-		argList = append(argList, resultDirFlag)
-		argList = append(argList, args.resultDir)
+	argList = append(argList, runSubcommand)
+	for flag, value := range args.runFlags {
+		argList = append(argList, fmt.Sprintf("%v=%v", flag, value))
 	}
 	argList = append(argList, args.target)
 	argList = append(argList, args.patterns...)
@@ -79,8 +120,12 @@ func genArgList(args *runArgs) []string {
 }
 
 // invokeTast invoke tast with the parameters based on rtd.Invocation.
-func invokeTast(logger *log.Logger, inv *rtd.Invocation) error {
-	const path = "/usr/bin/tast"
+func invokeTast(logger *log.Logger, inv *rtd.Invocation, rtdPath string) error {
+	path := "/usr/bin/tast"
+	// Default path to tast executable in rtd is /usr/src/rtd/tast/bin/tast.
+	if rtdPath != "" {
+		path = filepath.Join(rtdPath, "tast", "bin", "tast")
+	}
 
 	if len(inv.Duts) == 0 {
 		return errors.New("no DUT is specified")
@@ -89,7 +134,7 @@ func invokeTast(logger *log.Logger, inv *rtd.Invocation) error {
 		return errors.New("No test is specified")
 	}
 
-	args := newArgs(inv)
+	args := newArgs(inv, rtdPath)
 
 	// Create symbolic links to the the first result directory.
 	for _, r := range inv.Requests[1:] {
@@ -97,13 +142,22 @@ func invokeTast(logger *log.Logger, inv *rtd.Invocation) error {
 		if workDir == "" {
 			continue
 		}
-		if workDir == args.resultDir {
+		resultsDir := args.runFlags[resultsDirFlag]
+		if workDir == resultsDir {
 			continue
+		}
+		// Make sure the result directory exists.
+		if err := os.MkdirAll(resultsDir, 0755); err != nil {
+			return errors.Wrapf(err, "failed to create result directory %v", resultsDir)
 		}
 		if err := os.RemoveAll(workDir); err != nil {
 			return errors.Wrapf(err, "failed to remove working directory %v", workDir)
 		}
-		if err := os.Symlink(args.resultDir, workDir); err != nil {
+		// Make sure the parent directory of the symbolic link exists.
+		if err := os.MkdirAll(filepath.Dir(workDir), 0755); err != nil {
+			return errors.Wrapf(err, "failed to create parent directory of symbolic link %v", workDir)
+		}
+		if err := os.Symlink(resultsDir, workDir); err != nil {
 			return errors.Wrapf(err, "failed to create symbolic link %v", workDir)
 		}
 	}

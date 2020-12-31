@@ -63,6 +63,7 @@ func main() {
 	os.Exit(func() int {
 		version := flag.Bool("version", false, "print version and exit")
 		input := flag.String("input", "", "specify the test invocation request protobuf input file")
+		rtdPath := flag.String("rtd", "/usr/src/rtd", "specify the root directory of rtd files and executables.")
 		flag.Parse()
 
 		if *version {
@@ -85,7 +86,7 @@ func main() {
 			logger.Printf("Failed to read invocation protobuf file %v: %v", *input, err)
 			return 1
 		}
-		if err := invokeTast(logger, inv); err != nil {
+		if err := invokeTast(logger, inv, *rtdPath); err != nil {
 			logger.Printf("Failed to invoke tast: %v", err)
 			return 1
 		}

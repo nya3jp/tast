@@ -7,11 +7,14 @@ package main
 
 import (
 	"bufio"
+	"fmt"
 	"log"
 	"net"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strconv"
+	"strings"
 	"sync"
 
 	"github.com/golang/protobuf/proto"
@@ -29,49 +32,89 @@ func unmarshalInvocation(req []byte) (*rtd.Invocation, error) {
 	return inv, nil
 }
 
+// Command name and flag names.
+const (
+	runSubcommand              = "run"
+	verboseFlag                = "-verbose"
+	logTimeFlag                = "-logtime"
+	sshRetriesFlag             = "-sshretries"
+	downloadDataFlag           = "-downloaddata"
+	buildFlag                  = "-build"
+	remoteBundlerDirFlag       = "-remotebundledir"
+	remoteDataDirFlag          = "-remotedatadir"
+	remoteRunnerFlag           = "-remoterunner"
+	defaultVarsDirFlag         = "-defaultvarsdir"
+	downloadPrivateBundlesFlag = "-downloadprivatebundles"
+	devServerFlag              = "-devservers"
+	resultsDirFlag             = "-resultsdir"
+	tlwServerFlag              = "-tlwserver"
+	waitUntilReadyFlag         = "-waituntilready"
+	timeOutFlag                = "-timeout"
+)
+
 // runArgs stores arguments to invoke Tast
 type runArgs struct {
-	target    string   // the url for the target machine.
-	patterns  []string // the names of test to be run.
-	tlwServer string   // a string consisting tlw address and port.
-	resultDir string   // the result directory of the tast run.
+	target    string            // The url for the target machine.
+	patterns  []string          // The names of test to be run.
+	tastFlags map[string]string // The flags for tast.
+	runFlags  map[string]string // The flags for tast run command.
 }
 
 // newArgs created an argument structure for invoking tast
 func newArgs(inv *rtd.Invocation) *runArgs {
+
 	args := runArgs{
 		target: inv.Duts[0].TlsDutName, // TODO: Support multiple DUTs for sharding.
+		tastFlags: map[string]string{
+			verboseFlag: "true",
+			logTimeFlag: "false",
+		},
+		runFlags: map[string]string{
+			sshRetriesFlag:             "2",
+			downloadDataFlag:           "batch",
+			buildFlag:                  "false",
+			downloadPrivateBundlesFlag: "true",
+			timeOutFlag:                "3000",
+		},
+	}
+	// If it is running inside a RTD, assume bundle directory,
+	if exe, err := os.Executable(); err == nil {
+		if strings.Contains(exe, "/rtd/") {
+			rtdPath := filepath.Dir(exe)
+			args.runFlags[remoteBundlerDirFlag] = filepath.Join(rtdPath, "bundles", "romote")
+			args.runFlags[remoteDataDirFlag] = filepath.Join(rtdPath, "bundles", "data")
+			args.runFlags[remoteRunnerFlag] = filepath.Join(rtdPath, "remote_test_runner")
+			args.runFlags[defaultVarsDirFlag] = filepath.Join(rtdPath, "vars")
+		}
 	}
 
 	if inv.TestLabServicesConfig != nil && inv.TestLabServicesConfig.TlwAddress != "" {
-		args.tlwServer = inv.TestLabServicesConfig.TlwAddress
+		tlwServer := inv.TestLabServicesConfig.TlwAddress
 		if inv.TestLabServicesConfig.TlwPort != 0 {
-			args.tlwServer = net.JoinHostPort(args.tlwServer, strconv.Itoa(int(inv.TestLabServicesConfig.TlwPort)))
+			tlwServer = net.JoinHostPort(tlwServer, strconv.Itoa(int(inv.TestLabServicesConfig.TlwPort)))
 		}
+		args.runFlags[tlwServerFlag] = tlwServer
 	}
 
+	resultsDir := args.runFlags[resultsDirFlag]
 	for _, r := range inv.Requests {
 		args.patterns = append(args.patterns, r.Test)
-		if args.resultDir == "" {
-			args.resultDir = r.Environment.WorkDir
+		if resultsDir == "" {
+			resultsDir = r.Environment.WorkDir
 		}
 	}
+	args.runFlags[resultsDirFlag] = resultsDir
 	return &args
 }
 
 // genArgList generates argument list for invoking tast
-func genArgList(args *runArgs) []string {
-	const runSubcommand = "run"
-	const tlwFlag = "-tlwserver"
-	const resultDirFlag = "-resultsdir"
-	argList := []string{runSubcommand}
-	if args.tlwServer != "" {
-		argList = append(argList, tlwFlag)
-		argList = append(argList, args.tlwServer)
+func genArgList(args *runArgs) (argList []string) {
+	for flag, value := range args.tastFlags {
+		argList = append(argList, fmt.Sprintf("%v=%v", flag, value))
 	}
-	if args.resultDir != "" {
-		argList = append(argList, resultDirFlag)
-		argList = append(argList, args.resultDir)
+	argList = append(argList, runSubcommand)
+	for flag, value := range args.runFlags {
+		argList = append(argList, fmt.Sprintf("%v=%v", flag, value))
 	}
 	argList = append(argList, args.target)
 	argList = append(argList, args.patterns...)
@@ -97,13 +140,14 @@ func invokeTast(logger *log.Logger, inv *rtd.Invocation) error {
 		if workDir == "" {
 			continue
 		}
-		if workDir == args.resultDir {
+		resultsDir := args.runFlags[resultsDirFlag]
+		if workDir == resultsDir {
 			continue
 		}
 		if err := os.RemoveAll(workDir); err != nil {
 			return errors.Wrapf(err, "failed to remove working directory %v", workDir)
 		}
-		if err := os.Symlink(args.resultDir, workDir); err != nil {
+		if err := os.Symlink(resultsDir, workDir); err != nil {
 			return errors.Wrapf(err, "failed to create symbolic link %v", workDir)
 		}
 	}

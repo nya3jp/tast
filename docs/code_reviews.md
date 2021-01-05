@@ -27,7 +27,7 @@ reviewers:
 After getting LGTM from both reviewers, submit the change via the Commit Queue.
 
 [self-review checklist]: #Self_review-checklist
-[Tast reviewers]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/refs/heads/master/OWNERS
+[Tast reviewers]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/refs/heads/main/OWNERS
 [gwsq]: https://goto.google.com/gwsq-gerrit
 
 

@@ -24,9 +24,9 @@ and terminology in Tast.
 *   [remote_test_runner] is run on the host system by the `tast` process to
     initiate running remote tests.
 
-[tast executable]: https://chromium.googlesource.com/chromiumos/platform/tast/+/master/src/chromiumos/tast/cmd/tast/
-[local_test_runner]: https://chromium.googlesource.com/chromiumos/platform/tast/+/master/src/chromiumos/tast/cmd/local_test_runner/
-[remote_test_runner]: https://chromium.googlesource.com/chromiumos/platform/tast/+/master/src/chromiumos/tast/cmd/remote_test_runner/
+[tast executable]: https://chromium.googlesource.com/chromiumos/platform/tast/+/main/src/chromiumos/tast/cmd/tast/
+[local_test_runner]: https://chromium.googlesource.com/chromiumos/platform/tast/+/main/src/chromiumos/tast/cmd/local_test_runner/
+[remote_test_runner]: https://chromium.googlesource.com/chromiumos/platform/tast/+/main/src/chromiumos/tast/cmd/remote_test_runner/
 
 ### Libraries
 
@@ -42,12 +42,12 @@ are particularly important:
     `remote_test_runner`.
 *   [testing] contains code used to define and run tests.
 
-[tast directory]: https://chromium.googlesource.com/chromiumos/platform/tast/+/master/src/chromiumos/tast/
-[bundle]: https://chromium.googlesource.com/chromiumos/platform/tast/+/master/src/chromiumos/tast/bundle/
-[control]: https://chromium.googlesource.com/chromiumos/platform/tast/+/master/src/chromiumos/tast/control/
-[host]: https://chromium.googlesource.com/chromiumos/platform/tast/+/master/src/chromiumos/tast/host/
-[runner]: https://chromium.googlesource.com/chromiumos/platform/tast/+/master/src/chromiumos/tast/internal/runner/
-[testing]: https://chromium.googlesource.com/chromiumos/platform/tast/+/master/src/chromiumos/tast/testing/
+[tast directory]: https://chromium.googlesource.com/chromiumos/platform/tast/+/main/src/chromiumos/tast/
+[bundle]: https://chromium.googlesource.com/chromiumos/platform/tast/+/main/src/chromiumos/tast/bundle/
+[control]: https://chromium.googlesource.com/chromiumos/platform/tast/+/main/src/chromiumos/tast/control/
+[host]: https://chromium.googlesource.com/chromiumos/platform/tast/+/main/src/chromiumos/tast/host/
+[runner]: https://chromium.googlesource.com/chromiumos/platform/tast/+/main/src/chromiumos/tast/internal/runner/
+[testing]: https://chromium.googlesource.com/chromiumos/platform/tast/+/main/src/chromiumos/tast/testing/
 
 ## Making changes
 
@@ -102,7 +102,7 @@ while preserving its original marshaled name in its `json` tag.
 [runner] and [bundle] packages should copy the old fields to the new fields when
 the former are provided. See [change 1474620] for an example.
 
-[run]: https://chromium.googlesource.com/chromiumos/platform/tast/+/master/src/chromiumos/tast/cmd/tast/internal/run/
+[run]: https://chromium.googlesource.com/chromiumos/platform/tast/+/main/src/chromiumos/tast/cmd/tast/internal/run/
 [runner.Args]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/internal/runner#Args
 [bundle.Args]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/bundle#Args
 [runner.RunTestsArgs]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/internal/runner#RunTestsArgs
@@ -137,7 +137,7 @@ builds when you run `FEATURES=test sudo emerge tast-cmd` (after running
 
 Run `fast_build.sh -h` to see all available options.
 
-[fast_build.sh]: https://chromium.googlesource.com/chromiumos/platform/tast/+/master/fast_build.sh
+[fast_build.sh]: https://chromium.googlesource.com/chromiumos/platform/tast/+/main/fast_build.sh
 [Go's build cache]: https://golang.org/cmd/go/#hdr-Build_and_test_caching
 
 ## Testing changes

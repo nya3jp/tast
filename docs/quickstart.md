@@ -19,8 +19,8 @@ remove all user profiles from the device when run, including any local state.
 Prefer to have a device specifically for testing.
 
 [Chrome OS chroot]: http://www.chromium.org/chromium-os/quick-start-guide
-[Simple Chrome]: https://chromium.googlesource.com/chromiumos/docs/+/master/simple_chrome_workflow.md
-[virtual machine]: https://chromium.googlesource.com/chromiumos/docs/+/master/cros_vm.md
+[Simple Chrome]: https://chromium.googlesource.com/chromiumos/docs/+/main/simple_chrome_workflow.md
+[virtual machine]: https://chromium.googlesource.com/chromiumos/docs/+/main/cros_vm.md
 
 ## Setup
 

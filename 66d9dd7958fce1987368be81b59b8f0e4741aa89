@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0e7028df_92ec42b9",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 1053,
+      "author": {
+        "id": 1358595
+      },
+      "writtenOn": "2021-01-05T17:46:31Z",
+      "side": 1,
+      "message": "super nit: same category",
+      "range": {
+        "startLine": 1053,
+        "startChar": 82,
+        "endLine": 1053,
+        "endChar": 90
+      },
+      "revId": "66d9dd7958fce1987368be81b59b8f0e4741aa89",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

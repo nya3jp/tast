@@ -1143,9 +1143,11 @@ func TestRunFixtureVars(t *gotesting.T) {
 
 	cfg := &Config{
 		Fixtures: map[string]*testing.Fixture{fixt.Name: fixt},
-		Vars: map[string]string{
-			declaredVarName:   declaredVarValue,
-			undeclaredVarName: "forbidden",
+		Features: dep.Features{
+			Var: map[string]string{
+				declaredVarName:   declaredVarValue,
+				undeclaredVarName: "forbidden",
+			},
 		},
 	}
 

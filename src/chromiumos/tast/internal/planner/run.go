@@ -50,9 +50,7 @@ type Config struct {
 	DataDir string
 	// OutDir is the path to the base directory under which tests should write output files.
 	OutDir string
-	// Vars contains names and values of runtime variables used to pass out-of-band data to tests.
-	Vars map[string]string
-	// Features contains software/hardware features the DUT has.
+	// Features contains software/hardware features the DUT has, and runtime variables.
 	Features dep.Features
 	// Devservers contains URLs of devservers that can be used to download files.
 	Devservers []string
@@ -569,7 +567,7 @@ func runTest(ctx context.Context, t *testing.TestInstance, tout *entityOutputStr
 	rcfg := &testing.RuntimeConfig{
 		DataDir:      filepath.Join(pcfg.DataDir, testing.RelativeDataDir(t.Pkg)),
 		OutDir:       outDir,
-		Vars:         pcfg.Vars,
+		Vars:         pcfg.Features.Var,
 		CloudStorage: testing.NewCloudStorage(pcfg.Devservers, pcfg.TLWServer, pcfg.DUTName),
 		RemoteData:   pcfg.RemoteData,
 		FixtCtx:      fixtCtx,

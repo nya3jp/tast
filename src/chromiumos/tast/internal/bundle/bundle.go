@@ -272,7 +272,6 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 	pcfg := &planner.Config{
 		DataDir:           args.RunTests.DataDir,
 		OutDir:            args.RunTests.OutDir,
-		Vars:              args.RunTests.TestVars,
 		Features:          *args.RunTests.Features(),
 		Devservers:        args.RunTests.Devservers,
 		TLWServer:         args.RunTests.TLWServer,

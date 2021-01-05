@@ -142,6 +142,7 @@ func main() {
 			"ml_benchmark":       "ml_benchmark_drivers",
 			"ml_service":         "ml_service",
 			"mosys":              "!betty && !tast_vm",
+			"nacl":               "nacl",
 			"ndk_translation":    "ndk_translation",
 			"ndk_translation64":  "ndk_translation64",
 			"nnapi":              "nnapi",

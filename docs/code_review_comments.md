@@ -195,7 +195,7 @@ a change to add your package to [the allowlist in tast-lint].
 [`testing.ContextLog`]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#ContextLog
 [`testing.State.OutDir`]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#State.OutDir
 [`testing.ContextOutDir`]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#ContextOutDir
-[the allowlist in tast-lint]: https://chromium.googlesource.com/chromiumos/platform/tast/+/refs/heads/master/src/chromiumos/tast/cmd/tast-lint/check/disallow_testingstate.go
+[the allowlist in tast-lint]: https://chromium.googlesource.com/chromiumos/platform/tast/+/refs/heads/main/src/chromiumos/tast/cmd/tast-lint/check/disallow_testingstate.go
 
 
 ## Test dependencies

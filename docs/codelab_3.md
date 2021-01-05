@@ -100,7 +100,7 @@ Enabling Developer mode toggle, Clicking background page > Console. It has a
 [Codelab].
 
 [here]: https://sites.google.com/a/chromium.org/dev/developers/how-tos/inspecting-ash
-[Codelab]: https://source.chromium.org/chromiumos/chromiumos/codesearch/+/master:src/third_party/autotest/files/docs/chrome-automation-codelab.md?q=chrome-automation-codelab.md
+[Codelab]: https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/third_party/autotest/files/docs/chrome-automation-codelab.md?q=chrome-automation-codelab.md
 
 
 

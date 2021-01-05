@@ -188,7 +188,7 @@ run tests for a single package or all packages.
 
 [How to Write Go Code: Testing]: https://golang.org/doc/code.html#Testing
 [Go's testing package]: https://golang.org/pkg/testing/
-[Best practices for writing Chrome OS unit tests]: https://chromium.googlesource.com/chromiumos/docs/+/master/unit_tests.md
+[Best practices for writing Chrome OS unit tests]: https://chromium.googlesource.com/chromiumos/docs/+/main/testing/unit_tests.md
 [fast_build.sh]: modifying_tast.md#fast_build_sh
 
 ### Import
@@ -232,7 +232,7 @@ exported function that receives a [testing.State] struct. This is defined in the
 unit testing) and is used to log progress and report failures.
 
 [testing.State]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#State
-[Tast testing package]: https://chromium.googlesource.com/chromiumos/platform/tast/+/master/src/chromiumos/tast/testing/
+[Tast testing package]: https://chromium.googlesource.com/chromiumos/platform/tast/+/main/src/chromiumos/tast/testing/
 
 ### Startup and shutdown
 
@@ -411,9 +411,9 @@ later in this document. Importing a subpackage is allowed only in the category
 package containing it; otherwise `repo upload` will fail with lint errors.
 
 [scoped at the package level]: https://golang.org/ref/spec#Declarations_and_scope
-[chromecrash]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/master/src/chromiumos/tast/local/bundles/cros/ui/chromecrash/
-[ui.ChromeCrashLoggedIn]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/master/src/chromiumos/tast/local/bundles/cros/ui/chrome_crash_logged_in.go
-[ui.ChromeCrashNotLoggedIn]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/master/src/chromiumos/tast/local/bundles/cros/ui/chrome_crash_not_logged_in.go
+[chromecrash]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/main/src/chromiumos/tast/local/bundles/cros/ui/chromecrash/
+[ui.ChromeCrashLoggedIn]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/main/src/chromiumos/tast/local/bundles/cros/ui/chrome_crash_logged_in.go
+[ui.ChromeCrashNotLoggedIn]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/main/src/chromiumos/tast/local/bundles/cros/ui/chrome_crash_not_logged_in.go
 
 ### Test consolidation
 
@@ -545,12 +545,12 @@ subpackage so it can be shared by multiple test files.
 For example, see [video tests' pre subpackage].
 
 [testing.Test.Pre]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#Test.Pre
-[testing.Precondition]: https://chromium.git.corp.google.com/chromiumos/platform/tast/+/master/src/chromiumos/tast/testing/pre.go
+[testing.Precondition]: https://chromium.git.corp.google.com/chromiumos/platform/tast/+/main/src/chromiumos/tast/testing/pre.go
 [chrome.New]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/chrome#New
 [chrome.LoggedIn]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/chrome#LoggedIn
-[example.ChromeDisplay]: https://chromium.git.corp.google.com/chromiumos/platform/tast-tests/+/master/src/chromiumos/tast/local/bundles/cros/example/chrome_display.go
+[example.ChromeDisplay]: https://chromium.git.corp.google.com/chromiumos/platform/tast-tests/+/main/src/chromiumos/tast/local/bundles/cros/example/chrome_display.go
 [chrome.NewPrecondition]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/chrome#NewPrecondition
-[video tests' pre subpackage]: https://chromium.git.corp.google.com/chromiumos/platform/tast-tests/+/refs/heads/master/src/chromiumos/tast/local/media/pre
+[video tests' pre subpackage]: https://chromium.git.corp.google.com/chromiumos/platform/tast-tests/+/refs/heads/main/src/chromiumos/tast/local/media/pre
 
 ## Common testing patterns
 
@@ -977,8 +977,8 @@ never be overwritten once they have been used in a CQ run or dry-run. If
 overwriting a cloud storage file, remember to manually clear the cache folders
 before running Tast tests to prevent stale files from being served.
 
-[external link format]: https://chromium.googlesource.com/chromiumos/platform/tast/+/master/src/chromiumos/tast/internal/extdata/extdata.go
-[example.DataFiles]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/master/src/chromiumos/tast/local/bundles/cros/example/data_files.go
+[external link format]: https://chromium.googlesource.com/chromiumos/platform/tast/+/main/src/chromiumos/tast/internal/extdata/extdata.go
+[example.DataFiles]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/main/src/chromiumos/tast/local/bundles/cros/example/data_files.go
 [build artifacts of Chrome OS]: https://goto.google.com/cros-build/google-storage
 [`gsutil cp`]: https://cloud.google.com/storage/docs/gsutil/commands/cp
 
@@ -1003,10 +1003,10 @@ package and symlinked into each test package's `data` subdirectory. See the
 [media_session_test.html] file used by the [mediasession package] and shared by
 the [arc.PlayPauseChrome] and [ui.MediaSessionGain] tests, for example.
 
-[media_session_test.html]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/master/src/chromiumos/tast/local/chrome/mediasession/data/media_session_test.html
+[media_session_test.html]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/main/src/chromiumos/tast/local/chrome/mediasession/data/media_session_test.html
 [mediasession package]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/chrome/mediasession
-[arc.PlayPauseChrome]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/master/src/chromiumos/tast/local/bundles/cros/ui/play_pause_chrome.go
-[ui.MediaSessionGain]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/master/src/chromiumos/tast/local/bundles/cros/arc/media_session_gain.go
+[arc.PlayPauseChrome]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/main/src/chromiumos/tast/local/bundles/cros/ui/play_pause_chrome.go
+[ui.MediaSessionGain]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/main/src/chromiumos/tast/local/bundles/cros/arc/media_session_gain.go
 
 ### Using data files in tests
 
@@ -1478,4 +1478,4 @@ Just take usual precautions on introducing libraries, such as
 If you are in doubt, please feel free to send your proposal to
 tast-reviewers@google.com.
 
-[third_party/chromiumos-overlay]: https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/refs/heads/master/dev-go/
+[third_party/chromiumos-overlay]: https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/refs/heads/main/dev-go/

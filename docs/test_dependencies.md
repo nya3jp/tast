@@ -182,8 +182,8 @@ The following software features are defined:
 [Camera HAL1]: https://source.android.com/devices/camera#architecture-legacy
 [Linux Video Capture]: https://chromium.googlesource.com/chromium/src/+/HEAD/media/capture/video/linux/
 [AddressSanitizer]: https://github.com/google/sanitizers/wiki/AddressSanitizer
-[Autotest capability]: https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/master/chromeos-base/autotest-capability-default/
-[chromeos-chrome]: https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/master/chromeos-base/chromeos-chrome/chromeos-chrome-9999.ebuild
+[Autotest capability]: https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/main/chromeos-base/autotest-capability-default/
+[chromeos-chrome]: https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/main/chromeos-base/chromeos-chrome/chromeos-chrome-9999.ebuild
 [media::VideoDecoder]: https://cs.chromium.org/chromium/src/media/base/video_decoder.h
 [Diagnostic utilities]: https://chromium.googlesource.com/chromiumos/platform2/+/HEAD/diagnostics/README.md
 [Downloadable Content]: https://chromium.googlesource.com/chromiumos/platform2/+/HEAD/dlcservice
@@ -192,16 +192,16 @@ The following software features are defined:
 [Intel Dynamic Platform and Thermal Framework]: https://01.org/intel%C2%AE-dynamic-platform-and-thermal-framework-dptf-chromium-os
 [lacros]: https://chromium.googlesource.com/chromium/src.git/+/master/docs/lacros.md
 [sandboxed]: https://chromium.googlesource.com/chromium/src/+/HEAD/docs/linux_sandboxing.md
-[Memory stats collection daemon]: https://chromium.googlesource.com/chromiumos/platform2/+/master/metrics/memd/
+[Memory stats collection daemon]: https://chromium.googlesource.com/chromiumos/platform2/+/main/metrics/memd/
 [OCI]: https://www.opencontainers.org/
 [Optical Character Recognition Service]: https://chromium.googlesource.com/chromiumos/platform2/+/HEAD/ocr/README.md
-[Runtime AVL Compliance Check]: https://chromium.googlesource.com/chromiumos/platform2/+/refs/heads/master/runtime_probe/README.md
-[screenshot command]: https://chromium.googlesource.com/chromiumos/platform2/+/master/screenshot/
+[Runtime AVL Compliance Check]: https://chromium.googlesource.com/chromiumos/platform2/+/refs/heads/main/runtime_probe/README.md
+[screenshot command]: https://chromium.googlesource.com/chromiumos/platform2/+/main/screen-capture-utils/
 [Trusted Platform Module]: https://en.wikipedia.org/wiki/Trusted_Platform_Module
 [Transparent Hugepage]: https://www.kernel.org/doc/Documentation/vm/transhuge.txt
-[run virtual machines]: https://chromium.googlesource.com/chromiumos/docs/+/master/containers_and_vms.md
+[run virtual machines]: https://chromium.googlesource.com/chromiumos/docs/+/main/containers_and_vms.md
 [Vulkan]: https://www.khronos.org/vulkan/
-[virtual-usb-printer-readme]: https://source.chromium.org/chromiumos/chromiumos/codesearch/+/master:src/third_party/virtual-usb-printer/README.md
+[virtual-usb-printer-readme]: https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/third_party/virtual-usb-printer/README.md
 [wilco]: https://sites.google.com/corp/google.com/wilco/home
 
 ### New features
@@ -252,9 +252,9 @@ the correct order.
 If you're having trouble finding a way to specify your test's dependencies,
 please ask for help on the [tast-users mailing list].
 
-[local_test_runner]: https://chromium.googlesource.com/chromiumos/platform/tast/+/master/src/chromiumos/tast/cmd/local_test_runner/main.go
-[tast-use-flags]: https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/master/chromeos-base/tast-use-flags/
-[Cq-Depend]: https://chromium.googlesource.com/chromiumos/docs/+/master/contributing.md#cq-depend
+[local_test_runner]: https://chromium.googlesource.com/chromiumos/platform/tast/+/main/src/chromiumos/tast/cmd/local_test_runner/main.go
+[tast-use-flags]: https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/main/chromeos-base/tast-use-flags/
+[Cq-Depend]: https://chromium.googlesource.com/chromiumos/docs/+/main/contributing.md#cq-depend
 [tast-users mailing list]: https://groups.google.com/a/chromium.org/forum/#!forum/tast-user
 
 #### Example changes
@@ -325,7 +325,7 @@ Examples of their expected use cases are:
   In this case, it is expected that a dedicated engineer is assigned to
   investigate the cause and its fix.
 
-[hwdep package]: https://chromium.googlesource.com/chromiumos/platform/tast/+/master/src/chromiumos/tast/testing/hwdep/
+[hwdep package]: https://chromium.googlesource.com/chromiumos/platform/tast/+/main/src/chromiumos/tast/testing/hwdep/
 
 ### Adding new hardware conditions
 

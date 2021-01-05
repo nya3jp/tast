@@ -78,7 +78,7 @@ for _, w := range ws {
 
 [ash.GetAllWindows]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/chrome/ash#GetAllWindows
 [chrome.TestAPIConn]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/chrome#Chrome.TestAPIConn
-[ash package documentation]: https://chromium.googlesource.com/chromium/src/+/refs/heads/master/ash/README.md
+[ash package documentation]: https://chromium.googlesource.com/chromium/src/+/refs/heads/main/ash/README.md
 
 ### Checking files
 Similar to the windows the existence or non exsitence of a file might be the needed information to determine if the test was successful.
@@ -181,7 +181,7 @@ if err := testing.Poll(ctx, func(ctx context.Context) error {
 ```
 
 [testing.Poll]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#Poll
-[Context and timeouts]: https://chromium.googlesource.com/chromiumos/platform/tast/+/refs/heads/master/docs/writing_tests.md#contexts-and-timeouts
+[Context and timeouts]: https://chromium.googlesource.com/chromiumos/platform/tast/+/refs/heads/main/docs/writing_tests.md#contexts-and-timeouts
 
 ## Setup
 ### Using the Launcher

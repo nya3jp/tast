@@ -181,7 +181,7 @@ if err := testing.Poll(ctx, func(ctx context.Context) error {
 ```
 
 [testing.Poll]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#Poll
-[Context and timeouts]: https://chromium.googlesource.com/chromiumos/platform/tast/+/refs/heads/master/docs/writing_tests.md#contexts-and-timeouts
+[Context and timeouts]: https://chromium.googlesource.com/chromiumos/platform/tast/+/refs/heads/main/docs/writing_tests.md#contexts-and-timeouts
 
 ## Setup
 ### Using the Launcher

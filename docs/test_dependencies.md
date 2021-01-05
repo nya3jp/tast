@@ -107,6 +107,7 @@ The following software features are defined:
 *   `ml_service` - ML Service daemon.
 *   `ml_benchmark_drivers` - [ML benchmarking suite](http://go/roadrollerda)
 *   `mosys` - Ability to run mosys command.
+*   `nacl` - Availability of the Native Client sandboxing technology.
 *   `ndk_translation` - Availability of 32-bit NDK translation library for ARC.
 *   `ndk_translation64` - Availability of 64-bit NDK translation library for
     ARC.

@@ -1,0 +1,153 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "aa03a611_6453152d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 18
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-01-06T09:58:48Z",
+      "side": 1,
+      "message": "Looks pretty good!\n",
+      "revId": "ee39e35ffd4f786a16cce074241398894b9fd775",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c87bf414_a2b9b40b",
+        "filename": "src/chromiumos/tast/internal/bundle/fixture_service.go",
+        "patchSetId": 18
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-01-06T09:58:48Z",
+      "side": 1,
+      "message": "Do we need `done`? I guess that clients can just close the streaming channel to finish.",
+      "range": {
+        "startLine": 37,
+        "startChar": 1,
+        "endLine": 37,
+        "endChar": 14
+      },
+      "revId": "ee39e35ffd4f786a16cce074241398894b9fd775",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6dac0e07_531c95f9",
+        "filename": "src/chromiumos/tast/internal/bundle/fixture_service.go",
+        "patchSetId": 18
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-01-06T09:58:48Z",
+      "side": 1,
+      "message": "I\u0027m afraid that the message might be long. I guess \"fixture %v not found\" is enough for debugging?",
+      "range": {
+        "startLine": 54,
+        "startChar": 46,
+        "endLine": 54,
+        "endChar": 50
+      },
+      "revId": "ee39e35ffd4f786a16cce074241398894b9fd775",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f262b7c2_d1d3ec3a",
+        "filename": "src/chromiumos/tast/internal/bundle/fixture_service.go",
+        "patchSetId": 18
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-01-06T09:58:48Z",
+      "side": 1,
+      "message": "We have to remove TempDir when we\u0027re done with it.\n\nPlease also see my next comment about defer.",
+      "range": {
+        "startLine": 58,
+        "startChar": 4,
+        "endLine": 58,
+        "endChar": 20
+      },
+      "revId": "ee39e35ffd4f786a16cce074241398894b9fd775",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "762cf07d_c2fe2b15",
+        "filename": "src/chromiumos/tast/internal/bundle/fixture_service.go",
+        "patchSetId": 18
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-01-06T09:58:48Z",
+      "side": 1,
+      "message": "defer does not work well in loops. But it\u0027s difficult to release resources correctly without defer.\n\nYou might want to spawn a goroutine to convert this state-machine code to sequential code.",
+      "range": {
+        "startLine": 67,
+        "startChar": 3,
+        "endLine": 67,
+        "endChar": 8
+      },
+      "revId": "ee39e35ffd4f786a16cce074241398894b9fd775",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d0bf0a2e_3b906e9d",
+        "filename": "src/chromiumos/tast/internal/bundle/fixture_service.go",
+        "patchSetId": 18
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-01-06T09:58:48Z",
+      "side": 1,
+      "message": "Could you add a TODO to fill Meta?",
+      "range": {
+        "startLine": 97,
+        "startChar": 5,
+        "endLine": 97,
+        "endChar": 17
+      },
+      "revId": "ee39e35ffd4f786a16cce074241398894b9fd775",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "99b4a0ef_4ddff387",
+        "filename": "src/chromiumos/tast/internal/bundle/remote_fixture.proto",
+        "patchSetId": 18
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-01-06T09:58:48Z",
+      "side": 1,
+      "message": "No action needed: It\u0027s nice to move the proto to tast/internal/protocol eventually.",
+      "revId": "ee39e35ffd4f786a16cce074241398894b9fd775",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

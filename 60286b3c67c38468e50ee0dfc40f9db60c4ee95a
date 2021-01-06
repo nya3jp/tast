@@ -22,6 +22,30 @@
       },
       "revId": "60286b3c67c38468e50ee0dfc40f9db60c4ee95a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7420bb17_c31e491c",
+        "filename": "src/chromiumos/tast/internal/rpc/server.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-01-06T05:29:27Z",
+      "side": 1,
+      "message": "That\u0027s a good point, I\u0027ve added a unit test calling an extra core service. The CL is bigger now, but it\u0027s mostly generated protobuf change...",
+      "parentUuid": "01a0b94a_e4a4e35a",
+      "range": {
+        "startLine": 47,
+        "startChar": 1,
+        "endLine": 47,
+        "endChar": 9
+      },
+      "revId": "60286b3c67c38468e50ee0dfc40f9db60c4ee95a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

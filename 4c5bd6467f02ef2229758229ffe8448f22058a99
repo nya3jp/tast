@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "f4d442e9_66768042",
+        "filename": "src/chromiumos/tast/internal/bundle/fixture_service.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2021-01-06T00:42:00Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6f1b6c9d_24040eee",
+      "range": {
+        "startLine": 24,
+        "startChar": 5,
+        "endLine": 24,
+        "endChar": 19
+      },
+      "revId": "4c5bd6467f02ef2229758229ffe8448f22058a99",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "d20166d6_1c872834",
@@ -37,6 +61,30 @@
       "writtenOn": "2020-12-02T05:16:42Z",
       "side": 1,
       "message": "nit: Can you move this function to near definition of FixtureService? Currently fixtureServiceLogger comes in middle.",
+      "range": {
+        "startLine": 86,
+        "startChar": 25,
+        "endLine": 86,
+        "endChar": 35
+      },
+      "revId": "4c5bd6467f02ef2229758229ffe8448f22058a99",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e074cd63_d4cca5af",
+        "filename": "src/chromiumos/tast/internal/bundle/fixture_service.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2021-01-06T00:42:00Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d20166d6_1c872834",
       "range": {
         "startLine": 86,
         "startChar": 25,
@@ -70,6 +118,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "298b9ee7_649c3fa6",
+        "filename": "src/chromiumos/tast/internal/bundle/fixture_service.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 93,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2021-01-06T00:42:00Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "282f9119_49097bf1",
+      "range": {
+        "startLine": 93,
+        "startChar": 2,
+        "endLine": 93,
+        "endChar": 17
+      },
+      "revId": "4c5bd6467f02ef2229758229ffe8448f22058a99",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "5cca5677_9b30fd6e",
@@ -83,6 +155,30 @@
       "writtenOn": "2020-12-02T05:16:42Z",
       "side": 1,
       "message": "bundle/bundle.go does a few more things, e.g.\n\n- Setting up the temporary directory (prepareTempDir)\n- Connecting to the DUT (connectToTarget)\n\nIt\u0027s best if we can consolidate the logic between bundle.go and here. At least can you try replicating the same operations?",
+      "range": {
+        "startLine": 107,
+        "startChar": 3,
+        "endLine": 112,
+        "endChar": 22
+      },
+      "revId": "4c5bd6467f02ef2229758229ffe8448f22058a99",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7f95fc7d_c415a3f1",
+        "filename": "src/chromiumos/tast/internal/bundle/fixture_service.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 112,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2021-01-06T00:42:00Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5cca5677_9b30fd6e",
       "range": {
         "startLine": 107,
         "startChar": 3,
@@ -116,6 +212,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "0f039c4a_a2565619",
+        "filename": "src/chromiumos/tast/internal/bundle/fixture_service.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2021-01-06T00:42:00Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4c206782_23fc67e5",
+      "range": {
+        "startLine": 121,
+        "startChar": 4,
+        "endLine": 121,
+        "endChar": 6
+      },
+      "revId": "4c5bd6467f02ef2229758229ffe8448f22058a99",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "34014cbb_033541e1",
@@ -129,6 +249,30 @@
       "writtenOn": "2020-12-02T05:16:42Z",
       "side": 1,
       "message": "nit: Maybe we can move this out of the switch-case, and consolidate with the case with Pop?",
+      "range": {
+        "startLine": 136,
+        "startChar": 0,
+        "endLine": 143,
+        "endChar": 4
+      },
+      "revId": "4c5bd6467f02ef2229758229ffe8448f22058a99",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8f90a6de_02d85fa7",
+        "filename": "src/chromiumos/tast/internal/bundle/fixture_service.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 143,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2021-01-06T00:42:00Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "34014cbb_033541e1",
       "range": {
         "startLine": 136,
         "startChar": 0,
@@ -162,6 +306,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "d3ee3038_3cc17882",
+        "filename": "src/chromiumos/tast/internal/bundle/fixture_service_test.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2021-01-06T00:42:00Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7b09b0aa_e6e6cb0d",
+      "range": {
+        "startLine": 59,
+        "startChar": 1,
+        "endLine": 59,
+        "endChar": 6
+      },
+      "revId": "4c5bd6467f02ef2229758229ffe8448f22058a99",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "82a52864_1ca6901e",
@@ -175,6 +343,24 @@
       "writtenOn": "2020-12-02T05:16:42Z",
       "side": 1,
       "message": "Not required in this change: it\u0027s nice if you can eventually move protobuf definitions to chormiumos/tast/internal/protocol.",
+      "revId": "4c5bd6467f02ef2229758229ffe8448f22058a99",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "35701905_0ed89139",
+        "filename": "src/chromiumos/tast/internal/bundle/remote_fixture.proto",
+        "patchSetId": 8
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2021-01-06T00:42:00Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "82a52864_1ca6901e",
       "revId": "4c5bd6467f02ef2229758229ffe8448f22058a99",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }

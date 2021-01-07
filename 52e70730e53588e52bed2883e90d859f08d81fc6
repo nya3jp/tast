@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "62c2314f_d664ac03",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2021-01-07T13:36:16Z",
+      "side": 1,
+      "message": "LGTM with a comment request.",
+      "revId": "52e70730e53588e52bed2883e90d859f08d81fc6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "96557bc0_abe2cd4d",
+        "filename": "src/chromiumos/tast/internal/testing/attr.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 314,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2021-01-07T13:36:16Z",
+      "side": 1,
+      "message": "So, IIUC, this \"board\" is different from Chrome OS boards, such as \"eve\", \"kevin\", \"hatch\" etc., right? If so, could you clarify so, specifically for those who are not familiar with FP.",
+      "range": {
+        "startLine": 314,
+        "startChar": 41,
+        "endLine": 314,
+        "endChar": 46
+      },
+      "revId": "52e70730e53588e52bed2883e90d859f08d81fc6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

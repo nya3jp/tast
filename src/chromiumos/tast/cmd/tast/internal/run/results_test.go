@@ -438,6 +438,65 @@ func TestReadTestOutputTimingLog(t *gotesting.T) {
 	}
 }
 
+func TestReadTestOutputAbortFixture(t *gotesting.T) {
+	const (
+		fixt1Name   = "foo.Fixture1"
+		fixt1OutDir = fixt1Name + ".tmp"
+		fixt2Name   = "foo.Fixture2"
+		fixt2OutDir = fixt2Name + ".tmp"
+	)
+
+	epoch := time.Unix(0, 0)
+
+	tempDir := testutil.TempDir(t)
+	defer os.RemoveAll(tempDir)
+
+	outDir := filepath.Join(tempDir, "out")
+	if err := os.Mkdir(outDir, 0755); err != nil {
+		t.Fatal(err)
+	}
+
+	b := bytes.Buffer{}
+	mw := control.NewMessageWriter(&b)
+	mw.WriteMessage(&control.RunStart{Time: epoch})
+	mw.WriteMessage(&control.EntityStart{Time: epoch, Info: testing.EntityInfo{Name: fixt1Name, Type: testing.EntityFixture}, OutDir: filepath.Join(outDir, fixt1OutDir)})
+	mw.WriteMessage(&control.EntityStart{Time: epoch, Info: testing.EntityInfo{Name: fixt2Name, Type: testing.EntityFixture}, OutDir: filepath.Join(outDir, fixt2OutDir)})
+
+	var logBuf bytes.Buffer
+	cfg := Config{
+		Logger: logging.NewSimple(&logBuf, 0, false),
+		ResDir: filepath.Join(tempDir, "results"),
+	}
+	results, unstartedTests, err := readTestOutput(context.Background(), &cfg, &b, os.Rename, nil)
+	if err == nil {
+		t.Error("readTestOutput unexpectedly succeeded")
+	}
+	if len(unstartedTests) != 0 {
+		t.Errorf("readTestOutput reported unstarted tests %v", unstartedTests)
+	}
+	if err := WriteResults(context.Background(), &cfg, results, true); err != nil {
+		t.Fatal("WriteResults failed:", err)
+	}
+
+	files, err := testutil.ReadFiles(cfg.ResDir)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	var actRes, expRes []*EntityResult
+	if err := json.Unmarshal([]byte(files[resultsFilename]), &actRes); err != nil {
+		t.Errorf("Failed to decode %v: %v", resultsFilename, err)
+	}
+	if diff := cmp.Diff(actRes, expRes); diff != "" {
+		t.Errorf("%v mismatch (-got +want):\n%s", resultsFilename, diff)
+	}
+
+	streamRes := readStreamedResults(t, bytes.NewBufferString(files[streamedResultsFilename]))
+	if diff := cmp.Diff(streamRes, expRes); diff != "" {
+		t.Errorf("%v mismatch (-got +want):\n%s", streamedResultsFilename, diff)
+	}
+}
+
 func TestPerTestLogContainsRunError(t *gotesting.T) {
 	td := testutil.TempDir(t)
 	defer os.RemoveAll(td)

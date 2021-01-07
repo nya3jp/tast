@@ -36,6 +36,23 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "dc8cfd33_bf605683",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-01-07T09:36:29Z",
+      "side": 1,
+      "message": "(I\u0027m waiting for replies to Hidehiko\u0027s comments)\n",
+      "revId": "98773a0944031f9c6f84e86877f1bce26a0b3740",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "7ddfd85d_a849f5ae",

@@ -765,6 +765,44 @@ func TestRunListWithDep(t *gotesting.T) {
 	}
 }
 
+func TestRunListFixtures(t *gotesting.T) {
+	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
+	defer restore()
+
+	fixts := []*testing.Fixture{
+		{Name: "b", Parent: "a"},
+		{Name: "c"},
+		{Name: "d"},
+		{Name: "a"},
+	}
+
+	for _, f := range fixts {
+		testing.AddFixture(f)
+	}
+
+	// ListFixturesMode should output JSON-marshaled fixtures to stdout.
+	stdin := newBufferWithArgs(t, &Args{Mode: ListFixturesMode})
+	stdout := &bytes.Buffer{}
+	if status := run(context.Background(), nil, stdin, stdout, &bytes.Buffer{},
+		&Args{}, &runConfig{}, localBundle); status != statusSuccess {
+		t.Fatalf("run() = %v, want %v", status, statusSuccess)
+	}
+
+	got := make([]*testing.EntityInfo, 0)
+	if err := json.Unmarshal(stdout.Bytes(), &got); err != nil {
+		t.Fatalf("json.Unmarshal(%q): %v", stdout.String(), err)
+	}
+	want := []*testing.EntityInfo{
+		{Type: testing.EntityFixture, Name: "a"},
+		{Type: testing.EntityFixture, Name: "b", Fixture: "a"},
+		{Type: testing.EntityFixture, Name: "c"},
+		{Type: testing.EntityFixture, Name: "d"},
+	}
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Output mismatch (-got +want): %v", diff)
+	}
+}
+
 func TestRunRegistrationError(t *gotesting.T) {
 	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
 	defer restore()

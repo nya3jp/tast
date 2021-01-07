@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5ff71eba_e1890517",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-01-07T01:51:10Z",
+      "side": 1,
+      "message": "I have addressed all the comments, but I am still having trouble running tast_rtd inside a docker. Please review the latest code. I will update you all on the status of running tast_rtd inside a docker container. Thanks.",
+      "revId": "998c22da2bcc62a6453ffa23e362de3dafbb084f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

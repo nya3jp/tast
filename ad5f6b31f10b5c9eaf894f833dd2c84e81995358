@@ -54,6 +54,24 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "1cccafb8_a5547b10",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/invocation.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-01-07T01:51:10Z",
+      "side": 1,
+      "message": "I added an new option -rtd. Please let me know if it is ok. Thanks.",
+      "parentUuid": "48690ed1_3b7f1ee6",
+      "revId": "ad5f6b31f10b5c9eaf894f833dd2c84e81995358",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "3e6f1f1b_5f8142ee",
         "filename": "src/chromiumos/tast/cmd/tast_rtd/invocation_test.go",
         "patchSetId": 1
@@ -92,6 +110,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "aae05d32_87994f07",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/invocation_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 144,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-01-07T01:51:10Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "cdbce3f6_fd098140",
+      "range": {
+        "startLine": 142,
+        "startChar": 0,
+        "endLine": 144,
+        "endChar": 0
+      },
+      "revId": "ad5f6b31f10b5c9eaf894f833dd2c84e81995358",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "4eee6211_c1abc130",
@@ -105,6 +147,24 @@
       "writtenOn": "2021-01-06T08:27:56Z",
       "side": 1,
       "message": "https://source.chromium.org/search?q\u003dfile:tast%20cmp%5C.Diff\nWe may flip the x and y parameters to cmp.Diff in order to keep got-want order in the message.",
+      "revId": "ad5f6b31f10b5c9eaf894f833dd2c84e81995358",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9655560c_8c726732",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/invocation_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 146,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-01-07T01:51:10Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4eee6211_c1abc130",
       "revId": "ad5f6b31f10b5c9eaf894f833dd2c84e81995358",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }

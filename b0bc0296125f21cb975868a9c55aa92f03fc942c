@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ef55bac2_b681dee3",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/results_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 471,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2021-01-07T02:58:00Z",
+      "side": 1,
+      "message": "Could you briefly comment why it should return an error?",
+      "range": {
+        "startLine": 471,
+        "startChar": 4,
+        "endLine": 471,
+        "endChar": 7
+      },
+      "revId": "b0bc0296125f21cb975868a9c55aa92f03fc942c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3fdd71d0_58f5444a",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/results_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 474,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2021-01-07T02:58:00Z",
+      "side": 1,
+      "message": "optional nit: I prefer \u003e",
+      "range": {
+        "startLine": 474,
+        "startChar": 24,
+        "endLine": 474,
+        "endChar": 27
+      },
+      "revId": "b0bc0296125f21cb975868a9c55aa92f03fc942c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c24dce9d_973331a7",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/results_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 486,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2021-01-07T02:58:00Z",
+      "side": 1,
+      "message": "nit: got want ?\ncf. https://g3doc.corp.google.com/go/g3doc/style/decisions.md?cl\u003dhead",
+      "range": {
+        "startLine": 486,
+        "startChar": 5,
+        "endLine": 486,
+        "endChar": 11
+      },
+      "revId": "b0bc0296125f21cb975868a9c55aa92f03fc942c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ef77d5d3_ac03dd4b",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/results_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 486,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2021-01-07T02:58:00Z",
+      "side": 1,
+      "message": "expRes is actually nil? How about inlining it, or add a comment?",
+      "range": {
+        "startLine": 486,
+        "startChar": 13,
+        "endLine": 486,
+        "endChar": 19
+      },
+      "revId": "b0bc0296125f21cb975868a9c55aa92f03fc942c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

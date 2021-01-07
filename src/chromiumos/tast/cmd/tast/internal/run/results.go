@@ -510,7 +510,9 @@ func (r *resultsHandler) processMessages(ctx context.Context, mch <-chan interfa
 	defer func() {
 		for _, state := range r.currents {
 			state.result.Errors = append(state.result.Errors, EntityError{time.Now(), testing.Error{Reason: incompleteTestMsg}})
-			r.streamWriter.write(&state.result, true)
+			if state.result.Type == testing.EntityTest {
+				r.streamWriter.write(&state.result, true)
+			}
 		}
 	}()
 

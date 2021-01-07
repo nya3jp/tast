@@ -16,6 +16,23 @@
       "message": "I have addressed all the comments, but I have not had a chance to test it out with a RTS yet.\n\nThanks.\n\nSeewai\n",
       "revId": "fc19dace639767d4eafdcc8e103708d50310ae7d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b321010e_74573279",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-01-07T09:40:55Z",
+      "side": 1,
+      "message": "I\u0027ll defer to Tatsuhisa.",
+      "revId": "fc19dace639767d4eafdcc8e103708d50310ae7d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

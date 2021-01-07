@@ -33,6 +33,23 @@
       "message": "I\u0027ll defer to Tatsuhisa.",
       "revId": "fc19dace639767d4eafdcc8e103708d50310ae7d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7a6442a5_38c69a9b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-01-07T09:56:26Z",
+      "side": 1,
+      "message": "This change submits all the results through the RPC at once after all tests by Tast are finished (or aborted by error).\nNot clearly stated in the RPC spec, but it may be required to incrementally report test results after each test (called \"request\" in the API).\nI have posted question to the mailing list. I would prefer waiting it, but it may also make sense to submit this change as a tentative implementation. WDYT?",
+      "revId": "fc19dace639767d4eafdcc8e103708d50310ae7d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

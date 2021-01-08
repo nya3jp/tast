@@ -3,6 +3,63 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "5a661a01_8590c5ee",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 10
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2021-01-08T14:12:02Z",
+      "side": 1,
+      "message": "One timing issue is found. Others LG.",
+      "revId": "fc7a182c31fecb5d68ad96ee6efd7e4c60ab5355",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "12d0b26b_75035c25",
+        "filename": "src/chromiumos/tast/internal/xcontext/xcontext.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2021-01-08T14:12:02Z",
+      "side": 1,
+      "message": "this condition needs to be newDeadline. Here\u0027s an edge case:\n\ndeadlineErr is non-nil. reqDealine is \"after\" parent\u0027s deadline.\nOn parent.Err() at L75, the parent\u0027s deadline is not yet handled, so it passing through the L75. However, it does not mean the parent\u0027s deadline is not yet passed (since there can be small time lag between the actual deadline timing and the error handling).\n\nIn the case, deadline here is the one for parent one, and !deadline.After(clk.Now()) may be true. Again, reqDealine is after the parent\u0027s deadline so it may be still after clk.Now().\nIn the case, current code returns \"deadlineErr\", unexpected.\nI.e., from users\u0027 point of view, deadlineErr is returned even if the deadline does not yet come.\n\nIIUC, that case can be handled in the goroutine at L89. Since we expect L99 will be fired soon, while the dl at L101 won\u0027t be (assuming reqDealine is enough later). If reqDeadline is NOT enough later i.e., if both parent.Done() and tm.C() are signaled, the behavior may not be stable, but IIUC it cannot be avoided.",
+      "range": {
+        "startLine": 78,
+        "startChar": 5,
+        "endLine": 78,
+        "endChar": 23
+      },
+      "revId": "fc7a182c31fecb5d68ad96ee6efd7e4c60ab5355",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c744321a_67394239",
+        "filename": "src/chromiumos/tast/internal/xcontext/xcontext_test.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 114,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2021-01-08T14:12:02Z",
+      "side": 1,
+      "message": "optional: I\u0027d add another propagation check.\n\nctx1, cancel1 :\u003d ...\ndefer cancel1(...)\nctx2, cancel2 :\u003d ...\ndefer cancel2(...)\n\ncancel2(...)\n\n// Make sure the parent is not cancelled.\nif err :\u003d ctx1.Err(); err !\u003d nil {\n  t.Error(...)\n}\n\nThough, it looks just a simpler case.",
+      "revId": "fc7a182c31fecb5d68ad96ee6efd7e4c60ab5355",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "981c1805_d4c59808",
         "filename": "src/chromiumos/tast/internal/xcontext/xcontext_test.go",
         "patchSetId": 10
@@ -19,6 +76,29 @@
         "startChar": 1,
         "endLine": 259,
         "endChar": 52
+      },
+      "revId": "fc7a182c31fecb5d68ad96ee6efd7e4c60ab5355",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "81088d99_da32c43e",
+        "filename": "src/chromiumos/tast/internal/xcontext/xcontext_test.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 514,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2021-01-08T14:12:02Z",
+      "side": 1,
+      "message": "nit/style/optional: can be just\n\ndl1 :\u003d time.Unix(...)\ndl2 :\u003d time.Unix(...)\ndl3 :\u003d time.Unix(...)\n\nwhich looks shorter? Any intention to use var block here?",
+      "range": {
+        "startLine": 510,
+        "startChar": 1,
+        "endLine": 514,
+        "endChar": 2
       },
       "revId": "fc7a182c31fecb5d68ad96ee6efd7e4c60ab5355",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"

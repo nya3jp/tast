@@ -16,6 +16,24 @@
       "message": "\"Default\" might be confusing with \"the default behavior of this program\".\nCan you clarify it? (maybe RTD spec requires that kind of path?)",
       "revId": "5a96a411ade61520a698fa6483b35bbd7624f200",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "44356531_09b83c3d",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/invocation.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 132,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-01-08T18:24:50Z",
+      "side": 1,
+      "message": "From the CL chromium:2606390, I installed tast, tast_rtd and remote_test_runner in /usr/src/rtd/tast/bin inside a RTD container. That\u0027s why I set the path here. I have rephrase the comments. Please let me know if it is ok. Thanks.",
+      "parentUuid": "79103cf6_a89cf612",
+      "revId": "5a96a411ade61520a698fa6483b35bbd7624f200",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

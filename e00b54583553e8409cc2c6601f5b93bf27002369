@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "bcdf5eff_c5ae0072",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-01-08T18:24:50Z",
+      "side": 1,
+      "message": "Hi Tatsuhisa:\n\nI just rephrase my comments in code. Please take a look if it is ok now. Thanks.\n\nSeewai\n",
+      "revId": "e00b54583553e8409cc2c6601f5b93bf27002369",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

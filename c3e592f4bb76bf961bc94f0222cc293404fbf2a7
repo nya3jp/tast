@@ -16,6 +16,40 @@
       "message": "This is needed for https://chromium-review.googlesource.com/c/chromiumos/platform/tast-tests/+/2594929",
       "revId": "c3e592f4bb76bf961bc94f0222cc293404fbf2a7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2d44839d_359ee94f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-01-08T08:36:34Z",
+      "side": 1,
+      "message": "Thanks for the change!",
+      "revId": "c3e592f4bb76bf961bc94f0222cc293404fbf2a7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "691f3291_596dbd93",
+        "filename": "src/chromiumos/tast/internal/testing/state.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-01-08T08:36:34Z",
+      "side": 1,
+      "message": "Can you update state_test.go? It should fail for unknown exported methods.",
+      "revId": "c3e592f4bb76bf961bc94f0222cc293404fbf2a7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

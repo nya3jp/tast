@@ -59,6 +59,9 @@ func TestCheckKnownAttrs(t *testing.T) {
 			attrs: []string{"group:graphics"},
 		},
 		{
+			attrs: []string{"group:drivefs-cq"},
+		},
+		{
 			attrs: []string{"group:enrollment"},
 		},
 		{

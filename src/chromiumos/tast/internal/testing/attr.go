@@ -169,6 +169,11 @@ Tests in this group are not used for build verification.
 		Desc:     `A group of camera tests for postsubmit runs.`,
 	},
 	{
+		Name:     "drivefs-cq",
+		Contacts: []string{"chromeos-files-syd@google.com"},
+		Desc:     `The group of tests to be run in CQ for DriveFS functionality.`,
+	},
+	{
 		Name:     "enrollment",
 		Contacts: []string{"vsavu@google.com", "enterprise-policy-support-rotation@google.com"},
 		Desc:     `A group of tests performing enrollment and will clobber the stateful partition.`,

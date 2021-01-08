@@ -1,0 +1,61 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2cb317a9_16d96461",
+        "filename": "src/chromiumos/tast/internal/xcontext/xcontext.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 111,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2021-01-08T05:28:39Z",
+      "side": 1,
+      "message": "clarification: what should happen if context.WithCancel/WithDeadline/WithValue wraps this xcontext\u0027s Context? E.g.:\n\nSpecifically:\nctx :\u003d\nxctx, xcancel :\u003d context.WithDeadline(ctx, ...)\nctx2, cancel2 :\u003d context.WithDeadline(xctx, ...)\nxcancel(...)\n\nIIUC, ctx2 won\u0027t be cancelled at this timing?\n\nCould you add test coverage?",
+      "revId": "479b4e77f24c29ee882f8113f38aa28966bd2b70",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a90fa30c_8ecd5512",
+        "filename": "src/chromiumos/tast/internal/xcontext/xcontext.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 112,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2021-01-08T05:28:39Z",
+      "side": 1,
+      "message": "optional:\n\nI\u0027d recommend to merge cancelContext and deadlineContext.\nIIUC, the only diff is whether it handles timeout cases, or not.\nnil channel allows to merge them, so that the code path can be simpler (as baseContext can be removed thanks to the merge).\n\nfunc WithCancel(parent context.Context) (context.Context, CancelFunc) {\n  return newContext(parent, false /* \u003d no deadline */, time.Time{}, nil)\n}\n\nfunc WithDeadline(parent context.Context, t time.Time, err error) (context.Context, CancelFunc) {\n  return newContext(parent, true /* \u003d with deadline */, t, err)\n}\n\nfunc newContext(parent context.Context, hasDeadline bool, t time.Time, err error) (...) {\n  ... precondition check ...\n  go func() {\n    var tc \u003c-chan time.Time\n    if hasDeadline {\n      tm :\u003d ...\n      defer tm.Stop()\n      tc \u003d tm.C()\n    }\n    select {\n      ...\n    }\n  }()\n  ...\n}",
+      "revId": "479b4e77f24c29ee882f8113f38aa28966bd2b70",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6cb2a886_5e9a877d",
+        "filename": "src/chromiumos/tast/internal/xcontext/xcontext.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 147,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2021-01-08T05:28:39Z",
+      "side": 1,
+      "message": "this must not be nil, right?\nCould you document at least? Optionally, check with panic().",
+      "range": {
+        "startLine": 147,
+        "startChar": 55,
+        "endLine": 147,
+        "endChar": 64
+      },
+      "revId": "479b4e77f24c29ee882f8113f38aa28966bd2b70",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

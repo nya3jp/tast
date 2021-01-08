@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "981c1805_d4c59808",
+        "filename": "src/chromiumos/tast/internal/xcontext/xcontext_test.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 259,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-01-08T07:51:14Z",
+      "side": 1,
+      "message": "I found that simply calling clk.IncrementBySeconds here results in a race condition (this call might be made between clk.Now() and clk.NewTimer()).",
+      "range": {
+        "startLine": 259,
+        "startChar": 1,
+        "endLine": 259,
+        "endChar": 52
+      },
+      "revId": "fc7a182c31fecb5d68ad96ee6efd7e4c60ab5355",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

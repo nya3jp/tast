@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "92c44937_77fbe266",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 7
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-01-08T22:30:32Z",
+      "side": 1,
+      "message": "Thanks to Sean\u0027s quick response to prototype-rts. The sending of report request has been tested. I also addressed the latest feedback. Please review.",
+      "revId": "02bc4f25b66217c8741770d2105fbc96ae07f47a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ca827113_09b6bba8",
+        "filename": "src/chromiumos/tast/internal/bundle/fixture_service.go",
+        "patchSetId": 23
+      },
+      "lineNbr": 46,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-01-08T09:48:34Z",
+      "side": 1,
+      "message": "Comparing err with io.EOF is a little bit scary since functions other than Recv might return it as well. We might want to define a new error to distinguish graceful exit.",
+      "range": {
+        "startLine": 46,
+        "startChar": 11,
+        "endLine": 46,
+        "endChar": 20
+      },
+      "revId": "90acd7cf3ffff2d2ccc2d51c47498802f8180a81",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f3aa232b_1cd46ce9",
+        "filename": "src/chromiumos/tast/internal/bundle/fixture_service.go",
+        "patchSetId": 23
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-01-08T09:48:34Z",
+      "side": 1,
+      "message": "Why don\u0027t we call Send within a function? Then we can consolidate the cleanup logic that is currently duplicated.\n\n func (s *fixtureService) RunFixture(srv FixtureService_RunFixtureServer) error {\n   for {\n     err :\u003d pushAndPop(srv)\n     if err \u003d\u003d io.EOF {\n       break\n     }\n     if err !\u003d nil {\n       return err\n     }\n   }\n }\n\n func pushAndPop(srv FixtureService_RunFixtureServer) error) {\n   sendDone :\u003d ...\n   ...\n   // Process push request.\n   req, err :\u003d srv.Recv()\n   if err !\u003d nil {\n     return err\n   }\n   ...\n   if err :\u003d sendDone(); err !\u003d nil {\n     return err\n   }\n\n   // Process pop request.\n   req, err \u003d srv.Recv()\n   if err !\u003d nil {\n     return err\n   }\n   ...\n   return sendDone()\n\n }",
+      "range": {
+        "startLine": 64,
+        "startChar": 23,
+        "endLine": 64,
+        "endChar": 27
+      },
+      "revId": "90acd7cf3ffff2d2ccc2d51c47498802f8180a81",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

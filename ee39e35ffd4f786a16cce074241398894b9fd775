@@ -231,6 +231,30 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "bbfe7f5a_95fe548d",
+        "filename": "src/chromiumos/tast/internal/bundle/fixture_service.go",
+        "patchSetId": 18
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-01-08T09:48:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d0bf0a2e_3b906e9d",
+      "range": {
+        "startLine": 97,
+        "startChar": 5,
+        "endLine": 97,
+        "endChar": 17
+      },
+      "revId": "ee39e35ffd4f786a16cce074241398894b9fd775",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "99b4a0ef_4ddff387",
         "filename": "src/chromiumos/tast/internal/bundle/remote_fixture.proto",
         "patchSetId": 18

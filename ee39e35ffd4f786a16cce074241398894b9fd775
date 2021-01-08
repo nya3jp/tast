@@ -41,6 +41,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "a15c5d4c_525542ff",
+        "filename": "src/chromiumos/tast/internal/bundle/fixture_service.go",
+        "patchSetId": 18
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2021-01-08T01:27:30Z",
+      "side": 1,
+      "message": "Methods are factored out.",
+      "parentUuid": "c87bf414_a2b9b40b",
+      "range": {
+        "startLine": 37,
+        "startChar": 1,
+        "endLine": 37,
+        "endChar": 14
+      },
+      "revId": "ee39e35ffd4f786a16cce074241398894b9fd775",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "6dac0e07_531c95f9",
@@ -54,6 +78,30 @@
       "writtenOn": "2021-01-06T09:58:48Z",
       "side": 1,
       "message": "I\u0027m afraid that the message might be long. I guess \"fixture %v not found\" is enough for debugging?",
+      "range": {
+        "startLine": 54,
+        "startChar": 46,
+        "endLine": 54,
+        "endChar": 50
+      },
+      "revId": "ee39e35ffd4f786a16cce074241398894b9fd775",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1c232c94_1c9f27a3",
+        "filename": "src/chromiumos/tast/internal/bundle/fixture_service.go",
+        "patchSetId": 18
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2021-01-08T01:27:30Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6dac0e07_531c95f9",
       "range": {
         "startLine": 54,
         "startChar": 46,
@@ -87,6 +135,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "f12ae8b8_45215776",
+        "filename": "src/chromiumos/tast/internal/bundle/fixture_service.go",
+        "patchSetId": 18
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2021-01-08T01:27:30Z",
+      "side": 1,
+      "message": "Done. \nThank you. I somehow forgot to copy the part.\nAdded a unit test.",
+      "parentUuid": "f262b7c2_d1d3ec3a",
+      "range": {
+        "startLine": 58,
+        "startChar": 4,
+        "endLine": 58,
+        "endChar": 20
+      },
+      "revId": "ee39e35ffd4f786a16cce074241398894b9fd775",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "762cf07d_c2fe2b15",
@@ -100,6 +172,30 @@
       "writtenOn": "2021-01-06T09:58:48Z",
       "side": 1,
       "message": "defer does not work well in loops. But it\u0027s difficult to release resources correctly without defer.\n\nYou might want to spawn a goroutine to convert this state-machine code to sequential code.",
+      "range": {
+        "startLine": 67,
+        "startChar": 3,
+        "endLine": 67,
+        "endChar": 8
+      },
+      "revId": "ee39e35ffd4f786a16cce074241398894b9fd775",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e6a6f4f2_a8a2d381",
+        "filename": "src/chromiumos/tast/internal/bundle/fixture_service.go",
+        "patchSetId": 18
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2021-01-08T01:27:30Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "762cf07d_c2fe2b15",
       "range": {
         "startLine": 67,
         "startChar": 3,

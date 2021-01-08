@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a68c0c74_dbc726b3",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-01-08T02:09:36Z",
+      "side": 1,
+      "message": "Hi Everybody:\n\nI was able to test it with prototype-rts and make grpc connection, but I think ReportResult API has not been implemented yet in prototyp-rts. \n\n2021/01/08 01:54:51 Failed in reading tast test results: failed to report result: rpc error: code \u003d Unimplemented desc \u003d method ReportResult not implemented\n\nI will discuss with Sean on how to test it further. Please review the latest patch.\n\nThanks.\n\nSeewai\n",
+      "revId": "0de5584c8eeaa9081a5d74e67016237a8b6b1b34",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

@@ -3,6 +3,29 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "1fbfd2d4_6fa7b6ed",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/common_test.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1318707
+      },
+      "writtenOn": "2021-01-08T20:31:43Z",
+      "side": 1,
+      "message": "could do all of these in a single const\n\nconst (\n  a \u003d 1\n  b \u003d 2\n)",
+      "range": {
+        "startLine": 11,
+        "startChar": 0,
+        "endLine": 29,
+        "endChar": 29
+      },
+      "revId": "5a96a411ade61520a698fa6483b35bbd7624f200",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "79103cf6_a89cf612",
         "filename": "src/chromiumos/tast/cmd/tast_rtd/invocation.go",
         "patchSetId": 5
@@ -32,6 +55,144 @@
       "side": 1,
       "message": "From the CL chromium:2606390, I installed tast, tast_rtd and remote_test_runner in /usr/src/rtd/tast/bin inside a RTD container. That\u0027s why I set the path here. I have rephrase the comments. Please let me know if it is ok. Thanks.",
       "parentUuid": "79103cf6_a89cf612",
+      "revId": "5a96a411ade61520a698fa6483b35bbd7624f200",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "aa54702d_4e1f0631",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/invocation.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 138,
+      "author": {
+        "id": 1318707
+      },
+      "writtenOn": "2021-01-08T20:31:43Z",
+      "side": 1,
+      "message": "error could be more direct\n\"input invocation.duts is empty\"",
+      "range": {
+        "startLine": 138,
+        "startChar": 13,
+        "endLine": 138,
+        "endChar": 46
+      },
+      "revId": "5a96a411ade61520a698fa6483b35bbd7624f200",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "dd3a0959_087615b9",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/invocation.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 142,
+      "author": {
+        "id": 1318707
+      },
+      "writtenOn": "2021-01-08T20:31:43Z",
+      "side": 1,
+      "message": "error could be more direct\n\"input invocation.requests is empty\"",
+      "range": {
+        "startLine": 140,
+        "startChar": 0,
+        "endLine": 142,
+        "endChar": 2
+      },
+      "revId": "5a96a411ade61520a698fa6483b35bbd7624f200",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6ce7440a_b928e49f",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/main.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1318707
+      },
+      "writtenOn": "2021-01-08T20:31:43Z",
+      "side": 1,
+      "message": "you should consider defining\nctx :\u003d context.Background()\n\nnear the start of this function, then passing that into any function that needs a context. It\u0027s more idiomatic than calling context.Background() everywhere, e.g. below, in sendTestResults, etc., and it\u0027ll let you propagate timeouts and other context details more easily",
+      "range": {
+        "startLine": 67,
+        "startChar": 1,
+        "endLine": 67,
+        "endChar": 21
+      },
+      "revId": "5a96a411ade61520a698fa6483b35bbd7624f200",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5d69e0f4_74e895b4",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/main.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 1318707
+      },
+      "writtenOn": "2021-01-08T20:31:43Z",
+      "side": 1,
+      "message": "could be done more simply as this (no 127.0.0.1 needed either; the local host is implied)\n\npsAddr :\u003d fmt.Sprintf(\":%d\", inv.GetProgressSinkClientConfig().GetPort())",
+      "range": {
+        "startLine": 100,
+        "startChar": 2,
+        "endLine": 100,
+        "endChar": 95
+      },
+      "revId": "5a96a411ade61520a698fa6483b35bbd7624f200",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "981750a9_15588209",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/result.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 1318707
+      },
+      "writtenOn": "2021-01-08T20:31:43Z",
+      "side": 1,
+      "message": "\"failed to unmarshal testResults\"?",
+      "range": {
+        "startLine": 81,
+        "startChar": 32,
+        "endLine": 81,
+        "endChar": 57
+      },
+      "revId": "5a96a411ade61520a698fa6483b35bbd7624f200",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "105d4325_6d3db961",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/result.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 1318707
+      },
+      "writtenOn": "2021-01-08T20:31:43Z",
+      "side": 1,
+      "message": "I\u0027ve never seen this style..should it be make(map[string]*testResult)? or maybe even just testResult as the value, no pointer",
+      "range": {
+        "startLine": 84,
+        "startChar": 16,
+        "endLine": 84,
+        "endChar": 40
+      },
       "revId": "5a96a411ade61520a698fa6483b35bbd7624f200",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }

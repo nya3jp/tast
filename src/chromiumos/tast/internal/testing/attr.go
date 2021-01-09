@@ -297,6 +297,11 @@ third_party/autotest/files/server/site_tests/tast/control.runtime-probe
 		},
 	},
 	{
+		Name:     "cellular",
+		Contacts: []string{"chromeos-cellular-team@google.com"},
+		Desc:     `The group of Cellular tests to be run on hardware with a builtin Cellular modem and SIM card.`,
+	},
+	{
 		Name:     "meta",
 		Contacts: []string{"tast-owners@google.com"},
 		Desc: `A group of functional tests of the Tast framework itself.

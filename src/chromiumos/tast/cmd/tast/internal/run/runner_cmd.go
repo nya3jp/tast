@@ -112,7 +112,7 @@ func runTestRunnerCommand(r runnerCmd, args *runner.Args, out interface{}) error
 		return err
 	}
 	if err := json.Unmarshal(b, out); err != nil {
-		return fmt.Errorf("unmarshal output: %v", err)
+		return fmt.Errorf("json.Unmarshal(%q): %v", b, err)
 	}
 	return nil
 }

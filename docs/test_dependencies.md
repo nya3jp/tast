@@ -123,6 +123,7 @@ The following software features are defined:
 *   `no_symlink_mount` - Symlink mounting is disabled via the
     `CONFIG_SECURITY_CHROMIUMOS_NO_SYMLINK_MOUNT` kernel option.
 *   `no_ubsan` - Build was not built with Undefined Behavior Sanitizer.
+*   `nvme` - Ability to run NVMe software utilities.
 *   `oci` - The ability to use the `run_oci` program to execute code within
     [OCI] containers.
 *   `ocr` - [Optical Character Recognition Service] daemon.
@@ -143,6 +144,7 @@ The following software features are defined:
     will be enforced. This implies `selinux`.
 *   `shill-wifi` - WiFi technology is enabled for Shill.
 *   `smartdim` - Use smart dim to defer the imminent screen dimming.
+*   `smartctl` - Ability to run smartctl software utility.
 *   `storage_wearout_detect` - The ability to measure storage device health.
 *   `tablet_mode` - The ability to enter tablet mode. The device is either
     a convertible device or a tablet device.

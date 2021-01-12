@@ -155,6 +155,7 @@ func main() {
 			"no_qemu":            "!betty && !tast_vm",
 			"no_symlink_mount":   "!lxc", // boards using LXC set CONFIG_SECURITY_CHROMIUMOS_NO_SYMLINK_MOUNT=n
 			"no_ubsan":           "!ubsan",
+			"nvme":               "nvme",
 			"oci":                "containers && !moblab", // run_oci doesn't work on Moblab: https://crbug.com/951691
 			"ocr":                "ocr",
 			"plugin_vm":          "pita", // boards that can run Plugin VM.
@@ -174,6 +175,7 @@ func main() {
 			"selinux_experimental":   "selinux && selinux_experimental",
 			"shill-wifi":             "!moblab", // fizz-moblab disables the WiFi technology for Shill
 			"smartdim":               "smartdim",
+			"smartctl":               "nvme || sata",
 			"storage_wearout_detect": "storage_wearout_detect && !betty && !tast_vm", // Skip wearout checks for VMs and eMMC < 5.0
 			"tablet_mode":            "touchview",
 			"tpm":                    "!mocktpm",

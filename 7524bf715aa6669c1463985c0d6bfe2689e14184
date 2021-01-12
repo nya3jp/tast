@@ -16,6 +16,23 @@
       "message": "Feedback has been addressed. Sending to CQ",
       "revId": "7524bf715aa6669c1463985c0d6bfe2689e14184",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "bbbf5fe0_8d3827d9",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 8
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-01-12T17:32:00Z",
+      "side": 1,
+      "message": "resubmit",
+      "revId": "7524bf715aa6669c1463985c0d6bfe2689e14184",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

@@ -138,6 +138,9 @@ func (st *FixtureStack) Status() fixtureStatus {
 func (st *FixtureStack) RedFixtureName() string {
 	for _, f := range st.stack {
 		if f.Status() == statusRed {
+			if f.Name() == "" {
+				return st.cfg.StartFixtureName
+			}
 			return f.Name()
 		}
 	}

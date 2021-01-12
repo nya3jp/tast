@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b4db711e_0458764b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 11
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2021-01-12T16:00:29Z",
+      "side": 1,
+      "message": "LGTM with an ask.\n\nhttps://chromium.googlesource.com/chromiumos/platform/tast-tests/+/refs/heads/main/src/chromiumos/tast/local/bundles/cros/graphics/deqp.go#166\n\nThis line may be affected. Could you double check?\nAnd, if so, could you fix that code together?",
+      "revId": "9ffbdbaa32394cd2e311c661fb8251f61a21ff9e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

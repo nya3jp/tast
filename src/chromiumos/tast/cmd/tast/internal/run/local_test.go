@@ -48,11 +48,32 @@ const (
 	mockLocalBundleGlob = mockLocalBundleDir + "/*"
 
 	defaultBootID = "01234567-89ab-cdef-0123-456789abcdef"
+
+	// symlink to these executables created by newLocalTestData
+	fakeRemoteFixtureServer = "fake_remote_fixture_server"
 )
 
 var mockDevservers = []string{"192.168.0.1:12345", "192.168.0.2:23456"}
 
 type runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int)
+
+func init() {
+	// If the binary was executed via a symlink created by newLocalTestData,
+	// behave like a remote fixture server instead of running unit tests.
+	if filepath.Base(os.Args[0]) == fakeRemoteFixtureServer {
+		os.Exit(runFakeRemoteFixtureServer())
+	}
+}
+
+func runFakeRemoteFixtureServer() int {
+	if os.Args[1] != "-fixtureservice" {
+		log.Fatalf("os.Args[1] = %v, want -fixtureservice", os.Args[1])
+	}
+	if err := bundle.RunFixtureServiceServer(os.Stdin, os.Stdout); err != nil {
+		log.Fatalf("RunFixtureServiceServer: %v", err)
+	}
+	return 0
+}
 
 // localTestData holds data shared between tests that exercise the local function.
 type localTestData struct {
@@ -70,12 +91,18 @@ type localTestData struct {
 
 	expRunCmd string        // expected "exec" command for starting local_test_runner
 	runFunc   runFunc       // called for expRunCmd executions
-	runDelay  time.Duration // local_test_runner delay before exiting
+	runDelay  time.Duration // local_test_runner delay before exiting for run tests mode
 }
 
 // newLocalTestData performs setup for tests that exercise the local function.
 // It calls t.Fatal on error.
+// options can be used to apply non-default settings.
 func newLocalTestData(t *gotesting.T) *localTestData {
+	exec, err := os.Executable()
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	td := localTestData{expRunCmd: "exec env " + mockLocalRunner, bootID: defaultBootID}
 	td.srvData = sshtest.NewTestData(userKey, hostKey, td.handleExec)
 	td.cfg.KeyFile = td.srvData.UserKeyFile
@@ -99,6 +126,23 @@ func newLocalTestData(t *gotesting.T) *localTestData {
 	td.cfg.downloadMode = planner.DownloadLazy
 	td.cfg.totalShards = 1
 	td.cfg.shardIndex = 0
+
+	td.cfg.remoteFixtureServer = filepath.Join(td.tempDir, fakeRemoteFixtureServer)
+	if err := os.Symlink(exec, td.cfg.remoteFixtureServer); err != nil {
+		t.Fatal(err)
+	}
+	remoteFixts := runner.ListFixturesResult{
+		Fixtures: map[string][]*testing.EntityInfo{},
+	}
+	b, err := json.Marshal(&remoteFixts)
+	if err != nil {
+		t.Fatal(err)
+	}
+	// fakeRemoteRunnerData is defined in remote_test.go
+	td.cfg.remoteRunner, err = (&fakeRemoteRunnerData{string(b), "", 0}).setUp(td.tempDir)
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	// Avoid checking test dependencies, which causes an extra local_test_runner call.
 	td.cfg.checkTestDeps = false
@@ -146,7 +190,9 @@ func (td *localTestData) handleExec(req *sshtest.ExecReq) {
 			status = td.runFunc(&args, req, req.Stderr())
 		}
 		req.CloseOutput()
-		time.Sleep(td.runDelay)
+		if args.Mode == runner.RunTestsMode {
+			time.Sleep(td.runDelay)
+		}
 		req.End(status)
 	case "exec sync":
 		req.Start(true)
@@ -187,46 +233,60 @@ func errorCounts(rs []*EntityResult) map[string]int {
 }
 
 func TestLocalSuccess(t *gotesting.T) {
+	t.Parallel()
+
 	td := newLocalTestData(t)
 	defer td.close()
 
 	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
-		checkArgs(t, args, &runner.Args{
-			RunTests: &runner.RunTestsArgs{
-				BundleArgs: bundle.RunTestsArgs{
-					DataDir:           mockLocalDataDir,
-					OutDir:            mockLocalOutDir,
-					Devservers:        mockDevservers,
-					DUTName:           td.cfg.Target,
-					BuildArtifactsURL: mockBuildArtifactsURL,
-					DownloadMode:      planner.DownloadLazy,
-					HeartbeatInterval: heartbeatInterval,
+		switch args.Mode {
+		case runner.RunTestsMode:
+			checkArgs(t, args, &runner.Args{
+				RunTests: &runner.RunTestsArgs{
+					BundleArgs: bundle.RunTestsArgs{
+						DataDir:           mockLocalDataDir,
+						OutDir:            mockLocalOutDir,
+						Devservers:        mockDevservers,
+						DUTName:           td.cfg.Target,
+						BuildArtifactsURL: mockBuildArtifactsURL,
+						DownloadMode:      planner.DownloadLazy,
+						HeartbeatInterval: heartbeatInterval,
+					},
+					BundleGlob:                  mockLocalBundleGlob,
+					Devservers:                  mockDevservers,
+					BuildArtifactsURLDeprecated: mockBuildArtifactsURL,
 				},
-				BundleGlob:                  mockLocalBundleGlob,
-				Devservers:                  mockDevservers,
-				BuildArtifactsURLDeprecated: mockBuildArtifactsURL,
-			},
-		})
+			})
 
-		mw := control.NewMessageWriter(stdout)
-		mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
-		mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
+			mw := control.NewMessageWriter(stdout)
+			mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
+			mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
+		case runner.ListFixturesMode:
+			json.NewEncoder(stdout).Encode(&runner.ListFixturesResult{})
+		}
 		return 0
 	}
 
 	if _, err := runLocalTests(context.Background(), &td.cfg); err != nil {
-		t.Error("runLocalTest failed: ", err)
+		t.Errorf("runLocalTest failed: %v", err)
 	}
 }
 
 func TestLocalProxy(t *gotesting.T) {
+	t.Parallel()
+
 	td := newLocalTestData(t)
 	defer td.close()
 
 	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
-		mw := control.NewMessageWriter(stdout)
-		mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
-		mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
+		switch args.Mode {
+		case runner.RunTestsMode:
+			mw := control.NewMessageWriter(stdout)
+			mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
+			mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
+		case runner.ListFixturesMode:
+			json.NewEncoder(stdout).Encode(&runner.ListFixturesResult{})
+		}
 		return 0
 	}
 
@@ -279,11 +339,16 @@ func TestLocalCopyOutput(t *gotesting.T) {
 	defer td.close()
 
 	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
-		mw := control.NewMessageWriter(stdout)
-		mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), TestNames: []string{testName}})
-		mw.WriteMessage(&control.EntityStart{Time: time.Unix(2, 0), Info: testing.EntityInfo{Name: testName}, OutDir: filepath.Join(td.cfg.localOutDir, outName)})
-		mw.WriteMessage(&control.EntityEnd{Time: time.Unix(3, 0), Name: testName})
-		mw.WriteMessage(&control.RunEnd{Time: time.Unix(4, 0), OutDir: td.cfg.localOutDir})
+		switch args.Mode {
+		case runner.RunTestsMode:
+			mw := control.NewMessageWriter(stdout)
+			mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), TestNames: []string{testName}})
+			mw.WriteMessage(&control.EntityStart{Time: time.Unix(2, 0), Info: testing.EntityInfo{Name: testName}, OutDir: filepath.Join(td.cfg.localOutDir, outName)})
+			mw.WriteMessage(&control.EntityEnd{Time: time.Unix(3, 0), Name: testName})
+			mw.WriteMessage(&control.RunEnd{Time: time.Unix(4, 0), OutDir: td.cfg.localOutDir})
+		case runner.ListFixturesMode:
+			json.NewEncoder(stdout).Encode(&runner.ListFixturesResult{})
+		}
 		return 0
 	}
 
@@ -293,8 +358,11 @@ func TestLocalCopyOutput(t *gotesting.T) {
 		t.Fatal(err)
 	}
 
+	td.cfg.testsToRun = []*EntityResult{{EntityInfo: testing.EntityInfo{
+		Name: testName,
+	}}}
 	if _, err := runLocalTests(context.Background(), &td.cfg); err != nil {
-		t.Error("runLocalTests failed: ", err)
+		t.Fatalf("runLocalTests failed: %v", err)
 	}
 
 	files, err := testutil.ReadFiles(filepath.Join(td.cfg.ResDir, testLogsDir))
@@ -336,10 +404,16 @@ func TestLocalWaitTimeout(t *gotesting.T) {
 
 	// Simulate local_test_runner writing control messages immediately but hanging before exiting.
 	td.runDelay = time.Minute
+	td.cfg.testsToRun = []*EntityResult{{EntityInfo: testing.EntityInfo{Name: "pkg.Foo"}}}
 	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
-		mw := control.NewMessageWriter(stdout)
-		mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
-		mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0)})
+		switch args.Mode {
+		case runner.RunTestsMode:
+			mw := control.NewMessageWriter(stdout)
+			mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
+			mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0)})
+		case runner.ListFixturesMode:
+			json.NewEncoder(stdout).Encode(&runner.ListFixturesResult{})
+		}
 		return 0
 	}
 

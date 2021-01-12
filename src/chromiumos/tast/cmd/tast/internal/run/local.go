@@ -10,14 +10,25 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net"
+	"os"
+	"os/exec"
 	"path/filepath"
 	"time"
+
+	"github.com/golang/protobuf/ptypes"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/keepalive"
 
 	"chromiumos/tast/ctxutil"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/bundle"
+	"chromiumos/tast/internal/dep"
+	"chromiumos/tast/internal/planner"
+	"chromiumos/tast/internal/rpc"
 	"chromiumos/tast/internal/runner"
+	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/internal/timing"
 	"chromiumos/tast/ssh"
 )
@@ -74,20 +85,377 @@ func connectToTarget(ctx context.Context, cfg *Config) (*ssh.Conn, error) {
 	return cfg.hst, nil
 }
 
-// runLocalTests executes tests as described by cfg on hst and returns the results.
-// It is only used for RunTestsMode.
+type remoteFixtureService struct {
+	cmd *exec.Cmd // remote fixture gRPC server
+	cl  bundle.FixtureService_RunFixtureClient
+}
+
+// newRemoteFixtureService executes the remote bundle as a gRPC server and
+// returns fixture service connecting to it. The caller should call rf.close
+// to gracefully stop the server and the client.
+func newRemoteFixtureService(ctx context.Context, cfg *Config) (rf *remoteFixtureService, retErr error) {
+	if _, err := os.Stat(cfg.remoteFixtureServer); os.IsNotExist(err) {
+		return nil, fmt.Errorf("newRemoteFixtureService: %v", err)
+	}
+
+	cmd := exec.CommandContext(ctx, cfg.remoteFixtureServer, "-fixtureservice")
+	stdin, err := cmd.StdinPipe()
+	if err != nil {
+		return nil, fmt.Errorf("newRemoteFixtureService: %v", err)
+	}
+	stdout, err := cmd.StdoutPipe()
+	if err != nil {
+		return nil, fmt.Errorf("newRemoteFixtureService: %v", err)
+	}
+	cmd.Stderr = os.Stderr // ease debug
+	if err := cmd.Start(); err != nil {
+		return nil, fmt.Errorf("newRemoteFixtureService: %v", err)
+	}
+	defer func() {
+		if retErr != nil {
+			cmd.Process.Kill() // no error handling; already failed
+			cmd.Wait()
+		}
+	}()
+
+	conn, err := rpc.NewPipeClientConn(ctx, stdout, stdin, grpc.WithKeepaliveParams(keepalive.ClientParameters{
+		Time:    10 * time.Second, // ping interval
+		Timeout: 1 * time.Minute,
+	}))
+	if err != nil {
+		return nil, fmt.Errorf("NewPipeClientConn: %v", err)
+	}
+	cl, err := bundle.NewFixtureServiceClient(conn).RunFixture(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("RunFixture: %v", err)
+	}
+	return &remoteFixtureService{
+		cmd: cmd,
+		cl:  cl,
+	}, nil
+}
+
+func (rf *remoteFixtureService) close() (retErr error) {
+	defer func() {
+		if err := rf.cmd.Process.Kill(); err != nil && retErr == nil {
+			retErr = fmt.Errorf("rf.close: %v", err)
+		}
+		if err := rf.cmd.Wait(); err != nil && retErr == nil {
+			retErr = fmt.Errorf("rf.close: %v", err)
+		}
+	}()
+	if err := rf.cl.CloseSend(); err != nil {
+		return fmt.Errorf("rf.close: %v", err)
+	}
+	if r, err := rf.cl.Recv(); err != io.EOF {
+		return fmt.Errorf("rf.close: cl.Recv() = %v, %v, want EOF", r, err)
+	}
+	return nil
+}
+
+// localTestsCategorizer categorizes local by the bundle path and the
+// depending remote fixture in this order.
+type localTestsCategorizer func([]*testing.EntityInfo) (map[string]map[string][]*testing.EntityInfo, error)
+
+// newLocalTestsCategorizer creates a function which categorizes given local
+// tests by the bundle name and the remote fixture name tests depend on.
+// It computes by listing all the fixtures in the bundles designated by cfg.
+func newLocalTestsCategorizer(ctx context.Context, cfg *Config) (localTestsCategorizer, error) {
+	var remoteFixts runner.ListFixturesResult
+	if err := runTestRunnerCommand(remoteRunnerCommand(ctx, cfg), &runner.Args{
+		Mode: runner.ListFixturesMode,
+		ListFixtures: &runner.ListFixturesArgs{
+			BundleGlob: cfg.remoteBundleGlob(),
+		},
+	},
+		&remoteFixts,
+	); err != nil {
+		return nil, fmt.Errorf("list remote fixtures: %v", err)
+	}
+
+	var localFixts runner.ListFixturesResult
+	if err := runTestRunnerCommand(localRunnerCommand(ctx, cfg, cfg.hst), &runner.Args{
+		Mode: runner.ListFixturesMode,
+		ListFixtures: &runner.ListFixturesArgs{
+			BundleGlob: cfg.localBundleGlob(),
+		},
+	},
+		&localFixts,
+	); err != nil {
+		return nil, fmt.Errorf("listing local fixtures: %v", err)
+	}
+
+	if got := len(remoteFixts.Fixtures); got > 1 {
+		return nil, fmt.Errorf("BUG: got %v remote bundles, want 1", got)
+	}
+
+	remoteFixtSet := make(map[string]bool)
+	for _, fs := range remoteFixts.Fixtures {
+		for _, f := range fs {
+			remoteFixtSet[f.Name] = true
+			if f.Fixture != "" {
+				return nil, fmt.Errorf(`nested remote fixtures are not supported; parent of %v is %v, want ""`, f.Name, f.Fixture)
+			}
+		}
+	}
+	// bundle -> fixture -> parent
+	localFixtParent := make(map[string]map[string]string)
+	for bundlePath, fs := range localFixts.Fixtures {
+		bundle := filepath.Base(bundlePath)
+		localFixtParent[bundle] = make(map[string]string)
+		for _, f := range fs {
+			localFixtParent[bundle][f.Name] = f.Fixture
+		}
+	}
+
+	// Check there's no duplicated fixtures between remote and local bundles.
+	for bundle, fixts := range localFixtParent {
+		for fixt := range fixts {
+			if _, ok := remoteFixtSet[fixt]; ok {
+				return nil, fmt.Errorf("both local bundle %v and the remote bundle has fixture %v", bundle, fixt)
+			}
+		}
+	}
+
+	var dependingRemoteFixture func(string, string) (string, error)
+	dependingRemoteFixture = func(bundle, fixt string) (remoteFixt string, err error) {
+		if fixt == "" {
+			return "", nil
+		}
+		if remoteFixtSet[fixt] {
+			return fixt, nil
+		}
+		p, ok := localFixtParent[bundle][fixt]
+		if !ok {
+			return "", fmt.Errorf("fixture %q not found in bundle %v", fixt, bundle)
+		}
+		return dependingRemoteFixture(bundle, p)
+	}
+
+	categorizeLocalTests := func(localTests []*testing.EntityInfo) (map[string]map[string][]*testing.EntityInfo, error) {
+		// bundle -> depending remote fixture -> tests
+		res := make(map[string]map[string][]*testing.EntityInfo)
+		for _, t := range localTests {
+			if res[t.Bundle] == nil {
+				res[t.Bundle] = make(map[string][]*testing.EntityInfo)
+			}
+			rf, err := dependingRemoteFixture(t.Bundle, t.Fixture)
+			if err != nil {
+				return nil, fmt.Errorf("test %v: %v", t.Name, err)
+			}
+			res[t.Bundle][rf] = append(res[t.Bundle][rf], t)
+		}
+		return res, nil
+	}
+	return categorizeLocalTests, nil
+}
+
+// runFixtureAndTests runs fixture methods before and after runTests.
+// fixtErr will be non-nil if fixture errors happen.
+// It also stores fixture logs to a file under "fixtures" dir in cfg.ResDir.
+func runFixtureAndTests(ctx context.Context, cfg *Config, rfcl bundle.FixtureService_RunFixtureClient, remoteFixt string, runTests func(fixtErr []string) error) (retErr error) {
+	fixtResDir := filepath.Join(cfg.ResDir, "fixtures", remoteFixt)
+	// TODO(oka) rename testLogFilename to entityLogFilename
+	fixtLogPath := filepath.Join(fixtResDir, testLogFilename)
+
+	if err := os.MkdirAll(filepath.Dir(fixtLogPath), 0755); err != nil {
+		return err
+	}
+	fixtLogFile, err := os.Create(fixtLogPath)
+	if err != nil {
+		return fmt.Errorf("fixtLogFile: %v", err)
+	}
+	defer func() {
+		if err := fixtLogFile.Close(); err != nil && retErr != nil {
+			retErr = fmt.Errorf("fixtLogFile: %v", err)
+		}
+	}()
+
+	var dm bundle.RunFixtureConfig_PlannerDownloadMode
+	switch cfg.downloadMode {
+	case planner.DownloadBatch:
+		dm = bundle.RunFixtureConfig_BATCH
+	case planner.DownloadLazy:
+		dm = bundle.RunFixtureConfig_LAZY
+	default:
+		return fmt.Errorf("unknown mode %v", cfg.downloadMode)
+	}
+
+	var pushErrs []string
+
+	if remoteFixt != "" {
+		handleResponses := func() (fixtErrs []*bundle.RunFixtureError, retErr error) {
+			if err := cfg.Logger.AddWriter(fixtLogFile, log.LstdFlags); err != nil {
+				return nil, fmt.Errorf("handle fixture log: %v", err)
+			}
+			defer func() {
+				if err := cfg.Logger.RemoveWriter(fixtLogFile); err != nil && retErr == nil {
+					retErr = fmt.Errorf("handle fixture log: %v", err)
+				}
+			}()
+
+			for {
+				msg, err := rfcl.Recv()
+				if err != nil {
+					return nil, fmt.Errorf("rfcl.Recv(): %v", err)
+				}
+
+				timestamp, err := ptypes.Timestamp(msg.Timestamp)
+				if err != nil {
+					return nil, fmt.Errorf("invalid timestamp: %v", err)
+				}
+				ts := timestamp.Format(testOutputTimeFmt)
+
+				switch v := msg.Control.(type) {
+				case *bundle.RunFixtureResponse_Error:
+					fixtErrs = append(fixtErrs, v.Error)
+
+					cfg.Logger.Logf("[%s] Error at %s:%d: %s", ts, filepath.Base(v.Error.File), v.Error.Line, v.Error.Reason)
+					if v.Error.Stack != "" {
+						cfg.Logger.Logf("[%s] Stack trace:\n%s", ts, v.Error.Stack)
+					}
+				case *bundle.RunFixtureResponse_Log:
+					cfg.Logger.Logf("[%s] %s", ts, v.Log)
+				case *bundle.RunFixtureResponse_RequestDone:
+					return
+				}
+			}
+		}
+
+		if cfg.softwareFeatures == nil {
+			cfg.softwareFeatures = &dep.SoftwareFeatures{}
+		}
+		// push
+		if err := rfcl.Send(&bundle.RunFixtureRequest{
+			Control: &bundle.RunFixtureRequest_Push{
+				Push: &bundle.RunFixturePushRequest{
+					Name: remoteFixt,
+					Config: &bundle.RunFixtureConfig{
+						TestVars:                    cfg.testVars,
+						DataDir:                     cfg.remoteDataDir,
+						OutDir:                      cfg.remoteOutDir,
+						TempDir:                     "", // empty for fixture service to create it
+						Target:                      cfg.Target,
+						KeyFile:                     cfg.KeyFile,
+						KeyDir:                      cfg.KeyDir,
+						LocalBundleDir:              cfg.localBundleDir,
+						CheckSoftwareDeps:           true,
+						AvailableSoftwareFeatures:   cfg.softwareFeatures.Available,
+						UnavailableSoftwareFeatures: cfg.softwareFeatures.Unavailable,
+						Devservers:                  cfg.devservers,
+						TlwServer:                   cfg.tlwServerForDUT,
+						DutName:                     cfg.Target,
+						BuildArtifactsUrl:           cfg.buildArtifactsURL,
+						DownloadMode:                dm,
+					},
+				},
+			},
+		}); err != nil {
+			return fmt.Errorf("push %v: %v", remoteFixt, err)
+		}
+
+		fixtErrs, err := handleResponses()
+		if err != nil {
+			return fmt.Errorf("push %v: %v", remoteFixt, err)
+		}
+		for _, e := range fixtErrs {
+			pushErrs = append(pushErrs, e.Reason)
+		}
+
+		defer func() { // pop after tests run
+			if err := rfcl.Send(&bundle.RunFixtureRequest{
+				Control: &bundle.RunFixtureRequest_Pop{
+					Pop: &bundle.RunFixturePopRequest{},
+				},
+			}); err != nil && retErr == nil {
+				retErr = fmt.Errorf("pop: %v", err)
+			}
+
+			// fixtErrs is not used. Fixture errors are reported to the logger
+			// and handled there.
+			_, err := handleResponses()
+			if err != nil && retErr == nil {
+				retErr = fmt.Errorf("pop: %v", err)
+			}
+		}()
+	}
+
+	if err := runTests(pushErrs); err != nil {
+		return fmt.Errorf("runTests(): %v", err)
+	}
+	return nil
+}
+
+// runLocalTests executes tests as described by cfg on hst and returns the
+// results. It is only used for RunTestsMode.
 func runLocalTests(ctx context.Context, cfg *Config) ([]*EntityResult, error) {
 	cfg.Logger.Status("Running local tests on target")
 	ctx, st := timing.Start(ctx, "run_local_tests")
 	defer st.End()
 
-	hst, err := connectToTarget(ctx, cfg)
+	_, err := connectToTarget(ctx, cfg)
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed to connect to %s", cfg.Target)
 	}
 
-	runTests := func(ctx context.Context, patterns []string) (results []*EntityResult, unstarted []string, err error) {
-		return runLocalTestsOnce(ctx, cfg, hst, patterns)
+	rf, err := newRemoteFixtureService(ctx, cfg)
+	if err != nil {
+		return nil, err
+	}
+	defer rf.close()
+
+	categorize, err := newLocalTestsCategorizer(ctx, cfg)
+	if err != nil {
+		return nil, err
+	}
+
+	tests := make([]*testing.EntityInfo, len(cfg.testsToRun), len(cfg.testsToRun))
+	for i, t := range cfg.testsToRun {
+		tests[i] = &t.EntityInfo
+	}
+	bundleRemoteFixtTests, err := categorize(tests)
+	if err != nil {
+		return nil, err
+	}
+
+	start := time.Now()
+
+	var entityResults []*EntityResult
+	for bundle, remoteFixtTests := range bundleRemoteFixtTests {
+		cfg.Logger.Logf("Running tests in bundle %v", bundle)
+
+		for remoteFixt, tests := range remoteFixtTests {
+			names := make([]string, len(tests), len(tests))
+			for i, t := range tests {
+				names[i] = t.Name
+			}
+
+			// TODO(oka): write a unittest testing a connection to DUT is
+			// ensured for remote fixture.
+			if err := runFixtureAndTests(ctx, cfg, rf.cl, remoteFixt, func(setUpErrs []string) error {
+				res, err := runLocalTestsSub(ctx, names, remoteFixt, setUpErrs, cfg)
+				if err != nil {
+					return err
+				}
+				entityResults = append(entityResults, res...)
+				return nil
+			}); err != nil {
+				return nil, err
+			}
+		}
+	}
+	elapsed := time.Since(start)
+	cfg.Logger.Logf("Ran %v local test(s) in %v", len(entityResults), elapsed.Round(time.Millisecond))
+
+	return entityResults, nil
+}
+
+// runLocalTestsSub runs given local tests in between remote fixture
+// set up and tear down.
+func runLocalTestsSub(ctx context.Context, names []string, remoteFixt string, setUpErrs []string, cfg *Config) ([]*EntityResult, error) {
+	hst, err := connectToTarget(ctx, cfg)
+	if err != nil {
+		return nil, errors.Wrapf(err, "failed to connect to %s; remoteFixt = %q", cfg.Target, remoteFixt)
 	}
 	beforeRetry := func(ctx context.Context) bool {
 		oldHst := hst
@@ -118,11 +486,11 @@ func runLocalTests(ctx context.Context, cfg *Config) ([]*EntityResult, error) {
 		}
 		return true
 	}
+	runTests := func(ctx context.Context, patterns []string) (results []*EntityResult, unstarted []string, err error) {
+		return runLocalTestsOnce(ctx, cfg, hst, patterns, remoteFixt, setUpErrs)
+	}
 
-	start := time.Now()
-	results, err := runTestsWithRetry(ctx, cfg, cfg.testNames, runTests, beforeRetry)
-	elapsed := time.Since(start)
-	cfg.Logger.Logf("Ran %v local test(s) in %v", len(results), elapsed.Round(time.Millisecond))
+	results, err := runTestsWithRetry(ctx, cfg, names, runTests, beforeRetry)
 	return results, err
 }
 
@@ -170,7 +538,7 @@ func startLocalRunner(ctx context.Context, cfg *Config, hst *ssh.Conn, args *run
 // Results from started tests and the names of tests that should have been
 // started but weren't (in the order in which they should've been run) are
 // returned.
-func runLocalTestsOnce(ctx context.Context, cfg *Config, hst *ssh.Conn, patterns []string) (
+func runLocalTestsOnce(ctx context.Context, cfg *Config, hst *ssh.Conn, patterns []string, startFixtureName string, setUpErrs []string) (
 	results []*EntityResult, unstarted []string, err error) {
 	ctx, st := timing.Start(ctx, "run_local_tests_once")
 	defer st.End()
@@ -196,6 +564,8 @@ func runLocalTestsOnce(ctx context.Context, cfg *Config, hst *ssh.Conn, patterns
 				HeartbeatInterval: heartbeatInterval,
 				BuildArtifactsURL: cfg.buildArtifactsURL,
 				DownloadMode:      cfg.downloadMode,
+				StartFixtureName:  startFixtureName,
+				SetUpErrors:       setUpErrs,
 			},
 			BundleGlob: cfg.localBundleGlob(),
 			Devservers: cfg.devservers,

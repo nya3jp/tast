@@ -105,10 +105,11 @@ type Config struct {
 	localDataDir   string // dir containing packaged local test data
 	localOutDir    string // dir where intermediate outputs of local tests are written
 
-	remoteRunner    string // path to executable that runs remote test bundles
-	remoteBundleDir string // dir where packaged remote test bundles are installed
-	remoteDataDir   string // dir containing packaged remote test data
-	remoteOutDir    string // dir where intermediate outputs of remote tests are written
+	remoteRunner        string // path to executable that runs remote test bundles
+	remoteBundleDir     string // dir where packaged remote test bundles are installed
+	remoteFixtureServer string // path to executable that runs remote fixture server
+	remoteDataDir       string // dir containing packaged remote test data
+	remoteOutDir        string // dir where intermediate outputs of remote tests are written
 
 	totalShards int // total number of shards to be used in a test run
 	shardIndex  int // specifies the index of shard to used in the current run
@@ -349,6 +350,9 @@ func (c *Config) DeriveDefaults() error {
 		c.runLocal = true
 		c.runRemote = true
 	}
+	// TODO(crbug/1177189): we assume there's only one remote bundle. Consider
+	// removing the restriction.
+	c.remoteFixtureServer = filepath.Join(c.remoteBundleDir, "cros")
 
 	// Apply -varsfile.
 	for _, path := range c.varsFiles {

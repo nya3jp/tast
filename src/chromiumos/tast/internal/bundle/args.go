@@ -251,6 +251,9 @@ type RunTestsArgs struct {
 	// SetUpErrors contains error messages happened on test setup (e.g. fixture SetUp). If its
 	// length is non-zero, tests shouldn't run.
 	SetUpErrors []string `json:"setUpErrors,omitempty"`
+
+	// StartFixtureName is the remote fixture name that ran for the test.
+	StartFixtureName string `json:"startFixtureName,omitempty"`
 }
 
 // ListTestsArgs is nested within Args and contains arguments used by ListTestsMode.

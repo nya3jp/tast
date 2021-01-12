@@ -13,7 +13,8 @@ import (
 	"chromiumos/tast/internal/testing"
 )
 
-func runRPCServer(r io.Reader, w io.Writer, svcs []*testing.Service) error {
+// RunRPCServer runs the bundle as an RPC server.
+func RunRPCServer(r io.Reader, w io.Writer, svcs []*testing.Service) error {
 	return rpc.RunServer(r, w, svcs, func(srv *grpc.Server) {
 		registerFixtureService(srv)
 	})

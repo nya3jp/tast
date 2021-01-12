@@ -173,6 +173,8 @@ func TestRunTestsSkipTests(t *gotesting.T) {
 				count++
 			}
 			mw.WriteMessage(&control.RunEnd{Time: time.Unix(count, 0)})
+		case runner.ListFixturesMode:
+			json.NewEncoder(stdout).Encode(&runner.ListFixturesResult{})
 		default:
 			t.Errorf("Unexpected args.Mode = %v", args.Mode)
 		}

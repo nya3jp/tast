@@ -9,6 +9,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"os"
+	"os/exec"
 	"strings"
 
 	"google.golang.org/grpc"
@@ -68,6 +70,27 @@ func Dial(ctx context.Context, conn *ssh.Conn, path string, req *protocol.Handsh
 	return newClient(ctx, stdout, stdin, req, func(ctx context.Context) error {
 		cmd.Abort()
 		return cmd.Wait(ctx)
+	})
+}
+
+// DialExec establishes a gRPC connection to an executable on host.
+func DialExec(ctx context.Context, path string, req *protocol.HandshakeRequest) (*Client, error) {
+	cmd := exec.CommandContext(ctx, path, "-rpc")
+	stdin, err := cmd.StdinPipe()
+	if err != nil {
+		return nil, fmt.Errorf("newRemoteFixtureService: %v", err)
+	}
+	stdout, err := cmd.StdoutPipe()
+	if err != nil {
+		return nil, fmt.Errorf("newRemoteFixtureService: %v", err)
+	}
+	cmd.Stderr = os.Stderr // ease debug
+	if err := cmd.Start(); err != nil {
+		return nil, fmt.Errorf("newRemoteFixtureService: %v", err)
+	}
+	return newClient(ctx, stdout, stdin, &protocol.HandshakeRequest{NeedUserServices: false}, func(ctx context.Context) error {
+		defer cmd.Wait() // ignore error `signal: killed`
+		return cmd.Process.Kill()
 	})
 }
 

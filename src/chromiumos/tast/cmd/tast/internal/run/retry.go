@@ -29,6 +29,7 @@ type beforeRetryFunc func(ctx context.Context) bool
 // is true and runTests returns non-empty unstarted test names, it calls recover
 // followed by runTests again to restart testing.
 func runTestsWithRetry(ctx context.Context, cfg *Config, patterns []string, runTests runTestsFunc, beforeRetry beforeRetryFunc) ([]*EntityResult, error) {
+	// TODO(oka): patterns may not be needed. names will be enough.
 	var allResults []*EntityResult
 	for {
 		results, unstarted, rerr := runTests(ctx, patterns)

@@ -39,6 +39,10 @@ const (
 	// ListFixturesMode indicates that the bundle should write information about all the fixtures
 	// to stdout as a JSON array of testing.EntityInfo structs and exit.
 	ListFixturesMode = 4
+
+	// FixtureServiceMode indicates that the bundle should run as gRPC server
+	// serving remote fixture service.
+	FixtureServiceMode = 5
 )
 
 // Args is used to pass arguments from test runners to test bundles.
@@ -251,6 +255,9 @@ type RunTestsArgs struct {
 	// SetUpErrors contains error messages happened on test setup (e.g. fixture SetUp). If its
 	// length is non-zero, tests shouldn't run.
 	SetUpErrors []string `json:"setUpErrors,omitempty"`
+
+	// StartFixtureName is the remote fixture name that ran for the test.
+	StartFixtureName string `json:"startFixtureName,omitempty"`
 }
 
 // ListTestsArgs is nested within Args and contains arguments used by ListTestsMode.
@@ -293,6 +300,7 @@ func readArgs(clArgs []string, stdin io.Reader, stderr io.Writer, args *Args, bt
 		dump := flags.Bool("dumptests", false, "dump all tests as a JSON-marshaled array of testing.Test structs")
 		exportMetadata := flags.Bool("exportmetadata", false, "export all test metadata as a protobuf-marshaled message")
 		rpc := flags.Bool("rpc", false, "run gRPC server")
+		fixt := flags.Bool("fixtureservice", false, "run fixture service server")
 		if err := flags.Parse(clArgs); err != nil {
 			return command.NewStatusErrorf(statusBadArgs, "%v", err)
 		}
@@ -307,6 +315,10 @@ func readArgs(clArgs []string, stdin io.Reader, stderr io.Writer, args *Args, bt
 		}
 		if *rpc {
 			args.Mode = RPCMode
+			return nil
+		}
+		if *fixt {
+			args.Mode = FixtureServiceMode
 			return nil
 		}
 	}

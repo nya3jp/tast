@@ -36,10 +36,7 @@ func runTests(ctx context.Context, cfg *Config, state *State) ([]*EntityResult, 
 		testsToSkip = nil
 	}
 
-	cfg.testNames = nil
-	for _, t := range testsToRun {
-		cfg.testNames = append(cfg.testNames, t.Name)
-	}
+	cfg.testsToRun = testsToRun
 	cfg.TestNamesToSkip = nil
 	for _, t := range testsToSkip {
 		cfg.TestNamesToSkip = append(cfg.TestNamesToSkip, t.Name)
@@ -50,7 +47,7 @@ func runTests(ctx context.Context, cfg *Config, state *State) ([]*EntityResult, 
 
 	if cfg.totalShards > 1 {
 		cfg.Logger.Logf("Running shard %d/%d (tests %d/%d)", cfg.shardIndex+1, cfg.totalShards,
-			len(cfg.testNames), len(cfg.testNames)+len(cfg.TestNamesToSkip))
+			len(cfg.testsToRun), len(cfg.testsToRun)+len(cfg.TestNamesToSkip))
 	}
 	if len(testsToRun) == 0 {
 		// No tests to run.

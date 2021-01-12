@@ -34,7 +34,9 @@ func runTestsAndReadAll(t *gotesting.T, tests []*testing.TestInstance, pcfg *Con
 	t.Helper()
 
 	sink := newOutputSink()
-	RunTests(context.Background(), tests, sink, pcfg)
+	if err := RunTests(context.Background(), tests, sink, pcfg); err != nil {
+		t.Logf("RunTests: %v", err)
+	}
 	msgs, err := sink.ReadAll()
 	if err != nil {
 		t.Fatal("ReadAll: ", err)
@@ -851,11 +853,42 @@ func TestRunFixtureSetUpFailure(t *gotesting.T) {
 		&control.EntityEnd{Name: fixt1.Name},
 		// All tests depending on fixt1 fail.
 		&control.EntityStart{Info: *tests[1].EntityInfo()},
-		&control.EntityError{Name: tests[1].Name, Error: testing.Error{Reason: "[Fixture failure] fixt1: Setup failed"}},
+		&control.EntityError{Name: tests[1].Name, Error: testing.Error{Reason: "[Fixture failure] fixt1: SetUp failed"}},
 		&control.EntityEnd{Name: tests[1].Name},
 		&control.EntityStart{Info: *tests[2].EntityInfo()},
-		&control.EntityError{Name: tests[2].Name, Error: testing.Error{Reason: "[Fixture failure] fixt1: Setup failed"}},
+		&control.EntityError{Name: tests[2].Name, Error: testing.Error{Reason: "[Fixture failure] fixt1: SetUp failed"}},
 		&control.EntityEnd{Name: tests[2].Name},
+	}
+	if diff := cmp.Diff(msgs, want); diff != "" {
+		t.Error("Output mismatch (-got +want):\n", diff)
+	}
+}
+
+func TestRunFixtureRemoteSetUpFailure(t *gotesting.T) {
+	cfg := &Config{
+		StartFixtureName: "remoteFixt",
+		StartFixtureImpl: newFakeFixture(
+			withSetUp(func(ctx context.Context, s *testing.FixtState) interface{} {
+				// Error messages are not sent for the start fixture.
+				s.Error("fake error")
+				return nil
+			})),
+	}
+	tests := []*testing.TestInstance{{
+		Name:    "pkg.Test",
+		Fixture: "remoteFixt",
+		Func: func(ctx context.Context, s *testing.State) {
+			t.Errorf("pkg.Test run unexpectedly")
+		},
+		Timeout: time.Minute,
+	}}
+
+	msgs := runTestsAndReadAll(t, tests, cfg)
+
+	want := []control.Msg{
+		&control.EntityStart{Info: *tests[0].EntityInfo()},
+		&control.EntityError{Error: testing.Error{Reason: "[Fixture failure] remoteFixt: SetUp failed"}, Name: "pkg.Test"},
+		&control.EntityEnd{Name: tests[0].Name},
 	}
 	if diff := cmp.Diff(msgs, want); diff != "" {
 		t.Error("Output mismatch (-got +want):\n", diff)

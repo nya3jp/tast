@@ -26,7 +26,7 @@ type beforeRetryFunc func(ctx context.Context) bool
 // runTestsWithRetry runs local/remote tests in a loop. If cfg.continueAfterFailure
 // is true and runTests returns non-empty unstarted test names, it calls recover
 // followed by runTests again to restart testing.
-func runTestsWithRetry(ctx context.Context, cfg *Config, patterns []string, runTests runTestsFunc, beforeRetry beforeRetryFunc) ([]*EntityResult, error) {
+func runTestsWithRetry(ctx context.Context, cfg *Config, patterns []string, runTests runTestsFunc, beforeRetry beforeRetryFunc) ([]*EntityResult, error) { // FIXME: patterns will not be needed. names will be enough.
 	var allResults []*EntityResult
 	for {
 		results, unstarted, rerr := runTests(ctx, patterns)

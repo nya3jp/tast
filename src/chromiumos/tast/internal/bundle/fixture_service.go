@@ -47,6 +47,8 @@ var errFixtureServiceNormalEOF = errors.New("normal EOF")
 // pushAndPop handles push and pop operations. If the connection is terminated
 // normally, it returns errFixtureServiceNormalEOF.
 func pushAndPop(srv FixtureService_RunFixtureServer) (retErr error) {
+	ctx := srv.Context()
+
 	sendDone := func() error {
 		return srv.Send(&RunFixtureResponse{
 			Control: &RunFixtureResponse_RequestDone{
@@ -65,8 +67,6 @@ func pushAndPop(srv FixtureService_RunFixtureServer) (retErr error) {
 		}
 		retErr = sendDone()
 	}()
-
-	ctx := srv.Context()
 
 	req, err := srv.Recv()
 	if err == io.EOF {

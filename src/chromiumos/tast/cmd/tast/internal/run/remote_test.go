@@ -12,10 +12,12 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"reflect"
 	"strings"
 	gotesting "testing"
 	"time"
+
+	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 
 	"chromiumos/tast/cmd/tast/internal/logging"
 	"chromiumos/tast/internal/bundle"
@@ -92,19 +94,47 @@ type remoteTestData struct {
 	args   runner.Args  // args that were passed to fake runner
 }
 
+type fakeRemoteRunnerData struct {
+	stdout string
+	stderr string
+	status int
+}
+
+func (rd *fakeRemoteRunnerData) setUp(dir string) (string, error) {
+	exec, err := os.Executable()
+	if err != nil {
+		return "", err
+	}
+
+	// Create a symlink to ourselves that can be executed as a fake test runner.
+	runner := filepath.Join(dir, fakeRunnerName)
+	if err = os.Symlink(exec, runner); err != nil {
+		return "", err
+	}
+
+	// Write a config file telling the fake runner what to do.
+	rcfg := fakeRunnerConfig{Stdout: rd.stdout, Stderr: rd.stderr, Status: rd.status}
+	f, err := os.Create(filepath.Join(dir, fakeRunnerConfigFile))
+	if err != nil {
+		return "", err
+	}
+	defer f.Close()
+	if err = json.NewEncoder(f).Encode(&rcfg); err != nil {
+		return "", err
+	}
+	return runner, nil
+}
+
 // newRemoteTestData creates a temporary directory with a symlink back to the unit test binary
 // that's currently running. It also writes a config file instructing the test binary about
 // its stdout, stderr, and status code when running as a fake runner.
 func newRemoteTestData(t *gotesting.T, stdout, stderr string, status int) *remoteTestData {
-	exec, err := os.Executable()
-	if err != nil {
-		t.Fatal(err)
-	}
 	td := remoteTestData{}
 	td.dir = testutil.TempDir(t)
 	td.cfg.Logger = logging.NewSimple(&td.logbuf, true, true)
 	td.cfg.ResDir = filepath.Join(td.dir, "results")
-	if err = os.MkdirAll(td.cfg.ResDir, 0755); err != nil {
+	if err := os.MkdirAll(td.cfg.ResDir, 0755); err != nil {
+		os.RemoveAll(td.dir)
 		t.Fatal(err)
 	}
 	td.cfg.devservers = mockDevservers
@@ -117,25 +147,13 @@ func newRemoteTestData(t *gotesting.T, stdout, stderr string, status int) *remot
 	td.cfg.totalShards = 1
 	td.cfg.shardIndex = 0
 
-	// Create a symlink to ourselves that can be executed as a fake test runner.
-	td.cfg.remoteRunner = filepath.Join(td.dir, fakeRunnerName)
-	if err = os.Symlink(exec, td.cfg.remoteRunner); err != nil {
-		os.RemoveAll(td.dir)
-		t.Fatal(err)
-	}
-
-	// Write a config file telling the fake runner what to do.
-	rcfg := fakeRunnerConfig{Stdout: stdout, Stderr: stderr, Status: status}
-	f, err := os.Create(filepath.Join(td.dir, fakeRunnerConfigFile))
+	path, err := (&fakeRemoteRunnerData{stdout, stderr, status}).setUp(td.dir)
 	if err != nil {
 		os.RemoveAll(td.dir)
 		t.Fatal(err)
 	}
-	defer f.Close()
-	if err = json.NewEncoder(f).Encode(&rcfg); err != nil {
-		os.RemoveAll(td.dir)
-		t.Fatal(err)
-	}
+	td.cfg.remoteRunner = path
+
 	td.state.remoteDevservers = td.cfg.devservers
 
 	return &td
@@ -231,8 +249,8 @@ func TestRemoteRun(t *gotesting.T) {
 			},
 		},
 	}
-	if !reflect.DeepEqual(td.args, expArgs) {
-		t.Errorf("runRemoteTests(%+v) passed args %+v; want %+v", td.cfg, td.args, expArgs)
+	if diff := cmp.Diff(td.args, expArgs, cmpopts.IgnoreUnexported(expArgs)); diff != "" {
+		t.Errorf("runRemoteTests(%+v) passed unexpected args; diff (-got +want):\n%s", td.cfg, diff)
 	}
 }
 

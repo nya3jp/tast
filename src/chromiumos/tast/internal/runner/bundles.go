@@ -135,7 +135,8 @@ func getTests(args *Args, bundles []string) (tests []*testing.EntityWithRunnabil
 	return tests, bundlesWithTests, nil
 }
 
-type fixturesOrError struct { // FIXME: refactoring.
+// TODO(oka): consider merging getFixtures and getTests.
+type fixturesOrError struct {
 	bundle string
 	fs     []*testing.EntityInfo
 	err    *command.StatusError

@@ -300,6 +300,8 @@ func TestRunWithReports_LogStream(t *gotesting.T) {
 			mw.WriteMessage(&control.RunEnd{Time: time.Unix(50, 0), OutDir: ""})
 		case runner.ListTestsMode:
 			json.NewEncoder(stdout).Encode(tests)
+		case runner.ListFixturesMode:
+			json.NewEncoder(stdout).Encode(&runner.ListFixturesResult{})
 		}
 		return 0
 	}
@@ -380,6 +382,8 @@ func TestRunWithReports_ReportResult(t *gotesting.T) {
 			mw.WriteMessage(&control.RunEnd{Time: time.Unix(60, 0), OutDir: ""})
 		case runner.ListTestsMode:
 			json.NewEncoder(stdout).Encode(tests)
+		case runner.ListFixturesMode:
+			json.NewEncoder(stdout).Encode(&runner.ListFixturesResult{})
 		}
 		return 0
 	}
@@ -461,8 +465,9 @@ func TestRunWithSkippedTests(t *gotesting.T) {
 
 			mw.WriteMessage(&control.RunEnd{Time: time.Unix(count, 0), OutDir: ""})
 		case runner.ListTestsMode:
-
 			json.NewEncoder(stdout).Encode(tests)
+		case runner.ListFixturesMode:
+			json.NewEncoder(stdout).Encode(&runner.ListFixturesResult{})
 		}
 		return 0
 	}

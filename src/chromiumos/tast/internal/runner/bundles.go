@@ -135,7 +135,7 @@ func getTests(args *Args, bundles []string) (tests []*testing.EntityWithRunnabil
 	return tests, bundlesWithTests, nil
 }
 
-type fixturesOrError struct { // FIXME: refactoring.
+type fixturesOrError struct { // FIXME: refactoring. See review comments in changes too.
 	bundle string
 	fs     []*testing.EntityInfo
 	err    *command.StatusError

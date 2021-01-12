@@ -83,6 +83,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "dd1cf583_2b077fa3",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/invocation.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 132,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-01-12T02:01:15Z",
+      "side": 1,
+      "message": "Now it looks good. Thanks!",
+      "parentUuid": "44356531_09b83c3d",
+      "revId": "5a96a411ade61520a698fa6483b35bbd7624f200",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "aa54702d_4e1f0631",

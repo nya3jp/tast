@@ -33,6 +33,29 @@
       "message": "I have run a test with failed and skipped tests. Here is the output from prototype-rts. I think the output looks ok. I do think we need to discuss how we should report errors when tast failed.\n\n2021/01/08 14:18:53 got ReportResultRequest: request:\"Name2\" result:\u003cstate:SUCCEEDED \u003e \n2021/01/08 15:51:12 got ReportResultRequest: request:\"Name1\" result:\u003cstate:SUCCEEDED \u003e \n2021/01/08 15:51:12 got ReportResultRequest: request:\"Name2\" result:\u003cstate:SKIPPED errors:\u003csource:TEST severity:WARNING details:\u003cfields:\u003ckey:\"skipReason\" value:\u003cstring_value:\"missing SoftwareDeps: tablet_mode, DUT does not have an internal display\" \u003e \u003e \u003e \u003e \u003e \n2021/01/08 15:51:12 got ReportResultRequest: request:\"Name3\" result:\u003cstate:FAILED errors:\u003csource:TEST severity:CRITICAL details:\u003cfields:\u003ckey:\"file\" value:\u003cstring_value:\"/build/fizz/tmp/portage/chromeos-base/tast-local-tests-cros-0.0.1-r4783/work/tast-local-tests-cros-0.0.1/src/chromiumos/tast/local/bundles/cros/meta/local_fail.go\" \u003e \u003e fields:\u003ckey:\"line\" value:\u003cnumber_value:22 \u003e \u003e fields:\u003ckey:\"reason\" value:\u003cstring_value:\"Failed\" \u003e \u003e fields:\u003ckey:\"stack\" value:\u003cstring_value:\"Failed\\n\\tat chromiumos/tast/local/bundles/cros/meta.LocalFail (local_fail.go:22)\\n\\tat chromiumos/tast/internal/planner.runTestWithRoot.func3 (run.go:755)\\n\\tat chromiumos/tast/internal/planner.safeCall.func2 (safe.go:92)\\n\\tat runtime.goexit (asm_amd64.s:1357)\" \u003e \u003e fields:\u003ckey:\"time\" value:\u003cstring_value:\"2021-01-08T15:50:09.816117098-08:00\" \u003e \u003e \u003e \u003e \u003e \n2021/01/08 15:51:12 got ReportResultRequest: request:\"Name4\" result:\u003cstate:FAILED errors:\u003csource:TEST severity:CRITICAL details:\u003cfields:\u003ckey:\"file\" value:\u003cstring_value:\"/var/tmp/portage/chromeos-base/tast-remote-tests-cros-0.0.1-r4818/work/tast-remote-tests-cros-0.0.1/src/chromiumos/tast/remote/bundles/cros/meta/remote_fail.go\" \u003e \u003e fields:\u003ckey:\"line\" value:\u003cnumber_value:22 \u003e \u003e fields:\u003ckey:\"reason\" value:\u003cstring_value:\"Failed\" \u003e \u003e fields:\u003ckey:\"stack\" value:\u003cstring_value:\"Failed\\n\\tat chromiumos/tast/remote/bundles/cros/meta.RemoteFail (remote_fail.go:22)\\n\\tat chromiumos/tast/internal/planner.runTestWithRoot.func3 (run.go:755)\\n\\tat chromiumos/tast/internal/planner.safeCall.func2 (safe.go:92)\\n\\tat runtime.goexit (asm_amd64.s:1357)\" \u003e \u003e fields:\u003ckey:\"time\" value:\u003cstring_value:\"2021-01-08T23:51:09.466798035Z\" \u003e \u003e \u003e \u003e \u003e \n",
       "revId": "02bc4f25b66217c8741770d2105fbc96ae07f47a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "940b198f_68ee5368",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/invocation.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 133,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-01-12T02:01:15Z",
+      "side": 1,
+      "message": "nit: \"RTD\"",
+      "range": {
+        "startLine": 133,
+        "startChar": 39,
+        "endLine": 133,
+        "endChar": 42
+      },
+      "revId": "02bc4f25b66217c8741770d2105fbc96ae07f47a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

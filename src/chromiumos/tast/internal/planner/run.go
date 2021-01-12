@@ -560,7 +560,11 @@ func runTest(ctx context.Context, t *testing.TestInstance, tout *entityOutputStr
 	switch stack.Status() {
 	case statusGreen:
 	case statusRed:
-		msg := fmt.Sprintf("[Fixture failure] %s: Setup failed", stack.RedFixtureName())
+		name := stack.RedFixtureName()
+		if name == "" {
+			name = pcfg.StartFixtureName
+		}
+		msg := fmt.Sprintf("[Fixture failure] %s: SetUp failed", name)
 		tout.Error(testing.NewError(nil, msg, msg, 0))
 		return nil
 	case statusYellow:

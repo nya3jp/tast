@@ -144,6 +144,11 @@ func run(ctx context.Context, clArgs []string, stdin io.Reader, stdout, stderr i
 			return command.WriteError(stderr, err)
 		}
 		return statusSuccess
+	case FixtureServiceMode:
+		if err := RunFixtureServiceServer(stdin, stdout); err != nil {
+			return command.WriteError(stderr, err)
+		}
+		return statusSuccess
 	default:
 		return command.WriteError(stderr, command.NewStatusErrorf(statusBadArgs, "invalid mode %v", args.Mode))
 	}
@@ -350,6 +355,8 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 		DownloadMode:      args.RunTests.DownloadMode,
 		BeforeDownload:    cfg.beforeDownload,
 		Fixtures:          testing.GlobalRegistry().AllFixtures(),
+		StartFixtureName:  args.RunTests.StartFixtureName,
+		StartFixtureImpl:  &stubFixture{setUpErrors: args.RunTests.SetUpErrors},
 	}
 
 	if err := planner.RunTests(ctx, tests, ew, pcfg); err != nil {
@@ -418,3 +425,21 @@ func prepareTempDir(tempDir string) (restore func(), err error) {
 		}
 	}, nil
 }
+
+type stubFixture struct {
+	setUpErrors []string
+}
+
+var _ testing.FixtureImpl = (*stubFixture)(nil)
+
+func (sf *stubFixture) SetUp(ctx context.Context, s *testing.FixtState) interface{} {
+	for _, e := range sf.setUpErrors {
+		s.Error(e)
+	}
+	return nil
+}
+
+func (*stubFixture) TearDown(ctx context.Context, s *testing.FixtState)     {}
+func (*stubFixture) Reset(ctx context.Context) error                        { return nil }
+func (*stubFixture) PreTest(ctx context.Context, s *testing.FixtTestState)  {}
+func (*stubFixture) PostTest(ctx context.Context, s *testing.FixtTestState) {}

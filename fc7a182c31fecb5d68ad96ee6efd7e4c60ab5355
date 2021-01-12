@@ -41,6 +41,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "e12ae6c9_17695284",
+        "filename": "src/chromiumos/tast/internal/xcontext/xcontext.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-01-12T09:18:35Z",
+      "side": 1,
+      "message": "You\u0027re right, thanks for catching this subtle issue!",
+      "parentUuid": "12d0b26b_75035c25",
+      "range": {
+        "startLine": 78,
+        "startChar": 5,
+        "endLine": 78,
+        "endChar": 23
+      },
+      "revId": "fc7a182c31fecb5d68ad96ee6efd7e4c60ab5355",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "c744321a_67394239",
@@ -54,6 +78,24 @@
       "writtenOn": "2021-01-08T14:12:02Z",
       "side": 1,
       "message": "optional: I\u0027d add another propagation check.\n\nctx1, cancel1 :\u003d ...\ndefer cancel1(...)\nctx2, cancel2 :\u003d ...\ndefer cancel2(...)\n\ncancel2(...)\n\n// Make sure the parent is not cancelled.\nif err :\u003d ctx1.Err(); err !\u003d nil {\n  t.Error(...)\n}\n\nThough, it looks just a simpler case.",
+      "revId": "fc7a182c31fecb5d68ad96ee6efd7e4c60ab5355",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a9cb6ce9_4dab081b",
+        "filename": "src/chromiumos/tast/internal/xcontext/xcontext_test.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 114,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-01-12T09:18:35Z",
+      "side": 1,
+      "message": "SGTM, done.",
+      "parentUuid": "c744321a_67394239",
       "revId": "fc7a182c31fecb5d68ad96ee6efd7e4c60ab5355",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -94,6 +136,30 @@
       "writtenOn": "2021-01-08T14:12:02Z",
       "side": 1,
       "message": "nit/style/optional: can be just\n\ndl1 :\u003d time.Unix(...)\ndl2 :\u003d time.Unix(...)\ndl3 :\u003d time.Unix(...)\n\nwhich looks shorter? Any intention to use var block here?",
+      "range": {
+        "startLine": 510,
+        "startChar": 1,
+        "endLine": 514,
+        "endChar": 2
+      },
+      "revId": "fc7a182c31fecb5d68ad96ee6efd7e4c60ab5355",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "15121da3_902a1685",
+        "filename": "src/chromiumos/tast/internal/xcontext/xcontext_test.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 514,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-01-12T09:18:35Z",
+      "side": 1,
+      "message": "Yea, I don\u0027t remember why. :)",
+      "parentUuid": "81088d99_da32c43e",
       "range": {
         "startLine": 510,
         "startChar": 1,

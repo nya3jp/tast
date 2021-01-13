@@ -92,8 +92,9 @@ run_vet() {
 
 # Tests one or more packages.
 run_test() {
+  local args=(${@} ${EXTRAARGS[@]})
   go test ${verbose_flag} -pkgdir "${PKGDIR}" \
-    ${test_regex:+"-run=${test_regex}"} "${@}"
+    ${test_regex:+"-run=${test_regex}"} "${args[@]}"
 }
 
 # Executable package to build.
@@ -145,6 +146,9 @@ while getopts "CTb:c:ho:r:t:v-" opt; do
       ;;
   esac
 done
+
+shift $((OPTIND-1))
+EXTRAARGS=$@
 
 if [ -n "${build_pkg}" ]; then
   if [ -z "${build_out}" ]; then

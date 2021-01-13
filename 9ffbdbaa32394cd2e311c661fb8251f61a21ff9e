@@ -16,6 +16,41 @@
       "message": "LGTM with an ask.\n\nhttps://chromium.googlesource.com/chromiumos/platform/tast-tests/+/refs/heads/main/src/chromiumos/tast/local/bundles/cros/graphics/deqp.go#166\n\nThis line may be affected. Could you double check?\nAnd, if so, could you fix that code together?",
       "revId": "9ffbdbaa32394cd2e311c661fb8251f61a21ff9e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "65358c20_82c7fb75",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 11
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-01-13T02:12:49Z",
+      "side": 1,
+      "message": "This change does not user code. The only usage for now is in chromiumos/tast/cmd/tast (Tast CLI), which doesn\u0027t call user code directly. We have to take care of user code if we decide to use xcontext in test bundle code (e.g. chromiumos/tast/internal/testing).",
+      "parentUuid": "b4db711e_0458764b",
+      "revId": "9ffbdbaa32394cd2e311c661fb8251f61a21ff9e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5eea66e9_f7d11673",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 11
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-01-13T02:12:49Z",
+      "side": 1,
+      "message": "Thanks for reviewing!",
+      "revId": "9ffbdbaa32394cd2e311c661fb8251f61a21ff9e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

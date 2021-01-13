@@ -496,9 +496,13 @@ func TestRunExternalData(t *gotesting.T) {
 	)
 
 	for _, tc := range []struct {
-		name string
-		mode DownloadMode
-	}{{"batch", DownloadBatch}, {"lazy", DownloadLazy}} {
+		name         string
+		mode         DownloadMode
+		numDownloads int
+	}{
+		{"batch", DownloadBatch, 1},
+		{"lazy", DownloadLazy, 2},
+	} {
 		t.Run(tc.name, func(t *gotesting.T) {
 			ds, err := devservertest.NewServer(devservertest.Files([]*devservertest.File{
 				{URL: file1URL, Data: []byte(file1Data)},
@@ -537,6 +541,8 @@ func TestRunExternalData(t *gotesting.T) {
 				t.Fatal("WriteFiles: ", err)
 			}
 
+			numDownloads := 0
+
 			pcfg := &Config{
 				DataDir: dataDir,
 				Features: dep.Features{
@@ -547,6 +553,9 @@ func TestRunExternalData(t *gotesting.T) {
 				},
 				Devservers:   []string{ds.URL},
 				DownloadMode: tc.mode,
+				BeforeDownload: func(ctx context.Context) {
+					numDownloads++
+				},
 			}
 
 			tests := []*testing.TestInstance{
@@ -621,6 +630,10 @@ func TestRunExternalData(t *gotesting.T) {
 			}
 			if diff := cmp.Diff(files, wantFiles); diff != "" {
 				t.Error("Data directory mismatch (-got +want):\n", diff)
+			}
+
+			if numDownloads != tc.numDownloads {
+				t.Errorf("Unexpected number of download attempts: got %d, want %d", numDownloads, tc.numDownloads)
 			}
 		})
 	}

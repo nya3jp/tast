@@ -35,6 +35,31 @@ const (
 	statusNoTests     = 5 // no tests were matched by the supplied patterns
 )
 
+// Delegate injects functions as a part of test bundle framework implementation.
+type Delegate struct {
+	// TestHook is called before each test in the test bundle if it is not nil.
+	// The returned closure is executed after the test if it is not nil.
+	TestHook func(context.Context, *testing.TestHookState) func(context.Context, *testing.TestHookState)
+
+	// RunHook is called at the beginning of a bundle execution if it is not nil.
+	// The returned closure is executed at the end if it is not nil.
+	// In case of errors, no test in the test bundle will run.
+	RunHook func(context.Context) (func(context.Context) error, error)
+
+	// Ready is called at the beginning of a bundle execution if it is not
+	// nil and -waituntilready is set to true (default).
+	// Local test bundles can specify a function to wait for the DUT to be
+	// ready for tests to run. It is recommended to write informational
+	// messages with testing.ContextLog to let the user know the reason for
+	// the delay. In case of errors, no test in the test bundle will run.
+	// This field has an effect only for local test bundles.
+	Ready func(ctx context.Context) error
+
+	// BeforeReboot is called before every reboot if it is not nil.
+	// This field has an effect only for remote test bundles.
+	BeforeReboot func(ctx context.Context, d *dut.DUT) error
+}
+
 // run reads a JSON-marshaled Args struct from stdin and performs the requested action.
 // Default arguments may be specified via args, which will also be updated from stdin.
 // The caller should exit with the returned status code.
@@ -137,6 +162,27 @@ type runConfig struct {
 	// defaultTestTimeout contains the default maximum time allotted to each test.
 	// It is only used if testing.Test.Timeout is unset.
 	defaultTestTimeout time.Duration
+}
+
+func newArgsAndRunConfig(defaultTestTimeout time.Duration, dataDir string, d Delegate) (*Args, *runConfig) {
+	args := &Args{RunTests: &RunTestsArgs{DataDir: dataDir}}
+	cfg := &runConfig{
+		runHook: func(ctx context.Context) (func(context.Context) error, error) {
+			if d.Ready != nil && args.RunTests.WaitUntilReady {
+				if err := d.Ready(ctx); err != nil {
+					return nil, err
+				}
+			}
+			if d.RunHook == nil {
+				return nil, nil
+			}
+			return d.RunHook(ctx)
+		},
+		testHook:           d.TestHook,
+		beforeReboot:       d.BeforeReboot,
+		defaultTestTimeout: defaultTestTimeout,
+	}
+	return args, cfg
 }
 
 // eventWriter wraps MessageWriter to write events to syslog in parallel.

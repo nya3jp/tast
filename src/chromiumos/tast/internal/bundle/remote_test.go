@@ -32,7 +32,7 @@ func TestRemoteMissingTarget(t *gotesting.T) {
 	// Remote should fail if -target wasn't passed.
 	stdin := newBufferWithArgs(t, &Args{Mode: RunTestsMode, RunTests: &RunTestsArgs{}})
 	stderr := bytes.Buffer{}
-	if status := Remote(nil, stdin, &bytes.Buffer{}, &stderr, RemoteDelegate{}); status != statusError {
+	if status := Remote(nil, stdin, &bytes.Buffer{}, &stderr, Delegate{}); status != statusError {
 		t.Errorf("Remote() = %v; want %v", status, statusError)
 	}
 	if len(stderr.String()) == 0 {
@@ -55,7 +55,7 @@ func TestRemoteCantConnect(t *gotesting.T) {
 		RunTests: &RunTestsArgs{Target: td.Srv.Addr().String()},
 	}
 	stderr := bytes.Buffer{}
-	if status := Remote(nil, newBufferWithArgs(t, &args), &bytes.Buffer{}, &stderr, RemoteDelegate{}); status != statusError {
+	if status := Remote(nil, newBufferWithArgs(t, &args), &bytes.Buffer{}, &stderr, Delegate{}); status != statusError {
 		t.Errorf("Remote(%+v) = %v; want %v", args, status, statusError)
 	}
 	if len(stderr.String()) == 0 {
@@ -103,7 +103,7 @@ func TestRemoteDUT(t *gotesting.T) {
 			KeyFile: td.UserKeyFile,
 		},
 	}
-	if status := Remote(nil, newBufferWithArgs(t, &args), &bytes.Buffer{}, &bytes.Buffer{}, RemoteDelegate{}); status != statusSuccess {
+	if status := Remote(nil, newBufferWithArgs(t, &args), &bytes.Buffer{}, &bytes.Buffer{}, Delegate{}); status != statusSuccess {
 		t.Errorf("Remote(%+v) = %v; want %v", args, status, statusSuccess)
 	}
 	if realOutput != output {
@@ -144,7 +144,7 @@ func TestRemoteReconnectBetweenTests(t *gotesting.T) {
 			KeyFile: td.UserKeyFile,
 		},
 	}
-	if status := Remote(nil, newBufferWithArgs(t, &args), &bytes.Buffer{}, &bytes.Buffer{}, RemoteDelegate{}); status != statusSuccess {
+	if status := Remote(nil, newBufferWithArgs(t, &args), &bytes.Buffer{}, &bytes.Buffer{}, Delegate{}); status != statusSuccess {
 		t.Errorf("Remote(%+v) = %v; want %v", args, status, statusSuccess)
 	}
 	if conn1 != true {
@@ -187,7 +187,7 @@ func TestRemoteTestHooks(t *gotesting.T) {
 	var ranPreHookCount, ranPostHookCount int
 
 	// Test Remote function.
-	if status := Remote(nil, stdin, &bytes.Buffer{}, &stderr, RemoteDelegate{
+	if status := Remote(nil, stdin, &bytes.Buffer{}, &stderr, Delegate{
 		TestHook: func(context.Context, *testing.TestHookState) func(context.Context, *testing.TestHookState) {
 			ranPreHookCount++
 			return func(context.Context, *testing.TestHookState) {
@@ -245,7 +245,7 @@ func TestBeforeReboot(t *gotesting.T) {
 	var ranBeforeRebootCount int
 
 	// Test Remote function.
-	if status := Remote(nil, stdin, &bytes.Buffer{}, &stderr, RemoteDelegate{
+	if status := Remote(nil, stdin, &bytes.Buffer{}, &stderr, Delegate{
 		BeforeReboot: func(context.Context, *dut.DUT) error {
 			ranBeforeRebootCount++
 			return nil

@@ -11,13 +11,15 @@ import (
 )
 
 // RemoteDelegate injects functions as a part of remote test bundle framework implementation.
-type RemoteDelegate = bundle.RemoteDelegate
+//
+// Deprecated: Use Delegate.
+type RemoteDelegate = Delegate
 
 // RemoteDefault implements the main function for remote test bundles.
 //
 // Usually the Main function of a remote test bundles should just this function,
 // and pass the returned status code to os.Exit.
-func RemoteDefault(delegate RemoteDelegate) int {
+func RemoteDefault(d Delegate) int {
 	stdin, stdout, stderr := lockStdIO()
-	return bundle.Remote(os.Args[1:], stdin, stdout, stderr, delegate)
+	return bundle.Remote(os.Args[1:], stdin, stdout, stderr, d)
 }

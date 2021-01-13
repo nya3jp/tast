@@ -11,13 +11,15 @@ import (
 )
 
 // LocalDelegate injects several functions as a part of local test bundle framework implementation.
-type LocalDelegate = bundle.LocalDelegate
+//
+// Deprecated: Use Delegate.
+type LocalDelegate = Delegate
 
 // LocalDefault implements the main function for local test bundles.
 //
 // Usually the Main function of a local test bundles should just this function,
 // and pass the returned status code to os.Exit.
-func LocalDefault(delegate LocalDelegate) int {
+func LocalDefault(d Delegate) int {
 	stdin, stdout, stderr := lockStdIO()
-	return bundle.Local(os.Args[1:], stdin, stdout, stderr, delegate)
+	return bundle.Local(os.Args[1:], stdin, stdout, stderr, d)
 }

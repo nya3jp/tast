@@ -14,6 +14,9 @@ import (
 // RunTestsArgs is nested within Args and contains arguments used by RunTestsMode.
 type RunTestsArgs = bundle.RunTestsArgs
 
+// Delegate injects functions as a part of test bundle framework implementation.
+type Delegate = bundle.Delegate
+
 // lockStdIO replaces os.Stdin, os.Stdout and os.Stderr with closed pipes and
 // returns the original files. This function can be called at the beginning of
 // test bundles to ensure that calling fmt.Print and its family does not corrupt

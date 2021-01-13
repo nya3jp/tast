@@ -12,7 +12,7 @@ import (
 
 	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/testing"
-	"chromiumos/tast/timing"
+	"chromiumos/tast/internal/timing"
 )
 
 // fixtureStatus represents a status of a fixture, as well as that of a fixture

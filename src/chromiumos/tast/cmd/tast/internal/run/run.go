@@ -25,8 +25,8 @@ import (
 	"chromiumos/tast/internal/runner"
 	"chromiumos/tast/internal/sshconfig"
 	"chromiumos/tast/internal/testing"
+	"chromiumos/tast/internal/timing"
 	"chromiumos/tast/ssh"
-	"chromiumos/tast/timing"
 )
 
 const (

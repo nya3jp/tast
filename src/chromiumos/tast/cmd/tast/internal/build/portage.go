@@ -16,8 +16,8 @@ import (
 	"strings"
 	"time"
 
+	"chromiumos/tast/internal/timing"
 	"chromiumos/tast/shutil"
-	"chromiumos/tast/timing"
 )
 
 const (

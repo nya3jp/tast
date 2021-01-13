@@ -15,7 +15,7 @@ import (
 
 	"chromiumos/tast/internal/bundle"
 	"chromiumos/tast/internal/runner"
-	"chromiumos/tast/timing"
+	"chromiumos/tast/internal/timing"
 )
 
 // deviceConfigFile is a file name containing the dump of obtained device.Config of the DUT,

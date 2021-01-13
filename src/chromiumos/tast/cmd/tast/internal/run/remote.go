@@ -14,7 +14,7 @@ import (
 
 	"chromiumos/tast/internal/bundle"
 	"chromiumos/tast/internal/runner"
-	"chromiumos/tast/timing"
+	"chromiumos/tast/internal/timing"
 )
 
 // runRemoteTests runs the remote test runner and reads its output.

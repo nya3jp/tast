@@ -21,8 +21,8 @@ import (
 	"chromiumos/tast/ctxutil"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/command"
+	"chromiumos/tast/internal/timing"
 	"chromiumos/tast/internal/xcontext"
-	"chromiumos/tast/timing"
 )
 
 const (

@@ -26,8 +26,8 @@ import (
 	"chromiumos/tast/internal/control"
 	"chromiumos/tast/internal/runner"
 	"chromiumos/tast/internal/testing"
+	"chromiumos/tast/internal/timing"
 	"chromiumos/tast/testutil"
-	"chromiumos/tast/timing"
 )
 
 // noOpCopyAndRemove can be passed to readTestOutput by tests.

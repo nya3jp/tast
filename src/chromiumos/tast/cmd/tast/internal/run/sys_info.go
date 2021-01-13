@@ -10,7 +10,7 @@ import (
 	"path/filepath"
 
 	"chromiumos/tast/internal/runner"
-	"chromiumos/tast/timing"
+	"chromiumos/tast/internal/timing"
 )
 
 // getInitialSysInfo saves the initial state of the DUT's system information to cfg if

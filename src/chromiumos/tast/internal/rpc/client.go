@@ -19,8 +19,8 @@ import (
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testcontext"
+	"chromiumos/tast/internal/timing"
 	"chromiumos/tast/ssh"
-	"chromiumos/tast/timing"
 )
 
 // Client owns a gRPC connection to the DUT for remote tests to use.

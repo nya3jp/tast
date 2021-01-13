@@ -1,0 +1,130 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "60e6c6be_ed89979e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 27
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-01-13T10:21:52Z",
+      "side": 1,
+      "message": "Mostly good, I guess this is a last iteration.\n",
+      "revId": "05a81463b88097c085717b1c3b1516d3913127ff",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b6968fb6_87b86f04",
+        "filename": "src/chromiumos/tast/internal/bundle/fixture_service.go",
+        "patchSetId": 27
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-01-13T10:21:52Z",
+      "side": 1,
+      "message": "nit: Can we convert this method to a normal function?",
+      "range": {
+        "startLine": 49,
+        "startChar": 0,
+        "endLine": 49,
+        "endChar": 22
+      },
+      "revId": "05a81463b88097c085717b1c3b1516d3913127ff",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "16429375_e8b04df8",
+        "filename": "src/chromiumos/tast/internal/bundle/fixture_service.go",
+        "patchSetId": 27
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-01-13T10:21:52Z",
+      "side": 1,
+      "message": "nit\u0026optional: retErr is always nil. But I guess you wanted to repeat the same pattern across all deferred closures, so I don\u0027t have strong opinion.",
+      "range": {
+        "startLine": 66,
+        "startChar": 35,
+        "endLine": 66,
+        "endChar": 53
+      },
+      "revId": "05a81463b88097c085717b1c3b1516d3913127ff",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "422ca967_3d464074",
+        "filename": "src/chromiumos/tast/internal/bundle/fixture_service.go",
+        "patchSetId": 27
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-01-13T10:21:52Z",
+      "side": 1,
+      "message": "style: https://github.com/golang/go/wiki/CodeReviewComments#indent-error-flow\n\n if err \u003d\u003d io.EOF {\n   return ...\n }\n if err !\u003d nil {\n   return err\n }",
+      "range": {
+        "startLine": 74,
+        "startChar": 1,
+        "endLine": 78,
+        "endChar": 2
+      },
+      "revId": "05a81463b88097c085717b1c3b1516d3913127ff",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c8ed067f_427faac3",
+        "filename": "src/chromiumos/tast/internal/bundle/fixture_service.go",
+        "patchSetId": 27
+      },
+      "lineNbr": 164,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-01-13T10:21:52Z",
+      "side": 1,
+      "message": "In usual test runs (i.e. bundle.runTests) we call prepareTempDir only once for all tests. So we can do the same here: call prepareTempDir only once for push/pop.",
+      "revId": "05a81463b88097c085717b1c3b1516d3913127ff",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "60e4932b_14c78d30",
+        "filename": "src/chromiumos/tast/internal/bundle/fixture_service_test.go",
+        "patchSetId": 27
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-01-13T10:21:52Z",
+      "side": 1,
+      "message": "Optional: You may want to export and use planner.fakeFixture, a fully customizable fixture for testing. But given the current usage it might be rather too much.",
+      "range": {
+        "startLine": 27,
+        "startChar": 5,
+        "endLine": 27,
+        "endChar": 16
+      },
+      "revId": "05a81463b88097c085717b1c3b1516d3913127ff",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

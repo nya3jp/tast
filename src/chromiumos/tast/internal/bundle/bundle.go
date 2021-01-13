@@ -58,6 +58,18 @@ type Delegate struct {
 	// BeforeReboot is called before every reboot if it is not nil.
 	// This field has an effect only for remote test bundles.
 	BeforeReboot func(ctx context.Context, d *dut.DUT) error
+
+	// BeforeDownload is called before the framework attempts to download
+	// external data files if it is not nil.
+	//
+	// Test bundles can install this hook to recover from possible network
+	// outage caused by previous tests. Note that it is called only when
+	// the framework needs to download one or more external data files.
+	//
+	// Since no specific timeout is set to ctx, do remember to set a
+	// reasonable timeout at the beginning of the hook to avoid blocking
+	// for long time.
+	BeforeDownload func(ctx context.Context)
 }
 
 // run reads a JSON-marshaled Args struct from stdin and performs the requested action.
@@ -159,6 +171,8 @@ type runConfig struct {
 	// beforeReboot is run before every reboot if non-nil.
 	// The function must not call DUT.Reboot() or it will cause infinite recursion.
 	beforeReboot func(context.Context, *dut.DUT) error
+	// beforeDownload is run before downloading external data files if non-nil.
+	beforeDownload func(context.Context)
 	// defaultTestTimeout contains the default maximum time allotted to each test.
 	// It is only used if testing.Test.Timeout is unset.
 	defaultTestTimeout time.Duration
@@ -180,6 +194,7 @@ func newArgsAndRunConfig(defaultTestTimeout time.Duration, dataDir string, d Del
 		},
 		testHook:           d.TestHook,
 		beforeReboot:       d.BeforeReboot,
+		beforeDownload:     d.BeforeDownload,
 		defaultTestTimeout: defaultTestTimeout,
 	}
 	return args, cfg
@@ -325,6 +340,7 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 		RemoteData:        rd,
 		TestHook:          cfg.testHook,
 		DownloadMode:      args.RunTests.DownloadMode,
+		BeforeDownload:    cfg.beforeDownload,
 		Fixtures:          testing.GlobalRegistry().AllFixtures(),
 	}
 

@@ -638,7 +638,11 @@ func (d *downloader) Purgeable() []string {
 }
 
 func (d *downloader) download(ctx context.Context, tests []*testing.TestInstance) {
-	d.purgeable = extdata.Ensure(ctx, d.pcfg.DataDir, d.pcfg.BuildArtifactsURL, tests, d.cl)
+	jobs, purgeable := extdata.PrepareDownloads(ctx, d.pcfg.DataDir, d.pcfg.BuildArtifactsURL, tests)
+	if len(jobs) > 0 {
+		extdata.RunDownloads(ctx, d.pcfg.DataDir, jobs, d.cl)
+	}
+	d.purgeable = purgeable
 }
 
 func createEntityOutDir(baseDir, name string) (string, error) {

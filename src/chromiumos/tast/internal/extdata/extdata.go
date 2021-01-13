@@ -109,43 +109,39 @@ func newLink(d *LinkData, artifactsURL string) (*link, error) {
 	}
 }
 
-// downloadJob represents a job to download an external data file and make hard links
+// DownloadJob represents a job to download an external data file and make hard links
 // at several file paths.
-type downloadJob struct {
+type DownloadJob struct {
 	link  *link
 	dests []string
 }
 
-// downloadResult represents a result of a downloadJob.
+// downloadResult represents a result of a DownloadJob.
 type downloadResult struct {
-	job      *downloadJob
+	job      *DownloadJob
 	duration time.Duration
 	size     int64
 	err      error
 }
 
-// Ensure downloads missing or stale external data files associated with tests.
-// dataDir is the path to the base directory containing external data link files (typically
-// "/usr/local/share/tast/data" on DUT). artifactURL is the URL of Google Cloud Storage directory,
-// ending with a slash, containing build artifacts for the current Chrome OS image.
-// Ensure returns a list of external data file paths not needed to run the specified tests. They
-// can be deleted if the disk space is low.
-// This function does not return errors; instead it tries to download files as far as possible and
-// logs encountered errors with ctx so that a single download error does not cause all tests to fail.
-func Ensure(ctx context.Context, dataDir, artifactsURL string, tests []*testing.TestInstance, cl devserver.Client) (purgeable []string) {
-	jobs, purgeable := prepareDownloads(ctx, dataDir, artifactsURL, tests)
-	if len(jobs) > 0 {
-		runDownloads(ctx, dataDir, jobs, cl)
-	}
-	return purgeable
-}
-
-// prepareDownloads computes which external data files need to be downloaded.
-// It also removes stale files so they are never used even if we fail to download them later.
-// When it encounters errors, *.external-error files are saved so that they can be read and
-// reported by bundles later.
-func prepareDownloads(ctx context.Context, dataDir, artifactsURL string, tests []*testing.TestInstance) (jobs []*downloadJob, purgeable []string) {
-	urlToJob := make(map[string]*downloadJob)
+// PrepareDownloads computes a list of external data files that need to be
+// downloaded for tests.
+//
+// dataDir is the path to the base directory containing external data link files
+// (typically "/usr/local/share/tast/data" on DUT). artifactURL is the URL of
+// Google Cloud Storage directory, ending with a slash, containing build
+// artifacts for the current Chrome OS image.
+//
+// PrepareDownloads also removes stale files so they are never used even if we
+// fail to download them later. When it encounters errors, *.external-error
+// files are saved so that they can be read and reported by bundles later.
+//
+// PrepareDownloads returns a list of download job specifications that can be
+// passed to RunDownloads to perform actual downloads. It also returns a list of
+// external data file paths not needed to run the specified tests. They can be
+// deleted if the disk space is low.
+func PrepareDownloads(ctx context.Context, dataDir, artifactsURL string, tests []*testing.TestInstance) (jobs []*DownloadJob, purgeable []string) {
+	urlToJob := make(map[string]*DownloadJob)
 	hasErr := false
 
 	// Initialize purgeableSet with all external data files under dataDir.
@@ -226,7 +222,7 @@ func prepareDownloads(ctx context.Context, dataDir, artifactsURL string, tests [
 			// To check consistency, create an entry in urlToJob even if we are not updating the destination file.
 			job := urlToJob[link.ComputedURL]
 			if job == nil {
-				job = &downloadJob{link, nil}
+				job = &DownloadJob{link, nil}
 				urlToJob[link.ComputedURL] = job
 			} else if !reflect.DeepEqual(job.link, link) {
 				reportErr("conflicting external data link found at %s: got %+v, want %+v", filepath.Join(testing.RelativeDataDir(t.Pkg), name), link, job.link)
@@ -291,9 +287,17 @@ func loadLink(path, artifactsURL string) (*link, error) {
 	return l, nil
 }
 
-// runDownloads downloads required external data files in parallel.
-func runDownloads(ctx context.Context, dataDir string, jobs []*downloadJob, cl devserver.Client) {
-	jobCh := make(chan *downloadJob, len(jobs))
+// RunDownloads downloads required external data files in parallel.
+//
+// dataDir is the path to the base directory containing external data link files
+// (typically "/usr/local/share/tast/data" on DUT). jobs are typically obtained
+// by calling PrepareDownloads.
+//
+// This function does not return errors; instead it tries to download files as
+// far as possible and logs encountered errors with ctx so that a single
+// download error does not cause all tests to fail.
+func RunDownloads(ctx context.Context, dataDir string, jobs []*DownloadJob, cl devserver.Client) {
+	jobCh := make(chan *DownloadJob, len(jobs))
 	for _, job := range jobs {
 		jobCh <- job
 	}
@@ -343,7 +347,7 @@ func runDownloads(ctx context.Context, dataDir string, jobs []*downloadJob, cl d
 }
 
 // runDownload downloads an external data file.
-func runDownload(ctx context.Context, dataDir string, job *downloadJob, cl devserver.Client) (size int64, retErr error) {
+func runDownload(ctx context.Context, dataDir string, job *DownloadJob, cl devserver.Client) (size int64, retErr error) {
 	// Create the temporary file under dataDir to make use of hard links.
 	f, err := ioutil.TempFile(dataDir, ".external-download.")
 	if err != nil {

@@ -35,7 +35,7 @@ import (
 	"time"
 
 	"chromiumos/tast/internal/testing"
-	"chromiumos/tast/timing"
+	"chromiumos/tast/internal/timing"
 )
 
 // Msg is an interface implemented by all message types.

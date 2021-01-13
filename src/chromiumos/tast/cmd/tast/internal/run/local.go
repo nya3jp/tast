@@ -18,8 +18,8 @@ import (
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/bundle"
 	"chromiumos/tast/internal/runner"
+	"chromiumos/tast/internal/timing"
 	"chromiumos/tast/ssh"
-	"chromiumos/tast/timing"
 )
 
 const (

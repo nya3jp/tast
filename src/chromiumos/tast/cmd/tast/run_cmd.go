@@ -20,7 +20,7 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run"
 	"chromiumos/tast/ctxutil"
 	"chromiumos/tast/internal/command"
-	"chromiumos/tast/timing"
+	"chromiumos/tast/internal/timing"
 )
 
 const (

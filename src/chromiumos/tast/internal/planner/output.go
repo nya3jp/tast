@@ -9,7 +9,7 @@ import (
 
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/testing"
-	"chromiumos/tast/timing"
+	"chromiumos/tast/internal/timing"
 )
 
 // OutputStream is an interface to report streamed outputs of multiple entity runs.

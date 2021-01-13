@@ -20,7 +20,7 @@ import (
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/testing"
-	"chromiumos/tast/timing"
+	"chromiumos/tast/internal/timing"
 )
 
 // RunServer runs a gRPC server on r/w channels.

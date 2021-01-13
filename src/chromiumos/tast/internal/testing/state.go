@@ -65,7 +65,7 @@ import (
 	"chromiumos/tast/errors"
 	"chromiumos/tast/errors/stack"
 	"chromiumos/tast/internal/testcontext"
-	"chromiumos/tast/timing"
+	"chromiumos/tast/internal/timing"
 )
 
 const (

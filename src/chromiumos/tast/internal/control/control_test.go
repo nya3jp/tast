@@ -17,7 +17,7 @@ import (
 	"github.com/google/go-cmp/cmp/cmpopts"
 
 	"chromiumos/tast/internal/testing"
-	"chromiumos/tast/timing"
+	"chromiumos/tast/internal/timing"
 )
 
 func TestWriteAndRead(t *gotesting.T) {

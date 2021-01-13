@@ -12,7 +12,7 @@ import (
 
 	"chromiumos/tast/internal/control"
 	"chromiumos/tast/internal/testing"
-	"chromiumos/tast/timing"
+	"chromiumos/tast/internal/timing"
 )
 
 type outputSink struct {

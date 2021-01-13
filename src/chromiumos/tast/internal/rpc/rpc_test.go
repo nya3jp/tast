@@ -20,8 +20,8 @@ import (
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/testing"
+	"chromiumos/tast/internal/timing"
 	"chromiumos/tast/testutil"
-	"chromiumos/tast/timing"
 )
 
 const pingUserServiceName = "tast.coretest.PingUser"

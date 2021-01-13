@@ -24,7 +24,7 @@ import (
 	"chromiumos/tast/internal/extdata"
 	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/testing"
-	"chromiumos/tast/timing"
+	"chromiumos/tast/internal/timing"
 )
 
 const (

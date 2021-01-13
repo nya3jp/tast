@@ -25,7 +25,7 @@ func TestLocalBadTest(t *gotesting.T) {
 	args := Args{Mode: RunTestsMode}
 	stdin := newBufferWithArgs(t, &args)
 	stderr := bytes.Buffer{}
-	if status := Local(nil, stdin, &bytes.Buffer{}, &stderr, LocalDelegate{}); status != statusBadTests {
+	if status := Local(nil, stdin, &bytes.Buffer{}, &stderr, Delegate{}); status != statusBadTests {
 		t.Errorf("Local(%+v) = %v; want %v", args, status, statusBadTests)
 	}
 	if len(stderr.String()) == 0 {
@@ -45,7 +45,7 @@ func TestLocalRunTest(t *gotesting.T) {
 	args := Args{Mode: RunTestsMode, RunTests: &RunTestsArgs{OutDir: outDir}}
 	stdin := newBufferWithArgs(t, &args)
 	stderr := bytes.Buffer{}
-	if status := Local(nil, stdin, &bytes.Buffer{}, &stderr, LocalDelegate{}); status != statusSuccess {
+	if status := Local(nil, stdin, &bytes.Buffer{}, &stderr, Delegate{}); status != statusSuccess {
 		t.Errorf("Local(%+v) = %v; want %v", args, status, statusSuccess)
 	}
 	if !ran {
@@ -79,7 +79,7 @@ func TestLocalReadyFunc(t *gotesting.T) {
 		ranReady = true
 		return nil
 	}
-	if status := Local(nil, stdin, &bytes.Buffer{}, &stderr, LocalDelegate{
+	if status := Local(nil, stdin, &bytes.Buffer{}, &stderr, Delegate{
 		Ready: ready,
 	}); status != statusSuccess {
 		t.Errorf("Local(%+v) = %v; want %v", args, status, statusSuccess)
@@ -93,7 +93,7 @@ func TestLocalReadyFunc(t *gotesting.T) {
 	stderr = bytes.Buffer{}
 	const msg = "intentional failure"
 	ready = func(context.Context) error { return errors.New(msg) }
-	if status := Local(nil, stdin, &bytes.Buffer{}, &stderr, LocalDelegate{
+	if status := Local(nil, stdin, &bytes.Buffer{}, &stderr, Delegate{
 		Ready: ready,
 	}); status != statusError {
 		t.Errorf("Local(%+v) = %v; want %v", args, status, statusError)
@@ -126,7 +126,7 @@ func TestLocalReadyFuncDisabled(t *gotesting.T) {
 		ranReady = true
 		return nil
 	}
-	if status := Local(nil, stdin, &bytes.Buffer{}, &stderr, LocalDelegate{
+	if status := Local(nil, stdin, &bytes.Buffer{}, &stderr, Delegate{
 		Ready: ready,
 	}); status != statusSuccess {
 		t.Errorf("Local(%+v) = %v; want %v", args, status, statusSuccess)
@@ -148,7 +148,7 @@ func TestLocalTestHook(t *gotesting.T) {
 	stdin := newBufferWithArgs(t, &args)
 	stderr := bytes.Buffer{}
 	var ranPre, ranPost bool
-	if status := Local(nil, stdin, &bytes.Buffer{}, &stderr, LocalDelegate{
+	if status := Local(nil, stdin, &bytes.Buffer{}, &stderr, Delegate{
 		TestHook: func(context.Context, *testing.TestHookState) func(context.Context, *testing.TestHookState) {
 			ranPre = true
 			return func(context.Context, *testing.TestHookState) {
@@ -180,7 +180,7 @@ func TestLocalRunHook(t *gotesting.T) {
 	stdin := newBufferWithArgs(t, &args)
 	stderr := bytes.Buffer{}
 	var ranPre, ranPost bool
-	if status := Local(nil, stdin, &bytes.Buffer{}, &stderr, LocalDelegate{
+	if status := Local(nil, stdin, &bytes.Buffer{}, &stderr, Delegate{
 		RunHook: func(context.Context) (func(context.Context) error, error) {
 			ranPre = true
 			return func(context.Context) error {

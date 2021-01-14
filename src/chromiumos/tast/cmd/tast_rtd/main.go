@@ -18,6 +18,8 @@ import (
 
 	rtd "go.chromium.org/chromiumos/config/go/api/test/rtd/v1"
 	"google.golang.org/grpc"
+
+	"chromiumos/tast/cmd/tast_rtd/internal/rpc"
 )
 
 // Version is the version info of this command. It is filled in during emerge.
@@ -67,12 +69,19 @@ func main() {
 		version := flag.Bool("version", false, "print version and exit")
 		input := flag.String("input", "", "specify the test invocation request protobuf input file")
 		rtdPath := flag.String("rtd", "/usr/src/rtd", "specify the root directory of rtd files and executables.")
+		serverPort := flag.Int("reports_port", 0, "specify the port number to start Reports server.")
 		flag.Parse()
 
 		if *version {
 			fmt.Printf("tast_rtd version %s\n", Version)
 			return 0
 		}
+
+		srv, err := rpc.NewReportsServer(*serverPort)
+		if err != nil {
+			log.Fatalf("Failed to start Reports server: %v", err)
+		}
+		defer srv.Stop()
 
 		logFile, err := createLogFile()
 		if err != nil {

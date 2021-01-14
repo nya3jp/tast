@@ -69,6 +69,24 @@
       "parentUuid": "2ce010dc_838e0df1",
       "revId": "fb942dea4131b1ed541650eed2283eb578adb903",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "49493fef_7e4ef08c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1370239
+      },
+      "writtenOn": "2021-01-14T22:35:09Z",
+      "side": 1,
+      "message": "We cannot currently use fixtures for Crostini as there is not yet any way to get data files in fixtures.  We need screendiff this quarter, when will fixtures have data files available?",
+      "parentUuid": "4963e5f1_44560f5c",
+      "revId": "fb942dea4131b1ed541650eed2283eb578adb903",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

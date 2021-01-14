@@ -752,6 +752,13 @@ func runTestWithRoot(ctx context.Context, t *testing.TestInstance, root *testing
 			return err
 		}
 
+		// Write the service account key for screenshot tests to a file.
+		if key, ok := testState.Var("goldctl.goldServiceAccountKey"); ok {
+			if err := ioutil.WriteFile("/tmp/gold_service_account_key.json", []byte(key), 0644); err != nil {
+				return err
+			}
+		}
+
 		// Run the test function itself.
 		if err := safeCall(ctx, codeName, t.Timeout, timeoutOrDefault(t.ExitTimeout, pcfg.GracePeriod()), errorOnPanic(testState), func(ctx context.Context) {
 			t.Func(ctx, testState)

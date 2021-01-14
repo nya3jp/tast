@@ -196,7 +196,7 @@ func newTestInstance(t *Test, p *Param) (*TestInstance, error) {
 		Contacts:     append([]string(nil), t.Contacts...),
 		Attr:         attrs,
 		Data:         data,
-		Vars:         append([]string(nil), t.Vars...),
+		Vars:         append([]string{"goldctl.goldServiceAccountKey"}, t.Vars...),
 		VarDeps:      append([]string(nil), t.VarDeps...),
 		SoftwareDeps: swDeps,
 		HardwareDeps: hwDeps,

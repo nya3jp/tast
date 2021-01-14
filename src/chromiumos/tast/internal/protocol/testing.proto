@@ -1,0 +1,100 @@
+// Copyright 2021 The Chromium OS Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package tast.core;
+
+option go_package = "chromiumos/tast/internal/protocol";
+
+import "google/protobuf/timestamp.proto";
+
+// ControlMessage represents an event that occurred during testing.
+//
+// Control messages are sent over a streaming channel to notify events in
+// real time.
+message ControlMessage {
+  oneof message {
+    RunStart run_start = 1;
+    RunLog run_log = 2;
+    EntityStart entity_start = 3;
+    EntityLog entity_log = 4;
+    EntityError entity_error = 5;
+    EntityEnd entity_end = 6;
+  }
+}
+
+// RunStart message is sent exactly once as the first message on a streaming
+// channel to notify a testing plan.
+message RunStart {
+  // tests is a list of test names to be run. The list is sorted in the same
+  // order as that of actual test execution.
+  repeated string test_names = 1;
+}
+
+// RunLog message indicates that an informational log message not associated
+// with an entity was produced.
+message RunLog {
+  google.protobuf.Timestamp time = 1;
+  string text = 2;
+}
+
+// EntityStart message marks the start of an entity run.
+// EntityStart is sent even if an entity is to be skipped.
+message EntityStart {
+  google.protobuf.Timestamp time = 1;
+  string entity_name = 2;
+}
+
+// EntityLog message indicates that an informational log message was produced
+// by an entity.
+message EntityLog {
+  google.protobuf.Timestamp time = 1;
+  string entity_name = 2;
+  string text = 3;
+}
+
+// EntityError indicates that an error was produced by an entity. A consumer
+// should treat an entity as failed when it sees one or more errors reported for
+// it.
+message EntityError {
+  google.protobuf.Timestamp time = 1;
+  string entity_name = 2;
+  ErrorDetails error_details = 3;
+}
+
+// ErrorDetails describes details of an error reported by an entity.
+message ErrorDetails {
+  string reason = 1;
+  ErrorLocation location = 2;
+}
+
+// ErrorLocation represents a code location where an error was reported.
+message ErrorLocation {
+  string file = 1;
+  int64 line = 2;
+  string stack = 3;
+}
+
+// EntityEnd message marks the end of an entity run.
+message EntityEnd {
+  google.protobuf.Timestamp time = 1;
+  string entity_name = 2;
+  oneof result {
+    EntityFinished finished = 3;
+    EntitySkipped skipped = 4;
+  }
+}
+
+// EntityFinished indicates that an entity was finished. A finished entity is
+// considered failed if one or more errors were reported; otherwise it is
+// considered passed.
+message EntityFinished {
+}
+
+// EntitySkipped indicates that an entity was skipped. No errors should be
+// reported for a skipped tests though informational logs might be emitted.
+message EntitySkipped {
+  repeated string reasons = 1;
+}

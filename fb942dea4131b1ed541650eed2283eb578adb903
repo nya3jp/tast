@@ -51,6 +51,24 @@
       "parentUuid": "c1b95d27_b7489626",
       "revId": "fb942dea4131b1ed541650eed2283eb578adb903",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4963e5f1_44560f5c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-01-14T05:28:48Z",
+      "side": 1,
+      "message": "As we talked offline, my recommendation is to define a fixture which runs goldctl in its post-test hook. Fixtures can declare their own runtime variable dependencies, so tests using a fixture can avoid duplicated declarations.",
+      "parentUuid": "2ce010dc_838e0df1",
+      "revId": "fb942dea4131b1ed541650eed2283eb578adb903",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

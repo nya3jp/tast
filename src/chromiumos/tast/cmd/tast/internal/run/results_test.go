@@ -111,7 +111,7 @@ func TestReadTestOutput(t *gotesting.T) {
 
 	var logBuf bytes.Buffer
 	cfg := Config{
-		Logger: logging.NewSimple(&logBuf, 0, false), // drop debug messages
+		Logger: logging.NewSimple(&logBuf, false, false), // drop debug messages
 		ResDir: filepath.Join(tempDir, "results"),
 	}
 	results, unstartedTests, err := readTestOutput(context.Background(), &cfg, &b, os.Rename, nil)
@@ -253,7 +253,7 @@ func TestReadTestOutputSameEntity(t *gotesting.T) {
 
 	var logBuf bytes.Buffer
 	cfg := Config{
-		Logger: logging.NewSimple(&logBuf, 0, false),
+		Logger: logging.NewSimple(&logBuf, false, false),
 		ResDir: filepath.Join(tempDir, "results"),
 	}
 	results, unstartedTests, err := readTestOutput(context.Background(), &cfg, &b, os.Rename, nil)
@@ -333,7 +333,7 @@ func TestReadTestOutputConcurrentEntity(t *gotesting.T) {
 
 	var logBuf bytes.Buffer
 	cfg := Config{
-		Logger: logging.NewSimple(&logBuf, 0, false),
+		Logger: logging.NewSimple(&logBuf, false, false),
 		ResDir: filepath.Join(tempDir, "results"),
 	}
 	results, unstartedTests, err := readTestOutput(context.Background(), &cfg, &b, os.Rename, nil)
@@ -404,7 +404,7 @@ func TestReadTestOutputTimingLog(t *gotesting.T) {
 	defer os.RemoveAll(td)
 
 	cfg := Config{
-		Logger: logging.NewSimple(&bytes.Buffer{}, 0, false),
+		Logger: logging.NewSimple(&bytes.Buffer{}, false, false),
 		ResDir: td,
 	}
 	if _, _, err := readTestOutput(ctx, &cfg, &b, noOpCopyAndRemove, nil); err != nil {
@@ -467,7 +467,7 @@ func TestReadTestOutputAbortFixture(t *gotesting.T) {
 
 	var logBuf bytes.Buffer
 	cfg := Config{
-		Logger: logging.NewSimple(&logBuf, 0, false),
+		Logger: logging.NewSimple(&logBuf, false, false),
 		ResDir: filepath.Join(tempDir, "results"),
 	}
 	results, unstartedTests, err := readTestOutput(context.Background(), &cfg, &b, os.Rename, nil)
@@ -516,7 +516,7 @@ func TestPerTestLogContainsRunError(t *gotesting.T) {
 	mw.WriteMessage(&control.EntityStart{Time: time.Unix(2, 0), Info: testing.EntityInfo{Name: testName}})
 	mw.WriteMessage(&control.RunError{Time: time.Unix(3, 0), Error: testing.Error{Reason: errorMsg}})
 
-	cfg := Config{Logger: logging.NewSimple(&bytes.Buffer{}, 0, false), ResDir: td}
+	cfg := Config{Logger: logging.NewSimple(&bytes.Buffer{}, false, false), ResDir: td}
 	if _, _, err := readTestOutput(context.Background(), &cfg, &b, noOpCopyAndRemove, nil); err == nil {
 		t.Fatal("readTestOutput didn't report run error")
 	} else if !strings.Contains(err.Error(), errorMsg) {
@@ -601,7 +601,7 @@ func TestValidateMessages(t *gotesting.T) {
 			mw.WriteMessage(msg)
 		}
 		cfg := Config{
-			Logger: logging.NewSimple(&bytes.Buffer{}, 0, false),
+			Logger: logging.NewSimple(&bytes.Buffer{}, false, false),
 			ResDir: filepath.Join(tempDir, tc.desc),
 		}
 		if results, _, err := readTestOutput(context.Background(), &cfg, &b, noOpCopyAndRemove, nil); err == nil {
@@ -629,7 +629,7 @@ func TestReadTestOutputTimeout(t *gotesting.T) {
 
 	// When the message timeout is hit, an error should be reported.
 	cfg := Config{
-		Logger:     logging.NewSimple(&bytes.Buffer{}, 0, false),
+		Logger:     logging.NewSimple(&bytes.Buffer{}, false, false),
 		ResDir:     tempDir,
 		msgTimeout: time.Millisecond,
 	}
@@ -735,7 +735,7 @@ func TestWritePartialResults(t *gotesting.T) {
 	mw.WriteMessage(&control.EntityError{Time: test2Error, Name: test2Name, Error: testing.Error{Reason: test2Reason}})
 
 	cfg := Config{
-		Logger: logging.NewSimple(&bytes.Buffer{}, 0, false),
+		Logger: logging.NewSimple(&bytes.Buffer{}, false, false),
 		ResDir: filepath.Join(tempDir, "results"),
 	}
 	results, unstarted, err := readTestOutput(context.Background(), &cfg, &b, os.Rename, nil)
@@ -870,7 +870,7 @@ func TestUnfinishedTest(t *gotesting.T) {
 		}
 
 		cfg := Config{
-			Logger: logging.NewSimple(&bytes.Buffer{}, 0, false),
+			Logger: logging.NewSimple(&bytes.Buffer{}, false, false),
 			ResDir: filepath.Join(tempDir, strconv.Itoa(i)),
 		}
 		res, _, err := readTestOutput(context.Background(), &cfg, &b, os.Rename, tc.diagFunc)
@@ -929,7 +929,7 @@ func TestWriteResultsUnmatchedGlobs(t *gotesting.T) {
 	} {
 		cfg := *baseCfg
 		out := &bytes.Buffer{}
-		cfg.Logger = logging.NewSimple(out, 0, false)
+		cfg.Logger = logging.NewSimple(out, false, false)
 		cfg.Patterns = tc.patterns
 		for _, r := range results {
 			cfg.testNames = append(cfg.testNames, r.Name)

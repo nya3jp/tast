@@ -11,7 +11,6 @@ import (
 	"flag"
 	"fmt"
 	"io"
-	"log"
 	"os"
 
 	"github.com/google/subcommands"
@@ -81,7 +80,7 @@ func (lc *listCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{
 	lc.cfg.Patterns = f.Args()[1:]
 
 	b := bytes.Buffer{}
-	lc.cfg.Logger = logging.NewSimple(&b, log.LstdFlags, true)
+	lc.cfg.Logger = logging.NewSimple(&b, true, true)
 
 	status, results := lc.wrapper.run(ctx, lc.cfg)
 	if status.ExitCode != subcommands.ExitSuccess {

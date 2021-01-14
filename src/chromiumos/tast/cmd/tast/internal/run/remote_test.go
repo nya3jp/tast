@@ -101,7 +101,7 @@ func newRemoteTestData(t *gotesting.T, stdout, stderr string, status int) *remot
 	}
 	td := remoteTestData{}
 	td.dir = testutil.TempDir(t)
-	td.cfg.Logger = logging.NewSimple(&td.logbuf, log.LstdFlags, true)
+	td.cfg.Logger = logging.NewSimple(&td.logbuf, true, true)
 	td.cfg.ResDir = filepath.Join(td.dir, "results")
 	if err = os.MkdirAll(td.cfg.ResDir, 0755); err != nil {
 		t.Fatal(err)

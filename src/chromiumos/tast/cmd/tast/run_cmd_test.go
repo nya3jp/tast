@@ -9,7 +9,6 @@ import (
 	"context"
 	"errors"
 	"flag"
-	"log"
 	"os"
 	"reflect"
 	"strings"
@@ -114,7 +113,7 @@ func TestRunExecFailure(t *gotesting.T) {
 	}
 	args := []string{"root@example.net"}
 	b := bytes.Buffer{}
-	lg := logging.NewSimple(&b, log.LstdFlags, true)
+	lg := logging.NewSimple(&b, true, true)
 	if status := executeRunCmd(t, args, &wrapper, lg); status != wrapper.runStatus.ExitCode {
 		t.Fatalf("runCmd.Execute(%v) returned status %v; want %v", args, status, wrapper.runStatus.ExitCode)
 	}
@@ -144,7 +143,7 @@ func TestRunWriteFailure(t *gotesting.T) {
 	}
 	args := []string{"root@example.net"}
 	b := bytes.Buffer{}
-	lg := logging.NewSimple(&b, log.LstdFlags, true)
+	lg := logging.NewSimple(&b, true, true)
 	if status := executeRunCmd(t, args, &wrapper, lg); status != subcommands.ExitFailure {
 		t.Fatalf("runCmd.Execute(%v) returned status %v; want %v", args, status, subcommands.ExitFailure)
 	}

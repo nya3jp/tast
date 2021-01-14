@@ -44,7 +44,7 @@ func beforeRetrySuccess(ctx context.Context) bool {
 
 func TestRunTestsWithRetry(t *testing.T) {
 	cfg := &Config{
-		Logger:               logging.NewSimple(ioutil.Discard, 0, false),
+		Logger:               logging.NewSimple(ioutil.Discard, false, false),
 		continueAfterFailure: true,
 	}
 
@@ -60,7 +60,7 @@ func TestRunTestsWithRetry(t *testing.T) {
 
 func TestRunTestsWithRetryNoRetry(t *testing.T) {
 	cfg := &Config{
-		Logger:               logging.NewSimple(ioutil.Discard, 0, false),
+		Logger:               logging.NewSimple(ioutil.Discard, false, false),
 		continueAfterFailure: false, // disable retry
 	}
 
@@ -76,7 +76,7 @@ func TestRunTestsWithRetryNoRetry(t *testing.T) {
 
 func TestRunTestsWithRetryNoUnstarted(t *testing.T) {
 	cfg := &Config{
-		Logger:               logging.NewSimple(ioutil.Discard, 0, false),
+		Logger:               logging.NewSimple(ioutil.Discard, false, false),
 		continueAfterFailure: true,
 	}
 
@@ -92,7 +92,7 @@ func TestRunTestsWithRetryNoUnstarted(t *testing.T) {
 
 func TestRunTestsWithRetryStuck(t *testing.T) {
 	cfg := &Config{
-		Logger:               logging.NewSimple(ioutil.Discard, 0, false),
+		Logger:               logging.NewSimple(ioutil.Discard, false, false),
 		continueAfterFailure: true,
 	}
 
@@ -108,7 +108,7 @@ func TestRunTestsWithRetryStuck(t *testing.T) {
 
 func TestRunTestsWithRetryBeforeRetry(t *testing.T) {
 	cfg := &Config{
-		Logger:               logging.NewSimple(ioutil.Discard, 0, false),
+		Logger:               logging.NewSimple(ioutil.Discard, false, false),
 		continueAfterFailure: true,
 	}
 

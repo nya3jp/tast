@@ -25,7 +25,7 @@ func TestCreateSymbolFiles(t *testing.T) {
 		"/lib64/libutil-2.23.so": "0A356B7CFBCF5319947461F231A7D17C0",
 	}
 	cfg := Config{
-		Logger:    logging.NewSimple(&bytes.Buffer{}, 0, true),
+		Logger:    logging.NewSimple(&bytes.Buffer{}, false, true),
 		SymbolDir: filepath.Join(td, "symbols"),
 		BuildRoot: filepath.Join(td, "build"),
 	}

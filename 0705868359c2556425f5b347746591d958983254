@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "75f80a3e_98e3c049",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-01-14T06:36:43Z",
+      "side": 1,
+      "message": "FYI: I drafted definitions of control messages in protocol buffers. I don\u0027t intend to land it soon though.\n",
+      "revId": "0705868359c2556425f5b347746591d958983254",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

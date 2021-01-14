@@ -33,6 +33,24 @@
       "message": "It\u0027s not a good idea to add special cases for specific kind of tests in the framework.\n\nPlease describe a problem you want to solve by this change. I can help to come up with an alternative way.",
       "revId": "fb942dea4131b1ed541650eed2283eb578adb903",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2ce010dc_838e0df1",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1450817
+      },
+      "writtenOn": "2021-01-14T04:47:44Z",
+      "side": 1,
+      "message": "This is what I mentioned in the go/cros-screendiff in the section on authenticating goldctl on the device.\n\nWe have the variable goldctl.goldServiceAccountKey which contains the key file that needs to be written to disk at some point during screenshot tests.\n\nNormally (as mentioned in the design doc), you would need to add \"Vars: []string{\"goldctl.goldDevServiceAccountKey\"} to every screenshot test. However, this seems pretty unreasonable a requirement to make, given that any users of this library will only implicitly access this service account key, so will be completely unaware of it.",
+      "parentUuid": "c1b95d27_b7489626",
+      "revId": "fb942dea4131b1ed541650eed2283eb578adb903",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

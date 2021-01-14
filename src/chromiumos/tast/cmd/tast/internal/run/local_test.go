@@ -12,7 +12,6 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"log"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -88,7 +87,7 @@ func newLocalTestData(t *gotesting.T) *localTestData {
 	if err := os.Mkdir(td.cfg.ResDir, 0755); err != nil {
 		t.Fatal(err)
 	}
-	td.cfg.Logger = logging.NewSimple(&td.logbuf, log.LstdFlags, true)
+	td.cfg.Logger = logging.NewSimple(&td.logbuf, true, true)
 	td.cfg.Target = td.srvData.Srv.Addr().String()
 	td.cfg.localRunner = mockLocalRunner
 	td.cfg.localBundleDir = mockLocalBundleDir

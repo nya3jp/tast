@@ -38,11 +38,7 @@ func newLogger(fancy, verbose, logTime bool) (logging.Logger, error) {
 		return l, err
 	}
 
-	var flags int
-	if logTime {
-		flags = log.LstdFlags
-	}
-	return logging.NewSimple(os.Stdout, flags, verbose), nil
+	return logging.NewSimple(os.Stdout, logTime, verbose), nil
 }
 
 // installSignalHandler starts a goroutine that attempts to do some minimal

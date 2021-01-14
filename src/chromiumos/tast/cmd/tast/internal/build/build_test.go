@@ -55,7 +55,7 @@ func TestBuild(t *testing.T) {
 	outDir := filepath.Join(td, "out")
 
 	cfg := &Config{
-		Logger: logging.NewSimple(&bytes.Buffer{}, 0, false),
+		Logger: logging.NewSimple(&bytes.Buffer{}, false, false),
 	}
 	tgt := &Target{
 		Pkg:  mainPkgName,
@@ -106,7 +106,7 @@ func main() {
 	outDir := filepath.Join(td, "out")
 
 	cfg := &Config{
-		Logger: logging.NewSimple(&bytes.Buffer{}, 0, false),
+		Logger: logging.NewSimple(&bytes.Buffer{}, false, false),
 	}
 	tgts := []*Target{
 		{
@@ -146,7 +146,7 @@ func TestBuildBadWorkspace(t *testing.T) {
 	}
 
 	cfg := &Config{
-		Logger: logging.NewSimple(&bytes.Buffer{}, 0, false),
+		Logger: logging.NewSimple(&bytes.Buffer{}, false, false),
 	}
 	tgt := &Target{
 		Pkg:        "good",

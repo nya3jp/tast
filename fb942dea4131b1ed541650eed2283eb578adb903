@@ -87,6 +87,24 @@
       "parentUuid": "4963e5f1_44560f5c",
       "revId": "fb942dea4131b1ed541650eed2283eb578adb903",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "901e9d0c_0b516d2e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-01-15T03:41:27Z",
+      "side": 1,
+      "message": "I see. I\u0027m afraid that data file support won\u0027t come in this quarter.\n\nThen could you just repeat the same runtime variable declarations in all tests, even though it might look redundant at this moment? You can use a shared constant to avoid duplicating magic strings in all places.",
+      "parentUuid": "49493fef_7e4ef08c",
+      "revId": "fb942dea4131b1ed541650eed2283eb578adb903",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

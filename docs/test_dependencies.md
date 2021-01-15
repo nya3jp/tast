@@ -115,6 +115,7 @@ The following software features are defined:
 *   `no_android` - The inability to run Android apps. This is the opposite of
     the `android` feature; DUTs will have exactly one of these two features.
 *   `no_asan` - Build was not built with Address Sanitizer. Similar to `aslr`.
+*   `no_borealis_host` - Boards which is not designed to host borealis.
 *   `no_elm_hana_3_18` - Skip boards elm and hana with kernel-3.18 as they have
     issue performing WiFi scan. See [crbug.com/1015719](https://crbug.com/1015719).
 *   `no_msan` - Build was not built with Memory Sanitizer.

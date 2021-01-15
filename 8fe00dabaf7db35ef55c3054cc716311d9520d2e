@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "ca223f54_e11f19c6",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-01-15T01:33:37Z",
+      "side": 1,
+      "message": "It can, because tast_rtd/ is a descendant of tast/ in the directory tree.",
+      "parentUuid": "c915608f_6132cb05",
+      "revId": "8fe00dabaf7db35ef55c3054cc716311d9520d2e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "b36db928_74b31208",
@@ -31,6 +49,24 @@
       "writtenOn": "2021-01-15T00:05:48Z",
       "side": 1,
       "message": "Please change this to generic timestamp",
+      "revId": "8fe00dabaf7db35ef55c3054cc716311d9520d2e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "07896ee9_82e4273b",
+        "filename": "src/chromiumos/tast/internal/protocol/reports.proto",
+        "patchSetId": 3
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-01-15T01:33:37Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b36db928_74b31208",
       "revId": "8fe00dabaf7db35ef55c3054cc716311d9520d2e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }

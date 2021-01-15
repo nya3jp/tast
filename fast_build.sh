@@ -21,11 +21,13 @@ readonly SRCDIRS=(
   "${HOME}/trunk/src/platform/tast-tests-private"
 )
 
-# Package to build to produce tast executable.
+# Package to build to produce tast executables.
 readonly TAST_PKG="chromiumos/tast/cmd/tast"
+readonly TAST_RTD_PKG="chromiumos/tast/cmd/tast_rtd"
 
 # Output filename for tast executable.
 readonly TAST_OUT="${GOHOME}/bin/tast"
+readonly TAST_RTD_OUT="${GOHOME}/bin/tast_rtd"
 
 # Readonly Go workspaces containing source to build. Note that the packages
 # installed to /usr/lib/gopath (dev-go/crypto, dev-go/subcommand, etc.) need to
@@ -166,4 +168,5 @@ elif [ -n "${check_pkg}" ]; then
   fi
 else
   run_build "${TAST_PKG}" "${TAST_OUT}"
+  run_build "${TAST_RTD_PKG}" "${TAST_RTD_OUT}"
 fi

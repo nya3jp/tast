@@ -1,6 +1,29 @@
 {
   "comments": [
     {
+      "unresolved": true,
+      "key": {
+        "uuid": "e7a0c74f_91e53276",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-01-15T04:12:59Z",
+      "side": 1,
+      "message": "Can you also try running Tast? You can do this by:\n\n fast_build.sh\n ~/go/bin/tast run DUT example.Pass",
+      "range": {
+        "startLine": 16,
+        "startChar": 2,
+        "endLine": 16,
+        "endChar": 70
+      },
+      "revId": "7af1fe4fbc5c60052bf9808251a609e23074cd85",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": false,
       "key": {
         "uuid": "c3e818fe_91aa33fd",
@@ -14,6 +37,92 @@
       "writtenOn": "2021-01-15T03:34:27Z",
       "side": 1,
       "message": "Shuhei-san, could you take a look? Thanks.",
+      "revId": "7af1fe4fbc5c60052bf9808251a609e23074cd85",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "caf5ea87_70eeb5b2",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-01-15T04:12:59Z",
+      "side": 1,
+      "message": "Thanks! I have only minor comments.",
+      "revId": "7af1fe4fbc5c60052bf9808251a609e23074cd85",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "15a9cb01_1c53926c",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/logging/simple.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-01-15T04:12:59Z",
+      "side": 1,
+      "message": "This is a very short function called only once, so I think it\u0027s better to be inlined.",
+      "range": {
+        "startLine": 35,
+        "startChar": 20,
+        "endLine": 35,
+        "endChar": 32
+      },
+      "revId": "7af1fe4fbc5c60052bf9808251a609e23074cd85",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "87aada6c_5ca33ae2",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/logging/simple.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-01-15T04:12:59Z",
+      "side": 1,
+      "message": "Can you update this comment?",
+      "range": {
+        "startLine": 66,
+        "startChar": 24,
+        "endLine": 66,
+        "endChar": 81
+      },
+      "revId": "7af1fe4fbc5c60052bf9808251a609e23074cd85",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cb43ded2_f0e022da",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/logging/simple.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 114,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-01-15T04:12:59Z",
+      "side": 1,
+      "message": "This is a logger that discards everything, so we can set it to false.",
+      "range": {
+        "startLine": 114,
+        "startChar": 34,
+        "endLine": 114,
+        "endChar": 38
+      },
       "revId": "7af1fe4fbc5c60052bf9808251a609e23074cd85",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }

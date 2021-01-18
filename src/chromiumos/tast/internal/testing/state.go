@@ -626,6 +626,11 @@ func (s *testMixin) ServiceDeps() []string {
 	return append([]string(nil), s.testRoot.test.ServiceDeps...)
 }
 
+// TestName returns the name of the currently running test.
+func (s *testMixin) TestName() string {
+	return s.testRoot.test.Name
+}
+
 // State holds state relevant to the execution of a single test.
 //
 // Parts of its interface are patterned after Go's testing.T type.

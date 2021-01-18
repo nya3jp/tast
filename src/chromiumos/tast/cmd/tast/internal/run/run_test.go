@@ -25,6 +25,7 @@ import (
 
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/control"
+	"chromiumos/tast/internal/fakereports"
 	"chromiumos/tast/internal/faketlw"
 	"chromiumos/tast/internal/runner"
 	"chromiumos/tast/internal/testing"
@@ -241,6 +242,35 @@ func TestRunTLW(t *gotesting.T) {
 	td.cfg.Target = targetName
 	td.cfg.tlwServer = tlwAddr
 
+	if status, _ := Run(context.Background(), &td.cfg); status.ExitCode != subcommands.ExitSuccess {
+		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.logbuf.String())
+	}
+}
+
+// TestRunWithReports tests Run() with fake Reports server.
+// TODO(crbug.com/1166951, crbug.com/1166955): Revise this test to check with RPC invocations.
+// Currently the main logic calls Dial() but does not invoke any RPC method yet.
+// Therefore no RPC connection to the fake server is actually tested yet.
+func TestRunWithReports(t *gotesting.T) {
+	stopFunc, addr := fakereports.Start(t)
+	defer stopFunc()
+
+	td := newLocalTestData(t)
+	defer td.close()
+	td.cfg.reportsServer = addr
+
+	td.cfg.runLocal = true
+	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+		switch args.Mode {
+		case runner.RunTestsMode:
+			mw := control.NewMessageWriter(stdout)
+			mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
+			mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
+		case runner.ListTestsMode:
+			json.NewEncoder(stdout).Encode([]testing.EntityWithRunnabilityInfo{})
+		}
+		return 0
+	}
 	if status, _ := Run(context.Background(), &td.cfg); status.ExitCode != subcommands.ExitSuccess {
 		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.logbuf.String())
 	}

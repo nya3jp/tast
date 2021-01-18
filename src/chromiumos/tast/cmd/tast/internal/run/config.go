@@ -97,6 +97,7 @@ type Config struct {
 	downloadPrivateBundles bool                 // whether to download private bundles if missing
 	downloadMode           planner.DownloadMode // strategy to download external data files
 	tlwServer              string               // address of the TLW server if available
+	reportsServer          string               // address of Reports server if available
 
 	localRunner    string // path to executable that runs local test bundles
 	localBundleDir string // dir where packaged local test bundles are installed
@@ -146,6 +147,7 @@ type Config struct {
 	osVersion          string                     // Chrome OS Version
 	tlwConn            *grpc.ClientConn           // TLW gRPC service connection
 	tlwServerForDUT    string                     // TLW address accessible from DUT.
+	reportsConn        *grpc.ClientConn           // Reports gRPC service connection
 }
 
 // NewConfig returns a new configuration for executing test runners in the supplied mode.
@@ -195,6 +197,7 @@ func (c *Config) SetFlags(f *flag.FlagSet) {
 	f.BoolVar(&c.continueAfterFailure, "continueafterfailure", true, "try to run remaining tests after bundle/DUT crash or lost SSH connection")
 	f.IntVar(&c.sshRetries, "sshretries", 0, "number of SSH connect retries")
 	f.StringVar(&c.tlwServer, "tlwserver", "", "TLW server address")
+	f.StringVar(&c.reportsServer, "reports_server", "", "Reports server address")
 
 	f.IntVar(&c.totalShards, "totalshards", 1, "total number of shards to be used in a test run")
 	f.IntVar(&c.shardIndex, "shardindex", 0, "the index of shard to used in the current run")
@@ -267,6 +270,12 @@ func (c *Config) Close(ctx context.Context) error {
 			firstErr = err
 		}
 		c.tlwConn = nil
+	}
+	if c.reportsConn != nil {
+		if err := c.reportsConn.Close(); err != nil && firstErr == nil {
+			firstErr = err
+		}
+		c.reportsConn = nil
 	}
 	return firstErr
 }

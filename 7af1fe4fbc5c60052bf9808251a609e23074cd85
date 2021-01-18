@@ -26,6 +26,30 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "a8d50f4f_af40f1b1",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1000175
+      },
+      "writtenOn": "2021-01-18T04:42:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e7a0c74f_91e53276",
+      "range": {
+        "startLine": 16,
+        "startChar": 2,
+        "endLine": 16,
+        "endChar": 70
+      },
+      "revId": "7af1fe4fbc5c60052bf9808251a609e23074cd85",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "c3e818fe_91aa33fd",
         "filename": "/PATCHSET_LEVEL",
         "patchSetId": 1
@@ -81,6 +105,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "936035e7_a2f2434e",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/logging/simple.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1000175
+      },
+      "writtenOn": "2021-01-18T04:42:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "15a9cb01_1c53926c",
+      "range": {
+        "startLine": 35,
+        "startChar": 20,
+        "endLine": 35,
+        "endChar": 32
+      },
+      "revId": "7af1fe4fbc5c60052bf9808251a609e23074cd85",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "87aada6c_5ca33ae2",
@@ -104,6 +152,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "58edd7e8_399c6626",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/logging/simple.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1000175
+      },
+      "writtenOn": "2021-01-18T04:42:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "87aada6c_5ca33ae2",
+      "range": {
+        "startLine": 66,
+        "startChar": 24,
+        "endLine": 66,
+        "endChar": 81
+      },
+      "revId": "7af1fe4fbc5c60052bf9808251a609e23074cd85",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "cb43ded2_f0e022da",
@@ -117,6 +189,30 @@
       "writtenOn": "2021-01-15T04:12:59Z",
       "side": 1,
       "message": "This is a logger that discards everything, so we can set it to false.",
+      "range": {
+        "startLine": 114,
+        "startChar": 34,
+        "endLine": 114,
+        "endChar": 38
+      },
+      "revId": "7af1fe4fbc5c60052bf9808251a609e23074cd85",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2db72fc7_b8a4e4f1",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/logging/simple.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 114,
+      "author": {
+        "id": 1000175
+      },
+      "writtenOn": "2021-01-18T04:42:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "cb43ded2_f0e022da",
       "range": {
         "startLine": 114,
         "startChar": 34,

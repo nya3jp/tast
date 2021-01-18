@@ -96,6 +96,10 @@ func Run(ctx context.Context, cfg *Config) (status Status, results []*EntityResu
 		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to connect to TLW server: %v", err), nil
 	}
 
+	if err := connectToReports(ctx, cfg); err != nil {
+		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to connect to Reports server: %v", err), nil
+	}
+
 	if err := resolveTarget(ctx, cfg); err != nil {
 		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to resolve target: %v", err), nil
 	}
@@ -163,6 +167,19 @@ func connectToTLW(ctx context.Context, cfg *Config) error {
 		return err
 	}
 	cfg.tlwConn = conn
+	return nil
+}
+
+// connectToReports connects to the Reports server.
+func connectToReports(ctx context.Context, cfg *Config) error {
+	if cfg.reportsServer == "" {
+		return nil
+	}
+	conn, err := grpc.DialContext(ctx, cfg.reportsServer, grpc.WithInsecure())
+	if err != nil {
+		return err
+	}
+	cfg.reportsConn = conn
 	return nil
 }
 

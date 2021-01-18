@@ -96,6 +96,12 @@ func Run(ctx context.Context, cfg *Config) (status Status, results []*EntityResu
 		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to connect to TLW server: %v", err), nil
 	}
 
+	closeReportsFunc, err := connectToReports(ctx, cfg)
+	if err != nil {
+		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to connect to Reports server: %v", err), nil
+	}
+	defer closeReportsFunc()
+
 	if err := resolveTarget(ctx, cfg); err != nil {
 		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to resolve target: %v", err), nil
 	}
@@ -164,6 +170,22 @@ func connectToTLW(ctx context.Context, cfg *Config) error {
 	}
 	cfg.tlwConn = conn
 	return nil
+}
+
+// connectToReports connects to the Reports server.
+// The caller is responsible for calling the returned closing function.
+func connectToReports(ctx context.Context, cfg *Config) (func(), error) {
+	if cfg.reportsServer == "" {
+		return func() {}, nil
+	}
+	conn, err := grpc.DialContext(ctx, cfg.reportsServer, grpc.WithInsecure())
+	if err != nil {
+		return nil, err
+	}
+	cfg.reportsConn = conn
+	return func() {
+		conn.Close()
+	}, nil
 }
 
 // resolveTarget resolves cfg.Target using the TLW service if available.

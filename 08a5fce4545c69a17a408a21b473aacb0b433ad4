@@ -1,6 +1,23 @@
 {
   "comments": [
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "2c182817_7b5fd3ab",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 28
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-01-18T02:01:21Z",
+      "side": 1,
+      "message": "Thanks! LGTM after Victor\u0027s comment.\n",
+      "revId": "08a5fce4545c69a17a408a21b473aacb0b433ad4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "c4cfe168_83fafc93",
@@ -14,6 +31,30 @@
       "writtenOn": "2021-01-15T10:22:48Z",
       "side": 1,
       "message": "Is this accurate?",
+      "range": {
+        "startLine": 68,
+        "startChar": 71,
+        "endLine": 68,
+        "endChar": 82
+      },
+      "revId": "08a5fce4545c69a17a408a21b473aacb0b433ad4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7a81a69b_8624acac",
+        "filename": "src/chromiumos/tast/internal/bundle/remote_fixture.proto",
+        "patchSetId": 28
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-01-18T02:01:21Z",
+      "side": 1,
+      "message": "Good catch.",
+      "parentUuid": "c4cfe168_83fafc93",
       "range": {
         "startLine": 68,
         "startChar": 71,

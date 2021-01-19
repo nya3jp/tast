@@ -129,6 +129,7 @@ func main() {
 			"iwlwifi_rescan":          "iwlwifi_rescan",
 			"lacros":                  "!arm && !arm64", // TODO(crbug.com/1144013): Expand this to include arm as well.
 			"lock_core_pattern":       `"kernel-3_10" || "kernel-3_14" || "kernel-3_18"`,
+			"manatee":                 "manatee",
 			// QEMU has implemented memfd_create, but we haven't updated
 			// to a release with the change (https://bugs.launchpad.net/qemu/+bug/1734792).
 			// Remove "|| betty || tast_vm" from list when we upgrade.
@@ -174,6 +175,7 @@ func main() {
 			"selinux_current":        "selinux && !selinux_experimental",
 			"selinux_experimental":   "selinux && selinux_experimental",
 			"shill-wifi":             "!moblab", // fizz-moblab disables the WiFi technology for Shill
+			"sirenia":                "sirenia && !manatee",
 			"smartdim":               "smartdim",
 			"smartctl":               "nvme || sata",
 			"storage_wearout_detect": "storage_wearout_detect && !betty && !tast_vm", // Skip wearout checks for VMs and eMMC < 5.0

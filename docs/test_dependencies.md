@@ -101,6 +101,7 @@ The following software features are defined:
     implementation is not supported/enabled, hence using the legacy one.
 *   `lock_core_pattern` - Ability to lock down |core_pattern| from further
     modifications.
+*   `manatee` - The system is running a ManaTEE image.
 *   `memfd_create` - memfd_create function implemented in the kernel.
 *   `memd` - [Memory stats collection daemon].
 *   `microcode` - Platforms that have CPU microcode.
@@ -143,6 +144,7 @@ The following software features are defined:
     board has `SELINUX=permissive` in `/etc/selinux/config`, thus no policy
     will be enforced. This implies `selinux`.
 *   `shill-wifi` - WiFi technology is enabled for Shill.
+*   `siernia` - Sirenia is present on a non-ManaTEE image.
 *   `smartdim` - Use smart dim to defer the imminent screen dimming.
 *   `smartctl` - Ability to run smartctl software utility.
 *   `storage_wearout_detect` - The ability to measure storage device health.

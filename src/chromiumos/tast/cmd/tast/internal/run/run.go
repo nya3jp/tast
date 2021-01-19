@@ -22,6 +22,7 @@ import (
 	"google.golang.org/grpc"
 
 	"chromiumos/tast/cmd/tast/internal/build"
+	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/runner"
 	"chromiumos/tast/internal/sshconfig"
 	"chromiumos/tast/internal/testing"
@@ -172,7 +173,7 @@ func connectToTLW(ctx context.Context, cfg *Config) error {
 	return nil
 }
 
-// connectToReports connects to the Reports server.
+// connectToReports connects to the Reports server and starts log stream.
 // The caller is responsible for calling the returned closing function.
 func connectToReports(ctx context.Context, cfg *Config) (func(), error) {
 	if cfg.reportsServer == "" {
@@ -183,7 +184,14 @@ func connectToReports(ctx context.Context, cfg *Config) (func(), error) {
 		return nil, err
 	}
 	cfg.reportsConn = conn
+	cl := protocol.NewReportsClient(conn)
+	strm, err := cl.LogStream(ctx)
+	if err != nil {
+		return nil, err
+	}
+	cfg.reportsLogStream = &strm
 	return func() {
+		strm.CloseAndRecv()
 		conn.Close()
 	}, nil
 }

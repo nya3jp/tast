@@ -20,6 +20,7 @@ import (
 	"time"
 
 	"chromiumos/tast/internal/control"
+	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/internal/timing"
 )
@@ -71,6 +72,9 @@ type entityState struct {
 
 	// logFile is a file handle of the log file for the entity.
 	logFile *os.File
+
+	// logReportWriter is a Writer for the Reports.LogStream streaming gRPC.
+	logReportWriter io.Writer
 
 	// IntermediateOutDir is a directory path on the target where intermediate
 	// output files for the test is saved.
@@ -283,6 +287,23 @@ func (r *resultsHandler) handleRunEnd(ctx context.Context, msg *control.RunEnd) 
 	return nil
 }
 
+type logSender struct {
+	stream   *protocol.Reports_LogStreamClient
+	testName string
+}
+
+// Write sends given bytes to LogStream streaming gRPC API with the test name.
+func (s logSender) Write(p []byte) (n int, err error) {
+	req := protocol.LogStreamRequest{
+		Test: s.testName,
+		Data: p,
+	}
+	if err := (*s.stream).Send(&req); err != nil {
+		return 0, err
+	}
+	return len(p), nil
+}
+
 // handleTestStart handles EntityStart control messages from test runners.
 func (r *resultsHandler) handleTestStart(ctx context.Context, msg *control.EntityStart) error {
 	if r.runStart.IsZero() {
@@ -334,6 +355,15 @@ func (r *resultsHandler) handleTestStart(ctx context.Context, msg *control.Entit
 	state.logFile = f
 	if err := r.cfg.Logger.AddWriter(state.logFile, log.LstdFlags); err != nil {
 		return err
+	}
+	if r.cfg.reportsLogStream != nil {
+		state.logReportWriter = logSender{
+			stream:   r.cfg.reportsLogStream,
+			testName: msg.Info.Name,
+		}
+		if err := r.cfg.Logger.AddWriter(state.logReportWriter, log.LstdFlags); err != nil {
+			return err
+		}
 	}
 
 	r.cfg.Logger.Logf("Started %v %s", state.result.Type, state.result.Name)
@@ -409,6 +439,13 @@ func (r *resultsHandler) handleTestEnd(ctx context.Context, msg *control.EntityE
 	}
 	if err := state.logFile.Close(); err != nil {
 		r.cfg.Logger.Log(err)
+	}
+
+	if state.logReportWriter != nil {
+		if err := r.cfg.Logger.RemoveWriter(state.logReportWriter); err != nil {
+			r.cfg.Logger.Log(err)
+		}
+		state.logReportWriter = nil
 	}
 
 	// Pull finished test output files in a separate goroutine.

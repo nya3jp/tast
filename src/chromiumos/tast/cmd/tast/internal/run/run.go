@@ -22,6 +22,7 @@ import (
 	"google.golang.org/grpc"
 
 	"chromiumos/tast/cmd/tast/internal/build"
+	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/runner"
 	"chromiumos/tast/internal/sshconfig"
 	"chromiumos/tast/internal/testing"
@@ -118,6 +119,16 @@ func Run(ctx context.Context, cfg *Config) (status Status, results []*EntityResu
 		}
 		defer f.Close()
 		cfg.tlwServerForDUT = f.ListenAddr().String()
+	}
+
+	if cfg.reportsConn != nil {
+		cl := protocol.NewReportsClient(cfg.reportsConn)
+		strm, err := cl.LogStream(ctx)
+		if err != nil {
+			return errorStatusf(cfg, subcommands.ExitFailure, "Failed to start LogStream streaming RPC: %v", err), nil
+		}
+		defer strm.CloseAndRecv()
+		cfg.reportsLogStream = &strm
 	}
 
 	// Start an ephemeral devserver if necessary. Devservers are required in

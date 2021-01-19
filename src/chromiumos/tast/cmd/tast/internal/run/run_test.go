@@ -248,31 +248,68 @@ func TestRunTLW(t *gotesting.T) {
 }
 
 // TestRunWithReports tests Run() with fake Reports server.
-// TODO(crbug.com/1166951, crbug.com/1166955): Revise this test to check with RPC invocations.
-// Currently the main logic calls Dial() but does not invoke any RPC method yet.
-// Therefore no RPC connection to the fake server is actually tested yet.
-func TestRunWithReports(t *gotesting.T) {
-	stopFunc, addr := fakereports.Start(t)
+func TestRunWithReports_LogStream(t *gotesting.T) {
+	srv, stopFunc, addr := fakereports.Start(t)
 	defer stopFunc()
 
 	td := newLocalTestData(t)
 	defer td.close()
 	td.cfg.reportsServer = addr
-
 	td.cfg.runLocal = true
+
+	const (
+		test1Name    = "foo.FirstTest"
+		test1Desc    = "First description"
+		test1LogText = "Here's a test log message"
+		test2Name    = "foo.SecondTest"
+		test2Desc    = "Second description"
+		test2LogText = "Here's another test log message"
+	)
+	tests := []testing.EntityWithRunnabilityInfo{
+		{
+			EntityInfo: testing.EntityInfo{
+				Name: "pkg.Test_1",
+			},
+		},
+		{
+			EntityInfo: testing.EntityInfo{
+				Name: "pkg.Test_2",
+			},
+		},
+	}
+
 	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
 		switch args.Mode {
 		case runner.RunTestsMode:
+			patterns := args.RunTests.BundleArgs.Patterns
 			mw := control.NewMessageWriter(stdout)
-			mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
-			mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
+			mw.WriteMessage(&control.RunStart{Time: time.Unix(0, 0), NumTests: len(patterns)})
+			mw.WriteMessage(&control.EntityStart{Time: time.Unix(10, 0), Info: testing.EntityInfo{Name: test1Name}})
+			mw.WriteMessage(&control.EntityLog{Time: time.Unix(15, 0), Name: test1Name, Text: test1LogText})
+			mw.WriteMessage(&control.EntityEnd{Time: time.Unix(20, 0), Name: test1Name})
+			mw.WriteMessage(&control.EntityStart{Time: time.Unix(30, 0), Info: testing.EntityInfo{Name: test2Name}})
+			mw.WriteMessage(&control.EntityLog{Time: time.Unix(35, 0), Name: test2Name, Text: test2LogText})
+			mw.WriteMessage(&control.EntityEnd{Time: time.Unix(40, 0), Name: test2Name})
+			mw.WriteMessage(&control.RunEnd{Time: time.Unix(50, 0), OutDir: ""})
 		case runner.ListTestsMode:
-			json.NewEncoder(stdout).Encode([]testing.EntityWithRunnabilityInfo{})
+			json.NewEncoder(stdout).Encode(tests)
 		}
 		return 0
 	}
 	if status, _ := Run(context.Background(), &td.cfg); status.ExitCode != subcommands.ExitSuccess {
 		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.logbuf.String())
+	}
+	if str := string(srv.GetLog(test1Name)); !strings.Contains(str, test1LogText) {
+		t.Errorf("Expected log not received for test 1; got %q; should contain %q", str, test1LogText)
+	}
+	if str := string(srv.GetLog(test2Name)); !strings.Contains(str, test2LogText) {
+		t.Errorf("Expected log not received for test 2; got %q; should contain %q", str, test2LogText)
+	}
+	if str := string(srv.GetLog(test1Name)); strings.Contains(str, test2LogText) {
+		t.Errorf("Unexpected log found in test 1 log; got %q; should not contain %q", str, test2LogText)
+	}
+	if str := string(srv.GetLog(test2Name)); strings.Contains(str, test1LogText) {
+		t.Errorf("Unexpected log found in test 2 log; got %q; should not contain %q", str, test1LogText)
 	}
 }
 

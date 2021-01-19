@@ -20,6 +20,7 @@ import (
 	"time"
 
 	"chromiumos/tast/internal/control"
+	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/internal/timing"
 )
@@ -283,6 +284,29 @@ func (r *resultsHandler) handleRunEnd(ctx context.Context, msg *control.RunEnd) 
 	return nil
 }
 
+type logSender struct {
+	stream   *protocol.Reports_LogStreamClient
+	testName string
+}
+
+func (s logSender) Write(p []byte) (n int, err error) {
+	req := protocol.LogStreamRequest{
+		Test: s.testName,
+		Data: p,
+	}
+	if err := (*s.stream).Send(&req); err != nil {
+		return 0, err
+	}
+	return len(p), nil
+}
+
+func newLogSender(stream *protocol.Reports_LogStreamClient, testName string) io.Writer {
+	return logSender{
+		stream:   stream,
+		testName: testName,
+	}
+}
+
 // handleTestStart handles EntityStart control messages from test runners.
 func (r *resultsHandler) handleTestStart(ctx context.Context, msg *control.EntityStart) error {
 	if r.runStart.IsZero() {
@@ -334,6 +358,12 @@ func (r *resultsHandler) handleTestStart(ctx context.Context, msg *control.Entit
 	state.logFile = f
 	if err := r.cfg.Logger.AddWriter(state.logFile, log.LstdFlags); err != nil {
 		return err
+	}
+	if r.cfg.reportsConn != nil {
+		writer := newLogSender(r.cfg.reportsLogStream, msg.Info.Name)
+		if err := r.cfg.Logger.AddWriter(writer, log.LstdFlags); err != nil {
+			return err
+		}
 	}
 
 	r.cfg.Logger.Logf("Started %v %s", state.result.Type, state.result.Name)

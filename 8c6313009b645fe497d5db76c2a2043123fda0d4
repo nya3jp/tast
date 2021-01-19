@@ -16,6 +16,23 @@
       "message": "Looks fine, nya to make decision on whether the test name should be exposed or if there is another way to solve the problem\n",
       "revId": "8c6313009b645fe497d5db76c2a2043123fda0d4",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f43909d6_b2de5bf7",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-01-19T10:01:02Z",
+      "side": 1,
+      "message": "To be honest I\u0027m in a mixed feeling with exposing the test name. But I know it\u0027s needed in this case.",
+      "revId": "8c6313009b645fe497d5db76c2a2043123fda0d4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

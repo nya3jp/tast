@@ -24,6 +24,7 @@ import (
 	"chromiumos/tast/internal/command"
 	"chromiumos/tast/internal/dep"
 	"chromiumos/tast/internal/planner"
+	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/runner"
 	"chromiumos/tast/ssh"
 )
@@ -148,6 +149,7 @@ type Config struct {
 	tlwConn            *grpc.ClientConn           // TLW gRPC service connection
 	tlwServerForDUT    string                     // TLW address accessible from DUT.
 	reportsConn        *grpc.ClientConn           // Reports gRPC service connection
+	reportsLogStream   *protocol.Reports_LogStreamClient
 }
 
 // NewConfig returns a new configuration for executing test runners in the supplied mode.

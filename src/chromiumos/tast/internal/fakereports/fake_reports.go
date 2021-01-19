@@ -7,6 +7,7 @@ package fakereports
 
 import (
 	"context"
+	"io"
 	"net"
 	"testing"
 
@@ -18,13 +19,15 @@ import (
 	"chromiumos/tast/internal/protocol"
 )
 
-type fakeReportsServer struct{}
+type fakeReportsServer struct {
+	logData map[string][]byte
+}
 
 var _ protocol.ReportsServer = &fakeReportsServer{}
 
 // Start starts a gRPC server serving ReportsServer in the background for tests.
 // Callers are responsible for stopping the server by stopFunc().
-func Start(t *testing.T) (stopFunc func(), addr string) {
+func Start(t *testing.T) (server *fakeReportsServer, stopFunc func(), addr string) {
 	s := &fakeReportsServer{}
 	srv := grpc.NewServer()
 	protocol.RegisterReportsServer(srv, s)
@@ -33,13 +36,27 @@ func Start(t *testing.T) (stopFunc func(), addr string) {
 	if err != nil {
 		t.Fatal("Failed to listen: ", err)
 	}
+	s.logData = make(map[string][]byte)
 	go srv.Serve(lis)
-	return srv.Stop, lis.Addr().String()
+	return s, srv.Stop, lis.Addr().String()
 }
 
-func (*fakeReportsServer) LogStream(srv protocol.Reports_LogStreamServer) error {
-	// TODO(crbug.com/1166951): Implement for unit tests.
-	return status.Errorf(codes.Unimplemented, "method LogStream not implemented")
+func (s *fakeReportsServer) LogStream(stream protocol.Reports_LogStreamServer) error {
+	for {
+		req, err := stream.Recv()
+		if err == io.EOF {
+			return stream.SendAndClose(&empty.Empty{})
+		}
+		if err != nil {
+			return err
+		}
+		test := req.Test
+		s.logData[test] = append(s.logData[test], req.Data...)
+	}
+}
+
+func (s *fakeReportsServer) GetLog(test string) []byte {
+	return s.logData[test]
 }
 
 func (*fakeReportsServer) ReportResult(ctx context.Context, req *protocol.ReportResultRequest) (*empty.Empty, error) {

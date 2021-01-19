@@ -16,6 +16,30 @@
       "message": "Nya-san, PTAL again? Thanks,",
       "revId": "10cb5622787e3c78f45116cedb5aae0485ae5c58",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5cfd14e0_3037e417",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/logging/simple.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 1000175
+      },
+      "writtenOn": "2021-01-19T04:14:11Z",
+      "side": 1,
+      "message": "\u003e \"appened\" is a possible misspelling of \"append\", \"appended\", or \"happened\".\n\nDone",
+      "parentUuid": "1a54646b_da17e385",
+      "range": {
+        "startLine": 62,
+        "startChar": 65,
+        "endLine": 62,
+        "endChar": 72
+      },
+      "revId": "10cb5622787e3c78f45116cedb5aae0485ae5c58",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

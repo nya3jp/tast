@@ -343,6 +343,38 @@ func SupportsNV12Overlays() Condition {
 	}}
 }
 
+// Supports30bppFramebuffer says true if the SoC supports 30bpp color depth
+// primary plane scanout. This is: Intel SOCs Kabylake and onwards, AMD SOCs
+// from Zork onwards (codified Picasso), and not ARM SOCs.
+func Supports30bppFramebuffer() Condition {
+	return Condition{Satisfied: func(f *dep.HardwareFeatures) error {
+		if f.DC == nil {
+			return errors.New("device.Config is not given")
+		}
+		// Any ARM CPUs
+		if f.DC.Cpu == device.Config_ARM ||
+			f.DC.Cpu == device.Config_ARM64 ||
+			// Unknown SOCs
+			f.DC.Soc == device.Config_SOC_UNSPECIFIED ||
+			// Intel before Kabylake
+			f.DC.Soc == device.Config_SOC_APOLLO_LAKE ||
+			f.DC.Soc == device.Config_SOC_BAY_TRAIL ||
+			f.DC.Soc == device.Config_SOC_BRASWELL ||
+			f.DC.Soc == device.Config_SOC_IVY_BRIDGE ||
+			f.DC.Soc == device.Config_SOC_PINE_TRAIL ||
+			f.DC.Soc == device.Config_SOC_SANDY_BRIDGE ||
+			f.DC.Soc == device.Config_SOC_BROADWELL ||
+			f.DC.Soc == device.Config_SOC_HASWELL ||
+			f.DC.Soc == device.Config_SOC_SKYLAKE_U ||
+			f.DC.Soc == device.Config_SOC_SKYLAKE_Y ||
+			// AMD before Zork
+			f.DC.Soc == device.Config_SOC_STONEY_RIDGE {
+			return errors.New("SoC does not support scanning out 30bpp framebuffers")
+		}
+		return nil
+	}}
+}
+
 // Since there are no way to get whether an EC supports force discharging on a device or not,
 // list up the models known not to support force discharging here.
 var modelsWithoutForceDischargeSupport = []string{

@@ -16,6 +16,57 @@
       "message": "ptal",
       "revId": "26416178a76d5bc8b05ee198728b7608cb9080b3",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "70925226_780f8c61",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-01-20T21:41:34Z",
+      "side": 1,
+      "message": "Just two feedbacks regarding comments. Thanks.",
+      "revId": "26416178a76d5bc8b05ee198728b7608cb9080b3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bdccc970_d81d75f9",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/results.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 76,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-01-20T21:41:34Z",
+      "side": 1,
+      "message": "Should be streaming, not streming.",
+      "revId": "26416178a76d5bc8b05ee198728b7608cb9080b3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "61dd911d_bbf1cdfd",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/results.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 295,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-01-20T21:41:34Z",
+      "side": 1,
+      "message": "Please add a comment for this function.",
+      "revId": "26416178a76d5bc8b05ee198728b7608cb9080b3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

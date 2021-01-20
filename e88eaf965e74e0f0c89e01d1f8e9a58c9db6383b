@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a1859d2d_fa37215c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-01-20T22:33:12Z",
+      "side": 1,
+      "message": "I have just add ReportResult implementation for the gPRC server in tast_rtd. Please review. Unit Test passed. We do need discussion how we should handle the case of \"terminate\" is responded by the sink progress server. Thanks.",
+      "revId": "e88eaf965e74e0f0c89e01d1f8e9a58c9db6383b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

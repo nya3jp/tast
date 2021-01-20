@@ -8,13 +8,19 @@ import (
 	"context"
 	"testing"
 
+	"github.com/golang/protobuf/ptypes"
+	structpb "github.com/golang/protobuf/ptypes/struct"
+	"github.com/google/go-cmp/cmp"
+	v2 "go.chromium.org/chromiumos/config/go/api/test/results/v2"
+	rtd "go.chromium.org/chromiumos/config/go/api/test/rtd/v1"
 	"google.golang.org/grpc"
 
+	"chromiumos/tast/cmd/tast_rtd/internal/fakerts"
 	"chromiumos/tast/internal/protocol"
 )
 
 func TestReportsServer_LogStream(t *testing.T) {
-	srv, err := NewReportsServer(0)
+	srv, err := NewReportsServer(0, nil, nil)
 	if err != nil {
 		t.Fatalf("Failed to start Reports server: %v", err)
 	}
@@ -30,5 +36,142 @@ func TestReportsServer_LogStream(t *testing.T) {
 	cl := protocol.NewReportsClient(conn)
 	if _, err := cl.LogStream(context.Background()); err != nil {
 		t.Fatalf("Failed at LogStream: %v", err)
+	}
+}
+
+// TestReportsServer_ReportResult nakes sure reports server will pass on result to progress sink.
+func TestReportsServer_ReportResult(t *testing.T) {
+	ctx := context.Background()
+	psServer, addr, err := fakerts.StartProgressSink(ctx)
+	if err != nil {
+		t.Fatal("Failed to start fake ProgressSink server: ", err)
+	}
+	defer psServer.Stop()
+
+	psConn, err := grpc.Dial(addr.String(), grpc.WithInsecure())
+	if err != nil {
+		t.Fatal("Failed to establish connection to fake server: ", psServer)
+	}
+	psClient := rtd.NewProgressSinkClient(psConn)
+
+	testsToRequests := map[string]string{
+		"PassedTest":  "PassedReq",
+		"FailedTest":  "FailedReq",
+		"SkippedTest": "SkippedReq",
+	}
+	testTime := ptypes.TimestampNow()
+
+	requests := []*protocol.ReportResultRequest{
+		{
+			Test: "PassedTest",
+		},
+		{
+			Test: "FailedTest",
+			Errors: []*protocol.Error{
+				{
+					Time:   testTime,
+					Reason: "intentionally failed",
+					File:   "/tmp/file.go",
+					Line:   21,
+					Stack:  "None",
+				},
+			},
+		},
+		{
+			Test:       "SkippedTest",
+			SkipReason: "intentally skipped",
+		},
+	}
+
+	expectedResults := []*rtd.ReportResultRequest{
+		{
+			Request: "PassedReq",
+			Result: &v2.Result{
+				State: v2.Result_SUCCEEDED,
+			},
+		},
+		{
+			Request: "FailedReq",
+			Result: &v2.Result{
+				State: v2.Result_FAILED,
+				Errors: []*v2.Result_Error{
+					{
+						Source:   v2.Result_Error_TEST,
+						Severity: v2.Result_Error_CRITICAL,
+						Details: &structpb.Struct{
+							Fields: map[string]*structpb.Value{
+								"time": {
+									Kind: &structpb.Value_StringValue{
+										StringValue: ptypes.TimestampString(requests[1].Errors[0].Time),
+									},
+								},
+								"reason": {
+									Kind: &structpb.Value_StringValue{
+										StringValue: requests[1].Errors[0].Reason,
+									},
+								},
+								"file": {
+									Kind: &structpb.Value_StringValue{
+										StringValue: requests[1].Errors[0].File,
+									},
+								},
+								"line": {
+									Kind: &structpb.Value_NumberValue{
+										NumberValue: float64(requests[1].Errors[0].Line),
+									},
+								},
+								"stack": {
+									Kind: &structpb.Value_StringValue{
+										StringValue: requests[1].Errors[0].Stack,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			Request: "SkippedReq",
+			Result: &v2.Result{
+				State: v2.Result_SKIPPED,
+				Errors: []*v2.Result_Error{
+					{
+						Source:   v2.Result_Error_TEST,
+						Severity: v2.Result_Error_WARNING,
+						Details: &structpb.Struct{
+							Fields: map[string]*structpb.Value{
+								"SkipReason": {
+									Kind: &structpb.Value_StringValue{
+										StringValue: requests[2].SkipReason,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+
+	// Setting up reports server and client
+	reportsServer, err := NewReportsServer(0, psClient, testsToRequests)
+	if err != nil {
+		t.Fatalf("Failed to start Reports server: %v", err)
+	}
+	reportsConn, err := grpc.Dial(reportsServer.Address(), grpc.WithInsecure())
+	if err != nil {
+		t.Fatalf("Failed to dial: %v", err)
+	}
+	defer reportsConn.Close()
+	reportsClient := protocol.NewReportsClient(reportsConn)
+	for i, r := range requests {
+		if _, err := reportsClient.ReportResult(ctx, r); err != nil {
+			t.Fatalf("Failed at ReportResult: %v", err)
+		}
+		resultsAtSink := psServer.Results()
+		if diff := cmp.Diff(resultsAtSink[i], expectedResults[i]); diff != "" {
+			t.Errorf("Got unexpected argument from request %q (-got +want):\n%s", expectedResults[i].Request, diff)
+		}
 	}
 }

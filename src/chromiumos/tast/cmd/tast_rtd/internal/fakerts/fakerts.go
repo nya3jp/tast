@@ -28,7 +28,8 @@ type fakeProgressSinkService struct {
 	Server *grpc.Server
 
 	// received log by ReportLog RPC
-	log map[nameAndRequest][]byte
+	log     map[nameAndRequest][]byte
+	results []*rtd.ReportResultRequest
 }
 
 // StartProgressSink starts a fake progress sink service.
@@ -82,4 +83,13 @@ func (s *fakeProgressSinkService) ReportLog(stream rtd.ProgressSink_ReportLogSer
 		}
 		s.log[key] = append(s.log[key], data.Data...)
 	}
+}
+
+func (s *fakeProgressSinkService) ReportResult(ctx context.Context, result *rtd.ReportResultRequest) (*rtd.ReportResultResponse, error) {
+	s.results = append(s.results, result)
+	return &rtd.ReportResultResponse{}, nil
+}
+
+func (s *fakeProgressSinkService) Results() []*rtd.ReportResultRequest {
+	return s.results
 }

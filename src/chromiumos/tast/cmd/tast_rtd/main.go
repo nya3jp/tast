@@ -77,12 +77,6 @@ func main() {
 			return 0
 		}
 
-		srv, err := rpc.NewReportsServer(*serverPort)
-		if err != nil {
-			log.Fatalf("Failed to start Reports server: %v", err)
-		}
-		defer srv.Stop()
-
 		logFile, err := createLogFile()
 		if err != nil {
 			log.Fatalf("Failed to create log file: %v", err)
@@ -98,10 +92,10 @@ func main() {
 			logger.Printf("Failed to read invocation protobuf file %v: %v", *input, err)
 			return 1
 		}
-		resultDir, err := invokeTast(logger, inv, *rtdPath)
-		if err != nil {
-			logger.Printf("Failed to invoke tast: %v", err)
-			return 1
+
+		testsToRequests := make(map[string]string)
+		for _, request := range inv.Requests {
+			testsToRequests[request.Test] = request.Name
 		}
 
 		// Set up connection with ProgressSink
@@ -112,11 +106,21 @@ func main() {
 			return 1
 		}
 		defer conn.Close()
-
 		psClient := rtd.NewProgressSinkClient(conn)
 
-		if err := sendTestResults(ctx, logger, psClient, inv, resultDir); err != nil {
-			logger.Printf("Failed in reading tast test results: %v", err)
+		srv, err := rpc.NewReportsServer(*serverPort, psClient, testsToRequests)
+		if err != nil {
+			log.Fatalf("Failed to start Reports server: %v", err)
+		}
+		defer srv.Stop()
+
+		if _, err := invokeTast(logger, inv, *rtdPath); err != nil {
+			logger.Printf("Failed to invoke tast: %v", err)
+			return 1
+		}
+
+		if err := srv.SendMissingTestsReports(ctx); err != nil {
+			logger.Printf("Failed to send reports for missing tests.")
 			return 1
 		}
 

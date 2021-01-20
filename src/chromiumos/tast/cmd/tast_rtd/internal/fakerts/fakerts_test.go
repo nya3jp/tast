@@ -9,6 +9,7 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
+	resultspb "go.chromium.org/chromiumos/config/go/api/test/results/v2"
 	rtd "go.chromium.org/chromiumos/config/go/api/test/rtd/v1"
 	"google.golang.org/grpc"
 )
@@ -81,5 +82,36 @@ func TestProgressSink_ReportLog(t *testing.T) {
 	expected = []byte("#3")
 	if cmp.Diff(actual, expected) != "" {
 		t.Errorf("got %q, want %q", actual, expected)
+	}
+}
+
+// TestProgressSink_ReportResult makes sure the fake progress sink can handle ReportResult API.
+func TestProgressSink_ReportResult(t *testing.T) {
+	srv, addr, err := StartProgressSink(context.Background())
+	if err != nil {
+		t.Fatal("Failed to start fake ProgressSink server: ", err)
+	}
+	defer srv.Stop()
+
+	conn, err := grpc.Dial(addr.String(), grpc.WithInsecure())
+	if err != nil {
+		t.Fatal("Failed to establish connection to fake server: ", srv)
+	}
+	client := rtd.NewProgressSinkClient(conn)
+	request := rtd.ReportResultRequest{
+		Request: "PassedReq",
+		Result: &resultspb.Result{
+			State: resultspb.Result_SUCCEEDED,
+		},
+	}
+	if _, err = client.ReportResult(context.Background(), &request); err != nil {
+		t.Fatal("Failed to call ReportResult: ", err)
+	}
+	results := srv.Results()
+	if results[0].Request != request.Request {
+		t.Errorf("Got unexpected result request name -got %q +want %q", results[0].Request, request.Request)
+	}
+	if results[0].Result.State != request.Result.State {
+		t.Errorf("Got unexpected result state -got %v +want %v", results[0].Result.State, request.Result.State)
 	}
 }

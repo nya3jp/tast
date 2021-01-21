@@ -6,6 +6,7 @@ package rpc
 
 import (
 	"context"
+	"strings"
 	"testing"
 
 	"github.com/golang/protobuf/ptypes"
@@ -21,22 +22,85 @@ import (
 )
 
 func TestReportsServer_LogStream(t *testing.T) {
-	srv, err := NewReportsServer(0, nil, nil)
+	const (
+		testName1    = "test.Name1"
+		logSinkName1 = "tests/name01-20210123/test.Name1/log.txt"
+		requestName1 = "request_for_test_name1"
+		testLog1a    = "log1a"
+		testLog1b    = "log1b"
+		testName2    = "test.Name2"
+		requestName2 = "request_for_test_name2"
+		logSinkName2 = "tests/name01-20210123/test.Name2/log.txt"
+		testLog2a    = "log2a"
+	)
+
+	ctx := context.Background()
+	psServer, psAddr, err := fakerts.StartProgressSink(ctx)
+	if err != nil {
+		t.Fatal("Failed to start fake ProgressSink server: ", err)
+	}
+	defer psServer.Stop()
+
+	psConn, err := grpc.Dial(psAddr.String(), grpc.WithInsecure())
+	if err != nil {
+		t.Fatal("Failed to establish connection to fake server: ", psServer)
+	}
+	psClient := rtd.NewProgressSinkClient(psConn)
+
+	testsToRequests := map[string]string{
+		testName1: requestName1,
+		testName2: requestName2,
+	}
+	srv, err := NewReportsServer(0, psClient, testsToRequests)
 	if err != nil {
 		t.Fatalf("Failed to start Reports server: %v", err)
 	}
-	addr := srv.Address()
-	conn, err := grpc.Dial(addr, grpc.WithInsecure())
+
+	conn, err := grpc.Dial(srv.Address(), grpc.WithInsecure())
 	if err != nil {
 		t.Fatalf("Failed to dial: %v", err)
 	}
 	defer conn.Close()
 
-	// Test that the server is started and reachable by calling a method.
-	// TODO(crbug.com/1166942): Test with actual usage of LogStream.
 	cl := protocol.NewReportsClient(conn)
-	if _, err := cl.LogStream(context.Background()); err != nil {
+	strm, err := cl.LogStream(context.Background())
+	if err != nil {
 		t.Fatalf("Failed at LogStream: %v", err)
+	}
+	if err := strm.Send(&protocol.LogStreamRequest{
+		Test:    testName1,
+		LogPath: logSinkName1,
+		Data:    []byte(testLog1a),
+	}); err != nil {
+		t.Errorf("failed to send: %v", err)
+	}
+	if err := strm.Send(&protocol.LogStreamRequest{
+		Test:    testName1,
+		LogPath: logSinkName1,
+		Data:    []byte(testLog1b),
+	}); err != nil {
+		t.Errorf("failed to send: %v", err)
+	}
+	if err := strm.Send(&protocol.LogStreamRequest{
+		Test:    testName2,
+		LogPath: logSinkName2,
+		Data:    []byte(testLog2a),
+	}); err != nil {
+		t.Errorf("failed to send: %v", err)
+	}
+	if _, err := strm.CloseAndRecv(); err != nil {
+		t.Errorf("failed to CloseAndRecv: %v", err)
+	}
+	srv.Stop()
+
+	if s := string(psServer.ReceivedLog(logSinkName1, requestName1)); !strings.Contains(s, testLog1a+testLog1b) {
+		t.Errorf("Log sent to test #1 was not forwarded. Log#1=%q", s)
+	}
+	if s := string(psServer.ReceivedLog(logSinkName1, requestName1)); strings.Contains(s, testLog2a) {
+		t.Errorf("Log sent to #2 appeared in #1. Log#1=%q", s)
+	}
+	if s := string(psServer.ReceivedLog(logSinkName2, requestName2)); strings.Contains(s, testLog1a) {
+		t.Errorf("Log sent to #1 appeared in #2. Log#2=%q", s)
 	}
 }
 

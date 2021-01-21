@@ -9,6 +9,7 @@ import (
 	"context"
 	"io"
 	"net"
+	"sync"
 
 	rtd "go.chromium.org/chromiumos/config/go/api/test/rtd/v1"
 	"google.golang.org/grpc"
@@ -27,6 +28,7 @@ type fakeProgressSinkService struct {
 	rtd.UnimplementedProgressSinkServer
 	Server *grpc.Server
 
+	logMtx sync.Mutex
 	// received log by ReportLog RPC
 	log     map[nameAndRequest][]byte
 	results []*rtd.ReportResultRequest
@@ -77,11 +79,16 @@ func (s *fakeProgressSinkService) ReportLog(stream rtd.ProgressSink_ReportLogSer
 		if err == io.EOF {
 			return stream.SendAndClose(&rtd.ReportLogResponse{})
 		}
+		if err != nil {
+			return err
+		}
 		key := nameAndRequest{
 			name:    data.Name,
 			request: data.Request,
 		}
+		s.logMtx.Lock()
 		s.log[key] = append(s.log[key], data.Data...)
+		s.logMtx.Unlock()
 	}
 }
 

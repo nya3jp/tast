@@ -9,6 +9,7 @@ import (
 	"context"
 	"io"
 	"net"
+	"sync"
 
 	rtd "go.chromium.org/chromiumos/config/go/api/test/rtd/v1"
 	"google.golang.org/grpc"
@@ -27,9 +28,11 @@ type fakeProgressSinkService struct {
 	rtd.UnimplementedProgressSinkServer
 	Server *grpc.Server
 
+	logMtx sync.Mutex
 	// received log by ReportLog RPC
-	log     map[nameAndRequest][]byte
-	results []*rtd.ReportResultRequest
+	log        map[nameAndRequest][]byte
+	resultsMtx sync.Mutex
+	results    []*rtd.ReportResultRequest
 }
 
 // StartProgressSink starts a fake progress sink service.
@@ -68,28 +71,42 @@ func (s *fakeProgressSinkService) ReceivedLog(name, request string) []byte {
 		name:    name,
 		request: request,
 	}
+	s.logMtx.Lock()
+	defer s.logMtx.Unlock()
 	return s.log[key]
 }
 
+// ReportLog implements rtd.ProgressSinkServer.ReportLog.
 func (s *fakeProgressSinkService) ReportLog(stream rtd.ProgressSink_ReportLogServer) error {
 	for {
 		data, err := stream.Recv()
 		if err == io.EOF {
 			return stream.SendAndClose(&rtd.ReportLogResponse{})
 		}
+		if err != nil {
+			return err
+		}
 		key := nameAndRequest{
 			name:    data.Name,
 			request: data.Request,
 		}
+		s.logMtx.Lock()
 		s.log[key] = append(s.log[key], data.Data...)
+		s.logMtx.Unlock()
 	}
 }
 
+// ReportResult implements rtd.ProgressSinkServer.ReportResult.
 func (s *fakeProgressSinkService) ReportResult(ctx context.Context, result *rtd.ReportResultRequest) (*rtd.ReportResultResponse, error) {
+	s.resultsMtx.Lock()
 	s.results = append(s.results, result)
+	s.resultsMtx.Unlock()
 	return &rtd.ReportResultResponse{}, nil
 }
 
+// Result returns a shallow copy of slice pointing to results sent to the ReportResult fake API.
 func (s *fakeProgressSinkService) Results() []*rtd.ReportResultRequest {
-	return s.results
+	s.resultsMtx.Lock()
+	defer s.resultsMtx.Unlock()
+	return append([]*rtd.ReportResultRequest(nil), s.results...)
 }

@@ -6,6 +6,7 @@ package rpc
 
 import (
 	"context"
+	"strings"
 	"testing"
 
 	"github.com/golang/protobuf/ptypes"
@@ -21,22 +22,56 @@ import (
 )
 
 func TestReportsServer_LogStream(t *testing.T) {
-	srv, err := NewReportsServer(0, nil, nil)
+	const (
+		logSinkName = "/name01-20210123"
+		testName1   = "test.Name1"
+		testLog1    = "log1"
+	)
+
+	ctx := context.Background()
+	psServer, psAddr, err := fakerts.StartProgressSink(ctx)
+	if err != nil {
+		t.Fatal("Failed to start fake ProgressSink server: ", err)
+	}
+	t.Logf("started PSserver at %s", psAddr)
+	defer psServer.Stop()
+
+	psConn, err := grpc.Dial(psAddr.String(), grpc.WithInsecure())
+	if err != nil {
+		t.Fatal("Failed to establish connection to fake server: ", psServer)
+	}
+	psClient := rtd.NewProgressSinkClient(psConn)
+
+	testsToRequests := map[string]string{
+		"test.Name1": "PassedReq",
+	}
+	srv, err := NewReportsServer(0, psClient, psAddr.String(), testsToRequests, logSinkName)
 	if err != nil {
 		t.Fatalf("Failed to start Reports server: %v", err)
 	}
-	addr := srv.Address()
-	conn, err := grpc.Dial(addr, grpc.WithInsecure())
+	t.Logf("started server at %q", srv.Address())
+
+	conn, err := grpc.Dial(srv.Address(), grpc.WithInsecure())
 	if err != nil {
 		t.Fatalf("Failed to dial: %v", err)
 	}
 	defer conn.Close()
 
-	// Test that the server is started and reachable by calling a method.
-	// TODO(crbug.com/1166942): Test with actual usage of LogStream.
 	cl := protocol.NewReportsClient(conn)
-	if _, err := cl.LogStream(context.Background()); err != nil {
+	strm, err := cl.LogStream(context.Background())
+	if err != nil {
 		t.Fatalf("Failed at LogStream: %v", err)
+	}
+	req := protocol.LogStreamRequest{
+		Test: testName1,
+		Data: []byte(testLog1),
+	}
+	if err := strm.Send(&req); err != nil {
+		t.Errorf("failed to send: %v", err)
+	}
+
+	if s := string(psServer.ReceivedLog(logSinkName, testName1)); !strings.Contains(s, testLog1) {
+		t.Errorf("The log did not contain expected string: got %q, want %q", s, testLog1)
 	}
 }
 
@@ -178,7 +213,7 @@ func TestReportsServer_ReportResult(t *testing.T) {
 	}
 
 	// Setting up reports server and client
-	reportsServer, err := NewReportsServer(0, psClient, testsToRequests)
+	reportsServer, err := NewReportsServer(0, psClient, addr.String(), testsToRequests, "log_sink_name")
 	if err != nil {
 		t.Fatalf("Failed to start Reports server: %v", err)
 	}

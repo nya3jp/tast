@@ -108,7 +108,8 @@ func main() {
 		defer conn.Close()
 		psClient := rtd.NewProgressSinkClient(conn)
 
-		srv, err := rpc.NewReportsServer(*serverPort, psClient, testsToRequests)
+		workDir := filepath.Dir(logFile.Name())
+		srv, err := rpc.NewReportsServer(*serverPort, psClient, testsToRequests, workDir)
 		if err != nil {
 			log.Fatalf("Failed to start Reports server: %v", err)
 		}

@@ -7,6 +7,7 @@ package fakerts
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"net"
 
@@ -76,6 +77,10 @@ func (s *fakeProgressSinkService) ReportLog(stream rtd.ProgressSink_ReportLogSer
 		data, err := stream.Recv()
 		if err == io.EOF {
 			return stream.SendAndClose(&rtd.ReportLogResponse{})
+		}
+		if err != nil {
+			panic(fmt.Sprintf("unexpected error: %q", err))
+			return err
 		}
 		key := nameAndRequest{
 			name:    data.Name,

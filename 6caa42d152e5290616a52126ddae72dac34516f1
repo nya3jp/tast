@@ -1,6 +1,29 @@
 {
   "comments": [
     {
+      "unresolved": true,
+      "key": {
+        "uuid": "10fe36dc_c48e70e5",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1113991
+      },
+      "writtenOn": "2021-01-21T22:53:36Z",
+      "side": 1,
+      "message": "nit: you can say \"with crrev.com/c/... patched in\" instead).",
+      "range": {
+        "startLine": 17,
+        "startChar": 71,
+        "endLine": 19,
+        "endChar": 213
+      },
+      "revId": "6caa42d152e5290616a52126ddae72dac34516f1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": false,
       "key": {
         "uuid": "2260cf20_ebb6f2b5",
@@ -14,6 +37,92 @@
       "writtenOn": "2021-01-21T22:07:34Z",
       "side": 1,
       "message": "mcasas@: PTAL",
+      "revId": "6caa42d152e5290616a52126ddae72dac34516f1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d8b5bafa_341d4a2d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1113991
+      },
+      "writtenOn": "2021-01-21T22:53:36Z",
+      "side": 1,
+      "message": "LGTM % questions\n\n+hidehiko@ as tast-owner and since he wrote the SoC parsing logic, PTAL.",
+      "revId": "6caa42d152e5290616a52126ddae72dac34516f1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "115a4e54_38ec4963",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 346,
+      "author": {
+        "id": 1113991
+      },
+      "writtenOn": "2021-01-21T22:53:36Z",
+      "side": 1,
+      "message": "nit: add here \"primary plane scanout\".",
+      "range": {
+        "startLine": 346,
+        "startChar": 75,
+        "endLine": 346,
+        "endChar": 76
+      },
+      "revId": "6caa42d152e5290616a52126ddae72dac34516f1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "24c46948_0d137e62",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 384,
+      "author": {
+        "id": 1113991
+      },
+      "writtenOn": "2021-01-21T22:53:36Z",
+      "side": 1,
+      "message": "Wouldn\u0027t this be covered by l.356? QC is an ARM platform.\nSame about l.359-369.",
+      "range": {
+        "startLine": 383,
+        "startChar": 3,
+        "endLine": 384,
+        "endChar": 39
+      },
+      "revId": "6caa42d152e5290616a52126ddae72dac34516f1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "399c084a_7d4aed75",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 385,
+      "author": {
+        "id": 1113991
+      },
+      "writtenOn": "2021-01-21T22:53:36Z",
+      "side": 1,
+      "message": "nit: s/30bpp framebuffers/scanning out 30bpp framebuffers/",
+      "range": {
+        "startLine": 385,
+        "startChar": 43,
+        "endLine": 385,
+        "endChar": 61
+      },
       "revId": "6caa42d152e5290616a52126ddae72dac34516f1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }

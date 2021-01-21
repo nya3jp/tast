@@ -77,6 +77,9 @@ func (s *fakeProgressSinkService) ReportLog(stream rtd.ProgressSink_ReportLogSer
 		if err == io.EOF {
 			return stream.SendAndClose(&rtd.ReportLogResponse{})
 		}
+		if err != nil {
+			return err
+		}
 		key := nameAndRequest{
 			name:    data.Name,
 			request: data.Request,

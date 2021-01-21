@@ -35,6 +35,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "181f69da_31add413",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/internal/fakerts/fakerts_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-01-21T06:52:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "478942a3_8be6828a",
+      "revId": "ac054304a5697df10faa91a555d8cfac96b42dd5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "a021d426_5a862440",
@@ -48,6 +66,24 @@
       "writtenOn": "2021-01-21T05:51:46Z",
       "side": 1,
       "message": "Please add crbug number.\nTODO(crbug.com/1166946):",
+      "revId": "ac054304a5697df10faa91a555d8cfac96b42dd5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c0a4f561_63c2f6e2",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/internal/result/result.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-01-21T06:52:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a021d426_5a862440",
       "revId": "ac054304a5697df10faa91a555d8cfac96b42dd5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -69,6 +105,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "b3e5e8a4_809b32e0",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/internal/result/result.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-01-21T06:52:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b860e4d3_0f83047d",
+      "revId": "ac054304a5697df10faa91a555d8cfac96b42dd5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "6d2da367_4ff44700",
@@ -86,6 +140,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "4f0933d9_f3292d00",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/internal/result/result.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-01-21T06:52:03Z",
+      "side": 1,
+      "message": "Actually, the message was outdated.  It is ok for now. I will file a new crbug if the F20 team wants a different behavior.",
+      "parentUuid": "6d2da367_4ff44700",
+      "revId": "ac054304a5697df10faa91a555d8cfac96b42dd5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "d856ad02_9a07f77c",
@@ -99,6 +171,24 @@
       "writtenOn": "2021-01-21T05:51:46Z",
       "side": 1,
       "message": "Negate the condition and use early-reteurn.\nif result.SkipReason \u003d\u003d \"\" {\n  return nil\n}\nreturn \u0026rtd....\n\n(but also consider putting out the if condition to the caller in this case)",
+      "revId": "ac054304a5697df10faa91a555d8cfac96b42dd5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d0ac7ae7_58ccf8ed",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/internal/result/result.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-01-21T06:52:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d856ad02_9a07f77c",
       "revId": "ac054304a5697df10faa91a555d8cfac96b42dd5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -218,6 +308,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "6c950965_93eeec61",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/internal/rpc/reports_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-01-21T06:52:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fd5fd926_4423685b",
+      "range": {
+        "startLine": 43,
+        "startChar": 34,
+        "endLine": 43,
+        "endChar": 35
+      },
+      "revId": "ac054304a5697df10faa91a555d8cfac96b42dd5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "d9b111cf_a8be9f9b",
@@ -231,6 +345,24 @@
       "writtenOn": "2021-01-21T05:51:46Z",
       "side": 1,
       "message": "optional: I don\u0027t think this comment is needed, because this is same information as the code. (the symbols are self-descriptive names)",
+      "revId": "ac054304a5697df10faa91a555d8cfac96b42dd5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "73e428ab_c9def3f2",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/main.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-01-21T06:52:03Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d9b111cf_a8be9f9b",
       "revId": "ac054304a5697df10faa91a555d8cfac96b42dd5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }

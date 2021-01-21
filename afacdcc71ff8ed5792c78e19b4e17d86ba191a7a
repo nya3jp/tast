@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5dfd4216_85954d28",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-01-21T06:52:03Z",
+      "side": 1,
+      "message": "Hi Tatsuhisa:\n\nI have addressed all your feedback. Please review.\n\nThanks.\n\nSeewai\n",
+      "revId": "afacdcc71ff8ed5792c78e19b4e17d86ba191a7a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

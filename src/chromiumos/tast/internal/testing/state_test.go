@@ -853,7 +853,6 @@ func TestStateExports(t *gotesting.T) {
 				"RequiredVar",
 				"ServiceDeps",
 				"SoftwareDeps",
-				"TestInstance",
 				"TestName",
 				"Var",
 			},

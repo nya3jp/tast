@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9fbb0cb8_036419cc",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-01-21T07:20:08Z",
+      "side": 1,
+      "message": "Hi Shuhei:\n\nI have addressed your feedback. Please review.\n\nThanks.\n\nSeewai",
+      "revId": "6129161049c5f1645cd559077b6996076d25d89c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

@@ -216,6 +216,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "fdfad5a4_86323345",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/internal/rpc/reports.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-01-21T07:20:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5ab92081_86c394e0",
+      "range": {
+        "startLine": 23,
+        "startChar": 5,
+        "endLine": 23,
+        "endChar": 18
+      },
+      "revId": "ac054304a5697df10faa91a555d8cfac96b42dd5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "5c5fe19e_5d1c4217",
@@ -229,6 +253,30 @@
       "writtenOn": "2021-01-21T06:41:09Z",
       "side": 1,
       "message": "It is possible that gRPC methods are called in parallel, so please protect mutable fields with a mutex.\n\nMy personal recommendation is to categorize fields in mutability. For example:\n\n srv *grpc.Server\n addr net.Addr\n psClient rtd.ProgressSinkClient\n testsToRequests map[string]string\n\n mu sync.Mutex\n reportedRequests map[string]struct{}",
+      "range": {
+        "startLine": 27,
+        "startChar": 1,
+        "endLine": 28,
+        "endChar": 80
+      },
+      "revId": "ac054304a5697df10faa91a555d8cfac96b42dd5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1eaf1dd7_141b197c",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/internal/rpc/reports.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-01-21T07:20:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5c5fe19e_5d1c4217",
       "range": {
         "startLine": 27,
         "startChar": 1,
@@ -262,6 +310,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "031411f3_8cb01f0a",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/internal/rpc/reports.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-01-21T07:20:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "aad00bf4_ae670a4c",
+      "range": {
+        "startLine": 33,
+        "startChar": 8,
+        "endLine": 33,
+        "endChar": 21
+      },
+      "revId": "ac054304a5697df10faa91a555d8cfac96b42dd5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "c28b2b64_bd17ccd5",
@@ -275,6 +347,30 @@
       "writtenOn": "2021-01-21T06:41:09Z",
       "side": 1,
       "message": "grpc.Server.Serve takes ownership of net.Listener, so we should not close the listener here.\nhttps://pkg.go.dev/google.golang.org/grpc#Server.Serve\n\nTo make the ownership clear, I recommend removing net.Listener from reportsServer\u0027s field, and instead just storing lis.Addr to a field.",
+      "range": {
+        "startLine": 65,
+        "startChar": 1,
+        "endLine": 65,
+        "endChar": 19
+      },
+      "revId": "ac054304a5697df10faa91a555d8cfac96b42dd5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "55597284_5018f6ec",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/internal/rpc/reports.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-01-21T07:20:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c28b2b64_bd17ccd5",
       "range": {
         "startLine": 65,
         "startChar": 1,

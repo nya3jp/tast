@@ -108,7 +108,12 @@ func main() {
 		defer conn.Close()
 		psClient := rtd.NewProgressSinkClient(conn)
 
-		srv, err := rpc.NewReportsServer(*serverPort, psClient, testsToRequests)
+		// The path to the output directory, including a %s verb for the test name.
+		// Must be kept consistent with the file path synthesized in handleTestStart()
+		// in Tast framework code:
+		// src/platform/tast/src/chromiumos/tast/cmd/tast/internal/run/results.go
+		outDirTmpl := filepath.Join(filepath.Dir(logFile.Name()), "tests", "%s", "log.txt")
+		srv, err := rpc.NewReportsServer(*serverPort, psClient, testsToRequests, outDirTmpl)
 		if err != nil {
 			log.Fatalf("Failed to start Reports server: %v", err)
 		}

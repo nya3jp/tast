@@ -16,6 +16,276 @@
       "message": "Could you take a look early?\nUnit tests for new code are to be done, and probably I have to split the change though.\n",
       "revId": "43620458d145bedf6e79b9c6923cb45ac45465ca",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "98e39772_32d78394",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-01-21T05:18:54Z",
+      "side": 1,
+      "message": "Thanks for sending this change, here are my high level comments.",
+      "revId": "43620458d145bedf6e79b9c6923cb45ac45465ca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c7f1a19b_6b254dac",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/config.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-01-21T05:18:54Z",
+      "side": 1,
+      "message": "In the actual review, let\u0027s create a separate change for changing testNames to testsToRun.",
+      "range": {
+        "startLine": 75,
+        "startChar": 1,
+        "endLine": 75,
+        "endChar": 46
+      },
+      "revId": "43620458d145bedf6e79b9c6923cb45ac45465ca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d08c88d1_6ed3734f",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/config.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 342,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-01-21T05:18:54Z",
+      "side": 1,
+      "message": "Ouch. So we can run remote fixtures in the cros bundle only...\n\nDo you plan to fix this issue soon? Otherwise it\u0027s nice to file a tracking bug so as not to forget this limitation.",
+      "range": {
+        "startLine": 342,
+        "startChar": 1,
+        "endLine": 342,
+        "endChar": 65
+      },
+      "revId": "43620458d145bedf6e79b9c6923cb45ac45465ca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "95315f8f_c462bce1",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/local.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 157,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-01-21T05:18:54Z",
+      "side": 1,
+      "message": "It is important to keep testing order deterministic for reproducibility. Thus let us return a list instead of a map.",
+      "range": {
+        "startLine": 157,
+        "startChar": 56,
+        "endLine": 157,
+        "endChar": 99
+      },
+      "revId": "43620458d145bedf6e79b9c6923cb45ac45465ca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2446c91c_1bd0bc70",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/local.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 187,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-01-21T05:18:54Z",
+      "side": 1,
+      "message": "I\u0027m not sure what this check is for... got is the number of fixtures defined right?",
+      "range": {
+        "startLine": 187,
+        "startChar": 11,
+        "endLine": 187,
+        "endChar": 37
+      },
+      "revId": "43620458d145bedf6e79b9c6923cb45ac45465ca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "eff652b6_1a0bd84c",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/local.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 197,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-01-21T05:18:54Z",
+      "side": 1,
+      "message": "I wonder if we should check this condition on actual execution of remote fixtures. If we return an error here we abort test execution before running any test...",
+      "range": {
+        "startLine": 195,
+        "startChar": 0,
+        "endLine": 197,
+        "endChar": 4
+      },
+      "revId": "43620458d145bedf6e79b9c6923cb45ac45465ca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ee90fe68_fbd6b072",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/local.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 230,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-01-21T05:18:54Z",
+      "side": 1,
+      "message": "I guess this is (bundle, p)?",
+      "range": {
+        "startLine": 230,
+        "startChar": 32,
+        "endLine": 230,
+        "endChar": 42
+      },
+      "revId": "43620458d145bedf6e79b9c6923cb45ac45465ca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e9bd9a95_ea4fda13",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/local.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 254,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-01-21T05:18:54Z",
+      "side": 1,
+      "message": "Please pass ctx to this function.",
+      "range": {
+        "startLine": 254,
+        "startChar": 136,
+        "endLine": 254,
+        "endChar": 143
+      },
+      "revId": "43620458d145bedf6e79b9c6923cb45ac45465ca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ec169b84_2d3ed88b",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/local.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 433,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-01-21T05:18:54Z",
+      "side": 1,
+      "message": "runLocalTestsSub may return non-empty results and an error when it encounters an error in the middle of tests. And we still want to report completed test results. So this is a rare case where we should append results before bailing out for err.",
+      "range": {
+        "startLine": 430,
+        "startChar": 4,
+        "endLine": 433,
+        "endChar": 49
+      },
+      "revId": "43620458d145bedf6e79b9c6923cb45ac45465ca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "695a2ca7_ac824f1d",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/local.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 436,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-01-21T05:18:54Z",
+      "side": 1,
+      "message": "For the same reason we should return entityResults here.",
+      "range": {
+        "startLine": 436,
+        "startChar": 11,
+        "endLine": 436,
+        "endChar": 14
+      },
+      "revId": "43620458d145bedf6e79b9c6923cb45ac45465ca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "52016022_ca6d0df7",
+        "filename": "src/chromiumos/tast/internal/bundle/args.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-01-21T05:18:54Z",
+      "side": 1,
+      "message": "I think we can use RPCMode now with extra services registered in runRPCServer:\nhttps://chromium-review.googlesource.com/c/chromiumos/platform/tast/+/2600766/3/src/chromiumos/tast/internal/bundle/rpc.go",
+      "range": {
+        "startLine": 45,
+        "startChar": 1,
+        "endLine": 45,
+        "endChar": 19
+      },
+      "revId": "43620458d145bedf6e79b9c6923cb45ac45465ca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "51fe273a_5284a9cf",
+        "filename": "src/chromiumos/tast/internal/planner/run.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 566,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-01-21T05:18:54Z",
+      "side": 1,
+      "message": "Interesting... I guess it\u0027s better to put this logic inside RedFixtureName.",
+      "range": {
+        "startLine": 564,
+        "startChar": 2,
+        "endLine": 566,
+        "endChar": 3
+      },
+      "revId": "43620458d145bedf6e79b9c6923cb45ac45465ca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

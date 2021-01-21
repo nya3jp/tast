@@ -753,13 +753,6 @@ type TestHookState struct {
 	*testMixin
 }
 
-// TestInstance returns TestInstance of the test being run.
-// The returned TestInstance is a copy of an original TestInstance. Modifying
-// its fields doesn't affect test execution.
-func (s *TestHookState) TestInstance() *TestInstance {
-	return s.testRoot.test.clone()
-}
-
 // Purgeable returns a list of paths of purgeable cache files. This list may
 // contain external data files downloaded previously but unused in the next
 // test, and the like. Test hooks can delete those files safely without

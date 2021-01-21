@@ -20,6 +20,24 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "276ec2fb_16868803",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 5
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-01-21T19:11:32Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "355e38de_afd9b226",
+      "revId": "6129161049c5f1645cd559077b6996076d25d89c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "9fbb0cb8_036419cc",
         "filename": "/PATCHSET_LEVEL",
         "patchSetId": 5
@@ -48,6 +66,30 @@
       "writtenOn": "2021-01-21T07:54:51Z",
       "side": 1,
       "message": "nit: more popular comment pattern in the project is like \"protects reportedRequests\", and currently we only have the single mutable field.\nhttps://source.chromium.org/search?q\u003dfile:tast%20sync%5C.Mutex\nhttps://source.chromium.org/search?q\u003dfile:%5C.go$%20sync%5C.Mutex.*%5C%2F%5C%2F",
+      "range": {
+        "startLine": 30,
+        "startChar": 38,
+        "endLine": 30,
+        "endChar": 62
+      },
+      "revId": "6129161049c5f1645cd559077b6996076d25d89c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3387ad8b_33d624a9",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/internal/rpc/reports.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-01-21T19:11:32Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6bd238b0_6100b674",
       "range": {
         "startLine": 30,
         "startChar": 38,

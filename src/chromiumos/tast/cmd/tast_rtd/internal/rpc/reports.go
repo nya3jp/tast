@@ -8,6 +8,7 @@ package rpc
 import (
 	"context"
 	"fmt"
+	"io"
 	"net"
 	"sync"
 
@@ -26,6 +27,7 @@ type ReportsServer struct {
 	psClient        rtd.ProgressSinkClient // Progress Sink client to send reports.
 	listenerAddr    net.Addr               // The address for the listener for gRPC service.
 	testsToRequests map[string]string      // A mapping between test names and requests names.
+	reportLogStream rtd.ProgressSink_ReportLogClient
 
 	mu               sync.Mutex          // A mutex to protect reportedRequests.
 	reportedRequests map[string]struct{} // Requests that have received results.
@@ -33,9 +35,29 @@ type ReportsServer struct {
 
 var _ protocol.ReportsServer = (*ReportsServer)(nil)
 
-// LogStream gets logs from tast and passed on to progress sink.
-func (s *ReportsServer) LogStream(protocol.Reports_LogStreamServer) error {
-	return nil
+// LogStream gets logs from tast and passes on to progress sink server.
+func (s *ReportsServer) LogStream(stream protocol.Reports_LogStreamServer) error {
+	for {
+		in, err := stream.Recv()
+		if err == io.EOF {
+			return stream.SendAndClose(&empty.Empty{})
+		}
+		if err != nil {
+			return err
+		}
+		request, ok := s.testsToRequests[in.Test]
+		if !ok {
+			return errors.Errorf("cannot find request name for test %q", in.Test)
+		}
+		req := rtd.ReportLogRequest{
+			Name:    in.LogPath,
+			Request: request,
+			Data:    in.Data,
+		}
+		if err := s.reportLogStream.Send(&req); err != nil {
+			return errors.Wrap(err, "failed to send to ReportLog stream")
+		}
+	}
 }
 
 // ReportResult gets a report request from tast and passes on to progress sink.
@@ -70,6 +92,7 @@ func (s *ReportsServer) SendMissingTestsReports(ctx context.Context) error {
 
 // Stop stops the ReportsServer.
 func (s *ReportsServer) Stop() {
+	s.reportLogStream.CloseAndRecv()
 	s.srv.Stop()
 }
 
@@ -85,13 +108,20 @@ func NewReportsServer(port int, psClient rtd.ProgressSinkClient, testsToRequests
 	if err != nil {
 		return nil, err
 	}
+	stream, err := psClient.ReportLog(context.Background())
+	if err != nil {
+		l.Close()
+		return nil, err
+	}
 	s := ReportsServer{
 		srv:              grpc.NewServer(),
 		listenerAddr:     l.Addr(),
 		psClient:         psClient,
 		testsToRequests:  testsToRequests,
 		reportedRequests: make(map[string]struct{}),
+		reportLogStream:  stream,
 	}
+
 	protocol.RegisterReportsServer(s.srv, &s)
 	go s.srv.Serve(l)
 	return &s, nil

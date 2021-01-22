@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "39d43d33_28771ec7",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 18
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2021-01-22T07:06:03Z",
+      "side": 1,
+      "message": "Could you take another look?\nI basically just merged 3 changes related to ListFixturesMode which have got +2.\nI\u0027m fine to split it again if needed.\n",
+      "revId": "e46ab0a6a823aebe01de215ccce6e5743a39dc86",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

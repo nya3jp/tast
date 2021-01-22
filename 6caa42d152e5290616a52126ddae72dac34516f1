@@ -178,6 +178,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "d8068493_58971076",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 384,
+      "author": {
+        "id": 1113991
+      },
+      "writtenOn": "2021-01-22T01:09:39Z",
+      "side": 1,
+      "message": "Hmm I would expect to: looking at the code |device.Config_Architecture|\nis parsed from lscpu \"Architecture\" entry, which is IIRC one of the\nfields you can \"trust\" (as opposed to e.g. \"model\" or \"model name\"\nwhich are vendor-specific and oftentimes inconsistent among silicon\ngenerations).\n\nhttps://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform/tast/src/chromiumos/tast/internal/runner/features.go;l\u003d421",
+      "parentUuid": "832c9ea5_889cbf03",
+      "range": {
+        "startLine": 383,
+        "startChar": 3,
+        "endLine": 384,
+        "endChar": 39
+      },
+      "revId": "6caa42d152e5290616a52126ddae72dac34516f1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "399c084a_7d4aed75",
         "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
         "patchSetId": 2

@@ -16,6 +16,23 @@
       "message": "mcasas@: PTAL, one question for you\nhidehiko@: PTAL",
       "revId": "29d1cbf06164e7460a758ff7e47cf3c999aad145",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1b7e7320_852a8670",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2021-01-22T02:12:08Z",
+      "side": 1,
+      "message": "Tast LGTM. Defer mcasas@ for actual list of SoCs.",
+      "revId": "29d1cbf06164e7460a758ff7e47cf3c999aad145",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

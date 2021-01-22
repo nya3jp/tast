@@ -22,6 +22,30 @@
       },
       "revId": "969c0db055559482ae5d1f69822df36796e62dad",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5b644a5a_5420dd56",
+        "filename": "src/chromiumos/tast/internal/testing/test_instance.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 518,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2021-01-22T05:30:14Z",
+      "side": 1,
+      "message": "Done.\nI updated Bundle to have the basename of os.Args[0], instead of the absolute file path.\nos.Executable evaluates symlinks and returns the realpath of the file. It doesn\u0027t work well with the createBundleSymlinks function used by the unit test TestRunListTests.",
+      "parentUuid": "de5cfe9c_52e85f5a",
+      "range": {
+        "startLine": 518,
+        "startChar": 1,
+        "endLine": 518,
+        "endChar": 40
+      },
+      "revId": "969c0db055559482ae5d1f69822df36796e62dad",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

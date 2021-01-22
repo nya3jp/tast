@@ -200,6 +200,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "d19c6cff_12d70969",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 384,
+      "author": {
+        "id": 1485298
+      },
+      "writtenOn": "2021-01-22T18:54:00Z",
+      "side": 1,
+      "message": "Okay, thank you. I removed the individual ARM CPUs and verified that it still works.",
+      "parentUuid": "d8068493_58971076",
+      "range": {
+        "startLine": 383,
+        "startChar": 3,
+        "endLine": 384,
+        "endChar": 39
+      },
+      "revId": "6caa42d152e5290616a52126ddae72dac34516f1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "399c084a_7d4aed75",

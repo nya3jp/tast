@@ -74,6 +74,24 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "69e262ef_3a1918d9",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 5
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-01-22T01:05:48Z",
+      "side": 1,
+      "message": "LGTM. Thanks!",
+      "parentUuid": "472f1210_1f4af8df",
+      "revId": "6129161049c5f1645cd559077b6996076d25d89c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "9fbb0cb8_036419cc",
         "filename": "/PATCHSET_LEVEL",
         "patchSetId": 5

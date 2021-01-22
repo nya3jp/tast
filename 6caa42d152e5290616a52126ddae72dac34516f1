@@ -26,6 +26,30 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "6d3165c1_72d197d9",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1485298
+      },
+      "writtenOn": "2021-01-22T00:51:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "10fe36dc_c48e70e5",
+      "range": {
+        "startLine": 17,
+        "startChar": 71,
+        "endLine": 19,
+        "endChar": 213
+      },
+      "revId": "6caa42d152e5290616a52126ddae72dac34516f1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "2260cf20_ebb6f2b5",
         "filename": "/PATCHSET_LEVEL",
         "patchSetId": 2
@@ -81,6 +105,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "83cfaae6_4e69c3e4",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 346,
+      "author": {
+        "id": 1485298
+      },
+      "writtenOn": "2021-01-22T00:51:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "115a4e54_38ec4963",
+      "range": {
+        "startLine": 346,
+        "startChar": 75,
+        "endLine": 346,
+        "endChar": 76
+      },
+      "revId": "6caa42d152e5290616a52126ddae72dac34516f1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "24c46948_0d137e62",
@@ -106,6 +154,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "832c9ea5_889cbf03",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 384,
+      "author": {
+        "id": 1485298
+      },
+      "writtenOn": "2021-01-22T00:51:18Z",
+      "side": 1,
+      "message": "Question: do we expect in practice that this will always be fully correctly labeled? As in, both fields will be populated and will be correct?\n\nIf so, yep, it is redundant, as is the block above. In that case we may choose to keep the list just so that we have an explicit list of ARM SOCs known not to support 30bpp in case we expect that some future ARM SOCs might gain support. Then it would be easier to add to an existing list, as opposed to generating the list from scratch. This may not be something we expect, though, or it may not be worth it to keep this list around even if that is the case.\n\nLet me know your thoughts!",
+      "parentUuid": "24c46948_0d137e62",
+      "range": {
+        "startLine": 383,
+        "startChar": 3,
+        "endLine": 384,
+        "endChar": 39
+      },
+      "revId": "6caa42d152e5290616a52126ddae72dac34516f1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "399c084a_7d4aed75",
         "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
         "patchSetId": 2
@@ -117,6 +189,30 @@
       "writtenOn": "2021-01-21T22:53:36Z",
       "side": 1,
       "message": "nit: s/30bpp framebuffers/scanning out 30bpp framebuffers/",
+      "range": {
+        "startLine": 385,
+        "startChar": 43,
+        "endLine": 385,
+        "endChar": 61
+      },
+      "revId": "6caa42d152e5290616a52126ddae72dac34516f1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5394c753_229a5f79",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 385,
+      "author": {
+        "id": 1485298
+      },
+      "writtenOn": "2021-01-22T00:51:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "399c084a_7d4aed75",
       "range": {
         "startLine": 385,
         "startChar": 43,

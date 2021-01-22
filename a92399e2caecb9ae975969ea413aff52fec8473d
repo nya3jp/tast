@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5b2f8baa_733c2fd5",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-01-22T23:16:45Z",
+      "side": 1,
+      "message": "I think F20 team expects the ReportLogRequest.name to be the path of log.txt for each test. Please take a look at my comments. Thanks.",
+      "revId": "a92399e2caecb9ae975969ea413aff52fec8473d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4d014094_58bfc1a3",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/internal/fakerts/fakerts.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-01-22T23:16:45Z",
+      "side": 1,
+      "message": "Should add mutex while appending to results. Sorry. I didn\u0027t do it in the first place. Please add it here.",
+      "revId": "a92399e2caecb9ae975969ea413aff52fec8473d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e70b02a5_72d7ee35",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/internal/rpc/reports.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-01-22T23:16:45Z",
+      "side": 1,
+      "message": "It is going to be different from test to test. Therefore, I think it cannot be stored as a single string.",
+      "revId": "a92399e2caecb9ae975969ea413aff52fec8473d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "16a8d57f_246a065d",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/main.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 111,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-01-22T23:16:45Z",
+      "side": 1,
+      "message": "I think you have to get it from a request and it is going to be different from request to request. It should be something like\n// /tmp/tast/results/20210115-083022/tests/network.WifiSetTXPower/log.txt\nfilepath.Join(inv.request[i].Environment.WorkDir, \"tests\", inv.request[i].test, \"log.txt\")",
+      "revId": "a92399e2caecb9ae975969ea413aff52fec8473d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

@@ -38,6 +38,24 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "18ce2bc3_610c1f7f",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 5
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-01-22T00:57:16Z",
+      "side": 1,
+      "message": "https://chromium.googlesource.com/chromiumos/docs/+/master/contributing.md#describe-testing-performed\nIf possible, we may contain the essential and minimal information about the test into the TEST\u003d line.",
+      "parentUuid": "276ec2fb_16868803",
+      "revId": "6129161049c5f1645cd559077b6996076d25d89c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "9fbb0cb8_036419cc",
         "filename": "/PATCHSET_LEVEL",
         "patchSetId": 5

@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "eb425fc2_8c9e8229",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 7
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-01-22T01:02:35Z",
+      "side": 1,
+      "message": "Hi Tatsuhisa:\n\nI just updated the description. Please check if it is ok now. Thanks.\n\nSeewai\n",
+      "revId": "94a788601110d974fb691b7405cdc67126e4d04f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

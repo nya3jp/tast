@@ -19,6 +19,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/golang/protobuf/ptypes"
+
 	"chromiumos/tast/internal/control"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testing"
@@ -394,6 +396,33 @@ func (r *resultsHandler) handleTestError(ctx context.Context, msg *control.Entit
 	return nil
 }
 
+func (r *resultsHandler) reportResult(ctx context.Context, res *EntityResult) error {
+	if r.cfg.reportsClient == nil {
+		return nil
+	}
+	request := &protocol.ReportResultRequest{
+		Test:       res.Name,
+		SkipReason: res.SkipReason,
+	}
+	for _, e := range res.Errors {
+		ts, err := ptypes.TimestampProto(e.Time)
+		if err != nil {
+			return err
+		}
+		request.Errors = append(request.Errors, &protocol.Error{
+			Time:   ts,
+			Reason: e.Reason,
+			File:   e.File,
+			Line:   int32(e.Line),
+			Stack:  e.Stack,
+		})
+	}
+	if _, err := r.cfg.reportsClient.ReportResult(ctx, request); err != nil {
+		return err
+	}
+	return nil
+}
+
 func (r *resultsHandler) handleTestEnd(ctx context.Context, msg *control.EntityEnd) error {
 	state := r.currents[msg.Name]
 	if state == nil {
@@ -429,6 +458,9 @@ func (r *resultsHandler) handleTestEnd(ctx context.Context, msg *control.EntityE
 
 	// Replace the earlier partial TestResult object with the now-complete version.
 	if state.result.Type == testing.EntityTest {
+		if err := r.reportResult(ctx, &state.result); err != nil {
+			return err
+		}
 		if err := r.streamWriter.write(&state.result, true); err != nil {
 			return err
 		}
@@ -548,6 +580,7 @@ func (r *resultsHandler) processMessages(ctx context.Context, mch <-chan interfa
 		for _, state := range r.currents {
 			state.result.Errors = append(state.result.Errors, EntityError{time.Now(), testing.Error{Reason: incompleteTestMsg}})
 			if state.result.Type == testing.EntityTest {
+				r.reportResult(ctx, &state.result)
 				r.streamWriter.write(&state.result, true)
 			}
 		}

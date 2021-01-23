@@ -148,7 +148,8 @@ type Config struct {
 	osVersion          string                     // Chrome OS Version
 	tlwConn            *grpc.ClientConn           // TLW gRPC service connection
 	tlwServerForDUT    string                     // TLW address accessible from DUT.
-	reportsConn        *grpc.ClientConn           // Reports gRPC service connection
+	reportsConn        *grpc.ClientConn           // Reports gRPC service connection.
+	reportsClient      protocol.ReportsClient     // Reports gRPC client.
 	reportsLogStream   *protocol.Reports_LogStreamClient
 }
 
@@ -278,6 +279,7 @@ func (c *Config) Close(ctx context.Context) error {
 			firstErr = err
 		}
 		c.reportsConn = nil
+		c.reportsClient = nil
 	}
 	return firstErr
 }

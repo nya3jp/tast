@@ -51,10 +51,11 @@ func TestNewArgs(t *testing.T) {
 			remoteRunnerFlag:           filepath.Join(rtdPath, "tast", "bin", "remote_test_runner"),
 			defaultVarsDirFlag:         filepath.Join(rtdPath, "tast", "vars"),
 			keyfile:                    filepath.Join(rtdPath, "tast", "ssh_keys", "testing_rsa"),
+			reportsServer:              "127.0.0.1:3333",
 		},
 	}
 
-	args := newArgs(&inv, rtdPath)
+	args := newArgs(&inv, rtdPath, expectedArgs.runFlags[reportsServer])
 	if diff := cmp.Diff(args, &expectedArgs, cmp.AllowUnexported(runArgs{})); diff != "" {
 		t.Errorf("Got unexpected argument from newArgs (-got +want):\n%s", diff)
 	}
@@ -73,10 +74,11 @@ func TestGenArgList(t *testing.T) {
 			sshRetriesFlag:             "2",
 			downloadDataFlag:           "batch",
 			buildFlag:                  "false",
-			downloadPrivateBundlesFlag: "true",
+			downloadPrivateBundlesFlag: "false",
 			timeOutFlag:                "3000",
 			resultsDirFlag:             workDir1,
 			tlwServerFlag:              fmt.Sprintf("%v:%v", tlwAddress, tlwPort),
+			reportsServer:              "127.0.0.1:3333",
 		},
 	}
 

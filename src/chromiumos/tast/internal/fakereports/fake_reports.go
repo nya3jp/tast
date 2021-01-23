@@ -13,22 +13,22 @@ import (
 
 	"github.com/golang/protobuf/ptypes/empty"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 
 	"chromiumos/tast/internal/protocol"
 )
 
-type fakeReportsServer struct {
+// Server provides a fake resports server to test reports client implementation.
+type Server struct {
 	logData map[string][]byte
+	results []*protocol.ReportResultRequest
 }
 
-var _ protocol.ReportsServer = &fakeReportsServer{}
+var _ protocol.ReportsServer = &Server{}
 
 // Start starts a gRPC server serving ReportsServer in the background for tests.
 // Callers are responsible for stopping the server by stopFunc().
-func Start(t *testing.T) (server *fakeReportsServer, stopFunc func(), addr string) {
-	s := &fakeReportsServer{}
+func Start(t *testing.T) (server *Server, stopFunc func(), addr string) {
+	s := &Server{}
 	srv := grpc.NewServer()
 	protocol.RegisterReportsServer(srv, s)
 
@@ -41,7 +41,8 @@ func Start(t *testing.T) (server *fakeReportsServer, stopFunc func(), addr strin
 	return s, srv.Stop, lis.Addr().String()
 }
 
-func (s *fakeReportsServer) LogStream(stream protocol.Reports_LogStreamServer) error {
+// LogStream provides a means for reports clients to test LogStream requests.
+func (s *Server) LogStream(stream protocol.Reports_LogStreamServer) error {
 	for {
 		req, err := stream.Recv()
 		if err == io.EOF {
@@ -55,11 +56,18 @@ func (s *fakeReportsServer) LogStream(stream protocol.Reports_LogStreamServer) e
 	}
 }
 
-func (s *fakeReportsServer) GetLog(test string) []byte {
+// GetLog returns logs for a particular test.
+func (s *Server) GetLog(test string) []byte {
 	return s.logData[test]
 }
 
-func (*fakeReportsServer) ReportResult(ctx context.Context, req *protocol.ReportResultRequest) (*empty.Empty, error) {
-	// TODO(crbug.com/1166955): Implement for unit tests.
-	return nil, status.Errorf(codes.Unimplemented, "method ReportResult not implemented")
+// ReportResult provides a means for reports clients to test ReportResult requests.
+func (s *Server) ReportResult(ctx context.Context, req *protocol.ReportResultRequest) (*empty.Empty, error) {
+	s.results = append(s.results, req)
+	return &empty.Empty{}, nil
+}
+
+// Results returns all results have been received for this server.
+func (s *Server) Results() []*protocol.ReportResultRequest {
+	return s.results
 }

@@ -51,6 +51,7 @@ const (
 	waitUntilReadyFlag         = "-waituntilready"
 	timeOutFlag                = "-timeout"
 	keyfile                    = "-keyfile"
+	reportsServer              = "-reports_server"
 )
 
 // runArgs stores arguments to invoke Tast
@@ -62,8 +63,7 @@ type runArgs struct {
 }
 
 // newArgs created an argument structure for invoking tast
-func newArgs(inv *rtd.Invocation, rtdPath string) *runArgs {
-
+func newArgs(inv *rtd.Invocation, rtdPath, reportsServerAddr string) *runArgs {
 	args := runArgs{
 		target: inv.Duts[0].TlsDutName, // TODO: Support multiple DUTs for sharding.
 		tastFlags: map[string]string{
@@ -74,8 +74,9 @@ func newArgs(inv *rtd.Invocation, rtdPath string) *runArgs {
 			sshRetriesFlag:             "2",
 			downloadDataFlag:           "batch",
 			buildFlag:                  "false",
-			downloadPrivateBundlesFlag: "true",
+			downloadPrivateBundlesFlag: "false", // Default to "false".
 			timeOutFlag:                "3000",
+			reportsServer:              reportsServerAddr,
 		},
 	}
 	// If it is running inside a RTD, change default path for tast related directories.
@@ -93,6 +94,8 @@ func newArgs(inv *rtd.Invocation, rtdPath string) *runArgs {
 			tlwServer = net.JoinHostPort(tlwServer, strconv.Itoa(int(inv.TestLabServicesConfig.TlwPort)))
 		}
 		args.runFlags[tlwServerFlag] = tlwServer
+		// Change downloadPrivateBundlesFlag to "true" if tlwServer is specified.
+		args.runFlags[downloadPrivateBundlesFlag] = "true"
 	}
 
 	resultsDir := args.runFlags[resultsDirFlag]
@@ -127,7 +130,7 @@ func genArgList(args *runArgs) (argList []string) {
 }
 
 // invokeTast invoke tast with the parameters based on rtd.Invocation.
-func invokeTast(logger *log.Logger, inv *rtd.Invocation, rtdPath string) (resultsDir string, err error) {
+func invokeTast(logger *log.Logger, inv *rtd.Invocation, rtdPath, reportsServer string) (resultsDir string, err error) {
 	// The path to the tast executable in chroot is /usr/bin/tast.
 	path := "/usr/bin/tast"
 	// The path to the tast executable in RTD is /usr/src/rtd/tast/bin/tast.
@@ -142,7 +145,7 @@ func invokeTast(logger *log.Logger, inv *rtd.Invocation, rtdPath string) (result
 		return "", errors.New("input invocation.requests is empty")
 	}
 
-	args := newArgs(inv, rtdPath)
+	args := newArgs(inv, rtdPath, reportsServer)
 
 	// Make sure the result directory exists.
 	resultsDir = args.runFlags[resultsDirFlag]

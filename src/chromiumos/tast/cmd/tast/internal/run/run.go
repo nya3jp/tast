@@ -123,6 +123,7 @@ func Run(ctx context.Context, cfg *Config) (status Status, results []*EntityResu
 
 	if cfg.reportsConn != nil {
 		cl := protocol.NewReportsClient(cfg.reportsConn)
+		cfg.reportsClient = cl
 		strm, err := cl.LogStream(ctx)
 		if err != nil {
 			return errorStatusf(cfg, subcommands.ExitFailure, "Failed to start LogStream streaming RPC: %v", err), nil

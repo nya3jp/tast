@@ -114,7 +114,7 @@ func main() {
 		}
 		defer srv.Stop()
 
-		if _, err := invokeTast(logger, inv, *rtdPath); err != nil {
+		if _, err := invokeTast(logger, inv, *rtdPath, srv.Address()); err != nil {
 			logger.Printf("Failed to invoke tast: %v", err)
 			return 1
 		}

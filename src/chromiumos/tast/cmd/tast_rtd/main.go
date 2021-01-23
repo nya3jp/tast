@@ -14,6 +14,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	rtd "go.chromium.org/chromiumos/config/go/api/test/rtd/v1"
@@ -114,7 +115,12 @@ func main() {
 		}
 		defer srv.Stop()
 
-		if _, err := invokeTast(logger, inv, *rtdPath); err != nil {
+		// tast currently cannot handle '[::]:34471' as report server address so we cannot simply use srv.Address().
+		reportsServer := srv.Address()
+		if strings.HasPrefix(reportsServer, "[::]") {
+			reportsServer = strings.Replace(reportsServer, "[::]", "127.0.0.1", 1)
+		}
+		if _, err := invokeTast(logger, inv, *rtdPath, reportsServer); err != nil {
 			logger.Printf("Failed to invoke tast: %v", err)
 			return 1
 		}

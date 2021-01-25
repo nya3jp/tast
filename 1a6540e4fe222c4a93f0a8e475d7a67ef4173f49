@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e3949cb0_21e60bd5",
+        "filename": "src/chromiumos/tast/fsutil/fsutil.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-01-25T06:58:55Z",
+      "side": 1,
+      "message": "Could you add a TODO comment why we need this hack here, with a reference to golang.org/issue/16474 ?",
+      "range": {
+        "startLine": 41,
+        "startChar": 1,
+        "endLine": 41,
+        "endChar": 85
+      },
+      "revId": "1a6540e4fe222c4a93f0a8e475d7a67ef4173f49",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

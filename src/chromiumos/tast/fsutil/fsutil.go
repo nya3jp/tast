@@ -16,6 +16,59 @@ import (
 	"chromiumos/tast/errors"
 )
 
+// HACK HACK HACK: Functions from go 1.13
+// https://github.com/golang/go/blame/release-branch.go1.13/src/io/io.go
+func copyBuffer113(dst io.Writer, src io.Reader, buf []byte) (written int64, err error) {
+	// If the reader has a WriteTo method, use it to do the copy.
+	// Avoids an allocation and a copy.
+	if wt, ok := src.(io.WriterTo); ok {
+		return wt.WriteTo(dst)
+	}
+	// Similarly, if the writer has a ReadFrom method, use it to do the copy.
+	if rt, ok := dst.(io.ReaderFrom); ok {
+		return rt.ReadFrom(src)
+	}
+	if buf == nil {
+		size := 32 * 1024
+		if l, ok := src.(*io.LimitedReader); ok && int64(size) > l.N {
+			if l.N < 1 {
+				size = 1
+			} else {
+				size = int(l.N)
+			}
+		}
+		buf = make([]byte, size)
+	}
+	for {
+		nr, er := src.Read(buf)
+		if nr > 0 {
+			nw, ew := dst.Write(buf[0:nr])
+			if nw > 0 {
+				written += int64(nw)
+			}
+			if ew != nil {
+				err = ew
+				break
+			}
+			if nr != nw {
+				err = io.ErrShortWrite
+				break
+			}
+		}
+		if er != nil {
+			if er != io.EOF {
+				err = er
+			}
+			break
+		}
+	}
+	return written, err
+}
+
+func Copy113(dst io.Writer, src io.Reader) (written int64, err error) {
+	return copyBuffer113(dst, src, nil)
+}
+
 // CopyFile copies the regular file at path src to dst.
 // dst is atomically replaced if it already exists and inherits src's mode.
 // Ownership will also be preserved if the EUID is 0.
@@ -38,7 +91,7 @@ func CopyFile(src, dst string) error {
 	if err != nil {
 		return errors.Wrap(err, "failed to create tmp file")
 	}
-	if _, err := io.Copy(df, sf); err != nil {
+	if _, err := Copy113(df, sf); err != nil {
 		df.Close()
 		os.Remove(df.Name())
 		return errors.Wrap(err, "failed to copy data from src file to tmp file")

@@ -18,6 +18,23 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "9cf662d3_0acb4b03",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2021-01-25T17:16:35Z",
+      "side": 1,
+      "message": "Move yamaguchi@ to R. LGTM of the code. Defer yamaguchi@ to answer your question and double check.",
+      "revId": "881432866decf8077b6e5fc7d7926b59782dfa69",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "0ba2e8c8_0c8c7f7e",
@@ -43,6 +60,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "04773c9d_16604e2c",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 223,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2021-01-25T17:16:35Z",
+      "side": 1,
+      "message": "Defer to yamaguchi@.",
+      "parentUuid": "0ba2e8c8_0c8c7f7e",
+      "range": {
+        "startLine": 223,
+        "startChar": 4,
+        "endLine": 223,
+        "endChar": 8
+      },
+      "revId": "881432866decf8077b6e5fc7d7926b59782dfa69",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "6232e3e8_63d811f7",
         "filename": "src/chromiumos/tast/internal/runner/features.go",
         "patchSetId": 2
@@ -54,6 +95,30 @@
       "writtenOn": "2021-01-25T16:35:52Z",
       "side": 1,
       "message": "Is it acceptable if the only storage device we check for is NVMe? This is the only one currently used in the hwdeps checks.",
+      "range": {
+        "startLine": 231,
+        "startChar": 10,
+        "endLine": 231,
+        "endChar": 36
+      },
+      "revId": "881432866decf8077b6e5fc7d7926b59782dfa69",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "658bd966_225e3938",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 231,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2021-01-25T17:16:35Z",
+      "side": 1,
+      "message": "I think it is ok for short term. For long term, surely it would be nice if more are supported, here and in the infra. I think TODO covers the cases.",
+      "parentUuid": "6232e3e8_63d811f7",
       "range": {
         "startLine": 231,
         "startChar": 10,

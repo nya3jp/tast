@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "b7a85d88_5402a04a",
+        "filename": "src/chromiumos/tast/internal/runner/bundles.go",
+        "patchSetId": 19
+      },
+      "lineNbr": 136,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2021-01-25T15:01:36Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a6e825e4_3c7e966e",
+      "range": {
+        "startLine": 136,
+        "startChar": 5,
+        "endLine": 136,
+        "endChar": 13
+      },
+      "revId": "94257b5567b0e2b9c811004cfdba424be73ccabb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "ee2cf061_5f33fac1",
@@ -37,6 +61,30 @@
       "writtenOn": "2021-01-25T10:22:01Z",
       "side": 1,
       "message": "style: var fs []*testing.EntityInfo (though I know you copied this from above :))",
+      "range": {
+        "startLine": 162,
+        "startChar": 3,
+        "endLine": 162,
+        "endChar": 39
+      },
+      "revId": "94257b5567b0e2b9c811004cfdba424be73ccabb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5f35f146_dc5b9b37",
+        "filename": "src/chromiumos/tast/internal/runner/bundles.go",
+        "patchSetId": 19
+      },
+      "lineNbr": 162,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2021-01-25T15:01:36Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ee2cf061_5f33fac1",
       "range": {
         "startLine": 162,
         "startChar": 3,
@@ -70,6 +118,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "27c4d28e_7c73b7c0",
+        "filename": "src/chromiumos/tast/internal/runner/bundles.go",
+        "patchSetId": 19
+      },
+      "lineNbr": 168,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2021-01-25T15:01:36Z",
+      "side": 1,
+      "message": "Done\nGood idea!",
+      "parentUuid": "8c89fca9_d310c876",
+      "range": {
+        "startLine": 156,
+        "startChar": 3,
+        "endLine": 168,
+        "endChar": 42
+      },
+      "revId": "94257b5567b0e2b9c811004cfdba424be73ccabb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "5fb29ad6_96fc00a0",
@@ -83,6 +155,30 @@
       "writtenOn": "2021-01-25T10:22:01Z",
       "side": 1,
       "message": "Let\u0027s check condition in readArgs to be aligned with other modes.",
+      "range": {
+        "startLine": 81,
+        "startChar": 0,
+        "endLine": 83,
+        "endChar": 3
+      },
+      "revId": "94257b5567b0e2b9c811004cfdba424be73ccabb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "31f73a41_b90fb4e5",
+        "filename": "src/chromiumos/tast/internal/runner/runner.go",
+        "patchSetId": 19
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2021-01-25T15:01:36Z",
+      "side": 1,
+      "message": "Done\nThanks!",
+      "parentUuid": "5fb29ad6_96fc00a0",
       "range": {
         "startLine": 81,
         "startChar": 0,

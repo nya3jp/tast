@@ -1,0 +1,113 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6105987d_1d2f09e0",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 8
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-01-25T09:57:44Z",
+      "side": 1,
+      "message": "Oh I overlooked this CL. It\u0027s nice if you could include me to reviewers for Tast CLI changes.\n\n",
+      "revId": "656278168abe7730bc2abbc1f57ff0272a30ee6b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7f4b57e9_8a8f43e4",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/config.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 152,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-01-25T09:57:44Z",
+      "side": 1,
+      "message": "This is an interface, so we can store its value, not its pointer.\nhttps://github.com/golang/go/wiki/CodeReviewComments#pass-values",
+      "range": {
+        "startLine": 152,
+        "startChar": 21,
+        "endLine": 152,
+        "endChar": 53
+      },
+      "revId": "656278168abe7730bc2abbc1f57ff0272a30ee6b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "46647254_a3da0f85",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/results.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-01-25T09:57:44Z",
+      "side": 1,
+      "message": "Its value is always logSender, so let\u0027s use a concrete type for readability.\nhttps://github.com/golang/go/wiki/CodeReviewComments#interfaces",
+      "range": {
+        "startLine": 77,
+        "startChar": 1,
+        "endLine": 77,
+        "endChar": 16
+      },
+      "revId": "656278168abe7730bc2abbc1f57ff0272a30ee6b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5c655fa4_28a026c0",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/results.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 291,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-01-25T09:57:44Z",
+      "side": 1,
+      "message": "ditto: non-pointer",
+      "range": {
+        "startLine": 291,
+        "startChar": 10,
+        "endLine": 291,
+        "endChar": 43
+      },
+      "revId": "656278168abe7730bc2abbc1f57ff0272a30ee6b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e69349ae_f1959b01",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/results.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 296,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-01-25T09:57:44Z",
+      "side": 1,
+      "message": "Please always use pointer receiver for non-trivial structs.\nhttps://github.com/golang/go/wiki/CodeReviewComments#receiver-type",
+      "range": {
+        "startLine": 296,
+        "startChar": 6,
+        "endLine": 296,
+        "endChar": 17
+      },
+      "revId": "656278168abe7730bc2abbc1f57ff0272a30ee6b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

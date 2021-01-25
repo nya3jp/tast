@@ -1,0 +1,67 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "dced4141_938f387d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1304442
+      },
+      "writtenOn": "2021-01-25T16:35:52Z",
+      "side": 1,
+      "message": "I\u0027m not sure this is the right approach, but it does seem like this is the established pattern. Please let me know if there is a better way to accomplish this.",
+      "revId": "881432866decf8077b6e5fc7d7926b59782dfa69",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0ba2e8c8_0c8c7f7e",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 223,
+      "author": {
+        "id": 1304442
+      },
+      "writtenOn": "2021-01-25T16:35:52Z",
+      "side": 1,
+      "message": "Is there a bug I can put here for reading this information from the boxster config?",
+      "range": {
+        "startLine": 223,
+        "startChar": 4,
+        "endLine": 223,
+        "endChar": 8
+      },
+      "revId": "881432866decf8077b6e5fc7d7926b59782dfa69",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6232e3e8_63d811f7",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 231,
+      "author": {
+        "id": 1304442
+      },
+      "writtenOn": "2021-01-25T16:35:52Z",
+      "side": 1,
+      "message": "Is it acceptable if the only storage device we check for is NVMe? This is the only one currently used in the hwdeps checks.",
+      "range": {
+        "startLine": 231,
+        "startChar": 10,
+        "endLine": 231,
+        "endChar": 36
+      },
+      "revId": "881432866decf8077b6e5fc7d7926b59782dfa69",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

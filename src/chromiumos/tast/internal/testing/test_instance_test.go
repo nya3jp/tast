@@ -839,6 +839,11 @@ func TestWriteTestMetadataWithTCLint(t *gotesting.T) {
 				hwdep.Wifi80211ac(),
 				hwdep.Wifi80211ax(),
 			),
+		}, {
+			Name: "test003",
+			HardwareDeps: hwdep.D(
+				hwdep.Nvme(),
+			),
 		},
 	}
 

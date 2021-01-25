@@ -14,6 +14,7 @@ import (
 	"os"
 	"os/exec"
 	"path"
+	"path/filepath"
 	"regexp"
 	"sort"
 	"strconv"
@@ -218,6 +219,7 @@ func newDeviceConfigAndHardwareFeatures() (dc *device.Config, retFeatures *confi
 	if err != nil {
 		warns = append(warns, fmt.Sprintf("unknown CPU information: %v", err))
 	}
+
 	config := &device.Config{
 		Id: &device.ConfigId{
 			PlatformId: platform,
@@ -231,6 +233,7 @@ func newDeviceConfigAndHardwareFeatures() (dc *device.Config, retFeatures *confi
 		Screen:             &configpb.HardwareFeatures_Screen{},
 		Fingerprint:        &configpb.HardwareFeatures_Fingerprint{},
 		EmbeddedController: &configpb.HardwareFeatures_EmbeddedController{},
+		Storage:            &configpb.HardwareFeatures_Storage{},
 	}
 
 	hasInternalDisplay := func() bool {
@@ -299,6 +302,22 @@ func newDeviceConfigAndHardwareFeatures() (dc *device.Config, retFeatures *confi
 	if _, err := os.Stat("/dev/cros_ec"); err == nil {
 		features.EmbeddedController.Present = configpb.HardwareFeatures_PRESENT
 		features.EmbeddedController.EcType = configpb.HardwareFeatures_EmbeddedController_EC_CHROME
+	}
+
+	// TODO(b/173741162): Pull storage information from boxster config and add
+	// additional storage types.
+	hasNvmeStorage := func() bool {
+		matches, err := filepath.Glob("/dev/nvme*")
+		if err != nil {
+			return false
+		}
+		if len(matches) > 0 {
+			return true
+		}
+		return false
+	}()
+	if hasNvmeStorage {
+		features.Storage.StorageType = configpb.Component_Storage_NVME
 	}
 
 	func() {

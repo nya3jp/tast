@@ -319,6 +319,35 @@ func TestInternalDisplay(t *testing.T) {
 		true)
 }
 
+func TestNvmeStorage(t *testing.T) {
+	c := Nvme()
+
+	for _, tc := range []struct {
+		StorageType     configpb.Component_Storage_StorageType
+		expectSatisfied bool
+	}{
+		{configpb.Component_Storage_NVME, true},
+		{configpb.Component_Storage_STORAGE_TYPE_UNKNOWN, false},
+		{configpb.Component_Storage_SATA, false},
+	} {
+		verifyCondition(
+			t, c,
+			&device.Config{
+				Id: &device.ConfigId{
+					PlatformId: &device.PlatformId{
+						Value: "fake_platform",
+					},
+				},
+			},
+			&configpb.HardwareFeatures{
+				Storage: &configpb.HardwareFeatures_Storage{
+					StorageType: tc.StorageType,
+				},
+			},
+			tc.expectSatisfied)
+	}
+}
+
 func TestCEL(t *testing.T) {
 	for i, c := range []struct {
 		input    Deps
@@ -335,6 +364,7 @@ func TestCEL(t *testing.T) {
 		{D(Wifi80211ax()), "dut.hardware_features.wifi.supported_wlan_protocols.exists(x, x == api.Component.Wifi.WLANProtocol.IEEE_802_11_AX)"},
 		{D(WifiMACAddrRandomize()), "not_implemented"},
 		{D(WifiNotMarvell()), "not_implemented"},
+		{D(Nvme()), "dut.hardware_features.storage.storage_type == api.Component.Storage.StorageType.NVME"},
 
 		{D(TouchScreen(), Fingerprint()),
 			"dut.hardware_features.screen.touch_support == api.HardwareFeatures.Present.PRESENT && dut.hardware_features.fingerprint.location != api.HardwareFeatures.Fingerprint.Location.NOT_PRESENT"},

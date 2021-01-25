@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "cc5cdb11_d164fc25",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/config.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 152,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-01-25T19:09:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ec28a7dc_914fd6a4",
+      "revId": "9678c9a32eed4f44eaf9a23f918d0568ec14dc5f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "9576b5d4_67c09ebb",
@@ -41,6 +59,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "0279f8a7_b25f42bf",
+        "filename": "src/chromiumos/tast/internal/fakereports/fake_reports.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-01-25T19:09:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9576b5d4_67c09ebb",
+      "range": {
+        "startLine": 44,
+        "startChar": 22,
+        "endLine": 44,
+        "endChar": 28
+      },
+      "revId": "9678c9a32eed4f44eaf9a23f918d0568ec14dc5f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "2ff2071c_740ef27d",
@@ -54,6 +96,30 @@
       "writtenOn": "2021-01-25T09:55:30Z",
       "side": 1,
       "message": "ditto",
+      "range": {
+        "startLine": 64,
+        "startChar": 25,
+        "endLine": 64,
+        "endChar": 31
+      },
+      "revId": "9678c9a32eed4f44eaf9a23f918d0568ec14dc5f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7409723e_2075b514",
+        "filename": "src/chromiumos/tast/internal/fakereports/fake_reports.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-01-25T19:09:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2ff2071c_740ef27d",
       "range": {
         "startLine": 64,
         "startChar": 25,

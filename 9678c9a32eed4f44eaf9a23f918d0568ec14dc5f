@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9576b5d4_67c09ebb",
+        "filename": "src/chromiumos/tast/internal/fakereports/fake_reports.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-01-25T09:55:30Z",
+      "side": 1,
+      "message": "nit: \"a means\"",
+      "range": {
+        "startLine": 44,
+        "startChar": 22,
+        "endLine": 44,
+        "endChar": 28
+      },
+      "revId": "9678c9a32eed4f44eaf9a23f918d0568ec14dc5f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2ff2071c_740ef27d",
+        "filename": "src/chromiumos/tast/internal/fakereports/fake_reports.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-01-25T09:55:30Z",
+      "side": 1,
+      "message": "ditto",
+      "range": {
+        "startLine": 64,
+        "startChar": 25,
+        "endLine": 64,
+        "endChar": 31
+      },
+      "revId": "9678c9a32eed4f44eaf9a23f918d0568ec14dc5f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

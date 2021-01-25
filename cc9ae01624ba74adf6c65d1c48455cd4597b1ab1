@@ -16,6 +16,24 @@
       "message": "Please review latest to use the report API from tast to tast_rtd to progress sink.\n\nI did run into one issue with downloading private bundle this time. I don\u0027t know why I did not see this problem before. I changed the download private bundle flag to false in this CL. We should discuss whether it should be true or false. \n\nThanks.\n",
       "revId": "cc9ae01624ba74adf6c65d1c48455cd4597b1ab1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "801e72de_80d39fed",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-01-25T09:55:30Z",
+      "side": 1,
+      "message": "nya@ would have clearer answer, but IIUC, private bundles should be downloaded when running test set including private tests in the lab. However tast_rtd may be run in local environment of developers.\nSo I think the flag value might also need to be fed by the tast_rtd commandline.",
+      "parentUuid": "0f97ced8_bea3bcb4",
+      "revId": "cc9ae01624ba74adf6c65d1c48455cd4597b1ab1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

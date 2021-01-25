@@ -129,7 +129,7 @@ func Run(ctx context.Context, cfg *Config) (status Status, results []*EntityResu
 			return errorStatusf(cfg, subcommands.ExitFailure, "Failed to start LogStream streaming RPC: %v", err), nil
 		}
 		defer strm.CloseAndRecv()
-		cfg.reportsLogStream = &strm
+		cfg.reportsLogStream = strm
 	}
 
 	// Start an ephemeral devserver if necessary. Devservers are required in

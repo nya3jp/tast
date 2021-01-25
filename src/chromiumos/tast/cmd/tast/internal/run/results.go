@@ -75,8 +75,8 @@ type entityState struct {
 	// logFile is a file handle of the log file for the entity.
 	logFile *os.File
 
-	// logReportWriter is a Writer for the Reports.LogStream streaming gRPC.
-	logReportWriter io.Writer
+	// logReportWriter writes log through the Reports.LogStream streaming gRPC.
+	logReportWriter *logSender
 
 	// IntermediateOutDir is a directory path on the target where intermediate
 	// output files for the test is saved.
@@ -290,17 +290,17 @@ func (r *resultsHandler) handleRunEnd(ctx context.Context, msg *control.RunEnd) 
 }
 
 type logSender struct {
-	stream   *protocol.Reports_LogStreamClient
+	stream   protocol.Reports_LogStreamClient
 	testName string
 }
 
 // Write sends given bytes to LogStream streaming gRPC API with the test name.
-func (s logSender) Write(p []byte) (n int, err error) {
+func (s *logSender) Write(p []byte) (n int, err error) {
 	req := protocol.LogStreamRequest{
 		Test: s.testName,
 		Data: p,
 	}
-	if err := (*s.stream).Send(&req); err != nil {
+	if err := s.stream.Send(&req); err != nil {
 		return 0, err
 	}
 	return len(p), nil
@@ -359,7 +359,7 @@ func (r *resultsHandler) handleTestStart(ctx context.Context, msg *control.Entit
 		return err
 	}
 	if r.cfg.reportsLogStream != nil {
-		state.logReportWriter = logSender{
+		state.logReportWriter = &logSender{
 			stream:   r.cfg.reportsLogStream,
 			testName: msg.Info.Name,
 		}

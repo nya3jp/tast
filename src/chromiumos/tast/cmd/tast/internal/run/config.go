@@ -150,7 +150,7 @@ type Config struct {
 	tlwServerForDUT    string                     // TLW address accessible from DUT.
 	reportsConn        *grpc.ClientConn           // Reports gRPC service connection.
 	reportsClient      protocol.ReportsClient     // Reports gRPC client.
-	reportsLogStream   *protocol.Reports_LogStreamClient
+	reportsLogStream   protocol.Reports_LogStreamClient
 }
 
 // NewConfig returns a new configuration for executing test runners in the supplied mode.

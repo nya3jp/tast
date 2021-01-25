@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a3012e2e_d07ffba1",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-01-25T21:54:00Z",
+      "side": 1,
+      "message": "I have changed the code to set downloadprivatebundles to true only when tlw server is set. Please let me know if this solution is ok. Thanks.",
+      "revId": "2c726ccbb4641aa7b939fde335f18792e39f9adf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

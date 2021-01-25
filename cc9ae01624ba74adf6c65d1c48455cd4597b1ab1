@@ -52,6 +52,24 @@
       "parentUuid": "801e72de_80d39fed",
       "revId": "cc9ae01624ba74adf6c65d1c48455cd4597b1ab1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9946378c_c8e487d1",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-01-25T21:54:00Z",
+      "side": 1,
+      "message": "Thanks for pointing out a possible scenario that the test passed earlier. \nHow about checking if the TLW server before setting download private bundle flag to true. Please take a look a the latest change.",
+      "parentUuid": "b2a4d093_6071631a",
+      "revId": "cc9ae01624ba74adf6c65d1c48455cd4597b1ab1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

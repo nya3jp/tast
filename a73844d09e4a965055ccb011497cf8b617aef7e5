@@ -16,6 +16,23 @@
       "message": "thanks for providing this workaround! ",
       "revId": "a73844d09e4a965055ccb011497cf8b617aef7e5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ce7b6434_fc8d067f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-01-25T08:10:46Z",
+      "side": 1,
+      "message": "LGTM after a comment. Thanks for figuring this out Nicolas!\n",
+      "revId": "a73844d09e4a965055ccb011497cf8b617aef7e5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

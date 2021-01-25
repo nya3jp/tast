@@ -14,6 +14,7 @@ import (
 	"os"
 	"os/exec"
 	"path"
+	"path/filepath"
 	"regexp"
 	"sort"
 	"strconv"
@@ -218,14 +219,32 @@ func newDeviceConfigAndHardwareFeatures() (dc *device.Config, retFeatures *confi
 	if err != nil {
 		warns = append(warns, fmt.Sprintf("unknown CPU information: %v", err))
 	}
+
+	// TODO: Pull information from boxster config and add additional storage
+	// types.
+	storage, err := func() (device.Config_Storage, error) {
+		matches, err := filepath.Glob("/dev/nvme*")
+		if err != nil {
+			return device.Config_STORAGE_UNSPECIFIED, err
+		}
+		if len(matches) > 0 {
+			return device.Config_STORAGE_NVME, nil
+		}
+		return device.Config_STORAGE_UNSPECIFIED, nil
+	}()
+	if err != nil {
+		warns = append(warns, fmt.Sprintf("unable to parse storage type: %v", err))
+	}
+
 	config := &device.Config{
 		Id: &device.ConfigId{
 			PlatformId: platform,
 			ModelId:    model,
 			BrandId:    brand,
 		},
-		Soc: info.soc,
-		Cpu: info.cpuArch,
+		Soc:     info.soc,
+		Cpu:     info.cpuArch,
+		Storage: storage,
 	}
 	features := &configpb.HardwareFeatures{
 		Screen:             &configpb.HardwareFeatures_Screen{},

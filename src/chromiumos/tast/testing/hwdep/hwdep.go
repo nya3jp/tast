@@ -446,3 +446,17 @@ func X86() Condition {
 		return errors.New("DUT's CPU is not x86 compatible")
 	}}
 }
+
+// Nvme returns a hardware dependency condition if the device has an NVMe
+// storage device.
+func Nvme() Condition {
+	return Condition{Satisfied: func(f *dep.HardwareFeatures) error {
+		if f.DC == nil {
+			return errors.New("device.Config is not given")
+		}
+		if f.DC.Storage == device.Config_STORAGE_NVME {
+			return nil
+		}
+		return errors.New("DUT does not have an NVMe storage device")
+	}}
+}

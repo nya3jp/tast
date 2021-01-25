@@ -3,6 +3,23 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "ec28a7dc_914fd6a4",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/config.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 152,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-01-25T10:08:27Z",
+      "side": 1,
+      "message": "protocol.ReportsClient is an interface, so store it as a value, not as a pointer.\nhttps://github.com/golang/go/wiki/CodeReviewComments#pass-values",
+      "revId": "9678c9a32eed4f44eaf9a23f918d0568ec14dc5f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "9576b5d4_67c09ebb",
         "filename": "src/chromiumos/tast/internal/fakereports/fake_reports.go",
         "patchSetId": 2

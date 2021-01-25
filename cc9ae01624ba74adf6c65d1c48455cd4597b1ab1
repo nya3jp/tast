@@ -34,6 +34,24 @@
       "parentUuid": "0f97ced8_bea3bcb4",
       "revId": "cc9ae01624ba74adf6c65d1c48455cd4597b1ab1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b2a4d093_6071631a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-01-25T10:08:27Z",
+      "side": 1,
+      "message": "When -downloadprivatebundles\u003dtrue, Tast CLI downloads private test bundles via devservers. Since private test bundles are placed in ACL\u0027ed GCS buckets, it needs to download files via devservers or TLW servers.\n\nNote that downloaded private bundles are cached, so once we succeed to download private bundles, they\u0027re not downloaded again until we delete them, e.g. by reflashing the device. I guess that\u0027s why you saw the issue for the first time?\n\nRegarding whether to enable the flag, in most cases it should be true. But in order to enable it, TLW server should support downloading GCS files with credentials.",
+      "parentUuid": "801e72de_80d39fed",
+      "revId": "cc9ae01624ba74adf6c65d1c48455cd4597b1ab1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

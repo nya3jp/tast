@@ -38,7 +38,7 @@ func CopyFile(src, dst string) error {
 	if err != nil {
 		return errors.Wrap(err, "failed to create tmp file")
 	}
-	if _, err := io.Copy(df, sf); err != nil {
+	if _, err := io.Copy(struct{ io.Writer }{df}, struct{ io.Reader }{sf}); err != nil {
 		df.Close()
 		os.Remove(df.Name())
 		return errors.Wrap(err, "failed to copy data from src file to tmp file")

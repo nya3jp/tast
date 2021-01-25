@@ -7,8 +7,6 @@ import (
 	context "context"
 	fmt "fmt"
 	proto "github.com/golang/protobuf/proto"
-	duration "github.com/golang/protobuf/ptypes/duration"
-	empty "github.com/golang/protobuf/ptypes/empty"
 	timestamp "github.com/golang/protobuf/ptypes/timestamp"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -27,40 +25,42 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
-type RunFixtureConfig_PlannerDownloadMode int32
+type RunFixtureRequest_Method int32
 
 const (
-	RunFixtureConfig_BATCH RunFixtureConfig_PlannerDownloadMode = 0
-	RunFixtureConfig_LAZY  RunFixtureConfig_PlannerDownloadMode = 1
+	RunFixtureRequest_SetUp    RunFixtureRequest_Method = 0
+	RunFixtureRequest_TearDown RunFixtureRequest_Method = 1
 )
 
-var RunFixtureConfig_PlannerDownloadMode_name = map[int32]string{
-	0: "BATCH",
-	1: "LAZY",
+var RunFixtureRequest_Method_name = map[int32]string{
+	0: "SetUp",
+	1: "TearDown",
 }
 
-var RunFixtureConfig_PlannerDownloadMode_value = map[string]int32{
-	"BATCH": 0,
-	"LAZY":  1,
+var RunFixtureRequest_Method_value = map[string]int32{
+	"SetUp":    0,
+	"TearDown": 1,
 }
 
-func (x RunFixtureConfig_PlannerDownloadMode) String() string {
-	return proto.EnumName(RunFixtureConfig_PlannerDownloadMode_name, int32(x))
+func (x RunFixtureRequest_Method) String() string {
+	return proto.EnumName(RunFixtureRequest_Method_name, int32(x))
 }
 
-func (RunFixtureConfig_PlannerDownloadMode) EnumDescriptor() ([]byte, []int) {
-	return fileDescriptor_5cb9905fdd848d3a, []int{3, 0}
+func (RunFixtureRequest_Method) EnumDescriptor() ([]byte, []int) {
+	return fileDescriptor_5cb9905fdd848d3a, []int{0, 0}
 }
 
 // RunFixtureRequest is the request to RunFixture.
 type RunFixtureRequest struct {
-	// Types that are valid to be assigned to Control:
-	//	*RunFixtureRequest_Push
-	//	*RunFixtureRequest_Pop
-	Control              isRunFixtureRequest_Control `protobuf_oneof:"control"`
-	XXX_NoUnkeyedLiteral struct{}                    `json:"-"`
-	XXX_unrecognized     []byte                      `json:"-"`
-	XXX_sizecache        int32                       `json:"-"`
+	// Name is the name of the fixture to run method.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// Method is the method of the fixture to run.
+	Method RunFixtureRequest_Method `protobuf:"varint,2,opt,name=method,proto3,enum=tast.core.RunFixtureRequest_Method" json:"method,omitempty"`
+	// Config is the configuration the framework needs to run the fixture.
+	Config               *RunFixtureConfig `protobuf:"bytes,3,opt,name=config,proto3" json:"config,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}          `json:"-"`
+	XXX_unrecognized     []byte            `json:"-"`
+	XXX_sizecache        int32             `json:"-"`
 }
 
 func (m *RunFixtureRequest) Reset()         { *m = RunFixtureRequest{} }
@@ -88,132 +88,26 @@ func (m *RunFixtureRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_RunFixtureRequest proto.InternalMessageInfo
 
-type isRunFixtureRequest_Control interface {
-	isRunFixtureRequest_Control()
-}
-
-type RunFixtureRequest_Push struct {
-	Push *RunFixturePushRequest `protobuf:"bytes,1,opt,name=push,proto3,oneof"`
-}
-
-type RunFixtureRequest_Pop struct {
-	Pop *RunFixturePopRequest `protobuf:"bytes,2,opt,name=pop,proto3,oneof"`
-}
-
-func (*RunFixtureRequest_Push) isRunFixtureRequest_Control() {}
-
-func (*RunFixtureRequest_Pop) isRunFixtureRequest_Control() {}
-
-func (m *RunFixtureRequest) GetControl() isRunFixtureRequest_Control {
-	if m != nil {
-		return m.Control
-	}
-	return nil
-}
-
-func (m *RunFixtureRequest) GetPush() *RunFixturePushRequest {
-	if x, ok := m.GetControl().(*RunFixtureRequest_Push); ok {
-		return x.Push
-	}
-	return nil
-}
-
-func (m *RunFixtureRequest) GetPop() *RunFixturePopRequest {
-	if x, ok := m.GetControl().(*RunFixtureRequest_Pop); ok {
-		return x.Pop
-	}
-	return nil
-}
-
-// XXX_OneofWrappers is for the internal use of the proto package.
-func (*RunFixtureRequest) XXX_OneofWrappers() []interface{} {
-	return []interface{}{
-		(*RunFixtureRequest_Push)(nil),
-		(*RunFixtureRequest_Pop)(nil),
-	}
-}
-
-// RunFixturePushRequest requests pushing a fixture.
-type RunFixturePushRequest struct {
-	// Name is the name of the fixture to run method.
-	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// Config is the configuration the framework needs to run the fixture.
-	Config               *RunFixtureConfig `protobuf:"bytes,2,opt,name=config,proto3" json:"config,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}          `json:"-"`
-	XXX_unrecognized     []byte            `json:"-"`
-	XXX_sizecache        int32             `json:"-"`
-}
-
-func (m *RunFixturePushRequest) Reset()         { *m = RunFixturePushRequest{} }
-func (m *RunFixturePushRequest) String() string { return proto.CompactTextString(m) }
-func (*RunFixturePushRequest) ProtoMessage()    {}
-func (*RunFixturePushRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_5cb9905fdd848d3a, []int{1}
-}
-
-func (m *RunFixturePushRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_RunFixturePushRequest.Unmarshal(m, b)
-}
-func (m *RunFixturePushRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_RunFixturePushRequest.Marshal(b, m, deterministic)
-}
-func (m *RunFixturePushRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_RunFixturePushRequest.Merge(m, src)
-}
-func (m *RunFixturePushRequest) XXX_Size() int {
-	return xxx_messageInfo_RunFixturePushRequest.Size(m)
-}
-func (m *RunFixturePushRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_RunFixturePushRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_RunFixturePushRequest proto.InternalMessageInfo
-
-func (m *RunFixturePushRequest) GetName() string {
+func (m *RunFixtureRequest) GetName() string {
 	if m != nil {
 		return m.Name
 	}
 	return ""
 }
 
-func (m *RunFixturePushRequest) GetConfig() *RunFixtureConfig {
+func (m *RunFixtureRequest) GetMethod() RunFixtureRequest_Method {
+	if m != nil {
+		return m.Method
+	}
+	return RunFixtureRequest_SetUp
+}
+
+func (m *RunFixtureRequest) GetConfig() *RunFixtureConfig {
 	if m != nil {
 		return m.Config
 	}
 	return nil
 }
-
-// RunFixturePushRequest requests popping the pushed fixture.
-type RunFixturePopRequest struct {
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *RunFixturePopRequest) Reset()         { *m = RunFixturePopRequest{} }
-func (m *RunFixturePopRequest) String() string { return proto.CompactTextString(m) }
-func (*RunFixturePopRequest) ProtoMessage()    {}
-func (*RunFixturePopRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_5cb9905fdd848d3a, []int{2}
-}
-
-func (m *RunFixturePopRequest) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_RunFixturePopRequest.Unmarshal(m, b)
-}
-func (m *RunFixturePopRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_RunFixturePopRequest.Marshal(b, m, deterministic)
-}
-func (m *RunFixturePopRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_RunFixturePopRequest.Merge(m, src)
-}
-func (m *RunFixturePopRequest) XXX_Size() int {
-	return xxx_messageInfo_RunFixturePopRequest.Size(m)
-}
-func (m *RunFixturePopRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_RunFixturePopRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_RunFixturePopRequest proto.InternalMessageInfo
 
 // RunFixtureConfig contains information the framework needs to run fixtures.
 type RunFixtureConfig struct {
@@ -234,32 +128,17 @@ type RunFixtureConfig struct {
 	KeyDir string `protobuf:"bytes,7,opt,name=key_dir,json=keyDir,proto3" json:"key_dir,omitempty"`
 	// LocalBundleDir is the directory on the DUT where local test bundle executables are
 	// located. This path is used by remote fixture to invoke gRPC services in local test.
-	LocalBundleDir string `protobuf:"bytes,8,opt,name=local_bundle_dir,json=localBundleDir,proto3" json:"local_bundle_dir,omitempty"`
-	// CheckSoftwareDeps is true if each test's SoftwareDeps field should be checked against
-	// AvailableSoftwareFeatures and UnavailableSoftwareFeatures.
-	CheckSoftwareDeps bool `protobuf:"varint,9,opt,name=check_software_deps,json=checkSoftwareDeps,proto3" json:"check_software_deps,omitempty"`
-	// AvailableSoftwareFeatures contains a list of software features supported by the DUT.
-	AvailableSoftwareFeatures []string `protobuf:"bytes,10,rep,name=available_software_features,json=availableSoftwareFeatures,proto3" json:"available_software_features,omitempty"`
-	// UnavailableSoftwareFeatures contains a list of software features supported by the DUT.
-	UnavailableSoftwareFeatures []string                             `protobuf:"bytes,11,rep,name=unavailable_software_features,json=unavailableSoftwareFeatures,proto3" json:"unavailable_software_features,omitempty"`
-	Devservers                  []string                             `protobuf:"bytes,12,rep,name=devservers,proto3" json:"devservers,omitempty"`
-	TlwServer                   string                               `protobuf:"bytes,13,opt,name=tlw_server,json=tlwServer,proto3" json:"tlw_server,omitempty"`
-	DutName                     string                               `protobuf:"bytes,14,opt,name=dut_name,json=dutName,proto3" json:"dut_name,omitempty"`
-	BuildArtifactsUrl           string                               `protobuf:"bytes,15,opt,name=build_artifacts_url,json=buildArtifactsUrl,proto3" json:"build_artifacts_url,omitempty"`
-	DownloadMode                RunFixtureConfig_PlannerDownloadMode `protobuf:"varint,16,opt,name=download_mode,json=downloadMode,proto3,enum=tast.core.RunFixtureConfig_PlannerDownloadMode" json:"download_mode,omitempty"`
-	// CustomGracePeriod is the custom grace period for fixture methods. When omitted reasonable
-	// default will be used. This field exists for unit testing.
-	CustomGracePeriod    *duration.Duration `protobuf:"bytes,1000,opt,name=custom_grace_period,json=customGracePeriod,proto3" json:"custom_grace_period,omitempty"`
-	XXX_NoUnkeyedLiteral struct{}           `json:"-"`
-	XXX_unrecognized     []byte             `json:"-"`
-	XXX_sizecache        int32              `json:"-"`
+	LocalBundleDir       string   `protobuf:"bytes,8,opt,name=local_bundle_dir,json=localBundleDir,proto3" json:"local_bundle_dir,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
 }
 
 func (m *RunFixtureConfig) Reset()         { *m = RunFixtureConfig{} }
 func (m *RunFixtureConfig) String() string { return proto.CompactTextString(m) }
 func (*RunFixtureConfig) ProtoMessage()    {}
 func (*RunFixtureConfig) Descriptor() ([]byte, []int) {
-	return fileDescriptor_5cb9905fdd848d3a, []int{3}
+	return fileDescriptor_5cb9905fdd848d3a, []int{1}
 }
 
 func (m *RunFixtureConfig) XXX_Unmarshal(b []byte) error {
@@ -336,69 +215,6 @@ func (m *RunFixtureConfig) GetLocalBundleDir() string {
 	return ""
 }
 
-func (m *RunFixtureConfig) GetCheckSoftwareDeps() bool {
-	if m != nil {
-		return m.CheckSoftwareDeps
-	}
-	return false
-}
-
-func (m *RunFixtureConfig) GetAvailableSoftwareFeatures() []string {
-	if m != nil {
-		return m.AvailableSoftwareFeatures
-	}
-	return nil
-}
-
-func (m *RunFixtureConfig) GetUnavailableSoftwareFeatures() []string {
-	if m != nil {
-		return m.UnavailableSoftwareFeatures
-	}
-	return nil
-}
-
-func (m *RunFixtureConfig) GetDevservers() []string {
-	if m != nil {
-		return m.Devservers
-	}
-	return nil
-}
-
-func (m *RunFixtureConfig) GetTlwServer() string {
-	if m != nil {
-		return m.TlwServer
-	}
-	return ""
-}
-
-func (m *RunFixtureConfig) GetDutName() string {
-	if m != nil {
-		return m.DutName
-	}
-	return ""
-}
-
-func (m *RunFixtureConfig) GetBuildArtifactsUrl() string {
-	if m != nil {
-		return m.BuildArtifactsUrl
-	}
-	return ""
-}
-
-func (m *RunFixtureConfig) GetDownloadMode() RunFixtureConfig_PlannerDownloadMode {
-	if m != nil {
-		return m.DownloadMode
-	}
-	return RunFixtureConfig_BATCH
-}
-
-func (m *RunFixtureConfig) GetCustomGracePeriod() *duration.Duration {
-	if m != nil {
-		return m.CustomGracePeriod
-	}
-	return nil
-}
-
 // RunFixtureError describes an error encountered while running fixtures.
 type RunFixtureError struct {
 	Reason               string   `protobuf:"bytes,1,opt,name=reason,proto3" json:"reason,omitempty"`
@@ -414,7 +230,7 @@ func (m *RunFixtureError) Reset()         { *m = RunFixtureError{} }
 func (m *RunFixtureError) String() string { return proto.CompactTextString(m) }
 func (*RunFixtureError) ProtoMessage()    {}
 func (*RunFixtureError) Descriptor() ([]byte, []int) {
-	return fileDescriptor_5cb9905fdd848d3a, []int{4}
+	return fileDescriptor_5cb9905fdd848d3a, []int{2}
 }
 
 func (m *RunFixtureError) XXX_Unmarshal(b []byte) error {
@@ -468,10 +284,9 @@ type RunFixtureResponse struct {
 	// Types that are valid to be assigned to Control:
 	//	*RunFixtureResponse_Log
 	//	*RunFixtureResponse_Error
-	//	*RunFixtureResponse_RequestDone
 	Control isRunFixtureResponse_Control `protobuf_oneof:"control"`
 	// Timestamp is the timestamp of the event.
-	Timestamp            *timestamp.Timestamp `protobuf:"bytes,4,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
+	Timestamp            *timestamp.Timestamp `protobuf:"bytes,3,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}             `json:"-"`
 	XXX_unrecognized     []byte               `json:"-"`
 	XXX_sizecache        int32                `json:"-"`
@@ -481,7 +296,7 @@ func (m *RunFixtureResponse) Reset()         { *m = RunFixtureResponse{} }
 func (m *RunFixtureResponse) String() string { return proto.CompactTextString(m) }
 func (*RunFixtureResponse) ProtoMessage()    {}
 func (*RunFixtureResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_5cb9905fdd848d3a, []int{5}
+	return fileDescriptor_5cb9905fdd848d3a, []int{3}
 }
 
 func (m *RunFixtureResponse) XXX_Unmarshal(b []byte) error {
@@ -514,15 +329,9 @@ type RunFixtureResponse_Error struct {
 	Error *RunFixtureError `protobuf:"bytes,2,opt,name=error,proto3,oneof"`
 }
 
-type RunFixtureResponse_RequestDone struct {
-	RequestDone *empty.Empty `protobuf:"bytes,3,opt,name=request_done,json=requestDone,proto3,oneof"`
-}
-
 func (*RunFixtureResponse_Log) isRunFixtureResponse_Control() {}
 
 func (*RunFixtureResponse_Error) isRunFixtureResponse_Control() {}
-
-func (*RunFixtureResponse_RequestDone) isRunFixtureResponse_Control() {}
 
 func (m *RunFixtureResponse) GetControl() isRunFixtureResponse_Control {
 	if m != nil {
@@ -545,13 +354,6 @@ func (m *RunFixtureResponse) GetError() *RunFixtureError {
 	return nil
 }
 
-func (m *RunFixtureResponse) GetRequestDone() *empty.Empty {
-	if x, ok := m.GetControl().(*RunFixtureResponse_RequestDone); ok {
-		return x.RequestDone
-	}
-	return nil
-}
-
 func (m *RunFixtureResponse) GetTimestamp() *timestamp.Timestamp {
 	if m != nil {
 		return m.Timestamp
@@ -564,15 +366,12 @@ func (*RunFixtureResponse) XXX_OneofWrappers() []interface{} {
 	return []interface{}{
 		(*RunFixtureResponse_Log)(nil),
 		(*RunFixtureResponse_Error)(nil),
-		(*RunFixtureResponse_RequestDone)(nil),
 	}
 }
 
 func init() {
-	proto.RegisterEnum("tast.core.RunFixtureConfig_PlannerDownloadMode", RunFixtureConfig_PlannerDownloadMode_name, RunFixtureConfig_PlannerDownloadMode_value)
+	proto.RegisterEnum("tast.core.RunFixtureRequest_Method", RunFixtureRequest_Method_name, RunFixtureRequest_Method_value)
 	proto.RegisterType((*RunFixtureRequest)(nil), "tast.core.RunFixtureRequest")
-	proto.RegisterType((*RunFixturePushRequest)(nil), "tast.core.RunFixturePushRequest")
-	proto.RegisterType((*RunFixturePopRequest)(nil), "tast.core.RunFixturePopRequest")
 	proto.RegisterType((*RunFixtureConfig)(nil), "tast.core.RunFixtureConfig")
 	proto.RegisterMapType((map[string]string)(nil), "tast.core.RunFixtureConfig.TestVarsEntry")
 	proto.RegisterType((*RunFixtureError)(nil), "tast.core.RunFixtureError")
@@ -582,61 +381,43 @@ func init() {
 func init() { proto.RegisterFile("remote_fixture.proto", fileDescriptor_5cb9905fdd848d3a) }
 
 var fileDescriptor_5cb9905fdd848d3a = []byte{
-	// 864 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x7c, 0x54, 0x5d, 0x4f, 0xe3, 0x46,
-	0x14, 0xc5, 0x1b, 0x08, 0xf1, 0x0d, 0xb0, 0x61, 0xa0, 0xd4, 0x84, 0xb2, 0xa4, 0x79, 0x4a, 0xfb,
-	0xe0, 0x54, 0x41, 0xaa, 0x56, 0x5d, 0xa9, 0x12, 0xd9, 0x40, 0x51, 0xd5, 0x0f, 0xe4, 0xa5, 0x95,
-	0xba, 0x2f, 0xee, 0xc4, 0xbe, 0x09, 0x56, 0xc6, 0x1e, 0x77, 0x66, 0x1c, 0x9a, 0xdf, 0xd0, 0xff,
-	0xd8, 0xe7, 0xfd, 0x19, 0xd5, 0x7c, 0x40, 0x52, 0x36, 0xcb, 0xdb, 0xdc, 0x39, 0xe7, 0xdc, 0x7b,
-	0xec, 0xb9, 0xf7, 0xc2, 0xa1, 0xc0, 0x9c, 0x2b, 0x8c, 0x27, 0xd9, 0xdf, 0xaa, 0x12, 0x18, 0x96,
-	0x82, 0x2b, 0x4e, 0x7c, 0x45, 0xa5, 0x0a, 0x13, 0x2e, 0xb0, 0xfd, 0x6a, 0xca, 0xf9, 0x94, 0x61,
-	0xdf, 0x00, 0xe3, 0x6a, 0xd2, 0x4f, 0x2b, 0x41, 0x55, 0xc6, 0x0b, 0x4b, 0x6d, 0x9f, 0x3c, 0xc5,
-	0x31, 0x2f, 0xd5, 0xc2, 0x81, 0x67, 0x4f, 0x41, 0x95, 0xe5, 0x28, 0x15, 0xcd, 0x4b, 0x4b, 0xe8,
-	0xfe, 0xe3, 0xc1, 0x7e, 0x54, 0x15, 0x57, 0xb6, 0x7a, 0x84, 0x7f, 0x55, 0x28, 0x15, 0xf9, 0x16,
-	0x36, 0xcb, 0x4a, 0xde, 0x05, 0x5e, 0xc7, 0xeb, 0x35, 0x07, 0x9d, 0xf0, 0xd1, 0x4d, 0xb8, 0xe4,
-	0xde, 0x54, 0xf2, 0xce, 0xf1, 0xaf, 0x37, 0x22, 0xc3, 0x27, 0xe7, 0x50, 0x2b, 0x79, 0x19, 0xbc,
-	0x30, 0xb2, 0xb3, 0xf5, 0x32, 0x5e, 0x2e, 0x55, 0x9a, 0x3d, 0xf4, 0x61, 0x3b, 0xe1, 0x85, 0x12,
-	0x9c, 0x75, 0xff, 0x84, 0xcf, 0xd6, 0x16, 0x20, 0x04, 0x36, 0x0b, 0x9a, 0xa3, 0x31, 0xe4, 0x47,
-	0xe6, 0x4c, 0xce, 0xa1, 0x9e, 0xf0, 0x62, 0x92, 0x4d, 0x5d, 0xbd, 0x93, 0xb5, 0xf5, 0xde, 0x1a,
-	0x4a, 0xe4, 0xa8, 0xdd, 0x23, 0x38, 0x5c, 0xe7, 0xa5, 0xfb, 0xa1, 0x0e, 0xad, 0xa7, 0x22, 0x72,
-	0x05, 0xbe, 0x42, 0xa9, 0xe2, 0x39, 0x15, 0x32, 0xf0, 0x3a, 0xb5, 0x5e, 0x73, 0xf0, 0xd5, 0x33,
-	0x45, 0xc2, 0x5b, 0x94, 0xea, 0x77, 0x2a, 0xe4, 0x65, 0xa1, 0xc4, 0x22, 0x6a, 0x28, 0x17, 0x92,
-	0x63, 0x68, 0xa4, 0x54, 0xd1, 0x38, 0xcd, 0x84, 0xf1, 0xea, 0x47, 0xdb, 0x3a, 0x1e, 0x65, 0x82,
-	0x7c, 0x0e, 0xdb, 0xbc, 0x52, 0x06, 0xa9, 0x19, 0xa4, 0xce, 0x2b, 0xa5, 0x81, 0x63, 0x68, 0x28,
-	0xcc, 0x4b, 0x83, 0x6c, 0x5a, 0x8d, 0x8e, 0x35, 0x74, 0x04, 0x75, 0x45, 0xc5, 0x14, 0x55, 0xb0,
-	0x65, 0x25, 0x36, 0xd2, 0x92, 0x19, 0x2e, 0xe2, 0x49, 0xc6, 0x30, 0xa8, 0x5b, 0xc9, 0x0c, 0x17,
-	0x57, 0x19, 0x43, 0x5d, 0x46, 0x43, 0x3a, 0xd9, 0xb6, 0xd5, 0xcc, 0x70, 0xa1, 0x73, 0xf5, 0xa0,
-	0xc5, 0x78, 0x42, 0x59, 0x3c, 0xae, 0x8a, 0x94, 0xa1, 0x61, 0x34, 0x0c, 0x63, 0xcf, 0xdc, 0x0f,
-	0xcd, 0xb5, 0x66, 0x86, 0x70, 0x90, 0xdc, 0x61, 0x32, 0x8b, 0x25, 0x9f, 0xa8, 0x7b, 0x2a, 0x30,
-	0x4e, 0xb1, 0x94, 0x81, 0xdf, 0xf1, 0x7a, 0x8d, 0x68, 0xdf, 0x40, 0xef, 0x1c, 0x32, 0xc2, 0x52,
-	0x92, 0xef, 0xe1, 0x84, 0xce, 0x69, 0xc6, 0xe8, 0x98, 0xe1, 0x52, 0x33, 0x41, 0xaa, 0x7f, 0x98,
-	0x0c, 0xa0, 0x53, 0xeb, 0xf9, 0xd1, 0xf1, 0x23, 0xe5, 0x41, 0x7b, 0xe5, 0x08, 0x64, 0x08, 0xa7,
-	0x55, 0xf1, 0x5c, 0x86, 0xa6, 0xc9, 0x70, 0xb2, 0x42, 0xfa, 0x28, 0xc7, 0x2b, 0x80, 0x14, 0xe7,
-	0x12, 0xc5, 0x1c, 0x85, 0x0c, 0x76, 0x8c, 0x60, 0xe5, 0x86, 0x9c, 0x02, 0x28, 0x76, 0x1f, 0xdb,
-	0x30, 0xd8, 0x35, 0xdf, 0xed, 0x2b, 0x76, 0xff, 0xce, 0x5c, 0x98, 0x77, 0xab, 0x54, 0x6c, 0x3a,
-	0x6f, 0xcf, 0xbd, 0x5b, 0xa5, 0x7e, 0xd1, 0xcd, 0x17, 0xc2, 0xc1, 0xb8, 0xca, 0x58, 0x1a, 0x53,
-	0xa1, 0xb2, 0x09, 0x4d, 0x94, 0x8c, 0x2b, 0xc1, 0x82, 0x97, 0x86, 0xb5, 0x6f, 0xa0, 0x8b, 0x07,
-	0xe4, 0x37, 0xc1, 0xc8, 0x2d, 0xec, 0xa6, 0xfc, 0xbe, 0x60, 0x9c, 0xa6, 0x71, 0xce, 0x53, 0x0c,
-	0x5a, 0x1d, 0xaf, 0xb7, 0x37, 0xe8, 0x3f, 0xd7, 0x4e, 0x37, 0x8c, 0x16, 0x05, 0x8a, 0x91, 0xd3,
-	0xfd, 0xcc, 0x53, 0x8c, 0x76, 0xd2, 0x95, 0x88, 0xfc, 0x08, 0x07, 0x49, 0x25, 0x15, 0xcf, 0xe3,
-	0xa9, 0xa0, 0x09, 0xc6, 0x25, 0x8a, 0x8c, 0xa7, 0xc1, 0x87, 0x6d, 0x33, 0x10, 0xc7, 0xa1, 0x9d,
-	0xfe, 0xf0, 0x61, 0xfa, 0xc3, 0x91, 0x5b, 0x1d, 0xd1, 0xbe, 0x95, 0xfd, 0xa0, 0x55, 0x37, 0x46,
-	0xd4, 0x7e, 0x03, 0xbb, 0xff, 0xeb, 0x5f, 0xd2, 0x82, 0xda, 0x0c, 0x17, 0x6e, 0xe4, 0xf4, 0x91,
-	0x1c, 0xc2, 0xd6, 0x9c, 0xb2, 0x0a, 0x5d, 0x13, 0xdb, 0xe0, 0xbb, 0x17, 0xaf, 0xbd, 0xee, 0xd7,
-	0x70, 0xb0, 0xc6, 0x2d, 0xf1, 0x61, 0x6b, 0x78, 0x71, 0xfb, 0xf6, 0xba, 0xb5, 0x41, 0x1a, 0xb0,
-	0xf9, 0xd3, 0xc5, 0xfb, 0x3f, 0x5a, 0x5e, 0x77, 0x0a, 0x2f, 0x97, 0x9f, 0x7a, 0x29, 0x04, 0x37,
-	0x1d, 0x2d, 0x90, 0x4a, 0x5e, 0xb8, 0x6a, 0x2e, 0xd2, 0x63, 0x6f, 0xba, 0xd9, 0xd6, 0x33, 0x67,
-	0x7d, 0xc7, 0xb2, 0x02, 0xcd, 0xb8, 0x6c, 0x45, 0xe6, 0xac, 0x8d, 0x49, 0x45, 0x93, 0x99, 0x9b,
-	0x14, 0x1b, 0x74, 0xff, 0xf5, 0x80, 0xac, 0xee, 0x36, 0x59, 0xf2, 0x42, 0xea, 0x04, 0x35, 0xc6,
-	0xa7, 0xb6, 0x92, 0xde, 0x41, 0x8c, 0x4f, 0xc9, 0x00, 0xb6, 0x50, 0x3b, 0x71, 0xab, 0xa4, 0xbd,
-	0xf6, 0x59, 0x8c, 0xd7, 0xeb, 0x8d, 0xc8, 0x52, 0xc9, 0x1b, 0xd8, 0x11, 0x76, 0x7b, 0xc4, 0x29,
-	0x77, 0x86, 0x9a, 0x83, 0xa3, 0x8f, 0x7e, 0xfa, 0xa5, 0xde, 0xc7, 0xd7, 0x1b, 0x51, 0xd3, 0xb1,
-	0x47, 0xbc, 0x40, 0xf2, 0x1a, 0xfc, 0xc7, 0x55, 0x6c, 0x5c, 0xeb, 0xa2, 0x4f, 0x95, 0xb7, 0x0f,
-	0x8c, 0x68, 0x49, 0x5e, 0x59, 0x97, 0x03, 0x0a, 0x7b, 0xce, 0x9a, 0x6e, 0xd8, 0x2c, 0x41, 0xf2,
-	0x2b, 0xc0, 0xd2, 0x2f, 0xf9, 0x62, 0xed, 0x67, 0xb8, 0x95, 0xd7, 0x3e, 0xfd, 0x04, 0x6a, 0x7f,
-	0x53, 0x77, 0xa3, 0xe7, 0x7d, 0xe3, 0x0d, 0xbf, 0x7c, 0x7f, 0x96, 0xdc, 0x09, 0x9e, 0x67, 0x55,
-	0xce, 0x65, 0x5f, 0x0b, 0xfa, 0x59, 0xa1, 0x50, 0x14, 0x94, 0xf5, 0xed, 0xca, 0x18, 0xd7, 0x8d,
-	0xdf, 0xf3, 0xff, 0x02, 0x00, 0x00, 0xff, 0xff, 0x45, 0xbd, 0x42, 0xf4, 0xca, 0x06, 0x00, 0x00,
+	// 561 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x7c, 0x53, 0xcd, 0x52, 0xdb, 0x3e,
+	0x10, 0x8f, 0x09, 0x71, 0xe2, 0xe5, 0xff, 0xa7, 0xa9, 0x86, 0x69, 0x43, 0xda, 0x0e, 0x21, 0xbd,
+	0xa4, 0x17, 0xa7, 0x63, 0x2e, 0x4c, 0xb9, 0x51, 0x60, 0xb8, 0x70, 0x31, 0xb4, 0x87, 0x5e, 0x3c,
+	0xc2, 0xd9, 0x18, 0x4d, 0x6c, 0x29, 0x95, 0xd6, 0xb4, 0x79, 0x9c, 0xbe, 0x47, 0x1f, 0xa5, 0x0f,
+	0xd3, 0x91, 0x64, 0x48, 0x3f, 0x28, 0x37, 0xfd, 0xf4, 0xfb, 0x58, 0xad, 0xb4, 0x82, 0x1d, 0x8d,
+	0x95, 0x22, 0xcc, 0xe6, 0xe2, 0x2b, 0xd5, 0x1a, 0xe3, 0xa5, 0x56, 0xa4, 0x58, 0x44, 0xdc, 0x50,
+	0x9c, 0x2b, 0x8d, 0xc3, 0xbd, 0x42, 0xa9, 0xa2, 0xc4, 0xa9, 0x23, 0xae, 0xeb, 0xf9, 0x94, 0x44,
+	0x85, 0x86, 0x78, 0xb5, 0xf4, 0xda, 0xf1, 0xf7, 0x00, 0x9e, 0xa6, 0xb5, 0x3c, 0xf3, 0x01, 0x29,
+	0x7e, 0xae, 0xd1, 0x10, 0x63, 0xb0, 0x29, 0x79, 0x85, 0x83, 0x60, 0x14, 0x4c, 0xa2, 0xd4, 0xad,
+	0xd9, 0x11, 0x84, 0x15, 0xd2, 0x8d, 0x9a, 0x0d, 0x36, 0x46, 0xc1, 0x64, 0x3b, 0x79, 0x1d, 0xdf,
+	0x97, 0x89, 0xff, 0x4a, 0x88, 0x2f, 0x9c, 0x34, 0x6d, 0x2c, 0xec, 0x00, 0xc2, 0x5c, 0xc9, 0xb9,
+	0x28, 0x06, 0xed, 0x51, 0x30, 0xd9, 0x4a, 0x5e, 0x3c, 0x68, 0x7e, 0xef, 0x24, 0x69, 0x23, 0x1d,
+	0xef, 0x43, 0xe8, 0x63, 0x58, 0x04, 0x9d, 0x4b, 0xa4, 0x0f, 0xcb, 0x7e, 0x8b, 0xfd, 0x07, 0xbd,
+	0x2b, 0xe4, 0xfa, 0x44, 0x7d, 0x91, 0xfd, 0x60, 0xfc, 0x63, 0x03, 0xfa, 0x7f, 0xfa, 0xd9, 0x19,
+	0x44, 0x84, 0x86, 0xb2, 0x5b, 0xae, 0xcd, 0x20, 0x18, 0xb5, 0x27, 0x5b, 0xc9, 0x9b, 0x47, 0xea,
+	0xc5, 0x57, 0x68, 0xe8, 0x23, 0xd7, 0xe6, 0x54, 0x92, 0x5e, 0xa5, 0x3d, 0x6a, 0x20, 0xdb, 0x85,
+	0xde, 0x8c, 0x13, 0xcf, 0x66, 0x42, 0xbb, 0x9e, 0xa3, 0xb4, 0x6b, 0xf1, 0x89, 0xd0, 0xec, 0x39,
+	0x74, 0x55, 0x4d, 0x8e, 0x69, 0x3b, 0x26, 0x54, 0x35, 0x59, 0x62, 0x17, 0x7a, 0x84, 0xd5, 0xd2,
+	0x31, 0x9b, 0xde, 0x63, 0xb1, 0xa5, 0x9e, 0x41, 0x48, 0x5c, 0x17, 0x48, 0x83, 0x8e, 0xb7, 0x78,
+	0x64, 0x2d, 0x0b, 0x5c, 0x65, 0x73, 0x51, 0xe2, 0x20, 0xf4, 0x96, 0x05, 0xae, 0xce, 0x44, 0x89,
+	0xb6, 0x8c, 0xa5, 0x6c, 0x58, 0xd7, 0x7b, 0x16, 0xb8, 0xb2, 0x59, 0x13, 0xe8, 0x97, 0x2a, 0xe7,
+	0x65, 0x76, 0x5d, 0xcb, 0x59, 0x89, 0x4e, 0xd1, 0x73, 0x8a, 0x6d, 0xb7, 0x7f, 0xec, 0xb6, 0x4f,
+	0x84, 0x1e, 0x1e, 0xc1, 0xff, 0xbf, 0xf5, 0xc7, 0xfa, 0xd0, 0x5e, 0xe0, 0xaa, 0x79, 0x5a, 0xbb,
+	0x64, 0x3b, 0xd0, 0xb9, 0xe5, 0x65, 0x8d, 0x4d, 0x93, 0x1e, 0xbc, 0xdb, 0x38, 0x0c, 0xc6, 0x05,
+	0x3c, 0x59, 0xdf, 0xd6, 0xa9, 0xd6, 0xca, 0x75, 0xa1, 0x91, 0x1b, 0x25, 0x9b, 0x84, 0x06, 0xd9,
+	0x91, 0x71, 0x1d, 0xf8, 0x0c, 0xb7, 0xb6, 0x7b, 0xa5, 0x90, 0xe8, 0xae, 0xa8, 0x93, 0xba, 0xb5,
+	0x2d, 0x66, 0x88, 0xe7, 0x8b, 0xe6, 0x76, 0x3c, 0x18, 0x7f, 0x0b, 0x80, 0xfd, 0x3a, 0x44, 0x66,
+	0xa9, 0xa4, 0xb1, 0x01, 0xed, 0x52, 0x15, 0xbe, 0xd2, 0x79, 0x2b, 0xb5, 0x80, 0x25, 0xd0, 0x41,
+	0x7b, 0x12, 0x57, 0x69, 0x2b, 0x19, 0x3e, 0xf8, 0xb2, 0xee, 0xac, 0xe7, 0xad, 0xd4, 0x4b, 0xd9,
+	0x21, 0x44, 0xf7, 0x83, 0xdf, 0x4c, 0xe0, 0x30, 0xf6, 0x5f, 0x23, 0xbe, 0xfb, 0x1a, 0xf1, 0xd5,
+	0x9d, 0x22, 0x5d, 0x8b, 0x8f, 0x23, 0xe8, 0xe6, 0x4a, 0x92, 0x56, 0x65, 0x92, 0xc1, 0x76, 0x93,
+	0x7e, 0x89, 0xfa, 0x56, 0xe4, 0xc8, 0x2e, 0x00, 0xd6, 0x25, 0xd9, 0xcb, 0xc7, 0x3e, 0xc4, 0xf0,
+	0xd5, 0x3f, 0x58, 0xdf, 0xe9, 0xb8, 0xf5, 0x36, 0x38, 0xde, 0xff, 0xb4, 0x97, 0xdf, 0x68, 0x55,
+	0x89, 0xba, 0x52, 0x66, 0x6a, 0xe5, 0x53, 0x21, 0x09, 0xb5, 0xe4, 0xe5, 0xd4, 0xbf, 0xf3, 0x75,
+	0xe8, 0x4e, 0x7b, 0xf0, 0x33, 0x00, 0x00, 0xff, 0xff, 0xe0, 0x45, 0x43, 0x96, 0xf9, 0x03, 0x00,
+	0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -651,7 +432,7 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type FixtureServiceClient interface {
-	RunFixture(ctx context.Context, opts ...grpc.CallOption) (FixtureService_RunFixtureClient, error)
+	RunFixture(ctx context.Context, in *RunFixtureRequest, opts ...grpc.CallOption) (FixtureService_RunFixtureClient, error)
 }
 
 type fixtureServiceClient struct {
@@ -662,27 +443,28 @@ func NewFixtureServiceClient(cc *grpc.ClientConn) FixtureServiceClient {
 	return &fixtureServiceClient{cc}
 }
 
-func (c *fixtureServiceClient) RunFixture(ctx context.Context, opts ...grpc.CallOption) (FixtureService_RunFixtureClient, error) {
+func (c *fixtureServiceClient) RunFixture(ctx context.Context, in *RunFixtureRequest, opts ...grpc.CallOption) (FixtureService_RunFixtureClient, error) {
 	stream, err := c.cc.NewStream(ctx, &_FixtureService_serviceDesc.Streams[0], "/tast.core.FixtureService/RunFixture", opts...)
 	if err != nil {
 		return nil, err
 	}
 	x := &fixtureServiceRunFixtureClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
 	return x, nil
 }
 
 type FixtureService_RunFixtureClient interface {
-	Send(*RunFixtureRequest) error
 	Recv() (*RunFixtureResponse, error)
 	grpc.ClientStream
 }
 
 type fixtureServiceRunFixtureClient struct {
 	grpc.ClientStream
-}
-
-func (x *fixtureServiceRunFixtureClient) Send(m *RunFixtureRequest) error {
-	return x.ClientStream.SendMsg(m)
 }
 
 func (x *fixtureServiceRunFixtureClient) Recv() (*RunFixtureResponse, error) {
@@ -695,14 +477,14 @@ func (x *fixtureServiceRunFixtureClient) Recv() (*RunFixtureResponse, error) {
 
 // FixtureServiceServer is the server API for FixtureService service.
 type FixtureServiceServer interface {
-	RunFixture(FixtureService_RunFixtureServer) error
+	RunFixture(*RunFixtureRequest, FixtureService_RunFixtureServer) error
 }
 
 // UnimplementedFixtureServiceServer can be embedded to have forward compatible implementations.
 type UnimplementedFixtureServiceServer struct {
 }
 
-func (*UnimplementedFixtureServiceServer) RunFixture(srv FixtureService_RunFixtureServer) error {
+func (*UnimplementedFixtureServiceServer) RunFixture(req *RunFixtureRequest, srv FixtureService_RunFixtureServer) error {
 	return status.Errorf(codes.Unimplemented, "method RunFixture not implemented")
 }
 
@@ -711,12 +493,15 @@ func RegisterFixtureServiceServer(s *grpc.Server, srv FixtureServiceServer) {
 }
 
 func _FixtureService_RunFixture_Handler(srv interface{}, stream grpc.ServerStream) error {
-	return srv.(FixtureServiceServer).RunFixture(&fixtureServiceRunFixtureServer{stream})
+	m := new(RunFixtureRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(FixtureServiceServer).RunFixture(m, &fixtureServiceRunFixtureServer{stream})
 }
 
 type FixtureService_RunFixtureServer interface {
 	Send(*RunFixtureResponse) error
-	Recv() (*RunFixtureRequest, error)
 	grpc.ServerStream
 }
 
@@ -728,14 +513,6 @@ func (x *fixtureServiceRunFixtureServer) Send(m *RunFixtureResponse) error {
 	return x.ServerStream.SendMsg(m)
 }
 
-func (x *fixtureServiceRunFixtureServer) Recv() (*RunFixtureRequest, error) {
-	m := new(RunFixtureRequest)
-	if err := x.ServerStream.RecvMsg(m); err != nil {
-		return nil, err
-	}
-	return m, nil
-}
-
 var _FixtureService_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "tast.core.FixtureService",
 	HandlerType: (*FixtureServiceServer)(nil),
@@ -745,7 +522,6 @@ var _FixtureService_serviceDesc = grpc.ServiceDesc{
 			StreamName:    "RunFixture",
 			Handler:       _FixtureService_RunFixture_Handler,
 			ServerStreams: true,
-			ClientStreams: true,
 		},
 	},
 	Metadata: "remote_fixture.proto",

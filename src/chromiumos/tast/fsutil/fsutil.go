@@ -38,7 +38,9 @@ func CopyFile(src, dst string) error {
 	if err != nil {
 		return errors.Wrap(err, "failed to create tmp file")
 	}
-	if _, err := io.Copy(df, sf); err != nil {
+	// TODO(b:178332739): CopyFile triggers a kernel bug as copy_file_range does not
+	// behave correctly on kernel >=5.4 for zero-sized sysfs files.
+	if _, err := io.Copy(struct{ io.Writer }{df}, struct{ io.Reader }{sf}); err != nil {
 		df.Close()
 		os.Remove(df.Name())
 		return errors.Wrap(err, "failed to copy data from src file to tmp file")

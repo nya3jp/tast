@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f53572f6_25419dac",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-01-25T06:14:11Z",
+      "side": 1,
+      "message": "Ouch. I guess this is similar to golang.org/issue/16474?\n\nThe top comment shows a workaround, i.e.\n\n io.Copy(struct { io.Writer }{dst}, struct{ io.Reader }{src})",
+      "range": {
+        "startLine": 7,
+        "startChar": 0,
+        "endLine": 7,
+        "endChar": 68
+      },
+      "revId": "d58e3d358586baad28a54d9fe8e0820c216f8f1e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

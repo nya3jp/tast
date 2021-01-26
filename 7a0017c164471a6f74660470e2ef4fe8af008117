@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "75c6f02e_f99dd643",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-01-26T03:21:43Z",
+      "side": 1,
+      "message": "\u003e tast-remote-tests-cros-0.0.1-r4967: src/chromiumos/tast/local/bundlemain/main.go:225:38: s.TestInstance undefined (type *\"chromiumos/tast/internal/testing\".TestHookState has no field or method TestInstance)\nThis should have been fixed by crrev.com/c/2638968.",
+      "revId": "7a0017c164471a6f74660470e2ef4fe8af008117",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

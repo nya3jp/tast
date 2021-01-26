@@ -82,6 +82,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "8acb3a5c_791cbbbe",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 223,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-01-26T09:24:24Z",
+      "side": 1,
+      "message": "There is duscission in b:173741162 about the boxster config in general, including other HW properties.",
+      "parentUuid": "04773c9d_16604e2c",
+      "range": {
+        "startLine": 223,
+        "startChar": 4,
+        "endLine": 223,
+        "endChar": 8
+      },
+      "revId": "881432866decf8077b6e5fc7d7926b59782dfa69",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "6232e3e8_63d811f7",
@@ -125,6 +149,23 @@
         "endLine": 231,
         "endChar": 36
       },
+      "revId": "881432866decf8077b6e5fc7d7926b59782dfa69",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8f6e2eb3_15d81a26",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 457,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-01-26T09:24:24Z",
+      "side": 1,
+      "message": "Will you use f.Features (type api.HardwareFeatures) instead, for new functions, because we are removing dependency to infra/proto (crbug.com/1094802)?\nhttps://source.chromium.org/chromium/infra/infra/+/master:go/src/go.chromium.org/chromiumos/config/proto/chromiumos/config/api/test/metadata/v1/metadata.proto;l\u003d284;drc\u003d537b6bce3095e474ab8357bf8510f2c2cd51affb\nhttps://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/config/proto/chromiumos/config/api/topology.proto;l\u003d346;drc\u003db9b17b337dee6761d21ddc60e2d3bcb66aefd7f3\n\nPlease also add \"CEL\" field like Fingerprint() in this file.\nIt will be something like \"dut.hardware_features.storage \u003d\u003d api.Components.Storage.StorageType_NVME\"\nAlso add to the tests in src/chromiumos/tast/testing/hwdep/hwdep_test.go, so that the CEL string can be validated by the unit test.",
       "revId": "881432866decf8077b6e5fc7d7926b59782dfa69",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }

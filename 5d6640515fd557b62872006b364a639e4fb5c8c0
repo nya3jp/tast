@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "195d203d_d58e6d21",
+        "filename": "src/chromiumos/tast/internal/bundle/fixture_service_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 327,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-01-26T07:54:32Z",
+      "side": 1,
+      "message": "Do we hit the same issue when we call t.Fatal above? Even though unit tests would fail anyway, I\u0027m afraid that it might make debugging a bit more difficult. Maybe it\u0027s better to do this in a deferred statement?",
+      "range": {
+        "startLine": 322,
+        "startChar": 0,
+        "endLine": 327,
+        "endChar": 2
+      },
+      "revId": "5d6640515fd557b62872006b364a639e4fb5c8c0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

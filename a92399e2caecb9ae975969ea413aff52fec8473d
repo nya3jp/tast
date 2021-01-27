@@ -35,6 +35,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "279be6ba_53091563",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/internal/fakerts/fakerts.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-01-27T09:00:12Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4d014094_58bfc1a3",
+      "revId": "a92399e2caecb9ae975969ea413aff52fec8473d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "e70b02a5_72d7ee35",
@@ -52,6 +70,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "c6b73a53_0ad039e7",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/internal/rpc/reports.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-01-27T09:00:12Z",
+      "side": 1,
+      "message": "Replaced with the reportNameTmpl.",
+      "parentUuid": "e70b02a5_72d7ee35",
+      "revId": "a92399e2caecb9ae975969ea413aff52fec8473d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "16a8d57f_246a065d",
@@ -65,6 +101,24 @@
       "writtenOn": "2021-01-22T23:16:45Z",
       "side": 1,
       "message": "I think you have to get it from a request and it is going to be different from request to request. It should be something like\n// /tmp/tast/results/20210115-083022/tests/network.WifiSetTXPower/log.txt\nfilepath.Join(inv.request[i].Environment.WorkDir, \"tests\", inv.request[i].test, \"log.txt\")",
+      "revId": "a92399e2caecb9ae975969ea413aff52fec8473d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0e9c8cfe_8fcd5f89",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/main.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 111,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-01-27T09:00:12Z",
+      "side": 1,
+      "message": "Done.\nnya@, do you think this is OK?\nAnother option would be to make Tast pass the individual test\u0027s log file thorough the internal gRPC, so that we don\u0027t need to care how Tast decides the log file path location.",
+      "parentUuid": "16a8d57f_246a065d",
       "revId": "a92399e2caecb9ae975969ea413aff52fec8473d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }

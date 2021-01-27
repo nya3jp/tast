@@ -92,6 +92,29 @@ all `test` system images (non-`test` system images are not supposed by Tast).
 [tast-tests repository]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/
 [Go in Chromium OS]: https://www.chromium.org/chromium-os/developer-guide/go-in-chromium-os
 
+## Running tests with Servo
+
+Some tests use servo, a physical device that connects to both the host machine
+and the DUT. These tests all specify `servo` as a [runtime variable], so they
+must be run with that variable specifying the servo host and servo port:
+
+```shell
+tast run -var=servo=<servo-host>:<servo-port> <target> <test-pattern>
+```
+
+In order for a test to interact with the servo, the servo host must be running
+an instance of `servod` (servo daemon) on the appropriate port. When Tast is
+run through the Tauto wrapper via `test_that`, Tauto takes care of initiating
+and closing `servod`. However, when Tast is run through `tast run`, it does not
+initiate `servod`; the user must initiate `servod` from the servo host:
+
+```shell
+ssh <servo-host>
+servod --board=<board> --model=<model> --port=<servo-port> --serialname=<servo-serial>
+```
+
+[runtime variable]: writing_tests.md#runtime-variables
+
 ## Interpreting test results
 
 As each test runs, its output is streamed to the `tast` executable. Overall

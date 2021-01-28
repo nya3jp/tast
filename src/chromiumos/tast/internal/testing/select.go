@@ -62,7 +62,7 @@ func SelectTestsByArgs(tests []*TestInstance, args []string) ([]*TestInstance, e
 
 // selectTestsByGlob returns a subset of tests with names matched by w,
 // which may contain '*' to match zero or more arbitrary characters.
-func selectTestsByGlob(tests []*TestInstance, g string) ([]*TestInstance, error) {
+func selectTestsByGlob(tests map[string](*TestInstance), g string) ([]*TestInstance, error) {
 	re, err := NewTestGlobRegexp(g)
 	if err != nil {
 		return nil, fmt.Errorf("bad glob %q: %v", g, err)
@@ -81,20 +81,27 @@ func selectTestsByGlob(tests []*TestInstance, g string) ([]*TestInstance, error)
 // any glob in gs. See NewTestGlobRegexp for details about the glob format.
 func SelectTestsByGlobs(tests []*TestInstance, gs []string) ([]*TestInstance, error) {
 	var filtered []*TestInstance
-	seen := make(map[*TestInstance]struct{})
+	unmatched := make(map[string](*TestInstance))
+	for _, t := range tests {
+		unmatched[t.Name] = t
+	}
 	for _, g := range gs {
-		ts, err := selectTestsByGlob(tests, g)
+		if !strings.ContainsAny(g, `*?[[`) {
+			if t, ok := unmatched[g]; ok {
+				filtered = append(filtered, t.clone())
+				delete(unmatched, g)
+			}
+			continue
+		}
+		ts, err := selectTestsByGlob(unmatched, g)
 		if err != nil {
 			return nil, err
 		}
 
 		// De-dupe results while preserving order.
 		for _, t := range ts {
-			if _, ok := seen[t]; ok {
-				continue
-			}
 			filtered = append(filtered, t.clone())
-			seen[t] = struct{}{}
+			delete(unmatched, t.Name)
 		}
 	}
 	return filtered, nil

@@ -23,6 +23,18 @@ const (
 	TestPatternAttrExpr
 )
 
+// testPatternGlobType describes a TestPatternGlobs pattern in detail.
+type testPatternGlobType int
+
+const (
+	// testPatternGlobLiteral means the glob pattern is a test name without widecard characters.
+	testPatternGlobLiteral testPatternGlobType = iota
+	// testPatternGlobExpr means the glob pattern with wildcard characters.
+	testPatternGlobExpr
+	// testPatternGlobInvalid means the glob pattern is invalid.
+	testPatternInvalid
+)
+
 // GetTestPatternType returns the manner in which test patterns pats will be interpreted.
 // This is exported so it can be used by the tast command.
 func GetTestPatternType(pats []string) TestPatternType {
@@ -32,6 +44,22 @@ func GetTestPatternType(pats []string) TestPatternType {
 	default:
 		return TestPatternGlobs
 	}
+}
+
+// getTestPatternGlobType returns the manner in which a test glob pattern will be interpreted.
+func getTestPatternGlobType(pat string) (testPatternGlobType, error) {
+	globType := testPatternGlobLiteral
+	for _, ch := range pat {
+		switch {
+		case ch == '*':
+			globType = testPatternGlobExpr
+		case unicode.IsLetter(ch), unicode.IsDigit(ch), ch == '.', ch == '_':
+			continue
+		default:
+			return testPatternInvalid, fmt.Errorf("invalid character %v", ch)
+		}
+	}
+	return globType, nil
 }
 
 // SelectTestsByArgs returns a subset of tests filtered by arguments given to
@@ -62,7 +90,7 @@ func SelectTestsByArgs(tests []*TestInstance, args []string) ([]*TestInstance, e
 
 // selectTestsByGlob returns a subset of tests with names matched by w,
 // which may contain '*' to match zero or more arbitrary characters.
-func selectTestsByGlob(tests []*TestInstance, g string) ([]*TestInstance, error) {
+func selectTestsByGlob(tests map[string]*TestInstance, g string) ([]*TestInstance, error) {
 	re, err := NewTestGlobRegexp(g)
 	if err != nil {
 		return nil, fmt.Errorf("bad glob %q: %v", g, err)
@@ -81,20 +109,27 @@ func selectTestsByGlob(tests []*TestInstance, g string) ([]*TestInstance, error)
 // any glob in gs. See NewTestGlobRegexp for details about the glob format.
 func SelectTestsByGlobs(tests []*TestInstance, gs []string) ([]*TestInstance, error) {
 	var filtered []*TestInstance
-	seen := make(map[*TestInstance]struct{})
+	unmatched := make(map[string](*TestInstance))
+	for _, t := range tests {
+		unmatched[t.Name] = t
+	}
 	for _, g := range gs {
-		ts, err := selectTestsByGlob(tests, g)
+		if globType, _ := getTestPatternGlobType(g); globType == testPatternGlobLiteral {
+			if t, ok := unmatched[g]; ok {
+				filtered = append(filtered, t.clone())
+				delete(unmatched, g)
+			}
+			continue
+		}
+		ts, err := selectTestsByGlob(unmatched, g)
 		if err != nil {
 			return nil, err
 		}
 
 		// De-dupe results while preserving order.
 		for _, t := range ts {
-			if _, ok := seen[t]; ok {
-				continue
-			}
 			filtered = append(filtered, t.clone())
-			seen[t] = struct{}{}
+			delete(unmatched, t.Name)
 		}
 	}
 	return filtered, nil
@@ -125,10 +160,8 @@ func SelectTestsByAttrExpr(tests []*TestInstance, s string) ([]*TestInstance, er
 // This matches the logic used by TestsForGlobs and is exported to make it possible
 // for code outside this package to verify that a user-supplied glob matched at least one test.
 func NewTestGlobRegexp(g string) (*regexp.Regexp, error) {
-	for _, ch := range g {
-		if !unicode.IsLetter(ch) && !unicode.IsDigit(ch) && ch != '.' && ch != '_' && ch != '*' {
-			return nil, fmt.Errorf("invalid character %v", ch)
-		}
+	if _, err := getTestPatternGlobType(g); err != nil {
+		return nil, err
 	}
 	g = strings.Replace(g, ".", "\\.", -1)
 	g = strings.Replace(g, "*", ".*", -1)

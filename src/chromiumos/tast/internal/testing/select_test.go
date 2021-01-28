@@ -7,6 +7,8 @@ package testing
 import (
 	"context"
 	"reflect"
+	"sort"
+	"strings"
 	"testing"
 )
 
@@ -54,6 +56,8 @@ func TestSelectTestsByArgs(t *testing.T) {
 			for i := range tests {
 				actNames[i] = tests[i].Name
 			}
+			sort.Strings(actNames)
+			sort.Strings(tc.expNames)
 			if !reflect.DeepEqual(actNames, tc.expNames) {
 				t.Errorf("SelectTestsByArgs(..., %v) = %v; want %v", tc.args, actNames, tc.expNames)
 			}
@@ -66,6 +70,10 @@ func TestSelectTestsByGlobs(t *testing.T) {
 		{Name: "test.Foo", Func: func(context.Context, *State) {}},
 		{Name: "test.Bar", Func: func(context.Context, *State) {}},
 		{Name: "blah.Foo", Func: func(context.Context, *State) {}},
+	}
+	testNamesToInsts := make(map[string](*TestInstance))
+	for _, t := range allTests {
+		testNamesToInsts[t.Name] = t
 	}
 
 	for _, tc := range []struct {
@@ -83,9 +91,17 @@ func TestSelectTestsByGlobs(t *testing.T) {
 		// Test that periods are escaped.
 		{"test.Fo.", []*TestInstance{}},
 	} {
-		if tests, err := selectTestsByGlob(allTests, tc.glob); err != nil {
+		tests, err := selectTestsByGlob(testNamesToInsts, tc.glob)
+		if err != nil {
 			t.Fatalf("selectTestsByGlob(%q) failed: %v", tc.glob, err)
-		} else if !testsEqual(tests, tc.expected) {
+		}
+		sort.Slice(tests, func(i, j int) bool {
+			return tests[i].Name > tests[j].Name
+		})
+		sort.Slice(tc.expected, func(i, j int) bool {
+			return tests[i].Name > tests[j].Name
+		})
+		if !testsEqual(tests, tc.expected) {
 			t.Errorf("selectTestsByGlob(%q) = %v; want %v", tc.glob, tests, tc.expected)
 		}
 	}
@@ -187,5 +203,38 @@ func TestNewTestGlobRegexp(t *testing.T) {
 	// Unexepcted glob pattern case.
 	if _, err := NewTestGlobRegexp("arc.#*"); err == nil {
 		t.Error("Glob pattern with '#' is successfully compiled unexpectedly")
+	}
+}
+
+// TestValidatePattern tests the function validatePattern.
+func TestValidatePattern(t *testing.T) {
+	for _, tc := range []struct {
+		pat           string
+		expectedError bool
+	}{
+		{"test.Foo", false},
+		{"test_Bar.Foo", false},
+		{"test.*", false},
+		{"*.Foo", false},
+		{"*.*", false},
+		{"*", false},
+		{"*_*", false},
+		{"[]", true},
+		{"(", true},
+		{"test-Fo.", true},
+	} {
+		hasWildcard, err := validatePattern(tc.pat)
+		if err != nil {
+			if !tc.expectedError {
+				t.Errorf("validatePattern(%q) failed: %v", tc.pat, err)
+			}
+			continue
+		}
+		if tc.expectedError {
+			t.Errorf("validatePattern(%q) passed unexpectedly", tc.pat)
+		}
+		if strings.Contains(tc.pat, "*") != hasWildcard {
+			t.Errorf("validatePattern(%q) returned %v; expected %v", tc.pat, hasWildcard, !hasWildcard)
+		}
 	}
 }

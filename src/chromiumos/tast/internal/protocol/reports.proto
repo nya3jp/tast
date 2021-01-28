@@ -24,7 +24,8 @@ service Reports {
 
 message LogStreamRequest {
     string test = 1;  // test name of this log message
-    bytes data = 2;
+    string log_path = 2;  // test log file path relative to the result directory
+    bytes data = 3;
 }
 
 message ReportResultRequest {

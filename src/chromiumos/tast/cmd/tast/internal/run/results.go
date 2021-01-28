@@ -292,13 +292,15 @@ func (r *resultsHandler) handleRunEnd(ctx context.Context, msg *control.RunEnd) 
 type logSender struct {
 	stream   *protocol.Reports_LogStreamClient
 	testName string
+	logPath  string
 }
 
 // Write sends given bytes to LogStream streaming gRPC API with the test name.
 func (s logSender) Write(p []byte) (n int, err error) {
 	req := protocol.LogStreamRequest{
-		Test: s.testName,
-		Data: p,
+		Test:    s.testName,
+		LogPath: s.logPath,
+		Data:    p,
 	}
 	if err := (*s.stream).Send(&req); err != nil {
 		return 0, err
@@ -350,7 +352,8 @@ func (r *resultsHandler) handleTestStart(ctx context.Context, msg *control.Entit
 	if err := os.MkdirAll(state.result.OutDir, 0755); err != nil {
 		return err
 	}
-	f, err := os.Create(filepath.Join(state.result.OutDir, testLogFilename))
+	testLogPath := filepath.Join(state.result.OutDir, testLogFilename)
+	f, err := os.Create(testLogPath)
 	if err != nil {
 		return err
 	}
@@ -362,6 +365,7 @@ func (r *resultsHandler) handleTestStart(ctx context.Context, msg *control.Entit
 		state.logReportWriter = logSender{
 			stream:   r.cfg.reportsLogStream,
 			testName: msg.Info.Name,
+			logPath:  testLogPath,
 		}
 		if err := r.cfg.Logger.AddWriter(state.logReportWriter, log.LstdFlags); err != nil {
 			return err

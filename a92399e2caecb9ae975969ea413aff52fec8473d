@@ -121,6 +121,24 @@
       "parentUuid": "16a8d57f_246a065d",
       "revId": "a92399e2caecb9ae975969ea413aff52fec8473d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a452f20e_51761cb8",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/main.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 111,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-01-28T09:26:52Z",
+      "side": 1,
+      "message": "Chatted with nya@ off the thread.\nWe got that Tast can potentially change log file path at runtime. The directory name may not exactly match the test name.\nTherefore it needs to receive the full log path from Tast.\nI will update the internal gRPC protocol by crrev.com/c/2655046 (protobuf msg) and crrev.com/c/2655051 (client side, in tast).",
+      "parentUuid": "0e9c8cfe_8fcd5f89",
+      "revId": "a92399e2caecb9ae975969ea413aff52fec8473d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

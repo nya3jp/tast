@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "55c5e9e7_ad8beb63",
+        "filename": "src/chromiumos/tast/internal/protocol/reports.proto",
+        "patchSetId": 3
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-01-28T09:18:59Z",
+      "side": 1,
+      "message": "We basically avoid renumbering protobuf message fields for compatibility.\nHowever, since this is used internally by Tast and is not persisted to disks, I think we can safely modify fields.",
+      "revId": "974ef919c48031b34094fa76257949021e390c4f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

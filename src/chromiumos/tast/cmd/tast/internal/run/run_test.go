@@ -260,13 +260,18 @@ func TestRunWithReports_LogStream(t *gotesting.T) {
 	td.cfg.runLocal = true
 
 	const (
-		test1Name    = "foo.FirstTest"
+		resultDir = "/tmp/tast/results/latest"
+		test1Name = "foo.FirstTest"
+		// Log file path for a test. Composed by handleTestStart() in results.go.
+		test1Path    = "tests/foo.FirstTest/log.txt"
 		test1Desc    = "First description"
 		test1LogText = "Here's a test log message"
 		test2Name    = "foo.SecondTest"
+		test2Path    = "tests/foo.SecondTest/log.txt"
 		test2Desc    = "Second description"
 		test2LogText = "Here's another test log message"
 	)
+	td.cfg.ResDir = resultDir
 	tests := []testing.EntityWithRunnabilityInfo{
 		{
 			EntityInfo: testing.EntityInfo{
@@ -301,16 +306,16 @@ func TestRunWithReports_LogStream(t *gotesting.T) {
 	if status, _ := Run(context.Background(), &td.cfg); status.ExitCode != subcommands.ExitSuccess {
 		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.logbuf.String())
 	}
-	if str := string(srv.GetLog(test1Name)); !strings.Contains(str, test1LogText) {
+	if str := string(srv.GetLog(test1Name, test1Path)); !strings.Contains(str, test1LogText) {
 		t.Errorf("Expected log not received for test 1; got %q; should contain %q", str, test1LogText)
 	}
-	if str := string(srv.GetLog(test2Name)); !strings.Contains(str, test2LogText) {
+	if str := string(srv.GetLog(test2Name, test2Path)); !strings.Contains(str, test2LogText) {
 		t.Errorf("Expected log not received for test 2; got %q; should contain %q", str, test2LogText)
 	}
-	if str := string(srv.GetLog(test1Name)); strings.Contains(str, test2LogText) {
+	if str := string(srv.GetLog(test1Name, test1Path)); strings.Contains(str, test2LogText) {
 		t.Errorf("Unexpected log found in test 1 log; got %q; should not contain %q", str, test2LogText)
 	}
-	if str := string(srv.GetLog(test2Name)); strings.Contains(str, test1LogText) {
+	if str := string(srv.GetLog(test2Name, test2Path)); strings.Contains(str, test1LogText) {
 		t.Errorf("Unexpected log found in test 2 log; got %q; should not contain %q", str, test1LogText)
 	}
 }

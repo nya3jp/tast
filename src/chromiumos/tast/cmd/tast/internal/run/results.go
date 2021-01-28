@@ -292,13 +292,15 @@ func (r *resultsHandler) handleRunEnd(ctx context.Context, msg *control.RunEnd) 
 type logSender struct {
 	stream   protocol.Reports_LogStreamClient
 	testName string
+	logPath  string
 }
 
 // Write sends given bytes to LogStream streaming gRPC API with the test name.
 func (s *logSender) Write(p []byte) (n int, err error) {
 	req := protocol.LogStreamRequest{
-		Test: s.testName,
-		Data: p,
+		Test:    s.testName,
+		LogPath: s.logPath,
+		Data:    p,
 	}
 	if err := s.stream.Send(&req); err != nil {
 		return 0, err
@@ -321,15 +323,16 @@ func (r *resultsHandler) handleTestStart(ctx context.Context, msg *control.Entit
 	if msg.Info.Type == testing.EntityFixture {
 		relDir = fixtureLogsDir
 	}
-	finalOutDir := filepath.Join(r.cfg.ResDir, relDir, msg.Info.Name)
+	relFinalOutDir := filepath.Join(relDir, msg.Info.Name)
 
 	// Add a number suffix to the output directory name in case of conflict.
 	seenCnt := r.seenTimes[msg.Info.Name]
 	if seenCnt > 0 {
-		finalOutDir += fmt.Sprintf(".%d", seenCnt)
+		relFinalOutDir += fmt.Sprintf(".%d", seenCnt)
 	}
 	r.seenTimes[msg.Info.Name]++
 
+	finalOutDir := filepath.Join(r.cfg.ResDir, relFinalOutDir)
 	state := &entityState{
 		result: EntityResult{
 			EntityInfo: msg.Info,
@@ -366,6 +369,7 @@ func (r *resultsHandler) handleTestStart(ctx context.Context, msg *control.Entit
 		state.logReportWriter = &logSender{
 			stream:   r.cfg.reportsLogStream,
 			testName: msg.Info.Name,
+			logPath:  filepath.Join(relFinalOutDir, testLogFilename),
 		}
 		if err := r.cfg.Logger.AddWriter(state.logReportWriter, log.LstdFlags); err != nil {
 			return err

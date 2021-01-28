@@ -19,8 +19,13 @@ import (
 
 // Server provides a fake resports server to test reports client implementation.
 type Server struct {
-	logData map[string][]byte
+	logData map[logKey][]byte
 	results []*protocol.ReportResultRequest
+}
+
+type logKey struct {
+	test    string
+	logPath string
 }
 
 var _ protocol.ReportsServer = &Server{}
@@ -36,7 +41,7 @@ func Start(t *testing.T) (server *Server, stopFunc func(), addr string) {
 	if err != nil {
 		t.Fatal("Failed to listen: ", err)
 	}
-	s.logData = make(map[string][]byte)
+	s.logData = make(map[logKey][]byte)
 	go srv.Serve(lis)
 	return s, srv.Stop, lis.Addr().String()
 }
@@ -52,13 +57,21 @@ func (s *Server) LogStream(stream protocol.Reports_LogStreamServer) error {
 			return err
 		}
 		test := req.Test
-		s.logData[test] = append(s.logData[test], req.Data...)
+		key := logKey{
+			test:    test,
+			logPath: req.LogPath,
+		}
+		s.logData[key] = append(s.logData[key], req.Data...)
 	}
 }
 
 // GetLog returns logs for a particular test.
-func (s *Server) GetLog(test string) []byte {
-	return s.logData[test]
+func (s *Server) GetLog(test, logPath string) []byte {
+	key := logKey{
+		test:    test,
+		logPath: logPath,
+	}
+	return s.logData[key]
 }
 
 // ReportResult provides a means for reports clients to test ReportResult requests.

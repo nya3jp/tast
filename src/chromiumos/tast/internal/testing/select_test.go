@@ -7,6 +7,7 @@ package testing
 import (
 	"context"
 	"reflect"
+	"sort"
 	"testing"
 )
 
@@ -41,7 +42,7 @@ func TestSelectTestsByArgs(t *testing.T) {
 	} {
 		tests, err := SelectTestsByArgs(allTests, tc.args)
 		if tc.expNames == nil {
-			if err == nil {
+			if err == nil && len(tests) > 0 {
 				t.Errorf("SelectTestsByArgs(..., %v) succeeded unexpectedly", tc.args)
 			}
 			continue
@@ -67,6 +68,10 @@ func TestSelectTestsByGlobs(t *testing.T) {
 		{Name: "test.Bar", Func: func(context.Context, *State) {}},
 		{Name: "blah.Foo", Func: func(context.Context, *State) {}},
 	}
+	testNamesToInsts := make(map[string](*TestInstance))
+	for _, t := range allTests {
+		testNamesToInsts[t.Name] = t
+	}
 
 	for _, tc := range []struct {
 		glob     string
@@ -83,9 +88,17 @@ func TestSelectTestsByGlobs(t *testing.T) {
 		// Test that periods are escaped.
 		{"test.Fo.", []*TestInstance{}},
 	} {
-		if tests, err := selectTestsByGlob(allTests, tc.glob); err != nil {
+		tests, err := selectTestsByGlob(testNamesToInsts, tc.glob)
+		if err != nil {
 			t.Fatalf("selectTestsByGlob(%q) failed: %v", tc.glob, err)
-		} else if !testsEqual(tests, tc.expected) {
+		}
+		sort.Slice(tests, func(i, j int) bool {
+			return tests[i].Name > tests[j].Name
+		})
+		sort.Slice(tc.expected, func(i, j int) bool {
+			return tests[i].Name > tests[j].Name
+		})
+		if !testsEqual(tests, tc.expected) {
 			t.Errorf("selectTestsByGlob(%q) = %v; want %v", tc.glob, tests, tc.expected)
 		}
 	}

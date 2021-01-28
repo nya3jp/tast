@@ -210,6 +210,24 @@
       "parentUuid": "8f6e2eb3_15d81a26",
       "revId": "881432866decf8077b6e5fc7d7926b59782dfa69",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "80501d4f_5f684037",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 457,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-01-28T03:34:27Z",
+      "side": 1,
+      "message": "Please also add test case to TestWriteTestMetadataWithTCLint() in test_instance_test.go like:\n\nName: \"test003\",\nHardwareDeps: hwdep.D(\n\thwdep.Nvme(),\n),\n\nso that the added CEL string is validated by the infra tclint tool.\n(I should have mentioned this in my last comment. Sorry for that.)\n\nAlso ses crbug.com/1129566 in case you see an error in a wrong place from tclint.",
+      "parentUuid": "0a7b480a_3d887da3",
+      "revId": "881432866decf8077b6e5fc7d7926b59782dfa69",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

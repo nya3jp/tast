@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a32b9e06_331621b7",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 461,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-01-28T03:34:27Z",
+      "side": 1,
+      "message": "Now I found this is:\n\"dut.hardware_features.storage \u003d\u003d api.Component.Storage.StorageType.NVME\"\n(Component instead of Components, as defined in src/config/proto/chromiumos/config/api/component.proto)",
+      "revId": "b4d5d87329703518cd01f427e986f24b09779d32",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

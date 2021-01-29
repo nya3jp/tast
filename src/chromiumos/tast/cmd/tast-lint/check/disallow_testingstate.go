@@ -20,6 +20,10 @@ func VerifyTestingStateParam(fs *token.FileSet, f *ast.File) []*Issue {
 		"src/chromiumos/tast/local/bundlemain/main.go",
 		// Below files are cases still under considering.
 		"src/chromiumos/tast/local/graphics/trace/trace.go",
+		// TODO(crbug.com/1127165): Can remove the below after we can use Data in Fixtures.
+		"src/chromiumos/tast/local/lacros/lacros.go",
+		"src/chromiumos/tast/local/lacros/launcher/launcher.go",
+		"src/chromiumos/tast/local/lacros/perftest.go",
 	}
 	filepath := fs.Position(f.Package).Filename
 	for _, p := range allowList {

@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "fe050a6f_02b9ebd6",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 11
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-01-29T18:37:52Z",
+      "side": 1,
+      "message": "I have a comment regarding the fake rts. Please take a look.\n\nThanks.\n\nSeewai",
+      "revId": "3eb33fef7c75ae7615aa2b6da1555cfa045c8524",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "74f3c22d_9696af41",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/internal/fakerts/fakerts.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 107,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-01-29T18:37:52Z",
+      "side": 1,
+      "message": "Actually, I think this API is not thread safe because the array may be access outside this function while there is no lock. I didn\u0027t think of thread safety when I wrote this. I think this would make it thread safe. Sorry about it.\n\ts.resultsMtx.Lock()\n\tdefer s.resultsMtx.Unlock()\n        var results []*rtd.ReportResultRequest\n\tfor r :\u003d range s.results {\n            results \u003d append(results, r)\n        }\n        return results",
+      "revId": "3eb33fef7c75ae7615aa2b6da1555cfa045c8524",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

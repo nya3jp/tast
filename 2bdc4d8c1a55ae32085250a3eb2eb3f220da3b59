@@ -41,6 +41,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "8dc61f2f_af3079cc",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/internal/fakerts/fakerts.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-01-29T08:02:44Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "005e02b2_d7de67b5",
+      "range": {
+        "startLine": 74,
+        "startChar": 1,
+        "endLine": 74,
+        "endChar": 18
+      },
+      "revId": "2bdc4d8c1a55ae32085250a3eb2eb3f220da3b59",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "39e19948_88108ac7",
@@ -54,6 +78,30 @@
       "writtenOn": "2021-01-29T05:52:40Z",
       "side": 1,
       "message": "Need a lock",
+      "range": {
+        "startLine": 104,
+        "startChar": 1,
+        "endLine": 104,
+        "endChar": 17
+      },
+      "revId": "2bdc4d8c1a55ae32085250a3eb2eb3f220da3b59",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "65b75425_9aa2d130",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/internal/fakerts/fakerts.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 104,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-01-29T08:02:44Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "39e19948_88108ac7",
       "range": {
         "startLine": 104,
         "startChar": 1,
@@ -87,6 +135,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "ebf322b3_96b24acd",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/internal/rpc/reports.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-01-29T08:02:44Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "86bf7d63_4ceb1bc4",
+      "range": {
+        "startLine": 30,
+        "startChar": 17,
+        "endLine": 30,
+        "endChar": 18
+      },
+      "revId": "2bdc4d8c1a55ae32085250a3eb2eb3f220da3b59",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "8d5eea6d_52481e56",
@@ -110,6 +182,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "60b224cb_130604d1",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/internal/rpc/reports.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 118,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-01-29T08:02:44Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8d5eea6d_52481e56",
+      "range": {
+        "startLine": 118,
+        "startChar": 1,
+        "endLine": 118,
+        "endChar": 56
+      },
+      "revId": "2bdc4d8c1a55ae32085250a3eb2eb3f220da3b59",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "6cd404ee_016729bc",
@@ -123,6 +219,30 @@
       "writtenOn": "2021-01-29T05:52:40Z",
       "side": 1,
       "message": "l is leaked on this error case.",
+      "range": {
+        "startLine": 120,
+        "startChar": 2,
+        "endLine": 120,
+        "endChar": 17
+      },
+      "revId": "2bdc4d8c1a55ae32085250a3eb2eb3f220da3b59",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "dbb045cb_f4e02912",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/internal/rpc/reports.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-01-29T08:02:44Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6cd404ee_016729bc",
       "range": {
         "startLine": 120,
         "startChar": 2,

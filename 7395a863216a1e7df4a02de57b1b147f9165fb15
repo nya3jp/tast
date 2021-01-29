@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "99e37493_c10ee64b",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 5
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-01-29T03:20:41Z",
+      "side": 1,
+      "message": "Please add info about the tast unit test.\nFor example,\nTEST\u003d../platform/tast/fast_build.sh -t chromiumos/tast/internal/testing",
+      "revId": "7395a863216a1e7df4a02de57b1b147f9165fb15",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

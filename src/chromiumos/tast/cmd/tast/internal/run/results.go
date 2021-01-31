@@ -7,7 +7,6 @@ package run
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -21,6 +20,7 @@ import (
 
 	"github.com/golang/protobuf/ptypes"
 
+	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/control"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testing"
@@ -96,6 +96,9 @@ type EntityError struct {
 	// Error is an embedded struct describing the error.
 	testing.Error
 }
+
+// ErrTerminated is used when Tast is terminated due to various reasons.
+var ErrTerminated = errors.New("testing jobs are terminated")
 
 // WriteResults writes results (including errors) to a JSON file in the results directory.
 // It additionally logs each test's status to cfg.Logger.
@@ -203,6 +206,7 @@ type resultsHandler struct {
 	diagFunc         diagnoseRunErrorFunc    // called to diagnose run errors; may be nil
 	streamWriter     *streamedResultsWriter  // used to write results as control messages are read
 	pullers          sync.WaitGroup          // used to wait for puller goroutines
+	failuresCount    int                     // number of test failure so far.
 }
 
 func newResultsHandler(cfg *Config, crf copyAndRemoveFunc, df diagnoseRunErrorFunc) (*resultsHandler, error) {
@@ -458,12 +462,16 @@ func (r *resultsHandler) handleTestEnd(ctx context.Context, msg *control.EntityE
 
 	// Replace the earlier partial TestResult object with the now-complete version.
 	if state.result.Type == testing.EntityTest {
+		if len(state.result.Errors) > 0 {
+			r.failuresCount++
+		}
 		if err := r.reportResult(ctx, &state.result); err != nil {
 			return err
 		}
 		if err := r.streamWriter.write(&state.result, true); err != nil {
 			return err
 		}
+
 	}
 
 	if err := r.cfg.Logger.RemoveWriter(state.logFile); err != nil {
@@ -580,6 +588,7 @@ func (r *resultsHandler) processMessages(ctx context.Context, mch <-chan interfa
 		for _, state := range r.currents {
 			state.result.Errors = append(state.result.Errors, EntityError{time.Now(), testing.Error{Reason: incompleteTestMsg}})
 			if state.result.Type == testing.EntityTest {
+				r.failuresCount++
 				r.reportResult(ctx, &state.result)
 				r.streamWriter.write(&state.result, true)
 			}
@@ -601,6 +610,9 @@ func (r *resultsHandler) processMessages(ctx context.Context, mch <-chan interfa
 				}
 				if err := r.handleMessage(ctx, msg); err != nil {
 					return err
+				}
+				if r.cfg.maxTestFailures > 0 && r.failuresCount >= r.cfg.maxTestFailures {
+					return errors.Wrapf(ErrTerminated, "the maximum number of test failures (%v) reached", r.cfg.maxTestFailures)
 				}
 			case err := <-ech:
 				return err

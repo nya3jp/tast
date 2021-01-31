@@ -217,7 +217,17 @@ func runLocalTestsOnce(ctx context.Context, cfg *Config, hst *ssh.Conn, patterns
 	df := func(ctx context.Context, outDir string) string {
 		return diagnoseLocalRunError(ctx, cfg, outDir)
 	}
+
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
+
 	results, unstarted, rerr := readTestOutput(ctx, cfg, handle.stdout, crf, df)
+
+	canceled := false
+	if errors.Is(rerr, ErrTerminated) {
+		canceled = true
+		cancel()
+	}
 
 	// Check that the runner exits successfully first so that we don't give a useless error
 	// about incorrectly-formed output instead of e.g. an error about the runner being missing.
@@ -228,7 +238,9 @@ func runLocalTestsOnce(ctx context.Context, cfg *Config, hst *ssh.Conn, patterns
 	wctx, wcancel := context.WithTimeout(ctx, timeout)
 	defer wcancel()
 	if err := handle.cmd.Wait(wctx); err != nil {
-		return results, unstarted, stderrReader.appendToError(err, stderrTimeout)
+		if !canceled && !errors.Is(rerr, context.Canceled) {
+			return results, unstarted, stderrReader.appendToError(err, stderrTimeout)
+		}
 	}
 	return results, unstarted, rerr
 }

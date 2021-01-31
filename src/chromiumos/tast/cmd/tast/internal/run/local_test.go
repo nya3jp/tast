@@ -455,3 +455,36 @@ func TestLocalDataFiles(t *gotesting.T) {
 		t.Errorf("pushDataFiles() unexpectedly copied %s", extFile1)
 	}
 }
+
+// TestLocalSkipOnMaxFailures makes sure that runLocalTests does not run any tests if maximum failures allowed has been reach.
+func TestLocalSkipOnMaxFailures(t *gotesting.T) {
+	td := newLocalTestData(t)
+	defer td.close()
+
+	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+		checkArgs(t, args, &runner.Args{
+			RunTests: &runner.RunTestsArgs{
+				BundleArgs: bundle.RunTestsArgs{
+					DUTName: td.cfg.Target,
+				},
+				BundleGlob:                  mockLocalBundleGlob,
+				Devservers:                  mockDevservers,
+				BuildArtifactsURLDeprecated: mockBuildArtifactsURL,
+			},
+		})
+
+		mw := control.NewMessageWriter(stdout)
+		mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
+		mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
+		return 0
+	}
+	td.cfg.maxTestFailures = 2
+	td.cfg.failuresCount = 2
+	results, err := runLocalTests(context.Background(), &td.cfg)
+	if err != nil {
+		t.Error("runLocalTests failed: ", err)
+	}
+	if len(results) > 0 {
+		t.Errorf("runLocalTests return %v results; want 0", len(results))
+	}
+}

@@ -77,6 +77,9 @@ func connectToTarget(ctx context.Context, cfg *Config) (*ssh.Conn, error) {
 // runLocalTests executes tests as described by cfg on hst and returns the results.
 // It is only used for RunTestsMode.
 func runLocalTests(ctx context.Context, cfg *Config) ([]*EntityResult, error) {
+	if cfg.maxTestFailures > 0 && cfg.failuresCount >= cfg.maxTestFailures {
+		return nil, nil
+	}
 	cfg.Logger.Status("Running local tests on target")
 	ctx, st := timing.Start(ctx, "run_local_tests")
 	defer st.End()
@@ -217,7 +220,17 @@ func runLocalTestsOnce(ctx context.Context, cfg *Config, hst *ssh.Conn, patterns
 	df := func(ctx context.Context, outDir string) string {
 		return diagnoseLocalRunError(ctx, cfg, outDir)
 	}
+
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
+
 	results, unstarted, rerr := readTestOutput(ctx, cfg, handle.stdout, crf, df)
+
+	canceled := false
+	if errors.Is(rerr, ErrTerminated) {
+		canceled = true
+		cancel()
+	}
 
 	// Check that the runner exits successfully first so that we don't give a useless error
 	// about incorrectly-formed output instead of e.g. an error about the runner being missing.
@@ -227,7 +240,7 @@ func runLocalTestsOnce(ctx context.Context, cfg *Config, hst *ssh.Conn, patterns
 	}
 	wctx, wcancel := context.WithTimeout(ctx, timeout)
 	defer wcancel()
-	if err := handle.cmd.Wait(wctx); err != nil {
+	if err := handle.cmd.Wait(wctx); err != nil && !canceled {
 		return results, unstarted, stderrReader.appendToError(err, stderrTimeout)
 	}
 	return results, unstarted, rerr

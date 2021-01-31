@@ -7,6 +7,7 @@ package run
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -19,6 +20,9 @@ import (
 
 // runRemoteTests runs the remote test runner and reads its output.
 func runRemoteTests(ctx context.Context, cfg *Config) ([]*EntityResult, error) {
+	if cfg.maxTestFailures > 0 && cfg.failuresCount >= cfg.maxTestFailures {
+		return nil, nil
+	}
 	cfg.Logger.Status("Running remote tests on target")
 	ctx, st := timing.Start(ctx, "run_remote_tests")
 	defer st.End()
@@ -119,11 +123,20 @@ func runRemoteTestsOnce(ctx context.Context, cfg *Config, patterns []string) (re
 		return nil, nil, fmt.Errorf("close stdin: %v", err)
 	}
 
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
+
 	results, unstarted, rerr := readTestOutput(ctx, cfg, stdout, os.Rename, nil)
+
+	canceled := false
+	if errors.Is(rerr, ErrTerminated) {
+		canceled = true
+		cancel()
+	}
 
 	// Check that the runner exits successfully first so that we don't give a useless error
 	// about incorrectly-formed output instead of e.g. an error about the runner being missing.
-	if err := cmd.Wait(); err != nil {
+	if err := cmd.Wait(); err != nil && !canceled {
 		return results, unstarted, stderrReader.appendToError(err, stderrTimeout)
 	}
 	return results, unstarted, rerr

@@ -296,5 +296,39 @@ func disabledTestRemoteFailure(t *gotesting.T) {
 	}
 }
 
+// TestRemoteSkipOnMaxFailures makes sure that runRemoteTests does not run any tests if maximum failures allowed has been reach.
+func TestRemoteSkipOnMaxFailures(t *gotesting.T) {
+	const (
+		testName = "pkg.Test"
+		outFile  = "somefile.txt"
+		outData  = "somedata"
+		outName  = "pkg.Test.tmp1234"
+	)
+
+	outDir := testutil.TempDir(t)
+	defer os.RemoveAll(outDir)
+
+	b := bytes.Buffer{}
+	mw := control.NewMessageWriter(&b)
+	mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 1})
+	mw.WriteMessage(&control.EntityStart{Time: time.Unix(2, 0), Info: testing.EntityInfo{Name: testName}, OutDir: filepath.Join(outDir, outName)})
+	mw.WriteMessage(&control.EntityEnd{Time: time.Unix(3, 0), Name: testName})
+	mw.WriteMessage(&control.RunEnd{Time: time.Unix(4, 0), OutDir: outDir})
+
+	td := newRemoteTestData(t, b.String(), "", 0)
+	defer td.close()
+
+	td.cfg.maxTestFailures = 2
+	td.cfg.failuresCount = 2
+
+	results, err := runRemoteTests(context.Background(), &td.cfg)
+	if err != nil {
+		t.Errorf("runRemoteTests(%+v) failed: %v", td.cfg, err)
+	}
+	if len(results) > 0 {
+		t.Errorf("runRemoteTests return %v results; want 0", len(results))
+	}
+}
+
 // TODO(derat): Add a test that verifies that getInitialSysInfo is called before tests are run.
 // Also verify that cfg.startedRun is false if we see an early failure during getInitialSysInfo.

@@ -34,9 +34,7 @@ func runTestsWithRetry(ctx context.Context, cfg *Config, patterns []string, runT
 		if rerr == nil {
 			break
 		}
-
 		cfg.Logger.Logf("Test runner failed: %v", rerr)
-
 		// If runTests didn't provide a list of remaining tests, give up.
 		if unstarted == nil {
 			return allResults, rerr

@@ -120,6 +120,9 @@ func runRemoteTestsOnce(ctx context.Context, cfg *Config, patterns []string) (re
 	}
 
 	results, unstarted, rerr := readTestOutput(ctx, cfg, stdout, os.Rename, nil)
+	if rerr == ErrMaxFailuresReach {
+		return results, unstarted, rerr
+	}
 
 	// Check that the runner exits successfully first so that we don't give a useless error
 	// about incorrectly-formed output instead of e.g. an error about the runner being missing.

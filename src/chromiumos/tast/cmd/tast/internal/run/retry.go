@@ -34,6 +34,10 @@ func runTestsWithRetry(ctx context.Context, cfg *Config, patterns []string, runT
 		if rerr == nil {
 			break
 		}
+		if rerr == ErrMaxFailuresReach {
+
+			return allResults, rerr
+		}
 
 		cfg.Logger.Logf("Test runner failed: %v", rerr)
 

@@ -219,6 +219,10 @@ func runLocalTestsOnce(ctx context.Context, cfg *Config, hst *ssh.Conn, patterns
 	}
 	results, unstarted, rerr := readTestOutput(ctx, cfg, handle.stdout, crf, df)
 
+	if rerr == ErrMaxFailuresReach {
+		return results, unstarted, rerr
+	}
+
 	// Check that the runner exits successfully first so that we don't give a useless error
 	// about incorrectly-formed output instead of e.g. an error about the runner being missing.
 	timeout := defaultLocalRunnerWaitTimeout

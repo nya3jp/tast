@@ -120,6 +120,7 @@ type Config struct {
 	extraUSEFlags        []string  // additional USE flags to inject when determining features
 	proxy                proxyMode // how proxies should be used
 	collectSysInfo       bool      // collect system info (logs, crashes, etc.) generated during testing
+	maxFailures          int       // maximum number of failures
 
 	testVars        map[string]string // names and values of variables used to pass out-of-band data to tests
 	varsFiles       []string          // paths to variable files
@@ -201,6 +202,7 @@ func (c *Config) SetFlags(f *flag.FlagSet) {
 	f.IntVar(&c.sshRetries, "sshretries", 0, "number of SSH connect retries")
 	f.StringVar(&c.tlwServer, "tlwserver", "", "TLW server address")
 	f.StringVar(&c.reportsServer, "reports_server", "", "Reports server address")
+	f.IntVar(&c.maxFailures, "maxfailures", 0, "the maximum number failures allowed (default to 0 which means no limit)")
 
 	f.IntVar(&c.totalShards, "totalshards", 1, "total number of shards to be used in a test run")
 	f.IntVar(&c.shardIndex, "shardindex", 0, "the index of shard to used in the current run")

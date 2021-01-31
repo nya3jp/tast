@@ -962,3 +962,103 @@ func TestWriteResultsUnmatchedGlobs(t *gotesting.T) {
 		}
 	}
 }
+
+/// TestMaxTestFailure makes sure testing will stop after maximum number of failures was reached.
+func TestMaxTestFailures(t *gotesting.T) {
+	const (
+		runLogText = "Here's a run log message"
+
+		test1Name    = "foo.FirstTest"
+		test1Desc    = "First description"
+		test1LogText = "Here's a test log message"
+		test1OutFile = testLogFilename // conflicts with test log
+		test1OutData = "Data created by first test"
+
+		test2Name        = "foo.SecondTest"
+		test2Desc        = "Second description"
+		test2ErrorReason = "Everything is broken :-("
+		test2ErrorFile   = "some_test.go"
+		test2ErrorLine   = 123
+		test2ErrorStack  = "[stack trace]"
+		test2OutFile     = "data.txt"
+		test2OutData     = "Here's some data created by the test."
+
+		test3Name        = "foo.ThirdTest"
+		test3Desc        = "Third description"
+		test3ErrorReason = "Everything is broken :-("
+		test3ErrorFile   = "some_test.go"
+		test3ErrorLine   = 555
+		test3ErrorStack  = "[stack trace]"
+		test3OutFile     = "data.txt"
+		test3OutData     = "Here's some data created by the test."
+
+		test4Name = "foo.FourthTest"
+		test4Desc = "This test has missing dependencies"
+	)
+
+	runStartTime := time.Unix(1, 0)
+	runLogTime := time.Unix(2, 0)
+	test1StartTime := time.Unix(3, 0)
+	test1LogTime := time.Unix(4, 0)
+	test1EndTime := time.Unix(5, 0)
+	test2StartTime := time.Unix(6, 0)
+	test2ErrorTime := time.Unix(7, 0)
+	test2EndTime := time.Unix(9, 0)
+	test3StartTime := time.Unix(10, 0)
+	test3ErrorTime := time.Unix(11, 0)
+	test3EndTime := time.Unix(12, 0)
+	test4StartTime := time.Unix(13, 0)
+	test4EndTime := time.Unix(14, 0)
+	runEndTime := time.Unix(15, 0)
+
+	const skipReason = "weather is not good"
+
+	tempDir := testutil.TempDir(t)
+	defer os.RemoveAll(tempDir)
+
+	outDir := filepath.Join(tempDir, "out")
+	if err := testutil.WriteFiles(outDir, map[string]string{
+		filepath.Join(test1Name, test1OutFile): test1OutData,
+		filepath.Join(test2Name, test2OutFile): test2OutData,
+	}); err != nil {
+		t.Fatal(err)
+	}
+
+	b := bytes.Buffer{}
+	mw := control.NewMessageWriter(&b)
+	mw.WriteMessage(&control.RunStart{Time: runStartTime, TestNames: []string{test1Name, test2Name, test3Name, test4Name}, NumTests: 4})
+	mw.WriteMessage(&control.RunLog{Time: runLogTime, Text: runLogText})
+	mw.WriteMessage(&control.EntityStart{Time: test1StartTime, Info: testing.EntityInfo{Name: test1Name, Desc: test1Desc}, OutDir: filepath.Join(outDir, test1Name)})
+	mw.WriteMessage(&control.EntityLog{Time: test1LogTime, Name: test1Name, Text: test1LogText})
+	mw.WriteMessage(&control.EntityEnd{Time: test1EndTime, Name: test1Name})
+	mw.WriteMessage(&control.EntityStart{Time: test2StartTime, Info: testing.EntityInfo{Name: test2Name, Desc: test2Desc}, OutDir: filepath.Join(outDir, test2Name)})
+	mw.WriteMessage(&control.EntityError{Time: test2ErrorTime, Name: test2Name, Error: testing.Error{Reason: test2ErrorReason, File: test2ErrorFile, Line: test2ErrorLine, Stack: test2ErrorStack}})
+	mw.WriteMessage(&control.EntityEnd{Time: test2EndTime, Name: test2Name})
+	mw.WriteMessage(&control.EntityStart{Time: test3StartTime, Info: testing.EntityInfo{Name: test3Name, Desc: test3Desc}, OutDir: filepath.Join(outDir, test3Name)})
+	mw.WriteMessage(&control.EntityError{Time: test3ErrorTime, Name: test3Name, Error: testing.Error{Reason: test3ErrorReason, File: test3ErrorFile, Line: test3ErrorLine, Stack: test3ErrorStack}})
+	mw.WriteMessage(&control.EntityEnd{Time: test3EndTime, Name: test3Name})
+	mw.WriteMessage(&control.EntityStart{Time: test4StartTime, Info: testing.EntityInfo{Name: test4Name, Desc: test4Desc}})
+	mw.WriteMessage(&control.EntityEnd{Time: test4EndTime, Name: test4Name, SkipReasons: []string{skipReason}})
+	mw.WriteMessage(&control.RunEnd{Time: runEndTime, OutDir: outDir})
+
+	var logBuf bytes.Buffer
+	cfg := Config{
+		Logger:          logging.NewSimple(&logBuf, false, false), // drop debug messages
+		ResDir:          filepath.Join(tempDir, "results"),
+		maxTestFailures: 2,
+	}
+	var state State
+	results, unstartedTests, err := readTestOutput(context.Background(), &cfg, &state, &b, os.Rename, nil)
+	if err == nil {
+		t.Fatal("readTestOutput expected an error failure when maximum number of failed tests has reached, but did not get any error.")
+	}
+	if len(unstartedTests) != 1 {
+		t.Errorf("readTestOutput reported %v unstarted tests; want 1", len(unstartedTests))
+	}
+	if len(results) != 3 {
+		t.Errorf("readTestOutput reported %v test results: want 3", len(results))
+	}
+	if state.failuresCount != 2 {
+		t.Errorf("readTestOutput set failures count to %v; want 2", state.failuresCount)
+	}
+}

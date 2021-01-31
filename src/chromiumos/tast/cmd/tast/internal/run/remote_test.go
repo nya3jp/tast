@@ -298,5 +298,35 @@ func disabledTestRemoteFailure(t *gotesting.T) {
 	}
 }
 
+// TestRemoteMaxFailures makes sure that runRemoteTests does not run any tests if maximum failures allowed has been reach.
+func TestRemoteMaxFailures(t *gotesting.T) {
+	outDir := testutil.TempDir(t)
+	defer os.RemoveAll(outDir)
+
+	b := bytes.Buffer{}
+	mw := control.NewMessageWriter(&b)
+	mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 2})
+	mw.WriteMessage(&control.EntityStart{Time: time.Unix(2, 0), Info: testing.EntityInfo{Name: "t1"}})
+	mw.WriteMessage(&control.EntityError{Time: time.Unix(3, 0), Name: "t1", Error: testing.Error{Reason: "error"}})
+	mw.WriteMessage(&control.EntityEnd{Time: time.Unix(4, 0), Name: "t1"})
+	mw.WriteMessage(&control.EntityStart{Time: time.Unix(5, 0), Info: testing.EntityInfo{Name: "t2"}})
+	mw.WriteMessage(&control.EntityEnd{Time: time.Unix(6, 0), Name: "t2"})
+	mw.WriteMessage(&control.RunEnd{Time: time.Unix(7, 0), OutDir: ""})
+
+	td := newRemoteTestData(t, b.String(), "", 0)
+	defer td.close()
+
+	td.cfg.maxTestFailures = 1
+	td.state.failuresCount = 0
+
+	results, err := runRemoteTests(context.Background(), &td.cfg, &td.state)
+	if err == nil {
+		t.Errorf("runRemoteTests(%+v, %+v) passed unexpectedly", td.cfg, td.state)
+	}
+	if len(results) != 1 {
+		t.Errorf("runRemoteTests return %v results; want 1", len(results))
+	}
+}
+
 // TODO(derat): Add a test that verifies that getInitialSysInfo is called before tests are run.
 // Also verify that cfg.startedRun is false if we see an early failure during getInitialSysInfo.

@@ -456,3 +456,31 @@ func TestLocalDataFiles(t *gotesting.T) {
 		t.Errorf("pushDataFiles() unexpectedly copied %s", extFile1)
 	}
 }
+
+// TestLocalMaxFailures makes sure that runLocalTests does not run any tests after maximum failures allowed has been reach.
+func TestLocalMaxFailures(t *gotesting.T) {
+	td := newLocalTestData(t)
+	defer td.close()
+
+	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+		mw := control.NewMessageWriter(stdout)
+		mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 2})
+		mw.WriteMessage(&control.EntityStart{Time: time.Unix(2, 0), Info: testing.EntityInfo{Name: "t1"}})
+		mw.WriteMessage(&control.EntityError{Time: time.Unix(3, 0), Name: "t1", Error: testing.Error{Reason: "error"}})
+		mw.WriteMessage(&control.EntityEnd{Time: time.Unix(4, 0), Name: "t1"})
+		mw.WriteMessage(&control.EntityStart{Time: time.Unix(5, 0), Info: testing.EntityInfo{Name: "t2"}})
+		mw.WriteMessage(&control.EntityEnd{Time: time.Unix(6, 0), Name: "t2"})
+		mw.WriteMessage(&control.RunEnd{Time: time.Unix(7, 0), OutDir: ""})
+
+		return 0
+	}
+	td.cfg.maxTestFailures = 1
+	td.state.failuresCount = 0
+	results, err := runLocalTests(context.Background(), &td.cfg, &td.state)
+	if err == nil {
+		t.Errorf("runLocalTests(%+v, %+v) passed unexpectedly", td.cfg, td.state)
+	}
+	if len(results) != 1 {
+		t.Errorf("runLocalTests return %v results; want 1", len(results))
+	}
+}

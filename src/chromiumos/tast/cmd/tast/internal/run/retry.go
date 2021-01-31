@@ -7,6 +7,8 @@ package run
 import (
 	"context"
 	"reflect"
+
+	"chromiumos/tast/errors"
 )
 
 // runTestsFunc is a function to run local/remote tests matched with patterns.
@@ -34,9 +36,20 @@ func runTestsWithRetry(ctx context.Context, cfg *Config, patterns []string, runT
 		if rerr == nil {
 			break
 		}
-
 		cfg.Logger.Logf("Test runner failed: %v", rerr)
-
+		// If test is terminated due to any reason such as reaching the maximum number failures,
+		// we should not attempt to run tests again.
+		// If we do not have this check here, local test will fail in beforeRetry when it tries
+		// to contact the DUT and local test will fail when it rececive first heartbeat.
+		// Therefore, it will not affect the overall result even without this check.
+		// However, we will print out "Trying to run .. remaining test(s)" in log file after terminate.
+		// This behavior will confuse users when they read the log file.
+		// We can also use the check ctx.Err() != nil instead, but it will affect the current
+		// behavior of handling timeout. Currently, runTestsWithRetry will continue to run
+		// tests after timeout but it will get error in beforeRetry.
+		if errors.Is(rerr, ErrTerminate) {
+			return allResults, rerr
+		}
 		// If runTests didn't provide a list of remaining tests, give up.
 		if unstarted == nil {
 			return allResults, rerr

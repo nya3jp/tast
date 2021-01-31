@@ -7,7 +7,6 @@ package run
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -20,6 +19,7 @@ import (
 
 	"github.com/golang/protobuf/ptypes"
 
+	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/control"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testing"
@@ -95,6 +95,12 @@ type EntityError struct {
 	// Error is an embedded struct describing the error.
 	testing.Error
 }
+
+// ErrTerminate is used when Tast shoulbe be terminated due to various reasons such as the case
+// that maximum number of failures has been reached.
+// This error should be wrapped with a different error to indicate the exact cause of termination.
+// Callers should kill a running process on getting this error
+var ErrTerminate = errors.New("testing jobs will be terminated")
 
 // WriteResults writes results (including errors) to a JSON file in the results directory.
 // It additionally logs each test's status to cfg.Logger.
@@ -456,6 +462,9 @@ func (r *resultsHandler) handleTestEnd(ctx context.Context, msg *control.EntityE
 
 	// Replace the earlier partial TestResult object with the now-complete version.
 	if state.result.Type == testing.EntityTest {
+		if len(state.result.Errors) > 0 {
+			r.state.failuresCount++
+		}
 		if err := r.reportResult(ctx, &state.result); err != nil {
 			return err
 		}
@@ -578,6 +587,7 @@ func (r *resultsHandler) processMessages(ctx context.Context, mch <-chan interfa
 		for _, state := range r.currents {
 			state.result.Errors = append(state.result.Errors, EntityError{time.Now(), testing.Error{Reason: incompleteTestMsg}})
 			if state.result.Type == testing.EntityTest {
+				r.state.failuresCount++
 				r.reportResult(ctx, &state.result)
 				r.streamWriter.write(&state.result, true)
 			}
@@ -599,6 +609,9 @@ func (r *resultsHandler) processMessages(ctx context.Context, mch <-chan interfa
 				}
 				if err := r.handleMessage(ctx, msg); err != nil {
 					return err
+				}
+				if r.cfg.maxTestFailures > 0 && r.state.failuresCount >= r.cfg.maxTestFailures {
+					return errors.Wrapf(ErrTerminate, "the maximum number of test failures (%v) reached", r.cfg.maxTestFailures)
 				}
 			case err := <-ech:
 				return err

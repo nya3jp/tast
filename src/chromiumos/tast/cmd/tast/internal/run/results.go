@@ -311,7 +311,11 @@ func (r *resultsHandler) handleTestStart(ctx context.Context, msg *control.Entit
 	if r.runStart.IsZero() {
 		return errors.New("no RunStart message before EntityStart")
 	}
-	ctx, r.stage = timing.Start(ctx, msg.Info.Name)
+
+	// TODO(crbug.com/1127169): Support timing log for fixtures.
+	if msg.Info.Type == testing.EntityTest {
+		ctx, r.stage = timing.Start(ctx, msg.Info.Name)
+	}
 
 	relDir := testLogsDir
 	if msg.Info.Type == testing.EntityFixture {

@@ -33,6 +33,24 @@
       "message": "I think it may be better if it is\nfilepath.Join(relDir, msg.Info.Name, testLogFilename)",
       "revId": "d37faa231e1f4c0b0e02f14018a8978d4c293d1c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6cc81206_0877b341",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/results.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 368,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-02-01T09:48:39Z",
+      "side": 1,
+      "message": "The test individual subdir name may have suffix after msg.Info.Name by line 327.",
+      "parentUuid": "de9f394b_cd5a3af7",
+      "revId": "d37faa231e1f4c0b0e02f14018a8978d4c293d1c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

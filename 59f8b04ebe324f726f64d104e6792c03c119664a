@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "feb3a602_625a4cae",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1132414
+      },
+      "writtenOn": "2021-02-01T21:04:07Z",
+      "side": 1,
+      "message": "Done also for Tauto: https://chromium-review.googlesource.com/c/chromiumos/third_party/autotest/+/2665971",
+      "revId": "59f8b04ebe324f726f64d104e6792c03c119664a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

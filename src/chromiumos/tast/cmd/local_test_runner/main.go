@@ -274,7 +274,7 @@ func writeSystemInfo(ctx context.Context, dir string) error {
 		"dmesg.txt":        {"dmesg"},
 	}
 	if _, err := os.Stat("/proc/bus/pci"); !os.IsNotExist(err) {
-		cmds["lspci.txt"] = []string{"lspci", "-vvn"}
+		cmds["lspci.txt"] = []string{"lspci", "-vvnn"}
 	}
 
 	for fn, cmd := range cmds {

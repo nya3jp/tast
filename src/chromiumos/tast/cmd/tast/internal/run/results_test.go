@@ -372,6 +372,7 @@ func TestReadTestOutputConcurrentEntity(t *gotesting.T) {
 
 func TestReadTestOutputTimingLog(t *gotesting.T) {
 	const (
+		fixtName  = "fixt.A"
 		testName1 = "pkg.Test1"
 		testName2 = "pkg.Test2"
 		stageName = "timing_stage"
@@ -391,11 +392,13 @@ func TestReadTestOutputTimingLog(t *gotesting.T) {
 	b := bytes.Buffer{}
 	mw := control.NewMessageWriter(&b)
 	mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 2})
-	mw.WriteMessage(&control.EntityStart{Time: time.Unix(2, 0), Info: testing.EntityInfo{Name: testName1}})
-	mw.WriteMessage(&control.EntityEnd{Time: time.Unix(3, 0), Name: testName1, TimingLog: testLog1})
-	mw.WriteMessage(&control.EntityStart{Time: time.Unix(4, 0), Info: testing.EntityInfo{Name: testName2}})
-	mw.WriteMessage(&control.EntityEnd{Time: time.Unix(5, 0), Name: testName2, TimingLog: testLog2})
-	mw.WriteMessage(&control.RunEnd{Time: time.Unix(6, 0)})
+	mw.WriteMessage(&control.EntityStart{Time: time.Unix(2, 0), Info: testing.EntityInfo{Name: fixtName, Type: testing.EntityFixture}})
+	mw.WriteMessage(&control.EntityStart{Time: time.Unix(3, 0), Info: testing.EntityInfo{Name: testName1}})
+	mw.WriteMessage(&control.EntityEnd{Time: time.Unix(4, 0), Name: testName1, TimingLog: testLog1})
+	mw.WriteMessage(&control.EntityStart{Time: time.Unix(5, 0), Info: testing.EntityInfo{Name: testName2}})
+	mw.WriteMessage(&control.EntityEnd{Time: time.Unix(6, 0), Name: testName2, TimingLog: testLog2})
+	mw.WriteMessage(&control.EntityEnd{Time: time.Unix(7, 0), Name: fixtName, TimingLog: timing.NewLog()})
+	mw.WriteMessage(&control.RunEnd{Time: time.Unix(8, 0)})
 
 	td := testutil.TempDir(t)
 	defer os.RemoveAll(td)

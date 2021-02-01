@@ -68,6 +68,24 @@
       "parentUuid": "74f3c22d_9696af41",
       "revId": "3eb33fef7c75ae7615aa2b6da1555cfa045c8524",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a7f88769_110b2157",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/internal/fakerts/fakerts.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 107,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-02-01T10:02:02Z",
+      "side": 1,
+      "message": "Done.\nNow I got that this is a question about the nature of the returned slice rather than the thread safeness.\nI also think having a shallow copy would avoid accidental mistakes in the future, although current unit tests are not affected. Its runtime cost is trivial considering the test data size.\n\nAlso added function comments to the exported functions.",
+      "parentUuid": "b3b31555_079c88bc",
+      "revId": "3eb33fef7c75ae7615aa2b6da1555cfa045c8524",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

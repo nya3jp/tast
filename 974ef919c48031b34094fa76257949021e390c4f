@@ -3,6 +3,23 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "093b1c3c_2029f4fe",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-02-01T01:57:13Z",
+      "side": 1,
+      "message": "The path for the log message should be relative base on email discussion with Prathmesh and Sean.",
+      "revId": "974ef919c48031b34094fa76257949021e390c4f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "55c5e9e7_ad8beb63",
         "filename": "src/chromiumos/tast/internal/protocol/reports.proto",
         "patchSetId": 3
@@ -31,6 +48,30 @@
       "writtenOn": "2021-02-01T01:50:22Z",
       "side": 1,
       "message": "I guess it\u0027s easier to handle by making it relative to -resultsdir. WDYT?",
+      "range": {
+        "startLine": 27,
+        "startChar": 29,
+        "endLine": 27,
+        "endChar": 37
+      },
+      "revId": "974ef919c48031b34094fa76257949021e390c4f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "29bbe84a_a8e85b10",
+        "filename": "src/chromiumos/tast/internal/protocol/reports.proto",
+        "patchSetId": 3
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-02-01T01:57:13Z",
+      "side": 1,
+      "message": "Yes, based on the email discussion with Prathmesh and Sean, the path should be relative. Thanks.",
+      "parentUuid": "b4c005ad_0572e5e7",
       "range": {
         "startLine": 27,
         "startChar": 29,

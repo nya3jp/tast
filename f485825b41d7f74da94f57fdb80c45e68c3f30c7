@@ -16,6 +16,23 @@
       "message": "PTAL~",
       "revId": "f485825b41d7f74da94f57fdb80c45e68c3f30c7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "52c30848_6007c0f9",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2021-02-01T04:47:55Z",
+      "side": 1,
+      "message": "could you take a look at my comment on the other CL?",
+      "revId": "f485825b41d7f74da94f57fdb80c45e68c3f30c7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

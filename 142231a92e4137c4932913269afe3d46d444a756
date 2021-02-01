@@ -1,0 +1,147 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "35af6393_f58cef06",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-02-01T02:17:37Z",
+      "side": 1,
+      "message": "The overall approach looks good to me.\n",
+      "revId": "142231a92e4137c4932913269afe3d46d444a756",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "078711b9_e960c664",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/config.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 205,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-02-01T02:17:37Z",
+      "side": 1,
+      "message": "Let us clarify that this is the number of tests, not the number of errors.",
+      "range": {
+        "startLine": 205,
+        "startChar": 64,
+        "endLine": 205,
+        "endChar": 72
+      },
+      "revId": "142231a92e4137c4932913269afe3d46d444a756",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "17a87ef9_5ef192e2",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/local.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 224,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-02-01T02:17:37Z",
+      "side": 1,
+      "message": "Even in this case we have to call handle.cmd.Wait to release associated resources.\n\nTo abort execution, we can cancel the context we pased to startLocalRunner. Just like:\n\n ctx, cancel :\u003d context.WithCancel(ctx)\n defer cancel()\n\n handle, err :\u003d startLocalRunner(ctx, ...)\n ...\n\n if rerr \u003d\u003d ErrMaxFailuresReach {\n   cancel() // abort execution\n }\n ...\n\n if err :\u003d handle.cmd.Wait(wctx); err !\u003d nil { ... }\n return ...",
+      "range": {
+        "startLine": 222,
+        "startChar": 0,
+        "endLine": 224,
+        "endChar": 2
+      },
+      "revId": "142231a92e4137c4932913269afe3d46d444a756",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a79a9b8d_2759daea",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/remote.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 125,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-02-01T02:17:37Z",
+      "side": 1,
+      "message": "same here: We always have to call cmd.Wait.",
+      "range": {
+        "startLine": 122,
+        "startChar": 0,
+        "endLine": 125,
+        "endChar": 2
+      },
+      "revId": "142231a92e4137c4932913269afe3d46d444a756",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6957480a_b740d290",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/results.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 474,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-02-01T02:17:37Z",
+      "side": 1,
+      "message": "nit: Would you mind deleting this blank line?",
+      "revId": "142231a92e4137c4932913269afe3d46d444a756",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "37b1b3ba_0004e866",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/retry.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-02-01T02:17:37Z",
+      "side": 1,
+      "message": "We have to accumulate the number of failures on retries.\n\nAlso we have to combine the number of failures for local tests and remote tests.",
+      "range": {
+        "startLine": 31,
+        "startChar": 1,
+        "endLine": 31,
+        "endChar": 6
+      },
+      "revId": "142231a92e4137c4932913269afe3d46d444a756",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cbc97f9c_7b4c232c",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/retry.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-02-01T02:17:37Z",
+      "side": 1,
+      "message": "nit: Would you mind deleting this blank line?",
+      "revId": "142231a92e4137c4932913269afe3d46d444a756",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

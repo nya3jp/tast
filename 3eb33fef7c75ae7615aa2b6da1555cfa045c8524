@@ -18,6 +18,23 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "b9753137_d38bee82",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 11
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-02-01T02:01:19Z",
+      "side": 1,
+      "message": "I\u0027ll defer to Seewai.\n",
+      "revId": "3eb33fef7c75ae7615aa2b6da1555cfa045c8524",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "74f3c22d_9696af41",
@@ -31,6 +48,24 @@
       "writtenOn": "2021-01-29T18:37:52Z",
       "side": 1,
       "message": "Actually, I think this API is not thread safe because the array may be access outside this function while there is no lock. I didn\u0027t think of thread safety when I wrote this. I think this would make it thread safe. Sorry about it.\n\ts.resultsMtx.Lock()\n\tdefer s.resultsMtx.Unlock()\n        var results []*rtd.ReportResultRequest\n\tfor r :\u003d range s.results {\n            results \u003d append(results, r)\n        }\n        return results",
+      "revId": "3eb33fef7c75ae7615aa2b6da1555cfa045c8524",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b3b31555_079c88bc",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/internal/fakerts/fakerts.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 107,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-02-01T02:01:19Z",
+      "side": 1,
+      "message": "IIUC we don\u0027t need to copy the slice at this moment since we always append items to it. However I agree it\u0027s nice to return a shallow copy to avoid bugs in the future.\n\nYou can make a copy of a slice in one line:\n\n return append([]*rtd.ReportResultRequest(nil), s.results...)",
+      "parentUuid": "74f3c22d_9696af41",
       "revId": "3eb33fef7c75ae7615aa2b6da1555cfa045c8524",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }

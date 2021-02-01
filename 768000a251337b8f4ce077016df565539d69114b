@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "394576ba_49d2acf5",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-02-01T00:01:25Z",
+      "side": 1,
+      "message": "Hi Shuhei \u0026 Tatsuhisa:\n\nI just want to check if my current approach is ok. I didn\u0027t call the\ncontext function because it is a bit complicate due to the need of\nmodify a few functions signature to take more one parameter for the\ncancel function. I simply return a special error in the current\napproach. The result looks ok to me. Please point out any issues with\nthis approach.\n\nThanks.\n\nSeewai",
+      "revId": "768000a251337b8f4ce077016df565539d69114b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

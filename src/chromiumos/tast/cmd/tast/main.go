@@ -9,7 +9,6 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"log"
 	"os"
 	"os/signal"
 	"syscall"
@@ -21,24 +20,15 @@ import (
 )
 
 const (
-	signalChannelSize = 3  // capacity of channel used to intercept signals
-	fancyVerboseLines = 30 // verbose log lines to display in "fancy" mode
+	signalChannelSize = 3 // capacity of channel used to intercept signals
 )
 
 // Version is the version info of this command. It is filled in during emerge.
 var Version = "<unknown>"
 
 // newLogger creates a logging.Logger based on the supplied command-line flags.
-func newLogger(fancy, verbose, logTime bool) (logging.Logger, error) {
-	if fancy {
-		l, err := logging.NewFancy(fancyVerboseLines)
-		if err != nil {
-			err = fmt.Errorf("-fancy unsupported: %v", err)
-		}
-		return l, err
-	}
-
-	return logging.NewSimple(os.Stdout, logTime, verbose), nil
+func newLogger(verbose, logTime bool) logging.Logger {
+	return logging.NewSimple(os.Stdout, logTime, verbose)
 }
 
 // installSignalHandler starts a goroutine that attempts to do some minimal
@@ -80,7 +70,6 @@ func doMain() int {
 	subcommands.Register(&symbolizeCmd{}, "")
 
 	version := flag.Bool("version", false, "print version and exit")
-	fancy := flag.Bool("fancy", false, "use fancy logging")
 	verbose := flag.Bool("verbose", false, "use verbose logging")
 	logTime := flag.Bool("logtime", true, "include date/time headers in logs")
 	flag.Parse()
@@ -90,10 +79,7 @@ func doMain() int {
 		return 0
 	}
 
-	lg, err := newLogger(*fancy, *verbose, *logTime)
-	if err != nil {
-		log.Fatal("Failed to initialize logging: ", err)
-	}
+	lg := newLogger(*verbose, *logTime)
 	defer lg.Close()
 	ctx := logging.NewContext(context.Background(), lg)
 

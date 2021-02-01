@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3060abfc_aa83fd0e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-02-01T02:04:57Z",
+      "side": 1,
+      "message": "I think the path we should use is \nfilepath.Join(relDir, msg.Info.Name, testLogFilename)\nbased on the email discussion with Prathmesh and Sean.",
+      "revId": "d37faa231e1f4c0b0e02f14018a8978d4c293d1c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "de9f394b_cd5a3af7",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/results.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 368,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-02-01T02:04:57Z",
+      "side": 1,
+      "message": "I think it may be better if it is\nfilepath.Join(relDir, msg.Info.Name, testLogFilename)",
+      "revId": "d37faa231e1f4c0b0e02f14018a8978d4c293d1c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

@@ -7,6 +7,9 @@
 # empty.
 #
 # See repohooks/README.md for more details.
+#
+# When updating this file, make sure to update go/tast-coil-status.
+
 
 # black.?hat            - clean
 # black.?list           - clean
@@ -14,8 +17,10 @@
 # crazy                 - clean
 # cripple               - clean
 
-dummy
-#    - see crbug/1135039
+# dummy                 - see crbug/1135039
+# Found in 2 files used to replicate linux kernel sysinfo output.
+# src/chromiumos/tast/cmd/tast/internal/run/testdata/ramoops_crash_arm.txt
+# src/chromiumos/tast/cmd/tast/internal/run/testdata/ramoops_crash_x86.txt
 
 # first.?class.?citizen - clean
 # grandfathered         - clean
@@ -43,17 +48,17 @@ master
 # \b(in)?sane(\b|\d)    - clean
 # sanity                - clean
 
-slave
-#    - see crbug/1126921
+# slave                 - see crbug/1126921
+# Found in 1 file used to replicate linux kernel sysinfo output.
+# src/chromiumos/tast/cmd/tast/internal/run/testdata/ramoops_crash_arm.txt
 
 # white.?glove          - clean
 # white.?hat            - clean
 # white.?label          - clean
 
-white.?list
-#    - see crbug/1101928
-#    - see crbug/1125493
-#    - see crbug/1113099
+# white.?list           - see crbug/1125493
+# Found in docs/running_tests.md.
+# refer to /var/lib/whitelist.
 
 # \bwtf                 - clean
 

@@ -7,7 +7,10 @@
 package linuxssh
 
 import (
+	"bytes"
 	"context"
+	"fmt"
+	"os"
 
 	"chromiumos/tast/internal/linuxssh"
 	"chromiumos/tast/ssh"
@@ -43,4 +46,19 @@ const (
 func PutFiles(ctx context.Context, s *ssh.Conn, files map[string]string,
 	symlinkPolicy SymlinkPolicy) (bytes int64, err error) {
 	return linuxssh.PutFiles(ctx, s, files, symlinkPolicy)
+}
+
+// ReadFile reads the file on the path and returns the contents.
+func ReadFile(ctx context.Context, conn *ssh.Conn, path string) ([]byte, error) {
+	return conn.Command("cat", path).Output(ctx, ssh.DumpLogOnError)
+}
+
+// WriteFile writes data to the file on the path. If the file does not exist,
+// WriteFile creates it with permissions perm; otherwise WriteFile truncates it
+// before writing, without changing permissions.
+// Unlike ioutil.WriteFile, it doesn't apply umask on perm.
+func WriteFile(ctx context.Context, conn *ssh.Conn, path string, data []byte, perm os.FileMode) error {
+	cmd := conn.Command("sh", "-c", `test -e "$0"; r=$?; cat > "$0"; if [ $r = 1 ]; then chmod "$1" "$0"; fi`, path, fmt.Sprintf("%o", perm&os.ModePerm))
+	cmd.Stdin = bytes.NewBuffer(data)
+	return cmd.Run(ctx, ssh.DumpLogOnError)
 }

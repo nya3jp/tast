@@ -16,6 +16,40 @@
       "message": "I only ran a simply manual to show the performance. If you have suggestions on additional tests that would show performance enhancement, please let me know.\n\nThanks.\n\nSeewai",
       "revId": "b767055e7b9203ca5d8b0b0ac32a7a8f7114f1bd",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c05a3cc5_6194bce0",
+        "filename": "src/chromiumos/tast/internal/testing/select_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-02-02T06:41:21Z",
+      "side": 1,
+      "message": "Is this a new change with the behavior?",
+      "revId": "b767055e7b9203ca5d8b0b0ac32a7a8f7114f1bd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d841a879_fc50973d",
+        "filename": "src/chromiumos/tast/internal/testing/select_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-02-02T06:41:21Z",
+      "side": 1,
+      "message": "What is the reason to add sorting here?\nNot sure if it is in the spec, but Tast is currently expected to execute tests in a stable order for making debugging easier, and this change does not seem to break that assumption.",
+      "revId": "b767055e7b9203ca5d8b0b0ac32a7a8f7114f1bd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

@@ -18,6 +18,23 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "744af85a_8b3d5110",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-02-02T19:57:10Z",
+      "side": 1,
+      "message": "Thanks for finding a bug for me. Also, I am not sure if we need to maintain order because we always sort it after getting the result. Please advise.",
+      "revId": "b767055e7b9203ca5d8b0b0ac32a7a8f7114f1bd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "c05a3cc5_6194bce0",
@@ -35,6 +52,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "0fb80dd2_43d3f307",
+        "filename": "src/chromiumos/tast/internal/testing/select_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-02-02T19:57:10Z",
+      "side": 1,
+      "message": "Oh, it was a bug. Thanks for catching it.",
+      "parentUuid": "c05a3cc5_6194bce0",
+      "revId": "b767055e7b9203ca5d8b0b0ac32a7a8f7114f1bd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "d841a879_fc50973d",
@@ -48,6 +83,24 @@
       "writtenOn": "2021-02-02T06:41:21Z",
       "side": 1,
       "message": "What is the reason to add sorting here?\nNot sure if it is in the spec, but Tast is currently expected to execute tests in a stable order for making debugging easier, and this change does not seem to break that assumption.",
+      "revId": "b767055e7b9203ca5d8b0b0ac32a7a8f7114f1bd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f2f9e174_7f379afa",
+        "filename": "src/chromiumos/tast/internal/testing/select_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-02-02T19:57:10Z",
+      "side": 1,
+      "message": "I am not sure if it matter:\n\nTestSelectTestsByGlobs is called only by SelectTestsByArgs and SelectTestsByArgs is called only by testsToRun always sorted tests by name after it gets the test names. \n\nfunc testsToRun(cfg *runConfig, patterns []string) ([]*testing.TestInstance, error) {\n\ttests, err :\u003d testing.SelectTestsByArgs(testing.GlobalRegistry().AllTests(), patterns)\n\tif err !\u003d nil {\n\t\treturn nil, command.NewStatusErrorf(statusBadPatterns, \"failed getting tests for %v: %v\", patterns, err.Error())\n\t}\n\tfor _, tp :\u003d range tests {\n\t\tif tp.Timeout \u003d\u003d 0 {\n\t\t\ttp.Timeout \u003d cfg.defaultTestTimeout\n\t\t}\n\t}\n\tsort.Slice(tests, func(i, j int) bool {\n\t\treturn tests[i].Name \u003c tests[j].Name\n\t})\n\treturn tests, nil\n}",
+      "parentUuid": "d841a879_fc50973d",
       "revId": "b767055e7b9203ca5d8b0b0ac32a7a8f7114f1bd",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }

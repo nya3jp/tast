@@ -11,7 +11,6 @@ readonly trunk_dir="$(realpath -e "$(dirname "$0")/../../../..")"
 readonly src_dirs=(
   "${trunk_dir}/src/platform/tast"
   "${trunk_dir}/src/platform/tast-tests"
-  "${trunk_dir}/src/platform/tast-tests-pita"
   "${trunk_dir}/src/platform/tast-tests-private"
 )
 

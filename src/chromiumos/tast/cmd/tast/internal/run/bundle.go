@@ -22,12 +22,10 @@ func init() {
 		"crosint": {
 			workspace: "src/platform/tast-tests-private",
 		},
-		"pita": {
-			workspace: "src/platform/tast-tests-pita",
-		},
 	}
 }
 
+// getKnownBundleInfo returns a bundleInfo for a given test bundle.
 // TODO(nya): Consider simplifying this function to just return a workspace path.
 func getKnownBundleInfo(name string) *bundleInfo {
 	if b, ok := knownBundles[name]; ok {

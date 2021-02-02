@@ -75,6 +75,8 @@ The following software features are defined:
     [Diagnostic utilities].
 *   `display_backlight` - An internal display backlight.
 *   `dlc` - Support of [Downloadable Content] (DLC).
+*   `dmverity_stable` - Kernels with which dm-verity runs stably. See [crbug.com/1026982](https://crbug.com/1026982).
+*   `dmverity_unstable` - Kernels having known issue of dm-verity causing random crashes. See [crbug.com/1026982](https://crbug.com/1026982).
 *   `dptf` - Support of [Intel Dynamic Platform and Thermal Framework] (DPTF).
 *   `drivefs` - Google Drive support enabled.
 *   `drm_atomic` - The [DRM/KMS] kernel subsystem supports atomic commits.

@@ -7,6 +7,7 @@ package ssh_test
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"os"
@@ -19,6 +20,7 @@ import (
 	cryptossh "golang.org/x/crypto/ssh"
 
 	"chromiumos/tast/internal/sshtest"
+	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/ssh"
 	"chromiumos/tast/testutil"
 )
@@ -484,5 +486,131 @@ func TestWaitTwice(t *testing.T) {
 	// Second Wait call fails, but it should not panic.
 	if err := cmd.Wait(td.Ctx); err == nil {
 		t.Fatal("Second Wait succeeded")
+	}
+}
+
+func TestDumpLogOnError(t *testing.T) {
+	t.Parallel()
+	td := sshtest.NewTestDataConn(t)
+	defer td.Close()
+
+	type cmd func(context.Context, ...ssh.RunOption) error
+	type cmd2 func(context.Context, ...ssh.RunOption) ([]byte, error)
+
+	for i, tc := range []struct {
+		f          func(c *ssh.Cmd) cmd
+		f2         func(c *ssh.Cmd) cmd2
+		fail       bool
+		wantStdout bool
+		wantStderr bool
+	}{{
+		f:          func(c *ssh.Cmd) cmd { return c.Run },
+		fail:       true,
+		wantStdout: true,
+		wantStderr: true,
+	}, {
+		f:          func(c *ssh.Cmd) cmd { return c.Run },
+		fail:       false,
+		wantStdout: false,
+		wantStderr: false,
+	}, {
+		f2:         func(c *ssh.Cmd) cmd2 { return c.Output },
+		fail:       true,
+		wantStdout: false,
+		wantStderr: true,
+	}, {
+		f2:         func(c *ssh.Cmd) cmd2 { return c.CombinedOutput },
+		fail:       true,
+		wantStdout: false,
+		wantStderr: false,
+	}} {
+		t.Logf("Test#%d:", i)
+
+		// `echo "f"oo` doesn't match foo in itself, but produces `foo` when
+		// invoked.
+		script := `echo "f"oo; echo "b"ar >&2`
+		if tc.fail {
+			script += `; false`
+		}
+		cmd := td.Hst.Command("sh", "-c", script)
+
+		var log bytes.Buffer
+
+		ctx := testcontext.WithLogger(context.Background(), func(msg string) {
+			fmt.Fprint(&log, msg)
+		})
+		var err error
+		if tc.f != nil {
+			err = tc.f(cmd)(ctx, ssh.DumpLogOnError)
+		} else {
+			_, err = tc.f2(cmd)(ctx, ssh.DumpLogOnError)
+		}
+
+		if !tc.fail && err != nil {
+			t.Fatal("Got error: ", err)
+		} else if tc.fail && err == nil {
+			t.Fatal("Got no error")
+		}
+
+		if got, want := strings.Contains(log.String(), "foo"), tc.wantStdout; got != want {
+			if got {
+				t.Errorf("Log %q contains %q", log.String(), "foo")
+			} else {
+				t.Errorf("Log %q does not contain %q", log.String(), "foo")
+			}
+		}
+		if got, want := strings.Contains(log.String(), "bar"), tc.wantStderr; got != want {
+			if got {
+				t.Errorf("Log %q contains %q", log.String(), "bar")
+			} else {
+				t.Errorf("Log %q does not contain %q", log.String(), "bar")
+			}
+		}
+	}
+}
+
+func TestSameStdoutAndStderr(t *testing.T) {
+	t.Parallel()
+	td := sshtest.NewTestDataConn(t)
+	defer td.Close()
+
+	longx := "x"
+	longy := "yy"
+	for i := 0; i < 7; i++ { // repeat the original 128 times
+		longx += longx
+		longy += longy
+	}
+
+	const n = 50
+	script := fmt.Sprintf(`sh -c 'for _ in $(seq 1 %d); do echo "%s" &
+echo "%s" >&2 &
+done &'`, n, longx, longy)
+	cmd := td.Hst.Command("sh", "-c", script)
+
+	var w bytes.Buffer
+	cmd.Stderr = &w
+	cmd.Stdout = &w
+
+	if err := cmd.Run(context.Background()); err != nil {
+		t.Fatal(err)
+	}
+
+	x := 0
+	y := 0
+	for _, s := range strings.Split(strings.TrimSpace(w.String()), "\n") {
+		switch s {
+		case longx:
+			x++
+		case longy:
+			y++
+		default:
+			t.Errorf("Got unexpected line %q", s)
+		}
+	}
+	if x != n {
+		t.Errorf("Got x = %d, want %d", x, n)
+	}
+	if y != n {
+		t.Errorf("Got y = %d, want %d", y, n)
 	}
 }

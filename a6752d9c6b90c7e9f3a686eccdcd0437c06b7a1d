@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2e883d15_01fd031f",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-02-03T10:00:42Z",
+      "side": 1,
+      "message": "I think this bug number is here because this is related to the removal of -fancy flag, but getting to feel like this chain of changes deserves a separte refactoring process bug#.",
+      "revId": "a6752d9c6b90c7e9f3a686eccdcd0437c06b7a1d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

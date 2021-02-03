@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "de00c9f9_b44e444f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-02-03T02:52:37Z",
+      "side": 1,
+      "message": "Got ack from oncall to chump this change. These scripts are not used in Chrome OS build at all.\n",
+      "revId": "34e48cb8d553dfbd3e29d8f9aa1d5a8a514eb921",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

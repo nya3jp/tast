@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// Package logging is used by the tast executable to write informational output.
 package logging
 
 import (
@@ -51,8 +52,8 @@ func (l *logWriter) Output(s string) error {
 	return err
 }
 
-// simpleLogger is a basic implementation of the Logger interface that uses log.Logger.
-type simpleLogger struct {
+// Logger provides the logging mechanism for Tast CLI.
+type Logger struct {
 	mu      sync.Mutex // protects ws and log order; must be held on emitting logs
 	l       *logWriter
 	verbose bool
@@ -63,17 +64,19 @@ type simpleLogger struct {
 // simple logging to w. If datetime is true, a timestamp will be appended at the
 // begenning of a line. If verbose is true, all messages will be logged to w;
 // otherwise, only non-debug messages will be logged to w.
-func NewSimple(w io.Writer, datetime, verbose bool) Logger {
-	return &simpleLogger{
+func NewSimple(w io.Writer, datetime, verbose bool) *Logger {
+	return &Logger{
 		l:       newLogWriter(w, datetime),
 		verbose: verbose,
 		ws:      make(map[io.Writer]*log.Logger),
 	}
 }
 
-func (s *simpleLogger) Close() error { return nil }
+// Close closes the logger.
+func (s *Logger) Close() error { return nil }
 
-func (s *simpleLogger) Log(args ...interface{}) {
+// Log formats args using default formatting and logs them unconditionally.
+func (s *Logger) Log(args ...interface{}) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	s.l.Print(args...)
@@ -82,7 +85,8 @@ func (s *simpleLogger) Log(args ...interface{}) {
 	}
 }
 
-func (s *simpleLogger) Logf(format string, args ...interface{}) {
+// Logf is similar to Log but formats args as per fmt.Sprintf.
+func (s *Logger) Logf(format string, args ...interface{}) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	s.l.Printf(format, args...)
@@ -91,7 +95,9 @@ func (s *simpleLogger) Logf(format string, args ...interface{}) {
 	}
 }
 
-func (s *simpleLogger) Debug(args ...interface{}) {
+// Debug formats args using default formatting and prints a message that may be
+// omitted in non-verbose modes.
+func (s *Logger) Debug(args ...interface{}) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	if s.verbose {
@@ -102,7 +108,8 @@ func (s *simpleLogger) Debug(args ...interface{}) {
 	}
 }
 
-func (s *simpleLogger) Debugf(format string, args ...interface{}) {
+// Debugf is similar to Debug but formats args as per fmt.Sprintf.
+func (s *Logger) Debugf(format string, args ...interface{}) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	if s.verbose {
@@ -113,8 +120,11 @@ func (s *simpleLogger) Debugf(format string, args ...interface{}) {
 	}
 }
 
-// AddWriter starts writing to w.
-func (s *simpleLogger) AddWriter(w io.Writer, flag int) error {
+// AddWriter adds an additional writer to which Log, Logf, Debug, and Debugf's
+// messages are logged (regardless of any verbosity settings).
+// flag contains logging properties to be passed to log.New.
+// An error is returned if w has already been added.
+func (s *Logger) AddWriter(w io.Writer, flag int) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	if _, ok := s.ws[w]; ok {
@@ -124,8 +134,9 @@ func (s *simpleLogger) AddWriter(w io.Writer, flag int) error {
 	return nil
 }
 
-// RemoveWriter stops writing to w.
-func (s *simpleLogger) RemoveWriter(w io.Writer) error {
+// RemoveWriter stops logging to a writer previously passed to AddWriter.
+// An error is returned if w was not previously added.
+func (s *Logger) RemoveWriter(w io.Writer) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	if _, ok := s.ws[w]; !ok {
@@ -136,6 +147,6 @@ func (s *simpleLogger) RemoveWriter(w io.Writer) error {
 }
 
 // NewDiscard is a convencience function that returns a Logger that discards all messages.
-func NewDiscard() Logger {
+func NewDiscard() *Logger {
 	return NewSimple(ioutil.Discard, false, false)
 }

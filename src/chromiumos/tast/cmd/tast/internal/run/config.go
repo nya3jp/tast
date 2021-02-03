@@ -58,7 +58,7 @@ const (
 // Config contains shared configuration information for running or listing tests.
 type Config struct {
 	// Logger is used to log progress.
-	Logger logging.Logger
+	Logger *logging.Logger
 	// KeyFile is the path to a private SSH key to use to connect to the target device.
 	KeyFile string
 	// KeyDir is a directory containing private SSH keys (typically $HOME/.ssh).

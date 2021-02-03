@@ -25,7 +25,7 @@ import (
 
 // executeListCmd creates a listCmd and executes it using the supplied args and wrapper.
 func executeListCmd(t *gotesting.T, stdout io.Writer, args []string,
-	wrapper *stubRunWrapper, lg logging.Logger) subcommands.ExitStatus {
+	wrapper *stubRunWrapper, lg *logging.Logger) subcommands.ExitStatus {
 	td := testutil.TempDir(t)
 	defer os.RemoveAll(td)
 

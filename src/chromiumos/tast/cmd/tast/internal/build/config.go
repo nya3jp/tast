@@ -15,7 +15,7 @@ const ArchHost = "host"
 // Config describes a configuration for building an executable package.
 type Config struct {
 	// Logger is used to log informational messages.
-	Logger logging.Logger
+	Logger *logging.Logger
 	// CheckBuildDeps indicates whether to check that build dependencies are installed and up-to-date in
 	// the host sysroot.
 	CheckBuildDeps bool

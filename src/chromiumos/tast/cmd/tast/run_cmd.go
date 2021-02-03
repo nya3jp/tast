@@ -8,7 +8,6 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -136,7 +135,7 @@ func (r *runCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{})
 		lg.Log(err)
 		return subcommands.ExitFailure
 	}
-	if err = lg.AddWriter(fullLog, log.LstdFlags); err != nil {
+	if err = lg.AddWriter(fullLog, true); err != nil {
 		lg.Log(err)
 		return subcommands.ExitFailure
 	}

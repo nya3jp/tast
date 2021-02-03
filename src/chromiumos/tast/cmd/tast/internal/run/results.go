@@ -11,7 +11,6 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"log"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -354,7 +353,7 @@ func (r *resultsHandler) handleTestStart(ctx context.Context, msg *control.Entit
 		return err
 	}
 	state.logFile = f
-	if err := r.cfg.Logger.AddWriter(state.logFile, log.LstdFlags); err != nil {
+	if err := r.cfg.Logger.AddWriter(state.logFile, true); err != nil {
 		return err
 	}
 	if r.state.reportsLogStream != nil {
@@ -363,7 +362,7 @@ func (r *resultsHandler) handleTestStart(ctx context.Context, msg *control.Entit
 			testName: msg.Info.Name,
 			logPath:  filepath.Join(relFinalOutDir, testLogFilename),
 		}
-		if err := r.cfg.Logger.AddWriter(state.logReportWriter, log.LstdFlags); err != nil {
+		if err := r.cfg.Logger.AddWriter(state.logReportWriter, true); err != nil {
 			return err
 		}
 	}

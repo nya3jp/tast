@@ -21,7 +21,7 @@ import (
 // Config contains parameters used when symbolizing crash files.
 type Config struct {
 	// Logger is used to log progress and errors.
-	Logger logging.Logger
+	Logger *logging.Logger
 	// SymbolDir contains a directory used to store symbol files.
 	SymbolDir string
 	// BuildRoot contains build root (e.g. "/build/lumpy") that produced the system image.

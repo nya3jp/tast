@@ -40,10 +40,10 @@ func TestAdditionalWriter(t *testing.T) {
 	defer l.Close()
 
 	b2 := bytes.Buffer{}
-	if err := l.AddWriter(&b2, 0); err != nil {
+	if err := l.AddWriter(&b2, false); err != nil {
 		t.Fatal(err)
 	}
-	if err := l.AddWriter(&b2, 0); err == nil {
+	if err := l.AddWriter(&b2, false); err == nil {
 		t.Errorf("Didn't get error when double-adding writer")
 	}
 

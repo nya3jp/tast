@@ -9,7 +9,6 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"log"
 	"sync"
 	"time"
 )
@@ -57,18 +56,18 @@ type Logger struct {
 	mu      sync.Mutex // protects ws and log order; must be held on emitting logs
 	l       *logWriter
 	verbose bool
-	ws      map[io.Writer]*log.Logger
+	ws      map[io.Writer]*logWriter
 }
 
 // NewSimple returns an object implementing the Logger interface to perform
 // simple logging to w. If datetime is true, a timestamp will be appended at the
-// begenning of a line. If verbose is true, all messages will be logged to w;
+// beginning of a line. If verbose is true, all messages will be logged to w;
 // otherwise, only non-debug messages will be logged to w.
 func NewSimple(w io.Writer, datetime, verbose bool) *Logger {
 	return &Logger{
 		l:       newLogWriter(w, datetime),
 		verbose: verbose,
-		ws:      make(map[io.Writer]*log.Logger),
+		ws:      make(map[io.Writer]*logWriter),
 	}
 }
 
@@ -122,15 +121,15 @@ func (s *Logger) Debugf(format string, args ...interface{}) {
 
 // AddWriter adds an additional writer to which Log, Logf, Debug, and Debugf's
 // messages are logged (regardless of any verbosity settings).
-// flag contains logging properties to be passed to log.New.
+// If datetime is true, a timestamp will be appended at the beginning of a line.
 // An error is returned if w has already been added.
-func (s *Logger) AddWriter(w io.Writer, flag int) error {
+func (s *Logger) AddWriter(w io.Writer, datetime bool) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	if _, ok := s.ws[w]; ok {
 		return fmt.Errorf("writer %v already added", w)
 	}
-	s.ws[w] = log.New(w, "", flag)
+	s.ws[w] = newLogWriter(w, datetime)
 	return nil
 }
 

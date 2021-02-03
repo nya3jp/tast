@@ -83,13 +83,11 @@ func collectSysInfo(ctx context.Context, cfg *Config, state *State) error {
 	}
 
 	if len(res.LogDir) != 0 {
-		cfg.Logger.Status("Copying system logs")
 		if err := moveFromHost(ctx, cfg, hst, res.LogDir, filepath.Join(cfg.ResDir, systemLogsDir)); err != nil {
 			cfg.Logger.Log("Failed to copy system logs: ", err)
 		}
 	}
 	if len(res.CrashDir) != 0 {
-		cfg.Logger.Status("Copying crashes")
 		if err := moveFromHost(ctx, cfg, hst, res.CrashDir, filepath.Join(cfg.ResDir, crashesDir)); err != nil {
 			cfg.Logger.Log("Failed to copy crashes: ", err)
 		}

@@ -103,6 +103,24 @@
       "parentUuid": "d841a879_fc50973d",
       "revId": "b767055e7b9203ca5d8b0b0ac32a7a8f7114f1bd",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7db8457c_1c1ce54b",
+        "filename": "src/chromiumos/tast/internal/testing/select_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-02-03T02:36:20Z",
+      "side": 1,
+      "message": "Got it. Then it looks correct to compare after sorting here (i.e. equality of sets).",
+      "parentUuid": "f2f9e174_7f379afa",
+      "revId": "b767055e7b9203ca5d8b0b0ac32a7a8f7114f1bd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

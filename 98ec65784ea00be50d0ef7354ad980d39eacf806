@@ -39,6 +39,30 @@
       },
       "revId": "98ec65784ea00be50d0ef7354ad980d39eacf806",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2600624d_0f7b945c",
+        "filename": "src/chromiumos/tast/ssh/exec.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 287,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2021-02-03T08:53:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "51afa86a_e6317f17",
+      "range": {
+        "startLine": 287,
+        "startChar": 1,
+        "endLine": 287,
+        "endChar": 4
+      },
+      "revId": "98ec65784ea00be50d0ef7354ad980d39eacf806",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

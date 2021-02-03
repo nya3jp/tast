@@ -73,7 +73,7 @@ func Build(ctx context.Context, cfg *Config, tgts []*Target) error {
 }
 
 // buildOne builds one executable.
-func buildOne(ctx context.Context, log logging.Logger, tgt *Target) error {
+func buildOne(ctx context.Context, log *logging.Logger, tgt *Target) error {
 	ctx, st := timing.Start(ctx, filepath.Base(tgt.Pkg))
 	defer st.End()
 
@@ -111,7 +111,7 @@ func buildOne(ctx context.Context, log logging.Logger, tgt *Target) error {
 
 // logMissingDeps prints logs describing how to run cmds to install the listed missing packages.
 // missing and cmds should be produced by checkDeps.
-func logMissingDeps(log logging.Logger, missing []string, cmds [][]string) {
+func logMissingDeps(log *logging.Logger, missing []string, cmds [][]string) {
 	log.Log("The following dependencies are not installed:")
 	for _, dep := range missing {
 		log.Log("  ", dep)
@@ -126,7 +126,7 @@ func logMissingDeps(log logging.Logger, missing []string, cmds [][]string) {
 
 // installMissingDeps attempts to install the supplied missing packages by running cmds in sequence.
 // Progress is logged using log. missing and cmds should be produced by checkDeps.
-func installMissingDeps(ctx context.Context, log logging.Logger, missing []string, cmds [][]string) error {
+func installMissingDeps(ctx context.Context, log *logging.Logger, missing []string, cmds [][]string) error {
 	ctx, st := timing.Start(ctx, "install_deps")
 	defer st.End()
 
@@ -146,7 +146,7 @@ func installMissingDeps(ctx context.Context, log logging.Logger, missing []strin
 }
 
 // writeMultiline writes multiline text s to log.
-func writeMultiline(log logging.Logger, s string) {
+func writeMultiline(log *logging.Logger, s string) {
 	if s == "" {
 		return
 	}

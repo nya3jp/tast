@@ -24,7 +24,7 @@ import (
 )
 
 // executeRunCmd creates a runCmd and executes it using the supplied args, wrapper, and Logger.
-func executeRunCmd(t *gotesting.T, args []string, wrapper *stubRunWrapper, lg logging.Logger) subcommands.ExitStatus {
+func executeRunCmd(t *gotesting.T, args []string, wrapper *stubRunWrapper, lg *logging.Logger) subcommands.ExitStatus {
 	td := testutil.TempDir(t)
 	defer os.RemoveAll(td)
 

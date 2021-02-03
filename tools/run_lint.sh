@@ -12,6 +12,9 @@ declare -r chroot_gopath="${repo_root}/chroot/usr/lib/gopath"
 export GOBIN="${tast_root}/bin"
 export GOPATH="${tast_root}:${chroot_gopath}"
 
+# Disable Go modules. Go 1.16+ enables Go modules by default.
+export GO111MODULE=auto
+
 if ! go install chromiumos/tast/cmd/tast-lint; then
   echo "*** Failed to build tast-lint. Please run update_chroot."
   exit 1

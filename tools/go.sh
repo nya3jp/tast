@@ -25,4 +25,7 @@ export GOPATH="$(IFS=:; echo "${src_dirs[*]}"):${gopath_dir}"
 export CGO_ENABLED=0
 export GOPIE=0
 
+# Disable Go modules. Go 1.16+ enables Go modules by default.
+export GO111MODULE=auto
+
 exec go "$@"

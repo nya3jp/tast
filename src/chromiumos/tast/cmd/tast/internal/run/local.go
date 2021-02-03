@@ -45,7 +45,6 @@ func connectToTarget(ctx context.Context, cfg *Config) (*ssh.Conn, error) {
 
 	ctx, st := timing.Start(ctx, "connect")
 	defer st.End()
-	cfg.Logger.Status("Connecting to target")
 	cfg.Logger.Logf("Connecting to %s", cfg.Target)
 
 	o := ssh.Options{
@@ -77,7 +76,6 @@ func connectToTarget(ctx context.Context, cfg *Config) (*ssh.Conn, error) {
 // runLocalTests executes tests as described by cfg on hst and returns the results.
 // It is only used for RunTestsMode.
 func runLocalTests(ctx context.Context, cfg *Config) ([]*EntityResult, error) {
-	cfg.Logger.Status("Running local tests on target")
 	ctx, st := timing.Start(ctx, "run_local_tests")
 	defer st.End()
 

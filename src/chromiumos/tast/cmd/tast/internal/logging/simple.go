@@ -103,8 +103,6 @@ func (s *simpleLogger) Debugf(format string, args ...interface{}) {
 	s.loggerCommon.printf(format, args...)
 }
 
-func (s *simpleLogger) Status(msg string) {}
-
 // NewDiscard is a convencience function that returns a Logger that discards all messages.
 func NewDiscard() Logger {
 	return NewSimple(ioutil.Discard, false, false)

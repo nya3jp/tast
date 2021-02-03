@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"log"
 	"sync"
 	"time"
 )
@@ -52,10 +53,10 @@ func (l *logWriter) Output(s string) error {
 
 // simpleLogger is a basic implementation of the Logger interface that uses log.Logger.
 type simpleLogger struct {
-	loggerCommon
+	mu      sync.Mutex // protects ws and log order; must be held on emitting logs
 	l       *logWriter
 	verbose bool
-	mutex   sync.Mutex // protects l and c
+	ws      map[io.Writer]*log.Logger
 }
 
 // NewSimple returns an object implementing the Logger interface to perform
@@ -66,41 +67,72 @@ func NewSimple(w io.Writer, datetime, verbose bool) Logger {
 	return &simpleLogger{
 		l:       newLogWriter(w, datetime),
 		verbose: verbose,
+		ws:      make(map[io.Writer]*log.Logger),
 	}
 }
 
 func (s *simpleLogger) Close() error { return nil }
 
 func (s *simpleLogger) Log(args ...interface{}) {
-	s.mutex.Lock()
-	defer s.mutex.Unlock()
+	s.mu.Lock()
+	defer s.mu.Unlock()
 	s.l.Print(args...)
-	s.loggerCommon.print(args...)
+	for _, l := range s.ws {
+		l.Print(args...)
+	}
 }
 
 func (s *simpleLogger) Logf(format string, args ...interface{}) {
-	s.mutex.Lock()
-	defer s.mutex.Unlock()
+	s.mu.Lock()
+	defer s.mu.Unlock()
 	s.l.Printf(format, args...)
-	s.loggerCommon.printf(format, args...)
+	for _, l := range s.ws {
+		l.Printf(format, args...)
+	}
 }
 
 func (s *simpleLogger) Debug(args ...interface{}) {
-	s.mutex.Lock()
-	defer s.mutex.Unlock()
+	s.mu.Lock()
+	defer s.mu.Unlock()
 	if s.verbose {
 		s.l.Print(args...)
 	}
-	s.loggerCommon.print(args...)
+	for _, l := range s.ws {
+		l.Print(args...)
+	}
 }
 
 func (s *simpleLogger) Debugf(format string, args ...interface{}) {
-	s.mutex.Lock()
-	defer s.mutex.Unlock()
+	s.mu.Lock()
+	defer s.mu.Unlock()
 	if s.verbose {
 		s.l.Printf(format, args...)
 	}
-	s.loggerCommon.printf(format, args...)
+	for _, l := range s.ws {
+		l.Printf(format, args...)
+	}
+}
+
+// AddWriter starts writing to w.
+func (s *simpleLogger) AddWriter(w io.Writer, flag int) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	if _, ok := s.ws[w]; ok {
+		return fmt.Errorf("writer %v already added", w)
+	}
+	s.ws[w] = log.New(w, "", flag)
+	return nil
+}
+
+// RemoveWriter stops writing to w.
+func (s *simpleLogger) RemoveWriter(w io.Writer) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	if _, ok := s.ws[w]; !ok {
+		return fmt.Errorf("writer %v not registered", w)
+	}
+	delete(s.ws, w)
+	return nil
 }
 
 // NewDiscard is a convencience function that returns a Logger that discards all messages.

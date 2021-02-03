@@ -16,6 +16,23 @@
       "message": "I have fixed the bug for not accumulating failure counts and added a unit test for maximum failures count. Please review. Thanks.",
       "revId": "a9f6839cbdd50cd545384ff8153bfa7fec9c2cea",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2e4868aa_3a7a8d26",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-02-03T05:15:53Z",
+      "side": 1,
+      "message": "I also changed my manual testing to test failure count in local test is brought over to remote test.",
+      "revId": "a9f6839cbdd50cd545384ff8153bfa7fec9c2cea",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

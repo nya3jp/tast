@@ -3,6 +3,29 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "835e9de6_13d99635",
+        "filename": "src/chromiumos/tast/internal/testing/select.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 65,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-02-03T07:41:04Z",
+      "side": 1,
+      "message": "nit: You don\u0027t need parentheses here",
+      "range": {
+        "startLine": 65,
+        "startChar": 40,
+        "endLine": 65,
+        "endChar": 41
+      },
+      "revId": "3468be1cb03eaa92bf3a75b57512d2d454e68f1f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "b2bfac52_075d70bc",
         "filename": "src/chromiumos/tast/internal/testing/select.go",
         "patchSetId": 3
@@ -14,6 +37,24 @@
       "writtenOn": "2021-02-03T02:36:20Z",
       "side": 1,
       "message": "Do we need to check other than \"*\"?\n// selectTestsByGlob returns a subset of tests with names matched by w,\n// which may contain \u0027*\u0027 to match zero or more arbitrary characters.\n\nFor the maintainability in the future, I think it is best to share the logic to validate a glob with the NewTestGlobRegexp() making them consistent.\nhttps://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform/tast/src/chromiumos/tast/internal/testing/select.go;l\u003d122;drc\u003d2a013f0232c2f4d62dff0aba85a6d995424cab52",
+      "revId": "3468be1cb03eaa92bf3a75b57512d2d454e68f1f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "470d161d_d42a8f18",
+        "filename": "src/chromiumos/tast/internal/testing/select.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 89,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-02-03T07:41:04Z",
+      "side": 1,
+      "message": "+1.\n\nAlso, rather than inlining the condition here, can you introduce a utility function (e.g. isGlob) to check if a pattern is a glob?",
+      "parentUuid": "b2bfac52_075d70bc",
       "revId": "3468be1cb03eaa92bf3a75b57512d2d454e68f1f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }

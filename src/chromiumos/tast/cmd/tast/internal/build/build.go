@@ -45,7 +45,6 @@ func Build(ctx context.Context, cfg *Config, tgts []*Target) error {
 	}
 
 	if cfg.CheckBuildDeps {
-		cfg.Logger.Status("Checking build dependencies")
 		if missing, cmds, err := checkDeps(ctx, cfg.CheckDepsCachePath); err != nil {
 			return fmt.Errorf("failed checking build deps: %v", err)
 		} else if len(missing) > 0 {
@@ -103,8 +102,6 @@ func buildOne(ctx context.Context, log logging.Logger, tgt *Target) error {
 		"GOPIE=0")
 	cmd.Env = append(cmd.Env, archEnvs...)
 
-	log.Status("Compiling " + tgt.Pkg)
-
 	if out, err := cmd.CombinedOutput(); err != nil {
 		writeMultiline(log, string(out))
 		return err
@@ -138,7 +135,6 @@ func installMissingDeps(ctx context.Context, log logging.Logger, missing []strin
 		log.Log("  ", dep)
 	}
 	for _, cmd := range cmds {
-		log.Status(fmt.Sprintf("Running %s", shutil.EscapeSlice(cmd)))
 		log.Logf("Running %s", shutil.EscapeSlice(cmd))
 		if out, err := exec.CommandContext(ctx, cmd[0], cmd[1:]...).CombinedOutput(); err != nil {
 			log.Logf("Failed running %s", shutil.EscapeSlice(cmd))

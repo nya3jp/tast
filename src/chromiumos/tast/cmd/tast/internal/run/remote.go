@@ -20,7 +20,6 @@ import (
 
 // runRemoteTests runs the remote test runner and reads its output.
 func runRemoteTests(ctx context.Context, cfg *Config, state *State) ([]*EntityResult, error) {
-	cfg.Logger.Status("Running remote tests on target")
 	ctx, st := timing.Start(ctx, "run_remote_tests")
 	defer st.End()
 

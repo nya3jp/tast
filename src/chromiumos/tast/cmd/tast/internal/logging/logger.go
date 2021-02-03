@@ -30,10 +30,6 @@ type Logger interface {
 	// Debugf is similar to Debug but formats args as per fmt.Sprintf.
 	Debugf(format string, args ...interface{})
 
-	// Status updates a transient status message describing the current state of execution. Some
-	// implementations may not display these messages.
-	Status(msg string)
-
 	// AddWriter adds an additional writer to which Log, Logf, Debug, and Debugf's messages are
 	// logged (regardless of any verbosity settings).
 	// flag contains logging properties to be passed to log.New.

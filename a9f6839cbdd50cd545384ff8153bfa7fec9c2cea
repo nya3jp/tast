@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "aec7049c_797cc579",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-02-03T05:14:08Z",
+      "side": 1,
+      "message": "I have fixed the bug for not accumulating failure counts and added a unit test for maximum failures count. Please review. Thanks.",
+      "revId": "a9f6839cbdd50cd545384ff8153bfa7fec9c2cea",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

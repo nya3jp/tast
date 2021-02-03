@@ -235,15 +235,6 @@ func (r *resultsHandler) close() {
 	r.streamWriter.close()
 }
 
-// setProgress updates the currently displayed progress to display the number of completed vs.
-// total tests and the message s.
-func (r *resultsHandler) setProgress(s string) {
-	if s != "" {
-		s = " " + s
-	}
-	r.cfg.Logger.Status(fmt.Sprintf("[%d/%d]%s", len(r.results), r.numTests, s))
-}
-
 // handleRunStart handles RunStart control messages from test runners.
 func (r *resultsHandler) handleRunStart(ctx context.Context, msg *control.RunStart) error {
 	if !r.runStart.IsZero() {
@@ -257,7 +248,6 @@ func (r *resultsHandler) handleRunStart(ctx context.Context, msg *control.RunSta
 		// Fallback path for old runners that don't set TestNames: https://crbug.com/889119
 		r.numTests = msg.NumTests
 	}
-	r.setProgress("Starting testing")
 	return nil
 }
 
@@ -373,7 +363,6 @@ func (r *resultsHandler) handleTestStart(ctx context.Context, msg *control.Entit
 	}
 
 	r.cfg.Logger.Logf("Started %v %s", state.result.Type, state.result.Name)
-	r.setProgress("Running " + state.result.Name)
 	return nil
 }
 

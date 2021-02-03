@@ -370,13 +370,11 @@ func pushAll(ctx context.Context, cfg *Config, hst *ssh.Conn) error {
 		return nil
 	}
 
-	cfg.Logger.Status("Getting data file list")
 	paths, err := getDataFilePaths(ctx, cfg, hst)
 	if err != nil {
 		return fmt.Errorf("failed to get data file list: %v", err)
 	}
 	if len(paths) > 0 {
-		cfg.Logger.Status("Pushing data files to target")
 		pkg := path.Join(localBundlePkgPathPrefix, cfg.buildBundle)
 		destDir := filepath.Join(cfg.localDataDir, pkg)
 		if err := pushDataFiles(ctx, cfg, hst, destDir, paths); err != nil {

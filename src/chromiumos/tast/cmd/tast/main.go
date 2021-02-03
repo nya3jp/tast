@@ -27,14 +27,14 @@ const (
 var Version = "<unknown>"
 
 // newLogger creates a logging.Logger based on the supplied command-line flags.
-func newLogger(verbose, logTime bool) logging.Logger {
+func newLogger(verbose, logTime bool) *logging.Logger {
 	return logging.NewSimple(os.Stdout, logTime, verbose)
 }
 
 // installSignalHandler starts a goroutine that attempts to do some minimal
 // cleanup when the process is being terminated by a signal (which prevents
 // deferred functions from running).
-func installSignalHandler(lg logging.Logger) {
+func installSignalHandler(lg *logging.Logger) {
 	var st *terminal.State
 	fd := int(os.Stdin.Fd())
 	if terminal.IsTerminal(fd) {

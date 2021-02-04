@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "17de3a6b_68b4a7e1",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-02-04T18:28:58Z",
+      "side": 1,
+      "message": "I just created a new struct State and move all the non-config items from Config to State. All unit tests passed. Please review. Thanks.",
+      "revId": "16b5667730a6f8a5ccf20691779af4b9dc4105a2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

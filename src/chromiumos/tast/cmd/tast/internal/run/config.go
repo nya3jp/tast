@@ -132,10 +132,10 @@ type Config struct {
 	// tests, which can set this to a temp dir in order to inspect files that are copied to hst and
 	// control the files that are copied from it.
 	hstCopyBasePath string
+}
 
-	// The following fields hold state that is accumulated over the course of the run.
-	// TODO(crbug.com/971517): Consider moving these fields into a separate struct,
-	// as they aren't really configuration.
+// State hold state attributes which are accumulated over the course of the run.
+type State struct {
 	targetArch         string                     // architecture of target userland (usually given by "uname -m", but may be different)
 	startedRun         bool                       // true if we got to the point where we started trying to execute tests
 	initBootID         string                     // boot_id at the initial SSH connection
@@ -148,9 +148,11 @@ type Config struct {
 	osVersion          string                     // Chrome OS Version
 	tlwConn            *grpc.ClientConn           // TLW gRPC service connection
 	tlwServerForDUT    string                     // TLW address accessible from DUT.
-	reportsConn        *grpc.ClientConn           // Reports gRPC service connection.
-	reportsClient      protocol.ReportsClient     // Reports gRPC client.
-	reportsLogStream   protocol.Reports_LogStreamClient
+
+	// gRPC Reports Client related variables.
+	reportsConn      *grpc.ClientConn       // Reports gRPC service connection.
+	reportsClient    protocol.ReportsClient // Reports gRPC client.
+	reportsLogStream protocol.Reports_LogStreamClient
 }
 
 // NewConfig returns a new configuration for executing test runners in the supplied mode.
@@ -259,27 +261,27 @@ func (c *Config) SetFlags(f *flag.FlagSet) {
 
 // Close releases the config's resources (e.g. cached SSH connections).
 // It should be called at the completion of testing.
-func (c *Config) Close(ctx context.Context) error {
-	closeEphemeralDevserver(ctx, c) // ignore error; not meaningful if c.hst is dead
+func (s *State) Close(ctx context.Context) error {
+	closeEphemeralDevserver(ctx, s) // ignore error; not meaningful if c.hst is dead
 	var firstErr error
-	if c.hst != nil {
-		if err := c.hst.Close(ctx); err != nil && firstErr == nil {
+	if s.hst != nil {
+		if err := s.hst.Close(ctx); err != nil && firstErr == nil {
 			firstErr = err
 		}
-		c.hst = nil
+		s.hst = nil
 	}
-	if c.tlwConn != nil {
-		if err := c.tlwConn.Close(); err != nil && firstErr == nil {
+	if s.tlwConn != nil {
+		if err := s.tlwConn.Close(); err != nil && firstErr == nil {
 			firstErr = err
 		}
-		c.tlwConn = nil
+		s.tlwConn = nil
 	}
-	if c.reportsConn != nil {
-		if err := c.reportsConn.Close(); err != nil && firstErr == nil {
+	if s.reportsConn != nil {
+		if err := s.reportsConn.Close(); err != nil && firstErr == nil {
 			firstErr = err
 		}
-		c.reportsConn = nil
-		c.reportsClient = nil
+		s.reportsConn = nil
+		s.reportsClient = nil
 	}
 	return firstErr
 }

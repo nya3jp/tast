@@ -34,13 +34,13 @@ const (
 // connectToTarget establishes an SSH connection to the target specified in cfg.
 // The connection will be cached in cfg and should not be closed by the caller.
 // If a connection is already established, it will be returned.
-func connectToTarget(ctx context.Context, cfg *Config) (*ssh.Conn, error) {
+func connectToTarget(ctx context.Context, cfg *Config, state *State) (*ssh.Conn, error) {
 	// If we already have a connection, reuse it if it's still open.
-	if cfg.hst != nil {
-		if err := cfg.hst.Ping(ctx, sshPingTimeout); err == nil {
-			return cfg.hst, nil
+	if state.hst != nil {
+		if err := state.hst.Ping(ctx, sshPingTimeout); err == nil {
+			return state.hst, nil
 		}
-		cfg.hst = nil
+		state.hst = nil
 	}
 
 	ctx, st := timing.Start(ctx, "connect")
@@ -61,51 +61,51 @@ func connectToTarget(ctx context.Context, cfg *Config) (*ssh.Conn, error) {
 	}
 
 	var err error
-	if cfg.hst, err = ssh.New(ctx, &o); err != nil {
+	if state.hst, err = ssh.New(ctx, &o); err != nil {
 		return nil, err
 	}
 
-	if cfg.initBootID == "" {
-		if cfg.initBootID, err = readBootID(ctx, cfg.hst); err != nil {
+	if state.initBootID == "" {
+		if state.initBootID, err = readBootID(ctx, state.hst); err != nil {
 			return nil, err
 		}
 	}
 
-	return cfg.hst, nil
+	return state.hst, nil
 }
 
 // runLocalTests executes tests as described by cfg on hst and returns the results.
 // It is only used for RunTestsMode.
-func runLocalTests(ctx context.Context, cfg *Config) ([]*EntityResult, error) {
+func runLocalTests(ctx context.Context, cfg *Config, state *State) ([]*EntityResult, error) {
 	cfg.Logger.Status("Running local tests on target")
 	ctx, st := timing.Start(ctx, "run_local_tests")
 	defer st.End()
 
-	hst, err := connectToTarget(ctx, cfg)
+	hst, err := connectToTarget(ctx, cfg, state)
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed to connect to %s", cfg.Target)
 	}
 
 	runTests := func(ctx context.Context, patterns []string) (results []*EntityResult, unstarted []string, err error) {
-		return runLocalTestsOnce(ctx, cfg, hst, patterns)
+		return runLocalTestsOnce(ctx, cfg, state, hst, patterns)
 	}
 	beforeRetry := func(ctx context.Context) bool {
 		oldHst := hst
 		var connErr error
-		if hst, connErr = connectToTarget(ctx, cfg); connErr != nil {
+		if hst, connErr = connectToTarget(ctx, cfg, state); connErr != nil {
 			cfg.Logger.Log("Failed reconnecting to target: ", connErr)
 			return false
 		}
 		// The ephemeral devserver uses the SSH connection to the DUT, so a new devserver needs
 		// to be created if a new SSH connection was established.
 		if hst != oldHst {
-			if cfg.ephemeralDevserver != nil {
-				if devErr := startEphemeralDevserver(ctx, hst, cfg); devErr != nil {
+			if state.ephemeralDevserver != nil {
+				if devErr := startEphemeralDevserver(ctx, hst, cfg, state); devErr != nil {
 					cfg.Logger.Log("Failed restarting ephemeral devserver: ", connErr)
 					return false
 				}
 			}
-			if cfg.tlwServerForDUT != "" {
+			if state.tlwServerForDUT != "" {
 				f, err := hst.ForwardRemoteToLocal("tcp", "127.0.0.1:0", cfg.tlwServer, func(e error) {
 					cfg.Logger.Logf("remote forwarder error: %s", e)
 				})
@@ -113,7 +113,7 @@ func runLocalTests(ctx context.Context, cfg *Config) ([]*EntityResult, error) {
 					cfg.Logger.Log("Failed reconnecting remote port forwarding: ", err)
 					return false
 				}
-				cfg.tlwServerForDUT = f.ListenAddr().String()
+				state.tlwServerForDUT = f.ListenAddr().String()
 			}
 		}
 		return true
@@ -170,7 +170,7 @@ func startLocalRunner(ctx context.Context, cfg *Config, hst *ssh.Conn, args *run
 // Results from started tests and the names of tests that should have been
 // started but weren't (in the order in which they should've been run) are
 // returned.
-func runLocalTestsOnce(ctx context.Context, cfg *Config, hst *ssh.Conn, patterns []string) (
+func runLocalTestsOnce(ctx context.Context, cfg *Config, state *State, hst *ssh.Conn, patterns []string) (
 	results []*EntityResult, unstarted []string, err error) {
 	ctx, st := timing.Start(ctx, "run_local_tests_once")
 	defer st.End()
@@ -185,12 +185,12 @@ func runLocalTestsOnce(ctx context.Context, cfg *Config, hst *ssh.Conn, patterns
 		Mode: runner.RunTestsMode,
 		RunTests: &runner.RunTestsArgs{
 			BundleArgs: bundle.RunTestsArgs{
-				FeatureArgs:       *featureArgsFromConfig(cfg),
+				FeatureArgs:       *featureArgsFromConfig(cfg, state),
 				Patterns:          patterns,
 				DataDir:           cfg.localDataDir,
 				OutDir:            cfg.localOutDir,
 				Devservers:        cfg.devservers,
-				TLWServer:         cfg.tlwServerForDUT,
+				TLWServer:         state.tlwServerForDUT,
 				DUTName:           cfg.Target,
 				WaitUntilReady:    cfg.waitUntilReady,
 				HeartbeatInterval: heartbeatInterval,
@@ -215,9 +215,9 @@ func runLocalTestsOnce(ctx context.Context, cfg *Config, hst *ssh.Conn, patterns
 		return moveFromHost(ctx, cfg, hst, src, dst)
 	}
 	df := func(ctx context.Context, outDir string) string {
-		return diagnoseLocalRunError(ctx, cfg, outDir)
+		return diagnoseLocalRunError(ctx, cfg, state, outDir)
 	}
-	results, unstarted, rerr := readTestOutput(ctx, cfg, handle.stdout, crf, df)
+	results, unstarted, rerr := readTestOutput(ctx, cfg, state, handle.stdout, crf, df)
 
 	// Check that the runner exits successfully first so that we don't give a useless error
 	// about incorrectly-formed output instead of e.g. an error about the runner being missing.
@@ -251,8 +251,8 @@ func formatBytes(bytes int64) string {
 // startEphemeralDevserver starts an ephemeral devserver serving on hst.
 // cfg's ephemeralDevserver and devservers fields are updated.
 // If ephemeralDevserver is non-nil, it is closed first.
-func startEphemeralDevserver(ctx context.Context, hst *ssh.Conn, cfg *Config) error {
-	closeEphemeralDevserver(ctx, cfg) // ignore errors; this may rely on a now-dead SSH connection
+func startEphemeralDevserver(ctx context.Context, hst *ssh.Conn, cfg *Config, state *State) error {
+	closeEphemeralDevserver(ctx, state) // ignore errors; this may rely on a now-dead SSH connection
 
 	lis, err := hst.ListenTCP(&net.TCPAddr{IP: net.IPv4(127, 0, 0, 1), Port: ephemeralDevserverPort})
 	if err != nil {
@@ -265,17 +265,17 @@ func startEphemeralDevserver(ctx context.Context, hst *ssh.Conn, cfg *Config) er
 		return err
 	}
 
-	cfg.ephemeralDevserver = es
+	state.ephemeralDevserver = es
 	cfg.devservers = []string{fmt.Sprintf("http://%s", lis.Addr())}
 	return nil
 }
 
 // closeEphemeralDevserver closes and resets cfg.ephemeralDevserver if non-nil.
-func closeEphemeralDevserver(ctx context.Context, cfg *Config) error {
+func closeEphemeralDevserver(ctx context.Context, state *State) error {
 	var err error
-	if cfg.ephemeralDevserver != nil {
-		err = cfg.ephemeralDevserver.Close(ctx)
-		cfg.ephemeralDevserver = nil
+	if state.ephemeralDevserver != nil {
+		err = state.ephemeralDevserver.Close(ctx)
+		state.ephemeralDevserver = nil
 	}
 	return err
 }
@@ -283,12 +283,12 @@ func closeEphemeralDevserver(ctx context.Context, cfg *Config) error {
 // diagnoseLocalRunError is used to attempt to diagnose the cause of an error encountered
 // while running local tests. It returns a string that can be returned by a diagnoseRunErrorFunc.
 // Files useful for diagnosis might be saved under outDir.
-func diagnoseLocalRunError(ctx context.Context, cfg *Config, outDir string) string {
-	if cfg.hst == nil || ctxutil.DeadlineBefore(ctx, time.Now().Add(sshPingTimeout)) {
+func diagnoseLocalRunError(ctx context.Context, cfg *Config, state *State, outDir string) string {
+	if state.hst == nil || ctxutil.DeadlineBefore(ctx, time.Now().Add(sshPingTimeout)) {
 		return ""
 	}
-	if err := cfg.hst.Ping(ctx, sshPingTimeout); err == nil {
+	if err := state.hst.Ping(ctx, sshPingTimeout); err == nil {
 		return ""
 	}
-	return "Lost SSH connection: " + diagnoseSSHDrop(ctx, cfg, outDir)
+	return "Lost SSH connection: " + diagnoseSSHDrop(ctx, cfg, state, outDir)
 }

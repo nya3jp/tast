@@ -63,7 +63,7 @@ func TestRunPartialRun(t *gotesting.T) {
 	}
 	td.cfg.remoteRunner = filepath.Join(td.tempDir, "missing_remote_test_runner")
 
-	status, _ := Run(context.Background(), &td.cfg)
+	status, _ := Run(context.Background(), &td.cfg, &td.state)
 	if status.ExitCode != subcommands.ExitFailure {
 		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitFailure, td.logbuf.String())
 	}
@@ -76,7 +76,7 @@ func TestRunError(t *gotesting.T) {
 	td.cfg.runLocal = true
 	td.cfg.KeyFile = "" // force SSH auth error
 
-	if status, _ := Run(context.Background(), &td.cfg); status.ExitCode != subcommands.ExitFailure {
+	if status, _ := Run(context.Background(), &td.cfg, &td.state); status.ExitCode != subcommands.ExitFailure {
 		t.Errorf("Run() = %v; want %v", status, subcommands.ExitFailure)
 	} else if !status.FailedBeforeRun {
 		// local()'s initial connection attempt will fail, so we won't try to run tests.
@@ -103,7 +103,7 @@ func TestRunEphemeralDevserver(t *gotesting.T) {
 	td.cfg.devservers = nil // clear the default mock devservers set in newLocalTestData
 	td.cfg.useEphemeralDevserver = true
 
-	if status, _ := Run(context.Background(), &td.cfg); status.ExitCode != subcommands.ExitSuccess {
+	if status, _ := Run(context.Background(), &td.cfg, &td.state); status.ExitCode != subcommands.ExitSuccess {
 		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.logbuf.String())
 	}
 
@@ -200,7 +200,7 @@ func testRunDownloadPrivateBundles(t *gotesting.T, td *localTestData) {
 
 	td.cfg.downloadPrivateBundles = true
 
-	if status, _ := Run(context.Background(), &td.cfg); status.ExitCode != subcommands.ExitSuccess {
+	if status, _ := Run(context.Background(), &td.cfg, &td.state); status.ExitCode != subcommands.ExitSuccess {
 		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.logbuf.String())
 	}
 	if !called {
@@ -244,7 +244,7 @@ func TestRunTLW(t *gotesting.T) {
 	td.cfg.Target = targetName
 	td.cfg.tlwServer = tlwAddr
 
-	if status, _ := Run(context.Background(), &td.cfg); status.ExitCode != subcommands.ExitSuccess {
+	if status, _ := Run(context.Background(), &td.cfg, &td.state); status.ExitCode != subcommands.ExitSuccess {
 		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.logbuf.String())
 	}
 }
@@ -303,7 +303,7 @@ func TestRunWithReports_LogStream(t *gotesting.T) {
 		}
 		return 0
 	}
-	if status, _ := Run(context.Background(), &td.cfg); status.ExitCode != subcommands.ExitSuccess {
+	if status, _ := Run(context.Background(), &td.cfg, &td.state); status.ExitCode != subcommands.ExitSuccess {
 		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.logbuf.String())
 	}
 	if str := string(srv.GetLog(test1Name, test1Path)); !strings.Contains(str, test1LogText) {
@@ -383,7 +383,7 @@ func TestRunWithReports_ReportResult(t *gotesting.T) {
 		}
 		return 0
 	}
-	if status, _ := Run(context.Background(), &td.cfg); status.ExitCode != subcommands.ExitSuccess {
+	if status, _ := Run(context.Background(), &td.cfg, &td.state); status.ExitCode != subcommands.ExitSuccess {
 		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.logbuf.String())
 	}
 	test2ErrorTimeStamp, _ := ptypes.TimestampProto(test2ErrorTime)
@@ -466,7 +466,7 @@ func TestRunWithSkippedTests(t *gotesting.T) {
 		}
 		return 0
 	}
-	status, results := Run(context.Background(), &td.cfg)
+	status, results := Run(context.Background(), &td.cfg, &td.state)
 	if status.ExitCode == subcommands.ExitFailure {
 		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.logbuf.String())
 	}

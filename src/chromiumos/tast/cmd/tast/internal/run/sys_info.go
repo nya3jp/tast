@@ -16,11 +16,11 @@ import (
 // getInitialSysInfo saves the initial state of the DUT's system information to cfg if
 // requested and if it hasn't already been saved. This is called before testing.
 // This updates cfg.initialSysInfo, so calling twice won't work.
-func getInitialSysInfo(ctx context.Context, cfg *Config) error {
+func getInitialSysInfo(ctx context.Context, cfg *Config, state *State) error {
 	if !cfg.collectSysInfo {
 		return nil
 	}
-	if cfg.initialSysInfo != nil {
+	if state.initialSysInfo != nil {
 		return errors.New("getInitialSysInfo is already called")
 	}
 
@@ -28,7 +28,7 @@ func getInitialSysInfo(ctx context.Context, cfg *Config) error {
 	defer st.End()
 	cfg.Logger.Debug("Getting initial system state")
 
-	hst, err := connectToTarget(ctx, cfg)
+	hst, err := connectToTarget(ctx, cfg, state)
 	if err != nil {
 		return err
 	}
@@ -45,15 +45,15 @@ func getInitialSysInfo(ctx context.Context, cfg *Config) error {
 	for _, warn := range res.Warnings {
 		cfg.Logger.Log("Error getting system info: ", warn)
 	}
-	cfg.initialSysInfo = &res.State
+	state.initialSysInfo = &res.State
 	return nil
 }
 
 // collectSysInfo writes system information generated on the DUT during testing to the results dir if
 // doing so was requested. This is called after testing and relies on the state saved by
 // getInitialSysInfo.
-func collectSysInfo(ctx context.Context, cfg *Config) error {
-	if !cfg.collectSysInfo || cfg.initialSysInfo == nil {
+func collectSysInfo(ctx context.Context, cfg *Config, state *State) error {
+	if !cfg.collectSysInfo || state.initialSysInfo == nil {
 		return nil
 	}
 
@@ -61,7 +61,7 @@ func collectSysInfo(ctx context.Context, cfg *Config) error {
 	defer st.End()
 	cfg.Logger.Debug("Collecting system information")
 
-	hst, err := connectToTarget(ctx, cfg)
+	hst, err := connectToTarget(ctx, cfg, state)
 	if err != nil {
 		return err
 	}
@@ -71,7 +71,7 @@ func collectSysInfo(ctx context.Context, cfg *Config) error {
 		localRunnerCommand(ctx, cfg, hst),
 		&runner.Args{
 			Mode:           runner.CollectSysInfoMode,
-			CollectSysInfo: &runner.CollectSysInfoArgs{InitialState: *cfg.initialSysInfo},
+			CollectSysInfo: &runner.CollectSysInfoArgs{InitialState: *state.initialSysInfo},
 		},
 		&res,
 	); err != nil {

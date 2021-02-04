@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "73a50625_f2bbdc28",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-02-04T23:08:28Z",
+      "side": 1,
+      "message": "I have addressed latest feedback by changing the checking function to hasWildcardInTestPattern. I also add two unit tests: one for hasWildcardInTestPattern and one for making sure selectTestsByGlob scale well. Please review. Thanks.  ",
+      "revId": "ebb55849fc1dd9466157c027842a7a1cdce97460",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

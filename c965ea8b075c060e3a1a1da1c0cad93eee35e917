@@ -33,6 +33,24 @@
       "message": "Please add unit test of this function, or add error cases to TestSelectTestsByGlobs.\n\noptional: How about making this like\nfunc checkTestPatternGlob(pat string) (hasWildcard bool, err error)\nso that the new type is not neeed?\nI think it is OK to set the other return values incorrect in case err !\u003d nil.\nHowever I am not confident which is more readable.",
       "revId": "c965ea8b075c060e3a1a1da1c0cad93eee35e917",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f7f4d60f_fdbf8f3f",
+        "filename": "src/chromiumos/tast/internal/testing/select.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-02-04T23:08:28Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "29635cd9_3cd821b9",
+      "revId": "c965ea8b075c060e3a1a1da1c0cad93eee35e917",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

@@ -35,6 +35,7 @@ const (
 // runCmd implements subcommands.Command to support running tests.
 type runCmd struct {
 	cfg          *run.Config   // shared config for running tests
+	state        *run.State    // shared state for running tests.
 	wrapper      runWrapper    // can be set by tests to stub out calls to run package
 	failForTests bool          // exit with 1 if any individual tests fail
 	timeout      time.Duration // overall timeout; 0 if no timeout
@@ -45,6 +46,7 @@ var _ = subcommands.Command(&runCmd{})
 func newRunCmd(trunkDir string) *runCmd {
 	return &runCmd{
 		cfg:     run.NewConfig(run.RunTestsMode, tastDir, trunkDir),
+		state:   &run.State{},
 		wrapper: &realRunWrapper{},
 	}
 }
@@ -83,7 +85,7 @@ func (r *runCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{})
 	ctx, cancel := xcontext.WithTimeout(ctx, r.timeout, errors.Errorf("%v: global timeout reached (%v)", context.DeadlineExceeded, r.timeout))
 	defer cancel(context.Canceled)
 
-	defer r.cfg.Close(ctx)
+	defer r.state.Close(ctx)
 
 	tl := timing.NewLog()
 	ctx = timing.NewContext(ctx, tl)
@@ -169,7 +171,7 @@ func (r *runCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{})
 	rctx, rcancel := xcontext.WithDeadline(ctx, dl.Add(-wrt), errors.Errorf("%v: global timeout reached (%v)", context.DeadlineExceeded, r.timeout-wrt))
 	defer rcancel(context.Canceled)
 
-	status, results := r.wrapper.run(rctx, r.cfg)
+	status, results := r.wrapper.run(rctx, r.cfg, r.state)
 	allTestsRun := status.ExitCode == subcommands.ExitSuccess
 	if len(results) == 0 && len(r.cfg.TestNamesToSkip) == 0 && allTestsRun {
 		lg.Logf("No tests matched by pattern(s) %v", r.cfg.Patterns)
@@ -181,7 +183,7 @@ func (r *runCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{})
 	// if testing was interrupted, or even if no tests started due to the DUT not becoming ready:
 	// https://crbug.com/928445
 	if !status.FailedBeforeRun {
-		if err = r.wrapper.writeResults(ctx, r.cfg, results, allTestsRun); err != nil {
+		if err = r.wrapper.writeResults(ctx, r.cfg, r.state, results, allTestsRun); err != nil {
 			msg := fmt.Sprintf("Failed to write results: %v", err)
 			if status.ExitCode == subcommands.ExitSuccess {
 				status = run.Status{ExitCode: subcommands.ExitFailure, ErrorMsg: msg}

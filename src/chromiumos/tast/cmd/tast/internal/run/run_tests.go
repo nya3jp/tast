@@ -10,22 +10,22 @@ import (
 	"chromiumos/tast/errors"
 )
 
-func runTests(ctx context.Context, cfg *Config) ([]*EntityResult, error) {
-	if err := getDUTInfo(ctx, cfg); err != nil {
+func runTests(ctx context.Context, cfg *Config, state *State) ([]*EntityResult, error) {
+	if err := getDUTInfo(ctx, cfg, state); err != nil {
 		return nil, errors.Wrap(err, "failed to get DUT software features")
 	}
 
-	if cfg.osVersion == "" {
+	if state.osVersion == "" {
 		cfg.Logger.Log("Target version: not available from target")
 	} else {
-		cfg.Logger.Logf("Target version: %v", cfg.osVersion)
+		cfg.Logger.Logf("Target version: %v", state.osVersion)
 	}
 
-	if err := getInitialSysInfo(ctx, cfg); err != nil {
+	if err := getInitialSysInfo(ctx, cfg, state); err != nil {
 		return nil, errors.Wrap(err, "failed to get initial sysinfo")
 	}
 
-	testsToRun, testsToSkip, testsNotInShard, err := findTestsForShard(ctx, cfg)
+	testsToRun, testsToSkip, testsNotInShard, err := findTestsForShard(ctx, cfg, state)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to get test patterns for specified shard")
 	}
@@ -58,10 +58,10 @@ func runTests(ctx context.Context, cfg *Config) ([]*EntityResult, error) {
 	}
 
 	var results []*EntityResult
-	cfg.startedRun = true
+	state.startedRun = true
 
 	if cfg.runLocal {
-		lres, err := runLocalTests(ctx, cfg)
+		lres, err := runLocalTests(ctx, cfg, state)
 		results = append(results, lres...)
 		if err != nil {
 			// TODO(derat): While test runners are always supposed to report success even if tests fail,
@@ -73,21 +73,21 @@ func runTests(ctx context.Context, cfg *Config) ([]*EntityResult, error) {
 	// Turn down the ephemeral devserver before running remote tests. Some remote tests
 	// in the meta category run the tast command which starts yet another ephemeral devserver
 	// and reverse forwarding port can conflict.
-	closeEphemeralDevserver(ctx, cfg)
+	closeEphemeralDevserver(ctx, state)
 
 	if !cfg.runRemote {
 		return results, nil
 	}
 
 	// Run remote tests and merge the results.
-	rres, err := runRemoteTests(ctx, cfg)
+	rres, err := runRemoteTests(ctx, cfg, state)
 	results = append(results, rres...)
 	return results, err
 }
 
 // findTestsForShard finds the pattern for a subset of tests based on shard index.
-func findTestsForShard(ctx context.Context, cfg *Config) (testsToRun, testsToSkip, testsNotInShard []*EntityResult, err error) {
-	tests, testsToSkip, err := listRunnableTests(ctx, cfg)
+func findTestsForShard(ctx context.Context, cfg *Config, state *State) (testsToRun, testsToSkip, testsNotInShard []*EntityResult, err error) {
+	tests, testsToSkip, err := listRunnableTests(ctx, cfg, state)
 	if err != nil {
 		return nil, nil, nil, errors.Wrapf(err, "fails to find runnable tests for patterns %q", cfg.Patterns)
 	}
@@ -108,8 +108,8 @@ func findTestsForShard(ctx context.Context, cfg *Config) (testsToRun, testsToSki
 }
 
 // listRunnableTests finds runnable tests that fit the cfg.Patterns.
-func listRunnableTests(ctx context.Context, cfg *Config) (testsToInclude, testsToSkip []*EntityResult, err error) {
-	tests, err := listTests(ctx, cfg)
+func listRunnableTests(ctx context.Context, cfg *Config, state *State) (testsToInclude, testsToSkip []*EntityResult, err error) {
+	tests, err := listTests(ctx, cfg, state)
 	if err != nil {
 		return nil, nil, errors.Wrapf(err, "cannot list tests for patterns %q", cfg.Patterns)
 	}

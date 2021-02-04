@@ -58,6 +58,7 @@ type localTestData struct {
 	srvData *sshtest.TestData
 	logbuf  bytes.Buffer
 	cfg     Config
+	state   State
 	tempDir string
 
 	hostDir     string // directory simulating root dir on DUT for file copies
@@ -120,7 +121,7 @@ func (td *localTestData) close() {
 	if td == nil {
 		return
 	}
-	td.cfg.Close(context.Background())
+	td.state.Close(context.Background())
 	td.srvData.Close()
 	if td.tempDir != "" {
 		os.RemoveAll(td.tempDir)
@@ -213,7 +214,7 @@ func TestLocalSuccess(t *gotesting.T) {
 		return 0
 	}
 
-	if _, err := runLocalTests(context.Background(), &td.cfg); err != nil {
+	if _, err := runLocalTests(context.Background(), &td.cfg, &td.state); err != nil {
 		t.Error("runLocalTest failed: ", err)
 	}
 }
@@ -261,7 +262,7 @@ func TestLocalProxy(t *gotesting.T) {
 		mockLocalRunner,
 	}, " ")
 
-	if _, err := runLocalTests(context.Background(), &td.cfg); err != nil {
+	if _, err := runLocalTests(context.Background(), &td.cfg, &td.state); err != nil {
 		t.Error("runLocalTests failed: ", err)
 	}
 }
@@ -292,7 +293,7 @@ func TestLocalCopyOutput(t *gotesting.T) {
 		t.Fatal(err)
 	}
 
-	if _, err := runLocalTests(context.Background(), &td.cfg); err != nil {
+	if _, err := runLocalTests(context.Background(), &td.cfg, &td.state); err != nil {
 		t.Error("runLocalTests failed: ", err)
 	}
 
@@ -321,7 +322,7 @@ func disabledTestLocalExecFailure(t *gotesting.T) {
 		return 1
 	}
 
-	if _, err := runLocalTests(context.Background(), &td.cfg); err == nil {
+	if _, err := runLocalTests(context.Background(), &td.cfg, &td.state); err == nil {
 		t.Error("runLocalTests unexpectedly passed")
 	}
 	if !strings.Contains(td.logbuf.String(), msg) {
@@ -344,7 +345,7 @@ func TestLocalWaitTimeout(t *gotesting.T) {
 
 	// After setting a short wait timeout, an error should be reported.
 	td.cfg.localRunnerWaitTimeout = time.Millisecond
-	if _, err := runLocalTests(context.Background(), &td.cfg); err == nil {
+	if _, err := runLocalTests(context.Background(), &td.cfg, &td.state); err == nil {
 		t.Error("runLocalTests unexpectedly passed")
 	}
 }
@@ -414,12 +415,12 @@ func TestLocalDataFiles(t *gotesting.T) {
 	}
 
 	// getDataFilePaths should list the tests and return the files needed by them.
-	if _, err := connectToTarget(context.Background(), &td.cfg); err != nil {
+	if _, err := connectToTarget(context.Background(), &td.cfg, &td.state); err != nil {
 		t.Fatal(err)
 	}
 	td.cfg.buildBundle = bundleName
 	td.cfg.Patterns = []string{pattern}
-	paths, err := getDataFilePaths(context.Background(), &td.cfg, td.cfg.hst)
+	paths, err := getDataFilePaths(context.Background(), &td.cfg, &td.state, td.state.hst)
 	if err != nil {
 		t.Fatal("getDataFilePaths() failed: ", err)
 	}
@@ -435,7 +436,7 @@ func TestLocalDataFiles(t *gotesting.T) {
 	}
 
 	// pushDataFiles should copy the required files to the DUT.
-	if err = pushDataFiles(context.Background(), &td.cfg, td.cfg.hst,
+	if err = pushDataFiles(context.Background(), &td.cfg, td.state.hst,
 		filepath.Join(mockLocalDataDir, bundlePkg), paths); err != nil {
 		t.Fatal("pushDataFiles() failed: ", err)
 	}

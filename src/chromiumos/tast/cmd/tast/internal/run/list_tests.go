@@ -14,21 +14,21 @@ import (
 )
 
 // listTests returns the whole tests to run.
-func listTests(ctx context.Context, cfg *Config) ([]*EntityResult, error) {
+func listTests(ctx context.Context, cfg *Config, state *State) ([]*EntityResult, error) {
 	var tests []testing.EntityWithRunnabilityInfo
 	if cfg.runLocal {
-		hst, err := connectToTarget(ctx, cfg)
+		hst, err := connectToTarget(ctx, cfg, state)
 		if err != nil {
 			return nil, err
 		}
-		localTests, err := listLocalTests(ctx, cfg, hst)
+		localTests, err := listLocalTests(ctx, cfg, state, hst)
 		if err != nil {
 			return nil, err
 		}
 		tests = append(tests, localTests...)
 	}
 	if cfg.runRemote {
-		remoteTests, err := listRemoteTests(ctx, cfg)
+		remoteTests, err := listRemoteTests(ctx, cfg, state)
 		if err != nil {
 			return nil, err
 		}
@@ -43,24 +43,24 @@ func listTests(ctx context.Context, cfg *Config) ([]*EntityResult, error) {
 }
 
 // listLocalTests returns a list of local tests to run.
-func listLocalTests(ctx context.Context, cfg *Config, hst *ssh.Conn) ([]testing.EntityWithRunnabilityInfo, error) {
+func listLocalTests(ctx context.Context, cfg *Config, state *State, hst *ssh.Conn) ([]testing.EntityWithRunnabilityInfo, error) {
 	return runListTestsCommand(
-		localRunnerCommand(ctx, cfg, hst), cfg, cfg.localBundleGlob())
+		localRunnerCommand(ctx, cfg, hst), cfg, state, cfg.localBundleGlob())
 }
 
 // listRemoteTests returns a list of remote tests to run.
-func listRemoteTests(ctx context.Context, cfg *Config) ([]testing.EntityWithRunnabilityInfo, error) {
+func listRemoteTests(ctx context.Context, cfg *Config, state *State) ([]testing.EntityWithRunnabilityInfo, error) {
 	return runListTestsCommand(
-		remoteRunnerCommand(ctx, cfg), cfg, cfg.remoteBundleGlob())
+		remoteRunnerCommand(ctx, cfg), cfg, state, cfg.remoteBundleGlob())
 }
 
-func runListTestsCommand(r runnerCmd, cfg *Config, glob string) ([]testing.EntityWithRunnabilityInfo, error) {
+func runListTestsCommand(r runnerCmd, cfg *Config, state *State, glob string) ([]testing.EntityWithRunnabilityInfo, error) {
 	var ts []testing.EntityWithRunnabilityInfo
 	args := &runner.Args{
 		Mode: runner.ListTestsMode,
 		ListTests: &runner.ListTestsArgs{
 			BundleArgs: bundle.ListTestsArgs{
-				FeatureArgs: *featureArgsFromConfig(cfg),
+				FeatureArgs: *featureArgsFromConfig(cfg, state),
 				Patterns:    cfg.Patterns,
 			},
 			BundleGlob: glob,

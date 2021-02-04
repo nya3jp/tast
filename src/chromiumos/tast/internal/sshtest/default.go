@@ -30,7 +30,9 @@ type TestData struct { // NOLINT
 }
 
 // NewTestData initializes and returns a TestData struct. Panics on error.
-func NewTestData(userKey, hostKey *rsa.PrivateKey, handler ExecHandler) *TestData {
+func NewTestData(handler ExecHandler) *TestData {
+	userKey, hostKey := MustGenerateKeys()
+
 	d := TestData{}
 	var err error
 	if d.Srv, err = NewSSHServer(&userKey.PublicKey, hostKey, handler); err != nil {

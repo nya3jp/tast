@@ -29,14 +29,14 @@ func TestRetry(t *testing.T) {
 	// Configure the server to reject the next two connections and let the client only retry once.
 	srv.RejectConns(2)
 	ctx := context.Background()
-	if hst, err := sshtest.ConnectToServer(ctx, srv, userKey, &ssh.Options{ConnectRetries: 1}); err == nil {
+	if hst, err := sshtest.ConnectToServer(ctx, srv.Addr().String(), userKey, &ssh.Options{ConnectRetries: 1}); err == nil {
 		t.Error("Unexpectedly able to connect to server with inadequate retries")
 		hst.Close(ctx)
 	}
 
 	// With two retries (i.e. three attempts), the connection should be successfully established.
 	srv.RejectConns(2)
-	if hst, err := sshtest.ConnectToServer(ctx, srv, userKey, &ssh.Options{ConnectRetries: 2}); err != nil {
+	if hst, err := sshtest.ConnectToServer(ctx, srv.Addr().String(), userKey, &ssh.Options{ConnectRetries: 2}); err != nil {
 		t.Error("Failed connecting to server despite adequate retries: ", err)
 	} else {
 		hst.Close(ctx)

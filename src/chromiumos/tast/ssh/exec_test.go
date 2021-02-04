@@ -64,7 +64,7 @@ func TestCommandsOnCustomPlatform(t *testing.T) {
 	}
 
 	ctx := context.Background()
-	hst, err := sshtest.ConnectToServer(ctx, srv, userKey, &ssh.Options{ConnectRetries: 1, Platform: platform})
+	hst, err := sshtest.ConnectToServer(ctx, srv.Addr().String(), userKey, &ssh.Options{ConnectRetries: 1, Platform: platform})
 	if err != nil {
 		t.Fatal("Unable to connect to SSH Server")
 	}

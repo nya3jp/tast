@@ -23,9 +23,9 @@ func init() {
 	userKey, hostKey = MustGenerateKeys()
 }
 
-// ConnectToServer establishes a connection to srv using key.
+// ConnectToServer establishes a connection to target using key.
 // base is used as a base set of options.
-func ConnectToServer(ctx context.Context, srv *SSHServer, key *rsa.PrivateKey, base *ssh.Options) (*ssh.Conn, error) {
+func ConnectToServer(ctx context.Context, target string, key *rsa.PrivateKey, base *ssh.Options) (*ssh.Conn, error) {
 	keyFile, err := WriteKey(key)
 	if err != nil {
 		return nil, err
@@ -34,7 +34,7 @@ func ConnectToServer(ctx context.Context, srv *SSHServer, key *rsa.PrivateKey, b
 
 	o := *base
 	o.KeyFile = keyFile
-	if err = ssh.ParseTarget(srv.Addr().String(), &o); err != nil {
+	if err = ssh.ParseTarget(target, &o); err != nil {
 		return nil, err
 	}
 	s, err := ssh.New(ctx, &o)
@@ -84,7 +84,7 @@ func NewTestDataConn(t *testing.T) *TestDataConn {
 		t.Fatal(err)
 	}
 
-	if td.Hst, err = ConnectToServer(td.Ctx, td.Srv, userKey, &ssh.Options{}); err != nil {
+	if td.Hst, err = ConnectToServer(td.Ctx, td.Srv.Addr().String(), userKey, &ssh.Options{}); err != nil {
 		td.Srv.Close()
 		t.Fatal(err)
 	}

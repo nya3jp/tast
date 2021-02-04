@@ -120,7 +120,7 @@ func startFakeFixtureService(ctx context.Context, t *gotesting.T) (rfcl FixtureS
 }
 
 func TestFixtureServiceResponses(t *gotesting.T) {
-	td := sshtest.NewTestData(userKey, hostKey, nil)
+	td := sshtest.NewTestData(nil)
 	defer td.Close()
 
 	requests := []*RunFixtureRequest{
@@ -260,7 +260,7 @@ func TestFixtureServiceResponses(t *gotesting.T) {
 }
 
 func TestFixtureServiceParameters(t *gotesting.T) {
-	td := sshtest.NewTestData(userKey, hostKey, nil)
+	td := sshtest.NewTestData(nil)
 	defer td.Close()
 
 	tmpDir := testutil.TempDir(t)
@@ -348,7 +348,7 @@ func TestFixtureServiceParameters(t *gotesting.T) {
 }
 
 func TestFixtureServiceDefaultTempDir(t *gotesting.T) {
-	td := sshtest.NewTestData(userKey, hostKey, nil)
+	td := sshtest.NewTestData(nil)
 	defer td.Close()
 
 	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
@@ -442,7 +442,7 @@ func TestFixtureServiceNoSuchFixture(t *gotesting.T) {
 
 	tmpDir := testutil.TempDir(t)
 	defer os.RemoveAll(tmpDir)
-	td := sshtest.NewTestData(userKey, hostKey, nil)
+	td := sshtest.NewTestData(nil)
 	defer td.Close()
 
 	if err := rfcl.Send(&RunFixtureRequest{
@@ -485,7 +485,7 @@ func TestFixtureServiceTimeout(t *gotesting.T) {
 
 	tmpDir := testutil.TempDir(t)
 	defer os.RemoveAll(tmpDir)
-	td := sshtest.NewTestData(userKey, hostKey, nil)
+	td := sshtest.NewTestData(nil)
 	defer td.Close()
 
 	if err := rfcl.Send(&RunFixtureRequest{
@@ -515,7 +515,7 @@ func TestFixtureServiceWrongRequestOrder(t *gotesting.T) {
 	defer restore()
 	testing.AddFixture(&testing.Fixture{Name: "fake", Impl: &fakeFixture{}})
 
-	td := sshtest.NewTestData(userKey, hostKey, nil)
+	td := sshtest.NewTestData(nil)
 	defer td.Close()
 
 	push := &RunFixtureRequest{

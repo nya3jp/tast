@@ -7,7 +7,6 @@ package bundle
 import (
 	"bytes"
 	"context"
-	"crypto/rsa"
 	"log"
 	"os"
 	gotesting "testing"
@@ -17,12 +16,6 @@ import (
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/testutil"
 )
-
-var userKey, hostKey *rsa.PrivateKey
-
-func init() {
-	userKey, hostKey = sshtest.MustGenerateKeys()
-}
 
 func TestRemoteMissingTarget(t *gotesting.T) {
 	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
@@ -41,7 +34,7 @@ func TestRemoteMissingTarget(t *gotesting.T) {
 }
 
 func TestRemoteCantConnect(t *gotesting.T) {
-	td := sshtest.NewTestData(userKey, hostKey, nil)
+	td := sshtest.NewTestData(nil)
 	defer td.Close()
 
 	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
@@ -68,7 +61,7 @@ func TestRemoteDUT(t *gotesting.T) {
 		cmd    = "some_command"
 		output = "fake output"
 	)
-	td := sshtest.NewTestData(userKey, hostKey, func(req *sshtest.ExecReq) {
+	td := sshtest.NewTestData(func(req *sshtest.ExecReq) {
 		if req.Cmd != "exec "+cmd {
 			log.Printf("Unexpected command %q", req.Cmd)
 			req.Start(false)
@@ -112,7 +105,7 @@ func TestRemoteDUT(t *gotesting.T) {
 }
 
 func TestRemoteReconnectBetweenTests(t *gotesting.T) {
-	td := sshtest.NewTestData(userKey, hostKey, nil)
+	td := sshtest.NewTestData(nil)
 	defer td.Close()
 
 	// Returns a test function that sets the passed bool to true if the dut.DUT
@@ -157,7 +150,7 @@ func TestRemoteReconnectBetweenTests(t *gotesting.T) {
 
 // TestRemoteTestHooks makes sure hook function is called at the end of a test.
 func TestRemoteTestHooks(t *gotesting.T) {
-	td := sshtest.NewTestData(userKey, hostKey, nil)
+	td := sshtest.NewTestData(nil)
 	defer td.Close()
 	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
 	defer restore()
@@ -215,7 +208,7 @@ func TestRemoteTestHooks(t *gotesting.T) {
 
 // TestBeforeReboot makes sure hook function is called before reboot.
 func TestBeforeReboot(t *gotesting.T) {
-	td := sshtest.NewTestData(userKey, hostKey, nil)
+	td := sshtest.NewTestData(nil)
 	defer td.Close()
 	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
 	defer restore()

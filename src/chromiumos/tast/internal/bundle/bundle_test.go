@@ -453,7 +453,7 @@ func TestRunTestsSkipTestWithPrecondition(t *gotesting.T) {
 }
 
 func TestRunRemoteData(t *gotesting.T) {
-	td := sshtest.NewTestData(userKey, hostKey, nil)
+	td := sshtest.NewTestData(nil)
 	defer td.Close()
 
 	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
@@ -516,7 +516,7 @@ func TestRunRemoteData(t *gotesting.T) {
 }
 
 func TestRunCloudStorage(t *gotesting.T) {
-	td := sshtest.NewTestData(userKey, hostKey, nil)
+	td := sshtest.NewTestData(nil)
 	defer td.Close()
 
 	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
@@ -563,7 +563,7 @@ func TestRunExternalDataFiles(t *gotesting.T) {
 		file2Data = "data2"
 	)
 
-	td := sshtest.NewTestData(userKey, hostKey, nil)
+	td := sshtest.NewTestData(nil)
 	defer td.Close()
 
 	ds, err := devservertest.NewServer(devservertest.Files([]*devservertest.File{

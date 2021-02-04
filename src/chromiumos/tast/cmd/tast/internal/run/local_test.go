@@ -7,7 +7,6 @@ package run
 import (
 	"bytes"
 	"context"
-	"crypto/rsa"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -35,12 +34,6 @@ import (
 	"chromiumos/tast/shutil"
 	"chromiumos/tast/testutil"
 )
-
-var userKey, hostKey *rsa.PrivateKey
-
-func init() {
-	userKey, hostKey = sshtest.MustGenerateKeys()
-}
 
 const (
 	mockLocalRunner       = "/mock/local_test_runner"
@@ -216,7 +209,7 @@ func newLocalTestData(t *gotesting.T, opts ...localTestDataOption) *localTestDat
 	}
 
 	td := localTestData{expRunCmd: "exec env " + mockLocalRunner, bootID: defaultBootID}
-	td.srvData = sshtest.NewTestData(userKey, hostKey, td.handleExec)
+	td.srvData = sshtest.NewTestData(td.handleExec)
 	td.cfg.KeyFile = td.srvData.UserKeyFile
 
 	toClose := &td

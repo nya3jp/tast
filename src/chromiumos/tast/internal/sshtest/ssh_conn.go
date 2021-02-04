@@ -59,8 +59,8 @@ const (
 // TestDataConn wraps data common to all tests.
 // Whereas TastData only manages SSHServer it additionally owns connection to the server.
 type TestDataConn struct {
-	Srv *SSHServer // local SSH server
-	// Hst is a connection to srv.
+	Srv *Server // local SSH server
+	// Hst is a connection to Srv.
 	Hst *ssh.Conn
 
 	// Ctx is used for performaing operations using Hst.
@@ -80,7 +80,7 @@ func NewTestDataConn(t *testing.T) *TestDataConn {
 	td.Ctx, td.Cancel = context.WithCancel(context.Background())
 
 	var err error
-	if td.Srv, err = NewSSHServer(&userKey.PublicKey, hostKey, td.handleExec); err != nil {
+	if td.Srv, err = NewServer(&userKey.PublicKey, hostKey, td.handleExec); err != nil {
 		t.Fatal(err)
 	}
 

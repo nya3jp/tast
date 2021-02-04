@@ -43,7 +43,7 @@ func TestCommandsOnCustomPlatform(t *testing.T) {
 	t.Parallel()
 
 	var expectedCmd string
-	srv, err := sshtest.NewSSHServer(&userKey.PublicKey, hostKey, func(req *sshtest.ExecReq) {
+	srv, err := sshtest.NewServer(&userKey.PublicKey, hostKey, func(req *sshtest.ExecReq) {
 		if req.Cmd != expectedCmd {
 			t.Errorf("Unexpected command %q (want %q)", req.Cmd, expectedCmd)
 			req.Start(false)

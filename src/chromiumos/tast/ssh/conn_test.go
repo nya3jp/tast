@@ -20,7 +20,7 @@ var userKey, hostKey = sshtest.MustGenerateKeys()
 
 func TestRetry(t *testing.T) {
 	t.Parallel()
-	srv, err := sshtest.NewSSHServer(&userKey.PublicKey, hostKey, func(*sshtest.ExecReq) {})
+	srv, err := sshtest.NewServer(&userKey.PublicKey, hostKey, func(*sshtest.ExecReq) {})
 	if err != nil {
 		t.Fatal("Failed starting server: ", err)
 	}
@@ -67,7 +67,7 @@ func TestPing(t *testing.T) {
 
 func TestKeyDir(t *testing.T) {
 	t.Parallel()
-	srv, err := sshtest.NewSSHServer(&userKey.PublicKey, hostKey, nil)
+	srv, err := sshtest.NewServer(&userKey.PublicKey, hostKey, nil)
 	if err != nil {
 		t.Fatal(err)
 	}

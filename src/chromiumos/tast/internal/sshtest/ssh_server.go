@@ -39,12 +39,12 @@ const (
 	maxStringLen = 2048
 )
 
-// SSHServer implements an SSH server based on the ssh package's NewServerConn
+// Server implements an SSH server based on the ssh package's NewServerConn
 // example that listens on localhost and performs authentication via an RSA keypair.
 //
 // Only "exec" requests and pings (using SSH_MSG_IGNORE) are supported.
 // "exec" requests are handled using a caller-supplied function.
-type SSHServer struct {
+type Server struct {
 	cfg      *ssh.ServerConfig
 	listener net.Listener
 
@@ -79,9 +79,9 @@ func newServerConfig(pk *rsa.PublicKey, hk *rsa.PrivateKey) (*ssh.ServerConfig, 
 	return cfg, nil
 }
 
-// NewSSHServer creates an SSH server using host key hk and accepting public key authentication using pk.
+// NewServer creates an SSH server using host key hk and accepting public key authentication using pk.
 // A random port bound to the local IPv4 interface is used.
-func NewSSHServer(pk *rsa.PublicKey, hk *rsa.PrivateKey, handler ExecHandler) (*SSHServer, error) {
+func NewServer(pk *rsa.PublicKey, hk *rsa.PrivateKey, handler ExecHandler) (*Server, error) {
 	cfg, err := newServerConfig(pk, hk)
 	if err != nil {
 		return nil, err
@@ -90,7 +90,7 @@ func NewSSHServer(pk *rsa.PublicKey, hk *rsa.PrivateKey, handler ExecHandler) (*
 	if err != nil {
 		return nil, err
 	}
-	s := &SSHServer{
+	s := &Server{
 		cfg:         cfg,
 		listener:    ls,
 		answerPings: true,
@@ -113,27 +113,27 @@ func NewSSHServer(pk *rsa.PublicKey, hk *rsa.PrivateKey, handler ExecHandler) (*
 }
 
 // Close instructs the server to stop listening for connections.
-func (s *SSHServer) Close() error {
+func (s *Server) Close() error {
 	return s.listener.Close()
 }
 
 // AnswerPings controls whether the server should reply to SSH_MSG_IGNORE ping requests or ignore them.
-func (s *SSHServer) AnswerPings(v bool) {
+func (s *Server) AnswerPings(v bool) {
 	s.answerPings = v
 }
 
 // RejectConns instructs the server to reject the next n connections.
-func (s *SSHServer) RejectConns(n int) {
+func (s *Server) RejectConns(n int) {
 	atomic.StoreInt64(&s.rejectConns, int64(n))
 }
 
 // SessionDelay configures a delay used by the server before starting a new session.
-func (s *SSHServer) SessionDelay(d time.Duration) {
+func (s *Server) SessionDelay(d time.Duration) {
 	s.sessionDelay = d
 }
 
 // Addr returns the address on which the server is listening.
-func (s *SSHServer) Addr() net.Addr {
+func (s *Server) Addr() net.Addr {
 	if s.listener == nil {
 		panic("Server not listening")
 	}
@@ -194,7 +194,7 @@ func handleForward(sConn *ssh.ServerConn, src net.Conn) error {
 }
 
 // handleConn services a new incoming connection on conn.
-func (s *SSHServer) handleConn(conn net.Conn) error {
+func (s *Server) handleConn(conn net.Conn) error {
 	if atomic.AddInt64(&s.rejectConns, -1) >= 0 {
 		return errors.New("intentionally rejecting")
 	}
@@ -270,7 +270,7 @@ func (s *SSHServer) handleConn(conn net.Conn) error {
 }
 
 // handleChannel services a channel. Only "exec" requests are supported.
-func (s *SSHServer) handleChannel(ch ssh.Channel, reqs <-chan *ssh.Request) {
+func (s *Server) handleChannel(ch ssh.Channel, reqs <-chan *ssh.Request) {
 	defer ch.Close()
 
 	for req := range reqs {

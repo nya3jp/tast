@@ -39,14 +39,14 @@ func writeGetDUTInfoResult(w io.Writer, avail, unavail []string, dc *device.Conf
 
 // checkRunnerTestDepsArgs calls featureArgsFromConfig using cfg and verifies
 // that it sets runner args as specified per checkDeps, avail, and unavail.
-func checkRunnerTestDepsArgs(t *testing.T, cfg *Config, checkDeps bool,
+func checkRunnerTestDepsArgs(t *testing.T, cfg *Config, state *State, checkDeps bool,
 	avail, unavail []string, dc *device.Config, hf *configpb.HardwareFeatures, osVersion string) {
 	t.Helper()
 	args := runner.Args{
 		Mode: runner.RunTestsMode,
 		RunTests: &runner.RunTestsArgs{
 			BundleArgs: bundle.RunTestsArgs{
-				FeatureArgs: *featureArgsFromConfig(cfg),
+				FeatureArgs: *featureArgsFromConfig(cfg, state),
 			},
 		},
 	}
@@ -114,10 +114,10 @@ func TestGetDUTInfo(t *testing.T) {
 	}
 	td.cfg.checkTestDeps = true
 	td.cfg.extraUSEFlags = []string{"use1", "use2"}
-	if err := getDUTInfo(context.Background(), &td.cfg); err != nil {
+	if err := getDUTInfo(context.Background(), &td.cfg, &td.state); err != nil {
 		t.Fatalf("getDUTInfo(%+v) failed: %v", td.cfg, err)
 	}
-	checkRunnerTestDepsArgs(t, &td.cfg, true, avail, unavail, dc, hf, osVersion)
+	checkRunnerTestDepsArgs(t, &td.cfg, &td.state, true, avail, unavail, dc, hf, osVersion)
 
 	// Make sure device-config.txt is created.
 	if b, err := ioutil.ReadFile(filepath.Join(td.cfg.ResDir, "device-config.txt")); err != nil {
@@ -132,7 +132,7 @@ func TestGetDUTInfo(t *testing.T) {
 	}
 
 	// The second call should fail, because it tries to update cfg's fields twice.
-	if err := getDUTInfo(context.Background(), &td.cfg); err == nil {
+	if err := getDUTInfo(context.Background(), &td.cfg, &td.state); err == nil {
 		t.Fatal("Calling getDUTInfo twice unexpectedly succeeded")
 	}
 }
@@ -159,7 +159,7 @@ func TestGetDUTInfoNoDeviceConfig(t *testing.T) {
 		return 0
 	}
 	td.cfg.checkTestDeps = true
-	if err := getDUTInfo(context.Background(), &td.cfg); err != nil {
+	if err := getDUTInfo(context.Background(), &td.cfg, &td.state); err != nil {
 		t.Fatalf("getDUTInfo(%+v) failed: %v", td.cfg, err)
 	}
 
@@ -175,10 +175,10 @@ func TestGetDUTInfoNoCheckTestDeps(t *testing.T) {
 
 	// With "never", the runner shouldn't be called and dependencies shouldn't be checked.
 	td.cfg.checkTestDeps = false
-	if err := getDUTInfo(context.Background(), &td.cfg); err != nil {
+	if err := getDUTInfo(context.Background(), &td.cfg, &td.state); err != nil {
 		t.Fatalf("getDUTInfo(%+v) failed: %v", td.cfg, err)
 	}
-	checkRunnerTestDepsArgs(t, &td.cfg, false, nil, nil, nil, nil, "")
+	checkRunnerTestDepsArgs(t, &td.cfg, &td.state, false, nil, nil, nil, nil, "")
 }
 
 func TestGetSoftwareFeaturesNoFeatures(t *testing.T) {
@@ -196,7 +196,7 @@ func TestGetSoftwareFeaturesNoFeatures(t *testing.T) {
 		return 0
 	}
 	td.cfg.checkTestDeps = true
-	if err := getDUTInfo(context.Background(), &td.cfg); err == nil {
+	if err := getDUTInfo(context.Background(), &td.cfg, &td.state); err == nil {
 		t.Fatalf("getSoftwareFeatures(%+v) succeeded unexpectedly", td.cfg)
 	}
 }

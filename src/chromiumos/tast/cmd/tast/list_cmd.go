@@ -82,7 +82,7 @@ func (lc *listCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{
 	b := bytes.Buffer{}
 	lc.cfg.Logger = logging.NewSimple(&b, true, true)
 
-	status, results := lc.wrapper.run(ctx, lc.cfg)
+	status, results := lc.wrapper.run(ctx, lc.cfg, &run.State{})
 	if status.ExitCode != subcommands.ExitSuccess {
 		os.Stderr.Write(b.Bytes())
 		return status.ExitCode

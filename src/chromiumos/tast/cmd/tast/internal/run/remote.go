@@ -18,7 +18,7 @@ import (
 )
 
 // runRemoteTests runs the remote test runner and reads its output.
-func runRemoteTests(ctx context.Context, cfg *Config) ([]*EntityResult, error) {
+func runRemoteTests(ctx context.Context, cfg *Config, state *State) ([]*EntityResult, error) {
 	cfg.Logger.Status("Running remote tests on target")
 	ctx, st := timing.Start(ctx, "run_remote_tests")
 	defer st.End()
@@ -31,7 +31,7 @@ func runRemoteTests(ctx context.Context, cfg *Config) ([]*EntityResult, error) {
 	defer os.Remove(cfg.remoteOutDir)
 
 	runTests := func(ctx context.Context, patterns []string) (results []*EntityResult, unstarted []string, err error) {
-		return runRemoteTestsOnce(ctx, cfg, patterns)
+		return runRemoteTestsOnce(ctx, cfg, state, patterns)
 	}
 	beforeRetry := func(ctx context.Context) bool { return true }
 
@@ -48,7 +48,7 @@ func runRemoteTests(ctx context.Context, cfg *Config) ([]*EntityResult, error) {
 // Results from started tests and the names of tests that should have been
 // started but weren't (in the order in which they should've been run) are
 // returned.
-func runRemoteTestsOnce(ctx context.Context, cfg *Config, patterns []string) (results []*EntityResult, unstarted []string, err error) {
+func runRemoteTestsOnce(ctx context.Context, cfg *Config, state *State, patterns []string) (results []*EntityResult, unstarted []string, err error) {
 	ctx, st := timing.Start(ctx, "run_remote_tests_once")
 	defer st.End()
 
@@ -60,7 +60,7 @@ func runRemoteTestsOnce(ctx context.Context, cfg *Config, patterns []string) (re
 		Mode: runner.RunTestsMode,
 		RunTests: &runner.RunTestsArgs{
 			BundleArgs: bundle.RunTestsArgs{
-				FeatureArgs: *featureArgsFromConfig(cfg),
+				FeatureArgs: *featureArgsFromConfig(cfg, state),
 				Patterns:    patterns,
 				DataDir:     cfg.remoteDataDir,
 				OutDir:      cfg.remoteOutDir,
@@ -81,7 +81,7 @@ func runRemoteTestsOnce(ctx context.Context, cfg *Config, patterns []string) (re
 				},
 				LocalBundleDir:    cfg.localBundleDir,
 				Devservers:        cfg.devservers,
-				TLWServer:         cfg.tlwServerForDUT,
+				TLWServer:         state.tlwServerForDUT,
 				DUTName:           cfg.Target,
 				HeartbeatInterval: heartbeatInterval,
 				DownloadMode:      cfg.downloadMode,
@@ -119,7 +119,7 @@ func runRemoteTestsOnce(ctx context.Context, cfg *Config, patterns []string) (re
 		return nil, nil, fmt.Errorf("close stdin: %v", err)
 	}
 
-	results, unstarted, rerr := readTestOutput(ctx, cfg, stdout, os.Rename, nil)
+	results, unstarted, rerr := readTestOutput(ctx, cfg, state, stdout, os.Rename, nil)
 
 	// Check that the runner exits successfully first so that we don't give a useless error
 	// about incorrectly-formed output instead of e.g. an error about the runner being missing.

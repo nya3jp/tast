@@ -74,11 +74,11 @@ func errorStatusf(cfg *Config, code subcommands.ExitStatus, format string, args 
 // Messages are logged using cfg.Logger as the run progresses.
 // If an error is encountered, status.ErrorMsg will be logged to cfg.Logger before returning,
 // but the caller may wish to log it again later to increase its prominence if additional messages are logged.
-func Run(ctx context.Context, cfg *Config) (status Status, results []*EntityResult) {
+func Run(ctx context.Context, cfg *Config, state *State) (status Status, results []*EntityResult) {
 	defer func() {
 		// If we didn't get to the point where we started trying to run tests,
 		// report that to the caller so they can avoid writing a useless results dir.
-		if status.ExitCode == subcommands.ExitFailure && !cfg.startedRun {
+		if status.ExitCode == subcommands.ExitFailure && !state.startedRun {
 			status.FailedBeforeRun = true
 		}
 	}()
@@ -93,19 +93,19 @@ func Run(ctx context.Context, cfg *Config) (status Status, results []*EntityResu
 		cfg.Target = alternateTarget // Change targets according to SSH configuration files.
 	}
 
-	if err := connectToTLW(ctx, cfg); err != nil {
+	if err := connectToTLW(ctx, cfg, state); err != nil {
 		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to connect to TLW server: %v", err), nil
 	}
 
-	if err := connectToReports(ctx, cfg); err != nil {
+	if err := connectToReports(ctx, cfg, state); err != nil {
 		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to connect to Reports server: %v", err), nil
 	}
 
-	if err := resolveTarget(ctx, cfg); err != nil {
+	if err := resolveTarget(ctx, cfg, state); err != nil {
 		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to resolve target: %v", err), nil
 	}
 
-	hst, err := connectToTarget(ctx, cfg)
+	hst, err := connectToTarget(ctx, cfg, state)
 	if err != nil {
 		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to connect to %s: %v", cfg.Target, err), nil
 	}
@@ -118,18 +118,18 @@ func Run(ctx context.Context, cfg *Config) (status Status, results []*EntityResu
 			return errorStatusf(cfg, subcommands.ExitFailure, "Failed to set up remote-to-local port forwarding for TLW server: %v", err), nil
 		}
 		defer f.Close()
-		cfg.tlwServerForDUT = f.ListenAddr().String()
+		state.tlwServerForDUT = f.ListenAddr().String()
 	}
 
-	if cfg.reportsConn != nil {
-		cl := protocol.NewReportsClient(cfg.reportsConn)
-		cfg.reportsClient = cl
+	if state.reportsConn != nil {
+		cl := protocol.NewReportsClient(state.reportsConn)
+		state.reportsClient = cl
 		strm, err := cl.LogStream(ctx)
 		if err != nil {
 			return errorStatusf(cfg, subcommands.ExitFailure, "Failed to start LogStream streaming RPC: %v", err), nil
 		}
 		defer strm.CloseAndRecv()
-		cfg.reportsLogStream = strm
+		state.reportsLogStream = strm
 	}
 
 	// Start an ephemeral devserver if necessary. Devservers are required in
@@ -139,25 +139,25 @@ func Run(ctx context.Context, cfg *Config) (status Status, results []*EntityResu
 	// files to the prepare, try restricting the lifetime of the ephemeral
 	// devserver.
 	if cfg.runLocal && len(cfg.devservers) == 0 && cfg.tlwServer == "" && cfg.useEphemeralDevserver {
-		if err := startEphemeralDevserver(ctx, hst, cfg); err != nil {
+		if err := startEphemeralDevserver(ctx, hst, cfg, state); err != nil {
 			return errorStatusf(cfg, subcommands.ExitFailure, "Failed to start ephemeral devserver: %v", err), nil
 		}
-		defer closeEphemeralDevserver(ctx, cfg)
+		defer closeEphemeralDevserver(ctx, state)
 	}
 
-	if err := prepare(ctx, cfg, hst); err != nil {
+	if err := prepare(ctx, cfg, state, hst); err != nil {
 		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to build and push: %v", err), nil
 	}
 
 	switch cfg.mode {
 	case ListTestsMode:
-		results, err := listTests(ctx, cfg)
+		results, err := listTests(ctx, cfg, state)
 		if err != nil {
 			return errorStatusf(cfg, subcommands.ExitFailure, "Failed to list tests: %v", err), nil
 		}
 		return successStatus, results
 	case RunTestsMode:
-		results, err := runTests(ctx, cfg)
+		results, err := runTests(ctx, cfg, state)
 		if err != nil {
 			return errorStatusf(cfg, subcommands.ExitFailure, "Failed to run tests: %v", err), results
 		}
@@ -169,7 +169,7 @@ func Run(ctx context.Context, cfg *Config) (status Status, results []*EntityResu
 
 // connectToTLW connects to a TLW service if its address is provided, and stores
 // the connection to cfg.tlwConn.
-func connectToTLW(ctx context.Context, cfg *Config) error {
+func connectToTLW(ctx context.Context, cfg *Config, state *State) error {
 	if cfg.tlwServer == "" {
 		return nil
 	}
@@ -178,12 +178,12 @@ func connectToTLW(ctx context.Context, cfg *Config) error {
 	if err != nil {
 		return err
 	}
-	cfg.tlwConn = conn
+	state.tlwConn = conn
 	return nil
 }
 
 // connectToReports connects to the Reports server.
-func connectToReports(ctx context.Context, cfg *Config) error {
+func connectToReports(ctx context.Context, cfg *Config, state *State) error {
 	if cfg.reportsServer == "" {
 		return nil
 	}
@@ -191,13 +191,13 @@ func connectToReports(ctx context.Context, cfg *Config) error {
 	if err != nil {
 		return err
 	}
-	cfg.reportsConn = conn
+	state.reportsConn = conn
 	return nil
 }
 
 // resolveTarget resolves cfg.Target using the TLW service if available.
-func resolveTarget(ctx context.Context, cfg *Config) error {
-	if cfg.tlwConn == nil {
+func resolveTarget(ctx context.Context, cfg *Config, state *State) error {
+	if state.tlwConn == nil {
 		return nil
 	}
 
@@ -217,7 +217,7 @@ func resolveTarget(ctx context.Context, cfg *Config) error {
 
 	// Use the OpenDutPort API to resolve the target.
 	req := &tls.OpenDutPortRequest{Name: host, Port: int32(port)}
-	res, err := tls.NewWiringClient(cfg.tlwConn).OpenDutPort(ctx, req)
+	res, err := tls.NewWiringClient(state.tlwConn).OpenDutPort(ctx, req)
 	if err != nil {
 		return err
 	}
@@ -229,7 +229,7 @@ func resolveTarget(ctx context.Context, cfg *Config) error {
 // prepare prepares the DUT for running tests. When instructed in cfg, it builds
 // and pushes the local test runner and test bundles, and downloads private test
 // bundles.
-func prepare(ctx context.Context, cfg *Config, hst *ssh.Conn) error {
+func prepare(ctx context.Context, cfg *Config, state *State, hst *ssh.Conn) error {
 	if cfg.build && cfg.downloadPrivateBundles {
 		// Usually it makes no sense to download prebuilt private bundles when
 		// building and pushing a fresh test bundle.
@@ -239,17 +239,17 @@ func prepare(ctx context.Context, cfg *Config, hst *ssh.Conn) error {
 	written := false
 
 	if cfg.build {
-		if err := buildAll(ctx, cfg, hst); err != nil {
+		if err := buildAll(ctx, cfg, state, hst); err != nil {
 			return err
 		}
-		if err := pushAll(ctx, cfg, hst); err != nil {
+		if err := pushAll(ctx, cfg, state, hst); err != nil {
 			return err
 		}
 		written = true
 	}
 
 	if cfg.downloadPrivateBundles {
-		if err := downloadPrivateBundles(ctx, cfg, hst); err != nil {
+		if err := downloadPrivateBundles(ctx, cfg, state, hst); err != nil {
 			return fmt.Errorf("failed downloading private bundles: %v", err)
 		}
 		written = true
@@ -269,8 +269,8 @@ func prepare(ctx context.Context, cfg *Config, hst *ssh.Conn) error {
 }
 
 // buildAll builds Go binaries as instructed in cfg.
-func buildAll(ctx context.Context, cfg *Config, hst *ssh.Conn) error {
-	if err := getTargetArch(ctx, cfg, hst); err != nil {
+func buildAll(ctx context.Context, cfg *Config, state *State, hst *ssh.Conn) error {
+	if err := getTargetArch(ctx, cfg, state, hst); err != nil {
 		return fmt.Errorf("failed to get arch for %s: %v", cfg.Target, err)
 	}
 
@@ -279,18 +279,18 @@ func buildAll(ctx context.Context, cfg *Config, hst *ssh.Conn) error {
 	tgts := []*build.Target{
 		{
 			Pkg:        localRunnerPkg,
-			Arch:       cfg.targetArch,
+			Arch:       state.targetArch,
 			Workspaces: cfg.commonWorkspaces(),
-			Out:        filepath.Join(cfg.buildOutDir, cfg.targetArch, path.Base(localRunnerPkg)),
+			Out:        filepath.Join(cfg.buildOutDir, state.targetArch, path.Base(localRunnerPkg)),
 		},
 	}
 
 	if cfg.runLocal {
 		tgts = append(tgts, &build.Target{
 			Pkg:        path.Join(localBundlePkgPathPrefix, cfg.buildBundle),
-			Arch:       cfg.targetArch,
+			Arch:       state.targetArch,
 			Workspaces: cfg.bundleWorkspaces(),
-			Out:        filepath.Join(cfg.buildOutDir, cfg.targetArch, localBundleBuildSubdir, cfg.buildBundle),
+			Out:        filepath.Join(cfg.buildOutDir, state.targetArch, localBundleBuildSubdir, cfg.buildBundle),
 		})
 	}
 	if cfg.runRemote {
@@ -324,8 +324,8 @@ func buildAll(ctx context.Context, cfg *Config, hst *ssh.Conn) error {
 // saves it to cfg.targetArch. Note that this can be different from the kernel architecture
 // returned by "uname -m" on some boards (e.g. aarch64 kernel with armv7l userland).
 // TODO(crbug.com/982184): Get rid of this function.
-func getTargetArch(ctx context.Context, cfg *Config, hst *ssh.Conn) error {
-	if cfg.targetArch != "" {
+func getTargetArch(ctx context.Context, cfg *Config, state *State, hst *ssh.Conn) error {
+	if state.targetArch != "" {
 		return nil
 	}
 
@@ -341,12 +341,12 @@ func getTargetArch(ctx context.Context, cfg *Config, hst *ssh.Conn) error {
 	s := string(out)
 
 	if strings.Contains(s, "x86-64") {
-		cfg.targetArch = "x86_64"
+		state.targetArch = "x86_64"
 	} else {
 		if strings.HasPrefix(s, "ELF 64-bit") {
-			cfg.targetArch = "aarch64"
+			state.targetArch = "aarch64"
 		} else {
-			cfg.targetArch = "armv7l"
+			state.targetArch = "armv7l"
 		}
 	}
 	return nil
@@ -356,13 +356,13 @@ func getTargetArch(ctx context.Context, cfg *Config, hst *ssh.Conn) error {
 // and local test data files to the DUT if necessary. If cfg.mode is
 // ListTestsMode data files are not pushed since they are not needed to build
 // a list of tests.
-func pushAll(ctx context.Context, cfg *Config, hst *ssh.Conn) error {
+func pushAll(ctx context.Context, cfg *Config, state *State, hst *ssh.Conn) error {
 	ctx, st := timing.Start(ctx, "push")
 	defer st.End()
 
 	// Push executables first. New test bundle is needed later to get the list of
 	// data files to push.
-	if err := pushExecutables(ctx, cfg, hst); err != nil {
+	if err := pushExecutables(ctx, cfg, state, hst); err != nil {
 		return fmt.Errorf("failed to push local executables: %v", err)
 	}
 
@@ -371,7 +371,7 @@ func pushAll(ctx context.Context, cfg *Config, hst *ssh.Conn) error {
 	}
 
 	cfg.Logger.Status("Getting data file list")
-	paths, err := getDataFilePaths(ctx, cfg, hst)
+	paths, err := getDataFilePaths(ctx, cfg, state, hst)
 	if err != nil {
 		return fmt.Errorf("failed to get data file list: %v", err)
 	}
@@ -388,8 +388,8 @@ func pushAll(ctx context.Context, cfg *Config, hst *ssh.Conn) error {
 
 // pushExecutables pushes the freshly built local test runner, local test bundle
 // executable to the DUT if necessary.
-func pushExecutables(ctx context.Context, cfg *Config, hst *ssh.Conn) error {
-	srcDir := filepath.Join(cfg.buildOutDir, cfg.targetArch)
+func pushExecutables(ctx context.Context, cfg *Config, state *State, hst *ssh.Conn) error {
+	srcDir := filepath.Join(cfg.buildOutDir, state.targetArch)
 
 	// local_test_runner is required even if we are running only remote tests,
 	// e.g. to compute software dependencies.
@@ -416,14 +416,14 @@ func pushExecutables(ctx context.Context, cfg *Config, hst *ssh.Conn) error {
 
 // getDataFilePaths returns the paths to data files needed for running cfg.Patterns on hst.
 // The returned paths are relative to the test bundle directory, i.e. they take the form "<category>/data/<filename>".
-func getDataFilePaths(ctx context.Context, cfg *Config, hst *ssh.Conn) (
+func getDataFilePaths(ctx context.Context, cfg *Config, state *State, hst *ssh.Conn) (
 	paths []string, err error) {
 	ctx, st := timing.Start(ctx, "get_data_paths")
 	defer st.End()
 
 	cfg.Logger.Debug("Getting data file list from target")
 
-	ts, err := listLocalTests(ctx, cfg, hst)
+	ts, err := listLocalTests(ctx, cfg, state, hst)
 	if err != nil {
 		return nil, err
 	}
@@ -513,7 +513,7 @@ func pushDataFiles(ctx context.Context, cfg *Config, hst *ssh.Conn, destDir stri
 // An archive contains Go executables of local test bundles and their associated
 // internal data files and external data link files. Note that remote test
 // bundles are not included in archives.
-func downloadPrivateBundles(ctx context.Context, cfg *Config, hst *ssh.Conn) error {
+func downloadPrivateBundles(ctx context.Context, cfg *Config, state *State, hst *ssh.Conn) error {
 	ctx, st := timing.Start(ctx, "download_private_bundles")
 	defer st.End()
 
@@ -524,7 +524,7 @@ func downloadPrivateBundles(ctx context.Context, cfg *Config, hst *ssh.Conn) err
 			Mode: runner.DownloadPrivateBundlesMode,
 			DownloadPrivateBundles: &runner.DownloadPrivateBundlesArgs{
 				Devservers:        cfg.devservers,
-				TLWServer:         cfg.tlwServerForDUT,
+				TLWServer:         state.tlwServerForDUT,
 				DUTName:           cfg.Target,
 				BuildArtifactsURL: cfg.buildArtifactsURL,
 			},

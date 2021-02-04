@@ -45,12 +45,12 @@ func TestListLocalTests(t *gotesting.T) {
 		return 0
 	}
 
-	hst, err := connectToTarget(context.Background(), &td.cfg)
+	hst, err := connectToTarget(context.Background(), &td.cfg, &td.state)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	results, err := listLocalTests(context.Background(), &td.cfg, hst)
+	results, err := listLocalTests(context.Background(), &td.cfg, &td.state, hst)
 	if err != nil {
 		t.Error("Failed to list local tests: ", err)
 	}
@@ -91,7 +91,7 @@ func TestListRemoteList(t *gotesting.T) {
 	td.cfg.remoteDataDir = "/tmp/data"
 	td.cfg.Patterns = []string{"*Test*"}
 
-	results, err := listRemoteTests(context.Background(), &td.cfg)
+	results, err := listRemoteTests(context.Background(), &td.cfg, &td.state)
 	if err != nil {
 		t.Error("Failed to list remote tests: ", err)
 	}

@@ -36,18 +36,18 @@ func TestGetInitialSysInfo(t *testing.T) {
 
 	// Check that the expected command is sent to the DUT and that the returned state is decoded properly.
 	td.cfg.collectSysInfo = true
-	if err := getInitialSysInfo(context.Background(), &td.cfg); err != nil {
+	if err := getInitialSysInfo(context.Background(), &td.cfg, &td.state); err != nil {
 		t.Fatalf("getInitialSysInfo(..., %+v) failed: %v", td.cfg, err)
 	}
 
-	if td.cfg.initialSysInfo == nil {
+	if td.state.initialSysInfo == nil {
 		t.Error("initialSysInfo is nil")
-	} else if !reflect.DeepEqual(*td.cfg.initialSysInfo, res.State) {
-		t.Errorf("initialSysInfo is %+v; want %+v", *td.cfg.initialSysInfo, res.State)
+	} else if !reflect.DeepEqual(*td.state.initialSysInfo, res.State) {
+		t.Errorf("initialSysInfo is %+v; want %+v", *td.state.initialSysInfo, res.State)
 	}
 
 	// The second call should fail, because it tried to update cfg's field twice.
-	if err := getInitialSysInfo(context.Background(), &td.cfg); err == nil {
+	if err := getInitialSysInfo(context.Background(), &td.cfg, &td.state); err == nil {
 		t.Fatal("Calling getInitialSysInfo twice unexpectedly succeeded")
 	}
 }
@@ -59,7 +59,7 @@ func TestCollectSysInfo(t *testing.T) {
 	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
 		checkArgs(t, args, &runner.Args{
 			Mode:           runner.CollectSysInfoMode,
-			CollectSysInfo: &runner.CollectSysInfoArgs{InitialState: *td.cfg.initialSysInfo},
+			CollectSysInfo: &runner.CollectSysInfoArgs{InitialState: *td.state.initialSysInfo},
 		})
 
 		json.NewEncoder(stdout).Encode(&runner.CollectSysInfoResult{})
@@ -67,11 +67,11 @@ func TestCollectSysInfo(t *testing.T) {
 	}
 
 	td.cfg.collectSysInfo = true
-	td.cfg.initialSysInfo = &runner.SysInfoState{
+	td.state.initialSysInfo = &runner.SysInfoState{
 		LogInodeSizes: map[uint64]int64{1: 2, 3: 4},
 		MinidumpPaths: []string{"foo.dmp", "bar.dmp"},
 	}
-	if err := collectSysInfo(context.Background(), &td.cfg); err != nil {
+	if err := collectSysInfo(context.Background(), &td.cfg, &td.state); err != nil {
 		t.Fatalf("collectSysInfo(..., %+v) failed: %v", td.cfg, err)
 	}
 

@@ -88,6 +88,7 @@ type remoteTestData struct {
 	dir    string       // temp dir
 	logbuf bytes.Buffer // logging output
 	cfg    Config       // config passed to remote
+	state  State        // state passed to remote
 	args   runner.Args  // args that were passed to fake runner
 }
 
@@ -141,13 +142,13 @@ func newRemoteTestData(t *gotesting.T, stdout, stderr string, status int) *remot
 
 // close removes the temporary directory.
 func (td *remoteTestData) close() {
-	td.cfg.Close(context.Background())
+	td.state.Close(context.Background())
 	os.RemoveAll(td.dir)
 }
 
 // run calls remote and records the Args struct that was passed to the fake runner.
 func (td *remoteTestData) run(t *gotesting.T) ([]*EntityResult, error) {
-	res, rerr := runRemoteTests(context.Background(), &td.cfg)
+	res, rerr := runRemoteTests(context.Background(), &td.cfg, &td.state)
 
 	f, err := os.Open(filepath.Join(td.dir, fakeRunnerArgsFile))
 	if err != nil {

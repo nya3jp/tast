@@ -104,7 +104,7 @@ type EntityError struct {
 // any tests failed) and false if it was aborted.
 // If cfg.CollectSysInfo is true, system information generated on the DUT during testing
 // (e.g. logs and crashes) will also be written to the results dir.
-func WriteResults(ctx context.Context, cfg *Config, results []*EntityResult, complete bool) error {
+func WriteResults(ctx context.Context, cfg *Config, state *State, results []*EntityResult, complete bool) error {
 	f, err := os.Create(filepath.Join(cfg.ResDir, resultsFilename))
 	if err != nil {
 		return err
@@ -113,7 +113,7 @@ func WriteResults(ctx context.Context, cfg *Config, results []*EntityResult, com
 
 	// We don't want to bail out before writing test results if sys info collection fails,
 	// but we'll still return the error later.
-	sysInfoErr := collectSysInfo(ctx, cfg)
+	sysInfoErr := collectSysInfo(ctx, cfg, state)
 	if sysInfoErr != nil {
 		cfg.Logger.Log("Failed collecting system info: ", sysInfoErr)
 	}
@@ -190,7 +190,8 @@ type diagnoseRunErrorFunc func(ctx context.Context, outDir string) string
 
 // resultsHandler processes the output from a test binary.
 type resultsHandler struct {
-	cfg *Config
+	cfg   *Config
+	state *State
 
 	runStart, runEnd time.Time               // test-runner-reported times at which run started and ended
 	numTests         int                     // total number of tests that are expected to run
@@ -205,9 +206,10 @@ type resultsHandler struct {
 	pullers          sync.WaitGroup          // used to wait for puller goroutines
 }
 
-func newResultsHandler(cfg *Config, crf copyAndRemoveFunc, df diagnoseRunErrorFunc) (*resultsHandler, error) {
+func newResultsHandler(cfg *Config, state *State, crf copyAndRemoveFunc, df diagnoseRunErrorFunc) (*resultsHandler, error) {
 	r := &resultsHandler{
 		cfg:       cfg,
+		state:     state,
 		currents:  make(map[string]*entityState),
 		seenTimes: make(map[string]int),
 		crf:       crf,
@@ -365,9 +367,9 @@ func (r *resultsHandler) handleTestStart(ctx context.Context, msg *control.Entit
 	if err := r.cfg.Logger.AddWriter(state.logFile, log.LstdFlags); err != nil {
 		return err
 	}
-	if r.cfg.reportsLogStream != nil {
+	if r.state.reportsLogStream != nil {
 		state.logReportWriter = &logSender{
-			stream:   r.cfg.reportsLogStream,
+			stream:   r.state.reportsLogStream,
 			testName: msg.Info.Name,
 			logPath:  filepath.Join(relFinalOutDir, testLogFilename),
 		}
@@ -405,7 +407,7 @@ func (r *resultsHandler) handleTestError(ctx context.Context, msg *control.Entit
 }
 
 func (r *resultsHandler) reportResult(ctx context.Context, res *EntityResult) error {
-	if r.cfg.reportsClient == nil {
+	if r.state.reportsClient == nil {
 		return nil
 	}
 	request := &protocol.ReportResultRequest{
@@ -425,7 +427,7 @@ func (r *resultsHandler) reportResult(ctx context.Context, res *EntityResult) er
 			Stack:  e.Stack,
 		})
 	}
-	if _, err := r.cfg.reportsClient.ReportResult(ctx, request); err != nil {
+	if _, err := r.state.reportsClient.ReportResult(ctx, request); err != nil {
 		return err
 	}
 	return nil
@@ -751,9 +753,9 @@ func readMessages(r io.Reader, mch chan<- interface{}, ech chan<- error) {
 // A nil slice indicates that the list of tests to run was unavailable.
 //
 // df may be nil if diagnosis is unavailable.
-func readTestOutput(ctx context.Context, cfg *Config, r io.Reader, crf copyAndRemoveFunc, df diagnoseRunErrorFunc) (
+func readTestOutput(ctx context.Context, cfg *Config, state *State, r io.Reader, crf copyAndRemoveFunc, df diagnoseRunErrorFunc) (
 	results []*EntityResult, unstarted []string, err error) {
-	rh, err := newResultsHandler(cfg, crf, df)
+	rh, err := newResultsHandler(cfg, state, crf, df)
 	if err != nil {
 		return nil, nil, err
 	}

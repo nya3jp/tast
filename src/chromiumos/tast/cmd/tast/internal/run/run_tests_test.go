@@ -28,9 +28,10 @@ func TestRunTestsFailureBeforeRun(t *gotesting.T) {
 	// to run tests. local() shouldn't set startedRun to true since we failed before then.
 	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) { return 1 }
 	td.cfg.checkTestDeps = true
-	if _, err := runTests(context.Background(), &td.cfg); err == nil {
+	var state State
+	if _, err := runTests(context.Background(), &td.cfg, &state); err == nil {
 		t.Errorf("runTests unexpectedly passed")
-	} else if td.cfg.startedRun {
+	} else if state.startedRun {
 		t.Error("runTests incorrectly reported that run was started after early failure")
 	}
 }
@@ -63,7 +64,7 @@ func TestRunTestsGetDUTInfo(t *gotesting.T) {
 
 	td.cfg.checkTestDeps = true
 
-	if _, err := runTests(context.Background(), &td.cfg); err != nil {
+	if _, err := runTests(context.Background(), &td.cfg, &td.state); err != nil {
 		t.Error("runTests failed: ", err)
 	}
 
@@ -97,7 +98,7 @@ func TestRunTestsGetInitialSysInfo(t *gotesting.T) {
 
 	td.cfg.collectSysInfo = true
 
-	if _, err := runTests(context.Background(), &td.cfg); err != nil {
+	if _, err := runTests(context.Background(), &td.cfg, &td.state); err != nil {
 		t.Error("runTests failed: ", err)
 	}
 	if !called {
@@ -190,9 +191,9 @@ func TestRunTestsSkipTests(t *gotesting.T) {
 	passed := 0
 	skipped := 0
 	for shardIndex := 0; shardIndex < td.cfg.totalShards; shardIndex++ {
-		td.cfg.softwareFeatures = nil
+		td.state.softwareFeatures = nil
 		td.cfg.shardIndex = shardIndex
-		testResults, err := runTests(context.Background(), &td.cfg)
+		testResults, err := runTests(context.Background(), &td.cfg, &td.state)
 		if err != nil {
 			t.Fatal("Failed to run tests: ", err)
 		}
@@ -236,9 +237,10 @@ func TestFindPatternsForShard(t *gotesting.T) {
 	td.cfg.runRemote = true
 	td.cfg.totalShards = 3
 	processed := make(map[string]bool)
+	var state State
 	for shardIndex := 0; shardIndex < td.cfg.totalShards; shardIndex++ {
 		td.cfg.shardIndex = shardIndex
-		testsToRun, testsToSkip, testsNotInShard, err := findTestsForShard(context.Background(), &td.cfg)
+		testsToRun, testsToSkip, testsNotInShard, err := findTestsForShard(context.Background(), &td.cfg, &state)
 		if err != nil {
 			t.Fatal("Failed to find tests for shard: ", err)
 		}

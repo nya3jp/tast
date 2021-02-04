@@ -24,7 +24,7 @@ func MustGenerateKeys() (userKey, hostKey *rsa.PrivateKey) {
 }
 
 // TestData contains common data that can be used by tests that interact with an SSHServer.
-type TestData struct { // NOLINT
+type TestData struct {
 	Srv         *SSHServer
 	UserKeyFile string
 }

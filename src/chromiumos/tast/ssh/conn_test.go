@@ -6,7 +6,6 @@ package ssh_test
 
 import (
 	"context"
-	"crypto/rsa"
 	"os"
 	"path/filepath"
 	"testing"
@@ -17,11 +16,7 @@ import (
 	"chromiumos/tast/testutil"
 )
 
-var userKey, hostKey *rsa.PrivateKey
-
-func init() {
-	userKey, hostKey = sshtest.MustGenerateKeys()
-}
+var userKey, hostKey = sshtest.MustGenerateKeys()
 
 func TestRetry(t *testing.T) {
 	t.Parallel()

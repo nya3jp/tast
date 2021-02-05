@@ -177,6 +177,7 @@ func TestRemoteRun(t *gotesting.T) {
 	defer td.close()
 
 	// Set some parameters that can be overridden by flags to arbitrary values.
+	td.cfg.build = false
 	td.cfg.KeyFile = "/tmp/id_dsa"
 	td.cfg.remoteBundleDir = "/tmp/bundles"
 	td.cfg.remoteDataDir = "/tmp/data"
@@ -198,7 +199,7 @@ func TestRemoteRun(t *gotesting.T) {
 		t.Fatal(err)
 	}
 	runFlags := []string{
-		"-build=false",
+		"-build=false", // propagated from td.cfg.build
 		"-keyfile=" + td.cfg.KeyFile,
 		"-keydir=",
 		"-remoterunner=" + td.cfg.remoteRunner,

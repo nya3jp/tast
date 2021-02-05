@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strconv"
 	"time"
 
 	"chromiumos/tast/internal/bundle"
@@ -69,7 +70,7 @@ func runRemoteTestsOnce(ctx context.Context, cfg *Config, state *State, patterns
 				KeyDir:      cfg.KeyDir,
 				TastPath:    exe,
 				RunFlags: []string{
-					"-build=false",
+					"-build=" + strconv.FormatBool(cfg.build),
 					"-keyfile=" + cfg.KeyFile,
 					"-keydir=" + cfg.KeyDir,
 					"-remoterunner=" + cfg.remoteRunner,

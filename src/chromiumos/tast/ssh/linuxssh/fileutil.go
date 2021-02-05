@@ -7,6 +7,7 @@
 package linuxssh
 
 import (
+	"bytes"
 	"context"
 	"crypto/sha1"
 	"encoding/hex"
@@ -23,6 +24,7 @@ import (
 
 	cryptossh "golang.org/x/crypto/ssh"
 
+	"chromiumos/tast/shutil"
 	"chromiumos/tast/ssh"
 )
 
@@ -279,4 +281,27 @@ func PutFiles(ctx context.Context, s *ssh.Conn, files map[string]string,
 		return 0, fmt.Errorf("remote tar failed: %v", err)
 	}
 	return cr.bytes, nil
+}
+
+// ReadFile reads the file on the path and returns the contents.
+func ReadFile(ctx context.Context, conn *ssh.Conn, path string) ([]byte, error) {
+	return conn.Command("cat", path).Output(ctx, ssh.DumpLogOnError)
+}
+
+// WriteFile writes data to the file on the path. If the file does not exist,
+// WriteFile creates it with permissions perm; otherwise WriteFile truncates it
+// before writing, without changing permissions.
+// Unlike ioutil.WriteFile, it doesn't apply umask on perm.
+func WriteFile(ctx context.Context, conn *ssh.Conn, path string, data []byte, perm os.FileMode) error {
+	exists := conn.Command("test", "-e", path).Run(ctx) == nil
+
+	cmd := conn.Command("sh", "-c", fmt.Sprintf(`cat > %s`, shutil.Escape(path)))
+	cmd.Stdin = bytes.NewBuffer(data)
+	if err := cmd.Run(ctx, ssh.DumpLogOnError); err != nil {
+		return err
+	}
+	if exists {
+		return nil
+	}
+	return conn.Command("chmod", fmt.Sprintf("%o", perm&os.ModePerm), path).Run(ctx, ssh.DumpLogOnError)
 }

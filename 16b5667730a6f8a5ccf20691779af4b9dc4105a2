@@ -16,6 +16,115 @@
       "message": "I just created a new struct State and move all the non-config items from Config to State. All unit tests passed. Please review. Thanks.",
       "revId": "16b5667730a6f8a5ccf20691779af4b9dc4105a2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2c0e4fb6_72e6ff32",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-02-05T08:48:57Z",
+      "side": 1,
+      "message": "Thank you, it\u0027s now much easier to distinguish immutable fields and mutable fields.\n\nI only have minor comments.\n",
+      "revId": "16b5667730a6f8a5ccf20691779af4b9dc4105a2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "618673c1_213c0b3c",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/config.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 137,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-02-05T08:48:57Z",
+      "side": 1,
+      "message": "style: trailing period",
+      "range": {
+        "startLine": 137,
+        "startChar": 74,
+        "endLine": 137,
+        "endChar": 79
+      },
+      "revId": "16b5667730a6f8a5ccf20691779af4b9dc4105a2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fb9a830c_17b2f784",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/config.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 152,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-02-05T08:48:57Z",
+      "side": 1,
+      "message": "nit: gRPC",
+      "range": {
+        "startLine": 152,
+        "startChar": 4,
+        "endLine": 152,
+        "endChar": 8
+      },
+      "revId": "16b5667730a6f8a5ccf20691779af4b9dc4105a2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e4a9baca_50848208",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/local.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 274,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-02-05T08:48:57Z",
+      "side": 1,
+      "message": "nit: Maybe \"state\" for consistency?",
+      "range": {
+        "startLine": 274,
+        "startChar": 50,
+        "endLine": 274,
+        "endChar": 51
+      },
+      "revId": "16b5667730a6f8a5ccf20691779af4b9dc4105a2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "25d354ca_847182fb",
+        "filename": "src/chromiumos/tast/cmd/tast/run_cmd.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-02-05T08:48:57Z",
+      "side": 1,
+      "message": "Can you make this a local variable in Execute?\n\ncfg is a field of runCmd because it is used by several methods. It is not the case with State.",
+      "range": {
+        "startLine": 38,
+        "startChar": 1,
+        "endLine": 38,
+        "endChar": 27
+      },
+      "revId": "16b5667730a6f8a5ccf20691779af4b9dc4105a2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

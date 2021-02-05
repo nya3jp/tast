@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "dd14f3de_7b4d18b6",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-02-05T18:56:13Z",
+      "side": 1,
+      "message": "I have addressed the last set of feedback. Submitting to CQ.",
+      "revId": "42ff10d657098ad42bc5cd291b5c118454b36473",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

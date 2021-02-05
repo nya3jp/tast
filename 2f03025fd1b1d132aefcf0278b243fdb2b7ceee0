@@ -16,6 +16,46 @@
       "message": "Hi Tatsuhisa:\n\nI have just removed the inaccurate unit test. Please review again.\n\nThanks.\n\nSeewai\n",
       "revId": "2f03025fd1b1d132aefcf0278b243fdb2b7ceee0",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "923c20fe_27935a0a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-02-05T08:19:38Z",
+      "side": 1,
+      "message": "LGTM with a nit.\n",
+      "revId": "2f03025fd1b1d132aefcf0278b243fdb2b7ceee0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a3f49d23_eb66a288",
+        "filename": "src/chromiumos/tast/internal/testing/select.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-02-05T08:19:38Z",
+      "side": 1,
+      "message": "This naming seems a bit misleading because it actually checks validity of a test pattern and is called from NewTestGlobRegexp.\n\nI recommend naming it to reflect the reality, e.g.\n\n func validatePattern(pat string) (hasWildcard bool, err error)",
+      "range": {
+        "startLine": 38,
+        "startChar": 5,
+        "endLine": 38,
+        "endChar": 29
+      },
+      "revId": "2f03025fd1b1d132aefcf0278b243fdb2b7ceee0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

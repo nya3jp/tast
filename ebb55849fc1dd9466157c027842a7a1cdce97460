@@ -16,6 +16,40 @@
       "message": "I have addressed latest feedback by changing the checking function to hasWildcardInTestPattern. I also add two unit tests: one for hasWildcardInTestPattern and one for making sure selectTestsByGlob scale well. Please review. Thanks.  ",
       "revId": "ebb55849fc1dd9466157c027842a7a1cdce97460",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "eaf40429_6982a1f3",
+        "filename": "src/chromiumos/tast/internal/testing/select_test.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 247,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-02-05T04:21:57Z",
+      "side": 1,
+      "message": "I defer this to nya@ whether to add this test.\nI myself think we might not need this performance test because there is not a hard requirement to make the function less than O(N^2).",
+      "revId": "ebb55849fc1dd9466157c027842a7a1cdce97460",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ecac03b1_0e8c9751",
+        "filename": "src/chromiumos/tast/internal/testing/select_test.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 264,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-02-05T04:21:57Z",
+      "side": 1,
+      "message": "This would include time consumed by other processes during run. So I don\u0027t think we can use this for unit tests.\n(not sure if there is a way in go to get thread cpu time)",
+      "revId": "ebb55849fc1dd9466157c027842a7a1cdce97460",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ad0c2528_c7473c03",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 8
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-02-05T18:11:09Z",
+      "side": 1,
+      "message": "I have addressed the issue of misleading function name. Thanks.",
+      "revId": "a8295f2ea0d2654d88cdc4725d3b2d24f133daa3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

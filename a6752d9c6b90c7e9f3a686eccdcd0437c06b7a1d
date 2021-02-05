@@ -16,6 +16,24 @@
       "message": "I think this bug number is here because this is related to the removal of -fancy flag, but getting to feel like this chain of changes deserves a separte refactoring process bug#.",
       "revId": "a6752d9c6b90c7e9f3a686eccdcd0437c06b7a1d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "74d9b6c4_55a3bbe6",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-02-05T08:57:45Z",
+      "side": 1,
+      "message": "Makes perfect sense. I filed crbug.com/1174982 and updated BUG\u003d lines.",
+      "parentUuid": "2e883d15_01fd031f",
+      "revId": "a6752d9c6b90c7e9f3a686eccdcd0437c06b7a1d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

@@ -18,6 +18,23 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "d553404c_e2803162",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-02-05T04:28:44Z",
+      "side": 1,
+      "message": "Thanks for pointing out the issue with new test. I will remove it.\n\n",
+      "revId": "ebb55849fc1dd9466157c027842a7a1cdce97460",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "eaf40429_6982a1f3",
@@ -35,6 +52,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "660a3f30_543fba6d",
+        "filename": "src/chromiumos/tast/internal/testing/select_test.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 247,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-02-05T04:28:44Z",
+      "side": 1,
+      "message": "I didn\u0027t consider other unit test processes when this test runs. I agreed the test would inaccurate and not suitable for unit testing. I will remove it.",
+      "parentUuid": "eaf40429_6982a1f3",
+      "revId": "ebb55849fc1dd9466157c027842a7a1cdce97460",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "ecac03b1_0e8c9751",
@@ -48,6 +83,24 @@
       "writtenOn": "2021-02-05T04:21:57Z",
       "side": 1,
       "message": "This would include time consumed by other processes during run. So I don\u0027t think we can use this for unit tests.\n(not sure if there is a way in go to get thread cpu time)",
+      "revId": "ebb55849fc1dd9466157c027842a7a1cdce97460",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "aba83a20_e434c9df",
+        "filename": "src/chromiumos/tast/internal/testing/select_test.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 264,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-02-05T04:28:44Z",
+      "side": 1,
+      "message": "Thanks for pointing out the issue. I agree that it is not accurate. I will remove it.",
+      "parentUuid": "ecac03b1_0e8c9751",
       "revId": "ebb55849fc1dd9466157c027842a7a1cdce97460",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }

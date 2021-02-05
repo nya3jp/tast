@@ -16,6 +16,98 @@
       "message": "I have addressed the feedback comments. Please take a look. \n\nI also added additional unit tests to make sure runLocalTests and runRemoteTests would not be run if the maximum failures have reached.",
       "revId": "b1736c36a579dbbc6ce679f7d1098f42e05595f8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b2bb1ff1_459c5e78",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/local.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-02-05T08:40:58Z",
+      "side": 1,
+      "message": "I think this check is better to be added to retry.go instead; see my another comment.",
+      "range": {
+        "startLine": 80,
+        "startChar": 0,
+        "endLine": 82,
+        "endChar": 2
+      },
+      "revId": "b1736c36a579dbbc6ce679f7d1098f42e05595f8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3650c309_5a5c82aa",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/results.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-02-05T08:40:58Z",
+      "side": 1,
+      "message": "IIUC, this error is returned when we should terminate the test execution, not after it is terminated.\n\nSo could you:\n\n- add a comment that callers should kill a running process on getting this error\n- rename it to ErrTerminate",
+      "range": {
+        "startLine": 100,
+        "startChar": 0,
+        "endLine": 102,
+        "endChar": 98
+      },
+      "revId": "b1736c36a579dbbc6ce679f7d1098f42e05595f8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "735bae16_651d303f",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/retry.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-02-05T08:40:58Z",
+      "side": 1,
+      "message": "Why don\u0027t we insert the check of (cfg.failuresCount \u003e\u003d cfg.maxTestFailures) at the beginning of this for loop? Then we can cover both local tests and remote tests. It also allows us to stop unnecessary retries when we get enough number of failures.",
+      "range": {
+        "startLine": 31,
+        "startChar": 1,
+        "endLine": 31,
+        "endChar": 6
+      },
+      "revId": "b1736c36a579dbbc6ce679f7d1098f42e05595f8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6bd35883_cafd4525",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/retry.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-02-05T08:40:58Z",
+      "side": 1,
+      "message": "Hmm, I wonder why this is needed in this CL. Of course having this check is nicer to avoid unnecessary retry attempts when the context is canceled or timed out. But it sounds like orthogonal to this CL about adding max number of failures.\n\nIf it is actually needed for this CL, would you mind adding a comment describing why it is needed?\n\nIf not, could you create a separate CL to add this check?",
+      "range": {
+        "startLine": 38,
+        "startChar": 2,
+        "endLine": 40,
+        "endChar": 3
+      },
+      "revId": "b1736c36a579dbbc6ce679f7d1098f42e05595f8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

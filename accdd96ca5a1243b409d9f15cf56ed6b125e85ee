@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "aa7862a4_dd2211fc",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 11
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-02-06T02:57:30Z",
+      "side": 1,
+      "message": "Hi Shuhei:\n\nI have addressed the comment for changing the error name from ErrTerminated to ErrTerminate.\n\nFor checking whether maximum failures has reached at the beginning of runLocalTest and runRemoteTest. Base on my analysis, it will not happen with current code. Please see my comment on this.\n\nFor checking context error in runTestsWithRetry, I agree that it would change the behavior of handling timeout so I change the condition. I do think the condition is necessary to avoid confusion in the log file. Please take a look at my comments.\n\nThanks.\n",
+      "revId": "accdd96ca5a1243b409d9f15cf56ed6b125e85ee",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

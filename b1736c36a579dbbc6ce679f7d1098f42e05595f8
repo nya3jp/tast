@@ -41,6 +41,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "b9a03c82_5b6b5efa",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/local.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-02-06T02:57:30Z",
+      "side": 1,
+      "message": "I just removed the check. It was not necessary at all. This function runLocalTest would be run first so cfg.failuresCount is always zero. For runRemoteTest, it would not be run if runLocalTest would return an error when the cfg.failuresCount reached the maximum allowed.",
+      "parentUuid": "b2bb1ff1_459c5e78",
+      "range": {
+        "startLine": 80,
+        "startChar": 0,
+        "endLine": 82,
+        "endChar": 2
+      },
+      "revId": "b1736c36a579dbbc6ce679f7d1098f42e05595f8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "3650c309_5a5c82aa",
@@ -54,6 +78,30 @@
       "writtenOn": "2021-02-05T08:40:58Z",
       "side": 1,
       "message": "IIUC, this error is returned when we should terminate the test execution, not after it is terminated.\n\nSo could you:\n\n- add a comment that callers should kill a running process on getting this error\n- rename it to ErrTerminate",
+      "range": {
+        "startLine": 100,
+        "startChar": 0,
+        "endLine": 102,
+        "endChar": 98
+      },
+      "revId": "b1736c36a579dbbc6ce679f7d1098f42e05595f8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "63c07a5a_bea6850d",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/results.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-02-06T02:57:30Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3650c309_5a5c82aa",
       "range": {
         "startLine": 100,
         "startChar": 0,
@@ -89,6 +137,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "41deb2c3_956028d2",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/retry.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-02-06T02:57:30Z",
+      "side": 1,
+      "message": "We should do the check at the beginning. Please see my comment in local.go. The problem will not happen in the first iteration. It will help the rest of iteration, but it will print out message like \"Trying to run .. remaining test(s)\" after printing out error message for maxTestFailures which I think it would confuse user. Please see my another comment for the solution.",
+      "parentUuid": "735bae16_651d303f",
+      "range": {
+        "startLine": 31,
+        "startChar": 1,
+        "endLine": 31,
+        "endChar": 6
+      },
+      "revId": "b1736c36a579dbbc6ce679f7d1098f42e05595f8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "6bd35883_cafd4525",
         "filename": "src/chromiumos/tast/cmd/tast/internal/run/retry.go",
         "patchSetId": 8
@@ -100,6 +172,30 @@
       "writtenOn": "2021-02-05T08:40:58Z",
       "side": 1,
       "message": "Hmm, I wonder why this is needed in this CL. Of course having this check is nicer to avoid unnecessary retry attempts when the context is canceled or timed out. But it sounds like orthogonal to this CL about adding max number of failures.\n\nIf it is actually needed for this CL, would you mind adding a comment describing why it is needed?\n\nIf not, could you create a separate CL to add this check?",
+      "range": {
+        "startLine": 38,
+        "startChar": 2,
+        "endLine": 40,
+        "endChar": 3
+      },
+      "revId": "b1736c36a579dbbc6ce679f7d1098f42e05595f8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "735398f4_2df13f82",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/retry.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-02-06T02:57:30Z",
+      "side": 1,
+      "message": "I changed the check to \"errors.Is(rerr, ErrTerminate)\" so it will not affect the current behavior of timeout. Here was what I found for the current behavior of handling timeout: \n\n2021/01/20 19:28:32 Got global error: context deadline exceeded: global timeout reached (59m45s)\n2021/01/20 19:28:32 Test runner failed: context deadline exceeded: global timeout reached (59m45s)\n2021/01/20 19:28:32 Trying to run 57 remaining test(s)\n2021/01/20 19:28:32 Connecting to chromeos6-row17-rack10-host3:22\n2021/01/20 19:28:32 Failed reconnecting to target: context deadline exceeded: global timeout reached (59m45s)\n2021/01/20 19:28:32 Ran 144 local test(s) in 59m43.607s\n2021/01/20 19:28:32 Failed to run tests: context deadline exceeded: global timeout reached (59m45s)\n\nCurrently, runTestsWithRetry will continue run tests after timeout, but it will get a false in beforeRetry because it cannot connect to the DUT with a bad context for local test. I am not sure about its behavior for remote test because beforeRetry for remote test always returns true. Therefore, I would change the behavior of handling timeout if I use the condition \"ctx.Err() !\u003d nil\". I agree that changing behavior of the handling timeout is not within scope of this crbug. Therefore, I changed the condition to \"errors.Is(rerr, ErrTerminate)\". ErrTerminate is introduced in this CL and it is only used in the case of reaching maximum number of failures at this moment. Therefore, I think it is without scope of this CL.\n\nPlease let me know your opinion. Thanks.",
+      "parentUuid": "6bd35883_cafd4525",
       "range": {
         "startLine": 38,
         "startChar": 2,

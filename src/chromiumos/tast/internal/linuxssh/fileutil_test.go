@@ -11,6 +11,7 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
+	"strings"
 	"testing"
 
 	"chromiumos/tast/internal/sshtest"
@@ -114,9 +115,11 @@ func TestGetFileTimeout(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	c := make(chan struct{})
 	defer close(c)
-	td := sshtest.NewTestDataConn(t, sshtest.WithBeforeStartHook(func(string) {
-		cancel()
-		<-c
+	td := sshtest.NewTestDataConn(t, sshtest.WithBeforeStartHook(func(cmd string) {
+		if strings.HasPrefix(cmd, "exec tar ") {
+			cancel()
+			<-c
+		}
 	}))
 	defer td.Close()
 
@@ -219,15 +222,22 @@ func TestPutFilesUnchanged(t *testing.T) {
 
 func TestPutFilesTimeout(t *testing.T) {
 	t.Parallel()
-	td := sshtest.NewTestDataConn(t)
+
+	ctx, cancel := context.WithCancel(context.Background())
+	c := make(chan struct{})
+	td := sshtest.NewTestDataConn(t, sshtest.WithBeforeEndHook(func(cmd string) {
+		if strings.HasPrefix(cmd, "exec tar ") { // last command in PutFiles
+			cancel()
+			close(c)
+		}
+	}))
 	defer td.Close()
 
 	files := map[string]string{"file": "data"}
 	tmpDir, srcDir := initFileTest(t, files)
 	defer os.RemoveAll(tmpDir)
 	dstDir := filepath.Join(tmpDir, "dst")
-	td.ExecTimeout = sshtest.EndTimeout
-	if _, err := PutFiles(td.Ctx, td.Hst, map[string]string{
+	if _, err := PutFiles(ctx, td.Hst, map[string]string{
 		filepath.Join(srcDir, "file"): filepath.Join(dstDir, "file"),
 	}, PreserveSymlinks); err == nil {
 		t.Errorf("PutFiles() with expired context didn't return error")

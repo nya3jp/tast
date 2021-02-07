@@ -9,7 +9,6 @@ import (
 	"crypto/rsa"
 	"fmt"
 	"os"
-	"strings"
 	"testing"
 	"time"
 
@@ -44,17 +43,6 @@ func ConnectToServer(ctx context.Context, target string, key *rsa.PrivateKey, ba
 	return s, nil
 }
 
-// TimeoutType describes different types of timeouts that can be simulated during SSH "exec" requests.
-type TimeoutType int
-
-const (
-	// NoTimeout indicates that TestData.Ctx shouldn't be canceled.
-	NoTimeout TimeoutType = iota
-
-	// EndTimeout indicates that TestData.Ctx should be canceled after the command runs but before its status is returned.
-	EndTimeout
-)
-
 // TestDataConn wraps data common to all tests.
 // Whereas TastData only manages SSHServer it additionally owns connection to the server.
 type TestDataConn struct {
@@ -68,18 +56,26 @@ type TestDataConn struct {
 	cancel func()
 
 	beforeStart handleHook
-
-	// ExecTimeout directs how "exec" requests should time out.
-	ExecTimeout TimeoutType
+	beforeEnd   handleHook
 }
 
 type handleHook func(cmd string)
 
 type testDataConnOpt func(*TestDataConn)
 
+// WithBeforeStartHook returns an option to register a hook called before the
+// server sends a reply to the request reporting the start of the command.
 func WithBeforeStartHook(f handleHook) testDataConnOpt {
 	return func(c *TestDataConn) {
 		c.beforeStart = f
+	}
+}
+
+// WithBeforeEndtHook returns an option to register a hook called before the
+// server returns the exit status and closes the channel.
+func WithBeforeEndHook(f handleHook) testDataConnOpt {
+	return func(c *TestDataConn) {
+		c.beforeEnd = f
 	}
 }
 
@@ -88,7 +84,6 @@ func WithBeforeStartHook(f handleHook) testDataConnOpt {
 // Caller must call Close after use.
 func NewTestDataConn(t *testing.T, opt ...testDataConnOpt) *TestDataConn {
 	td := &TestDataConn{}
-
 	for _, o := range opt {
 		o(td)
 	}
@@ -132,11 +127,6 @@ func (td *TestDataConn) handleExec(req *ExecReq) {
 	if td.beforeStart != nil {
 		td.beforeStart(req.Cmd)
 	}
-
-	// PutFiles sends multiple "exec" requests.
-	// Ignore its initial "sha1sum" so we can hang during the tar command instead.
-	ignoreTimeout := strings.HasPrefix(req.Cmd, "sha1sum ")
-
 	req.Start(true)
 
 	var status int
@@ -147,9 +137,8 @@ func (td *TestDataConn) handleExec(req *ExecReq) {
 		status = req.RunRealCmd()
 	}
 
-	if td.ExecTimeout == EndTimeout && !ignoreTimeout {
-		td.cancel()
-		time.Sleep(time.Minute)
+	if td.beforeEnd != nil {
+		td.beforeEnd(req.Cmd)
 	}
 	req.End(status)
 }

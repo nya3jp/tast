@@ -407,36 +407,48 @@ func TestPipesClosedOnAbort(t *testing.T) {
 
 func TestRunTimeout(t *testing.T) {
 	t.Parallel()
-	td := sshtest.NewTestDataConn(t)
+
+	ctx, cancel := context.WithCancel(context.Background())
+	c := make(chan struct{})
+	td := sshtest.NewTestDataConn(t, sshtest.WithBeforeEndHook(func(string) {
+		cancel()
+		<-c
+	}))
 	defer td.Close()
 
-	td.ExecTimeout = sshtest.EndTimeout
-
-	if err := td.Hst.Command("true").Run(td.Ctx); err == nil {
+	if err := td.Hst.Command("true").Run(ctx); err == nil {
 		t.Fatal("Run did not honor the timeout")
 	}
 }
 
 func TestOutputTimeout(t *testing.T) {
 	t.Parallel()
-	td := sshtest.NewTestDataConn(t)
+
+	ctx, cancel := context.WithCancel(context.Background())
+	c := make(chan struct{})
+	td := sshtest.NewTestDataConn(t, sshtest.WithBeforeEndHook(func(string) {
+		cancel()
+		<-c
+	}))
 	defer td.Close()
 
-	td.ExecTimeout = sshtest.EndTimeout
-
-	if _, err := td.Hst.Command("true").Output(td.Ctx); err == nil {
+	if _, err := td.Hst.Command("true").Output(ctx); err == nil {
 		t.Fatal("Output did not honor the timeout")
 	}
 }
 
 func TestCombinedOutputTimeout(t *testing.T) {
 	t.Parallel()
-	td := sshtest.NewTestDataConn(t)
+
+	ctx, cancel := context.WithCancel(context.Background())
+	c := make(chan struct{})
+	td := sshtest.NewTestDataConn(t, sshtest.WithBeforeEndHook(func(string) {
+		cancel()
+		<-c
+	}))
 	defer td.Close()
 
-	td.ExecTimeout = sshtest.EndTimeout
-
-	if _, err := td.Hst.Command("true").CombinedOutput(td.Ctx); err == nil {
+	if _, err := td.Hst.Command("true").CombinedOutput(ctx); err == nil {
 		t.Fatal("CombinedOutput did not honor the timeout")
 	}
 }
@@ -448,8 +460,10 @@ func TestStartTimeout(t *testing.T) {
 	c := make(chan struct{})
 	defer close(c)
 	td := sshtest.NewTestDataConn(t, sshtest.WithBeforeStartHook(func(cmd string) {
-		cancel()
-		<-c
+		if cmd == "exec true" {
+			cancel()
+			<-c
+		}
 	}))
 	defer td.Close()
 
@@ -463,16 +477,20 @@ func TestStartTimeout(t *testing.T) {
 
 func TestWaitTimeout(t *testing.T) {
 	t.Parallel()
-	td := sshtest.NewTestDataConn(t)
+
+	ctx, cancel := context.WithCancel(context.Background())
+	c := make(chan struct{})
+	td := sshtest.NewTestDataConn(t, sshtest.WithBeforeEndHook(func(string) {
+		cancel()
+		<-c
+	}))
 	defer td.Close()
 
-	td.ExecTimeout = sshtest.EndTimeout
-
 	cmd := td.Hst.Command("true")
-	if err := cmd.Start(td.Ctx); err != nil {
+	if err := cmd.Start(ctx); err != nil {
 		t.Fatal("Start failed: ", err)
 	}
-	if err := cmd.Wait(td.Ctx); err == nil {
+	if err := cmd.Wait(ctx); err == nil {
 		t.Fatal("Wait did not honor the timeout")
 	}
 }

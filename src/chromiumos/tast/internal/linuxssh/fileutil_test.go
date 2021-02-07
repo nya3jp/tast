@@ -5,6 +5,7 @@
 package linuxssh
 
 import (
+	"context"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -105,17 +106,23 @@ func TestGetFileDir(t *testing.T) {
 
 func TestGetFileTimeout(t *testing.T) {
 	t.Parallel()
-	td := sshtest.NewTestDataConn(t)
-	defer td.Close()
 
 	files := map[string]string{"file": "data"}
 	tmpDir, srcDir := initFileTest(t, files)
 	defer os.RemoveAll(tmpDir)
 
+	ctx, cancel := context.WithCancel(context.Background())
+	c := make(chan struct{})
+	defer close(c)
+	td := sshtest.NewTestDataConn(t, sshtest.WithBeforeStartHook(func(string) {
+		cancel()
+		<-c
+	}))
+	defer td.Close()
+
 	srcFile := filepath.Join(srcDir, "file")
 	dstFile := filepath.Join(tmpDir, "file")
-	td.ExecTimeout = sshtest.StartTimeout
-	if err := GetFile(td.Ctx, td.Hst, srcFile, dstFile); err == nil {
+	if err := GetFile(ctx, td.Hst, srcFile, dstFile); err == nil {
 		t.Errorf("GetFile() with expired context didn't return error")
 	}
 }

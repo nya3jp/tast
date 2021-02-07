@@ -443,15 +443,21 @@ func TestCombinedOutputTimeout(t *testing.T) {
 
 func TestStartTimeout(t *testing.T) {
 	t.Parallel()
-	td := sshtest.NewTestDataConn(t)
+
+	ctx, cancel := context.WithCancel(context.Background())
+	c := make(chan struct{})
+	defer close(c)
+	td := sshtest.NewTestDataConn(t, sshtest.WithBeforeStartHook(func(cmd string) {
+		cancel()
+		<-c
+	}))
 	defer td.Close()
 
-	td.ExecTimeout = sshtest.StartTimeout
-
 	cmd := td.Hst.Command("true")
-	if err := cmd.Start(td.Ctx); err == nil {
-		defer cmd.Wait(td.Ctx)
-		t.Fatal("Start did not honor the timeout")
+
+	if err := cmd.Start(ctx); err == nil {
+		defer cmd.Wait(ctx)
+		t.Fatal("Start did not honor the context")
 	}
 }
 

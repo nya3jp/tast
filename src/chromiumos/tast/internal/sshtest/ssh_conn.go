@@ -50,8 +50,7 @@ type TimeoutType int
 const (
 	// NoTimeout indicates that TestData.Ctx shouldn't be canceled.
 	NoTimeout TimeoutType = iota
-	// StartTimeout indicates that TestData.Ctx should be canceled before the command starts.
-	StartTimeout
+
 	// EndTimeout indicates that TestData.Ctx should be canceled after the command runs but before its status is returned.
 	EndTimeout
 )
@@ -68,15 +67,32 @@ type TestDataConn struct {
 	// cancel cancels Ctx to simulate a timeout.
 	cancel func()
 
+	beforeStart handleHook
+
 	// ExecTimeout directs how "exec" requests should time out.
 	ExecTimeout TimeoutType
+}
+
+type handleHook func(cmd string)
+
+type testDataConnOpt func(*TestDataConn)
+
+func WithBeforeStartHook(f handleHook) testDataConnOpt {
+	return func(c *TestDataConn) {
+		c.beforeStart = f
+	}
 }
 
 // NewTestDataConn sets up local SSH server and connection to it, and
 // returns them together as a TestDataConn struct.
 // Caller must call Close after use.
-func NewTestDataConn(t *testing.T) *TestDataConn {
+func NewTestDataConn(t *testing.T, opt ...testDataConnOpt) *TestDataConn {
 	td := &TestDataConn{}
+
+	for _, o := range opt {
+		o(td)
+	}
+
 	td.Ctx, td.cancel = context.WithCancel(context.Background())
 
 	var err error
@@ -84,7 +100,7 @@ func NewTestDataConn(t *testing.T) *TestDataConn {
 		t.Fatal(err)
 	}
 
-	if td.Hst, err = ConnectToServer(td.Ctx, td.Srv.Addr().String(), userKey, &ssh.Options{}); err != nil {
+	if td.Hst, err = ConnectToServer(context.Background(), td.Srv.Addr().String(), userKey, &ssh.Options{}); err != nil {
 		td.Srv.Close()
 		t.Fatal(err)
 	}
@@ -113,17 +129,14 @@ func (td *TestDataConn) Close() {
 
 // handleExec handles an SSH "exec" request sent to td.Srv by executing the requested command.
 func (td *TestDataConn) handleExec(req *ExecReq) {
+	if td.beforeStart != nil {
+		td.beforeStart(req.Cmd)
+	}
+
 	// PutFiles sends multiple "exec" requests.
 	// Ignore its initial "sha1sum" so we can hang during the tar command instead.
 	ignoreTimeout := strings.HasPrefix(req.Cmd, "sha1sum ")
 
-	// If a timeout was requested, cancel the context and then sleep for an arbitrary-but-long
-	// amount of time to make sure that the client sees the expired context before the command
-	// actually runs.
-	if td.ExecTimeout == StartTimeout && !ignoreTimeout {
-		td.cancel()
-		time.Sleep(time.Minute)
-	}
 	req.Start(true)
 
 	var status int

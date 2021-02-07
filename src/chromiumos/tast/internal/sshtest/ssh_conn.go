@@ -65,8 +65,8 @@ type TestDataConn struct {
 
 	// Ctx is used for performaing operations using Hst.
 	Ctx context.Context
-	// Cancel cancels Ctx to simulate a timeout.
-	Cancel func()
+	// cancel cancels Ctx to simulate a timeout.
+	cancel func()
 
 	// ExecTimeout directs how "exec" requests should time out.
 	ExecTimeout TimeoutType
@@ -77,7 +77,7 @@ type TestDataConn struct {
 // Caller must call Close after use.
 func NewTestDataConn(t *testing.T) *TestDataConn {
 	td := &TestDataConn{}
-	td.Ctx, td.Cancel = context.WithCancel(context.Background())
+	td.Ctx, td.cancel = context.WithCancel(context.Background())
 
 	var err error
 	if td.Srv, err = NewServer(&userKey.PublicKey, hostKey, td.handleExec); err != nil {
@@ -98,7 +98,7 @@ func NewTestDataConn(t *testing.T) *TestDataConn {
 		case <-time.After(timeout):
 		}
 		t.Errorf("Test blocked for %v", timeout)
-		td.Cancel()
+		td.cancel()
 	}()
 
 	return td
@@ -108,7 +108,7 @@ func NewTestDataConn(t *testing.T) *TestDataConn {
 func (td *TestDataConn) Close() {
 	td.Srv.Close()
 	td.Hst.Close(td.Ctx)
-	td.Cancel()
+	td.cancel()
 }
 
 // handleExec handles an SSH "exec" request sent to td.Srv by executing the requested command.
@@ -121,7 +121,7 @@ func (td *TestDataConn) handleExec(req *ExecReq) {
 	// amount of time to make sure that the client sees the expired context before the command
 	// actually runs.
 	if td.ExecTimeout == StartTimeout && !ignoreTimeout {
-		td.Cancel()
+		td.cancel()
 		time.Sleep(time.Minute)
 	}
 	req.Start(true)
@@ -135,7 +135,7 @@ func (td *TestDataConn) handleExec(req *ExecReq) {
 	}
 
 	if td.ExecTimeout == EndTimeout && !ignoreTimeout {
-		td.Cancel()
+		td.cancel()
 		time.Sleep(time.Minute)
 	}
 	req.End(status)

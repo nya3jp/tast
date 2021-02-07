@@ -59,8 +59,9 @@ func TestPing(t *testing.T) {
 	}
 
 	// Cancel the context to simulate it having expired.
-	td.Cancel()
-	if err := td.Hst.Ping(td.Ctx, time.Minute); err == nil {
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+	if err := td.Hst.Ping(ctx, time.Minute); err == nil {
 		t.Errorf("Didn't get expected error when pinging host with expired context")
 	}
 }

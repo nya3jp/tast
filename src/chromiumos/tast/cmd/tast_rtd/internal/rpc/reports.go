@@ -61,7 +61,7 @@ func (s *ReportsServer) LogStream(stream protocol.Reports_LogStreamServer) error
 }
 
 // ReportResult gets a report request from tast and passes on to progress sink.
-func (s *ReportsServer) ReportResult(ctx context.Context, req *protocol.ReportResultRequest) (*empty.Empty, error) {
+func (s *ReportsServer) ReportResult(ctx context.Context, req *protocol.ReportResultRequest) (*protocol.ReportResultResponse, error) {
 	requestName, ok := s.testsToRequests[req.Test]
 	if !ok {
 		return nil, errors.Errorf("cannot find request name for test %q", req.Test)
@@ -72,7 +72,7 @@ func (s *ReportsServer) ReportResult(ctx context.Context, req *protocol.ReportRe
 	s.mu.Lock()
 	s.reportedRequests[requestName] = struct{}{}
 	s.mu.Unlock()
-	return &empty.Empty{}, nil
+	return &protocol.ReportResultResponse{}, nil
 }
 
 // SendMissingTestsReports sends reports to progress sink on all the tests that are not run by tast.

@@ -75,9 +75,9 @@ func (s *Server) GetLog(test, logPath string) []byte {
 }
 
 // ReportResult provides a means for reports clients to test ReportResult requests.
-func (s *Server) ReportResult(ctx context.Context, req *protocol.ReportResultRequest) (*empty.Empty, error) {
+func (s *Server) ReportResult(ctx context.Context, req *protocol.ReportResultRequest) (*protocol.ReportResultResponse, error) {
 	s.results = append(s.results, req)
-	return &empty.Empty{}, nil
+	return &protocol.ReportResultResponse{}, nil
 }
 
 // Results returns all results have been received for this server.

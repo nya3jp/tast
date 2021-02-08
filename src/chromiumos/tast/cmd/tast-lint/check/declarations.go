@@ -254,9 +254,13 @@ func verifyVars(fs *token.FileSet, node ast.Node) []*Issue {
 		}}
 	}
 
+	allowedConstants := []constant{
+		{pkg: "screenshot", variable: "GoldServiceAccountKeyVar"},
+	}
+
 	var issues []*Issue
 	for _, el := range comp.Elts {
-		if _, ok := toString(el); !ok {
+		if _, ok := toString(el); !ok && !isAnyOf(el, allowedConstants) {
 			issues = append(issues, &Issue{
 				Pos:  fs.Position(el.Pos()),
 				Msg:  nonLiteralVarsMsg,
@@ -375,4 +379,24 @@ func toString(node ast.Node) (s string, ok bool) {
 		return "", false
 	}
 	return s, true
+}
+
+type constant struct {
+	pkg      string
+	variable string
+}
+
+// isAnyOf checks if expr matches anything in the list of constants.
+func isAnyOf(expr ast.Expr, constants []constant) bool {
+	selector, ok := expr.(*ast.SelectorExpr)
+	if !ok {
+		return false
+	}
+	for _, constant := range constants {
+		pkgIdent, pkgOk := selector.X.(*ast.Ident)
+		if pkgOk && pkgIdent.Name == constant.pkg && selector.Sel.Name == constant.variable {
+			return true
+		}
+	}
+	return false
 }

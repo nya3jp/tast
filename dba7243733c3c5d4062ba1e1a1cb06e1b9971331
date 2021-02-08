@@ -16,6 +16,23 @@
       "message": "Code looks fine, but need nya@ for changes to core tast",
       "revId": "dba7243733c3c5d4062ba1e1a1cb06e1b9971331",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b807c624_b1b9f51d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-02-08T08:34:46Z",
+      "side": 1,
+      "message": "oka@, I guess you\u0027re going to remove the constantness check entirely? crbug.com/1073791\n",
+      "revId": "dba7243733c3c5d4062ba1e1a1cb06e1b9971331",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

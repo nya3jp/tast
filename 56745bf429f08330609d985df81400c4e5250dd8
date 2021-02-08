@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1bde6468_8ec90026",
+        "filename": "src/chromiumos/tast/ssh/linuxssh/fileutil.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 296,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-02-08T09:04:24Z",
+      "side": 1,
+      "message": "I think it\u0027s nice to reduce the number of Command invocations to reduce round-trips as this is a basic function.\n\nFor example we can make it a single shell script call:\n\n conn.Command(\"sh\", \"-c\", `test -e \"$0\"; r\u003d$?; cat \u003e \"$0\"; if [ r \u003d 1 ]; then chmod \"$1\" \"$0\"; fi`, path, fmt.Sprintf(...))",
+      "range": {
+        "startLine": 296,
+        "startChar": 1,
+        "endLine": 296,
+        "endChar": 59
+      },
+      "revId": "56745bf429f08330609d985df81400c4e5250dd8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "e693fc25_55182354",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-02-09T02:38:38Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e7bfde1e_555411a3",
+      "range": {
+        "startLine": 7,
+        "startChar": 43,
+        "endLine": 7,
+        "endChar": 48
+      },
+      "revId": "a075fba2f1ebcbbe93e27979f7dbc4b4ce196751",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "bda50c9c_6cb87ca8",
@@ -37,6 +61,30 @@
       "writtenOn": "2021-02-09T02:01:46Z",
       "side": 1,
       "message": "nit: extra \" \"",
+      "range": {
+        "startLine": 9,
+        "startChar": 4,
+        "endLine": 9,
+        "endChar": 5
+      },
+      "revId": "a075fba2f1ebcbbe93e27979f7dbc4b4ce196751",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5a75d33f_ba3ad071",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-02-09T02:38:38Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "bda50c9c_6cb87ca8",
       "range": {
         "startLine": 9,
         "startChar": 4,
@@ -64,6 +112,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "cc03797e_f415905d",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-02-09T02:38:38Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ee14a396_03b0a3bb",
+      "revId": "a075fba2f1ebcbbe93e27979f7dbc4b4ce196751",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "50b99dac_93f02663",
@@ -77,6 +143,30 @@
       "writtenOn": "2021-02-09T02:00:03Z",
       "side": 1,
       "message": "Remove 2 extra blank lines here.",
+      "range": {
+        "startLine": 41,
+        "startChar": 0,
+        "endLine": 41,
+        "endChar": 0
+      },
+      "revId": "a075fba2f1ebcbbe93e27979f7dbc4b4ce196751",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1e9df7be_4bbb9cca",
+        "filename": "src/chromiumos/tast/internal/protocol/reports.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-02-09T02:38:38Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "50b99dac_93f02663",
       "range": {
         "startLine": 41,
         "startChar": 0,

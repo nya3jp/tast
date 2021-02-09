@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "14827e75_d624688a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-02-09T00:13:45Z",
+      "side": 1,
+      "message": "This first the CL for support terminate in progress sink result response. This CL change the gRPC ReportsResult API to return a response with terminate flag. \n\nPlease review.\n\nThanks.\n ",
+      "revId": "56579b0d7748a8d81dbca371fab34618e43b1c6b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

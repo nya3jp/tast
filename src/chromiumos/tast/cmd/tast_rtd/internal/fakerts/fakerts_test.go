@@ -15,7 +15,7 @@ import (
 )
 
 func TestProgressSink_ReportLog(t *testing.T) {
-	srv, addr, err := StartProgressSink(context.Background())
+	srv, addr, err := StartProgressSink(context.Background(), 0)
 	if err != nil {
 		t.Fatal("Failed to start fake ProgressSink server: ", err)
 	}
@@ -87,7 +87,7 @@ func TestProgressSink_ReportLog(t *testing.T) {
 
 // TestProgressSink_ReportResult makes sure the fake progress sink can handle ReportResult API.
 func TestProgressSink_ReportResult(t *testing.T) {
-	srv, addr, err := StartProgressSink(context.Background())
+	srv, addr, err := StartProgressSink(context.Background(), 0)
 	if err != nil {
 		t.Fatal("Failed to start fake ProgressSink server: ", err)
 	}
@@ -113,5 +113,41 @@ func TestProgressSink_ReportResult(t *testing.T) {
 	}
 	if results[0].Result.State != request.Result.State {
 		t.Errorf("Got unexpected result state -got %v +want %v", results[0].Result.State, request.Result.State)
+	}
+}
+
+// TestProgressSink_ReportResultFailureCount makes sure the fake progress sink would set
+// the terminate flag when maximum failures allowed has reached.
+func TestProgressSink_ReportResultFailureCount(t *testing.T) {
+	srv, addr, err := StartProgressSink(context.Background(), 1)
+	if err != nil {
+		t.Fatal("Failed to start fake ProgressSink server: ", err)
+	}
+	defer srv.Stop()
+
+	conn, err := grpc.Dial(addr.String(), grpc.WithInsecure())
+	if err != nil {
+		t.Fatal("Failed to establish connection to fake server: ", srv)
+	}
+	client := rtd.NewProgressSinkClient(conn)
+	request := rtd.ReportResultRequest{
+		Request: "FailededReq",
+		Result: &resultspb.Result{
+			State: resultspb.Result_FAILED,
+			Errors: []*resultspb.Result_Error{
+				{
+					Source:   resultspb.Result_Error_TEST,
+					Severity: resultspb.Result_Error_CRITICAL,
+				},
+			},
+		},
+	}
+
+	rspn, err := client.ReportResult(context.Background(), &request)
+	if err != nil {
+		t.Fatal("Failed to call ReportResult: ", err)
+	}
+	if !rspn.Terminate {
+		t.Errorf("rspn.Terminate is false; want true")
 	}
 }

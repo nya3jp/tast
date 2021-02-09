@@ -35,7 +35,7 @@ func TestReportsServer_LogStream(t *testing.T) {
 	)
 
 	ctx := context.Background()
-	psServer, psAddr, err := fakerts.StartProgressSink(ctx)
+	psServer, psAddr, err := fakerts.StartProgressSink(ctx, 0)
 	if err != nil {
 		t.Fatal("Failed to start fake ProgressSink server: ", err)
 	}
@@ -107,7 +107,7 @@ func TestReportsServer_LogStream(t *testing.T) {
 // TestReportsServer_ReportResult makes sure reports server will pass on result to progress sink.
 func TestReportsServer_ReportResult(t *testing.T) {
 	ctx := context.Background()
-	psServer, addr, err := fakerts.StartProgressSink(ctx)
+	psServer, addr, err := fakerts.StartProgressSink(ctx, 0)
 	if err != nil {
 		t.Fatal("Failed to start fake ProgressSink server: ", err)
 	}
@@ -255,8 +255,12 @@ func TestReportsServer_ReportResult(t *testing.T) {
 
 	// Testing for normal reports.
 	for i, r := range requests {
-		if _, err := reportsClient.ReportResult(ctx, r); err != nil {
+		rspn, err := reportsClient.ReportResult(ctx, r)
+		if err != nil {
 			t.Fatalf("Failed at ReportResult: %v", err)
+		}
+		if rspn.Terminate {
+			t.Errorf("ReportResult(ctx, %+v) returned true; wanted false", r)
 		}
 		resultsAtSink := psServer.Results()
 		if diff := cmp.Diff(resultsAtSink[i], expectedResults[i]); diff != "" {
@@ -273,5 +277,73 @@ func TestReportsServer_ReportResult(t *testing.T) {
 	if diff := cmp.Diff(resultsAtSink[index], expectedResults[index]); diff != "" {
 		t.Errorf("Got unexpected argument from request %q (-got +want):\n%s", expectedResults[index].Request, diff)
 	}
+}
 
+// TestReportsServer_ReportResultWithTerminate makes sure reports server will pass on terminate response from progress sink to reports clients.
+func TestReportsServer_ReportResultWithTerminate(t *testing.T) {
+	ctx := context.Background()
+	psServer, addr, err := fakerts.StartProgressSink(ctx, 1)
+	if err != nil {
+		t.Fatal("Failed to start fake ProgressSink server: ", err)
+	}
+	defer psServer.Stop()
+
+	psConn, err := grpc.Dial(addr.String(), grpc.WithInsecure())
+	if err != nil {
+		t.Fatal("Failed to establish connection to fake server: ", psServer)
+	}
+	psClient := rtd.NewProgressSinkClient(psConn)
+
+	testsToRequests := map[string]string{
+		"PassedTest": "PassedReq",
+		"FailedTest": "FailedReq",
+	}
+	testTime := ptypes.TimestampNow()
+
+	requests := []*protocol.ReportResultRequest{
+		{
+			Test: "PassedTest",
+		},
+		{
+			Test: "FailedTest",
+			Errors: []*protocol.Error{
+				{
+					Time:   testTime,
+					Reason: "intentionally failed",
+					File:   "/tmp/file.go",
+					Line:   21,
+					Stack:  "None",
+				},
+			},
+		},
+	}
+
+	// Setting up reports server and client
+	reportsServer, err := NewReportsServer(0, psClient, testsToRequests)
+	if err != nil {
+		t.Fatalf("Failed to start Reports server: %v", err)
+	}
+	reportsConn, err := grpc.Dial(reportsServer.Address(), grpc.WithInsecure())
+	if err != nil {
+		t.Fatalf("Failed to dial: %v", err)
+	}
+	defer reportsConn.Close()
+	reportsClient := protocol.NewReportsClient(reportsConn)
+
+	// Testing for normal reports.
+	for _, r := range requests {
+		rspn, err := reportsClient.ReportResult(ctx, r)
+		if err != nil {
+			t.Fatalf("Failed at ReportResult: %v", err)
+		}
+		if len(r.Errors) > 0 {
+			if !rspn.Terminate {
+				t.Errorf("ReportResult(ctx, %+v) returned false for ; wanted true", r)
+			}
+			break
+		}
+		if rspn.Terminate {
+			t.Errorf("ReportResult(ctx, %+v) returned true for ; wanted false", r)
+		}
+	}
 }

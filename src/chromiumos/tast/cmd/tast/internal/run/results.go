@@ -53,10 +53,7 @@ type EntityResult struct {
 	Errors []EntityError `json:"errors"`
 	// Start is the time at which the entity started (as reported by the test bundle).
 	Start time.Time `json:"start"`
-	// End is the time at which the entity completed (as reported by the test bundle).
-	// It may hold the zero value (0001-01-01T00:00:00Z) to indicate that the entity did not complete
-	// (typically indicating that the test bundle, test runner, or DUT crashed mid-test).
-	// In this case, at least one error will also be present indicating that the entity was incomplete.
+	// End is the time at which the entity completeprocessMessages present indicating that the entity was incomplete.
 	End time.Time `json:"end"`
 	// OutDir is the directory into which entity output is stored.
 	OutDir string `json:"outDir"`
@@ -101,6 +98,8 @@ type EntityError struct {
 // This error should be wrapped with a different error to indicate the exact cause of termination.
 // Callers should kill a running process on getting this error
 var ErrTerminate = errors.New("testing jobs will be terminated")
+
+var errTerminateByRTD = errors.Wrap(ErrTerminate, "tast_rtd signal tast to terminate testing")
 
 // WriteResults writes results (including errors) to a JSON file in the results directory.
 // It additionally logs each test's status to cfg.Logger.
@@ -209,6 +208,7 @@ type resultsHandler struct {
 	diagFunc         diagnoseRunErrorFunc    // called to diagnose run errors; may be nil
 	streamWriter     *streamedResultsWriter  // used to write results as control messages are read
 	pullers          sync.WaitGroup          // used to wait for puller goroutines
+	terminatedByRTD  bool                    // testing will be terminated by tast_rtd.
 }
 
 func newResultsHandler(cfg *Config, state *State, crf copyAndRemoveFunc, df diagnoseRunErrorFunc) (*resultsHandler, error) {
@@ -421,13 +421,15 @@ func (r *resultsHandler) reportResult(ctx context.Context, res *EntityResult) er
 			Stack:  e.Stack,
 		})
 	}
-	if _, err := r.state.reportsClient.ReportResult(ctx, request); err != nil {
+	rspn, err := r.state.reportsClient.ReportResult(ctx, request)
+	if err != nil {
 		return err
 	}
+	r.terminatedByRTD = rspn.Terminate
 	return nil
 }
 
-func (r *resultsHandler) handleTestEnd(ctx context.Context, msg *control.EntityEnd) error {
+func (r *resultsHandler) handleTestEnd(ctx context.Context, msg *control.EntityEnd) (err error) {
 	state := r.currents[msg.Name]
 	if state == nil {
 		return fmt.Errorf("got TestEnd message for %s while it was not running", msg.Name)
@@ -465,7 +467,7 @@ func (r *resultsHandler) handleTestEnd(ctx context.Context, msg *control.EntityE
 		if len(state.result.Errors) > 0 {
 			r.state.failuresCount++
 		}
-		if err := r.reportResult(ctx, &state.result); err != nil {
+		if err = r.reportResult(ctx, &state.result); err != nil {
 			return err
 		}
 		if err := r.streamWriter.write(&state.result, true); err != nil {
@@ -588,8 +590,10 @@ func (r *resultsHandler) processMessages(ctx context.Context, mch <-chan interfa
 			state.result.Errors = append(state.result.Errors, EntityError{time.Now(), testing.Error{Reason: incompleteTestMsg}})
 			if state.result.Type == testing.EntityTest {
 				r.state.failuresCount++
-				r.reportResult(ctx, &state.result)
 				r.streamWriter.write(&state.result, true)
+				if !r.terminatedByRTD {
+					r.reportResult(ctx, &state.result)
+				}
 			}
 		}
 	}()
@@ -609,6 +613,9 @@ func (r *resultsHandler) processMessages(ctx context.Context, mch <-chan interfa
 				}
 				if err := r.handleMessage(ctx, msg); err != nil {
 					return err
+				}
+				if r.terminatedByRTD {
+					return errTerminateByRTD
 				}
 				if r.cfg.maxTestFailures > 0 && r.state.failuresCount >= r.cfg.maxTestFailures {
 					return errors.Wrapf(ErrTerminate, "the maximum number of test failures (%v) reached", r.cfg.maxTestFailures)
@@ -766,7 +773,12 @@ func readTestOutput(ctx context.Context, cfg *Config, state *State, r io.Reader,
 	ech := make(chan error)
 	go readMessages(r, mch, ech)
 
-	return rh.processMessages(ctx, mch, ech)
+	results, unstarted, err = rh.processMessages(ctx, mch, ech)
+	if rh.terminatedByRTD {
+		// handle the case of termination was happended during cleaning up of unfinished tests.
+		err = errTerminateByRTD
+	}
+	return results, unstarted, err
 }
 
 // unmatchedTestPatterns returns any glob test patterns in the supplied slice

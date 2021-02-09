@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "abd2249e_7dd2fd55",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-02-09T02:03:35Z",
+      "side": 1,
+      "message": "This CL is the second CL to support terminate from progress sink ReportResultResponse. New unit test was added and it passed. Please review.",
+      "revId": "e1345bda7335681ceb39a1f32e52d3bdf3abd7db",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

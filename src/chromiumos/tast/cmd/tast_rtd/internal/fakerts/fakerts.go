@@ -11,6 +11,7 @@ import (
 	"net"
 	"sync"
 
+	resultspb "go.chromium.org/chromiumos/config/go/api/test/results/v2"
 	rtd "go.chromium.org/chromiumos/config/go/api/test/rtd/v1"
 	"google.golang.org/grpc"
 
@@ -24,31 +25,36 @@ type nameAndRequest struct {
 	request string
 }
 
-type fakeProgressSinkService struct {
+//FakeProgressSinkService is a fake service for testing testing Porgress Sink client.
+type FakeProgressSinkService struct {
 	rtd.UnimplementedProgressSinkServer
 	Server *grpc.Server
 
 	logMtx sync.Mutex
 	// received log by ReportLog RPC
-	log        map[nameAndRequest][]byte
-	resultsMtx sync.Mutex
-	results    []*rtd.ReportResultRequest
+	log             map[nameAndRequest][]byte
+	resultsMtx      sync.Mutex
+	results         []*rtd.ReportResultRequest
+	maxTestFailures int
+	failuresCount   int
 }
 
 // StartProgressSink starts a fake progress sink service.
-func StartProgressSink(ctx context.Context) (*fakeProgressSinkService, net.Addr, error) {
+func StartProgressSink(ctx context.Context, maxTestFailures int) (*FakeProgressSinkService, net.Addr, error) {
 	l, err := net.Listen("tcp", "127.0.0.1:0")
 	if err != nil {
 		return nil, nil, errors.Wrap(err, "failed to listen")
 	}
-	result := fakeProgressSinkService{
-		log: map[nameAndRequest][]byte{},
+	result := FakeProgressSinkService{
+		log:             map[nameAndRequest][]byte{},
+		maxTestFailures: maxTestFailures,
 	}
 	result.Server = result.Serve(ctx, l)
 	return &result, l.Addr(), nil
 }
 
-func (s *fakeProgressSinkService) Serve(ctx context.Context, l net.Listener) *grpc.Server {
+// Serve starts FakeProgressSinkService.
+func (s *FakeProgressSinkService) Serve(ctx context.Context, l net.Listener) *grpc.Server {
 	server := grpc.NewServer()
 	rtd.RegisterProgressSinkServer(server, s)
 	// Start the server in a background thread, since the Serve() call blocks.
@@ -61,12 +67,12 @@ func (s *fakeProgressSinkService) Serve(ctx context.Context, l net.Listener) *gr
 }
 
 // Stop stops the fake ProgressSinkeService.
-func (s *fakeProgressSinkService) Stop() {
+func (s *FakeProgressSinkService) Stop() {
 	s.Server.Stop()
 }
 
 // ReceivedLog returns the bytes sent to the ReportLog fake API.
-func (s *fakeProgressSinkService) ReceivedLog(name, request string) []byte {
+func (s *FakeProgressSinkService) ReceivedLog(name, request string) []byte {
 	key := nameAndRequest{
 		name:    name,
 		request: request,
@@ -77,7 +83,7 @@ func (s *fakeProgressSinkService) ReceivedLog(name, request string) []byte {
 }
 
 // ReportLog implements rtd.ProgressSinkServer.ReportLog.
-func (s *fakeProgressSinkService) ReportLog(stream rtd.ProgressSink_ReportLogServer) error {
+func (s *FakeProgressSinkService) ReportLog(stream rtd.ProgressSink_ReportLogServer) error {
 	for {
 		data, err := stream.Recv()
 		if err == io.EOF {
@@ -97,15 +103,27 @@ func (s *fakeProgressSinkService) ReportLog(stream rtd.ProgressSink_ReportLogSer
 }
 
 // ReportResult implements rtd.ProgressSinkServer.ReportResult.
-func (s *fakeProgressSinkService) ReportResult(ctx context.Context, result *rtd.ReportResultRequest) (*rtd.ReportResultResponse, error) {
+func (s *FakeProgressSinkService) ReportResult(ctx context.Context, result *rtd.ReportResultRequest) (*rtd.ReportResultResponse, error) {
 	s.resultsMtx.Lock()
 	s.results = append(s.results, result)
 	s.resultsMtx.Unlock()
+	if result.Result.State == resultspb.Result_FAILED {
+		for _, e := range result.Result.Errors {
+			if e.Source == resultspb.Result_Error_TEST && e.Severity == resultspb.Result_Error_CRITICAL {
+				s.failuresCount++
+				break
+			}
+		}
+	}
+	// Only check for failure count if the maxTestFailures was set bigger than zero at the beginning.
+	if s.maxTestFailures > 0 {
+		return &rtd.ReportResultResponse{Terminate: s.failuresCount >= s.maxTestFailures}, nil
+	}
 	return &rtd.ReportResultResponse{}, nil
 }
 
-// Result returns a shallow copy of slice pointing to results sent to the ReportResult fake API.
-func (s *fakeProgressSinkService) Results() []*rtd.ReportResultRequest {
+// Results returns a shallow copy of slice pointing to results sent to the ReportResult fake API.
+func (s *FakeProgressSinkService) Results() []*rtd.ReportResultRequest {
 	s.resultsMtx.Lock()
 	defer s.resultsMtx.Unlock()
 	return append([]*rtd.ReportResultRequest(nil), s.results...)

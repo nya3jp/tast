@@ -15,7 +15,7 @@ import (
 )
 
 func TestProgressSink_ReportLog(t *testing.T) {
-	srv, addr, err := StartProgressSink(context.Background())
+	srv, addr, err := StartProgressSink(context.Background(), 0)
 	if err != nil {
 		t.Fatal("Failed to start fake ProgressSink server: ", err)
 	}
@@ -87,7 +87,7 @@ func TestProgressSink_ReportLog(t *testing.T) {
 
 // TestProgressSink_ReportResult makes sure the fake progress sink can handle ReportResult API.
 func TestProgressSink_ReportResult(t *testing.T) {
-	srv, addr, err := StartProgressSink(context.Background())
+	srv, addr, err := StartProgressSink(context.Background(), 0)
 	if err != nil {
 		t.Fatal("Failed to start fake ProgressSink server: ", err)
 	}

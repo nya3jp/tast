@@ -1042,7 +1042,7 @@ Occasionally tests need to access dynamic or secret data (i.e. *out-of-band* dat
 
 To use runtime variables, in your test's `testing.AddTest` call, set the
 `testing.Test` struct's `Vars` field to contain a slice of runtime variables.
-The `Vars` field should be an array literal of string literals.
+The `Vars` field should be an array literal of string literals or constants.
 The test can later access the values by calling `s.Var` or `s.RequiredVar` methods.
 
 To set runtime variables, add (possibly repeated) `-var=name=value` flags to `tast run`.

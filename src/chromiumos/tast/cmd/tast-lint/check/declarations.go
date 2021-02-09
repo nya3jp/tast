@@ -27,7 +27,7 @@ const (
 	nonLiteralContactsMsg = `Test Contacts should be an array literal of string literals`
 
 	nonLiteralAttrMsg         = `Test Attr should be an array literal of string literals`
-	nonLiteralVarsMsg         = `Test Vars should be an array literal of string literals`
+	nonLiteralVarsMsg         = `Test Vars should be an array literal of string literals or variables`
 	nonLiteralSoftwareDepsMsg = `Test SoftwareDeps should be an array literal of string literals or (possibly qualified) identifiers`
 	nonLiteralParamsMsg       = `Test Params should be an array literal of Param struct literals`
 	nonLiteralParamNameMsg    = `Name of Param should be a string literal`
@@ -245,7 +245,7 @@ func verifyAttr(fs *token.FileSet, node ast.Node) []*Issue {
 }
 
 func verifyVars(fs *token.FileSet, node ast.Node) []*Issue {
-	comp, ok := node.(*ast.CompositeLit)
+	_, ok := node.(*ast.CompositeLit)
 	if !ok {
 		return []*Issue{{
 			Pos:  fs.Position(node.Pos()),
@@ -253,18 +253,7 @@ func verifyVars(fs *token.FileSet, node ast.Node) []*Issue {
 			Link: testRegistrationURL,
 		}}
 	}
-
-	var issues []*Issue
-	for _, el := range comp.Elts {
-		if _, ok := toString(el); !ok {
-			issues = append(issues, &Issue{
-				Pos:  fs.Position(el.Pos()),
-				Msg:  nonLiteralVarsMsg,
-				Link: testRegistrationURL,
-			})
-		}
-	}
-	return issues
+	return nil
 }
 
 func verifySoftwareDeps(fs *token.FileSet, node ast.Node) []*Issue {

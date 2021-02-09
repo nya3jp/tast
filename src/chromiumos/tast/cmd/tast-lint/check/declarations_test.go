@@ -185,13 +185,13 @@ func TestDeclarationsVars(t *testing.T) {
 		Desc:     "This description is fine",
 		Contacts: []string{"me@chromium.org"},
 		Vars:     foobar,  // non array literal.
-	})`, declTestPath + ":8:13: " + nonLiteralVarsMsg}, {`
+	})`, declTestPath + ":8:13: " + nonLiteralVarsMsg}, {snip: `
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
 		Desc:     "This description is fine",
 		Contacts: []string{"me@chromium.org"},
-		Vars:     []string{variableVar},
-	})`, declTestPath + ":8:22: " + nonLiteralVarsMsg}} {
+		Vars:     []string{variableVar}, // this is valid
+	})`}} {
 		code := fmt.Sprintf(initTmpl, tc.snip)
 		f, fs := parse(code, declTestPath)
 		issues := Declarations(fs, f, false)

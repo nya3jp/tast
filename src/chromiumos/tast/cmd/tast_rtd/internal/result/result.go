@@ -21,22 +21,18 @@ import (
 const MissingTestSkipReason = "Test was not run"
 
 // SendTestResult reports result through progress API.
-func SendTestResult(ctx context.Context, request string, psClient rtd.ProgressSinkClient, result *protocol.ReportResultRequest) error {
+func SendTestResult(ctx context.Context, request string, psClient rtd.ProgressSinkClient, result *protocol.ReportResultRequest) (terminate bool, err error) {
 	resultRequest := makeResultRequest(request, result)
 	return SendReqToProgressSink(ctx, psClient, resultRequest)
 }
 
 // SendReqToProgressSink sends a result request to progress sink.
-func SendReqToProgressSink(ctx context.Context, psClient rtd.ProgressSinkClient, resultRequest *rtd.ReportResultRequest) error {
+func SendReqToProgressSink(ctx context.Context, psClient rtd.ProgressSinkClient, resultRequest *rtd.ReportResultRequest) (terminate bool, err error) {
 	rspn, err := psClient.ReportResult(ctx, resultRequest)
 	if err != nil {
-		return errors.Wrap(err, "failed to report result")
+		return false, errors.Wrap(err, "failed to report result")
 	}
-	// TODO(crbug.com/1166946): decide what to do with terminate
-	if rspn.Terminate {
-		return nil
-	}
-	return nil
+	return rspn.Terminate, nil
 }
 
 // makeResultRequest processes a *protocol.ReportResultRequest and prepares test results for progress API to use.

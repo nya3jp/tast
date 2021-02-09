@@ -102,6 +102,8 @@ type EntityError struct {
 // Callers should kill a running process on getting this error
 var ErrTerminate = errors.New("testing jobs will be terminated")
 
+var errUserReqTermination = errors.Wrap(ErrTerminate, "user requested tast to terminate testing")
+
 // WriteResults writes results (including errors) to a JSON file in the results directory.
 // It additionally logs each test's status to cfg.Logger.
 // The cfg arg should be the same one that was passed to Run earlier.
@@ -211,6 +213,7 @@ type resultsHandler struct {
 	diagFunc         diagnoseRunErrorFunc    // called to diagnose run errors; may be nil
 	streamWriter     *streamedResultsWriter  // used to write results as control messages are read
 	pullers          sync.WaitGroup          // used to wait for puller goroutines
+	terminated       bool                    // testing will be terminated.
 }
 
 func newResultsHandler(cfg *Config, state *State, crf copyAndRemoveFunc, df diagnoseRunErrorFunc) (*resultsHandler, error) {
@@ -423,9 +426,11 @@ func (r *resultsHandler) reportResult(ctx context.Context, res *EntityResult) er
 			Stack:  e.Stack,
 		})
 	}
-	if _, err := r.state.reportsClient.ReportResult(ctx, request); err != nil {
+	rspn, err := r.state.reportsClient.ReportResult(ctx, request)
+	if err != nil {
 		return err
 	}
+	r.terminated = rspn.Terminate
 	return nil
 }
 
@@ -590,9 +595,13 @@ func (r *resultsHandler) processMessages(ctx context.Context, mch <-chan interfa
 			state.result.Errors = append(state.result.Errors, EntityError{time.Now(), testing.Error{Reason: incompleteTestMsg}})
 			if state.result.Type == testing.EntityTest {
 				r.state.failuresCount++
-				r.reportResult(ctx, &state.result)
 				r.streamWriter.write(&state.result, true)
+				r.reportResult(ctx, &state.result)
 			}
+		}
+		// Return errUserReqTermination if we get a terminate response from result server in the loop above.
+		if err == nil && r.terminated {
+			err = errUserReqTermination
 		}
 	}()
 
@@ -611,6 +620,9 @@ func (r *resultsHandler) processMessages(ctx context.Context, mch <-chan interfa
 				}
 				if err := r.handleMessage(ctx, msg); err != nil {
 					return err
+				}
+				if r.terminated {
+					return errUserReqTermination
 				}
 				if r.cfg.maxTestFailures > 0 && r.state.failuresCount >= r.cfg.maxTestFailures {
 					return errors.Wrapf(ErrTerminate, "the maximum number of test failures (%v) reached", r.cfg.maxTestFailures)

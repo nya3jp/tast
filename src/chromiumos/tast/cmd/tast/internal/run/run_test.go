@@ -251,7 +251,7 @@ func TestRunTLW(t *gotesting.T) {
 
 // TestRunWithReports_LogStream tests Run() with fake Reports server and log stream.
 func TestRunWithReports_LogStream(t *gotesting.T) {
-	srv, stopFunc, addr := fakereports.Start(t)
+	srv, stopFunc, addr := fakereports.Start(t, 0)
 	defer stopFunc()
 
 	td := newLocalTestData(t)
@@ -322,7 +322,7 @@ func TestRunWithReports_LogStream(t *gotesting.T) {
 
 // TestRunWithReports_ReportResult tests Run() with fake Reports server and reporting results.
 func TestRunWithReports_ReportResult(t *gotesting.T) {
-	srv, stopFunc, addr := fakereports.Start(t)
+	srv, stopFunc, addr := fakereports.Start(t, 0)
 	defer stopFunc()
 
 	td := newLocalTestData(t)
@@ -406,6 +406,98 @@ func TestRunWithReports_ReportResult(t *gotesting.T) {
 		{
 			Test:       test3Name,
 			SkipReason: test3SkipReason,
+		},
+	}
+	results := srv.Results()
+	if diff := cmp.Diff(results, expectedResults); diff != "" {
+		t.Errorf("Got unexpected results (-got +want):\n%s", diff)
+	}
+
+}
+
+// TestRunWithReports_ReportResultTerminate tests Run() stop testing after getting terminate
+// response from reports server.
+func TestRunWithReports_ReportResultTerminate(t *gotesting.T) {
+	srv, stopFunc, addr := fakereports.Start(t, 1)
+	defer stopFunc()
+
+	td := newLocalTestData(t)
+	defer td.close()
+	td.cfg.reportsServer = addr
+	td.cfg.runLocal = true
+
+	const (
+		test1Name       = "foo.FirstTest"
+		test1Desc       = "First description"
+		test2Name       = "foo.SecondTest"
+		test2Desc       = "Second description"
+		test3Name       = "foo.ThirdTest"
+		test3Desc       = "Third description"
+		test3SkipReason = "Test skip reason"
+	)
+	test2Error := testing.Error{
+		Reason: "Intentionally failed",
+		File:   "/tmp/file.go",
+		Line:   21,
+		Stack:  "None",
+	}
+	test2ErrorTime := time.Unix(35, 0)
+	tests := []testing.EntityWithRunnabilityInfo{
+		{
+			EntityInfo: testing.EntityInfo{
+				Name: test1Name,
+			},
+		},
+		{
+			EntityInfo: testing.EntityInfo{
+				Name: test2Name,
+			},
+		},
+		{
+			EntityInfo: testing.EntityInfo{
+				Name: test3Name,
+			},
+		},
+	}
+
+	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+		switch args.Mode {
+		case runner.RunTestsMode:
+			patterns := args.RunTests.BundleArgs.Patterns
+			mw := control.NewMessageWriter(stdout)
+			mw.WriteMessage(&control.RunStart{Time: time.Unix(0, 0), NumTests: len(patterns)})
+			mw.WriteMessage(&control.EntityStart{Time: time.Unix(10, 0), Info: testing.EntityInfo{Name: test1Name}})
+			mw.WriteMessage(&control.EntityEnd{Time: time.Unix(20, 0), Name: test1Name})
+			mw.WriteMessage(&control.EntityStart{Time: time.Unix(30, 0), Info: testing.EntityInfo{Name: test2Name}})
+			mw.WriteMessage(&control.EntityError{Time: test2ErrorTime, Name: test2Name, Error: test2Error})
+			mw.WriteMessage(&control.EntityEnd{Time: time.Unix(40, 0), Name: test2Name})
+			mw.WriteMessage(&control.EntityStart{Time: time.Unix(45, 0), Info: testing.EntityInfo{Name: test3Name}})
+			mw.WriteMessage(&control.EntityEnd{Time: time.Unix(50, 0), Name: test3Name, SkipReasons: []string{test3SkipReason}})
+			mw.WriteMessage(&control.RunEnd{Time: time.Unix(60, 0), OutDir: ""})
+		case runner.ListTestsMode:
+			json.NewEncoder(stdout).Encode(tests)
+		}
+		return 0
+	}
+	if status, _ := Run(context.Background(), &td.cfg, &td.state); status.ExitCode != subcommands.ExitFailure {
+		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitFailure, td.logbuf.String())
+	}
+	test2ErrorTimeStamp, _ := ptypes.TimestampProto(test2ErrorTime)
+	expectedResults := []*protocol.ReportResultRequest{
+		{
+			Test: test1Name,
+		},
+		{
+			Test: test2Name,
+			Errors: []*protocol.Error{
+				{
+					Time:   test2ErrorTimeStamp,
+					Reason: test2Error.Reason,
+					File:   test2Error.File,
+					Line:   int32(test2Error.Line),
+					Stack:  test2Error.Stack,
+				},
+			},
 		},
 	}
 	results := srv.Results()

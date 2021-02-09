@@ -40,7 +40,7 @@ func TestPipeWatcher(t *testing.T) {
 	r = nil // disarm cleanup
 	select {
 	case <-time.After(time.Minute):
-		t.Fatalf("FD %d not reported as having closed read end", w.Fd())
+		t.Errorf("FD %d not reported as having closed read end", w.Fd())
 	case <-pw.readClosed:
 	}
 

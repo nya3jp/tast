@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ee14a396_03b0a3bb",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-02-09T02:00:03Z",
+      "side": 1,
+      "message": "I dont\u0027t think these input/outputs in the patch description is very  helpful. The manual test depends on the content of t1.pb. Also, unit tests would already cover the code path affected by the RPC message type change.\nHow about just having TEST\u003dfast_test.sh -T (or -t with related test names)?",
+      "revId": "a075fba2f1ebcbbe93e27979f7dbc4b4ce196751",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "50b99dac_93f02663",
+        "filename": "src/chromiumos/tast/internal/protocol/reports.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-02-09T02:00:03Z",
+      "side": 1,
+      "message": "Remove 2 extra blank lines here.",
+      "range": {
+        "startLine": 41,
+        "startChar": 0,
+        "endLine": 41,
+        "endChar": 0
+      },
+      "revId": "a075fba2f1ebcbbe93e27979f7dbc4b4ce196751",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

@@ -1,0 +1,113 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0e944668_77144fc2",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/internal/fakerts/fakerts.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-02-09T10:53:44Z",
+      "side": 1,
+      "message": "nit: a space after //",
+      "range": {
+        "startLine": 28,
+        "startChar": 0,
+        "endLine": 28,
+        "endChar": 25
+      },
+      "revId": "4c5a1ba6ce3a0a4d074626b075786fe16b3ace95",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "07d547d1_81e44197",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/internal/fakerts/fakerts.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-02-09T10:53:44Z",
+      "side": 1,
+      "message": "How about adding unit test for fakerts with maxTestFailures?",
+      "range": {
+        "startLine": 43,
+        "startChar": 43,
+        "endLine": 43,
+        "endChar": 63
+      },
+      "revId": "4c5a1ba6ce3a0a4d074626b075786fe16b3ace95",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c2a72ca3_2a35d38c",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/internal/fakerts/fakerts.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 118,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-02-09T10:53:44Z",
+      "side": 1,
+      "message": "I think this comment could be simplified by removing overlapped portion with the code.\nMaybe this means s.maxTestFailures\u003d\u003d0 is a special value that indicates max number limit is disabled? If so, it would be better to document in the constructor or struct field comment.",
+      "range": {
+        "startLine": 118,
+        "startChar": 0,
+        "endLine": 118,
+        "endChar": 98
+      },
+      "revId": "4c5a1ba6ce3a0a4d074626b075786fe16b3ace95",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cae8fa9e_56737b89",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/internal/rpc/reports_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 263,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-02-09T10:53:44Z",
+      "side": 1,
+      "message": "remove \"for\"\n(or perhaps add something after it?)",
+      "range": {
+        "startLine": 263,
+        "startChar": 36,
+        "endLine": 263,
+        "endChar": 55
+      },
+      "revId": "4c5a1ba6ce3a0a4d074626b075786fe16b3ace95",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "eecca15c_0e876682",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/internal/rpc/reports_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 301,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-02-09T10:53:44Z",
+      "side": 1,
+      "message": "Is this needed in this test function?",
+      "revId": "4c5a1ba6ce3a0a4d074626b075786fe16b3ace95",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

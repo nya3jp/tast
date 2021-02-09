@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b1415df5_7d91b89e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2021-02-09T04:34:27Z",
+      "side": 1,
+      "message": "PTAL",
+      "revId": "2e5b28485850f0bae0defbbe129fd2380797f8a5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f6978344_71c90c96",
+        "filename": "src/chromiumos/tast/internal/runner/pipe_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2021-02-09T04:34:27Z",
+      "side": 1,
+      "message": "Note: this relies on close() won\u0027t timed out. Theoretically, it shouldn\u0027t, but if we would like to more strongly guarantee it, close() should take context with time out, and close() implementation should respect it.",
+      "revId": "2e5b28485850f0bae0defbbe129fd2380797f8a5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

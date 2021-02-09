@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "35b232f9_c022fe84",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1390967
+      },
+      "writtenOn": "2021-02-09T23:33:49Z",
+      "side": 1,
+      "message": "David\u0027s going to use this for CB-\u003eCB sharing",
+      "revId": "1f2f7cdf1c8bc73f06c89ec65d07d2b0642c9aa9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

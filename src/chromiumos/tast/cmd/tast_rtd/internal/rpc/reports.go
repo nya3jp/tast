@@ -66,13 +66,14 @@ func (s *ReportsServer) ReportResult(ctx context.Context, req *protocol.ReportRe
 	if !ok {
 		return nil, errors.Errorf("cannot find request name for test %q", req.Test)
 	}
-	if err := result.SendTestResult(ctx, requestName, s.psClient, req); err != nil {
+	terminate, err := result.SendTestResult(ctx, requestName, s.psClient, req)
+	if err != nil {
 		return nil, errors.Wrap(err, "failed in ReportResult")
 	}
 	s.mu.Lock()
 	s.reportedRequests[requestName] = struct{}{}
 	s.mu.Unlock()
-	return &protocol.ReportResultResponse{}, nil
+	return &protocol.ReportResultResponse{Terminate: terminate}, nil
 }
 
 // SendMissingTestsReports sends reports to progress sink on all the tests that are not run by tast.
@@ -83,8 +84,12 @@ func (s *ReportsServer) SendMissingTestsReports(ctx context.Context) error {
 		if _, ok := s.reportedRequests[req]; ok {
 			continue
 		}
-		if err := result.SendReqToProgressSink(ctx, s.psClient, result.MissingTestResult(req)); err != nil {
+		terminate, err := result.SendReqToProgressSink(ctx, s.psClient, result.MissingTestResult(req))
+		if err != nil {
 			return errors.Wrapf(err, "failed in sending missing test report for request %q", req)
+		}
+		if terminate {
+			break
 		}
 	}
 	return nil

@@ -185,6 +185,8 @@ The following software features are defined:
     the DTC (Diagnostic and Telemetry Controller) VM, a special EC interface,
     and a dock firmware updater.
 *   `wired_8021x` - The ability to use 802.1X for authentication over Ethernet.
+*   `use_fscrypt_v2` - The board is set to use v2 fscrypt policy for user vault.
+*   `no_use_fscrypt_v2` - The board is prohibited to use v2 fscrypt policy for user vault.
 
 [amd64]: https://en.wikipedia.org/wiki/X86-64
 [arm]: https://en.wikipedia.org/wiki/ARM_architecture

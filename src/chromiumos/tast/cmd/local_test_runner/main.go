@@ -222,6 +222,11 @@ func main() {
 			// the boards that have Intel WiFi chips, skip the ones that don't have it.
 			"intel_wifi_chip": `!("board:bob" || "board:elm" || "board:grunt" || "board:hana" || "board:jacuzzi" || "board:kevin" || "board:kukui" || "board:oak" || "board:scarlet" || "board:trogdor" || "board:veyron_fievel" || "board:veyron_tiger" ||
 			                      "board:elm-kernelnext" || "board:hana-kernelnext" || "board:kukui-arc-r" || "board:grunt-arc-r" || "board:kevin64")`,
+			// FSCrypt v2 rollout control.
+			"fscrypt_v2_support":    `"kernel-5_4" || "kernel-5_10"`,
+			"no_fscrypt_v2_support": `!("kernel-5_4" || "kernel-5_10")`,
+			"use_fscrypt_v2":        "direncription_allow_v2",
+			"no_use_fscrypt_v2":     "!direncription_allow_v2",
 		},
 		// The autotest-capability package tries to install this to /etc but it's diverted to /usr/local.
 		AutotestCapabilityDir:   autocaps.DefaultCapabilityDir,

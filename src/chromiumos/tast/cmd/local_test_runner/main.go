@@ -215,6 +215,11 @@ func main() {
 			"wilco":       "wilco",
 			"wired_8021x": "wired_8021x",
 			"wpa3_sae":    "wpa3_sae",
+			// FSCrypt v2 rollout control.
+			"fscrypt_v2_support":    `("kernel-5_4" || "kernel-5_10") && !is-kernelnext`,
+			"no_fscrypt_v2_support": `!("kernel-5_4" || "kernel-5_10") || is-kernelnext || has-kernelnext`,
+			"use_fscrypt_v2":        "direncription_allow_v2",
+			"no_use_fscrypt_v2":     "!direncription_allow_v2",
 		},
 		// The autotest-capability package tries to install this to /etc but it's diverted to /usr/local.
 		AutotestCapabilityDir:   autocaps.DefaultCapabilityDir,

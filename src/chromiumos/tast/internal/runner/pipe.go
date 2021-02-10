@@ -5,6 +5,7 @@
 package runner
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"syscall"
@@ -56,9 +57,16 @@ func newPipeWatcher(writeFD int) (*pipeWatcher, error) {
 			// when the read end has been closed. epoll_wait(2) will always report for this event;
 			// it is not necessary to set it in _events_."
 			events := make([]syscall.EpollEvent, 1)
-			if _, err := syscall.EpollWait(epollFD, events, -1); err != nil {
-				return fmt.Errorf("epoll_wait: %v", err)
-			} else if ev := events[0]; ev.Fd == int32(writeFD) && ev.Events == syscall.EPOLLERR {
+			for {
+				ret, err := syscall.EpollWait(epollFD, events, -1)
+				if ret != -1 || err == nil {
+					break
+				}
+				if !errors.Is(err, syscall.EINTR) {
+					return fmt.Errorf("epoll_wait: %v", err)
+				}
+			}
+			if ev := events[0]; ev.Fd == int32(writeFD) && ev.Events == syscall.EPOLLERR {
 				// The read end of writeFD was closed.
 				close(pw.readClosed)
 				return nil

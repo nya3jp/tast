@@ -163,6 +163,8 @@ The following software features are defined:
 *   `transparent_hugepage` - [Transparent Hugepage] support in the Linux kernel.
 *   `untrusted_vm` - The ability to run an untrusted VM.
 *   `usbguard` - The ability to allow or block USB devices based on policy.
+*   `use_fscrypt_v1` - The board is set to use v1 fscrypt policy for user vault.
+*   `use_fscrypt_v2` - The board is set to use v2 fscrypt policy for user vault.
 *   `v4l2_codec` - Whether or not v4l2 video acceleration API is supported by this DUT.
 *   `vaapi` - Whether or not VA-API is supported by this DUT.
 *   `video_decoder_direct` - The platform uses the VideoDecoder (VD) by default.

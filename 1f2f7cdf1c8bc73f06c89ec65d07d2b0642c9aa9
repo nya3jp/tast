@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": true,
+      "key": {
+        "uuid": "459b3c6c_daa605d8",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1118689
+      },
+      "writtenOn": "2021-02-10T00:20:58Z",
+      "side": 1,
+      "message": "Unless there is another CL I don\u0027t know about, I believe that work is stalled: https://chromium-review.googlesource.com/c/chromiumos/platform/tast/+/2558269\n\nWe need to get something working now though. Nearby share deadlines are pretty tight, so if it is not already implemented we should go with this with a TODO to revisit when tast core\u0027s solution is in place.",
+      "parentUuid": "c17c0a00_d339809b",
+      "range": {
+        "startLine": 13,
+        "startChar": 14,
+        "endLine": 13,
+        "endChar": 51
+      },
+      "revId": "1f2f7cdf1c8bc73f06c89ec65d07d2b0642c9aa9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": false,
       "key": {
         "uuid": "35b232f9_c022fe84",

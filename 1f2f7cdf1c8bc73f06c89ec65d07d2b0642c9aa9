@@ -1,6 +1,29 @@
 {
   "comments": [
     {
+      "unresolved": true,
+      "key": {
+        "uuid": "c17c0a00_d339809b",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1358595
+      },
+      "writtenOn": "2021-02-10T00:13:16Z",
+      "side": 1,
+      "message": "Tast core is working on a built in way to deal with multiple duts, we should follow what they have and not add our own.",
+      "range": {
+        "startLine": 13,
+        "startChar": 14,
+        "endLine": 13,
+        "endChar": 51
+      },
+      "revId": "1f2f7cdf1c8bc73f06c89ec65d07d2b0642c9aa9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": false,
       "key": {
         "uuid": "35b232f9_c022fe84",
@@ -31,6 +54,69 @@
       "writtenOn": "2021-02-09T23:34:31Z",
       "side": 1,
       "message": "Verified working for me ",
+      "revId": "1f2f7cdf1c8bc73f06c89ec65d07d2b0642c9aa9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e4128fd1_9c3b3a1c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1358595
+      },
+      "writtenOn": "2021-02-10T00:13:16Z",
+      "side": 1,
+      "message": "+nya Tast core is already working on/implemented using multiple duts, correct?",
+      "revId": "1f2f7cdf1c8bc73f06c89ec65d07d2b0642c9aa9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "72954775_edf30099",
+        "filename": "src/chromiumos/tast/dut/dut.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 296,
+      "author": {
+        "id": 1358595
+      },
+      "writtenOn": "2021-02-10T00:13:16Z",
+      "side": 1,
+      "message": "is directly passing a string really what we want?",
+      "range": {
+        "startLine": 296,
+        "startChar": 33,
+        "endLine": 296,
+        "endChar": 46
+      },
+      "revId": "1f2f7cdf1c8bc73f06c89ec65d07d2b0642c9aa9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2b52cf2d_c2dbb5f0",
+        "filename": "src/chromiumos/tast/dut/dut.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 297,
+      "author": {
+        "id": 1358595
+      },
+      "writtenOn": "2021-02-10T00:13:16Z",
+      "side": 1,
+      "message": "is this always correct?",
+      "range": {
+        "startLine": 297,
+        "startChar": 11,
+        "endLine": 297,
+        "endChar": 39
+      },
       "revId": "1f2f7cdf1c8bc73f06c89ec65d07d2b0642c9aa9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }

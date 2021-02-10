@@ -189,6 +189,8 @@ func main() {
 			"transparent_hugepage":   "transparent_hugepage",
 			"untrusted_vm":           `"kernel-4_19" || "kernel-5_4"`,
 			"usbguard":               "usbguard",
+			"use_fscrypt_v1":         "!direncription_allow_v2",
+			"use_fscrypt_v2":         "direncription_allow_v2",
 			"v4l2_codec":             "v4l2_codec",
 			"vaapi":                  "vaapi",
 			// As the direct video decoder is transitioned in there is the need

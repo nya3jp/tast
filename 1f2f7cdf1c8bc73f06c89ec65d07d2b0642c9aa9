@@ -48,6 +48,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": true,
+      "key": {
+        "uuid": "0b75eaf2_c05803a1",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1118689
+      },
+      "writtenOn": "2021-02-10T00:27:52Z",
+      "side": 1,
+      "message": "Also note that our Chromebook to Chromebook test will be hardcoding hostnames in v1 anyway so we won\u0027t be using this runtime arg. (Skylab doesn\u0027t support supplying multiple duts to a test yet). So the test will just be calling NewSecondaryDevice() with a hardcoded hostname",
+      "parentUuid": "459b3c6c_daa605d8",
+      "range": {
+        "startLine": 13,
+        "startChar": 14,
+        "endLine": 13,
+        "endChar": 51
+      },
+      "revId": "1f2f7cdf1c8bc73f06c89ec65d07d2b0642c9aa9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": false,
       "key": {
         "uuid": "35b232f9_c022fe84",

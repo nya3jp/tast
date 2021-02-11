@@ -52,6 +52,24 @@
       "parentUuid": "27a1bbb1_00993f98",
       "revId": "0a18a343ed51aa01d17e404da04695ebf241d526",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "594db85b_2f6c772a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1328396
+      },
+      "writtenOn": "2021-02-11T21:23:29Z",
+      "side": 1,
+      "message": "Our aim now is to get the lab to green, so I\u0027m thinking we could start with what we know \"hopefully\" works, then expand it to more recent/older kernels. it\u0027s a start anyway so we could always improve. However, I\u0027m indifferent if we should just add 5.10. Maybe Sean would have a more informed opinion.",
+      "parentUuid": "8b2d01f7_3c82e52e",
+      "revId": "0a18a343ed51aa01d17e404da04695ebf241d526",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

@@ -19,6 +19,8 @@ type OutputStream interface {
 	EntityStart(ei *testing.EntityInfo, outDir string) error
 	// EntityLog reports an informational log message.
 	EntityLog(ei *testing.EntityInfo, msg string) error
+	// EntityLog reports an verbose log message.
+	EntityVLog(ei *testing.EntityInfo, msg string) error
 	// EntityError reports an error from an entity. An entity that reported one or more errors should be considered failure.
 	EntityError(ei *testing.EntityInfo, e *testing.Error) error
 	// EntityEnd reports that an entity has ended. If skipReasons is not empty it is considered skipped.
@@ -72,6 +74,20 @@ func (w *entityOutputStream) Log(msg string) error {
 		return nil
 	}
 	return w.out.EntityLog(w.ei, msg)
+}
+
+// Log reports an informational log from the entity.
+func (w *entityOutputStream) VLog(msg string) error {
+	w.mu.Lock()
+	defer w.mu.Unlock()
+	if w.ended {
+		return errAlreadyEnded
+	}
+	if w.ei.Name == "" {
+		// TODO(crbug.com/1035940): Consider emitting RunLog.
+		return nil
+	}
+	return w.out.EntityVLog(w.ei, msg)
 }
 
 // Log reports an error from the entity.

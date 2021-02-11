@@ -277,6 +277,8 @@ func logMessages(r io.Reader, lg *log.Logger) *command.StatusError {
 			}
 		case *control.EntityLog:
 			lg.Print(v.Text)
+		case *control.EntityVLog:
+			// Nothing is printed to stdout.
 		case *control.EntityError:
 			lg.Printf("Error: [%s:%d] %v", filepath.Base(v.Error.File), v.Error.Line, v.Error.Reason)
 			testFailed = true

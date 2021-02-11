@@ -296,6 +296,39 @@ func WifiNotMarvell() Condition {
 	return c
 }
 
+// WifiIntel returns a hardware dependency condition that if satisfied, indicates
+// that a device uses Intel WiFi. It is not guaranteed that the condition will be
+// satisfied for all devices with Intel WiFi.
+func WifiIntel() Condition {
+	// TODO(crbug.com/1070299): we don't yet have relevant fields in device.Config
+	// about WiFi chip, so list the known platforms here for now.
+	return Condition{Satisfied: func(f *dep.HardwareFeatures) error {
+		// TODO(crbug.com/1115620): remove "Elm" and "Hana" after unibuild migration
+		// completed.
+		// NB: Devices in the "scarlet" family use the platform name "gru", so
+		// "gru" is being used here to represent "scarlet" devices.
+		platformCondition := SkipOnPlatform(
+			"bob", "elm", "fievel", "gru", "grunt", "hana", "jacuzzi",
+			"kevin", "kukui", "oak", "tiger", "trogdor",
+		)
+		if err := platformCondition.Satisfied(f); err != nil {
+			return err
+		}
+		// NB: These exclusions are somewhat overly broad; some
+		// (but not all) blooglet devices have Intel WiFi chips. However,
+		// for now there is no better way to specify the exact hardware
+		// parameters needed for this dependency. (See crbug.com/1070299.)
+		modelCondition := SkipOnModel(
+			"blooglet", "dirinboz", "ezkinil", "vilboz",
+		)
+		if err := modelCondition.Satisfied(f); err != nil {
+			return err
+		}
+		return nil
+	}, CEL: "not_implemented",
+	}
+}
+
 func hasBattery(f *dep.HardwareFeatures) (bool, error) {
 	if f.DC == nil {
 		return false, errors.New("device.Config is not given")

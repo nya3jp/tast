@@ -376,3 +376,33 @@ func TestCEL(t *testing.T) {
 		}
 	}
 }
+
+func TestWiFiIntel(t *testing.T) {
+	c := WifiIntel()
+
+	for _, tc := range []struct {
+		platform        string
+		model           string
+		expectSatisfied bool
+	}{
+		{"grunt", "barla", false},
+		{"zork", "ezkinil", false},
+		{"zork", "morphius", true},
+		{"octopus", "droid", true},
+	} {
+		verifyCondition(
+			t, c,
+			&device.Config{
+				Id: &device.ConfigId{
+					PlatformId: &device.PlatformId{
+						Value: tc.platform,
+					},
+					ModelId: &device.ModelId{
+						Value: tc.model,
+					},
+				},
+			},
+			&configpb.HardwareFeatures{},
+			tc.expectSatisfied)
+	}
+}

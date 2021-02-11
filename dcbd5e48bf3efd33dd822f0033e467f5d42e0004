@@ -39,6 +39,30 @@
       },
       "revId": "dcbd5e48bf3efd33dd822f0033e467f5d42e0004",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "fdc9ed26_c2cff484",
+        "filename": "src/chromiumos/tast/internal/runner/pipe.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1351160
+      },
+      "writtenOn": "2021-02-11T19:42:12Z",
+      "side": 1,
+      "message": "SGTM, thanks for the quick review.\nAdjusted as per your comment.",
+      "parentUuid": "dd246094_bcfcd60f",
+      "range": {
+        "startLine": 60,
+        "startChar": 4,
+        "endLine": 69,
+        "endChar": 5
+      },
+      "revId": "dcbd5e48bf3efd33dd822f0033e467f5d42e0004",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

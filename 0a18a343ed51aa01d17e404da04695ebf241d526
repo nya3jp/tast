@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "be89327d_df826bd1",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000221
+      },
+      "writtenOn": "2021-02-11T19:01:21Z",
+      "side": 1,
+      "message": "If I recall correctly Sean wanted to start with the newest kernels only.\n\nDo we follow any upstream kernels newer than that in kernel-next builds?",
+      "revId": "0a18a343ed51aa01d17e404da04695ebf241d526",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

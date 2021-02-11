@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f2d87074_0ce458d4",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-02-11T19:44:06Z",
+      "side": 1,
+      "message": "Please let me know if the way this CL\u0027s handling of terminate response is ok. Thanks.",
+      "revId": "c749d02f0e16e117cf43842c64427c1013e683e2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

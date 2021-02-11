@@ -168,6 +168,9 @@ type OutputStream interface {
 	// Log reports an informational log message from an entity.
 	Log(msg string) error
 
+	// Log reports an verbose log message from an entity.
+	VLog(msg string) error
+
 	// Error reports an error from by an entity. An entity that reported one or
 	// more errors should be considered failure.
 	Error(e *Error) error
@@ -410,6 +413,16 @@ func (s *globalMixin) Log(args ...interface{}) {
 // Logf is similar to Log but formats its arguments using fmt.Sprintf.
 func (s *globalMixin) Logf(format string, args ...interface{}) {
 	s.entityRoot.out.Log(fmt.Sprintf(format, args...))
+}
+
+// VLog formats its arguments using default formatting and logs them to the verbose logs.
+func (s *globalMixin) VLog(args ...interface{}) {
+	s.entityRoot.out.VLog(fmt.Sprint(args...))
+}
+
+// VLogf is similar to VLog but formats its arguments using fmt.Sprintf.
+func (s *globalMixin) VLogf(format string, args ...interface{}) {
+	s.entityRoot.out.VLog(fmt.Sprintf(format, args...))
 }
 
 // Error formats its arguments using default formatting and marks the entity

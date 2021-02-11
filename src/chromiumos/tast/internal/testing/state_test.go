@@ -34,14 +34,22 @@ type outputSink struct {
 }
 
 type outputData struct {
-	Logs []string
-	Errs []*Error
+	Logs  []string
+	VLogs []string
+	Errs  []*Error
 }
 
 func (r *outputSink) Log(msg string) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	r.Data.Logs = append(r.Data.Logs, msg)
+	return nil
+}
+
+func (r *outputSink) VLog(msg string) error {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	r.Data.VLogs = append(r.Data.VLogs, msg)
 	return nil
 }
 
@@ -778,10 +786,12 @@ func TestCloudStorage(t *gotesting.T) {
 
 func TestStateExports(t *gotesting.T) {
 	for _, tc := range []struct {
+		name    string
 		state   interface{}
 		methods []string
 	}{
 		{
+			"State",
 			State{},
 			[]string{
 				"CloudStorage",
@@ -806,10 +816,13 @@ func TestStateExports(t *gotesting.T) {
 				"ServiceDeps",
 				"SoftwareDeps",
 				"TestName",
+				"VLog",
+				"VLogf",
 				"Var",
 			},
 		},
 		{
+			"PreState",
 			PreState{},
 			[]string{
 				"CloudStorage",
@@ -830,10 +843,13 @@ func TestStateExports(t *gotesting.T) {
 				"ServiceDeps",
 				"SoftwareDeps",
 				"TestName",
+				"VLog",
+				"VLogf",
 				"Var",
 			},
 		},
 		{
+			"TestHookState",
 			TestHookState{},
 			[]string{
 				"CloudStorage",
@@ -854,10 +870,13 @@ func TestStateExports(t *gotesting.T) {
 				"ServiceDeps",
 				"SoftwareDeps",
 				"TestName",
+				"VLog",
+				"VLogf",
 				"Var",
 			},
 		},
 		{
+			"FixtState",
 			FixtState{},
 			[]string{
 				"CloudStorage",
@@ -876,11 +895,14 @@ func TestStateExports(t *gotesting.T) {
 				"ParentValue",
 				"RPCHint",
 				"RequiredVar",
+				"VLog",
+				"VLogf",
 				"Var",
 				// TODO(crbug.com/1035940): Provide access to services.
 			},
 		},
 		{
+			"FixtTestState",
 			FixtTestState{},
 			[]string{
 				"CloudStorage",
@@ -894,6 +916,8 @@ func TestStateExports(t *gotesting.T) {
 				"Logf",
 				"OutDir",
 				"RPCHint",
+				"VLog",
+				"VLogf",
 			},
 		},
 	} {
@@ -914,7 +938,7 @@ func TestStateExports(t *gotesting.T) {
 				methods = append(methods, tp.Method(i).Name)
 			}
 			if diff := cmp.Diff(methods, tc.methods); diff != "" {
-				t.Errorf("Methods unmatch (-got +want):\n%s", diff)
+				t.Errorf("Methods unmatch in %s (-got +want):\n%s", tc.name, diff)
 			}
 		})
 	}

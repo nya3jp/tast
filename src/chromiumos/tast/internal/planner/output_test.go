@@ -38,6 +38,10 @@ func (s *outputSink) EntityLog(ei *testing.EntityInfo, msg string) error {
 	return s.mw.WriteMessage(&control.EntityLog{Text: msg, Name: ei.Name})
 }
 
+func (s *outputSink) EntityVLog(ei *testing.EntityInfo, msg string) error {
+	return s.mw.WriteMessage(&control.EntityVLog{Text: msg, Name: ei.Name})
+}
+
 func (s *outputSink) EntityError(ei *testing.EntityInfo, e *testing.Error) error {
 	// Clear Error fields except for Reason.
 	e = &testing.Error{Reason: e.Reason}
@@ -72,6 +76,7 @@ func TestTestOutputStream(t *gotesting.T) {
 	tout.Log("hello")
 	tout.Error(&testing.Error{Reason: "faulty", File: "world.go"})
 	tout.Log("world")
+	tout.VLog("!")
 	tout.End(nil, nil)
 
 	got, err := sink.ReadAll()
@@ -84,6 +89,7 @@ func TestTestOutputStream(t *gotesting.T) {
 		&control.EntityLog{Name: "pkg.Test", Text: "hello"},
 		&control.EntityError{Name: "pkg.Test", Error: testing.Error{Reason: "faulty"}},
 		&control.EntityLog{Name: "pkg.Test", Text: "world"},
+		&control.EntityVLog{Name: "pkg.Test", Text: "!"},
 		&control.EntityEnd{Name: "pkg.Test"},
 	}
 	if diff := cmp.Diff(got, want); diff != "" {

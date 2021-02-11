@@ -249,6 +249,10 @@ func (ew *eventWriter) EntityLog(ei *testing.EntityInfo, msg string) error {
 	return ew.mw.WriteMessage(&control.EntityLog{Time: time.Now(), Text: msg, Name: ei.Name})
 }
 
+func (ew *eventWriter) EntityVLog(ei *testing.EntityInfo, msg string) error {
+	return ew.mw.WriteMessage(&control.EntityVLog{Time: time.Now(), Text: msg, Name: ei.Name})
+}
+
 func (ew *eventWriter) EntityError(ei *testing.EntityInfo, e *testing.Error) error {
 	if ew.lg != nil {
 		ew.lg.Info(fmt.Sprintf("%s: Error at %s:%d: %s", ei.Name, filepath.Base(e.File), e.Line, e.Reason))

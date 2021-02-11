@@ -383,6 +383,12 @@ func (r *resultsHandler) handleTestLog(ctx context.Context, msg *control.EntityL
 	return nil
 }
 
+// handleTestVLog handles EntityLog control messages from test runners.
+func (r *resultsHandler) handleTestVLog(ctx context.Context, msg *control.EntityVLog) error {
+	r.cfg.Logger.Logf("[%s] %s", msg.Time.Format(testOutputTimeFmt), msg.Text)
+	return nil
+}
+
 // handleTestError handles TestError control messages from test runners.
 func (r *resultsHandler) handleTestError(ctx context.Context, msg *control.EntityError) error {
 	state := r.currents[msg.Name]
@@ -564,6 +570,8 @@ func (r *resultsHandler) handleMessage(ctx context.Context, msg interface{}) err
 		return r.handleTestStart(ctx, v)
 	case *control.EntityLog:
 		return r.handleTestLog(ctx, v)
+	case *control.EntityVLog:
+		return r.handleTestVLog(ctx, v)
 	case *control.EntityError:
 		return r.handleTestError(ctx, v)
 	case *control.EntityEnd:

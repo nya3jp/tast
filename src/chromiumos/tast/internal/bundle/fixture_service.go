@@ -214,6 +214,10 @@ func (l *fixtureServiceLogger) EntityLog(ei *testing.EntityInfo, msg string) err
 	return l.Log(msg)
 }
 
+func (l *fixtureServiceLogger) EntityVLog(ei *testing.EntityInfo, msg string) error {
+	return l.Log(msg)
+}
+
 func (l *fixtureServiceLogger) EntityError(ei *testing.EntityInfo, e *testing.Error) error {
 	return l.Error(e)
 }

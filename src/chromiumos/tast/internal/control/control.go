@@ -121,6 +121,18 @@ type EntityLog struct {
 
 func (*EntityLog) isMsg() {}
 
+// EntityVLog contains a verbose logging message produced by an entity.
+type EntityVLog struct {
+	// Time is the device-local time at which the message was logged.
+	Time time.Time `json:"testVLogTime"`
+	// Text is the actual message.
+	Text string `json:"testVLogText"`
+	// Name is the name of the entity, matching the earlier EntityStart.Test.Name.
+	Name string `json:"testVLogName"`
+}
+
+func (*EntityVLog) isMsg() {}
+
 // EntityError contains an error produced by an entity.
 type EntityError struct {
 	// Time is the device-local time at which the error occurred.
@@ -169,6 +181,7 @@ type messageUnion struct {
 	*RunEnd
 	*EntityStart
 	*EntityLog
+	*EntityVLog
 	*EntityError
 	*EntityEnd
 	*Heartbeat
@@ -204,6 +217,8 @@ func (mw *MessageWriter) WriteMessage(msg Msg) error {
 		return mw.enc.Encode(&messageUnion{EntityStart: v})
 	case *EntityLog:
 		return mw.enc.Encode(&messageUnion{EntityLog: v})
+	case *EntityVLog:
+		return mw.enc.Encode(&messageUnion{EntityVLog: v})
 	case *EntityError:
 		return mw.enc.Encode(&messageUnion{EntityError: v})
 	case *EntityEnd:
@@ -248,6 +263,8 @@ func (mr *MessageReader) ReadMessage() (Msg, error) {
 		return mu.EntityStart, nil
 	case mu.EntityLog != nil:
 		return mu.EntityLog, nil
+	case mu.EntityVLog != nil:
+		return mu.EntityVLog, nil
 	case mu.EntityError != nil:
 		return mu.EntityError, nil
 	case mu.EntityEnd != nil:

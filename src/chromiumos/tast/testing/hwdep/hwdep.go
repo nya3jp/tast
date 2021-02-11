@@ -461,3 +461,32 @@ func Nvme() Condition {
 	}, CEL: "dut.hardware_features.storage.storage_type == api.Component.Storage.StorageType.NVME",
 	}
 }
+
+// WifiIntel returns a hardware dependency condition that is satisfied iff
+// the DUT is using an Intel WiFi chip.
+func WifiIntel() Condition {
+	// TODO(crbug.com/1070299): we don't yet have relevant fields in device.Config
+	// about WiFi chip, so list the known platforms here for now.
+	return Condition{Satisfied: func(f *dep.HardwareFeatures) error {
+		platformCondition := SkipOnPlatform(
+			"bob", "elm", "grunt", "hana", "jacuzzi", "kevin",
+			"kukui", "oak", "scarlet", "trogdor", "veyron",
+		)
+		if platformErr := platformCondition.Satisfied(f); platformErr != nil {
+			return platformErr
+		}
+		// NB: These exclusions are somewhat overly broad; some
+		// (but not all) blooglet devices have WiFi chips that would
+		// work for this test. However, for now there is no better way
+		// to specify the exact hardware parameters needed for this
+		// test. (See crbug.com/1070299.)
+		modelCondition := SkipOnModel(
+			"blooglet", "dirinboz", "ezkinil", "vilboz",
+		)
+		if modelErr := modelCondition.Satisfied(f); modelErr != nil {
+			return modelErr
+		}
+		return nil
+	}, CEL: "not_implemented",
+	}
+}

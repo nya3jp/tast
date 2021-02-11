@@ -16,6 +16,24 @@
       "message": "If I recall correctly Sean wanted to start with the newest kernels only.\n\nDo we follow any upstream kernels newer than that in kernel-next builds?",
       "revId": "0a18a343ed51aa01d17e404da04695ebf241d526",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "27a1bbb1_00993f98",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1328396
+      },
+      "writtenOn": "2021-02-11T19:09:43Z",
+      "side": 1,
+      "message": "I spoke with Sean offline, and he said removing 4_19/4_14 would probably be sufficient and since dedede is JSL and 5.4, we should have a good pass rate. Also AMD is pretty good with igt, so we\u0027ll get zork.",
+      "parentUuid": "be89327d_df826bd1",
+      "revId": "0a18a343ed51aa01d17e404da04695ebf241d526",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

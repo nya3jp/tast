@@ -18,7 +18,7 @@ import (
 func TestKillSession(t *testing.T) {
 	// Start a shell in a new session that runs sleep.
 	// We can't tell the shell to run "sleep 60" directly since it execs sleep then.
-	cmd := exec.Command("/bin/sh", "-c", "true && sleep 60")
+	cmd := exec.Command("/bin/sh", "-c", "true && sleep 60; true")
 	cmd.SysProcAttr = &syscall.SysProcAttr{Setsid: true}
 	if err := cmd.Start(); err != nil {
 		t.Fatal("Failed to start command: ", err)

@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "68c03510_2b931ee1",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-02-11T19:42:45Z",
+      "side": 1,
+      "message": "All comments for this CLs has been address. Please let me know if there are any additional improvement that I should make.\n\nThanks.",
+      "revId": "3d48c458fc2c8db39363755a65864d43f3eb48e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

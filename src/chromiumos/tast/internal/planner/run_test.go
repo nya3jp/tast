@@ -770,7 +770,8 @@ func TestRunFixtureSetUpFailure(t *gotesting.T) {
 		Name: "fixt1",
 		Impl: newFakeFixture(
 			withSetUp(func(ctx context.Context, s *testing.FixtState) interface{} {
-				s.Error("Setup failure")
+				s.Error("Setup failure 1")
+				s.Error("Setup failure 2")
 				return nil
 			}),
 			withReset(func(ctx context.Context) error {
@@ -847,14 +848,17 @@ func TestRunFixtureSetUpFailure(t *gotesting.T) {
 		&control.EntityEnd{Name: tests[0].Name},
 		// fixt1 fails to set up.
 		&control.EntityStart{Info: *fixt1.EntityInfo()},
-		&control.EntityError{Name: fixt1.Name, Error: testing.Error{Reason: "Setup failure"}},
+		&control.EntityError{Name: fixt1.Name, Error: testing.Error{Reason: "Setup failure 1"}},
+		&control.EntityError{Name: fixt1.Name, Error: testing.Error{Reason: "Setup failure 2"}},
 		&control.EntityEnd{Name: fixt1.Name},
 		// All tests depending on fixt1 fail.
 		&control.EntityStart{Info: *tests[1].EntityInfo()},
-		&control.EntityError{Name: tests[1].Name, Error: testing.Error{Reason: "[Fixture failure] fixt1: Setup failed"}},
+		&control.EntityError{Name: tests[1].Name, Error: testing.Error{Reason: "[Fixture failure] fixt1: Setup failure 1"}},
+		&control.EntityError{Name: tests[1].Name, Error: testing.Error{Reason: "[Fixture failure] fixt1: Setup failure 2"}},
 		&control.EntityEnd{Name: tests[1].Name},
 		&control.EntityStart{Info: *tests[2].EntityInfo()},
-		&control.EntityError{Name: tests[2].Name, Error: testing.Error{Reason: "[Fixture failure] fixt1: Setup failed"}},
+		&control.EntityError{Name: tests[2].Name, Error: testing.Error{Reason: "[Fixture failure] fixt1: Setup failure 1"}},
+		&control.EntityError{Name: tests[2].Name, Error: testing.Error{Reason: "[Fixture failure] fixt1: Setup failure 2"}},
 		&control.EntityEnd{Name: tests[2].Name},
 	}
 	if diff := cmp.Diff(msgs, want); diff != "" {

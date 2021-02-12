@@ -131,17 +131,22 @@ func (st *FixtureStack) Status() fixtureStatus {
 	return statusGreen
 }
 
-// RedFixtureName returns a name of the bottom-most red fixture in the fixture
+// Errors returns errors to be reported for tests depending on this fixture
 // stack.
 //
-// If there is no red fixture in the stack, an empty string is returned.
-func (st *FixtureStack) RedFixtureName() string {
+// If there is no red fixture in the stack, an empty slice is returned.
+// Otherwise, this function returns a slice of error messages to be reported
+// for tests depending on the fixture stack. An error message is formatted in
+// the following way:
+//
+//  [Fixture failure] (fixture name): (original error message)
+func (st *FixtureStack) Errors() []*testing.Error {
 	for _, f := range st.stack {
 		if f.Status() == statusRed {
-			return f.Name()
+			return f.Errors()
 		}
 	}
-	return ""
+	return nil
 }
 
 // Val returns the fixture value of the top fixture.
@@ -325,6 +330,7 @@ type statefulFixture struct {
 	parent *statefulFixture
 
 	status fixtureStatus
+	errs   []*testing.Error
 	val    interface{} // val returned by SetUp
 }
 
@@ -348,6 +354,18 @@ func (f *statefulFixture) Name() string {
 // Status returns the current status of the fixture.
 func (f *statefulFixture) Status() fixtureStatus {
 	return f.status
+}
+
+// Errors returns errors to be reported for tests depending on the fixture.
+//
+// If SetUp has not been called for the fixture, an empty slice is returned.
+// Otherwise, this function returns a slice of error messages to be reported
+// for tests depending on the fixture. An error message is formatted in the
+// following way:
+//
+//  [Fixture failure] (fixture name): (original error message)
+func (f *statefulFixture) Errors() []*testing.Error {
+	return f.errs
 }
 
 // Val returns the fixture value obtained on setup.
@@ -374,7 +392,8 @@ func (f *statefulFixture) RunSetUp(ctx context.Context) error {
 		return err
 	}
 
-	if f.fout.HasError() {
+	f.errs = rewriteErrorsForTest(f.fout.Errors(), f.fixt.Name)
+	if len(f.errs) > 0 {
 		// TODO(crbug.com/1127169): Support timing log.
 		f.fout.End(nil, timing.NewLog())
 		return nil
@@ -476,4 +495,19 @@ func (f *statefulFixture) newTestContext(ctx context.Context, troot *testing.Tes
 		HasSoftwareDeps: false,
 	}
 	return testing.NewContext(ctx, ce, func(msg string) { s.Log(msg) })
+}
+
+// rewriteErrorsForTest rewrites error messages reported by a fixture to be
+// suitable for reporting for tests depending on the fixture.
+func rewriteErrorsForTest(errs []*testing.Error, fixtureName string) []*testing.Error {
+	newErrs := make([]*testing.Error, len(errs))
+	for i, e := range errs {
+		newErrs[i] = &testing.Error{
+			Reason: fmt.Sprintf("[Fixture failure] %s: %s", fixtureName, e.Reason),
+			File:   e.File,
+			Line:   e.Line,
+			Stack:  e.Stack,
+		}
+	}
+	return newErrs
 }

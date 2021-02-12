@@ -560,8 +560,9 @@ func runTest(ctx context.Context, t *testing.TestInstance, tout *entityOutputStr
 	switch stack.Status() {
 	case statusGreen:
 	case statusRed:
-		msg := fmt.Sprintf("[Fixture failure] %s: Setup failed", stack.RedFixtureName())
-		tout.Error(testing.NewError(nil, msg, msg, 0))
+		for _, e := range stack.Errors() {
+			tout.Error(e)
+		}
 		return nil
 	case statusYellow:
 		return errors.New("BUG: Cannot run a test on a yellow fixture stack")

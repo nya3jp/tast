@@ -33,9 +33,9 @@ type entityOutputStream struct {
 	out OutputStream
 	ei  *testing.EntityInfo
 
-	mu     sync.Mutex
-	hasErr bool
-	ended  bool
+	mu    sync.Mutex
+	errs  []*testing.Error
+	ended bool
 }
 
 var _ testing.OutputStream = &entityOutputStream{}
@@ -81,7 +81,7 @@ func (w *entityOutputStream) Error(e *testing.Error) error {
 	if w.ended {
 		return errAlreadyEnded
 	}
-	w.hasErr = true
+	w.errs = append(w.errs, e)
 	if w.ei.Name == "" {
 		// TODO(crbug.com/1035940): Consider emitting RunError.
 		return nil
@@ -104,9 +104,10 @@ func (w *entityOutputStream) End(skipReasons []string, timingLog *timing.Log) er
 	return w.out.EntityEnd(w.ei, skipReasons, timingLog)
 }
 
-// HasError reports if any error has been reported.
-func (w *entityOutputStream) HasError() bool {
+// Errors returns errors reported so far.
+func (w *entityOutputStream) Errors() []*testing.Error {
 	w.mu.Lock()
 	defer w.mu.Unlock()
-	return w.hasErr
+	// We always append to errs, so it is safe to return without copy.
+	return w.errs
 }

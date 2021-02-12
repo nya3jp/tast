@@ -259,10 +259,9 @@ func Wifi80211ac() Condition {
 // Wifi80211ax returns a hardware dependency condition that is satisfied
 // iff the DUT's WiFi module supports 802.11ax.
 func Wifi80211ax() Condition {
-	// Note: this is currently an allowlist. We can consider switching this to a
-	// blocklist/skiplist if we start adding too many relevant devices.
+	// Note: this is currently a blocklist.
 	// TODO(crbug.com/1070299): replace this when we have hwdep for WiFi chips.
-	c := Platform("hatch")
+	c := SkipOnPlatform("anglar", "arkham", "asuka", "atlas", "auron", "auron_cid", "auron_lulu", "auron_paine", "auron_yuna", "banjo", "banon", "beltino", "bob", "bolt", "brock", "buddy", "butterfly", "candy", "caroline", "cave", "celes", "chell", "cheza", "clapper", "coral", "cranky", "cyan", "daisy", "daisy_skate", "daisy_spring", "dixie", "drallion", "edgar", "electro", "enguarde", "eve", "expresso", "falco", "fievel", "fizz", "flapjack", "fox", "gale", "gandof", "glados", "glimmer", "gnawty", "grunt", "guado", "hana", "heli", "hell", "jacuzzi", "jecht", "kahlee", "kevin", "kip", "kirby", "kukui", "kunimitsu", "lars", "leon", "link", "lumpy", "mccloud", "meowth", "monroe", "nami", "nautilus", "nefario", "ninja", "nocturne", "nyan", "nyan_big", "nyan_blaze", "nyan_kitty", "oak", "octopus", "orco", "panther", "parrot", "parry", "pbody", "peach", "peach_pi", "peach_pit", "peppy", "puff", "puppy", "pyro", "quawks", "rambi", "rammus", "reef", "reks", "relm", "rikku", "rush", "samus", "sand", "sarien", "scarlet", "sentry", "setzer", "slippy", "snappy", "sonic", "soraka", "squawks", "storm", "stout", "strago", "strongbad", "stumpy", "sumo", "swanky", "terra", "tidus", "tiger", "tiny", "tricky", "trogdor", "ultima", "umaro", "veyron_brain", "veyron_gus", "veyron_jaq", "veyron_jerry", "veyron_mickey", "veyron_mighty", "veyron_minnie", "veyron_nicky", "veyron_pinky", "veyron_remy", "veyron_rialto", "veyron_speedy", "veyron_thea", "viridian", "whirlwind", "winky", "wizpig", "wolf", "zako")
 	c.CEL = "dut.hardware_features.wifi.supported_wlan_protocols.exists(x, x == api.Component.Wifi.WLANProtocol.IEEE_802_11_AX)"
 	return c
 }

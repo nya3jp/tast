@@ -33,6 +33,24 @@
       "message": "Thank you!\n\nFor all lifecycle methods timeout is zero. Would you mind adding similar comments to other methods as well?\n",
       "revId": "3fb86bc5ad13ea600bcd2dc633436dc5cbf750fe",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a194ea23_350f342f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2021-02-12T16:45:50Z",
+      "side": 1,
+      "message": "By lifecycle methods, do you mean SetUp,TearDown and Reset ?",
+      "parentUuid": "f31a8a34_f9c0ed62",
+      "revId": "3fb86bc5ad13ea600bcd2dc633436dc5cbf750fe",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

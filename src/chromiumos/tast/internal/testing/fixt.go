@@ -45,10 +45,12 @@ type Fixture struct {
 
 	// PreTestTimeout is the timeout applied to PreTest.
 	// Even if fixtures are nested, the timeout is applied only to this stage.
+	// This timeout is by default 0.
 	PreTestTimeout time.Duration
 
 	// PostTestTimeout is the timeout applied to PostTest.
 	// Even if fixtures are nested, the timeout is applied only to this stage.
+	// This timeout is by default 0.
 	PostTestTimeout time.Duration
 
 	// TearDownTimeout is the timeout applied to TearDown.
@@ -178,6 +180,8 @@ type FixtureImpl interface {
 	//
 	// This method is the best place to do a setup for the test runs next. e.g. redirect logs to a
 	// file in the test's output directory.
+	//
+	// Note that PreTestTimeout is by default 0. Change it to have a valid context.
 	PreTest(ctx context.Context, s *FixtTestState)
 
 	// PostTest is called by the framework after each test to tear down changes PreTest made.
@@ -201,6 +205,8 @@ type FixtureImpl interface {
 	//
 	// This method is the best place to tear down changes PreTest made. e.g. close log files in the
 	// test output directory.
+	//
+	// Note that PostTestTimeout is by default 0. Change it to have a valid context.
 	PostTest(ctx context.Context, s *FixtTestState)
 
 	// TearDown is called by the framework to tear down the environment SetUp set up.

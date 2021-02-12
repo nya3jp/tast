@@ -10,14 +10,34 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"net"
 	"os"
+	"path/filepath"
 	"strconv"
+	"strings"
 	"time"
 
 	"chromiumos/tast/internal/bundle"
 	"chromiumos/tast/internal/runner"
 	"chromiumos/tast/internal/timing"
 )
+
+func startEphemeralDevserverAtLocalHost(ctx context.Context, cfg *Config) (*ephemeralDevserver, error) {
+	cfg.Logger.Log("startEphemeralDevserverAtLocalHost")
+	lis, err := net.Listen("tcp", fmt.Sprintf("127.0.0.1:%d", ephemeralDevserverPort))
+	if err != nil {
+		return nil, fmt.Errorf("failed to listen to a local port: %v", err)
+	}
+
+	cacheDir := filepath.Join(cfg.tastDir, "devserver", "static")
+	es, err := newEphemeralDevserver(lis, cacheDir, cfg.extraAllowedBuckets)
+	if err != nil {
+		return nil, err
+	}
+
+	cfg.devservers = []string{fmt.Sprintf("http://%s", lis.Addr())}
+	return es, nil
+}
 
 // runRemoteTests runs the remote test runner and reads its output.
 func runRemoteTests(ctx context.Context, cfg *Config, state *State) ([]*EntityResult, error) {
@@ -35,6 +55,22 @@ func runRemoteTests(ctx context.Context, cfg *Config, state *State) ([]*EntityRe
 		return runRemoteTestsOnce(ctx, cfg, state, patterns)
 	}
 	beforeRetry := func(ctx context.Context) bool { return true }
+
+	useEphemeralDevserver := false
+	if cfg.tlwServer == "" && cfg.useEphemeralDevserver {
+		if len(cfg.devservers) == 0 {
+			useEphemeralDevserver = true
+		} else if len(cfg.devservers) == 1 && strings.Contains(cfg.devservers[0], fmt.Sprintf("http://127.0.0.1:%d", ephemeralDevserverPort)) {
+			useEphemeralDevserver = true
+		}
+	}
+	if useEphemeralDevserver {
+		es, err := startEphemeralDevserverAtLocalHost(ctx, cfg)
+		if err != nil {
+			return nil, fmt.Errorf("failed to start ephemeral for remote tests")
+		}
+		defer es.Close(ctx)
+	}
 
 	start := time.Now()
 	results, err := runTestsWithRetry(ctx, cfg, cfg.testNames, runTests, beforeRetry)

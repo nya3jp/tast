@@ -81,6 +81,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "a9a5a9c6_3fab2d09",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/config.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 342,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2021-02-12T04:58:58Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d08c88d1_6ed3734f",
+      "range": {
+        "startLine": 342,
+        "startChar": 1,
+        "endLine": 342,
+        "endChar": 65
+      },
+      "revId": "43620458d145bedf6e79b9c6923cb45ac45465ca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "95315f8f_c462bce1",
@@ -94,6 +118,30 @@
       "writtenOn": "2021-01-21T05:18:54Z",
       "side": 1,
       "message": "It is important to keep testing order deterministic for reproducibility. Thus let us return a list instead of a map.",
+      "range": {
+        "startLine": 157,
+        "startChar": 56,
+        "endLine": 157,
+        "endChar": 99
+      },
+      "revId": "43620458d145bedf6e79b9c6923cb45ac45465ca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e801bdc0_a9a44176",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/local.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 157,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2021-02-12T04:58:58Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "95315f8f_c462bce1",
       "range": {
         "startLine": 157,
         "startChar": 56,
@@ -127,6 +175,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "98123272_6c116f77",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/local.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 187,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2021-02-12T04:58:58Z",
+      "side": 1,
+      "message": "It\u0027s asserting there\u0027s onle one bundle providing remote fixtures. Added TODO to remove the restriction.",
+      "parentUuid": "2446c91c_1bd0bc70",
+      "range": {
+        "startLine": 187,
+        "startChar": 11,
+        "endLine": 187,
+        "endChar": 37
+      },
+      "revId": "43620458d145bedf6e79b9c6923cb45ac45465ca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "eff652b6_1a0bd84c",
@@ -140,6 +212,30 @@
       "writtenOn": "2021-01-21T05:18:54Z",
       "side": 1,
       "message": "I wonder if we should check this condition on actual execution of remote fixtures. If we return an error here we abort test execution before running any test...",
+      "range": {
+        "startLine": 195,
+        "startChar": 0,
+        "endLine": 197,
+        "endChar": 4
+      },
+      "revId": "43620458d145bedf6e79b9c6923cb45ac45465ca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "05b65eb0_ba583ff6",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/local.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 197,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2021-02-12T04:58:58Z",
+      "side": 1,
+      "message": "I\u0027d like to fail early and clearly in case nested remote fixtures are used, instead of obfuscating the failure in other logs such as test logs.",
+      "parentUuid": "eff652b6_1a0bd84c",
       "range": {
         "startLine": 195,
         "startChar": 0,
@@ -173,6 +269,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "93756f98_67d55f90",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/local.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 230,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2021-02-12T04:58:58Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ee90fe68_fbd6b072",
+      "range": {
+        "startLine": 230,
+        "startChar": 32,
+        "endLine": 230,
+        "endChar": 42
+      },
+      "revId": "43620458d145bedf6e79b9c6923cb45ac45465ca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "e9bd9a95_ea4fda13",
@@ -186,6 +306,30 @@
       "writtenOn": "2021-01-21T05:18:54Z",
       "side": 1,
       "message": "Please pass ctx to this function.",
+      "range": {
+        "startLine": 254,
+        "startChar": 136,
+        "endLine": 254,
+        "endChar": 143
+      },
+      "revId": "43620458d145bedf6e79b9c6923cb45ac45465ca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "bf58a5cd_7205ba9c",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/local.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 254,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2021-02-12T04:58:58Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e9bd9a95_ea4fda13",
       "range": {
         "startLine": 254,
         "startChar": 136,
@@ -219,6 +363,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "7e43c24b_12d79323",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/local.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 433,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2021-02-12T04:58:58Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ec169b84_2d3ed88b",
+      "range": {
+        "startLine": 430,
+        "startChar": 4,
+        "endLine": 433,
+        "endChar": 49
+      },
+      "revId": "43620458d145bedf6e79b9c6923cb45ac45465ca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "695a2ca7_ac824f1d",
@@ -232,6 +400,30 @@
       "writtenOn": "2021-01-21T05:18:54Z",
       "side": 1,
       "message": "For the same reason we should return entityResults here.",
+      "range": {
+        "startLine": 436,
+        "startChar": 11,
+        "endLine": 436,
+        "endChar": 14
+      },
+      "revId": "43620458d145bedf6e79b9c6923cb45ac45465ca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4f2bcef3_ea010f38",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/local.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 436,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2021-02-12T04:58:58Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "695a2ca7_ac824f1d",
       "range": {
         "startLine": 436,
         "startChar": 11,
@@ -265,6 +457,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "2a835fe2_747364bf",
+        "filename": "src/chromiumos/tast/internal/bundle/args.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2021-02-12T04:58:58Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "52016022_ca6d0df7",
+      "range": {
+        "startLine": 45,
+        "startChar": 1,
+        "endLine": 45,
+        "endChar": 19
+      },
+      "revId": "43620458d145bedf6e79b9c6923cb45ac45465ca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "51fe273a_5284a9cf",
@@ -278,6 +494,54 @@
       "writtenOn": "2021-01-21T05:18:54Z",
       "side": 1,
       "message": "Interesting... I guess it\u0027s better to put this logic inside RedFixtureName.",
+      "range": {
+        "startLine": 564,
+        "startChar": 2,
+        "endLine": 566,
+        "endChar": 3
+      },
+      "revId": "43620458d145bedf6e79b9c6923cb45ac45465ca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f175ef40_35fa9664",
+        "filename": "src/chromiumos/tast/internal/planner/run.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 566,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2021-02-12T04:58:58Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "51fe273a_5284a9cf",
+      "range": {
+        "startLine": 564,
+        "startChar": 2,
+        "endLine": 566,
+        "endChar": 3
+      },
+      "revId": "43620458d145bedf6e79b9c6923cb45ac45465ca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "31d415ea_efad9209",
+        "filename": "src/chromiumos/tast/internal/planner/run.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 566,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2021-02-12T04:58:58Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "51fe273a_5284a9cf",
       "range": {
         "startLine": 564,
         "startChar": 2,

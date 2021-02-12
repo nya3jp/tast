@@ -39,6 +39,30 @@
       },
       "revId": "ab2eb1a6c2ca5a530e9b06eaf00f736b5da4d349",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c24d6f15_44e6c39c",
+        "filename": "src/chromiumos/tast/internal/runner/pipe.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1351160
+      },
+      "writtenOn": "2021-02-12T17:24:42Z",
+      "side": 1,
+      "message": "Super neat! Thanks",
+      "parentUuid": "da8f364b_71e479ce",
+      "range": {
+        "startLine": 64,
+        "startChar": 7,
+        "endLine": 64,
+        "endChar": 72
+      },
+      "revId": "ab2eb1a6c2ca5a530e9b06eaf00f736b5da4d349",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

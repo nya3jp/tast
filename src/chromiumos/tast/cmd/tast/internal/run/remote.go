@@ -10,14 +10,35 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"net"
 	"os"
+	"path/filepath"
 	"strconv"
+	"strings"
 	"time"
 
 	"chromiumos/tast/internal/bundle"
 	"chromiumos/tast/internal/runner"
 	"chromiumos/tast/internal/timing"
 )
+
+// startEphemeralDevserverForRemoteTests starts an ephemeral devserver for remote tests.
+func startEphemeralDevserverForRemoteTests(ctx context.Context, cfg *Config, state *State) (*ephemeralDevserver, error) {
+	lis, err := net.Listen("tcp", "127.0.0.1:0")
+	if err != nil {
+		return nil, fmt.Errorf("failed to listen to a local port: %v", err)
+	}
+
+	cacheDir := filepath.Join(cfg.tastDir, "devserver", "static")
+	es, err := newEphemeralDevserver(lis, cacheDir, cfg.extraAllowedBuckets)
+	if err != nil {
+		return nil, err
+	}
+
+	state.remoteDevservers = []string{fmt.Sprintf("http://%s", lis.Addr())}
+	cfg.Logger.Log("Starting ephemeral devserver at ", state.remoteDevservers[0], " for remote tests")
+	return es, nil
+}
 
 // runRemoteTests runs the remote test runner and reads its output.
 func runRemoteTests(ctx context.Context, cfg *Config, state *State) ([]*EntityResult, error) {
@@ -83,9 +104,10 @@ func runRemoteTestsOnce(ctx context.Context, cfg *Config, state *State, patterns
 					"-localrunner=" + cfg.localRunner,
 					"-localbundledir=" + cfg.localBundleDir,
 					"-localdatadir=" + cfg.localDataDir,
+					"-devservers=" + strings.Join(cfg.devservers, ","),
 				},
 				LocalBundleDir:    cfg.localBundleDir,
-				Devservers:        cfg.devservers,
+				Devservers:        state.remoteDevservers,
 				TLWServer:         state.tlwServerForDUT,
 				DUTName:           cfg.Target,
 				HeartbeatInterval: heartbeatInterval,

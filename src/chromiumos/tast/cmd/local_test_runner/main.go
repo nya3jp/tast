@@ -215,14 +215,6 @@ func main() {
 			"wilco":       "wilco",
 			"wired_8021x": "wired_8021x",
 			"wpa3_sae":    "wpa3_sae",
-			// TODO(crbug.com/1070299): Remove the below hard-coded devices and use
-			// Intel WiFi dependency when wifi hardware dependencies are implemented.
-			// TODO(crbug.com/1115620): remove "Elm" and "Hana" after unibuild migration
-			// completed.
-			// The list of boards with Intel WiFi chips is long, so instead of listing all
-			// the boards that have Intel WiFi chips, skip the ones that don't have it.
-			"intel_wifi_chip": `!("board:bob" || "board:elm" || "board:grunt" || "board:hana" || "board:jacuzzi" || "board:kevin" || "board:kukui" || "board:oak" || "board:scarlet" || "board:trogdor" || "board:trogdor-kernelnext" ||
-			                      "board:veyron_fievel" || "board:veyron_tiger" || "board:elm-kernelnext" || "board:hana-kernelnext" || "board:kukui-arc-r" || "board:grunt-arc-r" || "board:kevin64")`,
 		},
 		// The autotest-capability package tries to install this to /etc but it's diverted to /usr/local.
 		AutotestCapabilityDir:   autocaps.DefaultCapabilityDir,

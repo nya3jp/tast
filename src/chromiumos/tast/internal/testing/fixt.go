@@ -37,22 +37,27 @@ type Fixture struct {
 
 	// SetUpTimeout is the timeout applied to SetUp.
 	// Even if fixtures are nested, the timeout is applied only to this stage.
+	// This timeout is by default 0.
 	SetUpTimeout time.Duration
 
 	// ResetTimeout is the timeout applied to Reset.
 	// Even if fixtures are nested, the timeout is applied only to this stage.
+	// This timeout is by default 0.
 	ResetTimeout time.Duration
 
 	// PreTestTimeout is the timeout applied to PreTest.
 	// Even if fixtures are nested, the timeout is applied only to this stage.
+	// This timeout is by default 0.
 	PreTestTimeout time.Duration
 
 	// PostTestTimeout is the timeout applied to PostTest.
 	// Even if fixtures are nested, the timeout is applied only to this stage.
+	// This timeout is by default 0.
 	PostTestTimeout time.Duration
 
 	// TearDownTimeout is the timeout applied to TearDown.
 	// Even if fixtures are nested, the timeout is applied only to this stage.
+	// This timeout is by default 0.
 	TearDownTimeout time.Duration
 
 	// ServiceDeps contains a list of RPC service names in local test bundles that this remote fixture
@@ -134,6 +139,8 @@ type FixtureImpl interface {
 	//
 	// This method is the best place to do a heavy-weight setup of the system environment, e.g.
 	// restarting a Chrome session.
+	//
+	// Note that SetUpTimeout is by default 0. Change it to have a valid context.
 	SetUp(ctx context.Context, s *FixtState) interface{}
 
 	// Reset is called by the framework after each test (except for the last one) to do a
@@ -156,6 +163,8 @@ type FixtureImpl interface {
 	//
 	// This method is the best place to do a light-weight cleanup of the system environment to the
 	// original one when the fixture was set up, e.g. closing open Chrome tabs.
+	//
+	// Note that ResetTimeout is by default 0. Change it to have a valid context.
 	Reset(ctx context.Context) error
 
 	// PreTest is called by the framework before each test to do a light-weight set up for the test.
@@ -178,6 +187,8 @@ type FixtureImpl interface {
 	//
 	// This method is the best place to do a setup for the test runs next. e.g. redirect logs to a
 	// file in the test's output directory.
+	//
+	// Note that PreTestTimeout is by default 0. Change it to have a valid context.
 	PreTest(ctx context.Context, s *FixtTestState)
 
 	// PostTest is called by the framework after each test to tear down changes PreTest made.
@@ -201,6 +212,8 @@ type FixtureImpl interface {
 	//
 	// This method is the best place to tear down changes PreTest made. e.g. close log files in the
 	// test output directory.
+	//
+	// Note that PostTestTimeout is by default 0. Change it to have a valid context.
 	PostTest(ctx context.Context, s *FixtTestState)
 
 	// TearDown is called by the framework to tear down the environment SetUp set up.
@@ -223,5 +236,7 @@ type FixtureImpl interface {
 	// enrollment.
 	// Changes that shouldn't hinder healthy execution of succeeding tests are not necessarily to
 	// be teared down. e.g. Chrome session can be left open.
+	//
+	// Note that TearDownTimeout is by default 0. Change it to have a valid context.
 	TearDown(ctx context.Context, s *FixtState)
 }

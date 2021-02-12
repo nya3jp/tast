@@ -114,6 +114,53 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "46f9c612_d518d214",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 265,
+      "author": {
+        "id": 1132414
+      },
+      "writtenOn": "2021-02-12T19:01:08Z",
+      "side": 1,
+      "message": "Aha, and *this* is why I suggested flipping this to a blocklist; we\u0027re only going to get *more* 11ax chips -- we\u0027re not getting new 11ac chips.\n\nBut I guess that gets muddier when you\u0027re doing platform or model lists, since there *will* be new 11ac models for some time. Still, I think it\u0027s worse to be too limiting than it is to be too permissive. If you\u0027re too permissive, you\u0027ll see (and have to fix) test failures. If you\u0027re too restrictive, you won\u0027t even know what you\u0027re missing.\n\nFun times in the land of \"must use hwdeps\" and \"hwdeps aren\u0027t really ready yet\". Somebody should make a meme about this common problem!",
+      "parentUuid": "8bf3368a_9db437e3",
+      "range": {
+        "startLine": 265,
+        "startChar": 1,
+        "endLine": 265,
+        "endChar": 23
+      },
+      "revId": "2e3eee0208b8488d290d1138b8920612372e0107",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "597d2698_a753d904",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 465,
+      "author": {
+        "id": 1132414
+      },
+      "writtenOn": "2021-02-12T19:01:08Z",
+      "side": 1,
+      "message": "This is not true, logically -- your comment at line 480 provides the counterexample ;) If the dep is satisfied, we know it\u0027s Intel; but not the other way around.\n\nIncidentally, I kinda wanted a WifiNotIntel() dep for at least one other test (network.WlanRegulatory; although, the oldest Intel chips can pass it...), but my first paragraph highlights why it isn\u0027t trivial to create such a dep by inverting this list. So feel free to ignore my \"want\".",
+      "range": {
+        "startLine": 465,
+        "startChar": 71,
+        "endLine": 465,
+        "endChar": 74
+      },
+      "revId": "2e3eee0208b8488d290d1138b8920612372e0107",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "82f90a19_f2cce584",
         "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
         "patchSetId": 4

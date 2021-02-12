@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2ed7284d_045b03bc",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-02-12T01:46:13Z",
+      "side": 1,
+      "message": "Good catch, thanks for the fix!\n",
+      "revId": "ab2eb1a6c2ca5a530e9b06eaf00f736b5da4d349",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "da8f364b_71e479ce",
+        "filename": "src/chromiumos/tast/internal/runner/pipe.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-02-12T01:46:13Z",
+      "side": 1,
+      "message": "We can write this as !errors.Is(err, syscall.EINTR)",
+      "range": {
+        "startLine": 64,
+        "startChar": 7,
+        "endLine": 64,
+        "endChar": 72
+      },
+      "revId": "ab2eb1a6c2ca5a530e9b06eaf00f736b5da4d349",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

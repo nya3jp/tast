@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "522689f5_70c4a183",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-02-12T00:32:58Z",
+      "side": 1,
+      "message": "I need guidance on how to test this CL. I could verify it manually. The bug indicates that the problem also happens in a drone. I need to know how to test this fix inside a drone. Please help.\n\nWhat I found was that we have never started an ephemeral server inside the host machine and we only starts one in the DUT. Therefore, remote tests failed to connect to http://127.0.0.1:28082. Also, the server that is started in the DUT is closed right before running remote tests. My code change is to start an ephemeral server inside the host machine right before we run remote tests.\n\nPlease review. Thanks.\n",
+      "revId": "27e2a6642782f6df573c10caddbcd18caaa2e79f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

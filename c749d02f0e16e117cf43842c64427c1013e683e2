@@ -16,6 +16,126 @@
       "message": "Please let me know if the way this CL\u0027s handling of terminate response is ok. Thanks.",
       "revId": "c749d02f0e16e117cf43842c64427c1013e683e2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "90f4b775_5afb9226",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/results.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-02-12T05:10:25Z",
+      "side": 1,
+      "message": "did you mean \"presented\"?",
+      "range": {
+        "startLine": 56,
+        "startChar": 64,
+        "endLine": 56,
+        "endChar": 72
+      },
+      "revId": "c749d02f0e16e117cf43842c64427c1013e683e2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e3900161_bf8cfc42",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/results.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-02-12T05:10:25Z",
+      "side": 1,
+      "message": "space",
+      "range": {
+        "startLine": 56,
+        "startChar": 40,
+        "endLine": 56,
+        "endChar": 63
+      },
+      "revId": "c749d02f0e16e117cf43842c64427c1013e683e2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "490f156c_652456d0",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/results.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 432,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-02-12T05:10:25Z",
+      "side": 1,
+      "message": "the named return variable looks unused for return",
+      "range": {
+        "startLine": 432,
+        "startChar": 84,
+        "endLine": 432,
+        "endChar": 96
+      },
+      "revId": "c749d02f0e16e117cf43842c64427c1013e683e2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3d2780c0_b6d35e83",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/results.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 470,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-02-12T05:10:25Z",
+      "side": 1,
+      "message": "This should be OK with \":\u003d\" as the return statement inside has the value.",
+      "revId": "c749d02f0e16e117cf43842c64427c1013e683e2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "96cf4a34_a31bed2e",
+        "filename": "src/chromiumos/tast/internal/fakereports/fake_reports.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-02-12T05:10:25Z",
+      "side": 1,
+      "message": "Thanks for the fix. Please do either:\n- rename logMtx as mtx and note that it locks all the variables\n- or add separate mutexes for other vars",
+      "revId": "c749d02f0e16e117cf43842c64427c1013e683e2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0ebde3b5_cda460d0",
+        "filename": "src/chromiumos/tast/internal/fakereports/fake_reports.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-02-12T05:10:25Z",
+      "side": 1,
+      "message": "remove this blank line",
+      "revId": "c749d02f0e16e117cf43842c64427c1013e683e2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

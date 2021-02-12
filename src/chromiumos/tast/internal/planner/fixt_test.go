@@ -12,6 +12,7 @@ import (
 	gotesting "testing"
 
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/control"
@@ -494,8 +495,8 @@ func TestFixtureStackVal(t *gotesting.T) {
 	}
 }
 
-// TestFixtureStackRedFixtureName tests RedFixtureName method.
-func TestFixtureStackRedFixtureName(t *gotesting.T) {
+// TestFixtureStackErrors tests Errors method.
+func TestFixtureStackErrors(t *gotesting.T) {
 	ctx := context.Background()
 	stack := NewFixtureStack(&Config{}, newOutputSink())
 
@@ -514,7 +515,8 @@ func TestFixtureStackRedFixtureName(t *gotesting.T) {
 		return stack.Push(ctx, &testing.Fixture{
 			Name: name,
 			Impl: newFakeFixture(withSetUp(func(ctx context.Context, s *testing.FixtState) interface{} {
-				s.Error("Setup failure")
+				s.Error("Setup failure 1")
+				s.Error("Setup failure 2")
 				return nil
 			})),
 		})
@@ -523,22 +525,28 @@ func TestFixtureStackRedFixtureName(t *gotesting.T) {
 		return stack.Pop(ctx)
 	}
 
+	wantErrs := []*testing.Error{
+		{Reason: "[Fixture failure] fixt.Red1: Setup failure 1"},
+		{Reason: "[Fixture failure] fixt.Red1: Setup failure 2"},
+	}
+
 	for i, step := range []struct {
 		f    func() error
-		want string
+		want []*testing.Error
 	}{
-		{pushGreen, ""},
-		{pushRed, "fixt.Red1"},
-		{pushRed, "fixt.Red1"},
-		{pop, "fixt.Red1"},
-		{pop, ""},
-		{pop, ""},
+		{pushGreen, nil},
+		{pushRed, wantErrs},
+		{pushRed, wantErrs},
+		{pop, wantErrs},
+		{pop, nil},
+		{pop, nil},
 	} {
 		if err := step.f(); err != nil {
 			t.Fatalf("Step %d: %v", i, err)
 		}
-		if got := stack.RedFixtureName(); got != step.want {
-			t.Fatalf("Step %d: got %q, want %q", i, got, step.want)
+		got := stack.Errors()
+		if diff := cmp.Diff(got, step.want, cmpopts.IgnoreFields(testing.Error{}, "File", "Line", "Stack")); diff != "" {
+			t.Fatalf("Step %d: Errors mismatch (-got +want):\n%s", i, diff)
 		}
 	}
 }

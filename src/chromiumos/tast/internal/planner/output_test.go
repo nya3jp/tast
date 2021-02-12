@@ -112,3 +112,24 @@ func TestTestOutputStreamUnnamedEntity(t *gotesting.T) {
 		t.Error("Output mismatch (-got +want):\n", diff)
 	}
 }
+
+func TestTestOutputStreamErrors(t *gotesting.T) {
+	sink := newOutputSink()
+	test := &testing.EntityInfo{Name: "pkg.Test"}
+	tout := newEntityOutputStream(sink, test)
+
+	tout.Start("/tmp/out")
+	tout.Error(&testing.Error{Reason: "error1", File: "test1.go"})
+	tout.Error(&testing.Error{Reason: "error2", File: "test2.go"})
+	tout.End(nil, nil)
+	tout.Error(&testing.Error{Reason: "error3", File: "test3.go"}) // error after End is ignored
+
+	got := tout.Errors()
+	want := []*testing.Error{
+		{Reason: "error1", File: "test1.go"},
+		{Reason: "error2", File: "test2.go"},
+	}
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Error("Errors mismatch (-got +want):\n", diff)
+	}
+}

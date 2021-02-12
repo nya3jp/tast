@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "347bbc03_2c566c95",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 14
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-02-12T09:58:06Z",
+      "side": 1,
+      "message": "This change is now 1K+ LoC and getting difficult to review. Could you try to split the change?\n",
+      "revId": "912734d0a17d31c6ee654012aee3685a0e9bf2cd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

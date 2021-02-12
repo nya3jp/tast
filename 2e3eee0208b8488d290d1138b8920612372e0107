@@ -1,0 +1,90 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "aa68b14c_9278cee5",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 4
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1158184
+      },
+      "writtenOn": "2021-02-12T02:07:01Z",
+      "side": 1,
+      "message": "That\u0027s not the bug you want to reference in this CL. The bug is for the \"real\" hardware dependency in Tast, not our workaround. Can you instead file a bug about the context of this CL (moving CheckIntelSARTable to critical)?",
+      "range": {
+        "startLine": 23,
+        "startChar": 4,
+        "endLine": 23,
+        "endChar": 20
+      },
+      "revId": "2e3eee0208b8488d290d1138b8920612372e0107",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "cf50d3ec_fee4fe8e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1158184
+      },
+      "writtenOn": "2021-02-12T02:07:01Z",
+      "side": 1,
+      "message": "I\u0027ll defer to Eric for the functionality, just a few comments.",
+      "revId": "2e3eee0208b8488d290d1138b8920612372e0107",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d5f65f6c_3e3d038f",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 265,
+      "author": {
+        "id": 1158184
+      },
+      "writtenOn": "2021-02-12T02:07:01Z",
+      "side": 1,
+      "message": "Not in your CL, but that seems wrong. Worth filing a bug?",
+      "range": {
+        "startLine": 265,
+        "startChar": 1,
+        "endLine": 265,
+        "endChar": 23
+      },
+      "revId": "2e3eee0208b8488d290d1138b8920612372e0107",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "82f90a19_f2cce584",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 467,
+      "author": {
+        "id": 1158184
+      },
+      "writtenOn": "2021-02-12T02:07:01Z",
+      "side": 1,
+      "message": "nit: unless there\u0027s a guideline I\u0027m missing, I\u0027d move that next to other WiFi-related hwdeps such as WifiNotMarvell",
+      "range": {
+        "startLine": 467,
+        "startChar": 0,
+        "endLine": 467,
+        "endChar": 26
+      },
+      "revId": "2e3eee0208b8488d290d1138b8920612372e0107",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

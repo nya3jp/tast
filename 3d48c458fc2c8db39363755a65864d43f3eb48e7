@@ -16,6 +16,23 @@
       "message": "All comments for this CLs has been address. Please let me know if there are any additional improvement that I should make.\n\nThanks.",
       "revId": "3d48c458fc2c8db39363755a65864d43f3eb48e7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ad2fb5f1_c10992eb",
+        "filename": "src/chromiumos/tast/cmd/tast_rtd/internal/fakerts/fakerts.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 118,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-02-12T02:01:44Z",
+      "side": 1,
+      "message": "What is the information that we want to add by this comment here?\nTo me, it looked obvious this is for terminating a test as the variable name says \"terminate\", and the inequality expression is comparing the failure count with the max failures. However I may be overlooking something you intended.",
+      "revId": "3d48c458fc2c8db39363755a65864d43f3eb48e7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

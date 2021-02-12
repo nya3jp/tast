@@ -10,7 +10,9 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"net"
 	"os"
+	"path/filepath"
 	"strconv"
 	"time"
 
@@ -18,6 +20,23 @@ import (
 	"chromiumos/tast/internal/runner"
 	"chromiumos/tast/internal/timing"
 )
+
+func startEphemeralDevserverAtLocalHost(ctx context.Context, cfg *Config) (*ephemeralDevserver, error) {
+	lis, err := net.Listen("tcp", "127.0.0.1:0")
+	if err != nil {
+		return nil, fmt.Errorf("failed to listen to a local port: %v", err)
+	}
+
+	cacheDir := filepath.Join(cfg.tastDir, "devserver", "static")
+	es, err := newEphemeralDevserver(lis, cacheDir, cfg.extraAllowedBuckets)
+	if err != nil {
+		return nil, err
+	}
+
+	cfg.devservers = []string{fmt.Sprintf("http://%s", lis.Addr())}
+	cfg.Logger.Log("Starting ephemeral devserver at ", cfg.devservers[0], " for remote tests")
+	return es, nil
+}
 
 // runRemoteTests runs the remote test runner and reads its output.
 func runRemoteTests(ctx context.Context, cfg *Config, state *State) ([]*EntityResult, error) {
@@ -35,6 +54,14 @@ func runRemoteTests(ctx context.Context, cfg *Config, state *State) ([]*EntityRe
 		return runRemoteTestsOnce(ctx, cfg, state, patterns)
 	}
 	beforeRetry := func(ctx context.Context) bool { return true }
+
+	if cfg.tlwServer == "" && cfg.useEphemeralDevserver && cfg.originalDevServersStr == "" {
+		es, err := startEphemeralDevserverAtLocalHost(ctx, cfg)
+		if err != nil {
+			return nil, fmt.Errorf("failed to start ephemeral for remote tests: %v", err)
+		}
+		defer es.Close(ctx)
+	}
 
 	start := time.Now()
 	results, err := runTestsWithRetry(ctx, cfg, cfg.testNames, runTests, beforeRetry)
@@ -57,6 +84,7 @@ func runRemoteTestsOnce(ctx context.Context, cfg *Config, state *State, patterns
 	if err != nil {
 		return nil, nil, err
 	}
+
 	args := runner.Args{
 		Mode: runner.RunTestsMode,
 		RunTests: &runner.RunTestsArgs{
@@ -89,6 +117,10 @@ func runRemoteTestsOnce(ctx context.Context, cfg *Config, state *State, patterns
 			},
 			BundleGlob: cfg.remoteBundleGlob(),
 		},
+	}
+	if cfg.originalDevServersStr != "" {
+		args.RunTests.BundleArgs.RunFlags = append(
+			args.RunTests.BundleArgs.RunFlags, "-devservers="+cfg.originalDevServersStr)
 	}
 
 	// Backfill deprecated fields in case we're executing an old test runner.

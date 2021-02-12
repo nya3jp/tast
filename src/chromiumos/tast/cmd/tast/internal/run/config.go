@@ -150,6 +150,8 @@ type State struct {
 	failuresCount      int                        // the number of test failures so far.
 	tlwConn            *grpc.ClientConn           // TLW gRPC service connection
 	tlwServerForDUT    string                     // TLW address accessible from DUT.
+	localDevservers    []string                   // list of devserver URLs used by local tests.
+	remoteDevservers   []string                   // list of devserver URLs used by remote tests.
 
 	// gRPC Reports Client related variables.
 	reportsConn      *grpc.ClientConn       // Reports gRPC service connection.

@@ -108,8 +108,8 @@ func TestRunEphemeralDevserver(t *gotesting.T) {
 	}
 
 	exp := []string{fmt.Sprintf("http://127.0.0.1:%d", ephemeralDevserverPort)}
-	if !reflect.DeepEqual(td.cfg.devservers, exp) {
-		t.Errorf("Run() set devserver=%v; want %v", td.cfg.devservers, exp)
+	if !reflect.DeepEqual(td.state.localDevservers, exp) {
+		t.Errorf("Run() set devserver=%v; want %v", td.state.localDevservers, exp)
 	}
 }
 

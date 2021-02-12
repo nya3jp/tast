@@ -136,6 +136,7 @@ func newRemoteTestData(t *gotesting.T, stdout, stderr string, status int) *remot
 		os.RemoveAll(td.dir)
 		t.Fatal(err)
 	}
+	td.state.remoteDevservers = td.cfg.devservers
 
 	return &td
 }
@@ -208,6 +209,7 @@ func TestRemoteRun(t *gotesting.T) {
 		"-localrunner=" + td.cfg.localRunner,
 		"-localbundledir=" + td.cfg.localBundleDir,
 		"-localdatadir=" + td.cfg.localDataDir,
+		"-devservers=" + strings.Join(td.cfg.devservers, ","),
 	}
 	expArgs := runner.Args{
 		Mode: runner.RunTestsMode,

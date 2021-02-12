@@ -98,7 +98,7 @@ func runLocalTests(ctx context.Context, cfg *Config, state *State) ([]*EntityRes
 		// to be created if a new SSH connection was established.
 		if hst != oldHst {
 			if state.ephemeralDevserver != nil {
-				if devErr := startEphemeralDevserver(ctx, hst, cfg, state); devErr != nil {
+				if devErr := startEphemeralDevserverForLocalTests(ctx, hst, cfg, state); devErr != nil {
 					cfg.Logger.Log("Failed restarting ephemeral devserver: ", connErr)
 					return false
 				}
@@ -192,7 +192,7 @@ func runLocalTestsOnce(ctx context.Context, cfg *Config, state *State, hst *ssh.
 				Patterns:          patterns,
 				DataDir:           cfg.localDataDir,
 				OutDir:            cfg.localOutDir,
-				Devservers:        cfg.devservers,
+				Devservers:        state.localDevservers,
 				TLWServer:         state.tlwServerForDUT,
 				DUTName:           cfg.Target,
 				WaitUntilReady:    cfg.waitUntilReady,
@@ -201,7 +201,7 @@ func runLocalTestsOnce(ctx context.Context, cfg *Config, state *State, hst *ssh.
 				DownloadMode:      cfg.downloadMode,
 			},
 			BundleGlob: cfg.localBundleGlob(),
-			Devservers: cfg.devservers,
+			Devservers: state.localDevservers,
 		},
 	}
 
@@ -261,10 +261,10 @@ func formatBytes(bytes int64) string {
 	return fmt.Sprintf("%d B", bytes)
 }
 
-// startEphemeralDevserver starts an ephemeral devserver serving on hst.
-// cfg's ephemeralDevserver and devservers fields are updated.
+// startEphemeralDevserverForLocalTests starts an ephemeral devserver serving on hst.
+// state's ephemeralDevserver and localDevservers fields are updated.
 // If ephemeralDevserver is non-nil, it is closed first.
-func startEphemeralDevserver(ctx context.Context, hst *ssh.Conn, cfg *Config, state *State) error {
+func startEphemeralDevserverForLocalTests(ctx context.Context, hst *ssh.Conn, cfg *Config, state *State) error {
 	closeEphemeralDevserver(ctx, state) // ignore errors; this may rely on a now-dead SSH connection
 
 	lis, err := hst.ListenTCP(&net.TCPAddr{IP: net.IPv4(127, 0, 0, 1), Port: ephemeralDevserverPort})
@@ -279,7 +279,7 @@ func startEphemeralDevserver(ctx context.Context, hst *ssh.Conn, cfg *Config, st
 	}
 
 	state.ephemeralDevserver = es
-	cfg.devservers = []string{fmt.Sprintf("http://%s", lis.Addr())}
+	state.localDevservers = []string{fmt.Sprintf("http://%s", lis.Addr())}
 	return nil
 }
 

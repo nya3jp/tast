@@ -94,6 +94,7 @@ type Config struct {
 	useEphemeralDevserver  bool                 // start an ephemeral devserver if no devserver is specified
 	extraAllowedBuckets    []string             // extra Google Cloud Storage buckets ephemeral devserver is allowed to access
 	devservers             []string             // list of devserver URLs; set by -devservers but may be dynamically modified
+	originalDevServersStr  string               // the original devserver URLs described on the
 	buildArtifactsURL      string               // Google Cloud Storage URL of build artifacts
 	downloadPrivateBundles bool                 // whether to download private bundles if missing
 	downloadMode           planner.DownloadMode // strategy to download external data files
@@ -190,7 +191,12 @@ func (c *Config) SetFlags(f *flag.FlagSet) {
 	f.StringVar(&c.buildOutDir, "buildoutdir", filepath.Join(c.tastDir, "build"), "directory where compiled executables are saved")
 	f.BoolVar(&c.checkPortageDeps, "checkbuilddeps", true, "check test bundle's dependencies before building")
 	f.BoolVar(&c.installPortageDeps, "installbuilddeps", true, "automatically install/upgrade test bundle dependencies (requires -checkbuilddeps)")
-	f.Var(command.NewListFlag(",", func(v []string) { c.devservers = v }, nil), "devservers", "comma-separated list of devserver URLs")
+	f.Var(command.NewListFlag(",",
+		func(v []string) {
+			c.devservers = v
+			c.originalDevServersStr = strings.Join(v, ",")
+		}, nil),
+		"devservers", "comma-separated list of devserver URLs")
 	f.BoolVar(&c.useEphemeralDevserver, "ephemeraldevserver", true, "start an ephemeral devserver if no devserver is specified")
 	f.Var(command.NewListFlag(",", func(v []string) { c.extraAllowedBuckets = v }, nil), "extraallowedbuckets", "comma-separated list of extra Google Cloud Storage buckets ephemeral devserver is allowed to access")
 	f.StringVar(&c.buildArtifactsURL, "buildartifactsurl", "", "override Google Cloud Storage URL of build artifacts (implies -extraallowedbuckets)")

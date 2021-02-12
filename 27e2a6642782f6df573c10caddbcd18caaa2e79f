@@ -16,6 +16,24 @@
       "message": "I need guidance on how to test this CL. I could verify it manually. The bug indicates that the problem also happens in a drone. I need to know how to test this fix inside a drone. Please help.\n\nWhat I found was that we have never started an ephemeral server inside the host machine and we only starts one in the DUT. Therefore, remote tests failed to connect to http://127.0.0.1:28082. Also, the server that is started in the DUT is closed right before running remote tests. My code change is to start an ephemeral server inside the host machine right before we run remote tests.\n\nPlease review. Thanks.\n",
       "revId": "27e2a6642782f6df573c10caddbcd18caaa2e79f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1756b9c4_41eacb7f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-02-12T10:30:24Z",
+      "side": 1,
+      "message": "You\u0027re right in that we need to start ephemeral devserver for remote tests.\n\nBut we can\u0027t use a fixed port number for ephemeral devserver for remote tests. That is because, on the host, there might be other applications running in parallel to Tast, so we\u0027re not sure if the fixed port is available. Please note that we\u0027re not affected by this for local tests because we have full control of which apps are running on DUTs.\n\nThis means that we have to use different set of devservers for local tests and remote tests. Currently, when we start ephemeral devserver for local tests, we rewrite cfg.devservers, but we should no longer do that.\n\nWe also have to deal with the case with drones in the lab. In this case \"real\" devservers are given in command line arguments. But I\u0027m not sure if the host can directly access them. To check it, could you try re-enabling meta.RunTests.files_remote test? Its results will give us data.\n\nActually I looked at meta.RunTests.files_remote results of while back:\nhttps://stainless.corp.google.com/browse/chromeos-test-logs/test-runner/prod/2021-02-10/fc0beb8d-6973-433c-b6ed-a455f5b5600f/\nand I found that the test is using ephemeral devserver despite it\u0027s running in the lab.\nhttps://storage.cloud.google.com/chromeos-test-logs/test-runner/prod/2021-02-10/fc0beb8d-6973-433c-b6ed-a455f5b5600f/autoserv_test/tast/results/tests/meta.RunTests.files_remote/stdout.txt\nIt\u0027s because we don\u0027t pass -devserver to tast subprocess. Can you try updating Tast CLI to pass those parameters to meta tests?\nhttps://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform/tast/src/chromiumos/tast/cmd/tast/internal/run/remote.go;drc\u003d9fd9e6b2c5f6fad5dd014d08ce1dba032e211c3b;l\u003d72\n\nTo summarize, in order to obtain some data, we need to do:\n1. Re-enable meta.RunTests.files_remote as informational tests\n2. Update Tast CLI to pass -devserver to meta tests via RunFlags\n\nAfter they\u0027re done we can discuss what to do...",
+      "parentUuid": "522689f5_70c4a183",
+      "revId": "27e2a6642782f6df573c10caddbcd18caaa2e79f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

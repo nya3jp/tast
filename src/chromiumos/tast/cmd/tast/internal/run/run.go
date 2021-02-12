@@ -131,14 +131,16 @@ func Run(ctx context.Context, cfg *Config, state *State) (status Status, results
 		defer strm.CloseAndRecv()
 		state.reportsLogStream = strm
 	}
-
+	// initialize local and remote dev servers to user specified dev servers.
+	state.localDevservers = cfg.devservers
+	state.remoteDevservers = cfg.devservers
 	// Start an ephemeral devserver if necessary. Devservers are required in
 	// prepare (to download private bundles if -downloadprivatebundles if set)
 	// and in local (to download external data files).
 	// TODO(crbug.com/982181): Once we move the logic to download external data
 	// files to the prepare, try restricting the lifetime of the ephemeral
 	// devserver.
-	if cfg.runLocal && len(cfg.devservers) == 0 && cfg.tlwServer == "" && cfg.useEphemeralDevserver {
+	if cfg.runLocal && len(state.localDevservers) == 0 && cfg.tlwServer == "" && cfg.useEphemeralDevserver {
 		if err := startEphemeralDevserver(ctx, hst, cfg, state); err != nil {
 			return errorStatusf(cfg, subcommands.ExitFailure, "Failed to start ephemeral devserver: %v", err), nil
 		}
@@ -521,7 +523,7 @@ func downloadPrivateBundles(ctx context.Context, cfg *Config, state *State, hst 
 		&runner.Args{
 			Mode: runner.DownloadPrivateBundlesMode,
 			DownloadPrivateBundles: &runner.DownloadPrivateBundlesArgs{
-				Devservers:        cfg.devservers,
+				Devservers:        state.localDevservers,
 				TLWServer:         state.tlwServerForDUT,
 				DUTName:           cfg.Target,
 				BuildArtifactsURL: cfg.buildArtifactsURL,

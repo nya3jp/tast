@@ -192,7 +192,7 @@ func runLocalTestsOnce(ctx context.Context, cfg *Config, state *State, hst *ssh.
 				Patterns:          patterns,
 				DataDir:           cfg.localDataDir,
 				OutDir:            cfg.localOutDir,
-				Devservers:        cfg.devservers,
+				Devservers:        state.localDevservers,
 				TLWServer:         state.tlwServerForDUT,
 				DUTName:           cfg.Target,
 				WaitUntilReady:    cfg.waitUntilReady,
@@ -201,7 +201,7 @@ func runLocalTestsOnce(ctx context.Context, cfg *Config, state *State, hst *ssh.
 				DownloadMode:      cfg.downloadMode,
 			},
 			BundleGlob: cfg.localBundleGlob(),
-			Devservers: cfg.devservers,
+			Devservers: state.localDevservers,
 		},
 	}
 
@@ -279,7 +279,7 @@ func startEphemeralDevserver(ctx context.Context, hst *ssh.Conn, cfg *Config, st
 	}
 
 	state.ephemeralDevserver = es
-	cfg.devservers = []string{fmt.Sprintf("http://%s", lis.Addr())}
+	state.localDevservers = []string{fmt.Sprintf("http://%s", lis.Addr())}
 	return nil
 }
 

@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1e38be1d_49d07540",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1360284
+      },
+      "writtenOn": "2021-02-12T00:11:30Z",
+      "side": 1,
+      "message": "I decided to make the dependency check for Intel WiFi as the positive, since that aligns better with our use case of running tests on boards with Intel WiFi.\n\nAlso, I went with the name \"WifiIntel\" for the dependency because that aligned with the \"WifiNotMarvell\" name, but I\u0027m not sure I like it. Would \"IntelWifi\" or \"WifiIsIntel\" be more clear? Also, there\u0027s the issue of capitalization of the word wifi. I usually prefer \"WiFi\", but this file uses \"Wifi\" in multiple places, so *shrug*.",
+      "revId": "4c20d38ca17d950a80ec5135997b98243afddb3e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

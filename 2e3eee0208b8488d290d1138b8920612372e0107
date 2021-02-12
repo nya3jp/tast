@@ -90,6 +90,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "8bf3368a_9db437e3",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 265,
+      "author": {
+        "id": 1158184
+      },
+      "writtenOn": "2021-02-12T17:28:39Z",
+      "side": 1,
+      "message": "Sorry, I wasn\u0027t clear. Yes, crbug.com/1070299 will allow us to replace the manually-curated allowlist at some point. What I meant is that this allowlist is out of date, it\u0027s not just hatch that has 11ax these days: volteer, dedede, some zork models. So it\u0027s probably worth filing a bug to update that list",
+      "parentUuid": "ebf5651c_bafa94a0",
+      "range": {
+        "startLine": 265,
+        "startChar": 1,
+        "endLine": 265,
+        "endChar": 23
+      },
+      "revId": "2e3eee0208b8488d290d1138b8920612372e0107",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "82f90a19_f2cce584",
         "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
         "patchSetId": 4

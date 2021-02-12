@@ -26,6 +26,30 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "bdcd7793_cab72969",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 4
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1360284
+      },
+      "writtenOn": "2021-02-12T22:03:12Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "aa68b14c_9278cee5",
+      "range": {
+        "startLine": 23,
+        "startChar": 4,
+        "endLine": 23,
+        "endChar": 20
+      },
+      "revId": "2e3eee0208b8488d290d1138b8920612372e0107",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "cf50d3ec_fee4fe8e",
         "filename": "/PATCHSET_LEVEL",
         "patchSetId": 4
@@ -183,6 +207,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "45c9d76b_199fad3b",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 465,
+      "author": {
+        "id": 1360284
+      },
+      "writtenOn": "2021-02-12T22:03:12Z",
+      "side": 1,
+      "message": "Good point.",
+      "parentUuid": "597d2698_a753d904",
+      "range": {
+        "startLine": 465,
+        "startChar": 71,
+        "endLine": 465,
+        "endChar": 74
+      },
+      "revId": "2e3eee0208b8488d290d1138b8920612372e0107",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "82f90a19_f2cce584",
@@ -230,6 +278,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "c312342b_aadb7d07",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 467,
+      "author": {
+        "id": 1360284
+      },
+      "writtenOn": "2021-02-12T22:03:12Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1280edb7_5ecb840b",
+      "range": {
+        "startLine": 467,
+        "startChar": 0,
+        "endLine": 467,
+        "endChar": 26
+      },
+      "revId": "2e3eee0208b8488d290d1138b8920612372e0107",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "ff1f012c_2ef38cf0",
@@ -253,6 +325,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "46dc205c_fe4ac236",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 477,
+      "author": {
+        "id": 1360284
+      },
+      "writtenOn": "2021-02-12T22:03:12Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ff1f012c_2ef38cf0",
+      "range": {
+        "startLine": 477,
+        "startChar": 5,
+        "endLine": 477,
+        "endChar": 16
+      },
+      "revId": "2e3eee0208b8488d290d1138b8920612372e0107",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "e8702c58_30b00051",
@@ -266,6 +362,30 @@
       "writtenOn": "2021-02-12T16:36:48Z",
       "side": 1,
       "message": "ditto, this can just be \"err\"",
+      "range": {
+        "startLine": 488,
+        "startChar": 5,
+        "endLine": 488,
+        "endChar": 13
+      },
+      "revId": "2e3eee0208b8488d290d1138b8920612372e0107",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "dfb69bd2_2b874b11",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 488,
+      "author": {
+        "id": 1360284
+      },
+      "writtenOn": "2021-02-12T22:03:12Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e8702c58_30b00051",
       "range": {
         "startLine": 488,
         "startChar": 5,

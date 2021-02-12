@@ -64,6 +64,54 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "00c0ee2e_7dbe6078",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/results.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-02-12T18:07:33Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e3900161_bf8cfc42",
+      "range": {
+        "startLine": 56,
+        "startChar": 40,
+        "endLine": 56,
+        "endChar": 63
+      },
+      "revId": "c749d02f0e16e117cf43842c64427c1013e683e2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5aee7d8a_2ed35b8c",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/results.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 56,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-02-12T18:07:33Z",
+      "side": 1,
+      "message": "Oh! The comment was accidentally removed. I put it back.",
+      "parentUuid": "90f4b775_5afb9226",
+      "range": {
+        "startLine": 56,
+        "startChar": 64,
+        "endLine": 56,
+        "endChar": 72
+      },
+      "revId": "c749d02f0e16e117cf43842c64427c1013e683e2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "74e127a6_af04dbed",
@@ -77,6 +125,30 @@
       "writtenOn": "2021-02-12T07:18:48Z",
       "side": 1,
       "message": "Let us avoid mentioning \"RTD\" here as we designed the protocol between tast and tast_rtd agnostic to RTD/F20.\n\nI think we can just say \"user requested to terminate testing\".",
+      "range": {
+        "startLine": 102,
+        "startChar": 4,
+        "endLine": 102,
+        "endChar": 21
+      },
+      "revId": "c749d02f0e16e117cf43842c64427c1013e683e2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1127a21b_4e57aebe",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/results.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-02-12T18:07:33Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "74e127a6_af04dbed",
       "range": {
         "startLine": 102,
         "startChar": 4,
@@ -110,6 +182,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "a4bb1129_aeea93c3",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/results.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 432,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-02-12T18:07:33Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "490f156c_652456d0",
+      "range": {
+        "startLine": 432,
+        "startChar": 84,
+        "endLine": 432,
+        "endChar": 96
+      },
+      "revId": "c749d02f0e16e117cf43842c64427c1013e683e2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "3d2780c0_b6d35e83",
@@ -123,6 +219,24 @@
       "writtenOn": "2021-02-12T05:10:25Z",
       "side": 1,
       "message": "This should be OK with \":\u003d\" as the return statement inside has the value.",
+      "revId": "c749d02f0e16e117cf43842c64427c1013e683e2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e48aa9b3_90d66193",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/results.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 470,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-02-12T18:07:33Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3d2780c0_b6d35e83",
       "revId": "c749d02f0e16e117cf43842c64427c1013e683e2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -150,6 +264,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "71705303_31643dd0",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/results.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 619,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-02-12T18:07:33Z",
+      "side": 1,
+      "message": "Yes, run.runTests has following code.\n\n\tif cfg.runLocal {\n\t\tlres, err :\u003d runLocalTests(ctx, cfg, state)\n\t\tresults \u003d append(results, lres...)\n\t\tif err !\u003d nil {\n\t\t\t// TODO(derat): While test runners are always supposed to report success even if tests fail,\n\t\t\t// it\u0027d probably be better to run both types here even if one fails.\n\t\t\treturn results, err\n\t\t}\n\t}\n\nIf there is an error in running local tests, it will return results and error.",
+      "parentUuid": "6f3ab089_9abaedf8",
+      "range": {
+        "startLine": 617,
+        "startChar": 4,
+        "endLine": 619,
+        "endChar": 5
+      },
+      "revId": "c749d02f0e16e117cf43842c64427c1013e683e2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "96cf4a34_a31bed2e",
@@ -167,6 +305,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "ae083758_baf2017e",
+        "filename": "src/chromiumos/tast/internal/fakereports/fake_reports.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-02-12T18:07:33Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "96cf4a34_a31bed2e",
+      "revId": "c749d02f0e16e117cf43842c64427c1013e683e2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "0ebde3b5_cda460d0",
@@ -180,6 +336,24 @@
       "writtenOn": "2021-02-12T05:10:25Z",
       "side": 1,
       "message": "remove this blank line",
+      "revId": "c749d02f0e16e117cf43842c64427c1013e683e2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "04193691_e59349ad",
+        "filename": "src/chromiumos/tast/internal/fakereports/fake_reports.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-02-12T18:07:33Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0ebde3b5_cda460d0",
       "revId": "c749d02f0e16e117cf43842c64427c1013e683e2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }

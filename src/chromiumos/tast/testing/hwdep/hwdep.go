@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Copyright 2021 The Chromium OS Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -282,12 +282,91 @@ func Wifi80211ac() Condition {
 // Wifi80211ax returns a hardware dependency condition that is satisfied
 // iff the DUT's WiFi module supports 802.11ax.
 func Wifi80211ax() Condition {
-	// Note: this is currently an allowlist. We can consider switching this to a
-	// blocklist/skiplist if we start adding too many relevant devices.
+	// Note: this is currently a blocklist.
 	// TODO(crbug.com/1070299): replace this when we have hwdep for WiFi chips.
-	c := Platform("hatch")
-	c.CEL = "dut.hardware_features.wifi.supported_wlan_protocols.exists(x, x == api.Component.Wifi.WLANProtocol.IEEE_802_11_AX)"
-	return c
+	return Condition{Satisfied: func(f *dep.HardwareFeatures) error {
+		// TODO(crbug.com/1115620): remove "Elm" and "Hana" after unibuild migration
+		// completed.
+		platformCondition := SkipOnPlatform(
+			"asuka",
+			"asurada",
+			"banjo",
+			"banon",
+			"bob",
+			"buddy",
+			"candy",
+			"caroline",
+			"cave",
+			"celes",
+			"chell",
+			"coral",
+			"cyan",
+			"edgar",
+			"elm",
+			"enguarde",
+			"eve",
+			"fievel",
+			"fizz",
+			"gale",
+			"gandof",
+			"gnawty",
+			"gru", // The mosys for scarlet is gru. scarlet does not support 802.11ax
+			"grunt",
+			"guado",
+			"hana",
+			"kalista",
+			"kefka",
+			"kevin",
+			"kip",
+			"kukui", // The mosys for jacuzzi is kukui. jacuzzi does not support 802.11ax
+			"lars",
+			"lulu",
+			"nami",
+			"nautilus",
+			"ninja",
+			"nocturne",
+			"octopus",
+			"orco",
+			"paine",
+			"poppy", // The mosys for atlas is poppy. atlas does not support 802.11ax
+			"puff",
+			"pyro",
+			"rammus",
+			"reef",
+			"reks",
+			"relm",
+			"rikku",
+			"samus",
+			"sand",
+			"sarien",
+			"sentry",
+			"setzer",
+			"snappy",
+			"soraka",
+			"sumo",
+			"swanky",
+			"terra",
+			"tidus",
+			"tiger",
+			"trogdor",
+			"ultima",
+			"winky",
+			"wizpig",
+			"yuna")
+		if err := platformCondition.Satisfied(f); err != nil {
+			return err
+		}
+		// Some models of boards excluded from the platform skip do not support
+		// 802.11ax. To be precise as possible, we will skip these models as well.
+		modelCondition := SkipOnModel(
+			"ezkinil", "vilboz",
+		)
+		if err := modelCondition.Satisfied(f); err != nil {
+			return err
+		}
+		return nil
+	}, CEL: "dut.hardware_features.wifi.supported_wlan_protocols.exists(x, x == api.Component.Wifi.WLANProtocol.IEEE_802_11_AX)",
+	}
 }
 
 // WifiMACAddrRandomize returns a hardware dependency condition that is satisfied

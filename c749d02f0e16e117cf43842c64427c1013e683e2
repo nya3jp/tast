@@ -66,6 +66,29 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "74e127a6_af04dbed",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/results.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-02-12T07:18:48Z",
+      "side": 1,
+      "message": "Let us avoid mentioning \"RTD\" here as we designed the protocol between tast and tast_rtd agnostic to RTD/F20.\n\nI think we can just say \"user requested to terminate testing\".",
+      "range": {
+        "startLine": 102,
+        "startChar": 4,
+        "endLine": 102,
+        "endChar": 21
+      },
+      "revId": "c749d02f0e16e117cf43842c64427c1013e683e2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "490f156c_652456d0",
         "filename": "src/chromiumos/tast/cmd/tast/internal/run/results.go",
         "patchSetId": 3
@@ -100,6 +123,29 @@
       "writtenOn": "2021-02-12T05:10:25Z",
       "side": 1,
       "message": "This should be OK with \":\u003d\" as the return statement inside has the value.",
+      "revId": "c749d02f0e16e117cf43842c64427c1013e683e2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6f3ab089_9abaedf8",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/results.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 619,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-02-12T07:18:48Z",
+      "side": 1,
+      "message": "When we terminate testing during local tests, do we skip remote tests entirely?",
+      "range": {
+        "startLine": 617,
+        "startChar": 4,
+        "endLine": 619,
+        "endChar": 5
+      },
       "revId": "c749d02f0e16e117cf43842c64427c1013e683e2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },

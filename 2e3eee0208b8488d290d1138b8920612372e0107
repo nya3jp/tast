@@ -186,6 +186,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "3f1c8d41_9a9c398b",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 265,
+      "author": {
+        "id": 1432127
+      },
+      "writtenOn": "2021-02-13T00:22:51Z",
+      "side": 1,
+      "message": "Filed https://chromium-review.googlesource.com/c/chromiumos/platform/tast/+/2692943",
+      "parentUuid": "08629bb3_f7df0b42",
+      "range": {
+        "startLine": 265,
+        "startChar": 1,
+        "endLine": 265,
+        "endChar": 23
+      },
+      "revId": "2e3eee0208b8488d290d1138b8920612372e0107",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "597d2698_a753d904",
         "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
         "patchSetId": 4

@@ -11,26 +11,28 @@ import "google/protobuf/timestamp.proto";
 
 option go_package = "chromiumos/tast/internal/protocol";
 
-// Reports service is invoked by Tast CLI for reporting its test results and logs.
+// Reports service is invoked by Tast CLI for reporting its test results and
+// logs.
 service Reports {
-    // LogStream accepts a stream of log data.
-    // The request should be called only once per client.
-    rpc LogStream(stream LogStreamRequest) returns (google.protobuf.Empty) {}
+  // LogStream accepts a stream of log data.
+  // The request should be called only once per client.
+  rpc LogStream(stream LogStreamRequest) returns (google.protobuf.Empty) {}
 
-    // ReportResults accepts test results from a client.
-    // This request can be called multiple times per client.
-    rpc ReportResult(ReportResultRequest) returns (ReportResultResponse) {}
+  // ReportResults accepts test results from a client.
+  // This request can be called multiple times per client.
+  rpc ReportResult(ReportResultRequest) returns (ReportResultResponse) {}
 }
 
 message LogStreamRequest {
-    string test = 1;  // test name of this log message
-    string log_path = 2;  // test log file path relative to the result directory
-    bytes data = 3;
+  string test = 1;     // test name of this log message
+  string log_path = 2; // test log file path relative to the result directory
+  bytes data = 3;
 }
 
 message ReportResultRequest {
   string test = 1; // Test name of this test result
-  repeated Error errors = 2; // errors contain errors encountered while running the test.
+  repeated Error errors =
+      2; // errors contain errors encountered while running the test.
   string skip_reason = 3; // skip_reason tells why the test is skipped.
 }
 

@@ -384,6 +384,10 @@ var modelsWithoutForceDischargeSupport = []string{
 	"drallion360",
 	"lulu",
 	"sarien",
+	// http://b/180279505: Restoring charging resets USB-Ethernet adapter.
+	"kakadu",
+	"kodama",
+	"krane",
 }
 
 // ForceDischarge returns a hardware dependency condition that is satisfied iff the DUT

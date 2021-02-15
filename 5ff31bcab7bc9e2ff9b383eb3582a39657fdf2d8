@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "31dbf4a0_e7cc9b3c",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/config.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 96,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-02-15T09:38:51Z",
+      "side": 1,
+      "message": "Currently Config.devservers is actually mutated. We wanted to move all mutable fields to State and this is one exception. And I guess that\u0027s why you wanted originalDevServersStr.\n\nInstead let us keep Config.devservers completely immutable, and instead introduce State.localDevservers and State.remoteDevservers, which contains actual devservers to use for local/remote tests. We can drop Config.originalDevServersStr.",
+      "range": {
+        "startLine": 96,
+        "startChar": 1,
+        "endLine": 96,
+        "endChar": 11
+      },
+      "revId": "5ff31bcab7bc9e2ff9b383eb3582a39657fdf2d8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6ed2ec39_8f1ecae7",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/remote.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 123,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-02-15T09:38:51Z",
+      "side": 1,
+      "message": "Specifying \"-devservers\u003d\" should be equivalent to not specifying -devservers. So please set RunFlags on struct initialization.\n\n RunFlags: []string{\n   ...\n   \"-devservers\u003d\" + strings.Join(state.remoteDevservers, \",\"),\n },",
+      "range": {
+        "startLine": 120,
+        "startChar": 1,
+        "endLine": 123,
+        "endChar": 2
+      },
+      "revId": "5ff31bcab7bc9e2ff9b383eb3582a39657fdf2d8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

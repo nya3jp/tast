@@ -17,6 +17,7 @@ import (
 	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/google/go-cmp/cmp"
 
+	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/rpc"
 	"chromiumos/tast/internal/sshtest"
 	"chromiumos/tast/internal/testcontext"
@@ -61,7 +62,7 @@ func startFakeFixtureService(ctx context.Context, t *gotesting.T) (rfcl FixtureS
 
 	stopped := make(chan error, 1)
 	go func() {
-		stopped <- RunFixtureServiceServer(sr, sw)
+		stopped <- rpc.RunServer(sr, sw, nil, registerFixtureService)
 	}()
 
 	var stopFunc []func()
@@ -85,11 +86,18 @@ func startFakeFixtureService(ctx context.Context, t *gotesting.T) (rfcl FixtureS
 		}
 	})
 
-	conn, err := rpc.NewPipeClientConn(ctx, cr, cw)
+	rpcCL, err := rpc.NewClient(ctx, cr, cw, &protocol.HandshakeRequest{
+		NeedUserServices: false,
+	})
 	if err != nil {
-		t.Fatal(err)
+		t.Fatalf("rpc.NewClient: %v", err)
 	}
-	cl := NewFixtureServiceClient(conn)
+	stopFunc = append(stopFunc, func() {
+		if err := rpcCL.Close(ctx); err != nil {
+			t.Errorf("rpcCL.Close(): %v", err)
+		}
+	})
+	cl := NewFixtureServiceClient(rpcCL.Conn)
 
 	rfcl, err = cl.RunFixture(ctx)
 	if err != nil {

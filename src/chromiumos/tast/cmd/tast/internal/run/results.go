@@ -161,7 +161,9 @@ func WriteResults(ctx context.Context, cfg *Config, state *State, results []*Ent
 
 	if complete {
 		var matchedTestNames []string
-		matchedTestNames = append(matchedTestNames, cfg.testNames...)
+		for _, t := range cfg.testsToRun {
+			matchedTestNames = append(matchedTestNames, t.Name)
+		}
 		matchedTestNames = append(matchedTestNames, cfg.TestNamesToSkip...)
 		// Let the user know if one or more of the globs that they supplied didn't match any tests.
 		if pats := unmatchedTestPatterns(cfg.Patterns, matchedTestNames); len(pats) > 0 {

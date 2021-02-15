@@ -8,7 +8,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"time"
 
 	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/testing"
@@ -204,7 +203,7 @@ func (st *FixtureStack) Push(ctx context.Context, fixt *testing.Fixture) error {
 	}
 
 	root := testing.NewEntityRoot(ce, ei, rcfg, fout)
-	f := newStatefulFixture(fixt, root, fout, st.top(), st.cfg.GracePeriod())
+	f := newStatefulFixture(fixt, root, fout, st.top(), st.cfg)
 	st.stack = append(st.stack, f)
 
 	if status == statusGreen {
@@ -322,7 +321,7 @@ func (st *FixtureStack) top() *statefulFixture {
 
 // statefulFixture holds a fixture and some extra variables tracking its states.
 type statefulFixture struct {
-	gracePeriod time.Duration
+	cfg *Config
 
 	fixt   *testing.Fixture
 	root   *testing.EntityRoot
@@ -335,14 +334,14 @@ type statefulFixture struct {
 }
 
 // newStatefulFixture creates a new statefulFixture.
-func newStatefulFixture(fixt *testing.Fixture, root *testing.EntityRoot, fout *entityOutputStream, parent *statefulFixture, gracePeriod time.Duration) *statefulFixture {
+func newStatefulFixture(fixt *testing.Fixture, root *testing.EntityRoot, fout *entityOutputStream, parent *statefulFixture, cfg *Config) *statefulFixture {
 	return &statefulFixture{
-		gracePeriod: gracePeriod,
-		fixt:        fixt,
-		root:        root,
-		fout:        fout,
-		parent:      parent,
-		status:      statusRed,
+		cfg:    cfg,
+		fixt:   fixt,
+		root:   root,
+		fout:   fout,
+		parent: parent,
+		status: statusRed,
 	}
 }
 
@@ -386,13 +385,16 @@ func (f *statefulFixture) RunSetUp(ctx context.Context) error {
 	f.fout.Start(s.OutDir())
 
 	var val interface{}
-	if err := safeCall(ctx, name, f.fixt.SetUpTimeout, f.gracePeriod, errorOnPanic(s), func(ctx context.Context) {
+	if err := safeCall(ctx, name, f.fixt.SetUpTimeout, f.cfg.GracePeriod(), errorOnPanic(s), func(ctx context.Context) {
 		val = f.fixt.Impl.SetUp(ctx, s)
 	}); err != nil {
 		return err
 	}
-
-	f.errs = rewriteErrorsForTest(f.fout.Errors(), f.fixt.Name)
+	fixtName := f.fixt.Name
+	if fixtName == "" {
+		fixtName = f.cfg.StartFixtureName
+	}
+	f.errs = rewriteErrorsForTest(f.fout.Errors(), fixtName)
 	if len(f.errs) > 0 {
 		// TODO(crbug.com/1127169): Support timing log.
 		f.fout.End(nil, timing.NewLog())
@@ -414,7 +416,7 @@ func (f *statefulFixture) RunTearDown(ctx context.Context) error {
 	s := f.root.NewFixtState()
 	name := fmt.Sprintf("%s:TearDown", f.fixt.Name)
 
-	if err := safeCall(ctx, name, f.fixt.TearDownTimeout, f.gracePeriod, errorOnPanic(s), func(ctx context.Context) {
+	if err := safeCall(ctx, name, f.fixt.TearDownTimeout, f.cfg.GracePeriod(), errorOnPanic(s), func(ctx context.Context) {
 		f.fixt.Impl.TearDown(ctx, s)
 	}); err != nil {
 		return err
@@ -442,7 +444,7 @@ func (f *statefulFixture) RunReset(ctx context.Context) error {
 		resetErr = fmt.Errorf("panic: %v", val)
 	}
 
-	if err := safeCall(ctx, name, f.fixt.ResetTimeout, f.gracePeriod, onPanic, func(ctx context.Context) {
+	if err := safeCall(ctx, name, f.fixt.ResetTimeout, f.cfg.GracePeriod(), onPanic, func(ctx context.Context) {
 		resetErr = f.fixt.Impl.Reset(ctx)
 	}); err != nil {
 		return err

@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1c4adfc4_75be62b0",
+        "filename": "src/chromiumos/tast/internal/bundle/fixture_service.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-02-15T10:02:34Z",
+      "side": 1,
+      "message": "Can we unexport this function?",
+      "range": {
+        "startLine": 31,
+        "startChar": 5,
+        "endLine": 31,
+        "endChar": 27
+      },
+      "revId": "7b06ae4536e562b400a3488031d6f4b830b88db4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a9f3e956_86976afc",
+        "filename": "src/chromiumos/tast/internal/rpc/client.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 78,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-02-15T10:02:34Z",
+      "side": 1,
+      "message": "I feel like newClient is too powerful to export as it allows callers to install arbitrary cleanup function in Client.\n\nInstead what do you think about introducing a new function NewClient which in turn calls newClient with empty clean?\n\n func NewClient(ctx context.Context, r io.Reader, w io.Writer, req *protocol.HandshakeRequest) (*Client, error) {\n   return newClient(ctx, r, w, req, func(context.Context) error { return nil })\n }\n\nI believe it\u0027s enough for the current purpose.",
+      "range": {
+        "startLine": 78,
+        "startChar": 5,
+        "endLine": 78,
+        "endChar": 14
+      },
+      "revId": "7b06ae4536e562b400a3488031d6f4b830b88db4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

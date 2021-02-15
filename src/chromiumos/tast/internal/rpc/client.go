@@ -84,6 +84,8 @@ func NewClient(ctx context.Context, r io.Reader, w io.Writer, req *protocol.Hand
 func newClient(ctx context.Context, r io.Reader, w io.Writer, req *protocol.HandshakeRequest, clean func(context.Context) error) (_ *Client, retErr error) {
 	defer func() {
 		if retErr != nil {
+			// TODO(oka): log error from clean. retErr is already non-nil, so
+			// the best we can do is to log it.
 			clean(ctx)
 		}
 	}()

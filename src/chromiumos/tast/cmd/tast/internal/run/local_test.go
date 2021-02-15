@@ -19,6 +19,8 @@ import (
 	gotesting "testing"
 	"time"
 
+	"github.com/google/go-cmp/cmp"
+
 	"chromiumos/tast/cmd/tast/internal/logging"
 	"chromiumos/tast/internal/bundle"
 	"chromiumos/tast/internal/command"
@@ -172,8 +174,9 @@ func (td *localTestData) handleExec(req *sshtest.ExecReq) {
 
 // checkArgs compares two runner.Args.
 func checkArgs(t *gotesting.T, args, exp *runner.Args) {
-	if !reflect.DeepEqual(args, exp) {
-		t.Errorf("got args %+v; want %+v", *args, *exp)
+	t.Helper()
+	if diff := cmp.Diff(args, exp, cmp.AllowUnexported(runner.Args{})); diff != "" {
+		t.Errorf("Args mismatch (-got +want):\n%v", diff)
 	}
 }
 
@@ -296,7 +299,7 @@ func TestLocalCopyOutput(t *gotesting.T) {
 	}
 
 	if _, err := runLocalTests(context.Background(), &td.cfg, &td.state); err != nil {
-		t.Error("runLocalTests failed: ", err)
+		t.Fatalf("runLocalTests failed: %v", err)
 	}
 
 	files, err := testutil.ReadFiles(filepath.Join(td.cfg.ResDir, testLogsDir))

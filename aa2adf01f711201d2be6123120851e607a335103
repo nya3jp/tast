@@ -16,6 +16,23 @@
       "message": "Comments have been addressed. Please review. Thanks.",
       "revId": "aa2adf01f711201d2be6123120851e607a335103",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "cc0a3a43_98975ec5",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-02-15T04:23:19Z",
+      "side": 1,
+      "message": "LGTM. Deferring to Shuhei for the other comments.",
+      "revId": "aa2adf01f711201d2be6123120851e607a335103",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

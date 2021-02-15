@@ -33,6 +33,75 @@
       "message": "LGTM. Deferring to Shuhei for the other comments.",
       "revId": "aa2adf01f711201d2be6123120851e607a335103",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0f37ba07_019fc8ae",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/results.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 214,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-02-15T09:24:10Z",
+      "side": 1,
+      "message": "Can you also drop \"RTD\" from this field and its comment?",
+      "range": {
+        "startLine": 214,
+        "startChar": 1,
+        "endLine": 214,
+        "endChar": 16
+      },
+      "revId": "aa2adf01f711201d2be6123120851e607a335103",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fcf17fe8_2afdbea5",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/results.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 599,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-02-15T09:24:10Z",
+      "side": 1,
+      "message": "Currently, resultsHandler has three methods to report test results:\n\n1. results.json (return value of processMessages)\n2. streamed_results.jsonl (r.streamWriter)\n3. Progress gRPC (r.state.reportsClient)\n\nIf we call r.reportResult only when terminatedByRTD\u003dfalse, we\u0027ll introduce inconsistency among these three methods. So we should call reportResult unconditionally.",
+      "range": {
+        "startLine": 597,
+        "startChar": 4,
+        "endLine": 599,
+        "endChar": 5
+      },
+      "revId": "aa2adf01f711201d2be6123120851e607a335103",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d2a3a8af_20634594",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/results.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 782,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-02-15T09:24:10Z",
+      "side": 1,
+      "message": "Generally speaking, replacing an error reported from a function call with a new unassociated error is what I want to avoid, since we lose detailed contexts of an error.\n\nWould you mind elaborating on the cases where we need this special case?",
+      "range": {
+        "startLine": 781,
+        "startChar": 2,
+        "endLine": 782,
+        "endChar": 29
+      },
+      "revId": "aa2adf01f711201d2be6123120851e607a335103",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

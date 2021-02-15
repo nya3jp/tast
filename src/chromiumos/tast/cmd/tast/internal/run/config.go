@@ -73,7 +73,7 @@ type Config struct {
 	// TestNamesToSkip are tests that match patterns but are not sent to runners to run.
 	TestNamesToSkip []string
 
-	testNames []string // testNames specifies the names of the tests to be run.
+	testsToRun []*EntityResult // tests to be run
 
 	mode     Mode   // action to perform
 	tastDir  string // base directory under which files are written

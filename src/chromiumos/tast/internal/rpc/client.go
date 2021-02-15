@@ -78,7 +78,9 @@ func Dial(ctx context.Context, conn *ssh.Conn, path string, req *protocol.Handsh
 func NewClient(ctx context.Context, r io.Reader, w io.Writer, req *protocol.HandshakeRequest, clean func(context.Context) error) (_ *Client, retErr error) {
 	defer func() {
 		if retErr != nil {
-			clean(ctx)
+			if err := clean(ctx); err != nil {
+				retErr = fmt.Errorf("NewClient: clean: %v", err)
+			}
 		}
 	}()
 

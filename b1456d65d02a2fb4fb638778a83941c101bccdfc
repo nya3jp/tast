@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "09980db4_378c93a7",
+        "filename": "src/chromiumos/tast/internal/rpc/client.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-02-15T10:06:59Z",
+      "side": 1,
+      "message": "Do we want to do this only when retErr \u003d\u003d nil ?",
+      "range": {
+        "startLine": 81,
+        "startChar": 36,
+        "endLine": 81,
+        "endChar": 37
+      },
+      "revId": "b1456d65d02a2fb4fb638778a83941c101bccdfc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

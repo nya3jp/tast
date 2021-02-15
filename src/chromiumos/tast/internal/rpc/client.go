@@ -65,17 +65,17 @@ func Dial(ctx context.Context, conn *ssh.Conn, path string, req *protocol.Handsh
 		return nil, errors.Wrap(err, "failed to connect to RPC service on DUT")
 	}
 
-	return newClient(ctx, stdout, stdin, req, func(ctx context.Context) error {
+	return NewClient(ctx, stdout, stdin, req, func(ctx context.Context) error {
 		cmd.Abort()
 		return cmd.Wait(ctx)
 	})
 }
 
-// newClient establishes a gRPC connection to a test bundle executable using r and w.
+// NewClient establishes a gRPC connection to a test bundle executable using r and w.
 //
 // When this function succeeds, clean is called in Client.Close. Otherwise it is called
 // before this function returns.
-func newClient(ctx context.Context, r io.Reader, w io.Writer, req *protocol.HandshakeRequest, clean func(context.Context) error) (_ *Client, retErr error) {
+func NewClient(ctx context.Context, r io.Reader, w io.Writer, req *protocol.HandshakeRequest, clean func(context.Context) error) (_ *Client, retErr error) {
 	defer func() {
 		if retErr != nil {
 			clean(ctx)

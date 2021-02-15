@@ -106,7 +106,7 @@ func newPingPair(ctx context.Context, t *gotesting.T, req *protocol.HandshakeReq
 		}
 	}()
 
-	cl, err := newClient(ctx, cr, cw, req, func(context.Context) error { return nil })
+	cl, err := NewClient(ctx, cr, cw, req, func(context.Context) error { return nil })
 	if err != nil {
 		t.Fatal("newClient failed: ", err)
 	}

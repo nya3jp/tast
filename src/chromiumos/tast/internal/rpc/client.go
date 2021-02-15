@@ -71,6 +71,12 @@ func Dial(ctx context.Context, conn *ssh.Conn, path string, req *protocol.Handsh
 	})
 }
 
+// NewClient establishes a gRPC connection to a test bundle executable using r
+// and w.
+func NewClient(ctx context.Context, r io.Reader, w io.Writer, req *protocol.HandshakeRequest) (*Client, error) {
+	return newClient(ctx, r, w, req, func(context.Context) error { return nil })
+}
+
 // newClient establishes a gRPC connection to a test bundle executable using r and w.
 //
 // When this function succeeds, clean is called in Client.Close. Otherwise it is called

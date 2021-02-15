@@ -13,11 +13,9 @@ import (
 	"github.com/golang/protobuf/ptypes"
 	"github.com/golang/protobuf/ptypes/empty"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/reflection"
 
 	"chromiumos/tast/internal/dep"
 	"chromiumos/tast/internal/planner"
-	"chromiumos/tast/internal/rpc"
 	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/internal/timing"
@@ -28,6 +26,11 @@ type fixtureService struct {
 }
 
 var _ FixtureServiceServer = (*fixtureService)(nil)
+
+// registerFixtureService registers fixture service.
+func registerFixtureService(srv *grpc.Server) {
+	RegisterFixtureServiceServer(srv, &fixtureService{})
+}
 
 // RunFixture provides operations to set up and tear down fixtures.
 // It accepts multiple pairs of push and pop requests in a loop until client
@@ -47,6 +50,8 @@ var errFixtureServiceNormalEOF = errors.New("normal EOF")
 // pushAndPop handles push and pop operations. If the connection is terminated
 // normally, it returns errFixtureServiceNormalEOF.
 func pushAndPop(srv FixtureService_RunFixtureServer) (retErr error) {
+	ctx := srv.Context()
+
 	sendDone := func() error {
 		return srv.Send(&RunFixtureResponse{
 			Control: &RunFixtureResponse_RequestDone{
@@ -65,8 +70,6 @@ func pushAndPop(srv FixtureService_RunFixtureServer) (retErr error) {
 		}
 		retErr = sendDone()
 	}()
-
-	ctx := srv.Context()
 
 	req, err := srv.Recv()
 	if err == io.EOF {
@@ -219,19 +222,5 @@ func (l *fixtureServiceLogger) EntityError(ei *testing.EntityInfo, e *testing.Er
 }
 
 func (l *fixtureServiceLogger) EntityEnd(ei *testing.EntityInfo, skipReasons []string, timingLog *timing.Log) error {
-	return nil
-}
-
-// RunFixtureServiceServer runs a gRPC server providing fixture service on r/w channels.
-// It blocks until the client connection is closed or it encounters an error.
-func RunFixtureServiceServer(r io.Reader, w io.Writer) error {
-	srv := grpc.NewServer()
-	reflection.Register(srv)
-
-	RegisterFixtureServiceServer(srv, &fixtureService{})
-
-	if err := srv.Serve(rpc.NewPipeListener(r, w)); err != nil && err != io.EOF {
-		return err
-	}
 	return nil
 }

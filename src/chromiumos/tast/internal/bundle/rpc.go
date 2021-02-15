@@ -14,5 +14,7 @@ import (
 )
 
 func runRPCServer(r io.Reader, w io.Writer, svcs []*testing.Service) error {
-	return rpc.RunServer(r, w, svcs, func(srv *grpc.Server) {})
+	return rpc.RunServer(r, w, svcs, func(srv *grpc.Server) {
+		registerFixtureService(srv)
+	})
 }

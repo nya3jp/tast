@@ -14,5 +14,5 @@ option go_package = "chromiumos/tast/internal/protocol";
 
 // PingUser is a fake user-defined service for unit tests.
 service PingUser {
-  rpc Ping (google.protobuf.Empty) returns (google.protobuf.Empty) {}
+  rpc Ping(google.protobuf.Empty) returns (google.protobuf.Empty) {}
 }

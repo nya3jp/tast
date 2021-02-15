@@ -103,9 +103,11 @@ func NewSSHServer(pk *rsa.PublicKey, hk *rsa.PrivateKey, handler ExecHandler) (*
 			if err != nil {
 				return
 			}
-			if err := s.handleConn(conn); err != nil {
-				log.Print("Got error while handling connection: ", err)
-			}
+			go func() {
+				if err := s.handleConn(conn); err != nil {
+					log.Print("Got error while handling connection: ", err)
+				}
+			}()
 		}
 	}()
 

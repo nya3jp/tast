@@ -91,6 +91,102 @@
       },
       "revId": "586f2cef4d0ce6a2b6a1e712e3ba2ec1000359a2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e0502746_5d81ec34",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 264,
+      "author": {
+        "id": 1432127
+      },
+      "writtenOn": "2021-02-16T19:31:52Z",
+      "side": 1,
+      "message": "Gotcha, I made the assumption that board is roughly equal to platform, and these didn\u0027t have suffixes like \"64\" or \"360\" on the end so I didn\u0027t prune and/or modify those. \n\nI\u0027ll take a pass at doing the lookup on each board -\u003e platform.",
+      "parentUuid": "4f405d0a_041cdfb4",
+      "range": {
+        "startLine": 264,
+        "startChar": 50,
+        "endLine": 264,
+        "endChar": 77
+      },
+      "revId": "586f2cef4d0ce6a2b6a1e712e3ba2ec1000359a2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7ce91525_de3fd070",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 264,
+      "author": {
+        "id": 1432127
+      },
+      "writtenOn": "2021-02-16T19:31:52Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e177fdb3_79ab0d33",
+      "range": {
+        "startLine": 264,
+        "startChar": 6,
+        "endLine": 264,
+        "endChar": 20
+      },
+      "revId": "586f2cef4d0ce6a2b6a1e712e3ba2ec1000359a2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c59f0364_99f0abed",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 264,
+      "author": {
+        "id": 1432127
+      },
+      "writtenOn": "2021-02-16T19:31:52Z",
+      "side": 1,
+      "message": "Done. Missed removing this entry",
+      "parentUuid": "a46bb55e_57112715",
+      "range": {
+        "startLine": 264,
+        "startChar": 326,
+        "endLine": 264,
+        "endChar": 335
+      },
+      "revId": "586f2cef4d0ce6a2b6a1e712e3ba2ec1000359a2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "373a4064_00bb0f2b",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 264,
+      "author": {
+        "id": 1432127
+      },
+      "writtenOn": "2021-02-16T19:31:52Z",
+      "side": 1,
+      "message": "In the initial patchset, I had the list of platforms from a connectivity spreadsheet. That included boards that were EOL and probably added too much spew to the file since we weren\u0027t even testing those anymore.\nI then thought it would be more useful to look at a list of boards that have been tested in our labs recently (since the new year) which yielded the newer cl. I sort of made the assumption that board ~\u003d platform which may not necessarily be true now that i\u0027m looking at it.\nIn both cases, I removed the entries that actually had AX enabled devices.\n\nHas tiger and fievel been tested in the lab recently?",
+      "parentUuid": "4f2c6459_f3bef4e9",
+      "range": {
+        "startLine": 264,
+        "startChar": 1,
+        "endLine": 264,
+        "endChar": 2
+      },
+      "revId": "586f2cef4d0ce6a2b6a1e712e3ba2ec1000359a2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

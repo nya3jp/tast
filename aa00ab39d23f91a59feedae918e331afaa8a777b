@@ -22,6 +22,30 @@
       },
       "revId": "aa00ab39d23f91a59feedae918e331afaa8a777b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "04d7fc0f_66d45791",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 310,
+      "author": {
+        "id": 1360284
+      },
+      "writtenOn": "2021-02-16T20:12:28Z",
+      "side": 1,
+      "message": "Changed. And the test correctly skips on tiger and fievel boards.",
+      "parentUuid": "4e769e3d_b290aafc",
+      "range": {
+        "startLine": 310,
+        "startChar": 42,
+        "endLine": 310,
+        "endChar": 48
+      },
+      "revId": "aa00ab39d23f91a59feedae918e331afaa8a777b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

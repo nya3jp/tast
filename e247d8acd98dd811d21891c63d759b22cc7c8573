@@ -16,6 +16,40 @@
       "message": "Thanks for working on this!\nWe took a look into it but we\u0027re not sure what caused this issue yet so this short term fix is needed...",
       "revId": "e247d8acd98dd811d21891c63d759b22cc7c8573",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5be5c354_b8084749",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2021-02-16T09:17:24Z",
+      "side": 1,
+      "message": "Tast LGTM with comments. Defer to other reviewers.",
+      "revId": "e247d8acd98dd811d21891c63d759b22cc7c8573",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3ae82147_361fd92b",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 387,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2021-02-16T09:17:24Z",
+      "side": 1,
+      "message": "Do you mean, this is temporary workaround?\nCould you add TODO explicitly to remove them when the problem is resolved?",
+      "revId": "e247d8acd98dd811d21891c63d759b22cc7c8573",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

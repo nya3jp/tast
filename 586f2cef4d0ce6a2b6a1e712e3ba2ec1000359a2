@@ -187,6 +187,30 @@
       },
       "revId": "586f2cef4d0ce6a2b6a1e712e3ba2ec1000359a2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "92eb4bb7_666db989",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 264,
+      "author": {
+        "id": 1132414
+      },
+      "writtenOn": "2021-02-16T19:43:55Z",
+      "side": 1,
+      "message": "\u003e Has tiger and fievel been tested in the lab recently?\n\nYes. http://shortn/_T3cz1xS2sY",
+      "parentUuid": "373a4064_00bb0f2b",
+      "range": {
+        "startLine": 264,
+        "startChar": 1,
+        "endLine": 264,
+        "endChar": 2
+      },
+      "revId": "586f2cef4d0ce6a2b6a1e712e3ba2ec1000359a2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

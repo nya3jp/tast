@@ -1,0 +1,96 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a46bb55e_57112715",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 264,
+      "author": {
+        "id": 1132414
+      },
+      "writtenOn": "2021-02-16T18:50:43Z",
+      "side": 1,
+      "message": "I don\u0027t believe that\u0027s a platform; it\u0027ll fall under \u0027kevin\u0027.",
+      "range": {
+        "startLine": 264,
+        "startChar": 326,
+        "endLine": 264,
+        "endChar": 335
+      },
+      "revId": "586f2cef4d0ce6a2b6a1e712e3ba2ec1000359a2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e177fdb3_79ab0d33",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 264,
+      "author": {
+        "id": 1132414
+      },
+      "writtenOn": "2021-02-16T18:50:43Z",
+      "side": 1,
+      "message": "seems like this is a long line that might need a moderate amount of modification over time. if the formatters allow it (I think they do?), it might make sense to split this up to one entry (or a few, if you want to group things) per line.",
+      "range": {
+        "startLine": 264,
+        "startChar": 6,
+        "endLine": 264,
+        "endChar": 20
+      },
+      "revId": "586f2cef4d0ce6a2b6a1e712e3ba2ec1000359a2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4f2c6459_f3bef4e9",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 264,
+      "author": {
+        "id": 1132414
+      },
+      "writtenOn": "2021-02-16T18:50:43Z",
+      "side": 1,
+      "message": "I\u0027m curious how you came up with this list? I think you\u0027re missing \"tiger\" and \"fievel\"",
+      "range": {
+        "startLine": 264,
+        "startChar": 1,
+        "endLine": 264,
+        "endChar": 2
+      },
+      "revId": "586f2cef4d0ce6a2b6a1e712e3ba2ec1000359a2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4f405d0a_041cdfb4",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 264,
+      "author": {
+        "id": 1132414
+      },
+      "writtenOn": "2021-02-16T18:50:43Z",
+      "side": 1,
+      "message": "I believe these are \"paine\" and \"yuna\"\n\nUnfortunately, this is kinda where we get into \"platform is a mosys implementation detail\" territory...",
+      "range": {
+        "startLine": 264,
+        "startChar": 50,
+        "endLine": 264,
+        "endChar": 77
+      },
+      "revId": "586f2cef4d0ce6a2b6a1e712e3ba2ec1000359a2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

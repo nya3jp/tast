@@ -50,6 +50,24 @@
       "message": "Do you mean, this is temporary workaround?\nCould you add TODO explicitly to remove them when the problem is resolved?",
       "revId": "e247d8acd98dd811d21891c63d759b22cc7c8573",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "02e2a127_b0250761",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 387,
+      "author": {
+        "id": 1454332
+      },
+      "writtenOn": "2021-02-16T09:50:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3ae82147_361fd92b",
+      "revId": "e247d8acd98dd811d21891c63d759b22cc7c8573",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

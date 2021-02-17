@@ -30,24 +30,6 @@ import (
 	"chromiumos/tast/ssh"
 )
 
-const (
-	localRunnerPkg  = "chromiumos/tast/cmd/local_test_runner"  // Go package for local_test_runner
-	remoteRunnerPkg = "chromiumos/tast/cmd/remote_test_runner" // Go package for remote_test_runner
-
-	localBundlePkgPathPrefix  = "chromiumos/tast/local/bundles"  // Go package path prefix for local test bundles
-	remoteBundlePkgPathPrefix = "chromiumos/tast/remote/bundles" // Go package path prefix for remote test bundles
-
-	// localBundleBuildSubdir is a subdirectory used for compiled local test bundles.
-	// Bundles are placed here rather than in the top-level build artifacts dir so that
-	// local and remote bundles with the same name won't overwrite each other.
-	localBundleBuildSubdir = "local_bundles"
-
-	// remoteBundleBuildSubdir is a subdirectory used for compiled remote test bundles.
-	// Bundles are placed here rather than in the top-level build artifacts dir so that
-	// local and remote bundles with the same name won't overwrite each other.
-	remoteBundleBuildSubdir = "remote_bundles"
-)
-
 // Status describes the result of a Run call.
 type Status struct {
 	// ExitCode contains the exit code that should be used by the tast process.
@@ -290,29 +272,29 @@ func buildAll(ctx context.Context, cfg *Config, state *State, hst *ssh.Conn) err
 	// e.g. to compute software dependencies.
 	tgts := []*build.Target{
 		{
-			Pkg:        localRunnerPkg,
+			Pkg:        build.LocalRunnerPkg,
 			Arch:       state.targetArch,
 			Workspaces: cfg.commonWorkspaces(),
-			Out:        filepath.Join(cfg.buildOutDir, state.targetArch, path.Base(localRunnerPkg)),
+			Out:        filepath.Join(cfg.buildOutDir, state.targetArch, path.Base(build.LocalRunnerPkg)),
 		},
 	}
 
 	if cfg.runLocal {
 		tgts = append(tgts, &build.Target{
-			Pkg:        path.Join(localBundlePkgPathPrefix, cfg.buildBundle),
+			Pkg:        path.Join(build.LocalBundlePkgPathPrefix, cfg.buildBundle),
 			Arch:       state.targetArch,
 			Workspaces: cfg.bundleWorkspaces(),
-			Out:        filepath.Join(cfg.buildOutDir, state.targetArch, localBundleBuildSubdir, cfg.buildBundle),
+			Out:        filepath.Join(cfg.buildOutDir, state.targetArch, build.LocalBundleBuildSubdir, cfg.buildBundle),
 		})
 	}
 	if cfg.runRemote {
 		tgts = append(tgts, &build.Target{
-			Pkg:        remoteRunnerPkg,
+			Pkg:        build.RemoteRunnerPkg,
 			Arch:       build.ArchHost,
 			Workspaces: cfg.commonWorkspaces(),
 			Out:        cfg.remoteRunner,
 		}, &build.Target{
-			Pkg:        path.Join(remoteBundlePkgPathPrefix, cfg.buildBundle),
+			Pkg:        path.Join(build.RemoteBundlePkgPathPrefix, cfg.buildBundle),
 			Arch:       build.ArchHost,
 			Workspaces: cfg.bundleWorkspaces(),
 			Out:        filepath.Join(cfg.remoteBundleDir, cfg.buildBundle),
@@ -387,7 +369,7 @@ func pushAll(ctx context.Context, cfg *Config, state *State, hst *ssh.Conn) erro
 		return fmt.Errorf("failed to get data file list: %v", err)
 	}
 	if len(paths) > 0 {
-		pkg := path.Join(localBundlePkgPathPrefix, cfg.buildBundle)
+		pkg := path.Join(build.LocalBundlePkgPathPrefix, cfg.buildBundle)
 		destDir := filepath.Join(cfg.localDataDir, pkg)
 		if err := pushDataFiles(ctx, cfg, hst, destDir, paths); err != nil {
 			return fmt.Errorf("failed to push data files: %v", err)
@@ -404,10 +386,10 @@ func pushExecutables(ctx context.Context, cfg *Config, state *State, hst *ssh.Co
 	// local_test_runner is required even if we are running only remote tests,
 	// e.g. to compute software dependencies.
 	files := map[string]string{
-		filepath.Join(srcDir, path.Base(localRunnerPkg)): cfg.localRunner,
+		filepath.Join(srcDir, path.Base(build.LocalRunnerPkg)): cfg.localRunner,
 	}
 	if cfg.runLocal {
-		files[filepath.Join(srcDir, localBundleBuildSubdir, cfg.buildBundle)] = filepath.Join(cfg.localBundleDir, cfg.buildBundle)
+		files[filepath.Join(srcDir, build.LocalBundleBuildSubdir, cfg.buildBundle)] = filepath.Join(cfg.localBundleDir, cfg.buildBundle)
 	}
 
 	ctx, st := timing.Start(ctx, "push_executables")
@@ -438,7 +420,7 @@ func getDataFilePaths(ctx context.Context, cfg *Config, state *State, hst *ssh.C
 		return nil, err
 	}
 
-	bundlePath := path.Join(localBundlePkgPathPrefix, cfg.buildBundle)
+	bundlePath := path.Join(build.LocalBundlePkgPathPrefix, cfg.buildBundle)
 	seenPaths := make(map[string]struct{})
 	for _, t := range ts {
 		if t.Data == nil {
@@ -475,7 +457,7 @@ func pushDataFiles(ctx context.Context, cfg *Config, hst *ssh.Conn, destDir stri
 
 	cfg.Logger.Log("Pushing data files to target")
 
-	srcDir := filepath.Join(cfg.buildWorkspace, "src", localBundlePkgPathPrefix, cfg.buildBundle)
+	srcDir := filepath.Join(cfg.buildWorkspace, "src", build.LocalBundlePkgPathPrefix, cfg.buildBundle)
 
 	// All paths are relative to the bundle dir.
 	var copyPaths, delPaths, missingPaths []string

@@ -78,7 +78,7 @@ for _, w := range ws {
 
 [ash.GetAllWindows]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/chrome/ash#GetAllWindows
 [chrome.TestAPIConn]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/chrome#Chrome.TestAPIConn
-[ash package documentation]: https://chromium.googlesource.com/chromium/src/+/refs/heads/master/ash/README.md
+[ash package documentation]: https://chromium.googlesource.com/chromium/src/+/HEAD/ash/README.md
 
 ### Checking files
 Similar to the windows the existence or non exsitence of a file might be the needed information to determine if the test was successful.

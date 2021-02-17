@@ -12,7 +12,7 @@
 // shared across different SKUs, "detectors" can also be used to determine capabilities at
 // runtime based on the CPU model and the presence of a Kepler PCI device.
 //
-// See https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/master/chromeos-base/autotest-capability-default/
+// See https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/HEAD/chromeos-base/autotest-capability-default/
 // for more information about autotest-capability.
 package autocaps
 

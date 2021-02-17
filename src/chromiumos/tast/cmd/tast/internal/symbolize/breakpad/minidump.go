@@ -41,7 +41,7 @@ func init() {
 }
 
 // ModuleInfo contains data from a Breakpad symbol file's MODULE record.
-// See https://chromium.googlesource.com/breakpad/breakpad/+/master/docs/symbol_files.md#records-1 for details.
+// See https://chromium.googlesource.com/breakpad/breakpad/+/HEAD/docs/symbol_files.md#records-1 for details.
 type ModuleInfo struct {
 	// OS identifies the operating system on which the executable or shared library was intended to run.
 	OS string
@@ -195,7 +195,7 @@ type mdStreamInfo struct {
 //	0x2c  stream 1 type (4 bytes)
 //	etc.
 //
-// See https://chromium.googlesource.com/breakpad/breakpad/+/master/src/google_breakpad/common/minidump_format.h
+// See https://chromium.googlesource.com/breakpad/breakpad/+/HEAD/src/google_breakpad/common/minidump_format.h
 // for more details.
 func readMinidumpStreamInfo(f *os.File) ([]mdStreamInfo, error) {
 	// First read the stream count.

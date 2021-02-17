@@ -11,7 +11,7 @@ import (
 )
 
 func TestParse(t *testing.T) {
-	// Example from https://chromium.googlesource.com/chromiumos/docs/+/master/lsb-release.md
+	// Example from https://chromium.googlesource.com/chromiumos/docs/+/HEAD/lsb-release.md
 	const data = `# Normal line.
 SOME_KEY=value
 # Key and value with leading/trailing whitespace.

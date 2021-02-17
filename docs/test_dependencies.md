@@ -197,7 +197,7 @@ The following software features are defined:
 [DRM/KMS]: https://www.kernel.org/doc/Documentation/gpu/drm-kms.rst
 [hardware overlays]: https://en.wikipedia.org/wiki/Hardware_overlay
 [Intel Dynamic Platform and Thermal Framework]: https://01.org/intel%C2%AE-dynamic-platform-and-thermal-framework-dptf-chromium-os
-[lacros]: https://chromium.googlesource.com/chromium/src.git/+/master/docs/lacros.md
+[lacros]: https://chromium.googlesource.com/chromium/src.git/+/HEAD/docs/lacros.md
 [sandboxed]: https://chromium.googlesource.com/chromium/src/+/HEAD/docs/linux_sandboxing.md
 [Memory stats collection daemon]: https://chromium.googlesource.com/chromiumos/platform2/+/main/metrics/memd/
 [OCI]: https://www.opencontainers.org/
@@ -379,6 +379,6 @@ vendor name is X”).
 3. The developer writes test(s) with hwdeps in its test metadata using the
    above function in Tast.
 
-[1]: https://source.chromium.org/chromium/infra/infra/+/master:go/src/go.chromium.org/chromiumos/config/proto/chromiumos/config/api/topology.proto
+[1]: https://source.chromium.org/chromium/infra/infra/+/HEAD:go/src/go.chromium.org/chromiumos/config/proto/chromiumos/config/api/topology.proto
 [2]: https://chromium-review.googlesource.com/c/chromiumos/config/+/2249691/4/proto/chromiumos/config/api/topology.proto
 [3]: https://chromium-review.googlesource.com/c/chromiumos/platform/tast/+/2335615

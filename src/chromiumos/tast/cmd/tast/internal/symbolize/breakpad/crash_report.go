@@ -56,7 +56,7 @@ func readField(r *bufio.Reader, delim byte, max int) (string, error) {
 // reader is returned separately without being loaded into memory. All other key/value pairs
 // are returned via a map.
 //
-// See https://chromium.googlesource.com/chromium/src/+/master/components/crash/content/app/breakpad_linux.cc
+// See https://chromium.googlesource.com/chromium/src/+/HEAD/components/crash/content/app/breakpad_linux.cc
 // for more details.
 func ReadCrashReport(r io.Reader) (pairs map[string]string, dumpOffset, dumpLen int, err error) {
 	br := bufio.NewReader(r)

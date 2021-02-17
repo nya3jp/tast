@@ -50,7 +50,7 @@ type Test struct {
 	Contacts []string
 
 	// Attr contains freeform text attributes describing the test.
-	// See https://chromium.googlesource.com/chromiumos/platform/tast/+/master/docs/test_attributes.md
+	// See https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/test_attributes.md
 	// for commonly-used attributes.
 	Attr []string
 
@@ -71,7 +71,7 @@ type Test struct {
 
 	// SoftwareDeps lists software features that are required to run the test.
 	// If any dependencies are not satisfied by the DUT, the test will be skipped.
-	// See https://chromium.googlesource.com/chromiumos/platform/tast/+/master/docs/test_dependencies.md
+	// See https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/test_dependencies.md
 	// for more information about dependencies.
 	SoftwareDeps []string
 

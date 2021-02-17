@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package run
+package devserver
 
 import (
 	"context"
@@ -18,20 +18,20 @@ import (
 	"chromiumos/tast/testutil"
 )
 
-type ephemeralDevserverTestData struct {
-	s        *ephemeralDevserver
+type testData struct {
+	s        *Ephemeral
 	cacheDir string
 	url      string
 	origPath string
 }
 
-func (td *ephemeralDevserverTestData) Close() error {
+func (td *testData) Close() error {
 	os.Setenv("PATH", td.origPath)
 	os.RemoveAll(td.cacheDir)
 	return td.s.Close(context.Background())
 }
 
-func (td *ephemeralDevserverTestData) Get(path string) (string, error) {
+func (td *testData) Get(path string) (string, error) {
 	res, err := http.Get(td.url + path)
 	if err != nil {
 		return "", fmt.Errorf("GET %s failed: %v", path, err)
@@ -49,7 +49,7 @@ func (td *ephemeralDevserverTestData) Get(path string) (string, error) {
 	return string(b), nil
 }
 
-func newEphemeralDevserverTestData(t *testing.T, gsutil string) *ephemeralDevserverTestData {
+func newTestData(t *testing.T, gsutil string) *testData {
 	success := false
 
 	cacheDir := testutil.TempDir(t)
@@ -80,18 +80,18 @@ func newEphemeralDevserverTestData(t *testing.T, gsutil string) *ephemeralDevser
 
 	url := fmt.Sprintf("http://%s", lis.Addr())
 
-	s, err := newEphemeralDevserver(lis, cacheDir, []string{"extra-allowed-bucket"})
+	s, err := NewEphemeral(lis, cacheDir, []string{"extra-allowed-bucket"})
 	if err != nil {
 		t.Fatal("Failed to start the ephemeral devserver: ", err)
 	}
 
 	success = true
-	return &ephemeralDevserverTestData{s, cacheDir, url, origPath}
+	return &testData{s, cacheDir, url, origPath}
 }
 
-// TestEphemeralDevserverCheckHealth checks /check_health returns 200 OK.
-func TestEphemeralDevserverCheckHealth(t *testing.T) {
-	td := newEphemeralDevserverTestData(t, "#!/bin/true")
+// TestCheckHealth checks /check_health returns 200 OK.
+func TestCheckHealth(t *testing.T) {
+	td := newTestData(t, "#!/bin/true")
 	defer td.Close()
 
 	if _, err := td.Get("/check_health"); err != nil {
@@ -99,9 +99,9 @@ func TestEphemeralDevserverCheckHealth(t *testing.T) {
 	}
 }
 
-// TestEphemeralDevserverStage checks stage and download succeed.
-func TestEphemeralDevserverStage(t *testing.T) {
-	td := newEphemeralDevserverTestData(t, `#!/bin/bash
+// TestStage checks stage and download succeed.
+func TestStage(t *testing.T) {
+	td := newTestData(t, `#!/bin/bash
 echo -n "$*" > ${!#}
 `)
 	defer td.Close()
@@ -140,9 +140,9 @@ echo -n "$*" > ${!#}
 	}
 }
 
-// TestEphemeralDevserverNotFound checks an error is returned for missing files.
-func TestEphemeralDevserverNotFound(t *testing.T) {
-	td := newEphemeralDevserverTestData(t, `#!/bin/bash
+// TestNotFound checks an error is returned for missing files.
+func TestNotFound(t *testing.T) {
+	td := newTestData(t, `#!/bin/bash
 echo "No URLs matched" >&2
 exit 1
 `)
@@ -173,7 +173,7 @@ exit 1
 }
 
 func TestValidateGSURL(t *testing.T) {
-	td := newEphemeralDevserverTestData(t, "#!/bin/true")
+	td := newTestData(t, "#!/bin/true")
 	defer td.Close()
 
 	for _, tc := range []struct {

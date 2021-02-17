@@ -16,6 +16,41 @@
       "message": "Thanks. Tentatively +1. I\u0027m curious to see if things work as expected on platforms (e.g. zork) where some models (e.g. ezkinil) have 11ac and others (e.g. morphius) have 11ax.",
       "revId": "fc0657698d11daadb6cf5d779d916aee64fa75fd",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c028e769_e7a9f23f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1132414
+      },
+      "writtenOn": "2021-02-17T19:25:06Z",
+      "side": 1,
+      "message": "sticky +2, modulo the model list for Zork",
+      "revId": "fc0657698d11daadb6cf5d779d916aee64fa75fd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "66c7453f_a1c7f172",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1132414
+      },
+      "writtenOn": "2021-02-17T19:25:06Z",
+      "side": 1,
+      "message": "I bet we need a Model skip-list too, to skip Ezkinil and a few others, similar to Kevin\u0027s Intel-WiFi hwdep.",
+      "parentUuid": "b56f8db3_a4671ba8",
+      "revId": "fc0657698d11daadb6cf5d779d916aee64fa75fd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

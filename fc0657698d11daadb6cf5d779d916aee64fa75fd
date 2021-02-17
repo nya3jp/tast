@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b56f8db3_a4671ba8",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1158184
+      },
+      "writtenOn": "2021-02-17T18:55:15Z",
+      "side": 1,
+      "message": "Thanks. Tentatively +1. I\u0027m curious to see if things work as expected on platforms (e.g. zork) where some models (e.g. ezkinil) have 11ac and others (e.g. morphius) have 11ax.",
+      "revId": "fc0657698d11daadb6cf5d779d916aee64fa75fd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

@@ -153,6 +153,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "563d445b_4c4541eb",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/results.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 599,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-02-17T18:25:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "291395a2_14ab21d6",
+      "range": {
+        "startLine": 597,
+        "startChar": 4,
+        "endLine": 599,
+        "endChar": 5
+      },
+      "revId": "aa2adf01f711201d2be6123120851e607a335103",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "d2a3a8af_20634594",
@@ -214,6 +238,30 @@
       "side": 1,
       "message": "I\u0027m afraid I can\u0027t decide without learning when this special casing is needed. Can you elaborate please?",
       "parentUuid": "24fe68ea_aadf918a",
+      "range": {
+        "startLine": 781,
+        "startChar": 2,
+        "endLine": 782,
+        "endChar": 29
+      },
+      "revId": "aa2adf01f711201d2be6123120851e607a335103",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9f396eb3_c25be18d",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/results.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 782,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-02-17T18:25:43Z",
+      "side": 1,
+      "message": "I think we may get a terminate message while reporting result during following function in processMessages:\n\n\tdefer func() {\n\t\tfor _, state :\u003d range r.currents {\n\t\t\tstate.result.Errors \u003d append(state.result.Errors, EntityError{time.Now(), testing.Error{Reason: incompleteTestMsg}})\n\t\t\tif state.result.Type \u003d\u003d testing.EntityTest {\n\t\t\t\tr.state.failuresCount++\n\t\t\t\tr.streamWriter.write(\u0026state.result, true)\n\t\t\t\tr.reportResult(ctx, \u0026state.result)\n\t\t\t}\n\t\t}\n\t}()\n\nIf we get a terminate in r.reportResult(ctx, \u0026state.result), I don\u0027t see there are better ways for us to return an errUserReqTermination.",
+      "parentUuid": "7dd131aa_1bdc1ca1",
       "range": {
         "startLine": 781,
         "startChar": 2,

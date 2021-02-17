@@ -23,7 +23,7 @@ import (
 const Path = "/etc/lsb-release"
 
 // Keys in /etc/lsb-release. See the following doc for details:
-//  https://chromium.googlesource.com/chromiumos/docs/+/master/os_config.md#LSB
+//  https://chromium.googlesource.com/chromiumos/docs/+/HEAD/os_config.md#LSB
 const (
 	// Board is a key for a board name (e.g. "eve")
 	Board = "CHROMEOS_RELEASE_BOARD"
@@ -112,7 +112,7 @@ func Parse(r io.Reader) (map[string]string, error) {
 	caller.Check(2, allowedPkgs)
 
 	// The format of /etc/lsb-release in Chrome OS is described in the following doc:
-	// https://chromium.googlesource.com/chromiumos/docs/+/master/lsb-release.md
+	// https://chromium.googlesource.com/chromiumos/docs/+/HEAD/lsb-release.md
 	kvs := make(map[string]string)
 	sc := bufio.NewScanner(r)
 	for sc.Scan() {

@@ -35,8 +35,10 @@
 # \bhers\b              - clean
 # man.?in.?the.?middle  - clean
 
-master
-#    - see crbug/1122372
+# master                - see crbug/1122372
+# Found in 2 files used to replicate procfs /devices/ff110000.spi/spi_master
+# src/chromiumos/tast/cmd/tast/internal/run/testdata/ramoops_crash_arm.txt
+# src/chromiumos/tast/cmd/tast/internal/run/testdata/ramoops_crash_x86.txt
 
 # \bmitm\b              - clean
 

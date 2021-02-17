@@ -922,7 +922,7 @@ Per the [Chromium guidelines for third-party code], place
 (appropriately-licensed) data that wasn't created by Chromium developers within
 a `third_party` subdirectory under the `data` directory.
 
-[Chromium guidelines for third-party code]: https://chromium.googlesource.com/chromium/src.git/+/master/docs/adding_to_third_party.md
+[Chromium guidelines for third-party code]: https://chromium.googlesource.com/chromium/src.git/+/HEAD/docs/adding_to_third_party.md
 
 ### External data files
 

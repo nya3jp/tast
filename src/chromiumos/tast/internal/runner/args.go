@@ -412,7 +412,7 @@ type Config struct {
 	SoftwareFeatureDefinitions map[string]string
 	// AutotestCapabilityDir contains the path to a directory containing autotest-capability YAML files used to
 	// define the DUT's capabilities for the purpose of determining which video tests it is able to run.
-	// See https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/master/chromeos-base/autotest-capability-default/
+	// See https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/HEAD/chromeos-base/autotest-capability-default/
 	// and the autocaps package for more information.
 	AutotestCapabilityDir string
 	// DefaultBuildArtifactsURL is the URL of Google Cloud Storage directory, ending with a slash,

@@ -98,7 +98,7 @@ stable.
 [testing.Test]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#Test
 [attributes]: https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/test_attributes.md
 [the mainline group]: https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/test_attributes.md
-[new mainline tests]: https://chrome-internal.googlesource.com/chromeos/chromeos-admin/+/master/doc/tast_add_test.md
+[new mainline tests]: https://chrome-internal.googlesource.com/chromeos/chromeos-admin/+/HEAD/doc/tast_add_test.md
 
 ## Test function
 

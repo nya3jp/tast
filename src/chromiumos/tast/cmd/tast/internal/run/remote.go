@@ -17,20 +17,21 @@ import (
 	"strings"
 	"time"
 
+	"chromiumos/tast/cmd/tast/internal/run/devserver"
 	"chromiumos/tast/internal/bundle"
 	"chromiumos/tast/internal/runner"
 	"chromiumos/tast/internal/timing"
 )
 
 // startEphemeralDevserverForRemoteTests starts an ephemeral devserver for remote tests.
-func startEphemeralDevserverForRemoteTests(ctx context.Context, cfg *Config, state *State) (*ephemeralDevserver, error) {
+func startEphemeralDevserverForRemoteTests(ctx context.Context, cfg *Config, state *State) (*devserver.Ephemeral, error) {
 	lis, err := net.Listen("tcp", "127.0.0.1:0")
 	if err != nil {
 		return nil, fmt.Errorf("failed to listen to a local port: %v", err)
 	}
 
 	cacheDir := filepath.Join(cfg.tastDir, "devserver", "static")
-	es, err := newEphemeralDevserver(lis, cacheDir, cfg.extraAllowedBuckets)
+	es, err := devserver.NewEphemeral(lis, cacheDir, cfg.extraAllowedBuckets)
 	if err != nil {
 		return nil, err
 	}

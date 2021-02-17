@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package run
+// Package devserver provides in-process devserver implementations.
+package devserver
 
 import (
 	"context"
@@ -19,28 +20,23 @@ import (
 	"strings"
 )
 
-// ephemeralDevserverPort is the TCP port number the ephemeral devserver listens on.
-// Real devservers listen on port 8082, so we use a similar but different port
-// to avoid conflict.
-const ephemeralDevserverPort = 28082
-
-// ephemeralDevserver is a minimal devserver implementation using local credentials.
+// Ephemeral is a minimal devserver implementation using local credentials.
 //
 // An ephemeral devserver usually uses SSH reverse port forwarding to accept
 // requests from local_test_runner on the DUT, and proxies requests to other
 // servers such as Google Cloud Storage with proper credentials installed on the
 // host. This allows unprivileged DUTs to access ACL'ed resources, such as
 // private external data files on Google Cloud Storage.
-type ephemeralDevserver struct {
+type Ephemeral struct {
 	server         *http.Server
 	cacheDir       string
 	allowedBuckets map[string]struct{}
 }
 
-// newEphemeralDevserver starts a new ephemeral devserver listening on lis.
+// NewEphemeral starts a new ephemeral devserver listening on lis.
 // Ownership of lis is taken, so the caller must not call lis.Close.
 // A directory is created at cacheDir if it does not exist.
-func newEphemeralDevserver(lis net.Listener, cacheDir string, extraAllowedBuckets []string) (*ephemeralDevserver, error) {
+func NewEphemeral(lis net.Listener, cacheDir string, extraAllowedBuckets []string) (*Ephemeral, error) {
 	defer func() {
 		if lis != nil {
 			lis.Close()
@@ -57,7 +53,7 @@ func newEphemeralDevserver(lis net.Listener, cacheDir string, extraAllowedBucket
 	}
 
 	mux := http.NewServeMux()
-	s := &ephemeralDevserver{
+	s := &Ephemeral{
 		server:         &http.Server{Handler: mux},
 		cacheDir:       cacheDir,
 		allowedBuckets: allowedBuckets,
@@ -76,33 +72,33 @@ func newEphemeralDevserver(lis net.Listener, cacheDir string, extraAllowedBucket
 }
 
 // Close shuts down the ephemeral devserver and releases associated resources.
-func (s *ephemeralDevserver) Close(ctx context.Context) error {
-	return s.server.Shutdown(ctx)
+func (e *Ephemeral) Close(ctx context.Context) error {
+	return e.server.Shutdown(ctx)
 }
 
 // handleIndex serves any requests not matched to any other routes.
-func (s *ephemeralDevserver) handleIndex(w http.ResponseWriter, r *http.Request) {
+func (e *Ephemeral) handleIndex(w http.ResponseWriter, r *http.Request) {
 	io.WriteString(w, "This is an ephemeral devserver provided by Tast.")
 }
 
 // handleCheckHealth serves requests to check the server health.
-func (s *ephemeralDevserver) handleCheckHealth(w http.ResponseWriter, r *http.Request) {
+func (e *Ephemeral) handleCheckHealth(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	io.WriteString(w, "{}")
 }
 
 // handleIsStaged serves requests to check if a file is staged.
-func (s *ephemeralDevserver) handleIsStaged(w http.ResponseWriter, r *http.Request) {
+func (e *Ephemeral) handleIsStaged(w http.ResponseWriter, r *http.Request) {
 	if err := func() error {
 		q := r.URL.Query()
 		// We only allow single file specified in &files=.
 		gsURL := strings.TrimRight(q.Get("archive_url"), "/") + "/" + q.Get("files")
 
-		relPath, err := s.validateGSURL(gsURL)
+		relPath, err := e.validateGSURL(gsURL)
 		if err != nil {
 			return err
 		}
-		savePath := filepath.Join(s.cacheDir, relPath)
+		savePath := filepath.Join(e.cacheDir, relPath)
 
 		if _, err := os.Stat(savePath); err == nil {
 			io.WriteString(w, "True")
@@ -119,17 +115,17 @@ func (s *ephemeralDevserver) handleIsStaged(w http.ResponseWriter, r *http.Reque
 }
 
 // handleStage serves requests to stage (i.e. download and cache) a file.
-func (s *ephemeralDevserver) handleStage(w http.ResponseWriter, r *http.Request) {
+func (e *Ephemeral) handleStage(w http.ResponseWriter, r *http.Request) {
 	if err := func() error {
 		q := r.URL.Query()
 		// We only allow single file specified in &files=.
 		gsURL := strings.TrimRight(q.Get("archive_url"), "/") + "/" + q.Get("files")
 
-		relPath, err := s.validateGSURL(gsURL)
+		relPath, err := e.validateGSURL(gsURL)
 		if err != nil {
 			return err
 		}
-		savePath := filepath.Join(s.cacheDir, relPath)
+		savePath := filepath.Join(e.cacheDir, relPath)
 
 		if _, err := os.Stat(savePath); err == nil {
 			// Already staged.
@@ -140,7 +136,7 @@ func (s *ephemeralDevserver) handleStage(w http.ResponseWriter, r *http.Request)
 			return err
 		}
 
-		tf, err := ioutil.TempFile(s.cacheDir, ".download.")
+		tf, err := ioutil.TempFile(e.cacheDir, ".download.")
 		if err != nil {
 			return err
 		}
@@ -187,7 +183,7 @@ func defaultAllowedBuckets() map[string]struct{} {
 
 // validateGSURL checks if the given Google Cloud Storage URL is a valid and
 // allowed, and returns the path in the URL (without a leading slash).
-func (s *ephemeralDevserver) validateGSURL(gsURL string) (path string, err error) {
+func (e *Ephemeral) validateGSURL(gsURL string) (path string, err error) {
 	p, err := url.Parse(gsURL)
 	if err != nil {
 		return "", fmt.Errorf("failed to parse URL %q: %v", gsURL, err)
@@ -195,7 +191,7 @@ func (s *ephemeralDevserver) validateGSURL(gsURL string) (path string, err error
 	if p.Scheme != "gs" {
 		return "", fmt.Errorf("%q is not a gs:// URL", gsURL)
 	}
-	if _, ok := s.allowedBuckets[p.Host]; !ok {
+	if _, ok := e.allowedBuckets[p.Host]; !ok {
 		return "", fmt.Errorf("%q doesn't use an allowed bucket", gsURL)
 	}
 	if filepath.Clean(p.Path) != p.Path {

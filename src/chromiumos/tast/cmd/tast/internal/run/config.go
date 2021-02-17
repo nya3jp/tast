@@ -325,14 +325,14 @@ func (c *Config) DeriveDefaults() error {
 		setIfEmpty(&c.localBundleDir, "/usr/local/libexec/tast/bundles/local_pushed")
 		setIfEmpty(&c.localDataDir, "/usr/local/share/tast/data_pushed")
 		setIfEmpty(&c.remoteRunner, filepath.Join(c.buildOutDir, build.ArchHost, "remote_test_runner"))
-		setIfEmpty(&c.remoteBundleDir, filepath.Join(c.buildOutDir, build.ArchHost, remoteBundleBuildSubdir))
+		setIfEmpty(&c.remoteBundleDir, filepath.Join(c.buildOutDir, build.ArchHost, build.RemoteBundleBuildSubdir))
 		// Remote data files are read from the source checkout directly.
 		setIfEmpty(&c.remoteDataDir, filepath.Join(c.buildWorkspace, "src"))
 		// Build and run local/remote tests only when the corresponding package exists.
-		if _, err := os.Stat(filepath.Join(c.buildWorkspace, "src", localBundlePkgPathPrefix, c.buildBundle)); err == nil {
+		if _, err := os.Stat(filepath.Join(c.buildWorkspace, "src", build.LocalBundlePkgPathPrefix, c.buildBundle)); err == nil {
 			c.runLocal = true
 		}
-		if _, err := os.Stat(filepath.Join(c.buildWorkspace, "src", remoteBundlePkgPathPrefix, c.buildBundle)); err == nil {
+		if _, err := os.Stat(filepath.Join(c.buildWorkspace, "src", build.RemoteBundlePkgPathPrefix, c.buildBundle)); err == nil {
 			c.runRemote = true
 		}
 		if !c.runLocal && !c.runRemote {

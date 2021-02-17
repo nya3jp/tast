@@ -14,6 +14,7 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 
+	"chromiumos/tast/cmd/tast/internal/build"
 	"chromiumos/tast/testutil"
 )
 
@@ -70,7 +71,7 @@ func TestConfigDeriveDefaultsBuild(t *testing.T) {
 	defer os.RemoveAll(td)
 
 	// Create the local bundle package.
-	if err := os.MkdirAll(filepath.Join(td, "src/platform/tast-tests/src", localBundlePkgPathPrefix, buildBundle), 0755); err != nil {
+	if err := os.MkdirAll(filepath.Join(td, "src/platform/tast-tests/src", build.LocalBundlePkgPathPrefix, buildBundle), 0755); err != nil {
 		t.Fatal("mkdir failed: ", err)
 	}
 
@@ -104,7 +105,7 @@ func TestConfigDeriveDefaultsBuildNonStandardBundle(t *testing.T) {
 	defer os.RemoveAll(td)
 
 	// Create the remote bundle package.
-	if err := os.MkdirAll(filepath.Join(td, "src", remoteBundlePkgPathPrefix, buildBundle), 0755); err != nil {
+	if err := os.MkdirAll(filepath.Join(td, "src", build.RemoteBundlePkgPathPrefix, buildBundle), 0755); err != nil {
 		t.Fatal("mkdir failed: ", err)
 	}
 

@@ -41,6 +41,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "8071e0d2_c5c82b57",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/remote.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-02-17T18:46:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0d4e6ab5_7cfb9937",
+      "range": {
+        "startLine": 25,
+        "startChar": 5,
+        "endLine": 25,
+        "endChar": 39
+      },
+      "revId": "5d78b77399c977074c42e4ef2bd8aeed4566ccea",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "c6eac0ea_adbd3052",
@@ -54,6 +78,30 @@
       "writtenOn": "2021-02-17T07:41:54Z",
       "side": 1,
       "message": "Can you move this to run.go, next to the code starting ephemeral devserver for local tests? Ephemeral devserver is started in run.go instead of local.go, so having this code in remote.go is assymmetric.",
+      "range": {
+        "startLine": 59,
+        "startChar": 1,
+        "endLine": 59,
+        "endChar": 90
+      },
+      "revId": "5d78b77399c977074c42e4ef2bd8aeed4566ccea",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "649d8301_f35f3cd4",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/remote.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-02-17T18:46:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c6eac0ea_adbd3052",
       "range": {
         "startLine": 59,
         "startChar": 1,

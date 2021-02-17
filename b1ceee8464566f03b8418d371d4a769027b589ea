@@ -1,0 +1,205 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "60d904a0_9daf1831",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 21
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-02-17T06:46:02Z",
+      "side": 1,
+      "message": "Thanks for your patience. I have only minor comments.",
+      "revId": "b1ceee8464566f03b8418d371d4a769027b589ea",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bb03a5aa_5ed70c6a",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/local.go",
+        "patchSetId": 21
+      },
+      "lineNbr": 341,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-02-17T06:46:02Z",
+      "side": 1,
+      "message": "We can omit this if we set CheckSoftwareDeps to false; see also my next comment.",
+      "range": {
+        "startLine": 339,
+        "startChar": 0,
+        "endLine": 341,
+        "endChar": 3
+      },
+      "revId": "b1ceee8464566f03b8418d371d4a769027b589ea",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1714ed88_721399fe",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/local.go",
+        "patchSetId": 21
+      },
+      "lineNbr": 358,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-02-17T06:46:02Z",
+      "side": 1,
+      "message": "We can set CheckSoftwareDeps to false since fixtures can\u0027t declare software/hardware dependencies.",
+      "range": {
+        "startLine": 356,
+        "startChar": 6,
+        "endLine": 358,
+        "endChar": 70
+      },
+      "revId": "b1ceee8464566f03b8418d371d4a769027b589ea",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d3f68987_29bd30ad",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/local.go",
+        "patchSetId": 21
+      },
+      "lineNbr": 430,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-02-17T06:46:02Z",
+      "side": 1,
+      "message": "nit: we can omit the capacity part.",
+      "range": {
+        "startLine": 430,
+        "startChar": 57,
+        "endLine": 430,
+        "endChar": 79
+      },
+      "revId": "b1ceee8464566f03b8418d371d4a769027b589ea",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "227d7cc7_f55ea22e",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/local.go",
+        "patchSetId": 21
+      },
+      "lineNbr": 449,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-02-17T06:46:02Z",
+      "side": 1,
+      "message": "ditto",
+      "range": {
+        "startLine": 449,
+        "startChar": 38,
+        "endLine": 449,
+        "endChar": 50
+      },
+      "revId": "b1ceee8464566f03b8418d371d4a769027b589ea",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "09542946_b69790a7",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/local.go",
+        "patchSetId": 21
+      },
+      "lineNbr": 474,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-02-17T06:46:02Z",
+      "side": 1,
+      "message": "nit: How about runLocalTestsForFixture, since the function runs tests depending on a particular remote fixture.",
+      "range": {
+        "startLine": 474,
+        "startChar": 5,
+        "endLine": 474,
+        "endChar": 21
+      },
+      "revId": "b1ceee8464566f03b8418d371d4a769027b589ea",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "608e4dd4_963a1c5e",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_test.go",
+        "patchSetId": 21
+      },
+      "lineNbr": 386,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-02-17T06:46:02Z",
+      "side": 1,
+      "message": "Why don\u0027t we use similar things as other occurrences, i.e.\n\n json.NewEncoder(stdout).Encode(\u0026runner.ListFixturesResult{})",
+      "range": {
+        "startLine": 386,
+        "startChar": 3,
+        "endLine": 386,
+        "endChar": 43
+      },
+      "revId": "b1ceee8464566f03b8418d371d4a769027b589ea",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e3d92e29_f7f3961f",
+        "filename": "src/chromiumos/tast/internal/rpc/client.go",
+        "patchSetId": 21
+      },
+      "lineNbr": 77,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-02-17T06:46:02Z",
+      "side": 1,
+      "message": "nit: \"DialRemote\" sounds like dialing to a remote host.\n\n(I know the underlying mistake was to use the words local/remote, relative adjectives....)\n\nIt would be nice to pick a different word than \"remote\". Examples: DialHost, DialExec?",
+      "range": {
+        "startLine": 77,
+        "startChar": 5,
+        "endLine": 77,
+        "endChar": 15
+      },
+      "revId": "b1ceee8464566f03b8418d371d4a769027b589ea",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "21a82bc0_d306a611",
+        "filename": "src/chromiumos/tast/internal/rpc/client.go",
+        "patchSetId": 21
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-02-17T06:46:02Z",
+      "side": 1,
+      "message": "We have to call Wait even if Kill failed in order to release resources associated with the subprocess.",
+      "range": {
+        "startLine": 95,
+        "startChar": 2,
+        "endLine": 95,
+        "endChar": 13
+      },
+      "revId": "b1ceee8464566f03b8418d371d4a769027b589ea",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

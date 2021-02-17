@@ -16,6 +16,29 @@
       "message": "+1 for formatting and implementation. I did not review the actual included boards.",
       "revId": "de118e5d4850d11af4a6c928d9b6e844961f2d2c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0ad6548e_6b24cbf6",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 280,
+      "author": {
+        "id": 1158184
+      },
+      "writtenOn": "2021-02-17T04:44:30Z",
+      "side": 1,
+      "message": "I think drallion has AX201",
+      "range": {
+        "startLine": 280,
+        "startChar": 3,
+        "endLine": 280,
+        "endChar": 11
+      },
+      "revId": "de118e5d4850d11af4a6c928d9b6e844961f2d2c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

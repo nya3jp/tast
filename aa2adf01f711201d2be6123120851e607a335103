@@ -131,6 +131,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "291395a2_14ab21d6",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/results.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 599,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-02-17T07:30:42Z",
+      "side": 1,
+      "message": "PS6 still makes inconsistency between 1 vs. 2/3.\n\nI think we should align to what we have today within Tast. If F20 spec doesn\u0027t want us to report results after termination, tast_rtd can filter results. But anyway, I\u0027m optimistic that TLW should allow results after termination since termination support is optional IIUC.",
+      "parentUuid": "49c6e523_b69edbe8",
+      "range": {
+        "startLine": 597,
+        "startChar": 4,
+        "endLine": 599,
+        "endChar": 5
+      },
+      "revId": "aa2adf01f711201d2be6123120851e607a335103",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "d2a3a8af_20634594",
         "filename": "src/chromiumos/tast/cmd/tast/internal/run/results.go",
         "patchSetId": 4
@@ -166,6 +190,30 @@
       "side": 1,
       "message": "How about I add a check for err \u003d\u003d nil?",
       "parentUuid": "d2a3a8af_20634594",
+      "range": {
+        "startLine": 781,
+        "startChar": 2,
+        "endLine": 782,
+        "endChar": 29
+      },
+      "revId": "aa2adf01f711201d2be6123120851e607a335103",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7dd131aa_1bdc1ca1",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/results.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 782,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-02-17T07:30:42Z",
+      "side": 1,
+      "message": "I\u0027m afraid I can\u0027t decide without learning when this special casing is needed. Can you elaborate please?",
+      "parentUuid": "24fe68ea_aadf918a",
       "range": {
         "startLine": 781,
         "startChar": 2,

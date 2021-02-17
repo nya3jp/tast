@@ -21,6 +21,7 @@ import (
 
 	"chromiumos/tast/cmd/tast/internal/build"
 	"chromiumos/tast/cmd/tast/internal/logging"
+	"chromiumos/tast/cmd/tast/internal/run/devserver"
 	"chromiumos/tast/internal/command"
 	"chromiumos/tast/internal/dep"
 	"chromiumos/tast/internal/planner"
@@ -142,7 +143,7 @@ type State struct {
 	startedRun         bool                       // true if we got to the point where we started trying to execute tests
 	initBootID         string                     // boot_id at the initial SSH connection
 	hst                *ssh.Conn                  // cached SSH connection to DUT; may be nil
-	ephemeralDevserver *ephemeralDevserver        // cached devserver; may be nil
+	ephemeralDevserver *devserver.Ephemeral       // cached devserver; may be nil
 	initialSysInfo     *runner.SysInfoState       // initial state of system info (logs, crashes, etc.) on DUT before testing
 	softwareFeatures   *dep.SoftwareFeatures      // software features of the DUT
 	deviceConfig       *device.Config             // hardware features of the DUT. Deprecated. Use hardwareFeatures instead.

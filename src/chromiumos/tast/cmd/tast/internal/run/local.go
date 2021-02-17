@@ -18,6 +18,7 @@ import (
 
 	"github.com/golang/protobuf/ptypes"
 
+	"chromiumos/tast/cmd/tast/internal/run/devserver"
 	"chromiumos/tast/ctxutil"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/bundle"
@@ -37,6 +38,11 @@ const (
 
 	defaultLocalRunnerWaitTimeout = 10 * time.Second // default timeout for waiting for local_test_runner to exit
 	heartbeatInterval             = time.Second      // interval for heartbeat messages
+
+	// localEphemeralDevserverPort is the TCP port number the ephemeral devserver listens on.
+	// Real devservers listen on port 8082, so we use a similar but different port
+	// to avoid conflict.
+	localEphemeralDevserverPort = 28082
 )
 
 // connectToTarget establishes an SSH connection to the target specified in cfg.
@@ -666,13 +672,13 @@ func formatBytes(bytes int64) string {
 func startEphemeralDevserverForLocalTests(ctx context.Context, hst *ssh.Conn, cfg *Config, state *State) error {
 	closeEphemeralDevserver(ctx, state) // ignore errors; this may rely on a now-dead SSH connection
 
-	lis, err := hst.ListenTCP(&net.TCPAddr{IP: net.IPv4(127, 0, 0, 1), Port: ephemeralDevserverPort})
+	lis, err := hst.ListenTCP(&net.TCPAddr{IP: net.IPv4(127, 0, 0, 1), Port: localEphemeralDevserverPort})
 	if err != nil {
 		return fmt.Errorf("failed to reverse-forward a port: %v", err)
 	}
 
 	cacheDir := filepath.Join(cfg.tastDir, "devserver", "static")
-	es, err := newEphemeralDevserver(lis, cacheDir, cfg.extraAllowedBuckets)
+	es, err := devserver.NewEphemeral(lis, cacheDir, cfg.extraAllowedBuckets)
 	if err != nil {
 		return err
 	}
@@ -682,7 +688,7 @@ func startEphemeralDevserverForLocalTests(ctx context.Context, hst *ssh.Conn, cf
 	return nil
 }
 
-// closeEphemeralDevserver closes and resets cfg.ephemeralDevserver if non-nil.
+// closeEphemeralDevserver closes and resets cfg.EphemeralDevserver if non-nil.
 func closeEphemeralDevserver(ctx context.Context, state *State) error {
 	var err error
 	if state.ephemeralDevserver != nil {

@@ -51,6 +51,24 @@
       "parentUuid": "b56f8db3_a4671ba8",
       "revId": "fc0657698d11daadb6cf5d779d916aee64fa75fd",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3629fc19_9bfcb7e0",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1158184
+      },
+      "writtenOn": "2021-02-18T01:53:08Z",
+      "side": 1,
+      "message": "Maybe. I suppose the SkipOnModel hammer will work, but my (very very limited and very possibly incorrect) understanding is that the \"dut.hardware_features.wifi.supported_wlan_protocols.exists(x, x \u003d\u003d api.Component.Wifi.WLANProtocol.IEEE_802_11_AX)\" test would also play a role for some of them. Though maybe only in the lab if everything is well configured, not sure on local devices.",
+      "parentUuid": "66c7453f_a1c7f172",
+      "revId": "fc0657698d11daadb6cf5d779d916aee64fa75fd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

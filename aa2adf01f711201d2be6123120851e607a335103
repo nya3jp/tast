@@ -270,6 +270,30 @@
       },
       "revId": "aa2adf01f711201d2be6123120851e607a335103",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "69da7eed_ee2aa0c7",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/results.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 782,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-02-18T02:13:41Z",
+      "side": 1,
+      "message": "Now I see, thanks for explanation. Yes, it makes sense to return errUserReqTermination when we see termination signal in this phase.\n\nThen how about moving this code to the defer statement so that related code come closer? That is:\n\n defer func()\n   for _, state :\u003d range r.currents {\n     ...\n   }\n   // reportResult may have observed termination requests.\n   if rh.terminate \u0026\u0026 err \u003d\u003d nil {\n     err \u003d errUserReqTermination\n   }\n }()",
+      "parentUuid": "9f396eb3_c25be18d",
+      "range": {
+        "startLine": 781,
+        "startChar": 2,
+        "endLine": 782,
+        "endChar": 29
+      },
+      "revId": "aa2adf01f711201d2be6123120851e607a335103",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

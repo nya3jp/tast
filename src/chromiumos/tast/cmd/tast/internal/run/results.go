@@ -29,6 +29,7 @@ import (
 const (
 	// These paths are relative to Config.ResDir.
 	resultsFilename         = "results.json"           // file containing JSON array of EntityResult objects
+	resultsXMLFilename      = "results.xml"            // file containing test results in JUnit XML format
 	streamedResultsFilename = "streamed_results.jsonl" // file containing stream of newline-separated JSON EntityResult objects
 	systemLogsDir           = "system_logs"            // dir containing DUT's system logs
 	crashesDir              = "crashes"                // dir containing DUT's crashes

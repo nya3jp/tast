@@ -87,6 +87,24 @@
       "parentUuid": "3629fc19_9bfcb7e0",
       "revId": "fc0657698d11daadb6cf5d779d916aee64fa75fd",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "fe3c779f_15141bfd",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1158184
+      },
+      "writtenOn": "2021-02-18T22:20:57Z",
+      "side": 1,
+      "message": "\u003e (I still don\u0027t understand these newfangled/incomplete hwdep abstractions.)\n\nSame, I think I have an idea but it\u0027s definitely not completely clear :-)\n\n\u003e We can always give it a try without, and see what happens.\n\nYep, let\u0027s go for it. That\u0027s what I meant by \"I\u0027m curious to see\"",
+      "parentUuid": "90a8277c_b22b2703",
+      "revId": "fc0657698d11daadb6cf5d779d916aee64fa75fd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

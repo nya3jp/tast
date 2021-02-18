@@ -71,3 +71,12 @@ func SoftwareDeps(t *gotesting.T, f TestFilter, requiredDeps []string) {
 		}
 	}
 }
+
+// PreAndFixture checks that tests matched by f declare preconditions adn fixtures which are accepted by check function.
+func PreAndFixture(t *gotesting.T, f TestFilter, check func(pre testing.Precondition, fixture string) error) {
+	for _, tst := range getTests(t, f) {
+		if err := check(tst.Pre, tst.Fixture); err != nil {
+			t.Errorf("%s: wrong precondition or fixture: %s", tst.Name, err)
+		}
+	}
+}

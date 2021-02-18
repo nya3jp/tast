@@ -69,6 +69,24 @@
       "parentUuid": "66c7453f_a1c7f172",
       "revId": "fc0657698d11daadb6cf5d779d916aee64fa75fd",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "90a8277c_b22b2703",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1132414
+      },
+      "writtenOn": "2021-02-18T19:40:53Z",
+      "side": 1,
+      "message": "Oh, good point. I\u0027ll revert back to cluelessness then. (I still don\u0027t understand these newfangled/incomplete hwdep abstractions.) We can always give it a try without, and see what happens.",
+      "parentUuid": "3629fc19_9bfcb7e0",
+      "revId": "fc0657698d11daadb6cf5d779d916aee64fa75fd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

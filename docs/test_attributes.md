@@ -40,6 +40,8 @@ Below is the list of most popular groups and their associated extra attributes:
     Its sub-attributes can be classified into two types:
     *  Role (required): specify the role of the test:
        *  `wificell_func`: verify basic WiFi functionalities nightly.
+       *  `wificell_suspend`: verify basic WiFi behavior related to
+          suspend/resume nightly.
        *  `wificell_cq`: Similar to wificell_func, but triggered by CLs that
           touch specific code paths.
        *  `wificell_perf`: measure WiFi performance.

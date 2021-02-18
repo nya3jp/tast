@@ -16,6 +16,46 @@
       "message": "Feedback has been addressed. Please review. Thanks.",
       "revId": "cbe74fdbc8857479f492aab8137d9f0e779e9618",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "dd137e5d_734e0977",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 10
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-02-18T02:17:19Z",
+      "side": 1,
+      "message": "LGTM with one request. Thanks!\n",
+      "revId": "cbe74fdbc8857479f492aab8137d9f0e779e9618",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b67cad59_d19284fa",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run.go",
+        "patchSetId": 10
+      },
+      "lineNbr": 150,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-02-18T02:17:19Z",
+      "side": 1,
+      "message": "Let us make these two setup aligned. Just like:\n\n if cfg.tlwServer \u003d\u003d \"\" \u0026\u0026 cfg.useEphemeralDevserver {\n   if cfg.runLocal \u0026\u0026 len(state.localDevservers) \u003d\u003d 0 {\n     // start local devserver...\n   }\n   if cfg.runRemote \u0026\u0026 len(state.remoteDevservers) \u003d\u003d 0 {\n     // start remote devserver...\n   }\n }",
+      "range": {
+        "startLine": 150,
+        "startChar": 4,
+        "endLine": 150,
+        "endChar": 90
+      },
+      "revId": "cbe74fdbc8857479f492aab8137d9f0e779e9618",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

@@ -16,6 +16,69 @@
       "message": "Feedback has been addressed. Please review. Thanks.",
       "revId": "8891b449608a60df067236aaabc5c3f238e8b607",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "bf62f009_b6fc293e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 8
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-02-18T02:49:32Z",
+      "side": 1,
+      "message": "Thanks! LGTM with nits.\n",
+      "revId": "8891b449608a60df067236aaabc5c3f238e8b607",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b5fe7a27_722e42e2",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/results.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 603,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-02-18T02:49:32Z",
+      "side": 1,
+      "message": "I see a tab here :)",
+      "range": {
+        "startLine": 603,
+        "startChar": 33,
+        "endLine": 603,
+        "endChar": 34
+      },
+      "revId": "8891b449608a60df067236aaabc5c3f238e8b607",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "de790140_bc436a63",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/results.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 785,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-02-18T02:49:32Z",
+      "side": 1,
+      "message": "We can inline rh.processMessage call (see the base)",
+      "range": {
+        "startLine": 784,
+        "startChar": 1,
+        "endLine": 785,
+        "endChar": 31
+      },
+      "revId": "8891b449608a60df067236aaabc5c3f238e8b607",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

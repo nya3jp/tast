@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c337164b_2641587d",
+        "filename": "src/chromiumos/tast/internal/testing/attr.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 267,
+      "author": {
+        "id": 1487074
+      },
+      "writtenOn": "2021-02-18T10:11:51Z",
+      "side": 1,
+      "message": "I\u0027m not sure if it is better to have this an optional attribute like wificell_unstable. I think the test \"suites\" other than wificell_func probably won\u0027t separate the suspend/resume case so I think this is simpler to have this as another \"suite\" instead of a \"property\".\n\n@Dean, WDYT?",
+      "revId": "1beaf83558a1a2199a787fe84825de7b412e45ef",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

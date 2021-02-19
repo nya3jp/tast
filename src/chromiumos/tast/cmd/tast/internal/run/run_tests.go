@@ -106,7 +106,7 @@ func findTestsForShard(ctx context.Context, cfg *Config, state *State) (testsToR
 
 // listRunnableTests finds runnable tests that fit the cfg.Patterns.
 func listRunnableTests(ctx context.Context, cfg *Config, state *State) (testsToInclude, testsToSkip []*EntityResult, err error) {
-	tests, err := listTests(ctx, cfg, state)
+	tests, err := listAllTests(ctx, cfg, state)
 	if err != nil {
 		return nil, nil, errors.Wrapf(err, "cannot list tests for patterns %q", cfg.Patterns)
 	}

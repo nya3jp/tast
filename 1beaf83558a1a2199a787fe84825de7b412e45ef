@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "44d2b691_4ef46f0e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1487074
+      },
+      "writtenOn": "2021-02-19T05:32:21Z",
+      "side": 1,
+      "message": "Thanks for noticing, I\u0027ll update the doc after the discussion/decision is finalized.",
+      "parentUuid": "ea6c364f_491c936e",
+      "revId": "1beaf83558a1a2199a787fe84825de7b412e45ef",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "c337164b_2641587d",
@@ -49,6 +67,24 @@
       "side": 1,
       "message": "Make it an optional attribute is fine. However, it should be named \"wificell_suspend\".\n\nAnother thing comes in my mind is that we have \"wificell_stress\". All (or most of) the stress tests have suspend/resume action, right? I\u0027m not sure if it is a good idea to merge the two attributes.",
       "parentUuid": "c337164b_2641587d",
+      "revId": "1beaf83558a1a2199a787fe84825de7b412e45ef",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d67888eb_d18dcbbf",
+        "filename": "src/chromiumos/tast/internal/testing/attr.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 267,
+      "author": {
+        "id": 1487074
+      },
+      "writtenOn": "2021-02-19T05:32:21Z",
+      "side": 1,
+      "message": "I prefer having it as a separate suite so I\u0027ll keep it as is.\n\nFor wificell_stress reuse, I think we still want to separate the two, because we probably don\u0027t want to run stress tests (which usually takes hours) in wifi_matfunc/AVL.",
+      "parentUuid": "db5da1c9_29975577",
       "revId": "1beaf83558a1a2199a787fe84825de7b412e45ef",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }

@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "76230883_55b95151",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-02-19T19:59:44Z",
+      "side": 1,
+      "message": "This CL is part of effort to support sharding in CQ. I will work on tast.py and control files in different crbug and CL. Please review. Thanks.",
+      "revId": "bb97993f72ac3d3fca27ba6aae23bdbac9806958",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

@@ -1,6 +1,23 @@
 {
   "comments": [
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "ea6c364f_491c936e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1001853
+      },
+      "writtenOn": "2021-02-19T05:23:07Z",
+      "side": 1,
+      "message": "Thanks for doing this. Don\u0027t forget to update the document https://source.corp.google.com/chromeos_public/src/platform/tast/docs/test_attributes.md",
+      "revId": "1beaf83558a1a2199a787fe84825de7b412e45ef",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "c337164b_2641587d",
@@ -14,6 +31,24 @@
       "writtenOn": "2021-02-18T10:11:51Z",
       "side": 1,
       "message": "I\u0027m not sure if it is better to have this an optional attribute like wificell_unstable. I think the test \"suites\" other than wificell_func probably won\u0027t separate the suspend/resume case so I think this is simpler to have this as another \"suite\" instead of a \"property\".\n\n@Dean, WDYT?",
+      "revId": "1beaf83558a1a2199a787fe84825de7b412e45ef",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "db5da1c9_29975577",
+        "filename": "src/chromiumos/tast/internal/testing/attr.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 267,
+      "author": {
+        "id": 1001853
+      },
+      "writtenOn": "2021-02-19T05:23:07Z",
+      "side": 1,
+      "message": "Make it an optional attribute is fine. However, it should be named \"wificell_suspend\".\n\nAnother thing comes in my mind is that we have \"wificell_stress\". All (or most of) the stress tests have suspend/resume action, right? I\u0027m not sure if it is a good idea to merge the two attributes.",
+      "parentUuid": "c337164b_2641587d",
       "revId": "1beaf83558a1a2199a787fe84825de7b412e45ef",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }

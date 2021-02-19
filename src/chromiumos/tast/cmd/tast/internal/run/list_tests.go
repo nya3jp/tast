@@ -15,6 +15,18 @@ import (
 
 // listTests returns the whole tests to run.
 func listTests(ctx context.Context, cfg *Config, state *State) ([]*EntityResult, error) {
+	testsToRun, testsToSkip, _, err := findTestsForShard(ctx, cfg, state)
+	if err != nil {
+		return nil, err
+	}
+	if cfg.shardIndex == 0 {
+		testsToRun = append(testsToRun, testsToSkip...)
+	}
+	return testsToRun, nil
+}
+
+// listAllTests returns the whole tests whether they will be skipped or not..
+func listAllTests(ctx context.Context, cfg *Config, state *State) ([]*EntityResult, error) {
 	var tests []testing.EntityWithRunnabilityInfo
 	if cfg.runLocal {
 		hst, err := connectToTarget(ctx, cfg, state)

@@ -16,6 +16,24 @@
       "message": "Could you avoid using platform in new code?\n\ncrbug.com/1124372\n\nMaybe can they translate to Model?",
       "revId": "b6e9c4b639c9c1efcea72d559fbd1c2411292962",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d6fe15fd_f6dfeb86",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 267,
+      "author": {
+        "id": 1432127
+      },
+      "writtenOn": "2021-02-22T21:48:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "27f8b3a2_2d6718df",
+      "revId": "b6e9c4b639c9c1efcea72d559fbd1c2411292962",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

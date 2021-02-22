@@ -34,6 +34,24 @@
       "parentUuid": "27f8b3a2_2d6718df",
       "revId": "b6e9c4b639c9c1efcea72d559fbd1c2411292962",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0d58b85f_5b3645d5",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 267,
+      "author": {
+        "id": 1158184
+      },
+      "writtenOn": "2021-02-22T22:12:41Z",
+      "side": 1,
+      "message": "I don\u0027t think that\u0027s right. A list of individual models is going to be completely unmanageable, we\u0027ll just keep adding new models all the time.\nI think we should stick to Platform until https://bugs.chromium.org/p/chromium/issues/detail?id\u003d1070299 has been implemented. It\u0027s painful enough to micro-manage all the platforms and some models, maintaining a full list of models is not reasonably feasible",
+      "parentUuid": "d6fe15fd_f6dfeb86",
+      "revId": "b6e9c4b639c9c1efcea72d559fbd1c2411292962",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

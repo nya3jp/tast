@@ -34,6 +34,23 @@
       "parentUuid": "24cc668c_a1ed2009",
       "revId": "73d55b363131e5af49f08a910cf8e62a8cf37020",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6f028605_9a720558",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 7
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-02-22T05:26:17Z",
+      "side": 1,
+      "message": "cc: yamaguchi for hwdep expertise.\n",
+      "revId": "73d55b363131e5af49f08a910cf8e62a8cf37020",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

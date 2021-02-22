@@ -87,6 +87,24 @@
       "parentUuid": "db5da1c9_29975577",
       "revId": "1beaf83558a1a2199a787fe84825de7b412e45ef",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "278965cf_5f8bd488",
+        "filename": "src/chromiumos/tast/internal/testing/attr.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 267,
+      "author": {
+        "id": 1001853
+      },
+      "writtenOn": "2021-02-22T02:59:44Z",
+      "side": 1,
+      "message": "Yes you are right. Attribute wificell_suspend and wificell_stress should be different. Do you agree to rename it to wificell_suspend?",
+      "parentUuid": "d67888eb_d18dcbbf",
+      "revId": "1beaf83558a1a2199a787fe84825de7b412e45ef",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

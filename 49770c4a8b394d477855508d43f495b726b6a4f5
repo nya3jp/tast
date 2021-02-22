@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0a123abd_cc9acfc7",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-02-22T05:24:32Z",
+      "side": 1,
+      "message": "Let me wait for discussion in crrev.com/c/2703561 to settle.\n",
+      "revId": "49770c4a8b394d477855508d43f495b726b6a4f5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

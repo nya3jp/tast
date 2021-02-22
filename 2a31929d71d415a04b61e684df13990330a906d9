@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "28f71a8f_b9076bca",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/junit_results.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-02-22T08:18:50Z",
+      "side": 1,
+      "message": "What package location would this file fit the best?\n- chromiumos/tast/cmd/tast/internal/run/junitxml\n- chromiumos/tast/cmd/tast/internal/junitxml\n- or somewhere else?",
+      "revId": "2a31929d71d415a04b61e684df13990330a906d9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

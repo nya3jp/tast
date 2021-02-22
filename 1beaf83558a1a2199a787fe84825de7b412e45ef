@@ -36,6 +36,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "509aebad_203fb18c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1487074
+      },
+      "writtenOn": "2021-02-22T03:16:56Z",
+      "side": 1,
+      "message": "Done.",
+      "parentUuid": "44d2b691_4ef46f0e",
+      "revId": "1beaf83558a1a2199a787fe84825de7b412e45ef",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "c337164b_2641587d",
@@ -103,6 +121,24 @@
       "side": 1,
       "message": "Yes you are right. Attribute wificell_suspend and wificell_stress should be different. Do you agree to rename it to wificell_suspend?",
       "parentUuid": "d67888eb_d18dcbbf",
+      "revId": "1beaf83558a1a2199a787fe84825de7b412e45ef",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d8d028e5_0087a738",
+        "filename": "src/chromiumos/tast/internal/testing/attr.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 267,
+      "author": {
+        "id": 1487074
+      },
+      "writtenOn": "2021-02-22T03:16:56Z",
+      "side": 1,
+      "message": "Rename it to wificell_suspend. I had it wificell_func_suspend to somehow imply it is in wifi_matfunc, but maybe it is not necessary.",
+      "parentUuid": "278965cf_5f8bd488",
       "revId": "1beaf83558a1a2199a787fe84825de7b412e45ef",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }

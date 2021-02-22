@@ -22,6 +22,30 @@
       },
       "revId": "a6c457abd42aa51b6ee5c743985d98c594780c3f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "909e7bb8_8e5a4148",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1411497
+      },
+      "writtenOn": "2021-02-22T01:50:02Z",
+      "side": 1,
+      "message": "I added the explanation.",
+      "parentUuid": "c79b84b1_34249bf1",
+      "range": {
+        "startLine": 8,
+        "startChar": 0,
+        "endLine": 8,
+        "endChar": 0
+      },
+      "revId": "a6c457abd42aa51b6ee5c743985d98c594780c3f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

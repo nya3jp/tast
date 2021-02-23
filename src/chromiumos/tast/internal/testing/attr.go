@@ -344,6 +344,21 @@ Meta tests should be a subset of mainline critical tests.
 		Contacts: []string{"chromeos-sw-engprod@google.com"},
 		Desc:     `A group of tests that test Nearby Share functionality.`,
 	},
+	{
+		Name:     "paper-io",
+		Contacts: []string{"project-bolton@google.com"},
+		Desc:     `A group of tests that test printing and scanning functionality.`,
+		Subattrs: []*attr{
+			{
+				Name: "printing",
+				Desc: `Printing tests.`,
+			},
+			{
+				Name: "scanning",
+				Desc: `Scanning tests.`,
+			},
+		},
+	},
 }
 
 // validGroupMap is the name-keyed map of validGroups.

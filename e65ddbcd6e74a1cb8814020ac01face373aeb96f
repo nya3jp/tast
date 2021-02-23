@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "21071dbd_a6ae5a5c",
+        "filename": "src/chromiumos/tast/internal/testing/attr.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 348,
+      "author": {
+        "id": 1192536
+      },
+      "writtenOn": "2021-02-23T17:19:18Z",
+      "side": 1,
+      "message": "Sweet, we\u0027re officially visible in the code now.",
+      "revId": "e65ddbcd6e74a1cb8814020ac01face373aeb96f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

@@ -161,6 +161,7 @@ func main() {
 			"ocr":                "ocr",
 			"plugin_vm":          "pita", // boards that can run Plugin VM.
 			"proprietary_codecs": "chrome_internal || chrome_media",
+			"protected_content":  "cdm_factory_daemon",
 			"pstore":             "!betty && !tast_vm", // These boards don't support pstore: https://crbug.com/971899
 			"qemu":               "betty || tast_vm",
 			"racc":               "racc",

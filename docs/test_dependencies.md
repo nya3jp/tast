@@ -134,6 +134,8 @@ The following software features are defined:
 *   `proprietary_codecs` - Indicates if Chrome supports proprietary video
     codecs (e.g. H.264). This is supported by Chrome official builds and Chromium
     builds with the |propietary_codecs| build flag set.
+*   `protected_content` - Platform has HW backed OEMCrypto implementation for Widevine
+    L1 HW DRM.
 *   `qemu` - For tests exclusive to Chrome OS QEMU images.
 *   `racc` - Whether [Runtime AVL Compliance Check] is available.
 *   `reboot` - The ability to reboot reliably during a remote test.

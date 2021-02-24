@@ -32,7 +32,11 @@ Below is the list of most popular groups and their associated extra attributes:
 *   `group:crosbolt` - Test failures are ignored and the test's performance data
     are uploaded to [crosbolt]. When you add this attribute, you also need to
     add one of `crosbolt_perbuild`, `crosbolt_nightly` or `crosbolt_weekly`.
-*   `group:wificell` - Tests that depends on [wificell] fixture to run.
+*   `group:wificell` - Tests that will run on the [wificell] fixture. Typically
+    those tests require special hardware (APs, ...) only available in those
+    fixtures. Some WiFi-specific functional tests that do not technically
+    require a [wificell] are also made part of this group for consistency to
+    simplify the validation of the whole WiFi stack.
     Its sub-attributes can be classified into two types:
     *  Role (required): specify the role of the test:
        *  `wificell_func`: verify basic WiFi functionalities nightly.

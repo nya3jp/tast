@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c07966d3_af63abc3",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 7
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2021-02-24T13:43:54Z",
+      "side": 1,
+      "message": "Because it is related to HWDeps + infra, I\u0027d like yamaguchi-san to jump in the discussion,\nsince it\u0027s one of his primary scopes.",
+      "revId": "e072df5ead365755d57c1508e8605514ea1ee6b9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

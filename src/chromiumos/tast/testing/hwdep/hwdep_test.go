@@ -276,6 +276,49 @@ func TestFingerprint(t *testing.T) {
 		true)
 }
 
+func TestNoFingerprint(t *testing.T) {
+	c := NoFingerprint()
+
+	for _, tc := range []struct {
+		Fingerprint     configpb.HardwareFeatures_Fingerprint_Location
+		expectSatisfied bool
+	}{
+		{configpb.HardwareFeatures_Fingerprint_NOT_PRESENT, true},
+		{configpb.HardwareFeatures_Fingerprint_LOCATION_UNKNOWN, false},
+	} {
+		verifyCondition(
+			t, c,
+			&device.Config{
+				Id: &device.ConfigId{
+					PlatformId: &device.PlatformId{
+						Value: "fake_platform",
+					},
+				},
+			},
+			&configpb.HardwareFeatures{
+				Fingerprint: &configpb.HardwareFeatures_Fingerprint{
+					Location: tc.Fingerprint,
+				},
+			},
+			tc.expectSatisfied)
+	}
+
+	verifyCondition(
+		t, c,
+		&device.Config{
+			Id: &device.ConfigId{
+				PlatformId: &device.PlatformId{
+					Value: "fake_platform",
+				},
+			},
+			HardwareFeatures: []device.Config_HardwareFeature{
+				device.Config_HARDWARE_FEATURE_FINGERPRINT,
+			},
+		},
+		nil,
+		false)
+}
+
 func TestInternalDisplay(t *testing.T) {
 	c := InternalDisplay()
 
@@ -359,6 +402,7 @@ func TestCEL(t *testing.T) {
 		{D(SkipOnPlatform("platform_id1", "platform_id2")), "not_implemented"},
 		{D(TouchScreen()), "dut.hardware_features.screen.touch_support == api.HardwareFeatures.Present.PRESENT"},
 		{D(Fingerprint()), "dut.hardware_features.fingerprint.location != api.HardwareFeatures.Fingerprint.Location.NOT_PRESENT"},
+		{D(NoFingerprint()), "dut.hardware_features.fingerprint.location == api.HardwareFeatures.Fingerprint.Location.NOT_PRESENT"},
 		{D(InternalDisplay()), "dut.hardware_features.screen.panel_properties.diagonal_milliinch != 0"},
 		{D(Wifi80211ac()), "dut.hardware_features.wifi.supported_wlan_protocols.exists(x, x == api.Component.Wifi.WLANProtocol.IEEE_802_11_AC)"},
 		{D(Wifi80211ax()), "dut.hardware_features.wifi.supported_wlan_protocols.exists(x, x == api.Component.Wifi.WLANProtocol.IEEE_802_11_AX)"},

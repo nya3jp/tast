@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4acde1f7_987f53d9",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 309,
+      "author": {
+        "id": 1360284
+      },
+      "writtenOn": "2021-02-24T19:51:57Z",
+      "side": 1,
+      "message": "It looks like boards under the platform \"scarlet\" actually report their platform as \"gru\", which is the codename for the SOC. I checked `mosys platform name` on each scarlet model in our labs (dru, druwl, and dumo), and each of them reports \"gru\". They all have QCA wifi as well, so replacing scarlet with gru seems safe. After adding gru, the test is correctly skipping on scarlet devices.\n\nThe other platforms with the gru soc are bob and kevin, but they both report their respective platform names instead of \"gru\".",
+      "range": {
+        "startLine": 309,
+        "startChar": 27,
+        "endLine": 309,
+        "endChar": 32
+      },
+      "revId": "a2cb4b837a8d88ac756823924791ac0f65efa5b7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

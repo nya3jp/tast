@@ -16,6 +16,24 @@
       "message": "What package location would this file fit the best?\n- chromiumos/tast/cmd/tast/internal/run/junitxml\n- chromiumos/tast/cmd/tast/internal/junitxml\n- or somewhere else?",
       "revId": "2a31929d71d415a04b61e684df13990330a906d9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "581350a6_4a35d6ae",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/junit_results.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-02-24T08:22:42Z",
+      "side": 1,
+      "message": "internal/run/junitxml would be good if it\u0027s used only from internal/run. If it\u0027s used from chromiumos/tast/cmd/tast, then chromiumos/tast/cmd/tast/internal/junitxml would be better.\n\nBTW introducing a separate package might be not trivial as you refer EntityResult in the code. I\u0027m going to split internal/run into multiple subpackages soon (crbug.com/1179179), though you don\u0027t need to think it as a blocker.",
+      "parentUuid": "28f71a8f_b9076bca",
+      "revId": "2a31929d71d415a04b61e684df13990330a906d9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

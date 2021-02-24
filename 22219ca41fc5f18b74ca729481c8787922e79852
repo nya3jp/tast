@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4fb3859c_00856627",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1398801
+      },
+      "writtenOn": "2021-02-24T00:09:28Z",
+      "side": 1,
+      "message": "Thanks a lot! I was going to do it after my cl is merged. Thanks for doing this in advance.",
+      "revId": "22219ca41fc5f18b74ca729481c8787922e79852",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

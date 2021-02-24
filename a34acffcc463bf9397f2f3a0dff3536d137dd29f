@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b9afeebc_79409cb8",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 222,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-02-24T11:59:59Z",
+      "side": 1,
+      "message": "This would be \"!\u003d\" because CEL should be true when the condition is met.",
+      "revId": "a34acffcc463bf9397f2f3a0dff3536d137dd29f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d10d95dc_4cf0791e",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 245,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-02-24T11:59:59Z",
+      "side": 1,
+      "message": "Please also add test to TestCEL() in hwdep_test.go to test that this CEL line is correct at the unit test.\nhttps://chromium-review.googlesource.com/c/chromiumos/platform/tast/+/2647527",
+      "revId": "a34acffcc463bf9397f2f3a0dff3536d137dd29f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "368b2ba1_102e9c6c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1158184
+      },
+      "writtenOn": "2021-02-24T02:20:33Z",
+      "side": 1,
+      "message": "\"scarlet-cq.hw.bvt-tast-cq: [tast.crash.KernelIwlwifiError](https://ci.chromium.org/p/chromeos/builders/test_runner/test_runner/b8854461200204737456) \"\n\nLooks like the CQ found an actual bug! This test should be skipped on scarlet, the hwdep is probably not quite working.",
+      "revId": "d9ebc5b10a5aa9ff1e830c9ec081214501ca6897",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

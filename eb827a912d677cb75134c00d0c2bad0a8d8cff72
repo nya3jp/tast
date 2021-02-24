@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "c30c8eac_264d65e0",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/junit_results.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-02-24T11:46:32Z",
+      "side": 1,
+      "message": "Done. Now I got that Tast should not output the file itself when 0 test were run.",
+      "parentUuid": "3849ea46_ddf36040",
+      "range": {
+        "startLine": 15,
+        "startChar": 1,
+        "endLine": 15,
+        "endChar": 49
+      },
+      "revId": "eb827a912d677cb75134c00d0c2bad0a8d8cff72",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "756429a3_235d8dca",
@@ -37,6 +61,30 @@
       "writtenOn": "2021-02-24T08:22:42Z",
       "side": 1,
       "message": "General comment: I recommend dropping omitempty for fields we\u0027ll always fill so that it\u0027s easier to catch bugs by looking at serialized text.",
+      "range": {
+        "startLine": 23,
+        "startChar": 44,
+        "endLine": 23,
+        "endChar": 53
+      },
+      "revId": "eb827a912d677cb75134c00d0c2bad0a8d8cff72",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b8679ffb_8cadfab8",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/junit_results.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-02-24T11:46:32Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "756429a3_235d8dca",
       "range": {
         "startLine": 23,
         "startChar": 44,
@@ -70,6 +118,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "b482d0da_04ceedfb",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/junit_results.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-02-24T11:46:32Z",
+      "side": 1,
+      "message": "Sorry that I missed to remove some draft code.",
+      "parentUuid": "918237e6_f9c12e65",
+      "range": {
+        "startLine": 27,
+        "startChar": 0,
+        "endLine": 27,
+        "endChar": 104
+      },
+      "revId": "eb827a912d677cb75134c00d0c2bad0a8d8cff72",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "4aaec443_a80380a4",
@@ -83,6 +155,30 @@
       "writtenOn": "2021-02-24T08:22:42Z",
       "side": 1,
       "message": "Is it? I thought this is a duration in seconds, and actually timestamp is in ISO8601.",
+      "range": {
+        "startLine": 32,
+        "startChar": 45,
+        "endLine": 32,
+        "endChar": 76
+      },
+      "revId": "eb827a912d677cb75134c00d0c2bad0a8d8cff72",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2bb0c6f7_17af4292",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/junit_results.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-02-24T11:46:32Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4aaec443_a80380a4",
       "range": {
         "startLine": 32,
         "startChar": 45,
@@ -116,6 +212,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "2dc27874_6772560a",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/junit_results.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-02-24T11:46:32Z",
+      "side": 1,
+      "message": "Done.\nThe xsd said status should run/notrun and result is something that provide further detail. So I changed the field order accordinly.",
+      "parentUuid": "df531f9f_459e5b7a",
+      "range": {
+        "startLine": 74,
+        "startChar": 3,
+        "endLine": 74,
+        "endChar": 4
+      },
+      "revId": "eb827a912d677cb75134c00d0c2bad0a8d8cff72",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "27c3c98d_0cabcefe",
@@ -129,6 +249,30 @@
       "writtenOn": "2021-02-24T08:22:42Z",
       "side": 1,
       "message": "What is this for?",
+      "range": {
+        "startLine": 86,
+        "startChar": 3,
+        "endLine": 86,
+        "endChar": 19
+      },
+      "revId": "eb827a912d677cb75134c00d0c2bad0a8d8cff72",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0ff38879_f7bacb8c",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/junit_results.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 86,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-02-24T11:46:32Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "27c3c98d_0cabcefe",
       "range": {
         "startLine": 86,
         "startChar": 3,
@@ -162,6 +306,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "36c05e14_f248311c",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/junit_results.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 92,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-02-24T11:46:32Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "75ec3224_91bffd80",
+      "range": {
+        "startLine": 89,
+        "startChar": 2,
+        "endLine": 92,
+        "endChar": 67
+      },
+      "revId": "eb827a912d677cb75134c00d0c2bad0a8d8cff72",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "5377b6f2_1d675ffe",
@@ -175,6 +343,30 @@
       "writtenOn": "2021-02-24T08:22:42Z",
       "side": 1,
       "message": "You may want to delete this line.",
+      "range": {
+        "startLine": 94,
+        "startChar": 2,
+        "endLine": 94,
+        "endChar": 62
+      },
+      "revId": "eb827a912d677cb75134c00d0c2bad0a8d8cff72",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c549a307_0a342626",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/junit_results.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 94,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-02-24T11:46:32Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5377b6f2_1d675ffe",
       "range": {
         "startLine": 94,
         "startChar": 2,

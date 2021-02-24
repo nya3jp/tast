@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4c62a01a_c8b976d2",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/junit_results.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 106,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-02-24T11:46:32Z",
+      "side": 1,
+      "message": "Changed to fill the timestamp/time of suite.",
+      "revId": "adcd7208df4dea36d2ddba96af2eb27b50b05d7e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

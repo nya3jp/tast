@@ -169,22 +169,21 @@ if err := ui.WaitUntilExists(node3)(ctx); err != nil {
   s.Fatal("Failed to wait for node3: ", err)
 }
 ```
-Or, you could use [uiauto.Run] or [uiauto.Combine] to deal with these actions as a group:
+Or, you could use [uiauto.Combine] to deal with these actions as a group:
 ```go
-if err := uiauto.Run(ctx,
+if err := uiauto.Combine("do some bigger action",
   ui.RightClick(node1),
   ui.LeftClick(node2),
   ui.WaitUntilExists(node3),
-); err != nil {
+)(ctx); err != nil {
   s.Fatal("Failed to do some bigger action: ", err)
 }
 ```
 
-> Note: I generally advise using [uiauto.Run] or [uiauto.Combine] if you are doing more
+> Note: I generally advise using [uiauto.Combine] if you are doing more
 than one action in a row.
 
 [uiauto.Action]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/chrome/uiauto#Action
-[uiauto.Run]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/chrome/uiauto#Run
 [uiauto.Combine]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/chrome/uiauto#Combine
 
 ## Dealing With a Race Condition
@@ -270,10 +269,10 @@ if err := ui.WaitUntilExists(nodewith.Name("Deep Purple").Role(role.StaticText))
 
 ## Full Code
 
-> Note: The code below is using [uiauto.Run] to simplify all of the steps above into
+> Note: The code below is using [uiauto.Combine] to simplify all of the steps above into
 one chain of operations.
 
-[uiauto.Run]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/chrome/uiauto#Run
+[uiauto.Combine]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/chrome/uiauto#Combine
 
 ```go
 // Copyright 2020 The Chromium OS Authors. All rights reserved.
@@ -317,7 +316,7 @@ func ChangeWallpaper(ctx context.Context, s *testing.State) {
 
 	ui := uiauto.New(tconn)
 	setWallpaperMenu := nodewith.Name("Set wallpaper").Role(role.MenuItem)
-	if err := uiauto.Run(ctx,
+	if err := uiauto.Combine("change the wallpaper",
 		ui.RightClick(nodewith.ClassName("WallpaperView")),
 		// This button takes a bit before it is clickable.
 		// Keep clicking it until the click is received and the menu closes.
@@ -327,7 +326,7 @@ func ChangeWallpaper(ctx context.Context, s *testing.State) {
 		// Ensure that "Deep Purple" text is displayed.
 		// The UI displays the name of the currently set wallpaper.
 		ui.WaitUntilExists(nodewith.Name("Deep Purple").Role(role.StaticText)),
-	); err != nil {
+	)(ctx); err != nil {
 		s.Fatal("Failed to change the wallpaper: ", err)
 	}
 }

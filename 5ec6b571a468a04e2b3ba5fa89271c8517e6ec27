@@ -1,0 +1,90 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f63f69c8_8c40d6ad",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2021-02-24T08:21:41Z",
+      "side": 1,
+      "message": "FYI: yamaguchi-san.",
+      "revId": "5ec6b571a468a04e2b3ba5fa89271c8517e6ec27",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f70d7620_265ab749",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 234,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2021-02-24T08:21:41Z",
+      "side": 1,
+      "message": "nit/style: guard style is preferred so\n\nif f.Features.FIngerprint.Location !\u003d cnfigpb....NOT_PRESENT {\n  return errors.New(...)\n}\nreturn nil\n\n(Though, I understand this comes from above. maybe it\u0027s nice to fix it, too.)",
+      "range": {
+        "startLine": 231,
+        "startChar": 3,
+        "endLine": 234,
+        "endChar": 50
+      },
+      "revId": "5ec6b571a468a04e2b3ba5fa89271c8517e6ec27",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ad53e972_32f1dd7e",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 243,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2021-02-24T08:21:41Z",
+      "side": 1,
+      "message": "Could you verify that HardwareFeatures does contain FEATURE_FINGERPRINT, instead?",
+      "range": {
+        "startLine": 239,
+        "startChar": 2,
+        "endLine": 243,
+        "endChar": 3
+      },
+      "revId": "5ec6b571a468a04e2b3ba5fa89271c8517e6ec27",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e9564466_137e5e6a",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 245,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2021-02-24T08:21:41Z",
+      "side": 1,
+      "message": "this needs to be updated, too.",
+      "range": {
+        "startLine": 245,
+        "startChar": 53,
+        "endLine": 245,
+        "endChar": 55
+      },
+      "revId": "5ec6b571a468a04e2b3ba5fa89271c8517e6ec27",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

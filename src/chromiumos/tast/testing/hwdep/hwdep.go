@@ -205,10 +205,10 @@ func ChromeEC() Condition {
 func Fingerprint() Condition {
 	return Condition{Satisfied: func(f *dep.HardwareFeatures) error {
 		if f.Features != nil {
-			if f.Features.Fingerprint.Location != configpb.HardwareFeatures_Fingerprint_NOT_PRESENT {
-				return nil
+			if f.Features.Fingerprint.Location == configpb.HardwareFeatures_Fingerprint_NOT_PRESENT {
+				return errors.New("DUT does not have fingerprint sensor")
 			}
-			return errors.New("DUT does not have fingerprint sensor")
+			return nil
 		}
 		if f.DC == nil {
 			return errors.New("device.Config is not given")
@@ -220,6 +220,29 @@ func Fingerprint() Condition {
 		}
 		return errors.New("DUT does not have fingerprint sensor")
 	}, CEL: "dut.hardware_features.fingerprint.location != api.HardwareFeatures.Fingerprint.Location.NOT_PRESENT",
+	}
+}
+
+// NoFingerprint returns a hardware dependency condition that is satisfied
+// if the DUT doesn't have fingerprint sensor.
+func NoFingerprint() Condition {
+	return Condition{Satisfied: func(f *dep.HardwareFeatures) error {
+		if f.Features != nil {
+			if f.Features.Fingerprint.Location != configpb.HardwareFeatures_Fingerprint_NOT_PRESENT {
+				return errors.New("DUT has fingerprint sensor")
+			}
+			return nil
+		}
+		if f.DC == nil {
+			return errors.New("device.Config is not given")
+		}
+		for _, f := range f.DC.HardwareFeatures {
+			if f == device.Config_HARDWARE_FEATURE_FINGERPRINT {
+				return errors.New("DUT has fingerprint sensor")
+			}
+		}
+		return nil
+	}, CEL: "dut.hardware_features.fingerprint.location == api.HardwareFeatures.Fingerprint.Location.NOT_PRESENT",
 	}
 }
 

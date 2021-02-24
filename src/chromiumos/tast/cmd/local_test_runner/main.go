@@ -138,32 +138,33 @@ func main() {
 			// Only official builds are considered to have metrics consent.
 			// See: ChromeCrashReporterClient::GetCollectStatsConsent()
 			// Also metrics consent needs TPM (crbug.com/1035197).
-			"metrics_consent":    "chrome_internal && !mocktpm && !tast_vm",
-			"microcode":          "!betty && !tast_vm",
-			"ml_benchmark":       "ml_benchmark_drivers",
-			"ml_service":         "ml_service",
-			"mosys":              "!betty && !tast_vm",
-			"nacl":               "nacl",
-			"ndk_translation":    "ndk_translation",
-			"ndk_translation64":  "ndk_translation64",
-			"nnapi":              "nnapi",
-			"no_android":         "!arc",
-			"no_arm":             "!arm",
-			"no_asan":            "!asan",
-			"no_borealis_host":   "!borealis_host",
-			"no_msan":            "!msan",
-			"no_qemu":            "!betty && !tast_vm",
-			"no_symlink_mount":   "!lxc", // boards using LXC set CONFIG_SECURITY_CHROMIUMOS_NO_SYMLINK_MOUNT=n
-			"no_ubsan":           "!ubsan",
-			"nvme":               "nvme",
-			"oci":                "containers && !moblab", // run_oci doesn't work on Moblab: https://crbug.com/951691
-			"ocr":                "ocr",
-			"plugin_vm":          "pita", // boards that can run Plugin VM.
-			"proprietary_codecs": "chrome_internal || chrome_media",
-			"protected_content":  "cdm_factory_daemon",
-			"pstore":             "!betty && !tast_vm", // These boards don't support pstore: https://crbug.com/971899
-			"qemu":               "betty || tast_vm",
-			"racc":               "racc",
+			"metrics_consent":       "chrome_internal && !mocktpm && !tast_vm",
+			"microcode":             "!betty && !tast_vm",
+			"ml_benchmark":          "ml_benchmark_drivers",
+			"ml_service":            "ml_service",
+			"mosys":                 "!betty && !tast_vm",
+			"nacl":                  "nacl",
+			"ndk_translation":       "ndk_translation",
+			"ndk_translation64":     "ndk_translation64",
+			"nnapi":                 "nnapi",
+			"no_android":            "!arc",
+			"no_arm":                "!arm",
+			"no_asan":               "!asan",
+			"no_borealis_host":      "!borealis_host",
+			"no_eth_loss_on_reboot": `!("board:jacuzzi")`, // some devices (jacuzzi) may not enumerate eth on reboot b/178529170
+			"no_msan":               "!msan",
+			"no_qemu":               "!betty && !tast_vm",
+			"no_symlink_mount":      "!lxc", // boards using LXC set CONFIG_SECURITY_CHROMIUMOS_NO_SYMLINK_MOUNT=n
+			"no_ubsan":              "!ubsan",
+			"nvme":                  "nvme",
+			"oci":                   "containers && !moblab", // run_oci doesn't work on Moblab: https://crbug.com/951691
+			"ocr":                   "ocr",
+			"plugin_vm":             "pita", // boards that can run Plugin VM.
+			"proprietary_codecs":    "chrome_internal || chrome_media",
+			"protected_content":     "cdm_factory_daemon",
+			"pstore":                "!betty && !tast_vm", // These boards don't support pstore: https://crbug.com/971899
+			"qemu":                  "betty || tast_vm",
+			"racc":                  "racc",
 			// weird missing-runner-after-reboot bug: https://crbug.com/909955
 			// TODO(yich): This is a workaround to enable reboot flag on all boards.
 			// We should disable this flag if the weird missing-runner-after-reboot bug still happening.

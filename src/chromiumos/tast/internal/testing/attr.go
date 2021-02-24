@@ -300,6 +300,23 @@ third_party/autotest/files/server/site_tests/tast/control.runtime-probe
 		Name:     "cellular",
 		Contacts: []string{"chromeos-cellular-team@google.com"},
 		Desc:     `The group of Cellular tests to be run on hardware with a builtin Cellular modem and SIM card.`,
+		Subattrs: []*attr{
+			{
+				Name: "cellular_unstable",
+				Desc: `Identifies Cellular tests that are unstable. Used to skip tests running on stable suites and/or the CQ.`,
+			},
+		},
+	},
+	{
+		Name:     "cellular_esim",
+		Contacts: []string{"chromeos-cellular-team@google.com"},
+		Desc:     `Identifies Cellular tests to be run on hardware with a builtin Cellular modem with an eSIM card and a pSIM card.`,
+		Subattrs: []*attr{
+			{
+				Name: "cellular_esim_unstable",
+				Desc: `Identifies Cellular esim tests that are unstable. Use to skip tests running on stable suites and/or the CQ.`,
+			},
+		},
 	},
 	{
 		Name:     "meta",

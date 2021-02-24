@@ -119,6 +119,7 @@ The following software features are defined:
     the `android` feature; DUTs will have exactly one of these two features.
 *   `no_asan` - Build was not built with Address Sanitizer. Similar to `aslr`.
 *   `no_borealis_host` - Boards which is not designed to host borealis.
+*   `no_eth_loss_on_reboot` - Board does not lose ethernet on reboot. Context: b/178529170
 *   `no_msan` - Build was not built with Memory Sanitizer.
 *   `no_qemu` - For tests not for Chrome OS QEMU images.
 *   `no_symlink_mount` - Symlink mounting is disabled via the

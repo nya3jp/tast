@@ -127,7 +127,7 @@ func Run(ctx context.Context, cfg *Config, state *State) (status Status, results
 			if err := startEphemeralDevserverForLocalTests(ctx, hst, cfg, state); err != nil {
 				return errorStatusf(cfg, subcommands.ExitFailure, "Failed to start ephemeral devserver for local tests: %v", err), nil
 			}
-			defer closeEphemeralDevserver(ctx, state)
+			defer state.CloseEphemeralDevserver(ctx)
 		}
 		//  Start an ephemeral devserver remote tests.
 		if cfg.runRemote && len(state.remoteDevservers) == 0 {

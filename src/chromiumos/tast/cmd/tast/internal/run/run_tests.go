@@ -70,7 +70,7 @@ func runTests(ctx context.Context, cfg *Config, state *State) ([]*EntityResult, 
 	// Turn down the ephemeral devserver before running remote tests. Some remote tests
 	// in the meta category run the tast command which starts yet another ephemeral devserver
 	// and reverse forwarding port can conflict.
-	closeEphemeralDevserver(ctx, state)
+	state.CloseEphemeralDevserver(ctx)
 
 	if !cfg.runRemote {
 		return results, nil

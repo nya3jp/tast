@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "73899ca6_f27bd827",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1487074
+      },
+      "writtenOn": "2021-02-25T05:23:00Z",
+      "side": 1,
+      "message": "The test failures look unrelated to this change. Let\u0027s add Disallow-Recycled-Builds and retry CQ.",
+      "revId": "45b83d0cc42ec6cfa14612b15a4c1fd8942070f1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

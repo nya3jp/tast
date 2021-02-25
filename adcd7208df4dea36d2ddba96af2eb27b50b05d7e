@@ -26,6 +26,30 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "bd674865_04b83119",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/junit_results.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-02-25T08:43:56Z",
+      "side": 1,
+      "message": "Done\nUpdated the unit test as well.",
+      "parentUuid": "f0d65e71_61db91c8",
+      "range": {
+        "startLine": 74,
+        "startChar": 14,
+        "endLine": 74,
+        "endChar": 51
+      },
+      "revId": "adcd7208df4dea36d2ddba96af2eb27b50b05d7e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "4c62a01a_c8b976d2",
         "filename": "src/chromiumos/tast/cmd/tast/internal/run/junit_results.go",
         "patchSetId": 6
@@ -64,6 +88,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "7ef5960b_98e561df",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/junit_results.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 110,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-02-25T08:43:56Z",
+      "side": 1,
+      "message": "I agree. Removed the test suite fields for now.",
+      "parentUuid": "2fbbce61_95d66dbd",
+      "range": {
+        "startLine": 109,
+        "startChar": 1,
+        "endLine": 110,
+        "endChar": 55
+      },
+      "revId": "adcd7208df4dea36d2ddba96af2eb27b50b05d7e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "9f3d0727_7bae5ded",
@@ -77,6 +125,30 @@
       "writtenOn": "2021-02-25T02:11:20Z",
       "side": 1,
       "message": "I prefer dropping a suite name for now because it adds a requirement that at least one result should be available on calling this function. We might want to write XML even when there is no result, e.g. on empty shards on sharded test runs. Anyway we don\u0027t have strict requirement to report bundle name, so we can defer the decision until it\u0027s really needed.",
+      "range": {
+        "startLine": 111,
+        "startChar": 1,
+        "endLine": 113,
+        "endChar": 2
+      },
+      "revId": "adcd7208df4dea36d2ddba96af2eb27b50b05d7e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7f9f0148_8363ff40",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/junit_results.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 113,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-02-25T08:43:56Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9f3d0727_7bae5ded",
       "range": {
         "startLine": 111,
         "startChar": 1,

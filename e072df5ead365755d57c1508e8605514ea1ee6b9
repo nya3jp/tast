@@ -33,6 +33,23 @@
       "message": "Unfortunately, I would like to propose continuing with platform allowlist.\nThe cost of maintaining the list of devices would be non-trivial in both way, allow-list or deny-list. \nSo I would go with the one that would result in a shorter list for now.\n\nIn the longer term plan, infra-side scheduler should handle this, but it will be after Q2 or later.\nOn the other hand, considering the current temporary implementation in Tast, if there is any way (command or content of any device file etc.) that can take the needed information about wifi properties after system boot, it would be much helpful.",
       "revId": "e072df5ead365755d57c1508e8605514ea1ee6b9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d232f031_04b7a42b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 7
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1158184
+      },
+      "writtenOn": "2021-02-25T21:21:35Z",
+      "side": 1,
+      "message": "I\u0027m not sure why this CL has been abandoned? Patchset #6 was good",
+      "revId": "e072df5ead365755d57c1508e8605514ea1ee6b9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

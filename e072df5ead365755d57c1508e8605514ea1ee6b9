@@ -50,6 +50,24 @@
       "message": "I\u0027m not sure why this CL has been abandoned? Patchset #6 was good",
       "revId": "e072df5ead365755d57c1508e8605514ea1ee6b9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bfb111a1_5fa15888",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 7
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1432127
+      },
+      "writtenOn": "2021-02-25T22:31:41Z",
+      "side": 1,
+      "message": "I abondoned the cl in response to yamaguchi\u0027s comment about the allow-list being better than the blocklist. How should we proceed?",
+      "parentUuid": "d232f031_04b7a42b",
+      "revId": "e072df5ead365755d57c1508e8605514ea1ee6b9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

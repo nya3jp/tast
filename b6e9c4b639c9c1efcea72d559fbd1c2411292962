@@ -75,6 +75,30 @@
       },
       "revId": "b6e9c4b639c9c1efcea72d559fbd1c2411292962",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cf9a386b_186f5ac1",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 319,
+      "author": {
+        "id": 1432127
+      },
+      "writtenOn": "2021-02-25T22:31:41Z",
+      "side": 1,
+      "message": "Ack. I\u0027ll add this if we move forward with the blocklist. I also know that the mosys for jacuzzi is \"kukui\" as well but since kukui is also in the blocklist anyways, it shouldn\u0027t matter.",
+      "parentUuid": "5b7bf183_90440333",
+      "range": {
+        "startLine": 319,
+        "startChar": 4,
+        "endLine": 319,
+        "endChar": 11
+      },
+      "revId": "b6e9c4b639c9c1efcea72d559fbd1c2411292962",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

@@ -1,6 +1,29 @@
 {
   "comments": [
     {
+      "unresolved": true,
+      "key": {
+        "uuid": "f0d65e71_61db91c8",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/junit_results.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-02-25T02:11:20Z",
+      "side": 1,
+      "message": "Z means UTC, so I think we have to convert r.Start to UTC in advance.\n\nhttps://play.golang.org/p/VnsP6jM89yB\n\nIt would be nice to update a unit test case as well.",
+      "range": {
+        "startLine": 74,
+        "startChar": 14,
+        "endLine": 74,
+        "endChar": 51
+      },
+      "revId": "adcd7208df4dea36d2ddba96af2eb27b50b05d7e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": false,
       "key": {
         "uuid": "4c62a01a_c8b976d2",
@@ -14,6 +37,52 @@
       "writtenOn": "2021-02-24T11:46:32Z",
       "side": 1,
       "message": "Changed to fill the timestamp/time of suite.",
+      "revId": "adcd7208df4dea36d2ddba96af2eb27b50b05d7e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2fbbce61_95d66dbd",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/junit_results.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 110,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-02-25T02:11:20Z",
+      "side": 1,
+      "message": "Strictly speaking the total time is not accurately equal to (last test end - first test start) because framework can perform some operations before/after tests.\n\nI recommend either computing it with actual numbers (we need more params to the function), or just dropping suite timestamp for now.",
+      "range": {
+        "startLine": 109,
+        "startChar": 1,
+        "endLine": 110,
+        "endChar": 55
+      },
+      "revId": "adcd7208df4dea36d2ddba96af2eb27b50b05d7e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9f3d0727_7bae5ded",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/junit_results.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 113,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-02-25T02:11:20Z",
+      "side": 1,
+      "message": "I prefer dropping a suite name for now because it adds a requirement that at least one result should be available on calling this function. We might want to write XML even when there is no result, e.g. on empty shards on sharded test runs. Anyway we don\u0027t have strict requirement to report bundle name, so we can defer the decision until it\u0027s really needed.",
+      "range": {
+        "startLine": 111,
+        "startChar": 1,
+        "endLine": 113,
+        "endChar": 2
+      },
       "revId": "adcd7208df4dea36d2ddba96af2eb27b50b05d7e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }

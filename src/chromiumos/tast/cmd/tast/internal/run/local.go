@@ -670,7 +670,7 @@ func formatBytes(bytes int64) string {
 // state's ephemeralDevserver and localDevservers fields are updated.
 // If ephemeralDevserver is non-nil, it is closed first.
 func startEphemeralDevserverForLocalTests(ctx context.Context, hst *ssh.Conn, cfg *Config, state *State) error {
-	closeEphemeralDevserver(ctx, state) // ignore errors; this may rely on a now-dead SSH connection
+	state.CloseEphemeralDevserver(ctx) // ignore errors; this may rely on a now-dead SSH connection
 
 	lis, err := hst.ListenTCP(&net.TCPAddr{IP: net.IPv4(127, 0, 0, 1), Port: localEphemeralDevserverPort})
 	if err != nil {
@@ -686,16 +686,6 @@ func startEphemeralDevserverForLocalTests(ctx context.Context, hst *ssh.Conn, cf
 	state.ephemeralDevserver = es
 	state.localDevservers = []string{fmt.Sprintf("http://%s", lis.Addr())}
 	return nil
-}
-
-// closeEphemeralDevserver closes and resets cfg.EphemeralDevserver if non-nil.
-func closeEphemeralDevserver(ctx context.Context, state *State) error {
-	var err error
-	if state.ephemeralDevserver != nil {
-		err = state.ephemeralDevserver.Close(ctx)
-		state.ephemeralDevserver = nil
-	}
-	return err
 }
 
 // diagnoseLocalRunError is used to attempt to diagnose the cause of an error encountered

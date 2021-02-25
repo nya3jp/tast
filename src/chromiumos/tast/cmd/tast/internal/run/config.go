@@ -266,10 +266,20 @@ func (c *Config) SetFlags(f *flag.FlagSet) {
 	}
 }
 
+// CloseEphemeralDevserver closes and resets s.ephemeralDevserver if non-nil.
+func (s *State) CloseEphemeralDevserver(ctx context.Context) error {
+	var err error
+	if s.ephemeralDevserver != nil {
+		err = s.ephemeralDevserver.Close(ctx)
+		s.ephemeralDevserver = nil
+	}
+	return err
+}
+
 // Close releases the config's resources (e.g. cached SSH connections).
 // It should be called at the completion of testing.
 func (s *State) Close(ctx context.Context) error {
-	closeEphemeralDevserver(ctx, s) // ignore error; not meaningful if c.hst is dead
+	s.CloseEphemeralDevserver(ctx) // ignore error; not meaningful if c.hst is dead
 	var firstErr error
 	if s.hst != nil {
 		if err := s.hst.Close(ctx); err != nil && firstErr == nil {

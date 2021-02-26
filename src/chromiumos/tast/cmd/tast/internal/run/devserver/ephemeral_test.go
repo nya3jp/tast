@@ -73,7 +73,7 @@ func newTestData(t *testing.T, gsutil string) *testData {
 	}()
 
 	// Start the ephemeral devserver.
-	lis, err := net.Listen("tcp", "127.0.0.1:0")
+	lis, err := net.Listen("tcp", "localhost:0")
 	if err != nil {
 		t.Fatal("Failed to listen on a TCP port: ", err)
 	}

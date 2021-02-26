@@ -41,7 +41,7 @@ type FakeProgressSinkService struct {
 
 // StartProgressSink starts a fake progress sink service.
 func StartProgressSink(ctx context.Context, maxTestFailures int) (*FakeProgressSinkService, net.Addr, error) {
-	l, err := net.Listen("tcp", "127.0.0.1:0")
+	l, err := net.Listen("tcp", "localhost:0")
 	if err != nil {
 		return nil, nil, errors.Wrap(err, "failed to listen")
 	}

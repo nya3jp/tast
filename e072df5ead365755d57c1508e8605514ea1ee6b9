@@ -68,6 +68,24 @@
       "parentUuid": "d232f031_04b7a42b",
       "revId": "e072df5ead365755d57c1508e8605514ea1ee6b9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ead9a1a6_a2662b61",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 7
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1158184
+      },
+      "writtenOn": "2021-02-26T00:20:03Z",
+      "side": 1,
+      "message": "But that comment didn\u0027t imply that the CL should be abandoned -the status quo where \"hatch\" is the only platform that tests 11ax is incorrect-, only a preference to expand the allow-list of platforms.\n\nBut then we run into https://crrev.com/c/2689451/11#message-6ad8690ec6fcc4651e62344d6a547dbe380b1de8\n\nSo a blocklist would probably be better.\n\n\u003e How should we proceed?\n\nYou can argue your case to convince the reviewer that the approach in patchset #6 (blocklist of platforms) is the better solution :-)\nFailing that, implement an allow-list of *platforms*, not *models*",
+      "parentUuid": "bfb111a1_5fa15888",
+      "revId": "e072df5ead365755d57c1508e8605514ea1ee6b9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

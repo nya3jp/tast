@@ -99,6 +99,30 @@
       },
       "revId": "b6e9c4b639c9c1efcea72d559fbd1c2411292962",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9366af6a_826f87af",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 319,
+      "author": {
+        "id": 1158184
+      },
+      "writtenOn": "2021-02-26T00:20:03Z",
+      "side": 1,
+      "message": "Oh, that\u0027s good knowledge too, worth adding a comment",
+      "parentUuid": "cf9a386b_186f5ac1",
+      "range": {
+        "startLine": 319,
+        "startChar": 4,
+        "endLine": 319,
+        "endChar": 11
+      },
+      "revId": "b6e9c4b639c9c1efcea72d559fbd1c2411292962",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

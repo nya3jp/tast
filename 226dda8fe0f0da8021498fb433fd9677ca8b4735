@@ -16,6 +16,23 @@
       "message": "I think we should hold off on this until we have a clear way forward. \n\nUnless the carrier labels from swarming can be used as HardwareDeps, we are probably stuck with creating separate control files as we do for autotests and if we go this route, see couple options in the below doc for how it would work...\n\nhttps://docs.google.com/document/d/1CiC7qcyjiezdyTJI5eXMCWyN5c4Mi3M28eqwi93hMzI/edit?resourcekey\u003d0-aUssgEFpY8y3HcLAAfKwgA#",
       "revId": "226dda8fe0f0da8021498fb433fd9677ca8b4735",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "10660c43_08f7f847",
+        "filename": "src/chromiumos/tast/internal/testing/attr.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 311,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2021-02-26T04:50:22Z",
+      "side": 1,
+      "message": "Clarification: Do you need another group? Rather than just a subattr of cellular?",
+      "revId": "226dda8fe0f0da8021498fb433fd9677ca8b4735",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

@@ -69,6 +69,24 @@
       "parentUuid": "b1d95a52_41fd1dfc",
       "revId": "226dda8fe0f0da8021498fb433fd9677ca8b4735",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "917395fe_85b633ca",
+        "filename": "src/chromiumos/tast/internal/testing/attr.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 311,
+      "author": {
+        "id": 1108324
+      },
+      "writtenOn": "2021-02-26T19:44:38Z",
+      "side": 1,
+      "message": "Good point. Wondering myself. I added this to the doc as a \u0027hybrid\u0027 option...\n\nhttps://docs.google.com/document/d/1CiC7qcyjiezdyTJI5eXMCWyN5c4Mi3M28eqwi93hMzI/edit?resourcekey\u003d0-aUssgEFpY8y3HcLAAfKwgA\u0026disco\u003dAAAALkK9es4",
+      "parentUuid": "15a6a48e_33a09685",
+      "revId": "226dda8fe0f0da8021498fb433fd9677ca8b4735",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

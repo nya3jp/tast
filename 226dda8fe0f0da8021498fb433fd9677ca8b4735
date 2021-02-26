@@ -51,6 +51,24 @@
       "parentUuid": "10660c43_08f7f847",
       "revId": "226dda8fe0f0da8021498fb433fd9677ca8b4735",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "15a6a48e_33a09685",
+        "filename": "src/chromiumos/tast/internal/testing/attr.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 311,
+      "author": {
+        "id": 1000191
+      },
+      "writtenOn": "2021-02-26T15:55:33Z",
+      "side": 1,
+      "message": "My expectation was that a subattr would describe a subset of a parent group, whereas cellular_esim would be a separate group, similar to wificell vs wificell_roam.\n\ni.e. we would create separate cellular_ota_esim{_unstable} control files, which would use:\n  test_exprs\u003d[\u0027(\"group:cellular_esim\" \u0026\u0026 {!}cellular_stable)\u0027]\n\nWhereas if we make this a subattr, wouldn\u0027t we need to explicitly exclude esim in any non esim control files? i.e. wouldn\u0027t the current control file filter include the esim tests:\n  test_exprs\u003d[\u0027(\"group:cellular\" \u0026\u0026 {!}cellular_stable)\u0027]\n\nUnless we changed all of those to:\n  test_exprs\u003d[\u0027(\"group:cellular_esim\" \u0026\u0026 !cellular_esim \u0026\u0026{!}cellular_stable)\u0027]\n\n?",
+      "parentUuid": "b1d95a52_41fd1dfc",
+      "revId": "226dda8fe0f0da8021498fb433fd9677ca8b4735",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

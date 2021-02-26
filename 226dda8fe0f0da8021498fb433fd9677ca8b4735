@@ -33,6 +33,24 @@
       "message": "Clarification: Do you need another group? Rather than just a subattr of cellular?",
       "revId": "226dda8fe0f0da8021498fb433fd9677ca8b4735",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b1d95a52_41fd1dfc",
+        "filename": "src/chromiumos/tast/internal/testing/attr.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 311,
+      "author": {
+        "id": 1108324
+      },
+      "writtenOn": "2021-02-26T04:57:33Z",
+      "side": 1,
+      "message": "+1\n\nI suggest adding a subattr instead of another group as I mentioned in the doc \n\nhttps://docs.google.com/document/d/1CiC7qcyjiezdyTJI5eXMCWyN5c4Mi3M28eqwi93hMzI/edit?resourcekey\u003d0-aUssgEFpY8y3HcLAAfKwgA#",
+      "parentUuid": "10660c43_08f7f847",
+      "revId": "226dda8fe0f0da8021498fb433fd9677ca8b4735",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

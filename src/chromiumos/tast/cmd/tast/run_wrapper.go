@@ -26,5 +26,8 @@ func (w realRunWrapper) run(ctx context.Context, cfg *run.Config, state *run.Sta
 }
 
 func (w realRunWrapper) writeResults(ctx context.Context, cfg *run.Config, state *run.State, results []*run.EntityResult, complete bool) error {
-	return run.WriteResults(ctx, cfg, state, results, complete)
+	if err := run.WriteResults(ctx, cfg, state, results, complete); err != nil {
+		return err
+	}
+	return run.WriteJUnitResults(ctx, cfg, results)
 }

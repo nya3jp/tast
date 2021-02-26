@@ -29,6 +29,7 @@ import (
 const (
 	// These paths are relative to Config.ResDir.
 	resultsFilename         = "results.json"           // file containing JSON array of EntityResult objects
+	resultsJUnitFilename    = "results.xml"            // file containing test result in the JUnit XML format
 	streamedResultsFilename = "streamed_results.jsonl" // file containing stream of newline-separated JSON EntityResult objects
 	systemLogsDir           = "system_logs"            // dir containing DUT's system logs
 	crashesDir              = "crashes"                // dir containing DUT's crashes
@@ -185,6 +186,21 @@ func WriteResults(ctx context.Context, cfg *Config, state *State, results []*Ent
 	cfg.Logger.Log(sep)
 	cfg.Logger.Log("Results saved to ", cfg.ResDir)
 	return sysInfoErr
+}
+
+// WriteJUnitResults writes the test results into a JUnit XML format.
+func WriteJUnitResults(cctx context.Context, cfg *Config, results []*EntityResult) error {
+	f, err := os.Create(filepath.Join(cfg.ResDir, resultsJUnitFilename))
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+	b, err := ToJUnitResults(results)
+	if err != nil {
+		return err
+	}
+	f.Write(b)
+	return nil
 }
 
 // copyAndRemoveFunc copies src on a DUT to dst on the local machine and then

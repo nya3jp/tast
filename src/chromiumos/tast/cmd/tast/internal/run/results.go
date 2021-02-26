@@ -21,6 +21,7 @@ import (
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/jsonprotocol"
+	"chromiumos/tast/cmd/tast/internal/run/junitxml"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/control"
 	"chromiumos/tast/internal/protocol"
@@ -31,6 +32,7 @@ import (
 const (
 	// These paths are relative to Config.ResDir.
 	resultsFilename         = "results.json"           // file containing JSON array of EntityResult objects
+	resultsJUnitFilename    = "results.xml"            // file containing test result in the JUnit XML format
 	streamedResultsFilename = "streamed_results.jsonl" // file containing stream of newline-separated JSON EntityResult objects
 	systemLogsDir           = "system_logs"            // dir containing DUT's system logs
 	crashesDir              = "crashes"                // dir containing DUT's crashes
@@ -152,9 +154,24 @@ func WriteResults(ctx context.Context, cfg *config.Config, state *config.State, 
 		cfg.Logger.Log("Run did not finish successfully; results are incomplete")
 	}
 
+	if err := WriteJUnitResults(ctx, cfg, results); err != nil {
+		return err
+	}
 	cfg.Logger.Log(sep)
 	cfg.Logger.Log("Results saved to ", cfg.ResDir)
 	return sysInfoErr
+}
+
+// WriteJUnitResults writes the test results into a JUnit XML format.
+func WriteJUnitResults(cctx context.Context, cfg *config.Config, results []*jsonprotocol.EntityResult) error {
+	b, err := junitxml.Marshal(results)
+	if err != nil {
+		return err
+	}
+	if err := ioutil.WriteFile(filepath.Join(cfg.ResDir, resultsJUnitFilename), b, 0644); err != nil {
+		return errors.Wrapf(err, "Failed to write JUnit result XML file")
+	}
+	return nil
 }
 
 // copyAndRemoveFunc copies src on a DUT to dst on the local machine and then

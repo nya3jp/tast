@@ -908,6 +908,35 @@ func TestUnfinishedTest(t *gotesting.T) {
 	}
 }
 
+func TestWriteResultsWriteFiles(t *gotesting.T) {
+	td := testutil.TempDir(t)
+	defer os.RemoveAll(td)
+
+	baseCfg := config.NewConfig(config.RunTestsMode, td, td)
+	baseCfg.ResDir = td
+
+	// Report that two tests were executed.
+	results := []*jsonprotocol.EntityResult{
+		{EntityInfo: testing.EntityInfo{Name: "pkg.Test1"}},
+		{EntityInfo: testing.EntityInfo{Name: "pkg.Test2"}},
+	}
+	cfg := *baseCfg
+	out := &bytes.Buffer{}
+	cfg.Logger = logging.NewSimple(out, false, false)
+	cfg.TestsToRun = results
+	var state config.State
+	if err := WriteResults(context.Background(), &cfg, &state, results, true /* complete */); err != nil {
+		t.Errorf("WriteResults() failed: %v", err)
+	}
+	if _, err := os.Stat(filepath.Join(td, "results.json")); err != nil {
+		t.Errorf("Result JSON file not generated: %v", err)
+	}
+	// Just check that the file is written. The content is tested in junit_results_test.go
+	if _, err := os.Stat(filepath.Join(td, "results.xml")); err != nil {
+		t.Errorf("Result XML file not generated: %v", err)
+	}
+}
+
 func TestWriteResultsUnmatchedGlobs(t *gotesting.T) {
 	td := testutil.TempDir(t)
 	defer os.RemoveAll(td)

@@ -86,7 +86,7 @@ func NewSSHServer(pk *rsa.PublicKey, hk *rsa.PrivateKey, handler ExecHandler) (*
 	if err != nil {
 		return nil, err
 	}
-	ls, err := net.Listen("tcp", "127.0.0.1:0")
+	ls, err := net.Listen("tcp", "localhost:0")
 	if err != nil {
 		return nil, err
 	}
@@ -224,7 +224,7 @@ func (s *SSHServer) handleConn(conn net.Conn) error {
 					req.Reply(false, nil)
 				}
 			case sshMsgTCPIPForward:
-				fwdListener, err := net.Listen("tcp", "127.0.0.1:0")
+				fwdListener, err := net.Listen("tcp", "localhost:0")
 				if err != nil {
 					log.Print("Failed to listen: ", err)
 					req.Reply(false, nil)

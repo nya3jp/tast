@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "14d145b4_3d9e15af",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 26
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2021-02-26T08:00:07Z",
+      "side": 1,
+      "message": "CQ fails on TestLocalSuccess unittest.\nhttps://logs.chromium.org/logs/chromeos/buildbucket/cr-buildbucket.appspot.com/8854300459921182064/+/steps/run_ebuild_tests/0/steps/call_chromite.api.TestService_BuildTargetUnitTest/0/steps/call_build_API_script/0/stdout\n\nI couldn\u0027t reproduce the exact same error, but I found if I decrease the timeout in TestLocalSuccess to 100ms, the test fails. Let me 10x the timeout and try again.",
+      "revId": "3d2bc5736b5e617a33cb1d0fb37146beaad90d98",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

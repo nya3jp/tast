@@ -82,6 +82,12 @@ func runRemoteTestsOnce(ctx context.Context, cfg *Config, state *State, patterns
 	if err != nil {
 		return nil, nil, err
 	}
+
+	buildArtifactsURL := cfg.buildArtifactsURL
+	if buildArtifactsURL == "" {
+		buildArtifactsURL = "gs://chromeos-image-archive/" + state.osVersion + "/"
+	}
+
 	args := runner.Args{
 		Mode: runner.RunTestsMode,
 		RunTests: &runner.RunTestsArgs{
@@ -105,12 +111,14 @@ func runRemoteTestsOnce(ctx context.Context, cfg *Config, state *State, patterns
 					"-localbundledir=" + cfg.localBundleDir,
 					"-localdatadir=" + cfg.localDataDir,
 					"-devservers=" + strings.Join(cfg.devservers, ","),
+					"-buildartifactsurl=" + buildArtifactsURL,
 				},
 				LocalBundleDir:    cfg.localBundleDir,
 				Devservers:        state.remoteDevservers,
 				TLWServer:         state.tlwServerForDUT,
 				DUTName:           cfg.Target,
 				HeartbeatInterval: heartbeatInterval,
+				BuildArtifactsURL: buildArtifactsURL,
 				DownloadMode:      cfg.downloadMode,
 			},
 			BundleGlob: cfg.remoteBundleGlob(),

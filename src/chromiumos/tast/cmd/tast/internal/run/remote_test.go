@@ -12,10 +12,11 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"reflect"
 	"strings"
 	gotesting "testing"
 	"time"
+
+	"github.com/google/go-cmp/cmp"
 
 	"chromiumos/tast/cmd/tast/internal/logging"
 	"chromiumos/tast/internal/bundle"
@@ -183,6 +184,7 @@ func TestRemoteRun(t *gotesting.T) {
 	td.cfg.remoteBundleDir = "/tmp/bundles"
 	td.cfg.remoteDataDir = "/tmp/data"
 	td.cfg.remoteOutDir = "/tmp/out"
+	td.cfg.buildArtifactsURL = mockBuildArtifactsURL
 
 	res, err := td.run(t)
 	if err != nil {
@@ -210,6 +212,7 @@ func TestRemoteRun(t *gotesting.T) {
 		"-localbundledir=" + td.cfg.localBundleDir,
 		"-localdatadir=" + td.cfg.localDataDir,
 		"-devservers=" + strings.Join(td.cfg.devservers, ","),
+		"-buildartifactsurl=" + mockBuildArtifactsURL,
 	}
 	expArgs := runner.Args{
 		Mode: runner.RunTestsMode,
@@ -226,13 +229,16 @@ func TestRemoteRun(t *gotesting.T) {
 					CheckSoftwareDeps: false,
 				},
 				Devservers:        mockDevservers,
+				BuildArtifactsURL: mockBuildArtifactsURL,
+
 				DownloadMode:      planner.DownloadLazy,
 				HeartbeatInterval: heartbeatInterval,
 			},
+			BuildArtifactsURLDeprecated: mockBuildArtifactsURL,
 		},
 	}
-	if !reflect.DeepEqual(td.args, expArgs) {
-		t.Errorf("runRemoteTests(%+v) passed args %+v; want %+v", td.cfg, td.args, expArgs)
+	if diff := cmp.Diff(td.args, expArgs, cmp.AllowUnexported(runner.Args{})); diff != "" {
+		t.Errorf("runRemoteTests(%+v) got unexpected argument (-got +want):\n%s", td.cfg, diff)
 	}
 }
 

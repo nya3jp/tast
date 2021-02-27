@@ -201,6 +201,7 @@ func TestRemoteRun(t *gotesting.T) {
 	td.cfg.remoteBundleDir = "/tmp/bundles"
 	td.cfg.remoteDataDir = "/tmp/data"
 	td.cfg.remoteOutDir = "/tmp/out"
+	td.cfg.buildArtifactsURL = mockBuildArtifactsURL
 
 	res, err := td.run(t)
 	if err != nil {
@@ -228,6 +229,7 @@ func TestRemoteRun(t *gotesting.T) {
 		"-localbundledir=" + td.cfg.localBundleDir,
 		"-localdatadir=" + td.cfg.localDataDir,
 		"-devservers=" + strings.Join(td.cfg.devservers, ","),
+		"-buildartifactsurl=" + mockBuildArtifactsURL,
 	}
 	expArgs := runner.Args{
 		Mode: runner.RunTestsMode,
@@ -244,9 +246,12 @@ func TestRemoteRun(t *gotesting.T) {
 					CheckSoftwareDeps: false,
 				},
 				Devservers:        mockDevservers,
+				BuildArtifactsURL: mockBuildArtifactsURL,
+
 				DownloadMode:      planner.DownloadLazy,
 				HeartbeatInterval: heartbeatInterval,
 			},
+			BuildArtifactsURLDeprecated: mockBuildArtifactsURL,
 		},
 	}
 	if diff := cmp.Diff(td.args, expArgs, cmpopts.IgnoreUnexported(expArgs)); diff != "" {

@@ -1,0 +1,84 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "72245184_85d97063",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-03-01T13:30:57Z",
+      "side": 1,
+      "message": "LGTM with nits, thanks!\n",
+      "revId": "b36662fd6e6f96d2b9d1909dcd5c7e242af8e713",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "044f77e3_1a427cf1",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/results.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-03-01T13:30:57Z",
+      "side": 1,
+      "message": "crrev.com/c/2725859 is landing very soon, I guess you have to rebase the change (sorry).",
+      "revId": "b36662fd6e6f96d2b9d1909dcd5c7e242af8e713",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "41c0c8d7_25d8db46",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/results.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 188,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-03-01T13:30:57Z",
+      "side": 1,
+      "message": "nit: I guess we want to do this before writing logs since we\u0027re also saving results.xml in cfg.ResDir.",
+      "range": {
+        "startLine": 188,
+        "startChar": 11,
+        "endLine": 188,
+        "endChar": 28
+      },
+      "revId": "b36662fd6e6f96d2b9d1909dcd5c7e242af8e713",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "837b67e1_6fef43e2",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/results.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 200,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-03-01T13:30:57Z",
+      "side": 1,
+      "message": "nit: Let\u0027s use ioutil.WriteFile since we don\u0027t need to open a stream. It can also handle write errors.",
+      "range": {
+        "startLine": 196,
+        "startChar": 1,
+        "endLine": 200,
+        "endChar": 16
+      },
+      "revId": "b36662fd6e6f96d2b9d1909dcd5c7e242af8e713",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

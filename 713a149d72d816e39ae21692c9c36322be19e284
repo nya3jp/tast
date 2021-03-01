@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "c517bd18_d60afbe5",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/results.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-03-01T08:04:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fee456a1_61731f79",
+      "revId": "713a149d72d816e39ae21692c9c36322be19e284",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "799655c0_e5595b97",
@@ -31,6 +49,30 @@
       "writtenOn": "2021-03-01T05:03:08Z",
       "side": 1,
       "message": "This function is meant to be a very simple wrapper of run.WriteResults (to replace its call in unit tests). Can you put this logic to inside run.WriteResults?",
+      "range": {
+        "startLine": 29,
+        "startChar": 1,
+        "endLine": 32,
+        "endChar": 48
+      },
+      "revId": "713a149d72d816e39ae21692c9c36322be19e284",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ac9049ec_6ca01ed2",
+        "filename": "src/chromiumos/tast/cmd/tast/run_wrapper.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-03-01T08:04:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "799655c0_e5595b97",
       "range": {
         "startLine": 29,
         "startChar": 1,

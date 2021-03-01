@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ecfe07fe_e60f984a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000191
+      },
+      "writtenOn": "2021-03-01T17:37:20Z",
+      "side": 1,
+      "message": "Switched from \u0027cellular_stable\u0027 attr to \u0027cellular_unstable\u0027 for unstable tests.\n\nPTAL\n",
+      "revId": "d36b096545290e44a01fce2e20b69324578e13a6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

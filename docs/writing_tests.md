@@ -51,6 +51,8 @@ If there's a support package that's specific to a single category, it's often
 best to place it underneath the category's directory. See the [Scoping and
 shared code] section.
 
+It's forbidden for `chromiumos/tast/remote/...` packages to import `chromiumos/tast/local/...` packages and vice versa. If local and remote packages should share the same code, put them in `chromiumos/tast/common/...`.
+
 [test bundles]: overview.md#Test-bundles
 [tast-tests repository]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD
 [tast-tests-private repository]: https://chrome-internal.googlesource.com/chromeos/platform/tast-tests-private/+/HEAD

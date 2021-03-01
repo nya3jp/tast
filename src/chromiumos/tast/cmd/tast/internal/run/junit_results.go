@@ -7,6 +7,8 @@ package run
 import (
 	"encoding/xml"
 	"fmt"
+
+	"chromiumos/tast/cmd/tast/internal/run/jsonprotocol"
 )
 
 // TestSuites is the top leve XML element of JUnit result.
@@ -55,7 +57,7 @@ type Skipped struct {
 }
 
 // ToJUnitResults marshalizes the Tast test results into JUnit XML format.
-func ToJUnitResults(results []*EntityResult) ([]byte, error) {
+func ToJUnitResults(results []*jsonprotocol.EntityResult) ([]byte, error) {
 	suites := TestSuites{
 		XMLName: xml.Name{Local: "testsuites"},
 		TestSuite: TestSuite{

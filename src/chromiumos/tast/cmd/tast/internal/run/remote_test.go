@@ -20,6 +20,7 @@ import (
 	"github.com/google/go-cmp/cmp/cmpopts"
 
 	"chromiumos/tast/cmd/tast/internal/logging"
+	"chromiumos/tast/cmd/tast/internal/run/jsonprotocol"
 	"chromiumos/tast/internal/bundle"
 	"chromiumos/tast/internal/control"
 	"chromiumos/tast/internal/planner"
@@ -166,7 +167,7 @@ func (td *remoteTestData) close() {
 }
 
 // run calls remote and records the Args struct that was passed to the fake runner.
-func (td *remoteTestData) run(t *gotesting.T) ([]*EntityResult, error) {
+func (td *remoteTestData) run(t *gotesting.T) ([]*jsonprotocol.EntityResult, error) {
 	res, rerr := runRemoteTests(context.Background(), &td.cfg, &td.state)
 
 	f, err := os.Open(filepath.Join(td.dir, fakeRunnerArgsFile))

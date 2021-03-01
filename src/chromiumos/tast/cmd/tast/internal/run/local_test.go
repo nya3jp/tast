@@ -23,6 +23,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 
 	"chromiumos/tast/cmd/tast/internal/logging"
+	"chromiumos/tast/cmd/tast/internal/run/jsonprotocol"
 	"chromiumos/tast/internal/bundle"
 	"chromiumos/tast/internal/command"
 	"chromiumos/tast/internal/control"
@@ -339,7 +340,7 @@ func checkArgs(t *gotesting.T, args, exp *runner.Args) {
 // errorCounts returns a map from test names in rs to the number of errors reported by each.
 // This is useful for tests that just want to quickly check the results of a test run.
 // Detailed tests for result generation are in results_test.go.
-func errorCounts(rs []*EntityResult) map[string]int {
+func errorCounts(rs []*jsonprotocol.EntityResult) map[string]int {
 	testErrs := make(map[string]int)
 	for _, r := range rs {
 		testErrs[r.Name] = len(r.Errors)
@@ -476,7 +477,7 @@ func TestLocalCopyOutput(t *gotesting.T) {
 		t.Fatal(err)
 	}
 
-	td.cfg.TestsToRun = []*EntityResult{{EntityInfo: testing.EntityInfo{
+	td.cfg.TestsToRun = []*jsonprotocol.EntityResult{{EntityInfo: testing.EntityInfo{
 		Name: testName,
 	}}}
 	if _, err := runLocalTests(context.Background(), &td.cfg, &td.state); err != nil {
@@ -522,7 +523,7 @@ func TestLocalWaitTimeout(t *gotesting.T) {
 
 	// Simulate local_test_runner writing control messages immediately but hanging before exiting.
 	td.runDelay = time.Minute
-	td.cfg.TestsToRun = []*EntityResult{{EntityInfo: testing.EntityInfo{Name: "pkg.Foo"}}}
+	td.cfg.TestsToRun = []*jsonprotocol.EntityResult{{EntityInfo: testing.EntityInfo{Name: "pkg.Foo"}}}
 	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
 		switch args.Mode {
 		case runner.RunTestsMode:
@@ -670,7 +671,7 @@ func TestLocalMaxFailures(t *gotesting.T) {
 		}
 		return 0
 	}
-	td.cfg.TestsToRun = []*EntityResult{{EntityInfo: testing.EntityInfo{Name: "pkg.Test"}}}
+	td.cfg.TestsToRun = []*jsonprotocol.EntityResult{{EntityInfo: testing.EntityInfo{Name: "pkg.Test"}}}
 	td.cfg.MaxTestFailures = 1
 	td.state.FailuresCount = 0
 	results, err := runLocalTests(context.Background(), &td.cfg, &td.state)
@@ -723,7 +724,7 @@ func TestFixturesDependency(t *gotesting.T) {
 		}
 		return 0
 	}
-	td.cfg.TestsToRun = []*EntityResult{
+	td.cfg.TestsToRun = []*jsonprotocol.EntityResult{
 		{EntityInfo: testing.EntityInfo{
 			Bundle:  "cros",
 			Fixture: "remoteFixt",

@@ -19,6 +19,7 @@ import (
 
 	"github.com/golang/protobuf/ptypes"
 
+	"chromiumos/tast/cmd/tast/internal/run/jsonprotocol"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/control"
 	"chromiumos/tast/internal/protocol"
@@ -43,33 +44,11 @@ const (
 	incompleteTestMsg = "Test did not finish" // error message for incomplete tests
 )
 
-// EntityResult contains the results from a single entity.
-// Fields are exported so they can be marshaled by the json package.
-type EntityResult struct {
-	// EntityInfo contains basic information about the entity.
-	testing.EntityInfo
-	// Errors contains errors encountered while running the entity.
-	// If it is empty, the entity passed.
-	Errors []EntityError `json:"errors"`
-	// Start is the time at which the entity started (as reported by the test bundle).
-	Start time.Time `json:"start"`
-	// End is the time at which the entity completed (as reported by the test bundle).
-	// It may hold the zero value (0001-01-01T00:00:00Z) to indicate that the entity did not complete
-	// (typically indicating that the test bundle, test runner, or DUT crashed mid-test).
-	// In this case, at least one error will also be present indicating that the entity was incomplete.
-	End time.Time `json:"end"`
-	// OutDir is the directory into which entity output is stored.
-	OutDir string `json:"outDir"`
-	// SkipReason contains a human-readable explanation of why the test was skipped.
-	// It is empty if the test actually ran.
-	SkipReason string `json:"skipReason"`
-}
-
 // entityState keeps track of states of a currently running entity.
 type entityState struct {
 	// result is the entity result message. It is modified as we receive control
 	// messages.
-	result EntityResult
+	result jsonprotocol.EntityResult
 
 	// logFile is a file handle of the log file for the entity.
 	logFile *os.File
@@ -84,16 +63,6 @@ type entityState struct {
 	// FinalOutDir is a directory path on the host where final output files
 	// for the test is saved.
 	FinalOutDir string
-}
-
-// EntityError describes an error that occurred while running an entity.
-// Most of its fields are defined in the Error struct in chromiumos/tast/testing.
-// This struct just adds an additional "Time" field.
-type EntityError struct {
-	// Time contains the time at which the error occurred (as reported by the test bundle).
-	Time time.Time `json:"time"`
-	// Error is an embedded struct describing the error.
-	testing.Error
 }
 
 // ErrTerminate is used when Tast shoulbe be terminated due to various reasons such as the case
@@ -111,7 +80,7 @@ var errUserReqTermination = errors.Wrap(ErrTerminate, "user requested tast to te
 // any tests failed) and false if it was aborted.
 // If cfg.CollectSysInfo is true, system information generated on the DUT during testing
 // (e.g. logs and crashes) will also be written to the results dir.
-func WriteResults(ctx context.Context, cfg *Config, state *State, results []*EntityResult, complete bool) error {
+func WriteResults(ctx context.Context, cfg *Config, state *State, results []*jsonprotocol.EntityResult, complete bool) error {
 	f, err := os.Create(filepath.Join(cfg.ResDir, resultsFilename))
 	if err != nil {
 		return err
@@ -202,18 +171,18 @@ type resultsHandler struct {
 	cfg   *Config
 	state *State
 
-	runStart, runEnd time.Time               // test-runner-reported times at which run started and ended
-	numTests         int                     // total number of tests that are expected to run
-	testsToRun       []string                // names of tests that will be run in their expected order
-	results          []*EntityResult         // information about tests seen so far; the last element can be ongoing and shared with current
-	currents         map[string]*entityState // currently-running entities, if any
-	seenTimes        map[string]int          // count of entity names seen so far
-	stage            *timing.Stage           // current test's timing stage
-	crf              copyAndRemoveFunc       // function used to copy and remove files from DUT
-	diagFunc         diagnoseRunErrorFunc    // called to diagnose run errors; may be nil
-	streamWriter     *streamedResultsWriter  // used to write results as control messages are read
-	pullers          sync.WaitGroup          // used to wait for puller goroutines
-	terminated       bool                    // testing will be terminated.
+	runStart, runEnd time.Time                    // test-runner-reported times at which run started and ended
+	numTests         int                          // total number of tests that are expected to run
+	testsToRun       []string                     // names of tests that will be run in their expected order
+	results          []*jsonprotocol.EntityResult // information about tests seen so far; the last element can be ongoing and shared with current
+	currents         map[string]*entityState      // currently-running entities, if any
+	seenTimes        map[string]int               // count of entity names seen so far
+	stage            *timing.Stage                // current test's timing stage
+	crf              copyAndRemoveFunc            // function used to copy and remove files from DUT
+	diagFunc         diagnoseRunErrorFunc         // called to diagnose run errors; may be nil
+	streamWriter     *streamedResultsWriter       // used to write results as control messages are read
+	pullers          sync.WaitGroup               // used to wait for puller goroutines
+	terminated       bool                         // testing will be terminated.
 }
 
 func newResultsHandler(cfg *Config, state *State, crf copyAndRemoveFunc, df diagnoseRunErrorFunc) (*resultsHandler, error) {
@@ -336,7 +305,7 @@ func (r *resultsHandler) handleTestStart(ctx context.Context, msg *control.Entit
 
 	finalOutDir := filepath.Join(r.cfg.ResDir, relFinalOutDir)
 	state := &entityState{
-		result: EntityResult{
+		result: jsonprotocol.EntityResult{
 			EntityInfo: msg.Info,
 			Start:      msg.Time,
 			OutDir:     finalOutDir,
@@ -395,7 +364,7 @@ func (r *resultsHandler) handleTestError(ctx context.Context, msg *control.Entit
 		return fmt.Errorf("got TestError message for %s while it was not running", msg.Name)
 	}
 
-	state.result.Errors = append(state.result.Errors, EntityError{msg.Time, msg.Error})
+	state.result.Errors = append(state.result.Errors, jsonprotocol.EntityError{Time: msg.Time, Error: msg.Error})
 
 	ts := msg.Time.Format(testOutputTimeFmt)
 	r.cfg.Logger.Logf("[%s] Error at %s:%d: %s", ts, filepath.Base(msg.Error.File), msg.Error.Line, msg.Error.Reason)
@@ -405,7 +374,7 @@ func (r *resultsHandler) handleTestError(ctx context.Context, msg *control.Entit
 	return nil
 }
 
-func (r *resultsHandler) reportResult(ctx context.Context, res *EntityResult) error {
+func (r *resultsHandler) reportResult(ctx context.Context, res *jsonprotocol.EntityResult) error {
 	if r.state.ReportsClient == nil {
 		return nil
 	}
@@ -587,12 +556,15 @@ func (r *resultsHandler) handleMessage(ctx context.Context, msg interface{}) err
 // run but were not started (likely due to an error). unstarted is nil if the list of
 // tests was unavailable; see readTestOutput.
 func (r *resultsHandler) processMessages(ctx context.Context, mch <-chan interface{}, ech <-chan error) (
-	results []*EntityResult, unstarted []string, err error) {
+	results []*jsonprotocol.EntityResult, unstarted []string, err error) {
 	// If a test is incomplete when we finish reading messages, rewrite its entry at the
 	// end of the streamed results file to make sure that all of its errors are recorded.
 	defer func() {
 		for _, state := range r.currents {
-			state.result.Errors = append(state.result.Errors, EntityError{time.Now(), testing.Error{Reason: incompleteTestMsg}})
+			state.result.Errors = append(state.result.Errors, jsonprotocol.EntityError{
+				Time:  time.Now(),
+				Error: testing.Error{Reason: incompleteTestMsg},
+			})
 			if state.result.Type == testing.EntityTest {
 				r.state.FailuresCount++
 				r.streamWriter.write(&state.result, true)
@@ -678,7 +650,10 @@ func (r *resultsHandler) processMessages(ctx context.Context, mch <-chan interfa
 		// log, and we also save it as an error within the test's result.
 		r.cfg.Logger.Log(msg)
 		if lastState != nil {
-			lastState.result.Errors = append(lastState.result.Errors, EntityError{time.Now(), testing.Error{Reason: msg}})
+			lastState.result.Errors = append(lastState.result.Errors, jsonprotocol.EntityError{
+				Time:  time.Now(),
+				Error: testing.Error{Reason: msg},
+			})
 		}
 		return r.results, unstarted, runErr
 	}
@@ -724,7 +699,7 @@ func (w *streamedResultsWriter) close() {
 // If update is true, the previous result that was written by this instance is overwritten.
 // Concurrent calls are not supported (note that tests are run serially, and runners send
 // control messages to the tast process serially as well).
-func (w *streamedResultsWriter) write(res *EntityResult, update bool) error {
+func (w *streamedResultsWriter) write(res *jsonprotocol.EntityResult, update bool) error {
 	var err error
 	if update {
 		// If we're replacing the last record, seek back to the beginning of it and leave the saved offset unmodified.
@@ -769,7 +744,7 @@ func readMessages(r io.Reader, mch chan<- interface{}, ech chan<- error) {
 //
 // df may be nil if diagnosis is unavailable.
 func readTestOutput(ctx context.Context, cfg *Config, state *State, r io.Reader, crf copyAndRemoveFunc, df diagnoseRunErrorFunc) (
-	results []*EntityResult, unstarted []string, err error) {
+	results []*jsonprotocol.EntityResult, unstarted []string, err error) {
 	rh, err := newResultsHandler(cfg, state, crf, df)
 	if err != nil {
 		return nil, nil, err

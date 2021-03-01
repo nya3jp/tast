@@ -18,6 +18,7 @@ import (
 	"time"
 
 	"chromiumos/tast/cmd/tast/internal/run/devserver"
+	"chromiumos/tast/cmd/tast/internal/run/jsonprotocol"
 	"chromiumos/tast/internal/bundle"
 	"chromiumos/tast/internal/runner"
 	"chromiumos/tast/internal/timing"
@@ -42,7 +43,7 @@ func startEphemeralDevserverForRemoteTests(ctx context.Context, cfg *Config, sta
 }
 
 // runRemoteTests runs the remote test runner and reads its output.
-func runRemoteTests(ctx context.Context, cfg *Config, state *State) ([]*EntityResult, error) {
+func runRemoteTests(ctx context.Context, cfg *Config, state *State) ([]*jsonprotocol.EntityResult, error) {
 	ctx, st := timing.Start(ctx, "run_remote_tests")
 	defer st.End()
 
@@ -53,7 +54,7 @@ func runRemoteTests(ctx context.Context, cfg *Config, state *State) ([]*EntityRe
 	// fails and the directory is left for debugging.
 	defer os.Remove(cfg.RemoteOutDir)
 
-	runTests := func(ctx context.Context, patterns []string) (results []*EntityResult, unstarted []string, err error) {
+	runTests := func(ctx context.Context, patterns []string) (results []*jsonprotocol.EntityResult, unstarted []string, err error) {
 		return runRemoteTestsOnce(ctx, cfg, state, patterns)
 	}
 	beforeRetry := func(ctx context.Context) bool { return true }
@@ -75,7 +76,7 @@ func runRemoteTests(ctx context.Context, cfg *Config, state *State) ([]*EntityRe
 // Results from started tests and the names of tests that should have been
 // started but weren't (in the order in which they should've been run) are
 // returned.
-func runRemoteTestsOnce(ctx context.Context, cfg *Config, state *State, patterns []string) (results []*EntityResult, unstarted []string, err error) {
+func runRemoteTestsOnce(ctx context.Context, cfg *Config, state *State, patterns []string) (results []*jsonprotocol.EntityResult, unstarted []string, err error) {
 	ctx, st := timing.Start(ctx, "run_remote_tests_once")
 	defer st.End()
 

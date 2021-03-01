@@ -7,6 +7,7 @@ package run
 import (
 	"context"
 
+	"chromiumos/tast/cmd/tast/internal/run/jsonprotocol"
 	"chromiumos/tast/internal/bundle"
 	"chromiumos/tast/internal/runner"
 	"chromiumos/tast/internal/testing"
@@ -14,7 +15,7 @@ import (
 )
 
 // listTests returns the whole tests to run.
-func listTests(ctx context.Context, cfg *Config, state *State) ([]*EntityResult, error) {
+func listTests(ctx context.Context, cfg *Config, state *State) ([]*jsonprotocol.EntityResult, error) {
 	testsToRun, testsToSkip, _, err := findTestsForShard(ctx, cfg, state)
 	if err != nil {
 		return nil, err
@@ -26,7 +27,7 @@ func listTests(ctx context.Context, cfg *Config, state *State) ([]*EntityResult,
 }
 
 // listAllTests returns the whole tests whether they will be skipped or not..
-func listAllTests(ctx context.Context, cfg *Config, state *State) ([]*EntityResult, error) {
+func listAllTests(ctx context.Context, cfg *Config, state *State) ([]*jsonprotocol.EntityResult, error) {
 	var tests []testing.EntityWithRunnabilityInfo
 	if cfg.RunLocal {
 		hst, err := connectToTarget(ctx, cfg, state)
@@ -47,9 +48,9 @@ func listAllTests(ctx context.Context, cfg *Config, state *State) ([]*EntityResu
 		tests = append(tests, remoteTests...)
 	}
 
-	results := make([]*EntityResult, len(tests))
+	results := make([]*jsonprotocol.EntityResult, len(tests))
 	for i := 0; i < len(tests); i++ {
-		results[i] = &EntityResult{EntityInfo: tests[i].EntityInfo, SkipReason: tests[i].SkipReason}
+		results[i] = &jsonprotocol.EntityResult{EntityInfo: tests[i].EntityInfo, SkipReason: tests[i].SkipReason}
 	}
 	return results, nil
 }

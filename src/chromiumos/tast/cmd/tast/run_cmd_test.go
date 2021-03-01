@@ -19,6 +19,7 @@ import (
 
 	"chromiumos/tast/cmd/tast/internal/logging"
 	"chromiumos/tast/cmd/tast/internal/run"
+	"chromiumos/tast/cmd/tast/internal/run/jsonprotocol"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/testutil"
 )
@@ -53,7 +54,7 @@ func TestRunConfig(t *gotesting.T) {
 		test2  = "pkg.Test2"
 	)
 	args := []string{target, test1, test2}
-	wrapper := stubRunWrapper{runRes: []*run.EntityResult{}}
+	wrapper := stubRunWrapper{runRes: []*jsonprotocol.EntityResult{}}
 	executeRunCmd(t, args, &wrapper, logging.NewDiscard())
 	if wrapper.runCfg.Target != target {
 		t.Errorf("runCmd.Execute(%v) passed target %q; want %q", args, wrapper.runCfg.Target, target)
@@ -66,7 +67,7 @@ func TestRunConfig(t *gotesting.T) {
 func TestRunNoResults(t *gotesting.T) {
 	// The run should fail if no tests were matched.
 	args := []string{"root@example.net"}
-	wrapper := stubRunWrapper{runRes: []*run.EntityResult{}}
+	wrapper := stubRunWrapper{runRes: []*jsonprotocol.EntityResult{}}
 	if status := executeRunCmd(t, args, &wrapper, logging.NewDiscard()); status != subcommands.ExitFailure {
 		t.Fatalf("runCmd.Execute(%v) returned status %v; want %v", args, status, subcommands.ExitFailure)
 	}
@@ -74,10 +75,10 @@ func TestRunNoResults(t *gotesting.T) {
 
 func TestRunResults(t *gotesting.T) {
 	// As long as results were returned and no run-level errors occurred, success should be reported.
-	wrapper := stubRunWrapper{runRes: []*run.EntityResult{
+	wrapper := stubRunWrapper{runRes: []*jsonprotocol.EntityResult{
 		{
 			EntityInfo: testing.EntityInfo{Name: "pkg.LocalTest"},
-			Errors:     []run.EntityError{{}},
+			Errors:     []jsonprotocol.EntityError{{}},
 		},
 	}}
 	args := []string{"root@example.net"}
@@ -108,7 +109,7 @@ func TestRunExecFailure(t *gotesting.T) {
 	// If tests fail to be executed, an error should be reported.
 	const msg = "exec failed"
 	wrapper := stubRunWrapper{
-		runRes:    []*run.EntityResult{{EntityInfo: testing.EntityInfo{Name: "pkg.LocalTest"}}},
+		runRes:    []*jsonprotocol.EntityResult{{EntityInfo: testing.EntityInfo{Name: "pkg.LocalTest"}}},
 		runStatus: run.Status{ExitCode: subcommands.ExitFailure, ErrorMsg: msg + "\nmore details"},
 	}
 	args := []string{"root@example.net"}
@@ -138,7 +139,7 @@ func TestRunWriteFailure(t *gotesting.T) {
 	// If writing results fails, an error should be reported.
 	const msg = "writing failed"
 	wrapper := stubRunWrapper{
-		runRes:   []*run.EntityResult{{EntityInfo: testing.EntityInfo{Name: "pkg.LocalTest"}}},
+		runRes:   []*jsonprotocol.EntityResult{{EntityInfo: testing.EntityInfo{Name: "pkg.LocalTest"}}},
 		writeErr: errors.New(msg),
 	}
 	args := []string{"root@example.net"}
@@ -161,7 +162,7 @@ func TestRunWriteResultsWithZeroTests(t *gotesting.T) {
 	// should still be called to ensure that system information is collected from the
 	// DUT: https://crbug.com/928445
 	wrapper := stubRunWrapper{
-		runRes:    []*run.EntityResult{}, // no tests were executed
+		runRes:    []*jsonprotocol.EntityResult{}, // no tests were executed
 		runStatus: run.Status{ExitCode: subcommands.ExitFailure, ErrorMsg: "testing failed"},
 	}
 	args := []string{"root@example.net"}
@@ -177,7 +178,7 @@ func TestRunDontWriteResultsForEarlyFailure(t *gotesting.T) {
 	// If we fail before trying to run tests (e.g. during compilation),
 	// writeResults shouldn't be called.
 	wrapper := stubRunWrapper{
-		runRes: []*run.EntityResult{}, // no tests were executed
+		runRes: []*jsonprotocol.EntityResult{}, // no tests were executed
 		runStatus: run.Status{
 			ExitCode:        subcommands.ExitFailure,
 			ErrorMsg:        "compilation failed",
@@ -195,7 +196,7 @@ func TestRunDontWriteResultsForEarlyFailure(t *gotesting.T) {
 
 func TestRunReserveTimeToWriteResults(t *gotesting.T) {
 	wrapper := stubRunWrapper{
-		runRes: []*run.EntityResult{{EntityInfo: testing.EntityInfo{Name: "pkg.Test"}}},
+		runRes: []*jsonprotocol.EntityResult{{EntityInfo: testing.EntityInfo{Name: "pkg.Test"}}},
 	}
 	executeRunCmd(t, []string{"-timeout=3600", "root@example.net"}, &wrapper, logging.NewDiscard())
 

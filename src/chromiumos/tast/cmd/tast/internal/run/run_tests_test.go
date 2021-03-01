@@ -13,6 +13,7 @@ import (
 	gotesting "testing"
 	"time"
 
+	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/internal/control"
 	"chromiumos/tast/internal/dep"
 	"chromiumos/tast/internal/runner"
@@ -28,7 +29,7 @@ func TestRunTestsFailureBeforeRun(t *gotesting.T) {
 	// to run tests. local() shouldn't set StartedRun to true since we failed before then.
 	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) { return 1 }
 	td.cfg.CheckTestDeps = true
-	var state State
+	var state config.State
 	if _, err := runTests(context.Background(), &td.cfg, &state); err == nil {
 		t.Errorf("runTests unexpectedly passed")
 	} else if state.StartedRun {
@@ -239,7 +240,7 @@ func TestFindPatternsForShard(t *gotesting.T) {
 	td.cfg.RunRemote = true
 	td.cfg.TotalShards = 3
 	processed := make(map[string]bool)
-	var state State
+	var state config.State
 	for shardIndex := 0; shardIndex < td.cfg.TotalShards; shardIndex++ {
 		td.cfg.ShardIndex = shardIndex
 		testsToRun, testsToSkip, testsNotInShard, err := findTestsForShard(context.Background(), &td.cfg, &state)

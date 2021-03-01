@@ -22,6 +22,7 @@ import (
 	"google.golang.org/grpc"
 
 	"chromiumos/tast/cmd/tast/internal/build"
+	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/jsonprotocol"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/runner"
@@ -47,7 +48,7 @@ var successStatus = Status{}
 
 // errorStatusf returns a Status describing a failing run. format and args are combined to produce the error
 // message, which is both logged to cfg.Logger and included in the returned status.
-func errorStatusf(cfg *Config, code subcommands.ExitStatus, format string, args ...interface{}) Status {
+func errorStatusf(cfg *config.Config, code subcommands.ExitStatus, format string, args ...interface{}) Status {
 	msg := fmt.Sprintf(format, args...)
 	cfg.Logger.Log(msg)
 	return Status{ExitCode: code, ErrorMsg: msg}
@@ -57,7 +58,7 @@ func errorStatusf(cfg *Config, code subcommands.ExitStatus, format string, args 
 // Messages are logged using cfg.Logger as the run progresses.
 // If an error is encountered, status.ErrorMsg will be logged to cfg.Logger before returning,
 // but the caller may wish to log it again later to increase its prominence if additional messages are logged.
-func Run(ctx context.Context, cfg *Config, state *State) (status Status, results []*jsonprotocol.EntityResult) {
+func Run(ctx context.Context, cfg *config.Config, state *config.State) (status Status, results []*jsonprotocol.EntityResult) {
 	defer func() {
 		// If we didn't get to the point where we started trying to run tests,
 		// report that to the caller so they can avoid writing a useless results dir.
@@ -145,13 +146,13 @@ func Run(ctx context.Context, cfg *Config, state *State) (status Status, results
 	}
 
 	switch cfg.Mode {
-	case ListTestsMode:
+	case config.ListTestsMode:
 		results, err := listTests(ctx, cfg, state)
 		if err != nil {
 			return errorStatusf(cfg, subcommands.ExitFailure, "Failed to list tests: %v", err), nil
 		}
 		return successStatus, results
-	case RunTestsMode:
+	case config.RunTestsMode:
 		results, err := runTests(ctx, cfg, state)
 		if err != nil {
 			return errorStatusf(cfg, subcommands.ExitFailure, "Failed to run tests: %v", err), results
@@ -164,7 +165,7 @@ func Run(ctx context.Context, cfg *Config, state *State) (status Status, results
 
 // connectToTLW connects to a TLW service if its address is provided, and stores
 // the connection to state.TLWConn.
-func connectToTLW(ctx context.Context, cfg *Config, state *State) error {
+func connectToTLW(ctx context.Context, cfg *config.Config, state *config.State) error {
 	if cfg.TLWServer == "" {
 		return nil
 	}
@@ -178,7 +179,7 @@ func connectToTLW(ctx context.Context, cfg *Config, state *State) error {
 }
 
 // connectToReports connects to the Reports server.
-func connectToReports(ctx context.Context, cfg *Config, state *State) error {
+func connectToReports(ctx context.Context, cfg *config.Config, state *config.State) error {
 	if cfg.ReportsServer == "" {
 		return nil
 	}
@@ -191,7 +192,7 @@ func connectToReports(ctx context.Context, cfg *Config, state *State) error {
 }
 
 // resolveTarget resolves cfg.Target using the TLW service if available.
-func resolveTarget(ctx context.Context, cfg *Config, state *State) error {
+func resolveTarget(ctx context.Context, cfg *config.Config, state *config.State) error {
 	if state.TLWConn == nil {
 		return nil
 	}
@@ -224,7 +225,7 @@ func resolveTarget(ctx context.Context, cfg *Config, state *State) error {
 // prepare prepares the DUT for running tests. When instructed in cfg, it builds
 // and pushes the local test runner and test bundles, and downloads private test
 // bundles.
-func prepare(ctx context.Context, cfg *Config, state *State, hst *ssh.Conn) error {
+func prepare(ctx context.Context, cfg *config.Config, state *config.State, hst *ssh.Conn) error {
 	if cfg.Build && cfg.DownloadPrivateBundles {
 		// Usually it makes no sense to download prebuilt private bundles when
 		// building and pushing a fresh test bundle.
@@ -264,7 +265,7 @@ func prepare(ctx context.Context, cfg *Config, state *State, hst *ssh.Conn) erro
 }
 
 // buildAll builds Go binaries as instructed in cfg.
-func buildAll(ctx context.Context, cfg *Config, state *State, hst *ssh.Conn) error {
+func buildAll(ctx context.Context, cfg *config.Config, state *config.State, hst *ssh.Conn) error {
 	if err := getTargetArch(ctx, cfg, state, hst); err != nil {
 		return fmt.Errorf("failed to get arch for %s: %v", cfg.Target, err)
 	}
@@ -319,7 +320,7 @@ func buildAll(ctx context.Context, cfg *Config, state *State, hst *ssh.Conn) err
 // saves it to state.TargetArch. Note that this can be different from the kernel architecture
 // returned by "uname -m" on some boards (e.g. aarch64 kernel with armv7l userland).
 // TODO(crbug.com/982184): Get rid of this function.
-func getTargetArch(ctx context.Context, cfg *Config, state *State, hst *ssh.Conn) error {
+func getTargetArch(ctx context.Context, cfg *config.Config, state *config.State, hst *ssh.Conn) error {
 	if state.TargetArch != "" {
 		return nil
 	}
@@ -351,7 +352,7 @@ func getTargetArch(ctx context.Context, cfg *Config, state *State, hst *ssh.Conn
 // and local test data files to the DUT if necessary. If cfg.mode is
 // ListTestsMode data files are not pushed since they are not needed to build
 // a list of tests.
-func pushAll(ctx context.Context, cfg *Config, state *State, hst *ssh.Conn) error {
+func pushAll(ctx context.Context, cfg *config.Config, state *config.State, hst *ssh.Conn) error {
 	ctx, st := timing.Start(ctx, "push")
 	defer st.End()
 
@@ -361,7 +362,7 @@ func pushAll(ctx context.Context, cfg *Config, state *State, hst *ssh.Conn) erro
 		return fmt.Errorf("failed to push local executables: %v", err)
 	}
 
-	if !cfg.RunLocal || cfg.Mode == ListTestsMode {
+	if !cfg.RunLocal || cfg.Mode == config.ListTestsMode {
 		return nil
 	}
 
@@ -381,7 +382,7 @@ func pushAll(ctx context.Context, cfg *Config, state *State, hst *ssh.Conn) erro
 
 // pushExecutables pushes the freshly built local test runner, local test bundle
 // executable to the DUT if necessary.
-func pushExecutables(ctx context.Context, cfg *Config, state *State, hst *ssh.Conn) error {
+func pushExecutables(ctx context.Context, cfg *config.Config, state *config.State, hst *ssh.Conn) error {
 	srcDir := filepath.Join(cfg.BuildOutDir, state.TargetArch)
 
 	// local_test_runner is required even if we are running only remote tests,
@@ -409,7 +410,7 @@ func pushExecutables(ctx context.Context, cfg *Config, state *State, hst *ssh.Co
 
 // getDataFilePaths returns the paths to data files needed for running cfg.Patterns on hst.
 // The returned paths are relative to the test bundle directory, i.e. they take the form "<category>/data/<filename>".
-func getDataFilePaths(ctx context.Context, cfg *Config, state *State, hst *ssh.Conn) (
+func getDataFilePaths(ctx context.Context, cfg *config.Config, state *config.State, hst *ssh.Conn) (
 	paths []string, err error) {
 	ctx, st := timing.Start(ctx, "get_data_paths")
 	defer st.End()
@@ -452,7 +453,7 @@ func getDataFilePaths(ctx context.Context, cfg *Config, state *State, hst *ssh.C
 // destDir is the data directory for this bundle, e.g. "/usr/share/tast/data/local/chromiumos/tast/local/bundles/cros".
 // The file paths are relative to the test bundle dir, i.e. paths take the form "<category>/data/<filename>".
 // Otherwise, files will be copied from cfg.BuildWorkspace.
-func pushDataFiles(ctx context.Context, cfg *Config, hst *ssh.Conn, destDir string, paths []string) error {
+func pushDataFiles(ctx context.Context, cfg *config.Config, hst *ssh.Conn, destDir string, paths []string) error {
 	ctx, st := timing.Start(ctx, "push_data")
 	defer st.End()
 
@@ -506,7 +507,7 @@ func pushDataFiles(ctx context.Context, cfg *Config, hst *ssh.Conn, destDir stri
 // An archive contains Go executables of local test bundles and their associated
 // internal data files and external data link files. Note that remote test
 // bundles are not included in archives.
-func downloadPrivateBundles(ctx context.Context, cfg *Config, state *State, hst *ssh.Conn) error {
+func downloadPrivateBundles(ctx context.Context, cfg *config.Config, state *config.State, hst *ssh.Conn) error {
 	ctx, st := timing.Start(ctx, "download_private_bundles")
 	defer st.End()
 

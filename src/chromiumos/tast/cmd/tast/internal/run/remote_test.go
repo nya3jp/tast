@@ -20,6 +20,7 @@ import (
 	"github.com/google/go-cmp/cmp/cmpopts"
 
 	"chromiumos/tast/cmd/tast/internal/logging"
+	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/jsonprotocol"
 	"chromiumos/tast/internal/bundle"
 	"chromiumos/tast/internal/control"
@@ -88,11 +89,11 @@ func runFakeRunner() int {
 
 // remoteTestData holds data corresponding to the current unit test.
 type remoteTestData struct {
-	dir    string       // temp dir
-	logbuf bytes.Buffer // logging output
-	cfg    Config       // config passed to remote
-	state  State        // state passed to remote
-	args   runner.Args  // args that were passed to fake runner
+	dir    string        // temp dir
+	logbuf bytes.Buffer  // logging output
+	cfg    config.Config // config passed to remote
+	state  config.State  // state passed to remote
+	args   runner.Args   // args that were passed to fake runner
 }
 
 type fakeRemoteRunnerData struct {

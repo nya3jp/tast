@@ -13,6 +13,7 @@ import (
 	"strings"
 	"time"
 
+	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/internal/testingutil"
 	"chromiumos/tast/ssh"
 )
@@ -29,7 +30,7 @@ func readBootID(ctx context.Context, hst *ssh.Conn) (string, error) {
 // diagnoseSSHDrop diagnoses a SSH connection drop during local test runs
 // and returns a diagnosis message. Files useful for diagnosis might be saved
 // under outDir.
-func diagnoseSSHDrop(ctx context.Context, cfg *Config, state *State, outDir string) string {
+func diagnoseSSHDrop(ctx context.Context, cfg *config.Config, state *config.State, outDir string) string {
 	if state.InitBootID == "" {
 		return "failed to diagnose: initial boot_id is not available"
 	}
@@ -76,7 +77,7 @@ var (
 // diagnoseReboot diagnoses the target reboot during local test runs
 // and returns a diagnosis message. Files useful for diagnosis might be saved
 // under outDir.
-func diagnoseReboot(ctx context.Context, cfg *Config, state *State, outDir string) string {
+func diagnoseReboot(ctx context.Context, cfg *config.Config, state *config.State, outDir string) string {
 	// Read the unified system log just before the reboot.
 	denseBootID := strings.Replace(state.InitBootID, "-", "", -1)
 	out, err := state.Hst.Command("croslog", "--quiet", "--boot="+denseBootID, "--lines=1000").Output(ctx)

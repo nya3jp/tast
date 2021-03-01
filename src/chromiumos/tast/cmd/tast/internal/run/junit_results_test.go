@@ -11,6 +11,7 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 
+	"chromiumos/tast/cmd/tast/internal/run/jsonprotocol"
 	"chromiumos/tast/internal/testing"
 )
 
@@ -29,26 +30,26 @@ func TestWriteJUnitResults(t *gotesting.T) {
 	failedTest.Name = "example.Fail"
 	skippedTest.Desc = "Failed test"
 	timeZone := time.FixedZone("Local", 9*60*60)
-	results := []*EntityResult{
-		&EntityResult{
+	results := []*jsonprotocol.EntityResult{
+		&jsonprotocol.EntityResult{
 			EntityInfo: passedTest,
-			Errors:     []EntityError{},
+			Errors:     []jsonprotocol.EntityError{},
 			Start:      time.Date(2021, 2, 3, 19, 00, 02, 0, timeZone),
 			End:        time.Date(2021, 2, 3, 19, 00, 03, 0, timeZone),
 			OutDir:     "/tmp/tast/results/20210203-1000/tests/example.Pass",
 			SkipReason: "",
 		},
-		&EntityResult{
+		&jsonprotocol.EntityResult{
 			EntityInfo: skippedTest,
-			Errors:     []EntityError{},
+			Errors:     []jsonprotocol.EntityError{},
 			Start:      time.Date(2021, 2, 3, 19, 00, 03, 0, timeZone),
 			End:        time.Date(2021, 2, 3, 19, 00, 05, 0, timeZone),
 			OutDir:     "/tmp/tast/results/20210203-1000/tests/example.Skipped",
 			SkipReason: "skipped by a certain reason",
 		},
-		&EntityResult{
+		&jsonprotocol.EntityResult{
 			EntityInfo: failedTest,
-			Errors: []EntityError{
+			Errors: []jsonprotocol.EntityError{
 				{
 					Error: testing.Error{
 						File:   "/home/user/trunk/src/platform/tast/src/chromiumos/tast/internal/planner/run.go",

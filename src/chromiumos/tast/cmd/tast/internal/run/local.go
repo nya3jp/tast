@@ -19,6 +19,7 @@ import (
 	"github.com/golang/protobuf/ptypes"
 
 	"chromiumos/tast/cmd/tast/internal/run/devserver"
+	"chromiumos/tast/cmd/tast/internal/run/jsonprotocol"
 	"chromiumos/tast/ctxutil"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/bundle"
@@ -422,7 +423,7 @@ func runFixtureAndTests(ctx context.Context, cfg *Config, state *State, rfcl bun
 // runLocalTests executes tests as described by cfg on hst and returns the
 // results. It is only used for RunTestsMode.
 // It can return partial results and an error when error happens mid-tests.
-func runLocalTests(ctx context.Context, cfg *Config, state *State) (res []*EntityResult, retErr error) {
+func runLocalTests(ctx context.Context, cfg *Config, state *State) (res []*jsonprotocol.EntityResult, retErr error) {
 	ctx, st := timing.Start(ctx, "run_local_tests")
 	defer st.End()
 
@@ -457,7 +458,7 @@ func runLocalTests(ctx context.Context, cfg *Config, state *State) (res []*Entit
 
 	start := time.Now()
 
-	var entityResults []*EntityResult
+	var entityResults []*jsonprotocol.EntityResult
 	for _, bt := range bundleRemoteFixtTests {
 		cfg.Logger.Logf("Running tests in bundle %v", bt.bundle)
 
@@ -490,7 +491,7 @@ func runLocalTests(ctx context.Context, cfg *Config, state *State) (res []*Entit
 // runLocalTestsForFixture runs given local tests in between remote fixture
 // set up and tear down.
 // It can return partial results and an error when error happens mid-tests.
-func runLocalTestsForFixture(ctx context.Context, names []string, remoteFixt string, setUpErrs []string, cfg *Config, state *State) ([]*EntityResult, error) {
+func runLocalTestsForFixture(ctx context.Context, names []string, remoteFixt string, setUpErrs []string, cfg *Config, state *State) ([]*jsonprotocol.EntityResult, error) {
 	hst, err := connectToTarget(ctx, cfg, state)
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed to connect to %s; remoteFixt = %q", cfg.Target, remoteFixt)
@@ -524,7 +525,7 @@ func runLocalTestsForFixture(ctx context.Context, names []string, remoteFixt str
 		}
 		return true
 	}
-	runTests := func(ctx context.Context, patterns []string) (results []*EntityResult, unstarted []string, err error) {
+	runTests := func(ctx context.Context, patterns []string) (results []*jsonprotocol.EntityResult, unstarted []string, err error) {
 		return runLocalTestsOnce(ctx, cfg, state, hst, patterns, remoteFixt, setUpErrs)
 	}
 
@@ -577,7 +578,7 @@ func startLocalRunner(ctx context.Context, cfg *Config, hst *ssh.Conn, args *run
 // started but weren't (in the order in which they should've been run) are
 // returned.
 func runLocalTestsOnce(ctx context.Context, cfg *Config, state *State, hst *ssh.Conn, patterns []string, startFixtureName string, setUpErrs []string) (
-	results []*EntityResult, unstarted []string, err error) {
+	results []*jsonprotocol.EntityResult, unstarted []string, err error) {
 	ctx, st := timing.Start(ctx, "run_local_tests_once")
 	defer st.End()
 

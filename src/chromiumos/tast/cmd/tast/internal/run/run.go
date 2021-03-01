@@ -22,6 +22,7 @@ import (
 	"google.golang.org/grpc"
 
 	"chromiumos/tast/cmd/tast/internal/build"
+	"chromiumos/tast/cmd/tast/internal/run/jsonprotocol"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/runner"
 	"chromiumos/tast/internal/sshconfig"
@@ -56,7 +57,7 @@ func errorStatusf(cfg *Config, code subcommands.ExitStatus, format string, args 
 // Messages are logged using cfg.Logger as the run progresses.
 // If an error is encountered, status.ErrorMsg will be logged to cfg.Logger before returning,
 // but the caller may wish to log it again later to increase its prominence if additional messages are logged.
-func Run(ctx context.Context, cfg *Config, state *State) (status Status, results []*EntityResult) {
+func Run(ctx context.Context, cfg *Config, state *State) (status Status, results []*jsonprotocol.EntityResult) {
 	defer func() {
 		// If we didn't get to the point where we started trying to run tests,
 		// report that to the caller so they can avoid writing a useless results dir.

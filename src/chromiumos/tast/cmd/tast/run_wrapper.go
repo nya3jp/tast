@@ -8,23 +8,24 @@ import (
 	"context"
 
 	"chromiumos/tast/cmd/tast/internal/run"
+	"chromiumos/tast/cmd/tast/internal/run/jsonprotocol"
 )
 
 // runWrapper is a wrapper that allows functions from the run package to be stubbed out for testing.
 type runWrapper interface {
 	// run calls run.Run.
-	run(ctx context.Context, cfg *run.Config, state *run.State) (run.Status, []*run.EntityResult)
+	run(ctx context.Context, cfg *run.Config, state *run.State) (run.Status, []*jsonprotocol.EntityResult)
 	// writeResults calls run.WriteResults.
-	writeResults(ctx context.Context, cfg *run.Config, state *run.State, results []*run.EntityResult, complete bool) error
+	writeResults(ctx context.Context, cfg *run.Config, state *run.State, results []*jsonprotocol.EntityResult, complete bool) error
 }
 
 // realRunWrapper is a runWrapper implementation that calls the real functions in the run package.
 type realRunWrapper struct{}
 
-func (w realRunWrapper) run(ctx context.Context, cfg *run.Config, state *run.State) (run.Status, []*run.EntityResult) {
+func (w realRunWrapper) run(ctx context.Context, cfg *run.Config, state *run.State) (run.Status, []*jsonprotocol.EntityResult) {
 	return run.Run(ctx, cfg, state)
 }
 
-func (w realRunWrapper) writeResults(ctx context.Context, cfg *run.Config, state *run.State, results []*run.EntityResult, complete bool) error {
+func (w realRunWrapper) writeResults(ctx context.Context, cfg *run.Config, state *run.State, results []*jsonprotocol.EntityResult, complete bool) error {
 	return run.WriteResults(ctx, cfg, state, results, complete)
 }

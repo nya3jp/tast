@@ -11,7 +11,8 @@ option go_package = "chromiumos/tast/internal/protocol";
 service FileTransfer {
   // PullDirectory transfers a directory on the DUT as a tar archive.
   // The directory is removed after transfer.
-  rpc PullDirectory (PullDirectoryRequest) returns (stream PullDirectoryResponse) {}
+  rpc PullDirectory(PullDirectoryRequest)
+      returns (stream PullDirectoryResponse) {}
 }
 
 message PullDirectoryRequest {

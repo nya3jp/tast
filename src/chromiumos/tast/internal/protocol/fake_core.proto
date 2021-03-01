@@ -12,5 +12,5 @@ option go_package = "chromiumos/tast/internal/protocol";
 
 // PingCore is a fake core service for unit tests.
 service PingCore {
-  rpc Ping (google.protobuf.Empty) returns (google.protobuf.Empty) {}
+  rpc Ping(google.protobuf.Empty) returns (google.protobuf.Empty) {}
 }

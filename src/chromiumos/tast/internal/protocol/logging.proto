@@ -14,11 +14,10 @@ service Logging {
   // sent back as a stream as logs are emitted. The response stream is closed
   // when the client closes the request stream or any error occurs.
   // At most one client can have an active call of this method at a time.
-  rpc ReadLogs (stream ReadLogsRequest) returns (stream ReadLogsResponse) {}
+  rpc ReadLogs(stream ReadLogsRequest) returns (stream ReadLogsResponse) {}
 }
 
-message ReadLogsRequest {
-}
+message ReadLogsRequest {}
 
 message ReadLogsResponse {
   // entry is an emitted log entry. It is missing for an initial

@@ -16,7 +16,6 @@ import "device/variant_id.proto";
 // These are the globally unique identifiers that determine what set of
 // configuration data is used for a given device.
 message ConfigId {
-
   // Required. 
   PlatformId platform_id = 1;
 

@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "08e9cbf4_9099ef1a",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 5
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1158184
+      },
+      "writtenOn": "2021-03-01T20:26:24Z",
+      "side": 1,
+      "message": "Also add b/178529170 maybe?",
+      "range": {
+        "startLine": 13,
+        "startChar": 0,
+        "endLine": 13,
+        "endChar": 3
+      },
+      "revId": "b8428101e45723796f1cf3cdd73f4c49720b02f8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5291ffdf_8eb9e02c",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 155,
+      "author": {
+        "id": 1158184
+      },
+      "writtenOn": "2021-03-01T20:26:24Z",
+      "side": 1,
+      "message": "b/178529170 is the real bug",
+      "range": {
+        "startLine": 155,
+        "startChar": 123,
+        "endLine": 155,
+        "endChar": 134
+      },
+      "revId": "b8428101e45723796f1cf3cdd73f4c49720b02f8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

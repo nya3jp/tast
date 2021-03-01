@@ -33,6 +33,52 @@
       "message": "The change looks correct, but I defer to nya@ for more context/decisions.\n- The \"artifacts\" with the gs path looks chrimium-specific. Is it OK to have that logic in here?",
       "revId": "3f1074442f3aaf5c32a6c656ef2bf99cb40626e1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "adcde73d_a7fba152",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/remote.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-03-01T08:07:33Z",
+      "side": 1,
+      "message": "I want to avoid hard-coding this URL here.\n\nThe source-of-truth of the URL is defined here.\nhttps://source.corp.google.com/chromeos_public/src/platform/tast/src/chromiumos/tast/cmd/local_test_runner/main.go;rcl\u003d9c17c2e0182e18736f4eca209d0a6a543099a35f;l\u003d225\n\nMy recommendation is to extend GetDUTInfo to return DefaultBuildArtifactsURL in GetDUTInfoResult.\nhttps://source.corp.google.com/chromeos_public/src/platform/tast/src/chromiumos/tast/internal/runner/args.go;rcl\u003d1c1362fc30c78adc5d00069d086dcc0a98fbcc96;l\u003d228",
+      "range": {
+        "startLine": 88,
+        "startChar": 2,
+        "endLine": 88,
+        "endChar": 76
+      },
+      "revId": "3f1074442f3aaf5c32a6c656ef2bf99cb40626e1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4bddf480_99090128",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/remote.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 114,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-03-01T08:07:33Z",
+      "side": 1,
+      "message": "This is a good catch!",
+      "range": {
+        "startLine": 114,
+        "startChar": 5,
+        "endLine": 114,
+        "endChar": 47
+      },
+      "revId": "3f1074442f3aaf5c32a6c656ef2bf99cb40626e1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

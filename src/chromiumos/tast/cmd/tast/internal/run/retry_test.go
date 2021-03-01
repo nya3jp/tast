@@ -45,7 +45,7 @@ func beforeRetrySuccess(ctx context.Context) bool {
 func TestRunTestsWithRetry(t *testing.T) {
 	cfg := &Config{
 		Logger:               logging.NewSimple(ioutil.Discard, false, false),
-		continueAfterFailure: true,
+		ContinueAfterFailure: true,
 	}
 
 	patterns := []string{"test1", "test2", "test3"}
@@ -61,7 +61,7 @@ func TestRunTestsWithRetry(t *testing.T) {
 func TestRunTestsWithRetryNoRetry(t *testing.T) {
 	cfg := &Config{
 		Logger:               logging.NewSimple(ioutil.Discard, false, false),
-		continueAfterFailure: false, // disable retry
+		ContinueAfterFailure: false, // disable retry
 	}
 
 	patterns := []string{"test1", "test2", "test3"}
@@ -77,7 +77,7 @@ func TestRunTestsWithRetryNoRetry(t *testing.T) {
 func TestRunTestsWithRetryNoUnstarted(t *testing.T) {
 	cfg := &Config{
 		Logger:               logging.NewSimple(ioutil.Discard, false, false),
-		continueAfterFailure: true,
+		ContinueAfterFailure: true,
 	}
 
 	patterns := []string{"test1", "test2", "test3"}
@@ -93,7 +93,7 @@ func TestRunTestsWithRetryNoUnstarted(t *testing.T) {
 func TestRunTestsWithRetryStuck(t *testing.T) {
 	cfg := &Config{
 		Logger:               logging.NewSimple(ioutil.Discard, false, false),
-		continueAfterFailure: true,
+		ContinueAfterFailure: true,
 	}
 
 	patterns := []string{"test1", "test2", "test3"}
@@ -109,7 +109,7 @@ func TestRunTestsWithRetryStuck(t *testing.T) {
 func TestRunTestsWithRetryBeforeRetry(t *testing.T) {
 	cfg := &Config{
 		Logger:               logging.NewSimple(ioutil.Discard, false, false),
-		continueAfterFailure: true,
+		ContinueAfterFailure: true,
 	}
 
 	beforeRetryFailure := func(ctx context.Context) bool {

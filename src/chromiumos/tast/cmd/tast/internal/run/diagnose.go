@@ -30,7 +30,7 @@ func readBootID(ctx context.Context, hst *ssh.Conn) (string, error) {
 // and returns a diagnosis message. Files useful for diagnosis might be saved
 // under outDir.
 func diagnoseSSHDrop(ctx context.Context, cfg *Config, state *State, outDir string) string {
-	if state.initBootID == "" {
+	if state.InitBootID == "" {
 		return "failed to diagnose: initial boot_id is not available"
 	}
 
@@ -44,12 +44,12 @@ func diagnoseSSHDrop(ctx context.Context, cfg *Config, state *State, outDir stri
 	}
 
 	// Compare boot_id to see if the target rebooted.
-	bootID, err := readBootID(ctx, state.hst)
+	bootID, err := readBootID(ctx, state.Hst)
 	if err != nil {
 		return fmt.Sprint("failed to diagnose: failed to read boot_id: ", err)
 	}
 
-	if bootID == state.initBootID {
+	if bootID == state.InitBootID {
 		return "target did not reboot, probably network issue"
 	}
 
@@ -78,11 +78,11 @@ var (
 // under outDir.
 func diagnoseReboot(ctx context.Context, cfg *Config, state *State, outDir string) string {
 	// Read the unified system log just before the reboot.
-	denseBootID := strings.Replace(state.initBootID, "-", "", -1)
-	out, err := state.hst.Command("croslog", "--quiet", "--boot="+denseBootID, "--lines=1000").Output(ctx)
+	denseBootID := strings.Replace(state.InitBootID, "-", "", -1)
+	out, err := state.Hst.Command("croslog", "--quiet", "--boot="+denseBootID, "--lines=1000").Output(ctx)
 	if err != nil {
 		cfg.Logger.Log("Failed to execute croslog command: ", err)
-		out, err = state.hst.Command("journalctl", "--quiet", "--boot="+denseBootID, "--lines=1000").Output(ctx)
+		out, err = state.Hst.Command("journalctl", "--quiet", "--boot="+denseBootID, "--lines=1000").Output(ctx)
 		if err != nil {
 			cfg.Logger.Log("Failed to execute journalctl command: ", err)
 		} else {
@@ -100,9 +100,9 @@ func diagnoseReboot(ctx context.Context, cfg *Config, state *State, outDir strin
 
 	// Read console-ramoops. Its path varies by systems, and it might not exist
 	// for normal reboots.
-	out, err = state.hst.Command("cat", "/sys/fs/pstore/console-ramoops-0").Output(ctx)
+	out, err = state.Hst.Command("cat", "/sys/fs/pstore/console-ramoops-0").Output(ctx)
 	if err != nil {
-		out, err = state.hst.Command("cat", "/sys/fs/pstore/console-ramoops").Output(ctx)
+		out, err = state.Hst.Command("cat", "/sys/fs/pstore/console-ramoops").Output(ctx)
 		if err != nil {
 			cfg.Logger.Log("console-ramoops not found")
 		}

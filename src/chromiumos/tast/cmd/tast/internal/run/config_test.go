@@ -24,11 +24,11 @@ func TestConfigRunDefaults(t *testing.T) {
 	cfg.SetFlags(flags)
 
 	const desc = "SetFlags for RunTestsMode"
-	if !cfg.collectSysInfo {
-		t.Errorf("%s didn't set collectSysInfo", desc)
+	if !cfg.CollectSysInfo {
+		t.Errorf("%s didn't set CollectSysInfo", desc)
 	}
-	if !cfg.checkTestDeps {
-		t.Errorf("%s set checkTestDeps to %v; want true", desc, cfg.checkTestDeps)
+	if !cfg.CheckTestDeps {
+		t.Errorf("%s set CheckTestDeps to %v; want true", desc, cfg.CheckTestDeps)
 	}
 }
 
@@ -38,11 +38,11 @@ func TestConfigListDefaults(t *testing.T) {
 	cfg.SetFlags(flags)
 
 	desc := "SetFlags for ListTestsMode"
-	if cfg.collectSysInfo {
-		t.Errorf("%s set collectSysInfo", desc)
+	if cfg.CollectSysInfo {
+		t.Errorf("%s set CollectSysInfo", desc)
 	}
-	if cfg.checkTestDeps {
-		t.Errorf("%s set checkTestDeps to %v; want false", desc, cfg.checkTestDeps)
+	if cfg.CheckTestDeps {
+		t.Errorf("%s set CheckTestDeps to %v; want false", desc, cfg.CheckTestDeps)
 	}
 }
 
@@ -51,16 +51,16 @@ func TestConfigDeriveDefaultsNoBuild(t *testing.T) {
 	flags := flag.NewFlagSet("", flag.ContinueOnError)
 	cfg.SetFlags(flags)
 
-	cfg.build = false
+	cfg.Build = false
 
 	if err := cfg.DeriveDefaults(); err != nil {
 		t.Error("DeriveDefaults failed: ", err)
 	}
-	if !cfg.runLocal {
-		t.Error("runLocal is false; want true")
+	if !cfg.RunLocal {
+		t.Error("RunLocal is false; want true")
 	}
-	if !cfg.runRemote {
-		t.Error("runRemote is false; want true")
+	if !cfg.RunRemote {
+		t.Error("RunRemote is false; want true")
 	}
 }
 
@@ -79,22 +79,22 @@ func TestConfigDeriveDefaultsBuild(t *testing.T) {
 	flags := flag.NewFlagSet("", flag.ContinueOnError)
 	cfg.SetFlags(flags)
 
-	cfg.buildBundle = buildBundle
+	cfg.BuildBundle = buildBundle
 
 	if err := cfg.DeriveDefaults(); err != nil {
 		t.Error("DeriveDefaults failed: ", err)
 	}
-	if cfg.buildWorkspace == "" {
-		t.Error("buildWorkspace is not set")
+	if cfg.BuildWorkspace == "" {
+		t.Error("BuildWorkspace is not set")
 	}
-	if cfg.localBundleDir == "" {
-		t.Error("localBundleDir is not set")
+	if cfg.LocalBundleDir == "" {
+		t.Error("LocalBundleDir is not set")
 	}
-	if !cfg.runLocal {
-		t.Error("runLocal is false; want true")
+	if !cfg.RunLocal {
+		t.Error("RunLocal is false; want true")
 	}
-	if cfg.runRemote {
-		t.Error("runRemote is true; want false")
+	if cfg.RunRemote {
+		t.Error("RunRemote is true; want false")
 	}
 }
 
@@ -113,27 +113,27 @@ func TestConfigDeriveDefaultsBuildNonStandardBundle(t *testing.T) {
 	flags := flag.NewFlagSet("", flag.ContinueOnError)
 	cfg.SetFlags(flags)
 
-	cfg.buildBundle = buildBundle
+	cfg.BuildBundle = buildBundle
 
 	// Since buildBundle is a not known bundle, DeriveDefaults fails to compute
-	// buildWorkspace.
+	// BuildWorkspace.
 	if err := cfg.DeriveDefaults(); err == nil {
 		t.Error("DeriveDefaults succeeded; want failure")
 	}
 
-	// It works if buildWorkspace is set explicitly.
-	cfg.buildWorkspace = td
+	// It works if BuildWorkspace is set explicitly.
+	cfg.BuildWorkspace = td
 	if err := cfg.DeriveDefaults(); err != nil {
 		t.Error("DeriveDefaults failed: ", err)
 	}
-	if cfg.localBundleDir == "" {
-		t.Error("localBundleDir is not set")
+	if cfg.LocalBundleDir == "" {
+		t.Error("LocalBundleDir is not set")
 	}
-	if cfg.runLocal {
-		t.Error("runLocal is true; want false")
+	if cfg.RunLocal {
+		t.Error("RunLocal is true; want false")
 	}
-	if !cfg.runRemote {
-		t.Error("runRemote is false; want true")
+	if !cfg.RunRemote {
+		t.Error("RunRemote is false; want true")
 	}
 }
 
@@ -147,7 +147,7 @@ func TestConfigDeriveDefaultsBuildMissingBundle(t *testing.T) {
 	flags := flag.NewFlagSet("", flag.ContinueOnError)
 	cfg.SetFlags(flags)
 
-	cfg.buildBundle = buildBundle
+	cfg.BuildBundle = buildBundle
 
 	// At least either one of local/remote bundle package should exist.
 	if err := cfg.DeriveDefaults(); err == nil {
@@ -264,11 +264,11 @@ func TestConfigDeriveDefaultsVars(t *testing.T) {
 			flags := flag.NewFlagSet("", flag.ContinueOnError)
 			cfg.SetFlags(flags)
 
-			cfg.build = false
-			cfg.testVars = tc.vars
-			cfg.defaultVarsDirs = defaultVarsDirs
+			cfg.Build = false
+			cfg.TestVars = tc.vars
+			cfg.DefaultVarsDirs = defaultVarsDirs
 			for p := range tc.overrides {
-				cfg.varsFiles = append(cfg.varsFiles, filepath.Join(overrideVarsDir, p))
+				cfg.VarsFiles = append(cfg.VarsFiles, filepath.Join(overrideVarsDir, p))
 			}
 
 			if err := cfg.DeriveDefaults(); err != nil {
@@ -292,45 +292,45 @@ func TestConfigDeriveExtraAllowedBuckets(t *testing.T) {
 	flags := flag.NewFlagSet("", flag.ContinueOnError)
 	cfg.SetFlags(flags)
 
-	cfg.build = false
-	cfg.extraAllowedBuckets = []string{"bucket1", "bucket2"}
-	cfg.buildArtifactsURL = "gs://bucket3/dir/"
+	cfg.Build = false
+	cfg.ExtraAllowedBuckets = []string{"bucket1", "bucket2"}
+	cfg.BuildArtifactsURL = "gs://bucket3/dir/"
 
 	if err := cfg.DeriveDefaults(); err != nil {
 		t.Error("DeriveDefaults failed: ", err)
 	}
 	want := []string{"bucket1", "bucket2", "bucket3"}
-	if got := cfg.extraAllowedBuckets; !reflect.DeepEqual(got, want) {
-		t.Errorf("cfg.extraAllowedBuckets = %q; want %q", got, want)
+	if got := cfg.ExtraAllowedBuckets; !reflect.DeepEqual(got, want) {
+		t.Errorf("cfg.ExtraAllowedBuckets = %q; want %q", got, want)
 	}
 }
 
 func TestConfigLocalBundleGlob(t *testing.T) {
 	cfg := NewConfig(RunTestsMode, "", "")
-	cfg.localBundleDir = "/mock/local_bundle_dir"
-	cfg.buildBundle = "mock_build_bundle"
+	cfg.LocalBundleDir = "/mock/local_bundle_dir"
+	cfg.BuildBundle = "mock_build_bundle"
 
-	cfg.build = true
-	if g := cfg.localBundleGlob(); g != "/mock/local_bundle_dir/mock_build_bundle" {
-		t.Fatalf(`Unexpected build localBundleGlob: got %q; want "/mock/local_bundle_dir/mock_bundle_dir"`, g)
+	cfg.Build = true
+	if g := cfg.LocalBundleGlob(); g != "/mock/local_bundle_dir/mock_build_bundle" {
+		t.Fatalf(`Unexpected build LocalBundleGlob: got %q; want "/mock/local_bundle_dir/mock_bundle_dir"`, g)
 	}
-	cfg.build = false
-	if g := cfg.localBundleGlob(); g != "/mock/local_bundle_dir/*" {
-		t.Fatalf(`Unexpected non-build localBundleGlob: got %q; want "/mock/local_bundle_dir/*"`, g)
+	cfg.Build = false
+	if g := cfg.LocalBundleGlob(); g != "/mock/local_bundle_dir/*" {
+		t.Fatalf(`Unexpected non-build LocalBundleGlob: got %q; want "/mock/local_bundle_dir/*"`, g)
 	}
 }
 
 func TestConfigRemoteBundleGlob(t *testing.T) {
 	cfg := NewConfig(RunTestsMode, "", "")
-	cfg.remoteBundleDir = "/mock/remote_bundle_dir"
-	cfg.buildBundle = "mock_build_bundle"
+	cfg.RemoteBundleDir = "/mock/remote_bundle_dir"
+	cfg.BuildBundle = "mock_build_bundle"
 
-	cfg.build = true
-	if g := cfg.remoteBundleGlob(); g != "/mock/remote_bundle_dir/mock_build_bundle" {
-		t.Fatalf(`Unexpected build remoteBundleGlob: got %q; want "/mock/remote_bundle_dir/mock_bundle_dir"`, g)
+	cfg.Build = true
+	if g := cfg.RemoteBundleGlob(); g != "/mock/remote_bundle_dir/mock_build_bundle" {
+		t.Fatalf(`Unexpected build RemoteBundleGlob: got %q; want "/mock/remote_bundle_dir/mock_bundle_dir"`, g)
 	}
-	cfg.build = false
-	if g := cfg.remoteBundleGlob(); g == "/mock/remote_budnle_dir/*" {
-		t.Fatalf(`Unexpected non-build remoteBundleGlob: got %q, want "/mock/remote_budnle_dir/*"`, g)
+	cfg.Build = false
+	if g := cfg.RemoteBundleGlob(); g == "/mock/remote_budnle_dir/*" {
+		t.Fatalf(`Unexpected non-build RemoteBundleGlob: got %q, want "/mock/remote_budnle_dir/*"`, g)
 	}
 }

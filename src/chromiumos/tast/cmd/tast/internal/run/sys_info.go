@@ -15,12 +15,12 @@ import (
 
 // getInitialSysInfo saves the initial state of the DUT's system information to cfg if
 // requested and if it hasn't already been saved. This is called before testing.
-// This updates cfg.initialSysInfo, so calling twice won't work.
+// This updates state.InitialSysInfo, so calling twice won't work.
 func getInitialSysInfo(ctx context.Context, cfg *Config, state *State) error {
-	if !cfg.collectSysInfo {
+	if !cfg.CollectSysInfo {
 		return nil
 	}
-	if state.initialSysInfo != nil {
+	if state.InitialSysInfo != nil {
 		return errors.New("getInitialSysInfo is already called")
 	}
 
@@ -45,7 +45,7 @@ func getInitialSysInfo(ctx context.Context, cfg *Config, state *State) error {
 	for _, warn := range res.Warnings {
 		cfg.Logger.Log("Error getting system info: ", warn)
 	}
-	state.initialSysInfo = &res.State
+	state.InitialSysInfo = &res.State
 	return nil
 }
 
@@ -53,7 +53,7 @@ func getInitialSysInfo(ctx context.Context, cfg *Config, state *State) error {
 // doing so was requested. This is called after testing and relies on the state saved by
 // getInitialSysInfo.
 func collectSysInfo(ctx context.Context, cfg *Config, state *State) error {
-	if !cfg.collectSysInfo || state.initialSysInfo == nil {
+	if !cfg.CollectSysInfo || state.InitialSysInfo == nil {
 		return nil
 	}
 
@@ -71,7 +71,7 @@ func collectSysInfo(ctx context.Context, cfg *Config, state *State) error {
 		localRunnerCommand(ctx, cfg, hst),
 		&runner.Args{
 			Mode:           runner.CollectSysInfoMode,
-			CollectSysInfo: &runner.CollectSysInfoArgs{InitialState: *state.initialSysInfo},
+			CollectSysInfo: &runner.CollectSysInfoArgs{InitialState: *state.InitialSysInfo},
 		},
 		&res,
 	); err != nil {

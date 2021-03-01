@@ -60,7 +60,7 @@ func Run(ctx context.Context, cfg *Config, state *State) (status Status, results
 	defer func() {
 		// If we didn't get to the point where we started trying to run tests,
 		// report that to the caller so they can avoid writing a useless results dir.
-		if status.ExitCode == subcommands.ExitFailure && !state.startedRun {
+		if status.ExitCode == subcommands.ExitFailure && !state.StartedRun {
 			status.FailedBeforeRun = true
 		}
 	}()
@@ -92,45 +92,45 @@ func Run(ctx context.Context, cfg *Config, state *State) (status Status, results
 		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to connect to %s: %v", cfg.Target, err), nil
 	}
 
-	if cfg.tlwServer != "" {
-		f, err := hst.ForwardRemoteToLocal("tcp", "127.0.0.1:0", cfg.tlwServer, func(e error) {
+	if cfg.TLWServer != "" {
+		f, err := hst.ForwardRemoteToLocal("tcp", "127.0.0.1:0", cfg.TLWServer, func(e error) {
 			cfg.Logger.Logf("TLW server port forwarding failed: %v", e)
 		})
 		if err != nil {
 			return errorStatusf(cfg, subcommands.ExitFailure, "Failed to set up remote-to-local port forwarding for TLW server: %v", err), nil
 		}
 		defer f.Close()
-		state.tlwServerForDUT = f.ListenAddr().String()
+		state.TLWServerForDUT = f.ListenAddr().String()
 	}
 
-	if state.reportsConn != nil {
-		cl := protocol.NewReportsClient(state.reportsConn)
-		state.reportsClient = cl
+	if state.ReportsConn != nil {
+		cl := protocol.NewReportsClient(state.ReportsConn)
+		state.ReportsClient = cl
 		strm, err := cl.LogStream(ctx)
 		if err != nil {
 			return errorStatusf(cfg, subcommands.ExitFailure, "Failed to start LogStream streaming RPC: %v", err), nil
 		}
 		defer strm.CloseAndRecv()
-		state.reportsLogStream = strm
+		state.ReportsLogStream = strm
 	}
 	// initialize local and remote dev servers to user specified dev servers.
-	state.localDevservers = cfg.devservers
-	state.remoteDevservers = cfg.devservers
-	if cfg.tlwServer == "" && cfg.useEphemeralDevserver {
+	state.LocalDevservers = cfg.Devservers
+	state.RemoteDevservers = cfg.Devservers
+	if cfg.TLWServer == "" && cfg.UseEphemeralDevserver {
 		// Start an ephemeral devserver if necessary. Devservers are required in
 		// prepare (to download private bundles if -downloadprivatebundles if set)
 		// and in local (to download external data files).
 		// TODO(crbug.com/982181): Once we move the logic to download external data
 		// files to the prepare, try restricting the lifetime of the ephemeral
 		// devserver.
-		if cfg.runLocal && len(state.localDevservers) == 0 {
+		if cfg.RunLocal && len(state.LocalDevservers) == 0 {
 			if err := startEphemeralDevserverForLocalTests(ctx, hst, cfg, state); err != nil {
 				return errorStatusf(cfg, subcommands.ExitFailure, "Failed to start ephemeral devserver for local tests: %v", err), nil
 			}
 			defer state.CloseEphemeralDevserver(ctx)
 		}
 		//  Start an ephemeral devserver remote tests.
-		if cfg.runRemote && len(state.remoteDevservers) == 0 {
+		if cfg.RunRemote && len(state.RemoteDevservers) == 0 {
 			es, err := startEphemeralDevserverForRemoteTests(ctx, cfg, state)
 			if err != nil {
 				return errorStatusf(cfg, subcommands.ExitFailure, "Failed to start ephemeral devserver for remote tests: %v", err), nil
@@ -143,7 +143,7 @@ func Run(ctx context.Context, cfg *Config, state *State) (status Status, results
 		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to build and push: %v", err), nil
 	}
 
-	switch cfg.mode {
+	switch cfg.Mode {
 	case ListTestsMode:
 		results, err := listTests(ctx, cfg, state)
 		if err != nil {
@@ -157,41 +157,41 @@ func Run(ctx context.Context, cfg *Config, state *State) (status Status, results
 		}
 		return successStatus, results
 	default:
-		return errorStatusf(cfg, subcommands.ExitFailure, "Unhandled mode %d", cfg.mode), nil
+		return errorStatusf(cfg, subcommands.ExitFailure, "Unhandled mode %d", cfg.Mode), nil
 	}
 }
 
 // connectToTLW connects to a TLW service if its address is provided, and stores
-// the connection to cfg.tlwConn.
+// the connection to state.TLWConn.
 func connectToTLW(ctx context.Context, cfg *Config, state *State) error {
-	if cfg.tlwServer == "" {
+	if cfg.TLWServer == "" {
 		return nil
 	}
 
-	conn, err := grpc.DialContext(ctx, cfg.tlwServer, grpc.WithInsecure())
+	conn, err := grpc.DialContext(ctx, cfg.TLWServer, grpc.WithInsecure())
 	if err != nil {
 		return err
 	}
-	state.tlwConn = conn
+	state.TLWConn = conn
 	return nil
 }
 
 // connectToReports connects to the Reports server.
 func connectToReports(ctx context.Context, cfg *Config, state *State) error {
-	if cfg.reportsServer == "" {
+	if cfg.ReportsServer == "" {
 		return nil
 	}
-	conn, err := grpc.DialContext(ctx, cfg.reportsServer, grpc.WithInsecure())
+	conn, err := grpc.DialContext(ctx, cfg.ReportsServer, grpc.WithInsecure())
 	if err != nil {
 		return err
 	}
-	state.reportsConn = conn
+	state.ReportsConn = conn
 	return nil
 }
 
 // resolveTarget resolves cfg.Target using the TLW service if available.
 func resolveTarget(ctx context.Context, cfg *Config, state *State) error {
-	if state.tlwConn == nil {
+	if state.TLWConn == nil {
 		return nil
 	}
 
@@ -211,7 +211,7 @@ func resolveTarget(ctx context.Context, cfg *Config, state *State) error {
 
 	// Use the OpenDutPort API to resolve the target.
 	req := &tls.OpenDutPortRequest{Name: host, Port: int32(port)}
-	res, err := tls.NewWiringClient(state.tlwConn).OpenDutPort(ctx, req)
+	res, err := tls.NewWiringClient(state.TLWConn).OpenDutPort(ctx, req)
 	if err != nil {
 		return err
 	}
@@ -224,7 +224,7 @@ func resolveTarget(ctx context.Context, cfg *Config, state *State) error {
 // and pushes the local test runner and test bundles, and downloads private test
 // bundles.
 func prepare(ctx context.Context, cfg *Config, state *State, hst *ssh.Conn) error {
-	if cfg.build && cfg.downloadPrivateBundles {
+	if cfg.Build && cfg.DownloadPrivateBundles {
 		// Usually it makes no sense to download prebuilt private bundles when
 		// building and pushing a fresh test bundle.
 		return errors.New("-downloadprivatebundles requires -build=false")
@@ -232,7 +232,7 @@ func prepare(ctx context.Context, cfg *Config, state *State, hst *ssh.Conn) erro
 
 	written := false
 
-	if cfg.build {
+	if cfg.Build {
 		if err := buildAll(ctx, cfg, state, hst); err != nil {
 			return err
 		}
@@ -242,7 +242,7 @@ func prepare(ctx context.Context, cfg *Config, state *State, hst *ssh.Conn) erro
 		written = true
 	}
 
-	if cfg.downloadPrivateBundles {
+	if cfg.DownloadPrivateBundles {
 		if err := downloadPrivateBundles(ctx, cfg, state, hst); err != nil {
 			return fmt.Errorf("failed downloading private bundles: %v", err)
 		}
@@ -273,31 +273,31 @@ func buildAll(ctx context.Context, cfg *Config, state *State, hst *ssh.Conn) err
 	tgts := []*build.Target{
 		{
 			Pkg:        build.LocalRunnerPkg,
-			Arch:       state.targetArch,
-			Workspaces: cfg.commonWorkspaces(),
-			Out:        filepath.Join(cfg.buildOutDir, state.targetArch, path.Base(build.LocalRunnerPkg)),
+			Arch:       state.TargetArch,
+			Workspaces: cfg.CommonWorkspaces(),
+			Out:        filepath.Join(cfg.BuildOutDir, state.TargetArch, path.Base(build.LocalRunnerPkg)),
 		},
 	}
 
-	if cfg.runLocal {
+	if cfg.RunLocal {
 		tgts = append(tgts, &build.Target{
-			Pkg:        path.Join(build.LocalBundlePkgPathPrefix, cfg.buildBundle),
-			Arch:       state.targetArch,
-			Workspaces: cfg.bundleWorkspaces(),
-			Out:        filepath.Join(cfg.buildOutDir, state.targetArch, build.LocalBundleBuildSubdir, cfg.buildBundle),
+			Pkg:        path.Join(build.LocalBundlePkgPathPrefix, cfg.BuildBundle),
+			Arch:       state.TargetArch,
+			Workspaces: cfg.BundleWorkspaces(),
+			Out:        filepath.Join(cfg.BuildOutDir, state.TargetArch, build.LocalBundleBuildSubdir, cfg.BuildBundle),
 		})
 	}
-	if cfg.runRemote {
+	if cfg.RunRemote {
 		tgts = append(tgts, &build.Target{
 			Pkg:        build.RemoteRunnerPkg,
 			Arch:       build.ArchHost,
-			Workspaces: cfg.commonWorkspaces(),
-			Out:        cfg.remoteRunner,
+			Workspaces: cfg.CommonWorkspaces(),
+			Out:        cfg.RemoteRunner,
 		}, &build.Target{
-			Pkg:        path.Join(build.RemoteBundlePkgPathPrefix, cfg.buildBundle),
+			Pkg:        path.Join(build.RemoteBundlePkgPathPrefix, cfg.BuildBundle),
 			Arch:       build.ArchHost,
-			Workspaces: cfg.bundleWorkspaces(),
-			Out:        filepath.Join(cfg.remoteBundleDir, cfg.buildBundle),
+			Workspaces: cfg.BundleWorkspaces(),
+			Out:        filepath.Join(cfg.RemoteBundleDir, cfg.BuildBundle),
 		})
 	}
 
@@ -307,7 +307,7 @@ func buildAll(ctx context.Context, cfg *Config, state *State, hst *ssh.Conn) err
 	}
 	cfg.Logger.Logf("Building %s", strings.Join(names, ", "))
 	start := time.Now()
-	if err := build.Build(ctx, cfg.buildCfg(), tgts); err != nil {
+	if err := build.Build(ctx, cfg.BuildCfg(), tgts); err != nil {
 		return fmt.Errorf("build failed: %v", err)
 	}
 	cfg.Logger.Logf("Built in %v", time.Now().Sub(start).Round(time.Millisecond))
@@ -315,11 +315,11 @@ func buildAll(ctx context.Context, cfg *Config, state *State, hst *ssh.Conn) err
 }
 
 // getTargetArch queries hst for its userland architecture if it isn't already known and
-// saves it to cfg.targetArch. Note that this can be different from the kernel architecture
+// saves it to state.TargetArch. Note that this can be different from the kernel architecture
 // returned by "uname -m" on some boards (e.g. aarch64 kernel with armv7l userland).
 // TODO(crbug.com/982184): Get rid of this function.
 func getTargetArch(ctx context.Context, cfg *Config, state *State, hst *ssh.Conn) error {
-	if state.targetArch != "" {
+	if state.TargetArch != "" {
 		return nil
 	}
 
@@ -335,12 +335,12 @@ func getTargetArch(ctx context.Context, cfg *Config, state *State, hst *ssh.Conn
 	s := string(out)
 
 	if strings.Contains(s, "x86-64") {
-		state.targetArch = "x86_64"
+		state.TargetArch = "x86_64"
 	} else {
 		if strings.HasPrefix(s, "ELF 64-bit") {
-			state.targetArch = "aarch64"
+			state.TargetArch = "aarch64"
 		} else {
-			state.targetArch = "armv7l"
+			state.TargetArch = "armv7l"
 		}
 	}
 	return nil
@@ -360,7 +360,7 @@ func pushAll(ctx context.Context, cfg *Config, state *State, hst *ssh.Conn) erro
 		return fmt.Errorf("failed to push local executables: %v", err)
 	}
 
-	if !cfg.runLocal || cfg.mode == ListTestsMode {
+	if !cfg.RunLocal || cfg.Mode == ListTestsMode {
 		return nil
 	}
 
@@ -369,8 +369,8 @@ func pushAll(ctx context.Context, cfg *Config, state *State, hst *ssh.Conn) erro
 		return fmt.Errorf("failed to get data file list: %v", err)
 	}
 	if len(paths) > 0 {
-		pkg := path.Join(build.LocalBundlePkgPathPrefix, cfg.buildBundle)
-		destDir := filepath.Join(cfg.localDataDir, pkg)
+		pkg := path.Join(build.LocalBundlePkgPathPrefix, cfg.BuildBundle)
+		destDir := filepath.Join(cfg.LocalDataDir, pkg)
 		if err := pushDataFiles(ctx, cfg, hst, destDir, paths); err != nil {
 			return fmt.Errorf("failed to push data files: %v", err)
 		}
@@ -381,15 +381,15 @@ func pushAll(ctx context.Context, cfg *Config, state *State, hst *ssh.Conn) erro
 // pushExecutables pushes the freshly built local test runner, local test bundle
 // executable to the DUT if necessary.
 func pushExecutables(ctx context.Context, cfg *Config, state *State, hst *ssh.Conn) error {
-	srcDir := filepath.Join(cfg.buildOutDir, state.targetArch)
+	srcDir := filepath.Join(cfg.BuildOutDir, state.TargetArch)
 
 	// local_test_runner is required even if we are running only remote tests,
 	// e.g. to compute software dependencies.
 	files := map[string]string{
-		filepath.Join(srcDir, path.Base(build.LocalRunnerPkg)): cfg.localRunner,
+		filepath.Join(srcDir, path.Base(build.LocalRunnerPkg)): cfg.LocalRunner,
 	}
-	if cfg.runLocal {
-		files[filepath.Join(srcDir, build.LocalBundleBuildSubdir, cfg.buildBundle)] = filepath.Join(cfg.localBundleDir, cfg.buildBundle)
+	if cfg.RunLocal {
+		files[filepath.Join(srcDir, build.LocalBundleBuildSubdir, cfg.BuildBundle)] = filepath.Join(cfg.LocalBundleDir, cfg.BuildBundle)
 	}
 
 	ctx, st := timing.Start(ctx, "push_executables")
@@ -420,7 +420,7 @@ func getDataFilePaths(ctx context.Context, cfg *Config, state *State, hst *ssh.C
 		return nil, err
 	}
 
-	bundlePath := path.Join(build.LocalBundlePkgPathPrefix, cfg.buildBundle)
+	bundlePath := path.Join(build.LocalBundlePkgPathPrefix, cfg.BuildBundle)
 	seenPaths := make(map[string]struct{})
 	for _, t := range ts {
 		if t.Data == nil {
@@ -450,14 +450,14 @@ func getDataFilePaths(ctx context.Context, cfg *Config, state *State, hst *ssh.C
 // pushDataFiles copies the listed test data files to destDir on hst.
 // destDir is the data directory for this bundle, e.g. "/usr/share/tast/data/local/chromiumos/tast/local/bundles/cros".
 // The file paths are relative to the test bundle dir, i.e. paths take the form "<category>/data/<filename>".
-// Otherwise, files will be copied from cfg.buildWorkspace.
+// Otherwise, files will be copied from cfg.BuildWorkspace.
 func pushDataFiles(ctx context.Context, cfg *Config, hst *ssh.Conn, destDir string, paths []string) error {
 	ctx, st := timing.Start(ctx, "push_data")
 	defer st.End()
 
 	cfg.Logger.Log("Pushing data files to target")
 
-	srcDir := filepath.Join(cfg.buildWorkspace, "src", build.LocalBundlePkgPathPrefix, cfg.buildBundle)
+	srcDir := filepath.Join(cfg.BuildWorkspace, "src", build.LocalBundlePkgPathPrefix, cfg.BuildBundle)
 
 	// All paths are relative to the bundle dir.
 	var copyPaths, delPaths, missingPaths []string
@@ -515,10 +515,10 @@ func downloadPrivateBundles(ctx context.Context, cfg *Config, state *State, hst 
 		&runner.Args{
 			Mode: runner.DownloadPrivateBundlesMode,
 			DownloadPrivateBundles: &runner.DownloadPrivateBundlesArgs{
-				Devservers:        state.localDevservers,
-				TLWServer:         state.tlwServerForDUT,
+				Devservers:        state.LocalDevservers,
+				TLWServer:         state.TLWServerForDUT,
 				DUTName:           cfg.Target,
-				BuildArtifactsURL: cfg.buildArtifactsURL,
+				BuildArtifactsURL: cfg.BuildArtifactsURL,
 			},
 		},
 		&res,

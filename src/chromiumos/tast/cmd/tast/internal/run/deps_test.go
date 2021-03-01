@@ -104,7 +104,7 @@ func TestGetDUTInfo(t *testing.T) {
 		checkArgs(t, args, &runner.Args{
 			Mode: runner.GetDUTInfoMode,
 			GetDUTInfo: &runner.GetDUTInfoArgs{
-				ExtraUSEFlags:       td.cfg.extraUSEFlags,
+				ExtraUSEFlags:       td.cfg.ExtraUSEFlags,
 				RequestDeviceConfig: true,
 			},
 		})
@@ -112,8 +112,8 @@ func TestGetDUTInfo(t *testing.T) {
 		writeGetDUTInfoResult(stdout, avail, unavail, dc, hf, osVersion)
 		return 0
 	}
-	td.cfg.checkTestDeps = true
-	td.cfg.extraUSEFlags = []string{"use1", "use2"}
+	td.cfg.CheckTestDeps = true
+	td.cfg.ExtraUSEFlags = []string{"use1", "use2"}
 	if err := getDUTInfo(context.Background(), &td.cfg, &td.state); err != nil {
 		t.Fatalf("getDUTInfo(%+v) failed: %v", td.cfg, err)
 	}
@@ -148,7 +148,7 @@ func TestGetDUTInfoNoDeviceConfig(t *testing.T) {
 		checkArgs(t, args, &runner.Args{
 			Mode: runner.GetDUTInfoMode,
 			GetDUTInfo: &runner.GetDUTInfoArgs{
-				ExtraUSEFlags:       td.cfg.extraUSEFlags,
+				ExtraUSEFlags:       td.cfg.ExtraUSEFlags,
 				RequestDeviceConfig: true,
 			},
 		})
@@ -158,7 +158,7 @@ func TestGetDUTInfoNoDeviceConfig(t *testing.T) {
 		writeGetDUTInfoResult(stdout, []string{"dep1"}, nil, nil, nil, "")
 		return 0
 	}
-	td.cfg.checkTestDeps = true
+	td.cfg.CheckTestDeps = true
 	if err := getDUTInfo(context.Background(), &td.cfg, &td.state); err != nil {
 		t.Fatalf("getDUTInfo(%+v) failed: %v", td.cfg, err)
 	}
@@ -174,7 +174,7 @@ func TestGetDUTInfoNoCheckTestDeps(t *testing.T) {
 	defer td.close()
 
 	// With "never", the runner shouldn't be called and dependencies shouldn't be checked.
-	td.cfg.checkTestDeps = false
+	td.cfg.CheckTestDeps = false
 	if err := getDUTInfo(context.Background(), &td.cfg, &td.state); err != nil {
 		t.Fatalf("getDUTInfo(%+v) failed: %v", td.cfg, err)
 	}
@@ -195,7 +195,7 @@ func TestGetSoftwareFeaturesNoFeatures(t *testing.T) {
 		writeGetDUTInfoResult(stdout, []string{}, []string{}, nil, nil, "")
 		return 0
 	}
-	td.cfg.checkTestDeps = true
+	td.cfg.CheckTestDeps = true
 	if err := getDUTInfo(context.Background(), &td.cfg, &td.state); err == nil {
 		t.Fatalf("getSoftwareFeatures(%+v) succeeded unexpectedly", td.cfg)
 	}

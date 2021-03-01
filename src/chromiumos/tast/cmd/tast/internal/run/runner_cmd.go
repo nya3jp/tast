@@ -42,7 +42,7 @@ func localRunnerCommand(ctx context.Context, cfg *Config, hst *ssh.Conn) *localR
 	// Set proxy-related environment variables for local_test_runner so it will use them
 	// when accessing network.
 	execArgs := []string{"env"}
-	if cfg.proxy == proxyEnv {
+	if cfg.Proxy == ProxyEnv {
 		// Proxy-related variables can be either uppercase or lowercase.
 		// See https://golang.org/pkg/net/http/#ProxyFromEnvironment.
 		for _, name := range []string{
@@ -54,7 +54,7 @@ func localRunnerCommand(ctx context.Context, cfg *Config, hst *ssh.Conn) *localR
 			}
 		}
 	}
-	execArgs = append(execArgs, cfg.localRunner)
+	execArgs = append(execArgs, cfg.LocalRunner)
 
 	return &localRunnerCmd{hst.Command(execArgs[0], execArgs[1:]...), ctx}
 }
@@ -76,7 +76,7 @@ type remoteRunnerCmd struct {
 }
 
 func remoteRunnerCommand(ctx context.Context, cfg *Config) *remoteRunnerCmd {
-	return &remoteRunnerCmd{exec.CommandContext(ctx, cfg.remoteRunner)}
+	return &remoteRunnerCmd{exec.CommandContext(ctx, cfg.RemoteRunner)}
 }
 
 func (r *remoteRunnerCmd) SetStdin(stdin io.Reader) {

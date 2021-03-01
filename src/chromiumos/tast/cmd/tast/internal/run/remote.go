@@ -30,14 +30,14 @@ func startEphemeralDevserverForRemoteTests(ctx context.Context, cfg *Config, sta
 		return nil, fmt.Errorf("failed to listen to a local port: %v", err)
 	}
 
-	cacheDir := filepath.Join(cfg.tastDir, "devserver", "static")
-	es, err := devserver.NewEphemeral(lis, cacheDir, cfg.extraAllowedBuckets)
+	cacheDir := filepath.Join(cfg.TastDir, "devserver", "static")
+	es, err := devserver.NewEphemeral(lis, cacheDir, cfg.ExtraAllowedBuckets)
 	if err != nil {
 		return nil, err
 	}
 
-	state.remoteDevservers = []string{fmt.Sprintf("http://%s", lis.Addr())}
-	cfg.Logger.Log("Starting ephemeral devserver at ", state.remoteDevservers[0], " for remote tests")
+	state.RemoteDevservers = []string{fmt.Sprintf("http://%s", lis.Addr())}
+	cfg.Logger.Log("Starting ephemeral devserver at ", state.RemoteDevservers[0], " for remote tests")
 	return es, nil
 }
 
@@ -46,12 +46,12 @@ func runRemoteTests(ctx context.Context, cfg *Config, state *State) ([]*EntityRe
 	ctx, st := timing.Start(ctx, "run_remote_tests")
 	defer st.End()
 
-	if err := os.MkdirAll(cfg.remoteOutDir, 0777); err != nil {
+	if err := os.MkdirAll(cfg.RemoteOutDir, 0777); err != nil {
 		return nil, fmt.Errorf("failed to create output dir: %v", err)
 	}
-	// At the end of tests remoteOutDir should be empty. Otherwise os.Remove
+	// At the end of tests RemoteOutDir should be empty. Otherwise os.Remove
 	// fails and the directory is left for debugging.
-	defer os.Remove(cfg.remoteOutDir)
+	defer os.Remove(cfg.RemoteOutDir)
 
 	runTests := func(ctx context.Context, patterns []string) (results []*EntityResult, unstarted []string, err error) {
 		return runRemoteTestsOnce(ctx, cfg, state, patterns)
@@ -59,8 +59,8 @@ func runRemoteTests(ctx context.Context, cfg *Config, state *State) ([]*EntityRe
 	beforeRetry := func(ctx context.Context) bool { return true }
 
 	start := time.Now()
-	names := make([]string, len(cfg.testsToRun), len(cfg.testsToRun))
-	for i, t := range cfg.testsToRun {
+	names := make([]string, len(cfg.TestsToRun), len(cfg.TestsToRun))
+	for i, t := range cfg.TestsToRun {
 		names[i] = t.Name
 	}
 	results, err := runTestsWithRetry(ctx, cfg, names, runTests, beforeRetry)
@@ -89,32 +89,32 @@ func runRemoteTestsOnce(ctx context.Context, cfg *Config, state *State, patterns
 			BundleArgs: bundle.RunTestsArgs{
 				FeatureArgs: *featureArgsFromConfig(cfg, state),
 				Patterns:    patterns,
-				DataDir:     cfg.remoteDataDir,
-				OutDir:      cfg.remoteOutDir,
+				DataDir:     cfg.RemoteDataDir,
+				OutDir:      cfg.RemoteOutDir,
 				Target:      cfg.Target,
 				KeyFile:     cfg.KeyFile,
 				KeyDir:      cfg.KeyDir,
 				TastPath:    exe,
 				RunFlags: []string{
-					"-build=" + strconv.FormatBool(cfg.build),
+					"-build=" + strconv.FormatBool(cfg.Build),
 					"-keyfile=" + cfg.KeyFile,
 					"-keydir=" + cfg.KeyDir,
-					"-remoterunner=" + cfg.remoteRunner,
-					"-remotebundledir=" + cfg.remoteBundleDir,
-					"-remotedatadir=" + cfg.remoteDataDir,
-					"-localrunner=" + cfg.localRunner,
-					"-localbundledir=" + cfg.localBundleDir,
-					"-localdatadir=" + cfg.localDataDir,
-					"-devservers=" + strings.Join(cfg.devservers, ","),
+					"-remoterunner=" + cfg.RemoteRunner,
+					"-remotebundledir=" + cfg.RemoteBundleDir,
+					"-remotedatadir=" + cfg.RemoteDataDir,
+					"-localrunner=" + cfg.LocalRunner,
+					"-localbundledir=" + cfg.LocalBundleDir,
+					"-localdatadir=" + cfg.LocalDataDir,
+					"-devservers=" + strings.Join(cfg.Devservers, ","),
 				},
-				LocalBundleDir:    cfg.localBundleDir,
-				Devservers:        state.remoteDevservers,
-				TLWServer:         state.tlwServerForDUT,
+				LocalBundleDir:    cfg.LocalBundleDir,
+				Devservers:        state.RemoteDevservers,
+				TLWServer:         state.TLWServerForDUT,
 				DUTName:           cfg.Target,
 				HeartbeatInterval: heartbeatInterval,
-				DownloadMode:      cfg.downloadMode,
+				DownloadMode:      cfg.DownloadMode,
 			},
-			BundleGlob: cfg.remoteBundleGlob(),
+			BundleGlob: cfg.RemoteBundleGlob(),
 		},
 	}
 

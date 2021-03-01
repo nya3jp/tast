@@ -163,7 +163,7 @@ func WriteResults(ctx context.Context, cfg *Config, state *State, results []*Ent
 
 	if complete {
 		var matchedTestNames []string
-		for _, t := range cfg.testsToRun {
+		for _, t := range cfg.TestsToRun {
 			matchedTestNames = append(matchedTestNames, t.Name)
 		}
 		matchedTestNames = append(matchedTestNames, cfg.TestNamesToSkip...)
@@ -367,9 +367,9 @@ func (r *resultsHandler) handleTestStart(ctx context.Context, msg *control.Entit
 	if err := r.cfg.Logger.AddWriter(state.logFile, true); err != nil {
 		return err
 	}
-	if r.state.reportsLogStream != nil {
+	if r.state.ReportsLogStream != nil {
 		state.logReportWriter = &logSender{
-			stream:   r.state.reportsLogStream,
+			stream:   r.state.ReportsLogStream,
 			testName: msg.Info.Name,
 			logPath:  filepath.Join(relFinalOutDir, testLogFilename),
 		}
@@ -406,7 +406,7 @@ func (r *resultsHandler) handleTestError(ctx context.Context, msg *control.Entit
 }
 
 func (r *resultsHandler) reportResult(ctx context.Context, res *EntityResult) error {
-	if r.state.reportsClient == nil {
+	if r.state.ReportsClient == nil {
 		return nil
 	}
 	request := &protocol.ReportResultRequest{
@@ -426,7 +426,7 @@ func (r *resultsHandler) reportResult(ctx context.Context, res *EntityResult) er
 			Stack:  e.Stack,
 		})
 	}
-	rspn, err := r.state.reportsClient.ReportResult(ctx, request)
+	rspn, err := r.state.ReportsClient.ReportResult(ctx, request)
 	if err != nil {
 		return err
 	}
@@ -470,7 +470,7 @@ func (r *resultsHandler) handleTestEnd(ctx context.Context, msg *control.EntityE
 	// Replace the earlier partial TestResult object with the now-complete version.
 	if state.result.Type == testing.EntityTest {
 		if len(state.result.Errors) > 0 {
-			r.state.failuresCount++
+			r.state.FailuresCount++
 		}
 		if err := r.reportResult(ctx, &state.result); err != nil {
 			return err
@@ -594,7 +594,7 @@ func (r *resultsHandler) processMessages(ctx context.Context, mch <-chan interfa
 		for _, state := range r.currents {
 			state.result.Errors = append(state.result.Errors, EntityError{time.Now(), testing.Error{Reason: incompleteTestMsg}})
 			if state.result.Type == testing.EntityTest {
-				r.state.failuresCount++
+				r.state.FailuresCount++
 				r.streamWriter.write(&state.result, true)
 				r.reportResult(ctx, &state.result)
 			}
@@ -606,8 +606,8 @@ func (r *resultsHandler) processMessages(ctx context.Context, mch <-chan interfa
 	}()
 
 	timeout := defaultMsgTimeout
-	if r.cfg.msgTimeout > 0 {
-		timeout = r.cfg.msgTimeout
+	if r.cfg.MsgTimeout > 0 {
+		timeout = r.cfg.MsgTimeout
 	}
 
 	runErr := func() error {
@@ -624,8 +624,8 @@ func (r *resultsHandler) processMessages(ctx context.Context, mch <-chan interfa
 				if r.terminated {
 					return errUserReqTermination
 				}
-				if r.cfg.maxTestFailures > 0 && r.state.failuresCount >= r.cfg.maxTestFailures {
-					return errors.Wrapf(ErrTerminate, "the maximum number of test failures (%v) reached", r.cfg.maxTestFailures)
+				if r.cfg.MaxTestFailures > 0 && r.state.FailuresCount >= r.cfg.MaxTestFailures {
+					return errors.Wrapf(ErrTerminate, "the maximum number of test failures (%v) reached", r.cfg.MaxTestFailures)
 				}
 			case err := <-ech:
 				return err

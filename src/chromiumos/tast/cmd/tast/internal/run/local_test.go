@@ -227,15 +227,15 @@ func newLocalTestData(t *gotesting.T, opts ...localTestDataOption) *localTestDat
 	}
 	td.cfg.Logger = logging.NewSimple(&td.logbuf, true, true)
 	td.cfg.Target = td.srvData.Srv.Addr().String()
-	td.cfg.localRunner = mockLocalRunner
-	td.cfg.localBundleDir = mockLocalBundleDir
-	td.cfg.localDataDir = mockLocalDataDir
-	td.cfg.localOutDir = mockLocalOutDir
-	td.cfg.devservers = mockDevservers
-	td.cfg.buildArtifactsURL = mockBuildArtifactsURL
-	td.cfg.downloadMode = planner.DownloadLazy
-	td.cfg.totalShards = 1
-	td.cfg.shardIndex = 0
+	td.cfg.LocalRunner = mockLocalRunner
+	td.cfg.LocalBundleDir = mockLocalBundleDir
+	td.cfg.LocalDataDir = mockLocalDataDir
+	td.cfg.LocalOutDir = mockLocalOutDir
+	td.cfg.Devservers = mockDevservers
+	td.cfg.BuildArtifactsURL = mockBuildArtifactsURL
+	td.cfg.DownloadMode = planner.DownloadLazy
+	td.cfg.TotalShards = 1
+	td.cfg.ShardIndex = 0
 
 	// Set up remote runner.
 	b, err := json.Marshal(runner.ListFixturesResult{
@@ -246,30 +246,30 @@ func newLocalTestData(t *gotesting.T, opts ...localTestDataOption) *localTestDat
 	if err != nil {
 		t.Fatal(err)
 	}
-	td.cfg.remoteRunner, err = (&fakeRemoteRunnerData{string(b), "", 0}).setUp(td.tempDir)
+	td.cfg.RemoteRunner, err = (&fakeRemoteRunnerData{string(b), "", 0}).setUp(td.tempDir)
 	if err != nil {
 		t.Fatal(err)
 	}
 	// Set up remote bundle server.
-	td.cfg.remoteFixtureServer, err = cfg.fakeRemoteServerData.setUp(td.tempDir)
+	td.cfg.RemoteFixtureServer, err = cfg.fakeRemoteServerData.setUp(td.tempDir)
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	// Avoid checking test dependencies, which causes an extra local_test_runner call.
-	td.cfg.checkTestDeps = false
+	td.cfg.CheckTestDeps = false
 
 	// Ensure that already-set environment variables don't affect unit tests.
-	td.cfg.proxy = proxyNone
+	td.cfg.Proxy = ProxyNone
 
 	// Run actual commands when performing file copies.
 	td.hostDir = filepath.Join(td.tempDir, "host")
 	if err := os.Mkdir(td.hostDir, 0755); err != nil {
 		t.Fatal(err)
 	}
-	td.cfg.hstCopyBasePath = td.hostDir
+	td.cfg.HstCopyBasePath = td.hostDir
 
-	td.state.localDevservers = td.cfg.devservers
+	td.state.LocalDevservers = td.cfg.Devservers
 
 	toClose = nil
 	return &td
@@ -319,7 +319,7 @@ func (td *localTestData) handleExec(req *sshtest.ExecReq) {
 		req.Start(true)
 		io.WriteString(req, td.ramOops)
 		req.End(0)
-	case "exec mkdir -p " + td.cfg.localOutDir:
+	case "exec mkdir -p " + td.cfg.LocalOutDir:
 		req.Start(true)
 		req.End(0)
 	default:
@@ -427,7 +427,7 @@ func TestLocalProxy(t *gotesting.T) {
 			defer os.Setenv(name, old)
 		}
 	}
-	td.cfg.proxy = proxyEnv
+	td.cfg.Proxy = ProxyEnv
 
 	// Proxy environment variables should be prepended to the local_test_runner command line.
 	// (The variables are added in this order in local.go.)
@@ -461,22 +461,22 @@ func TestLocalCopyOutput(t *gotesting.T) {
 		case runner.RunTestsMode:
 			mw := control.NewMessageWriter(stdout)
 			mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), TestNames: []string{testName}})
-			mw.WriteMessage(&control.EntityStart{Time: time.Unix(2, 0), Info: testing.EntityInfo{Name: testName}, OutDir: filepath.Join(td.cfg.localOutDir, outName)})
+			mw.WriteMessage(&control.EntityStart{Time: time.Unix(2, 0), Info: testing.EntityInfo{Name: testName}, OutDir: filepath.Join(td.cfg.LocalOutDir, outName)})
 			mw.WriteMessage(&control.EntityEnd{Time: time.Unix(3, 0), Name: testName})
-			mw.WriteMessage(&control.RunEnd{Time: time.Unix(4, 0), OutDir: td.cfg.localOutDir})
+			mw.WriteMessage(&control.RunEnd{Time: time.Unix(4, 0), OutDir: td.cfg.LocalOutDir})
 		case runner.ListFixturesMode:
 			json.NewEncoder(stdout).Encode(&runner.ListFixturesResult{})
 		}
 		return 0
 	}
 
-	if err := testutil.WriteFiles(filepath.Join(td.hostDir, td.cfg.localOutDir), map[string]string{
+	if err := testutil.WriteFiles(filepath.Join(td.hostDir, td.cfg.LocalOutDir), map[string]string{
 		filepath.Join(outName, outFile): outData,
 	}); err != nil {
 		t.Fatal(err)
 	}
 
-	td.cfg.testsToRun = []*EntityResult{{EntityInfo: testing.EntityInfo{
+	td.cfg.TestsToRun = []*EntityResult{{EntityInfo: testing.EntityInfo{
 		Name: testName,
 	}}}
 	if _, err := runLocalTests(context.Background(), &td.cfg, &td.state); err != nil {
@@ -522,7 +522,7 @@ func TestLocalWaitTimeout(t *gotesting.T) {
 
 	// Simulate local_test_runner writing control messages immediately but hanging before exiting.
 	td.runDelay = time.Minute
-	td.cfg.testsToRun = []*EntityResult{{EntityInfo: testing.EntityInfo{Name: "pkg.Foo"}}}
+	td.cfg.TestsToRun = []*EntityResult{{EntityInfo: testing.EntityInfo{Name: "pkg.Foo"}}}
 	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
 		switch args.Mode {
 		case runner.RunTestsMode:
@@ -536,7 +536,7 @@ func TestLocalWaitTimeout(t *gotesting.T) {
 	}
 
 	// After setting a short wait timeout, an error should be reported.
-	td.cfg.localRunnerWaitTimeout = time.Millisecond
+	td.cfg.LocalRunnerWaitTimeout = time.Millisecond
 	if _, err := runLocalTests(context.Background(), &td.cfg, &td.state); err == nil {
 		t.Error("runLocalTests unexpectedly passed")
 	}
@@ -584,7 +584,7 @@ func TestLocalDataFiles(t *gotesting.T) {
 	}
 
 	// Create a fake source checkout and write the data files to it. Just use their names as their contents.
-	td.cfg.buildWorkspace = filepath.Join(td.tempDir, "ws")
+	td.cfg.BuildWorkspace = filepath.Join(td.tempDir, "ws")
 	srcFiles := map[string]string{
 		file1:        file1,
 		file2:        file2,
@@ -593,7 +593,7 @@ func TestLocalDataFiles(t *gotesting.T) {
 		extLinkFile1: extLinkFile1,
 		extFile2:     extFile2,
 	}
-	if err := testutil.WriteFiles(filepath.Join(td.cfg.buildWorkspace, "src", testing.RelativeDataDir(tests[0].Pkg)), srcFiles); err != nil {
+	if err := testutil.WriteFiles(filepath.Join(td.cfg.BuildWorkspace, "src", testing.RelativeDataDir(tests[0].Pkg)), srcFiles); err != nil {
 		t.Fatal(err)
 	}
 
@@ -610,9 +610,9 @@ func TestLocalDataFiles(t *gotesting.T) {
 	if _, err := connectToTarget(context.Background(), &td.cfg, &td.state); err != nil {
 		t.Fatal(err)
 	}
-	td.cfg.buildBundle = bundleName
+	td.cfg.BuildBundle = bundleName
 	td.cfg.Patterns = []string{pattern}
-	paths, err := getDataFilePaths(context.Background(), &td.cfg, &td.state, td.state.hst)
+	paths, err := getDataFilePaths(context.Background(), &td.cfg, &td.state, td.state.Hst)
 	if err != nil {
 		t.Fatal("getDataFilePaths() failed: ", err)
 	}
@@ -628,7 +628,7 @@ func TestLocalDataFiles(t *gotesting.T) {
 	}
 
 	// pushDataFiles should copy the required files to the DUT.
-	if err = pushDataFiles(context.Background(), &td.cfg, td.state.hst,
+	if err = pushDataFiles(context.Background(), &td.cfg, td.state.Hst,
 		filepath.Join(mockLocalDataDir, bundlePkg), paths); err != nil {
 		t.Fatal("pushDataFiles() failed: ", err)
 	}
@@ -670,9 +670,9 @@ func TestLocalMaxFailures(t *gotesting.T) {
 		}
 		return 0
 	}
-	td.cfg.testsToRun = []*EntityResult{{EntityInfo: testing.EntityInfo{Name: "pkg.Test"}}}
-	td.cfg.maxTestFailures = 1
-	td.state.failuresCount = 0
+	td.cfg.TestsToRun = []*EntityResult{{EntityInfo: testing.EntityInfo{Name: "pkg.Test"}}}
+	td.cfg.MaxTestFailures = 1
+	td.state.FailuresCount = 0
 	results, err := runLocalTests(context.Background(), &td.cfg, &td.state)
 	if err == nil {
 		t.Errorf("runLocalTests() passed unexpectedly")
@@ -723,7 +723,7 @@ func TestFixturesDependency(t *gotesting.T) {
 		}
 		return 0
 	}
-	td.cfg.testsToRun = []*EntityResult{
+	td.cfg.TestsToRun = []*EntityResult{
 		{EntityInfo: testing.EntityInfo{
 			Bundle:  "cros",
 			Fixture: "remoteFixt",

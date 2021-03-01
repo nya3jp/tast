@@ -30,10 +30,11 @@ message LogStreamRequest {
 }
 
 message ReportResultRequest {
-  string test = 1; // Test name of this test result
-  repeated Error errors =
-      2; // errors contain errors encountered while running the test.
-  string skip_reason = 3; // skip_reason tells why the test is skipped.
+  string test = 1; // test name of this test result
+  // errors contain errors encountered while running the test.
+  repeated Error errors = 2;
+  // skip_reason tells why the test is skipped.
+  string skip_reason = 3;
 }
 
 message ReportResultResponse {

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package run
+package junitxml
 
 import (
 	"strings"
@@ -15,7 +15,7 @@ import (
 	"chromiumos/tast/internal/testing"
 )
 
-func TestWriteJUnitResults(t *gotesting.T) {
+func TestMarshal(t *gotesting.T) {
 	passedTest := testing.EntityInfo{
 		Name:    "example.Pass",
 		Pkg:     "chromiumos/tast/local/bundles/cros/example",
@@ -67,7 +67,7 @@ func TestWriteJUnitResults(t *gotesting.T) {
 			SkipReason: "",
 		},
 	}
-	x, err := ToJUnitResults(results)
+	x, err := Marshal(results)
 	if err != nil {
 		t.Fatalf("Failed to marshal to XML: %s", err)
 	}

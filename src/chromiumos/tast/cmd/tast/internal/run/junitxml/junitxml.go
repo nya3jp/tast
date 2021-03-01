@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package run
+// Package junitxml implements generating JUnit-like XML test reports.
+package junitxml
 
 import (
 	"encoding/xml"
@@ -11,18 +12,18 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/jsonprotocol"
 )
 
-// TestSuites is the top leve XML element of JUnit result.
-type TestSuites struct {
+// testSuites is the top leve XML element of JUnit result.
+type testSuites struct {
 	XMLName   xml.Name
-	TestSuite TestSuite `xml:"testsuite"`
+	TestSuite testSuite `xml:"testsuite"`
 }
 
-// TestSuite is an XML element in JUnit result.
+// testSuite is an XML element in JUnit result.
 // Some fields used in JUnit XML are not generated.
 // Errors: Tast only reports success or failure. All failures are reported as Failures.
 // Disabled: Tast does not have functionality to disable tests. It is done upstream scheduler job.
-type TestSuite struct {
-	TestCase []*TestCase `xml:"testcase"`
+type testSuite struct {
+	TestCase []*testCase `xml:"testcase"`
 
 	Tests int `xml:"tests,attr"`
 	// Errors and failures are not distinguished in the Tast result. Report both as failures.
@@ -30,8 +31,8 @@ type TestSuite struct {
 	Skipped  int `xml:"skipped,attr"`
 }
 
-// TestCase is an element in JUnit XML test result.
-type TestCase struct {
+// testCase is an element in JUnit XML test result.
+type testCase struct {
 	// Name of the test case. Typically this is the name of the test method.
 	Name      string `xml:"name,attr"`
 	Status    string `xml:"status,attr"`         // run or notrun
@@ -39,36 +40,36 @@ type TestCase struct {
 	Timestamp string `xml:"timestamp,attr"`      // start time, in ISO8601
 	Time      string `xml:"time,attr,omitempty"` // duration, in seconds (with a decimal point)
 
-	Failure []*Failure `xml:"failure,omitempty"`
-	Skipped *Skipped   `xml:"skipped,omitempty"`
+	Failure []*failure `xml:"failure,omitempty"`
+	Skipped *skipped   `xml:"skipped,omitempty"`
 }
 
-// Failure is an element in JUnit XML test result, representing a test case failure.
-type Failure struct {
+// failure is an element in JUnit XML test result, representing a test case failure.
+type failure struct {
 	Message string `xml:"message,attr,omitempty"`
 	Type    string `xml:"type,attr,omitempty"`
 	Details string `xml:",cdata"`
 }
 
-// Skipped is an element in JUnit XML test result, representing a skipped test case.
-type Skipped struct {
+// skipped is an element in JUnit XML test result, representing a skipped test case.
+type skipped struct {
 	Message string `xml:"message,attr,omitempty"`
 	Type    string `xml:"type,attr,omitempty"`
 }
 
-// ToJUnitResults marshalizes the Tast test results into JUnit XML format.
-func ToJUnitResults(results []*jsonprotocol.EntityResult) ([]byte, error) {
-	suites := TestSuites{
+// Marshal marshalizes the Tast test results into JUnit XML format.
+func Marshal(results []*jsonprotocol.EntityResult) ([]byte, error) {
+	suites := testSuites{
 		XMLName: xml.Name{Local: "testsuites"},
-		TestSuite: TestSuite{
+		TestSuite: testSuite{
 			Tests: len(results),
 		},
 	}
 	suite := &suites.TestSuite
-	var skipped int
+	var skips int
 	var failures int
 	for _, r := range results {
-		testCase := TestCase{
+		testCase := testCase{
 			Name:      r.EntityInfo.Name,
 			Timestamp: r.Start.UTC().Format("2006-01-02Z15:04:05"),
 			// Decimal point is needed for distinguishing it from nanoseconds notation.
@@ -78,15 +79,15 @@ func ToJUnitResults(results []*jsonprotocol.EntityResult) ([]byte, error) {
 		if r.SkipReason != "" {
 			testCase.Status = "notrun"
 			testCase.Result = "skipped"
-			testCase.Skipped = &Skipped{
+			testCase.Skipped = &skipped{
 				Message: r.SkipReason,
 			}
-			skipped++
+			skips++
 		} else if len(r.Errors) > 0 {
 			testCase.Status = "run"
 			testCase.Result = "completed"
 			for _, e := range r.Errors {
-				testCase.Failure = append(testCase.Failure, &Failure{
+				testCase.Failure = append(testCase.Failure, &failure{
 					Message: e.Reason,
 					Details: fmt.Sprintf("%s:%d\n%s", e.File, e.Line, e.Stack),
 				})
@@ -98,7 +99,7 @@ func ToJUnitResults(results []*jsonprotocol.EntityResult) ([]byte, error) {
 		}
 		suite.TestCase = append(suite.TestCase, &testCase)
 	}
-	suite.Skipped = skipped
+	suite.Skipped = skips
 	suite.Failures = failures
 	return xml.MarshalIndent(suites, "", "  ")
 }

@@ -18,6 +18,7 @@ import (
 	configpb "go.chromium.org/chromiumos/config/go/api"
 	"go.chromium.org/chromiumos/infra/proto/go/device"
 
+	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/internal/bundle"
 	"chromiumos/tast/internal/dep"
 	"chromiumos/tast/internal/runner"
@@ -39,7 +40,7 @@ func writeGetDUTInfoResult(w io.Writer, avail, unavail []string, dc *device.Conf
 
 // checkRunnerTestDepsArgs calls featureArgsFromConfig using cfg and verifies
 // that it sets runner args as specified per checkDeps, avail, and unavail.
-func checkRunnerTestDepsArgs(t *testing.T, cfg *Config, state *State, checkDeps bool,
+func checkRunnerTestDepsArgs(t *testing.T, cfg *config.Config, state *config.State, checkDeps bool,
 	avail, unavail []string, dc *device.Config, hf *configpb.HardwareFeatures, osVersion string) {
 	t.Helper()
 	args := runner.Args{

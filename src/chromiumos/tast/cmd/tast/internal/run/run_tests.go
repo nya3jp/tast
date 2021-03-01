@@ -7,11 +7,12 @@ package run
 import (
 	"context"
 
+	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/jsonprotocol"
 	"chromiumos/tast/errors"
 )
 
-func runTests(ctx context.Context, cfg *Config, state *State) ([]*jsonprotocol.EntityResult, error) {
+func runTests(ctx context.Context, cfg *config.Config, state *config.State) ([]*jsonprotocol.EntityResult, error) {
 	if err := getDUTInfo(ctx, cfg, state); err != nil {
 		return nil, errors.Wrap(err, "failed to get DUT software features")
 	}
@@ -84,7 +85,7 @@ func runTests(ctx context.Context, cfg *Config, state *State) ([]*jsonprotocol.E
 }
 
 // findTestsForShard finds the pattern for a subset of tests based on shard index.
-func findTestsForShard(ctx context.Context, cfg *Config, state *State) (testsToRun, testsToSkip, testsNotInShard []*jsonprotocol.EntityResult, err error) {
+func findTestsForShard(ctx context.Context, cfg *config.Config, state *config.State) (testsToRun, testsToSkip, testsNotInShard []*jsonprotocol.EntityResult, err error) {
 	tests, testsToSkip, err := listRunnableTests(ctx, cfg, state)
 	if err != nil {
 		return nil, nil, nil, errors.Wrapf(err, "fails to find runnable tests for patterns %q", cfg.Patterns)
@@ -106,7 +107,7 @@ func findTestsForShard(ctx context.Context, cfg *Config, state *State) (testsToR
 }
 
 // listRunnableTests finds runnable tests that fit the cfg.Patterns.
-func listRunnableTests(ctx context.Context, cfg *Config, state *State) (testsToInclude, testsToSkip []*jsonprotocol.EntityResult, err error) {
+func listRunnableTests(ctx context.Context, cfg *config.Config, state *config.State) (testsToInclude, testsToSkip []*jsonprotocol.EntityResult, err error) {
 	tests, err := listAllTests(ctx, cfg, state)
 	if err != nil {
 		return nil, nil, errors.Wrapf(err, "cannot list tests for patterns %q", cfg.Patterns)

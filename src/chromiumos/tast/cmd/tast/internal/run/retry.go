@@ -8,6 +8,7 @@ import (
 	"context"
 	"reflect"
 
+	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/jsonprotocol"
 	"chromiumos/tast/errors"
 )
@@ -29,7 +30,7 @@ type beforeRetryFunc func(ctx context.Context) bool
 // runTestsWithRetry runs local/remote tests in a loop. If cfg.ContinueAfterFailure
 // is true and runTests returns non-empty unstarted test names, it calls recover
 // followed by runTests again to restart testing.
-func runTestsWithRetry(ctx context.Context, cfg *Config, patterns []string, runTests runTestsFunc, beforeRetry beforeRetryFunc) ([]*jsonprotocol.EntityResult, error) {
+func runTestsWithRetry(ctx context.Context, cfg *config.Config, patterns []string, runTests runTestsFunc, beforeRetry beforeRetryFunc) ([]*jsonprotocol.EntityResult, error) {
 	var allResults []*jsonprotocol.EntityResult
 	for {
 		results, unstarted, rerr := runTests(ctx, patterns)

@@ -23,6 +23,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 
 	"chromiumos/tast/cmd/tast/internal/logging"
+	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/jsonprotocol"
 	"chromiumos/tast/internal/bundle"
 	"chromiumos/tast/internal/command"
@@ -170,8 +171,8 @@ func runFakeRemoteFixtureServer() int {
 type localTestData struct {
 	srvData *sshtest.TestData
 	logbuf  bytes.Buffer
-	cfg     Config
-	state   State
+	cfg     config.Config
+	state   config.State
 	tempDir string
 
 	hostDir     string // directory simulating root dir on DUT for file copies
@@ -261,7 +262,7 @@ func newLocalTestData(t *gotesting.T, opts ...localTestDataOption) *localTestDat
 	td.cfg.CheckTestDeps = false
 
 	// Ensure that already-set environment variables don't affect unit tests.
-	td.cfg.Proxy = ProxyNone
+	td.cfg.Proxy = config.ProxyNone
 
 	// Run actual commands when performing file copies.
 	td.hostDir = filepath.Join(td.tempDir, "host")
@@ -428,7 +429,7 @@ func TestLocalProxy(t *gotesting.T) {
 			defer os.Setenv(name, old)
 		}
 	}
-	td.cfg.Proxy = ProxyEnv
+	td.cfg.Proxy = config.ProxyEnv
 
 	// Proxy environment variables should be prepended to the local_test_runner command line.
 	// (The variables are added in this order in local.go.)

@@ -9,6 +9,7 @@ import (
 	"errors"
 	"path/filepath"
 
+	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/internal/runner"
 	"chromiumos/tast/internal/timing"
 )
@@ -16,7 +17,7 @@ import (
 // getInitialSysInfo saves the initial state of the DUT's system information to cfg if
 // requested and if it hasn't already been saved. This is called before testing.
 // This updates state.InitialSysInfo, so calling twice won't work.
-func getInitialSysInfo(ctx context.Context, cfg *Config, state *State) error {
+func getInitialSysInfo(ctx context.Context, cfg *config.Config, state *config.State) error {
 	if !cfg.CollectSysInfo {
 		return nil
 	}
@@ -52,7 +53,7 @@ func getInitialSysInfo(ctx context.Context, cfg *Config, state *State) error {
 // collectSysInfo writes system information generated on the DUT during testing to the results dir if
 // doing so was requested. This is called after testing and relies on the state saved by
 // getInitialSysInfo.
-func collectSysInfo(ctx context.Context, cfg *Config, state *State) error {
+func collectSysInfo(ctx context.Context, cfg *config.Config, state *config.State) error {
 	if !cfg.CollectSysInfo || state.InitialSysInfo == nil {
 		return nil
 	}

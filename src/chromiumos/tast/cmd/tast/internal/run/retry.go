@@ -8,6 +8,7 @@ import (
 	"context"
 	"reflect"
 
+	"chromiumos/tast/cmd/tast/internal/run/jsonprotocol"
 	"chromiumos/tast/errors"
 )
 
@@ -17,7 +18,7 @@ import (
 // it should return nil as unstarted. Note that nil slice and non-nil empty
 // slice are distinguished in this case; non-nil empty slice is considered that
 // there is no remaining test.
-type runTestsFunc func(ctx context.Context, patterns []string) (results []*EntityResult, unstarted []string, err error)
+type runTestsFunc func(ctx context.Context, patterns []string) (results []*jsonprotocol.EntityResult, unstarted []string, err error)
 
 // beforeRetryFunc is a function to recover from premature runner exits.
 // If it is okay to proceed to retry, return true. Otherwise no further retry
@@ -28,8 +29,8 @@ type beforeRetryFunc func(ctx context.Context) bool
 // runTestsWithRetry runs local/remote tests in a loop. If cfg.ContinueAfterFailure
 // is true and runTests returns non-empty unstarted test names, it calls recover
 // followed by runTests again to restart testing.
-func runTestsWithRetry(ctx context.Context, cfg *Config, patterns []string, runTests runTestsFunc, beforeRetry beforeRetryFunc) ([]*EntityResult, error) {
-	var allResults []*EntityResult
+func runTestsWithRetry(ctx context.Context, cfg *Config, patterns []string, runTests runTestsFunc, beforeRetry beforeRetryFunc) ([]*jsonprotocol.EntityResult, error) {
+	var allResults []*jsonprotocol.EntityResult
 	for {
 		results, unstarted, rerr := runTests(ctx, patterns)
 		allResults = append(allResults, results...)

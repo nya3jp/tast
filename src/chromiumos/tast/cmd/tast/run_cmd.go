@@ -17,6 +17,7 @@ import (
 
 	"chromiumos/tast/cmd/tast/internal/logging"
 	"chromiumos/tast/cmd/tast/internal/run"
+	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/ctxutil"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/command"
@@ -33,17 +34,17 @@ const (
 
 // runCmd implements subcommands.Command to support running tests.
 type runCmd struct {
-	cfg          *run.Config   // shared config for running tests
-	wrapper      runWrapper    // can be set by tests to stub out calls to run package
-	failForTests bool          // exit with 1 if any individual tests fail
-	timeout      time.Duration // overall timeout; 0 if no timeout
+	cfg          *config.Config // shared config for running tests
+	wrapper      runWrapper     // can be set by tests to stub out calls to run package
+	failForTests bool           // exit with 1 if any individual tests fail
+	timeout      time.Duration  // overall timeout; 0 if no timeout
 }
 
 var _ = subcommands.Command(&runCmd{})
 
 func newRunCmd(trunkDir string) *runCmd {
 	return &runCmd{
-		cfg:     run.NewConfig(run.RunTestsMode, tastDir, trunkDir),
+		cfg:     config.NewConfig(config.RunTestsMode, tastDir, trunkDir),
 		wrapper: &realRunWrapper{},
 	}
 }
@@ -82,7 +83,7 @@ func (r *runCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{})
 	ctx, cancel := xcontext.WithTimeout(ctx, r.timeout, errors.Errorf("%v: global timeout reached (%v)", context.DeadlineExceeded, r.timeout))
 	defer cancel(context.Canceled)
 
-	var state run.State
+	var state config.State
 	defer state.Close(ctx)
 
 	tl := timing.NewLog()

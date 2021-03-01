@@ -19,6 +19,7 @@ import (
 
 	"github.com/golang/protobuf/ptypes"
 
+	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/jsonprotocol"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/control"
@@ -80,7 +81,7 @@ var errUserReqTermination = errors.Wrap(ErrTerminate, "user requested tast to te
 // any tests failed) and false if it was aborted.
 // If cfg.CollectSysInfo is true, system information generated on the DUT during testing
 // (e.g. logs and crashes) will also be written to the results dir.
-func WriteResults(ctx context.Context, cfg *Config, state *State, results []*jsonprotocol.EntityResult, complete bool) error {
+func WriteResults(ctx context.Context, cfg *config.Config, state *config.State, results []*jsonprotocol.EntityResult, complete bool) error {
 	f, err := os.Create(filepath.Join(cfg.ResDir, resultsFilename))
 	if err != nil {
 		return err
@@ -168,8 +169,8 @@ type diagnoseRunErrorFunc func(ctx context.Context, outDir string) string
 
 // resultsHandler processes the output from a test binary.
 type resultsHandler struct {
-	cfg   *Config
-	state *State
+	cfg   *config.Config
+	state *config.State
 
 	runStart, runEnd time.Time                    // test-runner-reported times at which run started and ended
 	numTests         int                          // total number of tests that are expected to run
@@ -185,7 +186,7 @@ type resultsHandler struct {
 	terminated       bool                         // testing will be terminated.
 }
 
-func newResultsHandler(cfg *Config, state *State, crf copyAndRemoveFunc, df diagnoseRunErrorFunc) (*resultsHandler, error) {
+func newResultsHandler(cfg *config.Config, state *config.State, crf copyAndRemoveFunc, df diagnoseRunErrorFunc) (*resultsHandler, error) {
 	r := &resultsHandler{
 		cfg:       cfg,
 		state:     state,
@@ -743,7 +744,7 @@ func readMessages(r io.Reader, mch chan<- interface{}, ech chan<- error) {
 // A nil slice indicates that the list of tests to run was unavailable.
 //
 // df may be nil if diagnosis is unavailable.
-func readTestOutput(ctx context.Context, cfg *Config, state *State, r io.Reader, crf copyAndRemoveFunc, df diagnoseRunErrorFunc) (
+func readTestOutput(ctx context.Context, cfg *config.Config, state *config.State, r io.Reader, crf copyAndRemoveFunc, df diagnoseRunErrorFunc) (
 	results []*jsonprotocol.EntityResult, unstarted []string, err error) {
 	rh, err := newResultsHandler(cfg, state, crf, df)
 	if err != nil {

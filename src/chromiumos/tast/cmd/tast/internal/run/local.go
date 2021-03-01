@@ -18,6 +18,7 @@ import (
 
 	"github.com/golang/protobuf/ptypes"
 
+	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/devserver"
 	"chromiumos/tast/cmd/tast/internal/run/jsonprotocol"
 	"chromiumos/tast/ctxutil"
@@ -49,7 +50,7 @@ const (
 // connectToTarget establishes an SSH connection to the target specified in cfg.
 // The connection will be cached in cfg and should not be closed by the caller.
 // If a connection is already established, it will be returned.
-func connectToTarget(ctx context.Context, cfg *Config, state *State) (*ssh.Conn, error) {
+func connectToTarget(ctx context.Context, cfg *config.Config, state *config.State) (*ssh.Conn, error) {
 	// If we already have a connection, reuse it if it's still open.
 	if state.Hst != nil {
 		if err := state.Hst.Ping(ctx, sshPingTimeout); err == nil {
@@ -96,7 +97,7 @@ type remoteFixtureService struct {
 // newRemoteFixtureService executes the remote bundle as a gRPC server and
 // returns fixture service connecting to it. The caller should call rf.close
 // to gracefully stop the server and the client.
-func newRemoteFixtureService(ctx context.Context, cfg *Config) (rf *remoteFixtureService, retErr error) {
+func newRemoteFixtureService(ctx context.Context, cfg *config.Config) (rf *remoteFixtureService, retErr error) {
 	if _, err := os.Stat(cfg.RemoteFixtureServer); os.IsNotExist(err) {
 		return nil, fmt.Errorf("newRemoteFixtureService: %v", err)
 	}
@@ -156,7 +157,7 @@ type localTestsCategorizer func([]*testing.EntityInfo) ([]*bundleTests, error)
 // newLocalTestsCategorizer creates a function which categorizes given local
 // tests by the bundle name and the remote fixture name tests depend on.
 // It computes by listing all the fixtures in the bundles designated by cfg.
-func newLocalTestsCategorizer(ctx context.Context, cfg *Config, state *State) (localTestsCategorizer, error) {
+func newLocalTestsCategorizer(ctx context.Context, cfg *config.Config, state *config.State) (localTestsCategorizer, error) {
 	var localFixts runner.ListFixturesResult
 	if err := runTestRunnerCommand(
 		localRunnerCommand(ctx, cfg, state.Hst), &runner.Args{
@@ -292,7 +293,7 @@ func newLocalTestsCategorizer(ctx context.Context, cfg *Config, state *State) (l
 // runFixtureAndTests runs fixture methods before and after runTests.
 // fixtErr will be non-nil if fixture errors happen.
 // It also stores fixture logs to a file under "fixtures" dir in cfg.ResDir.
-func runFixtureAndTests(ctx context.Context, cfg *Config, state *State, rfcl bundle.FixtureService_RunFixtureClient, remoteFixt string, runTests func(ctx context.Context, fixtErr []string) error) (retErr error) {
+func runFixtureAndTests(ctx context.Context, cfg *config.Config, state *config.State, rfcl bundle.FixtureService_RunFixtureClient, remoteFixt string, runTests func(ctx context.Context, fixtErr []string) error) (retErr error) {
 	fixtResDir := filepath.Join(cfg.ResDir, "fixtures", remoteFixt)
 	// TODO(oka) rename testLogFilename to entityLogFilename
 	fixtLogPath := filepath.Join(fixtResDir, testLogFilename)
@@ -423,7 +424,7 @@ func runFixtureAndTests(ctx context.Context, cfg *Config, state *State, rfcl bun
 // runLocalTests executes tests as described by cfg on hst and returns the
 // results. It is only used for RunTestsMode.
 // It can return partial results and an error when error happens mid-tests.
-func runLocalTests(ctx context.Context, cfg *Config, state *State) (res []*jsonprotocol.EntityResult, retErr error) {
+func runLocalTests(ctx context.Context, cfg *config.Config, state *config.State) (res []*jsonprotocol.EntityResult, retErr error) {
 	ctx, st := timing.Start(ctx, "run_local_tests")
 	defer st.End()
 
@@ -491,7 +492,7 @@ func runLocalTests(ctx context.Context, cfg *Config, state *State) (res []*jsonp
 // runLocalTestsForFixture runs given local tests in between remote fixture
 // set up and tear down.
 // It can return partial results and an error when error happens mid-tests.
-func runLocalTestsForFixture(ctx context.Context, names []string, remoteFixt string, setUpErrs []string, cfg *Config, state *State) ([]*jsonprotocol.EntityResult, error) {
+func runLocalTestsForFixture(ctx context.Context, names []string, remoteFixt string, setUpErrs []string, cfg *config.Config, state *config.State) ([]*jsonprotocol.EntityResult, error) {
 	hst, err := connectToTarget(ctx, cfg, state)
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed to connect to %s; remoteFixt = %q", cfg.Target, remoteFixt)
@@ -547,7 +548,7 @@ func (h *localRunnerHandle) Close(ctx context.Context) error {
 // startLocalRunner asynchronously starts local_test_runner on hst and passes args to it.
 // args.FillDeprecated() is called first to backfill any deprecated fields for old runners.
 // The caller is responsible for reading the handle's stdout and closing the handle.
-func startLocalRunner(ctx context.Context, cfg *Config, hst *ssh.Conn, args *runner.Args) (*localRunnerHandle, error) {
+func startLocalRunner(ctx context.Context, cfg *config.Config, hst *ssh.Conn, args *runner.Args) (*localRunnerHandle, error) {
 	args.FillDeprecated()
 	argsData, err := json.Marshal(args)
 	if err != nil {
@@ -577,7 +578,7 @@ func startLocalRunner(ctx context.Context, cfg *Config, hst *ssh.Conn, args *run
 // Results from started tests and the names of tests that should have been
 // started but weren't (in the order in which they should've been run) are
 // returned.
-func runLocalTestsOnce(ctx context.Context, cfg *Config, state *State, hst *ssh.Conn, patterns []string, startFixtureName string, setUpErrs []string) (
+func runLocalTestsOnce(ctx context.Context, cfg *config.Config, state *config.State, hst *ssh.Conn, patterns []string, startFixtureName string, setUpErrs []string) (
 	results []*jsonprotocol.EntityResult, unstarted []string, err error) {
 	ctx, st := timing.Start(ctx, "run_local_tests_once")
 	defer st.End()
@@ -670,7 +671,7 @@ func formatBytes(bytes int64) string {
 // startEphemeralDevserverForLocalTests starts an ephemeral devserver serving on hst.
 // state's EphemeralDevserver and LocalDevservers fields are updated.
 // If EphemeralDevserver is non-nil, it is closed first.
-func startEphemeralDevserverForLocalTests(ctx context.Context, hst *ssh.Conn, cfg *Config, state *State) error {
+func startEphemeralDevserverForLocalTests(ctx context.Context, hst *ssh.Conn, cfg *config.Config, state *config.State) error {
 	state.CloseEphemeralDevserver(ctx) // ignore errors; this may rely on a now-dead SSH connection
 
 	lis, err := hst.ListenTCP(&net.TCPAddr{IP: net.IPv4(127, 0, 0, 1), Port: localEphemeralDevserverPort})
@@ -692,7 +693,7 @@ func startEphemeralDevserverForLocalTests(ctx context.Context, hst *ssh.Conn, cf
 // diagnoseLocalRunError is used to attempt to diagnose the cause of an error encountered
 // while running local tests. It returns a string that can be returned by a diagnoseRunErrorFunc.
 // Files useful for diagnosis might be saved under outDir.
-func diagnoseLocalRunError(ctx context.Context, cfg *Config, state *State, outDir string) string {
+func diagnoseLocalRunError(ctx context.Context, cfg *config.Config, state *config.State, outDir string) string {
 	if state.Hst == nil || ctxutil.DeadlineBefore(ctx, time.Now().Add(sshPingTimeout)) {
 		return ""
 	}

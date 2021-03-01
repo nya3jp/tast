@@ -23,6 +23,7 @@ import (
 	"github.com/google/go-cmp/cmp/cmpopts"
 
 	"chromiumos/tast/cmd/tast/internal/logging"
+	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/jsonprotocol"
 	"chromiumos/tast/internal/control"
 	"chromiumos/tast/internal/runner"
@@ -111,11 +112,11 @@ func TestReadTestOutput(t *gotesting.T) {
 	mw.WriteMessage(&control.RunEnd{Time: runEndTime, OutDir: outDir})
 
 	var logBuf bytes.Buffer
-	cfg := Config{
+	cfg := config.Config{
 		Logger: logging.NewSimple(&logBuf, false, false), // drop debug messages
 		ResDir: filepath.Join(tempDir, "results"),
 	}
-	var state State
+	var state config.State
 	results, unstartedTests, err := readTestOutput(context.Background(), &cfg, &state, &b, os.Rename, nil)
 	if err != nil {
 		t.Fatal("readTestOutput failed:", err)
@@ -254,11 +255,11 @@ func TestReadTestOutputSameEntity(t *gotesting.T) {
 	mw.WriteMessage(&control.RunEnd{Time: epoch})
 
 	var logBuf bytes.Buffer
-	cfg := Config{
+	cfg := config.Config{
 		Logger: logging.NewSimple(&logBuf, false, false),
 		ResDir: filepath.Join(tempDir, "results"),
 	}
-	var state State
+	var state config.State
 	results, unstartedTests, err := readTestOutput(context.Background(), &cfg, &state, &b, os.Rename, nil)
 	if err != nil {
 		t.Fatal("readTestOutput failed:", err)
@@ -335,11 +336,11 @@ func TestReadTestOutputConcurrentEntity(t *gotesting.T) {
 	mw.WriteMessage(&control.RunEnd{Time: epoch})
 
 	var logBuf bytes.Buffer
-	cfg := Config{
+	cfg := config.Config{
 		Logger: logging.NewSimple(&logBuf, false, false),
 		ResDir: filepath.Join(tempDir, "results"),
 	}
-	var state State
+	var state config.State
 	results, unstartedTests, err := readTestOutput(context.Background(), &cfg, &state, &b, os.Rename, nil)
 	if err != nil {
 		t.Fatal("readTestOutput failed:", err)
@@ -407,11 +408,11 @@ func TestReadTestOutputTimingLog(t *gotesting.T) {
 	td := testutil.TempDir(t)
 	defer os.RemoveAll(td)
 
-	cfg := Config{
+	cfg := config.Config{
 		Logger: logging.NewSimple(&bytes.Buffer{}, false, false),
 		ResDir: td,
 	}
-	var state State
+	var state config.State
 	if _, _, err := readTestOutput(ctx, &cfg, &state, &b, noOpCopyAndRemove, nil); err != nil {
 		t.Fatal("readTestOutput failed: ", err)
 	}
@@ -471,11 +472,11 @@ func TestReadTestOutputAbortFixture(t *gotesting.T) {
 	mw.WriteMessage(&control.EntityStart{Time: epoch, Info: testing.EntityInfo{Name: fixt2Name, Type: testing.EntityFixture}, OutDir: filepath.Join(outDir, fixt2OutDir)})
 
 	var logBuf bytes.Buffer
-	cfg := Config{
+	cfg := config.Config{
 		Logger: logging.NewSimple(&logBuf, false, false),
 		ResDir: filepath.Join(tempDir, "results"),
 	}
-	var state State
+	var state config.State
 	results, unstartedTests, err := readTestOutput(context.Background(), &cfg, &state, &b, os.Rename, nil)
 	if err == nil {
 		t.Error("readTestOutput succeeded; should fail for premature abort")
@@ -522,8 +523,8 @@ func TestPerTestLogContainsRunError(t *gotesting.T) {
 	mw.WriteMessage(&control.EntityStart{Time: time.Unix(2, 0), Info: testing.EntityInfo{Name: testName}})
 	mw.WriteMessage(&control.RunError{Time: time.Unix(3, 0), Error: testing.Error{Reason: errorMsg}})
 
-	cfg := Config{Logger: logging.NewSimple(&bytes.Buffer{}, false, false), ResDir: td}
-	var state State
+	cfg := config.Config{Logger: logging.NewSimple(&bytes.Buffer{}, false, false), ResDir: td}
+	var state config.State
 	if _, _, err := readTestOutput(context.Background(), &cfg, &state, &b, noOpCopyAndRemove, nil); err == nil {
 		t.Fatal("readTestOutput didn't report run error")
 	} else if !strings.Contains(err.Error(), errorMsg) {
@@ -607,11 +608,11 @@ func TestValidateMessages(t *gotesting.T) {
 		for _, msg := range tc.msgs {
 			mw.WriteMessage(msg)
 		}
-		cfg := Config{
+		cfg := config.Config{
 			Logger: logging.NewSimple(&bytes.Buffer{}, false, false),
 			ResDir: filepath.Join(tempDir, tc.desc),
 		}
-		var state State
+		var state config.State
 		if results, _, err := readTestOutput(context.Background(), &cfg, &state, &b, noOpCopyAndRemove, nil); err == nil {
 			t.Errorf("readTestOutput didn't fail for %s", tc.desc)
 		} else {
@@ -636,12 +637,12 @@ func TestReadTestOutputTimeout(t *gotesting.T) {
 	defer pw.Close()
 
 	// When the message timeout is hit, an error should be reported.
-	cfg := Config{
+	cfg := config.Config{
 		Logger:     logging.NewSimple(&bytes.Buffer{}, false, false),
 		ResDir:     tempDir,
 		MsgTimeout: time.Millisecond,
 	}
-	var state State
+	var state config.State
 	if _, _, err := readTestOutput(context.Background(), &cfg, &state, pr, noOpCopyAndRemove, nil); err == nil {
 		t.Error("readTestOutput didn't return error for message timeout")
 	}
@@ -743,11 +744,11 @@ func TestWritePartialResults(t *gotesting.T) {
 	mw.WriteMessage(&control.EntityStart{Time: test2Start, Info: testing.EntityInfo{Name: test2Name}, OutDir: filepath.Join(outDir, test2Name)})
 	mw.WriteMessage(&control.EntityError{Time: test2Error, Name: test2Name, Error: testing.Error{Reason: test2Reason}})
 
-	cfg := Config{
+	cfg := config.Config{
 		Logger: logging.NewSimple(&bytes.Buffer{}, false, false),
 		ResDir: filepath.Join(tempDir, "results"),
 	}
-	var state State
+	var state config.State
 	results, unstarted, err := readTestOutput(context.Background(), &cfg, &state, &b, os.Rename, nil)
 	if err == nil {
 		t.Fatal("readTestOutput unexpectedly succeeded")
@@ -879,11 +880,11 @@ func TestUnfinishedTest(t *gotesting.T) {
 			mw.WriteMessage(&control.RunError{Time: tm, Error: testing.Error{Reason: runMsg, File: runFile, Line: runLine}})
 		}
 
-		cfg := Config{
+		cfg := config.Config{
 			Logger: logging.NewSimple(&bytes.Buffer{}, false, false),
 			ResDir: filepath.Join(tempDir, strconv.Itoa(i)),
 		}
-		var state State
+		var state config.State
 		res, _, err := readTestOutput(context.Background(), &cfg, &state, &b, os.Rename, tc.diagFunc)
 		if err == nil {
 			t.Error("readTestOutput unexpectedly succeeded")
@@ -911,7 +912,7 @@ func TestWriteResultsUnmatchedGlobs(t *gotesting.T) {
 	td := testutil.TempDir(t)
 	defer os.RemoveAll(td)
 
-	baseCfg := NewConfig(RunTestsMode, td, td)
+	baseCfg := config.NewConfig(config.RunTestsMode, td, td)
 	baseCfg.ResDir = td
 
 	// Report that two tests were executed.
@@ -943,7 +944,7 @@ func TestWriteResultsUnmatchedGlobs(t *gotesting.T) {
 		cfg.Logger = logging.NewSimple(out, false, false)
 		cfg.Patterns = tc.patterns
 		cfg.TestsToRun = results
-		var state State
+		var state config.State
 		if err := WriteResults(context.Background(), &cfg, &state, results, tc.complete); err != nil {
 			t.Errorf("WriteResults() failed for %v: %v", cfg.Patterns, err)
 			continue
@@ -1041,12 +1042,12 @@ func TestMaxTestFailures(t *gotesting.T) {
 	mw.WriteMessage(&control.RunEnd{Time: runEndTime, OutDir: outDir})
 
 	var logBuf bytes.Buffer
-	cfg := Config{
+	cfg := config.Config{
 		Logger:          logging.NewSimple(&logBuf, false, false), // drop debug messages
 		ResDir:          filepath.Join(tempDir, "results"),
 		MaxTestFailures: 2,
 	}
-	var state State
+	var state config.State
 	results, unstartedTests, err := readTestOutput(context.Background(), &cfg, &state, &b, os.Rename, nil)
 	if err == nil {
 		t.Fatal("readTestOutput expected an error failure when maximum number of failed tests has reached, but did not get any error.")

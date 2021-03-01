@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package run
+// Package config defines common structs to carry configuration and associated
+// stateful data.
+package config
 
 import (
 	"context"

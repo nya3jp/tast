@@ -13,6 +13,7 @@ import (
 	"os"
 	"os/exec"
 
+	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/internal/runner"
 	"chromiumos/tast/ssh"
 )
@@ -38,11 +39,11 @@ type localRunnerCmd struct {
 	ctx context.Context
 }
 
-func localRunnerCommand(ctx context.Context, cfg *Config, hst *ssh.Conn) *localRunnerCmd {
+func localRunnerCommand(ctx context.Context, cfg *config.Config, hst *ssh.Conn) *localRunnerCmd {
 	// Set proxy-related environment variables for local_test_runner so it will use them
 	// when accessing network.
 	execArgs := []string{"env"}
-	if cfg.Proxy == ProxyEnv {
+	if cfg.Proxy == config.ProxyEnv {
 		// Proxy-related variables can be either uppercase or lowercase.
 		// See https://golang.org/pkg/net/http/#ProxyFromEnvironment.
 		for _, name := range []string{
@@ -75,7 +76,7 @@ type remoteRunnerCmd struct {
 	*exec.Cmd
 }
 
-func remoteRunnerCommand(ctx context.Context, cfg *Config) *remoteRunnerCmd {
+func remoteRunnerCommand(ctx context.Context, cfg *config.Config) *remoteRunnerCmd {
 	return &remoteRunnerCmd{exec.CommandContext(ctx, cfg.RemoteRunner)}
 }
 

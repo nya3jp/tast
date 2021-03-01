@@ -7,6 +7,7 @@ package run
 import (
 	"context"
 
+	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/jsonprotocol"
 	"chromiumos/tast/internal/bundle"
 	"chromiumos/tast/internal/runner"
@@ -15,7 +16,7 @@ import (
 )
 
 // listTests returns the whole tests to run.
-func listTests(ctx context.Context, cfg *Config, state *State) ([]*jsonprotocol.EntityResult, error) {
+func listTests(ctx context.Context, cfg *config.Config, state *config.State) ([]*jsonprotocol.EntityResult, error) {
 	testsToRun, testsToSkip, _, err := findTestsForShard(ctx, cfg, state)
 	if err != nil {
 		return nil, err
@@ -27,7 +28,7 @@ func listTests(ctx context.Context, cfg *Config, state *State) ([]*jsonprotocol.
 }
 
 // listAllTests returns the whole tests whether they will be skipped or not..
-func listAllTests(ctx context.Context, cfg *Config, state *State) ([]*jsonprotocol.EntityResult, error) {
+func listAllTests(ctx context.Context, cfg *config.Config, state *config.State) ([]*jsonprotocol.EntityResult, error) {
 	var tests []testing.EntityWithRunnabilityInfo
 	if cfg.RunLocal {
 		hst, err := connectToTarget(ctx, cfg, state)
@@ -56,18 +57,18 @@ func listAllTests(ctx context.Context, cfg *Config, state *State) ([]*jsonprotoc
 }
 
 // listLocalTests returns a list of local tests to run.
-func listLocalTests(ctx context.Context, cfg *Config, state *State, hst *ssh.Conn) ([]testing.EntityWithRunnabilityInfo, error) {
+func listLocalTests(ctx context.Context, cfg *config.Config, state *config.State, hst *ssh.Conn) ([]testing.EntityWithRunnabilityInfo, error) {
 	return runListTestsCommand(
 		localRunnerCommand(ctx, cfg, hst), cfg, state, cfg.LocalBundleGlob())
 }
 
 // listRemoteTests returns a list of remote tests to run.
-func listRemoteTests(ctx context.Context, cfg *Config, state *State) ([]testing.EntityWithRunnabilityInfo, error) {
+func listRemoteTests(ctx context.Context, cfg *config.Config, state *config.State) ([]testing.EntityWithRunnabilityInfo, error) {
 	return runListTestsCommand(
 		remoteRunnerCommand(ctx, cfg), cfg, state, cfg.RemoteBundleGlob())
 }
 
-func runListTestsCommand(r runnerCmd, cfg *Config, state *State, glob string) ([]testing.EntityWithRunnabilityInfo, error) {
+func runListTestsCommand(r runnerCmd, cfg *config.Config, state *config.State, glob string) ([]testing.EntityWithRunnabilityInfo, error) {
 	var ts []testing.EntityWithRunnabilityInfo
 	args := &runner.Args{
 		Mode: runner.ListTestsMode,

@@ -17,6 +17,7 @@ import (
 	"strings"
 	"time"
 
+	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/devserver"
 	"chromiumos/tast/cmd/tast/internal/run/jsonprotocol"
 	"chromiumos/tast/internal/bundle"
@@ -25,7 +26,7 @@ import (
 )
 
 // startEphemeralDevserverForRemoteTests starts an ephemeral devserver for remote tests.
-func startEphemeralDevserverForRemoteTests(ctx context.Context, cfg *Config, state *State) (*devserver.Ephemeral, error) {
+func startEphemeralDevserverForRemoteTests(ctx context.Context, cfg *config.Config, state *config.State) (*devserver.Ephemeral, error) {
 	lis, err := net.Listen("tcp", "localhost:0")
 	if err != nil {
 		return nil, fmt.Errorf("failed to listen to a local port: %v", err)
@@ -43,7 +44,7 @@ func startEphemeralDevserverForRemoteTests(ctx context.Context, cfg *Config, sta
 }
 
 // runRemoteTests runs the remote test runner and reads its output.
-func runRemoteTests(ctx context.Context, cfg *Config, state *State) ([]*jsonprotocol.EntityResult, error) {
+func runRemoteTests(ctx context.Context, cfg *config.Config, state *config.State) ([]*jsonprotocol.EntityResult, error) {
 	ctx, st := timing.Start(ctx, "run_remote_tests")
 	defer st.End()
 
@@ -76,7 +77,7 @@ func runRemoteTests(ctx context.Context, cfg *Config, state *State) ([]*jsonprot
 // Results from started tests and the names of tests that should have been
 // started but weren't (in the order in which they should've been run) are
 // returned.
-func runRemoteTestsOnce(ctx context.Context, cfg *Config, state *State, patterns []string) (results []*jsonprotocol.EntityResult, unstarted []string, err error) {
+func runRemoteTestsOnce(ctx context.Context, cfg *config.Config, state *config.State, patterns []string) (results []*jsonprotocol.EntityResult, unstarted []string, err error) {
 	ctx, st := timing.Start(ctx, "run_remote_tests_once")
 	defer st.End()
 

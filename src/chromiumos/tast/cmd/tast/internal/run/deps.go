@@ -13,6 +13,7 @@ import (
 
 	"github.com/golang/protobuf/proto"
 
+	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/internal/bundle"
 	"chromiumos/tast/internal/runner"
 	"chromiumos/tast/internal/timing"
@@ -25,7 +26,7 @@ const deviceConfigFile = "device-config.txt"
 // getDUTInfo executes local_test_runner on the DUT to get a list of DUT info.
 // The info is used to check tests' dependencies.
 // This updates state.SoftwareFeatures, thus calling this twice won't work.
-func getDUTInfo(ctx context.Context, cfg *Config, state *State) error {
+func getDUTInfo(ctx context.Context, cfg *config.Config, state *config.State) error {
 	if !cfg.CheckTestDeps {
 		return nil
 	}
@@ -84,7 +85,7 @@ func getDUTInfo(ctx context.Context, cfg *Config, state *State) error {
 }
 
 // featureArgsFromConfig returns feature arguments based on the configuration parameter.
-func featureArgsFromConfig(cfg *Config, state *State) *bundle.FeatureArgs {
+func featureArgsFromConfig(cfg *config.Config, state *config.State) *bundle.FeatureArgs {
 	args := bundle.FeatureArgs{
 		CheckSoftwareDeps: cfg.CheckTestDeps,
 		TestVars:          cfg.TestVars,

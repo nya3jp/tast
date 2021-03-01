@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package run
+package config
 
 // bundleInfo contains information about a test bundle.
 // All paths in this struct are relative to the Chrome OS trunk directory.

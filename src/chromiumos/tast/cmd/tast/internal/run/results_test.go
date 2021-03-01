@@ -638,7 +638,7 @@ func TestReadTestOutputTimeout(t *gotesting.T) {
 	cfg := Config{
 		Logger:     logging.NewSimple(&bytes.Buffer{}, false, false),
 		ResDir:     tempDir,
-		msgTimeout: time.Millisecond,
+		MsgTimeout: time.Millisecond,
 	}
 	var state State
 	if _, _, err := readTestOutput(context.Background(), &cfg, &state, pr, noOpCopyAndRemove, nil); err == nil {
@@ -646,14 +646,14 @@ func TestReadTestOutputTimeout(t *gotesting.T) {
 	}
 
 	// An error should also be reported for a canceled context.
-	cfg.msgTimeout = time.Minute
+	cfg.MsgTimeout = time.Minute
 	ctx, cancel := context.WithCancel(context.Background())
 	cancel()
 	start := time.Now()
 	if _, _, err := readTestOutput(ctx, &cfg, &state, pr, noOpCopyAndRemove, nil); err == nil {
 		t.Error("readTestOutput didn't return error for canceled context")
 	}
-	if elapsed := time.Now().Sub(start); elapsed >= cfg.msgTimeout {
+	if elapsed := time.Now().Sub(start); elapsed >= cfg.MsgTimeout {
 		t.Error("readTestOutput used message timeout instead of noticing context was canceled")
 	}
 }
@@ -672,8 +672,8 @@ func TestWriteResultsCollectSysInfo(t *gotesting.T) {
 		json.NewEncoder(stdout).Encode(&runner.CollectSysInfoResult{})
 		return 0
 	}
-	td.cfg.collectSysInfo = true
-	td.state.initialSysInfo = &runner.SysInfoState{}
+	td.cfg.CollectSysInfo = true
+	td.state.InitialSysInfo = &runner.SysInfoState{}
 	if err := WriteResults(context.Background(), &td.cfg, &td.state, []*EntityResult{}, true); err != nil {
 		t.Fatal("WriteResults failed: ", err)
 	}
@@ -686,8 +686,8 @@ func TestWriteResultsCollectSysInfoFailure(t *gotesting.T) {
 
 	// Report an error when collecting system info.
 	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) { return 1 }
-	td.cfg.collectSysInfo = true
-	td.state.initialSysInfo = &runner.SysInfoState{}
+	td.cfg.CollectSysInfo = true
+	td.state.InitialSysInfo = &runner.SysInfoState{}
 	err := WriteResults(context.Background(), &td.cfg, &td.state, []*EntityResult{}, true)
 	if err == nil {
 		t.Fatal("WriteResults didn't report expected error")
@@ -941,7 +941,7 @@ func TestWriteResultsUnmatchedGlobs(t *gotesting.T) {
 		out := &bytes.Buffer{}
 		cfg.Logger = logging.NewSimple(out, false, false)
 		cfg.Patterns = tc.patterns
-		cfg.testsToRun = results
+		cfg.TestsToRun = results
 		var state State
 		if err := WriteResults(context.Background(), &cfg, &state, results, tc.complete); err != nil {
 			t.Errorf("WriteResults() failed for %v: %v", cfg.Patterns, err)
@@ -1043,7 +1043,7 @@ func TestMaxTestFailures(t *gotesting.T) {
 	cfg := Config{
 		Logger:          logging.NewSimple(&logBuf, false, false), // drop debug messages
 		ResDir:          filepath.Join(tempDir, "results"),
-		maxTestFailures: 2,
+		MaxTestFailures: 2,
 	}
 	var state State
 	results, unstartedTests, err := readTestOutput(context.Background(), &cfg, &state, &b, os.Rename, nil)
@@ -1056,7 +1056,7 @@ func TestMaxTestFailures(t *gotesting.T) {
 	if len(results) != 3 {
 		t.Errorf("readTestOutput reported %v test results: want 3", len(results))
 	}
-	if state.failuresCount != 2 {
-		t.Errorf("readTestOutput set failures count to %v; want 2", state.failuresCount)
+	if state.FailuresCount != 2 {
+		t.Errorf("readTestOutput set failures count to %v; want 2", state.FailuresCount)
 	}
 }

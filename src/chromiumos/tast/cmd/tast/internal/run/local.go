@@ -50,11 +50,11 @@ const (
 // If a connection is already established, it will be returned.
 func connectToTarget(ctx context.Context, cfg *Config, state *State) (*ssh.Conn, error) {
 	// If we already have a connection, reuse it if it's still open.
-	if state.hst != nil {
-		if err := state.hst.Ping(ctx, sshPingTimeout); err == nil {
-			return state.hst, nil
+	if state.Hst != nil {
+		if err := state.Hst.Ping(ctx, sshPingTimeout); err == nil {
+			return state.Hst, nil
 		}
-		state.hst = nil
+		state.Hst = nil
 	}
 
 	ctx, st := timing.Start(ctx, "connect")
@@ -63,7 +63,7 @@ func connectToTarget(ctx context.Context, cfg *Config, state *State) (*ssh.Conn,
 
 	o := ssh.Options{
 		ConnectTimeout:       sshConnectTimeout,
-		ConnectRetries:       cfg.sshRetries,
+		ConnectRetries:       cfg.SSHRetries,
 		ConnectRetryInterval: sshRetryInterval,
 		KeyFile:              cfg.KeyFile,
 		KeyDir:               cfg.KeyDir,
@@ -74,17 +74,17 @@ func connectToTarget(ctx context.Context, cfg *Config, state *State) (*ssh.Conn,
 	}
 
 	var err error
-	if state.hst, err = ssh.New(ctx, &o); err != nil {
+	if state.Hst, err = ssh.New(ctx, &o); err != nil {
 		return nil, err
 	}
 
-	if state.initBootID == "" {
-		if state.initBootID, err = readBootID(ctx, state.hst); err != nil {
+	if state.InitBootID == "" {
+		if state.InitBootID, err = readBootID(ctx, state.Hst); err != nil {
 			return nil, err
 		}
 	}
 
-	return state.hst, nil
+	return state.Hst, nil
 }
 
 type remoteFixtureService struct {
@@ -96,11 +96,11 @@ type remoteFixtureService struct {
 // returns fixture service connecting to it. The caller should call rf.close
 // to gracefully stop the server and the client.
 func newRemoteFixtureService(ctx context.Context, cfg *Config) (rf *remoteFixtureService, retErr error) {
-	if _, err := os.Stat(cfg.remoteFixtureServer); os.IsNotExist(err) {
+	if _, err := os.Stat(cfg.RemoteFixtureServer); os.IsNotExist(err) {
 		return nil, fmt.Errorf("newRemoteFixtureService: %v", err)
 	}
 
-	rpcCL, err := rpc.DialExec(ctx, cfg.remoteFixtureServer, &protocol.HandshakeRequest{})
+	rpcCL, err := rpc.DialExec(ctx, cfg.RemoteFixtureServer, &protocol.HandshakeRequest{})
 
 	if err != nil {
 		return nil, fmt.Errorf("rpc.NewClient: %v", err)
@@ -113,7 +113,7 @@ func newRemoteFixtureService(ctx context.Context, cfg *Config) (rf *remoteFixtur
 
 	cl, err := bundle.NewFixtureServiceClient(rpcCL.Conn).RunFixture(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("RunFixture agasint %v: %v", cfg.remoteFixtureServer, err)
+		return nil, fmt.Errorf("RunFixture agasint %v: %v", cfg.RemoteFixtureServer, err)
 	}
 	return &remoteFixtureService{
 		rpcCL: rpcCL,
@@ -158,10 +158,10 @@ type localTestsCategorizer func([]*testing.EntityInfo) ([]*bundleTests, error)
 func newLocalTestsCategorizer(ctx context.Context, cfg *Config, state *State) (localTestsCategorizer, error) {
 	var localFixts runner.ListFixturesResult
 	if err := runTestRunnerCommand(
-		localRunnerCommand(ctx, cfg, state.hst), &runner.Args{
+		localRunnerCommand(ctx, cfg, state.Hst), &runner.Args{
 			Mode: runner.ListFixturesMode,
 			ListFixtures: &runner.ListFixturesArgs{
-				BundleGlob: cfg.localBundleGlob(),
+				BundleGlob: cfg.LocalBundleGlob(),
 			},
 		}, &localFixts); err != nil {
 		return nil, fmt.Errorf("listing local fixtures: %v", err)
@@ -180,7 +180,7 @@ func newLocalTestsCategorizer(ctx context.Context, cfg *Config, state *State) (l
 	if err := runTestRunnerCommand(remoteRunnerCommand(ctx, cfg), &runner.Args{
 		Mode: runner.ListFixturesMode,
 		ListFixtures: &runner.ListFixturesArgs{
-			BundleGlob: cfg.remoteBundleGlob(),
+			BundleGlob: cfg.RemoteBundleGlob(),
 		},
 	},
 		&remoteFixts,
@@ -310,13 +310,13 @@ func runFixtureAndTests(ctx context.Context, cfg *Config, state *State, rfcl bun
 	}()
 
 	var dm bundle.RunFixtureConfig_PlannerDownloadMode
-	switch cfg.downloadMode {
+	switch cfg.DownloadMode {
 	case planner.DownloadBatch:
 		dm = bundle.RunFixtureConfig_BATCH
 	case planner.DownloadLazy:
 		dm = bundle.RunFixtureConfig_LAZY
 	default:
-		return fmt.Errorf("unknown mode %v", cfg.downloadMode)
+		return fmt.Errorf("unknown mode %v", cfg.DownloadMode)
 	}
 
 	var pushErrs []string
@@ -366,19 +366,19 @@ func runFixtureAndTests(ctx context.Context, cfg *Config, state *State, rfcl bun
 				Push: &bundle.RunFixturePushRequest{
 					Name: remoteFixt,
 					Config: &bundle.RunFixtureConfig{
-						TestVars:          cfg.testVars,
-						DataDir:           cfg.remoteDataDir,
-						OutDir:            cfg.remoteOutDir,
+						TestVars:          cfg.TestVars,
+						DataDir:           cfg.RemoteDataDir,
+						OutDir:            cfg.RemoteOutDir,
 						TempDir:           "", // empty for fixture service to create it
 						Target:            cfg.Target,
 						KeyFile:           cfg.KeyFile,
 						KeyDir:            cfg.KeyDir,
-						LocalBundleDir:    cfg.localBundleDir,
+						LocalBundleDir:    cfg.LocalBundleDir,
 						CheckSoftwareDeps: false,
-						Devservers:        cfg.devservers,
-						TlwServer:         state.tlwServerForDUT,
+						Devservers:        cfg.Devservers,
+						TlwServer:         state.TLWServerForDUT,
 						DutName:           cfg.Target,
-						BuildArtifactsUrl: cfg.buildArtifactsURL,
+						BuildArtifactsUrl: cfg.BuildArtifactsURL,
 						DownloadMode:      dm,
 					},
 				},
@@ -446,8 +446,8 @@ func runLocalTests(ctx context.Context, cfg *Config, state *State) (res []*Entit
 		return nil, err
 	}
 
-	tests := make([]*testing.EntityInfo, len(cfg.testsToRun))
-	for i, t := range cfg.testsToRun {
+	tests := make([]*testing.EntityInfo, len(cfg.TestsToRun))
+	for i, t := range cfg.TestsToRun {
 		tests[i] = &t.EntityInfo
 	}
 	bundleRemoteFixtTests, err := categorize(tests)
@@ -505,21 +505,21 @@ func runLocalTestsForFixture(ctx context.Context, names []string, remoteFixt str
 		// The ephemeral devserver uses the SSH connection to the DUT, so a new devserver needs
 		// to be created if a new SSH connection was established.
 		if hst != oldHst {
-			if state.ephemeralDevserver != nil {
+			if state.EphemeralDevserver != nil {
 				if devErr := startEphemeralDevserverForLocalTests(ctx, hst, cfg, state); devErr != nil {
 					cfg.Logger.Log("Failed restarting ephemeral devserver: ", connErr)
 					return false
 				}
 			}
-			if state.tlwServerForDUT != "" {
-				f, err := hst.ForwardRemoteToLocal("tcp", "127.0.0.1:0", cfg.tlwServer, func(e error) {
+			if state.TLWServerForDUT != "" {
+				f, err := hst.ForwardRemoteToLocal("tcp", "127.0.0.1:0", cfg.TLWServer, func(e error) {
 					cfg.Logger.Logf("remote forwarder error: %s", e)
 				})
 				if err != nil {
 					cfg.Logger.Log("Failed reconnecting remote port forwarding: ", err)
 					return false
 				}
-				state.tlwServerForDUT = f.ListenAddr().String()
+				state.TLWServerForDUT = f.ListenAddr().String()
 			}
 		}
 		return true
@@ -584,7 +584,7 @@ func runLocalTestsOnce(ctx context.Context, cfg *Config, state *State, hst *ssh.
 	// Older local_test_runner does not create the specified output directory.
 	// TODO(crbug.com/1000549): Delete this workaround after 20191001.
 	// This workaround costs one round-trip time to the DUT.
-	if err := hst.Command("mkdir", "-p", cfg.localOutDir).Run(ctx); err != nil {
+	if err := hst.Command("mkdir", "-p", cfg.LocalOutDir).Run(ctx); err != nil {
 		return nil, nil, err
 	}
 	args := runner.Args{
@@ -593,20 +593,20 @@ func runLocalTestsOnce(ctx context.Context, cfg *Config, state *State, hst *ssh.
 			BundleArgs: bundle.RunTestsArgs{
 				FeatureArgs:       *featureArgsFromConfig(cfg, state),
 				Patterns:          patterns,
-				DataDir:           cfg.localDataDir,
-				OutDir:            cfg.localOutDir,
-				Devservers:        state.localDevservers,
-				TLWServer:         state.tlwServerForDUT,
+				DataDir:           cfg.LocalDataDir,
+				OutDir:            cfg.LocalOutDir,
+				Devservers:        state.LocalDevservers,
+				TLWServer:         state.TLWServerForDUT,
 				DUTName:           cfg.Target,
-				WaitUntilReady:    cfg.waitUntilReady,
+				WaitUntilReady:    cfg.WaitUntilReady,
 				HeartbeatInterval: heartbeatInterval,
-				BuildArtifactsURL: cfg.buildArtifactsURL,
-				DownloadMode:      cfg.downloadMode,
+				BuildArtifactsURL: cfg.BuildArtifactsURL,
+				DownloadMode:      cfg.DownloadMode,
 				StartFixtureName:  startFixtureName,
 				SetUpErrors:       setUpErrs,
 			},
-			BundleGlob: cfg.localBundleGlob(),
-			Devservers: state.localDevservers,
+			BundleGlob: cfg.LocalBundleGlob(),
+			Devservers: state.LocalDevservers,
 		},
 	}
 
@@ -640,8 +640,8 @@ func runLocalTestsOnce(ctx context.Context, cfg *Config, state *State, hst *ssh.
 	// Check that the runner exits successfully first so that we don't give a useless error
 	// about incorrectly-formed output instead of e.g. an error about the runner being missing.
 	timeout := defaultLocalRunnerWaitTimeout
-	if cfg.localRunnerWaitTimeout > 0 {
-		timeout = cfg.localRunnerWaitTimeout
+	if cfg.LocalRunnerWaitTimeout > 0 {
+		timeout = cfg.LocalRunnerWaitTimeout
 	}
 	wctx, wcancel := context.WithTimeout(ctx, timeout)
 	defer wcancel()
@@ -667,8 +667,8 @@ func formatBytes(bytes int64) string {
 }
 
 // startEphemeralDevserverForLocalTests starts an ephemeral devserver serving on hst.
-// state's ephemeralDevserver and localDevservers fields are updated.
-// If ephemeralDevserver is non-nil, it is closed first.
+// state's EphemeralDevserver and LocalDevservers fields are updated.
+// If EphemeralDevserver is non-nil, it is closed first.
 func startEphemeralDevserverForLocalTests(ctx context.Context, hst *ssh.Conn, cfg *Config, state *State) error {
 	state.CloseEphemeralDevserver(ctx) // ignore errors; this may rely on a now-dead SSH connection
 
@@ -677,14 +677,14 @@ func startEphemeralDevserverForLocalTests(ctx context.Context, hst *ssh.Conn, cf
 		return fmt.Errorf("failed to reverse-forward a port: %v", err)
 	}
 
-	cacheDir := filepath.Join(cfg.tastDir, "devserver", "static")
-	es, err := devserver.NewEphemeral(lis, cacheDir, cfg.extraAllowedBuckets)
+	cacheDir := filepath.Join(cfg.TastDir, "devserver", "static")
+	es, err := devserver.NewEphemeral(lis, cacheDir, cfg.ExtraAllowedBuckets)
 	if err != nil {
 		return err
 	}
 
-	state.ephemeralDevserver = es
-	state.localDevservers = []string{fmt.Sprintf("http://%s", lis.Addr())}
+	state.EphemeralDevserver = es
+	state.LocalDevservers = []string{fmt.Sprintf("http://%s", lis.Addr())}
 	return nil
 }
 
@@ -692,10 +692,10 @@ func startEphemeralDevserverForLocalTests(ctx context.Context, hst *ssh.Conn, cf
 // while running local tests. It returns a string that can be returned by a diagnoseRunErrorFunc.
 // Files useful for diagnosis might be saved under outDir.
 func diagnoseLocalRunError(ctx context.Context, cfg *Config, state *State, outDir string) string {
-	if state.hst == nil || ctxutil.DeadlineBefore(ctx, time.Now().Add(sshPingTimeout)) {
+	if state.Hst == nil || ctxutil.DeadlineBefore(ctx, time.Now().Add(sshPingTimeout)) {
 		return ""
 	}
-	if err := state.hst.Ping(ctx, sshPingTimeout); err == nil {
+	if err := state.Hst.Ping(ctx, sshPingTimeout); err == nil {
 		return ""
 	}
 	return "Lost SSH connection: " + diagnoseSSHDrop(ctx, cfg, state, outDir)

@@ -25,7 +25,7 @@ type runTestsFunc func(ctx context.Context, patterns []string) (results []*Entit
 // logs.
 type beforeRetryFunc func(ctx context.Context) bool
 
-// runTestsWithRetry runs local/remote tests in a loop. If cfg.continueAfterFailure
+// runTestsWithRetry runs local/remote tests in a loop. If cfg.ContinueAfterFailure
 // is true and runTests returns non-empty unstarted test names, it calls recover
 // followed by runTests again to restart testing.
 func runTestsWithRetry(ctx context.Context, cfg *Config, patterns []string, runTests runTestsFunc, beforeRetry beforeRetryFunc) ([]*EntityResult, error) {
@@ -60,7 +60,7 @@ func runTestsWithRetry(ctx context.Context, cfg *Config, patterns []string, runT
 			break
 		}
 		// If we don't want to try again, or we'd just be doing the same thing that we did last time, give up.
-		if !cfg.continueAfterFailure || reflect.DeepEqual(patterns, unstarted) {
+		if !cfg.ContinueAfterFailure || reflect.DeepEqual(patterns, unstarted) {
 			return allResults, rerr
 		}
 

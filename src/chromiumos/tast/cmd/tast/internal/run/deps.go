@@ -24,12 +24,12 @@ const deviceConfigFile = "device-config.txt"
 
 // getDUTInfo executes local_test_runner on the DUT to get a list of DUT info.
 // The info is used to check tests' dependencies.
-// This updates state.softwareFeatures, thus calling this twice won't work.
+// This updates state.SoftwareFeatures, thus calling this twice won't work.
 func getDUTInfo(ctx context.Context, cfg *Config, state *State) error {
-	if !cfg.checkTestDeps {
+	if !cfg.CheckTestDeps {
 		return nil
 	}
-	if state.softwareFeatures != nil {
+	if state.SoftwareFeatures != nil {
 		return errors.New("getDUTInfo is already called")
 	}
 
@@ -48,7 +48,7 @@ func getDUTInfo(ctx context.Context, cfg *Config, state *State) error {
 		&runner.Args{
 			Mode: runner.GetDUTInfoMode,
 			GetDUTInfo: &runner.GetDUTInfoArgs{
-				ExtraUSEFlags:       cfg.extraUSEFlags,
+				ExtraUSEFlags:       cfg.ExtraUSEFlags,
 				RequestDeviceConfig: true,
 			},
 		},
@@ -68,7 +68,7 @@ func getDUTInfo(ctx context.Context, cfg *Config, state *State) error {
 		cfg.Logger.Log(warn)
 	}
 
-	state.osVersion = res.OSVersion
+	state.OSVersion = res.OSVersion
 
 	cfg.Logger.Debug("Software features supported by DUT: ", strings.Join(res.SoftwareFeatures.Available, " "))
 	if res.DeviceConfig != nil {
@@ -76,24 +76,24 @@ func getDUTInfo(ctx context.Context, cfg *Config, state *State) error {
 		if err := ioutil.WriteFile(filepath.Join(cfg.ResDir, deviceConfigFile), []byte(proto.MarshalTextString(res.DeviceConfig)), 0644); err != nil {
 			cfg.Logger.Debugf("Failed to dump %s: %v", deviceConfigFile, err)
 		}
-		state.deviceConfig = res.DeviceConfig
-		state.hardwareFeatures = res.HardwareFeatures
+		state.DeviceConfig = res.DeviceConfig
+		state.HardwareFeatures = res.HardwareFeatures
 	}
-	state.softwareFeatures = res.SoftwareFeatures
+	state.SoftwareFeatures = res.SoftwareFeatures
 	return nil
 }
 
 // featureArgsFromConfig returns feature arguments based on the configuration parameter.
 func featureArgsFromConfig(cfg *Config, state *State) *bundle.FeatureArgs {
 	args := bundle.FeatureArgs{
-		CheckSoftwareDeps: cfg.checkTestDeps,
-		TestVars:          cfg.testVars,
+		CheckSoftwareDeps: cfg.CheckTestDeps,
+		TestVars:          cfg.TestVars,
 	}
-	if state.softwareFeatures != nil {
-		args.AvailableSoftwareFeatures = state.softwareFeatures.Available
-		args.UnavailableSoftwareFeatures = state.softwareFeatures.Unavailable
-		args.DeviceConfig.Proto = state.deviceConfig
-		args.HardwareFeatures.Proto = state.hardwareFeatures
+	if state.SoftwareFeatures != nil {
+		args.AvailableSoftwareFeatures = state.SoftwareFeatures.Available
+		args.UnavailableSoftwareFeatures = state.SoftwareFeatures.Unavailable
+		args.DeviceConfig.Proto = state.DeviceConfig
+		args.HardwareFeatures.Proto = state.HardwareFeatures
 	}
 	return &args
 }

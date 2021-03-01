@@ -35,15 +35,15 @@ func TestGetInitialSysInfo(t *testing.T) {
 	}
 
 	// Check that the expected command is sent to the DUT and that the returned state is decoded properly.
-	td.cfg.collectSysInfo = true
+	td.cfg.CollectSysInfo = true
 	if err := getInitialSysInfo(context.Background(), &td.cfg, &td.state); err != nil {
 		t.Fatalf("getInitialSysInfo(..., %+v) failed: %v", td.cfg, err)
 	}
 
-	if td.state.initialSysInfo == nil {
-		t.Error("initialSysInfo is nil")
-	} else if !reflect.DeepEqual(*td.state.initialSysInfo, res.State) {
-		t.Errorf("initialSysInfo is %+v; want %+v", *td.state.initialSysInfo, res.State)
+	if td.state.InitialSysInfo == nil {
+		t.Error("InitialSysInfo is nil")
+	} else if !reflect.DeepEqual(*td.state.InitialSysInfo, res.State) {
+		t.Errorf("InitialSysInfo is %+v; want %+v", *td.state.InitialSysInfo, res.State)
 	}
 
 	// The second call should fail, because it tried to update cfg's field twice.
@@ -59,15 +59,15 @@ func TestCollectSysInfo(t *testing.T) {
 	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
 		checkArgs(t, args, &runner.Args{
 			Mode:           runner.CollectSysInfoMode,
-			CollectSysInfo: &runner.CollectSysInfoArgs{InitialState: *td.state.initialSysInfo},
+			CollectSysInfo: &runner.CollectSysInfoArgs{InitialState: *td.state.InitialSysInfo},
 		})
 
 		json.NewEncoder(stdout).Encode(&runner.CollectSysInfoResult{})
 		return 0
 	}
 
-	td.cfg.collectSysInfo = true
-	td.state.initialSysInfo = &runner.SysInfoState{
+	td.cfg.CollectSysInfo = true
+	td.state.InitialSysInfo = &runner.SysInfoState{
 		LogInodeSizes: map[uint64]int64{1: 2, 3: 4},
 		MinidumpPaths: []string{"foo.dmp", "bar.dmp"},
 	}

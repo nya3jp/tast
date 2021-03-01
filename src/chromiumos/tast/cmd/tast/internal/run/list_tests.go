@@ -19,7 +19,7 @@ func listTests(ctx context.Context, cfg *Config, state *State) ([]*EntityResult,
 	if err != nil {
 		return nil, err
 	}
-	if cfg.shardIndex == 0 {
+	if cfg.ShardIndex == 0 {
 		testsToRun = append(testsToRun, testsToSkip...)
 	}
 	return testsToRun, nil
@@ -28,7 +28,7 @@ func listTests(ctx context.Context, cfg *Config, state *State) ([]*EntityResult,
 // listAllTests returns the whole tests whether they will be skipped or not..
 func listAllTests(ctx context.Context, cfg *Config, state *State) ([]*EntityResult, error) {
 	var tests []testing.EntityWithRunnabilityInfo
-	if cfg.runLocal {
+	if cfg.RunLocal {
 		hst, err := connectToTarget(ctx, cfg, state)
 		if err != nil {
 			return nil, err
@@ -39,7 +39,7 @@ func listAllTests(ctx context.Context, cfg *Config, state *State) ([]*EntityResu
 		}
 		tests = append(tests, localTests...)
 	}
-	if cfg.runRemote {
+	if cfg.RunRemote {
 		remoteTests, err := listRemoteTests(ctx, cfg, state)
 		if err != nil {
 			return nil, err
@@ -57,13 +57,13 @@ func listAllTests(ctx context.Context, cfg *Config, state *State) ([]*EntityResu
 // listLocalTests returns a list of local tests to run.
 func listLocalTests(ctx context.Context, cfg *Config, state *State, hst *ssh.Conn) ([]testing.EntityWithRunnabilityInfo, error) {
 	return runListTestsCommand(
-		localRunnerCommand(ctx, cfg, hst), cfg, state, cfg.localBundleGlob())
+		localRunnerCommand(ctx, cfg, hst), cfg, state, cfg.LocalBundleGlob())
 }
 
 // listRemoteTests returns a list of remote tests to run.
 func listRemoteTests(ctx context.Context, cfg *Config, state *State) ([]testing.EntityWithRunnabilityInfo, error) {
 	return runListTestsCommand(
-		remoteRunnerCommand(ctx, cfg), cfg, state, cfg.remoteBundleGlob())
+		remoteRunnerCommand(ctx, cfg), cfg, state, cfg.RemoteBundleGlob())
 }
 
 func runListTestsCommand(r runnerCmd, cfg *Config, state *State, glob string) ([]testing.EntityWithRunnabilityInfo, error) {

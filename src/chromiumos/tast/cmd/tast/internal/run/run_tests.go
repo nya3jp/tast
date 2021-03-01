@@ -15,10 +15,10 @@ func runTests(ctx context.Context, cfg *Config, state *State) ([]*EntityResult, 
 		return nil, errors.Wrap(err, "failed to get DUT software features")
 	}
 
-	if state.osVersion == "" {
+	if state.OSVersion == "" {
 		cfg.Logger.Log("Target version: not available from target")
 	} else {
-		cfg.Logger.Logf("Target version: %v", state.osVersion)
+		cfg.Logger.Logf("Target version: %v", state.OSVersion)
 	}
 
 	if err := getInitialSysInfo(ctx, cfg, state); err != nil {
@@ -31,12 +31,12 @@ func runTests(ctx context.Context, cfg *Config, state *State) ([]*EntityResult, 
 	}
 
 	// We include all tests to be skipped in shard 0
-	if cfg.shardIndex == 0 {
+	if cfg.ShardIndex == 0 {
 		testsToRun = append(testsToRun, testsToSkip...)
 		testsToSkip = nil
 	}
 
-	cfg.testsToRun = testsToRun
+	cfg.TestsToRun = testsToRun
 	cfg.TestNamesToSkip = nil
 	for _, t := range testsToSkip {
 		cfg.TestNamesToSkip = append(cfg.TestNamesToSkip, t.Name)
@@ -45,9 +45,9 @@ func runTests(ctx context.Context, cfg *Config, state *State) ([]*EntityResult, 
 		cfg.TestNamesToSkip = append(cfg.TestNamesToSkip, t.Name)
 	}
 
-	if cfg.totalShards > 1 {
-		cfg.Logger.Logf("Running shard %d/%d (tests %d/%d)", cfg.shardIndex+1, cfg.totalShards,
-			len(cfg.testsToRun), len(cfg.testsToRun)+len(cfg.TestNamesToSkip))
+	if cfg.TotalShards > 1 {
+		cfg.Logger.Logf("Running shard %d/%d (tests %d/%d)", cfg.ShardIndex+1, cfg.TotalShards,
+			len(cfg.TestsToRun), len(cfg.TestsToRun)+len(cfg.TestNamesToSkip))
 	}
 	if len(testsToRun) == 0 {
 		// No tests to run.
@@ -55,9 +55,9 @@ func runTests(ctx context.Context, cfg *Config, state *State) ([]*EntityResult, 
 	}
 
 	var results []*EntityResult
-	state.startedRun = true
+	state.StartedRun = true
 
-	if cfg.runLocal {
+	if cfg.RunLocal {
 		lres, err := runLocalTests(ctx, cfg, state)
 		results = append(results, lres...)
 		if err != nil {
@@ -72,7 +72,7 @@ func runTests(ctx context.Context, cfg *Config, state *State) ([]*EntityResult, 
 	// and reverse forwarding port can conflict.
 	state.CloseEphemeralDevserver(ctx)
 
-	if !cfg.runRemote {
+	if !cfg.RunRemote {
 		return results, nil
 	}
 
@@ -89,7 +89,7 @@ func findTestsForShard(ctx context.Context, cfg *Config, state *State) (testsToR
 		return nil, nil, nil, errors.Wrapf(err, "fails to find runnable tests for patterns %q", cfg.Patterns)
 	}
 
-	startIndex, endIndex := findShardIndices(len(tests), cfg.totalShards, cfg.shardIndex)
+	startIndex, endIndex := findShardIndices(len(tests), cfg.TotalShards, cfg.ShardIndex)
 	testsToRun = tests[startIndex:endIndex]
 
 	const skipReason = "test is not in the specified shard"

@@ -38,8 +38,8 @@ func TestRunPartialRun(t *gotesting.T) {
 	defer td.close()
 
 	// Set a nonexistent path for the remote runner so that it will fail.
-	td.cfg.runLocal = true
-	td.cfg.runRemote = true
+	td.cfg.RunLocal = true
+	td.cfg.RunRemote = true
 	const testName = "pkg.Test"
 	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
 		switch args.Mode {
@@ -61,7 +61,7 @@ func TestRunPartialRun(t *gotesting.T) {
 		}
 		return 0
 	}
-	td.cfg.remoteRunner = filepath.Join(td.tempDir, "missing_remote_test_runner")
+	td.cfg.RemoteRunner = filepath.Join(td.tempDir, "missing_remote_test_runner")
 
 	status, _ := Run(context.Background(), &td.cfg, &td.state)
 	if status.ExitCode != subcommands.ExitFailure {
@@ -73,7 +73,7 @@ func TestRunError(t *gotesting.T) {
 	td := newLocalTestData(t)
 	defer td.close()
 
-	td.cfg.runLocal = true
+	td.cfg.RunLocal = true
 	td.cfg.KeyFile = "" // force SSH auth error
 
 	if status, _ := Run(context.Background(), &td.cfg, &td.state); status.ExitCode != subcommands.ExitFailure {
@@ -88,7 +88,7 @@ func TestRunEphemeralDevserver(t *gotesting.T) {
 	td := newLocalTestData(t)
 	defer td.close()
 
-	td.cfg.runLocal = true
+	td.cfg.RunLocal = true
 	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
 		switch args.Mode {
 		case runner.RunTestsMode:
@@ -100,23 +100,23 @@ func TestRunEphemeralDevserver(t *gotesting.T) {
 		}
 		return 0
 	}
-	td.cfg.devservers = nil // clear the default mock devservers set in newLocalTestData
-	td.cfg.useEphemeralDevserver = true
+	td.cfg.Devservers = nil // clear the default mock devservers set in newLocalTestData
+	td.cfg.UseEphemeralDevserver = true
 
 	if status, _ := Run(context.Background(), &td.cfg, &td.state); status.ExitCode != subcommands.ExitSuccess {
 		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.logbuf.String())
 	}
 
 	exp := []string{fmt.Sprintf("http://127.0.0.1:%d", localEphemeralDevserverPort)}
-	if !reflect.DeepEqual(td.state.localDevservers, exp) {
-		t.Errorf("Run() set devserver=%v; want %v", td.state.localDevservers, exp)
+	if !reflect.DeepEqual(td.state.LocalDevservers, exp) {
+		t.Errorf("Run() set devserver=%v; want %v", td.state.LocalDevservers, exp)
 	}
 }
 
 func TestRunDownloadPrivateBundles(t *gotesting.T) {
 	td := newLocalTestData(t)
 	defer td.close()
-	td.cfg.devservers = []string{"http://example.com:8080"}
+	td.cfg.Devservers = []string{"http://example.com:8080"}
 	testRunDownloadPrivateBundles(t, td)
 }
 
@@ -142,8 +142,8 @@ func TestRunDownloadPrivateBundlesWithTLW(t *gotesting.T) {
 	defer stopFunc()
 
 	td.cfg.Target = targetName
-	td.cfg.tlwServer = tlwAddr
-	td.cfg.devservers = nil
+	td.cfg.TLWServer = tlwAddr
+	td.cfg.Devservers = nil
 	testRunDownloadPrivateBundles(t, td)
 }
 
@@ -163,7 +163,7 @@ func checkTLWServer(address string) error {
 }
 
 func testRunDownloadPrivateBundles(t *gotesting.T, td *localTestData) {
-	td.cfg.runLocal = true
+	td.cfg.RunLocal = true
 	called := false
 	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
 		switch args.Mode {
@@ -175,9 +175,9 @@ func testRunDownloadPrivateBundles(t *gotesting.T, td *localTestData) {
 			json.NewEncoder(stdout).Encode([]testing.EntityWithRunnabilityInfo{})
 		case runner.DownloadPrivateBundlesMode:
 			exp := runner.DownloadPrivateBundlesArgs{
-				Devservers:        td.cfg.devservers,
+				Devservers:        td.cfg.Devservers,
 				DUTName:           td.cfg.Target,
-				BuildArtifactsURL: td.cfg.buildArtifactsURL,
+				BuildArtifactsURL: td.cfg.BuildArtifactsURL,
 			}
 			if diff := cmp.Diff(exp, *args.DownloadPrivateBundles,
 				cmpopts.IgnoreFields(*args.DownloadPrivateBundles, "TLWServer")); diff != "" {
@@ -186,7 +186,7 @@ func testRunDownloadPrivateBundles(t *gotesting.T, td *localTestData) {
 			called = true
 			json.NewEncoder(stdout).Encode(&runner.DownloadPrivateBundlesResult{})
 
-			if td.cfg.tlwServer != "" {
+			if td.cfg.TLWServer != "" {
 				// Try connecting to TLWServer through ssh port forwarding.
 				if err := checkTLWServer(args.DownloadPrivateBundles.TLWServer); err != nil {
 					t.Errorf("TLW server was not available: %v", err)
@@ -198,7 +198,7 @@ func testRunDownloadPrivateBundles(t *gotesting.T, td *localTestData) {
 		return 0
 	}
 
-	td.cfg.downloadPrivateBundles = true
+	td.cfg.DownloadPrivateBundles = true
 
 	if status, _ := Run(context.Background(), &td.cfg, &td.state); status.ExitCode != subcommands.ExitSuccess {
 		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.logbuf.String())
@@ -229,7 +229,7 @@ func TestRunTLW(t *gotesting.T) {
 	}))
 	defer stopFunc()
 
-	td.cfg.runLocal = true
+	td.cfg.RunLocal = true
 	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
 		switch args.Mode {
 		case runner.RunTestsMode:
@@ -242,7 +242,7 @@ func TestRunTLW(t *gotesting.T) {
 		return 0
 	}
 	td.cfg.Target = targetName
-	td.cfg.tlwServer = tlwAddr
+	td.cfg.TLWServer = tlwAddr
 
 	if status, _ := Run(context.Background(), &td.cfg, &td.state); status.ExitCode != subcommands.ExitSuccess {
 		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.logbuf.String())
@@ -256,8 +256,8 @@ func TestRunWithReports_LogStream(t *gotesting.T) {
 
 	td := newLocalTestData(t)
 	defer td.close()
-	td.cfg.reportsServer = addr
-	td.cfg.runLocal = true
+	td.cfg.ReportsServer = addr
+	td.cfg.RunLocal = true
 
 	const (
 		resultDir = "/tmp/tast/results/latest"
@@ -329,8 +329,8 @@ func TestRunWithReports_ReportResult(t *gotesting.T) {
 
 	td := newLocalTestData(t)
 	defer td.close()
-	td.cfg.reportsServer = addr
-	td.cfg.runLocal = true
+	td.cfg.ReportsServer = addr
+	td.cfg.RunLocal = true
 
 	const (
 		test1Name       = "foo.FirstTest"
@@ -427,8 +427,8 @@ func TestRunWithReports_ReportResultTerminate(t *gotesting.T) {
 
 	td := newLocalTestData(t)
 	defer td.close()
-	td.cfg.reportsServer = addr
-	td.cfg.runLocal = true
+	td.cfg.ReportsServer = addr
+	td.cfg.RunLocal = true
 
 	const (
 		test1Name       = "foo.FirstTest"
@@ -519,7 +519,7 @@ func TestRunWithSkippedTests(t *gotesting.T) {
 	td := newLocalTestData(t)
 	defer td.close()
 
-	td.cfg.runLocal = true
+	td.cfg.RunLocal = true
 	tests := []testing.EntityWithRunnabilityInfo{
 		{
 			EntityInfo: testing.EntityInfo{

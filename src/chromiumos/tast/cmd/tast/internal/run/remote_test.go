@@ -137,24 +137,24 @@ func newRemoteTestData(t *gotesting.T, stdout, stderr string, status int) *remot
 		os.RemoveAll(td.dir)
 		t.Fatal(err)
 	}
-	td.cfg.devservers = mockDevservers
-	td.cfg.buildArtifactsURL = mockBuildArtifactsURL
-	td.cfg.downloadMode = planner.DownloadLazy
-	td.cfg.localRunner = mockLocalRunner
-	td.cfg.localBundleDir = mockLocalBundleDir
-	td.cfg.localDataDir = mockLocalDataDir
-	td.cfg.remoteOutDir = filepath.Join(td.cfg.ResDir, "out.tmp")
-	td.cfg.totalShards = 1
-	td.cfg.shardIndex = 0
+	td.cfg.Devservers = mockDevservers
+	td.cfg.BuildArtifactsURL = mockBuildArtifactsURL
+	td.cfg.DownloadMode = planner.DownloadLazy
+	td.cfg.LocalRunner = mockLocalRunner
+	td.cfg.LocalBundleDir = mockLocalBundleDir
+	td.cfg.LocalDataDir = mockLocalDataDir
+	td.cfg.RemoteOutDir = filepath.Join(td.cfg.ResDir, "out.tmp")
+	td.cfg.TotalShards = 1
+	td.cfg.ShardIndex = 0
 
 	path, err := (&fakeRemoteRunnerData{stdout, stderr, status}).setUp(td.dir)
 	if err != nil {
 		os.RemoveAll(td.dir)
 		t.Fatal(err)
 	}
-	td.cfg.remoteRunner = path
+	td.cfg.RemoteRunner = path
 
-	td.state.remoteDevservers = td.cfg.devservers
+	td.state.RemoteDevservers = td.cfg.Devservers
 
 	return &td
 }
@@ -196,11 +196,11 @@ func TestRemoteRun(t *gotesting.T) {
 	defer td.close()
 
 	// Set some parameters that can be overridden by flags to arbitrary values.
-	td.cfg.build = false
+	td.cfg.Build = false
 	td.cfg.KeyFile = "/tmp/id_dsa"
-	td.cfg.remoteBundleDir = "/tmp/bundles"
-	td.cfg.remoteDataDir = "/tmp/data"
-	td.cfg.remoteOutDir = "/tmp/out"
+	td.cfg.RemoteBundleDir = "/tmp/bundles"
+	td.cfg.RemoteDataDir = "/tmp/data"
+	td.cfg.RemoteOutDir = "/tmp/out"
 
 	res, err := td.run(t)
 	if err != nil {
@@ -212,7 +212,7 @@ func TestRemoteRun(t *gotesting.T) {
 		t.Errorf("runRemoteTests(%+v) returned result for test %q; want %q", td.cfg, res[0].Name, testName)
 	}
 
-	glob := filepath.Join(td.cfg.remoteBundleDir, "*")
+	glob := filepath.Join(td.cfg.RemoteBundleDir, "*")
 	exe, err := os.Executable()
 	if err != nil {
 		t.Fatal(err)
@@ -221,21 +221,21 @@ func TestRemoteRun(t *gotesting.T) {
 		"-build=false", // propagated from td.cfg.build
 		"-keyfile=" + td.cfg.KeyFile,
 		"-keydir=",
-		"-remoterunner=" + td.cfg.remoteRunner,
-		"-remotebundledir=" + td.cfg.remoteBundleDir,
-		"-remotedatadir=" + td.cfg.remoteDataDir,
-		"-localrunner=" + td.cfg.localRunner,
-		"-localbundledir=" + td.cfg.localBundleDir,
-		"-localdatadir=" + td.cfg.localDataDir,
-		"-devservers=" + strings.Join(td.cfg.devservers, ","),
+		"-remoterunner=" + td.cfg.RemoteRunner,
+		"-remotebundledir=" + td.cfg.RemoteBundleDir,
+		"-remotedatadir=" + td.cfg.RemoteDataDir,
+		"-localrunner=" + td.cfg.LocalRunner,
+		"-localbundledir=" + td.cfg.LocalBundleDir,
+		"-localdatadir=" + td.cfg.LocalDataDir,
+		"-devservers=" + strings.Join(td.cfg.Devservers, ","),
 	}
 	expArgs := runner.Args{
 		Mode: runner.RunTestsMode,
 		RunTests: &runner.RunTestsArgs{
 			BundleGlob: glob,
 			BundleArgs: bundle.RunTestsArgs{
-				DataDir:        td.cfg.remoteDataDir,
-				OutDir:         td.cfg.remoteOutDir,
+				DataDir:        td.cfg.RemoteDataDir,
+				OutDir:         td.cfg.RemoteOutDir,
 				KeyFile:        td.cfg.KeyFile,
 				TastPath:       exe,
 				RunFlags:       runFlags,
@@ -277,9 +277,9 @@ func TestRemoteRunCopyOutput(t *gotesting.T) {
 
 	// Set some parameters that can be overridden by flags to arbitrary values.
 	td.cfg.KeyFile = "/tmp/id_dsa"
-	td.cfg.remoteBundleDir = "/tmp/bundles"
-	td.cfg.remoteDataDir = "/tmp/data"
-	td.cfg.remoteOutDir = outDir
+	td.cfg.RemoteBundleDir = "/tmp/bundles"
+	td.cfg.RemoteDataDir = "/tmp/data"
+	td.cfg.RemoteOutDir = outDir
 
 	if err := testutil.WriteFiles(outDir, map[string]string{
 		filepath.Join(outName, outFile): outData,
@@ -336,8 +336,8 @@ func TestRemoteMaxFailures(t *gotesting.T) {
 	td := newRemoteTestData(t, b.String(), "", 0)
 	defer td.close()
 
-	td.cfg.maxTestFailures = 1
-	td.state.failuresCount = 0
+	td.cfg.MaxTestFailures = 1
+	td.state.FailuresCount = 0
 
 	results, err := runRemoteTests(context.Background(), &td.cfg, &td.state)
 	if err == nil {
@@ -349,4 +349,4 @@ func TestRemoteMaxFailures(t *gotesting.T) {
 }
 
 // TODO(derat): Add a test that verifies that getInitialSysInfo is called before tests are run.
-// Also verify that cfg.startedRun is false if we see an early failure during getInitialSysInfo.
+// Also verify that state.StartedRun is false if we see an early failure during getInitialSysInfo.

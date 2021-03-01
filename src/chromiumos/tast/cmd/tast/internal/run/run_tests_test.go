@@ -25,13 +25,13 @@ func TestRunTestsFailureBeforeRun(t *gotesting.T) {
 	defer td.close()
 
 	// Make the runner always fail, and ask to check test deps so we'll get a failure before trying
-	// to run tests. local() shouldn't set startedRun to true since we failed before then.
+	// to run tests. local() shouldn't set StartedRun to true since we failed before then.
 	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) { return 1 }
-	td.cfg.checkTestDeps = true
+	td.cfg.CheckTestDeps = true
 	var state State
 	if _, err := runTests(context.Background(), &td.cfg, &state); err == nil {
 		t.Errorf("runTests unexpectedly passed")
-	} else if state.startedRun {
+	} else if state.StartedRun {
 		t.Error("runTests incorrectly reported that run was started after early failure")
 	}
 }
@@ -62,7 +62,7 @@ func TestRunTestsGetDUTInfo(t *gotesting.T) {
 		return 0
 	}
 
-	td.cfg.checkTestDeps = true
+	td.cfg.CheckTestDeps = true
 
 	if _, err := runTests(context.Background(), &td.cfg, &td.state); err != nil {
 		t.Error("runTests failed: ", err)
@@ -96,7 +96,7 @@ func TestRunTestsGetInitialSysInfo(t *gotesting.T) {
 		return 0
 	}
 
-	td.cfg.collectSysInfo = true
+	td.cfg.CollectSysInfo = true
 
 	if _, err := runTests(context.Background(), &td.cfg, &td.state); err != nil {
 		t.Error("runTests failed: ", err)
@@ -182,19 +182,19 @@ func TestRunTestsSkipTests(t *gotesting.T) {
 	}
 
 	// List matching tests instead of running them.
-	td.cfg.localDataDir = "/tmp/data"
+	td.cfg.LocalDataDir = "/tmp/data"
 	td.cfg.Patterns = []string{"*Test*"}
-	td.cfg.runLocal = true
-	td.cfg.totalShards = 2
-	td.cfg.checkTestDeps = true
+	td.cfg.RunLocal = true
+	td.cfg.TotalShards = 2
+	td.cfg.CheckTestDeps = true
 
 	expectedPassed := 5
 	expectedSkipped := len(tests) - 5
 	passed := 0
 	skipped := 0
-	for shardIndex := 0; shardIndex < td.cfg.totalShards; shardIndex++ {
-		td.state.softwareFeatures = nil
-		td.cfg.shardIndex = shardIndex
+	for shardIndex := 0; shardIndex < td.cfg.TotalShards; shardIndex++ {
+		td.state.SoftwareFeatures = nil
+		td.cfg.ShardIndex = shardIndex
 		testResults, err := runTests(context.Background(), &td.cfg, &td.state)
 		if err != nil {
 			t.Fatal("Failed to run tests: ", err)
@@ -234,14 +234,14 @@ func TestFindPatternsForShard(t *gotesting.T) {
 	defer td.close()
 
 	// List matching tests instead of running them.
-	td.cfg.remoteDataDir = "/tmp/data"
+	td.cfg.RemoteDataDir = "/tmp/data"
 	td.cfg.Patterns = []string{"*Test*"}
-	td.cfg.runRemote = true
-	td.cfg.totalShards = 3
+	td.cfg.RunRemote = true
+	td.cfg.TotalShards = 3
 	processed := make(map[string]bool)
 	var state State
-	for shardIndex := 0; shardIndex < td.cfg.totalShards; shardIndex++ {
-		td.cfg.shardIndex = shardIndex
+	for shardIndex := 0; shardIndex < td.cfg.TotalShards; shardIndex++ {
+		td.cfg.ShardIndex = shardIndex
 		testsToRun, testsToSkip, testsNotInShard, err := findTestsForShard(context.Background(), &td.cfg, &state)
 		if err != nil {
 			t.Fatal("Failed to find tests for shard: ", err)

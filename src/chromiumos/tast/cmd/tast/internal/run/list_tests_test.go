@@ -88,7 +88,7 @@ func TestListRemoteList(t *gotesting.T) {
 	defer td.close()
 
 	// List matching tests instead of running them.
-	td.cfg.remoteDataDir = "/tmp/data"
+	td.cfg.RemoteDataDir = "/tmp/data"
 	td.cfg.Patterns = []string{"*Test*"}
 
 	results, err := listRemoteTests(context.Background(), &td.cfg, &td.state)
@@ -131,8 +131,8 @@ func TestListTests(t *gotesting.T) {
 		json.NewEncoder(stdout).Encode(tests)
 		return 0
 	}
-	td.cfg.totalShards = 1
-	td.cfg.runLocal = true
+	td.cfg.TotalShards = 1
+	td.cfg.RunLocal = true
 
 	results, err := listTests(context.Background(), &td.cfg, &td.state)
 	if err != nil {
@@ -177,11 +177,11 @@ func TestListTestsWithSharding(t *gotesting.T) {
 		json.NewEncoder(stdout).Encode(tests)
 		return 0
 	}
-	td.cfg.totalShards = 2
-	td.cfg.runLocal = true
+	td.cfg.TotalShards = 2
+	td.cfg.RunLocal = true
 
-	for i := 0; i < td.cfg.totalShards; i++ {
-		td.cfg.shardIndex = i
+	for i := 0; i < td.cfg.TotalShards; i++ {
+		td.cfg.ShardIndex = i
 		results, err := listTests(context.Background(), &td.cfg, &td.state)
 		if err != nil {
 			t.Error("Failed to list local tests: ", err)
@@ -232,11 +232,11 @@ func TestListTestsWithSkippedTests(t *gotesting.T) {
 		json.NewEncoder(stdout).Encode(tests)
 		return 0
 	}
-	td.cfg.totalShards = 2
-	td.cfg.runLocal = true
+	td.cfg.TotalShards = 2
+	td.cfg.RunLocal = true
 
 	// Shard 0 should include all skipped tests.
-	td.cfg.shardIndex = 0
+	td.cfg.ShardIndex = 0
 	results, err := listTests(context.Background(), &td.cfg, &td.state)
 	if err != nil {
 		t.Error("Failed to list local tests: ", err)
@@ -249,7 +249,7 @@ func TestListTestsWithSkippedTests(t *gotesting.T) {
 		t.Errorf("Unexpected list of local tests in shard 0: got %+v; want %+v", results, expected)
 	}
 
-	td.cfg.shardIndex = 1
+	td.cfg.ShardIndex = 1
 	// Shard 1 should have only one test
 	results, err = listTests(context.Background(), &td.cfg, &td.state)
 	if err != nil {

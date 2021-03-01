@@ -15,7 +15,6 @@ import "device/config_id.proto";
 
 // Next tag: 22
 message Config {
-
   // Required. Unique ID of the device config.
   ConfigId id = 1;
 
@@ -58,13 +57,15 @@ message Config {
     HARDWARE_FEATURE_UNSPECIFIED = 0;
     HARDWARE_FEATURE_BLUETOOTH = 1;
     HARDWARE_FEATURE_FLASHROM = 2;
-    // Indicate if the device support audio hotwording, an audio listening module
-    // included with Google Chrome and Chromium to support Google Assistant.
+    // Indicate if the device support audio hotwording, an audio listening
+    // module included with Google Chrome and Chromium to support Google
+    // Assistant.
     // https://chromeos.google.com/partner/dlm/docs/latest-requirements/chromebook.html#audio-hotwording-always-on-listening
     HARDWARE_FEATURE_HOTWORDING = 3;
     HARDWARE_FEATURE_INTERNAL_DISPLAY = 4;
-    // Indicate if the device has support for lucid sleep (a connected lower power state,
-    // in which the device should still has some network communications)
+    // Indicate if the device has support for lucid sleep (a connected lower
+    // power state, in which the device should still has some network
+    // communications)
     // https://chromeos.google.com/partner/dlm/docs/p-hardware-specs/lucidsleep.html
     HARDWARE_FEATURE_LUCID_SLEEP = 5;
     HARDWARE_FEATURE_WEBCAM = 6;
@@ -184,7 +185,8 @@ message Config {
   // ODM for device
   ODM odm = 14;
 
-  // Group email address for this device's odm contact in buganizer (@google.com)
+  // Group email address for this device's odm contact in buganizer
+  // (@google.com)
   string odm_email_group = 15;
 
   enum OEM {
@@ -201,10 +203,12 @@ message Config {
   // OEM for device
   OEM oem = 16;
 
-  // Group email address for this device's oem contact in buganizer (@google.com)
+  // Group email address for this device's oem contact in buganizer
+  // (@google.com)
   string oem_email_group = 17;
 
-  // Group email address for this device's SoC contact in buganizer (@google.com)
+  // Group email address for this device's SoC contact in buganizer
+  // (@google.com)
   string soc_email_group = 18;
 
   // A bit field used by firmware to make decisions. The definition of this

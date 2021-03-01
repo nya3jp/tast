@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-func TestForbiddenImports(t *testing.T) {
+func TestForbiddenImports_ErrorPackage(t *testing.T) {
 	const code = `package main
 
 import (
@@ -26,6 +26,42 @@ import (
 	}
 
 	f, fs := parse(code, "testfile.go")
+	issues := ForbiddenImports(fs, f)
+	verifyIssues(t, issues, expects)
+}
+
+func TestForbiddenImports_LocalRemote(t *testing.T) {
+	const code = `package main
+
+import (
+	"chromiumos/tast/common/foo"
+	"chromiumos/tast/local/foo"
+	"chromiumos/tast/remote/foo"
+)
+`
+	expects := []string{
+		"src/chromiumos/tast/local/testfile.go:6:2: Local package should not import remote package chromiumos/tast/remote/foo",
+	}
+
+	f, fs := parse(code, "src/chromiumos/tast/local/testfile.go")
+	issues := ForbiddenImports(fs, f)
+	verifyIssues(t, issues, expects)
+}
+
+func TestForbiddenImports_RemoteLocal(t *testing.T) {
+	const code = `package main
+
+import (
+	"chromiumos/tast/common/foo"
+	"chromiumos/tast/local/foo"
+	"chromiumos/tast/remote/foo"
+)
+`
+	expects := []string{
+		"src/chromiumos/tast/remote/testfile.go:5:2: Remote package should not import local package chromiumos/tast/local/foo",
+	}
+
+	f, fs := parse(code, "src/chromiumos/tast/remote/testfile.go")
 	issues := ForbiddenImports(fs, f)
 	verifyIssues(t, issues, expects)
 }

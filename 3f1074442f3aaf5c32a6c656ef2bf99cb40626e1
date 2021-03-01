@@ -16,6 +16,23 @@
       "message": "I still tried to figure more ways to test. Please review current change first. Thanks. ",
       "revId": "3f1074442f3aaf5c32a6c656ef2bf99cb40626e1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5ddad57a_b2637974",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-03-01T05:28:57Z",
+      "side": 1,
+      "message": "The change looks correct, but I defer to nya@ for more context/decisions.\n- The \"artifacts\" with the gs path looks chrimium-specific. Is it OK to have that logic in here?",
+      "revId": "3f1074442f3aaf5c32a6c656ef2bf99cb40626e1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

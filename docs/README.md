@@ -3,9 +3,10 @@
 ## First steps
 
 *   [Quickstart](quickstart.md)
-*   [Codelab #1](codelab_1.md)
-*   [Codelab #2](codelab_2.md)
-*   [Codelab #3](codelab_3.md)
+*   [Codelab #1](codelab_1.md) shows how to write a short Tast test.
+*   [Codelab #2](codelab_2.md) teaches advanced topics for writing Tast tests.
+*   [Codelab #3](codelab_3.md) demonstrates the usage of the UI Automation package.
+*   [Codelab #4](codelab_4.md) walks you through the creation of a remote test.
 *   [How-To](howto.md)
 *   [Getting Help](getting_help.md)
 

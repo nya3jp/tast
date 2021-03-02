@@ -22,6 +22,30 @@
       },
       "revId": "07bc0249ce2a7d3c73ac715bda46418b9adb5526",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8ee217d9_f1a90e73",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 5
+      },
+      "lineNbr": 1045,
+      "author": {
+        "id": 1450817
+      },
+      "writtenOn": "2021-03-02T23:26:48Z",
+      "side": 1,
+      "message": "I\u0027m not the authority on this, but if I\u0027m not mistaken, you should be using constants, but there\u0027s no way to distinguish this in terms of the syntax tree from any other variable.",
+      "parentUuid": "50809105_a3177233",
+      "range": {
+        "startLine": 1045,
+        "startChar": 66,
+        "endLine": 1045,
+        "endChar": 75
+      },
+      "revId": "07bc0249ce2a7d3c73ac715bda46418b9adb5526",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

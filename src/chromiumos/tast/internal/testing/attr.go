@@ -349,6 +349,11 @@ Meta tests should be a subset of mainline critical tests.
 		Desc:     `A group of tests that test Nearby Share functionality.`,
 	},
 	{
+		Name:     "nearby-share-remote",
+		Contacts: []string{"chromeos-sw-engprod@google.com"},
+		Desc:     `A group of remote tests that test Nearby Share functionality.`,
+	},
+	{
 		Name:     "paper-io",
 		Contacts: []string{"project-bolton@google.com"},
 		Desc:     `A group of tests that test printing and scanning functionality.`,

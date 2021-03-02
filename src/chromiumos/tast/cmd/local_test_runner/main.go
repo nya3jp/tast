@@ -151,7 +151,6 @@ func main() {
 			"no_arm":             "!arm",
 			"no_asan":            "!asan",
 			"no_borealis_host":   "!borealis_host",
-			"no_elm_hana_3_18":   `!((elm || hana) && "kernel-3_18")`, // board elm/hana with kernel-3.18 has issue performing WiFi scan: https://crbug.com/1015719
 			"no_msan":            "!msan",
 			"no_qemu":            "!betty && !tast_vm",
 			"no_symlink_mount":   "!lxc", // boards using LXC set CONFIG_SECURITY_CHROMIUMOS_NO_SYMLINK_MOUNT=n

@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "50809105_a3177233",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 5
+      },
+      "lineNbr": 1045,
+      "author": {
+        "id": 1306673
+      },
+      "writtenOn": "2021-03-02T08:43:36Z",
+      "side": 1,
+      "message": "Here you use term \"constants\", but in `declarations.go` you use \"variables\". Which one is correct? or it does not matter?",
+      "range": {
+        "startLine": 1045,
+        "startChar": 66,
+        "endLine": 1045,
+        "endChar": 75
+      },
+      "revId": "07bc0249ce2a7d3c73ac715bda46418b9adb5526",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

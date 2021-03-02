@@ -241,6 +241,9 @@ type GetDUTInfoResult struct {
 	// OSVersion contains the DUT's OS Version
 	OSVersion string `json:"osVersion,omitempty"`
 
+	// DefaultBuildArtifactsURL specified the default URL of the build artifacts.
+	DefaultBuildArtifactsURL string `json:"defaultBuildArtifactsURL,omitempty"`
+
 	// Warnings contains descriptions of non-fatal errors encountered while determining features.
 	Warnings []string `json:"warnings,omitempty"`
 }

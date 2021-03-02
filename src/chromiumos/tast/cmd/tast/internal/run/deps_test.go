@@ -25,15 +25,16 @@ import (
 )
 
 // writeGetDUTInfoResult writes runner.GetDUTInfoResult to w.
-func writeGetDUTInfoResult(w io.Writer, avail, unavail []string, dc *device.Config, hf *configpb.HardwareFeatures, osVersion string) error {
+func writeGetDUTInfoResult(w io.Writer, avail, unavail []string, dc *device.Config, hf *configpb.HardwareFeatures, osVersion, defaultBuildArtifactsURL string) error {
 	res := runner.GetDUTInfoResult{
 		SoftwareFeatures: &dep.SoftwareFeatures{
 			Available:   avail,
 			Unavailable: unavail,
 		},
-		DeviceConfig:     dc,
-		HardwareFeatures: hf,
-		OSVersion:        osVersion,
+		DeviceConfig:             dc,
+		HardwareFeatures:         hf,
+		OSVersion:                osVersion,
+		DefaultBuildArtifactsURL: defaultBuildArtifactsURL,
 	}
 	return json.NewEncoder(w).Encode(&res)
 }
@@ -41,7 +42,7 @@ func writeGetDUTInfoResult(w io.Writer, avail, unavail []string, dc *device.Conf
 // checkRunnerTestDepsArgs calls featureArgsFromConfig using cfg and verifies
 // that it sets runner args as specified per checkDeps, avail, and unavail.
 func checkRunnerTestDepsArgs(t *testing.T, cfg *config.Config, state *config.State, checkDeps bool,
-	avail, unavail []string, dc *device.Config, hf *configpb.HardwareFeatures, osVersion string) {
+	avail, unavail []string, dc *device.Config, hf *configpb.HardwareFeatures) {
 	t.Helper()
 	args := runner.Args{
 		Mode: runner.RunTestsMode,
@@ -101,6 +102,7 @@ func TestGetDUTInfo(t *testing.T) {
 		},
 	}
 	osVersion := "octopus-release/R86-13312.0.2020_07_02_1108"
+	defaultBuildArtifactsURL := "gs://chromeos-image-archive/octopus-release/R86-13312.0.2020_07_02_1108/"
 	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
 		checkArgs(t, args, &runner.Args{
 			Mode: runner.GetDUTInfoMode,
@@ -110,7 +112,7 @@ func TestGetDUTInfo(t *testing.T) {
 			},
 		})
 
-		writeGetDUTInfoResult(stdout, avail, unavail, dc, hf, osVersion)
+		writeGetDUTInfoResult(stdout, avail, unavail, dc, hf, osVersion, defaultBuildArtifactsURL)
 		return 0
 	}
 	td.cfg.CheckTestDeps = true
@@ -118,7 +120,15 @@ func TestGetDUTInfo(t *testing.T) {
 	if err := getDUTInfo(context.Background(), &td.cfg, &td.state); err != nil {
 		t.Fatalf("getDUTInfo(%+v) failed: %v", td.cfg, err)
 	}
-	checkRunnerTestDepsArgs(t, &td.cfg, &td.state, true, avail, unavail, dc, hf, osVersion)
+	checkRunnerTestDepsArgs(t, &td.cfg, &td.state, true, avail, unavail, dc, hf)
+
+	if td.state.OSVersion != osVersion {
+		t.Errorf("Unexpected OS version: got %+v, want %+v", td.state.OSVersion, osVersion)
+	}
+
+	if td.state.DefaultBuildArtifactsURL != defaultBuildArtifactsURL {
+		t.Errorf("Unexpected DefaultBuildArtifactsURL: got %+v, want %+v", td.state.DefaultBuildArtifactsURL, defaultBuildArtifactsURL)
+	}
 
 	// Make sure device-config.txt is created.
 	if b, err := ioutil.ReadFile(filepath.Join(td.cfg.ResDir, "device-config.txt")); err != nil {
@@ -156,7 +166,7 @@ func TestGetDUTInfoNoDeviceConfig(t *testing.T) {
 
 		// Note: if both avail/unavail are empty, it is handled as an error.
 		// Add fake here to avoid it.
-		writeGetDUTInfoResult(stdout, []string{"dep1"}, nil, nil, nil, "")
+		writeGetDUTInfoResult(stdout, []string{"dep1"}, nil, nil, nil, "", "")
 		return 0
 	}
 	td.cfg.CheckTestDeps = true
@@ -179,7 +189,7 @@ func TestGetDUTInfoNoCheckTestDeps(t *testing.T) {
 	if err := getDUTInfo(context.Background(), &td.cfg, &td.state); err != nil {
 		t.Fatalf("getDUTInfo(%+v) failed: %v", td.cfg, err)
 	}
-	checkRunnerTestDepsArgs(t, &td.cfg, &td.state, false, nil, nil, nil, nil, "")
+	checkRunnerTestDepsArgs(t, &td.cfg, &td.state, false, nil, nil, nil, nil)
 }
 
 func TestGetSoftwareFeaturesNoFeatures(t *testing.T) {
@@ -193,7 +203,7 @@ func TestGetSoftwareFeaturesNoFeatures(t *testing.T) {
 				RequestDeviceConfig: true,
 			},
 		})
-		writeGetDUTInfoResult(stdout, []string{}, []string{}, nil, nil, "")
+		writeGetDUTInfoResult(stdout, []string{}, []string{}, nil, nil, "", "")
 		return 0
 	}
 	td.cfg.CheckTestDeps = true

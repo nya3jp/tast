@@ -50,14 +50,13 @@ func handleGetDUTInfo(args *Args, cfg *Config, w io.Writer) error {
 		warnings = append(warnings, ws...)
 	}
 
-	osVersion := cfg.OSVersion
-
 	res := GetDUTInfoResult{
-		SoftwareFeatures: features,
-		DeviceConfig:     dc,
-		HardwareFeatures: hwFeatures,
-		OSVersion:        osVersion,
-		Warnings:         warnings,
+		SoftwareFeatures:         features,
+		DeviceConfig:             dc,
+		HardwareFeatures:         hwFeatures,
+		OSVersion:                cfg.OSVersion,
+		DefaultBuildArtifactsURL: cfg.DefaultBuildArtifactsURL,
+		Warnings:                 warnings,
 	}
 	if err := json.NewEncoder(w).Encode(&res); err != nil {
 		return command.NewStatusErrorf(statusError, "failed to serialize into JSON: %v", err)

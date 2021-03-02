@@ -85,6 +85,12 @@ func runRemoteTestsOnce(ctx context.Context, cfg *config.Config, state *config.S
 	if err != nil {
 		return nil, nil, err
 	}
+
+	buildArtifactsURL := cfg.BuildArtifactsURL
+	if buildArtifactsURL == "" {
+		buildArtifactsURL = state.DefaultBuildArtifactsURL
+	}
+
 	args := runner.Args{
 		Mode: runner.RunTestsMode,
 		RunTests: &runner.RunTestsArgs{
@@ -108,6 +114,7 @@ func runRemoteTestsOnce(ctx context.Context, cfg *config.Config, state *config.S
 					"-localbundledir=" + cfg.LocalBundleDir,
 					"-localdatadir=" + cfg.LocalDataDir,
 					"-devservers=" + strings.Join(cfg.Devservers, ","),
+					"-buildartifactsurl=" + buildArtifactsURL,
 				},
 				LocalBundleDir:    cfg.LocalBundleDir,
 				Devservers:        state.RemoteDevservers,
@@ -115,6 +122,7 @@ func runRemoteTestsOnce(ctx context.Context, cfg *config.Config, state *config.S
 				DUTName:           cfg.Target,
 				HeartbeatInterval: heartbeatInterval,
 				DownloadMode:      cfg.DownloadMode,
+				BuildArtifactsURL: buildArtifactsURL,
 			},
 			BundleGlob: cfg.RemoteBundleGlob(),
 		},

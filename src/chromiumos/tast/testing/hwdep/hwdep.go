@@ -521,3 +521,13 @@ func Nvme() Condition {
 	}, CEL: "dut.hardware_features.storage.storage_type == api.Component.Storage.StorageType.NVME",
 	}
 }
+
+// SSDTooSmallForPlatformEncodingTests returns a hardware dependency condition
+// that is satisfied on DUTs whose SSD is too small to store raw videos for
+// encoding testing.
+func SSDTooSmallForPlatformEncodingTests() Condition {
+	// See b/181165183; these are octopus models.
+	// TODO(crbug.com/1184468): use here HardwareFeatures SSD size instead.
+	c := SkipOnPlatform("apel", "bluebird", "bobba", "flex", "mimrock", "vorticon")
+	return c
+}

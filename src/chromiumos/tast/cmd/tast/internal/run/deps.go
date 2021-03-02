@@ -70,6 +70,7 @@ func getDUTInfo(ctx context.Context, cfg *config.Config, state *config.State) er
 	}
 
 	state.OSVersion = res.OSVersion
+	state.DefaultBuildArtifactsURL = res.DefaultBuildArtifactsURL
 
 	cfg.Logger.Debug("Software features supported by DUT: ", strings.Join(res.SoftwareFeatures.Available, " "))
 	if res.DeviceConfig != nil {

@@ -1,6 +1,29 @@
 {
   "comments": [
     {
+      "unresolved": true,
+      "key": {
+        "uuid": "712b4518_0956b014",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 5
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1459973
+      },
+      "writtenOn": "2021-03-03T13:29:05Z",
+      "side": 1,
+      "message": "don\u0027t we stick to imperative form in commit message and description?",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 9,
+        "endChar": 9
+      },
+      "revId": "8ba81e234376ca58975e254cf07609ba15bec98a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": false,
       "key": {
         "uuid": "f7652163_7cc990c5",
@@ -14,6 +37,29 @@
       "writtenOn": "2021-03-03T13:21:56Z",
       "side": 1,
       "message": "PTAL",
+      "revId": "8ba81e234376ca58975e254cf07609ba15bec98a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f5afdf75_fe0d10e7",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 5
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1459973
+      },
+      "writtenOn": "2021-03-03T13:29:05Z",
+      "side": 1,
+      "message": "What about adding a sequence diagram? Image says more than a thousand words ;)",
+      "range": {
+        "startLine": 13,
+        "startChar": 0,
+        "endLine": 14,
+        "endChar": 9
+      },
       "revId": "8ba81e234376ca58975e254cf07609ba15bec98a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }

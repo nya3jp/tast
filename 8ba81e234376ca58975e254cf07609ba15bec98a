@@ -43,6 +43,29 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "fa7ae54b_37bc0b66",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 5
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2021-03-03T13:36:22Z",
+      "side": 1,
+      "message": "nit: use DUT as it\u0027s used in the tast API to reduce confusion.",
+      "range": {
+        "startLine": 13,
+        "startChar": 47,
+        "endLine": 13,
+        "endChar": 50
+      },
+      "revId": "8ba81e234376ca58975e254cf07609ba15bec98a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "f5afdf75_fe0d10e7",
         "filename": "docs/codelab_4.md",
         "patchSetId": 5
@@ -60,6 +83,229 @@
         "endLine": 14,
         "endChar": 9
       },
+      "revId": "8ba81e234376ca58975e254cf07609ba15bec98a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5ab02122_2739b767",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 5
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2021-03-03T13:36:22Z",
+      "side": 1,
+      "message": "Does host make mores sense here",
+      "range": {
+        "startLine": 14,
+        "startChar": 0,
+        "endLine": 14,
+        "endChar": 7
+      },
+      "revId": "8ba81e234376ca58975e254cf07609ba15bec98a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4b3f2117_a56e96d4",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 5
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2021-03-03T13:36:22Z",
+      "side": 1,
+      "message": "nit: gRPC + add a link",
+      "range": {
+        "startLine": 16,
+        "startChar": 52,
+        "endLine": 16,
+        "endChar": 56
+      },
+      "revId": "8ba81e234376ca58975e254cf07609ba15bec98a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1289a3cd_d1b543fa",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 5
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2021-03-03T13:36:22Z",
+      "side": 1,
+      "message": "SSH commands can be used on the host without requiring a gRPC service.",
+      "range": {
+        "startLine": 18,
+        "startChar": 0,
+        "endLine": 18,
+        "endChar": 64
+      },
+      "revId": "8ba81e234376ca58975e254cf07609ba15bec98a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "474347f7_75d05e2b",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 5
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2021-03-03T13:36:22Z",
+      "side": 1,
+      "message": "nit: add a link",
+      "range": {
+        "startLine": 28,
+        "startChar": 36,
+        "endLine": 28,
+        "endChar": 52
+      },
+      "revId": "8ba81e234376ca58975e254cf07609ba15bec98a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cc982a09_7306fa8c",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 5
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2021-03-03T13:36:22Z",
+      "side": 1,
+      "message": "replace with ,",
+      "range": {
+        "startLine": 29,
+        "startChar": 0,
+        "endLine": 29,
+        "endChar": 3
+      },
+      "revId": "8ba81e234376ca58975e254cf07609ba15bec98a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4cd58c9c_ede0f6df",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 5
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2021-03-03T13:36:22Z",
+      "side": 1,
+      "message": "Note that the generated code needs to be committed to the git repository due to limitations of the go compiler.",
+      "range": {
+        "startLine": 61,
+        "startChar": 0,
+        "endLine": 62,
+        "endChar": 31
+      },
+      "revId": "8ba81e234376ca58975e254cf07609ba15bec98a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a44d8c0d_244f169e",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 5
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2021-03-03T13:36:22Z",
+      "side": 1,
+      "message": "nit: add a newline before",
+      "revId": "8ba81e234376ca58975e254cf07609ba15bec98a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2baec0d5_88bfb502",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 5
+      },
+      "lineNbr": 159,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2021-03-03T13:36:22Z",
+      "side": 1,
+      "message": "First explain that all methods can return an error.",
+      "revId": "8ba81e234376ca58975e254cf07609ba15bec98a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b6358d28_806094e5",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 5
+      },
+      "lineNbr": 167,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2021-03-03T13:36:22Z",
+      "side": 1,
+      "message": "Explain where the test needs to be located.",
+      "revId": "8ba81e234376ca58975e254cf07609ba15bec98a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "02e84c38_d1e3f8c4",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 5
+      },
+      "lineNbr": 194,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2021-03-03T13:36:22Z",
+      "side": 1,
+      "message": "use group:mainline and informational in the example (even if it\u0027s wrong).",
+      "revId": "8ba81e234376ca58975e254cf07609ba15bec98a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e8f33b2e_a1ef19bf",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 5
+      },
+      "lineNbr": 212,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2021-03-03T13:36:22Z",
+      "side": 1,
+      "message": "Shorten the test implementation to just the call to the remote service with a link to the full one. It contains too many details specific to policy testing.",
       "revId": "8ba81e234376ca58975e254cf07609ba15bec98a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }

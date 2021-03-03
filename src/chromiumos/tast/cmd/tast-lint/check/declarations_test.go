@@ -190,7 +190,7 @@ func TestDeclarationsVars(t *testing.T) {
 		Func:     DoStuff,
 		Desc:     "This description is fine",
 		Contacts: []string{"me@chromium.org"},
-		Vars:     []string{variableVar}, // this is valid
+		Vars:     []string{foo.Bar, someConstant}, // this is valid
 	})`}} {
 		code := fmt.Sprintf(initTmpl, tc.snip)
 		f, fs := parse(code, declTestPath)

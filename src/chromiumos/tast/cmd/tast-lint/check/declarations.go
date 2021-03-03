@@ -27,7 +27,7 @@ const (
 	nonLiteralContactsMsg = `Test Contacts should be an array literal of string literals`
 
 	nonLiteralAttrMsg         = `Test Attr should be an array literal of string literals`
-	nonLiteralVarsMsg         = `Test Vars should be an array literal of string literals or variables`
+	nonLiteralVarsMsg         = `Test Vars should be an array literal of string literals or constants`
 	nonLiteralSoftwareDepsMsg = `Test SoftwareDeps should be an array literal of string literals or (possibly qualified) identifiers`
 	nonLiteralParamsMsg       = `Test Params should be an array literal of Param struct literals`
 	nonLiteralParamNameMsg    = `Name of Param should be a string literal`

@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "32e60c05_29d5d36e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-03-03T01:42:53Z",
+      "side": 1,
+      "message": "I introduced a bug in patch 3 which broke meta.RunTests.files. It has been fixed now in the latest patch.",
+      "revId": "c189a79739eb91f2ee0ed6f69c88f8b4576dc822",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

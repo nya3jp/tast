@@ -67,6 +67,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "c71e2e91_76343099",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 528,
+      "author": {
+        "id": 1113991
+      },
+      "writtenOn": "2021-03-03T23:03:25Z",
+      "side": 1,
+      "message": "I had a similar reasoning while writing this method: if I was\nto call it e.g. SSDLessThan16GB() then it might attract other\nusers, but the implementation as it is only includes a few\nmodels where we know the PlatformEncoding test fails due to\nthe SSD being (always) too small. (More below).",
+      "parentUuid": "11a28226_7c3ed853",
+      "range": {
+        "startLine": 528,
+        "startChar": 5,
+        "endLine": 528,
+        "endChar": 40
+      },
+      "revId": "44bbf71da7455b757917a821b0b9bfd28ea550ce",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "73e4811a_00390ed8",
         "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
         "patchSetId": 1
@@ -78,6 +102,24 @@
       "writtenOn": "2021-03-03T00:00:36Z",
       "side": 1,
       "message": "Long term it seems better to add a field to the device config rather than manually id boards.  Can\u0027t platforms can have different skus with different sizes or types of drives?  I suspect it cannot be done now until more work is done with HWID data, but it\u0027s worth looking into.  See crbug.com/1070299",
+      "revId": "44bbf71da7455b757917a821b0b9bfd28ea550ce",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e6c49e39_80a5fbf6",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 530,
+      "author": {
+        "id": 1113991
+      },
+      "writtenOn": "2021-03-03T23:03:25Z",
+      "side": 1,
+      "message": "(Cont\u0027d from previous comment). \n\nI think it makes sense to add a bug to use here a size \ncomparison, something like (pseudocode):\n  \n return f.Features.Storage.StorageSize \u003c 16 \n\nbut I have only found the storage type, not the size, in the\nDUT database parameters. Let me make a bug and link it here \nas a TODO.",
+      "parentUuid": "73e4811a_00390ed8",
       "revId": "44bbf71da7455b757917a821b0b9bfd28ea550ce",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }

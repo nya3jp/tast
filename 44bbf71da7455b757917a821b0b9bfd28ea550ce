@@ -16,6 +16,46 @@
       "message": "threlkeld@ PTAL -- I gladly accept suggestions for the condition name :-)\n\nOthers FYI",
       "revId": "44bbf71da7455b757917a821b0b9bfd28ea550ce",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fd9a0b07_21256eb2",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 528,
+      "author": {
+        "id": 1002858
+      },
+      "writtenOn": "2021-03-03T00:00:36Z",
+      "side": 1,
+      "message": "reference the actual size here, not the type of tests (since that\u0027s the real thing you\u0027re depending on and it will make future edits clearer or let other tests use this dependency).",
+      "range": {
+        "startLine": 528,
+        "startChar": 5,
+        "endLine": 528,
+        "endChar": 40
+      },
+      "revId": "44bbf71da7455b757917a821b0b9bfd28ea550ce",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "73e4811a_00390ed8",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 530,
+      "author": {
+        "id": 1002858
+      },
+      "writtenOn": "2021-03-03T00:00:36Z",
+      "side": 1,
+      "message": "Long term it seems better to add a field to the device config rather than manually id boards.  Can\u0027t platforms can have different skus with different sizes or types of drives?  I suspect it cannot be done now until more work is done with HWID data, but it\u0027s worth looking into.  See crbug.com/1070299",
+      "revId": "44bbf71da7455b757917a821b0b9bfd28ea550ce",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

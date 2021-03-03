@@ -3,6 +3,23 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "00b895e9_9a66eecd",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-03-03T07:47:31Z",
+      "side": 1,
+      "message": "Feel free to link bugs like b:180549552 if it were related.",
+      "revId": "ff3d51c1a384cf44a8054330570e2d6df6fbaead",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "7c16045d_ea602c0e",
         "filename": "/PATCHSET_LEVEL",
         "patchSetId": 3

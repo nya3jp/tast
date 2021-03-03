@@ -112,6 +112,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "e1945dec_92e17667",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 5
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2021-03-03T13:38:26Z",
+      "side": 1,
+      "message": "+1 for a diagram, but a sequence diagram may be a bad choice since it would be too test specific.",
+      "parentUuid": "f5afdf75_fe0d10e7",
+      "range": {
+        "startLine": 13,
+        "startChar": 0,
+        "endLine": 14,
+        "endChar": 9
+      },
+      "revId": "8ba81e234376ca58975e254cf07609ba15bec98a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "4b3f2117_a56e96d4",
         "filename": "docs/codelab_4.md",
         "patchSetId": 5

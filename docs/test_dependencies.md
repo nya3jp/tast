@@ -361,8 +361,8 @@ hardware feature to be used in the test hardware constraints (e.g. “wifi chip
 vendor name is X”).
 
 1. The developer asks the infra team for that hardware feature.
-    + Send an email to g/cros-boxster-discuss and CC pprabhu@, for contacting
-      and collaborating with the infra team.
+    + Send an email to g/cros-boxster-discuss for contacting and collaborating
+      with the infra team.
 
     + The developer may propose a change to the schema
      [(config/api/topology.proto)][1] as a means of clarifying the data or

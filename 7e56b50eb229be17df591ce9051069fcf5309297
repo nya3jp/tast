@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "64e69e30_b2f10ca6",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-03-03T05:31:04Z",
+      "side": 1,
+      "message": "versa",
+      "range": {
+        "startLine": 54,
+        "startChar": 113,
+        "endLine": 54,
+        "endChar": 118
+      },
+      "revId": "7e56b50eb229be17df591ce9051069fcf5309297",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "aebd669b_9aa00e34",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/check/forbidden_imports.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-03-03T05:31:04Z",
+      "side": 1,
+      "message": "Nice to skip files neither local nor remote.",
+      "range": {
+        "startLine": 41,
+        "startChar": 1,
+        "endLine": 41,
+        "endChar": 48
+      },
+      "revId": "7e56b50eb229be17df591ce9051069fcf5309297",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7f0242eb_9c859203",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/check/forbidden_imports_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-03-03T05:31:04Z",
+      "side": 1,
+      "message": "Mind adding valid imports as well, e.g. local -\u003e local, local -\u003e common?",
+      "range": {
+        "startLine": 37,
+        "startChar": 1,
+        "endLine": 37,
+        "endChar": 29
+      },
+      "revId": "7e56b50eb229be17df591ce9051069fcf5309297",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

@@ -331,7 +331,7 @@ func WifiIntel() Condition {
 		// NB: Devices in the "scarlet" family use the platform name "gru", so
 		// "gru" is being used here to represent "scarlet" devices.
 		platformCondition := SkipOnPlatform(
-			"bob", "elm", "fievel", "gru", "grunt", "hana", "jacuzzi",
+			"asurada", "bob", "elm", "fievel", "gru", "grunt", "hana", "jacuzzi",
 			"kevin", "kukui", "oak", "tiger", "trogdor",
 		)
 		if err := platformCondition.Satisfied(f); err != nil {
@@ -342,7 +342,7 @@ func WifiIntel() Condition {
 		// for now there is no better way to specify the exact hardware
 		// parameters needed for this dependency. (See crbug.com/1070299.)
 		modelCondition := SkipOnModel(
-			"blooglet", "dirinboz", "ezkinil", "vilboz",
+			"blooglet", "dirinboz", "ezkinil", "madoo", "vilboz", "vorticon",
 		)
 		if err := modelCondition.Satisfied(f); err != nil {
 			return err

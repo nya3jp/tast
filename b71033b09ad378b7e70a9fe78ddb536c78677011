@@ -1,0 +1,90 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b127e999_d17c929e",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 9
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2021-03-03T17:42:29Z",
+      "side": 1,
+      "message": "nit: no need to link it everywhere 😊. First instance should be enough.",
+      "range": {
+        "startLine": 32,
+        "startChar": 4,
+        "endLine": 32,
+        "endChar": 19
+      },
+      "revId": "b71033b09ad378b7e70a9fe78ddb536c78677011",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9004fdc7_e691303e",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 9
+      },
+      "lineNbr": 221,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2021-03-03T17:42:29Z",
+      "side": 1,
+      "message": "No need to mention this.",
+      "range": {
+        "startLine": 220,
+        "startChar": 0,
+        "endLine": 221,
+        "endChar": 13
+      },
+      "revId": "b71033b09ad378b7e70a9fe78ddb536c78677011",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d91d59d6_de61818e",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 9
+      },
+      "lineNbr": 223,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2021-03-03T17:42:29Z",
+      "side": 1,
+      "message": "Add a link to the full test implementation.",
+      "range": {
+        "startLine": 223,
+        "startChar": 0,
+        "endLine": 223,
+        "endChar": 3
+      },
+      "revId": "b71033b09ad378b7e70a9fe78ddb536c78677011",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "07f989dc_bd38b8e7",
+        "filename": "docs/remote_test.png",
+        "patchSetId": 9
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2021-03-03T17:42:29Z",
+      "side": 1,
+      "message": "Can you replace the file with a SVG? It should be substantially smaller.",
+      "revId": "b71033b09ad378b7e70a9fe78ddb536c78677011",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

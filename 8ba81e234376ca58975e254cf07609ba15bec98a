@@ -26,6 +26,30 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "b7181ace_2c11ca96",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 5
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1411065
+      },
+      "writtenOn": "2021-03-03T17:31:23Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "712b4518_0956b014",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 9,
+        "endChar": 9
+      },
+      "revId": "8ba81e234376ca58975e254cf07609ba15bec98a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "f7652163_7cc990c5",
         "filename": "/PATCHSET_LEVEL",
         "patchSetId": 5
@@ -54,6 +78,30 @@
       "writtenOn": "2021-03-03T13:36:22Z",
       "side": 1,
       "message": "nit: use DUT as it\u0027s used in the tast API to reduce confusion.",
+      "range": {
+        "startLine": 13,
+        "startChar": 47,
+        "endLine": 13,
+        "endChar": 50
+      },
+      "revId": "8ba81e234376ca58975e254cf07609ba15bec98a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "42ebc6c4_129b874e",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 5
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1411065
+      },
+      "writtenOn": "2021-03-03T17:31:23Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fa7ae54b_37bc0b66",
       "range": {
         "startLine": 13,
         "startChar": 47,
@@ -134,6 +182,54 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "c2c8e22c_198a5959",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 5
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1411065
+      },
+      "writtenOn": "2021-03-03T17:31:23Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e1945dec_92e17667",
+      "range": {
+        "startLine": 13,
+        "startChar": 0,
+        "endLine": 14,
+        "endChar": 9
+      },
+      "revId": "8ba81e234376ca58975e254cf07609ba15bec98a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6a54e015_cbce0203",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 5
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1411065
+      },
+      "writtenOn": "2021-03-03T17:31:23Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5ab02122_2739b767",
+      "range": {
+        "startLine": 14,
+        "startChar": 0,
+        "endLine": 14,
+        "endChar": 7
+      },
+      "revId": "8ba81e234376ca58975e254cf07609ba15bec98a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "4b3f2117_a56e96d4",
@@ -147,6 +243,30 @@
       "writtenOn": "2021-03-03T13:36:22Z",
       "side": 1,
       "message": "nit: gRPC + add a link",
+      "range": {
+        "startLine": 16,
+        "startChar": 52,
+        "endLine": 16,
+        "endChar": 56
+      },
+      "revId": "8ba81e234376ca58975e254cf07609ba15bec98a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4699f3cf_acf8e6d1",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 5
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1411065
+      },
+      "writtenOn": "2021-03-03T17:31:23Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4b3f2117_a56e96d4",
       "range": {
         "startLine": 16,
         "startChar": 52,
@@ -180,6 +300,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "9d433250_2b239a17",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 5
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1411065
+      },
+      "writtenOn": "2021-03-03T17:31:23Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1289a3cd_d1b543fa",
+      "range": {
+        "startLine": 18,
+        "startChar": 0,
+        "endLine": 18,
+        "endChar": 64
+      },
+      "revId": "8ba81e234376ca58975e254cf07609ba15bec98a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "474347f7_75d05e2b",
@@ -193,6 +337,30 @@
       "writtenOn": "2021-03-03T13:36:22Z",
       "side": 1,
       "message": "nit: add a link",
+      "range": {
+        "startLine": 28,
+        "startChar": 36,
+        "endLine": 28,
+        "endChar": 52
+      },
+      "revId": "8ba81e234376ca58975e254cf07609ba15bec98a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5fff6b8d_8aca4ace",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 5
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1411065
+      },
+      "writtenOn": "2021-03-03T17:31:23Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "474347f7_75d05e2b",
       "range": {
         "startLine": 28,
         "startChar": 36,
@@ -226,6 +394,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "c715f676_b3657438",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 5
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1411065
+      },
+      "writtenOn": "2021-03-03T17:31:23Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "cc982a09_7306fa8c",
+      "range": {
+        "startLine": 29,
+        "startChar": 0,
+        "endLine": 29,
+        "endChar": 3
+      },
+      "revId": "8ba81e234376ca58975e254cf07609ba15bec98a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "4cd58c9c_ede0f6df",
@@ -239,6 +431,30 @@
       "writtenOn": "2021-03-03T13:36:22Z",
       "side": 1,
       "message": "Note that the generated code needs to be committed to the git repository due to limitations of the go compiler.",
+      "range": {
+        "startLine": 61,
+        "startChar": 0,
+        "endLine": 62,
+        "endChar": 31
+      },
+      "revId": "8ba81e234376ca58975e254cf07609ba15bec98a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "003fee1c_284e0d30",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 5
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 1411065
+      },
+      "writtenOn": "2021-03-03T17:31:23Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4cd58c9c_ede0f6df",
       "range": {
         "startLine": 61,
         "startChar": 0,
@@ -266,6 +482,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "7d921da2_4ef397a8",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 5
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 1411065
+      },
+      "writtenOn": "2021-03-03T17:31:23Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a44d8c0d_244f169e",
+      "revId": "8ba81e234376ca58975e254cf07609ba15bec98a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "2baec0d5_88bfb502",
@@ -279,6 +513,24 @@
       "writtenOn": "2021-03-03T13:36:22Z",
       "side": 1,
       "message": "First explain that all methods can return an error.",
+      "revId": "8ba81e234376ca58975e254cf07609ba15bec98a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "215d72b3_6f3c6c6b",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 5
+      },
+      "lineNbr": 159,
+      "author": {
+        "id": 1411065
+      },
+      "writtenOn": "2021-03-03T17:31:23Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2baec0d5_88bfb502",
       "revId": "8ba81e234376ca58975e254cf07609ba15bec98a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
@@ -300,6 +552,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "a7880403_efcf2732",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 5
+      },
+      "lineNbr": 167,
+      "author": {
+        "id": 1411065
+      },
+      "writtenOn": "2021-03-03T17:31:23Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b6358d28_806094e5",
+      "revId": "8ba81e234376ca58975e254cf07609ba15bec98a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "02e84c38_d1e3f8c4",
@@ -317,6 +587,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "00f4e4cf_c5ce2188",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 5
+      },
+      "lineNbr": 194,
+      "author": {
+        "id": 1411065
+      },
+      "writtenOn": "2021-03-03T17:31:23Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "02e84c38_d1e3f8c4",
+      "revId": "8ba81e234376ca58975e254cf07609ba15bec98a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "e8f33b2e_a1ef19bf",
@@ -330,6 +618,24 @@
       "writtenOn": "2021-03-03T13:36:22Z",
       "side": 1,
       "message": "Shorten the test implementation to just the call to the remote service with a link to the full one. It contains too many details specific to policy testing.",
+      "revId": "8ba81e234376ca58975e254cf07609ba15bec98a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "112cae63_4e67d3f0",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 5
+      },
+      "lineNbr": 212,
+      "author": {
+        "id": 1411065
+      },
+      "writtenOn": "2021-03-03T17:31:23Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e8f33b2e_a1ef19bf",
       "revId": "8ba81e234376ca58975e254cf07609ba15bec98a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }

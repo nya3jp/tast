@@ -16,6 +16,23 @@
       "message": "and one more...",
       "revId": "ff3d51c1a384cf44a8054330570e2d6df6fbaead",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "cb7242b1_42132b39",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1158184
+      },
+      "writtenOn": "2021-03-03T01:30:30Z",
+      "side": 1,
+      "message": "See also b/180549552: (some) vorticon in the wifi lab have RTL, others in low-touch lab have Intel",
+      "revId": "ff3d51c1a384cf44a8054330570e2d6df6fbaead",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

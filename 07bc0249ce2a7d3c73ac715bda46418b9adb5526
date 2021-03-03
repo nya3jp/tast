@@ -46,6 +46,30 @@
       },
       "revId": "07bc0249ce2a7d3c73ac715bda46418b9adb5526",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3a9e63e1_9a0abcd9",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 5
+      },
+      "lineNbr": 1045,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2021-03-03T02:51:10Z",
+      "side": 1,
+      "message": "Thank you for cathcing the discrepancy.\nMatt is right that I wanted to convey that we should use constants over variables.\nLet me update the linter output.",
+      "parentUuid": "8ee217d9_f1a90e73",
+      "range": {
+        "startLine": 1045,
+        "startChar": 66,
+        "endLine": 1045,
+        "endChar": 75
+      },
+      "revId": "07bc0249ce2a7d3c73ac715bda46418b9adb5526",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

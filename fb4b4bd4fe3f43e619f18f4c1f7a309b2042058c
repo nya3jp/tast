@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "920c2d10_89d5ed11",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-03-03T00:29:35Z",
+      "side": 1,
+      "message": "I have changed GetDUTInfo. Please review.Thanks.",
+      "revId": "fb4b4bd4fe3f43e619f18f4c1f7a309b2042058c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

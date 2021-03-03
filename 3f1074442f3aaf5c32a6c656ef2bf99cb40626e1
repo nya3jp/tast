@@ -60,6 +60,30 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "682885ed_e875d49c",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/remote.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-03-03T00:29:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "adcde73d_a7fba152",
+      "range": {
+        "startLine": 88,
+        "startChar": 2,
+        "endLine": 88,
+        "endChar": 76
+      },
+      "revId": "3f1074442f3aaf5c32a6c656ef2bf99cb40626e1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "4bddf480_99090128",
         "filename": "src/chromiumos/tast/cmd/tast/internal/run/remote.go",
         "patchSetId": 2

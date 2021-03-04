@@ -16,6 +16,29 @@
       "message": "Thanks for your comments.",
       "revId": "0a2a83205ddbef48297aa880c4ca743e0fc2c149",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3de4a3cd_97ab7cc6",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 11
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1401350
+      },
+      "writtenOn": "2021-03-04T10:29:29Z",
+      "side": 1,
+      "message": "The image is not loading in the preview now.",
+      "range": {
+        "startLine": 19,
+        "startChar": 15,
+        "endLine": 19,
+        "endChar": 30
+      },
+      "revId": "0a2a83205ddbef48297aa880c4ca743e0fc2c149",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

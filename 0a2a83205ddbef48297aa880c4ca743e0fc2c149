@@ -26,6 +26,30 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "1247f7b3_5ba2928d",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 11
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1411065
+      },
+      "writtenOn": "2021-03-04T13:38:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "00dd1f46_f3aac7f7",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 9,
+        "endChar": 6
+      },
+      "revId": "0a2a83205ddbef48297aa880c4ca743e0fc2c149",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "10aa19f0_2c2c72c6",
         "filename": "/PATCHSET_LEVEL",
         "patchSetId": 11
@@ -75,6 +99,23 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "65914269_cee7f00d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 11
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1411065
+      },
+      "writtenOn": "2021-03-04T13:38:11Z",
+      "side": 1,
+      "message": "Thanks for the comments.\nThe image can be shown in a browser just for the preview it doesn\u0027t seem to work.",
+      "revId": "0a2a83205ddbef48297aa880c4ca743e0fc2c149",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "17190bd3_e9674d62",
@@ -88,6 +129,30 @@
       "writtenOn": "2021-03-04T10:43:22Z",
       "side": 1,
       "message": "nit: Tast",
+      "range": {
+        "startLine": 5,
+        "startChar": 46,
+        "endLine": 5,
+        "endChar": 50
+      },
+      "revId": "0a2a83205ddbef48297aa880c4ca743e0fc2c149",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "73321cc7_aeaf698a",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 11
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1411065
+      },
+      "writtenOn": "2021-03-04T13:38:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "17190bd3_e9674d62",
       "range": {
         "startLine": 5,
         "startChar": 46,
@@ -123,6 +188,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "998da43c_6e1dfd09",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 11
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1411065
+      },
+      "writtenOn": "2021-03-04T13:38:11Z",
+      "side": 1,
+      "message": "As this is a more advanced codelab a link to the first that introduces you to a few things referenced here seems to make sense. We also have that in codelab 2 and codelab 3.",
+      "parentUuid": "dd8a1387_cdb5bbf4",
+      "range": {
+        "startLine": 8,
+        "startChar": 0,
+        "endLine": 8,
+        "endChar": 26
+      },
+      "revId": "0a2a83205ddbef48297aa880c4ca743e0fc2c149",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "3de4a3cd_97ab7cc6",
         "filename": "docs/codelab_4.md",
         "patchSetId": 11
@@ -134,6 +223,30 @@
       "writtenOn": "2021-03-04T10:29:29Z",
       "side": 1,
       "message": "The image is not loading in the preview now.",
+      "range": {
+        "startLine": 19,
+        "startChar": 15,
+        "endLine": 19,
+        "endChar": 30
+      },
+      "revId": "0a2a83205ddbef48297aa880c4ca743e0fc2c149",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c1dad0ba_bbed4075",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 11
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1411065
+      },
+      "writtenOn": "2021-03-04T13:38:11Z",
+      "side": 1,
+      "message": "I looked at a few other docs and it seems the preview of svg images only work when they are from external sources.",
+      "parentUuid": "3de4a3cd_97ab7cc6",
       "range": {
         "startLine": 19,
         "startChar": 15,
@@ -167,6 +280,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "34199d32_916e357a",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 11
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1411065
+      },
+      "writtenOn": "2021-03-04T13:38:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "de49f954_84ab34f4",
+      "range": {
+        "startLine": 30,
+        "startChar": 3,
+        "endLine": 30,
+        "endChar": 7
+      },
+      "revId": "0a2a83205ddbef48297aa880c4ca743e0fc2c149",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "aeff69f3_c49d3cfa",
@@ -190,6 +327,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "269b686c_33cce908",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 11
+      },
+      "lineNbr": 125,
+      "author": {
+        "id": 1411065
+      },
+      "writtenOn": "2021-03-04T13:38:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "aeff69f3_c49d3cfa",
+      "range": {
+        "startLine": 125,
+        "startChar": 36,
+        "endLine": 125,
+        "endChar": 45
+      },
+      "revId": "0a2a83205ddbef48297aa880c4ca743e0fc2c149",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "7bdc21ea_5af02b7a",
@@ -203,6 +364,30 @@
       "writtenOn": "2021-03-04T10:38:35Z",
       "side": 1,
       "message": "googler-team to be consistent",
+      "range": {
+        "startLine": 210,
+        "startChar": 4,
+        "endLine": 210,
+        "endChar": 33
+      },
+      "revId": "0a2a83205ddbef48297aa880c4ca743e0fc2c149",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ca2e56ee_b6aecdd0",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 11
+      },
+      "lineNbr": 210,
+      "author": {
+        "id": 1411065
+      },
+      "writtenOn": "2021-03-04T13:38:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7bdc21ea_5af02b7a",
       "range": {
         "startLine": 210,
         "startChar": 4,

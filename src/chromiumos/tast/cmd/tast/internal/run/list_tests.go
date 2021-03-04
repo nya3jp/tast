@@ -17,6 +17,9 @@ import (
 
 // listTests returns the whole tests to run.
 func listTests(ctx context.Context, cfg *config.Config, state *config.State) ([]*jsonprotocol.EntityResult, error) {
+	if err := getDUTInfo(ctx, cfg, state); err != nil {
+		return nil, err
+	}
 	testsToRun, testsToSkip, _, err := findTestsForShard(ctx, cfg, state)
 	if err != nil {
 		return nil, err

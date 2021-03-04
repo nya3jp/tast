@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "0fa9b22c_5a5bfdf1",
+        "filename": "docs/README.md",
+        "patchSetId": 9
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1411065
+      },
+      "writtenOn": "2021-03-04T09:59:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4faf82e9_6263aeb6",
+      "range": {
+        "startLine": 6,
+        "startChar": 58,
+        "endLine": 6,
+        "endChar": 59
+      },
+      "revId": "b71033b09ad378b7e70a9fe78ddb536c78677011",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "812020ae_95b36c4b",
@@ -37,6 +61,30 @@
       "writtenOn": "2021-03-04T09:11:32Z",
       "side": 1,
       "message": "Same here.",
+      "range": {
+        "startLine": 7,
+        "startChar": 67,
+        "endLine": 7,
+        "endChar": 68
+      },
+      "revId": "b71033b09ad378b7e70a9fe78ddb536c78677011",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f6af6bf3_4cc86cb9",
+        "filename": "docs/README.md",
+        "patchSetId": 9
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1411065
+      },
+      "writtenOn": "2021-03-04T09:59:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "812020ae_95b36c4b",
       "range": {
         "startLine": 7,
         "startChar": 67,
@@ -70,6 +118,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "d7152437_e058e667",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 9
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1411065
+      },
+      "writtenOn": "2021-03-04T09:59:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e3853113_f3a73d0a",
+      "range": {
+        "startLine": 26,
+        "startChar": 9,
+        "endLine": 26,
+        "endChar": 12
+      },
+      "revId": "b71033b09ad378b7e70a9fe78ddb536c78677011",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "b127e999_d17c929e",
@@ -83,6 +155,30 @@
       "writtenOn": "2021-03-03T17:42:29Z",
       "side": 1,
       "message": "nit: no need to link it everywhere 😊. First instance should be enough.",
+      "range": {
+        "startLine": 32,
+        "startChar": 4,
+        "endLine": 32,
+        "endChar": 19
+      },
+      "revId": "b71033b09ad378b7e70a9fe78ddb536c78677011",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ef6751f4_b002dd8f",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 9
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1411065
+      },
+      "writtenOn": "2021-03-04T09:59:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b127e999_d17c929e",
       "range": {
         "startLine": 32,
         "startChar": 4,
@@ -139,6 +235,54 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "350dde80_c2e34c19",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 9
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1411065
+      },
+      "writtenOn": "2021-03-04T09:59:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5181934e_19853fc0",
+      "range": {
+        "startLine": 43,
+        "startChar": 32,
+        "endLine": 43,
+        "endChar": 42
+      },
+      "revId": "b71033b09ad378b7e70a9fe78ddb536c78677011",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "117e178c_b16e2bcd",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 9
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1411065
+      },
+      "writtenOn": "2021-03-04T09:59:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1abbb5dd_1b911e12",
+      "range": {
+        "startLine": 43,
+        "startChar": 3,
+        "endLine": 43,
+        "endChar": 9
+      },
+      "revId": "b71033b09ad378b7e70a9fe78ddb536c78677011",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "e081ed6d_2e8958cd",
@@ -152,6 +296,30 @@
       "writtenOn": "2021-03-04T09:11:32Z",
       "side": 1,
       "message": "Quote it with `.",
+      "range": {
+        "startLine": 80,
+        "startChar": 17,
+        "endLine": 80,
+        "endChar": 23
+      },
+      "revId": "b71033b09ad378b7e70a9fe78ddb536c78677011",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "425cb585_f24a1b76",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 9
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 1411065
+      },
+      "writtenOn": "2021-03-04T09:59:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e081ed6d_2e8958cd",
       "range": {
         "startLine": 80,
         "startChar": 17,
@@ -185,6 +353,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "2eb6770d_a9334380",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 9
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 1411065
+      },
+      "writtenOn": "2021-03-04T09:59:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b54d1d2d_81eb5f86",
+      "range": {
+        "startLine": 81,
+        "startChar": 43,
+        "endLine": 81,
+        "endChar": 44
+      },
+      "revId": "b71033b09ad378b7e70a9fe78ddb536c78677011",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "94cc9524_d4727954",
@@ -198,6 +390,30 @@
       "writtenOn": "2021-03-04T09:11:32Z",
       "side": 1,
       "message": "maybe \", make\"?",
+      "range": {
+        "startLine": 83,
+        "startChar": 54,
+        "endLine": 83,
+        "endChar": 59
+      },
+      "revId": "b71033b09ad378b7e70a9fe78ddb536c78677011",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "099e00c4_26c6be98",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 9
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 1411065
+      },
+      "writtenOn": "2021-03-04T09:59:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "94cc9524_d4727954",
       "range": {
         "startLine": 83,
         "startChar": 54,
@@ -231,6 +447,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "3edb47c3_2f14c72c",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 9
+      },
+      "lineNbr": 95,
+      "author": {
+        "id": 1411065
+      },
+      "writtenOn": "2021-03-04T09:59:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "100cb14f_74664b1b",
+      "range": {
+        "startLine": 95,
+        "startChar": 30,
+        "endLine": 95,
+        "endChar": 34
+      },
+      "revId": "b71033b09ad378b7e70a9fe78ddb536c78677011",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "6189fef8_feb14185",
@@ -244,6 +484,30 @@
       "writtenOn": "2021-03-04T09:11:32Z",
       "side": 1,
       "message": "For Golang code blocks, you can use \"```go\". Though it only colors the comments.",
+      "range": {
+        "startLine": 123,
+        "startChar": 0,
+        "endLine": 123,
+        "endChar": 3
+      },
+      "revId": "b71033b09ad378b7e70a9fe78ddb536c78677011",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "601e50b8_6a60065d",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 9
+      },
+      "lineNbr": 123,
+      "author": {
+        "id": 1411065
+      },
+      "writtenOn": "2021-03-04T09:59:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6189fef8_feb14185",
       "range": {
         "startLine": 123,
         "startChar": 0,
@@ -277,6 +541,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "e594027d_6cf32fb9",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 9
+      },
+      "lineNbr": 183,
+      "author": {
+        "id": 1411065
+      },
+      "writtenOn": "2021-03-04T09:59:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5d245e3a_ee875cb3",
+      "range": {
+        "startLine": 183,
+        "startChar": 75,
+        "endLine": 183,
+        "endChar": 78
+      },
+      "revId": "b71033b09ad378b7e70a9fe78ddb536c78677011",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "a66fe13b_7b1f09d3",
@@ -290,6 +578,30 @@
       "writtenOn": "2021-03-04T09:11:32Z",
       "side": 1,
       "message": "quote `ServiceDeps`",
+      "range": {
+        "startLine": 197,
+        "startChar": 63,
+        "endLine": 197,
+        "endChar": 74
+      },
+      "revId": "b71033b09ad378b7e70a9fe78ddb536c78677011",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d3958271_df231a24",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 9
+      },
+      "lineNbr": 197,
+      "author": {
+        "id": 1411065
+      },
+      "writtenOn": "2021-03-04T09:59:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a66fe13b_7b1f09d3",
       "range": {
         "startLine": 197,
         "startChar": 63,
@@ -323,6 +635,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "929684e1_63f3ffa6",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 9
+      },
+      "lineNbr": 221,
+      "author": {
+        "id": 1411065
+      },
+      "writtenOn": "2021-03-04T09:59:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9004fdc7_e691303e",
+      "range": {
+        "startLine": 220,
+        "startChar": 0,
+        "endLine": 221,
+        "endChar": 13
+      },
+      "revId": "b71033b09ad378b7e70a9fe78ddb536c78677011",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "d91d59d6_de61818e",
@@ -346,6 +682,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "5dbb6700_3bd2650b",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 9
+      },
+      "lineNbr": 223,
+      "author": {
+        "id": 1411065
+      },
+      "writtenOn": "2021-03-04T09:59:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d91d59d6_de61818e",
+      "range": {
+        "startLine": 223,
+        "startChar": 0,
+        "endLine": 223,
+        "endChar": 3
+      },
+      "revId": "b71033b09ad378b7e70a9fe78ddb536c78677011",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "07f989dc_bd38b8e7",
@@ -359,6 +719,24 @@
       "writtenOn": "2021-03-03T17:42:29Z",
       "side": 1,
       "message": "Can you replace the file with a SVG? It should be substantially smaller.",
+      "revId": "b71033b09ad378b7e70a9fe78ddb536c78677011",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0238ed92_8f44b450",
+        "filename": "docs/remote_test.png",
+        "patchSetId": 9
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1411065
+      },
+      "writtenOn": "2021-03-04T09:59:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "07f989dc_bd38b8e7",
       "revId": "b71033b09ad378b7e70a9fe78ddb536c78677011",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }

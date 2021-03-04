@@ -45,6 +45,17 @@ const (
 	Disable
 )
 
+func (s State) String() string {
+	switch s {
+	case Yes:
+		return "Yes"
+	case No:
+		return "No"
+	default:
+		return "Disable"
+	}
+}
+
 var fileRegexp *regexp.Regexp      // matches YAML base filenames containing capabilities
 var directiveRegexp *regexp.Regexp // matches directive line in capability files
 

@@ -12,6 +12,7 @@ import (
 	gotesting "testing"
 
 	"chromiumos/tast/cmd/tast/internal/run/jsonprotocol"
+	"chromiumos/tast/internal/dep"
 	"chromiumos/tast/internal/runner"
 	"chromiumos/tast/internal/testing"
 )
@@ -261,5 +262,39 @@ func TestListTestsWithSkippedTests(t *gotesting.T) {
 	}
 	if !reflect.DeepEqual(results, expected) {
 		t.Errorf("Unexpected list of local tests in shard 1: got %+v; want %+v", results, expected)
+	}
+}
+
+// TestListTestsGetDUTInfo make sure getDUTInfo is called when listTests is called.
+func TestListTestsGetDUTInfo(t *gotesting.T) {
+	td := newLocalTestData(t)
+	defer td.close()
+
+	called := false
+
+	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+		switch args.Mode {
+		case runner.GetDUTInfoMode:
+			// Just check that getDUTInfo is called; details of args are
+			// tested in deps_test.go.
+			called = true
+			json.NewEncoder(stdout).Encode(&runner.GetDUTInfoResult{
+				SoftwareFeatures: &dep.SoftwareFeatures{
+					Available: []string{"foo"}, // must report non-empty features
+				},
+			})
+		default:
+			t.Errorf("Unexpected args.Mode = %v", args.Mode)
+		}
+		return 0
+	}
+
+	td.cfg.CheckTestDeps = true
+
+	if _, err := listTests(context.Background(), &td.cfg, &td.state); err != nil {
+		t.Error("listTests failed: ", err)
+	}
+	if !called {
+		t.Error("runTests did not call getSoftwareFeatures")
 	}
 }

@@ -41,8 +41,8 @@ func TestConfigListDefaults(t *testing.T) {
 	if cfg.CollectSysInfo {
 		t.Errorf("%s set CollectSysInfo", desc)
 	}
-	if cfg.CheckTestDeps {
-		t.Errorf("%s set CheckTestDeps to %v; want false", desc, cfg.CheckTestDeps)
+	if !cfg.CheckTestDeps {
+		t.Errorf("%s set CheckTestDeps to %v; want true", desc, cfg.CheckTestDeps)
 	}
 }
 

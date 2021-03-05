@@ -75,6 +75,9 @@ func connectToTarget(ctx context.Context, cfg *config.Config, state *config.Stat
 		return nil, err
 	}
 
+	ctx, cancel := context.WithTimeout(ctx, sshConnectTimeout*time.Duration(cfg.SSHRetries+1))
+	defer cancel()
+
 	var err error
 	if state.Hst, err = ssh.New(ctx, &o); err != nil {
 		return nil, err

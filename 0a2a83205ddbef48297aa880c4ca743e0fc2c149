@@ -235,6 +235,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "911535be_b5968acd",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 11
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1459973
+      },
+      "writtenOn": "2021-03-05T08:41:26Z",
+      "side": 1,
+      "message": "Maybe it would be good to explain somewhere what is \"remote\" or what it is remote to.\n\nTo be remote was from the beginning the opposite meaning. Remove meant that test run on DUT (it is remote to the host from where it was started). And it created a confusion in the way I understood it.",
+      "parentUuid": "913a8482_7a79c784",
+      "range": {
+        "startLine": 13,
+        "startChar": 0,
+        "endLine": 17,
+        "endChar": 75
+      },
+      "revId": "0a2a83205ddbef48297aa880c4ca743e0fc2c149",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "3de4a3cd_97ab7cc6",
         "filename": "docs/codelab_4.md",
         "patchSetId": 11

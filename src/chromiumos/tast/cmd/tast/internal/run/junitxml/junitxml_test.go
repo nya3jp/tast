@@ -75,11 +75,11 @@ func TestMarshal(t *gotesting.T) {
 	expected := strings.Split(
 		`<testsuites>
   <testsuite tests="3" failures="1" skipped="1">
-    <testcase name="example.Pass" status="run" result="completed" timestamp="2021-02-03Z10:00:02" time="1.0"></testcase>
-    <testcase name="example.Skip" status="notrun" result="skipped" timestamp="2021-02-03Z10:00:03" time="2.0">
+    <testcase name="example.Pass" status="run" result="completed" timestamp="2021-02-03T10:00:02Z" time="1.0"></testcase>
+    <testcase name="example.Skip" status="notrun" result="skipped" timestamp="2021-02-03T10:00:03Z" time="2.0">
       <skipped message="skipped by a certain reason"></skipped>
     </testcase>
-    <testcase name="example.Fail" status="run" result="completed" timestamp="2021-02-03Z10:00:07" time="3.5">
+    <testcase name="example.Fail" status="run" result="completed" timestamp="2021-02-03T10:00:07Z" time="3.5">
       <failure message="unknown SoftwareDeps: android"><![CDATA[/home/user/trunk/src/platform/tast/src/chromiumos/tast/internal/planner/run.go:829
 ]]></failure>
     </testcase>

@@ -16,6 +16,23 @@
       "message": "Adding yenlinlai@ directly for the same reviewer as the dependent CL.",
       "revId": "460eca4a5925c713200698d132d42e7df02d8a9f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "890b733b_08469a2e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1487074
+      },
+      "writtenOn": "2021-03-05T02:50:41Z",
+      "side": 1,
+      "message": "LGTM. Add tast-owner as the change is in framework.",
+      "revId": "460eca4a5925c713200698d132d42e7df02d8a9f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

@@ -283,6 +283,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "5b9f9369_2b0c3ece",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 11
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1411065
+      },
+      "writtenOn": "2021-03-05T09:11:36Z",
+      "side": 1,
+      "message": "Remote is the host that starts the test. It is remote to our test subject which is the DUT.\nI added a clarification here. As the term remote test is here specific to Tast I wouldn\u0027t add it to the general chromeOS glossary.",
+      "parentUuid": "9edc297f_0fab494e",
+      "range": {
+        "startLine": 13,
+        "startChar": 0,
+        "endLine": 17,
+        "endChar": 75
+      },
+      "revId": "0a2a83205ddbef48297aa880c4ca743e0fc2c149",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "3de4a3cd_97ab7cc6",
         "filename": "docs/codelab_4.md",
         "patchSetId": 11

@@ -8,6 +8,7 @@ package junitxml
 import (
 	"encoding/xml"
 	"fmt"
+	"time"
 
 	"chromiumos/tast/cmd/tast/internal/run/jsonprotocol"
 )
@@ -71,7 +72,7 @@ func Marshal(results []*jsonprotocol.EntityResult) ([]byte, error) {
 	for _, r := range results {
 		testCase := testCase{
 			Name:      r.EntityInfo.Name,
-			Timestamp: r.Start.UTC().Format("2006-01-02Z15:04:05"),
+			Timestamp: r.Start.UTC().Format(time.RFC3339),
 			// Decimal point is needed for distinguishing it from nanoseconds notation.
 			// e.g. "1.0" for one second.
 			Time: fmt.Sprintf("%.1f", r.End.Sub(r.Start).Seconds()),

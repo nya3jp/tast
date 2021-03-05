@@ -212,6 +212,29 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "913a8482_7a79c784",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 11
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1459973
+      },
+      "writtenOn": "2021-03-05T08:32:32Z",
+      "side": 1,
+      "message": "I know what it says but I get confused every time I read it. \nComing from WebDriver world and other frameworks - the world \"remote\" was used in a different context.\nJust wanted to clarify. \"Remote\" is the host (a driver) from where test is triggered, right?\nI will take a look at the attached picture too.",
+      "range": {
+        "startLine": 13,
+        "startChar": 0,
+        "endLine": 17,
+        "endChar": 75
+      },
+      "revId": "0a2a83205ddbef48297aa880c4ca743e0fc2c149",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "3de4a3cd_97ab7cc6",
         "filename": "docs/codelab_4.md",
         "patchSetId": 11

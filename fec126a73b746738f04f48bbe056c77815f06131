@@ -54,6 +54,23 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "ed336033_d058a095",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/list_tests.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-03-05T10:09:36Z",
+      "side": 1,
+      "message": "Can you update unit tests to ensure getDUTInfo is called by listTests?",
+      "revId": "fec126a73b746738f04f48bbe056c77815f06131",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "f548eb0a_dfff1d05",
         "filename": "src/chromiumos/tast/cmd/tast/internal/run/list_tests.go",
         "patchSetId": 1
@@ -65,6 +82,24 @@
       "writtenOn": "2021-03-05T03:17:25Z",
       "side": 1,
       "message": "Run() in run.go calls either listTests or runTests, and runTests() also does getDUTInfo at the beginning. How about changing to call it in Run()?",
+      "revId": "fec126a73b746738f04f48bbe056c77815f06131",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d828b761_9674a0f4",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/list_tests.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-03-05T10:09:36Z",
+      "side": 1,
+      "message": "I\u0027m okay with calling getDUTInfo here as it\u0027s not obvious if we need to call getDUTInfo in the future when more modes are added in addition to ListTestsMode and RunTestsMode.",
+      "parentUuid": "f548eb0a_dfff1d05",
       "revId": "fec126a73b746738f04f48bbe056c77815f06131",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }

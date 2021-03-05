@@ -20,6 +20,24 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "74469e1a_15812348",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-03-05T17:49:41Z",
+      "side": 1,
+      "message": "Please check new comments and see if it is clear. Thanks.",
+      "parentUuid": "1314dfc8_4d22854c",
+      "revId": "fec126a73b746738f04f48bbe056c77815f06131",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "25f8e367_ce16aa53",
         "filename": "/PATCHSET_LEVEL",
         "patchSetId": 1
@@ -69,6 +87,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "968fab56_f05713d7",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/list_tests.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-03-05T17:49:41Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ed336033_d058a095",
+      "revId": "fec126a73b746738f04f48bbe056c77815f06131",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "f548eb0a_dfff1d05",
@@ -100,6 +136,24 @@
       "side": 1,
       "message": "I\u0027m okay with calling getDUTInfo here as it\u0027s not obvious if we need to call getDUTInfo in the future when more modes are added in addition to ListTestsMode and RunTestsMode.",
       "parentUuid": "f548eb0a_dfff1d05",
+      "revId": "fec126a73b746738f04f48bbe056c77815f06131",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a78af7c4_0e49cf8f",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/list_tests.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-03-05T17:49:41Z",
+      "side": 1,
+      "message": "I am going to let it getDUTInfo staying here for this CL. Thanks.",
+      "parentUuid": "d828b761_9674a0f4",
       "revId": "fec126a73b746738f04f48bbe056c77815f06131",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }

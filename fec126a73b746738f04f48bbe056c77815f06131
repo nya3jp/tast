@@ -1,6 +1,23 @@
 {
   "comments": [
     {
+      "unresolved": true,
+      "key": {
+        "uuid": "1314dfc8_4d22854c",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-03-05T03:17:25Z",
+      "side": 1,
+      "message": "Pasting the entire test result would blur how the change was verified in this case. How about instead describing like:\n\"For example, arc.XXX.YYY is not listed by ZZZ command because....\"",
+      "revId": "fec126a73b746738f04f48bbe056c77815f06131",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": false,
       "key": {
         "uuid": "25f8e367_ce16aa53",
@@ -14,6 +31,40 @@
       "writtenOn": "2021-03-04T23:43:33Z",
       "side": 1,
       "message": "The CL fix a bug that listing tests for a shard does not factor in software/hardware dependency. Please review.",
+      "revId": "fec126a73b746738f04f48bbe056c77815f06131",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9f47e0aa_dbacc3a5",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-03-05T03:17:25Z",
+      "side": 1,
+      "message": "I\u0027d like to ask nya@ for a double check.\nThe behavior (equivalent default value of checkTestDeps) of tast list command changes. I think it is OK because tast list command is not used in any automation AFAIK. (The only exception is meta.ListTests, but it does not care the result).",
+      "revId": "fec126a73b746738f04f48bbe056c77815f06131",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f548eb0a_dfff1d05",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/list_tests.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-03-05T03:17:25Z",
+      "side": 1,
+      "message": "Run() in run.go calls either listTests or runTests, and runTests() also does getDUTInfo at the beginning. How about changing to call it in Run()?",
       "revId": "fec126a73b746738f04f48bbe056c77815f06131",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }

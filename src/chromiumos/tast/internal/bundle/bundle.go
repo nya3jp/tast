@@ -305,7 +305,13 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 	defer restoreTempDir()
 
 	var postRunFunc func(context.Context) error
-	if cfg.runHook != nil {
+
+	// Don't run runHook when remote fixtures are used.
+	// The runHook for local bundles (ready.Wait) may reset the state remote
+	// fixtures just have set up, e.g. enterprise enrollment.
+	// TODO(crbug/1184567): consider long term plan about interactions between
+	// remote fixtures and run hooks.
+	if cfg.runHook != nil && args.RunTests.StartFixtureName == "" {
 		var err error
 		postRunFunc, err = cfg.runHook(ctx)
 		if err != nil {

@@ -655,6 +655,45 @@ func TestRunExternalDataFiles(t *gotesting.T) {
 	}
 }
 
+func TestRunStartFixture(t *gotesting.T) {
+	// runTests should not run runHook if tests depend on remote fixtures.
+	// TODO(crbug/1184567): consider long term plan about interactions between
+	// remote fixtures and run hooks.
+	if err := runTests(context.Background(), &bytes.Buffer{}, &Args{RunTests: &RunTestsArgs{
+		StartFixtureName: "foo",
+	}}, &runConfig{
+		runHook: func(context.Context) (func(context.Context) error, error) {
+			t.Error("runHook unexpectedly called")
+			return nil, nil
+		},
+	}, localBundle, []*testing.TestInstance{{
+		Fixture: "foo",
+		Name:    "pkg.Test",
+		Func:    func(context.Context, *testing.State) {},
+	}}); err != nil {
+		t.Fatalf("runTests(): %v", err)
+	}
+
+	// If StartFixtureName is empty, runHook should run.
+	called := false
+	if err := runTests(context.Background(), &bytes.Buffer{}, &Args{RunTests: &RunTestsArgs{
+		StartFixtureName: "",
+	}}, &runConfig{
+		runHook: func(context.Context) (func(context.Context) error, error) {
+			called = true
+			return nil, nil
+		},
+	}, localBundle, []*testing.TestInstance{{
+		Name: "pkg.Test",
+		Func: func(context.Context, *testing.State) {},
+	}}); err != nil {
+		t.Fatalf("runTests(): %v", err)
+	}
+	if !called {
+		t.Error("runHook was not called")
+	}
+}
+
 func TestRunList(t *gotesting.T) {
 	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
 	defer restore()

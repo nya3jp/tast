@@ -179,7 +179,7 @@ Please write and review Tast changes to get used to Go, Tast and integration
 test best practices in general. Typically one writes more than 5 non-trivial
 changes before feeling familiar with Tast.
 
-Once you feel ready to go, please send a mail to chromeos-velocity@google.com to
+Once you feel ready to go, please send a mail to tast-reviewers@google.com to
 join shadow reviews. See [go/tast-shadow-review] for details of the process.
 Upon graduating from shadow reviews, you will be added to [Tast reviewers].
 

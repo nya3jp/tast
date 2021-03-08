@@ -373,6 +373,18 @@ func newDeviceConfigAndHardwareFeatures() (dc *device.Config, retFeatures *confi
 		}
 	}()
 
+	_, err = func() (int64, error) {
+		b, err := exec.Command("lsblk", "-J", "-b").Output()
+		if err != nil {
+			return 0, err
+		}
+		return findDiskSize(b)
+	}()
+	if err != nil {
+		warns = append(warns, fmt.Sprintf("failed to get disk size: %v", err))
+	}
+	// TODO(crbug.com/1184468, crbug.com/1186743): store the disk size value to features after the new field is added
+
 	return config, features, warns
 }
 
@@ -642,4 +654,105 @@ func findAMDSOC(parsed *lscpuResult) (device.Config_SOC, error) {
 		return device.Config_SOC_STONEY_RIDGE, nil
 	}
 	return device.Config_SOC_UNSPECIFIED, errors.Errorf("unknown AMD model: %s", model)
+}
+
+// lsblk command output differs depending on the version. Attempt parsing in multiple ways to accept all the cases.
+
+// lsblk from util-linux 2.32
+type blockDevices2_32 struct {
+	Name      string `json:"name"`
+	Removable string `json:"rm"`
+	Size      string `json:"size"`
+	Type      string `json:"type"`
+}
+
+type lsblkRoot2_32 struct {
+	BlockDevices []blockDevices2_32 `json:"blockdevices"`
+}
+
+// lsblk from util-linux 2.36.1
+type blockDevices struct {
+	Name      string `json:"name"`
+	Removable bool   `json:"rm"`
+	Size      int64  `json:"size"`
+	Type      string `json:"type"`
+}
+
+type lsblkRoot struct {
+	BlockDevices []blockDevices `json:"blockdevices"`
+}
+
+func parseLsblk(jsonData []byte) (result *lsblkRoot, retErr error) {
+	var r lsblkRoot
+	var errs []error
+	defer func() {
+		if result == nil {
+			var allErrString []string
+			for _, e := range errs {
+				allErrString = append(allErrString, e.Error())
+			}
+			retErr = fmt.Errorf("failed to parse JSON in all the expected formats: %s", strings.Join(allErrString, " | "))
+		}
+	}()
+	err := json.Unmarshal(jsonData, &r)
+	if err == nil {
+		result = &r
+		return
+	}
+	errs = append(errs, err)
+
+	// retry with old format
+	var r2 lsblkRoot2_32
+	if err := json.Unmarshal(jsonData, &r2); err != nil {
+		errs = append(errs, err)
+		return
+	}
+	r.BlockDevices = nil
+	for _, e := range r2.BlockDevices {
+		s, err := strconv.ParseInt(e.Size, 10, 64)
+		if err != nil {
+			errs = append(errs, err)
+			return
+		}
+		var rm bool
+		if e.Removable == "0" || e.Removable == "" {
+			rm = false
+		} else if e.Removable == "1" {
+			rm = true
+		} else {
+			errs = append(errs, fmt.Errorf("unknown value for rm: %q", e.Removable))
+			return
+		}
+		r.BlockDevices = append(r.BlockDevices, blockDevices{
+			Name:      e.Name,
+			Removable: rm,
+			Size:      s,
+			Type:      e.Type,
+		})
+	}
+	result = &r
+	return
+}
+
+// findDiskSize detects the size of the storage device from "lsblk -J -b" output in bytes.
+// When there are multiple disks, returns the size of the largest one.
+func findDiskSize(jsonData []byte) (int64, error) {
+	r, err := parseLsblk(jsonData)
+	if err != nil {
+		return 0, err
+	}
+	var maxSize int64
+	var found bool
+	for _, x := range r.BlockDevices {
+		if x.Type == "disk" && !x.Removable && !strings.HasPrefix(x.Name, "zram") {
+			found = true
+			if x.Size > maxSize {
+				maxSize = x.Size
+			}
+		}
+	}
+	if !found {
+		return 0, errors.New("no disk device found")
+	}
+	return maxSize, nil
 }

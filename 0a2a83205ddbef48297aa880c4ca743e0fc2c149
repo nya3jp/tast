@@ -305,6 +305,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "0fde655e_f5ada1c5",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 11
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1459973
+      },
+      "writtenOn": "2021-03-08T14:04:01Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5b9f9369_2b0c3ece",
+      "range": {
+        "startLine": 13,
+        "startChar": 0,
+        "endLine": 17,
+        "endChar": 75
+      },
+      "revId": "0a2a83205ddbef48297aa880c4ca743e0fc2c149",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "3de4a3cd_97ab7cc6",

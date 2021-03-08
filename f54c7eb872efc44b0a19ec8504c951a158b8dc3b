@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0e641531_22c87acc",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 13
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1401350
+      },
+      "writtenOn": "2021-03-08T14:26:30Z",
+      "side": 1,
+      "message": "nit: Tast",
+      "range": {
+        "startLine": 10,
+        "startChar": 12,
+        "endLine": 10,
+        "endChar": 13
+      },
+      "revId": "f54c7eb872efc44b0a19ec8504c951a158b8dc3b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

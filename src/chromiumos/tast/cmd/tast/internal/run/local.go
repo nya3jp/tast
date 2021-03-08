@@ -463,6 +463,16 @@ func runLocalTests(ctx context.Context, cfg *config.Config, state *config.State)
 	for _, bt := range bundleRemoteFixtTests {
 		cfg.Logger.Logf("Running tests in bundle %v", bt.bundle)
 
+		// If all the tests depend on remote fixtures, run empty test set
+		// with no remote fixture.
+		// Local bundles run its ready hook (DUT clean up) only when no remote
+		// fixutres are used. This workaround makes sure DUT clean up runs
+		// even if all the specified tests depend on remote fixtures.
+		// TODO(crbug/1184567): consider long term plan about interactions
+		// between remote fixtures and run hooks.
+		if len(bt.tests) > 0 && bt.tests[0].remoteFixt != "" {
+			bt.tests = append([]*categorizedTests{{remoteFixt: "", tests: nil}}, bt.tests...)
+		}
 		for _, fixtTests := range bt.tests {
 			remoteFixt := fixtTests.remoteFixt
 			tests := fixtTests.tests

@@ -47,6 +47,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "22741ada_843e3da6",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/check/forbidden_imports.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2021-03-08T06:58:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "aebd669b_9aa00e34",
+      "range": {
+        "startLine": 41,
+        "startChar": 1,
+        "endLine": 41,
+        "endChar": 48
+      },
+      "revId": "7e56b50eb229be17df591ce9051069fcf5309297",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "7f0242eb_9c859203",
@@ -60,6 +84,30 @@
       "writtenOn": "2021-03-03T05:31:04Z",
       "side": 1,
       "message": "Mind adding valid imports as well, e.g. local -\u003e local, local -\u003e common?",
+      "range": {
+        "startLine": 37,
+        "startChar": 1,
+        "endLine": 37,
+        "endChar": 29
+      },
+      "revId": "7e56b50eb229be17df591ce9051069fcf5309297",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f1d4d870_52d4ac27",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/check/forbidden_imports_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2021-03-08T06:58:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7f0242eb_9c859203",
       "range": {
         "startLine": 37,
         "startChar": 1,

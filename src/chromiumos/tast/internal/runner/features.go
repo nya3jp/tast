@@ -643,3 +643,39 @@ func findAMDSOC(parsed *lscpuResult) (device.Config_SOC, error) {
 	}
 	return device.Config_SOC_UNSPECIFIED, errors.Errorf("unknown AMD model: %s", model)
 }
+
+// findDiskSize detects the size of the storage device from "lsblk -J -b" output in bytes.
+// When there are multiple disks, returns the size of the largest one.
+func findDiskSize(jsonData []byte) (int64, error) {
+	type blockDevices struct {
+		Name      string `json:"name"`
+		Removable string `json:"rm"`
+		Size      string `json:"size"`
+		Type      string `json:"type"`
+	}
+	type root struct {
+		BlockDevices []blockDevices `json:"blockdevices"`
+	}
+	var r root
+	if err := json.Unmarshal(jsonData, &r); err != nil {
+		return 0, err
+	}
+	var maxSize int64
+	var found bool
+	for _, x := range r.BlockDevices {
+		if x.Type == "disk" && x.Removable == "0" && !strings.HasPrefix(x.Name, "zram") {
+			s, err := strconv.ParseInt(x.Size, 10, 64)
+			if err != nil {
+				return 0, err
+			}
+			found = true
+			if s > maxSize {
+				maxSize = s
+			}
+		}
+	}
+	if !found {
+		return 0, errors.New("no disk device found")
+	}
+	return maxSize, nil
+}

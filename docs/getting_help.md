@@ -35,12 +35,12 @@ components:
 
 *   [tast-users]: General discussion about writing and running tests.
 *   [tast-reviewers]: (Googler only) Alias of [Tast reviewers](code_reviews.md).
-*   [chromeos-velocity]: (Googler only) Group of engineers working on Tast core
+*   [tast-core]: (Googler only) Group of engineers working on Tast core
     framework development.
 
-[tast-users]: https://groups.google.com/a/chromium.org/forum/#!forum/tast-users
-[tast-reviewers]: https://groups.google.com/a/google.com/forum/#!forum/tast-reviewers
-[chromeos-velocity]: https://groups.google.com/a/google.com/forum/#!forum/chromeos-velocity
+[tast-users]: https://groups.google.com/a/chromium.org/g/tast-users
+[tast-reviewers]: https://groups.google.com/a/google.com/g/tast-reviewers/about
+[tast-core]: https://groups.google.com/a/google.com/g/tast-core/about
 
 ## Core team meeting notes (Googler only)
 

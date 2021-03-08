@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "59d110cb_1ccf580b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2021-03-08T14:05:45Z",
+      "side": 1,
+      "message": "Let me send this change early. I will add unit tests.\n",
+      "revId": "a6e36e15793e50bd5dc1028e6be9f88d4c88d79a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

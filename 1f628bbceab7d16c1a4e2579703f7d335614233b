@@ -33,6 +33,23 @@
       "message": "threlkeld@ ping",
       "revId": "1f628bbceab7d16c1a4e2579703f7d335614233b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c2ae6550_444e30d4",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1113991
+      },
+      "writtenOn": "2021-03-09T17:11:00Z",
+      "side": 1,
+      "message": "Reviewers ping.",
+      "revId": "1f628bbceab7d16c1a4e2579703f7d335614233b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

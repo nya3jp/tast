@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3ed1fb22_dc341f56",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2021-03-09T08:37:04Z",
+      "side": 1,
+      "message": "PTAL. I\u0027d like to confirm that unit tests are not needed.",
+      "revId": "5dd73b70283b4e54813fef4f18afaf073e06f932",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

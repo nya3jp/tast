@@ -374,6 +374,38 @@ Meta tests should be a subset of mainline critical tests.
 			},
 		},
 	},
+	{
+		Name:     "parallels_mainline",
+		Contacts: []string{"parallels-cros@google.com"},
+		Desc: `Functional tests that must be run on devices licensed for Parallels
+boot-up testing. Otherwise the same as group:mainline.`,
+		Subattrs: []*attr{
+			{
+				Name: "informational",
+				Desc: `Indicates that failures can be ignored.`,
+			},
+		},
+	},
+	{
+		Name:     "parallels_crosbolt",
+		Contacts: []string{"crosbolt-eng@google.com"},
+		Desc: `Performance tests that must be run on devices licensed for
+Parallels boot-up testing. Otherwise the same as group:crosbolt.`,
+		Subattrs: []*attr{
+			{
+				Name: "parallels_crosbolt_perbuild",
+				Desc: `Indicates that this test should run for every Chrome OS build.`,
+			},
+			{
+				Name: "parallels_crosbolt_nightly",
+				Desc: `Indicates that this test should run nightly.`,
+			},
+			{
+				Name: "parallels_crosbolt_weekly",
+				Desc: `Indicates that this test should run weekly.`,
+			},
+		},
+	},
 }
 
 // validGroupMap is the name-keyed map of validGroups.

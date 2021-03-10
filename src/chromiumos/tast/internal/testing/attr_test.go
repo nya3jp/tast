@@ -159,12 +159,13 @@ func TestModifyAttrsForCompat(t *testing.T) {
 
 func TestExtraAttributes(t *testing.T) {
 	for _, g := range validGroups {
-		// The mainline group is exceptional because it is the most common group.
-		if g.Name == "mainline" {
-			continue
-		}
 		prefix := g.Name + "_"
 		for _, a := range g.Subattrs {
+			// informational is an attribute that is allowed across multiple groups
+			// to allow standardisation of test demotion operations by oncall.
+			if a.Name == "informational" {
+				continue
+			}
 			if !strings.HasPrefix(a.Name, prefix) {
 				t.Errorf("Group %q has a subattribute %q but it should have the prefix %q", g.Name, a.Name, prefix)
 			}

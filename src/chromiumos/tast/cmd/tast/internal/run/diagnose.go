@@ -14,18 +14,10 @@ import (
 	"time"
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
+	"chromiumos/tast/internal/linuxssh"
 	"chromiumos/tast/internal/testingutil"
 	"chromiumos/tast/ssh"
 )
-
-// readBootID reads the current boot_id at hst.
-func readBootID(ctx context.Context, hst *ssh.Conn) (string, error) {
-	out, err := hst.Command("cat", "/proc/sys/kernel/random/boot_id").Output(ctx)
-	if err != nil {
-		return "", err
-	}
-	return strings.TrimSpace(string(out)), nil
-}
 
 // diagnoseSSHDrop diagnoses a SSH connection drop during local test runs
 // and returns a diagnosis message. Files useful for diagnosis might be saved
@@ -47,7 +39,7 @@ func diagnoseSSHDrop(ctx context.Context, cfg *config.Config, state *config.Stat
 	}
 
 	// Compare boot_id to see if the target rebooted.
-	bootID, err := readBootID(ctx, hst)
+	bootID, err := linuxssh.ReadBootID(ctx, hst)
 	if err != nil {
 		return fmt.Sprint("failed to diagnose: failed to read boot_id: ", err)
 	}

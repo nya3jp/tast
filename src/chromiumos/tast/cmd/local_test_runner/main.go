@@ -140,7 +140,7 @@ func main() {
 			// Also metrics consent needs TPM (crbug.com/1035197).
 			"metrics_consent":       "chrome_internal && !mocktpm && !tast_vm",
 			"microcode":             "!betty && !tast_vm",
-			"ml_benchmark":          "ml_benchmark_drivers",
+			"ml_benchmark_drivers":  "ml_benchmark_drivers",
 			"ml_service":            "ml_service",
 			"mosys":                 "!betty && !tast_vm",
 			"nacl":                  "nacl",

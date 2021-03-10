@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e71fcde5_a543c6f8",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2021-03-10T00:52:33Z",
+      "side": 1,
+      "message": "Assigning to nya@ for review because of email context.\n\nI considered adding only one group for Parallels as you mentioned, but was concerned it may confuse oncall if they want to demote the tests to informational.\n\nTest described in TEST\u003d was run with this CL present:\nhttps://chrome-internal-review.googlesource.com/c/chromeos/platform/tast-tests-private/+/3672804\n\nCorresponding CL to update autotest control files with be forthcoming.",
+      "revId": "fa7405a4298d50ee274cd68e3cfad04057a1723e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

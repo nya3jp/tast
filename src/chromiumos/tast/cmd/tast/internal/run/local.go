@@ -160,10 +160,10 @@ type localTestsCategorizer func([]*testing.EntityInfo) ([]*bundleTests, error)
 // newLocalTestsCategorizer creates a function which categorizes given local
 // tests by the bundle name and the remote fixture name tests depend on.
 // It computes by listing all the fixtures in the bundles designated by cfg.
-func newLocalTestsCategorizer(ctx context.Context, cfg *config.Config, state *config.State) (localTestsCategorizer, error) {
+func newLocalTestsCategorizer(ctx context.Context, cfg *config.Config, hst *ssh.Conn) (localTestsCategorizer, error) {
 	var localFixts runner.ListFixturesResult
 	if err := runTestRunnerCommand(
-		localRunnerCommand(ctx, cfg, state.Hst), &runner.Args{
+		localRunnerCommand(ctx, cfg, hst), &runner.Args{
 			Mode: runner.ListFixturesMode,
 			ListFixtures: &runner.ListFixturesArgs{
 				BundleGlob: cfg.LocalBundleGlob(),
@@ -431,7 +431,7 @@ func runLocalTests(ctx context.Context, cfg *config.Config, state *config.State)
 	ctx, st := timing.Start(ctx, "run_local_tests")
 	defer st.End()
 
-	_, err := connectToTarget(ctx, cfg, state)
+	hst, err := connectToTarget(ctx, cfg, state)
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed to connect to %s", cfg.Target)
 	}
@@ -446,7 +446,7 @@ func runLocalTests(ctx context.Context, cfg *config.Config, state *config.State)
 		}
 	}()
 
-	categorize, err := newLocalTestsCategorizer(ctx, cfg, state)
+	categorize, err := newLocalTestsCategorizer(ctx, cfg, hst)
 	if err != nil {
 		return nil, err
 	}
@@ -628,7 +628,7 @@ func runLocalTestsOnce(ctx context.Context, cfg *config.Config, state *config.St
 		return moveFromHost(ctx, cfg, hst, src, dst)
 	}
 	df := func(ctx context.Context, outDir string) string {
-		return diagnoseLocalRunError(ctx, cfg, state, outDir)
+		return diagnoseLocalRunError(ctx, cfg, state, hst, outDir)
 	}
 
 	ctx, cancel := context.WithCancel(ctx)
@@ -696,11 +696,11 @@ func startEphemeralDevserverForLocalTests(ctx context.Context, hst *ssh.Conn, cf
 // diagnoseLocalRunError is used to attempt to diagnose the cause of an error encountered
 // while running local tests. It returns a string that can be returned by a diagnoseRunErrorFunc.
 // Files useful for diagnosis might be saved under outDir.
-func diagnoseLocalRunError(ctx context.Context, cfg *config.Config, state *config.State, outDir string) string {
-	if state.Hst == nil || ctxutil.DeadlineBefore(ctx, time.Now().Add(sshPingTimeout)) {
+func diagnoseLocalRunError(ctx context.Context, cfg *config.Config, state *config.State, hst *ssh.Conn, outDir string) string {
+	if ctxutil.DeadlineBefore(ctx, time.Now().Add(sshPingTimeout)) {
 		return ""
 	}
-	if err := state.Hst.Ping(ctx, sshPingTimeout); err == nil {
+	if err := hst.Ping(ctx, sshPingTimeout); err == nil {
 		return ""
 	}
 	return "Lost SSH connection: " + diagnoseSSHDrop(ctx, cfg, state, outDir)

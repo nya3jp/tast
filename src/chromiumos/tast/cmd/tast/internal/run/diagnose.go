@@ -37,15 +37,17 @@ func diagnoseSSHDrop(ctx context.Context, cfg *config.Config, state *config.Stat
 
 	cfg.Logger.Log("Reconnecting to diagnose lost SSH connection")
 	const reconnectTimeout = time.Minute
+	var hst *ssh.Conn
 	if err := testingutil.Poll(ctx, func(ctx context.Context) error {
-		_, err := connectToTarget(ctx, cfg, state)
+		var err error
+		hst, err = connectToTarget(ctx, cfg, state)
 		return err
 	}, &testingutil.PollOptions{Timeout: reconnectTimeout}); err != nil {
 		return fmt.Sprint("target did not come back: ", err)
 	}
 
 	// Compare boot_id to see if the target rebooted.
-	bootID, err := readBootID(ctx, state.Hst)
+	bootID, err := readBootID(ctx, hst)
 	if err != nil {
 		return fmt.Sprint("failed to diagnose: failed to read boot_id: ", err)
 	}
@@ -55,7 +57,7 @@ func diagnoseSSHDrop(ctx context.Context, cfg *config.Config, state *config.Stat
 	}
 
 	// Target rebooted.
-	return diagnoseReboot(ctx, cfg, state, outDir)
+	return diagnoseReboot(ctx, cfg, state, hst, outDir)
 }
 
 var (
@@ -77,13 +79,13 @@ var (
 // diagnoseReboot diagnoses the target reboot during local test runs
 // and returns a diagnosis message. Files useful for diagnosis might be saved
 // under outDir.
-func diagnoseReboot(ctx context.Context, cfg *config.Config, state *config.State, outDir string) string {
+func diagnoseReboot(ctx context.Context, cfg *config.Config, state *config.State, hst *ssh.Conn, outDir string) string {
 	// Read the unified system log just before the reboot.
 	denseBootID := strings.Replace(state.InitBootID, "-", "", -1)
-	out, err := state.Hst.Command("croslog", "--quiet", "--boot="+denseBootID, "--lines=1000").Output(ctx)
+	out, err := hst.Command("croslog", "--quiet", "--boot="+denseBootID, "--lines=1000").Output(ctx)
 	if err != nil {
 		cfg.Logger.Log("Failed to execute croslog command: ", err)
-		out, err = state.Hst.Command("journalctl", "--quiet", "--boot="+denseBootID, "--lines=1000").Output(ctx)
+		out, err = hst.Command("journalctl", "--quiet", "--boot="+denseBootID, "--lines=1000").Output(ctx)
 		if err != nil {
 			cfg.Logger.Log("Failed to execute journalctl command: ", err)
 		} else {
@@ -101,9 +103,9 @@ func diagnoseReboot(ctx context.Context, cfg *config.Config, state *config.State
 
 	// Read console-ramoops. Its path varies by systems, and it might not exist
 	// for normal reboots.
-	out, err = state.Hst.Command("cat", "/sys/fs/pstore/console-ramoops-0").Output(ctx)
+	out, err = hst.Command("cat", "/sys/fs/pstore/console-ramoops-0").Output(ctx)
 	if err != nil {
-		out, err = state.Hst.Command("cat", "/sys/fs/pstore/console-ramoops").Output(ctx)
+		out, err = hst.Command("cat", "/sys/fs/pstore/console-ramoops").Output(ctx)
 		if err != nil {
 			cfg.Logger.Log("console-ramoops not found")
 		}

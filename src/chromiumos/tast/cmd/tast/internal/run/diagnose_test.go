@@ -13,6 +13,7 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 
+	"chromiumos/tast/internal/linuxssh"
 	"chromiumos/tast/testutil"
 )
 
@@ -41,12 +42,12 @@ func TestReadBootID(t *testing.T) {
 		t.Fatal("connectToTarget failed: ", err)
 	}
 
-	b, err := readBootID(context.Background(), hst)
+	b, err := linuxssh.ReadBootID(context.Background(), hst)
 	if err != nil {
-		t.Fatal("readBootID failed: ", err)
+		t.Fatal("ReadBootID failed: ", err)
 	}
 	if b != defaultBootID {
-		t.Errorf("readBootID returned %q; want %q", b, defaultBootID)
+		t.Errorf("ReadBootID returned %q; want %q", b, defaultBootID)
 	}
 }
 

@@ -24,6 +24,7 @@ import (
 	"chromiumos/tast/ctxutil"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/bundle"
+	"chromiumos/tast/internal/linuxssh"
 	"chromiumos/tast/internal/planner"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/rpc"
@@ -84,7 +85,7 @@ func connectToTarget(ctx context.Context, cfg *config.Config, state *config.Stat
 	}
 
 	if state.InitBootID == "" {
-		if state.InitBootID, err = readBootID(ctx, state.Hst); err != nil {
+		if state.InitBootID, err = linuxssh.ReadBootID(ctx, state.Hst); err != nil {
 			return nil, err
 		}
 	}

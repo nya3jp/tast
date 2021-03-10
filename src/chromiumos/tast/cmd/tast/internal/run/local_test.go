@@ -602,12 +602,13 @@ func TestLocalDataFiles(t *gotesting.T) {
 	}
 
 	// getDataFilePaths should list the tests and return the files needed by them.
-	if _, err := connectToTarget(context.Background(), &td.cfg, &td.state); err != nil {
+	hst, err := connectToTarget(context.Background(), &td.cfg, &td.state)
+	if err != nil {
 		t.Fatal(err)
 	}
 	td.cfg.BuildBundle = bundleName
 	td.cfg.Patterns = []string{pattern}
-	paths, err := getDataFilePaths(context.Background(), &td.cfg, &td.state, td.state.Hst)
+	paths, err := getDataFilePaths(context.Background(), &td.cfg, &td.state, hst)
 	if err != nil {
 		t.Fatal("getDataFilePaths() failed: ", err)
 	}
@@ -623,7 +624,7 @@ func TestLocalDataFiles(t *gotesting.T) {
 	}
 
 	// pushDataFiles should copy the required files to the DUT.
-	if err = pushDataFiles(context.Background(), &td.cfg, td.state.Hst,
+	if err = pushDataFiles(context.Background(), &td.cfg, hst,
 		filepath.Join(mockLocalDataDir, bundlePkg), paths); err != nil {
 		t.Fatal("pushDataFiles() failed: ", err)
 	}

@@ -39,6 +39,30 @@
       },
       "revId": "fa7405a4298d50ee274cd68e3cfad04057a1723e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a0f63938_3af549b9",
+        "filename": "src/chromiumos/tast/internal/testing/attr.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 378,
+      "author": {
+        "id": 1386944
+      },
+      "writtenOn": "2021-03-10T22:58:07Z",
+      "side": 1,
+      "message": "You remember well. I\u0027ve updated the test to allow this case to pass, but let me know if you disagree with using \u0027informational\u0027 across multiple groups. My main reason was to ensure oncall did not need to learn about a different attribute to effect a test demotion.",
+      "parentUuid": "81152057_b07559f0",
+      "range": {
+        "startLine": 378,
+        "startChar": 4,
+        "endLine": 378,
+        "endChar": 26
+      },
+      "revId": "fa7405a4298d50ee274cd68e3cfad04057a1723e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

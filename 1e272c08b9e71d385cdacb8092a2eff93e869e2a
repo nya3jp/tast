@@ -16,6 +16,115 @@
       "message": "PTAL",
       "revId": "1e272c08b9e71d385cdacb8092a2eff93e869e2a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "efac08f7_fa07eb8d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 14
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-03-10T10:13:29Z",
+      "side": 1,
+      "message": "Thanks for writing a nice codelab! I have only a few minor comments.\n",
+      "revId": "1e272c08b9e71d385cdacb8092a2eff93e869e2a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "08253e7e_3ca6a891",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 14
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-03-10T10:13:29Z",
+      "side": 1,
+      "message": "nit: reboot the DUT",
+      "range": {
+        "startLine": 16,
+        "startChar": 9,
+        "endLine": 16,
+        "endChar": 16
+      },
+      "revId": "1e272c08b9e71d385cdacb8092a2eff93e869e2a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "674962ac_536590ba",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 14
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-03-10T10:13:29Z",
+      "side": 1,
+      "message": "Do we need these backslashes?",
+      "range": {
+        "startLine": 16,
+        "startChar": 57,
+        "endLine": 16,
+        "endChar": 58
+      },
+      "revId": "1e272c08b9e71d385cdacb8092a2eff93e869e2a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "81f984ef_b038d6be",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 14
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-03-10T10:13:29Z",
+      "side": 1,
+      "message": "It would be nice to mention that users may be able to use remote fixtures to avoid writing remote tests.",
+      "range": {
+        "startLine": 22,
+        "startChar": 0,
+        "endLine": 22,
+        "endChar": 41
+      },
+      "revId": "1e272c08b9e71d385cdacb8092a2eff93e869e2a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bb0848e1_a49df137",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 14
+      },
+      "lineNbr": 153,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-03-10T10:13:29Z",
+      "side": 1,
+      "message": "Can you use os.Readlink instead of running an external command?\nhttps://pkg.go.dev/os#Readlink",
+      "range": {
+        "startLine": 149,
+        "startChar": 0,
+        "endLine": 153,
+        "endChar": 42
+      },
+      "revId": "1e272c08b9e71d385cdacb8092a2eff93e869e2a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

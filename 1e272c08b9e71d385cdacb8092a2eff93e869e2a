@@ -35,6 +35,23 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "4d193a5d_267a06af",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 14
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1411065
+      },
+      "writtenOn": "2021-03-10T12:22:27Z",
+      "side": 1,
+      "message": "Thanks for the comments.",
+      "revId": "1e272c08b9e71d385cdacb8092a2eff93e869e2a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "08253e7e_3ca6a891",
@@ -81,6 +98,54 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "bcdb591e_57e49123",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 14
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1411065
+      },
+      "writtenOn": "2021-03-10T12:22:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "08253e7e_3ca6a891",
+      "range": {
+        "startLine": 16,
+        "startChar": 9,
+        "endLine": 16,
+        "endChar": 16
+      },
+      "revId": "1e272c08b9e71d385cdacb8092a2eff93e869e2a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "505c3c06_ac9a63ce",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 14
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1411065
+      },
+      "writtenOn": "2021-03-10T12:22:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "674962ac_536590ba",
+      "range": {
+        "startLine": 16,
+        "startChar": 57,
+        "endLine": 16,
+        "endChar": 58
+      },
+      "revId": "1e272c08b9e71d385cdacb8092a2eff93e869e2a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "81f984ef_b038d6be",
@@ -104,6 +169,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "bbfa4e82_e6430e4e",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 14
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1411065
+      },
+      "writtenOn": "2021-03-10T12:22:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "81f984ef_b038d6be",
+      "range": {
+        "startLine": 22,
+        "startChar": 0,
+        "endLine": 22,
+        "endChar": 41
+      },
+      "revId": "1e272c08b9e71d385cdacb8092a2eff93e869e2a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "bb0848e1_a49df137",
@@ -117,6 +206,30 @@
       "writtenOn": "2021-03-10T10:13:29Z",
       "side": 1,
       "message": "Can you use os.Readlink instead of running an external command?\nhttps://pkg.go.dev/os#Readlink",
+      "range": {
+        "startLine": 149,
+        "startChar": 0,
+        "endLine": 153,
+        "endChar": 42
+      },
+      "revId": "1e272c08b9e71d385cdacb8092a2eff93e869e2a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b437f8ae_dfff9d32",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 14
+      },
+      "lineNbr": 153,
+      "author": {
+        "id": 1411065
+      },
+      "writtenOn": "2021-03-10T12:22:27Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "bb0848e1_a49df137",
       "range": {
         "startLine": 149,
         "startChar": 0,

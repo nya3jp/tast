@@ -1,0 +1,182 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "acee8944_824df53a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 15
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2021-03-10T15:24:56Z",
+      "side": 1,
+      "message": "Thank you for writing this!",
+      "revId": "3c74deec6a42def7859236eac7b6d4a2f110e6a5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ff89ad29_acea68ad",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 15
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2021-03-10T15:24:56Z",
+      "side": 1,
+      "message": "huge nit: maybe \"e.g.\"? There will be some other cases, like resetting hardware, etc, I guess.",
+      "range": {
+        "startLine": 18,
+        "startChar": 14,
+        "endLine": 18,
+        "endChar": 18
+      },
+      "revId": "3c74deec6a42def7859236eac7b6d4a2f110e6a5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "08857092_64ecbd37",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 15
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2021-03-10T15:24:56Z",
+      "side": 1,
+      "message": "huge nit: s/  / /",
+      "range": {
+        "startLine": 24,
+        "startChar": 41,
+        "endLine": 24,
+        "endChar": 43
+      },
+      "revId": "3c74deec6a42def7859236eac7b6d4a2f110e6a5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "87070c2b_dd32d6f0",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 15
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2021-03-10T15:24:56Z",
+      "side": 1,
+      "message": "ditto?",
+      "range": {
+        "startLine": 30,
+        "startChar": 13,
+        "endLine": 30,
+        "endChar": 17
+      },
+      "revId": "3c74deec6a42def7859236eac7b6d4a2f110e6a5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f5216845_72b9393b",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 15
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2021-03-10T15:24:56Z",
+      "side": 1,
+      "message": "maybe \"signatures\"?",
+      "range": {
+        "startLine": 36,
+        "startChar": 16,
+        "endLine": 36,
+        "endChar": 23
+      },
+      "revId": "3c74deec6a42def7859236eac7b6d4a2f110e6a5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "355eacd4_ef5f0420",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 15
+      },
+      "lineNbr": 186,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2021-03-10T15:24:56Z",
+      "side": 1,
+      "message": "remote_tests?\n\nNit: Maybe nice to have an actual path than symlink.",
+      "range": {
+        "startLine": 186,
+        "startChar": 12,
+        "endLine": 186,
+        "endChar": 23
+      },
+      "revId": "3c74deec6a42def7859236eac7b6d4a2f110e6a5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "87718d93_71ccd48e",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 15
+      },
+      "lineNbr": 187,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2021-03-10T15:24:56Z",
+      "side": 1,
+      "message": "ditto.",
+      "range": {
+        "startLine": 187,
+        "startChar": 12,
+        "endLine": 187,
+        "endChar": 23
+      },
+      "revId": "3c74deec6a42def7859236eac7b6d4a2f110e6a5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5062078b_6bdc47f5",
+        "filename": "docs/codelab_4.md",
+        "patchSetId": 15
+      },
+      "lineNbr": 215,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2021-03-10T15:24:56Z",
+      "side": 1,
+      "message": "s/group://",
+      "range": {
+        "startLine": 215,
+        "startChar": 44,
+        "endLine": 215,
+        "endChar": 50
+      },
+      "revId": "3c74deec6a42def7859236eac7b6d4a2f110e6a5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

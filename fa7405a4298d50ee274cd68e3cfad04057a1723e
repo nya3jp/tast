@@ -16,6 +16,29 @@
       "message": "Assigning to nya@ for review because of email context.\n\nI considered adding only one group for Parallels as you mentioned, but was concerned it may confuse oncall if they want to demote the tests to informational.\n\nTest described in TEST\u003d was run with this CL present:\nhttps://chrome-internal-review.googlesource.com/c/chromeos/platform/tast-tests-private/+/3672804\n\nCorresponding CL to update autotest control files with be forthcoming.",
       "revId": "fa7405a4298d50ee274cd68e3cfad04057a1723e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "81152057_b07559f0",
+        "filename": "src/chromiumos/tast/internal/testing/attr.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 378,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-03-10T10:38:11Z",
+      "side": 1,
+      "message": "I remember there is a unit test that ensures that subattribute names have a group name as a suffix. Does it pass?",
+      "range": {
+        "startLine": 378,
+        "startChar": 4,
+        "endLine": 378,
+        "endChar": 26
+      },
+      "revId": "fa7405a4298d50ee274cd68e3cfad04057a1723e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

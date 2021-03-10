@@ -117,7 +117,6 @@ func Run(ctx context.Context, cfg *config.Config, state *config.State) (status S
 	}
 	// initialize local and remote dev servers to user specified dev servers.
 	state.LocalDevservers = cfg.Devservers
-	state.RemoteDevservers = cfg.Devservers
 	if cfg.TLWServer == "" && cfg.UseEphemeralDevserver {
 		// Start an ephemeral devserver if necessary. Devservers are required in
 		// prepare (to download private bundles if -downloadprivatebundles if set)
@@ -132,7 +131,7 @@ func Run(ctx context.Context, cfg *config.Config, state *config.State) (status S
 			defer state.CloseEphemeralDevserver(ctx)
 		}
 		//  Start an ephemeral devserver remote tests.
-		if cfg.RunRemote && len(state.RemoteDevservers) == 0 {
+		if cfg.RunRemote {
 			es, err := startEphemeralDevserverForRemoteTests(ctx, cfg, state)
 			if err != nil {
 				return errorStatusf(cfg, subcommands.ExitFailure, "Failed to start ephemeral devserver for remote tests: %v", err), nil

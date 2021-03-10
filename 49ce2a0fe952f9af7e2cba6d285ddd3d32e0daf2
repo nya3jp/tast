@@ -39,6 +39,30 @@
       },
       "revId": "49ce2a0fe952f9af7e2cba6d285ddd3d32e0daf2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "990ed603_0f9428fb",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-03-10T02:43:04Z",
+      "side": 1,
+      "message": "Great catch. I have fixed code.",
+      "parentUuid": "423bc43b_c59615b4",
+      "range": {
+        "startLine": 120,
+        "startChar": 27,
+        "endLine": 120,
+        "endChar": 54
+      },
+      "revId": "49ce2a0fe952f9af7e2cba6d285ddd3d32e0daf2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

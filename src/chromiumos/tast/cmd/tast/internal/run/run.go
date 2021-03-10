@@ -117,22 +117,21 @@ func Run(ctx context.Context, cfg *config.Config, state *config.State) (status S
 	}
 	// initialize local and remote dev servers to user specified dev servers.
 	state.LocalDevservers = cfg.Devservers
-	state.RemoteDevservers = cfg.Devservers
-	if cfg.TLWServer == "" && cfg.UseEphemeralDevserver {
+	if cfg.TLWServer == "" {
 		// Start an ephemeral devserver if necessary. Devservers are required in
 		// prepare (to download private bundles if -downloadprivatebundles if set)
 		// and in local (to download external data files).
 		// TODO(crbug.com/982181): Once we move the logic to download external data
 		// files to the prepare, try restricting the lifetime of the ephemeral
 		// devserver.
-		if cfg.RunLocal && len(state.LocalDevservers) == 0 {
+		if cfg.RunLocal && len(state.LocalDevservers) == 0 && cfg.UseEphemeralDevserver {
 			if err := startEphemeralDevserverForLocalTests(ctx, hst, cfg, state); err != nil {
 				return errorStatusf(cfg, subcommands.ExitFailure, "Failed to start ephemeral devserver for local tests: %v", err), nil
 			}
 			defer state.CloseEphemeralDevserver(ctx)
 		}
-		//  Start an ephemeral devserver remote tests.
-		if cfg.RunRemote && len(state.RemoteDevservers) == 0 {
+		// Always start an ephemeral devserver for remote tests if TLWServer is not specified.
+		if cfg.RunRemote {
 			es, err := startEphemeralDevserverForRemoteTests(ctx, cfg, state)
 			if err != nil {
 				return errorStatusf(cfg, subcommands.ExitFailure, "Failed to start ephemeral devserver for remote tests: %v", err), nil

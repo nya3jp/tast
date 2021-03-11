@@ -97,6 +97,7 @@ The following software features are defined:
 *   `hostap_hwsim` - Whether system has the hostap project's test dependencies
     (scripts, daemons) installed and configured appropriately.
 *    igt  - Boards that can run igt-gpu-tools tests
+*   `iioservice` - Whether the device has CrOS IIO Service running.
 *   `iwlwifi_rescan` - Ability to remove/rescan WiFi PCI device when the
     hardware becomes non-responsive.
 *   `lacros` - Whether the system supports running [lacros].
@@ -122,6 +123,7 @@ The following software features are defined:
 *   `no_elm_hana_3_18` - Skip boards elm and hana with kernel-3.18 as they have
     issue performing WiFi scan. See [crbug.com/1015719](https://crbug.com/1015719).
 *   `no_eth_loss_on_reboot` - Board does not lose ethernet on reboot. Context: b/178529170
+*   `no_iioservice` - Build was not built with CrOS IIO Service.
 *   `no_msan` - Build was not built with Memory Sanitizer.
 *   `no_qemu` - For tests not for Chrome OS QEMU images.
 *   `no_symlink_mount` - Symlink mounting is disabled via the

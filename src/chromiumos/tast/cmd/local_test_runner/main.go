@@ -126,6 +126,7 @@ func main() {
 			"houdini64":               "houdini64",
 			"hostap_hwsim":            "wifi_hostap_test",
 			"igt":                     `("video_cards_amdgpu" || "video_cards_intel") && "kernel-5_4"`,
+			"iioservice":              "iioservice",
 			"iwlwifi_rescan":          "iwlwifi_rescan",
 			"lacros":                  "!arm && !arm64", // TODO(crbug.com/1144013): Expand this to include arm as well.
 			"lock_core_pattern":       `"kernel-3_10" || "kernel-3_14" || "kernel-3_18"`,
@@ -153,6 +154,7 @@ func main() {
 			"no_borealis_host":      "!borealis_host",
 			"no_elm_hana_3_18":      `!((elm || hana) && "kernel-3_18")`, // board elm/hana with kernel-3.18 has issue performing WiFi scan: https://crbug.com/1015719
 			"no_eth_loss_on_reboot": `!("board:jacuzzi")`,                // some devices (jacuzzi) may not enumerate eth on reboot b/178529170
+			"no_iioservice":         "!iioservice",
 			"no_kernel_upstream":    `!"kernel-upstream"`,
 			"no_msan":               "!msan",
 			"no_qemu":               "!betty && !tast_vm",

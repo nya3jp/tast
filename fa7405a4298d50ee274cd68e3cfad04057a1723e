@@ -63,6 +63,30 @@
       },
       "revId": "fa7405a4298d50ee274cd68e3cfad04057a1723e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a5690371_9062b958",
+        "filename": "src/chromiumos/tast/internal/testing/attr.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 378,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-03-11T09:46:18Z",
+      "side": 1,
+      "message": "It makes sense, SGTM to treat informational specially.",
+      "parentUuid": "a0f63938_3af549b9",
+      "range": {
+        "startLine": 378,
+        "startChar": 4,
+        "endLine": 378,
+        "endChar": 26
+      },
+      "revId": "fa7405a4298d50ee274cd68e3cfad04057a1723e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

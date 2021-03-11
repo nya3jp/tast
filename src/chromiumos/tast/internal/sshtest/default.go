@@ -25,28 +25,49 @@ func MustGenerateKeys() (userKey, hostKey *rsa.PrivateKey) {
 
 // TestData contains common data that can be used by tests that interact with an SSHServer.
 type TestData struct { // NOLINT
-	Srv         *SSHServer
-	UserKeyFile string
+	Srv           *SSHServer
+	UserKeyFile   string
+	additionalSrv []*SSHServer
+	userKey       *rsa.PrivateKey
+	hostKey       *rsa.PrivateKey
 }
 
 // NewTestData initializes and returns a TestData struct. Panics on error.
 func NewTestData(handler ExecHandler) *TestData {
-	userKey, hostKey := MustGenerateKeys()
-
-	d := TestData{}
+	userKey, hostKey = MustGenerateKeys()
 	var err error
-	if d.Srv, err = NewSSHServer(&userKey.PublicKey, hostKey, handler); err != nil {
+	srv, err := NewSSHServer(&userKey.PublicKey, hostKey, handler)
+	if err != nil {
 		panic(err)
 	}
-	if d.UserKeyFile, err = WriteKey(userKey); err != nil {
-		d.Srv.Close()
+	userKeyFile, err := WriteKey(userKey)
+	if err != nil {
+		srv.Close()
 		panic(err)
 	}
-	return &d
+	return &TestData{
+		Srv:         srv,
+		UserKeyFile: userKeyFile,
+		userKey:     userKey,
+		hostKey:     hostKey,
+	}
+}
+
+// NewAdditionalSSHServer create additional ssh server in TestData struct for testing.
+func (d *TestData) NewAdditionalSSHServer(handler ExecHandler) *SSHServer {
+	srv, err := NewSSHServer(&d.userKey.PublicKey, d.hostKey, handler)
+	if err != nil {
+		panic(err)
+	}
+	d.additionalSrv = append(d.additionalSrv, srv)
+	return srv
 }
 
 // Close stops the SSHServer and deletes the user key file.
 func (d *TestData) Close() {
 	d.Srv.Close()
+	for _, s := range d.additionalSrv {
+		s.Close()
+	}
 	os.Remove(d.UserKeyFile)
 }

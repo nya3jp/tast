@@ -123,9 +123,13 @@ func runRemoteTestsOnce(ctx context.Context, cfg *config.Config, state *config.S
 				HeartbeatInterval: heartbeatInterval,
 				DownloadMode:      cfg.DownloadMode,
 				BuildArtifactsURL: buildArtifactsURL,
+				CompanionDuts:     cfg.CompanionDuts,
 			},
 			BundleGlob: cfg.RemoteBundleGlob(),
 		},
+	}
+	for role, dut := range cfg.CompanionDuts {
+		args.RunTests.BundleArgs.RunFlags = append(args.RunTests.BundleArgs.RunFlags, fmt.Sprintf("-companiondut=%s,%s", role, dut))
 	}
 
 	// Backfill deprecated fields in case we're executing an old test runner.

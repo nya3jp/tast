@@ -316,6 +316,7 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 	var rd *testing.RemoteData
 	if bt == remoteBundle {
 		testcontext.Log(ctx, "Connecting to DUT")
+
 		dt, err := connectToTarget(ctx, args.RunTests.Target, args.RunTests.KeyFile, args.RunTests.KeyDir, cfg.beforeReboot)
 		if err != nil {
 			return command.NewStatusErrorf(statusError, "failed to connect to DUT: %v", err)
@@ -332,9 +333,25 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 				Target:   args.RunTests.Target,
 				RunFlags: args.RunTests.RunFlags,
 			},
-			RPCHint: testing.NewRPCHint(args.RunTests.LocalBundleDir, args.RunTests.TestVars),
-			DUT:     dt,
+			RPCHint:       testing.NewRPCHint(args.RunTests.LocalBundleDir, args.RunTests.TestVars),
+			DUT:           dt,
+			CompanionDuts: make(map[string]*dut.DUT),
 		}
+
+		for role, addr := range args.RunTests.CompanionDuts {
+			dut, err := connectToTarget(ctx, addr, args.RunTests.KeyFile, args.RunTests.KeyDir, cfg.beforeReboot)
+			if err != nil {
+				return command.NewStatusErrorf(statusError, "failed to connect to companion DUT %v: %v", addr, err)
+			}
+			rd.CompanionDuts[role] = dut
+		}
+		defer func() {
+			testcontext.Log(ctx, "Disconnecting from companion DUTs")
+			// It is okay to ignore the error since we've finished testing at this point.
+			for _, dut := range rd.CompanionDuts {
+				dut.Close(ctx)
+			}
+		}()
 	}
 
 	pcfg := &planner.Config{

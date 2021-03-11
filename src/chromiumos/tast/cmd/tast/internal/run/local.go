@@ -606,6 +606,7 @@ func runLocalTestsOnce(ctx context.Context, cfg *config.Config, state *config.St
 				DownloadMode:      cfg.DownloadMode,
 				StartFixtureName:  startFixtureName,
 				SetUpErrors:       setUpErrs,
+				CompanionDuts:     cfg.CompanionDuts,
 			},
 			BundleGlob: cfg.LocalBundleGlob(),
 			Devservers: state.LocalDevservers,

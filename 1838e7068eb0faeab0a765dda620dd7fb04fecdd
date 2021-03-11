@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "34640594_5a20fa3d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2021-03-11T07:38:26Z",
+      "side": 1,
+      "message": "oka: PTAL\n\ndependency CL: https://chromium-review.googlesource.com/c/chromiumos/overlays/chromiumos-overlay/+/2751629",
+      "revId": "1838e7068eb0faeab0a765dda620dd7fb04fecdd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

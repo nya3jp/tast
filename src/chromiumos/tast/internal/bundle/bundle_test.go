@@ -483,7 +483,7 @@ func TestRunRemoteData(t *gotesting.T) {
 			OutDir:         tmpDir,
 			DataDir:        tmpDir,
 			TastPath:       "/bogus/tast",
-			Target:         td.Srv.Addr().String(),
+			Target:         td.Srvs[0].Addr().String(),
 			KeyFile:        td.UserKeyFile,
 			RunFlags:       []string{"-flag1", "-flag2"},
 			LocalBundleDir: "/mock/local/bundles",
@@ -541,7 +541,7 @@ func TestRunCloudStorage(t *gotesting.T) {
 			OutDir:         tmpDir,
 			DataDir:        tmpDir,
 			TastPath:       "/bogus/tast",
-			Target:         td.Srv.Addr().String(),
+			Target:         td.Srvs[0].Addr().String(),
 			KeyFile:        td.UserKeyFile,
 			RunFlags:       []string{"-flag1", "-flag2"},
 			LocalBundleDir: "/mock/local/bundles",
@@ -625,7 +625,7 @@ func TestRunExternalDataFiles(t *gotesting.T) {
 		RunTests: &RunTestsArgs{
 			OutDir:  filepath.Join(tmpDir, "out"),
 			DataDir: dataDir,
-			Target:  td.Srv.Addr().String(),
+			Target:  td.Srvs[0].Addr().String(),
 			KeyFile: td.UserKeyFile,
 			FeatureArgs: FeatureArgs{
 				CheckSoftwareDeps:           true,

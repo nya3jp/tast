@@ -7,11 +7,9 @@ package run
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"io"
 	"net"
 	"path/filepath"
-	"reflect"
 	"strconv"
 	"strings"
 	gotesting "testing"
@@ -107,9 +105,8 @@ func TestRunEphemeralDevserver(t *gotesting.T) {
 		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.logbuf.String())
 	}
 
-	exp := []string{fmt.Sprintf("http://127.0.0.1:%d", localEphemeralDevserverPort)}
-	if !reflect.DeepEqual(td.state.LocalDevservers, exp) {
-		t.Errorf("Run() set devserver=%v; want %v", td.state.LocalDevservers, exp)
+	if len(td.state.LocalDevservers) != 1 {
+		t.Errorf("Run() set devserver=%v; want 1 entry", td.state.LocalDevservers)
 	}
 }
 

@@ -37,11 +37,6 @@ import (
 const (
 	defaultLocalRunnerWaitTimeout = 10 * time.Second // default timeout for waiting for local_test_runner to exit
 	heartbeatInterval             = time.Second      // interval for heartbeat messages
-
-	// localEphemeralDevserverPort is the TCP port number the ephemeral devserver listens on.
-	// Real devservers listen on port 8082, so we use a similar but different port
-	// to avoid conflict.
-	localEphemeralDevserverPort = 28082
 )
 
 type remoteFixtureService struct {
@@ -629,7 +624,7 @@ func formatBytes(bytes int64) string {
 func startEphemeralDevserverForLocalTests(ctx context.Context, hst *ssh.Conn, cfg *config.Config, state *config.State) error {
 	state.CloseEphemeralDevserver(ctx) // ignore errors; this may rely on a now-dead SSH connection
 
-	lis, err := hst.ListenTCP(&net.TCPAddr{IP: net.IPv4(127, 0, 0, 1), Port: localEphemeralDevserverPort})
+	lis, err := hst.ListenTCP(&net.TCPAddr{IP: net.IPv4(127, 0, 0, 1)})
 	if err != nil {
 		return fmt.Errorf("failed to reverse-forward a port: %v", err)
 	}

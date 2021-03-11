@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "fdc35d71_028e96f7",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-03-11T21:56:18Z",
+      "side": 1,
+      "message": "There is nothing wrong with the code. I just want discuss if there are a different approach. Right now, users has a lot struct needs to worry about. They need to know how ConnCache, Conn and ssh.Conn work. Would it be better to abstract all the operations in one struct, Conn?\n\nI just want a discussion with different approach. The code is okay as it.",
+      "revId": "44fe7e6e7ebd95bfec242185caf28930c44be4b5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9b3b329c_d9a81331",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/sys_info.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-03-11T21:56:18Z",
+      "side": 1,
+      "message": "Just for discussion purpose. Nothing wrong with the code. I just want to discuss a different approach: passing conn instead install SSHConn. At this moment, I think users need to get SSHConn from conn in order to do anything and the conn struct does not look too useful.",
+      "revId": "44fe7e6e7ebd95bfec242185caf28930c44be4b5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

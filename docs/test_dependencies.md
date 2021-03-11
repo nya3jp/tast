@@ -97,6 +97,7 @@ The following software features are defined:
 *   `hostap_hwsim` - Whether system has the hostap project's test dependencies
     (scripts, daemons) installed and configured appropriately.
 *    igt  - Boards that can run igt-gpu-tools tests
+*   `iioservice` - Whether the device has CrOS IIO Service running.
 *   `iwlwifi_rescan` - Ability to remove/rescan WiFi PCI device when the
     hardware becomes non-responsive.
 *   `lacros` - Whether the system supports running [lacros].

@@ -73,31 +73,35 @@ func runRemoteTestsOnce(ctx context.Context, cfg *config.Config, state *config.S
 		buildArtifactsURL = state.DefaultBuildArtifactsURL
 	}
 
+	runFlags := []string{
+		"-build=" + strconv.FormatBool(cfg.Build),
+		"-keyfile=" + cfg.KeyFile,
+		"-keydir=" + cfg.KeyDir,
+		"-remoterunner=" + cfg.RemoteRunner,
+		"-remotebundledir=" + cfg.RemoteBundleDir,
+		"-remotedatadir=" + cfg.RemoteDataDir,
+		"-localrunner=" + cfg.LocalRunner,
+		"-localbundledir=" + cfg.LocalBundleDir,
+		"-localdatadir=" + cfg.LocalDataDir,
+		"-devservers=" + strings.Join(cfg.Devservers, ","),
+		"-buildartifactsurl=" + buildArtifactsURL,
+	}
+	for role, dut := range cfg.CompanionDUTs {
+		runFlags = append(runFlags, fmt.Sprintf("-companiondut=%s:%s", role, dut))
+	}
 	args := runner.Args{
 		Mode: runner.RunTestsMode,
 		RunTests: &runner.RunTestsArgs{
 			BundleArgs: bundle.RunTestsArgs{
-				FeatureArgs: *featureArgsFromConfig(cfg, state),
-				Patterns:    patterns,
-				DataDir:     cfg.RemoteDataDir,
-				OutDir:      cfg.RemoteOutDir,
-				Target:      cfg.Target,
-				KeyFile:     cfg.KeyFile,
-				KeyDir:      cfg.KeyDir,
-				TastPath:    exe,
-				RunFlags: []string{
-					"-build=" + strconv.FormatBool(cfg.Build),
-					"-keyfile=" + cfg.KeyFile,
-					"-keydir=" + cfg.KeyDir,
-					"-remoterunner=" + cfg.RemoteRunner,
-					"-remotebundledir=" + cfg.RemoteBundleDir,
-					"-remotedatadir=" + cfg.RemoteDataDir,
-					"-localrunner=" + cfg.LocalRunner,
-					"-localbundledir=" + cfg.LocalBundleDir,
-					"-localdatadir=" + cfg.LocalDataDir,
-					"-devservers=" + strings.Join(cfg.Devservers, ","),
-					"-buildartifactsurl=" + buildArtifactsURL,
-				},
+				FeatureArgs:       *featureArgsFromConfig(cfg, state),
+				Patterns:          patterns,
+				DataDir:           cfg.RemoteDataDir,
+				OutDir:            cfg.RemoteOutDir,
+				Target:            cfg.Target,
+				KeyFile:           cfg.KeyFile,
+				KeyDir:            cfg.KeyDir,
+				TastPath:          exe,
+				RunFlags:          runFlags,
 				LocalBundleDir:    cfg.LocalBundleDir,
 				Devservers:        state.RemoteDevservers,
 				TLWServer:         cfg.TLWServer,
@@ -105,6 +109,7 @@ func runRemoteTestsOnce(ctx context.Context, cfg *config.Config, state *config.S
 				HeartbeatInterval: heartbeatInterval,
 				DownloadMode:      cfg.DownloadMode,
 				BuildArtifactsURL: buildArtifactsURL,
+				CompanionDUTs:     cfg.CompanionDUTs,
 			},
 			BundleGlob: cfg.RemoteBundleGlob(),
 		},

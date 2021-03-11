@@ -23,7 +23,6 @@ import (
 
 	"chromiumos/tast/cmd/tast/internal/build"
 	"chromiumos/tast/cmd/tast/internal/logging"
-	"chromiumos/tast/cmd/tast/internal/run/devserver"
 	"chromiumos/tast/cmd/tast/internal/run/jsonprotocol"
 	"chromiumos/tast/internal/command"
 	"chromiumos/tast/internal/dep"
@@ -143,7 +142,6 @@ type Config struct {
 type State struct {
 	TargetArch               string                     // architecture of target userland (usually given by "uname -m", but may be different)
 	StartedRun               bool                       // true if we got to the point where we started trying to execute tests
-	EphemeralDevserver       *devserver.Ephemeral       // cached devserver; may be nil
 	InitialSysInfo           *runner.SysInfoState       // initial state of system info (logs, crashes, etc.) on DUT before testing
 	SoftwareFeatures         *dep.SoftwareFeatures      // software features of the DUT
 	DeviceConfig             *device.Config             // hardware features of the DUT. Deprecated. Use HardwareFeatures instead.
@@ -151,8 +149,6 @@ type State struct {
 	OSVersion                string                     // Chrome OS Version
 	FailuresCount            int                        // the number of test failures so far.
 	TLWConn                  *grpc.ClientConn           // TLW gRPC service connection
-	TLWServerForDUT          string                     // TLW address accessible from DUT.
-	LocalDevservers          []string                   // list of devserver URLs used by local tests.
 	RemoteDevservers         []string                   // list of devserver URLs used by remote tests.
 	DefaultBuildArtifactsURL string                     // default URL of build artifacts.
 
@@ -268,20 +264,9 @@ func (c *Config) SetFlags(f *flag.FlagSet) {
 	}
 }
 
-// CloseEphemeralDevserver closes and resets s.EphemeralDevserver if non-nil.
-func (s *State) CloseEphemeralDevserver(ctx context.Context) error {
-	var err error
-	if s.EphemeralDevserver != nil {
-		err = s.EphemeralDevserver.Close(ctx)
-		s.EphemeralDevserver = nil
-	}
-	return err
-}
-
 // Close releases the config's resources (e.g. cached SSH connections).
 // It should be called at the completion of testing.
 func (s *State) Close(ctx context.Context) error {
-	s.CloseEphemeralDevserver(ctx) // ignore error; not meaningful if c.hst is dead
 	var firstErr error
 	if s.TLWConn != nil {
 		if err := s.TLWConn.Close(); err != nil && firstErr == nil {

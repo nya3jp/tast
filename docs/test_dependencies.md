@@ -131,6 +131,8 @@ The following software features are defined:
 *   `oci` - The ability to use the `run_oci` program to execute code within
     [OCI] containers.
 *   `ocr` - [Optical Character Recognition Service] daemon.
+*   `ondevice_handwriting` - On-device handwriting recognition support in `ml_service`.
+    This implies `ml_service`.
 *   `plugin_vm` - The ability to run Plugin VMs.
 *   `proprietary_codecs` - Indicates if Chrome supports proprietary video
     codecs (e.g. H.264). This is supported by Chrome official builds and Chromium

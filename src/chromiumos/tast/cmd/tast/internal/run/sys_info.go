@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
+	"chromiumos/tast/cmd/tast/internal/run/target"
 	"chromiumos/tast/internal/runner"
 	"chromiumos/tast/internal/timing"
 )
@@ -17,7 +18,7 @@ import (
 // getInitialSysInfo saves the initial state of the DUT's system information to cfg if
 // requested and if it hasn't already been saved. This is called before testing.
 // This updates state.InitialSysInfo, so calling twice won't work.
-func getInitialSysInfo(ctx context.Context, cfg *config.Config, state *config.State) error {
+func getInitialSysInfo(ctx context.Context, cfg *config.Config, state *config.State, cc *target.ConnCache) error {
 	if !cfg.CollectSysInfo {
 		return nil
 	}
@@ -29,7 +30,7 @@ func getInitialSysInfo(ctx context.Context, cfg *config.Config, state *config.St
 	defer st.End()
 	cfg.Logger.Debug("Getting initial system state")
 
-	hst, err := connectToTarget(ctx, cfg, state)
+	hst, err := cc.Conn(ctx)
 	if err != nil {
 		return err
 	}
@@ -62,7 +63,12 @@ func collectSysInfo(ctx context.Context, cfg *config.Config, state *config.State
 	defer st.End()
 	cfg.Logger.Debug("Collecting system information")
 
-	hst, err := connectToTarget(ctx, cfg, state)
+	// We have to create a new connection cache here since one created in
+	// Run is not available to WriteResults.
+	cc := target.NewConnCache(cfg)
+	defer cc.Close(ctx)
+
+	hst, err := cc.Conn(ctx)
 	if err != nil {
 		return err
 	}

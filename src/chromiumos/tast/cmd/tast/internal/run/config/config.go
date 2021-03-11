@@ -30,7 +30,6 @@ import (
 	"chromiumos/tast/internal/planner"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/runner"
-	"chromiumos/tast/ssh"
 )
 
 // Mode describes the action to perform.
@@ -144,8 +143,6 @@ type Config struct {
 type State struct {
 	TargetArch               string                     // architecture of target userland (usually given by "uname -m", but may be different)
 	StartedRun               bool                       // true if we got to the point where we started trying to execute tests
-	InitBootID               string                     // boot_id at the initial SSH connection
-	Hst                      *ssh.Conn                  // cached SSH connection to DUT; may be nil
 	EphemeralDevserver       *devserver.Ephemeral       // cached devserver; may be nil
 	InitialSysInfo           *runner.SysInfoState       // initial state of system info (logs, crashes, etc.) on DUT before testing
 	SoftwareFeatures         *dep.SoftwareFeatures      // software features of the DUT
@@ -286,12 +283,6 @@ func (s *State) CloseEphemeralDevserver(ctx context.Context) error {
 func (s *State) Close(ctx context.Context) error {
 	s.CloseEphemeralDevserver(ctx) // ignore error; not meaningful if c.hst is dead
 	var firstErr error
-	if s.Hst != nil {
-		if err := s.Hst.Close(ctx); err != nil && firstErr == nil {
-			firstErr = err
-		}
-		s.Hst = nil
-	}
 	if s.TLWConn != nil {
 		if err := s.TLWConn.Close(); err != nil && firstErr == nil {
 			firstErr = err

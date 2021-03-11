@@ -19,6 +19,7 @@ import (
 	"go.chromium.org/chromiumos/infra/proto/go/device"
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
+	"chromiumos/tast/cmd/tast/internal/run/target"
 	"chromiumos/tast/internal/bundle"
 	"chromiumos/tast/internal/dep"
 	"chromiumos/tast/internal/runner"
@@ -117,7 +118,11 @@ func TestGetDUTInfo(t *testing.T) {
 	}
 	td.cfg.CheckTestDeps = true
 	td.cfg.ExtraUSEFlags = []string{"use1", "use2"}
-	if err := getDUTInfo(context.Background(), &td.cfg, &td.state); err != nil {
+
+	cc := target.NewConnCache(&td.cfg)
+	defer cc.Close(context.Background())
+
+	if err := getDUTInfo(context.Background(), &td.cfg, &td.state, cc); err != nil {
 		t.Fatalf("getDUTInfo(%+v) failed: %v", td.cfg, err)
 	}
 	checkRunnerTestDepsArgs(t, &td.cfg, &td.state, true, avail, unavail, dc, hf)
@@ -143,7 +148,7 @@ func TestGetDUTInfo(t *testing.T) {
 	}
 
 	// The second call should fail, because it tries to update cfg's fields twice.
-	if err := getDUTInfo(context.Background(), &td.cfg, &td.state); err == nil {
+	if err := getDUTInfo(context.Background(), &td.cfg, &td.state, cc); err == nil {
 		t.Fatal("Calling getDUTInfo twice unexpectedly succeeded")
 	}
 }
@@ -170,7 +175,11 @@ func TestGetDUTInfoNoDeviceConfig(t *testing.T) {
 		return 0
 	}
 	td.cfg.CheckTestDeps = true
-	if err := getDUTInfo(context.Background(), &td.cfg, &td.state); err != nil {
+
+	cc := target.NewConnCache(&td.cfg)
+	defer cc.Close(context.Background())
+
+	if err := getDUTInfo(context.Background(), &td.cfg, &td.state, cc); err != nil {
 		t.Fatalf("getDUTInfo(%+v) failed: %v", td.cfg, err)
 	}
 
@@ -186,7 +195,11 @@ func TestGetDUTInfoNoCheckTestDeps(t *testing.T) {
 
 	// With "never", the runner shouldn't be called and dependencies shouldn't be checked.
 	td.cfg.CheckTestDeps = false
-	if err := getDUTInfo(context.Background(), &td.cfg, &td.state); err != nil {
+
+	cc := target.NewConnCache(&td.cfg)
+	defer cc.Close(context.Background())
+
+	if err := getDUTInfo(context.Background(), &td.cfg, &td.state, cc); err != nil {
 		t.Fatalf("getDUTInfo(%+v) failed: %v", td.cfg, err)
 	}
 	checkRunnerTestDepsArgs(t, &td.cfg, &td.state, false, nil, nil, nil, nil)
@@ -207,7 +220,11 @@ func TestGetSoftwareFeaturesNoFeatures(t *testing.T) {
 		return 0
 	}
 	td.cfg.CheckTestDeps = true
-	if err := getDUTInfo(context.Background(), &td.cfg, &td.state); err == nil {
+
+	cc := target.NewConnCache(&td.cfg)
+	defer cc.Close(context.Background())
+
+	if err := getDUTInfo(context.Background(), &td.cfg, &td.state, cc); err == nil {
 		t.Fatalf("getSoftwareFeatures(%+v) succeeded unexpectedly", td.cfg)
 	}
 }

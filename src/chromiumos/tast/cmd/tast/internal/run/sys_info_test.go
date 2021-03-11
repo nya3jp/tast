@@ -11,6 +11,7 @@ import (
 	"reflect"
 	"testing"
 
+	"chromiumos/tast/cmd/tast/internal/run/target"
 	"chromiumos/tast/internal/runner"
 )
 
@@ -36,7 +37,11 @@ func TestGetInitialSysInfo(t *testing.T) {
 
 	// Check that the expected command is sent to the DUT and that the returned state is decoded properly.
 	td.cfg.CollectSysInfo = true
-	if err := getInitialSysInfo(context.Background(), &td.cfg, &td.state); err != nil {
+
+	cc := target.NewConnCache(&td.cfg)
+	defer cc.Close(context.Background())
+
+	if err := getInitialSysInfo(context.Background(), &td.cfg, &td.state, cc); err != nil {
 		t.Fatalf("getInitialSysInfo(..., %+v) failed: %v", td.cfg, err)
 	}
 
@@ -47,7 +52,7 @@ func TestGetInitialSysInfo(t *testing.T) {
 	}
 
 	// The second call should fail, because it tried to update cfg's field twice.
-	if err := getInitialSysInfo(context.Background(), &td.cfg, &td.state); err == nil {
+	if err := getInitialSysInfo(context.Background(), &td.cfg, &td.state, cc); err == nil {
 		t.Fatal("Calling getInitialSysInfo twice unexpectedly succeeded")
 	}
 }

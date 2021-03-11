@@ -9,11 +9,12 @@ import (
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/jsonprotocol"
+	"chromiumos/tast/cmd/tast/internal/run/target"
 	"chromiumos/tast/errors"
 )
 
-func runTests(ctx context.Context, cfg *config.Config, state *config.State) ([]*jsonprotocol.EntityResult, error) {
-	if err := getDUTInfo(ctx, cfg, state); err != nil {
+func runTests(ctx context.Context, cfg *config.Config, state *config.State, cc *target.ConnCache) ([]*jsonprotocol.EntityResult, error) {
+	if err := getDUTInfo(ctx, cfg, state, cc); err != nil {
 		return nil, errors.Wrap(err, "failed to get DUT software features")
 	}
 
@@ -23,11 +24,11 @@ func runTests(ctx context.Context, cfg *config.Config, state *config.State) ([]*
 		cfg.Logger.Logf("Target version: %v", state.OSVersion)
 	}
 
-	if err := getInitialSysInfo(ctx, cfg, state); err != nil {
+	if err := getInitialSysInfo(ctx, cfg, state, cc); err != nil {
 		return nil, errors.Wrap(err, "failed to get initial sysinfo")
 	}
 
-	testsToRun, testsToSkip, testsNotInShard, err := findTestsForShard(ctx, cfg, state)
+	testsToRun, testsToSkip, testsNotInShard, err := findTestsForShard(ctx, cfg, state, cc)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to get test patterns for specified shard")
 	}
@@ -60,7 +61,7 @@ func runTests(ctx context.Context, cfg *config.Config, state *config.State) ([]*
 	state.StartedRun = true
 
 	if cfg.RunLocal {
-		lres, err := runLocalTests(ctx, cfg, state)
+		lres, err := runLocalTests(ctx, cfg, state, cc)
 		results = append(results, lres...)
 		if err != nil {
 			// TODO(derat): While test runners are always supposed to report success even if tests fail,
@@ -85,8 +86,8 @@ func runTests(ctx context.Context, cfg *config.Config, state *config.State) ([]*
 }
 
 // findTestsForShard finds the pattern for a subset of tests based on shard index.
-func findTestsForShard(ctx context.Context, cfg *config.Config, state *config.State) (testsToRun, testsToSkip, testsNotInShard []*jsonprotocol.EntityResult, err error) {
-	tests, testsToSkip, err := listRunnableTests(ctx, cfg, state)
+func findTestsForShard(ctx context.Context, cfg *config.Config, state *config.State, cc *target.ConnCache) (testsToRun, testsToSkip, testsNotInShard []*jsonprotocol.EntityResult, err error) {
+	tests, testsToSkip, err := listRunnableTests(ctx, cfg, state, cc)
 	if err != nil {
 		return nil, nil, nil, errors.Wrapf(err, "fails to find runnable tests for patterns %q", cfg.Patterns)
 	}
@@ -107,8 +108,8 @@ func findTestsForShard(ctx context.Context, cfg *config.Config, state *config.St
 }
 
 // listRunnableTests finds runnable tests that fit the cfg.Patterns.
-func listRunnableTests(ctx context.Context, cfg *config.Config, state *config.State) (testsToInclude, testsToSkip []*jsonprotocol.EntityResult, err error) {
-	tests, err := listAllTests(ctx, cfg, state)
+func listRunnableTests(ctx context.Context, cfg *config.Config, state *config.State, cc *target.ConnCache) (testsToInclude, testsToSkip []*jsonprotocol.EntityResult, err error) {
+	tests, err := listAllTests(ctx, cfg, state, cc)
 	if err != nil {
 		return nil, nil, errors.Wrapf(err, "cannot list tests for patterns %q", cfg.Patterns)
 	}

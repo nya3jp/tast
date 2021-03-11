@@ -30,14 +30,14 @@ func getInitialSysInfo(ctx context.Context, cfg *config.Config, state *config.St
 	defer st.End()
 	cfg.Logger.Debug("Getting initial system state")
 
-	hst, err := cc.Conn(ctx)
+	conn, err := cc.Conn(ctx)
 	if err != nil {
 		return err
 	}
 
 	var res runner.GetSysInfoStateResult
 	if err := runTestRunnerCommand(
-		localRunnerCommand(ctx, cfg, hst),
+		localRunnerCommand(ctx, cfg, conn.SSHConn()),
 		&runner.Args{Mode: runner.GetSysInfoStateMode},
 		&res,
 	); err != nil {
@@ -68,14 +68,14 @@ func collectSysInfo(ctx context.Context, cfg *config.Config, state *config.State
 	cc := target.NewConnCache(cfg)
 	defer cc.Close(ctx)
 
-	hst, err := cc.Conn(ctx)
+	conn, err := cc.Conn(ctx)
 	if err != nil {
 		return err
 	}
 
 	var res runner.CollectSysInfoResult
 	if err := runTestRunnerCommand(
-		localRunnerCommand(ctx, cfg, hst),
+		localRunnerCommand(ctx, cfg, conn.SSHConn()),
 		&runner.Args{
 			Mode:           runner.CollectSysInfoMode,
 			CollectSysInfo: &runner.CollectSysInfoArgs{InitialState: *state.InitialSysInfo},
@@ -90,12 +90,12 @@ func collectSysInfo(ctx context.Context, cfg *config.Config, state *config.State
 	}
 
 	if len(res.LogDir) != 0 {
-		if err := moveFromHost(ctx, cfg, hst, res.LogDir, filepath.Join(cfg.ResDir, systemLogsDir)); err != nil {
+		if err := moveFromHost(ctx, cfg, conn.SSHConn(), res.LogDir, filepath.Join(cfg.ResDir, systemLogsDir)); err != nil {
 			cfg.Logger.Log("Failed to copy system logs: ", err)
 		}
 	}
 	if len(res.CrashDir) != 0 {
-		if err := moveFromHost(ctx, cfg, hst, res.CrashDir, filepath.Join(cfg.ResDir, crashesDir)); err != nil {
+		if err := moveFromHost(ctx, cfg, conn.SSHConn(), res.CrashDir, filepath.Join(cfg.ResDir, crashesDir)); err != nil {
 			cfg.Logger.Log("Failed to copy crashes: ", err)
 		}
 	}

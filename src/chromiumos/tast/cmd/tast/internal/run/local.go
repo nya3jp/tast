@@ -383,7 +383,7 @@ func runLocalTests(ctx context.Context, cfg *config.Config, state *config.State,
 	ctx, st := timing.Start(ctx, "run_local_tests")
 	defer st.End()
 
-	hst, err := cc.Conn(ctx)
+	conn, err := cc.Conn(ctx)
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed to connect to %s", cfg.Target)
 	}
@@ -398,7 +398,7 @@ func runLocalTests(ctx context.Context, cfg *config.Config, state *config.State,
 		}
 	}()
 
-	categorize, err := newLocalTestsCategorizer(ctx, cfg, hst)
+	categorize, err := newLocalTestsCategorizer(ctx, cfg, conn.SSHConn())
 	if err != nil {
 		return nil, err
 	}
@@ -448,28 +448,28 @@ func runLocalTests(ctx context.Context, cfg *config.Config, state *config.State,
 // set up and tear down.
 // It can return partial results and an error when error happens mid-tests.
 func runLocalTestsForFixture(ctx context.Context, names []string, remoteFixt string, setUpErrs []string, cfg *config.Config, state *config.State, cc *target.ConnCache) ([]*jsonprotocol.EntityResult, error) {
-	hst, err := cc.Conn(ctx)
+	conn, err := cc.Conn(ctx)
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed to connect to %s; remoteFixt = %q", cfg.Target, remoteFixt)
 	}
 	beforeRetry := func(ctx context.Context) bool {
-		oldHst := hst
+		oldConn := conn
 		var connErr error
-		if hst, connErr = cc.Conn(ctx); connErr != nil {
+		if conn, connErr = cc.Conn(ctx); connErr != nil {
 			cfg.Logger.Log("Failed reconnecting to target: ", connErr)
 			return false
 		}
 		// The ephemeral devserver uses the SSH connection to the DUT, so a new devserver needs
 		// to be created if a new SSH connection was established.
-		if hst != oldHst {
+		if conn != oldConn {
 			if state.EphemeralDevserver != nil {
-				if devErr := startEphemeralDevserverForLocalTests(ctx, hst, cfg, state); devErr != nil {
+				if devErr := startEphemeralDevserverForLocalTests(ctx, conn.SSHConn(), cfg, state); devErr != nil {
 					cfg.Logger.Log("Failed restarting ephemeral devserver: ", connErr)
 					return false
 				}
 			}
 			if state.TLWServerForDUT != "" {
-				f, err := hst.ForwardRemoteToLocal("tcp", "127.0.0.1:0", cfg.TLWServer, func(e error) {
+				f, err := conn.SSHConn().ForwardRemoteToLocal("tcp", "127.0.0.1:0", cfg.TLWServer, func(e error) {
 					cfg.Logger.Logf("remote forwarder error: %s", e)
 				})
 				if err != nil {
@@ -482,7 +482,7 @@ func runLocalTestsForFixture(ctx context.Context, names []string, remoteFixt str
 		return true
 	}
 	runTests := func(ctx context.Context, patterns []string) (results []*jsonprotocol.EntityResult, unstarted []string, err error) {
-		return runLocalTestsOnce(ctx, cfg, state, cc, hst, patterns, remoteFixt, setUpErrs)
+		return runLocalTestsOnce(ctx, cfg, state, cc, conn.SSHConn(), patterns, remoteFixt, setUpErrs)
 	}
 
 	results, err := runTestsWithRetry(ctx, cfg, names, runTests, beforeRetry)

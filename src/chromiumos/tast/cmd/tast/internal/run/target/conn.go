@@ -22,8 +22,31 @@ const (
 	sshRetryInterval  = 5 * time.Second  // minimum time to wait between SSH connection attempts
 )
 
-func healthy(ctx context.Context, conn *ssh.Conn) error {
-	if err := conn.Ping(ctx, SSHPingTimeout); err != nil {
+// Conn holds an SSH connection to a target device, as well as several other
+// objects whose lifetime is tied to the connection such as SSH port forwards.
+type Conn struct {
+	sshConn *ssh.Conn
+}
+
+func newConn(ctx context.Context, cfg *config.Config) (*Conn, error) {
+	sshConn, err := dialSSH(ctx, cfg)
+	if err != nil {
+		return nil, err
+	}
+	return &Conn{sshConn: sshConn}, nil
+}
+
+func (c *Conn) close(ctx context.Context) error {
+	return c.sshConn.Close(ctx)
+}
+
+// SSHConn returns an SSH connection. A returned connection is owned by Conn
+// and should not be closed by users.
+func (c *Conn) SSHConn() *ssh.Conn { return c.sshConn }
+
+// Healthy checks health of the connection by sending an SSH ping packet.
+func (c *Conn) Healthy(ctx context.Context) error {
+	if err := c.sshConn.Ping(ctx, SSHPingTimeout); err != nil {
 		return errors.Wrap(err, "target connection is broken")
 	}
 	return nil

@@ -93,13 +93,13 @@ func Run(ctx context.Context, cfg *config.Config, state *config.State) (status S
 	cc := target.NewConnCache(cfg)
 	defer cc.Close(ctx)
 
-	hst, err := cc.Conn(ctx)
+	conn, err := cc.Conn(ctx)
 	if err != nil {
 		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to connect to %s: %v", cfg.Target, err), nil
 	}
 
 	if cfg.TLWServer != "" {
-		f, err := hst.ForwardRemoteToLocal("tcp", "127.0.0.1:0", cfg.TLWServer, func(e error) {
+		f, err := conn.SSHConn().ForwardRemoteToLocal("tcp", "127.0.0.1:0", cfg.TLWServer, func(e error) {
 			cfg.Logger.Logf("TLW server port forwarding failed: %v", e)
 		})
 		if err != nil {
@@ -129,7 +129,7 @@ func Run(ctx context.Context, cfg *config.Config, state *config.State) (status S
 		// files to the prepare, try restricting the lifetime of the ephemeral
 		// devserver.
 		if cfg.RunLocal && len(state.LocalDevservers) == 0 && cfg.UseEphemeralDevserver {
-			if err := startEphemeralDevserverForLocalTests(ctx, hst, cfg, state); err != nil {
+			if err := startEphemeralDevserverForLocalTests(ctx, conn.SSHConn(), cfg, state); err != nil {
 				return errorStatusf(cfg, subcommands.ExitFailure, "Failed to start ephemeral devserver for local tests: %v", err), nil
 			}
 			defer state.CloseEphemeralDevserver(ctx)
@@ -144,7 +144,7 @@ func Run(ctx context.Context, cfg *config.Config, state *config.State) (status S
 		}
 	}
 
-	if err := prepare(ctx, cfg, state, hst); err != nil {
+	if err := prepare(ctx, cfg, state, conn.SSHConn()); err != nil {
 		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to build and push: %v", err), nil
 	}
 

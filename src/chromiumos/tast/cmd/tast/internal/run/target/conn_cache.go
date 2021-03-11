@@ -9,7 +9,6 @@ import (
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/internal/linuxssh"
-	"chromiumos/tast/ssh"
 )
 
 // ConnCache manages a cached connection to the target.
@@ -18,7 +17,7 @@ import (
 type ConnCache struct {
 	cfg *config.Config
 
-	conn       *ssh.Conn
+	conn       *Conn
 	initBootID string
 }
 
@@ -32,7 +31,7 @@ func (cc *ConnCache) Close(ctx context.Context) error {
 	if cc.conn == nil {
 		return nil
 	}
-	err := cc.conn.Close(ctx)
+	err := cc.conn.close(ctx)
 	cc.conn = nil
 	return err
 }
@@ -51,10 +50,10 @@ func (cc *ConnCache) Close(ctx context.Context) error {
 //
 // A connection returned from this function is owned by ConnCache. Do not call
 // its Close.
-func (cc *ConnCache) Conn(ctx context.Context) (conn *ssh.Conn, retErr error) {
+func (cc *ConnCache) Conn(ctx context.Context) (conn *Conn, retErr error) {
 	// If we already have a connection, reuse it if it's still open.
 	if cc.conn != nil {
-		err := healthy(ctx, cc.conn)
+		err := cc.conn.Healthy(ctx)
 		if err == nil {
 			return cc.conn, nil
 		}
@@ -62,13 +61,13 @@ func (cc *ConnCache) Conn(ctx context.Context) (conn *ssh.Conn, retErr error) {
 		cc.Close(ctx)
 	}
 
-	conn, err := dialSSH(ctx, cc.cfg)
+	conn, err := newConn(ctx, cc.cfg)
 	if err != nil {
 		return nil, err
 	}
 	defer func() {
 		if retErr != nil {
-			conn.Close(ctx)
+			conn.close(ctx)
 		}
 	}()
 
@@ -76,7 +75,7 @@ func (cc *ConnCache) Conn(ctx context.Context) (conn *ssh.Conn, retErr error) {
 	// comparison later.
 	var bootID string
 	if cc.initBootID == "" {
-		bootID, err = linuxssh.ReadBootID(ctx, conn)
+		bootID, err = linuxssh.ReadBootID(ctx, conn.SSHConn())
 		if err != nil {
 			return nil, err
 		}

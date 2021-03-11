@@ -35,11 +35,11 @@ func listTests(ctx context.Context, cfg *config.Config, state *config.State, cc 
 func listAllTests(ctx context.Context, cfg *config.Config, state *config.State, cc *target.ConnCache) ([]*jsonprotocol.EntityResult, error) {
 	var tests []testing.EntityWithRunnabilityInfo
 	if cfg.RunLocal {
-		hst, err := cc.Conn(ctx)
+		conn, err := cc.Conn(ctx)
 		if err != nil {
 			return nil, err
 		}
-		localTests, err := listLocalTests(ctx, cfg, state, hst)
+		localTests, err := listLocalTests(ctx, cfg, state, conn.SSHConn())
 		if err != nil {
 			return nil, err
 		}

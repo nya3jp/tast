@@ -39,14 +39,14 @@ func getDUTInfo(ctx context.Context, cfg *config.Config, state *config.State, cc
 	defer st.End()
 	cfg.Logger.Debug("Getting DUT info")
 
-	hst, err := cc.Conn(ctx)
+	conn, err := cc.Conn(ctx)
 	if err != nil {
 		return err
 	}
 
 	var res runner.GetDUTInfoResult
 	if err := runTestRunnerCommand(
-		localRunnerCommand(ctx, cfg, hst),
+		localRunnerCommand(ctx, cfg, conn.SSHConn()),
 		&runner.Args{
 			Mode: runner.GetDUTInfoMode,
 			GetDUTInfo: &runner.GetDUTInfoArgs{

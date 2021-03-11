@@ -51,12 +51,12 @@ func TestListLocalTests(t *gotesting.T) {
 	cc := target.NewConnCache(&td.cfg)
 	defer cc.Close(context.Background())
 
-	hst, err := cc.Conn(context.Background())
+	conn, err := cc.Conn(context.Background())
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	results, err := listLocalTests(context.Background(), &td.cfg, &td.state, hst)
+	results, err := listLocalTests(context.Background(), &td.cfg, &td.state, conn.SSHConn())
 	if err != nil {
 		t.Error("Failed to list local tests: ", err)
 	}

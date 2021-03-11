@@ -41,12 +41,12 @@ func TestReadBootID(t *testing.T) {
 	cc := target.NewConnCache(&td.cfg)
 	defer cc.Close(context.Background())
 
-	hst, err := cc.Conn(context.Background())
+	conn, err := cc.Conn(context.Background())
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	b, err := linuxssh.ReadBootID(context.Background(), hst)
+	b, err := linuxssh.ReadBootID(context.Background(), conn.SSHConn())
 	if err != nil {
 		t.Fatal("ReadBootID failed: ", err)
 	}

@@ -30,17 +30,17 @@ func diagnoseSSHDrop(ctx context.Context, cfg *config.Config, cc *target.ConnCac
 
 	cfg.Logger.Log("Reconnecting to diagnose lost SSH connection")
 	const reconnectTimeout = time.Minute
-	var hst *ssh.Conn
+	var conn *target.Conn
 	if err := testingutil.Poll(ctx, func(ctx context.Context) error {
 		var err error
-		hst, err = cc.Conn(ctx)
+		conn, err = cc.Conn(ctx)
 		return err
 	}, &testingutil.PollOptions{Timeout: reconnectTimeout}); err != nil {
 		return fmt.Sprint("target did not come back: ", err)
 	}
 
 	// Compare boot_id to see if the target rebooted.
-	bootID, err := linuxssh.ReadBootID(ctx, hst)
+	bootID, err := linuxssh.ReadBootID(ctx, conn.SSHConn())
 	if err != nil {
 		return fmt.Sprint("failed to diagnose: failed to read boot_id: ", err)
 	}
@@ -50,7 +50,7 @@ func diagnoseSSHDrop(ctx context.Context, cfg *config.Config, cc *target.ConnCac
 	}
 
 	// Target rebooted.
-	return diagnoseReboot(ctx, cfg, cc, hst, outDir)
+	return diagnoseReboot(ctx, cfg, cc, conn.SSHConn(), outDir)
 }
 
 var (

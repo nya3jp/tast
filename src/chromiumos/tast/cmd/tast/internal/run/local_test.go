@@ -265,8 +265,6 @@ func newLocalTestData(t *gotesting.T, opts ...localTestDataOption) *localTestDat
 	}
 	td.cfg.HstCopyBasePath = td.hostDir
 
-	td.state.LocalDevservers = td.cfg.Devservers
-
 	toClose = nil
 	return &td
 }

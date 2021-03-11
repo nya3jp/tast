@@ -90,6 +90,9 @@ func TestRunEphemeralDevserver(t *gotesting.T) {
 	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
 		switch args.Mode {
 		case runner.RunTestsMode:
+			if len(args.RunTests.Devservers) != 1 {
+				t.Errorf("Devservers=%#v; want 1 entry", args.RunTests.Devservers)
+			}
 			mw := control.NewMessageWriter(stdout)
 			mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
 			mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
@@ -103,10 +106,6 @@ func TestRunEphemeralDevserver(t *gotesting.T) {
 
 	if status, _ := Run(context.Background(), &td.cfg, &td.state); status.ExitCode != subcommands.ExitSuccess {
 		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.logbuf.String())
-	}
-
-	if len(td.state.LocalDevservers) != 1 {
-		t.Errorf("Run() set devserver=%v; want 1 entry", td.state.LocalDevservers)
 	}
 }
 

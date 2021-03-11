@@ -50,6 +50,19 @@ func errorStatusf(cfg *config.Config, code subcommands.ExitStatus, format string
 	return Status{ExitCode: code, ErrorMsg: msg}
 }
 
+func resolveHost(cfg *config.Config, target string) string {
+	alternateTarget, err := sshconfig.ResolveHost(target)
+	if err != nil {
+		cfg.Logger.Logf("Error in reading SSH configuaration files: %v", err)
+		return target
+	}
+	if alternateTarget != target {
+		cfg.Logger.Logf("Using target %v instead of %v to connect according to SSH configuration files",
+			alternateTarget, target)
+	}
+	return alternateTarget
+}
+
 // Run executes or lists tests per cfg and returns the results.
 // Messages are logged using cfg.Logger as the run progresses.
 // If an error is encountered, status.ErrorMsg will be logged to cfg.Logger before returning,
@@ -64,13 +77,9 @@ func Run(ctx context.Context, cfg *config.Config, state *config.State) (status S
 	}()
 
 	// Check if host name needs to be resolved.
-	alternateTarget, err := sshconfig.ResolveHost(cfg.Target)
-	if err != nil {
-		cfg.Logger.Logf("Error in reading SSH configuaration files: %v", err)
-	} else if alternateTarget != cfg.Target {
-		cfg.Logger.Logf("Use target %v instead of %v to connect according to SSH configuration files",
-			alternateTarget, cfg.Target)
-		cfg.Target = alternateTarget // Change targets according to SSH configuration files.
+	cfg.Target = resolveHost(cfg, cfg.Target)
+	for role, dut := range cfg.CompanionDUTs {
+		cfg.CompanionDUTs[role] = resolveHost(cfg, dut)
 	}
 
 	if err := connectToTLW(ctx, cfg, state); err != nil {

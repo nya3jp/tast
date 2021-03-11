@@ -110,6 +110,8 @@ type RemoteData struct {
 	RPCHint *RPCHint
 	// DUT is an SSH connection shared among remote entities.
 	DUT *dut.DUT
+	// CompanionDUTs are other DUTs that can be used in remote test.
+	CompanionDUTs map[string]*dut.DUT
 }
 
 // Meta contains information about how the "tast" process used to initiate testing was run.
@@ -401,6 +403,19 @@ func (s *globalMixin) DUT() *dut.DUT {
 		panic("DUT unavailable (running non-remote?)")
 	}
 	return s.entityRoot.cfg.RemoteData.DUT
+}
+
+// CompanionDUT returns a shared SSH connection for a companion DUT.
+// It can only be called by remote entities.
+func (s *globalMixin) CompanionDUT(role string) *dut.DUT {
+	if s.entityRoot.cfg.RemoteData == nil {
+		panic("Companion DUT unavailable (running non-remote?)")
+	}
+	dut, ok := s.entityRoot.cfg.RemoteData.CompanionDUTs[role]
+	if !ok {
+		panic(fmt.Sprintf("Companion DUT %q cannot be found", role))
+	}
+	return dut
 }
 
 // Log formats its arguments using default formatting and logs them.

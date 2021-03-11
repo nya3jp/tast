@@ -103,6 +103,7 @@ type Config struct {
 	DownloadMode           planner.DownloadMode // strategy to download external data files
 	TLWServer              string               // address of the TLW server if available
 	ReportsServer          string               // address of Reports server if available
+	CompanionDuts          map[string]string    // role to address mapping of companion DUTs.
 
 	LocalRunner    string // path to executable that runs local test bundles
 	LocalBundleDir string // dir where packaged local test bundles are installed
@@ -171,10 +172,11 @@ type State struct {
 // trunkDir is the path to the Chrome OS checkout (within the chroot).
 func NewConfig(mode Mode, tastDir, trunkDir string) *Config {
 	return &Config{
-		Mode:     mode,
-		TastDir:  tastDir,
-		TrunkDir: trunkDir,
-		TestVars: make(map[string]string),
+		Mode:          mode,
+		TastDir:       tastDir,
+		TrunkDir:      trunkDir,
+		TestVars:      make(map[string]string),
+		CompanionDuts: make(map[string]string),
 	}
 }
 
@@ -268,6 +270,16 @@ func (c *Config) SetFlags(f *flag.FlagSet) {
 		td := command.NewEnumFlag(vals, func(v int) { c.Proxy = ProxyMode(v) }, "env")
 		desc := fmt.Sprintf("proxy settings used by the DUT (%s; default %q)", td.QuotedValues(), td.Default())
 		f.Var(td, "proxy", desc)
+
+		compDuts := command.RepeatedFlag(func(roleToDut string) error {
+			parts := strings.SplitN(roleToDut, ",", 2)
+			if len(parts) != 2 {
+				return errors.New(`want "role,address"`)
+			}
+			c.CompanionDuts[parts[0]] = parts[1]
+			return nil
+		})
+		f.Var(&compDuts, "companiondut", `role To companion DUT, as "role,address" (can be repeated)`)
 	}
 }
 

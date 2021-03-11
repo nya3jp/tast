@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "160767a8_fc9fbd9e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-03-11T21:08:08Z",
+      "side": 1,
+      "message": "The code is just moving the implementation to a new package. I don\u0027t see any major difference. The code looks fine to me.",
+      "revId": "9423d2ca202796e84801d960fe1b3c180bf408ee",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

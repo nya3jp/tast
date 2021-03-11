@@ -98,17 +98,6 @@ func Run(ctx context.Context, cfg *config.Config, state *config.State) (status S
 		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to connect to %s: %v", cfg.Target, err), nil
 	}
 
-	if cfg.TLWServer != "" {
-		f, err := conn.SSHConn().ForwardRemoteToLocal("tcp", "127.0.0.1:0", cfg.TLWServer, func(e error) {
-			cfg.Logger.Logf("TLW server port forwarding failed: %v", e)
-		})
-		if err != nil {
-			return errorStatusf(cfg, subcommands.ExitFailure, "Failed to set up remote-to-local port forwarding for TLW server: %v", err), nil
-		}
-		defer f.Close()
-		state.TLWServerForDUT = f.ListenAddr().String()
-	}
-
 	if state.ReportsConn != nil {
 		cl := protocol.NewReportsClient(state.ReportsConn)
 		state.ReportsClient = cl
@@ -119,32 +108,17 @@ func Run(ctx context.Context, cfg *config.Config, state *config.State) (status S
 		defer strm.CloseAndRecv()
 		state.ReportsLogStream = strm
 	}
-	// initialize local and remote dev servers to user specified dev servers.
-	state.LocalDevservers = cfg.Devservers
-	if cfg.TLWServer == "" {
-		// Start an ephemeral devserver if necessary. Devservers are required in
-		// prepare (to download private bundles if -downloadprivatebundles if set)
-		// and in local (to download external data files).
-		// TODO(crbug.com/982181): Once we move the logic to download external data
-		// files to the prepare, try restricting the lifetime of the ephemeral
-		// devserver.
-		if cfg.RunLocal && len(state.LocalDevservers) == 0 && cfg.UseEphemeralDevserver {
-			if err := startEphemeralDevserverForLocalTests(ctx, conn.SSHConn(), cfg, state); err != nil {
-				return errorStatusf(cfg, subcommands.ExitFailure, "Failed to start ephemeral devserver for local tests: %v", err), nil
-			}
-			defer state.CloseEphemeralDevserver(ctx)
+
+	// Always start an ephemeral devserver for remote tests if TLWServer is not specified.
+	if cfg.TLWServer == "" && cfg.RunRemote {
+		es, err := startEphemeralDevserverForRemoteTests(ctx, cfg, state)
+		if err != nil {
+			return errorStatusf(cfg, subcommands.ExitFailure, "Failed to start ephemeral devserver for remote tests: %v", err), nil
 		}
-		// Always start an ephemeral devserver for remote tests if TLWServer is not specified.
-		if cfg.RunRemote {
-			es, err := startEphemeralDevserverForRemoteTests(ctx, cfg, state)
-			if err != nil {
-				return errorStatusf(cfg, subcommands.ExitFailure, "Failed to start ephemeral devserver for remote tests: %v", err), nil
-			}
-			defer es.Close(ctx)
-		}
+		defer es.Close(ctx)
 	}
 
-	if err := prepare(ctx, cfg, state, conn.SSHConn()); err != nil {
+	if err := prepare(ctx, cfg, state, conn); err != nil {
 		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to build and push: %v", err), nil
 	}
 
@@ -228,7 +202,7 @@ func resolveTarget(ctx context.Context, cfg *config.Config, state *config.State)
 // prepare prepares the DUT for running tests. When instructed in cfg, it builds
 // and pushes the local test runner and test bundles, and downloads private test
 // bundles.
-func prepare(ctx context.Context, cfg *config.Config, state *config.State, hst *ssh.Conn) error {
+func prepare(ctx context.Context, cfg *config.Config, state *config.State, conn *target.Conn) error {
 	if cfg.Build && cfg.DownloadPrivateBundles {
 		// Usually it makes no sense to download prebuilt private bundles when
 		// building and pushing a fresh test bundle.
@@ -238,17 +212,17 @@ func prepare(ctx context.Context, cfg *config.Config, state *config.State, hst *
 	written := false
 
 	if cfg.Build {
-		if err := buildAll(ctx, cfg, state, hst); err != nil {
+		if err := buildAll(ctx, cfg, state, conn.SSHConn()); err != nil {
 			return err
 		}
-		if err := pushAll(ctx, cfg, state, hst); err != nil {
+		if err := pushAll(ctx, cfg, state, conn.SSHConn()); err != nil {
 			return err
 		}
 		written = true
 	}
 
 	if cfg.DownloadPrivateBundles {
-		if err := downloadPrivateBundles(ctx, cfg, state, hst); err != nil {
+		if err := downloadPrivateBundles(ctx, cfg, conn); err != nil {
 			return fmt.Errorf("failed downloading private bundles: %v", err)
 		}
 		written = true
@@ -260,7 +234,7 @@ func prepare(ctx context.Context, cfg *config.Config, state *config.State, hst *
 	// even if the DUT crashes later. This is important especially when we push local_test_runner
 	// because it can appear as zero-byte binary after a crash and subsequent sysinfo phase fails.
 	if written {
-		if err := hst.Command("sync").Run(ctx); err != nil {
+		if err := conn.SSHConn().Command("sync").Run(ctx); err != nil {
 			return fmt.Errorf("failed to sync disk writes: %v", err)
 		}
 	}
@@ -510,18 +484,28 @@ func pushDataFiles(ctx context.Context, cfg *config.Config, hst *ssh.Conn, destD
 // An archive contains Go executables of local test bundles and their associated
 // internal data files and external data link files. Note that remote test
 // bundles are not included in archives.
-func downloadPrivateBundles(ctx context.Context, cfg *config.Config, state *config.State, hst *ssh.Conn) error {
+func downloadPrivateBundles(ctx context.Context, cfg *config.Config, conn *target.Conn) error {
 	ctx, st := timing.Start(ctx, "download_private_bundles")
 	defer st.End()
 
+	localDevservers := append([]string(nil), cfg.Devservers...)
+	if url, ok := conn.Services().EphemeralDevserverURL(); ok {
+		localDevservers = append(localDevservers, url)
+	}
+
+	var tlwServer string
+	if addr, ok := conn.Services().TLWAddr(); ok {
+		tlwServer = addr.String()
+	}
+
 	var res runner.DownloadPrivateBundlesResult
 	if err := runTestRunnerCommand(
-		localRunnerCommand(ctx, cfg, hst),
+		localRunnerCommand(ctx, cfg, conn.SSHConn()),
 		&runner.Args{
 			Mode: runner.DownloadPrivateBundlesMode,
 			DownloadPrivateBundles: &runner.DownloadPrivateBundlesArgs{
-				Devservers:        state.LocalDevservers,
-				TLWServer:         state.TLWServerForDUT,
+				Devservers:        localDevservers,
+				TLWServer:         tlwServer,
 				DUTName:           cfg.Target,
 				BuildArtifactsURL: cfg.BuildArtifactsURL,
 			},

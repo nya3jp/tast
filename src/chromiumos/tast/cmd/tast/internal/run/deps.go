@@ -14,6 +14,7 @@ import (
 	"github.com/golang/protobuf/proto"
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
+	"chromiumos/tast/cmd/tast/internal/run/target"
 	"chromiumos/tast/internal/bundle"
 	"chromiumos/tast/internal/runner"
 	"chromiumos/tast/internal/timing"
@@ -26,7 +27,7 @@ const deviceConfigFile = "device-config.txt"
 // getDUTInfo executes local_test_runner on the DUT to get a list of DUT info.
 // The info is used to check tests' dependencies.
 // This updates state.SoftwareFeatures, thus calling this twice won't work.
-func getDUTInfo(ctx context.Context, cfg *config.Config, state *config.State) error {
+func getDUTInfo(ctx context.Context, cfg *config.Config, state *config.State, cc *target.ConnCache) error {
 	if !cfg.CheckTestDeps {
 		return nil
 	}
@@ -38,7 +39,7 @@ func getDUTInfo(ctx context.Context, cfg *config.Config, state *config.State) er
 	defer st.End()
 	cfg.Logger.Debug("Getting DUT info")
 
-	hst, err := connectToTarget(ctx, cfg, state)
+	hst, err := cc.Conn(ctx)
 	if err != nil {
 		return err
 	}

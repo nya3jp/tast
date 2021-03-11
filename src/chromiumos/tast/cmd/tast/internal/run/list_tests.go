@@ -9,6 +9,7 @@ import (
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/jsonprotocol"
+	"chromiumos/tast/cmd/tast/internal/run/target"
 	"chromiumos/tast/internal/bundle"
 	"chromiumos/tast/internal/runner"
 	"chromiumos/tast/internal/testing"
@@ -16,11 +17,11 @@ import (
 )
 
 // listTests returns the whole tests to run.
-func listTests(ctx context.Context, cfg *config.Config, state *config.State) ([]*jsonprotocol.EntityResult, error) {
-	if err := getDUTInfo(ctx, cfg, state); err != nil {
+func listTests(ctx context.Context, cfg *config.Config, state *config.State, cc *target.ConnCache) ([]*jsonprotocol.EntityResult, error) {
+	if err := getDUTInfo(ctx, cfg, state, cc); err != nil {
 		return nil, err
 	}
-	testsToRun, testsToSkip, _, err := findTestsForShard(ctx, cfg, state)
+	testsToRun, testsToSkip, _, err := findTestsForShard(ctx, cfg, state, cc)
 	if err != nil {
 		return nil, err
 	}
@@ -31,10 +32,10 @@ func listTests(ctx context.Context, cfg *config.Config, state *config.State) ([]
 }
 
 // listAllTests returns the whole tests whether they will be skipped or not..
-func listAllTests(ctx context.Context, cfg *config.Config, state *config.State) ([]*jsonprotocol.EntityResult, error) {
+func listAllTests(ctx context.Context, cfg *config.Config, state *config.State, cc *target.ConnCache) ([]*jsonprotocol.EntityResult, error) {
 	var tests []testing.EntityWithRunnabilityInfo
 	if cfg.RunLocal {
-		hst, err := connectToTarget(ctx, cfg, state)
+		hst, err := cc.Conn(ctx)
 		if err != nil {
 			return nil, err
 		}

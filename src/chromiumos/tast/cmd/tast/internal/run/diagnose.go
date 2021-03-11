@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
+	"chromiumos/tast/cmd/tast/internal/run/target"
 	"chromiumos/tast/internal/linuxssh"
 	"chromiumos/tast/internal/testingutil"
 	"chromiumos/tast/ssh"
@@ -22,8 +23,8 @@ import (
 // diagnoseSSHDrop diagnoses a SSH connection drop during local test runs
 // and returns a diagnosis message. Files useful for diagnosis might be saved
 // under outDir.
-func diagnoseSSHDrop(ctx context.Context, cfg *config.Config, state *config.State, outDir string) string {
-	if state.InitBootID == "" {
+func diagnoseSSHDrop(ctx context.Context, cfg *config.Config, cc *target.ConnCache, outDir string) string {
+	if cc.InitBootID() == "" {
 		return "failed to diagnose: initial boot_id is not available"
 	}
 
@@ -32,7 +33,7 @@ func diagnoseSSHDrop(ctx context.Context, cfg *config.Config, state *config.Stat
 	var hst *ssh.Conn
 	if err := testingutil.Poll(ctx, func(ctx context.Context) error {
 		var err error
-		hst, err = connectToTarget(ctx, cfg, state)
+		hst, err = cc.Conn(ctx)
 		return err
 	}, &testingutil.PollOptions{Timeout: reconnectTimeout}); err != nil {
 		return fmt.Sprint("target did not come back: ", err)
@@ -44,12 +45,12 @@ func diagnoseSSHDrop(ctx context.Context, cfg *config.Config, state *config.Stat
 		return fmt.Sprint("failed to diagnose: failed to read boot_id: ", err)
 	}
 
-	if bootID == state.InitBootID {
+	if bootID == cc.InitBootID() {
 		return "target did not reboot, probably network issue"
 	}
 
 	// Target rebooted.
-	return diagnoseReboot(ctx, cfg, state, hst, outDir)
+	return diagnoseReboot(ctx, cfg, cc, hst, outDir)
 }
 
 var (
@@ -71,9 +72,9 @@ var (
 // diagnoseReboot diagnoses the target reboot during local test runs
 // and returns a diagnosis message. Files useful for diagnosis might be saved
 // under outDir.
-func diagnoseReboot(ctx context.Context, cfg *config.Config, state *config.State, hst *ssh.Conn, outDir string) string {
+func diagnoseReboot(ctx context.Context, cfg *config.Config, cc *target.ConnCache, hst *ssh.Conn, outDir string) string {
 	// Read the unified system log just before the reboot.
-	denseBootID := strings.Replace(state.InitBootID, "-", "", -1)
+	denseBootID := strings.Replace(cc.InitBootID(), "-", "", -1)
 	out, err := hst.Command("croslog", "--quiet", "--boot="+denseBootID, "--lines=1000").Output(ctx)
 	if err != nil {
 		cfg.Logger.Log("Failed to execute croslog command: ", err)

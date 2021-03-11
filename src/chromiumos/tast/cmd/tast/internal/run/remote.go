@@ -118,7 +118,7 @@ func runRemoteTestsOnce(ctx context.Context, cfg *config.Config, state *config.S
 				},
 				LocalBundleDir:    cfg.LocalBundleDir,
 				Devservers:        state.RemoteDevservers,
-				TLWServer:         state.TLWServerForDUT,
+				TLWServer:         state.TLWServerForDUT, // BUG
 				DUTName:           cfg.Target,
 				HeartbeatInterval: heartbeatInterval,
 				DownloadMode:      cfg.DownloadMode,

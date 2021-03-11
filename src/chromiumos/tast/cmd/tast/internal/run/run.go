@@ -24,6 +24,7 @@ import (
 	"chromiumos/tast/cmd/tast/internal/build"
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/jsonprotocol"
+	"chromiumos/tast/cmd/tast/internal/run/target"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/runner"
 	"chromiumos/tast/internal/sshconfig"
@@ -89,7 +90,10 @@ func Run(ctx context.Context, cfg *config.Config, state *config.State) (status S
 		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to resolve target: %v", err), nil
 	}
 
-	hst, err := connectToTarget(ctx, cfg, state)
+	cc := target.NewConnCache(cfg)
+	defer cc.Close(ctx)
+
+	hst, err := cc.Conn(ctx)
 	if err != nil {
 		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to connect to %s: %v", cfg.Target, err), nil
 	}
@@ -146,13 +150,13 @@ func Run(ctx context.Context, cfg *config.Config, state *config.State) (status S
 
 	switch cfg.Mode {
 	case config.ListTestsMode:
-		results, err := listTests(ctx, cfg, state)
+		results, err := listTests(ctx, cfg, state, cc)
 		if err != nil {
 			return errorStatusf(cfg, subcommands.ExitFailure, "Failed to list tests: %v", err), nil
 		}
 		return successStatus, results
 	case config.RunTestsMode:
-		results, err := runTests(ctx, cfg, state)
+		results, err := runTests(ctx, cfg, state, cc)
 		if err != nil {
 			return errorStatusf(cfg, subcommands.ExitFailure, "Failed to run tests: %v", err), results
 		}

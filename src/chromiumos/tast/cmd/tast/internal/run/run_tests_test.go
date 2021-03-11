@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
+	"chromiumos/tast/cmd/tast/internal/run/target"
 	"chromiumos/tast/internal/control"
 	"chromiumos/tast/internal/dep"
 	"chromiumos/tast/internal/runner"
@@ -29,8 +30,12 @@ func TestRunTestsFailureBeforeRun(t *gotesting.T) {
 	// to run tests. local() shouldn't set StartedRun to true since we failed before then.
 	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) { return 1 }
 	td.cfg.CheckTestDeps = true
+
+	cc := target.NewConnCache(&td.cfg)
+	defer cc.Close(context.Background())
+
 	var state config.State
-	if _, err := runTests(context.Background(), &td.cfg, &state); err == nil {
+	if _, err := runTests(context.Background(), &td.cfg, &state, cc); err == nil {
 		t.Errorf("runTests unexpectedly passed")
 	} else if state.StartedRun {
 		t.Error("runTests incorrectly reported that run was started after early failure")
@@ -65,7 +70,10 @@ func TestRunTestsGetDUTInfo(t *gotesting.T) {
 
 	td.cfg.CheckTestDeps = true
 
-	if _, err := runTests(context.Background(), &td.cfg, &td.state); err != nil {
+	cc := target.NewConnCache(&td.cfg)
+	defer cc.Close(context.Background())
+
+	if _, err := runTests(context.Background(), &td.cfg, &td.state, cc); err != nil {
 		t.Error("runTests failed: ", err)
 	}
 
@@ -99,7 +107,10 @@ func TestRunTestsGetInitialSysInfo(t *gotesting.T) {
 
 	td.cfg.CollectSysInfo = true
 
-	if _, err := runTests(context.Background(), &td.cfg, &td.state); err != nil {
+	cc := target.NewConnCache(&td.cfg)
+	defer cc.Close(context.Background())
+
+	if _, err := runTests(context.Background(), &td.cfg, &td.state, cc); err != nil {
 		t.Error("runTests failed: ", err)
 	}
 	if !called {
@@ -189,6 +200,9 @@ func TestRunTestsSkipTests(t *gotesting.T) {
 	td.cfg.TotalShards = 2
 	td.cfg.CheckTestDeps = true
 
+	cc := target.NewConnCache(&td.cfg)
+	defer cc.Close(context.Background())
+
 	expectedPassed := 5
 	expectedSkipped := len(tests) - 5
 	passed := 0
@@ -196,7 +210,7 @@ func TestRunTestsSkipTests(t *gotesting.T) {
 	for shardIndex := 0; shardIndex < td.cfg.TotalShards; shardIndex++ {
 		td.state.SoftwareFeatures = nil
 		td.cfg.ShardIndex = shardIndex
-		testResults, err := runTests(context.Background(), &td.cfg, &td.state)
+		testResults, err := runTests(context.Background(), &td.cfg, &td.state, cc)
 		if err != nil {
 			t.Fatal("Failed to run tests: ", err)
 		}
@@ -239,11 +253,15 @@ func TestFindPatternsForShard(t *gotesting.T) {
 	td.cfg.Patterns = []string{"*Test*"}
 	td.cfg.RunRemote = true
 	td.cfg.TotalShards = 3
+
+	cc := target.NewConnCache(&td.cfg)
+	defer cc.Close(context.Background())
+
 	processed := make(map[string]bool)
 	var state config.State
 	for shardIndex := 0; shardIndex < td.cfg.TotalShards; shardIndex++ {
 		td.cfg.ShardIndex = shardIndex
-		testsToRun, testsToSkip, testsNotInShard, err := findTestsForShard(context.Background(), &td.cfg, &state)
+		testsToRun, testsToSkip, testsNotInShard, err := findTestsForShard(context.Background(), &td.cfg, &state, cc)
 		if err != nil {
 			t.Fatal("Failed to find tests for shard: ", err)
 		}

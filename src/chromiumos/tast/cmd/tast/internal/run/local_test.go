@@ -24,6 +24,7 @@ import (
 	"chromiumos/tast/cmd/tast/internal/logging"
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/jsonprotocol"
+	"chromiumos/tast/cmd/tast/internal/run/target"
 	"chromiumos/tast/internal/bundle"
 	"chromiumos/tast/internal/command"
 	"chromiumos/tast/internal/control"
@@ -377,10 +378,13 @@ func TestLocalSuccess(t *gotesting.T) {
 		return 0
 	}
 
+	cc := target.NewConnCache(&td.cfg)
+	defer cc.Close(context.Background())
+
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second) // avoid test being blocked indefinitely
 	defer cancel()
 
-	if _, err := runLocalTests(ctx, &td.cfg, &td.state); err != nil {
+	if _, err := runLocalTests(ctx, &td.cfg, &td.state, cc); err != nil {
 		t.Errorf("runLocalTest failed: %v", err)
 	}
 }
@@ -435,7 +439,10 @@ func TestLocalProxy(t *gotesting.T) {
 		mockLocalRunner,
 	}, " ")
 
-	if _, err := runLocalTests(context.Background(), &td.cfg, &td.state); err != nil {
+	cc := target.NewConnCache(&td.cfg)
+	defer cc.Close(context.Background())
+
+	if _, err := runLocalTests(context.Background(), &td.cfg, &td.state, cc); err != nil {
 		t.Error("runLocalTests failed: ", err)
 	}
 }
@@ -474,7 +481,11 @@ func TestLocalCopyOutput(t *gotesting.T) {
 	td.cfg.TestsToRun = []*jsonprotocol.EntityResult{{EntityInfo: testing.EntityInfo{
 		Name: testName,
 	}}}
-	if _, err := runLocalTests(context.Background(), &td.cfg, &td.state); err != nil {
+
+	cc := target.NewConnCache(&td.cfg)
+	defer cc.Close(context.Background())
+
+	if _, err := runLocalTests(context.Background(), &td.cfg, &td.state, cc); err != nil {
 		t.Fatalf("runLocalTests failed: %v", err)
 	}
 
@@ -503,7 +514,10 @@ func disabledTestLocalExecFailure(t *gotesting.T) {
 		return 1
 	}
 
-	if _, err := runLocalTests(context.Background(), &td.cfg, &td.state); err == nil {
+	cc := target.NewConnCache(&td.cfg)
+	defer cc.Close(context.Background())
+
+	if _, err := runLocalTests(context.Background(), &td.cfg, &td.state, cc); err == nil {
 		t.Error("runLocalTests unexpectedly passed")
 	}
 	if !strings.Contains(td.logbuf.String(), msg) {
@@ -532,7 +546,11 @@ func TestLocalWaitTimeout(t *gotesting.T) {
 
 	// After setting a short wait timeout, an error should be reported.
 	td.cfg.LocalRunnerWaitTimeout = time.Millisecond
-	if _, err := runLocalTests(context.Background(), &td.cfg, &td.state); err == nil {
+
+	cc := target.NewConnCache(&td.cfg)
+	defer cc.Close(context.Background())
+
+	if _, err := runLocalTests(context.Background(), &td.cfg, &td.state, cc); err == nil {
 		t.Error("runLocalTests unexpectedly passed")
 	}
 }
@@ -601,11 +619,16 @@ func TestLocalDataFiles(t *gotesting.T) {
 		t.Fatal(err)
 	}
 
-	// getDataFilePaths should list the tests and return the files needed by them.
-	hst, err := connectToTarget(context.Background(), &td.cfg, &td.state)
+	// Connect to the target.
+	cc := target.NewConnCache(&td.cfg)
+	defer cc.Close(context.Background())
+
+	hst, err := cc.Conn(context.Background())
 	if err != nil {
 		t.Fatal(err)
 	}
+
+	// getDataFilePaths should list the tests and return the files needed by them.
 	td.cfg.BuildBundle = bundleName
 	td.cfg.Patterns = []string{pattern}
 	paths, err := getDataFilePaths(context.Background(), &td.cfg, &td.state, hst)
@@ -669,7 +692,11 @@ func TestLocalMaxFailures(t *gotesting.T) {
 	td.cfg.TestsToRun = []*jsonprotocol.EntityResult{{EntityInfo: testing.EntityInfo{Name: "pkg.Test"}}}
 	td.cfg.MaxTestFailures = 1
 	td.state.FailuresCount = 0
-	results, err := runLocalTests(context.Background(), &td.cfg, &td.state)
+
+	cc := target.NewConnCache(&td.cfg)
+	defer cc.Close(context.Background())
+
+	results, err := runLocalTests(context.Background(), &td.cfg, &td.state, cc)
 	if err == nil {
 		t.Errorf("runLocalTests() passed unexpectedly")
 	}
@@ -750,7 +777,10 @@ func TestFixturesDependency(t *gotesting.T) {
 		}},
 	}
 
-	_, err := runLocalTests(context.Background(), &td.cfg, &td.state)
+	cc := target.NewConnCache(&td.cfg)
+	defer cc.Close(context.Background())
+
+	_, err := runLocalTests(context.Background(), &td.cfg, &td.state, cc)
 	if err != nil {
 		t.Fatalf("runLocalTests(): %v", err)
 	}

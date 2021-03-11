@@ -12,6 +12,7 @@ import (
 	gotesting "testing"
 
 	"chromiumos/tast/cmd/tast/internal/run/jsonprotocol"
+	"chromiumos/tast/cmd/tast/internal/run/target"
 	"chromiumos/tast/internal/dep"
 	"chromiumos/tast/internal/runner"
 	"chromiumos/tast/internal/testing"
@@ -47,7 +48,10 @@ func TestListLocalTests(t *gotesting.T) {
 		return 0
 	}
 
-	hst, err := connectToTarget(context.Background(), &td.cfg, &td.state)
+	cc := target.NewConnCache(&td.cfg)
+	defer cc.Close(context.Background())
+
+	hst, err := cc.Conn(context.Background())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -136,7 +140,10 @@ func TestListTests(t *gotesting.T) {
 	td.cfg.TotalShards = 1
 	td.cfg.RunLocal = true
 
-	results, err := listTests(context.Background(), &td.cfg, &td.state)
+	cc := target.NewConnCache(&td.cfg)
+	defer cc.Close(context.Background())
+
+	results, err := listTests(context.Background(), &td.cfg, &td.state, cc)
 	if err != nil {
 		t.Error("Failed to list local tests: ", err)
 	}
@@ -182,9 +189,12 @@ func TestListTestsWithSharding(t *gotesting.T) {
 	td.cfg.TotalShards = 2
 	td.cfg.RunLocal = true
 
+	cc := target.NewConnCache(&td.cfg)
+	defer cc.Close(context.Background())
+
 	for i := 0; i < td.cfg.TotalShards; i++ {
 		td.cfg.ShardIndex = i
-		results, err := listTests(context.Background(), &td.cfg, &td.state)
+		results, err := listTests(context.Background(), &td.cfg, &td.state, cc)
 		if err != nil {
 			t.Error("Failed to list local tests: ", err)
 		}
@@ -237,9 +247,12 @@ func TestListTestsWithSkippedTests(t *gotesting.T) {
 	td.cfg.TotalShards = 2
 	td.cfg.RunLocal = true
 
+	cc := target.NewConnCache(&td.cfg)
+	defer cc.Close(context.Background())
+
 	// Shard 0 should include all skipped tests.
 	td.cfg.ShardIndex = 0
-	results, err := listTests(context.Background(), &td.cfg, &td.state)
+	results, err := listTests(context.Background(), &td.cfg, &td.state, cc)
 	if err != nil {
 		t.Error("Failed to list local tests: ", err)
 	}
@@ -253,7 +266,7 @@ func TestListTestsWithSkippedTests(t *gotesting.T) {
 
 	td.cfg.ShardIndex = 1
 	// Shard 1 should have only one test
-	results, err = listTests(context.Background(), &td.cfg, &td.state)
+	results, err = listTests(context.Background(), &td.cfg, &td.state, cc)
 	if err != nil {
 		t.Error("Failed to list local tests: ", err)
 	}
@@ -291,7 +304,10 @@ func TestListTestsGetDUTInfo(t *gotesting.T) {
 
 	td.cfg.CheckTestDeps = true
 
-	if _, err := listTests(context.Background(), &td.cfg, &td.state); err != nil {
+	cc := target.NewConnCache(&td.cfg)
+	defer cc.Close(context.Background())
+
+	if _, err := listTests(context.Background(), &td.cfg, &td.state, cc); err != nil {
 		t.Error("listTests failed: ", err)
 	}
 	if !called {

@@ -21,10 +21,10 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/devserver"
 	"chromiumos/tast/cmd/tast/internal/run/jsonprotocol"
+	"chromiumos/tast/cmd/tast/internal/run/target"
 	"chromiumos/tast/ctxutil"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/bundle"
-	"chromiumos/tast/internal/linuxssh"
 	"chromiumos/tast/internal/planner"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/rpc"
@@ -35,10 +35,6 @@ import (
 )
 
 const (
-	sshConnectTimeout = 10 * time.Second // timeout for establishing SSH connection to DUT
-	sshPingTimeout    = 5 * time.Second  // timeout for checking if SSH connection to DUT is open
-	sshRetryInterval  = 5 * time.Second  // minimum time to wait between SSH connection attempts
-
 	defaultLocalRunnerWaitTimeout = 10 * time.Second // default timeout for waiting for local_test_runner to exit
 	heartbeatInterval             = time.Second      // interval for heartbeat messages
 
@@ -47,51 +43,6 @@ const (
 	// to avoid conflict.
 	localEphemeralDevserverPort = 28082
 )
-
-// connectToTarget establishes an SSH connection to the target specified in cfg.
-// The connection will be cached in cfg and should not be closed by the caller.
-// If a connection is already established, it will be returned.
-func connectToTarget(ctx context.Context, cfg *config.Config, state *config.State) (*ssh.Conn, error) {
-	// If we already have a connection, reuse it if it's still open.
-	if state.Hst != nil {
-		if err := state.Hst.Ping(ctx, sshPingTimeout); err == nil {
-			return state.Hst, nil
-		}
-		state.Hst = nil
-	}
-
-	ctx, st := timing.Start(ctx, "connect")
-	defer st.End()
-	cfg.Logger.Logf("Connecting to %s", cfg.Target)
-
-	o := ssh.Options{
-		ConnectTimeout:       sshConnectTimeout,
-		ConnectRetries:       cfg.SSHRetries,
-		ConnectRetryInterval: sshRetryInterval,
-		KeyFile:              cfg.KeyFile,
-		KeyDir:               cfg.KeyDir,
-		WarnFunc:             func(s string) { cfg.Logger.Log(s) },
-	}
-	if err := ssh.ParseTarget(cfg.Target, &o); err != nil {
-		return nil, err
-	}
-
-	ctx, cancel := context.WithTimeout(ctx, sshConnectTimeout*time.Duration(cfg.SSHRetries+1))
-	defer cancel()
-
-	var err error
-	if state.Hst, err = ssh.New(ctx, &o); err != nil {
-		return nil, err
-	}
-
-	if state.InitBootID == "" {
-		if state.InitBootID, err = linuxssh.ReadBootID(ctx, state.Hst); err != nil {
-			return nil, err
-		}
-	}
-
-	return state.Hst, nil
-}
 
 type remoteFixtureService struct {
 	rpcCL *rpc.Client
@@ -428,11 +379,11 @@ func runFixtureAndTests(ctx context.Context, cfg *config.Config, state *config.S
 // runLocalTests executes tests as described by cfg on hst and returns the
 // results. It is only used for RunTestsMode.
 // It can return partial results and an error when error happens mid-tests.
-func runLocalTests(ctx context.Context, cfg *config.Config, state *config.State) (res []*jsonprotocol.EntityResult, retErr error) {
+func runLocalTests(ctx context.Context, cfg *config.Config, state *config.State, cc *target.ConnCache) (res []*jsonprotocol.EntityResult, retErr error) {
 	ctx, st := timing.Start(ctx, "run_local_tests")
 	defer st.End()
 
-	hst, err := connectToTarget(ctx, cfg, state)
+	hst, err := cc.Conn(ctx)
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed to connect to %s", cfg.Target)
 	}
@@ -479,7 +430,7 @@ func runLocalTests(ctx context.Context, cfg *config.Config, state *config.State)
 			// TODO(oka): write a unittest testing a connection to DUT is
 			// ensured for remote fixture.
 			if err := runFixtureAndTests(ctx, cfg, state, rf.cl, remoteFixt, func(ctx context.Context, setUpErrs []string) error {
-				res, err := runLocalTestsForFixture(ctx, names, remoteFixt, setUpErrs, cfg, state)
+				res, err := runLocalTestsForFixture(ctx, names, remoteFixt, setUpErrs, cfg, state, cc)
 				entityResults = append(entityResults, res...)
 				return err
 			}); err != nil {
@@ -496,15 +447,15 @@ func runLocalTests(ctx context.Context, cfg *config.Config, state *config.State)
 // runLocalTestsForFixture runs given local tests in between remote fixture
 // set up and tear down.
 // It can return partial results and an error when error happens mid-tests.
-func runLocalTestsForFixture(ctx context.Context, names []string, remoteFixt string, setUpErrs []string, cfg *config.Config, state *config.State) ([]*jsonprotocol.EntityResult, error) {
-	hst, err := connectToTarget(ctx, cfg, state)
+func runLocalTestsForFixture(ctx context.Context, names []string, remoteFixt string, setUpErrs []string, cfg *config.Config, state *config.State, cc *target.ConnCache) ([]*jsonprotocol.EntityResult, error) {
+	hst, err := cc.Conn(ctx)
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed to connect to %s; remoteFixt = %q", cfg.Target, remoteFixt)
 	}
 	beforeRetry := func(ctx context.Context) bool {
 		oldHst := hst
 		var connErr error
-		if hst, connErr = connectToTarget(ctx, cfg, state); connErr != nil {
+		if hst, connErr = cc.Conn(ctx); connErr != nil {
 			cfg.Logger.Log("Failed reconnecting to target: ", connErr)
 			return false
 		}
@@ -531,7 +482,7 @@ func runLocalTestsForFixture(ctx context.Context, names []string, remoteFixt str
 		return true
 	}
 	runTests := func(ctx context.Context, patterns []string) (results []*jsonprotocol.EntityResult, unstarted []string, err error) {
-		return runLocalTestsOnce(ctx, cfg, state, hst, patterns, remoteFixt, setUpErrs)
+		return runLocalTestsOnce(ctx, cfg, state, cc, hst, patterns, remoteFixt, setUpErrs)
 	}
 
 	results, err := runTestsWithRetry(ctx, cfg, names, runTests, beforeRetry)
@@ -582,7 +533,7 @@ func startLocalRunner(ctx context.Context, cfg *config.Config, hst *ssh.Conn, ar
 // Results from started tests and the names of tests that should have been
 // started but weren't (in the order in which they should've been run) are
 // returned.
-func runLocalTestsOnce(ctx context.Context, cfg *config.Config, state *config.State, hst *ssh.Conn, patterns []string, startFixtureName string, setUpErrs []string) (
+func runLocalTestsOnce(ctx context.Context, cfg *config.Config, state *config.State, cc *target.ConnCache, hst *ssh.Conn, patterns []string, startFixtureName string, setUpErrs []string) (
 	results []*jsonprotocol.EntityResult, unstarted []string, err error) {
 	ctx, st := timing.Start(ctx, "run_local_tests_once")
 	defer st.End()
@@ -629,7 +580,7 @@ func runLocalTestsOnce(ctx context.Context, cfg *config.Config, state *config.St
 		return moveFromHost(ctx, cfg, hst, src, dst)
 	}
 	df := func(ctx context.Context, outDir string) string {
-		return diagnoseLocalRunError(ctx, cfg, state, hst, outDir)
+		return diagnoseLocalRunError(ctx, cfg, cc, hst, outDir)
 	}
 
 	ctx, cancel := context.WithCancel(ctx)
@@ -697,12 +648,12 @@ func startEphemeralDevserverForLocalTests(ctx context.Context, hst *ssh.Conn, cf
 // diagnoseLocalRunError is used to attempt to diagnose the cause of an error encountered
 // while running local tests. It returns a string that can be returned by a diagnoseRunErrorFunc.
 // Files useful for diagnosis might be saved under outDir.
-func diagnoseLocalRunError(ctx context.Context, cfg *config.Config, state *config.State, hst *ssh.Conn, outDir string) string {
-	if ctxutil.DeadlineBefore(ctx, time.Now().Add(sshPingTimeout)) {
+func diagnoseLocalRunError(ctx context.Context, cfg *config.Config, cc *target.ConnCache, hst *ssh.Conn, outDir string) string {
+	if ctxutil.DeadlineBefore(ctx, time.Now().Add(target.SSHPingTimeout)) {
 		return ""
 	}
-	if err := hst.Ping(ctx, sshPingTimeout); err == nil {
+	if err := hst.Ping(ctx, target.SSHPingTimeout); err == nil {
 		return ""
 	}
-	return "Lost SSH connection: " + diagnoseSSHDrop(ctx, cfg, state, outDir)
+	return "Lost SSH connection: " + diagnoseSSHDrop(ctx, cfg, cc, outDir)
 }

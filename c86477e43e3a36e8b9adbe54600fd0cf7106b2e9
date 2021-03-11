@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "9ca6c02f_a005daa7",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 649,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-03-11T12:09:40Z",
+      "side": 1,
+      "message": "Added to getSoftwareFeatures.",
+      "parentUuid": "2daa3ffd_82a88408",
+      "range": {
+        "startLine": 649,
+        "startChar": 5,
+        "endLine": 649,
+        "endChar": 17
+      },
+      "revId": "c86477e43e3a36e8b9adbe54600fd0cf7106b2e9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "16467ad6_7d3bd993",
@@ -37,6 +61,30 @@
       "writtenOn": "2021-03-10T09:55:04Z",
       "side": 1,
       "message": "lsblk JSON output schema looks unstable. In my Linux workstation env (util-linux 2.36.1), rm field is boolean, size field is number. This means that this logic will break if we update util-linux of Chrome OS.",
+      "range": {
+        "startLine": 650,
+        "startChar": 0,
+        "endLine": 655,
+        "endChar": 2
+      },
+      "revId": "c86477e43e3a36e8b9adbe54600fd0cf7106b2e9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a5c3b47f_ea31bed1",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 655,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-03-11T12:09:40Z",
+      "side": 1,
+      "message": "Thanks for the information. I\u0027ve added the logic and a unit test case to try both.",
+      "parentUuid": "16467ad6_7d3bd993",
       "range": {
         "startLine": 650,
         "startChar": 0,

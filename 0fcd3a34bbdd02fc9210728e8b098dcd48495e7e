@@ -33,6 +33,23 @@
       "message": "It\u0027s hacky, but I hope it works.",
       "revId": "0fcd3a34bbdd02fc9210728e8b098dcd48495e7e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d45d0a04_b3e7fd45",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-03-11T17:18:41Z",
+      "side": 1,
+      "message": "Retry",
+      "revId": "0fcd3a34bbdd02fc9210728e8b098dcd48495e7e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

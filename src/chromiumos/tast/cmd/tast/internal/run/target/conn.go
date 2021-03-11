@@ -26,23 +26,45 @@ const (
 // objects whose lifetime is tied to the connection such as SSH port forwards.
 type Conn struct {
 	sshConn *ssh.Conn
+	svcs    *Services
 }
 
-func newConn(ctx context.Context, cfg *config.Config) (*Conn, error) {
+func newConn(ctx context.Context, cfg *config.Config) (conn *Conn, retErr error) {
 	sshConn, err := dialSSH(ctx, cfg)
 	if err != nil {
 		return nil, err
 	}
-	return &Conn{sshConn: sshConn}, nil
+	defer func() {
+		if retErr != nil {
+			sshConn.Close(ctx)
+		}
+	}()
+
+	svcs, err := startServices(ctx, cfg, sshConn)
+	if err != nil {
+		return nil, err
+	}
+
+	return &Conn{sshConn: sshConn, svcs: svcs}, nil
 }
 
 func (c *Conn) close(ctx context.Context) error {
-	return c.sshConn.Close(ctx)
+	var firstErr error
+	if err := c.svcs.close(ctx); err != nil && firstErr == nil {
+		firstErr = err
+	}
+	if err := c.sshConn.Close(ctx); err != nil {
+		firstErr = err
+	}
+	return firstErr
 }
 
 // SSHConn returns an SSH connection. A returned connection is owned by Conn
 // and should not be closed by users.
 func (c *Conn) SSHConn() *ssh.Conn { return c.sshConn }
+
+// Services returns an object owning services tied to an SSH connection.
+func (c *Conn) Services() *Services { return c.svcs }
 
 // Healthy checks health of the connection by sending an SSH ping packet.
 func (c *Conn) Healthy(ctx context.Context) error {

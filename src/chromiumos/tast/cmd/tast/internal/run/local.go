@@ -18,6 +18,7 @@ import (
 	"github.com/golang/protobuf/ptypes"
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
+	"chromiumos/tast/cmd/tast/internal/run/diagnose"
 	"chromiumos/tast/cmd/tast/internal/run/jsonprotocol"
 	"chromiumos/tast/cmd/tast/internal/run/target"
 	"chromiumos/tast/ctxutil"
@@ -621,5 +622,5 @@ func diagnoseLocalRunError(ctx context.Context, cfg *config.Config, cc *target.C
 	if err := hst.Ping(ctx, target.SSHPingTimeout); err == nil {
 		return ""
 	}
-	return "Lost SSH connection: " + diagnoseSSHDrop(ctx, cfg, cc, outDir)
+	return "Lost SSH connection: " + diagnose.SSHDrop(ctx, cfg, cc, outDir)
 }

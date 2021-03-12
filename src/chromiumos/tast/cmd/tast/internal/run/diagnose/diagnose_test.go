@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package run
+package diagnose
 
 import (
 	"context"
@@ -56,7 +56,7 @@ func TestReadBootID(t *testing.T) {
 	}
 }
 
-func TestDiagnoseSSHDropNotRecovered(t *testing.T) {
+func TestSSHDropNotRecovered(t *testing.T) {
 	td := fakerunner.NewLocalTestData(t)
 	defer td.Close()
 
@@ -70,14 +70,14 @@ func TestDiagnoseSSHDropNotRecovered(t *testing.T) {
 	// Pass a canceled context to make reconnection fail.
 	ctx, cancel := context.WithCancel(context.Background())
 	cancel()
-	msg := diagnoseSSHDrop(ctx, &td.Cfg, cc, td.TempDir)
+	msg := SSHDrop(ctx, &td.Cfg, cc, td.TempDir)
 	const exp = "target did not come back: context canceled"
 	if msg != exp {
-		t.Errorf("diagnoseSSHDrop returned %q; want %q", msg, exp)
+		t.Errorf("SSHDrop returned %q; want %q", msg, exp)
 	}
 }
 
-func TestDiagnoseSSHDropNoReboot(t *testing.T) {
+func TestSSHDropNoReboot(t *testing.T) {
 	td := fakerunner.NewLocalTestData(t)
 	defer td.Close()
 
@@ -90,14 +90,14 @@ func TestDiagnoseSSHDropNoReboot(t *testing.T) {
 
 	// boot_id is not changed.
 
-	msg := diagnoseSSHDrop(context.Background(), &td.Cfg, cc, td.TempDir)
+	msg := SSHDrop(context.Background(), &td.Cfg, cc, td.TempDir)
 	const exp = "target did not reboot, probably network issue"
 	if msg != exp {
-		t.Errorf("diagnoseSSHDrop returned %q; want %q", msg, exp)
+		t.Errorf("SSHDrop returned %q; want %q", msg, exp)
 	}
 }
 
-func TestDiagnoseSSHDropUnknownCrash(t *testing.T) {
+func TestSSHDropUnknownCrash(t *testing.T) {
 	td := fakerunner.NewLocalTestData(t)
 	defer td.Close()
 
@@ -111,14 +111,14 @@ func TestDiagnoseSSHDropUnknownCrash(t *testing.T) {
 	// Change boot_id to simulate reboot.
 	td.BootID = anotherBootID
 
-	msg := diagnoseSSHDrop(context.Background(), &td.Cfg, cc, td.TempDir)
+	msg := SSHDrop(context.Background(), &td.Cfg, cc, td.TempDir)
 	const exp = "target rebooted for unknown crash"
 	if msg != exp {
-		t.Errorf("diagnoseSSHDrop returned %q; want %q", msg, exp)
+		t.Errorf("SSHDrop returned %q; want %q", msg, exp)
 	}
 }
 
-func TestDiagnoseSSHDropNormalReboot(t *testing.T) {
+func TestSSHDropNormalReboot(t *testing.T) {
 	td := fakerunner.NewLocalTestData(t)
 	defer td.Close()
 
@@ -136,14 +136,14 @@ Apr 19 07:12:49 pre-shutdown[31389]: Shutting down for reboot: system-update
 ...
 `
 
-	msg := diagnoseSSHDrop(context.Background(), &td.Cfg, cc, td.TempDir)
+	msg := SSHDrop(context.Background(), &td.Cfg, cc, td.TempDir)
 	const exp = "target normally shut down for reboot (system-update)"
 	if msg != exp {
-		t.Errorf("diagnoseSSHDrop returned %q; want %q", msg, exp)
+		t.Errorf("SSHDrop returned %q; want %q", msg, exp)
 	}
 }
 
-func TestDiagnoseSSHDropKernelCrashBugX86(t *testing.T) {
+func TestSSHDropKernelCrashBugX86(t *testing.T) {
 	td := fakerunner.NewLocalTestData(t)
 	defer td.Close()
 
@@ -157,14 +157,14 @@ func TestDiagnoseSSHDropKernelCrashBugX86(t *testing.T) {
 	td.BootID = anotherBootID
 	td.Ramoops = loadTestData(t, "ramoops_crash_x86.txt")
 
-	msg := diagnoseSSHDrop(context.Background(), &td.Cfg, cc, td.TempDir)
+	msg := SSHDrop(context.Background(), &td.Cfg, cc, td.TempDir)
 	const exp = "kernel crashed in i915_gem_execbuffer_relocate_vma+0x424/0x757"
 	if msg != exp {
-		t.Errorf("diagnoseSSHDrop returned %q; want %q", msg, exp)
+		t.Errorf("SSHDrop returned %q; want %q", msg, exp)
 	}
 }
 
-func TestDiagnoseSSHDropKernelCrashBugARM(t *testing.T) {
+func TestSSHDropKernelCrashBugARM(t *testing.T) {
 	td := fakerunner.NewLocalTestData(t)
 	defer td.Close()
 
@@ -178,16 +178,16 @@ func TestDiagnoseSSHDropKernelCrashBugARM(t *testing.T) {
 	td.BootID = anotherBootID
 	td.Ramoops = loadTestData(t, "ramoops_crash_arm.txt")
 
-	msg := diagnoseSSHDrop(context.Background(), &td.Cfg, cc, td.TempDir)
+	msg := SSHDrop(context.Background(), &td.Cfg, cc, td.TempDir)
 	// TODO(nya): Improve the symbol extraction. In this case, do_raw_spin_lock or
 	// spin_bug seems to be a better choice for diagnosis.
 	const exp = "kernel crashed in _clear_bit+0x20/0x38"
 	if msg != exp {
-		t.Errorf("diagnoseSSHDrop returned %q; want %q", msg, exp)
+		t.Errorf("SSHDrop returned %q; want %q", msg, exp)
 	}
 }
 
-func TestDiagnoseSSHDropKernelHungX86(t *testing.T) {
+func TestSSHDropKernelHungX86(t *testing.T) {
 	td := fakerunner.NewLocalTestData(t)
 	defer td.Close()
 
@@ -201,10 +201,10 @@ func TestDiagnoseSSHDropKernelHungX86(t *testing.T) {
 	td.BootID = anotherBootID
 	td.Ramoops = loadTestData(t, "ramoops_hung_x86.txt")
 
-	msg := diagnoseSSHDrop(context.Background(), &td.Cfg, cc, td.TempDir)
+	msg := SSHDrop(context.Background(), &td.Cfg, cc, td.TempDir)
 	const exp = "kernel crashed: kswapd0:32 hung in jbd2_log_wait_commit+0xb9/0x13c"
 	if msg != exp {
-		t.Errorf("diagnoseSSHDrop returned %q; want %q", msg, exp)
+		t.Errorf("SSHDrop returned %q; want %q", msg, exp)
 	}
 }
 
@@ -226,7 +226,7 @@ func TestDiagnoseSSHSaveFiles(t *testing.T) {
 	outDir := filepath.Join(td.TempDir, "diagnosis")
 	os.MkdirAll(outDir, 0777)
 
-	diagnoseSSHDrop(context.Background(), &td.Cfg, cc, outDir)
+	SSHDrop(context.Background(), &td.Cfg, cc, outDir)
 
 	files, err := testutil.ReadFiles(outDir)
 	if err != nil {
@@ -237,6 +237,6 @@ func TestDiagnoseSSHSaveFiles(t *testing.T) {
 		"console-ramoops.txt":            "bar",
 	}
 	if diff := cmp.Diff(files, exp); diff != "" {
-		t.Error("diagnoseSSHDrop did not save files as expected (-got +want):\n", diff)
+		t.Error("SSHDrop did not save files as expected (-got +want):\n", diff)
 	}
 }

@@ -24,6 +24,7 @@ import (
 
 	"chromiumos/tast/cmd/tast/internal/logging"
 	"chromiumos/tast/cmd/tast/internal/run/config"
+	"chromiumos/tast/cmd/tast/internal/run/fakerunner"
 	"chromiumos/tast/cmd/tast/internal/run/jsonprotocol"
 	"chromiumos/tast/internal/control"
 	"chromiumos/tast/internal/runner"
@@ -662,10 +663,10 @@ func TestReadTestOutputTimeout(t *gotesting.T) {
 
 func TestWriteResultsCollectSysInfo(t *gotesting.T) {
 	// This test uses types and functions from local_test.go.
-	td := newLocalTestData(t)
-	defer td.close()
+	td := fakerunner.NewLocalTestData(t)
+	defer td.Close()
 
-	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
 		checkArgs(t, args, &runner.Args{
 			Mode:           runner.CollectSysInfoMode,
 			CollectSysInfo: &runner.CollectSysInfoArgs{},
@@ -674,30 +675,30 @@ func TestWriteResultsCollectSysInfo(t *gotesting.T) {
 		json.NewEncoder(stdout).Encode(&runner.CollectSysInfoResult{})
 		return 0
 	}
-	td.cfg.CollectSysInfo = true
-	td.state.InitialSysInfo = &runner.SysInfoState{}
-	if err := WriteResults(context.Background(), &td.cfg, &td.state, []*jsonprotocol.EntityResult{}, true); err != nil {
+	td.Cfg.CollectSysInfo = true
+	td.State.InitialSysInfo = &runner.SysInfoState{}
+	if err := WriteResults(context.Background(), &td.Cfg, &td.State, []*jsonprotocol.EntityResult{}, true); err != nil {
 		t.Fatal("WriteResults failed: ", err)
 	}
 }
 
 func TestWriteResultsCollectSysInfoFailure(t *gotesting.T) {
 	// This test uses types and functions from local_test.go.
-	td := newLocalTestData(t)
-	defer td.close()
+	td := fakerunner.NewLocalTestData(t)
+	defer td.Close()
 
 	// Report an error when collecting system info.
-	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) { return 1 }
-	td.cfg.CollectSysInfo = true
-	td.state.InitialSysInfo = &runner.SysInfoState{}
-	err := WriteResults(context.Background(), &td.cfg, &td.state, []*jsonprotocol.EntityResult{}, true)
+	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) { return 1 }
+	td.Cfg.CollectSysInfo = true
+	td.State.InitialSysInfo = &runner.SysInfoState{}
+	err := WriteResults(context.Background(), &td.Cfg, &td.State, []*jsonprotocol.EntityResult{}, true)
 	if err == nil {
 		t.Fatal("WriteResults didn't report expected error")
 	}
 
 	// The error should've been logged by WriteResults: https://crbug.com/937913
-	if !strings.Contains(td.logbuf.String(), err.Error()) {
-		t.Errorf("WriteResults didn't log error %q in %q", err.Error(), td.logbuf.String())
+	if !strings.Contains(td.LogBuf.String(), err.Error()) {
+		t.Errorf("WriteResults didn't log error %q in %q", err.Error(), td.LogBuf.String())
 	}
 }
 

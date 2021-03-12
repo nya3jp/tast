@@ -8,8 +8,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"io"
-	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -19,8 +17,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 
-	"chromiumos/tast/cmd/tast/internal/logging"
-	"chromiumos/tast/cmd/tast/internal/run/config"
+	"chromiumos/tast/cmd/tast/internal/run/fakerunner"
 	"chromiumos/tast/cmd/tast/internal/run/jsonprotocol"
 	"chromiumos/tast/internal/bundle"
 	"chromiumos/tast/internal/control"
@@ -30,154 +27,18 @@ import (
 	"chromiumos/tast/testutil"
 )
 
-const (
-	fakeRunnerName       = "fake_runner"             // symlink to this executable created by newRemoteTestData
-	fakeRunnerConfigFile = "fake_runner_config.json" // config file read when acting as fake runner
-	fakeRunnerArgsFile   = "fake_runner_args.json"   // file containing args written when acting as fake runner
-)
+// runFakeRemoteRunner calls remote and records the Args struct that was passed
+// to the fake runner.
+func runFakeRemoteRunner(t *gotesting.T, td *fakerunner.RemoteTestData) ([]*jsonprotocol.EntityResult, error) {
+	res, rerr := runRemoteTests(context.Background(), &td.Cfg, &td.State)
 
-func init() {
-	// If the binary was executed via a symlink created by newRemoteTestData,
-	// behave like a test runner instead of running unit tests.
-	if filepath.Base(os.Args[0]) == fakeRunnerName {
-		os.Exit(runFakeRunner())
-	}
-}
-
-// fakeRunnerConfig describes this executable's output when it's acting as a fake test runner.
-type fakeRunnerConfig struct {
-	Stdout string `json:"stdout"`
-	Stderr string `json:"stderr"`
-	Status int    `json:"status"`
-}
-
-// runFakeRunner saves stdin to the current directory, reads a config, and writes the requested
-// data to stdout and stderr. It returns the status code to exit with.
-func runFakeRunner() int {
-	dir := filepath.Dir(os.Args[0])
-
-	// Write the arguments we received.
-	af, err := os.Create(filepath.Join(dir, fakeRunnerArgsFile))
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer af.Close()
-	if _, err = io.Copy(af, os.Stdin); err != nil {
-		log.Fatal(err)
-	}
-
-	if err = json.NewEncoder(af).Encode(os.Args[1:]); err != nil {
-		log.Fatal(err)
-	}
-
-	// Read our configuration.
-	cf, err := os.Open(filepath.Join(dir, fakeRunnerConfigFile))
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer cf.Close()
-
-	cfg := fakeRunnerConfig{}
-	if err = json.NewDecoder(cf).Decode(&cfg); err != nil {
-		log.Fatal(err)
-	}
-
-	os.Stdout.Write([]byte(cfg.Stdout))
-	os.Stderr.Write([]byte(cfg.Stderr))
-	return cfg.Status
-}
-
-// remoteTestData holds data corresponding to the current unit test.
-type remoteTestData struct {
-	dir    string        // temp dir
-	logbuf bytes.Buffer  // logging output
-	cfg    config.Config // config passed to remote
-	state  config.State  // state passed to remote
-	args   runner.Args   // args that were passed to fake runner
-}
-
-type fakeRemoteRunnerData struct {
-	stdout string
-	stderr string
-	status int
-}
-
-func (rd *fakeRemoteRunnerData) setUp(dir string) (string, error) {
-	exec, err := os.Executable()
-	if err != nil {
-		return "", err
-	}
-
-	// Create a symlink to ourselves that can be executed as a fake test runner.
-	runner := filepath.Join(dir, fakeRunnerName)
-	if err = os.Symlink(exec, runner); err != nil {
-		return "", err
-	}
-
-	// Write a config file telling the fake runner what to do.
-	rcfg := fakeRunnerConfig{Stdout: rd.stdout, Stderr: rd.stderr, Status: rd.status}
-	f, err := os.Create(filepath.Join(dir, fakeRunnerConfigFile))
-	if err != nil {
-		return "", err
-	}
-	defer f.Close()
-	if err = json.NewEncoder(f).Encode(&rcfg); err != nil {
-		return "", err
-	}
-	return runner, nil
-}
-
-// newRemoteTestData creates a temporary directory with a symlink back to the unit test binary
-// that's currently running. It also writes a config file instructing the test binary about
-// its stdout, stderr, and status code when running as a fake runner.
-func newRemoteTestData(t *gotesting.T, stdout, stderr string, status int) *remoteTestData {
-	td := remoteTestData{}
-	td.dir = testutil.TempDir(t)
-	td.cfg.Logger = logging.NewSimple(&td.logbuf, true, true)
-	td.cfg.ResDir = filepath.Join(td.dir, "results")
-	if err := os.MkdirAll(td.cfg.ResDir, 0755); err != nil {
-		os.RemoveAll(td.dir)
-		t.Fatal(err)
-	}
-	td.cfg.Devservers = mockDevservers
-	td.cfg.BuildArtifactsURL = mockBuildArtifactsURL
-	td.cfg.DownloadMode = planner.DownloadLazy
-	td.cfg.LocalRunner = mockLocalRunner
-	td.cfg.LocalBundleDir = mockLocalBundleDir
-	td.cfg.LocalDataDir = mockLocalDataDir
-	td.cfg.RemoteOutDir = filepath.Join(td.cfg.ResDir, "out.tmp")
-	td.cfg.TotalShards = 1
-	td.cfg.ShardIndex = 0
-
-	path, err := (&fakeRemoteRunnerData{stdout, stderr, status}).setUp(td.dir)
-	if err != nil {
-		os.RemoveAll(td.dir)
-		t.Fatal(err)
-	}
-	td.cfg.RemoteRunner = path
-
-	td.state.RemoteDevservers = td.cfg.Devservers
-
-	return &td
-}
-
-// close removes the temporary directory.
-func (td *remoteTestData) close() {
-	td.state.Close(context.Background())
-	os.RemoveAll(td.dir)
-}
-
-// run calls remote and records the Args struct that was passed to the fake runner.
-func (td *remoteTestData) run(t *gotesting.T) ([]*jsonprotocol.EntityResult, error) {
-	res, rerr := runRemoteTests(context.Background(), &td.cfg, &td.state)
-
-	f, err := os.Open(filepath.Join(td.dir, fakeRunnerArgsFile))
+	f, err := os.Open(filepath.Join(td.Dir, fakerunner.FakeRunnerArgsFile))
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer f.Close()
 
-	if err = json.NewDecoder(f).Decode(&td.args); err != nil {
+	if err = json.NewDecoder(f).Decode(&td.Args); err != nil {
 		t.Fatal(err)
 	}
 
@@ -194,71 +55,71 @@ func TestRemoteRun(t *gotesting.T) {
 	mw.WriteMessage(&control.EntityEnd{Time: time.Unix(3, 0), Name: testName})
 	mw.WriteMessage(&control.RunEnd{Time: time.Unix(4, 0), OutDir: ""})
 
-	td := newRemoteTestData(t, b.String(), "", 0)
-	defer td.close()
+	td := fakerunner.NewRemoteTestData(t, b.String(), "", 0)
+	defer td.Close()
 
 	// Set some parameters that can be overridden by flags to arbitrary values.
-	td.cfg.Build = false
-	td.cfg.KeyFile = "/tmp/id_dsa"
-	td.cfg.RemoteBundleDir = "/tmp/bundles"
-	td.cfg.RemoteDataDir = "/tmp/data"
-	td.cfg.RemoteOutDir = "/tmp/out"
-	td.cfg.BuildArtifactsURL = mockBuildArtifactsURL
-	td.cfg.TLWServer = "tlwserver"
+	td.Cfg.Build = false
+	td.Cfg.KeyFile = "/tmp/id_dsa"
+	td.Cfg.RemoteBundleDir = "/tmp/bundles"
+	td.Cfg.RemoteDataDir = "/tmp/data"
+	td.Cfg.RemoteOutDir = "/tmp/out"
+	td.Cfg.BuildArtifactsURL = fakerunner.MockBuildArtifactsURL
+	td.Cfg.TLWServer = "tlwserver"
 
-	res, err := td.run(t)
+	res, err := runFakeRemoteRunner(t, td)
 	if err != nil {
-		t.Errorf("runRemoteTests(%+v) failed: %v", td.cfg, err)
+		t.Errorf("runRemoteTests(%+v) failed: %v", td.Cfg, err)
 	}
 	if len(res) != 1 {
-		t.Errorf("runRemoteTests(%+v) returned %v result(s); want 1", td.cfg, len(res))
+		t.Errorf("runRemoteTests(%+v) returned %v result(s); want 1", td.Cfg, len(res))
 	} else if res[0].Name != testName {
-		t.Errorf("runRemoteTests(%+v) returned result for test %q; want %q", td.cfg, res[0].Name, testName)
+		t.Errorf("runRemoteTests(%+v) returned result for test %q; want %q", td.Cfg, res[0].Name, testName)
 	}
 
-	glob := filepath.Join(td.cfg.RemoteBundleDir, "*")
+	glob := filepath.Join(td.Cfg.RemoteBundleDir, "*")
 	exe, err := os.Executable()
 	if err != nil {
 		t.Fatal(err)
 	}
 	runFlags := []string{
 		"-build=false", // propagated from td.cfg.build
-		"-keyfile=" + td.cfg.KeyFile,
+		"-keyfile=" + td.Cfg.KeyFile,
 		"-keydir=",
-		"-remoterunner=" + td.cfg.RemoteRunner,
-		"-remotebundledir=" + td.cfg.RemoteBundleDir,
-		"-remotedatadir=" + td.cfg.RemoteDataDir,
-		"-localrunner=" + td.cfg.LocalRunner,
-		"-localbundledir=" + td.cfg.LocalBundleDir,
-		"-localdatadir=" + td.cfg.LocalDataDir,
-		"-devservers=" + strings.Join(td.cfg.Devservers, ","),
-		"-buildartifactsurl=" + mockBuildArtifactsURL,
+		"-remoterunner=" + td.Cfg.RemoteRunner,
+		"-remotebundledir=" + td.Cfg.RemoteBundleDir,
+		"-remotedatadir=" + td.Cfg.RemoteDataDir,
+		"-localrunner=" + td.Cfg.LocalRunner,
+		"-localbundledir=" + td.Cfg.LocalBundleDir,
+		"-localdatadir=" + td.Cfg.LocalDataDir,
+		"-devservers=" + strings.Join(td.Cfg.Devservers, ","),
+		"-buildartifactsurl=" + fakerunner.MockBuildArtifactsURL,
 	}
 	expArgs := runner.Args{
 		Mode: runner.RunTestsMode,
 		RunTests: &runner.RunTestsArgs{
 			BundleGlob: glob,
 			BundleArgs: bundle.RunTestsArgs{
-				DataDir:        td.cfg.RemoteDataDir,
-				OutDir:         td.cfg.RemoteOutDir,
-				KeyFile:        td.cfg.KeyFile,
+				DataDir:        td.Cfg.RemoteDataDir,
+				OutDir:         td.Cfg.RemoteOutDir,
+				KeyFile:        td.Cfg.KeyFile,
 				TastPath:       exe,
 				RunFlags:       runFlags,
-				LocalBundleDir: mockLocalBundleDir,
+				LocalBundleDir: fakerunner.MockLocalBundleDir,
 				FeatureArgs: bundle.FeatureArgs{
 					CheckSoftwareDeps: false,
 				},
-				Devservers:        mockDevservers,
-				TLWServer:         td.cfg.TLWServer,
-				BuildArtifactsURL: mockBuildArtifactsURL,
+				Devservers:        fakerunner.MockDevservers,
+				TLWServer:         td.Cfg.TLWServer,
+				BuildArtifactsURL: fakerunner.MockBuildArtifactsURL,
 				DownloadMode:      planner.DownloadLazy,
 				HeartbeatInterval: heartbeatInterval,
 			},
-			BuildArtifactsURLDeprecated: mockBuildArtifactsURL,
+			BuildArtifactsURLDeprecated: fakerunner.MockBuildArtifactsURL,
 		},
 	}
-	if diff := cmp.Diff(td.args, expArgs, cmpopts.IgnoreUnexported(expArgs)); diff != "" {
-		t.Errorf("runRemoteTests(%+v) passed unexpected args; diff (-got +want):\n%s", td.cfg, diff)
+	if diff := cmp.Diff(td.Args, expArgs, cmpopts.IgnoreUnexported(expArgs)); diff != "" {
+		t.Errorf("runRemoteTests(%+v) passed unexpected args; diff (-got +want):\n%s", td.Cfg, diff)
 	}
 }
 
@@ -280,14 +141,14 @@ func TestRemoteRunCopyOutput(t *gotesting.T) {
 	mw.WriteMessage(&control.EntityEnd{Time: time.Unix(3, 0), Name: testName})
 	mw.WriteMessage(&control.RunEnd{Time: time.Unix(4, 0), OutDir: outDir})
 
-	td := newRemoteTestData(t, b.String(), "", 0)
-	defer td.close()
+	td := fakerunner.NewRemoteTestData(t, b.String(), "", 0)
+	defer td.Close()
 
 	// Set some parameters that can be overridden by flags to arbitrary values.
-	td.cfg.KeyFile = "/tmp/id_dsa"
-	td.cfg.RemoteBundleDir = "/tmp/bundles"
-	td.cfg.RemoteDataDir = "/tmp/data"
-	td.cfg.RemoteOutDir = outDir
+	td.Cfg.KeyFile = "/tmp/id_dsa"
+	td.Cfg.RemoteBundleDir = "/tmp/bundles"
+	td.Cfg.RemoteDataDir = "/tmp/data"
+	td.Cfg.RemoteOutDir = outDir
 
 	if err := testutil.WriteFiles(outDir, map[string]string{
 		filepath.Join(outName, outFile): outData,
@@ -295,11 +156,11 @@ func TestRemoteRunCopyOutput(t *gotesting.T) {
 		t.Fatal(err)
 	}
 
-	if _, err := td.run(t); err != nil {
-		t.Errorf("runRemoteTests(%+v) failed: %v", td.cfg, err)
+	if _, err := runFakeRemoteRunner(t, td); err != nil {
+		t.Errorf("runRemoteTests(%+v) failed: %v", td.Cfg, err)
 	}
 
-	files, err := testutil.ReadFiles(filepath.Join(td.cfg.ResDir, testLogsDir))
+	files, err := testutil.ReadFiles(filepath.Join(td.Cfg.ResDir, testLogsDir))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -315,14 +176,14 @@ func TestRemoteRunCopyOutput(t *gotesting.T) {
 func disabledTestRemoteFailure(t *gotesting.T) {
 	// Make the test runner print a message to stderr and fail.
 	const errorMsg = "Whoops, something failed\n"
-	td := newRemoteTestData(t, "", errorMsg, 1)
-	defer td.close()
+	td := fakerunner.NewRemoteTestData(t, "", errorMsg, 1)
+	defer td.Close()
 
-	if _, err := td.run(t); err == nil {
-		t.Errorf("runRemoteTests(%v) unexpectedly passed", td.cfg)
+	if _, err := runFakeRemoteRunner(t, td); err == nil {
+		t.Errorf("runRemoteTests(%v) unexpectedly passed", td.Cfg)
 	} else if !strings.Contains(err.Error(), strings.TrimRight(errorMsg, "\n")) {
 		// The runner's error message should've been logged.
-		t.Errorf("runRemoteTests(%v) didn't log runner error %q in %q", td.cfg, errorMsg, err.Error())
+		t.Errorf("runRemoteTests(%v) didn't log runner error %q in %q", td.Cfg, errorMsg, err.Error())
 	}
 }
 
@@ -341,15 +202,15 @@ func TestRemoteMaxFailures(t *gotesting.T) {
 	mw.WriteMessage(&control.EntityEnd{Time: time.Unix(6, 0), Name: "t2"})
 	mw.WriteMessage(&control.RunEnd{Time: time.Unix(7, 0), OutDir: ""})
 
-	td := newRemoteTestData(t, b.String(), "", 0)
-	defer td.close()
+	td := fakerunner.NewRemoteTestData(t, b.String(), "", 0)
+	defer td.Close()
 
-	td.cfg.MaxTestFailures = 1
-	td.state.FailuresCount = 0
+	td.Cfg.MaxTestFailures = 1
+	td.State.FailuresCount = 0
 
-	results, err := runRemoteTests(context.Background(), &td.cfg, &td.state)
+	results, err := runRemoteTests(context.Background(), &td.Cfg, &td.State)
 	if err == nil {
-		t.Errorf("runRemoteTests(%+v, %+v) passed unexpectedly", td.cfg, td.state)
+		t.Errorf("runRemoteTests(%+v, %+v) passed unexpectedly", td.Cfg, td.State)
 	}
 	if len(results) != 1 {
 		t.Errorf("runRemoteTests return %v results; want 1", len(results))

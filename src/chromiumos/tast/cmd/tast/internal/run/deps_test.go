@@ -19,6 +19,7 @@ import (
 	"go.chromium.org/chromiumos/infra/proto/go/device"
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
+	"chromiumos/tast/cmd/tast/internal/run/fakerunner"
 	"chromiumos/tast/cmd/tast/internal/run/target"
 	"chromiumos/tast/internal/bundle"
 	"chromiumos/tast/internal/dep"
@@ -75,8 +76,8 @@ func checkRunnerTestDepsArgs(t *testing.T, cfg *config.Config, state *config.Sta
 }
 
 func TestGetDUTInfo(t *testing.T) {
-	td := newLocalTestData(t)
-	defer td.close()
+	td := fakerunner.NewLocalTestData(t)
+	defer td.Close()
 
 	// With "always", features returned by the runner should be passed through
 	// and dependencies should be checked.
@@ -104,11 +105,11 @@ func TestGetDUTInfo(t *testing.T) {
 	}
 	osVersion := "octopus-release/R86-13312.0.2020_07_02_1108"
 	defaultBuildArtifactsURL := "gs://chromeos-image-archive/octopus-release/R86-13312.0.2020_07_02_1108/"
-	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
 		checkArgs(t, args, &runner.Args{
 			Mode: runner.GetDUTInfoMode,
 			GetDUTInfo: &runner.GetDUTInfoArgs{
-				ExtraUSEFlags:       td.cfg.ExtraUSEFlags,
+				ExtraUSEFlags:       td.Cfg.ExtraUSEFlags,
 				RequestDeviceConfig: true,
 			},
 		})
@@ -116,27 +117,27 @@ func TestGetDUTInfo(t *testing.T) {
 		writeGetDUTInfoResult(stdout, avail, unavail, dc, hf, osVersion, defaultBuildArtifactsURL)
 		return 0
 	}
-	td.cfg.CheckTestDeps = true
-	td.cfg.ExtraUSEFlags = []string{"use1", "use2"}
+	td.Cfg.CheckTestDeps = true
+	td.Cfg.ExtraUSEFlags = []string{"use1", "use2"}
 
-	cc := target.NewConnCache(&td.cfg)
+	cc := target.NewConnCache(&td.Cfg)
 	defer cc.Close(context.Background())
 
-	if err := getDUTInfo(context.Background(), &td.cfg, &td.state, cc); err != nil {
-		t.Fatalf("getDUTInfo(%+v) failed: %v", td.cfg, err)
+	if err := getDUTInfo(context.Background(), &td.Cfg, &td.State, cc); err != nil {
+		t.Fatalf("getDUTInfo(%+v) failed: %v", td.Cfg, err)
 	}
-	checkRunnerTestDepsArgs(t, &td.cfg, &td.state, true, avail, unavail, dc, hf)
+	checkRunnerTestDepsArgs(t, &td.Cfg, &td.State, true, avail, unavail, dc, hf)
 
-	if td.state.OSVersion != osVersion {
-		t.Errorf("Unexpected OS version: got %+v, want %+v", td.state.OSVersion, osVersion)
+	if td.State.OSVersion != osVersion {
+		t.Errorf("Unexpected OS version: got %+v, want %+v", td.State.OSVersion, osVersion)
 	}
 
-	if td.state.DefaultBuildArtifactsURL != defaultBuildArtifactsURL {
-		t.Errorf("Unexpected DefaultBuildArtifactsURL: got %+v, want %+v", td.state.DefaultBuildArtifactsURL, defaultBuildArtifactsURL)
+	if td.State.DefaultBuildArtifactsURL != defaultBuildArtifactsURL {
+		t.Errorf("Unexpected DefaultBuildArtifactsURL: got %+v, want %+v", td.State.DefaultBuildArtifactsURL, defaultBuildArtifactsURL)
 	}
 
 	// Make sure device-config.txt is created.
-	if b, err := ioutil.ReadFile(filepath.Join(td.cfg.ResDir, "device-config.txt")); err != nil {
+	if b, err := ioutil.ReadFile(filepath.Join(td.Cfg.ResDir, "device-config.txt")); err != nil {
 		t.Error("Failed to read device-config.txt: ", err)
 	} else {
 		var readDc device.Config
@@ -148,7 +149,7 @@ func TestGetDUTInfo(t *testing.T) {
 	}
 
 	// The second call should fail, because it tries to update cfg's fields twice.
-	if err := getDUTInfo(context.Background(), &td.cfg, &td.state, cc); err == nil {
+	if err := getDUTInfo(context.Background(), &td.Cfg, &td.State, cc); err == nil {
 		t.Fatal("Calling getDUTInfo twice unexpectedly succeeded")
 	}
 }
@@ -157,14 +158,14 @@ func TestGetDUTInfoNoDeviceConfig(t *testing.T) {
 	// If local_test_runner is older, it may not return device.Config even if it is requested.
 	// For backward compatibility, it is not handled as an error case, but the device-config.txt
 	// won't be created.
-	td := newLocalTestData(t)
-	defer td.close()
+	td := fakerunner.NewLocalTestData(t)
+	defer td.Close()
 
-	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
 		checkArgs(t, args, &runner.Args{
 			Mode: runner.GetDUTInfoMode,
 			GetDUTInfo: &runner.GetDUTInfoArgs{
-				ExtraUSEFlags:       td.cfg.ExtraUSEFlags,
+				ExtraUSEFlags:       td.Cfg.ExtraUSEFlags,
 				RequestDeviceConfig: true,
 			},
 		})
@@ -174,42 +175,42 @@ func TestGetDUTInfoNoDeviceConfig(t *testing.T) {
 		writeGetDUTInfoResult(stdout, []string{"dep1"}, nil, nil, nil, "", "")
 		return 0
 	}
-	td.cfg.CheckTestDeps = true
+	td.Cfg.CheckTestDeps = true
 
-	cc := target.NewConnCache(&td.cfg)
+	cc := target.NewConnCache(&td.Cfg)
 	defer cc.Close(context.Background())
 
-	if err := getDUTInfo(context.Background(), &td.cfg, &td.state, cc); err != nil {
-		t.Fatalf("getDUTInfo(%+v) failed: %v", td.cfg, err)
+	if err := getDUTInfo(context.Background(), &td.Cfg, &td.State, cc); err != nil {
+		t.Fatalf("getDUTInfo(%+v) failed: %v", td.Cfg, err)
 	}
 
 	// Make sure device-config.txt is created.
-	if _, err := os.Stat(filepath.Join(td.cfg.ResDir, deviceConfigFile)); err == nil || !os.IsNotExist(err) {
+	if _, err := os.Stat(filepath.Join(td.Cfg.ResDir, deviceConfigFile)); err == nil || !os.IsNotExist(err) {
 		t.Error("Unexpected device config file: ", err)
 	}
 }
 
 func TestGetDUTInfoNoCheckTestDeps(t *testing.T) {
-	td := newLocalTestData(t)
-	defer td.close()
+	td := fakerunner.NewLocalTestData(t)
+	defer td.Close()
 
 	// With "never", the runner shouldn't be called and dependencies shouldn't be checked.
-	td.cfg.CheckTestDeps = false
+	td.Cfg.CheckTestDeps = false
 
-	cc := target.NewConnCache(&td.cfg)
+	cc := target.NewConnCache(&td.Cfg)
 	defer cc.Close(context.Background())
 
-	if err := getDUTInfo(context.Background(), &td.cfg, &td.state, cc); err != nil {
-		t.Fatalf("getDUTInfo(%+v) failed: %v", td.cfg, err)
+	if err := getDUTInfo(context.Background(), &td.Cfg, &td.State, cc); err != nil {
+		t.Fatalf("getDUTInfo(%+v) failed: %v", td.Cfg, err)
 	}
-	checkRunnerTestDepsArgs(t, &td.cfg, &td.state, false, nil, nil, nil, nil)
+	checkRunnerTestDepsArgs(t, &td.Cfg, &td.State, false, nil, nil, nil, nil)
 }
 
 func TestGetSoftwareFeaturesNoFeatures(t *testing.T) {
-	td := newLocalTestData(t)
-	defer td.close()
+	td := fakerunner.NewLocalTestData(t)
+	defer td.Close()
 	// "always" should fail if the runner doesn't know about any features.
-	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
 		checkArgs(t, args, &runner.Args{
 			Mode: runner.GetDUTInfoMode,
 			GetDUTInfo: &runner.GetDUTInfoArgs{
@@ -219,12 +220,12 @@ func TestGetSoftwareFeaturesNoFeatures(t *testing.T) {
 		writeGetDUTInfoResult(stdout, []string{}, []string{}, nil, nil, "", "")
 		return 0
 	}
-	td.cfg.CheckTestDeps = true
+	td.Cfg.CheckTestDeps = true
 
-	cc := target.NewConnCache(&td.cfg)
+	cc := target.NewConnCache(&td.Cfg)
 	defer cc.Close(context.Background())
 
-	if err := getDUTInfo(context.Background(), &td.cfg, &td.state, cc); err == nil {
-		t.Fatalf("getSoftwareFeatures(%+v) succeeded unexpectedly", td.cfg)
+	if err := getDUTInfo(context.Background(), &td.Cfg, &td.State, cc); err == nil {
+		t.Fatalf("getSoftwareFeatures(%+v) succeeded unexpectedly", td.Cfg)
 	}
 }

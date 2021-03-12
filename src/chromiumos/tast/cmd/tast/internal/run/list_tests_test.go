@@ -11,6 +11,7 @@ import (
 	"reflect"
 	gotesting "testing"
 
+	"chromiumos/tast/cmd/tast/internal/run/fakerunner"
 	"chromiumos/tast/cmd/tast/internal/run/jsonprotocol"
 	"chromiumos/tast/cmd/tast/internal/run/target"
 	"chromiumos/tast/internal/dep"
@@ -19,8 +20,8 @@ import (
 )
 
 func TestListLocalTests(t *gotesting.T) {
-	td := newLocalTestData(t)
-	defer td.close()
+	td := fakerunner.NewLocalTestData(t)
+	defer td.Close()
 
 	tests := []testing.EntityWithRunnabilityInfo{
 		{
@@ -38,17 +39,17 @@ func TestListLocalTests(t *gotesting.T) {
 		},
 	}
 
-	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
 		checkArgs(t, args, &runner.Args{
 			Mode:      runner.ListTestsMode,
-			ListTests: &runner.ListTestsArgs{BundleGlob: mockLocalBundleGlob},
+			ListTests: &runner.ListTestsArgs{BundleGlob: fakerunner.MockLocalBundleGlob},
 		})
 
 		json.NewEncoder(stdout).Encode(tests)
 		return 0
 	}
 
-	cc := target.NewConnCache(&td.cfg)
+	cc := target.NewConnCache(&td.Cfg)
 	defer cc.Close(context.Background())
 
 	conn, err := cc.Conn(context.Background())
@@ -56,7 +57,7 @@ func TestListLocalTests(t *gotesting.T) {
 		t.Fatal(err)
 	}
 
-	results, err := listLocalTests(context.Background(), &td.cfg, &td.state, conn.SSHConn())
+	results, err := listLocalTests(context.Background(), &td.Cfg, &td.State, conn.SSHConn())
 	if err != nil {
 		t.Error("Failed to list local tests: ", err)
 	}
@@ -90,14 +91,14 @@ func TestListRemoteList(t *gotesting.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	td := newRemoteTestData(t, string(b), "", 0)
-	defer td.close()
+	td := fakerunner.NewRemoteTestData(t, string(b), "", 0)
+	defer td.Close()
 
 	// List matching tests instead of running them.
-	td.cfg.RemoteDataDir = "/tmp/data"
-	td.cfg.Patterns = []string{"*Test*"}
+	td.Cfg.RemoteDataDir = "/tmp/data"
+	td.Cfg.Patterns = []string{"*Test*"}
 
-	results, err := listRemoteTests(context.Background(), &td.cfg, &td.state)
+	results, err := listRemoteTests(context.Background(), &td.Cfg, &td.State)
 	if err != nil {
 		t.Error("Failed to list remote tests: ", err)
 	}
@@ -109,8 +110,8 @@ func TestListRemoteList(t *gotesting.T) {
 
 // TestListTests make sure list test can list all tests.
 func TestListTests(t *gotesting.T) {
-	td := newLocalTestData(t)
-	defer td.close()
+	td := fakerunner.NewLocalTestData(t)
+	defer td.Close()
 
 	tests := []testing.EntityWithRunnabilityInfo{
 		{
@@ -128,22 +129,22 @@ func TestListTests(t *gotesting.T) {
 		},
 	}
 
-	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
 		checkArgs(t, args, &runner.Args{
 			Mode:      runner.ListTestsMode,
-			ListTests: &runner.ListTestsArgs{BundleGlob: mockLocalBundleGlob},
+			ListTests: &runner.ListTestsArgs{BundleGlob: fakerunner.MockLocalBundleGlob},
 		})
 
 		json.NewEncoder(stdout).Encode(tests)
 		return 0
 	}
-	td.cfg.TotalShards = 1
-	td.cfg.RunLocal = true
+	td.Cfg.TotalShards = 1
+	td.Cfg.RunLocal = true
 
-	cc := target.NewConnCache(&td.cfg)
+	cc := target.NewConnCache(&td.Cfg)
 	defer cc.Close(context.Background())
 
-	results, err := listTests(context.Background(), &td.cfg, &td.state, cc)
+	results, err := listTests(context.Background(), &td.Cfg, &td.State, cc)
 	if err != nil {
 		t.Error("Failed to list local tests: ", err)
 	}
@@ -158,8 +159,8 @@ func TestListTests(t *gotesting.T) {
 
 // TestListTestsWithSharding make sure list test can list tests in specified shards.
 func TestListTestsWithSharding(t *gotesting.T) {
-	td := newLocalTestData(t)
-	defer td.close()
+	td := fakerunner.NewLocalTestData(t)
+	defer td.Close()
 
 	tests := []testing.EntityWithRunnabilityInfo{
 		{
@@ -177,24 +178,24 @@ func TestListTestsWithSharding(t *gotesting.T) {
 		},
 	}
 
-	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
 		checkArgs(t, args, &runner.Args{
 			Mode:      runner.ListTestsMode,
-			ListTests: &runner.ListTestsArgs{BundleGlob: mockLocalBundleGlob},
+			ListTests: &runner.ListTestsArgs{BundleGlob: fakerunner.MockLocalBundleGlob},
 		})
 
 		json.NewEncoder(stdout).Encode(tests)
 		return 0
 	}
-	td.cfg.TotalShards = 2
-	td.cfg.RunLocal = true
+	td.Cfg.TotalShards = 2
+	td.Cfg.RunLocal = true
 
-	cc := target.NewConnCache(&td.cfg)
+	cc := target.NewConnCache(&td.Cfg)
 	defer cc.Close(context.Background())
 
-	for i := 0; i < td.cfg.TotalShards; i++ {
-		td.cfg.ShardIndex = i
-		results, err := listTests(context.Background(), &td.cfg, &td.state, cc)
+	for i := 0; i < td.Cfg.TotalShards; i++ {
+		td.Cfg.ShardIndex = i
+		results, err := listTests(context.Background(), &td.Cfg, &td.State, cc)
 		if err != nil {
 			t.Error("Failed to list local tests: ", err)
 		}
@@ -209,8 +210,8 @@ func TestListTestsWithSharding(t *gotesting.T) {
 
 // TestListTestsWithSkippedTests make sure list test can list skipped tests correctly.
 func TestListTestsWithSkippedTests(t *gotesting.T) {
-	td := newLocalTestData(t)
-	defer td.close()
+	td := fakerunner.NewLocalTestData(t)
+	defer td.Close()
 
 	tests := []testing.EntityWithRunnabilityInfo{
 		{
@@ -235,24 +236,24 @@ func TestListTestsWithSkippedTests(t *gotesting.T) {
 		},
 	}
 
-	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
 		checkArgs(t, args, &runner.Args{
 			Mode:      runner.ListTestsMode,
-			ListTests: &runner.ListTestsArgs{BundleGlob: mockLocalBundleGlob},
+			ListTests: &runner.ListTestsArgs{BundleGlob: fakerunner.MockLocalBundleGlob},
 		})
 
 		json.NewEncoder(stdout).Encode(tests)
 		return 0
 	}
-	td.cfg.TotalShards = 2
-	td.cfg.RunLocal = true
+	td.Cfg.TotalShards = 2
+	td.Cfg.RunLocal = true
 
-	cc := target.NewConnCache(&td.cfg)
+	cc := target.NewConnCache(&td.Cfg)
 	defer cc.Close(context.Background())
 
 	// Shard 0 should include all skipped tests.
-	td.cfg.ShardIndex = 0
-	results, err := listTests(context.Background(), &td.cfg, &td.state, cc)
+	td.Cfg.ShardIndex = 0
+	results, err := listTests(context.Background(), &td.Cfg, &td.State, cc)
 	if err != nil {
 		t.Error("Failed to list local tests: ", err)
 	}
@@ -264,9 +265,9 @@ func TestListTestsWithSkippedTests(t *gotesting.T) {
 		t.Errorf("Unexpected list of local tests in shard 0: got %+v; want %+v", results, expected)
 	}
 
-	td.cfg.ShardIndex = 1
+	td.Cfg.ShardIndex = 1
 	// Shard 1 should have only one test
-	results, err = listTests(context.Background(), &td.cfg, &td.state, cc)
+	results, err = listTests(context.Background(), &td.Cfg, &td.State, cc)
 	if err != nil {
 		t.Error("Failed to list local tests: ", err)
 	}
@@ -280,12 +281,12 @@ func TestListTestsWithSkippedTests(t *gotesting.T) {
 
 // TestListTestsGetDUTInfo make sure getDUTInfo is called when listTests is called.
 func TestListTestsGetDUTInfo(t *gotesting.T) {
-	td := newLocalTestData(t)
-	defer td.close()
+	td := fakerunner.NewLocalTestData(t)
+	defer td.Close()
 
 	called := false
 
-	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
 		switch args.Mode {
 		case runner.GetDUTInfoMode:
 			// Just check that getDUTInfo is called; details of args are
@@ -302,12 +303,12 @@ func TestListTestsGetDUTInfo(t *gotesting.T) {
 		return 0
 	}
 
-	td.cfg.CheckTestDeps = true
+	td.Cfg.CheckTestDeps = true
 
-	cc := target.NewConnCache(&td.cfg)
+	cc := target.NewConnCache(&td.Cfg)
 	defer cc.Close(context.Background())
 
-	if _, err := listTests(context.Background(), &td.cfg, &td.state, cc); err != nil {
+	if _, err := listTests(context.Background(), &td.Cfg, &td.State, cc); err != nil {
 		t.Error("listTests failed: ", err)
 	}
 	if !called {

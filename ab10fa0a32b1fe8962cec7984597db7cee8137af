@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4ad6b790_7adc692f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-03-12T05:04:03Z",
+      "side": 1,
+      "message": "Resolved conflict. I\u0027m submitting this change now, but let us continue discussion offline.\n",
+      "revId": "ab10fa0a32b1fe8962cec7984597db7cee8137af",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

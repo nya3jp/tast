@@ -597,21 +597,6 @@ func runLocalTestsOnce(ctx context.Context, cfg *config.Config, state *config.St
 	return results, unstarted, rerr
 }
 
-// formatBytes formats bytes as a human-friendly string.
-func formatBytes(bytes int64) string {
-	const (
-		kb = 1024
-		mb = 1024 * kb
-	)
-	switch {
-	case bytes >= mb:
-		return fmt.Sprintf("%.1f MB", float32(bytes)/float32(mb))
-	case bytes >= kb:
-		return fmt.Sprintf("%.1f KB", float32(bytes)/float32(kb))
-	}
-	return fmt.Sprintf("%d B", bytes)
-}
-
 // diagnoseLocalRunError is used to attempt to diagnose the cause of an error encountered
 // while running local tests. It returns a string that can be returned by a diagnoseRunErrorFunc.
 // Files useful for diagnosis might be saved under outDir.

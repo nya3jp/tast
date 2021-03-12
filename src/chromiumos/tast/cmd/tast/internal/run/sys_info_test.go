@@ -30,7 +30,7 @@ func TestGetInitialSysInfo(t *testing.T) {
 		},
 	}
 	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
-		checkArgs(t, args, &runner.Args{Mode: runner.GetSysInfoStateMode})
+		fakerunner.CheckArgs(t, args, &runner.Args{Mode: runner.GetSysInfoStateMode})
 
 		json.NewEncoder(stdout).Encode(res)
 		return 0
@@ -63,7 +63,7 @@ func TestCollectSysInfo(t *testing.T) {
 	defer td.Close()
 
 	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
-		checkArgs(t, args, &runner.Args{
+		fakerunner.CheckArgs(t, args, &runner.Args{
 			Mode:           runner.CollectSysInfoMode,
 			CollectSysInfo: &runner.CollectSysInfoArgs{InitialState: *td.State.InitialSysInfo},
 		})

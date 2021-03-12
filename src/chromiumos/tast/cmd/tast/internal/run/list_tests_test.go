@@ -7,17 +7,103 @@ package run
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"io"
 	"reflect"
 	gotesting "testing"
 
+	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/fakerunner"
-	"chromiumos/tast/cmd/tast/internal/run/jsonprotocol"
 	"chromiumos/tast/cmd/tast/internal/run/target"
-	"chromiumos/tast/internal/dep"
 	"chromiumos/tast/internal/runner"
 	"chromiumos/tast/internal/testing"
 )
+
+func TestFindPatternsForShard(t *gotesting.T) {
+	tests := []testing.EntityInfo{
+		{Name: "pkg.Test0", Desc: "This is test 0"},
+		{Name: "pkg.Test1", Desc: "This is test 1"},
+		{Name: "pkg.Test2", Desc: "This is test 2"},
+		{Name: "pkg.Test3", Desc: "This is test 3"},
+		{Name: "pkg.Test4", Desc: "This is test 4"},
+		{Name: "pkg.Test5", Desc: "This is test 5"},
+		{Name: "pkg.Test6", Desc: "This is test 6"},
+	}
+	// Make the runner print serialized tests.
+	b, err := json.Marshal(&tests)
+	if err != nil {
+		t.Fatal(err)
+	}
+	td := fakerunner.NewRemoteTestData(t, string(b), "", 0)
+	defer td.Close()
+
+	// List matching tests instead of running them.
+	td.Cfg.RemoteDataDir = "/tmp/data"
+	td.Cfg.Patterns = []string{"*Test*"}
+	td.Cfg.RunRemote = true
+	td.Cfg.TotalShards = 3
+
+	cc := target.NewConnCache(&td.Cfg)
+	defer cc.Close(context.Background())
+
+	processed := make(map[string]bool)
+	var state config.State
+	for shardIndex := 0; shardIndex < td.Cfg.TotalShards; shardIndex++ {
+		td.Cfg.ShardIndex = shardIndex
+		testsToRun, testsToSkip, testsNotInShard, err := findTestsForShard(context.Background(), &td.Cfg, &state, cc)
+		if err != nil {
+			t.Fatal("Failed to find tests for shard: ", err)
+		}
+		if len(testsToRun)+len(testsNotInShard)+len(testsToSkip) != len(tests) {
+			t.Fatalf("The sum of numbers of tests in the shard (%v), outside the shard (%v) and skipped tests(%v) does not match the number of tests (%v)",
+				len(testsToRun), len(testsNotInShard), len(testsToSkip), len(tests))
+		}
+		for _, tr := range testsToRun {
+			name := tr.Name
+			if processed[name] {
+				t.Fatalf("Test %q is in more than one shard", name)
+			}
+			processed[name] = true
+		}
+	}
+	if len(processed) != len(tests) {
+		t.Fatal("Some tests are missing")
+	}
+}
+
+// testFindShardIndices tests whether the function findShardIndices returning the correct indices.
+func testFindShardIndices(numTests, totalShards, shardIndex, wantedStartIndex, wantedEndIndex int) (err error) {
+	startIndex, endIndex := findShardIndices(numTests, totalShards, shardIndex)
+	if startIndex != wantedStartIndex || endIndex != wantedEndIndex {
+		return fmt.Errorf("findShardIndices(%v, %v, %v)=(%v, %v); want (%v, %v)",
+			numTests, totalShards, shardIndex, startIndex, endIndex, wantedStartIndex, wantedEndIndex)
+	}
+	return nil
+}
+
+// TestFindShardIndices makes sure findShardIndices return expected indices.
+func TestFindShardIndices(t *gotesting.T) {
+	t.Parallel()
+	tests := []struct {
+		purpose                                                               string
+		totalTests, totalShards, shardIndex, wantedStartIndex, wantedEndIndex int
+	}{
+		{"the last shard of an evenly distributed shards", 9, 3, 0, 0, 3},
+		{"the middle shard of an evenly distributed shards", 9, 3, 1, 3, 6},
+		{"the last shard of an evenly distributed shards", 9, 3, 2, 6, 9},
+		{"the first shard of an unevenly distributed shards", 11, 3, 0, 0, 4},
+		{"the middle shard of an unevenly distributed shards", 11, 3, 1, 4, 8},
+		{"the last shard of an unevenly distributed shards", 11, 3, 2, 8, 11},
+		{"the case that there are more shards than tests and specified shard has a test", 9, 10, 0, 0, 1},
+		{"the case that there are more shards than tests and specified shard has no test", 9, 10, 9, 9, 9},
+		{"the case that the shard index is greater than the number of tests", 9, 12, 11, 9, 9},
+	}
+	for _, tt := range tests {
+		if err := testFindShardIndices(tt.totalTests, tt.totalShards, tt.shardIndex, tt.wantedStartIndex, tt.wantedEndIndex); err != nil {
+			t.Errorf("Failed in testing for %v: %v", tt.purpose, err)
+		}
+	}
+}
 
 func TestListLocalTests(t *gotesting.T) {
 	td := fakerunner.NewLocalTestData(t)
@@ -40,7 +126,7 @@ func TestListLocalTests(t *gotesting.T) {
 	}
 
 	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
-		checkArgs(t, args, &runner.Args{
+		fakerunner.CheckArgs(t, args, &runner.Args{
 			Mode:      runner.ListTestsMode,
 			ListTests: &runner.ListTestsArgs{BundleGlob: fakerunner.MockLocalBundleGlob},
 		})
@@ -105,213 +191,5 @@ func TestListRemoteList(t *gotesting.T) {
 
 	if !reflect.DeepEqual(results, tests) {
 		t.Errorf("Unexpected list of remote tests: got %+v; want %+v", results, tests)
-	}
-}
-
-// TestListTests make sure list test can list all tests.
-func TestListTests(t *gotesting.T) {
-	td := fakerunner.NewLocalTestData(t)
-	defer td.Close()
-
-	tests := []testing.EntityWithRunnabilityInfo{
-		{
-			EntityInfo: testing.EntityInfo{
-				Name: "pkg.Test",
-				Desc: "This is a test",
-				Attr: []string{"attr1", "attr2"},
-			},
-		},
-		{
-			EntityInfo: testing.EntityInfo{
-				Name: "pkg.AnotherTest",
-				Desc: "Another test",
-			},
-		},
-	}
-
-	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
-		checkArgs(t, args, &runner.Args{
-			Mode:      runner.ListTestsMode,
-			ListTests: &runner.ListTestsArgs{BundleGlob: fakerunner.MockLocalBundleGlob},
-		})
-
-		json.NewEncoder(stdout).Encode(tests)
-		return 0
-	}
-	td.Cfg.TotalShards = 1
-	td.Cfg.RunLocal = true
-
-	cc := target.NewConnCache(&td.Cfg)
-	defer cc.Close(context.Background())
-
-	results, err := listTests(context.Background(), &td.Cfg, &td.State, cc)
-	if err != nil {
-		t.Error("Failed to list local tests: ", err)
-	}
-	expected := make([]*jsonprotocol.EntityResult, len(tests))
-	for i := 0; i < len(tests); i++ {
-		expected[i] = &jsonprotocol.EntityResult{EntityInfo: tests[i].EntityInfo, SkipReason: tests[i].SkipReason}
-	}
-	if !reflect.DeepEqual(results, expected) {
-		t.Errorf("Unexpected list of local tests: got %+v; want %+v", results, expected)
-	}
-}
-
-// TestListTestsWithSharding make sure list test can list tests in specified shards.
-func TestListTestsWithSharding(t *gotesting.T) {
-	td := fakerunner.NewLocalTestData(t)
-	defer td.Close()
-
-	tests := []testing.EntityWithRunnabilityInfo{
-		{
-			EntityInfo: testing.EntityInfo{
-				Name: "pkg.Test",
-				Desc: "This is a test",
-				Attr: []string{"attr1", "attr2"},
-			},
-		},
-		{
-			EntityInfo: testing.EntityInfo{
-				Name: "pkg.AnotherTest",
-				Desc: "Another test",
-			},
-		},
-	}
-
-	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
-		checkArgs(t, args, &runner.Args{
-			Mode:      runner.ListTestsMode,
-			ListTests: &runner.ListTestsArgs{BundleGlob: fakerunner.MockLocalBundleGlob},
-		})
-
-		json.NewEncoder(stdout).Encode(tests)
-		return 0
-	}
-	td.Cfg.TotalShards = 2
-	td.Cfg.RunLocal = true
-
-	cc := target.NewConnCache(&td.Cfg)
-	defer cc.Close(context.Background())
-
-	for i := 0; i < td.Cfg.TotalShards; i++ {
-		td.Cfg.ShardIndex = i
-		results, err := listTests(context.Background(), &td.Cfg, &td.State, cc)
-		if err != nil {
-			t.Error("Failed to list local tests: ", err)
-		}
-		expected := []*jsonprotocol.EntityResult{
-			{EntityInfo: tests[i].EntityInfo, SkipReason: tests[i].SkipReason},
-		}
-		if !reflect.DeepEqual(results, expected) {
-			t.Errorf("Unexpected list of local tests: got %+v; want %+v", results, expected)
-		}
-	}
-}
-
-// TestListTestsWithSkippedTests make sure list test can list skipped tests correctly.
-func TestListTestsWithSkippedTests(t *gotesting.T) {
-	td := fakerunner.NewLocalTestData(t)
-	defer td.Close()
-
-	tests := []testing.EntityWithRunnabilityInfo{
-		{
-			EntityInfo: testing.EntityInfo{
-				Name: "pkg.Test",
-				Desc: "This is a test",
-				Attr: []string{"attr1", "attr2"},
-			},
-		},
-		{
-			EntityInfo: testing.EntityInfo{
-				Name: "pkg.AnotherTest",
-				Desc: "Another test",
-			},
-		},
-		{
-			EntityInfo: testing.EntityInfo{
-				Name: "pkg.SkippedTest",
-				Desc: "Skipped test",
-			},
-			SkipReason: "Skip",
-		},
-	}
-
-	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
-		checkArgs(t, args, &runner.Args{
-			Mode:      runner.ListTestsMode,
-			ListTests: &runner.ListTestsArgs{BundleGlob: fakerunner.MockLocalBundleGlob},
-		})
-
-		json.NewEncoder(stdout).Encode(tests)
-		return 0
-	}
-	td.Cfg.TotalShards = 2
-	td.Cfg.RunLocal = true
-
-	cc := target.NewConnCache(&td.Cfg)
-	defer cc.Close(context.Background())
-
-	// Shard 0 should include all skipped tests.
-	td.Cfg.ShardIndex = 0
-	results, err := listTests(context.Background(), &td.Cfg, &td.State, cc)
-	if err != nil {
-		t.Error("Failed to list local tests: ", err)
-	}
-	expected := []*jsonprotocol.EntityResult{
-		{EntityInfo: tests[0].EntityInfo, SkipReason: tests[0].SkipReason},
-		{EntityInfo: tests[2].EntityInfo, SkipReason: tests[2].SkipReason},
-	}
-	if !reflect.DeepEqual(results, expected) {
-		t.Errorf("Unexpected list of local tests in shard 0: got %+v; want %+v", results, expected)
-	}
-
-	td.Cfg.ShardIndex = 1
-	// Shard 1 should have only one test
-	results, err = listTests(context.Background(), &td.Cfg, &td.State, cc)
-	if err != nil {
-		t.Error("Failed to list local tests: ", err)
-	}
-	expected = []*jsonprotocol.EntityResult{
-		{EntityInfo: tests[1].EntityInfo, SkipReason: tests[1].SkipReason},
-	}
-	if !reflect.DeepEqual(results, expected) {
-		t.Errorf("Unexpected list of local tests in shard 1: got %+v; want %+v", results, expected)
-	}
-}
-
-// TestListTestsGetDUTInfo make sure getDUTInfo is called when listTests is called.
-func TestListTestsGetDUTInfo(t *gotesting.T) {
-	td := fakerunner.NewLocalTestData(t)
-	defer td.Close()
-
-	called := false
-
-	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
-		switch args.Mode {
-		case runner.GetDUTInfoMode:
-			// Just check that getDUTInfo is called; details of args are
-			// tested in deps_test.go.
-			called = true
-			json.NewEncoder(stdout).Encode(&runner.GetDUTInfoResult{
-				SoftwareFeatures: &dep.SoftwareFeatures{
-					Available: []string{"foo"}, // must report non-empty features
-				},
-			})
-		default:
-			t.Errorf("Unexpected args.Mode = %v", args.Mode)
-		}
-		return 0
-	}
-
-	td.Cfg.CheckTestDeps = true
-
-	cc := target.NewConnCache(&td.Cfg)
-	defer cc.Close(context.Background())
-
-	if _, err := listTests(context.Background(), &td.Cfg, &td.State, cc); err != nil {
-		t.Error("listTests failed: ", err)
-	}
-	if !called {
-		t.Error("runTests did not call getSoftwareFeatures")
 	}
 }

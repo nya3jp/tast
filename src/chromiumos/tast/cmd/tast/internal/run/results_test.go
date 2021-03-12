@@ -667,7 +667,7 @@ func TestWriteResultsCollectSysInfo(t *gotesting.T) {
 	defer td.Close()
 
 	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
-		checkArgs(t, args, &runner.Args{
+		fakerunner.CheckArgs(t, args, &runner.Args{
 			Mode:           runner.CollectSysInfoMode,
 			CollectSysInfo: &runner.CollectSysInfoArgs{},
 		})

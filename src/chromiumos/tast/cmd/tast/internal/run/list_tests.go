@@ -10,25 +10,67 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/jsonprotocol"
 	"chromiumos/tast/cmd/tast/internal/run/target"
+	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/bundle"
 	"chromiumos/tast/internal/runner"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/ssh"
 )
 
-// listTests returns the whole tests to run.
-func listTests(ctx context.Context, cfg *config.Config, state *config.State, cc *target.ConnCache) ([]*jsonprotocol.EntityResult, error) {
-	if err := getDUTInfo(ctx, cfg, state, cc); err != nil {
-		return nil, err
-	}
-	testsToRun, testsToSkip, _, err := findTestsForShard(ctx, cfg, state, cc)
+// findTestsForShard finds the pattern for a subset of tests based on shard index.
+func findTestsForShard(ctx context.Context, cfg *config.Config, state *config.State, cc *target.ConnCache) (testsToRun, testsToSkip, testsNotInShard []*jsonprotocol.EntityResult, err error) {
+	tests, testsToSkip, err := listRunnableTests(ctx, cfg, state, cc)
 	if err != nil {
-		return nil, err
+		return nil, nil, nil, errors.Wrapf(err, "fails to find runnable tests for patterns %q", cfg.Patterns)
 	}
-	if cfg.ShardIndex == 0 {
-		testsToRun = append(testsToRun, testsToSkip...)
+
+	startIndex, endIndex := findShardIndices(len(tests), cfg.TotalShards, cfg.ShardIndex)
+	testsToRun = tests[startIndex:endIndex]
+
+	const skipReason = "test is not in the specified shard"
+	for i := 0; i < startIndex; i++ {
+		tests[i].SkipReason = skipReason
+		testsNotInShard = append(testsNotInShard, tests[i])
 	}
-	return testsToRun, nil
+	for i := endIndex; i < len(tests); i++ {
+		tests[i].SkipReason = skipReason
+		testsNotInShard = append(testsNotInShard, tests[i])
+	}
+	return testsToRun, testsToSkip, testsNotInShard, nil
+}
+
+// listRunnableTests finds runnable tests that fit the cfg.Patterns.
+func listRunnableTests(ctx context.Context, cfg *config.Config, state *config.State, cc *target.ConnCache) (testsToInclude, testsToSkip []*jsonprotocol.EntityResult, err error) {
+	tests, err := listAllTests(ctx, cfg, state, cc)
+	if err != nil {
+		return nil, nil, errors.Wrapf(err, "cannot list tests for patterns %q", cfg.Patterns)
+	}
+	for _, t := range tests {
+		if t.SkipReason == "" {
+			testsToInclude = append(testsToInclude, t)
+		} else {
+			testsToSkip = append(testsToSkip, t)
+		}
+	}
+	return testsToInclude, testsToSkip, nil
+}
+
+// findShardIndices find the start and end index of a shard.
+func findShardIndices(numTests, totalShards, shardIndex int) (startIndex, endIndex int) {
+	numTestsPerShard := numTests / totalShards
+	extraTests := numTests % totalShards
+
+	// The number of tests would be different for different shard index.
+	if shardIndex < extraTests {
+		// First few shards will have one extra test.
+		numTestsPerShard++
+		startIndex = shardIndex * numTestsPerShard
+	} else {
+		startIndex = shardIndex*numTestsPerShard + extraTests
+	}
+
+	endIndex = startIndex + numTestsPerShard
+	return startIndex, endIndex
 }
 
 // listAllTests returns the whole tests whether they will be skipped or not..

@@ -50,6 +50,23 @@
       "message": "Reviewers ping.",
       "revId": "1f628bbceab7d16c1a4e2579703f7d335614233b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "676be40a_c03d436a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000221
+      },
+      "writtenOn": "2021-03-12T01:23:10Z",
+      "side": 1,
+      "message": "Katherine, could you please take another look? Thanks!",
+      "revId": "1f628bbceab7d16c1a4e2579703f7d335614233b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

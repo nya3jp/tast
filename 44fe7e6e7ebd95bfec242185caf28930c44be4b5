@@ -20,6 +20,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "a7c96a17_16cd4085",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-03-12T01:36:14Z",
+      "side": 1,
+      "message": "\u003e There is nothing wrong with the code. I just want discuss if there are a different approach. Right now, users has a lot struct needs to worry about. They need to know how ConnCache, Conn and ssh.Conn work. Would it be better to abstract all the operations in one struct, Conn?\n\nActually, it is intentional that authors have to worry about several structs.\n\nAs you see, these changes are refactoring changes, not changing any behavior of the program. If you think that authors have to worry about many structs with refactoring changes, it means that necessity of worrying about these structs were hidden previously because they were essentially enclosed in one big struct State.\n\nCurrently most Tast CLI functions take State as an argument, which carries complex states. It works like: calling function A fills State.Foo and function B/C/D reads State.Foo. This means that we\u0027ll hit runtime errors if we call functions B/C/D before calling A. Then let\u0027s say an author decided to add a new function E which needs State.Foo. How do they know if it\u0027s safe to call? The only way is to read through the whole Tast CLI code to ensure that A is always called before E. This is not easy because they have to learn the whole structure of Tast CLI.\n\nOn the other hand, let\u0027s say we change function A to return an immutable struct S which contains Foo, instead of storing Foo to State, and pass it to functions needing Foo. Then it\u0027s now trivial for authors to decide if it\u0027s safe to call function E: it\u0027s safe if and only if we can get struct S from somewhere and pass it to E.\n\nAlso, if S provides methods that perform operations that cannot be done without S, it\u0027s also easy to tell if a function may perform these operations; if it takes A as an argument, it may, otherwise not.\n\n\nSo, going back to this series of CL, crrev.com/c/2751493 extracted target.ConnCache from State. target.ConnCache is essentially immutable struct (except that it can be closed; that\u0027s the only state we can never avoid, but can be ensured easily by deferred close).\n\nDifference between target.ConnCache and ssh.Conn is that target.ConnCache can reconnect to the DUT, while ssh.Conn cannot. This distinction is briefly mentioned in the comment of ConnCache.Conn:\n\n // Even when ConnCache has a cached connection, getting it with Conn has slight\n // performance hit because it checks the connection health by sending SSH ping.\n // Unless you expect connection drops (e.g. after running test bundles), try to\n // keep using a returned connection. As a corollary, there is nothing wrong with\n // functions taking both ConnCache and ssh.Conn as arguments.\n\nDifference between ssh.Conn and target.Conn is unclear at this point. They\u0027re not different for now, but crrev.com/c/2751504 (WIP) will make them different. It will let target.Conn own services whose lifetime is tied to an SSH connection, namely ephemeral devserver and TLW port forwarding. The change will remove more fields from State.",
+      "parentUuid": "fdc35d71_028e96f7",
+      "revId": "44fe7e6e7ebd95bfec242185caf28930c44be4b5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "9b3b329c_d9a81331",
         "filename": "src/chromiumos/tast/cmd/tast/internal/run/sys_info.go",
         "patchSetId": 1
@@ -31,6 +49,24 @@
       "writtenOn": "2021-03-11T21:56:18Z",
       "side": 1,
       "message": "Just for discussion purpose. Nothing wrong with the code. I just want to discuss a different approach: passing conn instead install SSHConn. At this moment, I think users need to get SSHConn from conn in order to do anything and the conn struct does not look too useful.",
+      "revId": "44fe7e6e7ebd95bfec242185caf28930c44be4b5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3a52d3a9_286e09a8",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/sys_info.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-03-12T01:36:14Z",
+      "side": 1,
+      "message": "You\u0027re right, at this point target.Conn is not very useful. It will become more useful when crrev.com/c/2751504 (WIP) lands, where target.Conn owns services whose lifetime is tied to an SSH connection.\n\nIf you like, I can merge this CL to the other one, but I don\u0027t recommend since it will make a CL bigger, harder to review.",
+      "parentUuid": "9b3b329c_d9a81331",
       "revId": "44fe7e6e7ebd95bfec242185caf28930c44be4b5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }

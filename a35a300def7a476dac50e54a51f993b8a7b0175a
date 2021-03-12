@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "27b58353_14754878",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-03-12T10:15:22Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "ec472e24_176b66d4",
+      "revId": "a35a300def7a476dac50e54a51f993b8a7b0175a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "181b326a_77d40f87",
@@ -41,6 +59,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "f4880789_0a8aadc6",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 685,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-03-12T10:15:22Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "181b326a_77d40f87",
+      "range": {
+        "startLine": 685,
+        "startChar": 5,
+        "endLine": 685,
+        "endChar": 15
+      },
+      "revId": "a35a300def7a476dac50e54a51f993b8a7b0175a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "0aa061e0_19696f4f",
@@ -54,6 +96,30 @@
       "writtenOn": "2021-03-12T07:36:09Z",
       "side": 1,
       "message": "style: Let us avoid naked returns.\nhttps://github.com/golang/go/wiki/CodeReviewComments#naked-returns",
+      "range": {
+        "startLine": 699,
+        "startChar": 2,
+        "endLine": 700,
+        "endChar": 8
+      },
+      "revId": "a35a300def7a476dac50e54a51f993b8a7b0175a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "bbf5d394_75ff5390",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 700,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-03-12T10:15:22Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0aa061e0_19696f4f",
       "range": {
         "startLine": 699,
         "startChar": 2,

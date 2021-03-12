@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package run
+// Package diagnose implements diagnosis logic for run failures.
+package diagnose
 
 import (
 	"context"
@@ -20,10 +21,10 @@ import (
 	"chromiumos/tast/ssh"
 )
 
-// diagnoseSSHDrop diagnoses a SSH connection drop during local test runs
+// SSHDrop diagnoses a SSH connection drop during local test runs
 // and returns a diagnosis message. Files useful for diagnosis might be saved
 // under outDir.
-func diagnoseSSHDrop(ctx context.Context, cfg *config.Config, cc *target.ConnCache, outDir string) string {
+func SSHDrop(ctx context.Context, cfg *config.Config, cc *target.ConnCache, outDir string) string {
 	if cc.InitBootID() == "" {
 		return "failed to diagnose: initial boot_id is not available"
 	}

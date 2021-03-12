@@ -10,6 +10,7 @@ import (
 	"io"
 	"net"
 	"path/filepath"
+	"reflect"
 	"strconv"
 	"strings"
 	gotesting "testing"
@@ -22,9 +23,13 @@ import (
 	"go.chromium.org/chromiumos/config/go/api/test/tls"
 	"google.golang.org/grpc"
 
+	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/fakerunner"
+	"chromiumos/tast/cmd/tast/internal/run/jsonprotocol"
+	"chromiumos/tast/cmd/tast/internal/run/target"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/control"
+	"chromiumos/tast/internal/dep"
 	"chromiumos/tast/internal/fakereports"
 	"chromiumos/tast/internal/faketlw"
 	"chromiumos/tast/internal/protocol"
@@ -578,6 +583,422 @@ func TestRunWithSkippedTests(t *gotesting.T) {
 			t.Errorf("Test %q has no SkipReason; want something", r.Name)
 
 		}
+	}
+}
+
+// TestListTests make sure list test can list all tests.
+func TestListTests(t *gotesting.T) {
+	td := fakerunner.NewLocalTestData(t)
+	defer td.Close()
+
+	tests := []testing.EntityWithRunnabilityInfo{
+		{
+			EntityInfo: testing.EntityInfo{
+				Name: "pkg.Test",
+				Desc: "This is a test",
+				Attr: []string{"attr1", "attr2"},
+			},
+		},
+		{
+			EntityInfo: testing.EntityInfo{
+				Name: "pkg.AnotherTest",
+				Desc: "Another test",
+			},
+		},
+	}
+
+	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+		fakerunner.CheckArgs(t, args, &runner.Args{
+			Mode:      runner.ListTestsMode,
+			ListTests: &runner.ListTestsArgs{BundleGlob: fakerunner.MockLocalBundleGlob},
+		})
+
+		json.NewEncoder(stdout).Encode(tests)
+		return 0
+	}
+	td.Cfg.TotalShards = 1
+	td.Cfg.RunLocal = true
+
+	cc := target.NewConnCache(&td.Cfg)
+	defer cc.Close(context.Background())
+
+	results, err := listTests(context.Background(), &td.Cfg, &td.State, cc)
+	if err != nil {
+		t.Error("Failed to list local tests: ", err)
+	}
+	expected := make([]*jsonprotocol.EntityResult, len(tests))
+	for i := 0; i < len(tests); i++ {
+		expected[i] = &jsonprotocol.EntityResult{EntityInfo: tests[i].EntityInfo, SkipReason: tests[i].SkipReason}
+	}
+	if !reflect.DeepEqual(results, expected) {
+		t.Errorf("Unexpected list of local tests: got %+v; want %+v", results, expected)
+	}
+}
+
+// TestListTestsWithSharding make sure list test can list tests in specified shards.
+func TestListTestsWithSharding(t *gotesting.T) {
+	td := fakerunner.NewLocalTestData(t)
+	defer td.Close()
+
+	tests := []testing.EntityWithRunnabilityInfo{
+		{
+			EntityInfo: testing.EntityInfo{
+				Name: "pkg.Test",
+				Desc: "This is a test",
+				Attr: []string{"attr1", "attr2"},
+			},
+		},
+		{
+			EntityInfo: testing.EntityInfo{
+				Name: "pkg.AnotherTest",
+				Desc: "Another test",
+			},
+		},
+	}
+
+	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+		fakerunner.CheckArgs(t, args, &runner.Args{
+			Mode:      runner.ListTestsMode,
+			ListTests: &runner.ListTestsArgs{BundleGlob: fakerunner.MockLocalBundleGlob},
+		})
+
+		json.NewEncoder(stdout).Encode(tests)
+		return 0
+	}
+	td.Cfg.TotalShards = 2
+	td.Cfg.RunLocal = true
+
+	cc := target.NewConnCache(&td.Cfg)
+	defer cc.Close(context.Background())
+
+	for i := 0; i < td.Cfg.TotalShards; i++ {
+		td.Cfg.ShardIndex = i
+		results, err := listTests(context.Background(), &td.Cfg, &td.State, cc)
+		if err != nil {
+			t.Error("Failed to list local tests: ", err)
+		}
+		expected := []*jsonprotocol.EntityResult{
+			{EntityInfo: tests[i].EntityInfo, SkipReason: tests[i].SkipReason},
+		}
+		if !reflect.DeepEqual(results, expected) {
+			t.Errorf("Unexpected list of local tests: got %+v; want %+v", results, expected)
+		}
+	}
+}
+
+// TestListTestsWithSkippedTests make sure list test can list skipped tests correctly.
+func TestListTestsWithSkippedTests(t *gotesting.T) {
+	td := fakerunner.NewLocalTestData(t)
+	defer td.Close()
+
+	tests := []testing.EntityWithRunnabilityInfo{
+		{
+			EntityInfo: testing.EntityInfo{
+				Name: "pkg.Test",
+				Desc: "This is a test",
+				Attr: []string{"attr1", "attr2"},
+			},
+		},
+		{
+			EntityInfo: testing.EntityInfo{
+				Name: "pkg.AnotherTest",
+				Desc: "Another test",
+			},
+		},
+		{
+			EntityInfo: testing.EntityInfo{
+				Name: "pkg.SkippedTest",
+				Desc: "Skipped test",
+			},
+			SkipReason: "Skip",
+		},
+	}
+
+	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+		fakerunner.CheckArgs(t, args, &runner.Args{
+			Mode:      runner.ListTestsMode,
+			ListTests: &runner.ListTestsArgs{BundleGlob: fakerunner.MockLocalBundleGlob},
+		})
+
+		json.NewEncoder(stdout).Encode(tests)
+		return 0
+	}
+	td.Cfg.TotalShards = 2
+	td.Cfg.RunLocal = true
+
+	cc := target.NewConnCache(&td.Cfg)
+	defer cc.Close(context.Background())
+
+	// Shard 0 should include all skipped tests.
+	td.Cfg.ShardIndex = 0
+	results, err := listTests(context.Background(), &td.Cfg, &td.State, cc)
+	if err != nil {
+		t.Error("Failed to list local tests: ", err)
+	}
+	expected := []*jsonprotocol.EntityResult{
+		{EntityInfo: tests[0].EntityInfo, SkipReason: tests[0].SkipReason},
+		{EntityInfo: tests[2].EntityInfo, SkipReason: tests[2].SkipReason},
+	}
+	if !reflect.DeepEqual(results, expected) {
+		t.Errorf("Unexpected list of local tests in shard 0: got %+v; want %+v", results, expected)
+	}
+
+	td.Cfg.ShardIndex = 1
+	// Shard 1 should have only one test
+	results, err = listTests(context.Background(), &td.Cfg, &td.State, cc)
+	if err != nil {
+		t.Error("Failed to list local tests: ", err)
+	}
+	expected = []*jsonprotocol.EntityResult{
+		{EntityInfo: tests[1].EntityInfo, SkipReason: tests[1].SkipReason},
+	}
+	if !reflect.DeepEqual(results, expected) {
+		t.Errorf("Unexpected list of local tests in shard 1: got %+v; want %+v", results, expected)
+	}
+}
+
+// TestListTestsGetDUTInfo make sure getDUTInfo is called when listTests is called.
+func TestListTestsGetDUTInfo(t *gotesting.T) {
+	td := fakerunner.NewLocalTestData(t)
+	defer td.Close()
+
+	called := false
+
+	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+		switch args.Mode {
+		case runner.GetDUTInfoMode:
+			// Just check that getDUTInfo is called; details of args are
+			// tested in deps_test.go.
+			called = true
+			json.NewEncoder(stdout).Encode(&runner.GetDUTInfoResult{
+				SoftwareFeatures: &dep.SoftwareFeatures{
+					Available: []string{"foo"}, // must report non-empty features
+				},
+			})
+		default:
+			t.Errorf("Unexpected args.Mode = %v", args.Mode)
+		}
+		return 0
+	}
+
+	td.Cfg.CheckTestDeps = true
+
+	cc := target.NewConnCache(&td.Cfg)
+	defer cc.Close(context.Background())
+
+	if _, err := listTests(context.Background(), &td.Cfg, &td.State, cc); err != nil {
+		t.Error("listTests failed: ", err)
+	}
+	if !called {
+		t.Error("runTests did not call getSoftwareFeatures")
+	}
+}
+
+func TestRunTestsFailureBeforeRun(t *gotesting.T) {
+	td := fakerunner.NewLocalTestData(t)
+	defer td.Close()
+
+	// Make the runner always fail, and ask to check test deps so we'll get a failure before trying
+	// to run tests. local() shouldn't set StartedRun to true since we failed before then.
+	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) { return 1 }
+	td.Cfg.CheckTestDeps = true
+
+	cc := target.NewConnCache(&td.Cfg)
+	defer cc.Close(context.Background())
+
+	var state config.State
+	if _, err := runTests(context.Background(), &td.Cfg, &state, cc); err == nil {
+		t.Errorf("runTests unexpectedly passed")
+	} else if state.StartedRun {
+		t.Error("runTests incorrectly reported that run was started after early failure")
+	}
+}
+
+func TestRunTestsGetDUTInfo(t *gotesting.T) {
+	td := fakerunner.NewLocalTestData(t)
+	defer td.Close()
+
+	called := false
+
+	osVersion := "octopus-release/R86-13312.0.2020_07_02_1108"
+
+	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+		switch args.Mode {
+		case runner.GetDUTInfoMode:
+			// Just check that getDUTInfo is called; details of args are
+			// tested in deps_test.go.
+			called = true
+			json.NewEncoder(stdout).Encode(&runner.GetDUTInfoResult{
+				SoftwareFeatures: &dep.SoftwareFeatures{
+					Available: []string{"foo"}, // must report non-empty features
+				},
+				OSVersion: osVersion,
+			})
+		default:
+			t.Errorf("Unexpected args.Mode = %v", args.Mode)
+		}
+		return 0
+	}
+
+	td.Cfg.CheckTestDeps = true
+
+	cc := target.NewConnCache(&td.Cfg)
+	defer cc.Close(context.Background())
+
+	if _, err := runTests(context.Background(), &td.Cfg, &td.State, cc); err != nil {
+		t.Error("runTests failed: ", err)
+	}
+
+	expectedOSVersion := "Target version: " + osVersion
+	if !strings.Contains(td.LogBuf.String(), expectedOSVersion) {
+		t.Errorf("Cannot find %q in log buffer %v", expectedOSVersion, td.LogBuf.String())
+	}
+	if !called {
+		t.Error("runTests did not call getSoftwareFeatures")
+	}
+}
+
+func TestRunTestsGetInitialSysInfo(t *gotesting.T) {
+	td := fakerunner.NewLocalTestData(t)
+	defer td.Close()
+
+	called := false
+
+	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+		switch args.Mode {
+		case runner.GetSysInfoStateMode:
+			// Just check that getInitialSysInfo is called; details of args are
+			// tested in sys_info_test.go.
+			called = true
+			json.NewEncoder(stdout).Encode(&runner.GetSysInfoStateResult{})
+		default:
+			t.Errorf("Unexpected args.Mode = %v", args.Mode)
+		}
+		return 0
+	}
+
+	td.Cfg.CollectSysInfo = true
+
+	cc := target.NewConnCache(&td.Cfg)
+	defer cc.Close(context.Background())
+
+	if _, err := runTests(context.Background(), &td.Cfg, &td.State, cc); err != nil {
+		t.Error("runTests failed: ", err)
+	}
+	if !called {
+		t.Errorf("runTests did not call getInitialSysInfo")
+	}
+}
+
+// TestRunTestsSkipTests check if runTests skipping testings correctly.
+func TestRunTestsSkipTests(t *gotesting.T) {
+	tests := []testing.EntityWithRunnabilityInfo{
+		{
+			EntityInfo: testing.EntityInfo{
+				Name:         "unsupported.Test0",
+				Desc:         "This is test 0",
+				SoftwareDeps: []string{"has_dep"},
+			},
+			SkipReason: "dependency not available",
+		},
+		{
+			EntityInfo: testing.EntityInfo{Name: "pkg.Test1", Desc: "This is test 1"},
+		},
+		{
+			EntityInfo: testing.EntityInfo{Name: "pkg.Test2", Desc: "This is test 2"},
+		},
+		{
+			EntityInfo: testing.EntityInfo{Name: "pkg.Test3", Desc: "This is test 3"},
+		},
+		{
+			EntityInfo: testing.EntityInfo{Name: "pkg.Test4", Desc: "This is test 4"},
+		},
+		{
+			EntityInfo: testing.EntityInfo{
+				Name:         "unsupported.Test5",
+				Desc:         "This is test 5",
+				SoftwareDeps: []string{"has_dep"},
+			},
+			SkipReason: "dependency not available",
+		},
+		{
+			EntityInfo: testing.EntityInfo{Name: "pkg.Test6", Desc: "This is test 6"},
+		},
+	}
+
+	td := fakerunner.NewLocalTestData(t)
+	defer td.Close()
+
+	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+		switch args.Mode {
+		case runner.GetDUTInfoMode:
+			// Just check that getDUTInfo is called; details of args are
+			// tested in deps_test.go.
+			json.NewEncoder(stdout).Encode(&runner.GetDUTInfoResult{
+				SoftwareFeatures: &dep.SoftwareFeatures{
+					Available: []string{"a_feature"},
+				},
+			})
+		case runner.ListTestsMode:
+			json.NewEncoder(stdout).Encode(tests)
+		case runner.RunTestsMode:
+			testNames := args.RunTests.BundleArgs.Patterns
+			mw := control.NewMessageWriter(stdout)
+			mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: len(testNames)})
+			count := int64(2)
+			for _, t := range testNames {
+				mw.WriteMessage(&control.EntityStart{Time: time.Unix(count, 0), Info: testing.EntityInfo{Name: t}})
+				count++
+				var skipReasons []string
+				if strings.HasPrefix(t, "unsupported") {
+					skipReasons = append(skipReasons, "dependency not available")
+				}
+				mw.WriteMessage(&control.EntityEnd{Time: time.Unix(count, 0), Name: t, SkipReasons: skipReasons})
+				count++
+			}
+			mw.WriteMessage(&control.RunEnd{Time: time.Unix(count, 0)})
+		case runner.ListFixturesMode:
+			json.NewEncoder(stdout).Encode(&runner.ListFixturesResult{})
+		default:
+			t.Errorf("Unexpected args.Mode = %v", args.Mode)
+		}
+		return 0
+	}
+
+	// List matching tests instead of running them.
+	td.Cfg.LocalDataDir = "/tmp/data"
+	td.Cfg.Patterns = []string{"*Test*"}
+	td.Cfg.RunLocal = true
+	td.Cfg.TotalShards = 2
+	td.Cfg.CheckTestDeps = true
+
+	cc := target.NewConnCache(&td.Cfg)
+	defer cc.Close(context.Background())
+
+	expectedPassed := 5
+	expectedSkipped := len(tests) - 5
+	passed := 0
+	skipped := 0
+	for shardIndex := 0; shardIndex < td.Cfg.TotalShards; shardIndex++ {
+		td.State.SoftwareFeatures = nil
+		td.Cfg.ShardIndex = shardIndex
+		testResults, err := runTests(context.Background(), &td.Cfg, &td.State, cc)
+		if err != nil {
+			t.Fatal("Failed to run tests: ", err)
+		}
+		for _, t := range testResults {
+			if t.SkipReason == "" {
+				passed++
+			} else {
+				skipped++
+			}
+		}
+	}
+	if passed != expectedPassed {
+		t.Errorf("runTests returned %d passed tests; want %d", passed, expectedPassed)
+	}
+	if skipped != expectedSkipped {
+		t.Errorf("runTests returned %d skipped tests; want %d", skipped, expectedSkipped)
 	}
 }
 

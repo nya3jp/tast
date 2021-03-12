@@ -10,38 +10,17 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"net"
 	"os"
-	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
-	"chromiumos/tast/cmd/tast/internal/run/devserver"
 	"chromiumos/tast/cmd/tast/internal/run/jsonprotocol"
 	"chromiumos/tast/internal/bundle"
 	"chromiumos/tast/internal/runner"
 	"chromiumos/tast/internal/timing"
 )
-
-// startEphemeralDevserverForRemoteTests starts an ephemeral devserver for remote tests.
-func startEphemeralDevserverForRemoteTests(ctx context.Context, cfg *config.Config, state *config.State) (*devserver.Ephemeral, error) {
-	lis, err := net.Listen("tcp", "localhost:0")
-	if err != nil {
-		return nil, fmt.Errorf("failed to listen to a local port: %v", err)
-	}
-
-	cacheDir := filepath.Join(cfg.TastDir, "devserver", "static")
-	es, err := devserver.NewEphemeral(lis, cacheDir, cfg.ExtraAllowedBuckets)
-	if err != nil {
-		return nil, err
-	}
-
-	state.RemoteDevservers = []string{fmt.Sprintf("http://%s", lis.Addr())}
-	cfg.Logger.Log("Starting ephemeral devserver at ", state.RemoteDevservers[0], " for remote tests")
-	return es, nil
-}
 
 // runRemoteTests runs the remote test runner and reads its output.
 func runRemoteTests(ctx context.Context, cfg *config.Config, state *config.State) ([]*jsonprotocol.EntityResult, error) {

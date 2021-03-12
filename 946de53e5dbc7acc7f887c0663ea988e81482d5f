@@ -16,6 +16,322 @@
       "message": "It is the first CL for companion DUTs support. It adds a new flags, makes connections to companion DUTs, and makes it available for tests to use. Please review. Thanks.",
       "revId": "946de53e5dbc7acc7f887c0663ea988e81482d5f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b4a107ac_f58a34db",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-03-12T08:08:56Z",
+      "side": 1,
+      "message": "Nice! I made several comments but no of them are major.\n",
+      "revId": "946de53e5dbc7acc7f887c0663ea988e81482d5f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "daaad032_567e0af1",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/config/config.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 106,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-03-12T08:08:56Z",
+      "side": 1,
+      "message": "style: CompanionDUTs",
+      "range": {
+        "startLine": 106,
+        "startChar": 1,
+        "endLine": 106,
+        "endChar": 14
+      },
+      "revId": "946de53e5dbc7acc7f887c0663ea988e81482d5f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "384c565a_1de2a9e2",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/config/config.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 275,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-03-12T08:08:56Z",
+      "side": 1,
+      "message": "TBH I prefer other delimiters. It\u0027s because \",\" is usually used to separate things of the same concept. So, \"role1,role2,role3\" looks fine, \"role1:addr1,role2:addr2\" looks fine, but \"role1,addr1\" looks a bit strange.\n\nWhat do you think about picking from these characters:\n\n : \u003d /",
+      "range": {
+        "startLine": 275,
+        "startChar": 38,
+        "endLine": 275,
+        "endChar": 41
+      },
+      "revId": "946de53e5dbc7acc7f887c0663ea988e81482d5f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a6561658_5c2acb78",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/remote.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 133,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-03-12T08:08:56Z",
+      "side": 1,
+      "message": "Let\u0027s try to avoid rewriting initialized structs as it\u0027s sometimes misleading.\n\n runFlags :\u003d []string{\n   \"-build\u003d\" + ...,\n   ...\n }\n\n for role, dut :\u003d range cfg.CompanionDuts {\n   runFlags \u003d append(runFlags, ...)\n }\n\n args :\u003d runner.Args{\n   ... /* use runFlags in this struct initialization */\n }",
+      "range": {
+        "startLine": 131,
+        "startChar": 1,
+        "endLine": 133,
+        "endChar": 2
+      },
+      "revId": "946de53e5dbc7acc7f887c0663ea988e81482d5f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b283f042_8c616ed5",
+        "filename": "src/chromiumos/tast/internal/bundle/args.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 236,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-03-12T08:08:56Z",
+      "side": 1,
+      "message": "nit: companionDuts to follow the JSON field naming conventions here.",
+      "range": {
+        "startLine": 236,
+        "startChar": 40,
+        "endLine": 236,
+        "endChar": 53
+      },
+      "revId": "946de53e5dbc7acc7f887c0663ea988e81482d5f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7a3ef682_e55b8ac7",
+        "filename": "src/chromiumos/tast/internal/bundle/args.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 236,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-03-12T08:08:56Z",
+      "side": 1,
+      "message": "style: CompanionDUTs",
+      "range": {
+        "startLine": 236,
+        "startChar": 1,
+        "endLine": 236,
+        "endChar": 14
+      },
+      "revId": "946de53e5dbc7acc7f887c0663ea988e81482d5f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6a8df8dd_e79d6ab7",
+        "filename": "src/chromiumos/tast/internal/bundle/bundle.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 352,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-03-12T08:08:56Z",
+      "side": 1,
+      "message": "Same here: Please create map[string]*dut.DUT before struct initialization of testing.RemoteData.",
+      "range": {
+        "startLine": 346,
+        "startChar": 2,
+        "endLine": 352,
+        "endChar": 3
+      },
+      "revId": "946de53e5dbc7acc7f887c0663ea988e81482d5f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f0807c59_8dd4944b",
+        "filename": "src/chromiumos/tast/internal/bundle/bundle.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 359,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-03-12T08:08:56Z",
+      "side": 1,
+      "message": "We have to put this defer statement within the loop above; otherwise we fail to close DUT when we hit an error within the loop.\n\n companionDUTs :\u003d make(map[string]*dut.DUT)\n for role, addr :\u003d range args.RunTests.CompanionDUTs {\n   dut, err :\u003d ...\n   if err !\u003d nil { ... }\n   defer func() {\n     ...\n   }()\n   companionDUTs[role] \u003d dut\n }",
+      "range": {
+        "startLine": 353,
+        "startChar": 2,
+        "endLine": 359,
+        "endChar": 5
+      },
+      "revId": "946de53e5dbc7acc7f887c0663ea988e81482d5f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0fb0cbde_1a914123",
+        "filename": "src/chromiumos/tast/internal/bundle/remote_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 261,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-03-12T08:08:56Z",
+      "side": 1,
+      "message": "style: DUTs",
+      "range": {
+        "startLine": 261,
+        "startChar": 5,
+        "endLine": 261,
+        "endChar": 28
+      },
+      "revId": "946de53e5dbc7acc7f887c0663ea988e81482d5f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "def7f999_fec62982",
+        "filename": "src/chromiumos/tast/internal/bundle/remote_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 299,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-03-12T08:08:56Z",
+      "side": 1,
+      "message": "I think it\u0027s nice to run two servers to make sure we don\u0027t mix up the primary DUT and companion DUTs.",
+      "range": {
+        "startLine": 298,
+        "startChar": 3,
+        "endLine": 299,
+        "endChar": 66
+      },
+      "revId": "946de53e5dbc7acc7f887c0663ea988e81482d5f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a0d4c2fb_f339fd29",
+        "filename": "src/chromiumos/tast/internal/testing/state.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 112,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-03-12T08:08:56Z",
+      "side": 1,
+      "message": "style: CompanionDUTs are ...",
+      "range": {
+        "startLine": 112,
+        "startChar": 4,
+        "endLine": 112,
+        "endChar": 18
+      },
+      "revId": "946de53e5dbc7acc7f887c0663ea988e81482d5f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "75469f7b_9132022d",
+        "filename": "src/chromiumos/tast/internal/testing/state.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 113,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-03-12T08:08:56Z",
+      "side": 1,
+      "message": "style: CompanionDUTs",
+      "range": {
+        "startLine": 113,
+        "startChar": 1,
+        "endLine": 113,
+        "endChar": 14
+      },
+      "revId": "946de53e5dbc7acc7f887c0663ea988e81482d5f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "87db707a_1c155c5c",
+        "filename": "src/chromiumos/tast/internal/testing/state.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 409,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-03-12T08:08:56Z",
+      "side": 1,
+      "message": "style: CompanionDUT",
+      "range": {
+        "startLine": 409,
+        "startChar": 22,
+        "endLine": 409,
+        "endChar": 34
+      },
+      "revId": "946de53e5dbc7acc7f887c0663ea988e81482d5f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "72d79a64_f898db7b",
+        "filename": "src/chromiumos/tast/internal/testing/state.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 413,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-03-12T08:08:56Z",
+      "side": 1,
+      "message": "Can you also panic when we can\u0027t find a DUT for a specified role?\n\nI also thought about returning (dut *dut.DUT, ok bool), but at this moment \"optional companion DUTs\" sounds bad for test result reproducibility. If it turns out that we need optional companion DUTs we can revisit the API later.",
+      "range": {
+        "startLine": 413,
+        "startChar": 1,
+        "endLine": 413,
+        "endChar": 55
+      },
+      "revId": "946de53e5dbc7acc7f887c0663ea988e81482d5f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

@@ -22,6 +22,7 @@ import (
 	"go.chromium.org/chromiumos/config/go/api/test/tls"
 	"google.golang.org/grpc"
 
+	"chromiumos/tast/cmd/tast/internal/run/fakerunner"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/control"
 	"chromiumos/tast/internal/fakereports"
@@ -32,14 +33,14 @@ import (
 )
 
 func TestRunPartialRun(t *gotesting.T) {
-	td := newLocalTestData(t)
-	defer td.close()
+	td := fakerunner.NewLocalTestData(t)
+	defer td.Close()
 
 	// Set a nonexistent path for the remote runner so that it will fail.
-	td.cfg.RunLocal = true
-	td.cfg.RunRemote = true
+	td.Cfg.RunLocal = true
+	td.Cfg.RunRemote = true
 	const testName = "pkg.Test"
-	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
 		switch args.Mode {
 		case runner.RunTestsMode:
 			mw := control.NewMessageWriter(stdout)
@@ -59,22 +60,22 @@ func TestRunPartialRun(t *gotesting.T) {
 		}
 		return 0
 	}
-	td.cfg.RemoteRunner = filepath.Join(td.tempDir, "missing_remote_test_runner")
+	td.Cfg.RemoteRunner = filepath.Join(td.TempDir, "missing_remote_test_runner")
 
-	status, _ := Run(context.Background(), &td.cfg, &td.state)
+	status, _ := Run(context.Background(), &td.Cfg, &td.State)
 	if status.ExitCode != subcommands.ExitFailure {
-		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitFailure, td.logbuf.String())
+		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitFailure, td.LogBuf.String())
 	}
 }
 
 func TestRunError(t *gotesting.T) {
-	td := newLocalTestData(t)
-	defer td.close()
+	td := fakerunner.NewLocalTestData(t)
+	defer td.Close()
 
-	td.cfg.RunLocal = true
-	td.cfg.KeyFile = "" // force SSH auth error
+	td.Cfg.RunLocal = true
+	td.Cfg.KeyFile = "" // force SSH auth error
 
-	if status, _ := Run(context.Background(), &td.cfg, &td.state); status.ExitCode != subcommands.ExitFailure {
+	if status, _ := Run(context.Background(), &td.Cfg, &td.State); status.ExitCode != subcommands.ExitFailure {
 		t.Errorf("Run() = %v; want %v", status, subcommands.ExitFailure)
 	} else if !status.FailedBeforeRun {
 		// local()'s initial connection attempt will fail, so we won't try to run tests.
@@ -83,11 +84,11 @@ func TestRunError(t *gotesting.T) {
 }
 
 func TestRunEphemeralDevserver(t *gotesting.T) {
-	td := newLocalTestData(t)
-	defer td.close()
+	td := fakerunner.NewLocalTestData(t)
+	defer td.Close()
 
-	td.cfg.RunLocal = true
-	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+	td.Cfg.RunLocal = true
+	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
 		switch args.Mode {
 		case runner.RunTestsMode:
 			if len(args.RunTests.Devservers) != 1 {
@@ -101,27 +102,27 @@ func TestRunEphemeralDevserver(t *gotesting.T) {
 		}
 		return 0
 	}
-	td.cfg.Devservers = nil // clear the default mock devservers set in newLocalTestData
-	td.cfg.UseEphemeralDevserver = true
+	td.Cfg.Devservers = nil // clear the default mock devservers set in NewLocalTestData
+	td.Cfg.UseEphemeralDevserver = true
 
-	if status, _ := Run(context.Background(), &td.cfg, &td.state); status.ExitCode != subcommands.ExitSuccess {
-		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.logbuf.String())
+	if status, _ := Run(context.Background(), &td.Cfg, &td.State); status.ExitCode != subcommands.ExitSuccess {
+		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.LogBuf.String())
 	}
 }
 
 func TestRunDownloadPrivateBundles(t *gotesting.T) {
-	td := newLocalTestData(t)
-	defer td.close()
-	td.cfg.Devservers = []string{"http://example.com:8080"}
+	td := fakerunner.NewLocalTestData(t)
+	defer td.Close()
+	td.Cfg.Devservers = []string{"http://example.com:8080"}
 	testRunDownloadPrivateBundles(t, td)
 }
 
 func TestRunDownloadPrivateBundlesWithTLW(t *gotesting.T) {
 	const targetName = "dut001"
-	td := newLocalTestData(t)
-	defer td.close()
+	td := fakerunner.NewLocalTestData(t)
+	defer td.Close()
 
-	host, portStr, err := net.SplitHostPort(td.cfg.Target)
+	host, portStr, err := net.SplitHostPort(td.Cfg.Target)
 	if err != nil {
 		t.Fatal("net.SplitHostPort: ", err)
 	}
@@ -137,9 +138,9 @@ func TestRunDownloadPrivateBundlesWithTLW(t *gotesting.T) {
 		faketlw.WithDUTName(targetName))
 	defer stopFunc()
 
-	td.cfg.Target = targetName
-	td.cfg.TLWServer = tlwAddr
-	td.cfg.Devservers = nil
+	td.Cfg.Target = targetName
+	td.Cfg.TLWServer = tlwAddr
+	td.Cfg.Devservers = nil
 	testRunDownloadPrivateBundles(t, td)
 }
 
@@ -158,10 +159,10 @@ func checkTLWServer(address string) error {
 	return nil
 }
 
-func testRunDownloadPrivateBundles(t *gotesting.T, td *localTestData) {
-	td.cfg.RunLocal = true
+func testRunDownloadPrivateBundles(t *gotesting.T, td *fakerunner.LocalTestData) {
+	td.Cfg.RunLocal = true
 	called := false
-	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
 		switch args.Mode {
 		case runner.RunTestsMode:
 			mw := control.NewMessageWriter(stdout)
@@ -171,9 +172,9 @@ func testRunDownloadPrivateBundles(t *gotesting.T, td *localTestData) {
 			json.NewEncoder(stdout).Encode([]testing.EntityWithRunnabilityInfo{})
 		case runner.DownloadPrivateBundlesMode:
 			exp := runner.DownloadPrivateBundlesArgs{
-				Devservers:        td.cfg.Devservers,
-				DUTName:           td.cfg.Target,
-				BuildArtifactsURL: td.cfg.BuildArtifactsURL,
+				Devservers:        td.Cfg.Devservers,
+				DUTName:           td.Cfg.Target,
+				BuildArtifactsURL: td.Cfg.BuildArtifactsURL,
 			}
 			if diff := cmp.Diff(exp, *args.DownloadPrivateBundles,
 				cmpopts.IgnoreFields(*args.DownloadPrivateBundles, "TLWServer")); diff != "" {
@@ -182,7 +183,7 @@ func testRunDownloadPrivateBundles(t *gotesting.T, td *localTestData) {
 			called = true
 			json.NewEncoder(stdout).Encode(&runner.DownloadPrivateBundlesResult{})
 
-			if td.cfg.TLWServer != "" {
+			if td.Cfg.TLWServer != "" {
 				// Try connecting to TLWServer through ssh port forwarding.
 				if err := checkTLWServer(args.DownloadPrivateBundles.TLWServer); err != nil {
 					t.Errorf("TLW server was not available: %v", err)
@@ -194,10 +195,10 @@ func testRunDownloadPrivateBundles(t *gotesting.T, td *localTestData) {
 		return 0
 	}
 
-	td.cfg.DownloadPrivateBundles = true
+	td.Cfg.DownloadPrivateBundles = true
 
-	if status, _ := Run(context.Background(), &td.cfg, &td.state); status.ExitCode != subcommands.ExitSuccess {
-		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.logbuf.String())
+	if status, _ := Run(context.Background(), &td.Cfg, &td.State); status.ExitCode != subcommands.ExitSuccess {
+		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.LogBuf.String())
 	}
 	if !called {
 		t.Errorf("Run did not call downloadPrivateBundles")
@@ -207,10 +208,10 @@ func testRunDownloadPrivateBundles(t *gotesting.T, td *localTestData) {
 func TestRunTLW(t *gotesting.T) {
 	const targetName = "the_dut"
 
-	td := newLocalTestData(t)
-	defer td.close()
+	td := fakerunner.NewLocalTestData(t)
+	defer td.Close()
 
-	host, portStr, err := net.SplitHostPort(td.cfg.Target)
+	host, portStr, err := net.SplitHostPort(td.Cfg.Target)
 	if err != nil {
 		t.Fatal("net.SplitHostPort: ", err)
 	}
@@ -225,8 +226,8 @@ func TestRunTLW(t *gotesting.T) {
 	}))
 	defer stopFunc()
 
-	td.cfg.RunLocal = true
-	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+	td.Cfg.RunLocal = true
+	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
 		switch args.Mode {
 		case runner.RunTestsMode:
 			mw := control.NewMessageWriter(stdout)
@@ -237,11 +238,11 @@ func TestRunTLW(t *gotesting.T) {
 		}
 		return 0
 	}
-	td.cfg.Target = targetName
-	td.cfg.TLWServer = tlwAddr
+	td.Cfg.Target = targetName
+	td.Cfg.TLWServer = tlwAddr
 
-	if status, _ := Run(context.Background(), &td.cfg, &td.state); status.ExitCode != subcommands.ExitSuccess {
-		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.logbuf.String())
+	if status, _ := Run(context.Background(), &td.Cfg, &td.State); status.ExitCode != subcommands.ExitSuccess {
+		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.LogBuf.String())
 	}
 }
 
@@ -250,10 +251,10 @@ func TestRunWithReports_LogStream(t *gotesting.T) {
 	srv, stopFunc, addr := fakereports.Start(t, 0)
 	defer stopFunc()
 
-	td := newLocalTestData(t)
-	defer td.close()
-	td.cfg.ReportsServer = addr
-	td.cfg.RunLocal = true
+	td := fakerunner.NewLocalTestData(t)
+	defer td.Close()
+	td.Cfg.ReportsServer = addr
+	td.Cfg.RunLocal = true
 
 	const (
 		resultDir = "/tmp/tast/results/latest"
@@ -267,7 +268,7 @@ func TestRunWithReports_LogStream(t *gotesting.T) {
 		test2Desc    = "Second description"
 		test2LogText = "Here's another test log message"
 	)
-	td.cfg.ResDir = resultDir
+	td.Cfg.ResDir = resultDir
 	tests := []testing.EntityWithRunnabilityInfo{
 		{
 			EntityInfo: testing.EntityInfo{
@@ -281,7 +282,7 @@ func TestRunWithReports_LogStream(t *gotesting.T) {
 		},
 	}
 
-	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
 		switch args.Mode {
 		case runner.RunTestsMode:
 			patterns := args.RunTests.BundleArgs.Patterns
@@ -301,8 +302,8 @@ func TestRunWithReports_LogStream(t *gotesting.T) {
 		}
 		return 0
 	}
-	if status, _ := Run(context.Background(), &td.cfg, &td.state); status.ExitCode != subcommands.ExitSuccess {
-		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.logbuf.String())
+	if status, _ := Run(context.Background(), &td.Cfg, &td.State); status.ExitCode != subcommands.ExitSuccess {
+		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.LogBuf.String())
 	}
 	if str := string(srv.GetLog(test1Name, test1Path)); !strings.Contains(str, test1LogText) {
 		t.Errorf("Expected log not received for test 1; got %q; should contain %q", str, test1LogText)
@@ -323,10 +324,10 @@ func TestRunWithReports_ReportResult(t *gotesting.T) {
 	srv, stopFunc, addr := fakereports.Start(t, 0)
 	defer stopFunc()
 
-	td := newLocalTestData(t)
-	defer td.close()
-	td.cfg.ReportsServer = addr
-	td.cfg.RunLocal = true
+	td := fakerunner.NewLocalTestData(t)
+	defer td.Close()
+	td.Cfg.ReportsServer = addr
+	td.Cfg.RunLocal = true
 
 	const (
 		test1Name       = "foo.FirstTest"
@@ -362,7 +363,7 @@ func TestRunWithReports_ReportResult(t *gotesting.T) {
 		},
 	}
 
-	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
 		switch args.Mode {
 		case runner.RunTestsMode:
 			patterns := args.RunTests.BundleArgs.Patterns
@@ -383,8 +384,8 @@ func TestRunWithReports_ReportResult(t *gotesting.T) {
 		}
 		return 0
 	}
-	if status, _ := Run(context.Background(), &td.cfg, &td.state); status.ExitCode != subcommands.ExitSuccess {
-		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.logbuf.String())
+	if status, _ := Run(context.Background(), &td.Cfg, &td.State); status.ExitCode != subcommands.ExitSuccess {
+		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.LogBuf.String())
 	}
 	test2ErrorTimeStamp, _ := ptypes.TimestampProto(test2ErrorTime)
 	expectedResults := []*protocol.ReportResultRequest{
@@ -421,10 +422,10 @@ func TestRunWithReports_ReportResultTerminate(t *gotesting.T) {
 	srv, stopFunc, addr := fakereports.Start(t, 1)
 	defer stopFunc()
 
-	td := newLocalTestData(t)
-	defer td.close()
-	td.cfg.ReportsServer = addr
-	td.cfg.RunLocal = true
+	td := fakerunner.NewLocalTestData(t)
+	defer td.Close()
+	td.Cfg.ReportsServer = addr
+	td.Cfg.RunLocal = true
 
 	const (
 		test1Name       = "foo.FirstTest"
@@ -460,7 +461,7 @@ func TestRunWithReports_ReportResultTerminate(t *gotesting.T) {
 		},
 	}
 
-	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
 		switch args.Mode {
 		case runner.RunTestsMode:
 			patterns := args.RunTests.BundleArgs.Patterns
@@ -481,8 +482,8 @@ func TestRunWithReports_ReportResultTerminate(t *gotesting.T) {
 		}
 		return 0
 	}
-	if status, _ := Run(context.Background(), &td.cfg, &td.state); status.ExitCode != subcommands.ExitFailure {
-		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitFailure, td.logbuf.String())
+	if status, _ := Run(context.Background(), &td.Cfg, &td.State); status.ExitCode != subcommands.ExitFailure {
+		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitFailure, td.LogBuf.String())
 	}
 	test2ErrorTimeStamp, _ := ptypes.TimestampProto(test2ErrorTime)
 	expectedResults := []*protocol.ReportResultRequest{
@@ -512,10 +513,10 @@ func TestRunWithReports_ReportResultTerminate(t *gotesting.T) {
 // TestRunWithSkippedTests makes sure that tests with unsupported dependency
 // would be skipped.
 func TestRunWithSkippedTests(t *gotesting.T) {
-	td := newLocalTestData(t)
-	defer td.close()
+	td := fakerunner.NewLocalTestData(t)
+	defer td.Close()
 
-	td.cfg.RunLocal = true
+	td.Cfg.RunLocal = true
 	tests := []testing.EntityWithRunnabilityInfo{
 		{
 			EntityInfo: testing.EntityInfo{
@@ -534,7 +535,7 @@ func TestRunWithSkippedTests(t *gotesting.T) {
 			},
 		},
 	}
-	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
 		switch args.Mode {
 		case runner.RunTestsMode:
 			patterns := args.RunTests.BundleArgs.Patterns
@@ -561,9 +562,9 @@ func TestRunWithSkippedTests(t *gotesting.T) {
 		}
 		return 0
 	}
-	status, results := Run(context.Background(), &td.cfg, &td.state)
+	status, results := Run(context.Background(), &td.Cfg, &td.State)
 	if status.ExitCode == subcommands.ExitFailure {
-		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.logbuf.String())
+		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.LogBuf.String())
 	}
 	if len(results) != len(tests) {
 		t.Errorf("Got wrong number of results %v; want %v", len(results), len(tests))

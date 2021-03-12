@@ -13,6 +13,7 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 
+	"chromiumos/tast/cmd/tast/internal/run/fakerunner"
 	"chromiumos/tast/cmd/tast/internal/run/target"
 	"chromiumos/tast/internal/linuxssh"
 	"chromiumos/tast/testutil"
@@ -35,10 +36,10 @@ func loadTestData(t *testing.T, filename string) string {
 }
 
 func TestReadBootID(t *testing.T) {
-	td := newLocalTestData(t)
-	defer td.close()
+	td := fakerunner.NewLocalTestData(t)
+	defer td.Close()
 
-	cc := target.NewConnCache(&td.cfg)
+	cc := target.NewConnCache(&td.Cfg)
 	defer cc.Close(context.Background())
 
 	conn, err := cc.Conn(context.Background())
@@ -50,16 +51,16 @@ func TestReadBootID(t *testing.T) {
 	if err != nil {
 		t.Fatal("ReadBootID failed: ", err)
 	}
-	if b != defaultBootID {
-		t.Errorf("ReadBootID returned %q; want %q", b, defaultBootID)
+	if b != fakerunner.DefaultBootID {
+		t.Errorf("ReadBootID returned %q; want %q", b, fakerunner.DefaultBootID)
 	}
 }
 
 func TestDiagnoseSSHDropNotRecovered(t *testing.T) {
-	td := newLocalTestData(t)
-	defer td.close()
+	td := fakerunner.NewLocalTestData(t)
+	defer td.Close()
 
-	cc := target.NewConnCache(&td.cfg)
+	cc := target.NewConnCache(&td.Cfg)
 	defer cc.Close(context.Background())
 
 	if _, err := cc.Conn(context.Background()); err != nil {
@@ -69,7 +70,7 @@ func TestDiagnoseSSHDropNotRecovered(t *testing.T) {
 	// Pass a canceled context to make reconnection fail.
 	ctx, cancel := context.WithCancel(context.Background())
 	cancel()
-	msg := diagnoseSSHDrop(ctx, &td.cfg, cc, td.tempDir)
+	msg := diagnoseSSHDrop(ctx, &td.Cfg, cc, td.TempDir)
 	const exp = "target did not come back: context canceled"
 	if msg != exp {
 		t.Errorf("diagnoseSSHDrop returned %q; want %q", msg, exp)
@@ -77,10 +78,10 @@ func TestDiagnoseSSHDropNotRecovered(t *testing.T) {
 }
 
 func TestDiagnoseSSHDropNoReboot(t *testing.T) {
-	td := newLocalTestData(t)
-	defer td.close()
+	td := fakerunner.NewLocalTestData(t)
+	defer td.Close()
 
-	cc := target.NewConnCache(&td.cfg)
+	cc := target.NewConnCache(&td.Cfg)
 	defer cc.Close(context.Background())
 
 	if _, err := cc.Conn(context.Background()); err != nil {
@@ -89,7 +90,7 @@ func TestDiagnoseSSHDropNoReboot(t *testing.T) {
 
 	// boot_id is not changed.
 
-	msg := diagnoseSSHDrop(context.Background(), &td.cfg, cc, td.tempDir)
+	msg := diagnoseSSHDrop(context.Background(), &td.Cfg, cc, td.TempDir)
 	const exp = "target did not reboot, probably network issue"
 	if msg != exp {
 		t.Errorf("diagnoseSSHDrop returned %q; want %q", msg, exp)
@@ -97,10 +98,10 @@ func TestDiagnoseSSHDropNoReboot(t *testing.T) {
 }
 
 func TestDiagnoseSSHDropUnknownCrash(t *testing.T) {
-	td := newLocalTestData(t)
-	defer td.close()
+	td := fakerunner.NewLocalTestData(t)
+	defer td.Close()
 
-	cc := target.NewConnCache(&td.cfg)
+	cc := target.NewConnCache(&td.Cfg)
 	defer cc.Close(context.Background())
 
 	if _, err := cc.Conn(context.Background()); err != nil {
@@ -108,9 +109,9 @@ func TestDiagnoseSSHDropUnknownCrash(t *testing.T) {
 	}
 
 	// Change boot_id to simulate reboot.
-	td.bootID = anotherBootID
+	td.BootID = anotherBootID
 
-	msg := diagnoseSSHDrop(context.Background(), &td.cfg, cc, td.tempDir)
+	msg := diagnoseSSHDrop(context.Background(), &td.Cfg, cc, td.TempDir)
 	const exp = "target rebooted for unknown crash"
 	if msg != exp {
 		t.Errorf("diagnoseSSHDrop returned %q; want %q", msg, exp)
@@ -118,10 +119,10 @@ func TestDiagnoseSSHDropUnknownCrash(t *testing.T) {
 }
 
 func TestDiagnoseSSHDropNormalReboot(t *testing.T) {
-	td := newLocalTestData(t)
-	defer td.close()
+	td := fakerunner.NewLocalTestData(t)
+	defer td.Close()
 
-	cc := target.NewConnCache(&td.cfg)
+	cc := target.NewConnCache(&td.Cfg)
 	defer cc.Close(context.Background())
 
 	if _, err := cc.Conn(context.Background()); err != nil {
@@ -129,13 +130,13 @@ func TestDiagnoseSSHDropNormalReboot(t *testing.T) {
 	}
 
 	// Simulate normal reboot.
-	td.bootID = anotherBootID
-	td.unifiedLog = `...
+	td.BootID = anotherBootID
+	td.UnifiedLog = `...
 Apr 19 07:12:49 pre-shutdown[31389]: Shutting down for reboot: system-update
 ...
 `
 
-	msg := diagnoseSSHDrop(context.Background(), &td.cfg, cc, td.tempDir)
+	msg := diagnoseSSHDrop(context.Background(), &td.Cfg, cc, td.TempDir)
 	const exp = "target normally shut down for reboot (system-update)"
 	if msg != exp {
 		t.Errorf("diagnoseSSHDrop returned %q; want %q", msg, exp)
@@ -143,20 +144,20 @@ Apr 19 07:12:49 pre-shutdown[31389]: Shutting down for reboot: system-update
 }
 
 func TestDiagnoseSSHDropKernelCrashBugX86(t *testing.T) {
-	td := newLocalTestData(t)
-	defer td.close()
+	td := fakerunner.NewLocalTestData(t)
+	defer td.Close()
 
-	cc := target.NewConnCache(&td.cfg)
+	cc := target.NewConnCache(&td.Cfg)
 	defer cc.Close(context.Background())
 
 	if _, err := cc.Conn(context.Background()); err != nil {
 		t.Fatal(err)
 	}
 
-	td.bootID = anotherBootID
-	td.ramOops = loadTestData(t, "ramoops_crash_x86.txt")
+	td.BootID = anotherBootID
+	td.Ramoops = loadTestData(t, "ramoops_crash_x86.txt")
 
-	msg := diagnoseSSHDrop(context.Background(), &td.cfg, cc, td.tempDir)
+	msg := diagnoseSSHDrop(context.Background(), &td.Cfg, cc, td.TempDir)
 	const exp = "kernel crashed in i915_gem_execbuffer_relocate_vma+0x424/0x757"
 	if msg != exp {
 		t.Errorf("diagnoseSSHDrop returned %q; want %q", msg, exp)
@@ -164,20 +165,20 @@ func TestDiagnoseSSHDropKernelCrashBugX86(t *testing.T) {
 }
 
 func TestDiagnoseSSHDropKernelCrashBugARM(t *testing.T) {
-	td := newLocalTestData(t)
-	defer td.close()
+	td := fakerunner.NewLocalTestData(t)
+	defer td.Close()
 
-	cc := target.NewConnCache(&td.cfg)
+	cc := target.NewConnCache(&td.Cfg)
 	defer cc.Close(context.Background())
 
 	if _, err := cc.Conn(context.Background()); err != nil {
 		t.Fatal(err)
 	}
 
-	td.bootID = anotherBootID
-	td.ramOops = loadTestData(t, "ramoops_crash_arm.txt")
+	td.BootID = anotherBootID
+	td.Ramoops = loadTestData(t, "ramoops_crash_arm.txt")
 
-	msg := diagnoseSSHDrop(context.Background(), &td.cfg, cc, td.tempDir)
+	msg := diagnoseSSHDrop(context.Background(), &td.Cfg, cc, td.TempDir)
 	// TODO(nya): Improve the symbol extraction. In this case, do_raw_spin_lock or
 	// spin_bug seems to be a better choice for diagnosis.
 	const exp = "kernel crashed in _clear_bit+0x20/0x38"
@@ -187,20 +188,20 @@ func TestDiagnoseSSHDropKernelCrashBugARM(t *testing.T) {
 }
 
 func TestDiagnoseSSHDropKernelHungX86(t *testing.T) {
-	td := newLocalTestData(t)
-	defer td.close()
+	td := fakerunner.NewLocalTestData(t)
+	defer td.Close()
 
-	cc := target.NewConnCache(&td.cfg)
+	cc := target.NewConnCache(&td.Cfg)
 	defer cc.Close(context.Background())
 
 	if _, err := cc.Conn(context.Background()); err != nil {
 		t.Fatal(err)
 	}
 
-	td.bootID = anotherBootID
-	td.ramOops = loadTestData(t, "ramoops_hung_x86.txt")
+	td.BootID = anotherBootID
+	td.Ramoops = loadTestData(t, "ramoops_hung_x86.txt")
 
-	msg := diagnoseSSHDrop(context.Background(), &td.cfg, cc, td.tempDir)
+	msg := diagnoseSSHDrop(context.Background(), &td.Cfg, cc, td.TempDir)
 	const exp = "kernel crashed: kswapd0:32 hung in jbd2_log_wait_commit+0xb9/0x13c"
 	if msg != exp {
 		t.Errorf("diagnoseSSHDrop returned %q; want %q", msg, exp)
@@ -208,24 +209,24 @@ func TestDiagnoseSSHDropKernelHungX86(t *testing.T) {
 }
 
 func TestDiagnoseSSHSaveFiles(t *testing.T) {
-	td := newLocalTestData(t)
-	defer td.close()
+	td := fakerunner.NewLocalTestData(t)
+	defer td.Close()
 
-	cc := target.NewConnCache(&td.cfg)
+	cc := target.NewConnCache(&td.Cfg)
 	defer cc.Close(context.Background())
 
 	if _, err := cc.Conn(context.Background()); err != nil {
 		t.Fatal(err)
 	}
 
-	td.bootID = anotherBootID
-	td.unifiedLog = "foo"
-	td.ramOops = "bar"
+	td.BootID = anotherBootID
+	td.UnifiedLog = "foo"
+	td.Ramoops = "bar"
 
-	outDir := filepath.Join(td.tempDir, "diagnosis")
+	outDir := filepath.Join(td.TempDir, "diagnosis")
 	os.MkdirAll(outDir, 0777)
 
-	diagnoseSSHDrop(context.Background(), &td.cfg, cc, outDir)
+	diagnoseSSHDrop(context.Background(), &td.Cfg, cc, outDir)
 
 	files, err := testutil.ReadFiles(outDir)
 	if err != nil {

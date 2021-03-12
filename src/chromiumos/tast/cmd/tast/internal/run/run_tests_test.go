@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
+	"chromiumos/tast/cmd/tast/internal/run/fakerunner"
 	"chromiumos/tast/cmd/tast/internal/run/target"
 	"chromiumos/tast/internal/control"
 	"chromiumos/tast/internal/dep"
@@ -23,19 +24,19 @@ import (
 )
 
 func TestRunTestsFailureBeforeRun(t *gotesting.T) {
-	td := newLocalTestData(t)
-	defer td.close()
+	td := fakerunner.NewLocalTestData(t)
+	defer td.Close()
 
 	// Make the runner always fail, and ask to check test deps so we'll get a failure before trying
 	// to run tests. local() shouldn't set StartedRun to true since we failed before then.
-	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) { return 1 }
-	td.cfg.CheckTestDeps = true
+	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) { return 1 }
+	td.Cfg.CheckTestDeps = true
 
-	cc := target.NewConnCache(&td.cfg)
+	cc := target.NewConnCache(&td.Cfg)
 	defer cc.Close(context.Background())
 
 	var state config.State
-	if _, err := runTests(context.Background(), &td.cfg, &state, cc); err == nil {
+	if _, err := runTests(context.Background(), &td.Cfg, &state, cc); err == nil {
 		t.Errorf("runTests unexpectedly passed")
 	} else if state.StartedRun {
 		t.Error("runTests incorrectly reported that run was started after early failure")
@@ -43,14 +44,14 @@ func TestRunTestsFailureBeforeRun(t *gotesting.T) {
 }
 
 func TestRunTestsGetDUTInfo(t *gotesting.T) {
-	td := newLocalTestData(t)
-	defer td.close()
+	td := fakerunner.NewLocalTestData(t)
+	defer td.Close()
 
 	called := false
 
 	osVersion := "octopus-release/R86-13312.0.2020_07_02_1108"
 
-	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
 		switch args.Mode {
 		case runner.GetDUTInfoMode:
 			// Just check that getDUTInfo is called; details of args are
@@ -68,18 +69,18 @@ func TestRunTestsGetDUTInfo(t *gotesting.T) {
 		return 0
 	}
 
-	td.cfg.CheckTestDeps = true
+	td.Cfg.CheckTestDeps = true
 
-	cc := target.NewConnCache(&td.cfg)
+	cc := target.NewConnCache(&td.Cfg)
 	defer cc.Close(context.Background())
 
-	if _, err := runTests(context.Background(), &td.cfg, &td.state, cc); err != nil {
+	if _, err := runTests(context.Background(), &td.Cfg, &td.State, cc); err != nil {
 		t.Error("runTests failed: ", err)
 	}
 
 	expectedOSVersion := "Target version: " + osVersion
-	if !strings.Contains(td.logbuf.String(), expectedOSVersion) {
-		t.Errorf("Cannot find %q in log buffer %v", expectedOSVersion, td.logbuf.String())
+	if !strings.Contains(td.LogBuf.String(), expectedOSVersion) {
+		t.Errorf("Cannot find %q in log buffer %v", expectedOSVersion, td.LogBuf.String())
 	}
 	if !called {
 		t.Error("runTests did not call getSoftwareFeatures")
@@ -87,12 +88,12 @@ func TestRunTestsGetDUTInfo(t *gotesting.T) {
 }
 
 func TestRunTestsGetInitialSysInfo(t *gotesting.T) {
-	td := newLocalTestData(t)
-	defer td.close()
+	td := fakerunner.NewLocalTestData(t)
+	defer td.Close()
 
 	called := false
 
-	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
 		switch args.Mode {
 		case runner.GetSysInfoStateMode:
 			// Just check that getInitialSysInfo is called; details of args are
@@ -105,12 +106,12 @@ func TestRunTestsGetInitialSysInfo(t *gotesting.T) {
 		return 0
 	}
 
-	td.cfg.CollectSysInfo = true
+	td.Cfg.CollectSysInfo = true
 
-	cc := target.NewConnCache(&td.cfg)
+	cc := target.NewConnCache(&td.Cfg)
 	defer cc.Close(context.Background())
 
-	if _, err := runTests(context.Background(), &td.cfg, &td.state, cc); err != nil {
+	if _, err := runTests(context.Background(), &td.Cfg, &td.State, cc); err != nil {
 		t.Error("runTests failed: ", err)
 	}
 	if !called {
@@ -154,10 +155,10 @@ func TestRunTestsSkipTests(t *gotesting.T) {
 		},
 	}
 
-	td := newLocalTestData(t)
-	defer td.close()
+	td := fakerunner.NewLocalTestData(t)
+	defer td.Close()
 
-	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
 		switch args.Mode {
 		case runner.GetDUTInfoMode:
 			// Just check that getDUTInfo is called; details of args are
@@ -194,23 +195,23 @@ func TestRunTestsSkipTests(t *gotesting.T) {
 	}
 
 	// List matching tests instead of running them.
-	td.cfg.LocalDataDir = "/tmp/data"
-	td.cfg.Patterns = []string{"*Test*"}
-	td.cfg.RunLocal = true
-	td.cfg.TotalShards = 2
-	td.cfg.CheckTestDeps = true
+	td.Cfg.LocalDataDir = "/tmp/data"
+	td.Cfg.Patterns = []string{"*Test*"}
+	td.Cfg.RunLocal = true
+	td.Cfg.TotalShards = 2
+	td.Cfg.CheckTestDeps = true
 
-	cc := target.NewConnCache(&td.cfg)
+	cc := target.NewConnCache(&td.Cfg)
 	defer cc.Close(context.Background())
 
 	expectedPassed := 5
 	expectedSkipped := len(tests) - 5
 	passed := 0
 	skipped := 0
-	for shardIndex := 0; shardIndex < td.cfg.TotalShards; shardIndex++ {
-		td.state.SoftwareFeatures = nil
-		td.cfg.ShardIndex = shardIndex
-		testResults, err := runTests(context.Background(), &td.cfg, &td.state, cc)
+	for shardIndex := 0; shardIndex < td.Cfg.TotalShards; shardIndex++ {
+		td.State.SoftwareFeatures = nil
+		td.Cfg.ShardIndex = shardIndex
+		testResults, err := runTests(context.Background(), &td.Cfg, &td.State, cc)
 		if err != nil {
 			t.Fatal("Failed to run tests: ", err)
 		}
@@ -245,23 +246,23 @@ func TestFindPatternsForShard(t *gotesting.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	td := newRemoteTestData(t, string(b), "", 0)
-	defer td.close()
+	td := fakerunner.NewRemoteTestData(t, string(b), "", 0)
+	defer td.Close()
 
 	// List matching tests instead of running them.
-	td.cfg.RemoteDataDir = "/tmp/data"
-	td.cfg.Patterns = []string{"*Test*"}
-	td.cfg.RunRemote = true
-	td.cfg.TotalShards = 3
+	td.Cfg.RemoteDataDir = "/tmp/data"
+	td.Cfg.Patterns = []string{"*Test*"}
+	td.Cfg.RunRemote = true
+	td.Cfg.TotalShards = 3
 
-	cc := target.NewConnCache(&td.cfg)
+	cc := target.NewConnCache(&td.Cfg)
 	defer cc.Close(context.Background())
 
 	processed := make(map[string]bool)
 	var state config.State
-	for shardIndex := 0; shardIndex < td.cfg.TotalShards; shardIndex++ {
-		td.cfg.ShardIndex = shardIndex
-		testsToRun, testsToSkip, testsNotInShard, err := findTestsForShard(context.Background(), &td.cfg, &state, cc)
+	for shardIndex := 0; shardIndex < td.Cfg.TotalShards; shardIndex++ {
+		td.Cfg.ShardIndex = shardIndex
+		testsToRun, testsToSkip, testsNotInShard, err := findTestsForShard(context.Background(), &td.Cfg, &state, cc)
 		if err != nil {
 			t.Fatal("Failed to find tests for shard: ", err)
 		}

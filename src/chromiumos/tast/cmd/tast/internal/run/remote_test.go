@@ -204,6 +204,7 @@ func TestRemoteRun(t *gotesting.T) {
 	td.cfg.RemoteDataDir = "/tmp/data"
 	td.cfg.RemoteOutDir = "/tmp/out"
 	td.cfg.BuildArtifactsURL = mockBuildArtifactsURL
+	td.cfg.TLWServer = "tlwserver"
 
 	res, err := td.run(t)
 	if err != nil {
@@ -248,8 +249,8 @@ func TestRemoteRun(t *gotesting.T) {
 					CheckSoftwareDeps: false,
 				},
 				Devservers:        mockDevservers,
+				TLWServer:         td.cfg.TLWServer,
 				BuildArtifactsURL: mockBuildArtifactsURL,
-
 				DownloadMode:      planner.DownloadLazy,
 				HeartbeatInterval: heartbeatInterval,
 			},

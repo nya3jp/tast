@@ -106,7 +106,7 @@ func TestGetDUTInfo(t *testing.T) {
 	osVersion := "octopus-release/R86-13312.0.2020_07_02_1108"
 	defaultBuildArtifactsURL := "gs://chromeos-image-archive/octopus-release/R86-13312.0.2020_07_02_1108/"
 	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
-		checkArgs(t, args, &runner.Args{
+		fakerunner.CheckArgs(t, args, &runner.Args{
 			Mode: runner.GetDUTInfoMode,
 			GetDUTInfo: &runner.GetDUTInfoArgs{
 				ExtraUSEFlags:       td.Cfg.ExtraUSEFlags,
@@ -162,7 +162,7 @@ func TestGetDUTInfoNoDeviceConfig(t *testing.T) {
 	defer td.Close()
 
 	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
-		checkArgs(t, args, &runner.Args{
+		fakerunner.CheckArgs(t, args, &runner.Args{
 			Mode: runner.GetDUTInfoMode,
 			GetDUTInfo: &runner.GetDUTInfoArgs{
 				ExtraUSEFlags:       td.Cfg.ExtraUSEFlags,
@@ -211,7 +211,7 @@ func TestGetSoftwareFeaturesNoFeatures(t *testing.T) {
 	defer td.Close()
 	// "always" should fail if the runner doesn't know about any features.
 	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
-		checkArgs(t, args, &runner.Args{
+		fakerunner.CheckArgs(t, args, &runner.Args{
 			Mode: runner.GetDUTInfoMode,
 			GetDUTInfo: &runner.GetDUTInfoArgs{
 				RequestDeviceConfig: true,

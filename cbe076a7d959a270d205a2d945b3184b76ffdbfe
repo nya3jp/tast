@@ -16,6 +16,24 @@
       "message": "Looks ok to me.  In the case of screendiff it would be nice to put the expected value in the error message as well, but I guess they will have to get that from docs/codesearch.",
       "revId": "cbe076a7d959a270d205a2d945b3184b76ffdbfe",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e81ca3a8_5d4e08a2",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1450817
+      },
+      "writtenOn": "2021-03-15T03:23:34Z",
+      "side": 1,
+      "message": "The main reason we have a variable is to stop them from doing a typo, so if they copy-and-paste, that should be fine anyway.",
+      "parentUuid": "17ec7b19_9aa42a7a",
+      "revId": "cbe076a7d959a270d205a2d945b3184b76ffdbfe",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

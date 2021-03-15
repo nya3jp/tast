@@ -542,7 +542,7 @@ func (s *varMixin) Var(name string) (val string, ok bool) {
 		}
 	}
 	if !seen {
-		panic(fmt.Sprintf("Variable %q was not registered in testing.Test.Vars", name))
+		panic(fmt.Sprintf("Variable %q was not registered in testing.Test.Vars. Try adding the line 'Vars: []string{%q},' to your testing.Test{}", name, name))
 	}
 
 	val, ok = s.entityRoot.cfg.Vars[name]

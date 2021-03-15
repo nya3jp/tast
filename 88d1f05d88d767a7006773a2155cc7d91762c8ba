@@ -22,6 +22,30 @@
       },
       "revId": "88d1f05d88d767a7006773a2155cc7d91762c8ba",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cd80e3bd_6f5c97de",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 369,
+      "author": {
+        "id": 1373754
+      },
+      "writtenOn": "2021-03-15T20:20:06Z",
+      "side": 1,
+      "message": "That\u0027s true, but I actually found that model: barla, Board: grunt has realtek WiFi chip, so I added the \"SkipModel\" part.",
+      "parentUuid": "a0234f69_090fce36",
+      "range": {
+        "startLine": 360,
+        "startChar": 8,
+        "endLine": 369,
+        "endChar": 2
+      },
+      "revId": "88d1f05d88d767a7006773a2155cc7d91762c8ba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

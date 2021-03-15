@@ -19,6 +19,7 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/devserver"
 	"chromiumos/tast/cmd/tast/internal/run/jsonprotocol"
+	"chromiumos/tast/cmd/tast/internal/run/prepare"
 	"chromiumos/tast/cmd/tast/internal/run/runnerclient"
 	"chromiumos/tast/cmd/tast/internal/run/target"
 	"chromiumos/tast/errors"
@@ -112,7 +113,7 @@ func Run(ctx context.Context, cfg *config.Config, state *config.State) (status S
 		defer es.Close(ctx)
 	}
 
-	if err := prepare(ctx, cfg, state, conn); err != nil {
+	if err := prepare.Prepare(ctx, cfg, state, conn); err != nil {
 		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to build and push: %v", err), nil
 	}
 

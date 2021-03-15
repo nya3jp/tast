@@ -20,7 +20,6 @@ import (
 	"chromiumos/tast/internal/dep"
 	"chromiumos/tast/internal/runner"
 	"chromiumos/tast/internal/testing"
-	internal_testing "chromiumos/tast/internal/testing"
 )
 
 func TestRunTestsFailureBeforeRun(t *gotesting.T) {
@@ -121,9 +120,9 @@ func TestRunTestsGetInitialSysInfo(t *gotesting.T) {
 
 // TestRunTestsSkipTests check if runTests skipping testings correctly.
 func TestRunTestsSkipTests(t *gotesting.T) {
-	tests := []internal_testing.EntityWithRunnabilityInfo{
+	tests := []testing.EntityWithRunnabilityInfo{
 		{
-			EntityInfo: internal_testing.EntityInfo{
+			EntityInfo: testing.EntityInfo{
 				Name:         "unsupported.Test0",
 				Desc:         "This is test 0",
 				SoftwareDeps: []string{"has_dep"},
@@ -131,19 +130,19 @@ func TestRunTestsSkipTests(t *gotesting.T) {
 			SkipReason: "dependency not available",
 		},
 		{
-			EntityInfo: internal_testing.EntityInfo{Name: "pkg.Test1", Desc: "This is test 1"},
+			EntityInfo: testing.EntityInfo{Name: "pkg.Test1", Desc: "This is test 1"},
 		},
 		{
-			EntityInfo: internal_testing.EntityInfo{Name: "pkg.Test2", Desc: "This is test 2"},
+			EntityInfo: testing.EntityInfo{Name: "pkg.Test2", Desc: "This is test 2"},
 		},
 		{
-			EntityInfo: internal_testing.EntityInfo{Name: "pkg.Test3", Desc: "This is test 3"},
+			EntityInfo: testing.EntityInfo{Name: "pkg.Test3", Desc: "This is test 3"},
 		},
 		{
-			EntityInfo: internal_testing.EntityInfo{Name: "pkg.Test4", Desc: "This is test 4"},
+			EntityInfo: testing.EntityInfo{Name: "pkg.Test4", Desc: "This is test 4"},
 		},
 		{
-			EntityInfo: internal_testing.EntityInfo{
+			EntityInfo: testing.EntityInfo{
 				Name:         "unsupported.Test5",
 				Desc:         "This is test 5",
 				SoftwareDeps: []string{"has_dep"},
@@ -151,7 +150,7 @@ func TestRunTestsSkipTests(t *gotesting.T) {
 			SkipReason: "dependency not available",
 		},
 		{
-			EntityInfo: internal_testing.EntityInfo{Name: "pkg.Test6", Desc: "This is test 6"},
+			EntityInfo: testing.EntityInfo{Name: "pkg.Test6", Desc: "This is test 6"},
 		},
 	}
 
@@ -232,7 +231,7 @@ func TestRunTestsSkipTests(t *gotesting.T) {
 }
 
 func TestFindPatternsForShard(t *gotesting.T) {
-	tests := []internal_testing.EntityInfo{
+	tests := []testing.EntityInfo{
 		{Name: "pkg.Test0", Desc: "This is test 0"},
 		{Name: "pkg.Test1", Desc: "This is test 1"},
 		{Name: "pkg.Test2", Desc: "This is test 2"},

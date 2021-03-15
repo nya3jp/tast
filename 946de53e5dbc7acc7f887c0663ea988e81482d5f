@@ -58,6 +58,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "940d54f0_0b9e912f",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/config/config.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 106,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-03-15T22:21:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "daaad032_567e0af1",
+      "range": {
+        "startLine": 106,
+        "startChar": 1,
+        "endLine": 106,
+        "endChar": 14
+      },
+      "revId": "946de53e5dbc7acc7f887c0663ea988e81482d5f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "384c565a_1de2a9e2",
@@ -104,6 +128,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "d01df6f1_4a064778",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/remote.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 133,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-03-15T22:21:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a6561658_5c2acb78",
+      "range": {
+        "startLine": 131,
+        "startChar": 1,
+        "endLine": 133,
+        "endChar": 2
+      },
+      "revId": "946de53e5dbc7acc7f887c0663ea988e81482d5f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "6293d346_c24ceacf",
@@ -121,6 +169,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "48e3878d_9227a8ea",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-03-15T22:21:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6293d346_c24ceacf",
+      "revId": "946de53e5dbc7acc7f887c0663ea988e81482d5f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "06574634_1524761b",
@@ -134,6 +200,30 @@
       "writtenOn": "2021-03-12T08:57:13Z",
       "side": 1,
       "message": "I suggest \"using\" to avoid being interpreted as an instruction in the imperative form.",
+      "range": {
+        "startLine": 63,
+        "startChar": 19,
+        "endLine": 63,
+        "endChar": 22
+      },
+      "revId": "946de53e5dbc7acc7f887c0663ea988e81482d5f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "41b73e3b_f4b9a29f",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 63,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-03-15T22:21:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "06574634_1524761b",
       "range": {
         "startLine": 63,
         "startChar": 19,
@@ -190,6 +280,54 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "6303b400_2f1ee722",
+        "filename": "src/chromiumos/tast/internal/bundle/args.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 236,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-03-15T22:21:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b283f042_8c616ed5",
+      "range": {
+        "startLine": 236,
+        "startChar": 40,
+        "endLine": 236,
+        "endChar": 53
+      },
+      "revId": "946de53e5dbc7acc7f887c0663ea988e81482d5f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1f0e282d_a2be50eb",
+        "filename": "src/chromiumos/tast/internal/bundle/args.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 236,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-03-15T22:21:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7a3ef682_e55b8ac7",
+      "range": {
+        "startLine": 236,
+        "startChar": 1,
+        "endLine": 236,
+        "endChar": 14
+      },
+      "revId": "946de53e5dbc7acc7f887c0663ea988e81482d5f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "6a8df8dd_e79d6ab7",
@@ -203,6 +341,30 @@
       "writtenOn": "2021-03-12T08:08:56Z",
       "side": 1,
       "message": "Same here: Please create map[string]*dut.DUT before struct initialization of testing.RemoteData.",
+      "range": {
+        "startLine": 346,
+        "startChar": 2,
+        "endLine": 352,
+        "endChar": 3
+      },
+      "revId": "946de53e5dbc7acc7f887c0663ea988e81482d5f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ae580e2a_07cdb8b4",
+        "filename": "src/chromiumos/tast/internal/bundle/bundle.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 352,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-03-15T22:21:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6a8df8dd_e79d6ab7",
       "range": {
         "startLine": 346,
         "startChar": 2,
@@ -236,6 +398,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "7522b483_2c83b61d",
+        "filename": "src/chromiumos/tast/internal/bundle/bundle.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 359,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-03-15T22:21:29Z",
+      "side": 1,
+      "message": "I disconnect in a different way. Please review new code.",
+      "parentUuid": "f0807c59_8dd4944b",
+      "range": {
+        "startLine": 353,
+        "startChar": 2,
+        "endLine": 359,
+        "endChar": 5
+      },
+      "revId": "946de53e5dbc7acc7f887c0663ea988e81482d5f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "0fb0cbde_1a914123",
@@ -249,6 +435,30 @@
       "writtenOn": "2021-03-12T08:08:56Z",
       "side": 1,
       "message": "style: DUTs",
+      "range": {
+        "startLine": 261,
+        "startChar": 5,
+        "endLine": 261,
+        "endChar": 28
+      },
+      "revId": "946de53e5dbc7acc7f887c0663ea988e81482d5f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6e1978e2_45353d22",
+        "filename": "src/chromiumos/tast/internal/bundle/remote_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 261,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-03-15T22:21:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0fb0cbde_1a914123",
       "range": {
         "startLine": 261,
         "startChar": 5,
@@ -282,6 +492,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "3fe0c5d4_817d29c8",
+        "filename": "src/chromiumos/tast/internal/bundle/remote_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 299,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-03-15T22:21:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "def7f999_fec62982",
+      "range": {
+        "startLine": 298,
+        "startChar": 3,
+        "endLine": 299,
+        "endChar": 66
+      },
+      "revId": "946de53e5dbc7acc7f887c0663ea988e81482d5f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "a0d4c2fb_f339fd29",
@@ -295,6 +529,30 @@
       "writtenOn": "2021-03-12T08:08:56Z",
       "side": 1,
       "message": "style: CompanionDUTs are ...",
+      "range": {
+        "startLine": 112,
+        "startChar": 4,
+        "endLine": 112,
+        "endChar": 18
+      },
+      "revId": "946de53e5dbc7acc7f887c0663ea988e81482d5f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "30e000c5_2a7430ca",
+        "filename": "src/chromiumos/tast/internal/testing/state.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 112,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-03-15T22:21:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a0d4c2fb_f339fd29",
       "range": {
         "startLine": 112,
         "startChar": 4,
@@ -328,6 +586,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "56d6c444_cd5b0dcb",
+        "filename": "src/chromiumos/tast/internal/testing/state.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 113,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-03-15T22:21:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "75469f7b_9132022d",
+      "range": {
+        "startLine": 113,
+        "startChar": 1,
+        "endLine": 113,
+        "endChar": 14
+      },
+      "revId": "946de53e5dbc7acc7f887c0663ea988e81482d5f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "87db707a_1c155c5c",
@@ -351,6 +633,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "22f2a55f_d8930484",
+        "filename": "src/chromiumos/tast/internal/testing/state.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 409,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-03-15T22:21:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "87db707a_1c155c5c",
+      "range": {
+        "startLine": 409,
+        "startChar": 22,
+        "endLine": 409,
+        "endChar": 34
+      },
+      "revId": "946de53e5dbc7acc7f887c0663ea988e81482d5f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "72d79a64_f898db7b",
@@ -364,6 +670,30 @@
       "writtenOn": "2021-03-12T08:08:56Z",
       "side": 1,
       "message": "Can you also panic when we can\u0027t find a DUT for a specified role?\n\nI also thought about returning (dut *dut.DUT, ok bool), but at this moment \"optional companion DUTs\" sounds bad for test result reproducibility. If it turns out that we need optional companion DUTs we can revisit the API later.",
+      "range": {
+        "startLine": 413,
+        "startChar": 1,
+        "endLine": 413,
+        "endChar": 55
+      },
+      "revId": "946de53e5dbc7acc7f887c0663ea988e81482d5f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "afe9708b_d3d4b8cd",
+        "filename": "src/chromiumos/tast/internal/testing/state.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 413,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-03-15T22:21:29Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "72d79a64_f898db7b",
       "range": {
         "startLine": 413,
         "startChar": 1,

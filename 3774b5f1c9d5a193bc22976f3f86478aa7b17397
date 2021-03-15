@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2b463a4c_a5ffe58c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-03-15T22:21:29Z",
+      "side": 1,
+      "message": "All comments have been addressed. Also, I added a new function NewAdditionalSSHServer to create additional SSH server for companion DUTs for unit test.",
+      "revId": "3774b5f1c9d5a193bc22976f3f86478aa7b17397",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

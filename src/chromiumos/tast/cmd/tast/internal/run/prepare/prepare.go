@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package run
+// Package prepare implements the preparation phase of Tast CLI. Preparation
+// steps include building/pushing test bundles (when -build=true) and
+// downloading private test bundles (when -build=false).
+package prepare
 
 import (
 	"context"
@@ -23,10 +26,10 @@ import (
 	"chromiumos/tast/ssh"
 )
 
-// prepare prepares the DUT for running tests. When instructed in cfg, it builds
+// Prepare prepares the DUT for running tests. When instructed in cfg, it builds
 // and pushes the local test runner and test bundles, and downloads private test
 // bundles.
-func prepare(ctx context.Context, cfg *config.Config, state *config.State, conn *target.Conn) error {
+func Prepare(ctx context.Context, cfg *config.Config, state *config.State, conn *target.Conn) error {
 	if cfg.Build && cfg.DownloadPrivateBundles {
 		// Usually it makes no sense to download prebuilt private bundles when
 		// building and pushing a fresh test bundle.

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package run
+package runnerclient
 
 import (
 	"context"
@@ -50,7 +50,7 @@ func TestFindPatternsForShard(t *gotesting.T) {
 	var state config.State
 	for shardIndex := 0; shardIndex < td.Cfg.TotalShards; shardIndex++ {
 		td.Cfg.ShardIndex = shardIndex
-		testsToRun, testsToSkip, testsNotInShard, err := findTestsForShard(context.Background(), &td.Cfg, &state, cc)
+		testsToRun, testsToSkip, testsNotInShard, err := FindTestsForShard(context.Background(), &td.Cfg, &state, cc)
 		if err != nil {
 			t.Fatal("Failed to find tests for shard: ", err)
 		}
@@ -143,7 +143,7 @@ func TestListLocalTests(t *gotesting.T) {
 		t.Fatal(err)
 	}
 
-	results, err := listLocalTests(context.Background(), &td.Cfg, &td.State, conn.SSHConn())
+	results, err := ListLocalTests(context.Background(), &td.Cfg, &td.State, conn.SSHConn())
 	if err != nil {
 		t.Error("Failed to list local tests: ", err)
 	}

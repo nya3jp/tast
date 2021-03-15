@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package run
+package runnerclient
 
 import (
 	"context"
@@ -17,8 +17,8 @@ import (
 	"chromiumos/tast/ssh"
 )
 
-// findTestsForShard finds the pattern for a subset of tests based on shard index.
-func findTestsForShard(ctx context.Context, cfg *config.Config, state *config.State, cc *target.ConnCache) (testsToRun, testsToSkip, testsNotInShard []*jsonprotocol.EntityResult, err error) {
+// FindTestsForShard finds the pattern for a subset of tests based on shard index.
+func FindTestsForShard(ctx context.Context, cfg *config.Config, state *config.State, cc *target.ConnCache) (testsToRun, testsToSkip, testsNotInShard []*jsonprotocol.EntityResult, err error) {
 	tests, testsToSkip, err := listRunnableTests(ctx, cfg, state, cc)
 	if err != nil {
 		return nil, nil, nil, errors.Wrapf(err, "fails to find runnable tests for patterns %q", cfg.Patterns)
@@ -81,7 +81,7 @@ func listAllTests(ctx context.Context, cfg *config.Config, state *config.State, 
 		if err != nil {
 			return nil, err
 		}
-		localTests, err := listLocalTests(ctx, cfg, state, conn.SSHConn())
+		localTests, err := ListLocalTests(ctx, cfg, state, conn.SSHConn())
 		if err != nil {
 			return nil, err
 		}
@@ -102,8 +102,8 @@ func listAllTests(ctx context.Context, cfg *config.Config, state *config.State, 
 	return results, nil
 }
 
-// listLocalTests returns a list of local tests to run.
-func listLocalTests(ctx context.Context, cfg *config.Config, state *config.State, hst *ssh.Conn) ([]testing.EntityWithRunnabilityInfo, error) {
+// ListLocalTests returns a list of local tests to run.
+func ListLocalTests(ctx context.Context, cfg *config.Config, state *config.State, hst *ssh.Conn) ([]testing.EntityWithRunnabilityInfo, error) {
 	return runListTestsCommand(
 		localRunnerCommand(ctx, cfg, hst), cfg, state, cfg.LocalBundleGlob())
 }

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package run
+package runnerclient
 
 import (
 	"context"
@@ -24,15 +24,15 @@ import (
 // which is directly under ResDir.
 const deviceConfigFile = "device-config.txt"
 
-// getDUTInfo executes local_test_runner on the DUT to get a list of DUT info.
+// GetDUTInfo executes local_test_runner on the DUT to get a list of DUT info.
 // The info is used to check tests' dependencies.
 // This updates state.SoftwareFeatures, thus calling this twice won't work.
-func getDUTInfo(ctx context.Context, cfg *config.Config, state *config.State, cc *target.ConnCache) error {
+func GetDUTInfo(ctx context.Context, cfg *config.Config, state *config.State, cc *target.ConnCache) error {
 	if !cfg.CheckTestDeps {
 		return nil
 	}
 	if state.SoftwareFeatures != nil {
-		return errors.New("getDUTInfo is already called")
+		return errors.New("GetDUTInfo is already called")
 	}
 
 	ctx, st := timing.Start(ctx, "get_dut_info")

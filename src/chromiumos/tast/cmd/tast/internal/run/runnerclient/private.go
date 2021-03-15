@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package run
+package runnerclient
 
 import (
 	"context"
@@ -13,13 +13,13 @@ import (
 	"chromiumos/tast/internal/timing"
 )
 
-// downloadPrivateBundles executes local_test_runner on hst to download and unpack
+// DownloadPrivateBundles executes local_test_runner on hst to download and unpack
 // a private test bundles archive corresponding to the Chrome OS version of hst
 // if it has not been done yet.
 // An archive contains Go executables of local test bundles and their associated
 // internal data files and external data link files. Note that remote test
 // bundles are not included in archives.
-func downloadPrivateBundles(ctx context.Context, cfg *config.Config, conn *target.Conn) error {
+func DownloadPrivateBundles(ctx context.Context, cfg *config.Config, conn *target.Conn) error {
 	ctx, st := timing.Start(ctx, "download_private_bundles")
 	defer st.End()
 

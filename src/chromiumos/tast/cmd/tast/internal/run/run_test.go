@@ -757,7 +757,7 @@ func TestListTestsWithSkippedTests(t *gotesting.T) {
 	}
 }
 
-// TestListTestsGetDUTInfo make sure getDUTInfo is called when listTests is called.
+// TestListTestsGetDUTInfo make sure GetDUTInfo is called when listTests is called.
 func TestListTestsGetDUTInfo(t *gotesting.T) {
 	td := fakerunner.NewLocalTestData(t)
 	defer td.Close()
@@ -767,7 +767,7 @@ func TestListTestsGetDUTInfo(t *gotesting.T) {
 	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
 		switch args.Mode {
 		case runner.GetDUTInfoMode:
-			// Just check that getDUTInfo is called; details of args are
+			// Just check that GetDUTInfo is called; details of args are
 			// tested in deps_test.go.
 			called = true
 			json.NewEncoder(stdout).Encode(&runner.GetDUTInfoResult{
@@ -825,7 +825,7 @@ func TestRunTestsGetDUTInfo(t *gotesting.T) {
 	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
 		switch args.Mode {
 		case runner.GetDUTInfoMode:
-			// Just check that getDUTInfo is called; details of args are
+			// Just check that GetDUTInfo is called; details of args are
 			// tested in deps_test.go.
 			called = true
 			json.NewEncoder(stdout).Encode(&runner.GetDUTInfoResult{
@@ -867,7 +867,7 @@ func TestRunTestsGetInitialSysInfo(t *gotesting.T) {
 	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
 		switch args.Mode {
 		case runner.GetSysInfoStateMode:
-			// Just check that getInitialSysInfo is called; details of args are
+			// Just check that GetInitialSysInfo is called; details of args are
 			// tested in sys_info_test.go.
 			called = true
 			json.NewEncoder(stdout).Encode(&runner.GetSysInfoStateResult{})
@@ -886,7 +886,7 @@ func TestRunTestsGetInitialSysInfo(t *gotesting.T) {
 		t.Error("runTests failed: ", err)
 	}
 	if !called {
-		t.Errorf("runTests did not call getInitialSysInfo")
+		t.Errorf("runTests did not call GetInitialSysInfo")
 	}
 }
 
@@ -932,7 +932,7 @@ func TestRunTestsSkipTests(t *gotesting.T) {
 	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
 		switch args.Mode {
 		case runner.GetDUTInfoMode:
-			// Just check that getDUTInfo is called; details of args are
+			// Just check that GetDUTInfo is called; details of args are
 			// tested in deps_test.go.
 			json.NewEncoder(stdout).Encode(&runner.GetDUTInfoResult{
 				SoftwareFeatures: &dep.SoftwareFeatures{

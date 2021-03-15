@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package run
+package runnerclient
 
 import (
 	"bytes"
@@ -30,7 +30,7 @@ import (
 // runFakeRemoteRunner calls remote and records the Args struct that was passed
 // to the fake runner.
 func runFakeRemoteRunner(t *gotesting.T, td *fakerunner.RemoteTestData) ([]*jsonprotocol.EntityResult, error) {
-	res, rerr := runRemoteTests(context.Background(), &td.Cfg, &td.State)
+	res, rerr := RunRemoteTests(context.Background(), &td.Cfg, &td.State)
 
 	f, err := os.Open(filepath.Join(td.Dir, fakerunner.FakeRunnerArgsFile))
 	if err != nil {
@@ -69,12 +69,12 @@ func TestRemoteRun(t *gotesting.T) {
 
 	res, err := runFakeRemoteRunner(t, td)
 	if err != nil {
-		t.Errorf("runRemoteTests(%+v) failed: %v", td.Cfg, err)
+		t.Errorf("RunRemoteTests(%+v) failed: %v", td.Cfg, err)
 	}
 	if len(res) != 1 {
-		t.Errorf("runRemoteTests(%+v) returned %v result(s); want 1", td.Cfg, len(res))
+		t.Errorf("RunRemoteTests(%+v) returned %v result(s); want 1", td.Cfg, len(res))
 	} else if res[0].Name != testName {
-		t.Errorf("runRemoteTests(%+v) returned result for test %q; want %q", td.Cfg, res[0].Name, testName)
+		t.Errorf("RunRemoteTests(%+v) returned result for test %q; want %q", td.Cfg, res[0].Name, testName)
 	}
 
 	glob := filepath.Join(td.Cfg.RemoteBundleDir, "*")
@@ -119,7 +119,7 @@ func TestRemoteRun(t *gotesting.T) {
 		},
 	}
 	if diff := cmp.Diff(td.Args, expArgs, cmpopts.IgnoreUnexported(expArgs)); diff != "" {
-		t.Errorf("runRemoteTests(%+v) passed unexpected args; diff (-got +want):\n%s", td.Cfg, diff)
+		t.Errorf("RunRemoteTests(%+v) passed unexpected args; diff (-got +want):\n%s", td.Cfg, diff)
 	}
 }
 
@@ -157,7 +157,7 @@ func TestRemoteRunCopyOutput(t *gotesting.T) {
 	}
 
 	if _, err := runFakeRemoteRunner(t, td); err != nil {
-		t.Errorf("runRemoteTests(%+v) failed: %v", td.Cfg, err)
+		t.Errorf("RunRemoteTests(%+v) failed: %v", td.Cfg, err)
 	}
 
 	files, err := testutil.ReadFiles(filepath.Join(td.Cfg.ResDir, testLogsDir))
@@ -180,14 +180,14 @@ func disabledTestRemoteFailure(t *gotesting.T) {
 	defer td.Close()
 
 	if _, err := runFakeRemoteRunner(t, td); err == nil {
-		t.Errorf("runRemoteTests(%v) unexpectedly passed", td.Cfg)
+		t.Errorf("RunRemoteTests(%v) unexpectedly passed", td.Cfg)
 	} else if !strings.Contains(err.Error(), strings.TrimRight(errorMsg, "\n")) {
 		// The runner's error message should've been logged.
-		t.Errorf("runRemoteTests(%v) didn't log runner error %q in %q", td.Cfg, errorMsg, err.Error())
+		t.Errorf("RunRemoteTests(%v) didn't log runner error %q in %q", td.Cfg, errorMsg, err.Error())
 	}
 }
 
-// TestRemoteMaxFailures makes sure that runRemoteTests does not run any tests if maximum failures allowed has been reach.
+// TestRemoteMaxFailures makes sure that RunRemoteTests does not run any tests if maximum failures allowed has been reach.
 func TestRemoteMaxFailures(t *gotesting.T) {
 	outDir := testutil.TempDir(t)
 	defer os.RemoveAll(outDir)
@@ -208,14 +208,14 @@ func TestRemoteMaxFailures(t *gotesting.T) {
 	td.Cfg.MaxTestFailures = 1
 	td.State.FailuresCount = 0
 
-	results, err := runRemoteTests(context.Background(), &td.Cfg, &td.State)
+	results, err := RunRemoteTests(context.Background(), &td.Cfg, &td.State)
 	if err == nil {
-		t.Errorf("runRemoteTests(%+v, %+v) passed unexpectedly", td.Cfg, td.State)
+		t.Errorf("RunRemoteTests(%+v, %+v) passed unexpectedly", td.Cfg, td.State)
 	}
 	if len(results) != 1 {
-		t.Errorf("runRemoteTests return %v results; want 1", len(results))
+		t.Errorf("RunRemoteTests return %v results; want 1", len(results))
 	}
 }
 
-// TODO(derat): Add a test that verifies that getInitialSysInfo is called before tests are run.
-// Also verify that state.StartedRun is false if we see an early failure during getInitialSysInfo.
+// TODO(derat): Add a test that verifies that GetInitialSysInfo is called before tests are run.
+// Also verify that state.StartedRun is false if we see an early failure during GetInitialSysInfo.

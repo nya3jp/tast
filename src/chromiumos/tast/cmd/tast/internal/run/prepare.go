@@ -16,6 +16,7 @@ import (
 
 	"chromiumos/tast/cmd/tast/internal/build"
 	"chromiumos/tast/cmd/tast/internal/run/config"
+	"chromiumos/tast/cmd/tast/internal/run/runnerclient"
 	"chromiumos/tast/cmd/tast/internal/run/target"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/internal/timing"
@@ -45,7 +46,7 @@ func prepare(ctx context.Context, cfg *config.Config, state *config.State, conn 
 	}
 
 	if cfg.DownloadPrivateBundles {
-		if err := downloadPrivateBundles(ctx, cfg, conn); err != nil {
+		if err := runnerclient.DownloadPrivateBundles(ctx, cfg, conn); err != nil {
 			return fmt.Errorf("failed downloading private bundles: %v", err)
 		}
 		written = true
@@ -217,7 +218,7 @@ func getDataFilePaths(ctx context.Context, cfg *config.Config, state *config.Sta
 
 	cfg.Logger.Debug("Getting data file list from target")
 
-	ts, err := listLocalTests(ctx, cfg, state, hst)
+	ts, err := runnerclient.ListLocalTests(ctx, cfg, state, hst)
 	if err != nil {
 		return nil, err
 	}

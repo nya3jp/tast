@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package run
+package runnerclient
 
 import (
 	"context"
@@ -15,15 +15,15 @@ import (
 	"chromiumos/tast/internal/timing"
 )
 
-// getInitialSysInfo saves the initial state of the DUT's system information to cfg if
+// GetInitialSysInfo saves the initial state of the DUT's system information to cfg if
 // requested and if it hasn't already been saved. This is called before testing.
 // This updates state.InitialSysInfo, so calling twice won't work.
-func getInitialSysInfo(ctx context.Context, cfg *config.Config, state *config.State, cc *target.ConnCache) error {
+func GetInitialSysInfo(ctx context.Context, cfg *config.Config, state *config.State, cc *target.ConnCache) error {
 	if !cfg.CollectSysInfo {
 		return nil
 	}
 	if state.InitialSysInfo != nil {
-		return errors.New("getInitialSysInfo is already called")
+		return errors.New("GetInitialSysInfo is already called")
 	}
 
 	ctx, st := timing.Start(ctx, "initial_sys_info")
@@ -53,7 +53,7 @@ func getInitialSysInfo(ctx context.Context, cfg *config.Config, state *config.St
 
 // collectSysInfo writes system information generated on the DUT during testing to the results dir if
 // doing so was requested. This is called after testing and relies on the state saved by
-// getInitialSysInfo.
+// GetInitialSysInfo.
 func collectSysInfo(ctx context.Context, cfg *config.Config, state *config.State) error {
 	if !cfg.CollectSysInfo || state.InitialSysInfo == nil {
 		return nil

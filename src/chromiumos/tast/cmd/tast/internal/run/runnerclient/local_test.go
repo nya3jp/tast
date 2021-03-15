@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package run
+package runnerclient
 
 import (
 	"context"
@@ -71,7 +71,7 @@ func TestLocalSuccess(t *gotesting.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second) // avoid test being blocked indefinitely
 	defer cancel()
 
-	if _, err := runLocalTests(ctx, &td.Cfg, &td.State, cc); err != nil {
+	if _, err := RunLocalTests(ctx, &td.Cfg, &td.State, cc); err != nil {
 		t.Errorf("runLocalTest failed: %v", err)
 	}
 }
@@ -129,8 +129,8 @@ func TestLocalProxy(t *gotesting.T) {
 	cc := target.NewConnCache(&td.Cfg)
 	defer cc.Close(context.Background())
 
-	if _, err := runLocalTests(context.Background(), &td.Cfg, &td.State, cc); err != nil {
-		t.Error("runLocalTests failed: ", err)
+	if _, err := RunLocalTests(context.Background(), &td.Cfg, &td.State, cc); err != nil {
+		t.Error("RunLocalTests failed: ", err)
 	}
 }
 
@@ -172,8 +172,8 @@ func TestLocalCopyOutput(t *gotesting.T) {
 	cc := target.NewConnCache(&td.Cfg)
 	defer cc.Close(context.Background())
 
-	if _, err := runLocalTests(context.Background(), &td.Cfg, &td.State, cc); err != nil {
-		t.Fatalf("runLocalTests failed: %v", err)
+	if _, err := RunLocalTests(context.Background(), &td.Cfg, &td.State, cc); err != nil {
+		t.Fatalf("RunLocalTests failed: %v", err)
 	}
 
 	files, err := testutil.ReadFiles(filepath.Join(td.Cfg.ResDir, testLogsDir))
@@ -204,11 +204,11 @@ func disabledTestLocalExecFailure(t *gotesting.T) {
 	cc := target.NewConnCache(&td.Cfg)
 	defer cc.Close(context.Background())
 
-	if _, err := runLocalTests(context.Background(), &td.Cfg, &td.State, cc); err == nil {
-		t.Error("runLocalTests unexpectedly passed")
+	if _, err := RunLocalTests(context.Background(), &td.Cfg, &td.State, cc); err == nil {
+		t.Error("RunLocalTests unexpectedly passed")
 	}
 	if !strings.Contains(td.LogBuf.String(), msg) {
-		t.Errorf("runLocalTests logged %q; want substring %q", td.LogBuf.String(), msg)
+		t.Errorf("RunLocalTests logged %q; want substring %q", td.LogBuf.String(), msg)
 	}
 }
 
@@ -237,12 +237,12 @@ func TestLocalWaitTimeout(t *gotesting.T) {
 	cc := target.NewConnCache(&td.Cfg)
 	defer cc.Close(context.Background())
 
-	if _, err := runLocalTests(context.Background(), &td.Cfg, &td.State, cc); err == nil {
-		t.Error("runLocalTests unexpectedly passed")
+	if _, err := RunLocalTests(context.Background(), &td.Cfg, &td.State, cc); err == nil {
+		t.Error("RunLocalTests unexpectedly passed")
 	}
 }
 
-// TestLocalMaxFailures makes sure that runLocalTests does not run any tests after maximum failures allowed has been reach.
+// TestLocalMaxFailures makes sure that RunLocalTests does not run any tests after maximum failures allowed has been reach.
 func TestLocalMaxFailures(t *gotesting.T) {
 	td := fakerunner.NewLocalTestData(t)
 	defer td.Close()
@@ -270,12 +270,12 @@ func TestLocalMaxFailures(t *gotesting.T) {
 	cc := target.NewConnCache(&td.Cfg)
 	defer cc.Close(context.Background())
 
-	results, err := runLocalTests(context.Background(), &td.Cfg, &td.State, cc)
+	results, err := RunLocalTests(context.Background(), &td.Cfg, &td.State, cc)
 	if err == nil {
-		t.Errorf("runLocalTests() passed unexpectedly")
+		t.Errorf("RunLocalTests() passed unexpectedly")
 	}
 	if len(results) != 1 {
-		t.Errorf("runLocalTests return %v results; want 1", len(results))
+		t.Errorf("RunLocalTests return %v results; want 1", len(results))
 	}
 }
 
@@ -354,9 +354,9 @@ func TestFixturesDependency(t *gotesting.T) {
 	cc := target.NewConnCache(&td.Cfg)
 	defer cc.Close(context.Background())
 
-	_, err := runLocalTests(context.Background(), &td.Cfg, &td.State, cc)
+	_, err := RunLocalTests(context.Background(), &td.Cfg, &td.State, cc)
 	if err != nil {
-		t.Fatalf("runLocalTests(): %v", err)
+		t.Fatalf("RunLocalTests(): %v", err)
 	}
 
 	// Test chunks are sorted by depending remote fixture name.

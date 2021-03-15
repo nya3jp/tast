@@ -28,19 +28,6 @@ func pushToHost(ctx context.Context, cfg *config.Config, hst *ssh.Conn, files ma
 	return linuxssh.PutFiles(ctx, hst, files, linuxssh.DereferenceSymlinks)
 }
 
-// moveFromHost copies the tree rooted at src on hst to dst on the local system and deletes src from hst.
-// src is appended to cfg.HstCopyBasePath to support unit tests.
-func moveFromHost(ctx context.Context, cfg *config.Config, hst *ssh.Conn, src, dst string) error {
-	src = filepath.Join(cfg.HstCopyBasePath, src)
-	if err := linuxssh.GetFile(ctx, hst, src, dst); err != nil {
-		return err
-	}
-	if out, err := hst.Command("rm", "-rf", "--", src).Output(ctx); err != nil {
-		cfg.Logger.Logf("Failed cleaning %s: %v\n%s", src, err, out)
-	}
-	return nil
-}
-
 // deleteFromHost is a wrapper around hst.DeleteTree that should be used instead of calling DeleteTree directly.
 // baseDir is appended to cfg.HstCopyBasePath to support unit tests.
 func deleteFromHost(ctx context.Context, cfg *config.Config, hst *ssh.Conn, baseDir string, files []string) error {

@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a0234f69_090fce36",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 369,
+      "author": {
+        "id": 1487074
+      },
+      "writtenOn": "2021-03-15T03:37:08Z",
+      "side": 1,
+      "message": "Can\u0027t we just return Platform(\"strongbad\", ....) here? I think WifiIntel defines Satisfied function by itself because it wants to combine Platform and Model.",
+      "range": {
+        "startLine": 360,
+        "startChar": 8,
+        "endLine": 369,
+        "endChar": 2
+      },
+      "revId": "88d1f05d88d767a7006773a2155cc7d91762c8ba",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

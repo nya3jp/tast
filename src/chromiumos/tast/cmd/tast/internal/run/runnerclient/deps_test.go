@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package run
+package runnerclient
 
 import (
 	"context"
@@ -123,8 +123,8 @@ func TestGetDUTInfo(t *testing.T) {
 	cc := target.NewConnCache(&td.Cfg)
 	defer cc.Close(context.Background())
 
-	if err := getDUTInfo(context.Background(), &td.Cfg, &td.State, cc); err != nil {
-		t.Fatalf("getDUTInfo(%+v) failed: %v", td.Cfg, err)
+	if err := GetDUTInfo(context.Background(), &td.Cfg, &td.State, cc); err != nil {
+		t.Fatalf("GetDUTInfo(%+v) failed: %v", td.Cfg, err)
 	}
 	checkRunnerTestDepsArgs(t, &td.Cfg, &td.State, true, avail, unavail, dc, hf)
 
@@ -149,8 +149,8 @@ func TestGetDUTInfo(t *testing.T) {
 	}
 
 	// The second call should fail, because it tries to update cfg's fields twice.
-	if err := getDUTInfo(context.Background(), &td.Cfg, &td.State, cc); err == nil {
-		t.Fatal("Calling getDUTInfo twice unexpectedly succeeded")
+	if err := GetDUTInfo(context.Background(), &td.Cfg, &td.State, cc); err == nil {
+		t.Fatal("Calling GetDUTInfo twice unexpectedly succeeded")
 	}
 }
 
@@ -180,8 +180,8 @@ func TestGetDUTInfoNoDeviceConfig(t *testing.T) {
 	cc := target.NewConnCache(&td.Cfg)
 	defer cc.Close(context.Background())
 
-	if err := getDUTInfo(context.Background(), &td.Cfg, &td.State, cc); err != nil {
-		t.Fatalf("getDUTInfo(%+v) failed: %v", td.Cfg, err)
+	if err := GetDUTInfo(context.Background(), &td.Cfg, &td.State, cc); err != nil {
+		t.Fatalf("GetDUTInfo(%+v) failed: %v", td.Cfg, err)
 	}
 
 	// Make sure device-config.txt is created.
@@ -200,8 +200,8 @@ func TestGetDUTInfoNoCheckTestDeps(t *testing.T) {
 	cc := target.NewConnCache(&td.Cfg)
 	defer cc.Close(context.Background())
 
-	if err := getDUTInfo(context.Background(), &td.Cfg, &td.State, cc); err != nil {
-		t.Fatalf("getDUTInfo(%+v) failed: %v", td.Cfg, err)
+	if err := GetDUTInfo(context.Background(), &td.Cfg, &td.State, cc); err != nil {
+		t.Fatalf("GetDUTInfo(%+v) failed: %v", td.Cfg, err)
 	}
 	checkRunnerTestDepsArgs(t, &td.Cfg, &td.State, false, nil, nil, nil, nil)
 }
@@ -225,7 +225,7 @@ func TestGetSoftwareFeaturesNoFeatures(t *testing.T) {
 	cc := target.NewConnCache(&td.Cfg)
 	defer cc.Close(context.Background())
 
-	if err := getDUTInfo(context.Background(), &td.Cfg, &td.State, cc); err == nil {
+	if err := GetDUTInfo(context.Background(), &td.Cfg, &td.State, cc); err == nil {
 		t.Fatalf("getSoftwareFeatures(%+v) succeeded unexpectedly", td.Cfg)
 	}
 }

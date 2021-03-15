@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package run
+package runnerclient
 
 import (
 	"context"
@@ -42,8 +42,8 @@ func TestGetInitialSysInfo(t *testing.T) {
 	cc := target.NewConnCache(&td.Cfg)
 	defer cc.Close(context.Background())
 
-	if err := getInitialSysInfo(context.Background(), &td.Cfg, &td.State, cc); err != nil {
-		t.Fatalf("getInitialSysInfo(..., %+v) failed: %v", td.Cfg, err)
+	if err := GetInitialSysInfo(context.Background(), &td.Cfg, &td.State, cc); err != nil {
+		t.Fatalf("GetInitialSysInfo(..., %+v) failed: %v", td.Cfg, err)
 	}
 
 	if td.State.InitialSysInfo == nil {
@@ -53,8 +53,8 @@ func TestGetInitialSysInfo(t *testing.T) {
 	}
 
 	// The second call should fail, because it tried to update cfg's field twice.
-	if err := getInitialSysInfo(context.Background(), &td.Cfg, &td.State, cc); err == nil {
-		t.Fatal("Calling getInitialSysInfo twice unexpectedly succeeded")
+	if err := GetInitialSysInfo(context.Background(), &td.Cfg, &td.State, cc); err == nil {
+		t.Fatal("Calling GetInitialSysInfo twice unexpectedly succeeded")
 	}
 }
 

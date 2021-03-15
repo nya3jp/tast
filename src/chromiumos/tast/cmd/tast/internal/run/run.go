@@ -19,6 +19,7 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/devserver"
 	"chromiumos/tast/cmd/tast/internal/run/jsonprotocol"
+	"chromiumos/tast/cmd/tast/internal/run/runnerclient"
 	"chromiumos/tast/cmd/tast/internal/run/target"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/protocol"
@@ -212,10 +213,10 @@ func startEphemeralDevserverForRemoteTests(ctx context.Context, cfg *config.Conf
 
 // listTests returns the whole tests to run.
 func listTests(ctx context.Context, cfg *config.Config, state *config.State, cc *target.ConnCache) ([]*jsonprotocol.EntityResult, error) {
-	if err := getDUTInfo(ctx, cfg, state, cc); err != nil {
+	if err := runnerclient.GetDUTInfo(ctx, cfg, state, cc); err != nil {
 		return nil, err
 	}
-	testsToRun, testsToSkip, _, err := findTestsForShard(ctx, cfg, state, cc)
+	testsToRun, testsToSkip, _, err := runnerclient.FindTestsForShard(ctx, cfg, state, cc)
 	if err != nil {
 		return nil, err
 	}
@@ -226,7 +227,7 @@ func listTests(ctx context.Context, cfg *config.Config, state *config.State, cc 
 }
 
 func runTests(ctx context.Context, cfg *config.Config, state *config.State, cc *target.ConnCache) ([]*jsonprotocol.EntityResult, error) {
-	if err := getDUTInfo(ctx, cfg, state, cc); err != nil {
+	if err := runnerclient.GetDUTInfo(ctx, cfg, state, cc); err != nil {
 		return nil, errors.Wrap(err, "failed to get DUT software features")
 	}
 
@@ -236,11 +237,11 @@ func runTests(ctx context.Context, cfg *config.Config, state *config.State, cc *
 		cfg.Logger.Logf("Target version: %v", state.OSVersion)
 	}
 
-	if err := getInitialSysInfo(ctx, cfg, state, cc); err != nil {
+	if err := runnerclient.GetInitialSysInfo(ctx, cfg, state, cc); err != nil {
 		return nil, errors.Wrap(err, "failed to get initial sysinfo")
 	}
 
-	testsToRun, testsToSkip, testsNotInShard, err := findTestsForShard(ctx, cfg, state, cc)
+	testsToRun, testsToSkip, testsNotInShard, err := runnerclient.FindTestsForShard(ctx, cfg, state, cc)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to get test patterns for specified shard")
 	}
@@ -273,7 +274,7 @@ func runTests(ctx context.Context, cfg *config.Config, state *config.State, cc *
 	state.StartedRun = true
 
 	if cfg.RunLocal {
-		lres, err := runLocalTests(ctx, cfg, state, cc)
+		lres, err := runnerclient.RunLocalTests(ctx, cfg, state, cc)
 		results = append(results, lres...)
 		if err != nil {
 			// TODO(derat): While test runners are always supposed to report success even if tests fail,
@@ -287,7 +288,7 @@ func runTests(ctx context.Context, cfg *config.Config, state *config.State, cc *
 	}
 
 	// Run remote tests and merge the results.
-	rres, err := runRemoteTests(ctx, cfg, state)
+	rres, err := runnerclient.RunRemoteTests(ctx, cfg, state)
 	results = append(results, rres...)
 	return results, err
 }

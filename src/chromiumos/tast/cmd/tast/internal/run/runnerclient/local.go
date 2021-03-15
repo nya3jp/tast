@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package run
+package runnerclient
 
 import (
 	"bytes"
@@ -375,10 +375,10 @@ func runFixtureAndTests(ctx context.Context, cfg *config.Config, conn *target.Co
 	return nil
 }
 
-// runLocalTests executes tests as described by cfg on hst and returns the
+// RunLocalTests executes tests as described by cfg on hst and returns the
 // results. It is only used for RunTestsMode.
 // It can return partial results and an error when error happens mid-tests.
-func runLocalTests(ctx context.Context, cfg *config.Config, state *config.State, cc *target.ConnCache) (res []*jsonprotocol.EntityResult, retErr error) {
+func RunLocalTests(ctx context.Context, cfg *config.Config, state *config.State, cc *target.ConnCache) (res []*jsonprotocol.EntityResult, retErr error) {
 	ctx, st := timing.Start(ctx, "run_local_tests")
 	defer st.End()
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package run
+package runnerclient
 
 import (
 	"context"
@@ -22,8 +22,8 @@ import (
 	"chromiumos/tast/internal/timing"
 )
 
-// runRemoteTests runs the remote test runner and reads its output.
-func runRemoteTests(ctx context.Context, cfg *config.Config, state *config.State) ([]*jsonprotocol.EntityResult, error) {
+// RunRemoteTests runs the remote test runner and reads its output.
+func RunRemoteTests(ctx context.Context, cfg *config.Config, state *config.State) ([]*jsonprotocol.EntityResult, error) {
 	ctx, st := timing.Start(ctx, "run_remote_tests")
 	defer st.End()
 

@@ -10,6 +10,7 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run"
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/jsonprotocol"
+	"chromiumos/tast/cmd/tast/internal/run/runnerclient"
 )
 
 // runWrapper is a wrapper that allows functions from the run package to be stubbed out for testing.
@@ -28,5 +29,5 @@ func (w realRunWrapper) run(ctx context.Context, cfg *config.Config, state *conf
 }
 
 func (w realRunWrapper) writeResults(ctx context.Context, cfg *config.Config, state *config.State, results []*jsonprotocol.EntityResult, complete bool) error {
-	return run.WriteResults(ctx, cfg, state, results, complete)
+	return runnerclient.WriteResults(ctx, cfg, state, results, complete)
 }

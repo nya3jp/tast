@@ -40,9 +40,11 @@ func RunRemoteTests(ctx context.Context, cfg *config.Config, state *config.State
 	beforeRetry := func(ctx context.Context) bool { return true }
 
 	start := time.Now()
-	names := make([]string, len(cfg.TestsToRun), len(cfg.TestsToRun))
-	for i, t := range cfg.TestsToRun {
-		names[i] = t.Name
+	var names []string
+	for _, t := range cfg.TestsToRun {
+		if t.BundleType == jsonprotocol.RemoteBundle {
+			names = append(names, t.Name)
+		}
 	}
 	results, err := runTestsWithRetry(ctx, cfg, names, runTests, beforeRetry)
 	elapsed := time.Since(start)

@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "38d9c99e_3952407b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-03-15T06:56:35Z",
+      "side": 1,
+      "message": "LGTM, just one optional nit.\n",
+      "revId": "ba56dda790d468e61cc75c65e55ee95837415d8a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "24d340f2_7d4ebb14",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 739,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-03-15T06:56:35Z",
+      "side": 1,
+      "message": "nit\u0026optional: It\u0027s nice to format error messages as a plain English. How about separating strings with \"; \" ?",
+      "range": {
+        "startLine": 739,
+        "startChar": 107,
+        "endLine": 739,
+        "endChar": 109
+      },
+      "revId": "ba56dda790d468e61cc75c65e55ee95837415d8a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

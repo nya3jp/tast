@@ -16,6 +16,24 @@
       "message": "We probably should rename test to TestSSHDropKernelCrashBugARM. Same for other TestDiagnose* test functions.",
       "revId": "65127d09d8fb29c99e75135c17856be830096ee9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "56a38b0e_fbd19135",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/diagnose/diagnose_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 167,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-03-15T05:16:08Z",
+      "side": 0,
+      "message": "Good catch! Done.",
+      "parentUuid": "e9a36b2d_85d77475",
+      "revId": "65127d09d8fb29c99e75135c17856be830096ee9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

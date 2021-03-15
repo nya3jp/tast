@@ -75,31 +75,38 @@ func findShardIndices(numTests, totalShards, shardIndex int) (startIndex, endInd
 
 // listAllTests returns the whole tests whether they will be skipped or not..
 func listAllTests(ctx context.Context, cfg *config.Config, state *config.State, cc *target.ConnCache) ([]*jsonprotocol.EntityResult, error) {
-	var tests []testing.EntityWithRunnabilityInfo
+	var tests []*jsonprotocol.EntityResult
 	if cfg.RunLocal {
 		conn, err := cc.Conn(ctx)
 		if err != nil {
 			return nil, err
 		}
-		localTests, err := ListLocalTests(ctx, cfg, state, conn.SSHConn())
+		ts, err := ListLocalTests(ctx, cfg, state, conn.SSHConn())
 		if err != nil {
 			return nil, err
 		}
-		tests = append(tests, localTests...)
+		for _, t := range ts {
+			tests = append(tests, &jsonprotocol.EntityResult{
+				EntityInfo: t.EntityInfo,
+				SkipReason: t.SkipReason,
+				BundleType: jsonprotocol.LocalBundle,
+			})
+		}
 	}
 	if cfg.RunRemote {
-		remoteTests, err := listRemoteTests(ctx, cfg, state)
+		ts, err := listRemoteTests(ctx, cfg, state)
 		if err != nil {
 			return nil, err
 		}
-		tests = append(tests, remoteTests...)
+		for _, t := range ts {
+			tests = append(tests, &jsonprotocol.EntityResult{
+				EntityInfo: t.EntityInfo,
+				SkipReason: t.SkipReason,
+				BundleType: jsonprotocol.RemoteBundle,
+			})
+		}
 	}
-
-	results := make([]*jsonprotocol.EntityResult, len(tests))
-	for i := 0; i < len(tests); i++ {
-		results[i] = &jsonprotocol.EntityResult{EntityInfo: tests[i].EntityInfo, SkipReason: tests[i].SkipReason}
-	}
-	return results, nil
+	return tests, nil
 }
 
 // ListLocalTests returns a list of local tests to run.

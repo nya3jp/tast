@@ -16,6 +16,121 @@
       "message": "as this is a change in tast repo, add tast-owners to review.",
       "revId": "28b91ba07dd3716fb186e52171fcb32034601214",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "49ff136a_38c46726",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 362,
+      "author": {
+        "id": 1132414
+      },
+      "writtenOn": "2021-03-16T17:34:22Z",
+      "side": 1,
+      "message": "I don\u0027t think this exists",
+      "range": {
+        "startLine": 362,
+        "startChar": 57,
+        "endLine": 362,
+        "endChar": 65
+      },
+      "revId": "28b91ba07dd3716fb186e52171fcb32034601214",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "03c67ef8_98bd39dc",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 362,
+      "author": {
+        "id": 1132414
+      },
+      "writtenOn": "2021-03-16T17:34:22Z",
+      "side": 1,
+      "message": "this was just a reference board and doesn\u0027t actually exist; it should be \u0027grunt\u0027 anyway, I think",
+      "range": {
+        "startLine": 362,
+        "startChar": 69,
+        "endLine": 362,
+        "endChar": 75
+      },
+      "revId": "28b91ba07dd3716fb186e52171fcb32034601214",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "44222660_b38ae8a4",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 362,
+      "author": {
+        "id": 1132414
+      },
+      "writtenOn": "2021-03-16T17:34:22Z",
+      "side": 1,
+      "message": "I think this is just \u0027trogdor\u0027\n\n(try `mosys platform name`)",
+      "range": {
+        "startLine": 362,
+        "startChar": 4,
+        "endLine": 362,
+        "endChar": 13
+      },
+      "revId": "28b91ba07dd3716fb186e52171fcb32034601214",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f90d8efc_cce89510",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 362,
+      "author": {
+        "id": 1132414
+      },
+      "writtenOn": "2021-03-16T17:34:22Z",
+      "side": 1,
+      "message": "this is just \u0027kukui\u0027",
+      "range": {
+        "startLine": 362,
+        "startChar": 37,
+        "endLine": 362,
+        "endChar": 44
+      },
+      "revId": "28b91ba07dd3716fb186e52171fcb32034601214",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "96b4f6ab_8bac846c",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 364,
+      "author": {
+        "id": 1132414
+      },
+      "writtenOn": "2021-03-16T17:34:22Z",
+      "side": 1,
+      "message": "because this is not a \u0027skip\u0027 list (it\u0027s an \u0027allow\u0027 list), this needs to go after any \u0027skip\u0027 list (i.e. after line 368) to work properly.",
+      "range": {
+        "startLine": 364,
+        "startChar": 0,
+        "endLine": 364,
+        "endChar": 56
+      },
+      "revId": "28b91ba07dd3716fb186e52171fcb32034601214",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

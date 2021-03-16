@@ -112,6 +112,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "13cfb525_5a6594da",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 362,
+      "author": {
+        "id": 1426782
+      },
+      "writtenOn": "2021-03-16T21:58:40Z",
+      "side": 1,
+      "message": "Actually this is for CoachZ devices. Strongbad is for WCN3991 based variant. So I guess we might have to keep this.",
+      "parentUuid": "44222660_b38ae8a4",
+      "range": {
+        "startLine": 362,
+        "startChar": 4,
+        "endLine": 362,
+        "endChar": 13
+      },
+      "revId": "28b91ba07dd3716fb186e52171fcb32034601214",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "96b4f6ab_8bac846c",
         "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
         "patchSetId": 2

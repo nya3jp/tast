@@ -139,6 +139,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "6dda225d_62a2b74e",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 528,
+      "author": {
+        "id": 1002858
+      },
+      "writtenOn": "2021-03-16T17:16:48Z",
+      "side": 1,
+      "message": "If you want to only run the test on boards that have a certain amount of free space left, that\u0027s not something that can be done with scheduling rules alone since - as you say - it will also depend on device state and what tests have been run before.\n\nIf you want to prevent the test from running on all current and future boards that have \u003c n GB total storage, then adding a general condition here based on the disc size makes sense.  You could also continue to prevent the test from running on a certain set of predefined boards, but in that case I think it\u0027s better to call the skip condition and maintain the list in one of your team\u0027s common libraries instead of in tast core.  \n\nIIuc what you want is some combination of: hardware rules for scheduling (\"we know devices with small ssds don\u0027t work so don\u0027t bother trying\"), tests being in their own suite (control which tests ran before, limiting the possibility of a filled ssd at start), and some way to clean up the device at runtime as a last resort if it is too full",
+      "parentUuid": "81957088_d2c7f237",
+      "range": {
+        "startLine": 528,
+        "startChar": 5,
+        "endLine": 528,
+        "endChar": 40
+      },
+      "revId": "44bbf71da7455b757917a821b0b9bfd28ea550ce",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "73e4811a_00390ed8",
         "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
         "patchSetId": 1

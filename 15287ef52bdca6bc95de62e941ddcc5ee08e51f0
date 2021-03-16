@@ -16,6 +16,24 @@
       "message": "The code is fine. I just have a question about ephemeral dev server for remote tests. Why do we not move it to target.Conn? I don\u0027t really understand. Thanks.",
       "revId": "15287ef52bdca6bc95de62e941ddcc5ee08e51f0",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a4eb66a7_cf2f495c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-03-16T02:59:43Z",
+      "side": 1,
+      "message": "That is because lifetime of the ephemeral devserver for remote tests is not associated with a SSH connection. We don\u0027t need to restart it when an SSH connection is dropped; rather we have to keep the server running when we\u0027re running remote tests, during which Tast CLI may not be able to maintain an active SSH connection to the DUT due to remote tests rebooting the DUT.",
+      "parentUuid": "fd9d92c4_b8059d30",
+      "revId": "15287ef52bdca6bc95de62e941ddcc5ee08e51f0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

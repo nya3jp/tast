@@ -93,6 +93,30 @@
       },
       "revId": "0bcb4471dd9da9868e57e25882b3838d854cae5a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e5da7893_1bb6dc7a",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 220,
+      "author": {
+        "id": 1132414
+      },
+      "writtenOn": "2021-03-17T22:55:14Z",
+      "side": 1,
+      "message": "OK, maybe this is just a quirk of the Tast syntax (i.e., my ignorance). I\u0027ll let somebody more knowledgeable about this piece complain if there\u0027s anything to complain about here.\n\n*resolved*",
+      "parentUuid": "5ae0a2cd_195376e4",
+      "range": {
+        "startLine": 220,
+        "startChar": 25,
+        "endLine": 220,
+        "endChar": 45
+      },
+      "revId": "0bcb4471dd9da9868e57e25882b3838d854cae5a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

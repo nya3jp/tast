@@ -45,6 +45,54 @@
       },
       "revId": "0bcb4471dd9da9868e57e25882b3838d854cae5a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5ae0a2cd_195376e4",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 220,
+      "author": {
+        "id": 1373754
+      },
+      "writtenOn": "2021-03-17T22:42:40Z",
+      "side": 1,
+      "message": "I already tried the following but failed:\n1- \"!kernel-upstream\"\n2- `!kernel-upstream`,\nfailed to parse \"no_kernel_upstream\" feature expression \"!kernel-upstream\": invalid binary operator \"-\"",
+      "parentUuid": "dca95cc6_0653566a",
+      "range": {
+        "startLine": 220,
+        "startChar": 25,
+        "endLine": 220,
+        "endChar": 45
+      },
+      "revId": "0bcb4471dd9da9868e57e25882b3838d854cae5a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9263d904_f1fddea1",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 220,
+      "author": {
+        "id": 1373754
+      },
+      "writtenOn": "2021-03-17T22:42:40Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "322ecf5e_1a8b4fde",
+      "range": {
+        "startLine": 220,
+        "startChar": 4,
+        "endLine": 220,
+        "endChar": 5
+      },
+      "revId": "0bcb4471dd9da9868e57e25882b3838d854cae5a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

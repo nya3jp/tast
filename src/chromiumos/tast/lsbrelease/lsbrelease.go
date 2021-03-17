@@ -56,6 +56,10 @@ const (
 	// ARCSDKVersion is a key for the Android SDK Version of the current
 	// ARC image installed on the DUT.
 	ARCSDKVersion = "CHROMEOS_ARC_ANDROID_SDK_VERSION"
+
+	// GerritChanges is a key for a comma-seperated list of the gerrit changes applied
+	// on top of the code. Only filled for CQ builds (since only they patch a CL in).
+	GerritChanges = "GERRIT_CHANGES"
 )
 
 // allowedPkgs is the list of Go packages that can use this package.
@@ -69,9 +73,10 @@ var allowedPkgs = []string{
 	"chromiumos/tast/local/crash",
 	"chromiumos/tast/local/graphics/trace",
 	"chromiumos/tast/local/rialto",
+	"chromiumos/tast/local/screenshot", // For Board.
 	"chromiumos/tast/lsbrelease",
 	"chromiumos/tast/remote/bundles/cros/firmware", // For finding firmware file.
-	"chromiumos/tast/remote/firmware/reporters",    // For Board.
+	"chromiumos/tast/remote/firmware/reporters",    // For Board and gerrit changes.
 	"main", // for local_test_runner
 }
 

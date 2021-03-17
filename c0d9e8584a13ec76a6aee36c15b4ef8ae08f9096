@@ -35,6 +35,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "351e9df9_e8dc7e85",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 188,
+      "author": {
+        "id": 1404997
+      },
+      "writtenOn": "2021-03-17T20:26:16Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "14e4cf7f_a74156b8",
+      "revId": "c0d9e8584a13ec76a6aee36c15b4ef8ae08f9096",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "768d01ef_e6fa8a99",
@@ -48,6 +66,24 @@
       "writtenOn": "2021-03-17T15:46:58Z",
       "side": 1,
       "message": "Ditto (sorry overlooked in the previous review).",
+      "revId": "c0d9e8584a13ec76a6aee36c15b4ef8ae08f9096",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8a7464c6_ecaad93e",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 220,
+      "author": {
+        "id": 1404997
+      },
+      "writtenOn": "2021-03-17T20:26:16Z",
+      "side": 1,
+      "message": "done. also renamed no_use_fscrypt_v2 to use_fscrypt_v1 so they are next to each other.",
+      "parentUuid": "768d01ef_e6fa8a99",
       "revId": "c0d9e8584a13ec76a6aee36c15b4ef8ae08f9096",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }

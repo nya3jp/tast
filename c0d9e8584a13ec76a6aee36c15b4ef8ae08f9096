@@ -1,0 +1,55 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1ad78ee6_1a60d819",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2021-03-17T15:46:58Z",
+      "side": 1,
+      "message": "Marking CR+2 to skip cross-timezone iteration, but could you address my comments below before landing?",
+      "revId": "c0d9e8584a13ec76a6aee36c15b4ef8ae08f9096",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "14e4cf7f_a74156b8",
+        "filename": "docs/test_dependencies.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 188,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2021-03-17T15:46:58Z",
+      "side": 1,
+      "message": "Could you sort in the lexicographical order?",
+      "revId": "c0d9e8584a13ec76a6aee36c15b4ef8ae08f9096",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "768d01ef_e6fa8a99",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 220,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2021-03-17T15:46:58Z",
+      "side": 1,
+      "message": "Ditto (sorry overlooked in the previous review).",
+      "revId": "c0d9e8584a13ec76a6aee36c15b4ef8ae08f9096",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

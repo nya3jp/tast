@@ -153,6 +153,7 @@ func main() {
 			"no_borealis_host":      "!borealis_host",
 			"no_elm_hana_3_18":      `!((elm || hana) && "kernel-3_18")`, // board elm/hana with kernel-3.18 has issue performing WiFi scan: https://crbug.com/1015719
 			"no_eth_loss_on_reboot": `!("board:jacuzzi")`,                // some devices (jacuzzi) may not enumerate eth on reboot b/178529170
+			"no_kernel_upstream":    `!"kernel-upstream"`,
 			"no_msan":               "!msan",
 			"no_qemu":               "!betty && !tast_vm",
 			"no_symlink_mount":      "!lxc", // boards using LXC set CONFIG_SECURITY_CHROMIUMOS_NO_SYMLINK_MOUNT=n

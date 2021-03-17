@@ -158,6 +158,78 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "1d12a3a5_7dd4f38d",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 362,
+      "author": {
+        "id": 1373754
+      },
+      "writtenOn": "2021-03-17T19:38:10Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f90d8efc_cce89510",
+      "range": {
+        "startLine": 362,
+        "startChar": 37,
+        "endLine": 362,
+        "endChar": 44
+      },
+      "revId": "28b91ba07dd3716fb186e52171fcb32034601214",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "eeda5025_d3b3ac02",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 362,
+      "author": {
+        "id": 1373754
+      },
+      "writtenOn": "2021-03-17T19:38:10Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "03c67ef8_98bd39dc",
+      "range": {
+        "startLine": 362,
+        "startChar": 69,
+        "endLine": 362,
+        "endChar": 75
+      },
+      "revId": "28b91ba07dd3716fb186e52171fcb32034601214",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "fb30c96f_77cd5a9d",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 362,
+      "author": {
+        "id": 1373754
+      },
+      "writtenOn": "2021-03-17T19:38:10Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "49ff136a_38c46726",
+      "range": {
+        "startLine": 362,
+        "startChar": 57,
+        "endLine": 362,
+        "endChar": 65
+      },
+      "revId": "28b91ba07dd3716fb186e52171fcb32034601214",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "96b4f6ab_8bac846c",

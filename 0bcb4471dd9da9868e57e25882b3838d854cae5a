@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "322ecf5e_1a8b4fde",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 220,
+      "author": {
+        "id": 1132414
+      },
+      "writtenOn": "2021-03-17T22:06:25Z",
+      "side": 1,
+      "message": "forgot this earlier: I think these are supposed to be alphabetical, so this belongs around line 156",
+      "range": {
+        "startLine": 220,
+        "startChar": 4,
+        "endLine": 220,
+        "endChar": 5
+      },
+      "revId": "0bcb4471dd9da9868e57e25882b3838d854cae5a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "dca95cc6_0653566a",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 220,
+      "author": {
+        "id": 1132414
+      },
+      "writtenOn": "2021-03-17T22:06:25Z",
+      "side": 1,
+      "message": "I\u0027m a little confused (mostly just ignorance) about the syntax here; the backticks make a string just as the quotes do on most other lines; but here, you\u0027re adding additional quoting within the string, whereas others (like line 216) don\u0027t. Presumably this works either way, but it seems like an oddly-inconsistent choice.",
+      "range": {
+        "startLine": 220,
+        "startChar": 25,
+        "endLine": 220,
+        "endChar": 45
+      },
+      "revId": "0bcb4471dd9da9868e57e25882b3838d854cae5a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

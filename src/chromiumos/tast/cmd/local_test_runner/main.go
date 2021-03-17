@@ -213,11 +213,12 @@ func main() {
 			"watchdog":  `watchdog`,
 			// nyan_kitty is skipped as its WiFi device is unresolvably flaky (crrev.com/c/944502),
 			// exhibiting very similar symptoms to crbug.com/693724, b/65858242, b/36264732.
-			"wifi":          "!betty && !tast_vm && !nyan_kitty",
-			"wilco":         "wilco",
-			"wired_8021x":   "wired_8021x",
-			"wpa3_sae":      "wpa3_sae",
-			"no_kernelnext": `!("board:*-kernelnext")`,
+			"wifi":               "!betty && !tast_vm && !nyan_kitty",
+			"wilco":              "wilco",
+			"wired_8021x":        "wired_8021x",
+			"wpa3_sae":           "wpa3_sae",
+			"no_kernelnext":      `!("board:*-kernelnext")`,
+			"no_kernel_upstream": `!"kernel-upstream"`,
 		},
 		// The autotest-capability package tries to install this to /etc but it's diverted to /usr/local.
 		AutotestCapabilityDir:   autocaps.DefaultCapabilityDir,

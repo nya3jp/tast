@@ -39,7 +39,7 @@ func TestGetInitialSysInfo(t *testing.T) {
 	// Check that the expected command is sent to the DUT and that the returned state is decoded properly.
 	td.Cfg.CollectSysInfo = true
 
-	cc := target.NewConnCache(&td.Cfg)
+	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
 	defer cc.Close(context.Background())
 
 	if err := GetInitialSysInfo(context.Background(), &td.Cfg, &td.State, cc); err != nil {

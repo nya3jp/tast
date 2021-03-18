@@ -65,7 +65,7 @@ func collectSysInfo(ctx context.Context, cfg *config.Config, state *config.State
 
 	// We have to create a new connection cache here since one created in
 	// Run is not available to WriteResults.
-	cc := target.NewConnCache(cfg)
+	cc := target.NewConnCache(cfg, cfg.Target)
 	defer cc.Close(ctx)
 
 	conn, err := cc.Conn(ctx)

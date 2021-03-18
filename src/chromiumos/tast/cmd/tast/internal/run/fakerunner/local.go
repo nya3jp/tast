@@ -198,6 +198,7 @@ type LocalTestData struct {
 type localTestDataConfig struct {
 	remoteFixtures       []*jsonprotocol.EntityInfo
 	fakeRemoteServerData *FakeRemoteServerData
+	CompanionDUTRoles    []string
 }
 
 // LocalTestDataOption is an option that can be passed to NewLocalTestData to
@@ -220,6 +221,14 @@ func WithFakeRemoteServerData(data *FakeRemoteServerData) LocalTestDataOption {
 	}
 }
 
+// WithCompanionDUTRoles is an option that can be passed to NewLocalTestData
+// to give roles to companion DUTs.
+func WithCompanionDUTRoles(roles []string) LocalTestDataOption {
+	return func(cfg *localTestDataConfig) {
+		cfg.CompanionDUTRoles = roles
+	}
+}
+
 // NewLocalTestData performs setup for tests that exercise the local function.
 // It calls t.Fatal on error.
 // options can be used to apply non-default settings.
@@ -230,7 +239,12 @@ func NewLocalTestData(t *gotesting.T, opts ...LocalTestDataOption) *LocalTestDat
 	}
 
 	td := LocalTestData{ExpRunCmd: "exec env " + MockLocalRunner, BootID: DefaultBootID}
-	td.SrvData = sshtest.NewTestData(td.handleExec)
+
+	handlers := []sshtest.ExecHandler{td.handleExec}
+	for i := 0; i < len(cfg.CompanionDUTRoles); i++ {
+		handlers = append(handlers, td.handleExec)
+	}
+	td.SrvData = sshtest.NewTestData(handlers...)
 	td.Cfg.KeyFile = td.SrvData.UserKeyFile
 
 	toClose := &td
@@ -243,6 +257,15 @@ func NewLocalTestData(t *gotesting.T, opts ...LocalTestDataOption) *LocalTestDat
 	}
 	td.Cfg.Logger = logging.NewSimple(&td.LogBuf, true, true)
 	td.Cfg.Target = td.SrvData.Srvs[0].Addr().String()
+	if len(cfg.CompanionDUTRoles) > 0 {
+		srvIndex := 1
+		td.Cfg.CompanionDUTs = make(map[string]string)
+		for _, role := range cfg.CompanionDUTRoles {
+			td.Cfg.CompanionDUTs[role] = td.SrvData.Srvs[srvIndex].Addr().String()
+			srvIndex++
+		}
+	}
+
 	td.Cfg.LocalRunner = MockLocalRunner
 	td.Cfg.LocalBundleDir = MockLocalBundleDir
 	td.Cfg.LocalDataDir = MockLocalDataDir

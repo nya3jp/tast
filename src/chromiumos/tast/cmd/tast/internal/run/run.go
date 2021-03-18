@@ -94,7 +94,7 @@ func Run(ctx context.Context, cfg *config.Config, state *config.State) (status S
 		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to resolve target: %v", err), nil
 	}
 
-	cc := target.NewConnCache(cfg)
+	cc := target.NewConnCache(cfg, cfg.Target)
 	defer cc.Close(ctx)
 
 	conn, err := cc.Conn(ctx)

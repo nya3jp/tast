@@ -618,7 +618,7 @@ func TestListTests(t *gotesting.T) {
 	td.Cfg.TotalShards = 1
 	td.Cfg.RunLocal = true
 
-	cc := target.NewConnCache(&td.Cfg)
+	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
 	defer cc.Close(context.Background())
 
 	results, err := listTests(context.Background(), &td.Cfg, &td.State, cc)
@@ -667,7 +667,7 @@ func TestListTestsWithSharding(t *gotesting.T) {
 	td.Cfg.TotalShards = 2
 	td.Cfg.RunLocal = true
 
-	cc := target.NewConnCache(&td.Cfg)
+	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
 	defer cc.Close(context.Background())
 
 	for i := 0; i < td.Cfg.TotalShards; i++ {
@@ -725,7 +725,7 @@ func TestListTestsWithSkippedTests(t *gotesting.T) {
 	td.Cfg.TotalShards = 2
 	td.Cfg.RunLocal = true
 
-	cc := target.NewConnCache(&td.Cfg)
+	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
 	defer cc.Close(context.Background())
 
 	// Shard 0 should include all skipped tests.
@@ -782,7 +782,7 @@ func TestListTestsGetDUTInfo(t *gotesting.T) {
 
 	td.Cfg.CheckTestDeps = true
 
-	cc := target.NewConnCache(&td.Cfg)
+	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
 	defer cc.Close(context.Background())
 
 	if _, err := listTests(context.Background(), &td.Cfg, &td.State, cc); err != nil {
@@ -802,7 +802,7 @@ func TestRunTestsFailureBeforeRun(t *gotesting.T) {
 	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) { return 1 }
 	td.Cfg.CheckTestDeps = true
 
-	cc := target.NewConnCache(&td.Cfg)
+	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
 	defer cc.Close(context.Background())
 
 	var state config.State
@@ -841,7 +841,7 @@ func TestRunTestsGetDUTInfo(t *gotesting.T) {
 
 	td.Cfg.CheckTestDeps = true
 
-	cc := target.NewConnCache(&td.Cfg)
+	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
 	defer cc.Close(context.Background())
 
 	if _, err := runTests(context.Background(), &td.Cfg, &td.State, cc); err != nil {
@@ -878,7 +878,7 @@ func TestRunTestsGetInitialSysInfo(t *gotesting.T) {
 
 	td.Cfg.CollectSysInfo = true
 
-	cc := target.NewConnCache(&td.Cfg)
+	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
 	defer cc.Close(context.Background())
 
 	if _, err := runTests(context.Background(), &td.Cfg, &td.State, cc); err != nil {
@@ -971,7 +971,7 @@ func TestRunTestsSkipTests(t *gotesting.T) {
 	td.Cfg.TotalShards = 2
 	td.Cfg.CheckTestDeps = true
 
-	cc := target.NewConnCache(&td.Cfg)
+	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
 	defer cc.Close(context.Background())
 
 	expectedPassed := 5

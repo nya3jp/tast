@@ -64,7 +64,7 @@ func TestLocalSuccess(t *gotesting.T) {
 		return 0
 	}
 
-	cc := target.NewConnCache(&td.Cfg)
+	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
 	defer cc.Close(context.Background())
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second) // avoid test being blocked indefinitely
@@ -125,7 +125,7 @@ func TestLocalProxy(t *gotesting.T) {
 		fakerunner.MockLocalRunner,
 	}, " ")
 
-	cc := target.NewConnCache(&td.Cfg)
+	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
 	defer cc.Close(context.Background())
 
 	if _, err := RunLocalTests(context.Background(), &td.Cfg, &td.State, cc); err != nil {
@@ -168,7 +168,7 @@ func TestLocalCopyOutput(t *gotesting.T) {
 		Name: testName,
 	}}}
 
-	cc := target.NewConnCache(&td.Cfg)
+	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
 	defer cc.Close(context.Background())
 
 	if _, err := RunLocalTests(context.Background(), &td.Cfg, &td.State, cc); err != nil {
@@ -200,7 +200,7 @@ func disabledTestLocalExecFailure(t *gotesting.T) {
 		return 1
 	}
 
-	cc := target.NewConnCache(&td.Cfg)
+	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
 	defer cc.Close(context.Background())
 
 	if _, err := RunLocalTests(context.Background(), &td.Cfg, &td.State, cc); err == nil {
@@ -233,7 +233,7 @@ func TestLocalWaitTimeout(t *gotesting.T) {
 	// After setting a short wait timeout, an error should be reported.
 	td.Cfg.LocalRunnerWaitTimeout = time.Millisecond
 
-	cc := target.NewConnCache(&td.Cfg)
+	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
 	defer cc.Close(context.Background())
 
 	if _, err := RunLocalTests(context.Background(), &td.Cfg, &td.State, cc); err == nil {
@@ -266,7 +266,7 @@ func TestLocalMaxFailures(t *gotesting.T) {
 	td.Cfg.MaxTestFailures = 1
 	td.State.FailuresCount = 0
 
-	cc := target.NewConnCache(&td.Cfg)
+	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
 	defer cc.Close(context.Background())
 
 	results, err := RunLocalTests(context.Background(), &td.Cfg, &td.State, cc)
@@ -359,7 +359,7 @@ func TestFixturesDependency(t *gotesting.T) {
 		},
 	}
 
-	cc := target.NewConnCache(&td.Cfg)
+	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
 	defer cc.Close(context.Background())
 
 	_, err := RunLocalTests(context.Background(), &td.Cfg, &td.State, cc)

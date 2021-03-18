@@ -87,7 +87,7 @@ func TestPushDataFiles(t *gotesting.T) {
 	}
 
 	// Connect to the target.
-	cc := target.NewConnCache(&td.Cfg)
+	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
 	defer cc.Close(context.Background())
 
 	conn, err := cc.Conn(context.Background())

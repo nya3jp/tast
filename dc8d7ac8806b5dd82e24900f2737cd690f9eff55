@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5cc79a65_9f92fd98",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-03-18T01:31:35Z",
+      "side": 1,
+      "message": "It is still work in progress. I want to discuss whether the following change is ideal.\n\n\tcompanionCfg :\u003d *cfg\n\tcompanionState :\u003d *state\n\tcompanionState.TargetArch \u003d \"\"\n\nOn the one hand, it allows minimal changes on the current code.\n\nOne the other hand, modifying config and state probably make maintenance difficult in future. \n\nRedefining getTargetArch and newConnCache is probably a better approach, but it would require much more code changes. ",
+      "revId": "dc8d7ac8806b5dd82e24900f2737cd690f9eff55",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

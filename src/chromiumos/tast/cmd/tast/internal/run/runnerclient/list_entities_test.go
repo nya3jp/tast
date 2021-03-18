@@ -43,7 +43,7 @@ func TestFindPatternsForShard(t *gotesting.T) {
 	td.Cfg.RunRemote = true
 	td.Cfg.TotalShards = 3
 
-	cc := target.NewConnCache(&td.Cfg)
+	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
 	defer cc.Close(context.Background())
 
 	processed := make(map[string]bool)
@@ -135,7 +135,7 @@ func TestListLocalTests(t *gotesting.T) {
 		return 0
 	}
 
-	cc := target.NewConnCache(&td.Cfg)
+	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
 	defer cc.Close(context.Background())
 
 	conn, err := cc.Conn(context.Background())

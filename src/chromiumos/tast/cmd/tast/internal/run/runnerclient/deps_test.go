@@ -120,7 +120,7 @@ func TestGetDUTInfo(t *testing.T) {
 	td.Cfg.CheckTestDeps = true
 	td.Cfg.ExtraUSEFlags = []string{"use1", "use2"}
 
-	cc := target.NewConnCache(&td.Cfg)
+	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
 	defer cc.Close(context.Background())
 
 	if err := GetDUTInfo(context.Background(), &td.Cfg, &td.State, cc); err != nil {
@@ -177,7 +177,7 @@ func TestGetDUTInfoNoDeviceConfig(t *testing.T) {
 	}
 	td.Cfg.CheckTestDeps = true
 
-	cc := target.NewConnCache(&td.Cfg)
+	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
 	defer cc.Close(context.Background())
 
 	if err := GetDUTInfo(context.Background(), &td.Cfg, &td.State, cc); err != nil {
@@ -197,7 +197,7 @@ func TestGetDUTInfoNoCheckTestDeps(t *testing.T) {
 	// With "never", the runner shouldn't be called and dependencies shouldn't be checked.
 	td.Cfg.CheckTestDeps = false
 
-	cc := target.NewConnCache(&td.Cfg)
+	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
 	defer cc.Close(context.Background())
 
 	if err := GetDUTInfo(context.Background(), &td.Cfg, &td.State, cc); err != nil {
@@ -222,7 +222,7 @@ func TestGetSoftwareFeaturesNoFeatures(t *testing.T) {
 	}
 	td.Cfg.CheckTestDeps = true
 
-	cc := target.NewConnCache(&td.Cfg)
+	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
 	defer cc.Close(context.Background())
 
 	if err := GetDUTInfo(context.Background(), &td.Cfg, &td.State, cc); err == nil {

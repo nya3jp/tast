@@ -39,7 +39,7 @@ func TestReadBootID(t *testing.T) {
 	td := fakerunner.NewLocalTestData(t)
 	defer td.Close()
 
-	cc := target.NewConnCache(&td.Cfg)
+	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
 	defer cc.Close(context.Background())
 
 	conn, err := cc.Conn(context.Background())
@@ -60,7 +60,7 @@ func TestSSHDropNotRecovered(t *testing.T) {
 	td := fakerunner.NewLocalTestData(t)
 	defer td.Close()
 
-	cc := target.NewConnCache(&td.Cfg)
+	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
 	defer cc.Close(context.Background())
 
 	if _, err := cc.Conn(context.Background()); err != nil {
@@ -81,7 +81,7 @@ func TestSSHDropNoReboot(t *testing.T) {
 	td := fakerunner.NewLocalTestData(t)
 	defer td.Close()
 
-	cc := target.NewConnCache(&td.Cfg)
+	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
 	defer cc.Close(context.Background())
 
 	if _, err := cc.Conn(context.Background()); err != nil {
@@ -101,7 +101,7 @@ func TestSSHDropUnknownCrash(t *testing.T) {
 	td := fakerunner.NewLocalTestData(t)
 	defer td.Close()
 
-	cc := target.NewConnCache(&td.Cfg)
+	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
 	defer cc.Close(context.Background())
 
 	if _, err := cc.Conn(context.Background()); err != nil {
@@ -122,7 +122,7 @@ func TestSSHDropNormalReboot(t *testing.T) {
 	td := fakerunner.NewLocalTestData(t)
 	defer td.Close()
 
-	cc := target.NewConnCache(&td.Cfg)
+	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
 	defer cc.Close(context.Background())
 
 	if _, err := cc.Conn(context.Background()); err != nil {
@@ -147,7 +147,7 @@ func TestSSHDropKernelCrashBugX86(t *testing.T) {
 	td := fakerunner.NewLocalTestData(t)
 	defer td.Close()
 
-	cc := target.NewConnCache(&td.Cfg)
+	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
 	defer cc.Close(context.Background())
 
 	if _, err := cc.Conn(context.Background()); err != nil {
@@ -168,7 +168,7 @@ func TestSSHDropKernelCrashBugARM(t *testing.T) {
 	td := fakerunner.NewLocalTestData(t)
 	defer td.Close()
 
-	cc := target.NewConnCache(&td.Cfg)
+	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
 	defer cc.Close(context.Background())
 
 	if _, err := cc.Conn(context.Background()); err != nil {
@@ -191,7 +191,7 @@ func TestSSHDropKernelHungX86(t *testing.T) {
 	td := fakerunner.NewLocalTestData(t)
 	defer td.Close()
 
-	cc := target.NewConnCache(&td.Cfg)
+	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
 	defer cc.Close(context.Background())
 
 	if _, err := cc.Conn(context.Background()); err != nil {
@@ -212,7 +212,7 @@ func TestDiagnoseSSHSaveFiles(t *testing.T) {
 	td := fakerunner.NewLocalTestData(t)
 	defer td.Close()
 
-	cc := target.NewConnCache(&td.Cfg)
+	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
 	defer cc.Close(context.Background())
 
 	if _, err := cc.Conn(context.Background()); err != nil {

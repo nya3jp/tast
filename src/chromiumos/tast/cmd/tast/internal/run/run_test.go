@@ -164,9 +164,21 @@ func checkTLWServer(address string) error {
 	return nil
 }
 
+// TestRunDownloadPrivateBundlesWithCompanionDUTs makes sure private bundles would be downloaded.
+func TestRunDownloadPrivateBundlesWithCompanionDUTs(t *gotesting.T) {
+	td := fakerunner.NewLocalTestData(t, fakerunner.WithCompanionDUTRoles([]string{"cd1", "cd2"}))
+	defer td.Close()
+	td.Cfg.Devservers = []string{"http://example.com:8080"}
+	testRunDownloadPrivateBundles(t, td)
+}
+
 func testRunDownloadPrivateBundles(t *gotesting.T, td *fakerunner.LocalTestData) {
 	td.Cfg.RunLocal = true
-	called := false
+	duts := make(map[string]struct{})
+	for _, srv := range td.SrvData.Srvs {
+		duts[srv.Addr().String()] = struct{}{}
+	}
+	dutsWithDownloadRequest := make(map[string]struct{})
 	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
 		switch args.Mode {
 		case runner.RunTestsMode:
@@ -176,16 +188,24 @@ func testRunDownloadPrivateBundles(t *gotesting.T, td *fakerunner.LocalTestData)
 		case runner.ListTestsMode:
 			json.NewEncoder(stdout).Encode([]jsonprotocol.EntityWithRunnabilityInfo{})
 		case runner.DownloadPrivateBundlesMode:
+			dutName := args.DownloadPrivateBundles.DUTName
+			if strings.Contains(dutName, "@") {
+				userHost := strings.SplitN(dutName, "@", 2)
+				dutName = userHost[1]
+			}
+			if _, ok := duts[dutName]; !ok {
+				t.Errorf("got unknown DUT name %v while downloading private bundle", dutName)
+			}
+			dutsWithDownloadRequest[dutName] = struct{}{}
 			exp := runner.DownloadPrivateBundlesArgs{
 				Devservers:        td.Cfg.Devservers,
-				DUTName:           td.Cfg.Target,
+				DUTName:           args.DownloadPrivateBundles.DUTName,
 				BuildArtifactsURL: td.Cfg.BuildArtifactsURL,
 			}
 			if diff := cmp.Diff(exp, *args.DownloadPrivateBundles,
 				cmpopts.IgnoreFields(*args.DownloadPrivateBundles, "TLWServer")); diff != "" {
 				t.Errorf("got args %+v; want %+v; diff=%v", *args.DownloadPrivateBundles, exp, diff)
 			}
-			called = true
 			json.NewEncoder(stdout).Encode(&runner.DownloadPrivateBundlesResult{})
 
 			if td.Cfg.TLWServer != "" {
@@ -205,8 +225,8 @@ func testRunDownloadPrivateBundles(t *gotesting.T, td *fakerunner.LocalTestData)
 	if status, _ := Run(context.Background(), &td.Cfg, &td.State); status.ExitCode != subcommands.ExitSuccess {
 		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.LogBuf.String())
 	}
-	if !called {
-		t.Errorf("Run did not call downloadPrivateBundles")
+	if diff := cmp.Diff(dutsWithDownloadRequest, duts); diff != "" {
+		t.Errorf("got DUTs with download request %+v; want %+v; diff=%v", dutsWithDownloadRequest, duts, diff)
 	}
 }
 
@@ -619,7 +639,7 @@ func TestListTests(t *gotesting.T) {
 	td.Cfg.TotalShards = 1
 	td.Cfg.RunLocal = true
 
-	cc := target.NewConnCache(&td.Cfg)
+	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
 	defer cc.Close(context.Background())
 
 	results, err := listTests(context.Background(), &td.Cfg, &td.State, cc)
@@ -668,7 +688,7 @@ func TestListTestsWithSharding(t *gotesting.T) {
 	td.Cfg.TotalShards = 2
 	td.Cfg.RunLocal = true
 
-	cc := target.NewConnCache(&td.Cfg)
+	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
 	defer cc.Close(context.Background())
 
 	for i := 0; i < td.Cfg.TotalShards; i++ {
@@ -726,7 +746,7 @@ func TestListTestsWithSkippedTests(t *gotesting.T) {
 	td.Cfg.TotalShards = 2
 	td.Cfg.RunLocal = true
 
-	cc := target.NewConnCache(&td.Cfg)
+	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
 	defer cc.Close(context.Background())
 
 	// Shard 0 should include all skipped tests.
@@ -783,7 +803,7 @@ func TestListTestsGetDUTInfo(t *gotesting.T) {
 
 	td.Cfg.CheckTestDeps = true
 
-	cc := target.NewConnCache(&td.Cfg)
+	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
 	defer cc.Close(context.Background())
 
 	if _, err := listTests(context.Background(), &td.Cfg, &td.State, cc); err != nil {
@@ -803,7 +823,7 @@ func TestRunTestsFailureBeforeRun(t *gotesting.T) {
 	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) { return 1 }
 	td.Cfg.CheckTestDeps = true
 
-	cc := target.NewConnCache(&td.Cfg)
+	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
 	defer cc.Close(context.Background())
 
 	var state config.State
@@ -842,7 +862,7 @@ func TestRunTestsGetDUTInfo(t *gotesting.T) {
 
 	td.Cfg.CheckTestDeps = true
 
-	cc := target.NewConnCache(&td.Cfg)
+	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
 	defer cc.Close(context.Background())
 
 	if _, err := runTests(context.Background(), &td.Cfg, &td.State, cc); err != nil {
@@ -879,7 +899,7 @@ func TestRunTestsGetInitialSysInfo(t *gotesting.T) {
 
 	td.Cfg.CollectSysInfo = true
 
-	cc := target.NewConnCache(&td.Cfg)
+	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
 	defer cc.Close(context.Background())
 
 	if _, err := runTests(context.Background(), &td.Cfg, &td.State, cc); err != nil {
@@ -972,7 +992,7 @@ func TestRunTestsSkipTests(t *gotesting.T) {
 	td.Cfg.TotalShards = 2
 	td.Cfg.CheckTestDeps = true
 
-	cc := target.NewConnCache(&td.Cfg)
+	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
 	defer cc.Close(context.Background())
 
 	expectedPassed := 5

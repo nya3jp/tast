@@ -19,7 +19,7 @@ import (
 // An archive contains Go executables of local test bundles and their associated
 // internal data files and external data link files. Note that remote test
 // bundles are not included in archives.
-func DownloadPrivateBundles(ctx context.Context, cfg *config.Config, conn *target.Conn) error {
+func DownloadPrivateBundles(ctx context.Context, cfg *config.Config, conn *target.Conn, target string) error {
 	ctx, st := timing.Start(ctx, "download_private_bundles")
 	defer st.End()
 
@@ -41,7 +41,7 @@ func DownloadPrivateBundles(ctx context.Context, cfg *config.Config, conn *targe
 			DownloadPrivateBundles: &runner.DownloadPrivateBundlesArgs{
 				Devservers:        localDevservers,
 				TLWServer:         tlwServer,
-				DUTName:           cfg.Target,
+				DUTName:           target,
 				BuildArtifactsURL: cfg.BuildArtifactsURL,
 			},
 		},

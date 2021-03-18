@@ -15,15 +15,16 @@ import (
 //
 // ConnCache is not goroutine-safe.
 type ConnCache struct {
-	cfg *config.Config
+	cfg    *config.Config
+	target string
 
 	conn       *Conn
 	initBootID string
 }
 
 // NewConnCache creates a new cache. Call Close when it is no longer needed.
-func NewConnCache(cfg *config.Config) *ConnCache {
-	return &ConnCache{cfg: cfg}
+func NewConnCache(cfg *config.Config, target string) *ConnCache {
+	return &ConnCache{cfg: cfg, target: target}
 }
 
 // Close closes a cached connection if any.
@@ -61,7 +62,7 @@ func (cc *ConnCache) Conn(ctx context.Context) (conn *Conn, retErr error) {
 		cc.Close(ctx)
 	}
 
-	conn, err := newConn(ctx, cc.cfg)
+	conn, err := newConn(ctx, cc.cfg, cc.target)
 	if err != nil {
 		return nil, err
 	}

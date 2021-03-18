@@ -29,8 +29,8 @@ type Conn struct {
 	svcs    *Services
 }
 
-func newConn(ctx context.Context, cfg *config.Config) (conn *Conn, retErr error) {
-	sshConn, err := dialSSH(ctx, cfg)
+func newConn(ctx context.Context, cfg *config.Config, target string) (conn *Conn, retErr error) {
+	sshConn, err := dialSSH(ctx, cfg, target)
 	if err != nil {
 		return nil, err
 	}
@@ -74,10 +74,10 @@ func (c *Conn) Healthy(ctx context.Context) error {
 	return nil
 }
 
-func dialSSH(ctx context.Context, cfg *config.Config) (*ssh.Conn, error) {
+func dialSSH(ctx context.Context, cfg *config.Config, target string) (*ssh.Conn, error) {
 	ctx, st := timing.Start(ctx, "connect")
 	defer st.End()
-	cfg.Logger.Logf("Connecting to %s", cfg.Target)
+	cfg.Logger.Logf("Connecting to %s", target)
 
 	opts := &ssh.Options{
 		ConnectTimeout:       sshConnectTimeout,
@@ -87,7 +87,7 @@ func dialSSH(ctx context.Context, cfg *config.Config) (*ssh.Conn, error) {
 		KeyDir:               cfg.KeyDir,
 		WarnFunc:             func(s string) { cfg.Logger.Log(s) },
 	}
-	if err := ssh.ParseTarget(cfg.Target, opts); err != nil {
+	if err := ssh.ParseTarget(target, opts); err != nil {
 		return nil, err
 	}
 

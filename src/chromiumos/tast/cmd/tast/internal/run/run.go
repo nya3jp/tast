@@ -157,6 +157,10 @@ func Run(ctx context.Context, cfg *config.Config, state *config.State) (status S
 		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to build and push: %v", err), nil
 	}
 
+	if err := prepareCompanionDUTs(ctx, cfg, state); err != nil {
+		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to build and push to companion DUTs: %v", err), nil
+	}
+
 	switch cfg.Mode {
 	case config.ListTestsMode:
 		results, err := listTests(ctx, cfg, state, cc)
@@ -231,6 +235,30 @@ func resolveTarget(ctx context.Context, cfg *config.Config, state *config.State)
 	}
 
 	cfg.Target = fmt.Sprintf("%s@%s:%d", opts.User, res.GetAddress(), res.GetPort())
+	return nil
+}
+
+// prepareCompanionDUTs prepares companion DUTs for running tests.
+func prepareCompanionDUTs(ctx context.Context, cfg *config.Config, state *config.State) error {
+	if len(cfg.CompanionDUTs) == 0 {
+		return nil
+	}
+	companionCfg := *cfg
+	companionState := *state
+	companionState.TargetArch = ""
+	for _, dut := range cfg.CompanionDUTs {
+		companionCfg.Target = dut
+		cc := target.NewConnCache(&companionCfg) // Maybe it is better to supply target in NewConnCache.
+		conn, err := cc.Conn(ctx)
+		if err != nil {
+			return fmt.Errorf("Failed to connect to %s: %v", dut, err)
+		}
+		err = prepare(ctx, &companionCfg, &companionState, conn.SSHConn())
+		cc.Close(ctx)
+		if err != nil {
+			return fmt.Errorf("Failed to build and push to companion DUT %v: %v", dut, err)
+		}
+	}
 	return nil
 }
 
@@ -409,7 +437,7 @@ func pushExecutables(ctx context.Context, cfg *config.Config, state *config.Stat
 	ctx, st := timing.Start(ctx, "push_executables")
 	defer st.End()
 
-	cfg.Logger.Log("Pushing executables to target")
+	cfg.Logger.Log("Pushing executables to target: ", cfg.Target)
 	start := time.Now()
 	bytes, err := pushToHost(ctx, cfg, hst, files)
 	if err != nil {

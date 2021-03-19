@@ -89,6 +89,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "de98f2a4_820258ca",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/jsonprotocol/jsonprotocol.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2021-03-19T09:43:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "515a157b_f1a8113a",
+      "range": {
+        "startLine": 47,
+        "startChar": 30,
+        "endLine": 47,
+        "endChar": 40
+      },
+      "revId": "0402296034d84f3259604ff36110138be54116cf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "333b99ef_2272551a",
@@ -106,6 +130,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "b5d04798_3ee70ef2",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/local.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2021-03-19T09:43:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "333b99ef_2272551a",
+      "revId": "0402296034d84f3259604ff36110138be54116cf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "ddb791c2_3b02ea9e",
@@ -119,6 +161,30 @@
       "writtenOn": "2021-03-19T04:36:02Z",
       "side": 1,
       "message": "Do we have to do similar things in remote.go?",
+      "range": {
+        "startLine": 408,
+        "startChar": 2,
+        "endLine": 408,
+        "endChar": 47
+      },
+      "revId": "0402296034d84f3259604ff36110138be54116cf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "beeab91f_3bc8626f",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/local.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 408,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2021-03-19T09:43:59Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ddb791c2_3b02ea9e",
       "range": {
         "startLine": 408,
         "startChar": 2,

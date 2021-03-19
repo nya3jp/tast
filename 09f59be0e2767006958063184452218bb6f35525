@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "fed572a3_1eadea01",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-03-19T21:56:45Z",
+      "side": 1,
+      "message": "I have rebased and done a new implementation. Please review.\n\nThis CL does not handle the download private bundle. It will be done in next CL.",
+      "revId": "09f59be0e2767006958063184452218bb6f35525",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

@@ -139,6 +139,11 @@ Tests in this group are not used for build verification.
 		Desc:     `A group of ARC tests to be run in Android PFQ and collect data for specific Android build.`,
 	},
 	{
+		Name:     "arc-functional",
+		Contacts: []string{"chromeos-sw-engprod@google.com"},
+		Desc:     `A group of ARC Functional tests.`,
+	},
+	{
 		Name:     "appcompat",
 		Contacts: []string{"chromeos-engprod@google.com"},
 		Desc:     `A group of ARC app compatibility tests.`,

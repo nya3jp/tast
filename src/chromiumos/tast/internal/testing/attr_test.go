@@ -53,6 +53,9 @@ func TestCheckKnownAttrs(t *testing.T) {
 			attrs: []string{"group:arc-data-collector"},
 		},
 		{
+			attrs: []string{"group:arc-functional"},
+		},
+		{
 			attrs: []string{"group:appcompat"},
 		},
 		{

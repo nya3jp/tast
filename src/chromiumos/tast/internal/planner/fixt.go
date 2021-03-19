@@ -203,7 +203,7 @@ func (st *FixtureStack) Push(ctx context.Context, fixt *testing.Fixture) error {
 	}
 
 	root := testing.NewEntityRoot(ce, ei, rcfg, fout)
-	f := newStatefulFixture(fixt, root, fout, st.top(), st.cfg)
+	f := newStatefulFixture(fixt, root, fout, st.cfg)
 	st.stack = append(st.stack, f)
 
 	if status == statusGreen {
@@ -323,10 +323,9 @@ func (st *FixtureStack) top() *statefulFixture {
 type statefulFixture struct {
 	cfg *Config
 
-	fixt   *testing.Fixture
-	root   *testing.EntityRoot
-	fout   *entityOutputStream
-	parent *statefulFixture
+	fixt *testing.Fixture
+	root *testing.EntityRoot
+	fout *entityOutputStream
 
 	status fixtureStatus
 	errs   []*testing.Error
@@ -334,13 +333,12 @@ type statefulFixture struct {
 }
 
 // newStatefulFixture creates a new statefulFixture.
-func newStatefulFixture(fixt *testing.Fixture, root *testing.EntityRoot, fout *entityOutputStream, parent *statefulFixture, cfg *Config) *statefulFixture {
+func newStatefulFixture(fixt *testing.Fixture, root *testing.EntityRoot, fout *entityOutputStream, cfg *Config) *statefulFixture {
 	return &statefulFixture{
 		cfg:    cfg,
 		fixt:   fixt,
 		root:   root,
 		fout:   fout,
-		parent: parent,
 		status: statusRed,
 	}
 }

@@ -1,0 +1,84 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c2def03a_ae6f76ac",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-03-19T04:36:02Z",
+      "side": 1,
+      "message": "Hi, thanks for this fix. Yes, cfg.TestsToRun includes both local tests and remote tests indeed...\n",
+      "revId": "0402296034d84f3259604ff36110138be54116cf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8476482b_70e56ed2",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/jsonprotocol/jsonprotocol.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-03-19T04:36:02Z",
+      "side": 1,
+      "message": "Can we avoid exporting this field for JSON? IIUC we don\u0027t need to send this field over protocol (it\u0027s used only within Tast CLI). And I want to avoid adding more fields to results.json.",
+      "range": {
+        "startLine": 47,
+        "startChar": 30,
+        "endLine": 47,
+        "endChar": 40
+      },
+      "revId": "0402296034d84f3259604ff36110138be54116cf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "333b99ef_2272551a",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/local.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-03-19T04:36:02Z",
+      "side": 1,
+      "message": "You\u0027ll have to rebase to ToT since I\u0027ve just submitted a series of CLs to refactor the run package. Sorry for the extra work.",
+      "revId": "0402296034d84f3259604ff36110138be54116cf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ddb791c2_3b02ea9e",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/local.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 408,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-03-19T04:36:02Z",
+      "side": 1,
+      "message": "Do we have to do similar things in remote.go?",
+      "range": {
+        "startLine": 408,
+        "startChar": 2,
+        "endLine": 408,
+        "endChar": 47
+      },
+      "revId": "0402296034d84f3259604ff36110138be54116cf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

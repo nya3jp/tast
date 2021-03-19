@@ -152,11 +152,13 @@ func (st *FixtureStack) Errors() []*testing.Error {
 //
 // If the fixture stack is empty or red, it returns nil.
 func (st *FixtureStack) Val() interface{} {
-	f := st.top()
-	if f == nil || f.Status() == statusRed {
+	if len(st.stack) == 0 {
 		return nil
 	}
-	return f.Val()
+	if st.Status() == statusRed {
+		return nil
+	}
+	return st.top().Val()
 }
 
 // Push adds a new fixture to the top of the fixture stack.
@@ -310,11 +312,10 @@ func (st *FixtureStack) MarkDirty() error {
 	return nil
 }
 
-// top returns the stateful fixture at the top of the stack. If the stack is
-// empty, nil is returned.
+// top returns the stateful fixture at the top of the stack.
 func (st *FixtureStack) top() *statefulFixture {
 	if len(st.stack) == 0 {
-		return nil
+		panic("BUG: top called for an empty stack")
 	}
 	return st.stack[len(st.stack)-1]
 }

@@ -1,6 +1,23 @@
 {
   "comments": [
     {
+      "unresolved": true,
+      "key": {
+        "uuid": "dfd21be9_b4b39992",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-03-19T04:59:20Z",
+      "side": 1,
+      "message": "My Tast CLI refactoring CLs have landed, so please go ahead with rebasing. Thanks for waiting for them.",
+      "revId": "06d30c52ae3ff8637f43f7ebb91f66440bb7eaa8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": false,
       "key": {
         "uuid": "5fd53c55_d86f1557",
@@ -14,6 +31,121 @@
       "writtenOn": "2021-03-19T00:46:41Z",
       "side": 1,
       "message": "Hi Tatsuhisa:\n\nThanks for catching the bug. It has been fixed. Please review.\n\nFor your the other comment, a DUT would not be added to the map if the connection was not established. Therefore, every entry in the map has an established connection. Please let me know if I missed anything. Thanks.",
+      "revId": "06d30c52ae3ff8637f43f7ebb91f66440bb7eaa8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fbfa68a7_22df5e9a",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/config/config.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 274,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-03-19T04:59:20Z",
+      "side": 1,
+      "message": ":",
+      "range": {
+        "startLine": 274,
+        "startChar": 33,
+        "endLine": 274,
+        "endChar": 34
+      },
+      "revId": "06d30c52ae3ff8637f43f7ebb91f66440bb7eaa8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f874ef16_c1ec0bcd",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/config/config.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 279,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-03-19T04:59:20Z",
+      "side": 1,
+      "message": ":",
+      "range": {
+        "startLine": 279,
+        "startChar": 67,
+        "endLine": 279,
+        "endChar": 68
+      },
+      "revId": "06d30c52ae3ff8637f43f7ebb91f66440bb7eaa8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1b0f6c9a_d9fd1935",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/config/config.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 279,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-03-19T04:59:20Z",
+      "side": 1,
+      "message": "to",
+      "range": {
+        "startLine": 279,
+        "startChar": 41,
+        "endLine": 279,
+        "endChar": 43
+      },
+      "revId": "06d30c52ae3ff8637f43f7ebb91f66440bb7eaa8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b6fa6e34_0eb92c77",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-03-19T04:59:20Z",
+      "side": 1,
+      "message": "Not related to this change, but I noticed that we should not look up ~/.ssh/config when Tast is run as RTD. I filed crbug.com/1189991.",
+      "range": {
+        "startLine": 84,
+        "startChar": 1,
+        "endLine": 84,
+        "endChar": 44
+      },
+      "revId": "06d30c52ae3ff8637f43f7ebb91f66440bb7eaa8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b4af57cc_f522562b",
+        "filename": "src/chromiumos/tast/internal/sshtest/default.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-03-19T04:59:20Z",
+      "side": 1,
+      "message": "Why don\u0027t we call NewTestData multiple times to start multiple servers, rather than letting one TestData own multiple servers?",
+      "range": {
+        "startLine": 57,
+        "startChar": 19,
+        "endLine": 57,
+        "endChar": 41
+      },
       "revId": "06d30c52ae3ff8637f43f7ebb91f66440bb7eaa8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }

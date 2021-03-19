@@ -43,6 +43,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "5b63b53a_532d1855",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/jsonprotocol/jsonprotocol.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2021-03-19T08:59:35Z",
+      "side": 1,
+      "message": "Can we just unexport it, or should we create another type?",
+      "parentUuid": "8476482b_70e56ed2",
+      "range": {
+        "startLine": 47,
+        "startChar": 30,
+        "endLine": 47,
+        "endChar": 40
+      },
+      "revId": "0402296034d84f3259604ff36110138be54116cf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "333b99ef_2272551a",
         "filename": "src/chromiumos/tast/cmd/tast/internal/run/local.go",
         "patchSetId": 1

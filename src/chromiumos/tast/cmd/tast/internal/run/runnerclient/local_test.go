@@ -349,6 +349,15 @@ func TestFixturesDependency(t *gotesting.T) {
 			Fixture: "tearDownFailFixt",
 			Name:    "pkg.Test4",
 		}},
+		{
+			// Remote tests should not be used on computing fixtures to run.
+			BundleType: jsonprotocol.RemoteBundle,
+			EntityInfo: testing.EntityInfo{
+				Bundle:  "cros",
+				Fixture: "shouldNotRun",
+				Name:    "pkg.RemoteTest",
+			},
+		},
 	}
 
 	cc := target.NewConnCache(&td.Cfg)

@@ -402,9 +402,11 @@ func RunLocalTests(ctx context.Context, cfg *config.Config, state *config.State,
 		return nil, err
 	}
 
-	tests := make([]*testing.EntityInfo, len(cfg.TestsToRun))
-	for i, t := range cfg.TestsToRun {
-		tests[i] = &t.EntityInfo
+	var tests []*testing.EntityInfo
+	for _, t := range cfg.TestsToRun {
+		if t.BundleType == jsonprotocol.LocalBundle {
+			tests = append(tests, &t.EntityInfo)
+		}
 	}
 	bundleRemoteFixtTests, err := categorize(tests)
 	if err != nil {

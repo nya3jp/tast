@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "5f93e424_86abac27",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/remote.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 108,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-03-19T00:46:41Z",
+      "side": 1,
+      "message": "Yes, good catch. Thanks.",
+      "parentUuid": "a94ffe38_50861596",
+      "range": {
+        "startLine": 108,
+        "startChar": 43,
+        "endLine": 108,
+        "endChar": 62
+      },
+      "revId": "5a5c835683c95e1d76d476ad4c80b49439de4997",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "ab7f1d0f_ff79c32b",
@@ -37,6 +61,30 @@
       "writtenOn": "2021-03-18T08:01:33Z",
       "side": 1,
       "message": "I still think it is safer and more natural to call Close() only for those duts whose connections were established.\nDUT.Disconnect() states it is no-op when the connection does not exist, however, DUT.Close() does not state it.",
+      "range": {
+        "startLine": 336,
+        "startChar": 0,
+        "endLine": 345,
+        "endChar": 5
+      },
+      "revId": "5a5c835683c95e1d76d476ad4c80b49439de4997",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2c3ad0b2_5e3be076",
+        "filename": "src/chromiumos/tast/internal/bundle/bundle.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 345,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-03-19T00:46:41Z",
+      "side": 1,
+      "message": "If the connection to a DUT was not established, the DUT will not be added to the companionDUTs (see line 351). Therefore, every entry in the map is an established connection.",
+      "parentUuid": "ab7f1d0f_ff79c32b",
       "range": {
         "startLine": 336,
         "startChar": 0,

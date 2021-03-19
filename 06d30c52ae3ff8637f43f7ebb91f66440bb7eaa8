@@ -58,6 +58,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "7b1e97bf_5a16d791",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/config/config.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 274,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-03-19T17:09:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fbfa68a7_22df5e9a",
+      "range": {
+        "startLine": 274,
+        "startChar": 33,
+        "endLine": 274,
+        "endChar": 34
+      },
+      "revId": "06d30c52ae3ff8637f43f7ebb91f66440bb7eaa8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "f874ef16_c1ec0bcd",
@@ -106,6 +130,54 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "88526bb8_806e9a18",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/config/config.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 279,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-03-19T17:09:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1b0f6c9a_d9fd1935",
+      "range": {
+        "startLine": 279,
+        "startChar": 41,
+        "endLine": 279,
+        "endChar": 43
+      },
+      "revId": "06d30c52ae3ff8637f43f7ebb91f66440bb7eaa8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "fe870335_9923772d",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/config/config.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 279,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-03-19T17:09:46Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f874ef16_c1ec0bcd",
+      "range": {
+        "startLine": 279,
+        "startChar": 67,
+        "endLine": 279,
+        "endChar": 68
+      },
+      "revId": "06d30c52ae3ff8637f43f7ebb91f66440bb7eaa8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "b6fa6e34_0eb92c77",
         "filename": "src/chromiumos/tast/cmd/tast/internal/run/run.go",
         "patchSetId": 6
@@ -140,6 +212,30 @@
       "writtenOn": "2021-03-19T04:59:20Z",
       "side": 1,
       "message": "Why don\u0027t we call NewTestData multiple times to start multiple servers, rather than letting one TestData own multiple servers?",
+      "range": {
+        "startLine": 57,
+        "startChar": 19,
+        "endLine": 57,
+        "endChar": 41
+      },
+      "revId": "06d30c52ae3ff8637f43f7ebb91f66440bb7eaa8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e16f46c6_cd930d40",
+        "filename": "src/chromiumos/tast/internal/sshtest/default.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-03-19T17:09:46Z",
+      "side": 1,
+      "message": "It was because of the key file. Tast config use a single key file. Unless there is a need to support multiple key files in Tast, I think it would be better to use one single test data.",
+      "parentUuid": "b4af57cc_f522562b",
       "range": {
         "startLine": 57,
         "startChar": 19,

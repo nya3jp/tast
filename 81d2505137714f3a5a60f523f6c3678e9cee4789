@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "638ba0f6_9d76ab7f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 7
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-03-19T17:09:46Z",
+      "side": 1,
+      "message": "I have merged the code and addressed comments. Please take a look. thanks.",
+      "revId": "81d2505137714f3a5a60f523f6c3678e9cee4789",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

@@ -41,6 +41,9 @@ func RunRemoteTests(ctx context.Context, cfg *config.Config, state *config.State
 
 	start := time.Now()
 	names := make([]string, len(cfg.TestsToRun), len(cfg.TestsToRun))
+	// TODO(oka): Filter out local tests. Currently simply removing local tests
+	// don't work, because if resulting names become empty, it instructs to run
+	// all the tests.
 	for i, t := range cfg.TestsToRun {
 		names[i] = t.Name
 	}

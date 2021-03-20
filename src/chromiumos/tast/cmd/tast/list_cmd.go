@@ -76,7 +76,7 @@ func (lc *listCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{
 		lg.Log("Failed to derive defaults: ", err)
 		return subcommands.ExitUsageError
 	}
-	lc.cfg.Target = f.Args()[0]
+	lc.cfg.RawTarget = f.Args()[0]
 	lc.cfg.Patterns = f.Args()[1:]
 
 	b := bytes.Buffer{}

@@ -677,6 +677,7 @@ func TestWriteResultsCollectSysInfo(t *gotesting.T) {
 	}
 	td.Cfg.CollectSysInfo = true
 	td.State.InitialSysInfo = &runner.SysInfoState{}
+	td.State.Target = td.Cfg.RawTarget
 	if err := WriteResults(context.Background(), &td.Cfg, &td.State, []*jsonprotocol.EntityResult{}, true); err != nil {
 		t.Fatal("WriteResults failed: ", err)
 	}
@@ -924,9 +925,10 @@ func TestWriteResultsWriteFiles(t *gotesting.T) {
 	cfg := *baseCfg
 	out := &bytes.Buffer{}
 	cfg.Logger = logging.NewSimple(out, false, false)
-	cfg.TestsToRun = results
-	var state config.State
-	if err := WriteResults(context.Background(), &cfg, &state, results, true /* complete */); err != nil {
+	state := &config.State{
+		TestsToRun: results,
+	}
+	if err := WriteResults(context.Background(), &cfg, state, results, true /* complete */); err != nil {
 		t.Errorf("WriteResults() failed: %v", err)
 	}
 	if _, err := os.Stat(filepath.Join(td, "results.json")); err != nil {
@@ -973,9 +975,10 @@ func TestWriteResultsUnmatchedGlobs(t *gotesting.T) {
 		out := &bytes.Buffer{}
 		cfg.Logger = logging.NewSimple(out, false, false)
 		cfg.Patterns = tc.patterns
-		cfg.TestsToRun = results
-		var state config.State
-		if err := WriteResults(context.Background(), &cfg, &state, results, tc.complete); err != nil {
+		state := &config.State{
+			TestsToRun: results,
+		}
+		if err := WriteResults(context.Background(), &cfg, state, results, tc.complete); err != nil {
 			t.Errorf("WriteResults() failed for %v: %v", cfg.Patterns, err)
 			continue
 		}

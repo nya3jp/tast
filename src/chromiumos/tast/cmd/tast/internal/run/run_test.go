@@ -127,7 +127,7 @@ func TestRunDownloadPrivateBundlesWithTLW(t *gotesting.T) {
 	td := fakerunner.NewLocalTestData(t)
 	defer td.Close()
 
-	host, portStr, err := net.SplitHostPort(td.Cfg.Target)
+	host, portStr, err := net.SplitHostPort(td.Cfg.RawTarget)
 	if err != nil {
 		t.Fatal("net.SplitHostPort: ", err)
 	}
@@ -143,7 +143,7 @@ func TestRunDownloadPrivateBundlesWithTLW(t *gotesting.T) {
 		faketlw.WithDUTName(targetName))
 	defer stopFunc()
 
-	td.Cfg.Target = targetName
+	td.Cfg.RawTarget = targetName
 	td.Cfg.TLWServer = tlwAddr
 	td.Cfg.Devservers = nil
 	testRunDownloadPrivateBundles(t, td)
@@ -178,7 +178,7 @@ func testRunDownloadPrivateBundles(t *gotesting.T, td *fakerunner.LocalTestData)
 		case runner.DownloadPrivateBundlesMode:
 			exp := runner.DownloadPrivateBundlesArgs{
 				Devservers:        td.Cfg.Devservers,
-				DUTName:           td.Cfg.Target,
+				DUTName:           td.State.Target,
 				BuildArtifactsURL: td.Cfg.BuildArtifactsURL,
 			}
 			if diff := cmp.Diff(exp, *args.DownloadPrivateBundles,
@@ -216,7 +216,7 @@ func TestRunTLW(t *gotesting.T) {
 	td := fakerunner.NewLocalTestData(t)
 	defer td.Close()
 
-	host, portStr, err := net.SplitHostPort(td.Cfg.Target)
+	host, portStr, err := net.SplitHostPort(td.Cfg.RawTarget)
 	if err != nil {
 		t.Fatal("net.SplitHostPort: ", err)
 	}
@@ -243,7 +243,7 @@ func TestRunTLW(t *gotesting.T) {
 		}
 		return 0
 	}
-	td.Cfg.Target = targetName
+	td.Cfg.RawTarget = targetName
 	td.Cfg.TLWServer = tlwAddr
 
 	if status, _ := Run(context.Background(), &td.Cfg, &td.State); status.ExitCode != subcommands.ExitSuccess {
@@ -619,7 +619,7 @@ func TestListTests(t *gotesting.T) {
 	td.Cfg.TotalShards = 1
 	td.Cfg.RunLocal = true
 
-	cc := target.NewConnCache(&td.Cfg)
+	cc := target.NewConnCache(&td.Cfg, td.Cfg.RawTarget)
 	defer cc.Close(context.Background())
 
 	results, err := listTests(context.Background(), &td.Cfg, &td.State, cc)
@@ -668,7 +668,7 @@ func TestListTestsWithSharding(t *gotesting.T) {
 	td.Cfg.TotalShards = 2
 	td.Cfg.RunLocal = true
 
-	cc := target.NewConnCache(&td.Cfg)
+	cc := target.NewConnCache(&td.Cfg, td.Cfg.RawTarget)
 	defer cc.Close(context.Background())
 
 	for i := 0; i < td.Cfg.TotalShards; i++ {
@@ -726,7 +726,7 @@ func TestListTestsWithSkippedTests(t *gotesting.T) {
 	td.Cfg.TotalShards = 2
 	td.Cfg.RunLocal = true
 
-	cc := target.NewConnCache(&td.Cfg)
+	cc := target.NewConnCache(&td.Cfg, td.Cfg.RawTarget)
 	defer cc.Close(context.Background())
 
 	// Shard 0 should include all skipped tests.
@@ -783,7 +783,7 @@ func TestListTestsGetDUTInfo(t *gotesting.T) {
 
 	td.Cfg.CheckTestDeps = true
 
-	cc := target.NewConnCache(&td.Cfg)
+	cc := target.NewConnCache(&td.Cfg, td.Cfg.RawTarget)
 	defer cc.Close(context.Background())
 
 	if _, err := listTests(context.Background(), &td.Cfg, &td.State, cc); err != nil {
@@ -803,7 +803,7 @@ func TestRunTestsFailureBeforeRun(t *gotesting.T) {
 	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) { return 1 }
 	td.Cfg.CheckTestDeps = true
 
-	cc := target.NewConnCache(&td.Cfg)
+	cc := target.NewConnCache(&td.Cfg, td.Cfg.RawTarget)
 	defer cc.Close(context.Background())
 
 	var state config.State
@@ -842,7 +842,7 @@ func TestRunTestsGetDUTInfo(t *gotesting.T) {
 
 	td.Cfg.CheckTestDeps = true
 
-	cc := target.NewConnCache(&td.Cfg)
+	cc := target.NewConnCache(&td.Cfg, td.Cfg.RawTarget)
 	defer cc.Close(context.Background())
 
 	if _, err := runTests(context.Background(), &td.Cfg, &td.State, cc); err != nil {
@@ -879,7 +879,7 @@ func TestRunTestsGetInitialSysInfo(t *gotesting.T) {
 
 	td.Cfg.CollectSysInfo = true
 
-	cc := target.NewConnCache(&td.Cfg)
+	cc := target.NewConnCache(&td.Cfg, td.Cfg.RawTarget)
 	defer cc.Close(context.Background())
 
 	if _, err := runTests(context.Background(), &td.Cfg, &td.State, cc); err != nil {
@@ -972,7 +972,7 @@ func TestRunTestsSkipTests(t *gotesting.T) {
 	td.Cfg.TotalShards = 2
 	td.Cfg.CheckTestDeps = true
 
-	cc := target.NewConnCache(&td.Cfg)
+	cc := target.NewConnCache(&td.Cfg, td.Cfg.RawTarget)
 	defer cc.Close(context.Background())
 
 	expectedPassed := 5

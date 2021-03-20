@@ -40,11 +40,11 @@ func RunRemoteTests(ctx context.Context, cfg *config.Config, state *config.State
 	beforeRetry := func(ctx context.Context) bool { return true }
 
 	start := time.Now()
-	names := make([]string, len(cfg.TestsToRun), len(cfg.TestsToRun))
+	names := make([]string, len(state.TestsToRun), len(state.TestsToRun))
 	// TODO(crbug/1190653): Filter out local tests. Currently simply removing
 	// local tests doesn't work, because if resulting names become empty, it
 	// instructs to run all the tests.
-	for i, t := range cfg.TestsToRun {
+	for i, t := range state.TestsToRun {
 		names[i] = t.Name
 	}
 	results, err := runTestsWithRetry(ctx, cfg, names, runTests, beforeRetry)
@@ -81,7 +81,7 @@ func runRemoteTestsOnce(ctx context.Context, cfg *config.Config, state *config.S
 				Patterns:    patterns,
 				DataDir:     cfg.RemoteDataDir,
 				OutDir:      cfg.RemoteOutDir,
-				Target:      cfg.Target,
+				Target:      state.Target,
 				KeyFile:     cfg.KeyFile,
 				KeyDir:      cfg.KeyDir,
 				TastPath:    exe,
@@ -101,7 +101,7 @@ func runRemoteTestsOnce(ctx context.Context, cfg *config.Config, state *config.S
 				LocalBundleDir:    cfg.LocalBundleDir,
 				Devservers:        state.RemoteDevservers,
 				TLWServer:         cfg.TLWServer,
-				DUTName:           cfg.Target,
+				DUTName:           state.Target,
 				HeartbeatInterval: heartbeatInterval,
 				DownloadMode:      cfg.DownloadMode,
 				BuildArtifactsURL: buildArtifactsURL,

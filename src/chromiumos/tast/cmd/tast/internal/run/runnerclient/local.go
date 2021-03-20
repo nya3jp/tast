@@ -242,7 +242,7 @@ func newLocalTestsCategorizer(ctx context.Context, cfg *config.Config, hst *ssh.
 // runFixtureAndTests runs fixture methods before and after runTests.
 // fixtErr will be non-nil if fixture errors happen.
 // It also stores fixture logs to a file under "fixtures" dir in cfg.ResDir.
-func runFixtureAndTests(ctx context.Context, cfg *config.Config, conn *target.Conn, rfcl bundle.FixtureService_RunFixtureClient, remoteFixt string, runTests func(ctx context.Context, fixtErr []string) error) (retErr error) {
+func runFixtureAndTests(ctx context.Context, cfg *config.Config, target string, conn *target.Conn, rfcl bundle.FixtureService_RunFixtureClient, remoteFixt string, runTests func(ctx context.Context, fixtErr []string) error) (retErr error) {
 	fixtResDir := filepath.Join(cfg.ResDir, "fixtures", remoteFixt)
 	// TODO(oka) rename testLogFilename to entityLogFilename
 	fixtLogPath := filepath.Join(fixtResDir, testLogFilename)
@@ -326,14 +326,14 @@ func runFixtureAndTests(ctx context.Context, cfg *config.Config, conn *target.Co
 						DataDir:           cfg.RemoteDataDir,
 						OutDir:            cfg.RemoteOutDir,
 						TempDir:           "", // empty for fixture service to create it
-						Target:            cfg.Target,
+						Target:            target,
 						KeyFile:           cfg.KeyFile,
 						KeyDir:            cfg.KeyDir,
 						LocalBundleDir:    cfg.LocalBundleDir,
 						CheckSoftwareDeps: false,
 						Devservers:        cfg.Devservers,
 						TlwServer:         tlwServer,
-						DutName:           cfg.Target,
+						DutName:           target,
 						BuildArtifactsUrl: cfg.BuildArtifactsURL,
 						DownloadMode:      dm,
 					},
@@ -378,13 +378,14 @@ func runFixtureAndTests(ctx context.Context, cfg *config.Config, conn *target.Co
 // RunLocalTests executes tests as described by cfg on hst and returns the
 // results. It is only used for RunTestsMode.
 // It can return partial results and an error when error happens mid-tests.
+// state.Target must be set.
 func RunLocalTests(ctx context.Context, cfg *config.Config, state *config.State, cc *target.ConnCache) (res []*jsonprotocol.EntityResult, retErr error) {
 	ctx, st := timing.Start(ctx, "run_local_tests")
 	defer st.End()
 
 	conn, err := cc.Conn(ctx)
 	if err != nil {
-		return nil, errors.Wrapf(err, "failed to connect to %s", cfg.Target)
+		return nil, errors.Wrapf(err, "failed to connect to %s", state.Target)
 	}
 
 	rf, err := newRemoteFixtureService(ctx, cfg)
@@ -403,7 +404,7 @@ func RunLocalTests(ctx context.Context, cfg *config.Config, state *config.State,
 	}
 
 	var tests []*testing.EntityInfo
-	for _, t := range cfg.TestsToRun {
+	for _, t := range state.TestsToRun {
 		if t.BundleType == jsonprotocol.LocalBundle {
 			tests = append(tests, &t.EntityInfo)
 		}
@@ -430,7 +431,7 @@ func RunLocalTests(ctx context.Context, cfg *config.Config, state *config.State,
 
 			// TODO(oka): write a unittest testing a connection to DUT is
 			// ensured for remote fixture.
-			if err := runFixtureAndTests(ctx, cfg, conn, rf.cl, remoteFixt, func(ctx context.Context, setUpErrs []string) error {
+			if err := runFixtureAndTests(ctx, cfg, state.Target, conn, rf.cl, remoteFixt, func(ctx context.Context, setUpErrs []string) error {
 				res, err := runLocalTestsForFixture(ctx, names, remoteFixt, setUpErrs, cfg, state, cc)
 				entityResults = append(entityResults, res...)
 				return err
@@ -451,7 +452,7 @@ func RunLocalTests(ctx context.Context, cfg *config.Config, state *config.State,
 func runLocalTestsForFixture(ctx context.Context, names []string, remoteFixt string, setUpErrs []string, cfg *config.Config, state *config.State, cc *target.ConnCache) ([]*jsonprotocol.EntityResult, error) {
 	conn, err := cc.Conn(ctx)
 	if err != nil {
-		return nil, errors.Wrapf(err, "failed to connect to %s; remoteFixt = %q", cfg.Target, remoteFixt)
+		return nil, errors.Wrapf(err, "failed to connect to %s; remoteFixt = %q", state.Target, remoteFixt)
 	}
 	beforeRetry := func(ctx context.Context) bool {
 		var connErr error
@@ -545,7 +546,7 @@ func runLocalTestsOnce(ctx context.Context, cfg *config.Config, state *config.St
 				OutDir:            cfg.LocalOutDir,
 				Devservers:        localDevservers,
 				TLWServer:         tlwServer,
-				DUTName:           cfg.Target,
+				DUTName:           state.Target,
 				WaitUntilReady:    cfg.WaitUntilReady,
 				HeartbeatInterval: heartbeatInterval,
 				BuildArtifactsURL: cfg.BuildArtifactsURL,

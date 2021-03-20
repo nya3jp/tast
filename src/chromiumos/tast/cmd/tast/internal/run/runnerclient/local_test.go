@@ -45,7 +45,7 @@ func TestLocalSuccess(t *gotesting.T) {
 						DataDir:           fakerunner.MockLocalDataDir,
 						OutDir:            fakerunner.MockLocalOutDir,
 						Devservers:        fakerunner.MockDevservers,
-						DUTName:           td.Cfg.Target,
+						DUTName:           td.Cfg.RawTarget,
 						BuildArtifactsURL: fakerunner.MockBuildArtifactsURL,
 						DownloadMode:      planner.DownloadLazy,
 						HeartbeatInterval: heartbeatInterval,
@@ -65,7 +65,7 @@ func TestLocalSuccess(t *gotesting.T) {
 		return 0
 	}
 
-	cc := target.NewConnCache(&td.Cfg)
+	cc := target.NewConnCache(&td.Cfg, td.Cfg.RawTarget)
 	defer cc.Close(context.Background())
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second) // avoid test being blocked indefinitely
@@ -126,7 +126,7 @@ func TestLocalProxy(t *gotesting.T) {
 		fakerunner.MockLocalRunner,
 	}, " ")
 
-	cc := target.NewConnCache(&td.Cfg)
+	cc := target.NewConnCache(&td.Cfg, td.Cfg.RawTarget)
 	defer cc.Close(context.Background())
 
 	if _, err := RunLocalTests(context.Background(), &td.Cfg, &td.State, cc); err != nil {
@@ -165,11 +165,11 @@ func TestLocalCopyOutput(t *gotesting.T) {
 		t.Fatal(err)
 	}
 
-	td.Cfg.TestsToRun = []*jsonprotocol.EntityResult{{EntityInfo: testing.EntityInfo{
+	td.State.TestsToRun = []*jsonprotocol.EntityResult{{EntityInfo: testing.EntityInfo{
 		Name: testName,
 	}}}
 
-	cc := target.NewConnCache(&td.Cfg)
+	cc := target.NewConnCache(&td.Cfg, td.Cfg.RawTarget)
 	defer cc.Close(context.Background())
 
 	if _, err := RunLocalTests(context.Background(), &td.Cfg, &td.State, cc); err != nil {
@@ -201,7 +201,7 @@ func disabledTestLocalExecFailure(t *gotesting.T) {
 		return 1
 	}
 
-	cc := target.NewConnCache(&td.Cfg)
+	cc := target.NewConnCache(&td.Cfg, td.Cfg.RawTarget)
 	defer cc.Close(context.Background())
 
 	if _, err := RunLocalTests(context.Background(), &td.Cfg, &td.State, cc); err == nil {
@@ -218,7 +218,7 @@ func TestLocalWaitTimeout(t *gotesting.T) {
 
 	// Simulate local_test_runner writing control messages immediately but hanging before exiting.
 	td.RunDelay = time.Minute
-	td.Cfg.TestsToRun = []*jsonprotocol.EntityResult{{EntityInfo: testing.EntityInfo{Name: "pkg.Foo"}}}
+	td.State.TestsToRun = []*jsonprotocol.EntityResult{{EntityInfo: testing.EntityInfo{Name: "pkg.Foo"}}}
 	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
 		switch args.Mode {
 		case runner.RunTestsMode:
@@ -234,7 +234,7 @@ func TestLocalWaitTimeout(t *gotesting.T) {
 	// After setting a short wait timeout, an error should be reported.
 	td.Cfg.LocalRunnerWaitTimeout = time.Millisecond
 
-	cc := target.NewConnCache(&td.Cfg)
+	cc := target.NewConnCache(&td.Cfg, td.Cfg.RawTarget)
 	defer cc.Close(context.Background())
 
 	if _, err := RunLocalTests(context.Background(), &td.Cfg, &td.State, cc); err == nil {
@@ -263,11 +263,11 @@ func TestLocalMaxFailures(t *gotesting.T) {
 		}
 		return 0
 	}
-	td.Cfg.TestsToRun = []*jsonprotocol.EntityResult{{EntityInfo: testing.EntityInfo{Name: "pkg.Test"}}}
+	td.State.TestsToRun = []*jsonprotocol.EntityResult{{EntityInfo: testing.EntityInfo{Name: "pkg.Test"}}}
 	td.Cfg.MaxTestFailures = 1
 	td.State.FailuresCount = 0
 
-	cc := target.NewConnCache(&td.Cfg)
+	cc := target.NewConnCache(&td.Cfg, td.Cfg.RawTarget)
 	defer cc.Close(context.Background())
 
 	results, err := RunLocalTests(context.Background(), &td.Cfg, &td.State, cc)
@@ -320,7 +320,7 @@ func TestFixturesDependency(t *gotesting.T) {
 		}
 		return 0
 	}
-	td.Cfg.TestsToRun = []*jsonprotocol.EntityResult{
+	td.State.TestsToRun = []*jsonprotocol.EntityResult{
 		{EntityInfo: testing.EntityInfo{
 			Bundle:  "cros",
 			Fixture: "remoteFixt",
@@ -360,9 +360,10 @@ func TestFixturesDependency(t *gotesting.T) {
 		},
 	}
 
-	cc := target.NewConnCache(&td.Cfg)
+	cc := target.NewConnCache(&td.Cfg, td.Cfg.RawTarget)
 	defer cc.Close(context.Background())
 
+	td.State.Target = td.Cfg.RawTarget
 	_, err := RunLocalTests(context.Background(), &td.Cfg, &td.State, cc)
 	if err != nil {
 		t.Fatalf("RunLocalTests(): %v", err)
@@ -392,7 +393,7 @@ func TestFixturesDependency(t *gotesting.T) {
 		w.BundleArgs.DataDir = fakerunner.MockLocalDataDir
 		w.BundleArgs.OutDir = fakerunner.MockLocalOutDir
 		w.BundleArgs.Devservers = fakerunner.MockDevservers
-		w.BundleArgs.DUTName = td.Cfg.Target
+		w.BundleArgs.DUTName = td.Cfg.RawTarget
 		w.BundleArgs.BuildArtifactsURL = fakerunner.MockBuildArtifactsURL
 		w.BundleArgs.DownloadMode = planner.DownloadLazy
 		w.BundleArgs.HeartbeatInterval = heartbeatInterval

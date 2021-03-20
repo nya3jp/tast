@@ -65,17 +65,15 @@ type Config struct {
 	KeyFile string
 	// KeyDir is a directory containing private SSH keys (typically $HOME/.ssh).
 	KeyDir string
-	// Target is the target device for testing, in the form "[<user>@]host[:<port>]".
-	Target string
+	// RawTarget is the target device for testing.
+	// RawTarget is uninterpreted verbatim user input. It should never be used
+	// after State.Target is populated.
+	RawTarget string
 	// Patterns specifies the patterns of tests to operate against.
 	Patterns []string
 	// ResDir is the path to the directory where test results should be written.
 	// It is only used for RunTestsMode.
 	ResDir string
-	// TestNamesToSkip are tests that match patterns but are not sent to runners to run.
-	TestNamesToSkip []string
-
-	TestsToRun []*jsonprotocol.EntityResult // tests to be run
 
 	Mode     Mode   // action to perform
 	TastDir  string // base directory under which files are written
@@ -140,6 +138,7 @@ type Config struct {
 
 // State hold state attributes which are accumulated over the course of the run.
 type State struct {
+	Target                   string                     // target device for testing, in the form "[<user>@]host[:<port>]"
 	TargetArch               string                     // architecture of target userland (usually given by "uname -m", but may be different)
 	StartedRun               bool                       // true if we got to the point where we started trying to execute tests
 	InitialSysInfo           *runner.SysInfoState       // initial state of system info (logs, crashes, etc.) on DUT before testing
@@ -151,6 +150,9 @@ type State struct {
 	TLWConn                  *grpc.ClientConn           // TLW gRPC service connection
 	RemoteDevservers         []string                   // list of devserver URLs used by remote tests.
 	DefaultBuildArtifactsURL string                     // default URL of build artifacts.
+
+	TestNamesToSkip []string                     // tests that match patterns but are not sent to runners to run
+	TestsToRun      []*jsonprotocol.EntityResult // tests to be run
 
 	// gRPC Reports Client related variables.
 	ReportsConn      *grpc.ClientConn       // Reports gRPC service connection.

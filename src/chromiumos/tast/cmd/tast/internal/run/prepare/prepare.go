@@ -49,7 +49,7 @@ func Prepare(ctx context.Context, cfg *config.Config, state *config.State, conn 
 	}
 
 	if cfg.DownloadPrivateBundles {
-		if err := runnerclient.DownloadPrivateBundles(ctx, cfg, conn); err != nil {
+		if err := runnerclient.DownloadPrivateBundles(ctx, cfg, state.Target, conn); err != nil {
 			return fmt.Errorf("failed downloading private bundles: %v", err)
 		}
 		written = true
@@ -71,7 +71,7 @@ func Prepare(ctx context.Context, cfg *config.Config, state *config.State, conn 
 // buildAll builds Go binaries as instructed in cfg.
 func buildAll(ctx context.Context, cfg *config.Config, state *config.State, hst *ssh.Conn) error {
 	if err := getTargetArch(ctx, cfg, state, hst); err != nil {
-		return fmt.Errorf("failed to get arch for %s: %v", cfg.Target, err)
+		return fmt.Errorf("failed to get arch for %s: %v", state.Target, err)
 	}
 
 	// local_test_runner is required even if we are running only remote tests,

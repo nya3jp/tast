@@ -241,7 +241,7 @@ func NewLocalTestData(t *gotesting.T, opts ...LocalTestDataOption) *LocalTestDat
 		t.Fatal(err)
 	}
 	td.Cfg.Logger = logging.NewSimple(&td.LogBuf, true, true)
-	td.Cfg.Target = td.SrvData.Srv.Addr().String()
+	td.Cfg.RawTarget = td.SrvData.Srv.Addr().String()
 	td.Cfg.LocalRunner = MockLocalRunner
 	td.Cfg.LocalBundleDir = MockLocalBundleDir
 	td.Cfg.LocalDataDir = MockLocalDataDir

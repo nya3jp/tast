@@ -64,13 +64,13 @@ func Run(ctx context.Context, cfg *config.Config, state *config.State) (status S
 	}()
 
 	// Check if host name needs to be resolved.
-	alternateTarget, err := sshconfig.ResolveHost(cfg.Target)
+	var err error
+	state.Target, err = sshconfig.ResolveHost(cfg.RawTarget) // change targets according to SSH configuration files
 	if err != nil {
 		cfg.Logger.Logf("Error in reading SSH configuaration files: %v", err)
-	} else if alternateTarget != cfg.Target {
+	} else if state.Target != cfg.RawTarget {
 		cfg.Logger.Logf("Use target %v instead of %v to connect according to SSH configuration files",
-			alternateTarget, cfg.Target)
-		cfg.Target = alternateTarget // Change targets according to SSH configuration files.
+			state.Target, cfg.RawTarget)
 	}
 
 	if err := connectToTLW(ctx, cfg, state); err != nil {
@@ -85,12 +85,12 @@ func Run(ctx context.Context, cfg *config.Config, state *config.State) (status S
 		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to resolve target: %v", err), nil
 	}
 
-	cc := target.NewConnCache(cfg)
+	cc := target.NewConnCache(cfg, state.Target)
 	defer cc.Close(ctx)
 
 	conn, err := cc.Conn(ctx)
 	if err != nil {
-		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to connect to %s: %v", cfg.Target, err), nil
+		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to connect to %s: %v", state.Target, err), nil
 	}
 
 	if state.ReportsConn != nil {
@@ -163,14 +163,14 @@ func connectToReports(ctx context.Context, cfg *config.Config, state *config.Sta
 	return nil
 }
 
-// resolveTarget resolves cfg.Target using the TLW service if available.
+// resolveTarget resolves state.Target using the TLW service if available.
 func resolveTarget(ctx context.Context, cfg *config.Config, state *config.State) error {
 	if state.TLWConn == nil {
 		return nil
 	}
 
 	var opts ssh.Options
-	if err := ssh.ParseTarget(cfg.Target, &opts); err != nil {
+	if err := ssh.ParseTarget(state.Target, &opts); err != nil {
 		return err
 	}
 	host, portStr, err := net.SplitHostPort(opts.Hostname)
@@ -190,7 +190,7 @@ func resolveTarget(ctx context.Context, cfg *config.Config, state *config.State)
 		return err
 	}
 
-	cfg.Target = fmt.Sprintf("%s@%s:%d", opts.User, res.GetAddress(), res.GetPort())
+	state.Target = fmt.Sprintf("%s@%s:%d", opts.User, res.GetAddress(), res.GetPort())
 	return nil
 }
 
@@ -253,18 +253,18 @@ func runTests(ctx context.Context, cfg *config.Config, state *config.State, cc *
 		testsToSkip = nil
 	}
 
-	cfg.TestsToRun = testsToRun
-	cfg.TestNamesToSkip = nil
+	state.TestsToRun = testsToRun
+	state.TestNamesToSkip = nil
 	for _, t := range testsToSkip {
-		cfg.TestNamesToSkip = append(cfg.TestNamesToSkip, t.Name)
+		state.TestNamesToSkip = append(state.TestNamesToSkip, t.Name)
 	}
 	for _, t := range testsNotInShard {
-		cfg.TestNamesToSkip = append(cfg.TestNamesToSkip, t.Name)
+		state.TestNamesToSkip = append(state.TestNamesToSkip, t.Name)
 	}
 
 	if cfg.TotalShards > 1 {
 		cfg.Logger.Logf("Running shard %d/%d (tests %d/%d)", cfg.ShardIndex+1, cfg.TotalShards,
-			len(cfg.TestsToRun), len(cfg.TestsToRun)+len(cfg.TestNamesToSkip))
+			len(state.TestsToRun), len(state.TestsToRun)+len(state.TestNamesToSkip))
 	}
 	if len(testsToRun) == 0 {
 		// No tests to run.

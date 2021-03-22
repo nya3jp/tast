@@ -12,7 +12,7 @@ import (
 
 	"chromiumos/tast/cmd/tast/internal/logging"
 	"chromiumos/tast/cmd/tast/internal/run/config"
-	"chromiumos/tast/cmd/tast/internal/run/jsonprotocol"
+	"chromiumos/tast/internal/jsonprotocol"
 )
 
 // runFirstTest is runTestsFunc that pretends to run the first test only. It returns remaining tests as unstarted.

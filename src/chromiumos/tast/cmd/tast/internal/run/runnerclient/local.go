@@ -106,19 +106,13 @@ type localTestsCategorizer func([]*resultsjson.Test) ([]*bundleTests, error)
 // tests by the bundle name and the remote fixture name tests depend on.
 // It computes by listing all the fixtures in the bundles designated by cfg.
 func newLocalTestsCategorizer(ctx context.Context, cfg *config.Config, hst *ssh.Conn) (localTestsCategorizer, error) {
-	var localFixts runner.ListFixturesResult
-	if err := runTestRunnerCommand(
-		localRunnerCommand(ctx, cfg, hst), &runner.Args{
-			Mode: runner.ListFixturesMode,
-			ListFixtures: &runner.ListFixturesArgs{
-				BundleGlob: cfg.LocalBundleGlob(),
-			},
-		}, &localFixts); err != nil {
-		return nil, fmt.Errorf("listing local fixtures: %v", err)
+	localFixts, err := listLocalFixtures(ctx, cfg, hst)
+	if err != nil {
+		return nil, err
 	}
 	// bundle -> fixture -> parent
 	localFixtParent := make(map[string]map[string]string)
-	for bundlePath, fs := range localFixts.Fixtures {
+	for bundlePath, fs := range localFixts {
 		bundle := filepath.Base(bundlePath)
 		localFixtParent[bundle] = make(map[string]string)
 		for _, f := range fs {
@@ -126,21 +120,14 @@ func newLocalTestsCategorizer(ctx context.Context, cfg *config.Config, hst *ssh.
 		}
 	}
 
-	var remoteFixts runner.ListFixturesResult
-	if err := runTestRunnerCommand(remoteRunnerCommand(ctx, cfg), &runner.Args{
-		Mode: runner.ListFixturesMode,
-		ListFixtures: &runner.ListFixturesArgs{
-			BundleGlob: cfg.RemoteBundleGlob(),
-		},
-	},
-		&remoteFixts,
-	); err != nil {
-		return nil, fmt.Errorf("list remote fixtures: %v", err)
+	remoteFixts, err := listRemoteFixtures(ctx, cfg)
+	if err != nil {
+		return nil, err
 	}
 
 	// TODO(crbug/1177189): allow multiple bundles to define remote fixtures.
-	if len(remoteFixts.Fixtures) > 1 {
-		return nil, fmt.Errorf("multiple (%v) bundles define remote fixtures; want <= 1", len(remoteFixts.Fixtures))
+	if len(remoteFixts) > 1 {
+		return nil, fmt.Errorf("multiple (%v) bundles define remote fixtures; want <= 1", len(remoteFixts))
 	}
 	// Compute real remote fixtures. Remote bundles can import tast/local/*
 	// package and remote bundles may accidentally contain local fixtures.
@@ -155,7 +142,7 @@ func newLocalTestsCategorizer(ctx context.Context, cfg *config.Config, hst *ssh.
 			}
 		}
 		rfs := make(map[string]struct{})
-		for _, fs := range remoteFixts.Fixtures {
+		for _, fs := range remoteFixts {
 			for _, f := range fs {
 				if _, ok := lfs[f.Name]; ok {
 					continue

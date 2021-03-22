@@ -133,7 +133,7 @@ func TestReportsServer_ReportResult(t *testing.T) {
 		},
 		{
 			Test: "FailedTest",
-			Errors: []*protocol.Error{
+			Errors: []*protocol.ErrorReport{
 				{
 					Time:   testTime,
 					Reason: "intentionally failed",
@@ -306,7 +306,7 @@ func TestReportsServer_ReportResultWithTerminate(t *testing.T) {
 		},
 		{
 			Test: "FailedTest",
-			Errors: []*protocol.Error{
+			Errors: []*protocol.ErrorReport{
 				{
 					Time:   testTime,
 					Reason: "intentionally failed",

@@ -32,7 +32,7 @@ message LogStreamRequest {
 message ReportResultRequest {
   string test = 1; // test name of this test result
   // errors contain errors encountered while running the test.
-  repeated Error errors = 2;
+  repeated ErrorReport errors = 2;
   // skip_reason tells why the test is skipped.
   string skip_reason = 3;
 }
@@ -41,7 +41,7 @@ message ReportResultResponse {
   bool terminate = 1; // If set, the tast should, skipping remaining tests.
 }
 
-message Error {
+message ErrorReport {
   google.protobuf.Timestamp time = 1;
   string reason = 2;
   string file = 3;

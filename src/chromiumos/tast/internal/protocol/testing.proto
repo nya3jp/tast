@@ -1,0 +1,65 @@
+// Copyright 2021 The Chromium OS Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package tast.core;
+
+import "google/protobuf/duration.proto";
+
+option go_package = "chromiumos/tast/internal/protocol";
+
+// EntityType represents a type of an entity.
+enum EntityType {
+  TEST = 0;
+  FIXTURE = 1;
+}
+
+// Entity describes an entity.
+message Entity {
+  EntityType type = 1;
+  string name = 2;
+  string package = 3;
+  repeated string attributes = 4;
+  string description = 5;
+  string fixture = 6;
+  EntityDependencies dependencies = 7;
+  EntityContacts contacts = 8;
+  EntityLegacyData legacy_data = 9;
+}
+
+// EntityContacts contains contact information of an entity.
+message EntityContacts { repeated string emails = 1; }
+
+// EntityDependencies describes dependencies of an entity that need to be
+// evaluated before running it.
+message EntityDependencies {
+  repeated string data_files = 1;
+  repeated string services = 2;
+}
+
+// EntityLegacyData contains extra information of an entity.
+// Fields in this message are considered legacy because test bundles need to
+// send these fields to Tast CLI just because they are made available in
+// results.json for compatibility reasons.
+message EntityLegacyData {
+  google.protobuf.Duration timeout = 1;
+  repeated string variables = 2;
+  repeated string variable_deps = 3;
+  repeated string software_deps = 4;
+  string bundle = 5;
+}
+
+// Error describes details of an error reported by an entity.
+message Error {
+  string reason = 1;
+  ErrorLocation location = 2;
+}
+
+// ErrorLocation represents a code location where an error was reported.
+message ErrorLocation {
+  string file = 1;
+  int64 line = 2;
+  string stack = 3;
+}

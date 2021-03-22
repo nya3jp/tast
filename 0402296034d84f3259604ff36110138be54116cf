@@ -193,6 +193,30 @@
       },
       "revId": "0402296034d84f3259604ff36110138be54116cf",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d1856926_95aa2c1f",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/local.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 408,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2021-03-22T03:58:34Z",
+      "side": 1,
+      "message": "I found that doing the same thing in remote.go doesn\u0027t work.\nIf there\u0027s no remote tests, names become empty. Empty pattern means to run all the tests.",
+      "parentUuid": "beeab91f_3bc8626f",
+      "range": {
+        "startLine": 408,
+        "startChar": 2,
+        "endLine": 408,
+        "endChar": 47
+      },
+      "revId": "0402296034d84f3259604ff36110138be54116cf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

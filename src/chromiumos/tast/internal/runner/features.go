@@ -572,7 +572,7 @@ func findIntelSOC(parsed *lscpuResult) (device.Config_SOC, error) {
 			ptn string
 		}{
 			// https://ark.intel.com/content/www/us/en/ark/products/codename/186968/amber-lake-y.html
-			{device.Config_SOC_AMBERLAKE_Y, `Core.* i\d-(10|8)\d{3}Y`},
+			{device.Config_SOC_AMBERLAKE_Y, `Core.* [mi]\d-(10|8)\d{3}Y`},
 
 			// https://ark.intel.com/content/www/us/en/ark/products/codename/90354/comet-lake.html
 			{device.Config_SOC_COMET_LAKE_U, `Core.* i\d-10\d{3}U|Celeron.* 5[23]05U`},

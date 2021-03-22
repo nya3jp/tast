@@ -6,6 +6,7 @@ package runnerclient
 
 import (
 	"context"
+	"fmt"
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
@@ -115,10 +116,40 @@ func ListLocalTests(ctx context.Context, cfg *config.Config, state *config.State
 		localRunnerCommand(ctx, cfg, hst), cfg, state, cfg.LocalBundleGlob())
 }
 
+// listLocalFixtures returns a map from bundle to fixtures.
+func listLocalFixtures(ctx context.Context, cfg *config.Config, hst *ssh.Conn) (map[string][]*jsonprotocol.EntityInfo, error) {
+	var localFixts runner.ListFixturesResult
+	if err := runTestRunnerCommand(
+		localRunnerCommand(ctx, cfg, hst), &runner.Args{
+			Mode: runner.ListFixturesMode,
+			ListFixtures: &runner.ListFixturesArgs{
+				BundleGlob: cfg.LocalBundleGlob(),
+			},
+		}, &localFixts); err != nil {
+		return nil, fmt.Errorf("listing local fixtures: %v", err)
+	}
+	return localFixts.Fixtures, nil
+}
+
 // listRemoteTests returns a list of remote tests to run.
 func listRemoteTests(ctx context.Context, cfg *config.Config, state *config.State) ([]jsonprotocol.EntityWithRunnabilityInfo, error) {
 	return runListTestsCommand(
 		remoteRunnerCommand(ctx, cfg), cfg, state, cfg.RemoteBundleGlob())
+}
+
+// listRemoteFixtures returns a map from bundle to fixtures.
+func listRemoteFixtures(ctx context.Context, cfg *config.Config) (map[string][]*jsonprotocol.EntityInfo, error) {
+	var remoteFixts runner.ListFixturesResult
+	if err := runTestRunnerCommand(
+		remoteRunnerCommand(ctx, cfg), &runner.Args{
+			Mode: runner.ListFixturesMode,
+			ListFixtures: &runner.ListFixturesArgs{
+				BundleGlob: cfg.RemoteBundleGlob(),
+			},
+		}, &remoteFixts); err != nil {
+		return nil, fmt.Errorf("listing remote fixtures: %v", err)
+	}
+	return remoteFixts.Fixtures, nil
 }
 
 func runListTestsCommand(r runnerCmd, cfg *config.Config, state *config.State, glob string) ([]jsonprotocol.EntityWithRunnabilityInfo, error) {

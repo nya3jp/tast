@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "599fa769_237a4c53",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-03-22T06:42:06Z",
+      "side": 1,
+      "message": "Thanks for the cleanup!\n",
+      "revId": "2fe28f320b9f22b1b67bac4c43a83c28005fc9c0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1f97fdb8_773de8a5",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/config/config.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 141,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-03-22T06:42:06Z",
+      "side": 1,
+      "message": "I\u0027d like to minimize the use of State.Target, hopefully only in two places: target.NewConnCache calls in Run and collectSysInfo (except unit tests).\n\nCould you try:\n1. Adding the Target() getter to target.Conn and target.ConnCache so that any function already taking them as argument should have access to the target name,\n2. Passing the target name directly to functions which don\u0027t take Conn/ConnCache already.",
+      "range": {
+        "startLine": 141,
+        "startChar": 1,
+        "endLine": 141,
+        "endChar": 119
+      },
+      "revId": "2fe28f320b9f22b1b67bac4c43a83c28005fc9c0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

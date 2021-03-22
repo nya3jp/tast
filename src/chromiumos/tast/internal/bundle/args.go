@@ -51,6 +51,8 @@ type Args struct {
 	RunTests *RunTestsArgs `json:"runTests,omitempty"`
 	// ListTests contains arguments used by ListTestsMode.
 	ListTests *ListTestsArgs `json:"listTests,omitempty"`
+	// ListFixtures contains arguments used by ListFixturesMode.
+	ListFixtures *ListFixturesArgs `json:"listFixtures,omitempty"`
 }
 
 // FillDeprecated backfills deprecated fields from the corresponding non-deprecated fields.
@@ -265,6 +267,13 @@ type ListTestsArgs struct {
 	// Patterns contains patterns (either empty to list all tests, exactly one attribute expression,
 	// or one or more globs) describing which tests to list.
 	Patterns []string `json:"patterns,omitempty"`
+}
+
+// ListFixturesArgs is nested within Args and contains arguments used by
+// ListFixturesMode.
+type ListFixturesArgs struct {
+	// Names are fixtures to list, or nil to list all the fixtures.
+	Names *[]string `json:"patterns,omitempty"`
 }
 
 // bundleType describes the type of tests contained in a test bundle (i.e. local or remote).

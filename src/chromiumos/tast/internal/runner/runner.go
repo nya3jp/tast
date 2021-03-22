@@ -79,7 +79,7 @@ func Run(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, args *Args,
 		}
 		return statusSuccess
 	case ListFixturesMode:
-		fixts, err := listFixtures(args.ListFixtures.BundleGlob)
+		fixts, err := listFixtures(args.ListFixtures.BundleGlob, &args.ListFixtures.BundleArgs)
 		if err != nil {
 			return command.WriteError(stderr, err)
 		}

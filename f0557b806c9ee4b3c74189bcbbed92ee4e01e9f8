@@ -33,6 +33,29 @@
       "message": "I have read the conversation and got that this temporary fix is needed considering current situation.",
       "revId": "f0557b806c9ee4b3c74189bcbbed92ee4e01e9f8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f24413b1_98fb8819",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 293,
+      "author": {
+        "id": 1132414
+      },
+      "writtenOn": "2021-03-22T23:03:47Z",
+      "side": 1,
+      "message": "oh wow, `mosys platform name` says this is \"poppy\"...",
+      "range": {
+        "startLine": 293,
+        "startChar": 0,
+        "endLine": 293,
+        "endChar": 11
+      },
+      "revId": "f0557b806c9ee4b3c74189bcbbed92ee4e01e9f8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

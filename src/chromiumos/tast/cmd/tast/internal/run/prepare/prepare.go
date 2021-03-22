@@ -21,6 +21,7 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/runnerclient"
 	"chromiumos/tast/cmd/tast/internal/run/target"
+	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/internal/timing"
 	"chromiumos/tast/ssh"
@@ -220,24 +221,39 @@ func getDataFilePaths(ctx context.Context, cfg *config.Config, state *config.Sta
 
 	cfg.Logger.Debug("Getting data file list from target")
 
+	// List tests.
 	ts, err := runnerclient.ListLocalTests(ctx, cfg, state, hst)
 	if err != nil {
 		return nil, err
 	}
 
-	bundlePath := path.Join(build.LocalBundlePkgPathPrefix, cfg.BuildBundle)
-	seenPaths := make(map[string]struct{})
+	// List fixtures tests may use.
+	var fixtures []string
+	seenFixtures := make(map[string]bool)
 	for _, t := range ts {
-		if t.Data == nil {
-			continue
+		if t.Fixture != "" && !seenFixtures[t.Fixture] {
+			seenFixtures[t.Fixture] = true
+			fixtures = append(fixtures, t.Fixture)
 		}
+	}
 
-		for _, p := range t.Data {
-			// t.DataDir returns the file's path relative to the top data dir, i.e. /usr/share/tast/data/local.
-			full := filepath.Clean(filepath.Join(testing.RelativeDataDir(t.Pkg), p))
-			if !strings.HasPrefix(full, bundlePath+"/") {
-				return nil, fmt.Errorf("data file path %q escapes base dir", full)
-			}
+	localFixts, err := runnerclient.ListLocalFixtures(ctx, cfg, hst, &fixtures)
+	if err != nil {
+		return nil, fmt.Errorf("ListLocalFixtures(%v): %v", fixtures, err)
+	}
+
+	var entities []*jsonprotocol.EntityInfo
+	for _, t := range ts {
+		entities = append(entities, &t.EntityInfo)
+	}
+	if fs, ok := localFixts[filepath.Join(cfg.LocalBundleDir, cfg.BuildBundle)]; ok {
+		entities = append(entities, fs...)
+	}
+
+	seenPaths := make(map[string]struct{})
+	for _, e := range entities {
+		for _, p := range e.Data {
+			full := filepath.Clean(filepath.Join(testing.RelativeDataDir(e.Pkg), p))
 			if _, ok := seenPaths[full]; ok {
 				continue
 			}
@@ -245,7 +261,6 @@ func getDataFilePaths(ctx context.Context, cfg *config.Config, state *config.Sta
 			seenPaths[full] = struct{}{}
 		}
 	}
-
 	cfg.Logger.Debugf("Got data file list with %v file(s)", len(paths))
 	return paths, nil
 }

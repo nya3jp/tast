@@ -183,6 +183,8 @@ type ListTestsResult struct {
 
 // ListFixturesArgs is nested within Args and contains arguments used by ListFixturesMode.
 type ListFixturesArgs struct {
+	// BundleArgs contains arguments that are relevant to test bundles.
+	BundleArgs bundle.ListFixturesArgs `json:"bundleArgs,omitempty"`
 	// BundleGlob is a glob-style path matching test bundles to execute.
 	BundleGlob string `json:"bundleGlob,omitempty"`
 }

@@ -813,6 +813,12 @@ func (s *FixtState) OutDir() string {
 	return s.entityRoot.cfg.OutDir
 }
 
+// DataPath returns the absolute path to use to access a data file previously
+// registered via Fixture.Data.
+func (s *FixtState) DataPath(p string) string {
+	return filepath.Join(s.entityRoot.cfg.DataDir, p)
+}
+
 // FixtTestState is the state the framework passes to PreTest and PostTest.
 type FixtTestState struct {
 	*globalMixin

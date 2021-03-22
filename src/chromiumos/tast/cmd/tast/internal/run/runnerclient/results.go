@@ -304,12 +304,12 @@ func (r *resultsHandler) handleTestStart(ctx context.Context, msg *control.Entit
 	}
 
 	// TODO(crbug.com/1127169): Support timing log for fixtures.
-	if msg.Info.Type == testing.EntityTest {
+	if msg.Info.Type == jsonprotocol.EntityTest {
 		ctx, r.stage = timing.Start(ctx, msg.Info.Name)
 	}
 
 	relDir := testLogsDir
-	if msg.Info.Type == testing.EntityFixture {
+	if msg.Info.Type == jsonprotocol.EntityFixture {
 		relDir = fixtureLogsDir
 	}
 	relFinalOutDir := filepath.Join(relDir, msg.Info.Name)
@@ -334,7 +334,7 @@ func (r *resultsHandler) handleTestStart(ctx context.Context, msg *control.Entit
 	r.currents[msg.Info.Name] = state
 	// Do not include fixture results in the output.
 	// TODO(crbug.com/1135078): Consider reporting fixture results.
-	if state.result.Type == testing.EntityTest {
+	if state.result.Type == jsonprotocol.EntityTest {
 		r.results = append(r.results, &state.result)
 
 		// Write a partial EntityResult object to record that we started the test.
@@ -455,7 +455,7 @@ func (r *resultsHandler) handleTestEnd(ctx context.Context, msg *control.EntityE
 	state.result.End = msg.Time
 
 	// Replace the earlier partial TestResult object with the now-complete version.
-	if state.result.Type == testing.EntityTest {
+	if state.result.Type == jsonprotocol.EntityTest {
 		if len(state.result.Errors) > 0 {
 			r.state.FailuresCount++
 		}
@@ -581,9 +581,9 @@ func (r *resultsHandler) processMessages(ctx context.Context, mch <-chan interfa
 		for _, state := range r.currents {
 			state.result.Errors = append(state.result.Errors, jsonprotocol.EntityError{
 				Time:  time.Now(),
-				Error: testing.Error{Reason: incompleteTestMsg},
+				Error: jsonprotocol.Error{Reason: incompleteTestMsg},
 			})
-			if state.result.Type == testing.EntityTest {
+			if state.result.Type == jsonprotocol.EntityTest {
 				r.state.FailuresCount++
 				r.streamWriter.write(&state.result, true)
 				r.reportResult(ctx, &state.result)
@@ -670,7 +670,7 @@ func (r *resultsHandler) processMessages(ctx context.Context, mch <-chan interfa
 		if lastState != nil {
 			lastState.result.Errors = append(lastState.result.Errors, jsonprotocol.EntityError{
 				Time:  time.Now(),
-				Error: testing.Error{Reason: msg},
+				Error: jsonprotocol.Error{Reason: msg},
 			})
 		}
 		return r.results, unstarted, runErr

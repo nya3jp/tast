@@ -13,7 +13,6 @@ import (
 	"chromiumos/tast/internal/bundle"
 	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/runner"
-	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/ssh"
 )
 
@@ -110,19 +109,19 @@ func listAllTests(ctx context.Context, cfg *config.Config, state *config.State, 
 }
 
 // ListLocalTests returns a list of local tests to run.
-func ListLocalTests(ctx context.Context, cfg *config.Config, state *config.State, hst *ssh.Conn) ([]testing.EntityWithRunnabilityInfo, error) {
+func ListLocalTests(ctx context.Context, cfg *config.Config, state *config.State, hst *ssh.Conn) ([]jsonprotocol.EntityWithRunnabilityInfo, error) {
 	return runListTestsCommand(
 		localRunnerCommand(ctx, cfg, hst), cfg, state, cfg.LocalBundleGlob())
 }
 
 // listRemoteTests returns a list of remote tests to run.
-func listRemoteTests(ctx context.Context, cfg *config.Config, state *config.State) ([]testing.EntityWithRunnabilityInfo, error) {
+func listRemoteTests(ctx context.Context, cfg *config.Config, state *config.State) ([]jsonprotocol.EntityWithRunnabilityInfo, error) {
 	return runListTestsCommand(
 		remoteRunnerCommand(ctx, cfg), cfg, state, cfg.RemoteBundleGlob())
 }
 
-func runListTestsCommand(r runnerCmd, cfg *config.Config, state *config.State, glob string) ([]testing.EntityWithRunnabilityInfo, error) {
-	var ts []testing.EntityWithRunnabilityInfo
+func runListTestsCommand(r runnerCmd, cfg *config.Config, state *config.State, glob string) ([]jsonprotocol.EntityWithRunnabilityInfo, error) {
+	var ts []jsonprotocol.EntityWithRunnabilityInfo
 	args := &runner.Args{
 		Mode: runner.ListTestsMode,
 		ListTests: &runner.ListTestsArgs{

@@ -21,7 +21,7 @@ import (
 	"chromiumos/tast/internal/bundle"
 	"chromiumos/tast/internal/command"
 	"chromiumos/tast/internal/dep"
-	"chromiumos/tast/internal/testing"
+	"chromiumos/tast/internal/jsonprotocol"
 )
 
 // RunMode describes the runner's behavior.
@@ -184,7 +184,7 @@ type ListFixturesArgs struct {
 // ListFixturesResult holds the result of a ListFixturesMode command.
 type ListFixturesResult struct {
 	// Fixtures maps bundle path to the fixtures it contains.
-	Fixtures map[string][]*testing.EntityInfo `json:"fixtures,omitempty"`
+	Fixtures map[string][]*jsonprotocol.EntityInfo `json:"fixtures,omitempty"`
 }
 
 // GetSysInfoStateResult holds the result of a GetSysInfoStateMode command.

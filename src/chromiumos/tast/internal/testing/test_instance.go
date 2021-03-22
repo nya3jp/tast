@@ -21,6 +21,7 @@ import (
 
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/dep"
+	"chromiumos/tast/internal/jsonprotocol"
 )
 
 const (
@@ -480,55 +481,9 @@ func (t *TestInstance) Constraints() *EntityConstraints {
 	}
 }
 
-// EntityType represents a type of an entity.
-type EntityType int
-
-const (
-	// EntityTest represents a test.
-	// This must be zero so that an unspecified entity type is a test for
-	// protocol compatibility.
-	EntityTest EntityType = 0
-
-	// EntityFixture represents a fixture.
-	EntityFixture EntityType = 1
-)
-
-func (t EntityType) String() string {
-	switch t {
-	case EntityTest:
-		return "test"
-	case EntityFixture:
-		return "fixture"
-	default:
-		return fmt.Sprintf("unknown(%d)", int(t))
-	}
-}
-
-// EntityInfo is a JSON-serializable description of an entity.
-type EntityInfo struct {
-	// See TestInstance for details of the fields.
-	Name         string           `json:"name"`
-	Pkg          string           `json:"pkg"`
-	Desc         string           `json:"desc"`
-	Contacts     []string         `json:"contacts"`
-	Attr         []string         `json:"attr"`
-	Data         []string         `json:"data"`
-	Vars         []string         `json:"vars,omitempty"`
-	VarDeps      []string         `json:"varDeps,omitempty"`
-	SoftwareDeps dep.SoftwareDeps `json:"softwareDeps,omitempty"`
-	ServiceDeps  []string         `json:"serviceDeps,omitempty"`
-	Fixture      string           `json:"fixture,omitempty"`
-	Timeout      time.Duration    `json:"timeout"`
-	Type         EntityType       `json:"entityType,omitempty"`
-
-	// Bundle is the basename of the executable containing the entity.
-	// Symlinks are not evaluated.
-	Bundle string `json:"bundle,omitempty"`
-}
-
 // EntityInfo converts TestInstance to EntityInfo.
-func (t *TestInstance) EntityInfo() *EntityInfo {
-	return &EntityInfo{
+func (t *TestInstance) EntityInfo() *jsonprotocol.EntityInfo {
+	return &jsonprotocol.EntityInfo{
 		Name:         t.Name,
 		Pkg:          t.Pkg,
 		Desc:         t.Desc,
@@ -546,16 +501,9 @@ func (t *TestInstance) EntityInfo() *EntityInfo {
 	}
 }
 
-// EntityWithRunnabilityInfo is a JSON-serializable description of information of an entity to be used for listing test.
-type EntityWithRunnabilityInfo struct {
-	// See TestInstance for details of the fields.
-	EntityInfo
-	SkipReason string `json:"skipReason"`
-}
-
 // EntityWithRunnabilityInfo converts TestInstance to EntityWithRunnabilityInfo.
-func (t *TestInstance) EntityWithRunnabilityInfo(features *dep.Features) *EntityWithRunnabilityInfo {
-	info := EntityWithRunnabilityInfo{
+func (t *TestInstance) EntityWithRunnabilityInfo(features *dep.Features) *jsonprotocol.EntityWithRunnabilityInfo {
+	info := jsonprotocol.EntityWithRunnabilityInfo{
 		EntityInfo: *t.EntityInfo(),
 	}
 	if features == nil {
@@ -572,7 +520,7 @@ func (t *TestInstance) EntityWithRunnabilityInfo(features *dep.Features) *Entity
 }
 
 // WriteTestsAsJSON marshals ts to JSON and writes the resulting data to w.
-func WriteTestsAsJSON(w io.Writer, ts []*EntityWithRunnabilityInfo) error {
+func WriteTestsAsJSON(w io.Writer, ts []*jsonprotocol.EntityWithRunnabilityInfo) error {
 
 	b, err := json.Marshal(ts)
 	if err != nil {

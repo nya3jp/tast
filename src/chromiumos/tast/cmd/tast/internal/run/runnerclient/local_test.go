@@ -25,7 +25,6 @@ import (
 	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/planner"
 	"chromiumos/tast/internal/runner"
-	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/shutil"
 	"chromiumos/tast/testutil"
 )
@@ -150,7 +149,7 @@ func TestLocalCopyOutput(t *gotesting.T) {
 		case runner.RunTestsMode:
 			mw := control.NewMessageWriter(stdout)
 			mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), TestNames: []string{testName}})
-			mw.WriteMessage(&control.EntityStart{Time: time.Unix(2, 0), Info: testing.EntityInfo{Name: testName}, OutDir: filepath.Join(td.Cfg.LocalOutDir, outName)})
+			mw.WriteMessage(&control.EntityStart{Time: time.Unix(2, 0), Info: jsonprotocol.EntityInfo{Name: testName}, OutDir: filepath.Join(td.Cfg.LocalOutDir, outName)})
 			mw.WriteMessage(&control.EntityEnd{Time: time.Unix(3, 0), Name: testName})
 			mw.WriteMessage(&control.RunEnd{Time: time.Unix(4, 0), OutDir: td.Cfg.LocalOutDir})
 		case runner.ListFixturesMode:
@@ -165,7 +164,7 @@ func TestLocalCopyOutput(t *gotesting.T) {
 		t.Fatal(err)
 	}
 
-	td.Cfg.TestsToRun = []*jsonprotocol.EntityResult{{EntityInfo: testing.EntityInfo{
+	td.Cfg.TestsToRun = []*jsonprotocol.EntityResult{{EntityInfo: jsonprotocol.EntityInfo{
 		Name: testName,
 	}}}
 
@@ -218,7 +217,7 @@ func TestLocalWaitTimeout(t *gotesting.T) {
 
 	// Simulate local_test_runner writing control messages immediately but hanging before exiting.
 	td.RunDelay = time.Minute
-	td.Cfg.TestsToRun = []*jsonprotocol.EntityResult{{EntityInfo: testing.EntityInfo{Name: "pkg.Foo"}}}
+	td.Cfg.TestsToRun = []*jsonprotocol.EntityResult{{EntityInfo: jsonprotocol.EntityInfo{Name: "pkg.Foo"}}}
 	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
 		switch args.Mode {
 		case runner.RunTestsMode:
@@ -252,10 +251,10 @@ func TestLocalMaxFailures(t *gotesting.T) {
 		case runner.RunTestsMode:
 			mw := control.NewMessageWriter(stdout)
 			mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 2})
-			mw.WriteMessage(&control.EntityStart{Time: time.Unix(2, 0), Info: testing.EntityInfo{Name: "t1"}})
-			mw.WriteMessage(&control.EntityError{Time: time.Unix(3, 0), Name: "t1", Error: testing.Error{Reason: "error"}})
+			mw.WriteMessage(&control.EntityStart{Time: time.Unix(2, 0), Info: jsonprotocol.EntityInfo{Name: "t1"}})
+			mw.WriteMessage(&control.EntityError{Time: time.Unix(3, 0), Name: "t1", Error: jsonprotocol.Error{Reason: "error"}})
 			mw.WriteMessage(&control.EntityEnd{Time: time.Unix(4, 0), Name: "t1"})
-			mw.WriteMessage(&control.EntityStart{Time: time.Unix(5, 0), Info: testing.EntityInfo{Name: "t2"}})
+			mw.WriteMessage(&control.EntityStart{Time: time.Unix(5, 0), Info: jsonprotocol.EntityInfo{Name: "t2"}})
 			mw.WriteMessage(&control.EntityEnd{Time: time.Unix(6, 0), Name: "t2"})
 			mw.WriteMessage(&control.RunEnd{Time: time.Unix(7, 0), OutDir: ""})
 		case runner.ListFixturesMode:
@@ -263,7 +262,7 @@ func TestLocalMaxFailures(t *gotesting.T) {
 		}
 		return 0
 	}
-	td.Cfg.TestsToRun = []*jsonprotocol.EntityResult{{EntityInfo: testing.EntityInfo{Name: "pkg.Test"}}}
+	td.Cfg.TestsToRun = []*jsonprotocol.EntityResult{{EntityInfo: jsonprotocol.EntityInfo{Name: "pkg.Test"}}}
 	td.Cfg.MaxTestFailures = 1
 	td.State.FailuresCount = 0
 
@@ -280,7 +279,7 @@ func TestLocalMaxFailures(t *gotesting.T) {
 }
 
 func TestFixturesDependency(t *gotesting.T) {
-	td := fakerunner.NewLocalTestData(t, fakerunner.WithFakeRemoteRunnerData([]*testing.EntityInfo{
+	td := fakerunner.NewLocalTestData(t, fakerunner.WithFakeRemoteRunnerData([]*jsonprotocol.EntityInfo{
 		{Name: "remoteFixt"},
 		{Name: "failFixt"},
 		{Name: "tearDownFailFixt"},
@@ -307,13 +306,13 @@ func TestFixturesDependency(t *gotesting.T) {
 			mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
 		case runner.ListFixturesMode:
 			json.NewEncoder(stdout).Encode(&runner.ListFixturesResult{
-				Fixtures: map[string][]*testing.EntityInfo{
+				Fixtures: map[string][]*jsonprotocol.EntityInfo{
 					"/path/to/cros": {
-						&testing.EntityInfo{Name: "fixt1B", Fixture: "remoteFixt"},
-						&testing.EntityInfo{Name: "fixt2", Fixture: "failFixt"},
-						&testing.EntityInfo{Name: "fixt3A", Fixture: "localFixt"},
-						&testing.EntityInfo{Name: "fixt3B"},
-						&testing.EntityInfo{Name: "localFixt"},
+						&jsonprotocol.EntityInfo{Name: "fixt1B", Fixture: "remoteFixt"},
+						&jsonprotocol.EntityInfo{Name: "fixt2", Fixture: "failFixt"},
+						&jsonprotocol.EntityInfo{Name: "fixt3A", Fixture: "localFixt"},
+						&jsonprotocol.EntityInfo{Name: "fixt3B"},
+						&jsonprotocol.EntityInfo{Name: "localFixt"},
 					},
 				},
 			})
@@ -321,30 +320,30 @@ func TestFixturesDependency(t *gotesting.T) {
 		return 0
 	}
 	td.Cfg.TestsToRun = []*jsonprotocol.EntityResult{
-		{EntityInfo: testing.EntityInfo{
+		{EntityInfo: jsonprotocol.EntityInfo{
 			Bundle:  "cros",
 			Fixture: "remoteFixt",
 			Name:    "pkg.Test1A",
-		}}, {EntityInfo: testing.EntityInfo{
+		}}, {EntityInfo: jsonprotocol.EntityInfo{
 			Bundle:  "cros",
 			Fixture: "fixt1B", // depends on remoteFixt
 			Name:    "pkg.Test1B",
-		}}, {EntityInfo: testing.EntityInfo{
+		}}, {EntityInfo: jsonprotocol.EntityInfo{
 			Bundle:  "cros",
 			Fixture: "fixt2", // depends on failFixt
 			Name:    "pkg.Test2",
-		}}, {EntityInfo: testing.EntityInfo{
+		}}, {EntityInfo: jsonprotocol.EntityInfo{
 			Bundle:  "cros",
 			Fixture: "fixt3A", // depends on localFixt
 			Name:    "pkg.Test3A",
-		}}, {EntityInfo: testing.EntityInfo{
+		}}, {EntityInfo: jsonprotocol.EntityInfo{
 			Bundle:  "cros",
 			Fixture: "fixt3B", // depends on nothing
 			Name:    "pkg.Test3B",
-		}}, {EntityInfo: testing.EntityInfo{
+		}}, {EntityInfo: jsonprotocol.EntityInfo{
 			Bundle: "cros",
 			Name:   "pkg.Test3C",
-		}}, {EntityInfo: testing.EntityInfo{
+		}}, {EntityInfo: jsonprotocol.EntityInfo{
 			Bundle:  "cros",
 			Fixture: "tearDownFailFixt",
 			Name:    "pkg.Test4",
@@ -352,7 +351,7 @@ func TestFixturesDependency(t *gotesting.T) {
 		{
 			// Remote tests should not be used on computing fixtures to run.
 			BundleType: jsonprotocol.RemoteBundle,
-			EntityInfo: testing.EntityInfo{
+			EntityInfo: jsonprotocol.EntityInfo{
 				Bundle:  "cros",
 				Fixture: "shouldNotRun",
 				Name:    "pkg.RemoteTest",

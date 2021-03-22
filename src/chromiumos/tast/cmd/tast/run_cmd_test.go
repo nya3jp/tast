@@ -20,7 +20,6 @@ import (
 	"chromiumos/tast/cmd/tast/internal/logging"
 	"chromiumos/tast/cmd/tast/internal/run"
 	"chromiumos/tast/internal/jsonprotocol"
-	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/testutil"
 )
 
@@ -77,7 +76,7 @@ func TestRunResults(t *gotesting.T) {
 	// As long as results were returned and no run-level errors occurred, success should be reported.
 	wrapper := stubRunWrapper{runRes: []*jsonprotocol.EntityResult{
 		{
-			EntityInfo: testing.EntityInfo{Name: "pkg.LocalTest"},
+			EntityInfo: jsonprotocol.EntityInfo{Name: "pkg.LocalTest"},
 			Errors:     []jsonprotocol.EntityError{{}},
 		},
 	}}
@@ -109,7 +108,7 @@ func TestRunExecFailure(t *gotesting.T) {
 	// If tests fail to be executed, an error should be reported.
 	const msg = "exec failed"
 	wrapper := stubRunWrapper{
-		runRes:    []*jsonprotocol.EntityResult{{EntityInfo: testing.EntityInfo{Name: "pkg.LocalTest"}}},
+		runRes:    []*jsonprotocol.EntityResult{{EntityInfo: jsonprotocol.EntityInfo{Name: "pkg.LocalTest"}}},
 		runStatus: run.Status{ExitCode: subcommands.ExitFailure, ErrorMsg: msg + "\nmore details"},
 	}
 	args := []string{"root@example.net"}
@@ -139,7 +138,7 @@ func TestRunWriteFailure(t *gotesting.T) {
 	// If writing results fails, an error should be reported.
 	const msg = "writing failed"
 	wrapper := stubRunWrapper{
-		runRes:   []*jsonprotocol.EntityResult{{EntityInfo: testing.EntityInfo{Name: "pkg.LocalTest"}}},
+		runRes:   []*jsonprotocol.EntityResult{{EntityInfo: jsonprotocol.EntityInfo{Name: "pkg.LocalTest"}}},
 		writeErr: errors.New(msg),
 	}
 	args := []string{"root@example.net"}
@@ -196,7 +195,7 @@ func TestRunDontWriteResultsForEarlyFailure(t *gotesting.T) {
 
 func TestRunReserveTimeToWriteResults(t *gotesting.T) {
 	wrapper := stubRunWrapper{
-		runRes: []*jsonprotocol.EntityResult{{EntityInfo: testing.EntityInfo{Name: "pkg.Test"}}},
+		runRes: []*jsonprotocol.EntityResult{{EntityInfo: jsonprotocol.EntityInfo{Name: "pkg.Test"}}},
 	}
 	executeRunCmd(t, []string{"-timeout=3600", "root@example.net"}, &wrapper, logging.NewDiscard())
 

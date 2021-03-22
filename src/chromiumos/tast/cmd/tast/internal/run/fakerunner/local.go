@@ -22,6 +22,7 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/internal/bundle"
 	"chromiumos/tast/internal/command"
+	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/planner"
 	"chromiumos/tast/internal/runner"
 	"chromiumos/tast/internal/sshtest"
@@ -195,7 +196,7 @@ type LocalTestData struct {
 }
 
 type localTestDataConfig struct {
-	remoteFixtures       []*testing.EntityInfo
+	remoteFixtures       []*jsonprotocol.EntityInfo
 	fakeRemoteServerData *FakeRemoteServerData
 }
 
@@ -205,7 +206,7 @@ type LocalTestDataOption func(*localTestDataConfig)
 
 // WithFakeRemoteRunnerData is an option that can be passed to NewLocalTestData
 // to specify remote fixture entity data.
-func WithFakeRemoteRunnerData(remoteFixtures []*testing.EntityInfo) LocalTestDataOption {
+func WithFakeRemoteRunnerData(remoteFixtures []*jsonprotocol.EntityInfo) LocalTestDataOption {
 	return func(cfg *localTestDataConfig) {
 		cfg.remoteFixtures = remoteFixtures
 	}
@@ -254,7 +255,7 @@ func NewLocalTestData(t *gotesting.T, opts ...LocalTestDataOption) *LocalTestDat
 
 	// Set up remote runner.
 	b, err := json.Marshal(runner.ListFixturesResult{
-		Fixtures: map[string][]*testing.EntityInfo{
+		Fixtures: map[string][]*jsonprotocol.EntityInfo{
 			"cros": cfg.remoteFixtures,
 		},
 	})

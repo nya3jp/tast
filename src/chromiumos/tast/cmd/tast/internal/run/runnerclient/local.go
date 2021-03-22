@@ -28,7 +28,6 @@ import (
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/rpc"
 	"chromiumos/tast/internal/runner"
-	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/internal/timing"
 	"chromiumos/tast/ssh"
 )
@@ -94,14 +93,14 @@ type bundleTests struct {
 
 type categorizedTests struct {
 	remoteFixt string
-	tests      []*testing.EntityInfo
+	tests      []*jsonprotocol.EntityInfo
 }
 
 // localTestsCategorizer categorizes local by the bundle path and the
 // depending remote fixture in this order. Results are sorted by
 // the bundle name, the depending remote fixture name, and the test name,
 // assuming the input is already sorted by the test name.
-type localTestsCategorizer func([]*testing.EntityInfo) ([]*bundleTests, error)
+type localTestsCategorizer func([]*jsonprotocol.EntityInfo) ([]*bundleTests, error)
 
 // newLocalTestsCategorizer creates a function which categorizes given local
 // tests by the bundle name and the remote fixture name tests depend on.
@@ -197,12 +196,12 @@ func newLocalTestsCategorizer(ctx context.Context, cfg *config.Config, hst *ssh.
 		return dependingRemoteFixture(bundle, p)
 	}
 
-	categorizeLocalTests := func(localTests []*testing.EntityInfo) ([]*bundleTests, error) {
+	categorizeLocalTests := func(localTests []*jsonprotocol.EntityInfo) ([]*bundleTests, error) {
 		// bundle -> depending remote fixture -> tests
-		resMap := make(map[string]map[string][]*testing.EntityInfo)
+		resMap := make(map[string]map[string][]*jsonprotocol.EntityInfo)
 		for _, t := range localTests {
 			if resMap[t.Bundle] == nil {
-				resMap[t.Bundle] = make(map[string][]*testing.EntityInfo)
+				resMap[t.Bundle] = make(map[string][]*jsonprotocol.EntityInfo)
 			}
 			rf, err := dependingRemoteFixture(t.Bundle, t.Fixture)
 			if err != nil {
@@ -402,7 +401,7 @@ func RunLocalTests(ctx context.Context, cfg *config.Config, state *config.State,
 		return nil, err
 	}
 
-	var tests []*testing.EntityInfo
+	var tests []*jsonprotocol.EntityInfo
 	for _, t := range cfg.TestsToRun {
 		if t.BundleType == jsonprotocol.LocalBundle {
 			tests = append(tests, &t.EntityInfo)

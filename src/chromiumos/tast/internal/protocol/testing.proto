@@ -1,0 +1,46 @@
+// Copyright 2021 The Chromium OS Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package tast.core;
+
+import "google/protobuf/duration.proto";
+
+option go_package = "chromiumos/tast/internal/protocol";
+
+enum EntityType {
+  TEST = 0;
+  FIXTURE = 1;
+}
+
+message Entity {
+  EntityType type = 1;
+  string name = 2;
+  string package = 3;
+  repeated string attributes = 4;
+  string description = 5;
+  string fixture = 6;
+  EntityDependencies dependencies = 7;
+  EntityContacts contacts = 8;
+  EntityLegacyData legacy_data = 9;
+}
+
+message EntityContacts {
+  repeated string emails = 1;
+}
+
+message EntityDependencies {
+  repeated string data_files = 1;
+  repeated string services = 2;
+}
+
+message EntityLegacyData {
+  string description = 1;
+  google.protobuf.Duration timeout = 2;
+  repeated string variables = 3;
+  repeated string variable_deps = 4;
+  repeated string software_deps = 5;
+  string bundle = 6;
+}

@@ -22,6 +22,7 @@ import (
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/dep"
 	"chromiumos/tast/internal/jsonprotocol"
+	"chromiumos/tast/internal/protocol"
 )
 
 const (
@@ -498,6 +499,32 @@ func (t *TestInstance) EntityInfo() *jsonprotocol.EntityInfo {
 		Timeout:      t.Timeout,
 
 		Bundle: filepath.Base(os.Args[0]),
+	}
+}
+
+func (t *TestInstance) EntityProto() *protocol.Entity {
+	return &protocol.Entity{
+		Type:        protocol.EntityType_TEST,
+		Name:        t.Name,
+		Package:     t.Pkg,
+		Attributes:  append([]string(nil), t.Attr...),
+		Description: t.Desc,
+		Fixture:     t.Fixture,
+		Dependencies: &protocol.EntityDependencies{
+			DataFiles: append([]string(nil), t.Data...),
+			Services:  append([]string(nil), t.ServiceDeps...),
+		},
+		Contacts: &protocol.EntityContacts{
+			Emails: append([]string(nil), t.Contacts...),
+		},
+		LegacyData: &protocol.EntityLegacyData{
+			Description:  t.Desc,
+			Timeout:      nil,
+			Variables:    append([]string(nil), t.Vars...),
+			VariableDeps: append([]string(nil), t.VarDeps...),
+			SoftwareDeps: append([]string(nil), t.SoftwareDeps...),
+			Bundle:       filepath.Base(os.Args[0]),
+		},
 	}
 }
 

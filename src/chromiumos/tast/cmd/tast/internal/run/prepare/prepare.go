@@ -203,9 +203,7 @@ func pushAll(ctx context.Context, cfg *config.Config, state *config.State, hst *
 		return fmt.Errorf("failed to get data file list: %v", err)
 	}
 	if len(paths) > 0 {
-		pkg := path.Join(build.LocalBundlePkgPathPrefix, cfg.BuildBundle)
-		destDir := filepath.Join(cfg.LocalDataDir, pkg)
-		if err := pushDataFiles(ctx, cfg, hst, destDir, paths); err != nil {
+		if err := pushDataFiles(ctx, cfg, hst, cfg.LocalDataDir, paths); err != nil {
 			return fmt.Errorf("failed to push data files: %v", err)
 		}
 	}
@@ -240,8 +238,9 @@ func pushExecutables(ctx context.Context, cfg *config.Config, hst *ssh.Conn, tar
 	return nil
 }
 
-// getDataFilePaths returns the paths to data files needed for running cfg.Patterns on hst.
-// The returned paths are relative to the test bundle directory, i.e. they take the form "<category>/data/<filename>".
+// getDataFilePaths returns the paths to data files needed for running
+// cfg.Patterns on hst. The returned paths are relative to the package root,
+// e.g. "chromiumos/tast/local/bundle/<bundle>/<category>/data/<filename>".
 func getDataFilePaths(ctx context.Context, cfg *config.Config, state *config.State, hst *ssh.Conn) (
 	paths []string, err error) {
 	ctx, st := timing.Start(ctx, "get_data_paths")
@@ -267,13 +266,11 @@ func getDataFilePaths(ctx context.Context, cfg *config.Config, state *config.Sta
 			if !strings.HasPrefix(full, bundlePath+"/") {
 				return nil, fmt.Errorf("data file path %q escapes base dir", full)
 			}
-			// Get the file's path relative to the bundle dir.
-			rel := full[len(bundlePath)+1:]
-			if _, ok := seenPaths[rel]; ok {
+			if _, ok := seenPaths[full]; ok {
 				continue
 			}
-			paths = append(paths, rel)
-			seenPaths[rel] = struct{}{}
+			paths = append(paths, full)
+			seenPaths[full] = struct{}{}
 		}
 	}
 
@@ -281,9 +278,10 @@ func getDataFilePaths(ctx context.Context, cfg *config.Config, state *config.Sta
 	return paths, nil
 }
 
-// pushDataFiles copies the listed test data files to destDir on hst.
-// destDir is the data directory for this bundle, e.g. "/usr/share/tast/data/local/chromiumos/tast/local/bundles/cros".
-// The file paths are relative to the test bundle dir, i.e. paths take the form "<category>/data/<filename>".
+// pushDataFiles copies the listed entity data files to destDir on hst.
+// destDir is the data directory for Tast, e.g. "/usr/share/tast/data/local".
+// The file paths are relative to the package root, i.e. paths take the form
+// "chromiumos/tast/local/bundle/cros/<category>/data/<filename>".
 // Otherwise, files will be copied from cfg.BuildWorkspace.
 func pushDataFiles(ctx context.Context, cfg *config.Config, hst *ssh.Conn, destDir string, paths []string) error {
 	ctx, st := timing.Start(ctx, "push_data")
@@ -291,7 +289,7 @@ func pushDataFiles(ctx context.Context, cfg *config.Config, hst *ssh.Conn, destD
 
 	cfg.Logger.Log("Pushing data files to target")
 
-	srcDir := filepath.Join(cfg.BuildWorkspace, "src", build.LocalBundlePkgPathPrefix, cfg.BuildBundle)
+	srcDir := filepath.Join(cfg.BuildWorkspace, "src")
 
 	// All paths are relative to the bundle dir.
 	var copyPaths, delPaths, missingPaths []string

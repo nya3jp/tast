@@ -204,7 +204,7 @@ func (st *FixtureStack) Push(ctx context.Context, fixt *testing.Fixture) error {
 		FixtCtx:      ctx,
 	}
 
-	root := testing.NewEntityRoot(ce, ei, rcfg, fout)
+	root := testing.NewEntityRoot(ce, fixt.Constraints(), rcfg, fout)
 	f := newStatefulFixture(fixt, root, fout, st.cfg)
 	st.stack = append(st.stack, f)
 

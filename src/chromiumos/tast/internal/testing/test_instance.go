@@ -473,6 +473,13 @@ func (t *TestInstance) Proto() *testpb.Test {
 	return &r
 }
 
+// Constraints returns EntityConstraints for this test.
+func (t *TestInstance) Constraints() *EntityConstraints {
+	return &EntityConstraints{
+		vars: append([]string(nil), t.Vars...),
+	}
+}
+
 // EntityType represents a type of an entity.
 type EntityType int
 

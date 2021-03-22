@@ -18,6 +18,6 @@ const (
 //
 // Main function of remote test bundles should call RemoteDefault instead.
 func Remote(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, d Delegate) int {
-	args, cfg := newArgsAndRunConfig(remoteTestTimeout, "", d)
+	args, cfg := newArgsAndStaticConfig(remoteTestTimeout, "", d)
 	return run(context.Background(), clArgs, stdin, stdout, stderr, args, cfg, remoteBundle)
 }

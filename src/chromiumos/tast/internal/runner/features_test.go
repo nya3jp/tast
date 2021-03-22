@@ -11,6 +11,8 @@ import (
 	"reflect"
 	"testing"
 
+	"go.chromium.org/chromiumos/infra/proto/go/device"
+
 	"chromiumos/tast/autocaps"
 	"chromiumos/tast/internal/dep"
 	"chromiumos/tast/testutil"
@@ -243,6 +245,36 @@ func TestGetDiskSize(t *testing.T) {
 		}
 		if r != tc.expectedSize {
 			t.Errorf("Got %d, want %d; input=%s", r, tc.expectedSize, string(tc.input))
+		}
+	}
+}
+
+func TestFindIntelSOC(t *testing.T) {
+	lscpu := func(cpuFamily, model, modelName string) *lscpuResult {
+		return &lscpuResult{
+			Entries: []lscpuEntry{
+				{Field: "CPU family:", Data: cpuFamily},
+				{Field: "Model:", Data: model},
+				{Field: "Model name:", Data: modelName},
+			},
+		}
+	}
+	testCases := []struct {
+		input *lscpuResult
+		soc   device.Config_SOC
+	}{
+		{
+			lscpu("6", "142", "Intel(R) Core(TM) m3-8100Y CPU @ 1.10GHz"),
+			device.Config_SOC_AMBERLAKE_Y,
+		},
+	}
+	for _, tc := range testCases {
+		r, err := findIntelSOC(tc.input)
+		if err != nil {
+			t.Errorf("Failed to find Intel SoC for %v: %s", *tc.input, err)
+		}
+		if r != tc.soc {
+			t.Errorf("Got %s, want %s: input=%v", r, tc.soc, *tc.input)
 		}
 	}
 }

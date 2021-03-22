@@ -67,8 +67,8 @@ func (r *Registry) AddService(s *Service) error {
 	return nil
 }
 
-// AddFixture adds f to the registry.
-func (r *Registry) AddFixture(f *Fixture) error {
+// addFixture adds f to the registry.
+func (r *Registry) addFixture(f *Fixture) error {
 	if err := validateFixture(f); err != nil {
 		return err
 	}

@@ -34,7 +34,7 @@ import (
 	"sync"
 	"time"
 
-	"chromiumos/tast/internal/testing"
+	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/timing"
 )
 
@@ -76,7 +76,7 @@ type RunError struct {
 	// Time is the device-local time at which the error occurred.
 	Time time.Time `json:"runErrorTime"`
 	// Error describes the error that occurred.
-	Error testing.Error `json:"runErrorError"`
+	Error jsonprotocol.Error `json:"runErrorError"`
 	// Status is the exit status code of the test runner if it is run directly.
 	Status int `json:"runErrorStatus"`
 }
@@ -100,7 +100,7 @@ type EntityStart struct {
 	// Time is the device-local time at which the entity started.
 	Time time.Time `json:"testStartTime"`
 	// Info contains details about the entity.
-	Info testing.EntityInfo `json:"testStartTest"`
+	Info jsonprotocol.EntityInfo `json:"testStartTest"`
 	// OutDir is a directory path where output files for the entity is written.
 	// OutDir can be empty if the entity is being skipped.
 	// When set, OutDir is a direct subdirectory of bundle.RunTestsArgs.OutDir.
@@ -126,7 +126,7 @@ type EntityError struct {
 	// Time is the device-local time at which the error occurred.
 	Time time.Time `json:"testErrorTime"`
 	// Error describes the error that occurred.
-	Error testing.Error `json:"testErrorError"`
+	Error jsonprotocol.Error `json:"testErrorError"`
 	// Name is the name of the entity, matching the earlier EntityStart.Test.Name.
 	Name string `json:"testErrorName"`
 }

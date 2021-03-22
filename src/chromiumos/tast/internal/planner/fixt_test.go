@@ -16,6 +16,7 @@ import (
 
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/control"
+	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/testutil"
@@ -525,14 +526,14 @@ func TestFixtureStackErrors(t *gotesting.T) {
 		return stack.Pop(ctx)
 	}
 
-	wantErrs := []*testing.Error{
+	wantErrs := []*jsonprotocol.Error{
 		{Reason: "[Fixture failure] fixt.Red1: Setup failure 1"},
 		{Reason: "[Fixture failure] fixt.Red1: Setup failure 2"},
 	}
 
 	for i, step := range []struct {
 		f    func() error
-		want []*testing.Error
+		want []*jsonprotocol.Error
 	}{
 		{pushGreen, nil},
 		{pushRed, wantErrs},
@@ -545,7 +546,7 @@ func TestFixtureStackErrors(t *gotesting.T) {
 			t.Fatalf("Step %d: %v", i, err)
 		}
 		got := stack.Errors()
-		if diff := cmp.Diff(got, step.want, cmpopts.IgnoreFields(testing.Error{}, "File", "Line", "Stack")); diff != "" {
+		if diff := cmp.Diff(got, step.want, cmpopts.IgnoreFields(jsonprotocol.Error{}, "File", "Line", "Stack")); diff != "" {
 			t.Fatalf("Step %d: Errors mismatch (-got +want):\n%s", i, diff)
 		}
 	}
@@ -618,11 +619,11 @@ func TestFixtureStackOutputGreen(t *gotesting.T) {
 	}
 
 	want := []control.Msg{
-		&control.EntityStart{Info: testing.EntityInfo{Name: "fixt1", Type: testing.EntityFixture, Bundle: bundleName}},
+		&control.EntityStart{Info: jsonprotocol.EntityInfo{Name: "fixt1", Type: jsonprotocol.EntityFixture, Bundle: bundleName}},
 		&control.EntityLog{Name: "fixt1", Text: "SetUp 1 via Context"},
 		&control.EntityLog{Name: "fixt1", Text: "SetUp 1 via Fixture-scoped Context"},
 		&control.EntityLog{Name: "fixt1", Text: "SetUp 1 via State"},
-		&control.EntityStart{Info: testing.EntityInfo{Name: "fixt2", Type: testing.EntityFixture, Bundle: bundleName}},
+		&control.EntityStart{Info: jsonprotocol.EntityInfo{Name: "fixt2", Type: jsonprotocol.EntityFixture, Bundle: bundleName}},
 		&control.EntityLog{Name: "fixt2", Text: "SetUp 2 via Context"},
 		&control.EntityLog{Name: "fixt2", Text: "SetUp 2 via Fixture-scoped Context"},
 		&control.EntityLog{Name: "fixt2", Text: "SetUp 2 via State"},
@@ -707,11 +708,11 @@ func TestFixtureStackOutputRed(t *gotesting.T) {
 	}
 
 	want := []control.Msg{
-		&control.EntityStart{Info: testing.EntityInfo{Name: "fixt1", Type: testing.EntityFixture, Bundle: bundleName}},
+		&control.EntityStart{Info: jsonprotocol.EntityInfo{Name: "fixt1", Type: jsonprotocol.EntityFixture, Bundle: bundleName}},
 		&control.EntityLog{Name: "fixt1", Text: "SetUp 1"},
-		&control.EntityStart{Info: testing.EntityInfo{Name: "fixt2", Type: testing.EntityFixture, Bundle: bundleName}},
+		&control.EntityStart{Info: jsonprotocol.EntityInfo{Name: "fixt2", Type: jsonprotocol.EntityFixture, Bundle: bundleName}},
 		&control.EntityLog{Name: "fixt2", Text: "SetUp 2"},
-		&control.EntityError{Name: "fixt2", Error: testing.Error{Reason: "SetUp 2 failure"}},
+		&control.EntityError{Name: "fixt2", Error: jsonprotocol.Error{Reason: "SetUp 2 failure"}},
 		&control.EntityEnd{Name: "fixt2"},
 		&control.EntityLog{Name: "fixt1", Text: "TearDown 1"},
 		&control.EntityEnd{Name: "fixt1"},
@@ -778,11 +779,11 @@ func TestFixtureStackOutputYellow(t *gotesting.T) {
 	}
 
 	want := []control.Msg{
-		&control.EntityStart{Info: testing.EntityInfo{Name: "fixt1", Type: testing.EntityFixture, Bundle: bundleName}},
+		&control.EntityStart{Info: jsonprotocol.EntityInfo{Name: "fixt1", Type: jsonprotocol.EntityFixture, Bundle: bundleName}},
 		&control.EntityLog{Name: "fixt1", Text: "SetUp 1"},
-		&control.EntityStart{Info: testing.EntityInfo{Name: "fixt2", Type: testing.EntityFixture, Bundle: bundleName}},
+		&control.EntityStart{Info: jsonprotocol.EntityInfo{Name: "fixt2", Type: jsonprotocol.EntityFixture, Bundle: bundleName}},
 		&control.EntityLog{Name: "fixt2", Text: "SetUp 2"},
-		&control.EntityStart{Info: testing.EntityInfo{Name: "fixt3", Type: testing.EntityFixture, Bundle: bundleName}},
+		&control.EntityStart{Info: jsonprotocol.EntityInfo{Name: "fixt3", Type: jsonprotocol.EntityFixture, Bundle: bundleName}},
 		&control.EntityLog{Name: "fixt3", Text: "SetUp 3"},
 		&control.EntityLog{Name: "fixt1", Text: "Reset 1"},
 		&control.EntityLog{Name: "fixt2", Text: "Reset 2"},

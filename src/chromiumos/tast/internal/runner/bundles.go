@@ -28,12 +28,12 @@ import (
 	"chromiumos/tast/internal/bundle"
 	"chromiumos/tast/internal/command"
 	"chromiumos/tast/internal/devserver"
+	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/testcontext"
-	"chromiumos/tast/internal/testing"
 )
 
 // getBundlesAndTests returns matched tests and paths to the bundles containing them.
-func getBundlesAndTests(args *Args) (bundles []string, tests []*testing.EntityWithRunnabilityInfo, err *command.StatusError) {
+func getBundlesAndTests(args *Args) (bundles []string, tests []*jsonprotocol.EntityWithRunnabilityInfo, err *command.StatusError) {
 	var glob string
 	switch args.Mode {
 	case RunTestsMode:
@@ -75,14 +75,14 @@ func getBundles(glob string) ([]string, *command.StatusError) {
 
 type testsOrError struct {
 	bundle string
-	tests  []*testing.EntityWithRunnabilityInfo
+	tests  []*jsonprotocol.EntityWithRunnabilityInfo
 	err    *command.StatusError
 }
 
 // getTests returns tests in bundles matched by args.Patterns. It does this by executing
 // each bundle to ask it to marshal and print its tests. A slice of paths to bundles
 // with matched tests is also returned.
-func getTests(args *Args, bundles []string) (tests []*testing.EntityWithRunnabilityInfo,
+func getTests(args *Args, bundles []string) (tests []*jsonprotocol.EntityWithRunnabilityInfo,
 	bundlesWithTests []string, statusErr *command.StatusError) {
 	bundleArgs, err := args.bundleArgs(bundle.ListTestsMode)
 	if err != nil {
@@ -99,7 +99,7 @@ func getTests(args *Args, bundles []string) (tests []*testing.EntityWithRunnabil
 				ch <- testsOrError{bundle, nil, err}
 				return
 			}
-			ts := make([]*testing.EntityWithRunnabilityInfo, 0)
+			ts := make([]*jsonprotocol.EntityWithRunnabilityInfo, 0)
 			if err := json.Unmarshal(out.Bytes(), &ts); err != nil {
 				ch <- testsOrError{bundle, nil,
 					command.NewStatusErrorf(statusBundleFailed, "bundle %v gave bad output: %v", bundle, err)}
@@ -110,7 +110,7 @@ func getTests(args *Args, bundles []string) (tests []*testing.EntityWithRunnabil
 	}
 
 	// Read results into a map from bundle to that bundle's tests.
-	bundleTests := make(map[string][]*testing.EntityWithRunnabilityInfo)
+	bundleTests := make(map[string][]*jsonprotocol.EntityWithRunnabilityInfo)
 	for i := 0; i < len(bundles); i++ {
 		toe := <-ch
 		if toe.err != nil {
@@ -134,10 +134,10 @@ func getTests(args *Args, bundles []string) (tests []*testing.EntityWithRunnabil
 
 // listFixtures returns listFixtures in bundles. It does this by executing
 // each bundle to ask it to marshal and print them.
-func listFixtures(bundleGlob string) (map[string][]*testing.EntityInfo, *command.StatusError) {
+func listFixtures(bundleGlob string) (map[string][]*jsonprotocol.EntityInfo, *command.StatusError) {
 	type fixturesOrError struct {
 		bundle string
-		fs     []*testing.EntityInfo
+		fs     []*jsonprotocol.EntityInfo
 		err    *command.StatusError
 	}
 
@@ -160,8 +160,8 @@ func listFixtures(bundleGlob string) (map[string][]*testing.EntityInfo, *command
 				return
 			}
 
-			fs, err := func() ([]*testing.EntityInfo, *command.StatusError) {
-				var fs []*testing.EntityInfo
+			fs, err := func() ([]*jsonprotocol.EntityInfo, *command.StatusError) {
+				var fs []*jsonprotocol.EntityInfo
 				if err := json.Unmarshal(out.Bytes(), &fs); err != nil {
 					return nil, command.NewStatusErrorf(statusBundleFailed, "bundle %v gave bad output: %v", bundle, err)
 				}
@@ -171,7 +171,7 @@ func listFixtures(bundleGlob string) (map[string][]*testing.EntityInfo, *command
 		}()
 	}
 
-	bundleFixts := make(map[string][]*testing.EntityInfo)
+	bundleFixts := make(map[string][]*jsonprotocol.EntityInfo)
 	for i := 0; i < len(bundles); i++ {
 		foe := <-ch
 		if foe.err != nil {

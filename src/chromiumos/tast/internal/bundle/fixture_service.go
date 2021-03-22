@@ -15,6 +15,7 @@ import (
 	"google.golang.org/grpc"
 
 	"chromiumos/tast/internal/dep"
+	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/planner"
 	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/testing"
@@ -195,7 +196,7 @@ func (l *fixtureServiceLogger) Log(msg string) error {
 	})
 }
 
-func (l *fixtureServiceLogger) Error(e *testing.Error) error {
+func (l *fixtureServiceLogger) Error(e *jsonprotocol.Error) error {
 	return l.stream.Send(&RunFixtureResponse{
 		Control: &RunFixtureResponse_Error{
 			Error: &RunFixtureError{
@@ -209,18 +210,18 @@ func (l *fixtureServiceLogger) Error(e *testing.Error) error {
 	})
 }
 
-func (l *fixtureServiceLogger) EntityStart(ei *testing.EntityInfo, outDir string) error {
+func (l *fixtureServiceLogger) EntityStart(ei *jsonprotocol.EntityInfo, outDir string) error {
 	return nil
 }
 
-func (l *fixtureServiceLogger) EntityLog(ei *testing.EntityInfo, msg string) error {
+func (l *fixtureServiceLogger) EntityLog(ei *jsonprotocol.EntityInfo, msg string) error {
 	return l.Log(msg)
 }
 
-func (l *fixtureServiceLogger) EntityError(ei *testing.EntityInfo, e *testing.Error) error {
+func (l *fixtureServiceLogger) EntityError(ei *jsonprotocol.EntityInfo, e *jsonprotocol.Error) error {
 	return l.Error(e)
 }
 
-func (l *fixtureServiceLogger) EntityEnd(ei *testing.EntityInfo, skipReasons []string, timingLog *timing.Log) error {
+func (l *fixtureServiceLogger) EntityEnd(ei *jsonprotocol.EntityInfo, skipReasons []string, timingLog *timing.Log) error {
 	return nil
 }

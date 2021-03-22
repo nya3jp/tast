@@ -12,11 +12,10 @@ import (
 	"github.com/google/go-cmp/cmp"
 
 	"chromiumos/tast/internal/jsonprotocol"
-	"chromiumos/tast/internal/testing"
 )
 
 func TestMarshal(t *gotesting.T) {
-	passedTest := testing.EntityInfo{
+	passedTest := jsonprotocol.EntityInfo{
 		Name:    "example.Pass",
 		Pkg:     "chromiumos/tast/local/bundles/cros/example",
 		Desc:    "Passed test",
@@ -51,7 +50,7 @@ func TestMarshal(t *gotesting.T) {
 			EntityInfo: failedTest,
 			Errors: []jsonprotocol.EntityError{
 				{
-					Error: testing.Error{
+					Error: jsonprotocol.Error{
 						File:   "/home/user/trunk/src/platform/tast/src/chromiumos/tast/internal/planner/run.go",
 						Line:   829,
 						Reason: "unknown SoftwareDeps: android",

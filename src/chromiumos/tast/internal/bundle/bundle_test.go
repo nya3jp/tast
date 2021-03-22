@@ -26,6 +26,7 @@ import (
 	"chromiumos/tast/internal/control"
 	"chromiumos/tast/internal/devserver/devservertest"
 	"chromiumos/tast/internal/extdata"
+	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/sshtest"
 	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/testing"
@@ -349,7 +350,7 @@ func TestRunTestsMissingDeps(t *gotesting.T) {
 
 	// Read through the control messages to get test results.
 	var testName string
-	testFailed := make(map[string][]testing.Error)
+	testFailed := make(map[string][]jsonprotocol.Error)
 	testSkipped := make(map[string]bool)
 	r := control.NewMessageReader(stdout)
 	for r.More() {
@@ -708,7 +709,7 @@ func TestRunList(t *gotesting.T) {
 		testing.AddTestInstance(test)
 	}
 
-	var infos []*testing.EntityWithRunnabilityInfo
+	var infos []*jsonprotocol.EntityWithRunnabilityInfo
 	for _, test := range tests {
 		infos = append(infos, test.EntityWithRunnabilityInfo(nil))
 	}
@@ -783,7 +784,7 @@ func TestRunListWithDep(t *gotesting.T) {
 		&Args{}, &staticConfig{}, localBundle); status != statusSuccess {
 		t.Fatalf("run() returned status %v; want %v", status, statusSuccess)
 	}
-	var ts []testing.EntityWithRunnabilityInfo
+	var ts []jsonprotocol.EntityWithRunnabilityInfo
 	if err := json.Unmarshal(stdout.Bytes(), &ts); err != nil {
 		t.Fatalf("unmarshal output %q: %v", stdout.String(), err)
 	}
@@ -827,16 +828,16 @@ func TestRunListFixtures(t *gotesting.T) {
 		t.Fatalf("run() = %v, want %v", status, statusSuccess)
 	}
 
-	got := make([]*testing.EntityInfo, 0)
+	got := make([]*jsonprotocol.EntityInfo, 0)
 	if err := json.Unmarshal(stdout.Bytes(), &got); err != nil {
 		t.Fatalf("json.Unmarshal(%q): %v", stdout.String(), err)
 	}
 	bundle := filepath.Base(os.Args[0])
-	want := []*testing.EntityInfo{
-		{Type: testing.EntityFixture, Name: "a", Bundle: bundle},
-		{Type: testing.EntityFixture, Name: "b", Fixture: "a", Bundle: bundle},
-		{Type: testing.EntityFixture, Name: "c", Bundle: bundle},
-		{Type: testing.EntityFixture, Name: "d", Bundle: bundle},
+	want := []*jsonprotocol.EntityInfo{
+		{Type: jsonprotocol.EntityFixture, Name: "a", Bundle: bundle},
+		{Type: jsonprotocol.EntityFixture, Name: "b", Fixture: "a", Bundle: bundle},
+		{Type: jsonprotocol.EntityFixture, Name: "c", Bundle: bundle},
+		{Type: jsonprotocol.EntityFixture, Name: "d", Bundle: bundle},
 	}
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Output mismatch (-got +want): %v", diff)

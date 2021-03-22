@@ -17,7 +17,7 @@ import (
 
 	"chromiumos/tast/cmd/tast/internal/logging"
 	"chromiumos/tast/cmd/tast/internal/run/config"
-	"chromiumos/tast/internal/testing"
+	"chromiumos/tast/internal/jsonprotocol"
 )
 
 // listCmd implements subcommands.Command to support listing tests.
@@ -66,7 +66,7 @@ func (lc *listCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{
 		panic("logger not attached to context")
 	}
 
-	var tests []*testing.EntityInfo
+	var tests []*jsonprotocol.EntityInfo
 
 	if len(f.Args()) == 0 {
 		lg.Log("Missing target.\n\n" + lc.Usage())
@@ -87,7 +87,7 @@ func (lc *listCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{
 		os.Stderr.Write(b.Bytes())
 		return status.ExitCode
 	}
-	tests = make([]*testing.EntityInfo, len(results))
+	tests = make([]*jsonprotocol.EntityInfo, len(results))
 	for i := range results {
 		tests[i] = &results[i].EntityInfo
 	}
@@ -100,7 +100,7 @@ func (lc *listCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{
 }
 
 // printTests writes the supplied tests to lc.stdout.
-func (lc *listCmd) printTests(tests []*testing.EntityInfo) error {
+func (lc *listCmd) printTests(tests []*jsonprotocol.EntityInfo) error {
 	if lc.json {
 		enc := json.NewEncoder(lc.stdout)
 		enc.SetIndent("", "  ")

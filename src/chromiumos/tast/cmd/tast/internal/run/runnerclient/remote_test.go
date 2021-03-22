@@ -23,7 +23,6 @@ import (
 	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/planner"
 	"chromiumos/tast/internal/runner"
-	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/testutil"
 )
 
@@ -51,7 +50,7 @@ func TestRemoteRun(t *gotesting.T) {
 	b := bytes.Buffer{}
 	mw := control.NewMessageWriter(&b)
 	mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 1})
-	mw.WriteMessage(&control.EntityStart{Time: time.Unix(2, 0), Info: testing.EntityInfo{Name: testName}})
+	mw.WriteMessage(&control.EntityStart{Time: time.Unix(2, 0), Info: jsonprotocol.EntityInfo{Name: testName}})
 	mw.WriteMessage(&control.EntityEnd{Time: time.Unix(3, 0), Name: testName})
 	mw.WriteMessage(&control.RunEnd{Time: time.Unix(4, 0), OutDir: ""})
 
@@ -137,7 +136,7 @@ func TestRemoteRunCopyOutput(t *gotesting.T) {
 	b := bytes.Buffer{}
 	mw := control.NewMessageWriter(&b)
 	mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 1})
-	mw.WriteMessage(&control.EntityStart{Time: time.Unix(2, 0), Info: testing.EntityInfo{Name: testName}, OutDir: filepath.Join(outDir, outName)})
+	mw.WriteMessage(&control.EntityStart{Time: time.Unix(2, 0), Info: jsonprotocol.EntityInfo{Name: testName}, OutDir: filepath.Join(outDir, outName)})
 	mw.WriteMessage(&control.EntityEnd{Time: time.Unix(3, 0), Name: testName})
 	mw.WriteMessage(&control.RunEnd{Time: time.Unix(4, 0), OutDir: outDir})
 
@@ -195,10 +194,10 @@ func TestRemoteMaxFailures(t *gotesting.T) {
 	b := bytes.Buffer{}
 	mw := control.NewMessageWriter(&b)
 	mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 2})
-	mw.WriteMessage(&control.EntityStart{Time: time.Unix(2, 0), Info: testing.EntityInfo{Name: "t1"}})
-	mw.WriteMessage(&control.EntityError{Time: time.Unix(3, 0), Name: "t1", Error: testing.Error{Reason: "error"}})
+	mw.WriteMessage(&control.EntityStart{Time: time.Unix(2, 0), Info: jsonprotocol.EntityInfo{Name: "t1"}})
+	mw.WriteMessage(&control.EntityError{Time: time.Unix(3, 0), Name: "t1", Error: jsonprotocol.Error{Reason: "error"}})
 	mw.WriteMessage(&control.EntityEnd{Time: time.Unix(4, 0), Name: "t1"})
-	mw.WriteMessage(&control.EntityStart{Time: time.Unix(5, 0), Info: testing.EntityInfo{Name: "t2"}})
+	mw.WriteMessage(&control.EntityStart{Time: time.Unix(5, 0), Info: jsonprotocol.EntityInfo{Name: "t2"}})
 	mw.WriteMessage(&control.EntityEnd{Time: time.Unix(6, 0), Name: "t2"})
 	mw.WriteMessage(&control.RunEnd{Time: time.Unix(7, 0), OutDir: ""})
 

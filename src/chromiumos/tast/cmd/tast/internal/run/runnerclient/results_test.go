@@ -28,7 +28,6 @@ import (
 	"chromiumos/tast/internal/control"
 	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/runner"
-	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/internal/timing"
 	"chromiumos/tast/testutil"
 )
@@ -102,13 +101,13 @@ func TestReadTestOutput(t *gotesting.T) {
 	mw := control.NewMessageWriter(&b)
 	mw.WriteMessage(&control.RunStart{Time: runStartTime, TestNames: []string{test1Name, test2Name, test3Name}, NumTests: 3})
 	mw.WriteMessage(&control.RunLog{Time: runLogTime, Text: runLogText})
-	mw.WriteMessage(&control.EntityStart{Time: test1StartTime, Info: testing.EntityInfo{Name: test1Name, Desc: test1Desc}, OutDir: filepath.Join(outDir, test1Name)})
+	mw.WriteMessage(&control.EntityStart{Time: test1StartTime, Info: jsonprotocol.EntityInfo{Name: test1Name, Desc: test1Desc}, OutDir: filepath.Join(outDir, test1Name)})
 	mw.WriteMessage(&control.EntityLog{Time: test1LogTime, Name: test1Name, Text: test1LogText})
 	mw.WriteMessage(&control.EntityEnd{Time: test1EndTime, Name: test1Name})
-	mw.WriteMessage(&control.EntityStart{Time: test2StartTime, Info: testing.EntityInfo{Name: test2Name, Desc: test2Desc}, OutDir: filepath.Join(outDir, test2Name)})
-	mw.WriteMessage(&control.EntityError{Time: test2ErrorTime, Name: test2Name, Error: testing.Error{Reason: test2ErrorReason, File: test2ErrorFile, Line: test2ErrorLine, Stack: test2ErrorStack}})
+	mw.WriteMessage(&control.EntityStart{Time: test2StartTime, Info: jsonprotocol.EntityInfo{Name: test2Name, Desc: test2Desc}, OutDir: filepath.Join(outDir, test2Name)})
+	mw.WriteMessage(&control.EntityError{Time: test2ErrorTime, Name: test2Name, Error: jsonprotocol.Error{Reason: test2ErrorReason, File: test2ErrorFile, Line: test2ErrorLine, Stack: test2ErrorStack}})
 	mw.WriteMessage(&control.EntityEnd{Time: test2EndTime, Name: test2Name})
-	mw.WriteMessage(&control.EntityStart{Time: test3StartTime, Info: testing.EntityInfo{Name: test3Name, Desc: test3Desc}})
+	mw.WriteMessage(&control.EntityStart{Time: test3StartTime, Info: jsonprotocol.EntityInfo{Name: test3Name, Desc: test3Desc}})
 	mw.WriteMessage(&control.EntityEnd{Time: test3EndTime, Name: test3Name, SkipReasons: []string{skipReason}})
 	mw.WriteMessage(&control.RunEnd{Time: runEndTime, OutDir: outDir})
 
@@ -136,17 +135,17 @@ func TestReadTestOutput(t *gotesting.T) {
 
 	expRes := []*jsonprotocol.EntityResult{
 		{
-			EntityInfo: testing.EntityInfo{Name: test1Name, Desc: test1Desc},
+			EntityInfo: jsonprotocol.EntityInfo{Name: test1Name, Desc: test1Desc},
 			Start:      test1StartTime,
 			End:        test1EndTime,
 			OutDir:     filepath.Join(cfg.ResDir, testLogsDir, test1Name),
 		},
 		{
-			EntityInfo: testing.EntityInfo{Name: test2Name, Desc: test2Desc},
+			EntityInfo: jsonprotocol.EntityInfo{Name: test2Name, Desc: test2Desc},
 			Errors: []jsonprotocol.EntityError{
 				{
 					Time: test2ErrorTime,
-					Error: testing.Error{
+					Error: jsonprotocol.Error{
 						Reason: test2ErrorReason,
 						File:   test2ErrorFile,
 						Line:   test2ErrorLine,
@@ -159,7 +158,7 @@ func TestReadTestOutput(t *gotesting.T) {
 			OutDir: filepath.Join(cfg.ResDir, testLogsDir, test2Name),
 		},
 		{
-			EntityInfo: testing.EntityInfo{Name: test3Name, Desc: test3Desc},
+			EntityInfo: jsonprotocol.EntityInfo{Name: test3Name, Desc: test3Desc},
 			Start:      test3StartTime,
 			End:        test3EndTime,
 			SkipReason: skipReason,
@@ -249,9 +248,9 @@ func TestReadTestOutputSameEntity(t *gotesting.T) {
 	b := bytes.Buffer{}
 	mw := control.NewMessageWriter(&b)
 	mw.WriteMessage(&control.RunStart{Time: epoch})
-	mw.WriteMessage(&control.EntityStart{Time: epoch, Info: testing.EntityInfo{Name: fixtName, Type: testing.EntityFixture}, OutDir: filepath.Join(outDir, fixt1OutDir)})
+	mw.WriteMessage(&control.EntityStart{Time: epoch, Info: jsonprotocol.EntityInfo{Name: fixtName, Type: jsonprotocol.EntityFixture}, OutDir: filepath.Join(outDir, fixt1OutDir)})
 	mw.WriteMessage(&control.EntityEnd{Time: epoch, Name: fixtName})
-	mw.WriteMessage(&control.EntityStart{Time: epoch, Info: testing.EntityInfo{Name: fixtName, Type: testing.EntityFixture}, OutDir: filepath.Join(outDir, fixt2OutDir)})
+	mw.WriteMessage(&control.EntityStart{Time: epoch, Info: jsonprotocol.EntityInfo{Name: fixtName, Type: jsonprotocol.EntityFixture}, OutDir: filepath.Join(outDir, fixt2OutDir)})
 	mw.WriteMessage(&control.EntityEnd{Time: epoch, Name: fixtName})
 	mw.WriteMessage(&control.RunEnd{Time: epoch})
 
@@ -328,10 +327,10 @@ func TestReadTestOutputConcurrentEntity(t *gotesting.T) {
 	b := bytes.Buffer{}
 	mw := control.NewMessageWriter(&b)
 	mw.WriteMessage(&control.RunStart{Time: epoch})
-	mw.WriteMessage(&control.EntityStart{Time: epoch, Info: testing.EntityInfo{Name: fixt1Name, Type: testing.EntityFixture}, OutDir: filepath.Join(outDir, fixt1Name)})
-	mw.WriteMessage(&control.EntityStart{Time: epoch, Info: testing.EntityInfo{Name: fixt2Name, Type: testing.EntityFixture}, OutDir: filepath.Join(outDir, fixt2Name)})
+	mw.WriteMessage(&control.EntityStart{Time: epoch, Info: jsonprotocol.EntityInfo{Name: fixt1Name, Type: jsonprotocol.EntityFixture}, OutDir: filepath.Join(outDir, fixt1Name)})
+	mw.WriteMessage(&control.EntityStart{Time: epoch, Info: jsonprotocol.EntityInfo{Name: fixt2Name, Type: jsonprotocol.EntityFixture}, OutDir: filepath.Join(outDir, fixt2Name)})
 	mw.WriteMessage(&control.EntityLog{Time: epoch, Name: fixt1Name, Text: fixt1LogText})
-	mw.WriteMessage(&control.EntityError{Time: epoch, Name: fixt2Name, Error: testing.Error{Reason: fixt2ErrText}})
+	mw.WriteMessage(&control.EntityError{Time: epoch, Name: fixt2Name, Error: jsonprotocol.Error{Reason: fixt2ErrText}})
 	mw.WriteMessage(&control.EntityEnd{Time: epoch, Name: fixt2Name})
 	mw.WriteMessage(&control.EntityEnd{Time: epoch, Name: fixt1Name})
 	mw.WriteMessage(&control.RunEnd{Time: epoch})
@@ -398,10 +397,10 @@ func TestReadTestOutputTimingLog(t *gotesting.T) {
 	b := bytes.Buffer{}
 	mw := control.NewMessageWriter(&b)
 	mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 2})
-	mw.WriteMessage(&control.EntityStart{Time: time.Unix(2, 0), Info: testing.EntityInfo{Name: fixtName, Type: testing.EntityFixture}})
-	mw.WriteMessage(&control.EntityStart{Time: time.Unix(3, 0), Info: testing.EntityInfo{Name: testName1}})
+	mw.WriteMessage(&control.EntityStart{Time: time.Unix(2, 0), Info: jsonprotocol.EntityInfo{Name: fixtName, Type: jsonprotocol.EntityFixture}})
+	mw.WriteMessage(&control.EntityStart{Time: time.Unix(3, 0), Info: jsonprotocol.EntityInfo{Name: testName1}})
 	mw.WriteMessage(&control.EntityEnd{Time: time.Unix(4, 0), Name: testName1, TimingLog: testLog1})
-	mw.WriteMessage(&control.EntityStart{Time: time.Unix(5, 0), Info: testing.EntityInfo{Name: testName2}})
+	mw.WriteMessage(&control.EntityStart{Time: time.Unix(5, 0), Info: jsonprotocol.EntityInfo{Name: testName2}})
 	mw.WriteMessage(&control.EntityEnd{Time: time.Unix(6, 0), Name: testName2, TimingLog: testLog2})
 	mw.WriteMessage(&control.EntityEnd{Time: time.Unix(7, 0), Name: fixtName, TimingLog: timing.NewLog()})
 	mw.WriteMessage(&control.RunEnd{Time: time.Unix(8, 0)})
@@ -469,8 +468,8 @@ func TestReadTestOutputAbortFixture(t *gotesting.T) {
 	b := bytes.Buffer{}
 	mw := control.NewMessageWriter(&b)
 	mw.WriteMessage(&control.RunStart{Time: epoch})
-	mw.WriteMessage(&control.EntityStart{Time: epoch, Info: testing.EntityInfo{Name: fixt1Name, Type: testing.EntityFixture}, OutDir: filepath.Join(outDir, fixt1OutDir)})
-	mw.WriteMessage(&control.EntityStart{Time: epoch, Info: testing.EntityInfo{Name: fixt2Name, Type: testing.EntityFixture}, OutDir: filepath.Join(outDir, fixt2OutDir)})
+	mw.WriteMessage(&control.EntityStart{Time: epoch, Info: jsonprotocol.EntityInfo{Name: fixt1Name, Type: jsonprotocol.EntityFixture}, OutDir: filepath.Join(outDir, fixt1OutDir)})
+	mw.WriteMessage(&control.EntityStart{Time: epoch, Info: jsonprotocol.EntityInfo{Name: fixt2Name, Type: jsonprotocol.EntityFixture}, OutDir: filepath.Join(outDir, fixt2OutDir)})
 
 	var logBuf bytes.Buffer
 	cfg := config.Config{
@@ -521,8 +520,8 @@ func TestPerTestLogContainsRunError(t *gotesting.T) {
 	b := bytes.Buffer{}
 	mw := control.NewMessageWriter(&b)
 	mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 1})
-	mw.WriteMessage(&control.EntityStart{Time: time.Unix(2, 0), Info: testing.EntityInfo{Name: testName}})
-	mw.WriteMessage(&control.RunError{Time: time.Unix(3, 0), Error: testing.Error{Reason: errorMsg}})
+	mw.WriteMessage(&control.EntityStart{Time: time.Unix(2, 0), Info: jsonprotocol.EntityInfo{Name: testName}})
+	mw.WriteMessage(&control.RunError{Time: time.Unix(3, 0), Error: jsonprotocol.Error{Reason: errorMsg}})
 
 	cfg := config.Config{Logger: logging.NewSimple(&bytes.Buffer{}, false, false), ResDir: td}
 	var state config.State
@@ -574,33 +573,33 @@ func TestValidateMessages(t *gotesting.T) {
 		}},
 		{"unfinished test", []string{"test1", "test2"}, []control.Msg{
 			&control.RunStart{Time: time.Unix(1, 0), TestNames: []string{"test1", "test2"}},
-			&control.EntityStart{Time: time.Unix(2, 0), Info: testing.EntityInfo{Name: "test1"}},
+			&control.EntityStart{Time: time.Unix(2, 0), Info: jsonprotocol.EntityInfo{Name: "test1"}},
 			&control.EntityEnd{Time: time.Unix(3, 0), Name: "test1"},
-			&control.EntityStart{Time: time.Unix(4, 0), Info: testing.EntityInfo{Name: "test2"}},
+			&control.EntityStart{Time: time.Unix(4, 0), Info: jsonprotocol.EntityInfo{Name: "test2"}},
 			&control.RunEnd{Time: time.Unix(5, 0), OutDir: ""},
 		}},
 		{"EntityStart before RunStart", nil, []control.Msg{
-			&control.EntityStart{Time: time.Unix(1, 0), Info: testing.EntityInfo{Name: "test1"}},
+			&control.EntityStart{Time: time.Unix(1, 0), Info: jsonprotocol.EntityInfo{Name: "test1"}},
 			&control.RunStart{Time: time.Unix(2, 0), TestNames: []string{"test1"}},
 			&control.EntityEnd{Time: time.Unix(3, 0), Name: "test1"},
 			&control.RunEnd{Time: time.Unix(4, 0), OutDir: ""},
 		}},
 		{"EntityError without EntityStart", nil, []control.Msg{
 			&control.RunStart{Time: time.Unix(1, 0)},
-			&control.EntityError{Time: time.Unix(2, 0), Error: testing.Error{}},
+			&control.EntityError{Time: time.Unix(2, 0), Error: jsonprotocol.Error{}},
 			&control.RunEnd{Time: time.Unix(3, 0), OutDir: ""},
 		}},
 		{"wrong EntityEnd", []string{"test1"}, []control.Msg{
 			&control.RunStart{Time: time.Unix(1, 0), TestNames: []string{"test1"}},
-			&control.EntityStart{Time: time.Unix(2, 0), Info: testing.EntityInfo{Name: "test1"}},
+			&control.EntityStart{Time: time.Unix(2, 0), Info: jsonprotocol.EntityInfo{Name: "test1"}},
 			&control.EntityEnd{Time: time.Unix(3, 0), Name: "test2"},
 			&control.RunEnd{Time: time.Unix(3, 0), OutDir: ""},
 		}},
 		{"no EntityEnd", []string{"test1", "test2"}, []control.Msg{
 			&control.RunStart{Time: time.Unix(1, 0), TestNames: []string{"test1", "test2"}},
-			&control.EntityStart{Time: time.Unix(2, 0), Info: testing.EntityInfo{Name: "test1"}},
+			&control.EntityStart{Time: time.Unix(2, 0), Info: jsonprotocol.EntityInfo{Name: "test1"}},
 			&control.EntityEnd{Time: time.Unix(3, 0), Name: "test1"},
-			&control.EntityStart{Time: time.Unix(4, 0), Info: testing.EntityInfo{Name: "test2"}},
+			&control.EntityStart{Time: time.Unix(4, 0), Info: jsonprotocol.EntityInfo{Name: "test2"}},
 			&control.RunEnd{Time: time.Unix(5, 0), OutDir: ""},
 		}},
 	} {
@@ -740,10 +739,10 @@ func TestWritePartialResults(t *gotesting.T) {
 	b := bytes.Buffer{}
 	mw := control.NewMessageWriter(&b)
 	mw.WriteMessage(&control.RunStart{Time: run1Start, TestNames: []string{test1Name, test2Name, test3Name}})
-	mw.WriteMessage(&control.EntityStart{Time: test1Start, Info: testing.EntityInfo{Name: test1Name}, OutDir: filepath.Join(outDir, test1Name)})
+	mw.WriteMessage(&control.EntityStart{Time: test1Start, Info: jsonprotocol.EntityInfo{Name: test1Name}, OutDir: filepath.Join(outDir, test1Name)})
 	mw.WriteMessage(&control.EntityEnd{Time: test1End, Name: test1Name})
-	mw.WriteMessage(&control.EntityStart{Time: test2Start, Info: testing.EntityInfo{Name: test2Name}, OutDir: filepath.Join(outDir, test2Name)})
-	mw.WriteMessage(&control.EntityError{Time: test2Error, Name: test2Name, Error: testing.Error{Reason: test2Reason}})
+	mw.WriteMessage(&control.EntityStart{Time: test2Start, Info: jsonprotocol.EntityInfo{Name: test2Name}, OutDir: filepath.Join(outDir, test2Name)})
+	mw.WriteMessage(&control.EntityError{Time: test2Error, Name: test2Name, Error: jsonprotocol.Error{Reason: test2Reason}})
 
 	cfg := config.Config{
 		Logger: logging.NewSimple(&bytes.Buffer{}, false, false),
@@ -764,7 +763,7 @@ func TestWritePartialResults(t *gotesting.T) {
 	streamRes := readStreamedResults(t, bytes.NewBufferString(files[streamedResultsFilename]))
 	expRes := []*jsonprotocol.EntityResult{
 		{
-			EntityInfo: testing.EntityInfo{Name: test1Name},
+			EntityInfo: jsonprotocol.EntityInfo{Name: test1Name},
 			Start:      test1Start,
 			End:        test1End,
 			OutDir:     filepath.Join(cfg.ResDir, testLogsDir, test1Name),
@@ -772,11 +771,11 @@ func TestWritePartialResults(t *gotesting.T) {
 		// No EntityEnd message was received for the second test, so its entry in the streamed results
 		// file should have an empty end time. The error should be included, though.
 		{
-			EntityInfo: testing.EntityInfo{Name: test2Name},
+			EntityInfo: jsonprotocol.EntityInfo{Name: test2Name},
 			Start:      test2Start,
 			Errors: []jsonprotocol.EntityError{
-				{Error: testing.Error{Reason: test2Reason}},
-				{Error: testing.Error{Reason: incompleteTestMsg}},
+				{Error: jsonprotocol.Error{Reason: test2Reason}},
+				{Error: jsonprotocol.Error{Reason: incompleteTestMsg}},
 			},
 			OutDir: filepath.Join(cfg.ResDir, testLogsDir, test2Name),
 		},
@@ -801,7 +800,7 @@ func TestWritePartialResults(t *gotesting.T) {
 	// Write control messages describing another run containing the third test.
 	b.Reset()
 	mw.WriteMessage(&control.RunStart{Time: run2Start, TestNames: []string{test4Name}})
-	mw.WriteMessage(&control.EntityStart{Time: test4Start, Info: testing.EntityInfo{Name: test4Name}, OutDir: filepath.Join(outDir, test4Name)})
+	mw.WriteMessage(&control.EntityStart{Time: test4Start, Info: jsonprotocol.EntityInfo{Name: test4Name}, OutDir: filepath.Join(outDir, test4Name)})
 	mw.WriteMessage(&control.EntityEnd{Time: test4End, Name: test4Name})
 	mw.WriteMessage(&control.RunEnd{Time: run2End})
 
@@ -814,7 +813,7 @@ func TestWritePartialResults(t *gotesting.T) {
 	}
 	streamRes = readStreamedResults(t, bytes.NewBufferString(files[streamedResultsFilename]))
 	expRes = append(expRes, &jsonprotocol.EntityResult{
-		EntityInfo: testing.EntityInfo{Name: test4Name},
+		EntityInfo: jsonprotocol.EntityInfo{Name: test4Name},
 		Start:      test4Start,
 		End:        test4End,
 		OutDir:     filepath.Join(cfg.ResDir, testLogsDir, test4Name),
@@ -846,11 +845,11 @@ func TestUnfinishedTest(t *gotesting.T) {
 		runLine  = 12
 		diagMsg  = "SSH connection was lost"
 	)
-	incompleteErr := jsonprotocol.EntityError{Error: testing.Error{Reason: incompleteTestMsg}}
-	testErr := jsonprotocol.EntityError{Error: testing.Error{Reason: testMsg}}
+	incompleteErr := jsonprotocol.EntityError{Error: jsonprotocol.Error{Reason: incompleteTestMsg}}
+	testErr := jsonprotocol.EntityError{Error: jsonprotocol.Error{Reason: testMsg}}
 	runReason := fmt.Sprintf("Got global error: %s:%d: %s", runFile, runLine, runMsg)
-	runErr := jsonprotocol.EntityError{Error: testing.Error{Reason: runReason}}
-	diagErr := jsonprotocol.EntityError{Error: testing.Error{Reason: diagMsg}}
+	runErr := jsonprotocol.EntityError{Error: jsonprotocol.Error{Reason: runReason}}
+	diagErr := jsonprotocol.EntityError{Error: jsonprotocol.Error{Reason: diagMsg}}
 
 	// diagnoseRunErrorFunc implementations.
 	emptyDiag := func(context.Context, string) string { return "" }
@@ -873,12 +872,12 @@ func TestUnfinishedTest(t *gotesting.T) {
 		b := bytes.Buffer{}
 		mw := control.NewMessageWriter(&b)
 		mw.WriteMessage(&control.RunStart{Time: tm, NumTests: 1})
-		mw.WriteMessage(&control.EntityStart{Time: tm, Info: testing.EntityInfo{Name: testName}})
+		mw.WriteMessage(&control.EntityStart{Time: tm, Info: jsonprotocol.EntityInfo{Name: testName}})
 		if tc.writeTestErr {
-			mw.WriteMessage(&control.EntityError{Time: tm, Name: testName, Error: testing.Error{Reason: testMsg}})
+			mw.WriteMessage(&control.EntityError{Time: tm, Name: testName, Error: jsonprotocol.Error{Reason: testMsg}})
 		}
 		if tc.writeRunErr {
-			mw.WriteMessage(&control.RunError{Time: tm, Error: testing.Error{Reason: runMsg, File: runFile, Line: runLine}})
+			mw.WriteMessage(&control.RunError{Time: tm, Error: jsonprotocol.Error{Reason: runMsg, File: runFile, Line: runLine}})
 		}
 
 		cfg := config.Config{
@@ -918,8 +917,8 @@ func TestWriteResultsWriteFiles(t *gotesting.T) {
 
 	// Report that two tests were executed.
 	results := []*jsonprotocol.EntityResult{
-		{EntityInfo: testing.EntityInfo{Name: "pkg.Test1"}},
-		{EntityInfo: testing.EntityInfo{Name: "pkg.Test2"}},
+		{EntityInfo: jsonprotocol.EntityInfo{Name: "pkg.Test1"}},
+		{EntityInfo: jsonprotocol.EntityInfo{Name: "pkg.Test2"}},
 	}
 	cfg := *baseCfg
 	out := &bytes.Buffer{}
@@ -947,8 +946,8 @@ func TestWriteResultsUnmatchedGlobs(t *gotesting.T) {
 
 	// Report that two tests were executed.
 	results := []*jsonprotocol.EntityResult{
-		{EntityInfo: testing.EntityInfo{Name: "pkg.Test1"}},
-		{EntityInfo: testing.EntityInfo{Name: "pkg.Test2"}},
+		{EntityInfo: jsonprotocol.EntityInfo{Name: "pkg.Test1"}},
+		{EntityInfo: jsonprotocol.EntityInfo{Name: "pkg.Test2"}},
 	}
 
 	// This matches the message logged by WriteResults followed by patterns that
@@ -1058,16 +1057,16 @@ func TestMaxTestFailures(t *gotesting.T) {
 	mw := control.NewMessageWriter(&b)
 	mw.WriteMessage(&control.RunStart{Time: runStartTime, TestNames: []string{test1Name, test2Name, test3Name, test4Name}, NumTests: 4})
 	mw.WriteMessage(&control.RunLog{Time: runLogTime, Text: runLogText})
-	mw.WriteMessage(&control.EntityStart{Time: test1StartTime, Info: testing.EntityInfo{Name: test1Name, Desc: test1Desc}, OutDir: filepath.Join(outDir, test1Name)})
+	mw.WriteMessage(&control.EntityStart{Time: test1StartTime, Info: jsonprotocol.EntityInfo{Name: test1Name, Desc: test1Desc}, OutDir: filepath.Join(outDir, test1Name)})
 	mw.WriteMessage(&control.EntityLog{Time: test1LogTime, Name: test1Name, Text: test1LogText})
 	mw.WriteMessage(&control.EntityEnd{Time: test1EndTime, Name: test1Name})
-	mw.WriteMessage(&control.EntityStart{Time: test2StartTime, Info: testing.EntityInfo{Name: test2Name, Desc: test2Desc}, OutDir: filepath.Join(outDir, test2Name)})
-	mw.WriteMessage(&control.EntityError{Time: test2ErrorTime, Name: test2Name, Error: testing.Error{Reason: test2ErrorReason, File: test2ErrorFile, Line: test2ErrorLine, Stack: test2ErrorStack}})
+	mw.WriteMessage(&control.EntityStart{Time: test2StartTime, Info: jsonprotocol.EntityInfo{Name: test2Name, Desc: test2Desc}, OutDir: filepath.Join(outDir, test2Name)})
+	mw.WriteMessage(&control.EntityError{Time: test2ErrorTime, Name: test2Name, Error: jsonprotocol.Error{Reason: test2ErrorReason, File: test2ErrorFile, Line: test2ErrorLine, Stack: test2ErrorStack}})
 	mw.WriteMessage(&control.EntityEnd{Time: test2EndTime, Name: test2Name})
-	mw.WriteMessage(&control.EntityStart{Time: test3StartTime, Info: testing.EntityInfo{Name: test3Name, Desc: test3Desc}, OutDir: filepath.Join(outDir, test3Name)})
-	mw.WriteMessage(&control.EntityError{Time: test3ErrorTime, Name: test3Name, Error: testing.Error{Reason: test3ErrorReason, File: test3ErrorFile, Line: test3ErrorLine, Stack: test3ErrorStack}})
+	mw.WriteMessage(&control.EntityStart{Time: test3StartTime, Info: jsonprotocol.EntityInfo{Name: test3Name, Desc: test3Desc}, OutDir: filepath.Join(outDir, test3Name)})
+	mw.WriteMessage(&control.EntityError{Time: test3ErrorTime, Name: test3Name, Error: jsonprotocol.Error{Reason: test3ErrorReason, File: test3ErrorFile, Line: test3ErrorLine, Stack: test3ErrorStack}})
 	mw.WriteMessage(&control.EntityEnd{Time: test3EndTime, Name: test3Name})
-	mw.WriteMessage(&control.EntityStart{Time: test4StartTime, Info: testing.EntityInfo{Name: test4Name, Desc: test4Desc}})
+	mw.WriteMessage(&control.EntityStart{Time: test4StartTime, Info: jsonprotocol.EntityInfo{Name: test4Name, Desc: test4Desc}})
 	mw.WriteMessage(&control.EntityEnd{Time: test4EndTime, Name: test4Name, SkipReasons: []string{skipReason}})
 	mw.WriteMessage(&control.RunEnd{Time: runEndTime, OutDir: outDir})
 

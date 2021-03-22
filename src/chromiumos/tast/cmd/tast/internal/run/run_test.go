@@ -34,7 +34,6 @@ import (
 	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/runner"
-	"chromiumos/tast/internal/testing"
 )
 
 func TestRunPartialRun(t *gotesting.T) {
@@ -50,13 +49,13 @@ func TestRunPartialRun(t *gotesting.T) {
 		case runner.RunTestsMode:
 			mw := control.NewMessageWriter(stdout)
 			mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 1})
-			mw.WriteMessage(&control.EntityStart{Time: time.Unix(2, 0), Info: testing.EntityInfo{Name: testName}})
+			mw.WriteMessage(&control.EntityStart{Time: time.Unix(2, 0), Info: jsonprotocol.EntityInfo{Name: testName}})
 			mw.WriteMessage(&control.EntityEnd{Time: time.Unix(3, 0), Name: testName})
 			mw.WriteMessage(&control.RunEnd{Time: time.Unix(4, 0), OutDir: ""})
 		case runner.ListTestsMode:
-			tests := []testing.EntityWithRunnabilityInfo{
+			tests := []jsonprotocol.EntityWithRunnabilityInfo{
 				{
-					EntityInfo: testing.EntityInfo{
+					EntityInfo: jsonprotocol.EntityInfo{
 						Name: testName,
 					},
 				},
@@ -103,7 +102,7 @@ func TestRunEphemeralDevserver(t *gotesting.T) {
 			mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
 			mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
 		case runner.ListTestsMode:
-			json.NewEncoder(stdout).Encode([]testing.EntityWithRunnabilityInfo{})
+			json.NewEncoder(stdout).Encode([]jsonprotocol.EntityWithRunnabilityInfo{})
 		}
 		return 0
 	}
@@ -174,7 +173,7 @@ func testRunDownloadPrivateBundles(t *gotesting.T, td *fakerunner.LocalTestData)
 			mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
 			mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
 		case runner.ListTestsMode:
-			json.NewEncoder(stdout).Encode([]testing.EntityWithRunnabilityInfo{})
+			json.NewEncoder(stdout).Encode([]jsonprotocol.EntityWithRunnabilityInfo{})
 		case runner.DownloadPrivateBundlesMode:
 			exp := runner.DownloadPrivateBundlesArgs{
 				Devservers:        td.Cfg.Devservers,
@@ -239,7 +238,7 @@ func TestRunTLW(t *gotesting.T) {
 			mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
 			mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
 		case runner.ListTestsMode:
-			json.NewEncoder(stdout).Encode([]testing.EntityWithRunnabilityInfo{})
+			json.NewEncoder(stdout).Encode([]jsonprotocol.EntityWithRunnabilityInfo{})
 		}
 		return 0
 	}
@@ -274,14 +273,14 @@ func TestRunWithReports_LogStream(t *gotesting.T) {
 		test2LogText = "Here's another test log message"
 	)
 	td.Cfg.ResDir = resultDir
-	tests := []testing.EntityWithRunnabilityInfo{
+	tests := []jsonprotocol.EntityWithRunnabilityInfo{
 		{
-			EntityInfo: testing.EntityInfo{
+			EntityInfo: jsonprotocol.EntityInfo{
 				Name: "pkg.Test_1",
 			},
 		},
 		{
-			EntityInfo: testing.EntityInfo{
+			EntityInfo: jsonprotocol.EntityInfo{
 				Name: "pkg.Test_2",
 			},
 		},
@@ -293,10 +292,10 @@ func TestRunWithReports_LogStream(t *gotesting.T) {
 			patterns := args.RunTests.BundleArgs.Patterns
 			mw := control.NewMessageWriter(stdout)
 			mw.WriteMessage(&control.RunStart{Time: time.Unix(0, 0), NumTests: len(patterns)})
-			mw.WriteMessage(&control.EntityStart{Time: time.Unix(10, 0), Info: testing.EntityInfo{Name: test1Name}})
+			mw.WriteMessage(&control.EntityStart{Time: time.Unix(10, 0), Info: jsonprotocol.EntityInfo{Name: test1Name}})
 			mw.WriteMessage(&control.EntityLog{Time: time.Unix(15, 0), Name: test1Name, Text: test1LogText})
 			mw.WriteMessage(&control.EntityEnd{Time: time.Unix(20, 0), Name: test1Name})
-			mw.WriteMessage(&control.EntityStart{Time: time.Unix(30, 0), Info: testing.EntityInfo{Name: test2Name}})
+			mw.WriteMessage(&control.EntityStart{Time: time.Unix(30, 0), Info: jsonprotocol.EntityInfo{Name: test2Name}})
 			mw.WriteMessage(&control.EntityLog{Time: time.Unix(35, 0), Name: test2Name, Text: test2LogText})
 			mw.WriteMessage(&control.EntityEnd{Time: time.Unix(40, 0), Name: test2Name})
 			mw.WriteMessage(&control.RunEnd{Time: time.Unix(50, 0), OutDir: ""})
@@ -343,26 +342,26 @@ func TestRunWithReports_ReportResult(t *gotesting.T) {
 		test3Desc       = "Third description"
 		test3SkipReason = "Test skip reason"
 	)
-	test2Error := testing.Error{
+	test2Error := jsonprotocol.Error{
 		Reason: "Intentionally failed",
 		File:   "/tmp/file.go",
 		Line:   21,
 		Stack:  "None",
 	}
 	test2ErrorTime := time.Unix(35, 0)
-	tests := []testing.EntityWithRunnabilityInfo{
+	tests := []jsonprotocol.EntityWithRunnabilityInfo{
 		{
-			EntityInfo: testing.EntityInfo{
+			EntityInfo: jsonprotocol.EntityInfo{
 				Name: test1Name,
 			},
 		},
 		{
-			EntityInfo: testing.EntityInfo{
+			EntityInfo: jsonprotocol.EntityInfo{
 				Name: test2Name,
 			},
 		},
 		{
-			EntityInfo: testing.EntityInfo{
+			EntityInfo: jsonprotocol.EntityInfo{
 				Name: test3Name,
 			},
 		},
@@ -374,12 +373,12 @@ func TestRunWithReports_ReportResult(t *gotesting.T) {
 			patterns := args.RunTests.BundleArgs.Patterns
 			mw := control.NewMessageWriter(stdout)
 			mw.WriteMessage(&control.RunStart{Time: time.Unix(0, 0), NumTests: len(patterns)})
-			mw.WriteMessage(&control.EntityStart{Time: time.Unix(10, 0), Info: testing.EntityInfo{Name: test1Name}})
+			mw.WriteMessage(&control.EntityStart{Time: time.Unix(10, 0), Info: jsonprotocol.EntityInfo{Name: test1Name}})
 			mw.WriteMessage(&control.EntityEnd{Time: time.Unix(20, 0), Name: test1Name})
-			mw.WriteMessage(&control.EntityStart{Time: time.Unix(30, 0), Info: testing.EntityInfo{Name: test2Name}})
+			mw.WriteMessage(&control.EntityStart{Time: time.Unix(30, 0), Info: jsonprotocol.EntityInfo{Name: test2Name}})
 			mw.WriteMessage(&control.EntityError{Time: test2ErrorTime, Name: test2Name, Error: test2Error})
 			mw.WriteMessage(&control.EntityEnd{Time: time.Unix(40, 0), Name: test2Name})
-			mw.WriteMessage(&control.EntityStart{Time: time.Unix(45, 0), Info: testing.EntityInfo{Name: test3Name}})
+			mw.WriteMessage(&control.EntityStart{Time: time.Unix(45, 0), Info: jsonprotocol.EntityInfo{Name: test3Name}})
 			mw.WriteMessage(&control.EntityEnd{Time: time.Unix(50, 0), Name: test3Name, SkipReasons: []string{test3SkipReason}})
 			mw.WriteMessage(&control.RunEnd{Time: time.Unix(60, 0), OutDir: ""})
 		case runner.ListTestsMode:
@@ -441,26 +440,26 @@ func TestRunWithReports_ReportResultTerminate(t *gotesting.T) {
 		test3Desc       = "Third description"
 		test3SkipReason = "Test skip reason"
 	)
-	test2Error := testing.Error{
+	test2Error := jsonprotocol.Error{
 		Reason: "Intentionally failed",
 		File:   "/tmp/file.go",
 		Line:   21,
 		Stack:  "None",
 	}
 	test2ErrorTime := time.Unix(35, 0)
-	tests := []testing.EntityWithRunnabilityInfo{
+	tests := []jsonprotocol.EntityWithRunnabilityInfo{
 		{
-			EntityInfo: testing.EntityInfo{
+			EntityInfo: jsonprotocol.EntityInfo{
 				Name: test1Name,
 			},
 		},
 		{
-			EntityInfo: testing.EntityInfo{
+			EntityInfo: jsonprotocol.EntityInfo{
 				Name: test2Name,
 			},
 		},
 		{
-			EntityInfo: testing.EntityInfo{
+			EntityInfo: jsonprotocol.EntityInfo{
 				Name: test3Name,
 			},
 		},
@@ -472,12 +471,12 @@ func TestRunWithReports_ReportResultTerminate(t *gotesting.T) {
 			patterns := args.RunTests.BundleArgs.Patterns
 			mw := control.NewMessageWriter(stdout)
 			mw.WriteMessage(&control.RunStart{Time: time.Unix(0, 0), NumTests: len(patterns)})
-			mw.WriteMessage(&control.EntityStart{Time: time.Unix(10, 0), Info: testing.EntityInfo{Name: test1Name}})
+			mw.WriteMessage(&control.EntityStart{Time: time.Unix(10, 0), Info: jsonprotocol.EntityInfo{Name: test1Name}})
 			mw.WriteMessage(&control.EntityEnd{Time: time.Unix(20, 0), Name: test1Name})
-			mw.WriteMessage(&control.EntityStart{Time: time.Unix(30, 0), Info: testing.EntityInfo{Name: test2Name}})
+			mw.WriteMessage(&control.EntityStart{Time: time.Unix(30, 0), Info: jsonprotocol.EntityInfo{Name: test2Name}})
 			mw.WriteMessage(&control.EntityError{Time: test2ErrorTime, Name: test2Name, Error: test2Error})
 			mw.WriteMessage(&control.EntityEnd{Time: time.Unix(40, 0), Name: test2Name})
-			mw.WriteMessage(&control.EntityStart{Time: time.Unix(45, 0), Info: testing.EntityInfo{Name: test3Name}})
+			mw.WriteMessage(&control.EntityStart{Time: time.Unix(45, 0), Info: jsonprotocol.EntityInfo{Name: test3Name}})
 			mw.WriteMessage(&control.EntityEnd{Time: time.Unix(50, 0), Name: test3Name, SkipReasons: []string{test3SkipReason}})
 			mw.WriteMessage(&control.RunEnd{Time: time.Unix(60, 0), OutDir: ""})
 		case runner.ListTestsMode:
@@ -522,20 +521,20 @@ func TestRunWithSkippedTests(t *gotesting.T) {
 	defer td.Close()
 
 	td.Cfg.RunLocal = true
-	tests := []testing.EntityWithRunnabilityInfo{
+	tests := []jsonprotocol.EntityWithRunnabilityInfo{
 		{
-			EntityInfo: testing.EntityInfo{
+			EntityInfo: jsonprotocol.EntityInfo{
 				Name: "pkg.Supported_1",
 			},
 		},
 		{
-			EntityInfo: testing.EntityInfo{
+			EntityInfo: jsonprotocol.EntityInfo{
 				Name: "pkg.Unsupported_1",
 			},
 			SkipReason: "Not Supported",
 		},
 		{
-			EntityInfo: testing.EntityInfo{
+			EntityInfo: jsonprotocol.EntityInfo{
 				Name: "pkg.Supported_2",
 			},
 		},
@@ -549,7 +548,7 @@ func TestRunWithSkippedTests(t *gotesting.T) {
 			mw.WriteMessage(&control.RunStart{Time: time.Unix(count, 0), NumTests: len(patterns)})
 			for _, p := range patterns {
 				count = count + 1
-				mw.WriteMessage(&control.EntityStart{Time: time.Unix(count, 0), Info: testing.EntityInfo{Name: p}})
+				mw.WriteMessage(&control.EntityStart{Time: time.Unix(count, 0), Info: jsonprotocol.EntityInfo{Name: p}})
 				count = count + 1
 				var skipReasons []string
 				if strings.HasPrefix(p, "pkg.Unsupported") {
@@ -591,16 +590,16 @@ func TestListTests(t *gotesting.T) {
 	td := fakerunner.NewLocalTestData(t)
 	defer td.Close()
 
-	tests := []testing.EntityWithRunnabilityInfo{
+	tests := []jsonprotocol.EntityWithRunnabilityInfo{
 		{
-			EntityInfo: testing.EntityInfo{
+			EntityInfo: jsonprotocol.EntityInfo{
 				Name: "pkg.Test",
 				Desc: "This is a test",
 				Attr: []string{"attr1", "attr2"},
 			},
 		},
 		{
-			EntityInfo: testing.EntityInfo{
+			EntityInfo: jsonprotocol.EntityInfo{
 				Name: "pkg.AnotherTest",
 				Desc: "Another test",
 			},
@@ -640,16 +639,16 @@ func TestListTestsWithSharding(t *gotesting.T) {
 	td := fakerunner.NewLocalTestData(t)
 	defer td.Close()
 
-	tests := []testing.EntityWithRunnabilityInfo{
+	tests := []jsonprotocol.EntityWithRunnabilityInfo{
 		{
-			EntityInfo: testing.EntityInfo{
+			EntityInfo: jsonprotocol.EntityInfo{
 				Name: "pkg.Test",
 				Desc: "This is a test",
 				Attr: []string{"attr1", "attr2"},
 			},
 		},
 		{
-			EntityInfo: testing.EntityInfo{
+			EntityInfo: jsonprotocol.EntityInfo{
 				Name: "pkg.AnotherTest",
 				Desc: "Another test",
 			},
@@ -691,22 +690,22 @@ func TestListTestsWithSkippedTests(t *gotesting.T) {
 	td := fakerunner.NewLocalTestData(t)
 	defer td.Close()
 
-	tests := []testing.EntityWithRunnabilityInfo{
+	tests := []jsonprotocol.EntityWithRunnabilityInfo{
 		{
-			EntityInfo: testing.EntityInfo{
+			EntityInfo: jsonprotocol.EntityInfo{
 				Name: "pkg.Test",
 				Desc: "This is a test",
 				Attr: []string{"attr1", "attr2"},
 			},
 		},
 		{
-			EntityInfo: testing.EntityInfo{
+			EntityInfo: jsonprotocol.EntityInfo{
 				Name: "pkg.AnotherTest",
 				Desc: "Another test",
 			},
 		},
 		{
-			EntityInfo: testing.EntityInfo{
+			EntityInfo: jsonprotocol.EntityInfo{
 				Name: "pkg.SkippedTest",
 				Desc: "Skipped test",
 			},
@@ -892,9 +891,9 @@ func TestRunTestsGetInitialSysInfo(t *gotesting.T) {
 
 // TestRunTestsSkipTests check if runTests skipping testings correctly.
 func TestRunTestsSkipTests(t *gotesting.T) {
-	tests := []testing.EntityWithRunnabilityInfo{
+	tests := []jsonprotocol.EntityWithRunnabilityInfo{
 		{
-			EntityInfo: testing.EntityInfo{
+			EntityInfo: jsonprotocol.EntityInfo{
 				Name:         "unsupported.Test0",
 				Desc:         "This is test 0",
 				SoftwareDeps: []string{"has_dep"},
@@ -902,19 +901,19 @@ func TestRunTestsSkipTests(t *gotesting.T) {
 			SkipReason: "dependency not available",
 		},
 		{
-			EntityInfo: testing.EntityInfo{Name: "pkg.Test1", Desc: "This is test 1"},
+			EntityInfo: jsonprotocol.EntityInfo{Name: "pkg.Test1", Desc: "This is test 1"},
 		},
 		{
-			EntityInfo: testing.EntityInfo{Name: "pkg.Test2", Desc: "This is test 2"},
+			EntityInfo: jsonprotocol.EntityInfo{Name: "pkg.Test2", Desc: "This is test 2"},
 		},
 		{
-			EntityInfo: testing.EntityInfo{Name: "pkg.Test3", Desc: "This is test 3"},
+			EntityInfo: jsonprotocol.EntityInfo{Name: "pkg.Test3", Desc: "This is test 3"},
 		},
 		{
-			EntityInfo: testing.EntityInfo{Name: "pkg.Test4", Desc: "This is test 4"},
+			EntityInfo: jsonprotocol.EntityInfo{Name: "pkg.Test4", Desc: "This is test 4"},
 		},
 		{
-			EntityInfo: testing.EntityInfo{
+			EntityInfo: jsonprotocol.EntityInfo{
 				Name:         "unsupported.Test5",
 				Desc:         "This is test 5",
 				SoftwareDeps: []string{"has_dep"},
@@ -922,7 +921,7 @@ func TestRunTestsSkipTests(t *gotesting.T) {
 			SkipReason: "dependency not available",
 		},
 		{
-			EntityInfo: testing.EntityInfo{Name: "pkg.Test6", Desc: "This is test 6"},
+			EntityInfo: jsonprotocol.EntityInfo{Name: "pkg.Test6", Desc: "This is test 6"},
 		},
 	}
 
@@ -947,7 +946,7 @@ func TestRunTestsSkipTests(t *gotesting.T) {
 			mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: len(testNames)})
 			count := int64(2)
 			for _, t := range testNames {
-				mw.WriteMessage(&control.EntityStart{Time: time.Unix(count, 0), Info: testing.EntityInfo{Name: t}})
+				mw.WriteMessage(&control.EntityStart{Time: time.Unix(count, 0), Info: jsonprotocol.EntityInfo{Name: t}})
 				count++
 				var skipReasons []string
 				if strings.HasPrefix(t, "unsupported") {

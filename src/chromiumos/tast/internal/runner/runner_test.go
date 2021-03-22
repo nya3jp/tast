@@ -24,6 +24,7 @@ import (
 
 	"chromiumos/tast/internal/bundle"
 	"chromiumos/tast/internal/control"
+	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/testutil"
 )
@@ -196,7 +197,7 @@ func TestRunListTests(t *gotesting.T) {
 		t.Fatalf("%s = %v; want %v", sig, status, statusSuccess)
 	}
 
-	var tests []*testing.EntityInfo
+	var tests []*jsonprotocol.EntityInfo
 	if err := json.Unmarshal(stdout.Bytes(), &tests); err != nil {
 		t.Fatalf("%s printed unparsable output %q", sig, stdout.String())
 	}
@@ -243,10 +244,10 @@ func TestRunListFixtures(t *gotesting.T) {
 
 	bundle := fmt.Sprintf("%s-0-p", bundlePrefix)
 	bundlePath := filepath.Join(dir, bundle)
-	want := ListFixturesResult{Fixtures: map[string][]*testing.EntityInfo{
+	want := ListFixturesResult{Fixtures: map[string][]*jsonprotocol.EntityInfo{
 		bundlePath: {
-			{Name: "fake1", Type: testing.EntityFixture, Bundle: bundle},
-			{Name: "fake2", Fixture: "fake1", Type: testing.EntityFixture, Bundle: bundle},
+			{Name: "fake1", Type: jsonprotocol.EntityFixture, Bundle: bundle},
+			{Name: "fake2", Fixture: "fake1", Type: jsonprotocol.EntityFixture, Bundle: bundle},
 		},
 	}}
 

@@ -24,6 +24,7 @@ import (
 	"github.com/google/go-cmp/cmp/cmpopts"
 
 	"chromiumos/tast/errors"
+	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/testutil"
 )
 
@@ -35,7 +36,7 @@ type outputSink struct {
 
 type outputData struct {
 	Logs []string
-	Errs []*Error
+	Errs []*jsonprotocol.Error
 }
 
 func (r *outputSink) Log(msg string) error {
@@ -45,7 +46,7 @@ func (r *outputSink) Log(msg string) error {
 	return nil
 }
 
-func (r *outputSink) Error(e *Error) error {
+func (r *outputSink) Error(e *jsonprotocol.Error) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	r.Data.Errs = append(r.Data.Errs, e)
@@ -53,7 +54,7 @@ func (r *outputSink) Error(e *Error) error {
 }
 
 var outputDataCmpOpts = []cmp.Option{
-	cmpopts.IgnoreFields(Error{}, "File", "Line", "Stack"),
+	cmpopts.IgnoreFields(jsonprotocol.Error{}, "File", "Line", "Stack"),
 }
 
 func TestLog(t *gotesting.T) {
@@ -123,7 +124,7 @@ func TestRunReturn(t *gotesting.T) {
 			"Starting subtest p2",
 			"ok",
 		},
-		Errs: []*Error{
+		Errs: []*jsonprotocol.Error{
 			{Reason: "p1: fail"},
 		},
 	}
@@ -207,7 +208,7 @@ func TestReportError(t *gotesting.T) {
 		t.Errorf("Got non-sequential line numbers %d and %d", e0.Line, e1.Line)
 	}
 
-	for _, e := range []*Error{e0, e1} {
+	for _, e := range []*jsonprotocol.Error{e0, e1} {
 		lines := strings.Split(e.Stack, "\n")
 		if len(lines) < 2 {
 			t.Errorf("Stack trace %q contains fewer than 2 lines", string(e.Stack))
@@ -280,7 +281,7 @@ func TestReportErrorInPrecondition(t *gotesting.T) {
 		t.Errorf("Got non-sequential line numbers %d and %d", e0.Line, e1.Line)
 	}
 
-	for _, e := range []*Error{e0, e1} {
+	for _, e := range []*jsonprotocol.Error{e0, e1} {
 		lines := strings.Split(e.Stack, "\n")
 		if len(lines) < 2 {
 			t.Errorf("Stack trace %q contains fewer than 2 lines", string(e.Stack))
@@ -377,7 +378,7 @@ func TestRunUsePrefix(t *gotesting.T) {
 			"Starting subtest f1",
 			"Starting subtest f1/f2",
 		},
-		Errs: []*Error{
+		Errs: []*jsonprotocol.Error{
 			{Reason: "f1/f2: error msg"},
 		},
 	}
@@ -414,7 +415,7 @@ func TestRunNonFatal(t *gotesting.T) {
 		Logs: []string{
 			"Starting subtest f",
 		},
-		Errs: []*Error{
+		Errs: []*jsonprotocol.Error{
 			{Reason: "f: fatal msg"},
 		},
 	}
@@ -443,7 +444,7 @@ func TestFatal(t *gotesting.T) {
 	}
 
 	exp := outputData{
-		Errs: []*Error{
+		Errs: []*jsonprotocol.Error{
 			{Reason: "fatal msg"},
 		},
 	}
@@ -472,7 +473,7 @@ func TestFatalInPrecondition(t *gotesting.T) {
 	}
 
 	exp := outputData{
-		Errs: []*Error{
+		Errs: []*jsonprotocol.Error{
 			{Reason: preFailPrefix + "fatal msg"},
 		},
 	}

@@ -10,6 +10,8 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
+
+	"chromiumos/tast/internal/jsonprotocol"
 )
 
 func TestFixtureEntityInfo(t *testing.T) {
@@ -21,14 +23,14 @@ func TestFixtureEntityInfo(t *testing.T) {
 		ServiceDeps: []string{"chrome.Service"},
 	}
 	got := fixt.EntityInfo()
-	want := &EntityInfo{
+	want := &jsonprotocol.EntityInfo{
 		Name:        "chrome.LoggedIn",
 		Pkg:         "",
 		Desc:        "Make sure logged into a Chrome session",
 		Contacts:    []string{"a@example.com", "b@example.com"},
 		ServiceDeps: []string{"chrome.Service"},
 		Fixture:     "system.Booted",
-		Type:        EntityFixture,
+		Type:        jsonprotocol.EntityFixture,
 		Bundle:      filepath.Base(os.Args[0]),
 	}
 	if diff := cmp.Diff(got, want); diff != "" {

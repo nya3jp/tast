@@ -15,12 +15,12 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/fakerunner"
 	"chromiumos/tast/cmd/tast/internal/run/target"
+	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/runner"
-	"chromiumos/tast/internal/testing"
 )
 
 func TestFindPatternsForShard(t *gotesting.T) {
-	tests := []testing.EntityInfo{
+	tests := []jsonprotocol.EntityInfo{
 		{Name: "pkg.Test0", Desc: "This is test 0"},
 		{Name: "pkg.Test1", Desc: "This is test 1"},
 		{Name: "pkg.Test2", Desc: "This is test 2"},
@@ -109,16 +109,16 @@ func TestListLocalTests(t *gotesting.T) {
 	td := fakerunner.NewLocalTestData(t)
 	defer td.Close()
 
-	tests := []testing.EntityWithRunnabilityInfo{
+	tests := []jsonprotocol.EntityWithRunnabilityInfo{
 		{
-			EntityInfo: testing.EntityInfo{
+			EntityInfo: jsonprotocol.EntityInfo{
 				Name: "pkg.Test",
 				Desc: "This is a test",
 				Attr: []string{"attr1", "attr2"},
 			},
 		},
 		{
-			EntityInfo: testing.EntityInfo{
+			EntityInfo: jsonprotocol.EntityInfo{
 				Name: "pkg.AnotherTest",
 				Desc: "Another test",
 			},
@@ -155,9 +155,9 @@ func TestListLocalTests(t *gotesting.T) {
 
 func TestListRemoteList(t *gotesting.T) {
 	// Make the runner print serialized tests.
-	tests := []testing.EntityWithRunnabilityInfo{
+	tests := []jsonprotocol.EntityWithRunnabilityInfo{
 		{
-			EntityInfo: testing.EntityInfo{
+			EntityInfo: jsonprotocol.EntityInfo{
 				Name: "pkg.Test1",
 				Desc: "First description",
 				Attr: []string{"attr1", "attr2"},
@@ -165,7 +165,7 @@ func TestListRemoteList(t *gotesting.T) {
 			},
 		},
 		{
-			EntityInfo: testing.EntityInfo{
+			EntityInfo: jsonprotocol.EntityInfo{
 				Name: "pkg2.Test2",
 				Desc: "Second description",
 				Attr: []string{"attr3"},

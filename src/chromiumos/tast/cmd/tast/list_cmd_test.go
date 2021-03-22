@@ -19,7 +19,6 @@ import (
 
 	"chromiumos/tast/cmd/tast/internal/logging"
 	"chromiumos/tast/internal/jsonprotocol"
-	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/testutil"
 )
 
@@ -41,8 +40,8 @@ func executeListCmd(t *gotesting.T, stdout io.Writer, args []string,
 }
 
 func TestListTests(t *gotesting.T) {
-	test1 := testing.EntityInfo{Name: "pkg.Test1", Desc: "First description", Attr: []string{"attr1"}}
-	test2 := testing.EntityInfo{Name: "pkg.Test2", Desc: "Second description"}
+	test1 := jsonprotocol.EntityInfo{Name: "pkg.Test1", Desc: "First description", Attr: []string{"attr1"}}
+	test2 := jsonprotocol.EntityInfo{Name: "pkg.Test2", Desc: "Second description"}
 	wrapper := stubRunWrapper{
 		runRes: []*jsonprotocol.EntityResult{{EntityInfo: test1}, {EntityInfo: test2}},
 	}
@@ -63,11 +62,11 @@ func TestListTests(t *gotesting.T) {
 	if status := executeListCmd(t, &stdout, args, &wrapper, logging.NewDiscard()); status != subcommands.ExitSuccess {
 		t.Fatalf("listCmd.Execute(%v) returned status %v; want %v", args, status, subcommands.ExitSuccess)
 	}
-	var act []testing.EntityInfo
+	var act []jsonprotocol.EntityInfo
 	if err := json.Unmarshal(stdout.Bytes(), &act); err != nil {
 		t.Errorf("Failed to unmarshal output from listCmd.Execute(%v): %v", args, err)
 	}
-	if exp := []testing.EntityInfo{test1, test2}; !reflect.DeepEqual(exp, act) {
+	if exp := []jsonprotocol.EntityInfo{test1, test2}; !reflect.DeepEqual(exp, act) {
 		t.Errorf("listCmd.Execute(%v) printed %+v; want %+v", args, act, exp)
 	}
 }

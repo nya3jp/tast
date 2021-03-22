@@ -405,7 +405,7 @@ func (r *resultsHandler) reportResult(ctx context.Context, res *jsonprotocol.Ent
 		if err != nil {
 			return err
 		}
-		request.Errors = append(request.Errors, &protocol.Error{
+		request.Errors = append(request.Errors, &protocol.ErrorReport{
 			Time:   ts,
 			Reason: e.Reason,
 			File:   e.File,

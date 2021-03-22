@@ -244,6 +244,30 @@
       },
       "revId": "06d30c52ae3ff8637f43f7ebb91f66440bb7eaa8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ed341b00_959e4d2d",
+        "filename": "src/chromiumos/tast/internal/sshtest/default.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-03-22T03:16:49Z",
+      "side": 1,
+      "message": "OK, then I\u0027m fine with letting TestData own multiple servers. But I still want to resolve assymmetricity between the \"primary\" server and additional servers.\n\nWhat do you think about updating TestData to:\n\n type TestData struct {\n   Srvs        []*SSHServer\n   UserKeyFile string\n }\n \nand NewTestData to:\n\n func NewTestData(handlers ...ExecHandler) *TestData\n\nso that users can start multiple servers by passing several handlers to NewTestData?",
+      "parentUuid": "e16f46c6_cd930d40",
+      "range": {
+        "startLine": 57,
+        "startChar": 19,
+        "endLine": 57,
+        "endChar": 41
+      },
+      "revId": "06d30c52ae3ff8637f43f7ebb91f66440bb7eaa8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

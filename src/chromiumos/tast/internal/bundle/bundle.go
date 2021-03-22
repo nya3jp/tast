@@ -21,6 +21,7 @@ import (
 	"chromiumos/tast/dut"
 	"chromiumos/tast/internal/command"
 	"chromiumos/tast/internal/control"
+	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/planner"
 	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/testing"
@@ -97,7 +98,7 @@ func run(ctx context.Context, clArgs []string, stdin io.Reader, stdout, stderr i
 		if err != nil {
 			return command.WriteError(stderr, err)
 		}
-		var infos []*testing.EntityWithRunnabilityInfo
+		var infos []*jsonprotocol.EntityWithRunnabilityInfo
 		features := args.ListTests.Features()
 		for _, test := range tests {
 			infos = append(infos, test.EntityWithRunnabilityInfo(features))
@@ -108,7 +109,7 @@ func run(ctx context.Context, clArgs []string, stdin io.Reader, stdout, stderr i
 		return statusSuccess
 	case ListFixturesMode:
 		fixts := testing.GlobalRegistry().AllFixtures()
-		var infos []*testing.EntityInfo
+		var infos []*jsonprotocol.EntityInfo
 		for _, f := range fixts {
 			infos = append(infos, f.EntityInfo())
 		}
@@ -233,28 +234,28 @@ func (ew *eventWriter) RunLog(msg string) error {
 	return ew.mw.WriteMessage(&control.RunLog{Time: time.Now(), Text: msg})
 }
 
-func (ew *eventWriter) EntityStart(ei *testing.EntityInfo, outDir string) error {
+func (ew *eventWriter) EntityStart(ei *jsonprotocol.EntityInfo, outDir string) error {
 	if ew.lg != nil {
 		ew.lg.Info(fmt.Sprintf("%s: ======== start", ei.Name))
 	}
 	return ew.mw.WriteMessage(&control.EntityStart{Time: time.Now(), Info: *ei, OutDir: outDir})
 }
 
-func (ew *eventWriter) EntityLog(ei *testing.EntityInfo, msg string) error {
+func (ew *eventWriter) EntityLog(ei *jsonprotocol.EntityInfo, msg string) error {
 	if ew.lg != nil {
 		ew.lg.Info(fmt.Sprintf("%s: %s", ei.Name, msg))
 	}
 	return ew.mw.WriteMessage(&control.EntityLog{Time: time.Now(), Text: msg, Name: ei.Name})
 }
 
-func (ew *eventWriter) EntityError(ei *testing.EntityInfo, e *testing.Error) error {
+func (ew *eventWriter) EntityError(ei *jsonprotocol.EntityInfo, e *jsonprotocol.Error) error {
 	if ew.lg != nil {
 		ew.lg.Info(fmt.Sprintf("%s: Error at %s:%d: %s", ei.Name, filepath.Base(e.File), e.Line, e.Reason))
 	}
 	return ew.mw.WriteMessage(&control.EntityError{Time: time.Now(), Error: *e, Name: ei.Name})
 }
 
-func (ew *eventWriter) EntityEnd(ei *testing.EntityInfo, skipReasons []string, timingLog *timing.Log) error {
+func (ew *eventWriter) EntityEnd(ei *jsonprotocol.EntityInfo, skipReasons []string, timingLog *timing.Log) error {
 	if ew.lg != nil {
 		ew.lg.Info(fmt.Sprintf("%s: ======== end", ei.Name))
 	}

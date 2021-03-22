@@ -64,6 +64,7 @@ import (
 	"chromiumos/tast/dut"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/errors/stack"
+	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/timing"
 )
@@ -170,22 +171,14 @@ type OutputStream interface {
 
 	// Error reports an error from by an entity. An entity that reported one or
 	// more errors should be considered failure.
-	Error(e *Error) error
-}
-
-// Error describes an error encountered while running an entity.
-type Error struct {
-	Reason string `json:"reason"`
-	File   string `json:"file"`
-	Line   int    `json:"line"`
-	Stack  string `json:"stack"`
+	Error(e *jsonprotocol.Error) error
 }
 
 // NewError returns a new Error object containing reason rsn.
 // skipFrames contains the number of frames to skip to get the code that's reporting
 // the error: the caller should pass 0 to report its own frame, 1 to skip just its own frame,
 // 2 to additionally skip the frame that called it, and so on.
-func NewError(err error, fullMsg, lastMsg string, skipFrames int) *Error {
+func NewError(err error, fullMsg, lastMsg string, skipFrames int) *jsonprotocol.Error {
 	// Also skip the NewError frame.
 	skipFrames++
 
@@ -198,7 +191,7 @@ func NewError(err error, fullMsg, lastMsg string, skipFrames int) *Error {
 		trace += fmt.Sprintf("\n%+v", err)
 	}
 
-	return &Error{
+	return &jsonprotocol.Error{
 		Reason: fullMsg,
 		File:   fn,
 		Line:   ln,

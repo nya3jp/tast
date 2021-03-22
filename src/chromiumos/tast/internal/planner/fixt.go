@@ -9,6 +9,7 @@ import (
 	"errors"
 	"fmt"
 
+	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/internal/timing"
@@ -139,7 +140,7 @@ func (st *FixtureStack) Status() fixtureStatus {
 // the following way:
 //
 //  [Fixture failure] (fixture name): (original error message)
-func (st *FixtureStack) Errors() []*testing.Error {
+func (st *FixtureStack) Errors() []*jsonprotocol.Error {
 	for _, f := range st.stack {
 		if f.Status() == statusRed {
 			return f.Errors()
@@ -329,7 +330,7 @@ type statefulFixture struct {
 	fout *entityOutputStream
 
 	status fixtureStatus
-	errs   []*testing.Error
+	errs   []*jsonprotocol.Error
 	val    interface{} // val returned by SetUp
 }
 
@@ -362,7 +363,7 @@ func (f *statefulFixture) Status() fixtureStatus {
 // following way:
 //
 //  [Fixture failure] (fixture name): (original error message)
-func (f *statefulFixture) Errors() []*testing.Error {
+func (f *statefulFixture) Errors() []*jsonprotocol.Error {
 	return f.errs
 }
 
@@ -500,10 +501,10 @@ func (f *statefulFixture) newTestContext(ctx context.Context, troot *testing.Tes
 
 // rewriteErrorsForTest rewrites error messages reported by a fixture to be
 // suitable for reporting for tests depending on the fixture.
-func rewriteErrorsForTest(errs []*testing.Error, fixtureName string) []*testing.Error {
-	newErrs := make([]*testing.Error, len(errs))
+func rewriteErrorsForTest(errs []*jsonprotocol.Error, fixtureName string) []*jsonprotocol.Error {
+	newErrs := make([]*jsonprotocol.Error, len(errs))
 	for i, e := range errs {
-		newErrs[i] = &testing.Error{
+		newErrs[i] = &jsonprotocol.Error{
 			Reason: fmt.Sprintf("[Fixture failure] %s: %s", fixtureName, e.Reason),
 			File:   e.File,
 			Line:   e.Line,

@@ -22,6 +22,7 @@ import (
 	"go.chromium.org/chromiumos/infra/proto/go/device"
 
 	"chromiumos/tast/internal/dep"
+	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/testing/hwdep"
 )
 
@@ -701,7 +702,7 @@ func TestTestInfo(t *gotesting.T) {
 	}
 
 	got := test.EntityInfo()
-	want := &EntityInfo{
+	want := &jsonprotocol.EntityInfo{
 		Name:         "pkg.Test",
 		Pkg:          "chromiumos/foo/bar",
 		Desc:         "Description",

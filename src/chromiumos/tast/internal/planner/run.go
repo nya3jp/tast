@@ -22,6 +22,7 @@ import (
 	"chromiumos/tast/internal/dep"
 	"chromiumos/tast/internal/devserver"
 	"chromiumos/tast/internal/extdata"
+	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/internal/timing"
@@ -499,7 +500,7 @@ type preLogger struct {
 	out OutputStream
 
 	mu sync.Mutex
-	ti *testing.EntityInfo
+	ti *jsonprotocol.EntityInfo
 }
 
 func newPreLogger(out OutputStream) *preLogger {
@@ -515,7 +516,7 @@ func (l *preLogger) Log(msg string) {
 }
 
 // SetCurrentTest sets the current test.
-func (l *preLogger) SetCurrentTest(ti *testing.EntityInfo) {
+func (l *preLogger) SetCurrentTest(ti *jsonprotocol.EntityInfo) {
 	l.mu.Lock()
 	defer l.mu.Unlock()
 	l.ti = ti
@@ -813,7 +814,7 @@ func timeoutOrDefault(timeout, def time.Duration) time.Duration {
 func reportOrphanTest(tout *entityOutputStream, missingFixtName string) {
 	tout.Start("")
 	_, fn, ln, _ := runtime.Caller(0)
-	tout.Error(&testing.Error{
+	tout.Error(&jsonprotocol.Error{
 		Reason: fmt.Sprintf("Fixture %q not found", missingFixtName),
 		File:   fn,
 		Line:   ln,
@@ -827,7 +828,7 @@ func reportSkippedTest(tout *entityOutputStream, result *testing.ShouldRunResult
 	tout.Start("")
 	for _, msg := range result.Errors {
 		_, fn, ln, _ := runtime.Caller(0)
-		tout.Error(&testing.Error{
+		tout.Error(&jsonprotocol.Error{
 			Reason: msg,
 			File:   fn,
 			Line:   ln,
@@ -854,7 +855,7 @@ func dumpGoroutines(tout *entityOutputStream) {
 		}
 		return sc.Err()
 	}(); err != nil {
-		tout.Error(&testing.Error{
+		tout.Error(&jsonprotocol.Error{
 			Reason: fmt.Sprintf("Failed to dump goroutines: %v", err),
 		})
 	}

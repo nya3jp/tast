@@ -9,8 +9,8 @@ import (
 	"reflect"
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
-	"chromiumos/tast/cmd/tast/internal/run/jsonprotocol"
 	"chromiumos/tast/errors"
+	"chromiumos/tast/internal/jsonprotocol"
 )
 
 // runTestsFunc is a function to run local/remote tests matched with patterns.

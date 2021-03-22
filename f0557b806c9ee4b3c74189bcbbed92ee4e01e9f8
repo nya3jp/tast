@@ -16,6 +16,23 @@
       "message": "Thank you!",
       "revId": "f0557b806c9ee4b3c74189bcbbed92ee4e01e9f8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "be96c367_d0f614f6",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 8
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-03-22T16:33:01Z",
+      "side": 1,
+      "message": "I have read the conversation and got that this temporary fix is needed considering current situation.",
+      "revId": "f0557b806c9ee4b3c74189bcbbed92ee4e01e9f8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

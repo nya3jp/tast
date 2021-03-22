@@ -398,7 +398,7 @@ func TestRunWithReports_ReportResult(t *gotesting.T) {
 		},
 		{
 			Test: test2Name,
-			Errors: []*protocol.Error{
+			Errors: []*protocol.ErrorReport{
 				{
 					Time:   test2ErrorTimeStamp,
 					Reason: test2Error.Reason,
@@ -496,7 +496,7 @@ func TestRunWithReports_ReportResultTerminate(t *gotesting.T) {
 		},
 		{
 			Test: test2Name,
-			Errors: []*protocol.Error{
+			Errors: []*protocol.ErrorReport{
 				{
 					Time:   test2ErrorTimeStamp,
 					Reason: test2Error.Reason,

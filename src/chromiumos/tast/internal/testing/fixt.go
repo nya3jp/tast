@@ -18,7 +18,6 @@ import (
 type Fixture struct {
 	// Name is the name of the fixture.
 	// Tests and fixtures use the name to specify the fixture.
-	// TODO(oka): We may want to decide the naming convention of the name, e.g. snake case.
 	Name string
 
 	// Desc is the description of the fixture.
@@ -68,16 +67,24 @@ type Fixture struct {
 	// Values are supplied using "tast run -var=name=value", and tests can access values via State.Var.
 	Vars []string
 
-	// TODO(oka): Add Data and Param fields.
+	// Data contains the names of data files fixtures access at runtime.
+	Data []string
+
+	// TODO(oka): Add Param fields.
+
+	// pkg is the package of the func registering the fixture.
+	pkg string
 }
 
 // EntityInfo returns EntityInfo for the fixture.
 func (f *Fixture) EntityInfo() *EntityInfo {
 	return &EntityInfo{
 		Name:        f.Name,
+		Pkg:         f.pkg,
 		Desc:        f.Desc,
 		Contacts:    append([]string(nil), f.Contacts...),
 		Vars:        append([]string(nil), f.Vars...),
+		Data:        append([]string(nil), f.Data...),
 		ServiceDeps: append([]string(nil), f.ServiceDeps...),
 		Fixture:     f.Parent,
 		Type:        EntityFixture,

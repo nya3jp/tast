@@ -107,7 +107,7 @@ type localTestsCategorizer func([]*testing.EntityInfo) ([]*bundleTests, error)
 // tests by the bundle name and the remote fixture name tests depend on.
 // It computes by listing all the fixtures in the bundles designated by cfg.
 func newLocalTestsCategorizer(ctx context.Context, cfg *config.Config, hst *ssh.Conn) (localTestsCategorizer, error) {
-	localFixts, err := listLocalFixtures(ctx, cfg, hst, nil)
+	localFixts, err := ListLocalFixtures(ctx, cfg, hst, nil)
 	if err != nil {
 		return nil, err
 	}

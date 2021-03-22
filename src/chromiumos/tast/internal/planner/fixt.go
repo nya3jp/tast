@@ -8,6 +8,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"path/filepath"
 
 	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/testing"
@@ -193,7 +194,7 @@ func (st *FixtureStack) Push(ctx context.Context, fixt *testing.Fixture) error {
 	ctx = testing.NewContext(ctx, ce, func(msg string) { fout.Log(msg) })
 
 	rcfg := &testing.RuntimeConfig{
-		// TODO(crbug.com/1127165): Support DataDir.
+		DataDir:      filepath.Join(st.cfg.DataDir, testing.RelativeDataDir(fixt.EntityInfo().Pkg)),
 		OutDir:       outDir,
 		Vars:         st.cfg.Features.Var,
 		CloudStorage: testing.NewCloudStorage(st.cfg.Devservers, st.cfg.TLWServer, st.cfg.DUTName),

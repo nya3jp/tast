@@ -134,7 +134,7 @@ func getTests(args *Args, bundles []string) (tests []*testing.EntityWithRunnabil
 
 // listFixtures returns listFixtures in bundles. It does this by executing
 // each bundle to ask it to marshal and print them.
-func listFixtures(bundleGlob string) (map[string][]*testing.EntityInfo, *command.StatusError) {
+func listFixtures(bundleGlob string, args *bundle.ListFixturesArgs) (map[string][]*testing.EntityInfo, *command.StatusError) {
 	type fixturesOrError struct {
 		bundle string
 		fs     []*testing.EntityInfo
@@ -147,7 +147,8 @@ func listFixtures(bundleGlob string) (map[string][]*testing.EntityInfo, *command
 	}
 
 	bundleArgs := &bundle.Args{
-		Mode: bundle.ListFixturesMode,
+		Mode:         bundle.ListFixturesMode,
+		ListFixtures: args,
 	}
 	// Run all the bundles in parallel.
 	ch := make(chan *fixturesOrError, len(bundles))

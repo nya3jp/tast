@@ -862,7 +862,7 @@ func TestStateExports(t *gotesting.T) {
 			[]string{
 				"CloudStorage",
 				"DUT",
-				// TODO(crbug.com/1035940): Provide access to data files.
+				"DataPath",
 				"Error",
 				"Errorf",
 				"Fatal",

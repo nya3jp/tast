@@ -116,15 +116,18 @@ func ListLocalTests(ctx context.Context, cfg *config.Config, state *config.State
 		localRunnerCommand(ctx, cfg, hst), cfg, state, cfg.LocalBundleGlob())
 }
 
-// listLocalFixtures returns a map from bundle to fixtures.
+// ListLocalFixtures returns a map from bundle to fixtures.
 // All the fixtures are listed if names is nil.
-func listLocalFixtures(ctx context.Context, cfg *config.Config, hst *ssh.Conn, names *[]string) (map[string][]*testing.EntityInfo, error) {
+func ListLocalFixtures(ctx context.Context, cfg *config.Config, hst *ssh.Conn, names *[]string) (map[string][]*testing.EntityInfo, error) {
 	var localFixts runner.ListFixturesResult
 	if err := runTestRunnerCommand(
 		localRunnerCommand(ctx, cfg, hst), &runner.Args{
 			Mode: runner.ListFixturesMode,
 			ListFixtures: &runner.ListFixturesArgs{
 				BundleGlob: cfg.LocalBundleGlob(),
+				BundleArgs: bundle.ListFixturesArgs{
+					Names: names,
+				},
 			},
 		}, &localFixts); err != nil {
 		return nil, fmt.Errorf("listing local fixtures: %v", err)

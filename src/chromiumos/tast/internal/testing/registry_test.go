@@ -141,10 +141,10 @@ func TestAddTestConflictingPre(t *gotesting.T) {
 func TestAddFixtureDuplicateName(t *gotesting.T) {
 	const name = "foo"
 	reg := NewRegistry()
-	if err := reg.AddFixture(&Fixture{Name: name}); err != nil {
+	if err := reg.addFixture(&Fixture{Name: name}); err != nil {
 		t.Fatalf("Fixture registration failed: %v", err)
 	}
-	if err := reg.AddFixture(&Fixture{Name: name}); err == nil {
+	if err := reg.addFixture(&Fixture{Name: name}); err == nil {
 		t.Error("Duplicated fixture registration succeeded unexpectedly")
 	}
 }
@@ -170,12 +170,12 @@ func TestAddFixtureInvalidName(t *gotesting.T) {
 		{"ieee1394", true},
 	} {
 		reg := NewRegistry()
-		err := reg.AddFixture(&Fixture{Name: tc.name})
+		err := reg.addFixture(&Fixture{Name: tc.name})
 		if tc.ok && err != nil {
-			t.Errorf("AddFixture(%q) failed: %v", tc.name, err)
+			t.Errorf("addFixture(%q) failed: %v", tc.name, err)
 		}
 		if !tc.ok && err == nil {
-			t.Errorf("AddFixture(%q) passed unexpectedly", tc.name)
+			t.Errorf("addFixture(%q) passed unexpectedly", tc.name)
 		}
 	}
 }
@@ -209,7 +209,7 @@ func TestAllFixtures(t *gotesting.T) {
 	}
 
 	for _, f := range allFixts {
-		if err := reg.AddFixture(f); err != nil {
+		if err := reg.addFixture(f); err != nil {
 			t.Fatal(err)
 		}
 	}

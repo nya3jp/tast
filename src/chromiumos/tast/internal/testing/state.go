@@ -206,6 +206,14 @@ func NewError(err error, fullMsg, lastMsg string, skipFrames int) *Error {
 	}
 }
 
+// EntityConstraints represents constraints imposed to an entity.
+// For example, a test can only access runtime variables declared on its
+// registration. This struct carries a list of declared runtime variables to be
+// checked against in State.Var.
+type EntityConstraints struct {
+	vars []string
+}
+
 // EntityRoot is the root of all State objects associated with an entity.
 // EntityRoot keeps track of states shared among all State objects associated
 // with an entity (e.g. whether any error has been reported), as well as
@@ -214,7 +222,7 @@ func NewError(err error, fullMsg, lastMsg string, skipFrames int) *Error {
 // EntityRoot must be kept private to the framework.
 type EntityRoot struct {
 	ce  *testcontext.CurrentEntity // current entity info to be available via context.Context
-	ei  *EntityInfo                // entity metadata
+	cst *EntityConstraints         // constraints for the entity
 	cfg *RuntimeConfig             // details about how to run an entity
 	out OutputStream               // stream to which logging messages and errors are reported
 
@@ -223,10 +231,10 @@ type EntityRoot struct {
 }
 
 // NewEntityRoot returns a new EntityRoot object.
-func NewEntityRoot(ce *testcontext.CurrentEntity, ei *EntityInfo, cfg *RuntimeConfig, out OutputStream) *EntityRoot {
+func NewEntityRoot(ce *testcontext.CurrentEntity, cst *EntityConstraints, cfg *RuntimeConfig, out OutputStream) *EntityRoot {
 	return &EntityRoot{
 		ce:  ce,
-		ei:  ei,
+		cst: cst,
 		cfg: cfg,
 		out: out,
 	}
@@ -294,7 +302,7 @@ func NewTestEntityRoot(test *TestInstance, cfg *RuntimeConfig, out OutputStream)
 		ServiceDeps:     test.ServiceDeps,
 	}
 	return &TestEntityRoot{
-		entityRoot: NewEntityRoot(ce, test.EntityInfo(), cfg, out),
+		entityRoot: NewEntityRoot(ce, test.Constraints(), cfg, out),
 		test:       test,
 	}
 }
@@ -535,7 +543,7 @@ type varMixin struct {
 // If a value was not supplied at runtime via the -var flag to "tast run", ok will be false.
 func (s *varMixin) Var(name string) (val string, ok bool) {
 	seen := false
-	for _, n := range s.entityRoot.ei.Vars {
+	for _, n := range s.entityRoot.cst.vars {
 		if n == name {
 			seen = true
 			break

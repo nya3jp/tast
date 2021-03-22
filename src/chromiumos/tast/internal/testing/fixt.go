@@ -71,6 +71,13 @@ type Fixture struct {
 	// TODO(oka): Add Data and Param fields.
 }
 
+// Constraints returns EntityConstraints for this fixture.
+func (f *Fixture) Constraints() *EntityConstraints {
+	return &EntityConstraints{
+		vars: append([]string(nil), f.Vars...),
+	}
+}
+
 // EntityInfo returns EntityInfo for the fixture.
 func (f *Fixture) EntityInfo() *EntityInfo {
 	return &EntityInfo{

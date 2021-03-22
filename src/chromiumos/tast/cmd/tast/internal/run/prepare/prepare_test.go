@@ -101,11 +101,11 @@ func TestPushDataFiles(t *gotesting.T) {
 		t.Fatal("getDataFilePaths() failed: ", err)
 	}
 	expPaths := []string{
-		filepath.Join(category, dataSubdir, file1),
-		filepath.Join(category, dataSubdir, file2),
-		filepath.Join(category, dataSubdir, file3),
-		filepath.Join(category, dataSubdir, extFile1),
-		filepath.Join(category, dataSubdir, extFile2),
+		filepath.Join(bundlePkg, category, dataSubdir, file1),
+		filepath.Join(bundlePkg, category, dataSubdir, file2),
+		filepath.Join(bundlePkg, category, dataSubdir, file3),
+		filepath.Join(bundlePkg, category, dataSubdir, extFile1),
+		filepath.Join(bundlePkg, category, dataSubdir, extFile2),
 	}
 	if !reflect.DeepEqual(paths, expPaths) {
 		t.Fatalf("getDataFilePaths() = %v; want %v", paths, expPaths)
@@ -113,7 +113,7 @@ func TestPushDataFiles(t *gotesting.T) {
 
 	// pushDataFiles should copy the required files to the DUT.
 	if err = pushDataFiles(context.Background(), &td.Cfg, conn.SSHConn(),
-		filepath.Join(fakerunner.MockLocalDataDir, bundlePkg), paths); err != nil {
+		fakerunner.MockLocalDataDir, paths); err != nil {
 		t.Fatal("pushDataFiles() failed: ", err)
 	}
 	expData := map[string]string{

@@ -77,7 +77,7 @@ type Delegate struct {
 // Default arguments may be specified via args, which will also be updated from stdin.
 // The caller should exit with the returned status code.
 func run(ctx context.Context, clArgs []string, stdin io.Reader, stdout, stderr io.Writer,
-	args *Args, cfg *runConfig, bt bundleType) int {
+	args *Args, scfg *staticConfig, bt bundleType) int {
 	if err := readArgs(clArgs, stdin, stderr, args, bt); err != nil {
 		return command.WriteError(stderr, err)
 	}
@@ -93,7 +93,7 @@ func run(ctx context.Context, clArgs []string, stdin io.Reader, stdout, stderr i
 
 	switch args.Mode {
 	case ListTestsMode:
-		tests, err := testsToRun(cfg, args.ListTests.Patterns)
+		tests, err := testsToRun(scfg, args.ListTests.Patterns)
 		if err != nil {
 			return command.WriteError(stderr, err)
 		}
@@ -122,7 +122,7 @@ func run(ctx context.Context, clArgs []string, stdin io.Reader, stdout, stderr i
 		}
 		return statusSuccess
 	case ExportMetadataMode:
-		tests, err := testsToRun(cfg, nil)
+		tests, err := testsToRun(scfg, nil)
 		if err != nil {
 			return command.WriteError(stderr, err)
 		}
@@ -131,11 +131,11 @@ func run(ctx context.Context, clArgs []string, stdin io.Reader, stdout, stderr i
 		}
 		return statusSuccess
 	case RunTestsMode:
-		tests, err := testsToRun(cfg, args.RunTests.Patterns)
+		tests, err := testsToRun(scfg, args.RunTests.Patterns)
 		if err != nil {
 			return command.WriteError(stderr, err)
 		}
-		if err := runTests(ctx, stdout, args, cfg, bt, tests); err != nil {
+		if err := runTests(ctx, stdout, args, scfg, bt, tests); err != nil {
 			return command.WriteError(stderr, err)
 		}
 		return statusSuccess
@@ -150,14 +150,14 @@ func run(ctx context.Context, clArgs []string, stdin io.Reader, stdout, stderr i
 }
 
 // testsToRun returns a sorted list of tests to run for the given patterns.
-func testsToRun(cfg *runConfig, patterns []string) ([]*testing.TestInstance, error) {
+func testsToRun(scfg *staticConfig, patterns []string) ([]*testing.TestInstance, error) {
 	tests, err := testing.SelectTestsByArgs(testing.GlobalRegistry().AllTests(), patterns)
 	if err != nil {
 		return nil, command.NewStatusErrorf(statusBadPatterns, "failed getting tests for %v: %v", patterns, err.Error())
 	}
 	for _, tp := range tests {
 		if tp.Timeout == 0 {
-			tp.Timeout = cfg.defaultTestTimeout
+			tp.Timeout = scfg.defaultTestTimeout
 		}
 	}
 	sort.Slice(tests, func(i, j int) bool {
@@ -166,13 +166,11 @@ func testsToRun(cfg *runConfig, patterns []string) ([]*testing.TestInstance, err
 	return tests, nil
 }
 
-// runConfig contains additional parameters used when running tests.
+// staticConfig contains configurations unique to a test bundle.
 //
-// The supplied functions are used to provide customizations that apply to all local or all remote bundles
-// and should not contain bundle-specific code (e.g. don't perform actions that depend on a UI being present,
-// since some bundles may run on Chrome-OS-derived systems that don't contain Chrome). See ReadyFunc if
-// bundle-specific work needs to be performed.
-type runConfig struct {
+// The supplied functions are used to provide customizations that apply to all
+// entities in a test bundle. They may contain bundle-specific code.
+type staticConfig struct {
 	// runHook is run at the beginning of the entire series of tests if non-nil.
 	// The returned closure is executed after the entire series of tests if not nil.
 	runHook func(context.Context) (func(context.Context) error, error)
@@ -191,9 +189,9 @@ type runConfig struct {
 	defaultTestTimeout time.Duration
 }
 
-func newArgsAndRunConfig(defaultTestTimeout time.Duration, dataDir string, d Delegate) (*Args, *runConfig) {
+func newArgsAndStaticConfig(defaultTestTimeout time.Duration, dataDir string, d Delegate) (*Args, *staticConfig) {
 	args := &Args{RunTests: &RunTestsArgs{DataDir: dataDir}}
-	cfg := &runConfig{
+	scfg := &staticConfig{
 		runHook: func(ctx context.Context) (func(context.Context) error, error) {
 			if d.Ready != nil && args.RunTests.WaitUntilReady {
 				if err := d.Ready(ctx); err != nil {
@@ -210,7 +208,7 @@ func newArgsAndRunConfig(defaultTestTimeout time.Duration, dataDir string, d Del
 		beforeDownload:     d.BeforeDownload,
 		defaultTestTimeout: defaultTestTimeout,
 	}
-	return args, cfg
+	return args, scfg
 }
 
 // eventWriter wraps MessageWriter to write events to syslog in parallel.
@@ -273,7 +271,7 @@ func (ew *eventWriter) EntityEnd(ei *testing.EntityInfo, skipReasons []string, t
 //
 // If an error is encountered in the test harness (as opposed to in a test), an error is returned.
 // Otherwise, nil is returned (test errors will be reported via EntityError control messages).
-func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
+func runTests(ctx context.Context, stdout io.Writer, args *Args, scfg *staticConfig,
 	bt bundleType, tests []*testing.TestInstance) error {
 	mw := control.NewMessageWriter(stdout)
 
@@ -311,9 +309,9 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 	// fixtures just have set up, e.g. enterprise enrollment.
 	// TODO(crbug/1184567): consider long term plan about interactions between
 	// remote fixtures and run hooks.
-	if cfg.runHook != nil && args.RunTests.StartFixtureName == "" {
+	if scfg.runHook != nil && args.RunTests.StartFixtureName == "" {
 		var err error
-		postRunFunc, err = cfg.runHook(ctx)
+		postRunFunc, err = scfg.runHook(ctx)
 		if err != nil {
 			return command.NewStatusErrorf(statusError, "pre-run failed: %v", err)
 		}
@@ -322,7 +320,7 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 	var rd *testing.RemoteData
 	if bt == remoteBundle {
 		testcontext.Log(ctx, "Connecting to DUT")
-		dt, err := connectToTarget(ctx, args.RunTests.Target, args.RunTests.KeyFile, args.RunTests.KeyDir, cfg.beforeReboot)
+		dt, err := connectToTarget(ctx, args.RunTests.Target, args.RunTests.KeyFile, args.RunTests.KeyDir, scfg.beforeReboot)
 		if err != nil {
 			return command.NewStatusErrorf(statusError, "failed to connect to DUT: %v", err)
 		}
@@ -352,9 +350,9 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, cfg *runConfig,
 		DUTName:           args.RunTests.DUTName,
 		BuildArtifactsURL: args.RunTests.BuildArtifactsURL,
 		RemoteData:        rd,
-		TestHook:          cfg.testHook,
+		TestHook:          scfg.testHook,
 		DownloadMode:      args.RunTests.DownloadMode,
-		BeforeDownload:    cfg.beforeDownload,
+		BeforeDownload:    scfg.beforeDownload,
 		Fixtures:          testing.GlobalRegistry().AllFixtures(),
 		StartFixtureName:  args.RunTests.StartFixtureName,
 		StartFixtureImpl:  &stubFixture{setUpErrors: args.RunTests.SetUpErrors},

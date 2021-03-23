@@ -232,8 +232,6 @@ type RunTestsArgs struct {
 	TLWServer string `json:"tlwServer,omitempty"`
 	// DUTName contains given DUT identifier to be passed to TLS Wiring API.
 	DUTName string `json:"dutName,omitempty"`
-	// companionDuts contains mapping between roles and addresses of companion DUTs.
-	CompanionDUTs map[string]string `json:"companionDUTs,omitempty"`
 
 	// BuildArtifactsURL is the URL of Google Cloud Storage directory, ending with a slash,
 	// containing build artifacts for the current Chrome OS image.

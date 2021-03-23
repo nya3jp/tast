@@ -331,34 +331,14 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, scfg *staticCon
 			dt.Close(ctx)
 		}()
 
-		companionDUTs := make(map[string]*dut.DUT)
-		defer func() {
-			if len(companionDUTs) == 0 {
-				return
-			}
-			testcontext.Log(ctx, "Disconnecting from companion DUTs")
-			// It is okay to ignore the error since we've finished testing at this point.
-			for _, dut := range rd.CompanionDUTs {
-				dut.Close(ctx)
-			}
-		}()
-		for role, addr := range args.RunTests.CompanionDUTs {
-			dut, err := connectToTarget(ctx, addr, args.RunTests.KeyFile, args.RunTests.KeyDir, cfg.beforeReboot)
-			if err != nil {
-				return command.NewStatusErrorf(statusError, "failed to connect to companion DUT %v: %v", addr, err)
-			}
-			companionDUTs[role] = dut
-		}
-
 		rd = &testing.RemoteData{
 			Meta: &testing.Meta{
 				TastPath: args.RunTests.TastPath,
 				Target:   args.RunTests.Target,
 				RunFlags: args.RunTests.RunFlags,
 			},
-			RPCHint:       testing.NewRPCHint(args.RunTests.LocalBundleDir, args.RunTests.TestVars),
-			DUT:           dt,
-			CompanionDUTs: companionDUTs,
+			RPCHint: testing.NewRPCHint(args.RunTests.LocalBundleDir, args.RunTests.TestVars),
+			DUT:     dt,
 		}
 	}
 

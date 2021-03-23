@@ -16,6 +16,23 @@
       "message": "There was a merge conflict but somehow Gerrit let my CL went thru. Here is the fix.\n\n",
       "revId": "5368d4f6e05639050872aa0c64449a5c9575c634",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a7561c15_4e40647f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1365249
+      },
+      "writtenOn": "2021-03-23T17:14:31Z",
+      "side": 1,
+      "message": "Approving for Submit to fix CQ breakage",
+      "revId": "5368d4f6e05639050872aa0c64449a5c9575c634",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

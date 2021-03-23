@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2606b821_4425336b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-03-23T16:54:07Z",
+      "side": 1,
+      "message": "There was a merge conflict but somehow Gerrit let my CL went thru. Here is the fix.\n\n",
+      "revId": "5368d4f6e05639050872aa0c64449a5c9575c634",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

@@ -56,6 +56,30 @@
       },
       "revId": "f0557b806c9ee4b3c74189bcbbed92ee4e01e9f8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "20a8fdd4_2e1e7b3a",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 293,
+      "author": {
+        "id": 1432127
+      },
+      "writtenOn": "2021-03-23T01:04:19Z",
+      "side": 1,
+      "message": "Done. Tested against an atlas device and it is now skipping properly.",
+      "parentUuid": "f24413b1_98fb8819",
+      "range": {
+        "startLine": 293,
+        "startChar": 0,
+        "endLine": 293,
+        "endChar": 11
+      },
+      "revId": "f0557b806c9ee4b3c74189bcbbed92ee4e01e9f8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

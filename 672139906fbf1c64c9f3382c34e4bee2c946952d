@@ -58,6 +58,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "3f4856d1_262944c9",
+        "filename": "src/chromiumos/tast/internal/sshtest/default.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-03-23T07:19:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "4ec168bf_dc16911d",
+      "range": {
+        "startLine": 35,
+        "startChar": 2,
+        "endLine": 35,
+        "endChar": 12
+      },
+      "revId": "672139906fbf1c64c9f3382c34e4bee2c946952d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "8e9d3e43_0909d50f",
@@ -81,6 +105,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "9bfad3a5_f8b8f2f4",
+        "filename": "src/chromiumos/tast/internal/sshtest/default.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-03-23T07:19:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8e9d3e43_0909d50f",
+      "range": {
+        "startLine": 38,
+        "startChar": 0,
+        "endLine": 38,
+        "endChar": 14
+      },
+      "revId": "672139906fbf1c64c9f3382c34e4bee2c946952d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "7fcc4c2c_c7786a70",
@@ -94,6 +142,30 @@
       "writtenOn": "2021-03-23T07:00:07Z",
       "side": 1,
       "message": "We\u0027ll leak servers in this panic case.",
+      "range": {
+        "startLine": 43,
+        "startChar": 3,
+        "endLine": 43,
+        "endChar": 13
+      },
+      "revId": "672139906fbf1c64c9f3382c34e4bee2c946952d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "97b46bf4_1f6d546b",
+        "filename": "src/chromiumos/tast/internal/sshtest/default.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-03-23T07:19:18Z",
+      "side": 1,
+      "message": "Good catch. thanks.",
+      "parentUuid": "7fcc4c2c_c7786a70",
       "range": {
         "startLine": 43,
         "startChar": 3,

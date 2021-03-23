@@ -30,38 +30,39 @@ import (
 	verifyIssues(t, issues, expects)
 }
 
-func TestForbiddenImports_LocalRemote(t *testing.T) {
+func TestForbiddenImports(t *testing.T) {
 	const code = `package main
 
 import (
 	"chromiumos/tast/common/foo"
 	"chromiumos/tast/local/foo"
 	"chromiumos/tast/remote/foo"
+	"some/other/package"
 )
 `
-	expects := []string{
-		"src/chromiumos/tast/local/testfile.go:6:2: Local package should not import remote package chromiumos/tast/remote/foo",
+
+	for _, tc := range []struct {
+		filepath string
+		want     []string
+	}{{
+		filepath: "src/chromiumos/tast/local/testfile.go",
+		want: []string{
+			"src/chromiumos/tast/local/testfile.go:6:2: Non-remote package should not import remote package chromiumos/tast/remote/foo",
+		},
+	}, {
+		filepath: "src/chromiumos/tast/remote/testfile.go",
+		want: []string{
+			"src/chromiumos/tast/remote/testfile.go:5:2: Non-local package should not import local package chromiumos/tast/local/foo",
+		},
+	}, {
+		filepath: "src/chromiumos/tast/common/testfile.go",
+		want: []string{
+			"src/chromiumos/tast/common/testfile.go:5:2: Non-local package should not import local package chromiumos/tast/local/foo",
+			"src/chromiumos/tast/common/testfile.go:6:2: Non-remote package should not import remote package chromiumos/tast/remote/foo",
+		},
+	}} {
+		f, fs := parse(code, tc.filepath)
+		issues := ForbiddenImports(fs, f)
+		verifyIssues(t, issues, tc.want)
 	}
-
-	f, fs := parse(code, "src/chromiumos/tast/local/testfile.go")
-	issues := ForbiddenImports(fs, f)
-	verifyIssues(t, issues, expects)
-}
-
-func TestForbiddenImports_RemoteLocal(t *testing.T) {
-	const code = `package main
-
-import (
-	"chromiumos/tast/common/foo"
-	"chromiumos/tast/local/foo"
-	"chromiumos/tast/remote/foo"
-)
-`
-	expects := []string{
-		"src/chromiumos/tast/remote/testfile.go:5:2: Remote package should not import local package chromiumos/tast/local/foo",
-	}
-
-	f, fs := parse(code, "src/chromiumos/tast/remote/testfile.go")
-	issues := ForbiddenImports(fs, f)
-	verifyIssues(t, issues, expects)
 }

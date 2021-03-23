@@ -343,7 +343,7 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, scfg *staticCon
 			}
 		}()
 		for role, addr := range args.RunTests.CompanionDUTs {
-			dut, err := connectToTarget(ctx, addr, args.RunTests.KeyFile, args.RunTests.KeyDir, cfg.beforeReboot)
+			dut, err := connectToTarget(ctx, addr, args.RunTests.KeyFile, args.RunTests.KeyDir, scfg.beforeReboot)
 			if err != nil {
 				return command.NewStatusErrorf(statusError, "failed to connect to companion DUT %v: %v", addr, err)
 			}

@@ -450,9 +450,9 @@ import (
 	"strings"
 	"time"
 
+	"chromiumos/tast/common/testexec"
 	"chromiumos/tast/ctxutil"
 	"chromiumos/tast/errors"
-	"chromiumos/tast/local/testexec"
 	"chromiumos/tast/testing"
 )
 

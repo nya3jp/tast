@@ -33,6 +33,23 @@
       "message": "Approving for Submit to fix CQ breakage",
       "revId": "5368d4f6e05639050872aa0c64449a5c9575c634",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8624050d_af57e281",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1365249
+      },
+      "writtenOn": "2021-03-23T17:16:58Z",
+      "side": 1,
+      "message": "Removing +2 to revert instead",
+      "revId": "5368d4f6e05639050872aa0c64449a5c9575c634",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

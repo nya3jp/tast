@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "69bea29b_9a912058",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 10
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-03-23T14:10:30Z",
+      "side": 1,
+      "message": "Would you tell us how you got the exhaustive list of the platform ids in this change?\nWe are also currently investigating this and going to have help from the infra team to get to the geniune data source.\n\nThe platform value in Tast today is based on\n$ cros_config /identity platform-name\n\nBased on some devices that we could examine (thanks to nya@), some more boards return platform value different from the board name.\nnami, nautilus, nocturne, rammus -\u003e \"poppy\"\npyro , sand -\u003e \"reef\"\n(This doesn\u0027t deny the possibility that there might be another board that returns id \"nami\" or so, though.)",
+      "revId": "b5fdb52620a6b39bc37c6bd1323a4ceaf95ccece",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

@@ -6,7 +6,6 @@
 package crash
 
 import (
-	"errors"
 	"os"
 	"path/filepath"
 	"strings"
@@ -108,38 +107,25 @@ func GetCrashes(dirs ...string) ([]string, error) {
 // If maxPerExec is positive, it limits the maximum number of files that will be copied
 // for each base executable. The returned warnings map contains non-fatal errors keyed by
 // crash file paths.
-func CopyNewFiles(dstDir string, newPaths, oldPaths []string, maxPerExec int) (
-	warnings map[string]error, err error) {
+func CopyNewFiles(dstDir string, newPaths, oldPaths []string) (warnings map[string]error, err error) {
 	oldMap := make(map[string]struct{}, len(oldPaths))
 	for _, p := range oldPaths {
 		oldMap[p] = struct{}{}
 	}
 
 	warnings = make(map[string]error)
-	execCount := make(map[string]int)
 	for _, sp := range newPaths {
 		if _, ok := oldMap[sp]; ok {
 			continue
 		}
-
-		var base string
-		if parts := strings.Split(filepath.Base(sp), "."); len(parts) > 2 {
-			// If there are at least three components in the crash filename, assume
-			// that it's something like name.id.dmp and count the first part.
-			base = filepath.Join(filepath.Dir(sp), parts[0])
-		} else {
-			// Otherwise, add it to the per-directory count.
-			base = filepath.Dir(sp)
-		}
-		if maxPerExec > 0 && execCount[base] == maxPerExec {
-			warnings[sp] = errors.New("skipping; too many files")
+		// Core dumps (.core) are often too large, do not copy them.
+		// Minidumps (.dmp) are usually sufficient.
+		if strings.HasSuffix(sp, ".core") {
 			continue
 		}
 
 		if err := fsutil.CopyFile(sp, filepath.Join(dstDir, filepath.Base(sp))); err != nil {
 			warnings[sp] = err
-		} else {
-			execCount[base]++
 		}
 	}
 	return warnings, nil

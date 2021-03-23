@@ -64,15 +64,14 @@ func TestCopyNewFiles(t *testing.T) {
 	defer os.RemoveAll(td)
 
 	sd := filepath.Join(td, "src")
-	a0 := writeCrashFile(t, sd, "a.0.dmp", "a0")
-	a1 := writeCrashFile(t, sd, "a.1.dmp", "a1")
-	a2 := writeCrashFile(t, sd, "a.2.dmp", "a2")
-	b0 := writeCrashFile(t, sd, "b.0.dmp", "b0")
-	c0 := writeCrashFile(t, sd, "c.0.dmp", "c0")
-	// Chrome writes files without a Chrome prefix, e.g. "dcafa20c-4eca-47a7-136b0080-44a9fc7f.dmp".
-	d0 := writeCrashFile(t, sd, "d0.dmp", "d0")
-	d1 := writeCrashFile(t, sd, "d1.dmp", "d1")
-	d2 := writeCrashFile(t, sd, "d2.dmp", "d2")
+	a0 := writeCrashFile(t, sd, "a.dmp", "a0")
+	a1 := writeCrashFile(t, sd, "a.meta", "a1")
+	a2 := writeCrashFile(t, sd, "a.core", "a2")
+	b0 := writeCrashFile(t, sd, "b.dmp", "b0")
+	c0 := writeCrashFile(t, sd, "c.dmp", "c0")
+	d0 := writeCrashFile(t, sd, "d.dmp", "d0")
+	d1 := writeCrashFile(t, sd, "d.meta", "d1")
+	d2 := writeCrashFile(t, sd, "d.core", "d2")
 
 	dd := filepath.Join(td, "dst")
 	if err := os.MkdirAll(dd, 0755); err != nil {
@@ -80,9 +79,8 @@ func TestCopyNewFiles(t *testing.T) {
 	}
 	op := []string{b0.abs}
 	np := []string{a0.abs, a1.abs, a2.abs, b0.abs, c0.abs, d0.abs, d1.abs, d2.abs}
-	max := 2
-	if _, err := CopyNewFiles(dd, np, op, max); err != nil {
-		t.Fatalf("CopyNewFiles(%v, %v, %v, %v) failed: %v", dd, np, op, max, err)
+	if _, err := CopyNewFiles(dd, np, op); err != nil {
+		t.Fatalf("CopyNewFiles(%v, %v, %v) failed: %v", dd, np, op, err)
 	}
 
 	if fs, err := testutil.ReadFiles(dd); err != nil {
@@ -90,14 +88,13 @@ func TestCopyNewFiles(t *testing.T) {
 	} else if exp := map[string]string{
 		a0.rel: a0.data,
 		a1.rel: a1.data,
-		// a2 should be skipped since we've already seen two files for "a".
+		// a2 is skipped since it is a core dump.
 		// b0 should be skipped since it already existed.
 		c0.rel: c0.data,
 		d0.rel: d0.data,
 		d1.rel: d1.data,
-		// d2 should be skipped since we've already seen two non-prefixed files.
+		// d2 is skipped since it is a core dump.
 	}; !reflect.DeepEqual(fs, exp) {
-		t.Errorf("CopyNewFiles(%v, %v, %v, %v) wrote %v; want %v", dd, np, op,
-			max, fs, exp)
+		t.Errorf("CopyNewFiles(%v, %v, %v) wrote %v; want %v", dd, np, op, fs, exp)
 	}
 }

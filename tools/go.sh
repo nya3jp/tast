@@ -14,7 +14,13 @@ readonly src_dirs=(
   "${trunk_dir}/src/platform/tast-tests-private"
 )
 
-readonly gopath_dir="${trunk_dir}/chroot/usr/lib/gopath"
+if [[ -f "/etc/cros_chroot_version" ]]; then
+  readonly chroot_dir=""
+else
+  readonly chroot_dir="${trunk_dir}/chroot"
+fi
+
+readonly gopath_dir="${chroot_dir}/usr/lib/gopath"
 
 export GOPATH="$(IFS=:; echo "${src_dirs[*]}"):${gopath_dir}"
 

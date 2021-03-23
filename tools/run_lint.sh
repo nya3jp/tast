@@ -4,18 +4,12 @@
 # found in the LICENSE file.
 
 # Absolute path to the root directory of the repo checkout.
-declare -r repo_root="$(cd "$(dirname "$(readlink -e "$0")")/../../../.."; pwd)"
-
-declare -r tast_root="${repo_root}/src/platform/tast"
-declare -r chroot_gopath="${repo_root}/chroot/usr/lib/gopath"
+readonly repo_root="$(cd "$(dirname "$(readlink -e "$0")")/../../../.."; pwd)"
+readonly tast_root="${repo_root}/src/platform/tast"
 
 export GOBIN="${tast_root}/bin"
-export GOPATH="${tast_root}:${chroot_gopath}"
 
-# Disable Go modules. Go 1.16+ enables Go modules by default.
-export GO111MODULE=auto
-
-if ! go install chromiumos/tast/cmd/tast-lint; then
+if ! "${tast_root}/tools/go.sh" install chromiumos/tast/cmd/tast-lint; then
   echo "*** Failed to build tast-lint. Please run update_chroot."
   exit 1
 fi

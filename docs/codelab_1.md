@@ -33,7 +33,7 @@ import (
 	"context"
 	"strings"
 
-	"chromiumos/tast/local/testexec"
+	"chromiumos/tast/common/testexec"
 	"chromiumos/tast/shutil"
 	"chromiumos/tast/testing"
 )
@@ -206,7 +206,7 @@ spaces, we use `%q` so they'll be quoted automatically. The `<foo>
 printed/produced/= <bar>; want <baz>` form is also common in Go unit tests and
 recommended in Tast.
 
-[testexec]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/testexec
+[testexec]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/common/testexec
 [exec]: https://golang.org/pkg/os/exec/
 [shutil]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/shutil
 
@@ -246,7 +246,7 @@ import (
 	"context"
 	"strings"
 
-	"chromiumos/tast/local/testexec"
+	"chromiumos/tast/common/testexec"
 	"chromiumos/tast/shutil"
 	"chromiumos/tast/testing"
 )

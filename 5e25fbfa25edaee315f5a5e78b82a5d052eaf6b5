@@ -1,0 +1,67 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "85cbb4a0_f8734035",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-03-23T09:31:35Z",
+      "side": 1,
+      "message": "Thanks for writing this lint! I have only minor comments.\n",
+      "revId": "5e25fbfa25edaee315f5a5e78b82a5d052eaf6b5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5ddcfbfa_4db34afa",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/check/deprecated_apis.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-03-23T09:31:35Z",
+      "side": 1,
+      "message": "You can use strconv.Unquote.\nhttps://pkg.go.dev/strconv#Unquote",
+      "range": {
+        "startLine": 69,
+        "startChar": 1,
+        "endLine": 75,
+        "endChar": 2
+      },
+      "revId": "5e25fbfa25edaee315f5a5e78b82a5d052eaf6b5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6e3f9992_1ed08dd5",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/check/deprecated_apis.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-03-23T09:31:35Z",
+      "side": 1,
+      "message": "We don\u0027t need whole *ast.ImportSpec. How about carrying just unquote(i.Path.Value)?",
+      "range": {
+        "startLine": 90,
+        "startChar": 31,
+        "endLine": 90,
+        "endChar": 46
+      },
+      "revId": "5e25fbfa25edaee315f5a5e78b82a5d052eaf6b5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

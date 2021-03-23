@@ -41,6 +41,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "e3867670_7f21d59c",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/check/deprecated_apis.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2021-03-23T09:50:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5ddcfbfa_4db34afa",
+      "range": {
+        "startLine": 69,
+        "startChar": 1,
+        "endLine": 75,
+        "endChar": 2
+      },
+      "revId": "5e25fbfa25edaee315f5a5e78b82a5d052eaf6b5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "6e3f9992_1ed08dd5",
@@ -54,6 +78,30 @@
       "writtenOn": "2021-03-23T09:31:35Z",
       "side": 1,
       "message": "We don\u0027t need whole *ast.ImportSpec. How about carrying just unquote(i.Path.Value)?",
+      "range": {
+        "startLine": 90,
+        "startChar": 31,
+        "endLine": 90,
+        "endChar": 46
+      },
+      "revId": "5e25fbfa25edaee315f5a5e78b82a5d052eaf6b5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a91a88d0_45888f7a",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/check/deprecated_apis.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2021-03-23T09:50:18Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "6e3f9992_1ed08dd5",
       "range": {
         "startLine": 90,
         "startChar": 31,

@@ -45,7 +45,7 @@ func TestRemoteCantConnect(t *gotesting.T) {
 	// established since the user key wasn't passed.
 	args := Args{
 		Mode:     RunTestsMode,
-		RunTests: &RunTestsArgs{Target: td.Srvs[0].Addr().String()},
+		RunTests: &RunTestsArgs{Target: td.Srv.Addr().String()},
 	}
 	stderr := bytes.Buffer{}
 	if status := Remote(nil, newBufferWithArgs(t, &args), &bytes.Buffer{}, &stderr, Delegate{}); status != statusError {
@@ -92,7 +92,7 @@ func TestRemoteDUT(t *gotesting.T) {
 		Mode: RunTestsMode,
 		RunTests: &RunTestsArgs{
 			OutDir:  outDir,
-			Target:  td.Srvs[0].Addr().String(),
+			Target:  td.Srv.Addr().String(),
 			KeyFile: td.UserKeyFile,
 		},
 	}
@@ -133,7 +133,7 @@ func TestRemoteReconnectBetweenTests(t *gotesting.T) {
 		Mode: RunTestsMode,
 		RunTests: &RunTestsArgs{
 			OutDir:  outDir,
-			Target:  td.Srvs[0].Addr().String(),
+			Target:  td.Srv.Addr().String(),
 			KeyFile: td.UserKeyFile,
 		},
 	}
@@ -166,7 +166,7 @@ func TestRemoteTestHooks(t *gotesting.T) {
 		Mode: RunTestsMode,
 		RunTests: &RunTestsArgs{
 			OutDir:  outDir,
-			Target:  td.Srvs[0].Addr().String(),
+			Target:  td.Srv.Addr().String(),
 			KeyFile: td.UserKeyFile,
 		},
 	}
@@ -225,7 +225,7 @@ func TestBeforeReboot(t *gotesting.T) {
 		Mode: RunTestsMode,
 		RunTests: &RunTestsArgs{
 			OutDir:  outDir,
-			Target:  td.Srvs[0].Addr().String(),
+			Target:  td.Srv.Addr().String(),
 			KeyFile: td.UserKeyFile,
 		},
 	}
@@ -254,60 +254,5 @@ func TestBeforeReboot(t *gotesting.T) {
 	// Make sure there are no unexpected errors from test functions.
 	if stderr.String() != "" {
 		t.Errorf("Remote(%+v) unexpectedly wrote %q to stderr", args, stderr.String())
-	}
-}
-
-// TestRemoteCompanionDUTs make sure we can access companion DUTs.
-func TestRemoteCompanionDUTs(t *gotesting.T) {
-	const (
-		cmd    = "some_command"
-		output = "fake output"
-	)
-	handler := func(req *sshtest.ExecReq) {
-		if req.Cmd != "exec "+cmd {
-			log.Printf("Unexpected command %q", req.Cmd)
-			req.Start(false)
-		} else {
-			req.Start(true)
-			req.Write([]byte(output))
-			req.End(0)
-		}
-	}
-
-	td := sshtest.NewTestData(handler, handler)
-	defer td.Close()
-
-	companionHost := td.Srvs[1]
-
-	// Register a test that runs a command on the DUT and saves its output.
-	realOutput := ""
-	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
-	defer restore()
-	const role = "role"
-	testing.AddTestInstance(&testing.TestInstance{Name: "pkg.Test", Func: func(ctx context.Context, s *testing.State) {
-		dt := s.CompanionDUT(role)
-		out, err := dt.Command(cmd).Output(ctx)
-		if err != nil {
-			s.Fatalf("Got error when running %q: %v", cmd, err)
-		}
-		realOutput = string(out)
-	}})
-
-	outDir := testutil.TempDir(t)
-	defer os.RemoveAll(outDir)
-	args := Args{
-		Mode: RunTestsMode,
-		RunTests: &RunTestsArgs{
-			OutDir:        outDir,
-			Target:        td.Srvs[0].Addr().String(),
-			CompanionDUTs: map[string]string{role: companionHost.Addr().String()},
-			KeyFile:       td.UserKeyFile,
-		},
-	}
-	if status := Remote(nil, newBufferWithArgs(t, &args), &bytes.Buffer{}, &bytes.Buffer{}, Delegate{}); status != statusSuccess {
-		t.Errorf("Remote(%+v) = %v; want %v", args, status, statusSuccess)
-	}
-	if realOutput != output {
-		t.Errorf("Test got output %q from DUT; want %q", realOutput, output)
 	}
 }

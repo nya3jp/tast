@@ -129,7 +129,7 @@ func TestFixtureServiceResponses(t *gotesting.T) {
 				Push: &RunFixturePushRequest{
 					Name: "fake",
 					Config: &RunFixtureConfig{
-						Target:  td.Srvs[0].Addr().String(),
+						Target:  td.Srv.Addr().String(),
 						KeyFile: td.UserKeyFile,
 					},
 				},
@@ -268,7 +268,7 @@ func TestFixtureServiceParameters(t *gotesting.T) {
 
 	cfg := &RunFixtureConfig{
 		TempDir: filepath.Join(tmpDir, "tmp"),
-		Target:  td.Srvs[0].Addr().String(),
+		Target:  td.Srv.Addr().String(),
 		KeyFile: td.UserKeyFile,
 
 		OutDir:         filepath.Join(tmpDir, "out"),
@@ -358,7 +358,7 @@ func TestFixtureServiceDefaultTempDir(t *gotesting.T) {
 	// directory for fixtures to use, and remove it after the pop operation.
 	cfg := &RunFixtureConfig{
 		TempDir: "",
-		Target:  td.Srvs[0].Addr().String(),
+		Target:  td.Srv.Addr().String(),
 		KeyFile: td.UserKeyFile,
 	}
 
@@ -451,7 +451,7 @@ func TestFixtureServiceNoSuchFixture(t *gotesting.T) {
 				Name: "noSuchFixture",
 				Config: &RunFixtureConfig{
 					OutDir:  tmpDir,
-					Target:  td.Srvs[0].Addr().String(),
+					Target:  td.Srv.Addr().String(),
 					KeyFile: td.UserKeyFile,
 				},
 			},
@@ -495,7 +495,7 @@ func TestFixtureServiceTimeout(t *gotesting.T) {
 				Config: &RunFixtureConfig{
 					TempDir:           tmpDir,
 					OutDir:            tmpDir,
-					Target:            td.Srvs[0].Addr().String(),
+					Target:            td.Srv.Addr().String(),
 					KeyFile:           td.UserKeyFile,
 					CustomGracePeriod: ptypes.DurationProto(time.Millisecond),
 				},
@@ -523,7 +523,7 @@ func TestFixtureServiceWrongRequestOrder(t *gotesting.T) {
 			Push: &RunFixturePushRequest{
 				Name: "fake",
 				Config: &RunFixtureConfig{
-					Target:  td.Srvs[0].Addr().String(),
+					Target:  td.Srv.Addr().String(),
 					KeyFile: td.UserKeyFile,
 				},
 			},

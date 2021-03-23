@@ -19,7 +19,6 @@ import (
 )
 
 const (
-	maxCrashesPerExec         = 3                   // max crashes to collect per executable
 	unifiedCompactLogFileName = "unified.log"       // compact human-readable unified system log
 	unifiedExportLogFileName  = "unified.export.gz" // full compressed unified system log with metadata
 )
@@ -115,7 +114,7 @@ func handleCollectSysInfo(ctx context.Context, args *Args, cfg *Config, w io.Wri
 	if res.CrashDir, err = ioutil.TempDir("", "tast_crashes."); err != nil {
 		return err
 	}
-	if warnings, err = crash.CopyNewFiles(res.CrashDir, dumps, cmdArgs.InitialState.MinidumpPaths, maxCrashesPerExec); err != nil {
+	if warnings, err = crash.CopyNewFiles(res.CrashDir, dumps, cmdArgs.InitialState.MinidumpPaths); err != nil {
 		return err
 	}
 	for p, w := range warnings {

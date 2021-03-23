@@ -27,11 +27,16 @@ func RegistrationErrors() []error {
 	return registrationErrors
 }
 
+// AddRegistrationError adds a registration error.
+func AddRegistrationError(file string, line int, err error) {
+	registrationErrors = append(registrationErrors, fmt.Errorf("%s:%d: %v", file, line, err))
+}
+
 // AddTest adds test t to the global registry.
 func AddTest(t *Test) {
 	if err := GlobalRegistry().AddTest(t); err != nil {
 		file, line := realCaller()
-		registrationErrors = append(registrationErrors, fmt.Errorf("%s:%d: %v", file, line, err))
+		AddRegistrationError(file, line, err)
 	}
 }
 
@@ -40,7 +45,7 @@ func AddTest(t *Test) {
 func AddTestInstance(t *TestInstance) {
 	if err := GlobalRegistry().AddTestInstance(t); err != nil {
 		file, line := realCaller()
-		registrationErrors = append(registrationErrors, fmt.Errorf("%s:%d: %v", file, line, err))
+		AddRegistrationError(file, line, err)
 	}
 }
 
@@ -48,7 +53,7 @@ func AddTestInstance(t *TestInstance) {
 func AddService(s *Service) {
 	if err := GlobalRegistry().AddService(s); err != nil {
 		file, line := realCaller()
-		registrationErrors = append(registrationErrors, fmt.Errorf("%s:%d: %v", file, line, err))
+		AddRegistrationError(file, line, err)
 	}
 }
 
@@ -56,7 +61,7 @@ func AddService(s *Service) {
 func AddFixture(f *Fixture) {
 	if err := GlobalRegistry().AddFixture(f); err != nil {
 		file, line := realCaller()
-		registrationErrors = append(registrationErrors, fmt.Errorf("%s:%d: %v", file, line, err))
+		AddRegistrationError(file, line, err)
 	}
 }
 

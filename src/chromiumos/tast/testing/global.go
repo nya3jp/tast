@@ -26,8 +26,10 @@ func RegistrationErrors() []error {
 // The argument of AddTest() in the case should be a pointer to a
 // composite literal of testing.Test.
 func AddTest(t *Test) {
-	pc, _, _, _ := runtime.Caller(1)
-	verifier.verifyAndRegister(pc)
+	pc, file, line, _ := runtime.Caller(1)
+	if err := verifier.verifyAndRegister(pc); err != nil {
+		testing.AddRegistrationError(file, line, err)
+	}
 	testing.AddTest(t)
 }
 

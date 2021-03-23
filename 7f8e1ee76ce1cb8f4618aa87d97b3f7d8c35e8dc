@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0c2a6856_f854060c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-03-23T17:47:20Z",
+      "side": 1,
+      "message": "This Reland fixed the merge conflict between \n\nhttps://chromium-review.googlesource.com/c/chromiumos/platform/tast/+/2753451\nand \nhttps://chromium-review.googlesource.com/c/chromiumos/platform/tast/+/2777977",
+      "revId": "7f8e1ee76ce1cb8f4618aa87d97b3f7d8c35e8dc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

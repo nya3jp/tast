@@ -16,6 +16,92 @@
       "message": "I have addressed review comment. Please review again. Thanks.",
       "revId": "672139906fbf1c64c9f3382c34e4bee2c946952d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d45a05cd_a2f11927",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 8
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-03-23T07:00:07Z",
+      "side": 1,
+      "message": "LGTM with nits, thanks!\n",
+      "revId": "672139906fbf1c64c9f3382c34e4bee2c946952d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4ec168bf_dc16911d",
+        "filename": "src/chromiumos/tast/internal/sshtest/default.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 35,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-03-23T07:00:07Z",
+      "side": 1,
+      "message": "I don\u0027t think returning nil is useful... let us panic in this case.",
+      "range": {
+        "startLine": 35,
+        "startChar": 2,
+        "endLine": 35,
+        "endChar": 12
+      },
+      "revId": "672139906fbf1c64c9f3382c34e4bee2c946952d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8e9d3e43_0909d50f",
+        "filename": "src/chromiumos/tast/internal/sshtest/default.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-03-23T07:00:07Z",
+      "side": 1,
+      "message": "This decl needs unnecessary?",
+      "range": {
+        "startLine": 38,
+        "startChar": 0,
+        "endLine": 38,
+        "endChar": 14
+      },
+      "revId": "672139906fbf1c64c9f3382c34e4bee2c946952d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7fcc4c2c_c7786a70",
+        "filename": "src/chromiumos/tast/internal/sshtest/default.go",
+        "patchSetId": 8
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-03-23T07:00:07Z",
+      "side": 1,
+      "message": "We\u0027ll leak servers in this panic case.",
+      "range": {
+        "startLine": 43,
+        "startChar": 3,
+        "endLine": 43,
+        "endChar": 13
+      },
+      "revId": "672139906fbf1c64c9f3382c34e4bee2c946952d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

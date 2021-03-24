@@ -73,6 +73,30 @@
       },
       "revId": "c79beab70ff4934e9e420be2901be206967f4dad",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3c72a797_d7f34a3c",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 328,
+      "author": {
+        "id": 1432127
+      },
+      "writtenOn": "2021-03-24T22:31:26Z",
+      "side": 1,
+      "message": "are you sure about hana -\u003e oak? I spotchecked the hana devices in our wificell pool and they both returned hana.\n\nlocalhost ~ # mosys platform name\nHana",
+      "parentUuid": "4f4fe570_39396e20",
+      "range": {
+        "startLine": 328,
+        "startChar": 27,
+        "endLine": 328,
+        "endChar": 30
+      },
+      "revId": "c79beab70ff4934e9e420be2901be206967f4dad",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

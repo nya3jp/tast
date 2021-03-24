@@ -302,7 +302,6 @@ func Wifi80211ax() Condition {
 			"coral",
 			"cyan",
 			"edgar",
-			"elm",
 			"enguarde",
 			"eve",
 			"fievel",
@@ -314,6 +313,7 @@ func Wifi80211ax() Condition {
 			"grunt",
 			"guado",
 			"hana",
+			"jecht", // The mosys for tidus is jecht. tidus does not support 802.11ax
 			"kalista",
 			"kefka",
 			"kevin",
@@ -325,6 +325,7 @@ func Wifi80211ax() Condition {
 			"nautilus",
 			"ninja",
 			"nocturne",
+			"oak", // The mosys for elm is oak. elm does not support 802.11ax
 			"octopus",
 			"orco",
 			"paine",
@@ -346,7 +347,6 @@ func Wifi80211ax() Condition {
 			"sumo",
 			"swanky",
 			"terra",
-			"tidus",
 			"tiger",
 			"trogdor",
 			"ultima",

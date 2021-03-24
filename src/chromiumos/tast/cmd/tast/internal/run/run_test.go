@@ -33,6 +33,7 @@ import (
 	"chromiumos/tast/internal/faketlw"
 	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/protocol"
+	"chromiumos/tast/internal/runner"
 )
 
 func TestRunPartialRun(t *gotesting.T) {
@@ -52,14 +53,14 @@ func TestRunPartialRun(t *gotesting.T) {
 			mw.WriteMessage(&control.EntityEnd{Time: time.Unix(3, 0), Name: testName})
 			mw.WriteMessage(&control.RunEnd{Time: time.Unix(4, 0), OutDir: ""})
 		case jsonprotocol.RunnerListTestsMode:
-			tests := []jsonprotocol.EntityWithRunnabilityInfo{
+			tests := []*jsonprotocol.EntityWithRunnabilityInfo{
 				{
 					EntityInfo: jsonprotocol.EntityInfo{
 						Name: testName,
 					},
 				},
 			}
-			json.NewEncoder(stdout).Encode(tests)
+			runner.WriteListTestsResultAsJSON(stdout, tests)
 		}
 		return 0
 	}
@@ -101,7 +102,7 @@ func TestRunEphemeralDevserver(t *gotesting.T) {
 			mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
 			mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
 		case jsonprotocol.RunnerListTestsMode:
-			json.NewEncoder(stdout).Encode([]jsonprotocol.EntityWithRunnabilityInfo{})
+			runner.WriteListTestsResultAsJSON(stdout, nil)
 		}
 		return 0
 	}
@@ -222,7 +223,7 @@ func testRunDownloadPrivateBundles(t *gotesting.T, td *fakerunner.LocalTestData)
 			mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
 			mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
 		case jsonprotocol.RunnerListTestsMode:
-			json.NewEncoder(stdout).Encode([]jsonprotocol.EntityWithRunnabilityInfo{})
+			runner.WriteListTestsResultAsJSON(stdout, nil)
 		case jsonprotocol.RunnerDownloadPrivateBundlesMode:
 			dutName := args.DownloadPrivateBundles.DUTName
 			if strings.Contains(dutName, "@") {
@@ -295,7 +296,7 @@ func TestRunTLW(t *gotesting.T) {
 			mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
 			mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
 		case jsonprotocol.RunnerListTestsMode:
-			json.NewEncoder(stdout).Encode([]jsonprotocol.EntityWithRunnabilityInfo{})
+			runner.WriteListTestsResultAsJSON(stdout, nil)
 		}
 		return 0
 	}
@@ -330,7 +331,7 @@ func TestRunWithReports_LogStream(t *gotesting.T) {
 		test2LogText = "Here's another test log message"
 	)
 	td.Cfg.ResDir = resultDir
-	tests := []jsonprotocol.EntityWithRunnabilityInfo{
+	tests := []*jsonprotocol.EntityWithRunnabilityInfo{
 		{
 			EntityInfo: jsonprotocol.EntityInfo{
 				Name: "pkg.Test_1",
@@ -357,7 +358,7 @@ func TestRunWithReports_LogStream(t *gotesting.T) {
 			mw.WriteMessage(&control.EntityEnd{Time: time.Unix(40, 0), Name: test2Name})
 			mw.WriteMessage(&control.RunEnd{Time: time.Unix(50, 0), OutDir: ""})
 		case jsonprotocol.RunnerListTestsMode:
-			json.NewEncoder(stdout).Encode(tests)
+			runner.WriteListTestsResultAsJSON(stdout, tests)
 		case jsonprotocol.RunnerListFixturesMode:
 			json.NewEncoder(stdout).Encode(&jsonprotocol.RunnerListFixturesResult{})
 		}
@@ -406,7 +407,7 @@ func TestRunWithReports_ReportResult(t *gotesting.T) {
 		Stack:  "None",
 	}
 	test2ErrorTime := time.Unix(35, 0)
-	tests := []jsonprotocol.EntityWithRunnabilityInfo{
+	tests := []*jsonprotocol.EntityWithRunnabilityInfo{
 		{
 			EntityInfo: jsonprotocol.EntityInfo{
 				Name: test1Name,
@@ -439,7 +440,7 @@ func TestRunWithReports_ReportResult(t *gotesting.T) {
 			mw.WriteMessage(&control.EntityEnd{Time: time.Unix(50, 0), Name: test3Name, SkipReasons: []string{test3SkipReason}})
 			mw.WriteMessage(&control.RunEnd{Time: time.Unix(60, 0), OutDir: ""})
 		case jsonprotocol.RunnerListTestsMode:
-			json.NewEncoder(stdout).Encode(tests)
+			runner.WriteListTestsResultAsJSON(stdout, tests)
 		case jsonprotocol.RunnerListFixturesMode:
 			json.NewEncoder(stdout).Encode(&jsonprotocol.RunnerListFixturesResult{})
 		}
@@ -504,7 +505,7 @@ func TestRunWithReports_ReportResultTerminate(t *gotesting.T) {
 		Stack:  "None",
 	}
 	test2ErrorTime := time.Unix(35, 0)
-	tests := []jsonprotocol.EntityWithRunnabilityInfo{
+	tests := []*jsonprotocol.EntityWithRunnabilityInfo{
 		{
 			EntityInfo: jsonprotocol.EntityInfo{
 				Name: test1Name,
@@ -537,7 +538,7 @@ func TestRunWithReports_ReportResultTerminate(t *gotesting.T) {
 			mw.WriteMessage(&control.EntityEnd{Time: time.Unix(50, 0), Name: test3Name, SkipReasons: []string{test3SkipReason}})
 			mw.WriteMessage(&control.RunEnd{Time: time.Unix(60, 0), OutDir: ""})
 		case jsonprotocol.RunnerListTestsMode:
-			json.NewEncoder(stdout).Encode(tests)
+			runner.WriteListTestsResultAsJSON(stdout, tests)
 		case jsonprotocol.RunnerListFixturesMode:
 			json.NewEncoder(stdout).Encode(jsonprotocol.RunnerListFixturesResult{})
 		}
@@ -578,7 +579,7 @@ func TestRunWithSkippedTests(t *gotesting.T) {
 	defer td.Close()
 
 	td.Cfg.RunLocal = true
-	tests := []jsonprotocol.EntityWithRunnabilityInfo{
+	tests := []*jsonprotocol.EntityWithRunnabilityInfo{
 		{
 			EntityInfo: jsonprotocol.EntityInfo{
 				Name: "pkg.Supported_1",
@@ -617,7 +618,7 @@ func TestRunWithSkippedTests(t *gotesting.T) {
 
 			mw.WriteMessage(&control.RunEnd{Time: time.Unix(count, 0), OutDir: ""})
 		case jsonprotocol.RunnerListTestsMode:
-			json.NewEncoder(stdout).Encode(tests)
+			runner.WriteListTestsResultAsJSON(stdout, tests)
 		case jsonprotocol.RunnerListFixturesMode:
 			json.NewEncoder(stdout).Encode(&jsonprotocol.RunnerListFixturesResult{})
 		}
@@ -647,7 +648,7 @@ func TestListTests(t *gotesting.T) {
 	td := fakerunner.NewLocalTestData(t)
 	defer td.Close()
 
-	tests := []jsonprotocol.EntityWithRunnabilityInfo{
+	tests := []*jsonprotocol.EntityWithRunnabilityInfo{
 		{
 			EntityInfo: jsonprotocol.EntityInfo{
 				Name: "pkg.Test",
@@ -668,8 +669,7 @@ func TestListTests(t *gotesting.T) {
 			Mode:      jsonprotocol.RunnerListTestsMode,
 			ListTests: &jsonprotocol.RunnerListTestsArgs{BundleGlob: fakerunner.MockLocalBundleGlob},
 		})
-
-		json.NewEncoder(stdout).Encode(tests)
+		runner.WriteListTestsResultAsJSON(stdout, tests)
 		return 0
 	}
 	td.Cfg.TotalShards = 1
@@ -696,7 +696,7 @@ func TestListTestsWithSharding(t *gotesting.T) {
 	td := fakerunner.NewLocalTestData(t)
 	defer td.Close()
 
-	tests := []jsonprotocol.EntityWithRunnabilityInfo{
+	tests := []*jsonprotocol.EntityWithRunnabilityInfo{
 		{
 			EntityInfo: jsonprotocol.EntityInfo{
 				Name: "pkg.Test",
@@ -718,7 +718,7 @@ func TestListTestsWithSharding(t *gotesting.T) {
 			ListTests: &jsonprotocol.RunnerListTestsArgs{BundleGlob: fakerunner.MockLocalBundleGlob},
 		})
 
-		json.NewEncoder(stdout).Encode(tests)
+		runner.WriteListTestsResultAsJSON(stdout, tests)
 		return 0
 	}
 	td.Cfg.TotalShards = 2
@@ -747,7 +747,7 @@ func TestListTestsWithSkippedTests(t *gotesting.T) {
 	td := fakerunner.NewLocalTestData(t)
 	defer td.Close()
 
-	tests := []jsonprotocol.EntityWithRunnabilityInfo{
+	tests := []*jsonprotocol.EntityWithRunnabilityInfo{
 		{
 			EntityInfo: jsonprotocol.EntityInfo{
 				Name: "pkg.Test",
@@ -775,8 +775,7 @@ func TestListTestsWithSkippedTests(t *gotesting.T) {
 			Mode:      jsonprotocol.RunnerListTestsMode,
 			ListTests: &jsonprotocol.RunnerListTestsArgs{BundleGlob: fakerunner.MockLocalBundleGlob},
 		})
-
-		json.NewEncoder(stdout).Encode(tests)
+		runner.WriteListTestsResultAsJSON(stdout, tests)
 		return 0
 	}
 	td.Cfg.TotalShards = 2
@@ -948,7 +947,7 @@ func TestRunTestsGetInitialSysInfo(t *gotesting.T) {
 
 // TestRunTestsSkipTests check if runTests skipping testings correctly.
 func TestRunTestsSkipTests(t *gotesting.T) {
-	tests := []jsonprotocol.EntityWithRunnabilityInfo{
+	tests := []*jsonprotocol.EntityWithRunnabilityInfo{
 		{
 			EntityInfo: jsonprotocol.EntityInfo{
 				Name:         "unsupported.Test0",
@@ -996,7 +995,7 @@ func TestRunTestsSkipTests(t *gotesting.T) {
 				},
 			})
 		case jsonprotocol.RunnerListTestsMode:
-			json.NewEncoder(stdout).Encode(tests)
+			runner.WriteListTestsResultAsJSON(stdout, tests)
 		case jsonprotocol.RunnerRunTestsMode:
 			testNames := args.RunTests.BundleArgs.Patterns
 			mw := control.NewMessageWriter(stdout)

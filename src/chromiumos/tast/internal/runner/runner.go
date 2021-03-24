@@ -72,7 +72,7 @@ func Run(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, args *jsonp
 		if err != nil {
 			return command.WriteError(stderr, err)
 		}
-		if err := json.NewEncoder(stdout).Encode(tests); err != nil {
+		if err := WriteListTestsResultAsJSON(stdout, tests); err != nil {
 			return command.WriteError(stderr, err)
 		}
 		return statusSuccess
@@ -340,4 +340,12 @@ func killStaleRunners(ctx context.Context, sig syscall.Signal) {
 			testcontext.Logf(ctx, "Failed killing process group %d: %v", proc.Pid, err)
 		}
 	}
+}
+
+// WriteListTestsResultAsJSON packs given parameters as a ListTestsResult, and
+// writes it to w in JSON format. This function is exported for unit tests to
+// implement fake runner.
+func WriteListTestsResultAsJSON(w io.Writer, tests []*jsonprotocol.EntityWithRunnabilityInfo) error {
+	var r jsonprotocol.RunnerListTestsResult = tests
+	return json.NewEncoder(w).Encode(r)
 }

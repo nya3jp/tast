@@ -6,7 +6,6 @@ package prepare
 
 import (
 	"context"
-	"encoding/json"
 	"io"
 	"io/ioutil"
 	"path/filepath"
@@ -16,6 +15,7 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/fakerunner"
 	"chromiumos/tast/cmd/tast/internal/run/target"
 	"chromiumos/tast/internal/jsonprotocol"
+	"chromiumos/tast/internal/runner"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/testutil"
 )
@@ -43,7 +43,7 @@ func TestPushDataFiles(t *gotesting.T) {
 	)
 
 	// Make local_test_runner list two tests containing the first three files (with overlap).
-	tests := []jsonprotocol.EntityWithRunnabilityInfo{
+	tests := []*jsonprotocol.EntityWithRunnabilityInfo{
 		{EntityInfo: jsonprotocol.EntityInfo{Name: category + ".Test1", Pkg: categoryPkg, Data: []string{file1, file2}}},
 		{EntityInfo: jsonprotocol.EntityInfo{Name: category + ".Test2", Pkg: categoryPkg, Data: []string{file2, file3, extFile1, extFile2}}},
 	}
@@ -56,8 +56,7 @@ func TestPushDataFiles(t *gotesting.T) {
 				BundleGlob: fakerunner.MockLocalBundleGlob,
 			},
 		})
-
-		json.NewEncoder(stdout).Encode(tests)
+		runner.WriteListTestsResultAsJSON(stdout, tests)
 		return 0
 	}
 

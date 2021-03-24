@@ -155,6 +155,9 @@ type RunnerListTestsArgs struct {
 	BundleGlob string `json:"bundleGlob,omitempty"`
 }
 
+// RunnerListTestsResult holds the result of a ListTestsMode command
+type RunnerListTestsResult []*EntityWithRunnabilityInfo
+
 // RunnerListFixturesArgs is nested within RunnerArgs and contains arguments used by RunnerListFixturesMode.
 type RunnerListFixturesArgs struct {
 	// BundleGlob is a glob-style path matching test bundles to execute.

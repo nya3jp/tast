@@ -35,7 +35,7 @@ func NewTestData(handlers ...ExecHandler) *TestData {
 	if len(handlers) == 0 {
 		panic(errors.New("no handler is specfied"))
 	}
-	userKey, hostKey = MustGenerateKeys()
+	userKey, hostKey := MustGenerateKeys()
 	var servers []*SSHServer
 	for _, handler := range handlers {
 		srv, err := NewSSHServer(&userKey.PublicKey, hostKey, handler)

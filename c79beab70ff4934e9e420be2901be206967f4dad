@@ -16,6 +16,23 @@
       "message": "Updates to blocklist.",
       "revId": "c79beab70ff4934e9e420be2901be206967f4dad",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ed2e62d4_0fc365a3",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1158184
+      },
+      "writtenOn": "2021-03-24T21:42:38Z",
+      "side": 1,
+      "message": "Normally you\u0027d revert the offending CL https://crrev.com/c/2692943, it gives you more time to fix it properly, validate the fix, and wait for OWNERS review http://g/chromeos-eng/bTgNbpwkKlQ/RK0RgLOJAQAJ\n\nI *think* the sheriff can bypass OWNERS for reverts (http://doc/1RpayMEErF9GubYgpAj00xKnP_tcydQjTAZP1BdkSxz4#heading\u003dh.7r7an318354p) but I\u0027m not sure, I\u0027ll defer to abps@ on that\n\n+1 for the fix in general, up to abps@ if he prefers a revert/reland of a forward fix.",
+      "revId": "c79beab70ff4934e9e420be2901be206967f4dad",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

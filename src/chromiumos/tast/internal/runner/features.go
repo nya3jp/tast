@@ -373,7 +373,7 @@ func newDeviceConfigAndHardwareFeatures() (dc *device.Config, retFeatures *confi
 		}
 	}()
 
-	_, err = func() (int64, error) {
+	storageBytes, err := func() (int64, error) {
 		b, err := exec.Command("lsblk", "-J", "-b").Output()
 		if err != nil {
 			return 0, err
@@ -383,7 +383,9 @@ func newDeviceConfigAndHardwareFeatures() (dc *device.Config, retFeatures *confi
 	if err != nil {
 		warns = append(warns, fmt.Sprintf("failed to get disk size: %v", err))
 	}
-	// TODO(crbug.com/1184468, crbug.com/1186743): store the disk size value to features after the new field is added
+	features.Storage.Component = &configpb.Component_Storage{
+		SizeGb: uint32(storageBytes / 1_000_000_000),
+	}
 
 	return config, features, warns
 }

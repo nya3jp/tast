@@ -521,7 +521,6 @@ func (t *TestInstance) EntityWithRunnabilityInfo(features *dep.Features) *jsonpr
 
 // WriteTestsAsJSON marshals ts to JSON and writes the resulting data to w.
 func WriteTestsAsJSON(w io.Writer, ts []*jsonprotocol.EntityWithRunnabilityInfo) error {
-
 	b, err := json.Marshal(ts)
 	if err != nil {
 		return err

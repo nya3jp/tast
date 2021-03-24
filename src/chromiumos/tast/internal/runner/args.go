@@ -30,8 +30,8 @@ type RunMode int
 const (
 	// RunTestsMode indicates that the runner should run all matched tests.
 	RunTestsMode RunMode = 0
-	// ListTestsMode indicates that the runner should write information about matched tests to stdout as a
-	// JSON array of testing.Test structs and exit.
+	// ListTestsMode indicates that the runner should write information about
+	// matched tests as marshalized ListTestsResult.
 	ListTestsMode = 2
 	// GetSysInfoStateMode indicates that the runner should write a JSON-marshaled GetSysInfoStateResult struct
 	// to stdout and exit. It's used by the tast executable to get the initial state of the system before tests
@@ -174,6 +174,9 @@ type ListTestsArgs struct {
 	// BundleGlob is a glob-style path matching test bundles to execute.
 	BundleGlob string `json:"bundleGlob,omitempty"`
 }
+
+// ListTestsResult holds the result of a ListTestsMode command.
+type ListTestsResult []*jsonprotocol.EntityWithRunnabilityInfo
 
 // ListFixturesArgs is nested within Args and contains arguments used by ListFixturesMode.
 type ListFixturesArgs struct {

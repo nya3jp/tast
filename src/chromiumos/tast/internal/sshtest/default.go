@@ -6,7 +6,6 @@ package sshtest
 
 import (
 	"crypto/rsa"
-	"errors"
 	"os"
 )
 
@@ -25,45 +24,29 @@ func MustGenerateKeys() (userKey, hostKey *rsa.PrivateKey) {
 }
 
 // TestData contains common data that can be used by tests that interact with an SSHServer.
-type TestData struct { // NOLINT
-	Srvs        []*SSHServer
+type TestData struct {
+	Srv         *SSHServer
 	UserKeyFile string
 }
 
 // NewTestData initializes and returns a TestData struct. Panics on error.
-func NewTestData(handlers ...ExecHandler) *TestData {
-	if len(handlers) == 0 {
-		panic(errors.New("no handler is specfied"))
-	}
-	userKey, hostKey = MustGenerateKeys()
-	var servers []*SSHServer
-	for _, handler := range handlers {
-		srv, err := NewSSHServer(&userKey.PublicKey, hostKey, handler)
-		if err != nil {
-			for _, srv := range servers {
-				srv.Close()
-			}
-			panic(err)
-		}
-		servers = append(servers, srv)
-	}
-	userKeyFile, err := WriteKey(userKey)
-	if err != nil {
-		for _, srv := range servers {
-			srv.Close()
-		}
+func NewTestData(handler ExecHandler) *TestData {
+	userKey, hostKey := MustGenerateKeys()
+
+	d := TestData{}
+	var err error
+	if d.Srv, err = NewSSHServer(&userKey.PublicKey, hostKey, handler); err != nil {
 		panic(err)
 	}
-	return &TestData{
-		Srvs:        servers,
-		UserKeyFile: userKeyFile,
+	if d.UserKeyFile, err = WriteKey(userKey); err != nil {
+		d.Srv.Close()
+		panic(err)
 	}
+	return &d
 }
 
 // Close stops the SSHServer and deletes the user key file.
 func (d *TestData) Close() {
-	for _, s := range d.Srvs {
-		s.Close()
-	}
+	d.Srv.Close()
 	os.Remove(d.UserKeyFile)
 }

@@ -786,7 +786,6 @@ func TestStateExports(t *gotesting.T) {
 			State{},
 			[]string{
 				"CloudStorage",
-				"CompanionDUT",
 				"DUT",
 				"DataFileSystem",
 				"DataPath",
@@ -815,7 +814,6 @@ func TestStateExports(t *gotesting.T) {
 			PreState{},
 			[]string{
 				"CloudStorage",
-				"CompanionDUT",
 				"DUT",
 				"DataFileSystem",
 				"DataPath",
@@ -840,7 +838,6 @@ func TestStateExports(t *gotesting.T) {
 			TestHookState{},
 			[]string{
 				"CloudStorage",
-				"CompanionDUT",
 				"DUT",
 				"DataFileSystem",
 				"DataPath",
@@ -865,7 +862,6 @@ func TestStateExports(t *gotesting.T) {
 			FixtState{},
 			[]string{
 				"CloudStorage",
-				"CompanionDUT",
 				"DUT",
 				// TODO(crbug.com/1035940): Provide access to data files.
 				"Error",
@@ -889,7 +885,6 @@ func TestStateExports(t *gotesting.T) {
 			FixtTestState{},
 			[]string{
 				"CloudStorage",
-				"CompanionDUT",
 				"DUT",
 				"Error",
 				"Errorf",

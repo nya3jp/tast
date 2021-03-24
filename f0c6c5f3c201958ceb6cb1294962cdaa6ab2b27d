@@ -16,6 +16,23 @@
       "message": "Hi alemate@, can you try if this change fixes the issue?",
       "revId": "f0c6c5f3c201958ceb6cb1294962cdaa6ab2b27d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6e081c70_f9f723d9",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1003168
+      },
+      "writtenOn": "2021-03-24T00:40:20Z",
+      "side": 1,
+      "message": "It works. Thank you!",
+      "revId": "f0c6c5f3c201958ceb6cb1294962cdaa6ab2b27d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

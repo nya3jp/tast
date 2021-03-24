@@ -10,7 +10,7 @@ import (
 	"fmt"
 	"time"
 
-	"chromiumos/tast/cmd/tast/internal/run/jsonprotocol"
+	"chromiumos/tast/internal/jsonprotocol"
 )
 
 // testSuites is the top leve XML element of JUnit result.

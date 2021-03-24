@@ -8,6 +8,7 @@ import (
 	"sync"
 
 	"chromiumos/tast/errors"
+	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/internal/timing"
 )
@@ -16,13 +17,13 @@ import (
 // Note that testing.OutputStream is for a single entity in contrast.
 type OutputStream interface {
 	// EntityStart reports that an entity has started.
-	EntityStart(ei *testing.EntityInfo, outDir string) error
+	EntityStart(ei *jsonprotocol.EntityInfo, outDir string) error
 	// EntityLog reports an informational log message.
-	EntityLog(ei *testing.EntityInfo, msg string) error
+	EntityLog(ei *jsonprotocol.EntityInfo, msg string) error
 	// EntityError reports an error from an entity. An entity that reported one or more errors should be considered failure.
-	EntityError(ei *testing.EntityInfo, e *testing.Error) error
+	EntityError(ei *jsonprotocol.EntityInfo, e *jsonprotocol.Error) error
 	// EntityEnd reports that an entity has ended. If skipReasons is not empty it is considered skipped.
-	EntityEnd(ei *testing.EntityInfo, skipReasons []string, timingLog *timing.Log) error
+	EntityEnd(ei *jsonprotocol.EntityInfo, skipReasons []string, timingLog *timing.Log) error
 }
 
 // entityOutputStream wraps planner.OutputStream for a single entity.
@@ -31,17 +32,17 @@ type OutputStream interface {
 // it is safe to call its methods concurrently from multiple goroutines.
 type entityOutputStream struct {
 	out OutputStream
-	ei  *testing.EntityInfo
+	ei  *jsonprotocol.EntityInfo
 
 	mu    sync.Mutex
-	errs  []*testing.Error
+	errs  []*jsonprotocol.Error
 	ended bool
 }
 
 var _ testing.OutputStream = &entityOutputStream{}
 
 // newEntityOutputStream creates entityOutputStream for out and ei.
-func newEntityOutputStream(out OutputStream, ei *testing.EntityInfo) *entityOutputStream {
+func newEntityOutputStream(out OutputStream, ei *jsonprotocol.EntityInfo) *entityOutputStream {
 	return &entityOutputStream{out: out, ei: ei}
 }
 
@@ -75,7 +76,7 @@ func (w *entityOutputStream) Log(msg string) error {
 }
 
 // Log reports an error from the entity.
-func (w *entityOutputStream) Error(e *testing.Error) error {
+func (w *entityOutputStream) Error(e *jsonprotocol.Error) error {
 	w.mu.Lock()
 	defer w.mu.Unlock()
 	if w.ended {
@@ -105,7 +106,7 @@ func (w *entityOutputStream) End(skipReasons []string, timingLog *timing.Log) er
 }
 
 // Errors returns errors reported so far.
-func (w *entityOutputStream) Errors() []*testing.Error {
+func (w *entityOutputStream) Errors() []*jsonprotocol.Error {
 	w.mu.Lock()
 	defer w.mu.Unlock()
 	// We always append to errs, so it is safe to return without copy.

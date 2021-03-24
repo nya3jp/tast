@@ -19,6 +19,6 @@ const (
 //
 // Main function of local test bundles should call LocalDefault instead.
 func Local(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, d Delegate) int {
-	args, cfg := newArgsAndRunConfig(localTestTimeout, localTestDataDir, d)
+	args, cfg := newArgsAndStaticConfig(localTestTimeout, localTestDataDir, d)
 	return run(context.Background(), clArgs, stdin, stdout, stderr, args, cfg, localBundle)
 }

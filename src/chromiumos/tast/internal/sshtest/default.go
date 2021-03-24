@@ -24,13 +24,15 @@ func MustGenerateKeys() (userKey, hostKey *rsa.PrivateKey) {
 }
 
 // TestData contains common data that can be used by tests that interact with an SSHServer.
-type TestData struct { // NOLINT
+type TestData struct {
 	Srv         *SSHServer
 	UserKeyFile string
 }
 
 // NewTestData initializes and returns a TestData struct. Panics on error.
-func NewTestData(userKey, hostKey *rsa.PrivateKey, handler ExecHandler) *TestData {
+func NewTestData(handler ExecHandler) *TestData {
+	userKey, hostKey := MustGenerateKeys()
+
 	d := TestData{}
 	var err error
 	if d.Srv, err = NewSSHServer(&userKey.PublicKey, hostKey, handler); err != nil {

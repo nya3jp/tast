@@ -139,6 +139,11 @@ Tests in this group are not used for build verification.
 		Desc:     `A group of ARC tests to be run in Android PFQ and collect data for specific Android build.`,
 	},
 	{
+		Name:     "arc-functional",
+		Contacts: []string{"chromeos-sw-engprod@google.com"},
+		Desc:     `A group of ARC Functional tests.`,
+	},
+	{
 		Name:     "appcompat",
 		Contacts: []string{"chromeos-engprod@google.com"},
 		Desc:     `A group of ARC app compatibility tests.`,
@@ -371,6 +376,38 @@ Meta tests should be a subset of mainline critical tests.
 			{
 				Name: "paper-io_scanning",
 				Desc: `Scanning tests.`,
+			},
+		},
+	},
+	{
+		Name:     "parallels_mainline",
+		Contacts: []string{"parallels-cros@google.com"},
+		Desc: `Functional tests that must be run on devices licensed for Parallels
+boot-up testing. Otherwise the same as group:mainline.`,
+		Subattrs: []*attr{
+			{
+				Name: "informational",
+				Desc: `Indicates that failures can be ignored.`,
+			},
+		},
+	},
+	{
+		Name:     "parallels_crosbolt",
+		Contacts: []string{"crosbolt-eng@google.com"},
+		Desc: `Performance tests that must be run on devices licensed for
+Parallels boot-up testing. Otherwise the same as group:crosbolt.`,
+		Subattrs: []*attr{
+			{
+				Name: "parallels_crosbolt_perbuild",
+				Desc: `Indicates that this test should run for every Chrome OS build.`,
+			},
+			{
+				Name: "parallels_crosbolt_nightly",
+				Desc: `Indicates that this test should run nightly.`,
+			},
+			{
+				Name: "parallels_crosbolt_weekly",
+				Desc: `Indicates that this test should run weekly.`,
 			},
 		},
 	},

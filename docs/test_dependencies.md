@@ -97,6 +97,7 @@ The following software features are defined:
 *   `hostap_hwsim` - Whether system has the hostap project's test dependencies
     (scripts, daemons) installed and configured appropriately.
 *    igt  - Boards that can run igt-gpu-tools tests
+*   `iioservice` - Whether the device has CrOS IIO Service running.
 *   `iwlwifi_rescan` - Ability to remove/rescan WiFi PCI device when the
     hardware becomes non-responsive.
 *   `lacros` - Whether the system supports running [lacros].
@@ -119,7 +120,10 @@ The following software features are defined:
     the `android` feature; DUTs will have exactly one of these two features.
 *   `no_asan` - Build was not built with Address Sanitizer. Similar to `aslr`.
 *   `no_borealis_host` - Boards which is not designed to host borealis.
+*   `no_elm_hana_3_18` - Skip boards elm and hana with kernel-3.18 as they have
+    issue performing WiFi scan. See [crbug.com/1015719](https://crbug.com/1015719).
 *   `no_eth_loss_on_reboot` - Board does not lose ethernet on reboot. Context: b/178529170
+*   `no_iioservice` - Build was not built with CrOS IIO Service.
 *   `no_msan` - Build was not built with Memory Sanitizer.
 *   `no_qemu` - For tests not for Chrome OS QEMU images.
 *   `no_symlink_mount` - Symlink mounting is disabled via the
@@ -129,6 +133,8 @@ The following software features are defined:
 *   `oci` - The ability to use the `run_oci` program to execute code within
     [OCI] containers.
 *   `ocr` - [Optical Character Recognition Service] daemon.
+*   `ondevice_handwriting` - On-device handwriting recognition support in `ml_service`.
+    This implies `ml_service`.
 *   `plugin_vm` - The ability to run Plugin VMs.
 *   `proprietary_codecs` - Indicates if Chrome supports proprietary video
     codecs (e.g. H.264). This is supported by Chrome official builds and Chromium
@@ -159,6 +165,8 @@ The following software features are defined:
 *   `transparent_hugepage` - [Transparent Hugepage] support in the Linux kernel.
 *   `untrusted_vm` - The ability to run an untrusted VM.
 *   `usbguard` - The ability to allow or block USB devices based on policy.
+*   `use_fscrypt_v1` - The board is set to use v1 fscrypt policy for user vault.
+*   `use_fscrypt_v2` - The board is set to use v2 fscrypt policy for user vault.
 *   `v4l2_codec` - Whether or not v4l2 video acceleration API is supported by this DUT.
 *   `vaapi` - Whether or not VA-API is supported by this DUT.
 *   `video_decoder_direct` - The platform uses the VideoDecoder (VD) by default.
@@ -181,6 +189,7 @@ The following software features are defined:
     the DTC (Diagnostic and Telemetry Controller) VM, a special EC interface,
     and a dock firmware updater.
 *   `wired_8021x` - The ability to use 802.1X for authentication over Ethernet.
+*   `no_kernel_upstream` - Skip boards with continuously-rebased kernel.
 
 [amd64]: https://en.wikipedia.org/wiki/X86-64
 [arm]: https://en.wikipedia.org/wiki/ARM_architecture

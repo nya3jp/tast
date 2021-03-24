@@ -7,7 +7,6 @@ package run
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"io"
 	"net"
 	"path/filepath"
@@ -24,35 +23,39 @@ import (
 	"go.chromium.org/chromiumos/config/go/api/test/tls"
 	"google.golang.org/grpc"
 
+	"chromiumos/tast/cmd/tast/internal/run/config"
+	"chromiumos/tast/cmd/tast/internal/run/fakerunner"
+	"chromiumos/tast/cmd/tast/internal/run/target"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/control"
+	"chromiumos/tast/internal/dep"
 	"chromiumos/tast/internal/fakereports"
 	"chromiumos/tast/internal/faketlw"
+	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/runner"
-	"chromiumos/tast/internal/testing"
 )
 
 func TestRunPartialRun(t *gotesting.T) {
-	td := newLocalTestData(t)
-	defer td.close()
+	td := fakerunner.NewLocalTestData(t)
+	defer td.Close()
 
 	// Set a nonexistent path for the remote runner so that it will fail.
-	td.cfg.RunLocal = true
-	td.cfg.RunRemote = true
+	td.Cfg.RunLocal = true
+	td.Cfg.RunRemote = true
 	const testName = "pkg.Test"
-	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
 		switch args.Mode {
 		case runner.RunTestsMode:
 			mw := control.NewMessageWriter(stdout)
 			mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 1})
-			mw.WriteMessage(&control.EntityStart{Time: time.Unix(2, 0), Info: testing.EntityInfo{Name: testName}})
+			mw.WriteMessage(&control.EntityStart{Time: time.Unix(2, 0), Info: jsonprotocol.EntityInfo{Name: testName}})
 			mw.WriteMessage(&control.EntityEnd{Time: time.Unix(3, 0), Name: testName})
 			mw.WriteMessage(&control.RunEnd{Time: time.Unix(4, 0), OutDir: ""})
 		case runner.ListTestsMode:
-			tests := []testing.EntityWithRunnabilityInfo{
+			tests := []jsonprotocol.EntityWithRunnabilityInfo{
 				{
-					EntityInfo: testing.EntityInfo{
+					EntityInfo: jsonprotocol.EntityInfo{
 						Name: testName,
 					},
 				},
@@ -61,22 +64,22 @@ func TestRunPartialRun(t *gotesting.T) {
 		}
 		return 0
 	}
-	td.cfg.RemoteRunner = filepath.Join(td.tempDir, "missing_remote_test_runner")
+	td.Cfg.RemoteRunner = filepath.Join(td.TempDir, "missing_remote_test_runner")
 
-	status, _ := Run(context.Background(), &td.cfg, &td.state)
+	status, _ := Run(context.Background(), &td.Cfg, &td.State)
 	if status.ExitCode != subcommands.ExitFailure {
-		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitFailure, td.logbuf.String())
+		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitFailure, td.LogBuf.String())
 	}
 }
 
 func TestRunError(t *gotesting.T) {
-	td := newLocalTestData(t)
-	defer td.close()
+	td := fakerunner.NewLocalTestData(t)
+	defer td.Close()
 
-	td.cfg.RunLocal = true
-	td.cfg.KeyFile = "" // force SSH auth error
+	td.Cfg.RunLocal = true
+	td.Cfg.KeyFile = "" // force SSH auth error
 
-	if status, _ := Run(context.Background(), &td.cfg, &td.state); status.ExitCode != subcommands.ExitFailure {
+	if status, _ := Run(context.Background(), &td.Cfg, &td.State); status.ExitCode != subcommands.ExitFailure {
 		t.Errorf("Run() = %v; want %v", status, subcommands.ExitFailure)
 	} else if !status.FailedBeforeRun {
 		// local()'s initial connection attempt will fail, so we won't try to run tests.
@@ -85,47 +88,45 @@ func TestRunError(t *gotesting.T) {
 }
 
 func TestRunEphemeralDevserver(t *gotesting.T) {
-	td := newLocalTestData(t)
-	defer td.close()
+	td := fakerunner.NewLocalTestData(t)
+	defer td.Close()
 
-	td.cfg.RunLocal = true
-	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+	td.Cfg.RunLocal = true
+	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
 		switch args.Mode {
 		case runner.RunTestsMode:
+			if len(args.RunTests.Devservers) != 1 {
+				t.Errorf("Devservers=%#v; want 1 entry", args.RunTests.Devservers)
+			}
 			mw := control.NewMessageWriter(stdout)
 			mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
 			mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
 		case runner.ListTestsMode:
-			json.NewEncoder(stdout).Encode([]testing.EntityWithRunnabilityInfo{})
+			json.NewEncoder(stdout).Encode([]jsonprotocol.EntityWithRunnabilityInfo{})
 		}
 		return 0
 	}
-	td.cfg.Devservers = nil // clear the default mock devservers set in newLocalTestData
-	td.cfg.UseEphemeralDevserver = true
+	td.Cfg.Devservers = nil // clear the default mock devservers set in NewLocalTestData
+	td.Cfg.UseEphemeralDevserver = true
 
-	if status, _ := Run(context.Background(), &td.cfg, &td.state); status.ExitCode != subcommands.ExitSuccess {
-		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.logbuf.String())
-	}
-
-	exp := []string{fmt.Sprintf("http://127.0.0.1:%d", localEphemeralDevserverPort)}
-	if !reflect.DeepEqual(td.state.LocalDevservers, exp) {
-		t.Errorf("Run() set devserver=%v; want %v", td.state.LocalDevservers, exp)
+	if status, _ := Run(context.Background(), &td.Cfg, &td.State); status.ExitCode != subcommands.ExitSuccess {
+		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.LogBuf.String())
 	}
 }
 
 func TestRunDownloadPrivateBundles(t *gotesting.T) {
-	td := newLocalTestData(t)
-	defer td.close()
-	td.cfg.Devservers = []string{"http://example.com:8080"}
+	td := fakerunner.NewLocalTestData(t)
+	defer td.Close()
+	td.Cfg.Devservers = []string{"http://example.com:8080"}
 	testRunDownloadPrivateBundles(t, td)
 }
 
 func TestRunDownloadPrivateBundlesWithTLW(t *gotesting.T) {
 	const targetName = "dut001"
-	td := newLocalTestData(t)
-	defer td.close()
+	td := fakerunner.NewLocalTestData(t)
+	defer td.Close()
 
-	host, portStr, err := net.SplitHostPort(td.cfg.Target)
+	host, portStr, err := net.SplitHostPort(td.Cfg.Target)
 	if err != nil {
 		t.Fatal("net.SplitHostPort: ", err)
 	}
@@ -141,9 +142,9 @@ func TestRunDownloadPrivateBundlesWithTLW(t *gotesting.T) {
 		faketlw.WithDUTName(targetName))
 	defer stopFunc()
 
-	td.cfg.Target = targetName
-	td.cfg.TLWServer = tlwAddr
-	td.cfg.Devservers = nil
+	td.Cfg.Target = targetName
+	td.Cfg.TLWServer = tlwAddr
+	td.Cfg.Devservers = nil
 	testRunDownloadPrivateBundles(t, td)
 }
 
@@ -162,22 +163,22 @@ func checkTLWServer(address string) error {
 	return nil
 }
 
-func testRunDownloadPrivateBundles(t *gotesting.T, td *localTestData) {
-	td.cfg.RunLocal = true
+func testRunDownloadPrivateBundles(t *gotesting.T, td *fakerunner.LocalTestData) {
+	td.Cfg.RunLocal = true
 	called := false
-	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
 		switch args.Mode {
 		case runner.RunTestsMode:
 			mw := control.NewMessageWriter(stdout)
 			mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
 			mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
 		case runner.ListTestsMode:
-			json.NewEncoder(stdout).Encode([]testing.EntityWithRunnabilityInfo{})
+			json.NewEncoder(stdout).Encode([]jsonprotocol.EntityWithRunnabilityInfo{})
 		case runner.DownloadPrivateBundlesMode:
 			exp := runner.DownloadPrivateBundlesArgs{
-				Devservers:        td.cfg.Devservers,
-				DUTName:           td.cfg.Target,
-				BuildArtifactsURL: td.cfg.BuildArtifactsURL,
+				Devservers:        td.Cfg.Devservers,
+				DUTName:           td.Cfg.Target,
+				BuildArtifactsURL: td.Cfg.BuildArtifactsURL,
 			}
 			if diff := cmp.Diff(exp, *args.DownloadPrivateBundles,
 				cmpopts.IgnoreFields(*args.DownloadPrivateBundles, "TLWServer")); diff != "" {
@@ -186,7 +187,7 @@ func testRunDownloadPrivateBundles(t *gotesting.T, td *localTestData) {
 			called = true
 			json.NewEncoder(stdout).Encode(&runner.DownloadPrivateBundlesResult{})
 
-			if td.cfg.TLWServer != "" {
+			if td.Cfg.TLWServer != "" {
 				// Try connecting to TLWServer through ssh port forwarding.
 				if err := checkTLWServer(args.DownloadPrivateBundles.TLWServer); err != nil {
 					t.Errorf("TLW server was not available: %v", err)
@@ -198,10 +199,10 @@ func testRunDownloadPrivateBundles(t *gotesting.T, td *localTestData) {
 		return 0
 	}
 
-	td.cfg.DownloadPrivateBundles = true
+	td.Cfg.DownloadPrivateBundles = true
 
-	if status, _ := Run(context.Background(), &td.cfg, &td.state); status.ExitCode != subcommands.ExitSuccess {
-		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.logbuf.String())
+	if status, _ := Run(context.Background(), &td.Cfg, &td.State); status.ExitCode != subcommands.ExitSuccess {
+		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.LogBuf.String())
 	}
 	if !called {
 		t.Errorf("Run did not call downloadPrivateBundles")
@@ -211,10 +212,10 @@ func testRunDownloadPrivateBundles(t *gotesting.T, td *localTestData) {
 func TestRunTLW(t *gotesting.T) {
 	const targetName = "the_dut"
 
-	td := newLocalTestData(t)
-	defer td.close()
+	td := fakerunner.NewLocalTestData(t)
+	defer td.Close()
 
-	host, portStr, err := net.SplitHostPort(td.cfg.Target)
+	host, portStr, err := net.SplitHostPort(td.Cfg.Target)
 	if err != nil {
 		t.Fatal("net.SplitHostPort: ", err)
 	}
@@ -229,23 +230,23 @@ func TestRunTLW(t *gotesting.T) {
 	}))
 	defer stopFunc()
 
-	td.cfg.RunLocal = true
-	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+	td.Cfg.RunLocal = true
+	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
 		switch args.Mode {
 		case runner.RunTestsMode:
 			mw := control.NewMessageWriter(stdout)
 			mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
 			mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
 		case runner.ListTestsMode:
-			json.NewEncoder(stdout).Encode([]testing.EntityWithRunnabilityInfo{})
+			json.NewEncoder(stdout).Encode([]jsonprotocol.EntityWithRunnabilityInfo{})
 		}
 		return 0
 	}
-	td.cfg.Target = targetName
-	td.cfg.TLWServer = tlwAddr
+	td.Cfg.Target = targetName
+	td.Cfg.TLWServer = tlwAddr
 
-	if status, _ := Run(context.Background(), &td.cfg, &td.state); status.ExitCode != subcommands.ExitSuccess {
-		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.logbuf.String())
+	if status, _ := Run(context.Background(), &td.Cfg, &td.State); status.ExitCode != subcommands.ExitSuccess {
+		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.LogBuf.String())
 	}
 }
 
@@ -254,10 +255,10 @@ func TestRunWithReports_LogStream(t *gotesting.T) {
 	srv, stopFunc, addr := fakereports.Start(t, 0)
 	defer stopFunc()
 
-	td := newLocalTestData(t)
-	defer td.close()
-	td.cfg.ReportsServer = addr
-	td.cfg.RunLocal = true
+	td := fakerunner.NewLocalTestData(t)
+	defer td.Close()
+	td.Cfg.ReportsServer = addr
+	td.Cfg.RunLocal = true
 
 	const (
 		resultDir = "/tmp/tast/results/latest"
@@ -271,30 +272,30 @@ func TestRunWithReports_LogStream(t *gotesting.T) {
 		test2Desc    = "Second description"
 		test2LogText = "Here's another test log message"
 	)
-	td.cfg.ResDir = resultDir
-	tests := []testing.EntityWithRunnabilityInfo{
+	td.Cfg.ResDir = resultDir
+	tests := []jsonprotocol.EntityWithRunnabilityInfo{
 		{
-			EntityInfo: testing.EntityInfo{
+			EntityInfo: jsonprotocol.EntityInfo{
 				Name: "pkg.Test_1",
 			},
 		},
 		{
-			EntityInfo: testing.EntityInfo{
+			EntityInfo: jsonprotocol.EntityInfo{
 				Name: "pkg.Test_2",
 			},
 		},
 	}
 
-	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
 		switch args.Mode {
 		case runner.RunTestsMode:
 			patterns := args.RunTests.BundleArgs.Patterns
 			mw := control.NewMessageWriter(stdout)
 			mw.WriteMessage(&control.RunStart{Time: time.Unix(0, 0), NumTests: len(patterns)})
-			mw.WriteMessage(&control.EntityStart{Time: time.Unix(10, 0), Info: testing.EntityInfo{Name: test1Name}})
+			mw.WriteMessage(&control.EntityStart{Time: time.Unix(10, 0), Info: jsonprotocol.EntityInfo{Name: test1Name}})
 			mw.WriteMessage(&control.EntityLog{Time: time.Unix(15, 0), Name: test1Name, Text: test1LogText})
 			mw.WriteMessage(&control.EntityEnd{Time: time.Unix(20, 0), Name: test1Name})
-			mw.WriteMessage(&control.EntityStart{Time: time.Unix(30, 0), Info: testing.EntityInfo{Name: test2Name}})
+			mw.WriteMessage(&control.EntityStart{Time: time.Unix(30, 0), Info: jsonprotocol.EntityInfo{Name: test2Name}})
 			mw.WriteMessage(&control.EntityLog{Time: time.Unix(35, 0), Name: test2Name, Text: test2LogText})
 			mw.WriteMessage(&control.EntityEnd{Time: time.Unix(40, 0), Name: test2Name})
 			mw.WriteMessage(&control.RunEnd{Time: time.Unix(50, 0), OutDir: ""})
@@ -305,8 +306,8 @@ func TestRunWithReports_LogStream(t *gotesting.T) {
 		}
 		return 0
 	}
-	if status, _ := Run(context.Background(), &td.cfg, &td.state); status.ExitCode != subcommands.ExitSuccess {
-		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.logbuf.String())
+	if status, _ := Run(context.Background(), &td.Cfg, &td.State); status.ExitCode != subcommands.ExitSuccess {
+		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.LogBuf.String())
 	}
 	if str := string(srv.GetLog(test1Name, test1Path)); !strings.Contains(str, test1LogText) {
 		t.Errorf("Expected log not received for test 1; got %q; should contain %q", str, test1LogText)
@@ -327,10 +328,10 @@ func TestRunWithReports_ReportResult(t *gotesting.T) {
 	srv, stopFunc, addr := fakereports.Start(t, 0)
 	defer stopFunc()
 
-	td := newLocalTestData(t)
-	defer td.close()
-	td.cfg.ReportsServer = addr
-	td.cfg.RunLocal = true
+	td := fakerunner.NewLocalTestData(t)
+	defer td.Close()
+	td.Cfg.ReportsServer = addr
+	td.Cfg.RunLocal = true
 
 	const (
 		test1Name       = "foo.FirstTest"
@@ -341,43 +342,43 @@ func TestRunWithReports_ReportResult(t *gotesting.T) {
 		test3Desc       = "Third description"
 		test3SkipReason = "Test skip reason"
 	)
-	test2Error := testing.Error{
+	test2Error := jsonprotocol.Error{
 		Reason: "Intentionally failed",
 		File:   "/tmp/file.go",
 		Line:   21,
 		Stack:  "None",
 	}
 	test2ErrorTime := time.Unix(35, 0)
-	tests := []testing.EntityWithRunnabilityInfo{
+	tests := []jsonprotocol.EntityWithRunnabilityInfo{
 		{
-			EntityInfo: testing.EntityInfo{
+			EntityInfo: jsonprotocol.EntityInfo{
 				Name: test1Name,
 			},
 		},
 		{
-			EntityInfo: testing.EntityInfo{
+			EntityInfo: jsonprotocol.EntityInfo{
 				Name: test2Name,
 			},
 		},
 		{
-			EntityInfo: testing.EntityInfo{
+			EntityInfo: jsonprotocol.EntityInfo{
 				Name: test3Name,
 			},
 		},
 	}
 
-	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
 		switch args.Mode {
 		case runner.RunTestsMode:
 			patterns := args.RunTests.BundleArgs.Patterns
 			mw := control.NewMessageWriter(stdout)
 			mw.WriteMessage(&control.RunStart{Time: time.Unix(0, 0), NumTests: len(patterns)})
-			mw.WriteMessage(&control.EntityStart{Time: time.Unix(10, 0), Info: testing.EntityInfo{Name: test1Name}})
+			mw.WriteMessage(&control.EntityStart{Time: time.Unix(10, 0), Info: jsonprotocol.EntityInfo{Name: test1Name}})
 			mw.WriteMessage(&control.EntityEnd{Time: time.Unix(20, 0), Name: test1Name})
-			mw.WriteMessage(&control.EntityStart{Time: time.Unix(30, 0), Info: testing.EntityInfo{Name: test2Name}})
+			mw.WriteMessage(&control.EntityStart{Time: time.Unix(30, 0), Info: jsonprotocol.EntityInfo{Name: test2Name}})
 			mw.WriteMessage(&control.EntityError{Time: test2ErrorTime, Name: test2Name, Error: test2Error})
 			mw.WriteMessage(&control.EntityEnd{Time: time.Unix(40, 0), Name: test2Name})
-			mw.WriteMessage(&control.EntityStart{Time: time.Unix(45, 0), Info: testing.EntityInfo{Name: test3Name}})
+			mw.WriteMessage(&control.EntityStart{Time: time.Unix(45, 0), Info: jsonprotocol.EntityInfo{Name: test3Name}})
 			mw.WriteMessage(&control.EntityEnd{Time: time.Unix(50, 0), Name: test3Name, SkipReasons: []string{test3SkipReason}})
 			mw.WriteMessage(&control.RunEnd{Time: time.Unix(60, 0), OutDir: ""})
 		case runner.ListTestsMode:
@@ -387,8 +388,8 @@ func TestRunWithReports_ReportResult(t *gotesting.T) {
 		}
 		return 0
 	}
-	if status, _ := Run(context.Background(), &td.cfg, &td.state); status.ExitCode != subcommands.ExitSuccess {
-		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.logbuf.String())
+	if status, _ := Run(context.Background(), &td.Cfg, &td.State); status.ExitCode != subcommands.ExitSuccess {
+		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.LogBuf.String())
 	}
 	test2ErrorTimeStamp, _ := ptypes.TimestampProto(test2ErrorTime)
 	expectedResults := []*protocol.ReportResultRequest{
@@ -425,10 +426,10 @@ func TestRunWithReports_ReportResultTerminate(t *gotesting.T) {
 	srv, stopFunc, addr := fakereports.Start(t, 1)
 	defer stopFunc()
 
-	td := newLocalTestData(t)
-	defer td.close()
-	td.cfg.ReportsServer = addr
-	td.cfg.RunLocal = true
+	td := fakerunner.NewLocalTestData(t)
+	defer td.Close()
+	td.Cfg.ReportsServer = addr
+	td.Cfg.RunLocal = true
 
 	const (
 		test1Name       = "foo.FirstTest"
@@ -439,43 +440,43 @@ func TestRunWithReports_ReportResultTerminate(t *gotesting.T) {
 		test3Desc       = "Third description"
 		test3SkipReason = "Test skip reason"
 	)
-	test2Error := testing.Error{
+	test2Error := jsonprotocol.Error{
 		Reason: "Intentionally failed",
 		File:   "/tmp/file.go",
 		Line:   21,
 		Stack:  "None",
 	}
 	test2ErrorTime := time.Unix(35, 0)
-	tests := []testing.EntityWithRunnabilityInfo{
+	tests := []jsonprotocol.EntityWithRunnabilityInfo{
 		{
-			EntityInfo: testing.EntityInfo{
+			EntityInfo: jsonprotocol.EntityInfo{
 				Name: test1Name,
 			},
 		},
 		{
-			EntityInfo: testing.EntityInfo{
+			EntityInfo: jsonprotocol.EntityInfo{
 				Name: test2Name,
 			},
 		},
 		{
-			EntityInfo: testing.EntityInfo{
+			EntityInfo: jsonprotocol.EntityInfo{
 				Name: test3Name,
 			},
 		},
 	}
 
-	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
 		switch args.Mode {
 		case runner.RunTestsMode:
 			patterns := args.RunTests.BundleArgs.Patterns
 			mw := control.NewMessageWriter(stdout)
 			mw.WriteMessage(&control.RunStart{Time: time.Unix(0, 0), NumTests: len(patterns)})
-			mw.WriteMessage(&control.EntityStart{Time: time.Unix(10, 0), Info: testing.EntityInfo{Name: test1Name}})
+			mw.WriteMessage(&control.EntityStart{Time: time.Unix(10, 0), Info: jsonprotocol.EntityInfo{Name: test1Name}})
 			mw.WriteMessage(&control.EntityEnd{Time: time.Unix(20, 0), Name: test1Name})
-			mw.WriteMessage(&control.EntityStart{Time: time.Unix(30, 0), Info: testing.EntityInfo{Name: test2Name}})
+			mw.WriteMessage(&control.EntityStart{Time: time.Unix(30, 0), Info: jsonprotocol.EntityInfo{Name: test2Name}})
 			mw.WriteMessage(&control.EntityError{Time: test2ErrorTime, Name: test2Name, Error: test2Error})
 			mw.WriteMessage(&control.EntityEnd{Time: time.Unix(40, 0), Name: test2Name})
-			mw.WriteMessage(&control.EntityStart{Time: time.Unix(45, 0), Info: testing.EntityInfo{Name: test3Name}})
+			mw.WriteMessage(&control.EntityStart{Time: time.Unix(45, 0), Info: jsonprotocol.EntityInfo{Name: test3Name}})
 			mw.WriteMessage(&control.EntityEnd{Time: time.Unix(50, 0), Name: test3Name, SkipReasons: []string{test3SkipReason}})
 			mw.WriteMessage(&control.RunEnd{Time: time.Unix(60, 0), OutDir: ""})
 		case runner.ListTestsMode:
@@ -485,8 +486,8 @@ func TestRunWithReports_ReportResultTerminate(t *gotesting.T) {
 		}
 		return 0
 	}
-	if status, _ := Run(context.Background(), &td.cfg, &td.state); status.ExitCode != subcommands.ExitFailure {
-		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitFailure, td.logbuf.String())
+	if status, _ := Run(context.Background(), &td.Cfg, &td.State); status.ExitCode != subcommands.ExitFailure {
+		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitFailure, td.LogBuf.String())
 	}
 	test2ErrorTimeStamp, _ := ptypes.TimestampProto(test2ErrorTime)
 	expectedResults := []*protocol.ReportResultRequest{
@@ -516,29 +517,29 @@ func TestRunWithReports_ReportResultTerminate(t *gotesting.T) {
 // TestRunWithSkippedTests makes sure that tests with unsupported dependency
 // would be skipped.
 func TestRunWithSkippedTests(t *gotesting.T) {
-	td := newLocalTestData(t)
-	defer td.close()
+	td := fakerunner.NewLocalTestData(t)
+	defer td.Close()
 
-	td.cfg.RunLocal = true
-	tests := []testing.EntityWithRunnabilityInfo{
+	td.Cfg.RunLocal = true
+	tests := []jsonprotocol.EntityWithRunnabilityInfo{
 		{
-			EntityInfo: testing.EntityInfo{
+			EntityInfo: jsonprotocol.EntityInfo{
 				Name: "pkg.Supported_1",
 			},
 		},
 		{
-			EntityInfo: testing.EntityInfo{
+			EntityInfo: jsonprotocol.EntityInfo{
 				Name: "pkg.Unsupported_1",
 			},
 			SkipReason: "Not Supported",
 		},
 		{
-			EntityInfo: testing.EntityInfo{
+			EntityInfo: jsonprotocol.EntityInfo{
 				Name: "pkg.Supported_2",
 			},
 		},
 	}
-	td.runFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
 		switch args.Mode {
 		case runner.RunTestsMode:
 			patterns := args.RunTests.BundleArgs.Patterns
@@ -547,7 +548,7 @@ func TestRunWithSkippedTests(t *gotesting.T) {
 			mw.WriteMessage(&control.RunStart{Time: time.Unix(count, 0), NumTests: len(patterns)})
 			for _, p := range patterns {
 				count = count + 1
-				mw.WriteMessage(&control.EntityStart{Time: time.Unix(count, 0), Info: testing.EntityInfo{Name: p}})
+				mw.WriteMessage(&control.EntityStart{Time: time.Unix(count, 0), Info: jsonprotocol.EntityInfo{Name: p}})
 				count = count + 1
 				var skipReasons []string
 				if strings.HasPrefix(p, "pkg.Unsupported") {
@@ -565,9 +566,9 @@ func TestRunWithSkippedTests(t *gotesting.T) {
 		}
 		return 0
 	}
-	status, results := Run(context.Background(), &td.cfg, &td.state)
+	status, results := Run(context.Background(), &td.Cfg, &td.State)
 	if status.ExitCode == subcommands.ExitFailure {
-		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.logbuf.String())
+		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.LogBuf.String())
 	}
 	if len(results) != len(tests) {
 		t.Errorf("Got wrong number of results %v; want %v", len(results), len(tests))
@@ -581,6 +582,422 @@ func TestRunWithSkippedTests(t *gotesting.T) {
 			t.Errorf("Test %q has no SkipReason; want something", r.Name)
 
 		}
+	}
+}
+
+// TestListTests make sure list test can list all tests.
+func TestListTests(t *gotesting.T) {
+	td := fakerunner.NewLocalTestData(t)
+	defer td.Close()
+
+	tests := []jsonprotocol.EntityWithRunnabilityInfo{
+		{
+			EntityInfo: jsonprotocol.EntityInfo{
+				Name: "pkg.Test",
+				Desc: "This is a test",
+				Attr: []string{"attr1", "attr2"},
+			},
+		},
+		{
+			EntityInfo: jsonprotocol.EntityInfo{
+				Name: "pkg.AnotherTest",
+				Desc: "Another test",
+			},
+		},
+	}
+
+	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+		fakerunner.CheckArgs(t, args, &runner.Args{
+			Mode:      runner.ListTestsMode,
+			ListTests: &runner.ListTestsArgs{BundleGlob: fakerunner.MockLocalBundleGlob},
+		})
+
+		json.NewEncoder(stdout).Encode(tests)
+		return 0
+	}
+	td.Cfg.TotalShards = 1
+	td.Cfg.RunLocal = true
+
+	cc := target.NewConnCache(&td.Cfg)
+	defer cc.Close(context.Background())
+
+	results, err := listTests(context.Background(), &td.Cfg, &td.State, cc)
+	if err != nil {
+		t.Error("Failed to list local tests: ", err)
+	}
+	expected := make([]*jsonprotocol.EntityResult, len(tests))
+	for i := 0; i < len(tests); i++ {
+		expected[i] = &jsonprotocol.EntityResult{EntityInfo: tests[i].EntityInfo, SkipReason: tests[i].SkipReason}
+	}
+	if !reflect.DeepEqual(results, expected) {
+		t.Errorf("Unexpected list of local tests: got %+v; want %+v", results, expected)
+	}
+}
+
+// TestListTestsWithSharding make sure list test can list tests in specified shards.
+func TestListTestsWithSharding(t *gotesting.T) {
+	td := fakerunner.NewLocalTestData(t)
+	defer td.Close()
+
+	tests := []jsonprotocol.EntityWithRunnabilityInfo{
+		{
+			EntityInfo: jsonprotocol.EntityInfo{
+				Name: "pkg.Test",
+				Desc: "This is a test",
+				Attr: []string{"attr1", "attr2"},
+			},
+		},
+		{
+			EntityInfo: jsonprotocol.EntityInfo{
+				Name: "pkg.AnotherTest",
+				Desc: "Another test",
+			},
+		},
+	}
+
+	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+		fakerunner.CheckArgs(t, args, &runner.Args{
+			Mode:      runner.ListTestsMode,
+			ListTests: &runner.ListTestsArgs{BundleGlob: fakerunner.MockLocalBundleGlob},
+		})
+
+		json.NewEncoder(stdout).Encode(tests)
+		return 0
+	}
+	td.Cfg.TotalShards = 2
+	td.Cfg.RunLocal = true
+
+	cc := target.NewConnCache(&td.Cfg)
+	defer cc.Close(context.Background())
+
+	for i := 0; i < td.Cfg.TotalShards; i++ {
+		td.Cfg.ShardIndex = i
+		results, err := listTests(context.Background(), &td.Cfg, &td.State, cc)
+		if err != nil {
+			t.Error("Failed to list local tests: ", err)
+		}
+		expected := []*jsonprotocol.EntityResult{
+			{EntityInfo: tests[i].EntityInfo, SkipReason: tests[i].SkipReason},
+		}
+		if !reflect.DeepEqual(results, expected) {
+			t.Errorf("Unexpected list of local tests: got %+v; want %+v", results, expected)
+		}
+	}
+}
+
+// TestListTestsWithSkippedTests make sure list test can list skipped tests correctly.
+func TestListTestsWithSkippedTests(t *gotesting.T) {
+	td := fakerunner.NewLocalTestData(t)
+	defer td.Close()
+
+	tests := []jsonprotocol.EntityWithRunnabilityInfo{
+		{
+			EntityInfo: jsonprotocol.EntityInfo{
+				Name: "pkg.Test",
+				Desc: "This is a test",
+				Attr: []string{"attr1", "attr2"},
+			},
+		},
+		{
+			EntityInfo: jsonprotocol.EntityInfo{
+				Name: "pkg.AnotherTest",
+				Desc: "Another test",
+			},
+		},
+		{
+			EntityInfo: jsonprotocol.EntityInfo{
+				Name: "pkg.SkippedTest",
+				Desc: "Skipped test",
+			},
+			SkipReason: "Skip",
+		},
+	}
+
+	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+		fakerunner.CheckArgs(t, args, &runner.Args{
+			Mode:      runner.ListTestsMode,
+			ListTests: &runner.ListTestsArgs{BundleGlob: fakerunner.MockLocalBundleGlob},
+		})
+
+		json.NewEncoder(stdout).Encode(tests)
+		return 0
+	}
+	td.Cfg.TotalShards = 2
+	td.Cfg.RunLocal = true
+
+	cc := target.NewConnCache(&td.Cfg)
+	defer cc.Close(context.Background())
+
+	// Shard 0 should include all skipped tests.
+	td.Cfg.ShardIndex = 0
+	results, err := listTests(context.Background(), &td.Cfg, &td.State, cc)
+	if err != nil {
+		t.Error("Failed to list local tests: ", err)
+	}
+	expected := []*jsonprotocol.EntityResult{
+		{EntityInfo: tests[0].EntityInfo, SkipReason: tests[0].SkipReason},
+		{EntityInfo: tests[2].EntityInfo, SkipReason: tests[2].SkipReason},
+	}
+	if !reflect.DeepEqual(results, expected) {
+		t.Errorf("Unexpected list of local tests in shard 0: got %+v; want %+v", results, expected)
+	}
+
+	td.Cfg.ShardIndex = 1
+	// Shard 1 should have only one test
+	results, err = listTests(context.Background(), &td.Cfg, &td.State, cc)
+	if err != nil {
+		t.Error("Failed to list local tests: ", err)
+	}
+	expected = []*jsonprotocol.EntityResult{
+		{EntityInfo: tests[1].EntityInfo, SkipReason: tests[1].SkipReason},
+	}
+	if !reflect.DeepEqual(results, expected) {
+		t.Errorf("Unexpected list of local tests in shard 1: got %+v; want %+v", results, expected)
+	}
+}
+
+// TestListTestsGetDUTInfo make sure GetDUTInfo is called when listTests is called.
+func TestListTestsGetDUTInfo(t *gotesting.T) {
+	td := fakerunner.NewLocalTestData(t)
+	defer td.Close()
+
+	called := false
+
+	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+		switch args.Mode {
+		case runner.GetDUTInfoMode:
+			// Just check that GetDUTInfo is called; details of args are
+			// tested in deps_test.go.
+			called = true
+			json.NewEncoder(stdout).Encode(&runner.GetDUTInfoResult{
+				SoftwareFeatures: &dep.SoftwareFeatures{
+					Available: []string{"foo"}, // must report non-empty features
+				},
+			})
+		default:
+			t.Errorf("Unexpected args.Mode = %v", args.Mode)
+		}
+		return 0
+	}
+
+	td.Cfg.CheckTestDeps = true
+
+	cc := target.NewConnCache(&td.Cfg)
+	defer cc.Close(context.Background())
+
+	if _, err := listTests(context.Background(), &td.Cfg, &td.State, cc); err != nil {
+		t.Error("listTests failed: ", err)
+	}
+	if !called {
+		t.Error("runTests did not call getSoftwareFeatures")
+	}
+}
+
+func TestRunTestsFailureBeforeRun(t *gotesting.T) {
+	td := fakerunner.NewLocalTestData(t)
+	defer td.Close()
+
+	// Make the runner always fail, and ask to check test deps so we'll get a failure before trying
+	// to run tests. local() shouldn't set StartedRun to true since we failed before then.
+	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) { return 1 }
+	td.Cfg.CheckTestDeps = true
+
+	cc := target.NewConnCache(&td.Cfg)
+	defer cc.Close(context.Background())
+
+	var state config.State
+	if _, err := runTests(context.Background(), &td.Cfg, &state, cc); err == nil {
+		t.Errorf("runTests unexpectedly passed")
+	} else if state.StartedRun {
+		t.Error("runTests incorrectly reported that run was started after early failure")
+	}
+}
+
+func TestRunTestsGetDUTInfo(t *gotesting.T) {
+	td := fakerunner.NewLocalTestData(t)
+	defer td.Close()
+
+	called := false
+
+	osVersion := "octopus-release/R86-13312.0.2020_07_02_1108"
+
+	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+		switch args.Mode {
+		case runner.GetDUTInfoMode:
+			// Just check that GetDUTInfo is called; details of args are
+			// tested in deps_test.go.
+			called = true
+			json.NewEncoder(stdout).Encode(&runner.GetDUTInfoResult{
+				SoftwareFeatures: &dep.SoftwareFeatures{
+					Available: []string{"foo"}, // must report non-empty features
+				},
+				OSVersion: osVersion,
+			})
+		default:
+			t.Errorf("Unexpected args.Mode = %v", args.Mode)
+		}
+		return 0
+	}
+
+	td.Cfg.CheckTestDeps = true
+
+	cc := target.NewConnCache(&td.Cfg)
+	defer cc.Close(context.Background())
+
+	if _, err := runTests(context.Background(), &td.Cfg, &td.State, cc); err != nil {
+		t.Error("runTests failed: ", err)
+	}
+
+	expectedOSVersion := "Target version: " + osVersion
+	if !strings.Contains(td.LogBuf.String(), expectedOSVersion) {
+		t.Errorf("Cannot find %q in log buffer %v", expectedOSVersion, td.LogBuf.String())
+	}
+	if !called {
+		t.Error("runTests did not call getSoftwareFeatures")
+	}
+}
+
+func TestRunTestsGetInitialSysInfo(t *gotesting.T) {
+	td := fakerunner.NewLocalTestData(t)
+	defer td.Close()
+
+	called := false
+
+	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+		switch args.Mode {
+		case runner.GetSysInfoStateMode:
+			// Just check that GetInitialSysInfo is called; details of args are
+			// tested in sys_info_test.go.
+			called = true
+			json.NewEncoder(stdout).Encode(&runner.GetSysInfoStateResult{})
+		default:
+			t.Errorf("Unexpected args.Mode = %v", args.Mode)
+		}
+		return 0
+	}
+
+	td.Cfg.CollectSysInfo = true
+
+	cc := target.NewConnCache(&td.Cfg)
+	defer cc.Close(context.Background())
+
+	if _, err := runTests(context.Background(), &td.Cfg, &td.State, cc); err != nil {
+		t.Error("runTests failed: ", err)
+	}
+	if !called {
+		t.Errorf("runTests did not call GetInitialSysInfo")
+	}
+}
+
+// TestRunTestsSkipTests check if runTests skipping testings correctly.
+func TestRunTestsSkipTests(t *gotesting.T) {
+	tests := []jsonprotocol.EntityWithRunnabilityInfo{
+		{
+			EntityInfo: jsonprotocol.EntityInfo{
+				Name:         "unsupported.Test0",
+				Desc:         "This is test 0",
+				SoftwareDeps: []string{"has_dep"},
+			},
+			SkipReason: "dependency not available",
+		},
+		{
+			EntityInfo: jsonprotocol.EntityInfo{Name: "pkg.Test1", Desc: "This is test 1"},
+		},
+		{
+			EntityInfo: jsonprotocol.EntityInfo{Name: "pkg.Test2", Desc: "This is test 2"},
+		},
+		{
+			EntityInfo: jsonprotocol.EntityInfo{Name: "pkg.Test3", Desc: "This is test 3"},
+		},
+		{
+			EntityInfo: jsonprotocol.EntityInfo{Name: "pkg.Test4", Desc: "This is test 4"},
+		},
+		{
+			EntityInfo: jsonprotocol.EntityInfo{
+				Name:         "unsupported.Test5",
+				Desc:         "This is test 5",
+				SoftwareDeps: []string{"has_dep"},
+			},
+			SkipReason: "dependency not available",
+		},
+		{
+			EntityInfo: jsonprotocol.EntityInfo{Name: "pkg.Test6", Desc: "This is test 6"},
+		},
+	}
+
+	td := fakerunner.NewLocalTestData(t)
+	defer td.Close()
+
+	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+		switch args.Mode {
+		case runner.GetDUTInfoMode:
+			// Just check that GetDUTInfo is called; details of args are
+			// tested in deps_test.go.
+			json.NewEncoder(stdout).Encode(&runner.GetDUTInfoResult{
+				SoftwareFeatures: &dep.SoftwareFeatures{
+					Available: []string{"a_feature"},
+				},
+			})
+		case runner.ListTestsMode:
+			json.NewEncoder(stdout).Encode(tests)
+		case runner.RunTestsMode:
+			testNames := args.RunTests.BundleArgs.Patterns
+			mw := control.NewMessageWriter(stdout)
+			mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: len(testNames)})
+			count := int64(2)
+			for _, t := range testNames {
+				mw.WriteMessage(&control.EntityStart{Time: time.Unix(count, 0), Info: jsonprotocol.EntityInfo{Name: t}})
+				count++
+				var skipReasons []string
+				if strings.HasPrefix(t, "unsupported") {
+					skipReasons = append(skipReasons, "dependency not available")
+				}
+				mw.WriteMessage(&control.EntityEnd{Time: time.Unix(count, 0), Name: t, SkipReasons: skipReasons})
+				count++
+			}
+			mw.WriteMessage(&control.RunEnd{Time: time.Unix(count, 0)})
+		case runner.ListFixturesMode:
+			json.NewEncoder(stdout).Encode(&runner.ListFixturesResult{})
+		default:
+			t.Errorf("Unexpected args.Mode = %v", args.Mode)
+		}
+		return 0
+	}
+
+	// List matching tests instead of running them.
+	td.Cfg.LocalDataDir = "/tmp/data"
+	td.Cfg.Patterns = []string{"*Test*"}
+	td.Cfg.RunLocal = true
+	td.Cfg.TotalShards = 2
+	td.Cfg.CheckTestDeps = true
+
+	cc := target.NewConnCache(&td.Cfg)
+	defer cc.Close(context.Background())
+
+	expectedPassed := 5
+	expectedSkipped := len(tests) - 5
+	passed := 0
+	skipped := 0
+	for shardIndex := 0; shardIndex < td.Cfg.TotalShards; shardIndex++ {
+		td.State.SoftwareFeatures = nil
+		td.Cfg.ShardIndex = shardIndex
+		testResults, err := runTests(context.Background(), &td.Cfg, &td.State, cc)
+		if err != nil {
+			t.Fatal("Failed to run tests: ", err)
+		}
+		for _, t := range testResults {
+			if t.SkipReason == "" {
+				passed++
+			} else {
+				skipped++
+			}
+		}
+	}
+	if passed != expectedPassed {
+		t.Errorf("runTests returned %d passed tests; want %d", passed, expectedPassed)
+	}
+	if skipped != expectedSkipped {
+		t.Errorf("runTests returned %d skipped tests; want %d", skipped, expectedSkipped)
 	}
 }
 

@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"chromiumos/tast/errors"
+	"chromiumos/tast/internal/jsonprotocol"
 )
 
 // Fixture represents fixtures to register to the framework.
@@ -71,16 +72,23 @@ type Fixture struct {
 	// TODO(oka): Add Data and Param fields.
 }
 
+// Constraints returns EntityConstraints for this fixture.
+func (f *Fixture) Constraints() *EntityConstraints {
+	return &EntityConstraints{
+		vars: append([]string(nil), f.Vars...),
+	}
+}
+
 // EntityInfo returns EntityInfo for the fixture.
-func (f *Fixture) EntityInfo() *EntityInfo {
-	return &EntityInfo{
+func (f *Fixture) EntityInfo() *jsonprotocol.EntityInfo {
+	return &jsonprotocol.EntityInfo{
 		Name:        f.Name,
 		Desc:        f.Desc,
 		Contacts:    append([]string(nil), f.Contacts...),
 		Vars:        append([]string(nil), f.Vars...),
 		ServiceDeps: append([]string(nil), f.ServiceDeps...),
 		Fixture:     f.Parent,
-		Type:        EntityFixture,
+		Type:        jsonprotocol.EntityFixture,
 
 		Bundle: filepath.Base(os.Args[0]),
 	}

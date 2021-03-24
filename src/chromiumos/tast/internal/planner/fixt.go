@@ -9,6 +9,7 @@ import (
 	"errors"
 	"fmt"
 
+	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/internal/timing"
@@ -139,7 +140,7 @@ func (st *FixtureStack) Status() fixtureStatus {
 // the following way:
 //
 //  [Fixture failure] (fixture name): (original error message)
-func (st *FixtureStack) Errors() []*testing.Error {
+func (st *FixtureStack) Errors() []*jsonprotocol.Error {
 	for _, f := range st.stack {
 		if f.Status() == statusRed {
 			return f.Errors()
@@ -152,11 +153,13 @@ func (st *FixtureStack) Errors() []*testing.Error {
 //
 // If the fixture stack is empty or red, it returns nil.
 func (st *FixtureStack) Val() interface{} {
-	f := st.top()
-	if f == nil || f.Status() == statusRed {
+	if len(st.stack) == 0 {
 		return nil
 	}
-	return f.Val()
+	if st.Status() == statusRed {
+		return nil
+	}
+	return st.top().Val()
 }
 
 // Push adds a new fixture to the top of the fixture stack.
@@ -202,8 +205,8 @@ func (st *FixtureStack) Push(ctx context.Context, fixt *testing.Fixture) error {
 		FixtCtx:      ctx,
 	}
 
-	root := testing.NewEntityRoot(ce, ei, rcfg, fout)
-	f := newStatefulFixture(fixt, root, fout, st.top(), st.cfg)
+	root := testing.NewEntityRoot(ce, fixt.Constraints(), rcfg, fout)
+	f := newStatefulFixture(fixt, root, fout, st.cfg)
 	st.stack = append(st.stack, f)
 
 	if status == statusGreen {
@@ -310,11 +313,10 @@ func (st *FixtureStack) MarkDirty() error {
 	return nil
 }
 
-// top returns the stateful fixture at the top of the stack. If the stack is
-// empty, nil is returned.
+// top returns the stateful fixture at the top of the stack.
 func (st *FixtureStack) top() *statefulFixture {
 	if len(st.stack) == 0 {
-		return nil
+		panic("BUG: top called for an empty stack")
 	}
 	return st.stack[len(st.stack)-1]
 }
@@ -323,24 +325,22 @@ func (st *FixtureStack) top() *statefulFixture {
 type statefulFixture struct {
 	cfg *Config
 
-	fixt   *testing.Fixture
-	root   *testing.EntityRoot
-	fout   *entityOutputStream
-	parent *statefulFixture
+	fixt *testing.Fixture
+	root *testing.EntityRoot
+	fout *entityOutputStream
 
 	status fixtureStatus
-	errs   []*testing.Error
+	errs   []*jsonprotocol.Error
 	val    interface{} // val returned by SetUp
 }
 
 // newStatefulFixture creates a new statefulFixture.
-func newStatefulFixture(fixt *testing.Fixture, root *testing.EntityRoot, fout *entityOutputStream, parent *statefulFixture, cfg *Config) *statefulFixture {
+func newStatefulFixture(fixt *testing.Fixture, root *testing.EntityRoot, fout *entityOutputStream, cfg *Config) *statefulFixture {
 	return &statefulFixture{
 		cfg:    cfg,
 		fixt:   fixt,
 		root:   root,
 		fout:   fout,
-		parent: parent,
 		status: statusRed,
 	}
 }
@@ -363,7 +363,7 @@ func (f *statefulFixture) Status() fixtureStatus {
 // following way:
 //
 //  [Fixture failure] (fixture name): (original error message)
-func (f *statefulFixture) Errors() []*testing.Error {
+func (f *statefulFixture) Errors() []*jsonprotocol.Error {
 	return f.errs
 }
 
@@ -501,10 +501,10 @@ func (f *statefulFixture) newTestContext(ctx context.Context, troot *testing.Tes
 
 // rewriteErrorsForTest rewrites error messages reported by a fixture to be
 // suitable for reporting for tests depending on the fixture.
-func rewriteErrorsForTest(errs []*testing.Error, fixtureName string) []*testing.Error {
-	newErrs := make([]*testing.Error, len(errs))
+func rewriteErrorsForTest(errs []*jsonprotocol.Error, fixtureName string) []*jsonprotocol.Error {
+	newErrs := make([]*jsonprotocol.Error, len(errs))
 	for i, e := range errs {
-		newErrs[i] = &testing.Error{
+		newErrs[i] = &jsonprotocol.Error{
 			Reason: fmt.Sprintf("[Fixture failure] %s: %s", fixtureName, e.Reason),
 			File:   e.File,
 			Line:   e.Line,

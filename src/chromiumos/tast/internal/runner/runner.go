@@ -24,6 +24,7 @@ import (
 	"chromiumos/tast/internal/bundle"
 	"chromiumos/tast/internal/command"
 	"chromiumos/tast/internal/control"
+	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/testing"
 )
@@ -199,7 +200,7 @@ func newRunErrorMessagef(status int, format string, args ...interface{}) *contro
 	_, fn, ln, _ := runtime.Caller(1)
 	return &control.RunError{
 		Time: time.Now(),
-		Error: testing.Error{
+		Error: jsonprotocol.Error{
 			Reason: fmt.Sprintf(format, args...),
 			File:   fn,
 			Line:   ln,

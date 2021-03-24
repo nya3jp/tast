@@ -64,6 +64,7 @@ import (
 	"chromiumos/tast/dut"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/errors/stack"
+	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/timing"
 )
@@ -170,22 +171,14 @@ type OutputStream interface {
 
 	// Error reports an error from by an entity. An entity that reported one or
 	// more errors should be considered failure.
-	Error(e *Error) error
-}
-
-// Error describes an error encountered while running an entity.
-type Error struct {
-	Reason string `json:"reason"`
-	File   string `json:"file"`
-	Line   int    `json:"line"`
-	Stack  string `json:"stack"`
+	Error(e *jsonprotocol.Error) error
 }
 
 // NewError returns a new Error object containing reason rsn.
 // skipFrames contains the number of frames to skip to get the code that's reporting
 // the error: the caller should pass 0 to report its own frame, 1 to skip just its own frame,
 // 2 to additionally skip the frame that called it, and so on.
-func NewError(err error, fullMsg, lastMsg string, skipFrames int) *Error {
+func NewError(err error, fullMsg, lastMsg string, skipFrames int) *jsonprotocol.Error {
 	// Also skip the NewError frame.
 	skipFrames++
 
@@ -198,12 +191,20 @@ func NewError(err error, fullMsg, lastMsg string, skipFrames int) *Error {
 		trace += fmt.Sprintf("\n%+v", err)
 	}
 
-	return &Error{
+	return &jsonprotocol.Error{
 		Reason: fullMsg,
 		File:   fn,
 		Line:   ln,
 		Stack:  trace,
 	}
+}
+
+// EntityConstraints represents constraints imposed to an entity.
+// For example, a test can only access runtime variables declared on its
+// registration. This struct carries a list of declared runtime variables to be
+// checked against in State.Var.
+type EntityConstraints struct {
+	vars []string
 }
 
 // EntityRoot is the root of all State objects associated with an entity.
@@ -214,7 +215,7 @@ func NewError(err error, fullMsg, lastMsg string, skipFrames int) *Error {
 // EntityRoot must be kept private to the framework.
 type EntityRoot struct {
 	ce  *testcontext.CurrentEntity // current entity info to be available via context.Context
-	ei  *EntityInfo                // entity metadata
+	cst *EntityConstraints         // constraints for the entity
 	cfg *RuntimeConfig             // details about how to run an entity
 	out OutputStream               // stream to which logging messages and errors are reported
 
@@ -223,10 +224,10 @@ type EntityRoot struct {
 }
 
 // NewEntityRoot returns a new EntityRoot object.
-func NewEntityRoot(ce *testcontext.CurrentEntity, ei *EntityInfo, cfg *RuntimeConfig, out OutputStream) *EntityRoot {
+func NewEntityRoot(ce *testcontext.CurrentEntity, cst *EntityConstraints, cfg *RuntimeConfig, out OutputStream) *EntityRoot {
 	return &EntityRoot{
 		ce:  ce,
-		ei:  ei,
+		cst: cst,
 		cfg: cfg,
 		out: out,
 	}
@@ -294,7 +295,7 @@ func NewTestEntityRoot(test *TestInstance, cfg *RuntimeConfig, out OutputStream)
 		ServiceDeps:     test.ServiceDeps,
 	}
 	return &TestEntityRoot{
-		entityRoot: NewEntityRoot(ce, test.EntityInfo(), cfg, out),
+		entityRoot: NewEntityRoot(ce, test.Constraints(), cfg, out),
 		test:       test,
 	}
 }
@@ -535,14 +536,14 @@ type varMixin struct {
 // If a value was not supplied at runtime via the -var flag to "tast run", ok will be false.
 func (s *varMixin) Var(name string) (val string, ok bool) {
 	seen := false
-	for _, n := range s.entityRoot.ei.Vars {
+	for _, n := range s.entityRoot.cst.vars {
 		if n == name {
 			seen = true
 			break
 		}
 	}
 	if !seen {
-		panic(fmt.Sprintf("Variable %q was not registered in testing.Test.Vars", name))
+		panic(fmt.Sprintf("Variable %q was not registered in testing.Test.Vars. Try adding the line 'Vars: []string{%q},' to your testing.Test{}", name, name))
 	}
 
 	val, ok = s.entityRoot.cfg.Vars[name]

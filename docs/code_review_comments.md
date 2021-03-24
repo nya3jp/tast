@@ -44,9 +44,9 @@ out, err := testexec.CommandContext(...).CombinedOutput()
 if regexp.Match(out, "...") { ... }
 ```
 
-[`CombinedOutput`]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/testexec#Cmd.CombinedOutput
-[`Output`]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/testexec#Cmd.Output
-[`Run`]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/testexec#Cmd.Run
+[`CombinedOutput`]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/common/testexec#Cmd.CombinedOutput
+[`Output`]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/common/testexec#Cmd.Output
+[`Run`]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/common/testexec#Cmd.Run
 
 
 ## Context cancellation

@@ -16,7 +16,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 
-	"chromiumos/tast/internal/testing"
+	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/timing"
 )
 
@@ -24,16 +24,16 @@ func TestWriteAndRead(t *gotesting.T) {
 	msgs := []Msg{
 		&RunStart{time.Unix(1, 0), []string{"pkg.MyTest"}, 1},
 		&RunLog{time.Unix(2, 0), "run message"},
-		&EntityStart{time.Unix(3, 0), testing.EntityInfo{
+		&EntityStart{time.Unix(3, 0), jsonprotocol.EntityInfo{
 			Name: "pkg.MyTest",
 			Desc: "test description",
 			Attr: []string{"attr1", "attr2"},
 		}, "/tmp/out/test1"},
 		&EntityLog{time.Unix(4, 0), "here's a log message", "pkg.MyTest"},
-		&EntityError{time.Unix(5, 0), testing.Error{Reason: "whoops", File: "file.go", Line: 20, Stack: "stack"}, "pkg.MyTest"},
+		&EntityError{time.Unix(5, 0), jsonprotocol.Error{Reason: "whoops", File: "file.go", Line: 20, Stack: "stack"}, "pkg.MyTest"},
 		&EntityEnd{time.Unix(6, 0), "pkg.MyTest", []string{"dep"}, []string{"errHwdep"}, timing.NewLog()},
 		&RunEnd{time.Unix(7, 0), "/tmp/out"},
-		&RunError{time.Unix(8, 0), testing.Error{Reason: "whoops again", File: "file2.go", Line: 30, Stack: "stack 2"}, 1},
+		&RunError{time.Unix(8, 0), jsonprotocol.Error{Reason: "whoops again", File: "file2.go", Line: 30, Stack: "stack 2"}, 1},
 		&Heartbeat{Time: time.Unix(9, 0)},
 	}
 

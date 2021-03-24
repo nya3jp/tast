@@ -302,6 +302,7 @@ func Wifi80211ax() Condition {
 			"coral",
 			"cyan",
 			"edgar",
+<<<<<<< HEAD   (7019fa TAST: Update Wifi80211ax blocklist platforms)
 			"enguarde",
 			"eve",
 			"fievel",
@@ -347,6 +348,53 @@ func Wifi80211ax() Condition {
 			"sumo",
 			"swanky",
 			"terra",
+=======
+			"elm",
+			"enguarde",
+			"eve",
+			"fievel",
+			"fizz",
+			"gale",
+			"gandof",
+			"gnawty",
+			"gru", // The mosys for scarlet is gru. scarlet does not support 802.11ax
+			"grunt",
+			"guado",
+			"hana",
+			"kalista",
+			"kefka",
+			"kevin",
+			"kip",
+			"kukui", // The mosys for jacuzzi is kukui. jacuzzi does not support 802.11ax
+			"lars",
+			"lulu",
+			"nami",
+			"nautilus",
+			"ninja",
+			"nocturne",
+			"octopus",
+			"orco",
+			"paine",
+			"poppy", // The mosys for atlas is poppy. atlas does not support 802.11ax
+			"puff",
+			"pyro",
+			"rammus",
+			"reef",
+			"reks",
+			"relm",
+			"rikku",
+			"samus",
+			"sand",
+			"sarien",
+			"sentry",
+			"setzer",
+			"snappy",
+			"soraka",
+			"sumo",
+			"swanky",
+			"terra",
+			"tidus",
+>>>>>>> BRANCH (5908e1 Revert "Reland "tast: add flag -companionduts and new API te)
 			"tiger",
 			"trogdor",
 			"ultima",
@@ -421,7 +469,31 @@ func WifiIntel() Condition {
 		// for now there is no better way to specify the exact hardware
 		// parameters needed for this dependency. (See crbug.com/1070299.)
 		modelCondition := SkipOnModel(
-			"blooglet", "dirinboz", "ezkinil", "madoo", "vilboz", "vorticon",
+			"blooglet", "dirinboz", "ezkinil", "gumboz", "madoo", "vilboz", "vorticon",
+		)
+		if err := modelCondition.Satisfied(f); err != nil {
+			return err
+		}
+		return nil
+	}, CEL: "not_implemented",
+	}
+}
+
+// WifiQualcomm returns a hardware dependency condition that if satisfied, indicates
+// that a device uses Qualcomm WiFi.
+func WifiQualcomm() Condition {
+	// TODO(crbug.com/1070299): we don't yet have relevant fields in device.Config
+	// about WiFi chip, so list the known platforms here for now.
+	return Condition{Satisfied: func(f *dep.HardwareFeatures) error {
+		platformCondition := Platform(
+			"trogdor", "kukui", "grunt", "scarlet",
+		)
+		if err := platformCondition.Satisfied(f); err != nil {
+			return err
+		}
+		// barla has Realtek WiFi chip.
+		modelCondition := SkipOnModel(
+			"barla",
 		)
 		if err := modelCondition.Satisfied(f); err != nil {
 			return err

@@ -126,6 +126,7 @@ func main() {
 			"houdini64":               "houdini64",
 			"hostap_hwsim":            "wifi_hostap_test",
 			"igt":                     `("video_cards_amdgpu" || "video_cards_intel") && "kernel-5_4"`,
+			"iioservice":              "iioservice",
 			"iwlwifi_rescan":          "iwlwifi_rescan",
 			"lacros":                  "!arm && !arm64", // TODO(crbug.com/1144013): Expand this to include arm as well.
 			"lock_core_pattern":       `"kernel-3_10" || "kernel-3_14" || "kernel-3_18"`,
@@ -140,7 +141,7 @@ func main() {
 			// Also metrics consent needs TPM (crbug.com/1035197).
 			"metrics_consent":       "chrome_internal && !mocktpm && !tast_vm",
 			"microcode":             "!betty && !tast_vm",
-			"ml_benchmark":          "ml_benchmark_drivers",
+			"ml_benchmark_drivers":  "ml_benchmark_drivers",
 			"ml_service":            "ml_service",
 			"mosys":                 "!betty && !tast_vm",
 			"nacl":                  "nacl",
@@ -151,7 +152,10 @@ func main() {
 			"no_arm":                "!arm",
 			"no_asan":               "!asan",
 			"no_borealis_host":      "!borealis_host",
-			"no_eth_loss_on_reboot": `!("board:jacuzzi")`, // some devices (jacuzzi) may not enumerate eth on reboot b/178529170
+			"no_elm_hana_3_18":      `!((elm || hana) && "kernel-3_18")`, // board elm/hana with kernel-3.18 has issue performing WiFi scan: https://crbug.com/1015719
+			"no_eth_loss_on_reboot": `!("board:jacuzzi")`,                // some devices (jacuzzi) may not enumerate eth on reboot b/178529170
+			"no_iioservice":         "!iioservice",
+			"no_kernel_upstream":    `!"kernel-upstream"`,
 			"no_msan":               "!msan",
 			"no_qemu":               "!betty && !tast_vm",
 			"no_symlink_mount":      "!lxc", // boards using LXC set CONFIG_SECURITY_CHROMIUMOS_NO_SYMLINK_MOUNT=n
@@ -159,6 +163,7 @@ func main() {
 			"nvme":                  "nvme",
 			"oci":                   "containers && !moblab", // run_oci doesn't work on Moblab: https://crbug.com/951691
 			"ocr":                   "ocr",
+			"ondevice_handwriting":  "ml_service && ondevice_handwriting",
 			"plugin_vm":             "pita", // boards that can run Plugin VM.
 			"proprietary_codecs":    "chrome_internal || chrome_media",
 			"protected_content":     "cdm_factory_daemon",
@@ -187,6 +192,8 @@ func main() {
 			"transparent_hugepage":   "transparent_hugepage",
 			"untrusted_vm":           `"kernel-4_19" || "kernel-5_4"`,
 			"usbguard":               "usbguard",
+			"use_fscrypt_v1":         "!direncription_allow_v2",
+			"use_fscrypt_v2":         "direncription_allow_v2",
 			"v4l2_codec":             "v4l2_codec",
 			"vaapi":                  "vaapi",
 			// As the direct video decoder is transitioned in there is the need

@@ -33,6 +33,46 @@
       "message": "Normally you\u0027d revert the offending CL https://crrev.com/c/2692943, it gives you more time to fix it properly, validate the fix, and wait for OWNERS review http://g/chromeos-eng/bTgNbpwkKlQ/RK0RgLOJAQAJ\n\nI *think* the sheriff can bypass OWNERS for reverts (http://doc/1RpayMEErF9GubYgpAj00xKnP_tcydQjTAZP1BdkSxz4#heading\u003dh.7r7an318354p) but I\u0027m not sure, I\u0027ll defer to abps@ on that\n\n+1 for the fix in general, up to abps@ if he prefers a revert/reland of a forward fix.",
       "revId": "c79beab70ff4934e9e420be2901be206967f4dad",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b43600a5_6c50c1d7",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1132414
+      },
+      "writtenOn": "2021-03-24T22:23:15Z",
+      "side": 1,
+      "message": "You could use the Exempt-From-Owner-Approval tag http://shortn/_c9w790M9F8\n\nBut yes, I believe clean reverts (use the Revert button in Gerrit UI) have an auto-approver bot, so you don\u0027t have to use the Exempt-* approach.",
+      "revId": "c79beab70ff4934e9e420be2901be206967f4dad",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4f4fe570_39396e20",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 328,
+      "author": {
+        "id": 1132414
+      },
+      "writtenOn": "2021-03-24T22:23:15Z",
+      "side": 1,
+      "message": "same for \u0027hana\u0027, but it\u0027s OK to have excess entries",
+      "range": {
+        "startLine": 328,
+        "startChar": 27,
+        "endLine": 328,
+        "endChar": 30
+      },
+      "revId": "c79beab70ff4934e9e420be2901be206967f4dad",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

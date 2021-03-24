@@ -775,7 +775,11 @@ func TestWritePartialResults(t *gotesting.T) {
 			Start:      test2Start,
 			Errors: []jsonprotocol.EntityError{
 				{Error: jsonprotocol.Error{Reason: test2Reason}},
-				{Error: jsonprotocol.Error{Reason: incompleteTestMsg}},
+				{
+					Error: jsonprotocol.Error{
+						Reason: fmt.Sprintf("%s because %s", incompleteTestMsg, noRunEndMsg),
+					},
+				},
 			},
 			OutDir: filepath.Join(cfg.ResDir, testLogsDir, test2Name),
 		},
@@ -845,7 +849,16 @@ func TestUnfinishedTest(t *gotesting.T) {
 		runLine  = 12
 		diagMsg  = "SSH connection was lost"
 	)
-	incompleteErr := jsonprotocol.EntityError{Error: jsonprotocol.Error{Reason: incompleteTestMsg}}
+	incompleteTestErr := jsonprotocol.EntityError{
+		Error: jsonprotocol.Error{
+			Reason: fmt.Sprintf("%s because %s:%d: %s", incompleteTestMsg, runFile, runLine, runMsg),
+		},
+	}
+	incompleteEndErr := jsonprotocol.EntityError{
+		Error: jsonprotocol.Error{
+			Reason: fmt.Sprintf("%s because %s", incompleteTestMsg, noRunEndMsg),
+		},
+	}
 	testErr := jsonprotocol.EntityError{Error: jsonprotocol.Error{Reason: testMsg}}
 	runReason := fmt.Sprintf("Got global error: %s:%d: %s", runFile, runLine, runMsg)
 	runErr := jsonprotocol.EntityError{Error: jsonprotocol.Error{Reason: runReason}}
@@ -861,12 +874,12 @@ func TestUnfinishedTest(t *gotesting.T) {
 		diagFunc     diagnoseRunErrorFunc
 		expErrs      []jsonprotocol.EntityError
 	}{
-		{false, false, nil, []jsonprotocol.EntityError{incompleteErr}},                      // no test or run error
-		{true, false, nil, []jsonprotocol.EntityError{testErr, incompleteErr}},              // test error reported
-		{false, true, nil, []jsonprotocol.EntityError{runErr, incompleteErr}},               // run error attributed to test
-		{true, true, nil, []jsonprotocol.EntityError{testErr, runErr, incompleteErr}},       // test error reported, then run error
-		{true, true, emptyDiag, []jsonprotocol.EntityError{testErr, runErr, incompleteErr}}, // failed diagnosis, so report run error
-		{true, true, goodDiag, []jsonprotocol.EntityError{testErr, diagErr, incompleteErr}}, // successful diagnosis replaces run error
+		{false, false, nil, []jsonprotocol.EntityError{incompleteEndErr}},                       // no test or run error
+		{true, false, nil, []jsonprotocol.EntityError{testErr, incompleteEndErr}},               // test error reported
+		{false, true, nil, []jsonprotocol.EntityError{runErr, incompleteTestErr}},               // run error attributed to test
+		{true, true, nil, []jsonprotocol.EntityError{testErr, runErr, incompleteTestErr}},       // test error reported, then run error
+		{true, true, emptyDiag, []jsonprotocol.EntityError{testErr, runErr, incompleteTestErr}}, // failed diagnosis, so report run error
+		{true, true, goodDiag, []jsonprotocol.EntityError{testErr, diagErr, incompleteTestErr}}, // successful diagnosis replaces run error
 	} {
 		// Report that the test started but didn't finish.
 		b := bytes.Buffer{}
@@ -903,7 +916,7 @@ func TestUnfinishedTest(t *gotesting.T) {
 		}
 		// Ignore timestamps since run errors contain time.Now.
 		if !cmp.Equal(res[0].Errors, tc.expErrs, cmpopts.IgnoreFields(jsonprotocol.EntityError{}, "Time")) {
-			t.Errorf("readTestOutput returned errors %+v; want %+v", res[0].Errors, tc.expErrs)
+			t.Errorf("readTestOutput (%d) returned errors %+v; want %+v", i, res[0].Errors, tc.expErrs)
 		}
 	}
 }

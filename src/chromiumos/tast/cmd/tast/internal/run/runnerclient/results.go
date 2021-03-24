@@ -45,6 +45,7 @@ const (
 
 	defaultMsgTimeout = time.Minute           // default timeout for reading next control message
 	incompleteTestMsg = "Test did not finish" // error message for incomplete tests
+	noRunEndMsg       = "no RunEnd message"   // error message for missing RunEnd message
 )
 
 // entityState keeps track of states of a currently running entity.
@@ -579,9 +580,13 @@ func (r *resultsHandler) processMessages(ctx context.Context, mch <-chan interfa
 	// end of the streamed results file to make sure that all of its errors are recorded.
 	defer func() {
 		for _, state := range r.currents {
+			reason := incompleteTestMsg
+			if err != nil {
+				reason = fmt.Sprintf("%s because %v", incompleteTestMsg, err)
+			}
 			state.result.Errors = append(state.result.Errors, jsonprotocol.EntityError{
 				Time:  time.Now(),
-				Error: jsonprotocol.Error{Reason: incompleteTestMsg},
+				Error: jsonprotocol.Error{Reason: reason},
 			})
 			if state.result.Type == jsonprotocol.EntityTest {
 				r.state.FailuresCount++
@@ -677,7 +682,7 @@ func (r *resultsHandler) processMessages(ctx context.Context, mch <-chan interfa
 	}
 
 	if r.runEnd.IsZero() {
-		return r.results, unstarted, errors.New("no RunEnd message")
+		return r.results, unstarted, errors.New(noRunEndMsg)
 	}
 	if len(unstarted) > 0 {
 		return r.results, unstarted, fmt.Errorf("%v test(s) are unstarted", len(unstarted))

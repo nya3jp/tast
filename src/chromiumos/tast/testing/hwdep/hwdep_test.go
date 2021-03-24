@@ -450,3 +450,26 @@ func TestWiFiIntel(t *testing.T) {
 			tc.expectSatisfied)
 	}
 }
+
+func TestMinStorage(t *testing.T) {
+	c := MinStorage(16)
+	for _, tc := range []struct {
+		sizeGb          uint32
+		expectSatisfied bool
+	}{
+		{0, false},
+		{15, false},
+		{16, true},
+		{32, true},
+	} {
+		verifyCondition(
+			t, c,
+			nil,
+			&configpb.HardwareFeatures{
+				Storage: &configpb.HardwareFeatures_Storage{
+					SizeGb: tc.sizeGb,
+				},
+			},
+			tc.expectSatisfied)
+	}
+}

@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": true,
+      "key": {
+        "uuid": "3d0fb418_b34589ce",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-03-24T04:00:58Z",
+      "side": 1,
+      "message": "I just found that the test didn\u0027t cause an error returned in processMessage. It simply return msg to nil. Therefore, it was in the following case \n\ncase msg :\u003d \u003c-mch:\n\tif msg \u003d\u003d nil {\n\t\t// If the channel is closed, we\u0027ll read the zero value.\n\t\tr.cfg.Logger.Log(\"msg \u003d\u003d nil\")\n\t\treturn nil\n\t}\nI will try to check for health of the connection if the msg is equal to nil, in my next patch.",
+      "parentUuid": "a6813ed6_aea358e2",
+      "range": {
+        "startLine": 16,
+        "startChar": 74,
+        "endLine": 16,
+        "endChar": 99
+      },
+      "revId": "526a16fdc2ed3b85fe3d3916ae253a1f3fe91820",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": false,
       "key": {
         "uuid": "d78da916_583a7f0e",
@@ -37,6 +61,23 @@
       "writtenOn": "2021-03-24T00:32:36Z",
       "side": 1,
       "message": "Not sure if the new reason is good enough. Please review.\n",
+      "revId": "526a16fdc2ed3b85fe3d3916ae253a1f3fe91820",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a44b1b40_d296f6d1",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-03-24T04:00:58Z",
+      "side": 1,
+      "message": "I found out the reason that my change didn\u0027t produce meaningful message. Please see my comment. I will try to address it tomorrow.",
       "revId": "526a16fdc2ed3b85fe3d3916ae253a1f3fe91820",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },

@@ -23,9 +23,9 @@ import (
 
 	"chromiumos/tast/cmd/tast/internal/build"
 	"chromiumos/tast/cmd/tast/internal/logging"
+	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
 	"chromiumos/tast/internal/command"
 	"chromiumos/tast/internal/dep"
-	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/planner"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/runner"
@@ -75,7 +75,7 @@ type Config struct {
 	// TestNamesToSkip are tests that match patterns but are not sent to runners to run.
 	TestNamesToSkip []string
 
-	TestsToRun []*jsonprotocol.EntityResult // tests to be run
+	TestsToRun []*resultsjson.Result // tests to be run
 
 	Mode     Mode   // action to perform
 	TastDir  string // base directory under which files are written

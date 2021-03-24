@@ -25,6 +25,7 @@ import (
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/fakerunner"
+	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
 	"chromiumos/tast/cmd/tast/internal/run/target"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/control"
@@ -625,9 +626,9 @@ func TestListTests(t *gotesting.T) {
 	if err != nil {
 		t.Error("Failed to list local tests: ", err)
 	}
-	expected := make([]*jsonprotocol.EntityResult, len(tests))
+	expected := make([]*resultsjson.Result, len(tests))
 	for i := 0; i < len(tests); i++ {
-		expected[i] = &jsonprotocol.EntityResult{EntityInfo: tests[i].EntityInfo, SkipReason: tests[i].SkipReason}
+		expected[i] = &resultsjson.Result{Test: *resultsjson.NewTest(&tests[i].EntityInfo), SkipReason: tests[i].SkipReason}
 	}
 	if !reflect.DeepEqual(results, expected) {
 		t.Errorf("Unexpected list of local tests: got %+v; want %+v", results, expected)
@@ -676,8 +677,8 @@ func TestListTestsWithSharding(t *gotesting.T) {
 		if err != nil {
 			t.Error("Failed to list local tests: ", err)
 		}
-		expected := []*jsonprotocol.EntityResult{
-			{EntityInfo: tests[i].EntityInfo, SkipReason: tests[i].SkipReason},
+		expected := []*resultsjson.Result{
+			{Test: *resultsjson.NewTest(&tests[i].EntityInfo), SkipReason: tests[i].SkipReason},
 		}
 		if !reflect.DeepEqual(results, expected) {
 			t.Errorf("Unexpected list of local tests: got %+v; want %+v", results, expected)
@@ -734,9 +735,9 @@ func TestListTestsWithSkippedTests(t *gotesting.T) {
 	if err != nil {
 		t.Error("Failed to list local tests: ", err)
 	}
-	expected := []*jsonprotocol.EntityResult{
-		{EntityInfo: tests[0].EntityInfo, SkipReason: tests[0].SkipReason},
-		{EntityInfo: tests[2].EntityInfo, SkipReason: tests[2].SkipReason},
+	expected := []*resultsjson.Result{
+		{Test: *resultsjson.NewTest(&tests[0].EntityInfo), SkipReason: tests[0].SkipReason},
+		{Test: *resultsjson.NewTest(&tests[2].EntityInfo), SkipReason: tests[2].SkipReason},
 	}
 	if !reflect.DeepEqual(results, expected) {
 		t.Errorf("Unexpected list of local tests in shard 0: got %+v; want %+v", results, expected)
@@ -748,8 +749,8 @@ func TestListTestsWithSkippedTests(t *gotesting.T) {
 	if err != nil {
 		t.Error("Failed to list local tests: ", err)
 	}
-	expected = []*jsonprotocol.EntityResult{
-		{EntityInfo: tests[1].EntityInfo, SkipReason: tests[1].SkipReason},
+	expected = []*resultsjson.Result{
+		{Test: *resultsjson.NewTest(&tests[1].EntityInfo), SkipReason: tests[1].SkipReason},
 	}
 	if !reflect.DeepEqual(results, expected) {
 		t.Errorf("Unexpected list of local tests in shard 1: got %+v; want %+v", results, expected)

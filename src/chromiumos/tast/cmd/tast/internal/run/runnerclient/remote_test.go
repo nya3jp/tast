@@ -18,6 +18,7 @@ import (
 	"github.com/google/go-cmp/cmp/cmpopts"
 
 	"chromiumos/tast/cmd/tast/internal/run/fakerunner"
+	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
 	"chromiumos/tast/internal/bundle"
 	"chromiumos/tast/internal/control"
 	"chromiumos/tast/internal/jsonprotocol"
@@ -28,7 +29,7 @@ import (
 
 // runFakeRemoteRunner calls remote and records the Args struct that was passed
 // to the fake runner.
-func runFakeRemoteRunner(t *gotesting.T, td *fakerunner.RemoteTestData) ([]*jsonprotocol.EntityResult, error) {
+func runFakeRemoteRunner(t *gotesting.T, td *fakerunner.RemoteTestData) ([]*resultsjson.Result, error) {
 	res, rerr := RunRemoteTests(context.Background(), &td.Cfg, &td.State)
 
 	f, err := os.Open(filepath.Join(td.Dir, fakerunner.FakeRunnerArgsFile))

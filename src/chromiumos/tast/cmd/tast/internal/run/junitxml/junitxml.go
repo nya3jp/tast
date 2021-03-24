@@ -10,7 +10,7 @@ import (
 	"fmt"
 	"time"
 
-	"chromiumos/tast/internal/jsonprotocol"
+	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
 )
 
 // testSuites is the top leve XML element of JUnit result.
@@ -59,7 +59,7 @@ type skipped struct {
 }
 
 // Marshal marshalizes the Tast test results into JUnit XML format.
-func Marshal(results []*jsonprotocol.EntityResult) ([]byte, error) {
+func Marshal(results []*resultsjson.Result) ([]byte, error) {
 	suites := testSuites{
 		XMLName: xml.Name{Local: "testsuites"},
 		TestSuite: testSuite{
@@ -71,7 +71,7 @@ func Marshal(results []*jsonprotocol.EntityResult) ([]byte, error) {
 	var failures int
 	for _, r := range results {
 		testCase := testCase{
-			Name:      r.EntityInfo.Name,
+			Name:      r.Name,
 			Timestamp: r.Start.UTC().Format(time.RFC3339),
 			// Decimal point is needed for distinguishing it from nanoseconds notation.
 			// e.g. "1.0" for one second.

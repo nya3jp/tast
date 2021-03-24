@@ -19,11 +19,11 @@ import (
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/diagnose"
+	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
 	"chromiumos/tast/cmd/tast/internal/run/target"
 	"chromiumos/tast/ctxutil"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/bundle"
-	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/planner"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/rpc"
@@ -93,14 +93,14 @@ type bundleTests struct {
 
 type categorizedTests struct {
 	remoteFixt string
-	tests      []*jsonprotocol.EntityInfo
+	tests      []*resultsjson.Test
 }
 
 // localTestsCategorizer categorizes local by the bundle path and the
 // depending remote fixture in this order. Results are sorted by
 // the bundle name, the depending remote fixture name, and the test name,
 // assuming the input is already sorted by the test name.
-type localTestsCategorizer func([]*jsonprotocol.EntityInfo) ([]*bundleTests, error)
+type localTestsCategorizer func([]*resultsjson.Test) ([]*bundleTests, error)
 
 // newLocalTestsCategorizer creates a function which categorizes given local
 // tests by the bundle name and the remote fixture name tests depend on.
@@ -196,12 +196,12 @@ func newLocalTestsCategorizer(ctx context.Context, cfg *config.Config, hst *ssh.
 		return dependingRemoteFixture(bundle, p)
 	}
 
-	categorizeLocalTests := func(localTests []*jsonprotocol.EntityInfo) ([]*bundleTests, error) {
+	categorizeLocalTests := func(localTests []*resultsjson.Test) ([]*bundleTests, error) {
 		// bundle -> depending remote fixture -> tests
-		resMap := make(map[string]map[string][]*jsonprotocol.EntityInfo)
+		resMap := make(map[string]map[string][]*resultsjson.Test)
 		for _, t := range localTests {
 			if resMap[t.Bundle] == nil {
-				resMap[t.Bundle] = make(map[string][]*jsonprotocol.EntityInfo)
+				resMap[t.Bundle] = make(map[string][]*resultsjson.Test)
 			}
 			rf, err := dependingRemoteFixture(t.Bundle, t.Fixture)
 			if err != nil {
@@ -377,7 +377,7 @@ func runFixtureAndTests(ctx context.Context, cfg *config.Config, conn *target.Co
 // RunLocalTests executes tests as described by cfg on hst and returns the
 // results. It is only used for RunTestsMode.
 // It can return partial results and an error when error happens mid-tests.
-func RunLocalTests(ctx context.Context, cfg *config.Config, state *config.State, cc *target.ConnCache) (res []*jsonprotocol.EntityResult, retErr error) {
+func RunLocalTests(ctx context.Context, cfg *config.Config, state *config.State, cc *target.ConnCache) (res []*resultsjson.Result, retErr error) {
 	ctx, st := timing.Start(ctx, "run_local_tests")
 	defer st.End()
 
@@ -401,10 +401,10 @@ func RunLocalTests(ctx context.Context, cfg *config.Config, state *config.State,
 		return nil, err
 	}
 
-	var tests []*jsonprotocol.EntityInfo
+	var tests []*resultsjson.Test
 	for _, t := range cfg.TestsToRun {
-		if t.BundleType == jsonprotocol.LocalBundle {
-			tests = append(tests, &t.EntityInfo)
+		if t.BundleType == resultsjson.LocalBundle {
+			tests = append(tests, &t.Test)
 		}
 	}
 	bundleRemoteFixtTests, err := categorize(tests)
@@ -414,7 +414,7 @@ func RunLocalTests(ctx context.Context, cfg *config.Config, state *config.State,
 
 	start := time.Now()
 
-	var entityResults []*jsonprotocol.EntityResult
+	var entityResults []*resultsjson.Result
 	for _, bt := range bundleRemoteFixtTests {
 		cfg.Logger.Logf("Running tests in bundle %v", bt.bundle)
 
@@ -447,7 +447,7 @@ func RunLocalTests(ctx context.Context, cfg *config.Config, state *config.State,
 // runLocalTestsForFixture runs given local tests in between remote fixture
 // set up and tear down.
 // It can return partial results and an error when error happens mid-tests.
-func runLocalTestsForFixture(ctx context.Context, names []string, remoteFixt string, setUpErrs []string, cfg *config.Config, state *config.State, cc *target.ConnCache) ([]*jsonprotocol.EntityResult, error) {
+func runLocalTestsForFixture(ctx context.Context, names []string, remoteFixt string, setUpErrs []string, cfg *config.Config, state *config.State, cc *target.ConnCache) ([]*resultsjson.Result, error) {
 	conn, err := cc.Conn(ctx)
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed to connect to %s; remoteFixt = %q", cfg.Target, remoteFixt)
@@ -460,7 +460,7 @@ func runLocalTestsForFixture(ctx context.Context, names []string, remoteFixt str
 		}
 		return true
 	}
-	runTests := func(ctx context.Context, patterns []string) (results []*jsonprotocol.EntityResult, unstarted []string, err error) {
+	runTests := func(ctx context.Context, patterns []string) (results []*resultsjson.Result, unstarted []string, err error) {
 		return runLocalTestsOnce(ctx, cfg, state, cc, conn, patterns, remoteFixt, setUpErrs)
 	}
 
@@ -513,7 +513,7 @@ func startLocalRunner(ctx context.Context, cfg *config.Config, hst *ssh.Conn, ar
 // started but weren't (in the order in which they should've been run) are
 // returned.
 func runLocalTestsOnce(ctx context.Context, cfg *config.Config, state *config.State, cc *target.ConnCache, conn *target.Conn, patterns []string, startFixtureName string, setUpErrs []string) (
-	results []*jsonprotocol.EntityResult, unstarted []string, err error) {
+	results []*resultsjson.Result, unstarted []string, err error) {
 	ctx, st := timing.Start(ctx, "run_local_tests_once")
 	defer st.End()
 

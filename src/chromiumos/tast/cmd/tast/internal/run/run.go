@@ -19,10 +19,10 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/devserver"
 	"chromiumos/tast/cmd/tast/internal/run/prepare"
+	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
 	"chromiumos/tast/cmd/tast/internal/run/runnerclient"
 	"chromiumos/tast/cmd/tast/internal/run/target"
 	"chromiumos/tast/errors"
-	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/sshconfig"
 	"chromiumos/tast/ssh"
@@ -67,7 +67,7 @@ func resolveHost(cfg *config.Config, target string) string {
 // Messages are logged using cfg.Logger as the run progresses.
 // If an error is encountered, status.ErrorMsg will be logged to cfg.Logger before returning,
 // but the caller may wish to log it again later to increase its prominence if additional messages are logged.
-func Run(ctx context.Context, cfg *config.Config, state *config.State) (status Status, results []*jsonprotocol.EntityResult) {
+func Run(ctx context.Context, cfg *config.Config, state *config.State) (status Status, results []*resultsjson.Result) {
 	defer func() {
 		// If we didn't get to the point where we started trying to run tests,
 		// report that to the caller so they can avoid writing a useless results dir.
@@ -222,7 +222,7 @@ func startEphemeralDevserverForRemoteTests(ctx context.Context, cfg *config.Conf
 }
 
 // listTests returns the whole tests to run.
-func listTests(ctx context.Context, cfg *config.Config, state *config.State, cc *target.ConnCache) ([]*jsonprotocol.EntityResult, error) {
+func listTests(ctx context.Context, cfg *config.Config, state *config.State, cc *target.ConnCache) ([]*resultsjson.Result, error) {
 	if err := runnerclient.GetDUTInfo(ctx, cfg, state, cc); err != nil {
 		return nil, err
 	}
@@ -236,7 +236,7 @@ func listTests(ctx context.Context, cfg *config.Config, state *config.State, cc 
 	return testsToRun, nil
 }
 
-func runTests(ctx context.Context, cfg *config.Config, state *config.State, cc *target.ConnCache) ([]*jsonprotocol.EntityResult, error) {
+func runTests(ctx context.Context, cfg *config.Config, state *config.State, cc *target.ConnCache) ([]*resultsjson.Result, error) {
 	if err := runnerclient.GetDUTInfo(ctx, cfg, state, cc); err != nil {
 		return nil, errors.Wrap(err, "failed to get DUT software features")
 	}
@@ -280,7 +280,7 @@ func runTests(ctx context.Context, cfg *config.Config, state *config.State, cc *
 		return nil, nil
 	}
 
-	var results []*jsonprotocol.EntityResult
+	var results []*resultsjson.Result
 	state.StartedRun = true
 
 	if cfg.RunLocal {

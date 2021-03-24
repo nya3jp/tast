@@ -8,6 +8,7 @@ import (
 	"context"
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
+	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
 	"chromiumos/tast/cmd/tast/internal/run/target"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/bundle"
@@ -17,7 +18,7 @@ import (
 )
 
 // FindTestsForShard finds the pattern for a subset of tests based on shard index.
-func FindTestsForShard(ctx context.Context, cfg *config.Config, state *config.State, cc *target.ConnCache) (testsToRun, testsToSkip, testsNotInShard []*jsonprotocol.EntityResult, err error) {
+func FindTestsForShard(ctx context.Context, cfg *config.Config, state *config.State, cc *target.ConnCache) (testsToRun, testsToSkip, testsNotInShard []*resultsjson.Result, err error) {
 	tests, testsToSkip, err := listRunnableTests(ctx, cfg, state, cc)
 	if err != nil {
 		return nil, nil, nil, errors.Wrapf(err, "fails to find runnable tests for patterns %q", cfg.Patterns)
@@ -39,7 +40,7 @@ func FindTestsForShard(ctx context.Context, cfg *config.Config, state *config.St
 }
 
 // listRunnableTests finds runnable tests that fit the cfg.Patterns.
-func listRunnableTests(ctx context.Context, cfg *config.Config, state *config.State, cc *target.ConnCache) (testsToInclude, testsToSkip []*jsonprotocol.EntityResult, err error) {
+func listRunnableTests(ctx context.Context, cfg *config.Config, state *config.State, cc *target.ConnCache) (testsToInclude, testsToSkip []*resultsjson.Result, err error) {
 	tests, err := listAllTests(ctx, cfg, state, cc)
 	if err != nil {
 		return nil, nil, errors.Wrapf(err, "cannot list tests for patterns %q", cfg.Patterns)
@@ -73,8 +74,8 @@ func findShardIndices(numTests, totalShards, shardIndex int) (startIndex, endInd
 }
 
 // listAllTests returns the whole tests whether they will be skipped or not..
-func listAllTests(ctx context.Context, cfg *config.Config, state *config.State, cc *target.ConnCache) ([]*jsonprotocol.EntityResult, error) {
-	var tests []*jsonprotocol.EntityResult
+func listAllTests(ctx context.Context, cfg *config.Config, state *config.State, cc *target.ConnCache) ([]*resultsjson.Result, error) {
+	var tests []*resultsjson.Result
 	if cfg.RunLocal {
 		conn, err := cc.Conn(ctx)
 		if err != nil {
@@ -85,10 +86,10 @@ func listAllTests(ctx context.Context, cfg *config.Config, state *config.State, 
 			return nil, err
 		}
 		for _, t := range ts {
-			tests = append(tests, &jsonprotocol.EntityResult{
-				EntityInfo: t.EntityInfo,
+			tests = append(tests, &resultsjson.Result{
+				Test:       *resultsjson.NewTest(&t.EntityInfo),
 				SkipReason: t.SkipReason,
-				BundleType: jsonprotocol.LocalBundle,
+				BundleType: resultsjson.LocalBundle,
 			})
 		}
 	}
@@ -98,10 +99,10 @@ func listAllTests(ctx context.Context, cfg *config.Config, state *config.State, 
 			return nil, err
 		}
 		for _, t := range ts {
-			tests = append(tests, &jsonprotocol.EntityResult{
-				EntityInfo: t.EntityInfo,
+			tests = append(tests, &resultsjson.Result{
+				Test:       *resultsjson.NewTest(&t.EntityInfo),
 				SkipReason: t.SkipReason,
-				BundleType: jsonprotocol.RemoteBundle,
+				BundleType: resultsjson.RemoteBundle,
 			})
 		}
 	}

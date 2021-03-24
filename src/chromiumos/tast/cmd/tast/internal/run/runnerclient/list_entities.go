@@ -111,7 +111,7 @@ func listAllTests(ctx context.Context, cfg *config.Config, state *config.State, 
 }
 
 // ListLocalTests returns a list of local tests to run.
-func ListLocalTests(ctx context.Context, cfg *config.Config, state *config.State, hst *ssh.Conn) ([]jsonprotocol.EntityWithRunnabilityInfo, error) {
+func ListLocalTests(ctx context.Context, cfg *config.Config, state *config.State, hst *ssh.Conn) ([]*jsonprotocol.EntityWithRunnabilityInfo, error) {
 	return runListTestsCommand(
 		localRunnerCommand(ctx, cfg, hst), cfg, state, cfg.LocalBundleGlob())
 }
@@ -132,7 +132,7 @@ func listLocalFixtures(ctx context.Context, cfg *config.Config, hst *ssh.Conn) (
 }
 
 // listRemoteTests returns a list of remote tests to run.
-func listRemoteTests(ctx context.Context, cfg *config.Config, state *config.State) ([]jsonprotocol.EntityWithRunnabilityInfo, error) {
+func listRemoteTests(ctx context.Context, cfg *config.Config, state *config.State) ([]*jsonprotocol.EntityWithRunnabilityInfo, error) {
 	return runListTestsCommand(
 		remoteRunnerCommand(ctx, cfg), cfg, state, cfg.RemoteBundleGlob())
 }
@@ -152,8 +152,7 @@ func listRemoteFixtures(ctx context.Context, cfg *config.Config) (map[string][]*
 	return remoteFixts.Fixtures, nil
 }
 
-func runListTestsCommand(r runnerCmd, cfg *config.Config, state *config.State, glob string) ([]jsonprotocol.EntityWithRunnabilityInfo, error) {
-	var ts []jsonprotocol.EntityWithRunnabilityInfo
+func runListTestsCommand(r runnerCmd, cfg *config.Config, state *config.State, glob string) ([]*jsonprotocol.EntityWithRunnabilityInfo, error) {
 	args := &runner.Args{
 		Mode: runner.ListTestsMode,
 		ListTests: &runner.ListTestsArgs{
@@ -164,12 +163,13 @@ func runListTestsCommand(r runnerCmd, cfg *config.Config, state *config.State, g
 			BundleGlob: glob,
 		},
 	}
+	var res runner.ListTestsResult
 	if err := runTestRunnerCommand(
 		r,
 		args,
-		&ts,
+		&res,
 	); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("listing tests %v: %v", cfg.Patterns, err)
 	}
-	return ts, nil
+	return res, nil
 }

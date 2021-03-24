@@ -45,6 +45,7 @@ const (
 
 	defaultMsgTimeout = time.Minute           // default timeout for reading next control message
 	incompleteTestMsg = "Test did not finish" // error message for incomplete tests
+	noRunEndMsg       = "no RunEnd message"   // error message for missing RunEnd message
 )
 
 // entityState keeps track of states of a currently running entity.
@@ -642,9 +643,14 @@ func (r *resultsHandler) processMessages(ctx context.Context, mch <-chan interfa
 		}
 	}
 
+	noRunEndErr := errors.New(noRunEndMsg)
+
+	if runErr == nil && r.runEnd.IsZero() {
+		runErr = noRunEndErr
+	}
 	if runErr != nil {
 		// Try to get a more-specific diagnosis of what went wrong.
-		msg := fmt.Sprintf("Got global error: %v", runErr)
+		msg := ""
 
 		// Find an entity that started most recently.
 		var lastState *entityState
@@ -664,10 +670,14 @@ func (r *resultsHandler) processMessages(ctx context.Context, mch <-chan interfa
 			}
 		}
 
-		// Log the message. If the error interrupted a test, the message will be written to the test's
-		// log, and we also save it as an error within the test's result.
-		r.cfg.Logger.Log(msg)
-		if lastState != nil {
+		if runErr != noRunEndErr && msg == "" {
+			msg = fmt.Sprintf("Got global error: %v", runErr)
+		}
+
+		if lastState != nil && msg != "" {
+			// Log the message. If the error interrupted a test, the message will be written to the test's
+			// log, and we also save it as an error within the test's result.
+			r.cfg.Logger.Log(msg)
 			lastState.result.Errors = append(lastState.result.Errors, jsonprotocol.EntityError{
 				Time:  time.Now(),
 				Error: jsonprotocol.Error{Reason: msg},
@@ -676,9 +686,6 @@ func (r *resultsHandler) processMessages(ctx context.Context, mch <-chan interfa
 		return r.results, unstarted, runErr
 	}
 
-	if r.runEnd.IsZero() {
-		return r.results, unstarted, errors.New("no RunEnd message")
-	}
 	if len(unstarted) > 0 {
 		return r.results, unstarted, fmt.Errorf("%v test(s) are unstarted", len(unstarted))
 	}

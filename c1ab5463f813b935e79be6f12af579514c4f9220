@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "10e16e23_316908de",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2021-03-24T04:57:06Z",
+      "side": 1,
+      "message": "Skipped CQ, as it\u0027s a pure documentation change.",
+      "revId": "c1ab5463f813b935e79be6f12af579514c4f9220",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2ee470de_1dc6e7e6",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-03-24T18:54:28Z",
+      "side": 1,
+      "message": "I think it may be the cause for crbug/1192191. Try CQ+1 and see if it fixes the issue.",
+      "revId": "daddeccb16de57e3b38dd0bcd010babf4223b352",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

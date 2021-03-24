@@ -13,16 +13,6 @@ import (
 	"chromiumos/tast/internal/dep"
 )
 
-// BundleType indicates local or remote bundle type.
-type BundleType int
-
-const (
-	// LocalBundle is local bundle type.
-	LocalBundle BundleType = iota
-	// RemoteBundle is remote bundle type.
-	RemoteBundle
-)
-
 // EntityResult contains the results from a single entity.
 // Fields are exported so they can be marshaled by the json package.
 type EntityResult struct {
@@ -43,11 +33,6 @@ type EntityResult struct {
 	// SkipReason contains a human-readable explanation of why the test was skipped.
 	// It is empty if the test actually ran.
 	SkipReason string `json:"skipReason"`
-	// BundleType is the location of the entity; whether it's in a remote or
-	// a local bundle. This field should not be used outside run package.
-	// TODO(crbug/1189989): Remove this field; drop TestsToRun from
-	// Config and add two fields LocalTestsToRun and RemoteTestsToRun to State.
-	BundleType BundleType `json:"-"`
 }
 
 // EntityError describes an error that occurred while running an entity.

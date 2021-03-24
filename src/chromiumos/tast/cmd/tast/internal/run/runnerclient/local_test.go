@@ -19,6 +19,7 @@ import (
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/fakerunner"
+	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
 	"chromiumos/tast/cmd/tast/internal/run/target"
 	"chromiumos/tast/internal/bundle"
 	"chromiumos/tast/internal/control"
@@ -164,7 +165,7 @@ func TestLocalCopyOutput(t *gotesting.T) {
 		t.Fatal(err)
 	}
 
-	td.Cfg.TestsToRun = []*jsonprotocol.EntityResult{{EntityInfo: jsonprotocol.EntityInfo{
+	td.Cfg.TestsToRun = []*resultsjson.Result{{Test: resultsjson.Test{
 		Name: testName,
 	}}}
 
@@ -217,7 +218,7 @@ func TestLocalWaitTimeout(t *gotesting.T) {
 
 	// Simulate local_test_runner writing control messages immediately but hanging before exiting.
 	td.RunDelay = time.Minute
-	td.Cfg.TestsToRun = []*jsonprotocol.EntityResult{{EntityInfo: jsonprotocol.EntityInfo{Name: "pkg.Foo"}}}
+	td.Cfg.TestsToRun = []*resultsjson.Result{{Test: resultsjson.Test{Name: "pkg.Foo"}}}
 	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
 		switch args.Mode {
 		case runner.RunTestsMode:
@@ -262,7 +263,7 @@ func TestLocalMaxFailures(t *gotesting.T) {
 		}
 		return 0
 	}
-	td.Cfg.TestsToRun = []*jsonprotocol.EntityResult{{EntityInfo: jsonprotocol.EntityInfo{Name: "pkg.Test"}}}
+	td.Cfg.TestsToRun = []*resultsjson.Result{{Test: resultsjson.Test{Name: "pkg.Test"}}}
 	td.Cfg.MaxTestFailures = 1
 	td.State.FailuresCount = 0
 
@@ -319,39 +320,39 @@ func TestFixturesDependency(t *gotesting.T) {
 		}
 		return 0
 	}
-	td.Cfg.TestsToRun = []*jsonprotocol.EntityResult{
-		{EntityInfo: jsonprotocol.EntityInfo{
+	td.Cfg.TestsToRun = []*resultsjson.Result{
+		{Test: resultsjson.Test{
 			Bundle:  "cros",
 			Fixture: "remoteFixt",
 			Name:    "pkg.Test1A",
-		}}, {EntityInfo: jsonprotocol.EntityInfo{
+		}}, {Test: resultsjson.Test{
 			Bundle:  "cros",
 			Fixture: "fixt1B", // depends on remoteFixt
 			Name:    "pkg.Test1B",
-		}}, {EntityInfo: jsonprotocol.EntityInfo{
+		}}, {Test: resultsjson.Test{
 			Bundle:  "cros",
 			Fixture: "fixt2", // depends on failFixt
 			Name:    "pkg.Test2",
-		}}, {EntityInfo: jsonprotocol.EntityInfo{
+		}}, {Test: resultsjson.Test{
 			Bundle:  "cros",
 			Fixture: "fixt3A", // depends on localFixt
 			Name:    "pkg.Test3A",
-		}}, {EntityInfo: jsonprotocol.EntityInfo{
+		}}, {Test: resultsjson.Test{
 			Bundle:  "cros",
 			Fixture: "fixt3B", // depends on nothing
 			Name:    "pkg.Test3B",
-		}}, {EntityInfo: jsonprotocol.EntityInfo{
+		}}, {Test: resultsjson.Test{
 			Bundle: "cros",
 			Name:   "pkg.Test3C",
-		}}, {EntityInfo: jsonprotocol.EntityInfo{
+		}}, {Test: resultsjson.Test{
 			Bundle:  "cros",
 			Fixture: "tearDownFailFixt",
 			Name:    "pkg.Test4",
 		}},
 		{
 			// Remote tests should not be used on computing fixtures to run.
-			BundleType: jsonprotocol.RemoteBundle,
-			EntityInfo: jsonprotocol.EntityInfo{
+			BundleType: resultsjson.RemoteBundle,
+			Test: resultsjson.Test{
 				Bundle:  "cros",
 				Fixture: "shouldNotRun",
 				Name:    "pkg.RemoteTest",

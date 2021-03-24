@@ -11,11 +11,11 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 
-	"chromiumos/tast/internal/jsonprotocol"
+	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
 )
 
 func TestMarshal(t *gotesting.T) {
-	passedTest := jsonprotocol.EntityInfo{
+	passedTest := resultsjson.Test{
 		Name:    "example.Pass",
 		Pkg:     "chromiumos/tast/local/bundles/cros/example",
 		Desc:    "Passed test",
@@ -29,34 +29,32 @@ func TestMarshal(t *gotesting.T) {
 	failedTest.Name = "example.Fail"
 	skippedTest.Desc = "Failed test"
 	timeZone := time.FixedZone("Local", 9*60*60)
-	results := []*jsonprotocol.EntityResult{
-		&jsonprotocol.EntityResult{
-			EntityInfo: passedTest,
-			Errors:     []jsonprotocol.EntityError{},
+	results := []*resultsjson.Result{
+		{
+			Test:       passedTest,
+			Errors:     nil,
 			Start:      time.Date(2021, 2, 3, 19, 00, 02, 0, timeZone),
 			End:        time.Date(2021, 2, 3, 19, 00, 03, 0, timeZone),
 			OutDir:     "/tmp/tast/results/20210203-1000/tests/example.Pass",
 			SkipReason: "",
 		},
-		&jsonprotocol.EntityResult{
-			EntityInfo: skippedTest,
-			Errors:     []jsonprotocol.EntityError{},
+		{
+			Test:       skippedTest,
+			Errors:     nil,
 			Start:      time.Date(2021, 2, 3, 19, 00, 03, 0, timeZone),
 			End:        time.Date(2021, 2, 3, 19, 00, 05, 0, timeZone),
 			OutDir:     "/tmp/tast/results/20210203-1000/tests/example.Skipped",
 			SkipReason: "skipped by a certain reason",
 		},
-		&jsonprotocol.EntityResult{
-			EntityInfo: failedTest,
-			Errors: []jsonprotocol.EntityError{
+		{
+			Test: failedTest,
+			Errors: []resultsjson.Error{
 				{
-					Error: jsonprotocol.Error{
-						File:   "/home/user/trunk/src/platform/tast/src/chromiumos/tast/internal/planner/run.go",
-						Line:   829,
-						Reason: "unknown SoftwareDeps: android",
-						Stack:  ``,
-					},
-					Time: time.Date(2021, 2, 3, 19, 0, 10, 0, timeZone),
+					Time:   time.Date(2021, 2, 3, 19, 0, 10, 0, timeZone),
+					File:   "/home/user/trunk/src/platform/tast/src/chromiumos/tast/internal/planner/run.go",
+					Line:   829,
+					Reason: "unknown SoftwareDeps: android",
+					Stack:  ``,
 				},
 			},
 			Start: time.Date(2021, 2, 3, 19, 0, 7, 0, timeZone),

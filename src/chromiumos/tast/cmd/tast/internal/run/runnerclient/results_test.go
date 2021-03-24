@@ -25,6 +25,7 @@ import (
 	"chromiumos/tast/cmd/tast/internal/logging"
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/fakerunner"
+	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
 	"chromiumos/tast/internal/control"
 	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/runner"
@@ -36,11 +37,11 @@ import (
 func noOpCopyAndRemove(testName, dst string) error { return nil }
 
 // readStreamedResults decodes newline-terminated, JSON-marshaled EntityResult structs from r.
-func readStreamedResults(t *gotesting.T, r io.Reader) []*jsonprotocol.EntityResult {
-	var results []*jsonprotocol.EntityResult
+func readStreamedResults(t *gotesting.T, r io.Reader) []*resultsjson.Result {
+	var results []*resultsjson.Result
 	dec := json.NewDecoder(r)
 	for dec.More() {
-		res := &jsonprotocol.EntityResult{}
+		res := &resultsjson.Result{}
 		if err := dec.Decode(res); err != nil {
 			t.Errorf("Failed to decode result: %v", err)
 		}
@@ -133,24 +134,22 @@ func TestReadTestOutput(t *gotesting.T) {
 		t.Fatal(err)
 	}
 
-	expRes := []*jsonprotocol.EntityResult{
+	expRes := []*resultsjson.Result{
 		{
-			EntityInfo: jsonprotocol.EntityInfo{Name: test1Name, Desc: test1Desc},
-			Start:      test1StartTime,
-			End:        test1EndTime,
-			OutDir:     filepath.Join(cfg.ResDir, testLogsDir, test1Name),
+			Test:   resultsjson.Test{Name: test1Name, Desc: test1Desc},
+			Start:  test1StartTime,
+			End:    test1EndTime,
+			OutDir: filepath.Join(cfg.ResDir, testLogsDir, test1Name),
 		},
 		{
-			EntityInfo: jsonprotocol.EntityInfo{Name: test2Name, Desc: test2Desc},
-			Errors: []jsonprotocol.EntityError{
+			Test: resultsjson.Test{Name: test2Name, Desc: test2Desc},
+			Errors: []resultsjson.Error{
 				{
-					Time: test2ErrorTime,
-					Error: jsonprotocol.Error{
-						Reason: test2ErrorReason,
-						File:   test2ErrorFile,
-						Line:   test2ErrorLine,
-						Stack:  test2ErrorStack,
-					},
+					Time:   test2ErrorTime,
+					Reason: test2ErrorReason,
+					File:   test2ErrorFile,
+					Line:   test2ErrorLine,
+					Stack:  test2ErrorStack,
 				},
 			},
 			Start:  test2StartTime,
@@ -158,14 +157,14 @@ func TestReadTestOutput(t *gotesting.T) {
 			OutDir: filepath.Join(cfg.ResDir, testLogsDir, test2Name),
 		},
 		{
-			EntityInfo: jsonprotocol.EntityInfo{Name: test3Name, Desc: test3Desc},
+			Test:       resultsjson.Test{Name: test3Name, Desc: test3Desc},
 			Start:      test3StartTime,
 			End:        test3EndTime,
 			SkipReason: skipReason,
 			OutDir:     filepath.Join(cfg.ResDir, testLogsDir, test3Name),
 		},
 	}
-	var actRes []*jsonprotocol.EntityResult
+	var actRes []*resultsjson.Result
 	if err := json.Unmarshal([]byte(files[resultsFilename]), &actRes); err != nil {
 		t.Errorf("Failed to decode %v: %v", resultsFilename, err)
 	}
@@ -276,7 +275,7 @@ func TestReadTestOutputSameEntity(t *gotesting.T) {
 		t.Fatal(err)
 	}
 
-	var expRes, actRes []*jsonprotocol.EntityResult
+	var expRes, actRes []*resultsjson.Result
 	if err := json.Unmarshal([]byte(files[resultsFilename]), &actRes); err != nil {
 		t.Errorf("Failed to decode %v: %v", resultsFilename, err)
 	}
@@ -357,7 +356,7 @@ func TestReadTestOutputConcurrentEntity(t *gotesting.T) {
 		t.Fatal(err)
 	}
 
-	var expRes, actRes []*jsonprotocol.EntityResult
+	var expRes, actRes []*resultsjson.Result
 	if err := json.Unmarshal([]byte(files[resultsFilename]), &actRes); err != nil {
 		t.Errorf("Failed to decode %v: %v", resultsFilename, err)
 	}
@@ -493,8 +492,8 @@ func TestReadTestOutputAbortFixture(t *gotesting.T) {
 		t.Fatal(err)
 	}
 
-	var want []*jsonprotocol.EntityResult // want = ([]*EntityResult)(nil); it's not equal to (interface{})(nil)
-	var got []*jsonprotocol.EntityResult
+	var want []*resultsjson.Result // want = ([]*EntityResult)(nil); it's not equal to (interface{})(nil)
+	var got []*resultsjson.Result
 	if err := json.Unmarshal([]byte(files[resultsFilename]), &got); err != nil {
 		t.Errorf("Failed to decode %v: %v", resultsFilename, err)
 	}
@@ -676,7 +675,7 @@ func TestWriteResultsCollectSysInfo(t *gotesting.T) {
 	}
 	td.Cfg.CollectSysInfo = true
 	td.State.InitialSysInfo = &runner.SysInfoState{}
-	if err := WriteResults(context.Background(), &td.Cfg, &td.State, []*jsonprotocol.EntityResult{}, true); err != nil {
+	if err := WriteResults(context.Background(), &td.Cfg, &td.State, nil, true); err != nil {
 		t.Fatal("WriteResults failed: ", err)
 	}
 }
@@ -690,7 +689,7 @@ func TestWriteResultsCollectSysInfoFailure(t *gotesting.T) {
 	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) { return 1 }
 	td.Cfg.CollectSysInfo = true
 	td.State.InitialSysInfo = &runner.SysInfoState{}
-	err := WriteResults(context.Background(), &td.Cfg, &td.State, []*jsonprotocol.EntityResult{}, true)
+	err := WriteResults(context.Background(), &td.Cfg, &td.State, nil, true)
 	if err == nil {
 		t.Fatal("WriteResults didn't report expected error")
 	}
@@ -761,31 +760,31 @@ func TestWritePartialResults(t *gotesting.T) {
 		t.Fatal(err)
 	}
 	streamRes := readStreamedResults(t, bytes.NewBufferString(files[streamedResultsFilename]))
-	expRes := []*jsonprotocol.EntityResult{
+	expRes := []*resultsjson.Result{
 		{
-			EntityInfo: jsonprotocol.EntityInfo{Name: test1Name},
-			Start:      test1Start,
-			End:        test1End,
-			OutDir:     filepath.Join(cfg.ResDir, testLogsDir, test1Name),
+			Test:   resultsjson.Test{Name: test1Name},
+			Start:  test1Start,
+			End:    test1End,
+			OutDir: filepath.Join(cfg.ResDir, testLogsDir, test1Name),
 		},
 		// No EntityEnd message was received for the second test, so its entry in the streamed results
 		// file should have an empty end time. The error should be included, though.
 		{
-			EntityInfo: jsonprotocol.EntityInfo{Name: test2Name},
-			Start:      test2Start,
-			Errors: []jsonprotocol.EntityError{
-				{Error: jsonprotocol.Error{Reason: test2Reason}},
-				{Error: jsonprotocol.Error{Reason: incompleteTestMsg}},
+			Test:  resultsjson.Test{Name: test2Name},
+			Start: test2Start,
+			Errors: []resultsjson.Error{
+				{Reason: test2Reason},
+				{Reason: incompleteTestMsg},
 			},
 			OutDir: filepath.Join(cfg.ResDir, testLogsDir, test2Name),
 		},
 	}
-	if diff := cmp.Diff(streamRes, expRes, cmpopts.IgnoreFields(jsonprotocol.EntityError{}, "Time")); diff != "" {
+	if diff := cmp.Diff(streamRes, expRes, cmpopts.IgnoreFields(resultsjson.Error{}, "Time")); diff != "" {
 		t.Errorf("%v mismatch (-got +want):\n%s", streamedResultsFilename, diff)
 	}
 
 	// The returned results should contain the same data.
-	if diff := cmp.Diff(results, expRes, cmpopts.IgnoreFields(jsonprotocol.EntityError{}, "Time")); diff != "" {
+	if diff := cmp.Diff(results, expRes, cmpopts.IgnoreFields(resultsjson.Error{}, "Time")); diff != "" {
 		t.Errorf("Returned results mismatch (-got +want):\n%s", diff)
 	}
 
@@ -812,13 +811,13 @@ func TestWritePartialResults(t *gotesting.T) {
 		t.Fatal(err)
 	}
 	streamRes = readStreamedResults(t, bytes.NewBufferString(files[streamedResultsFilename]))
-	expRes = append(expRes, &jsonprotocol.EntityResult{
-		EntityInfo: jsonprotocol.EntityInfo{Name: test4Name},
-		Start:      test4Start,
-		End:        test4End,
-		OutDir:     filepath.Join(cfg.ResDir, testLogsDir, test4Name),
+	expRes = append(expRes, &resultsjson.Result{
+		Test:   resultsjson.Test{Name: test4Name},
+		Start:  test4Start,
+		End:    test4End,
+		OutDir: filepath.Join(cfg.ResDir, testLogsDir, test4Name),
 	})
-	if diff := cmp.Diff(streamRes, expRes, cmpopts.IgnoreFields(jsonprotocol.EntityError{}, "Time")); diff != "" {
+	if diff := cmp.Diff(streamRes, expRes, cmpopts.IgnoreFields(resultsjson.Error{}, "Time")); diff != "" {
 		t.Errorf("%v mismatch (-got +want):\n%s", streamedResultsFilename, diff)
 	}
 
@@ -845,11 +844,11 @@ func TestUnfinishedTest(t *gotesting.T) {
 		runLine  = 12
 		diagMsg  = "SSH connection was lost"
 	)
-	incompleteErr := jsonprotocol.EntityError{Error: jsonprotocol.Error{Reason: incompleteTestMsg}}
-	testErr := jsonprotocol.EntityError{Error: jsonprotocol.Error{Reason: testMsg}}
+	incompleteErr := resultsjson.Error{Reason: incompleteTestMsg}
+	testErr := resultsjson.Error{Reason: testMsg}
 	runReason := fmt.Sprintf("Got global error: %s:%d: %s", runFile, runLine, runMsg)
-	runErr := jsonprotocol.EntityError{Error: jsonprotocol.Error{Reason: runReason}}
-	diagErr := jsonprotocol.EntityError{Error: jsonprotocol.Error{Reason: diagMsg}}
+	runErr := resultsjson.Error{Reason: runReason}
+	diagErr := resultsjson.Error{Reason: diagMsg}
 
 	// diagnoseRunErrorFunc implementations.
 	emptyDiag := func(context.Context, string) string { return "" }
@@ -859,14 +858,14 @@ func TestUnfinishedTest(t *gotesting.T) {
 		writeTestErr bool // write a EntityError control message with testMsg
 		writeRunErr  bool // write a RunError control message with runMsg
 		diagFunc     diagnoseRunErrorFunc
-		expErrs      []jsonprotocol.EntityError
+		expErrs      []resultsjson.Error
 	}{
-		{false, false, nil, []jsonprotocol.EntityError{incompleteErr}},                      // no test or run error
-		{true, false, nil, []jsonprotocol.EntityError{testErr, incompleteErr}},              // test error reported
-		{false, true, nil, []jsonprotocol.EntityError{runErr, incompleteErr}},               // run error attributed to test
-		{true, true, nil, []jsonprotocol.EntityError{testErr, runErr, incompleteErr}},       // test error reported, then run error
-		{true, true, emptyDiag, []jsonprotocol.EntityError{testErr, runErr, incompleteErr}}, // failed diagnosis, so report run error
-		{true, true, goodDiag, []jsonprotocol.EntityError{testErr, diagErr, incompleteErr}}, // successful diagnosis replaces run error
+		{false, false, nil, []resultsjson.Error{incompleteErr}},                      // no test or run error
+		{true, false, nil, []resultsjson.Error{testErr, incompleteErr}},              // test error reported
+		{false, true, nil, []resultsjson.Error{runErr, incompleteErr}},               // run error attributed to test
+		{true, true, nil, []resultsjson.Error{testErr, runErr, incompleteErr}},       // test error reported, then run error
+		{true, true, emptyDiag, []resultsjson.Error{testErr, runErr, incompleteErr}}, // failed diagnosis, so report run error
+		{true, true, goodDiag, []resultsjson.Error{testErr, diagErr, incompleteErr}}, // successful diagnosis replaces run error
 	} {
 		// Report that the test started but didn't finish.
 		b := bytes.Buffer{}
@@ -902,7 +901,7 @@ func TestUnfinishedTest(t *gotesting.T) {
 			t.Errorf("readTestOutput returned non-zero end time %v", res[0].End)
 		}
 		// Ignore timestamps since run errors contain time.Now.
-		if !cmp.Equal(res[0].Errors, tc.expErrs, cmpopts.IgnoreFields(jsonprotocol.EntityError{}, "Time")) {
+		if !cmp.Equal(res[0].Errors, tc.expErrs, cmpopts.IgnoreFields(resultsjson.Error{}, "Time")) {
 			t.Errorf("readTestOutput returned errors %+v; want %+v", res[0].Errors, tc.expErrs)
 		}
 	}
@@ -916,9 +915,9 @@ func TestWriteResultsWriteFiles(t *gotesting.T) {
 	baseCfg.ResDir = td
 
 	// Report that two tests were executed.
-	results := []*jsonprotocol.EntityResult{
-		{EntityInfo: jsonprotocol.EntityInfo{Name: "pkg.Test1"}},
-		{EntityInfo: jsonprotocol.EntityInfo{Name: "pkg.Test2"}},
+	results := []*resultsjson.Result{
+		{Test: resultsjson.Test{Name: "pkg.Test1"}},
+		{Test: resultsjson.Test{Name: "pkg.Test2"}},
 	}
 	cfg := *baseCfg
 	out := &bytes.Buffer{}
@@ -945,9 +944,9 @@ func TestWriteResultsUnmatchedGlobs(t *gotesting.T) {
 	baseCfg.ResDir = td
 
 	// Report that two tests were executed.
-	results := []*jsonprotocol.EntityResult{
-		{EntityInfo: jsonprotocol.EntityInfo{Name: "pkg.Test1"}},
-		{EntityInfo: jsonprotocol.EntityInfo{Name: "pkg.Test2"}},
+	results := []*resultsjson.Result{
+		{Test: resultsjson.Test{Name: "pkg.Test1"}},
+		{Test: resultsjson.Test{Name: "pkg.Test2"}},
 	}
 
 	// This matches the message logged by WriteResults followed by patterns that

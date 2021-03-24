@@ -1,6 +1,29 @@
 {
   "comments": [
     {
+      "unresolved": true,
+      "key": {
+        "uuid": "a6813ed6_aea358e2",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-03-24T03:20:39Z",
+      "side": 1,
+      "message": "Hmm, I hoped we could get a message mentioning SSH drop. \"no RunEnd message\" is not very much useful. Could you figure out why?",
+      "range": {
+        "startLine": 16,
+        "startChar": 74,
+        "endLine": 16,
+        "endChar": 99
+      },
+      "revId": "526a16fdc2ed3b85fe3d3916ae253a1f3fe91820",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": false,
       "key": {
         "uuid": "d78da916_583a7f0e",
@@ -14,6 +37,29 @@
       "writtenOn": "2021-03-24T00:32:36Z",
       "side": 1,
       "message": "Not sure if the new reason is good enough. Please review.\n",
+      "revId": "526a16fdc2ed3b85fe3d3916ae253a1f3fe91820",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2cf4c03e_9e709dfc",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/runnerclient/results.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 585,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-03-24T03:20:39Z",
+      "side": 1,
+      "message": "We typically chain error reasons by colons.\n\n %s: %v",
+      "range": {
+        "startLine": 585,
+        "startChar": 27,
+        "endLine": 585,
+        "endChar": 39
+      },
       "revId": "526a16fdc2ed3b85fe3d3916ae253a1f3fe91820",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }

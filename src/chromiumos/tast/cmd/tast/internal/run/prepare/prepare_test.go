@@ -6,7 +6,6 @@ package prepare
 
 import (
 	"context"
-	"encoding/json"
 	"io"
 	"io/ioutil"
 	"path/filepath"
@@ -45,9 +44,9 @@ func TestPushDataFiles(t *gotesting.T) {
 	)
 
 	// Make local_test_runner list two tests containing the first three files (with overlap).
-	tests := []jsonprotocol.EntityInfo{
-		{Name: category + ".Test1", Pkg: categoryPkg, Data: []string{file1, file2}},
-		{Name: category + ".Test2", Pkg: categoryPkg, Data: []string{file2, file3, extFile1, extFile2}},
+	tests := []*jsonprotocol.EntityWithRunnabilityInfo{
+		{EntityInfo: jsonprotocol.EntityInfo{Name: category + ".Test1", Pkg: categoryPkg, Data: []string{file1, file2}}},
+		{EntityInfo: jsonprotocol.EntityInfo{Name: category + ".Test2", Pkg: categoryPkg, Data: []string{file2, file3, extFile1, extFile2}}},
 	}
 
 	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
@@ -58,8 +57,7 @@ func TestPushDataFiles(t *gotesting.T) {
 				BundleGlob: fakerunner.MockLocalBundleGlob,
 			},
 		})
-
-		json.NewEncoder(stdout).Encode(tests)
+		runner.WriteListTestsResultAsJSON(stdout, tests)
 		return 0
 	}
 

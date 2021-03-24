@@ -5,12 +5,13 @@
 package runnerclient
 
 import (
+	"bytes"
 	"context"
-	"encoding/json"
 	"fmt"
 	"io"
-	"reflect"
 	gotesting "testing"
+
+	"github.com/google/go-cmp/cmp"
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/fakerunner"
@@ -20,21 +21,21 @@ import (
 )
 
 func TestFindPatternsForShard(t *gotesting.T) {
-	tests := []jsonprotocol.EntityInfo{
-		{Name: "pkg.Test0", Desc: "This is test 0"},
-		{Name: "pkg.Test1", Desc: "This is test 1"},
-		{Name: "pkg.Test2", Desc: "This is test 2"},
-		{Name: "pkg.Test3", Desc: "This is test 3"},
-		{Name: "pkg.Test4", Desc: "This is test 4"},
-		{Name: "pkg.Test5", Desc: "This is test 5"},
-		{Name: "pkg.Test6", Desc: "This is test 6"},
+	tests := []*jsonprotocol.EntityWithRunnabilityInfo{
+		{EntityInfo: jsonprotocol.EntityInfo{Name: "pkg.Test0", Desc: "This is test 0"}},
+		{EntityInfo: jsonprotocol.EntityInfo{Name: "pkg.Test1", Desc: "This is test 1"}},
+		{EntityInfo: jsonprotocol.EntityInfo{Name: "pkg.Test2", Desc: "This is test 2"}},
+		{EntityInfo: jsonprotocol.EntityInfo{Name: "pkg.Test3", Desc: "This is test 3"}},
+		{EntityInfo: jsonprotocol.EntityInfo{Name: "pkg.Test4", Desc: "This is test 4"}},
+		{EntityInfo: jsonprotocol.EntityInfo{Name: "pkg.Test5", Desc: "This is test 5"}},
+		{EntityInfo: jsonprotocol.EntityInfo{Name: "pkg.Test6", Desc: "This is test 6"}},
 	}
 	// Make the runner print serialized tests.
-	b, err := json.Marshal(&tests)
-	if err != nil {
+	var b bytes.Buffer
+	if err := runner.WriteListTestsResultAsJSON(&b, tests); err != nil {
 		t.Fatal(err)
 	}
-	td := fakerunner.NewRemoteTestData(t, string(b), "", 0)
+	td := fakerunner.NewRemoteTestData(t, b.String(), "", 0)
 	defer td.Close()
 
 	// List matching tests instead of running them.
@@ -109,7 +110,7 @@ func TestListLocalTests(t *gotesting.T) {
 	td := fakerunner.NewLocalTestData(t)
 	defer td.Close()
 
-	tests := []jsonprotocol.EntityWithRunnabilityInfo{
+	tests := []*jsonprotocol.EntityWithRunnabilityInfo{
 		{
 			EntityInfo: jsonprotocol.EntityInfo{
 				Name: "pkg.Test",
@@ -130,8 +131,7 @@ func TestListLocalTests(t *gotesting.T) {
 			Mode:      runner.ListTestsMode,
 			ListTests: &runner.ListTestsArgs{BundleGlob: fakerunner.MockLocalBundleGlob},
 		})
-
-		json.NewEncoder(stdout).Encode(tests)
+		runner.WriteListTestsResultAsJSON(stdout, tests)
 		return 0
 	}
 
@@ -145,17 +145,17 @@ func TestListLocalTests(t *gotesting.T) {
 
 	results, err := ListLocalTests(context.Background(), &td.Cfg, &td.State, conn.SSHConn())
 	if err != nil {
-		t.Error("Failed to list local tests: ", err)
+		t.Fatal("Failed to list local tests: ", err)
 	}
 
-	if !reflect.DeepEqual(results, tests) {
-		t.Errorf("Unexpected list of local tests: got %+v; want %+v", results, tests)
+	if diff := cmp.Diff(results, tests); diff != "" {
+		t.Errorf("Unexpected list of local tests (-got +want):\n%v", diff)
 	}
 }
 
 func TestListRemoteList(t *gotesting.T) {
 	// Make the runner print serialized tests.
-	tests := []jsonprotocol.EntityWithRunnabilityInfo{
+	tests := []*jsonprotocol.EntityWithRunnabilityInfo{
 		{
 			EntityInfo: jsonprotocol.EntityInfo{
 				Name: "pkg.Test1",
@@ -173,11 +173,11 @@ func TestListRemoteList(t *gotesting.T) {
 			},
 		},
 	}
-	b, err := json.Marshal(&tests)
-	if err != nil {
+	var b bytes.Buffer
+	if err := runner.WriteListTestsResultAsJSON(&b, tests); err != nil {
 		t.Fatal(err)
 	}
-	td := fakerunner.NewRemoteTestData(t, string(b), "", 0)
+	td := fakerunner.NewRemoteTestData(t, b.String(), "", 0)
 	defer td.Close()
 
 	// List matching tests instead of running them.
@@ -189,7 +189,7 @@ func TestListRemoteList(t *gotesting.T) {
 		t.Error("Failed to list remote tests: ", err)
 	}
 
-	if !reflect.DeepEqual(results, tests) {
-		t.Errorf("Unexpected list of remote tests: got %+v; want %+v", results, tests)
+	if diff := cmp.Diff(results, tests); diff != "" {
+		t.Errorf("Unexpected list of remote tests (-got +want):\n%v", diff)
 	}
 }

@@ -7,6 +7,7 @@
 package hwdep
 
 import (
+	"fmt"
 	"regexp"
 	"strings"
 
@@ -622,5 +623,19 @@ func Nvme() Condition {
 		}
 		return errors.New("DUT does not have an NVMe storage device")
 	}, CEL: "dut.hardware_features.storage.storage_type == api.Component.Storage.StorageType.NVME",
+	}
+}
+
+// MinStorage returns a hardware dependency condition requiring the minumum size of the storage in gigabytes.
+func MinStorage(reqGigabytes int) Condition {
+	return Condition{Satisfied: func(f *dep.HardwareFeatures) error {
+		s := f.Features.Storage.Component.SizeGb
+		if s < uint32(reqGigabytes) {
+			return fmt.Errorf("The total storage size is smaller than required; got %dGB, need %dGB", s, reqGigabytes)
+		}
+		return nil
+	}, CEL: "not_implemented",
+	// TODO(crbug/1184468): Apply this CEL after the CEL supports the >= operator.
+	// CEL: "dut.hardware_features.storage.component.size_gb >= " + string(gigabytes),
 	}
 }

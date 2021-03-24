@@ -46,6 +46,7 @@ const (
 
 	defaultMsgTimeout = time.Minute           // default timeout for reading next control message
 	incompleteTestMsg = "Test did not finish" // error message for incomplete tests
+	noRunEndMsg       = "no RunEnd message"   // error message for missing RunEnd message
 )
 
 // entityState keeps track of states of a currently running entity.
@@ -649,6 +650,9 @@ func (r *resultsHandler) processMessages(ctx context.Context, mch <-chan interfa
 		}
 	}
 
+	if runErr == nil && r.runEnd.IsZero() {
+		runErr = errors.New(noRunEndMsg)
+	}
 	if runErr != nil {
 		// Try to get a more-specific diagnosis of what went wrong.
 		msg := fmt.Sprintf("Got global error: %v", runErr)
@@ -683,9 +687,6 @@ func (r *resultsHandler) processMessages(ctx context.Context, mch <-chan interfa
 		return r.results, unstarted, runErr
 	}
 
-	if r.runEnd.IsZero() {
-		return r.results, unstarted, errors.New("no RunEnd message")
-	}
 	if len(unstarted) > 0 {
 		return r.results, unstarted, fmt.Errorf("%v test(s) are unstarted", len(unstarted))
 	}

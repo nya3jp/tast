@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d78da916_583a7f0e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-03-24T00:32:36Z",
+      "side": 1,
+      "message": "Not sure if the new reason is good enough. Please review.\n",
+      "revId": "526a16fdc2ed3b85fe3d3916ae253a1f3fe91820",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

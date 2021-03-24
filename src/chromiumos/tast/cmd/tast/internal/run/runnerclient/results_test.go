@@ -774,6 +774,7 @@ func TestWritePartialResults(t *gotesting.T) {
 			Start: test2Start,
 			Errors: []resultsjson.Error{
 				{Reason: test2Reason},
+				{Reason: fmt.Sprintf("Got global error: %v", noRunEndMsg)},
 				{Reason: incompleteTestMsg},
 			},
 			OutDir: filepath.Join(cfg.ResDir, testLogsDir, test2Name),
@@ -849,6 +850,8 @@ func TestUnfinishedTest(t *gotesting.T) {
 	runReason := fmt.Sprintf("Got global error: %s:%d: %s", runFile, runLine, runMsg)
 	runErr := resultsjson.Error{Reason: runReason}
 	diagErr := resultsjson.Error{Reason: diagMsg}
+	noRunEndReason := fmt.Sprintf("Got global error: %v", noRunEndMsg)
+	noRunEndErr := resultsjson.Error{Reason: noRunEndReason}
 
 	// diagnoseRunErrorFunc implementations.
 	emptyDiag := func(context.Context, string) string { return "" }
@@ -860,8 +863,8 @@ func TestUnfinishedTest(t *gotesting.T) {
 		diagFunc     diagnoseRunErrorFunc
 		expErrs      []resultsjson.Error
 	}{
-		{false, false, nil, []resultsjson.Error{incompleteErr}},                      // no test or run error
-		{true, false, nil, []resultsjson.Error{testErr, incompleteErr}},              // test error reported
+		{false, false, nil, []resultsjson.Error{noRunEndErr, incompleteErr}},         // no test or run error
+		{true, false, nil, []resultsjson.Error{testErr, noRunEndErr, incompleteErr}}, // test error reported
 		{false, true, nil, []resultsjson.Error{runErr, incompleteErr}},               // run error attributed to test
 		{true, true, nil, []resultsjson.Error{testErr, runErr, incompleteErr}},       // test error reported, then run error
 		{true, true, emptyDiag, []resultsjson.Error{testErr, runErr, incompleteErr}}, // failed diagnosis, so report run error

@@ -903,7 +903,7 @@ func TestUnfinishedTest(t *gotesting.T) {
 		}
 		// Ignore timestamps since run errors contain time.Now.
 		if !cmp.Equal(res[0].Errors, tc.expErrs, cmpopts.IgnoreFields(jsonprotocol.EntityError{}, "Time")) {
-			t.Errorf("readTestOutput returned errors %+v; want %+v", res[0].Errors, tc.expErrs)
+			t.Errorf("readTestOutput(%d) returned errors %+v; want %+v", i, res[0].Errors, tc.expErrs)
 		}
 	}
 }

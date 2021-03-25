@@ -16,6 +16,29 @@
       "message": "I changed the logic in handling errors. Please take a look. Thanks.",
       "revId": "384596346d6e88107bd66e37d08f787343ea78ff",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "48c77f97_0ee51709",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/runnerclient/results.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 651,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-03-25T09:16:20Z",
+      "side": 1,
+      "message": "I don\u0027t see the reason of changes within this \"if runErr !\u003d nil\" block. Why do we treat noRunEndErr specially? What happens if we revert all changes in the block?",
+      "range": {
+        "startLine": 651,
+        "startChar": 1,
+        "endLine": 651,
+        "endChar": 19
+      },
+      "revId": "384596346d6e88107bd66e37d08f787343ea78ff",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

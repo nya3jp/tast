@@ -16,6 +16,7 @@ import (
 	"time"
 
 	"github.com/golang/protobuf/proto"
+	"github.com/golang/protobuf/ptypes"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	testpb "go.chromium.org/chromiumos/config/go/api/test/metadata/v1"
@@ -23,6 +24,7 @@ import (
 
 	"chromiumos/tast/internal/dep"
 	"chromiumos/tast/internal/jsonprotocol"
+	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/testing/hwdep"
 )
 
@@ -683,7 +685,7 @@ func TestHardwareDeps(t *gotesting.T) {
 	}
 }
 
-func TestTestInfo(t *gotesting.T) {
+func TestTestInstanceEntityInfo(t *gotesting.T) {
 	test := &TestInstance{
 		Name:         "pkg.Test",
 		Pkg:          "chromiumos/foo/bar",
@@ -719,6 +721,51 @@ func TestTestInfo(t *gotesting.T) {
 	}
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Got unexpected EntityInfo (-got +want):\n%s", diff)
+	}
+}
+
+func TestTestInstanceEntityProto(t *gotesting.T) {
+	test := &TestInstance{
+		Name:         "pkg.Test",
+		Pkg:          "chromiumos/foo/bar",
+		Val:          "somevalue",
+		Func:         TESTINSTANCETEST,
+		Desc:         "Description",
+		Contacts:     []string{"me@example.com"},
+		Attr:         []string{"attr1", "attr2"},
+		Data:         []string{"foo.txt"},
+		Vars:         []string{"var1", "var2", "servo"},
+		VarDeps:      []string{"servo"},
+		SoftwareDeps: []string{"dep1", "dep2"},
+		ServiceDeps:  []string{"svc1", "svc2"},
+		Fixture:      "fixt",
+		Timeout:      time.Hour,
+	}
+
+	got := test.EntityProto()
+	want := &protocol.Entity{
+		Name:        "pkg.Test",
+		Package:     "chromiumos/foo/bar",
+		Attributes:  []string{"attr1", "attr2"},
+		Description: "Description",
+		Fixture:     "fixt",
+		Dependencies: &protocol.EntityDependencies{
+			DataFiles: []string{"foo.txt"},
+			Services:  []string{"svc1", "svc2"},
+		},
+		Contacts: &protocol.EntityContacts{
+			Emails: []string{"me@example.com"},
+		},
+		LegacyData: &protocol.EntityLegacyData{
+			Variables:    []string{"var1", "var2", "servo"},
+			VariableDeps: []string{"servo"},
+			SoftwareDeps: []string{"dep1", "dep2"},
+			Timeout:      ptypes.DurationProto(time.Hour),
+			Bundle:       filepath.Base(os.Args[0]),
+		},
+	}
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Got unexpected Entity (-got +want):\n%s", diff)
 	}
 }
 

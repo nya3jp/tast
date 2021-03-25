@@ -711,11 +711,13 @@ func TestRunList(t *gotesting.T) {
 
 	var infos []*jsonprotocol.EntityWithRunnabilityInfo
 	for _, test := range tests {
-		infos = append(infos, test.EntityWithRunnabilityInfo(nil))
+		infos = append(infos, &jsonprotocol.EntityWithRunnabilityInfo{
+			EntityInfo: *jsonprotocol.MustEntityInfoFromProto(test.EntityProto()),
+		})
 	}
 
 	var exp bytes.Buffer
-	if err := testing.WriteTestsAsJSON(&exp, infos); err != nil {
+	if err := json.NewEncoder(&exp).Encode(infos); err != nil {
 		t.Fatal(err)
 	}
 

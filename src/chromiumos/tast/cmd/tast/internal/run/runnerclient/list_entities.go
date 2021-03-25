@@ -171,5 +171,5 @@ func runListTestsCommand(r runnerCmd, cfg *config.Config, state *config.State, g
 	); err != nil {
 		return nil, fmt.Errorf("listing tests %v: %v", cfg.Patterns, err)
 	}
-	return res, nil
+	return res.Tests, nil
 }

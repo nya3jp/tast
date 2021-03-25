@@ -187,6 +187,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "bdcd9305_46c0130d",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 528,
+      "author": {
+        "id": 1113991
+      },
+      "writtenOn": "2021-03-25T19:04:00Z",
+      "side": 1,
+      "message": "Thanks yamaguchi@ ! We have seen that devices with 16GB of SSD or less\ndon\u0027t have enough spare room to run the test, so we could start by \nusing here that size and the condition you\u0027re working on. Will wait\nfor that crbug to be marked Fixed and then refry this CL.",
+      "parentUuid": "f97f4bd1_48eb29c4",
+      "range": {
+        "startLine": 528,
+        "startChar": 5,
+        "endLine": 528,
+        "endChar": 40
+      },
+      "revId": "44bbf71da7455b757917a821b0b9bfd28ea550ce",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "73e4811a_00390ed8",
         "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
         "patchSetId": 1

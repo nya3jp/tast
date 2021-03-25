@@ -5,7 +5,6 @@
 package testing
 
 import (
-	"encoding/json"
 	"fmt"
 	"io"
 	"os"
@@ -22,7 +21,6 @@ import (
 
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/dep"
-	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/protocol"
 )
 
@@ -507,49 +505,6 @@ func (t *TestInstance) EntityProto() *protocol.Entity {
 			Bundle:       filepath.Base(os.Args[0]),
 		},
 	}
-}
-
-// EntityWithRunnabilityInfo converts TestInstance to EntityWithRunnabilityInfo.
-func (t *TestInstance) EntityWithRunnabilityInfo(features *dep.Features) *jsonprotocol.EntityWithRunnabilityInfo {
-	info := jsonprotocol.EntityWithRunnabilityInfo{
-		EntityInfo: jsonprotocol.EntityInfo{
-			Name:         t.Name,
-			Pkg:          t.Pkg,
-			Desc:         t.Desc,
-			Contacts:     append([]string(nil), t.Contacts...),
-			Attr:         append([]string(nil), t.Attr...),
-			Data:         append([]string(nil), t.Data...),
-			Vars:         append([]string(nil), t.Vars...),
-			VarDeps:      append([]string(nil), t.VarDeps...),
-			SoftwareDeps: append([]string(nil), t.SoftwareDeps...),
-			ServiceDeps:  append([]string(nil), t.ServiceDeps...),
-			Fixture:      t.Fixture,
-			Timeout:      t.Timeout,
-			Bundle:       filepath.Base(os.Args[0]),
-		},
-	}
-	if features == nil {
-		return &info
-	}
-	r := t.ShouldRun(features)
-	if !r.OK() {
-		var reasons []string
-		reasons = append(reasons, r.SkipReasons...)
-		reasons = append(reasons, r.Errors...)
-		info.SkipReason = strings.Join(reasons, ", ")
-	}
-	return &info
-}
-
-// WriteTestsAsJSON marshals ts to JSON and writes the resulting data to w.
-func WriteTestsAsJSON(w io.Writer, ts []*jsonprotocol.EntityWithRunnabilityInfo) error {
-
-	b, err := json.Marshal(ts)
-	if err != nil {
-		return err
-	}
-	_, err = w.Write(b)
-	return err
 }
 
 // WriteTestsAsProto exports test metadata in the protobuf format defined by infra.

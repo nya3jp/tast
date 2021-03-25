@@ -26,7 +26,6 @@ import (
 	"chromiumos/tast/internal/control"
 	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/testcontext"
-	"chromiumos/tast/internal/testing"
 )
 
 const (
@@ -74,7 +73,7 @@ func Run(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, args *Args,
 		if err != nil {
 			return command.WriteError(stderr, err)
 		}
-		if err := testing.WriteTestsAsJSON(stdout, tests); err != nil {
+		if err := json.NewEncoder(stdout).Encode(tests); err != nil {
 			return command.WriteError(stderr, err)
 		}
 		return statusSuccess
@@ -84,11 +83,7 @@ func Run(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, args *Args,
 			return command.WriteError(stderr, err)
 		}
 		res := &ListFixturesResult{Fixtures: fixts}
-		b, err2 := json.Marshal(res) // err can't be used due to type mismatch
-		if err2 != nil {
-			return command.WriteError(stderr, err2)
-		}
-		if _, err := stdout.Write(b); err != nil {
+		if err := json.NewEncoder(stdout).Encode(res); err != nil {
 			return command.WriteError(stderr, err)
 		}
 		return statusSuccess

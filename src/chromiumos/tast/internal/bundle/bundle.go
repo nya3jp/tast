@@ -102,9 +102,16 @@ func run(ctx context.Context, clArgs []string, stdin io.Reader, stdout, stderr i
 		var infos []*jsonprotocol.EntityWithRunnabilityInfo
 		features := args.ListTests.Features()
 		for _, test := range tests {
-			infos = append(infos, test.EntityWithRunnabilityInfo(features))
+			var skipReason string
+			if r := test.ShouldRun(features); !r.OK() {
+				skipReason = strings.Join(append(append([]string(nil), r.SkipReasons...), r.Errors...), ", ")
+			}
+			infos = append(infos, &jsonprotocol.EntityWithRunnabilityInfo{
+				EntityInfo: *jsonprotocol.MustEntityInfoFromProto(test.EntityProto()),
+				SkipReason: skipReason,
+			})
 		}
-		if err := testing.WriteTestsAsJSON(stdout, infos); err != nil {
+		if err := json.NewEncoder(stdout).Encode(infos); err != nil {
 			return command.WriteError(stderr, err)
 		}
 		return statusSuccess
@@ -115,11 +122,7 @@ func run(ctx context.Context, clArgs []string, stdin io.Reader, stdout, stderr i
 			infos = append(infos, jsonprotocol.MustEntityInfoFromProto(f.EntityProto()))
 		}
 		sort.Slice(infos, func(i, j int) bool { return infos[i].Name < infos[j].Name })
-		b, err := json.Marshal(infos)
-		if err != nil {
-			return command.WriteError(stderr, err)
-		}
-		if _, err := stdout.Write(b); err != nil {
+		if err := json.NewEncoder(stdout).Encode(infos); err != nil {
 			return command.WriteError(stderr, err)
 		}
 		return statusSuccess

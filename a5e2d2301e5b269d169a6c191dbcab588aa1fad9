@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "eb571319_0bd5d79b",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/runnerclient/list_entities_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-03-25T09:33:05Z",
+      "side": 1,
+      "message": "Good catch!",
+      "range": {
+        "startLine": 24,
+        "startChar": 26,
+        "endLine": 24,
+        "endChar": 51
+      },
+      "revId": "a5e2d2301e5b269d169a6c191dbcab588aa1fad9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

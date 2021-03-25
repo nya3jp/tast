@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d97d12d8_d9175602",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-03-25T09:38:05Z",
+      "side": 1,
+      "message": "This is actually a breaking protocol change.\n\nI _believe_ it\u0027s sufficient to increment sourceCompatVersion and trigger Tast CLI update. Can you try it locally?",
+      "range": {
+        "startLine": 11,
+        "startChar": 0,
+        "endLine": 11,
+        "endChar": 34
+      },
+      "revId": "ffe9b54e3f550f2a67c49e8392f9b3cbc5d76e99",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

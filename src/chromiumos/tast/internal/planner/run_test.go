@@ -83,7 +83,7 @@ func TestRunSuccess(t *gotesting.T) {
 	msgs := runTestsAndReadAll(t, tests, &Config{OutDir: od})
 
 	want := []control.Msg{
-		&control.EntityStart{Info: *tests[0].EntityInfo(), OutDir: filepath.Join(od, "pkg.Test")},
+		&control.EntityStart{Info: *jsonprotocol.MustEntityInfoFromProto(tests[0].EntityProto()), OutDir: filepath.Join(od, "pkg.Test")},
 		&control.EntityEnd{Name: tests[0].Name},
 	}
 	if diff := cmp.Diff(msgs, want); diff != "" {
@@ -105,7 +105,7 @@ func TestRunPanic(t *gotesting.T) {
 	}}
 	msgs := runTestsAndReadAll(t, tests, &Config{})
 	want := []control.Msg{
-		&control.EntityStart{Info: *tests[0].EntityInfo()},
+		&control.EntityStart{Info: *jsonprotocol.MustEntityInfoFromProto(tests[0].EntityProto())},
 		&control.EntityError{Name: "pkg.Test", Error: jsonprotocol.Error{Reason: "Panic: intentional panic"}},
 		&control.EntityEnd{Name: "pkg.Test"},
 	}
@@ -129,7 +129,7 @@ func TestRunDeadline(t *gotesting.T) {
 	// The error that was reported by the test after its deadline was hit
 	// but within the exit delay should be available.
 	want := []control.Msg{
-		&control.EntityStart{Info: *tests[0].EntityInfo()},
+		&control.EntityStart{Info: *jsonprotocol.MustEntityInfoFromProto(tests[0].EntityProto())},
 		&control.EntityError{Name: "pkg.Test", Error: jsonprotocol.Error{Reason: "Saw timeout within test"}},
 		&control.EntityEnd{Name: "pkg.Test"},
 	}
@@ -170,7 +170,7 @@ func TestRunLogAfterTimeout(t *gotesting.T) {
 
 	// An error is written with a goroutine dump.
 	want := []control.Msg{
-		&control.EntityStart{Info: *tests[0].EntityInfo()},
+		&control.EntityStart{Info: *jsonprotocol.MustEntityInfoFromProto(tests[0].EntityProto())},
 		&control.EntityError{Name: "pkg.Test", Error: jsonprotocol.Error{Reason: "Test did not return on timeout (see log for goroutine dump)"}},
 		&control.EntityLog{Name: "pkg.Test", Text: "Dumping all goroutines"},
 		// A goroutine dump follows. Do not compare them as the content is undeterministic.
@@ -203,7 +203,7 @@ func TestRunLateWriteFromGoroutine(t *gotesting.T) {
 	<-end
 
 	want := []control.Msg{
-		&control.EntityStart{Info: *tests[0].EntityInfo()},
+		&control.EntityStart{Info: *jsonprotocol.MustEntityInfoFromProto(tests[0].EntityProto())},
 		// Log message from the goroutine is not reported.
 		&control.EntityEnd{Name: tests[0].Name},
 	}
@@ -609,11 +609,11 @@ func TestRunExternalData(t *gotesting.T) {
 			msgs := runTestsAndReadAll(t, tests, pcfg)
 
 			want := []control.Msg{
-				&control.EntityStart{Info: *tests[0].EntityInfo()},
+				&control.EntityStart{Info: *jsonprotocol.MustEntityInfoFromProto(tests[0].EntityProto())},
 				&control.EntityEnd{Name: tests[0].Name, SkipReasons: []string{"missing SoftwareDeps: dep1"}},
-				&control.EntityStart{Info: *tests[1].EntityInfo()},
+				&control.EntityStart{Info: *jsonprotocol.MustEntityInfoFromProto(tests[1].EntityProto())},
 				&control.EntityEnd{Name: tests[1].Name},
-				&control.EntityStart{Info: *tests[2].EntityInfo()},
+				&control.EntityStart{Info: *jsonprotocol.MustEntityInfoFromProto(tests[2].EntityProto())},
 				&control.EntityError{Name: tests[2].Name, Error: jsonprotocol.Error{Reason: "Required data file file3.txt missing: failed to download gs://bucket/file3.txt: file does not exist"}},
 				&control.EntityEnd{Name: tests[2].Name},
 			}
@@ -734,13 +734,13 @@ func TestRunFixture(t *gotesting.T) {
 
 	want := []control.Msg{
 		// pkg.Test0 simply runs.
-		&control.EntityStart{Info: *tests[0].EntityInfo()},
+		&control.EntityStart{Info: *jsonprotocol.MustEntityInfoFromProto(tests[0].EntityProto())},
 		&control.EntityLog{Name: tests[0].Name, Text: "Test 0"},
 		&control.EntityEnd{Name: tests[0].Name},
-		&control.EntityStart{Info: *fixt1.EntityInfo()},
+		&control.EntityStart{Info: *jsonprotocol.MustEntityInfoFromProto(fixt1.EntityProto())},
 		// pkg.Test1 depends on fixt1.
 		&control.EntityLog{Name: fixt1.Name, Text: "fixt1 SetUp"},
-		&control.EntityStart{Info: *tests[1].EntityInfo()},
+		&control.EntityStart{Info: *jsonprotocol.MustEntityInfoFromProto(tests[1].EntityProto())},
 		&control.EntityLog{Name: tests[1].Name, Text: "fixt1 PreTest"},
 		&control.EntityLog{Name: tests[1].Name, Text: "Test 1"},
 		&control.EntityLog{Name: tests[1].Name, Text: "fixt1 PostTest"},
@@ -748,9 +748,9 @@ func TestRunFixture(t *gotesting.T) {
 		// fixt1 is reset.
 		&control.EntityLog{Name: fixt1.Name, Text: "fixt1 Reset"},
 		// pkg.Test2 depends on fixt2, which in turn depends on fixt1.
-		&control.EntityStart{Info: *fixt2.EntityInfo()},
+		&control.EntityStart{Info: *jsonprotocol.MustEntityInfoFromProto(fixt2.EntityProto())},
 		&control.EntityLog{Name: fixt2.Name, Text: "fixt2 SetUp"},
-		&control.EntityStart{Info: *tests[2].EntityInfo()},
+		&control.EntityStart{Info: *jsonprotocol.MustEntityInfoFromProto(tests[2].EntityProto())},
 		&control.EntityLog{Name: tests[2].Name, Text: "fixt1 PreTest"},
 		&control.EntityLog{Name: tests[2].Name, Text: "fixt2 PreTest"},
 		&control.EntityLog{Name: tests[2].Name, Text: "Test 2"},
@@ -846,20 +846,20 @@ func TestRunFixtureSetUpFailure(t *gotesting.T) {
 
 	want := []control.Msg{
 		// pkg.Test0 runs successfully.
-		&control.EntityStart{Info: *tests[0].EntityInfo()},
+		&control.EntityStart{Info: *jsonprotocol.MustEntityInfoFromProto(tests[0].EntityProto())},
 		&control.EntityLog{Name: tests[0].Name, Text: "Test 0"},
 		&control.EntityEnd{Name: tests[0].Name},
 		// fixt1 fails to set up.
-		&control.EntityStart{Info: *fixt1.EntityInfo()},
+		&control.EntityStart{Info: *jsonprotocol.MustEntityInfoFromProto(fixt1.EntityProto())},
 		&control.EntityError{Name: fixt1.Name, Error: jsonprotocol.Error{Reason: "Setup failure 1"}},
 		&control.EntityError{Name: fixt1.Name, Error: jsonprotocol.Error{Reason: "Setup failure 2"}},
 		&control.EntityEnd{Name: fixt1.Name},
 		// All tests depending on fixt1 fail.
-		&control.EntityStart{Info: *tests[1].EntityInfo()},
+		&control.EntityStart{Info: *jsonprotocol.MustEntityInfoFromProto(tests[1].EntityProto())},
 		&control.EntityError{Name: tests[1].Name, Error: jsonprotocol.Error{Reason: "[Fixture failure] fixt1: Setup failure 1"}},
 		&control.EntityError{Name: tests[1].Name, Error: jsonprotocol.Error{Reason: "[Fixture failure] fixt1: Setup failure 2"}},
 		&control.EntityEnd{Name: tests[1].Name},
-		&control.EntityStart{Info: *tests[2].EntityInfo()},
+		&control.EntityStart{Info: *jsonprotocol.MustEntityInfoFromProto(tests[2].EntityProto())},
 		&control.EntityError{Name: tests[2].Name, Error: jsonprotocol.Error{Reason: "[Fixture failure] fixt1: Setup failure 1"}},
 		&control.EntityError{Name: tests[2].Name, Error: jsonprotocol.Error{Reason: "[Fixture failure] fixt1: Setup failure 2"}},
 		&control.EntityEnd{Name: tests[2].Name},
@@ -890,7 +890,7 @@ func TestRunFixtureRemoteSetUpFailure(t *gotesting.T) {
 	msgs := runTestsAndReadAll(t, tests, cfg)
 
 	want := []control.Msg{
-		&control.EntityStart{Info: *tests[0].EntityInfo()},
+		&control.EntityStart{Info: *jsonprotocol.MustEntityInfoFromProto(tests[0].EntityProto())},
 		&control.EntityError{Error: jsonprotocol.Error{Reason: "[Fixture failure] remoteFixt: Remote failure"}, Name: "pkg.Test"},
 		&control.EntityEnd{Name: tests[0].Name},
 	}
@@ -948,24 +948,24 @@ func TestRunFixtureResetFailure(t *gotesting.T) {
 
 	want := []control.Msg{
 		// pkg.Test0 runs successfully.
-		&control.EntityStart{Info: *tests[0].EntityInfo()},
+		&control.EntityStart{Info: *jsonprotocol.MustEntityInfoFromProto(tests[0].EntityProto())},
 		&control.EntityLog{Name: tests[0].Name, Text: "Test 0"},
 		&control.EntityEnd{Name: tests[0].Name},
 		// fixt1 sets up successfully.
-		&control.EntityStart{Info: *fixt1.EntityInfo()},
+		&control.EntityStart{Info: *jsonprotocol.MustEntityInfoFromProto(fixt1.EntityProto())},
 		// pkg.Test1 runs successfully.
-		&control.EntityStart{Info: *tests[1].EntityInfo()},
+		&control.EntityStart{Info: *jsonprotocol.MustEntityInfoFromProto(tests[1].EntityProto())},
 		&control.EntityLog{Name: tests[1].Name, Text: "Test 1"},
 		&control.EntityEnd{Name: tests[1].Name},
 		// fixt1 fails to reset. It is torn down.
 		&control.EntityLog{Name: fixt1.Name, Text: "Reset 1"},
 		&control.EntityLog{Name: fixt1.Name, Text: "Fixture failed to reset: failure; recovering"},
 		&control.EntityEnd{Name: fixt1.Name},
-		&control.EntityStart{Info: *fixt1.EntityInfo()},
+		&control.EntityStart{Info: *jsonprotocol.MustEntityInfoFromProto(fixt1.EntityProto())},
 		// fixt2 sets up successfully.
-		&control.EntityStart{Info: *fixt2.EntityInfo()},
+		&control.EntityStart{Info: *jsonprotocol.MustEntityInfoFromProto(fixt2.EntityProto())},
 		// pkg.Test2 runs successfully.
-		&control.EntityStart{Info: *tests[2].EntityInfo()},
+		&control.EntityStart{Info: *jsonprotocol.MustEntityInfoFromProto(tests[2].EntityProto())},
 		&control.EntityLog{Name: tests[2].Name, Text: "Test 2"},
 		&control.EntityEnd{Name: tests[2].Name},
 		// Fixtures are torn down.
@@ -1049,45 +1049,45 @@ func TestRunFixtureMinimumReset(t *gotesting.T) {
 
 	want := []control.Msg{
 		// pkg.Test0 runs.
-		&control.EntityStart{Info: *tests[0].EntityInfo()},
+		&control.EntityStart{Info: *jsonprotocol.MustEntityInfoFromProto(tests[0].EntityProto())},
 		&control.EntityEnd{Name: tests[0].Name},
 		// fixt1 starts.
-		&control.EntityStart{Info: *fixt1.EntityInfo()},
+		&control.EntityStart{Info: *jsonprotocol.MustEntityInfoFromProto(fixt1.EntityProto())},
 		// pkg.Test1 runs.
-		&control.EntityStart{Info: *tests[1].EntityInfo()},
+		&control.EntityStart{Info: *jsonprotocol.MustEntityInfoFromProto(tests[1].EntityProto())},
 		&control.EntityEnd{Name: tests[1].Name},
 		// fixt1 is reset for pkg.Test2.
 		&control.EntityLog{Name: fixt1.Name, Text: "Reset 1"},
 		// pkg.Test2 runs.
-		&control.EntityStart{Info: *tests[2].EntityInfo()},
+		&control.EntityStart{Info: *jsonprotocol.MustEntityInfoFromProto(tests[2].EntityProto())},
 		&control.EntityEnd{Name: tests[2].Name},
 		// fixt1 is reset for pkg.Test3. fixt2 is NOT reset.
 		&control.EntityLog{Name: fixt1.Name, Text: "Reset 1"},
 		// fixt2 starts.
-		&control.EntityStart{Info: *fixt2.EntityInfo()},
+		&control.EntityStart{Info: *jsonprotocol.MustEntityInfoFromProto(fixt2.EntityProto())},
 		// pkg.Test3 runs.
-		&control.EntityStart{Info: *tests[3].EntityInfo()},
+		&control.EntityStart{Info: *jsonprotocol.MustEntityInfoFromProto(tests[3].EntityProto())},
 		&control.EntityEnd{Name: tests[3].Name},
 		// fixt1 and fixt2 are reset for pkg.Test4.
 		&control.EntityLog{Name: fixt1.Name, Text: "Reset 1"},
 		&control.EntityLog{Name: fixt2.Name, Text: "Reset 2"},
 		// pkg.Test4 runs.
-		&control.EntityStart{Info: *tests[4].EntityInfo()},
+		&control.EntityStart{Info: *jsonprotocol.MustEntityInfoFromProto(tests[4].EntityProto())},
 		&control.EntityEnd{Name: tests[4].Name},
 		// fixt2 ends.
 		&control.EntityEnd{Name: fixt2.Name},
 		// fixt1 is reset for pkg.Test5. fixt2 is NOT reset.
 		&control.EntityLog{Name: fixt1.Name, Text: "Reset 1"},
 		// fixt3 starts.
-		&control.EntityStart{Info: *fixt3.EntityInfo()},
+		&control.EntityStart{Info: *jsonprotocol.MustEntityInfoFromProto(fixt3.EntityProto())},
 		// pkg.Test5 runs.
-		&control.EntityStart{Info: *tests[5].EntityInfo()},
+		&control.EntityStart{Info: *jsonprotocol.MustEntityInfoFromProto(tests[5].EntityProto())},
 		&control.EntityEnd{Name: tests[5].Name},
 		// fixt1 and fixt3 are reset for pkg.Test5.
 		&control.EntityLog{Name: fixt1.Name, Text: "Reset 1"},
 		&control.EntityLog{Name: fixt3.Name, Text: "Reset 3"},
 		// pkg.Test6 runs.
-		&control.EntityStart{Info: *tests[6].EntityInfo()},
+		&control.EntityStart{Info: *jsonprotocol.MustEntityInfoFromProto(tests[6].EntityProto())},
 		&control.EntityEnd{Name: tests[6].Name},
 		// fixt3 and fixt1 end. They are NOT reset.
 		&control.EntityEnd{Name: fixt3.Name},
@@ -1136,14 +1136,14 @@ func TestRunFixtureMissing(t *gotesting.T) {
 
 	want := []control.Msg{
 		// Orphan tests are reported first, sorted by name.
-		&control.EntityStart{Info: *tests[1].EntityInfo()},
+		&control.EntityStart{Info: *jsonprotocol.MustEntityInfoFromProto(tests[1].EntityProto())},
 		&control.EntityError{Name: tests[1].Name, Error: jsonprotocol.Error{Reason: "Fixture \"fixt0\" not found"}},
 		&control.EntityEnd{Name: tests[1].Name},
-		&control.EntityStart{Info: *tests[2].EntityInfo()},
+		&control.EntityStart{Info: *jsonprotocol.MustEntityInfoFromProto(tests[2].EntityProto())},
 		&control.EntityError{Name: tests[2].Name, Error: jsonprotocol.Error{Reason: "Fixture \"fixt0\" not found"}},
 		&control.EntityEnd{Name: tests[2].Name},
 		// Valid tests are run.
-		&control.EntityStart{Info: *tests[0].EntityInfo()},
+		&control.EntityStart{Info: *jsonprotocol.MustEntityInfoFromProto(tests[0].EntityProto())},
 		&control.EntityEnd{Name: tests[0].Name},
 	}
 	if diff := cmp.Diff(msgs, want); diff != "" {
@@ -1233,7 +1233,7 @@ func TestRunPrecondition(t *gotesting.T) {
 	msgs := runTestsAndReadAll(t, tests, &Config{})
 
 	want := []control.Msg{
-		&control.EntityStart{Info: *tests[0].EntityInfo()},
+		&control.EntityStart{Info: *jsonprotocol.MustEntityInfoFromProto(tests[0].EntityProto())},
 		&control.EntityLog{Name: tests[0].Name, Text: `Preparing precondition "pre"`},
 		&control.EntityLog{Name: tests[0].Name, Text: `Closing precondition "pre"`},
 		&control.EntityEnd{Name: tests[0].Name},
@@ -1293,11 +1293,11 @@ func TestRunPreconditionContext(t *gotesting.T) {
 	msgs := runTestsAndReadAll(t, tests, &Config{})
 
 	want := []control.Msg{
-		&control.EntityStart{Info: *tests[0].EntityInfo()},
+		&control.EntityStart{Info: *jsonprotocol.MustEntityInfoFromProto(tests[0].EntityProto())},
 		&control.EntityLog{Name: tests[0].Name, Text: `Preparing precondition "pre"`},
 		&control.EntityLog{Name: tests[0].Name, Text: "Log via PreCtx"},
 		&control.EntityEnd{Name: tests[0].Name},
-		&control.EntityStart{Info: *tests[1].EntityInfo()},
+		&control.EntityStart{Info: *jsonprotocol.MustEntityInfoFromProto(tests[1].EntityProto())},
 		&control.EntityLog{Name: tests[1].Name, Text: `Preparing precondition "pre"`},
 		&control.EntityLog{Name: tests[1].Name, Text: "Log via PreCtx"},
 		&control.EntityLog{Name: tests[1].Name, Text: `Closing precondition "pre"`},
@@ -1416,7 +1416,7 @@ func TestAttachStateToContext(t *gotesting.T) {
 	msgs := runTestsAndReadAll(t, tests, &Config{})
 
 	want := []control.Msg{
-		&control.EntityStart{Info: *tests[0].EntityInfo()},
+		&control.EntityStart{Info: *jsonprotocol.MustEntityInfoFromProto(tests[0].EntityProto())},
 		&control.EntityLog{Name: tests[0].Name, Text: "msg 1"},
 		&control.EntityLog{Name: tests[0].Name, Text: "msg 2"},
 		&control.EntityEnd{Name: tests[0].Name},

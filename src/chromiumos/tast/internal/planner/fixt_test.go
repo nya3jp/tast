@@ -17,6 +17,7 @@ import (
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/control"
 	"chromiumos/tast/internal/jsonprotocol"
+	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/testutil"
@@ -526,14 +527,14 @@ func TestFixtureStackErrors(t *gotesting.T) {
 		return stack.Pop(ctx)
 	}
 
-	wantErrs := []*jsonprotocol.Error{
+	wantErrs := []*protocol.Error{
 		{Reason: "[Fixture failure] fixt.Red1: Setup failure 1"},
 		{Reason: "[Fixture failure] fixt.Red1: Setup failure 2"},
 	}
 
 	for i, step := range []struct {
 		f    func() error
-		want []*jsonprotocol.Error
+		want []*protocol.Error
 	}{
 		{pushGreen, nil},
 		{pushRed, wantErrs},
@@ -546,7 +547,7 @@ func TestFixtureStackErrors(t *gotesting.T) {
 			t.Fatalf("Step %d: %v", i, err)
 		}
 		got := stack.Errors()
-		if diff := cmp.Diff(got, step.want, cmpopts.IgnoreFields(jsonprotocol.Error{}, "File", "Line", "Stack")); diff != "" {
+		if diff := cmp.Diff(got, step.want, cmpopts.IgnoreFields(protocol.Error{}, "Location")); diff != "" {
 			t.Fatalf("Step %d: Errors mismatch (-got +want):\n%s", i, diff)
 		}
 	}
@@ -558,7 +559,7 @@ func TestFixtureStackOutputGreen(t *gotesting.T) {
 	ctx := context.Background()
 	sink := newOutputSink()
 	ti := &testing.TestInstance{Name: "pkg.Test"}
-	troot := testing.NewTestEntityRoot(ti, &testing.RuntimeConfig{}, newEntityOutputStream(sink, ti.EntityInfo()))
+	troot := testing.NewTestEntityRoot(ti, &testing.RuntimeConfig{}, newEntityOutputStream(sink, ti.EntityProto()))
 	stack := NewFixtureStack(&Config{}, sink)
 
 	newLoggingFixture := func(id int) *testing.Fixture {

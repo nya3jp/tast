@@ -9,14 +9,14 @@ import (
 	"runtime"
 
 	"chromiumos/tast/errors/stack"
-	"chromiumos/tast/internal/jsonprotocol"
+	"chromiumos/tast/internal/protocol"
 )
 
 // NewError returns a new Error object containing reason rsn.
 // skipFrames contains the number of frames to skip to get the code that's reporting
 // the error: the caller should pass 0 to report its own frame, 1 to skip just its own frame,
 // 2 to additionally skip the frame that called it, and so on.
-func NewError(err error, fullMsg, lastMsg string, skipFrames int) *jsonprotocol.Error {
+func NewError(err error, fullMsg, lastMsg string, skipFrames int) *protocol.Error {
 	// Also skip the NewError frame.
 	skipFrames++
 
@@ -29,10 +29,12 @@ func NewError(err error, fullMsg, lastMsg string, skipFrames int) *jsonprotocol.
 		trace += fmt.Sprintf("\n%+v", err)
 	}
 
-	return &jsonprotocol.Error{
+	return &protocol.Error{
 		Reason: fullMsg,
-		File:   fn,
-		Line:   ln,
-		Stack:  trace,
+		Location: &protocol.ErrorLocation{
+			File:  fn,
+			Line:  int64(ln),
+			Stack: trace,
+		},
 	}
 }

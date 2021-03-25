@@ -9,7 +9,7 @@ import (
 	"errors"
 	"fmt"
 
-	"chromiumos/tast/internal/jsonprotocol"
+	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/internal/timing"
@@ -140,7 +140,7 @@ func (st *FixtureStack) Status() fixtureStatus {
 // the following way:
 //
 //  [Fixture failure] (fixture name): (original error message)
-func (st *FixtureStack) Errors() []*jsonprotocol.Error {
+func (st *FixtureStack) Errors() []*protocol.Error {
 	for _, f := range st.stack {
 		if f.Status() == statusRed {
 			return f.Errors()
@@ -190,7 +190,7 @@ func (st *FixtureStack) Push(ctx context.Context, fixt *testing.Fixture) error {
 		OutDir:      outDir,
 		ServiceDeps: fixt.ServiceDeps,
 	}
-	ei := fixt.EntityInfo()
+	ei := fixt.EntityProto()
 	fout := newEntityOutputStream(st.out, ei)
 
 	ctx = testing.NewContext(ctx, ce, func(msg string) { fout.Log(msg) })
@@ -330,7 +330,7 @@ type statefulFixture struct {
 	fout *entityOutputStream
 
 	status fixtureStatus
-	errs   []*jsonprotocol.Error
+	errs   []*protocol.Error
 	val    interface{} // val returned by SetUp
 }
 
@@ -363,7 +363,7 @@ func (f *statefulFixture) Status() fixtureStatus {
 // following way:
 //
 //  [Fixture failure] (fixture name): (original error message)
-func (f *statefulFixture) Errors() []*jsonprotocol.Error {
+func (f *statefulFixture) Errors() []*protocol.Error {
 	return f.errs
 }
 
@@ -501,14 +501,12 @@ func (f *statefulFixture) newTestContext(ctx context.Context, troot *testing.Tes
 
 // rewriteErrorsForTest rewrites error messages reported by a fixture to be
 // suitable for reporting for tests depending on the fixture.
-func rewriteErrorsForTest(errs []*jsonprotocol.Error, fixtureName string) []*jsonprotocol.Error {
-	newErrs := make([]*jsonprotocol.Error, len(errs))
+func rewriteErrorsForTest(errs []*protocol.Error, fixtureName string) []*protocol.Error {
+	newErrs := make([]*protocol.Error, len(errs))
 	for i, e := range errs {
-		newErrs[i] = &jsonprotocol.Error{
-			Reason: fmt.Sprintf("[Fixture failure] %s: %s", fixtureName, e.Reason),
-			File:   e.File,
-			Line:   e.Line,
-			Stack:  e.Stack,
+		newErrs[i] = &protocol.Error{
+			Reason:   fmt.Sprintf("[Fixture failure] %s: %s", fixtureName, e.GetReason()),
+			Location: e.GetLocation(),
 		}
 	}
 	return newErrs

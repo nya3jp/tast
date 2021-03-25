@@ -23,6 +23,7 @@ import (
 	"chromiumos/tast/internal/control"
 	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/planner"
+	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/internal/timing"
@@ -111,7 +112,7 @@ func run(ctx context.Context, clArgs []string, stdin io.Reader, stdout, stderr i
 		fixts := testing.GlobalRegistry().AllFixtures()
 		var infos []*jsonprotocol.EntityInfo
 		for _, f := range fixts {
-			infos = append(infos, f.EntityInfo())
+			infos = append(infos, jsonprotocol.MustEntityInfoFromProto(f.EntityProto()))
 		}
 		sort.Slice(infos, func(i, j int) bool { return infos[i].Name < infos[j].Name })
 		b, err := json.Marshal(infos)
@@ -234,30 +235,31 @@ func (ew *eventWriter) RunLog(msg string) error {
 	return ew.mw.WriteMessage(&control.RunLog{Time: time.Now(), Text: msg})
 }
 
-func (ew *eventWriter) EntityStart(ei *jsonprotocol.EntityInfo, outDir string) error {
+func (ew *eventWriter) EntityStart(ei *protocol.Entity, outDir string) error {
 	if ew.lg != nil {
 		ew.lg.Info(fmt.Sprintf("%s: ======== start", ei.Name))
 	}
-	return ew.mw.WriteMessage(&control.EntityStart{Time: time.Now(), Info: *ei, OutDir: outDir})
+	return ew.mw.WriteMessage(&control.EntityStart{Time: time.Now(), Info: *jsonprotocol.MustEntityInfoFromProto(ei), OutDir: outDir})
 }
 
-func (ew *eventWriter) EntityLog(ei *jsonprotocol.EntityInfo, msg string) error {
+func (ew *eventWriter) EntityLog(ei *protocol.Entity, msg string) error {
 	if ew.lg != nil {
 		ew.lg.Info(fmt.Sprintf("%s: %s", ei.Name, msg))
 	}
-	return ew.mw.WriteMessage(&control.EntityLog{Time: time.Now(), Text: msg, Name: ei.Name})
+	return ew.mw.WriteMessage(&control.EntityLog{Time: time.Now(), Text: msg, Name: ei.GetName()})
 }
 
-func (ew *eventWriter) EntityError(ei *jsonprotocol.EntityInfo, e *jsonprotocol.Error) error {
+func (ew *eventWriter) EntityError(ei *protocol.Entity, e *protocol.Error) error {
 	if ew.lg != nil {
-		ew.lg.Info(fmt.Sprintf("%s: Error at %s:%d: %s", ei.Name, filepath.Base(e.File), e.Line, e.Reason))
+		loc := e.GetLocation()
+		ew.lg.Info(fmt.Sprintf("%s: Error at %s:%d: %s", ei.GetName(), filepath.Base(loc.GetFile()), loc.GetLine(), e.GetReason()))
 	}
-	return ew.mw.WriteMessage(&control.EntityError{Time: time.Now(), Error: *e, Name: ei.Name})
+	return ew.mw.WriteMessage(&control.EntityError{Time: time.Now(), Error: *jsonprotocol.ErrorFromProto(e), Name: ei.GetName()})
 }
 
-func (ew *eventWriter) EntityEnd(ei *jsonprotocol.EntityInfo, skipReasons []string, timingLog *timing.Log) error {
+func (ew *eventWriter) EntityEnd(ei *protocol.Entity, skipReasons []string, timingLog *timing.Log) error {
 	if ew.lg != nil {
-		ew.lg.Info(fmt.Sprintf("%s: ======== end", ei.Name))
+		ew.lg.Info(fmt.Sprintf("%s: ======== end", ei.GetName()))
 	}
 
 	return ew.mw.WriteMessage(&control.EntityEnd{

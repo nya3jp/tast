@@ -197,10 +197,11 @@ func TestRunListTests(t *gotesting.T) {
 		t.Fatalf("%s = %v; want %v", sig, status, statusSuccess)
 	}
 
-	var tests []*jsonprotocol.EntityWithRunnabilityInfo
-	if err := json.Unmarshal(stdout.Bytes(), &tests); err != nil {
+	var res jsonprotocol.RunnerListTestsResult
+	if err := json.Unmarshal(stdout.Bytes(), &res); err != nil {
 		t.Fatalf("%s printed unparsable output %q", sig, stdout.String())
 	}
+	tests := res.Tests
 	if len(tests) != 6 {
 		t.Errorf("%s printed %v test(s); want 6: %v", sig, len(tests), stdout.String())
 	}

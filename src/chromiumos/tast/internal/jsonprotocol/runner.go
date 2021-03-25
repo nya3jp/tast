@@ -154,7 +154,10 @@ type RunnerListTestsArgs struct {
 }
 
 // RunnerListTestsResult holds the result of a ListTestsMode command
-type RunnerListTestsResult []*EntityWithRunnabilityInfo
+type RunnerListTestsResult struct {
+	// Tests contains the matching tests.
+	Tests []*EntityWithRunnabilityInfo `json:"tests,omitempty"`
+}
 
 // RunnerListFixturesArgs is nested within RunnerArgs and contains arguments used by RunnerListFixturesMode.
 type RunnerListFixturesArgs struct {

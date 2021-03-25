@@ -176,7 +176,10 @@ type ListTestsArgs struct {
 }
 
 // ListTestsResult holds the result of a ListTestsMode command.
-type ListTestsResult = []*jsonprotocol.EntityWithRunnabilityInfo
+type ListTestsResult struct {
+	// Tests contains the matching tests.
+	Tests []*jsonprotocol.EntityWithRunnabilityInfo `json:"tests,omitempty"`
+}
 
 // ListFixturesArgs is nested within Args and contains arguments used by ListFixturesMode.
 type ListFixturesArgs struct {

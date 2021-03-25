@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b5425811_58b7a889",
+        "filename": "src/chromiumos/tast/internal/sshtest/default.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-03-25T00:53:22Z",
+      "side": 1,
+      "message": "Ouch!\n\nAs we chatted, it\u0027s not a blocker for this CL, but could you work on cleanup to align the way keys are generated?",
+      "range": {
+        "startLine": 38,
+        "startChar": 1,
+        "endLine": 38,
+        "endChar": 39
+      },
+      "revId": "76a319e7474d6e4216a409a89326067f21ece88a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

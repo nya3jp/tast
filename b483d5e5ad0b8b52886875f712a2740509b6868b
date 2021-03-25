@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "569b69bb_93ba9b09",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-03-25T09:21:36Z",
+      "side": 1,
+      "message": "Actually I\u0027m removing this function in crrev.com/c/2786530.\n",
+      "revId": "b483d5e5ad0b8b52886875f712a2740509b6868b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

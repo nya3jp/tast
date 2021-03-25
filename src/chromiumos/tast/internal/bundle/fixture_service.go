@@ -15,8 +15,8 @@ import (
 	"google.golang.org/grpc"
 
 	"chromiumos/tast/internal/dep"
-	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/planner"
+	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/internal/timing"
@@ -196,32 +196,32 @@ func (l *fixtureServiceLogger) Log(msg string) error {
 	})
 }
 
-func (l *fixtureServiceLogger) Error(e *jsonprotocol.Error) error {
+func (l *fixtureServiceLogger) Error(e *protocol.Error) error {
 	return l.stream.Send(&RunFixtureResponse{
 		Control: &RunFixtureResponse_Error{
 			Error: &RunFixtureError{
-				Reason: e.Reason,
-				File:   e.File,
-				Line:   int32(e.Line),
-				Stack:  e.Stack,
+				Reason: e.GetReason(),
+				File:   e.GetLocation().GetFile(),
+				Line:   int32(e.GetLocation().GetLine()),
+				Stack:  e.GetLocation().GetStack(),
 			},
 		},
 		Timestamp: ptypes.TimestampNow(),
 	})
 }
 
-func (l *fixtureServiceLogger) EntityStart(ei *jsonprotocol.EntityInfo, outDir string) error {
+func (l *fixtureServiceLogger) EntityStart(ei *protocol.Entity, outDir string) error {
 	return nil
 }
 
-func (l *fixtureServiceLogger) EntityLog(ei *jsonprotocol.EntityInfo, msg string) error {
+func (l *fixtureServiceLogger) EntityLog(ei *protocol.Entity, msg string) error {
 	return l.Log(msg)
 }
 
-func (l *fixtureServiceLogger) EntityError(ei *jsonprotocol.EntityInfo, e *jsonprotocol.Error) error {
+func (l *fixtureServiceLogger) EntityError(ei *protocol.Entity, e *protocol.Error) error {
 	return l.Error(e)
 }
 
-func (l *fixtureServiceLogger) EntityEnd(ei *jsonprotocol.EntityInfo, skipReasons []string, timingLog *timing.Log) error {
+func (l *fixtureServiceLogger) EntityEnd(ei *protocol.Entity, skipReasons []string, timingLog *timing.Log) error {
 	return nil
 }

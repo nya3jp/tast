@@ -5,7 +5,7 @@
 package testing
 
 import (
-	"chromiumos/tast/internal/jsonprotocol"
+	"chromiumos/tast/internal/protocol"
 )
 
 // OutputStream is an interface to report streamed outputs of an entity.
@@ -16,5 +16,5 @@ type OutputStream interface {
 
 	// Error reports an error from by an entity. An entity that reported one or
 	// more errors should be considered failure.
-	Error(e *jsonprotocol.Error) error
+	Error(e *protocol.Error) error
 }

@@ -163,6 +163,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "f97f4bd1_48eb29c4",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 528,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-03-25T10:04:31Z",
+      "side": 1,
+      "message": "I am going to implement a new HW deps condition which would look like \"d.MinPrimaryDiskSizeGB(10)\" (crbug.com/1184468)\nwhich only sees the total capacity of the largest internal disk.\n\nSo it would be better if I could know the min SSD size of the device on which you know the test works fine.",
+      "parentUuid": "6dda225d_62a2b74e",
+      "range": {
+        "startLine": 528,
+        "startChar": 5,
+        "endLine": 528,
+        "endChar": 40
+      },
+      "revId": "44bbf71da7455b757917a821b0b9bfd28ea550ce",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "73e4811a_00390ed8",
         "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
         "patchSetId": 1

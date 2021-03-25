@@ -13,6 +13,7 @@ import (
 
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/jsonprotocol"
+	"chromiumos/tast/internal/protocol"
 )
 
 // Fixture represents fixtures to register to the framework.
@@ -80,6 +81,7 @@ func (f *Fixture) Constraints() *EntityConstraints {
 }
 
 // EntityInfo returns EntityInfo for the fixture.
+// DEPRECATED: Use EntityProto.
 func (f *Fixture) EntityInfo() *jsonprotocol.EntityInfo {
 	return &jsonprotocol.EntityInfo{
 		Name:        f.Name,
@@ -91,6 +93,26 @@ func (f *Fixture) EntityInfo() *jsonprotocol.EntityInfo {
 		Type:        jsonprotocol.EntityFixture,
 
 		Bundle: filepath.Base(os.Args[0]),
+	}
+}
+
+// EntityProto a protocol buffer message representation of TestInstance.
+func (f *Fixture) EntityProto() *protocol.Entity {
+	return &protocol.Entity{
+		Type:        protocol.EntityType_FIXTURE,
+		Name:        f.Name,
+		Description: f.Desc,
+		Fixture:     f.Parent,
+		Dependencies: &protocol.EntityDependencies{
+			Services: append([]string(nil), f.ServiceDeps...),
+		},
+		Contacts: &protocol.EntityContacts{
+			Emails: append([]string(nil), f.Contacts...),
+		},
+		LegacyData: &protocol.EntityLegacyData{
+			Variables: append([]string(nil), f.Vars...),
+			Bundle:    filepath.Base(os.Args[0]),
+		},
 	}
 }
 

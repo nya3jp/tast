@@ -483,27 +483,6 @@ func (t *TestInstance) Constraints() *EntityConstraints {
 	}
 }
 
-// EntityInfo converts TestInstance to EntityInfo.
-// DEPRECATED: Use EntityProto.
-func (t *TestInstance) EntityInfo() *jsonprotocol.EntityInfo {
-	return &jsonprotocol.EntityInfo{
-		Name:         t.Name,
-		Pkg:          t.Pkg,
-		Desc:         t.Desc,
-		Contacts:     append([]string(nil), t.Contacts...),
-		Attr:         append([]string(nil), t.Attr...),
-		Data:         append([]string(nil), t.Data...),
-		Vars:         append([]string(nil), t.Vars...),
-		VarDeps:      append([]string(nil), t.VarDeps...),
-		SoftwareDeps: append([]string(nil), t.SoftwareDeps...),
-		ServiceDeps:  append([]string(nil), t.ServiceDeps...),
-		Fixture:      t.Fixture,
-		Timeout:      t.Timeout,
-
-		Bundle: filepath.Base(os.Args[0]),
-	}
-}
-
 // EntityProto a protocol buffer message representation of TestInstance.
 func (t *TestInstance) EntityProto() *protocol.Entity {
 	return &protocol.Entity{
@@ -533,7 +512,21 @@ func (t *TestInstance) EntityProto() *protocol.Entity {
 // EntityWithRunnabilityInfo converts TestInstance to EntityWithRunnabilityInfo.
 func (t *TestInstance) EntityWithRunnabilityInfo(features *dep.Features) *jsonprotocol.EntityWithRunnabilityInfo {
 	info := jsonprotocol.EntityWithRunnabilityInfo{
-		EntityInfo: *t.EntityInfo(),
+		EntityInfo: jsonprotocol.EntityInfo{
+			Name:         t.Name,
+			Pkg:          t.Pkg,
+			Desc:         t.Desc,
+			Contacts:     append([]string(nil), t.Contacts...),
+			Attr:         append([]string(nil), t.Attr...),
+			Data:         append([]string(nil), t.Data...),
+			Vars:         append([]string(nil), t.Vars...),
+			VarDeps:      append([]string(nil), t.VarDeps...),
+			SoftwareDeps: append([]string(nil), t.SoftwareDeps...),
+			ServiceDeps:  append([]string(nil), t.ServiceDeps...),
+			Fixture:      t.Fixture,
+			Timeout:      t.Timeout,
+			Bundle:       filepath.Base(os.Args[0]),
+		},
 	}
 	if features == nil {
 		return &info

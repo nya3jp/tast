@@ -24,7 +24,7 @@ import (
 	"github.com/google/go-cmp/cmp/cmpopts"
 
 	"chromiumos/tast/errors"
-	"chromiumos/tast/internal/jsonprotocol"
+	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/testutil"
 )
 
@@ -36,7 +36,7 @@ type outputSink struct {
 
 type outputData struct {
 	Logs []string
-	Errs []*jsonprotocol.Error
+	Errs []*protocol.Error
 }
 
 func (r *outputSink) Log(msg string) error {
@@ -46,7 +46,7 @@ func (r *outputSink) Log(msg string) error {
 	return nil
 }
 
-func (r *outputSink) Error(e *jsonprotocol.Error) error {
+func (r *outputSink) Error(e *protocol.Error) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	r.Data.Errs = append(r.Data.Errs, e)
@@ -54,7 +54,7 @@ func (r *outputSink) Error(e *jsonprotocol.Error) error {
 }
 
 var outputDataCmpOpts = []cmp.Option{
-	cmpopts.IgnoreFields(jsonprotocol.Error{}, "File", "Line", "Stack"),
+	cmpopts.IgnoreFields(protocol.Error{}, "Location"),
 }
 
 func TestLog(t *gotesting.T) {
@@ -124,7 +124,7 @@ func TestRunReturn(t *gotesting.T) {
 			"Starting subtest p2",
 			"ok",
 		},
-		Errs: []*jsonprotocol.Error{
+		Errs: []*protocol.Error{
 			{Reason: "p1: fail"},
 		},
 	}
@@ -201,24 +201,24 @@ func TestReportError(t *gotesting.T) {
 	if act, exp := []string{e0.Reason, e1.Reason}, []string{"error 1", "error 2"}; !reflect.DeepEqual(act, exp) {
 		t.Errorf("Got reasons %v; want %v", act, exp)
 	}
-	if _, fn, _, _ := runtime.Caller(0); e0.File != fn || e1.File != fn {
-		t.Errorf("Got filenames %q and %q; want %q", e0.File, e1.File, fn)
+	if _, fn, _, _ := runtime.Caller(0); e0.GetLocation().GetFile() != fn || e1.GetLocation().GetFile() != fn {
+		t.Errorf("Got filenames %q and %q; want %q", e0.GetLocation().GetFile(), e1.GetLocation().GetFile(), fn)
 	}
-	if e0.Line+1 != e1.Line {
-		t.Errorf("Got non-sequential line numbers %d and %d", e0.Line, e1.Line)
+	if e0.GetLocation().GetLine()+1 != e1.GetLocation().GetLine() {
+		t.Errorf("Got non-sequential line numbers %d and %d", e0.GetLocation().GetLine(), e1.GetLocation().GetLine())
 	}
 
-	for _, e := range []*jsonprotocol.Error{e0, e1} {
-		lines := strings.Split(e.Stack, "\n")
+	for _, e := range []*protocol.Error{e0, e1} {
+		lines := strings.Split(e.GetLocation().GetStack(), "\n")
 		if len(lines) < 2 {
-			t.Errorf("Stack trace %q contains fewer than 2 lines", string(e.Stack))
+			t.Errorf("Stack trace %q contains fewer than 2 lines", string(e.GetLocation().GetStack()))
 			continue
 		}
 		if exp := "error "; !strings.HasPrefix(lines[0], exp) {
-			t.Errorf("First line of stack trace %q doesn't start with %q", string(e.Stack), exp)
+			t.Errorf("First line of stack trace %q doesn't start with %q", string(e.GetLocation().GetStack()), exp)
 		}
-		if exp := fmt.Sprintf("\tat chromiumos/tast/internal/testing.TestReportError (%s:%d)", filepath.Base(e.File), e.Line); lines[1] != exp {
-			t.Errorf("Second line of stack trace %q doesn't match %q", string(e.Stack), exp)
+		if exp := fmt.Sprintf("\tat chromiumos/tast/internal/testing.TestReportError (%s:%d)", filepath.Base(e.GetLocation().GetFile()), e.GetLocation().GetLine()); lines[1] != exp {
+			t.Errorf("Second line of stack trace %q doesn't match %q", string(e.GetLocation().GetStack()), exp)
 		}
 	}
 }
@@ -274,24 +274,24 @@ func TestReportErrorInPrecondition(t *gotesting.T) {
 	if act, exp := []string{e0.Reason, e1.Reason}, []string{preFailPrefix + "error 1", preFailPrefix + "error 2"}; !reflect.DeepEqual(act, exp) {
 		t.Errorf("Got reasons %v; want %v", act, exp)
 	}
-	if _, fn, _, _ := runtime.Caller(0); e0.File != fn || e1.File != fn {
-		t.Errorf("Got filenames %q and %q; want %q", e0.File, e1.File, fn)
+	if _, fn, _, _ := runtime.Caller(0); e0.GetLocation().GetFile() != fn || e1.GetLocation().GetFile() != fn {
+		t.Errorf("Got filenames %q and %q; want %q", e0.GetLocation().GetFile(), e1.GetLocation().GetFile(), fn)
 	}
-	if e0.Line+1 != e1.Line {
-		t.Errorf("Got non-sequential line numbers %d and %d", e0.Line, e1.Line)
+	if e0.GetLocation().GetLine()+1 != e1.GetLocation().GetLine() {
+		t.Errorf("Got non-sequential line numbers %d and %d", e0.GetLocation().GetLine(), e1.GetLocation().GetLine())
 	}
 
-	for _, e := range []*jsonprotocol.Error{e0, e1} {
-		lines := strings.Split(e.Stack, "\n")
+	for _, e := range []*protocol.Error{e0, e1} {
+		lines := strings.Split(e.GetLocation().GetStack(), "\n")
 		if len(lines) < 2 {
-			t.Errorf("Stack trace %q contains fewer than 2 lines", string(e.Stack))
+			t.Errorf("Stack trace %q contains fewer than 2 lines", string(e.GetLocation().GetStack()))
 			continue
 		}
 		if exp := preFailPrefix + "error "; !strings.HasPrefix(lines[0], exp) {
-			t.Errorf("First line of stack trace %q doesn't start with %q", string(e.Stack), exp)
+			t.Errorf("First line of stack trace %q doesn't start with %q", string(e.GetLocation().GetStack()), exp)
 		}
-		if exp := fmt.Sprintf("\tat chromiumos/tast/internal/testing.TestReportErrorInPrecondition (%s:%d)", filepath.Base(e.File), e.Line); lines[1] != exp {
-			t.Errorf("Second line of stack trace %q doesn't match %q", string(e.Stack), exp)
+		if exp := fmt.Sprintf("\tat chromiumos/tast/internal/testing.TestReportErrorInPrecondition (%s:%d)", filepath.Base(e.GetLocation().GetFile()), e.GetLocation().GetLine()); lines[1] != exp {
+			t.Errorf("Second line of stack trace %q doesn't match %q", string(e.GetLocation().GetStack()), exp)
 		}
 	}
 }
@@ -317,11 +317,11 @@ func TestExtractErrorSimple(t *gotesting.T) {
 	if exp := "meow"; e.Reason != exp {
 		t.Errorf("Error message %q is not %q", e.Reason, exp)
 	}
-	if exp := "meow\n\tat chromiumos/tast/internal/testing.TestExtractErrorSimple"; !strings.HasPrefix(e.Stack, exp) {
-		t.Errorf("Stack trace %q doesn't start with %q", e.Stack, exp)
+	if exp := "meow\n\tat chromiumos/tast/internal/testing.TestExtractErrorSimple"; !strings.HasPrefix(e.GetLocation().GetStack(), exp) {
+		t.Errorf("Stack trace %q doesn't start with %q", e.GetLocation().GetStack(), exp)
 	}
-	if exp := "meow\n\tat chromiumos/tast/internal/testing.errorFunc"; !strings.Contains(e.Stack, exp) {
-		t.Errorf("Stack trace %q doesn't contain %q", e.Stack, exp)
+	if exp := "meow\n\tat chromiumos/tast/internal/testing.errorFunc"; !strings.Contains(e.GetLocation().GetStack(), exp) {
+		t.Errorf("Stack trace %q doesn't contain %q", e.GetLocation().GetStack(), exp)
 	}
 }
 
@@ -344,11 +344,11 @@ func TestExtractErrorHeuristic(t *gotesting.T) {
 		if exp := "Failed something  "; !strings.HasPrefix(e.Reason, exp) {
 			t.Errorf("Error message %q doesn't start with %q", e.Reason, exp)
 		}
-		if exp := "Failed something\n\tat chromiumos/tast/internal/testing.TestExtractErrorHeuristic"; !strings.HasPrefix(e.Stack, exp) {
-			t.Errorf("Stack trace %q doesn't start with %q", e.Stack, exp)
+		if exp := "Failed something\n\tat chromiumos/tast/internal/testing.TestExtractErrorHeuristic"; !strings.HasPrefix(e.GetLocation().GetStack(), exp) {
+			t.Errorf("Stack trace %q doesn't start with %q", e.GetLocation().GetStack(), exp)
 		}
-		if exp := "\nmeow\n\tat chromiumos/tast/internal/testing.errorFunc"; !strings.Contains(e.Stack, exp) {
-			t.Errorf("Stack trace %q doesn't contain %q", e.Stack, exp)
+		if exp := "\nmeow\n\tat chromiumos/tast/internal/testing.errorFunc"; !strings.Contains(e.GetLocation().GetStack(), exp) {
+			t.Errorf("Stack trace %q doesn't contain %q", e.GetLocation().GetStack(), exp)
 		}
 	}
 }
@@ -378,7 +378,7 @@ func TestRunUsePrefix(t *gotesting.T) {
 			"Starting subtest f1",
 			"Starting subtest f1/f2",
 		},
-		Errs: []*jsonprotocol.Error{
+		Errs: []*protocol.Error{
 			{Reason: "f1/f2: error msg"},
 		},
 	}
@@ -415,7 +415,7 @@ func TestRunNonFatal(t *gotesting.T) {
 		Logs: []string{
 			"Starting subtest f",
 		},
-		Errs: []*jsonprotocol.Error{
+		Errs: []*protocol.Error{
 			{Reason: "f: fatal msg"},
 		},
 	}
@@ -444,7 +444,7 @@ func TestFatal(t *gotesting.T) {
 	}
 
 	exp := outputData{
-		Errs: []*jsonprotocol.Error{
+		Errs: []*protocol.Error{
 			{Reason: "fatal msg"},
 		},
 	}
@@ -473,7 +473,7 @@ func TestFatalInPrecondition(t *gotesting.T) {
 	}
 
 	exp := outputData{
-		Errs: []*jsonprotocol.Error{
+		Errs: []*protocol.Error{
 			{Reason: preFailPrefix + "fatal msg"},
 		},
 	}

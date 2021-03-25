@@ -23,7 +23,6 @@ import (
 	"go.chromium.org/chromiumos/infra/proto/go/device"
 
 	"chromiumos/tast/internal/dep"
-	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/testing/hwdep"
 )
@@ -682,45 +681,6 @@ func TestHardwareDeps(t *gotesting.T) {
 	want := &ShouldRunResult{SkipReasons: []string{"ModelId did not match"}}
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("ShouldRun() = %+v; want %+v", got, want)
-	}
-}
-
-func TestTestInstanceEntityInfo(t *gotesting.T) {
-	test := &TestInstance{
-		Name:         "pkg.Test",
-		Pkg:          "chromiumos/foo/bar",
-		Val:          "somevalue",
-		Func:         TESTINSTANCETEST,
-		Desc:         "Description",
-		Contacts:     []string{"me@example.com"},
-		Attr:         []string{"attr1", "attr2"},
-		Data:         []string{"foo.txt"},
-		Vars:         []string{"var1", "var2", "servo"},
-		VarDeps:      []string{"servo"},
-		SoftwareDeps: []string{"dep1", "dep2"},
-		ServiceDeps:  []string{"svc1", "svc2"},
-		Fixture:      "fixt",
-		Timeout:      time.Hour,
-	}
-
-	got := test.EntityInfo()
-	want := &jsonprotocol.EntityInfo{
-		Name:         "pkg.Test",
-		Pkg:          "chromiumos/foo/bar",
-		Desc:         "Description",
-		Contacts:     []string{"me@example.com"},
-		Attr:         []string{"attr1", "attr2"},
-		Data:         []string{"foo.txt"},
-		Vars:         []string{"var1", "var2", "servo"},
-		VarDeps:      []string{"servo"},
-		SoftwareDeps: []string{"dep1", "dep2"},
-		ServiceDeps:  []string{"svc1", "svc2"},
-		Fixture:      "fixt",
-		Timeout:      time.Hour,
-		Bundle:       filepath.Base(os.Args[0]),
-	}
-	if diff := cmp.Diff(got, want); diff != "" {
-		t.Errorf("Got unexpected EntityInfo (-got +want):\n%s", diff)
 	}
 }
 

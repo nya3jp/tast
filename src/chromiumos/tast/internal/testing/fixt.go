@@ -12,7 +12,6 @@ import (
 	"time"
 
 	"chromiumos/tast/errors"
-	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/protocol"
 )
 
@@ -77,22 +76,6 @@ type Fixture struct {
 func (f *Fixture) Constraints() *EntityConstraints {
 	return &EntityConstraints{
 		vars: append([]string(nil), f.Vars...),
-	}
-}
-
-// EntityInfo returns EntityInfo for the fixture.
-// DEPRECATED: Use EntityProto.
-func (f *Fixture) EntityInfo() *jsonprotocol.EntityInfo {
-	return &jsonprotocol.EntityInfo{
-		Name:        f.Name,
-		Desc:        f.Desc,
-		Contacts:    append([]string(nil), f.Contacts...),
-		Vars:        append([]string(nil), f.Vars...),
-		ServiceDeps: append([]string(nil), f.ServiceDeps...),
-		Fixture:     f.Parent,
-		Type:        jsonprotocol.EntityFixture,
-
-		Bundle: filepath.Base(os.Args[0]),
 	}
 }
 

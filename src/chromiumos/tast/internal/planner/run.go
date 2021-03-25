@@ -22,7 +22,7 @@ import (
 	"chromiumos/tast/internal/dep"
 	"chromiumos/tast/internal/devserver"
 	"chromiumos/tast/internal/extdata"
-	"chromiumos/tast/internal/jsonprotocol"
+	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/internal/timing"
@@ -182,7 +182,7 @@ func (p *plan) run(ctx context.Context, out OutputStream) error {
 	dl.BeforeRun(ctx, p.testsToRun())
 
 	for _, s := range p.skips {
-		tout := newEntityOutputStream(out, s.test.EntityInfo())
+		tout := newEntityOutputStream(out, s.test.EntityProto())
 		reportSkippedTest(tout, s.result)
 	}
 
@@ -345,7 +345,7 @@ func buildFixtPlan(tests []*testing.TestInstance, pcfg *Config) (*fixtPlan, erro
 
 func (p *fixtPlan) run(ctx context.Context, out OutputStream, dl *downloader) error {
 	for _, o := range p.orphans {
-		tout := newEntityOutputStream(out, o.test.EntityInfo())
+		tout := newEntityOutputStream(out, o.test.EntityProto())
 		reportOrphanTest(tout, o.missingFixtName)
 	}
 
@@ -398,7 +398,7 @@ func runFixtTree(ctx context.Context, tree *fixtTree, stack *FixtureStack, pcfg 
 			for stack.Status() != statusYellow && len(tree.tests) > 0 {
 				t := tree.tests[0]
 				tree.tests = tree.tests[1:]
-				tout := newEntityOutputStream(out, t.EntityInfo())
+				tout := newEntityOutputStream(out, t.EntityProto())
 				if err := runTest(ctx, t, tout, pcfg, &preConfig{}, stack, dl); err != nil {
 					return err
 				}
@@ -470,7 +470,7 @@ func (p *prePlan) run(ctx context.Context, out OutputStream, dl *downloader) err
 	stack := NewFixtureStack(p.pcfg, out)
 
 	for i, t := range p.tests {
-		ti := t.EntityInfo()
+		ti := t.EntityProto()
 		plog.SetCurrentTest(ti)
 		tout := newEntityOutputStream(out, ti)
 		precfg := &preConfig{
@@ -500,7 +500,7 @@ type preLogger struct {
 	out OutputStream
 
 	mu sync.Mutex
-	ti *jsonprotocol.EntityInfo
+	ti *protocol.Entity
 }
 
 func newPreLogger(out OutputStream) *preLogger {
@@ -516,7 +516,7 @@ func (l *preLogger) Log(msg string) {
 }
 
 // SetCurrentTest sets the current test.
-func (l *preLogger) SetCurrentTest(ti *jsonprotocol.EntityInfo) {
+func (l *preLogger) SetCurrentTest(ti *protocol.Entity) {
 	l.mu.Lock()
 	defer l.mu.Unlock()
 	l.ti = ti
@@ -814,10 +814,12 @@ func timeoutOrDefault(timeout, def time.Duration) time.Duration {
 func reportOrphanTest(tout *entityOutputStream, missingFixtName string) {
 	tout.Start("")
 	_, fn, ln, _ := runtime.Caller(0)
-	tout.Error(&jsonprotocol.Error{
+	tout.Error(&protocol.Error{
 		Reason: fmt.Sprintf("Fixture %q not found", missingFixtName),
-		File:   fn,
-		Line:   ln,
+		Location: &protocol.ErrorLocation{
+			File: fn,
+			Line: int64(ln),
+		},
 	})
 	tout.End(nil, nil)
 }
@@ -828,10 +830,12 @@ func reportSkippedTest(tout *entityOutputStream, result *testing.ShouldRunResult
 	tout.Start("")
 	for _, msg := range result.Errors {
 		_, fn, ln, _ := runtime.Caller(0)
-		tout.Error(&jsonprotocol.Error{
+		tout.Error(&protocol.Error{
 			Reason: msg,
-			File:   fn,
-			Line:   ln,
+			Location: &protocol.ErrorLocation{
+				File: fn,
+				Line: int64(ln),
+			},
 		})
 	}
 	tout.End(result.SkipReasons, nil)
@@ -855,7 +859,7 @@ func dumpGoroutines(tout *entityOutputStream) {
 		}
 		return sc.Err()
 	}(); err != nil {
-		tout.Error(&jsonprotocol.Error{
+		tout.Error(&protocol.Error{
 			Reason: fmt.Sprintf("Failed to dump goroutines: %v", err),
 		})
 	}

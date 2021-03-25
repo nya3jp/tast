@@ -97,6 +97,30 @@
       },
       "revId": "c79beab70ff4934e9e420be2901be206967f4dad",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0410b874_8117c23c",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 328,
+      "author": {
+        "id": 1132414
+      },
+      "writtenOn": "2021-03-25T00:56:35Z",
+      "side": 1,
+      "message": "No, I\u0027m not sure at all. Obviously you are right.\n\nHana is in the Oak family, but I guess mosys decides differently... Ah, I got it: hana is currently not a unibuild board, but elm is:\n\nhttps://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform/mosys/platform/arm/oak/oak.c;l\u003d51?q\u003dfile:mosys%20file:oak.c%20CONFIG_CROS_CONFIG\n\nhttps://source.chromium.org/search?q\u003d(file:overlay-elm%20OR%20file:overlay-hana)%20file:make.defaults%20unibuild\u0026sq\u003d\n\n\nI guess https://crbug.com/1124372 is really right...",
+      "parentUuid": "3c72a797_d7f34a3c",
+      "range": {
+        "startLine": 328,
+        "startChar": 27,
+        "endLine": 328,
+        "endChar": 30
+      },
+      "revId": "c79beab70ff4934e9e420be2901be206967f4dad",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

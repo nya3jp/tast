@@ -341,6 +341,5 @@ func killStaleRunners(ctx context.Context, sig syscall.Signal) {
 // writes it to w in JSON format. This function is exported for unit tests to
 // implement fake runner.
 func WriteListTestsResultAsJSON(w io.Writer, tests []*jsonprotocol.EntityWithRunnabilityInfo) error {
-	var r jsonprotocol.RunnerListTestsResult = tests
-	return json.NewEncoder(w).Encode(r)
+	return json.NewEncoder(w).Encode(jsonprotocol.RunnerListTestsResult{Tests: tests})
 }

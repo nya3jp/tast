@@ -170,12 +170,12 @@ func TestAddFixtureInvalidName(t *gotesting.T) {
 		{"ieee1394", true},
 	} {
 		reg := NewRegistry()
-		err := reg.AddFixture(&Fixture{Name: tc.name})
+		err := reg.addFixture(&Fixture{Name: tc.name})
 		if tc.ok && err != nil {
-			t.Errorf("AddFixture(%q) failed: %v", tc.name, err)
+			t.Errorf("addFixture(%q) failed: %v", tc.name, err)
 		}
 		if !tc.ok && err == nil {
-			t.Errorf("AddFixture(%q) passed unexpectedly", tc.name)
+			t.Errorf("addFixture(%q) passed unexpectedly", tc.name)
 		}
 	}
 }

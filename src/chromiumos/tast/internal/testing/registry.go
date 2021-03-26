@@ -26,23 +26,23 @@ func NewRegistry() *Registry {
 	}
 }
 
-// AddTest adds t to the registry.
-func (r *Registry) AddTest(t *Test) error {
+// addTest adds t to the registry.
+func (r *Registry) addTest(t *Test) error {
 	tis, err := instantiate(t)
 	if err != nil {
 		return err
 	}
 	for _, ti := range tis {
-		if err := r.AddTestInstance(ti); err != nil {
+		if err := r.addTestInstance(ti); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-// AddTestInstance adds t to the registry.
+// addTestInstance adds t to the registry.
 // TODO(crbug.com/985381): Consider to hide the method for better encapsulation.
-func (r *Registry) AddTestInstance(t *TestInstance) error {
+func (r *Registry) addTestInstance(t *TestInstance) error {
 	t = t.clone()
 	if _, ok := r.testNames[t.Name]; ok {
 		return fmt.Errorf("test %q already registered", t.Name)
@@ -61,14 +61,14 @@ func (r *Registry) AddTestInstance(t *TestInstance) error {
 	return nil
 }
 
-// AddService adds s to the registry.
-func (r *Registry) AddService(s *Service) error {
+// addService adds s to the registry.
+func (r *Registry) addService(s *Service) error {
 	r.allServices = append(r.allServices, s)
 	return nil
 }
 
-// AddFixture adds f to the registry.
-func (r *Registry) AddFixture(f *Fixture) error {
+// addFixture adds f to the registry.
+func (r *Registry) addFixture(f *Fixture) error {
 	if err := validateFixture(f); err != nil {
 		return err
 	}

@@ -192,6 +192,8 @@ type staticConfig struct {
 	// defaultTestTimeout contains the default maximum time allotted to each test.
 	// It is only used if testing.Test.Timeout is unset.
 	defaultTestTimeout time.Duration
+
+	customGracePeriod *time.Duration // used when non-nil
 }
 
 func newArgsAndStaticConfig(defaultTestTimeout time.Duration, dataDir string, d Delegate) (*Args, *staticConfig) {
@@ -382,6 +384,7 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, scfg *staticCon
 		Fixtures:          testing.GlobalRegistry().AllFixtures(),
 		StartFixtureName:  args.RunTests.StartFixtureName,
 		StartFixtureImpl:  &stubFixture{setUpErrors: args.RunTests.SetUpErrors},
+		CustomGracePeriod: scfg.customGracePeriod,
 	}
 
 	if err := planner.RunTests(ctx, tests, ew, pcfg); err != nil {

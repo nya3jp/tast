@@ -220,10 +220,9 @@ func TestRunTestsTimeout(t *gotesting.T) {
 	ch := make(chan bool, 1)
 	defer func() { ch <- true }()
 	testing.AddTestInstance(&testing.TestInstance{
-		Name:        name1,
-		Func:        func(context.Context, *testing.State) { <-ch },
-		Timeout:     time.Millisecond,
-		ExitTimeout: time.Millisecond, // avoid blocking after timeout
+		Name:    name1,
+		Func:    func(context.Context, *testing.State) { <-ch },
+		Timeout: time.Millisecond,
 	})
 
 	// The second test passes.
@@ -246,7 +245,8 @@ func TestRunTestsTimeout(t *gotesting.T) {
 
 	// The first test should time out after 1 millisecond.
 	// The second test is not run.
-	if err := runTests(context.Background(), &stdout, &args, &staticConfig{}, localBundle, testing.GlobalRegistry().AllTests()); err == nil {
+	cgp := time.Millisecond // avoid blocking after timeout
+	if err := runTests(context.Background(), &stdout, &args, &staticConfig{customGracePeriod: &cgp}, localBundle, testing.GlobalRegistry().AllTests()); err == nil {
 		t.Fatalf("runTests(..., %+v, ...) succeeded unexpectedly", args)
 	}
 

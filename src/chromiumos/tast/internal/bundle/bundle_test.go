@@ -835,12 +835,17 @@ func TestRunListFixtures(t *gotesting.T) {
 	if err := json.Unmarshal(stdout.Bytes(), &got); err != nil {
 		t.Fatalf("json.Unmarshal(%q): %v", stdout.String(), err)
 	}
-	bundle := filepath.Base(os.Args[0])
 	want := []*jsonprotocol.EntityInfo{
-		{Type: jsonprotocol.EntityFixture, Name: "a", Bundle: bundle},
-		{Type: jsonprotocol.EntityFixture, Name: "b", Fixture: "a", Bundle: bundle},
-		{Type: jsonprotocol.EntityFixture, Name: "c", Bundle: bundle},
-		{Type: jsonprotocol.EntityFixture, Name: "d", Bundle: bundle},
+		{Name: "a"},
+		{Name: "b", Fixture: "a"},
+		{Name: "c"},
+		{Name: "d"},
+	}
+	for _, f := range want {
+		f.Type = jsonprotocol.EntityFixture
+		f.Bundle = filepath.Base(os.Args[0])
+		type x struct{}
+		f.Pkg = reflect.TypeOf(x{}).PkgPath()
 	}
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Output mismatch (-got +want): %v", diff)

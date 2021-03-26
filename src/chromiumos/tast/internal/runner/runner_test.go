@@ -245,10 +245,12 @@ func TestRunListFixtures(t *gotesting.T) {
 
 	bundle := fmt.Sprintf("%s-0-p", bundlePrefix)
 	bundlePath := filepath.Join(dir, bundle)
+	// Fake fixtures are registered in runFakeBundle in this package.
+	const pkg = "chromiumos/tast/internal/runner"
 	want := ListFixturesResult{Fixtures: map[string][]*jsonprotocol.EntityInfo{
 		bundlePath: {
-			{Name: "fake1", Type: jsonprotocol.EntityFixture, Bundle: bundle},
-			{Name: "fake2", Fixture: "fake1", Type: jsonprotocol.EntityFixture, Bundle: bundle},
+			{Name: "fake1", Type: jsonprotocol.EntityFixture, Bundle: bundle, Pkg: pkg},
+			{Name: "fake2", Fixture: "fake1", Type: jsonprotocol.EntityFixture, Bundle: bundle, Pkg: pkg},
 		},
 	}}
 

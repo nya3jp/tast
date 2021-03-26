@@ -138,48 +138,6 @@ func TestAddTestConflictingPre(t *gotesting.T) {
 	}
 }
 
-func TestAddFixtureDuplicateName(t *gotesting.T) {
-	const name = "foo"
-	reg := NewRegistry()
-	if err := reg.addFixture(&Fixture{Name: name}); err != nil {
-		t.Fatalf("Fixture registration failed: %v", err)
-	}
-	if err := reg.addFixture(&Fixture{Name: name}); err == nil {
-		t.Error("Duplicated fixture registration succeeded unexpectedly")
-	}
-}
-
-func TestAddFixtureInvalidName(t *gotesting.T) {
-	for _, tc := range []struct {
-		name string
-		ok   bool
-	}{
-		{"", false},
-		{"a", true},
-		{"A", false},
-		{"1", false},
-		{"%", false},
-		{"abc", true},
-		{"aBc", true},
-		{"a1r", true},
-		{"a1R", true},
-		{"a r", false},
-		{"a_r", false},
-		{"a-r", false},
-		{"chromeLoggedIn", true},
-		{"ieee1394", true},
-	} {
-		reg := NewRegistry()
-		err := reg.addFixture(&Fixture{Name: tc.name})
-		if tc.ok && err != nil {
-			t.Errorf("addFixture(%q) failed: %v", tc.name, err)
-		}
-		if !tc.ok && err == nil {
-			t.Errorf("addFixture(%q) passed unexpectedly", tc.name)
-		}
-	}
-}
-
 func TestAllServices(t *gotesting.T) {
 	reg := NewRegistry()
 	allSvcs := []*Service{

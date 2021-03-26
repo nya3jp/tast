@@ -6,8 +6,6 @@ package runnerclient
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
 	"io"
 	"os"
 	"path/filepath"
@@ -60,7 +58,7 @@ func TestLocalSuccess(t *gotesting.T) {
 			mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
 			mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
 		case runner.ListFixturesMode:
-			json.NewEncoder(stdout).Encode(&runner.ListFixturesResult{})
+			runner.WriteListFixturesResultAsJSON(stdout, nil)
 		}
 		return 0
 	}
@@ -89,7 +87,7 @@ func TestLocalProxy(t *gotesting.T) {
 			mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
 			mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
 		case runner.ListFixturesMode:
-			json.NewEncoder(stdout).Encode(&runner.ListFixturesResult{})
+			runner.WriteListFixturesResultAsJSON(stdout, nil)
 		}
 		return 0
 	}
@@ -154,7 +152,7 @@ func TestLocalCopyOutput(t *gotesting.T) {
 			mw.WriteMessage(&control.EntityEnd{Time: time.Unix(3, 0), Name: testName})
 			mw.WriteMessage(&control.RunEnd{Time: time.Unix(4, 0), OutDir: td.Cfg.LocalOutDir})
 		case runner.ListFixturesMode:
-			json.NewEncoder(stdout).Encode(&runner.ListFixturesResult{})
+			runner.WriteListFixturesResultAsJSON(stdout, nil)
 		}
 		return 0
 	}
@@ -226,7 +224,7 @@ func TestLocalWaitTimeout(t *gotesting.T) {
 			mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
 			mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0)})
 		case runner.ListFixturesMode:
-			json.NewEncoder(stdout).Encode(&runner.ListFixturesResult{})
+			runner.WriteListFixturesResultAsJSON(stdout, nil)
 		}
 		return 0
 	}
@@ -259,7 +257,7 @@ func TestLocalMaxFailures(t *gotesting.T) {
 			mw.WriteMessage(&control.EntityEnd{Time: time.Unix(6, 0), Name: "t2"})
 			mw.WriteMessage(&control.RunEnd{Time: time.Unix(7, 0), OutDir: ""})
 		case runner.ListFixturesMode:
-			fmt.Fprintln(stdout, "{}") // no fixtures
+			runner.WriteListFixturesResultAsJSON(stdout, nil)
 		}
 		return 0
 	}
@@ -306,15 +304,13 @@ func TestFixturesDependency(t *gotesting.T) {
 			mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 1})
 			mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
 		case runner.ListFixturesMode:
-			json.NewEncoder(stdout).Encode(&runner.ListFixturesResult{
-				Fixtures: map[string][]*jsonprotocol.EntityInfo{
-					"/path/to/cros": {
-						&jsonprotocol.EntityInfo{Name: "fixt1B", Fixture: "remoteFixt"},
-						&jsonprotocol.EntityInfo{Name: "fixt2", Fixture: "failFixt"},
-						&jsonprotocol.EntityInfo{Name: "fixt3A", Fixture: "localFixt"},
-						&jsonprotocol.EntityInfo{Name: "fixt3B"},
-						&jsonprotocol.EntityInfo{Name: "localFixt"},
-					},
+			runner.WriteListFixturesResultAsJSON(stdout, map[string][]*jsonprotocol.EntityInfo{
+				"/path/to/cros": {
+					&jsonprotocol.EntityInfo{Name: "fixt1B", Fixture: "remoteFixt"},
+					&jsonprotocol.EntityInfo{Name: "fixt2", Fixture: "failFixt"},
+					&jsonprotocol.EntityInfo{Name: "fixt3A", Fixture: "localFixt"},
+					&jsonprotocol.EntityInfo{Name: "fixt3B"},
+					&jsonprotocol.EntityInfo{Name: "localFixt"},
 				},
 			})
 		}

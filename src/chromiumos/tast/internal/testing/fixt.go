@@ -19,7 +19,6 @@ import (
 type Fixture struct {
 	// Name is the name of the fixture.
 	// Tests and fixtures use the name to specify the fixture.
-	// TODO(oka): We may want to decide the naming convention of the name, e.g. snake case.
 	Name string
 
 	// Desc is the description of the fixture.
@@ -69,7 +68,14 @@ type Fixture struct {
 	// Values are supplied using "tast run -var=name=value", and tests can access values via State.Var.
 	Vars []string
 
-	// TODO(oka): Add Data and Param fields.
+	// Data is not supported in fixtures yet.
+	//
+	// Data contains paths of data files needed by the fixture, relative to a
+	// "data" subdirectory within the directory in which the file registering
+	// the fixture is located.
+	Data []string
+
+	// TODO(oka): Add Param fields.
 }
 
 // Constraints returns EntityConstraints for this fixture.
@@ -87,7 +93,8 @@ func (f *Fixture) EntityProto() *protocol.Entity {
 		Description: f.Desc,
 		Fixture:     f.Parent,
 		Dependencies: &protocol.EntityDependencies{
-			Services: append([]string(nil), f.ServiceDeps...),
+			DataFiles: append([]string(nil), f.Data...),
+			Services:  append([]string(nil), f.ServiceDeps...),
 		},
 		Contacts: &protocol.EntityContacts{
 			Emails: append([]string(nil), f.Contacts...),

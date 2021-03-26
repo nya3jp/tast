@@ -765,7 +765,7 @@ func runTestWithRoot(ctx context.Context, t *testing.TestInstance, root *testing
 		}
 
 		// Run the test function itself.
-		if err := safeCall(ctx, codeName, t.Timeout, timeoutOrDefault(t.ExitTimeout, pcfg.GracePeriod()), errorOnPanic(testState), func(ctx context.Context) {
+		if err := safeCall(ctx, codeName, t.Timeout, pcfg.GracePeriod(), errorOnPanic(testState), func(ctx context.Context) {
 			t.Func(ctx, testState)
 		}); err != nil {
 			return err

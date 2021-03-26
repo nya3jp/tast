@@ -298,7 +298,7 @@ func TestRunWithReports_LogStream(t *gotesting.T) {
 		case runner.ListTestsMode:
 			runner.WriteListTestsResultAsJSON(stdout, tests)
 		case runner.ListFixturesMode:
-			json.NewEncoder(stdout).Encode(&runner.ListFixturesResult{})
+			runner.WriteListFixturesResultAsJSON(stdout, nil)
 		}
 		return 0
 	}
@@ -380,7 +380,7 @@ func TestRunWithReports_ReportResult(t *gotesting.T) {
 		case runner.ListTestsMode:
 			runner.WriteListTestsResultAsJSON(stdout, tests)
 		case runner.ListFixturesMode:
-			json.NewEncoder(stdout).Encode(&runner.ListFixturesResult{})
+			runner.WriteListFixturesResultAsJSON(stdout, nil)
 		}
 		return 0
 	}
@@ -478,7 +478,7 @@ func TestRunWithReports_ReportResultTerminate(t *gotesting.T) {
 		case runner.ListTestsMode:
 			runner.WriteListTestsResultAsJSON(stdout, tests)
 		case runner.ListFixturesMode:
-			json.NewEncoder(stdout).Encode(runner.ListFixturesResult{})
+			runner.WriteListFixturesResultAsJSON(stdout, nil)
 		}
 		return 0
 	}
@@ -558,7 +558,7 @@ func TestRunWithSkippedTests(t *gotesting.T) {
 		case runner.ListTestsMode:
 			runner.WriteListTestsResultAsJSON(stdout, tests)
 		case runner.ListFixturesMode:
-			json.NewEncoder(stdout).Encode(&runner.ListFixturesResult{})
+			runner.WriteListFixturesResultAsJSON(stdout, nil)
 		}
 		return 0
 	}
@@ -951,7 +951,7 @@ func TestRunTestsSkipTests(t *gotesting.T) {
 			}
 			mw.WriteMessage(&control.RunEnd{Time: time.Unix(count, 0)})
 		case runner.ListFixturesMode:
-			json.NewEncoder(stdout).Encode(&runner.ListFixturesResult{})
+			runner.WriteListFixturesResultAsJSON(stdout, nil)
 		default:
 			t.Errorf("Unexpected args.Mode = %v", args.Mode)
 		}

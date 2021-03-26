@@ -8,8 +8,8 @@ import (
 	"fmt"
 )
 
-// Registry holds tests and services.
-type Registry struct {
+// registry holds tests and services.
+type registry struct {
 	allTests    []*TestInstance
 	testNames   map[string]struct{} // names of registered tests
 	allServices []*Service
@@ -18,31 +18,31 @@ type Registry struct {
 }
 
 // NewRegistry returns a new test registry.
-func NewRegistry() *Registry {
-	return &Registry{
+func NewRegistry() *registry {
+	return &registry{
 		testNames:   make(map[string]struct{}),
 		allPres:     make(map[string]Precondition),
 		allFixtures: make(map[string]*Fixture),
 	}
 }
 
-// AddTest adds t to the registry.
-func (r *Registry) AddTest(t *Test) error {
+// addTest adds t to the registry.
+func (r *registry) addTest(t *Test) error {
 	tis, err := instantiate(t)
 	if err != nil {
 		return err
 	}
 	for _, ti := range tis {
-		if err := r.AddTestInstance(ti); err != nil {
+		if err := r.addTestInstance(ti); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-// AddTestInstance adds t to the registry.
+// addTestInstance adds t to the registry.
 // TODO(crbug.com/985381): Consider to hide the method for better encapsulation.
-func (r *Registry) AddTestInstance(t *TestInstance) error {
+func (r *registry) addTestInstance(t *TestInstance) error {
 	t = t.clone()
 	if _, ok := r.testNames[t.Name]; ok {
 		return fmt.Errorf("test %q already registered", t.Name)
@@ -61,14 +61,14 @@ func (r *Registry) AddTestInstance(t *TestInstance) error {
 	return nil
 }
 
-// AddService adds s to the registry.
-func (r *Registry) AddService(s *Service) error {
+// addService adds s to the registry.
+func (r *registry) addService(s *Service) error {
 	r.allServices = append(r.allServices, s)
 	return nil
 }
 
-// AddFixture adds f to the registry.
-func (r *Registry) AddFixture(f *Fixture) error {
+// addFixture adds f to the registry.
+func (r *registry) addFixture(f *Fixture) error {
 	if err := validateFixture(f); err != nil {
 		return err
 	}
@@ -80,7 +80,7 @@ func (r *Registry) AddFixture(f *Fixture) error {
 }
 
 // AllTests returns copies of all registered tests.
-func (r *Registry) AllTests() []*TestInstance {
+func (r *registry) AllTests() []*TestInstance {
 	ts := make([]*TestInstance, len(r.allTests))
 	for i, t := range r.allTests {
 		ts[i] = t.clone()
@@ -89,12 +89,12 @@ func (r *Registry) AllTests() []*TestInstance {
 }
 
 // AllServices returns copies of all registered services.
-func (r *Registry) AllServices() []*Service {
+func (r *registry) AllServices() []*Service {
 	return append(([]*Service)(nil), r.allServices...)
 }
 
 // AllFixtures returns copies of all registered fixtures.
-func (r *Registry) AllFixtures() map[string]*Fixture {
+func (r *registry) AllFixtures() map[string]*Fixture {
 	fs := make(map[string]*Fixture)
 	for name, f := range r.allFixtures {
 		fs[name] = f

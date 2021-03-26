@@ -10,12 +10,12 @@ import (
 	"strings"
 )
 
-var globalRegistry *Registry   // singleton, initialized on first use
+var globalRegistry *registry   // singleton, initialized on first use
 var registrationErrors []error // singleton for errors encountered in Add* calls
 
 // GlobalRegistry returns a global registry containing tests
 // registered by calls to AddTest.
-func GlobalRegistry() *Registry {
+func GlobalRegistry() *registry {
 	if globalRegistry == nil {
 		globalRegistry = NewRegistry()
 	}
@@ -34,7 +34,7 @@ func AddRegistrationError(file string, line int, err error) {
 
 // AddTest adds test t to the global registry.
 func AddTest(t *Test) {
-	if err := GlobalRegistry().AddTest(t); err != nil {
+	if err := GlobalRegistry().addTest(t); err != nil {
 		file, line := realCaller()
 		AddRegistrationError(file, line, err)
 	}
@@ -43,7 +43,7 @@ func AddTest(t *Test) {
 // AddTestInstance adds test case t to the global registry. This is only for
 // testing purpose.
 func AddTestInstance(t *TestInstance) {
-	if err := GlobalRegistry().AddTestInstance(t); err != nil {
+	if err := GlobalRegistry().addTestInstance(t); err != nil {
 		file, line := realCaller()
 		AddRegistrationError(file, line, err)
 	}
@@ -51,7 +51,7 @@ func AddTestInstance(t *TestInstance) {
 
 // AddService adds service s to the global registry.
 func AddService(s *Service) {
-	if err := GlobalRegistry().AddService(s); err != nil {
+	if err := GlobalRegistry().addService(s); err != nil {
 		file, line := realCaller()
 		AddRegistrationError(file, line, err)
 	}
@@ -59,7 +59,7 @@ func AddService(s *Service) {
 
 // AddFixture adds fixture f to the global registry.
 func AddFixture(f *Fixture) {
-	if err := GlobalRegistry().AddFixture(f); err != nil {
+	if err := GlobalRegistry().addFixture(f); err != nil {
 		file, line := realCaller()
 		AddRegistrationError(file, line, err)
 	}
@@ -80,7 +80,7 @@ func realCaller() (file string, line int) {
 // The caller must call the returned function later to restore the original registry and errors.
 // This is intended to be used by unit tests that need to register tests in the global registry but don't
 // want to affect subsequent unit tests.
-func SetGlobalRegistryForTesting(reg *Registry) (restore func()) {
+func SetGlobalRegistryForTesting(reg *registry) (restore func()) {
 	origReg := globalRegistry
 	origErrs := registrationErrors
 

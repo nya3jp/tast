@@ -81,8 +81,7 @@ func Run(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, args *jsonp
 		if err != nil {
 			return command.WriteError(stderr, err)
 		}
-		res := &jsonprotocol.RunnerListFixturesResult{Fixtures: fixts}
-		if err := json.NewEncoder(stdout).Encode(res); err != nil {
+		if err := WriteListFixturesResultAsJSON(stdout, fixts); err != nil {
 			return command.WriteError(stderr, err)
 		}
 		return statusSuccess
@@ -342,4 +341,11 @@ func killStaleRunners(ctx context.Context, sig syscall.Signal) {
 // implement fake runner.
 func WriteListTestsResultAsJSON(w io.Writer, tests []*jsonprotocol.EntityWithRunnabilityInfo) error {
 	return json.NewEncoder(w).Encode(jsonprotocol.RunnerListTestsResult{Tests: tests})
+}
+
+// WriteListFixturesResultAsJSON packs given parameters as a ListTestsResult, and
+// writes it to w in JSON format. This function is exported for unit tests to
+// implement fake runner.
+func WriteListFixturesResultAsJSON(w io.Writer, fixts map[string][]*jsonprotocol.EntityInfo) error {
+	return json.NewEncoder(w).Encode(jsonprotocol.RunnerListFixturesResult{Fixtures: fixts})
 }

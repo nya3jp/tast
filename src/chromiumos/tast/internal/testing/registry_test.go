@@ -50,7 +50,7 @@ func TestAllTests(t *gotesting.T) {
 		{Name: "test.Bar", Func: func(context.Context, *State) {}},
 	}
 	for _, test := range allTests {
-		if err := reg.AddTestInstance(test); err != nil {
+		if err := reg.addTestInstance(test); err != nil {
 			t.Fatal(err)
 		}
 	}
@@ -67,10 +67,10 @@ func TestAllTests(t *gotesting.T) {
 func TestAddTestDuplicateName(t *gotesting.T) {
 	const name = "test.Foo"
 	reg := NewRegistry()
-	if err := reg.AddTestInstance(&TestInstance{Name: name, Func: func(context.Context, *State) {}}); err != nil {
+	if err := reg.addTestInstance(&TestInstance{Name: name, Func: func(context.Context, *State) {}}); err != nil {
 		t.Fatal("Failed to add initial test: ", err)
 	}
-	if err := reg.AddTestInstance(&TestInstance{Name: name, Func: func(context.Context, *State) {}}); err == nil {
+	if err := reg.addTestInstance(&TestInstance{Name: name, Func: func(context.Context, *State) {}}); err == nil {
 		t.Fatal("Duplicate test name unexpectedly not rejected")
 	}
 }
@@ -84,7 +84,7 @@ func TestAddTestModifyOriginal(t *gotesting.T) {
 		Func:         func(context.Context, *State) {},
 		SoftwareDeps: []string{origDep},
 	}
-	if err := reg.AddTestInstance(test); err != nil {
+	if err := reg.addTestInstance(test); err != nil {
 		t.Fatal("AddTest failed: ", err)
 	}
 
@@ -113,7 +113,7 @@ func TestAddTestConflictingPre(t *gotesting.T) {
 	pre1 := &fakePre{"fake_pre"}
 	pre2 := &fakePre{"fake_pre"}
 
-	if err := reg.AddTestInstance(&TestInstance{
+	if err := reg.addTestInstance(&TestInstance{
 		Name: "pkg.Test1",
 		Func: func(context.Context, *State) {},
 		Pre:  pre1,
@@ -121,7 +121,7 @@ func TestAddTestConflictingPre(t *gotesting.T) {
 		t.Fatal("AddTestInstance failed for pkg.Test1: ", err)
 	}
 
-	if err := reg.AddTestInstance(&TestInstance{
+	if err := reg.addTestInstance(&TestInstance{
 		Name: "pkg.Test2",
 		Func: func(context.Context, *State) {},
 		Pre:  pre1,
@@ -129,7 +129,7 @@ func TestAddTestConflictingPre(t *gotesting.T) {
 		t.Fatal("AddTestInstance failed for pkg.Test2: ", err)
 	}
 
-	if err := reg.AddTestInstance(&TestInstance{
+	if err := reg.addTestInstance(&TestInstance{
 		Name: "pkg.Test3",
 		Func: func(context.Context, *State) {},
 		Pre:  pre2,
@@ -141,10 +141,10 @@ func TestAddTestConflictingPre(t *gotesting.T) {
 func TestAddFixtureDuplicateName(t *gotesting.T) {
 	const name = "foo"
 	reg := NewRegistry()
-	if err := reg.AddFixture(&Fixture{Name: name}); err != nil {
+	if err := reg.addFixture(&Fixture{Name: name}); err != nil {
 		t.Fatalf("Fixture registration failed: %v", err)
 	}
-	if err := reg.AddFixture(&Fixture{Name: name}); err == nil {
+	if err := reg.addFixture(&Fixture{Name: name}); err == nil {
 		t.Error("Duplicated fixture registration succeeded unexpectedly")
 	}
 }
@@ -170,12 +170,12 @@ func TestAddFixtureInvalidName(t *gotesting.T) {
 		{"ieee1394", true},
 	} {
 		reg := NewRegistry()
-		err := reg.AddFixture(&Fixture{Name: tc.name})
+		err := reg.addFixture(&Fixture{Name: tc.name})
 		if tc.ok && err != nil {
-			t.Errorf("AddFixture(%q) failed: %v", tc.name, err)
+			t.Errorf("addFixture(%q) failed: %v", tc.name, err)
 		}
 		if !tc.ok && err == nil {
-			t.Errorf("AddFixture(%q) passed unexpectedly", tc.name)
+			t.Errorf("addFixture(%q) passed unexpectedly", tc.name)
 		}
 	}
 }
@@ -189,7 +189,7 @@ func TestAllServices(t *gotesting.T) {
 	}
 
 	for _, svc := range allSvcs {
-		if err := reg.AddService(svc); err != nil {
+		if err := reg.addService(svc); err != nil {
 			t.Fatal(err)
 		}
 	}
@@ -209,7 +209,7 @@ func TestAllFixtures(t *gotesting.T) {
 	}
 
 	for _, f := range allFixts {
-		if err := reg.AddFixture(f); err != nil {
+		if err := reg.addFixture(f); err != nil {
 			t.Fatal(err)
 		}
 	}

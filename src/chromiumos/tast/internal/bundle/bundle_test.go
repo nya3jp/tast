@@ -71,6 +71,8 @@ func errorHasStatus(err error, status int) bool {
 }
 
 func TestRunTests(t *gotesting.T) {
+	defer testing.SetGlobalRegistryForTesting(testing.NewRegistry())()
+
 	const (
 		name1       = "foo.Test1"
 		name2       = "foo.Test2"
@@ -80,13 +82,12 @@ func TestRunTests(t *gotesting.T) {
 		postTestMsg = "cleaning up for test"
 	)
 
-	reg := testing.NewRegistry()
-	reg.AddTestInstance(&testing.TestInstance{
+	testing.AddTestInstance(&testing.TestInstance{
 		Name:    name1,
 		Func:    func(context.Context, *testing.State) {},
 		Timeout: time.Minute},
 	)
-	reg.AddTestInstance(&testing.TestInstance{
+	testing.AddTestInstance(&testing.TestInstance{
 		Name:    name2,
 		Func:    func(ctx context.Context, s *testing.State) { s.Error("error") },
 		Timeout: time.Minute},
@@ -104,7 +105,7 @@ func TestRunTests(t *gotesting.T) {
 	}
 
 	stdout := bytes.Buffer{}
-	tests := reg.AllTests()
+	tests := testing.GlobalRegistry().AllTests()
 	var preRunCalls, postRunCalls, preTestCalls, postTestCalls int
 	args := Args{
 		RunTests: &RunTestsArgs{
@@ -212,13 +213,13 @@ func TestRunTests(t *gotesting.T) {
 }
 
 func TestRunTestsTimeout(t *gotesting.T) {
-	reg := testing.NewRegistry()
+	defer testing.SetGlobalRegistryForTesting(testing.NewRegistry())()
 
 	// The first test blocks indefinitely on a channel.
 	const name1 = "foo.Test1"
 	ch := make(chan bool, 1)
 	defer func() { ch <- true }()
-	reg.AddTestInstance(&testing.TestInstance{
+	testing.AddTestInstance(&testing.TestInstance{
 		Name:        name1,
 		Func:        func(context.Context, *testing.State) { <-ch },
 		Timeout:     time.Millisecond,
@@ -227,7 +228,7 @@ func TestRunTestsTimeout(t *gotesting.T) {
 
 	// The second test passes.
 	const name2 = "foo.Test2"
-	reg.AddTestInstance(&testing.TestInstance{
+	testing.AddTestInstance(&testing.TestInstance{
 		Name:    name2,
 		Func:    func(context.Context, *testing.State) {},
 		Timeout: time.Minute,
@@ -245,7 +246,7 @@ func TestRunTestsTimeout(t *gotesting.T) {
 
 	// The first test should time out after 1 millisecond.
 	// The second test is not run.
-	if err := runTests(context.Background(), &stdout, &args, &staticConfig{}, localBundle, reg.AllTests()); err == nil {
+	if err := runTests(context.Background(), &stdout, &args, &staticConfig{}, localBundle, testing.GlobalRegistry().AllTests()); err == nil {
 		t.Fatalf("runTests(..., %+v, ...) succeeded unexpectedly", args)
 	}
 

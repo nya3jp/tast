@@ -197,7 +197,7 @@ func TestRunListTests(t *gotesting.T) {
 		t.Fatalf("%s = %v; want %v", sig, status, statusSuccess)
 	}
 
-	var res ListTestsResult
+	var res jsonprotocol.RunnerListTestsResult
 	if err := json.Unmarshal(stdout.Bytes(), &res); err != nil {
 		t.Fatalf("%s printed unparsable output %q", sig, stdout.String())
 	}

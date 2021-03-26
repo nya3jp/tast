@@ -76,6 +76,9 @@ type Fixture struct {
 	Data []string
 
 	// TODO(oka): Add Param fields.
+
+	// pkg is the package of the func registering the fixture.
+	pkg string
 }
 
 // Constraints returns EntityConstraints for this fixture.
@@ -91,6 +94,7 @@ func (f *Fixture) EntityProto() *protocol.Entity {
 		Type:        protocol.EntityType_FIXTURE,
 		Name:        f.Name,
 		Description: f.Desc,
+		Package:     f.pkg,
 		Fixture:     f.Parent,
 		Dependencies: &protocol.EntityDependencies{
 			DataFiles: append([]string(nil), f.Data...),

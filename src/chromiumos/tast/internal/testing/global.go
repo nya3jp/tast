@@ -35,7 +35,7 @@ func AddRegistrationError(file string, line int, err error) {
 // AddTest adds test t to the global registry.
 func AddTest(t *Test) {
 	if err := GlobalRegistry().addTest(t); err != nil {
-		file, line := realCaller()
+		_, file, line := realCaller()
 		AddRegistrationError(file, line, err)
 	}
 }
@@ -44,7 +44,7 @@ func AddTest(t *Test) {
 // testing purpose.
 func AddTestInstance(t *TestInstance) {
 	if err := GlobalRegistry().addTestInstance(t); err != nil {
-		file, line := realCaller()
+		_, file, line := realCaller()
 		AddRegistrationError(file, line, err)
 	}
 }
@@ -52,28 +52,30 @@ func AddTestInstance(t *TestInstance) {
 // AddService adds service s to the global registry.
 func AddService(s *Service) {
 	if err := GlobalRegistry().addService(s); err != nil {
-		file, line := realCaller()
+		_, file, line := realCaller()
 		AddRegistrationError(file, line, err)
 	}
 }
 
 // AddFixture adds fixture f to the global registry.
 func AddFixture(f *Fixture) {
+	pc, file, line := realCaller()
+	f.pkg = strings.SplitN(runtime.FuncForPC(pc).Name(), ".", 2)[0]
+
 	if err := GlobalRegistry().addFixture(f); err != nil {
-		file, line := realCaller()
 		AddRegistrationError(file, line, err)
 	}
 }
 
-func realCaller() (file string, line int) {
-	pc, file, line, _ := runtime.Caller(2)
+func realCaller() (pc uintptr, file string, line int) {
+	pc, file, line, _ = runtime.Caller(2)
 	f := runtime.FuncForPC(pc)
 	// When the function is being called from its public API in chromiumos/tast/testing,
 	// dig one more stack frame to obtain the "real" caller.
 	if strings.HasPrefix(f.Name(), "chromiumos/tast/testing.") {
 		pc, file, line, _ = runtime.Caller(3)
 	}
-	return file, line
+	return pc, file, line
 }
 
 // SetGlobalRegistryForTesting temporarily sets reg as the global registry and clears registration errors.

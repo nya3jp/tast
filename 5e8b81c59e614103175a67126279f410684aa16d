@@ -22,6 +22,30 @@
       },
       "revId": "5e8b81c59e614103175a67126279f410684aa16d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1a715e9a_d0f84148",
+        "filename": "src/chromiumos/tast/internal/bundle/bundle_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2021-03-29T09:54:45Z",
+      "side": 1,
+      "message": "My intention is to add this CL. https://chromium-review.googlesource.com/c/chromiumos/platform/tast/+/2789827/\nIn this CL we set Fixture.pkg in testing.AddFixture.\nThus I wanted to limit the API to set Fixture to testing.AddFixture.",
+      "parentUuid": "0c70c70f_4ef2bcc6",
+      "range": {
+        "startLine": 74,
+        "startChar": 1,
+        "endLine": 74,
+        "endChar": 67
+      },
+      "revId": "5e8b81c59e614103175a67126279f410684aa16d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

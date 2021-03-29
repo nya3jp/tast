@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0c70c70f_4ef2bcc6",
+        "filename": "src/chromiumos/tast/internal/bundle/bundle_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 74,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-03-29T09:18:19Z",
+      "side": 1,
+      "message": "Hmm, I\u0027m not very sure if this is an improvement since we now depend on the global registry. For example we can\u0027t run this test in parallel to other tests.\n\nIf the whole point of this CL is to unexport Add* methods, I\u0027m not sure if it\u0027s worth doing. If you have other purposes please let me know.",
+      "range": {
+        "startLine": 74,
+        "startChar": 1,
+        "endLine": 74,
+        "endChar": 67
+      },
+      "revId": "5e8b81c59e614103175a67126279f410684aa16d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

@@ -11,12 +11,11 @@ import (
 	"path/filepath"
 	gotesting "testing"
 
+	"github.com/golang/protobuf/proto"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 
 	"chromiumos/tast/errors"
-	"chromiumos/tast/internal/control"
-	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/testing"
@@ -591,11 +590,13 @@ func TestFixtureStackOutputGreen(t *gotesting.T) {
 				})),
 		}
 	}
+	fixt1 := newLoggingFixture(1)
+	fixt2 := newLoggingFixture(2)
 
-	if err := stack.Push(ctx, newLoggingFixture(1)); err != nil {
+	if err := stack.Push(ctx, fixt1); err != nil {
 		t.Fatal("Push 1: ", err)
 	}
-	if err := stack.Push(ctx, newLoggingFixture(2)); err != nil {
+	if err := stack.Push(ctx, fixt2); err != nil {
 		t.Fatal("Push 2: ", err)
 	}
 	if err := stack.PreTest(ctx, troot); err != nil {
@@ -614,38 +615,35 @@ func TestFixtureStackOutputGreen(t *gotesting.T) {
 		t.Fatal("Pop 1: ", err)
 	}
 
-	msgs, err := sink.ReadAll()
-	if err != nil {
-		t.Fatal("ReadAll: ", err)
-	}
+	msgs := sink.ReadAll()
 
-	want := []control.Msg{
-		&control.EntityStart{Info: jsonprotocol.EntityInfo{Name: "fixt1", Type: jsonprotocol.EntityFixture, Bundle: bundleName}},
-		&control.EntityLog{Name: "fixt1", Text: "SetUp 1 via Context"},
-		&control.EntityLog{Name: "fixt1", Text: "SetUp 1 via Fixture-scoped Context"},
-		&control.EntityLog{Name: "fixt1", Text: "SetUp 1 via State"},
-		&control.EntityStart{Info: jsonprotocol.EntityInfo{Name: "fixt2", Type: jsonprotocol.EntityFixture, Bundle: bundleName}},
-		&control.EntityLog{Name: "fixt2", Text: "SetUp 2 via Context"},
-		&control.EntityLog{Name: "fixt2", Text: "SetUp 2 via Fixture-scoped Context"},
-		&control.EntityLog{Name: "fixt2", Text: "SetUp 2 via State"},
-		&control.EntityLog{Name: "pkg.Test", Text: "PreTest 1 via Context"},
-		&control.EntityLog{Name: "pkg.Test", Text: "PreTest 1 via State"},
-		&control.EntityLog{Name: "pkg.Test", Text: "PreTest 2 via Context"},
-		&control.EntityLog{Name: "pkg.Test", Text: "PreTest 2 via State"},
-		&control.EntityLog{Name: "pkg.Test", Text: "PostTest 2 via Context"},
-		&control.EntityLog{Name: "pkg.Test", Text: "PostTest 2 via State"},
-		&control.EntityLog{Name: "pkg.Test", Text: "PostTest 1 via Context"},
-		&control.EntityLog{Name: "pkg.Test", Text: "PostTest 1 via State"},
-		&control.EntityLog{Name: "fixt1", Text: "Reset 1 via Context"},
-		&control.EntityLog{Name: "fixt2", Text: "Reset 2 via Context"},
-		&control.EntityLog{Name: "fixt2", Text: "TearDown 2 via Context"},
-		&control.EntityLog{Name: "fixt2", Text: "TearDown 2 via Fixture-scoped Context"},
-		&control.EntityLog{Name: "fixt2", Text: "TearDown 2 via State"},
-		&control.EntityEnd{Name: "fixt2"},
-		&control.EntityLog{Name: "fixt1", Text: "TearDown 1 via Context"},
-		&control.EntityLog{Name: "fixt1", Text: "TearDown 1 via Fixture-scoped Context"},
-		&control.EntityLog{Name: "fixt1", Text: "TearDown 1 via State"},
-		&control.EntityEnd{Name: "fixt1"},
+	want := []proto.Message{
+		&protocol.EntityStartEvent{Entity: fixt1.EntityProto()},
+		&protocol.EntityLogEvent{EntityName: "fixt1", Text: "SetUp 1 via Context"},
+		&protocol.EntityLogEvent{EntityName: "fixt1", Text: "SetUp 1 via Fixture-scoped Context"},
+		&protocol.EntityLogEvent{EntityName: "fixt1", Text: "SetUp 1 via State"},
+		&protocol.EntityStartEvent{Entity: fixt2.EntityProto()},
+		&protocol.EntityLogEvent{EntityName: "fixt2", Text: "SetUp 2 via Context"},
+		&protocol.EntityLogEvent{EntityName: "fixt2", Text: "SetUp 2 via Fixture-scoped Context"},
+		&protocol.EntityLogEvent{EntityName: "fixt2", Text: "SetUp 2 via State"},
+		&protocol.EntityLogEvent{EntityName: "pkg.Test", Text: "PreTest 1 via Context"},
+		&protocol.EntityLogEvent{EntityName: "pkg.Test", Text: "PreTest 1 via State"},
+		&protocol.EntityLogEvent{EntityName: "pkg.Test", Text: "PreTest 2 via Context"},
+		&protocol.EntityLogEvent{EntityName: "pkg.Test", Text: "PreTest 2 via State"},
+		&protocol.EntityLogEvent{EntityName: "pkg.Test", Text: "PostTest 2 via Context"},
+		&protocol.EntityLogEvent{EntityName: "pkg.Test", Text: "PostTest 2 via State"},
+		&protocol.EntityLogEvent{EntityName: "pkg.Test", Text: "PostTest 1 via Context"},
+		&protocol.EntityLogEvent{EntityName: "pkg.Test", Text: "PostTest 1 via State"},
+		&protocol.EntityLogEvent{EntityName: "fixt1", Text: "Reset 1 via Context"},
+		&protocol.EntityLogEvent{EntityName: "fixt2", Text: "Reset 2 via Context"},
+		&protocol.EntityLogEvent{EntityName: "fixt2", Text: "TearDown 2 via Context"},
+		&protocol.EntityLogEvent{EntityName: "fixt2", Text: "TearDown 2 via Fixture-scoped Context"},
+		&protocol.EntityLogEvent{EntityName: "fixt2", Text: "TearDown 2 via State"},
+		&protocol.EntityEndEvent{EntityName: "fixt2"},
+		&protocol.EntityLogEvent{EntityName: "fixt1", Text: "TearDown 1 via Context"},
+		&protocol.EntityLogEvent{EntityName: "fixt1", Text: "TearDown 1 via Fixture-scoped Context"},
+		&protocol.EntityLogEvent{EntityName: "fixt1", Text: "TearDown 1 via State"},
+		&protocol.EntityEndEvent{EntityName: "fixt1"},
 	}
 	if diff := cmp.Diff(msgs, want); diff != "" {
 		t.Error("Output mismatch (-got +want):\n", diff)
@@ -679,15 +677,18 @@ func TestFixtureStackOutputRed(t *gotesting.T) {
 				})),
 		}
 	}
+	fixt1 := newLoggingFixture(1, true)
+	fixt2 := newLoggingFixture(2, false)
+	fixt3 := newLoggingFixture(3, true)
 
 	// Push and pop three fixtures. Second fixture fails to set up.
-	if err := stack.Push(ctx, newLoggingFixture(1, true)); err != nil {
+	if err := stack.Push(ctx, fixt1); err != nil {
 		t.Fatal("Push 1: ", err)
 	}
-	if err := stack.Push(ctx, newLoggingFixture(2, false)); err != nil {
+	if err := stack.Push(ctx, fixt2); err != nil {
 		t.Fatal("Push 2: ", err)
 	}
-	if err := stack.Push(ctx, newLoggingFixture(3, true)); err != nil {
+	if err := stack.Push(ctx, fixt3); err != nil {
 		t.Fatal("Push 3: ", err)
 	}
 	if err := stack.Reset(ctx); err != nil {
@@ -703,20 +704,17 @@ func TestFixtureStackOutputRed(t *gotesting.T) {
 		t.Fatal("Pop 1: ", err)
 	}
 
-	msgs, err := sink.ReadAll()
-	if err != nil {
-		t.Fatal("ReadAll: ", err)
-	}
+	msgs := sink.ReadAll()
 
-	want := []control.Msg{
-		&control.EntityStart{Info: jsonprotocol.EntityInfo{Name: "fixt1", Type: jsonprotocol.EntityFixture, Bundle: bundleName}},
-		&control.EntityLog{Name: "fixt1", Text: "SetUp 1"},
-		&control.EntityStart{Info: jsonprotocol.EntityInfo{Name: "fixt2", Type: jsonprotocol.EntityFixture, Bundle: bundleName}},
-		&control.EntityLog{Name: "fixt2", Text: "SetUp 2"},
-		&control.EntityError{Name: "fixt2", Error: jsonprotocol.Error{Reason: "SetUp 2 failure"}},
-		&control.EntityEnd{Name: "fixt2"},
-		&control.EntityLog{Name: "fixt1", Text: "TearDown 1"},
-		&control.EntityEnd{Name: "fixt1"},
+	want := []proto.Message{
+		&protocol.EntityStartEvent{Entity: fixt1.EntityProto()},
+		&protocol.EntityLogEvent{EntityName: "fixt1", Text: "SetUp 1"},
+		&protocol.EntityStartEvent{Entity: fixt2.EntityProto()},
+		&protocol.EntityLogEvent{EntityName: "fixt2", Text: "SetUp 2"},
+		&protocol.EntityErrorEvent{EntityName: "fixt2", Error: &protocol.Error{Reason: "SetUp 2 failure"}},
+		&protocol.EntityEndEvent{EntityName: "fixt2"},
+		&protocol.EntityLogEvent{EntityName: "fixt1", Text: "TearDown 1"},
+		&protocol.EntityEndEvent{EntityName: "fixt1"},
 	}
 	if diff := cmp.Diff(msgs, want); diff != "" {
 		t.Error("Output mismatch (-got +want):\n", diff)
@@ -750,15 +748,18 @@ func TestFixtureStackOutputYellow(t *gotesting.T) {
 				})),
 		}
 	}
+	fixt1 := newLoggingFixture(1, true)
+	fixt2 := newLoggingFixture(2, false)
+	fixt3 := newLoggingFixture(3, true)
 
 	// Push and pop three fixtures. Second fixture fails to reset.
-	if err := stack.Push(ctx, newLoggingFixture(1, true)); err != nil {
+	if err := stack.Push(ctx, fixt1); err != nil {
 		t.Fatal("Push 1: ", err)
 	}
-	if err := stack.Push(ctx, newLoggingFixture(2, false)); err != nil {
+	if err := stack.Push(ctx, fixt2); err != nil {
 		t.Fatal("Push 2: ", err)
 	}
-	if err := stack.Push(ctx, newLoggingFixture(3, true)); err != nil {
+	if err := stack.Push(ctx, fixt3); err != nil {
 		t.Fatal("Push 3: ", err)
 	}
 	if err := stack.Reset(ctx); err != nil {
@@ -774,27 +775,24 @@ func TestFixtureStackOutputYellow(t *gotesting.T) {
 		t.Fatal("Pop 1: ", err)
 	}
 
-	msgs, err := sink.ReadAll()
-	if err != nil {
-		t.Fatal("ReadAll: ", err)
-	}
+	msgs := sink.ReadAll()
 
-	want := []control.Msg{
-		&control.EntityStart{Info: jsonprotocol.EntityInfo{Name: "fixt1", Type: jsonprotocol.EntityFixture, Bundle: bundleName}},
-		&control.EntityLog{Name: "fixt1", Text: "SetUp 1"},
-		&control.EntityStart{Info: jsonprotocol.EntityInfo{Name: "fixt2", Type: jsonprotocol.EntityFixture, Bundle: bundleName}},
-		&control.EntityLog{Name: "fixt2", Text: "SetUp 2"},
-		&control.EntityStart{Info: jsonprotocol.EntityInfo{Name: "fixt3", Type: jsonprotocol.EntityFixture, Bundle: bundleName}},
-		&control.EntityLog{Name: "fixt3", Text: "SetUp 3"},
-		&control.EntityLog{Name: "fixt1", Text: "Reset 1"},
-		&control.EntityLog{Name: "fixt2", Text: "Reset 2"},
-		&control.EntityLog{Name: "fixt2", Text: "Fixture failed to reset: failure; recovering"},
-		&control.EntityLog{Name: "fixt3", Text: "TearDown 3"},
-		&control.EntityEnd{Name: "fixt3"},
-		&control.EntityLog{Name: "fixt2", Text: "TearDown 2"},
-		&control.EntityEnd{Name: "fixt2"},
-		&control.EntityLog{Name: "fixt1", Text: "TearDown 1"},
-		&control.EntityEnd{Name: "fixt1"},
+	want := []proto.Message{
+		&protocol.EntityStartEvent{Entity: fixt1.EntityProto()},
+		&protocol.EntityLogEvent{EntityName: "fixt1", Text: "SetUp 1"},
+		&protocol.EntityStartEvent{Entity: fixt2.EntityProto()},
+		&protocol.EntityLogEvent{EntityName: "fixt2", Text: "SetUp 2"},
+		&protocol.EntityStartEvent{Entity: fixt3.EntityProto()},
+		&protocol.EntityLogEvent{EntityName: "fixt3", Text: "SetUp 3"},
+		&protocol.EntityLogEvent{EntityName: "fixt1", Text: "Reset 1"},
+		&protocol.EntityLogEvent{EntityName: "fixt2", Text: "Reset 2"},
+		&protocol.EntityLogEvent{EntityName: "fixt2", Text: "Fixture failed to reset: failure; recovering"},
+		&protocol.EntityLogEvent{EntityName: "fixt3", Text: "TearDown 3"},
+		&protocol.EntityEndEvent{EntityName: "fixt3"},
+		&protocol.EntityLogEvent{EntityName: "fixt2", Text: "TearDown 2"},
+		&protocol.EntityEndEvent{EntityName: "fixt2"},
+		&protocol.EntityLogEvent{EntityName: "fixt1", Text: "TearDown 1"},
+		&protocol.EntityEndEvent{EntityName: "fixt1"},
 	}
 	if diff := cmp.Diff(msgs, want); diff != "" {
 		t.Error("Output mismatch (-got +want):\n", diff)

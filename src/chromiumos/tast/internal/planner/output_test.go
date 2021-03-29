@@ -5,63 +5,68 @@
 package planner
 
 import (
-	"bytes"
 	gotesting "testing"
 
+	"github.com/golang/protobuf/proto"
 	"github.com/google/go-cmp/cmp"
 
-	"chromiumos/tast/internal/control"
-	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/timing"
 )
 
 type outputSink struct {
-	buf bytes.Buffer
-	mw  *control.MessageWriter
+	msgs []proto.Message
 }
 
 func newOutputSink() *outputSink {
-	s := outputSink{}
-	s.mw = control.NewMessageWriter(&s.buf)
-	return &s
+	return &outputSink{}
 }
 
 func (s *outputSink) RunLog(msg string) error {
-	return s.mw.WriteMessage(&control.RunLog{Text: msg})
+	s.msgs = append(s.msgs, &protocol.RunLogEvent{
+		Text: msg,
+	})
+	return nil
 }
 
 func (s *outputSink) EntityStart(ei *protocol.Entity, outDir string) error {
-	return s.mw.WriteMessage(&control.EntityStart{Info: *jsonprotocol.MustEntityInfoFromProto(ei), OutDir: outDir})
+	s.msgs = append(s.msgs, &protocol.EntityStartEvent{
+		Entity: ei,
+		OutDir: outDir,
+	})
+	return nil
 }
 
 func (s *outputSink) EntityLog(ei *protocol.Entity, msg string) error {
-	return s.mw.WriteMessage(&control.EntityLog{Text: msg, Name: ei.Name})
+	s.msgs = append(s.msgs, &protocol.EntityLogEvent{
+		EntityName: ei.GetName(),
+		Text:       msg,
+	})
+	return nil
 }
 
 func (s *outputSink) EntityError(ei *protocol.Entity, e *protocol.Error) error {
-	// Clear Error fields except for Reason.
-	je := &jsonprotocol.Error{Reason: e.Reason}
-	return s.mw.WriteMessage(&control.EntityError{Error: *je, Name: ei.Name})
+	s.msgs = append(s.msgs, &protocol.EntityErrorEvent{
+		EntityName: ei.GetName(),
+		// Clear Error fields except for Reason.
+		Error: &protocol.Error{Reason: e.GetReason()},
+	})
+	return nil
 }
 
 func (s *outputSink) EntityEnd(ei *protocol.Entity, skipReasons []string, timingLog *timing.Log) error {
 	// Drop timingLog.
-	return s.mw.WriteMessage(&control.EntityEnd{Name: ei.Name, SkipReasons: skipReasons})
+	var skip *protocol.Skip
+	if len(skipReasons) > 0 {
+		skip = &protocol.Skip{Reasons: skipReasons}
+	}
+	s.msgs = append(s.msgs, &protocol.EntityEndEvent{EntityName: ei.GetName(), Skip: skip})
+	return nil
 }
 
 // ReadAll reads all control messages written to the sink.
-func (s *outputSink) ReadAll() ([]control.Msg, error) {
-	var msgs []control.Msg
-	mr := control.NewMessageReader(&s.buf)
-	for mr.More() {
-		msg, err := mr.ReadMessage()
-		if err != nil {
-			return nil, err
-		}
-		msgs = append(msgs, msg)
-	}
-	return msgs, nil
+func (s *outputSink) ReadAll() []proto.Message {
+	return s.msgs
 }
 
 func TestTestOutputStream(t *gotesting.T) {
@@ -75,17 +80,14 @@ func TestTestOutputStream(t *gotesting.T) {
 	tout.Log("world")
 	tout.End(nil, nil)
 
-	got, err := sink.ReadAll()
-	if err != nil {
-		t.Fatal("ReadAll: ", err)
-	}
+	got := sink.ReadAll()
 
-	want := []control.Msg{
-		&control.EntityStart{Info: *jsonprotocol.MustEntityInfoFromProto(test), OutDir: "/tmp/out"},
-		&control.EntityLog{Name: "pkg.Test", Text: "hello"},
-		&control.EntityError{Name: "pkg.Test", Error: jsonprotocol.Error{Reason: "faulty"}},
-		&control.EntityLog{Name: "pkg.Test", Text: "world"},
-		&control.EntityEnd{Name: "pkg.Test"},
+	want := []proto.Message{
+		&protocol.EntityStartEvent{Entity: test, OutDir: "/tmp/out"},
+		&protocol.EntityLogEvent{EntityName: "pkg.Test", Text: "hello"},
+		&protocol.EntityErrorEvent{EntityName: "pkg.Test", Error: &protocol.Error{Reason: "faulty"}},
+		&protocol.EntityLogEvent{EntityName: "pkg.Test", Text: "world"},
+		&protocol.EntityEndEvent{EntityName: "pkg.Test"},
 	}
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Error("Output mismatch (-got +want):\n", diff)
@@ -103,12 +105,9 @@ func TestTestOutputStreamUnnamedEntity(t *gotesting.T) {
 	tout.Log("world")
 	tout.End(nil, nil)
 
-	got, err := sink.ReadAll()
-	if err != nil {
-		t.Fatal("ReadAll: ", err)
-	}
+	got := sink.ReadAll()
 
-	var want []control.Msg
+	var want []proto.Message
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Error("Output mismatch (-got +want):\n", diff)
 	}

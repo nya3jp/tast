@@ -39,6 +39,30 @@
       },
       "revId": "384596346d6e88107bd66e37d08f787343ea78ff",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7c9ae8d8_72f8eaec",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/runnerclient/results.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 651,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-03-29T16:25:05Z",
+      "side": 1,
+      "message": "I was not sure if noRunEndMsg should be considered as global error. Please check my latest changes. Thanks.",
+      "parentUuid": "48c77f97_0ee51709",
+      "range": {
+        "startLine": 651,
+        "startChar": 1,
+        "endLine": 651,
+        "endChar": 19
+      },
+      "revId": "384596346d6e88107bd66e37d08f787343ea78ff",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

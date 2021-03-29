@@ -352,9 +352,6 @@ each `Condition` should be based on the
 For example, the `hwdep.Touchscreen()` can check
 whether `Screen.TouchSupport` is set to `HardwareFeatures_PRESENT`.
 
-Any condition should not depend on any other surrounding environment,
-such as some command execution on DUT or reading some config file on DUT, etc.
-
 Note that currently a `chromiumos.config.api.HardwareFeatures` instance is
 generated internally by Tast at runtime, so only limited fields are filled.
 In the future, Chrome OS infra test scheduler will be responsible for checking

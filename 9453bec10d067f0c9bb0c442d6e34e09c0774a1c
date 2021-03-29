@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "43af7c54_08905143",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 388,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-03-29T09:14:26Z",
+      "side": 1,
+      "message": "Is it okay to use GiB (1024^3) instead of GB (1000^3)? Usually storage size is measured in GB.",
+      "range": {
+        "startLine": 388,
+        "startChar": 53,
+        "endLine": 388,
+        "endChar": 60
+      },
+      "revId": "9453bec10d067f0c9bb0c442d6e34e09c0774a1c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

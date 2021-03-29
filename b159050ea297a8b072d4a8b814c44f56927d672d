@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9dc1a8c7_fa2ac81c",
+        "filename": "src/chromiumos/tast/internal/testing/registry.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-03-29T02:41:54Z",
+      "side": 1,
+      "message": "IMHO, in general, exported functions should return exported types. Otherwise it may restrict usage of a returned value in an unreasonable way.\n\nFor instance, we used to unexport chrome.Option type because typical usage doesn\u0027t need to export them, e.g.\n\n chrome.New(ctx, chrome.ARCEnabled())\n\nHowever it turned out that this prevents us from setting options conditionally, e.g.\n\n var opts []chrome.option // ERROR: unexported symbol \"option\"\n if someCondition {\n   opts \u003d append(opts, chrome.ARCEnabled())\n }\n chrome.New(ctx, ...opts)",
+      "range": {
+        "startLine": 21,
+        "startChar": 0,
+        "endLine": 21,
+        "endChar": 30
+      },
+      "revId": "b159050ea297a8b072d4a8b814c44f56927d672d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

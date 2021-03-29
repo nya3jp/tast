@@ -7,6 +7,7 @@ syntax = "proto3";
 package tast.core;
 
 import "google/protobuf/duration.proto";
+import "google/protobuf/timestamp.proto";
 
 option go_package = "chromiumos/tast/internal/protocol";
 
@@ -63,3 +64,45 @@ message ErrorLocation {
   int64 line = 2;
   string stack = 3;
 }
+
+// RunLogEvent indicates that an informational log message not associated with
+// an entity was produced.
+message RunLogEvent {
+  google.protobuf.Timestamp time = 1;
+  string text = 2;
+}
+
+// EntityStartEvent marks the start of an entity run. EntityStartEvent is sent
+// even if an entity is to be skipped.
+message EntityStartEvent {
+  google.protobuf.Timestamp time = 1;
+  Entity entity = 2;
+  string out_dir = 3;
+}
+
+// EntityLogEvent indicates that an informational log message was produced by
+// an entity.
+message EntityLogEvent {
+  google.protobuf.Timestamp time = 1;
+  string entity_name = 2;
+  string text = 3;
+}
+
+// EntityErrorEvent indicates that an error was produced by an entity.
+// A consumer should treat an entity as failed when it sees one or more errors
+// reported for it.
+message EntityErrorEvent {
+  google.protobuf.Timestamp time = 1;
+  string entity_name = 2;
+  Error error = 3;
+}
+
+// EntityEndEvent marks the end of an entity run.
+message EntityEndEvent {
+  google.protobuf.Timestamp time = 1;
+  string entity_name = 2;
+  Skip skip = 3;
+}
+
+// Skip describes the reasons why an entity is skipped.
+message Skip { repeated string reasons = 1; }

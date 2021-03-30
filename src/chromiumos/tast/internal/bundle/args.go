@@ -11,6 +11,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"regexp"
 	"time"
 
 	"github.com/golang/protobuf/proto"
@@ -150,6 +151,11 @@ type FeatureArgs struct {
 	// TestVars contains names and values of runtime variables used to pass out-of-band data to tests.
 	// Names correspond to testing.Test.Vars and values are accessed using testing.State.Var.
 	TestVars map[string]string `json:"testVars,omitempty"`
+	// MaybeMissingVars contains a regex compiled with regexp.Compile().
+	// If every missing variable in testing.Test.VarDeps (exactly) matches the
+	// regex, the test is skipped instead of failing.
+	// If empty, no tests are skipped due to missing vars.
+	MaybeMissingVars string `json:"maybeMissingVars,omitempty"`
 	// CheckSoftwareDeps is true if each test's SoftwareDeps field should be checked against
 	// AvailableSoftwareFeatures and UnavailableSoftwareFeatures.
 	CheckSoftwareDeps bool `json:"checkSoftwareDeps,omitempty"`
@@ -169,13 +175,19 @@ type FeatureArgs struct {
 }
 
 // Features returns dep.Features to be used to check test dependencies.
-func (a *FeatureArgs) Features() *dep.Features {
+func (a *FeatureArgs) Features() (*dep.Features, error) {
 	var f dep.Features
 	if a.CheckSoftwareDeps {
 		f.Var = make(map[string]string)
 		for k, v := range a.TestVars {
 			f.Var[k] = v
 		}
+		var err error
+		f.MaybeMissingVars, err = regexp.Compile(`^(` + a.MaybeMissingVars + `)$`)
+		if err != nil {
+			return nil, fmt.Errorf("regex %v is invalid: %v", a.MaybeMissingVars, err)
+		}
+
 		f.Software = &dep.SoftwareFeatures{
 			Available:   a.AvailableSoftwareFeatures,
 			Unavailable: a.UnavailableSoftwareFeatures,
@@ -185,7 +197,7 @@ func (a *FeatureArgs) Features() *dep.Features {
 			Features: a.HardwareFeatures.Proto,
 		}
 	}
-	return &f
+	return &f, nil
 }
 
 // RunTestsArgs is nested within Args and contains arguments used by RunTestsMode.

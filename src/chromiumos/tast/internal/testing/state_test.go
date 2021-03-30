@@ -594,7 +594,7 @@ func TestVars(t *gotesting.T) {
 		unregValue = "unreg value"
 	)
 
-	test := &TestInstance{Vars: []string{validName, unsetName}}
+	test := &TestInstance{AllVars: []string{validName, unsetName}}
 	cfg := &RuntimeConfig{Vars: map[string]string{validName: validValue, unregName: unregValue}}
 	var out outputSink
 	root := NewTestEntityRoot(test, cfg, &out)

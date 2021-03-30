@@ -172,6 +172,44 @@ func TestRunDownloadPrivateBundlesWithCompanionDUTs(t *gotesting.T) {
 	testRunDownloadPrivateBundles(t, td)
 }
 
+// TestRunDownloadPrivateBundlesWithCompanionDUTsAndTLW makes sure private bundles would be downloaded with TLw.
+func TestRunDownloadPrivateBundlesWithCompanionDUTsAndTLW(t *gotesting.T) {
+	const targetName = "dut001"
+	const companionRole = "compRole"
+	const companionDutName = "compDUT0"
+	td := fakerunner.NewLocalTestData(t, fakerunner.WithCompanionDUTRoles([]string{companionRole}))
+	defer td.Close()
+
+	var hosts []string
+	var ports []uint64
+	for _, server := range td.SrvData.Srvs {
+		host, portStr, err := net.SplitHostPort(server.Addr().String())
+		if err != nil {
+			t.Fatal("net.SplitHostPort: ", err)
+		}
+		hosts = append(hosts, host)
+		port, err := strconv.ParseUint(portStr, 10, 32)
+		if err != nil {
+			t.Fatal("strconv.ParseUint: ", err)
+		}
+		ports = append(ports, port)
+	}
+
+	// Start a TLW server that resolves "dut001:22" to the real target addr/port.
+	stopFunc, tlwAddr := faketlw.StartWiringServer(t, faketlw.WithDUTPortMap(map[faketlw.NamePort]faketlw.NamePort{
+		{Name: targetName, Port: 22}:       {Name: hosts[0], Port: int32(ports[0])},
+		{Name: companionDutName, Port: 22}: {Name: hosts[1], Port: int32(ports[1])},
+	}), faketlw.WithCacheFileMap(map[string][]byte{"gs://a/b/c": []byte("abc")}),
+		faketlw.WithDUTName(targetName))
+	defer stopFunc()
+
+	td.Cfg.Target = targetName
+	td.Cfg.TLWServer = tlwAddr
+	td.Cfg.Devservers = nil
+	td.Cfg.CompanionDUTs = map[string]string{companionRole: companionDutName}
+	testRunDownloadPrivateBundles(t, td)
+}
+
 func testRunDownloadPrivateBundles(t *gotesting.T, td *fakerunner.LocalTestData) {
 	td.Cfg.RunLocal = true
 	duts := make(map[string]struct{})

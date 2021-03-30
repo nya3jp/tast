@@ -90,8 +90,14 @@ func Run(ctx context.Context, cfg *config.Config, state *config.State) (status S
 		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to connect to Reports server: %v", err), nil
 	}
 
-	if err := resolveTarget(ctx, cfg, state); err != nil {
+	var err error
+	if cfg.Target, err = resolveTarget(ctx, state.TLWConn, cfg.Target); err != nil {
 		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to resolve target: %v", err), nil
+	}
+	for role, dut := range cfg.CompanionDUTs {
+		if cfg.CompanionDUTs[role], err = resolveTarget(ctx, state.TLWConn, dut); err != nil {
+			return errorStatusf(cfg, subcommands.ExitFailure, "Failed to resolve companion DUT %v : %v", dut, err), nil
+		}
 	}
 
 	cc := target.NewConnCache(cfg, cfg.Target)
@@ -173,14 +179,14 @@ func connectToReports(ctx context.Context, cfg *config.Config, state *config.Sta
 }
 
 // resolveTarget resolves cfg.Target using the TLW service if available.
-func resolveTarget(ctx context.Context, cfg *config.Config, state *config.State) error {
-	if state.TLWConn == nil {
-		return nil
+func resolveTarget(ctx context.Context, tlwConn *grpc.ClientConn, target string) (resolvedTarget string, err error) {
+	if tlwConn == nil {
+		return target, nil
 	}
 
 	var opts ssh.Options
-	if err := ssh.ParseTarget(cfg.Target, &opts); err != nil {
-		return err
+	if err := ssh.ParseTarget(target, &opts); err != nil {
+		return target, err
 	}
 	host, portStr, err := net.SplitHostPort(opts.Hostname)
 	if err != nil {
@@ -189,18 +195,17 @@ func resolveTarget(ctx context.Context, cfg *config.Config, state *config.State)
 	}
 	port, err := strconv.ParseUint(portStr, 10, 16)
 	if err != nil {
-		return err
+		return target, err
 	}
 
 	// Use the OpenDutPort API to resolve the target.
 	req := &tls.OpenDutPortRequest{Name: host, Port: int32(port)}
-	res, err := tls.NewWiringClient(state.TLWConn).OpenDutPort(ctx, req)
+	res, err := tls.NewWiringClient(tlwConn).OpenDutPort(ctx, req)
 	if err != nil {
-		return err
+		return target, err
 	}
 
-	cfg.Target = fmt.Sprintf("%s@%s:%d", opts.User, res.GetAddress(), res.GetPort())
-	return nil
+	return fmt.Sprintf("%s@%s:%d", opts.User, res.GetAddress(), res.GetPort()), nil
 }
 
 // startEphemeralDevserverForRemoteTests starts an ephemeral devserver for remote tests.

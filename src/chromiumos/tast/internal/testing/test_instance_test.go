@@ -51,7 +51,7 @@ func (p *fakePre) Timeout() time.Duration { return time.Minute }
 
 func (p *fakePre) String() string { return p.name }
 
-func features(availableSWs []string, model string, vars map[string]string) *dep.Features {
+func features(availableSWs []string, model string) *dep.Features {
 	availableSWSet := make(map[string]struct{})
 	for _, dep := range availableSWs {
 		availableSWSet[dep] = struct{}{}
@@ -65,7 +65,6 @@ func features(availableSWs []string, model string, vars map[string]string) *dep.
 	}
 
 	return &dep.Features{
-		Var: vars,
 		Software: &dep.SoftwareFeatures{
 			Available:   availableSWs,
 			Unavailable: unavailableSWs,
@@ -90,7 +89,6 @@ func TestInstantiate(t *gotesting.T) {
 		Attr:         []string{"group:mainline", "informational"},
 		Data:         []string{"data1.txt", "data2.txt"},
 		Vars:         []string{"var1", "servo"},
-		VarDeps:      []string{"servo"},
 		SoftwareDeps: []string{"dep1", "dep2"},
 		HardwareDeps: hwdep.D(hwdep.Model("model1", "model2")),
 		Timeout:      123 * time.Second,
@@ -115,7 +113,6 @@ func TestInstantiate(t *gotesting.T) {
 		},
 		Data:         []string{"data1.txt", "data2.txt"},
 		Vars:         []string{"var1", "servo"},
-		VarDeps:      []string{"servo"},
 		SoftwareDeps: []string{"dep1", "dep2"},
 		Timeout:      123 * time.Second,
 		ServiceDeps:  []string{"svc1", "svc2"},
@@ -127,10 +124,10 @@ func TestInstantiate(t *gotesting.T) {
 		if got[0].Func == nil {
 			t.Error("Got nil Func")
 		}
-		if result := got[0].ShouldRun(features([]string{"dep1", "dep2"}, "model1", map[string]string{"servo": "_"})); !result.OK() {
+		if result := got[0].ShouldRun(features([]string{"dep1", "dep2"}, "model1")); !result.OK() {
 			t.Error("Got unexpected HardwareDeps: ShouldRun returned false for model1: ", result)
 		}
-		if result := got[0].ShouldRun(features([]string{"dep1", "dep2"}, "modelX", map[string]string{"servo": "_"})); result.OK() {
+		if result := got[0].ShouldRun(features([]string{"dep1", "dep2"}, "modelX")); result.OK() {
 			t.Error("Got unexpected HardwareDeps: ShouldRun returned true for modelX")
 		}
 	}
@@ -203,19 +200,19 @@ func TestInstantiateParams(t *gotesting.T) {
 		if got[0].Func == nil {
 			t.Error("Got nil Func for the first test instance")
 		}
-		if result := got[0].ShouldRun(features([]string{"dep0", "dep1"}, "model1", nil)); !result.OK() {
+		if result := got[0].ShouldRun(features([]string{"dep0", "dep1"}, "model1")); !result.OK() {
 			t.Error("Got unexpected HardwareDeps for first test instance: ShouldRun returned false for model1: ", result)
 		}
-		if result := got[0].ShouldRun(features([]string{"dep0", "dep1"}, "model2", nil)); result.OK() {
+		if result := got[0].ShouldRun(features([]string{"dep0", "dep1"}, "model2")); result.OK() {
 			t.Error("Got unexpected HardwareDeps for first test instance: ShouldRun returned true for model2")
 		}
 		if got[1].Func == nil {
 			t.Error("Got nil Func for the second test instance")
 		}
-		if result := got[1].ShouldRun(features([]string{"dep0", "dep2"}, "model2", nil)); !result.OK() {
+		if result := got[1].ShouldRun(features([]string{"dep0", "dep2"}, "model2")); !result.OK() {
 			t.Error("Got unexpected HardwareDeps for second test instance: ShouldRun returned false for model2: ", result)
 		}
-		if result := got[1].ShouldRun(features([]string{"dep0", "dep2"}, "model1", nil)); result.OK() {
+		if result := got[1].ShouldRun(features([]string{"dep0", "dep2"}, "model1")); result.OK() {
 			t.Error("Got unexpected HardwareDeps for second test instance: ShouldRun returned true for model1")
 		}
 	}
@@ -496,28 +493,6 @@ func TestInstantiateReservedAttrPrefixes(t *gotesting.T) {
 	}
 }
 
-func TestInstantiateVarDeps(t *gotesting.T) {
-	for _, tc := range []struct {
-		vars      []string
-		varDeps   []string
-		wantError bool
-	}{
-		{vars: []string{"a"}},
-		{vars: []string{"a", "servo"}, varDeps: []string{"servo"}},
-		{vars: []string{"servo"}, varDeps: []string{"servo", "example.PublicVars.foo"}, wantError: true},
-	} {
-		if _, err := instantiate(&Test{
-			Func:    TESTINSTANCETEST,
-			Vars:    tc.vars,
-			VarDeps: tc.varDeps,
-		}); err != nil && !tc.wantError {
-			t.Errorf("Unexpected error for vars %v and varDeps %v: %v", tc.vars, tc.varDeps, err)
-		} else if err == nil && tc.wantError {
-			t.Errorf("err = nil for vars %v and varDeps %v", tc.vars, tc.varDeps)
-		}
-	}
-}
-
 func TestValidateVars_OK(t *gotesting.T) {
 	const (
 		category = "a"
@@ -652,20 +627,9 @@ func TestInstantiateNonPointerPrecondition(t *gotesting.T) {
 	}
 }
 
-func TestVarDeps(t *gotesting.T) {
-	test := TestInstance{VarDeps: []string{"servo", "example.PublicVars.foo"}}
-	got := test.ShouldRun(features(nil, "eve", map[string]string{"servo": "_", "foo": "_"}))
-	want := &ShouldRunResult{
-		SkipReasons: []string{"var example.PublicVars.foo not provided"},
-	}
-	if !reflect.DeepEqual(got, want) {
-		t.Errorf("ShouldRun() = %+v; want %+v", got, want)
-	}
-}
-
 func TestSoftwareDeps(t *gotesting.T) {
 	test := TestInstance{SoftwareDeps: []string{"dep3", "dep1", "dep2", "depX"}}
-	got := test.ShouldRun(features([]string{"dep0", "dep2", "dep4"}, "eve", nil))
+	got := test.ShouldRun(features([]string{"dep0", "dep2", "dep4"}, "eve"))
 	want := &ShouldRunResult{
 		SkipReasons: []string{"missing SoftwareDeps: dep1, dep3, depX"},
 		Errors:      []string{"unknown SoftwareDeps: depX"},
@@ -677,7 +641,7 @@ func TestSoftwareDeps(t *gotesting.T) {
 
 func TestHardwareDeps(t *gotesting.T) {
 	test := TestInstance{HardwareDeps: hwdep.D(hwdep.Model("eve"))}
-	got := test.ShouldRun(features(nil, "samus", nil))
+	got := test.ShouldRun(features(nil, "samus"))
 	want := &ShouldRunResult{SkipReasons: []string{"ModelId did not match"}}
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("ShouldRun() = %+v; want %+v", got, want)
@@ -695,7 +659,6 @@ func TestTestInstanceEntityProto(t *gotesting.T) {
 		Attr:         []string{"attr1", "attr2"},
 		Data:         []string{"foo.txt"},
 		Vars:         []string{"var1", "var2", "servo"},
-		VarDeps:      []string{"servo"},
 		SoftwareDeps: []string{"dep1", "dep2"},
 		ServiceDeps:  []string{"svc1", "svc2"},
 		Fixture:      "fixt",
@@ -718,7 +681,6 @@ func TestTestInstanceEntityProto(t *gotesting.T) {
 		},
 		LegacyData: &protocol.EntityLegacyData{
 			Variables:    []string{"var1", "var2", "servo"},
-			VariableDeps: []string{"servo"},
 			SoftwareDeps: []string{"dep1", "dep2"},
 			Timeout:      ptypes.DurationProto(time.Hour),
 			Bundle:       filepath.Base(os.Args[0]),
@@ -735,7 +697,6 @@ func TestTestClone(t *gotesting.T) {
 		timeout = time.Minute
 	)
 	attr := []string{"a", "b"}
-	varDeps := []string{"servo", "example.PublicVars.foo"}
 	softwareDeps := []string{"sw1", "sw2"}
 	serviceDeps := []string{"svc1", "svc2"}
 	f := func(context.Context, *State) {}
@@ -749,7 +710,6 @@ func TestTestClone(t *gotesting.T) {
 		want := &TestInstance{
 			Name:         name,
 			Attr:         attr,
-			VarDeps:      varDeps,
 			SoftwareDeps: softwareDeps,
 			ServiceDeps:  serviceDeps,
 			Timeout:      timeout,
@@ -764,7 +724,6 @@ func TestTestClone(t *gotesting.T) {
 		Name:         name,
 		Func:         f,
 		Attr:         append([]string(nil), attr...),
-		VarDeps:      append([]string(nil), varDeps...),
 		SoftwareDeps: append([]string(nil), softwareDeps...),
 		ServiceDeps:  append([]string(nil), serviceDeps...),
 		Timeout:      timeout,
@@ -777,7 +736,6 @@ func TestTestClone(t *gotesting.T) {
 	clone.Func = nil
 	clone.Attr[0] = "new"
 	clone.Timeout = 2 * timeout
-	clone.VarDeps[0] = "varnew"
 	clone.SoftwareDeps[0] = "swnew"
 	clone.ServiceDeps[0] = "svcnew"
 	checkTest("update after clone()", &orig)

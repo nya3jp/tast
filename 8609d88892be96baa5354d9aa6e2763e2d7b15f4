@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d41490c2_b1e84ded",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2021-03-30T09:28:44Z",
+      "side": 1,
+      "message": "Hi,\n\nThis is the CL that makes the switch: https://chromium-review.googlesource.com/c/chromiumos/platform/tast-tests/+/2786790",
+      "revId": "8609d88892be96baa5354d9aa6e2763e2d7b15f4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

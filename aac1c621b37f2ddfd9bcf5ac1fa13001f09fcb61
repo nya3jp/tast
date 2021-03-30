@@ -16,6 +16,46 @@
       "message": "I have added a unit test for the downloading of private bundle for the companion DUTs. I also manually tested it with a new test meta.CompanionDUTs. Please review. Thanks.",
       "revId": "aac1c621b37f2ddfd9bcf5ac1fa13001f09fcb61",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a6af72bb_50499658",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 9
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-03-30T16:19:46Z",
+      "side": 1,
+      "message": "lgtm with a nit",
+      "revId": "aac1c621b37f2ddfd9bcf5ac1fa13001f09fcb61",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "373440cb_33e7aad5",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/prepare/prepare.go",
+        "patchSetId": 9
+      },
+      "lineNbr": 31,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-03-30T16:19:46Z",
+      "side": 1,
+      "message": "Based on\ngo/go-style/decisions#named-result-parameters\nI think this should be an unnamed result and err should be declared as a normal local variable in a separate line.",
+      "range": {
+        "startLine": 31,
+        "startChar": 94,
+        "endLine": 31,
+        "endChar": 105
+      },
+      "revId": "aac1c621b37f2ddfd9bcf5ac1fa13001f09fcb61",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

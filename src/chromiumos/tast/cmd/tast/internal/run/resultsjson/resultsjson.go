@@ -87,7 +87,6 @@ func NewTest(ei *jsonprotocol.EntityInfo) *Test {
 		Attr:         ei.Attr,
 		Data:         ei.Data,
 		Vars:         ei.Vars,
-		VarDeps:      ei.VarDeps,
 		SoftwareDeps: ei.SoftwareDeps,
 		ServiceDeps:  ei.ServiceDeps,
 		Fixture:      ei.Fixture,

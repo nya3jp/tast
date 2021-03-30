@@ -90,7 +90,6 @@ func TestInstantiate(t *gotesting.T) {
 		Attr:         []string{"group:mainline", "informational"},
 		Data:         []string{"data1.txt", "data2.txt"},
 		Vars:         []string{"var1", "servo"},
-		VarDeps:      []string{"servo"},
 		SoftwareDeps: []string{"dep1", "dep2"},
 		HardwareDeps: hwdep.D(hwdep.Model("model1", "model2")),
 		Timeout:      123 * time.Second,
@@ -115,7 +114,6 @@ func TestInstantiate(t *gotesting.T) {
 		},
 		Data:         []string{"data1.txt", "data2.txt"},
 		Vars:         []string{"var1", "servo"},
-		VarDeps:      []string{"servo"},
 		SoftwareDeps: []string{"dep1", "dep2"},
 		Timeout:      123 * time.Second,
 		ServiceDeps:  []string{"svc1", "svc2"},
@@ -496,28 +494,6 @@ func TestInstantiateReservedAttrPrefixes(t *gotesting.T) {
 	}
 }
 
-func TestInstantiateVarDeps(t *gotesting.T) {
-	for _, tc := range []struct {
-		vars      []string
-		varDeps   []string
-		wantError bool
-	}{
-		{vars: []string{"a"}},
-		{vars: []string{"a", "servo"}, varDeps: []string{"servo"}},
-		{vars: []string{"servo"}, varDeps: []string{"servo", "example.PublicVars.foo"}, wantError: true},
-	} {
-		if _, err := instantiate(&Test{
-			Func:    TESTINSTANCETEST,
-			Vars:    tc.vars,
-			VarDeps: tc.varDeps,
-		}); err != nil && !tc.wantError {
-			t.Errorf("Unexpected error for vars %v and varDeps %v: %v", tc.vars, tc.varDeps, err)
-		} else if err == nil && tc.wantError {
-			t.Errorf("err = nil for vars %v and varDeps %v", tc.vars, tc.varDeps)
-		}
-	}
-}
-
 func TestValidateVars_OK(t *gotesting.T) {
 	const (
 		category = "a"
@@ -652,17 +628,6 @@ func TestInstantiateNonPointerPrecondition(t *gotesting.T) {
 	}
 }
 
-func TestVarDeps(t *gotesting.T) {
-	test := TestInstance{VarDeps: []string{"servo", "example.PublicVars.foo"}}
-	got := test.ShouldRun(features(nil, "eve", map[string]string{"servo": "_", "foo": "_"}))
-	want := &ShouldRunResult{
-		SkipReasons: []string{"var example.PublicVars.foo not provided"},
-	}
-	if !reflect.DeepEqual(got, want) {
-		t.Errorf("ShouldRun() = %+v; want %+v", got, want)
-	}
-}
-
 func TestSoftwareDeps(t *gotesting.T) {
 	test := TestInstance{SoftwareDeps: []string{"dep3", "dep1", "dep2", "depX"}}
 	got := test.ShouldRun(features([]string{"dep0", "dep2", "dep4"}, "eve", nil))
@@ -695,7 +660,6 @@ func TestTestInstanceEntityProto(t *gotesting.T) {
 		Attr:         []string{"attr1", "attr2"},
 		Data:         []string{"foo.txt"},
 		Vars:         []string{"var1", "var2", "servo"},
-		VarDeps:      []string{"servo"},
 		SoftwareDeps: []string{"dep1", "dep2"},
 		ServiceDeps:  []string{"svc1", "svc2"},
 		Fixture:      "fixt",
@@ -718,7 +682,6 @@ func TestTestInstanceEntityProto(t *gotesting.T) {
 		},
 		LegacyData: &protocol.EntityLegacyData{
 			Variables:    []string{"var1", "var2", "servo"},
-			VariableDeps: []string{"servo"},
 			SoftwareDeps: []string{"dep1", "dep2"},
 			Timeout:      ptypes.DurationProto(time.Hour),
 			Bundle:       filepath.Base(os.Args[0]),
@@ -735,7 +698,6 @@ func TestTestClone(t *gotesting.T) {
 		timeout = time.Minute
 	)
 	attr := []string{"a", "b"}
-	varDeps := []string{"servo", "example.PublicVars.foo"}
 	softwareDeps := []string{"sw1", "sw2"}
 	serviceDeps := []string{"svc1", "svc2"}
 	f := func(context.Context, *State) {}
@@ -749,7 +711,6 @@ func TestTestClone(t *gotesting.T) {
 		want := &TestInstance{
 			Name:         name,
 			Attr:         attr,
-			VarDeps:      varDeps,
 			SoftwareDeps: softwareDeps,
 			ServiceDeps:  serviceDeps,
 			Timeout:      timeout,
@@ -764,7 +725,6 @@ func TestTestClone(t *gotesting.T) {
 		Name:         name,
 		Func:         f,
 		Attr:         append([]string(nil), attr...),
-		VarDeps:      append([]string(nil), varDeps...),
 		SoftwareDeps: append([]string(nil), softwareDeps...),
 		ServiceDeps:  append([]string(nil), serviceDeps...),
 		Timeout:      timeout,
@@ -777,7 +737,6 @@ func TestTestClone(t *gotesting.T) {
 	clone.Func = nil
 	clone.Attr[0] = "new"
 	clone.Timeout = 2 * timeout
-	clone.VarDeps[0] = "varnew"
 	clone.SoftwareDeps[0] = "swnew"
 	clone.ServiceDeps[0] = "svcnew"
 	checkTest("update after clone()", &orig)

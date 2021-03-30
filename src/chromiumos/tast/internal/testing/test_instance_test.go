@@ -11,6 +11,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"reflect"
+	"regexp"
 	"strings"
 	gotesting "testing"
 	"time"
@@ -88,7 +89,8 @@ func TestInstantiate(t *gotesting.T) {
 		Contacts:     []string{"a@example.com", "b@example.com"},
 		Attr:         []string{"group:mainline", "informational"},
 		Data:         []string{"data1.txt", "data2.txt"},
-		Vars:         []string{"var1", "servo"},
+		Vars:         []string{"var1"},
+		VarDeps:      []string{"vardep1"},
 		SoftwareDeps: []string{"dep1", "dep2"},
 		HardwareDeps: hwdep.D(hwdep.Model("model1", "model2")),
 		Timeout:      123 * time.Second,
@@ -112,7 +114,8 @@ func TestInstantiate(t *gotesting.T) {
 			testDepAttrPrefix + "dep2",
 		},
 		Data:         []string{"data1.txt", "data2.txt"},
-		Vars:         []string{"var1", "servo"},
+		Vars:         []string{"var1"},
+		VarDeps:      []string{"vardep1"},
 		SoftwareDeps: []string{"dep1", "dep2"},
 		Timeout:      123 * time.Second,
 		ServiceDeps:  []string{"svc1", "svc2"},
@@ -522,6 +525,7 @@ func TestValidateVars_Error(t *gotesting.T) {
 		{"a.X.c"},
 		{"a.B.c."},
 		{"a.B._"},
+		{"a", "a"},
 	} {
 		if err := validateVars(category, name, vars); err == nil {
 			t.Errorf("validateVars(%v, %v, %v) = nil; want error", category, name, vars)
@@ -648,6 +652,45 @@ func TestHardwareDeps(t *gotesting.T) {
 	}
 }
 
+func TestVarDeps(t *gotesting.T) {
+	test := TestInstance{VarDeps: []string{"foo"}}
+	for _, tc := range []struct {
+		name     string
+		features *dep.Features
+		want     *ShouldRunResult
+	}{{
+		name: "pass",
+		features: &dep.Features{
+			Var: map[string]string{"foo": "bar"},
+		},
+		want: &ShouldRunResult{},
+	}, {
+		name: "fail",
+		features: &dep.Features{
+			Var: map[string]string{},
+		},
+		want: &ShouldRunResult{
+			Errors: []string{"variable foo is missing and not specified in -maybe-missing-vars"},
+		},
+	}, {
+		name: "skip",
+		features: &dep.Features{
+			Var:              map[string]string{},
+			MaybeMissingVars: regexp.MustCompile(`foo`),
+		},
+		want: &ShouldRunResult{
+			SkipReasons: []string{"variable foo is missing"},
+		},
+	}} {
+		t.Run(tc.name, func(t *gotesting.T) {
+			got := test.ShouldRun(tc.features)
+			if diff := cmp.Diff(got, tc.want); diff != "" {
+				t.Errorf("Result mismaatch (-got +want):\n%v", diff)
+			}
+		})
+	}
+}
+
 func TestTestInstanceEntityProto(t *gotesting.T) {
 	test := &TestInstance{
 		Name:         "pkg.Test",
@@ -658,7 +701,8 @@ func TestTestInstanceEntityProto(t *gotesting.T) {
 		Contacts:     []string{"me@example.com"},
 		Attr:         []string{"attr1", "attr2"},
 		Data:         []string{"foo.txt"},
-		Vars:         []string{"var1", "var2", "servo"},
+		Vars:         []string{"var1", "var2"},
+		VarDeps:      []string{"vardep1"},
 		SoftwareDeps: []string{"dep1", "dep2"},
 		ServiceDeps:  []string{"svc1", "svc2"},
 		Fixture:      "fixt",
@@ -680,7 +724,8 @@ func TestTestInstanceEntityProto(t *gotesting.T) {
 			Emails: []string{"me@example.com"},
 		},
 		LegacyData: &protocol.EntityLegacyData{
-			Variables:    []string{"var1", "var2", "servo"},
+			Variables:    []string{"var1", "var2"},
+			VariableDeps: []string{"vardep1"},
 			SoftwareDeps: []string{"dep1", "dep2"},
 			Timeout:      ptypes.DurationProto(time.Hour),
 			Bundle:       filepath.Base(os.Args[0]),

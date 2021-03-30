@@ -308,9 +308,10 @@ func TestRunTestsMissingDeps(t *gotesting.T) {
 		missingName = "foo.Missing"
 		unregName   = "foo.Unregistered"
 
-		validDep   = "valid"
-		missingDep = "missing"
-		unregDep   = "unreg"
+		maybeMissingVarsRE = `missingvar\..*`
+		validDep           = "valid"
+		missingDep         = "missing"
+		unregDep           = "unreg"
 	)
 
 	// Register four tests: one with a satisfied dep, another with a missing SW dep,
@@ -333,6 +334,7 @@ func TestRunTestsMissingDeps(t *gotesting.T) {
 			DataDir: tmpDir,
 			FeatureArgs: FeatureArgs{
 				CheckSoftwareDeps:           true,
+				MaybeMissingVars:            maybeMissingVarsRE,
 				TestVars:                    map[string]string{},
 				AvailableSoftwareFeatures:   []string{validDep},
 				UnavailableSoftwareFeatures: []string{missingDep},

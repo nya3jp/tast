@@ -7,6 +7,7 @@ package dep
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
 )
 
@@ -16,6 +17,10 @@ type Features struct {
 	// Var contains runtime variables.
 	// If it is nil, variable dependency checks should not be performed.
 	Var map[string]string
+
+	// MaybeMissingVars contains regex that matches with possibly missing
+	// runtime variables.
+	MaybeMissingVars *regexp.Regexp
 
 	// Software contains information about software features.
 	// If it is nil, software dependency checks should not be performed.
@@ -55,9 +60,14 @@ func (d *Deps) Check(f *Features) *CheckResult {
 	var errs []string
 	if f.Var != nil {
 		for _, v := range d.Var {
-			if _, ok := f.Var[v]; !ok {
-				reasons = append(reasons, fmt.Sprintf("var %s not provided", v))
+			if _, ok := f.Var[v]; ok {
+				continue
 			}
+			if f.MaybeMissingVars != nil && f.MaybeMissingVars.MatchString(v) {
+				reasons = append(reasons, fmt.Sprintf("runtime variable %s is missing and matches with %v", v, f.MaybeMissingVars))
+				continue
+			}
+			errs = append(errs, fmt.Sprintf("runtime variable %s is missing and not specified in -maybemissingvars", v))
 		}
 	}
 	if f.Software != nil {

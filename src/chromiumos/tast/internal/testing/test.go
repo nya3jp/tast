@@ -62,6 +62,14 @@ type Test struct {
 	// Values are supplied using "tast run -var=name=value", and tests can access values via State.Var.
 	Vars []string
 
+	// VarDeps is not supported yet (crbug/1183238).
+	//
+	// VarDeps contains the names of runtime variables that the test depends on.
+	// Whether test fails or skipped when a variable in VarDeps is missing
+	// is controlled by flags specified to the Tast CLI.
+	// Vars and VarDeps should be mutually exclusive.
+	VarDeps []string
+
 	// SoftwareDeps lists software features that are required to run the test.
 	// If any dependencies are not satisfied by the DUT, the test will be skipped.
 	// See https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/test_dependencies.md

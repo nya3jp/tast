@@ -90,6 +90,7 @@ func featureArgsFromConfig(cfg *config.Config, state *config.State) *jsonprotoco
 	args := jsonprotocol.FeatureArgs{
 		CheckSoftwareDeps: cfg.CheckTestDeps,
 		TestVars:          cfg.TestVars,
+		MaybeMissingVars:  cfg.MaybeMissingVars,
 	}
 	if state.SoftwareFeatures != nil {
 		args.AvailableSoftwareFeatures = state.SoftwareFeatures.Available

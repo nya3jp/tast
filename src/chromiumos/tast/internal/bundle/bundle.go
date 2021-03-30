@@ -100,7 +100,10 @@ func run(ctx context.Context, clArgs []string, stdin io.Reader, stdout, stderr i
 			return command.WriteError(stderr, err)
 		}
 		var infos []*jsonprotocol.EntityWithRunnabilityInfo
-		features := args.ListTests.Features()
+		features, err := args.ListTests.Features()
+		if err != nil {
+			return command.WriteError(stderr, err)
+		}
 		for _, test := range tests {
 			var skipReason string
 			if r := test.ShouldRun(features); !r.OK() {
@@ -367,10 +370,14 @@ func runTests(ctx context.Context, stdout io.Writer, args *Args, scfg *staticCon
 		}
 	}
 
+	fs, err := args.RunTests.Features()
+	if err != nil {
+		return command.NewStatusErrorf(statusBadArgs, "invalid feature args: %v", err)
+	}
 	pcfg := &planner.Config{
 		DataDir:           args.RunTests.DataDir,
 		OutDir:            args.RunTests.OutDir,
-		Features:          *args.RunTests.Features(),
+		Features:          *fs,
 		Devservers:        args.RunTests.Devservers,
 		TLWServer:         args.RunTests.TLWServer,
 		DUTName:           args.RunTests.DUTName,

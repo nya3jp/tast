@@ -14,6 +14,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"time"
 
@@ -125,9 +126,10 @@ type Config struct {
 	CollectSysInfo       bool      // collect system info (logs, crashes, etc.) generated during testing
 	MaxTestFailures      int       // maximum number of test failures
 
-	TestVars        map[string]string // names and values of variables used to pass out-of-band data to tests
-	VarsFiles       []string          // paths to variable files
-	DefaultVarsDirs []string          // dirs containing default variable files
+	TestVars         map[string]string // names and values of variables used to pass out-of-band data to tests
+	VarsFiles        []string          // paths to variable files
+	DefaultVarsDirs  []string          // dirs containing default variable files
+	MaybeMissingVars string            // regex matching with variables which may be missing
 
 	MsgTimeout             time.Duration // timeout for reading control messages; default used if zero
 	LocalRunnerWaitTimeout time.Duration // timeout for waiting for local_test_runner to exit; default used if zero
@@ -254,6 +256,12 @@ func (c *Config) SetFlags(f *flag.FlagSet) {
 			return nil
 		})
 		f.Var(&vff, "varsfile", "YAML file containing variables (can be repeated)")
+		// TODO(oka): Use flag.Func once it's available.
+		f.Var(funcValue(func(s string) error {
+			c.MaybeMissingVars = s
+			_, err := regexp.Compile(s)
+			return err
+		}), "maybemissingvars", "Regex matching with variables which may be missing")
 
 		vals := map[string]int{
 			"env":  int(ProxyEnv),
@@ -274,6 +282,11 @@ func (c *Config) SetFlags(f *flag.FlagSet) {
 		f.Var(&compDUTs, "companiondut", `role to companion DUT, as "role:address" (can be repeated)`)
 	}
 }
+
+type funcValue func(string) error // implements flag.Value
+
+func (f funcValue) Set(s string) error { return f(s) }
+func (f funcValue) String() string     { return "" }
 
 // Close releases the config's resources (e.g. cached SSH connections).
 // It should be called at the completion of testing.

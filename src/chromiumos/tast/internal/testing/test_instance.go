@@ -66,12 +66,14 @@ type TestInstance struct {
 	// Following fields are copied from testing.Test struct.
 	// See the documents of the struct.
 
-	Func         TestFunc
-	Desc         string
-	Contacts     []string
-	Attr         []string
-	Data         []string
+	Func     TestFunc
+	Desc     string
+	Contacts []string
+	Attr     []string
+	Data     []string
+	// Vars contains the union of Test.Vars and Test.VarDeps.
 	Vars         []string
+	VarDeps      []string
 	SoftwareDeps dep.SoftwareDeps
 	// HardwareDeps field is not in the protocol yet. When the scheduler in infra is
 	// implemented, it is needed.
@@ -134,7 +136,7 @@ func newTestInstance(t *Test, p *Param) (*TestInstance, error) {
 		return nil, err
 	}
 
-	if err := validateVars(info.category, info.name, t.Vars); err != nil {
+	if err := validateVars(info.category, info.name, append(append([]string(nil), t.Vars...), t.VarDeps...)); err != nil {
 		return nil, err
 	}
 
@@ -193,7 +195,8 @@ func newTestInstance(t *Test, p *Param) (*TestInstance, error) {
 		Contacts:     append([]string(nil), t.Contacts...),
 		Attr:         attrs,
 		Data:         data,
-		Vars:         append([]string(nil), t.Vars...),
+		Vars:         append(append([]string(nil), t.Vars...), t.VarDeps...),
+		VarDeps:      append([]string(nil), t.VarDeps...),
 		SoftwareDeps: swDeps,
 		HardwareDeps: hwDeps,
 		ServiceDeps:  append([]string(nil), t.ServiceDeps...),
@@ -384,6 +387,15 @@ func validateVars(category, name string, vars []string) error {
 		}
 		return fmt.Errorf("variable name %s violates our naming convention defined in https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#Runtime-variables", v)
 	}
+
+	seen := make(map[string]struct{})
+	for _, v := range vars {
+		if _, ok := seen[v]; ok {
+			return fmt.Errorf("Vars and VarDeps should not contain the same variable %q twice", v)
+		}
+		seen[v] = struct{}{}
+	}
+
 	return nil
 }
 
@@ -394,6 +406,7 @@ func (t *TestInstance) clone() *TestInstance {
 	ret.Attr = append([]string(nil), ret.Attr...)
 	ret.Data = append([]string(nil), ret.Data...)
 	ret.Vars = append([]string(nil), ret.Vars...)
+	ret.VarDeps = append([]string(nil), ret.VarDeps...)
 	ret.SoftwareDeps = append([]string(nil), ret.SoftwareDeps...)
 	ret.ServiceDeps = append([]string(nil), ret.ServiceDeps...)
 	return ret
@@ -410,6 +423,7 @@ type ShouldRunResult = dep.CheckResult
 // In case of not, in addition, the reason why it should be skipped is also returned.
 func (t *TestInstance) ShouldRun(f *dep.Features) *ShouldRunResult {
 	deps := dep.Deps{
+		Var:      t.VarDeps,
 		Software: t.SoftwareDeps,
 		Hardware: t.HardwareDeps,
 	}
@@ -466,6 +480,7 @@ func (t *TestInstance) EntityProto() *protocol.Entity {
 		LegacyData: &protocol.EntityLegacyData{
 			Timeout:      ptypes.DurationProto(t.Timeout),
 			Variables:    append([]string(nil), t.Vars...),
+			VariableDeps: append([]string(nil), t.VarDeps...),
 			SoftwareDeps: append([]string(nil), t.SoftwareDeps...),
 			Bundle:       filepath.Base(os.Args[0]),
 		},

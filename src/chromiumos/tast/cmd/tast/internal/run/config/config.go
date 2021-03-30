@@ -125,9 +125,10 @@ type Config struct {
 	CollectSysInfo       bool      // collect system info (logs, crashes, etc.) generated during testing
 	MaxTestFailures      int       // maximum number of test failures
 
-	TestVars        map[string]string // names and values of variables used to pass out-of-band data to tests
-	VarsFiles       []string          // paths to variable files
-	DefaultVarsDirs []string          // dirs containing default variable files
+	TestVars         map[string]string // names and values of variables used to pass out-of-band data to tests
+	VarsFiles        []string          // paths to variable files
+	DefaultVarsDirs  []string          // dirs containing default variable files
+	MaybeMissingVars string            // regex matching with variables which may be missing
 
 	MsgTimeout             time.Duration // timeout for reading control messages; default used if zero
 	LocalRunnerWaitTimeout time.Duration // timeout for waiting for local_test_runner to exit; default used if zero
@@ -254,6 +255,7 @@ func (c *Config) SetFlags(f *flag.FlagSet) {
 			return nil
 		})
 		f.Var(&vff, "varsfile", "YAML file containing variables (can be repeated)")
+		f.StringVar(&c.MaybeMissingVars, "maybemissingvars", "", "Regex matching with variables which may be missing")
 
 		vals := map[string]int{
 			"env":  int(ProxyEnv),

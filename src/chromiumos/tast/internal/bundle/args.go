@@ -178,6 +178,7 @@ func (a *FeatureArgs) Features() *protocol.Features {
 	if !a.CheckSoftwareDeps {
 		return nil
 	}
+
 	vars := make(map[string]string)
 	for k, v := range a.TestVars {
 		vars[k] = v

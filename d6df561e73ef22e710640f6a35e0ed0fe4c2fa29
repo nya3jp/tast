@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5dc48f21_4041d34b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-03-31T10:12:18Z",
+      "side": 1,
+      "message": "Sorry for delay...\n",
+      "revId": "d6df561e73ef22e710640f6a35e0ed0fe4c2fa29",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "55f29a3f_0562812e",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 388,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-03-31T10:12:18Z",
+      "side": 1,
+      "message": "nit: I think we don\u0027t need to cast to float64.\n\nWell, we can\u0027t use the literal 1e9 in that case, but we can still write it as (1000 * 1000 * 1000) or 1000_000_000.",
+      "range": {
+        "startLine": 388,
+        "startChar": 28,
+        "endLine": 388,
+        "endChar": 35
+      },
+      "revId": "d6df561e73ef22e710640f6a35e0ed0fe4c2fa29",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

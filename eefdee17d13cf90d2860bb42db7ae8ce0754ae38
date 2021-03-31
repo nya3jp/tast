@@ -16,6 +16,24 @@
       "message": "Then, should the section move to the previous one?",
       "revId": "eefdee17d13cf90d2860bb42db7ae8ce0754ae38",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "121a4c4c_223bb589",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-03-31T04:03:08Z",
+      "side": 1,
+      "message": "Done.\nI found the point of potential confusion is distinction between 1. how the characteristics are physically determined and 2. how those are actually probed by tast today. Modified some sentences to avoid such confusion. Hope it looks better though not perfect.",
+      "parentUuid": "b40ebd27_a6710d23",
+      "revId": "eefdee17d13cf90d2860bb42db7ae8ce0754ae38",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

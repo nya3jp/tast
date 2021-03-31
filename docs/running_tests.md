@@ -113,7 +113,14 @@ ssh <servo-host>
 servod --board=<board> --model=<model> --port=<servo-port> --serialname=<servo-serial>
 ```
 
+In automated testing in the Chrome OS lab, Tast tests can reach a working Servo
+device via `servo` runtime variable if they are scheduled with Autotest control
+files declaring a Servo dependency. Control files for mainline tests declare it,
+but other control files may not. See [crrev.com/c/2790771] for an example to add
+a dependency declaration.
+
 [runtime variable]: writing_tests.md#runtime-variables
+[crrev.com/c/2790771]: https://crrev.com/c/2790771
 
 ## Interpreting test results
 

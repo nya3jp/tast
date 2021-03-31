@@ -1042,12 +1042,20 @@ external data files.
 
 ## Runtime variables
 
-Occasionally tests need to access dynamic or secret data (i.e. *out-of-band* data), and that's when runtime variables become useful.
+Occasionally tests need to access dynamic or secret data (i.e. *out-of-band*
+data), and that's when runtime variables become useful.
 
 To use runtime variables, in your test's `testing.AddTest` call, set the
-`testing.Test` struct's `Vars` field to contain a slice of runtime variables.
-The `Vars` field should be an array literal of string literals or constants.
+`testing.Test` struct's `Vars` or `VarDeps` field to contain a slice of runtime
+variables. `Vars` specifies optional runtime variables, and `VarDeps` specifies
+required runtime variables to run the test.
+`Vars` and `VarDeps` should be an array literal of string literals or constants.
 The test can later access the values by calling `s.Var` or `s.RequiredVar` methods.
+
+When runtime variables in `VarDeps` are missing, by default the test fails
+before it runs. `-maybemissingvars=<regex>` can be used to specify possibly
+missing runtime variables and if every missing runtime variable in `VarDeps`
+matches with the regex, the test is skipped.
 
 To set runtime variables, add (possibly repeated) `-var=name=value` flags to `tast run`.
 
@@ -1103,7 +1111,7 @@ func init() {
 	testing.AddTest(&testing.Test{
 		Func:     Bar,
 	...
-		Vars: []string{"foo.Bar.user", "foo.Bar.password"},
+		VarDeps: []string{"foo.Bar.user", "foo.Bar.password"},
 		// or foo.user, foo.password
 	})
 }

@@ -18,8 +18,8 @@ import (
 	"go.chromium.org/chromiumos/infra/proto/go/device"
 
 	"chromiumos/tast/internal/command"
-	"chromiumos/tast/internal/dep"
 	"chromiumos/tast/internal/planner"
+	"chromiumos/tast/internal/protocol"
 )
 
 // RunMode describes the bundle's behavior.
@@ -168,24 +168,27 @@ type FeatureArgs struct {
 	HardwareFeatures HardwareFeaturesJSON
 }
 
-// Features returns dep.Features to be used to check test dependencies.
-func (a *FeatureArgs) Features() *dep.Features {
-	var f dep.Features
-	if a.CheckSoftwareDeps {
-		f.Var = make(map[string]string)
-		for k, v := range a.TestVars {
-			f.Var[k] = v
-		}
-		f.Software = &dep.SoftwareFeatures{
+// Features returns protocol.Features to be used to check test dependencies.
+func (a *FeatureArgs) Features() *protocol.Features {
+	if !a.CheckSoftwareDeps {
+		return nil
+	}
+
+	vars := make(map[string]string)
+	for k, v := range a.TestVars {
+		vars[k] = v
+	}
+	return &protocol.Features{
+		Software: &protocol.SoftwareFeatures{
 			Available:   a.AvailableSoftwareFeatures,
 			Unavailable: a.UnavailableSoftwareFeatures,
-		}
-		f.Hardware = &dep.HardwareFeatures{
-			DC:       a.DeviceConfig.Proto,
-			Features: a.HardwareFeatures.Proto,
-		}
+		},
+		Hardware: &protocol.HardwareFeatures{
+			DeprecatedDeviceConfig: a.DeviceConfig.Proto,
+			HardwareFeatures:       a.HardwareFeatures.Proto,
+		},
+		Vars: vars,
 	}
-	return &f
 }
 
 // RunTestsArgs is nested within Args and contains arguments used by RunTestsMode.

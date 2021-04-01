@@ -10,13 +10,13 @@ import (
 	configpb "go.chromium.org/chromiumos/config/go/api"
 	"go.chromium.org/chromiumos/infra/proto/go/device"
 
-	"chromiumos/tast/internal/dep"
+	"chromiumos/tast/internal/protocol"
 )
 
 func verifyCondition(t *testing.T, c Condition, dc *device.Config, features *configpb.HardwareFeatures, expectSatisfied bool) {
 	t.Helper()
 
-	err := c.Satisfied(&dep.HardwareFeatures{DC: dc, Features: features})
+	err := c.Satisfied(&protocol.HardwareFeatures{DeprecatedDeviceConfig: dc, HardwareFeatures: features})
 	if expectSatisfied {
 		if err != nil {
 			t.Error("Unexpectedly unsatisfied: ", err)

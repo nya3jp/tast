@@ -29,7 +29,6 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/target"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/control"
-	"chromiumos/tast/internal/dep"
 	"chromiumos/tast/internal/fakereports"
 	"chromiumos/tast/internal/faketlw"
 	"chromiumos/tast/internal/jsonprotocol"
@@ -829,7 +828,7 @@ func TestListTestsGetDUTInfo(t *gotesting.T) {
 			// tested in deps_test.go.
 			called = true
 			json.NewEncoder(stdout).Encode(&runner.GetDUTInfoResult{
-				SoftwareFeatures: &dep.SoftwareFeatures{
+				SoftwareFeatures: &protocol.SoftwareFeatures{
 					Available: []string{"foo"}, // must report non-empty features
 				},
 			})
@@ -887,7 +886,7 @@ func TestRunTestsGetDUTInfo(t *gotesting.T) {
 			// tested in deps_test.go.
 			called = true
 			json.NewEncoder(stdout).Encode(&runner.GetDUTInfoResult{
-				SoftwareFeatures: &dep.SoftwareFeatures{
+				SoftwareFeatures: &protocol.SoftwareFeatures{
 					Available: []string{"foo"}, // must report non-empty features
 				},
 				OSVersion: osVersion,
@@ -993,7 +992,7 @@ func TestRunTestsSkipTests(t *gotesting.T) {
 			// Just check that GetDUTInfo is called; details of args are
 			// tested in deps_test.go.
 			json.NewEncoder(stdout).Encode(&runner.GetDUTInfoResult{
-				SoftwareFeatures: &dep.SoftwareFeatures{
+				SoftwareFeatures: &protocol.SoftwareFeatures{
 					Available: []string{"a_feature"},
 				},
 			})

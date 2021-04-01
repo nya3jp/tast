@@ -20,8 +20,8 @@ import (
 	"chromiumos/tast/autocaps"
 	"chromiumos/tast/internal/bundle"
 	"chromiumos/tast/internal/command"
-	"chromiumos/tast/internal/dep"
 	"chromiumos/tast/internal/jsonprotocol"
+	"chromiumos/tast/internal/protocol"
 )
 
 // RunMode describes the runner's behavior.
@@ -230,7 +230,7 @@ type GetDUTInfoResult struct {
 	// For backward compatibility, in JSON format, fields are flatten.
 	// This struct has MarshalJSON/UnmarshalJSON and the serialization/deserialization
 	// of this field are handled in the methods respectively.
-	SoftwareFeatures *dep.SoftwareFeatures `json:"-"`
+	SoftwareFeatures *protocol.SoftwareFeatures `json:"-"`
 
 	// DeviceConfig contains the DUT's device characteristic.
 	// Similar to SoftwareFeatures field, the serialization/deserialization
@@ -253,8 +253,8 @@ type GetDUTInfoResult struct {
 func (r *GetDUTInfoResult) MarshalJSON() ([]byte, error) {
 	var available, missing []string
 	if r.SoftwareFeatures != nil {
-		available = r.SoftwareFeatures.Available
-		missing = r.SoftwareFeatures.Unavailable
+		available = r.SoftwareFeatures.GetAvailable()
+		missing = r.SoftwareFeatures.GetUnavailable()
 	}
 
 	var dc []byte
@@ -307,7 +307,7 @@ func (r *GetDUTInfoResult) UnmarshalJSON(b []byte) error {
 		return err
 	}
 	if len(aux.Available) > 0 || len(aux.Missing) > 0 {
-		r.SoftwareFeatures = &dep.SoftwareFeatures{
+		r.SoftwareFeatures = &protocol.SoftwareFeatures{
 			Available:   aux.Available,
 			Unavailable: aux.Missing,
 		}

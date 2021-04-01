@@ -7,22 +7,9 @@ package dep
 import (
 	"strings"
 
-	"go.chromium.org/chromiumos/config/go/api"
-	"go.chromium.org/chromiumos/infra/proto/go/device"
-
 	"chromiumos/tast/errors"
+	"chromiumos/tast/internal/protocol"
 )
-
-// HardwareFeatures contains information about hardware features of the DUT.
-// Hardware dependency conditions should decide eligibility based only on this information.
-type HardwareFeatures struct {
-	// Deprecated. Use Features instead.
-	DC *device.Config
-
-	Features *api.HardwareFeatures
-
-	// TODO(hidehiko): Consider adding lab peripherals here.
-}
 
 // HardwareDeps is exported as chromiumos/tast/testing/hwdep.Deps. Please find its document for details.
 type HardwareDeps struct {
@@ -37,7 +24,7 @@ type HardwareDeps struct {
 type HardwareCondition struct {
 	// Satisfied is a pointer to a function which checks if the given HardwareFeatures satisfies
 	// the condition.
-	Satisfied func(f *HardwareFeatures) error
+	Satisfied func(f *protocol.HardwareFeatures) error
 
 	// CEL is the CEL expression denoting the condition.
 	CEL string
@@ -64,7 +51,7 @@ type UnsatisfiedError struct {
 // i.e., the test can run on the current device setup.
 // Otherwise, this returns an UnsatisfiedError instance, which contains a
 // collection of detailed errors in Reasons.
-func (d *HardwareDeps) Satisfied(f *HardwareFeatures) *UnsatisfiedError {
+func (d *HardwareDeps) Satisfied(f *protocol.HardwareFeatures) *UnsatisfiedError {
 	var reasons []error
 	for _, c := range d.conds {
 		if c.Satisfied == nil {

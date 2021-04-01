@@ -14,7 +14,7 @@ import (
 	"go.chromium.org/chromiumos/infra/proto/go/device"
 
 	"chromiumos/tast/autocaps"
-	"chromiumos/tast/internal/dep"
+	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/testutil"
 )
 
@@ -62,7 +62,7 @@ func TestGetDUTInfo(t *testing.T) {
 		t.Fatalf("%v gave bad output: %v", sig, err)
 	}
 	exp := GetDUTInfoResult{
-		SoftwareFeatures: &dep.SoftwareFeatures{
+		SoftwareFeatures: &protocol.SoftwareFeatures{
 			Available:   []string{"board", "foo_glob", "foobar", "other"},
 			Unavailable: []string{"not_bar_glob", "not_board", "not_foo"},
 		},

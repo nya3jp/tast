@@ -19,7 +19,6 @@ import (
 	"time"
 
 	"chromiumos/tast/errors"
-	"chromiumos/tast/internal/dep"
 	"chromiumos/tast/internal/devserver"
 	"chromiumos/tast/internal/extdata"
 	"chromiumos/tast/internal/protocol"
@@ -52,7 +51,7 @@ type Config struct {
 	// OutDir is the path to the base directory under which tests should write output files.
 	OutDir string
 	// Features contains software/hardware features the DUT has, and runtime variables.
-	Features dep.Features
+	Features *protocol.Features
 	// Devservers contains URLs of devservers that can be used to download files.
 	Devservers []string
 	// TLWServer is the address of TLW server
@@ -134,7 +133,7 @@ func buildPlan(tests []*testing.TestInstance, pcfg *Config) (*plan, error) {
 	var runs []*testing.TestInstance
 	var skips []*skippedTest
 	for _, t := range tests {
-		reasons, err := t.Deps().Check(&pcfg.Features)
+		reasons, err := t.Deps().Check(pcfg.Features)
 		if err == nil && len(reasons) == 0 {
 			runs = append(runs, t)
 		} else {
@@ -573,7 +572,7 @@ func runTest(ctx context.Context, t *testing.TestInstance, tout *entityOutputStr
 	rcfg := &testing.RuntimeConfig{
 		DataDir:      filepath.Join(pcfg.DataDir, testing.RelativeDataDir(t.Pkg)),
 		OutDir:       outDir,
-		Vars:         pcfg.Features.Var,
+		Vars:         pcfg.Features.GetVars(),
 		CloudStorage: testing.NewCloudStorage(pcfg.Devservers, pcfg.TLWServer, pcfg.DUTName),
 		RemoteData:   pcfg.RemoteData,
 		FixtCtx:      fixtCtx,

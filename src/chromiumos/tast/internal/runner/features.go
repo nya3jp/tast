@@ -26,8 +26,8 @@ import (
 	"chromiumos/tast/autocaps"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/command"
-	"chromiumos/tast/internal/dep"
 	"chromiumos/tast/internal/expr"
+	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/lsbrelease"
 )
 
@@ -67,7 +67,7 @@ func handleGetDUTInfo(args *Args, cfg *Config, w io.Writer) error {
 // getSoftwareFeatures implements the main function of GetDUTInfoMode (i.e., except input/output
 // conversion for RPC).
 func getSoftwareFeatures(definitions map[string]string, useFlagsFile, lsbReleaseFile string, extraUSEFlags []string, autotestCapsDir string) (
-	features *dep.SoftwareFeatures, warnings []string, err error) {
+	features *protocol.SoftwareFeatures, warnings []string, err error) {
 	if useFlagsFile == "" {
 		return nil, nil, command.NewStatusErrorf(statusBadArgs, "feature enumeration unsupported")
 	}
@@ -138,7 +138,7 @@ func readUSEFlagsFile(fn string) ([]string, error) {
 // useFlags contains a list of relevant USE flags that were set when building the system image (see Config.USEFlagsFile).
 // autotestCaps contains a mapping from autotest-capability names to the corresponding states.
 func determineSoftwareFeatures(definitions map[string]string, useFlags []string, autotestCaps map[string]autocaps.State) (
-	*dep.SoftwareFeatures, error) {
+	*protocol.SoftwareFeatures, error) {
 	var available, unavailable []string
 	for ft, es := range definitions {
 		if strings.HasPrefix(ft, autotestCapPrefix) {
@@ -166,7 +166,7 @@ func determineSoftwareFeatures(definitions map[string]string, useFlags []string,
 
 	sort.Strings(available)
 	sort.Strings(unavailable)
-	return &dep.SoftwareFeatures{Available: available, Unavailable: unavailable}, nil
+	return &protocol.SoftwareFeatures{Available: available, Unavailable: unavailable}, nil
 }
 
 // newDeviceConfigAndHardwareFeatures returns a device.Config and api.HardwareFeatures instances

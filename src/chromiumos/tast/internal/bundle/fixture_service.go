@@ -14,7 +14,6 @@ import (
 	"github.com/golang/protobuf/ptypes/empty"
 	"google.golang.org/grpc"
 
-	"chromiumos/tast/internal/dep"
 	"chromiumos/tast/internal/planner"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testcontext"
@@ -138,9 +137,9 @@ func pushAndPop(srv FixtureService_RunFixtureServer) (retErr error) {
 			// TODO(oka): fill Meta field.
 		},
 		DownloadMode: downloadMode,
-		Features: dep.Features{
-			Var: r.Config.TestVars,
-			Software: &dep.SoftwareFeatures{
+		Features: &protocol.Features{
+			Vars: r.Config.TestVars,
+			Software: &protocol.SoftwareFeatures{
 				Available:   r.Config.AvailableSoftwareFeatures,
 				Unavailable: r.Config.UnavailableSoftwareFeatures,
 			},

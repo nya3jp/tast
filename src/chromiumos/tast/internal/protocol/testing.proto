@@ -9,7 +9,17 @@ package tast.core;
 import "google/protobuf/duration.proto";
 import "google/protobuf/timestamp.proto";
 
+import "features.proto";
+
 option go_package = "chromiumos/tast/internal/protocol";
+
+service TestService {
+  rpc ListEntities(ListEntitiesRequest) returns (ListEntitiesResponse) {}
+}
+
+message ListEntitiesRequest { Features features = 1; }
+
+message ListEntitiesResponse { repeated ResolvedEntity entities = 1; }
 
 // EntityType represents a type of an entity.
 enum EntityType {
@@ -63,6 +73,13 @@ message ErrorLocation {
   string file = 1;
   int64 line = 2;
   string stack = 3;
+}
+
+// ResolvedEntity is similar to Entity, but contains additional fields computed
+// from an original Entity and run time information.
+message ResolvedEntity {
+  Entity entity = 1;
+  Skip skip = 2;
 }
 
 // RunLogEvent indicates that an informational log message not associated with

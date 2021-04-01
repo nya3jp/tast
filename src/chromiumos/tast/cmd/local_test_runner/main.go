@@ -128,7 +128,9 @@ func main() {
 			"igt":                     `("video_cards_amdgpu" || "video_cards_intel") && "kernel-5_4"`,
 			"iioservice":              "iioservice",
 			"iwlwifi_rescan":          "iwlwifi_rescan",
-			"lacros":                  "!arm && !arm64", // TODO(crbug.com/1144013): Expand this to include arm as well.
+			"lacros":                  "!arm && !arm64",                       // TODO(crbug.com/1144013): Expand this (and below lacros_*) to include arm as well.
+			"lacros_stable":           "!arm && !arm64 && !tast_vm && !betty", // TODO(b/183969803): Remove this.
+			"lacros_unstable":         "!arm && !arm64 && (tast_vm || betty)", // TODO(b/183969803): Remove this.
 			"lock_core_pattern":       `"kernel-3_10" || "kernel-3_14" || "kernel-3_18"`,
 			"manatee":                 "manatee",
 			// QEMU has implemented memfd_create, but we haven't updated

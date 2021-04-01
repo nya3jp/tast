@@ -101,7 +101,8 @@ The following software features are defined:
 *   `iwlwifi_rescan` - Ability to remove/rescan WiFi PCI device when the
     hardware becomes non-responsive.
 *   `lacros` - Whether the system supports running [lacros].
-    implementation is not supported/enabled, hence using the legacy one.
+*   `lacros_stable` - Whether the system supports running [lacros] and is stable enough for CQ. [TODO: Remove this.](b/183969803)
+*   `lacros_unstable` - Whether the system supports running [lacros] and is not stable enough for CQ. [TODO: Remove this.](b/183969803)
 *   `lock_core_pattern` - Ability to lock down |core_pattern| from further
     modifications.
 *   `manatee` - The system is running a ManaTEE image.

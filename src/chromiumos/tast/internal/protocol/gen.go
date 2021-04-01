@@ -9,7 +9,7 @@
 //go:generate protoc --go_out=plugins=grpc:../../../.. -I . handshake.proto
 //go:generate protoc --go_out=plugins=grpc:../../../.. -I . logging.proto
 //go:generate protoc --go_out=plugins=grpc:../../../.. -I . reports.proto
-//go:generate protoc --go_out=plugins=grpc:../../../.. -I . testing.proto
+//go:generate protoc --go_out=plugins=grpc:../../../.. -I . -I ../../../../../proto/infra -I ../../../../../../../config/proto testing.proto
 
 package protocol
 

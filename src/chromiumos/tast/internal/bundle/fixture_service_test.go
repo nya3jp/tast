@@ -16,6 +16,7 @@ import (
 	"github.com/golang/protobuf/ptypes"
 	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/google/go-cmp/cmp"
+	"google.golang.org/grpc"
 
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/rpc"
@@ -62,7 +63,10 @@ func startFakeFixtureService(ctx context.Context, t *gotesting.T) (rfcl FixtureS
 
 	stopped := make(chan error, 1)
 	go func() {
-		stopped <- rpc.RunServer(sr, sw, nil, registerFixtureService)
+		stopped <- rpc.RunServer(sr, sw, nil, func(srv *grpc.Server, req *protocol.HandshakeRequest) error {
+			registerFixtureService(srv)
+			return nil
+		})
 	}()
 
 	var stopFunc []func()

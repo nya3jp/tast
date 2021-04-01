@@ -52,6 +52,24 @@
       "parentUuid": "5ca7d493_e49c1738",
       "revId": "6a2ed1d1b4218a547280b731a91c12c0311522f1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "94dc6ff8_102fbded",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 131,
+      "author": {
+        "id": 1179631
+      },
+      "writtenOn": "2021-04-01T07:52:42Z",
+      "side": 1,
+      "message": "Sorry, I thought you meant the comment. Done.",
+      "parentUuid": "f80fc62f_28210743",
+      "revId": "6a2ed1d1b4218a547280b731a91c12c0311522f1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

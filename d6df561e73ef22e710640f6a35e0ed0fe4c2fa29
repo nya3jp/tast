@@ -39,6 +39,30 @@
       },
       "revId": "d6df561e73ef22e710640f6a35e0ed0fe4c2fa29",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5d5b55c4_51aa00fb",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 388,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-04-01T15:06:26Z",
+      "side": 1,
+      "message": "This needed to be float64 for using math.Round, originally hoping that we are more likely to get 32 for the devices which are usually said to be \"32GB\".\nHowever now I\u0027ve noticed that mmcblk0 of my caroline device is 31,268,536,320 bytes, which will be still rounded to \"31GB\". There is not much benefit by rounding.\nSo changed to apply the simple truncation.",
+      "parentUuid": "55f29a3f_0562812e",
+      "range": {
+        "startLine": 388,
+        "startChar": 28,
+        "endLine": 388,
+        "endChar": 35
+      },
+      "revId": "d6df561e73ef22e710640f6a35e0ed0fe4c2fa29",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

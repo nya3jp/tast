@@ -317,6 +317,17 @@ third_party/autotest/files/server/site_tests/tast/control.runtime-probe
 		},
 	},
 	{
+		Name:     "cellular_multisim",
+		Contacts: []string{"chromeos-cellular-team@google.com"},
+		Desc:     `The group of Cellular tests to be run on hardware with a builtin Cellular modem, a provisioned pSIM slot, and an eSIM slot with multiple provisioned profiles.`,
+		Subattrs: []*attr{
+			{
+				Name: "cellular_multisim_unstable",
+				Desc: `Identifies multisim Cellular tests that are unstable. Used to skip tests running on stable suites and/or the CQ.`,
+			},
+		},
+	},
+	{
 		Name:     "meta",
 		Contacts: []string{"tast-owners@google.com"},
 		Desc: `A group of functional tests of the Tast framework itself.

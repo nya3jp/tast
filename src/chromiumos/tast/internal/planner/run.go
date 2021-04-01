@@ -125,19 +125,20 @@ type plan struct {
 }
 
 type skippedTest struct {
-	test   *testing.TestInstance
-	result *testing.ShouldRunResult
+	test    *testing.TestInstance
+	reasons []string
+	err     error
 }
 
 func buildPlan(tests []*testing.TestInstance, pcfg *Config) (*plan, error) {
 	var runs []*testing.TestInstance
 	var skips []*skippedTest
 	for _, t := range tests {
-		r := t.ShouldRun(&pcfg.Features)
-		if r.OK() {
+		reasons, err := t.Deps().Check(&pcfg.Features)
+		if err == nil && len(reasons) == 0 {
 			runs = append(runs, t)
 		} else {
-			skips = append(skips, &skippedTest{test: t, result: r})
+			skips = append(skips, &skippedTest{test: t, reasons: reasons, err: err})
 		}
 	}
 	sort.Slice(skips, func(i, j int) bool {
@@ -183,7 +184,7 @@ func (p *plan) run(ctx context.Context, out OutputStream) error {
 
 	for _, s := range p.skips {
 		tout := newEntityOutputStream(out, s.test.EntityProto())
-		reportSkippedTest(tout, s.result)
+		reportSkippedTest(tout, s.reasons, s.err)
 	}
 
 	if err := p.fixtPlan.run(ctx, out, dl); err != nil {
@@ -826,19 +827,26 @@ func reportOrphanTest(tout *entityOutputStream, missingFixtName string) {
 
 // reportSkippedTest is called instead of runTest for a test that is skipped due to
 // having unsatisfied dependencies.
-func reportSkippedTest(tout *entityOutputStream, result *testing.ShouldRunResult) {
+func reportSkippedTest(tout *entityOutputStream, reasons []string, err error) {
 	tout.Start("")
-	for _, msg := range result.Errors {
-		_, fn, ln, _ := runtime.Caller(0)
-		tout.Error(&protocol.Error{
-			Reason: msg,
-			Location: &protocol.ErrorLocation{
-				File: fn,
-				Line: int64(ln),
-			},
-		})
+	if err == nil {
+		tout.End(reasons, nil)
+		return
 	}
-	tout.End(result.SkipReasons, nil)
+
+	_, fn, ln, _ := runtime.Caller(0)
+	tout.Error(&protocol.Error{
+		Reason: err.Error(),
+		Location: &protocol.ErrorLocation{
+			File: fn,
+			Line: int64(ln),
+		},
+	})
+	// Do not report a test as skipped if we encounter errors while checking
+	// dependencies. There is ambiguity if a test is skipped while reporting
+	// errors, and in the worst case, dependency check errors can be
+	// silently discarded.
+	tout.End(nil, nil)
 }
 
 // dumpGoroutines dumps all goroutines to tout.

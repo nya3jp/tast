@@ -375,7 +375,7 @@ func TestRunTestsMissingDeps(t *gotesting.T) {
 	}{
 		{validName, true, false, false},
 		{missingName, false, false, true},
-		{unregName, false, true, true},
+		{unregName, false, true, false},
 	} {
 		if testRan[tc.name] && !tc.shouldRun {
 			t.Errorf("%v ran unexpectedly", tc.name)

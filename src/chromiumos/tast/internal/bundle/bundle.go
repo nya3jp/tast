@@ -102,9 +102,12 @@ func run(ctx context.Context, clArgs []string, stdin io.Reader, stdout, stderr i
 		var infos []*jsonprotocol.EntityWithRunnabilityInfo
 		features := args.ListTests.Features()
 		for _, test := range tests {
+			// If we encounter errors while checking test dependencies,
+			// treat the test as not skipped. When we actually try to
+			// run the test later, it will fail with errors.
 			var skipReason string
-			if r := test.ShouldRun(features); !r.OK() {
-				skipReason = strings.Join(append(append([]string(nil), r.SkipReasons...), r.Errors...), ", ")
+			if reasons, err := test.Deps().Check(features); err == nil && len(reasons) > 0 {
+				skipReason = strings.Join(append([]string(nil), reasons...), ", ")
 			}
 			infos = append(infos, &jsonprotocol.EntityWithRunnabilityInfo{
 				EntityInfo: *jsonprotocol.MustEntityInfoFromProto(test.EntityProto()),

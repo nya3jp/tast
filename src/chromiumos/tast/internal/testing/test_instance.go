@@ -403,17 +403,12 @@ func (t *TestInstance) String() string {
 	return t.Name
 }
 
-// ShouldRunResult represents the result of the check whether to run a test.
-type ShouldRunResult = dep.CheckResult
-
-// ShouldRun returns whether this test should run under the current testing environment.
-// In case of not, in addition, the reason why it should be skipped is also returned.
-func (t *TestInstance) ShouldRun(f *dep.Features) *ShouldRunResult {
-	deps := dep.Deps{
-		Software: t.SoftwareDeps,
+// Deps dependencies of this test.
+func (t *TestInstance) Deps() *dep.Deps {
+	return &dep.Deps{
+		Software: append([]string(nil), t.SoftwareDeps...),
 		Hardware: t.HardwareDeps,
 	}
-	return deps.Check(f)
 }
 
 // Proto converts test metadata of TestInstance into a protobuf message.

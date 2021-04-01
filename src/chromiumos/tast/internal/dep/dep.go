@@ -8,6 +8,8 @@ package dep
 import (
 	"fmt"
 	"strings"
+
+	"chromiumos/tast/errors"
 )
 
 // Features conveys actual values test dependencies are checked against.
@@ -33,26 +35,10 @@ type Deps struct {
 	Hardware HardwareDeps
 }
 
-// CheckResult represents the result of the check whether to run a test.
-type CheckResult struct {
-	// SkipReasons contains a list of messages describing why some dependencies
-	// were not satisfied. They should be reported as informational logs.
-	SkipReasons []string
-
-	// Errors contains a list of messages describing errors encountered while
-	// evaluating dependencies. They should be reported as test errors.
-	Errors []string
-}
-
-// OK returns whether to run the test.
-func (r *CheckResult) OK() bool {
-	return len(r.SkipReasons) == 0 && len(r.Errors) == 0
-}
-
-// Check returns whether d is satisfied on f.
-func (d *Deps) Check(f *Features) *CheckResult {
-	var reasons []string
-	var errs []string
+// Check performs dependency checks according to given features.
+// On success, it returns a list of reasons for which a test should be skipped.
+// If reasons is empty, a test should be run.
+func (d *Deps) Check(f *Features) (reasons []string, err error) {
 	if f.Var != nil {
 		for _, v := range d.Var {
 			if _, ok := f.Var[v]; !ok {
@@ -62,11 +48,11 @@ func (d *Deps) Check(f *Features) *CheckResult {
 	}
 	if f.Software != nil {
 		missing, unknown := missingSoftwareDeps(d.Software, f.Software)
+		if len(unknown) > 0 {
+			return nil, errors.Errorf("unknown SoftwareDeps: %v", strings.Join(unknown, ", "))
+		}
 		if len(missing) > 0 {
 			reasons = append(reasons, fmt.Sprintf("missing SoftwareDeps: %s", strings.Join(missing, ", ")))
-		}
-		if len(unknown) > 0 {
-			errs = append(errs, fmt.Sprintf("unknown SoftwareDeps: %v", strings.Join(unknown, ", ")))
 		}
 	}
 	if f.Hardware != nil {
@@ -76,5 +62,5 @@ func (d *Deps) Check(f *Features) *CheckResult {
 			}
 		}
 	}
-	return &CheckResult{SkipReasons: reasons, Errors: errs}
+	return reasons, nil
 }

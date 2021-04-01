@@ -92,6 +92,8 @@ func (m *ListEntitiesRequest) GetFeatures() *Features {
 }
 
 type ListEntitiesResponse struct {
+	// Entities is a list of entities available on the server. The order of
+	// entities is unspecified.
 	Entities             []*ResolvedEntity `protobuf:"bytes,1,rep,name=entities,proto3" json:"entities,omitempty"`
 	XXX_NoUnkeyedLiteral struct{}          `json:"-"`
 	XXX_unrecognized     []byte            `json:"-"`
@@ -958,6 +960,7 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type TestServiceClient interface {
+	// ListEntities requests all entities available on the server.
 	ListEntities(ctx context.Context, in *ListEntitiesRequest, opts ...grpc.CallOption) (*ListEntitiesResponse, error)
 }
 
@@ -980,6 +983,7 @@ func (c *testServiceClient) ListEntities(ctx context.Context, in *ListEntitiesRe
 
 // TestServiceServer is the server API for TestService service.
 type TestServiceServer interface {
+	// ListEntities requests all entities available on the server.
 	ListEntities(context.Context, *ListEntitiesRequest) (*ListEntitiesResponse, error)
 }
 

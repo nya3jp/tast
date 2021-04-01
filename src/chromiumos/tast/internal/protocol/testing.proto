@@ -14,12 +14,17 @@ import "features.proto";
 option go_package = "chromiumos/tast/internal/protocol";
 
 service TestService {
+  // ListEntities requests all entities available on the server.
   rpc ListEntities(ListEntitiesRequest) returns (ListEntitiesResponse) {}
 }
 
 message ListEntitiesRequest { Features features = 1; }
 
-message ListEntitiesResponse { repeated ResolvedEntity entities = 1; }
+message ListEntitiesResponse {
+  // Entities is a list of entities available on the server. The order of
+  // entities is unspecified.
+  repeated ResolvedEntity entities = 1;
+}
 
 // EntityType represents a type of an entity.
 enum EntityType {

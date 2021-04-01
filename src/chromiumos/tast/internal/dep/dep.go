@@ -10,23 +10,8 @@ import (
 	"strings"
 
 	"chromiumos/tast/errors"
+	"chromiumos/tast/internal/protocol"
 )
-
-// Features conveys actual values test dependencies are checked against.
-// TODO(oka): rename the struct name.
-type Features struct {
-	// Var contains runtime variables.
-	// If it is nil, variable dependency checks should not be performed.
-	Var map[string]string
-
-	// Software contains information about software features.
-	// If it is nil, software dependency checks should not be performed.
-	Software *SoftwareFeatures
-
-	// Hardware contains information about hardware features.
-	// If it is nil, hardware dependency checks should not be performed.
-	Hardware *HardwareFeatures
-}
 
 // Deps contains all information about dependencies tests have.
 type Deps struct {
@@ -38,16 +23,16 @@ type Deps struct {
 // Check performs dependency checks according to given features.
 // On success, it returns a list of reasons for which a test should be skipped.
 // If reasons is empty, a test should be run.
-func (d *Deps) Check(f *Features) (reasons []string, err error) {
-	if f.Var != nil {
-		for _, v := range d.Var {
-			if _, ok := f.Var[v]; !ok {
-				reasons = append(reasons, fmt.Sprintf("var %s not provided", v))
-			}
+func (d *Deps) Check(f *protocol.Features) (reasons []string, err error) {
+	vars := f.GetVars()
+	for _, v := range d.Var {
+		if _, ok := vars[v]; !ok {
+			reasons = append(reasons, fmt.Sprintf("var %s not provided", v))
 		}
 	}
-	if f.Software != nil {
-		missing, unknown := missingSoftwareDeps(d.Software, f.Software)
+
+	if sf := f.GetSoftware(); sf != nil {
+		missing, unknown := missingSoftwareDeps(d.Software, sf)
 		if len(unknown) > 0 {
 			return nil, errors.Errorf("unknown SoftwareDeps: %v", strings.Join(unknown, ", "))
 		}
@@ -55,12 +40,14 @@ func (d *Deps) Check(f *Features) (reasons []string, err error) {
 			reasons = append(reasons, fmt.Sprintf("missing SoftwareDeps: %s", strings.Join(missing, ", ")))
 		}
 	}
-	if f.Hardware != nil {
-		if err := d.Hardware.Satisfied(f.Hardware); err != nil {
+
+	if hf := f.GetHardware(); hf != nil {
+		if err := d.Hardware.Satisfied(hf); err != nil {
 			for _, r := range err.Reasons {
 				reasons = append(reasons, r.Error())
 			}
 		}
 	}
+
 	return reasons, nil
 }

@@ -22,14 +22,14 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/fakerunner"
 	"chromiumos/tast/cmd/tast/internal/run/target"
 	"chromiumos/tast/internal/bundle"
-	"chromiumos/tast/internal/dep"
+	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/runner"
 )
 
 // writeGetDUTInfoResult writes runner.GetDUTInfoResult to w.
 func writeGetDUTInfoResult(w io.Writer, avail, unavail []string, dc *device.Config, hf *configpb.HardwareFeatures, osVersion, defaultBuildArtifactsURL string) error {
 	res := runner.GetDUTInfoResult{
-		SoftwareFeatures: &dep.SoftwareFeatures{
+		SoftwareFeatures: &protocol.SoftwareFeatures{
 			Available:   avail,
 			Unavailable: unavail,
 		},

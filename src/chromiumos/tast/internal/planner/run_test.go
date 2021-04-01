@@ -20,7 +20,6 @@ import (
 	"github.com/google/go-cmp/cmp"
 
 	"chromiumos/tast/errors"
-	"chromiumos/tast/internal/dep"
 	"chromiumos/tast/internal/devserver/devservertest"
 	"chromiumos/tast/internal/extdata"
 	"chromiumos/tast/internal/protocol"
@@ -549,8 +548,8 @@ func TestRunExternalData(t *gotesting.T) {
 
 			pcfg := &Config{
 				DataDir: dataDir,
-				Features: dep.Features{
-					Software: &dep.SoftwareFeatures{
+				Features: &protocol.Features{
+					Software: &protocol.SoftwareFeatures{
 						Available:   []string{"dep2"},
 						Unavailable: []string{"dep1"},
 					},
@@ -1194,8 +1193,8 @@ func TestRunFixtureVars(t *gotesting.T) {
 
 	cfg := &Config{
 		Fixtures: map[string]*testing.Fixture{fixt.Name: fixt},
-		Features: dep.Features{
-			Var: map[string]string{
+		Features: &protocol.Features{
+			Vars: map[string]string{
 				declaredVarName:   declaredVarValue,
 				undeclaredVarName: "forbidden",
 			},
@@ -1431,8 +1430,8 @@ func TestRunPlan(t *gotesting.T) {
 	fixt1 := &testing.Fixture{Name: "fixt1", Impl: newFakeFixture()}
 	fixt2 := &testing.Fixture{Name: "fixt2", Impl: newFakeFixture(), Parent: "fixt1"}
 	cfg := &Config{
-		Features: dep.Features{
-			Software: &dep.SoftwareFeatures{
+		Features: &protocol.Features{
+			Software: &protocol.SoftwareFeatures{
 				Available:   []string{"yes"},
 				Unavailable: []string{"no"},
 			},

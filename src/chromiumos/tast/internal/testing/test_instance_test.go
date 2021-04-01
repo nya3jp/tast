@@ -22,7 +22,6 @@ import (
 	testpb "go.chromium.org/chromiumos/config/go/api/test/metadata/v1"
 	"go.chromium.org/chromiumos/infra/proto/go/device"
 
-	"chromiumos/tast/internal/dep"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/testing/hwdep"
 )
@@ -51,7 +50,7 @@ func (p *fakePre) Timeout() time.Duration { return time.Minute }
 
 func (p *fakePre) String() string { return p.name }
 
-func features(availableSWs []string, model string) *dep.Features {
+func features(availableSWs []string, model string) *protocol.Features {
 	availableSWSet := make(map[string]struct{})
 	for _, dep := range availableSWs {
 		availableSWSet[dep] = struct{}{}
@@ -64,13 +63,13 @@ func features(availableSWs []string, model string) *dep.Features {
 		}
 	}
 
-	return &dep.Features{
-		Software: &dep.SoftwareFeatures{
+	return &protocol.Features{
+		Software: &protocol.SoftwareFeatures{
 			Available:   availableSWs,
 			Unavailable: unavailableSWs,
 		},
-		Hardware: &dep.HardwareFeatures{
-			DC: &device.Config{
+		Hardware: &protocol.HardwareFeatures{
+			DeprecatedDeviceConfig: &device.Config{
 				Id: &device.ConfigId{
 					ModelId: &device.ModelId{
 						Value: model,

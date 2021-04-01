@@ -6,16 +6,9 @@ package dep
 
 import (
 	"sort"
+
+	"chromiumos/tast/internal/protocol"
 )
-
-// SoftwareFeatures contains information about software features of the DUT.
-type SoftwareFeatures struct {
-	// Available contains a list of software features supported by the DUT.
-	Available []string
-
-	// Unavailable contains a list of software features not supported by the DUT.
-	Unavailable []string
-}
 
 // SoftwareDeps represents dependencies to software features.
 type SoftwareDeps = []string
@@ -24,16 +17,16 @@ type SoftwareDeps = []string
 // that aren't present on the DUT (per the passed-in features list).
 // unknown is a sorted list of unknown software features. It is always a subset
 // of missing.
-func missingSoftwareDeps(deps SoftwareDeps, features *SoftwareFeatures) (missing, unknown []string) {
+func missingSoftwareDeps(deps SoftwareDeps, features *protocol.SoftwareFeatures) (missing, unknown []string) {
 DepLoop:
 	for _, d := range deps {
-		for _, f := range features.Available {
+		for _, f := range features.GetAvailable() {
 			if d == f {
 				continue DepLoop
 			}
 		}
 		missing = append(missing, d)
-		for _, f := range features.Unavailable {
+		for _, f := range features.GetUnavailable() {
 			if d == f {
 				continue DepLoop
 			}

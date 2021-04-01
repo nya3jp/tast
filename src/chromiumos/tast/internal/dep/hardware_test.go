@@ -8,18 +8,19 @@ import (
 	"testing"
 
 	"chromiumos/tast/errors"
+	"chromiumos/tast/internal/protocol"
 )
 
 // success returns a HardwareCondition that is always satisfied.
 func success() HardwareCondition {
-	return HardwareCondition{Satisfied: func(f *HardwareFeatures) error {
+	return HardwareCondition{Satisfied: func(f *protocol.HardwareFeatures) error {
 		return nil
 	}}
 }
 
 // fail returns a HardwareCondition that always fail to be satisfied.
 func fail() HardwareCondition {
-	return HardwareCondition{Satisfied: func(f *HardwareFeatures) error {
+	return HardwareCondition{Satisfied: func(f *protocol.HardwareFeatures) error {
 		return errors.New("failed")
 	}}
 }
@@ -36,7 +37,7 @@ func TestHardwareDepsSuccess(t *testing.T) {
 	if err := d.Validate(); err != nil {
 		t.Fatal("Unexpected validation error: ", err)
 	}
-	if err := d.Satisfied(&HardwareFeatures{}); err != nil {
+	if err := d.Satisfied(&protocol.HardwareFeatures{}); err != nil {
 		t.Error("Unexpected fail: ", err)
 	}
 }
@@ -46,7 +47,7 @@ func TestHardwareDepsFail(t *testing.T) {
 	if err := d.Validate(); err != nil {
 		t.Fatal("Unexpected validateion error: ", err)
 	}
-	if err := d.Satisfied(&HardwareFeatures{}); err == nil {
+	if err := d.Satisfied(&protocol.HardwareFeatures{}); err == nil {
 		t.Error("Unexpected success")
 	}
 }
@@ -57,14 +58,14 @@ func TestHardwareDepsInvalid(t *testing.T) {
 		t.Error("Unexpected validation pass")
 	}
 	// Make sure d.Satisfied() won't crash.
-	if err := d.Satisfied(&HardwareFeatures{}); err == nil {
+	if err := d.Satisfied(&protocol.HardwareFeatures{}); err == nil {
 		t.Error("Unexpected success")
 	}
 }
 
 func TestHardwareDepsMultipleCondition(t *testing.T) {
 	d := NewHardwareDeps(success(), fail())
-	if err := d.Satisfied(&HardwareFeatures{}); err == nil {
+	if err := d.Satisfied(&protocol.HardwareFeatures{}); err == nil {
 		t.Error("Unexpected success")
 	} else if len(err.Reasons) != 1 {
 		t.Errorf("Unexpected number of reasons: got %+v", err.Reasons)
@@ -76,7 +77,7 @@ func TestMergeHardwareDeps(t *testing.T) {
 	d2 := NewHardwareDeps(fail())
 	d := MergeHardwareDeps(d1, d2)
 
-	if err := d.Satisfied(&HardwareFeatures{}); err == nil {
+	if err := d.Satisfied(&protocol.HardwareFeatures{}); err == nil {
 		t.Error("Unexpected success")
 	} else if len(err.Reasons) != 1 {
 		t.Errorf("Unexpected number of reasons: got %+v", err.Reasons)

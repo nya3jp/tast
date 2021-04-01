@@ -25,7 +25,6 @@ import (
 	"chromiumos/tast/cmd/tast/internal/logging"
 	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
 	"chromiumos/tast/internal/command"
-	"chromiumos/tast/internal/dep"
 	"chromiumos/tast/internal/planner"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/runner"
@@ -144,7 +143,7 @@ type State struct {
 	TargetArch               string                     // architecture of target userland (usually given by "uname -m", but may be different)
 	StartedRun               bool                       // true if we got to the point where we started trying to execute tests
 	InitialSysInfo           *runner.SysInfoState       // initial state of system info (logs, crashes, etc.) on DUT before testing
-	SoftwareFeatures         *dep.SoftwareFeatures      // software features of the DUT
+	SoftwareFeatures         *protocol.SoftwareFeatures // software features of the DUT
 	DeviceConfig             *device.Config             // hardware features of the DUT. Deprecated. Use HardwareFeatures instead.
 	HardwareFeatures         *configpb.HardwareFeatures // hardware features of the DUT.
 	OSVersion                string                     // Chrome OS Version

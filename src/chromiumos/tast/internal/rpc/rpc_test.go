@@ -88,8 +88,9 @@ func newPingPair(ctx context.Context, t *gotesting.T, req *protocol.HandshakeReq
 
 	stopped := make(chan error, 1)
 	go func() {
-		stopped <- RunServer(sr, sw, []*testing.Service{pingSvc}, func(srv *grpc.Server) {
+		stopped <- RunServer(sr, sw, []*testing.Service{pingSvc}, func(srv *grpc.Server, req *protocol.HandshakeRequest) error {
 			protocol.RegisterPingCoreServer(srv, &pingCoreServer{})
+			return nil
 		})
 	}()
 	stopServer := func() error {

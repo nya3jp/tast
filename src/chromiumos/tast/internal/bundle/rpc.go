@@ -9,13 +9,15 @@ import (
 
 	"google.golang.org/grpc"
 
+	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/rpc"
 	"chromiumos/tast/internal/testing"
 )
 
 // RunRPCServer runs the bundle as an RPC server.
 func RunRPCServer(r io.Reader, w io.Writer, svcs []*testing.Service) error {
-	return rpc.RunServer(r, w, svcs, func(srv *grpc.Server) {
+	return rpc.RunServer(r, w, svcs, func(srv *grpc.Server, req *protocol.HandshakeRequest) error {
 		registerFixtureService(srv)
+		return nil
 	})
 }

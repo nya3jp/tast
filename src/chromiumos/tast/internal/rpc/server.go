@@ -7,7 +7,6 @@ package rpc
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -17,6 +16,7 @@ import (
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/reflection"
 
+	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/testing"
@@ -29,7 +29,7 @@ import (
 // HandshakeRequest.
 // RunServer blocks until the client connection is closed or it encounters an
 // error.
-func RunServer(r io.Reader, w io.Writer, svcs []*testing.Service, register func(srv *grpc.Server)) error {
+func RunServer(r io.Reader, w io.Writer, svcs []*testing.Service, register func(srv *grpc.Server, req *protocol.HandshakeRequest) error) error {
 	var req protocol.HandshakeRequest
 	if err := receiveRawMessage(r, &req); err != nil {
 		return err
@@ -44,7 +44,7 @@ func RunServer(r io.Reader, w io.Writer, svcs []*testing.Service, register func(
 	reflection.Register(srv)
 	protocol.RegisterLoggingServer(srv, ls)
 	protocol.RegisterFileTransferServer(srv, newFileTransferServer())
-	register(srv)
+	regErr := register(srv, &req)
 
 	// Create a server-scoped context.
 	ctx, cancel := context.WithCancel(context.Background())
@@ -57,6 +57,17 @@ func RunServer(r io.Reader, w io.Writer, svcs []*testing.Service, register func(
 		for _, svc := range svcs {
 			svc.Register(srv, testing.NewServiceState(ctx, testing.NewServiceRoot(svc, vars)))
 		}
+	}
+
+	if regErr != nil {
+		err := errors.Wrap(regErr, "gRPC server initialization failed")
+		res := &protocol.HandshakeResponse{
+			Error: &protocol.HandshakeError{
+				Reason: fmt.Sprintf("gRPC server initialization failed: %v", err),
+			},
+		}
+		sendRawMessage(w, res)
+		return err
 	}
 
 	if err := sendRawMessage(w, &protocol.HandshakeResponse{}); err != nil {

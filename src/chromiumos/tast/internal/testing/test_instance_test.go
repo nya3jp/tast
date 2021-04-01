@@ -124,11 +124,19 @@ func TestInstantiate(t *gotesting.T) {
 		if got[0].Func == nil {
 			t.Error("Got nil Func")
 		}
-		if result := got[0].ShouldRun(features([]string{"dep1", "dep2"}, "model1")); !result.OK() {
-			t.Error("Got unexpected HardwareDeps: ShouldRun returned false for model1: ", result)
+		reasons, err := got[0].Deps().Check(features([]string{"dep1", "dep2"}, "model1"))
+		if err != nil {
+			t.Fatal("Check failed: ", err)
 		}
-		if result := got[0].ShouldRun(features([]string{"dep1", "dep2"}, "modelX")); result.OK() {
-			t.Error("Got unexpected HardwareDeps: ShouldRun returned true for modelX")
+		if len(reasons) > 0 {
+			t.Error("Got unexpected HardwareDeps: Check returns skip reasons for model1: ", reasons)
+		}
+		reasons, err = got[0].Deps().Check(features([]string{"dep1", "dep2"}, "modelX"))
+		if err != nil {
+			t.Fatal("Check failed: ", err)
+		}
+		if len(reasons) == 0 {
+			t.Error("Got unexpected HardwareDeps: Check returned no skip reason for modelX")
 		}
 	}
 }
@@ -200,20 +208,27 @@ func TestInstantiateParams(t *gotesting.T) {
 		if got[0].Func == nil {
 			t.Error("Got nil Func for the first test instance")
 		}
-		if result := got[0].ShouldRun(features([]string{"dep0", "dep1"}, "model1")); !result.OK() {
-			t.Error("Got unexpected HardwareDeps for first test instance: ShouldRun returned false for model1: ", result)
+		reasons, err := got[0].Deps().Check(features([]string{"dep0", "dep1"}, "model1"))
+		if err != nil {
+			t.Fatal("Check failed: ", err)
 		}
-		if result := got[0].ShouldRun(features([]string{"dep0", "dep1"}, "model2")); result.OK() {
-			t.Error("Got unexpected HardwareDeps for first test instance: ShouldRun returned true for model2")
+		if len(reasons) > 0 {
+			t.Error("Got unexpected HardwareDeps for first test instance: Check returned skip reasons for model1: ", reasons)
+		}
+		reasons, err = got[0].Deps().Check(features([]string{"dep0", "dep1"}, "model2"))
+		if len(reasons) == 0 {
+			t.Error("Got unexpected HardwareDeps for first test instance: Check returned no skip reason for model2")
 		}
 		if got[1].Func == nil {
 			t.Error("Got nil Func for the second test instance")
 		}
-		if result := got[1].ShouldRun(features([]string{"dep0", "dep2"}, "model2")); !result.OK() {
-			t.Error("Got unexpected HardwareDeps for second test instance: ShouldRun returned false for model2: ", result)
+		reasons, err = got[1].Deps().Check(features([]string{"dep0", "dep2"}, "model2"))
+		if len(reasons) > 0 {
+			t.Error("Got unexpected HardwareDeps for second test instance: Check returned skip reasons for model2: ", reasons)
 		}
-		if result := got[1].ShouldRun(features([]string{"dep0", "dep2"}, "model1")); result.OK() {
-			t.Error("Got unexpected HardwareDeps for second test instance: ShouldRun returned true for model1")
+		reasons, err = got[1].Deps().Check(features([]string{"dep0", "dep2"}, "model1"))
+		if len(reasons) == 0 {
+			t.Error("Got unexpected HardwareDeps for second test instance: Check returned no skip reason for model1")
 		}
 	}
 }
@@ -629,22 +644,25 @@ func TestInstantiateNonPointerPrecondition(t *gotesting.T) {
 
 func TestSoftwareDeps(t *gotesting.T) {
 	test := TestInstance{SoftwareDeps: []string{"dep3", "dep1", "dep2", "depX"}}
-	got := test.ShouldRun(features([]string{"dep0", "dep2", "dep4"}, "eve"))
-	want := &ShouldRunResult{
-		SkipReasons: []string{"missing SoftwareDeps: dep1, dep3, depX"},
-		Errors:      []string{"unknown SoftwareDeps: depX"},
+	_, err := test.Deps().Check(features([]string{"dep0", "dep2", "dep4"}, "eve"))
+	if err == nil {
+		t.Fatal("Check succeeded; want error")
 	}
-	if !reflect.DeepEqual(got, want) {
-		t.Errorf("ShouldRun() = %+v; want %+v", got, want)
+	const want = "unknown SoftwareDeps: depX"
+	if err.Error() != want {
+		t.Errorf("Check: %v; want %q", err, want)
 	}
 }
 
 func TestHardwareDeps(t *gotesting.T) {
 	test := TestInstance{HardwareDeps: hwdep.D(hwdep.Model("eve"))}
-	got := test.ShouldRun(features(nil, "samus"))
-	want := &ShouldRunResult{SkipReasons: []string{"ModelId did not match"}}
+	got, err := test.Deps().Check(features(nil, "samus"))
+	if err != nil {
+		t.Fatal("Check failed: ", err)
+	}
+	want := []string{"ModelId did not match"}
 	if !reflect.DeepEqual(got, want) {
-		t.Errorf("ShouldRun() = %+v; want %+v", got, want)
+		t.Errorf("Check() = %+v; want %+v", got, want)
 	}
 }
 

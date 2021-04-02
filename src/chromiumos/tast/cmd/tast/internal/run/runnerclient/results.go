@@ -788,7 +788,7 @@ func readTestOutput(ctx context.Context, cfg *config.Config, state *config.State
 // that failed to match any tests.
 func unmatchedTestPatterns(patterns, testNames []string) []string {
 	// TODO(derat): Consider also checking attribute expressions.
-	if testing.GetTestPatternType(patterns) != testing.TestPatternGlobs {
+	if m, err := testing.NewMatcher(patterns); err != nil || m.NeedAttrs() {
 		return nil
 	}
 

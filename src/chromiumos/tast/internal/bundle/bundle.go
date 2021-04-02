@@ -159,9 +159,15 @@ func run(ctx context.Context, clArgs []string, stdin io.Reader, stdout, stderr i
 
 // testsToRun returns a sorted list of tests to run for the given patterns.
 func testsToRun(scfg *staticConfig, patterns []string) ([]*testing.TestInstance, error) {
-	tests, err := testing.SelectTestsByArgs(testing.GlobalRegistry().AllTests(), patterns)
+	m, err := testing.NewMatcher(patterns)
 	if err != nil {
 		return nil, command.NewStatusErrorf(statusBadPatterns, "failed getting tests for %v: %v", patterns, err.Error())
+	}
+	var tests []*testing.TestInstance
+	for _, t := range testing.GlobalRegistry().AllTests() {
+		if m.Match(t.Name, t.Attr) {
+			tests = append(tests, t)
+		}
 	}
 	for _, tp := range tests {
 		if tp.Timeout == 0 {

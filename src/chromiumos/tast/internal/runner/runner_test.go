@@ -127,7 +127,7 @@ func runFakeBundle() int {
 		})
 	}
 
-	return bundle.Local(nil, os.Stdin, os.Stdout, os.Stderr, reg, bundle.Delegate{})
+	return bundle.Local(os.Args[1:], os.Stdin, os.Stdout, os.Stderr, reg, bundle.Delegate{})
 }
 
 // newBufferWithArgs returns a buffer containing the JSON representation of args.
@@ -564,38 +564,6 @@ func TestCheckDepsWhenRunManually(t *gotesting.T) {
 	if exp := []string{"neither"}; !reflect.DeepEqual(bundleArgs.RunTests.UnavailableSoftwareFeatures, exp) {
 		t.Errorf("%s would pass unavailable features %v; want %v",
 			sig, bundleArgs.RunTests.UnavailableSoftwareFeatures, exp)
-	}
-}
-
-func TestRunPrintBundleError(t *gotesting.T) {
-	// Without any tests, the bundle should report failure.
-	dir := createBundleSymlinks(t, []bool{})
-	defer os.RemoveAll(dir)
-
-	// parseArgs should report success, but it should write a RunError control message.
-	args := jsonprotocol.RunnerArgs{
-		Mode: jsonprotocol.RunnerRunTestsMode,
-		RunTests: &jsonprotocol.RunnerRunTestsArgs{
-			BundleGlob: filepath.Join(dir, "*"),
-		},
-	}
-	status, stdout, _, sig := callRun(t, nil, &args, nil, &Config{Type: LocalRunner})
-	if status != statusSuccess {
-		t.Errorf("%s = %v; want %v", sig, status, statusSuccess)
-	}
-
-	// The RunError control message should contain the error message that the bundle wrote to stderr.
-	var msg *control.RunError
-	for _, m := range readAllMessages(t, stdout) {
-		if re, ok := m.(*control.RunError); ok {
-			msg = re
-			break
-		}
-	}
-	if msg == nil {
-		t.Fatal("No RunError message for failed bundle")
-	} else if !strings.Contains(msg.Error.Reason, noTestsError) {
-		t.Fatalf("RunError message %q doesn't contain bundle stderr message %q", msg.Error.Reason, noTestsError)
 	}
 }
 

@@ -182,6 +182,30 @@
       },
       "revId": "d808e9af35098586f00459f6ea9f86e341b22a63",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0b707e97_a77d7dda",
+        "filename": "src/chromiumos/tast/internal/testing/test_instance.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-04-02T10:05:22Z",
+      "side": 1,
+      "message": "Sounds nice!",
+      "parentUuid": "3f8285b0_1cd99882",
+      "range": {
+        "startLine": 74,
+        "startChar": 1,
+        "endLine": 75,
+        "endChar": 22
+      },
+      "revId": "d808e9af35098586f00459f6ea9f86e341b22a63",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

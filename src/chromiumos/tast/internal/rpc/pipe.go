@@ -89,20 +89,20 @@ func (c *pipeConn) SetWriteDeadline(t time.Time) error {
 
 var _ net.Conn = (*pipeConn)(nil)
 
-// pipeListener is a pseudo net.Listener implementation based on io.Reader and
-// io.Writer. pipeListener's Accept returns exactly one net.Conn that is based
+// PipeListener is a pseudo net.Listener implementation based on io.Reader and
+// io.Writer. PipeListener's Accept returns exactly one net.Conn that is based
 // on the given io.Reader and io.Writer. When the connection is closed, Accept
 // returns io.EOF.
 //
-// pipeListener is suitable for running a gRPC server over a bidirectional pipe.
-type pipeListener struct {
+// PipeListener is suitable for running a gRPC server over a bidirectional pipe.
+type PipeListener struct {
 	ch chan *pipeConn
 }
 
-// NewPipeListener constructs a new pipeListener based on r and w.
-func NewPipeListener(r io.Reader, w io.Writer) *pipeListener {
+// NewPipeListener constructs a new PipeListener based on r and w.
+func NewPipeListener(r io.Reader, w io.Writer) *PipeListener {
 	connCh := make(chan *pipeConn, 1)
-	lis := &pipeListener{ch: connCh}
+	lis := &PipeListener{ch: connCh}
 	conn := &pipeConn{
 		r: r,
 		w: w,
@@ -115,8 +115,8 @@ func NewPipeListener(r io.Reader, w io.Writer) *pipeListener {
 	return lis
 }
 
-// Accept returns a connection. See the comment of pipeListener for its behavior.
-func (l *pipeListener) Accept() (net.Conn, error) {
+// Accept returns a connection. See the comment of PipeListener for its behavior.
+func (l *PipeListener) Accept() (net.Conn, error) {
 	conn, ok := <-l.ch
 	if !ok {
 		return nil, io.EOF
@@ -125,16 +125,16 @@ func (l *pipeListener) Accept() (net.Conn, error) {
 }
 
 // Close closes the listener.
-func (l *pipeListener) Close() error {
+func (l *PipeListener) Close() error {
 	return nil
 }
 
 // Addr returns a fake IPv4 address.
-func (l *pipeListener) Addr() net.Addr {
+func (l *PipeListener) Addr() net.Addr {
 	return fakeAddr
 }
 
-var _ net.Listener = (*pipeListener)(nil)
+var _ net.Listener = (*PipeListener)(nil)
 
 // NewPipeClientConn constructs ClientConn based on r and w.
 //

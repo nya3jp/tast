@@ -1,0 +1,39 @@
+// Copyright 2021 The Chromium OS Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package tast.core;
+
+option go_package = "chromiumos/tast/internal/protocol";
+
+// LoopbackExecService is a protocol used by loopback executables internally.
+// See fakeexec package for details.
+service LoopbackExecService {
+  rpc Exec(stream ExecRequest) returns (stream ExecResponse) {}
+}
+
+message ExecRequest {
+  oneof type {
+    InitEvent init = 1;
+    PipeEvent stdin = 2;
+  }
+}
+
+message ExecResponse {
+  oneof type {
+    ExitEvent exit = 1;
+    PipeEvent stdout = 2;
+    PipeEvent stderr = 3;
+  }
+}
+
+message InitEvent { repeated string args = 1; }
+
+message ExitEvent { int32 code = 1; }
+
+message PipeEvent {
+  bytes data = 1;
+  bool close = 2;
+}

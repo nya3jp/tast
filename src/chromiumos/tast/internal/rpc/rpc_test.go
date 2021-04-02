@@ -94,7 +94,7 @@ func newPingPair(ctx context.Context, t *gotesting.T, req *protocol.HandshakeReq
 	}()
 	stopServer := func() error {
 		// Close the client pipes. This will let the gRPC server close the singleton
-		// gRPC connection, which triggers the gRPC server to stop via pipeListener.
+		// gRPC connection, which triggers the gRPC server to stop via PipeListener.
 		cw.Close()
 		cr.Close()
 		return <-stopped

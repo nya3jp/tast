@@ -16,6 +16,23 @@
       "message": "Nice!",
       "revId": "974c7d0ff24a895373e79c35c6a64fc889e9b0a7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5145e44d_3c57eb10",
+        "filename": "src/chromiumos/tast/internal/planner/run.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 137,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2021-04-02T06:25:25Z",
+      "side": 1,
+      "message": "Is it bad to return err here? If so, could you update Check\u0027s documentation?",
+      "revId": "974c7d0ff24a895373e79c35c6a64fc889e9b0a7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

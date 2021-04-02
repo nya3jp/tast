@@ -28,7 +28,10 @@ import (
 	"chromiumos/tast/internal/command"
 	"chromiumos/tast/internal/devserver"
 	"chromiumos/tast/internal/jsonprotocol"
+	"chromiumos/tast/internal/protocol"
+	"chromiumos/tast/internal/rpc"
 	"chromiumos/tast/internal/testcontext"
+	"chromiumos/tast/internal/testing"
 )
 
 // getBundlesAndTests returns matched tests and paths to the bundles containing them.
@@ -88,23 +91,45 @@ func getTests(args *jsonprotocol.RunnerArgs, bundles []string) (tests []*jsonpro
 		return nil, nil, command.NewStatusErrorf(statusBadArgs, "%v", err)
 	}
 
+	matcher, err := testing.NewMatcher(bundleArgs.ListTests.Patterns)
+	if err != nil {
+		return nil, nil, command.NewStatusErrorf(statusBadArgs, "%v", err)
+	}
+
 	// Run all bundles in parallel.
 	ch := make(chan testsOrError, len(bundles))
 	for _, b := range bundles {
 		bundle := b
 		go func() {
-			out := bytes.Buffer{}
-			if err := runBundle(bundle, bundleArgs, &out); err != nil {
-				ch <- testsOrError{bundle, nil, err}
-				return
-			}
-			ts := make([]*jsonprotocol.EntityWithRunnabilityInfo, 0)
-			if err := json.Unmarshal(out.Bytes(), &ts); err != nil {
-				ch <- testsOrError{bundle, nil,
-					command.NewStatusErrorf(statusBundleFailed, "bundle %v gave bad output: %v", bundle, err)}
-				return
-			}
-			ch <- testsOrError{bundle, ts, nil}
+			tests, err := func() ([]*jsonprotocol.EntityWithRunnabilityInfo, *command.StatusError) {
+				ctx := context.Background()
+
+				conn, err := rpc.DialExec(ctx, bundle, &protocol.HandshakeRequest{})
+				if err != nil {
+					return nil, command.NewStatusErrorf(statusBundleFailed, "failed to connect to bundle %s: %v", bundle, err)
+				}
+				defer conn.Close(ctx)
+
+				cl := protocol.NewTestServiceClient(conn.Conn)
+
+				res, err := cl.ListEntities(ctx, &protocol.ListEntitiesRequest{Features: bundleArgs.ListTests.FeatureArgs.Features()})
+				if err != nil {
+					return nil, command.NewStatusErrorf(statusBundleFailed, "failed to list entities in bundle %s: %v", bundle, err)
+				}
+
+				var tests []*jsonprotocol.EntityWithRunnabilityInfo
+				for _, e := range res.Entities {
+					if e.GetEntity().GetType() != protocol.EntityType_TEST {
+						continue
+					}
+					if !matcher.Match(e.GetEntity().GetName(), e.GetEntity().GetAttributes()) {
+						continue
+					}
+					tests = append(tests, jsonprotocol.MustEntityWithRunnabilityInfoFromProto(e))
+				}
+				return tests, nil
+			}()
+			ch <- testsOrError{bundle, tests, err}
 		}()
 	}
 
@@ -145,24 +170,33 @@ func listFixtures(bundleGlob string) (map[string][]*jsonprotocol.EntityInfo, *co
 		return nil, err
 	}
 
-	bundleArgs := &jsonprotocol.BundleArgs{
-		Mode: jsonprotocol.BundleListFixturesMode,
-	}
 	// Run all the bundles in parallel.
 	ch := make(chan *fixturesOrError, len(bundles))
 	for _, bundle := range bundles {
 		bundle := bundle
 		go func() {
-			out := bytes.Buffer{}
-			if err := runBundle(bundle, bundleArgs, &out); err != nil {
-				ch <- &fixturesOrError{bundle, nil, err}
-				return
-			}
-
 			fs, err := func() ([]*jsonprotocol.EntityInfo, *command.StatusError) {
+				ctx := context.Background()
+
+				conn, err := rpc.DialExec(ctx, bundle, &protocol.HandshakeRequest{})
+				if err != nil {
+					return nil, command.NewStatusErrorf(statusBundleFailed, "failed to connect to bundle %s: %v", bundle, err)
+				}
+				defer conn.Close(ctx)
+
+				cl := protocol.NewTestServiceClient(conn.Conn)
+
+				res, err := cl.ListEntities(ctx, &protocol.ListEntitiesRequest{})
+				if err != nil {
+					return nil, command.NewStatusErrorf(statusBundleFailed, "failed to list entities in bundle %s: %v", bundle, err)
+				}
+
 				var fs []*jsonprotocol.EntityInfo
-				if err := json.Unmarshal(out.Bytes(), &fs); err != nil {
-					return nil, command.NewStatusErrorf(statusBundleFailed, "bundle %v gave bad output: %v", bundle, err)
+				for _, e := range res.Entities {
+					if e.GetEntity().GetType() != protocol.EntityType_FIXTURE {
+						continue
+					}
+					fs = append(fs, jsonprotocol.MustEntityInfoFromProto(e.GetEntity()))
 				}
 				return fs, nil
 			}()

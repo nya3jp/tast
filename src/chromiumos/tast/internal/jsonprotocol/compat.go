@@ -6,6 +6,7 @@ package jsonprotocol
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/golang/protobuf/ptypes"
@@ -71,4 +72,27 @@ func ErrorFromProto(e *protocol.Error) *Error {
 		Line:   int(e.GetLocation().GetLine()),
 		Stack:  e.GetLocation().GetStack(),
 	}
+}
+
+// EntityWithRunnabilityInfoFromProto converts protocol.ResolvedEntity to
+// jsonprotocol.EntityWithRunnabilityInfo.
+func EntityWithRunnabilityInfoFromProto(e *protocol.ResolvedEntity) (*EntityWithRunnabilityInfo, error) {
+	ei, err := EntityInfoFromProto(e.GetEntity())
+	if err != nil {
+		return nil, err
+	}
+	return &EntityWithRunnabilityInfo{
+		EntityInfo: *ei,
+		SkipReason: strings.Join(e.GetSkip().GetReasons(), "; "),
+	}, nil
+}
+
+// MustEntityWithRunnabilityInfoFromProto is similar to
+// EntityWithRunnabilityInfoFromProto, but it panics when it fails to convert.
+func MustEntityWithRunnabilityInfoFromProto(e *protocol.ResolvedEntity) *EntityWithRunnabilityInfo {
+	ei, err := EntityWithRunnabilityInfoFromProto(e)
+	if err != nil {
+		panic(fmt.Sprintf("MustEntityWithRunnabilityInfoFromProto: %v", err))
+	}
+	return ei
 }

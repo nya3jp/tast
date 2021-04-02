@@ -21,6 +21,7 @@ import (
 	gotesting "testing"
 
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 
 	"chromiumos/tast/internal/bundle"
 	"chromiumos/tast/internal/control"
@@ -32,9 +33,6 @@ import (
 const (
 	// Prefix for bundles created by createBundleSymlinks.
 	bundlePrefix = "fake_bundle"
-
-	// Message written to stderr by runFakeBundle when no tests were registered.
-	noTestsError = "no tests in bundle"
 )
 
 var (
@@ -102,12 +100,6 @@ func runFakeBundle() int {
 		log.Fatalf("Bad bundle number %q in filename %q", parts[1], os.Args[0])
 	}
 
-	// Write a hardcoded error message if no tests were specified.
-	if len(parts[2]) == 0 {
-		fmt.Fprintf(os.Stderr, "%s\n", noTestsError)
-		os.Exit(1)
-	}
-
 	reg := testing.NewRegistry()
 	reg.AddFixture(fakeFixture1)
 	reg.AddFixture(fakeFixture2)
@@ -127,7 +119,7 @@ func runFakeBundle() int {
 		})
 	}
 
-	return bundle.Local(nil, os.Stdin, os.Stdout, os.Stderr, reg, bundle.Delegate{})
+	return bundle.Local(os.Args[1:], os.Stdin, os.Stdout, os.Stderr, reg, bundle.Delegate{})
 }
 
 // newBufferWithArgs returns a buffer containing the JSON representation of args.
@@ -248,8 +240,8 @@ func TestRunListFixtures(t *gotesting.T) {
 			{Name: "fake2", Fixture: "fake1", Type: jsonprotocol.EntityFixture, Bundle: bundle},
 		},
 	}}
-
-	if diff := cmp.Diff(got, want); diff != "" {
+	sortEntities := cmpopts.SortSlices(func(a, b *jsonprotocol.EntityInfo) bool { return a.Name < b.Name })
+	if diff := cmp.Diff(got, want, sortEntities); diff != "" {
 		t.Fatal("Result mismatch (-want +got): ", diff)
 	}
 
@@ -564,38 +556,6 @@ func TestCheckDepsWhenRunManually(t *gotesting.T) {
 	if exp := []string{"neither"}; !reflect.DeepEqual(bundleArgs.RunTests.UnavailableSoftwareFeatures, exp) {
 		t.Errorf("%s would pass unavailable features %v; want %v",
 			sig, bundleArgs.RunTests.UnavailableSoftwareFeatures, exp)
-	}
-}
-
-func TestRunPrintBundleError(t *gotesting.T) {
-	// Without any tests, the bundle should report failure.
-	dir := createBundleSymlinks(t, []bool{})
-	defer os.RemoveAll(dir)
-
-	// parseArgs should report success, but it should write a RunError control message.
-	args := jsonprotocol.RunnerArgs{
-		Mode: jsonprotocol.RunnerRunTestsMode,
-		RunTests: &jsonprotocol.RunnerRunTestsArgs{
-			BundleGlob: filepath.Join(dir, "*"),
-		},
-	}
-	status, stdout, _, sig := callRun(t, nil, &args, nil, &Config{Type: LocalRunner})
-	if status != statusSuccess {
-		t.Errorf("%s = %v; want %v", sig, status, statusSuccess)
-	}
-
-	// The RunError control message should contain the error message that the bundle wrote to stderr.
-	var msg *control.RunError
-	for _, m := range readAllMessages(t, stdout) {
-		if re, ok := m.(*control.RunError); ok {
-			msg = re
-			break
-		}
-	}
-	if msg == nil {
-		t.Fatal("No RunError message for failed bundle")
-	} else if !strings.Contains(msg.Error.Reason, noTestsError) {
-		t.Fatalf("RunError message %q doesn't contain bundle stderr message %q", msg.Error.Reason, noTestsError)
 	}
 }
 

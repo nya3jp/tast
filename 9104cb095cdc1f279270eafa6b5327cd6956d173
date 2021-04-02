@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9d7f9e63_dd51a859",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1164104
+      },
+      "writtenOn": "2021-04-02T17:58:43Z",
+      "side": 1,
+      "message": "The failures seem to be unrelated, so retrying CQ.",
+      "revId": "9104cb095cdc1f279270eafa6b5327cd6956d173",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

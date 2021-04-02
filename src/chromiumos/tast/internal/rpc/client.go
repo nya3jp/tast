@@ -52,8 +52,8 @@ func (c *Client) Close(ctx context.Context) error {
 	return firstErr
 }
 
-// Dial establishes a gRPC connection to an executable on a remote machine.
-func Dial(ctx context.Context, conn *ssh.Conn, path string, req *protocol.HandshakeRequest) (*Client, error) {
+// DialSSH establishes a gRPC connection to an executable on a remote machine.
+func DialSSH(ctx context.Context, conn *ssh.Conn, path string, req *protocol.HandshakeRequest) (*Client, error) {
 	cmd := conn.Command(path, "-rpc")
 	stdin, err := cmd.StdinPipe()
 	if err != nil {
@@ -88,7 +88,7 @@ func DialExec(ctx context.Context, path string, req *protocol.HandshakeRequest) 
 	if err := cmd.Start(); err != nil {
 		return nil, fmt.Errorf("newRemoteFixtureService: %v", err)
 	}
-	return newClient(ctx, stdout, stdin, &protocol.HandshakeRequest{NeedUserServices: false}, func(ctx context.Context) error {
+	return newClient(ctx, stdout, stdin, req, func(ctx context.Context) error {
 		defer cmd.Wait() // ignore error `signal: killed`
 		return cmd.Process.Kill()
 	})

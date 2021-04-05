@@ -299,7 +299,7 @@ func TestRunTestsNoTests(t *gotesting.T) {
 	}
 }
 
-func TestRunTestsMissingDeps(t *gotesting.T) {
+func TestRunTestsMissingSoftwareDeps(t *gotesting.T) {
 	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
 	defer restore()
 
@@ -392,6 +392,136 @@ func TestRunTestsMissingDeps(t *gotesting.T) {
 		} else if !skipped && tc.shouldSkip {
 			t.Errorf("%v didn't skip", tc.name)
 		}
+	}
+}
+
+func TestRunTestsVarDeps(t *gotesting.T) {
+	tmpDir := testutil.TempDir(t)
+	defer os.RemoveAll(tmpDir)
+
+	type verdict string
+	const (
+		pass verdict = "pass"
+		fail verdict = "fail"
+		skip verdict = "skip"
+	)
+	for _, tc := range []struct {
+		name             string
+		maybeMissingVars string
+		givenVars        []string
+		varDeps          []string
+		want             verdict
+	}{{
+		name:      "simple pass",
+		givenVars: []string{"foo"},
+		varDeps:   []string{"foo"},
+		want:      pass,
+	}, {
+		name:    "simple fail",
+		varDeps: []string{"foo"},
+		want:    fail,
+	}, {
+		name:             "simple skip",
+		maybeMissingVars: "foo",
+		varDeps:          []string{"foo"},
+		want:             skip,
+	}, {
+		name:             "expected missing vars",
+		maybeMissingVars: "foo",
+		givenVars:        []string{"bar"},
+		varDeps:          []string{"bar", "foo"},
+		want:             skip,
+	}, {
+		name:             "unexpected missing vars",
+		maybeMissingVars: "foo",
+		varDeps:          []string{"bar", "foo"},
+		want:             fail,
+	}, {
+		name:             "simple regex",
+		maybeMissingVars: `foo\..*`,
+		varDeps:          []string{"foo.a", "foo.b.c"},
+		want:             skip,
+	}, {
+		name:             "complex regex",
+		maybeMissingVars: `(bar|foo\..*)`,
+		varDeps:          []string{"bar", "foo.a", "foo.b.c"},
+		want:             skip,
+	}, {
+		name:             "no substring match",
+		maybeMissingVars: `foo`,
+		varDeps:          []string{"foobar"},
+		want:             fail,
+	}} {
+		t.Run(tc.name, func(t *gotesting.T) {
+			restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
+			defer restore()
+
+			testVars := make(map[string]string)
+			for _, s := range tc.givenVars {
+				testVars[s] = "val"
+			}
+
+			testing.AddTestInstance(&testing.TestInstance{
+				Name: "t.T",
+				Func: func(ctx context.Context, s *testing.State) {
+					defer func() {
+						// s.RequiredVar() panics on failure.
+						if r := recover(); r != nil {
+							t.Errorf("panicked: %v", r)
+						}
+					}()
+					for _, v := range tc.varDeps {
+						if got, want := s.RequiredVar(v), "val"; got != want {
+							t.Errorf("s.RequiredVar(%q)=%q, want %q", v, got, want)
+						}
+					}
+				},
+				VarDeps: tc.varDeps,
+			})
+
+			args := jsonprotocol.BundleArgs{
+				Mode: jsonprotocol.BundleRunTestsMode,
+				RunTests: &jsonprotocol.BundleRunTestsArgs{
+					OutDir:  tmpDir,
+					DataDir: tmpDir,
+					FeatureArgs: jsonprotocol.FeatureArgs{
+						CheckSoftwareDeps: true,
+						TestVars:          testVars,
+						MaybeMissingVars:  tc.maybeMissingVars,
+					},
+				},
+			}
+			stdin := newBufferWithArgs(t, &args)
+			stdout := &bytes.Buffer{}
+			if status := run(context.Background(), nil, stdin, stdout, &bytes.Buffer{}, &jsonprotocol.BundleArgs{},
+				&staticConfig{defaultTestTimeout: time.Minute}, localBundle); status != statusSuccess {
+				t.Fatalf("run() returned status %v; want %v", status, statusSuccess)
+			}
+
+			if got := func() verdict {
+				r := control.NewMessageReader(stdout)
+				for r.More() {
+					msg, err := r.ReadMessage()
+					if err != nil {
+						t.Fatalf("Failed to read message: %v", err)
+					}
+					switch m := msg.(type) {
+					case *control.EntityEnd:
+						if len(m.SkipReasons) > 0 {
+							return skip
+						}
+						return pass
+					case *control.EntityError:
+						t.Logf("Got error: %v", m.Error)
+						return fail
+					}
+				}
+				t.Fatal("Unexpected end of message")
+				panic("BUG: unreachable")
+			}(); got != tc.want {
+				t.Errorf("Got verdict %v, want %v", got, tc.want)
+			}
+		})
 	}
 }
 

@@ -7,6 +7,7 @@ package dep
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
 
 	"chromiumos/tast/errors"
@@ -24,11 +25,25 @@ type Deps struct {
 // On success, it returns a list of reasons for which a test should be skipped.
 // If reasons is empty, a test should be run.
 func (d *Deps) Check(f *protocol.Features) (reasons []string, err error) {
+	// If f.MaybeMissingVars is empty, no variables are considered as missing.
+	maybeMissingVars, err := regexp.Compile("^" + f.GetMaybeMissingVars() + "$")
+	if err != nil {
+		return nil, errors.Errorf("regex %v is invalid: %v", f.GetMaybeMissingVars(), err)
+	}
+
 	vars := f.GetVars()
 	for _, v := range d.Var {
-		if _, ok := vars[v]; !ok {
-			reasons = append(reasons, fmt.Sprintf("var %s not provided", v))
+		if _, ok := vars[v]; ok {
+			continue
 		}
+		if maybeMissingVars.MatchString(v) {
+			reasons = append(reasons, fmt.Sprintf("runtime variable %v is missing and matches with %v", v, maybeMissingVars))
+			continue
+		}
+		if f.GetMaybeMissingVars() == "" {
+			return nil, errors.Errorf("runtime variable %v is missing", v)
+		}
+		return nil, errors.Errorf("runtime variable %v is missing and doesn't match with %v", v, maybeMissingVars)
 	}
 
 	if sf := f.GetSoftware(); sf != nil {

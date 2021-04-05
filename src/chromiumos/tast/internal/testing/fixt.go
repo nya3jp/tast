@@ -75,7 +75,7 @@ type Fixture struct {
 // Constraints returns EntityConstraints for this fixture.
 func (f *Fixture) Constraints() *EntityConstraints {
 	return &EntityConstraints{
-		vars: append([]string(nil), f.Vars...),
+		allVars: append([]string(nil), f.Vars...),
 	}
 }
 

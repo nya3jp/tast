@@ -24,26 +24,26 @@ const (
 	RunnerRunTestsMode RunnerRunMode = 0
 	// RunnerListTestsMode indicates that the runner should write information about matched tests to stdout as a
 	// JSON array of testing.Test structs and exit.
-	RunnerListTestsMode = 2
+	RunnerListTestsMode RunnerRunMode = 2
 	// RunnerGetSysInfoStateMode indicates that the runner should write a JSON-marshaled RunnerGetSysInfoStateResult struct
 	// to stdout and exit. It's used by the tast executable to get the initial state of the system before tests
 	// are executed. This mode is only supported by local_test_runner.
-	RunnerGetSysInfoStateMode = 3
+	RunnerGetSysInfoStateMode RunnerRunMode = 3
 	// RunnerCollectSysInfoMode indicates that the runner should collect system information that was written in the
 	// course of testing and write a JSON-marshaled RunnerCollectSysInfoResult struct to stdout and exit. It's used by
 	// the tast executable to get system info after testing is completed.
 	// This mode is only supported by local_test_runner.
-	RunnerCollectSysInfoMode = 4
+	RunnerCollectSysInfoMode RunnerRunMode = 4
 	// RunnerGetDUTInfoMode indicates that the runner should return DUT information via a JSON-marshaled
 	// RunnerGetDUTInfoResult struct written to stdout. This mode is only supported by local_test_runner.
-	RunnerGetDUTInfoMode = 5
+	RunnerGetDUTInfoMode RunnerRunMode = 5
 	// RunnerDownloadPrivateBundlesMode indicates that the runner should download private bundles from devservers,
 	// install them to the DUT, write a JSON-marshaled RunnerDownloadPrivateBundlesResult struct to stdout and exit.
 	// This mode is only supported by local_test_runner.
-	RunnerDownloadPrivateBundlesMode = 6
+	RunnerDownloadPrivateBundlesMode RunnerRunMode = 6
 	// RunnerListFixturesMode indicates that the runner should write information about fixtures to stdout
 	// as a JSON serialized RunnerListFixturesResult.
-	RunnerListFixturesMode = 7
+	RunnerListFixturesMode RunnerRunMode = 7
 )
 
 // RunnerArgs provides a backward- and forward-compatible way to pass arguments from the tast executable to test runners.

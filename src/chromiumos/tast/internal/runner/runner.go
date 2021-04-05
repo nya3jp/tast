@@ -87,7 +87,7 @@ func Run(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, args *Runne
 		}
 		return statusSuccess
 	case RunnerRunTestsMode:
-		if args.report {
+		if args.Report {
 			// Success is always reported when running tests on behalf of the tast command.
 			runTestsAndReport(ctx, args, cfg, stdout)
 		} else if err := runTestsAndLog(ctx, args, cfg, stdout); err != nil {
@@ -118,7 +118,7 @@ func runTestsAndReport(ctx context.Context, args *RunnerArgs, cfg *Config, stdou
 		return
 	}
 
-	bundleArgs, err := args.bundleArgs(jsonprotocol.BundleRunTestsMode)
+	bundleArgs, err := args.BundleArgs(jsonprotocol.BundleRunTestsMode)
 	if err != nil {
 		mw.WriteMessage(newRunErrorMessagef(statusBadArgs, "Failed constructing bundle args: %v", err))
 		return
@@ -142,7 +142,7 @@ func runTestsAndReport(ctx context.Context, args *RunnerArgs, cfg *Config, stdou
 	// user specified a pattern that matched only local or only remote tests rather than tests
 	// of both types. Don't bother creating an out dir in that case.
 	if len(tests) == 0 {
-		if !args.report {
+		if !args.Report {
 			mw.WriteMessage(newRunErrorMessagef(statusNoTests, "No tests matched"))
 			return
 		}
@@ -153,7 +153,7 @@ func runTestsAndReport(ctx context.Context, args *RunnerArgs, cfg *Config, stdou
 			return
 		}
 		// If the runner was executed manually and an out dir wasn't specified, clean up the temp dir that was created.
-		if !args.report && created {
+		if !args.Report && created {
 			defer os.RemoveAll(bundleArgs.RunTests.OutDir)
 		}
 

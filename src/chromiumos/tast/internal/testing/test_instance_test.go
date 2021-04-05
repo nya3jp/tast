@@ -10,7 +10,6 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
-	"reflect"
 	"strings"
 	gotesting "testing"
 	"time"
@@ -121,6 +120,7 @@ func TestInstantiate(t *gotesting.T) {
 	if diff := cmp.Diff(got, want, cmpopts.IgnoreFields(TestInstance{}, "Func", "HardwareDeps")); diff != "" {
 		t.Errorf("Got unexpected test instances (-got +want):\n%s", diff)
 	}
+<<<<<<< HEAD   (8851e4 tast: Add function to marshalize result into JUnit XML.)
 	if len(got) == 1 {
 		if got[0].Func == nil {
 			t.Error("Got nil Func")
@@ -131,6 +131,10 @@ func TestInstantiate(t *gotesting.T) {
 		if result := got[0].ShouldRun(features([]string{"dep1", "dep2"}, "modelX", map[string]string{"servo": "_"})); result.OK() {
 			t.Error("Got unexpected HardwareDeps: ShouldRun returned true for modelX")
 		}
+=======
+	if got[0].Func == nil {
+		t.Error("Got nil Func")
+>>>>>>> CHANGE (c65b7e testing: refactor test)
 	}
 }
 
@@ -662,23 +666,96 @@ func TestVarDeps(t *gotesting.T) {
 }
 
 func TestSoftwareDeps(t *gotesting.T) {
+<<<<<<< HEAD   (8851e4 tast: Add function to marshalize result into JUnit XML.)
 	test := TestInstance{SoftwareDeps: []string{"dep3", "dep1", "dep2", "depX"}}
 	got := test.ShouldRun(features([]string{"dep0", "dep2", "dep4"}, "eve", nil))
 	want := &ShouldRunResult{
 		SkipReasons: []string{"missing SoftwareDeps: dep1, dep3, depX"},
 		Errors:      []string{"unknown SoftwareDeps: depX"},
+=======
+	fs := &protocol.Features{
+		Software: &protocol.SoftwareFeatures{
+			Available:   []string{"dep1", "dep2"},
+			Unavailable: []string{"dep0", "dep3"},
+		},
+>>>>>>> CHANGE (c65b7e testing: refactor test)
 	}
+<<<<<<< HEAD   (8851e4 tast: Add function to marshalize result into JUnit XML.)
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("ShouldRun() = %+v; want %+v", got, want)
+=======
+
+	for _, tc := range []struct {
+		name        string
+		testDeps    []string
+		wantReasons []string
+		wantErr     string
+	}{{
+		name:     "error",
+		testDeps: []string{"dep3", "dep1", "dep2", "depX"},
+		wantErr:  "unknown SoftwareDeps: depX",
+	}, {
+		name:     "pass",
+		testDeps: []string{"dep1", "dep2"},
+	}, {
+		name:        "skip",
+		testDeps:    []string{"dep0", "dep1"},
+		wantReasons: []string{"missing SoftwareDeps: dep0"},
+	}} {
+		t.Run(tc.name, func(t *gotesting.T) {
+			reasons, err := (&TestInstance{SoftwareDeps: tc.testDeps}).Deps().Check(fs)
+			if tc.wantErr == "" && err != nil {
+				t.Errorf("Check() failed: %v", err)
+			}
+			if tc.wantErr != "" && (err == nil || err.Error() != tc.wantErr) {
+				t.Errorf("Check() returned error %v; want %q", err, tc.wantErr)
+			}
+			if diff := cmp.Diff(reasons, tc.wantReasons); diff != "" {
+				t.Errorf("Reasons unmatch (-got +want):\n%v", diff)
+			}
+		})
+>>>>>>> CHANGE (c65b7e testing: refactor test)
 	}
 }
 
 func TestHardwareDeps(t *gotesting.T) {
+<<<<<<< HEAD   (8851e4 tast: Add function to marshalize result into JUnit XML.)
 	test := TestInstance{HardwareDeps: hwdep.D(hwdep.Model("eve"))}
 	got := test.ShouldRun(features(nil, "samus", nil))
 	want := &ShouldRunResult{SkipReasons: []string{"ModelId did not match"}}
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("ShouldRun() = %+v; want %+v", got, want)
+=======
+	fs := &protocol.Features{
+		Hardware: &protocol.HardwareFeatures{
+			DeprecatedDeviceConfig: &device.Config{
+				Id: &device.ConfigId{
+					ModelId: &device.ModelId{
+						Value: "samus",
+					},
+				},
+			},
+		},
+	}
+	for _, tc := range []struct {
+		modelDep    string
+		wantReasons []string
+	}{{
+		modelDep:    "eve",
+		wantReasons: []string{"ModelId did not match"},
+	}, {
+		modelDep: "samus",
+	}} {
+		t.Run(tc.modelDep, func(t *gotesting.T) {
+			reasons, err := (&TestInstance{HardwareDeps: hwdep.D(hwdep.Model(tc.modelDep))}).Deps().Check(fs)
+			if err != nil {
+				t.Fatal("Check failed: ", err)
+			}
+			if diff := cmp.Diff(reasons, tc.wantReasons); diff != "" {
+				t.Errorf("Reasons unmatch (-got +want):\n%v", diff)
+			}
+		})
+>>>>>>> CHANGE (c65b7e testing: refactor test)
 	}
 }
 

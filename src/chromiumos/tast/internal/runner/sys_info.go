@@ -24,13 +24,13 @@ const (
 )
 
 // handleGetSysInfoState gets information about the system's current state (e.g. log files
-// and crash reports) and writes a JSON-marshaled GetSysInfoStateResult struct to w.
+// and crash reports) and writes a JSON-marshaled RunnerGetSysInfoStateResult struct to w.
 func handleGetSysInfoState(ctx context.Context, cfg *Config, w io.Writer) error {
 	if cfg.SystemLogDir == "" || len(cfg.SystemCrashDirs) == 0 {
 		return command.NewStatusErrorf(statusBadArgs, "system info collection unsupported")
 	}
 
-	res := GetSysInfoStateResult{}
+	res := RunnerGetSysInfoStateResult{}
 
 	if err := suspendLogCleanup(cfg.CleanupLogsPausedPath); err != nil {
 		res.Warnings = append(res.Warnings, fmt.Sprintf("Failed to pause log cleanup: %v", err))
@@ -61,8 +61,8 @@ func handleGetSysInfoState(ctx context.Context, cfg *Config, w io.Writer) error 
 }
 
 // handleCollectSysInfo copies system information that was written after args.CollectSysInfo.InitialState
-// was generated into temporary directories and writes a JSON-marshaled CollectSysInfoResult struct to w.
-func handleCollectSysInfo(ctx context.Context, args *Args, cfg *Config, w io.Writer) error {
+// was generated into temporary directories and writes a JSON-marshaled RunnerCollectSysInfoResult struct to w.
+func handleCollectSysInfo(ctx context.Context, args *RunnerArgs, cfg *Config, w io.Writer) error {
 	if cfg.SystemLogDir == "" || len(cfg.SystemCrashDirs) == 0 {
 		return command.NewStatusErrorf(statusBadArgs, "system info collection unsupported")
 	}
@@ -71,7 +71,7 @@ func handleCollectSysInfo(ctx context.Context, args *Args, cfg *Config, w io.Wri
 	if cmdArgs == nil {
 		return command.NewStatusErrorf(statusBadArgs, "missing system info args")
 	}
-	res := CollectSysInfoResult{}
+	res := RunnerCollectSysInfoResult{}
 
 	// Collect syslog logs.
 	var err error

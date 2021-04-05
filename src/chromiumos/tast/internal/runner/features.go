@@ -33,9 +33,9 @@ import (
 
 const autotestCapPrefix = "autotest-capability:" // prefix for autotest-capability feature names
 
-// handleGetDUTInfo handles a GetDUTInfoMode request from args
-// and JSON-marshals a GetDUTInfoResult struct to w.
-func handleGetDUTInfo(args *Args, cfg *Config, w io.Writer) error {
+// handleGetDUTInfo handles a RunnerGetDUTInfoMode request from args
+// and JSON-marshals a RunnerGetDUTInfoResult struct to w.
+func handleGetDUTInfo(args *RunnerArgs, cfg *Config, w io.Writer) error {
 	features, warnings, err := getSoftwareFeatures(
 		cfg.SoftwareFeatureDefinitions, cfg.USEFlagsFile, cfg.LSBReleaseFile, args.GetDUTInfo.ExtraUSEFlags, cfg.AutotestCapabilityDir)
 	if err != nil {
@@ -50,7 +50,7 @@ func handleGetDUTInfo(args *Args, cfg *Config, w io.Writer) error {
 		warnings = append(warnings, ws...)
 	}
 
-	res := GetDUTInfoResult{
+	res := RunnerGetDUTInfoResult{
 		SoftwareFeatures:         features,
 		DeviceConfig:             dc,
 		HardwareFeatures:         hwFeatures,
@@ -64,7 +64,7 @@ func handleGetDUTInfo(args *Args, cfg *Config, w io.Writer) error {
 	return nil
 }
 
-// getSoftwareFeatures implements the main function of GetDUTInfoMode (i.e., except input/output
+// getSoftwareFeatures implements the main function of RunnerGetDUTInfoMode (i.e., except input/output
 // conversion for RPC).
 func getSoftwareFeatures(definitions map[string]string, useFlagsFile, lsbReleaseFile string, extraUSEFlags []string, autotestCapsDir string) (
 	features *protocol.SoftwareFeatures, warnings []string, err error) {

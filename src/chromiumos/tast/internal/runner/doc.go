@@ -12,7 +12,7 @@ local_test_runner executes local bundles on-device, while remote_test_runner
 executes remote bundles on the system where the tast command is running
 (e.g. a developer's workstation).
 
-The tast command writes a JSON-marshaled Args struct to a runner's stdin,
+The tast command writes a JSON-marshaled RunnerArgs struct to a runner's stdin,
 which instructs the runner to report progress by writing JSON-marshaled
 control messages to stdout. In this mode, the runner exits with status code
 0 in almost all cases (the one exception being malformed arguments), since

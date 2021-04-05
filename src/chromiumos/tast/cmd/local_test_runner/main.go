@@ -29,8 +29,8 @@ import (
 )
 
 func main() {
-	args := runner.Args{
-		RunTests: &runner.RunTestsArgs{
+	args := runner.RunnerArgs{
+		RunTests: &runner.RunnerRunTestsArgs{
 			BundleGlob: "/usr/local/libexec/tast/bundles/local/*",
 			BundleArgs: jsonprotocol.BundleRunTestsArgs{
 				DataDir: "/usr/local/share/tast/data",

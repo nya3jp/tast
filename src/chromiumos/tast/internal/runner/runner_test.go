@@ -133,7 +133,7 @@ func runFakeBundle() int {
 }
 
 // newBufferWithArgs returns a buffer containing the JSON representation of args.
-func newBufferWithArgs(t *gotesting.T, args *Args) *bytes.Buffer {
+func newBufferWithArgs(t *gotesting.T, args *RunnerArgs) *bytes.Buffer {
 	b := &bytes.Buffer{}
 	if args != nil {
 		if err := json.NewEncoder(b).Encode(args); err != nil {
@@ -145,10 +145,10 @@ func newBufferWithArgs(t *gotesting.T, args *Args) *bytes.Buffer {
 
 // callRun calls Run using the supplied arguments and returns its output, status, and a signature that can
 // be used in error messages.
-func callRun(t *gotesting.T, clArgs []string, stdinArgs, defaultArgs *Args, cfg *Config) (
+func callRun(t *gotesting.T, clArgs []string, stdinArgs, defaultArgs *RunnerArgs, cfg *Config) (
 	status int, stdout, stderr *bytes.Buffer, sig string) {
 	if defaultArgs == nil {
-		defaultArgs = &Args{}
+		defaultArgs = &RunnerArgs{}
 	}
 	sig = fmt.Sprintf("Run(%v, %+v)", clArgs, stdinArgs)
 	stdout = &bytes.Buffer{}
@@ -188,9 +188,9 @@ func TestRunListTests(t *gotesting.T) {
 	defer os.RemoveAll(dir)
 
 	// All six tests should be printed.
-	args := Args{
-		Mode:      ListTestsMode,
-		ListTests: &ListTestsArgs{BundleGlob: filepath.Join(dir, "*")},
+	args := RunnerArgs{
+		Mode:      RunnerListTestsMode,
+		ListTests: &RunnerListTestsArgs{BundleGlob: filepath.Join(dir, "*")},
 	}
 	status, stdout, stderr, sig := callRun(t, nil, &args, nil, &Config{Type: LocalRunner})
 	if status != statusSuccess {
@@ -226,9 +226,9 @@ func TestRunListFixtures(t *gotesting.T) {
 	dir := createBundleSymlinks(t, []bool{true})
 	defer os.RemoveAll(dir)
 
-	args := Args{
-		Mode: ListFixturesMode,
-		ListFixtures: &ListFixturesArgs{
+	args := RunnerArgs{
+		Mode: RunnerListFixturesMode,
+		ListFixtures: &RunnerListFixturesArgs{
 			BundleGlob: filepath.Join(dir, "*"),
 		},
 	}
@@ -237,14 +237,14 @@ func TestRunListFixtures(t *gotesting.T) {
 		t.Fatalf("%s = %v; want %v", sig, status, statusSuccess)
 	}
 
-	var got ListFixturesResult
+	var got RunnerListFixturesResult
 	if err := json.Unmarshal(stdout.Bytes(), &got); err != nil {
 		t.Fatalf("%s printed unparsable output %q", sig, stdout.String())
 	}
 
 	bundle := fmt.Sprintf("%s-0-p", bundlePrefix)
 	bundlePath := filepath.Join(dir, bundle)
-	want := ListFixturesResult{Fixtures: map[string][]*jsonprotocol.EntityInfo{
+	want := RunnerListFixturesResult{Fixtures: map[string][]*jsonprotocol.EntityInfo{
 		bundlePath: {
 			{Name: "fake1", Type: jsonprotocol.EntityFixture, Bundle: bundle},
 			{Name: "fake2", Fixture: "fake1", Type: jsonprotocol.EntityFixture, Bundle: bundle},
@@ -256,7 +256,7 @@ func TestRunListFixtures(t *gotesting.T) {
 	}
 
 	// Test errors
-	status, _, _, sig = callRun(t, nil, &Args{Mode: ListFixturesMode /* ListFixtures is nil */}, nil, &Config{Type: LocalRunner})
+	status, _, _, sig = callRun(t, nil, &RunnerArgs{Mode: RunnerListFixturesMode /* ListFixtures is nil */}, nil, &Config{Type: LocalRunner})
 	if status != statusBadArgs {
 		t.Fatalf("%s = %v; want %v", sig, status, statusBadArgs)
 	}
@@ -267,9 +267,9 @@ func TestRunListTestsNoBundles(t *gotesting.T) {
 	dir := createBundleSymlinks(t)
 	defer os.RemoveAll(dir)
 
-	args := Args{
-		Mode:      ListTestsMode,
-		ListTests: &ListTestsArgs{BundleGlob: filepath.Join(dir, "*")},
+	args := RunnerArgs{
+		Mode:      RunnerListTestsMode,
+		ListTests: &RunnerListTestsArgs{BundleGlob: filepath.Join(dir, "*")},
 	}
 	// The runner should only exit with 0 and report errors via control messages on stdout when it's
 	// performing an actual test run. Since we're only listing tests, it should instead exit with an
@@ -327,11 +327,11 @@ func TestRunSysInfo(t *gotesting.T) {
 		SystemCrashDirs:       []string{filepath.Join(td, crashesDir)},
 		CleanupLogsPausedPath: filepath.Join(td, "cleanup_logs_paused"),
 	}
-	status, stdout, _, sig := callRun(t, nil, &Args{Mode: GetSysInfoStateMode}, nil, &cfg)
+	status, stdout, _, sig := callRun(t, nil, &RunnerArgs{Mode: RunnerGetSysInfoStateMode}, nil, &cfg)
 	if status != statusSuccess {
 		t.Fatalf("%s = %v; want %v", sig, status, statusSuccess)
 	}
-	var getRes GetSysInfoStateResult
+	var getRes RunnerGetSysInfoStateResult
 	if err := json.NewDecoder(stdout).Decode(&getRes); err != nil {
 		t.Fatalf("%v gave bad output: %v", sig, err)
 	}
@@ -351,14 +351,14 @@ func TestRunSysInfo(t *gotesting.T) {
 	}
 
 	// Now collect system info.
-	args := Args{
-		Mode:           CollectSysInfoMode,
-		CollectSysInfo: &CollectSysInfoArgs{InitialState: getRes.State},
+	args := RunnerArgs{
+		Mode:           RunnerCollectSysInfoMode,
+		CollectSysInfo: &RunnerCollectSysInfoArgs{InitialState: getRes.State},
 	}
 	if status, stdout, _, sig = callRun(t, nil, &args, nil, &cfg); status != statusSuccess {
 		t.Fatalf("%s = %v; want %v", sig, status, statusSuccess)
 	}
-	var collectRes CollectSysInfoResult
+	var collectRes RunnerCollectSysInfoResult
 	if err := json.NewDecoder(stdout).Decode(&collectRes); err != nil {
 		t.Fatalf("%v gave bad output: %v", sig, err)
 	}
@@ -397,7 +397,7 @@ func TestRunTests(t *gotesting.T) {
 	defer os.RemoveAll(dir)
 
 	// Run should execute multiple test bundles and merge their output correctly.
-	args := &Args{RunTests: &RunTestsArgs{BundleGlob: filepath.Join(dir, "*")}}
+	args := &RunnerArgs{RunTests: &RunnerRunTestsArgs{BundleGlob: filepath.Join(dir, "*")}}
 	status, stdout, stderr, sig := callRun(t, nil, args, nil, &Config{Type: LocalRunner})
 	if status != statusSuccess {
 		t.Fatalf("%s = %v; want %v", sig, status, statusSuccess)
@@ -488,8 +488,8 @@ func TestRunNoTests(t *gotesting.T) {
 	}
 
 	// If the command was run by the tast command, it should exit with success.
-	args := &Args{
-		RunTests: &RunTestsArgs{
+	args := &RunnerArgs{
+		RunTests: &RunnerRunTestsArgs{
 			BundleArgs: jsonprotocol.BundleRunTestsArgs{Patterns: []string{"bogus.SomeTest"}},
 			BundleGlob: filepath.Join(dir, "*"),
 		},
@@ -535,7 +535,7 @@ func TestCheckDepsWhenRunManually(t *gotesting.T) {
 		t.Fatal(err)
 	}
 
-	args := Args{RunTests: &RunTestsArgs{BundleGlob: filepath.Join(bd, "*")}}
+	args := RunnerArgs{RunTests: &RunnerRunTestsArgs{BundleGlob: filepath.Join(bd, "*")}}
 	cfg := Config{
 		Type:         LocalRunner,
 		USEFlagsFile: filepath.Join(td, useFlagsFile),
@@ -575,9 +575,9 @@ func TestRunPrintBundleError(t *gotesting.T) {
 	defer os.RemoveAll(dir)
 
 	// parseArgs should report success, but it should write a RunError control message.
-	args := Args{
-		Mode: RunTestsMode,
-		RunTests: &RunTestsArgs{
+	args := RunnerArgs{
+		Mode: RunnerRunTestsMode,
+		RunTests: &RunnerRunTestsArgs{
 			BundleGlob: filepath.Join(dir, "*"),
 		},
 	}
@@ -621,8 +621,8 @@ func TestRunTestsUseRequestedOutDir(t *gotesting.T) {
 	outDir := testutil.TempDir(t)
 	defer os.RemoveAll(outDir)
 
-	status, stdout, _, sig := callRun(t, nil, &Args{
-		RunTests: &RunTestsArgs{
+	status, stdout, _, sig := callRun(t, nil, &RunnerArgs{
+		RunTests: &RunnerRunTestsArgs{
 			BundleGlob: filepath.Join(bundleDir, "*"),
 			BundleArgs: jsonprotocol.BundleRunTestsArgs{OutDir: outDir},
 		},

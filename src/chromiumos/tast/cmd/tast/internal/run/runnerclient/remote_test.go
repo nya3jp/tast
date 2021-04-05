@@ -26,7 +26,7 @@ import (
 	"chromiumos/tast/testutil"
 )
 
-// runFakeRemoteRunner calls remote and records the Args struct that was passed
+// runFakeRemoteRunner calls remote and records the RunnerArgs struct that was passed
 // to the fake runner.
 func runFakeRemoteRunner(t *gotesting.T, td *fakerunner.RemoteTestData) ([]*resultsjson.Result, error) {
 	res, rerr := RunRemoteTests(context.Background(), &td.Cfg, &td.State)
@@ -94,9 +94,9 @@ func TestRemoteRun(t *gotesting.T) {
 		"-devservers=" + strings.Join(td.Cfg.Devservers, ","),
 		"-buildartifactsurl=" + fakerunner.MockBuildArtifactsURL,
 	}
-	expArgs := runner.Args{
-		Mode: runner.RunTestsMode,
-		RunTests: &runner.RunTestsArgs{
+	expArgs := runner.RunnerArgs{
+		Mode: runner.RunnerRunTestsMode,
+		RunTests: &runner.RunnerRunTestsArgs{
 			BundleGlob: glob,
 			BundleArgs: jsonprotocol.BundleRunTestsArgs{
 				DataDir:        td.Cfg.RemoteDataDir,

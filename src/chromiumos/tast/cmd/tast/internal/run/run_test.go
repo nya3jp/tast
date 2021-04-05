@@ -44,15 +44,15 @@ func TestRunPartialRun(t *gotesting.T) {
 	td.Cfg.RunLocal = true
 	td.Cfg.RunRemote = true
 	const testName = "pkg.Test"
-	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+	td.RunFunc = func(args *runner.RunnerArgs, stdout, stderr io.Writer) (status int) {
 		switch args.Mode {
-		case runner.RunTestsMode:
+		case runner.RunnerRunTestsMode:
 			mw := control.NewMessageWriter(stdout)
 			mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 1})
 			mw.WriteMessage(&control.EntityStart{Time: time.Unix(2, 0), Info: jsonprotocol.EntityInfo{Name: testName}})
 			mw.WriteMessage(&control.EntityEnd{Time: time.Unix(3, 0), Name: testName})
 			mw.WriteMessage(&control.RunEnd{Time: time.Unix(4, 0), OutDir: ""})
-		case runner.ListTestsMode:
+		case runner.RunnerListTestsMode:
 			tests := []jsonprotocol.EntityWithRunnabilityInfo{
 				{
 					EntityInfo: jsonprotocol.EntityInfo{
@@ -92,16 +92,16 @@ func TestRunEphemeralDevserver(t *gotesting.T) {
 	defer td.Close()
 
 	td.Cfg.RunLocal = true
-	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+	td.RunFunc = func(args *runner.RunnerArgs, stdout, stderr io.Writer) (status int) {
 		switch args.Mode {
-		case runner.RunTestsMode:
+		case runner.RunnerRunTestsMode:
 			if len(args.RunTests.Devservers) != 1 {
 				t.Errorf("Devservers=%#v; want 1 entry", args.RunTests.Devservers)
 			}
 			mw := control.NewMessageWriter(stdout)
 			mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
 			mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
-		case runner.ListTestsMode:
+		case runner.RunnerListTestsMode:
 			json.NewEncoder(stdout).Encode([]jsonprotocol.EntityWithRunnabilityInfo{})
 		}
 		return 0
@@ -216,15 +216,15 @@ func testRunDownloadPrivateBundles(t *gotesting.T, td *fakerunner.LocalTestData)
 		duts[srv.Addr().String()] = struct{}{}
 	}
 	dutsWithDownloadRequest := make(map[string]struct{})
-	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+	td.RunFunc = func(args *runner.RunnerArgs, stdout, stderr io.Writer) (status int) {
 		switch args.Mode {
-		case runner.RunTestsMode:
+		case runner.RunnerRunTestsMode:
 			mw := control.NewMessageWriter(stdout)
 			mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
 			mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
-		case runner.ListTestsMode:
+		case runner.RunnerListTestsMode:
 			json.NewEncoder(stdout).Encode([]jsonprotocol.EntityWithRunnabilityInfo{})
-		case runner.DownloadPrivateBundlesMode:
+		case runner.RunnerDownloadPrivateBundlesMode:
 			dutName := args.DownloadPrivateBundles.DUTName
 			if strings.Contains(dutName, "@") {
 				userHost := strings.SplitN(dutName, "@", 2)
@@ -234,7 +234,7 @@ func testRunDownloadPrivateBundles(t *gotesting.T, td *fakerunner.LocalTestData)
 				t.Errorf("got unknown DUT name %v while downloading private bundle", dutName)
 			}
 			dutsWithDownloadRequest[dutName] = struct{}{}
-			exp := runner.DownloadPrivateBundlesArgs{
+			exp := runner.RunnerDownloadPrivateBundlesArgs{
 				Devservers:        td.Cfg.Devservers,
 				DUTName:           args.DownloadPrivateBundles.DUTName,
 				BuildArtifactsURL: td.Cfg.BuildArtifactsURL,
@@ -243,7 +243,7 @@ func testRunDownloadPrivateBundles(t *gotesting.T, td *fakerunner.LocalTestData)
 				cmpopts.IgnoreFields(*args.DownloadPrivateBundles, "TLWServer")); diff != "" {
 				t.Errorf("got args %+v; want %+v; diff=%v", *args.DownloadPrivateBundles, exp, diff)
 			}
-			json.NewEncoder(stdout).Encode(&runner.DownloadPrivateBundlesResult{})
+			json.NewEncoder(stdout).Encode(&runner.RunnerDownloadPrivateBundlesResult{})
 
 			if td.Cfg.TLWServer != "" {
 				// Try connecting to TLWServer through ssh port forwarding.
@@ -289,13 +289,13 @@ func TestRunTLW(t *gotesting.T) {
 	defer stopFunc()
 
 	td.Cfg.RunLocal = true
-	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+	td.RunFunc = func(args *runner.RunnerArgs, stdout, stderr io.Writer) (status int) {
 		switch args.Mode {
-		case runner.RunTestsMode:
+		case runner.RunnerRunTestsMode:
 			mw := control.NewMessageWriter(stdout)
 			mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
 			mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
-		case runner.ListTestsMode:
+		case runner.RunnerListTestsMode:
 			json.NewEncoder(stdout).Encode([]jsonprotocol.EntityWithRunnabilityInfo{})
 		}
 		return 0
@@ -344,9 +344,9 @@ func TestRunWithReports_LogStream(t *gotesting.T) {
 		},
 	}
 
-	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+	td.RunFunc = func(args *runner.RunnerArgs, stdout, stderr io.Writer) (status int) {
 		switch args.Mode {
-		case runner.RunTestsMode:
+		case runner.RunnerRunTestsMode:
 			patterns := args.RunTests.BundleArgs.Patterns
 			mw := control.NewMessageWriter(stdout)
 			mw.WriteMessage(&control.RunStart{Time: time.Unix(0, 0), NumTests: len(patterns)})
@@ -357,10 +357,10 @@ func TestRunWithReports_LogStream(t *gotesting.T) {
 			mw.WriteMessage(&control.EntityLog{Time: time.Unix(35, 0), Name: test2Name, Text: test2LogText})
 			mw.WriteMessage(&control.EntityEnd{Time: time.Unix(40, 0), Name: test2Name})
 			mw.WriteMessage(&control.RunEnd{Time: time.Unix(50, 0), OutDir: ""})
-		case runner.ListTestsMode:
+		case runner.RunnerListTestsMode:
 			json.NewEncoder(stdout).Encode(tests)
-		case runner.ListFixturesMode:
-			json.NewEncoder(stdout).Encode(&runner.ListFixturesResult{})
+		case runner.RunnerListFixturesMode:
+			json.NewEncoder(stdout).Encode(&runner.RunnerListFixturesResult{})
 		}
 		return 0
 	}
@@ -425,9 +425,9 @@ func TestRunWithReports_ReportResult(t *gotesting.T) {
 		},
 	}
 
-	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+	td.RunFunc = func(args *runner.RunnerArgs, stdout, stderr io.Writer) (status int) {
 		switch args.Mode {
-		case runner.RunTestsMode:
+		case runner.RunnerRunTestsMode:
 			patterns := args.RunTests.BundleArgs.Patterns
 			mw := control.NewMessageWriter(stdout)
 			mw.WriteMessage(&control.RunStart{Time: time.Unix(0, 0), NumTests: len(patterns)})
@@ -439,10 +439,10 @@ func TestRunWithReports_ReportResult(t *gotesting.T) {
 			mw.WriteMessage(&control.EntityStart{Time: time.Unix(45, 0), Info: jsonprotocol.EntityInfo{Name: test3Name}})
 			mw.WriteMessage(&control.EntityEnd{Time: time.Unix(50, 0), Name: test3Name, SkipReasons: []string{test3SkipReason}})
 			mw.WriteMessage(&control.RunEnd{Time: time.Unix(60, 0), OutDir: ""})
-		case runner.ListTestsMode:
+		case runner.RunnerListTestsMode:
 			json.NewEncoder(stdout).Encode(tests)
-		case runner.ListFixturesMode:
-			json.NewEncoder(stdout).Encode(&runner.ListFixturesResult{})
+		case runner.RunnerListFixturesMode:
+			json.NewEncoder(stdout).Encode(&runner.RunnerListFixturesResult{})
 		}
 		return 0
 	}
@@ -523,9 +523,9 @@ func TestRunWithReports_ReportResultTerminate(t *gotesting.T) {
 		},
 	}
 
-	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+	td.RunFunc = func(args *runner.RunnerArgs, stdout, stderr io.Writer) (status int) {
 		switch args.Mode {
-		case runner.RunTestsMode:
+		case runner.RunnerRunTestsMode:
 			patterns := args.RunTests.BundleArgs.Patterns
 			mw := control.NewMessageWriter(stdout)
 			mw.WriteMessage(&control.RunStart{Time: time.Unix(0, 0), NumTests: len(patterns)})
@@ -537,10 +537,10 @@ func TestRunWithReports_ReportResultTerminate(t *gotesting.T) {
 			mw.WriteMessage(&control.EntityStart{Time: time.Unix(45, 0), Info: jsonprotocol.EntityInfo{Name: test3Name}})
 			mw.WriteMessage(&control.EntityEnd{Time: time.Unix(50, 0), Name: test3Name, SkipReasons: []string{test3SkipReason}})
 			mw.WriteMessage(&control.RunEnd{Time: time.Unix(60, 0), OutDir: ""})
-		case runner.ListTestsMode:
+		case runner.RunnerListTestsMode:
 			json.NewEncoder(stdout).Encode(tests)
-		case runner.ListFixturesMode:
-			json.NewEncoder(stdout).Encode(runner.ListFixturesResult{})
+		case runner.RunnerListFixturesMode:
+			json.NewEncoder(stdout).Encode(runner.RunnerListFixturesResult{})
 		}
 		return 0
 	}
@@ -597,9 +597,9 @@ func TestRunWithSkippedTests(t *gotesting.T) {
 			},
 		},
 	}
-	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+	td.RunFunc = func(args *runner.RunnerArgs, stdout, stderr io.Writer) (status int) {
 		switch args.Mode {
-		case runner.RunTestsMode:
+		case runner.RunnerRunTestsMode:
 			patterns := args.RunTests.BundleArgs.Patterns
 			mw := control.NewMessageWriter(stdout)
 			var count int64 = 1
@@ -617,10 +617,10 @@ func TestRunWithSkippedTests(t *gotesting.T) {
 			count = count + 1
 
 			mw.WriteMessage(&control.RunEnd{Time: time.Unix(count, 0), OutDir: ""})
-		case runner.ListTestsMode:
+		case runner.RunnerListTestsMode:
 			json.NewEncoder(stdout).Encode(tests)
-		case runner.ListFixturesMode:
-			json.NewEncoder(stdout).Encode(&runner.ListFixturesResult{})
+		case runner.RunnerListFixturesMode:
+			json.NewEncoder(stdout).Encode(&runner.RunnerListFixturesResult{})
 		}
 		return 0
 	}
@@ -664,10 +664,10 @@ func TestListTests(t *gotesting.T) {
 		},
 	}
 
-	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
-		fakerunner.CheckArgs(t, args, &runner.Args{
-			Mode:      runner.ListTestsMode,
-			ListTests: &runner.ListTestsArgs{BundleGlob: fakerunner.MockLocalBundleGlob},
+	td.RunFunc = func(args *runner.RunnerArgs, stdout, stderr io.Writer) (status int) {
+		fakerunner.CheckArgs(t, args, &runner.RunnerArgs{
+			Mode:      runner.RunnerListTestsMode,
+			ListTests: &runner.RunnerListTestsArgs{BundleGlob: fakerunner.MockLocalBundleGlob},
 		})
 
 		json.NewEncoder(stdout).Encode(tests)
@@ -713,10 +713,10 @@ func TestListTestsWithSharding(t *gotesting.T) {
 		},
 	}
 
-	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
-		fakerunner.CheckArgs(t, args, &runner.Args{
-			Mode:      runner.ListTestsMode,
-			ListTests: &runner.ListTestsArgs{BundleGlob: fakerunner.MockLocalBundleGlob},
+	td.RunFunc = func(args *runner.RunnerArgs, stdout, stderr io.Writer) (status int) {
+		fakerunner.CheckArgs(t, args, &runner.RunnerArgs{
+			Mode:      runner.RunnerListTestsMode,
+			ListTests: &runner.RunnerListTestsArgs{BundleGlob: fakerunner.MockLocalBundleGlob},
 		})
 
 		json.NewEncoder(stdout).Encode(tests)
@@ -771,10 +771,10 @@ func TestListTestsWithSkippedTests(t *gotesting.T) {
 		},
 	}
 
-	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
-		fakerunner.CheckArgs(t, args, &runner.Args{
-			Mode:      runner.ListTestsMode,
-			ListTests: &runner.ListTestsArgs{BundleGlob: fakerunner.MockLocalBundleGlob},
+	td.RunFunc = func(args *runner.RunnerArgs, stdout, stderr io.Writer) (status int) {
+		fakerunner.CheckArgs(t, args, &runner.RunnerArgs{
+			Mode:      runner.RunnerListTestsMode,
+			ListTests: &runner.RunnerListTestsArgs{BundleGlob: fakerunner.MockLocalBundleGlob},
 		})
 
 		json.NewEncoder(stdout).Encode(tests)
@@ -821,13 +821,13 @@ func TestListTestsGetDUTInfo(t *gotesting.T) {
 
 	called := false
 
-	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+	td.RunFunc = func(args *runner.RunnerArgs, stdout, stderr io.Writer) (status int) {
 		switch args.Mode {
-		case runner.GetDUTInfoMode:
+		case runner.RunnerGetDUTInfoMode:
 			// Just check that GetDUTInfo is called; details of args are
 			// tested in deps_test.go.
 			called = true
-			json.NewEncoder(stdout).Encode(&runner.GetDUTInfoResult{
+			json.NewEncoder(stdout).Encode(&runner.RunnerGetDUTInfoResult{
 				SoftwareFeatures: &protocol.SoftwareFeatures{
 					Available: []string{"foo"}, // must report non-empty features
 				},
@@ -857,7 +857,7 @@ func TestRunTestsFailureBeforeRun(t *gotesting.T) {
 
 	// Make the runner always fail, and ask to check test deps so we'll get a failure before trying
 	// to run tests. local() shouldn't set StartedRun to true since we failed before then.
-	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) { return 1 }
+	td.RunFunc = func(args *runner.RunnerArgs, stdout, stderr io.Writer) (status int) { return 1 }
 	td.Cfg.CheckTestDeps = true
 
 	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
@@ -879,13 +879,13 @@ func TestRunTestsGetDUTInfo(t *gotesting.T) {
 
 	osVersion := "octopus-release/R86-13312.0.2020_07_02_1108"
 
-	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+	td.RunFunc = func(args *runner.RunnerArgs, stdout, stderr io.Writer) (status int) {
 		switch args.Mode {
-		case runner.GetDUTInfoMode:
+		case runner.RunnerGetDUTInfoMode:
 			// Just check that GetDUTInfo is called; details of args are
 			// tested in deps_test.go.
 			called = true
-			json.NewEncoder(stdout).Encode(&runner.GetDUTInfoResult{
+			json.NewEncoder(stdout).Encode(&runner.RunnerGetDUTInfoResult{
 				SoftwareFeatures: &protocol.SoftwareFeatures{
 					Available: []string{"foo"}, // must report non-empty features
 				},
@@ -921,13 +921,13 @@ func TestRunTestsGetInitialSysInfo(t *gotesting.T) {
 
 	called := false
 
-	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+	td.RunFunc = func(args *runner.RunnerArgs, stdout, stderr io.Writer) (status int) {
 		switch args.Mode {
-		case runner.GetSysInfoStateMode:
+		case runner.RunnerGetSysInfoStateMode:
 			// Just check that GetInitialSysInfo is called; details of args are
 			// tested in sys_info_test.go.
 			called = true
-			json.NewEncoder(stdout).Encode(&runner.GetSysInfoStateResult{})
+			json.NewEncoder(stdout).Encode(&runner.RunnerGetSysInfoStateResult{})
 		default:
 			t.Errorf("Unexpected args.Mode = %v", args.Mode)
 		}
@@ -986,19 +986,19 @@ func TestRunTestsSkipTests(t *gotesting.T) {
 	td := fakerunner.NewLocalTestData(t)
 	defer td.Close()
 
-	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
+	td.RunFunc = func(args *runner.RunnerArgs, stdout, stderr io.Writer) (status int) {
 		switch args.Mode {
-		case runner.GetDUTInfoMode:
+		case runner.RunnerGetDUTInfoMode:
 			// Just check that GetDUTInfo is called; details of args are
 			// tested in deps_test.go.
-			json.NewEncoder(stdout).Encode(&runner.GetDUTInfoResult{
+			json.NewEncoder(stdout).Encode(&runner.RunnerGetDUTInfoResult{
 				SoftwareFeatures: &protocol.SoftwareFeatures{
 					Available: []string{"a_feature"},
 				},
 			})
-		case runner.ListTestsMode:
+		case runner.RunnerListTestsMode:
 			json.NewEncoder(stdout).Encode(tests)
-		case runner.RunTestsMode:
+		case runner.RunnerRunTestsMode:
 			testNames := args.RunTests.BundleArgs.Patterns
 			mw := control.NewMessageWriter(stdout)
 			mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: len(testNames)})
@@ -1014,8 +1014,8 @@ func TestRunTestsSkipTests(t *gotesting.T) {
 				count++
 			}
 			mw.WriteMessage(&control.RunEnd{Time: time.Unix(count, 0)})
-		case runner.ListFixturesMode:
-			json.NewEncoder(stdout).Encode(&runner.ListFixturesResult{})
+		case runner.RunnerListFixturesMode:
+			json.NewEncoder(stdout).Encode(&runner.RunnerListFixturesResult{})
 		default:
 			t.Errorf("Unexpected args.Mode = %v", args.Mode)
 		}

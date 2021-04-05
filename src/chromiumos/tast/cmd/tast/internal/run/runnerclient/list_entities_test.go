@@ -125,10 +125,10 @@ func TestListLocalTests(t *gotesting.T) {
 		},
 	}
 
-	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
-		fakerunner.CheckArgs(t, args, &runner.Args{
-			Mode:      runner.ListTestsMode,
-			ListTests: &runner.ListTestsArgs{BundleGlob: fakerunner.MockLocalBundleGlob},
+	td.RunFunc = func(args *runner.RunnerArgs, stdout, stderr io.Writer) (status int) {
+		fakerunner.CheckArgs(t, args, &runner.RunnerArgs{
+			Mode:      runner.RunnerListTestsMode,
+			ListTests: &runner.RunnerListTestsArgs{BundleGlob: fakerunner.MockLocalBundleGlob},
 		})
 
 		json.NewEncoder(stdout).Encode(tests)

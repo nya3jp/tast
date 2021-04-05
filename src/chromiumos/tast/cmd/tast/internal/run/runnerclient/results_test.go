@@ -664,13 +664,13 @@ func TestWriteResultsCollectSysInfo(t *gotesting.T) {
 	td := fakerunner.NewLocalTestData(t)
 	defer td.Close()
 
-	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
-		fakerunner.CheckArgs(t, args, &runner.Args{
-			Mode:           runner.CollectSysInfoMode,
-			CollectSysInfo: &runner.CollectSysInfoArgs{},
+	td.RunFunc = func(args *runner.RunnerArgs, stdout, stderr io.Writer) (status int) {
+		fakerunner.CheckArgs(t, args, &runner.RunnerArgs{
+			Mode:           runner.RunnerCollectSysInfoMode,
+			CollectSysInfo: &runner.RunnerCollectSysInfoArgs{},
 		})
 
-		json.NewEncoder(stdout).Encode(&runner.CollectSysInfoResult{})
+		json.NewEncoder(stdout).Encode(&runner.RunnerCollectSysInfoResult{})
 		return 0
 	}
 	td.Cfg.CollectSysInfo = true
@@ -686,7 +686,7 @@ func TestWriteResultsCollectSysInfoFailure(t *gotesting.T) {
 	defer td.Close()
 
 	// Report an error when collecting system info.
-	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) { return 1 }
+	td.RunFunc = func(args *runner.RunnerArgs, stdout, stderr io.Writer) (status int) { return 1 }
 	td.Cfg.CollectSysInfo = true
 	td.State.InitialSysInfo = &runner.SysInfoState{}
 	err := WriteResults(context.Background(), &td.Cfg, &td.State, nil, true)

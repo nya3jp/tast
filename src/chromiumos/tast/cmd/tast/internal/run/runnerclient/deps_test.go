@@ -26,9 +26,9 @@ import (
 	"chromiumos/tast/internal/runner"
 )
 
-// writeGetDUTInfoResult writes runner.GetDUTInfoResult to w.
+// writeGetDUTInfoResult writes runner.RunnerGetDUTInfoResult to w.
 func writeGetDUTInfoResult(w io.Writer, avail, unavail []string, dc *device.Config, hf *configpb.HardwareFeatures, osVersion, defaultBuildArtifactsURL string) error {
-	res := runner.GetDUTInfoResult{
+	res := runner.RunnerGetDUTInfoResult{
 		SoftwareFeatures: &protocol.SoftwareFeatures{
 			Available:   avail,
 			Unavailable: unavail,
@@ -46,16 +46,16 @@ func writeGetDUTInfoResult(w io.Writer, avail, unavail []string, dc *device.Conf
 func checkRunnerTestDepsArgs(t *testing.T, cfg *config.Config, state *config.State, checkDeps bool,
 	avail, unavail []string, dc *device.Config, hf *configpb.HardwareFeatures) {
 	t.Helper()
-	args := runner.Args{
-		Mode: runner.RunTestsMode,
-		RunTests: &runner.RunTestsArgs{
+	args := runner.RunnerArgs{
+		Mode: runner.RunnerRunTestsMode,
+		RunTests: &runner.RunnerRunTestsArgs{
 			BundleArgs: jsonprotocol.BundleRunTestsArgs{
 				FeatureArgs: *featureArgsFromConfig(cfg, state),
 			},
 		},
 	}
 
-	exp := runner.RunTestsArgs{
+	exp := runner.RunnerRunTestsArgs{
 		BundleArgs: jsonprotocol.BundleRunTestsArgs{
 			FeatureArgs: jsonprotocol.FeatureArgs{
 				CheckSoftwareDeps:           checkDeps,
@@ -105,10 +105,10 @@ func TestGetDUTInfo(t *testing.T) {
 	}
 	osVersion := "octopus-release/R86-13312.0.2020_07_02_1108"
 	defaultBuildArtifactsURL := "gs://chromeos-image-archive/octopus-release/R86-13312.0.2020_07_02_1108/"
-	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
-		fakerunner.CheckArgs(t, args, &runner.Args{
-			Mode: runner.GetDUTInfoMode,
-			GetDUTInfo: &runner.GetDUTInfoArgs{
+	td.RunFunc = func(args *runner.RunnerArgs, stdout, stderr io.Writer) (status int) {
+		fakerunner.CheckArgs(t, args, &runner.RunnerArgs{
+			Mode: runner.RunnerGetDUTInfoMode,
+			GetDUTInfo: &runner.RunnerGetDUTInfoArgs{
 				ExtraUSEFlags:       td.Cfg.ExtraUSEFlags,
 				RequestDeviceConfig: true,
 			},
@@ -161,10 +161,10 @@ func TestGetDUTInfoNoDeviceConfig(t *testing.T) {
 	td := fakerunner.NewLocalTestData(t)
 	defer td.Close()
 
-	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
-		fakerunner.CheckArgs(t, args, &runner.Args{
-			Mode: runner.GetDUTInfoMode,
-			GetDUTInfo: &runner.GetDUTInfoArgs{
+	td.RunFunc = func(args *runner.RunnerArgs, stdout, stderr io.Writer) (status int) {
+		fakerunner.CheckArgs(t, args, &runner.RunnerArgs{
+			Mode: runner.RunnerGetDUTInfoMode,
+			GetDUTInfo: &runner.RunnerGetDUTInfoArgs{
 				ExtraUSEFlags:       td.Cfg.ExtraUSEFlags,
 				RequestDeviceConfig: true,
 			},
@@ -210,10 +210,10 @@ func TestGetSoftwareFeaturesNoFeatures(t *testing.T) {
 	td := fakerunner.NewLocalTestData(t)
 	defer td.Close()
 	// "always" should fail if the runner doesn't know about any features.
-	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
-		fakerunner.CheckArgs(t, args, &runner.Args{
-			Mode: runner.GetDUTInfoMode,
-			GetDUTInfo: &runner.GetDUTInfoArgs{
+	td.RunFunc = func(args *runner.RunnerArgs, stdout, stderr io.Writer) (status int) {
+		fakerunner.CheckArgs(t, args, &runner.RunnerArgs{
+			Mode: runner.RunnerGetDUTInfoMode,
+			GetDUTInfo: &runner.RunnerGetDUTInfoArgs{
 				RequestDeviceConfig: true,
 			},
 		})

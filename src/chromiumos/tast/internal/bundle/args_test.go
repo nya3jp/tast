@@ -18,7 +18,7 @@ import (
 )
 
 // newBufferWithArgs returns a bytes.Buffer containing the JSON representation of args.
-func newBufferWithArgs(t *testing.T, args *Args) *bytes.Buffer {
+func newBufferWithArgs(t *testing.T, args *BundleArgs) *bytes.Buffer {
 	t.Helper()
 	b := bytes.Buffer{}
 	if err := json.NewEncoder(&b).Encode(args); err != nil {
@@ -33,14 +33,14 @@ func TestReadArgs(t *testing.T) {
 		pattern        = "example.*"
 	)
 
-	args := &Args{
-		RunTests: &RunTestsArgs{
+	args := &BundleArgs{
+		RunTests: &BundleRunTestsArgs{
 			DataDir: defaultDataDir,
 		},
 	}
-	stdin := newBufferWithArgs(t, &Args{
-		Mode: ListTestsMode,
-		ListTests: &ListTestsArgs{
+	stdin := newBufferWithArgs(t, &BundleArgs{
+		Mode: BundleListTestsMode,
+		ListTests: &BundleListTestsArgs{
 			Patterns: []string{pattern},
 		},
 	})
@@ -48,54 +48,54 @@ func TestReadArgs(t *testing.T) {
 		t.Fatal("readArgs failed: ", err)
 	}
 
-	// Args are merged.
-	exp := &Args{
-		Mode: ListTestsMode,
-		RunTests: &RunTestsArgs{
+	// BundleArgs are merged.
+	exp := &BundleArgs{
+		Mode: BundleListTestsMode,
+		RunTests: &BundleRunTestsArgs{
 			DataDir: defaultDataDir,
 		},
-		ListTests: &ListTestsArgs{
+		ListTests: &BundleListTestsArgs{
 			Patterns: []string{pattern},
 		},
 	}
 	if diff := cmp.Diff(args, exp); diff != "" {
-		t.Fatal("Args mismatch (-want +got): ", diff)
+		t.Fatal("BundleArgs mismatch (-want +got): ", diff)
 	}
 }
 
 func TestReadArgsDumpTests(t *testing.T) {
-	args := &Args{}
+	args := &BundleArgs{}
 	if err := readArgs([]string{"-dumptests"}, &bytes.Buffer{}, ioutil.Discard, args, localBundle); err != nil {
 		t.Fatal("readArgs failed: ", err)
 	}
 
-	exp := &Args{
-		Mode:      ListTestsMode,
-		ListTests: &ListTestsArgs{},
+	exp := &BundleArgs{
+		Mode:      BundleListTestsMode,
+		ListTests: &BundleListTestsArgs{},
 	}
 	if diff := cmp.Diff(args, exp); diff != "" {
-		t.Fatal("Args mismatch (-want +got): ", diff)
+		t.Fatal("BundleArgs mismatch (-want +got): ", diff)
 	}
 }
 
 func TestReadArgsRPC(t *testing.T) {
-	args := &Args{}
+	args := &BundleArgs{}
 	if err := readArgs([]string{"-rpc"}, &bytes.Buffer{}, ioutil.Discard, args, localBundle); err != nil {
 		t.Fatal("readArgs failed: ", err)
 	}
 
-	exp := &Args{
-		Mode: RPCMode,
+	exp := &BundleArgs{
+		Mode: BundleRPCMode,
 	}
 	if diff := cmp.Diff(args, exp); diff != "" {
-		t.Fatal("Args mismatch (-want +got): ", diff)
+		t.Fatal("BundleArgs mismatch (-want +got): ", diff)
 	}
 }
 
 func TestMarshal(t *testing.T) {
 	// 0-bytes data after marshal is treated as nil.
 	// Fill some fields to test non-nil case here.
-	in := &RunTestsArgs{
+	in := &BundleRunTestsArgs{
 		FeatureArgs: FeatureArgs{
 			AvailableSoftwareFeatures:   []string{"feature1"},
 			UnavailableSoftwareFeatures: []string{"feature2"},
@@ -132,7 +132,7 @@ func TestMarshal(t *testing.T) {
 	if err != nil {
 		t.Fatal("Failed to marshalize JSON:", err)
 	}
-	out := &RunTestsArgs{}
+	out := &BundleRunTestsArgs{}
 	if err := json.Unmarshal(b, &out); err != nil {
 		t.Fatal("Failed to unmarshal JSON: ", err)
 	}

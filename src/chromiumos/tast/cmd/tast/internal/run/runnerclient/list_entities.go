@@ -157,7 +157,7 @@ func runListTestsCommand(r runnerCmd, cfg *config.Config, state *config.State, g
 	args := &runner.Args{
 		Mode: runner.ListTestsMode,
 		ListTests: &runner.ListTestsArgs{
-			BundleArgs: bundle.ListTestsArgs{
+			BundleArgs: bundle.BundleListTestsArgs{
 				FeatureArgs: *featureArgsFromConfig(cfg, state),
 				Patterns:    cfg.Patterns,
 			},

@@ -49,14 +49,14 @@ func checkRunnerTestDepsArgs(t *testing.T, cfg *config.Config, state *config.Sta
 	args := runner.Args{
 		Mode: runner.RunTestsMode,
 		RunTests: &runner.RunTestsArgs{
-			BundleArgs: bundle.RunTestsArgs{
+			BundleArgs: bundle.BundleRunTestsArgs{
 				FeatureArgs: *featureArgsFromConfig(cfg, state),
 			},
 		},
 	}
 
 	exp := runner.RunTestsArgs{
-		BundleArgs: bundle.RunTestsArgs{
+		BundleArgs: bundle.BundleRunTestsArgs{
 			FeatureArgs: bundle.FeatureArgs{
 				CheckSoftwareDeps:           checkDeps,
 				AvailableSoftwareFeatures:   avail,

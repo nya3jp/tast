@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "06f8d239_32317e13",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 14
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2021-04-05T08:37:35Z",
+      "side": 1,
+      "message": "I rebased the CL, and Check() is updated. Could you take another look?",
+      "revId": "903fad388957d1a2921a5fef714a5d5c7b6644a1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

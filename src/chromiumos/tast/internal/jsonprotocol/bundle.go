@@ -25,14 +25,14 @@ const (
 	BundleRunTestsMode BundleRunMode = 0
 	// BundleListTestsMode indicates that the bundle should write information about matched tests to stdout as a
 	// JSON array of testing.Test structs and exit.
-	BundleListTestsMode = 1
+	BundleListTestsMode BundleRunMode = 1
 	// BundleRPCMode indicates that the bundle should run a gRPC server on the stdin/stdout.
-	BundleRPCMode = 2
+	BundleRPCMode BundleRunMode = 2
 	// BundleExportMetadataMode indicates that the bundle should compose and dump test metadata.
-	BundleExportMetadataMode = 3
+	BundleExportMetadataMode BundleRunMode = 3
 	// BundleListFixturesMode indicates that the bundle should write information about all the fixtures
 	// to stdout as a JSON array of testing.EntityInfo structs and exit.
-	BundleListFixturesMode = 4
+	BundleListFixturesMode BundleRunMode = 4
 )
 
 // BundleArgs is used to pass arguments from test runners to test bundles.

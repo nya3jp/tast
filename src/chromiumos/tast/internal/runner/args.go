@@ -73,16 +73,16 @@ type RunnerArgs struct {
 	// DownloadPrivateBundles contains arguments used by RunnerDownloadPrivateBundlesMode.
 	DownloadPrivateBundles *RunnerDownloadPrivateBundlesArgs `json:"downloadPrivateBundles,omitempty"`
 
-	// report is set to true by readArgs if status should be reported via control messages rather
+	// Report is set to true by readArgs if status should be reported via control messages rather
 	// than human-readable log messages. This is true when args were supplied via stdin rather than
 	// command-line flags, indicating that the runner was executed by the tast command. It's only relevant
 	// for RunnerRunTestsMode.
-	report bool
+	Report bool `json:"-"`
 }
 
-// bundleArgs creates a jsonprotocol.BundleArgs appropriate for running bundles in the supplied mode.
+// BundleArgs creates a jsonprotocol.BundleArgs appropriate for running bundles in the supplied mode.
 // The returned struct's slices should not be modified, as they are shared with a.
-func (a *RunnerArgs) bundleArgs(mode jsonprotocol.BundleRunMode) (*jsonprotocol.BundleArgs, error) {
+func (a *RunnerArgs) BundleArgs(mode jsonprotocol.BundleRunMode) (*jsonprotocol.BundleArgs, error) {
 	ba := jsonprotocol.BundleArgs{Mode: mode}
 
 	switch mode {
@@ -109,20 +109,6 @@ func (a *RunnerArgs) bundleArgs(mode jsonprotocol.BundleRunMode) (*jsonprotocol.
 	ba.FillDeprecated()
 
 	return &ba, nil
-}
-
-// fillDefaults fills unset fields with default values from cfg.
-func (a *RunnerArgs) fillDefaults(cfg *Config) {
-	switch a.Mode {
-	case RunnerRunTestsMode:
-		if a.RunTests.BundleArgs.BuildArtifactsURL == "" {
-			a.RunTests.BundleArgs.BuildArtifactsURL = cfg.DefaultBuildArtifactsURL
-		}
-	case RunnerDownloadPrivateBundlesMode:
-		if a.DownloadPrivateBundles.BuildArtifactsURL == "" {
-			a.DownloadPrivateBundles.BuildArtifactsURL = cfg.DefaultBuildArtifactsURL
-		}
-	}
 }
 
 // FillDeprecated backfills deprecated fields from the corresponding non-deprecated fields.
@@ -432,6 +418,20 @@ type Config struct {
 	OSVersion string
 }
 
+// fillDefaults fills unset fields with default values from cfg.
+func (cfg *Config) fillDefaults(a *RunnerArgs) {
+	switch a.Mode {
+	case RunnerRunTestsMode:
+		if a.RunTests.BundleArgs.BuildArtifactsURL == "" {
+			a.RunTests.BundleArgs.BuildArtifactsURL = cfg.DefaultBuildArtifactsURL
+		}
+	case RunnerDownloadPrivateBundlesMode:
+		if a.DownloadPrivateBundles.BuildArtifactsURL == "" {
+			a.DownloadPrivateBundles.BuildArtifactsURL = cfg.DefaultBuildArtifactsURL
+		}
+	}
+}
+
 // readArgs parses runtime arguments.
 // clArgs contains command-line arguments and is typically os.Args[1:].
 // args contains default values for arguments and is further populated by parsing clArgs or
@@ -442,7 +442,7 @@ func readArgs(clArgs []string, stdin io.Reader, stderr io.Writer, args *RunnerAr
 		if err := json.NewDecoder(stdin).Decode(args); err != nil {
 			return command.NewStatusErrorf(statusBadArgs, "failed to decode args from stdin: %v", err)
 		}
-		args.report = true
+		args.Report = true
 	} else {
 		// Expose a limited amount of configurability via command-line flags to support running test runners manually.
 		args.Mode = RunnerRunTestsMode
@@ -513,7 +513,7 @@ errors, including the failure of an individual test.
 		return command.NewStatusErrorf(statusBadArgs, "args not set for mode %v", args.Mode)
 	}
 
-	args.fillDefaults(cfg)
+	cfg.fillDefaults(args)
 
 	// Use deprecated fields if they were supplied by an old tast binary.
 	args.PromoteDeprecated()

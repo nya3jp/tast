@@ -83,7 +83,7 @@ type testsOrError struct {
 // with matched tests is also returned.
 func getTests(args *RunnerArgs, bundles []string) (tests []*jsonprotocol.EntityWithRunnabilityInfo,
 	bundlesWithTests []string, statusErr *command.StatusError) {
-	bundleArgs, err := args.bundleArgs(jsonprotocol.BundleListTestsMode)
+	bundleArgs, err := args.BundleArgs(jsonprotocol.BundleListTestsMode)
 	if err != nil {
 		return nil, nil, command.NewStatusErrorf(statusBadArgs, "%v", err)
 	}

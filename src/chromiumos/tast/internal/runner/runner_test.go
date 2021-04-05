@@ -551,10 +551,10 @@ func TestCheckDepsWhenRunManually(t *gotesting.T) {
 		t.Fatalf("%s = %v; want %v", sig, status, statusSuccess)
 	}
 
-	// Use args.bundleArgs to determine what would be passed to test bundles.
-	bundleArgs, err := args.bundleArgs(jsonprotocol.BundleRunTestsMode)
+	// Use args.BundleArgs to determine what would be passed to test bundles.
+	bundleArgs, err := args.BundleArgs(jsonprotocol.BundleRunTestsMode)
 	if err != nil {
-		t.Fatal("bundleArgs failed: ", err)
+		t.Fatal("BundleArgs failed: ", err)
 	}
 	if !bundleArgs.RunTests.CheckSoftwareDeps {
 		t.Errorf("%s wouldn't request checking test deps", sig)

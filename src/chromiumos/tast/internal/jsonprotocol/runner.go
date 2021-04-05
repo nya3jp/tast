@@ -44,6 +44,8 @@ const (
 	// RunnerListFixturesMode indicates that the runner should write information about fixtures to stdout
 	// as a JSON serialized RunnerListFixturesResult.
 	RunnerListFixturesMode RunnerRunMode = 7
+	// RunnerRPCMode indicates that the runner should run a gRPC server on the stdin/stdout.
+	RunnerRPCMode RunnerRunMode = 8
 )
 
 // RunnerArgs provides a backward- and forward-compatible way to pass arguments from the tast executable to test runners.

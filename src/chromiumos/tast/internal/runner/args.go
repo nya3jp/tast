@@ -136,6 +136,7 @@ errors, including the failure of an individual test.
 			fmt.Fprintf(stderr, usage, filepath.Base(os.Args[0]))
 			flags.PrintDefaults()
 		}
+		rpc := flags.Bool("rpc", false, "run gRPC server")
 		flags.StringVar(&args.RunTests.BundleGlob, "bundles",
 			args.RunTests.BundleGlob, "glob matching test bundles")
 		flags.StringVar(&args.RunTests.BundleArgs.DataDir, "datadir",
@@ -160,6 +161,11 @@ errors, including the failure of an individual test.
 
 		if err := flags.Parse(clArgs); err != nil {
 			return command.NewStatusErrorf(statusBadArgs, "%v", err)
+		}
+
+		if *rpc {
+			args.Mode = jsonprotocol.RunnerRPCMode
+			return nil
 		}
 
 		args.RunTests.BundleArgs.Patterns = flags.Args()

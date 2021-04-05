@@ -144,6 +144,11 @@ type FeatureArgs struct {
 	// TestVars contains names and values of runtime variables used to pass out-of-band data to tests.
 	// Names correspond to testing.Test.Vars and values are accessed using testing.State.Var.
 	TestVars map[string]string `json:"testVars,omitempty"`
+	// MaybeMissingVars contains a regex compiled with regexp.Compile().
+	// If every missing variable in testing.Test.VarDeps (exactly) matches the
+	// regex, the test is skipped instead of failing.
+	// If empty, no tests are skipped due to missing vars.
+	MaybeMissingVars string `json:"maybeMissingVars,omitempty"`
 	// CheckSoftwareDeps is true if each test's SoftwareDeps field should be checked against
 	// AvailableSoftwareFeatures and UnavailableSoftwareFeatures.
 	CheckSoftwareDeps bool `json:"checkSoftwareDeps,omitempty"`
@@ -181,7 +186,8 @@ func (a *FeatureArgs) Features() *protocol.Features {
 			DeprecatedDeviceConfig: a.DeviceConfig.Proto,
 			HardwareFeatures:       a.HardwareFeatures.Proto,
 		},
-		Vars: vars,
+		Vars:             vars,
+		MaybeMissingVars: a.MaybeMissingVars,
 	}
 }
 

@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "30386493_1fb7792f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 15
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-04-05T09:39:21Z",
+      "side": 1,
+      "message": "Still LGTM with a relatively minor comment.",
+      "revId": "f5c4087fed776c672703e7ea4e9ee9e51852e1fe",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7c92d245_54df9080",
+        "filename": "src/chromiumos/tast/internal/dep/dep.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 43,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-04-05T09:39:21Z",
+      "side": 1,
+      "message": "When f.MaybeMIssingVars is an empty string (default), this message might be a bit confusing. How about treating the case specially?",
+      "range": {
+        "startLine": 43,
+        "startChar": 91,
+        "endLine": 43,
+        "endChar": 107
+      },
+      "revId": "f5c4087fed776c672703e7ea4e9ee9e51852e1fe",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

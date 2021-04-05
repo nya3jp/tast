@@ -11,7 +11,7 @@ package main
 import (
 	"os"
 
-	"chromiumos/tast/internal/bundle"
+	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/runner"
 )
 
@@ -19,7 +19,7 @@ func main() {
 	args := runner.Args{
 		RunTests: &runner.RunTestsArgs{
 			BundleGlob: "/usr/libexec/tast/bundles/remote/*", // default glob matching test bundles
-			BundleArgs: bundle.BundleRunTestsArgs{
+			BundleArgs: jsonprotocol.BundleRunTestsArgs{
 				DataDir: "/usr/share/tast/data", // default dir containing test data
 			},
 		},

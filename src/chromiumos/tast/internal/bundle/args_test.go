@@ -15,10 +15,12 @@ import (
 	"github.com/google/go-cmp/cmp"
 	configpb "go.chromium.org/chromiumos/config/go/api"
 	"go.chromium.org/chromiumos/infra/proto/go/device"
+
+	"chromiumos/tast/internal/jsonprotocol"
 )
 
 // newBufferWithArgs returns a bytes.Buffer containing the JSON representation of args.
-func newBufferWithArgs(t *testing.T, args *BundleArgs) *bytes.Buffer {
+func newBufferWithArgs(t *testing.T, args *jsonprotocol.BundleArgs) *bytes.Buffer {
 	t.Helper()
 	b := bytes.Buffer{}
 	if err := json.NewEncoder(&b).Encode(args); err != nil {
@@ -33,14 +35,14 @@ func TestReadArgs(t *testing.T) {
 		pattern        = "example.*"
 	)
 
-	args := &BundleArgs{
-		RunTests: &BundleRunTestsArgs{
+	args := &jsonprotocol.BundleArgs{
+		RunTests: &jsonprotocol.BundleRunTestsArgs{
 			DataDir: defaultDataDir,
 		},
 	}
-	stdin := newBufferWithArgs(t, &BundleArgs{
-		Mode: BundleListTestsMode,
-		ListTests: &BundleListTestsArgs{
+	stdin := newBufferWithArgs(t, &jsonprotocol.BundleArgs{
+		Mode: jsonprotocol.BundleListTestsMode,
+		ListTests: &jsonprotocol.BundleListTestsArgs{
 			Patterns: []string{pattern},
 		},
 	})
@@ -49,12 +51,12 @@ func TestReadArgs(t *testing.T) {
 	}
 
 	// BundleArgs are merged.
-	exp := &BundleArgs{
-		Mode: BundleListTestsMode,
-		RunTests: &BundleRunTestsArgs{
+	exp := &jsonprotocol.BundleArgs{
+		Mode: jsonprotocol.BundleListTestsMode,
+		RunTests: &jsonprotocol.BundleRunTestsArgs{
 			DataDir: defaultDataDir,
 		},
-		ListTests: &BundleListTestsArgs{
+		ListTests: &jsonprotocol.BundleListTestsArgs{
 			Patterns: []string{pattern},
 		},
 	}
@@ -64,14 +66,14 @@ func TestReadArgs(t *testing.T) {
 }
 
 func TestReadArgsDumpTests(t *testing.T) {
-	args := &BundleArgs{}
+	args := &jsonprotocol.BundleArgs{}
 	if err := readArgs([]string{"-dumptests"}, &bytes.Buffer{}, ioutil.Discard, args, localBundle); err != nil {
 		t.Fatal("readArgs failed: ", err)
 	}
 
-	exp := &BundleArgs{
-		Mode:      BundleListTestsMode,
-		ListTests: &BundleListTestsArgs{},
+	exp := &jsonprotocol.BundleArgs{
+		Mode:      jsonprotocol.BundleListTestsMode,
+		ListTests: &jsonprotocol.BundleListTestsArgs{},
 	}
 	if diff := cmp.Diff(args, exp); diff != "" {
 		t.Fatal("BundleArgs mismatch (-want +got): ", diff)
@@ -79,13 +81,13 @@ func TestReadArgsDumpTests(t *testing.T) {
 }
 
 func TestReadArgsRPC(t *testing.T) {
-	args := &BundleArgs{}
+	args := &jsonprotocol.BundleArgs{}
 	if err := readArgs([]string{"-rpc"}, &bytes.Buffer{}, ioutil.Discard, args, localBundle); err != nil {
 		t.Fatal("readArgs failed: ", err)
 	}
 
-	exp := &BundleArgs{
-		Mode: BundleRPCMode,
+	exp := &jsonprotocol.BundleArgs{
+		Mode: jsonprotocol.BundleRPCMode,
 	}
 	if diff := cmp.Diff(args, exp); diff != "" {
 		t.Fatal("BundleArgs mismatch (-want +got): ", diff)
@@ -95,11 +97,11 @@ func TestReadArgsRPC(t *testing.T) {
 func TestMarshal(t *testing.T) {
 	// 0-bytes data after marshal is treated as nil.
 	// Fill some fields to test non-nil case here.
-	in := &BundleRunTestsArgs{
-		FeatureArgs: FeatureArgs{
+	in := &jsonprotocol.BundleRunTestsArgs{
+		FeatureArgs: jsonprotocol.FeatureArgs{
 			AvailableSoftwareFeatures:   []string{"feature1"},
 			UnavailableSoftwareFeatures: []string{"feature2"},
-			DeviceConfig: DeviceConfigJSON{
+			DeviceConfig: jsonprotocol.DeviceConfigJSON{
 				Proto: &device.Config{
 					Id: &device.ConfigId{
 						PlatformId: &device.PlatformId{Value: "platformId"},
@@ -108,7 +110,7 @@ func TestMarshal(t *testing.T) {
 					},
 				},
 			},
-			HardwareFeatures: HardwareFeaturesJSON{
+			HardwareFeatures: jsonprotocol.HardwareFeaturesJSON{
 				Proto: &configpb.HardwareFeatures{
 					Screen: &configpb.HardwareFeatures_Screen{
 						TouchSupport: configpb.HardwareFeatures_PRESENT,
@@ -132,7 +134,7 @@ func TestMarshal(t *testing.T) {
 	if err != nil {
 		t.Fatal("Failed to marshalize JSON:", err)
 	}
-	out := &BundleRunTestsArgs{}
+	out := &jsonprotocol.BundleRunTestsArgs{}
 	if err := json.Unmarshal(b, &out); err != nil {
 		t.Fatal("Failed to unmarshal JSON: ", err)
 	}

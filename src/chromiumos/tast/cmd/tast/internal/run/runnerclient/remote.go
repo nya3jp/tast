@@ -17,7 +17,7 @@ import (
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
-	"chromiumos/tast/internal/bundle"
+	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/runner"
 	"chromiumos/tast/internal/timing"
 )
@@ -92,7 +92,7 @@ func runRemoteTestsOnce(ctx context.Context, cfg *config.Config, state *config.S
 	args := runner.Args{
 		Mode: runner.RunTestsMode,
 		RunTests: &runner.RunTestsArgs{
-			BundleArgs: bundle.BundleRunTestsArgs{
+			BundleArgs: jsonprotocol.BundleRunTestsArgs{
 				FeatureArgs:       *featureArgsFromConfig(cfg, state),
 				Patterns:          patterns,
 				DataDir:           cfg.RemoteDataDir,

@@ -18,7 +18,6 @@ import (
 	"go.chromium.org/chromiumos/infra/proto/go/device"
 
 	"chromiumos/tast/autocaps"
-	"chromiumos/tast/internal/bundle"
 	"chromiumos/tast/internal/command"
 	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/protocol"
@@ -81,24 +80,24 @@ type Args struct {
 	report bool
 }
 
-// bundleArgs creates a bundle.BundleArgs appropriate for running bundles in the supplied mode.
+// bundleArgs creates a jsonprotocol.BundleArgs appropriate for running bundles in the supplied mode.
 // The returned struct's slices should not be modified, as they are shared with a.
-func (a *Args) bundleArgs(mode bundle.BundleRunMode) (*bundle.BundleArgs, error) {
-	ba := bundle.BundleArgs{Mode: mode}
+func (a *Args) bundleArgs(mode jsonprotocol.BundleRunMode) (*jsonprotocol.BundleArgs, error) {
+	ba := jsonprotocol.BundleArgs{Mode: mode}
 
 	switch mode {
-	case bundle.BundleRunTestsMode:
+	case jsonprotocol.BundleRunTestsMode:
 		switch a.Mode {
 		case RunTestsMode:
 			ba.RunTests = &a.RunTests.BundleArgs
 		default:
 			return nil, fmt.Errorf("can't make RunTests bundle args in runner mode %d", int(a.Mode))
 		}
-	case bundle.BundleListTestsMode:
+	case jsonprotocol.BundleListTestsMode:
 		switch a.Mode {
 		case RunTestsMode:
 			// We didn't receive ListTests args, so copy the shared patterns field from RunTests.
-			ba.ListTests = &bundle.BundleListTestsArgs{Patterns: a.RunTests.BundleArgs.Patterns}
+			ba.ListTests = &jsonprotocol.BundleListTestsArgs{Patterns: a.RunTests.BundleArgs.Patterns}
 		case ListTestsMode:
 			ba.ListTests = &a.ListTests.BundleArgs
 		default:
@@ -155,7 +154,7 @@ func (a *Args) PromoteDeprecated() {
 // RunTestsArgs is nested within Args and contains arguments used by RunTestsMode.
 type RunTestsArgs struct {
 	// BundleArgs contains arguments that are relevant to test bundles.
-	BundleArgs bundle.BundleRunTestsArgs `json:"bundleArgs"`
+	BundleArgs jsonprotocol.BundleRunTestsArgs `json:"bundleArgs"`
 	// BundleGlob is a glob-style path matching test bundles to execute.
 	BundleGlob string `json:"bundleGlob,omitempty"`
 	// Devservers contains URLs of devservers that can be used to download files.
@@ -163,14 +162,14 @@ type RunTestsArgs struct {
 	// BuildArtifactsURLDeprecated is the URL of Google Cloud Storage directory, ending with a slash,
 	// containing build artifacts for the current Chrome OS image.
 	// If it is empty, DefaultBuildArtifactsURL in runner.Config is used.
-	// DEPRECATED: Use bundle.BundleRunTestsArgs.BuildArtifactsURL instead.
+	// DEPRECATED: Use jsonprotocol.BundleRunTestsArgs.BuildArtifactsURL instead.
 	BuildArtifactsURLDeprecated string `json:"buildArtifactsUrl,omitempty"`
 }
 
 // ListTestsArgs is nested within Args and contains arguments used by ListTestsMode.
 type ListTestsArgs struct {
 	// BundleArgs contains arguments that are relevant to test bundles.
-	BundleArgs bundle.BundleListTestsArgs `json:"bundleArgs"`
+	BundleArgs jsonprotocol.BundleListTestsArgs `json:"bundleArgs"`
 	// BundleGlob is a glob-style path matching test bundles to execute.
 	BundleGlob string `json:"bundleGlob,omitempty"`
 }

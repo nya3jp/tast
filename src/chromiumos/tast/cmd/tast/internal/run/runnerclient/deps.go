@@ -15,7 +15,7 @@ import (
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/target"
-	"chromiumos/tast/internal/bundle"
+	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/runner"
 	"chromiumos/tast/internal/timing"
 )
@@ -87,8 +87,8 @@ func GetDUTInfo(ctx context.Context, cfg *config.Config, state *config.State, cc
 }
 
 // featureArgsFromConfig returns feature arguments based on the configuration parameter.
-func featureArgsFromConfig(cfg *config.Config, state *config.State) *bundle.FeatureArgs {
-	args := bundle.FeatureArgs{
+func featureArgsFromConfig(cfg *config.Config, state *config.State) *jsonprotocol.FeatureArgs {
+	args := jsonprotocol.FeatureArgs{
 		CheckSoftwareDeps: cfg.CheckTestDeps,
 		TestVars:          cfg.TestVars,
 	}

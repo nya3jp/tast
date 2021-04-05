@@ -21,8 +21,8 @@ import (
 	"time"
 
 	"chromiumos/tast/autocaps"
-	"chromiumos/tast/internal/bundle"
 	"chromiumos/tast/internal/crash"
+	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/runner"
 	"chromiumos/tast/lsbrelease"
 	"chromiumos/tast/shutil"
@@ -32,7 +32,7 @@ func main() {
 	args := runner.Args{
 		RunTests: &runner.RunTestsArgs{
 			BundleGlob: "/usr/local/libexec/tast/bundles/local/*",
-			BundleArgs: bundle.BundleRunTestsArgs{
+			BundleArgs: jsonprotocol.BundleRunTestsArgs{
 				DataDir: "/usr/local/share/tast/data",
 				TempDir: "/usr/local/tmp/tast/run_tmp",
 			},

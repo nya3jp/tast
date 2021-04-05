@@ -16,8 +16,8 @@ import (
 )
 
 func main() {
-	args := runner.Args{
-		RunTests: &runner.RunTestsArgs{
+	args := runner.RunnerArgs{
+		RunTests: &runner.RunnerRunTestsArgs{
 			BundleGlob: "/usr/libexec/tast/bundles/remote/*", // default glob matching test bundles
 			BundleArgs: jsonprotocol.BundleRunTestsArgs{
 				DataDir: "/usr/share/tast/data", // default dir containing test data

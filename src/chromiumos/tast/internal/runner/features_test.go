@@ -47,9 +47,9 @@ func TestGetDUTInfo(t *testing.T) {
 	}
 	status, stdout, _, sig := callRun(
 		t, nil,
-		&Args{
-			Mode: GetDUTInfoMode,
-			GetDUTInfo: &GetDUTInfoArgs{
+		&RunnerArgs{
+			Mode: RunnerGetDUTInfoMode,
+			GetDUTInfo: &RunnerGetDUTInfoArgs{
 				ExtraUSEFlags: []string{"baz"},
 			},
 		},
@@ -57,11 +57,11 @@ func TestGetDUTInfo(t *testing.T) {
 	if status != statusSuccess {
 		t.Fatalf("%v = %v; want %v", sig, status, statusSuccess)
 	}
-	var res GetDUTInfoResult
+	var res RunnerGetDUTInfoResult
 	if err := json.NewDecoder(stdout).Decode(&res); err != nil {
 		t.Fatalf("%v gave bad output: %v", sig, err)
 	}
-	exp := GetDUTInfoResult{
+	exp := RunnerGetDUTInfoResult{
 		SoftwareFeatures: &protocol.SoftwareFeatures{
 			Available:   []string{"board", "foo_glob", "foobar", "other"},
 			Unavailable: []string{"not_bar_glob", "not_board", "not_foo"},
@@ -80,19 +80,19 @@ func TestGetSoftwareFeaturesNoFile(t *testing.T) {
 		USEFlagsFile:               "/tmp/nonexistent_use_flags_file.txt",
 		SoftwareFeatureDefinitions: map[string]string{"foo": "bar"},
 	}
-	args := &Args{
-		Mode:       GetDUTInfoMode,
-		GetDUTInfo: &GetDUTInfoArgs{},
+	args := &RunnerArgs{
+		Mode:       RunnerGetDUTInfoMode,
+		GetDUTInfo: &RunnerGetDUTInfoArgs{},
 	}
 	status, stdout, _, sig := callRun(t, nil, args, nil, &cfg)
 	if status != statusSuccess {
 		t.Fatalf("%v = %v; want %v", sig, status, statusSuccess)
 	}
-	var res GetDUTInfoResult
+	var res RunnerGetDUTInfoResult
 	if err := json.NewDecoder(stdout).Decode(&res); err != nil {
 		t.Fatalf("%v gave bad output: %v", sig, err)
 	}
-	exp := GetDUTInfoResult{}
+	exp := RunnerGetDUTInfoResult{}
 	if !reflect.DeepEqual(res, exp) {
 		t.Errorf("%v wrote result %+v; want %+v", sig, res, exp)
 	}

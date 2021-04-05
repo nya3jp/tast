@@ -44,12 +44,12 @@ func GetDUTInfo(ctx context.Context, cfg *config.Config, state *config.State, cc
 		return err
 	}
 
-	var res runner.GetDUTInfoResult
+	var res runner.RunnerGetDUTInfoResult
 	if err := runTestRunnerCommand(
 		localRunnerCommand(ctx, cfg, conn.SSHConn()),
-		&runner.Args{
-			Mode: runner.GetDUTInfoMode,
-			GetDUTInfo: &runner.GetDUTInfoArgs{
+		&runner.RunnerArgs{
+			Mode: runner.RunnerGetDUTInfoMode,
+			GetDUTInfo: &runner.RunnerGetDUTInfoArgs{
 				ExtraUSEFlags:       cfg.ExtraUSEFlags,
 				RequestDeviceConfig: true,
 			},

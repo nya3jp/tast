@@ -56,7 +56,7 @@ const (
 var MockDevservers = []string{"192.168.0.1:12345", "192.168.0.2:23456"}
 
 // RunFunc is the type of LocalTestData.RunFunc.
-type RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int)
+type RunFunc = func(args *runner.RunnerArgs, stdout, stderr io.Writer) (status int)
 
 func init() {
 	// If the binary was executed via a symlink created by
@@ -277,7 +277,7 @@ func NewLocalTestData(t *gotesting.T, opts ...LocalTestDataOption) *LocalTestDat
 	td.Cfg.ShardIndex = 0
 
 	// Set up remote runner.
-	b, err := json.Marshal(runner.ListFixturesResult{
+	b, err := json.Marshal(runner.RunnerListFixturesResult{
 		Fixtures: map[string][]*jsonprotocol.EntityInfo{
 			"cros": cfg.remoteFixtures,
 		},
@@ -334,7 +334,7 @@ func (td *LocalTestData) handleExec(req *sshtest.ExecReq) {
 		req.End(0)
 	case td.ExpRunCmd:
 		req.Start(true)
-		var args runner.Args
+		var args runner.RunnerArgs
 		var status int
 		if err := json.NewDecoder(req).Decode(&args); err != nil {
 			status = command.WriteError(req.Stderr(), err)
@@ -342,7 +342,7 @@ func (td *LocalTestData) handleExec(req *sshtest.ExecReq) {
 			status = td.RunFunc(&args, req, req.Stderr())
 		}
 		req.CloseOutput()
-		if args.Mode == runner.RunTestsMode {
+		if args.Mode == runner.RunnerRunTestsMode {
 			time.Sleep(td.RunDelay)
 		}
 		req.End(status)

@@ -106,8 +106,8 @@ func TestRunTests(t *gotesting.T) {
 	stdout := bytes.Buffer{}
 	tests := reg.AllTests()
 	var preRunCalls, postRunCalls, preTestCalls, postTestCalls int
-	args := BundleArgs{
-		RunTests: &BundleRunTestsArgs{
+	args := jsonprotocol.BundleArgs{
+		RunTests: &jsonprotocol.BundleRunTestsArgs{
 			OutDir:  tmpDir,
 			DataDir: tmpDir,
 			TempDir: runTmpDir,
@@ -236,8 +236,8 @@ func TestRunTestsTimeout(t *gotesting.T) {
 	stdout := bytes.Buffer{}
 	tmpDir := testutil.TempDir(t)
 	defer os.RemoveAll(tmpDir)
-	args := BundleArgs{
-		RunTests: &BundleRunTestsArgs{
+	args := jsonprotocol.BundleArgs{
+		RunTests: &jsonprotocol.BundleRunTestsArgs{
 			OutDir:  tmpDir,
 			DataDir: tmpDir,
 		},
@@ -293,7 +293,7 @@ func TestRunTestsTimeout(t *gotesting.T) {
 
 func TestRunTestsNoTests(t *gotesting.T) {
 	// runTests should report failure when passed an empty slice of tests.
-	if err := runTests(context.Background(), &bytes.Buffer{}, &BundleArgs{RunTests: &BundleRunTestsArgs{}},
+	if err := runTests(context.Background(), &bytes.Buffer{}, &jsonprotocol.BundleArgs{RunTests: &jsonprotocol.BundleRunTestsArgs{}},
 		&staticConfig{}, localBundle, []*testing.TestInstance{}); !errorHasStatus(err, statusNoTests) {
 		t.Fatalf("runTests() = %v; want status %v", err, statusNoTests)
 	}
@@ -326,12 +326,12 @@ func TestRunTestsMissingDeps(t *gotesting.T) {
 	tmpDir := testutil.TempDir(t)
 	defer os.RemoveAll(tmpDir)
 
-	args := BundleArgs{
-		Mode: BundleRunTestsMode,
-		RunTests: &BundleRunTestsArgs{
+	args := jsonprotocol.BundleArgs{
+		Mode: jsonprotocol.BundleRunTestsMode,
+		RunTests: &jsonprotocol.BundleRunTestsArgs{
 			OutDir:  tmpDir,
 			DataDir: tmpDir,
-			FeatureArgs: FeatureArgs{
+			FeatureArgs: jsonprotocol.FeatureArgs{
 				CheckSoftwareDeps:           true,
 				TestVars:                    map[string]string{},
 				AvailableSoftwareFeatures:   []string{validDep},
@@ -341,7 +341,7 @@ func TestRunTestsMissingDeps(t *gotesting.T) {
 	}
 	stdin := newBufferWithArgs(t, &args)
 	stdout := &bytes.Buffer{}
-	if status := run(context.Background(), nil, stdin, stdout, &bytes.Buffer{}, &BundleArgs{},
+	if status := run(context.Background(), nil, stdin, stdout, &bytes.Buffer{}, &jsonprotocol.BundleArgs{},
 		&staticConfig{defaultTestTimeout: time.Minute}, localBundle); status != statusSuccess {
 		t.Fatalf("run() returned status %v; want %v", status, statusSuccess)
 	}
@@ -425,12 +425,12 @@ func TestRunTestsSkipTestWithPrecondition(t *gotesting.T) {
 	tmpDir := testutil.TempDir(t)
 	defer os.RemoveAll(tmpDir)
 
-	args := BundleArgs{
-		Mode: BundleRunTestsMode,
-		RunTests: &BundleRunTestsArgs{
+	args := jsonprotocol.BundleArgs{
+		Mode: jsonprotocol.BundleRunTestsMode,
+		RunTests: &jsonprotocol.BundleRunTestsArgs{
 			OutDir:  tmpDir,
 			DataDir: tmpDir,
-			FeatureArgs: FeatureArgs{
+			FeatureArgs: jsonprotocol.FeatureArgs{
 				CheckSoftwareDeps:           true,
 				UnavailableSoftwareFeatures: []string{"dep"},
 			},
@@ -438,7 +438,7 @@ func TestRunTestsSkipTestWithPrecondition(t *gotesting.T) {
 	}
 	stdin := newBufferWithArgs(t, &args)
 	stdout := &bytes.Buffer{}
-	if status := run(context.Background(), nil, stdin, stdout, &bytes.Buffer{}, &BundleArgs{},
+	if status := run(context.Background(), nil, stdin, stdout, &bytes.Buffer{}, &jsonprotocol.BundleArgs{},
 		&staticConfig{defaultTestTimeout: time.Minute}, localBundle); status != statusSuccess {
 		t.Fatalf("run() returned status %v; want %v", status, statusSuccess)
 	}
@@ -474,9 +474,9 @@ func TestRunRemoteData(t *gotesting.T) {
 	tmpDir := testutil.TempDir(t)
 	defer os.RemoveAll(tmpDir)
 
-	args := BundleArgs{
-		Mode: BundleRunTestsMode,
-		RunTests: &BundleRunTestsArgs{
+	args := jsonprotocol.BundleArgs{
+		Mode: jsonprotocol.BundleRunTestsMode,
+		RunTests: &jsonprotocol.BundleRunTestsArgs{
 			OutDir:         tmpDir,
 			DataDir:        tmpDir,
 			TastPath:       "/bogus/tast",
@@ -484,13 +484,13 @@ func TestRunRemoteData(t *gotesting.T) {
 			KeyFile:        td.UserKeyFile,
 			RunFlags:       []string{"-flag1", "-flag2"},
 			LocalBundleDir: "/mock/local/bundles",
-			FeatureArgs: FeatureArgs{
+			FeatureArgs: jsonprotocol.FeatureArgs{
 				TestVars: map[string]string{"var1": "value1"},
 			},
 		},
 	}
 	stdin := newBufferWithArgs(t, &args)
-	if status := run(context.Background(), nil, stdin, &bytes.Buffer{}, &bytes.Buffer{}, &BundleArgs{},
+	if status := run(context.Background(), nil, stdin, &bytes.Buffer{}, &bytes.Buffer{}, &jsonprotocol.BundleArgs{},
 		&staticConfig{defaultTestTimeout: time.Minute}, remoteBundle); status != statusSuccess {
 		t.Fatalf("run() returned status %v; want %v", status, statusSuccess)
 	}
@@ -532,9 +532,9 @@ func TestRunCloudStorage(t *gotesting.T) {
 	tmpDir := testutil.TempDir(t)
 	defer os.RemoveAll(tmpDir)
 
-	args := BundleArgs{
-		Mode: BundleRunTestsMode,
-		RunTests: &BundleRunTestsArgs{
+	args := jsonprotocol.BundleArgs{
+		Mode: jsonprotocol.BundleRunTestsMode,
+		RunTests: &jsonprotocol.BundleRunTestsArgs{
 			OutDir:         tmpDir,
 			DataDir:        tmpDir,
 			TastPath:       "/bogus/tast",
@@ -545,7 +545,7 @@ func TestRunCloudStorage(t *gotesting.T) {
 		},
 	}
 	stdin := newBufferWithArgs(t, &args)
-	if status := run(context.Background(), nil, stdin, &bytes.Buffer{}, &bytes.Buffer{}, &BundleArgs{},
+	if status := run(context.Background(), nil, stdin, &bytes.Buffer{}, &bytes.Buffer{}, &jsonprotocol.BundleArgs{},
 		&staticConfig{defaultTestTimeout: time.Minute}, remoteBundle); status != statusSuccess {
 		t.Fatalf("run() returned status %v; want %v", status, statusSuccess)
 	}
@@ -617,14 +617,14 @@ func TestRunExternalDataFiles(t *gotesting.T) {
 		t.Fatal("WriteFiles: ", err)
 	}
 
-	args := BundleArgs{
-		Mode: BundleRunTestsMode,
-		RunTests: &BundleRunTestsArgs{
+	args := jsonprotocol.BundleArgs{
+		Mode: jsonprotocol.BundleRunTestsMode,
+		RunTests: &jsonprotocol.BundleRunTestsArgs{
 			OutDir:  filepath.Join(tmpDir, "out"),
 			DataDir: dataDir,
 			Target:  td.Srvs[0].Addr().String(),
 			KeyFile: td.UserKeyFile,
-			FeatureArgs: FeatureArgs{
+			FeatureArgs: jsonprotocol.FeatureArgs{
 				CheckSoftwareDeps:           true,
 				AvailableSoftwareFeatures:   []string{"dep1"},
 				UnavailableSoftwareFeatures: []string{"dep2"},
@@ -633,7 +633,7 @@ func TestRunExternalDataFiles(t *gotesting.T) {
 		},
 	}
 	stdin := newBufferWithArgs(t, &args)
-	if status := run(context.Background(), nil, stdin, ioutil.Discard, ioutil.Discard, &BundleArgs{},
+	if status := run(context.Background(), nil, stdin, ioutil.Discard, ioutil.Discard, &jsonprotocol.BundleArgs{},
 		&staticConfig{defaultTestTimeout: time.Minute}, remoteBundle); status != statusSuccess {
 		t.Fatalf("run() returned status %v; want %v", status, statusSuccess)
 	}
@@ -657,7 +657,7 @@ func TestRunStartFixture(t *gotesting.T) {
 	// runTests should not run runHook if tests depend on remote fixtures.
 	// TODO(crbug/1184567): consider long term plan about interactions between
 	// remote fixtures and run hooks.
-	if err := runTests(context.Background(), &bytes.Buffer{}, &BundleArgs{RunTests: &BundleRunTestsArgs{
+	if err := runTests(context.Background(), &bytes.Buffer{}, &jsonprotocol.BundleArgs{RunTests: &jsonprotocol.BundleRunTestsArgs{
 		StartFixtureName: "foo",
 	}}, &staticConfig{
 		runHook: func(context.Context) (func(context.Context) error, error) {
@@ -674,7 +674,7 @@ func TestRunStartFixture(t *gotesting.T) {
 
 	// If StartFixtureName is empty, runHook should run.
 	called := false
-	if err := runTests(context.Background(), &bytes.Buffer{}, &BundleArgs{RunTests: &BundleRunTestsArgs{
+	if err := runTests(context.Background(), &bytes.Buffer{}, &jsonprotocol.BundleArgs{RunTests: &jsonprotocol.BundleRunTestsArgs{
 		StartFixtureName: "",
 	}}, &staticConfig{
 		runHook: func(context.Context) (func(context.Context) error, error) {
@@ -719,10 +719,10 @@ func TestRunList(t *gotesting.T) {
 	}
 
 	// BundleListTestsMode should result in tests being JSON-marshaled to stdout.
-	stdin := newBufferWithArgs(t, &BundleArgs{Mode: BundleListTestsMode, ListTests: &BundleListTestsArgs{}})
+	stdin := newBufferWithArgs(t, &jsonprotocol.BundleArgs{Mode: jsonprotocol.BundleListTestsMode, ListTests: &jsonprotocol.BundleListTestsArgs{}})
 	stdout := &bytes.Buffer{}
 	if status := run(context.Background(), nil, stdin, stdout, &bytes.Buffer{},
-		&BundleArgs{}, &staticConfig{}, localBundle); status != statusSuccess {
+		&jsonprotocol.BundleArgs{}, &staticConfig{}, localBundle); status != statusSuccess {
 		t.Fatalf("run() returned status %v; want %v", status, statusSuccess)
 	}
 	if stdout.String() != exp.String() {
@@ -733,7 +733,7 @@ func TestRunList(t *gotesting.T) {
 	clArgs := []string{"-dumptests"}
 	stdout.Reset()
 	if status := run(context.Background(), clArgs, &bytes.Buffer{}, stdout, &bytes.Buffer{},
-		&BundleArgs{}, &staticConfig{}, localBundle); status != statusSuccess {
+		&jsonprotocol.BundleArgs{}, &staticConfig{}, localBundle); status != statusSuccess {
 		t.Fatalf("run(%v) returned status %v; want %v", clArgs, status, statusSuccess)
 	}
 	if stdout.String() != exp.String() {
@@ -764,10 +764,10 @@ func TestRunListWithDep(t *gotesting.T) {
 		testing.AddTestInstance(test)
 	}
 
-	args := BundleArgs{
-		Mode: BundleListTestsMode,
-		ListTests: &BundleListTestsArgs{
-			FeatureArgs: FeatureArgs{
+	args := jsonprotocol.BundleArgs{
+		Mode: jsonprotocol.BundleListTestsMode,
+		ListTests: &jsonprotocol.BundleListTestsArgs{
+			FeatureArgs: jsonprotocol.FeatureArgs{
 				CheckSoftwareDeps:           true,
 				TestVars:                    map[string]string{},
 				AvailableSoftwareFeatures:   []string{validDep},
@@ -780,7 +780,7 @@ func TestRunListWithDep(t *gotesting.T) {
 	stdin := newBufferWithArgs(t, &args)
 	stdout := &bytes.Buffer{}
 	if status := run(context.Background(), nil, stdin, stdout, &bytes.Buffer{},
-		&BundleArgs{}, &staticConfig{}, localBundle); status != statusSuccess {
+		&jsonprotocol.BundleArgs{}, &staticConfig{}, localBundle); status != statusSuccess {
 		t.Fatalf("run() returned status %v; want %v", status, statusSuccess)
 	}
 	var ts []jsonprotocol.EntityWithRunnabilityInfo
@@ -820,10 +820,10 @@ func TestRunListFixtures(t *gotesting.T) {
 	}
 
 	// BundleListFixturesMode should output JSON-marshaled fixtures to stdout.
-	stdin := newBufferWithArgs(t, &BundleArgs{Mode: BundleListFixturesMode})
+	stdin := newBufferWithArgs(t, &jsonprotocol.BundleArgs{Mode: jsonprotocol.BundleListFixturesMode})
 	stdout := &bytes.Buffer{}
 	if status := run(context.Background(), nil, stdin, stdout, &bytes.Buffer{},
-		&BundleArgs{}, &staticConfig{}, localBundle); status != statusSuccess {
+		&jsonprotocol.BundleArgs{}, &staticConfig{}, localBundle); status != statusSuccess {
 		t.Fatalf("run() = %v, want %v", status, statusSuccess)
 	}
 
@@ -852,9 +852,9 @@ func TestRunRegistrationError(t *gotesting.T) {
 	// Adding a test with same name should generate an error.
 	testing.AddTestInstance(&testing.TestInstance{Name: name, Func: testFunc})
 
-	stdin := newBufferWithArgs(t, &BundleArgs{Mode: BundleListTestsMode, ListTests: &BundleListTestsArgs{}})
+	stdin := newBufferWithArgs(t, &jsonprotocol.BundleArgs{Mode: jsonprotocol.BundleListTestsMode, ListTests: &jsonprotocol.BundleListTestsArgs{}})
 	if status := run(context.Background(), nil, stdin, ioutil.Discard, ioutil.Discard,
-		&BundleArgs{}, &staticConfig{}, localBundle); status != statusBadTests {
+		&jsonprotocol.BundleArgs{}, &staticConfig{}, localBundle); status != statusBadTests {
 		t.Errorf("run() with bad test returned status %v; want %v", status, statusBadTests)
 	}
 }

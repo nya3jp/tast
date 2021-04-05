@@ -12,6 +12,7 @@ import (
 	gotesting "testing"
 
 	"chromiumos/tast/errors"
+	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/testutil"
 )
@@ -22,7 +23,7 @@ func TestLocalBadTest(t *gotesting.T) {
 	defer restore()
 	testing.AddTest(&testing.Test{})
 
-	args := BundleArgs{Mode: BundleRunTestsMode}
+	args := jsonprotocol.BundleArgs{Mode: jsonprotocol.BundleRunTestsMode}
 	stdin := newBufferWithArgs(t, &args)
 	stderr := bytes.Buffer{}
 	if status := Local(nil, stdin, &bytes.Buffer{}, &stderr, Delegate{}); status != statusBadTests {
@@ -42,7 +43,7 @@ func TestLocalRunTest(t *gotesting.T) {
 
 	outDir := testutil.TempDir(t)
 	defer os.RemoveAll(outDir)
-	args := BundleArgs{Mode: BundleRunTestsMode, RunTests: &BundleRunTestsArgs{OutDir: outDir}}
+	args := jsonprotocol.BundleArgs{Mode: jsonprotocol.BundleRunTestsMode, RunTests: &jsonprotocol.BundleRunTestsArgs{OutDir: outDir}}
 	stdin := newBufferWithArgs(t, &args)
 	stderr := bytes.Buffer{}
 	if status := Local(nil, stdin, &bytes.Buffer{}, &stderr, Delegate{}); status != statusSuccess {
@@ -65,9 +66,9 @@ func TestLocalReadyFunc(t *gotesting.T) {
 	defer os.RemoveAll(outDir)
 
 	// Ensure that a successful ready function is executed.
-	args := BundleArgs{
-		Mode: BundleRunTestsMode,
-		RunTests: &BundleRunTestsArgs{
+	args := jsonprotocol.BundleArgs{
+		Mode: jsonprotocol.BundleRunTestsMode,
+		RunTests: &jsonprotocol.BundleRunTestsArgs{
 			OutDir:         outDir,
 			WaitUntilReady: true,
 		},
@@ -112,9 +113,9 @@ func TestLocalReadyFuncDisabled(t *gotesting.T) {
 	defer os.RemoveAll(outDir)
 
 	// The ready function should be skipped if WaitUntilReady is false.
-	args := BundleArgs{
-		Mode: BundleRunTestsMode,
-		RunTests: &BundleRunTestsArgs{
+	args := jsonprotocol.BundleArgs{
+		Mode: jsonprotocol.BundleRunTestsMode,
+		RunTests: &jsonprotocol.BundleRunTestsArgs{
 			OutDir:         outDir,
 			WaitUntilReady: false,
 		},
@@ -144,7 +145,7 @@ func TestLocalTestHook(t *gotesting.T) {
 
 	outDir := testutil.TempDir(t)
 	defer os.RemoveAll(outDir)
-	args := BundleArgs{Mode: BundleRunTestsMode, RunTests: &BundleRunTestsArgs{OutDir: outDir}}
+	args := jsonprotocol.BundleArgs{Mode: jsonprotocol.BundleRunTestsMode, RunTests: &jsonprotocol.BundleRunTestsArgs{OutDir: outDir}}
 	stdin := newBufferWithArgs(t, &args)
 	stderr := bytes.Buffer{}
 	var ranPre, ranPost bool
@@ -176,7 +177,7 @@ func TestLocalRunHook(t *gotesting.T) {
 
 	outDir := testutil.TempDir(t)
 	defer os.RemoveAll(outDir)
-	args := BundleArgs{Mode: BundleRunTestsMode, RunTests: &BundleRunTestsArgs{OutDir: outDir}}
+	args := jsonprotocol.BundleArgs{Mode: jsonprotocol.BundleRunTestsMode, RunTests: &jsonprotocol.BundleRunTestsArgs{OutDir: outDir}}
 	stdin := newBufferWithArgs(t, &args)
 	stderr := bytes.Buffer{}
 	var ranPre, ranPost bool

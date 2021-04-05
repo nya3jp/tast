@@ -21,7 +21,7 @@ import (
 	"time"
 
 	"chromiumos/tast/autocaps"
-	"chromiumos/tast/bundle"
+	"chromiumos/tast/internal/bundle"
 	"chromiumos/tast/internal/crash"
 	"chromiumos/tast/internal/runner"
 	"chromiumos/tast/lsbrelease"

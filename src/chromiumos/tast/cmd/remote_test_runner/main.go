@@ -11,7 +11,7 @@ package main
 import (
 	"os"
 
-	"chromiumos/tast/bundle"
+	"chromiumos/tast/internal/bundle"
 	"chromiumos/tast/internal/runner"
 )
 

@@ -44,7 +44,7 @@ const (
 // Default arguments may be passed via args, which is filled with the additional args that are read.
 // clArgs should typically be os.Args[1:].
 // The caller should exit with the returned status code.
-func Run(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, args *RunnerArgs, cfg *Config) int {
+func Run(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, args *jsonprotocol.RunnerArgs, cfg *Config) int {
 	// TODO(derat|nya): Consider applying timeout.
 	ctx := context.TODO()
 	if err := readArgs(clArgs, stdin, stderr, args, cfg); err != nil {
@@ -52,22 +52,22 @@ func Run(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, args *Runne
 	}
 
 	switch args.Mode {
-	case RunnerGetSysInfoStateMode:
+	case jsonprotocol.RunnerGetSysInfoStateMode:
 		if err := handleGetSysInfoState(ctx, cfg, stdout); err != nil {
 			return command.WriteError(stderr, err)
 		}
 		return statusSuccess
-	case RunnerCollectSysInfoMode:
+	case jsonprotocol.RunnerCollectSysInfoMode:
 		if err := handleCollectSysInfo(ctx, args, cfg, stdout); err != nil {
 			return command.WriteError(stderr, err)
 		}
 		return statusSuccess
-	case RunnerGetDUTInfoMode:
+	case jsonprotocol.RunnerGetDUTInfoMode:
 		if err := handleGetDUTInfo(args, cfg, stdout); err != nil {
 			return command.WriteError(stderr, err)
 		}
 		return statusSuccess
-	case RunnerListTestsMode:
+	case jsonprotocol.RunnerListTestsMode:
 		_, tests, err := getBundlesAndTests(args)
 		if err != nil {
 			return command.WriteError(stderr, err)
@@ -76,17 +76,17 @@ func Run(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, args *Runne
 			return command.WriteError(stderr, err)
 		}
 		return statusSuccess
-	case RunnerListFixturesMode:
+	case jsonprotocol.RunnerListFixturesMode:
 		fixts, err := listFixtures(args.ListFixtures.BundleGlob)
 		if err != nil {
 			return command.WriteError(stderr, err)
 		}
-		res := &RunnerListFixturesResult{Fixtures: fixts}
+		res := &jsonprotocol.RunnerListFixturesResult{Fixtures: fixts}
 		if err := json.NewEncoder(stdout).Encode(res); err != nil {
 			return command.WriteError(stderr, err)
 		}
 		return statusSuccess
-	case RunnerRunTestsMode:
+	case jsonprotocol.RunnerRunTestsMode:
 		if args.Report {
 			// Success is always reported when running tests on behalf of the tast command.
 			runTestsAndReport(ctx, args, cfg, stdout)
@@ -94,7 +94,7 @@ func Run(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, args *Runne
 			return command.WriteError(stderr, err)
 		}
 		return statusSuccess
-	case RunnerDownloadPrivateBundlesMode:
+	case jsonprotocol.RunnerDownloadPrivateBundlesMode:
 		if err := handleDownloadPrivateBundles(ctx, args, cfg, stdout); err != nil {
 			return command.WriteError(stderr, err)
 		}
@@ -106,7 +106,7 @@ func Run(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, args *Runne
 
 // runTestsAndReport runs bundles serially to perform testing and writes control messages to stdout.
 // Fatal errors are reported via RunError messages, while test errors are reported via EntityError messages.
-func runTestsAndReport(ctx context.Context, args *RunnerArgs, cfg *Config, stdout io.Writer) {
+func runTestsAndReport(ctx context.Context, args *jsonprotocol.RunnerArgs, cfg *Config, stdout io.Writer) {
 	mw := control.NewMessageWriter(stdout)
 
 	hbw := control.NewHeartbeatWriter(mw, args.RunTests.BundleArgs.HeartbeatInterval)
@@ -177,7 +177,7 @@ func runTestsAndReport(ctx context.Context, args *RunnerArgs, cfg *Config, stdou
 
 // runTestsAndLog runs bundles serially to perform testing and logs human-readable results to stdout.
 // Errors are returned both for fatal errors and for errors in individual tests.
-func runTestsAndLog(ctx context.Context, args *RunnerArgs, cfg *Config, stdout io.Writer) *command.StatusError {
+func runTestsAndLog(ctx context.Context, args *jsonprotocol.RunnerArgs, cfg *Config, stdout io.Writer) *command.StatusError {
 	lg := log.New(stdout, "", log.LstdFlags)
 
 	pr, pw := io.Pipe()

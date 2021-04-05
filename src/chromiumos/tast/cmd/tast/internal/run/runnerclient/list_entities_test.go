@@ -16,7 +16,6 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/fakerunner"
 	"chromiumos/tast/cmd/tast/internal/run/target"
 	"chromiumos/tast/internal/jsonprotocol"
-	"chromiumos/tast/internal/runner"
 )
 
 func TestFindPatternsForShard(t *gotesting.T) {
@@ -125,10 +124,10 @@ func TestListLocalTests(t *gotesting.T) {
 		},
 	}
 
-	td.RunFunc = func(args *runner.RunnerArgs, stdout, stderr io.Writer) (status int) {
-		fakerunner.CheckArgs(t, args, &runner.RunnerArgs{
-			Mode:      runner.RunnerListTestsMode,
-			ListTests: &runner.RunnerListTestsArgs{BundleGlob: fakerunner.MockLocalBundleGlob},
+	td.RunFunc = func(args *jsonprotocol.RunnerArgs, stdout, stderr io.Writer) (status int) {
+		fakerunner.CheckArgs(t, args, &jsonprotocol.RunnerArgs{
+			Mode:      jsonprotocol.RunnerListTestsMode,
+			ListTests: &jsonprotocol.RunnerListTestsArgs{BundleGlob: fakerunner.MockLocalBundleGlob},
 		})
 
 		json.NewEncoder(stdout).Encode(tests)

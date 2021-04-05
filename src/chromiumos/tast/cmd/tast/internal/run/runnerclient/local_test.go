@@ -24,7 +24,6 @@ import (
 	"chromiumos/tast/internal/control"
 	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/planner"
-	"chromiumos/tast/internal/runner"
 	"chromiumos/tast/shutil"
 	"chromiumos/tast/testutil"
 )
@@ -35,11 +34,11 @@ func TestLocalSuccess(t *gotesting.T) {
 	td := fakerunner.NewLocalTestData(t)
 	defer td.Close()
 
-	td.RunFunc = func(args *runner.RunnerArgs, stdout, stderr io.Writer) (status int) {
+	td.RunFunc = func(args *jsonprotocol.RunnerArgs, stdout, stderr io.Writer) (status int) {
 		switch args.Mode {
-		case runner.RunnerRunTestsMode:
-			fakerunner.CheckArgs(t, args, &runner.RunnerArgs{
-				RunTests: &runner.RunnerRunTestsArgs{
+		case jsonprotocol.RunnerRunTestsMode:
+			fakerunner.CheckArgs(t, args, &jsonprotocol.RunnerArgs{
+				RunTests: &jsonprotocol.RunnerRunTestsArgs{
 					BundleArgs: jsonprotocol.BundleRunTestsArgs{
 						DataDir:           fakerunner.MockLocalDataDir,
 						OutDir:            fakerunner.MockLocalOutDir,
@@ -58,8 +57,8 @@ func TestLocalSuccess(t *gotesting.T) {
 			mw := control.NewMessageWriter(stdout)
 			mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
 			mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
-		case runner.RunnerListFixturesMode:
-			json.NewEncoder(stdout).Encode(&runner.RunnerListFixturesResult{})
+		case jsonprotocol.RunnerListFixturesMode:
+			json.NewEncoder(stdout).Encode(&jsonprotocol.RunnerListFixturesResult{})
 		}
 		return 0
 	}
@@ -81,14 +80,14 @@ func TestLocalProxy(t *gotesting.T) {
 	td := fakerunner.NewLocalTestData(t)
 	defer td.Close()
 
-	td.RunFunc = func(args *runner.RunnerArgs, stdout, stderr io.Writer) (status int) {
+	td.RunFunc = func(args *jsonprotocol.RunnerArgs, stdout, stderr io.Writer) (status int) {
 		switch args.Mode {
-		case runner.RunnerRunTestsMode:
+		case jsonprotocol.RunnerRunTestsMode:
 			mw := control.NewMessageWriter(stdout)
 			mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
 			mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
-		case runner.RunnerListFixturesMode:
-			json.NewEncoder(stdout).Encode(&runner.RunnerListFixturesResult{})
+		case jsonprotocol.RunnerListFixturesMode:
+			json.NewEncoder(stdout).Encode(&jsonprotocol.RunnerListFixturesResult{})
 		}
 		return 0
 	}
@@ -144,16 +143,16 @@ func TestLocalCopyOutput(t *gotesting.T) {
 	td := fakerunner.NewLocalTestData(t)
 	defer td.Close()
 
-	td.RunFunc = func(args *runner.RunnerArgs, stdout, stderr io.Writer) (status int) {
+	td.RunFunc = func(args *jsonprotocol.RunnerArgs, stdout, stderr io.Writer) (status int) {
 		switch args.Mode {
-		case runner.RunnerRunTestsMode:
+		case jsonprotocol.RunnerRunTestsMode:
 			mw := control.NewMessageWriter(stdout)
 			mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), TestNames: []string{testName}})
 			mw.WriteMessage(&control.EntityStart{Time: time.Unix(2, 0), Info: jsonprotocol.EntityInfo{Name: testName}, OutDir: filepath.Join(td.Cfg.LocalOutDir, outName)})
 			mw.WriteMessage(&control.EntityEnd{Time: time.Unix(3, 0), Name: testName})
 			mw.WriteMessage(&control.RunEnd{Time: time.Unix(4, 0), OutDir: td.Cfg.LocalOutDir})
-		case runner.RunnerListFixturesMode:
-			json.NewEncoder(stdout).Encode(&runner.RunnerListFixturesResult{})
+		case jsonprotocol.RunnerListFixturesMode:
+			json.NewEncoder(stdout).Encode(&jsonprotocol.RunnerListFixturesResult{})
 		}
 		return 0
 	}
@@ -192,7 +191,7 @@ func disabledTestLocalExecFailure(t *gotesting.T) {
 
 	const msg = "some failure message\n"
 
-	td.RunFunc = func(args *runner.RunnerArgs, stdout, stderr io.Writer) (status int) {
+	td.RunFunc = func(args *jsonprotocol.RunnerArgs, stdout, stderr io.Writer) (status int) {
 		mw := control.NewMessageWriter(stdout)
 		mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
 		mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
@@ -218,14 +217,14 @@ func TestLocalWaitTimeout(t *gotesting.T) {
 	// Simulate local_test_runner writing control messages immediately but hanging before exiting.
 	td.RunDelay = time.Minute
 	td.Cfg.TestsToRun = []*resultsjson.Result{{Test: resultsjson.Test{Name: "pkg.Foo"}}}
-	td.RunFunc = func(args *runner.RunnerArgs, stdout, stderr io.Writer) (status int) {
+	td.RunFunc = func(args *jsonprotocol.RunnerArgs, stdout, stderr io.Writer) (status int) {
 		switch args.Mode {
-		case runner.RunnerRunTestsMode:
+		case jsonprotocol.RunnerRunTestsMode:
 			mw := control.NewMessageWriter(stdout)
 			mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
 			mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0)})
-		case runner.RunnerListFixturesMode:
-			json.NewEncoder(stdout).Encode(&runner.RunnerListFixturesResult{})
+		case jsonprotocol.RunnerListFixturesMode:
+			json.NewEncoder(stdout).Encode(&jsonprotocol.RunnerListFixturesResult{})
 		}
 		return 0
 	}
@@ -246,9 +245,9 @@ func TestLocalMaxFailures(t *gotesting.T) {
 	td := fakerunner.NewLocalTestData(t)
 	defer td.Close()
 
-	td.RunFunc = func(args *runner.RunnerArgs, stdout, stderr io.Writer) (status int) {
+	td.RunFunc = func(args *jsonprotocol.RunnerArgs, stdout, stderr io.Writer) (status int) {
 		switch args.Mode {
-		case runner.RunnerRunTestsMode:
+		case jsonprotocol.RunnerRunTestsMode:
 			mw := control.NewMessageWriter(stdout)
 			mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 2})
 			mw.WriteMessage(&control.EntityStart{Time: time.Unix(2, 0), Info: jsonprotocol.EntityInfo{Name: "t1"}})
@@ -257,7 +256,7 @@ func TestLocalMaxFailures(t *gotesting.T) {
 			mw.WriteMessage(&control.EntityStart{Time: time.Unix(5, 0), Info: jsonprotocol.EntityInfo{Name: "t2"}})
 			mw.WriteMessage(&control.EntityEnd{Time: time.Unix(6, 0), Name: "t2"})
 			mw.WriteMessage(&control.RunEnd{Time: time.Unix(7, 0), OutDir: ""})
-		case runner.RunnerListFixturesMode:
+		case jsonprotocol.RunnerListFixturesMode:
 			fmt.Fprintln(stdout, "{}") // no fixtures
 		}
 		return 0
@@ -294,18 +293,18 @@ func TestFixturesDependency(t *gotesting.T) {
 	}))
 	defer td.Close()
 
-	var gotRunArgs []*runner.RunnerRunTestsArgs
+	var gotRunArgs []*jsonprotocol.RunnerRunTestsArgs
 
-	td.RunFunc = func(args *runner.RunnerArgs, stdout, stderr io.Writer) (status int) {
+	td.RunFunc = func(args *jsonprotocol.RunnerArgs, stdout, stderr io.Writer) (status int) {
 		switch args.Mode {
-		case runner.RunnerRunTestsMode:
+		case jsonprotocol.RunnerRunTestsMode:
 			gotRunArgs = append(gotRunArgs, args.RunTests)
 
 			mw := control.NewMessageWriter(stdout)
 			mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 1})
 			mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
-		case runner.RunnerListFixturesMode:
-			json.NewEncoder(stdout).Encode(&runner.RunnerListFixturesResult{
+		case jsonprotocol.RunnerListFixturesMode:
+			json.NewEncoder(stdout).Encode(&jsonprotocol.RunnerListFixturesResult{
 				Fixtures: map[string][]*jsonprotocol.EntityInfo{
 					"/path/to/cros": {
 						&jsonprotocol.EntityInfo{Name: "fixt1B", Fixture: "remoteFixt"},
@@ -368,7 +367,7 @@ func TestFixturesDependency(t *gotesting.T) {
 	}
 
 	// Test chunks are sorted by depending remote fixture name.
-	want := []*runner.RunnerRunTestsArgs{
+	want := []*jsonprotocol.RunnerRunTestsArgs{
 		{BundleArgs: jsonprotocol.BundleRunTestsArgs{
 			Patterns: []string{"pkg.Test3A", "pkg.Test3B", "pkg.Test3C"},
 		}}, {BundleArgs: jsonprotocol.BundleRunTestsArgs{

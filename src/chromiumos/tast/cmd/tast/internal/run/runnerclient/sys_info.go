@@ -11,7 +11,7 @@ import (
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/target"
-	"chromiumos/tast/internal/runner"
+	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/timing"
 )
 
@@ -35,10 +35,10 @@ func GetInitialSysInfo(ctx context.Context, cfg *config.Config, state *config.St
 		return err
 	}
 
-	var res runner.RunnerGetSysInfoStateResult
+	var res jsonprotocol.RunnerGetSysInfoStateResult
 	if err := runTestRunnerCommand(
 		localRunnerCommand(ctx, cfg, conn.SSHConn()),
-		&runner.RunnerArgs{Mode: runner.RunnerGetSysInfoStateMode},
+		&jsonprotocol.RunnerArgs{Mode: jsonprotocol.RunnerGetSysInfoStateMode},
 		&res,
 	); err != nil {
 		return err
@@ -73,12 +73,12 @@ func collectSysInfo(ctx context.Context, cfg *config.Config, state *config.State
 		return err
 	}
 
-	var res runner.RunnerCollectSysInfoResult
+	var res jsonprotocol.RunnerCollectSysInfoResult
 	if err := runTestRunnerCommand(
 		localRunnerCommand(ctx, cfg, conn.SSHConn()),
-		&runner.RunnerArgs{
-			Mode:           runner.RunnerCollectSysInfoMode,
-			CollectSysInfo: &runner.RunnerCollectSysInfoArgs{InitialState: *state.InitialSysInfo},
+		&jsonprotocol.RunnerArgs{
+			Mode:           jsonprotocol.RunnerCollectSysInfoMode,
+			CollectSysInfo: &jsonprotocol.RunnerCollectSysInfoArgs{InitialState: *state.InitialSysInfo},
 		},
 		&res,
 	); err != nil {

@@ -16,7 +16,6 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/fakerunner"
 	"chromiumos/tast/cmd/tast/internal/run/target"
 	"chromiumos/tast/internal/jsonprotocol"
-	"chromiumos/tast/internal/runner"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/testutil"
 )
@@ -49,10 +48,10 @@ func TestPushDataFiles(t *gotesting.T) {
 		{EntityInfo: jsonprotocol.EntityInfo{Name: category + ".Test2", Pkg: categoryPkg, Data: []string{file2, file3, extFile1, extFile2}}},
 	}
 
-	td.RunFunc = func(args *runner.RunnerArgs, stdout, stderr io.Writer) (status int) {
-		fakerunner.CheckArgs(t, args, &runner.RunnerArgs{
-			Mode: runner.RunnerListTestsMode,
-			ListTests: &runner.RunnerListTestsArgs{
+	td.RunFunc = func(args *jsonprotocol.RunnerArgs, stdout, stderr io.Writer) (status int) {
+		fakerunner.CheckArgs(t, args, &jsonprotocol.RunnerArgs{
+			Mode: jsonprotocol.RunnerListTestsMode,
+			ListTests: &jsonprotocol.RunnerListTestsArgs{
 				BundleArgs: jsonprotocol.BundleListTestsArgs{Patterns: []string{pattern}},
 				BundleGlob: fakerunner.MockLocalBundleGlob,
 			},

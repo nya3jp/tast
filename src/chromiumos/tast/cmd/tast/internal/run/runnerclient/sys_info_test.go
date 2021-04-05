@@ -13,7 +13,7 @@ import (
 
 	"chromiumos/tast/cmd/tast/internal/run/fakerunner"
 	"chromiumos/tast/cmd/tast/internal/run/target"
-	"chromiumos/tast/internal/runner"
+	"chromiumos/tast/internal/jsonprotocol"
 )
 
 // This file uses types and functions from local_test.go.
@@ -23,14 +23,14 @@ func TestGetInitialSysInfo(t *testing.T) {
 	defer td.Close()
 
 	// Report a few log files and crashes.
-	res := runner.RunnerGetSysInfoStateResult{
-		State: runner.SysInfoState{
+	res := jsonprotocol.RunnerGetSysInfoStateResult{
+		State: jsonprotocol.SysInfoState{
 			LogInodeSizes: map[uint64]int64{1: 2, 3: 4},
 			MinidumpPaths: []string{"foo.dmp", "bar.dmp"},
 		},
 	}
-	td.RunFunc = func(args *runner.RunnerArgs, stdout, stderr io.Writer) (status int) {
-		fakerunner.CheckArgs(t, args, &runner.RunnerArgs{Mode: runner.RunnerGetSysInfoStateMode})
+	td.RunFunc = func(args *jsonprotocol.RunnerArgs, stdout, stderr io.Writer) (status int) {
+		fakerunner.CheckArgs(t, args, &jsonprotocol.RunnerArgs{Mode: jsonprotocol.RunnerGetSysInfoStateMode})
 
 		json.NewEncoder(stdout).Encode(res)
 		return 0
@@ -62,18 +62,18 @@ func TestCollectSysInfo(t *testing.T) {
 	td := fakerunner.NewLocalTestData(t)
 	defer td.Close()
 
-	td.RunFunc = func(args *runner.RunnerArgs, stdout, stderr io.Writer) (status int) {
-		fakerunner.CheckArgs(t, args, &runner.RunnerArgs{
-			Mode:           runner.RunnerCollectSysInfoMode,
-			CollectSysInfo: &runner.RunnerCollectSysInfoArgs{InitialState: *td.State.InitialSysInfo},
+	td.RunFunc = func(args *jsonprotocol.RunnerArgs, stdout, stderr io.Writer) (status int) {
+		fakerunner.CheckArgs(t, args, &jsonprotocol.RunnerArgs{
+			Mode:           jsonprotocol.RunnerCollectSysInfoMode,
+			CollectSysInfo: &jsonprotocol.RunnerCollectSysInfoArgs{InitialState: *td.State.InitialSysInfo},
 		})
 
-		json.NewEncoder(stdout).Encode(&runner.RunnerCollectSysInfoResult{})
+		json.NewEncoder(stdout).Encode(&jsonprotocol.RunnerCollectSysInfoResult{})
 		return 0
 	}
 
 	td.Cfg.CollectSysInfo = true
-	td.State.InitialSysInfo = &runner.SysInfoState{
+	td.State.InitialSysInfo = &jsonprotocol.SysInfoState{
 		LogInodeSizes: map[uint64]int64{1: 2, 3: 4},
 		MinidumpPaths: []string{"foo.dmp", "bar.dmp"},
 	}

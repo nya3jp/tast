@@ -9,7 +9,7 @@ import (
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/target"
-	"chromiumos/tast/internal/runner"
+	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/timing"
 )
 
@@ -33,12 +33,12 @@ func DownloadPrivateBundles(ctx context.Context, cfg *config.Config, conn *targe
 		tlwServer = addr.String()
 	}
 
-	var res runner.RunnerDownloadPrivateBundlesResult
+	var res jsonprotocol.RunnerDownloadPrivateBundlesResult
 	if err := runTestRunnerCommand(
 		localRunnerCommand(ctx, cfg, conn.SSHConn()),
-		&runner.RunnerArgs{
-			Mode: runner.RunnerDownloadPrivateBundlesMode,
-			DownloadPrivateBundles: &runner.RunnerDownloadPrivateBundlesArgs{
+		&jsonprotocol.RunnerArgs{
+			Mode: jsonprotocol.RunnerDownloadPrivateBundlesMode,
+			DownloadPrivateBundles: &jsonprotocol.RunnerDownloadPrivateBundlesArgs{
 				Devservers:        localDevservers,
 				TLWServer:         tlwServer,
 				DUTName:           target,

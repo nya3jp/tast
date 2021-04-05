@@ -22,7 +22,6 @@ import (
 	"chromiumos/tast/internal/control"
 	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/planner"
-	"chromiumos/tast/internal/runner"
 	"chromiumos/tast/testutil"
 )
 
@@ -94,9 +93,9 @@ func TestRemoteRun(t *gotesting.T) {
 		"-devservers=" + strings.Join(td.Cfg.Devservers, ","),
 		"-buildartifactsurl=" + fakerunner.MockBuildArtifactsURL,
 	}
-	expArgs := runner.RunnerArgs{
-		Mode: runner.RunnerRunTestsMode,
-		RunTests: &runner.RunnerRunTestsArgs{
+	expArgs := jsonprotocol.RunnerArgs{
+		Mode: jsonprotocol.RunnerRunTestsMode,
+		RunTests: &jsonprotocol.RunnerRunTestsArgs{
 			BundleGlob: glob,
 			BundleArgs: jsonprotocol.BundleRunTestsArgs{
 				DataDir:        td.Cfg.RemoteDataDir,

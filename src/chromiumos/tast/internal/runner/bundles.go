@@ -32,12 +32,12 @@ import (
 )
 
 // getBundlesAndTests returns matched tests and paths to the bundles containing them.
-func getBundlesAndTests(args *RunnerArgs) (bundles []string, tests []*jsonprotocol.EntityWithRunnabilityInfo, err *command.StatusError) {
+func getBundlesAndTests(args *jsonprotocol.RunnerArgs) (bundles []string, tests []*jsonprotocol.EntityWithRunnabilityInfo, err *command.StatusError) {
 	var glob string
 	switch args.Mode {
-	case RunnerRunTestsMode:
+	case jsonprotocol.RunnerRunTestsMode:
 		glob = args.RunTests.BundleGlob
-	case RunnerListTestsMode:
+	case jsonprotocol.RunnerListTestsMode:
 		glob = args.ListTests.BundleGlob
 	default:
 		return nil, nil, command.NewStatusErrorf(statusBadArgs, "bundles unneeded for mode %v", args.Mode)
@@ -81,7 +81,7 @@ type testsOrError struct {
 // getTests returns tests in bundles matched by args.Patterns. It does this by executing
 // each bundle to ask it to marshal and print its tests. A slice of paths to bundles
 // with matched tests is also returned.
-func getTests(args *RunnerArgs, bundles []string) (tests []*jsonprotocol.EntityWithRunnabilityInfo,
+func getTests(args *jsonprotocol.RunnerArgs, bundles []string) (tests []*jsonprotocol.EntityWithRunnabilityInfo,
 	bundlesWithTests []string, statusErr *command.StatusError) {
 	bundleArgs, err := args.BundleArgs(jsonprotocol.BundleListTestsMode)
 	if err != nil {
@@ -303,7 +303,7 @@ func killSession(sid int, sig syscall.Signal) {
 
 // handleDownloadPrivateBundles handles a RunnerDownloadPrivateBundlesMode request from args
 // and JSON-marshals a RunnerDownloadPrivateBundlesResult struct to w.
-func handleDownloadPrivateBundles(ctx context.Context, args *RunnerArgs, cfg *Config, stdout io.Writer) error {
+func handleDownloadPrivateBundles(ctx context.Context, args *jsonprotocol.RunnerArgs, cfg *Config, stdout io.Writer) error {
 	if cfg.PrivateBundlesStampPath == "" {
 		return errors.New("this test runner is not configured for private bundles")
 	}
@@ -321,7 +321,7 @@ func handleDownloadPrivateBundles(ctx context.Context, args *RunnerArgs, cfg *Co
 	})
 
 	defer func() {
-		res := &RunnerDownloadPrivateBundlesResult{Messages: logs}
+		res := &jsonprotocol.RunnerDownloadPrivateBundlesResult{Messages: logs}
 		json.NewEncoder(stdout).Encode(res)
 	}()
 

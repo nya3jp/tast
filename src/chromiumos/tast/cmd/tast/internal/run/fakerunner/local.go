@@ -24,7 +24,6 @@ import (
 	"chromiumos/tast/internal/command"
 	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/planner"
-	"chromiumos/tast/internal/runner"
 	"chromiumos/tast/internal/sshtest"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/testutil"
@@ -56,7 +55,7 @@ const (
 var MockDevservers = []string{"192.168.0.1:12345", "192.168.0.2:23456"}
 
 // RunFunc is the type of LocalTestData.RunFunc.
-type RunFunc = func(args *runner.RunnerArgs, stdout, stderr io.Writer) (status int)
+type RunFunc = func(args *jsonprotocol.RunnerArgs, stdout, stderr io.Writer) (status int)
 
 func init() {
 	// If the binary was executed via a symlink created by
@@ -277,7 +276,7 @@ func NewLocalTestData(t *gotesting.T, opts ...LocalTestDataOption) *LocalTestDat
 	td.Cfg.ShardIndex = 0
 
 	// Set up remote runner.
-	b, err := json.Marshal(runner.RunnerListFixturesResult{
+	b, err := json.Marshal(jsonprotocol.RunnerListFixturesResult{
 		Fixtures: map[string][]*jsonprotocol.EntityInfo{
 			"cros": cfg.remoteFixtures,
 		},
@@ -334,7 +333,7 @@ func (td *LocalTestData) handleExec(req *sshtest.ExecReq) {
 		req.End(0)
 	case td.ExpRunCmd:
 		req.Start(true)
-		var args runner.RunnerArgs
+		var args jsonprotocol.RunnerArgs
 		var status int
 		if err := json.NewDecoder(req).Decode(&args); err != nil {
 			status = command.WriteError(req.Stderr(), err)
@@ -342,7 +341,7 @@ func (td *LocalTestData) handleExec(req *sshtest.ExecReq) {
 			status = td.RunFunc(&args, req, req.Stderr())
 		}
 		req.CloseOutput()
-		if args.Mode == runner.RunnerRunTestsMode {
+		if args.Mode == jsonprotocol.RunnerRunTestsMode {
 			time.Sleep(td.RunDelay)
 		}
 		req.End(status)

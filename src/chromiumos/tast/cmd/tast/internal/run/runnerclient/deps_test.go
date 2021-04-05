@@ -23,12 +23,11 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/target"
 	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/protocol"
-	"chromiumos/tast/internal/runner"
 )
 
 // writeGetDUTInfoResult writes runner.RunnerGetDUTInfoResult to w.
 func writeGetDUTInfoResult(w io.Writer, avail, unavail []string, dc *device.Config, hf *configpb.HardwareFeatures, osVersion, defaultBuildArtifactsURL string) error {
-	res := runner.RunnerGetDUTInfoResult{
+	res := jsonprotocol.RunnerGetDUTInfoResult{
 		SoftwareFeatures: &protocol.SoftwareFeatures{
 			Available:   avail,
 			Unavailable: unavail,
@@ -46,16 +45,16 @@ func writeGetDUTInfoResult(w io.Writer, avail, unavail []string, dc *device.Conf
 func checkRunnerTestDepsArgs(t *testing.T, cfg *config.Config, state *config.State, checkDeps bool,
 	avail, unavail []string, dc *device.Config, hf *configpb.HardwareFeatures) {
 	t.Helper()
-	args := runner.RunnerArgs{
-		Mode: runner.RunnerRunTestsMode,
-		RunTests: &runner.RunnerRunTestsArgs{
+	args := jsonprotocol.RunnerArgs{
+		Mode: jsonprotocol.RunnerRunTestsMode,
+		RunTests: &jsonprotocol.RunnerRunTestsArgs{
 			BundleArgs: jsonprotocol.BundleRunTestsArgs{
 				FeatureArgs: *featureArgsFromConfig(cfg, state),
 			},
 		},
 	}
 
-	exp := runner.RunnerRunTestsArgs{
+	exp := jsonprotocol.RunnerRunTestsArgs{
 		BundleArgs: jsonprotocol.BundleRunTestsArgs{
 			FeatureArgs: jsonprotocol.FeatureArgs{
 				CheckSoftwareDeps:           checkDeps,
@@ -105,10 +104,10 @@ func TestGetDUTInfo(t *testing.T) {
 	}
 	osVersion := "octopus-release/R86-13312.0.2020_07_02_1108"
 	defaultBuildArtifactsURL := "gs://chromeos-image-archive/octopus-release/R86-13312.0.2020_07_02_1108/"
-	td.RunFunc = func(args *runner.RunnerArgs, stdout, stderr io.Writer) (status int) {
-		fakerunner.CheckArgs(t, args, &runner.RunnerArgs{
-			Mode: runner.RunnerGetDUTInfoMode,
-			GetDUTInfo: &runner.RunnerGetDUTInfoArgs{
+	td.RunFunc = func(args *jsonprotocol.RunnerArgs, stdout, stderr io.Writer) (status int) {
+		fakerunner.CheckArgs(t, args, &jsonprotocol.RunnerArgs{
+			Mode: jsonprotocol.RunnerGetDUTInfoMode,
+			GetDUTInfo: &jsonprotocol.RunnerGetDUTInfoArgs{
 				ExtraUSEFlags:       td.Cfg.ExtraUSEFlags,
 				RequestDeviceConfig: true,
 			},
@@ -161,10 +160,10 @@ func TestGetDUTInfoNoDeviceConfig(t *testing.T) {
 	td := fakerunner.NewLocalTestData(t)
 	defer td.Close()
 
-	td.RunFunc = func(args *runner.RunnerArgs, stdout, stderr io.Writer) (status int) {
-		fakerunner.CheckArgs(t, args, &runner.RunnerArgs{
-			Mode: runner.RunnerGetDUTInfoMode,
-			GetDUTInfo: &runner.RunnerGetDUTInfoArgs{
+	td.RunFunc = func(args *jsonprotocol.RunnerArgs, stdout, stderr io.Writer) (status int) {
+		fakerunner.CheckArgs(t, args, &jsonprotocol.RunnerArgs{
+			Mode: jsonprotocol.RunnerGetDUTInfoMode,
+			GetDUTInfo: &jsonprotocol.RunnerGetDUTInfoArgs{
 				ExtraUSEFlags:       td.Cfg.ExtraUSEFlags,
 				RequestDeviceConfig: true,
 			},
@@ -210,10 +209,10 @@ func TestGetSoftwareFeaturesNoFeatures(t *testing.T) {
 	td := fakerunner.NewLocalTestData(t)
 	defer td.Close()
 	// "always" should fail if the runner doesn't know about any features.
-	td.RunFunc = func(args *runner.RunnerArgs, stdout, stderr io.Writer) (status int) {
-		fakerunner.CheckArgs(t, args, &runner.RunnerArgs{
-			Mode: runner.RunnerGetDUTInfoMode,
-			GetDUTInfo: &runner.RunnerGetDUTInfoArgs{
+	td.RunFunc = func(args *jsonprotocol.RunnerArgs, stdout, stderr io.Writer) (status int) {
+		fakerunner.CheckArgs(t, args, &jsonprotocol.RunnerArgs{
+			Mode: jsonprotocol.RunnerGetDUTInfoMode,
+			GetDUTInfo: &jsonprotocol.RunnerGetDUTInfoArgs{
 				RequestDeviceConfig: true,
 			},
 		})

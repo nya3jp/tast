@@ -16,8 +16,8 @@ import (
 
 	"chromiumos/tast/cmd/tast/internal/logging"
 	"chromiumos/tast/cmd/tast/internal/run/config"
+	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/planner"
-	"chromiumos/tast/internal/runner"
 	"chromiumos/tast/testutil"
 )
 
@@ -82,11 +82,11 @@ func runFakeRunner() int {
 
 // RemoteTestData holds data corresponding to the current unit test.
 type RemoteTestData struct {
-	Dir    string            // temp dir
-	LogBuf bytes.Buffer      // logging output
-	Cfg    config.Config     // config passed to remote
-	State  config.State      // state passed to remote
-	Args   runner.RunnerArgs // args that were passed to fake runner
+	Dir    string                  // temp dir
+	LogBuf bytes.Buffer            // logging output
+	Cfg    config.Config           // config passed to remote
+	State  config.State            // state passed to remote
+	Args   jsonprotocol.RunnerArgs // args that were passed to fake runner
 }
 
 type fakeRemoteRunnerData struct {

@@ -84,7 +84,7 @@ type testsOrError struct {
 // with matched tests is also returned.
 func getTests(args *Args, bundles []string) (tests []*jsonprotocol.EntityWithRunnabilityInfo,
 	bundlesWithTests []string, statusErr *command.StatusError) {
-	bundleArgs, err := args.bundleArgs(bundle.ListTestsMode)
+	bundleArgs, err := args.bundleArgs(bundle.BundleListTestsMode)
 	if err != nil {
 		return nil, nil, command.NewStatusErrorf(statusBadArgs, "%v", err)
 	}
@@ -146,8 +146,8 @@ func listFixtures(bundleGlob string) (map[string][]*jsonprotocol.EntityInfo, *co
 		return nil, err
 	}
 
-	bundleArgs := &bundle.Args{
-		Mode: bundle.ListFixturesMode,
+	bundleArgs := &bundle.BundleArgs{
+		Mode: bundle.BundleListFixturesMode,
 	}
 	// Run all the bundles in parallel.
 	ch := make(chan *fixturesOrError, len(bundles))
@@ -187,7 +187,7 @@ func listFixtures(bundleGlob string) (map[string][]*jsonprotocol.EntityInfo, *co
 // startBundleCmd creates and returns a new command running the test bundle at path using args.
 // cmd's Start method has already been called, and the caller is responsible for calling Wait.
 // A new session is created for the bundle process.
-func startBundleCmd(path string, bundleArgs *bundle.Args, stdout, stderr io.Writer) (*exec.Cmd, error) {
+func startBundleCmd(path string, bundleArgs *bundle.BundleArgs, stdout, stderr io.Writer) (*exec.Cmd, error) {
 	var stdin bytes.Buffer
 	if err := json.NewEncoder(&stdin).Encode(bundleArgs); err != nil {
 		return nil, err
@@ -214,7 +214,7 @@ func startBundleCmd(path string, bundleArgs *bundle.Args, stdout, stderr io.Writ
 
 // runBundle runs the bundle at path to completion, passing bundleArgs.
 // The bundle's stdout is copied to the stdout arg.
-func runBundle(path string, bundleArgs *bundle.Args, stdout io.Writer) *command.StatusError {
+func runBundle(path string, bundleArgs *bundle.BundleArgs, stdout io.Writer) *command.StatusError {
 	// Watch for stdout being closed so we can abort the bundle and clean up: https://crbug.com/945626
 	// Otherwise, the runner, bundle, and processes started by tests may run indefinitely.
 	// When stdout is closed, it's important that we clean up before writing anything to it, as Go will

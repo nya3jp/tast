@@ -22,7 +22,7 @@ func TestLocalBadTest(t *gotesting.T) {
 	defer restore()
 	testing.AddTest(&testing.Test{})
 
-	args := Args{Mode: RunTestsMode}
+	args := BundleArgs{Mode: BundleRunTestsMode}
 	stdin := newBufferWithArgs(t, &args)
 	stderr := bytes.Buffer{}
 	if status := Local(nil, stdin, &bytes.Buffer{}, &stderr, Delegate{}); status != statusBadTests {
@@ -42,7 +42,7 @@ func TestLocalRunTest(t *gotesting.T) {
 
 	outDir := testutil.TempDir(t)
 	defer os.RemoveAll(outDir)
-	args := Args{Mode: RunTestsMode, RunTests: &RunTestsArgs{OutDir: outDir}}
+	args := BundleArgs{Mode: BundleRunTestsMode, RunTests: &BundleRunTestsArgs{OutDir: outDir}}
 	stdin := newBufferWithArgs(t, &args)
 	stderr := bytes.Buffer{}
 	if status := Local(nil, stdin, &bytes.Buffer{}, &stderr, Delegate{}); status != statusSuccess {
@@ -65,9 +65,9 @@ func TestLocalReadyFunc(t *gotesting.T) {
 	defer os.RemoveAll(outDir)
 
 	// Ensure that a successful ready function is executed.
-	args := Args{
-		Mode: RunTestsMode,
-		RunTests: &RunTestsArgs{
+	args := BundleArgs{
+		Mode: BundleRunTestsMode,
+		RunTests: &BundleRunTestsArgs{
 			OutDir:         outDir,
 			WaitUntilReady: true,
 		},
@@ -112,9 +112,9 @@ func TestLocalReadyFuncDisabled(t *gotesting.T) {
 	defer os.RemoveAll(outDir)
 
 	// The ready function should be skipped if WaitUntilReady is false.
-	args := Args{
-		Mode: RunTestsMode,
-		RunTests: &RunTestsArgs{
+	args := BundleArgs{
+		Mode: BundleRunTestsMode,
+		RunTests: &BundleRunTestsArgs{
 			OutDir:         outDir,
 			WaitUntilReady: false,
 		},
@@ -144,7 +144,7 @@ func TestLocalTestHook(t *gotesting.T) {
 
 	outDir := testutil.TempDir(t)
 	defer os.RemoveAll(outDir)
-	args := Args{Mode: RunTestsMode, RunTests: &RunTestsArgs{OutDir: outDir}}
+	args := BundleArgs{Mode: BundleRunTestsMode, RunTests: &BundleRunTestsArgs{OutDir: outDir}}
 	stdin := newBufferWithArgs(t, &args)
 	stderr := bytes.Buffer{}
 	var ranPre, ranPost bool
@@ -176,7 +176,7 @@ func TestLocalRunHook(t *gotesting.T) {
 
 	outDir := testutil.TempDir(t)
 	defer os.RemoveAll(outDir)
-	args := Args{Mode: RunTestsMode, RunTests: &RunTestsArgs{OutDir: outDir}}
+	args := BundleArgs{Mode: BundleRunTestsMode, RunTests: &BundleRunTestsArgs{OutDir: outDir}}
 	stdin := newBufferWithArgs(t, &args)
 	stderr := bytes.Buffer{}
 	var ranPre, ranPost bool

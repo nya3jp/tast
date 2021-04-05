@@ -119,7 +119,7 @@ func runTestsAndReport(ctx context.Context, args *Args, cfg *Config, stdout io.W
 		return
 	}
 
-	bundleArgs, err := args.bundleArgs(bundle.RunTestsMode)
+	bundleArgs, err := args.bundleArgs(bundle.BundleRunTestsMode)
 	if err != nil {
 		mw.WriteMessage(newRunErrorMessagef(statusBadArgs, "Failed constructing bundle args: %v", err))
 		return
@@ -208,7 +208,7 @@ func newRunErrorMessagef(status int, format string, args ...interface{}) *contro
 // setUpBaseOutDir creates and assigns a temporary directory if args.RunTests.OutDir is empty.
 // It also ensures that the dir is accessible to all users. The returned boolean created
 // indicates whether a new directory was created.
-func setUpBaseOutDir(args *bundle.Args) (created bool, err error) {
+func setUpBaseOutDir(args *bundle.BundleArgs) (created bool, err error) {
 	defer func() {
 		if err != nil && created {
 			os.RemoveAll(args.RunTests.OutDir)

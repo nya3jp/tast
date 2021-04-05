@@ -41,7 +41,7 @@ func TestLocalSuccess(t *gotesting.T) {
 		case runner.RunTestsMode:
 			fakerunner.CheckArgs(t, args, &runner.Args{
 				RunTests: &runner.RunTestsArgs{
-					BundleArgs: bundle.RunTestsArgs{
+					BundleArgs: bundle.BundleRunTestsArgs{
 						DataDir:           fakerunner.MockLocalDataDir,
 						OutDir:            fakerunner.MockLocalOutDir,
 						Devservers:        fakerunner.MockDevservers,
@@ -370,16 +370,16 @@ func TestFixturesDependency(t *gotesting.T) {
 
 	// Test chunks are sorted by depending remote fixture name.
 	want := []*runner.RunTestsArgs{
-		{BundleArgs: bundle.RunTestsArgs{
+		{BundleArgs: bundle.BundleRunTestsArgs{
 			Patterns: []string{"pkg.Test3A", "pkg.Test3B", "pkg.Test3C"},
-		}}, {BundleArgs: bundle.RunTestsArgs{
+		}}, {BundleArgs: bundle.BundleRunTestsArgs{
 			Patterns:         []string{"pkg.Test2"},
 			StartFixtureName: "failFixt",
 			SetUpErrors:      []string{"Whoa"},
-		}}, {BundleArgs: bundle.RunTestsArgs{
+		}}, {BundleArgs: bundle.BundleRunTestsArgs{
 			Patterns:         []string{"pkg.Test1A", "pkg.Test1B"},
 			StartFixtureName: "remoteFixt",
-		}}, {BundleArgs: bundle.RunTestsArgs{
+		}}, {BundleArgs: bundle.BundleRunTestsArgs{
 			Patterns:         []string{"pkg.Test4"},
 			StartFixtureName: "tearDownFailFixt",
 		}},

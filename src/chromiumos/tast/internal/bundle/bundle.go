@@ -75,11 +75,11 @@ type Delegate struct {
 	BeforeDownload func(ctx context.Context)
 }
 
-// run reads a JSON-marshaled Args struct from stdin and performs the requested action.
+// run reads a JSON-marshaled BundleArgs struct from stdin and performs the requested action.
 // Default arguments may be specified via args, which will also be updated from stdin.
 // The caller should exit with the returned status code.
 func run(ctx context.Context, clArgs []string, stdin io.Reader, stdout, stderr io.Writer,
-	args *Args, scfg *staticConfig, bt bundleType) int {
+	args *BundleArgs, scfg *staticConfig, bt bundleType) int {
 	if err := readArgs(clArgs, stdin, stderr, args, bt); err != nil {
 		return command.WriteError(stderr, err)
 	}
@@ -94,7 +94,7 @@ func run(ctx context.Context, clArgs []string, stdin io.Reader, stdout, stderr i
 	}
 
 	switch args.Mode {
-	case ListTestsMode:
+	case BundleListTestsMode:
 		tests, err := testsToRun(scfg, args.ListTests.Patterns)
 		if err != nil {
 			return command.WriteError(stderr, err)
@@ -118,7 +118,7 @@ func run(ctx context.Context, clArgs []string, stdin io.Reader, stdout, stderr i
 			return command.WriteError(stderr, err)
 		}
 		return statusSuccess
-	case ListFixturesMode:
+	case BundleListFixturesMode:
 		fixts := testing.GlobalRegistry().AllFixtures()
 		var infos []*jsonprotocol.EntityInfo
 		for _, f := range fixts {
@@ -129,7 +129,7 @@ func run(ctx context.Context, clArgs []string, stdin io.Reader, stdout, stderr i
 			return command.WriteError(stderr, err)
 		}
 		return statusSuccess
-	case ExportMetadataMode:
+	case BundleExportMetadataMode:
 		tests, err := testsToRun(scfg, nil)
 		if err != nil {
 			return command.WriteError(stderr, err)
@@ -138,7 +138,7 @@ func run(ctx context.Context, clArgs []string, stdin io.Reader, stdout, stderr i
 			return command.WriteError(stderr, err)
 		}
 		return statusSuccess
-	case RunTestsMode:
+	case BundleRunTestsMode:
 		tests, err := testsToRun(scfg, args.RunTests.Patterns)
 		if err != nil {
 			return command.WriteError(stderr, err)
@@ -147,7 +147,7 @@ func run(ctx context.Context, clArgs []string, stdin io.Reader, stdout, stderr i
 			return command.WriteError(stderr, err)
 		}
 		return statusSuccess
-	case RPCMode:
+	case BundleRPCMode:
 		if err := RunRPCServer(stdin, stdout, testing.GlobalRegistry().AllServices()); err != nil {
 			return command.WriteError(stderr, err)
 		}
@@ -203,8 +203,8 @@ type staticConfig struct {
 	defaultTestTimeout time.Duration
 }
 
-func newArgsAndStaticConfig(defaultTestTimeout time.Duration, dataDir string, d Delegate) (*Args, *staticConfig) {
-	args := &Args{RunTests: &RunTestsArgs{DataDir: dataDir}}
+func newArgsAndStaticConfig(defaultTestTimeout time.Duration, dataDir string, d Delegate) (*BundleArgs, *staticConfig) {
+	args := &BundleArgs{RunTests: &BundleRunTestsArgs{DataDir: dataDir}}
 	scfg := &staticConfig{
 		runHook: func(ctx context.Context) (func(context.Context) error, error) {
 			if d.Ready != nil && args.RunTests.WaitUntilReady {
@@ -286,7 +286,7 @@ func (ew *eventWriter) EntityEnd(ei *protocol.Entity, skipReasons []string, timi
 //
 // If an error is encountered in the test harness (as opposed to in a test), an error is returned.
 // Otherwise, nil is returned (test errors will be reported via EntityError control messages).
-func runTests(ctx context.Context, stdout io.Writer, args *Args, scfg *staticConfig,
+func runTests(ctx context.Context, stdout io.Writer, args *BundleArgs, scfg *staticConfig,
 	bt bundleType, tests []*testing.TestInstance) error {
 	mw := control.NewMessageWriter(stdout)
 

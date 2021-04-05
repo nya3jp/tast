@@ -524,7 +524,7 @@ func runLocalTestsOnce(ctx context.Context, cfg *config.Config, state *config.St
 	args := runner.Args{
 		Mode: runner.RunTestsMode,
 		RunTests: &runner.RunTestsArgs{
-			BundleArgs: bundle.RunTestsArgs{
+			BundleArgs: bundle.BundleRunTestsArgs{
 				FeatureArgs:       *featureArgsFromConfig(cfg, state),
 				Patterns:          patterns,
 				DataDir:           cfg.LocalDataDir,

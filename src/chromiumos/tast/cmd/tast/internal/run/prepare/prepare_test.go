@@ -54,7 +54,7 @@ func TestPushDataFiles(t *gotesting.T) {
 		fakerunner.CheckArgs(t, args, &runner.Args{
 			Mode: runner.ListTestsMode,
 			ListTests: &runner.ListTestsArgs{
-				BundleArgs: bundle.ListTestsArgs{Patterns: []string{pattern}},
+				BundleArgs: bundle.BundleListTestsArgs{Patterns: []string{pattern}},
 				BundleGlob: fakerunner.MockLocalBundleGlob,
 			},
 		})

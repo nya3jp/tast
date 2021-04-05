@@ -99,7 +99,7 @@ func TestRemoteRun(t *gotesting.T) {
 		Mode: runner.RunTestsMode,
 		RunTests: &runner.RunTestsArgs{
 			BundleGlob: glob,
-			BundleArgs: bundle.RunTestsArgs{
+			BundleArgs: bundle.BundleRunTestsArgs{
 				DataDir:        td.Cfg.RemoteDataDir,
 				OutDir:         td.Cfg.RemoteOutDir,
 				KeyFile:        td.Cfg.KeyFile,

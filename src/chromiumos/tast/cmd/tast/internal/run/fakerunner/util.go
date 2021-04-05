@@ -9,13 +9,13 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 
-	"chromiumos/tast/internal/runner"
+	"chromiumos/tast/internal/jsonprotocol"
 )
 
 // CheckArgs compares two runner.RunnerArgs.
-func CheckArgs(t *testing.T, args, exp *runner.RunnerArgs) {
+func CheckArgs(t *testing.T, args, exp *jsonprotocol.RunnerArgs) {
 	t.Helper()
-	if diff := cmp.Diff(args, exp, cmp.AllowUnexported(runner.RunnerArgs{})); diff != "" {
+	if diff := cmp.Diff(args, exp, cmp.AllowUnexported(jsonprotocol.RunnerArgs{})); diff != "" {
 		t.Errorf("RunnerArgs mismatch (-got +want):\n%v", diff)
 	}
 }

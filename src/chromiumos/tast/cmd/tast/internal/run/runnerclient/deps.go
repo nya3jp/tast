@@ -16,7 +16,6 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/target"
 	"chromiumos/tast/internal/jsonprotocol"
-	"chromiumos/tast/internal/runner"
 	"chromiumos/tast/internal/timing"
 )
 
@@ -44,12 +43,12 @@ func GetDUTInfo(ctx context.Context, cfg *config.Config, state *config.State, cc
 		return err
 	}
 
-	var res runner.RunnerGetDUTInfoResult
+	var res jsonprotocol.RunnerGetDUTInfoResult
 	if err := runTestRunnerCommand(
 		localRunnerCommand(ctx, cfg, conn.SSHConn()),
-		&runner.RunnerArgs{
-			Mode: runner.RunnerGetDUTInfoMode,
-			GetDUTInfo: &runner.RunnerGetDUTInfoArgs{
+		&jsonprotocol.RunnerArgs{
+			Mode: jsonprotocol.RunnerGetDUTInfoMode,
+			GetDUTInfo: &jsonprotocol.RunnerGetDUTInfoArgs{
 				ExtraUSEFlags:       cfg.ExtraUSEFlags,
 				RequestDeviceConfig: true,
 			},

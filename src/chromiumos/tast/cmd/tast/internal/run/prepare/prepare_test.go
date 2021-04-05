@@ -15,7 +15,6 @@ import (
 
 	"chromiumos/tast/cmd/tast/internal/run/fakerunner"
 	"chromiumos/tast/cmd/tast/internal/run/target"
-	"chromiumos/tast/internal/bundle"
 	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/runner"
 	"chromiumos/tast/internal/testing"
@@ -54,7 +53,7 @@ func TestPushDataFiles(t *gotesting.T) {
 		fakerunner.CheckArgs(t, args, &runner.Args{
 			Mode: runner.ListTestsMode,
 			ListTests: &runner.ListTestsArgs{
-				BundleArgs: bundle.BundleListTestsArgs{Patterns: []string{pattern}},
+				BundleArgs: jsonprotocol.BundleListTestsArgs{Patterns: []string{pattern}},
 				BundleGlob: fakerunner.MockLocalBundleGlob,
 			},
 		})

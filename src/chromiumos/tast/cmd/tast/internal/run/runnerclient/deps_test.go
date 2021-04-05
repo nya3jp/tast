@@ -21,7 +21,7 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/fakerunner"
 	"chromiumos/tast/cmd/tast/internal/run/target"
-	"chromiumos/tast/internal/bundle"
+	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/runner"
 )
@@ -49,22 +49,22 @@ func checkRunnerTestDepsArgs(t *testing.T, cfg *config.Config, state *config.Sta
 	args := runner.Args{
 		Mode: runner.RunTestsMode,
 		RunTests: &runner.RunTestsArgs{
-			BundleArgs: bundle.BundleRunTestsArgs{
+			BundleArgs: jsonprotocol.BundleRunTestsArgs{
 				FeatureArgs: *featureArgsFromConfig(cfg, state),
 			},
 		},
 	}
 
 	exp := runner.RunTestsArgs{
-		BundleArgs: bundle.BundleRunTestsArgs{
-			FeatureArgs: bundle.FeatureArgs{
+		BundleArgs: jsonprotocol.BundleRunTestsArgs{
+			FeatureArgs: jsonprotocol.FeatureArgs{
 				CheckSoftwareDeps:           checkDeps,
 				AvailableSoftwareFeatures:   avail,
 				UnavailableSoftwareFeatures: unavail,
-				DeviceConfig: bundle.DeviceConfigJSON{
+				DeviceConfig: jsonprotocol.DeviceConfigJSON{
 					Proto: dc,
 				},
-				HardwareFeatures: bundle.HardwareFeaturesJSON{
+				HardwareFeatures: jsonprotocol.HardwareFeaturesJSON{
 					Proto: hf,
 				},
 			},

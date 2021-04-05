@@ -12,7 +12,6 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
 	"chromiumos/tast/cmd/tast/internal/run/target"
 	"chromiumos/tast/errors"
-	"chromiumos/tast/internal/bundle"
 	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/runner"
 	"chromiumos/tast/ssh"
@@ -157,7 +156,7 @@ func runListTestsCommand(r runnerCmd, cfg *config.Config, state *config.State, g
 	args := &runner.Args{
 		Mode: runner.ListTestsMode,
 		ListTests: &runner.ListTestsArgs{
-			BundleArgs: bundle.BundleListTestsArgs{
+			BundleArgs: jsonprotocol.BundleListTestsArgs{
 				FeatureArgs: *featureArgsFromConfig(cfg, state),
 				Patterns:    cfg.Patterns,
 			},

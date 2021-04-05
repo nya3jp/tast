@@ -19,7 +19,6 @@ import (
 
 	"chromiumos/tast/cmd/tast/internal/run/fakerunner"
 	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
-	"chromiumos/tast/internal/bundle"
 	"chromiumos/tast/internal/control"
 	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/planner"
@@ -99,14 +98,14 @@ func TestRemoteRun(t *gotesting.T) {
 		Mode: runner.RunTestsMode,
 		RunTests: &runner.RunTestsArgs{
 			BundleGlob: glob,
-			BundleArgs: bundle.BundleRunTestsArgs{
+			BundleArgs: jsonprotocol.BundleRunTestsArgs{
 				DataDir:        td.Cfg.RemoteDataDir,
 				OutDir:         td.Cfg.RemoteOutDir,
 				KeyFile:        td.Cfg.KeyFile,
 				TastPath:       exe,
 				RunFlags:       runFlags,
 				LocalBundleDir: fakerunner.MockLocalBundleDir,
-				FeatureArgs: bundle.FeatureArgs{
+				FeatureArgs: jsonprotocol.FeatureArgs{
 					CheckSoftwareDeps: false,
 				},
 				Devservers:        fakerunner.MockDevservers,

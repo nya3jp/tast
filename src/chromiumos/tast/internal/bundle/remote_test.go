@@ -12,6 +12,7 @@ import (
 	gotesting "testing"
 
 	"chromiumos/tast/dut"
+	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/sshtest"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/testutil"
@@ -23,7 +24,7 @@ func TestRemoteMissingTarget(t *gotesting.T) {
 	testing.AddTestInstance(&testing.TestInstance{Name: "pkg.Test", Func: func(context.Context, *testing.State) {}})
 
 	// Remote should fail if -target wasn't passed.
-	stdin := newBufferWithArgs(t, &BundleArgs{Mode: BundleRunTestsMode, RunTests: &BundleRunTestsArgs{}})
+	stdin := newBufferWithArgs(t, &jsonprotocol.BundleArgs{Mode: jsonprotocol.BundleRunTestsMode, RunTests: &jsonprotocol.BundleRunTestsArgs{}})
 	stderr := bytes.Buffer{}
 	if status := Remote(nil, stdin, &bytes.Buffer{}, &stderr, Delegate{}); status != statusError {
 		t.Errorf("Remote() = %v; want %v", status, statusError)
@@ -43,9 +44,9 @@ func TestRemoteCantConnect(t *gotesting.T) {
 
 	// Remote should fail if the initial connection to the DUT couldn't be
 	// established since the user key wasn't passed.
-	args := BundleArgs{
-		Mode:     BundleRunTestsMode,
-		RunTests: &BundleRunTestsArgs{Target: td.Srvs[0].Addr().String()},
+	args := jsonprotocol.BundleArgs{
+		Mode:     jsonprotocol.BundleRunTestsMode,
+		RunTests: &jsonprotocol.BundleRunTestsArgs{Target: td.Srvs[0].Addr().String()},
 	}
 	stderr := bytes.Buffer{}
 	if status := Remote(nil, newBufferWithArgs(t, &args), &bytes.Buffer{}, &stderr, Delegate{}); status != statusError {
@@ -88,9 +89,9 @@ func TestRemoteDUT(t *gotesting.T) {
 
 	outDir := testutil.TempDir(t)
 	defer os.RemoveAll(outDir)
-	args := BundleArgs{
-		Mode: BundleRunTestsMode,
-		RunTests: &BundleRunTestsArgs{
+	args := jsonprotocol.BundleArgs{
+		Mode: jsonprotocol.BundleRunTestsMode,
+		RunTests: &jsonprotocol.BundleRunTestsArgs{
 			OutDir:  outDir,
 			Target:  td.Srvs[0].Addr().String(),
 			KeyFile: td.UserKeyFile,
@@ -129,9 +130,9 @@ func TestRemoteReconnectBetweenTests(t *gotesting.T) {
 
 	outDir := testutil.TempDir(t)
 	defer os.RemoveAll(outDir)
-	args := BundleArgs{
-		Mode: BundleRunTestsMode,
-		RunTests: &BundleRunTestsArgs{
+	args := jsonprotocol.BundleArgs{
+		Mode: jsonprotocol.BundleRunTestsMode,
+		RunTests: &jsonprotocol.BundleRunTestsArgs{
 			OutDir:  outDir,
 			Target:  td.Srvs[0].Addr().String(),
 			KeyFile: td.UserKeyFile,
@@ -162,9 +163,9 @@ func TestRemoteTestHooks(t *gotesting.T) {
 	// Set up test argument.
 	outDir := testutil.TempDir(t)
 	defer os.RemoveAll(outDir)
-	args := BundleArgs{
-		Mode: BundleRunTestsMode,
-		RunTests: &BundleRunTestsArgs{
+	args := jsonprotocol.BundleArgs{
+		Mode: jsonprotocol.BundleRunTestsMode,
+		RunTests: &jsonprotocol.BundleRunTestsArgs{
 			OutDir:  outDir,
 			Target:  td.Srvs[0].Addr().String(),
 			KeyFile: td.UserKeyFile,
@@ -221,9 +222,9 @@ func TestBeforeReboot(t *gotesting.T) {
 	// Set up test argument.
 	outDir := testutil.TempDir(t)
 	defer os.RemoveAll(outDir)
-	args := BundleArgs{
-		Mode: BundleRunTestsMode,
-		RunTests: &BundleRunTestsArgs{
+	args := jsonprotocol.BundleArgs{
+		Mode: jsonprotocol.BundleRunTestsMode,
+		RunTests: &jsonprotocol.BundleRunTestsArgs{
 			OutDir:  outDir,
 			Target:  td.Srvs[0].Addr().String(),
 			KeyFile: td.UserKeyFile,
@@ -295,9 +296,9 @@ func TestRemoteCompanionDUTs(t *gotesting.T) {
 
 	outDir := testutil.TempDir(t)
 	defer os.RemoveAll(outDir)
-	args := BundleArgs{
-		Mode: BundleRunTestsMode,
-		RunTests: &BundleRunTestsArgs{
+	args := jsonprotocol.BundleArgs{
+		Mode: jsonprotocol.BundleRunTestsMode,
+		RunTests: &jsonprotocol.BundleRunTestsArgs{
 			OutDir:        outDir,
 			Target:        td.Srvs[0].Addr().String(),
 			CompanionDUTs: map[string]string{role: companionHost.Addr().String()},

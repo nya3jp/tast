@@ -22,55 +22,55 @@ import (
 	"chromiumos/tast/internal/protocol"
 )
 
-// RunMode describes the bundle's behavior.
-type RunMode int
+// BundleRunMode describes the bundle's behavior.
+type BundleRunMode int
 
 const (
-	// RunTestsMode indicates that the bundle should run all matched tests and write the results to stdout as
+	// BundleRunTestsMode indicates that the bundle should run all matched tests and write the results to stdout as
 	// a sequence of JSON-marshaled control.Entity* control messages.
-	RunTestsMode RunMode = 0
-	// ListTestsMode indicates that the bundle should write information about matched tests to stdout as a
+	BundleRunTestsMode BundleRunMode = 0
+	// BundleListTestsMode indicates that the bundle should write information about matched tests to stdout as a
 	// JSON array of testing.Test structs and exit.
-	ListTestsMode = 1
-	// RPCMode indicates that the bundle should run a gRPC server on the stdin/stdout.
-	RPCMode = 2
-	// ExportMetadataMode indicates that the bundle should compose and dump test metadata.
-	ExportMetadataMode = 3
-	// ListFixturesMode indicates that the bundle should write information about all the fixtures
+	BundleListTestsMode = 1
+	// BundleRPCMode indicates that the bundle should run a gRPC server on the stdin/stdout.
+	BundleRPCMode = 2
+	// BundleExportMetadataMode indicates that the bundle should compose and dump test metadata.
+	BundleExportMetadataMode = 3
+	// BundleListFixturesMode indicates that the bundle should write information about all the fixtures
 	// to stdout as a JSON array of testing.EntityInfo structs and exit.
-	ListFixturesMode = 4
+	BundleListFixturesMode = 4
 )
 
-// Args is used to pass arguments from test runners to test bundles.
+// BundleArgs is used to pass arguments from test runners to test bundles.
 // The runner executable writes the struct's JSON-marshaled representation to the bundle's stdin.
-type Args struct {
+type BundleArgs struct {
 	// Mode describes the mode that should be used by the bundle.
-	Mode RunMode `json:"mode"`
+	Mode BundleRunMode `json:"mode"`
 
-	// RunTests contains arguments used by RunTestsMode.
-	RunTests *RunTestsArgs `json:"runTests,omitempty"`
-	// ListTests contains arguments used by ListTestsMode.
-	ListTests *ListTestsArgs `json:"listTests,omitempty"`
+	// RunTests contains arguments used by BundleRunTestsMode.
+	RunTests *BundleRunTestsArgs `json:"runTests,omitempty"`
+	// ListTests contains arguments used by BundleListTestsMode.
+	ListTests *BundleListTestsArgs `json:"listTests,omitempty"`
 }
 
 // FillDeprecated backfills deprecated fields from the corresponding non-deprecated fields.
 // This method is called by test runners to ensure that args will be interpreted
 // correctly by older test bundles.
-func (a *Args) FillDeprecated() {
+func (a *BundleArgs) FillDeprecated() {
 	// If there were any deprecated fields, we would fill them from the corresponding
 	// non-deprecated fields here using command.CopyFieldIfNonZero for basic types or
 	// manual copies for structs.
 }
 
 // PromoteDeprecated copies all non-zero-valued deprecated fields to the corresponding non-deprecated fields.
-// Missing sub-structs (e.g. RunTestsArgs and ListTestsArgs) are initialized.
+// Missing sub-structs (e.g. BundleRunTestsArgs and BundleListTestsArgs) are initialized.
 // This method is called by test bundles to normalize args that were marshaled by an older test runner.
 //
 // If both an old and new field are set, the old field takes precedence. This is counter-intuitive but
 // necessary: a default value for the new field may have been passed to run by Local or Remote. If the
 // corresponding old field is non-zero, it was passed by an old runner (or by a new runner that called
 // FillDeprecated), so we use the old field to make sure that it overrides the default.
-func (a *Args) PromoteDeprecated() {
+func (a *BundleArgs) PromoteDeprecated() {
 	// We don't have any deprecated fields right now.
 }
 
@@ -191,8 +191,8 @@ func (a *FeatureArgs) Features() *protocol.Features {
 	}
 }
 
-// RunTestsArgs is nested within Args and contains arguments used by RunTestsMode.
-type RunTestsArgs struct {
+// BundleRunTestsArgs is nested within BundleArgs and contains arguments used by BundleRunTestsMode.
+type BundleRunTestsArgs struct {
 	// FeatureArgs includes all the feature related arguments.
 	FeatureArgs
 
@@ -261,8 +261,8 @@ type RunTestsArgs struct {
 	StartFixtureName string `json:"startFixtureName,omitempty"`
 }
 
-// ListTestsArgs is nested within Args and contains arguments used by ListTestsMode.
-type ListTestsArgs struct {
+// BundleListTestsArgs is nested within BundleArgs and contains arguments used by BundleListTestsMode.
+type BundleListTestsArgs struct {
 	// FeatureArgs includes all the feature related arguments.
 	FeatureArgs
 	// Patterns contains patterns (either empty to list all tests, exactly one attribute expression,
@@ -280,9 +280,9 @@ const (
 
 // readArgs parses runtime arguments.
 // clArgs contains command-line arguments and is typically os.Args[1:].
-// args contains default values for arguments and is further updated by decoding a JSON-marshaled Args struct from stdin.
+// args contains default values for arguments and is further updated by decoding a JSON-marshaled BundleArgs struct from stdin.
 // The caller is responsible for performing the requested action.
-func readArgs(clArgs []string, stdin io.Reader, stderr io.Writer, args *Args, bt bundleType) error {
+func readArgs(clArgs []string, stdin io.Reader, stderr io.Writer, args *BundleArgs, bt bundleType) error {
 	if len(clArgs) != 0 {
 		flags := flag.NewFlagSet("", flag.ContinueOnError)
 		flags.SetOutput(stderr)
@@ -305,16 +305,16 @@ func readArgs(clArgs []string, stdin io.Reader, stderr io.Writer, args *Args, bt
 			return command.NewStatusErrorf(statusBadArgs, "%v", err)
 		}
 		if *dump {
-			args.Mode = ListTestsMode
-			args.ListTests = &ListTestsArgs{}
+			args.Mode = BundleListTestsMode
+			args.ListTests = &BundleListTestsArgs{}
 			return nil
 		}
 		if *exportMetadata {
-			args.Mode = ExportMetadataMode
+			args.Mode = BundleExportMetadataMode
 			return nil
 		}
 		if *rpc {
-			args.Mode = RPCMode
+			args.Mode = BundleRPCMode
 			return nil
 		}
 	}
@@ -323,8 +323,8 @@ func readArgs(clArgs []string, stdin io.Reader, stderr io.Writer, args *Args, bt
 		return command.NewStatusErrorf(statusBadArgs, "failed to decode args from stdin: %v", err)
 	}
 
-	if (args.Mode == RunTestsMode && args.RunTests == nil) ||
-		(args.Mode == ListTestsMode && args.ListTests == nil) {
+	if (args.Mode == BundleRunTestsMode && args.RunTests == nil) ||
+		(args.Mode == BundleListTestsMode && args.ListTests == nil) {
 		return command.NewStatusErrorf(statusBadArgs, "args not set for mode %v", args.Mode)
 	}
 

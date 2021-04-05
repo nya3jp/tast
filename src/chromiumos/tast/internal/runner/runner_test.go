@@ -490,7 +490,7 @@ func TestRunNoTests(t *gotesting.T) {
 	// If the command was run by the tast command, it should exit with success.
 	args := &Args{
 		RunTests: &RunTestsArgs{
-			BundleArgs: bundle.RunTestsArgs{Patterns: []string{"bogus.SomeTest"}},
+			BundleArgs: bundle.BundleRunTestsArgs{Patterns: []string{"bogus.SomeTest"}},
 			BundleGlob: filepath.Join(dir, "*"),
 		},
 	}
@@ -552,7 +552,7 @@ func TestCheckDepsWhenRunManually(t *gotesting.T) {
 	}
 
 	// Use args.bundleArgs to determine what would be passed to test bundles.
-	bundleArgs, err := args.bundleArgs(bundle.RunTestsMode)
+	bundleArgs, err := args.bundleArgs(bundle.BundleRunTestsMode)
 	if err != nil {
 		t.Fatal("bundleArgs failed: ", err)
 	}
@@ -624,7 +624,7 @@ func TestRunTestsUseRequestedOutDir(t *gotesting.T) {
 	status, stdout, _, sig := callRun(t, nil, &Args{
 		RunTests: &RunTestsArgs{
 			BundleGlob: filepath.Join(bundleDir, "*"),
-			BundleArgs: bundle.RunTestsArgs{OutDir: outDir},
+			BundleArgs: bundle.BundleRunTestsArgs{OutDir: outDir},
 		},
 	}, nil, &Config{Type: LocalRunner})
 	if status != statusSuccess {

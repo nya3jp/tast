@@ -32,7 +32,7 @@ func main() {
 	args := runner.Args{
 		RunTests: &runner.RunTestsArgs{
 			BundleGlob: "/usr/local/libexec/tast/bundles/local/*",
-			BundleArgs: bundle.RunTestsArgs{
+			BundleArgs: bundle.BundleRunTestsArgs{
 				DataDir: "/usr/local/share/tast/data",
 				TempDir: "/usr/local/tmp/tast/run_tmp",
 			},

@@ -12,10 +12,10 @@ import (
 	"chromiumos/tast/internal/runner"
 )
 
-// CheckArgs compares two runner.Args.
-func CheckArgs(t *testing.T, args, exp *runner.Args) {
+// CheckArgs compares two runner.RunnerArgs.
+func CheckArgs(t *testing.T, args, exp *runner.RunnerArgs) {
 	t.Helper()
-	if diff := cmp.Diff(args, exp, cmp.AllowUnexported(runner.Args{})); diff != "" {
-		t.Errorf("Args mismatch (-got +want):\n%v", diff)
+	if diff := cmp.Diff(args, exp, cmp.AllowUnexported(runner.RunnerArgs{})); diff != "" {
+		t.Errorf("RunnerArgs mismatch (-got +want):\n%v", diff)
 	}
 }

@@ -23,82 +23,82 @@ import (
 	"chromiumos/tast/internal/protocol"
 )
 
-// RunMode describes the runner's behavior.
-type RunMode int
+// RunnerRunMode describes the runner's behavior.
+type RunnerRunMode int
 
 const (
-	// RunTestsMode indicates that the runner should run all matched tests.
-	RunTestsMode RunMode = 0
-	// ListTestsMode indicates that the runner should write information about matched tests to stdout as a
+	// RunnerRunTestsMode indicates that the runner should run all matched tests.
+	RunnerRunTestsMode RunnerRunMode = 0
+	// RunnerListTestsMode indicates that the runner should write information about matched tests to stdout as a
 	// JSON array of testing.Test structs and exit.
-	ListTestsMode = 2
-	// GetSysInfoStateMode indicates that the runner should write a JSON-marshaled GetSysInfoStateResult struct
+	RunnerListTestsMode = 2
+	// RunnerGetSysInfoStateMode indicates that the runner should write a JSON-marshaled RunnerGetSysInfoStateResult struct
 	// to stdout and exit. It's used by the tast executable to get the initial state of the system before tests
 	// are executed. This mode is only supported by local_test_runner.
-	GetSysInfoStateMode = 3
-	// CollectSysInfoMode indicates that the runner should collect system information that was written in the
-	// course of testing and write a JSON-marshaled CollectSysInfoResult struct to stdout and exit. It's used by
+	RunnerGetSysInfoStateMode = 3
+	// RunnerCollectSysInfoMode indicates that the runner should collect system information that was written in the
+	// course of testing and write a JSON-marshaled RunnerCollectSysInfoResult struct to stdout and exit. It's used by
 	// the tast executable to get system info after testing is completed.
 	// This mode is only supported by local_test_runner.
-	CollectSysInfoMode = 4
-	// GetDUTInfoMode indicates that the runner should return DUT information via a JSON-marshaled
-	// GetDUTInfoResult struct written to stdout. This mode is only supported by local_test_runner.
-	GetDUTInfoMode = 5
-	// DownloadPrivateBundlesMode indicates that the runner should download private bundles from devservers,
-	// install them to the DUT, write a JSON-marshaled DownloadPrivateBundlesResult struct to stdout and exit.
+	RunnerCollectSysInfoMode = 4
+	// RunnerGetDUTInfoMode indicates that the runner should return DUT information via a JSON-marshaled
+	// RunnerGetDUTInfoResult struct written to stdout. This mode is only supported by local_test_runner.
+	RunnerGetDUTInfoMode = 5
+	// RunnerDownloadPrivateBundlesMode indicates that the runner should download private bundles from devservers,
+	// install them to the DUT, write a JSON-marshaled RunnerDownloadPrivateBundlesResult struct to stdout and exit.
 	// This mode is only supported by local_test_runner.
-	DownloadPrivateBundlesMode = 6
-	// ListFixturesMode indicates that the runner should write information about fixtures to stdout
-	// as a JSON serialized ListFixturesResult.
-	ListFixturesMode = 7
+	RunnerDownloadPrivateBundlesMode = 6
+	// RunnerListFixturesMode indicates that the runner should write information about fixtures to stdout
+	// as a JSON serialized RunnerListFixturesResult.
+	RunnerListFixturesMode = 7
 )
 
-// Args provides a backward- and forward-compatible way to pass arguments from the tast executable to test runners.
+// RunnerArgs provides a backward- and forward-compatible way to pass arguments from the tast executable to test runners.
 // The tast executable writes the struct's JSON-serialized representation to the runner's stdin.
-type Args struct {
+type RunnerArgs struct {
 	// Mode describes the mode that should be used by the runner.
-	Mode RunMode `json:"mode"`
+	Mode RunnerRunMode `json:"mode"`
 
-	// RunTests contains arguments used by RunTestsMode.
-	RunTests *RunTestsArgs `json:"runTests,omitempty"`
-	// ListTests contains arguments used by ListTestsMode.
-	ListTests *ListTestsArgs `json:"listTests,omitempty"`
-	// ListFixtures contains arguments used by ListFixturesMode.
-	ListFixtures *ListFixturesArgs `json:"listFixtures,omitempty"`
-	// CollectSysInfo contains arguments used by CollectSysInfoMode.
-	CollectSysInfo *CollectSysInfoArgs `json:"collectSysInfo,omitempty"`
-	// GetDUTInfo contains arguments used by GetDUTInfoMode.
+	// RunTests contains arguments used by RunnerRunTestsMode.
+	RunTests *RunnerRunTestsArgs `json:"runTests,omitempty"`
+	// ListTests contains arguments used by RunnerListTestsMode.
+	ListTests *RunnerListTestsArgs `json:"listTests,omitempty"`
+	// ListFixtures contains arguments used by RunnerListFixturesMode.
+	ListFixtures *RunnerListFixturesArgs `json:"listFixtures,omitempty"`
+	// CollectSysInfo contains arguments used by RunnerCollectSysInfoMode.
+	CollectSysInfo *RunnerCollectSysInfoArgs `json:"collectSysInfo,omitempty"`
+	// GetDUTInfo contains arguments used by RunnerGetDUTInfoMode.
 	// Note that, for backward compatibility, the JSON's field name is getSoftwareFeatures.
-	GetDUTInfo *GetDUTInfoArgs `json:"getSoftwareFeatures,omitempty"`
-	// DownloadPrivateBundles contains arguments used by DownloadPrivateBundlesMode.
-	DownloadPrivateBundles *DownloadPrivateBundlesArgs `json:"downloadPrivateBundles,omitempty"`
+	GetDUTInfo *RunnerGetDUTInfoArgs `json:"getSoftwareFeatures,omitempty"`
+	// DownloadPrivateBundles contains arguments used by RunnerDownloadPrivateBundlesMode.
+	DownloadPrivateBundles *RunnerDownloadPrivateBundlesArgs `json:"downloadPrivateBundles,omitempty"`
 
 	// report is set to true by readArgs if status should be reported via control messages rather
 	// than human-readable log messages. This is true when args were supplied via stdin rather than
 	// command-line flags, indicating that the runner was executed by the tast command. It's only relevant
-	// for RunTestsMode.
+	// for RunnerRunTestsMode.
 	report bool
 }
 
 // bundleArgs creates a jsonprotocol.BundleArgs appropriate for running bundles in the supplied mode.
 // The returned struct's slices should not be modified, as they are shared with a.
-func (a *Args) bundleArgs(mode jsonprotocol.BundleRunMode) (*jsonprotocol.BundleArgs, error) {
+func (a *RunnerArgs) bundleArgs(mode jsonprotocol.BundleRunMode) (*jsonprotocol.BundleArgs, error) {
 	ba := jsonprotocol.BundleArgs{Mode: mode}
 
 	switch mode {
 	case jsonprotocol.BundleRunTestsMode:
 		switch a.Mode {
-		case RunTestsMode:
+		case RunnerRunTestsMode:
 			ba.RunTests = &a.RunTests.BundleArgs
 		default:
 			return nil, fmt.Errorf("can't make RunTests bundle args in runner mode %d", int(a.Mode))
 		}
 	case jsonprotocol.BundleListTestsMode:
 		switch a.Mode {
-		case RunTestsMode:
+		case RunnerRunTestsMode:
 			// We didn't receive ListTests args, so copy the shared patterns field from RunTests.
 			ba.ListTests = &jsonprotocol.BundleListTestsArgs{Patterns: a.RunTests.BundleArgs.Patterns}
-		case ListTestsMode:
+		case RunnerListTestsMode:
 			ba.ListTests = &a.ListTests.BundleArgs
 		default:
 			return nil, fmt.Errorf("can't make ListTests bundle args in runner mode %d", int(a.Mode))
@@ -112,13 +112,13 @@ func (a *Args) bundleArgs(mode jsonprotocol.BundleRunMode) (*jsonprotocol.Bundle
 }
 
 // fillDefaults fills unset fields with default values from cfg.
-func (a *Args) fillDefaults(cfg *Config) {
+func (a *RunnerArgs) fillDefaults(cfg *Config) {
 	switch a.Mode {
-	case RunTestsMode:
+	case RunnerRunTestsMode:
 		if a.RunTests.BundleArgs.BuildArtifactsURL == "" {
 			a.RunTests.BundleArgs.BuildArtifactsURL = cfg.DefaultBuildArtifactsURL
 		}
-	case DownloadPrivateBundlesMode:
+	case RunnerDownloadPrivateBundlesMode:
 		if a.DownloadPrivateBundles.BuildArtifactsURL == "" {
 			a.DownloadPrivateBundles.BuildArtifactsURL = cfg.DefaultBuildArtifactsURL
 		}
@@ -128,7 +128,7 @@ func (a *Args) fillDefaults(cfg *Config) {
 // FillDeprecated backfills deprecated fields from the corresponding non-deprecated fields.
 // This method is called by the tast process to ensure that args will be interpreted
 // correctly by older test runners.
-func (a *Args) FillDeprecated() {
+func (a *RunnerArgs) FillDeprecated() {
 	// If there were any deprecated fields, we would fill them from the corresponding
 	// non-deprecated fields here using command.CopyFieldIfNonZero for basic types or
 	// manual copies for structs.
@@ -138,21 +138,21 @@ func (a *Args) FillDeprecated() {
 }
 
 // PromoteDeprecated copies all non-zero-valued deprecated fields to the corresponding non-deprecated fields.
-// Missing sub-structs (e.g. RunTestsArgs and ListTestsArgs) are initialized.
+// Missing sub-structs (e.g. RunnerRunTestsArgs and RunnerListTestsArgs) are initialized.
 // This method is called by test runners to normalize args that were marshaled by an older tast executable.
 //
 // If both an old and new field are set, the old field takes precedence. This is counter-intuitive but
 // necessary: a default value for the new field may have been passed to Run. If the corresponding old field
 // is non-zero, it was passed by an old tast executable (or by a new executable that called FillDeprecated),
 // so we use the old field to make sure that it overrides the default.
-func (a *Args) PromoteDeprecated() {
+func (a *RunnerArgs) PromoteDeprecated() {
 	if a.RunTests != nil {
 		command.CopyFieldIfNonZero(&a.RunTests.BuildArtifactsURLDeprecated, &a.RunTests.BundleArgs.BuildArtifactsURL)
 	}
 }
 
-// RunTestsArgs is nested within Args and contains arguments used by RunTestsMode.
-type RunTestsArgs struct {
+// RunnerRunTestsArgs is nested within RunnerArgs and contains arguments used by RunnerRunTestsMode.
+type RunnerRunTestsArgs struct {
 	// BundleArgs contains arguments that are relevant to test bundles.
 	BundleArgs jsonprotocol.BundleRunTestsArgs `json:"bundleArgs"`
 	// BundleGlob is a glob-style path matching test bundles to execute.
@@ -166,28 +166,28 @@ type RunTestsArgs struct {
 	BuildArtifactsURLDeprecated string `json:"buildArtifactsUrl,omitempty"`
 }
 
-// ListTestsArgs is nested within Args and contains arguments used by ListTestsMode.
-type ListTestsArgs struct {
+// RunnerListTestsArgs is nested within RunnerArgs and contains arguments used by RunnerListTestsMode.
+type RunnerListTestsArgs struct {
 	// BundleArgs contains arguments that are relevant to test bundles.
 	BundleArgs jsonprotocol.BundleListTestsArgs `json:"bundleArgs"`
 	// BundleGlob is a glob-style path matching test bundles to execute.
 	BundleGlob string `json:"bundleGlob,omitempty"`
 }
 
-// ListFixturesArgs is nested within Args and contains arguments used by ListFixturesMode.
-type ListFixturesArgs struct {
+// RunnerListFixturesArgs is nested within RunnerArgs and contains arguments used by RunnerListFixturesMode.
+type RunnerListFixturesArgs struct {
 	// BundleGlob is a glob-style path matching test bundles to execute.
 	BundleGlob string `json:"bundleGlob,omitempty"`
 }
 
-// ListFixturesResult holds the result of a ListFixturesMode command.
-type ListFixturesResult struct {
+// RunnerListFixturesResult holds the result of a RunnerListFixturesMode command.
+type RunnerListFixturesResult struct {
 	// Fixtures maps bundle path to the fixtures it contains.
 	Fixtures map[string][]*jsonprotocol.EntityInfo `json:"fixtures,omitempty"`
 }
 
-// GetSysInfoStateResult holds the result of a GetSysInfoStateMode command.
-type GetSysInfoStateResult struct {
+// RunnerGetSysInfoStateResult holds the result of a RunnerGetSysInfoStateMode command.
+type RunnerGetSysInfoStateResult struct {
 	// SysInfoState contains the collected state.
 	State SysInfoState `json:"state"`
 	// Warnings contains descriptions of non-fatal errors encountered while collecting data.
@@ -195,15 +195,15 @@ type GetSysInfoStateResult struct {
 	Warnings []string `json:"warnings,omitempty"`
 }
 
-// CollectSysInfoArgs is nested within Args and holds arguments used by CollectSysInfoMode.
-type CollectSysInfoArgs struct {
-	// InitialState describes the pre-testing state of the DUT. It should be generated by a GetSysInfoStateMode
+// RunnerCollectSysInfoArgs is nested within RunnerArgs and holds arguments used by RunnerCollectSysInfoMode.
+type RunnerCollectSysInfoArgs struct {
+	// InitialState describes the pre-testing state of the DUT. It should be generated by a RunnerGetSysInfoStateMode
 	// command executed before tests are run.
 	InitialState SysInfoState `json:"initialState"`
 }
 
-// CollectSysInfoResult contains the result of a CollectSysInfoMode command.
-type CollectSysInfoResult struct {
+// RunnerCollectSysInfoResult contains the result of a RunnerCollectSysInfoMode command.
+type RunnerCollectSysInfoResult struct {
 	// LogDir is the directory where log files were copied. The caller should delete it.
 	LogDir string `json:"logDir,omitempty"`
 	// CrashDir is the directory where minidump crash files were copied. The caller should delete it.
@@ -212,19 +212,19 @@ type CollectSysInfoResult struct {
 	Warnings []string `json:"warnings,omitempty"`
 }
 
-// GetDUTInfoArgs is nested within Args and contains arguments used by GetDUTInfoMode.
-type GetDUTInfoArgs struct {
+// RunnerGetDUTInfoArgs is nested within RunnerArgs and contains arguments used by RunnerGetDUTInfoMode.
+type RunnerGetDUTInfoArgs struct {
 	// ExtraUSEFlags lists USE flags that should be treated as being set an addition to
-	// the ones read from Config.USEFlagsFile when computing the feature sets for GetDUTInfoResult.
+	// the ones read from Config.USEFlagsFile when computing the feature sets for RunnerGetDUTInfoResult.
 	ExtraUSEFlags []string `json:"extraUseFlags,omitempty"`
 
-	// RequestDeviceConfig specifies if GetDUTInfoMode should return a device.Config instance
+	// RequestDeviceConfig specifies if RunnerGetDUTInfoMode should return a device.Config instance
 	// generated from runtime DUT configuration.
 	RequestDeviceConfig bool `json:"requestDeviceConfig,omitempty"`
 }
 
-// GetDUTInfoResult contains the result of a GetDUTInfoMode command.
-type GetDUTInfoResult struct {
+// RunnerGetDUTInfoResult contains the result of a RunnerGetDUTInfoMode command.
+type RunnerGetDUTInfoResult struct {
 	// SoftwareFeatures contains the information about the software features of the DUT.
 	// For backward compatibility, in JSON format, fields are flatten.
 	// This struct has MarshalJSON/UnmarshalJSON and the serialization/deserialization
@@ -247,9 +247,9 @@ type GetDUTInfoResult struct {
 	Warnings []string `json:"warnings,omitempty"`
 }
 
-// MarshalJSON marshals the given GetDUTInfoResult with handing protocol
+// MarshalJSON marshals the given RunnerGetDUTInfoResult with handing protocol
 // backward compatibility.
-func (r *GetDUTInfoResult) MarshalJSON() ([]byte, error) {
+func (r *RunnerGetDUTInfoResult) MarshalJSON() ([]byte, error) {
 	var available, missing []string
 	if r.SoftwareFeatures != nil {
 		available = r.SoftwareFeatures.GetAvailable()
@@ -273,7 +273,7 @@ func (r *GetDUTInfoResult) MarshalJSON() ([]byte, error) {
 		}
 	}
 
-	type Alias GetDUTInfoResult
+	type Alias RunnerGetDUTInfoResult
 	return json.Marshal(struct {
 		Available        []string `json:"available,omitempty"`
 		Missing          []string `json:"missing,omitempty"`
@@ -291,8 +291,8 @@ func (r *GetDUTInfoResult) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON unmarshals the given b to this r object with handing protocol
 // backward compatibility.
-func (r *GetDUTInfoResult) UnmarshalJSON(b []byte) error {
-	type Alias GetDUTInfoResult
+func (r *RunnerGetDUTInfoResult) UnmarshalJSON(b []byte) error {
+	type Alias RunnerGetDUTInfoResult
 	aux := struct {
 		Available        []string `json:"available,omitempty"`
 		Missing          []string `json:"missing,omitempty"`
@@ -339,8 +339,8 @@ type SysInfoState struct {
 	MinidumpPaths []string `json:"minidumpPaths,omitempty"`
 }
 
-// DownloadPrivateBundlesArgs is nested within Args and contains arguments used by DownloadPrivateBundlesMode.
-type DownloadPrivateBundlesArgs struct {
+// RunnerDownloadPrivateBundlesArgs is nested within RunnerArgs and contains arguments used by RunnerDownloadPrivateBundlesMode.
+type RunnerDownloadPrivateBundlesArgs struct {
 	// Devservers contains URLs of devservers that can be used to download files.
 	Devservers []string `json:"devservers,omitempty"`
 
@@ -358,8 +358,8 @@ type DownloadPrivateBundlesArgs struct {
 	BuildArtifactsURL string `json:"buildArtifactsUrl,omitempty"`
 }
 
-// DownloadPrivateBundlesResult contains the result of a DownloadPrivateBundlesMode command.
-type DownloadPrivateBundlesResult struct {
+// RunnerDownloadPrivateBundlesResult contains the result of a RunnerDownloadPrivateBundlesMode command.
+type RunnerDownloadPrivateBundlesResult struct {
 	// Messages contains log messages emitted while downloading test bundles.
 	Messages []string `json:"logs,omitempty"`
 }
@@ -381,7 +381,7 @@ type Config struct {
 	Type RunnerType
 
 	// KillStaleRunners dictates whether SIGTERM should be sent to any existing test runner processes
-	// when using RunTestsMode. This can help prevent confusing failures if multiple test jobs are
+	// when using RunnerRunTestsMode. This can help prevent confusing failures if multiple test jobs are
 	// incorrectly scheduled on the same DUT: https://crbug.com/941829
 	KillStaleRunners bool
 
@@ -389,7 +389,7 @@ type Config struct {
 	SystemLogDir string
 	// SystemLogExcludes contains relative paths of directories and files in SystemLogDir to exclude.
 	SystemLogExcludes []string
-	// UnifiedLogSubdir contains the subdirectory within CollectSysInfoResult.LogDir where unified system logs will be written.
+	// UnifiedLogSubdir contains the subdirectory within RunnerCollectSysInfoResult.LogDir where unified system logs will be written.
 	// No system logs will be be collected if this is empty.
 	UnifiedLogSubdir string `json:"-"`
 	// SystemInfoFunc contains a function that will be executed to gather additional system info.
@@ -436,8 +436,8 @@ type Config struct {
 // clArgs contains command-line arguments and is typically os.Args[1:].
 // args contains default values for arguments and is further populated by parsing clArgs or
 // (if clArgs is empty, as is the case when a runner is executed by the tast command) by
-// decoding a JSON-marshaled Args struct from stdin.
-func readArgs(clArgs []string, stdin io.Reader, stderr io.Writer, args *Args, cfg *Config) error {
+// decoding a JSON-marshaled RunnerArgs struct from stdin.
+func readArgs(clArgs []string, stdin io.Reader, stderr io.Writer, args *RunnerArgs, cfg *Config) error {
 	if len(clArgs) == 0 {
 		if err := json.NewDecoder(stdin).Decode(args); err != nil {
 			return command.NewStatusErrorf(statusBadArgs, "failed to decode args from stdin: %v", err)
@@ -445,9 +445,9 @@ func readArgs(clArgs []string, stdin io.Reader, stderr io.Writer, args *Args, cf
 		args.report = true
 	} else {
 		// Expose a limited amount of configurability via command-line flags to support running test runners manually.
-		args.Mode = RunTestsMode
+		args.Mode = RunnerRunTestsMode
 		if args.RunTests == nil {
-			args.RunTests = &RunTestsArgs{}
+			args.RunTests = &RunnerRunTestsArgs{}
 		}
 		var extraUSEFlags []string
 
@@ -493,22 +493,23 @@ errors, including the failure of an individual test.
 		if err := flags.Parse(clArgs); err != nil {
 			return command.NewStatusErrorf(statusBadArgs, "%v", err)
 		}
+
 		args.RunTests.BundleArgs.Patterns = flags.Args()
 
 		// When the runner is executed by the "tast run" command, the list of software features (used to skip
 		// unsupported tests) is passed in after having been gathered by an earlier call to local_test_runner
-		// with GetDUTInfoMode. When the runner is executed directly, gather the list here instead.
+		// with RunnerGetDUTInfoMode. When the runner is executed directly, gather the list here instead.
 		if err := setManualDepsArgs(args, cfg, extraUSEFlags); err != nil {
 			return err
 		}
 	}
 
-	if (args.Mode == RunTestsMode && args.RunTests == nil) ||
-		(args.Mode == ListTestsMode && args.ListTests == nil) ||
-		(args.Mode == CollectSysInfoMode && args.CollectSysInfo == nil) ||
-		(args.Mode == GetDUTInfoMode && args.GetDUTInfo == nil) ||
-		(args.Mode == DownloadPrivateBundlesMode && args.DownloadPrivateBundles == nil) ||
-		(args.Mode == ListFixturesMode && args.ListFixtures == nil) {
+	if (args.Mode == RunnerRunTestsMode && args.RunTests == nil) ||
+		(args.Mode == RunnerListTestsMode && args.ListTests == nil) ||
+		(args.Mode == RunnerCollectSysInfoMode && args.CollectSysInfo == nil) ||
+		(args.Mode == RunnerGetDUTInfoMode && args.GetDUTInfo == nil) ||
+		(args.Mode == RunnerDownloadPrivateBundlesMode && args.DownloadPrivateBundles == nil) ||
+		(args.Mode == RunnerListFixturesMode && args.ListFixtures == nil) {
 		return command.NewStatusErrorf(statusBadArgs, "args not set for mode %v", args.Mode)
 	}
 
@@ -522,7 +523,7 @@ errors, including the failure of an individual test.
 
 // setManualDepsArgs sets dependency/feature-related fields in args.RunTests appropriately for a manual
 // run (i.e. when the runner is executed directly with command-line flags rather than via "tast run").
-func setManualDepsArgs(args *Args, cfg *Config, extraUSEFlags []string) error {
+func setManualDepsArgs(args *RunnerArgs, cfg *Config, extraUSEFlags []string) error {
 	if cfg.USEFlagsFile == "" {
 		return nil
 	}

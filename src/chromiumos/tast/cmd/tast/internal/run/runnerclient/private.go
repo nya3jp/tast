@@ -33,12 +33,12 @@ func DownloadPrivateBundles(ctx context.Context, cfg *config.Config, conn *targe
 		tlwServer = addr.String()
 	}
 
-	var res runner.DownloadPrivateBundlesResult
+	var res runner.RunnerDownloadPrivateBundlesResult
 	if err := runTestRunnerCommand(
 		localRunnerCommand(ctx, cfg, conn.SSHConn()),
-		&runner.Args{
-			Mode: runner.DownloadPrivateBundlesMode,
-			DownloadPrivateBundles: &runner.DownloadPrivateBundlesArgs{
+		&runner.RunnerArgs{
+			Mode: runner.RunnerDownloadPrivateBundlesMode,
+			DownloadPrivateBundles: &runner.RunnerDownloadPrivateBundlesArgs{
 				Devservers:        localDevservers,
 				TLWServer:         tlwServer,
 				DUTName:           target,

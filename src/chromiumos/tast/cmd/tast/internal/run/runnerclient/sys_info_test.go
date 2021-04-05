@@ -23,14 +23,14 @@ func TestGetInitialSysInfo(t *testing.T) {
 	defer td.Close()
 
 	// Report a few log files and crashes.
-	res := runner.GetSysInfoStateResult{
+	res := runner.RunnerGetSysInfoStateResult{
 		State: runner.SysInfoState{
 			LogInodeSizes: map[uint64]int64{1: 2, 3: 4},
 			MinidumpPaths: []string{"foo.dmp", "bar.dmp"},
 		},
 	}
-	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
-		fakerunner.CheckArgs(t, args, &runner.Args{Mode: runner.GetSysInfoStateMode})
+	td.RunFunc = func(args *runner.RunnerArgs, stdout, stderr io.Writer) (status int) {
+		fakerunner.CheckArgs(t, args, &runner.RunnerArgs{Mode: runner.RunnerGetSysInfoStateMode})
 
 		json.NewEncoder(stdout).Encode(res)
 		return 0
@@ -62,13 +62,13 @@ func TestCollectSysInfo(t *testing.T) {
 	td := fakerunner.NewLocalTestData(t)
 	defer td.Close()
 
-	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
-		fakerunner.CheckArgs(t, args, &runner.Args{
-			Mode:           runner.CollectSysInfoMode,
-			CollectSysInfo: &runner.CollectSysInfoArgs{InitialState: *td.State.InitialSysInfo},
+	td.RunFunc = func(args *runner.RunnerArgs, stdout, stderr io.Writer) (status int) {
+		fakerunner.CheckArgs(t, args, &runner.RunnerArgs{
+			Mode:           runner.RunnerCollectSysInfoMode,
+			CollectSysInfo: &runner.RunnerCollectSysInfoArgs{InitialState: *td.State.InitialSysInfo},
 		})
 
-		json.NewEncoder(stdout).Encode(&runner.CollectSysInfoResult{})
+		json.NewEncoder(stdout).Encode(&runner.RunnerCollectSysInfoResult{})
 		return 0
 	}
 

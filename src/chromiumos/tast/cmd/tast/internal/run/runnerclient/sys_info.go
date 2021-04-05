@@ -35,10 +35,10 @@ func GetInitialSysInfo(ctx context.Context, cfg *config.Config, state *config.St
 		return err
 	}
 
-	var res runner.GetSysInfoStateResult
+	var res runner.RunnerGetSysInfoStateResult
 	if err := runTestRunnerCommand(
 		localRunnerCommand(ctx, cfg, conn.SSHConn()),
-		&runner.Args{Mode: runner.GetSysInfoStateMode},
+		&runner.RunnerArgs{Mode: runner.RunnerGetSysInfoStateMode},
 		&res,
 	); err != nil {
 		return err
@@ -73,12 +73,12 @@ func collectSysInfo(ctx context.Context, cfg *config.Config, state *config.State
 		return err
 	}
 
-	var res runner.CollectSysInfoResult
+	var res runner.RunnerCollectSysInfoResult
 	if err := runTestRunnerCommand(
 		localRunnerCommand(ctx, cfg, conn.SSHConn()),
-		&runner.Args{
-			Mode:           runner.CollectSysInfoMode,
-			CollectSysInfo: &runner.CollectSysInfoArgs{InitialState: *state.InitialSysInfo},
+		&runner.RunnerArgs{
+			Mode:           runner.RunnerCollectSysInfoMode,
+			CollectSysInfo: &runner.RunnerCollectSysInfoArgs{InitialState: *state.InitialSysInfo},
 		},
 		&res,
 	); err != nil {

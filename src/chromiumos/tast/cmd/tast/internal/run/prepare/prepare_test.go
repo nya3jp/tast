@@ -49,10 +49,10 @@ func TestPushDataFiles(t *gotesting.T) {
 		{EntityInfo: jsonprotocol.EntityInfo{Name: category + ".Test2", Pkg: categoryPkg, Data: []string{file2, file3, extFile1, extFile2}}},
 	}
 
-	td.RunFunc = func(args *runner.Args, stdout, stderr io.Writer) (status int) {
-		fakerunner.CheckArgs(t, args, &runner.Args{
-			Mode: runner.ListTestsMode,
-			ListTests: &runner.ListTestsArgs{
+	td.RunFunc = func(args *runner.RunnerArgs, stdout, stderr io.Writer) (status int) {
+		fakerunner.CheckArgs(t, args, &runner.RunnerArgs{
+			Mode: runner.RunnerListTestsMode,
+			ListTests: &runner.RunnerListTestsArgs{
 				BundleArgs: jsonprotocol.BundleListTestsArgs{Patterns: []string{pattern}},
 				BundleGlob: fakerunner.MockLocalBundleGlob,
 			},

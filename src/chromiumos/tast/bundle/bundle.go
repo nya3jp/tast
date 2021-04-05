@@ -11,9 +11,6 @@ import (
 	"chromiumos/tast/internal/bundle"
 )
 
-// RunTestsArgs is nested within Args and contains arguments used by RunTestsMode.
-type RunTestsArgs = bundle.RunTestsArgs
-
 // Delegate injects functions as a part of test bundle framework implementation.
 type Delegate = bundle.Delegate
 

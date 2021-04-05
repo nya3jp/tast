@@ -13,7 +13,6 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/target"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/jsonprotocol"
-	"chromiumos/tast/internal/runner"
 	"chromiumos/tast/ssh"
 )
 
@@ -117,11 +116,11 @@ func ListLocalTests(ctx context.Context, cfg *config.Config, state *config.State
 
 // listLocalFixtures returns a map from bundle to fixtures.
 func listLocalFixtures(ctx context.Context, cfg *config.Config, hst *ssh.Conn) (map[string][]*jsonprotocol.EntityInfo, error) {
-	var localFixts runner.RunnerListFixturesResult
+	var localFixts jsonprotocol.RunnerListFixturesResult
 	if err := runTestRunnerCommand(
-		localRunnerCommand(ctx, cfg, hst), &runner.RunnerArgs{
-			Mode: runner.RunnerListFixturesMode,
-			ListFixtures: &runner.RunnerListFixturesArgs{
+		localRunnerCommand(ctx, cfg, hst), &jsonprotocol.RunnerArgs{
+			Mode: jsonprotocol.RunnerListFixturesMode,
+			ListFixtures: &jsonprotocol.RunnerListFixturesArgs{
 				BundleGlob: cfg.LocalBundleGlob(),
 			},
 		}, &localFixts); err != nil {
@@ -138,11 +137,11 @@ func listRemoteTests(ctx context.Context, cfg *config.Config, state *config.Stat
 
 // listRemoteFixtures returns a map from bundle to fixtures.
 func listRemoteFixtures(ctx context.Context, cfg *config.Config) (map[string][]*jsonprotocol.EntityInfo, error) {
-	var remoteFixts runner.RunnerListFixturesResult
+	var remoteFixts jsonprotocol.RunnerListFixturesResult
 	if err := runTestRunnerCommand(
-		remoteRunnerCommand(ctx, cfg), &runner.RunnerArgs{
-			Mode: runner.RunnerListFixturesMode,
-			ListFixtures: &runner.RunnerListFixturesArgs{
+		remoteRunnerCommand(ctx, cfg), &jsonprotocol.RunnerArgs{
+			Mode: jsonprotocol.RunnerListFixturesMode,
+			ListFixtures: &jsonprotocol.RunnerListFixturesArgs{
 				BundleGlob: cfg.RemoteBundleGlob(),
 			},
 		}, &remoteFixts); err != nil {
@@ -153,9 +152,9 @@ func listRemoteFixtures(ctx context.Context, cfg *config.Config) (map[string][]*
 
 func runListTestsCommand(r runnerCmd, cfg *config.Config, state *config.State, glob string) ([]jsonprotocol.EntityWithRunnabilityInfo, error) {
 	var ts []jsonprotocol.EntityWithRunnabilityInfo
-	args := &runner.RunnerArgs{
-		Mode: runner.RunnerListTestsMode,
-		ListTests: &runner.RunnerListTestsArgs{
+	args := &jsonprotocol.RunnerArgs{
+		Mode: jsonprotocol.RunnerListTestsMode,
+		ListTests: &jsonprotocol.RunnerListTestsArgs{
 			BundleArgs: jsonprotocol.BundleListTestsArgs{
 				FeatureArgs: *featureArgsFromConfig(cfg, state),
 				Patterns:    cfg.Patterns,

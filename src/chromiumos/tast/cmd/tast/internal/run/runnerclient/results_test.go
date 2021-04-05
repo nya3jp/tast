@@ -28,7 +28,6 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
 	"chromiumos/tast/internal/control"
 	"chromiumos/tast/internal/jsonprotocol"
-	"chromiumos/tast/internal/runner"
 	"chromiumos/tast/internal/timing"
 	"chromiumos/tast/testutil"
 )
@@ -664,17 +663,17 @@ func TestWriteResultsCollectSysInfo(t *gotesting.T) {
 	td := fakerunner.NewLocalTestData(t)
 	defer td.Close()
 
-	td.RunFunc = func(args *runner.RunnerArgs, stdout, stderr io.Writer) (status int) {
-		fakerunner.CheckArgs(t, args, &runner.RunnerArgs{
-			Mode:           runner.RunnerCollectSysInfoMode,
-			CollectSysInfo: &runner.RunnerCollectSysInfoArgs{},
+	td.RunFunc = func(args *jsonprotocol.RunnerArgs, stdout, stderr io.Writer) (status int) {
+		fakerunner.CheckArgs(t, args, &jsonprotocol.RunnerArgs{
+			Mode:           jsonprotocol.RunnerCollectSysInfoMode,
+			CollectSysInfo: &jsonprotocol.RunnerCollectSysInfoArgs{},
 		})
 
-		json.NewEncoder(stdout).Encode(&runner.RunnerCollectSysInfoResult{})
+		json.NewEncoder(stdout).Encode(&jsonprotocol.RunnerCollectSysInfoResult{})
 		return 0
 	}
 	td.Cfg.CollectSysInfo = true
-	td.State.InitialSysInfo = &runner.SysInfoState{}
+	td.State.InitialSysInfo = &jsonprotocol.SysInfoState{}
 	if err := WriteResults(context.Background(), &td.Cfg, &td.State, nil, true); err != nil {
 		t.Fatal("WriteResults failed: ", err)
 	}
@@ -686,9 +685,9 @@ func TestWriteResultsCollectSysInfoFailure(t *gotesting.T) {
 	defer td.Close()
 
 	// Report an error when collecting system info.
-	td.RunFunc = func(args *runner.RunnerArgs, stdout, stderr io.Writer) (status int) { return 1 }
+	td.RunFunc = func(args *jsonprotocol.RunnerArgs, stdout, stderr io.Writer) (status int) { return 1 }
 	td.Cfg.CollectSysInfo = true
-	td.State.InitialSysInfo = &runner.SysInfoState{}
+	td.State.InitialSysInfo = &jsonprotocol.SysInfoState{}
 	err := WriteResults(context.Background(), &td.Cfg, &td.State, nil, true)
 	if err == nil {
 		t.Fatal("WriteResults didn't report expected error")

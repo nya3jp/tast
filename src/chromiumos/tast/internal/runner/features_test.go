@@ -14,6 +14,7 @@ import (
 	"go.chromium.org/chromiumos/infra/proto/go/device"
 
 	"chromiumos/tast/autocaps"
+	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/testutil"
 )
@@ -47,9 +48,9 @@ func TestGetDUTInfo(t *testing.T) {
 	}
 	status, stdout, _, sig := callRun(
 		t, nil,
-		&RunnerArgs{
-			Mode: RunnerGetDUTInfoMode,
-			GetDUTInfo: &RunnerGetDUTInfoArgs{
+		&jsonprotocol.RunnerArgs{
+			Mode: jsonprotocol.RunnerGetDUTInfoMode,
+			GetDUTInfo: &jsonprotocol.RunnerGetDUTInfoArgs{
 				ExtraUSEFlags: []string{"baz"},
 			},
 		},
@@ -57,11 +58,11 @@ func TestGetDUTInfo(t *testing.T) {
 	if status != statusSuccess {
 		t.Fatalf("%v = %v; want %v", sig, status, statusSuccess)
 	}
-	var res RunnerGetDUTInfoResult
+	var res jsonprotocol.RunnerGetDUTInfoResult
 	if err := json.NewDecoder(stdout).Decode(&res); err != nil {
 		t.Fatalf("%v gave bad output: %v", sig, err)
 	}
-	exp := RunnerGetDUTInfoResult{
+	exp := jsonprotocol.RunnerGetDUTInfoResult{
 		SoftwareFeatures: &protocol.SoftwareFeatures{
 			Available:   []string{"board", "foo_glob", "foobar", "other"},
 			Unavailable: []string{"not_bar_glob", "not_board", "not_foo"},
@@ -80,19 +81,19 @@ func TestGetSoftwareFeaturesNoFile(t *testing.T) {
 		USEFlagsFile:               "/tmp/nonexistent_use_flags_file.txt",
 		SoftwareFeatureDefinitions: map[string]string{"foo": "bar"},
 	}
-	args := &RunnerArgs{
-		Mode:       RunnerGetDUTInfoMode,
-		GetDUTInfo: &RunnerGetDUTInfoArgs{},
+	args := &jsonprotocol.RunnerArgs{
+		Mode:       jsonprotocol.RunnerGetDUTInfoMode,
+		GetDUTInfo: &jsonprotocol.RunnerGetDUTInfoArgs{},
 	}
 	status, stdout, _, sig := callRun(t, nil, args, nil, &cfg)
 	if status != statusSuccess {
 		t.Fatalf("%v = %v; want %v", sig, status, statusSuccess)
 	}
-	var res RunnerGetDUTInfoResult
+	var res jsonprotocol.RunnerGetDUTInfoResult
 	if err := json.NewDecoder(stdout).Decode(&res); err != nil {
 		t.Fatalf("%v gave bad output: %v", sig, err)
 	}
-	exp := RunnerGetDUTInfoResult{}
+	exp := jsonprotocol.RunnerGetDUTInfoResult{}
 	if !reflect.DeepEqual(res, exp) {
 		t.Errorf("%v wrote result %+v; want %+v", sig, res, exp)
 	}

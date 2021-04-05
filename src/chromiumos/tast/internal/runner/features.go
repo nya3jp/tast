@@ -27,6 +27,7 @@ import (
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/command"
 	"chromiumos/tast/internal/expr"
+	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/lsbrelease"
 )
@@ -35,7 +36,7 @@ const autotestCapPrefix = "autotest-capability:" // prefix for autotest-capabili
 
 // handleGetDUTInfo handles a RunnerGetDUTInfoMode request from args
 // and JSON-marshals a RunnerGetDUTInfoResult struct to w.
-func handleGetDUTInfo(args *RunnerArgs, cfg *Config, w io.Writer) error {
+func handleGetDUTInfo(args *jsonprotocol.RunnerArgs, cfg *Config, w io.Writer) error {
 	features, warnings, err := getSoftwareFeatures(
 		cfg.SoftwareFeatureDefinitions, cfg.USEFlagsFile, cfg.LSBReleaseFile, args.GetDUTInfo.ExtraUSEFlags, cfg.AutotestCapabilityDir)
 	if err != nil {
@@ -50,7 +51,7 @@ func handleGetDUTInfo(args *RunnerArgs, cfg *Config, w io.Writer) error {
 		warnings = append(warnings, ws...)
 	}
 
-	res := RunnerGetDUTInfoResult{
+	res := jsonprotocol.RunnerGetDUTInfoResult{
 		SoftwareFeatures:         features,
 		DeviceConfig:             dc,
 		HardwareFeatures:         hwFeatures,

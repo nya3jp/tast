@@ -28,7 +28,6 @@ import (
 	"chromiumos/tast/internal/planner"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/rpc"
-	"chromiumos/tast/internal/runner"
 	"chromiumos/tast/internal/timing"
 	"chromiumos/tast/ssh"
 )
@@ -470,7 +469,7 @@ func (h *localRunnerHandle) Close(ctx context.Context) error {
 // startLocalRunner asynchronously starts local_test_runner on hst and passes args to it.
 // args.FillDeprecated() is called first to backfill any deprecated fields for old runners.
 // The caller is responsible for reading the handle's stdout and closing the handle.
-func startLocalRunner(ctx context.Context, cfg *config.Config, hst *ssh.Conn, args *runner.RunnerArgs) (*localRunnerHandle, error) {
+func startLocalRunner(ctx context.Context, cfg *config.Config, hst *ssh.Conn, args *jsonprotocol.RunnerArgs) (*localRunnerHandle, error) {
 	args.FillDeprecated()
 	argsData, err := json.Marshal(args)
 	if err != nil {
@@ -522,9 +521,9 @@ func runLocalTestsOnce(ctx context.Context, cfg *config.Config, state *config.St
 		tlwServer = addr.String()
 	}
 
-	args := runner.RunnerArgs{
-		Mode: runner.RunnerRunTestsMode,
-		RunTests: &runner.RunnerRunTestsArgs{
+	args := jsonprotocol.RunnerArgs{
+		Mode: jsonprotocol.RunnerRunTestsMode,
+		RunTests: &jsonprotocol.RunnerRunTestsArgs{
 			BundleArgs: jsonprotocol.BundleRunTestsArgs{
 				FeatureArgs:       *featureArgsFromConfig(cfg, state),
 				Patterns:          patterns,

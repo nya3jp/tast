@@ -18,7 +18,6 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
 	"chromiumos/tast/internal/jsonprotocol"
-	"chromiumos/tast/internal/runner"
 	"chromiumos/tast/internal/timing"
 )
 
@@ -89,9 +88,9 @@ func runRemoteTestsOnce(ctx context.Context, cfg *config.Config, state *config.S
 	for role, dut := range cfg.CompanionDUTs {
 		runFlags = append(runFlags, fmt.Sprintf("-companiondut=%s:%s", role, dut))
 	}
-	args := runner.RunnerArgs{
-		Mode: runner.RunnerRunTestsMode,
-		RunTests: &runner.RunnerRunTestsArgs{
+	args := jsonprotocol.RunnerArgs{
+		Mode: jsonprotocol.RunnerRunTestsMode,
+		RunTests: &jsonprotocol.RunnerRunTestsArgs{
 			BundleArgs: jsonprotocol.BundleRunTestsArgs{
 				FeatureArgs:       *featureArgsFromConfig(cfg, state),
 				Patterns:          patterns,

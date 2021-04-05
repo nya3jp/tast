@@ -14,7 +14,7 @@ import (
 	"os/exec"
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
-	"chromiumos/tast/internal/runner"
+	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/ssh"
 )
 
@@ -92,7 +92,7 @@ func (r *remoteRunnerCmd) SetStderr(stderr io.Writer) {
 // serialized args from its stdin, then output json serialized value to stdout.
 // This function unmarshals the output to out, so the pointer to an appropriate
 // struct is expected to be passed via out.
-func runTestRunnerCommand(r runnerCmd, args *runner.RunnerArgs, out interface{}) error {
+func runTestRunnerCommand(r runnerCmd, args *jsonprotocol.RunnerArgs, out interface{}) error {
 	args.FillDeprecated()
 	stdin, err := json.Marshal(args)
 	if err != nil {

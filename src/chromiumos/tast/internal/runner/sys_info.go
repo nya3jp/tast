@@ -15,6 +15,7 @@ import (
 
 	"chromiumos/tast/internal/command"
 	"chromiumos/tast/internal/crash"
+	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/logs"
 )
 
@@ -30,7 +31,7 @@ func handleGetSysInfoState(ctx context.Context, cfg *Config, w io.Writer) error 
 		return command.NewStatusErrorf(statusBadArgs, "system info collection unsupported")
 	}
 
-	res := RunnerGetSysInfoStateResult{}
+	res := jsonprotocol.RunnerGetSysInfoStateResult{}
 
 	if err := suspendLogCleanup(cfg.CleanupLogsPausedPath); err != nil {
 		res.Warnings = append(res.Warnings, fmt.Sprintf("Failed to pause log cleanup: %v", err))
@@ -62,7 +63,7 @@ func handleGetSysInfoState(ctx context.Context, cfg *Config, w io.Writer) error 
 
 // handleCollectSysInfo copies system information that was written after args.CollectSysInfo.InitialState
 // was generated into temporary directories and writes a JSON-marshaled RunnerCollectSysInfoResult struct to w.
-func handleCollectSysInfo(ctx context.Context, args *RunnerArgs, cfg *Config, w io.Writer) error {
+func handleCollectSysInfo(ctx context.Context, args *jsonprotocol.RunnerArgs, cfg *Config, w io.Writer) error {
 	if cfg.SystemLogDir == "" || len(cfg.SystemCrashDirs) == 0 {
 		return command.NewStatusErrorf(statusBadArgs, "system info collection unsupported")
 	}
@@ -71,7 +72,7 @@ func handleCollectSysInfo(ctx context.Context, args *RunnerArgs, cfg *Config, w 
 	if cmdArgs == nil {
 		return command.NewStatusErrorf(statusBadArgs, "missing system info args")
 	}
-	res := RunnerCollectSysInfoResult{}
+	res := jsonprotocol.RunnerCollectSysInfoResult{}
 
 	// Collect syslog logs.
 	var err error

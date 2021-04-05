@@ -77,7 +77,7 @@ const (
 // registration. This struct carries a list of declared runtime variables to be
 // checked against in State.Var.
 type EntityConstraints struct {
-	vars []string
+	allVars []string
 }
 
 // EntityRoot is the root of all State objects associated with an entity.
@@ -422,7 +422,7 @@ type varMixin struct {
 // If a value was not supplied at runtime via the -var flag to "tast run", ok will be false.
 func (s *varMixin) Var(name string) (val string, ok bool) {
 	seen := false
-	for _, n := range s.entityRoot.cst.vars {
+	for _, n := range s.entityRoot.cst.allVars {
 		if n == name {
 			seen = true
 			break

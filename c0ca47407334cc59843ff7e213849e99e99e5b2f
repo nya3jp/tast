@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b7f86973_8b09fed7",
+        "filename": "src/chromiumos/tast/internal/testing/matcher.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 98,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2021-04-05T05:52:31Z",
+      "side": 1,
+      "message": "glob ?",
+      "range": {
+        "startLine": 98,
+        "startChar": 26,
+        "endLine": 98,
+        "endChar": 29
+      },
+      "revId": "c0ca47407334cc59843ff7e213849e99e99e5b2f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

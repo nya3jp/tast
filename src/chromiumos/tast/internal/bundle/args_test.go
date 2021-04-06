@@ -30,67 +30,48 @@ func newBufferWithArgs(t *testing.T, args *jsonprotocol.BundleArgs) *bytes.Buffe
 }
 
 func TestReadArgs(t *testing.T) {
-	const (
-		defaultDataDir = "/mock/data"
-		pattern        = "example.*"
-	)
-
-	args := &jsonprotocol.BundleArgs{
-		RunTests: &jsonprotocol.BundleRunTestsArgs{
-			DataDir: defaultDataDir,
-		},
-	}
-	stdin := newBufferWithArgs(t, &jsonprotocol.BundleArgs{
+	want := &jsonprotocol.BundleArgs{
 		Mode: jsonprotocol.BundleListTestsMode,
 		ListTests: &jsonprotocol.BundleListTestsArgs{
-			Patterns: []string{pattern},
+			Patterns: []string{"example.*"},
 		},
-	})
-	if err := readArgs(nil, stdin, ioutil.Discard, args, localBundle); err != nil {
+	}
+	got, err := readArgs(nil, newBufferWithArgs(t, want), ioutil.Discard, localBundle)
+	if err != nil {
 		t.Fatal("readArgs failed: ", err)
 	}
 
-	// BundleArgs are merged.
-	exp := &jsonprotocol.BundleArgs{
-		Mode: jsonprotocol.BundleListTestsMode,
-		RunTests: &jsonprotocol.BundleRunTestsArgs{
-			DataDir: defaultDataDir,
-		},
-		ListTests: &jsonprotocol.BundleListTestsArgs{
-			Patterns: []string{pattern},
-		},
-	}
-	if diff := cmp.Diff(args, exp); diff != "" {
-		t.Fatal("BundleArgs mismatch (-want +got): ", diff)
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Fatal("BundleArgs mismatch (-got +want): ", diff)
 	}
 }
 
 func TestReadArgsDumpTests(t *testing.T) {
-	args := &jsonprotocol.BundleArgs{}
-	if err := readArgs([]string{"-dumptests"}, &bytes.Buffer{}, ioutil.Discard, args, localBundle); err != nil {
+	got, err := readArgs([]string{"-dumptests"}, &bytes.Buffer{}, ioutil.Discard, localBundle)
+	if err != nil {
 		t.Fatal("readArgs failed: ", err)
 	}
 
-	exp := &jsonprotocol.BundleArgs{
+	want := &jsonprotocol.BundleArgs{
 		Mode:      jsonprotocol.BundleListTestsMode,
 		ListTests: &jsonprotocol.BundleListTestsArgs{},
 	}
-	if diff := cmp.Diff(args, exp); diff != "" {
-		t.Fatal("BundleArgs mismatch (-want +got): ", diff)
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Fatal("BundleArgs mismatch (-got +want): ", diff)
 	}
 }
 
 func TestReadArgsRPC(t *testing.T) {
-	args := &jsonprotocol.BundleArgs{}
-	if err := readArgs([]string{"-rpc"}, &bytes.Buffer{}, ioutil.Discard, args, localBundle); err != nil {
+	got, err := readArgs([]string{"-rpc"}, &bytes.Buffer{}, ioutil.Discard, localBundle)
+	if err != nil {
 		t.Fatal("readArgs failed: ", err)
 	}
 
-	exp := &jsonprotocol.BundleArgs{
+	want := &jsonprotocol.BundleArgs{
 		Mode: jsonprotocol.BundleRPCMode,
 	}
-	if diff := cmp.Diff(args, exp); diff != "" {
-		t.Fatal("BundleArgs mismatch (-want +got): ", diff)
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Fatal("BundleArgs mismatch (-got +want): ", diff)
 	}
 }
 

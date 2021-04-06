@@ -78,9 +78,9 @@ type Delegate struct {
 // run reads a JSON-marshaled BundleArgs struct from stdin and performs the requested action.
 // Default arguments may be specified via args, which will also be updated from stdin.
 // The caller should exit with the returned status code.
-func run(ctx context.Context, clArgs []string, stdin io.Reader, stdout, stderr io.Writer,
-	args *jsonprotocol.BundleArgs, scfg *staticConfig, bt bundleType) int {
-	if err := readArgs(clArgs, stdin, stderr, args, bt); err != nil {
+func run(ctx context.Context, clArgs []string, stdin io.Reader, stdout, stderr io.Writer, scfg *staticConfig, bt bundleType) int {
+	args, err := readArgs(clArgs, stdin, stderr, bt)
+	if err != nil {
 		return command.WriteError(stderr, err)
 	}
 
@@ -203,9 +203,8 @@ type staticConfig struct {
 	defaultTestTimeout time.Duration
 }
 
-func newArgsAndStaticConfig(defaultTestTimeout time.Duration, d Delegate) (*jsonprotocol.BundleArgs, *staticConfig) {
-	args := &jsonprotocol.BundleArgs{}
-	scfg := &staticConfig{
+func newStaticConfig(defaultTestTimeout time.Duration, d Delegate) *staticConfig {
+	return &staticConfig{
 		runHook: func(ctx context.Context) (func(context.Context) error, error) {
 			pd, ok := testcontext.PrivateDataFromContext(ctx)
 			if !ok {
@@ -226,7 +225,6 @@ func newArgsAndStaticConfig(defaultTestTimeout time.Duration, d Delegate) (*json
 		beforeDownload:     d.BeforeDownload,
 		defaultTestTimeout: defaultTestTimeout,
 	}
-	return args, scfg
 }
 
 // eventWriter wraps MessageWriter to write events to syslog in parallel.

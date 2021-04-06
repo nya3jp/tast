@@ -29,6 +29,10 @@ const (
 	mdReleaseStreamMaxSize = 4096       // max bytes to read from mdReleaseStreamType streams
 )
 
+// ErrReleaseInfoNotFound is returned, when a minidump does not contain /etc/lsb-release stream.
+// The caller can recover if necessary information can be obtained in another way.
+var ErrReleaseInfoNotFound = errors.New("no lsb-release stream")
+
 // missingRegexp extracts module paths and IDs from messages logged by minidump_stackwalk.
 var missingRegexp *regexp.Regexp
 
@@ -230,7 +234,7 @@ func readMinidumpStreamInfo(f *os.File) ([]mdStreamInfo, error) {
 
 // GetMinidumpReleaseInfo returns the contents of /etc/lsb-release if it
 // is present in f, a minidump file. The Linux version of Breakpad includes
-// this information in crashes.
+// this information in crashes, but Crashpad, which is used by Chrome, doesn't.
 func GetMinidumpReleaseInfo(f *os.File) (string, error) {
 	infos, err := readMinidumpStreamInfo(f)
 	if err != nil {
@@ -244,7 +248,7 @@ func GetMinidumpReleaseInfo(f *os.File) (string, error) {
 		}
 	}
 	if releaseInfo == nil {
-		return "", errors.New("no lsb-release stream")
+		return "", ErrReleaseInfoNotFound
 	}
 
 	if _, err = f.Seek(int64(releaseInfo.offset), 0); err != nil {

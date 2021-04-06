@@ -35,7 +35,10 @@ Symbolize a minidump crash file to stdout.
 
 func (s *symbolizeCmd) SetFlags(f *flag.FlagSet) {
 	f.StringVar(&s.cfg.SymbolDir, "symboldir", "/tmp/breakpad_symbols", "directory to write symbol files to")
-	f.StringVar(&s.cfg.BuildRoot, "buildroot", "", "buildroot containing debugging binaries; inferred from dump if empty")
+	f.StringVar(&s.cfg.BuilderPath, "builderpath", "",
+		"for example, betty-release/R91-13892.0.0, it can be found in /etc/lsb-release; inferred from dump if empty")
+	f.StringVar(&s.cfg.BuildRoot, "buildroot", "",
+		"buildroot containing debugging binaries, for example /build/betty; inferred from dump if empty")
 }
 
 func (s *symbolizeCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{}) subcommands.ExitStatus {

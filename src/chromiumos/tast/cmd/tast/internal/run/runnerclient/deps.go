@@ -81,6 +81,9 @@ func GetDUTInfo(ctx context.Context, cfg *config.Config, state *config.State, cc
 		state.DeviceConfig = res.DeviceConfig
 		state.HardwareFeatures = res.HardwareFeatures
 	}
+	if res.DeviceConfigIds != nil {
+		state.DeviceConfigIds = res.DeviceConfigIds
+	}
 	state.SoftwareFeatures = res.SoftwareFeatures
 	return nil
 }
@@ -97,6 +100,7 @@ func featureArgsFromConfig(cfg *config.Config, state *config.State) *jsonprotoco
 		args.UnavailableSoftwareFeatures = state.SoftwareFeatures.Unavailable
 		args.DeviceConfig.Proto = state.DeviceConfig
 		args.HardwareFeatures.Proto = state.HardwareFeatures
+		args.DeviceConfigIds.Proto = state.DeviceConfigIds
 	}
 	return &args
 }

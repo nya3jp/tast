@@ -14,9 +14,9 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/google/go-cmp/cmp"
 	configpb "go.chromium.org/chromiumos/config/go/api"
-	"go.chromium.org/chromiumos/infra/proto/go/device"
 
 	"chromiumos/tast/internal/jsonprotocol"
+	"chromiumos/tast/internal/protocol"
 )
 
 // newBufferWithArgs returns a bytes.Buffer containing the JSON representation of args.
@@ -83,11 +83,11 @@ func TestMarshal(t *testing.T) {
 			AvailableSoftwareFeatures:   []string{"feature1"},
 			UnavailableSoftwareFeatures: []string{"feature2"},
 			DeviceConfig: jsonprotocol.DeviceConfigJSON{
-				Proto: &device.Config{
-					Id: &device.ConfigId{
-						PlatformId: &device.PlatformId{Value: "platformId"},
-						ModelId:    &device.ModelId{Value: "modelId"},
-						BrandId:    &device.BrandId{Value: "brandId"},
+				Proto: &protocol.DeprecatedDeviceConfig{
+					Id: &protocol.DeprecatedConfigId{
+						Platform: "PlatformId",
+						Model:    "ModelId",
+						Brand:    "BrandId",
 					},
 				},
 			},

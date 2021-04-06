@@ -11,14 +11,13 @@ import (
 )
 
 const (
-	localTestTimeout = 2 * time.Minute              // default max runtime for each test
-	localTestDataDir = "/usr/local/share/tast/data" // default dir for test data
+	localTestTimeout = 2 * time.Minute // default max runtime for each test
 )
 
 // Local implements the main function for local test bundles.
 //
 // Main function of local test bundles should call LocalDefault instead.
 func Local(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, d Delegate) int {
-	args, cfg := newArgsAndStaticConfig(localTestTimeout, localTestDataDir, d)
+	args, cfg := newArgsAndStaticConfig(localTestTimeout, d)
 	return run(context.Background(), clArgs, stdin, stdout, stderr, args, cfg, localBundle)
 }

@@ -1204,6 +1204,39 @@ func TestRunFixtureVars(t *gotesting.T) {
 	runTestsAndReadAll(t, tests, cfg)
 }
 
+func TestRunFixtureTestContext(t *gotesting.T) {
+	testDone := make(chan struct{})
+	fixt := &testing.Fixture{
+		Name: "fixt",
+		Impl: newFakeFixture(withPreTest(func(ctx context.Context, s *testing.FixtTestState) {
+			if err := s.TestContext().Err(); err != nil {
+				t.Errorf("s.TestContext() is canceled: %v", err)
+			}
+			go func() {
+				testDone <- <-s.TestContext().Done()
+			}()
+		}), withPostTest(func(ctx context.Context, s *testing.FixtTestState) {
+			if err := s.TestContext().Err(); err != nil {
+				t.Errorf("s.TestContext() is canceled: %v", err)
+			}
+		}), withTearDown(func(ctx context.Context, s *testing.FixtState) {
+			// TestContext must be cancelled as soon as PostTest finishes.
+			<-testDone
+		})),
+	}
+	tests := []*testing.TestInstance{{
+		Name:    "pkg.Test",
+		Fixture: "fixt",
+		Timeout: time.Minute,
+		Func:    func(ctx context.Context, s *testing.State) {},
+	}}
+
+	cfg := &Config{
+		Fixtures: map[string]*testing.Fixture{fixt.Name: fixt},
+	}
+	runTestsAndReadAll(t, tests, cfg)
+}
+
 func TestRunPrecondition(t *gotesting.T) {
 	type data struct{}
 	preData := &data{}

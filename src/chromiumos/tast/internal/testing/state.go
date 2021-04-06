@@ -208,10 +208,23 @@ func (r *TestEntityRoot) NewTestHookState() *TestHookState {
 }
 
 // NewFixtTestState creates a FixtTestState for a test.
-func (r *TestEntityRoot) NewFixtTestState() *FixtTestState {
-	return &FixtTestState{
+// ctx should have the same lifetime as the test, including PreTest and PostTest.
+// Returned context should be used to call in PreTest and PostTest.
+func (r *TestEntityRoot) NewFixtTestState(ctx context.Context, f *Fixture) (context.Context, *FixtTestState) {
+	s := &FixtTestState{
 		globalMixin: r.entityRoot.newGlobalMixin("", r.HasError()),
 	}
+	ce := &testcontext.CurrentEntity{
+		// OutDir is from the test so that test hooks can save files just like tests.
+		OutDir: r.OutDir(),
+		// ServiceDeps is from the fixture so that test hooks can call gRPC services
+		// without relying on what tests declare in ServiceDeps.
+		ServiceDeps: f.ServiceDeps,
+		// SoftwareDeps is unavailable because fixtures can't declare software dependencies.
+		HasSoftwareDeps: false,
+	}
+	s.testCtx = NewContext(ctx, ce, func(msg string) { s.Log(msg) })
+	return s.testCtx, s
 }
 
 // NewContext creates a new context associated with the entity.
@@ -687,10 +700,18 @@ func (s *FixtState) OutDir() string {
 // FixtTestState is the state the framework passes to PreTest and PostTest.
 type FixtTestState struct {
 	*globalMixin
+	testCtx context.Context
 }
 
 // OutDir returns a directory into which the entity may place arbitrary files
 // that should be included with the entity results.
 func (s *FixtTestState) OutDir() string {
 	return s.entityRoot.cfg.OutDir
+}
+
+// TestContext returns context associated with the test.
+// It has the same lifetime as the test including PreTest and PostTest, and
+// the same metadata as the test has.
+func (s *FixtTestState) TestContext() context.Context {
+	return s.testCtx
 }

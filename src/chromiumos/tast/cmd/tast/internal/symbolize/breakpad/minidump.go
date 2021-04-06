@@ -244,7 +244,7 @@ func GetMinidumpReleaseInfo(f *os.File) (string, error) {
 		}
 	}
 	if releaseInfo == nil {
-		return "", errors.New("no lsb-release stream")
+		return "", nil
 	}
 
 	if _, err = f.Seek(int64(releaseInfo.offset), 0); err != nil {

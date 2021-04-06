@@ -19,6 +19,16 @@ type releaseInfo struct {
 	builderPath string
 }
 
+// isEmpty is true if both board and builderPath are empty.
+func (ri *releaseInfo) isEmpty() bool {
+	return ri.board == "" && ri.builderPath == ""
+}
+
+// newEmptyReleaseInfo returns a releaseInfo with empty components.
+func newEmptyReleaseInfo() *releaseInfo {
+	return &releaseInfo{"", ""}
+}
+
 // getReleaseInfo parses data (typically the contents of /etc/lsb-release)
 // and returns information about the system image.
 func getReleaseInfo(data string) *releaseInfo {

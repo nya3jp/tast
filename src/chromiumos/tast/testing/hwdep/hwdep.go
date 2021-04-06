@@ -12,7 +12,6 @@ import (
 	"strings"
 
 	configpb "go.chromium.org/chromiumos/config/go/api"
-	"go.chromium.org/chromiumos/infra/proto/go/device"
 
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/dep"
@@ -33,14 +32,15 @@ func D(conds ...Condition) Deps {
 // idRegexp is the pattern that the given model/platform ID names should match with.
 var idRegexp = regexp.MustCompile(`^[a-z0-9_-]+$`)
 
-// modelListed returns whether the model represented by a device.Config is listed in
-// the given list of names or not.
-func modelListed(dc *device.Config, names ...string) (bool, error) {
-	if dc == nil || dc.Id == nil || dc.Id.ModelId == nil {
-		return false, errors.New("device.Config does not have ModelId")
+// modelListed returns whether the model represented by a protocol.DeprecatedDeviceConfig is listed
+// in the given list of names or not.
+func modelListed(di *protocol.DeprecatedDeviceConfig, names ...string) (bool, error) {
+	if di == nil || di.Ids == nil || di.Ids.Model == "" {
+		return false, errors.New("DeviceInfo does not have model ID")
 	}
+	m := di.Ids.Model
 	// Remove the suffix _signed since it is not a part of a model name.
-	modelID := strings.TrimSuffix(strings.ToLower(dc.Id.ModelId.Value), "_signed")
+	modelID := strings.TrimSuffix(strings.ToLower(m), "_signed")
 	for _, name := range names {
 		if name == modelID {
 			return true, nil
@@ -49,13 +49,14 @@ func modelListed(dc *device.Config, names ...string) (bool, error) {
 	return false, nil
 }
 
-// platformListed returns whether the platform represented by a device.Config is listed in
-// the given list of names or not.
-func platformListed(dc *device.Config, names ...string) (bool, error) {
-	if dc == nil || dc.Id == nil || dc.Id.PlatformId == nil {
-		return false, errors.New("device.Config does not have PlatformId")
+// platformListed returns whether the platform represented by a protocol.HardwareFeatures
+// is listed in the given list of names or not.
+func platformListed(di *protocol.DeprecatedDeviceConfig, names ...string) (bool, error) {
+	if di == nil || di.Ids == nil {
+		return false, errors.New("device.Config does not have platform ID")
 	}
-	platformID := strings.ToLower(dc.Id.PlatformId.Value)
+	p := di.Ids.Platform
+	platformID := strings.ToLower(p)
 	for _, name := range names {
 		if name == platformID {
 			return true, nil
@@ -85,7 +86,7 @@ func Model(names ...string) Condition {
 		}
 	}
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) error {
-		listed, err := modelListed(f.GetDeprecatedDeviceConfig(), names...)
+		listed, err := modelListed(f.DeprecatedDeviceConfig, names...)
 		if err != nil {
 			return err
 		}
@@ -106,7 +107,7 @@ func SkipOnModel(names ...string) Condition {
 		}
 	}
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) error {
-		listed, err := modelListed(f.GetDeprecatedDeviceConfig(), names...)
+		listed, err := modelListed(f.DeprecatedDeviceConfig, names...)
 		if err != nil {
 			return err
 		}
@@ -148,7 +149,7 @@ func SkipOnPlatform(names ...string) Condition {
 		}
 	}
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) error {
-		listed, err := platformListed(f.GetDeprecatedDeviceConfig(), names...)
+		listed, err := platformListed(f.DeprecatedDeviceConfig, names...)
 		if err != nil {
 			return err
 		}
@@ -163,24 +164,14 @@ func SkipOnPlatform(names ...string) Condition {
 // iff the DUT has touchscreen.
 func TouchScreen() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) error {
-		if hf := f.GetHardwareFeatures(); hf != nil {
-			if hf.GetScreen().GetTouchSupport() == configpb.HardwareFeatures_PRESENT {
-				return nil
-			}
-			return errors.New("DUT does not have touchscreen")
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return errors.New("DUT HardwareFeatures data is not given")
 		}
-
-		// Kept for protocol compatibility with an older version of Tast command.
-		// TODO(crbug.com/1094802): Remove this block when we bump sourceCompatVersion in tast/internal/build/compat.go.
-		if dc := f.GetDeprecatedDeviceConfig(); dc != nil {
-			for _, f := range dc.GetHardwareFeatures() {
-				if f == device.Config_HARDWARE_FEATURE_TOUCHSCREEN {
-					return nil
-				}
-			}
-			return errors.New("DUT does not have touchscreen")
+		if hf.GetScreen().GetTouchSupport() == configpb.HardwareFeatures_PRESENT {
+			return nil
 		}
-		return errors.New("DUT HardwareFeatures data is not given")
+		return errors.New("DUT does not have touchscreen")
 	}, CEL: "dut.hardware_features.screen.touch_support == api.HardwareFeatures.Present.PRESENT",
 	}
 }
@@ -207,22 +198,14 @@ func ChromeEC() Condition {
 // iff the DUT has fingerprint sensor.
 func Fingerprint() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) error {
-		if hf := f.GetHardwareFeatures(); hf != nil {
-			if hf.GetFingerprint().GetLocation() == configpb.HardwareFeatures_Fingerprint_NOT_PRESENT {
-				return errors.New("DUT does not have fingerprint sensor")
-			}
-			return nil
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return errors.New("HardwareFeatures is not given")
 		}
-		dc := f.GetDeprecatedDeviceConfig()
-		if dc == nil {
-			return errors.New("device.Config is not given")
+		if hf.GetFingerprint().GetLocation() == configpb.HardwareFeatures_Fingerprint_NOT_PRESENT {
+			return errors.New("DUT does not have fingerprint sensor")
 		}
-		for _, f := range dc.GetHardwareFeatures() {
-			if f == device.Config_HARDWARE_FEATURE_FINGERPRINT {
-				return nil
-			}
-		}
-		return errors.New("DUT does not have fingerprint sensor")
+		return nil
 	}, CEL: "dut.hardware_features.fingerprint.location != api.HardwareFeatures.Fingerprint.Location.NOT_PRESENT",
 	}
 }
@@ -231,20 +214,12 @@ func Fingerprint() Condition {
 // if the DUT doesn't have fingerprint sensor.
 func NoFingerprint() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) error {
-		if hf := f.GetHardwareFeatures(); hf != nil {
-			if hf.GetFingerprint().GetLocation() != configpb.HardwareFeatures_Fingerprint_NOT_PRESENT {
-				return errors.New("DUT has fingerprint sensor")
-			}
-			return nil
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return errors.New("HardwareFeatures is not given")
 		}
-		dc := f.GetDeprecatedDeviceConfig()
-		if dc == nil {
-			return errors.New("device.Config is not given")
-		}
-		for _, f := range dc.GetHardwareFeatures() {
-			if f == device.Config_HARDWARE_FEATURE_FINGERPRINT {
-				return errors.New("DUT has fingerprint sensor")
-			}
+		if hf.GetFingerprint().GetLocation() != configpb.HardwareFeatures_Fingerprint_NOT_PRESENT {
+			return errors.New("DUT has fingerprint sensor")
 		}
 		return nil
 	}, CEL: "dut.hardware_features.fingerprint.location == api.HardwareFeatures.Fingerprint.Location.NOT_PRESENT",
@@ -255,20 +230,12 @@ func NoFingerprint() Condition {
 // iff the DUT has an internal display, e.g. Chromeboxes and Chromebits don't.
 func InternalDisplay() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) error {
-		if hf := f.GetHardwareFeatures(); hf != nil {
-			if hf.GetScreen().GetPanelProperties() != nil {
-				return nil
-			}
-			return errors.New("DUT does not have an internal display")
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return errors.New("HardwareFeatures is not given")
 		}
-		dc := f.GetDeprecatedDeviceConfig()
-		if dc == nil {
-			return errors.New("device.Config is not given")
-		}
-		for _, f := range dc.GetHardwareFeatures() {
-			if f == device.Config_HARDWARE_FEATURE_INTERNAL_DISPLAY {
-				return nil
-			}
+		if hf.GetScreen().GetPanelProperties() != nil {
+			return nil
 		}
 		return errors.New("DUT does not have an internal display")
 	}, CEL: "dut.hardware_features.screen.panel_properties.diagonal_milliinch != 0",
@@ -480,11 +447,11 @@ func WifiQualcomm() Condition {
 }
 
 func hasBattery(f *protocol.HardwareFeatures) (bool, error) {
-	dc := f.GetDeprecatedDeviceConfig()
-	if dc == nil {
-		return false, errors.New("device.Config is not given")
+	i := f.GetDeprecatedDeviceConfig()
+	if i == nil {
+		return false, errors.New("DeviceInfo is not given")
 	}
-	return dc.GetPower() == device.Config_POWER_SUPPLY_BATTERY, nil
+	return i.GetPower() == protocol.DeprecatedDeviceConfig_POWER_SUPPLY_BATTERY, nil
 }
 
 // Battery returns a hardware dependency condition that is satisfied iff the DUT
@@ -508,20 +475,20 @@ func Battery() Condition {
 // those.
 func SupportsNV12Overlays() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) error {
-		dc := f.GetDeprecatedDeviceConfig()
-		if dc == nil {
-			return errors.New("device.Config is not given")
+		info := f.GetDeprecatedDeviceConfig()
+		if info == nil {
+			return errors.New("deviceInfo is not given")
 		}
-		if dc.GetSoc() == device.Config_SOC_HASWELL ||
-			dc.GetSoc() == device.Config_SOC_BAY_TRAIL ||
-			dc.GetSoc() == device.Config_SOC_BROADWELL ||
-			dc.GetSoc() == device.Config_SOC_BRASWELL ||
-			dc.GetSoc() == device.Config_SOC_SKYLAKE_U ||
-			dc.GetSoc() == device.Config_SOC_SKYLAKE_Y ||
-			dc.GetSoc() == device.Config_SOC_APOLLO_LAKE ||
-			dc.GetSoc() == device.Config_SOC_MT8173 ||
-			dc.GetSoc() == device.Config_SOC_MT8176 ||
-			dc.GetSoc() == device.Config_SOC_MT8183 {
+		if info.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_HASWELL ||
+			info.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_BAY_TRAIL ||
+			info.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_BROADWELL ||
+			info.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_BRASWELL ||
+			info.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_SKYLAKE_U ||
+			info.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_SKYLAKE_Y ||
+			info.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_APOLLO_LAKE ||
+			info.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_MT8173 ||
+			info.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_MT8176 ||
+			info.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_MT8183 {
 			return errors.New("SoC does not support NV12 Overlays")
 		}
 		return nil
@@ -533,28 +500,28 @@ func SupportsNV12Overlays() Condition {
 // from Zork onwards (codified Picasso), and not ARM SOCs.
 func Supports30bppFramebuffer() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) error {
-		dc := f.GetDeprecatedDeviceConfig()
-		if dc == nil {
-			return errors.New("device.Config is not given")
+		info := f.GetDeprecatedDeviceConfig()
+		if info == nil {
+			return errors.New("deviceInfo is not given")
 		}
 		// Any ARM CPUs
-		if dc.GetCpu() == device.Config_ARM ||
-			dc.GetCpu() == device.Config_ARM64 ||
+		if info.GetCpu() == protocol.DeprecatedDeviceConfig_ARM ||
+			info.GetCpu() == protocol.DeprecatedDeviceConfig_ARM64 ||
 			// Unknown SOCs
-			dc.GetSoc() == device.Config_SOC_UNSPECIFIED ||
+			info.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_UNSPECIFIED ||
 			// Intel before Kabylake
-			dc.GetSoc() == device.Config_SOC_APOLLO_LAKE ||
-			dc.GetSoc() == device.Config_SOC_BAY_TRAIL ||
-			dc.GetSoc() == device.Config_SOC_BRASWELL ||
-			dc.GetSoc() == device.Config_SOC_IVY_BRIDGE ||
-			dc.GetSoc() == device.Config_SOC_PINE_TRAIL ||
-			dc.GetSoc() == device.Config_SOC_SANDY_BRIDGE ||
-			dc.GetSoc() == device.Config_SOC_BROADWELL ||
-			dc.GetSoc() == device.Config_SOC_HASWELL ||
-			dc.GetSoc() == device.Config_SOC_SKYLAKE_U ||
-			dc.GetSoc() == device.Config_SOC_SKYLAKE_Y ||
+			info.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_APOLLO_LAKE ||
+			info.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_BAY_TRAIL ||
+			info.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_BRASWELL ||
+			info.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_IVY_BRIDGE ||
+			info.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_PINE_TRAIL ||
+			info.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_SANDY_BRIDGE ||
+			info.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_BROADWELL ||
+			info.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_HASWELL ||
+			info.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_SKYLAKE_U ||
+			info.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_SKYLAKE_Y ||
 			// AMD before Zork
-			dc.GetSoc() == device.Config_SOC_STONEY_RIDGE {
+			info.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_STONEY_RIDGE {
 			return errors.New("SoC does not support scanning out 30bpp framebuffers")
 		}
 		return nil
@@ -623,11 +590,11 @@ func NoForceDischarge() Condition {
 // X86 returns a hardware dependency condition matching x86 ABI compatible platform.
 func X86() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) error {
-		dc := f.GetDeprecatedDeviceConfig()
-		if dc == nil {
-			return errors.New("device.Config is not given")
+		i := f.GetDeprecatedDeviceConfig()
+		if i == nil {
+			return errors.New("deviceInfor is not given")
 		}
-		if dc.GetCpu() == device.Config_X86 || dc.GetCpu() == device.Config_X86_64 {
+		if i.GetCpu() == protocol.DeprecatedDeviceConfig_X86 || i.GetCpu() == protocol.DeprecatedDeviceConfig_X86_64 {
 			return nil
 		}
 		return errors.New("DUT's CPU is not x86 compatible")
@@ -637,11 +604,11 @@ func X86() Condition {
 // NoX86 returns a hardware dependency condition matching non-x86 ABI compatible platform.
 func NoX86() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) error {
-		dc := f.GetDeprecatedDeviceConfig()
-		if dc == nil {
-			return errors.New("device.Config is not given")
+		i := f.GetDeprecatedDeviceConfig()
+		if i == nil {
+			return errors.New("DeviceInfo is not given")
 		}
-		if dc.GetCpu() != device.Config_X86 && dc.GetCpu() != device.Config_X86_64 {
+		if i.GetCpu() != protocol.DeprecatedDeviceConfig_X86 && i.GetCpu() != protocol.DeprecatedDeviceConfig_X86_64 {
 			return nil
 		}
 		return errors.New("DUT's CPU is x86 compatible")

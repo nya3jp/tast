@@ -23,13 +23,14 @@ import (
 
 // fixtureService implements FixtureServiceServer gRPC service.
 type fixtureService struct {
+	reg *testing.Registry
 }
 
 var _ FixtureServiceServer = (*fixtureService)(nil)
 
 // registerFixtureService registers fixture service.
-func registerFixtureService(srv *grpc.Server) {
-	RegisterFixtureServiceServer(srv, &fixtureService{})
+func registerFixtureService(srv *grpc.Server, reg *testing.Registry) {
+	RegisterFixtureServiceServer(srv, &fixtureService{reg: reg})
 }
 
 // RunFixture provides operations to set up and tear down fixtures.
@@ -37,7 +38,7 @@ func registerFixtureService(srv *grpc.Server) {
 // closes the connection.
 func (s *fixtureService) RunFixture(srv FixtureService_RunFixtureServer) error {
 	for {
-		if err := pushAndPop(srv); err == errFixtureServiceNormalEOF {
+		if err := s.pushAndPop(srv); err == errFixtureServiceNormalEOF {
 			return nil
 		} else if err != nil {
 			return err
@@ -49,7 +50,7 @@ var errFixtureServiceNormalEOF = errors.New("normal EOF")
 
 // pushAndPop handles push and pop operations. If the connection is terminated
 // normally, it returns errFixtureServiceNormalEOF.
-func pushAndPop(srv FixtureService_RunFixtureServer) (retErr error) {
+func (s *fixtureService) pushAndPop(srv FixtureService_RunFixtureServer) (retErr error) {
 	ctx := srv.Context()
 
 	sendDone := func() error {
@@ -82,7 +83,7 @@ func pushAndPop(srv FixtureService_RunFixtureServer) (retErr error) {
 		return fmt.Errorf("req = %v, want push request", req)
 	}
 
-	f := testing.GlobalRegistry().AllFixtures()[r.Name]
+	f := s.reg.AllFixtures()[r.Name]
 	if f == nil {
 		return fmt.Errorf("push %v: no such fixture", r.Name)
 	}

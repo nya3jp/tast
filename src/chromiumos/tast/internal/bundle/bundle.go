@@ -84,7 +84,7 @@ func run(ctx context.Context, clArgs []string, stdin io.Reader, stdout, stderr i
 		return command.WriteError(stderr, err)
 	}
 
-	if errs := testing.GlobalRegistry().Errors(); len(errs) > 0 {
+	if errs := scfg.registry.Errors(); len(errs) > 0 {
 		es := make([]string, len(errs))
 		for i, err := range errs {
 			es[i] = err.Error()
@@ -119,7 +119,7 @@ func run(ctx context.Context, clArgs []string, stdin io.Reader, stdout, stderr i
 		}
 		return statusSuccess
 	case jsonprotocol.BundleListFixturesMode:
-		fixts := testing.GlobalRegistry().AllFixtures()
+		fixts := scfg.registry.AllFixtures()
 		var infos []*jsonprotocol.EntityInfo
 		for _, f := range fixts {
 			infos = append(infos, jsonprotocol.MustEntityInfoFromProto(f.EntityProto()))
@@ -148,7 +148,7 @@ func run(ctx context.Context, clArgs []string, stdin io.Reader, stdout, stderr i
 		}
 		return statusSuccess
 	case jsonprotocol.BundleRPCMode:
-		if err := RunRPCServer(stdin, stdout, testing.GlobalRegistry().AllServices()); err != nil {
+		if err := RunRPCServer(stdin, stdout, scfg.registry); err != nil {
 			return command.WriteError(stderr, err)
 		}
 		return statusSuccess
@@ -164,7 +164,7 @@ func testsToRun(scfg *staticConfig, patterns []string) ([]*testing.TestInstance,
 		return nil, command.NewStatusErrorf(statusBadPatterns, "failed getting tests for %v: %v", patterns, err.Error())
 	}
 	var tests []*testing.TestInstance
-	for _, t := range testing.GlobalRegistry().AllTests() {
+	for _, t := range scfg.registry.AllTests() {
 		if m.Match(t.Name, t.Attr) {
 			tests = append(tests, t)
 		}
@@ -185,6 +185,8 @@ func testsToRun(scfg *staticConfig, patterns []string) ([]*testing.TestInstance,
 // The supplied functions are used to provide customizations that apply to all
 // entities in a test bundle. They may contain bundle-specific code.
 type staticConfig struct {
+	// registry is a registry to be used to find entities.
+	registry *testing.Registry
 	// runHook is run at the beginning of the entire series of tests if non-nil.
 	// The returned closure is executed after the entire series of tests if not nil.
 	runHook func(context.Context) (func(context.Context) error, error)
@@ -203,8 +205,9 @@ type staticConfig struct {
 	defaultTestTimeout time.Duration
 }
 
-func newStaticConfig(defaultTestTimeout time.Duration, d Delegate) *staticConfig {
+func newStaticConfig(reg *testing.Registry, defaultTestTimeout time.Duration, d Delegate) *staticConfig {
 	return &staticConfig{
+		registry: reg,
 		runHook: func(ctx context.Context) (func(context.Context) error, error) {
 			pd, ok := testcontext.PrivateDataFromContext(ctx)
 			if !ok {
@@ -394,7 +397,7 @@ func runTests(ctx context.Context, stdout io.Writer, args *jsonprotocol.BundleAr
 		TestHook:          scfg.testHook,
 		DownloadMode:      args.RunTests.DownloadMode,
 		BeforeDownload:    scfg.beforeDownload,
-		Fixtures:          testing.GlobalRegistry().AllFixtures(),
+		Fixtures:          scfg.registry.AllFixtures(),
 		StartFixtureName:  args.RunTests.StartFixtureName,
 		StartFixtureImpl:  &stubFixture{setUpErrors: args.RunTests.SetUpErrors},
 	}

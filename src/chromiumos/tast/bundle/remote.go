@@ -8,6 +8,7 @@ import (
 	"os"
 
 	"chromiumos/tast/internal/bundle"
+	"chromiumos/tast/internal/testing"
 )
 
 // RemoteDelegate injects functions as a part of remote test bundle framework implementation.
@@ -21,5 +22,5 @@ type RemoteDelegate = Delegate
 // and pass the returned status code to os.Exit.
 func RemoteDefault(d Delegate) int {
 	stdin, stdout, stderr := lockStdIO()
-	return bundle.Remote(os.Args[1:], stdin, stdout, stderr, d)
+	return bundle.Remote(os.Args[1:], stdin, stdout, stderr, testing.GlobalRegistry(), d)
 }

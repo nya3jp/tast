@@ -8,6 +8,7 @@ import (
 	"os"
 
 	"chromiumos/tast/internal/bundle"
+	"chromiumos/tast/internal/testing"
 )
 
 // LocalDelegate injects several functions as a part of local test bundle framework implementation.
@@ -21,5 +22,5 @@ type LocalDelegate = Delegate
 // and pass the returned status code to os.Exit.
 func LocalDefault(d Delegate) int {
 	stdin, stdout, stderr := lockStdIO()
-	return bundle.Local(os.Args[1:], stdin, stdout, stderr, d)
+	return bundle.Local(os.Args[1:], stdin, stdout, stderr, testing.GlobalRegistry(), d)
 }

@@ -8,6 +8,8 @@ import (
 	"context"
 	"io"
 	"time"
+
+	"chromiumos/tast/internal/testing"
 )
 
 const (
@@ -17,7 +19,7 @@ const (
 // Remote implements the main function for remote test bundles.
 //
 // Main function of remote test bundles should call RemoteDefault instead.
-func Remote(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, d Delegate) int {
-	cfg := newStaticConfig(remoteTestTimeout, d)
+func Remote(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, reg *testing.Registry, d Delegate) int {
+	cfg := newStaticConfig(reg, remoteTestTimeout, d)
 	return run(context.Background(), clArgs, stdin, stdout, stderr, cfg, remoteBundle)
 }

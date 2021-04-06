@@ -19,14 +19,13 @@ import (
 )
 
 func TestRemoteMissingTarget(t *gotesting.T) {
-	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
-	defer restore()
-	testing.AddTestInstance(&testing.TestInstance{Name: "pkg.Test", Func: func(context.Context, *testing.State) {}})
+	reg := testing.NewRegistry()
+	reg.AddTestInstance(&testing.TestInstance{Name: "pkg.Test", Func: func(context.Context, *testing.State) {}})
 
 	// Remote should fail if -target wasn't passed.
 	stdin := newBufferWithArgs(t, &jsonprotocol.BundleArgs{Mode: jsonprotocol.BundleRunTestsMode, RunTests: &jsonprotocol.BundleRunTestsArgs{}})
 	stderr := bytes.Buffer{}
-	if status := Remote(nil, stdin, &bytes.Buffer{}, &stderr, Delegate{}); status != statusError {
+	if status := Remote(nil, stdin, &bytes.Buffer{}, &stderr, reg, Delegate{}); status != statusError {
 		t.Errorf("Remote() = %v; want %v", status, statusError)
 	}
 	if len(stderr.String()) == 0 {
@@ -38,9 +37,8 @@ func TestRemoteCantConnect(t *gotesting.T) {
 	td := sshtest.NewTestData(nil)
 	defer td.Close()
 
-	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
-	defer restore()
-	testing.AddTestInstance(&testing.TestInstance{Name: "pkg.Test", Func: func(context.Context, *testing.State) {}})
+	reg := testing.NewRegistry()
+	reg.AddTestInstance(&testing.TestInstance{Name: "pkg.Test", Func: func(context.Context, *testing.State) {}})
 
 	// Remote should fail if the initial connection to the DUT couldn't be
 	// established since the user key wasn't passed.
@@ -49,7 +47,7 @@ func TestRemoteCantConnect(t *gotesting.T) {
 		RunTests: &jsonprotocol.BundleRunTestsArgs{Target: td.Srvs[0].Addr().String()},
 	}
 	stderr := bytes.Buffer{}
-	if status := Remote(nil, newBufferWithArgs(t, &args), &bytes.Buffer{}, &stderr, Delegate{}); status != statusError {
+	if status := Remote(nil, newBufferWithArgs(t, &args), &bytes.Buffer{}, &stderr, reg, Delegate{}); status != statusError {
 		t.Errorf("Remote(%+v) = %v; want %v", args, status, statusError)
 	}
 	if len(stderr.String()) == 0 {
@@ -76,9 +74,8 @@ func TestRemoteDUT(t *gotesting.T) {
 
 	// Register a test that runs a command on the DUT and saves its output.
 	realOutput := ""
-	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
-	defer restore()
-	testing.AddTestInstance(&testing.TestInstance{Name: "pkg.Test", Func: func(ctx context.Context, s *testing.State) {
+	reg := testing.NewRegistry()
+	reg.AddTestInstance(&testing.TestInstance{Name: "pkg.Test", Func: func(ctx context.Context, s *testing.State) {
 		dt := s.DUT()
 		out, err := dt.Command(cmd).Output(ctx)
 		if err != nil {
@@ -97,7 +94,7 @@ func TestRemoteDUT(t *gotesting.T) {
 			KeyFile: td.UserKeyFile,
 		},
 	}
-	if status := Remote(nil, newBufferWithArgs(t, &args), &bytes.Buffer{}, &bytes.Buffer{}, Delegate{}); status != statusSuccess {
+	if status := Remote(nil, newBufferWithArgs(t, &args), &bytes.Buffer{}, &bytes.Buffer{}, reg, Delegate{}); status != statusSuccess {
 		t.Errorf("Remote(%+v) = %v; want %v", args, status, statusSuccess)
 	}
 	if realOutput != output {
@@ -123,10 +120,9 @@ func TestRemoteReconnectBetweenTests(t *gotesting.T) {
 	}
 
 	var conn1, conn2 bool
-	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
-	defer restore()
-	testing.AddTestInstance(&testing.TestInstance{Name: "pkg.Test1", Func: makeFunc(&conn1)})
-	testing.AddTestInstance(&testing.TestInstance{Name: "pkg.Test2", Func: makeFunc(&conn2)})
+	reg := testing.NewRegistry()
+	reg.AddTestInstance(&testing.TestInstance{Name: "pkg.Test1", Func: makeFunc(&conn1)})
+	reg.AddTestInstance(&testing.TestInstance{Name: "pkg.Test2", Func: makeFunc(&conn2)})
 
 	outDir := testutil.TempDir(t)
 	defer os.RemoveAll(outDir)
@@ -138,7 +134,7 @@ func TestRemoteReconnectBetweenTests(t *gotesting.T) {
 			KeyFile: td.UserKeyFile,
 		},
 	}
-	if status := Remote(nil, newBufferWithArgs(t, &args), &bytes.Buffer{}, &bytes.Buffer{}, Delegate{}); status != statusSuccess {
+	if status := Remote(nil, newBufferWithArgs(t, &args), &bytes.Buffer{}, &bytes.Buffer{}, reg, Delegate{}); status != statusSuccess {
 		t.Errorf("Remote(%+v) = %v; want %v", args, status, statusSuccess)
 	}
 	if conn1 != true {
@@ -153,12 +149,11 @@ func TestRemoteReconnectBetweenTests(t *gotesting.T) {
 func TestRemoteTestHooks(t *gotesting.T) {
 	td := sshtest.NewTestData(nil)
 	defer td.Close()
-	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
-	defer restore()
+	reg := testing.NewRegistry()
 
 	// Add two test instances.
-	testing.AddTestInstance(&testing.TestInstance{Name: "pkg.Test1", Func: func(context.Context, *testing.State) {}})
-	testing.AddTestInstance(&testing.TestInstance{Name: "pkg.Test2", Func: func(context.Context, *testing.State) {}})
+	reg.AddTestInstance(&testing.TestInstance{Name: "pkg.Test1", Func: func(context.Context, *testing.State) {}})
+	reg.AddTestInstance(&testing.TestInstance{Name: "pkg.Test2", Func: func(context.Context, *testing.State) {}})
 
 	// Set up test argument.
 	outDir := testutil.TempDir(t)
@@ -181,7 +176,7 @@ func TestRemoteTestHooks(t *gotesting.T) {
 	var ranPreHookCount, ranPostHookCount int
 
 	// Test Remote function.
-	if status := Remote(nil, stdin, &bytes.Buffer{}, &stderr, Delegate{
+	if status := Remote(nil, stdin, &bytes.Buffer{}, &stderr, reg, Delegate{
 		TestHook: func(context.Context, *testing.TestHookState) func(context.Context, *testing.TestHookState) {
 			ranPreHookCount++
 			return func(context.Context, *testing.TestHookState) {
@@ -211,10 +206,9 @@ func TestRemoteTestHooks(t *gotesting.T) {
 func TestBeforeReboot(t *gotesting.T) {
 	td := sshtest.NewTestData(nil)
 	defer td.Close()
-	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
-	defer restore()
+	reg := testing.NewRegistry()
 
-	testing.AddTestInstance(&testing.TestInstance{Name: "pkg.Test1", Func: func(ctx context.Context, s *testing.State) {
+	reg.AddTestInstance(&testing.TestInstance{Name: "pkg.Test1", Func: func(ctx context.Context, s *testing.State) {
 		s.DUT().Reboot(ctx)
 		s.DUT().Reboot(ctx)
 	}})
@@ -239,7 +233,7 @@ func TestBeforeReboot(t *gotesting.T) {
 	var ranBeforeRebootCount int
 
 	// Test Remote function.
-	if status := Remote(nil, stdin, &bytes.Buffer{}, &stderr, Delegate{
+	if status := Remote(nil, stdin, &bytes.Buffer{}, &stderr, reg, Delegate{
 		BeforeReboot: func(context.Context, *dut.DUT) error {
 			ranBeforeRebootCount++
 			return nil
@@ -282,10 +276,9 @@ func TestRemoteCompanionDUTs(t *gotesting.T) {
 
 	// Register a test that runs a command on the DUT and saves its output.
 	realOutput := ""
-	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
-	defer restore()
+	reg := testing.NewRegistry()
 	const role = "role"
-	testing.AddTestInstance(&testing.TestInstance{Name: "pkg.Test", Func: func(ctx context.Context, s *testing.State) {
+	reg.AddTestInstance(&testing.TestInstance{Name: "pkg.Test", Func: func(ctx context.Context, s *testing.State) {
 		dt := s.CompanionDUT(role)
 		out, err := dt.Command(cmd).Output(ctx)
 		if err != nil {
@@ -305,7 +298,7 @@ func TestRemoteCompanionDUTs(t *gotesting.T) {
 			KeyFile:       td.UserKeyFile,
 		},
 	}
-	if status := Remote(nil, newBufferWithArgs(t, &args), &bytes.Buffer{}, &bytes.Buffer{}, Delegate{}); status != statusSuccess {
+	if status := Remote(nil, newBufferWithArgs(t, &args), &bytes.Buffer{}, &bytes.Buffer{}, reg, Delegate{}); status != statusSuccess {
 		t.Errorf("Remote(%+v) = %v; want %v", args, status, statusSuccess)
 	}
 	if realOutput != output {

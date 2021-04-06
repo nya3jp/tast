@@ -147,8 +147,7 @@ func runFakeRemoteFixtureServer() int {
 		log.Fatalf("os.Args[1] = %v, want -rpc", os.Args[1])
 	}
 
-	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
-	defer restore()
+	reg := testing.NewRegistry()
 
 	func() {
 		b, err := ioutil.ReadFile(filepath.Join(filepath.Dir(os.Args[0]), fakeRemoteServerDataPath))
@@ -160,14 +159,14 @@ func runFakeRemoteFixtureServer() int {
 			log.Fatalf("Remote server: %v", err)
 		}
 		for name, fixt := range data.Fixtures {
-			testing.AddFixture(&testing.Fixture{
+			reg.AddFixture(&testing.Fixture{
 				Name: name,
 				Impl: fixt,
 			})
 		}
 	}()
 
-	if err := bundle.RunRPCServer(os.Stdin, os.Stdout, nil); err != nil {
+	if err := bundle.RunRPCServer(os.Stdin, os.Stdout, reg); err != nil {
 		log.Fatalf("Remote server: %v", err)
 	}
 	return 0

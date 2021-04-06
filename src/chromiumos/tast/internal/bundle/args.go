@@ -26,9 +26,8 @@ const (
 
 // readArgs parses runtime arguments.
 // clArgs contains command-line arguments and is typically os.Args[1:].
-// args contains default values for arguments and is further updated by decoding a JSON-marshaled BundleArgs struct from stdin.
 // The caller is responsible for performing the requested action.
-func readArgs(clArgs []string, stdin io.Reader, stderr io.Writer, args *jsonprotocol.BundleArgs, bt bundleType) error {
+func readArgs(clArgs []string, stdin io.Reader, stderr io.Writer, bt bundleType) (*jsonprotocol.BundleArgs, error) {
 	if len(clArgs) != 0 {
 		flags := flag.NewFlagSet("", flag.ContinueOnError)
 		flags.SetOutput(stderr)
@@ -48,34 +47,38 @@ func readArgs(clArgs []string, stdin io.Reader, stderr io.Writer, args *jsonprot
 		exportMetadata := flags.Bool("exportmetadata", false, "export all test metadata as a protobuf-marshaled message")
 		rpc := flags.Bool("rpc", false, "run gRPC server")
 		if err := flags.Parse(clArgs); err != nil {
-			return command.NewStatusErrorf(statusBadArgs, "%v", err)
+			return nil, command.NewStatusErrorf(statusBadArgs, "%v", err)
 		}
 		if *dump {
-			args.Mode = jsonprotocol.BundleListTestsMode
-			args.ListTests = &jsonprotocol.BundleListTestsArgs{}
-			return nil
+			return &jsonprotocol.BundleArgs{
+				Mode:      jsonprotocol.BundleListTestsMode,
+				ListTests: &jsonprotocol.BundleListTestsArgs{},
+			}, nil
 		}
 		if *exportMetadata {
-			args.Mode = jsonprotocol.BundleExportMetadataMode
-			return nil
+			return &jsonprotocol.BundleArgs{
+				Mode: jsonprotocol.BundleExportMetadataMode,
+			}, nil
 		}
 		if *rpc {
-			args.Mode = jsonprotocol.BundleRPCMode
-			return nil
+			return &jsonprotocol.BundleArgs{
+				Mode: jsonprotocol.BundleRPCMode,
+			}, nil
 		}
 	}
 
-	if err := json.NewDecoder(stdin).Decode(args); err != nil {
-		return command.NewStatusErrorf(statusBadArgs, "failed to decode args from stdin: %v", err)
+	var args jsonprotocol.BundleArgs
+	if err := json.NewDecoder(stdin).Decode(&args); err != nil {
+		return nil, command.NewStatusErrorf(statusBadArgs, "failed to decode args from stdin: %v", err)
 	}
 
 	if (args.Mode == jsonprotocol.BundleRunTestsMode && args.RunTests == nil) ||
 		(args.Mode == jsonprotocol.BundleListTestsMode && args.ListTests == nil) {
-		return command.NewStatusErrorf(statusBadArgs, "args not set for mode %v", args.Mode)
+		return nil, command.NewStatusErrorf(statusBadArgs, "args not set for mode %v", args.Mode)
 	}
 
 	// Use non-zero-valued deprecated fields if they were supplied by an old test runner.
 	args.PromoteDeprecated()
 
-	return nil
+	return &args, nil
 }

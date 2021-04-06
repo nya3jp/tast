@@ -19,7 +19,7 @@ import (
 	"chromiumos/tast/internal/timing"
 )
 
-// deviceConfigFile is a file name containing the dump of obtained device.Config of the DUT,
+// deviceConfigFile is a file name containing the dump of obtained DeviceInfo of the DUT,
 // which is directly under ResDir.
 const deviceConfigFile = "device-config.txt"
 
@@ -73,12 +73,12 @@ func GetDUTInfo(ctx context.Context, cfg *config.Config, state *config.State, cc
 	state.DefaultBuildArtifactsURL = res.DefaultBuildArtifactsURL
 
 	cfg.Logger.Debug("Software features supported by DUT: ", strings.Join(res.SoftwareFeatures.Available, " "))
-	if res.DeviceConfig != nil {
+	if res.DeviceInfo != nil {
 		cfg.Logger.Debug("Got DUT device.Config data; dumping to ", deviceConfigFile)
-		if err := ioutil.WriteFile(filepath.Join(cfg.ResDir, deviceConfigFile), []byte(proto.MarshalTextString(res.DeviceConfig)), 0644); err != nil {
+		if err := ioutil.WriteFile(filepath.Join(cfg.ResDir, deviceConfigFile), []byte(proto.MarshalTextString(res.DeviceInfo)), 0644); err != nil {
 			cfg.Logger.Debugf("Failed to dump %s: %v", deviceConfigFile, err)
 		}
-		state.DeviceConfig = res.DeviceConfig
+		state.DeviceInfo = res.DeviceInfo
 		state.HardwareFeatures = res.HardwareFeatures
 	}
 	state.SoftwareFeatures = res.SoftwareFeatures
@@ -95,7 +95,7 @@ func featureArgsFromConfig(cfg *config.Config, state *config.State) *jsonprotoco
 	if state.SoftwareFeatures != nil {
 		args.AvailableSoftwareFeatures = state.SoftwareFeatures.Available
 		args.UnavailableSoftwareFeatures = state.SoftwareFeatures.Unavailable
-		args.DeviceConfig.Proto = state.DeviceConfig
+		args.DeviceInfo.Proto = state.DeviceInfo
 		args.HardwareFeatures.Proto = state.HardwareFeatures
 	}
 	return &args

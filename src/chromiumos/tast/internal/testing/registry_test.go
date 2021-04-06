@@ -50,9 +50,10 @@ func TestAllTests(t *gotesting.T) {
 		{Name: "test.Bar", Func: func(context.Context, *State) {}},
 	}
 	for _, test := range allTests {
-		if err := reg.AddTestInstance(test); err != nil {
-			t.Fatal(err)
-		}
+		reg.AddTestInstance(test)
+	}
+	if errs := reg.Errors(); len(errs) > 0 {
+		t.Fatal("Registration failed: ", errs)
 	}
 
 	tests := reg.AllTests()
@@ -67,10 +68,12 @@ func TestAllTests(t *gotesting.T) {
 func TestAddTestDuplicateName(t *gotesting.T) {
 	const name = "test.Foo"
 	reg := NewRegistry()
-	if err := reg.AddTestInstance(&TestInstance{Name: name, Func: func(context.Context, *State) {}}); err != nil {
-		t.Fatal("Failed to add initial test: ", err)
+	reg.AddTestInstance(&TestInstance{Name: name, Func: func(context.Context, *State) {}})
+	if errs := reg.Errors(); len(errs) > 0 {
+		t.Fatal("Failed to add initial test: ", errs)
 	}
-	if err := reg.AddTestInstance(&TestInstance{Name: name, Func: func(context.Context, *State) {}}); err == nil {
+	reg.AddTestInstance(&TestInstance{Name: name, Func: func(context.Context, *State) {}})
+	if errs := reg.Errors(); len(errs) == 0 {
 		t.Fatal("Duplicate test name unexpectedly not rejected")
 	}
 }
@@ -84,8 +87,9 @@ func TestAddTestModifyOriginal(t *gotesting.T) {
 		Func:         func(context.Context, *State) {},
 		SoftwareDeps: []string{origDep},
 	}
-	if err := reg.AddTestInstance(test); err != nil {
-		t.Fatal("AddTest failed: ", err)
+	reg.AddTestInstance(test)
+	if errs := reg.Errors(); len(errs) > 0 {
+		t.Fatal("Registration failed: ", errs)
 	}
 
 	// Change the original Test struct's name and modify the dependency slice's data.
@@ -113,27 +117,30 @@ func TestAddTestConflictingPre(t *gotesting.T) {
 	pre1 := &fakePre{"fake_pre"}
 	pre2 := &fakePre{"fake_pre"}
 
-	if err := reg.AddTestInstance(&TestInstance{
+	reg.AddTestInstance(&TestInstance{
 		Name: "pkg.Test1",
 		Func: func(context.Context, *State) {},
 		Pre:  pre1,
-	}); err != nil {
-		t.Fatal("AddTestInstance failed for pkg.Test1: ", err)
+	})
+	if errs := reg.Errors(); len(errs) > 0 {
+		t.Fatal("AddTestInstance failed for pkg.Test1: ", errs)
 	}
 
-	if err := reg.AddTestInstance(&TestInstance{
+	reg.AddTestInstance(&TestInstance{
 		Name: "pkg.Test2",
 		Func: func(context.Context, *State) {},
 		Pre:  pre1,
-	}); err != nil {
-		t.Fatal("AddTestInstance failed for pkg.Test2: ", err)
+	})
+	if errs := reg.Errors(); len(errs) > 0 {
+		t.Fatal("AddTestInstance failed for pkg.Test2: ", errs)
 	}
 
-	if err := reg.AddTestInstance(&TestInstance{
+	reg.AddTestInstance(&TestInstance{
 		Name: "pkg.Test3",
 		Func: func(context.Context, *State) {},
 		Pre:  pre2,
-	}); err == nil {
+	})
+	if errs := reg.Errors(); len(errs) == 0 {
 		t.Fatal("AddTestInstance unexpectedly succeeded for pkg.Test3")
 	}
 }
@@ -141,10 +148,12 @@ func TestAddTestConflictingPre(t *gotesting.T) {
 func TestAddFixtureDuplicateName(t *gotesting.T) {
 	const name = "foo"
 	reg := NewRegistry()
-	if err := reg.AddFixture(&Fixture{Name: name}); err != nil {
-		t.Fatalf("Fixture registration failed: %v", err)
+	reg.AddFixture(&Fixture{Name: name})
+	if errs := reg.Errors(); len(errs) > 0 {
+		t.Fatalf("Fixture registration failed: %v", errs)
 	}
-	if err := reg.AddFixture(&Fixture{Name: name}); err == nil {
+	reg.AddFixture(&Fixture{Name: name})
+	if errs := reg.Errors(); len(errs) == 0 {
 		t.Error("Duplicated fixture registration succeeded unexpectedly")
 	}
 }
@@ -170,11 +179,12 @@ func TestAddFixtureInvalidName(t *gotesting.T) {
 		{"ieee1394", true},
 	} {
 		reg := NewRegistry()
-		err := reg.AddFixture(&Fixture{Name: tc.name})
-		if tc.ok && err != nil {
-			t.Errorf("AddFixture(%q) failed: %v", tc.name, err)
+		reg.AddFixture(&Fixture{Name: tc.name})
+		errs := reg.Errors()
+		if tc.ok && len(errs) > 0 {
+			t.Errorf("AddFixture(%q) failed: %v", tc.name, errs)
 		}
-		if !tc.ok && err == nil {
+		if !tc.ok && len(errs) == 0 {
 			t.Errorf("AddFixture(%q) passed unexpectedly", tc.name)
 		}
 	}
@@ -189,9 +199,10 @@ func TestAllServices(t *gotesting.T) {
 	}
 
 	for _, svc := range allSvcs {
-		if err := reg.AddService(svc); err != nil {
-			t.Fatal(err)
-		}
+		reg.AddService(svc)
+	}
+	if errs := reg.Errors(); len(errs) > 0 {
+		t.Fatal("Registration failed: ", errs)
 	}
 
 	svcs := reg.AllServices()
@@ -209,9 +220,10 @@ func TestAllFixtures(t *gotesting.T) {
 	}
 
 	for _, f := range allFixts {
-		if err := reg.AddFixture(f); err != nil {
-			t.Fatal(err)
-		}
+		reg.AddFixture(f)
+	}
+	if errs := reg.Errors(); len(errs) > 0 {
+		t.Fatal("Registration failed: ", errs)
 	}
 
 	fixts := reg.AllFixtures()

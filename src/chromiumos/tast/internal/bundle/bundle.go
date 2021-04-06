@@ -84,7 +84,7 @@ func run(ctx context.Context, clArgs []string, stdin io.Reader, stdout, stderr i
 		return command.WriteError(stderr, err)
 	}
 
-	if errs := testing.RegistrationErrors(); len(errs) > 0 {
+	if errs := testing.GlobalRegistry().Errors(); len(errs) > 0 {
 		es := make([]string, len(errs))
 		for i, err := range errs {
 			es[i] = err.Error()

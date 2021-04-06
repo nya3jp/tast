@@ -14,6 +14,7 @@ message HandshakeRequest {
   // Whether to initialize user-defined gRPC services.
   bool need_user_services = 1;
   UserServiceInitParams user_service_init_params = 2;
+  RunnerInitParams runner_init_params = 3;
 }
 
 // UserServiceInitParams contains parameters needed to initialize user-defined
@@ -34,4 +35,11 @@ message HandshakeResponse {
 // HandshakeError describes a failed handshake result.
 message HandshakeError {
   string reason = 1;
+}
+
+// RunnerInitParams contains information needed to initialize test runners.
+message RunnerInitParams {
+  // A file path glob that matches test bundle executables.
+  // Example: "/usr/local/libexec/tast/bundles/local/*"
+  string bundle_glob = 1;
 }

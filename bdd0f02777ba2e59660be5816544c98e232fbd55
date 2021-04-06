@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7e48b0aa_dfb89e07",
+        "filename": "src/chromiumos/tast/internal/testcontext/context.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2021-04-06T09:25:59Z",
+      "side": 1,
+      "message": "I know you followed existing pattern, but https://pkg.go.dev/context#WithValue\nsays the key type should not be string.\n\"Users of WithValue should define their own types for keys.\".",
+      "range": {
+        "startLine": 8,
+        "startChar": 5,
+        "endLine": 8,
+        "endChar": 12
+      },
+      "revId": "bdd0f02777ba2e59660be5816544c98e232fbd55",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

@@ -13,6 +13,7 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"sync"
 	gotesting "testing"
 	"time"
 
@@ -1202,6 +1203,53 @@ func TestRunFixtureVars(t *gotesting.T) {
 	}
 
 	runTestsAndReadAll(t, tests, cfg)
+}
+
+func TestRunFixtureTestContext(t *gotesting.T) {
+	var ctxPreTest context.Context
+
+	var wg sync.WaitGroup
+	wg.Add(2)
+
+	fixt := &testing.Fixture{
+		Name: "fixt",
+		Impl: newFakeFixture(withPreTest(func(ctx context.Context, s *testing.FixtTestState) {
+			if err := s.TestContext().Err(); err != nil {
+				t.Errorf("s.TestContext() is canceled: %v", err)
+			}
+			ctxPreTest = s.TestContext()
+			go func() {
+				<-s.TestContext().Done()
+				wg.Done()
+			}()
+		}), withPostTest(func(ctx context.Context, s *testing.FixtTestState) {
+			if err := ctxPreTest.Err(); err != nil {
+				t.Errorf("Test context in PreTest is canceled: %v", err)
+			}
+			if err := s.TestContext().Err(); err != nil {
+				t.Errorf("s.TestContext() is canceled: %v", err)
+			}
+			go func() {
+				<-s.TestContext().Done()
+				wg.Done()
+			}()
+		}), withTearDown(func(ctx context.Context, s *testing.FixtState) {
+			// TestContext must be cancelled as soon as PostTest finishes.
+			wg.Wait()
+		})),
+	}
+	tests := []*testing.TestInstance{{
+		Name:    "pkg.Test",
+		Fixture: "fixt",
+		Timeout: time.Minute,
+		Func:    func(ctx context.Context, s *testing.State) {},
+	}}
+
+	cfg := &Config{
+		Fixtures: map[string]*testing.Fixture{fixt.Name: fixt},
+	}
+	runTestsAndReadAll(t, tests, cfg)
+	wg.Wait()
 }
 
 func TestRunPrecondition(t *gotesting.T) {

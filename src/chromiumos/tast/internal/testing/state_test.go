@@ -900,6 +900,7 @@ func TestStateExports(t *gotesting.T) {
 				"Logf",
 				"OutDir",
 				"RPCHint",
+				"TestContext",
 			},
 		},
 	} {

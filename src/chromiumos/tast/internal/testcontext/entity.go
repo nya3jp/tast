@@ -9,9 +9,6 @@ import (
 	"context"
 )
 
-// keyType is the key type for objects attached to context.Context.
-type keyType string
-
 // currentEntityKey is the key used for attaching a CurrentEntity to a context.Context.
 const currentEntityKey keyType = "CurrentEntity"
 

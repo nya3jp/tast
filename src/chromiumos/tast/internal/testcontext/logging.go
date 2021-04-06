@@ -13,17 +13,17 @@ import (
 type LoggerFunc = func(msg string)
 
 // loggerKey is the key type for LoggerFunc attached to context.Context.
-type loggerKey struct{}
+const loggerKey keyType = "Logger"
 
 // WithLogger creates a context associated with logger. The returned context can
 // be used to call Log/Logf.
 func WithLogger(ctx context.Context, logger LoggerFunc) context.Context {
-	return context.WithValue(ctx, loggerKey{}, logger)
+	return context.WithValue(ctx, loggerKey, logger)
 }
 
 // Logger extracts a logger from a context.
 func Logger(ctx context.Context) (LoggerFunc, bool) {
-	logger, ok := ctx.Value(loggerKey{}).(LoggerFunc)
+	logger, ok := ctx.Value(loggerKey).(LoggerFunc)
 	return logger, ok
 }
 

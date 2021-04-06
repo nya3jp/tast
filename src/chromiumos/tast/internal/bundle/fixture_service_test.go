@@ -55,7 +55,7 @@ func (ff *fakeFixture) Reset(ctx context.Context) error {
 
 // startFakeFixtureService starts a fixture service server and returns a client connected to it.
 // stop must be called by the caller.
-func startFakeFixtureService(ctx context.Context, t *gotesting.T) (rfcl FixtureService_RunFixtureClient, stop func()) {
+func startFakeFixtureService(ctx context.Context, t *gotesting.T, reg *testing.Registry) (rfcl FixtureService_RunFixtureClient, stop func()) {
 	t.Helper()
 
 	sr, cw := io.Pipe()
@@ -64,7 +64,7 @@ func startFakeFixtureService(ctx context.Context, t *gotesting.T) (rfcl FixtureS
 	stopped := make(chan error, 1)
 	go func() {
 		stopped <- rpc.RunServer(sr, sw, nil, func(srv *grpc.Server, req *protocol.HandshakeRequest) error {
-			registerFixtureService(srv)
+			registerFixtureService(srv, reg)
 			return nil
 		})
 	}()
@@ -196,13 +196,12 @@ func TestFixtureServiceResponses(t *gotesting.T) {
 		},
 	} {
 		t.Run(tc.name, func(t *gotesting.T) {
-			restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
-			defer restore()
+			reg := testing.NewRegistry()
 
-			testing.AddFixture(&testing.Fixture{Name: "fake", Impl: tc.fixt})
+			reg.AddFixture(&testing.Fixture{Name: "fake", Impl: tc.fixt})
 
 			ctx := context.Background()
-			rfcl, stop := startFakeFixtureService(ctx, t)
+			rfcl, stop := startFakeFixtureService(ctx, t, reg)
 			defer stop()
 
 			// responses reads responses from rfcl. It checks fields not suitable for exact
@@ -288,10 +287,9 @@ func TestFixtureServiceParameters(t *gotesting.T) {
 		// TODO(oka): Consider testing TlwServer, DutName, BuildArtifactsUrl and DownloadMode.
 	}
 
-	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
-	defer restore()
+	reg := testing.NewRegistry()
 
-	testing.AddFixture(&testing.Fixture{
+	reg.AddFixture(&testing.Fixture{
 		Name:         "fake",
 		Vars:         []string{"var"},
 		SetUpTimeout: time.Second,
@@ -324,7 +322,7 @@ func TestFixtureServiceParameters(t *gotesting.T) {
 	})
 
 	ctx := context.Background()
-	rfcl, stop := startFakeFixtureService(ctx, t)
+	rfcl, stop := startFakeFixtureService(ctx, t, reg)
 	defer stop()
 
 	if err := rfcl.Send(&RunFixtureRequest{
@@ -355,8 +353,7 @@ func TestFixtureServiceDefaultTempDir(t *gotesting.T) {
 	td := sshtest.NewTestData(nil)
 	defer td.Close()
 
-	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
-	defer restore()
+	reg := testing.NewRegistry()
 
 	// If TempDir is not set, fixture service should create a temporary
 	// directory for fixtures to use, and remove it after the pop operation.
@@ -369,7 +366,7 @@ func TestFixtureServiceDefaultTempDir(t *gotesting.T) {
 	origTempDir := os.TempDir()
 	var setUpTempDir string
 	var tearDownTempDir string
-	testing.AddFixture(&testing.Fixture{
+	reg.AddFixture(&testing.Fixture{
 		Name: "fake",
 		Impl: &fakeFixture{
 			setUp: func(ctx context.Context, s *testing.FixtState) interface{} {
@@ -382,7 +379,7 @@ func TestFixtureServiceDefaultTempDir(t *gotesting.T) {
 		},
 	})
 
-	rfcl, stop := startFakeFixtureService(context.Background(), t)
+	rfcl, stop := startFakeFixtureService(context.Background(), t, reg)
 	defer stop()
 
 	if err := rfcl.Send(&RunFixtureRequest{
@@ -438,10 +435,9 @@ func TestFixtureServiceDefaultTempDir(t *gotesting.T) {
 }
 
 func TestFixtureServiceNoSuchFixture(t *gotesting.T) {
-	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
-	defer restore()
+	reg := testing.NewRegistry()
 
-	rfcl, stop := startFakeFixtureService(context.Background(), t)
+	rfcl, stop := startFakeFixtureService(context.Background(), t, reg)
 	defer stop()
 
 	tmpDir := testutil.TempDir(t)
@@ -470,13 +466,12 @@ func TestFixtureServiceNoSuchFixture(t *gotesting.T) {
 }
 
 func TestFixtureServiceTimeout(t *gotesting.T) {
-	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
-	defer restore()
+	reg := testing.NewRegistry()
 
 	c := make(chan struct{})
 	defer close(c)
 
-	testing.AddFixture(&testing.Fixture{Name: "fake", Impl: &fakeFixture{
+	reg.AddFixture(&testing.Fixture{Name: "fake", Impl: &fakeFixture{
 		setUp: func(context.Context, *testing.FixtState) interface{} {
 			<-c
 			return nil
@@ -484,7 +479,7 @@ func TestFixtureServiceTimeout(t *gotesting.T) {
 	}})
 
 	ctx := context.Background()
-	rfcl, stop := startFakeFixtureService(ctx, t)
+	rfcl, stop := startFakeFixtureService(ctx, t, reg)
 	defer stop()
 
 	tmpDir := testutil.TempDir(t)
@@ -515,9 +510,8 @@ func TestFixtureServiceTimeout(t *gotesting.T) {
 }
 
 func TestFixtureServiceWrongRequestOrder(t *gotesting.T) {
-	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
-	defer restore()
-	testing.AddFixture(&testing.Fixture{Name: "fake", Impl: &fakeFixture{}})
+	reg := testing.NewRegistry()
+	reg.AddFixture(&testing.Fixture{Name: "fake", Impl: &fakeFixture{}})
 
 	td := sshtest.NewTestData(nil)
 	defer td.Close()
@@ -566,7 +560,7 @@ func TestFixtureServiceWrongRequestOrder(t *gotesting.T) {
 	} {
 		t.Run(tc.name, func(t *gotesting.T) {
 			ctx := context.Background()
-			rfcl, stop := startFakeFixtureService(ctx, t)
+			rfcl, stop := startFakeFixtureService(ctx, t, reg)
 			defer stop()
 
 			consume := func() error {

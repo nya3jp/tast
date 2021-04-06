@@ -108,11 +108,9 @@ func runFakeBundle() int {
 		os.Exit(1)
 	}
 
-	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
-	defer restore()
-
-	testing.AddFixture(fakeFixture1)
-	testing.AddFixture(fakeFixture2)
+	reg := testing.NewRegistry()
+	reg.AddFixture(fakeFixture1)
+	reg.AddFixture(fakeFixture2)
 
 	for i, res := range parts[2] {
 		var f testing.TestFunc
@@ -123,13 +121,13 @@ func runFakeBundle() int {
 		} else {
 			log.Fatalf("Bad rune %v in result string %q", res, parts[2])
 		}
-		testing.AddTestInstance(&testing.TestInstance{
+		reg.AddTestInstance(&testing.TestInstance{
 			Name: getTestName(bundleNum, i),
 			Func: f,
 		})
 	}
 
-	return bundle.Local(nil, os.Stdin, os.Stdout, os.Stderr, bundle.Delegate{})
+	return bundle.Local(nil, os.Stdin, os.Stdout, os.Stderr, reg, bundle.Delegate{})
 }
 
 // newBufferWithArgs returns a buffer containing the JSON representation of args.

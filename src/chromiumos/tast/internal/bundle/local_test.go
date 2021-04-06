@@ -19,14 +19,13 @@ import (
 
 func TestLocalBadTest(t *gotesting.T) {
 	// A test without a function should trigger a registration error.
-	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
-	defer restore()
-	testing.AddTest(&testing.Test{})
+	reg := testing.NewRegistry()
+	reg.AddTest(&testing.Test{})
 
 	args := jsonprotocol.BundleArgs{Mode: jsonprotocol.BundleRunTestsMode, RunTests: &jsonprotocol.BundleRunTestsArgs{}}
 	stdin := newBufferWithArgs(t, &args)
 	stderr := bytes.Buffer{}
-	if status := Local(nil, stdin, &bytes.Buffer{}, &stderr, Delegate{}); status != statusBadTests {
+	if status := Local(nil, stdin, &bytes.Buffer{}, &stderr, reg, Delegate{}); status != statusBadTests {
 		t.Errorf("Local(%+v) = %v; want %v", args, status, statusBadTests)
 	}
 	if len(stderr.String()) == 0 {
@@ -37,16 +36,15 @@ func TestLocalBadTest(t *gotesting.T) {
 func TestLocalRunTest(t *gotesting.T) {
 	const name = "pkg.Test"
 	ran := false
-	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
-	defer restore()
-	testing.AddTestInstance(&testing.TestInstance{Name: name, Func: func(context.Context, *testing.State) { ran = true }})
+	reg := testing.NewRegistry()
+	reg.AddTestInstance(&testing.TestInstance{Name: name, Func: func(context.Context, *testing.State) { ran = true }})
 
 	outDir := testutil.TempDir(t)
 	defer os.RemoveAll(outDir)
 	args := jsonprotocol.BundleArgs{Mode: jsonprotocol.BundleRunTestsMode, RunTests: &jsonprotocol.BundleRunTestsArgs{OutDir: outDir}}
 	stdin := newBufferWithArgs(t, &args)
 	stderr := bytes.Buffer{}
-	if status := Local(nil, stdin, &bytes.Buffer{}, &stderr, Delegate{}); status != statusSuccess {
+	if status := Local(nil, stdin, &bytes.Buffer{}, &stderr, reg, Delegate{}); status != statusSuccess {
 		t.Errorf("Local(%+v) = %v; want %v", args, status, statusSuccess)
 	}
 	if !ran {
@@ -58,9 +56,8 @@ func TestLocalRunTest(t *gotesting.T) {
 }
 
 func TestLocalReadyFunc(t *gotesting.T) {
-	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
-	defer restore()
-	testing.AddTestInstance(&testing.TestInstance{Name: "pkg.Test", Func: func(context.Context, *testing.State) {}})
+	reg := testing.NewRegistry()
+	reg.AddTestInstance(&testing.TestInstance{Name: "pkg.Test", Func: func(context.Context, *testing.State) {}})
 
 	outDir := testutil.TempDir(t)
 	defer os.RemoveAll(outDir)
@@ -80,7 +77,7 @@ func TestLocalReadyFunc(t *gotesting.T) {
 		ranReady = true
 		return nil
 	}
-	if status := Local(nil, stdin, &bytes.Buffer{}, &stderr, Delegate{
+	if status := Local(nil, stdin, &bytes.Buffer{}, &stderr, reg, Delegate{
 		Ready: ready,
 	}); status != statusSuccess {
 		t.Errorf("Local(%+v) = %v; want %v", args, status, statusSuccess)
@@ -94,7 +91,7 @@ func TestLocalReadyFunc(t *gotesting.T) {
 	stderr = bytes.Buffer{}
 	const msg = "intentional failure"
 	ready = func(context.Context) error { return errors.New(msg) }
-	if status := Local(nil, stdin, &bytes.Buffer{}, &stderr, Delegate{
+	if status := Local(nil, stdin, &bytes.Buffer{}, &stderr, reg, Delegate{
 		Ready: ready,
 	}); status != statusError {
 		t.Errorf("Local(%+v) = %v; want %v", args, status, statusError)
@@ -105,9 +102,8 @@ func TestLocalReadyFunc(t *gotesting.T) {
 }
 
 func TestLocalReadyFuncDisabled(t *gotesting.T) {
-	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
-	defer restore()
-	testing.AddTestInstance(&testing.TestInstance{Name: "pkg.Test", Func: func(context.Context, *testing.State) {}})
+	reg := testing.NewRegistry()
+	reg.AddTestInstance(&testing.TestInstance{Name: "pkg.Test", Func: func(context.Context, *testing.State) {}})
 
 	outDir := testutil.TempDir(t)
 	defer os.RemoveAll(outDir)
@@ -127,7 +123,7 @@ func TestLocalReadyFuncDisabled(t *gotesting.T) {
 		ranReady = true
 		return nil
 	}
-	if status := Local(nil, stdin, &bytes.Buffer{}, &stderr, Delegate{
+	if status := Local(nil, stdin, &bytes.Buffer{}, &stderr, reg, Delegate{
 		Ready: ready,
 	}); status != statusSuccess {
 		t.Errorf("Local(%+v) = %v; want %v", args, status, statusSuccess)
@@ -139,9 +135,8 @@ func TestLocalReadyFuncDisabled(t *gotesting.T) {
 
 func TestLocalTestHook(t *gotesting.T) {
 	const name = "pkg.Test"
-	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
-	defer restore()
-	testing.AddTestInstance(&testing.TestInstance{Name: name, Func: func(context.Context, *testing.State) {}})
+	reg := testing.NewRegistry()
+	reg.AddTestInstance(&testing.TestInstance{Name: name, Func: func(context.Context, *testing.State) {}})
 
 	outDir := testutil.TempDir(t)
 	defer os.RemoveAll(outDir)
@@ -149,7 +144,7 @@ func TestLocalTestHook(t *gotesting.T) {
 	stdin := newBufferWithArgs(t, &args)
 	stderr := bytes.Buffer{}
 	var ranPre, ranPost bool
-	if status := Local(nil, stdin, &bytes.Buffer{}, &stderr, Delegate{
+	if status := Local(nil, stdin, &bytes.Buffer{}, &stderr, reg, Delegate{
 		TestHook: func(context.Context, *testing.TestHookState) func(context.Context, *testing.TestHookState) {
 			ranPre = true
 			return func(context.Context, *testing.TestHookState) {
@@ -171,9 +166,8 @@ func TestLocalTestHook(t *gotesting.T) {
 }
 
 func TestLocalRunHook(t *gotesting.T) {
-	restore := testing.SetGlobalRegistryForTesting(testing.NewRegistry())
-	defer restore()
-	testing.AddTestInstance(&testing.TestInstance{Name: "pkg.Test", Func: func(context.Context, *testing.State) {}})
+	reg := testing.NewRegistry()
+	reg.AddTestInstance(&testing.TestInstance{Name: "pkg.Test", Func: func(context.Context, *testing.State) {}})
 
 	outDir := testutil.TempDir(t)
 	defer os.RemoveAll(outDir)
@@ -181,7 +175,7 @@ func TestLocalRunHook(t *gotesting.T) {
 	stdin := newBufferWithArgs(t, &args)
 	stderr := bytes.Buffer{}
 	var ranPre, ranPost bool
-	if status := Local(nil, stdin, &bytes.Buffer{}, &stderr, Delegate{
+	if status := Local(nil, stdin, &bytes.Buffer{}, &stderr, reg, Delegate{
 		RunHook: func(context.Context) (func(context.Context) error, error) {
 			ranPre = true
 			return func(context.Context) error {

@@ -9,11 +9,9 @@ import (
 	"context"
 )
 
-// keyType is the key type for objects attached to context.Context.
-type keyType string
-
-// currentEntityKey is the key used for attaching a CurrentEntity to a context.Context.
-const currentEntityKey keyType = "CurrentEntity"
+// currentEntityKey is the type of the key used for attaching a CurrentEntity
+// to a context.Context.
+type currentEntityKey struct{}
 
 // CurrentEntity contains information about the currently running entity.
 //
@@ -35,13 +33,13 @@ type CurrentEntity struct {
 // WithCurrentEntity attaches CurrentEntity to context.Context. This function can't
 // be called from user code.
 func WithCurrentEntity(ctx context.Context, ec *CurrentEntity) context.Context {
-	return context.WithValue(ctx, currentEntityKey, ec)
+	return context.WithValue(ctx, currentEntityKey{}, ec)
 }
 
 // OutDir is similar to testing.State.OutDir but takes context instead. It is intended to be
 // used by packages providing support for tests that need to write files.
 func OutDir(ctx context.Context) (dir string, ok bool) {
-	ec, ok := ctx.Value(currentEntityKey).(*CurrentEntity)
+	ec, ok := ctx.Value(currentEntityKey{}).(*CurrentEntity)
 	if !ok || ec.OutDir == "" {
 		return "", false
 	}
@@ -52,7 +50,7 @@ func OutDir(ctx context.Context) (dir string, ok bool) {
 // It is intended to be used by packages providing support for tests that want to
 // make sure tests declare proper dependencies.
 func SoftwareDeps(ctx context.Context) ([]string, bool) {
-	ec, ok := ctx.Value(currentEntityKey).(*CurrentEntity)
+	ec, ok := ctx.Value(currentEntityKey{}).(*CurrentEntity)
 	if !ok {
 		return nil, false
 	}
@@ -66,7 +64,7 @@ func SoftwareDeps(ctx context.Context) ([]string, bool) {
 // It is intended to be used by packages providing support for tests that want to
 // make sure tests declare proper dependencies.
 func ServiceDeps(ctx context.Context) ([]string, bool) {
-	ec, ok := ctx.Value(currentEntityKey).(*CurrentEntity)
+	ec, ok := ctx.Value(currentEntityKey{}).(*CurrentEntity)
 	if !ok {
 		return nil, false
 	}

@@ -16,6 +16,7 @@ import (
 // runRPCServer runs a runner RPC server.
 func runRPCServer(r io.Reader, w io.Writer) error {
 	return rpc.RunServer(r, w, nil, func(srv *grpc.Server, req *protocol.HandshakeRequest) error {
+		protocol.RegisterTestServiceServer(srv, newTestServer(req.GetRunnerInitParams().GetBundleGlob()))
 		return nil
 	})
 }

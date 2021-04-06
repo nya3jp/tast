@@ -11,7 +11,6 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
 	"go.chromium.org/chromiumos/config/go/api"
-	"go.chromium.org/chromiumos/infra/proto/go/device"
 
 	"chromiumos/tast/internal/planner"
 	"chromiumos/tast/internal/protocol"
@@ -69,43 +68,6 @@ func (a *BundleArgs) PromoteDeprecated() {
 	// We don't have any deprecated fields right now.
 }
 
-// DeviceConfigJSON is a wrapper class for device.Config to facilitate marshalling/unmarshalling.
-type DeviceConfigJSON struct {
-	// Proto contains the device configuration info about DUT.
-	// Marshaling and unmarshaling of this field is handled in MarshalJSON/UnmarshalJSON
-	// respectively.
-	Proto *device.Config `json:"-"`
-}
-
-// MarshalJSON marshals the *device.Config struct into JSON.
-func (a *DeviceConfigJSON) MarshalJSON() ([]byte, error) {
-	if a.Proto == nil {
-		return []byte(`null`), nil
-	}
-	bin, err := proto.Marshal(a.Proto)
-	if err != nil {
-		return nil, err
-	}
-	return json.Marshal(bin)
-}
-
-// UnmarshalJSON unmarshals JSON blob for device.Config.
-func (a *DeviceConfigJSON) UnmarshalJSON(b []byte) error {
-	var aux []byte
-	if err := json.Unmarshal(b, &aux); err != nil {
-		return err
-	}
-	if len(aux) == 0 {
-		return nil
-	}
-	var dc device.Config
-	if err := proto.Unmarshal(aux, &dc); err != nil {
-		return err
-	}
-	a.Proto = &dc
-	return nil
-}
-
 // HardwareFeaturesJSON is a wrapper class for api.HardwareFeatures to facilitate marshalling/unmarshalling.
 type HardwareFeaturesJSON struct {
 	// Proto contains the hardware info about DUT.
@@ -140,6 +102,43 @@ func (a *HardwareFeaturesJSON) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
+// DeviceInfoJSON is a wrapper class for protocol.DeviceInfo to facilitate marshalling/unmarshalling.
+type DeviceInfoJSON struct {
+	// Proto contains the information about DUT.
+	// Marshaling and unmarshaling of this field is handled in MarshalJSON/UnmarshalJSON
+	// respectively.
+	Proto *protocol.DeviceInfo `json:"-"`
+}
+
+// MarshalJSON marshals the protocol.DeviceInfo struct into JSON.
+func (a *DeviceInfoJSON) MarshalJSON() ([]byte, error) {
+	if a.Proto == nil {
+		return []byte(`null`), nil
+	}
+	bin, err := proto.Marshal(a.Proto)
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(bin)
+}
+
+// UnmarshalJSON unmarshals JSON blob for protocol.DeviceInfo.
+func (a *DeviceInfoJSON) UnmarshalJSON(b []byte) error {
+	var aux []byte
+	if err := json.Unmarshal(b, &aux); err != nil {
+		return err
+	}
+	if len(aux) == 0 {
+		return nil
+	}
+	var info protocol.DeviceInfo
+	if err := proto.Unmarshal(aux, &info); err != nil {
+		return err
+	}
+	a.Proto = &info
+	return nil
+}
+
 // FeatureArgs includes all the feature related arguments.
 type FeatureArgs struct {
 	// TestVars contains names and values of runtime variables used to pass out-of-band data to tests.
@@ -157,11 +156,10 @@ type FeatureArgs struct {
 	AvailableSoftwareFeatures []string `json:"availableSoftwareFeatures,omitempty"`
 	// UnavailableSoftwareFeatures contains a list of software features supported by the DUT.
 	UnavailableSoftwareFeatures []string `json:"unavailableSoftwareFeatures,omitempty"`
-	// DeviceConfig contains the hardware info about the DUT.
+	// DeviceInfo contains the hardware info about DUT.
 	// Marshaling and unmarshaling of this field is handled in MarshalJSON/UnmarshalJSON
 	// respectively.
-	// Deprecated. Use HardwareFeatures instead.
-	DeviceConfig DeviceConfigJSON
+	DeviceInfo DeviceInfoJSON
 	// HardwareFeatures contains the hardware info about DUT.
 	// Marshaling and unmarshaling of this field is handled in MarshalJSON/UnmarshalJSON
 	// respectively.
@@ -181,8 +179,8 @@ func (a *FeatureArgs) Features() *protocol.Features {
 			Unavailable: a.UnavailableSoftwareFeatures,
 		},
 		Hardware: &protocol.HardwareFeatures{
-			DeprecatedDeviceConfig: a.DeviceConfig.Proto,
-			HardwareFeatures:       a.HardwareFeatures.Proto,
+			DeviceInfo:       a.DeviceInfo.Proto,
+			HardwareFeatures: a.HardwareFeatures.Proto,
 		},
 		Vars:             vars,
 		MaybeMissingVars: a.MaybeMissingVars,

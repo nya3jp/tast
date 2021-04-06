@@ -13,10 +13,10 @@ import (
 	"chromiumos/tast/internal/protocol"
 )
 
-func verifyCondition(t *testing.T, c Condition, dc *device.Config, features *configpb.HardwareFeatures, expectSatisfied bool) {
+func verifyCondition(t *testing.T, c Condition, dc *device.Config, features *configpb.HardwareFeatures, info *protocol.DeviceInfo, expectSatisfied bool) {
 	t.Helper()
 
-	err := c.Satisfied(&protocol.HardwareFeatures{DeprecatedDeviceConfig: dc, HardwareFeatures: features})
+	err := c.Satisfied(&protocol.HardwareFeatures{DeprecatedDeviceConfig: dc, HardwareFeatures: features, DeviceInfo: info})
 	if expectSatisfied {
 		if err != nil {
 			t.Error("Unexpectedly unsatisfied: ", err)
@@ -42,6 +42,7 @@ func TestModel(t *testing.T) {
 		{"kevin_signed", true},
 		{"nocturne_signed", false},
 	} {
+		// old protocol
 		verifyCondition(
 			t, c,
 			&device.Config{
@@ -52,6 +53,18 @@ func TestModel(t *testing.T) {
 				},
 			},
 			&configpb.HardwareFeatures{},
+			nil, // protocol.DeviceInfo
+			tc.expectSatisfied)
+		// new protocol
+		verifyCondition(
+			t, c,
+			nil, // device.Config
+			&configpb.HardwareFeatures{},
+			&protocol.DeviceInfo{
+				Ids: &protocol.ConfigIds{
+					Model: tc.model,
+				},
+			},
 			tc.expectSatisfied)
 	}
 }
@@ -70,6 +83,7 @@ func TestSkipOnModel(t *testing.T) {
 		{"kevin_signed", false},
 		{"nocturne_signed", true},
 	} {
+		// old protocol
 		verifyCondition(
 			t, c,
 			&device.Config{
@@ -80,6 +94,18 @@ func TestSkipOnModel(t *testing.T) {
 				},
 			},
 			&configpb.HardwareFeatures{},
+			nil, // protocol.DeviceInfo
+			tc.expectSatisfied)
+		// new protocol
+		verifyCondition(
+			t, c,
+			nil, // device.Config
+			&configpb.HardwareFeatures{},
+			&protocol.DeviceInfo{
+				Ids: &protocol.ConfigIds{
+					Model: tc.model,
+				},
+			},
 			tc.expectSatisfied)
 	}
 }
@@ -96,6 +122,7 @@ func TestPlatform(t *testing.T) {
 		{"Kevin", true},
 		{"Nocturne", false},
 	} {
+		// old protocol
 		verifyCondition(
 			t, c,
 			&device.Config{
@@ -106,6 +133,18 @@ func TestPlatform(t *testing.T) {
 				},
 			},
 			&configpb.HardwareFeatures{},
+			nil, // protocol.DeviceInfo
+			tc.expectSatisfied)
+		// new protocol
+		verifyCondition(
+			t, c,
+			nil, // device.Config
+			&configpb.HardwareFeatures{},
+			&protocol.DeviceInfo{
+				Ids: &protocol.ConfigIds{
+					Platform: tc.platform,
+				},
+			},
 			tc.expectSatisfied)
 	}
 }
@@ -122,6 +161,7 @@ func TestSkipOnPlatform(t *testing.T) {
 		{"Kevin", false},
 		{"Nocturne", true},
 	} {
+		// old protocol
 		verifyCondition(
 			t, c,
 			&device.Config{
@@ -132,6 +172,18 @@ func TestSkipOnPlatform(t *testing.T) {
 				},
 			},
 			&configpb.HardwareFeatures{},
+			nil, // protocol.DeviceInfo
+			tc.expectSatisfied)
+		// new protocol
+		verifyCondition(
+			t, c,
+			nil, // device.Config
+			&configpb.HardwareFeatures{},
+			&protocol.DeviceInfo{
+				Ids: &protocol.ConfigIds{
+					Platform: tc.platform,
+				},
+			},
 			tc.expectSatisfied)
 	}
 }
@@ -148,18 +200,13 @@ func TestTouchscreen(t *testing.T) {
 	} {
 		verifyCondition(
 			t, c,
-			&device.Config{
-				Id: &device.ConfigId{
-					PlatformId: &device.PlatformId{
-						Value: "fake_platform",
-					},
-				},
-			},
+			nil,
 			&configpb.HardwareFeatures{
 				Screen: &configpb.HardwareFeatures_Screen{
 					TouchSupport: tc.TouchSupport,
 				},
 			},
+			&protocol.DeviceInfo{},
 			tc.expectSatisfied)
 	}
 
@@ -175,6 +222,7 @@ func TestTouchscreen(t *testing.T) {
 				device.Config_HARDWARE_FEATURE_TOUCHSCREEN,
 			},
 		},
+		nil,
 		nil,
 		true)
 }
@@ -216,19 +264,14 @@ func TestChromeEC(t *testing.T) {
 	} {
 		verifyCondition(
 			t, c,
-			&device.Config{
-				Id: &device.ConfigId{
-					PlatformId: &device.PlatformId{
-						Value: "fake_platform",
-					},
-				},
-			},
+			nil,
 			&configpb.HardwareFeatures{
 				EmbeddedController: &configpb.HardwareFeatures_EmbeddedController{
 					Present: tc.ECPresent,
 					EcType:  tc.ECType,
 				},
 			},
+			&protocol.DeviceInfo{},
 			tc.expectSatisfied)
 	}
 }
@@ -245,18 +288,13 @@ func TestFingerprint(t *testing.T) {
 	} {
 		verifyCondition(
 			t, c,
-			&device.Config{
-				Id: &device.ConfigId{
-					PlatformId: &device.PlatformId{
-						Value: "fake_platform",
-					},
-				},
-			},
+			nil,
 			&configpb.HardwareFeatures{
 				Fingerprint: &configpb.HardwareFeatures_Fingerprint{
 					Location: tc.Fingerprint,
 				},
 			},
+			&protocol.DeviceInfo{},
 			tc.expectSatisfied)
 	}
 
@@ -272,6 +310,7 @@ func TestFingerprint(t *testing.T) {
 				device.Config_HARDWARE_FEATURE_FINGERPRINT,
 			},
 		},
+		nil,
 		nil,
 		true)
 }
@@ -288,18 +327,13 @@ func TestNoFingerprint(t *testing.T) {
 	} {
 		verifyCondition(
 			t, c,
-			&device.Config{
-				Id: &device.ConfigId{
-					PlatformId: &device.PlatformId{
-						Value: "fake_platform",
-					},
-				},
-			},
+			nil,
 			&configpb.HardwareFeatures{
 				Fingerprint: &configpb.HardwareFeatures_Fingerprint{
 					Location: tc.Fingerprint,
 				},
 			},
+			&protocol.DeviceInfo{},
 			tc.expectSatisfied)
 	}
 
@@ -316,6 +350,7 @@ func TestNoFingerprint(t *testing.T) {
 			},
 		},
 		nil,
+		nil,
 		false)
 }
 
@@ -331,18 +366,13 @@ func TestInternalDisplay(t *testing.T) {
 	} {
 		verifyCondition(
 			t, c,
-			&device.Config{
-				Id: &device.ConfigId{
-					PlatformId: &device.PlatformId{
-						Value: "fake_platform",
-					},
-				},
-			},
+			nil,
 			&configpb.HardwareFeatures{
 				Screen: &configpb.HardwareFeatures_Screen{
 					PanelProperties: tc.PanelProperties,
 				},
 			},
+			&protocol.DeviceInfo{},
 			tc.expectSatisfied)
 	}
 
@@ -358,6 +388,7 @@ func TestInternalDisplay(t *testing.T) {
 				device.Config_HARDWARE_FEATURE_INTERNAL_DISPLAY,
 			},
 		},
+		nil,
 		nil,
 		true)
 }
@@ -375,18 +406,13 @@ func TestNvmeStorage(t *testing.T) {
 	} {
 		verifyCondition(
 			t, c,
-			&device.Config{
-				Id: &device.ConfigId{
-					PlatformId: &device.PlatformId{
-						Value: "fake_platform",
-					},
-				},
-			},
+			nil,
 			&configpb.HardwareFeatures{
 				Storage: &configpb.HardwareFeatures_Storage{
 					StorageType: tc.StorageType,
 				},
 			},
+			&protocol.DeviceInfo{},
 			tc.expectSatisfied)
 	}
 }
@@ -436,17 +462,14 @@ func TestWiFiIntel(t *testing.T) {
 	} {
 		verifyCondition(
 			t, c,
-			&device.Config{
-				Id: &device.ConfigId{
-					PlatformId: &device.PlatformId{
-						Value: tc.platform,
-					},
-					ModelId: &device.ModelId{
-						Value: tc.model,
-					},
+			nil,
+			&configpb.HardwareFeatures{},
+			&protocol.DeviceInfo{
+				Ids: &protocol.ConfigIds{
+					Platform: tc.platform,
+					Model:    tc.model,
 				},
 			},
-			&configpb.HardwareFeatures{},
 			tc.expectSatisfied)
 	}
 }
@@ -470,6 +493,7 @@ func TestMinStorage(t *testing.T) {
 					SizeGb: tc.sizeGb,
 				},
 			},
+			nil,
 			tc.expectSatisfied)
 	}
 }

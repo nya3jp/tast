@@ -30,9 +30,25 @@ message SoftwareFeatures {
   repeated string unavailable = 2;
 }
 
+// ConfigIds is the labels given to DUT based on the hardware model or
+// platform name. These information is fetched from the DUT at runtime by the
+// framework.
+message ConfigIds {
+  string model = 1;
+  string platform = 2;
+  string brand = 3;
+}
+
+// A message that replaces device.Config from device/config.proto.
+message DeviceInfo {
+  ConfigIds ids = 1;
+  // SoC, CPU arch and power fields will be added here.
+}
+
 // HardwareFeatures represents a set of hardware features available for the
 // device model being tested.
 message HardwareFeatures {
   chromiumos.config.api.HardwareFeatures hardware_features = 1;
   device.Config deprecated_device_config = 2;
+  DeviceInfo device_info = 3;
 }

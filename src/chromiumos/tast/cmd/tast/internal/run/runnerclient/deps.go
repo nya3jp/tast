@@ -19,7 +19,7 @@ import (
 	"chromiumos/tast/internal/timing"
 )
 
-// deviceConfigFile is a file name containing the dump of obtained device.Config of the DUT,
+// deviceConfigFile is a file name containing the dump of obtained protocol.DeprecatedDeviceConfig of the DUT,
 // which is directly under ResDir.
 const deviceConfigFile = "device-config.txt"
 

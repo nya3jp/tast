@@ -10,7 +10,6 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	"go.chromium.org/chromiumos/config/go/api"
-	"go.chromium.org/chromiumos/infra/proto/go/device"
 
 	"chromiumos/tast/internal/command"
 	"chromiumos/tast/internal/protocol"
@@ -215,10 +214,14 @@ type RunnerGetDUTInfoResult struct {
 	// of this field are handled in the methods respectively.
 	SoftwareFeatures *protocol.SoftwareFeatures `json:"-"`
 
-	// DeviceConfig contains the DUT's device characteristic.
+	// DeviceConfig contains the DUT's device charactersitic that is not covered by HardwareFeatures.
 	// Similar to SoftwareFeatures field, the serialization/deserialization
 	// of this field are handled in MarshalJSON/UnmarshalJSON respectively.
-	DeviceConfig     *device.Config        `json:"-"`
+	DeviceConfig *protocol.DeprecatedDeviceConfig `json:"-"`
+
+	// HardwareFeatures contains the DUT's device characteristic.
+	// Similar to SoftwareFeatures field, the serialization/deserialization
+	// of this field are handled in MarshalJSON/UnmarshalJSON respectively.
 	HardwareFeatures *api.HardwareFeatures `json:"-"`
 
 	// OSVersion contains the DUT's OS Version
@@ -296,7 +299,7 @@ func (r *RunnerGetDUTInfoResult) UnmarshalJSON(b []byte) error {
 		}
 	}
 	if len(aux.DeviceConfig) > 0 {
-		var dc device.Config
+		var dc protocol.DeprecatedDeviceConfig
 		if err := proto.Unmarshal(aux.DeviceConfig, &dc); err != nil {
 			return err
 		}

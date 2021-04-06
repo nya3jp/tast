@@ -11,8 +11,6 @@ import (
 	"reflect"
 	"testing"
 
-	"go.chromium.org/chromiumos/infra/proto/go/device"
-
 	"chromiumos/tast/autocaps"
 	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/protocol"
@@ -262,15 +260,15 @@ func TestFindIntelSOC(t *testing.T) {
 	}
 	testCases := []struct {
 		input *lscpuResult
-		soc   device.Config_SOC
+		soc   protocol.DeprecatedDeviceConfig_SOC
 	}{
 		{
 			lscpu("142", "Intel(R) Core(TM) m3-8100Y CPU @ 1.10GHz"),
-			device.Config_SOC_AMBERLAKE_Y,
+			protocol.DeprecatedDeviceConfig_SOC_AMBERLAKE_Y,
 		},
 		{
 			lscpu("142", "Intel(R) Core(TM) m3-7Y30 Processor @ 2.60GHz"),
-			device.Config_SOC_KABYLAKE_Y,
+			protocol.DeprecatedDeviceConfig_SOC_KABYLAKE_Y,
 		},
 	}
 	for _, tc := range testCases {

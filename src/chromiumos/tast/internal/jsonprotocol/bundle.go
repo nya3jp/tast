@@ -11,7 +11,6 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
 	"go.chromium.org/chromiumos/config/go/api"
-	"go.chromium.org/chromiumos/infra/proto/go/device"
 
 	"chromiumos/tast/internal/planner"
 	"chromiumos/tast/internal/protocol"
@@ -69,15 +68,15 @@ func (a *BundleArgs) PromoteDeprecated() {
 	// We don't have any deprecated fields right now.
 }
 
-// DeviceConfigJSON is a wrapper class for device.Config to facilitate marshalling/unmarshalling.
+// DeviceConfigJSON is a wrapper class for protocol.DeprecatedDeviceConfig to facilitate marshalling/unmarshalling.
 type DeviceConfigJSON struct {
-	// Proto contains the device configuration info about DUT.
+	// Proto contains the device configuration information about DUT.
 	// Marshaling and unmarshaling of this field is handled in MarshalJSON/UnmarshalJSON
 	// respectively.
-	Proto *device.Config `json:"-"`
+	Proto *protocol.DeprecatedDeviceConfig `json:"-"`
 }
 
-// MarshalJSON marshals the *device.Config struct into JSON.
+// MarshalJSON marshals the protocol.DeprecatedDeviceConfig struct into JSON.
 func (a *DeviceConfigJSON) MarshalJSON() ([]byte, error) {
 	if a.Proto == nil {
 		return []byte(`null`), nil
@@ -89,7 +88,7 @@ func (a *DeviceConfigJSON) MarshalJSON() ([]byte, error) {
 	return json.Marshal(bin)
 }
 
-// UnmarshalJSON unmarshals JSON blob for device.Config.
+// UnmarshalJSON unmarshals JSON blob for protocol.DeprecatedDeviceConfig.
 func (a *DeviceConfigJSON) UnmarshalJSON(b []byte) error {
 	var aux []byte
 	if err := json.Unmarshal(b, &aux); err != nil {
@@ -98,7 +97,7 @@ func (a *DeviceConfigJSON) UnmarshalJSON(b []byte) error {
 	if len(aux) == 0 {
 		return nil
 	}
-	var dc device.Config
+	var dc protocol.DeprecatedDeviceConfig
 	if err := proto.Unmarshal(aux, &dc); err != nil {
 		return err
 	}
@@ -160,7 +159,6 @@ type FeatureArgs struct {
 	// DeviceConfig contains the hardware info about the DUT.
 	// Marshaling and unmarshaling of this field is handled in MarshalJSON/UnmarshalJSON
 	// respectively.
-	// Deprecated. Use HardwareFeatures instead.
 	DeviceConfig DeviceConfigJSON
 	// HardwareFeatures contains the hardware info about DUT.
 	// Marshaling and unmarshaling of this field is handled in MarshalJSON/UnmarshalJSON

@@ -140,6 +140,43 @@ func (a *HardwareFeaturesJSON) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
+// DeviceInfoJSON is a wrapper class for protocol.DeviceInfo to facilitate marshalling/unmarshalling.
+type DeviceInfoJSON struct {
+	// Proto contains the information about DUT.
+	// Marshaling and unmarshaling of this field is handled in MarshalJSON/UnmarshalJSON
+	// respectively.
+	Proto *protocol.DeviceInfo `json:"-"`
+}
+
+// MarshalJSON marshals the protocol.DeviceInfo struct into JSON.
+func (a *DeviceInfoJSON) MarshalJSON() ([]byte, error) {
+	if a.Proto == nil {
+		return []byte(`null`), nil
+	}
+	bin, err := proto.Marshal(a.Proto)
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(bin)
+}
+
+// UnmarshalJSON unmarshals JSON blob for protocol.DeviceInfo.
+func (a *DeviceInfoJSON) UnmarshalJSON(b []byte) error {
+	var aux []byte
+	if err := json.Unmarshal(b, &aux); err != nil {
+		return err
+	}
+	if len(aux) == 0 {
+		return nil
+	}
+	var info protocol.DeviceInfo
+	if err := proto.Unmarshal(aux, &info); err != nil {
+		return err
+	}
+	a.Proto = &info
+	return nil
+}
+
 // FeatureArgs includes all the feature related arguments.
 type FeatureArgs struct {
 	// TestVars contains names and values of runtime variables used to pass out-of-band data to tests.
@@ -166,6 +203,10 @@ type FeatureArgs struct {
 	// Marshaling and unmarshaling of this field is handled in MarshalJSON/UnmarshalJSON
 	// respectively.
 	HardwareFeatures HardwareFeaturesJSON
+	// DeviceInfo contains the hardware info about DUT.
+	// Marshaling and unmarshaling of this field is handled in MarshalJSON/UnmarshalJSON
+	// respectively.
+	DeviceInfo DeviceInfoJSON
 }
 
 // Features returns protocol.Features to be used to check test dependencies.
@@ -181,8 +222,8 @@ func (a *FeatureArgs) Features() *protocol.Features {
 			Unavailable: a.UnavailableSoftwareFeatures,
 		},
 		Hardware: &protocol.HardwareFeatures{
-			DeprecatedDeviceConfig: a.DeviceConfig.Proto,
-			HardwareFeatures:       a.HardwareFeatures.Proto,
+			HardwareFeatures: a.HardwareFeatures.Proto,
+			DeviceInfo:       a.DeviceInfo.Proto,
 		},
 		Vars:             vars,
 		MaybeMissingVars: a.MaybeMissingVars,

@@ -759,20 +759,28 @@ func runTestWithRoot(ctx context.Context, t *testing.TestInstance, root *testing
 	}
 
 	if !root.HasError() {
-		// Run fixture pre-test hooks.
-		if err := stack.PreTest(ctx, root); err != nil {
-			return err
-		}
+		if err := func() error {
+			ctx, cancel := context.WithCancel(ctx)
+			defer cancel()
 
-		// Run the test function itself.
-		if err := safeCall(ctx, codeName, t.Timeout, timeoutOrDefault(t.ExitTimeout, pcfg.GracePeriod()), errorOnPanic(testState), func(ctx context.Context) {
-			t.Func(ctx, testState)
-		}); err != nil {
-			return err
-		}
+			// Run fixture pre-test hooks.
+			if err := stack.PreTest(ctx, root); err != nil {
+				return err
+			}
 
-		// Run fixture post-test hooks.
-		if err := stack.PostTest(ctx, root); err != nil {
+			// Run the test function itself.
+			if err := safeCall(ctx, codeName, t.Timeout, timeoutOrDefault(t.ExitTimeout, pcfg.GracePeriod()), errorOnPanic(testState), func(ctx context.Context) {
+				t.Func(ctx, testState)
+			}); err != nil {
+				return err
+			}
+
+			// Run fixture post-test hooks.
+			if err := stack.PostTest(ctx, root); err != nil {
+				return err
+			}
+			return nil
+		}(); err != nil {
 			return err
 		}
 	}

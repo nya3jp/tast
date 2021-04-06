@@ -341,8 +341,7 @@ func TestRunTestsMissingDeps(t *gotesting.T) {
 	}
 	stdin := newBufferWithArgs(t, &args)
 	stdout := &bytes.Buffer{}
-	if status := run(context.Background(), nil, stdin, stdout, &bytes.Buffer{}, &jsonprotocol.BundleArgs{},
-		&staticConfig{defaultTestTimeout: time.Minute}, localBundle); status != statusSuccess {
+	if status := run(context.Background(), nil, stdin, stdout, &bytes.Buffer{}, &staticConfig{defaultTestTimeout: time.Minute}, localBundle); status != statusSuccess {
 		t.Fatalf("run() returned status %v; want %v", status, statusSuccess)
 	}
 
@@ -438,8 +437,7 @@ func TestRunTestsSkipTestWithPrecondition(t *gotesting.T) {
 	}
 	stdin := newBufferWithArgs(t, &args)
 	stdout := &bytes.Buffer{}
-	if status := run(context.Background(), nil, stdin, stdout, &bytes.Buffer{}, &jsonprotocol.BundleArgs{},
-		&staticConfig{defaultTestTimeout: time.Minute}, localBundle); status != statusSuccess {
+	if status := run(context.Background(), nil, stdin, stdout, &bytes.Buffer{}, &staticConfig{defaultTestTimeout: time.Minute}, localBundle); status != statusSuccess {
 		t.Fatalf("run() returned status %v; want %v", status, statusSuccess)
 	}
 
@@ -490,8 +488,7 @@ func TestRunRemoteData(t *gotesting.T) {
 		},
 	}
 	stdin := newBufferWithArgs(t, &args)
-	if status := run(context.Background(), nil, stdin, &bytes.Buffer{}, &bytes.Buffer{}, &jsonprotocol.BundleArgs{},
-		&staticConfig{defaultTestTimeout: time.Minute}, remoteBundle); status != statusSuccess {
+	if status := run(context.Background(), nil, stdin, &bytes.Buffer{}, &bytes.Buffer{}, &staticConfig{defaultTestTimeout: time.Minute}, remoteBundle); status != statusSuccess {
 		t.Fatalf("run() returned status %v; want %v", status, statusSuccess)
 	}
 
@@ -545,8 +542,7 @@ func TestRunCloudStorage(t *gotesting.T) {
 		},
 	}
 	stdin := newBufferWithArgs(t, &args)
-	if status := run(context.Background(), nil, stdin, &bytes.Buffer{}, &bytes.Buffer{}, &jsonprotocol.BundleArgs{},
-		&staticConfig{defaultTestTimeout: time.Minute}, remoteBundle); status != statusSuccess {
+	if status := run(context.Background(), nil, stdin, &bytes.Buffer{}, &bytes.Buffer{}, &staticConfig{defaultTestTimeout: time.Minute}, remoteBundle); status != statusSuccess {
 		t.Fatalf("run() returned status %v; want %v", status, statusSuccess)
 	}
 }
@@ -633,8 +629,7 @@ func TestRunExternalDataFiles(t *gotesting.T) {
 		},
 	}
 	stdin := newBufferWithArgs(t, &args)
-	if status := run(context.Background(), nil, stdin, ioutil.Discard, ioutil.Discard, &jsonprotocol.BundleArgs{},
-		&staticConfig{defaultTestTimeout: time.Minute}, remoteBundle); status != statusSuccess {
+	if status := run(context.Background(), nil, stdin, ioutil.Discard, ioutil.Discard, &staticConfig{defaultTestTimeout: time.Minute}, remoteBundle); status != statusSuccess {
 		t.Fatalf("run() returned status %v; want %v", status, statusSuccess)
 	}
 
@@ -721,8 +716,7 @@ func TestRunList(t *gotesting.T) {
 	// BundleListTestsMode should result in tests being JSON-marshaled to stdout.
 	stdin := newBufferWithArgs(t, &jsonprotocol.BundleArgs{Mode: jsonprotocol.BundleListTestsMode, ListTests: &jsonprotocol.BundleListTestsArgs{}})
 	stdout := &bytes.Buffer{}
-	if status := run(context.Background(), nil, stdin, stdout, &bytes.Buffer{},
-		&jsonprotocol.BundleArgs{}, &staticConfig{}, localBundle); status != statusSuccess {
+	if status := run(context.Background(), nil, stdin, stdout, &bytes.Buffer{}, &staticConfig{}, localBundle); status != statusSuccess {
 		t.Fatalf("run() returned status %v; want %v", status, statusSuccess)
 	}
 	if stdout.String() != exp.String() {
@@ -732,8 +726,7 @@ func TestRunList(t *gotesting.T) {
 	// The -dumptests command-line flag should do the same thing.
 	clArgs := []string{"-dumptests"}
 	stdout.Reset()
-	if status := run(context.Background(), clArgs, &bytes.Buffer{}, stdout, &bytes.Buffer{},
-		&jsonprotocol.BundleArgs{}, &staticConfig{}, localBundle); status != statusSuccess {
+	if status := run(context.Background(), clArgs, &bytes.Buffer{}, stdout, &bytes.Buffer{}, &staticConfig{}, localBundle); status != statusSuccess {
 		t.Fatalf("run(%v) returned status %v; want %v", clArgs, status, statusSuccess)
 	}
 	if stdout.String() != exp.String() {
@@ -779,8 +772,7 @@ func TestRunListWithDep(t *gotesting.T) {
 	// BundleListTestsMode should result in tests being JSON-marshaled to stdout.
 	stdin := newBufferWithArgs(t, &args)
 	stdout := &bytes.Buffer{}
-	if status := run(context.Background(), nil, stdin, stdout, &bytes.Buffer{},
-		&jsonprotocol.BundleArgs{}, &staticConfig{}, localBundle); status != statusSuccess {
+	if status := run(context.Background(), nil, stdin, stdout, &bytes.Buffer{}, &staticConfig{}, localBundle); status != statusSuccess {
 		t.Fatalf("run() returned status %v; want %v", status, statusSuccess)
 	}
 	var ts []jsonprotocol.EntityWithRunnabilityInfo
@@ -822,8 +814,7 @@ func TestRunListFixtures(t *gotesting.T) {
 	// BundleListFixturesMode should output JSON-marshaled fixtures to stdout.
 	stdin := newBufferWithArgs(t, &jsonprotocol.BundleArgs{Mode: jsonprotocol.BundleListFixturesMode})
 	stdout := &bytes.Buffer{}
-	if status := run(context.Background(), nil, stdin, stdout, &bytes.Buffer{},
-		&jsonprotocol.BundleArgs{}, &staticConfig{}, localBundle); status != statusSuccess {
+	if status := run(context.Background(), nil, stdin, stdout, &bytes.Buffer{}, &staticConfig{}, localBundle); status != statusSuccess {
 		t.Fatalf("run() = %v, want %v", status, statusSuccess)
 	}
 
@@ -853,8 +844,7 @@ func TestRunRegistrationError(t *gotesting.T) {
 	testing.AddTestInstance(&testing.TestInstance{Name: name, Func: testFunc})
 
 	stdin := newBufferWithArgs(t, &jsonprotocol.BundleArgs{Mode: jsonprotocol.BundleListTestsMode, ListTests: &jsonprotocol.BundleListTestsArgs{}})
-	if status := run(context.Background(), nil, stdin, ioutil.Discard, ioutil.Discard,
-		&jsonprotocol.BundleArgs{}, &staticConfig{}, localBundle); status != statusBadTests {
+	if status := run(context.Background(), nil, stdin, ioutil.Discard, ioutil.Discard, &staticConfig{}, localBundle); status != statusBadTests {
 		t.Errorf("run() with bad test returned status %v; want %v", status, statusBadTests)
 	}
 }

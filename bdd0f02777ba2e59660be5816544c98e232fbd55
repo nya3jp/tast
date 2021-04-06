@@ -70,6 +70,30 @@
       },
       "revId": "bdd0f02777ba2e59660be5816544c98e232fbd55",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "15597470_82c31726",
+        "filename": "src/chromiumos/tast/internal/testcontext/context.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2021-04-06T10:45:59Z",
+      "side": 1,
+      "message": "optional: You could define multiple types with concret type struct{} per purpose, and use it like context.WithValue(ctx, TypeA{}, valA)\ncontext.WithValue(ctx, TypeB{}, valB). It\u0027d be slightly more efficient, because string allocations and comparisons are not needed, but I guess the impact would be negligible.",
+      "parentUuid": "913deeaf_3038c43d",
+      "range": {
+        "startLine": 8,
+        "startChar": 5,
+        "endLine": 8,
+        "endChar": 12
+      },
+      "revId": "bdd0f02777ba2e59660be5816544c98e232fbd55",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

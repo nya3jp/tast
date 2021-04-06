@@ -22,6 +22,30 @@
       },
       "revId": "bdd0f02777ba2e59660be5816544c98e232fbd55",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8b81d154_03bad66a",
+        "filename": "src/chromiumos/tast/internal/testcontext/context.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-04-06T09:33:48Z",
+      "side": 1,
+      "message": "keyType is a new type that is not a string (c.f. type keyType \u003d string).",
+      "parentUuid": "7e48b0aa_dfb89e07",
+      "range": {
+        "startLine": 8,
+        "startChar": 5,
+        "endLine": 8,
+        "endChar": 12
+      },
+      "revId": "bdd0f02777ba2e59660be5816544c98e232fbd55",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

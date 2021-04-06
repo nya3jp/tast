@@ -17,6 +17,7 @@ import (
 	"go.chromium.org/chromiumos/infra/proto/go/device"
 
 	"chromiumos/tast/internal/jsonprotocol"
+	"chromiumos/tast/internal/protocol"
 )
 
 // newBufferWithArgs returns a bytes.Buffer containing the JSON representation of args.
@@ -128,6 +129,13 @@ func TestMarshal(t *testing.T) {
 					},
 				},
 			},
+			DeviceConfigIds: jsonprotocol.DeviceConfigIdsJSON{
+				Proto: &protocol.DeviceConfigIds{
+					Platform: "PlatformId",
+					Model:    "ModelId",
+					Brand:    "BrandId",
+				},
+			},
 		},
 	}
 	b, err := json.Marshal(&in)
@@ -143,6 +151,9 @@ func TestMarshal(t *testing.T) {
 	}
 	if !proto.Equal(in.HardwareFeatures.Proto, out.HardwareFeatures.Proto) {
 		t.Errorf("HardwareFeatures did not match: want %v, got %v", in.HardwareFeatures.Proto, out.HardwareFeatures.Proto)
+	}
+	if !proto.Equal(in.DeviceConfigIds.Proto, out.DeviceConfigIds.Proto) {
+		t.Errorf("DeviceConfigIds did not match: want %v, got %v", in.DeviceConfigIds.Proto, out.DeviceConfigIds.Proto)
 	}
 	if !reflect.DeepEqual(in.AvailableSoftwareFeatures, out.AvailableSoftwareFeatures) {
 		t.Errorf("AvailableSoftwareFeatures did not match: want %v, got %v", in.AvailableSoftwareFeatures, out.AvailableSoftwareFeatures)

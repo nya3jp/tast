@@ -28,6 +28,15 @@ message SoftwareFeatures {
   repeated string unavailable = 2;
 }
 
+// DeviceConfigIds is the labels given to DUT based on the hardware model or
+// platform name. These information is fetched from the DUT at runtime by the
+// framework.
+message DeviceConfigIds {
+  string model = 1;
+  string platform = 2;
+  string brand = 3;
+}
+
 // HardwareFeatures represents a set of hardware features available for the
 // device model being tested.
 // A nil message indicates that all tests should always run, thus it should be
@@ -35,4 +44,5 @@ message SoftwareFeatures {
 message HardwareFeatures {
   chromiumos.config.api.HardwareFeatures hardware_features = 1;
   device.Config deprecated_device_config = 2;
+  DeviceConfigIds device_config_ids = 3;
 }

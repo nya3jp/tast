@@ -148,6 +148,7 @@ type State struct {
 	SoftwareFeatures         *protocol.SoftwareFeatures // software features of the DUT
 	DeviceConfig             *device.Config             // hardware features of the DUT. Deprecated. Use HardwareFeatures instead.
 	HardwareFeatures         *configpb.HardwareFeatures // hardware features of the DUT.
+	DeviceConfigIds          *protocol.DeviceConfigIds  // DUT hardware type (model, platform, brand).
 	OSVersion                string                     // Chrome OS Version
 	FailuresCount            int                        // the number of test failures so far.
 	TLWConn                  *grpc.ClientConn           // TLW gRPC service connection

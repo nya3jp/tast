@@ -13,10 +13,10 @@ import (
 	"chromiumos/tast/internal/protocol"
 )
 
-func verifyCondition(t *testing.T, c Condition, dc *device.Config, features *configpb.HardwareFeatures, expectSatisfied bool) {
+func verifyCondition(t *testing.T, c Condition, dc *device.Config, features *configpb.HardwareFeatures, deviceIds *protocol.DeviceConfigIds, expectSatisfied bool) {
 	t.Helper()
 
-	err := c.Satisfied(&protocol.HardwareFeatures{DeprecatedDeviceConfig: dc, HardwareFeatures: features})
+	err := c.Satisfied(&protocol.HardwareFeatures{DeprecatedDeviceConfig: dc, HardwareFeatures: features, DeviceConfigIds: deviceIds})
 	if expectSatisfied {
 		if err != nil {
 			t.Error("Unexpectedly unsatisfied: ", err)
@@ -52,6 +52,7 @@ func TestModel(t *testing.T) {
 				},
 			},
 			&configpb.HardwareFeatures{},
+			nil,
 			tc.expectSatisfied)
 	}
 }
@@ -80,6 +81,16 @@ func TestSkipOnModel(t *testing.T) {
 				},
 			},
 			&configpb.HardwareFeatures{},
+			nil, // protocol.DeviceConfigIds
+			tc.expectSatisfied)
+
+		verifyCondition(
+			t, c,
+			nil, // device.Config
+			&configpb.HardwareFeatures{},
+			&protocol.DeviceConfigIds{
+				Model: tc.model,
+			},
 			tc.expectSatisfied)
 	}
 }
@@ -106,6 +117,7 @@ func TestPlatform(t *testing.T) {
 				},
 			},
 			&configpb.HardwareFeatures{},
+			nil,
 			tc.expectSatisfied)
 	}
 }
@@ -122,6 +134,7 @@ func TestSkipOnPlatform(t *testing.T) {
 		{"Kevin", false},
 		{"Nocturne", true},
 	} {
+		// old protocol
 		verifyCondition(
 			t, c,
 			&device.Config{
@@ -132,6 +145,16 @@ func TestSkipOnPlatform(t *testing.T) {
 				},
 			},
 			&configpb.HardwareFeatures{},
+			nil, // protocol.DeviceConfigIds
+			tc.expectSatisfied)
+		// new protocol
+		verifyCondition(
+			t, c,
+			nil, // device.Config
+			&configpb.HardwareFeatures{},
+			&protocol.DeviceConfigIds{
+				Platform: tc.platform,
+			},
 			tc.expectSatisfied)
 	}
 }
@@ -160,6 +183,7 @@ func TestTouchscreen(t *testing.T) {
 					TouchSupport: tc.TouchSupport,
 				},
 			},
+			nil,
 			tc.expectSatisfied)
 	}
 
@@ -175,6 +199,7 @@ func TestTouchscreen(t *testing.T) {
 				device.Config_HARDWARE_FEATURE_TOUCHSCREEN,
 			},
 		},
+		nil,
 		nil,
 		true)
 }
@@ -229,6 +254,7 @@ func TestChromeEC(t *testing.T) {
 					EcType:  tc.ECType,
 				},
 			},
+			nil,
 			tc.expectSatisfied)
 	}
 }
@@ -257,6 +283,7 @@ func TestFingerprint(t *testing.T) {
 					Location: tc.Fingerprint,
 				},
 			},
+			nil,
 			tc.expectSatisfied)
 	}
 
@@ -272,6 +299,7 @@ func TestFingerprint(t *testing.T) {
 				device.Config_HARDWARE_FEATURE_FINGERPRINT,
 			},
 		},
+		nil,
 		nil,
 		true)
 }
@@ -300,6 +328,7 @@ func TestNoFingerprint(t *testing.T) {
 					Location: tc.Fingerprint,
 				},
 			},
+			nil,
 			tc.expectSatisfied)
 	}
 
@@ -315,6 +344,7 @@ func TestNoFingerprint(t *testing.T) {
 				device.Config_HARDWARE_FEATURE_FINGERPRINT,
 			},
 		},
+		nil,
 		nil,
 		false)
 }
@@ -343,6 +373,7 @@ func TestInternalDisplay(t *testing.T) {
 					PanelProperties: tc.PanelProperties,
 				},
 			},
+			nil,
 			tc.expectSatisfied)
 	}
 
@@ -358,6 +389,7 @@ func TestInternalDisplay(t *testing.T) {
 				device.Config_HARDWARE_FEATURE_INTERNAL_DISPLAY,
 			},
 		},
+		nil,
 		nil,
 		true)
 }
@@ -387,6 +419,7 @@ func TestNvmeStorage(t *testing.T) {
 					StorageType: tc.StorageType,
 				},
 			},
+			nil,
 			tc.expectSatisfied)
 	}
 }
@@ -447,6 +480,7 @@ func TestWiFiIntel(t *testing.T) {
 				},
 			},
 			&configpb.HardwareFeatures{},
+			nil,
 			tc.expectSatisfied)
 	}
 }

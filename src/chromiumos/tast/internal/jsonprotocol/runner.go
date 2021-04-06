@@ -213,8 +213,9 @@ type RunnerGetDUTInfoResult struct {
 	// DeviceConfig contains the DUT's device characteristic.
 	// Similar to SoftwareFeatures field, the serialization/deserialization
 	// of this field are handled in MarshalJSON/UnmarshalJSON respectively.
-	DeviceConfig     *device.Config        `json:"-"`
-	HardwareFeatures *api.HardwareFeatures `json:"-"`
+	DeviceConfig     *device.Config            `json:"-"`
+	HardwareFeatures *api.HardwareFeatures     `json:"-"`
+	DeviceIds        *protocol.DeviceConfigIds `json:"-"`
 
 	// OSVersion contains the DUT's OS Version
 	OSVersion string `json:"osVersion,omitempty"`

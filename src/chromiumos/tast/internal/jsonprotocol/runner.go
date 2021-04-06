@@ -218,8 +218,18 @@ type RunnerGetDUTInfoResult struct {
 	// DeviceConfig contains the DUT's device characteristic.
 	// Similar to SoftwareFeatures field, the serialization/deserialization
 	// of this field are handled in MarshalJSON/UnmarshalJSON respectively.
-	DeviceConfig     *device.Config        `json:"-"`
+	// Deprecated. Use HardwareFeatures instead.
+	DeviceConfig *device.Config `json:"-"`
+
+	// HardwareFeatures contains the DUT's device characteristic.
+	// Similar to SoftwareFeatures field, the serialization/deserialization
+	// of this field are handled in MarshalJSON/UnmarshalJSON respectively.
 	HardwareFeatures *api.HardwareFeatures `json:"-"`
+
+	// DeviceInfo contains the DUT's device charactersitic.
+	// Similar to SoftwareFeatures field, the serialization/deserialization
+	// of this field are handled in MarshalJSON/UnmarshalJSON respectively.
+	DeviceInfo *protocol.DeviceInfo `json:"-"`
 
 	// OSVersion contains the DUT's OS Version
 	OSVersion string `json:"osVersion,omitempty"`
@@ -256,6 +266,14 @@ func (r *RunnerGetDUTInfoResult) MarshalJSON() ([]byte, error) {
 			return nil, err
 		}
 	}
+	var info []byte
+	if r.DeviceInfo != nil {
+		var err error
+		info, err = proto.Marshal(r.DeviceInfo)
+		if err != nil {
+			return nil, err
+		}
+	}
 
 	type Alias RunnerGetDUTInfoResult
 	return json.Marshal(struct {
@@ -263,12 +281,14 @@ func (r *RunnerGetDUTInfoResult) MarshalJSON() ([]byte, error) {
 		Missing          []string `json:"missing,omitempty"`
 		DeviceConfig     []byte   `json:"deviceConfig,omitempty"`
 		HardwareFeatures []byte   `json:"hardwareFeatures,omitempty"`
+		DeviceInfo       []byte   `json:"DeviceInfo,omitempty"`
 		*Alias
 	}{
 		Available:        available,
 		Missing:          missing,
 		DeviceConfig:     dc,
 		HardwareFeatures: hf,
+		DeviceInfo:       info,
 		Alias:            (*Alias)(r),
 	})
 }
@@ -282,6 +302,7 @@ func (r *RunnerGetDUTInfoResult) UnmarshalJSON(b []byte) error {
 		Missing          []string `json:"missing,omitempty"`
 		DeviceConfig     []byte   `json:"deviceConfig,omitempty"`
 		HardwareFeatures []byte   `json:"hardwareFeatures,omitempty"`
+		DeviceInfo       []byte   `json:"deviceInfo,omitempty"`
 		*Alias
 	}{
 		Alias: (*Alias)(r),
@@ -308,6 +329,13 @@ func (r *RunnerGetDUTInfoResult) UnmarshalJSON(b []byte) error {
 			return err
 		}
 		r.HardwareFeatures = &hf
+	}
+	if len(aux.DeviceInfo) > 0 {
+		var ids protocol.DeviceInfo
+		if err := proto.Unmarshal(aux.DeviceInfo, &ids); err != nil {
+			return err
+		}
+		r.DeviceInfo = &ids
 	}
 	return nil
 }

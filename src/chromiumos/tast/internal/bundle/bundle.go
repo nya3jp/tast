@@ -207,7 +207,11 @@ func newArgsAndStaticConfig(defaultTestTimeout time.Duration, dataDir string, d 
 	args := &jsonprotocol.BundleArgs{RunTests: &jsonprotocol.BundleRunTestsArgs{DataDir: dataDir}}
 	scfg := &staticConfig{
 		runHook: func(ctx context.Context) (func(context.Context) error, error) {
-			if d.Ready != nil && args.RunTests.WaitUntilReady {
+			pd, ok := testcontext.PrivateDataFromContext(ctx)
+			if !ok {
+				panic("BUG: PrivateData not available in run hook")
+			}
+			if d.Ready != nil && pd.WaitUntilReady {
 				if err := d.Ready(ctx); err != nil {
 					return nil, err
 				}
@@ -288,6 +292,10 @@ func (ew *eventWriter) EntityEnd(ei *protocol.Entity, skipReasons []string, timi
 // Otherwise, nil is returned (test errors will be reported via EntityError control messages).
 func runTests(ctx context.Context, stdout io.Writer, args *jsonprotocol.BundleArgs, scfg *staticConfig,
 	bt bundleType, tests []*testing.TestInstance) error {
+	ctx = testcontext.WithPrivateData(ctx, testcontext.PrivateData{
+		WaitUntilReady: args.RunTests.WaitUntilReady,
+	})
+
 	mw := control.NewMessageWriter(stdout)
 
 	hbw := control.NewHeartbeatWriter(mw, args.RunTests.HeartbeatInterval)

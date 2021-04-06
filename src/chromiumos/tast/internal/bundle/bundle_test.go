@@ -113,8 +113,8 @@ func TestRunTests(t *gotesting.T) {
 			TempDir: runTmpDir,
 		},
 	}
-	scfg := staticConfig{
-		runHook: func(ctx context.Context) (func(context.Context) error, error) {
+	scfg := newStaticConfig(0, Delegate{
+		RunHook: func(ctx context.Context) (func(context.Context) error, error) {
 			preRunCalls++
 			testcontext.Log(ctx, preRunMsg)
 			return func(ctx context.Context) error {
@@ -123,7 +123,7 @@ func TestRunTests(t *gotesting.T) {
 				return nil
 			}, nil
 		},
-		testHook: func(ctx context.Context, s *testing.TestHookState) func(ctx context.Context, s *testing.TestHookState) {
+		TestHook: func(ctx context.Context, s *testing.TestHookState) func(ctx context.Context, s *testing.TestHookState) {
 			preTestCalls++
 			s.Log(preTestMsg)
 
@@ -132,10 +132,10 @@ func TestRunTests(t *gotesting.T) {
 				s.Log(postTestMsg)
 			}
 		},
-	}
+	})
 
-	sig := fmt.Sprintf("runTests(..., %+v, %+v)", args, scfg)
-	if err := runTests(context.Background(), &stdout, &args, &scfg, localBundle, tests); err != nil {
+	sig := fmt.Sprintf("runTests(..., %+v, %+v)", args, *scfg)
+	if err := runTests(context.Background(), &stdout, &args, scfg, localBundle, tests); err != nil {
 		t.Fatalf("%v failed: %v", sig, err)
 	}
 
@@ -245,7 +245,7 @@ func TestRunTestsTimeout(t *gotesting.T) {
 
 	// The first test should time out after 1 millisecond.
 	// The second test is not run.
-	if err := runTests(context.Background(), &stdout, &args, &staticConfig{}, localBundle, reg.AllTests()); err == nil {
+	if err := runTests(context.Background(), &stdout, &args, newStaticConfig(0, Delegate{}), localBundle, reg.AllTests()); err == nil {
 		t.Fatalf("runTests(..., %+v, ...) succeeded unexpectedly", args)
 	}
 
@@ -294,7 +294,7 @@ func TestRunTestsTimeout(t *gotesting.T) {
 func TestRunTestsNoTests(t *gotesting.T) {
 	// runTests should report failure when passed an empty slice of tests.
 	if err := runTests(context.Background(), &bytes.Buffer{}, &jsonprotocol.BundleArgs{RunTests: &jsonprotocol.BundleRunTestsArgs{}},
-		&staticConfig{}, localBundle, []*testing.TestInstance{}); !errorHasStatus(err, statusNoTests) {
+		newStaticConfig(0, Delegate{}), localBundle, []*testing.TestInstance{}); !errorHasStatus(err, statusNoTests) {
 		t.Fatalf("runTests() = %v; want status %v", err, statusNoTests)
 	}
 }
@@ -341,7 +341,7 @@ func TestRunTestsMissingSoftwareDeps(t *gotesting.T) {
 	}
 	stdin := newBufferWithArgs(t, &args)
 	stdout := &bytes.Buffer{}
-	if status := run(context.Background(), nil, stdin, stdout, &bytes.Buffer{}, &staticConfig{defaultTestTimeout: time.Minute}, localBundle); status != statusSuccess {
+	if status := run(context.Background(), nil, stdin, stdout, &bytes.Buffer{}, newStaticConfig(time.Minute, Delegate{}), localBundle); status != statusSuccess {
 		t.Fatalf("run() returned status %v; want %v", status, statusSuccess)
 	}
 
@@ -492,7 +492,7 @@ func TestRunTestsVarDeps(t *gotesting.T) {
 			}
 			stdin := newBufferWithArgs(t, &args)
 			stdout := &bytes.Buffer{}
-			if status := run(context.Background(), nil, stdin, stdout, &bytes.Buffer{}, &staticConfig{defaultTestTimeout: time.Minute}, localBundle); status != statusSuccess {
+			if status := run(context.Background(), nil, stdin, stdout, &bytes.Buffer{}, newStaticConfig(time.Minute, Delegate{}), localBundle); status != statusSuccess {
 				t.Fatalf("run() returned status %v; want %v", status, statusSuccess)
 			}
 
@@ -566,7 +566,7 @@ func TestRunTestsSkipTestWithPrecondition(t *gotesting.T) {
 	}
 	stdin := newBufferWithArgs(t, &args)
 	stdout := &bytes.Buffer{}
-	if status := run(context.Background(), nil, stdin, stdout, &bytes.Buffer{}, &staticConfig{defaultTestTimeout: time.Minute}, localBundle); status != statusSuccess {
+	if status := run(context.Background(), nil, stdin, stdout, &bytes.Buffer{}, newStaticConfig(time.Minute, Delegate{}), localBundle); status != statusSuccess {
 		t.Fatalf("run() returned status %v; want %v", status, statusSuccess)
 	}
 
@@ -617,7 +617,7 @@ func TestRunRemoteData(t *gotesting.T) {
 		},
 	}
 	stdin := newBufferWithArgs(t, &args)
-	if status := run(context.Background(), nil, stdin, &bytes.Buffer{}, &bytes.Buffer{}, &staticConfig{defaultTestTimeout: time.Minute}, remoteBundle); status != statusSuccess {
+	if status := run(context.Background(), nil, stdin, &bytes.Buffer{}, &bytes.Buffer{}, newStaticConfig(time.Minute, Delegate{}), remoteBundle); status != statusSuccess {
 		t.Fatalf("run() returned status %v; want %v", status, statusSuccess)
 	}
 
@@ -671,7 +671,7 @@ func TestRunCloudStorage(t *gotesting.T) {
 		},
 	}
 	stdin := newBufferWithArgs(t, &args)
-	if status := run(context.Background(), nil, stdin, &bytes.Buffer{}, &bytes.Buffer{}, &staticConfig{defaultTestTimeout: time.Minute}, remoteBundle); status != statusSuccess {
+	if status := run(context.Background(), nil, stdin, &bytes.Buffer{}, &bytes.Buffer{}, newStaticConfig(time.Minute, Delegate{}), remoteBundle); status != statusSuccess {
 		t.Fatalf("run() returned status %v; want %v", status, statusSuccess)
 	}
 }
@@ -758,7 +758,7 @@ func TestRunExternalDataFiles(t *gotesting.T) {
 		},
 	}
 	stdin := newBufferWithArgs(t, &args)
-	if status := run(context.Background(), nil, stdin, ioutil.Discard, ioutil.Discard, &staticConfig{defaultTestTimeout: time.Minute}, remoteBundle); status != statusSuccess {
+	if status := run(context.Background(), nil, stdin, ioutil.Discard, ioutil.Discard, newStaticConfig(time.Minute, Delegate{}), remoteBundle); status != statusSuccess {
 		t.Fatalf("run() returned status %v; want %v", status, statusSuccess)
 	}
 
@@ -783,12 +783,12 @@ func TestRunStartFixture(t *gotesting.T) {
 	// remote fixtures and run hooks.
 	if err := runTests(context.Background(), &bytes.Buffer{}, &jsonprotocol.BundleArgs{RunTests: &jsonprotocol.BundleRunTestsArgs{
 		StartFixtureName: "foo",
-	}}, &staticConfig{
-		runHook: func(context.Context) (func(context.Context) error, error) {
+	}}, newStaticConfig(0, Delegate{
+		RunHook: func(context.Context) (func(context.Context) error, error) {
 			t.Error("runHook unexpectedly called")
 			return nil, nil
 		},
-	}, localBundle, []*testing.TestInstance{{
+	}), localBundle, []*testing.TestInstance{{
 		Fixture: "foo",
 		Name:    "pkg.Test",
 		Func:    func(context.Context, *testing.State) {},
@@ -800,12 +800,12 @@ func TestRunStartFixture(t *gotesting.T) {
 	called := false
 	if err := runTests(context.Background(), &bytes.Buffer{}, &jsonprotocol.BundleArgs{RunTests: &jsonprotocol.BundleRunTestsArgs{
 		StartFixtureName: "",
-	}}, &staticConfig{
-		runHook: func(context.Context) (func(context.Context) error, error) {
+	}}, newStaticConfig(0, Delegate{
+		RunHook: func(context.Context) (func(context.Context) error, error) {
 			called = true
 			return nil, nil
 		},
-	}, localBundle, []*testing.TestInstance{{
+	}), localBundle, []*testing.TestInstance{{
 		Name: "pkg.Test",
 		Func: func(context.Context, *testing.State) {},
 	}}); err != nil {
@@ -845,7 +845,7 @@ func TestRunList(t *gotesting.T) {
 	// BundleListTestsMode should result in tests being JSON-marshaled to stdout.
 	stdin := newBufferWithArgs(t, &jsonprotocol.BundleArgs{Mode: jsonprotocol.BundleListTestsMode, ListTests: &jsonprotocol.BundleListTestsArgs{}})
 	stdout := &bytes.Buffer{}
-	if status := run(context.Background(), nil, stdin, stdout, &bytes.Buffer{}, &staticConfig{}, localBundle); status != statusSuccess {
+	if status := run(context.Background(), nil, stdin, stdout, &bytes.Buffer{}, newStaticConfig(0, Delegate{}), localBundle); status != statusSuccess {
 		t.Fatalf("run() returned status %v; want %v", status, statusSuccess)
 	}
 	if stdout.String() != exp.String() {
@@ -855,7 +855,7 @@ func TestRunList(t *gotesting.T) {
 	// The -dumptests command-line flag should do the same thing.
 	clArgs := []string{"-dumptests"}
 	stdout.Reset()
-	if status := run(context.Background(), clArgs, &bytes.Buffer{}, stdout, &bytes.Buffer{}, &staticConfig{}, localBundle); status != statusSuccess {
+	if status := run(context.Background(), clArgs, &bytes.Buffer{}, stdout, &bytes.Buffer{}, newStaticConfig(0, Delegate{}), localBundle); status != statusSuccess {
 		t.Fatalf("run(%v) returned status %v; want %v", clArgs, status, statusSuccess)
 	}
 	if stdout.String() != exp.String() {
@@ -901,7 +901,7 @@ func TestRunListWithDep(t *gotesting.T) {
 	// BundleListTestsMode should result in tests being JSON-marshaled to stdout.
 	stdin := newBufferWithArgs(t, &args)
 	stdout := &bytes.Buffer{}
-	if status := run(context.Background(), nil, stdin, stdout, &bytes.Buffer{}, &staticConfig{}, localBundle); status != statusSuccess {
+	if status := run(context.Background(), nil, stdin, stdout, &bytes.Buffer{}, newStaticConfig(0, Delegate{}), localBundle); status != statusSuccess {
 		t.Fatalf("run() returned status %v; want %v", status, statusSuccess)
 	}
 	var ts []jsonprotocol.EntityWithRunnabilityInfo
@@ -943,7 +943,7 @@ func TestRunListFixtures(t *gotesting.T) {
 	// BundleListFixturesMode should output JSON-marshaled fixtures to stdout.
 	stdin := newBufferWithArgs(t, &jsonprotocol.BundleArgs{Mode: jsonprotocol.BundleListFixturesMode})
 	stdout := &bytes.Buffer{}
-	if status := run(context.Background(), nil, stdin, stdout, &bytes.Buffer{}, &staticConfig{}, localBundle); status != statusSuccess {
+	if status := run(context.Background(), nil, stdin, stdout, &bytes.Buffer{}, newStaticConfig(0, Delegate{}), localBundle); status != statusSuccess {
 		t.Fatalf("run() = %v, want %v", status, statusSuccess)
 	}
 
@@ -973,7 +973,7 @@ func TestRunRegistrationError(t *gotesting.T) {
 	testing.AddTestInstance(&testing.TestInstance{Name: name, Func: testFunc})
 
 	stdin := newBufferWithArgs(t, &jsonprotocol.BundleArgs{Mode: jsonprotocol.BundleListTestsMode, ListTests: &jsonprotocol.BundleListTestsArgs{}})
-	if status := run(context.Background(), nil, stdin, ioutil.Discard, ioutil.Discard, &staticConfig{}, localBundle); status != statusBadTests {
+	if status := run(context.Background(), nil, stdin, ioutil.Discard, ioutil.Discard, newStaticConfig(0, Delegate{}), localBundle); status != statusBadTests {
 		t.Errorf("run() with bad test returned status %v; want %v", status, statusBadTests)
 	}
 }
@@ -991,7 +991,7 @@ func TestTestsToRunSortTests(t *gotesting.T) {
 	testing.AddTestInstance(&testing.TestInstance{Name: test3, Func: testFunc})
 	testing.AddTestInstance(&testing.TestInstance{Name: test1, Func: testFunc})
 
-	tests, err := testsToRun(&staticConfig{}, nil)
+	tests, err := testsToRun(newStaticConfig(0, Delegate{}), nil)
 	if err != nil {
 		t.Fatal("testsToRun failed: ", err)
 	}
@@ -1018,7 +1018,7 @@ func TestTestsToRunTestTimeouts(t *gotesting.T) {
 	testing.AddTestInstance(&testing.TestInstance{Name: name1, Func: testFunc, Timeout: customTimeout})
 	testing.AddTestInstance(&testing.TestInstance{Name: name2, Func: testFunc})
 
-	tests, err := testsToRun(&staticConfig{defaultTestTimeout: defaultTimeout}, nil)
+	tests, err := testsToRun(newStaticConfig(defaultTimeout, Delegate{}), nil)
 	if err != nil {
 		t.Fatal("testsToRun failed: ", err)
 	}

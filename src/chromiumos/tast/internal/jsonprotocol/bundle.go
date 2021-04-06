@@ -140,6 +140,43 @@ func (a *HardwareFeaturesJSON) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
+// DeviceConfigIdsJSON is a wrapper class for protocol.DeviceConfigIds to facilitate marshalling/unmarshalling.
+type DeviceConfigIdsJSON struct {
+	// Proto contains the device type information about DUT.
+	// Marshaling and unmarshaling of this field is handled in MarshalJSON/UnmarshalJSON
+	// respectively.
+	Proto *protocol.DeviceConfigIds `json:"-"`
+}
+
+// MarshalJSON marshals the protocol.DeviceConfigIds struct into JSON.
+func (a *DeviceConfigIdsJSON) MarshalJSON() ([]byte, error) {
+	if a.Proto == nil {
+		return []byte(`null`), nil
+	}
+	bin, err := proto.Marshal(a.Proto)
+	if err != nil {
+		return nil, err
+	}
+	return json.Marshal(bin)
+}
+
+// UnmarshalJSON unmarshals JSON blob for protocol.DeviceConfigIds.
+func (a *DeviceConfigIdsJSON) UnmarshalJSON(b []byte) error {
+	var aux []byte
+	if err := json.Unmarshal(b, &aux); err != nil {
+		return err
+	}
+	if len(aux) == 0 {
+		return nil
+	}
+	var ids protocol.DeviceConfigIds
+	if err := proto.Unmarshal(aux, &ids); err != nil {
+		return err
+	}
+	a.Proto = &ids
+	return nil
+}
+
 // FeatureArgs includes all the feature related arguments.
 type FeatureArgs struct {
 	// TestVars contains names and values of runtime variables used to pass out-of-band data to tests.
@@ -166,6 +203,10 @@ type FeatureArgs struct {
 	// Marshaling and unmarshaling of this field is handled in MarshalJSON/UnmarshalJSON
 	// respectively.
 	HardwareFeatures HardwareFeaturesJSON
+	// DeviceConfigIds contains labels that identify DUT's device type.
+	// Marshaling and unmarshaling of this field is handled in MarshalJSON/UnmarshalJSON
+	// respectively.
+	DeviceConfigIds DeviceConfigIdsJSON
 }
 
 // Features returns protocol.Features to be used to check test dependencies.
@@ -183,6 +224,7 @@ func (a *FeatureArgs) Features() *protocol.Features {
 		Hardware: &protocol.HardwareFeatures{
 			DeprecatedDeviceConfig: a.DeviceConfig.Proto,
 			HardwareFeatures:       a.HardwareFeatures.Proto,
+			DeviceConfigIds:        a.DeviceConfigIds.Proto,
 		},
 		Vars:             vars,
 		MaybeMissingVars: a.MaybeMissingVars,

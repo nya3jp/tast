@@ -33,14 +33,21 @@ func D(conds ...Condition) Deps {
 // idRegexp is the pattern that the given model/platform ID names should match with.
 var idRegexp = regexp.MustCompile(`^[a-z0-9_-]+$`)
 
-// modelListed returns whether the model represented by a device.Config is listed in
-// the given list of names or not.
-func modelListed(dc *device.Config, names ...string) (bool, error) {
-	if dc == nil || dc.Id == nil || dc.Id.ModelId == nil {
-		return false, errors.New("device.Config does not have ModelId")
+// modelListed returns whether the model represented by HardwareFeatures is listed
+// in the given list of names or not.
+func modelListed(f *protocol.HardwareFeatures, names ...string) (bool, error) {
+	var m string
+	if f.DeviceConfigIds != nil {
+		m = f.DeviceConfigIds.Model
+	} else {
+		dc := f.GetDeprecatedDeviceConfig()
+		if dc == nil || dc.Id == nil || dc.Id.ModelId == nil {
+			return false, errors.New("device.Config does not have ModelId")
+		}
+		m = dc.Id.ModelId.Value
 	}
 	// Remove the suffix _signed since it is not a part of a model name.
-	modelID := strings.TrimSuffix(strings.ToLower(dc.Id.ModelId.Value), "_signed")
+	modelID := strings.TrimSuffix(strings.ToLower(m), "_signed")
 	for _, name := range names {
 		if name == modelID {
 			return true, nil
@@ -49,13 +56,20 @@ func modelListed(dc *device.Config, names ...string) (bool, error) {
 	return false, nil
 }
 
-// platformListed returns whether the platform represented by a device.Config is listed in
-// the given list of names or not.
-func platformListed(dc *device.Config, names ...string) (bool, error) {
-	if dc == nil || dc.Id == nil || dc.Id.PlatformId == nil {
-		return false, errors.New("device.Config does not have PlatformId")
+// platformListed returns whether the platform represented by a protocol.HardwareFeatures
+// is listed in the given list of names or not.
+func platformListed(f *protocol.HardwareFeatures, names ...string) (bool, error) {
+	var p string
+	if f.DeviceConfigIds != nil {
+		p = f.DeviceConfigIds.Platform
+	} else {
+		dc := f.GetDeprecatedDeviceConfig()
+		if dc == nil || dc.Id == nil || dc.Id.PlatformId == nil {
+			return false, errors.New("device.Config does not have PlatformId")
+		}
+		p = dc.Id.PlatformId.Value
 	}
-	platformID := strings.ToLower(dc.Id.PlatformId.Value)
+	platformID := strings.ToLower(p)
 	for _, name := range names {
 		if name == platformID {
 			return true, nil
@@ -85,7 +99,7 @@ func Model(names ...string) Condition {
 		}
 	}
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) error {
-		listed, err := modelListed(f.GetDeprecatedDeviceConfig(), names...)
+		listed, err := modelListed(f, names...)
 		if err != nil {
 			return err
 		}
@@ -106,7 +120,7 @@ func SkipOnModel(names ...string) Condition {
 		}
 	}
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) error {
-		listed, err := modelListed(f.GetDeprecatedDeviceConfig(), names...)
+		listed, err := modelListed(f, names...)
 		if err != nil {
 			return err
 		}
@@ -127,7 +141,7 @@ func Platform(names ...string) Condition {
 		}
 	}
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) error {
-		listed, err := platformListed(f.GetDeprecatedDeviceConfig(), names...)
+		listed, err := platformListed(f, names...)
 		if err != nil {
 			return err
 		}
@@ -148,7 +162,7 @@ func SkipOnPlatform(names ...string) Condition {
 		}
 	}
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) error {
-		listed, err := platformListed(f.GetDeprecatedDeviceConfig(), names...)
+		listed, err := platformListed(f, names...)
 		if err != nil {
 			return err
 		}
@@ -586,7 +600,7 @@ func ForceDischarge() Condition {
 		if !hasBattery {
 			return errors.New("DUT does not have a battery")
 		}
-		doesNotSupportForceDischarge, err := modelListed(f.GetDeprecatedDeviceConfig(), modelsWithoutForceDischargeSupport...)
+		doesNotSupportForceDischarge, err := modelListed(f, modelsWithoutForceDischargeSupport...)
 		if err != nil {
 			return err
 		}
@@ -600,7 +614,7 @@ func ForceDischarge() Condition {
 // NoForceDischarge is a complementary condition of ForceDischarge.
 func NoForceDischarge() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) error {
-		doesNotSupportForceDischarge, err := modelListed(f.GetDeprecatedDeviceConfig(), modelsWithoutForceDischargeSupport...)
+		doesNotSupportForceDischarge, err := modelListed(f, modelsWithoutForceDischargeSupport...)
 		if err != nil {
 			return err
 		}

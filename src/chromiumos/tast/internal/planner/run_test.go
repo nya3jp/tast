@@ -1204,6 +1204,56 @@ func TestRunFixtureVars(t *gotesting.T) {
 	runTestsAndReadAll(t, tests, cfg)
 }
 
+func TestRunFixtureContext(t *gotesting.T) {
+	testDone := make(chan struct{})
+	// TestContext
+	fixt := &testing.Fixture{
+		Name: "fixt",
+		Impl: newFakeFixture(withPreTest(func(ctx context.Context, s *testing.FixtTestState) {
+			t.Log("PreTest")
+			if err := s.TestContext().Err(); err != nil {
+				t.Errorf("s.TestContext() is canceled: %v", err)
+			}
+			go func() {
+				testDone <- <-s.TestContext().Done()
+			}()
+		}), withPostTest(func(ctx context.Context, s *testing.FixtTestState) {
+			t.Log("PostTest")
+			if err := s.TestContext().Err(); err != nil {
+				t.Errorf("s.TestContext() is canceled: %v", err)
+			}
+		}), withTearDown(func(ctx context.Context, s *testing.FixtState) {
+			t.Log("TearDown")
+			// TestContext must be cancelled as soon as PostTest finishes.
+			<-testDone
+		})),
+	}
+	tests := []*testing.TestInstance{{
+		Name:    "pkg.Test",
+		Fixture: "fixt",
+		Timeout: 1 * time.Minute,
+		Func:    func(ctx context.Context, s *testing.State) {},
+	}}
+
+	cfg := &Config{
+		Fixtures: map[string]*testing.Fixture{fixt.Name: fixt},
+	}
+	msgs := runTestsAndReadAll(t, tests, cfg)
+	t.Logf("msgs: %v", msgs)
+
+	// want := []proto.Message{
+	// 	// pkg.Test0 simply runs.
+	// 	&protocol.EntityStartEvent{Entity: tests[0].EntityProto()},
+	// 	&protocol.EntityLogEvent{EntityName: tests[0].Name, Text: "Test 0"},
+	// 	&protocol.EntityEndEvent{EntityName: tests[0].Name},
+	// 	&protocol.EntityStartEvent{Entity: fixt.EntityProto()},
+	// }
+	// if diff := cmp.Diff(msgs, want); diff != "" {
+	// 	t.Error("Output mismatch (-got +want):\n", diff)
+	// }
+
+}
+
 func TestRunPrecondition(t *gotesting.T) {
 	type data struct{}
 	preData := &data{}

@@ -272,6 +272,7 @@ func TestFixtureStackMarkDirty(t *gotesting.T) {
 func TestFixtureStackContext(t *gotesting.T) {
 	const fixtureName = "fixt"
 	serviceDeps := []string{"svc1", "svc2"}
+	testSWDeps := []string{"sw1", "sw2"}
 
 	ctx := context.Background()
 
@@ -301,6 +302,21 @@ func TestFixtureStackContext(t *gotesting.T) {
 		}
 	}
 
+	verifyTestContext := func(t *gotesting.T, ctx context.Context) {
+		t.Helper()
+		outDir, ok := testcontext.OutDir(ctx)
+		if !ok {
+			t.Error("OutDir not available")
+		} else if outDir != testOutDir {
+			t.Errorf("OutDir = %q; want %q", outDir, testOutDir)
+		}
+		if sws, ok := testcontext.SoftwareDeps(ctx); !ok {
+			t.Error("SoftwareDeps not available")
+		} else if diff := cmp.Diff(sws, testSWDeps); diff != "" {
+			t.Errorf("SoftwareDeps mismatch (-got +want):\n%s", diff)
+		}
+	}
+
 	ff := newFakeFixture(
 		withSetUp(func(ctx context.Context, s *testing.FixtState) interface{} {
 			t.Run("SetUp", func(t *gotesting.T) {
@@ -318,11 +334,13 @@ func TestFixtureStackContext(t *gotesting.T) {
 		withPreTest(func(ctx context.Context, s *testing.FixtTestState) {
 			t.Run("PreTest", func(t *gotesting.T) {
 				verifyContext(t, ctx, testOutDir)
+				verifyTestContext(t, s.TestContext())
 			})
 		}),
 		withPostTest(func(ctx context.Context, s *testing.FixtTestState) {
 			t.Run("PostTest", func(t *gotesting.T) {
 				verifyContext(t, ctx, testOutDir)
+				verifyTestContext(t, s.TestContext())
 			})
 		}),
 		withTearDown(func(ctx context.Context, s *testing.FixtState) {
@@ -338,7 +356,7 @@ func TestFixtureStackContext(t *gotesting.T) {
 		ServiceDeps: serviceDeps,
 	}
 
-	troot := testing.NewTestEntityRoot(&testing.TestInstance{}, &testing.RuntimeConfig{OutDir: testOutDir}, nil)
+	troot := testing.NewTestEntityRoot(&testing.TestInstance{SoftwareDeps: testSWDeps}, &testing.RuntimeConfig{OutDir: testOutDir}, nil)
 
 	if err := stack.Push(ctx, fixt); err != nil {
 		t.Fatal("Push: ", err)

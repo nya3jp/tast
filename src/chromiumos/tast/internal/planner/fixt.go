@@ -462,8 +462,8 @@ func (f *statefulFixture) RunPreTest(ctx context.Context, troot *testing.TestEnt
 		return fmt.Errorf("BUG: RunPreTest called for a %v fixture", status)
 	}
 
-	s := troot.NewFixtTestState()
-	ctx = f.newTestContext(ctx, troot, s)
+	ctx = f.newTestContext(ctx, troot, troot.Logger())
+	s := troot.NewFixtTestState(ctx)
 	name := fmt.Sprintf("%s:PreTest", f.fixt.Name)
 
 	return safeCall(ctx, name, f.fixt.PreTestTimeout, defaultGracePeriod, errorOnPanic(s), func(ctx context.Context) {
@@ -476,8 +476,8 @@ func (f *statefulFixture) RunPostTest(ctx context.Context, troot *testing.TestEn
 		return fmt.Errorf("BUG: RunPostTest called for a %v fixture", status)
 	}
 
-	s := troot.NewFixtTestState()
-	ctx = f.newTestContext(ctx, troot, s)
+	ctx = f.newTestContext(ctx, troot, troot.Logger())
+	s := troot.NewFixtTestState(ctx)
 	name := fmt.Sprintf("%s:PostTest", f.fixt.Name)
 
 	return safeCall(ctx, name, f.fixt.PostTestTimeout, defaultGracePeriod, errorOnPanic(s), func(ctx context.Context) {
@@ -486,7 +486,7 @@ func (f *statefulFixture) RunPostTest(ctx context.Context, troot *testing.TestEn
 }
 
 // newTestContext returns a Context to be passed to PreTest/PostTest of a fixture.
-func (f *statefulFixture) newTestContext(ctx context.Context, troot *testing.TestEntityRoot, s *testing.FixtTestState) context.Context {
+func (f *statefulFixture) newTestContext(ctx context.Context, troot *testing.TestEntityRoot, logger func(msg string)) context.Context {
 	ce := &testcontext.CurrentEntity{
 		// OutDir is from the test so that test hooks can save files just like tests.
 		OutDir: troot.OutDir(),
@@ -496,7 +496,7 @@ func (f *statefulFixture) newTestContext(ctx context.Context, troot *testing.Tes
 		// SoftwareDeps is unavailable because fixtures can't declare software dependencies.
 		HasSoftwareDeps: false,
 	}
-	return testing.NewContext(ctx, ce, func(msg string) { s.Log(msg) })
+	return testing.NewContext(ctx, ce, logger)
 }
 
 // rewriteErrorsForTest rewrites error messages reported by a fixture to be

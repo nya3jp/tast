@@ -318,11 +318,13 @@ func TestFixtureStackContext(t *gotesting.T) {
 		withPreTest(func(ctx context.Context, s *testing.FixtTestState) {
 			t.Run("PreTest", func(t *gotesting.T) {
 				verifyContext(t, ctx, testOutDir)
+				verifyContext(t, s.TestContext(), testOutDir)
 			})
 		}),
 		withPostTest(func(ctx context.Context, s *testing.FixtTestState) {
 			t.Run("PostTest", func(t *gotesting.T) {
 				verifyContext(t, ctx, testOutDir)
+				verifyContext(t, s.TestContext(), testOutDir)
 			})
 		}),
 		withTearDown(func(ctx context.Context, s *testing.FixtState) {

@@ -19,7 +19,6 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	testpb "go.chromium.org/chromiumos/config/go/api/test/metadata/v1"
-	"go.chromium.org/chromiumos/infra/proto/go/device"
 
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/testing/hwdep"
@@ -69,11 +68,9 @@ func features(availableSWs []string, model string) *protocol.Features {
 			Unavailable: unavailableSWs,
 		},
 		Hardware: &protocol.HardwareFeatures{
-			DeprecatedDeviceConfig: &device.Config{
-				Id: &device.ConfigId{
-					ModelId: &device.ModelId{
-						Value: model,
-					},
+			DeprecatedDeviceConfig: &protocol.DeprecatedDeviceConfig{
+				Id: &protocol.DeprecatedConfigId{
+					Model: model,
 				},
 			},
 		},
@@ -673,11 +670,9 @@ func TestHardwareDeps(t *gotesting.T) {
 	fs := &protocol.Features{
 		CheckDeps: true,
 		Hardware: &protocol.HardwareFeatures{
-			DeprecatedDeviceConfig: &device.Config{
-				Id: &device.ConfigId{
-					ModelId: &device.ModelId{
-						Value: "samus",
-					},
+			DeprecatedDeviceConfig: &protocol.DeprecatedDeviceConfig{
+				Id: &protocol.DeprecatedConfigId{
+					Model: "samus",
 				},
 			},
 		},

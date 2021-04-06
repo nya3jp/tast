@@ -15,9 +15,9 @@ import (
 )
 
 // RunRPCServer runs the bundle as an RPC server.
-func RunRPCServer(r io.Reader, w io.Writer, svcs []*testing.Service) error {
-	return rpc.RunServer(r, w, svcs, func(srv *grpc.Server, req *protocol.HandshakeRequest) error {
-		registerFixtureService(srv)
+func RunRPCServer(r io.Reader, w io.Writer, reg *testing.Registry) error {
+	return rpc.RunServer(r, w, reg.AllServices(), func(srv *grpc.Server, req *protocol.HandshakeRequest) error {
+		registerFixtureService(srv, reg)
 		return nil
 	})
 }

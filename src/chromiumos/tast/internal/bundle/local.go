@@ -8,6 +8,8 @@ import (
 	"context"
 	"io"
 	"time"
+
+	"chromiumos/tast/internal/testing"
 )
 
 const (
@@ -17,7 +19,7 @@ const (
 // Local implements the main function for local test bundles.
 //
 // Main function of local test bundles should call LocalDefault instead.
-func Local(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, d Delegate) int {
-	cfg := newStaticConfig(localTestTimeout, d)
+func Local(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, reg *testing.Registry, d Delegate) int {
+	cfg := newStaticConfig(reg, localTestTimeout, d)
 	return run(context.Background(), clArgs, stdin, stdout, stderr, cfg, localBundle)
 }

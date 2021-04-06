@@ -29,3 +29,8 @@ executed at `/usr/local/bin/abort` to produce
 written by Chrome. The minidump length "519824" starting at 0x51C was changed to
 "002781" to reflect the minidump data's truncation to (0x1000 - 0x523 = 2781)
 bytes.
+
+## chrome.20210406.155226.62533.9042.dmp
+
+`chrome.20210406.155226.62533.9042.dmp` was produced by visiting chrome:crash
+on betty VM.

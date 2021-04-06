@@ -462,7 +462,7 @@ func (f *statefulFixture) RunPreTest(ctx context.Context, troot *testing.TestEnt
 		return fmt.Errorf("BUG: RunPreTest called for a %v fixture", status)
 	}
 
-	s := troot.NewFixtTestState()
+	s := troot.NewFixtTestState(ctx)
 	ctx = f.newTestContext(ctx, troot, s)
 	name := fmt.Sprintf("%s:PreTest", f.fixt.Name)
 
@@ -476,7 +476,7 @@ func (f *statefulFixture) RunPostTest(ctx context.Context, troot *testing.TestEn
 		return fmt.Errorf("BUG: RunPostTest called for a %v fixture", status)
 	}
 
-	s := troot.NewFixtTestState()
+	s := troot.NewFixtTestState(ctx)
 	ctx = f.newTestContext(ctx, troot, s)
 	name := fmt.Sprintf("%s:PostTest", f.fixt.Name)
 

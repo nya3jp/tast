@@ -24,6 +24,9 @@ type Config struct {
 	Logger *logging.Logger
 	// SymbolDir contains a directory used to store symbol files.
 	SymbolDir string
+	// BuilderPath, for example, "betty-release/R91-13892.0.0", identifies the location
+	// of debug symbols in gs://chromeos-image-archive.
+	BuilderPath string
 	// BuildRoot contains build root (e.g. "/build/lumpy") that produced the system image.
 	// If empty, inferred by extracting the board name from the minidump.
 	// The build root is only used if a builder path can't be extracted from the minidump.
@@ -49,11 +52,22 @@ func SymbolizeCrash(path string, w io.Writer, cfg Config) error { // NOLINT
 
 	ri, err := getMinidumpReleaseInfo(dumpPath)
 	if err != nil {
-		return fmt.Errorf("failed to get release info from %v: %v", dumpPath, err)
+		if err == breakpad.ErrReleaseInfoNotFound {
+			cfg.Logger.Debug(err)
+			ri = newEmptyReleaseInfo()
+		} else {
+			return fmt.Errorf("failed to get release info from %v: %v", dumpPath, err)
+		}
+	}
+	if ri.isEmpty() && cfg.BuildRoot == "" && cfg.BuilderPath == "" {
+		return errors.New("minidump does not contain release info, please supply --builderpath or --buildroot parameter to fix this error")
 	}
 	cfg.Logger.Debugf("Got board %q and builder path %q from minidump", ri.board, ri.builderPath)
 	if cfg.BuildRoot == "" {
 		cfg.BuildRoot = filepath.Join("/build", ri.board)
+	}
+	if cfg.BuilderPath == "" {
+		cfg.BuilderPath = ri.builderPath
 	}
 
 	cfg.Logger.Debugf("Walking %v with symbol dir %v", dumpPath, cfg.SymbolDir)
@@ -65,8 +79,8 @@ func SymbolizeCrash(path string, w io.Writer, cfg Config) error { // NOLINT
 
 	created := 0
 	if len(missing) > 0 {
-		if ri.builderPath != "" {
-			url := breakpad.GetSymbolsURL(ri.builderPath)
+		if cfg.BuilderPath != "" {
+			url := breakpad.GetSymbolsURL(cfg.BuilderPath)
 			cfg.Logger.Debugf("Extracting %v symbol file(s) from %v", len(missing), url)
 			if created, err = breakpad.DownloadSymbols(url, cfg.SymbolDir, missing); err != nil {
 				// Keep going so we can print what we have.

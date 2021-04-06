@@ -23,7 +23,7 @@ func TestLocalBadTest(t *gotesting.T) {
 	defer restore()
 	testing.AddTest(&testing.Test{})
 
-	args := jsonprotocol.BundleArgs{Mode: jsonprotocol.BundleRunTestsMode}
+	args := jsonprotocol.BundleArgs{Mode: jsonprotocol.BundleRunTestsMode, RunTests: &jsonprotocol.BundleRunTestsArgs{}}
 	stdin := newBufferWithArgs(t, &args)
 	stderr := bytes.Buffer{}
 	if status := Local(nil, stdin, &bytes.Buffer{}, &stderr, Delegate{}); status != statusBadTests {

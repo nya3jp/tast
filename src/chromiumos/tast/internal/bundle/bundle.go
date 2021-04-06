@@ -203,8 +203,8 @@ type staticConfig struct {
 	defaultTestTimeout time.Duration
 }
 
-func newArgsAndStaticConfig(defaultTestTimeout time.Duration, dataDir string, d Delegate) (*jsonprotocol.BundleArgs, *staticConfig) {
-	args := &jsonprotocol.BundleArgs{RunTests: &jsonprotocol.BundleRunTestsArgs{DataDir: dataDir}}
+func newArgsAndStaticConfig(defaultTestTimeout time.Duration, d Delegate) (*jsonprotocol.BundleArgs, *staticConfig) {
+	args := &jsonprotocol.BundleArgs{}
 	scfg := &staticConfig{
 		runHook: func(ctx context.Context) (func(context.Context) error, error) {
 			pd, ok := testcontext.PrivateDataFromContext(ctx)

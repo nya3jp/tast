@@ -208,9 +208,11 @@ func (r *TestEntityRoot) NewTestHookState() *TestHookState {
 }
 
 // NewFixtTestState creates a FixtTestState for a test.
-func (r *TestEntityRoot) NewFixtTestState() *FixtTestState {
+// ctx should have the same lifetime as the test, including PreTest and PostTest.
+func (r *TestEntityRoot) NewFixtTestState(ctx context.Context) *FixtTestState {
 	return &FixtTestState{
 		globalMixin: r.entityRoot.newGlobalMixin("", r.HasError()),
+		testCtx:     ctx,
 	}
 }
 
@@ -233,6 +235,11 @@ func (r *TestEntityRoot) SetPreValue(val interface{}) {
 // that should be included with the test results.
 func (r *TestEntityRoot) OutDir() string {
 	return r.entityRoot.cfg.OutDir
+}
+
+// Logger returns logger for the test entity.
+func (r *TestEntityRoot) Logger() func(string) {
+	return func(msg string) { r.entityRoot.out.Log(msg) }
 }
 
 // NewContext returns a context.Context to be used for the entity.
@@ -687,10 +694,18 @@ func (s *FixtState) OutDir() string {
 // FixtTestState is the state the framework passes to PreTest and PostTest.
 type FixtTestState struct {
 	*globalMixin
+	testCtx context.Context
 }
 
 // OutDir returns a directory into which the entity may place arbitrary files
 // that should be included with the entity results.
 func (s *FixtTestState) OutDir() string {
 	return s.entityRoot.cfg.OutDir
+}
+
+// TestContext returns context associated with the test.
+// It has the same lifetime as the test (including PreTest and PostTest), and
+// the same metadata as the ctx passed to PreTest and PostTest.
+func (s *FixtTestState) TestContext() context.Context {
+	return s.testCtx
 }

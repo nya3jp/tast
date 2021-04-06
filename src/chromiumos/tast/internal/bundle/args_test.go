@@ -14,9 +14,9 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/google/go-cmp/cmp"
 	configpb "go.chromium.org/chromiumos/config/go/api"
-	"go.chromium.org/chromiumos/infra/proto/go/device"
 
 	"chromiumos/tast/internal/jsonprotocol"
+	"chromiumos/tast/internal/protocol"
 )
 
 // newBufferWithArgs returns a bytes.Buffer containing the JSON representation of args.
@@ -82,12 +82,12 @@ func TestMarshal(t *testing.T) {
 		FeatureArgs: jsonprotocol.FeatureArgs{
 			AvailableSoftwareFeatures:   []string{"feature1"},
 			UnavailableSoftwareFeatures: []string{"feature2"},
-			DeviceConfig: jsonprotocol.DeviceConfigJSON{
-				Proto: &device.Config{
-					Id: &device.ConfigId{
-						PlatformId: &device.PlatformId{Value: "platformId"},
-						ModelId:    &device.ModelId{Value: "modelId"},
-						BrandId:    &device.BrandId{Value: "brandId"},
+			DeviceInfo: jsonprotocol.DeviceInfoJSON{
+				Proto: &protocol.DeviceInfo{
+					Ids: &protocol.ConfigIds{
+						Platform: "PlatformId",
+						Model:    "ModelId",
+						Brand:    "BrandId",
 					},
 				},
 			},
@@ -119,8 +119,8 @@ func TestMarshal(t *testing.T) {
 	if err := json.Unmarshal(b, &out); err != nil {
 		t.Fatal("Failed to unmarshal JSON: ", err)
 	}
-	if !proto.Equal(in.DeviceConfig.Proto, out.DeviceConfig.Proto) {
-		t.Errorf("DeviceConfig did not match: want %v, got %v", in.DeviceConfig.Proto, out.DeviceConfig.Proto)
+	if !proto.Equal(in.DeviceInfo.Proto, out.DeviceInfo.Proto) {
+		t.Errorf("DeviceInfo did not match: want %v, got %v", in.DeviceInfo.Proto, out.DeviceInfo.Proto)
 	}
 	if !proto.Equal(in.HardwareFeatures.Proto, out.HardwareFeatures.Proto) {
 		t.Errorf("HardwareFeatures did not match: want %v, got %v", in.HardwareFeatures.Proto, out.HardwareFeatures.Proto)

@@ -16,7 +16,6 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/google/go-cmp/cmp"
 	configpb "go.chromium.org/chromiumos/config/go/api"
-	"go.chromium.org/chromiumos/infra/proto/go/device"
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/fakerunner"
@@ -26,13 +25,13 @@ import (
 )
 
 // writeGetDUTInfoResult writes runner.RunnerGetDUTInfoResult to w.
-func writeGetDUTInfoResult(w io.Writer, avail, unavail []string, dc *device.Config, hf *configpb.HardwareFeatures, osVersion, defaultBuildArtifactsURL string) error {
+func writeGetDUTInfoResult(w io.Writer, avail, unavail []string, info *protocol.DeviceInfo, hf *configpb.HardwareFeatures, osVersion, defaultBuildArtifactsURL string) error {
 	res := jsonprotocol.RunnerGetDUTInfoResult{
 		SoftwareFeatures: &protocol.SoftwareFeatures{
 			Available:   avail,
 			Unavailable: unavail,
 		},
-		DeviceConfig:             dc,
+		DeviceInfo:               info,
 		HardwareFeatures:         hf,
 		OSVersion:                osVersion,
 		DefaultBuildArtifactsURL: defaultBuildArtifactsURL,
@@ -43,7 +42,7 @@ func writeGetDUTInfoResult(w io.Writer, avail, unavail []string, dc *device.Conf
 // checkRunnerTestDepsArgs calls featureArgsFromConfig using cfg and verifies
 // that it sets runner args as specified per checkDeps, avail, and unavail.
 func checkRunnerTestDepsArgs(t *testing.T, cfg *config.Config, state *config.State, checkDeps bool,
-	avail, unavail []string, dc *device.Config, hf *configpb.HardwareFeatures) {
+	avail, unavail []string, info *protocol.DeviceInfo, hf *configpb.HardwareFeatures) {
 	t.Helper()
 	args := jsonprotocol.RunnerArgs{
 		Mode: jsonprotocol.RunnerRunTestsMode,
@@ -60,8 +59,8 @@ func checkRunnerTestDepsArgs(t *testing.T, cfg *config.Config, state *config.Sta
 				CheckDeps:                   checkDeps,
 				AvailableSoftwareFeatures:   avail,
 				UnavailableSoftwareFeatures: unavail,
-				DeviceConfig: jsonprotocol.DeviceConfigJSON{
-					Proto: dc,
+				DeviceInfo: jsonprotocol.DeviceInfoJSON{
+					Proto: info,
 				},
 				HardwareFeatures: jsonprotocol.HardwareFeaturesJSON{
 					Proto: hf,
@@ -82,11 +81,11 @@ func TestGetDUTInfo(t *testing.T) {
 	// and dependencies should be checked.
 	avail := []string{"dep1", "dep2"}
 	unavail := []string{"dep3"}
-	dc := &device.Config{
-		Id: &device.ConfigId{
-			PlatformId: &device.PlatformId{Value: "platform-id"},
-			ModelId:    &device.ModelId{Value: "model-id"},
-			BrandId:    &device.BrandId{Value: "brand-id"},
+	info := &protocol.DeviceInfo{
+		Ids: &protocol.ConfigIds{
+			Platform: "platform_id",
+			Model:    "model_id",
+			Brand:    "brand_id",
 		},
 	}
 	hf := &configpb.HardwareFeatures{
@@ -113,7 +112,7 @@ func TestGetDUTInfo(t *testing.T) {
 			},
 		})
 
-		writeGetDUTInfoResult(stdout, avail, unavail, dc, hf, osVersion, defaultBuildArtifactsURL)
+		writeGetDUTInfoResult(stdout, avail, unavail, info, hf, osVersion, defaultBuildArtifactsURL)
 		return 0
 	}
 	td.Cfg.CheckTestDeps = true
@@ -125,7 +124,7 @@ func TestGetDUTInfo(t *testing.T) {
 	if err := GetDUTInfo(context.Background(), &td.Cfg, &td.State, cc); err != nil {
 		t.Fatalf("GetDUTInfo(%+v) failed: %v", td.Cfg, err)
 	}
-	checkRunnerTestDepsArgs(t, &td.Cfg, &td.State, true, avail, unavail, dc, hf)
+	checkRunnerTestDepsArgs(t, &td.Cfg, &td.State, true, avail, unavail, info, hf)
 
 	if td.State.OSVersion != osVersion {
 		t.Errorf("Unexpected OS version: got %+v, want %+v", td.State.OSVersion, osVersion)
@@ -136,14 +135,14 @@ func TestGetDUTInfo(t *testing.T) {
 	}
 
 	// Make sure device-config.txt is created.
-	if b, err := ioutil.ReadFile(filepath.Join(td.Cfg.ResDir, "device-config.txt")); err != nil {
-		t.Error("Failed to read device-config.txt: ", err)
+	if b, err := ioutil.ReadFile(filepath.Join(td.Cfg.ResDir, "device-info.txt")); err != nil {
+		t.Error("Failed to read device-info.txt: ", err)
 	} else {
-		var readDc device.Config
-		if err := proto.UnmarshalText(string(b), &readDc); err != nil {
+		var readDi protocol.DeviceInfo
+		if err := proto.UnmarshalText(string(b), &readDi); err != nil {
 			t.Error("Failed to unmarshal device config: ", err)
-		} else if !proto.Equal(dc, &readDc) {
-			t.Errorf("Unexpected device config: got %+v, want %+v", &readDc, dc)
+		} else if !proto.Equal(info, &readDi) {
+			t.Errorf("Unexpected device config: got %+v, want %+v", &readDi, info)
 		}
 	}
 
@@ -153,9 +152,9 @@ func TestGetDUTInfo(t *testing.T) {
 	}
 }
 
-func TestGetDUTInfoNoDeviceConfig(t *testing.T) {
-	// If local_test_runner is older, it may not return device.Config even if it is requested.
-	// For backward compatibility, it is not handled as an error case, but the device-config.txt
+func TestGetDUTInfoNoDeviceInfo(t *testing.T) {
+	// If local_test_runner is older, it may not return protocol.DeviceInfo even if it is requested.
+	// For backward compatibility, it is not handled as an error case, but the device-info.txt
 	// won't be created.
 	td := fakerunner.NewLocalTestData(t)
 	defer td.Close()
@@ -184,8 +183,8 @@ func TestGetDUTInfoNoDeviceConfig(t *testing.T) {
 	}
 
 	// Make sure device-config.txt is created.
-	if _, err := os.Stat(filepath.Join(td.Cfg.ResDir, deviceConfigFile)); err == nil || !os.IsNotExist(err) {
-		t.Error("Unexpected device config file: ", err)
+	if _, err := os.Stat(filepath.Join(td.Cfg.ResDir, deviceInfoFile)); err == nil || !os.IsNotExist(err) {
+		t.Error("Unexpected device info file: ", err)
 	}
 }
 

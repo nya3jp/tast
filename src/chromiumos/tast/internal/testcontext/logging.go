@@ -9,11 +9,12 @@ import (
 	"fmt"
 )
 
+// loggerKey is the type of the key used for attaching a LoggerFunc to a
+// context.Context.
+type loggerKey struct{}
+
 // LoggerFunc is the type of a function to emit log messages.
 type LoggerFunc = func(msg string)
-
-// loggerKey is the key type for LoggerFunc attached to context.Context.
-type loggerKey struct{}
 
 // WithLogger creates a context associated with logger. The returned context can
 // be used to call Log/Logf.

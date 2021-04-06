@@ -26,7 +26,7 @@ import (
 )
 
 // writeGetDUTInfoResult writes runner.RunnerGetDUTInfoResult to w.
-func writeGetDUTInfoResult(w io.Writer, avail, unavail []string, dc *device.Config, hf *configpb.HardwareFeatures, osVersion, defaultBuildArtifactsURL string) error {
+func writeGetDUTInfoResult(w io.Writer, avail, unavail []string, dc *device.Config, hf *configpb.HardwareFeatures, ids *protocol.DeviceConfigIds, osVersion, defaultBuildArtifactsURL string) error {
 	res := jsonprotocol.RunnerGetDUTInfoResult{
 		SoftwareFeatures: &protocol.SoftwareFeatures{
 			Available:   avail,
@@ -34,6 +34,7 @@ func writeGetDUTInfoResult(w io.Writer, avail, unavail []string, dc *device.Conf
 		},
 		DeviceConfig:             dc,
 		HardwareFeatures:         hf,
+		DeviceConfigIds:          ids,
 		OSVersion:                osVersion,
 		DefaultBuildArtifactsURL: defaultBuildArtifactsURL,
 	}
@@ -43,7 +44,7 @@ func writeGetDUTInfoResult(w io.Writer, avail, unavail []string, dc *device.Conf
 // checkRunnerTestDepsArgs calls featureArgsFromConfig using cfg and verifies
 // that it sets runner args as specified per checkDeps, avail, and unavail.
 func checkRunnerTestDepsArgs(t *testing.T, cfg *config.Config, state *config.State, checkDeps bool,
-	avail, unavail []string, dc *device.Config, hf *configpb.HardwareFeatures) {
+	avail, unavail []string, dc *device.Config, hf *configpb.HardwareFeatures, ids *protocol.DeviceConfigIds) {
 	t.Helper()
 	args := jsonprotocol.RunnerArgs{
 		Mode: jsonprotocol.RunnerRunTestsMode,
@@ -65,6 +66,9 @@ func checkRunnerTestDepsArgs(t *testing.T, cfg *config.Config, state *config.Sta
 				},
 				HardwareFeatures: jsonprotocol.HardwareFeaturesJSON{
 					Proto: hf,
+				},
+				DeviceConfigIds: jsonprotocol.DeviceConfigIdsJSON{
+					Proto: ids,
 				},
 			},
 		},
@@ -102,6 +106,11 @@ func TestGetDUTInfo(t *testing.T) {
 			EcType:  configpb.HardwareFeatures_EmbeddedController_EC_CHROME,
 		},
 	}
+	ids := &protocol.DeviceConfigIds{
+		Platform: "platform_id",
+		Model:    "model_id",
+		Brand:    "brand_id",
+	}
 	osVersion := "octopus-release/R86-13312.0.2020_07_02_1108"
 	defaultBuildArtifactsURL := "gs://chromeos-image-archive/octopus-release/R86-13312.0.2020_07_02_1108/"
 	td.RunFunc = func(args *jsonprotocol.RunnerArgs, stdout, stderr io.Writer) (status int) {
@@ -113,7 +122,7 @@ func TestGetDUTInfo(t *testing.T) {
 			},
 		})
 
-		writeGetDUTInfoResult(stdout, avail, unavail, dc, hf, osVersion, defaultBuildArtifactsURL)
+		writeGetDUTInfoResult(stdout, avail, unavail, dc, hf, ids, osVersion, defaultBuildArtifactsURL)
 		return 0
 	}
 	td.Cfg.CheckTestDeps = true
@@ -125,7 +134,7 @@ func TestGetDUTInfo(t *testing.T) {
 	if err := GetDUTInfo(context.Background(), &td.Cfg, &td.State, cc); err != nil {
 		t.Fatalf("GetDUTInfo(%+v) failed: %v", td.Cfg, err)
 	}
-	checkRunnerTestDepsArgs(t, &td.Cfg, &td.State, true, avail, unavail, dc, hf)
+	checkRunnerTestDepsArgs(t, &td.Cfg, &td.State, true, avail, unavail, dc, hf, ids)
 
 	if td.State.OSVersion != osVersion {
 		t.Errorf("Unexpected OS version: got %+v, want %+v", td.State.OSVersion, osVersion)
@@ -171,7 +180,7 @@ func TestGetDUTInfoNoDeviceConfig(t *testing.T) {
 
 		// Note: if both avail/unavail are empty, it is handled as an error.
 		// Add fake here to avoid it.
-		writeGetDUTInfoResult(stdout, []string{"dep1"}, nil, nil, nil, "", "")
+		writeGetDUTInfoResult(stdout, []string{"dep1"}, nil, nil, nil, nil, "", "")
 		return 0
 	}
 	td.Cfg.CheckTestDeps = true
@@ -202,7 +211,7 @@ func TestGetDUTInfoNoCheckTestDeps(t *testing.T) {
 	if err := GetDUTInfo(context.Background(), &td.Cfg, &td.State, cc); err != nil {
 		t.Fatalf("GetDUTInfo(%+v) failed: %v", td.Cfg, err)
 	}
-	checkRunnerTestDepsArgs(t, &td.Cfg, &td.State, false, nil, nil, nil, nil)
+	checkRunnerTestDepsArgs(t, &td.Cfg, &td.State, false, nil, nil, nil, nil, nil)
 }
 
 func TestGetSoftwareFeaturesNoFeatures(t *testing.T) {
@@ -216,7 +225,7 @@ func TestGetSoftwareFeaturesNoFeatures(t *testing.T) {
 				RequestDeviceConfig: true,
 			},
 		})
-		writeGetDUTInfoResult(stdout, []string{}, []string{}, nil, nil, "", "")
+		writeGetDUTInfoResult(stdout, []string{}, []string{}, nil, nil, nil, "", "")
 		return 0
 	}
 	td.Cfg.CheckTestDeps = true

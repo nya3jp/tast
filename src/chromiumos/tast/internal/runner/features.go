@@ -45,9 +45,10 @@ func handleGetDUTInfo(args *jsonprotocol.RunnerArgs, cfg *Config, w io.Writer) e
 
 	var dc *device.Config
 	var hwFeatures *configpb.HardwareFeatures
+	var deviceIds *protocol.DeviceConfigIds
 	if args.GetDUTInfo.RequestDeviceConfig {
 		var ws []string
-		dc, hwFeatures, ws = newDeviceConfigAndHardwareFeatures()
+		dc, hwFeatures, deviceIds, ws = newDeviceConfigAndHardwareFeatures()
 		warnings = append(warnings, ws...)
 	}
 
@@ -55,6 +56,7 @@ func handleGetDUTInfo(args *jsonprotocol.RunnerArgs, cfg *Config, w io.Writer) e
 		SoftwareFeatures:         features,
 		DeviceConfig:             dc,
 		HardwareFeatures:         hwFeatures,
+		DeviceConfigIds:          deviceIds,
 		OSVersion:                cfg.OSVersion,
 		DefaultBuildArtifactsURL: cfg.DefaultBuildArtifactsURL,
 		Warnings:                 warnings,
@@ -172,7 +174,7 @@ func determineSoftwareFeatures(definitions map[string]string, useFlags []string,
 
 // newDeviceConfigAndHardwareFeatures returns a device.Config and api.HardwareFeatures instances
 // some of whose members are filled based on runtime information.
-func newDeviceConfigAndHardwareFeatures() (dc *device.Config, retFeatures *configpb.HardwareFeatures, warns []string) {
+func newDeviceConfigAndHardwareFeatures() (dc *device.Config, retFeatures *configpb.HardwareFeatures, retDeviceIds *protocol.DeviceConfigIds, warns []string) {
 	crosConfig := func(path, prop string) (string, error) {
 		cmd := exec.Command("cros_config", path, prop)
 		var buf bytes.Buffer
@@ -184,32 +186,32 @@ func newDeviceConfigAndHardwareFeatures() (dc *device.Config, retFeatures *confi
 		return string(b), nil
 	}
 
-	platform, err := func() (*device.PlatformId, error) {
+	platform, err := func() (string, error) {
 		out, err := crosConfig("/identity", "platform-name")
 		if err != nil {
-			return nil, err
+			return "", err
 		}
-		return &device.PlatformId{Value: out}, nil
+		return out, nil
 	}()
 	if err != nil {
 		warns = append(warns, fmt.Sprintf("unknown platform-id: %v", err))
 	}
-	model, err := func() (*device.ModelId, error) {
+	model, err := func() (string, error) {
 		out, err := crosConfig("/", "name")
 		if err != nil {
-			return nil, err
+			return "", err
 		}
-		return &device.ModelId{Value: out}, nil
+		return out, nil
 	}()
 	if err != nil {
 		warns = append(warns, fmt.Sprintf("unknown model-id: %v", err))
 	}
-	brand, err := func() (*device.BrandId, error) {
+	brand, err := func() (string, error) {
 		out, err := crosConfig("/", "brand-code")
 		if err != nil {
-			return nil, err
+			return "", err
 		}
-		return &device.BrandId{Value: out}, nil
+		return out, nil
 	}()
 	if err != nil {
 		warns = append(warns, fmt.Sprintf("unknown brand-id: %v", err))
@@ -222,12 +224,17 @@ func newDeviceConfigAndHardwareFeatures() (dc *device.Config, retFeatures *confi
 
 	config := &device.Config{
 		Id: &device.ConfigId{
-			PlatformId: platform,
-			ModelId:    model,
-			BrandId:    brand,
+			PlatformId: &device.PlatformId{Value: platform},
+			ModelId:    &device.ModelId{Value: model},
+			BrandId:    &device.BrandId{Value: brand},
 		},
 		Soc: info.soc,
 		Cpu: info.cpuArch,
+	}
+	deviceIds := &protocol.DeviceConfigIds{
+		Platform: platform,
+		Model:    model,
+		Brand:    brand,
 	}
 	features := &configpb.HardwareFeatures{
 		Screen:             &configpb.HardwareFeatures_Screen{},
@@ -386,7 +393,7 @@ func newDeviceConfigAndHardwareFeatures() (dc *device.Config, retFeatures *confi
 	}
 	// TODO(crbug.com/1184468, crbug.com/1186743): store the disk size value to features after the new field is added
 
-	return config, features, warns
+	return config, features, deviceIds, warns
 }
 
 type lscpuEntry struct {

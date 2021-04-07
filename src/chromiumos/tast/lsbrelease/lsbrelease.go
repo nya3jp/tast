@@ -61,6 +61,7 @@ const (
 // allowedPkgs is the list of Go packages that can use this package.
 var allowedPkgs = []string{
 	"chromiumos/tast/cmd/tast/internal/symbolize",
+	"chromiumos/tast/common/cros/nearbyshare/nearbysetup",
 	"chromiumos/tast/internal/runner",        // For SoftwareDeps check.
 	"chromiumos/tast/local/arc",              // For SDKVersion.
 	"chromiumos/tast/local/bundles/cros/arc", // For Version.

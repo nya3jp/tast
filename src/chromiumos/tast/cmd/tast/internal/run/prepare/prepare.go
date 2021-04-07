@@ -21,6 +21,7 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/runnerclient"
 	"chromiumos/tast/cmd/tast/internal/run/target"
+	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/internal/timing"
 	"chromiumos/tast/ssh"
@@ -235,6 +236,31 @@ func pushExecutables(ctx context.Context, cfg *config.Config, hst *ssh.Conn, tar
 	return nil
 }
 
+func allNeededFixtures(fixtures []*jsonprotocol.EntityInfo, tests []*jsonprotocol.EntityWithRunnabilityInfo) []*jsonprotocol.EntityInfo {
+	m := make(map[string]*jsonprotocol.EntityInfo)
+	for _, e := range fixtures {
+		m[e.Name] = e
+	}
+	var res []*jsonprotocol.EntityInfo
+	var dfs func(string)
+	dfs = func(name string) {
+		if name == "" {
+			return
+		}
+		e, ok := m[name]
+		if !ok {
+			return
+		}
+		res = append(res, e)
+		delete(m, name)
+		dfs(e.Fixture)
+	}
+	for _, t := range tests {
+		dfs(t.Fixture)
+	}
+	return res
+}
+
 // getDataFilePaths returns the paths to data files needed for running
 // cfg.Patterns on hst. The returned paths are relative to the package root,
 // e.g. "chromiumos/tast/local/bundle/<bundle>/<category>/data/<filename>".
@@ -245,24 +271,31 @@ func getDataFilePaths(ctx context.Context, cfg *config.Config, state *config.Sta
 
 	cfg.Logger.Debug("Getting data file list from target")
 
+	var entities []*jsonprotocol.EntityInfo // all entities needed to run tests
+
+	// Add tests to entities.
 	ts, err := runnerclient.ListLocalTests(ctx, cfg, state, hst)
 	if err != nil {
 		return nil, err
 	}
-
-	bundlePath := path.Join(build.LocalBundlePkgPathPrefix, cfg.BuildBundle)
-	seenPaths := make(map[string]struct{})
 	for _, t := range ts {
-		if t.Data == nil {
-			continue
-		}
+		entities = append(entities, &t.EntityInfo)
+	}
 
-		for _, p := range t.Data {
-			// t.DataDir returns the file's path relative to the top data dir, i.e. /usr/share/tast/data/local.
-			full := filepath.Clean(filepath.Join(testing.RelativeDataDir(t.Pkg), p))
-			if !strings.HasPrefix(full, bundlePath+"/") {
-				return nil, fmt.Errorf("data file path %q escapes base dir", full)
-			}
+	// Add fixtures tests use to entities.
+	localFixts, err := runnerclient.ListLocalFixtures(ctx, cfg, hst)
+	if err != nil {
+		return nil, fmt.Errorf("ListLocalFixtures: %v", err)
+	}
+	if fixts, ok := localFixts[filepath.Join(cfg.LocalBundleDir, cfg.BuildBundle)]; ok {
+		entities = append(entities, allNeededFixtures(fixts, ts)...)
+	}
+
+	// Compute data that entities may use.
+	seenPaths := make(map[string]struct{})
+	for _, e := range entities {
+		for _, p := range e.Data {
+			full := filepath.Clean(filepath.Join(testing.RelativeDataDir(e.Pkg), p))
 			if _, ok := seenPaths[full]; ok {
 				continue
 			}

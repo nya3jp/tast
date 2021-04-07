@@ -114,8 +114,8 @@ func ListLocalTests(ctx context.Context, cfg *config.Config, state *config.State
 		localRunnerCommand(ctx, cfg, hst), cfg, state, cfg.LocalBundleGlob())
 }
 
-// listLocalFixtures returns a map from bundle to fixtures.
-func listLocalFixtures(ctx context.Context, cfg *config.Config, hst *ssh.Conn) (map[string][]*jsonprotocol.EntityInfo, error) {
+// ListLocalFixtures returns a map from bundle to fixtures.
+func ListLocalFixtures(ctx context.Context, cfg *config.Config, hst *ssh.Conn) (map[string][]*jsonprotocol.EntityInfo, error) {
 	var localFixts jsonprotocol.RunnerListFixturesResult
 	if err := runTestRunnerCommand(
 		localRunnerCommand(ctx, cfg, hst), &jsonprotocol.RunnerArgs{

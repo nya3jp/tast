@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "57cc51cc_e2a2375e",
+        "filename": "src/chromiumos/tast/internal/fakeexec/loopback_child.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2021-04-07T05:07:03Z",
+      "side": 1,
+      "message": "Don\u0027t we have to os.Exit(0) here?",
+      "revId": "762c9b82dffa634890ed7bf7b068534beac2ba80",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

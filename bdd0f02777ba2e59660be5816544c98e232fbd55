@@ -94,6 +94,30 @@
       },
       "revId": "bdd0f02777ba2e59660be5816544c98e232fbd55",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "35cefbd7_b4a8de4b",
+        "filename": "src/chromiumos/tast/internal/testcontext/context.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-04-07T05:57:37Z",
+      "side": 1,
+      "message": "I will do this. Replying now to remind me :)",
+      "parentUuid": "15597470_82c31726",
+      "range": {
+        "startLine": 8,
+        "startChar": 5,
+        "endLine": 8,
+        "endChar": 12
+      },
+      "revId": "bdd0f02777ba2e59660be5816544c98e232fbd55",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

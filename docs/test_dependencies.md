@@ -136,6 +136,7 @@ The following software features are defined:
 *   `ocr` - [Optical Character Recognition Service] daemon.
 *   `ondevice_handwriting` - On-device handwriting recognition support in `ml_service`.
     This implies `ml_service`.
+*   `play_store` - Boards where Google Play Store is supported.
 *   `plugin_vm` - The ability to run Plugin VMs.
 *   `proprietary_codecs` - Indicates if Chrome supports proprietary video
     codecs (e.g. H.264). This is supported by Chrome official builds and Chromium

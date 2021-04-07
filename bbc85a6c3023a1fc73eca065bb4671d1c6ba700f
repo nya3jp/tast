@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "72dd1a56_d812e5e0",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1487074
+      },
+      "writtenOn": "2021-04-07T07:53:09Z",
+      "side": 1,
+      "message": "As the change is in tast, also need tast framework owner to review.",
+      "revId": "bbc85a6c3023a1fc73eca065bb4671d1c6ba700f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

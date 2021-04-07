@@ -72,15 +72,50 @@ type Fixture struct {
 	// TODO(oka): Add Data and Param fields.
 }
 
+func (f *Fixture) instantiate(pkg string) []*FixtureInstance {
+	return []*FixtureInstance{{
+		Name:            f.Name,
+		Desc:            f.Desc,
+		Contacts:        append([]string(nil), f.Contacts...),
+		Impl:            f.Impl,
+		Parent:          f.Parent,
+		SetUpTimeout:    f.SetUpTimeout,
+		ResetTimeout:    f.ResetTimeout,
+		PreTestTimeout:  f.PreTestTimeout,
+		PostTestTimeout: f.PostTestTimeout,
+		TearDownTimeout: f.TearDownTimeout,
+		ServiceDeps:     append([]string(nil), f.ServiceDeps...),
+		Vars:            append([]string(nil), f.Vars...),
+	}}
+}
+
+// FixtureInstance represents a fixture instance registered to the framework.
+//
+// FixtureInstance is to Fixture what TestInstance is to Test.
+type FixtureInstance struct {
+	Name            string
+	Desc            string
+	Contacts        []string
+	Impl            FixtureImpl
+	Parent          string
+	SetUpTimeout    time.Duration
+	ResetTimeout    time.Duration
+	PreTestTimeout  time.Duration
+	PostTestTimeout time.Duration
+	TearDownTimeout time.Duration
+	ServiceDeps     []string
+	Vars            []string
+}
+
 // Constraints returns EntityConstraints for this fixture.
-func (f *Fixture) Constraints() *EntityConstraints {
+func (f *FixtureInstance) Constraints() *EntityConstraints {
 	return &EntityConstraints{
 		allVars: append([]string(nil), f.Vars...),
 	}
 }
 
 // EntityProto a protocol buffer message representation of TestInstance.
-func (f *Fixture) EntityProto() *protocol.Entity {
+func (f *FixtureInstance) EntityProto() *protocol.Entity {
 	return &protocol.Entity{
 		Type:        protocol.EntityType_FIXTURE,
 		Name:        f.Name,

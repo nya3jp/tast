@@ -39,6 +39,30 @@
       },
       "revId": "dbacf4c380217c5d76bdd47f8d8b5fcd24c2f6f7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "bc7dc0d3_c56a9004",
+        "filename": "src/chromiumos/tast/internal/planner/run_test.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 1221,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2021-04-07T10:03:56Z",
+      "side": 1,
+      "message": "That\u0027s a good idea!\nDone",
+      "parentUuid": "f7726821_69e154cb",
+      "range": {
+        "startLine": 1218,
+        "startChar": 8,
+        "endLine": 1221,
+        "endChar": 4
+      },
+      "revId": "dbacf4c380217c5d76bdd47f8d8b5fcd24c2f6f7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

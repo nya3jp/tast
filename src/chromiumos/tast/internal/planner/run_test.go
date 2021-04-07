@@ -10,6 +10,9 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"net/http"
+	"net/http/httptest"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -681,7 +684,7 @@ func TestRunExternalData(t *gotesting.T) {
 		numDownloads int
 	}{
 		{"batch", DownloadBatch, 1},
-		{"lazy", DownloadLazy, 3},
+		{"lazy", DownloadLazy, 4},
 	} {
 		t.Run(tc.name, func(t *gotesting.T) {
 			ds, err := devservertest.NewServer(devservertest.Files([]*devservertest.File{
@@ -715,6 +718,13 @@ func TestRunExternalData(t *gotesting.T) {
 				Impl: newFakeFixture(),
 				Data: []string{"file3.txt"},
 			}
+			fixt2 := &testing.FixtureInstance{
+				Name: "fixt2",
+				Pkg:  "pkg",
+				Impl: newFakeFixture(),
+				Data: []string{"fail.txt"},
+			}
+
 			pcfg := &Config{
 				DataDir: dataDir,
 				Features: &protocol.Features{
@@ -732,7 +742,8 @@ func TestRunExternalData(t *gotesting.T) {
 					numDownloads++
 				},
 				Fixtures: map[string]*testing.FixtureInstance{
-					"fixt": fixt,
+					"fixt":  fixt,
+					"fixt2": fixt2,
 				},
 			}
 
@@ -779,6 +790,13 @@ func TestRunExternalData(t *gotesting.T) {
 					Data:    []string{"fail.txt"},
 					Timeout: time.Minute,
 				},
+				{
+					Name:    "example.Test4",
+					Pkg:     "pkg",
+					Func:    func(ctx context.Context, s *testing.State) {},
+					Fixture: "fixt2",
+					Timeout: time.Minute,
+				},
 			}
 
 			msgs := runTestsAndReadAll(t, tests, pcfg)
@@ -793,6 +811,13 @@ func TestRunExternalData(t *gotesting.T) {
 				&protocol.EntityErrorEvent{EntityName: tests[2].Name, Error: &protocol.Error{Reason: "Required data file fail.txt missing: failed to download gs://bucket/fail.txt: file does not exist"}},
 				&protocol.EntityEndEvent{EntityName: tests[2].Name},
 				&protocol.EntityEndEvent{EntityName: fixt.Name},
+
+				&protocol.EntityStartEvent{Entity: fixt2.EntityProto()},
+				&protocol.EntityErrorEvent{EntityName: fixt2.Name, Error: &protocol.Error{Reason: "Required data file fail.txt missing: failed to download gs://bucket/fail.txt: file does not exist"}},
+				&protocol.EntityEndEvent{EntityName: fixt2.Name},
+				&protocol.EntityStartEvent{Entity: tests[3].EntityProto()},
+				&protocol.EntityErrorEvent{EntityName: tests[3].Name, Error: &protocol.Error{Reason: "[Fixture failure] fixt2: Required data file fail.txt missing: failed to download gs://bucket/fail.txt: file does not exist"}},
+				&protocol.EntityEndEvent{EntityName: tests[3].Name},
 			}
 			if diff := cmp.Diff(msgs, want); diff != "" {
 				t.Error("Output mismatch (-got +want):\n", diff)
@@ -1538,6 +1563,68 @@ func TestRunFixtureTestContext(t *gotesting.T) {
 	}
 	runTestsAndReadAll(t, tests, cfg)
 	wg.Wait()
+}
+
+func TestRunFixtureData(t *gotesting.T) {
+	dataDir := testutil.TempDir(t)
+	defer os.RemoveAll(dataDir)
+
+	const fileName = "file.txt"
+	testutil.WriteFiles(dataDir, map[string]string{
+		filepath.Join("pkg/data", fileName): "42",
+	})
+
+	fixt := &testing.FixtureInstance{
+		Name: "fixt",
+		Pkg:  "pkg",
+		Data: []string{fileName},
+		Impl: newFakeFixture(withSetUp(func(ctx context.Context, s *testing.FixtState) interface{} {
+			if got, want := s.DataPath(fileName), filepath.Join(dataDir, "pkg/data", fileName); got != want {
+				t.Errorf("s.DataPath(%q) = %v, want %v", fileName, got, want)
+			}
+			func() {
+				// Brace for panic.
+				defer func() {
+					recover()
+				}()
+				s.DataPath("unknown.txt")
+				t.Errorf(`Data "unknown.txt" could be accessed unexpectedly`)
+			}()
+
+			srv := httptest.NewServer(http.FileServer(s.DataFileSystem()))
+			defer srv.Close()
+
+			resp, err := http.Get(srv.URL + "/" + fileName)
+			if err != nil {
+				t.Error(err)
+			}
+			defer resp.Body.Close()
+			if got, err := ioutil.ReadAll(resp.Body); err != nil {
+				t.Error(err)
+			} else if string(got) != "42" {
+				t.Errorf(`Got %v, want "42"`, got)
+			}
+			return nil
+		}), withTearDown(func(ctx context.Context, s *testing.FixtState) {
+			if got, want := s.DataPath(fileName), filepath.Join(dataDir, "pkg/data", fileName); got != want {
+				t.Errorf("s.DataPath(%q) = %v, want %v", fileName, got, want)
+			}
+		})),
+	}
+
+	tests := []*testing.TestInstance{{
+		Name:    "pkg.Test",
+		Fixture: "fixt",
+		Func:    func(ctx context.Context, s *testing.State) {},
+		Timeout: time.Minute,
+	}}
+
+	cfg := &Config{
+		Fixtures: map[string]*testing.FixtureInstance{fixt.Name: fixt},
+		DataDir:  dataDir,
+	}
+
+	runTestsAndReadAll(t, tests, cfg)
 }
 
 func TestRunPrecondition(t *gotesting.T) {

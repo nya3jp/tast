@@ -78,6 +78,7 @@ const (
 // checked against in State.Var.
 type EntityConstraints struct {
 	allVars []string
+	allData []string
 }
 
 // EntityRoot is the root of all State objects associated with an entity.
@@ -452,21 +453,15 @@ func (s *entityMixin) RequiredVar(name string) string {
 	return val
 }
 
-// testMixin implements common methods for State types associated with a test.
-// A testMixin object must not be shared among multiple State objects.
-type testMixin struct {
-	testRoot *TestEntityRoot
-}
-
 // DataPath returns the absolute path to use to access a data file previously
-// registered via Test.Data.
-func (s *testMixin) DataPath(p string) string {
-	for _, f := range s.testRoot.test.Data {
+// registered via Data. It aborts the entity if the p was not declared.
+func (s *entityMixin) DataPath(p string) string {
+	for _, f := range s.entityRoot.cst.allData {
 		if f == p {
-			return filepath.Join(s.testRoot.entityRoot.cfg.DataDir, p)
+			return filepath.Join(s.entityRoot.cfg.DataDir, p)
 		}
 	}
-	panic(fmt.Sprintf("Test data %q wasn't declared in definition passed to testing.AddTest", p))
+	panic(fmt.Sprintf("Data %q wasn't declared on registration", p))
 }
 
 // DataFileSystem returns an http.FileSystem implementation that serves an entity's data files.
@@ -474,10 +469,10 @@ func (s *testMixin) DataPath(p string) string {
 //	srv := httptest.NewServer(http.FileServer(s.DataFileSystem()))
 //	defer srv.Close()
 //	resp, err := http.Get(srv.URL+"/data_file.html")
-func (s *testMixin) DataFileSystem() *dataFS { return (*dataFS)(s) }
+func (s *entityMixin) DataFileSystem() *dataFS { return (*dataFS)(s) }
 
 // dataFS implements http.FileSystem.
-type dataFS testMixin
+type dataFS entityMixin
 
 // Open opens the file at name, a path that would be passed to DataPath.
 func (d *dataFS) Open(name string) (http.File, error) {
@@ -498,12 +493,18 @@ func (d *dataFS) Open(name string) (http.File, error) {
 				err = errors.New("not found")
 			}
 		}()
-		return (*testMixin)(d).DataPath(name), nil
+		return (*entityMixin)(d).DataPath(name), nil
 	}()
 	if err != nil {
 		return nil, err
 	}
 	return os.Open(path)
+}
+
+// testMixin implements common methods for State types associated with a test.
+// A testMixin object must not be shared among multiple State objects.
+type testMixin struct {
+	testRoot *TestEntityRoot
 }
 
 // OutDir returns a directory into which the entity may place arbitrary files

@@ -8,6 +8,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"path/filepath"
 
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testcontext"
@@ -196,7 +197,7 @@ func (st *FixtureStack) Push(ctx context.Context, fixt *testing.FixtureInstance)
 	ctx = testing.NewContext(ctx, ce, func(msg string) { fout.Log(msg) })
 
 	rcfg := &testing.RuntimeConfig{
-		// TODO(crbug.com/1127165): Support DataDir.
+		DataDir:      filepath.Join(st.cfg.DataDir, testing.RelativeDataDir(fixt.Pkg)),
 		OutDir:       outDir,
 		Vars:         st.cfg.Features.GetInfra().GetVars(),
 		CloudStorage: testing.NewCloudStorage(st.cfg.Devservers, st.cfg.TLWServer, st.cfg.DUTName),
@@ -386,6 +387,11 @@ func (f *statefulFixture) RunSetUp(ctx context.Context) error {
 
 	var val interface{}
 	if err := safeCall(ctx, name, f.fixt.SetUpTimeout, f.cfg.GracePeriod(), errorOnPanic(s), func(ctx context.Context) {
+		entityPreCheck(f.fixt.Data, s)
+		if s.HasError() {
+			return
+		}
+
 		val = f.fixt.Impl.SetUp(ctx, s)
 	}); err != nil {
 		return err

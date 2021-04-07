@@ -452,6 +452,7 @@ func (t *TestInstance) Proto() *testpb.Test {
 func (t *TestInstance) Constraints() *EntityConstraints {
 	return &EntityConstraints{
 		allVars: append(append([]string(nil), t.Vars...), t.VarDeps...),
+		allData: append([]string(nil), t.Data...),
 	}
 }
 

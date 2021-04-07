@@ -106,6 +106,7 @@ The following software features are defined:
 *   `lock_core_pattern` - Ability to lock down |core_pattern| from further
     modifications.
 *   `manatee` - The system is running a ManaTEE image.
+*   `mbo` - WiFi MBO support.
 *   `memfd_create` - memfd_create function implemented in the kernel.
 *   `memd` - [Memory stats collection daemon].
 *   `microcode` - Platforms that have CPU microcode.
@@ -146,6 +147,7 @@ The following software features are defined:
 *   `qemu` - For tests exclusive to Chrome OS QEMU images.
 *   `racc` - Whether [Runtime AVL Compliance Check] is available.
 *   `reboot` - The ability to reboot reliably during a remote test.
+*   `rrm_support` - Driver support for 802.11k RRM.
 *   `screenshot` - The [screenshot command] can save screenshots.
 *   `selinux` - An SELinux-enabled board. All Android boards are
     SELinux-enabled.

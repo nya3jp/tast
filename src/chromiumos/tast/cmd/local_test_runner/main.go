@@ -133,6 +133,7 @@ func main() {
 			"lacros_unstable":         "!arm && !arm64 && (tast_vm || betty)", // TODO(b/183969803): Remove this.
 			"lock_core_pattern":       `"kernel-3_10" || "kernel-3_14" || "kernel-3_18"`,
 			"manatee":                 "manatee",
+			"mbo":                     "mbo",
 			// QEMU has implemented memfd_create, but we haven't updated
 			// to a release with the change (https://bugs.launchpad.net/qemu/+bug/1734792).
 			// Remove "|| betty || tast_vm" from list when we upgrade.
@@ -179,6 +180,7 @@ func main() {
 			// Or cleanup all reboot dependency in tast-tests.
 			// Notice: The flag would be false when a board didn't have any attributes.
 			"reboot":                 `"*"`,
+			"rrm_support":            `!("kernel-3_8" || "kernel-3_10" || "kernel-3_14" || "kernel-3_18" || "kernel-4_4")`,
 			"screenshot":             "display_backlight && !rk3399", // screenshot command broken on RK3399: https://crbug.com/880597
 			"selinux":                "selinux",
 			"selinux_current":        "selinux && !selinux_experimental",

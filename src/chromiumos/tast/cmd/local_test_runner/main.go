@@ -166,6 +166,7 @@ func main() {
 			"oci":                   "containers && !moblab", // run_oci doesn't work on Moblab: https://crbug.com/951691
 			"ocr":                   "ocr",
 			"ondevice_handwriting":  "ml_service && ondevice_handwriting",
+			"play_store":            `arc && !("board:novato")`,
 			"plugin_vm":             "pita", // boards that can run Plugin VM.
 			"proprietary_codecs":    "chrome_internal || chrome_media",
 			"protected_content":     "cdm_factory_daemon",

@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9c596c5b_3f235c5e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-04-07T07:51:38Z",
+      "side": 1,
+      "message": "Seems bundle.go and some other places need to be updated to propagate the entire stack. Still woring on.",
+      "revId": "d51e6a04cf2ea2e25c6992bba03acda652b62694",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

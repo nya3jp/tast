@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ff401cf6_8ec086c1",
+        "filename": "src/chromiumos/tast/internal/planner/fixt.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 489,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-04-07T06:52:54Z",
+      "side": 1,
+      "message": "In this PS, a test context is associated with a test entity, but it prevents users from calling gRPC methods for example.\n\nI think a test context should be similar to one returned by this method, but with a different lifetime.",
+      "range": {
+        "startLine": 489,
+        "startChar": 26,
+        "endLine": 489,
+        "endChar": 40
+      },
+      "revId": "d94215be546f2544ae51ce695716f589204936bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

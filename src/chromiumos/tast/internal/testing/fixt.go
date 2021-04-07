@@ -72,11 +72,12 @@ type Fixture struct {
 	// TODO(oka): Add Data and Param fields.
 }
 
-func (f *Fixture) instantiate() (*FixtureInstance, error) {
+func (f *Fixture) instantiate(pkg string) (*FixtureInstance, error) {
 	if err := validateFixture(f); err != nil {
 		return nil, err
 	}
 	return &FixtureInstance{
+		Pkg:             pkg,
 		Name:            f.Name,
 		Desc:            f.Desc,
 		Contacts:        append([]string(nil), f.Contacts...),
@@ -96,6 +97,10 @@ func (f *Fixture) instantiate() (*FixtureInstance, error) {
 //
 // FixtureInstance is to Fixture what TestInstance is to Test.
 type FixtureInstance struct {
+	// Pkg is the package from which the fixture is registered.
+	Pkg string
+
+	// Following fields are copied from Fixture.
 	Name            string
 	Desc            string
 	Contacts        []string
@@ -122,6 +127,7 @@ func (f *FixtureInstance) EntityProto() *protocol.Entity {
 	return &protocol.Entity{
 		Type:        protocol.EntityType_FIXTURE,
 		Name:        f.Name,
+		Package:     f.Pkg,
 		Description: f.Desc,
 		Fixture:     f.Parent,
 		Dependencies: &protocol.EntityDependencies{

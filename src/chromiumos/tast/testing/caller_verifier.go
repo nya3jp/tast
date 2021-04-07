@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"regexp"
 	"runtime"
+	"strings"
 )
 
 // callerVerifier is to verify testing.AddTest() function callers.
@@ -43,4 +44,9 @@ func (v *callerVerifier) verifyAndRegister(pc uintptr) error {
 	v.files[file] = struct{}{}
 
 	return nil
+}
+
+func packageForPC(pc uintptr) string {
+	rf := runtime.FuncForPC(pc)
+	return strings.Split(rf.Name(), ".")[0]
 }

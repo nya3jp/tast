@@ -93,6 +93,17 @@ func (f *Fixture) instantiate(pkg string) ([]*FixtureInstance, error) {
 	}}, nil
 }
 
+// fixtureNameRegexp defines the valid fixture name pattern.
+var fixtureNameRegexp = regexp.MustCompile(`^[a-z][A-Za-z0-9]*$`)
+
+// validateFixture validates a user-supplied Fixture metadata.
+func validateFixture(f *Fixture) error {
+	if !fixtureNameRegexp.MatchString(f.Name) {
+		return errors.Errorf("invalid fixture name: %q", f.Name)
+	}
+	return nil
+}
+
 // FixtureInstance represents a fixture instance registered to the framework.
 //
 // FixtureInstance is to Fixture what TestInstance is to Test.
@@ -122,10 +133,11 @@ func (f *FixtureInstance) Constraints() *EntityConstraints {
 	}
 }
 
-// EntityProto a protocol buffer message representation of TestInstance.
+// EntityProto is a protocol buffer message representation of f.
 func (f *FixtureInstance) EntityProto() *protocol.Entity {
 	return &protocol.Entity{
 		Type:        protocol.EntityType_FIXTURE,
+		Package:     f.Pkg,
 		Name:        f.Name,
 		Description: f.Desc,
 		Fixture:     f.Parent,
@@ -140,17 +152,6 @@ func (f *FixtureInstance) EntityProto() *protocol.Entity {
 			Bundle:    filepath.Base(os.Args[0]),
 		},
 	}
-}
-
-// fixtureNameRegexp defines the valid fixture name pattern.
-var fixtureNameRegexp = regexp.MustCompile(`^[a-z][A-Za-z0-9]*$`)
-
-// validateFixture validates a user-supplied Fixture metadata.
-func validateFixture(f *Fixture) error {
-	if !fixtureNameRegexp.MatchString(f.Name) {
-		return errors.Errorf("invalid fixture name: %q", f.Name)
-	}
-	return nil
 }
 
 // FixtureImpl provides implementation of the fixture registered to the framework.

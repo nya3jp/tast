@@ -45,6 +45,30 @@
       },
       "revId": "04de2e315bed8775b8b6bc1002ac996927442a1c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a8452ec3_88e797ad",
+        "filename": "src/chromiumos/tast/internal/runner/service_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-04-07T06:00:19Z",
+      "side": 1,
+      "message": "It\u0027s closed by srv.Serve.\nhttps://pkg.go.dev/google.golang.org/grpc#Server.Serve",
+      "parentUuid": "73ca447a_85e3297e",
+      "range": {
+        "startLine": 72,
+        "startChar": 1,
+        "endLine": 72,
+        "endChar": 4
+      },
+      "revId": "04de2e315bed8775b8b6bc1002ac996927442a1c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

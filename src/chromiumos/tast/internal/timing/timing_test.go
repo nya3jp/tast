@@ -11,8 +11,11 @@ import (
 	"testing"
 	"time"
 
+	"github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
+
+	"chromiumos/tast/internal/protocol"
 )
 
 // fakeClock can be used to simulate the package of time in tests.
@@ -242,4 +245,99 @@ func TestImportMarshaledLog(t *testing.T) {
 	// Finish the stage in the outer log. This will close the incomplete
 	// stage in the inner log. This used to cause panic (crbug.com/981708).
 	st.End()
+}
+
+func TestProto(t *testing.T) {
+	var fc fakeClock
+	fc.install()
+	defer fc.uninstall()
+
+	log := NewLog()
+	st := log.StartTop("0")
+	st.StartChild("1").End()
+	st.StartChild("2").End()
+	st.End()
+
+	got, err := log.Proto()
+	if err != nil {
+		t.Fatalf("Proto failed: %v", err)
+	}
+
+	want := &protocol.TimingLog{
+		Root: &protocol.TimingStage{
+			Children: []*protocol.TimingStage{{
+				Name:      "0",
+				StartTime: &timestamp.Timestamp{Seconds: 0},
+				EndTime:   &timestamp.Timestamp{Seconds: 5},
+				Children: []*protocol.TimingStage{
+					{
+						Name:      "1",
+						StartTime: &timestamp.Timestamp{Seconds: 1},
+						EndTime:   &timestamp.Timestamp{Seconds: 2},
+					},
+					{
+						Name:      "2",
+						StartTime: &timestamp.Timestamp{Seconds: 3},
+						EndTime:   &timestamp.Timestamp{Seconds: 4},
+					},
+				},
+			}},
+		},
+	}
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("Proto mismatch (-got +want):\n%s", diff)
+	}
+}
+
+func TestLogFromProto(t *testing.T) {
+	log := &protocol.TimingLog{
+		Root: &protocol.TimingStage{
+			Children: []*protocol.TimingStage{{
+				Name:      "0",
+				StartTime: &timestamp.Timestamp{Seconds: 0},
+				EndTime:   &timestamp.Timestamp{Seconds: 5},
+				Children: []*protocol.TimingStage{
+					{
+						Name:      "1",
+						StartTime: &timestamp.Timestamp{Seconds: 1},
+						EndTime:   &timestamp.Timestamp{Seconds: 2},
+					},
+					{
+						Name:      "2",
+						StartTime: &timestamp.Timestamp{Seconds: 3},
+						EndTime:   &timestamp.Timestamp{Seconds: 4},
+					},
+				},
+			}},
+		},
+	}
+	got, err := LogFromProto(log)
+	if err != nil {
+		t.Fatalf("LogFromProto failed: %v", err)
+	}
+
+	want := &Log{
+		Root: &Stage{
+			Children: []*Stage{{
+				Name:      "0",
+				StartTime: time.Unix(0, 0),
+				EndTime:   time.Unix(5, 0),
+				Children: []*Stage{
+					{
+						Name:      "1",
+						StartTime: time.Unix(1, 0),
+						EndTime:   time.Unix(2, 0),
+					},
+					{
+						Name:      "2",
+						StartTime: time.Unix(3, 0),
+						EndTime:   time.Unix(4, 0),
+					},
+				},
+			}},
+		},
+	}
+	if diff := cmp.Diff(got, want, cmpopts.IgnoreUnexported(Stage{})); diff != "" {
+		t.Fatal("Log changed after marshal and unmarshal (-got +want)\n", diff)
+	}
 }

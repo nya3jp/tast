@@ -1377,7 +1377,7 @@ func TestRunFixtureTestContext(t *gotesting.T) {
 	var wg sync.WaitGroup
 	wg.Add(2)
 
-	fixt := &testing.Fixture{
+	fixt := &testing.FixtureInstance{
 		Name: "fixt",
 		Impl: newFakeFixture(withPreTest(func(ctx context.Context, s *testing.FixtTestState) {
 			if err := s.TestContext().Err(); err != nil {
@@ -1412,7 +1412,7 @@ func TestRunFixtureTestContext(t *gotesting.T) {
 	}}
 
 	cfg := &Config{
-		Fixtures: map[string]*testing.Fixture{fixt.Name: fixt},
+		Fixtures: map[string]*testing.FixtureInstance{fixt.Name: fixt},
 	}
 	runTestsAndReadAll(t, tests, cfg)
 	wg.Wait()

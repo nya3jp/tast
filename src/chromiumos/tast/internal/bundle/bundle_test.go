@@ -80,8 +80,8 @@ func TestRunListWithDep(t *gotesting.T) {
 		{Name: "pkg.Test2", Func: f, SoftwareDeps: []string{missingDep}},
 	}
 
-	expectedPassTests := map[string]struct{}{tests[0].Name: struct{}{}}
-	expectedSkipTests := map[string]struct{}{tests[1].Name: struct{}{}}
+	expectedPassTests := map[string]struct{}{tests[0].Name: {}}
+	expectedSkipTests := map[string]struct{}{tests[1].Name: {}}
 
 	for _, test := range tests {
 		reg.AddTestInstance(test)
@@ -137,7 +137,7 @@ func TestRunListFixtures(t *gotesting.T) {
 	}
 
 	for _, f := range fixts {
-		reg.AddFixture(f)
+		reg.AddFixture(f, "pkg")
 	}
 
 	// BundleListFixturesMode should output JSON-marshaled fixtures to stdout.

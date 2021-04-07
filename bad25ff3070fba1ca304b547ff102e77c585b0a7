@@ -22,6 +22,30 @@
       },
       "revId": "bad25ff3070fba1ca304b547ff102e77c585b0a7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2b7356f5_d8e25817",
+        "filename": "src/chromiumos/tast/internal/runner/runner_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 130,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-04-07T07:30:30Z",
+      "side": 1,
+      "message": "It\u0027s to pass -rpc flag.",
+      "parentUuid": "1ac29df0_7319d0cb",
+      "range": {
+        "startLine": 130,
+        "startChar": 21,
+        "endLine": 130,
+        "endChar": 22
+      },
+      "revId": "bad25ff3070fba1ca304b547ff102e77c585b0a7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

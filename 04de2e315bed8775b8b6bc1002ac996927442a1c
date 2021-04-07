@@ -22,6 +22,30 @@
       },
       "revId": "04de2e315bed8775b8b6bc1002ac996927442a1c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "cbc3d0db_657a3b99",
+        "filename": "src/chromiumos/tast/internal/runner/runner_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 597,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-04-07T07:30:30Z",
+      "side": 0,
+      "message": "Good catch, removed.",
+      "parentUuid": "4f43be43_b538bf1a",
+      "range": {
+        "startLine": 597,
+        "startChar": 47,
+        "endLine": 597,
+        "endChar": 59
+      },
+      "revId": "04de2e315bed8775b8b6bc1002ac996927442a1c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

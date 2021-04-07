@@ -42,5 +42,6 @@ func AddService(s *Service) {
 
 // AddFixture adds fixture f to the global registry.
 func AddFixture(f *Fixture) {
-	testing.GlobalRegistry().AddFixture(f)
+	pc, _, _, _ := runtime.Caller(1)
+	testing.GlobalRegistry().AddFixture(f, packageForPC(pc))
 }

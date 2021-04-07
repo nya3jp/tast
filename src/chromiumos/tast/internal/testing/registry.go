@@ -88,15 +88,15 @@ func (r *Registry) AddService(s *Service) {
 }
 
 // AddFixture adds f to the registry.
-func (r *Registry) AddFixture(f *Fixture) {
+func (r *Registry) AddFixture(f *Fixture, pkg string) {
 	r.RecordError(func() error {
-		if err := validateFixture(f); err != nil {
+		fis, err := f.instantiate(pkg)
+		if err != nil {
 			return err
 		}
-		if _, ok := r.allFixtures[f.Name]; ok {
-			return fmt.Errorf("fixture %q already registered", f.Name)
+		for _, fi := range fis {
+			r.AddFixtureInstance(fi)
 		}
-		r.allFixtures[f.Name] = f
 		return nil
 	}())
 }
@@ -104,9 +104,6 @@ func (r *Registry) AddFixture(f *Fixture) {
 // AddFixtureInstance adds f to the registry.
 func (r *Registry) AddFixtureInstance(f *FixtureInstance) {
 	r.RecordError(func() error {
-		if err := validateFixture(f); err != nil {
-			return err
-		}
 		if _, ok := r.allFixtures[f.Name]; ok {
 			return fmt.Errorf("fixture %q already registered", f.Name)
 		}

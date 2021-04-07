@@ -33,3 +33,10 @@ func TestRegisterTwiceVerify(t *gotesting.T) {
 		t.Fatal("Unexpected verification pass for two times registration")
 	}
 }
+
+func TestPackageFromPC(t *gotesting.T) {
+	pc, _, _, _ := runtime.Caller(0)
+	if got, want := packageForPC(pc), "chromiumos/tast/testing"; got != want {
+		t.Errorf("packageFromPC(%#v) = %q, want %q", pc, got, want)
+	}
+}

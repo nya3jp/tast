@@ -15,7 +15,7 @@ import (
 )
 
 func TestFixtureEntityProto(t *testing.T) {
-	fixt := &Fixture{
+	fixt := &FixtureInstance{
 		Name:        "chrome.LoggedIn",
 		Desc:        "Make sure logged into a Chrome session",
 		Contacts:    []string{"a@example.com", "b@example.com"},

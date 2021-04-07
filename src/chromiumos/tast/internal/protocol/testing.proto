@@ -87,6 +87,17 @@ message ResolvedEntity {
   Skip skip = 2;
 }
 
+// TimingLog is a protobuf presentation of a timing.Log.
+message TimingLog { TimingStage root = 1; }
+
+// TimingStage is a protobuf presentation of a completed timing.Stage.
+message TimingStage {
+  string name = 1;
+  google.protobuf.Timestamp start_time = 2;
+  google.protobuf.Timestamp end_time = 3;
+  repeated TimingStage children = 4;
+}
+
 // RunLogEvent indicates that an informational log message not associated with
 // an entity was produced.
 message RunLogEvent {

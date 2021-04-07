@@ -8,12 +8,17 @@ package timing
 import (
 	"bufio"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/golang/protobuf/ptypes"
+	"github.com/golang/protobuf/ptypes/timestamp"
+
+	"chromiumos/tast/errors"
+	"chromiumos/tast/internal/protocol"
 )
 
 // now is the function to return the current time. This is altered in unit tests.
@@ -80,6 +85,15 @@ func (l *Log) WritePretty(w io.Writer) error {
 
 	io.WriteString(bw, "]\n")
 	return bw.Flush() // returns first error encountered during earlier writes
+}
+
+// Proto returns a protobuf presentation of Log.
+func (l *Log) Proto() (*protocol.TimingLog, error) {
+	r, err := l.Root.Proto()
+	if err != nil {
+		return nil, err
+	}
+	return &protocol.TimingLog{Root: r}, nil
 }
 
 // jsonLog represents the JSON schema of Log.
@@ -209,4 +223,79 @@ func (s *Stage) writePretty(w *bufio.Writer, initialIndent, followIndent string,
 		io.WriteString(w, ",\n")
 	}
 	return nil
+}
+
+// Proto returns a protobuf presentation of Stage.
+func (s *Stage) Proto() (*protocol.TimingStage, error) {
+	start, err := timestampProto(s.StartTime)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to convert StartTime to protobuf")
+	}
+	end, err := timestampProto(s.EndTime)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to convert EndTime to protobuf")
+	}
+	var children []*protocol.TimingStage
+	for _, c := range s.Children {
+		child, err := c.Proto()
+		if err != nil {
+			return nil, err
+		}
+		children = append(children, child)
+	}
+	return &protocol.TimingStage{
+		Name:      s.Name,
+		StartTime: start,
+		EndTime:   end,
+		Children:  children,
+	}, nil
+}
+
+func timestampProto(t time.Time) (*timestamp.Timestamp, error) {
+	if t.IsZero() {
+		return nil, nil
+	}
+	return ptypes.TimestampProto(t)
+}
+
+// LogFromProto constructs Log from its protocol buffer presentation.
+func LogFromProto(p *protocol.TimingLog) (*Log, error) {
+	s, err := StageFromProto(p.GetRoot())
+	if err != nil {
+		return nil, err
+	}
+	return &Log{Root: s}, nil
+}
+
+// StageFromProto constructs Stage from its protocol buffer presentation.
+func StageFromProto(p *protocol.TimingStage) (*Stage, error) {
+	var start, end time.Time
+	if ts := p.GetStartTime(); ts != nil {
+		var err error
+		start, err = ptypes.Timestamp(ts)
+		if err != nil {
+			return nil, err
+		}
+	}
+	if ts := p.GetEndTime(); ts != nil {
+		var err error
+		end, err = ptypes.Timestamp(ts)
+		if err != nil {
+			return nil, err
+		}
+	}
+	var children []*Stage
+	for _, c := range p.GetChildren() {
+		child, err := StageFromProto(c)
+		if err != nil {
+			return nil, err
+		}
+		children = append(children, child)
+	}
+	return &Stage{
+		Name:      p.GetName(),
+		StartTime: start,
+		EndTime:   end,
+		Children:  children,
+	}, nil
 }

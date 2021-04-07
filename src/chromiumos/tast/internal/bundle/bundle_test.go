@@ -129,7 +129,7 @@ func TestRunListWithDep(t *gotesting.T) {
 func TestRunListFixtures(t *gotesting.T) {
 	reg := testing.NewRegistry()
 
-	fixts := []*testing.Fixture{
+	fixts := []*testing.FixtureInstance{
 		{Name: "b", Parent: "a"},
 		{Name: "c"},
 		{Name: "d"},
@@ -137,7 +137,7 @@ func TestRunListFixtures(t *gotesting.T) {
 	}
 
 	for _, f := range fixts {
-		reg.AddFixture(f, "pkg")
+		reg.AddFixtureInstance(f)
 	}
 
 	// BundleListFixturesMode should output JSON-marshaled fixtures to stdout.
@@ -153,10 +153,14 @@ func TestRunListFixtures(t *gotesting.T) {
 	}
 	bundle := filepath.Base(os.Args[0])
 	want := []*jsonprotocol.EntityInfo{
-		{Type: jsonprotocol.EntityFixture, Name: "a", Bundle: bundle},
-		{Type: jsonprotocol.EntityFixture, Name: "b", Fixture: "a", Bundle: bundle},
-		{Type: jsonprotocol.EntityFixture, Name: "c", Bundle: bundle},
-		{Type: jsonprotocol.EntityFixture, Name: "d", Bundle: bundle},
+		{Name: "a"},
+		{Name: "b", Fixture: "a"},
+		{Name: "c"},
+		{Name: "d"},
+	}
+	for _, w := range want {
+		w.Type = jsonprotocol.EntityFixture
+		w.Bundle = bundle
 	}
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Output mismatch (-got +want): %v", diff)

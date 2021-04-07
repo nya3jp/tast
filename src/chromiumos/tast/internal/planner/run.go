@@ -727,6 +727,27 @@ func createEntityOutDir(baseDir, name string) (string, error) {
 	return outDir, nil
 }
 
+type entityState interface {
+	DataPath(p string) string
+	Errorf(fmt string, args ...interface{})
+}
+
+func entityPreCheck(data []string, s entityState) {
+	// Make sure all required data files exist.
+	for _, fn := range data {
+		fp := s.DataPath(fn)
+		if _, err := os.Stat(fp); err == nil {
+			continue
+		}
+		ep := fp + testing.ExternalErrorSuffix
+		if data, err := ioutil.ReadFile(ep); err == nil {
+			s.Errorf("Required data file %s missing: %s", fn, string(data))
+		} else {
+			s.Errorf("Required data file %s missing", fn)
+		}
+	}
+}
+
 // runTestWithRoot runs a test with TestEntityRoot.
 //
 // The time allotted to the test is generally the sum of t.Timeout and t.ExitTimeout, but
@@ -750,19 +771,7 @@ func runTestWithRoot(ctx context.Context, t *testing.TestInstance, root *testing
 			testState.Fatal("Invalid timeout ", t.Timeout)
 		}
 
-		// Make sure all required data files exist.
-		for _, fn := range t.Data {
-			fp := testState.DataPath(fn)
-			if _, err := os.Stat(fp); err == nil {
-				continue
-			}
-			ep := fp + testing.ExternalErrorSuffix
-			if data, err := ioutil.ReadFile(ep); err == nil {
-				testState.Errorf("Required data file %s missing: %s", fn, string(data))
-			} else {
-				testState.Errorf("Required data file %s missing", fn)
-			}
-		}
+		entityPreCheck(t.Data, testState)
 		if testState.HasError() {
 			return
 		}

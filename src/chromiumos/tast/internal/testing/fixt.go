@@ -120,6 +120,7 @@ type FixtureInstance struct {
 func (f *FixtureInstance) Constraints() *EntityConstraints {
 	return &EntityConstraints{
 		allVars: append([]string(nil), f.Vars...),
+		allData: append([]string(nil), f.Data...),
 	}
 }
 

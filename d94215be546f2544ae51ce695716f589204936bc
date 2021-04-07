@@ -22,6 +22,30 @@
       },
       "revId": "d94215be546f2544ae51ce695716f589204936bc",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e948af70_872e918a",
+        "filename": "src/chromiumos/tast/internal/planner/fixt.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 489,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2021-04-07T09:18:29Z",
+      "side": 1,
+      "message": "I implemented two possible implementations for this. PS 3 and PS 4.\nhttps://chromium-review.googlesource.com/c/chromiumos/platform/tast/+/2807757/3..4\n\nWhich do you think is the better?",
+      "parentUuid": "ff401cf6_8ec086c1",
+      "range": {
+        "startLine": 489,
+        "startChar": 26,
+        "endLine": 489,
+        "endChar": 40
+      },
+      "revId": "d94215be546f2544ae51ce695716f589204936bc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8b2fc57f_3d4ea846",
+        "filename": "src/chromiumos/tast/internal/testcontext/entity.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2021-04-07T07:53:51Z",
+      "side": 1,
+      "message": "nit: Type suffix is not necessary?",
+      "range": {
+        "startLine": 14,
+        "startChar": 21,
+        "endLine": 14,
+        "endChar": 25
+      },
+      "revId": "5f886ba7445985eb35a466d19ac156fa90614785",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

@@ -54,15 +54,15 @@ func TestTestServerListEntities(t *gotesting.T) {
 	// Create two fake bundles.
 	t1 := &testing.TestInstance{Name: "pkg.Test1"}
 	t2 := &testing.TestInstance{Name: "pkg.Test2"}
-	f1 := &testing.Fixture{Name: "fixt1"}
-	f2 := &testing.Fixture{Name: "fixt2"}
+	f1 := &testing.FixtureInstance{Name: "fixt1"}
+	f2 := &testing.FixtureInstance{Name: "fixt2"}
 
 	reg1 := testing.NewRegistry()
 	reg2 := testing.NewRegistry()
 	reg1.AddTestInstance(t1)
 	reg2.AddTestInstance(t2)
-	reg1.AddFixture(f1)
-	reg2.AddFixture(f2)
+	reg1.AddFixtureInstance(f1)
+	reg2.AddFixtureInstance(f2)
 
 	bundleGlob := fakebundle.Install(t, map[string]*testing.Registry{"a": reg1, "b": reg2})
 

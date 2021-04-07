@@ -19,7 +19,7 @@ type Registry struct {
 	testNames   map[string]struct{} // names of registered tests
 	allServices []*Service
 	allPres     map[string]Precondition
-	allFixtures map[string]*Fixture
+	allFixtures map[string]*FixtureInstance
 }
 
 // NewRegistry returns a new test registry.
@@ -27,7 +27,7 @@ func NewRegistry() *Registry {
 	return &Registry{
 		testNames:   make(map[string]struct{}),
 		allPres:     make(map[string]Precondition),
-		allFixtures: make(map[string]*Fixture),
+		allFixtures: make(map[string]*FixtureInstance),
 	}
 }
 
@@ -90,9 +90,18 @@ func (r *Registry) AddService(s *Service) {
 // AddFixture adds f to the registry.
 func (r *Registry) AddFixture(f *Fixture) {
 	r.RecordError(func() error {
-		if err := validateFixture(f); err != nil {
+		fi, err := f.instantiate()
+		if err != nil {
 			return err
 		}
+		r.AddFixtureInstance(fi)
+		return nil
+	}())
+}
+
+// AddFixtureInstance adds f to the registry.
+func (r *Registry) AddFixtureInstance(f *FixtureInstance) {
+	r.RecordError(func() error {
 		if _, ok := r.allFixtures[f.Name]; ok {
 			return fmt.Errorf("fixture %q already registered", f.Name)
 		}
@@ -116,8 +125,8 @@ func (r *Registry) AllServices() []*Service {
 }
 
 // AllFixtures returns copies of all registered fixtures.
-func (r *Registry) AllFixtures() map[string]*Fixture {
-	fs := make(map[string]*Fixture)
+func (r *Registry) AllFixtures() map[string]*FixtureInstance {
+	fs := make(map[string]*FixtureInstance)
 	for name, f := range r.allFixtures {
 		fs[name] = f
 	}

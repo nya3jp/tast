@@ -120,7 +120,7 @@ func TestFixtureStackStatusTransitionGreen(t *gotesting.T) {
 	stack := NewFixtureStack(&Config{}, newOutputSink())
 
 	pushGreen := func() error {
-		return stack.Push(ctx, &testing.Fixture{Impl: newFakeFixture()})
+		return stack.Push(ctx, &testing.FixtureInstance{Impl: newFakeFixture()})
 	}
 	reset := func() error {
 		return stack.Reset(ctx)
@@ -157,10 +157,10 @@ func TestFixtureStackStatusTransitionRed(t *gotesting.T) {
 	stack := NewFixtureStack(&Config{}, newOutputSink())
 
 	pushGreen := func() error {
-		return stack.Push(ctx, &testing.Fixture{Impl: newFakeFixture()})
+		return stack.Push(ctx, &testing.FixtureInstance{Impl: newFakeFixture()})
 	}
 	pushRed := func() error {
-		return stack.Push(ctx, &testing.Fixture{
+		return stack.Push(ctx, &testing.FixtureInstance{
 			Impl: newFakeFixture(withSetUp(func(ctx context.Context, s *testing.FixtState) interface{} {
 				s.Error("Failed")
 				return nil
@@ -206,10 +206,10 @@ func TestFixtureStackStatusTransitionYellow(t *gotesting.T) {
 	stack := NewFixtureStack(&Config{}, newOutputSink())
 
 	pushGreen := func() error {
-		return stack.Push(ctx, &testing.Fixture{Impl: newFakeFixture()})
+		return stack.Push(ctx, &testing.FixtureInstance{Impl: newFakeFixture()})
 	}
 	pushYellow := func() error {
-		return stack.Push(ctx, &testing.Fixture{
+		return stack.Push(ctx, &testing.FixtureInstance{
 			Impl: newFakeFixture(withReset(func(ctx context.Context) error {
 				return errors.New("failed")
 			})),
@@ -333,7 +333,7 @@ func TestFixtureStackContext(t *gotesting.T) {
 			})
 		}))
 
-	fixt := &testing.Fixture{
+	fixt := &testing.FixtureInstance{
 		Name:        fixtureName,
 		Impl:        ff,
 		ServiceDeps: serviceDeps,
@@ -401,7 +401,7 @@ func TestFixtureStackState(t *gotesting.T) {
 			})
 		}))
 
-	fixt := &testing.Fixture{
+	fixt := &testing.FixtureInstance{
 		Impl: ff,
 	}
 
@@ -436,7 +436,7 @@ func TestFixtureStackVal(t *gotesting.T) {
 	}
 
 	// Push fixtures and check values.
-	if err := stack.Push(ctx, &testing.Fixture{
+	if err := stack.Push(ctx, &testing.FixtureInstance{
 		Impl: newFakeFixture(
 			withSetUp(func(ctx context.Context, s *testing.FixtState) interface{} {
 				if val := s.ParentValue(); val != nil {
@@ -450,7 +450,7 @@ func TestFixtureStackVal(t *gotesting.T) {
 		t.Errorf("After Push 1: Val() = %v; want %v", val, val1)
 	}
 
-	if err := stack.Push(ctx, &testing.Fixture{
+	if err := stack.Push(ctx, &testing.FixtureInstance{
 		Impl: newFakeFixture(
 			withSetUp(func(ctx context.Context, s *testing.FixtState) interface{} {
 				if val := s.ParentValue(); val != val1 {
@@ -506,7 +506,7 @@ func TestFixtureStackErrors(t *gotesting.T) {
 	pushGreen := func() error {
 		name := fmt.Sprintf("fixt.Green%d", id)
 		id++
-		return stack.Push(ctx, &testing.Fixture{
+		return stack.Push(ctx, &testing.FixtureInstance{
 			Name: name,
 			Impl: newFakeFixture(),
 		})
@@ -514,7 +514,7 @@ func TestFixtureStackErrors(t *gotesting.T) {
 	pushRed := func() error {
 		name := fmt.Sprintf("fixt.Red%d", id)
 		id++
-		return stack.Push(ctx, &testing.Fixture{
+		return stack.Push(ctx, &testing.FixtureInstance{
 			Name: name,
 			Impl: newFakeFixture(withSetUp(func(ctx context.Context, s *testing.FixtState) interface{} {
 				s.Error("Setup failure 1")
@@ -562,8 +562,8 @@ func TestFixtureStackOutputGreen(t *gotesting.T) {
 	troot := testing.NewTestEntityRoot(ti, &testing.RuntimeConfig{}, newEntityOutputStream(sink, ti.EntityProto()))
 	stack := NewFixtureStack(&Config{}, sink)
 
-	newLoggingFixture := func(id int) *testing.Fixture {
-		return &testing.Fixture{
+	newLoggingFixture := func(id int) *testing.FixtureInstance {
+		return &testing.FixtureInstance{
 			Name: fmt.Sprintf("fixt%d", id),
 			Impl: newFakeFixture(
 				withSetUp(func(ctx context.Context, s *testing.FixtState) interface{} {
@@ -658,8 +658,8 @@ func TestFixtureStackOutputRed(t *gotesting.T) {
 	sink := newOutputSink()
 	stack := NewFixtureStack(&Config{}, sink)
 
-	newLoggingFixture := func(id int, setUp bool) *testing.Fixture {
-		return &testing.Fixture{
+	newLoggingFixture := func(id int, setUp bool) *testing.FixtureInstance {
+		return &testing.FixtureInstance{
 			Name: fmt.Sprintf("fixt%d", id),
 			Impl: newFakeFixture(
 				withSetUp(func(ctx context.Context, s *testing.FixtState) interface{} {
@@ -729,8 +729,8 @@ func TestFixtureStackOutputYellow(t *gotesting.T) {
 	sink := newOutputSink()
 	stack := NewFixtureStack(&Config{}, sink)
 
-	newLoggingFixture := func(id int, reset bool) *testing.Fixture {
-		return &testing.Fixture{
+	newLoggingFixture := func(id int, reset bool) *testing.FixtureInstance {
+		return &testing.FixtureInstance{
 			Name: fmt.Sprintf("fixt%d", id),
 			Impl: newFakeFixture(
 				withSetUp(func(ctx context.Context, s *testing.FixtState) interface{} {

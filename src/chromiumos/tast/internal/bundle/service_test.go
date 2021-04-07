@@ -45,14 +45,14 @@ func startTestServer(t *gotesting.T, scfg *StaticConfig) protocol.TestServiceCli
 func TestTestServerListEntities(t *gotesting.T) {
 	t1 := &testing.TestInstance{Name: "pkg.Test1"}
 	t2 := &testing.TestInstance{Name: "pkg.Test2"}
-	f1 := &testing.Fixture{Name: "fixt1"}
-	f2 := &testing.Fixture{Name: "fixt2"}
+	f1 := &testing.FixtureInstance{Name: "fixt1"}
+	f2 := &testing.FixtureInstance{Name: "fixt2"}
 
 	reg := testing.NewRegistry()
 	reg.AddTestInstance(t1)
 	reg.AddTestInstance(t2)
-	reg.AddFixture(f1)
-	reg.AddFixture(f2)
+	reg.AddFixtureInstance(f1)
+	reg.AddFixtureInstance(f2)
 
 	scfg := NewStaticConfig(reg, 0, Delegate{})
 

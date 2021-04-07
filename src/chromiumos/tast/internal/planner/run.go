@@ -97,7 +97,7 @@ type Config struct {
 	// It is ignored if it is nil.
 	BeforeDownload func(context.Context)
 	// Fixtures is a map from a fixture name to its metadata.
-	Fixtures map[string]*testing.Fixture
+	Fixtures map[string]*testing.FixtureInstance
 	// StartFixtureName is a name of a fixture to start test execution.
 	// Tests requested to run should depend on the start fixture directly or
 	// indirectly.
@@ -238,7 +238,7 @@ func (p *plan) testsToRun() []*testing.TestInstance {
 // tree must not appear as a subtree of another fixture tree so that we can
 // check if a fixture tree is empty in O(1).
 type fixtTree struct {
-	fixt *testing.Fixture
+	fixt *testing.FixtureInstance
 
 	// Following fields are updated as we execute a plan.
 	tests    []*testing.TestInstance
@@ -346,7 +346,7 @@ func buildFixtPlan(tests []*testing.TestInstance, pcfg *Config) (*fixtPlan, erro
 		impl = &stubFixture{}
 	}
 	const infinite = 24 * time.Hour // a day is considered infinite
-	tree.fixt = &testing.Fixture{
+	tree.fixt = &testing.FixtureInstance{
 		// Do not set Name of a start fixture. entityOutputStream do not emit
 		// EntityStart/EntityEnd for unnamed entities.
 		Impl: impl,

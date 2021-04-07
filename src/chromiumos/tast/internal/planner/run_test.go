@@ -814,7 +814,7 @@ func TestRunFixture(t *gotesting.T) {
 		val1 = "val1"
 		val2 = "val2"
 	)
-	fixt1 := &testing.Fixture{
+	fixt1 := &testing.FixtureInstance{
 		Name: "fixt1",
 		Impl: newFakeFixture(
 			withSetUp(func(ctx context.Context, s *testing.FixtState) interface{} {
@@ -835,7 +835,7 @@ func TestRunFixture(t *gotesting.T) {
 				testcontext.Log(ctx, "fixt1 TearDown")
 			})),
 	}
-	fixt2 := &testing.Fixture{
+	fixt2 := &testing.FixtureInstance{
 		Name: "fixt2",
 		Impl: newFakeFixture(
 			withSetUp(func(ctx context.Context, s *testing.FixtState) interface{} {
@@ -858,7 +858,7 @@ func TestRunFixture(t *gotesting.T) {
 		Parent: "fixt1",
 	}
 	cfg := &Config{
-		Fixtures: map[string]*testing.Fixture{
+		Fixtures: map[string]*testing.FixtureInstance{
 			fixt1.Name: fixt1,
 			fixt2.Name: fixt2,
 		},
@@ -934,7 +934,7 @@ func TestRunFixture(t *gotesting.T) {
 }
 
 func TestRunFixtureSetUpFailure(t *gotesting.T) {
-	fixt1 := &testing.Fixture{
+	fixt1 := &testing.FixtureInstance{
 		Name: "fixt1",
 		Impl: newFakeFixture(
 			withSetUp(func(ctx context.Context, s *testing.FixtState) interface{} {
@@ -956,7 +956,7 @@ func TestRunFixtureSetUpFailure(t *gotesting.T) {
 				testcontext.Log(ctx, "fixt1 TearDown")
 			})),
 	}
-	fixt2 := &testing.Fixture{
+	fixt2 := &testing.FixtureInstance{
 		Name: "fixt2",
 		Impl: newFakeFixture(
 			withSetUp(func(ctx context.Context, s *testing.FixtState) interface{} {
@@ -979,7 +979,7 @@ func TestRunFixtureSetUpFailure(t *gotesting.T) {
 		Parent: "fixt1",
 	}
 	cfg := &Config{
-		Fixtures: map[string]*testing.Fixture{
+		Fixtures: map[string]*testing.FixtureInstance{
 			fixt1.Name: fixt1,
 			fixt2.Name: fixt2,
 		},
@@ -1065,14 +1065,14 @@ func TestRunFixtureRemoteSetUpFailure(t *gotesting.T) {
 }
 
 func TestRunFixtureResetFailure(t *gotesting.T) {
-	fixt1 := &testing.Fixture{
+	fixt1 := &testing.FixtureInstance{
 		Name: "fixt1",
 		Impl: newFakeFixture(withReset(func(ctx context.Context) error {
 			testcontext.Log(ctx, "Reset 1")
 			return errors.New("failure")
 		})),
 	}
-	fixt2 := &testing.Fixture{
+	fixt2 := &testing.FixtureInstance{
 		Name: "fixt2",
 		Impl: newFakeFixture(withReset(func(ctx context.Context) error {
 			testcontext.Log(ctx, "Reset 2")
@@ -1081,7 +1081,7 @@ func TestRunFixtureResetFailure(t *gotesting.T) {
 		Parent: "fixt1",
 	}
 	cfg := &Config{
-		Fixtures: map[string]*testing.Fixture{
+		Fixtures: map[string]*testing.FixtureInstance{
 			fixt1.Name: fixt1,
 			fixt2.Name: fixt2,
 		},
@@ -1143,14 +1143,14 @@ func TestRunFixtureResetFailure(t *gotesting.T) {
 }
 
 func TestRunFixtureMinimumReset(t *gotesting.T) {
-	fixt1 := &testing.Fixture{
+	fixt1 := &testing.FixtureInstance{
 		Name: "fixt1",
 		Impl: newFakeFixture(withReset(func(ctx context.Context) error {
 			testcontext.Log(ctx, "Reset 1")
 			return nil
 		})),
 	}
-	fixt2 := &testing.Fixture{
+	fixt2 := &testing.FixtureInstance{
 		Name: "fixt2",
 		Impl: newFakeFixture(withReset(func(ctx context.Context) error {
 			testcontext.Log(ctx, "Reset 2")
@@ -1158,7 +1158,7 @@ func TestRunFixtureMinimumReset(t *gotesting.T) {
 		})),
 		Parent: "fixt1",
 	}
-	fixt3 := &testing.Fixture{
+	fixt3 := &testing.FixtureInstance{
 		Name: "fixt3",
 		Impl: newFakeFixture(withReset(func(ctx context.Context) error {
 			testcontext.Log(ctx, "Reset 3")
@@ -1167,7 +1167,7 @@ func TestRunFixtureMinimumReset(t *gotesting.T) {
 		Parent: "fixt1",
 	}
 	cfg := &Config{
-		Fixtures: map[string]*testing.Fixture{
+		Fixtures: map[string]*testing.FixtureInstance{
 			fixt1.Name: fixt1,
 			fixt2.Name: fixt2,
 			fixt3.Name: fixt3,
@@ -1264,18 +1264,18 @@ func TestRunFixtureMinimumReset(t *gotesting.T) {
 }
 
 func TestRunFixtureMissing(t *gotesting.T) {
-	fixt1 := &testing.Fixture{
+	fixt1 := &testing.FixtureInstance{
 		Name:   "fixt1",
 		Impl:   newFakeFixture(),
 		Parent: "fixt0", // no such fixture
 	}
-	fixt2 := &testing.Fixture{
+	fixt2 := &testing.FixtureInstance{
 		Name:   "fixt2",
 		Impl:   newFakeFixture(),
 		Parent: "fixt1",
 	}
 	cfg := &Config{
-		Fixtures: map[string]*testing.Fixture{
+		Fixtures: map[string]*testing.FixtureInstance{
 			fixt1.Name: fixt1,
 			fixt2.Name: fixt2,
 		},
@@ -1323,7 +1323,7 @@ func TestRunFixtureVars(t *gotesting.T) {
 		undeclaredVarName = "undeclared"
 	)
 
-	fixt := &testing.Fixture{
+	fixt := &testing.FixtureInstance{
 		Name: "fixt",
 		Impl: newFakeFixture(withSetUp(func(ctx context.Context, s *testing.FixtState) interface{} {
 			func() {
@@ -1359,7 +1359,7 @@ func TestRunFixtureVars(t *gotesting.T) {
 	}}
 
 	cfg := &Config{
-		Fixtures: map[string]*testing.Fixture{fixt.Name: fixt},
+		Fixtures: map[string]*testing.FixtureInstance{fixt.Name: fixt},
 		Features: &protocol.Features{
 			Vars: map[string]string{
 				declaredVarName:   declaredVarValue,
@@ -1377,7 +1377,7 @@ func TestRunFixtureTestContext(t *gotesting.T) {
 	var wg sync.WaitGroup
 	wg.Add(2)
 
-	fixt := &testing.Fixture{
+	fixt := &testing.FixtureInstance{
 		Name: "fixt",
 		Impl: newFakeFixture(withPreTest(func(ctx context.Context, s *testing.FixtTestState) {
 			if err := s.TestContext().Err(); err != nil {
@@ -1412,7 +1412,7 @@ func TestRunFixtureTestContext(t *gotesting.T) {
 	}}
 
 	cfg := &Config{
-		Fixtures: map[string]*testing.Fixture{fixt.Name: fixt},
+		Fixtures: map[string]*testing.FixtureInstance{fixt.Name: fixt},
 	}
 	runTestsAndReadAll(t, tests, cfg)
 	wg.Wait()
@@ -1684,8 +1684,8 @@ func TestAttachStateToContext(t *gotesting.T) {
 func TestRunPlan(t *gotesting.T) {
 	pre1 := &testPre{name: "pre1"}
 	pre2 := &testPre{name: "pre2"}
-	fixt1 := &testing.Fixture{Name: "fixt1", Impl: newFakeFixture()}
-	fixt2 := &testing.Fixture{Name: "fixt2", Impl: newFakeFixture(), Parent: "fixt1"}
+	fixt1 := &testing.FixtureInstance{Name: "fixt1", Impl: newFakeFixture()}
+	fixt2 := &testing.FixtureInstance{Name: "fixt2", Impl: newFakeFixture(), Parent: "fixt1"}
 	cfg := &Config{
 		Features: &protocol.Features{
 			CheckDeps: true,
@@ -1694,7 +1694,7 @@ func TestRunPlan(t *gotesting.T) {
 				Unavailable: []string{"no"},
 			},
 		},
-		Fixtures: map[string]*testing.Fixture{
+		Fixtures: map[string]*testing.FixtureInstance{
 			fixt1.Name: fixt1,
 			fixt2.Name: fixt2,
 		},

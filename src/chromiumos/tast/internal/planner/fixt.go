@@ -171,7 +171,7 @@ func (st *FixtureStack) Val() interface{} {
 // and the resulting fixture stack is red.
 //
 // It is an error to call Push for a yellow fixture stack.
-func (st *FixtureStack) Push(ctx context.Context, fixt *testing.Fixture) error {
+func (st *FixtureStack) Push(ctx context.Context, fixt *testing.FixtureInstance) error {
 	status := st.Status()
 	if status == statusYellow {
 		return errors.New("BUG: fixture must not be pushed to a yellow stack")
@@ -325,7 +325,7 @@ func (st *FixtureStack) top() *statefulFixture {
 type statefulFixture struct {
 	cfg *Config
 
-	fixt *testing.Fixture
+	fixt *testing.FixtureInstance
 	root *testing.EntityRoot
 	fout *entityOutputStream
 
@@ -335,7 +335,7 @@ type statefulFixture struct {
 }
 
 // newStatefulFixture creates a new statefulFixture.
-func newStatefulFixture(fixt *testing.Fixture, root *testing.EntityRoot, fout *entityOutputStream, cfg *Config) *statefulFixture {
+func newStatefulFixture(fixt *testing.FixtureInstance, root *testing.EntityRoot, fout *entityOutputStream, cfg *Config) *statefulFixture {
 	return &statefulFixture{
 		cfg:    cfg,
 		fixt:   fixt,

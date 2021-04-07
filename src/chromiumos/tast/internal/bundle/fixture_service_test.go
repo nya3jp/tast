@@ -198,7 +198,7 @@ func TestFixtureServiceResponses(t *gotesting.T) {
 		t.Run(tc.name, func(t *gotesting.T) {
 			reg := testing.NewRegistry()
 
-			reg.AddFixture(&testing.Fixture{Name: "fake", Impl: tc.fixt})
+			reg.AddFixtureInstance(&testing.FixtureInstance{Name: "fake", Impl: tc.fixt})
 
 			ctx := context.Background()
 			rfcl, stop := startFakeFixtureService(ctx, t, reg)
@@ -289,7 +289,7 @@ func TestFixtureServiceParameters(t *gotesting.T) {
 
 	reg := testing.NewRegistry()
 
-	reg.AddFixture(&testing.Fixture{
+	reg.AddFixtureInstance(&testing.FixtureInstance{
 		Name:         "fake",
 		Vars:         []string{"var"},
 		SetUpTimeout: time.Second,
@@ -366,7 +366,7 @@ func TestFixtureServiceDefaultTempDir(t *gotesting.T) {
 	origTempDir := os.TempDir()
 	var setUpTempDir string
 	var tearDownTempDir string
-	reg.AddFixture(&testing.Fixture{
+	reg.AddFixtureInstance(&testing.FixtureInstance{
 		Name: "fake",
 		Impl: &fakeFixture{
 			setUp: func(ctx context.Context, s *testing.FixtState) interface{} {
@@ -471,7 +471,7 @@ func TestFixtureServiceTimeout(t *gotesting.T) {
 	c := make(chan struct{})
 	defer close(c)
 
-	reg.AddFixture(&testing.Fixture{Name: "fake", Impl: &fakeFixture{
+	reg.AddFixtureInstance(&testing.FixtureInstance{Name: "fake", Impl: &fakeFixture{
 		setUp: func(context.Context, *testing.FixtState) interface{} {
 			<-c
 			return nil
@@ -511,7 +511,7 @@ func TestFixtureServiceTimeout(t *gotesting.T) {
 
 func TestFixtureServiceWrongRequestOrder(t *gotesting.T) {
 	reg := testing.NewRegistry()
-	reg.AddFixture(&testing.Fixture{Name: "fake", Impl: &fakeFixture{}})
+	reg.AddFixtureInstance(&testing.FixtureInstance{Name: "fake", Impl: &fakeFixture{}})
 
 	td := sshtest.NewTestData(nil)
 	defer td.Close()

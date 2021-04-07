@@ -37,8 +37,8 @@ const (
 
 var (
 	// fakeFixture1 and fakeFixture2 are fake fixtures which fake bundles have.
-	fakeFixture1 *testing.Fixture = &testing.Fixture{Name: "fake1"}
-	fakeFixture2 *testing.Fixture = &testing.Fixture{Name: "fake2", Parent: "fake1"}
+	fakeFixture1 = &testing.FixtureInstance{Name: "fake1"}
+	fakeFixture2 = &testing.FixtureInstance{Name: "fake2", Parent: "fake1"}
 )
 
 func init() {
@@ -101,8 +101,8 @@ func runFakeBundle() int {
 	}
 
 	reg := testing.NewRegistry()
-	reg.AddFixture(fakeFixture1)
-	reg.AddFixture(fakeFixture2)
+	reg.AddFixtureInstance(fakeFixture1)
+	reg.AddFixtureInstance(fakeFixture2)
 
 	for i, res := range parts[2] {
 		var f testing.TestFunc

@@ -9,6 +9,7 @@ import (
 	"reflect"
 	gotesting "testing"
 
+	"github.com/google/go-cmp/cmp"
 	"google.golang.org/grpc"
 )
 
@@ -148,11 +149,11 @@ func TestAddTestConflictingPre(t *gotesting.T) {
 func TestAddFixtureDuplicateName(t *gotesting.T) {
 	const name = "foo"
 	reg := NewRegistry()
-	reg.AddFixture(&Fixture{Name: name})
+	reg.AddFixture(&Fixture{Name: name}, "pkg")
 	if errs := reg.Errors(); len(errs) > 0 {
 		t.Fatalf("Fixture registration failed: %v", errs)
 	}
-	reg.AddFixture(&Fixture{Name: name})
+	reg.AddFixture(&Fixture{Name: name}, "pkg2")
 	if errs := reg.Errors(); len(errs) == 0 {
 		t.Error("Duplicated fixture registration succeeded unexpectedly")
 	}
@@ -179,7 +180,7 @@ func TestAddFixtureInvalidName(t *gotesting.T) {
 		{"ieee1394", true},
 	} {
 		reg := NewRegistry()
-		reg.AddFixture(&Fixture{Name: tc.name})
+		reg.AddFixture(&Fixture{Name: tc.name}, "pkg")
 		errs := reg.Errors()
 		if tc.ok && len(errs) > 0 {
 			t.Errorf("AddFixture(%q) failed: %v", tc.name, errs)
@@ -220,14 +221,18 @@ func TestAllFixtures(t *gotesting.T) {
 	}
 
 	for _, f := range allFixts {
-		reg.AddFixture(f)
+		reg.AddFixture(f, "pkg")
 	}
 	if errs := reg.Errors(); len(errs) > 0 {
 		t.Fatal("Registration failed: ", errs)
 	}
 
-	fixts := reg.AllFixtures()
-	if len(fixts) != 3 {
-		t.Errorf("len(AllFixtures()) = %d; want 3", len(fixts))
+	want := map[string]*FixtureInstance{
+		"a": {Name: "a", Pkg: "pkg"},
+		"b": {Name: "b", Pkg: "pkg"},
+		"c": {Name: "c", Pkg: "pkg"},
+	}
+	if diff := cmp.Diff(reg.AllFixtures(), want); diff != "" {
+		t.Errorf("Result mismatch (-got +want):\n%v", diff)
 	}
 }

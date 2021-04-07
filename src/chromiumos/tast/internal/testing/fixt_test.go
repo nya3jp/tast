@@ -16,6 +16,7 @@ import (
 
 func TestFixtureEntityProto(t *testing.T) {
 	fixt := &FixtureInstance{
+		Pkg:         "pkg",
 		Name:        "chrome.LoggedIn",
 		Desc:        "Make sure logged into a Chrome session",
 		Contacts:    []string{"a@example.com", "b@example.com"},
@@ -26,6 +27,7 @@ func TestFixtureEntityProto(t *testing.T) {
 	want := &protocol.Entity{
 		Type:        protocol.EntityType_FIXTURE,
 		Name:        "chrome.LoggedIn",
+		Package:     "pkg",
 		Description: "Make sure logged into a Chrome session",
 		Fixture:     "system.Booted",
 		Dependencies: &protocol.EntityDependencies{

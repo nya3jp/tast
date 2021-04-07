@@ -162,7 +162,7 @@ func runFakeRemoteFixtureServer() int {
 			reg.AddFixture(&testing.Fixture{
 				Name: name,
 				Impl: fixt,
-			})
+			}, "pkg")
 		}
 	}()
 

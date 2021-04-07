@@ -80,8 +80,8 @@ func TestRunListWithDep(t *gotesting.T) {
 		{Name: "pkg.Test2", Func: f, SoftwareDeps: []string{missingDep}},
 	}
 
-	expectedPassTests := map[string]struct{}{tests[0].Name: struct{}{}}
-	expectedSkipTests := map[string]struct{}{tests[1].Name: struct{}{}}
+	expectedPassTests := map[string]struct{}{tests[0].Name: {}}
+	expectedSkipTests := map[string]struct{}{tests[1].Name: {}}
 
 	for _, test := range tests {
 		reg.AddTestInstance(test)
@@ -129,7 +129,7 @@ func TestRunListWithDep(t *gotesting.T) {
 func TestRunListFixtures(t *gotesting.T) {
 	reg := testing.NewRegistry()
 
-	fixts := []*testing.Fixture{
+	fixts := []*testing.FixtureInstance{
 		{Name: "b", Parent: "a"},
 		{Name: "c"},
 		{Name: "d"},
@@ -137,7 +137,7 @@ func TestRunListFixtures(t *gotesting.T) {
 	}
 
 	for _, f := range fixts {
-		reg.AddFixture(f)
+		reg.AddFixtureInstance(f)
 	}
 
 	// BundleListFixturesMode should output JSON-marshaled fixtures to stdout.
@@ -151,12 +151,21 @@ func TestRunListFixtures(t *gotesting.T) {
 	if err := json.Unmarshal(stdout.Bytes(), &got); err != nil {
 		t.Fatalf("json.Unmarshal(%q): %v", stdout.String(), err)
 	}
+
 	bundle := filepath.Base(os.Args[0])
+	newEntityInfo := func(name, fixture string) *jsonprotocol.EntityInfo {
+		return &jsonprotocol.EntityInfo{
+			Type:    jsonprotocol.EntityFixture,
+			Name:    name,
+			Fixture: fixture,
+			Bundle:  bundle,
+		}
+	}
 	want := []*jsonprotocol.EntityInfo{
-		{Type: jsonprotocol.EntityFixture, Name: "a", Bundle: bundle},
-		{Type: jsonprotocol.EntityFixture, Name: "b", Fixture: "a", Bundle: bundle},
-		{Type: jsonprotocol.EntityFixture, Name: "c", Bundle: bundle},
-		{Type: jsonprotocol.EntityFixture, Name: "d", Bundle: bundle},
+		newEntityInfo("a", ""),
+		newEntityInfo("b", "a"),
+		newEntityInfo("c", ""),
+		newEntityInfo("d", ""),
 	}
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Output mismatch (-got +want): %v", diff)

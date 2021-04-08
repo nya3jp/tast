@@ -44,7 +44,7 @@ func (l *Log) Empty() bool {
 	return len(l.Root.Children) == 0
 }
 
-// Write writes timing information to w as JSON, consisting of an array
+// WritePretty writes timing information to w as JSON, consisting of an array
 // of stages, each represented by an array consisting of the stage's duration, name,
 // and an optional array of child stages.
 //
@@ -58,7 +58,7 @@ func (l *Log) Empty() bool {
 // 	                 [2.000, "stage3"]]],
 // 	         [1.000, "stage4"]]],
 // 	 [0.531, "stage5"]]
-func (l *Log) Write(w io.Writer) error {
+func (l *Log) WritePretty(w io.Writer) error {
 	l.Root.mu.Lock()
 	defer l.Root.mu.Unlock()
 
@@ -73,7 +73,7 @@ func (l *Log) Write(w io.Writer) error {
 		if i > 0 {
 			indent = " "
 		}
-		if err := s.write(bw, indent, " ", i == len(l.Root.Children)-1); err != nil {
+		if err := s.writePretty(bw, indent, " ", i == len(l.Root.Children)-1); err != nil {
 			return err
 		}
 	}
@@ -168,12 +168,12 @@ func (s *Stage) End() {
 	s.EndTime = now()
 }
 
-// write writes information about the stage and its children to w as a JSON array.
+// writePretty writes information about the stage and its children to w as a JSON array.
 // The first line of output is indented by initialIndent, while any subsequent lines (e.g.
 // for child stages) are indented by followIndent. last should be true if this is the last
 // entry in its parent array; otherwise a trailing comma and newline are appended.
 // The caller is responsible for checking w for errors encountered while writing.
-func (s *Stage) write(w *bufio.Writer, initialIndent, followIndent string, last bool) error {
+func (s *Stage) writePretty(w *bufio.Writer, initialIndent, followIndent string, last bool) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -196,7 +196,7 @@ func (s *Stage) write(w *bufio.Writer, initialIndent, followIndent string, last 
 		io.WriteString(w, ", [\n")
 		ci := followIndent + strings.Repeat(" ", 8)
 		for i, c := range s.Children {
-			if err := c.write(w, ci, ci, i == len(s.Children)-1); err != nil {
+			if err := c.writePretty(w, ci, ci, i == len(s.Children)-1); err != nil {
 				return err
 			}
 		}

@@ -125,7 +125,7 @@ func (r *runCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{})
 			return
 		}
 		defer f.Close()
-		if err := tl.Write(f); err != nil {
+		if err := tl.WritePretty(f); err != nil {
 			lg.Log(err)
 		}
 	}()

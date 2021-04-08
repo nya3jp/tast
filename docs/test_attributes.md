@@ -46,6 +46,7 @@ Below is the list of most popular groups and their associated extra attributes:
           touch specific code paths.
        *  `wificell_perf`: measure WiFi performance.
        *  `wificell_stress`: Stress test the WiFi functionalities.
+       *  `wificell_mtbf`: measure Mean Time Between Failures (MTBF).
     *  Stability (optional): if `wificell_unstable` is present, the test is yet
        to be verified as stable; otherwise, the test is stable.
 *   `group:wificell_roam` - Tests that depends on [grover] (Googlers only) fixture to run.

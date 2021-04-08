@@ -285,6 +285,10 @@ third_party/autotest/files/server/site_tests/tast/control.runtime-probe
 				Desc: `Stress tests WiFi functionalities using Wificell fixture.`,
 			},
 			{
+				Name: "wificell_mtbf",
+				Desc: `Measure Mean Time Between Failures (MTBF) using Wificell fixture.`,
+			},
+			{
 				Name: "wificell_unstable",
 				Desc: `Indicates that this test is yet to be verified as stable.`,
 			},

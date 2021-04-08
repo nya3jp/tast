@@ -41,11 +41,11 @@ func (c *fakeClock) now() time.Time {
 	return t
 }
 
-// writeLog returns a buffer containing JSON data written by lg.Write.
-func writeLog(t *testing.T, lg *Log) *bytes.Buffer {
+// writePretty returns a buffer containing JSON data written by lg.WritePretty.
+func writePretty(t *testing.T, lg *Log) *bytes.Buffer {
 	b := &bytes.Buffer{}
-	if err := lg.Write(b); err != nil {
-		t.Fatal("Write() failed: ", err)
+	if err := lg.WritePretty(b); err != nil {
+		t.Fatal("WritePretty() failed: ", err)
 	}
 	return b
 }
@@ -85,14 +85,14 @@ func TestStage_End(t *testing.T) {
 	s0.StartChild("1").End()
 	s0.End()
 
-	actBuf := writeLog(t, lg)
-	expBuf := writeLog(t, expLog)
+	actBuf := writePretty(t, lg)
+	expBuf := writePretty(t, expLog)
 	if actBuf.String() != expBuf.String() {
 		t.Errorf("Got %v; want %v", actBuf.String(), expBuf.String())
 	}
 }
 
-func TestWrite(t *testing.T) {
+func TestWritePretty(t *testing.T) {
 	const (
 		name0 = "stage0"
 		name1 = "stage1"
@@ -115,7 +115,7 @@ func TestWrite(t *testing.T) {
 	l.StartTop(name4).End()
 
 	// Check the expected indenting as well.
-	act := writeLog(t, l).String()
+	act := writePretty(t, l).String()
 	exp := strings.TrimLeft(`
 [[7.000, "stage0", [
          [3.000, "stage1", [
@@ -124,7 +124,7 @@ func TestWrite(t *testing.T) {
  [1.000, "stage4"]]
 `, "\n")
 	if act != exp {
-		t.Errorf("Write() = %q; want %q", act, exp)
+		t.Errorf("WritePretty() = %q; want %q", act, exp)
 	}
 }
 
@@ -188,8 +188,8 @@ func TestImport(t *testing.T) {
 	addInnerStages(st)
 	st.End()
 
-	actBuf := writeLog(t, outerLog)
-	expBuf := writeLog(t, expLog)
+	actBuf := writePretty(t, outerLog)
+	expBuf := writePretty(t, expLog)
 	if actBuf.String() != expBuf.String() {
 		t.Errorf("Got %v; want %v", actBuf.String(), expBuf.String())
 	}

@@ -7,8 +7,11 @@ package rpc
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"io"
+	"io/ioutil"
 	"os"
+	"path/filepath"
 	"reflect"
 	gotesting "testing"
 
@@ -17,10 +20,13 @@ import (
 	"google.golang.org/grpc"
 
 	"chromiumos/tast/errors"
+	"chromiumos/tast/internal/fakeexec"
 	"chromiumos/tast/internal/protocol"
+	"chromiumos/tast/internal/sshtest"
 	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/internal/timing"
+	"chromiumos/tast/ssh"
 	"chromiumos/tast/testutil"
 )
 
@@ -467,6 +473,93 @@ func TestRPCExtraCoreServices(t *gotesting.T) {
 	defer pp.Close(ctx)
 
 	if _, err := pp.CoreClient.Ping(ctx, &empty.Empty{}); err != nil {
+		t.Error("Ping failed: ", err)
+	}
+}
+
+func TestRPCOverExec(t *gotesting.T) {
+	ctx := context.Background()
+
+	// Create a loopback executable providing gRPC server.
+	dir, err := ioutil.TempDir("", "tast-unittest.")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer os.RemoveAll(dir)
+
+	path := filepath.Join(dir, "rpc-server")
+	lo, err := fakeexec.CreateLoopback(path, func(_ []string, stdin io.Reader, stdout, _ io.WriteCloser) int {
+		if err := RunServer(stdin, stdout, nil, func(srv *grpc.Server, req *protocol.HandshakeRequest) error {
+			protocol.RegisterPingCoreServer(srv, &pingCoreServer{})
+			return nil
+		}); err != nil {
+			fmt.Fprintf(os.Stderr, "FATAL: %v\n", err)
+			return 1
+		}
+		return 0
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer lo.Close()
+
+	// Connect to the server and try calling a method.
+	conn, err := DialExec(ctx, path, &protocol.HandshakeRequest{})
+	if err != nil {
+		t.Fatalf("DialExec failed: %v", err)
+	}
+	defer func() {
+		if err := conn.Close(ctx); err != nil {
+			t.Errorf("Close failed: %v", err)
+		}
+	}()
+
+	cl := protocol.NewPingCoreClient(conn.Conn)
+	if _, err := cl.Ping(ctx, &empty.Empty{}); err != nil {
+		t.Error("Ping failed: ", err)
+	}
+}
+
+func TestRPCOverSSH(t *gotesting.T) {
+	ctx := context.Background()
+
+	// Start a fake SSH server providing gRPC server.
+	td := sshtest.NewTestData(func(req *sshtest.ExecReq) {
+		req.Start(true)
+		if err := RunServer(req, req, nil, func(srv *grpc.Server, req *protocol.HandshakeRequest) error {
+			protocol.RegisterPingCoreServer(srv, &pingCoreServer{})
+			return nil
+		}); err != nil {
+			fmt.Fprintf(req.Stderr(), "FATAL: %v\n", err)
+			req.End(1)
+			return
+		}
+		req.End(0)
+	})
+	defer td.Close()
+
+	sshConn, err := ssh.New(ctx, &ssh.Options{
+		Hostname: td.Srvs[0].Addr().String(),
+		KeyFile:  td.UserKeyFile,
+	})
+	if err != nil {
+		t.Fatalf("Failed to connect to fake SSH server: %v", err)
+	}
+	defer sshConn.Close(ctx)
+
+	// Connect to the server and try calling a method.
+	conn, err := DialSSH(ctx, sshConn, "", &protocol.HandshakeRequest{})
+	if err != nil {
+		t.Fatalf("DialSSH failed: %v", err)
+	}
+	defer func() {
+		if err := conn.Close(ctx); err != nil {
+			t.Errorf("Close failed: %v", err)
+		}
+	}()
+
+	cl := protocol.NewPingCoreClient(conn.Conn)
+	if _, err := cl.Ping(ctx, &empty.Empty{}); err != nil {
 		t.Error("Ping failed: ", err)
 	}
 }

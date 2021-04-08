@@ -69,7 +69,9 @@ func DialSSH(ctx context.Context, conn *ssh.Conn, path string, req *protocol.Han
 
 	return newClient(ctx, stdout, stdin, req, func(ctx context.Context) error {
 		cmd.Abort()
-		return cmd.Wait(ctx)
+		// Ignore errors from Wait since Abort above causes it to return context.Canceled.
+		cmd.Wait(ctx)
+		return nil
 	})
 }
 

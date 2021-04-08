@@ -16,6 +16,23 @@
       "message": "Looks good.",
       "revId": "d4fee86b45e975c483fbbe28c09e3caf50c8e8b9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d6b9777f_d6095fd4",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-04-08T04:55:36Z",
+      "side": 1,
+      "message": "Sorry. Accidentally, hit CQ+2 instead of CR+2.",
+      "revId": "d4fee86b45e975c483fbbe28c09e3caf50c8e8b9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

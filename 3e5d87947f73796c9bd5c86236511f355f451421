@@ -1,0 +1,90 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e0600bd9_cc1310ee",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-04-09T07:44:01Z",
+      "side": 1,
+      "message": "Thanks looks nice overall.\n",
+      "revId": "3e5d87947f73796c9bd5c86236511f355f451421",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5af50343_4fc5d4a4",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/symbolize/breakpad/minidump.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 247,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-04-09T07:44:01Z",
+      "side": 1,
+      "message": "Returning success sounds odd since we couldn\u0027t find a stream. Can you define an error, and check for the error in callers?",
+      "range": {
+        "startLine": 247,
+        "startChar": 13,
+        "endLine": 247,
+        "endChar": 16
+      },
+      "revId": "3e5d87947f73796c9bd5c86236511f355f451421",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c0d8bc8e_fb1c69a4",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/symbolize/symbolize.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-04-09T07:44:01Z",
+      "side": 1,
+      "message": "Hmm, it would be nice to avoid mocking function calls if possible.\n\nAn alternative way I can think of is to install a custom script named \"gsutil\", but I\u0027m not sure if it\u0027s easy.",
+      "range": {
+        "startLine": 36,
+        "startChar": 0,
+        "endLine": 36,
+        "endChar": 46
+      },
+      "revId": "3e5d87947f73796c9bd5c86236511f355f451421",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0da54df1_c116e935",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/symbolize/symbolize_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-04-09T07:44:01Z",
+      "side": 1,
+      "message": "Thanks for adding a unit test!",
+      "range": {
+        "startLine": 16,
+        "startChar": 5,
+        "endLine": 16,
+        "endChar": 18
+      },
+      "revId": "3e5d87947f73796c9bd5c86236511f355f451421",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

@@ -149,9 +149,9 @@ type FeatureArgs struct {
 	// regex, the test is skipped instead of failing.
 	// If empty, no tests are skipped due to missing vars.
 	MaybeMissingVars string `json:"maybeMissingVars,omitempty"`
-	// CheckSoftwareDeps is true if each test's SoftwareDeps field should be checked against
-	// AvailableSoftwareFeatures and UnavailableSoftwareFeatures.
-	CheckSoftwareDeps bool `json:"checkSoftwareDeps,omitempty"`
+	// CheckDeps indicates whether test runners should skip tests whose
+	// dependencies are not satisfied by available features.
+	CheckDeps bool `json:"checkSoftwareDeps,omitempty"`
 	// AvailableSoftwareFeatures contains a list of software features supported by the DUT.
 	AvailableSoftwareFeatures []string `json:"availableSoftwareFeatures,omitempty"`
 	// UnavailableSoftwareFeatures contains a list of software features supported by the DUT.
@@ -169,7 +169,7 @@ type FeatureArgs struct {
 
 // Features returns protocol.Features to be used to check test dependencies.
 func (a *FeatureArgs) Features() *protocol.Features {
-	if !a.CheckSoftwareDeps {
+	if !a.CheckDeps {
 		return nil
 	}
 

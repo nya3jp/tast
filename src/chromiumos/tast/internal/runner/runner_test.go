@@ -546,7 +546,7 @@ func TestCheckDepsWhenRunManually(t *gotesting.T) {
 	if err != nil {
 		t.Fatal("BundleArgs failed: ", err)
 	}
-	if !bundleArgs.RunTests.CheckSoftwareDeps {
+	if !bundleArgs.RunTests.CheckDeps {
 		t.Errorf("%s wouldn't request checking test deps", sig)
 	}
 	if exp := []string{"both", "third"}; !reflect.DeepEqual(bundleArgs.RunTests.AvailableSoftwareFeatures, exp) {

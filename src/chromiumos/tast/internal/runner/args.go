@@ -222,7 +222,7 @@ func setManualDepsArgs(args *jsonprotocol.RunnerArgs, cfg *Config, extraUSEFlags
 	if err != nil {
 		return command.NewStatusErrorf(statusError, "%v", err)
 	}
-	args.RunTests.BundleArgs.CheckSoftwareDeps = true
+	args.RunTests.BundleArgs.CheckDeps = true
 	args.RunTests.BundleArgs.AvailableSoftwareFeatures = features.Available
 	args.RunTests.BundleArgs.UnavailableSoftwareFeatures = features.Unavailable
 	return nil

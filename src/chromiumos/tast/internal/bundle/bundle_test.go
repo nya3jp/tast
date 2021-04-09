@@ -330,7 +330,7 @@ func TestRunTestsMissingSoftwareDeps(t *gotesting.T) {
 			OutDir:  tmpDir,
 			DataDir: tmpDir,
 			FeatureArgs: jsonprotocol.FeatureArgs{
-				CheckSoftwareDeps:           true,
+				CheckDeps:                   true,
 				TestVars:                    map[string]string{},
 				AvailableSoftwareFeatures:   []string{validDep},
 				UnavailableSoftwareFeatures: []string{missingDep},
@@ -481,9 +481,9 @@ func TestRunTestsVarDeps(t *gotesting.T) {
 					OutDir:  tmpDir,
 					DataDir: tmpDir,
 					FeatureArgs: jsonprotocol.FeatureArgs{
-						CheckSoftwareDeps: true,
-						TestVars:          testVars,
-						MaybeMissingVars:  tc.maybeMissingVars,
+						CheckDeps:        true,
+						TestVars:         testVars,
+						MaybeMissingVars: tc.maybeMissingVars,
 					},
 				},
 			}
@@ -554,7 +554,7 @@ func TestRunTestsSkipTestWithPrecondition(t *gotesting.T) {
 			OutDir:  tmpDir,
 			DataDir: tmpDir,
 			FeatureArgs: jsonprotocol.FeatureArgs{
-				CheckSoftwareDeps:           true,
+				CheckDeps:                   true,
 				UnavailableSoftwareFeatures: []string{"dep"},
 			},
 		},
@@ -741,7 +741,7 @@ func TestRunExternalDataFiles(t *gotesting.T) {
 			Target:  td.Srvs[0].Addr().String(),
 			KeyFile: td.UserKeyFile,
 			FeatureArgs: jsonprotocol.FeatureArgs{
-				CheckSoftwareDeps:           true,
+				CheckDeps:                   true,
 				AvailableSoftwareFeatures:   []string{"dep1"},
 				UnavailableSoftwareFeatures: []string{"dep2"},
 			},
@@ -879,7 +879,7 @@ func TestRunListWithDep(t *gotesting.T) {
 		Mode: jsonprotocol.BundleListTestsMode,
 		ListTests: &jsonprotocol.BundleListTestsArgs{
 			FeatureArgs: jsonprotocol.FeatureArgs{
-				CheckSoftwareDeps:           true,
+				CheckDeps:                   true,
 				TestVars:                    map[string]string{},
 				AvailableSoftwareFeatures:   []string{validDep},
 				UnavailableSoftwareFeatures: []string{missingDep},

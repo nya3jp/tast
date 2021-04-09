@@ -364,7 +364,7 @@ func Wifi80211ax() Condition {
 		// Some models of boards excluded from the platform skip do not support
 		// 802.11ax. To be precise as possible, we will skip these models as well.
 		modelCondition := SkipOnModel(
-			"ezkinil", "dirinboz", "gumboz", "madoo", "vilboz",
+			"ezkinil", "dirinboz", "gumboz", "jelboz", "lantis", "madoo", "vilboz",
 		)
 		if err := modelCondition.Satisfied(f); err != nil {
 			return err
@@ -426,7 +426,7 @@ func WifiIntel() Condition {
 		// for now there is no better way to specify the exact hardware
 		// parameters needed for this dependency. (See crbug.com/1070299.)
 		modelCondition := SkipOnModel(
-			"blooglet", "dirinboz", "ezkinil", "gumboz", "madoo", "vilboz", "vorticon",
+			"blooglet", "dirinboz", "ezkinil", "gumboz", "jelboz", "lantis", "madoo", "vilboz", "vorticon",
 		)
 		if err := modelCondition.Satisfied(f); err != nil {
 			return err

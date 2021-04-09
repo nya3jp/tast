@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/golang/protobuf/proto"
+	"github.com/golang/protobuf/ptypes"
 	"go.chromium.org/chromiumos/config/go/api"
 	"go.chromium.org/chromiumos/infra/proto/go/device"
 
@@ -256,6 +257,75 @@ type BundleRunTestsArgs struct {
 
 	// StartFixtureName is the remote fixture name that ran for the test.
 	StartFixtureName string `json:"startFixtureName,omitempty"`
+}
+
+// Proto generates protocol.RunConfig.
+func (a *BundleRunTestsArgs) Proto() *protocol.RunConfig {
+	var remoteCfg *protocol.RemoteTestConfig
+	var tlwSelfName string
+	// We consider that BundleRunTestsArgs is for remote tests if Target is
+	// non-empty.
+	if a.Target == "" {
+		tlwSelfName = a.DUTName
+	} else {
+		companionDUTs := make(map[string]*protocol.DUTConfig)
+		for role, addr := range a.CompanionDUTs {
+			companionDUTs[role] = &protocol.DUTConfig{
+				SshConfig: &protocol.SSHConfig{
+					Target:  addr,
+					KeyFile: a.KeyFile,
+					KeyDir:  a.KeyDir,
+				},
+			}
+		}
+		remoteCfg = &protocol.RemoteTestConfig{
+			PrimaryDut: &protocol.DUTConfig{
+				SshConfig: &protocol.SSHConfig{
+					Target:  a.Target,
+					KeyFile: a.KeyFile,
+					KeyDir:  a.KeyDir,
+				},
+				TlwName: a.DUTName,
+			},
+			CompanionDuts:  companionDUTs,
+			LocalBundleDir: a.LocalBundleDir,
+			MetaTestConfig: &protocol.MetaTestConfig{
+				TastPath: a.TastPath,
+				RunFlags: a.RunFlags,
+			},
+		}
+	}
+
+	var startFixtErrors []*protocol.Error
+	for _, r := range a.SetUpErrors {
+		startFixtErrors = append(startFixtErrors, &protocol.Error{Reason: r})
+	}
+
+	return &protocol.RunConfig{
+		Tests: a.Patterns,
+		Dirs: &protocol.RunDirectories{
+			DataDir: a.DataDir,
+			OutDir:  a.OutDir,
+			TempDir: a.TempDir,
+		},
+		Features: a.Features(),
+		ServiceConfig: &protocol.ServiceConfig{
+			Devservers:  a.Devservers,
+			TlwServer:   a.TLWServer,
+			TlwSelfName: tlwSelfName,
+		},
+		DataFileConfig: &protocol.DataFileConfig{
+			DownloadMode:      a.DownloadMode.Proto(),
+			BuildArtifactsUrl: a.BuildArtifactsURL,
+		},
+		RemoteTestConfig: remoteCfg,
+		StartFixtureState: &protocol.StartFixtureState{
+			Name:   a.StartFixtureName,
+			Errors: startFixtErrors,
+		},
+		HeartbeatInterval: ptypes.DurationProto(a.HeartbeatInterval),
+		WaitUntilReady:    a.WaitUntilReady,
+	}
 }
 
 // BundleListTestsArgs is nested within BundleArgs and contains arguments used by BundleListTestsMode.

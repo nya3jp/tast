@@ -105,7 +105,7 @@ func TestRemoteRun(t *gotesting.T) {
 				RunFlags:       runFlags,
 				LocalBundleDir: fakerunner.MockLocalBundleDir,
 				FeatureArgs: jsonprotocol.FeatureArgs{
-					CheckSoftwareDeps: false,
+					CheckDeps: false,
 				},
 				Devservers:        fakerunner.MockDevservers,
 				TLWServer:         td.Cfg.TLWServer,

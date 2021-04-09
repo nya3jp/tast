@@ -88,9 +88,9 @@ func GetDUTInfo(ctx context.Context, cfg *config.Config, state *config.State, cc
 // featureArgsFromConfig returns feature arguments based on the configuration parameter.
 func featureArgsFromConfig(cfg *config.Config, state *config.State) *jsonprotocol.FeatureArgs {
 	args := jsonprotocol.FeatureArgs{
-		CheckSoftwareDeps: cfg.CheckTestDeps,
-		TestVars:          cfg.TestVars,
-		MaybeMissingVars:  cfg.MaybeMissingVars,
+		CheckDeps:        cfg.CheckTestDeps,
+		TestVars:         cfg.TestVars,
+		MaybeMissingVars: cfg.MaybeMissingVars,
 	}
 	if state.SoftwareFeatures != nil {
 		args.AvailableSoftwareFeatures = state.SoftwareFeatures.Available

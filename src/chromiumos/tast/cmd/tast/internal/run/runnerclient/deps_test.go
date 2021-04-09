@@ -57,7 +57,7 @@ func checkRunnerTestDepsArgs(t *testing.T, cfg *config.Config, state *config.Sta
 	exp := jsonprotocol.RunnerRunTestsArgs{
 		BundleArgs: jsonprotocol.BundleRunTestsArgs{
 			FeatureArgs: jsonprotocol.FeatureArgs{
-				CheckSoftwareDeps:           checkDeps,
+				CheckDeps:                   checkDeps,
 				AvailableSoftwareFeatures:   avail,
 				UnavailableSoftwareFeatures: unavail,
 				DeviceConfig: jsonprotocol.DeviceConfigJSON{

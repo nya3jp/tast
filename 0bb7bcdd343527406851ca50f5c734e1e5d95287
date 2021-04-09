@@ -33,6 +33,24 @@
       "message": "platform may be nil, because it just adds warning to the array in case of error. Same for model and brand.",
       "revId": "0bb7bcdd343527406851ca50f5c734e1e5d95287",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c1ebc686_976bb6d1",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 235,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-04-09T08:51:26Z",
+      "side": 1,
+      "message": "Done.\n\nThe difference between having this field nil or the empty value is only in the error message. (see platformListed in hwdep.go) However it does not change the result boolean.\nConsidering this field is deprecated (and new field takes precedence), I think it would be acceptable.",
+      "parentUuid": "df61905a_cc5d91a6",
+      "revId": "0bb7bcdd343527406851ca50f5c734e1e5d95287",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

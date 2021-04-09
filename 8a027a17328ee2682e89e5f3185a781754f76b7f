@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "09e1d2bb_b3ef7d48",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 7
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-04-09T08:51:26Z",
+      "side": 1,
+      "message": "Fixed a potential cause that crashed in vm builders.\n(dry-run seems not have vm builder, unfortunately)",
+      "revId": "8a027a17328ee2682e89e5f3185a781754f76b7f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

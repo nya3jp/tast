@@ -16,6 +16,12 @@ option go_package = "chromiumos/tast/internal/protocol";
 service TestService {
   // ListEntities requests all entities available on the server.
   rpc ListEntities(ListEntitiesRequest) returns (ListEntitiesResponse) {}
+
+  // RunTests requests to run tests.
+  // A client must send an initial request message containing RunTestsInit to
+  // a server. Then a server starts running tests and report progress in
+  // streamed response messages.
+  rpc RunTests(stream RunTestsRequest) returns (stream RunTestsResponse) {}
 }
 
 message ListEntitiesRequest { Features features = 1; }
@@ -24,6 +30,20 @@ message ListEntitiesResponse {
   // Entities is a list of entities available on the server. The order of
   // entities is unspecified.
   repeated ResolvedEntity entities = 1;
+}
+
+message RunTestsRequest {
+  oneof type { RunTestsInit run_tests_init = 1; }
+}
+
+message RunTestsResponse {
+  oneof type {
+    RunLogEvent run_log = 1;
+    EntityStartEvent entity_start = 2;
+    EntityLogEvent entity_log = 3;
+    EntityErrorEvent entity_error = 4;
+    EntityEndEvent entity_end = 5;
+  }
 }
 
 // EntityType represents a type of an entity.
@@ -66,6 +86,8 @@ message EntityLegacyData {
   repeated string software_deps = 4;
   string bundle = 5;
 }
+
+message RunTestsInit { RunConfig run_config = 1; }
 
 // RunConfig contains parameters needed to run tests in a test bundle.
 message RunConfig {
@@ -260,6 +282,7 @@ message EntityEndEvent {
   google.protobuf.Timestamp time = 1;
   string entity_name = 2;
   Skip skip = 3;
+  TimingLog timing_log = 4;
 }
 
 // Skip describes the reasons why an entity is skipped.

@@ -33,6 +33,23 @@
       "message": "PTAL",
       "revId": "8a027a17328ee2682e89e5f3185a781754f76b7f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6ebec1d7_f391c884",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 7
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-04-09T10:05:22Z",
+      "side": 1,
+      "message": "Please add me to the attention set if you want another iteration of review, it\u0027s rare that I notice \"PTAL\" message without it...\n\nThat said I\u0027m sorry I\u0027m finishing my day now, let me review this change next week.\n",
+      "revId": "8a027a17328ee2682e89e5f3185a781754f76b7f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

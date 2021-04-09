@@ -27,6 +27,7 @@ import (
 	"chromiumos/tast/internal/devserver/devservertest"
 	"chromiumos/tast/internal/extdata"
 	"chromiumos/tast/internal/jsonprotocol"
+	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/sshtest"
 	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/testing"
@@ -106,8 +107,8 @@ func TestRunTests(t *gotesting.T) {
 	stdout := bytes.Buffer{}
 	tests := reg.AllTests()
 	var preRunCalls, postRunCalls, preTestCalls, postTestCalls int
-	args := jsonprotocol.BundleArgs{
-		RunTests: &jsonprotocol.BundleRunTestsArgs{
+	cfg := &protocol.RunConfig{
+		Dirs: &protocol.RunDirectories{
 			OutDir:  tmpDir,
 			DataDir: tmpDir,
 			TempDir: runTmpDir,
@@ -134,8 +135,8 @@ func TestRunTests(t *gotesting.T) {
 		},
 	})
 
-	sig := fmt.Sprintf("runTests(..., %+v, %+v)", args, *scfg)
-	if err := runTests(context.Background(), &stdout, &args, scfg, localBundle, tests); err != nil {
+	sig := fmt.Sprintf("runTests(..., %+v, %+v)", *cfg, *scfg)
+	if err := runTests(context.Background(), &stdout, cfg, scfg, localBundle, tests); err != nil {
 		t.Fatalf("%v failed: %v", sig, err)
 	}
 
@@ -236,8 +237,8 @@ func TestRunTestsTimeout(t *gotesting.T) {
 	stdout := bytes.Buffer{}
 	tmpDir := testutil.TempDir(t)
 	defer os.RemoveAll(tmpDir)
-	args := jsonprotocol.BundleArgs{
-		RunTests: &jsonprotocol.BundleRunTestsArgs{
+	cfg := &protocol.RunConfig{
+		Dirs: &protocol.RunDirectories{
 			OutDir:  tmpDir,
 			DataDir: tmpDir,
 		},
@@ -245,8 +246,8 @@ func TestRunTestsTimeout(t *gotesting.T) {
 
 	// The first test should time out after 1 millisecond.
 	// The second test is not run.
-	if err := runTests(context.Background(), &stdout, &args, newStaticConfig(reg, 0, Delegate{}), localBundle, reg.AllTests()); err == nil {
-		t.Fatalf("runTests(..., %+v, ...) succeeded unexpectedly", args)
+	if err := runTests(context.Background(), &stdout, cfg, newStaticConfig(reg, 0, Delegate{}), localBundle, reg.AllTests()); err == nil {
+		t.Fatalf("runTests(..., %+v, ...) succeeded unexpectedly", *cfg)
 	}
 
 	// EntityStart, EntityError and EntityEnd should be observed exactly once for the first test.
@@ -293,7 +294,7 @@ func TestRunTestsTimeout(t *gotesting.T) {
 
 func TestRunTestsNoTests(t *gotesting.T) {
 	// runTests should report failure when passed an empty slice of tests.
-	if err := runTests(context.Background(), &bytes.Buffer{}, &jsonprotocol.BundleArgs{RunTests: &jsonprotocol.BundleRunTestsArgs{}},
+	if err := runTests(context.Background(), &bytes.Buffer{}, nil,
 		newStaticConfig(testing.NewRegistry(), 0, Delegate{}), localBundle, []*testing.TestInstance{}); !errorHasStatus(err, statusNoTests) {
 		t.Fatalf("runTests() = %v; want status %v", err, statusNoTests)
 	}
@@ -772,9 +773,9 @@ func TestRunStartFixture(t *gotesting.T) {
 	// runTests should not run runHook if tests depend on remote fixtures.
 	// TODO(crbug/1184567): consider long term plan about interactions between
 	// remote fixtures and run hooks.
-	if err := runTests(context.Background(), &bytes.Buffer{}, &jsonprotocol.BundleArgs{RunTests: &jsonprotocol.BundleRunTestsArgs{
-		StartFixtureName: "foo",
-	}}, newStaticConfig(testing.NewRegistry(), 0, Delegate{
+	if err := runTests(context.Background(), &bytes.Buffer{}, &protocol.RunConfig{
+		StartFixtureState: &protocol.StartFixtureState{Name: "foo"},
+	}, newStaticConfig(testing.NewRegistry(), 0, Delegate{
 		RunHook: func(context.Context) (func(context.Context) error, error) {
 			t.Error("runHook unexpectedly called")
 			return nil, nil
@@ -789,9 +790,9 @@ func TestRunStartFixture(t *gotesting.T) {
 
 	// If StartFixtureName is empty, runHook should run.
 	called := false
-	if err := runTests(context.Background(), &bytes.Buffer{}, &jsonprotocol.BundleArgs{RunTests: &jsonprotocol.BundleRunTestsArgs{
-		StartFixtureName: "",
-	}}, newStaticConfig(testing.NewRegistry(), 0, Delegate{
+	if err := runTests(context.Background(), &bytes.Buffer{}, &protocol.RunConfig{
+		StartFixtureState: &protocol.StartFixtureState{Name: ""},
+	}, newStaticConfig(testing.NewRegistry(), 0, Delegate{
 		RunHook: func(context.Context) (func(context.Context) error, error) {
 			called = true
 			return nil, nil

@@ -44,6 +44,30 @@ const (
 	DownloadLazy
 )
 
+// DownloadModeFromProto converts protocol.DownloadMode to planner.DownloadMode.
+func DownloadModeFromProto(p protocol.DownloadMode) (DownloadMode, error) {
+	switch p {
+	case protocol.DownloadMode_BATCH:
+		return DownloadBatch, nil
+	case protocol.DownloadMode_LAZY:
+		return DownloadLazy, nil
+	default:
+		return DownloadBatch, errors.Errorf("unknown DownloadMode: %v", p)
+	}
+}
+
+// Proto converts planner.DownloadMode to protocol.DownloadMode.
+func (m DownloadMode) Proto() protocol.DownloadMode {
+	switch m {
+	case DownloadBatch:
+		return protocol.DownloadMode_BATCH
+	case DownloadLazy:
+		return protocol.DownloadMode_LAZY
+	default:
+		panic(fmt.Sprintf("Unknown DownloadMode: %v", m))
+	}
+}
+
 // Config contains details about how the planner should run tests.
 type Config struct {
 	// DataDir is the path to the base directory containing test data files.

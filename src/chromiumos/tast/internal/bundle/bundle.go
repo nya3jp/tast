@@ -18,6 +18,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/golang/protobuf/ptypes"
+
 	"chromiumos/tast/dut"
 	"chromiumos/tast/internal/command"
 	"chromiumos/tast/internal/control"
@@ -143,7 +145,7 @@ func run(ctx context.Context, clArgs []string, stdin io.Reader, stdout, stderr i
 		if err != nil {
 			return command.WriteError(stderr, err)
 		}
-		if err := runTests(ctx, stdout, args, scfg, bt, tests); err != nil {
+		if err := runTests(ctx, stdout, args.RunTests.Proto(), scfg, bt, tests); err != nil {
 			return command.WriteError(stderr, err)
 		}
 		return statusSuccess
@@ -291,15 +293,24 @@ func (ew *eventWriter) EntityEnd(ei *protocol.Entity, skipReasons []string, timi
 //
 // If an error is encountered in the test harness (as opposed to in a test), an error is returned.
 // Otherwise, nil is returned (test errors will be reported via EntityError control messages).
-func runTests(ctx context.Context, stdout io.Writer, args *jsonprotocol.BundleArgs, scfg *staticConfig,
+func runTests(ctx context.Context, stdout io.Writer, cfg *protocol.RunConfig, scfg *staticConfig,
 	bt bundleType, tests []*testing.TestInstance) error {
 	ctx = testcontext.WithPrivateData(ctx, testcontext.PrivateData{
-		WaitUntilReady: args.RunTests.WaitUntilReady,
+		WaitUntilReady: cfg.GetWaitUntilReady(),
 	})
+
+	var hbi time.Duration
+	if pb := cfg.GetHeartbeatInterval(); pb != nil {
+		var err error
+		hbi, err = ptypes.Duration(pb)
+		if err != nil {
+			return command.NewStatusErrorf(statusError, "%v", err)
+		}
+	}
 
 	mw := control.NewMessageWriter(stdout)
 
-	hbw := control.NewHeartbeatWriter(mw, args.RunTests.HeartbeatInterval)
+	hbw := control.NewHeartbeatWriter(mw, hbi)
 	defer hbw.Stop()
 
 	ew := newEventWriter(mw)
@@ -311,16 +322,17 @@ func runTests(ctx context.Context, stdout io.Writer, args *jsonprotocol.BundleAr
 		return command.NewStatusErrorf(statusNoTests, "no tests matched by pattern(s)")
 	}
 
-	if args.RunTests.TempDir == "" {
+	tempDir := cfg.GetDirs().GetTempDir()
+	if tempDir == "" {
 		var err error
-		args.RunTests.TempDir, err = defaultTempDir()
+		tempDir, err = defaultTempDir()
 		if err != nil {
 			return err
 		}
-		defer os.RemoveAll(args.RunTests.TempDir)
+		defer os.RemoveAll(tempDir)
 	}
 
-	restoreTempDir, err := prepareTempDir(args.RunTests.TempDir)
+	restoreTempDir, err := prepareTempDir(tempDir)
 	if err != nil {
 		return err
 	}
@@ -333,7 +345,7 @@ func runTests(ctx context.Context, stdout io.Writer, args *jsonprotocol.BundleAr
 	// fixtures just have set up, e.g. enterprise enrollment.
 	// TODO(crbug/1184567): consider long term plan about interactions between
 	// remote fixtures and run hooks.
-	if scfg.runHook != nil && args.RunTests.StartFixtureName == "" {
+	if scfg.runHook != nil && cfg.GetStartFixtureState().GetName() == "" {
 		var err error
 		postRunFunc, err = scfg.runHook(ctx)
 		if err != nil {
@@ -343,8 +355,11 @@ func runTests(ctx context.Context, stdout io.Writer, args *jsonprotocol.BundleAr
 
 	var rd *testing.RemoteData
 	if bt == remoteBundle {
+		rcfg := cfg.GetRemoteTestConfig()
+
 		testcontext.Log(ctx, "Connecting to DUT")
-		dt, err := connectToTarget(ctx, args.RunTests.Target, args.RunTests.KeyFile, args.RunTests.KeyDir, scfg.beforeReboot)
+		sshCfg := rcfg.GetPrimaryDut().GetSshConfig()
+		dt, err := connectToTarget(ctx, sshCfg.GetTarget(), sshCfg.GetKeyFile(), sshCfg.GetKeyDir(), scfg.beforeReboot)
 		if err != nil {
 			return command.NewStatusErrorf(statusError, "failed to connect to DUT: %v", err)
 		}
@@ -365,41 +380,47 @@ func runTests(ctx context.Context, stdout io.Writer, args *jsonprotocol.BundleAr
 				dut.Close(ctx)
 			}
 		}()
-		for role, addr := range args.RunTests.CompanionDUTs {
-			dut, err := connectToTarget(ctx, addr, args.RunTests.KeyFile, args.RunTests.KeyDir, scfg.beforeReboot)
+		for role, dut := range rcfg.GetCompanionDuts() {
+			sshCfg := dut.GetSshConfig()
+			d, err := connectToTarget(ctx, sshCfg.GetTarget(), sshCfg.GetKeyFile(), sshCfg.GetKeyDir(), scfg.beforeReboot)
 			if err != nil {
-				return command.NewStatusErrorf(statusError, "failed to connect to companion DUT %v: %v", addr, err)
+				return command.NewStatusErrorf(statusError, "failed to connect to companion DUT %v: %v", sshCfg.GetTarget(), err)
 			}
-			companionDUTs[role] = dut
+			companionDUTs[role] = d
 		}
 
 		rd = &testing.RemoteData{
 			Meta: &testing.Meta{
-				TastPath: args.RunTests.TastPath,
-				Target:   args.RunTests.Target,
-				RunFlags: args.RunTests.RunFlags,
+				TastPath: cfg.GetRemoteTestConfig().GetMetaTestConfig().GetTastPath(),
+				Target:   sshCfg.GetTarget(),
+				RunFlags: cfg.GetRemoteTestConfig().GetMetaTestConfig().GetRunFlags(),
 			},
-			RPCHint:       testing.NewRPCHint(args.RunTests.LocalBundleDir, args.RunTests.TestVars),
+			RPCHint:       testing.NewRPCHint(cfg.GetRemoteTestConfig().GetLocalBundleDir(), cfg.GetFeatures().GetVars()),
 			DUT:           dt,
 			CompanionDUTs: companionDUTs,
 		}
 	}
 
+	mode, err := planner.DownloadModeFromProto(cfg.GetDataFileConfig().GetDownloadMode())
+	if err != nil {
+		return command.NewStatusErrorf(statusError, "%v", err)
+	}
+
 	pcfg := &planner.Config{
-		DataDir:           args.RunTests.DataDir,
-		OutDir:            args.RunTests.OutDir,
-		Features:          args.RunTests.Features(),
-		Devservers:        args.RunTests.Devservers,
-		TLWServer:         args.RunTests.TLWServer,
-		DUTName:           args.RunTests.DUTName,
-		BuildArtifactsURL: args.RunTests.BuildArtifactsURL,
+		DataDir:           cfg.GetDirs().GetDataDir(),
+		OutDir:            cfg.GetDirs().GetOutDir(),
+		Features:          cfg.GetFeatures(),
+		Devservers:        cfg.GetServiceConfig().GetDevservers(),
+		TLWServer:         cfg.GetServiceConfig().GetTlwServer(),
+		DUTName:           cfg.GetServiceConfig().GetTlwSelfName(),
+		BuildArtifactsURL: cfg.GetDataFileConfig().GetBuildArtifactsUrl(),
 		RemoteData:        rd,
 		TestHook:          scfg.testHook,
-		DownloadMode:      args.RunTests.DownloadMode,
+		DownloadMode:      mode,
 		BeforeDownload:    scfg.beforeDownload,
 		Fixtures:          scfg.registry.AllFixtures(),
-		StartFixtureName:  args.RunTests.StartFixtureName,
-		StartFixtureImpl:  &stubFixture{setUpErrors: args.RunTests.SetUpErrors},
+		StartFixtureName:  cfg.GetStartFixtureState().GetName(),
+		StartFixtureImpl:  &stubFixture{setUpErrors: cfg.GetStartFixtureState().GetErrors()},
 	}
 
 	if err := planner.RunTests(ctx, tests, ew, pcfg); err != nil {
@@ -470,14 +491,14 @@ func prepareTempDir(tempDir string) (restore func(), err error) {
 }
 
 type stubFixture struct {
-	setUpErrors []string
+	setUpErrors []*protocol.Error
 }
 
 var _ testing.FixtureImpl = (*stubFixture)(nil)
 
 func (sf *stubFixture) SetUp(ctx context.Context, s *testing.FixtState) interface{} {
 	for _, e := range sf.setUpErrors {
-		s.Error(e)
+		s.Error(e.GetReason())
 	}
 	return nil
 }

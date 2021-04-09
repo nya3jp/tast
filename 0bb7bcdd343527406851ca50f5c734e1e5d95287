@@ -16,6 +16,23 @@
       "message": "Updated the jsonprotocol part. PTAL.\n\nThe change keeps the old message (device.Config.Id.*) for compatibility but uses the new protocol message (protocol.DeviceConfigIds).\nI checked it by tweaking features.go commenting out the old protocol message\n\n\tconfig :\u003d \u0026device.Config{\n\t\tId: \u0026device.ConfigId{\n\t\t\tPlatformId: platform,\n\t\t\t//  ModelId:    model,\n\t\t\tBrandId:    brand,\n\t\t},\n\nand then running a test having hwdep.Model of a certain device.\n",
       "revId": "0bb7bcdd343527406851ca50f5c734e1e5d95287",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "df61905a_cc5d91a6",
+        "filename": "src/chromiumos/tast/internal/runner/features.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 235,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-04-09T07:31:13Z",
+      "side": 1,
+      "message": "platform may be nil, because it just adds warning to the array in case of error. Same for model and brand.",
+      "revId": "0bb7bcdd343527406851ca50f5c734e1e5d95287",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

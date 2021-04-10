@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d199f268_f1963162",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 446,
+      "author": {
+        "id": 1267126
+      },
+      "writtenOn": "2021-04-10T02:35:55Z",
+      "side": 1,
+      "message": "Should the \"platform\" code somehow append \"-kernelnext\" and maybe \"-arc-r\" to them so we don\u0027t have to keep doing this?",
+      "range": {
+        "startLine": 446,
+        "startChar": 23,
+        "endLine": 446,
+        "endChar": 31
+      },
+      "revId": "9ee212e24ce339d0ccf9b7248884117a58dbdbfc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

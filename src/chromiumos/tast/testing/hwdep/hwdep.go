@@ -354,6 +354,7 @@ func Wifi80211ax() Condition {
 			"terra",
 			"tiger",
 			"trogdor",
+			"trogdor-kernelnext",
 			"ultima",
 			"winky",
 			"wizpig",
@@ -416,7 +417,7 @@ func WifiIntel() Condition {
 		// "gru" is being used here to represent "scarlet" devices.
 		platformCondition := SkipOnPlatform(
 			"asurada", "bob", "elm", "fievel", "gru", "grunt", "hana", "jacuzzi",
-			"kevin", "kukui", "oak", "tiger", "trogdor",
+			"kevin", "kukui", "oak", "tiger", "trogdor", "trogdor-kernelnext",
 		)
 		if err := platformCondition.Satisfied(f); err != nil {
 			return err
@@ -443,7 +444,7 @@ func WifiQualcomm() Condition {
 	// about WiFi chip, so list the known platforms here for now.
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) error {
 		platformCondition := Platform(
-			"trogdor", "kukui", "grunt", "scarlet",
+			"trogdor", "trogdor-kernelnext", "kukui", "grunt", "scarlet",
 		)
 		if err := platformCondition.Satisfied(f); err != nil {
 			return err

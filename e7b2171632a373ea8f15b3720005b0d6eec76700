@@ -16,6 +16,46 @@
       "message": "Test view: http://shortn/_8I9vp5DTKc",
       "revId": "e7b2171632a373ea8f15b3720005b0d6eec76700",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "98e0e467_f8bf4cd3",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1432127
+      },
+      "writtenOn": "2021-04-10T00:43:58Z",
+      "side": 1,
+      "message": "LGTM",
+      "revId": "e7b2171632a373ea8f15b3720005b0d6eec76700",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a14fbf04_6033189b",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 429,
+      "author": {
+        "id": 1432127
+      },
+      "writtenOn": "2021-04-10T00:43:58Z",
+      "side": 1,
+      "message": "micro nit: I think we should probably have each of these entries be on their own line at this point.",
+      "range": {
+        "startLine": 429,
+        "startChar": 4,
+        "endLine": 429,
+        "endChar": 98
+      },
+      "revId": "e7b2171632a373ea8f15b3720005b0d6eec76700",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

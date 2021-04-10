@@ -56,6 +56,30 @@
       },
       "revId": "e7b2171632a373ea8f15b3720005b0d6eec76700",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a69d9434_9e16702d",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 429,
+      "author": {
+        "id": 1132414
+      },
+      "writtenOn": "2021-04-10T01:05:11Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a14fbf04_6033189b",
+      "range": {
+        "startLine": 429,
+        "startChar": 4,
+        "endLine": 429,
+        "endChar": 98
+      },
+      "revId": "e7b2171632a373ea8f15b3720005b0d6eec76700",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

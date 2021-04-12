@@ -67,6 +67,23 @@
       "message": "Still LGTM.\n",
       "revId": "8a027a17328ee2682e89e5f3185a781754f76b7f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2c095bbe_e887850a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 7
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-04-12T11:20:55Z",
+      "side": 1,
+      "message": "I did not find related issue with this change in some of the last CQ failiure logs which I sampled. Retrying.",
+      "revId": "8a027a17328ee2682e89e5f3185a781754f76b7f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

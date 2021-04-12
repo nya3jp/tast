@@ -232,6 +232,7 @@ func newDeviceConfigAndHardwareFeatures() (dc *device.Config, retFeatures *confi
 	features := &configpb.HardwareFeatures{
 		Screen:             &configpb.HardwareFeatures_Screen{},
 		Fingerprint:        &configpb.HardwareFeatures_Fingerprint{},
+		Keyboard:           &configpb.HardwareFeatures_Keyboard{},
 		EmbeddedController: &configpb.HardwareFeatures_EmbeddedController{},
 		Storage:            &configpb.HardwareFeatures_Storage{},
 	}
@@ -295,6 +296,14 @@ func newDeviceConfigAndHardwareFeatures() (dc *device.Config, retFeatures *confi
 	if hasFingerprint {
 		features.Fingerprint.Location = configpb.HardwareFeatures_Fingerprint_LOCATION_UNKNOWN
 		config.HardwareFeatures = append(config.HardwareFeatures, device.Config_HARDWARE_FEATURE_FINGERPRINT)
+	}
+
+	if model != nil {
+		if model.Value == "drallion360" {
+			features.Keyboard.PowerButton = configpb.HardwareFeatures_PRESENT
+		} else {
+			features.Keyboard.PowerButton = configpb.HardwareFeatures_NOT_PRESENT
+		}
 	}
 
 	// Device has ChromeEC if /dev/cros_ec exists.

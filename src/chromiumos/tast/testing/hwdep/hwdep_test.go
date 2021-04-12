@@ -409,6 +409,7 @@ func TestCEL(t *testing.T) {
 		{D(WifiMACAddrRandomize()), "not_implemented"},
 		{D(WifiNotMarvell()), "not_implemented"},
 		{D(Nvme()), "dut.hardware_features.storage.storage_type == api.Component.Storage.StorageType.NVME"},
+		{D(PowerButtonOnKeyboard()), "dut.hardware_features.keyboard.power_button == api.HardwareFeatures.Present.PRESENT"},
 
 		{D(TouchScreen(), Fingerprint()),
 			"dut.hardware_features.screen.touch_support == api.HardwareFeatures.Present.PRESENT && dut.hardware_features.fingerprint.location != api.HardwareFeatures.Fingerprint.Location.NOT_PRESENT"},
@@ -447,6 +448,27 @@ func TestWiFiIntel(t *testing.T) {
 				},
 			},
 			&configpb.HardwareFeatures{},
+			tc.expectSatisfied)
+	}
+}
+
+func TestPowerButtonOnKeyboard(t *testing.T) {
+	c := PowerButtonOnKeyboard()
+	for _, tc := range []struct {
+		Present         configpb.HardwareFeatures_Present
+		expectSatisfied bool
+	}{
+		{configpb.HardwareFeatures_PRESENT, true},
+		{configpb.HardwareFeatures_NOT_PRESENT, false},
+	} {
+		verifyCondition(
+			t, c,
+			nil,
+			&configpb.HardwareFeatures{
+				Keyboard: &configpb.HardwareFeatures_Keyboard{
+					PowerButton: tc.Present,
+				},
+			},
 			tc.expectSatisfied)
 	}
 }

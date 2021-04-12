@@ -650,3 +650,20 @@ func Nvme() Condition {
 	}, CEL: "dut.hardware_features.storage.storage_type == api.Component.Storage.StorageType.NVME",
 	}
 }
+
+// PowerButtonOnKeyboard returns a hardware dependency condition that the power
+// button exists on the keyboard rather than the side of the device (and thus
+// it should behave differently).
+func PowerButtonOnKeyboard() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) error {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return errors.New("Did not find hardware features")
+		}
+		if hf.GetKeyboard().GetPowerButton() == configpb.HardwareFeatures_PRESENT {
+			return nil
+		}
+		return errors.New("DUT does not have power button on keyboard")
+	}, CEL: "dut.hardware_features.keyboard.power_button == api.HardwareFeatures.Present.PRESENT",
+	}
+}

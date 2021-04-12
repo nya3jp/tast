@@ -914,6 +914,7 @@ func TestWriteTestMetadataWithTCLint(t *gotesting.T) {
 			Name: "test003",
 			HardwareDeps: hwdep.D(
 				hwdep.Nvme(),
+				hwdep.PowerButtonOnKeyboard(),
 			),
 		},
 	}

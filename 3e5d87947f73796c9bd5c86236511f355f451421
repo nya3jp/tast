@@ -41,6 +41,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "ca85d7b7_cbf158bc",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/symbolize/breakpad/minidump.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 247,
+      "author": {
+        "id": 1355869
+      },
+      "writtenOn": "2021-04-12T09:38:34Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5af50343_4fc5d4a4",
+      "range": {
+        "startLine": 247,
+        "startChar": 13,
+        "endLine": 247,
+        "endChar": 16
+      },
+      "revId": "3e5d87947f73796c9bd5c86236511f355f451421",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "c0d8bc8e_fb1c69a4",
@@ -54,6 +78,30 @@
       "writtenOn": "2021-04-09T07:44:01Z",
       "side": 1,
       "message": "Hmm, it would be nice to avoid mocking function calls if possible.\n\nAn alternative way I can think of is to install a custom script named \"gsutil\", but I\u0027m not sure if it\u0027s easy.",
+      "range": {
+        "startLine": 36,
+        "startChar": 0,
+        "endLine": 36,
+        "endChar": 46
+      },
+      "revId": "3e5d87947f73796c9bd5c86236511f355f451421",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d31919af_a29a1f0b",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/symbolize/symbolize.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1355869
+      },
+      "writtenOn": "2021-04-12T09:38:34Z",
+      "side": 1,
+      "message": "I\u0027m not familiar with gsutil, but that what breakpad/download.go uses.\n\nI removed the variable introduced for testing. Instead, I rely on checking logs to ensure we download symbols from the correct location. Downloading should fail due to the fake location, but we do not care - this test is concerned with verifying the logic in symbolize.go. Checking logs is also how we verify the scenario when we generate symbols, so it simplifies the tests as well.",
+      "parentUuid": "c0d8bc8e_fb1c69a4",
       "range": {
         "startLine": 36,
         "startChar": 0,

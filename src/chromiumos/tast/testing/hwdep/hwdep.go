@@ -426,7 +426,8 @@ func WifiIntel() Condition {
 		// for now there is no better way to specify the exact hardware
 		// parameters needed for this dependency. (See crbug.com/1070299.)
 		modelCondition := SkipOnModel(
-			"blooglet", "dirinboz", "ezkinil", "gumboz", "madoo", "vilboz", "vorticon",
+			"blooglet", "dirinboz", "ezkinil", "gumboz", "lantis", "madoo",
+			"vilboz", "vorticon",
 		)
 		if err := modelCondition.Satisfied(f); err != nil {
 			return err

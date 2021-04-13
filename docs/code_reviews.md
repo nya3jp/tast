@@ -55,7 +55,7 @@ on the [Chromium bug tracker]). When adding a new test, it is recommended to
 file an issue to track promoting the test and using it to track flakiness
 issues that need to be resolved.
 
-[Chromium bug tracker]: https://crbug.com/
+[Buganizer]: https://b.corp.google.com/issues/new?component=1034754&template=1569144
 
 ### Do not make large changes
 

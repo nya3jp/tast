@@ -2,24 +2,19 @@
 
 ## Bug reports
 
-Please file bug reports and feature requests in the [Chromium issue tracker].
+Please file Tast framework related bug reports and feature requests in
+the [Buganizer].
 
-[Chromium issue tracker]: https://bugs.chromium.org/p/chromium/issues/list
+[Buganizer]: https://b.corp.google.com/issues/new?component=1034754&template=1569144
 
 ### Test Defects
 
-Please file test bug reports using the following [template]:
+Please file test bug reports to the feature components.  See the
+[Tast debugging guide] (Googler only) and [Tast failures guide] (Googler only)
+to learn more about how to determine the cause of failures while running
+Tast tests.  The guides provide suggestions on how to deal with failures and
+how to find the component associated with a test.
 
-*   `Chrome OS Integration Test Defect (Tast test)`: Tast test failures.
-
-See the [Tast debugging guide] (Googler only) and
-[Tast failures guide] (Googler only) to learn more about how to determine the
-cause of failures while running Tast tests.
-The guides provide suggestions on how to deal with failures and how to find
-the component associated with a test.
-
-
-[template]: https://bugs.chromium.org/p/chromium/issues/entry?template=Chrome+OS+Integration+Test+Defect+%28Tast+tests%29
 [Tast debugging guide]: https://goto.google.com/tast-debugging-guide
 [Tast failures guide]: https://goto.google.com/tast-failures
 
@@ -28,8 +23,8 @@ the component associated with a test.
 Please file Core bug reports and feature requests using the following
 components:
 
-*   `Test>Tast>Framework`: Core framework issues.
-*   `Test>Tast>Examples`: Core Tast test examples.
+*   `ChromeOS>Test>Harness>Tast>Framework`: Core framework issues.
+*   `ChromeOS>Test>Harness>Tast>Framework`: Core Tast test examples.
 
 ## Mailing lists
 

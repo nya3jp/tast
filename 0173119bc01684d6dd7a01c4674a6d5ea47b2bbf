@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "148aadc9_6d31b80a",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 210,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2021-04-13T03:38:34Z",
+      "side": 1,
+      "message": "nit: Could you sort them alphabetically?",
+      "range": {
+        "startLine": 210,
+        "startChar": 40,
+        "endLine": 210,
+        "endChar": 106
+      },
+      "revId": "0173119bc01684d6dd7a01c4674a6d5ea47b2bbf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "645de34a_b693620d",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 421,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2021-04-13T03:38:34Z",
+      "side": 1,
+      "message": "nit: Could you sort them alphabetically?",
+      "range": {
+        "startLine": 421,
+        "startChar": 71,
+        "endLine": 421,
+        "endChar": 80
+      },
+      "revId": "0173119bc01684d6dd7a01c4674a6d5ea47b2bbf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "58efbeb0_19876b85",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 448,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2021-04-13T03:38:34Z",
+      "side": 1,
+      "message": "ditto",
+      "range": {
+        "startLine": 448,
+        "startChar": 37,
+        "endLine": 448,
+        "endChar": 46
+      },
+      "revId": "0173119bc01684d6dd7a01c4674a6d5ea47b2bbf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

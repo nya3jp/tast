@@ -75,8 +75,8 @@ The following software features are defined:
     [Diagnostic utilities].
 *   `display_backlight` - An internal display backlight.
 *   `dlc` - Support of [Downloadable Content] (DLC).
-*   `dmverity_stable` - Kernels with which dm-verity runs stably. See [crbug.com/1026982](https://crbug.com/1026982).
-*   `dmverity_unstable` - Kernels having known issue of dm-verity causing random crashes. See [crbug.com/1026982](https://crbug.com/1026982).
+*   `dmverity_stable` - Kernels with which dm-verity runs stably. See [b/172227689](https://b.corp.google.com/issues/172227689).
+*   `dmverity_unstable` - Kernels having known issue of dm-verity causing random crashes. See [b/172227689](https://b.corp.google.com/issues/172227689).
 *   `dptf` - Support of [Intel Dynamic Platform and Thermal Framework] (DPTF).
 *   `drivefs` - Google Drive support enabled.
 *   `drm_atomic` - The [DRM/KMS] kernel subsystem supports atomic commits.
@@ -123,7 +123,7 @@ The following software features are defined:
 *   `no_asan` - Build was not built with Address Sanitizer. Similar to `aslr`.
 *   `no_borealis_host` - Boards which is not designed to host borealis.
 *   `no_elm_hana_3_18` - Skip boards elm and hana with kernel-3.18 as they have
-    issue performing WiFi scan. See [crbug.com/1015719](https://crbug.com/1015719).
+    issue performing WiFi scan. See [b/172211349](https://b.corp.google.com/issues/172211349).
 *   `no_eth_loss_on_reboot` - Board does not lose ethernet on reboot. Context: b/178529170
 *   `no_iioservice` - Build was not built with CrOS IIO Service.
 *   `no_msan` - Build was not built with Memory Sanitizer.
@@ -181,7 +181,7 @@ The following software features are defined:
     use [virtual USB printing][virtual-usb-printer-readme]. Note that
     while the necessary kernel modules are available on kernel v4.4,
     this feature excludes that version for known flakiness. See
-    [this bug](https://crbug.com/1083421#c10) for context.
+    [this bug](https://b.corp.google.com/issues/172224081) for context.
 *   `vm_host` - The ability to [run virtual machines].
 *   `vp9_smoke` - The ability to stay alive playing a VP9 video with hardware
     acceleration even for a profile which the driver doesn't support.

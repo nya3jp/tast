@@ -51,11 +51,11 @@ new code in the future.
 ### Associate changes to bug tracker issues
 
 All Tast test changes should be associated with bug tracker issues (typically
-on the [Chromium bug tracker]). When adding a new test, it is recommended to
+on the [Buganizer]). When adding a new test, it is recommended to
 file an issue to track promoting the test and using it to track flakiness
 issues that need to be resolved.
 
-[Chromium bug tracker]: https://crbug.com/
+[Buganizer]: https://b.corp.google.com/
 
 ### Do not make large changes
 

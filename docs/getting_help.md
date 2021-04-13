@@ -2,34 +2,35 @@
 
 ## Bug reports
 
-Please file bug reports and feature requests in the [Chromium issue tracker].
+Please file Tast related bug reports and feature requests in
+the [Buganizer] or [Chromium issue tracker], depending on components.
 
+[Buganizer]: https://b.corp.google.com/
 [Chromium issue tracker]: https://bugs.chromium.org/p/chromium/issues/list
 
 ### Test Defects
 
-Please file test bug reports using the following [template]:
+Please file test bug reports to the feature components. See the
+[Tast debugging guide] (Googler only) and [Tast failures guide] (Googler only)
+to learn more about how to determine the cause of failures while running
+Tast tests. The guides provide suggestions on how to deal with failures and
+how to find the component associated with a test.
 
-*   `Chrome OS Integration Test Defect (Tast test)`: Tast test failures.
-
-See the [Tast debugging guide] (Googler only) and
-[Tast failures guide] (Googler only) to learn more about how to determine the
-cause of failures while running Tast tests.
-The guides provide suggestions on how to deal with failures and how to find
-the component associated with a test.
-
-
-[template]: https://bugs.chromium.org/p/chromium/issues/entry?template=Chrome+OS+Integration+Test+Defect+%28Tast+tests%29
 [Tast debugging guide]: https://goto.google.com/tast-debugging-guide
 [Tast failures guide]: https://goto.google.com/tast-failures
 
 ### Core Defects
 
 Please file Core bug reports and feature requests using the following
-components:
+components in Buganizer:
 
-*   `Test>Tast>Framework`: Core framework issues.
-*   `Test>Tast>Examples`: Core Tast test examples.
+*   `ChromeOS>Test>Harness>Tast>Framework`: [Core framework issues].
+*   `ChromeOS>Test>Harness>Tast>Examples`: [Core Tast test examples].
+*   `ChromeOS>Test>Harness>Tast>Libraries`: [Tast test libraries].
+
+[Core framework issues]: https://b.corp.google.com/issues/new?component=1034754&template=1569144
+[Core Tast test examples]: https://b.corp.google.com/issues/new?component=1034522&template=1569277
+[Tast test libraries]: https://b.corp.google.com/issues/new?component=1034649&template=1569145
 
 ## Mailing lists
 

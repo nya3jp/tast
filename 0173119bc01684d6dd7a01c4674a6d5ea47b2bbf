@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "cfe47742_c8bc397d",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 210,
+      "author": {
+        "id": 1267126
+      },
+      "writtenOn": "2021-04-13T06:04:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "148aadc9_6d31b80a",
+      "range": {
+        "startLine": 210,
+        "startChar": 40,
+        "endLine": 210,
+        "endChar": 106
+      },
+      "revId": "0173119bc01684d6dd7a01c4674a6d5ea47b2bbf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "645de34a_b693620d",
@@ -47,6 +71,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "eb17da99_e2d206c4",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 421,
+      "author": {
+        "id": 1267126
+      },
+      "writtenOn": "2021-04-13T06:04:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "645de34a_b693620d",
+      "range": {
+        "startLine": 421,
+        "startChar": 71,
+        "endLine": 421,
+        "endChar": 80
+      },
+      "revId": "0173119bc01684d6dd7a01c4674a6d5ea47b2bbf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "58efbeb0_19876b85",
@@ -60,6 +108,30 @@
       "writtenOn": "2021-04-13T03:38:34Z",
       "side": 1,
       "message": "ditto",
+      "range": {
+        "startLine": 448,
+        "startChar": 37,
+        "endLine": 448,
+        "endChar": 46
+      },
+      "revId": "0173119bc01684d6dd7a01c4674a6d5ea47b2bbf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c905896f_a736ae98",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 448,
+      "author": {
+        "id": 1267126
+      },
+      "writtenOn": "2021-04-13T06:04:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "58efbeb0_19876b85",
       "range": {
         "startLine": 448,
         "startChar": 37,

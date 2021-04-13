@@ -80,7 +80,10 @@ func main() {
 			// TODO(b/73436929) Grunt cannot run 720p due to performance issue,
 			// we should remove grunt after hardware encoding supported.
 			// daisy variants' cameras don't support 1280x720.
-			"camera_720p":     "!snow && !skate && !spring && !grunt",
+			"camera_720p": "!snow && !skate && !spring && !grunt",
+			// Some boards might not support the camera/video/audio components required by the camera app.
+			// TODO(b/185087278): Remove soraka-libcamera.
+			"camera_app":      `!("board:volteer-kernelnext" || "board:soraka-libcamera")`,
 			"camera_legacy":   `!"arc-camera1" && !"arc-camera3"`,
 			"cert_provision":  "cert_provision",
 			"chrome":          "!chromeless_tty && !rialto",

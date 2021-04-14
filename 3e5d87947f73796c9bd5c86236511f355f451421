@@ -136,6 +136,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": true,
+      "key": {
+        "uuid": "f60730e8_02832fa3",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/symbolize/symbolize.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1355869
+      },
+      "writtenOn": "2021-04-14T07:43:34Z",
+      "side": 1,
+      "message": "Could you point me to some documentation or example, which shows how to install such fake script?",
+      "parentUuid": "d7b63438_6a92f60b",
+      "range": {
+        "startLine": 36,
+        "startChar": 0,
+        "endLine": 36,
+        "endChar": 46
+      },
+      "revId": "3e5d87947f73796c9bd5c86236511f355f451421",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": false,
       "key": {
         "uuid": "0da54df1_c116e935",

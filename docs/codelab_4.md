@@ -19,7 +19,7 @@ for the test (e.g. enrollment, resetting hardware etc.). The remote host can
 communicate with the DUT via ssh or gRPC services during the test, which are
 used to execute code on the DUT itself.
 
-![remote test](remote_test.svg)
+![remote test](remote_test.png)
 
 Unless ssh calls are enough for the test, the remote test will consist of two
 parts:

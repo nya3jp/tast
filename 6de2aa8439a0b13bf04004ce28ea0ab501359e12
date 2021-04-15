@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "069c9584_08701fe9",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1221932
+      },
+      "writtenOn": "2021-04-15T06:06:33Z",
+      "side": 1,
+      "message": "QQ: Is this so that we only run mtp on certain devices?",
+      "revId": "6de2aa8439a0b13bf04004ce28ea0ab501359e12",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

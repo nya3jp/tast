@@ -16,6 +16,236 @@
       "message": "Please review this document update due to migration to Buganizer. I have not replace all the crbug reference yet because I don\u0027t know the new Buganizer ids yet. Thanks.",
       "revId": "161f9a3735022f4c4997703967dbdf8d5eb2b25f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "343004a9_2ac97f68",
+        "filename": "docs/code_reviews.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-04-15T09:41:20Z",
+      "side": 1,
+      "message": "We have to update this as well.",
+      "range": {
+        "startLine": 54,
+        "startChar": 8,
+        "endLine": 54,
+        "endChar": 28
+      },
+      "revId": "161f9a3735022f4c4997703967dbdf8d5eb2b25f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fc62f0a8_ea586270",
+        "filename": "docs/code_reviews.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 58,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-04-15T09:41:20Z",
+      "side": 1,
+      "message": "Since the context is to file bugs for Tast test changes, it\u0027s likely the right component is Tast\u003eFramework.\n\nMaybe we can just link to https://b.corp.google.com/",
+      "range": {
+        "startLine": 58,
+        "startChar": 13,
+        "endLine": 58,
+        "endChar": 84
+      },
+      "revId": "161f9a3735022f4c4997703967dbdf8d5eb2b25f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "04761ad7_50fc0b59",
+        "filename": "docs/codelab_3.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-04-15T09:41:20Z",
+      "side": 1,
+      "message": "I\u0027m not sure if \"built-in apps\" is the same as \"native apps\"... anyway I want you to focus on Monorail-\u003eBuganizer changes in this patch.",
+      "range": {
+        "startLine": 18,
+        "startChar": 0,
+        "endLine": 18,
+        "endChar": 15
+      },
+      "revId": "161f9a3735022f4c4997703967dbdf8d5eb2b25f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e8a180a1_805b11d8",
+        "filename": "docs/getting_help.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 6,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-04-15T09:41:20Z",
+      "side": 1,
+      "message": "\"Bugs reports\" section covers both \"Test Defects\" subsection and \"Core Defects\" section, so I think the original sentence not referring to \"framework bugs\" looks better.\n\nAlso we end up using two issue trackers depending on component (e.g. some software teams remain in Monorail), so this might be something like:\n\n Please file bug reports and feature requests in [Buganizer] or [Chromium issue tracker], depending on components.",
+      "range": {
+        "startLine": 5,
+        "startChar": 0,
+        "endLine": 6,
+        "endChar": 16
+      },
+      "revId": "161f9a3735022f4c4997703967dbdf8d5eb2b25f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "faee3bbc_b08f3797",
+        "filename": "docs/getting_help.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 8,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-04-15T09:41:20Z",
+      "side": 1,
+      "message": "For the reason stated above, it\u0027s nice to link to https://b.corp.google.com/ (without specifying components)",
+      "range": {
+        "startLine": 8,
+        "startChar": 13,
+        "endLine": 8,
+        "endChar": 84
+      },
+      "revId": "161f9a3735022f4c4997703967dbdf8d5eb2b25f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2eac25d7_e7057884",
+        "filename": "docs/getting_help.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 24,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-04-15T09:41:20Z",
+      "side": 1,
+      "message": "... following components in Buganizer:",
+      "range": {
+        "startLine": 24,
+        "startChar": 7,
+        "endLine": 24,
+        "endChar": 11
+      },
+      "revId": "161f9a3735022f4c4997703967dbdf8d5eb2b25f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7c5d99ee_a7700a6a",
+        "filename": "docs/getting_help.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-04-15T09:41:20Z",
+      "side": 1,
+      "message": "Optional: It would be nice to make this a link.",
+      "range": {
+        "startLine": 26,
+        "startChar": 4,
+        "endLine": 26,
+        "endChar": 34
+      },
+      "revId": "161f9a3735022f4c4997703967dbdf8d5eb2b25f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "511412c9_beb0f6eb",
+        "filename": "docs/getting_help.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-04-15T09:41:20Z",
+      "side": 1,
+      "message": "Examples?",
+      "range": {
+        "startLine": 27,
+        "startChar": 32,
+        "endLine": 27,
+        "endChar": 41
+      },
+      "revId": "161f9a3735022f4c4997703967dbdf8d5eb2b25f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "dcb918cb_e27a48a6",
+        "filename": "docs/getting_help.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-04-15T09:41:20Z",
+      "side": 1,
+      "message": "While you\u0027re at it, can you add a mention of the library component? I guess it didn\u0027t exist when we added this section...",
+      "range": {
+        "startLine": 27,
+        "startChar": 5,
+        "endLine": 27,
+        "endChar": 13
+      },
+      "revId": "161f9a3735022f4c4997703967dbdf8d5eb2b25f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4f61725a_f703737b",
+        "filename": "navbar.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-04-15T09:41:20Z",
+      "side": 1,
+      "message": "This is a template for Tast tests, not one for Tast framework.",
+      "range": {
+        "startLine": 9,
+        "startChar": 15,
+        "endLine": 9,
+        "endChar": 86
+      },
+      "revId": "161f9a3735022f4c4997703967dbdf8d5eb2b25f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "511ef4c8_b2529277",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1132414
+      },
+      "writtenOn": "2021-04-15T17:24:49Z",
+      "side": 1,
+      "message": "ok, this should be *resolving* CQ issues, and the failing tests in question aren\u0027t relevant -- if we can build, we\u0027re almost definitely in the clear. I\u0027m a chump.",
+      "revId": "9ffd41dca3bc734633ffe4e5f3dc65d0d278c14a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

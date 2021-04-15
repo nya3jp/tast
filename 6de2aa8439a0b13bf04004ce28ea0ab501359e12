@@ -16,6 +16,29 @@
       "message": "QQ: Is this so that we only run mtp on certain devices?",
       "revId": "6de2aa8439a0b13bf04004ce28ea0ab501359e12",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8c784b7c_cefb890e",
+        "filename": "src/chromiumos/tast/internal/testing/attr.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 149,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2021-04-15T08:56:58Z",
+      "side": 1,
+      "message": "Could you describe more explanation? E.g., \"MTP\" can be abbreviated from variation of words.",
+      "range": {
+        "startLine": 149,
+        "startChar": 13,
+        "endLine": 149,
+        "endChar": 57
+      },
+      "revId": "6de2aa8439a0b13bf04004ce28ea0ab501359e12",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

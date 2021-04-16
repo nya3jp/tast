@@ -16,30 +16,17 @@ import (
 	"chromiumos/tast/internal/jsonprotocol"
 )
 
-// bundleType describes the type of tests contained in a test bundle (i.e. local or remote).
-type bundleType int
-
-const (
-	localBundle bundleType = iota
-	remoteBundle
-)
-
 // readArgs parses runtime arguments.
 // clArgs contains command-line arguments and is typically os.Args[1:].
 // The caller is responsible for performing the requested action.
-func readArgs(clArgs []string, stdin io.Reader, stderr io.Writer, bt bundleType) (*jsonprotocol.BundleArgs, error) {
+func readArgs(clArgs []string, stdin io.Reader, stderr io.Writer) (*jsonprotocol.BundleArgs, error) {
 	if len(clArgs) != 0 {
 		flags := flag.NewFlagSet("", flag.ContinueOnError)
 		flags.SetOutput(stderr)
 		flags.Usage = func() {
-			runner := "local_test_runner"
-			if bt == remoteBundle {
-				runner = "remote_test_runner"
-			}
 			fmt.Fprintf(stderr, "Usage: %s [flag]...\n\n"+
-				"Tast test bundle containing integration tests.\n\n"+
-				"This is typically executed by %s.\n\n",
-				filepath.Base(os.Args[0]), runner)
+				"Tast test bundle containing integration tests.\n\n",
+				filepath.Base(os.Args[0]))
 			flags.PrintDefaults()
 		}
 

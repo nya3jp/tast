@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "11f45d4d_9e86d877",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-04-16T01:54:54Z",
+      "side": 1,
+      "message": "I have addressed all comments except one. I do have question regarding that comment. Please take a look. Thanks.",
+      "revId": "0b021c4fbbcf2a8c5a67bb8f38d3eb67d445d46b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

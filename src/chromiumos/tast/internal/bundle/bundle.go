@@ -141,11 +141,7 @@ func run(ctx context.Context, clArgs []string, stdin io.Reader, stdout, stderr i
 		}
 		return statusSuccess
 	case jsonprotocol.BundleRunTestsMode:
-		tests, err := testsToRun(scfg, args.RunTests.Patterns)
-		if err != nil {
-			return command.WriteError(stderr, err)
-		}
-		if err := runTests(ctx, stdout, args.RunTests.Proto(), scfg, tests); err != nil {
+		if err := runTests(ctx, stdout, args.RunTests.Proto(), scfg); err != nil {
 			return command.WriteError(stderr, err)
 		}
 		return statusSuccess
@@ -294,7 +290,7 @@ func (ew *eventWriter) EntityEnd(ei *protocol.Entity, skipReasons []string, timi
 //
 // If an error is encountered in the test harness (as opposed to in a test), an error is returned.
 // Otherwise, nil is returned (test errors will be reported via EntityError control messages).
-func runTests(ctx context.Context, stdout io.Writer, cfg *protocol.RunConfig, scfg *StaticConfig, tests []*testing.TestInstance) error {
+func runTests(ctx context.Context, stdout io.Writer, cfg *protocol.RunConfig, scfg *StaticConfig) error {
 	ctx = testcontext.WithPrivateData(ctx, testcontext.PrivateData{
 		WaitUntilReady: cfg.GetWaitUntilReady(),
 	})
@@ -318,6 +314,10 @@ func runTests(ctx context.Context, stdout io.Writer, cfg *protocol.RunConfig, sc
 		ew.RunLog(msg)
 	})
 
+	tests, err := testsToRun(scfg, cfg.GetTests())
+	if err != nil {
+		return err
+	}
 	if len(tests) == 0 {
 		return command.NewStatusErrorf(statusNoTests, "no tests matched by pattern(s)")
 	}

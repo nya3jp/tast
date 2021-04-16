@@ -853,7 +853,7 @@ func reportOrphanTest(tout *entityOutputStream, missingFixtName string) {
 			Line: int64(ln),
 		},
 	})
-	tout.End(nil, nil)
+	tout.End(nil, timing.NewLog())
 }
 
 // reportSkippedTest is called instead of runTest for a test that is skipped due to
@@ -861,7 +861,7 @@ func reportOrphanTest(tout *entityOutputStream, missingFixtName string) {
 func reportSkippedTest(tout *entityOutputStream, reasons []string, err error) {
 	tout.Start("")
 	if err == nil {
-		tout.End(reasons, nil)
+		tout.End(reasons, timing.NewLog())
 		return
 	}
 
@@ -877,7 +877,7 @@ func reportSkippedTest(tout *entityOutputStream, reasons []string, err error) {
 	// dependencies. There is ambiguity if a test is skipped while reporting
 	// errors, and in the worst case, dependency check errors can be
 	// silently discarded.
-	tout.End(nil, nil)
+	tout.End(nil, timing.NewLog())
 }
 
 // dumpGoroutines dumps all goroutines to tout.

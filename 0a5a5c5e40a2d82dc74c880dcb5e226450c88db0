@@ -26,6 +26,30 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "b2bdba00_3a7b0cc2",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1312379
+      },
+      "writtenOn": "2021-04-16T15:26:52Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5043476c_91a1b375",
+      "range": {
+        "startLine": 7,
+        "startChar": 6,
+        "endLine": 7,
+        "endChar": 9
+      },
+      "revId": "0a5a5c5e40a2d82dc74c880dcb5e226450c88db0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "6f1c3efe_d6f011f3",
         "filename": "/PATCHSET_LEVEL",
         "patchSetId": 1
@@ -54,6 +78,24 @@
       "writtenOn": "2021-04-16T14:58:14Z",
       "side": 1,
       "message": "nit: please add a short comment as well.",
+      "revId": "0a5a5c5e40a2d82dc74c880dcb5e226450c88db0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "aed350f0_68ab6ee6",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 120,
+      "author": {
+        "id": 1312379
+      },
+      "writtenOn": "2021-04-16T15:26:52Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "f1e34d07_7d4e6794",
       "revId": "0a5a5c5e40a2d82dc74c880dcb5e226450c88db0",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }

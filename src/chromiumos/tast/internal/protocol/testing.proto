@@ -67,6 +67,131 @@ message EntityLegacyData {
   string bundle = 5;
 }
 
+// RunConfig contains parameters needed to run tests in a test bundle.
+message RunConfig {
+  // Tests is a list of test names to be run. Wildcards are not allowed.
+  repeated string tests = 1;
+
+  RunDirectories dirs = 2;
+  Features features = 3;
+  ServiceConfig service_config = 4;
+  DataFileConfig data_file_config = 5;
+  RemoteTestConfig remote_test_config = 6;
+  StartFixtureState start_fixture_state = 7;
+
+  // HeartbeatInterval is the interval in seconds at which heartbeat messages
+  // are sent back periodically from runners (before running bundles) and
+  // bundles. If this value is not positive, heartbeat messages are not sent.
+  // TODO(crbug.com/1128259): Remove this field once we fully migrate to gRPC.
+  google.protobuf.Duration heartbeat_interval = 8;
+
+  // WaitUntilReady indicates that the test bundle's "ready" function (see
+  // ReadyFunc) should be executed before any tests are executed.
+  // TODO(crbug.com/1128259): Remove this field once we fully migrate to gRPC.
+  bool wait_until_ready = 9;
+}
+
+// RunDirectories holds several directory paths important for running tests.
+message RunDirectories {
+  // DataDir is the path to the directory containing test data files.
+  string data_dir = 1;
+  // OutDir is the path to the base directory under which tests should write
+  // output files.
+  string out_dir = 2;
+  // TempDir is the path to the directory under which temporary files for tests
+  // are written.
+  string temp_dir = 3;
+}
+
+// ServiceConfig contains configurations of external services available to
+// Tast framework and Tast tests.
+message ServiceConfig {
+  // Devservers is a list of devserver URLs (e.g. "https://1.2.3.4:5678").
+  // Devservers are used to download data files from Google Cloud Storage with
+  // cache. It is ignored if TlwServer is available.
+  repeated string devservers = 1;
+
+  // TlwServer is an address of a TLW server (e.g. "1.2.3.4:5678").
+  // When this is set, it takes precedence over Devservers.
+  string tlw_server = 2;
+
+  // TlwSelfName is a "DUT name" that identifies the current machine.
+  // It is empty for remote tests.
+  string tlw_self_name = 3;
+}
+
+// DownloadMode specifies a strategy to download external data files.
+enum DownloadMode {
+  // BATCH specifies that test bundles should download external data files
+  // in batch before running tests.
+  BATCH = 0;
+  // LAZY specifies that test bundles should download external data files
+  // as needed between tests.
+  LAZY = 1;
+}
+
+// DataFileConfig contains configurations about data files.
+message DataFileConfig {
+  DownloadMode download_mode = 1;
+
+  // BuildArtifactsUrl is the URL of Google Cloud Storage directory, ending with
+  // a slash, containing build artifacts for the current Chrome OS image.
+  string build_artifacts_url = 2;
+}
+
+// RemoteTestConfig contains parameters needed by remote tests.
+message RemoteTestConfig {
+  DUTConfig primary_dut = 1;
+  map<string, DUTConfig> companion_duts = 2;
+  // LocalBundleDir is the directory on the DUT where local test bundle
+  // executables are located. This path is used by remote tests to invoke gRPC
+  // services in local test bundles.
+  string local_bundle_dir = 3;
+  MetaTestConfig meta_test_config = 4;
+}
+
+// DUTConfig describes a DUT.
+message DUTConfig {
+  // SshConfig contains information needed to connect to the DUT via SSH.
+  SSHConfig ssh_config = 1;
+  // TlwName contains the name of the DUT recognized by the TLW service.
+  // This must be set when TLW API is used.
+  string tlw_name = 2;
+}
+
+// SSHConfig contains information needed to connect to the DUT via SSH.
+message SSHConfig {
+  // Target is a connection spec as [<user>@]host[:<port>].
+  string target = 1;
+  // KeyFile is a path to the SSH private key to use to connect to the target.
+  string key_file = 2;
+  // KeyDir is a path to the directory containing SSH private keys
+  // (typically $HOME/.ssh).
+  string key_dir = 3;
+}
+
+// MetaTestConfig contains parameters needed by meta tests (tests that
+// exercise Tast itself).
+message MetaTestConfig {
+  // TastPath contains the path to the tast binary that was executed to initiate
+  // testing.
+  string tast_path = 1;
+  // RunFlags contains a subset of the flags that were passed to the "tast run"
+  // command. The included flags are ones that are necessary for core
+  // functionality, e.g. paths to binaries used by the tast process and
+  // credentials for reconnecting to the DUT.
+  repeated string run_flags = 2;
+}
+
+// StartFixtureState contains information of a start fixture.
+message StartFixtureState {
+  // Name is the name of a start fixture.
+  string name = 1;
+  // Errors contains errors reported on dependent fixture setup. If it is not
+  // empty, all fixtures and tests should fail immediately.
+  repeated Error errors = 2;
+}
+
 // Error describes details of an error reported by an entity.
 message Error {
   string reason = 1;

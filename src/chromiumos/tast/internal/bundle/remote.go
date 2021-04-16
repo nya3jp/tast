@@ -21,5 +21,5 @@ const (
 // Main function of remote test bundles should call RemoteDefault instead.
 func Remote(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, reg *testing.Registry, d Delegate) int {
 	cfg := newStaticConfig(reg, remoteTestTimeout, d)
-	return run(context.Background(), clArgs, stdin, stdout, stderr, cfg, remoteBundle)
+	return run(context.Background(), clArgs, stdin, stdout, stderr, cfg)
 }

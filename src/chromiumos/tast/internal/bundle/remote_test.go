@@ -18,21 +18,6 @@ import (
 	"chromiumos/tast/testutil"
 )
 
-func TestRemoteMissingTarget(t *gotesting.T) {
-	reg := testing.NewRegistry()
-	reg.AddTestInstance(&testing.TestInstance{Name: "pkg.Test", Func: func(context.Context, *testing.State) {}})
-
-	// Remote should fail if -target wasn't passed.
-	stdin := newBufferWithArgs(t, &jsonprotocol.BundleArgs{Mode: jsonprotocol.BundleRunTestsMode, RunTests: &jsonprotocol.BundleRunTestsArgs{}})
-	stderr := bytes.Buffer{}
-	if status := Remote(nil, stdin, &bytes.Buffer{}, &stderr, reg, Delegate{}); status != statusError {
-		t.Errorf("Remote() = %v; want %v", status, statusError)
-	}
-	if len(stderr.String()) == 0 {
-		t.Error("Remote() didn't write error to stderr")
-	}
-}
-
 func TestRemoteCantConnect(t *gotesting.T) {
 	td := sshtest.NewTestData(nil)
 	defer td.Close()

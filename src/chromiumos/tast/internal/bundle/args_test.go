@@ -36,7 +36,7 @@ func TestReadArgs(t *testing.T) {
 			Patterns: []string{"example.*"},
 		},
 	}
-	got, err := readArgs(nil, newBufferWithArgs(t, want), ioutil.Discard, localBundle)
+	got, err := readArgs(nil, newBufferWithArgs(t, want), ioutil.Discard)
 	if err != nil {
 		t.Fatal("readArgs failed: ", err)
 	}
@@ -47,7 +47,7 @@ func TestReadArgs(t *testing.T) {
 }
 
 func TestReadArgsDumpTests(t *testing.T) {
-	got, err := readArgs([]string{"-dumptests"}, &bytes.Buffer{}, ioutil.Discard, localBundle)
+	got, err := readArgs([]string{"-dumptests"}, &bytes.Buffer{}, ioutil.Discard)
 	if err != nil {
 		t.Fatal("readArgs failed: ", err)
 	}
@@ -62,7 +62,7 @@ func TestReadArgsDumpTests(t *testing.T) {
 }
 
 func TestReadArgsRPC(t *testing.T) {
-	got, err := readArgs([]string{"-rpc"}, &bytes.Buffer{}, ioutil.Discard, localBundle)
+	got, err := readArgs([]string{"-rpc"}, &bytes.Buffer{}, ioutil.Discard)
 	if err != nil {
 		t.Fatal("readArgs failed: ", err)
 	}

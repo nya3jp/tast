@@ -63,6 +63,7 @@ func features(availableSWs []string, model string) *protocol.Features {
 	}
 
 	return &protocol.Features{
+		CheckDeps: true,
 		Software: &protocol.SoftwareFeatures{
 			Available:   availableSWs,
 			Unavailable: unavailableSWs,
@@ -629,6 +630,7 @@ func TestInstantiateNonPointerPrecondition(t *gotesting.T) {
 
 func TestSoftwareDeps(t *gotesting.T) {
 	fs := &protocol.Features{
+		CheckDeps: true,
 		Software: &protocol.SoftwareFeatures{
 			Available:   []string{"dep1", "dep2"},
 			Unavailable: []string{"dep0", "dep3"},
@@ -669,6 +671,7 @@ func TestSoftwareDeps(t *gotesting.T) {
 
 func TestHardwareDeps(t *gotesting.T) {
 	fs := &protocol.Features{
+		CheckDeps: true,
 		Hardware: &protocol.HardwareFeatures{
 			DeprecatedDeviceConfig: &device.Config{
 				Id: &device.ConfigId{
@@ -710,18 +713,21 @@ func TestVarDeps(t *gotesting.T) {
 	}{{
 		name: "pass",
 		features: &protocol.Features{
-			Vars: map[string]string{"foo": "val"},
+			CheckDeps: true,
+			Vars:      map[string]string{"foo": "val"},
 		},
 		wantReasons: nil,
 	}, {
 		name: "fail",
 		features: &protocol.Features{
-			Vars: map[string]string{},
+			CheckDeps: true,
+			Vars:      map[string]string{},
 		},
 		wantErr: true,
 	}, {
 		name: "skip",
 		features: &protocol.Features{
+			CheckDeps:        true,
 			Vars:             map[string]string{},
 			MaybeMissingVars: `foo`,
 		},

@@ -80,8 +80,8 @@ type Delegate struct {
 // run reads a JSON-marshaled BundleArgs struct from stdin and performs the requested action.
 // Default arguments may be specified via args, which will also be updated from stdin.
 // The caller should exit with the returned status code.
-func run(ctx context.Context, clArgs []string, stdin io.Reader, stdout, stderr io.Writer, scfg *staticConfig, bt bundleType) int {
-	args, err := readArgs(clArgs, stdin, stderr, bt)
+func run(ctx context.Context, clArgs []string, stdin io.Reader, stdout, stderr io.Writer, scfg *staticConfig) int {
+	args, err := readArgs(clArgs, stdin, stderr)
 	if err != nil {
 		return command.WriteError(stderr, err)
 	}
@@ -145,7 +145,7 @@ func run(ctx context.Context, clArgs []string, stdin io.Reader, stdout, stderr i
 		if err != nil {
 			return command.WriteError(stderr, err)
 		}
-		if err := runTests(ctx, stdout, args.RunTests.Proto(), scfg, bt, tests); err != nil {
+		if err := runTests(ctx, stdout, args.RunTests.Proto(), scfg, tests); err != nil {
 			return command.WriteError(stderr, err)
 		}
 		return statusSuccess
@@ -293,8 +293,7 @@ func (ew *eventWriter) EntityEnd(ei *protocol.Entity, skipReasons []string, timi
 //
 // If an error is encountered in the test harness (as opposed to in a test), an error is returned.
 // Otherwise, nil is returned (test errors will be reported via EntityError control messages).
-func runTests(ctx context.Context, stdout io.Writer, cfg *protocol.RunConfig, scfg *staticConfig,
-	bt bundleType, tests []*testing.TestInstance) error {
+func runTests(ctx context.Context, stdout io.Writer, cfg *protocol.RunConfig, scfg *staticConfig, tests []*testing.TestInstance) error {
 	ctx = testcontext.WithPrivateData(ctx, testcontext.PrivateData{
 		WaitUntilReady: cfg.GetWaitUntilReady(),
 	})
@@ -354,9 +353,7 @@ func runTests(ctx context.Context, stdout io.Writer, cfg *protocol.RunConfig, sc
 	}
 
 	var rd *testing.RemoteData
-	if bt == remoteBundle {
-		rcfg := cfg.GetRemoteTestConfig()
-
+	if rcfg := cfg.GetRemoteTestConfig(); rcfg != nil {
 		testcontext.Log(ctx, "Connecting to DUT")
 		sshCfg := rcfg.GetPrimaryDut().GetSshConfig()
 		dt, err := connectToTarget(ctx, sshCfg.GetTarget(), sshCfg.GetKeyFile(), sshCfg.GetKeyDir(), scfg.beforeReboot)

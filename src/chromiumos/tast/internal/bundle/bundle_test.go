@@ -105,9 +105,9 @@ func TestRunTests(t *gotesting.T) {
 	}
 
 	stdout := bytes.Buffer{}
-	tests := reg.AllTests()
 	var preRunCalls, postRunCalls, preTestCalls, postTestCalls int
 	cfg := &protocol.RunConfig{
+		Tests: []string{name1, name2},
 		Dirs: &protocol.RunDirectories{
 			OutDir:  tmpDir,
 			DataDir: tmpDir,
@@ -136,7 +136,7 @@ func TestRunTests(t *gotesting.T) {
 	})
 
 	sig := fmt.Sprintf("runTests(..., %+v, %+v)", *cfg, *scfg)
-	if err := runTests(context.Background(), &stdout, cfg, scfg, tests); err != nil {
+	if err := runTests(context.Background(), &stdout, cfg, scfg); err != nil {
 		t.Fatalf("%v failed: %v", sig, err)
 	}
 
@@ -146,6 +146,8 @@ func TestRunTests(t *gotesting.T) {
 	if postRunCalls != 1 {
 		t.Errorf("%v called run post-run function %d time(s); want 1", sig, postRunCalls)
 	}
+
+	tests := reg.AllTests()
 	if preTestCalls != len(tests) {
 		t.Errorf("%v called pre-test function %d time(s); want %d", sig, preTestCalls, len(tests))
 	}
@@ -238,6 +240,7 @@ func TestRunTestsTimeout(t *gotesting.T) {
 	tmpDir := testutil.TempDir(t)
 	defer os.RemoveAll(tmpDir)
 	cfg := &protocol.RunConfig{
+		Tests: []string{name1, name2},
 		Dirs: &protocol.RunDirectories{
 			OutDir:  tmpDir,
 			DataDir: tmpDir,
@@ -246,7 +249,7 @@ func TestRunTestsTimeout(t *gotesting.T) {
 
 	// The first test should time out after 1 millisecond.
 	// The second test is not run.
-	if err := runTests(context.Background(), &stdout, cfg, NewStaticConfig(reg, 0, Delegate{}), reg.AllTests()); err == nil {
+	if err := runTests(context.Background(), &stdout, cfg, NewStaticConfig(reg, 0, Delegate{})); err == nil {
 		t.Fatalf("runTests(..., %+v, ...) succeeded unexpectedly", *cfg)
 	}
 
@@ -294,7 +297,7 @@ func TestRunTestsTimeout(t *gotesting.T) {
 
 func TestRunTestsNoTests(t *gotesting.T) {
 	// runTests should report failure when passed an empty slice of tests.
-	if err := runTests(context.Background(), &bytes.Buffer{}, nil, NewStaticConfig(testing.NewRegistry(), 0, Delegate{}), []*testing.TestInstance{}); !errorHasStatus(err, statusNoTests) {
+	if err := runTests(context.Background(), &bytes.Buffer{}, nil, NewStaticConfig(testing.NewRegistry(), 0, Delegate{})); !errorHasStatus(err, statusNoTests) {
 		t.Fatalf("runTests() = %v; want status %v", err, statusNoTests)
 	}
 }
@@ -769,37 +772,43 @@ func TestRunExternalDataFiles(t *gotesting.T) {
 }
 
 func TestRunStartFixture(t *gotesting.T) {
+	const testName = "pkg.Test"
 	// runTests should not run runHook if tests depend on remote fixtures.
 	// TODO(crbug/1184567): consider long term plan about interactions between
 	// remote fixtures and run hooks.
-	if err := runTests(context.Background(), &bytes.Buffer{}, &protocol.RunConfig{
+	cfg := &protocol.RunConfig{
+		Tests:             []string{testName},
 		StartFixtureState: &protocol.StartFixtureState{Name: "foo"},
-	}, NewStaticConfig(testing.NewRegistry(), 0, Delegate{
+	}
+	reg := testing.NewRegistry()
+	reg.AddTestInstance(&testing.TestInstance{
+		Fixture: "foo",
+		Name:    testName,
+		Func:    func(context.Context, *testing.State) {},
+	})
+	scfg := NewStaticConfig(reg, 0, Delegate{
 		RunHook: func(context.Context) (func(context.Context) error, error) {
 			t.Error("runHook unexpectedly called")
 			return nil, nil
 		},
-	}), []*testing.TestInstance{{
-		Fixture: "foo",
-		Name:    "pkg.Test",
-		Func:    func(context.Context, *testing.State) {},
-	}}); err != nil {
+	})
+	if err := runTests(context.Background(), &bytes.Buffer{}, cfg, scfg); err != nil {
 		t.Fatalf("runTests(): %v", err)
 	}
 
 	// If StartFixtureName is empty, runHook should run.
-	called := false
-	if err := runTests(context.Background(), &bytes.Buffer{}, &protocol.RunConfig{
+	cfg = &protocol.RunConfig{
+		Tests:             []string{testName},
 		StartFixtureState: &protocol.StartFixtureState{Name: ""},
-	}, NewStaticConfig(testing.NewRegistry(), 0, Delegate{
+	}
+	called := false
+	scfg = NewStaticConfig(reg, 0, Delegate{
 		RunHook: func(context.Context) (func(context.Context) error, error) {
 			called = true
 			return nil, nil
 		},
-	}), []*testing.TestInstance{{
-		Name: "pkg.Test",
-		Func: func(context.Context, *testing.State) {},
-	}}); err != nil {
+	})
+	if err := runTests(context.Background(), &bytes.Buffer{}, cfg, scfg); err != nil {
 		t.Fatalf("runTests(): %v", err)
 	}
 	if !called {

@@ -80,7 +80,7 @@ type Delegate struct {
 // run reads a JSON-marshaled BundleArgs struct from stdin and performs the requested action.
 // Default arguments may be specified via args, which will also be updated from stdin.
 // The caller should exit with the returned status code.
-func run(ctx context.Context, clArgs []string, stdin io.Reader, stdout, stderr io.Writer, scfg *staticConfig) int {
+func run(ctx context.Context, clArgs []string, stdin io.Reader, stdout, stderr io.Writer, scfg *StaticConfig) int {
 	args, err := readArgs(clArgs, stdin, stderr)
 	if err != nil {
 		return command.WriteError(stderr, err)
@@ -150,7 +150,7 @@ func run(ctx context.Context, clArgs []string, stdin io.Reader, stdout, stderr i
 		}
 		return statusSuccess
 	case jsonprotocol.BundleRPCMode:
-		if err := RunRPCServer(stdin, stdout, scfg.registry); err != nil {
+		if err := RunRPCServer(stdin, stdout, scfg); err != nil {
 			return command.WriteError(stderr, err)
 		}
 		return statusSuccess
@@ -160,7 +160,7 @@ func run(ctx context.Context, clArgs []string, stdin io.Reader, stdout, stderr i
 }
 
 // testsToRun returns a sorted list of tests to run for the given patterns.
-func testsToRun(scfg *staticConfig, patterns []string) ([]*testing.TestInstance, error) {
+func testsToRun(scfg *StaticConfig, patterns []string) ([]*testing.TestInstance, error) {
 	m, err := testing.NewMatcher(patterns)
 	if err != nil {
 		return nil, command.NewStatusErrorf(statusBadPatterns, "failed getting tests for %v: %v", patterns, err.Error())
@@ -182,11 +182,11 @@ func testsToRun(scfg *staticConfig, patterns []string) ([]*testing.TestInstance,
 	return tests, nil
 }
 
-// staticConfig contains configurations unique to a test bundle.
+// StaticConfig contains configurations unique to a test bundle.
 //
 // The supplied functions are used to provide customizations that apply to all
 // entities in a test bundle. They may contain bundle-specific code.
-type staticConfig struct {
+type StaticConfig struct {
 	// registry is a registry to be used to find entities.
 	registry *testing.Registry
 	// runHook is run at the beginning of the entire series of tests if non-nil.
@@ -207,8 +207,9 @@ type staticConfig struct {
 	defaultTestTimeout time.Duration
 }
 
-func newStaticConfig(reg *testing.Registry, defaultTestTimeout time.Duration, d Delegate) *staticConfig {
-	return &staticConfig{
+// NewStaticConfig constructs StaticConfig from given parameters.
+func NewStaticConfig(reg *testing.Registry, defaultTestTimeout time.Duration, d Delegate) *StaticConfig {
+	return &StaticConfig{
 		registry: reg,
 		runHook: func(ctx context.Context) (func(context.Context) error, error) {
 			pd, ok := testcontext.PrivateDataFromContext(ctx)
@@ -293,7 +294,7 @@ func (ew *eventWriter) EntityEnd(ei *protocol.Entity, skipReasons []string, timi
 //
 // If an error is encountered in the test harness (as opposed to in a test), an error is returned.
 // Otherwise, nil is returned (test errors will be reported via EntityError control messages).
-func runTests(ctx context.Context, stdout io.Writer, cfg *protocol.RunConfig, scfg *staticConfig, tests []*testing.TestInstance) error {
+func runTests(ctx context.Context, stdout io.Writer, cfg *protocol.RunConfig, scfg *StaticConfig, tests []*testing.TestInstance) error {
 	ctx = testcontext.WithPrivateData(ctx, testcontext.PrivateData{
 		WaitUntilReady: cfg.GetWaitUntilReady(),
 	})

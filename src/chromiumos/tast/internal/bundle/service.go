@@ -13,15 +13,15 @@ import (
 
 type testServer struct {
 	protocol.UnimplementedTestServiceServer
-	reg *testing.Registry
+	scfg *StaticConfig
 }
 
-func newTestServer(reg *testing.Registry) *testServer {
-	return &testServer{reg: reg}
+func newTestServer(scfg *StaticConfig) *testServer {
+	return &testServer{scfg: scfg}
 }
 
 func (s *testServer) ListEntities(ctx context.Context, req *protocol.ListEntitiesRequest) (*protocol.ListEntitiesResponse, error) {
-	resolved := listEntities(s.reg, req.GetFeatures())
+	resolved := listEntities(s.scfg.registry, req.GetFeatures())
 	return &protocol.ListEntitiesResponse{Entities: resolved}, nil
 }
 

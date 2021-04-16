@@ -93,6 +93,9 @@ func (w *entityOutputStream) Error(e *protocol.Error) error {
 // End reports that the entity has ended. After End is called, all methods will
 // fail with an error.
 func (w *entityOutputStream) End(skipReasons []string, timingLog *timing.Log) error {
+	if timingLog == nil {
+		panic("BUG: entityOutputStream.End: nil timing log")
+	}
 	w.mu.Lock()
 	defer w.mu.Unlock()
 	if w.ended {

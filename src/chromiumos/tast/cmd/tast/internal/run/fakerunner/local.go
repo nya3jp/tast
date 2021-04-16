@@ -166,7 +166,9 @@ func runFakeRemoteFixtureServer() int {
 		}
 	}()
 
-	if err := bundle.RunRPCServer(os.Stdin, os.Stdout, reg); err != nil {
+	scfg := bundle.NewStaticConfig(reg, 0, bundle.Delegate{})
+
+	if err := bundle.RunRPCServer(os.Stdin, os.Stdout, scfg); err != nil {
 		log.Fatalf("Remote server: %v", err)
 	}
 	return 0

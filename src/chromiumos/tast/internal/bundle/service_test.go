@@ -29,9 +29,11 @@ func TestTestServerListEntities(t *gotesting.T) {
 	reg.AddFixture(f1)
 	reg.AddFixture(f2)
 
+	scfg := NewStaticConfig(reg, 0, Delegate{})
+
 	// Set up a local gRPC server.
 	srv := grpc.NewServer()
-	protocol.RegisterTestServiceServer(srv, newTestServer(reg))
+	protocol.RegisterTestServiceServer(srv, newTestServer(scfg))
 
 	lis, err := net.Listen("tcp", "localhost:0")
 	if err != nil {
@@ -87,9 +89,11 @@ func TestTestServerListEntitiesTestSkips(t *gotesting.T) {
 	reg.AddTestInstance(t2)
 	reg.AddTestInstance(t3)
 
+	scfg := NewStaticConfig(reg, 0, Delegate{})
+
 	// Set up a local gRPC server.
 	srv := grpc.NewServer()
-	protocol.RegisterTestServiceServer(srv, newTestServer(reg))
+	protocol.RegisterTestServiceServer(srv, newTestServer(scfg))
 
 	lis, err := net.Listen("tcp", "localhost:0")
 	if err != nil {

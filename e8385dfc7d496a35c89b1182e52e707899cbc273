@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1d338ebf_1ecedaf6",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-04-16T17:44:04Z",
+      "side": 1,
+      "message": "I have change the link of \"File a Bug\" in the navigation bar /docs/getting_help.md#bug-reports\n\nSubmitting to CQ.",
+      "revId": "e8385dfc7d496a35c89b1182e52e707899cbc273",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

@@ -510,6 +510,30 @@
       },
       "revId": "161f9a3735022f4c4997703967dbdf8d5eb2b25f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a24c00b1_dd929e2d",
+        "filename": "navbar.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-04-16T17:44:04Z",
+      "side": 1,
+      "message": "I think it is a good idea to link to getting_help.md#bug-reports. I just made the change.",
+      "parentUuid": "63fefa14_25156801",
+      "range": {
+        "startLine": 9,
+        "startChar": 15,
+        "endLine": 9,
+        "endChar": 86
+      },
+      "revId": "161f9a3735022f4c4997703967dbdf8d5eb2b25f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

@@ -78,7 +78,7 @@ func TestTestOutputStream(t *gotesting.T) {
 	tout.Log("hello")
 	tout.Error(&protocol.Error{Reason: "faulty", Location: &protocol.ErrorLocation{File: "world.go"}})
 	tout.Log("world")
-	tout.End(nil, nil)
+	tout.End(nil, timing.NewLog())
 
 	got := sink.ReadAll()
 
@@ -103,7 +103,7 @@ func TestTestOutputStreamUnnamedEntity(t *gotesting.T) {
 	tout.Log("hello")
 	tout.Error(&protocol.Error{Reason: "faulty", Location: &protocol.ErrorLocation{File: "world.go"}})
 	tout.Log("world")
-	tout.End(nil, nil)
+	tout.End(nil, timing.NewLog())
 
 	got := sink.ReadAll()
 
@@ -121,7 +121,7 @@ func TestTestOutputStreamErrors(t *gotesting.T) {
 	tout.Start("/tmp/out")
 	tout.Error(&protocol.Error{Reason: "error1", Location: &protocol.ErrorLocation{File: "test1.go"}})
 	tout.Error(&protocol.Error{Reason: "error2", Location: &protocol.ErrorLocation{File: "test2.go"}})
-	tout.End(nil, nil)
+	tout.End(nil, timing.NewLog())
 	tout.Error(&protocol.Error{Reason: "error3", Location: &protocol.ErrorLocation{File: "test3.go"}}) // error after End is ignored
 
 	got := tout.Errors()

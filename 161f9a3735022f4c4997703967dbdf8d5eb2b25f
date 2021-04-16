@@ -486,6 +486,30 @@
       },
       "revId": "161f9a3735022f4c4997703967dbdf8d5eb2b25f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "63fefa14_25156801",
+        "filename": "navbar.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-04-16T05:36:12Z",
+      "side": 1,
+      "message": "When I looked at this URL first, it showed a template for Tast test failures with the default component set to ChromeOS\u003eTest\u003eHarness\u003eTast\u003eFramework, so I was confused. Now the template is removed and it looks good.\n\nMaybe it\u0027s even more better to link to getting_help.md#bug-reports since it has detailed explanation how to choose components.",
+      "parentUuid": "b7ae909a_b6304629",
+      "range": {
+        "startLine": 9,
+        "startChar": 15,
+        "endLine": 9,
+        "endChar": 86
+      },
+      "revId": "161f9a3735022f4c4997703967dbdf8d5eb2b25f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

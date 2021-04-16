@@ -16,6 +16,23 @@
       "message": "I have addressed all comments except one. I do have question regarding that comment. Please take a look. Thanks.",
       "revId": "0b021c4fbbcf2a8c5a67bb8f38d3eb67d445d46b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4f8168b9_4d62f759",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-04-16T05:36:12Z",
+      "side": 1,
+      "message": "Thanks for update!\n",
+      "revId": "0b021c4fbbcf2a8c5a67bb8f38d3eb67d445d46b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

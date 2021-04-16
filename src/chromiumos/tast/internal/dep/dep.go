@@ -25,6 +25,10 @@ type Deps struct {
 // On success, it returns a list of reasons for which a test should be skipped.
 // If reasons is empty, a test should be run.
 func (d *Deps) Check(f *protocol.Features) (reasons []string, err error) {
+	if !f.GetCheckDeps() {
+		return nil, nil
+	}
+
 	// If f.MaybeMissingVars is empty, no variables are considered as missing.
 	maybeMissingVars, err := regexp.Compile("^" + f.GetMaybeMissingVars() + "$")
 	if err != nil {
@@ -46,21 +50,17 @@ func (d *Deps) Check(f *protocol.Features) (reasons []string, err error) {
 		return nil, errors.Errorf("runtime variable %v is missing and doesn't match with %v", v, maybeMissingVars)
 	}
 
-	if sf := f.GetSoftware(); sf != nil {
-		missing, unknown := missingSoftwareDeps(d.Software, sf)
-		if len(unknown) > 0 {
-			return nil, errors.Errorf("unknown SoftwareDeps: %v", strings.Join(unknown, ", "))
-		}
-		if len(missing) > 0 {
-			reasons = append(reasons, fmt.Sprintf("missing SoftwareDeps: %s", strings.Join(missing, ", ")))
-		}
+	missing, unknown := missingSoftwareDeps(d.Software, f.GetSoftware())
+	if len(unknown) > 0 {
+		return nil, errors.Errorf("unknown SoftwareDeps: %v", strings.Join(unknown, ", "))
+	}
+	if len(missing) > 0 {
+		reasons = append(reasons, fmt.Sprintf("missing SoftwareDeps: %s", strings.Join(missing, ", ")))
 	}
 
-	if hf := f.GetHardware(); hf != nil {
-		if err := d.Hardware.Satisfied(hf); err != nil {
-			for _, r := range err.Reasons {
-				reasons = append(reasons, r.Error())
-			}
+	if err := d.Hardware.Satisfied(f.GetHardware()); err != nil {
+		for _, r := range err.Reasons {
+			reasons = append(reasons, r.Error())
 		}
 	}
 

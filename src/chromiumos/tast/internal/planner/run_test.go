@@ -550,6 +550,7 @@ func TestRunExternalData(t *gotesting.T) {
 			pcfg := &Config{
 				DataDir: dataDir,
 				Features: &protocol.Features{
+					CheckDeps: true,
 					Software: &protocol.SoftwareFeatures{
 						Available:   []string{"dep2"},
 						Unavailable: []string{"dep1"},
@@ -1479,6 +1480,7 @@ func TestRunPlan(t *gotesting.T) {
 	fixt2 := &testing.Fixture{Name: "fixt2", Impl: newFakeFixture(), Parent: "fixt1"}
 	cfg := &Config{
 		Features: &protocol.Features{
+			CheckDeps: true,
 			Software: &protocol.SoftwareFeatures{
 				Available:   []string{"yes"},
 				Unavailable: []string{"no"},

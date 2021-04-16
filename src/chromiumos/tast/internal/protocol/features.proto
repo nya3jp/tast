@@ -13,6 +13,10 @@ option go_package = "chromiumos/tast/internal/protocol";
 
 // Features represents a set of features available for tests.
 message Features {
+  // CheckDeps indicates whether to skip tests whose dependencies are not
+  // satisfied by available features.
+  bool check_deps = 5;
+
   SoftwareFeatures software = 1;
   HardwareFeatures hardware = 2;
   map<string, string> vars = 3;
@@ -21,8 +25,6 @@ message Features {
 
 // SoftwareFeatures represents a set of software features available for the
 // image being tested.
-// A nil message indicates that all tests should always run, thus it should be
-// distinguished from an empty message.
 message SoftwareFeatures {
   repeated string available = 1;
   repeated string unavailable = 2;
@@ -30,8 +32,6 @@ message SoftwareFeatures {
 
 // HardwareFeatures represents a set of hardware features available for the
 // device model being tested.
-// A nil message indicates that all tests should always run, thus it should be
-// distinguished from an empty message.
 message HardwareFeatures {
   chromiumos.config.api.HardwareFeatures hardware_features = 1;
   device.Config deprecated_device_config = 2;

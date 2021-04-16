@@ -169,15 +169,12 @@ type FeatureArgs struct {
 
 // Features returns protocol.Features to be used to check test dependencies.
 func (a *FeatureArgs) Features() *protocol.Features {
-	if !a.CheckDeps {
-		return nil
-	}
-
 	vars := make(map[string]string)
 	for k, v := range a.TestVars {
 		vars[k] = v
 	}
 	return &protocol.Features{
+		CheckDeps: a.CheckDeps,
 		Software: &protocol.SoftwareFeatures{
 			Available:   a.AvailableSoftwareFeatures,
 			Unavailable: a.UnavailableSoftwareFeatures,

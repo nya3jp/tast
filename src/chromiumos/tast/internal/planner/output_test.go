@@ -7,7 +7,6 @@ package planner
 import (
 	gotesting "testing"
 
-	"github.com/golang/protobuf/proto"
 	"github.com/google/go-cmp/cmp"
 
 	"chromiumos/tast/internal/protocol"
@@ -15,7 +14,7 @@ import (
 )
 
 type outputSink struct {
-	msgs []proto.Message
+	msgs []protocol.Event
 }
 
 func newOutputSink() *outputSink {
@@ -65,7 +64,7 @@ func (s *outputSink) EntityEnd(ei *protocol.Entity, skipReasons []string, timing
 }
 
 // ReadAll reads all control messages written to the sink.
-func (s *outputSink) ReadAll() []proto.Message {
+func (s *outputSink) ReadAll() []protocol.Event {
 	return s.msgs
 }
 
@@ -82,7 +81,7 @@ func TestTestOutputStream(t *gotesting.T) {
 
 	got := sink.ReadAll()
 
-	want := []proto.Message{
+	want := []protocol.Event{
 		&protocol.EntityStartEvent{Entity: test, OutDir: "/tmp/out"},
 		&protocol.EntityLogEvent{EntityName: "pkg.Test", Text: "hello"},
 		&protocol.EntityErrorEvent{EntityName: "pkg.Test", Error: &protocol.Error{Reason: "faulty"}},
@@ -107,7 +106,7 @@ func TestTestOutputStreamUnnamedEntity(t *gotesting.T) {
 
 	got := sink.ReadAll()
 
-	var want []proto.Message
+	var want []protocol.Event
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Error("Output mismatch (-got +want):\n", diff)
 	}

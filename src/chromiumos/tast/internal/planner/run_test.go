@@ -17,7 +17,6 @@ import (
 	gotesting "testing"
 	"time"
 
-	"github.com/golang/protobuf/proto"
 	"github.com/google/go-cmp/cmp"
 
 	"chromiumos/tast/errors"
@@ -30,7 +29,7 @@ import (
 )
 
 // runTestsAndReadAll runs tests and returns a slice of control messages written to the output.
-func runTestsAndReadAll(t *gotesting.T, tests []*testing.TestInstance, pcfg *Config) []proto.Message {
+func runTestsAndReadAll(t *gotesting.T, tests []*testing.TestInstance, pcfg *Config) []protocol.Event {
 	t.Helper()
 
 	sink := newOutputSink()
@@ -77,7 +76,7 @@ func TestRunSuccess(t *gotesting.T) {
 
 	msgs := runTestsAndReadAll(t, tests, &Config{OutDir: od})
 
-	want := []proto.Message{
+	want := []protocol.Event{
 		&protocol.EntityStartEvent{Entity: tests[0].EntityProto(), OutDir: filepath.Join(od, "pkg.Test")},
 		&protocol.EntityEndEvent{EntityName: tests[0].Name},
 	}
@@ -99,7 +98,7 @@ func TestRunPanic(t *gotesting.T) {
 		Timeout: time.Minute,
 	}}
 	msgs := runTestsAndReadAll(t, tests, &Config{})
-	want := []proto.Message{
+	want := []protocol.Event{
 		&protocol.EntityStartEvent{Entity: tests[0].EntityProto()},
 		&protocol.EntityErrorEvent{EntityName: "pkg.Test", Error: &protocol.Error{Reason: "Panic: intentional panic"}},
 		&protocol.EntityEndEvent{EntityName: "pkg.Test"},
@@ -123,7 +122,7 @@ func TestRunDeadline(t *gotesting.T) {
 	msgs := runTestsAndReadAll(t, tests, &Config{CustomGracePeriod: &gracePeriod})
 	// The error that was reported by the test after its deadline was hit
 	// but within the exit delay should be available.
-	want := []proto.Message{
+	want := []protocol.Event{
 		&protocol.EntityStartEvent{Entity: tests[0].EntityProto()},
 		&protocol.EntityErrorEvent{EntityName: "pkg.Test", Error: &protocol.Error{Reason: "Saw timeout within test"}},
 		&protocol.EntityEndEvent{EntityName: "pkg.Test"},
@@ -164,7 +163,7 @@ func TestRunLogAfterTimeout(t *gotesting.T) {
 	}
 
 	// An error is written with a goroutine dump.
-	want := []proto.Message{
+	want := []protocol.Event{
 		&protocol.EntityStartEvent{Entity: tests[0].EntityProto()},
 		&protocol.EntityErrorEvent{EntityName: "pkg.Test", Error: &protocol.Error{Reason: "Test did not return on timeout (see log for goroutine dump)"}},
 		&protocol.EntityLogEvent{EntityName: "pkg.Test", Text: "Dumping all goroutines"},
@@ -197,7 +196,7 @@ func TestRunLateWriteFromGoroutine(t *gotesting.T) {
 	close(start)
 	<-end
 
-	want := []proto.Message{
+	want := []protocol.Event{
 		&protocol.EntityStartEvent{Entity: tests[0].EntityProto()},
 		// Log message from the goroutine is not reported.
 		&protocol.EntityEndEvent{EntityName: tests[0].Name},
@@ -242,14 +241,14 @@ func TestRunSkipStages(t *gotesting.T) {
 	for _, tc := range []struct {
 		name  string
 		tests []testBehavior
-		want  []proto.Message
+		want  []protocol.Event
 	}{
 		{
 			name: "no precondition",
 			tests: []testBehavior{
 				{nil, pass, noCall, pass, noCall, pass},
 			},
-			want: []proto.Message{
+			want: []protocol.Event{
 				&protocol.EntityStartEvent{Entity: &protocol.Entity{Name: "0"}},
 				&protocol.EntityLogEvent{EntityName: "0", Text: "preTest: OK"},
 				&protocol.EntityLogEvent{EntityName: "0", Text: "test: OK"},
@@ -262,7 +261,7 @@ func TestRunSkipStages(t *gotesting.T) {
 			tests: []testBehavior{
 				{pre1, pass, pass, pass, pass, pass},
 			},
-			want: []proto.Message{
+			want: []protocol.Event{
 				&protocol.EntityStartEvent{Entity: &protocol.Entity{Name: "0"}},
 				&protocol.EntityLogEvent{EntityName: "0", Text: "preTest: OK"},
 				&protocol.EntityLogEvent{EntityName: "0", Text: `Preparing precondition "pre1"`},
@@ -279,7 +278,7 @@ func TestRunSkipStages(t *gotesting.T) {
 			tests: []testBehavior{
 				{pre1, doError, noCall, noCall, pass, pass},
 			},
-			want: []proto.Message{
+			want: []protocol.Event{
 				&protocol.EntityStartEvent{Entity: &protocol.Entity{Name: "0"}},
 				&protocol.EntityErrorEvent{EntityName: "0", Error: &protocol.Error{Reason: "preTest: Intentional error"}},
 				&protocol.EntityLogEvent{EntityName: "0", Text: `Closing precondition "pre1"`},
@@ -293,7 +292,7 @@ func TestRunSkipStages(t *gotesting.T) {
 			tests: []testBehavior{
 				{pre1, doPanic, noCall, noCall, pass, pass},
 			},
-			want: []proto.Message{
+			want: []protocol.Event{
 				&protocol.EntityStartEvent{Entity: &protocol.Entity{Name: "0"}},
 				&protocol.EntityErrorEvent{EntityName: "0", Error: &protocol.Error{Reason: "Panic: preTest: Intentional panic"}},
 				&protocol.EntityLogEvent{EntityName: "0", Text: `Closing precondition "pre1"`},
@@ -306,7 +305,7 @@ func TestRunSkipStages(t *gotesting.T) {
 			tests: []testBehavior{
 				{pre1, pass, doError, noCall, pass, pass},
 			},
-			want: []proto.Message{
+			want: []protocol.Event{
 				&protocol.EntityStartEvent{Entity: &protocol.Entity{Name: "0"}},
 				&protocol.EntityLogEvent{EntityName: "0", Text: "preTest: OK"},
 				&protocol.EntityLogEvent{EntityName: "0", Text: `Preparing precondition "pre1"`},
@@ -322,7 +321,7 @@ func TestRunSkipStages(t *gotesting.T) {
 			tests: []testBehavior{
 				{pre1, pass, doPanic, noCall, pass, pass},
 			},
-			want: []proto.Message{
+			want: []protocol.Event{
 				&protocol.EntityStartEvent{Entity: &protocol.Entity{Name: "0"}},
 				&protocol.EntityLogEvent{EntityName: "0", Text: "preTest: OK"},
 				&protocol.EntityLogEvent{EntityName: "0", Text: `Preparing precondition "pre1"`},
@@ -339,7 +338,7 @@ func TestRunSkipStages(t *gotesting.T) {
 				{pre1, pass, pass, pass, noCall, pass},
 				{pre1, pass, pass, pass, pass, pass},
 			},
-			want: []proto.Message{
+			want: []protocol.Event{
 				&protocol.EntityStartEvent{Entity: &protocol.Entity{Name: "0"}},
 				&protocol.EntityLogEvent{EntityName: "0", Text: "preTest: OK"},
 				&protocol.EntityLogEvent{EntityName: "0", Text: `Preparing precondition "pre1"`},
@@ -364,7 +363,7 @@ func TestRunSkipStages(t *gotesting.T) {
 				{pre1, pass, pass, pass, pass, pass},
 				{pre2, pass, pass, pass, pass, pass},
 			},
-			want: []proto.Message{
+			want: []protocol.Event{
 				&protocol.EntityStartEvent{Entity: &protocol.Entity{Name: "0"}},
 				&protocol.EntityLogEvent{EntityName: "0", Text: "preTest: OK"},
 				&protocol.EntityLogEvent{EntityName: "0", Text: `Preparing precondition "pre1"`},
@@ -391,7 +390,7 @@ func TestRunSkipStages(t *gotesting.T) {
 				{pre1, pass, doError, noCall, noCall, pass},
 				{pre1, pass, pass, pass, pass, pass},
 			},
-			want: []proto.Message{
+			want: []protocol.Event{
 				&protocol.EntityStartEvent{Entity: &protocol.Entity{Name: "0"}},
 				&protocol.EntityLogEvent{EntityName: "0", Text: "preTest: OK"},
 				&protocol.EntityLogEvent{EntityName: "0", Text: `Preparing precondition "pre1"`},
@@ -608,7 +607,7 @@ func TestRunExternalData(t *gotesting.T) {
 
 			msgs := runTestsAndReadAll(t, tests, pcfg)
 
-			want := []proto.Message{
+			want := []protocol.Event{
 				&protocol.EntityStartEvent{Entity: tests[0].EntityProto()},
 				&protocol.EntityEndEvent{EntityName: tests[0].Name, Skip: &protocol.Skip{Reasons: []string{"missing SoftwareDeps: dep1"}}},
 				&protocol.EntityStartEvent{Entity: tests[1].EntityProto()},
@@ -732,7 +731,7 @@ func TestRunFixture(t *gotesting.T) {
 
 	msgs := runTestsAndReadAll(t, tests, cfg)
 
-	want := []proto.Message{
+	want := []protocol.Event{
 		// pkg.Test0 simply runs.
 		&protocol.EntityStartEvent{Entity: tests[0].EntityProto()},
 		&protocol.EntityLogEvent{EntityName: tests[0].Name, Text: "Test 0"},
@@ -844,7 +843,7 @@ func TestRunFixtureSetUpFailure(t *gotesting.T) {
 
 	msgs := runTestsAndReadAll(t, tests, cfg)
 
-	want := []proto.Message{
+	want := []protocol.Event{
 		// pkg.Test0 runs successfully.
 		&protocol.EntityStartEvent{Entity: tests[0].EntityProto()},
 		&protocol.EntityLogEvent{EntityName: tests[0].Name, Text: "Test 0"},
@@ -889,7 +888,7 @@ func TestRunFixtureRemoteSetUpFailure(t *gotesting.T) {
 
 	msgs := runTestsAndReadAll(t, tests, cfg)
 
-	want := []proto.Message{
+	want := []protocol.Event{
 		&protocol.EntityStartEvent{Entity: tests[0].EntityProto()},
 		&protocol.EntityErrorEvent{Error: &protocol.Error{Reason: "[Fixture failure] remoteFixt: Remote failure"}, EntityName: "pkg.Test"},
 		&protocol.EntityEndEvent{EntityName: tests[0].Name},
@@ -946,7 +945,7 @@ func TestRunFixtureResetFailure(t *gotesting.T) {
 
 	msgs := runTestsAndReadAll(t, tests, cfg)
 
-	want := []proto.Message{
+	want := []protocol.Event{
 		// pkg.Test0 runs successfully.
 		&protocol.EntityStartEvent{Entity: tests[0].EntityProto()},
 		&protocol.EntityLogEvent{EntityName: tests[0].Name, Text: "Test 0"},
@@ -1047,7 +1046,7 @@ func TestRunFixtureMinimumReset(t *gotesting.T) {
 
 	msgs := runTestsAndReadAll(t, tests, cfg)
 
-	want := []proto.Message{
+	want := []protocol.Event{
 		// pkg.Test0 runs.
 		&protocol.EntityStartEvent{Entity: tests[0].EntityProto()},
 		&protocol.EntityEndEvent{EntityName: tests[0].Name},
@@ -1134,7 +1133,7 @@ func TestRunFixtureMissing(t *gotesting.T) {
 
 	msgs := runTestsAndReadAll(t, tests, cfg)
 
-	want := []proto.Message{
+	want := []protocol.Event{
 		// Orphan tests are reported first, sorted by name.
 		&protocol.EntityStartEvent{Entity: tests[1].EntityProto()},
 		&protocol.EntityErrorEvent{EntityName: tests[1].Name, Error: &protocol.Error{Reason: "Fixture \"fixt0\" not found"}},
@@ -1279,7 +1278,7 @@ func TestRunPrecondition(t *gotesting.T) {
 
 	msgs := runTestsAndReadAll(t, tests, &Config{})
 
-	want := []proto.Message{
+	want := []protocol.Event{
 		&protocol.EntityStartEvent{Entity: tests[0].EntityProto()},
 		&protocol.EntityLogEvent{EntityName: tests[0].Name, Text: `Preparing precondition "pre"`},
 		&protocol.EntityLogEvent{EntityName: tests[0].Name, Text: `Closing precondition "pre"`},
@@ -1339,7 +1338,7 @@ func TestRunPreconditionContext(t *gotesting.T) {
 
 	msgs := runTestsAndReadAll(t, tests, &Config{})
 
-	want := []proto.Message{
+	want := []protocol.Event{
 		&protocol.EntityStartEvent{Entity: tests[0].EntityProto()},
 		&protocol.EntityLogEvent{EntityName: tests[0].Name, Text: `Preparing precondition "pre"`},
 		&protocol.EntityLogEvent{EntityName: tests[0].Name, Text: "Log via PreCtx"},
@@ -1462,7 +1461,7 @@ func TestAttachStateToContext(t *gotesting.T) {
 
 	msgs := runTestsAndReadAll(t, tests, &Config{})
 
-	want := []proto.Message{
+	want := []protocol.Event{
 		&protocol.EntityStartEvent{Entity: tests[0].EntityProto()},
 		&protocol.EntityLogEvent{EntityName: tests[0].Name, Text: "msg 1"},
 		&protocol.EntityLogEvent{EntityName: tests[0].Name, Text: "msg 2"},

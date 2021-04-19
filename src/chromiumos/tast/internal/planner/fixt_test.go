@@ -11,7 +11,6 @@ import (
 	"path/filepath"
 	gotesting "testing"
 
-	"github.com/golang/protobuf/proto"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 
@@ -619,7 +618,7 @@ func TestFixtureStackOutputGreen(t *gotesting.T) {
 
 	msgs := sink.ReadAll()
 
-	want := []proto.Message{
+	want := []protocol.Event{
 		&protocol.EntityStartEvent{Entity: fixt1.EntityProto()},
 		&protocol.EntityLogEvent{EntityName: "fixt1", Text: "SetUp 1 via Context"},
 		&protocol.EntityLogEvent{EntityName: "fixt1", Text: "SetUp 1 via Fixture-scoped Context"},
@@ -708,7 +707,7 @@ func TestFixtureStackOutputRed(t *gotesting.T) {
 
 	msgs := sink.ReadAll()
 
-	want := []proto.Message{
+	want := []protocol.Event{
 		&protocol.EntityStartEvent{Entity: fixt1.EntityProto()},
 		&protocol.EntityLogEvent{EntityName: "fixt1", Text: "SetUp 1"},
 		&protocol.EntityStartEvent{Entity: fixt2.EntityProto()},
@@ -779,7 +778,7 @@ func TestFixtureStackOutputYellow(t *gotesting.T) {
 
 	msgs := sink.ReadAll()
 
-	want := []proto.Message{
+	want := []protocol.Event{
 		&protocol.EntityStartEvent{Entity: fixt1.EntityProto()},
 		&protocol.EntityLogEvent{EntityName: "fixt1", Text: "SetUp 1"},
 		&protocol.EntityStartEvent{Entity: fixt2.EntityProto()},

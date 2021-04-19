@@ -6,16 +6,41 @@ package bundle
 
 import (
 	"context"
-	"net"
+	"io"
+	"io/ioutil"
 	gotesting "testing"
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
-	"google.golang.org/grpc"
 
 	"chromiumos/tast/internal/protocol"
+	"chromiumos/tast/internal/rpc"
 	"chromiumos/tast/internal/testing"
 )
+
+// startTestServer starts an in-process gRPC server and returns a connection as
+// TestServiceClient. On completion of the current test, resources are released
+// automatically.
+func startTestServer(t *gotesting.T, scfg *StaticConfig) protocol.TestServiceClient {
+	sr, cw := io.Pipe()
+	cr, sw := io.Pipe()
+	t.Cleanup(func() {
+		cw.Close()
+		cr.Close()
+	})
+
+	go run(context.Background(), []string{"-rpc"}, sr, sw, ioutil.Discard, scfg)
+
+	conn, err := rpc.NewClient(context.Background(), cr, cw, &protocol.HandshakeRequest{})
+	if err != nil {
+		t.Fatalf("Failed to connect to in-process gRPC server: %v", err)
+	}
+	t.Cleanup(func() {
+		conn.Close(context.Background())
+	})
+
+	return protocol.NewTestServiceClient(conn.Conn)
+}
 
 func TestTestServerListEntities(t *gotesting.T) {
 	t1 := &testing.TestInstance{Name: "pkg.Test1"}
@@ -31,24 +56,7 @@ func TestTestServerListEntities(t *gotesting.T) {
 
 	scfg := NewStaticConfig(reg, 0, Delegate{})
 
-	// Set up a local gRPC server.
-	srv := grpc.NewServer()
-	protocol.RegisterTestServiceServer(srv, newTestServer(scfg))
-
-	lis, err := net.Listen("tcp", "localhost:0")
-	if err != nil {
-		t.Fatal(err)
-	}
-	go srv.Serve(lis)
-	defer srv.Stop()
-
-	conn, err := grpc.Dial(lis.Addr().String(), grpc.WithInsecure())
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer conn.Close()
-
-	cl := protocol.NewTestServiceClient(conn)
+	cl := startTestServer(t, scfg)
 
 	// Call ListEntities.
 	got, err := cl.ListEntities(context.Background(), &protocol.ListEntitiesRequest{})
@@ -91,24 +99,7 @@ func TestTestServerListEntitiesTestSkips(t *gotesting.T) {
 
 	scfg := NewStaticConfig(reg, 0, Delegate{})
 
-	// Set up a local gRPC server.
-	srv := grpc.NewServer()
-	protocol.RegisterTestServiceServer(srv, newTestServer(scfg))
-
-	lis, err := net.Listen("tcp", "localhost:0")
-	if err != nil {
-		t.Fatal(err)
-	}
-	go srv.Serve(lis)
-	defer srv.Stop()
-
-	conn, err := grpc.Dial(lis.Addr().String(), grpc.WithInsecure())
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer conn.Close()
-
-	cl := protocol.NewTestServiceClient(conn)
+	cl := startTestServer(t, scfg)
 
 	// Call ListEntities.
 	got, err := cl.ListEntities(context.Background(), &protocol.ListEntitiesRequest{Features: features})

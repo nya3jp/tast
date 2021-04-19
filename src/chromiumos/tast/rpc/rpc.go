@@ -7,9 +7,11 @@ package rpc
 
 import (
 	"context"
+	"os"
 	"path/filepath"
 
 	"chromiumos/tast/dut"
+	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/rpc"
 	"chromiumos/tast/internal/testing"
@@ -36,6 +38,16 @@ type Client = rpc.Client
 //  	return err
 //  }
 func Dial(ctx context.Context, d *dut.DUT, h *testing.RPCHint, bundleName string) (*Client, error) {
+	// Reject dial to a local test bundle with a different name.
+	// TODO(b/185755639): Consider dropping bundleName argument entirely.
+	exe, err := os.Executable()
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get self bundle name")
+	}
+	if selfName := filepath.Base(exe); bundleName != selfName {
+		return nil, errors.Errorf("cross-bundle gRPC connections are not supported: remote=%q, local=%q", selfName, bundleName)
+	}
+
 	bundlePath := filepath.Join(testing.ExtractLocalBundleDir(h), bundleName)
 	req := &protocol.HandshakeRequest{
 		NeedUserServices: true,

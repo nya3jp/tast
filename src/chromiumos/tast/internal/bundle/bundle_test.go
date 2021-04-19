@@ -22,7 +22,6 @@ import (
 	"github.com/google/go-cmp/cmp"
 
 	"chromiumos/tast/dut"
-	"chromiumos/tast/internal/command"
 	"chromiumos/tast/internal/control"
 	"chromiumos/tast/internal/devserver/devservertest"
 	"chromiumos/tast/internal/extdata"
@@ -60,16 +59,6 @@ func (p *testPre) Close(ctx context.Context, s *testing.PreState) {
 func (p *testPre) Timeout() time.Duration { return time.Minute }
 
 func (p *testPre) String() string { return p.name }
-
-// errorHasStatus returns true if err is of type *command.StatusError and contains the supplied status code.
-func errorHasStatus(err error, status int) bool {
-	if se, ok := err.(*command.StatusError); !ok {
-		return false
-	} else if se.Status() != status {
-		return false
-	}
-	return true
-}
 
 func TestRunTests(t *gotesting.T) {
 	const (
@@ -296,9 +285,9 @@ func TestRunTestsTimeout(t *gotesting.T) {
 }
 
 func TestRunTestsNoTests(t *gotesting.T) {
-	// runTests should report failure when passed an empty slice of tests.
-	if err := runTests(context.Background(), &bytes.Buffer{}, nil, NewStaticConfig(testing.NewRegistry(), 0, Delegate{})); !errorHasStatus(err, statusNoTests) {
-		t.Fatalf("runTests() = %v; want status %v", err, statusNoTests)
+	// runTests should report success when no test is executed.
+	if err := runTests(context.Background(), &bytes.Buffer{}, nil, NewStaticConfig(testing.NewRegistry(), 0, Delegate{})); err != nil {
+		t.Fatalf("runTests failed for empty tests: %v", err)
 	}
 }
 

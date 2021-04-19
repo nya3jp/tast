@@ -7,7 +7,6 @@ package bundle
 import (
 	"bytes"
 	"context"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
@@ -17,11 +16,13 @@ import (
 	gotesting "testing"
 	"time"
 
+	"github.com/google/go-cmp/cmp"
+
 	"chromiumos/tast/dut"
 	"chromiumos/tast/errors"
-	"chromiumos/tast/internal/control"
 	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/protocol"
+	"chromiumos/tast/internal/protocol/protocoltest"
 	"chromiumos/tast/internal/sshtest"
 	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/testing"
@@ -63,6 +64,7 @@ func TestRunTests(t *gotesting.T) {
 		postRunMsg  = "cleaning up after run"
 		preTestMsg  = "setting up for test"
 		postTestMsg = "cleaning up for test"
+		errorMsg    = "error"
 	)
 
 	reg := testing.NewRegistry()
@@ -73,7 +75,7 @@ func TestRunTests(t *gotesting.T) {
 	)
 	reg.AddTestInstance(&testing.TestInstance{
 		Name:    name2,
-		Func:    func(ctx context.Context, s *testing.State) { s.Error("error") },
+		Func:    func(ctx context.Context, s *testing.State) { s.Error(errorMsg) },
 		Timeout: time.Minute},
 	)
 
@@ -88,7 +90,6 @@ func TestRunTests(t *gotesting.T) {
 		t.Fatalf("Failed to create foo.txt: %v", err)
 	}
 
-	stdout := bytes.Buffer{}
 	var preRunCalls, postRunCalls, preTestCalls, postTestCalls int
 	cfg := &protocol.RunConfig{
 		Tests: []string{name1, name2},
@@ -119,82 +120,46 @@ func TestRunTests(t *gotesting.T) {
 		},
 	})
 
-	sig := fmt.Sprintf("runTests(..., %+v, %+v)", *cfg, *scfg)
-	if err := runTestsCompat(context.Background(), &stdout, cfg, scfg); err != nil {
-		t.Fatalf("%v failed: %v", sig, err)
+	cl := startTestServer(t, scfg)
+
+	events, err := protocoltest.RunTestsForEvents(cl, cfg, true)
+	if err != nil {
+		t.Fatalf("RunTests failed: %v", err)
 	}
 
 	if preRunCalls != 1 {
-		t.Errorf("%v called pre-run function %d time(s); want 1", sig, preRunCalls)
+		t.Errorf("RunTests called pre-run function %d time(s); want 1", preRunCalls)
 	}
 	if postRunCalls != 1 {
-		t.Errorf("%v called run post-run function %d time(s); want 1", sig, postRunCalls)
+		t.Errorf("RunTests called run post-run function %d time(s); want 1", postRunCalls)
 	}
 
 	tests := reg.AllTests()
 	if preTestCalls != len(tests) {
-		t.Errorf("%v called pre-test function %d time(s); want %d", sig, preTestCalls, len(tests))
+		t.Errorf("RunTests called pre-test function %d time(s); want %d", preTestCalls, len(tests))
 	}
 	if postTestCalls != len(tests) {
-		t.Errorf("%v called post-test function %d time(s); want %d", sig, postTestCalls, len(tests))
+		t.Errorf("RunTests called post-test function %d time(s); want %d", postTestCalls, len(tests))
 	}
 
 	// Just check some basic details of the control messages.
-	r := control.NewMessageReader(&stdout)
-	for i, ei := range []interface{}{
-		&control.RunLog{Text: preRunMsg},
-		&control.RunLog{Text: "Devserver status: using pseudo client"},
-		&control.RunLog{Text: "Found 0 external linked data file(s), need to download 0"},
-		&control.EntityStart{Info: *jsonprotocol.MustEntityInfoFromProto(tests[0].EntityProto())},
-		&control.EntityLog{Text: preTestMsg},
-		&control.EntityLog{Text: postTestMsg},
-		&control.EntityEnd{Name: name1},
-		&control.EntityStart{Info: *jsonprotocol.MustEntityInfoFromProto(tests[1].EntityProto())},
-		&control.EntityLog{Text: preTestMsg},
-		&control.EntityError{},
-		&control.EntityLog{Text: postTestMsg},
-		&control.EntityEnd{Name: name2},
-		&control.RunLog{Text: postRunMsg},
-	} {
-		if ai, err := r.ReadMessage(); err != nil {
-			t.Errorf("Failed to read message %d: %v", i, err)
-		} else {
-			switch em := ei.(type) {
-			case *control.RunLog:
-				if am, ok := ai.(*control.RunLog); !ok {
-					t.Errorf("Got %v at %d; want RunLog", ai, i)
-				} else if am.Text != em.Text {
-					t.Errorf("Got RunLog containing %q at %d; want %q", am.Text, i, em.Text)
-				}
-			case *control.EntityStart:
-				if am, ok := ai.(*control.EntityStart); !ok {
-					t.Errorf("Got %v at %d; want EntityStart", ai, i)
-				} else if am.Info.Name != em.Info.Name {
-					t.Errorf("Got EntityStart with Test %q at %d; want %q", am.Info.Name, i, em.Info.Name)
-				}
-			case *control.EntityEnd:
-				if am, ok := ai.(*control.EntityEnd); !ok {
-					t.Errorf("Got %v at %d; want EntityEnd", ai, i)
-				} else if am.Name != em.Name {
-					t.Errorf("Got EntityEnd for %q at %d; want %q", am.Name, i, em.Name)
-				} else if am.TimingLog == nil {
-					t.Error("Got EntityEnd with missing timing log at ", i)
-				}
-			case *control.EntityError:
-				if _, ok := ai.(*control.EntityError); !ok {
-					t.Errorf("Got %v at %d; want EntityError", ai, i)
-				}
-			case *control.EntityLog:
-				if am, ok := ai.(*control.EntityLog); !ok {
-					t.Errorf("Got %v at %d; want EntityLog", ai, i)
-				} else if am.Text != em.Text {
-					t.Errorf("Got EntityLog containing %q at %d; want %q", am.Text, i, em.Text)
-				}
-			}
-		}
+	wantEvents := []protocol.Event{
+		&protocol.RunLogEvent{Text: preRunMsg},
+		&protocol.RunLogEvent{Text: "Devserver status: using pseudo client"},
+		&protocol.RunLogEvent{Text: "Found 0 external linked data file(s), need to download 0"},
+		&protocol.EntityStartEvent{Entity: tests[0].EntityProto()},
+		&protocol.EntityLogEvent{EntityName: name1, Text: preTestMsg},
+		&protocol.EntityLogEvent{EntityName: name1, Text: postTestMsg},
+		&protocol.EntityEndEvent{EntityName: name1},
+		&protocol.EntityStartEvent{Entity: tests[1].EntityProto()},
+		&protocol.EntityLogEvent{EntityName: name2, Text: preTestMsg},
+		&protocol.EntityErrorEvent{EntityName: name2, Error: &protocol.Error{Reason: errorMsg}},
+		&protocol.EntityLogEvent{EntityName: name2, Text: postTestMsg},
+		&protocol.EntityEndEvent{EntityName: name2},
+		&protocol.RunLogEvent{Text: postRunMsg},
 	}
-	if r.More() {
-		t.Errorf("%v wrote extra message(s)", sig)
+	if diff := cmp.Diff(events, wantEvents, protocoltest.EventCmpOpts...); diff != "" {
+		t.Errorf("Events mismatch (-got +want):\n%s", diff)
 	}
 }
 
@@ -266,7 +231,7 @@ func TestRunRemoteData(t *gotesting.T) {
 	}
 }
 
-func TestRunStartFixture(t *gotesting.T) {
+func TestRunTestsStartFixture(t *gotesting.T) {
 	const testName = "pkg.Test"
 	// runTests should not run runHook if tests depend on remote fixtures.
 	// TODO(crbug/1184567): consider long term plan about interactions between
@@ -287,8 +252,9 @@ func TestRunStartFixture(t *gotesting.T) {
 			return nil, nil
 		},
 	})
-	if err := runTestsCompat(context.Background(), &bytes.Buffer{}, cfg, scfg); err != nil {
-		t.Fatalf("runTests(): %v", err)
+	cl := startTestServer(t, scfg)
+	if _, err := protocoltest.RunTestsForEvents(cl, cfg, false); err != nil {
+		t.Fatalf("RunTests failed: %v", err)
 	}
 
 	// If StartFixtureName is empty, runHook should run.
@@ -303,8 +269,9 @@ func TestRunStartFixture(t *gotesting.T) {
 			return nil, nil
 		},
 	})
-	if err := runTestsCompat(context.Background(), &bytes.Buffer{}, cfg, scfg); err != nil {
-		t.Fatalf("runTests(): %v", err)
+	cl = startTestServer(t, scfg)
+	if _, err := protocoltest.RunTestsForEvents(cl, cfg, false); err != nil {
+		t.Fatalf("RunTests failed: %v", err)
 	}
 	if !called {
 		t.Error("runHook was not called")

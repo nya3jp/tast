@@ -120,7 +120,7 @@ func TestRunTests(t *gotesting.T) {
 	})
 
 	sig := fmt.Sprintf("runTests(..., %+v, %+v)", *cfg, *scfg)
-	if err := runTests(context.Background(), &stdout, cfg, scfg); err != nil {
+	if err := runTestsCompat(context.Background(), &stdout, cfg, scfg); err != nil {
 		t.Fatalf("%v failed: %v", sig, err)
 	}
 
@@ -200,7 +200,7 @@ func TestRunTests(t *gotesting.T) {
 
 func TestRunTestsNoTests(t *gotesting.T) {
 	// runTests should report success when no test is executed.
-	if err := runTests(context.Background(), &bytes.Buffer{}, nil, NewStaticConfig(testing.NewRegistry(), 0, Delegate{})); err != nil {
+	if err := runTestsCompat(context.Background(), &bytes.Buffer{}, nil, NewStaticConfig(testing.NewRegistry(), 0, Delegate{})); err != nil {
 		t.Fatalf("runTests failed for empty tests: %v", err)
 	}
 }
@@ -287,7 +287,7 @@ func TestRunStartFixture(t *gotesting.T) {
 			return nil, nil
 		},
 	})
-	if err := runTests(context.Background(), &bytes.Buffer{}, cfg, scfg); err != nil {
+	if err := runTestsCompat(context.Background(), &bytes.Buffer{}, cfg, scfg); err != nil {
 		t.Fatalf("runTests(): %v", err)
 	}
 
@@ -303,7 +303,7 @@ func TestRunStartFixture(t *gotesting.T) {
 			return nil, nil
 		},
 	})
-	if err := runTests(context.Background(), &bytes.Buffer{}, cfg, scfg); err != nil {
+	if err := runTestsCompat(context.Background(), &bytes.Buffer{}, cfg, scfg); err != nil {
 		t.Fatalf("runTests(): %v", err)
 	}
 	if !called {

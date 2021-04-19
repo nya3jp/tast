@@ -129,7 +129,7 @@ func run(ctx context.Context, clArgs []string, stdin io.Reader, stdout, stderr i
 		}
 		return statusSuccess
 	case jsonprotocol.BundleRunTestsMode:
-		if err := runTests(ctx, stdout, args.RunTests.Proto(), scfg); err != nil {
+		if err := runTestsCompat(ctx, stdout, args.RunTests.Proto(), scfg); err != nil {
 			return command.WriteError(stderr, err)
 		}
 		return statusSuccess

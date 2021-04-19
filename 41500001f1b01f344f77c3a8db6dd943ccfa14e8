@@ -22,6 +22,30 @@
       },
       "revId": "41500001f1b01f344f77c3a8db6dd943ccfa14e8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f819f129_ad4c0322",
+        "filename": "src/chromiumos/tast/internal/protocol/testing.proto",
+        "patchSetId": 1
+      },
+      "lineNbr": 90,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-04-19T04:54:38Z",
+      "side": 1,
+      "message": "Ouch, good catch.",
+      "parentUuid": "445550c6_90ec15ea",
+      "range": {
+        "startLine": 90,
+        "startChar": 3,
+        "endLine": 90,
+        "endChar": 14
+      },
+      "revId": "41500001f1b01f344f77c3a8db6dd943ccfa14e8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

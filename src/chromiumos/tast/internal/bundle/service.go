@@ -7,6 +7,7 @@ package bundle
 import (
 	"context"
 
+	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testing"
 )
@@ -23,6 +24,21 @@ func newTestServer(scfg *StaticConfig) *testServer {
 func (s *testServer) ListEntities(ctx context.Context, req *protocol.ListEntitiesRequest) (*protocol.ListEntitiesResponse, error) {
 	resolved := listEntities(s.scfg.registry, req.GetFeatures())
 	return &protocol.ListEntitiesResponse{Entities: resolved}, nil
+}
+
+func (s *testServer) RunTests(srv protocol.TestService_RunTestsServer) error {
+	ctx := srv.Context()
+
+	initReq, err := srv.Recv()
+	if err != nil {
+		return err
+	}
+	if _, ok := initReq.GetType().(*protocol.RunTestsRequest_RunTestsInit); !ok {
+		return errors.Errorf("RunTests: unexpected initial request message: got %T, want %T", initReq.GetType(), &protocol.RunTestsRequest_RunTestsInit{})
+	}
+	init := initReq.GetRunTestsInit()
+
+	return runTests(ctx, srv, init.GetRunConfig(), s.scfg)
 }
 
 func listEntities(reg *testing.Registry, features *protocol.Features) []*protocol.ResolvedEntity {

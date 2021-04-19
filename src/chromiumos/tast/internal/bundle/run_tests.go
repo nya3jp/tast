@@ -24,6 +24,7 @@ import (
 	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/planner"
 	"chromiumos/tast/internal/protocol"
+	"chromiumos/tast/internal/rpc"
 	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/internal/timing"
@@ -52,30 +53,16 @@ func testsToRun(scfg *StaticConfig, patterns []string) ([]*testing.TestInstance,
 	return tests, nil
 }
 
-// runTests runs tests per args and cfg and writes control messages to stdout.
+// runTests runs tests per cfg and scfg and writes responses to srv.
 //
 // If an error is encountered in the test harness (as opposed to in a test), an error is returned.
 // Otherwise, nil is returned (test errors will be reported via EntityError control messages).
-func runTests(ctx context.Context, stdout io.Writer, cfg *protocol.RunConfig, scfg *StaticConfig) error {
+func runTests(ctx context.Context, srv protocol.TestService_RunTestsServer, cfg *protocol.RunConfig, scfg *StaticConfig) error {
 	ctx = testcontext.WithPrivateData(ctx, testcontext.PrivateData{
 		WaitUntilReady: cfg.GetWaitUntilReady(),
 	})
 
-	var hbi time.Duration
-	if pb := cfg.GetHeartbeatInterval(); pb != nil {
-		var err error
-		hbi, err = ptypes.Duration(pb)
-		if err != nil {
-			return command.NewStatusErrorf(statusError, "%v", err)
-		}
-	}
-
-	mw := control.NewMessageWriter(stdout)
-
-	hbw := control.NewHeartbeatWriter(mw, hbi)
-	defer hbw.Stop()
-
-	ew := newEventWriter(mw)
+	ew := newEventWriter(srv)
 	ctx = testcontext.WithLogger(ctx, func(msg string) {
 		ew.RunLog(msg)
 	})
@@ -201,35 +188,46 @@ func runTests(ctx context.Context, stdout io.Writer, cfg *protocol.RunConfig, sc
 // eventWriter is goroutine-safe; it is safe to call its methods concurrently from multiple
 // goroutines.
 type eventWriter struct {
-	mw *control.MessageWriter
-	lg *syslog.Writer
+	srv protocol.TestService_RunTestsServer
+	lg  *syslog.Writer
 }
 
-func newEventWriter(mw *control.MessageWriter) *eventWriter {
+func newEventWriter(srv protocol.TestService_RunTestsServer) *eventWriter {
 	// Continue even if we fail to connect to syslog.
 	lg, _ := syslog.New(syslog.LOG_INFO, "tast")
-	return &eventWriter{mw: mw, lg: lg}
+	return &eventWriter{srv: srv, lg: lg}
 }
 
 func (ew *eventWriter) RunLog(msg string) error {
 	if ew.lg != nil {
 		ew.lg.Info(msg)
 	}
-	return ew.mw.WriteMessage(&control.RunLog{Time: time.Now(), Text: msg})
+	return ew.srv.Send(&protocol.RunTestsResponse{Type: &protocol.RunTestsResponse_RunLog{RunLog: &protocol.RunLogEvent{
+		Time: ptypes.TimestampNow(),
+		Text: msg,
+	}}})
 }
 
 func (ew *eventWriter) EntityStart(ei *protocol.Entity, outDir string) error {
 	if ew.lg != nil {
 		ew.lg.Info(fmt.Sprintf("%s: ======== start", ei.Name))
 	}
-	return ew.mw.WriteMessage(&control.EntityStart{Time: time.Now(), Info: *jsonprotocol.MustEntityInfoFromProto(ei), OutDir: outDir})
+	return ew.srv.Send(&protocol.RunTestsResponse{Type: &protocol.RunTestsResponse_EntityStart{EntityStart: &protocol.EntityStartEvent{
+		Time:   ptypes.TimestampNow(),
+		Entity: ei,
+		OutDir: outDir,
+	}}})
 }
 
 func (ew *eventWriter) EntityLog(ei *protocol.Entity, msg string) error {
 	if ew.lg != nil {
 		ew.lg.Info(fmt.Sprintf("%s: %s", ei.Name, msg))
 	}
-	return ew.mw.WriteMessage(&control.EntityLog{Time: time.Now(), Text: msg, Name: ei.GetName()})
+	return ew.srv.Send(&protocol.RunTestsResponse{Type: &protocol.RunTestsResponse_EntityLog{EntityLog: &protocol.EntityLogEvent{
+		Time:       ptypes.TimestampNow(),
+		EntityName: ei.GetName(),
+		Text:       msg,
+	}}})
 }
 
 func (ew *eventWriter) EntityError(ei *protocol.Entity, e *protocol.Error) error {
@@ -237,20 +235,31 @@ func (ew *eventWriter) EntityError(ei *protocol.Entity, e *protocol.Error) error
 		loc := e.GetLocation()
 		ew.lg.Info(fmt.Sprintf("%s: Error at %s:%d: %s", ei.GetName(), filepath.Base(loc.GetFile()), loc.GetLine(), e.GetReason()))
 	}
-	return ew.mw.WriteMessage(&control.EntityError{Time: time.Now(), Error: *jsonprotocol.ErrorFromProto(e), Name: ei.GetName()})
+	return ew.srv.Send(&protocol.RunTestsResponse{Type: &protocol.RunTestsResponse_EntityError{EntityError: &protocol.EntityErrorEvent{
+		Time:       ptypes.TimestampNow(),
+		EntityName: ei.GetName(),
+		Error:      e,
+	}}})
 }
 
 func (ew *eventWriter) EntityEnd(ei *protocol.Entity, skipReasons []string, timingLog *timing.Log) error {
 	if ew.lg != nil {
 		ew.lg.Info(fmt.Sprintf("%s: ======== end", ei.GetName()))
 	}
-
-	return ew.mw.WriteMessage(&control.EntityEnd{
-		Time:        time.Now(),
-		Name:        ei.Name,
-		SkipReasons: skipReasons,
-		TimingLog:   timingLog,
-	})
+	var skip *protocol.Skip
+	if len(skipReasons) > 0 {
+		skip = &protocol.Skip{Reasons: skipReasons}
+	}
+	tlpb, err := timingLog.Proto()
+	if err != nil {
+		return err
+	}
+	return ew.srv.Send(&protocol.RunTestsResponse{Type: &protocol.RunTestsResponse_EntityEnd{EntityEnd: &protocol.EntityEndEvent{
+		Time:       ptypes.TimestampNow(),
+		EntityName: ei.GetName(),
+		Skip:       skip,
+		TimingLog:  tlpb,
+	}}})
 }
 
 // connectToTarget connects to the target DUT and returns its connection.
@@ -325,3 +334,110 @@ func (*stubFixture) TearDown(ctx context.Context, s *testing.FixtState)     {}
 func (*stubFixture) Reset(ctx context.Context) error                        { return nil }
 func (*stubFixture) PreTest(ctx context.Context, s *testing.FixtTestState)  {}
 func (*stubFixture) PostTest(ctx context.Context, s *testing.FixtTestState) {}
+
+// runTestsCompat runs tests per cfg and scfg and writes control messages to stdout.
+//
+// This is similar to runTests, but it brings up an in-process gRPC server to
+// call into runTests indirectly, and coverts streamed responses to JSON control
+// messages.
+func runTestsCompat(ctx context.Context, stdout io.Writer, cfg *protocol.RunConfig, scfg *StaticConfig) error {
+	var hbi time.Duration
+	if pb := cfg.GetHeartbeatInterval(); pb != nil {
+		var err error
+		hbi, err = ptypes.Duration(pb)
+		if err != nil {
+			return command.NewStatusErrorf(statusError, "%v", err)
+		}
+	}
+
+	// Set up MessageWriter and start heartbeat.
+	mw := control.NewMessageWriter(stdout)
+
+	hbw := control.NewHeartbeatWriter(mw, hbi)
+	defer hbw.Stop()
+
+	// Start an in-process gRPC server.
+	sr, cw := io.Pipe()
+	cr, sw := io.Pipe()
+	defer func() {
+		cw.Close()
+		cr.Close()
+	}()
+	go RunRPCServer(sr, sw, scfg)
+
+	conn, err := rpc.NewClient(ctx, cr, cw, &protocol.HandshakeRequest{})
+	if err != nil {
+		return err
+	}
+	defer conn.Close(ctx)
+
+	cl := protocol.NewTestServiceClient(conn.Conn)
+
+	// Call RunTests method and send the initial request.
+	srv, err := cl.RunTests(ctx)
+	if err != nil {
+		return err
+	}
+
+	initReq := &protocol.RunTestsRequest{Type: &protocol.RunTestsRequest_RunTestsInit{RunTestsInit: &protocol.RunTestsInit{RunConfig: cfg}}}
+	if err := srv.Send(initReq); err != nil {
+		return err
+	}
+
+	// Keeping reading responses and convert them to control messages.
+	for {
+		res, err := srv.Recv()
+		if err == io.EOF {
+			return nil
+		}
+		if err != nil {
+			return err
+		}
+
+		switch res := res.GetType().(type) {
+		case *protocol.RunTestsResponse_RunLog:
+			r := res.RunLog
+			ts, err := ptypes.Timestamp(r.GetTime())
+			if err != nil {
+				return err
+			}
+			mw.WriteMessage(&control.RunLog{Time: ts, Text: r.GetText()})
+		case *protocol.RunTestsResponse_EntityStart:
+			r := res.EntityStart
+			ts, err := ptypes.Timestamp(r.GetTime())
+			if err != nil {
+				return err
+			}
+			ei, err := jsonprotocol.EntityInfoFromProto(r.GetEntity())
+			if err != nil {
+				return err
+			}
+			mw.WriteMessage(&control.EntityStart{Time: ts, Info: *ei, OutDir: r.GetOutDir()})
+		case *protocol.RunTestsResponse_EntityLog:
+			r := res.EntityLog
+			ts, err := ptypes.Timestamp(r.GetTime())
+			if err != nil {
+				return err
+			}
+			mw.WriteMessage(&control.EntityLog{Time: ts, Name: r.GetEntityName(), Text: r.GetText()})
+		case *protocol.RunTestsResponse_EntityError:
+			r := res.EntityError
+			ts, err := ptypes.Timestamp(r.GetTime())
+			if err != nil {
+				return err
+			}
+			mw.WriteMessage(&control.EntityError{Time: ts, Name: r.GetEntityName(), Error: *jsonprotocol.ErrorFromProto(r.GetError())})
+		case *protocol.RunTestsResponse_EntityEnd:
+			r := res.EntityEnd
+			ts, err := ptypes.Timestamp(r.GetTime())
+			if err != nil {
+				return err
+			}
+			timingLog, err := timing.LogFromProto(r.GetTimingLog())
+			if err != nil {
+				return err
+			}
+			mw.WriteMessage(&control.EntityEnd{Time: ts, Name: r.GetEntityName(), SkipReasons: r.GetSkip().GetReasons(), TimingLog: timingLog})
+		}
+	}
+}

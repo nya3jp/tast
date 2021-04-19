@@ -37,7 +37,7 @@ const (
 	statusBadArgs     = 2 // bad command-line flags or other args were supplied
 	statusBadTests    = 3 // errors in test registration (bad names, missing test functions, etc.)
 	statusBadPatterns = 4 // one or more bad test patterns were passed to the bundle
-	statusNoTests     = 5 // no tests were matched by the supplied patterns
+	_                 = 5 // deprecated
 )
 
 // Delegate injects functions as a part of test bundle framework implementation.
@@ -317,9 +317,6 @@ func runTests(ctx context.Context, stdout io.Writer, cfg *protocol.RunConfig, sc
 	tests, err := testsToRun(scfg, cfg.GetTests())
 	if err != nil {
 		return err
-	}
-	if len(tests) == 0 {
-		return command.NewStatusErrorf(statusNoTests, "no tests matched by pattern(s)")
 	}
 
 	tempDir := cfg.GetDirs().GetTempDir()

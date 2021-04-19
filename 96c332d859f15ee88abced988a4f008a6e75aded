@@ -22,6 +22,30 @@
       },
       "revId": "96c332d859f15ee88abced988a4f008a6e75aded",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "43ec1fe0_603bbb04",
+        "filename": "src/chromiumos/tast/internal/planner/output_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 81,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-04-19T04:54:44Z",
+      "side": 1,
+      "message": "That sounds a good idea. I updated End to panic in that case. I chose to panic instead of returning an error because (1) passing a nil timing log is a programming error and (2) errors returned from End are often ignored like this.",
+      "parentUuid": "7ce91d7c_9a0a7311",
+      "range": {
+        "startLine": 81,
+        "startChar": 6,
+        "endLine": 81,
+        "endChar": 9
+      },
+      "revId": "96c332d859f15ee88abced988a4f008a6e75aded",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

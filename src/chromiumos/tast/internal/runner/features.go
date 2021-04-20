@@ -36,9 +36,9 @@ const autotestCapPrefix = "autotest-capability:" // prefix for autotest-capabili
 
 // handleGetDUTInfo handles a RunnerGetDUTInfoMode request from args
 // and JSON-marshals a RunnerGetDUTInfoResult struct to w.
-func handleGetDUTInfo(args *jsonprotocol.RunnerArgs, cfg *Config, w io.Writer) error {
+func handleGetDUTInfo(args *jsonprotocol.RunnerArgs, scfg *StaticConfig, w io.Writer) error {
 	features, warnings, err := getSoftwareFeatures(
-		cfg.SoftwareFeatureDefinitions, cfg.USEFlagsFile, cfg.LSBReleaseFile, args.GetDUTInfo.ExtraUSEFlags, cfg.AutotestCapabilityDir)
+		scfg.SoftwareFeatureDefinitions, scfg.USEFlagsFile, scfg.LSBReleaseFile, args.GetDUTInfo.ExtraUSEFlags, scfg.AutotestCapabilityDir)
 	if err != nil {
 		return err
 	}
@@ -55,8 +55,8 @@ func handleGetDUTInfo(args *jsonprotocol.RunnerArgs, cfg *Config, w io.Writer) e
 		SoftwareFeatures:         features,
 		DeviceConfig:             dc,
 		HardwareFeatures:         hwFeatures,
-		OSVersion:                cfg.OSVersion,
-		DefaultBuildArtifactsURL: cfg.DefaultBuildArtifactsURL,
+		OSVersion:                scfg.OSVersion,
+		DefaultBuildArtifactsURL: scfg.DefaultBuildArtifactsURL,
 		Warnings:                 warnings,
 	}
 	if err := json.NewEncoder(w).Encode(&res); err != nil {
@@ -111,7 +111,7 @@ func getSoftwareFeatures(definitions map[string]string, useFlagsFile, lsbRelease
 	return features, warnings, nil
 }
 
-// readUSEFlagsFile reads a list of USE flags from fn (see Config.USEFlagsFile).
+// readUSEFlagsFile reads a list of USE flags from fn (see StaticConfig.USEFlagsFile).
 // Each flag should be specified on its own line, and lines beginning with '#' are ignored.
 func readUSEFlagsFile(fn string) ([]string, error) {
 	f, err := os.Open(fn)
@@ -135,8 +135,8 @@ func readUSEFlagsFile(fn string) ([]string, error) {
 }
 
 // determineSoftwareFeatures computes the DUT's available and unavailable software features.
-// definitions maps feature names to definitions (see Config.SoftwareFeatureDefinitions).
-// useFlags contains a list of relevant USE flags that were set when building the system image (see Config.USEFlagsFile).
+// definitions maps feature names to definitions (see StaticConfig.SoftwareFeatureDefinitions).
+// useFlags contains a list of relevant USE flags that were set when building the system image (see StaticConfig.USEFlagsFile).
 // autotestCaps contains a mapping from autotest-capability names to the corresponding states.
 func determineSoftwareFeatures(definitions map[string]string, useFlags []string, autotestCaps map[string]autocaps.State) (
 	*protocol.SoftwareFeatures, error) {

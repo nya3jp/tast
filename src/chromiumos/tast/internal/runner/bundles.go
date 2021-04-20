@@ -337,8 +337,8 @@ func killSession(sid int, sig syscall.Signal) {
 
 // handleDownloadPrivateBundles handles a RunnerDownloadPrivateBundlesMode request from args
 // and JSON-marshals a RunnerDownloadPrivateBundlesResult struct to w.
-func handleDownloadPrivateBundles(ctx context.Context, args *jsonprotocol.RunnerArgs, cfg *Config, stdout io.Writer) error {
-	if cfg.PrivateBundlesStampPath == "" {
+func handleDownloadPrivateBundles(ctx context.Context, args *jsonprotocol.RunnerArgs, scfg *StaticConfig, stdout io.Writer) error {
+	if scfg.PrivateBundlesStampPath == "" {
 		return errors.New("this test runner is not configured for private bundles")
 	}
 
@@ -360,7 +360,7 @@ func handleDownloadPrivateBundles(ctx context.Context, args *jsonprotocol.Runner
 	}()
 
 	// If the stamp file exists, private bundles have been already downloaded.
-	if _, err := os.Stat(cfg.PrivateBundlesStampPath); err == nil {
+	if _, err := os.Stat(scfg.PrivateBundlesStampPath); err == nil {
 		return nil
 	}
 
@@ -408,5 +408,5 @@ func handleDownloadPrivateBundles(ctx context.Context, args *jsonprotocol.Runner
 		return fmt.Errorf("failed to download %s: %v", archiveURL, err)
 	}
 
-	return ioutil.WriteFile(cfg.PrivateBundlesStampPath, nil, 0644)
+	return ioutil.WriteFile(scfg.PrivateBundlesStampPath, nil, 0644)
 }

@@ -16,9 +16,9 @@ import (
 
 const (
 	// SSHPingTimeout is the timeout for checking if SSH connection to DUT is open.
-	SSHPingTimeout = 5 * time.Second
+	SSHPingTimeout = 10 * 5 * time.Second
 
-	sshConnectTimeout = 10 * time.Second // timeout for establishing SSH connection to DUT
+	sshConnectTimeout = 10 * 10 * time.Second // timeout for establishing SSH connection to DUT
 	sshRetryInterval  = 5 * time.Second  // minimum time to wait between SSH connection attempts
 )
 

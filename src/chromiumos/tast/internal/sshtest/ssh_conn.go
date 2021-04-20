@@ -91,7 +91,7 @@ func NewTestDataConn(t *testing.T) *TestDataConn {
 
 	// Automatically abort the test if it takes too long time.
 	go func() {
-		const timeout = 10 * time.Second
+		const timeout = 10 * 10 * time.Second
 		select {
 		case <-td.Ctx.Done():
 			return

@@ -174,5 +174,5 @@ func WithTimeout(parent context.Context, d time.Duration, err error) (context.Co
 	if err == nil {
 		panic("xcontext: WithTimeout called with nil err")
 	}
-	return WithDeadline(parent, clk.Now().Add(d), err)
+	return WithDeadline(parent, clk.Now().Add(d*10), err)
 }

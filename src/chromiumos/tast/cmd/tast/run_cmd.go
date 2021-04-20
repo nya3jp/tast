@@ -29,7 +29,7 @@ const (
 	fullLogName   = "full.txt"    // file in runConfig.resDir containing full output
 	timingLogName = "timing.json" // file in runConfig.resDir containing timing information
 
-	writeResultsTimeout = 15 * time.Second // time reserved for writing results when timeout is set
+	writeResultsTimeout = 10 * 15 * time.Second // time reserved for writing results when timeout is set
 )
 
 // runCmd implements subcommands.Command to support running tests.

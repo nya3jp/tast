@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f5523edc_681313e0",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 7
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1355869
+      },
+      "writtenOn": "2021-04-20T04:32:11Z",
+      "side": 1,
+      "message": "Verified it again.\n\n1) ran ~/go/bin/tast -verbose symbolize -buildroot\u003d/build/betty ~/chrome.20210331.134544.35399.3156.dmp |less -S\n2021-04-20T04:19:23.317922Z Using minidump file /home/ttylenda/chrome.20210331.134544.35399.3156.dmp\n2021-04-20T04:19:23.318026Z no lsb-release stream\n2021-04-20T04:19:23.318041Z Got board \"\" and builder path \"\" from minidump\n2021-04-20T04:19:23.318049Z Walking /home/ttylenda/chrome.20210331.134544.35399.3156.dmp with symbol dir /tmp/breakpad_symbols\n2021-04-20T04:19:23.354435Z Generating 4 symbol file(s) from /build/betty\n(...)\nThread 0 (crashed)\n 0  chrome!content::internal::CrashIntentionally() [crash_helpers.cc : 23 + 0x0]\n    rax \u003d 0x66722bf6592c8e00   rdx \u003d 0x0000000000000000\n(...)\n\n2) deleted /tmp/breakpad_symbols and ran ~/go/bin/tast --verbose symbolize --builderpath\u003dbetty-release/R91-13892.0.0 ~/chrome.20210406.155226.62533.9042.dmp |less -s\n2021-04-20T04:16:59.329395Z Using minidump file /home/ttylenda/chrome.20210406.155226.62533.9042.dmp\n2021-04-20T04:16:59.329482Z no lsb-release stream\n2021-04-20T04:16:59.329493Z Got board \"\" and builder path \"\" from minidump\n2021-04-20T04:16:59.329501Z Walking /home/ttylenda/chrome.20210406.155226.62533.9042.dmp with symbol dir /tmp/breakpad_symbols\n2021-04-20T04:16:59.360151Z Extracting 4 symbol file(s) from gs://chromeos-image-archive/betty-release/R91-13892.0.0/debug_breakpad.tar.xz\n(...)\nThread 0 (crashed)\n 0  chrome!content::internal::CrashIntentionally() [crash_helpers.cc : 23 + 0x0]\n    rax \u003d 0xecbaca601bf3c500   rdx \u003d 0x0000000000000000\n    rcx \u003d 0x0000000000000000   rbx \u003d 0x00007fff9ad71f30\n\n3) verified that the tool shows an error message when the parameters are missing: ~/go/bin/tast -verbose symbolize ~/chrome.20210331.134544.35399.3156.dmp\n2021-04-20T04:29:05.582432Z Using minidump file /home/ttylenda/chrome.20210331.134544.35399.3156.dmp\n2021-04-20T04:29:05.582557Z no lsb-release stream\n2021-04-20T04:29:05.582573Z Failed to symbolize /home/ttylenda/chrome.20210331.134544.35399.3156.dmp: minidump does not contain release info, please supply --builderpath or --buildroot parameter to fix this error\n",
+      "revId": "5fd3be99b2f5cff69516aaea4092398fb60b4a65",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

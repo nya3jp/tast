@@ -24,12 +24,12 @@ import (
 	"google.golang.org/grpc"
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
+	"chromiumos/tast/cmd/tast/internal/run/fakereports"
 	"chromiumos/tast/cmd/tast/internal/run/fakerunner"
 	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
 	"chromiumos/tast/cmd/tast/internal/run/target"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/control"
-	"chromiumos/tast/internal/fakereports"
 	"chromiumos/tast/internal/faketlw"
 	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/protocol"

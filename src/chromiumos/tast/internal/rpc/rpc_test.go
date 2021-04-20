@@ -368,6 +368,14 @@ func TestRPCPullOutDir(t *gotesting.T) {
 		if od == outDir {
 			return errors.Errorf("OutDir given to service must not be that on the host: %s", od)
 		}
+		st, err := os.Stat(od)
+		if err != nil {
+			return err
+		}
+		const mask = os.ModePerm | os.ModeSticky
+		if mode := st.Mode() & mask; mode != mask {
+			return errors.Errorf("wrong directory permission: got %o, want %o", mode, mask)
+		}
 		return testutil.WriteFiles(od, want)
 	})
 

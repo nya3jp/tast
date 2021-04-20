@@ -6,48 +6,17 @@ package runner
 
 import (
 	"context"
-	"fmt"
-	"io"
-	"io/ioutil"
 	"net"
-	"os"
-	"path/filepath"
 	gotesting "testing"
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"google.golang.org/grpc"
 
-	"chromiumos/tast/internal/bundle"
-	"chromiumos/tast/internal/fakeexec"
+	"chromiumos/tast/internal/bundle/fakebundle"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testing"
 )
-
-// createFakeBundles creates fake test bundles corresponding to regs, and
-// returns a file path glob that matches file paths.
-func createFakeBundles(t *gotesting.T, regs ...*testing.Registry) (bundleGlob string) {
-	t.Helper()
-
-	dir, err := ioutil.TempDir("", "tast-fakebundles.")
-	if err != nil {
-		t.Fatal(err)
-	}
-	t.Cleanup(func() { os.RemoveAll(dir) })
-
-	for i, reg := range regs {
-		name := fmt.Sprintf("bundle%d", i)
-		reg := reg
-		lo, err := fakeexec.CreateLoopback(filepath.Join(dir, name), func(args []string, stdin io.Reader, stdout, stderr io.WriteCloser) int {
-			return bundle.Local(args[1:], stdin, stdout, stderr, reg, bundle.Delegate{})
-		})
-		if err != nil {
-			t.Fatal(err)
-		}
-		t.Cleanup(func() { lo.Close() })
-	}
-	return filepath.Join(dir, "*")
-}
 
 func TestTestServer(t *gotesting.T) {
 	// Create two fake bundles.
@@ -63,7 +32,7 @@ func TestTestServer(t *gotesting.T) {
 	reg1.AddFixture(f1)
 	reg2.AddFixture(f2)
 
-	bundleGlob := createFakeBundles(t, reg1, reg2)
+	bundleGlob := fakebundle.Install(t, map[string]*testing.Registry{"a": reg1, "b": reg2})
 
 	// Set up a local gRPC server.
 	srv := grpc.NewServer()

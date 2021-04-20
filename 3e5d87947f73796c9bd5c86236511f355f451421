@@ -186,6 +186,30 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "198b36bb_869fab3a",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/symbolize/symbolize.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1355869
+      },
+      "writtenOn": "2021-04-20T00:42:55Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1c30f353_066e3855",
+      "range": {
+        "startLine": 36,
+        "startChar": 0,
+        "endLine": 36,
+        "endChar": 46
+      },
+      "revId": "3e5d87947f73796c9bd5c86236511f355f451421",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "0da54df1_c116e935",
         "filename": "src/chromiumos/tast/cmd/tast/internal/symbolize/symbolize_test.go",
         "patchSetId": 3

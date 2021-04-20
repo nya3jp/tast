@@ -16,25 +16,40 @@ import (
 
 type testServer struct {
 	protocol.UnimplementedTestServiceServer
-	bundleGlob string
+	scfg   *StaticConfig
+	params *protocol.RunnerInitParams
 }
 
-func newTestServer(bundleGlob string) *testServer {
+func newTestServer(scfg *StaticConfig, params *protocol.RunnerInitParams) *testServer {
 	return &testServer{
-		bundleGlob: bundleGlob,
+		scfg:   scfg,
+		params: params,
 	}
 }
 
 func (s *testServer) ListEntities(ctx context.Context, req *protocol.ListEntitiesRequest) (*protocol.ListEntitiesResponse, error) {
-	bundlePaths, err := filepath.Glob(s.bundleGlob)
-	if err != nil {
+	var entities []*protocol.ResolvedEntity
+	if err := s.forEachBundle(ctx, func(ctx context.Context, ts protocol.TestServiceClient) error {
+		res, err := ts.ListEntities(ctx, req) // pass through req
+		if err != nil {
+			return err
+		}
+		entities = append(entities, res.GetEntities()...)
+		return nil
+	}); err != nil {
 		return nil, err
 	}
+	return &protocol.ListEntitiesResponse{Entities: entities}, nil
+}
 
+func (s *testServer) forEachBundle(ctx context.Context, f func(ctx context.Context, ts protocol.TestServiceClient) error) error {
+	bundlePaths, err := filepath.Glob(s.params.GetBundleGlob())
+	if err != nil {
+		return err
+	}
 	// Sort bundles for determinism.
 	sort.Strings(bundlePaths)
 
-	var entities []*protocol.ResolvedEntity
 	for _, bundlePath := range bundlePaths {
 		if err := func() error {
 			cl, err := rpc.DialExec(ctx, bundlePath, true, &protocol.HandshakeRequest{})
@@ -43,17 +58,10 @@ func (s *testServer) ListEntities(ctx context.Context, req *protocol.ListEntitie
 			}
 			defer cl.Close()
 
-			ts := protocol.NewTestServiceClient(cl.Conn())
-			res, err := ts.ListEntities(ctx, req) // pass through req
-			if err != nil {
-				return err
-			}
-
-			entities = append(entities, res.GetEntities()...)
-			return nil
+			return f(ctx, protocol.NewTestServiceClient(cl.Conn()))
 		}(); err != nil {
-			return nil, errors.Wrap(err, filepath.Base(bundlePath))
+			return errors.Wrap(err, filepath.Base(bundlePath))
 		}
 	}
-	return &protocol.ListEntitiesResponse{Entities: entities}, nil
+	return nil
 }

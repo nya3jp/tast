@@ -114,6 +114,12 @@ func serverOpts(logger testcontext.LoggerFunc) []grpc.ServerOption {
 			return nil, nil, err
 		}
 
+		// Make the directory world-writable so that tests can create files as other users,
+		// and set the sticky bit to prevent users from deleting other users' files.
+		if err := os.Chmod(outDir, 0777|os.ModeSticky); err != nil {
+			return nil, nil, err
+		}
+
 		ctx = testcontext.WithLogger(ctx, logger)
 		ctx = testcontext.WithCurrentEntity(ctx, incomingCurrentContext(md, outDir))
 		tl := timing.NewLog()

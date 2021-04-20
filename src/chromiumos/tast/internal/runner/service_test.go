@@ -6,17 +6,47 @@ package runner
 
 import (
 	"context"
-	"net"
+	"io"
+	"io/ioutil"
 	gotesting "testing"
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
-	"google.golang.org/grpc"
 
 	"chromiumos/tast/internal/bundle/fakebundle"
+	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/protocol"
+	"chromiumos/tast/internal/rpc"
 	"chromiumos/tast/internal/testing"
 )
+
+// startTestServer starts an in-process gRPC server and returns a connection as
+// TestServiceClient. On completion of the current test, resources are released
+// automatically.
+func startTestServer(t *gotesting.T, params *protocol.RunnerInitParams) protocol.TestServiceClient {
+	sr, cw := io.Pipe()
+	cr, sw := io.Pipe()
+	done := make(chan struct{})
+	go func() {
+		defer close(done)
+		Run([]string{"-rpc"}, sr, sw, ioutil.Discard, &jsonprotocol.RunnerArgs{}, &StaticConfig{})
+	}()
+	t.Cleanup(func() {
+		cw.Close()
+		cr.Close()
+		<-done
+	})
+
+	conn, err := rpc.NewClient(context.Background(), cr, cw, &protocol.HandshakeRequest{RunnerInitParams: params})
+	if err != nil {
+		t.Fatalf("Failed to connect to in-process gRPC server: %v", err)
+	}
+	t.Cleanup(func() {
+		conn.Close(context.Background())
+	})
+
+	return protocol.NewTestServiceClient(conn.Conn)
+}
 
 func TestTestServer(t *gotesting.T) {
 	// Create two fake bundles.
@@ -34,24 +64,7 @@ func TestTestServer(t *gotesting.T) {
 
 	bundleGlob := fakebundle.Install(t, map[string]*testing.Registry{"a": reg1, "b": reg2})
 
-	// Set up a local gRPC server.
-	srv := grpc.NewServer()
-	protocol.RegisterTestServiceServer(srv, newTestServer(bundleGlob))
-
-	lis, err := net.Listen("tcp", "localhost:0")
-	if err != nil {
-		t.Fatal(err)
-	}
-	go srv.Serve(lis)
-	defer srv.Stop()
-
-	conn, err := grpc.Dial(lis.Addr().String(), grpc.WithInsecure())
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer conn.Close()
-
-	cl := protocol.NewTestServiceClient(conn)
+	cl := startTestServer(t, &protocol.RunnerInitParams{BundleGlob: bundleGlob})
 
 	// Call ListEntities.
 	got, err := cl.ListEntities(context.Background(), &protocol.ListEntitiesRequest{})

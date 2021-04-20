@@ -6,12 +6,17 @@ package runner
 
 import (
 	"context"
+	"io"
 	"path/filepath"
 	"sort"
+	"syscall"
+
+	"github.com/golang/protobuf/ptypes"
 
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/rpc"
+	"chromiumos/tast/internal/testcontext"
 )
 
 type testServer struct {
@@ -40,6 +45,59 @@ func (s *testServer) ListEntities(ctx context.Context, req *protocol.ListEntitie
 		return nil, err
 	}
 	return &protocol.ListEntitiesResponse{Entities: entities}, nil
+}
+
+func (s *testServer) RunTests(srv protocol.TestService_RunTestsServer) error {
+	ctx := srv.Context()
+	ctx = testcontext.WithLogger(ctx, func(msg string) {
+		srv.Send(&protocol.RunTestsResponse{
+			Type: &protocol.RunTestsResponse_RunLog{
+				RunLog: &protocol.RunLogEvent{
+					Time: ptypes.TimestampNow(),
+					Text: msg,
+				},
+			},
+		})
+	})
+
+	initReq, err := srv.Recv()
+	if err != nil {
+		return err
+	}
+	if _, ok := initReq.GetType().(*protocol.RunTestsRequest_RunTestsInit); !ok {
+		return errors.Errorf("RunTests: unexpected initial request message: got %T, want %T", initReq.GetType(), &protocol.RunTestsRequest_RunTestsInit{})
+	}
+
+	if s.scfg.KillStaleRunners {
+		killStaleRunners(ctx, syscall.SIGTERM)
+	}
+
+	return s.forEachBundle(ctx, func(ctx context.Context, ts protocol.TestServiceClient) error {
+		st, err := ts.RunTests(ctx)
+		if err != nil {
+			return err
+		}
+		defer st.CloseSend()
+
+		// Duplicate the initial request.
+		if err := st.Send(initReq); err != nil {
+			return err
+		}
+
+		// Relay responses.
+		for {
+			res, err := st.Recv()
+			if err == io.EOF {
+				return nil
+			}
+			if err != nil {
+				return err
+			}
+			if err := srv.Send(res); err != nil {
+				return err
+			}
+		}
+	})
 }
 
 func (s *testServer) forEachBundle(ctx context.Context, f func(ctx context.Context, ts protocol.TestServiceClient) error) error {

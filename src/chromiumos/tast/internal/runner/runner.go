@@ -44,26 +44,26 @@ const (
 // Default arguments may be passed via args, which is filled with the additional args that are read.
 // clArgs should typically be os.Args[1:].
 // The caller should exit with the returned status code.
-func Run(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, args *jsonprotocol.RunnerArgs, cfg *Config) int {
+func Run(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, args *jsonprotocol.RunnerArgs, scfg *StaticConfig) int {
 	// TODO(derat|nya): Consider applying timeout.
 	ctx := context.TODO()
-	if err := readArgs(clArgs, stdin, stderr, args, cfg); err != nil {
+	if err := readArgs(clArgs, stdin, stderr, args, scfg); err != nil {
 		return command.WriteError(stderr, err)
 	}
 
 	switch args.Mode {
 	case jsonprotocol.RunnerGetSysInfoStateMode:
-		if err := handleGetSysInfoState(ctx, cfg, stdout); err != nil {
+		if err := handleGetSysInfoState(ctx, scfg, stdout); err != nil {
 			return command.WriteError(stderr, err)
 		}
 		return statusSuccess
 	case jsonprotocol.RunnerCollectSysInfoMode:
-		if err := handleCollectSysInfo(ctx, args, cfg, stdout); err != nil {
+		if err := handleCollectSysInfo(ctx, args, scfg, stdout); err != nil {
 			return command.WriteError(stderr, err)
 		}
 		return statusSuccess
 	case jsonprotocol.RunnerGetDUTInfoMode:
-		if err := handleGetDUTInfo(args, cfg, stdout); err != nil {
+		if err := handleGetDUTInfo(args, scfg, stdout); err != nil {
 			return command.WriteError(stderr, err)
 		}
 		return statusSuccess
@@ -89,13 +89,13 @@ func Run(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, args *jsonp
 	case jsonprotocol.RunnerRunTestsMode:
 		if args.Report {
 			// Success is always reported when running tests on behalf of the tast command.
-			runTestsAndReport(ctx, args, cfg, stdout)
-		} else if err := runTestsAndLog(ctx, args, cfg, stdout); err != nil {
+			runTestsAndReport(ctx, args, scfg, stdout)
+		} else if err := runTestsAndLog(ctx, args, scfg, stdout); err != nil {
 			return command.WriteError(stderr, err)
 		}
 		return statusSuccess
 	case jsonprotocol.RunnerDownloadPrivateBundlesMode:
-		if err := handleDownloadPrivateBundles(ctx, args, cfg, stdout); err != nil {
+		if err := handleDownloadPrivateBundles(ctx, args, scfg, stdout); err != nil {
 			return command.WriteError(stderr, err)
 		}
 		return statusSuccess
@@ -111,7 +111,7 @@ func Run(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, args *jsonp
 
 // runTestsAndReport runs bundles serially to perform testing and writes control messages to stdout.
 // Fatal errors are reported via RunError messages, while test errors are reported via EntityError messages.
-func runTestsAndReport(ctx context.Context, args *jsonprotocol.RunnerArgs, cfg *Config, stdout io.Writer) {
+func runTestsAndReport(ctx context.Context, args *jsonprotocol.RunnerArgs, scfg *StaticConfig, stdout io.Writer) {
 	mw := control.NewMessageWriter(stdout)
 
 	hbw := control.NewHeartbeatWriter(mw, args.RunTests.BundleArgs.HeartbeatInterval)
@@ -139,7 +139,7 @@ func runTestsAndReport(ctx context.Context, args *jsonprotocol.RunnerArgs, cfg *
 		mw.WriteMessage(&control.RunLog{Time: time.Now(), Text: msg})
 	})
 
-	if cfg.KillStaleRunners {
+	if scfg.KillStaleRunners {
 		killStaleRunners(ctx, syscall.SIGTERM)
 	}
 
@@ -182,14 +182,14 @@ func runTestsAndReport(ctx context.Context, args *jsonprotocol.RunnerArgs, cfg *
 
 // runTestsAndLog runs bundles serially to perform testing and logs human-readable results to stdout.
 // Errors are returned both for fatal errors and for errors in individual tests.
-func runTestsAndLog(ctx context.Context, args *jsonprotocol.RunnerArgs, cfg *Config, stdout io.Writer) *command.StatusError {
+func runTestsAndLog(ctx context.Context, args *jsonprotocol.RunnerArgs, scfg *StaticConfig, stdout io.Writer) *command.StatusError {
 	lg := log.New(stdout, "", log.LstdFlags)
 
 	pr, pw := io.Pipe()
 	ch := make(chan *command.StatusError, 1)
 	go func() { ch <- logMessages(pr, lg) }()
 
-	runTestsAndReport(ctx, args, cfg, pw)
+	runTestsAndReport(ctx, args, scfg, pw)
 	pw.Close()
 	return <-ch
 }

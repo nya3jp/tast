@@ -28,9 +28,9 @@ const (
 	RemoteRunner
 )
 
-// Config contains fixed parameters for the runner that are passed in from local_test_runner
-// or remote_test_runner.
-type Config struct {
+// StaticConfig contains fixed parameters for the runner that are passed in from
+// local_test_runner or remote_test_runner.
+type StaticConfig struct {
 	// Type describes the type of runner being executed.
 	Type RunnerType
 
@@ -87,15 +87,15 @@ type Config struct {
 }
 
 // fillDefaults fills unset fields with default values from cfg.
-func (cfg *Config) fillDefaults(a *jsonprotocol.RunnerArgs) {
+func (c *StaticConfig) fillDefaults(a *jsonprotocol.RunnerArgs) {
 	switch a.Mode {
 	case jsonprotocol.RunnerRunTestsMode:
 		if a.RunTests.BundleArgs.BuildArtifactsURL == "" {
-			a.RunTests.BundleArgs.BuildArtifactsURL = cfg.DefaultBuildArtifactsURL
+			a.RunTests.BundleArgs.BuildArtifactsURL = c.DefaultBuildArtifactsURL
 		}
 	case jsonprotocol.RunnerDownloadPrivateBundlesMode:
 		if a.DownloadPrivateBundles.BuildArtifactsURL == "" {
-			a.DownloadPrivateBundles.BuildArtifactsURL = cfg.DefaultBuildArtifactsURL
+			a.DownloadPrivateBundles.BuildArtifactsURL = c.DefaultBuildArtifactsURL
 		}
 	}
 }
@@ -105,7 +105,7 @@ func (cfg *Config) fillDefaults(a *jsonprotocol.RunnerArgs) {
 // args contains default values for arguments and is further populated by parsing clArgs or
 // (if clArgs is empty, as is the case when a runner is executed by the tast command) by
 // decoding a JSON-marshaled RunnerArgs struct from stdin.
-func readArgs(clArgs []string, stdin io.Reader, stderr io.Writer, args *jsonprotocol.RunnerArgs, cfg *Config) error {
+func readArgs(clArgs []string, stdin io.Reader, stderr io.Writer, args *jsonprotocol.RunnerArgs, scfg *StaticConfig) error {
 	if len(clArgs) == 0 {
 		if err := json.NewDecoder(stdin).Decode(args); err != nil {
 			return command.NewStatusErrorf(statusBadArgs, "failed to decode args from stdin: %v", err)
@@ -150,7 +150,7 @@ errors, including the failure of an individual test.
 		flags.BoolVar(&args.RunTests.BundleArgs.WaitUntilReady, "waituntilready",
 			true, "wait until DUT is ready before running tests")
 
-		if cfg.Type == RemoteRunner {
+		if scfg.Type == RemoteRunner {
 			flags.StringVar(&args.RunTests.BundleArgs.Target, "target",
 				"", "DUT connection spec as \"[<user>@]host[:<port>]\"")
 			flags.StringVar(&args.RunTests.BundleArgs.KeyFile, "keyfile",
@@ -173,7 +173,7 @@ errors, including the failure of an individual test.
 		// When the runner is executed by the "tast run" command, the list of software features (used to skip
 		// unsupported tests) is passed in after having been gathered by an earlier call to local_test_runner
 		// with RunnerGetDUTInfoMode. When the runner is executed directly, gather the list here instead.
-		if err := setManualDepsArgs(args, cfg, extraUSEFlags); err != nil {
+		if err := setManualDepsArgs(args, scfg, extraUSEFlags); err != nil {
 			return err
 		}
 	}
@@ -187,7 +187,7 @@ errors, including the failure of an individual test.
 		return command.NewStatusErrorf(statusBadArgs, "args not set for mode %v", args.Mode)
 	}
 
-	cfg.fillDefaults(args)
+	scfg.fillDefaults(args)
 
 	// Use deprecated fields if they were supplied by an old tast binary.
 	args.PromoteDeprecated()
@@ -197,28 +197,28 @@ errors, including the failure of an individual test.
 
 // setManualDepsArgs sets dependency/feature-related fields in args.RunTests appropriately for a manual
 // run (i.e. when the runner is executed directly with command-line flags rather than via "tast run").
-func setManualDepsArgs(args *jsonprotocol.RunnerArgs, cfg *Config, extraUSEFlags []string) error {
-	if cfg.USEFlagsFile == "" {
+func setManualDepsArgs(args *jsonprotocol.RunnerArgs, scfg *StaticConfig, extraUSEFlags []string) error {
+	if scfg.USEFlagsFile == "" {
 		return nil
 	}
-	if _, err := os.Stat(cfg.USEFlagsFile); os.IsNotExist(err) {
+	if _, err := os.Stat(scfg.USEFlagsFile); os.IsNotExist(err) {
 		return nil
 	}
 
-	useFlags, err := readUSEFlagsFile(cfg.USEFlagsFile)
+	useFlags, err := readUSEFlagsFile(scfg.USEFlagsFile)
 	if err != nil {
 		return command.NewStatusErrorf(statusError, "%v", err)
 	}
 	useFlags = append(useFlags, extraUSEFlags...)
 
 	var autotestCaps map[string]autocaps.State
-	if cfg.AutotestCapabilityDir != "" {
+	if scfg.AutotestCapabilityDir != "" {
 		// Ignore errors. autotest-capability is outside of Tast's control, and it's probably better to let
 		// some unsupported video tests fail instead of making the whole run fail.
-		autotestCaps, _ = autocaps.Read(cfg.AutotestCapabilityDir, nil)
+		autotestCaps, _ = autocaps.Read(scfg.AutotestCapabilityDir, nil)
 	}
 
-	features, err := determineSoftwareFeatures(cfg.SoftwareFeatureDefinitions, useFlags, autotestCaps)
+	features, err := determineSoftwareFeatures(scfg.SoftwareFeatureDefinitions, useFlags, autotestCaps)
 	if err != nil {
 		return command.NewStatusErrorf(statusError, "%v", err)
 	}

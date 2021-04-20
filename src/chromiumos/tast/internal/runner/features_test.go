@@ -31,7 +31,7 @@ func TestGetDUTInfo(t *testing.T) {
 	}
 
 	osVersion := "octopus-release/R86-13312.0.2020_07_02_1108"
-	cfg := Config{
+	scfg := StaticConfig{
 		Type:           LocalRunner,
 		USEFlagsFile:   filepath.Join(td, "use_flags"),
 		LSBReleaseFile: filepath.Join(td, "lsbrelease"),
@@ -54,7 +54,7 @@ func TestGetDUTInfo(t *testing.T) {
 				ExtraUSEFlags: []string{"baz"},
 			},
 		},
-		nil, &cfg)
+		nil, &scfg)
 	if status != statusSuccess {
 		t.Fatalf("%v = %v; want %v", sig, status, statusSuccess)
 	}
@@ -76,7 +76,7 @@ func TestGetDUTInfo(t *testing.T) {
 
 func TestGetSoftwareFeaturesNoFile(t *testing.T) {
 	// If the file listing USE flags was missing, an empty result should be returned.
-	cfg := Config{
+	scfg := StaticConfig{
 		Type:                       LocalRunner,
 		USEFlagsFile:               "/tmp/nonexistent_use_flags_file.txt",
 		SoftwareFeatureDefinitions: map[string]string{"foo": "bar"},
@@ -85,7 +85,7 @@ func TestGetSoftwareFeaturesNoFile(t *testing.T) {
 		Mode:       jsonprotocol.RunnerGetDUTInfoMode,
 		GetDUTInfo: &jsonprotocol.RunnerGetDUTInfoArgs{},
 	}
-	status, stdout, _, sig := callRun(t, nil, args, nil, &cfg)
+	status, stdout, _, sig := callRun(t, nil, args, nil, &scfg)
 	if status != statusSuccess {
 		t.Fatalf("%v = %v; want %v", sig, status, statusSuccess)
 	}

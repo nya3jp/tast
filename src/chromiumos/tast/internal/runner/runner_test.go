@@ -135,7 +135,7 @@ func newBufferWithArgs(t *gotesting.T, args *jsonprotocol.RunnerArgs) *bytes.Buf
 
 // callRun calls Run using the supplied arguments and returns its output, status, and a signature that can
 // be used in error messages.
-func callRun(t *gotesting.T, clArgs []string, stdinArgs, defaultArgs *jsonprotocol.RunnerArgs, cfg *Config) (
+func callRun(t *gotesting.T, clArgs []string, stdinArgs, defaultArgs *jsonprotocol.RunnerArgs, scfg *StaticConfig) (
 	status int, stdout, stderr *bytes.Buffer, sig string) {
 	if defaultArgs == nil {
 		defaultArgs = &jsonprotocol.RunnerArgs{}
@@ -143,7 +143,7 @@ func callRun(t *gotesting.T, clArgs []string, stdinArgs, defaultArgs *jsonprotoc
 	sig = fmt.Sprintf("Run(%v, %+v)", clArgs, stdinArgs)
 	stdout = &bytes.Buffer{}
 	stderr = &bytes.Buffer{}
-	return Run(clArgs, newBufferWithArgs(t, stdinArgs), stdout, stderr, defaultArgs, cfg), stdout, stderr, sig
+	return Run(clArgs, newBufferWithArgs(t, stdinArgs), stdout, stderr, defaultArgs, scfg), stdout, stderr, sig
 }
 
 // readAllMessages reads and returns a slice of pointers to control messages
@@ -182,7 +182,7 @@ func TestRunListTests(t *gotesting.T) {
 		Mode:      jsonprotocol.RunnerListTestsMode,
 		ListTests: &jsonprotocol.RunnerListTestsArgs{BundleGlob: filepath.Join(dir, "*")},
 	}
-	status, stdout, stderr, sig := callRun(t, nil, &args, nil, &Config{Type: LocalRunner})
+	status, stdout, stderr, sig := callRun(t, nil, &args, nil, &StaticConfig{Type: LocalRunner})
 	if status != statusSuccess {
 		t.Fatalf("%s = %v; want %v", sig, status, statusSuccess)
 	}
@@ -222,7 +222,7 @@ func TestRunListFixtures(t *gotesting.T) {
 			BundleGlob: filepath.Join(dir, "*"),
 		},
 	}
-	status, stdout, _, sig := callRun(t, nil, &args, nil, &Config{Type: LocalRunner})
+	status, stdout, _, sig := callRun(t, nil, &args, nil, &StaticConfig{Type: LocalRunner})
 	if status != statusSuccess {
 		t.Fatalf("%s = %v; want %v", sig, status, statusSuccess)
 	}
@@ -246,7 +246,7 @@ func TestRunListFixtures(t *gotesting.T) {
 	}
 
 	// Test errors
-	status, _, _, sig = callRun(t, nil, &jsonprotocol.RunnerArgs{Mode: jsonprotocol.RunnerListFixturesMode /* ListFixtures is nil */}, nil, &Config{Type: LocalRunner})
+	status, _, _, sig = callRun(t, nil, &jsonprotocol.RunnerArgs{Mode: jsonprotocol.RunnerListFixturesMode /* ListFixtures is nil */}, nil, &StaticConfig{Type: LocalRunner})
 	if status != statusBadArgs {
 		t.Fatalf("%s = %v; want %v", sig, status, statusBadArgs)
 	}
@@ -264,7 +264,7 @@ func TestRunListTestsNoBundles(t *gotesting.T) {
 	// The runner should only exit with 0 and report errors via control messages on stdout when it's
 	// performing an actual test run. Since we're only listing tests, it should instead exit with an
 	// error (and write the error to stderr, although that's not checked here).
-	status, stdout, stderr, sig := callRun(t, nil, &args, nil, &Config{Type: LocalRunner})
+	status, stdout, stderr, sig := callRun(t, nil, &args, nil, &StaticConfig{Type: LocalRunner})
 	if status != statusNoBundles {
 		t.Errorf("%s = %v; want %v", sig, status, statusNoBundles)
 	}
@@ -308,7 +308,7 @@ func TestRunSysInfo(t *gotesting.T) {
 	}
 
 	// Get the initial state.
-	cfg := Config{
+	scfg := StaticConfig{
 		Type:         LocalRunner,
 		SystemLogDir: filepath.Join(td, logsDir),
 		SystemInfoFunc: func(ctx context.Context, dir string) error {
@@ -317,7 +317,7 @@ func TestRunSysInfo(t *gotesting.T) {
 		SystemCrashDirs:       []string{filepath.Join(td, crashesDir)},
 		CleanupLogsPausedPath: filepath.Join(td, "cleanup_logs_paused"),
 	}
-	status, stdout, _, sig := callRun(t, nil, &jsonprotocol.RunnerArgs{Mode: jsonprotocol.RunnerGetSysInfoStateMode}, nil, &cfg)
+	status, stdout, _, sig := callRun(t, nil, &jsonprotocol.RunnerArgs{Mode: jsonprotocol.RunnerGetSysInfoStateMode}, nil, &scfg)
 	if status != statusSuccess {
 		t.Fatalf("%s = %v; want %v", sig, status, statusSuccess)
 	}
@@ -329,7 +329,7 @@ func TestRunSysInfo(t *gotesting.T) {
 		t.Errorf("%v produced warning(s): %v", sig, getRes.Warnings)
 	}
 
-	if _, err := os.Stat(cfg.CleanupLogsPausedPath); err != nil {
+	if _, err := os.Stat(scfg.CleanupLogsPausedPath); err != nil {
 		t.Errorf("Cleanup logs paused file not created: %v", err)
 	}
 
@@ -345,7 +345,7 @@ func TestRunSysInfo(t *gotesting.T) {
 		Mode:           jsonprotocol.RunnerCollectSysInfoMode,
 		CollectSysInfo: &jsonprotocol.RunnerCollectSysInfoArgs{InitialState: getRes.State},
 	}
-	if status, stdout, _, sig = callRun(t, nil, &args, nil, &cfg); status != statusSuccess {
+	if status, stdout, _, sig = callRun(t, nil, &args, nil, &scfg); status != statusSuccess {
 		t.Fatalf("%s = %v; want %v", sig, status, statusSuccess)
 	}
 	var collectRes jsonprotocol.RunnerCollectSysInfoResult
@@ -377,7 +377,7 @@ func TestRunSysInfo(t *gotesting.T) {
 		}
 	}
 
-	if _, err := os.Stat(cfg.CleanupLogsPausedPath); !os.IsNotExist(err) {
+	if _, err := os.Stat(scfg.CleanupLogsPausedPath); !os.IsNotExist(err) {
 		t.Errorf("Cleanup logs paused file not deleted: %v", err)
 	}
 }
@@ -388,7 +388,7 @@ func TestRunTests(t *gotesting.T) {
 
 	// Run should execute multiple test bundles and merge their output correctly.
 	args := &jsonprotocol.RunnerArgs{RunTests: &jsonprotocol.RunnerRunTestsArgs{BundleGlob: filepath.Join(dir, "*")}}
-	status, stdout, stderr, sig := callRun(t, nil, args, nil, &Config{Type: LocalRunner})
+	status, stdout, stderr, sig := callRun(t, nil, args, nil, &StaticConfig{Type: LocalRunner})
 	if status != statusSuccess {
 		t.Fatalf("%s = %v; want %v", sig, status, statusSuccess)
 	}
@@ -448,7 +448,7 @@ func TestRunTests(t *gotesting.T) {
 }
 
 func TestInvalidFlag(t *gotesting.T) {
-	status, stdout, stderr, sig := callRun(t, []string{"-bogus"}, nil, nil, &Config{Type: LocalRunner})
+	status, stdout, stderr, sig := callRun(t, []string{"-bogus"}, nil, nil, &StaticConfig{Type: LocalRunner})
 	if status != statusBadArgs {
 		t.Errorf("%s = %v; want %v", sig, status, statusBadArgs)
 	}
@@ -466,7 +466,7 @@ func TestRunNoTests(t *gotesting.T) {
 
 	// RunTests should fail when run manually with a pattern is passed that doesn't match any tests.
 	clArgs := []string{"-bundles=" + filepath.Join(dir, "*"), "bogus.SomeTest"}
-	status, stdout, stderr, sig := callRun(t, clArgs, nil, nil, &Config{Type: LocalRunner})
+	status, stdout, stderr, sig := callRun(t, clArgs, nil, nil, &StaticConfig{Type: LocalRunner})
 	if status != statusNoTests {
 		t.Errorf("%s = %v; want %v", sig, status, statusNoTests)
 	}
@@ -484,8 +484,8 @@ func TestRunNoTests(t *gotesting.T) {
 			BundleGlob: filepath.Join(dir, "*"),
 		},
 	}
-	cfg := &Config{Type: LocalRunner}
-	if status, stdout, stderr, sig = callRun(t, nil, args, nil, cfg); status != statusSuccess {
+	scfg := &StaticConfig{Type: LocalRunner}
+	if status, stdout, stderr, sig = callRun(t, nil, args, nil, scfg); status != statusSuccess {
 		t.Errorf("%s = %v; want %v", sig, status, statusSuccess)
 	}
 	if gotRunError(readAllMessages(t, stdout)) {
@@ -502,7 +502,7 @@ func TestRunFailForTestErrorWhenRunManually(t *gotesting.T) {
 
 	// RunTests should fail when a bundle reports failure while run manually.
 	clArgs := []string{"-bundles=" + filepath.Join(dir, "*")}
-	status, _, stderr, sig := callRun(t, clArgs, nil, nil, &Config{Type: LocalRunner})
+	status, _, stderr, sig := callRun(t, clArgs, nil, nil, &StaticConfig{Type: LocalRunner})
 	if status != statusTestFailed {
 		t.Errorf("%s = %v; want %v", sig, status, statusTestFailed)
 	}
@@ -526,7 +526,7 @@ func TestCheckDepsWhenRunManually(t *gotesting.T) {
 	}
 
 	args := jsonprotocol.RunnerArgs{RunTests: &jsonprotocol.RunnerRunTestsArgs{BundleGlob: filepath.Join(bd, "*")}}
-	cfg := Config{
+	scfg := StaticConfig{
 		Type:         LocalRunner,
 		USEFlagsFile: filepath.Join(td, useFlagsFile),
 		SoftwareFeatureDefinitions: map[string]string{
@@ -535,7 +535,7 @@ func TestCheckDepsWhenRunManually(t *gotesting.T) {
 			"third":   "flag3",
 		},
 	}
-	status, _, stderr, sig := callRun(t, []string{"-extrauseflags=flag3,flag4", "(!foo)"}, nil, &args, &cfg)
+	status, _, stderr, sig := callRun(t, []string{"-extrauseflags=flag3,flag4", "(!foo)"}, nil, &args, &scfg)
 	if status != statusSuccess {
 		println(stderr.String())
 		t.Fatalf("%s = %v; want %v", sig, status, statusSuccess)
@@ -567,7 +567,7 @@ func TestSkipBundlesWithoutMatchedTests(t *gotesting.T) {
 	// match any tests in the bundle. Pass the name of the test in the first bundle and
 	// check that the run succeeds (i.e. the second bundle wasn't executed).
 	clArgs := []string{"-bundles=" + filepath.Join(dir, "*"), getTestName(0, 0)}
-	status, _, _, sig := callRun(t, clArgs, nil, nil, &Config{Type: LocalRunner})
+	status, _, _, sig := callRun(t, clArgs, nil, nil, &StaticConfig{Type: LocalRunner})
 	if status != statusSuccess {
 		t.Errorf("%s = %v; want %v", sig, status, statusSuccess)
 	}
@@ -584,7 +584,7 @@ func TestRunTestsUseRequestedOutDir(t *gotesting.T) {
 			BundleGlob: filepath.Join(bundleDir, "*"),
 			BundleArgs: jsonprotocol.BundleRunTestsArgs{OutDir: outDir},
 		},
-	}, nil, &Config{Type: LocalRunner})
+	}, nil, &StaticConfig{Type: LocalRunner})
 	if status != statusSuccess {
 		t.Fatalf("%s = %v; want %v", sig, status, statusSuccess)
 	}

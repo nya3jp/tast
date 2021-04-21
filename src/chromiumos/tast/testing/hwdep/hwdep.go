@@ -29,6 +29,17 @@ func D(conds ...Condition) Deps {
 	return dep.NewHardwareDeps(conds...)
 }
 
+// Invert returns a Condition that is satisfied iff the passed in `cond` is not.
+func Invert(cond Condition) Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) error {
+		err := cond.Satisfied(f)
+		if err == nil {
+			return errors.New("Not matched")
+		}
+		return nil
+	}}
+}
+
 // idRegexp is the pattern that the given model/plaform ID names should match with.
 var idRegexp = regexp.MustCompile(`^[a-z0-9_-]+$`)
 

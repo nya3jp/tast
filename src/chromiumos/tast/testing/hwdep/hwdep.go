@@ -29,7 +29,28 @@ func D(conds ...Condition) Deps {
 	return dep.NewHardwareDeps(conds...)
 }
 
-// idRegexp is the pattern that the given model/plaform ID names should match with.
+// Invert returns a Condition that is satisfied iff the passed in `cond` is not.
+func Invert(cond Condition) Condition {
+	return Condition{
+		Satisfied: func(f *protocol.HardwareFeatures) error {
+			if cond.Err != nil {
+				return cond.Err
+			}
+			err := cond.Satisfied(f)
+			if err == nil {
+				if cond.CEL == "" {
+					return errors.New("HardwareCondition is not satisified")
+				}
+				return errors.Errorf("!%s was not satisified", cond.CEL)
+			}
+			return nil
+		},
+		CEL: "!" + cond.CEL,
+		Err: cond.Err,
+	}
+}
+
+// idRegexp is the pattern that the given model/platform ID names should match with.
 var idRegexp = regexp.MustCompile(`^[a-z0-9_-]+$`)
 
 // modelListed returns whether the model represented by a device.Config is listed in

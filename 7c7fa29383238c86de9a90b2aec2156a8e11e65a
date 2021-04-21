@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7428c859_af11da2a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 8
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-04-21T04:19:23Z",
+      "side": 1,
+      "message": "Looks not related to this change, but could be a persistent issue.\n\n2021-04-21T03:57:10.606279Z [20:57:10.606] Backing up the logs\n2021-04-21T03:57:10.800333Z [20:57:10.799] Error at finalize.go:97: Dump wipe_init.log fail: moving local file failed: rename /b/s/w/ir/k/recipe_cleanup/test-resultsmPZi7B/tast_out.20210420-201144.589140812/factory.Finalize/wipe_init.log.468106032/wipe_init.log /b/s/w/ir/k/recipe_cleanup/test-resultsmPZi7B/tast_out.20210420-201144.589140812/factory.Finalize/wipe_init.log: no such file or directory\n2021-04-21T03:57:10.800355Z [20:57:10.799] Stack trace:\nDump wipe_init.log fail\n\tat chromiumos/tast/remote/bundles/cros/factory.cleanup (finalize.go:97)\n\tat runtime.Goexit (panic.go:617)\n\tat chromiumos/tast/internal/testing.(*globalMixin).Fatal (state.go:333)\n\tat chromiumos/tast/remote/bundles/cros/factory.Finalize (finalize.go:65)\n\tat chromiumos/tast/internal/planner.runTestWithRoot.func3.1 (run.go:797)\n\tat chromiumos/tast/internal/planner.safeCall.func2 (safe.go:92)\n\tat runtime.goexit (asm_amd64.s:1374)",
+      "revId": "7c7fa29383238c86de9a90b2aec2156a8e11e65a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

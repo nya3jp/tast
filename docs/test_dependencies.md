@@ -15,7 +15,6 @@ Tests specify dependencies through the `SoftwareDeps` and `HardwareDeps` fields 
 
 The following software features are defined:
 
-*   `alt_syscall` - Whether the platform supports the alt syscall framework.
 *   `amd64` - The [amd64] processor architecture.
 *   `android_vm` - The ability to [run Android apps] in VM instead of container.
     Any version of Android R+ can be used. Prefer this over `android_vm_r` if possible.
@@ -83,7 +82,6 @@ The following software features are defined:
 *   `drm_atomic` - The [DRM/KMS] kernel subsystem supports atomic commits.
 *   `ec_crash` - Boards that have EC firmware, implement the `crash` EC command,
     and produce a panicinfo file after a crash.
-*   `encrypted_reboot_vault` - Whether the system can setup an encrypted reboot vault in the stateful partition.
 *   `endorsement` - Whether the system have a valid endorsement certificate.
 *   `firewall` - Standard Chrome OS network firewall rules.
 *   `flashrom` - Userspace utility to update firmware.

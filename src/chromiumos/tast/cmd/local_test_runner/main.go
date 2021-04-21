@@ -55,8 +55,7 @@ func main() {
 			// This list is documented at docs/test_dependencies.md.
 			// All USE flags referenced here must be listed in IUSE in the tast-use-flags ebuild.
 			// The one exception is tast_vm, which is inserted by VM builders via -extrauseflags.
-			"alt_syscall": `!"kernel-3_8" && !"kernel-3_10"`,
-			"amd64":       "amd64",
+			"amd64": "amd64",
 			// ARC USE flags are defined here:
 			// http://cs/chromeos_public/src/third_party/chromiumos-overlay/eclass/arc-build-constants.eclass
 			"android_vm":         `arc && arcvm && !"android-vm-pi"`,
@@ -93,7 +92,7 @@ func main() {
 			// TODO(b/174888780) Remove kernel-4_4 once arm64 kernel reporting is fixed
 			// TODO(b/174889440) Remove hana, elm
 			// Per b/175345642 veryon_fievel/veyron_tiger are safe but arm32 doesn't report anything in sysfs so just ignore these boards
-			"cpu_vuln_sysfs":    `!("kernel-3_8" || "kernel-3_10" || "kernel-3_14" || ("kernel-3_18" && ("board:asuka" || "board:caroline" || "board:cave" || "board:chell" || "board:lars" || "board:sentry")) || ("kernel-4_4" && ("arm" || "arm64")) || "board:hana" || "board:elm" || "board:hana-kernelnext" || "board:elm-kernelnext" || "board:veyron_fievel" || "board:veyron_tiger")`,
+			"cpu_vuln_sysfs":    `!(("kernel-3_18" && ("board:asuka" || "board:caroline" || "board:cave" || "board:chell" || "board:lars" || "board:sentry")) || ("kernel-4_4" && ("arm" || "arm64")) || "board:hana" || "board:elm" || "board:hana-kernelnext" || "board:elm-kernelnext" || "board:veyron_fievel" || "board:veyron_tiger")`,
 			"crashpad":          "!force_breakpad",
 			"cros_config":       "unibuild",
 			"cros_internal":     "internal",
@@ -106,8 +105,8 @@ func main() {
 			"dlc":               "dlc && dlc_test",
 			"dptf":              "dptf",
 			"device_crash":      `!("board:samus")`, // Samus devices do not reliably come back after kernel crashes. crbug.com/1045821
-			"dmverity_stable":   `"kernel-3_8" || "kernel-3_10" || "kernel-3_14" || "kernel-3_18" || "kernel-4_4" || "kernel-4_14"`,
-			"dmverity_unstable": `!("kernel-3_8" || "kernel-3_10" || "kernel-3_14" || "kernel-3_18" || "kernel-4_4" || "kernel-4_14")`,
+			"dmverity_stable":   `"kernel-3_18" || "kernel-4_4" || "kernel-4_14"`,
+			"dmverity_unstable": `!("kernel-3_18" || "kernel-4_4" || "kernel-4_14")`,
 			"drivefs":           "drivefs",
 			"drm_atomic":        "drm_atomic",
 			// asuka, banon, caroline, cave, celes, chell, cyan, edgar, kefka, reks, relm, sentry, terra, ultima, and wizpig have buggy EC firmware and cannot capture crash reports. b/172228823
@@ -116,7 +115,6 @@ func main() {
 			// nocturne only sporadically captures EC panics. crbug.com/1135798
 			// TODO(https://crbug.com/1122066): remove guado-cfm and rikku-cfm when they're no longer necessary
 			"ec_crash":                `!(("board:asuka" || "board:banon" || "board:caroline" || "board:caroline-kernelnext" || "board:cave" || "board:celes" || "board:chell" || "board:cyan" || "board:edgar" || "board:kefka" || "board:reks" || "board:relm" || "board:sentry" || "board:terra" || "board:ultima" || "board:wizpig") || ("board:drallion" || "board:sarien") || ("board:guado" || "board:guado-cfm" || "board:tidus" || "board:rikku" || "board:rikku-cfm" || "board:veyron_fievel" || "board:veyron_tiger") || "board:nocturne")`,
-			"encrypted_reboot_vault":  `!("kernel-3_8" || "kernel-3_10" || "kernel-3_14")`,
 			"endorsement":             "!betty && !tast_vm", // VMs don't have valid endorsement certificate.
 			"firewall":                "!moblab",            // Moblab has relaxed iptables rules
 			"flashrom":                "!betty && !tast_vm",
@@ -124,7 +122,7 @@ func main() {
 			"gboard_decoder":          "gboard_decoder",                         // have IME mojo service installed.
 			"google_virtual_keyboard": "chrome_internal && internal && !moblab", // doesn't work on Moblab: https://crbug.com/949912
 			"gpu_sandboxing":          "!betty && !tast_vm",                     // no GPU sandboxing on VMs: https://crbug.com/914688
-			"graphics_debugfs":        `!("kernel-3_8" || "kernel-3_10" || "kernel-3_14" || "kernel-3_18")`,
+			"graphics_debugfs":        `!"kernel-3_18"`,
 			"gsc":                     "cr50_onboard",
 			"houdini":                 "houdini",
 			"houdini64":               "houdini64",
@@ -135,13 +133,13 @@ func main() {
 			"lacros":                  "!arm && !arm64",                       // TODO(crbug.com/1144013): Expand this (and below lacros_*) to include arm as well.
 			"lacros_stable":           "!arm && !arm64 && !tast_vm && !betty", // TODO(b/183969803): Remove this.
 			"lacros_unstable":         "!arm && !arm64 && (tast_vm || betty)", // TODO(b/183969803): Remove this.
-			"lock_core_pattern":       `"kernel-3_10" || "kernel-3_14" || "kernel-3_18"`,
+			"lock_core_pattern":       `"kernel-3_18"`,
 			"manatee":                 "manatee",
 			"mbo":                     "mbo",
 			// QEMU has implemented memfd_create, but we haven't updated
 			// to a release with the change (https://bugs.launchpad.net/qemu/+bug/1734792).
 			// Remove "|| betty || tast_vm" from list when we upgrade.
-			"memfd_create": `!("kernel-3_8" || "kernel-3_10" || "kernel-3_14" || betty || tast_vm)`,
+			"memfd_create": `!(betty || tast_vm)`,
 			"memd":         "memd",
 			// Only official builds are considered to have metrics consent.
 			// See: ChromeCrashReporterClient::GetCollectStatsConsent()
@@ -184,7 +182,7 @@ func main() {
 			// Or cleanup all reboot dependency in tast-tests.
 			// Notice: The flag would be false when a board didn't have any attributes.
 			"reboot":                 `"*"`,
-			"rrm_support":            `!("kernel-3_8" || "kernel-3_10" || "kernel-3_14" || "kernel-3_18" || "kernel-4_4")`,
+			"rrm_support":            `!("kernel-3_18" || "kernel-4_4")`,
 			"screenshot":             "display_backlight && !rk3399", // screenshot command broken on RK3399: https://crbug.com/880597
 			"selinux":                "selinux",
 			"selinux_current":        "selinux && !selinux_experimental",
@@ -216,7 +214,7 @@ func main() {
 			// video_overlays; in practice, they tend to be enabled at the same time.
 			// TODO(mcasas): query in advance for NV12 format DRM Plane support.
 			"video_overlays":      "drm_atomic",
-			"virtual_usb_printer": `!("kernel-3_8" || "kernel-3_10" || "kernel-3_14" || "kernel-4_4")`,
+			"virtual_usb_printer": `!"kernel-4_4"`,
 			// Some VM builds actually can run nested VM with right host configuration.
 			// But we haven't enable this feature on builders. For now, just disable
 			// vm_host feature for VM builds. The kvm_transition flag indicates the

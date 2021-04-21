@@ -5,6 +5,7 @@
 package hwdep
 
 import (
+	"errors"
 	"testing"
 
 	configpb "go.chromium.org/chromiumos/config/go/api"
@@ -447,6 +448,32 @@ func TestWiFiIntel(t *testing.T) {
 				},
 			},
 			&configpb.HardwareFeatures{},
+			tc.expectSatisfied)
+	}
+}
+
+func TestInvert(t *testing.T) {
+	for _, tc := range []struct {
+		cond            Condition
+		expectSatisfied bool
+	}{
+		{Condition{Satisfied: func(f *protocol.HardwareFeatures) error {
+			return nil
+		}}, false},
+		{Condition{Satisfied: func(f *protocol.HardwareFeatures) error {
+			return errors.New("Not matched")
+		}}, true},
+	} {
+		verifyCondition(
+			t, Invert(tc.cond),
+			&device.Config{
+				Id: &device.ConfigId{
+					PlatformId: &device.PlatformId{
+						Value: "fake_platform",
+					},
+				},
+			},
+			nil,
 			tc.expectSatisfied)
 	}
 }

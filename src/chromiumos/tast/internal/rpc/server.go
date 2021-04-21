@@ -11,7 +11,10 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
+	"os/signal"
+	"sync"
 
+	"golang.org/x/sys/unix"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/reflection"
@@ -30,15 +33,29 @@ import (
 // RunServer blocks until the client connection is closed or it encounters an
 // error.
 func RunServer(r io.Reader, w io.Writer, svcs []*testing.Service, register func(srv *grpc.Server, req *protocol.HandshakeRequest) error) error {
+	// In case w is stdout or stderr, writing data to it after it is closed
+	// causes SIGPIPE to be delivered to the process, which by default
+	// terminates the process without running deferred cleanup calls.
+	// To avoid the issue, ignore SIGPIPE while running the gRPC server.
+	// See https://golang.org/pkg/os/signal/#hdr-SIGPIPE for more details.
+	signal.Ignore(unix.SIGPIPE)
+	defer signal.Reset(unix.SIGPIPE)
+
 	var req protocol.HandshakeRequest
 	if err := receiveRawMessage(r, &req); err != nil {
 		return err
 	}
 
+	// Make sure to return only after all active method calls finish.
+	// Otherwise the process can exit before running deferred function
+	// calls on service goroutines.
+	var calls sync.WaitGroup
+	defer calls.Wait()
+
 	// Start a remote logging server. It is used to forward logs from
 	// user-defined gRPC services via side channels.
 	ls := newRemoteLoggingServer()
-	srv := grpc.NewServer(serverOpts(ls.Log)...)
+	srv := grpc.NewServer(serverOpts(ls.Log, &calls)...)
 
 	// Register core services.
 	reflection.Register(srv)
@@ -74,7 +91,26 @@ func RunServer(r io.Reader, w io.Writer, svcs []*testing.Service, register func(
 		return err
 	}
 
+	// From now on, catch SIGINT/SIGTERM to stop the server gracefully.
+	sigCh := make(chan os.Signal, 1)
+	defer close(sigCh)
+	signal.Notify(sigCh, unix.SIGINT, unix.SIGTERM)
+	defer signal.Stop(sigCh)
+	sigErrCh := make(chan error, 1)
+	go func() {
+		if sig, ok := <-sigCh; ok {
+			sigErrCh <- errors.Errorf("caught signal %d (%s)", sig, sig)
+			srv.Stop()
+		}
+	}()
+
 	if err := srv.Serve(NewPipeListener(r, w)); err != nil && err != io.EOF {
+		// Replace the error if we saw a signal.
+		select {
+		case err := <-sigErrCh:
+			return err
+		default:
+		}
 		return err
 	}
 	return nil
@@ -94,7 +130,7 @@ func (s *serverStreamWithContext) Context() context.Context {
 var _ grpc.ServerStream = (*serverStreamWithContext)(nil)
 
 // serverOpts returns gRPC server-side interceptors to manipulate context.
-func serverOpts(logger testcontext.LoggerFunc) []grpc.ServerOption {
+func serverOpts(logger testcontext.LoggerFunc, calls *sync.WaitGroup) []grpc.ServerOption {
 	// hook is called on every gRPC method call.
 	// It returns a Context to be passed to a gRPC method, a function to be
 	// called on the end of the gRPC method call to compute trailers, and
@@ -152,6 +188,8 @@ func serverOpts(logger testcontext.LoggerFunc) []grpc.ServerOption {
 
 	return []grpc.ServerOption{
 		grpc.UnaryInterceptor(func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (res interface{}, err error) {
+			calls.Add(1)
+			defer calls.Done()
 			ctx, trailer, err := hook(ctx, info.FullMethod)
 			if err != nil {
 				return nil, err
@@ -162,6 +200,8 @@ func serverOpts(logger testcontext.LoggerFunc) []grpc.ServerOption {
 			return handler(ctx, req)
 		}),
 		grpc.StreamInterceptor(func(srv interface{}, stream grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
+			calls.Add(1)
+			defer calls.Done()
 			ctx, trailer, err := hook(stream.Context(), info.FullMethod)
 			if err != nil {
 				return err

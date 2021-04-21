@@ -12,7 +12,10 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+	"syscall"
 
+	"github.com/shirou/gopsutil/process"
+	"golang.org/x/sys/unix"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -76,23 +79,32 @@ func DialSSH(ctx context.Context, conn *ssh.Conn, path string, req *protocol.Han
 }
 
 // DialExec establishes a gRPC connection to an executable on host.
-func DialExec(ctx context.Context, path string, req *protocol.HandshakeRequest) (*Client, error) {
+// If newSession is true, a new session is created for the subprocess and its
+// descendants so that all of them are killed on closing Client.
+func DialExec(ctx context.Context, path string, newSession bool, req *protocol.HandshakeRequest) (*Client, error) {
 	cmd := exec.CommandContext(ctx, path, "-rpc")
 	stdin, err := cmd.StdinPipe()
 	if err != nil {
-		return nil, fmt.Errorf("newRemoteFixtureService: %v", err)
+		return nil, errors.Wrapf(err, "failed to run %s for RPC", path)
 	}
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
-		return nil, fmt.Errorf("newRemoteFixtureService: %v", err)
+		return nil, errors.Wrapf(err, "failed to run %s for RPC", path)
 	}
 	cmd.Stderr = os.Stderr // ease debug
+	if newSession {
+		cmd.SysProcAttr = &syscall.SysProcAttr{Setsid: true}
+	}
 	if err := cmd.Start(); err != nil {
-		return nil, fmt.Errorf("newRemoteFixtureService: %v", err)
+		return nil, errors.Wrapf(err, "failed to run %s for RPC", path)
 	}
 	return newClient(ctx, stdout, stdin, req, func(ctx context.Context) error {
-		defer cmd.Wait() // ignore error `signal: killed`
-		return cmd.Process.Kill()
+		cmd.Process.Kill()
+		if newSession {
+			killSession(cmd.Process.Pid)
+		}
+		_ = cmd.Wait() // ignore error `signal: killed`
+		return nil
 	})
 }
 
@@ -284,4 +296,31 @@ func (s *clientStreamWithAfter) RecvMsg(m interface{}) error {
 		retErr = err
 	}
 	return retErr
+}
+
+// killSession makes a best-effort attempt to kill all processes in session sid.
+// It makes several passes over the list of running processes, sending sig to any
+// that are part of the session. After it doesn't find any new processes, it returns.
+// Note that this is racy: it's possible (but hopefully unlikely) that continually-forking
+// processes could spawn children that don't get killed.
+func killSession(sid int) {
+	const maxPasses = 3
+	for i := 0; i < maxPasses; i++ {
+		procs, err := process.Processes()
+		if err != nil {
+			return
+		}
+		n := 0
+		for _, proc := range procs {
+			pid := int(proc.Pid)
+			if s, err := unix.Getsid(pid); err == nil && s == sid {
+				syscall.Kill(pid, syscall.SIGKILL)
+				n++
+			}
+		}
+		// If we didn't find any processes in the session, we're done.
+		if n == 0 {
+			return
+		}
+	}
 }

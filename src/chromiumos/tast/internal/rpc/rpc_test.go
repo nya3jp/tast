@@ -11,12 +11,16 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"reflect"
+	"strconv"
 	gotesting "testing"
+	"time"
 
 	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/google/go-cmp/cmp"
+	"github.com/shirou/gopsutil/process"
 	"google.golang.org/grpc"
 
 	"chromiumos/tast/errors"
@@ -25,6 +29,7 @@ import (
 	"chromiumos/tast/internal/sshtest"
 	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/testing"
+	"chromiumos/tast/internal/testingutil"
 	"chromiumos/tast/internal/timing"
 	"chromiumos/tast/ssh"
 	"chromiumos/tast/testutil"
@@ -512,7 +517,7 @@ func TestRPCOverExec(t *gotesting.T) {
 	defer lo.Close()
 
 	// Connect to the server and try calling a method.
-	conn, err := DialExec(ctx, path, &protocol.HandshakeRequest{})
+	conn, err := DialExec(ctx, path, false, &protocol.HandshakeRequest{})
 	if err != nil {
 		t.Fatalf("DialExec failed: %v", err)
 	}
@@ -525,6 +530,93 @@ func TestRPCOverExec(t *gotesting.T) {
 	cl := protocol.NewPingCoreClient(conn.Conn())
 	if _, err := cl.Ping(ctx, &empty.Empty{}); err != nil {
 		t.Error("Ping failed: ", err)
+	}
+}
+
+type leakingPingServer struct{}
+
+func (s *leakingPingServer) Ping(ctx context.Context, _ *empty.Empty) (*empty.Empty, error) {
+	// Intentionally leak a subprocess.
+	exec.Command("sleep", "60").Start()
+	return &empty.Empty{}, nil
+}
+
+var leakingMain = fakeexec.NewAuxMain("rpc_new_session_test", func(_ struct{}) {
+	if err := RunServer(os.Stdin, os.Stdout, nil, func(srv *grpc.Server, req *protocol.HandshakeRequest) error {
+		protocol.RegisterPingCoreServer(srv, &leakingPingServer{})
+		return nil
+	}); err != nil {
+		fmt.Fprintf(os.Stderr, "FATAL: %v\n", err)
+		os.Exit(1)
+	}
+})
+
+func TestRPCOverExecNewSession(t *gotesting.T) {
+	ctx := context.Background()
+
+	params, err := leakingMain.Params(struct{}{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	restore := params.SetEnvs()
+	defer restore()
+
+	for _, newSession := range []bool{false, true} {
+		t.Run(strconv.FormatBool(newSession), func(t *gotesting.T) {
+			var subproc *process.Process
+			func() {
+				// Connect to the server and call a method.
+				conn, err := DialExec(ctx, params.Executable(), newSession, &protocol.HandshakeRequest{})
+				if err != nil {
+					t.Fatalf("DialExec failed: %v", err)
+				}
+				defer func() {
+					if err := conn.Close(); err != nil {
+						t.Errorf("Close failed: %v", err)
+					}
+				}()
+
+				// Call Ping. This will leak a subprocess.
+				cl := protocol.NewPingCoreClient(conn.Conn())
+				if _, err := cl.Ping(ctx, &empty.Empty{}); err != nil {
+					t.Error("Ping failed: ", err)
+				}
+
+				// Find the leaked subprocess.
+				procs, err := process.Processes()
+				if err != nil {
+					t.Fatalf("Failed to enumerate processes: %v", err)
+				}
+				for _, proc := range procs {
+					ppid, err := proc.Ppid()
+					if err == nil && int(ppid) == conn.PID() {
+						subproc = proc
+						break
+					}
+				}
+				if subproc == nil {
+					t.Fatal("Failed to find a leaked subprocess")
+				}
+			}()
+
+			if newSession {
+				// Closing rpc.SSHClient should have killed the whole session.
+				// Wait some time to allow the process to exit.
+				if err := testingutil.Poll(context.Background(), func(context.Context) error {
+					if _, err := subproc.Status(); err != nil {
+						return nil
+					}
+					return errors.Errorf("process %d still exists", subproc.Pid)
+				}, &testingutil.PollOptions{Timeout: 10 * time.Second}); err != nil {
+					t.Fatalf("Failed to wait for a leaked subprocess to exit: %v", err)
+				}
+			} else {
+				// Leaked subprocess should be still running.
+				if err := subproc.Terminate(); err != nil {
+					t.Fatalf("Failed to kill the leaked subprocess: %v", err)
+				}
+			}
+		})
 	}
 }
 

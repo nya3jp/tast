@@ -50,7 +50,7 @@ func newRemoteFixtureService(ctx context.Context, cfg *config.Config) (rf *remot
 		return nil, fmt.Errorf("newRemoteFixtureService: %v", err)
 	}
 
-	rpcCL, err := rpc.DialExec(ctx, cfg.RemoteFixtureServer, &protocol.HandshakeRequest{})
+	rpcCL, err := rpc.DialExec(ctx, cfg.RemoteFixtureServer, false, &protocol.HandshakeRequest{})
 
 	if err != nil {
 		return nil, fmt.Errorf("rpc.NewClient: %v", err)

@@ -13,6 +13,8 @@ import (
 	"os/exec"
 	"strings"
 
+	"github.com/shirou/gopsutil/process"
+	"golang.org/x/sys/unix"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -74,13 +76,19 @@ func DialSSH(ctx context.Context, conn *ssh.Conn, path string, req *protocol.Han
 
 // ExecClient is a Tast gRPC client over a locally executed subprocess.
 type ExecClient struct {
-	cl  *GenericClient
-	cmd *exec.Cmd
+	cl         *GenericClient
+	cmd        *exec.Cmd
+	newSession bool
 }
 
 // Conn returns a gRPC connection.
 func (c *ExecClient) Conn() *grpc.ClientConn {
 	return c.cl.Conn()
+}
+
+// PID returns PID of the subprocess.
+func (c *ExecClient) PID() int {
+	return c.cmd.Process.Pid
 }
 
 // Close closes this client.
@@ -92,34 +100,46 @@ func (c *ExecClient) Close() error {
 	if err := c.cmd.Process.Kill(); err != nil && firstErr == nil {
 		firstErr = err
 	}
+	if c.newSession {
+		killSession(c.cmd.Process.Pid)
+	}
 	c.cmd.Wait() // ignore error `signal: killed`
 	return firstErr
 }
 
 // DialExec establishes a gRPC connection to an executable on host.
-func DialExec(ctx context.Context, path string, req *protocol.HandshakeRequest) (*ExecClient, error) {
+// If newSession is true, a new session is created for the subprocess and its
+// descendants so that all of them are killed on closing Client.
+func DialExec(ctx context.Context, path string, newSession bool, req *protocol.HandshakeRequest) (*ExecClient, error) {
 	cmd := exec.CommandContext(ctx, path, "-rpc")
 	stdin, err := cmd.StdinPipe()
 	if err != nil {
-		return nil, fmt.Errorf("newRemoteFixtureService: %v", err)
+		return nil, errors.Wrapf(err, "failed to run %s for RPC", path)
 	}
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
-		return nil, fmt.Errorf("newRemoteFixtureService: %v", err)
+		return nil, errors.Wrapf(err, "failed to run %s for RPC", path)
 	}
 	cmd.Stderr = os.Stderr // ease debug
+	if newSession {
+		cmd.SysProcAttr = &unix.SysProcAttr{Setsid: true}
+	}
 	if err := cmd.Start(); err != nil {
-		return nil, fmt.Errorf("newRemoteFixtureService: %v", err)
+		return nil, errors.Wrapf(err, "failed to run %s for RPC", path)
 	}
 	c, err := NewClient(ctx, stdout, stdin, req)
 	if err != nil {
 		cmd.Process.Kill()
+		if newSession {
+			killSession(cmd.Process.Pid)
+		}
 		cmd.Wait()
 		return nil, err
 	}
 	return &ExecClient{
-		cl:  c,
-		cmd: cmd,
+		cl:         c,
+		cmd:        cmd,
+		newSession: newSession,
 	}, nil
 }
 
@@ -319,4 +339,31 @@ func (s *clientStreamWithAfter) RecvMsg(m interface{}) error {
 		retErr = err
 	}
 	return retErr
+}
+
+// killSession makes a best-effort attempt to kill all processes in session sid.
+// It makes several passes over the list of running processes, sending sig to any
+// that are part of the session. After it doesn't find any new processes, it returns.
+// Note that this is racy: it's possible (but hopefully unlikely) that continually-forking
+// processes could spawn children that don't get killed.
+func killSession(sid int) {
+	const maxPasses = 3
+	for i := 0; i < maxPasses; i++ {
+		procs, err := process.Processes()
+		if err != nil {
+			return
+		}
+		n := 0
+		for _, proc := range procs {
+			pid := int(proc.Pid)
+			if s, err := unix.Getsid(pid); err == nil && s == sid {
+				unix.Kill(pid, unix.SIGKILL)
+				n++
+			}
+		}
+		// If we didn't find any processes in the session, we're done.
+		if n == 0 {
+			return
+		}
+	}
 }

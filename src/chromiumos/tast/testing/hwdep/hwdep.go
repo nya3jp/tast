@@ -30,7 +30,7 @@ func D(conds ...Condition) Deps {
 	return dep.NewHardwareDeps(conds...)
 }
 
-// idRegexp is the pattern that the given model/plaform ID names should match with.
+// idRegexp is the pattern that the given model/platform ID names should match with.
 var idRegexp = regexp.MustCompile(`^[a-z0-9_-]+$`)
 
 // modelListed returns whether the model represented by a device.Config is listed in
@@ -631,6 +631,20 @@ func X86() Condition {
 			return nil
 		}
 		return errors.New("DUT's CPU is not x86 compatible")
+	}}
+}
+
+// NoX86 returns a hardware dependency condition matching non-x86 ABI compatible platform.
+func NoX86() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) error {
+		dc := f.GetDeprecatedDeviceConfig()
+		if dc == nil {
+			return errors.New("device.Config is not given")
+		}
+		if dc.GetCpu() != device.Config_X86 && dc.GetCpu() != device.Config_X86_64 {
+			return nil
+		}
+		return errors.New("DUT's CPU is x86 compatible")
 	}}
 }
 

@@ -104,7 +104,7 @@ func getTests(args *jsonprotocol.RunnerArgs, bundles []string) (tests []*jsonpro
 			tests, err := func() ([]*jsonprotocol.EntityWithRunnabilityInfo, *command.StatusError) {
 				ctx := context.Background()
 
-				conn, err := rpc.DialExec(ctx, bundle, &protocol.HandshakeRequest{})
+				conn, err := rpc.DialExec(ctx, bundle, false, &protocol.HandshakeRequest{})
 				if err != nil {
 					return nil, command.NewStatusErrorf(statusBundleFailed, "failed to connect to bundle %s: %v", bundle, err)
 				}
@@ -178,7 +178,7 @@ func listFixtures(bundleGlob string) (map[string][]*jsonprotocol.EntityInfo, *co
 			fs, err := func() ([]*jsonprotocol.EntityInfo, *command.StatusError) {
 				ctx := context.Background()
 
-				conn, err := rpc.DialExec(ctx, bundle, &protocol.HandshakeRequest{})
+				conn, err := rpc.DialExec(ctx, bundle, false, &protocol.HandshakeRequest{})
 				if err != nil {
 					return nil, command.NewStatusErrorf(statusBundleFailed, "failed to connect to bundle %s: %v", bundle, err)
 				}

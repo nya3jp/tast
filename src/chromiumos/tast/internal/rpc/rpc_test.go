@@ -512,7 +512,7 @@ func TestRPCOverExec(t *gotesting.T) {
 	defer lo.Close()
 
 	// Connect to the server and try calling a method.
-	conn, err := DialExec(ctx, path, &protocol.HandshakeRequest{})
+	conn, err := DialExec(ctx, path, false, &protocol.HandshakeRequest{})
 	if err != nil {
 		t.Fatalf("DialExec failed: %v", err)
 	}

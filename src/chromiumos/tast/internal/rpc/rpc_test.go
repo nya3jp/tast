@@ -11,9 +11,12 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"reflect"
+	"syscall"
 	gotesting "testing"
+	"time"
 
 	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/google/go-cmp/cmp"
@@ -25,6 +28,7 @@ import (
 	"chromiumos/tast/internal/sshtest"
 	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/testing"
+	"chromiumos/tast/internal/testingutil"
 	"chromiumos/tast/internal/timing"
 	"chromiumos/tast/ssh"
 	"chromiumos/tast/testutil"
@@ -570,4 +574,154 @@ func TestRPCOverSSH(t *gotesting.T) {
 	if _, err := cl.Ping(ctx, &empty.Empty{}); err != nil {
 		t.Error("Ping failed: ", err)
 	}
+}
+
+// stdioTestSubprocessEnv is the name of an environment variable whose presence
+// indicates that the current process is a subprocess of a unit test and should
+// run a gRPC server on stdin/stdout. Its value is be a file path to which
+// the server should write some data.
+const stdioTestSubprocessEnv = "TAST_RPC_STDIO_TEST_SUBPROCESS"
+
+const (
+	textReady    = "ready"
+	textFinished = "finished"
+)
+
+type subprocessServer struct {
+	path string
+}
+
+func (s *subprocessServer) Ping(ctx context.Context, _ *empty.Empty) (*empty.Empty, error) {
+	if err := ctx.Err(); err != nil {
+		return nil, errors.Wrap(err, "context already canceled on entering method")
+	}
+
+	// Notify the parent process that we're in the middle of a method call.
+	ioutil.WriteFile(s.path, []byte(textReady), 0666)
+
+	// Wait for the context to be canceled.
+	<-ctx.Done()
+
+	// Notify the parent process that we're finishing the method call.
+	ioutil.WriteFile(s.path, []byte(textFinished), 0666)
+
+	return &empty.Empty{}, nil
+}
+
+// init runs a gRPC server on stdin/stdout if an environment variable
+// stdioTestSubprocessEnv is set.
+func init() {
+	path := os.Getenv(stdioTestSubprocessEnv)
+	if path == "" {
+		return
+	}
+
+	RunServer(os.Stdin, os.Stdout, nil, func(s *grpc.Server, req *protocol.HandshakeRequest) error {
+		protocol.RegisterPingCoreServer(s, &subprocessServer{path})
+		return nil
+	})
+	os.Exit(0)
+}
+
+// runStdioTestServer starts a subprocess serving subprocessServer and
+// starts an asynchronous call of its Ping method.
+func runStdioTestServer(t *gotesting.T) (cmd *exec.Cmd, stdout io.ReadCloser, waitReady, waitFinish func(t *gotesting.T)) {
+	ctx := context.Background()
+
+	// Create a temporary file. Is is initially empty, but a subprocess
+	// writes some data to it later.
+	f, err := ioutil.TempFile("", "tast-unittest.")
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() {
+		f.Close()
+		os.Remove(f.Name())
+	})
+
+	// Run the self executable with stdioTestSubprocessEnv set, which spins
+	// up a gRPC server.
+	self, err := os.Executable()
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	cmd = exec.Command(self)
+	cmd.Env = append(os.Environ(), fmt.Sprintf("%s=%s", stdioTestSubprocessEnv, f.Name()))
+	cmd.Stderr = os.Stderr
+	stdin, err := cmd.StdinPipe()
+	if err != nil {
+		t.Fatal(err)
+	}
+	stdout, err = cmd.StdoutPipe()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := cmd.Start(); err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() {
+		cmd.Process.Kill()
+		cmd.Wait()
+	})
+
+	conn, err := NewClient(ctx, stdout, stdin, &protocol.HandshakeRequest{})
+	if err != nil {
+		t.Fatalf("Failed to establish gRPC connection to subprocess: %v", err)
+	}
+	t.Cleanup(func() {
+		conn.Close(ctx)
+	})
+
+	// Make an RPC call on a goroutine.
+	go func() {
+		cl := protocol.NewPingCoreClient(conn.Conn)
+		cl.Ping(ctx, &empty.Empty{})
+	}()
+
+	// waitText waits until f's content becomes the specified one.
+	waitText := func(t *gotesting.T, want string) {
+		if err := testingutil.Poll(ctx, func(ctx context.Context) error {
+			b, err := ioutil.ReadFile(f.Name())
+			if err != nil {
+				return testingutil.PollBreak(err)
+			}
+			got := string(b)
+			if got != want {
+				return errors.Errorf("content mismatch: got %q, want %q", got, want)
+			}
+			return nil
+		}, &testingutil.PollOptions{Timeout: 10 * time.Second}); err != nil {
+			t.Fatalf("Failed to wait for subprocess write: %v", err)
+		}
+	}
+	// waitReady waits for the subprocess to enter the gRPC method.
+	waitReady = func(t *gotesting.T) { waitText(t, textReady) }
+	// waitFinish wait for the subprocess to finish the gRPC method call.
+	waitFinish = func(t *gotesting.T) { waitText(t, textFinished) }
+	return cmd, stdout, waitReady, waitFinish
+}
+
+func TestRPCOverStdioSIGPIPE(t *gotesting.T) {
+	_, stdout, waitReady, waitSuccess := runStdioTestServer(t)
+
+	waitReady(t)
+
+	// Close stdout of the subprocess. If the subprocess doesn't install
+	// SIGPIPE handlers, writing data to stdout will cause termination.
+	stdout.Close()
+
+	waitSuccess(t)
+}
+
+func TestRPCOverStdioSIGINT(t *gotesting.T) {
+	cmd, _, waitReady, waitSuccess := runStdioTestServer(t)
+
+	waitReady(t)
+
+	// Send SIGINT to the subprocess. If the subprocess doesn't install
+	// SIGINT handlers it will terminate immediately.
+	cmd.Process.Signal(syscall.SIGINT)
+
+	waitSuccess(t)
 }

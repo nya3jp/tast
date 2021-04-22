@@ -67,6 +67,21 @@ func runTests(ctx context.Context, srv protocol.TestService_RunTestsServer, cfg 
 		return err
 	}
 
+	// Set up output directory.
+	// OutDir can be empty if the caller is not interested in output
+	// files, e.g. in unit tests.
+	if outDir := cfg.GetDirs().GetOutDir(); outDir != "" {
+		if err := os.MkdirAll(outDir, 0755); err != nil {
+			return errors.Wrap(err, "failed to create output directory")
+		}
+		// Call os.Chmod again to ensure permission. The mode passed to
+		// os.MkdirAll is modified by umask, so we need an explicit chmod.
+		if err := os.Chmod(outDir, 0755); err != nil {
+			return errors.Wrap(err, "failed to chmod output directory")
+		}
+	}
+
+	// Set up temporary directory.
 	tempDir := cfg.GetDirs().GetTempDir()
 	if tempDir == "" {
 		var err error

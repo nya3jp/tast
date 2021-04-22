@@ -231,6 +231,35 @@ func TestRunTestsRemoteData(t *gotesting.T) {
 	}
 }
 
+func TestRunTestsOutDir(t *gotesting.T) {
+	td := testutil.TempDir(t)
+	defer os.RemoveAll(td)
+
+	outDir := filepath.Join(td, "out")
+
+	cl := startTestServer(t, NewStaticConfig(testing.NewRegistry(), 0, Delegate{}))
+	cfg := &protocol.RunConfig{
+		Dirs: &protocol.RunDirectories{
+			OutDir: outDir,
+		},
+	}
+	if _, err := protocoltest.RunTestsForEvents(cl, cfg, false); err != nil {
+		t.Fatalf("RunTests failed: %v", err)
+	}
+
+	// OutDir is created by RunTests.
+	fi, err := os.Stat(outDir)
+	if err != nil {
+		t.Fatalf("Failed to stat output directory: %v", err)
+	}
+
+	// OutDir should be writable.
+	const wantPerm = 0755
+	if perm := fi.Mode().Perm(); perm != wantPerm {
+		t.Errorf("Unexpected output directory permission: got 0%o, want 0%o", perm, wantPerm)
+	}
+}
+
 func TestRunTestsStartFixture(t *gotesting.T) {
 	const testName = "pkg.Test"
 	// runTests should not run runHook if tests depend on remote fixtures.

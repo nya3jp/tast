@@ -59,8 +59,7 @@ func readArgs(clArgs []string, stdin io.Reader, stderr io.Writer) (*jsonprotocol
 		return nil, command.NewStatusErrorf(statusBadArgs, "failed to decode args from stdin: %v", err)
 	}
 
-	if (args.Mode == jsonprotocol.BundleRunTestsMode && args.RunTests == nil) ||
-		(args.Mode == jsonprotocol.BundleListTestsMode && args.ListTests == nil) {
+	if args.Mode == jsonprotocol.BundleListTestsMode && args.ListTests == nil {
 		return nil, command.NewStatusErrorf(statusBadArgs, "args not set for mode %v", args.Mode)
 	}
 

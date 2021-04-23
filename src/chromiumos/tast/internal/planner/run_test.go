@@ -206,6 +206,159 @@ func TestRunLateWriteFromGoroutine(t *gotesting.T) {
 	}
 }
 
+func TestRunSoftwareDeps(t *gotesting.T) {
+	const (
+		validDep   = "valid"
+		missingDep = "missing"
+		unregDep   = "unreg"
+	)
+
+	nopFunc := func(context.Context, *testing.State) {}
+	test1 := &testing.TestInstance{Name: "pkg.Test1", SoftwareDeps: []string{validDep}, Func: nopFunc, Timeout: time.Minute}
+	test2 := &testing.TestInstance{Name: "pkg.Test2", SoftwareDeps: []string{missingDep}, Func: nopFunc, Timeout: time.Minute}
+	test3 := &testing.TestInstance{Name: "pkg.Test3", SoftwareDeps: []string{unregDep}, Func: nopFunc, Timeout: time.Minute}
+	tests := []*testing.TestInstance{test1, test2, test3}
+
+	cfg := &Config{
+		Features: &protocol.Features{
+			CheckDeps: true,
+			Software: &protocol.SoftwareFeatures{
+				Available:   []string{validDep},
+				Unavailable: []string{missingDep},
+			},
+		},
+	}
+
+	msgs := runTestsAndReadAll(t, tests, cfg)
+
+	want := []protocol.Event{
+		&protocol.EntityStartEvent{Entity: test2.EntityProto()},
+		&protocol.EntityEndEvent{EntityName: test2.Name, Skip: &protocol.Skip{Reasons: []string{"missing SoftwareDeps: missing"}}},
+		&protocol.EntityStartEvent{Entity: test3.EntityProto()},
+		&protocol.EntityErrorEvent{EntityName: test3.Name, Error: &protocol.Error{Reason: "unknown SoftwareDeps: unreg"}},
+		&protocol.EntityEndEvent{EntityName: test3.Name},
+		&protocol.EntityStartEvent{Entity: test1.EntityProto()},
+		&protocol.EntityEndEvent{EntityName: test1.Name},
+	}
+	if diff := cmp.Diff(msgs, want); diff != "" {
+		t.Error("Output mismatch (-got +want):\n", diff)
+	}
+}
+
+func TestRunVarDeps(t *gotesting.T) {
+	tmpDir := testutil.TempDir(t)
+	defer os.RemoveAll(tmpDir)
+
+	type verdict string
+	const (
+		pass verdict = "pass"
+		fail verdict = "fail"
+		skip verdict = "skip"
+	)
+	for _, tc := range []struct {
+		name             string
+		maybeMissingVars string
+		givenVars        []string
+		varDeps          []string
+		want             verdict
+	}{{
+		name:      "simple pass",
+		givenVars: []string{"foo"},
+		varDeps:   []string{"foo"},
+		want:      pass,
+	}, {
+		name:    "simple fail",
+		varDeps: []string{"foo"},
+		want:    fail,
+	}, {
+		name:             "simple skip",
+		maybeMissingVars: "foo",
+		varDeps:          []string{"foo"},
+		want:             skip,
+	}, {
+		name:             "expected missing vars",
+		maybeMissingVars: "foo",
+		givenVars:        []string{"bar"},
+		varDeps:          []string{"bar", "foo"},
+		want:             skip,
+	}, {
+		name:             "unexpected missing vars",
+		maybeMissingVars: "foo",
+		varDeps:          []string{"bar", "foo"},
+		want:             fail,
+	}, {
+		name:             "simple regex",
+		maybeMissingVars: `foo\..*`,
+		varDeps:          []string{"foo.a", "foo.b.c"},
+		want:             skip,
+	}, {
+		name:             "complex regex",
+		maybeMissingVars: `(bar|foo\..*)`,
+		varDeps:          []string{"bar", "foo.a", "foo.b.c"},
+		want:             skip,
+	}, {
+		name:             "no substring match",
+		maybeMissingVars: `foo`,
+		varDeps:          []string{"foobar"},
+		want:             fail,
+	}} {
+		t.Run(tc.name, func(t *gotesting.T) {
+			test := &testing.TestInstance{
+				Name: "t.T",
+				Func: func(ctx context.Context, s *testing.State) {
+					defer func() {
+						// s.RequiredVar() panics on failure.
+						if r := recover(); r != nil {
+							t.Errorf("panicked: %v", r)
+						}
+					}()
+					for _, v := range tc.varDeps {
+						if got, want := s.RequiredVar(v), "val"; got != want {
+							t.Errorf("s.RequiredVar(%q)=%q, want %q", v, got, want)
+						}
+					}
+				},
+				VarDeps: tc.varDeps,
+				Timeout: time.Minute,
+			}
+
+			vars := make(map[string]string)
+			for _, s := range tc.givenVars {
+				vars[s] = "val"
+			}
+
+			cfg := &Config{
+				Features: &protocol.Features{
+					CheckDeps:        true,
+					Vars:             vars,
+					MaybeMissingVars: tc.maybeMissingVars,
+				},
+			}
+
+			msgs := runTestsAndReadAll(t, []*testing.TestInstance{test}, cfg)
+
+			if got := func() verdict {
+				for _, msg := range msgs {
+					switch m := msg.(type) {
+					case *protocol.EntityEndEvent:
+						if len(m.GetSkip().GetReasons()) > 0 {
+							return skip
+						}
+						return pass
+					case *protocol.EntityErrorEvent:
+						t.Logf("Got error: %v", *m.GetError())
+						return fail
+					}
+				}
+				t.Fatal("Unexpected end of message")
+				panic("BUG: unreachable")
+			}(); got != tc.want {
+				t.Errorf("Got verdict %v, want %v", got, tc.want)
+			}
+		})
+	}
+}
+
 var bundleName = filepath.Base(os.Args[0])
 
 func TestRunSkipStages(t *gotesting.T) {
@@ -641,6 +794,19 @@ func TestRunExternalData(t *gotesting.T) {
 			}
 		})
 	}
+}
+
+func TestRunCloudStorage(t *gotesting.T) {
+	tests := []*testing.TestInstance{{
+		Name: "pkg.Test",
+		Func: func(ctx context.Context, s *testing.State) {
+			if s.CloudStorage() == nil {
+				t.Error("testing.State.CloudStorage is nil")
+			}
+		},
+	}}
+	cfg := &Config{}
+	_ = runTestsAndReadAll(t, tests, cfg)
 }
 
 func TestRunFixture(t *gotesting.T) {
@@ -1286,6 +1452,49 @@ func TestRunPrecondition(t *gotesting.T) {
 	}
 	if diff := cmp.Diff(msgs, want); diff != "" {
 		t.Error("Output mismatch (-got +want):\n", diff)
+	}
+}
+
+func TestRunPreconditionWithSkips(t *gotesting.T) {
+	const dep = "dep"
+
+	var pre1Closed, pre2Closed bool
+	pre1 := &testPre{
+		name:      "pre1",
+		closeFunc: func(context.Context, *testing.PreState) { pre1Closed = true },
+	}
+	pre2 := &testPre{
+		name:      "pre2",
+		closeFunc: func(context.Context, *testing.PreState) { pre2Closed = true },
+	}
+
+	// Make the last test using each precondition get skipped due to
+	// missing software dependencies.
+	nopFunc := func(context.Context, *testing.State) {}
+	tests := []*testing.TestInstance{
+		{Name: "pkg.Test1", Func: nopFunc, Pre: pre1},
+		{Name: "pkg.Test2", Func: nopFunc, Pre: pre1},
+		{Name: "pkg.Test3", Func: nopFunc, Pre: pre1, SoftwareDeps: []string{dep}},
+		{Name: "pkg.Test4", Func: nopFunc, Pre: pre2},
+		{Name: "pkg.Test5", Func: nopFunc, Pre: pre2},
+		{Name: "pkg.Test6", Func: nopFunc, Pre: pre2, SoftwareDeps: []string{dep}},
+	}
+
+	cfg := &Config{
+		Features: &protocol.Features{
+			CheckDeps: true,
+			Software: &protocol.SoftwareFeatures{
+				Unavailable: []string{dep},
+			},
+		},
+	}
+
+	_ = runTestsAndReadAll(t, tests, cfg)
+	if !pre1Closed {
+		t.Error("pre1 was not closed")
+	}
+	if !pre2Closed {
+		t.Error("pre2 was not closed")
 	}
 }
 

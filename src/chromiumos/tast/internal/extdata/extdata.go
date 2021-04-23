@@ -184,7 +184,7 @@ func (m *Manager) Purgeable() []string {
 // deleted if the disk space is low.
 //
 // release must be called after tests are done.
-func (m *Manager) PrepareDownloads(ctx context.Context, dataDir, artifactsURL string, tests []*testing.TestInstance) (jobs []*DownloadJob, purgeable []string, release func()) {
+func (m *Manager) PrepareDownloads(ctx context.Context, dataDir, artifactsURL string, tests []*testing.TestInstance) (jobs []*DownloadJob, release func()) {
 	urlToJob := make(map[string]*DownloadJob)
 	hasErr := false
 
@@ -288,7 +288,7 @@ func (m *Manager) PrepareDownloads(ctx context.Context, dataDir, artifactsURL st
 	if hasErr {
 		testcontext.Log(ctx, "Encountered some errors on scanning external data link files, but continuing anyway; corresponding tests will fail")
 	}
-	return jobs, m.Purgeable(), func() {
+	return jobs, func() {
 		for _, f := range releaseFunc {
 			f()
 		}

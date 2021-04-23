@@ -625,8 +625,6 @@ type downloader struct {
 	pcfg           *Config
 	cl             devserver.Client
 	beforeDownload func(context.Context)
-
-	purgeable []string
 }
 
 func newDownloader(ctx context.Context, pcfg *Config) (*downloader, error) {
@@ -675,18 +673,17 @@ func (d *downloader) BeforeTest(ctx context.Context, test *testing.TestInstance)
 // Purgeable returns a list of cached external data files that can be deleted without
 // disrupting the test execution.
 func (d *downloader) Purgeable() []string {
-	return append([]string(nil), d.purgeable...)
+	return d.m.Purgeable()
 }
 
 func (d *downloader) download(ctx context.Context, tests []*testing.TestInstance) (release func()) {
-	jobs, purgeable, release := d.m.PrepareDownloads(ctx, d.pcfg.DataDir, d.pcfg.BuildArtifactsURL, tests)
+	jobs, release := d.m.PrepareDownloads(ctx, d.pcfg.DataDir, d.pcfg.BuildArtifactsURL, tests)
 	if len(jobs) > 0 {
 		if d.beforeDownload != nil {
 			d.beforeDownload(ctx)
 		}
 		extdata.RunDownloads(ctx, d.pcfg.DataDir, jobs, d.cl)
 	}
-	d.purgeable = purgeable
 	return release
 }
 

@@ -56,7 +56,7 @@ func TestPrepareDownloadsStatic(t *gotesting.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	jobs, _, _ := m.PrepareDownloads(ctx, dataDir, fakeArtifactURL, tests)
+	jobs, _ := m.PrepareDownloads(ctx, dataDir, fakeArtifactURL, tests)
 
 	exp := []*DownloadJob{
 		{
@@ -107,7 +107,7 @@ func TestPrepareDownloadsArtifact(t *gotesting.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	jobs, _, _ := m.PrepareDownloads(ctx, dataDir, fakeArtifactURL, tests)
+	jobs, _ := m.PrepareDownloads(ctx, dataDir, fakeArtifactURL, tests)
 
 	exp := []*DownloadJob{
 		{
@@ -159,7 +159,7 @@ func TestPrepareDownloadsDupLinks(t *gotesting.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	jobs, _, _ := m.PrepareDownloads(ctx, dataDir, fakeArtifactURL, tests)
+	jobs, _ := m.PrepareDownloads(ctx, dataDir, fakeArtifactURL, tests)
 
 	exp := []*DownloadJob{
 		{
@@ -207,7 +207,7 @@ func TestPrepareDownloadsInconsistentDupLinks(t *gotesting.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	jobs, _, _ := m.PrepareDownloads(ctx, dataDir, fakeArtifactURL, tests)
+	jobs, _ := m.PrepareDownloads(ctx, dataDir, fakeArtifactURL, tests)
 
 	exp := []*DownloadJob{
 		{
@@ -258,7 +258,7 @@ func TestPrepareDownloadsStale(t *gotesting.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	jobs, _, _ := m.PrepareDownloads(ctx, dataDir, fakeArtifactURL, tests)
+	jobs, _ := m.PrepareDownloads(ctx, dataDir, fakeArtifactURL, tests)
 
 	exp := []*DownloadJob{
 		{
@@ -314,7 +314,7 @@ func TestPrepareDownloadsUpToDate(t *gotesting.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	jobs, _, _ := m.PrepareDownloads(ctx, dataDir, fakeArtifactURL, tests)
+	jobs, _ := m.PrepareDownloads(ctx, dataDir, fakeArtifactURL, tests)
 
 	if len(jobs) > 0 {
 		t.Errorf("PrepareDownloads returned %v; want []", jobs)
@@ -356,7 +356,7 @@ func TestPrepareDownloadsBrokenLink(t *gotesting.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	jobs, _, _ := m.PrepareDownloads(ctx, dataDir, fakeArtifactURL, tests)
+	jobs, _ := m.PrepareDownloads(ctx, dataDir, fakeArtifactURL, tests)
 
 	exp := []*DownloadJob{
 		{
@@ -398,7 +398,7 @@ func TestPrepareDownloadsArtifactUnavailable(t *gotesting.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	jobs, _, _ := m.PrepareDownloads(ctx, dataDir, "", tests)
+	jobs, _ := m.PrepareDownloads(ctx, dataDir, "", tests)
 
 	if len(jobs) > 0 {
 		t.Errorf("PrepareDownloads returned %v; want []", jobs)
@@ -505,13 +505,13 @@ func TestPrepareDownloadsPurgeable(t *gotesting.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	_, purgeable, _ := m.PrepareDownloads(ctx, dataDir, fakeArtifactURL, tests)
+	m.PrepareDownloads(ctx, dataDir, fakeArtifactURL, tests)
 
 	want := []string{
 		filepath.Join(dataSubdir, "ext_file2.txt"),
 		filepath.Join(dataSubdir, "ext_file5.txt"),
 	}
-	if diff := cmp.Diff(purgeable, want); diff != "" {
+	if diff := cmp.Diff(m.Purgeable(), want); diff != "" {
 		t.Error("Purgeable mismatch (-got +want):\n", diff)
 	}
 }

@@ -128,11 +128,6 @@ func run(ctx context.Context, clArgs []string, stdin io.Reader, stdout, stderr i
 			return command.WriteError(stderr, err)
 		}
 		return statusSuccess
-	case jsonprotocol.BundleRunTestsMode:
-		if err := runTestsCompat(ctx, stdout, args.RunTests.Proto(), scfg); err != nil {
-			return command.WriteError(stderr, err)
-		}
-		return statusSuccess
 	case jsonprotocol.BundleRPCMode:
 		if err := RunRPCServer(stdin, stdout, scfg); err != nil {
 			return command.WriteError(stderr, err)

@@ -15,16 +15,23 @@ import (
 	"path/filepath"
 	"runtime"
 	"runtime/debug"
+	"sort"
 	"strings"
 	"time"
 
+	"github.com/golang/protobuf/ptypes"
 	"github.com/shirou/gopsutil/process"
 	"golang.org/x/sys/unix"
 
+	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/command"
 	"chromiumos/tast/internal/control"
 	"chromiumos/tast/internal/jsonprotocol"
+	"chromiumos/tast/internal/protocol"
+	"chromiumos/tast/internal/rpc"
 	"chromiumos/tast/internal/testcontext"
+	"chromiumos/tast/internal/testing"
+	"chromiumos/tast/internal/timing"
 )
 
 const (
@@ -32,11 +39,11 @@ const (
 	statusError        = 1 // unspecified error was encountered
 	statusBadArgs      = 2 // bad arguments were passed to the runner
 	statusNoBundles    = 3 // glob passed to runner didn't match any bundles
-	statusNoTests      = 4 // pattern(s) passed to runner didn't match any tests
+	_                  = 4 // deprecated
 	statusBundleFailed = 5 // test bundle exited with nonzero status
 	statusTestFailed   = 6 // one or more tests failed during manual run
-	statusInterrupted  = 7 // read end of stdout was closed or SIGINT was received
-	statusTerminated   = 8 // SIGTERM was received
+	_                  = 7 // deprecated
+	_                  = 8 // deprecated
 )
 
 // Run reads command-line flags from clArgs (in the case of a manual run) or a JSON-marshaled
@@ -117,67 +124,151 @@ func runTestsAndReport(ctx context.Context, args *jsonprotocol.RunnerArgs, scfg 
 	hbw := control.NewHeartbeatWriter(mw, args.RunTests.BundleArgs.HeartbeatInterval)
 	defer hbw.Stop()
 
-	bundles, tests, statusErr := getBundlesAndTests(args)
-	if statusErr != nil {
-		mw.WriteMessage(newRunErrorMessagef(statusErr.Status(), "Failed enumerating tests: %v", statusErr))
-		return
+	if err := runTestsCompat(ctx, mw, scfg, args); err != nil {
+		mw.WriteMessage(newRunErrorMessagef(statusError, "%v", err))
 	}
+}
 
+func runTestsCompat(ctx context.Context, mw *control.MessageWriter, scfg *StaticConfig, args *jsonprotocol.RunnerArgs) error {
 	bundleArgs, err := args.BundleArgs(jsonprotocol.BundleRunTestsMode)
 	if err != nil {
-		mw.WriteMessage(newRunErrorMessagef(statusBadArgs, "Failed constructing bundle args: %v", err))
-		return
+		return errors.Wrap(err, "failed constructing bundle args")
 	}
 
-	testNames := make([]string, len(tests))
-	for i, t := range tests {
-		testNames[i] = t.Name
+	matcher, err := testing.NewMatcher(bundleArgs.RunTests.Patterns)
+	if err != nil {
+		return err
 	}
-	mw.WriteMessage(&control.RunStart{Time: time.Now(), TestNames: testNames, NumTests: len(tests)})
 
-	ctx = testcontext.WithLogger(ctx, func(msg string) {
-		mw.WriteMessage(&control.RunLog{Time: time.Now(), Text: msg})
-	})
+	// Start an in-process gRPC server.
+	sr, cw := io.Pipe()
+	cr, sw := io.Pipe()
+	defer func() {
+		cw.Close()
+		cr.Close()
+	}()
+	go runRPCServer(scfg, sr, sw)
 
-	if scfg.KillStaleRunners {
-		killStaleRunners(ctx, unix.SIGTERM)
+	params := &protocol.RunnerInitParams{
+		BundleGlob: args.RunTests.BundleGlob,
 	}
+	conn, err := rpc.NewClient(ctx, cr, cw, &protocol.HandshakeRequest{RunnerInitParams: params})
+	if err != nil {
+		return errors.Wrap(err, "failed to connect to in-process gRPC server")
+	}
+	defer conn.Close()
+
+	cl := protocol.NewTestServiceClient(conn.Conn())
+
+	// Enumerate tests to run.
+	res, err := cl.ListEntities(ctx, &protocol.ListEntitiesRequest{Features: bundleArgs.RunTests.Features()})
+	if err != nil {
+		return errors.Wrap(err, "failed to enumerate entities in bundles")
+	}
+
+	var testNames []string
+	for _, r := range res.Entities {
+		e := r.GetEntity()
+		if e.GetType() != protocol.EntityType_TEST {
+			continue
+		}
+		if matcher.Match(e.GetName(), e.GetAttributes()) {
+			testNames = append(testNames, e.GetName())
+		}
+	}
+	sort.Strings(testNames)
+
+	mw.WriteMessage(&control.RunStart{Time: time.Now(), TestNames: testNames, NumTests: len(testNames)})
 
 	// We expect to not match any tests if both local and remote tests are being run but the
 	// user specified a pattern that matched only local or only remote tests rather than tests
 	// of both types. Don't bother creating an out dir in that case.
-	if len(tests) == 0 {
+	if len(testNames) == 0 {
 		if !args.Report {
-			mw.WriteMessage(newRunErrorMessagef(statusNoTests, "No tests matched"))
-			return
+			return errors.New("no tests matched")
 		}
-	} else {
-		created, err := setUpBaseOutDir(bundleArgs)
-		if err != nil {
-			mw.WriteMessage(newRunErrorMessagef(statusError, "Failed to set up base out dir: %v", err))
-			return
-		}
-		// If the runner was executed manually and an out dir wasn't specified, clean up the temp dir that was created.
-		if !args.Report && created {
-			defer os.RemoveAll(bundleArgs.RunTests.OutDir)
-		}
-
-		// Hereafter, heartbeat messages are sent by bundles.
-		hbw.Stop()
-
-		for _, bundle := range bundles {
-			// Copy each bundle's output (consisting of control messages) directly to stdout.
-			if err := runBundle(bundle, bundleArgs, stdout); err != nil {
-				// TODO(derat): The tast command currently aborts the run as soon as it sees a RunError
-				// message, but consider changing that and continuing to run other bundles here.
-				// If we execute additional bundles, be sure to return immediately for statusInterrupted.
-				mw.WriteMessage(newRunErrorMessagef(err.Status(), "Bundle %v failed: %v", bundle, err))
-				return
-			}
-		}
+		mw.WriteMessage(&control.RunEnd{Time: time.Now(), OutDir: bundleArgs.RunTests.OutDir})
+		return nil
 	}
 
-	mw.WriteMessage(&control.RunEnd{Time: time.Now(), OutDir: bundleArgs.RunTests.OutDir})
+	created, err := setUpBaseOutDir(bundleArgs)
+	if err != nil {
+		return errors.Wrap(err, "failed to set up base out dir")
+	}
+	// If the runner was executed manually and an out dir wasn't specified, clean up the temp dir that was created.
+	if !args.Report && created {
+		defer os.RemoveAll(bundleArgs.RunTests.OutDir)
+	}
+
+	// Call RunTests method and send the initial request.
+	srv, err := cl.RunTests(ctx)
+	if err != nil {
+		return errors.Wrap(err, "RunTests: failed to call")
+	}
+
+	cfg := bundleArgs.RunTests.Proto()
+	initReq := &protocol.RunTestsRequest{Type: &protocol.RunTestsRequest_RunTestsInit{RunTestsInit: &protocol.RunTestsInit{RunConfig: cfg}}}
+	if err := srv.Send(initReq); err != nil {
+		return errors.Wrap(err, "RunTests: failed to send initial request")
+	}
+
+	// Keep reading responses and convert them to control messages.
+	for {
+		res, err := srv.Recv()
+		if err == io.EOF {
+			mw.WriteMessage(&control.RunEnd{Time: time.Now(), OutDir: bundleArgs.RunTests.OutDir})
+			return nil
+		}
+		if err != nil {
+			return err
+		}
+
+		switch res := res.GetType().(type) {
+		case *protocol.RunTestsResponse_RunLog:
+			r := res.RunLog
+			ts, err := ptypes.Timestamp(r.GetTime())
+			if err != nil {
+				return err
+			}
+			mw.WriteMessage(&control.RunLog{Time: ts, Text: r.GetText()})
+		case *protocol.RunTestsResponse_EntityStart:
+			r := res.EntityStart
+			ts, err := ptypes.Timestamp(r.GetTime())
+			if err != nil {
+				return err
+			}
+			ei, err := jsonprotocol.EntityInfoFromProto(r.GetEntity())
+			if err != nil {
+				return err
+			}
+			mw.WriteMessage(&control.EntityStart{Time: ts, Info: *ei, OutDir: r.GetOutDir()})
+		case *protocol.RunTestsResponse_EntityLog:
+			r := res.EntityLog
+			ts, err := ptypes.Timestamp(r.GetTime())
+			if err != nil {
+				return err
+			}
+			mw.WriteMessage(&control.EntityLog{Time: ts, Name: r.GetEntityName(), Text: r.GetText()})
+		case *protocol.RunTestsResponse_EntityError:
+			r := res.EntityError
+			ts, err := ptypes.Timestamp(r.GetTime())
+			if err != nil {
+				return err
+			}
+			mw.WriteMessage(&control.EntityError{Time: ts, Name: r.GetEntityName(), Error: *jsonprotocol.ErrorFromProto(r.GetError())})
+		case *protocol.RunTestsResponse_EntityEnd:
+			r := res.EntityEnd
+			ts, err := ptypes.Timestamp(r.GetTime())
+			if err != nil {
+				return err
+			}
+			timingLog, err := timing.LogFromProto(r.GetTimingLog())
+			if err != nil {
+				return err
+			}
+			mw.WriteMessage(&control.EntityEnd{Time: ts, Name: r.GetEntityName(), SkipReasons: r.GetSkip().GetReasons(), TimingLog: timingLog})
+		}
+	}
 }
 
 // runTestsAndLog runs bundles serially to perform testing and logs human-readable results to stdout.

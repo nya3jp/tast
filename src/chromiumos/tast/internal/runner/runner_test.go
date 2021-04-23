@@ -467,8 +467,8 @@ func TestRunNoTests(t *gotesting.T) {
 	// RunTests should fail when run manually with a pattern is passed that doesn't match any tests.
 	clArgs := []string{"-bundles=" + filepath.Join(dir, "*"), "bogus.SomeTest"}
 	status, stdout, stderr, sig := callRun(t, clArgs, nil, nil, &StaticConfig{Type: LocalRunner})
-	if status != statusNoTests {
-		t.Errorf("%s = %v; want %v", sig, status, statusNoTests)
+	if status == 0 {
+		t.Errorf("%s = %v; want non-zero", sig, status)
 	}
 	if stdout.Len() != 0 {
 		t.Errorf("%s wrote %q to stdout; want nothing (error should go to stderr)", sig, stdout.String())

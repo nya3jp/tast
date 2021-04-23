@@ -49,7 +49,8 @@ type Msg interface {
 type RunStart struct {
 	// Time is the device-local time at which the run started.
 	Time time.Time `json:"runStartTime"`
-	// TestNames contains the names of tests to run, in the order in which they'll be executed.
+	// TestNames contains the names of tests to run. The order does not
+	// necessarily match the actual execution order.
 	// Note that some of these tests may later be skipped (see EntityEnd).
 	TestNames []string `json:"runStartTestNames"`
 	// NumTests is the number of tests that will be run.

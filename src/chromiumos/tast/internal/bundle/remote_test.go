@@ -130,63 +130,6 @@ func TestRemoteReconnectBetweenTests(t *gotesting.T) {
 	}
 }
 
-// TestRemoteTestHooks makes sure hook function is called at the end of a test.
-func TestRemoteTestHooks(t *gotesting.T) {
-	td := sshtest.NewTestData(nil)
-	defer td.Close()
-	reg := testing.NewRegistry()
-
-	// Add two test instances.
-	reg.AddTestInstance(&testing.TestInstance{Name: "pkg.Test1", Func: func(context.Context, *testing.State) {}})
-	reg.AddTestInstance(&testing.TestInstance{Name: "pkg.Test2", Func: func(context.Context, *testing.State) {}})
-
-	// Set up test argument.
-	outDir := testutil.TempDir(t)
-	defer os.RemoveAll(outDir)
-	args := jsonprotocol.BundleArgs{
-		Mode: jsonprotocol.BundleRunTestsMode,
-		RunTests: &jsonprotocol.BundleRunTestsArgs{
-			OutDir:  outDir,
-			Target:  td.Srvs[0].Addr().String(),
-			KeyFile: td.UserKeyFile,
-		},
-	}
-
-	// Set up input and output buffers.
-	stdin := newBufferWithArgs(t, &args)
-	stderr := bytes.Buffer{}
-
-	// ranPreHookCount keeps the number of times prehook function was called.
-	// ranPostHookCount keepts the number of times posthoook functions was called.
-	var ranPreHookCount, ranPostHookCount int
-
-	// Test Remote function.
-	if status := Remote(nil, stdin, &bytes.Buffer{}, &stderr, reg, Delegate{
-		TestHook: func(context.Context, *testing.TestHookState) func(context.Context, *testing.TestHookState) {
-			ranPreHookCount++
-			return func(context.Context, *testing.TestHookState) {
-				ranPostHookCount++
-			}
-		},
-	}); status != statusSuccess {
-		t.Errorf("Remote(%+v) = %v; want %v", args, status, statusSuccess)
-	}
-
-	// Make sure prehook function was called twice.
-	if ranPreHookCount != 2 {
-		t.Errorf("Remote(%+v) test pre hook was called %v times; want 2 times", args, ranPreHookCount)
-	}
-	// Make sure posthook function was called twice.
-	if ranPostHookCount != 2 {
-		t.Errorf("Remote(%+v) test post hook was called %v times; want 2 times", args, ranPostHookCount)
-	}
-	// Make sure there are no unexpected errors from test functions.
-	if stderr.String() != "" {
-		t.Errorf("Remote(%+v) unexpectedly wrote %q to stderr", args, stderr.String())
-	}
-
-}
-
 // TestBeforeReboot makes sure hook function is called before reboot.
 func TestBeforeReboot(t *gotesting.T) {
 	td := sshtest.NewTestData(nil)

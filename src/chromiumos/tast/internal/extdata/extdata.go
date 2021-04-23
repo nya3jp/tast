@@ -124,6 +124,48 @@ type downloadResult struct {
 	err      error
 }
 
+type Manager struct {
+	all   map[string]struct{} // all external files under dataDir.
+	inuse map[string]int      // used external files under dataDir with count.
+}
+
+func NewManager(ctx context.Context, dataDir string) (*Manager, error) {
+	all := make(map[string]struct{})
+	if err := filepath.Walk(dataDir, func(linkPath string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if !strings.HasSuffix(linkPath, testing.ExternalLinkSuffix) {
+			return nil
+		}
+		destPath := strings.TrimSuffix(linkPath, testing.ExternalLinkSuffix)
+		if _, err := os.Stat(destPath); err != nil {
+			return nil
+		}
+		all[destPath] = struct{}{}
+		return nil
+	}); err != nil && !os.IsNotExist(err) {
+		return nil, err
+	}
+	return &Manager{
+		all:   all,
+		inuse: make(map[string]int),
+	}, nil
+}
+
+func (m *Manager) Purgeable() []string {
+	// TODO: avoind O(n) operation
+	var res []string
+	for p := range m.all {
+		if m.inuse[p] > 0 {
+			continue
+		}
+		res = append(res, p)
+	}
+	sort.Strings(res)
+	return res
+}
+
 // PrepareDownloads computes a list of external data files that need to be
 // downloaded for tests.
 //
@@ -140,28 +182,13 @@ type downloadResult struct {
 // passed to RunDownloads to perform actual downloads. It also returns a list of
 // external data file paths not needed to run the specified tests. They can be
 // deleted if the disk space is low.
-func PrepareDownloads(ctx context.Context, dataDir, artifactsURL string, tests []*testing.TestInstance) (jobs []*DownloadJob, purgeable []string) {
+//
+// release must be called after tests are done.
+func (m *Manager) PrepareDownloads(ctx context.Context, dataDir, artifactsURL string, tests []*testing.TestInstance) (jobs []*DownloadJob, purgeable []string, release func()) {
 	urlToJob := make(map[string]*DownloadJob)
 	hasErr := false
 
-	// Initialize purgeableSet with all external data files under dataDir.
-	purgeableSet := make(map[string]struct{})
-	if err := filepath.Walk(dataDir, func(linkPath string, info os.FileInfo, err error) error {
-		if err != nil {
-			return err
-		}
-		if !strings.HasSuffix(linkPath, testing.ExternalLinkSuffix) {
-			return nil
-		}
-		destPath := strings.TrimSuffix(linkPath, testing.ExternalLinkSuffix)
-		if _, err := os.Stat(destPath); err != nil {
-			return nil
-		}
-		purgeableSet[destPath] = struct{}{}
-		return nil
-	}); err != nil && !os.IsNotExist(err) {
-		testcontext.Log(ctx, "Failed to walk data directory: ", err)
-	}
+	var releaseFunc []func()
 
 	// Process tests.
 	for _, t := range tests {
@@ -190,7 +217,10 @@ func PrepareDownloads(ctx context.Context, dataDir, artifactsURL string, tests [
 			}
 
 			// This file is not purgeable.
-			delete(purgeableSet, destPath)
+			m.inuse[destPath]++
+			releaseFunc = append(releaseFunc, func() {
+				m.inuse[destPath]--
+			})
 
 			link, err := loadLink(linkPath, artifactsURL)
 			if err != nil {
@@ -254,17 +284,15 @@ func PrepareDownloads(ctx context.Context, dataDir, artifactsURL string, tests [
 		return jobs[i].link.ComputedURL < jobs[j].link.ComputedURL
 	})
 
-	purgeable = make([]string, 0, len(purgeableSet))
-	for p := range purgeableSet {
-		purgeable = append(purgeable, p)
-	}
-	sort.Strings(purgeable)
-
 	testcontext.Logf(ctx, "Found %d external linked data file(s), need to download %d", len(urlToJob), len(jobs))
 	if hasErr {
 		testcontext.Log(ctx, "Encountered some errors on scanning external data link files, but continuing anyway; corresponding tests will fail")
 	}
-	return jobs, purgeable
+	return jobs, m.Purgeable(), func() {
+		for _, f := range releaseFunc {
+			f()
+		}
+	}
 }
 
 // loadLink loads a JSON file of LinkData.

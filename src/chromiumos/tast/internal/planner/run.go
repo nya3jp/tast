@@ -576,7 +576,8 @@ func runTest(ctx context.Context, t *testing.TestInstance, tout *entityOutputStr
 	tout.Start(outDir)
 	defer tout.End(nil, timingLog)
 
-	dl.BeforeTest(ctx, t)
+	afterTest := dl.BeforeTest(ctx, t)
+	defer afterTest()
 
 	if err := stack.MarkDirty(); err != nil {
 		return err
@@ -619,6 +620,8 @@ func runTest(ctx context.Context, t *testing.TestInstance, tout *entityOutputStr
 
 // downloader encapsulates the logic to download external data files.
 type downloader struct {
+	m *extdata.Manager
+
 	pcfg           *Config
 	cl             devserver.Client
 	beforeDownload func(context.Context)
@@ -632,7 +635,12 @@ func newDownloader(ctx context.Context, pcfg *Config) (*downloader, error) {
 		return nil, errors.Wrapf(err, "failed to create new client [devservers=%v, TLWServer=%s]",
 			pcfg.Devservers, pcfg.TLWServer)
 	}
+	m, err := extdata.NewManager(ctx, pcfg.DataDir)
+	if err != nil {
+		return nil, err
+	}
 	return &downloader{
+		m:              m,
 		pcfg:           pcfg,
 		cl:             cl,
 		beforeDownload: pcfg.BeforeDownload,
@@ -648,18 +656,20 @@ func (d *downloader) TearDown() error {
 // data files if Config.DownloadMode is DownloadBatch.
 func (d *downloader) BeforeRun(ctx context.Context, tests []*testing.TestInstance) {
 	if d.pcfg.DownloadMode == DownloadBatch {
+		// Ignore release because no data files are to be purged.
 		d.download(ctx, tests)
 	}
 }
 
 // BeforeTest must be called before running each test. It downloads external
 // data files if Config.DownloadMode is DownloadLazy.
-func (d *downloader) BeforeTest(ctx context.Context, test *testing.TestInstance) {
+func (d *downloader) BeforeTest(ctx context.Context, test *testing.TestInstance) (release func()) {
 	if d.pcfg.DownloadMode == DownloadLazy {
 		// TODO(crbug.com/1106218): Make sure this approach is scalable.
 		// Recomputing purgeable on each test costs O(|purgeable| * |tests|) overall.
-		d.download(ctx, []*testing.TestInstance{test})
+		return d.download(ctx, []*testing.TestInstance{test})
 	}
+	return func() {}
 }
 
 // Purgeable returns a list of cached external data files that can be deleted without
@@ -668,8 +678,8 @@ func (d *downloader) Purgeable() []string {
 	return append([]string(nil), d.purgeable...)
 }
 
-func (d *downloader) download(ctx context.Context, tests []*testing.TestInstance) {
-	jobs, purgeable := extdata.PrepareDownloads(ctx, d.pcfg.DataDir, d.pcfg.BuildArtifactsURL, tests)
+func (d *downloader) download(ctx context.Context, tests []*testing.TestInstance) (release func()) {
+	jobs, purgeable, release := d.m.PrepareDownloads(ctx, d.pcfg.DataDir, d.pcfg.BuildArtifactsURL, tests)
 	if len(jobs) > 0 {
 		if d.beforeDownload != nil {
 			d.beforeDownload(ctx)
@@ -677,6 +687,7 @@ func (d *downloader) download(ctx context.Context, tests []*testing.TestInstance
 		extdata.RunDownloads(ctx, d.pcfg.DataDir, jobs, d.cl)
 	}
 	d.purgeable = purgeable
+	return release
 }
 
 func createEntityOutDir(baseDir, name string) (string, error) {

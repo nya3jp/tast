@@ -17,44 +17,6 @@ import (
 	"chromiumos/tast/testutil"
 )
 
-func TestLocalBadTest(t *gotesting.T) {
-	// A test without a function should trigger a registration error.
-	reg := testing.NewRegistry()
-	reg.AddTest(&testing.Test{})
-
-	args := jsonprotocol.BundleArgs{Mode: jsonprotocol.BundleRunTestsMode, RunTests: &jsonprotocol.BundleRunTestsArgs{}}
-	stdin := newBufferWithArgs(t, &args)
-	stderr := bytes.Buffer{}
-	if status := Local(nil, stdin, &bytes.Buffer{}, &stderr, reg, Delegate{}); status != statusBadTests {
-		t.Errorf("Local(%+v) = %v; want %v", args, status, statusBadTests)
-	}
-	if len(stderr.String()) == 0 {
-		t.Errorf("Local(%+v) didn't write error to stderr", args)
-	}
-}
-
-func TestLocalRunTest(t *gotesting.T) {
-	const name = "pkg.Test"
-	ran := false
-	reg := testing.NewRegistry()
-	reg.AddTestInstance(&testing.TestInstance{Name: name, Func: func(context.Context, *testing.State) { ran = true }})
-
-	outDir := testutil.TempDir(t)
-	defer os.RemoveAll(outDir)
-	args := jsonprotocol.BundleArgs{Mode: jsonprotocol.BundleRunTestsMode, RunTests: &jsonprotocol.BundleRunTestsArgs{OutDir: outDir}}
-	stdin := newBufferWithArgs(t, &args)
-	stderr := bytes.Buffer{}
-	if status := Local(nil, stdin, &bytes.Buffer{}, &stderr, reg, Delegate{}); status != statusSuccess {
-		t.Errorf("Local(%+v) = %v; want %v", args, status, statusSuccess)
-	}
-	if !ran {
-		t.Errorf("Local(%+v) didn't run test %q", args, name)
-	}
-	if len(stderr.String()) != 0 {
-		t.Errorf("Local(%+v) unexpectedly wrote %q to stderr", args, stderr.String())
-	}
-}
-
 func TestLocalReadyFunc(t *gotesting.T) {
 	reg := testing.NewRegistry()
 	reg.AddTestInstance(&testing.TestInstance{Name: "pkg.Test", Func: func(context.Context, *testing.State) {}})

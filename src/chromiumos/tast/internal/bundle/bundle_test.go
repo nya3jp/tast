@@ -7,15 +7,12 @@ package bundle
 import (
 	"bytes"
 	"context"
-	"crypto/sha256"
-	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"reflect"
-	"strings"
 	gotesting "testing"
 	"time"
 
@@ -23,8 +20,6 @@ import (
 
 	"chromiumos/tast/dut"
 	"chromiumos/tast/internal/control"
-	"chromiumos/tast/internal/devserver/devservertest"
-	"chromiumos/tast/internal/extdata"
 	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/sshtest"
@@ -200,87 +195,6 @@ func TestRunTests(t *gotesting.T) {
 	}
 	if r.More() {
 		t.Errorf("%v wrote extra message(s)", sig)
-	}
-}
-
-func TestRunTestsTimeout(t *gotesting.T) {
-	reg := testing.NewRegistry()
-
-	// The first test blocks indefinitely on a channel.
-	const name1 = "foo.Test1"
-	ch := make(chan bool, 1)
-	defer func() { ch <- true }()
-	reg.AddTestInstance(&testing.TestInstance{
-		Name:        name1,
-		Func:        func(context.Context, *testing.State) { <-ch },
-		Timeout:     time.Millisecond,
-		ExitTimeout: time.Millisecond, // avoid blocking after timeout
-	})
-
-	// The second test passes.
-	const name2 = "foo.Test2"
-	reg.AddTestInstance(&testing.TestInstance{
-		Name:    name2,
-		Func:    func(context.Context, *testing.State) {},
-		Timeout: time.Minute,
-	})
-
-	stdout := bytes.Buffer{}
-	tmpDir := testutil.TempDir(t)
-	defer os.RemoveAll(tmpDir)
-	cfg := &protocol.RunConfig{
-		Tests: []string{name1, name2},
-		Dirs: &protocol.RunDirectories{
-			OutDir:  tmpDir,
-			DataDir: tmpDir,
-		},
-	}
-
-	// The first test should time out after 1 millisecond.
-	// The second test is not run.
-	if err := runTests(context.Background(), &stdout, cfg, NewStaticConfig(reg, 0, Delegate{})); err == nil {
-		t.Fatalf("runTests(..., %+v, ...) succeeded unexpectedly", *cfg)
-	}
-
-	// EntityStart, EntityError and EntityEnd should be observed exactly once for the first test.
-	seenStart := 0
-	seenError := 0
-	seenEnd := 0
-	foundMe := false
-	r := control.NewMessageReader(&stdout)
-	for r.More() {
-		if msg, err := r.ReadMessage(); err != nil {
-			t.Error("ReadMessage failed: ", err)
-		} else if ts, ok := msg.(*control.EntityStart); ok {
-			if ts.Info.Name != name1 {
-				t.Errorf("EntityStart.Test.Name = %q; want %q", ts.Info.Name, name1)
-			}
-			seenStart++
-		} else if tl, ok := msg.(*control.EntityLog); ok {
-			// The log should contain stack traces, including this test function.
-			if strings.Contains(tl.Text, "TestRunTestsTimeout") {
-				foundMe = true
-			}
-		} else if _, ok := msg.(*control.EntityError); ok {
-			seenError++
-		} else if te, ok := msg.(*control.EntityEnd); ok {
-			if te.Name != name1 {
-				t.Errorf("EntityEnd.Name = %q; want %q", te.Name, name1)
-			}
-			seenEnd++
-		}
-	}
-	if seenStart != 1 {
-		t.Errorf("Got EntityStart %d time(s); want 1 time", seenStart)
-	}
-	if seenError != 1 {
-		t.Errorf("Got EntityError %d time(s); want 1 time", seenError)
-	}
-	if seenEnd != 1 {
-		t.Errorf("Got EntityEnd %d time(s); want 1 time", seenEnd)
-	}
-	if !foundMe {
-		t.Error("Stack trace not found")
 	}
 }
 
@@ -657,106 +571,6 @@ func TestRunCloudStorage(t *gotesting.T) {
 	stdin := newBufferWithArgs(t, &args)
 	if status := run(context.Background(), nil, stdin, &bytes.Buffer{}, &bytes.Buffer{}, NewStaticConfig(reg, time.Minute, Delegate{})); status != statusSuccess {
 		t.Fatalf("run() returned status %v; want %v", status, statusSuccess)
-	}
-}
-
-func TestRunExternalDataFiles(t *gotesting.T) {
-	const (
-		file1URL  = "gs://bucket/file1.txt"
-		file1Path = "pkg/data/file1.txt"
-		file1Data = "data1"
-		file2URL  = "gs://bucket/file2.txt"
-		file2Path = "pkg/data/file2.txt"
-		file2Data = "data2"
-	)
-
-	td := sshtest.NewTestData(nil)
-	defer td.Close()
-
-	ds, err := devservertest.NewServer(devservertest.Files([]*devservertest.File{
-		{URL: file1URL, Data: []byte(file1Data)},
-		{URL: file2URL, Data: []byte(file2Data)},
-	}))
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer ds.Close()
-
-	reg := testing.NewRegistry()
-
-	reg.AddTestInstance(&testing.TestInstance{
-		Name:         "example.Test1",
-		Pkg:          "pkg",
-		Func:         func(ctx context.Context, s *testing.State) {},
-		Data:         []string{"file1.txt"},
-		SoftwareDeps: []string{"dep1"},
-	})
-	reg.AddTestInstance(&testing.TestInstance{
-		Name:         "example.Test2",
-		Pkg:          "pkg",
-		Func:         func(ctx context.Context, s *testing.State) {},
-		Data:         []string{"file2.txt"},
-		SoftwareDeps: []string{"dep2"},
-	})
-
-	tmpDir := testutil.TempDir(t)
-	defer os.RemoveAll(tmpDir)
-
-	buildLink := func(url, data string) string {
-		hash := sha256.Sum256([]byte(data))
-		ld := &extdata.LinkData{
-			Type:      extdata.TypeStatic,
-			StaticURL: url,
-			Size:      int64(len(data)),
-			SHA256Sum: hex.EncodeToString(hash[:]),
-		}
-		b, err := json.Marshal(ld)
-		if err != nil {
-			t.Fatal(err)
-		}
-		return string(b)
-	}
-
-	dataDir := filepath.Join(tmpDir, "data")
-	if err := testutil.WriteFiles(dataDir, map[string]string{
-		file1Path + testing.ExternalLinkSuffix: buildLink(file1URL, file1Data),
-		file2Path + testing.ExternalLinkSuffix: buildLink(file2URL, file2Data),
-	}); err != nil {
-		t.Fatal("WriteFiles: ", err)
-	}
-
-	args := jsonprotocol.BundleArgs{
-		Mode: jsonprotocol.BundleRunTestsMode,
-		RunTests: &jsonprotocol.BundleRunTestsArgs{
-			OutDir:  filepath.Join(tmpDir, "out"),
-			DataDir: dataDir,
-			Target:  td.Srvs[0].Addr().String(),
-			KeyFile: td.UserKeyFile,
-			FeatureArgs: jsonprotocol.FeatureArgs{
-				CheckDeps:                   true,
-				AvailableSoftwareFeatures:   []string{"dep1"},
-				UnavailableSoftwareFeatures: []string{"dep2"},
-			},
-			Devservers: []string{ds.URL},
-		},
-	}
-	stdin := newBufferWithArgs(t, &args)
-	if status := run(context.Background(), nil, stdin, ioutil.Discard, ioutil.Discard, NewStaticConfig(reg, time.Minute, Delegate{})); status != statusSuccess {
-		t.Fatalf("run() returned status %v; want %v", status, statusSuccess)
-	}
-
-	// file1.txt is downloaded, but file2.txt is not due to missing software dependencies.
-	files, err := testutil.ReadFiles(dataDir)
-	if err != nil {
-		t.Fatal("ReadFiles: ", err)
-	}
-	exp := map[string]string{
-		file1Path:                              file1Data,
-		file1Path + testing.ExternalLinkSuffix: buildLink(file1URL, file1Data),
-		file2Path + testing.ExternalLinkSuffix: buildLink(file2URL, file2Data),
-	}
-	if diff := cmp.Diff(files, exp); diff != "" {
-		t.Error("Unexpected data files after run (-got +want):\n", diff)
 	}
 }
 

@@ -222,12 +222,17 @@ func (p *plan) run(ctx context.Context, out OutputStream) error {
 	return nil
 }
 
-func (p *plan) testsToRun() []*testing.TestInstance {
-	tests := p.fixtPlan.testsToRun()
-	for _, pp := range p.prePlans {
-		tests = append(tests, pp.testsToRun()...)
+func (p *plan) testsToRun() []*protocol.Entity {
+	var res []*protocol.Entity
+	for _, t := range p.fixtPlan.testsToRun() {
+		res = append(res, t.EntityProto())
 	}
-	return tests
+	for _, pp := range p.prePlans {
+		for _, t := range pp.testsToRun() {
+			res = append(res, t.EntityProto())
+		}
+	}
+	return res
 }
 
 // fixtTree represents a fixture tree.
@@ -576,7 +581,7 @@ func runTest(ctx context.Context, t *testing.TestInstance, tout *entityOutputStr
 	tout.Start(outDir)
 	defer tout.End(nil, timingLog)
 
-	dl.BeforeTest(ctx, t)
+	dl.BeforeTest(ctx, t.EntityProto())
 
 	if err := stack.MarkDirty(); err != nil {
 		return err
@@ -646,19 +651,19 @@ func (d *downloader) TearDown() error {
 
 // BeforeRun must be called before running a set of tests. It downloads external
 // data files if Config.DownloadMode is DownloadBatch.
-func (d *downloader) BeforeRun(ctx context.Context, tests []*testing.TestInstance) {
+func (d *downloader) BeforeRun(ctx context.Context, tests []*protocol.Entity) {
 	if d.pcfg.DownloadMode == DownloadBatch {
 		d.download(ctx, tests)
 	}
 }
 
-// BeforeTest must be called before running each test. It downloads external
+// BeforeEntity must be called before running each entity. It downloads external
 // data files if Config.DownloadMode is DownloadLazy.
-func (d *downloader) BeforeTest(ctx context.Context, test *testing.TestInstance) {
+func (d *downloader) BeforeTest(ctx context.Context, test *protocol.Entity) {
 	if d.pcfg.DownloadMode == DownloadLazy {
 		// TODO(crbug.com/1106218): Make sure this approach is scalable.
 		// Recomputing purgeable on each test costs O(|purgeable| * |tests|) overall.
-		d.download(ctx, []*testing.TestInstance{test})
+		d.download(ctx, []*protocol.Entity{test})
 	}
 }
 
@@ -668,8 +673,8 @@ func (d *downloader) Purgeable() []string {
 	return append([]string(nil), d.purgeable...)
 }
 
-func (d *downloader) download(ctx context.Context, tests []*testing.TestInstance) {
-	jobs, purgeable := extdata.PrepareDownloads(ctx, d.pcfg.DataDir, d.pcfg.BuildArtifactsURL, tests)
+func (d *downloader) download(ctx context.Context, entities []*protocol.Entity) {
+	jobs, purgeable := extdata.PrepareDownloads(ctx, d.pcfg.DataDir, d.pcfg.BuildArtifactsURL, entities)
 	if len(jobs) > 0 {
 		if d.beforeDownload != nil {
 			d.beforeDownload(ctx)

@@ -416,6 +416,9 @@ func runFixtTree(ctx context.Context, tree *fixtTree, stack *FixtureStack, pcfg 
 			ctx, cancel := context.WithCancel(ctx)
 			defer cancel()
 
+			release := dl.BeforeEntity(ctx, tree.fixt.EntityProto())
+			defer release()
+
 			// Push a fixture to the stack. This will call SetUp if the fixture stack is green.
 			if err := stack.Push(ctx, tree.fixt); err != nil {
 				return err

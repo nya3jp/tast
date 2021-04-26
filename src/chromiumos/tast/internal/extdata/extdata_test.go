@@ -16,6 +16,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 
 	"chromiumos/tast/internal/devserver"
+	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/testutil"
 )
@@ -47,9 +48,9 @@ func TestPrepareDownloadsStatic(t *gotesting.T) {
 		t.Fatal(err)
 	}
 
-	tests := []*testing.TestInstance{
-		{Pkg: pkg, Data: []string{extFile1}},
-		{Pkg: pkg, Data: []string{intFile, extFile2}},
+	tests := []*protocol.Entity{
+		{Package: pkg, Dependencies: &protocol.EntityDependencies{DataFiles: []string{extFile1}}},
+		{Package: pkg, Dependencies: &protocol.EntityDependencies{DataFiles: []string{intFile, extFile2}}},
 	}
 	ctx := context.Background()
 	m, err := NewManager(ctx, dataDir, fakeArtifactURL, nil)
@@ -98,9 +99,9 @@ func TestPrepareDownloadsArtifact(t *gotesting.T) {
 		t.Fatal(err)
 	}
 
-	tests := []*testing.TestInstance{
-		{Pkg: pkg, Data: []string{extFile1}},
-		{Pkg: pkg, Data: []string{intFile, extFile2}},
+	tests := []*protocol.Entity{
+		{Package: pkg, Dependencies: &protocol.EntityDependencies{DataFiles: []string{extFile1}}},
+		{Package: pkg, Dependencies: &protocol.EntityDependencies{DataFiles: []string{intFile, extFile2}}},
 	}
 	ctx := context.Background()
 	m, err := NewManager(ctx, dataDir, fakeArtifactURL, nil)
@@ -149,9 +150,9 @@ func TestPrepareDownloadsDupLinks(t *gotesting.T) {
 		t.Fatal(err)
 	}
 
-	tests := []*testing.TestInstance{
-		{Pkg: pkg, Data: []string{extFile1, extFile2}},
-		{Pkg: pkg, Data: []string{extFile2, extFile3}},
+	tests := []*protocol.Entity{
+		{Package: pkg, Dependencies: &protocol.EntityDependencies{DataFiles: []string{extFile1, extFile2}}},
+		{Package: pkg, Dependencies: &protocol.EntityDependencies{DataFiles: []string{extFile2, extFile3}}},
 	}
 
 	ctx := context.Background()
@@ -199,8 +200,8 @@ func TestPrepareDownloadsInconsistentDupLinks(t *gotesting.T) {
 		t.Fatal(err)
 	}
 
-	tests := []*testing.TestInstance{
-		{Pkg: pkg, Data: []string{extFile1, extFile2}},
+	tests := []*protocol.Entity{
+		{Package: pkg, Dependencies: &protocol.EntityDependencies{DataFiles: []string{extFile1, extFile2}}},
 	}
 	ctx := context.Background()
 	m, err := NewManager(ctx, dataDir, fakeArtifactURL, nil)
@@ -250,8 +251,8 @@ func TestPrepareDownloadsStale(t *gotesting.T) {
 		t.Fatal(err)
 	}
 
-	tests := []*testing.TestInstance{
-		{Pkg: pkg, Data: []string{extFile1, extFile2}},
+	tests := []*protocol.Entity{
+		{Package: pkg, Dependencies: &protocol.EntityDependencies{DataFiles: []string{extFile1, extFile2}}},
 	}
 	ctx := context.Background()
 	m, err := NewManager(ctx, dataDir, fakeArtifactURL, nil)
@@ -306,8 +307,8 @@ func TestPrepareDownloadsUpToDate(t *gotesting.T) {
 		t.Fatal(err)
 	}
 
-	tests := []*testing.TestInstance{
-		{Pkg: pkg, Data: []string{extFile1, extFile2}},
+	tests := []*protocol.Entity{
+		{Package: pkg, Dependencies: &protocol.EntityDependencies{DataFiles: []string{extFile1, extFile2}}},
 	}
 	ctx := context.Background()
 	m, err := NewManager(ctx, dataDir, fakeArtifactURL, nil)
@@ -348,8 +349,8 @@ func TestPrepareDownloadsBrokenLink(t *gotesting.T) {
 		t.Fatal(err)
 	}
 
-	tests := []*testing.TestInstance{
-		{Pkg: pkg, Data: []string{extFile1, extFile2}},
+	tests := []*protocol.Entity{
+		{Package: pkg, Dependencies: &protocol.EntityDependencies{DataFiles: []string{extFile1, extFile2}}},
 	}
 	ctx := context.Background()
 	m, err := NewManager(ctx, dataDir, fakeArtifactURL, nil)
@@ -390,8 +391,8 @@ func TestPrepareDownloadsArtifactUnavailable(t *gotesting.T) {
 		t.Fatal(err)
 	}
 
-	tests := []*testing.TestInstance{
-		{Pkg: pkg, Data: []string{extFile1}},
+	tests := []*protocol.Entity{
+		{Package: pkg, Dependencies: &protocol.EntityDependencies{DataFiles: []string{extFile1}}},
 	}
 	ctx := context.Background()
 	m, err := NewManager(ctx, dataDir, "", nil)
@@ -431,8 +432,8 @@ func TestPrepareDownloadsError(t *gotesting.T) {
 		t.Fatal(err)
 	}
 
-	tests := []*testing.TestInstance{
-		{Pkg: pkg, Data: []string{extFile1, extFile2}},
+	tests := []*protocol.Entity{
+		{Package: pkg, Dependencies: &protocol.EntityDependencies{DataFiles: []string{extFile1, extFile2}}},
 	}
 	ctx := context.Background()
 	m, err := NewManager(ctx, dataDir, fakeArtifactURL, nil)
@@ -486,9 +487,9 @@ func TestPrepareDownloadsPurgeable(t *gotesting.T) {
 		t.Fatal(err)
 	}
 
-	tests := []*testing.TestInstance{{
-		Pkg: pkg,
-		Data: []string{
+	tests := []*protocol.Entity{{
+		Package: pkg,
+		Dependencies: &protocol.EntityDependencies{DataFiles: []string{
 			"int_file1.txt",
 			// int_file2.txt is not used.
 			"ext_file1.txt",
@@ -497,7 +498,7 @@ func TestPrepareDownloadsPurgeable(t *gotesting.T) {
 			"ext_file4.txt",
 			// ext_file5.txt is not used.
 			"ext_file6.txt",
-		},
+		}},
 	}}
 
 	ctx := context.Background()

@@ -22,6 +22,7 @@ import (
 	"time"
 
 	"chromiumos/tast/internal/devserver"
+	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/testing"
 )
@@ -125,7 +126,7 @@ type downloadResult struct {
 }
 
 // PrepareDownloads computes a list of external data files that need to be
-// downloaded for tests.
+// downloaded for entities.
 //
 // dataDir is the path to the base directory containing external data link files
 // (typically "/usr/local/share/tast/data" on DUT). artifactURL is the URL of
@@ -138,9 +139,9 @@ type downloadResult struct {
 //
 // PrepareDownloads returns a list of download job specifications that can be
 // passed to RunDownloads to perform actual downloads. It also returns a list of
-// external data file paths not needed to run the specified tests. They can be
+// external data file paths not needed to run the specified entities. They can be
 // deleted if the disk space is low.
-func PrepareDownloads(ctx context.Context, dataDir, artifactsURL string, tests []*testing.TestInstance) (jobs []*DownloadJob, purgeable []string) {
+func PrepareDownloads(ctx context.Context, dataDir, artifactsURL string, entities []*protocol.Entity) (jobs []*DownloadJob, purgeable []string) {
 	urlToJob := make(map[string]*DownloadJob)
 	hasErr := false
 
@@ -164,9 +165,9 @@ func PrepareDownloads(ctx context.Context, dataDir, artifactsURL string, tests [
 	}
 
 	// Process tests.
-	for _, t := range tests {
-		for _, name := range t.Data {
-			destPath := filepath.Join(dataDir, testing.RelativeDataDir(t.Pkg), name)
+	for _, t := range entities {
+		for _, name := range t.GetDependencies().GetDataFiles() {
+			destPath := filepath.Join(dataDir, testing.RelativeDataDir(t.Package), name)
 			linkPath := destPath + testing.ExternalLinkSuffix
 			errorPath := destPath + testing.ExternalErrorSuffix
 
@@ -225,7 +226,7 @@ func PrepareDownloads(ctx context.Context, dataDir, artifactsURL string, tests [
 				job = &DownloadJob{link, nil}
 				urlToJob[link.ComputedURL] = job
 			} else if !reflect.DeepEqual(job.link, link) {
-				reportErr("conflicting external data link found at %s: got %+v, want %+v", filepath.Join(testing.RelativeDataDir(t.Pkg), name), link, job.link)
+				reportErr("conflicting external data link found at %s: got %+v, want %+v", filepath.Join(testing.RelativeDataDir(t.Package), name), link, job.link)
 				continue
 			}
 

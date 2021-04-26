@@ -111,6 +111,30 @@
       },
       "revId": "bd66bc911af4ec3e4686e3d0ce15e8a7346cb554",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "59803efb_d6b0ba1e",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-04-26T01:57:22Z",
+      "side": 1,
+      "message": "I could not understand. I feel like we need a short doc to discuss how tags and hardware deps interact. Let us discuss this topic separately.\n\nMeanwhile, could you decide if it is okay to introduce a generic \"Invert\" operator for hardware dependencies? I can\u0027t decide it due to lack of understanding of tags.",
+      "parentUuid": "08f94922_ed004207",
+      "range": {
+        "startLine": 33,
+        "startChar": 5,
+        "endLine": 33,
+        "endChar": 11
+      },
+      "revId": "bd66bc911af4ec3e4686e3d0ce15e8a7346cb554",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

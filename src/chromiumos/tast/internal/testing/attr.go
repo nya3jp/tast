@@ -297,6 +297,11 @@ Tests in this group are not used for build verification.`,
 		Desc:     `A group of tests that must pass reliably prior to lab deployments.`,
 	},
 	{
+		Name:     "omaha",
+		Contacts: []string{"vsavu@google.com", "chromeos-commercial-remote-management@google.com"},
+		Desc:     `A group of tests verifying the current state of Omaha.`,
+	},
+	{
 		Name:     "rapid-ime-decoder",
 		Contacts: []string{"essential-inputs-team@google.com"},
 		Desc:     `A group of tests to validate libIMEdecoder.so releases.`,

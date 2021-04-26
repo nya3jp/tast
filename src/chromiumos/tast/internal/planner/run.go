@@ -224,8 +224,8 @@ func (p *plan) run(ctx context.Context, out OutputStream) error {
 
 func (p *plan) testsToRun() []*protocol.Entity {
 	var res []*protocol.Entity
-	for _, t := range p.fixtPlan.testsToRun() {
-		res = append(res, t.EntityProto())
+	for _, e := range p.fixtPlan.entitiesToRun() {
+		res = append(res, e)
 	}
 	for _, pp := range p.prePlans {
 		for _, t := range pp.testsToRun() {
@@ -383,23 +383,26 @@ func (p *fixtPlan) run(ctx context.Context, out OutputStream, dl *downloader) er
 	return runFixtTree(ctx, tree, stack, p.pcfg, out, dl)
 }
 
-func (p *fixtPlan) testsToRun() []*testing.TestInstance {
-	var tests []*testing.TestInstance
+func (p *fixtPlan) entitiesToRun() []*protocol.Entity {
+	var res []*protocol.Entity
 
 	for _, o := range p.orphans {
-		tests = append(tests, o.test)
+		res = append(res, o.test.EntityProto())
 	}
 
 	var traverse func(tree *fixtTree)
 	traverse = func(tree *fixtTree) {
-		tests = append(tests, tree.tests...)
+		res = append(res, tree.fixt.EntityProto())
+		for _, t := range tree.tests {
+			res = append(res, t.EntityProto())
+		}
 		for _, subtree := range tree.children {
 			traverse(subtree)
 		}
 	}
 	traverse(p.tree)
 
-	return tests
+	return res
 }
 
 // runFixtTree runs tests in a fixture tree.

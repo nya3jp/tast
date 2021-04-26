@@ -222,12 +222,17 @@ func (p *plan) run(ctx context.Context, out OutputStream) error {
 	return nil
 }
 
-func (p *plan) testsToRun() []*testing.TestInstance {
-	tests := p.fixtPlan.testsToRun()
-	for _, pp := range p.prePlans {
-		tests = append(tests, pp.testsToRun()...)
+func (p *plan) testsToRun() []*protocol.Entity {
+	var res []*protocol.Entity
+	for _, t := range p.fixtPlan.testsToRun() {
+		res = append(res, t.EntityProto())
 	}
-	return tests
+	for _, pp := range p.prePlans {
+		for _, t := range pp.testsToRun() {
+			res = append(res, t.EntityProto())
+		}
+	}
+	return res
 }
 
 // fixtTree represents a fixture tree.
@@ -576,7 +581,7 @@ func runTest(ctx context.Context, t *testing.TestInstance, tout *entityOutputStr
 	tout.Start(outDir)
 	defer tout.End(nil, timingLog)
 
-	release := dl.BeforeTest(ctx, t)
+	release := dl.BeforeEntity(ctx, t.EntityProto())
 	defer release()
 
 	if err := stack.MarkDirty(); err != nil {
@@ -651,27 +656,27 @@ func (d *downloader) TearDown() error {
 
 // BeforeRun must be called before running a set of tests. It downloads external
 // data files if Config.DownloadMode is DownloadBatch.
-func (d *downloader) BeforeRun(ctx context.Context, tests []*testing.TestInstance) {
+func (d *downloader) BeforeRun(ctx context.Context, entities []*protocol.Entity) {
 	if d.downloadMode == DownloadBatch {
 		// Ignore release because no data files tests use should be purged
 		// on DownloadBatch mode.
-		d.download(ctx, tests)
+		d.download(ctx, entities)
 	}
 }
 
-// BeforeTest must be called before running each test. It downloads external
+// BeforeEntity must be called before running each entity. It downloads external
 // data files if Config.DownloadMode is DownloadLazy.
-func (d *downloader) BeforeTest(ctx context.Context, test *testing.TestInstance) (release func()) {
+func (d *downloader) BeforeEntity(ctx context.Context, entity *protocol.Entity) (release func()) {
 	if d.downloadMode == DownloadLazy {
 		// TODO(crbug.com/1106218): Make sure this approach is scalable.
 		// Recomputing purgeable on each test costs O(|purgeable| * |tests|) overall.
-		return d.download(ctx, []*testing.TestInstance{test})
+		return d.download(ctx, []*protocol.Entity{entity})
 	}
 	return func() {}
 }
 
-func (d *downloader) download(ctx context.Context, tests []*testing.TestInstance) (release func()) {
-	release = d.m.SetUp(ctx, d.cl, tests)
+func (d *downloader) download(ctx context.Context, entities []*protocol.Entity) (release func()) {
+	release = d.m.SetUp(ctx, d.cl, entities)
 	d.purgeable = d.m.Purgeable(ctx)
 	return release
 }

@@ -22,6 +22,7 @@ import (
 	"time"
 
 	"chromiumos/tast/internal/devserver"
+	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/testing"
 )
@@ -201,8 +202,8 @@ func preDownload(jobs []*downloadJob, purgeable []string) *BeforeDownloadState {
 
 // SetUp downloads external data tests depend on marking those files not
 // purgebale. release must be called after the test finishes.
-func (m *Manager) SetUp(ctx context.Context, cl devserver.Client, tests []*testing.TestInstance) (release func()) {
-	jobs, release := m.prepareDownloads(ctx, tests)
+func (m *Manager) SetUp(ctx context.Context, cl devserver.Client, entities []*protocol.Entity) (release func()) {
+	jobs, release := m.prepareDownloads(ctx, entities)
 	if len(jobs) > 0 {
 		if m.beforeDownload != nil {
 			m.beforeDownload(ctx, preDownload(jobs, m.Purgeable(ctx)))
@@ -230,7 +231,7 @@ func (m *Manager) SetUp(ctx context.Context, cl devserver.Client, tests []*testi
 // deleted if the disk space is low.
 //
 // release must be called after tests are done.
-func (m *Manager) prepareDownloads(ctx context.Context, tests []*testing.TestInstance) (jobs []*downloadJob, release func()) {
+func (m *Manager) prepareDownloads(ctx context.Context, tests []*protocol.Entity) (jobs []*downloadJob, release func()) {
 	urlToJob := make(map[string]*downloadJob)
 	hasErr := false
 
@@ -238,8 +239,8 @@ func (m *Manager) prepareDownloads(ctx context.Context, tests []*testing.TestIns
 
 	// Process tests.
 	for _, t := range tests {
-		for _, name := range t.Data {
-			destPath := filepath.Join(m.dataDir, testing.RelativeDataDir(t.Pkg), name)
+		for _, name := range t.GetDependencies().GetDataFiles() {
+			destPath := filepath.Join(m.dataDir, testing.RelativeDataDir(t.Package), name)
 			linkPath := destPath + testing.ExternalLinkSuffix
 			errorPath := destPath + testing.ExternalErrorSuffix
 
@@ -301,7 +302,7 @@ func (m *Manager) prepareDownloads(ctx context.Context, tests []*testing.TestIns
 				job = &downloadJob{link, nil}
 				urlToJob[link.ComputedURL] = job
 			} else if !reflect.DeepEqual(job.link, link) {
-				reportErr("conflicting external data link found at %s: got %+v, want %+v", filepath.Join(testing.RelativeDataDir(t.Pkg), name), link, job.link)
+				reportErr("conflicting external data link found at %s: got %+v, want %+v", filepath.Join(testing.RelativeDataDir(t.Package), name), link, job.link)
 				continue
 			}
 

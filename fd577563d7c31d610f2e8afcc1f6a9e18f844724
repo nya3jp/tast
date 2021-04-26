@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c39e9759_3994f30c",
+        "filename": "src/chromiumos/tast/internal/protocol/protocoltest/protocoltest.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2021-04-26T01:39:15Z",
+      "side": 1,
+      "message": "Could you mention in which CL this package is used?",
+      "range": {
+        "startLine": 7,
+        "startChar": 0,
+        "endLine": 7,
+        "endChar": 7
+      },
+      "revId": "fd577563d7c31d610f2e8afcc1f6a9e18f844724",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

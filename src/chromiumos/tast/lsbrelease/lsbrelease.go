@@ -47,6 +47,9 @@ const (
 	// ReleaseAppID is a key for the release Omaha app ID.
 	ReleaseAppID = "CHROMEOS_RELEASE_APPID"
 
+	// BoardAppID is a key for the board Omaha app ID.
+	BoardAppID = "CHROMEOS_BOARD_APPID"
+
 	// BuildType is a key for Chrome Release Build Type (e.g "Test Build - username")
 	BuildType = "CHROMEOS_RELEASE_BUILD_TYPE"
 
@@ -72,8 +75,9 @@ var allowedPkgs = []string{
 	"chromiumos/tast/local/rialto",
 	"chromiumos/tast/local/screenshot", // For Board.
 	"chromiumos/tast/lsbrelease",
-	"chromiumos/tast/remote/bundles/cros/firmware", // For finding firmware file.
-	"chromiumos/tast/remote/firmware/reporters",    // For Board.
+	"chromiumos/tast/remote/bundles/cros/firmware",      // For finding firmware file.
+	"chromiumos/tast/remote/bundles/cros/omaha/request", // To replicate update_engine behavior.
+	"chromiumos/tast/remote/firmware/reporters",         // For Board.
 	"main", // for local_test_runner
 }
 

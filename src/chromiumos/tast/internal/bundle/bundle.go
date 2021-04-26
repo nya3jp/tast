@@ -14,6 +14,7 @@ import (
 
 	"chromiumos/tast/dut"
 	"chromiumos/tast/internal/command"
+	"chromiumos/tast/internal/extdata"
 	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/testing"
@@ -62,7 +63,7 @@ type Delegate struct {
 	// Since no specific timeout is set to ctx, do remember to set a
 	// reasonable timeout at the beginning of the hook to avoid blocking
 	// for long time.
-	BeforeDownload func(ctx context.Context)
+	BeforeDownload extdata.BeforeDownload
 }
 
 // run reads a JSON-marshaled BundleArgs struct from stdin and performs the requested action.
@@ -162,7 +163,7 @@ type StaticConfig struct {
 	// The function must not call DUT.Reboot() or it will cause infinite recursion.
 	beforeReboot func(context.Context, *dut.DUT) error
 	// beforeDownload is run before downloading external data files if non-nil.
-	beforeDownload func(context.Context)
+	beforeDownload extdata.BeforeDownload
 	// defaultTestTimeout contains the default maximum time allotted to each test.
 	// It is only used if testing.Test.Timeout is unset.
 	defaultTestTimeout time.Duration

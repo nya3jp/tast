@@ -52,13 +52,13 @@ func TestPrepareDownloadsStatic(t *gotesting.T) {
 		{Pkg: pkg, Data: []string{intFile, extFile2}},
 	}
 	ctx := context.Background()
-	m, err := NewManager(ctx, dataDir)
+	m, err := NewManager(ctx, dataDir, fakeArtifactURL, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
-	jobs, _ := m.PrepareDownloads(ctx, dataDir, fakeArtifactURL, tests)
+	jobs, _ := m.prepareDownloads(ctx, tests)
 
-	exp := []*DownloadJob{
+	exp := []*downloadJob{
 		{
 			link:  &link{Data: LinkData{StaticURL: "url1", Size: 111, SHA256Sum: "aaaa", Executable: false}, ComputedURL: "url1"},
 			dests: []string{filepath.Join(dataSubdir, extFile1)},
@@ -103,13 +103,13 @@ func TestPrepareDownloadsArtifact(t *gotesting.T) {
 		{Pkg: pkg, Data: []string{intFile, extFile2}},
 	}
 	ctx := context.Background()
-	m, err := NewManager(ctx, dataDir)
+	m, err := NewManager(ctx, dataDir, fakeArtifactURL, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
-	jobs, _ := m.PrepareDownloads(ctx, dataDir, fakeArtifactURL, tests)
+	jobs, _ := m.prepareDownloads(ctx, tests)
 
-	exp := []*DownloadJob{
+	exp := []*downloadJob{
 		{
 			link:  &link{Data: LinkData{Type: TypeArtifact, Name: "some_artifact1"}, ComputedURL: fakeArtifactURL + "some_artifact1"},
 			dests: []string{filepath.Join(dataSubdir, extFile1)},
@@ -155,13 +155,13 @@ func TestPrepareDownloadsDupLinks(t *gotesting.T) {
 	}
 
 	ctx := context.Background()
-	m, err := NewManager(ctx, dataDir)
+	m, err := NewManager(ctx, dataDir, fakeArtifactURL, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
-	jobs, _ := m.PrepareDownloads(ctx, dataDir, fakeArtifactURL, tests)
+	jobs, _ := m.prepareDownloads(ctx, tests)
 
-	exp := []*DownloadJob{
+	exp := []*downloadJob{
 		{
 			link: &link{Data: LinkData{StaticURL: "url1", Size: 111, SHA256Sum: "aaaa", Executable: false}, ComputedURL: "url1"},
 			dests: []string{
@@ -203,13 +203,13 @@ func TestPrepareDownloadsInconsistentDupLinks(t *gotesting.T) {
 		{Pkg: pkg, Data: []string{extFile1, extFile2}},
 	}
 	ctx := context.Background()
-	m, err := NewManager(ctx, dataDir)
+	m, err := NewManager(ctx, dataDir, fakeArtifactURL, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
-	jobs, _ := m.PrepareDownloads(ctx, dataDir, fakeArtifactURL, tests)
+	jobs, _ := m.prepareDownloads(ctx, tests)
 
-	exp := []*DownloadJob{
+	exp := []*downloadJob{
 		{
 			link: &link{Data: LinkData{StaticURL: "same_url", Size: 111, SHA256Sum: "aaaa", Executable: false}, ComputedURL: "same_url"},
 			dests: []string{
@@ -254,13 +254,13 @@ func TestPrepareDownloadsStale(t *gotesting.T) {
 		{Pkg: pkg, Data: []string{extFile1, extFile2}},
 	}
 	ctx := context.Background()
-	m, err := NewManager(ctx, dataDir)
+	m, err := NewManager(ctx, dataDir, fakeArtifactURL, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
-	jobs, _ := m.PrepareDownloads(ctx, dataDir, fakeArtifactURL, tests)
+	jobs, _ := m.prepareDownloads(ctx, tests)
 
-	exp := []*DownloadJob{
+	exp := []*downloadJob{
 		{
 			link: &link{Data: LinkData{StaticURL: "url1", Size: 9, SHA256Sum: "2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae"}, ComputedURL: "url1"},
 			dests: []string{
@@ -310,11 +310,11 @@ func TestPrepareDownloadsUpToDate(t *gotesting.T) {
 		{Pkg: pkg, Data: []string{extFile1, extFile2}},
 	}
 	ctx := context.Background()
-	m, err := NewManager(ctx, dataDir)
+	m, err := NewManager(ctx, dataDir, fakeArtifactURL, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
-	jobs, _ := m.PrepareDownloads(ctx, dataDir, fakeArtifactURL, tests)
+	jobs, _ := m.prepareDownloads(ctx, tests)
 
 	if len(jobs) > 0 {
 		t.Errorf("PrepareDownloads returned %v; want []", jobs)
@@ -352,13 +352,13 @@ func TestPrepareDownloadsBrokenLink(t *gotesting.T) {
 		{Pkg: pkg, Data: []string{extFile1, extFile2}},
 	}
 	ctx := context.Background()
-	m, err := NewManager(ctx, dataDir)
+	m, err := NewManager(ctx, dataDir, fakeArtifactURL, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
-	jobs, _ := m.PrepareDownloads(ctx, dataDir, fakeArtifactURL, tests)
+	jobs, _ := m.prepareDownloads(ctx, tests)
 
-	exp := []*DownloadJob{
+	exp := []*downloadJob{
 		{
 			link: &link{Data: LinkData{StaticURL: "url2", Size: 222, SHA256Sum: "bbbb", Executable: false}, ComputedURL: "url2"},
 			dests: []string{
@@ -394,11 +394,11 @@ func TestPrepareDownloadsArtifactUnavailable(t *gotesting.T) {
 		{Pkg: pkg, Data: []string{extFile1}},
 	}
 	ctx := context.Background()
-	m, err := NewManager(ctx, dataDir)
+	m, err := NewManager(ctx, dataDir, "", nil)
 	if err != nil {
 		t.Fatal(err)
 	}
-	jobs, _ := m.PrepareDownloads(ctx, dataDir, "", tests)
+	jobs, _ := m.prepareDownloads(ctx, tests)
 
 	if len(jobs) > 0 {
 		t.Errorf("PrepareDownloads returned %v; want []", jobs)
@@ -435,11 +435,11 @@ func TestPrepareDownloadsError(t *gotesting.T) {
 		{Pkg: pkg, Data: []string{extFile1, extFile2}},
 	}
 	ctx := context.Background()
-	m, err := NewManager(ctx, dataDir)
+	m, err := NewManager(ctx, dataDir, fakeArtifactURL, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
-	m.PrepareDownloads(ctx, dataDir, fakeArtifactURL, tests)
+	m.prepareDownloads(ctx, tests)
 
 	// extError1 should exist due to JSON parse error.
 	if _, err := os.Stat(filepath.Join(dataSubdir, extError1)); err != nil {
@@ -501,17 +501,17 @@ func TestPrepareDownloadsPurgeable(t *gotesting.T) {
 	}}
 
 	ctx := context.Background()
-	m, err := NewManager(ctx, dataDir)
+	m, err := NewManager(ctx, dataDir, fakeArtifactURL, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
-	m.PrepareDownloads(ctx, dataDir, fakeArtifactURL, tests)
+	m.prepareDownloads(ctx, tests)
 
 	want := []string{
 		filepath.Join(dataSubdir, "ext_file2.txt"),
 		filepath.Join(dataSubdir, "ext_file5.txt"),
 	}
-	if diff := cmp.Diff(m.Purgeable(), want); diff != "" {
+	if diff := cmp.Diff(m.Purgeable(ctx), want); diff != "" {
 		t.Error("Purgeable mismatch (-got +want):\n", diff)
 	}
 }
@@ -531,7 +531,7 @@ func TestRunDownloadsStatic(t *gotesting.T) {
 	tmpDir := testutil.TempDir(t)
 	defer os.RemoveAll(tmpDir)
 
-	jobs := []*DownloadJob{
+	jobs := []*downloadJob{
 		{
 			link: &link{
 				Data: LinkData{
@@ -561,7 +561,7 @@ func TestRunDownloadsStatic(t *gotesting.T) {
 		url2: []byte(data2),
 	})
 
-	RunDownloads(context.Background(), tmpDir, jobs, cl)
+	runDownloads(context.Background(), tmpDir, jobs, cl)
 
 	path1 := filepath.Join(tmpDir, file1)
 	if out, err := ioutil.ReadFile(path1); err != nil {
@@ -603,7 +603,7 @@ func TestRunDownloadsArtifact(t *gotesting.T) {
 	tmpDir := testutil.TempDir(t)
 	defer os.RemoveAll(tmpDir)
 
-	jobs := []*DownloadJob{
+	jobs := []*downloadJob{
 		{
 			link: &link{
 				Data: LinkData{
@@ -631,7 +631,7 @@ func TestRunDownloadsArtifact(t *gotesting.T) {
 		url2: []byte(data2),
 	})
 
-	RunDownloads(context.Background(), tmpDir, jobs, cl)
+	runDownloads(context.Background(), tmpDir, jobs, cl)
 
 	path1 := filepath.Join(tmpDir, file1)
 	if out, err := ioutil.ReadFile(path1); err != nil {
@@ -676,7 +676,7 @@ func TestRunDownloadsCorrupted(t *gotesting.T) {
 	tmpDir := testutil.TempDir(t)
 	defer os.RemoveAll(tmpDir)
 
-	jobs := []*DownloadJob{
+	jobs := []*downloadJob{
 		{
 			link: &link{
 				Data: LinkData{
@@ -717,7 +717,7 @@ func TestRunDownloadsCorrupted(t *gotesting.T) {
 		// url3 returns an error.
 	})
 
-	RunDownloads(context.Background(), tmpDir, jobs, cl)
+	runDownloads(context.Background(), tmpDir, jobs, cl)
 
 	for _, name := range []string{file1, file2, file3} {
 		if _, err := os.Stat(filepath.Join(tmpDir, name)); err == nil {
@@ -738,7 +738,7 @@ func TestRunDownloadsError(t *gotesting.T) {
 	tmpDir := testutil.TempDir(t)
 	defer os.RemoveAll(tmpDir)
 
-	jobs := []*DownloadJob{
+	jobs := []*downloadJob{
 		{
 			link: &link{
 				Data: LinkData{
@@ -764,7 +764,7 @@ func TestRunDownloadsError(t *gotesting.T) {
 	}
 	cl := devserver.NewFakeClient(map[string][]byte{url: []byte(data)})
 
-	RunDownloads(context.Background(), tmpDir, jobs, cl)
+	runDownloads(context.Background(), tmpDir, jobs, cl)
 
 	for _, f := range []string{file1, file2} {
 		path := filepath.Join(tmpDir, f+testing.ExternalErrorSuffix)

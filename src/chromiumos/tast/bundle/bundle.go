@@ -9,10 +9,13 @@ import (
 	"os"
 
 	"chromiumos/tast/internal/bundle"
+	"chromiumos/tast/internal/extdata"
 )
 
 // Delegate injects functions as a part of test bundle framework implementation.
 type Delegate = bundle.Delegate
+
+type BeforeDownloadState = extdata.PreDownload
 
 // lockStdIO replaces os.Stdin, os.Stdout and os.Stderr with closed pipes and
 // returns the original files. This function can be called at the beginning of

@@ -109,29 +109,55 @@ func newLink(d *LinkData, artifactsURL string) (*link, error) {
 	}
 }
 
-// DownloadJob represents a job to download an external data file and make hard links
+// downloadJob represents a job to download an external data file and make hard links
 // at several file paths.
-type DownloadJob struct {
+type downloadJob struct {
 	link  *link
 	dests []string
 }
 
 // downloadResult represents a result of a DownloadJob.
 type downloadResult struct {
-	job      *DownloadJob
+	job      *downloadJob
 	duration time.Duration
 	size     int64
 	err      error
 }
 
-type Manager struct {
-	all   map[string]struct{} // all external files under dataDir.
-	inuse map[string]int      // used external files under dataDir with count.
+type BeforeDownload func(context.Context, *BeforeDownloadState)
+
+// BeforeDownloadState represents download.
+type BeforeDownloadState struct {
+	// StaticDataSize is the total size of static data files to be downloaded.
+	StaticDataSize int64
+	// ArtifactNames is the names of artifacts to be downloaded.
+	ArtifactNames []string
+	// Purgeable is purgeable files in data directory.
+	Purgeable []string
 }
 
-func NewManager(ctx context.Context, dataDir string) (*Manager, error) {
-	all := make(map[string]struct{})
-	if err := filepath.Walk(dataDir, func(linkPath string, info os.FileInfo, err error) error {
+type Manager struct {
+	inuse map[string]int // used external files under dataDir with count.
+
+	dataDir        string
+	artifactsURL   string
+	beforeDownload BeforeDownload // called before download.
+}
+
+func NewManager(ctx context.Context, dataDir, artifactsURL string, before BeforeDownload) (*Manager, error) {
+	return &Manager{
+		inuse:          make(map[string]int),
+		dataDir:        dataDir,
+		artifactsURL:   artifactsURL,
+		beforeDownload: before,
+	}, nil
+}
+
+// Purgeable returns file names that are not used in the currently running
+// entities.
+func (m *Manager) Purgeable(ctx context.Context) []string {
+	var res []string
+	err := filepath.Walk(m.dataDir, func(linkPath string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
@@ -142,28 +168,48 @@ func NewManager(ctx context.Context, dataDir string) (*Manager, error) {
 		if _, err := os.Stat(destPath); err != nil {
 			return nil
 		}
-		all[destPath] = struct{}{}
-		return nil
-	}); err != nil && !os.IsNotExist(err) {
-		return nil, err
-	}
-	return &Manager{
-		all:   all,
-		inuse: make(map[string]int),
-	}, nil
-}
-
-func (m *Manager) Purgeable() []string {
-	// TODO: avoind O(n) operation
-	var res []string
-	for p := range m.all {
-		if m.inuse[p] > 0 {
-			continue
+		if _, ok := m.inuse[destPath]; ok {
+			return nil
 		}
-		res = append(res, p)
+		res = append(res, destPath)
+		return nil
+	})
+	if err != nil {
+		testcontext.Log(ctx, "Failed to walk data directory: ", err)
 	}
 	sort.Strings(res)
 	return res
+}
+
+func preDownload(jobs []*downloadJob, purgeable []string) *BeforeDownloadState {
+	var staticDataSize int64
+	var artifactNames []string
+	for _, j := range jobs {
+		switch j.link.Data.Type {
+		case TypeStatic:
+			staticDataSize += j.link.Data.Size
+		case TypeArtifact:
+			artifactNames = append(artifactNames, j.link.Data.Name)
+		}
+	}
+	return &BeforeDownloadState{
+		StaticDataSize: staticDataSize,
+		ArtifactNames:  artifactNames,
+		Purgeable:      purgeable,
+	}
+}
+
+// SetUp downloads external data tests depend on marking those files not
+// purgebale. release must be called after the test finishes.
+func (m *Manager) SetUp(ctx context.Context, cl devserver.Client, tests []*testing.TestInstance) (release func()) {
+	jobs, release := m.prepareDownloads(ctx, tests)
+	if len(jobs) > 0 {
+		if m.beforeDownload != nil {
+			m.beforeDownload(ctx, preDownload(jobs, m.Purgeable(ctx)))
+		}
+		runDownloads(ctx, m.dataDir, jobs, cl)
+	}
+	return release
 }
 
 // PrepareDownloads computes a list of external data files that need to be
@@ -184,8 +230,8 @@ func (m *Manager) Purgeable() []string {
 // deleted if the disk space is low.
 //
 // release must be called after tests are done.
-func (m *Manager) PrepareDownloads(ctx context.Context, dataDir, artifactsURL string, tests []*testing.TestInstance) (jobs []*DownloadJob, release func()) {
-	urlToJob := make(map[string]*DownloadJob)
+func (m *Manager) prepareDownloads(ctx context.Context, tests []*testing.TestInstance) (jobs []*downloadJob, release func()) {
+	urlToJob := make(map[string]*downloadJob)
 	hasErr := false
 
 	var releaseFunc []func()
@@ -193,7 +239,7 @@ func (m *Manager) PrepareDownloads(ctx context.Context, dataDir, artifactsURL st
 	// Process tests.
 	for _, t := range tests {
 		for _, name := range t.Data {
-			destPath := filepath.Join(dataDir, testing.RelativeDataDir(t.Pkg), name)
+			destPath := filepath.Join(m.dataDir, testing.RelativeDataDir(t.Pkg), name)
 			linkPath := destPath + testing.ExternalLinkSuffix
 			errorPath := destPath + testing.ExternalErrorSuffix
 
@@ -222,7 +268,7 @@ func (m *Manager) PrepareDownloads(ctx context.Context, dataDir, artifactsURL st
 				m.inuse[destPath]--
 			})
 
-			link, err := loadLink(linkPath, artifactsURL)
+			link, err := loadLink(linkPath, m.artifactsURL)
 			if err != nil {
 				reportErr("failed to load %s: %v", linkPath, err)
 				continue
@@ -252,7 +298,7 @@ func (m *Manager) PrepareDownloads(ctx context.Context, dataDir, artifactsURL st
 			// To check consistency, create an entry in urlToJob even if we are not updating the destination file.
 			job := urlToJob[link.ComputedURL]
 			if job == nil {
-				job = &DownloadJob{link, nil}
+				job = &downloadJob{link, nil}
 				urlToJob[link.ComputedURL] = job
 			} else if !reflect.DeepEqual(job.link, link) {
 				reportErr("conflicting external data link found at %s: got %+v, want %+v", filepath.Join(testing.RelativeDataDir(t.Pkg), name), link, job.link)
@@ -315,7 +361,7 @@ func loadLink(path, artifactsURL string) (*link, error) {
 	return l, nil
 }
 
-// RunDownloads downloads required external data files in parallel.
+// runDownloads downloads required external data files in parallel.
 //
 // dataDir is the path to the base directory containing external data link files
 // (typically "/usr/local/share/tast/data" on DUT). jobs are typically obtained
@@ -324,8 +370,8 @@ func loadLink(path, artifactsURL string) (*link, error) {
 // This function does not return errors; instead it tries to download files as
 // far as possible and logs encountered errors with ctx so that a single
 // download error does not cause all tests to fail.
-func RunDownloads(ctx context.Context, dataDir string, jobs []*DownloadJob, cl devserver.Client) {
-	jobCh := make(chan *DownloadJob, len(jobs))
+func runDownloads(ctx context.Context, dataDir string, jobs []*downloadJob, cl devserver.Client) {
+	jobCh := make(chan *downloadJob, len(jobs))
 	for _, job := range jobs {
 		jobCh <- job
 	}
@@ -375,7 +421,7 @@ func RunDownloads(ctx context.Context, dataDir string, jobs []*DownloadJob, cl d
 }
 
 // runDownload downloads an external data file.
-func runDownload(ctx context.Context, dataDir string, job *DownloadJob, cl devserver.Client) (size int64, retErr error) {
+func runDownload(ctx context.Context, dataDir string, job *downloadJob, cl devserver.Client) (size int64, retErr error) {
 	// Create the temporary file under dataDir to make use of hard links.
 	f, err := ioutil.TempFile(dataDir, ".external-download.")
 	if err != nil {

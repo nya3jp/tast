@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bb8a2f42_333561f3",
+        "filename": "src/chromiumos/tast/internal/planner/run_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 804,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2021-04-26T03:48:56Z",
+      "side": 1,
+      "message": "nit: nil",
+      "range": {
+        "startLine": 804,
+        "startChar": 43,
+        "endLine": 804,
+        "endChar": 47
+      },
+      "revId": "fc58456f77eab084c2ceffb72566ff2af39d90a1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

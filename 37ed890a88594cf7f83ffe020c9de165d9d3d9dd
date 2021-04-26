@@ -3,6 +3,29 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "86af8a82_39c2be36",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2021-04-26T04:03:48Z",
+      "side": 1,
+      "message": "What went wrong in ListEntities without this change?",
+      "range": {
+        "startLine": 11,
+        "startChar": 16,
+        "endLine": 12,
+        "endChar": 9
+      },
+      "revId": "37ed890a88594cf7f83ffe020c9de165d9d3d9dd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "4d2782ec_297adb28",
         "filename": "src/chromiumos/tast/internal/rpc/client.go",
         "patchSetId": 1

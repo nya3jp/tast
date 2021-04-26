@@ -371,6 +371,7 @@ func Wifi80211ax() Condition {
 			"ezkinil",
 			"gumboz",
 			"jelboz",
+			"jelboz360",
 			"lantis",
 			"madoo",
 			"vilboz",

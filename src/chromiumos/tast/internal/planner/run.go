@@ -95,7 +95,7 @@ type Config struct {
 	DownloadMode DownloadMode
 	// BeforeDownload specifies a function called before downloading external data files.
 	// It is ignored if it is nil.
-	BeforeDownload func(context.Context)
+	BeforeDownload extdata.BeforeDownload
 	// Fixtures is a map from a fixture name to its metadata.
 	Fixtures map[string]*testing.Fixture
 	// StartFixtureName is a name of a fixture to start test execution.
@@ -576,8 +576,8 @@ func runTest(ctx context.Context, t *testing.TestInstance, tout *entityOutputStr
 	tout.Start(outDir)
 	defer tout.End(nil, timingLog)
 
-	afterTest := dl.BeforeTest(ctx, t)
-	defer afterTest()
+	release := dl.BeforeTest(ctx, t)
+	defer release()
 
 	if err := stack.MarkDirty(); err != nil {
 		return err
@@ -603,7 +603,7 @@ func runTest(ctx context.Context, t *testing.TestInstance, tout *entityOutputStr
 		FixtCtx:      fixtCtx,
 		FixtValue:    stack.Val(),
 		PreCtx:       precfg.ctx,
-		Purgeable:    dl.Purgeable(),
+		Purgeable:    dl.purgeable,
 	}
 	root := testing.NewTestEntityRoot(t, rcfg, tout)
 
@@ -620,11 +620,10 @@ func runTest(ctx context.Context, t *testing.TestInstance, tout *entityOutputStr
 
 // downloader encapsulates the logic to download external data files.
 type downloader struct {
-	m *extdata.Manager
-
-	pcfg           *Config
-	cl             devserver.Client
-	beforeDownload func(context.Context)
+	m            *extdata.Manager
+	cl           devserver.Client
+	downloadMode DownloadMode
+	purgeable    []string
 }
 
 func newDownloader(ctx context.Context, pcfg *Config) (*downloader, error) {
@@ -633,15 +632,15 @@ func newDownloader(ctx context.Context, pcfg *Config) (*downloader, error) {
 		return nil, errors.Wrapf(err, "failed to create new client [devservers=%v, TLWServer=%s]",
 			pcfg.Devservers, pcfg.TLWServer)
 	}
-	m, err := extdata.NewManager(ctx, pcfg.DataDir)
+	m, err := extdata.NewManager(ctx, pcfg.DataDir, pcfg.BuildArtifactsURL, pcfg.BeforeDownload)
 	if err != nil {
 		return nil, err
 	}
 	return &downloader{
-		m:              m,
-		pcfg:           pcfg,
-		cl:             cl,
-		beforeDownload: pcfg.BeforeDownload,
+		m:            m,
+		cl:           cl,
+		downloadMode: pcfg.DownloadMode,
+		purgeable:    m.Purgeable(ctx),
 	}, nil
 }
 
@@ -653,8 +652,9 @@ func (d *downloader) TearDown() error {
 // BeforeRun must be called before running a set of tests. It downloads external
 // data files if Config.DownloadMode is DownloadBatch.
 func (d *downloader) BeforeRun(ctx context.Context, tests []*testing.TestInstance) {
-	if d.pcfg.DownloadMode == DownloadBatch {
-		// Ignore release because no data files are to be purged.
+	if d.downloadMode == DownloadBatch {
+		// Ignore release because no data files tests use should be purged
+		// on DownloadBatch mode.
 		d.download(ctx, tests)
 	}
 }
@@ -662,7 +662,7 @@ func (d *downloader) BeforeRun(ctx context.Context, tests []*testing.TestInstanc
 // BeforeTest must be called before running each test. It downloads external
 // data files if Config.DownloadMode is DownloadLazy.
 func (d *downloader) BeforeTest(ctx context.Context, test *testing.TestInstance) (release func()) {
-	if d.pcfg.DownloadMode == DownloadLazy {
+	if d.downloadMode == DownloadLazy {
 		// TODO(crbug.com/1106218): Make sure this approach is scalable.
 		// Recomputing purgeable on each test costs O(|purgeable| * |tests|) overall.
 		return d.download(ctx, []*testing.TestInstance{test})
@@ -670,20 +670,9 @@ func (d *downloader) BeforeTest(ctx context.Context, test *testing.TestInstance)
 	return func() {}
 }
 
-// Purgeable returns a list of cached external data files that can be deleted without
-// disrupting the test execution.
-func (d *downloader) Purgeable() []string {
-	return d.m.Purgeable()
-}
-
 func (d *downloader) download(ctx context.Context, tests []*testing.TestInstance) (release func()) {
-	jobs, release := d.m.PrepareDownloads(ctx, d.pcfg.DataDir, d.pcfg.BuildArtifactsURL, tests)
-	if len(jobs) > 0 {
-		if d.beforeDownload != nil {
-			d.beforeDownload(ctx)
-		}
-		extdata.RunDownloads(ctx, d.pcfg.DataDir, jobs, d.cl)
-	}
+	release = d.m.SetUp(ctx, d.cl, tests)
+	d.purgeable = d.m.Purgeable(ctx)
 	return release
 }
 

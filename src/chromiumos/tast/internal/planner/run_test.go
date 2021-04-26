@@ -710,7 +710,7 @@ func TestRunExternalData(t *gotesting.T) {
 				},
 				Devservers:   []string{ds.URL},
 				DownloadMode: tc.mode,
-				BeforeDownload: func(ctx context.Context) {
+				BeforeDownload: func(ctx context.Context, s *extdata.BeforeDownloadState) {
 					numDownloads++
 				},
 			}

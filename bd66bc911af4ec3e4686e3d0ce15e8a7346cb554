@@ -135,6 +135,30 @@
       },
       "revId": "bd66bc911af4ec3e4686e3d0ce15e8a7346cb554",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "49f59102_17432433",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1206284
+      },
+      "writtenOn": "2021-04-26T09:14:52Z",
+      "side": 1,
+      "message": "that\u0027s supported in the design above, so sgtm",
+      "parentUuid": "59803efb_d6b0ba1e",
+      "range": {
+        "startLine": 33,
+        "startChar": 5,
+        "endLine": 33,
+        "endChar": 11
+      },
+      "revId": "bd66bc911af4ec3e4686e3d0ce15e8a7346cb554",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

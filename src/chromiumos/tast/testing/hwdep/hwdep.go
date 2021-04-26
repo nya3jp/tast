@@ -568,10 +568,6 @@ var modelsWithoutForceDischargeSupport = []string{
 	"drallion360",
 	"lulu",
 	"sarien",
-	// TODO(b/180279505): Remove kukui models once restoring charging no longer resets USB-Ethernet adapter.
-	"kakadu",
-	"kodama",
-	"krane",
 }
 
 // ForceDischarge returns a hardware dependency condition that is satisfied iff the DUT

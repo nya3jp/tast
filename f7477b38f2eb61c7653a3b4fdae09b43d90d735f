@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "fe0a82e6_b18bff5b",
+        "filename": "src/chromiumos/tast/internal/rpc/client.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 83,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2021-04-26T02:34:39Z",
+      "side": 0,
+      "message": "oops. Thank you for the fix.",
+      "range": {
+        "startLine": 83,
+        "startChar": 26,
+        "endLine": 83,
+        "endChar": 49
+      },
+      "revId": "f7477b38f2eb61c7653a3b4fdae09b43d90d735f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

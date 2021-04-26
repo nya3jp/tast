@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4d2782ec_297adb28",
+        "filename": "src/chromiumos/tast/internal/rpc/client.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2021-04-26T02:34:39Z",
+      "side": 1,
+      "message": "\"syscall\" is deprecatd. Could you use golang.org/x/sys?\nhttps://golang.org/pkg/syscall/",
+      "range": {
+        "startLine": 15,
+        "startChar": 2,
+        "endLine": 15,
+        "endChar": 9
+      },
+      "revId": "37ed890a88594cf7f83ffe020c9de165d9d3d9dd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "10890897_8d6a35d8",
+        "filename": "src/chromiumos/tast/internal/rpc/client.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 84,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2021-04-26T02:34:39Z",
+      "side": 1,
+      "message": "Could you add unit tests for newSession parameter?",
+      "range": {
+        "startLine": 84,
+        "startChar": 48,
+        "endLine": 84,
+        "endChar": 58
+      },
+      "revId": "37ed890a88594cf7f83ffe020c9de165d9d3d9dd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

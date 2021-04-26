@@ -46,7 +46,7 @@ The default local and remote bundles, consisting of Chrome OS tests, are named
 `cros` and are checked into the [tast-tests repository].
 
 Local tests can be included in a system image via Portage packages with names of
-the form `chromeos-base/tast-local-test-<bundle>`, while remote tests can be
+the form `chromeos-base/tast-local-tests-<bundle>`, while remote tests can be
 installed onto the host system via packages named
 `chromeos-base/tast-remote-tests-<bundle>`. Either type of bundle can also be
 compiled (and deployed, in the case of local tests) on-the-fly by `tast`.

@@ -57,8 +57,14 @@ type Loopback struct {
 
 // CreateLoopback creates a new file called a loopback executable.
 //
-// When a loopback executable file is executed, its process behaves exactly as
-// defined by ProcFunc.
+// When a loopback executable file is executed, its process connects to the
+// current unit test process by gRPC to call proc remotely. The process behaves
+// exactly as specified by proc. Since proc is called within the current unit
+// test process, unit tests and subprocesses can interact easily with Go
+// constructs, e.g. shared memory or channels.
+//
+// A drawback is that proc can only emulate args, stdio and exit code. If you
+// need to do anything else, e.g. catching signals, use NewAuxMain instead.
 //
 // Once you're done with a loopback executable, call Loopback.Close to release
 // associated resources.

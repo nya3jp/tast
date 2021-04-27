@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8f16c354_dd8a055d",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 6
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-04-27T04:05:46Z",
+      "side": 1,
+      "message": "Need to rebase on 2846254, which has been merged now instead of my tentative base patch 2786576(abandoned).\nhttps://chromium-review.googlesource.com/c/chromiumos/config/+/2846254/6/proto/chromiumos/config/api/topology.proto",
+      "revId": "f1e814693f2a1a6d8c9adfd4f1d2d5afc2827379",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

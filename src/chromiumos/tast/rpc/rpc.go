@@ -10,6 +10,8 @@ import (
 	"os"
 	"path/filepath"
 
+	"google.golang.org/grpc"
+
 	"chromiumos/tast/dut"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/protocol"
@@ -18,7 +20,17 @@ import (
 )
 
 // Client owns a gRPC connection to the DUT for remote tests to use.
-type Client = rpc.Client
+type Client struct {
+	// Conn is the gRPC connection. Use this to create gRPC service stubs.
+	Conn *grpc.ClientConn
+
+	cl *rpc.SSHClient
+}
+
+// Close closes the connection.
+func (c *Client) Close(ctx context.Context) error {
+	return c.cl.Close(ctx)
+}
 
 // Dial establishes a gRPC connection to the test bundle executable named
 // bundleName using d and h.
@@ -55,5 +67,12 @@ func Dial(ctx context.Context, d *dut.DUT, h *testing.RPCHint, bundleName string
 			Vars: testing.ExtractTestVars(h),
 		},
 	}
-	return rpc.DialSSH(ctx, d.Conn(), bundlePath, req)
+	cl, err := rpc.DialSSH(ctx, d.Conn(), bundlePath, req)
+	if err != nil {
+		return nil, err
+	}
+	return &Client{
+		Conn: cl.Conn(),
+		cl:   cl,
+	}, nil
 }

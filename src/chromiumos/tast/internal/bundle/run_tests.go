@@ -369,9 +369,9 @@ func runTestsCompat(ctx context.Context, stdout io.Writer, cfg *protocol.RunConf
 	if err != nil {
 		return err
 	}
-	defer conn.Close(ctx)
+	defer conn.Close()
 
-	cl := protocol.NewTestServiceClient(conn.Conn)
+	cl := protocol.NewTestServiceClient(conn.Conn())
 
 	// Call RunTests method and send the initial request.
 	srv, err := cl.RunTests(ctx)

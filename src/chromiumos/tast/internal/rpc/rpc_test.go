@@ -59,13 +59,13 @@ type pingPair struct {
 	// The server is missing here; it is implicitly owned by the background
 	// goroutine that calls RunServer.
 
-	rpcClient  *Client      // underlying gRPC connection
-	stopServer func() error // func to stop the gRPC server
+	rpcClient  *GenericClient // underlying gRPC connection
+	stopServer func() error   // func to stop the gRPC server
 }
 
 // Close closes the gRPC connection and stops the gRPC server.
-func (p *pingPair) Close(ctx context.Context) error {
-	firstErr := p.rpcClient.Close(ctx)
+func (p *pingPair) Close() error {
+	firstErr := p.rpcClient.Close()
 	if err := p.stopServer(); firstErr == nil {
 		firstErr = err
 	}
@@ -113,15 +113,15 @@ func newPingPair(ctx context.Context, t *gotesting.T, req *protocol.HandshakeReq
 		}
 	}()
 
-	cl, err := newClient(ctx, cr, cw, req, func(context.Context) error { return nil })
+	cl, err := NewClient(ctx, cr, cw, req)
 	if err != nil {
 		t.Fatal("newClient failed: ", err)
 	}
 
 	success = true
 	return &pingPair{
-		UserClient: protocol.NewPingUserClient(cl.Conn),
-		CoreClient: protocol.NewPingCoreClient(cl.Conn),
+		UserClient: protocol.NewPingUserClient(cl.Conn()),
+		CoreClient: protocol.NewPingCoreClient(cl.Conn()),
 		rpcClient:  cl,
 		stopServer: stopServer,
 	}
@@ -138,7 +138,7 @@ func TestRPCSuccess(t *gotesting.T) {
 	})
 
 	pp := newPingPair(ctx, t, req, svc)
-	defer pp.Close(ctx)
+	defer pp.Close()
 
 	callCtx := testcontext.WithCurrentEntity(ctx, &testcontext.CurrentEntity{
 		ServiceDeps: []string{pingUserServiceName},
@@ -162,7 +162,7 @@ func TestRPCFailure(t *gotesting.T) {
 	})
 
 	pp := newPingPair(ctx, t, req, svc)
-	defer pp.Close(ctx)
+	defer pp.Close()
 
 	callCtx := testcontext.WithCurrentEntity(ctx, &testcontext.CurrentEntity{
 		ServiceDeps: []string{pingUserServiceName},
@@ -186,7 +186,7 @@ func TestRPCNotRequested(t *gotesting.T) {
 	})
 
 	pp := newPingPair(ctx, t, req, svc)
-	defer pp.Close(ctx)
+	defer pp.Close()
 
 	callCtx := testcontext.WithCurrentEntity(ctx, &testcontext.CurrentEntity{
 		ServiceDeps: []string{pingUserServiceName},
@@ -210,7 +210,7 @@ func TestRPCNoCurrentEntity(t *gotesting.T) {
 	})
 
 	pp := newPingPair(ctx, t, req, svc)
-	defer pp.Close(ctx)
+	defer pp.Close()
 
 	if _, err := pp.UserClient.Ping(context.Background(), &empty.Empty{}); err == nil {
 		t.Error("Ping unexpectedly succeeded for a context missing CurrentEntity")
@@ -225,7 +225,7 @@ func TestRPCRejectUndeclaredServices(t *gotesting.T) {
 	req := &protocol.HandshakeRequest{NeedUserServices: true}
 	svc := newPingService(func(context.Context, *testing.ServiceState) error { return nil })
 	pp := newPingPair(ctx, t, req, svc)
-	defer pp.Close(ctx)
+	defer pp.Close()
 
 	callCtx := testcontext.WithCurrentEntity(ctx, &testcontext.CurrentEntity{
 		ServiceDeps: []string{"foo.Bar"},
@@ -251,7 +251,7 @@ func TestRPCForwardCurrentEntity(t *gotesting.T) {
 	})
 
 	pp := newPingPair(ctx, t, req, svc)
-	defer pp.Close(ctx)
+	defer pp.Close()
 
 	if _, err := pp.UserClient.Ping(ctx, &empty.Empty{}); err == nil {
 		t.Error("Ping unexpectedly succeeded for a context without CurrentEntity")
@@ -291,7 +291,7 @@ func TestRPCForwardLogs(t *gotesting.T) {
 	})
 
 	pp := newPingPair(ctx, t, req, svc)
-	defer pp.Close(ctx)
+	defer pp.Close()
 
 	callCtx := testcontext.WithCurrentEntity(ctx, &testcontext.CurrentEntity{
 		ServiceDeps: []string{pingUserServiceName},
@@ -326,7 +326,7 @@ func TestRPCForwardTiming(t *gotesting.T) {
 	})
 
 	pp := newPingPair(ctx, t, req, svc)
-	defer pp.Close(ctx)
+	defer pp.Close()
 
 	callCtx := testcontext.WithCurrentEntity(ctx, &testcontext.CurrentEntity{
 		ServiceDeps: []string{pingUserServiceName},
@@ -380,7 +380,7 @@ func TestRPCPullOutDir(t *gotesting.T) {
 	})
 
 	pp := newPingPair(ctx, t, req, svc)
-	defer pp.Close(ctx)
+	defer pp.Close()
 
 	callCtx := testcontext.WithCurrentEntity(ctx, &testcontext.CurrentEntity{
 		ServiceDeps: []string{pingUserServiceName},
@@ -422,7 +422,7 @@ func TestRPCSetVars(t *gotesting.T) {
 	svc.Vars = []string{key}
 
 	pp := newPingPair(ctx, t, req, svc)
-	defer pp.Close(ctx)
+	defer pp.Close()
 
 	callCtx := testcontext.WithCurrentEntity(ctx, &testcontext.CurrentEntity{
 		ServiceDeps: []string{pingUserServiceName},
@@ -455,7 +455,7 @@ func TestRPCServiceScopedContext(t *gotesting.T) {
 	})
 
 	pp := newPingPair(ctx, t, req, svc)
-	defer pp.Close(ctx)
+	defer pp.Close()
 
 	callCtx := testcontext.WithCurrentEntity(ctx, &testcontext.CurrentEntity{
 		ServiceDeps: []string{pingUserServiceName},
@@ -478,7 +478,7 @@ func TestRPCExtraCoreServices(t *gotesting.T) {
 	svc := newPingService(nil)
 
 	pp := newPingPair(ctx, t, req, svc)
-	defer pp.Close(ctx)
+	defer pp.Close()
 
 	if _, err := pp.CoreClient.Ping(ctx, &empty.Empty{}); err != nil {
 		t.Error("Ping failed: ", err)
@@ -517,12 +517,12 @@ func TestRPCOverExec(t *gotesting.T) {
 		t.Fatalf("DialExec failed: %v", err)
 	}
 	defer func() {
-		if err := conn.Close(ctx); err != nil {
+		if err := conn.Close(); err != nil {
 			t.Errorf("Close failed: %v", err)
 		}
 	}()
 
-	cl := protocol.NewPingCoreClient(conn.Conn)
+	cl := protocol.NewPingCoreClient(conn.Conn())
 	if _, err := cl.Ping(ctx, &empty.Empty{}); err != nil {
 		t.Error("Ping failed: ", err)
 	}
@@ -566,7 +566,7 @@ func TestRPCOverSSH(t *gotesting.T) {
 		}
 	}()
 
-	cl := protocol.NewPingCoreClient(conn.Conn)
+	cl := protocol.NewPingCoreClient(conn.Conn())
 	if _, err := cl.Ping(ctx, &empty.Empty{}); err != nil {
 		t.Error("Ping failed: ", err)
 	}

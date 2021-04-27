@@ -42,10 +42,10 @@ func startTestServer(t *gotesting.T, params *protocol.RunnerInitParams) protocol
 		t.Fatalf("Failed to connect to in-process gRPC server: %v", err)
 	}
 	t.Cleanup(func() {
-		conn.Close(context.Background())
+		conn.Close()
 	})
 
-	return protocol.NewTestServiceClient(conn.Conn)
+	return protocol.NewTestServiceClient(conn.Conn())
 }
 
 func TestTestServer(t *gotesting.T) {

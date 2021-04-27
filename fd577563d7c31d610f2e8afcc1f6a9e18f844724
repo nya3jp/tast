@@ -22,6 +22,30 @@
       },
       "revId": "fd577563d7c31d610f2e8afcc1f6a9e18f844724",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a480976e_afe16dd2",
+        "filename": "src/chromiumos/tast/internal/protocol/protocoltest/protocoltest.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-04-27T00:59:53Z",
+      "side": 1,
+      "message": "The package will be used in crrev.com/c/2848084 (unit tests for RunTests in test bundles), as well as upcoming CL of unit tests for RunTests in test runners.",
+      "parentUuid": "c39e9759_3994f30c",
+      "range": {
+        "startLine": 7,
+        "startChar": 0,
+        "endLine": 7,
+        "endChar": 7
+      },
+      "revId": "fd577563d7c31d610f2e8afcc1f6a9e18f844724",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

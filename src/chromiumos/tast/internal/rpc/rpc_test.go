@@ -11,12 +11,16 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"reflect"
+	"strconv"
 	gotesting "testing"
+	"time"
 
 	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/google/go-cmp/cmp"
+	"github.com/shirou/gopsutil/process"
 	"google.golang.org/grpc"
 
 	"chromiumos/tast/errors"
@@ -25,6 +29,7 @@ import (
 	"chromiumos/tast/internal/sshtest"
 	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/testing"
+	"chromiumos/tast/internal/testingutil"
 	"chromiumos/tast/internal/timing"
 	"chromiumos/tast/ssh"
 	"chromiumos/tast/testutil"
@@ -59,13 +64,13 @@ type pingPair struct {
 	// The server is missing here; it is implicitly owned by the background
 	// goroutine that calls RunServer.
 
-	rpcClient  *Client      // underlying gRPC connection
-	stopServer func() error // func to stop the gRPC server
+	rpcClient  *GenericClient // underlying gRPC connection
+	stopServer func() error   // func to stop the gRPC server
 }
 
 // Close closes the gRPC connection and stops the gRPC server.
-func (p *pingPair) Close(ctx context.Context) error {
-	firstErr := p.rpcClient.Close(ctx)
+func (p *pingPair) Close() error {
+	firstErr := p.rpcClient.Close()
 	if err := p.stopServer(); firstErr == nil {
 		firstErr = err
 	}
@@ -113,15 +118,15 @@ func newPingPair(ctx context.Context, t *gotesting.T, req *protocol.HandshakeReq
 		}
 	}()
 
-	cl, err := newClient(ctx, cr, cw, req, func(context.Context) error { return nil })
+	cl, err := NewClient(ctx, cr, cw, req)
 	if err != nil {
 		t.Fatal("newClient failed: ", err)
 	}
 
 	success = true
 	return &pingPair{
-		UserClient: protocol.NewPingUserClient(cl.Conn),
-		CoreClient: protocol.NewPingCoreClient(cl.Conn),
+		UserClient: protocol.NewPingUserClient(cl.Conn()),
+		CoreClient: protocol.NewPingCoreClient(cl.Conn()),
 		rpcClient:  cl,
 		stopServer: stopServer,
 	}
@@ -138,7 +143,7 @@ func TestRPCSuccess(t *gotesting.T) {
 	})
 
 	pp := newPingPair(ctx, t, req, svc)
-	defer pp.Close(ctx)
+	defer pp.Close()
 
 	callCtx := testcontext.WithCurrentEntity(ctx, &testcontext.CurrentEntity{
 		ServiceDeps: []string{pingUserServiceName},
@@ -162,7 +167,7 @@ func TestRPCFailure(t *gotesting.T) {
 	})
 
 	pp := newPingPair(ctx, t, req, svc)
-	defer pp.Close(ctx)
+	defer pp.Close()
 
 	callCtx := testcontext.WithCurrentEntity(ctx, &testcontext.CurrentEntity{
 		ServiceDeps: []string{pingUserServiceName},
@@ -186,7 +191,7 @@ func TestRPCNotRequested(t *gotesting.T) {
 	})
 
 	pp := newPingPair(ctx, t, req, svc)
-	defer pp.Close(ctx)
+	defer pp.Close()
 
 	callCtx := testcontext.WithCurrentEntity(ctx, &testcontext.CurrentEntity{
 		ServiceDeps: []string{pingUserServiceName},
@@ -210,7 +215,7 @@ func TestRPCNoCurrentEntity(t *gotesting.T) {
 	})
 
 	pp := newPingPair(ctx, t, req, svc)
-	defer pp.Close(ctx)
+	defer pp.Close()
 
 	if _, err := pp.UserClient.Ping(context.Background(), &empty.Empty{}); err == nil {
 		t.Error("Ping unexpectedly succeeded for a context missing CurrentEntity")
@@ -225,7 +230,7 @@ func TestRPCRejectUndeclaredServices(t *gotesting.T) {
 	req := &protocol.HandshakeRequest{NeedUserServices: true}
 	svc := newPingService(func(context.Context, *testing.ServiceState) error { return nil })
 	pp := newPingPair(ctx, t, req, svc)
-	defer pp.Close(ctx)
+	defer pp.Close()
 
 	callCtx := testcontext.WithCurrentEntity(ctx, &testcontext.CurrentEntity{
 		ServiceDeps: []string{"foo.Bar"},
@@ -251,7 +256,7 @@ func TestRPCForwardCurrentEntity(t *gotesting.T) {
 	})
 
 	pp := newPingPair(ctx, t, req, svc)
-	defer pp.Close(ctx)
+	defer pp.Close()
 
 	if _, err := pp.UserClient.Ping(ctx, &empty.Empty{}); err == nil {
 		t.Error("Ping unexpectedly succeeded for a context without CurrentEntity")
@@ -291,7 +296,7 @@ func TestRPCForwardLogs(t *gotesting.T) {
 	})
 
 	pp := newPingPair(ctx, t, req, svc)
-	defer pp.Close(ctx)
+	defer pp.Close()
 
 	callCtx := testcontext.WithCurrentEntity(ctx, &testcontext.CurrentEntity{
 		ServiceDeps: []string{pingUserServiceName},
@@ -326,7 +331,7 @@ func TestRPCForwardTiming(t *gotesting.T) {
 	})
 
 	pp := newPingPair(ctx, t, req, svc)
-	defer pp.Close(ctx)
+	defer pp.Close()
 
 	callCtx := testcontext.WithCurrentEntity(ctx, &testcontext.CurrentEntity{
 		ServiceDeps: []string{pingUserServiceName},
@@ -380,7 +385,7 @@ func TestRPCPullOutDir(t *gotesting.T) {
 	})
 
 	pp := newPingPair(ctx, t, req, svc)
-	defer pp.Close(ctx)
+	defer pp.Close()
 
 	callCtx := testcontext.WithCurrentEntity(ctx, &testcontext.CurrentEntity{
 		ServiceDeps: []string{pingUserServiceName},
@@ -422,7 +427,7 @@ func TestRPCSetVars(t *gotesting.T) {
 	svc.Vars = []string{key}
 
 	pp := newPingPair(ctx, t, req, svc)
-	defer pp.Close(ctx)
+	defer pp.Close()
 
 	callCtx := testcontext.WithCurrentEntity(ctx, &testcontext.CurrentEntity{
 		ServiceDeps: []string{pingUserServiceName},
@@ -455,7 +460,7 @@ func TestRPCServiceScopedContext(t *gotesting.T) {
 	})
 
 	pp := newPingPair(ctx, t, req, svc)
-	defer pp.Close(ctx)
+	defer pp.Close()
 
 	callCtx := testcontext.WithCurrentEntity(ctx, &testcontext.CurrentEntity{
 		ServiceDeps: []string{pingUserServiceName},
@@ -478,7 +483,7 @@ func TestRPCExtraCoreServices(t *gotesting.T) {
 	svc := newPingService(nil)
 
 	pp := newPingPair(ctx, t, req, svc)
-	defer pp.Close(ctx)
+	defer pp.Close()
 
 	if _, err := pp.CoreClient.Ping(ctx, &empty.Empty{}); err != nil {
 		t.Error("Ping failed: ", err)
@@ -512,19 +517,106 @@ func TestRPCOverExec(t *gotesting.T) {
 	defer lo.Close()
 
 	// Connect to the server and try calling a method.
-	conn, err := DialExec(ctx, path, &protocol.HandshakeRequest{})
+	conn, err := DialExec(ctx, path, false, &protocol.HandshakeRequest{})
 	if err != nil {
 		t.Fatalf("DialExec failed: %v", err)
 	}
 	defer func() {
-		if err := conn.Close(ctx); err != nil {
+		if err := conn.Close(); err != nil {
 			t.Errorf("Close failed: %v", err)
 		}
 	}()
 
-	cl := protocol.NewPingCoreClient(conn.Conn)
+	cl := protocol.NewPingCoreClient(conn.Conn())
 	if _, err := cl.Ping(ctx, &empty.Empty{}); err != nil {
 		t.Error("Ping failed: ", err)
+	}
+}
+
+type leakingPingServer struct{}
+
+func (s *leakingPingServer) Ping(ctx context.Context, _ *empty.Empty) (*empty.Empty, error) {
+	// Intentionally leak a subprocess.
+	exec.Command("sleep", "60").Start()
+	return &empty.Empty{}, nil
+}
+
+var leakingMain = fakeexec.NewAuxMain("rpc_new_session_test", func(_ struct{}) {
+	if err := RunServer(os.Stdin, os.Stdout, nil, func(srv *grpc.Server, req *protocol.HandshakeRequest) error {
+		protocol.RegisterPingCoreServer(srv, &leakingPingServer{})
+		return nil
+	}); err != nil {
+		fmt.Fprintf(os.Stderr, "FATAL: %v\n", err)
+		os.Exit(1)
+	}
+})
+
+func TestRPCOverExecNewSession(t *gotesting.T) {
+	ctx := context.Background()
+
+	params, err := leakingMain.Params(struct{}{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	restore := params.SetEnvs()
+	defer restore()
+
+	for _, newSession := range []bool{false, true} {
+		t.Run(strconv.FormatBool(newSession), func(t *gotesting.T) {
+			var subproc *process.Process
+			func() {
+				// Connect to the server and call a method.
+				conn, err := DialExec(ctx, params.Executable(), newSession, &protocol.HandshakeRequest{})
+				if err != nil {
+					t.Fatalf("DialExec failed: %v", err)
+				}
+				defer func() {
+					if err := conn.Close(); err != nil {
+						t.Errorf("Close failed: %v", err)
+					}
+				}()
+
+				// Call Ping. This will leak a subprocess.
+				cl := protocol.NewPingCoreClient(conn.Conn())
+				if _, err := cl.Ping(ctx, &empty.Empty{}); err != nil {
+					t.Error("Ping failed: ", err)
+				}
+
+				// Find the leaked subprocess.
+				procs, err := process.Processes()
+				if err != nil {
+					t.Fatalf("Failed to enumerate processes: %v", err)
+				}
+				for _, proc := range procs {
+					ppid, err := proc.Ppid()
+					if err == nil && int(ppid) == conn.PID() {
+						subproc = proc
+						break
+					}
+				}
+				if subproc == nil {
+					t.Fatal("Failed to find a leaked subprocess")
+				}
+			}()
+
+			if newSession {
+				// Closing rpc.SSHClient should have killed the whole session.
+				// Wait some time to allow the process to exit.
+				if err := testingutil.Poll(context.Background(), func(context.Context) error {
+					if _, err := subproc.Status(); err != nil {
+						return nil
+					}
+					return errors.Errorf("process %d still exists", subproc.Pid)
+				}, &testingutil.PollOptions{Timeout: 10 * time.Second}); err != nil {
+					t.Fatalf("Failed to wait for a leaked subprocess to exit: %v", err)
+				}
+			} else {
+				// Leaked subprocess should be still running.
+				if err := subproc.Terminate(); err != nil {
+					t.Fatalf("Failed to kill the leaked subprocess: %v", err)
+				}
+			}
+		})
 	}
 }
 
@@ -566,7 +658,7 @@ func TestRPCOverSSH(t *gotesting.T) {
 		}
 	}()
 
-	cl := protocol.NewPingCoreClient(conn.Conn)
+	cl := protocol.NewPingCoreClient(conn.Conn())
 	if _, err := cl.Ping(ctx, &empty.Empty{}); err != nil {
 		t.Error("Ping failed: ", err)
 	}

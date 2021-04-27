@@ -104,13 +104,13 @@ func getTests(args *jsonprotocol.RunnerArgs, bundles []string) (tests []*jsonpro
 			tests, err := func() ([]*jsonprotocol.EntityWithRunnabilityInfo, *command.StatusError) {
 				ctx := context.Background()
 
-				conn, err := rpc.DialExec(ctx, bundle, &protocol.HandshakeRequest{})
+				conn, err := rpc.DialExec(ctx, bundle, false, &protocol.HandshakeRequest{})
 				if err != nil {
 					return nil, command.NewStatusErrorf(statusBundleFailed, "failed to connect to bundle %s: %v", bundle, err)
 				}
-				defer conn.Close(ctx)
+				defer conn.Close()
 
-				cl := protocol.NewTestServiceClient(conn.Conn)
+				cl := protocol.NewTestServiceClient(conn.Conn())
 
 				res, err := cl.ListEntities(ctx, &protocol.ListEntitiesRequest{Features: bundleArgs.ListTests.FeatureArgs.Features()})
 				if err != nil {
@@ -178,13 +178,13 @@ func listFixtures(bundleGlob string) (map[string][]*jsonprotocol.EntityInfo, *co
 			fs, err := func() ([]*jsonprotocol.EntityInfo, *command.StatusError) {
 				ctx := context.Background()
 
-				conn, err := rpc.DialExec(ctx, bundle, &protocol.HandshakeRequest{})
+				conn, err := rpc.DialExec(ctx, bundle, false, &protocol.HandshakeRequest{})
 				if err != nil {
 					return nil, command.NewStatusErrorf(statusBundleFailed, "failed to connect to bundle %s: %v", bundle, err)
 				}
-				defer conn.Close(ctx)
+				defer conn.Close()
 
-				cl := protocol.NewTestServiceClient(conn.Conn)
+				cl := protocol.NewTestServiceClient(conn.Conn())
 
 				res, err := cl.ListEntities(ctx, &protocol.ListEntitiesRequest{})
 				if err != nil {

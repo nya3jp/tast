@@ -37,13 +37,13 @@ func (s *testServer) ListEntities(ctx context.Context, req *protocol.ListEntitie
 	var entities []*protocol.ResolvedEntity
 	for _, bundlePath := range bundlePaths {
 		if err := func() error {
-			cl, err := rpc.DialExec(ctx, bundlePath, &protocol.HandshakeRequest{})
+			cl, err := rpc.DialExec(ctx, bundlePath, true, &protocol.HandshakeRequest{})
 			if err != nil {
 				return err
 			}
-			defer cl.Close(ctx)
+			defer cl.Close()
 
-			ts := protocol.NewTestServiceClient(cl.Conn)
+			ts := protocol.NewTestServiceClient(cl.Conn())
 			res, err := ts.ListEntities(ctx, req) // pass through req
 			if err != nil {
 				return err

@@ -13,6 +13,8 @@ import (
 	"os/exec"
 	"strings"
 
+	"github.com/shirou/gopsutil/process"
+	"golang.org/x/sys/unix"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -25,35 +27,28 @@ import (
 	"chromiumos/tast/ssh"
 )
 
-// Client owns a gRPC connection to the DUT for remote tests to use.
-type Client struct {
-	// Conn is the gRPC connection. Use this to create gRPC service stubs.
-	Conn *grpc.ClientConn
+// SSHClient is a Tast gRPC client over an SSH connection.
+type SSHClient struct {
+	cl  *GenericClient
+	cmd *ssh.Cmd
+}
 
-	log *remoteLoggingClient
-	// clean is a function to be called on closing the client.
-	// In the typical case of a gRPC connection established over an SSH connection,
-	// this function should terminate the test bundle executable running on the DUT.
-	clean func(context.Context) error
+// Conn returns a gRPC connection.
+func (c *SSHClient) Conn() *grpc.ClientConn {
+	return c.cl.Conn()
 }
 
 // Close closes this client.
-func (c *Client) Close(ctx context.Context) error {
-	var firstErr error
-	if err := c.log.Close(); err != nil && firstErr == nil {
-		firstErr = err
-	}
-	if err := c.Conn.Close(); err != nil && firstErr == nil {
-		firstErr = err
-	}
-	if err := c.clean(ctx); err != nil && firstErr == nil {
-		firstErr = err
-	}
-	return firstErr
+func (c *SSHClient) Close(ctx context.Context) error {
+	closeErr := c.cl.Close()
+	c.cmd.Abort()
+	// Ignore errors from Wait since Abort above causes it to return context.Canceled.
+	c.cmd.Wait(ctx)
+	return closeErr
 }
 
 // DialSSH establishes a gRPC connection to an executable on a remote machine.
-func DialSSH(ctx context.Context, conn *ssh.Conn, path string, req *protocol.HandshakeRequest) (*Client, error) {
+func DialSSH(ctx context.Context, conn *ssh.Conn, path string, req *protocol.HandshakeRequest) (*SSHClient, error) {
 	cmd := conn.Command(path, "-rpc")
 	stdin, err := cmd.StdinPipe()
 	if err != nil {
@@ -67,54 +62,115 @@ func DialSSH(ctx context.Context, conn *ssh.Conn, path string, req *protocol.Han
 		return nil, errors.Wrap(err, "failed to connect to RPC service on DUT")
 	}
 
-	return newClient(ctx, stdout, stdin, req, func(ctx context.Context) error {
+	c, err := NewClient(ctx, stdout, stdin, req)
+	if err != nil {
 		cmd.Abort()
-		// Ignore errors from Wait since Abort above causes it to return context.Canceled.
 		cmd.Wait(ctx)
-		return nil
-	})
+		return nil, err
+	}
+	return &SSHClient{
+		cl:  c,
+		cmd: cmd,
+	}, nil
+}
+
+// ExecClient is a Tast gRPC client over a locally executed subprocess.
+type ExecClient struct {
+	cl         *GenericClient
+	cmd        *exec.Cmd
+	newSession bool
+}
+
+// Conn returns a gRPC connection.
+func (c *ExecClient) Conn() *grpc.ClientConn {
+	return c.cl.Conn()
+}
+
+// PID returns PID of the subprocess.
+func (c *ExecClient) PID() int {
+	return c.cmd.Process.Pid
+}
+
+// Close closes this client.
+func (c *ExecClient) Close() error {
+	var firstErr error
+	if err := c.cl.Close(); err != nil && firstErr == nil {
+		firstErr = err
+	}
+	if err := c.cmd.Process.Kill(); err != nil && firstErr == nil {
+		firstErr = err
+	}
+	if c.newSession {
+		killSession(c.cmd.Process.Pid)
+	}
+	c.cmd.Wait() // ignore error `signal: killed`
+	return firstErr
 }
 
 // DialExec establishes a gRPC connection to an executable on host.
-func DialExec(ctx context.Context, path string, req *protocol.HandshakeRequest) (*Client, error) {
+// If newSession is true, a new session is created for the subprocess and its
+// descendants so that all of them are killed on closing Client.
+func DialExec(ctx context.Context, path string, newSession bool, req *protocol.HandshakeRequest) (*ExecClient, error) {
 	cmd := exec.CommandContext(ctx, path, "-rpc")
 	stdin, err := cmd.StdinPipe()
 	if err != nil {
-		return nil, fmt.Errorf("newRemoteFixtureService: %v", err)
+		return nil, errors.Wrapf(err, "failed to run %s for RPC", path)
 	}
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
-		return nil, fmt.Errorf("newRemoteFixtureService: %v", err)
+		return nil, errors.Wrapf(err, "failed to run %s for RPC", path)
 	}
 	cmd.Stderr = os.Stderr // ease debug
-	if err := cmd.Start(); err != nil {
-		return nil, fmt.Errorf("newRemoteFixtureService: %v", err)
+	if newSession {
+		cmd.SysProcAttr = &unix.SysProcAttr{Setsid: true}
 	}
-	return newClient(ctx, stdout, stdin, req, func(ctx context.Context) error {
-		defer cmd.Wait() // ignore error `signal: killed`
-		return cmd.Process.Kill()
-	})
+	if err := cmd.Start(); err != nil {
+		return nil, errors.Wrapf(err, "failed to run %s for RPC", path)
+	}
+	c, err := NewClient(ctx, stdout, stdin, req)
+	if err != nil {
+		cmd.Process.Kill()
+		if newSession {
+			killSession(cmd.Process.Pid)
+		}
+		cmd.Wait()
+		return nil, err
+	}
+	return &ExecClient{
+		cl:         c,
+		cmd:        cmd,
+		newSession: newSession,
+	}, nil
+}
+
+// GenericClient is a Tast gRPC client.
+type GenericClient struct {
+	conn *grpc.ClientConn
+	log  *remoteLoggingClient
+}
+
+// Conn returns a gRPC connection.
+func (c *GenericClient) Conn() *grpc.ClientConn {
+	return c.conn
+}
+
+// Close closes this client.
+func (c *GenericClient) Close() error {
+	var firstErr error
+	if err := c.log.Close(); err != nil && firstErr == nil {
+		firstErr = err
+	}
+	if err := c.conn.Close(); err != nil && firstErr == nil {
+		firstErr = err
+	}
+	return firstErr
 }
 
 // NewClient establishes a gRPC connection to a test bundle executable using r
 // and w.
-func NewClient(ctx context.Context, r io.Reader, w io.Writer, req *protocol.HandshakeRequest) (*Client, error) {
-	return newClient(ctx, r, w, req, func(context.Context) error { return nil })
-}
-
-// newClient establishes a gRPC connection to a test bundle executable using r and w.
-//
-// When this function succeeds, clean is called in Client.Close. Otherwise it is called
-// before this function returns.
-func newClient(ctx context.Context, r io.Reader, w io.Writer, req *protocol.HandshakeRequest, clean func(context.Context) error) (_ *Client, retErr error) {
-	defer func() {
-		if retErr != nil {
-			// TODO(oka): log error from clean. retErr is already non-nil, so
-			// the best we can do is to log it.
-			clean(ctx)
-		}
-	}()
-
+// Callers are responsible for closing the underlying connection of r/w after
+// the client is closed.
+func NewClient(ctx context.Context, r io.Reader, w io.Writer, req *protocol.HandshakeRequest) (_ *GenericClient, retErr error) {
 	if err := sendRawMessage(w, req); err != nil {
 		return nil, err
 	}
@@ -141,10 +197,9 @@ func newClient(ctx context.Context, r io.Reader, w io.Writer, req *protocol.Hand
 		return nil, errors.Wrap(err, "failed to start remote logging")
 	}
 
-	return &Client{
-		Conn:  conn,
-		log:   log,
-		clean: clean,
+	return &GenericClient{
+		conn: conn,
+		log:  log,
 	}, nil
 }
 
@@ -284,4 +339,31 @@ func (s *clientStreamWithAfter) RecvMsg(m interface{}) error {
 		retErr = err
 	}
 	return retErr
+}
+
+// killSession makes a best-effort attempt to kill all processes in session sid.
+// It makes several passes over the list of running processes, sending sig to any
+// that are part of the session. After it doesn't find any new processes, it returns.
+// Note that this is racy: it's possible (but hopefully unlikely) that continually-forking
+// processes could spawn children that don't get killed.
+func killSession(sid int) {
+	const maxPasses = 3
+	for i := 0; i < maxPasses; i++ {
+		procs, err := process.Processes()
+		if err != nil {
+			return
+		}
+		n := 0
+		for _, proc := range procs {
+			pid := int(proc.Pid)
+			if s, err := unix.Getsid(pid); err == nil && s == sid {
+				unix.Kill(pid, unix.SIGKILL)
+				n++
+			}
+		}
+		// If we didn't find any processes in the session, we're done.
+		if n == 0 {
+			return
+		}
+	}
 }

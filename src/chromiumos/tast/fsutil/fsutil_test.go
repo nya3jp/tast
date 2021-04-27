@@ -8,8 +8,9 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"syscall"
 	"testing"
+
+	"golang.org/x/sys/unix"
 
 	"chromiumos/tast/testutil"
 )
@@ -91,15 +92,15 @@ func TestMoveFileAcrossFilesystems(t *testing.T) {
 	td, src := setUpFile(t, data, mode)
 	defer os.RemoveAll(td)
 
-	var srcStat syscall.Statfs_t
-	if err := syscall.Statfs(src, &srcStat); err != nil {
+	var srcStat unix.Statfs_t
+	if err := unix.Statfs(src, &srcStat); err != nil {
 		t.Fatal(err)
 	}
 
 	// Check that we're actually crossing filesystems.
 	const dstFS = "/dev/shm"
-	var dstStat syscall.Statfs_t
-	if err := syscall.Statfs(dstFS, &dstStat); err != nil {
+	var dstStat unix.Statfs_t
+	if err := unix.Statfs(dstFS, &dstStat); err != nil {
 		t.Logf("Failed to stat %v; skipping test: %v", dstFS, err)
 		return
 	} else if srcStat.Fsid == dstStat.Fsid {

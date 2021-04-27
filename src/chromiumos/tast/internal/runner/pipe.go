@@ -8,7 +8,8 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"syscall"
+
+	"golang.org/x/sys/unix"
 )
 
 // pipeWatcher asynchronously watches an FD corresponding to a pipe and reports when
@@ -41,14 +42,14 @@ func newPipeWatcher(writeFD int) (*pipeWatcher, error) {
 		defer close(pw.errCh)
 
 		pw.errCh <- func() error {
-			epollFD, err := syscall.EpollCreate1(0)
+			epollFD, err := unix.EpollCreate1(0)
 			if err != nil {
 				return fmt.Errorf("failed creating epoll FD: %v", err)
 			}
-			defer syscall.Close(epollFD)
+			defer unix.Close(epollFD)
 
 			for _, fd := range []int{writeFD, int(w.Fd())} {
-				if err := syscall.EpollCtl(epollFD, syscall.EPOLL_CTL_ADD, fd, &syscall.EpollEvent{Fd: int32(fd)}); err != nil {
+				if err := unix.EpollCtl(epollFD, unix.EPOLL_CTL_ADD, fd, &unix.EpollEvent{Fd: int32(fd)}); err != nil {
 					return fmt.Errorf("failed to add FD %d: %v", fd, err)
 				}
 			}
@@ -56,21 +57,21 @@ func newPipeWatcher(writeFD int) (*pipeWatcher, error) {
 			// See epoll_ctl(2): "[EPOLLERR] is also reported for the write end of a pipe
 			// when the read end has been closed. epoll_wait(2) will always report for this event;
 			// it is not necessary to set it in _events_."
-			events := make([]syscall.EpollEvent, 1)
+			events := make([]unix.EpollEvent, 1)
 			for {
-				ret, err := syscall.EpollWait(epollFD, events, -1)
+				ret, err := unix.EpollWait(epollFD, events, -1)
 				if ret != -1 || err == nil {
 					break
 				}
-				if !errors.Is(err, syscall.EINTR) {
+				if !errors.Is(err, unix.EINTR) {
 					return fmt.Errorf("epoll_wait: %v", err)
 				}
 			}
-			if ev := events[0]; ev.Fd == int32(writeFD) && ev.Events == syscall.EPOLLERR {
+			if ev := events[0]; ev.Fd == int32(writeFD) && ev.Events == unix.EPOLLERR {
 				// The read end of writeFD was closed.
 				close(pw.readClosed)
 				return nil
-			} else if ev.Fd == int32(w.Fd()) && ev.Events == syscall.EPOLLERR {
+			} else if ev.Fd == int32(w.Fd()) && ev.Events == unix.EPOLLERR {
 				// The read end of w.Fd was closed (i.e. close() was called).
 				return nil
 			} else {

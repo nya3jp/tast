@@ -18,7 +18,6 @@ import (
 	"sort"
 	"strings"
 	"sync"
-	"syscall"
 	"time"
 
 	"github.com/shirou/gopsutil/process"
@@ -235,7 +234,7 @@ func startBundleCmd(path string, bundleArgs *jsonprotocol.BundleArgs, stdout, st
 	// We can't just use a process group here, as the testexec package places each command
 	// run by a test into its own process group.
 	if cmd.SysProcAttr == nil {
-		cmd.SysProcAttr = &syscall.SysProcAttr{}
+		cmd.SysProcAttr = &unix.SysProcAttr{}
 	}
 	cmd.SysProcAttr.Setsid = true
 
@@ -262,7 +261,7 @@ func runBundle(path string, bundleArgs *jsonprotocol.BundleArgs, stdout io.Write
 	// Also catch SIGINT so we can clean up if the runner was executed manually and
 	// later interrupted with Ctrl-C, and SIGTERM in case we're killed by another runner process.
 	sigCh := make(chan os.Signal, 1)
-	signal.Notify(sigCh, syscall.SIGINT, syscall.SIGTERM)
+	signal.Notify(sigCh, unix.SIGINT, unix.SIGTERM)
 	defer signal.Stop(sigCh)
 
 	stderr := bytes.Buffer{}
@@ -273,7 +272,7 @@ func runBundle(path string, bundleArgs *jsonprotocol.BundleArgs, stdout io.Write
 
 	// When we return, kill the bundle process and any other processes in its session.
 	// Per setsid(2), "[the calling process's] session ID is made the same as its process ID".
-	defer killSession(cmd.Process.Pid, syscall.SIGKILL)
+	defer killSession(cmd.Process.Pid, unix.SIGKILL)
 
 	waitCh := make(chan error, 1)
 	go func() {
@@ -299,9 +298,9 @@ func runBundle(path string, bundleArgs *jsonprotocol.BundleArgs, stdout io.Write
 		// SIGTERM (we were likely killed by another test runner process).
 		status := statusError
 		switch sig {
-		case syscall.SIGINT:
+		case unix.SIGINT:
 			status = statusInterrupted
-		case syscall.SIGTERM:
+		case unix.SIGTERM:
 			status = statusTerminated
 		}
 		return command.NewStatusErrorf(status, "caught signal %d (%s)", sig, sig)
@@ -313,7 +312,7 @@ func runBundle(path string, bundleArgs *jsonprotocol.BundleArgs, stdout io.Write
 // that are part of the session. After it doesn't find any new processes, it returns.
 // Note that this is racy: it's possible (but hopefully unlikely) that continually-forking
 // processes could spawn children that don't get killed.
-func killSession(sid int, sig syscall.Signal) {
+func killSession(sid int, sig unix.Signal) {
 	const maxPasses = 3
 	for i := 0; i < maxPasses; i++ {
 		procs, err := process.Processes()
@@ -324,7 +323,7 @@ func killSession(sid int, sig syscall.Signal) {
 		for _, proc := range procs {
 			pid := int(proc.Pid)
 			if s, err := unix.Getsid(pid); err == nil && s == sid {
-				syscall.Kill(pid, sig)
+				unix.Kill(pid, sig)
 				n++
 			}
 		}

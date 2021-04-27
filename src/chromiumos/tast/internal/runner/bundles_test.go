@@ -7,7 +7,6 @@ package runner
 import (
 	"fmt"
 	"os/exec"
-	"syscall"
 	"testing"
 	"time"
 
@@ -19,7 +18,7 @@ func TestKillSession(t *testing.T) {
 	// Start a shell in a new session that runs sleep.
 	// We can't tell the shell to run "sleep 60" directly since it execs sleep then.
 	cmd := exec.Command("/bin/sh", "-c", "true && sleep 60; true")
-	cmd.SysProcAttr = &syscall.SysProcAttr{Setsid: true}
+	cmd.SysProcAttr = &unix.SysProcAttr{Setsid: true}
 	if err := cmd.Start(); err != nil {
 		t.Fatal("Failed to start command: ", err)
 	}
@@ -58,7 +57,7 @@ func TestKillSession(t *testing.T) {
 
 	// After killing the session and calling wait() on sh (to remove its process entry),
 	// both processes should disappear.
-	killSession(sid, syscall.SIGKILL)
+	killSession(sid, unix.SIGKILL)
 	go cmd.Wait() // avoid blocking forever if killSession is broken
 	if err := waitForProcs(0, 10*time.Second); err != nil {
 		t.Errorf("Didn't get 0 procs after calling killSession: %v", err)

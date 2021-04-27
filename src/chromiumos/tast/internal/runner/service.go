@@ -9,9 +9,9 @@ import (
 	"io"
 	"path/filepath"
 	"sort"
-	"syscall"
 
 	"github.com/golang/protobuf/ptypes"
+	"golang.org/x/sys/unix"
 
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/protocol"
@@ -69,7 +69,7 @@ func (s *testServer) RunTests(srv protocol.TestService_RunTestsServer) error {
 	}
 
 	if s.scfg.KillStaleRunners {
-		killStaleRunners(ctx, syscall.SIGTERM)
+		killStaleRunners(ctx, unix.SIGTERM)
 	}
 
 	return s.forEachBundle(ctx, func(ctx context.Context, ts protocol.TestServiceClient) error {

@@ -11,10 +11,10 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
-	"syscall"
 
 	"github.com/google/subcommands"
 	"golang.org/x/crypto/ssh/terminal"
+	"golang.org/x/sys/unix"
 
 	"chromiumos/tast/cmd/tast/internal/logging"
 )
@@ -55,7 +55,7 @@ func installSignalHandler(lg *logging.Logger) {
 			os.Exit(1)
 		}
 	}()
-	signal.Notify(sc, syscall.SIGINT, syscall.SIGKILL)
+	signal.Notify(sc, unix.SIGINT, unix.SIGKILL)
 }
 
 // doMain implements the main body of the program. It's a separate function so

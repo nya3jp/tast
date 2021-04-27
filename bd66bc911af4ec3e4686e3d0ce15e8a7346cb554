@@ -159,6 +159,53 @@
       },
       "revId": "bd66bc911af4ec3e4686e3d0ce15e8a7346cb554",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c2700450_8a2c71fe",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 33,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-04-27T09:40:26Z",
+      "side": 1,
+      "message": "Thanks, then I will continue reviewing this change. Let us continue discussion about tags on go/cros-f20-notes.",
+      "parentUuid": "49f59102_17432433",
+      "range": {
+        "startLine": 33,
+        "startChar": 5,
+        "endLine": 33,
+        "endChar": 11
+      },
+      "revId": "bd66bc911af4ec3e4686e3d0ce15e8a7346cb554",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b8bb6895_2daf404d",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-04-27T09:40:26Z",
+      "side": 1,
+      "message": "This message is not informational for users. Could you try to construct useful messages? I\u0027m afraid that we need to change the signature of Satisfied as well.",
+      "range": {
+        "startLine": 37,
+        "startChar": 9,
+        "endLine": 37,
+        "endChar": 35
+      },
+      "revId": "bd66bc911af4ec3e4686e3d0ce15e8a7346cb554",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

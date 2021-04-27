@@ -13,6 +13,8 @@ import (
 	"path/filepath"
 	"syscall"
 
+	"golang.org/x/sys/unix"
+
 	"chromiumos/tast/errors"
 )
 
@@ -84,7 +86,7 @@ func MoveFile(src, dst string) error {
 	// Try to do a rename first. This only works if we're not moving across filesystems.
 	if err := os.Rename(src, dst); err == nil {
 		return nil
-	} else if lerr, ok := err.(*os.LinkError); !ok || lerr.Err != syscall.EXDEV {
+	} else if lerr, ok := err.(*os.LinkError); !ok || lerr.Err != unix.EXDEV {
 		return errors.Wrap(err, "failed to rename src to dst file")
 	}
 

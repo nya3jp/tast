@@ -18,9 +18,9 @@ import (
 	"regexp"
 	"sort"
 	"strings"
-	"syscall"
 
 	cryptossh "golang.org/x/crypto/ssh"
+	"golang.org/x/sys/unix"
 
 	"chromiumos/tast/ssh"
 )
@@ -269,7 +269,7 @@ func PutFiles(ctx context.Context, s *ssh.Conn, files map[string]string,
 		return 0, fmt.Errorf("running local tar failed: %v", err)
 	}
 	defer cmd.Wait()
-	defer syscall.Kill(cmd.Process.Pid, syscall.SIGKILL)
+	defer unix.Kill(cmd.Process.Pid, unix.SIGKILL)
 
 	rcmd := s.Command("tar", "-x", "--gzip", "--no-same-owner", "--recursive-unlink", "-C", "/")
 	cr := &countingReader{r: p}

@@ -41,9 +41,9 @@ func (s *testServer) ListEntities(ctx context.Context, req *protocol.ListEntitie
 			if err != nil {
 				return err
 			}
-			defer cl.Close(ctx)
+			defer cl.Close()
 
-			ts := protocol.NewTestServiceClient(cl.Conn)
+			ts := protocol.NewTestServiceClient(cl.Conn())
 			res, err := ts.ListEntities(ctx, req) // pass through req
 			if err != nil {
 				return err

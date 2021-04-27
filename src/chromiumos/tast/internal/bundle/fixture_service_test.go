@@ -97,11 +97,11 @@ func startFakeFixtureService(ctx context.Context, t *gotesting.T, reg *testing.R
 		t.Fatalf("rpc.NewClient: %v", err)
 	}
 	stopFunc = append(stopFunc, func() {
-		if err := rpcCL.Close(ctx); err != nil {
+		if err := rpcCL.Close(); err != nil {
 			t.Errorf("rpcCL.Close(): %v", err)
 		}
 	})
-	cl := NewFixtureServiceClient(rpcCL.Conn)
+	cl := NewFixtureServiceClient(rpcCL.Conn())
 
 	rfcl, err = cl.RunFixture(ctx)
 	if err != nil {

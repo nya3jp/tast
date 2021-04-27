@@ -16,10 +16,10 @@ import (
 	"runtime"
 	"runtime/debug"
 	"strings"
-	"syscall"
 	"time"
 
 	"github.com/shirou/gopsutil/process"
+	"golang.org/x/sys/unix"
 
 	"chromiumos/tast/internal/command"
 	"chromiumos/tast/internal/control"
@@ -140,7 +140,7 @@ func runTestsAndReport(ctx context.Context, args *jsonprotocol.RunnerArgs, scfg 
 	})
 
 	if scfg.KillStaleRunners {
-		killStaleRunners(ctx, syscall.SIGTERM)
+		killStaleRunners(ctx, unix.SIGTERM)
 	}
 
 	// We expect to not match any tests if both local and remote tests are being run but the
@@ -315,7 +315,7 @@ func logMessages(r io.Reader, lg *log.Logger) *command.StatusError {
 
 // killStaleRunners sends sig to the process groups of any other processes sharing
 // the current process's executable. Status messages and errors are logged using lf.
-func killStaleRunners(ctx context.Context, sig syscall.Signal) {
+func killStaleRunners(ctx context.Context, sig unix.Signal) {
 	ourPID := os.Getpid()
 	ourExe, err := os.Executable()
 	if err != nil {
@@ -336,7 +336,7 @@ func killStaleRunners(ctx context.Context, sig syscall.Signal) {
 			continue
 		}
 		testcontext.Logf(ctx, "Sending signal %d to stale %v process group %d", sig, ourExe, proc.Pid)
-		if err := syscall.Kill(int(-proc.Pid), sig); err != nil {
+		if err := unix.Kill(int(-proc.Pid), sig); err != nil {
 			testcontext.Logf(ctx, "Failed killing process group %d: %v", proc.Pid, err)
 		}
 	}

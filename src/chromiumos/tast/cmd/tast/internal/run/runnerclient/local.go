@@ -38,7 +38,7 @@ const (
 )
 
 type remoteFixtureService struct {
-	rpcCL *rpc.Client
+	rpcCL *rpc.ExecClient
 	cl    bundle.FixtureService_RunFixtureClient
 }
 
@@ -57,11 +57,11 @@ func newRemoteFixtureService(ctx context.Context, cfg *config.Config) (rf *remot
 	}
 	defer func() {
 		if retErr != nil {
-			rpcCL.Close(ctx)
+			rpcCL.Close()
 		}
 	}()
 
-	cl, err := bundle.NewFixtureServiceClient(rpcCL.Conn).RunFixture(ctx)
+	cl, err := bundle.NewFixtureServiceClient(rpcCL.Conn()).RunFixture(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("RunFixture agasint %v: %v", cfg.RemoteFixtureServer, err)
 	}
@@ -71,9 +71,9 @@ func newRemoteFixtureService(ctx context.Context, cfg *config.Config) (rf *remot
 	}, nil
 }
 
-func (rf *remoteFixtureService) close(ctx context.Context) (retErr error) {
+func (rf *remoteFixtureService) close() (retErr error) {
 	defer func() {
-		if err := rf.rpcCL.Close(ctx); err != nil && retErr == nil {
+		if err := rf.rpcCL.Close(); err != nil && retErr == nil {
 			retErr = fmt.Errorf("rpcCL.Close(): %v", err)
 		}
 	}()
@@ -378,7 +378,7 @@ func RunLocalTests(ctx context.Context, cfg *config.Config, state *config.State,
 		return nil, err
 	}
 	defer func() {
-		if err := rf.close(ctx); err != nil && retErr == nil {
+		if err := rf.close(); err != nil && retErr == nil {
 			retErr = err
 		}
 	}()

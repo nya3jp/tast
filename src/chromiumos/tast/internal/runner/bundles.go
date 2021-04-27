@@ -108,9 +108,9 @@ func getTests(args *jsonprotocol.RunnerArgs, bundles []string) (tests []*jsonpro
 				if err != nil {
 					return nil, command.NewStatusErrorf(statusBundleFailed, "failed to connect to bundle %s: %v", bundle, err)
 				}
-				defer conn.Close(ctx)
+				defer conn.Close()
 
-				cl := protocol.NewTestServiceClient(conn.Conn)
+				cl := protocol.NewTestServiceClient(conn.Conn())
 
 				res, err := cl.ListEntities(ctx, &protocol.ListEntitiesRequest{Features: bundleArgs.ListTests.FeatureArgs.Features()})
 				if err != nil {
@@ -182,9 +182,9 @@ func listFixtures(bundleGlob string) (map[string][]*jsonprotocol.EntityInfo, *co
 				if err != nil {
 					return nil, command.NewStatusErrorf(statusBundleFailed, "failed to connect to bundle %s: %v", bundle, err)
 				}
-				defer conn.Close(ctx)
+				defer conn.Close()
 
-				cl := protocol.NewTestServiceClient(conn.Conn)
+				cl := protocol.NewTestServiceClient(conn.Conn())
 
 				res, err := cl.ListEntities(ctx, &protocol.ListEntitiesRequest{})
 				if err != nil {

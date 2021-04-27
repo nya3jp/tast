@@ -36,10 +36,10 @@ func startTestServer(t *gotesting.T, scfg *StaticConfig) protocol.TestServiceCli
 		t.Fatalf("Failed to connect to in-process gRPC server: %v", err)
 	}
 	t.Cleanup(func() {
-		conn.Close(context.Background())
+		conn.Close()
 	})
 
-	return protocol.NewTestServiceClient(conn.Conn)
+	return protocol.NewTestServiceClient(conn.Conn())
 }
 
 func TestTestServerListEntities(t *gotesting.T) {

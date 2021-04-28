@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3a4f06aa_cb8b93e4",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2021-04-28T10:15:58Z",
+      "side": 1,
+      "message": "Thank you. Could you update the linter http://cs/chromeos_public/src/platform/tast/src/chromiumos/tast/cmd/tast-lint/check/deprecated_apis.go , to prohibit use of syscall ?",
+      "revId": "23f5c65c7e21fd5bb0919665303f79c192c5e319",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

@@ -230,6 +230,30 @@
       },
       "revId": "bd66bc911af4ec3e4686e3d0ce15e8a7346cb554",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "93e96562_a0ab9b5d",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-04-28T08:59:50Z",
+      "side": 1,
+      "message": "Thanks for the proposal. I agree that\u0027s better than nothing... but it\u0027s still not very great since we lose the information in many cases.\n\nWhat are hardware dependencies you\u0027re particularly interested in? Since this generalized problem is not trivial to solve, you might want to introduce specialized hardware deps (e.g. NoX86) to unblock you early.",
+      "parentUuid": "d9a6ffd1_839b428d",
+      "range": {
+        "startLine": 37,
+        "startChar": 9,
+        "endLine": 37,
+        "endChar": 35
+      },
+      "revId": "bd66bc911af4ec3e4686e3d0ce15e8a7346cb554",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

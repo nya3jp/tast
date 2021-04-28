@@ -254,6 +254,30 @@
       },
       "revId": "bd66bc911af4ec3e4686e3d0ce15e8a7346cb554",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7358c3e9_450ec6f8",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1483403
+      },
+      "writtenOn": "2021-04-28T15:18:32Z",
+      "side": 1,
+      "message": "I want to use different regexes in my test depending on if the DUT is x86 or not.  It doesn\u0027t look like you can just check some IsX86() function in the test, so I made it a parameterized test instead, but I don\u0027t want the x86 duts to run the non-x86 version.\n\nhttps://chromium-review.googlesource.com/c/chromiumos/platform/tast-tests/+/2843076\n\nI could have somehow gotten the device config and pasted in the if dc.GetCpu() \u003d\u003d device.Config_X86 || dc.GetCpu() \u003d\u003d device.Config_X86_64 {} check into my test, but that seemed like a bad idea.",
+      "parentUuid": "93e96562_a0ab9b5d",
+      "range": {
+        "startLine": 37,
+        "startChar": 9,
+        "endLine": 37,
+        "endChar": 35
+      },
+      "revId": "bd66bc911af4ec3e4686e3d0ce15e8a7346cb554",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

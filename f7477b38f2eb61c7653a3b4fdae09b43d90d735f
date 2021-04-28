@@ -16,6 +16,24 @@
       "message": "Could you confirm that the run returns?",
       "revId": "f7477b38f2eb61c7653a3b4fdae09b43d90d735f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "aaef0b03_6bdc77df",
+        "filename": "src/chromiumos/tast/internal/runner/service_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-04-28T09:21:23Z",
+      "side": 1,
+      "message": "Ah that\u0027s a good idea, let me do so.",
+      "parentUuid": "9c872fd5_db8261d4",
+      "revId": "f7477b38f2eb61c7653a3b4fdae09b43d90d735f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

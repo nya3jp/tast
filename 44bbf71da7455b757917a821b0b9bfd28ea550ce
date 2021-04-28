@@ -209,6 +209,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "e9e57cd5_638ca3b6",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 528,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-04-28T04:43:32Z",
+      "side": 1,
+      "message": "The change has landed. crbug.com/1184468#c13\n\nNote that those devices said to have 16GB SSD may have a different value from 16GB recognized by the framework.\nFor example, an apel device had 15758000128 bytes for regular disk (except boot partitions), which will be treated as \"15GB\".",
+      "parentUuid": "bdcd9305_46c0130d",
+      "range": {
+        "startLine": 528,
+        "startChar": 5,
+        "endLine": 528,
+        "endChar": 40
+      },
+      "revId": "44bbf71da7455b757917a821b0b9bfd28ea550ce",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "73e4811a_00390ed8",

@@ -88,7 +88,9 @@ run_build() {
 
 # Checks one or more packages.
 run_vet() {
-  go vet -printfuncs=Log,Logf,Error,Errorf,Fatal,Fatalf,Wrap,Wrapf "${@}"
+  go vet -unusedresult.funcs=errors.New,errors.Wrap,errors.Wrapf,fmt.Errorf,\
+fmt.Sprint,fmt.Sprintf,sort.Reverse \
+    -printf.funcs=Log,Logf,Error,Errorf,Fatal,Fatalf,Wrap,Wrapf "${@}"
 }
 
 # Tests one or more packages.

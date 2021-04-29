@@ -67,7 +67,11 @@ type Fixture struct {
 	// Values are supplied using "tast run -var=name=value", and tests can access values via State.Var.
 	Vars []string
 
-	// TODO(oka): Add Data and Param fields.
+	// Data contains paths of data files needed by the fixture, relative to a
+	// "data" subdirectory within the directory in which the fixture is registered.
+	Data []string
+
+	// TODO(oka): Add Param fields.
 }
 
 func (f *Fixture) instantiate(pkg string) (*FixtureInstance, error) {
@@ -87,6 +91,7 @@ func (f *Fixture) instantiate(pkg string) (*FixtureInstance, error) {
 		PostTestTimeout: f.PostTestTimeout,
 		TearDownTimeout: f.TearDownTimeout,
 		ServiceDeps:     append([]string(nil), f.ServiceDeps...),
+		Data:            append([]string(nil), f.Data...),
 		Vars:            append([]string(nil), f.Vars...),
 	}, nil
 }

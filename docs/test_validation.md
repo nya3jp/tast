@@ -74,9 +74,9 @@ The [go vet] command is part of the official Go distribution:
 > that do not guarantee all reports are genuine problems, but it can find errors
 > not caught by the compilers.
 
-`go vet` is minimally configurable; we pass the `-printfuncs` flag to enable
-checking of additional `printf`-like functions but otherwise use default
-settings.
+`go vet` is minimally configurable; we pass the `-printf.funcs` flag to enable
+checking of additional `printf`-like functions in addition to the
+`unusedresult.funcs` flag but otherwise use default settings.
 
 `go vet` currently runs as part of the `src_test` stage when building test
 bundle packages (e.g. `tast-local-tests-cros`). If developers don't manually

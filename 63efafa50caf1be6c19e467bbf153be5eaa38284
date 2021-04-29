@@ -33,6 +33,24 @@
       "message": "Sorry, I hit send too quick. I meant\n\nFrom the description, it sounds like it is fixing a bug, but why BUG field and TEST were none?\n",
       "revId": "63efafa50caf1be6c19e467bbf153be5eaa38284",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "70c43b62_116c176f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1432569
+      },
+      "writtenOn": "2021-04-29T05:37:34Z",
+      "side": 1,
+      "message": "I created a buganizer report for the bug. In terms of testing, the cq should be sufficient as that should run go vet.",
+      "parentUuid": "4451a648_7249ccc3",
+      "revId": "63efafa50caf1be6c19e467bbf153be5eaa38284",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

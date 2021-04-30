@@ -233,6 +233,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "56d67f26_6183f35e",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 528,
+      "author": {
+        "id": 1113991
+      },
+      "writtenOn": "2021-04-30T18:15:37Z",
+      "side": 1,
+      "message": "Thanks! Abandoning this CL in favour of crrev/c/2857074.",
+      "parentUuid": "e9e57cd5_638ca3b6",
+      "range": {
+        "startLine": 528,
+        "startChar": 5,
+        "endLine": 528,
+        "endChar": 40
+      },
+      "revId": "44bbf71da7455b757917a821b0b9bfd28ea550ce",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "73e4811a_00390ed8",

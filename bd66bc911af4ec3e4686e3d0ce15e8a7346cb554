@@ -278,6 +278,30 @@
       },
       "revId": "bd66bc911af4ec3e4686e3d0ce15e8a7346cb554",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0649020c_4ebe978a",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1483403
+      },
+      "writtenOn": "2021-04-30T22:18:03Z",
+      "side": 1,
+      "message": "Added NoX86 instead.",
+      "parentUuid": "7358c3e9_450ec6f8",
+      "range": {
+        "startLine": 37,
+        "startChar": 9,
+        "endLine": 37,
+        "endChar": 35
+      },
+      "revId": "bd66bc911af4ec3e4686e3d0ce15e8a7346cb554",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "84047beb_d825f06f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1501785
+      },
+      "writtenOn": "2021-05-03T23:15:44Z",
+      "side": 1,
+      "message": "This change adds the reven board to the SoftwareFeatureDefinitions map in such a way that the same tests that are skipped for betty builds (should) also be skipped for reven. There is probably a more code-compact way to do this but I wanted to keep it readable.",
+      "revId": "6d99053839514650c46e2a715ae8ada70a7933dd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

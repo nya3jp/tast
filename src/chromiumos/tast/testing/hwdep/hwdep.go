@@ -455,24 +455,42 @@ func WifiIntel() Condition {
 	}
 }
 
+// hasWifiQualcomm returns true if the board/model uses Qualcomm WiFi.
+func hasWifiQualcomm(f *protocol.HardwareFeatures) (bool, error) {
+	// TODO(crbug.com/1070299): we don't yet have relevant fields in device.Config
+	// about WiFi chip, so list the known platforms here for now.
+	dc := f.GetDeprecatedDeviceConfig()
+	if listed, err := platformListed(dc, "grunt", "kukui", "scarlet", "strongbad", "trogdor", "trogdor-kernelnext"); listed == false || err != nil {
+		return listed, err
+	}
+
+	// grunt/balra uses Realtek chip.
+	listed, err := modelListed(dc, "barla")
+	return !listed, err
+}
+
 // WifiQualcomm returns a hardware dependency condition that if satisfied, indicates
 // that a device uses Qualcomm WiFi.
 func WifiQualcomm() Condition {
-	// TODO(crbug.com/1070299): we don't yet have relevant fields in device.Config
-	// about WiFi chip, so list the known platforms here for now.
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) error {
-		platformCondition := Platform(
-			"grunt", "kukui", "scarlet", "strongbad", "trogdor", "trogdor-kernelnext",
-		)
-		if err := platformCondition.Satisfied(f); err != nil {
-			return err
+		if hasQci, err := hasWifiQualcomm(f); err != nil {
+			return errors.Wrap(err, "unable to determine if the model has a Qualcomm WiFi module")
+		} else if !hasQci {
+			return errors.New("the model does not have a Qualcomm WiFi module")
 		}
-		// barla has Realtek WiFi chip.
-		modelCondition := SkipOnModel(
-			"barla",
-		)
-		if err := modelCondition.Satisfied(f); err != nil {
-			return err
+		return nil
+	}, CEL: "not_implemented",
+	}
+}
+
+// WifiNotQualcomm returns a hardware dependency condition that if satisfied, indicates
+// that a device does not use Qualcomm WiFi.
+func WifiNotQualcomm() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) error {
+		if hasQci, err := hasWifiQualcomm(f); err != nil {
+			return errors.Wrap(err, "unable to determine if the model has a Qualcomm WiFi module")
+		} else if hasQci {
+			return errors.New("the model has a Qualcomm WiFi module")
 		}
 		return nil
 	}, CEL: "not_implemented",

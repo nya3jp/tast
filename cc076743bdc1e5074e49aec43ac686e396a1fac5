@@ -16,6 +16,29 @@
       "message": "ihf@ mcasas@ PTAL.\njchinlee FYI",
       "revId": "cc076743bdc1e5074e49aec43ac686e396a1fac5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "05531522_c1fa570e",
+        "filename": "src/chromiumos/tast/internal/testing/attr.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 130,
+      "author": {
+        "id": 1113991
+      },
+      "writtenOn": "2021-05-03T20:03:57Z",
+      "side": 1,
+      "message": "nit: s/platform_decode/graphics_video_platform_decode/ ?\n\nRather too verbose than leave it under-determined.",
+      "range": {
+        "startLine": 130,
+        "startChar": 11,
+        "endLine": 130,
+        "endChar": 26
+      },
+      "revId": "cc076743bdc1e5074e49aec43ac686e396a1fac5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

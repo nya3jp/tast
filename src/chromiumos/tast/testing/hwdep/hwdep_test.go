@@ -421,7 +421,7 @@ func TestCEL(t *testing.T) {
 	}
 }
 
-func TestWiFiIntel(t *testing.T) {
+func TestWifiIntel(t *testing.T) {
 	c := WifiIntel()
 
 	for _, tc := range []struct {
@@ -431,6 +431,68 @@ func TestWiFiIntel(t *testing.T) {
 	}{
 		{"grunt", "barla", false},
 		{"zork", "ezkinil", false},
+		{"zork", "morphius", true},
+		{"octopus", "droid", true},
+	} {
+		verifyCondition(
+			t, c,
+			&device.Config{
+				Id: &device.ConfigId{
+					PlatformId: &device.PlatformId{
+						Value: tc.platform,
+					},
+					ModelId: &device.ModelId{
+						Value: tc.model,
+					},
+				},
+			},
+			&configpb.HardwareFeatures{},
+			tc.expectSatisfied)
+	}
+}
+
+func TestWifiQualcomm(t *testing.T) {
+	c := WifiQualcomm()
+
+	for _, tc := range []struct {
+		platform        string
+		model           string
+		expectSatisfied bool
+	}{
+		{"grunt", "barla", false},
+		{"grunt", "kasumi", true},
+		{"kukui", "krane", true},
+		{"zork", "morphius", false},
+		{"octopus", "droid", false},
+	} {
+		verifyCondition(
+			t, c,
+			&device.Config{
+				Id: &device.ConfigId{
+					PlatformId: &device.PlatformId{
+						Value: tc.platform,
+					},
+					ModelId: &device.ModelId{
+						Value: tc.model,
+					},
+				},
+			},
+			&configpb.HardwareFeatures{},
+			tc.expectSatisfied)
+	}
+}
+
+func TestWifiNotQualcomm(t *testing.T) {
+	c := WifiNotQualcomm()
+
+	for _, tc := range []struct {
+		platform        string
+		model           string
+		expectSatisfied bool
+	}{
+		{"grunt", "barla", true},
+		{"grunt", "kasumi", false},
+		{"kukui", "krane", false},
 		{"zork", "morphius", true},
 		{"octopus", "droid", true},
 	} {

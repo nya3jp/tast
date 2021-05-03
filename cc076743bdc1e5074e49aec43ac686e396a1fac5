@@ -39,6 +39,30 @@
       },
       "revId": "cc076743bdc1e5074e49aec43ac686e396a1fac5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2d2044fe_74c250a1",
+        "filename": "src/chromiumos/tast/internal/testing/attr.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 130,
+      "author": {
+        "id": 1197299
+      },
+      "writtenOn": "2021-05-03T23:51:24Z",
+      "side": 1,
+      "message": "Good catch. This attr is only applies within group:graphics but you are right. Rather too verbose.",
+      "parentUuid": "05531522_c1fa570e",
+      "range": {
+        "startLine": 130,
+        "startChar": 11,
+        "endLine": 130,
+        "endChar": 26
+      },
+      "revId": "cc076743bdc1e5074e49aec43ac686e396a1fac5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

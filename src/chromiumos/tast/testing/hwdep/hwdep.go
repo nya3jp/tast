@@ -479,6 +479,28 @@ func WifiQualcomm() Condition {
 	}
 }
 
+// SupportPTK returns true if the device's WiFi module supports PTK.
+// TOD(b/183463918): Remove this once the issue is solved.
+func SupportPTK() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) error {
+		// TODO(crbug.com/1070299): we don't yet have relevant fields in device.Config
+		// about WiFi chip, so list the known platforms here for now.
+		return SkipOnPlatform("jacuzzi", "kukui").Satisfied(f)
+	}, CEL: "not_implemented",
+	}
+}
+
+// NotSupportPTK returns true if the device's WiFi module does not support PTK.
+// TOD(b/183463918): Remove this once the issue is solved.
+func NotSupportPTK() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) error {
+		// TODO(crbug.com/1070299): we don't yet have relevant fields in device.Config
+		// about WiFi chip, so list the known platforms here for now.
+		return Platform("jacuzzi", "kukui").Satisfied(f)
+	}, CEL: "not_implemented",
+	}
+}
+
 func hasBattery(f *protocol.HardwareFeatures) (bool, error) {
 	dc := f.GetDeprecatedDeviceConfig()
 	if dc == nil {

@@ -126,6 +126,14 @@ Tests in this group are not used for build verification.
 				Name: "graphics_av_analysis",
 				Desc: `Indicates that this test should run on audio/video analysis pool.`,
 			},
+			{
+				Name: "graphics_video_platformdecoding",
+				Desc: `Indicates that this test is exercising platform video decoding abilities.`,
+			},
+			{
+				Name: "codec_vp9",
+				Desc: `Indicates that this test is exercising vp9 codec.`,
+			},
 		},
 	},
 	{

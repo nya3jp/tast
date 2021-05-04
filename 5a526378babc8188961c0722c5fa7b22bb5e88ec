@@ -35,6 +35,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "9543b471_4abe4010",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1197299
+      },
+      "writtenOn": "2021-05-04T01:23:30Z",
+      "side": 1,
+      "message": "Done.",
+      "parentUuid": "bf9f3f81_3ebbb156",
+      "revId": "5a526378babc8188961c0722c5fa7b22bb5e88ec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "e96d7dd7_dd9d2e56",
@@ -48,6 +66,30 @@
       "writtenOn": "2021-05-04T00:19:30Z",
       "side": 1,
       "message": "platformdecoding",
+      "range": {
+        "startLine": 130,
+        "startChar": 26,
+        "endLine": 130,
+        "endChar": 41
+      },
+      "revId": "5a526378babc8188961c0722c5fa7b22bb5e88ec",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "28cc1cb8_45a60415",
+        "filename": "src/chromiumos/tast/internal/testing/attr.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 130,
+      "author": {
+        "id": 1197299
+      },
+      "writtenOn": "2021-05-04T01:23:30Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e96d7dd7_dd9d2e56",
       "range": {
         "startLine": 130,
         "startChar": 26,

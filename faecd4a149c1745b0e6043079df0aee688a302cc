@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "10e22699_b1b0e02f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2021-05-04T14:54:35Z",
+      "side": 1,
+      "message": "LGTM with comments.",
+      "revId": "faecd4a149c1745b0e6043079df0aee688a302cc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b32ed86f_6081dd86",
+        "filename": "src/chromiumos/tast/internal/testing/attr.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 134,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2021-05-04T14:54:35Z",
+      "side": 1,
+      "message": "nit: for consistency, graphics_codec_vp9",
+      "range": {
+        "startLine": 134,
+        "startChar": 11,
+        "endLine": 134,
+        "endChar": 20
+      },
+      "revId": "faecd4a149c1745b0e6043079df0aee688a302cc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

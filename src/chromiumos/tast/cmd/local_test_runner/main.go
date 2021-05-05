@@ -197,7 +197,7 @@ func main() {
 			"tpm1":                   "!mocktpm && !tpm2", // Indicate tpm1.2 is available
 			"tpm2":                   "!mocktpm && tpm2",  // Indicate tpm2 is available
 			"transparent_hugepage":   "transparent_hugepage",
-			"untrusted_vm":           `"kernel-4_19" || "kernel-5_4"`,
+			"untrusted_vm":           `"kernel-4_19" || "kernel-5_4" || "kernel-5_10"`,
 			"usbguard":               "usbguard",
 			"use_fscrypt_v1":         "!direncription_allow_v2",
 			"use_fscrypt_v2":         "direncription_allow_v2",

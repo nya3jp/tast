@@ -126,6 +126,7 @@ The following software features are defined:
 *   `no_eth_loss_on_reboot` - Board does not lose ethernet on reboot. Context: b/178529170
 *   `no_iioservice` - Build was not built with CrOS IIO Service.
 *   `no_msan` - Build was not built with Memory Sanitizer.
+*   `no_ondevice_handwriting` - Doesn't have on-device handwriting recognition support. Either ml_service is not enabled, or if ml_service doesn't support `ondevice_handwriting`.
 *   `no_qemu` - For tests not for Chrome OS QEMU images.
 *   `no_symlink_mount` - Symlink mounting is disabled via the
     `CONFIG_SECURITY_CHROMIUMOS_NO_SYMLINK_MOUNT` kernel option.

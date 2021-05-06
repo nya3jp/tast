@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "955557e4_cefdee74",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 7
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-05-06T00:25:15Z",
+      "side": 1,
+      "message": "Now I\u0027m back from 1-week national holiday...\n\nThanks, LGTM.\n",
+      "revId": "c6fe4d3ffdfd827b8b9130dcb243b61ff35af110",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

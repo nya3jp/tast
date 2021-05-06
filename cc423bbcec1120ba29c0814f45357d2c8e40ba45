@@ -22,6 +22,30 @@
       },
       "revId": "cc423bbcec1120ba29c0814f45357d2c8e40ba45",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ff8fc80a_ef8b008c",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 489,
+      "author": {
+        "id": 1001853
+      },
+      "writtenOn": "2021-05-06T06:29:52Z",
+      "side": 1,
+      "message": "Good idea. Done.",
+      "parentUuid": "642619d7_cd4d7537",
+      "range": {
+        "startLine": 489,
+        "startChar": 2,
+        "endLine": 489,
+        "endChar": 14
+      },
+      "revId": "cc423bbcec1120ba29c0814f45357d2c8e40ba45",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

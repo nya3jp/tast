@@ -56,6 +56,10 @@ const (
 	// ARCSDKVersion is a key for the Android SDK Version of the current
 	// ARC image installed on the DUT.
 	ARCSDKVersion = "CHROMEOS_ARC_ANDROID_SDK_VERSION"
+
+	// ARCVersion is a key for the Android Version of the current ARC image
+	// installed on the DUT
+	ARCVersion = "CHROMEOS_ARC_VERSION"
 )
 
 // allowedPkgs is the list of Go packages that can use this package.
@@ -67,6 +71,7 @@ var allowedPkgs = []string{
 	"chromiumos/tast/local/bundles/cros/arc", // For Version.
 	"chromiumos/tast/local/bundles/cros/platform/updateserver",
 	"chromiumos/tast/local/bundles/cros/health", // To confirm OS version can be parsed.
+	"chromiumos/tast/local/bundles/cros/system", // For Version.
 	"chromiumos/tast/local/crash",
 	"chromiumos/tast/local/graphics/trace",
 	"chromiumos/tast/local/rialto",

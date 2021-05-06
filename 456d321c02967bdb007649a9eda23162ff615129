@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "76b6c86b_3445ff71",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1158184
+      },
+      "writtenOn": "2021-05-06T18:12:40Z",
+      "side": 1,
+      "message": "The linked bug mentions a bug specific to QCA6174A (http://issuetracker.google.com/160113424#comment12), not Qualcomm in general. For example trogdor would not be impacted.\n\nI think in that case, since it\u0027s for a specific feature, it makes sense for the test itself to list the limitation.\n\nIn general it\u0027s also better to filter the feature itself (e.g. create a hwdep supportsPTK()) rather than a broader isQC() hwdep.",
+      "revId": "456d321c02967bdb007649a9eda23162ff615129",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

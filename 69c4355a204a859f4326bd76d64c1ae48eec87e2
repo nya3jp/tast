@@ -22,6 +22,30 @@
       },
       "revId": "69c4355a204a859f4326bd76d64c1ae48eec87e2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a7a8aec2_e7d43b5a",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 467,
+      "author": {
+        "id": 1001853
+      },
+      "writtenOn": "2021-05-06T10:38:05Z",
+      "side": 1,
+      "message": "I mean to exclude model barla in board (platform) grunt. Rephrased.",
+      "parentUuid": "267b0eb0_4e70cf9b",
+      "range": {
+        "startLine": 467,
+        "startChar": 4,
+        "endLine": 467,
+        "endChar": 9
+      },
+      "revId": "69c4355a204a859f4326bd76d64c1ae48eec87e2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

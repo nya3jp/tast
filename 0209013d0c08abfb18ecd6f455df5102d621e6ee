@@ -50,6 +50,24 @@
       "message": "Tast owners, PTAL",
       "revId": "0209013d0c08abfb18ecd6f455df5102d621e6ee",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "88d490c1_0877c69f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1378025
+      },
+      "writtenOn": "2021-05-06T09:50:25Z",
+      "side": 1,
+      "message": "oops. I guess gerrit\u0027s suggest owner needs some improvement.\n\nit shows\n\n```\n./docs/test_dependencies.md (2 files):\n* benreich\n...\n```",
+      "parentUuid": "269adafc_d6083759",
+      "revId": "0209013d0c08abfb18ecd6f455df5102d621e6ee",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

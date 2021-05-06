@@ -16,6 +16,29 @@
       "message": "This change adds the reven board to the SoftwareFeatureDefinitions map in such a way that the same tests that are skipped for betty builds (should) also be skipped for reven. There is probably a more code-compact way to do this but I wanted to keep it readable.",
       "revId": "6d99053839514650c46e2a715ae8ada70a7933dd",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b0fbc5da_8ebf29a9",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-05-06T06:34:31Z",
+      "side": 1,
+      "message": "USE flags in feature definitions should be included in tast-use-flags-9999.ebuild. reven seems not yet included?\nhttps://source.corp.google.com/chromeos_public/src/third_party/chromiumos-overlay/chromeos-base/tast-use-flags/tast-use-flags-9999.ebuild\n\nAlternatively you can use \"board:reven\", which doesn\u0027t need explicit definitions in tast-use-flags. Actually I recommend this.",
+      "range": {
+        "startLine": 101,
+        "startChar": 36,
+        "endLine": 101,
+        "endChar": 41
+      },
+      "revId": "6d99053839514650c46e2a715ae8ada70a7933dd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

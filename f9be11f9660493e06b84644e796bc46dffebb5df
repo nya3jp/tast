@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "9bbcb252_3332b885",
+        "filename": "src/chromiumos/tast/internal/fakeexec/aux.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 116,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-05-07T05:12:48Z",
+      "side": 1,
+      "message": "Ouch. Fixed.",
+      "parentUuid": "72087600_42a867c6",
+      "range": {
+        "startLine": 116,
+        "startChar": 2,
+        "endLine": 116,
+        "endChar": 3
+      },
+      "revId": "f9be11f9660493e06b84644e796bc46dffebb5df",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "1b543354_f5551d5a",
@@ -47,6 +71,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "a1c0a286_79fbfa11",
+        "filename": "src/chromiumos/tast/internal/fakeexec/aux.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 147,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-05-07T05:12:48Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1b543354_f5551d5a",
+      "range": {
+        "startLine": 147,
+        "startChar": 8,
+        "endLine": 147,
+        "endChar": 19
+      },
+      "revId": "f9be11f9660493e06b84644e796bc46dffebb5df",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "ee1d8d0c_d32c6cd6",
@@ -60,6 +108,30 @@
       "writtenOn": "2021-05-06T09:45:42Z",
       "side": 1,
       "message": "Could you be more specific about what kind of system calls don\u0027t work?\nI guess for example read syscall is harmless.\nSetsid in case of DialExec test?",
+      "range": {
+        "startLine": 67,
+        "startChar": 16,
+        "endLine": 67,
+        "endChar": 28
+      },
+      "revId": "f9be11f9660493e06b84644e796bc46dffebb5df",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6c38a566_de586e7e",
+        "filename": "src/chromiumos/tast/internal/fakeexec/loopback.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-05-07T05:12:48Z",
+      "side": 1,
+      "message": "That\u0027s right. I\u0027ve updated the sentence: \"if you need to do anything else, e.g. catching signals\".",
+      "parentUuid": "ee1d8d0c_d32c6cd6",
       "range": {
         "startLine": 67,
         "startChar": 16,

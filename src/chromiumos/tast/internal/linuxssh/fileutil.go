@@ -197,7 +197,8 @@ func tarTransformFlag(s, d string) string {
 		}
 		return s
 	}
-	return fmt.Sprintf("--transform=s,^%s$,%s,",
+	// Transform foo -> bar but not foobar -> barbar. Therefore match foo$ or foo/
+	return fmt.Sprintf(`--transform=s,^%s\($\|/\),%s,`,
 		esc(regexp.QuoteMeta(s), []string{","}),
 		esc(d, []string{"\\", ",", "&"}))
 }
@@ -274,7 +275,7 @@ func PutFiles(ctx context.Context, s *ssh.Conn, files map[string]string,
 	rcmd := s.Command("tar", "-x", "--gzip", "--no-same-owner", "--recursive-unlink", "-C", "/")
 	cr := &countingReader{r: p}
 	rcmd.Stdin = cr
-	if err := rcmd.Run(ctx); err != nil {
+	if err := rcmd.Run(ctx, ssh.DumpLogOnError); err != nil {
 		return 0, fmt.Errorf("remote tar failed: %v", err)
 	}
 	return cr.bytes, nil

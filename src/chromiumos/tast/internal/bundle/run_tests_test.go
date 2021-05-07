@@ -5,7 +5,6 @@
 package bundle
 
 import (
-	"bytes"
 	"context"
 	"io/ioutil"
 	"log"
@@ -20,7 +19,6 @@ import (
 
 	"chromiumos/tast/dut"
 	"chromiumos/tast/errors"
-	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/protocol/protocoltest"
 	"chromiumos/tast/internal/sshtest"
@@ -164,13 +162,14 @@ func TestRunTests(t *gotesting.T) {
 }
 
 func TestRunTestsNoTests(t *gotesting.T) {
-	// runTests should report success when no test is executed.
-	if err := runTestsCompat(context.Background(), &bytes.Buffer{}, nil, NewStaticConfig(testing.NewRegistry(), 0, Delegate{})); err != nil {
-		t.Fatalf("runTests failed for empty tests: %v", err)
+	// RunTests should report success when no test is executed.
+	cl := startTestServer(t, NewStaticConfig(testing.NewRegistry(), 0, Delegate{}))
+	if _, err := protocoltest.RunTestsForEvents(cl, &protocol.RunConfig{}, false); err != nil {
+		t.Fatalf("RunTests failed for empty tests: %v", err)
 	}
 }
 
-func TestRunRemoteData(t *gotesting.T) {
+func TestRunTestsRemoteData(t *gotesting.T) {
 	td := sshtest.NewTestData(nil)
 	defer td.Close()
 
@@ -190,39 +189,40 @@ func TestRunRemoteData(t *gotesting.T) {
 		},
 	})
 
-	tmpDir := testutil.TempDir(t)
-	defer os.RemoveAll(tmpDir)
-
-	args := jsonprotocol.BundleArgs{
-		Mode: jsonprotocol.BundleRunTestsMode,
-		RunTests: &jsonprotocol.BundleRunTestsArgs{
-			OutDir:         tmpDir,
-			DataDir:        tmpDir,
-			TastPath:       "/bogus/tast",
-			Target:         td.Srvs[0].Addr().String(),
-			KeyFile:        td.UserKeyFile,
-			RunFlags:       []string{"-flag1", "-flag2"},
+	cfg := &protocol.RunConfig{
+		RemoteTestConfig: &protocol.RemoteTestConfig{
+			PrimaryDut: &protocol.DUTConfig{
+				SshConfig: &protocol.SSHConfig{
+					Target:  td.Srvs[0].Addr().String(),
+					KeyFile: td.UserKeyFile,
+				},
+			},
 			LocalBundleDir: "/mock/local/bundles",
-			FeatureArgs: jsonprotocol.FeatureArgs{
-				TestVars: map[string]string{"var1": "value1"},
+			MetaTestConfig: &protocol.MetaTestConfig{
+				TastPath: "/bogus/tast",
+				RunFlags: []string{"-flag1", "-flag2"},
 			},
 		},
+		Features: &protocol.Features{
+			Vars: map[string]string{"var1": "value1"},
+		},
 	}
-	stdin := newBufferWithArgs(t, &args)
-	if status := run(context.Background(), nil, stdin, &bytes.Buffer{}, &bytes.Buffer{}, NewStaticConfig(reg, time.Minute, Delegate{})); status != statusSuccess {
-		t.Fatalf("run() returned status %v; want %v", status, statusSuccess)
+
+	cl := startTestServer(t, NewStaticConfig(reg, time.Minute, Delegate{}))
+	if _, err := protocoltest.RunTestsForEvents(cl, cfg, false); err != nil {
+		t.Fatalf("RunTests failed: %v", err)
 	}
 
 	// The test should have access to information related to remote tests.
 	expMeta := &testing.Meta{
-		TastPath: args.RunTests.TastPath,
-		Target:   args.RunTests.Target,
-		RunFlags: args.RunTests.RunFlags,
+		Target:   cfg.RemoteTestConfig.PrimaryDut.SshConfig.Target,
+		TastPath: cfg.RemoteTestConfig.MetaTestConfig.TastPath,
+		RunFlags: cfg.RemoteTestConfig.MetaTestConfig.RunFlags,
 	}
 	if !reflect.DeepEqual(meta, expMeta) {
 		t.Errorf("Test got Meta %+v; want %+v", *meta, *expMeta)
 	}
-	expHint := testing.NewRPCHint(args.RunTests.LocalBundleDir, args.RunTests.TestVars)
+	expHint := testing.NewRPCHint(cfg.RemoteTestConfig.LocalBundleDir, cfg.Features.Vars)
 	if !reflect.DeepEqual(hint, expHint) {
 		t.Errorf("Test got RPCHint %+v; want %+v", *hint, *expHint)
 	}
@@ -278,127 +278,101 @@ func TestRunTestsStartFixture(t *gotesting.T) {
 	}
 }
 
-func TestLocalReadyFunc(t *gotesting.T) {
+func TestRunTestsReadyFunc(t *gotesting.T) {
 	reg := testing.NewRegistry()
 	reg.AddTestInstance(&testing.TestInstance{Name: "pkg.Test", Func: func(context.Context, *testing.State) {}})
-
-	outDir := testutil.TempDir(t)
-	defer os.RemoveAll(outDir)
 
 	// Ensure that a successful ready function is executed.
-	args := jsonprotocol.BundleArgs{
-		Mode: jsonprotocol.BundleRunTestsMode,
-		RunTests: &jsonprotocol.BundleRunTestsArgs{
-			OutDir:         outDir,
-			WaitUntilReady: true,
-		},
+	cfg := &protocol.RunConfig{
+		WaitUntilReady: true,
 	}
-	stdin := newBufferWithArgs(t, &args)
-	stderr := bytes.Buffer{}
 	ranReady := false
-	ready := func(context.Context) error {
-		ranReady = true
-		return nil
-	}
-	if status := Local(nil, stdin, &bytes.Buffer{}, &stderr, reg, Delegate{
-		Ready: ready,
-	}); status != statusSuccess {
-		t.Errorf("Local(%+v) = %v; want %v", args, status, statusSuccess)
+	scfg := NewStaticConfig(reg, time.Minute, Delegate{
+		Ready: func(context.Context) error {
+			ranReady = true
+			return nil
+		},
+	})
+	cl := startTestServer(t, scfg)
+	if _, err := protocoltest.RunTestsForEvents(cl, cfg, false); err != nil {
+		t.Fatalf("RunTests failed: %v", err)
 	}
 	if !ranReady {
-		t.Errorf("Local(%+v) didn't run ready function", args)
+		t.Error("RunTests didn't run ready function")
 	}
 
-	// Local should fail if the ready function returns an error.
-	stdin = newBufferWithArgs(t, &args)
-	stderr = bytes.Buffer{}
+	// RunTests should fail if the ready function returns an error.
 	const msg = "intentional failure"
-	ready = func(context.Context) error { return errors.New(msg) }
-	if status := Local(nil, stdin, &bytes.Buffer{}, &stderr, reg, Delegate{
-		Ready: ready,
-	}); status != statusError {
-		t.Errorf("Local(%+v) = %v; want %v", args, status, statusError)
+	scfg = NewStaticConfig(reg, time.Minute, Delegate{
+		Ready: func(context.Context) error { return errors.New(msg) },
+	})
+	cl = startTestServer(t, scfg)
+	_, err := protocoltest.RunTestsForEvents(cl, cfg, false)
+	if err == nil {
+		t.Fatal("RunTests unexpectedly succeeded despite ready hook failure")
 	}
-	if s := stderr.String(); !strings.Contains(s, msg) {
-		t.Errorf("Local(%+v) didn't write ready error %q to stderr (got %q)", args, msg, s)
+	if s := err.Error(); !strings.Contains(s, msg) {
+		t.Errorf("RunTests error doesn't include error message %q: %v", msg, s)
 	}
 }
 
-func TestLocalReadyFuncDisabled(t *gotesting.T) {
+func TestRunTestsReadyFuncDisabled(t *gotesting.T) {
 	reg := testing.NewRegistry()
 	reg.AddTestInstance(&testing.TestInstance{Name: "pkg.Test", Func: func(context.Context, *testing.State) {}})
 
-	outDir := testutil.TempDir(t)
-	defer os.RemoveAll(outDir)
-
 	// The ready function should be skipped if WaitUntilReady is false.
-	args := jsonprotocol.BundleArgs{
-		Mode: jsonprotocol.BundleRunTestsMode,
-		RunTests: &jsonprotocol.BundleRunTestsArgs{
-			OutDir:         outDir,
-			WaitUntilReady: false,
-		},
+	cfg := &protocol.RunConfig{
+		WaitUntilReady: false,
 	}
-	stdin := newBufferWithArgs(t, &args)
-	stderr := bytes.Buffer{}
 	ranReady := false
-	ready := func(context.Context) error {
-		ranReady = true
-		return nil
-	}
-	if status := Local(nil, stdin, &bytes.Buffer{}, &stderr, reg, Delegate{
-		Ready: ready,
-	}); status != statusSuccess {
-		t.Errorf("Local(%+v) = %v; want %v", args, status, statusSuccess)
+	scfg := NewStaticConfig(reg, time.Minute, Delegate{
+		Ready: func(context.Context) error {
+			ranReady = true
+			return nil
+		},
+	})
+	cl := startTestServer(t, scfg)
+	if _, err := protocoltest.RunTestsForEvents(cl, cfg, false); err != nil {
+		t.Fatalf("RunTests failed: %v", err)
 	}
 	if ranReady {
-		t.Errorf("Local(%+v) ran ready function despite being told not to", args)
+		t.Error("RunTests ran ready function despite being told not to")
 	}
 }
 
-func TestLocalTestHook(t *gotesting.T) {
-	const name = "pkg.Test"
+func TestRunTestsTestHook(t *gotesting.T) {
 	reg := testing.NewRegistry()
-	reg.AddTestInstance(&testing.TestInstance{Name: name, Func: func(context.Context, *testing.State) {}})
+	reg.AddTestInstance(&testing.TestInstance{Name: "pkg.Test", Func: func(context.Context, *testing.State) {}})
 
-	outDir := testutil.TempDir(t)
-	defer os.RemoveAll(outDir)
-	args := jsonprotocol.BundleArgs{Mode: jsonprotocol.BundleRunTestsMode, RunTests: &jsonprotocol.BundleRunTestsArgs{OutDir: outDir}}
-	stdin := newBufferWithArgs(t, &args)
-	stderr := bytes.Buffer{}
+	cfg := &protocol.RunConfig{}
 	var ranPre, ranPost bool
-	if status := Local(nil, stdin, &bytes.Buffer{}, &stderr, reg, Delegate{
+	scfg := NewStaticConfig(reg, time.Minute, Delegate{
 		TestHook: func(context.Context, *testing.TestHookState) func(context.Context, *testing.TestHookState) {
 			ranPre = true
 			return func(context.Context, *testing.TestHookState) {
 				ranPost = true
 			}
 		},
-	}); status != statusSuccess {
-		t.Errorf("Local(%+v) = %v; want %v", args, status, statusSuccess)
+	})
+	cl := startTestServer(t, scfg)
+	if _, err := protocoltest.RunTestsForEvents(cl, cfg, false); err != nil {
+		t.Fatalf("RunTests failed: %v", err)
 	}
 	if !ranPre {
-		t.Errorf("Local(%+v) didn't run test pre-test hook %q", args, name)
+		t.Error("RunTests didn't run pre-test hook")
 	}
 	if !ranPost {
-		t.Errorf("Local(%+v) didn't run test post-test hook %q", args, name)
-	}
-	if len(stderr.String()) != 0 {
-		t.Errorf("Local(%+v) unexpectedly wrote %q to stderr", args, stderr.String())
+		t.Error("RunTests didn't run post-test hook")
 	}
 }
 
-func TestLocalRunHook(t *gotesting.T) {
+func TestRunTestsRunHook(t *gotesting.T) {
 	reg := testing.NewRegistry()
 	reg.AddTestInstance(&testing.TestInstance{Name: "pkg.Test", Func: func(context.Context, *testing.State) {}})
 
-	outDir := testutil.TempDir(t)
-	defer os.RemoveAll(outDir)
-	args := jsonprotocol.BundleArgs{Mode: jsonprotocol.BundleRunTestsMode, RunTests: &jsonprotocol.BundleRunTestsArgs{OutDir: outDir}}
-	stdin := newBufferWithArgs(t, &args)
-	stderr := bytes.Buffer{}
+	cfg := &protocol.RunConfig{}
 	var ranPre, ranPost bool
-	if status := Local(nil, stdin, &bytes.Buffer{}, &stderr, reg, Delegate{
+	scfg := NewStaticConfig(reg, time.Minute, Delegate{
 		RunHook: func(context.Context) (func(context.Context) error, error) {
 			ranPre = true
 			return func(context.Context) error {
@@ -406,43 +380,50 @@ func TestLocalRunHook(t *gotesting.T) {
 				return nil
 			}, nil
 		},
-	}); status != statusSuccess {
-		t.Errorf("Local(%+v) = %v; want %v", args, status, statusSuccess)
+	})
+	cl := startTestServer(t, scfg)
+	if _, err := protocoltest.RunTestsForEvents(cl, cfg, false); err != nil {
+		t.Fatalf("RunTests failed: %v", err)
 	}
 	if !ranPre {
-		t.Errorf("Local(%+v) didn't run test pre-run hook", args)
+		t.Error("RunTests didn't run pre-run hook")
 	}
 	if !ranPost {
-		t.Errorf("Local(%+v) didn't run test post-run hook", args)
-	}
-	if len(stderr.String()) != 0 {
-		t.Errorf("Local(%+v) unexpectedly wrote %q to stderr", args, stderr.String())
+		t.Error("RunTests didn't run post-run hook")
 	}
 }
 
-func TestRemoteCantConnect(t *gotesting.T) {
+func TestRunTestsRemoteCantConnect(t *gotesting.T) {
 	td := sshtest.NewTestData(nil)
 	defer td.Close()
 
 	reg := testing.NewRegistry()
 	reg.AddTestInstance(&testing.TestInstance{Name: "pkg.Test", Func: func(context.Context, *testing.State) {}})
 
-	// Remote should fail if the initial connection to the DUT couldn't be
+	// RunTests should fail if the initial connection to the DUT couldn't be
 	// established since the user key wasn't passed.
-	args := jsonprotocol.BundleArgs{
-		Mode:     jsonprotocol.BundleRunTestsMode,
-		RunTests: &jsonprotocol.BundleRunTestsArgs{Target: td.Srvs[0].Addr().String()},
+	cfg := &protocol.RunConfig{
+		RemoteTestConfig: &protocol.RemoteTestConfig{
+			PrimaryDut: &protocol.DUTConfig{
+				SshConfig: &protocol.SSHConfig{
+					Target: td.Srvs[0].Addr().String(),
+					// KeyFile is missing.
+				},
+			},
+		},
 	}
-	stderr := bytes.Buffer{}
-	if status := Remote(nil, newBufferWithArgs(t, &args), &bytes.Buffer{}, &stderr, reg, Delegate{}); status != statusError {
-		t.Errorf("Remote(%+v) = %v; want %v", args, status, statusError)
+	cl := startTestServer(t, NewStaticConfig(reg, time.Minute, Delegate{}))
+	_, err := protocoltest.RunTestsForEvents(cl, cfg, false)
+	if err == nil {
+		t.Fatal("RunTests unexpectedly succeeded despite unconnectable server")
 	}
-	if len(stderr.String()) == 0 {
-		t.Errorf("Remote(%+v) didn't write error to stderr", args)
+	const msg = "failed to connect to DUT"
+	if s := err.Error(); !strings.Contains(s, msg) {
+		t.Errorf("RunTests error doesn't include error message %q: %v", msg, s)
 	}
 }
 
-func TestRemoteDUT(t *gotesting.T) {
+func TestRunTestsRemoteDUT(t *gotesting.T) {
 	const (
 		cmd    = "some_command"
 		output = "fake output"
@@ -471,25 +452,27 @@ func TestRemoteDUT(t *gotesting.T) {
 		realOutput = string(out)
 	}})
 
-	outDir := testutil.TempDir(t)
-	defer os.RemoveAll(outDir)
-	args := jsonprotocol.BundleArgs{
-		Mode: jsonprotocol.BundleRunTestsMode,
-		RunTests: &jsonprotocol.BundleRunTestsArgs{
-			OutDir:  outDir,
-			Target:  td.Srvs[0].Addr().String(),
-			KeyFile: td.UserKeyFile,
+	cfg := &protocol.RunConfig{
+		RemoteTestConfig: &protocol.RemoteTestConfig{
+			PrimaryDut: &protocol.DUTConfig{
+				SshConfig: &protocol.SSHConfig{
+					Target:  td.Srvs[0].Addr().String(),
+					KeyFile: td.UserKeyFile,
+				},
+			},
 		},
 	}
-	if status := Remote(nil, newBufferWithArgs(t, &args), &bytes.Buffer{}, &bytes.Buffer{}, reg, Delegate{}); status != statusSuccess {
-		t.Errorf("Remote(%+v) = %v; want %v", args, status, statusSuccess)
+	cl := startTestServer(t, NewStaticConfig(reg, time.Minute, Delegate{}))
+	if _, err := protocoltest.RunTestsForEvents(cl, cfg, false); err != nil {
+		t.Fatalf("RunTests failed: %v", err)
 	}
+
 	if realOutput != output {
 		t.Errorf("Test got output %q from DUT; want %q", realOutput, output)
 	}
 }
 
-func TestRemoteReconnectBetweenTests(t *gotesting.T) {
+func TestRunTestsRemoteReconnectBetweenTests(t *gotesting.T) {
 	td := sshtest.NewTestData(nil)
 	defer td.Close()
 
@@ -511,79 +494,70 @@ func TestRemoteReconnectBetweenTests(t *gotesting.T) {
 	reg.AddTestInstance(&testing.TestInstance{Name: "pkg.Test1", Func: makeFunc(&conn1)})
 	reg.AddTestInstance(&testing.TestInstance{Name: "pkg.Test2", Func: makeFunc(&conn2)})
 
-	outDir := testutil.TempDir(t)
-	defer os.RemoveAll(outDir)
-	args := jsonprotocol.BundleArgs{
-		Mode: jsonprotocol.BundleRunTestsMode,
-		RunTests: &jsonprotocol.BundleRunTestsArgs{
-			OutDir:  outDir,
-			Target:  td.Srvs[0].Addr().String(),
-			KeyFile: td.UserKeyFile,
+	cfg := &protocol.RunConfig{
+		RemoteTestConfig: &protocol.RemoteTestConfig{
+			PrimaryDut: &protocol.DUTConfig{
+				SshConfig: &protocol.SSHConfig{
+					Target:  td.Srvs[0].Addr().String(),
+					KeyFile: td.UserKeyFile,
+				},
+			},
 		},
 	}
-	if status := Remote(nil, newBufferWithArgs(t, &args), &bytes.Buffer{}, &bytes.Buffer{}, reg, Delegate{}); status != statusSuccess {
-		t.Errorf("Remote(%+v) = %v; want %v", args, status, statusSuccess)
+	cl := startTestServer(t, NewStaticConfig(reg, time.Minute, Delegate{}))
+	if _, err := protocoltest.RunTestsForEvents(cl, cfg, false); err != nil {
+		t.Fatalf("RunTests failed: %v", err)
 	}
-	if conn1 != true {
-		t.Errorf("Remote(%+v) didn't pass live connection to first test", args)
+	if !conn1 {
+		t.Error("RunTests didn't pass live connection to first test")
 	}
-	if conn2 != true {
-		t.Errorf("Remote(%+v) didn't pass live connection to second test", args)
+	if !conn2 {
+		t.Error("RunTests didn't pass live connection to second test")
 	}
 }
 
-// TestBeforeReboot makes sure hook function is called before reboot.
-func TestBeforeReboot(t *gotesting.T) {
+// TestRunTestsRemoteBeforeReboot makes sure hook function is called before reboot.
+func TestRunTestsRemoteBeforeReboot(t *gotesting.T) {
 	td := sshtest.NewTestData(nil)
 	defer td.Close()
-	reg := testing.NewRegistry()
 
+	reg := testing.NewRegistry()
 	reg.AddTestInstance(&testing.TestInstance{Name: "pkg.Test1", Func: func(ctx context.Context, s *testing.State) {
 		s.DUT().Reboot(ctx)
 		s.DUT().Reboot(ctx)
 	}})
 
-	// Set up test argument.
-	outDir := testutil.TempDir(t)
-	defer os.RemoveAll(outDir)
-	args := jsonprotocol.BundleArgs{
-		Mode: jsonprotocol.BundleRunTestsMode,
-		RunTests: &jsonprotocol.BundleRunTestsArgs{
-			OutDir:  outDir,
-			Target:  td.Srvs[0].Addr().String(),
-			KeyFile: td.UserKeyFile,
+	cfg := &protocol.RunConfig{
+		RemoteTestConfig: &protocol.RemoteTestConfig{
+			PrimaryDut: &protocol.DUTConfig{
+				SshConfig: &protocol.SSHConfig{
+					Target:  td.Srvs[0].Addr().String(),
+					KeyFile: td.UserKeyFile,
+				},
+			},
 		},
 	}
-
-	// Set up input and output buffers.
-	stdin := newBufferWithArgs(t, &args)
-	stderr := bytes.Buffer{}
-
-	// ranBeforeRebootCount keepts the number of times pre-reboot function was called.
-	var ranBeforeRebootCount int
-
-	// Test Remote function.
-	if status := Remote(nil, stdin, &bytes.Buffer{}, &stderr, reg, Delegate{
+	ranBeforeRebootCount := 0
+	scfg := NewStaticConfig(reg, time.Minute, Delegate{
 		BeforeReboot: func(context.Context, *dut.DUT) error {
 			ranBeforeRebootCount++
 			return nil
 		},
-	}); status != statusSuccess {
-		t.Errorf("Remote(%+v) = %v; want %v", args, status, statusSuccess)
+	})
+
+	cl := startTestServer(t, scfg)
+	if _, err := protocoltest.RunTestsForEvents(cl, cfg, false); err != nil {
+		t.Fatalf("RunTests failed: %v", err)
 	}
 
 	// Make sure pre-reboot function was called twice.
 	if ranBeforeRebootCount != 2 {
-		t.Errorf("Remote(%+v) pre-reboot hook was called %v times; want 2 times", args, ranBeforeRebootCount)
-	}
-	// Make sure there are no unexpected errors from test functions.
-	if stderr.String() != "" {
-		t.Errorf("Remote(%+v) unexpectedly wrote %q to stderr", args, stderr.String())
+		t.Errorf("RunTests called pre-reboot hook %v times; want 2 times", ranBeforeRebootCount)
 	}
 }
 
-// TestRemoteCompanionDUTs make sure we can access companion DUTs.
-func TestRemoteCompanionDUTs(t *gotesting.T) {
+// TestRunTestsRemoteCompanionDUTs make sure we can access companion DUTs.
+func TestRunTestsRemoteCompanionDUTs(t *gotesting.T) {
 	const (
 		cmd    = "some_command"
 		output = "fake output"
@@ -602,8 +576,6 @@ func TestRemoteCompanionDUTs(t *gotesting.T) {
 	td := sshtest.NewTestData(handler, handler)
 	defer td.Close()
 
-	companionHost := td.Srvs[1]
-
 	// Register a test that runs a command on the DUT and saves its output.
 	realOutput := ""
 	reg := testing.NewRegistry()
@@ -617,19 +589,28 @@ func TestRemoteCompanionDUTs(t *gotesting.T) {
 		realOutput = string(out)
 	}})
 
-	outDir := testutil.TempDir(t)
-	defer os.RemoveAll(outDir)
-	args := jsonprotocol.BundleArgs{
-		Mode: jsonprotocol.BundleRunTestsMode,
-		RunTests: &jsonprotocol.BundleRunTestsArgs{
-			OutDir:        outDir,
-			Target:        td.Srvs[0].Addr().String(),
-			CompanionDUTs: map[string]string{role: companionHost.Addr().String()},
-			KeyFile:       td.UserKeyFile,
+	cfg := &protocol.RunConfig{
+		RemoteTestConfig: &protocol.RemoteTestConfig{
+			PrimaryDut: &protocol.DUTConfig{
+				SshConfig: &protocol.SSHConfig{
+					Target:  td.Srvs[0].Addr().String(),
+					KeyFile: td.UserKeyFile,
+				},
+			},
+			CompanionDuts: map[string]*protocol.DUTConfig{
+				role: {
+					SshConfig: &protocol.SSHConfig{
+						Target:  td.Srvs[1].Addr().String(),
+						KeyFile: td.UserKeyFile,
+					},
+				},
+			},
 		},
 	}
-	if status := Remote(nil, newBufferWithArgs(t, &args), &bytes.Buffer{}, &bytes.Buffer{}, reg, Delegate{}); status != statusSuccess {
-		t.Errorf("Remote(%+v) = %v; want %v", args, status, statusSuccess)
+
+	cl := startTestServer(t, NewStaticConfig(reg, time.Minute, Delegate{}))
+	if _, err := protocoltest.RunTestsForEvents(cl, cfg, false); err != nil {
+		t.Fatalf("RunTests failed: %v", err)
 	}
 	if realOutput != output {
 		t.Errorf("Test got output %q from DUT; want %q", realOutput, output)

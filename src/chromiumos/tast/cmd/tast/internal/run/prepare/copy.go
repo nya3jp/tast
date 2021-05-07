@@ -25,6 +25,7 @@ func pushToHost(ctx context.Context, cfg *config.Config, hst *ssh.Conn, files ma
 		files = rewritten
 	}
 
+	cfg.Logger.Logf("Pushing %s", files)
 	return linuxssh.PutFiles(ctx, hst, files, linuxssh.DereferenceSymlinks)
 }
 

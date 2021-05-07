@@ -33,6 +33,24 @@
       "message": "nit/style: This would be clearer with `rawstrings`:\n\n    return fmt.Sprintf(`--transform\u003ds,^%s\\($\\|/\\),%s,`,\n\nDitto the logging messages above, but those are less important.",
       "revId": "247a2d94f4265eabefd8b205a8f459483b876063",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4712e32e_353c1ece",
+        "filename": "src/chromiumos/tast/internal/linuxssh/fileutil.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 206,
+      "author": {
+        "id": 1483403
+      },
+      "writtenOn": "2021-05-07T17:40:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d3873f48_38d73ba5",
+      "revId": "247a2d94f4265eabefd8b205a8f459483b876063",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

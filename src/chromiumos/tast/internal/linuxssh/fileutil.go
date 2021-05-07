@@ -22,6 +22,7 @@ import (
 
 	cryptossh "golang.org/x/crypto/ssh"
 
+	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/ssh"
 )
 
@@ -37,6 +38,7 @@ func GetFile(ctx context.Context, s *ssh.Conn, src, dst string) error {
 		return err
 	}
 	// Create a temporary directory alongside the destination path.
+	testcontext.Logf(ctx, "ioutil.TempDir(%v, %v)", filepath.Dir(dst), filepath.Base(dst)+".")
 	td, err := ioutil.TempDir(filepath.Dir(dst), filepath.Base(dst)+".")
 	if err != nil {
 		return fmt.Errorf("creating local temp dir failed: %v", err)
@@ -44,6 +46,7 @@ func GetFile(ctx context.Context, s *ssh.Conn, src, dst string) error {
 	defer os.RemoveAll(td)
 
 	sb := filepath.Base(src)
+	testcontext.Logf(ctx, `s.Command("tar", "-c", "--gzip", "-C", %v, %v)`, filepath.Dir(src), sb)
 	rcmd := s.Command("tar", "-c", "--gzip", "-C", filepath.Dir(src), sb)
 	p, err := rcmd.StdoutPipe()
 	if err != nil {
@@ -55,12 +58,14 @@ func GetFile(ctx context.Context, s *ssh.Conn, src, dst string) error {
 	defer rcmd.Wait(ctx)
 	defer rcmd.Abort()
 
+	testcontext.Logf(ctx, `exec.CommandContext("/bin/tar", "-x", "--gzip", "--no-same-owner", "-C", %v)`, td)
 	cmd := exec.CommandContext(ctx, "/bin/tar", "-x", "--gzip", "--no-same-owner", "-C", td)
 	cmd.Stdin = p
 	if err := cmd.Run(); err != nil {
 		return fmt.Errorf("running local tar failed: %v", err)
 	}
 
+	testcontext.Logf(ctx, "os.Rename(%v, %v)", filepath.Join(td, sb), dst)
 	if err := os.Rename(filepath.Join(td, sb), dst); err != nil {
 		return fmt.Errorf("moving local file failed: %v", err)
 	}
@@ -197,7 +202,8 @@ func tarTransformFlag(s, d string) string {
 		}
 		return s
 	}
-	return fmt.Sprintf("--transform=s,^%s$,%s,",
+	// Transform foo -> bar but not foobar -> barbar. Therefore match foo$ or foo/
+	return fmt.Sprintf(`--transform=s,^%s\($\|/\),%s,`,
 		esc(regexp.QuoteMeta(s), []string{","}),
 		esc(d, []string{"\\", ",", "&"}))
 }
@@ -260,6 +266,7 @@ func PutFiles(ctx context.Context, s *ssh.Conn, files map[string]string,
 	for l := range cf {
 		args = append(args, strings.TrimPrefix(l, "/"))
 	}
+	testcontext.Logf(ctx, "Tar: %v", args)
 	cmd := exec.CommandContext(ctx, "/bin/tar", args...)
 	p, err := cmd.StdoutPipe()
 	if err != nil {
@@ -274,7 +281,7 @@ func PutFiles(ctx context.Context, s *ssh.Conn, files map[string]string,
 	rcmd := s.Command("tar", "-x", "--gzip", "--no-same-owner", "--recursive-unlink", "-C", "/")
 	cr := &countingReader{r: p}
 	rcmd.Stdin = cr
-	if err := rcmd.Run(ctx); err != nil {
+	if err := rcmd.Run(ctx, ssh.DumpLogOnError); err != nil {
 		return 0, fmt.Errorf("remote tar failed: %v", err)
 	}
 	return cr.bytes, nil

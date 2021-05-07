@@ -5,7 +5,6 @@
 package runnerclient
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -19,6 +18,7 @@ import (
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/diagnose"
+	"chromiumos/tast/cmd/tast/internal/run/genericexec"
 	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
 	"chromiumos/tast/cmd/tast/internal/run/target"
 	"chromiumos/tast/ctxutil"
@@ -455,42 +455,21 @@ func runLocalTestsForFixture(ctx context.Context, names []string, remoteFixt str
 	return results, err
 }
 
-type localRunnerHandle struct {
-	cmd            *ssh.Cmd
-	stdout, stderr io.Reader
-}
-
-// Close kills and waits the remote process.
-func (h *localRunnerHandle) Close(ctx context.Context) error {
-	h.cmd.Abort()
-	return h.cmd.Wait(ctx)
-}
-
 // startLocalRunner asynchronously starts local_test_runner on hst and passes args to it.
 // args.FillDeprecated() is called first to backfill any deprecated fields for old runners.
-// The caller is responsible for reading the handle's stdout and closing the handle.
-func startLocalRunner(ctx context.Context, cfg *config.Config, hst *ssh.Conn, args *jsonprotocol.RunnerArgs) (*localRunnerHandle, error) {
+// The caller is responsible for terminating the returned process.
+func startLocalRunner(ctx context.Context, cfg *config.Config, hst *ssh.Conn, args *jsonprotocol.RunnerArgs) (genericexec.Process, error) {
 	args.FillDeprecated()
-	argsData, err := json.Marshal(args)
-	if err != nil {
-		return nil, fmt.Errorf("marshal args: %v", err)
-	}
 
-	cmd := localRunnerCommand(ctx, cfg, hst)
-	cmd.cmd.Stdin = bytes.NewBuffer(argsData)
-	stdout, err := cmd.cmd.StdoutPipe()
+	cmd := localRunnerCommand(cfg, hst)
+	proc, err := cmd.Interact(ctx, nil)
 	if err != nil {
-		return nil, fmt.Errorf("failed to open stdout pipe: %v", err)
-	}
-	stderr, err := cmd.cmd.StderrPipe()
-	if err != nil {
-		return nil, fmt.Errorf("failed to open stderr pipe: %v", err)
-	}
-
-	if err := cmd.cmd.Start(ctx); err != nil {
 		return nil, fmt.Errorf("failed to start local_test_runner: %v", err)
 	}
-	return &localRunnerHandle{cmd.cmd, stdout, stderr}, nil
+
+	go json.NewEncoder(proc.Stdin()).Encode(args)
+
+	return proc, nil
 }
 
 // runLocalTestsOnce synchronously runs local_test_runner to run local tests
@@ -545,14 +524,14 @@ func runLocalTestsOnce(ctx context.Context, cfg *config.Config, state *config.St
 		},
 	}
 
-	handle, err := startLocalRunner(ctx, cfg, conn.SSHConn(), &args)
+	proc, err := startLocalRunner(ctx, cfg, conn.SSHConn(), &args)
 	if err != nil {
 		return nil, nil, err
 	}
-	defer handle.Close(ctx)
+	defer proc.Wait(ctx)
 
 	// Read stderr in the background so it can be included in error messages.
-	stderrReader := newFirstLineReader(handle.stderr)
+	stderrReader := newFirstLineReader(proc.Stderr())
 
 	crf := func(src, dst string) error {
 		return moveFromHost(ctx, cfg, conn.SSHConn(), src, dst)
@@ -564,7 +543,7 @@ func runLocalTestsOnce(ctx context.Context, cfg *config.Config, state *config.St
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
-	results, unstarted, rerr := readTestOutput(ctx, cfg, state, handle.stdout, crf, df)
+	results, unstarted, rerr := readTestOutput(ctx, cfg, state, proc.Stdout(), crf, df)
 
 	canceled := false
 	if errors.Is(rerr, ErrTerminate) {
@@ -580,7 +559,7 @@ func runLocalTestsOnce(ctx context.Context, cfg *config.Config, state *config.St
 	}
 	wctx, wcancel := context.WithTimeout(ctx, timeout)
 	defer wcancel()
-	if err := handle.cmd.Wait(wctx); err != nil && !canceled {
+	if err := proc.Wait(wctx); err != nil && !canceled {
 		return results, unstarted, stderrReader.appendToError(err, stderrTimeout)
 	}
 	return results, unstarted, rerr

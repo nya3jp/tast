@@ -9,37 +9,15 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io"
 	"os"
-	"os/exec"
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
+	"chromiumos/tast/cmd/tast/internal/run/genericexec"
 	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/ssh"
 )
 
-// runnerCmd provides common interface to execute a test_runner.
-// The APIs this interface provides are based on exec.Cmd.
-type runnerCmd interface {
-	// SetStdin sets the given stdin as the subprocess's stdin.
-	SetStdin(stdin io.Reader)
-
-	// SetStderr sets the given stderr as the subprocess's stderr.
-	SetStderr(stderr io.Writer)
-
-	// Output executes the command, and returns its stdout.
-	Output() ([]byte, error)
-}
-
-type localRunnerCmd struct {
-	// cmd holds the instance to execute a command on DUT.
-	cmd *ssh.Cmd
-
-	// ctx is used to run ssh.Cmd.Start() and ssh.Cmd.Wait().
-	ctx context.Context
-}
-
-func localRunnerCommand(ctx context.Context, cfg *config.Config, hst *ssh.Conn) *localRunnerCmd {
+func localRunnerCommand(cfg *config.Config, hst *ssh.Conn) *genericexec.SSHCmd {
 	// Set proxy-related environment variables for local_test_runner so it will use them
 	// when accessing network.
 	execArgs := []string{"env"}
@@ -57,54 +35,27 @@ func localRunnerCommand(ctx context.Context, cfg *config.Config, hst *ssh.Conn) 
 	}
 	execArgs = append(execArgs, cfg.LocalRunner)
 
-	return &localRunnerCmd{hst.Command(execArgs[0], execArgs[1:]...), ctx}
+	return genericexec.CommandSSH(hst, execArgs[0], execArgs[1:]...)
 }
 
-func (r *localRunnerCmd) SetStdin(stdin io.Reader) {
-	r.cmd.Stdin = stdin
-}
-
-func (r *localRunnerCmd) SetStderr(stderr io.Writer) {
-	r.cmd.Stderr = stderr
-}
-
-func (r *localRunnerCmd) Output() ([]byte, error) {
-	return r.cmd.Output(r.ctx)
-}
-
-type remoteRunnerCmd struct {
-	*exec.Cmd
-}
-
-func remoteRunnerCommand(ctx context.Context, cfg *config.Config) *remoteRunnerCmd {
-	return &remoteRunnerCmd{exec.CommandContext(ctx, cfg.RemoteRunner)}
-}
-
-func (r *remoteRunnerCmd) SetStdin(stdin io.Reader) {
-	r.Stdin = stdin
-}
-
-func (r *remoteRunnerCmd) SetStderr(stderr io.Writer) {
-	r.Stderr = stderr
+func remoteRunnerCommand(cfg *config.Config) *genericexec.ExecCmd {
+	return genericexec.CommandExec(cfg.RemoteRunner)
 }
 
 // runTestRunnerCommand executes the given test_runner r. The test_runner reads
 // serialized args from its stdin, then output json serialized value to stdout.
 // This function unmarshals the output to out, so the pointer to an appropriate
 // struct is expected to be passed via out.
-func runTestRunnerCommand(r runnerCmd, args *jsonprotocol.RunnerArgs, out interface{}) error {
+func runTestRunnerCommand(ctx context.Context, cmd genericexec.Cmd, args *jsonprotocol.RunnerArgs, out interface{}) error {
 	args.FillDeprecated()
+
 	stdin, err := json.Marshal(args)
 	if err != nil {
-		return fmt.Errorf("marshal args: %v", err)
+		return fmt.Errorf("failed to marshal runner args: %v", err)
 	}
-	r.SetStdin(bytes.NewBuffer(stdin))
 
-	var stderr bytes.Buffer
-	r.SetStderr(&stderr)
-
-	b, err := r.Output()
-	if err != nil {
+	var stdout, stderr bytes.Buffer
+	if err := cmd.Run(ctx, nil, bytes.NewBuffer(stdin), &stdout, &stderr); err != nil {
 		// Append the first line of stderr, which often contains useful info
 		// for debugging to users.
 		if split := bytes.SplitN(stderr.Bytes(), []byte(","), 2); len(split) > 0 {
@@ -112,8 +63,8 @@ func runTestRunnerCommand(r runnerCmd, args *jsonprotocol.RunnerArgs, out interf
 		}
 		return err
 	}
-	if err := json.Unmarshal(b, out); err != nil {
-		return fmt.Errorf("json.Unmarshal(%q): %v", b, err)
+	if err := json.NewDecoder(&stdout).Decode(out); err != nil {
+		return fmt.Errorf("failed to unmarshal runner response: %v", err)
 	}
 	return nil
 }

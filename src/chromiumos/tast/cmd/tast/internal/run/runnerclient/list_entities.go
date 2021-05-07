@@ -9,6 +9,7 @@ import (
 	"fmt"
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
+	"chromiumos/tast/cmd/tast/internal/run/genericexec"
 	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
 	"chromiumos/tast/cmd/tast/internal/run/target"
 	"chromiumos/tast/errors"
@@ -111,14 +112,15 @@ func listAllTests(ctx context.Context, cfg *config.Config, state *config.State, 
 // ListLocalTests returns a list of local tests to run.
 func ListLocalTests(ctx context.Context, cfg *config.Config, state *config.State, hst *ssh.Conn) ([]*jsonprotocol.EntityWithRunnabilityInfo, error) {
 	return runListTestsCommand(
-		localRunnerCommand(ctx, cfg, hst), cfg, state, cfg.LocalBundleGlob())
+		ctx, localRunnerCommand(cfg, hst), cfg, state, cfg.LocalBundleGlob())
 }
 
 // ListLocalFixtures returns a map from bundle to fixtures.
 func ListLocalFixtures(ctx context.Context, cfg *config.Config, hst *ssh.Conn) (map[string][]*jsonprotocol.EntityInfo, error) {
 	var localFixts jsonprotocol.RunnerListFixturesResult
 	if err := runTestRunnerCommand(
-		localRunnerCommand(ctx, cfg, hst), &jsonprotocol.RunnerArgs{
+		ctx,
+		localRunnerCommand(cfg, hst), &jsonprotocol.RunnerArgs{
 			Mode: jsonprotocol.RunnerListFixturesMode,
 			ListFixtures: &jsonprotocol.RunnerListFixturesArgs{
 				BundleGlob: cfg.LocalBundleGlob(),
@@ -132,14 +134,15 @@ func ListLocalFixtures(ctx context.Context, cfg *config.Config, hst *ssh.Conn) (
 // listRemoteTests returns a list of remote tests to run.
 func listRemoteTests(ctx context.Context, cfg *config.Config, state *config.State) ([]*jsonprotocol.EntityWithRunnabilityInfo, error) {
 	return runListTestsCommand(
-		remoteRunnerCommand(ctx, cfg), cfg, state, cfg.RemoteBundleGlob())
+		ctx, remoteRunnerCommand(cfg), cfg, state, cfg.RemoteBundleGlob())
 }
 
 // listRemoteFixtures returns a map from bundle to fixtures.
 func listRemoteFixtures(ctx context.Context, cfg *config.Config) (map[string][]*jsonprotocol.EntityInfo, error) {
 	var remoteFixts jsonprotocol.RunnerListFixturesResult
 	if err := runTestRunnerCommand(
-		remoteRunnerCommand(ctx, cfg), &jsonprotocol.RunnerArgs{
+		ctx,
+		remoteRunnerCommand(cfg), &jsonprotocol.RunnerArgs{
 			Mode: jsonprotocol.RunnerListFixturesMode,
 			ListFixtures: &jsonprotocol.RunnerListFixturesArgs{
 				BundleGlob: cfg.RemoteBundleGlob(),
@@ -150,7 +153,7 @@ func listRemoteFixtures(ctx context.Context, cfg *config.Config) (map[string][]*
 	return remoteFixts.Fixtures, nil
 }
 
-func runListTestsCommand(r runnerCmd, cfg *config.Config, state *config.State, glob string) ([]*jsonprotocol.EntityWithRunnabilityInfo, error) {
+func runListTestsCommand(ctx context.Context, cmd genericexec.Cmd, cfg *config.Config, state *config.State, glob string) ([]*jsonprotocol.EntityWithRunnabilityInfo, error) {
 	args := &jsonprotocol.RunnerArgs{
 		Mode: jsonprotocol.RunnerListTestsMode,
 		ListTests: &jsonprotocol.RunnerListTestsArgs{
@@ -162,11 +165,7 @@ func runListTestsCommand(r runnerCmd, cfg *config.Config, state *config.State, g
 		},
 	}
 	var res jsonprotocol.RunnerListTestsResult
-	if err := runTestRunnerCommand(
-		r,
-		args,
-		&res,
-	); err != nil {
+	if err := runTestRunnerCommand(ctx, cmd, args, &res); err != nil {
 		return nil, fmt.Errorf("listing tests %v: %v", cfg.Patterns, err)
 	}
 	return res, nil

@@ -37,7 +37,8 @@ func GetInitialSysInfo(ctx context.Context, cfg *config.Config, state *config.St
 
 	var res jsonprotocol.RunnerGetSysInfoStateResult
 	if err := runTestRunnerCommand(
-		localRunnerCommand(ctx, cfg, conn.SSHConn()),
+		ctx,
+		localRunnerCommand(cfg, conn.SSHConn()),
 		&jsonprotocol.RunnerArgs{Mode: jsonprotocol.RunnerGetSysInfoStateMode},
 		&res,
 	); err != nil {
@@ -70,7 +71,8 @@ func collectSysInfo(ctx context.Context, cfg *config.Config, state *config.State
 
 	var res jsonprotocol.RunnerCollectSysInfoResult
 	if err := runTestRunnerCommand(
-		localRunnerCommand(ctx, cfg, conn.SSHConn()),
+		ctx,
+		localRunnerCommand(cfg, conn.SSHConn()),
 		&jsonprotocol.RunnerArgs{
 			Mode:           jsonprotocol.RunnerCollectSysInfoMode,
 			CollectSysInfo: &jsonprotocol.RunnerCollectSysInfoArgs{InitialState: *state.InitialSysInfo},

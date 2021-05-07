@@ -35,7 +35,8 @@ func DownloadPrivateBundles(ctx context.Context, cfg *config.Config, conn *targe
 
 	var res jsonprotocol.RunnerDownloadPrivateBundlesResult
 	if err := runTestRunnerCommand(
-		localRunnerCommand(ctx, cfg, conn.SSHConn()),
+		ctx,
+		localRunnerCommand(cfg, conn.SSHConn()),
 		&jsonprotocol.RunnerArgs{
 			Mode: jsonprotocol.RunnerDownloadPrivateBundlesMode,
 			DownloadPrivateBundles: &jsonprotocol.RunnerDownloadPrivateBundlesArgs{

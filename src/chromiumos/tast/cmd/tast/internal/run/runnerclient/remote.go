@@ -9,7 +9,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io"
 	"os"
 	"strconv"
 	"strings"
@@ -117,45 +116,36 @@ func runRemoteTestsOnce(ctx context.Context, cfg *config.Config, state *config.S
 	// Backfill deprecated fields in case we're executing an old test runner.
 	args.FillDeprecated()
 
-	cmd := remoteRunnerCommand(ctx, cfg)
-	stdin, err := cmd.StdinPipe()
+	cmd := remoteRunnerCommand(cfg)
+	cfg.Logger.Logf("Starting %v locally", cfg.RemoteRunner)
+	proc, err := cmd.Interact(ctx, nil)
 	if err != nil {
 		return nil, nil, err
 	}
-	var stdout, stderr io.Reader
-	if stdout, err = cmd.StdoutPipe(); err != nil {
-		return nil, nil, err
-	}
-	if stderr, err = cmd.StderrPipe(); err != nil {
-		return nil, nil, err
-	}
-	stderrReader := newFirstLineReader(stderr)
+	// TODO(b/187793617): Fix leak of proc.
 
-	cfg.Logger.Logf("Starting %v locally", cmd.Path)
-	if err = cmd.Start(); err != nil {
-		return nil, nil, err
-	}
-
-	if err = json.NewEncoder(stdin).Encode(&args); err != nil {
+	if err := json.NewEncoder(proc.Stdin()).Encode(&args); err != nil {
 		return nil, nil, fmt.Errorf("write to stdin: %v", err)
 	}
-	if err = stdin.Close(); err != nil {
+	if err := proc.Stdin().Close(); err != nil {
 		return nil, nil, fmt.Errorf("close stdin: %v", err)
 	}
 
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
 
-	results, unstarted, rerr := readTestOutput(ctx, cfg, state, stdout, os.Rename, nil)
+	results, unstarted, rerr := readTestOutput(ctx, cfg, state, proc.Stdout(), os.Rename, nil)
 	canceled := false
 	if errors.Is(rerr, ErrTerminate) {
 		canceled = true
 		cancel()
 	}
 
+	stderrReader := newFirstLineReader(proc.Stderr())
+
 	// Check that the runner exits successfully first so that we don't give a useless error
 	// about incorrectly-formed output instead of e.g. an error about the runner being missing.
-	if err := cmd.Wait(); err != nil && !canceled {
+	if err := proc.Wait(ctx); err != nil && !canceled {
 		return results, unstarted, stderrReader.appendToError(err, stderrTimeout)
 	}
 	return results, unstarted, rerr

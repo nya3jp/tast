@@ -33,6 +33,23 @@
       "message": "Still LGTM",
       "revId": "46995a70d36183b5edea38710cb064c47361df13",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "03d4d173_dc77a744",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1243287
+      },
+      "writtenOn": "2021-05-07T20:12:41Z",
+      "side": 1,
+      "message": "lgtm as well, thanks for catching that Nicolas.",
+      "revId": "46995a70d36183b5edea38710cb064c47361df13",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

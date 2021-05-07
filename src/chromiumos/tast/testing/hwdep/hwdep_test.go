@@ -451,6 +451,31 @@ func TestWiFiIntel(t *testing.T) {
 	}
 }
 
+func TestMinMemoryMB(t *testing.T) {
+	c := MinMemoryMB(2048)
+	for _, tc := range []struct {
+		sizeMb          uint32
+		expectSatisfied bool
+	}{
+		{0, false},
+		{1024, false},
+		{2048, true},
+		{4196, true},
+	} {
+		verifyCondition(
+			t, c,
+			nil,
+			&configpb.HardwareFeatures{
+				Memory: &configpb.HardwareFeatures_Memory{
+					Profile: &configpb.Component_Memory_Profile{
+						SizeMegabytes: tc.sizeMb,
+					},
+				},
+			},
+			tc.expectSatisfied)
+	}
+}
+
 func TestMinStorage(t *testing.T) {
 	c := MinStorage(16)
 	for _, tc := range []struct {

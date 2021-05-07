@@ -664,6 +664,28 @@ func Nvme() Condition {
 	}
 }
 
+// MinMemoryMB returns a hardware dependency condition requiring the minimum size of the memory in megabytes.
+func MinMemoryMB(reqMegabytes int) Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) error {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return errors.New("Did not find hardware features")
+		}
+		if hf.GetMemory() == nil {
+			return errors.New("Features.Memory was nil")
+		}
+		if hf.GetMemory().GetProfile() == nil {
+			return errors.New("Features.Memory.Profile was nil")
+		}
+		s := hf.GetMemory().GetProfile().GetSizeMegabytes()
+		if s < int32(reqMegabytes) {
+			return fmt.Errorf("The total storage size is smaller than required; got %dMB, need %dMB", s, reqMegabytes)
+		}
+		return nil
+	}, CEL: "not_implemented",
+	}
+}
+
 // MinStorage returns a hardware dependency condition requiring the minimum size of the storage in gigabytes.
 func MinStorage(reqGigabytes int) Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) error {

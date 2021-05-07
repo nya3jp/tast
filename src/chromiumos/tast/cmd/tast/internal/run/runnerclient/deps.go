@@ -44,7 +44,8 @@ func GetDUTInfo(ctx context.Context, cfg *config.Config, state *config.State, cc
 
 	var res jsonprotocol.RunnerGetDUTInfoResult
 	if err := runTestRunnerCommand(
-		localRunnerCommand(ctx, cfg, conn.SSHConn()),
+		ctx,
+		localRunnerCommand(cfg, conn.SSHConn()),
 		&jsonprotocol.RunnerArgs{
 			Mode: jsonprotocol.RunnerGetDUTInfoMode,
 			GetDUTInfo: &jsonprotocol.RunnerGetDUTInfoArgs{

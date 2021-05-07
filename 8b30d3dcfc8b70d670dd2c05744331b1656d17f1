@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f6d27c7a_239aa360",
+        "filename": "src/chromiumos/tast/internal/control/control.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-05-07T07:06:02Z",
+      "side": 1,
+      "message": "This change is okay - Tast CLI does not depend on the order of test names.",
+      "range": {
+        "startLine": 52,
+        "startChar": 49,
+        "endLine": 53,
+        "endChar": 49
+      },
+      "revId": "8b30d3dcfc8b70d670dd2c05744331b1656d17f1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

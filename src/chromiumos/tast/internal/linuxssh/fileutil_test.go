@@ -327,3 +327,85 @@ func TestDeleteTreeOutside(t *testing.T) {
 		t.Error("DeleteTree succeeded; should fail")
 	}
 }
+
+func TestGetFilePerms(t *testing.T) {
+	t.Parallel()
+	td := sshtest.NewTestDataConn(t)
+	defer td.Close()
+
+	files := map[string]string{"rofile": "read only", "rwfile": "read write", "exec": "read and exec"}
+	tmpDir, srcDir := initFileTest(t, files)
+	defer os.RemoveAll(tmpDir)
+
+	for _, f := range []struct {
+		filename string
+		perm     os.FileMode
+	}{
+		{"rofile", 0444},
+		{"rwfile", 0666},
+		{"exec", 0555},
+	} {
+		if err := os.Chmod(filepath.Join(srcDir, f.filename), f.perm); err != nil {
+			t.Fatal(err)
+		}
+
+		srcFile := filepath.Join(srcDir, f.filename)
+		dstFile := filepath.Join(tmpDir, f.filename+".copy")
+		if err := GetFile(td.Ctx, td.Hst, srcFile, dstFile); err != nil {
+			t.Fatal(err)
+		}
+		info, err := os.Stat(dstFile)
+		if err != nil {
+			t.Error(err)
+		}
+		if info.Mode().Perm() != f.perm {
+			t.Errorf("File %s should have perms %#o but was %#o", dstFile, f.perm, info.Mode().Perm())
+		}
+	}
+}
+
+func TestPutFilesPerm(t *testing.T) {
+	t.Parallel()
+	td := sshtest.NewTestDataConn(t)
+	defer td.Close()
+
+	files := map[string]string{"rofile": "read only", "rwfile": "read write", "exec": "read and exec"}
+	tmpDir, srcDir := initFileTest(t, files)
+	defer os.RemoveAll(tmpDir)
+
+	fileperms := []struct {
+		filename string
+		perm     os.FileMode
+	}{
+		{"rofile", 0444},
+		{"rwfile", 0666},
+		{"exec", 0555},
+	}
+
+	for _, f := range fileperms {
+		if err := os.Chmod(filepath.Join(srcDir, f.filename), f.perm); err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	dstDir := filepath.Join(tmpDir, "dst")
+	if n, err := PutFiles(td.Ctx, td.Hst, map[string]string{
+		filepath.Join(srcDir, "rofile"): filepath.Join(dstDir, "rofile"),
+		filepath.Join(srcDir, "rwfile"): filepath.Join(dstDir, "rwfile"),
+		filepath.Join(srcDir, "exec"):   filepath.Join(dstDir, "exec"),
+	}, PreserveSymlinks); err != nil {
+		t.Fatal(err)
+	} else if n <= 0 {
+		t.Errorf("Copied non-positive %v bytes", n)
+	}
+
+	for _, f := range fileperms {
+		info, err := os.Stat(filepath.Join(dstDir, f.filename))
+		if err != nil {
+			t.Error(err)
+		}
+		if info.Mode().Perm() != f.perm {
+			t.Errorf("File %s should have perms %#o but was %#o", f.filename, f.perm, info.Mode().Perm())
+		}
+	}
+}

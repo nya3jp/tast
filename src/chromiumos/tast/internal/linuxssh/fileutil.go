@@ -55,7 +55,7 @@ func GetFile(ctx context.Context, s *ssh.Conn, src, dst string) error {
 	defer rcmd.Wait(ctx)
 	defer rcmd.Abort()
 
-	cmd := exec.CommandContext(ctx, "/bin/tar", "-x", "--gzip", "--no-same-owner", "-C", td)
+	cmd := exec.CommandContext(ctx, "/bin/tar", "-x", "--gzip", "--no-same-owner", "-p", "-C", td)
 	cmd.Stdin = p
 	if err := cmd.Run(); err != nil {
 		return fmt.Errorf("running local tar failed: %v", err)
@@ -272,7 +272,7 @@ func PutFiles(ctx context.Context, s *ssh.Conn, files map[string]string,
 	defer cmd.Wait()
 	defer unix.Kill(cmd.Process.Pid, unix.SIGKILL)
 
-	rcmd := s.Command("tar", "-x", "--gzip", "--no-same-owner", "--recursive-unlink", "-C", "/")
+	rcmd := s.Command("tar", "-x", "--gzip", "--no-same-owner", "--recursive-unlink", "-p", "-C", "/")
 	cr := &countingReader{r: p}
 	rcmd.Stdin = cr
 	if err := rcmd.Run(ctx, ssh.DumpLogOnError); err != nil {

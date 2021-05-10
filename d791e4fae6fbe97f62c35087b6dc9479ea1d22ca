@@ -43,6 +43,30 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "854ccb3c_36131f40",
+        "filename": "src/chromiumos/tast/internal/linuxssh/fileutil.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1483403
+      },
+      "writtenOn": "2021-05-10T15:44:55Z",
+      "side": 1,
+      "message": "It would be really helpful if there was a testcontext.DebugLog() function.",
+      "parentUuid": "5745a882_705b8190",
+      "range": {
+        "startLine": 41,
+        "startChar": 1,
+        "endLine": 41,
+        "endChar": 91
+      },
+      "revId": "d791e4fae6fbe97f62c35087b6dc9479ea1d22ca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "2565fa65_19cbcfaf",
         "filename": "src/chromiumos/tast/internal/linuxssh/fileutil.go",
         "patchSetId": 3

@@ -54,6 +54,9 @@ Below is the list of most popular groups and their associated extra attributes:
     *  `wificell_roam_func`: verify basic WiFi roaming functionalities.
     *  `wificell_roam_perf`: measure WiFi roaming performance.
 *   `group:labqual` - Tests that must pass for devices to go to a low-touch lab.
+*   `group:mtp` - Tests that will run on the `mtpWithAndroid` fixture. Typically
+    those tests require special hardware (Android Phone Connected to DUT) and setup
+    available in the fixture.
 
 See [attr.go] for the full list of valid attributes.
 

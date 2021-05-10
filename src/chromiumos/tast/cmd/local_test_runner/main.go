@@ -167,6 +167,7 @@ func main() {
 			"no_ondevice_handwriting": "!ml_service || !ondevice_handwriting",
 			"no_qemu":                 `!"betty" && !"board:reven" && !"tast_vm"`,
 			"no_symlink_mount":        "!lxc", // boards using LXC set CONFIG_SECURITY_CHROMIUMOS_NO_SYMLINK_MOUNT=n
+			"no_tablet_form_factor":   "!tablet_form_factor",
 			"no_ubsan":                "!ubsan",
 			"nvme":                    "nvme",
 			"oci":                     "containers && !moblab", // run_oci doesn't work on Moblab: https://crbug.com/951691
@@ -196,6 +197,7 @@ func main() {
 			"smartctl":               "nvme || sata",
 			"storage_wearout_detect": `"storage_wearout_detect" && !"betty" && !"board:reven" && !"tast_vm"`, // Skip wearout checks for VMs and eMMC < 5.0
 			"tablet_mode":            "touchview",
+			"tablet_form_factor":     "tablet_form_factor",
 			"tpm":                    "!mocktpm",
 			"tpm1":                   "!mocktpm && !tpm2", // Indicate tpm1.2 is available
 			"tpm2":                   "!mocktpm && tpm2",  // Indicate tpm2 is available

@@ -1,0 +1,67 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "cb567b22_23ef1148",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-05-10T08:51:26Z",
+      "side": 1,
+      "message": "Thanks for the fix!",
+      "revId": "d791e4fae6fbe97f62c35087b6dc9479ea1d22ca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5745a882_705b8190",
+        "filename": "src/chromiumos/tast/internal/linuxssh/fileutil.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-05-10T08:51:26Z",
+      "side": 1,
+      "message": "Unless we\u0027re debugging linuxssh, these logs are verbose... Would you mind dropping them from this CL?",
+      "range": {
+        "startLine": 41,
+        "startChar": 1,
+        "endLine": 41,
+        "endChar": 91
+      },
+      "revId": "d791e4fae6fbe97f62c35087b6dc9479ea1d22ca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2565fa65_19cbcfaf",
+        "filename": "src/chromiumos/tast/internal/linuxssh/fileutil.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 206,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-05-10T08:51:26Z",
+      "side": 1,
+      "message": "Good catch!",
+      "range": {
+        "startLine": 206,
+        "startChar": 19,
+        "endLine": 206,
+        "endChar": 52
+      },
+      "revId": "d791e4fae6fbe97f62c35087b6dc9479ea1d22ca",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

@@ -176,6 +176,11 @@ Tests in this group are not used for build verification.
 		},
 	},
 	{
+		Name:     "appcompat_smoke",
+		Contacts: []string{"chromeos-engprod@google.com"},
+		Desc:     `A group of ARC app compatibility tests for smoke testing.`,
+	},
+	{
 		Name:     "camerabox",
 		Contacts: []string{"chromeos-camera-eng@google.com"},
 		Desc:     `The group of camera tests to be run with Camerabox fixture.`,

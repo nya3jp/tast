@@ -166,7 +166,7 @@ Tests in this group are not used for build verification.
 	},
 	{
 		Name:     "appcompat",
-		Contacts: []string{"chromeos-engprod@google.com"},
+		Contacts: []string{"chromeos-engprod@google.com", "cros-appcompat-test-team@google.com"},
 		Desc:     `A group of ARC app compatibility tests.`,
 		Subattrs: []*attr{
 			{
@@ -174,6 +174,11 @@ Tests in this group are not used for build verification.
 				Desc: `A group of ARC app compatibility tests for release testing.`,
 			},
 		},
+	},
+	{
+		Name:     "appcompat_smoke",
+		Contacts: []string{"chromeos-engprod@google.com", "cros-appcompat-test-team@google.com"},
+		Desc:     `A group of ARC app compatibility tests for smoke testing.`,
 	},
 	{
 		Name:     "camerabox",

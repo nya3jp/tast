@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c229174a_f1fcaf9f",
+        "filename": "src/chromiumos/tast/internal/testing/fixt.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-05-10T09:09:13Z",
+      "side": 1,
+      "message": "Do we want to return multiple instances (e.g. parameterized fixtures)? If we don\u0027t have an immediate plan, I\u0027d think it\u0027s nicer to return a single instance.",
+      "range": {
+        "startLine": 75,
+        "startChar": 33,
+        "endLine": 75,
+        "endChar": 51
+      },
+      "revId": "e9dab9a823c4a3fa9bda570c22121fda10da262e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

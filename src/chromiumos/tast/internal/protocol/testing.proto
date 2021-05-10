@@ -22,6 +22,9 @@ service TestService {
   // a server. Then a server starts running tests and report progress in
   // streamed response messages.
   rpc RunTests(stream RunTestsRequest) returns (stream RunTestsResponse) {}
+
+  // GetDUTInfo requests to collect DUT system information.
+  rpc GetDUTInfo(GetDUTInfoRequest) returns (GetDUTInfoResponse) {}
 }
 
 message ListEntitiesRequest { Features features = 1; }
@@ -45,6 +48,10 @@ message RunTestsResponse {
     EntityEndEvent entity_end = 5;
   }
 }
+
+message GetDUTInfoRequest {}
+
+message GetDUTInfoResponse { DUTInfo dut_info = 1; }
 
 // EntityType represents a type of an entity.
 enum EntityType {
@@ -287,3 +294,10 @@ message EntityEndEvent {
 
 // Skip describes the reasons why an entity is skipped.
 message Skip { repeated string reasons = 1; }
+
+// DUTInfo holds DUT system information.
+message DUTInfo {
+  Features features = 1;
+  string os_version = 2;
+  string default_build_artifacts_url = 3;
+}

@@ -29,6 +29,9 @@ Below is the list of most popular groups and their associated extra attributes:
     change, while failures in informational tests are ignored.
     All informational mainline tests are supposed to be promoted to critical
     tests.
+*   `group:appcompat` - A group of ARC app compatibility tests.
+    Below are its sub-attribute:
+     * `appcompat_release`: A group of ARC app compatibility tests for release testing.
 *   `group:crosbolt` - Test failures are ignored and the test's performance data
     are uploaded to [crosbolt]. When you add this attribute, you also need to
     add one of `crosbolt_perbuild`, `crosbolt_nightly` or `crosbolt_weekly`.

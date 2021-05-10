@@ -35,6 +35,23 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "42c9e287_cb554555",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2021-05-10T02:57:25Z",
+      "side": 1,
+      "message": "# Sorry for delay. Back from OOO.",
+      "revId": "faecd4a149c1745b0e6043079df0aee688a302cc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "b32ed86f_6081dd86",
@@ -72,6 +89,30 @@
       "side": 1,
       "message": "Is this a tast name space issue? Because vp9 is a video codec. So \"video_vp9\" or \"codec_vp9\" make more sense than \"graphics_vp9\".",
       "parentUuid": "b32ed86f_6081dd86",
+      "range": {
+        "startLine": 134,
+        "startChar": 11,
+        "endLine": 134,
+        "endChar": 20
+      },
+      "revId": "faecd4a149c1745b0e6043079df0aee688a302cc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2d9fcc95_ddba9908",
+        "filename": "src/chromiumos/tast/internal/testing/attr.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 134,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2021-05-10T02:57:25Z",
+      "side": 1,
+      "message": "yes, it\u0027s global namespace.\nIt is not a strict rule, but I\u0027d recommend to add prefix (graphics_codec_vp9 or graphics_video_vp9) to indicate this belongs to graphics as you did above.",
+      "parentUuid": "63020def_29ee66fd",
       "range": {
         "startLine": 134,
         "startChar": 11,

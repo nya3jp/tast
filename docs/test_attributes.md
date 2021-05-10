@@ -32,6 +32,7 @@ Below is the list of most popular groups and their associated extra attributes:
 *   `group:appcompat` - A group of ARC app compatibility tests.
     Below are its sub-attribute:
      * `appcompat_release`: A group of ARC app compatibility tests for release testing.
+     * `appcompat_smoke`: A group of ARC app compatibility tests for smoke testing.
 *   `group:crosbolt` - Test failures are ignored and the test's performance data
     are uploaded to [crosbolt]. When you add this attribute, you also need to
     add one of `crosbolt_perbuild`, `crosbolt_nightly` or `crosbolt_weekly`.

@@ -132,6 +132,7 @@ The following software features are defined:
 *   `no_qemu` - For tests not for Chrome OS QEMU images.
 *   `no_symlink_mount` - Symlink mounting is disabled via the
     `CONFIG_SECURITY_CHROMIUMOS_NO_SYMLINK_MOUNT` kernel option.
+*   `no_tablet_form_factor` - The device's primary form factor is not tablet
 *   `no_ubsan` - Build was not built with Undefined Behavior Sanitizer.
 *   `nvme` - Ability to run NVMe software utilities.
 *   `oci` - The ability to use the `run_oci` program to execute code within
@@ -165,6 +166,7 @@ The following software features are defined:
 *   `storage_wearout_detect` - The ability to measure storage device health.
 *   `tablet_mode` - The ability to enter tablet mode. The device is either
     a convertible device or a tablet device.
+*   `tablet_form_factor` - The device's primary form factor is tablet
 *   `tpm` - A [Trusted Platform Module] chip.
 *   `tpm1` - Indicate a Trusted Platform Module supporting TPMv1.2 is available. Note that TPMv2 is not backward compatible.
 *   `tpm2` - Indicate a Trusted Platform Module supporting TPMv2 is available.

@@ -7,13 +7,13 @@ package ssh
 import (
 	"bytes"
 	"context"
-	"errors"
 	"fmt"
 	"io"
 	"sync"
 
 	"golang.org/x/crypto/ssh"
 
+	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/shutil"
 )
@@ -348,7 +348,7 @@ func (c *Cmd) startSession(ctx context.Context) error {
 	}); err != nil {
 		c.state = stateDone
 		c.closePipes(io.EOF)
-		return fmt.Errorf("failed to create session: %v", err)
+		return errors.Wrap(err, "failed to create session")
 	}
 
 	c.sess = sess

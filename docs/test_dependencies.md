@@ -53,6 +53,7 @@ The following software features are defined:
     `session_manager` and `cryptohome`). This also implies that the
     [chromeos-chrome] Portage package is installed (which also installs Chrome
     binary tests), and that the `ui` Upstart job is present.
+*   `chromeless` - Explicit *lack* of support for login via Chrome.
 *   `chrome_internal` - Functionality that is only available in internal builds
     of Chrome (e.g. official branding). Any test that specifies this dependency
     should also explicitly specify a `chrome` dependency.

@@ -87,6 +87,7 @@ func main() {
 			"cert_provision":  "cert_provision",
 			"chrome":          "!chromeless_tty && !rialto",
 			"chrome_internal": "chrome_internal",
+			"chromeless":      "chromeless_tty || rialto",
 			"coresched":       "coresched",
 			// TODO(b/174890060) Remove asuka, caroline, cave, chell, lars, sentry
 			// TODO(b/174888780) Remove kernel-4_4 once arm64 kernel reporting is fixed

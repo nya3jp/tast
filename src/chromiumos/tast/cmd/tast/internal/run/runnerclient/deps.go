@@ -30,7 +30,7 @@ func GetDUTInfo(ctx context.Context, cfg *config.Config, state *config.State, cc
 	if !cfg.CheckTestDeps {
 		return nil
 	}
-	if state.SoftwareFeatures != nil {
+	if state.DUTInfo != nil {
 		return errors.New("GetDUTInfo is already called")
 	}
 
@@ -65,38 +65,30 @@ func GetDUTInfo(ctx context.Context, cfg *config.Config, state *config.State, cc
 		return errors.New("can't check test deps; no software features reported by DUT")
 	}
 
-	for _, warn := range res.Warnings {
-		cfg.Logger.Log(warn)
-	}
+	info := res.Proto(ctx, cfg.CheckTestDeps, cfg.TestVars, cfg.MaybeMissingVars)
 
-	state.OSVersion = res.OSVersion
-	state.DefaultBuildArtifactsURL = res.DefaultBuildArtifactsURL
-
-	cfg.Logger.Debug("Software features supported by DUT: ", strings.Join(res.SoftwareFeatures.Available, " "))
-	if res.DeviceConfig != nil {
+	cfg.Logger.Debug("Software features supported by DUT: ", strings.Join(info.GetFeatures().GetSoftware().GetAvailable(), " "))
+	if dc := info.GetFeatures().GetHardware().GetDeprecatedDeviceConfig(); dc != nil {
 		cfg.Logger.Debug("Got DUT device.Config data; dumping to ", deviceConfigFile)
 		if err := ioutil.WriteFile(filepath.Join(cfg.ResDir, deviceConfigFile), []byte(proto.MarshalTextString(res.DeviceConfig)), 0644); err != nil {
 			cfg.Logger.Debugf("Failed to dump %s: %v", deviceConfigFile, err)
 		}
-		state.DeviceConfig = res.DeviceConfig
-		state.HardwareFeatures = res.HardwareFeatures
 	}
-	state.SoftwareFeatures = res.SoftwareFeatures
+
+	state.DUTInfo = info
 	return nil
 }
 
 // featureArgsFromConfig returns feature arguments based on the configuration parameter.
 func featureArgsFromConfig(cfg *config.Config, state *config.State) *jsonprotocol.FeatureArgs {
-	args := jsonprotocol.FeatureArgs{
-		CheckDeps:        cfg.CheckTestDeps,
-		TestVars:         cfg.TestVars,
-		MaybeMissingVars: cfg.MaybeMissingVars,
+	f := state.DUTInfo.GetFeatures()
+	return &jsonprotocol.FeatureArgs{
+		CheckDeps:                   cfg.CheckTestDeps,
+		TestVars:                    cfg.TestVars,
+		MaybeMissingVars:            cfg.MaybeMissingVars,
+		AvailableSoftwareFeatures:   f.GetSoftware().GetAvailable(),
+		UnavailableSoftwareFeatures: f.GetSoftware().GetUnavailable(),
+		DeviceConfig:                jsonprotocol.DeviceConfigJSON{Proto: f.GetHardware().GetDeprecatedDeviceConfig()},
+		HardwareFeatures:            jsonprotocol.HardwareFeaturesJSON{Proto: f.GetHardware().GetHardwareFeatures()},
 	}
-	if state.SoftwareFeatures != nil {
-		args.AvailableSoftwareFeatures = state.SoftwareFeatures.Available
-		args.UnavailableSoftwareFeatures = state.SoftwareFeatures.Unavailable
-		args.DeviceConfig.Proto = state.DeviceConfig
-		args.HardwareFeatures.Proto = state.HardwareFeatures
-	}
-	return &args
 }

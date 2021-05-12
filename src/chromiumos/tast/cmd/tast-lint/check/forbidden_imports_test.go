@@ -66,3 +66,21 @@ import (
 		verifyIssues(t, issues, tc.want)
 	}
 }
+
+func TestForbiddenImports_Context(t *testing.T) {
+	const code = `package main
+
+import (
+	"context"
+
+	"golang.org/x/net/context"
+)
+`
+	expects := []string{
+		`testfile.go:6:2: Use built-in context package instead of the old golang.org/x/net/context`,
+	}
+
+	f, fs := parse(code, "testfile.go")
+	issues := ForbiddenImports(fs, f)
+	verifyIssues(t, issues, expects)
+}

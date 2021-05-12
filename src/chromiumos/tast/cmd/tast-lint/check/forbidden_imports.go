@@ -65,5 +65,21 @@ func ForbiddenImports(fs *token.FileSet, f *ast.File) []*Issue {
 		}
 	}
 
+	// Use built-in "context" instead of "golang.org/x/net/context".
+	const oldContextPath = "golang.org/x/net/context"
+	for _, im := range f.Imports {
+		p, err := strconv.Unquote(im.Path.Value)
+		if err != nil {
+			continue
+		}
+		if p == oldContextPath {
+			issues = append(issues, &Issue{
+				Pos:  fs.Position(im.Pos()),
+				Msg:  fmt.Sprintf("Use built-in context package instead of the old %s", p),
+				Link: "https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#Contexts-and-timeouts",
+			})
+		}
+	}
+
 	return issues
 }

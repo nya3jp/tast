@@ -16,6 +16,52 @@
       "message": "Hi Renuga, \n\nPlease review it. Thanks.\n\nRegards,\nMeena",
       "revId": "5bfee61f649b93812e0cbfa52a5417e6d527e257",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5e4f6738_854d47c2",
+        "filename": "src/chromiumos/tast/internal/testing/attr.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 157,
+      "author": {
+        "id": 1474010
+      },
+      "writtenOn": "2021-05-12T22:01:51Z",
+      "side": 1,
+      "message": "Suggest it to be appcompat_smoke",
+      "range": {
+        "startLine": 157,
+        "startChar": 0,
+        "endLine": 157,
+        "endChar": 30
+      },
+      "revId": "5bfee61f649b93812e0cbfa52a5417e6d527e257",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bd94f757_079f9490",
+        "filename": "src/chromiumos/tast/internal/testing/attr.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 159,
+      "author": {
+        "id": 1474010
+      },
+      "writtenOn": "2021-05-12T22:01:51Z",
+      "side": 1,
+      "message": "Left a comment on internal CL as well. Can we extend it to Stable Channel as well.",
+      "range": {
+        "startLine": 159,
+        "startChar": 56,
+        "endLine": 159,
+        "endChar": 69
+      },
+      "revId": "5bfee61f649b93812e0cbfa52a5417e6d527e257",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

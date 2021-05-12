@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "da7229dc_41e0abae",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/check/forbidden_imports.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 69,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-05-12T07:17:17Z",
+      "side": 1,
+      "message": "Can you try updating deprecated_apis.go? It\u0027s easier to maintain.",
+      "range": {
+        "startLine": 69,
+        "startChar": 1,
+        "endLine": 69,
+        "endChar": 50
+      },
+      "revId": "c4b908c08745c8dfb534f3df07c6890cd926da07",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

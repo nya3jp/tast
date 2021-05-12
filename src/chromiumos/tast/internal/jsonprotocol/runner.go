@@ -5,6 +5,7 @@
 package jsonprotocol
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 
@@ -13,6 +14,7 @@ import (
 
 	"chromiumos/tast/internal/command"
 	"chromiumos/tast/internal/protocol"
+	"chromiumos/tast/internal/testcontext"
 )
 
 // RunnerRunMode describes the runner's behavior.
@@ -313,6 +315,28 @@ func (r *RunnerGetDUTInfoResult) UnmarshalJSON(b []byte) error {
 		r.HardwareFeatures = &hf
 	}
 	return nil
+}
+
+// Proto generates protocol.DUTInfo with additional fields missing in
+// RunnerGetDUTInfoResult. It also sends warning messages to the context logger.
+func (r *RunnerGetDUTInfoResult) Proto(ctx context.Context, checkDeps bool, vars map[string]string, maybeMissingVars string) *protocol.DUTInfo {
+	for _, msg := range r.Warnings {
+		testcontext.Log(ctx, msg)
+	}
+	return &protocol.DUTInfo{
+		Features: &protocol.Features{
+			CheckDeps: checkDeps,
+			Software:  r.SoftwareFeatures,
+			Hardware: &protocol.HardwareFeatures{
+				HardwareFeatures:       r.HardwareFeatures,
+				DeprecatedDeviceConfig: r.DeviceConfig,
+			},
+			Vars:             vars,
+			MaybeMissingVars: maybeMissingVars,
+		},
+		OsVersion:                r.OSVersion,
+		DefaultBuildArtifactsUrl: r.DefaultBuildArtifactsURL,
+	}
 }
 
 // SysInfoState contains the state of the DUT's system information.

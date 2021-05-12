@@ -126,12 +126,12 @@ func TestGetDUTInfo(t *testing.T) {
 	}
 	checkRunnerTestDepsArgs(t, &td.Cfg, &td.State, true, avail, unavail, dc, hf)
 
-	if td.State.OSVersion != osVersion {
-		t.Errorf("Unexpected OS version: got %+v, want %+v", td.State.OSVersion, osVersion)
+	if ver := td.State.DUTInfo.GetOsVersion(); ver != osVersion {
+		t.Errorf("Unexpected OS version: got %+v, want %+v", ver, osVersion)
 	}
 
-	if td.State.DefaultBuildArtifactsURL != defaultBuildArtifactsURL {
-		t.Errorf("Unexpected DefaultBuildArtifactsURL: got %+v, want %+v", td.State.DefaultBuildArtifactsURL, defaultBuildArtifactsURL)
+	if url := td.State.DUTInfo.GetDefaultBuildArtifactsUrl(); url != defaultBuildArtifactsURL {
+		t.Errorf("Unexpected DefaultBuildArtifactsURL: got %+v, want %+v", url, defaultBuildArtifactsURL)
 	}
 
 	// Make sure device-config.txt is created.

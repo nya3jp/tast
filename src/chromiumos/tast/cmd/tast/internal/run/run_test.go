@@ -1084,7 +1084,7 @@ func TestRunTestsSkipTests(t *gotesting.T) {
 	passed := 0
 	skipped := 0
 	for shardIndex := 0; shardIndex < td.Cfg.TotalShards; shardIndex++ {
-		td.State.SoftwareFeatures = nil
+		td.State.DUTInfo = nil
 		td.Cfg.ShardIndex = shardIndex
 		testResults, err := runTests(context.Background(), &td.Cfg, &td.State, cc)
 		if err != nil {

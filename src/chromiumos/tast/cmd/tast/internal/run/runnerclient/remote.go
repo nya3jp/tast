@@ -69,7 +69,7 @@ func runRemoteTestsOnce(ctx context.Context, cfg *config.Config, state *config.S
 
 	buildArtifactsURL := cfg.BuildArtifactsURL
 	if buildArtifactsURL == "" {
-		buildArtifactsURL = state.DefaultBuildArtifactsURL
+		buildArtifactsURL = state.DUTInfo.GetDefaultBuildArtifactsUrl()
 	}
 
 	runFlags := []string{

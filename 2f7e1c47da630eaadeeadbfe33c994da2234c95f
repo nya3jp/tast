@@ -34,6 +34,24 @@
       "parentUuid": "afd6515c_8be73f2c",
       "revId": "2f7e1c47da630eaadeeadbfe33c994da2234c95f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9522632f_83abe85f",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/check/deprecated_apis.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 1487074
+      },
+      "writtenOn": "2021-05-12T12:05:25Z",
+      "side": 1,
+      "message": "Thanks for the suggestion. Renamed.",
+      "parentUuid": "52cfb1d2_59285c8d",
+      "revId": "2f7e1c47da630eaadeeadbfe33c994da2234c95f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

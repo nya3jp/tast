@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5239d412_95fb9d08",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-05-12T02:45:24Z",
+      "side": 1,
+      "message": "Thanks! And sorry for delay, I was busy for constable rotation yesterday.\n",
+      "revId": "0b8d210743de0961c88149af87dc554b81e91956",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

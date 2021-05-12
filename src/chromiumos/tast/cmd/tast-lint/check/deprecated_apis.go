@@ -54,6 +54,12 @@ func DeprecatedAPIs(fs *token.FileSet, f *ast.File) []*Issue {
 			alternative: "chromiumos/tast/local/policyutil/fixtures",
 			bug:         "https://crbug.com/1192497",
 		},
+		{
+			pkg:         "golang.org/x/net/context",
+			ident:       "",
+			alternative: "context",
+			bug:         "https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#Contexts-and-timeouts",
+		},
 	})
 }
 

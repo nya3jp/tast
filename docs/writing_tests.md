@@ -314,6 +314,9 @@ Several blog posts discuss these patterns in more detail:
 *   [Go Concurrency Patterns: Context]
 *   [Go Concurrency Patterns: Timing out, moving on]
 
+Note: there is an old equivalent "golang.org/x/net/context" package, but for
+consistency, the built-in "context" package is preferred.
+
 [context.Context]: https://golang.org/pkg/context/
 [channel]: https://tour.golang.org/concurrency/2
 [select]: https://tour.golang.org/concurrency/5

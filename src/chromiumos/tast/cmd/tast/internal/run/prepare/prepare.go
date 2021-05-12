@@ -35,14 +35,11 @@ func Prepare(ctx context.Context, cfg *config.Config, state *config.State, conn 
 		return errors.New("-downloadprivatebundles requires -build=false")
 	}
 
-	if state.TargetArch == "" {
-		var err error
-		state.TargetArch, err = getTargetArch(ctx, cfg, conn.SSHConn())
-		if err != nil {
-			return fmt.Errorf("Failed to get architecture information from DUT %s: %v", cfg.Target, err)
-		}
+	targetArch, err := getTargetArch(ctx, cfg, conn.SSHConn())
+	if err != nil {
+		return fmt.Errorf("Failed to get architecture information from DUT %s: %v", cfg.Target, err)
 	}
-	if err := prepareDUT(ctx, cfg, state, conn, cfg.Target, state.TargetArch); err != nil {
+	if err := prepareDUT(ctx, cfg, state, conn, cfg.Target, targetArch); err != nil {
 		return err
 	}
 

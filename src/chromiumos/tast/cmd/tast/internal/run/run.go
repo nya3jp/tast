@@ -148,10 +148,10 @@ func runTests(ctx context.Context, cfg *config.Config, state *config.State, cc *
 		return nil, errors.Wrap(err, "failed to get DUT software features")
 	}
 
-	if state.OSVersion == "" {
+	if ver := state.DUTInfo.GetOsVersion(); ver == "" {
 		cfg.Logger.Log("Target version: not available from target")
 	} else {
-		cfg.Logger.Logf("Target version: %v", state.OSVersion)
+		cfg.Logger.Logf("Target version: %v", ver)
 	}
 
 	if err := runnerclient.GetInitialSysInfo(ctx, cfg, state, cc); err != nil {

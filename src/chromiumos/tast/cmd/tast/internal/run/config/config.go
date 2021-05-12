@@ -17,7 +17,6 @@ import (
 	"strings"
 	"time"
 
-	configpb "go.chromium.org/chromiumos/config/go/api"
 	"google.golang.org/grpc"
 
 	"chromiumos/tast/cmd/tast/internal/build"
@@ -141,17 +140,13 @@ type Config struct {
 
 // State hold state attributes which are accumulated over the course of the run.
 type State struct {
-	TargetArch               string                           // architecture of target userland (usually given by "uname -m", but may be different)
-	StartedRun               bool                             // true if we got to the point where we started trying to execute tests
-	InitialSysInfo           *jsonprotocol.SysInfoState       // initial state of system info (logs, crashes, etc.) on DUT before testing
-	SoftwareFeatures         *protocol.SoftwareFeatures       // software features of the DUT
-	DeviceConfig             *protocol.DeprecatedDeviceConfig // hardware features of the DUT not covered by HardwareFeatures.
-	HardwareFeatures         *configpb.HardwareFeatures       // hardware features of the DUT.
-	OSVersion                string                           // Chrome OS Version
-	FailuresCount            int                              // the number of test failures so far.
-	TLWConn                  *grpc.ClientConn                 // TLW gRPC service connection
-	RemoteDevservers         []string                         // list of devserver URLs used by remote tests.
-	DefaultBuildArtifactsURL string                           // default URL of build artifacts.
+	TargetArch       string                     // architecture of target userland (usually given by "uname -m", but may be different)
+	StartedRun       bool                       // true if we got to the point where we started trying to execute tests
+	DUTInfo          *protocol.DUTInfo          // DUT information retrieved at the beginning of the current run
+	InitialSysInfo   *jsonprotocol.SysInfoState // initial state of system info (logs, crashes, etc.) on DUT before testing
+	FailuresCount    int                        // the number of test failures so far.
+	TLWConn          *grpc.ClientConn           // TLW gRPC service connection
+	RemoteDevservers []string                   // list of devserver URLs used by remote tests.
 
 	// gRPC Reports Client related variables.
 	ReportsConn      *grpc.ClientConn       // Reports gRPC service connection.

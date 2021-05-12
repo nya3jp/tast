@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "afd6515c_8be73f2c",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/check/deprecated_apis.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 61,
+      "author": {
+        "id": 1487074
+      },
+      "writtenOn": "2021-05-12T07:48:50Z",
+      "side": 1,
+      "message": "The \"bug\" field becomes a little awkward in buganizer as Tast component (and b/187798752) it is not public. I have the public doc link here instead for now.\n\nDo we have a public component for Tast in buganizer? Or, maybe we can just rename the \"bug\" here to \"link\".\n\nWDYT?",
+      "revId": "2f7e1c47da630eaadeeadbfe33c994da2234c95f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

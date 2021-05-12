@@ -39,6 +39,30 @@
       },
       "revId": "41cbb00c9f5c7a8d5fc2879c542626d8e4d59fef",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "67717c9f_b81aa80a",
+        "filename": "docs/test_attributes.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1474010
+      },
+      "writtenOn": "2021-05-12T09:07:43Z",
+      "side": 1,
+      "message": "Removed the braces to avoid confusion as I didn\u0027t intend to have link here.",
+      "parentUuid": "254f8904_588d6327",
+      "range": {
+        "startLine": 57,
+        "startChar": 46,
+        "endLine": 57,
+        "endChar": 60
+      },
+      "revId": "41cbb00c9f5c7a8d5fc2879c542626d8e4d59fef",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

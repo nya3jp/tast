@@ -12,12 +12,12 @@ func TestDeprecatedAPIs(t *testing.T) {
 	deprecated := []*deprecatedAPI{{
 		pkg:         "chromiumos/tast/local/testexec",
 		alternative: "chromiumos/tast/common/testexec",
-		bug:         "https://crbug.com/1119252",
+		link:        "https://crbug.com/1119252",
 	}, {
 		pkg:         "chromiumos/tast/bundle",
 		ident:       "LocalDelegate",
 		alternative: "Delegate",
-		bug:         "https://crbug.com/1134060",
+		link:        "https://crbug.com/1134060",
 	}}
 	const code = `package main
 

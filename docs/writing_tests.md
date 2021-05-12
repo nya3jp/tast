@@ -97,6 +97,7 @@ func init() {
 		Contacts:     []string{"me@chromium.org"},
 		Attr:         []string{"group:mainline", "informational"},
 		SoftwareDeps: []string{"chrome"},
+		Timeout:      3 * time.Minute, // optional
 	})
 }
 
@@ -275,7 +276,8 @@ Put more succintly:
 
 Tast uses [context.Context] to implement timeouts. A test function takes as its
 first argument a [context.Context] with an associated deadline that expires when
-the test's timeout is reached. The context's `Done` function returns a [channel]
+the test's timeout is reached. The default timeout is 2 minutes for [local tests]
+and 5 minutes for [remote tests]. The context's `Done` function returns a [channel]
 that can be used within a [select] statement to wait for expiration, after which
 the context's `Err` function returns a non-`nil` error.
 
@@ -319,6 +321,8 @@ consistency, the built-in "context" package is preferred.
 
 [context.Context]: https://golang.org/pkg/context/
 [channel]: https://tour.golang.org/concurrency/2
+[local tests]: https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform/tast/src/chromiumos/tast/internal/bundle/local.go
+[remote tests]: https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform/tast/src/chromiumos/tast/internal/bundle/remote.go
 [select]: https://tour.golang.org/concurrency/5
 [testing.Poll]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#Poll
 [testing.PollBreak]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#PollBreak
@@ -568,7 +572,7 @@ should be tested. In this case you can write a [table-driven test], which is a
 common pattern in Go unit tests. [testing.State.Run] can be used to start a
 subtest.
 
-```
+```go
 for _, tc := range []struct {
     format   string
     filename string
@@ -1114,7 +1118,7 @@ Secret variables cannot be used to define global variables.
 
 **Don't log secrets in tests** to avoid possible data leakage.
 
-```Go
+```go
 func init() {
 	testing.AddTest(&testing.Test{
 		Func:     Bar,
@@ -1168,7 +1172,7 @@ rules described below.
 
 Here is an example of a parameterized test registration:
 
-```
+```go
 func init() {
     testing.AddTest(&testing.Test{
         Func:     Playback,

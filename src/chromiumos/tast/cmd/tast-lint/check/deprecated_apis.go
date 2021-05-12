@@ -25,7 +25,7 @@ type deprecatedAPI struct {
 	ident string
 
 	alternative string // alternative to use displayed in the error message
-	bug         string // bug link
+	link        string // bug link
 }
 
 // DeprecatedAPIs checks if deprecated APIs are used.
@@ -34,25 +34,31 @@ func DeprecatedAPIs(fs *token.FileSet, f *ast.File) []*Issue {
 		{
 			pkg:         "chromiumos/tast/local/testexec",
 			alternative: "chromiumos/tast/common/testexec",
-			bug:         "https://crbug.com/1119252",
+			link:        "https://crbug.com/1119252",
 		},
 		{
 			pkg:         "chromiumos/tast/bundle",
 			ident:       "LocalDelegate",
 			alternative: "Delegate",
-			bug:         "https://crbug.com/1134060",
+			link:        "https://crbug.com/1134060",
 		},
 		{
 			pkg:         "chromiumos/tast/bundle",
 			ident:       "RemoteDelegate",
 			alternative: "Delegate",
-			bug:         "https://crbug.com/1134060",
+			link:        "https://crbug.com/1134060",
 		},
 		{
 			pkg:         "chromiumos/tast/local/policyutil/pre",
 			ident:       "User",
 			alternative: "chromiumos/tast/local/policyutil/fixtures",
-			bug:         "https://crbug.com/1192497",
+			link:        "https://crbug.com/1192497",
+		},
+		{
+			pkg:         "golang.org/x/net/context",
+			ident:       "",
+			alternative: "context",
+			link:        "https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#Contexts-and-timeouts",
 		},
 	})
 }
@@ -89,7 +95,7 @@ func deprecatedAPIs(fs *token.FileSet, f *ast.File, ds []*deprecatedAPI) []*Issu
 		issues = append(issues, &Issue{
 			Pos:  fs.Position(i.Pos()),
 			Msg:  fmt.Sprintf("package %v is deprecated; use %v instead", d.pkg, d.alternative),
-			Link: d.bug,
+			Link: d.link,
 		})
 	}
 
@@ -128,7 +134,7 @@ func deprecatedAPIs(fs *token.FileSet, f *ast.File, ds []*deprecatedAPI) []*Issu
 		issues = append(issues, &Issue{
 			Pos:  fs.Position(x.Pos()),
 			Msg:  fmt.Sprintf("%v.%v is deprecated; use %v instead", d.pkg, d.ident, d.alternative),
-			Link: d.bug,
+			Link: d.link,
 		})
 		return true
 	}, nil)

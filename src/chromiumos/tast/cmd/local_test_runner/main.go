@@ -118,7 +118,7 @@ func main() {
 			"endorsement":             `!"betty" && !"board:reven" && !"tast_vm"`, // VMs don't have valid endorsement certificate.
 			"firewall":                "!moblab",                                  // Moblab has relaxed iptables rules
 			"flashrom":                `!"betty" && !"board:reven" && !"tast_vm"`,
-			"fwupd":                   "fwupd",                                    // have sys-apps/fwupd installed.
+			"fwupd":                   "fwupd && !tast_vm",                        // have sys-apps/fwupd installed, amd64-generic-direct-tast-vm does not have /etc/os-release.
 			"gboard_decoder":          "gboard_decoder",                           // have IME mojo service installed.
 			"google_virtual_keyboard": "chrome_internal && internal && !moblab",   // doesn't work on Moblab: https://crbug.com/949912
 			"gpu_sandboxing":          `!"betty" && !"board:reven" && !"tast_vm"`, // no GPU sandboxing on VMs: https://crbug.com/914688

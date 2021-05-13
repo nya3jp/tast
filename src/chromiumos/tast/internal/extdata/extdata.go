@@ -125,13 +125,27 @@ type downloadResult struct {
 	err      error
 }
 
-// PrepareDownloads computes a list of external data files that need to be
-// downloaded for entities.
+// Manager manages operations for external data files.
+type Manager struct {
+	dataDir      string
+	artifactsURL string
+}
+
+// NewManager creates a new Manager.
 //
 // dataDir is the path to the base directory containing external data link files
 // (typically "/usr/local/share/tast/data" on DUT). artifactURL is the URL of
 // Google Cloud Storage directory, ending with a slash, containing build
 // artifacts for the current Chrome OS image.
+func NewManager(ctx context.Context, dataDir, artifactsURL string) (*Manager, error) {
+	return &Manager{
+		dataDir:      dataDir,
+		artifactsURL: artifactsURL,
+	}, nil
+}
+
+// PrepareDownloads computes a list of external data files that need to be
+// downloaded for entities.
 //
 // PrepareDownloads also removes stale files so they are never used even if we
 // fail to download them later. When it encounters errors, *.external-error
@@ -141,13 +155,13 @@ type downloadResult struct {
 // passed to RunDownloads to perform actual downloads. It also returns a list of
 // external data file paths not needed to run the specified entities. They can be
 // deleted if the disk space is low.
-func PrepareDownloads(ctx context.Context, dataDir, artifactsURL string, entities []*protocol.Entity) (jobs []*DownloadJob, purgeable []string) {
+func (m *Manager) PrepareDownloads(ctx context.Context, entities []*protocol.Entity) (jobs []*DownloadJob, purgeable []string) {
 	urlToJob := make(map[string]*DownloadJob)
 	hasErr := false
 
 	// Initialize purgeableSet with all external data files under dataDir.
 	purgeableSet := make(map[string]struct{})
-	if err := filepath.Walk(dataDir, func(linkPath string, info os.FileInfo, err error) error {
+	if err := filepath.Walk(m.dataDir, func(linkPath string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
@@ -167,7 +181,7 @@ func PrepareDownloads(ctx context.Context, dataDir, artifactsURL string, entitie
 	// Process tests.
 	for _, t := range entities {
 		for _, name := range t.GetDependencies().GetDataFiles() {
-			destPath := filepath.Join(dataDir, testing.RelativeDataDir(t.Package), name)
+			destPath := filepath.Join(m.dataDir, testing.RelativeDataDir(t.Package), name)
 			linkPath := destPath + testing.ExternalLinkSuffix
 			errorPath := destPath + testing.ExternalErrorSuffix
 
@@ -190,14 +204,14 @@ func PrepareDownloads(ctx context.Context, dataDir, artifactsURL string, entitie
 				continue
 			}
 
-			// This file is not purgeable.
-			delete(purgeableSet, destPath)
-
-			link, err := loadLink(linkPath, artifactsURL)
+			link, err := loadLink(linkPath, m.artifactsURL)
 			if err != nil {
 				reportErr("failed to load %s: %v", linkPath, err)
 				continue
 			}
+
+			// This file is not purgeable.
+			delete(purgeableSet, destPath)
 
 			// Decide if we need to update the destination file.
 			needed := false

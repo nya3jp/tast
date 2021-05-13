@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "0e7f801e_6262e77f",
+        "filename": "src/chromiumos/tast/internal/bundle/fixture_service_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 201,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2021-05-13T03:22:47Z",
+      "side": 1,
+      "message": "Done.",
+      "parentUuid": "8a97c9ef_d644be8e",
+      "range": {
+        "startLine": 201,
+        "startChar": 7,
+        "endLine": 201,
+        "endChar": 17
+      },
+      "revId": "51580e63fa890edf9229bbf67bcc0e414bedfb7c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "1bb2678c_f1842a1c",
@@ -37,6 +61,30 @@
       "writtenOn": "2021-05-10T09:09:18Z",
       "side": 1,
       "message": "While you\u0027re at it: explicit types are not needed.",
+      "range": {
+        "startLine": 40,
+        "startChar": 14,
+        "endLine": 40,
+        "endChar": 38
+      },
+      "revId": "51580e63fa890edf9229bbf67bcc0e414bedfb7c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "293761b6_5b9277d4",
+        "filename": "src/chromiumos/tast/internal/runner/runner_test.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2021-05-13T03:22:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1bb2678c_f1842a1c",
       "range": {
         "startLine": 40,
         "startChar": 14,

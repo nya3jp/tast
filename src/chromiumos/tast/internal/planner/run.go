@@ -624,6 +624,8 @@ func runTest(ctx context.Context, t *testing.TestInstance, tout *entityOutputStr
 
 // downloader encapsulates the logic to download external data files.
 type downloader struct {
+	m *extdata.Manager
+
 	pcfg           *Config
 	cl             devserver.Client
 	beforeDownload func(context.Context)
@@ -637,7 +639,12 @@ func newDownloader(ctx context.Context, pcfg *Config) (*downloader, error) {
 		return nil, errors.Wrapf(err, "failed to create new client [devservers=%v, TLWServer=%s]",
 			pcfg.Devservers, pcfg.TLWServer)
 	}
+	m, err := extdata.NewManager(ctx, pcfg.DataDir, pcfg.BuildArtifactsURL)
+	if err != nil {
+		return nil, err
+	}
 	return &downloader{
+		m:              m,
 		pcfg:           pcfg,
 		cl:             cl,
 		beforeDownload: pcfg.BeforeDownload,
@@ -674,7 +681,7 @@ func (d *downloader) Purgeable() []string {
 }
 
 func (d *downloader) download(ctx context.Context, entities []*protocol.Entity) {
-	jobs, purgeable := extdata.PrepareDownloads(ctx, d.pcfg.DataDir, d.pcfg.BuildArtifactsURL, entities)
+	jobs, purgeable := d.m.PrepareDownloads(ctx, entities)
 	if len(jobs) > 0 {
 		if d.beforeDownload != nil {
 			d.beforeDownload(ctx)

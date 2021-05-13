@@ -16,6 +16,23 @@
       "message": "Hi Keigo, could you please take a look? Thank you!",
       "revId": "07ef6a5246455a953ebe5a5aff3691d8752bffd5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "779ede78_3c955b92",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000221
+      },
+      "writtenOn": "2021-05-13T15:58:13Z",
+      "side": 1,
+      "message": "The test failures have nothing to do with the change.",
+      "revId": "07ef6a5246455a953ebe5a5aff3691d8752bffd5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

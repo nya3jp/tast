@@ -16,6 +16,23 @@
       "message": "Please check if I added the info to the appropriate place.",
       "revId": "b924440dbc0008e47bbd21e39210cc18ca6c1ce1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "fbad52a1_445f12e1",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-05-13T09:04:07Z",
+      "side": 1,
+      "message": "Thanks for the update!\n",
+      "revId": "b924440dbc0008e47bbd21e39210cc18ca6c1ce1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

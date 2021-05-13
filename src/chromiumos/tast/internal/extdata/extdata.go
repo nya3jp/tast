@@ -129,6 +129,7 @@ type downloadResult struct {
 type Manager struct {
 	dataDir      string
 	artifactsURL string
+	all          []string // all the locations external data files can exist.
 }
 
 // NewManager creates a new Manager.
@@ -138,9 +139,26 @@ type Manager struct {
 // Google Cloud Storage directory, ending with a slash, containing build
 // artifacts for the current Chrome OS image.
 func NewManager(ctx context.Context, dataDir, artifactsURL string) (*Manager, error) {
+	var all []string
+	if err := filepath.Walk(dataDir, func(linkPath string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if !strings.HasSuffix(linkPath, testing.ExternalLinkSuffix) {
+			return nil
+		}
+		destPath := strings.TrimSuffix(linkPath, testing.ExternalLinkSuffix)
+		all = append(all, destPath)
+		return nil
+	}); err != nil && !os.IsNotExist(err) {
+		return nil, fmt.Errorf("Failed to walk data directory: %v", err)
+	}
+	sort.Strings(all)
+
 	return &Manager{
 		dataDir:      dataDir,
 		artifactsURL: artifactsURL,
+		all:          all,
 	}, nil
 }
 
@@ -161,21 +179,10 @@ func (m *Manager) PrepareDownloads(ctx context.Context, entities []*protocol.Ent
 
 	// Initialize purgeableSet with all external data files under dataDir.
 	purgeableSet := make(map[string]struct{})
-	if err := filepath.Walk(m.dataDir, func(linkPath string, info os.FileInfo, err error) error {
-		if err != nil {
-			return err
+	for _, p := range m.all {
+		if _, err := os.Stat(p); err == nil {
+			purgeableSet[p] = struct{}{}
 		}
-		if !strings.HasSuffix(linkPath, testing.ExternalLinkSuffix) {
-			return nil
-		}
-		destPath := strings.TrimSuffix(linkPath, testing.ExternalLinkSuffix)
-		if _, err := os.Stat(destPath); err != nil {
-			return nil
-		}
-		purgeableSet[destPath] = struct{}{}
-		return nil
-	}); err != nil && !os.IsNotExist(err) {
-		testcontext.Log(ctx, "Failed to walk data directory: ", err)
 	}
 
 	// Process tests.

@@ -464,24 +464,22 @@ func TestPrepareDownloadsPurgeable(t *gotesting.T) {
 	dataDir := testutil.TempDir(t)
 	defer os.RemoveAll(dataDir)
 	dataSubdir := filepath.Join(dataDir, pkg, "data")
-
 	if err := testutil.WriteFiles(dataSubdir, map[string]string{
-		// int_file1.txt and int_file2.txt are internal data files. Not purgeable.
-		"int_file1.txt": "data1",
-		"int_file2.txt": "data2",
-		// ext_file1.txt is already downloaded, correct, and used. Not purgeable.
-		"ext_file1.txt":          extData,
+		"int_file1.txt": "data1", // internal, used
+		"int_file2.txt": "data2", // internal, unused
+
+		"ext_file1.txt":          extData, // correct, used
 		"ext_file1.txt.external": extLink,
-		// ext_file2.txt is already downloaded, correct, but not used. Purgeable.
-		"ext_file2.txt":          extData,
+
+		"ext_file2.txt":          extData, // correct, unused
 		"ext_file2.txt.external": extLink,
-		// ext_file3.txt is used, but does not exist. Not purgeable.
-		"ext_file3.txt.external": extLink,
-		// ext_file4.txt is already downloaded, used, but broken. Not purgeable.
-		"ext_file4.txt":          "broken",
+
+		"ext_file3.txt.external": extLink, // to be downloaded
+
+		"ext_file4.txt":          "broken", // broken, used
 		"ext_file4.txt.external": extLink,
-		// ext_file5.txt is already downloaded, but broken and not used. Purgeable.
-		"ext_file5.txt":          "broken",
+
+		"ext_file5.txt":          "broken", // broken, unused
 		"ext_file5.txt.external": extLink,
 	}); err != nil {
 		t.Fatal(err)
@@ -506,14 +504,34 @@ func TestPrepareDownloadsPurgeable(t *gotesting.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	_, purgeable := m.PrepareDownloads(ctx, tests)
 
-	want := []string{
+	if diff := cmp.Diff(m.Purgeable(), []string{
+		filepath.Join(dataSubdir, "ext_file1.txt"),
+		filepath.Join(dataSubdir, "ext_file2.txt"),
+		filepath.Join(dataSubdir, "ext_file4.txt"),
+		filepath.Join(dataSubdir, "ext_file5.txt"),
+	}); diff != "" {
+		t.Error("Purgeable mismatch (-got +want):\n", diff)
+	}
+
+	_, release := m.PrepareDownloads(ctx, tests)
+
+	if diff := cmp.Diff(m.Purgeable(), []string{
 		filepath.Join(dataSubdir, "ext_file2.txt"),
 		filepath.Join(dataSubdir, "ext_file5.txt"),
+	}); diff != "" {
+		t.Error("Purgeable mismatch after PrepareDownloads (-got +want):\n", diff)
 	}
-	if diff := cmp.Diff(purgeable, want); diff != "" {
-		t.Error("Purgeable mismatch (-got +want):\n", diff)
+
+	release()
+
+	if diff := cmp.Diff(m.Purgeable(), []string{
+		filepath.Join(dataSubdir, "ext_file1.txt"),
+		filepath.Join(dataSubdir, "ext_file2.txt"),
+		// ext_file4.txt was found to be broken, and removed.
+		filepath.Join(dataSubdir, "ext_file5.txt"),
+	}); diff != "" {
+		t.Error("Purgeable mismatch after release (-got +want):\n", diff)
 	}
 }
 

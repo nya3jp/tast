@@ -22,6 +22,30 @@
       },
       "revId": "3380e008751a52ebe6ab6d7ada37bf50d69d736c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "fe5627c5_f0af9299",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 1312379
+      },
+      "writtenOn": "2021-05-14T03:31:29Z",
+      "side": 1,
+      "message": "My suspicion is that it is related to being a Chromium vs Chrome image. We first attempted to fix the issue of the missing /etc/os-release file with crrev.com/c/2893002 but had to be reverted since it broke other tast tests: crrev.com/c/2892356\n\nConceptually fwupd is not to different from flashrom as it is used to flash firmware and it does not make much sense in a VM either way. I could just simply update the comment if that makes more sense. Even though I would like to have that warning there for the future in case someone thinks that it makes sense on a VM.",
+      "parentUuid": "1955e0ca_40967394",
+      "range": {
+        "startLine": 121,
+        "startChar": 41,
+        "endLine": 121,
+        "endChar": 48
+      },
+      "revId": "3380e008751a52ebe6ab6d7ada37bf50d69d736c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

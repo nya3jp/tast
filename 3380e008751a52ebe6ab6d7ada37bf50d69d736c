@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1955e0ca_40967394",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-05-14T00:45:43Z",
+      "side": 1,
+      "message": "tast_vm is essentially a hardware feature because presence of the feature is determined at run time. It was introduced as a pseudo software dependency because we didn\u0027t have hardware dependency support at that time.\n\nConsidering that, using tast_vm to decide presence of /etc/os-release sounds weird; content of /etc should be fully determined at build time, so we should be able to construct the condition from pure software features only.\n\nDo you know why /etc/os-release is present on some boards while not on other boards, and what is exact difference?",
+      "range": {
+        "startLine": 121,
+        "startChar": 41,
+        "endLine": 121,
+        "endChar": 48
+      },
+      "revId": "3380e008751a52ebe6ab6d7ada37bf50d69d736c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

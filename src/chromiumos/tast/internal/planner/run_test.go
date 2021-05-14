@@ -665,6 +665,10 @@ func TestRunExternalData(t *gotesting.T) {
 		file2Data = "data2"
 		file3URL  = "gs://bucket/file3.txt"
 		file3Path = "pkg/data/file3.txt"
+		file3Data = "data3"
+
+		downloadFailURL  = "gs://bucket/fail.txt"
+		downloadFailPath = "pkg/data/fail.txt"
 	)
 
 	for _, tc := range []struct {
@@ -673,13 +677,13 @@ func TestRunExternalData(t *gotesting.T) {
 		numDownloads int
 	}{
 		{"batch", DownloadBatch, 1},
-		{"lazy", DownloadLazy, 2},
+		{"lazy", DownloadLazy, 3},
 	} {
 		t.Run(tc.name, func(t *gotesting.T) {
 			ds, err := devservertest.NewServer(devservertest.Files([]*devservertest.File{
 				{URL: file1URL, Data: []byte(file1Data)},
 				{URL: file2URL, Data: []byte(file2Data)},
-				// file3.txt is missing.
+				{URL: file3URL, Data: []byte(file3Data)},
 			}))
 			if err != nil {
 				t.Fatal(err)
@@ -691,15 +695,22 @@ func TestRunExternalData(t *gotesting.T) {
 
 			dataDir := filepath.Join(tmpDir, "data")
 			if err := testutil.WriteFiles(dataDir, map[string]string{
-				file1Path + testing.ExternalLinkSuffix: buildLink(t, file1URL, file1Data),
-				file2Path + testing.ExternalLinkSuffix: buildLink(t, file2URL, file2Data),
-				file3Path + testing.ExternalLinkSuffix: buildLink(t, file3URL, ""),
+				file1Path + testing.ExternalLinkSuffix:        buildLink(t, file1URL, file1Data),
+				file2Path + testing.ExternalLinkSuffix:        buildLink(t, file2URL, file2Data),
+				file3Path + testing.ExternalLinkSuffix:        buildLink(t, file3URL, file3Data),
+				downloadFailPath + testing.ExternalLinkSuffix: buildLink(t, downloadFailURL, ""),
 			}); err != nil {
 				t.Fatal("WriteFiles: ", err)
 			}
 
 			numDownloads := 0
 
+			fixt := &testing.FixtureInstance{
+				Name: "fixt",
+				Pkg:  "pkg",
+				Impl: newFakeFixture(),
+				Data: []string{"file3.txt"},
+			}
 			pcfg := &Config{
 				DataDir: dataDir,
 				Features: &protocol.Features{
@@ -714,6 +725,9 @@ func TestRunExternalData(t *gotesting.T) {
 				BeforeDownload: func(ctx context.Context) {
 					numDownloads++
 				},
+				Fixtures: map[string]*testing.FixtureInstance{
+					"fixt": fixt,
+				},
 			}
 
 			tests := []*testing.TestInstance{
@@ -721,7 +735,7 @@ func TestRunExternalData(t *gotesting.T) {
 					Name:         "example.Test1",
 					Pkg:          "pkg",
 					Func:         func(ctx context.Context, s *testing.State) {},
-					Data:         []string{"file1.txt"},
+					Fixture:      "fixt",
 					SoftwareDeps: []string{"dep1"},
 					Timeout:      time.Minute,
 				},
@@ -729,7 +743,7 @@ func TestRunExternalData(t *gotesting.T) {
 					Name: "example.Test2",
 					Pkg:  "pkg",
 					Func: func(ctx context.Context, s *testing.State) {
-						fp := filepath.Join(dataDir, file3Path+testing.ExternalErrorSuffix)
+						fp := filepath.Join(dataDir, downloadFailPath+testing.ExternalErrorSuffix)
 						_, err := os.Stat(fp)
 						switch tc.mode {
 						case DownloadBatch:
@@ -746,6 +760,7 @@ func TestRunExternalData(t *gotesting.T) {
 							}
 						}
 					},
+					Fixture:      "fixt",
 					Data:         []string{"file2.txt"},
 					SoftwareDeps: []string{"dep2"},
 					Timeout:      time.Minute,
@@ -754,7 +769,8 @@ func TestRunExternalData(t *gotesting.T) {
 					Name:    "example.Test3",
 					Pkg:     "pkg",
 					Func:    func(ctx context.Context, s *testing.State) {},
-					Data:    []string{"file3.txt"},
+					Fixture: "fixt",
+					Data:    []string{"fail.txt"},
 					Timeout: time.Minute,
 				},
 			}
@@ -764,11 +780,13 @@ func TestRunExternalData(t *gotesting.T) {
 			want := []protocol.Event{
 				&protocol.EntityStartEvent{Entity: tests[0].EntityProto()},
 				&protocol.EntityEndEvent{EntityName: tests[0].Name, Skip: &protocol.Skip{Reasons: []string{"missing SoftwareDeps: dep1"}}},
+				&protocol.EntityStartEvent{Entity: fixt.EntityProto()},
 				&protocol.EntityStartEvent{Entity: tests[1].EntityProto()},
 				&protocol.EntityEndEvent{EntityName: tests[1].Name},
 				&protocol.EntityStartEvent{Entity: tests[2].EntityProto()},
-				&protocol.EntityErrorEvent{EntityName: tests[2].Name, Error: &protocol.Error{Reason: "Required data file file3.txt missing: failed to download gs://bucket/file3.txt: file does not exist"}},
+				&protocol.EntityErrorEvent{EntityName: tests[2].Name, Error: &protocol.Error{Reason: "Required data file fail.txt missing: failed to download gs://bucket/fail.txt: file does not exist"}},
 				&protocol.EntityEndEvent{EntityName: tests[2].Name},
+				&protocol.EntityEndEvent{EntityName: fixt.Name},
 			}
 			if diff := cmp.Diff(msgs, want); diff != "" {
 				t.Error("Output mismatch (-got +want):\n", diff)
@@ -780,11 +798,13 @@ func TestRunExternalData(t *gotesting.T) {
 			}
 			wantFiles := map[string]string{
 				// file1.txt is not downloaded since pkg.Test1 is not run.
-				file1Path + testing.ExternalLinkSuffix:  buildLink(t, file1URL, file1Data),
-				file2Path:                               file2Data,
-				file2Path + testing.ExternalLinkSuffix:  buildLink(t, file2URL, file2Data),
-				file3Path + testing.ExternalLinkSuffix:  buildLink(t, file3URL, ""),
-				file3Path + testing.ExternalErrorSuffix: "failed to download gs://bucket/file3.txt: file does not exist",
+				file1Path + testing.ExternalLinkSuffix:         buildLink(t, file1URL, file1Data),
+				file2Path:                                      file2Data,
+				file2Path + testing.ExternalLinkSuffix:         buildLink(t, file2URL, file2Data),
+				downloadFailPath + testing.ExternalLinkSuffix:  buildLink(t, downloadFailURL, ""),
+				downloadFailPath + testing.ExternalErrorSuffix: "failed to download gs://bucket/fail.txt: file does not exist",
+				file3Path:                              file3Data,
+				file3Path + testing.ExternalLinkSuffix: buildLink(t, file3URL, file3Data),
 			}
 			if diff := cmp.Diff(files, wantFiles); diff != "" {
 				t.Error("Data directory mismatch (-got +want):\n", diff)
@@ -825,25 +845,27 @@ func TestLazyDownloadPurgeable(t *gotesting.T) {
 		file1Path + testing.ExternalLinkSuffix: buildLink(t, file1URL, ""),
 		file2Path + testing.ExternalLinkSuffix: buildLink(t, file2URL, ""),
 		file3Path + testing.ExternalLinkSuffix: buildLink(t, file3URL, ""),
-		file3Path:                              "", // file3 alraedy exists
+		file3Path:                              "", // file3 already exists
 	}); err != nil {
 		t.Fatal("WriteFiles: ", err)
 	}
 
-	ti := func(name string, data []string) *testing.TestInstance {
+	ti := func(name string, data []string, fixture string) *testing.TestInstance {
 		return &testing.TestInstance{
 			Name:    name,
+			Fixture: fixture,
+			Data:    data,
 			Pkg:     "pkg",
 			Func:    func(ctx context.Context, s *testing.State) {},
-			Data:    data,
 			Timeout: time.Minute,
 		}
 	}
 	tests := []*testing.TestInstance{
-		ti("example.Tetst1", []string{"file1.txt"}),
-		ti("example.Tetst2", []string{"file2.txt"}),
-		ti("example.Tetst3", []string{"file2.txt", "file3.txt"}),
-		ti("example.Tetst4", []string{}),
+		ti("example.Tetst1", []string{"file1.txt"}, ""),
+		ti("example.Tetst2", []string{"file2.txt"}, ""),
+		ti("example.Tetst3", []string{"file2.txt"}, "fixt"),
+		ti("example.Tetst4", []string{}, "fixt"),
+		ti("example.Tetst5", []string{}, "fixt2"),
 	}
 
 	var got [][]string
@@ -856,6 +878,20 @@ func TestLazyDownloadPurgeable(t *gotesting.T) {
 			got = append(got, s.Purgeable())
 			return nil
 		},
+		Fixtures: map[string]*testing.FixtureInstance{
+			"fixt": {
+				Pkg:  "pkg",
+				Name: "fixt",
+				Impl: newFakeFixture(),
+				Data: []string{"file3.txt"},
+			},
+			"fixt2": {
+				Pkg:  "pkg",
+				Name: "fixt2",
+				Impl: newFakeFixture(),
+				Data: []string{},
+			},
+		},
 	}
 
 	runTestsAndReadAll(t, tests, pcfg)
@@ -865,6 +901,7 @@ func TestLazyDownloadPurgeable(t *gotesting.T) {
 		{abs(file3Path)},
 		{abs(file1Path), abs(file3Path)},
 		{abs(file1Path)},
+		{abs(file1Path), abs(file2Path)}, // file3Path is used by fixt
 		{abs(file1Path), abs(file2Path), abs(file3Path)},
 	}
 

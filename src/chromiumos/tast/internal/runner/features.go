@@ -228,8 +228,8 @@ func newDeviceConfigAndHardwareFeatures() (dc *device.Config, retFeatures *confi
 			ModelId:    &device.ModelId{Value: model},
 			BrandId:    &device.BrandId{Value: brand},
 		},
-		Soc: info.soc,
-		Cpu: info.cpuArch,
+		Soc: toDeviceConfigSoc(info.soc),
+		Cpu: toDeviceConfigCPUArch(info.cpuArch),
 	}
 	deviceInfo := &protocol.DeviceInfo{
 		Ids: &protocol.ConfigIds{
@@ -237,6 +237,8 @@ func newDeviceConfigAndHardwareFeatures() (dc *device.Config, retFeatures *confi
 			Model:    model,
 			Brand:    brand,
 		},
+		Soc: info.soc,
+		Cpu: info.cpuArch,
 	}
 	features := &configpb.HardwareFeatures{
 		Screen:             &configpb.HardwareFeatures_Screen{},
@@ -330,10 +332,10 @@ func newDeviceConfigAndHardwareFeatures() (dc *device.Config, retFeatures *confi
 	}
 
 	func() {
-		// This function determines DUT's power supply type and stores it to config.Power.
-		// If DUT has a battery, config.Power is Config_POWER_SUPPLY_BATTERY.
-		// If DUT has AC power supplies only, config.Power is Config_POWER_SUPPLY_AC_ONLY.
-		// Otherwise, Config_POWER_SUPPLY_UNSPECIFIED is populated.
+		// This function determines DUT's power supply type and stores it to deviceInfo.Power.
+		// If DUT has a battery, deviceInfo.Power is DeviceInfo_POWER_SUPPLY_BATTERY.
+		// If DUT has AC power supplies only, deviceInfo.Power is DeviceInfo_POWER_SUPPLY_AC_ONLY.
+		// Otherwise, DeviceInfo_POWER_SUPPLY_UNSPECIFIED is populated.
 		const sysFsPowerSupplyPath = "/sys/class/power_supply"
 		// AC power types come from power_supply driver in Linux kernel (drivers/power/supply/power_supply_sysfs.c)
 		acPowerTypes := [...]string{
@@ -345,7 +347,7 @@ func newDeviceConfigAndHardwareFeatures() (dc *device.Config, retFeatures *confi
 		for _, s := range acPowerTypes {
 			isACPower[s] = true
 		}
-		config.Power = device.Config_POWER_SUPPLY_UNSPECIFIED
+		deviceInfo.Power = protocol.DeviceInfo_POWER_SUPPLY_UNSPECIFIED
 		files, err := ioutil.ReadDir(sysFsPowerSupplyPath)
 		if err != nil {
 			warns = append(warns, fmt.Sprintf("failed to read %v: %v", sysFsPowerSupplyPath, err))
@@ -371,7 +373,7 @@ func newDeviceConfigAndHardwareFeatures() (dc *device.Config, retFeatures *confi
 					// Ignore batteries for peripheral devices.
 					continue
 				}
-				config.Power = device.Config_POWER_SUPPLY_BATTERY
+				deviceInfo.Power = protocol.DeviceInfo_POWER_SUPPLY_BATTERY
 				// Found at least one battery so this device is powered by battery.
 				break
 			}
@@ -379,9 +381,10 @@ func newDeviceConfigAndHardwareFeatures() (dc *device.Config, retFeatures *confi
 				warns = append(warns, fmt.Sprintf("Unknown supply type %v for %v", supplyType, devPath))
 				continue
 			}
-			config.Power = device.Config_POWER_SUPPLY_AC_ONLY
+			deviceInfo.Power = protocol.DeviceInfo_POWER_SUPPLY_AC_ONLY
 		}
 	}()
+	config.Power = toDeviceConfigPowerSupply(deviceInfo.Power)
 
 	storageBytes, err := func() (int64, error) {
 		b, err := exec.Command("lsblk", "-J", "-b").Output()
@@ -417,14 +420,14 @@ func (r *lscpuResult) find(name string) (data string, ok bool) {
 }
 
 type cpuConfig struct {
-	cpuArch device.Config_Architecture
-	soc     device.Config_SOC
+	cpuArch protocol.DeviceInfo_Architecture
+	soc     protocol.DeviceInfo_SOC
 }
 
 // cpuInfo returns a structure containing field data from the "lscpu" command
 // which outputs CPU architecture information from "sysfs" and "/proc/cpuinfo".
 func cpuInfo() (cpuConfig, error) {
-	errInfo := cpuConfig{device.Config_ARCHITECTURE_UNDEFINED, device.Config_SOC_UNSPECIFIED}
+	errInfo := cpuConfig{protocol.DeviceInfo_ARCHITECTURE_UNDEFINED, protocol.DeviceInfo_SOC_UNSPECIFIED}
 	b, err := exec.Command("lscpu", "--json").Output()
 	if err != nil {
 		return errInfo, err
@@ -446,32 +449,32 @@ func cpuInfo() (cpuConfig, error) {
 
 // findArchitecture returns an architecture configuration based from parsed output
 // data value of the "Architecture" field.
-func findArchitecture(parsed lscpuResult) (device.Config_Architecture, error) {
+func findArchitecture(parsed lscpuResult) (protocol.DeviceInfo_Architecture, error) {
 	arch, ok := parsed.find("Architecture:")
 	if !ok {
-		return device.Config_ARCHITECTURE_UNDEFINED, errors.New("failed to find Architecture field")
+		return protocol.DeviceInfo_ARCHITECTURE_UNDEFINED, errors.New("failed to find Architecture field")
 	}
 
 	switch arch {
 	case "x86_64":
-		return device.Config_X86_64, nil
+		return protocol.DeviceInfo_X86_64, nil
 	case "i686":
-		return device.Config_X86, nil
+		return protocol.DeviceInfo_X86, nil
 	case "aarch64":
-		return device.Config_ARM64, nil
+		return protocol.DeviceInfo_ARM64, nil
 	case "armv7l", "armv8l":
-		return device.Config_ARM, nil
+		return protocol.DeviceInfo_ARM, nil
 	default:
-		return device.Config_ARCHITECTURE_UNDEFINED, errors.Errorf("unknown architecture: %q", arch)
+		return protocol.DeviceInfo_ARCHITECTURE_UNDEFINED, errors.Errorf("unknown architecture: %q", arch)
 	}
 }
 
 // findSOC returns a SOC configuration based from parsed output data value of the
 // "Vendor ID" and other related fields.
-func findSOC(parsed lscpuResult) (device.Config_SOC, error) {
+func findSOC(parsed lscpuResult) (protocol.DeviceInfo_SOC, error) {
 	vendorID, ok := parsed.find("Vendor ID:")
 	if !ok {
-		return device.Config_SOC_UNSPECIFIED, errors.New("failed to find Vendor ID field")
+		return protocol.DeviceInfo_SOC_UNSPECIFIED, errors.New("failed to find Vendor ID field")
 	}
 
 	switch vendorID {
@@ -484,12 +487,12 @@ func findSOC(parsed lscpuResult) (device.Config_SOC, error) {
 	case "AuthenticAMD":
 		return findAMDSOC(&parsed)
 	default:
-		return device.Config_SOC_UNSPECIFIED, errors.Errorf("unknown vendor ID: %q", vendorID)
+		return protocol.DeviceInfo_SOC_UNSPECIFIED, errors.Errorf("unknown vendor ID: %q", vendorID)
 	}
 }
 
 // findARMSOC returns an ARM SOC configuration based on "soc_id" from "/sys/bus/soc/devices".
-func findARMSOC() (device.Config_SOC, error) {
+func findARMSOC() (protocol.DeviceInfo_SOC, error) {
 	// Platforms with SMCCC >= 1.2 should implement get_soc functions in firmware
 	const socSysFS = "/sys/bus/soc/devices"
 	socs, err := ioutil.ReadDir(socSysFS)
@@ -503,9 +506,9 @@ func findARMSOC() (device.Config_SOC, error) {
 			socID := strings.TrimRight(string(c), "\x00\n")
 			switch socID {
 			case "jep106:0426:8192":
-				return device.Config_SOC_MT8192, nil
+				return protocol.DeviceInfo_SOC_MT8192, nil
 			default:
-				return device.Config_SOC_UNSPECIFIED, errors.Errorf("unknown ARM model: %s", socID)
+				return protocol.DeviceInfo_SOC_UNSPECIFIED, errors.Errorf("unknown ARM model: %s", socID)
 			}
 		}
 	}
@@ -515,7 +518,7 @@ func findARMSOC() (device.Config_SOC, error) {
 	// Example: google,krane-sku176\x00google,krane\x00mediatek,mt8183\x00
 	c, err := ioutil.ReadFile("/sys/firmware/devicetree/base/compatible")
 	if err != nil {
-		return device.Config_SOC_UNSPECIFIED, errors.Wrap(err, "failed to find ARM model")
+		return protocol.DeviceInfo_SOC_UNSPECIFIED, errors.Wrap(err, "failed to find ARM model")
 	}
 
 	compatible := string(c)
@@ -524,49 +527,49 @@ func findARMSOC() (device.Config_SOC, error) {
 
 	switch model {
 	case "mt8173":
-		return device.Config_SOC_MT8173, nil
+		return protocol.DeviceInfo_SOC_MT8173, nil
 	case "mt8183":
-		return device.Config_SOC_MT8183, nil
+		return protocol.DeviceInfo_SOC_MT8183, nil
 	case "rk3288":
-		return device.Config_SOC_RK3288, nil
+		return protocol.DeviceInfo_SOC_RK3288, nil
 	case "rk3399":
-		return device.Config_SOC_RK3399, nil
+		return protocol.DeviceInfo_SOC_RK3399, nil
 	default:
-		return device.Config_SOC_UNSPECIFIED, errors.Errorf("unknown ARM model: %s", model)
+		return protocol.DeviceInfo_SOC_UNSPECIFIED, errors.Errorf("unknown ARM model: %s", model)
 	}
 }
 
 // findQualcommSOC returns a Qualcomm SOC configuration based on "Model" field.
-func findQualcommSOC(parsed *lscpuResult) (device.Config_SOC, error) {
+func findQualcommSOC(parsed *lscpuResult) (protocol.DeviceInfo_SOC, error) {
 	model, ok := parsed.find("Model:")
 	if !ok {
-		return device.Config_SOC_UNSPECIFIED, errors.New("failed to find Qualcomm model")
+		return protocol.DeviceInfo_SOC_UNSPECIFIED, errors.New("failed to find Qualcomm model")
 	}
 
 	switch model {
 	case "14":
-		return device.Config_SOC_SC7180, nil
+		return protocol.DeviceInfo_SOC_SC7180, nil
 	default:
-		return device.Config_SOC_UNSPECIFIED, errors.Errorf("unknown Qualcomm model: %s", model)
+		return protocol.DeviceInfo_SOC_UNSPECIFIED, errors.Errorf("unknown Qualcomm model: %s", model)
 	}
 }
 
 // findIntelSOC returns an Intel SOC configuration based on "CPU family", "Model",
 // and "Model name" fields.
-func findIntelSOC(parsed *lscpuResult) (device.Config_SOC, error) {
+func findIntelSOC(parsed *lscpuResult) (protocol.DeviceInfo_SOC, error) {
 	if family, ok := parsed.find("CPU family:"); !ok {
-		return device.Config_SOC_UNSPECIFIED, errors.New("failed to find Intel family")
+		return protocol.DeviceInfo_SOC_UNSPECIFIED, errors.New("failed to find Intel family")
 	} else if family != "6" {
-		return device.Config_SOC_UNSPECIFIED, errors.Errorf("unknown Intel family: %s", family)
+		return protocol.DeviceInfo_SOC_UNSPECIFIED, errors.Errorf("unknown Intel family: %s", family)
 	}
 
 	modelStr, ok := parsed.find("Model:")
 	if !ok {
-		return device.Config_SOC_UNSPECIFIED, errors.New("failed to find Intel model")
+		return protocol.DeviceInfo_SOC_UNSPECIFIED, errors.New("failed to find Intel model")
 	}
 	model, err := strconv.ParseInt(modelStr, 10, 64)
 	if err != nil {
-		return device.Config_SOC_UNSPECIFIED, errors.Wrapf(err, "failed to parse Intel model: %q", modelStr)
+		return protocol.DeviceInfo_SOC_UNSPECIFIED, errors.Wrapf(err, "failed to parse Intel model: %q", modelStr)
 	}
 	switch model {
 	case INTEL_FAM6_KABYLAKE_L:
@@ -575,95 +578,95 @@ func findIntelSOC(parsed *lscpuResult) (device.Config_SOC, error) {
 		// Note that Pentium brand is unsupported.
 		modelName, ok := parsed.find("Model name:")
 		if !ok {
-			return device.Config_SOC_UNSPECIFIED, errors.New("failed to find Intel model name")
+			return protocol.DeviceInfo_SOC_UNSPECIFIED, errors.New("failed to find Intel model name")
 		}
 		for _, e := range []struct {
-			soc device.Config_SOC
+			soc protocol.DeviceInfo_SOC
 			ptn string
 		}{
 			// https://ark.intel.com/content/www/us/en/ark/products/codename/186968/amber-lake-y.html
-			{device.Config_SOC_AMBERLAKE_Y, `Core.* [mi]\d-(10|8)\d{3}Y`},
+			{protocol.DeviceInfo_SOC_AMBERLAKE_Y, `Core.* [mi]\d-(10|8)\d{3}Y`},
 
 			// https://ark.intel.com/content/www/us/en/ark/products/codename/90354/comet-lake.html
-			{device.Config_SOC_COMET_LAKE_U, `Core.* i\d-10\d{3}U|Celeron.* 5[23]05U`},
+			{protocol.DeviceInfo_SOC_COMET_LAKE_U, `Core.* i\d-10\d{3}U|Celeron.* 5[23]05U`},
 
 			// https://ark.intel.com/content/www/us/en/ark/products/codename/135883/whiskey-lake.html
-			{device.Config_SOC_WHISKEY_LAKE_U, `Core.* i\d-8\d{2}5U|Celeron.* 4[23]05U`},
+			{protocol.DeviceInfo_SOC_WHISKEY_LAKE_U, `Core.* i\d-8\d{2}5U|Celeron.* 4[23]05U`},
 
 			// https://ark.intel.com/content/www/us/en/ark/products/codename/82879/kaby-lake.html
-			{device.Config_SOC_KABYLAKE_U, `Core.* i\d-7\d{3}U|Celeron.* 3[89]65U`},
-			{device.Config_SOC_KABYLAKE_Y, `Core.* [mi]\d-7Y\d{2}|Celeron.* 3965Y`},
+			{protocol.DeviceInfo_SOC_KABYLAKE_U, `Core.* i\d-7\d{3}U|Celeron.* 3[89]65U`},
+			{protocol.DeviceInfo_SOC_KABYLAKE_Y, `Core.* [mi]\d-7Y\d{2}|Celeron.* 3965Y`},
 
 			// https://ark.intel.com/content/www/us/en/ark/products/codename/126287/kaby-lake-r.html
-			{device.Config_SOC_KABYLAKE_U_R, `Core.* i\d-8\d{2}0U|Celeron.* 3867U`},
+			{protocol.DeviceInfo_SOC_KABYLAKE_U_R, `Core.* i\d-8\d{2}0U|Celeron.* 3867U`},
 		} {
 			r := regexp.MustCompile(e.ptn)
 			if r.MatchString(modelName) {
 				return e.soc, nil
 			}
 		}
-		return device.Config_SOC_UNSPECIFIED, errors.Errorf("unknown model name: %s", modelName)
+		return protocol.DeviceInfo_SOC_UNSPECIFIED, errors.Errorf("unknown model name: %s", modelName)
 	case INTEL_FAM6_ICELAKE_L:
-		return device.Config_SOC_ICE_LAKE_Y, nil
+		return protocol.DeviceInfo_SOC_ICE_LAKE_Y, nil
 	case INTEL_FAM6_ATOM_GOLDMONT_PLUS:
-		return device.Config_SOC_GEMINI_LAKE, nil
+		return protocol.DeviceInfo_SOC_GEMINI_LAKE, nil
 	case INTEL_FAM6_ATOM_TREMONT_L:
-		return device.Config_SOC_JASPER_LAKE, nil
+		return protocol.DeviceInfo_SOC_JASPER_LAKE, nil
 	case INTEL_FAM6_TIGERLAKE_L:
-		return device.Config_SOC_TIGER_LAKE, nil
+		return protocol.DeviceInfo_SOC_TIGER_LAKE, nil
 	case INTEL_FAM6_CANNONLAKE_L:
-		return device.Config_SOC_CANNON_LAKE_Y, nil
+		return protocol.DeviceInfo_SOC_CANNON_LAKE_Y, nil
 	case INTEL_FAM6_ATOM_GOLDMONT:
-		return device.Config_SOC_APOLLO_LAKE, nil
+		return protocol.DeviceInfo_SOC_APOLLO_LAKE, nil
 	case INTEL_FAM6_SKYLAKE_L:
 		// SKYLAKE_U and SKYLAKE_Y share the same model. Parse model name.
 		modelName, ok := parsed.find("Model name:")
 		if !ok {
-			return device.Config_SOC_UNSPECIFIED, errors.New("failed to find Intel model name")
+			return protocol.DeviceInfo_SOC_UNSPECIFIED, errors.New("failed to find Intel model name")
 		}
 		for _, e := range []struct {
-			soc device.Config_SOC
+			soc protocol.DeviceInfo_SOC
 			ptn string
 		}{
 			// https://ark.intel.com/content/www/us/en/ark/products/codename/37572/skylake.html
-			{device.Config_SOC_SKYLAKE_U, `Core.* i\d-6\d{3}U|Celeron.*3[89]55U`},
-			{device.Config_SOC_SKYLAKE_Y, `Core.* m\d-6Y\d{2}`},
+			{protocol.DeviceInfo_SOC_SKYLAKE_U, `Core.* i\d-6\d{3}U|Celeron.*3[89]55U`},
+			{protocol.DeviceInfo_SOC_SKYLAKE_Y, `Core.* m\d-6Y\d{2}`},
 		} {
 			r := regexp.MustCompile(e.ptn)
 			if r.MatchString(modelName) {
 				return e.soc, nil
 			}
 		}
-		return device.Config_SOC_UNSPECIFIED, errors.Errorf("unknown model name: %s", modelName)
+		return protocol.DeviceInfo_SOC_UNSPECIFIED, errors.Errorf("unknown model name: %s", modelName)
 	case INTEL_FAM6_ATOM_AIRMONT:
-		return device.Config_SOC_BRASWELL, nil
+		return protocol.DeviceInfo_SOC_BRASWELL, nil
 	case INTEL_FAM6_BROADWELL:
-		return device.Config_SOC_BROADWELL, nil
+		return protocol.DeviceInfo_SOC_BROADWELL, nil
 	case INTEL_FAM6_HASWELL, INTEL_FAM6_HASWELL_L:
-		return device.Config_SOC_HASWELL, nil
+		return protocol.DeviceInfo_SOC_HASWELL, nil
 	case INTEL_FAM6_IVYBRIDGE:
-		return device.Config_SOC_IVY_BRIDGE, nil
+		return protocol.DeviceInfo_SOC_IVY_BRIDGE, nil
 	case INTEL_FAM6_ATOM_SILVERMONT:
-		return device.Config_SOC_BAY_TRAIL, nil
+		return protocol.DeviceInfo_SOC_BAY_TRAIL, nil
 	case INTEL_FAM6_SANDYBRIDGE:
-		return device.Config_SOC_SANDY_BRIDGE, nil
+		return protocol.DeviceInfo_SOC_SANDY_BRIDGE, nil
 	case INTEL_FAM6_ATOM_BONNELL:
-		return device.Config_SOC_PINE_TRAIL, nil
+		return protocol.DeviceInfo_SOC_PINE_TRAIL, nil
 	default:
-		return device.Config_SOC_UNSPECIFIED, errors.Errorf("unknown Intel model: %d", model)
+		return protocol.DeviceInfo_SOC_UNSPECIFIED, errors.Errorf("unknown Intel model: %d", model)
 	}
 }
 
 // findAMDSOC returns an AMD SOC configuration based on "Model" field.
-func findAMDSOC(parsed *lscpuResult) (device.Config_SOC, error) {
+func findAMDSOC(parsed *lscpuResult) (protocol.DeviceInfo_SOC, error) {
 	model, ok := parsed.find("Model:")
 	if !ok {
-		return device.Config_SOC_UNSPECIFIED, errors.New("failed to find AMD model")
+		return protocol.DeviceInfo_SOC_UNSPECIFIED, errors.New("failed to find AMD model")
 	}
 	if model == "112" {
-		return device.Config_SOC_STONEY_RIDGE, nil
+		return protocol.DeviceInfo_SOC_STONEY_RIDGE, nil
 	}
-	return device.Config_SOC_UNSPECIFIED, errors.Errorf("unknown AMD model: %s", model)
+	return protocol.DeviceInfo_SOC_UNSPECIFIED, errors.Errorf("unknown AMD model: %s", model)
 }
 
 // lsblk command output differs depending on the version. Attempt parsing in multiple ways to accept all the cases.

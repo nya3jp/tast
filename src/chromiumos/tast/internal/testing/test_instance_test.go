@@ -69,11 +69,9 @@ func features(availableSWs []string, model string) *protocol.Features {
 			Unavailable: unavailableSWs,
 		},
 		Hardware: &protocol.HardwareFeatures{
-			DeprecatedDeviceConfig: &device.Config{
-				Id: &device.ConfigId{
-					ModelId: &device.ModelId{
-						Value: model,
-					},
+			DeviceInfo: &protocol.DeviceInfo{
+				Ids: &protocol.ConfigIds{
+					Model: model,
 				},
 			},
 		},

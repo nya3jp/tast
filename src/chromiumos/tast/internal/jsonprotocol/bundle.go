@@ -209,11 +209,34 @@ type FeatureArgs struct {
 	DeviceInfo DeviceInfoJSON
 }
 
+func fromDeviceConfig(dc *device.Config) *protocol.DeviceInfo {
+	var ids *protocol.ConfigIds
+	if dc != nil && dc.Id != nil && dc.Id.ModelId != nil {
+		ids = &protocol.ConfigIds{
+			Model:    dc.Id.ModelId.Value,
+			Platform: dc.Id.PlatformId.Value,
+			Brand:    dc.Id.BrandId.Value,
+		}
+	}
+	return &protocol.DeviceInfo{
+		Ids:   ids,
+		Cpu:   fromDeviceConfigCPUArch(dc.GetCpu()),
+		Soc:   fromDeviceConfigSoc(dc.GetSoc()),
+		Power: fromDeviceConfigPowerSupply(dc.GetPower()),
+	}
+}
+
 // Features returns protocol.Features to be used to check test dependencies.
 func (a *FeatureArgs) Features() *protocol.Features {
 	vars := make(map[string]string)
 	for k, v := range a.TestVars {
 		vars[k] = v
+	}
+	var info *protocol.DeviceInfo
+	if a.DeviceInfo.Proto != nil {
+		info = a.DeviceInfo.Proto
+	} else {
+		info = fromDeviceConfig(a.DeviceConfig.Proto)
 	}
 	return &protocol.Features{
 		CheckDeps: a.CheckDeps,
@@ -222,9 +245,8 @@ func (a *FeatureArgs) Features() *protocol.Features {
 			Unavailable: a.UnavailableSoftwareFeatures,
 		},
 		Hardware: &protocol.HardwareFeatures{
-			DeprecatedDeviceConfig: a.DeviceConfig.Proto,
-			HardwareFeatures:       a.HardwareFeatures.Proto,
-			DeviceInfo:             a.DeviceInfo.Proto,
+			HardwareFeatures: a.HardwareFeatures.Proto,
+			DeviceInfo:       info,
 		},
 		Vars:             vars,
 		MaybeMissingVars: a.MaybeMissingVars,

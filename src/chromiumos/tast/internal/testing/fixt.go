@@ -111,6 +111,7 @@ type FixtureInstance struct {
 	PreTestTimeout  time.Duration
 	PostTestTimeout time.Duration
 	TearDownTimeout time.Duration
+	Data            []string
 	ServiceDeps     []string
 	Vars            []string
 }
@@ -131,7 +132,8 @@ func (f *FixtureInstance) EntityProto() *protocol.Entity {
 		Description: f.Desc,
 		Fixture:     f.Parent,
 		Dependencies: &protocol.EntityDependencies{
-			Services: append([]string(nil), f.ServiceDeps...),
+			DataFiles: append([]string(nil), f.Data...),
+			Services:  append([]string(nil), f.ServiceDeps...),
 		},
 		Contacts: &protocol.EntityContacts{
 			Emails: append([]string(nil), f.Contacts...),

@@ -13,10 +13,10 @@ import (
 	"chromiumos/tast/internal/protocol"
 )
 
-func verifyCondition(t *testing.T, c Condition, dc *device.Config, features *configpb.HardwareFeatures, deviceIds *protocol.DeviceConfigIds, expectSatisfied bool) {
+func verifyCondition(t *testing.T, c Condition, dc *device.Config, features *configpb.HardwareFeatures, info *protocol.DeviceInfo, expectSatisfied bool) {
 	t.Helper()
 
-	err := c.Satisfied(&protocol.HardwareFeatures{DeprecatedDeviceConfig: dc, HardwareFeatures: features, DeviceConfigIds: deviceIds})
+	err := c.Satisfied(&protocol.HardwareFeatures{DeprecatedDeviceConfig: dc, HardwareFeatures: features, DeviceInfo: info})
 	if expectSatisfied {
 		if err != nil {
 			t.Error("Unexpectedly unsatisfied: ", err)
@@ -53,15 +53,17 @@ func TestModel(t *testing.T) {
 				},
 			},
 			&configpb.HardwareFeatures{},
-			nil, // protocol.DeviceConfigIds
+			nil, // protocol.DeviceInfo
 			tc.expectSatisfied)
 		// new protocol
 		verifyCondition(
 			t, c,
 			nil, // device.Config
 			&configpb.HardwareFeatures{},
-			&protocol.DeviceConfigIds{
-				Model: tc.model,
+			&protocol.DeviceInfo{
+				Ids: &protocol.DeviceConfigIds{
+					Model: tc.model,
+				},
 			},
 			tc.expectSatisfied)
 	}
@@ -92,15 +94,17 @@ func TestSkipOnModel(t *testing.T) {
 				},
 			},
 			&configpb.HardwareFeatures{},
-			nil, // protocol.DeviceConfigIds
+			nil, // protocol.DeviceInfo
 			tc.expectSatisfied)
 		// new protocol
 		verifyCondition(
 			t, c,
 			nil, // device.Config
 			&configpb.HardwareFeatures{},
-			&protocol.DeviceConfigIds{
-				Model: tc.model,
+			&protocol.DeviceInfo{
+				Ids: &protocol.DeviceConfigIds{
+					Model: tc.model,
+				},
 			},
 			tc.expectSatisfied)
 	}
@@ -129,15 +133,17 @@ func TestPlatform(t *testing.T) {
 				},
 			},
 			&configpb.HardwareFeatures{},
-			nil, // protocol.DeviceConfigIds
+			nil, // protocol.DeviceInfo
 			tc.expectSatisfied)
 		// new protocol
 		verifyCondition(
 			t, c,
 			nil, // device.Config
 			&configpb.HardwareFeatures{},
-			&protocol.DeviceConfigIds{
-				Platform: tc.platform,
+			&protocol.DeviceInfo{
+				Ids: &protocol.DeviceConfigIds{
+					Platform: tc.platform,
+				},
 			},
 			tc.expectSatisfied)
 	}
@@ -166,15 +172,17 @@ func TestSkipOnPlatform(t *testing.T) {
 				},
 			},
 			&configpb.HardwareFeatures{},
-			nil, // protocol.DeviceConfigIds
+			nil, // protocol.DeviceInfo
 			tc.expectSatisfied)
 		// new protocol
 		verifyCondition(
 			t, c,
 			nil, // device.Config
 			&configpb.HardwareFeatures{},
-			&protocol.DeviceConfigIds{
-				Platform: tc.platform,
+			&protocol.DeviceInfo{
+				Ids: &protocol.DeviceConfigIds{
+					Platform: tc.platform,
+				},
 			},
 			tc.expectSatisfied)
 	}
@@ -198,7 +206,7 @@ func TestTouchscreen(t *testing.T) {
 					TouchSupport: tc.TouchSupport,
 				},
 			},
-			&protocol.DeviceConfigIds{},
+			&protocol.DeviceInfo{},
 			tc.expectSatisfied)
 	}
 
@@ -263,7 +271,7 @@ func TestChromeEC(t *testing.T) {
 					EcType:  tc.ECType,
 				},
 			},
-			&protocol.DeviceConfigIds{},
+			&protocol.DeviceInfo{},
 			tc.expectSatisfied)
 	}
 }
@@ -286,7 +294,7 @@ func TestFingerprint(t *testing.T) {
 					Location: tc.Fingerprint,
 				},
 			},
-			&protocol.DeviceConfigIds{},
+			&protocol.DeviceInfo{},
 			tc.expectSatisfied)
 	}
 
@@ -325,7 +333,7 @@ func TestNoFingerprint(t *testing.T) {
 					Location: tc.Fingerprint,
 				},
 			},
-			&protocol.DeviceConfigIds{},
+			&protocol.DeviceInfo{},
 			tc.expectSatisfied)
 	}
 
@@ -364,7 +372,7 @@ func TestInternalDisplay(t *testing.T) {
 					PanelProperties: tc.PanelProperties,
 				},
 			},
-			&protocol.DeviceConfigIds{},
+			&protocol.DeviceInfo{},
 			tc.expectSatisfied)
 	}
 
@@ -404,7 +412,7 @@ func TestNvmeStorage(t *testing.T) {
 					StorageType: tc.StorageType,
 				},
 			},
-			&protocol.DeviceConfigIds{},
+			&protocol.DeviceInfo{},
 			tc.expectSatisfied)
 	}
 }
@@ -456,9 +464,11 @@ func TestWiFiIntel(t *testing.T) {
 			t, c,
 			nil,
 			&configpb.HardwareFeatures{},
-			&protocol.DeviceConfigIds{
-				Platform: tc.platform,
-				Model:    tc.model,
+			&protocol.DeviceInfo{
+				Ids: &protocol.DeviceConfigIds{
+					Platform: tc.platform,
+					Model:    tc.model,
+				},
 			},
 			tc.expectSatisfied)
 	}

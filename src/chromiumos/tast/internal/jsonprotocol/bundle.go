@@ -148,6 +148,14 @@ type DeviceConfigIdsJSON struct {
 	Proto *protocol.DeviceConfigIds `json:"-"`
 }
 
+// DeviceInfoJSON is a wrapper class for protocol.DeviceInfo to facilitate marshalling/unmarshalling.
+type DeviceInfoJSON struct {
+	// Proto contains the information about DUT.
+	// Marshaling and unmarshaling of this field is handled in MarshalJSON/UnmarshalJSON
+	// respectively.
+	Proto *protocol.DeviceInfo `json:"-"`
+}
+
 // MarshalJSON marshals the protocol.DeviceConfigIds struct into JSON.
 func (a *DeviceConfigIdsJSON) MarshalJSON() ([]byte, error) {
 	if a.Proto == nil {
@@ -206,7 +214,12 @@ type FeatureArgs struct {
 	// DeviceConfigIds contains labels that identify DUT's device type.
 	// Marshaling and unmarshaling of this field is handled in MarshalJSON/UnmarshalJSON
 	// respectively.
+	// Deprecated. Use Ids field in DeviceInfoJSON instead.
 	DeviceConfigIds DeviceConfigIdsJSON
+	// DeviceInfo contains the hardware info about DUT.
+	// Marshaling and unmarshaling of this field is handled in MarshalJSON/UnmarshalJSON
+	// respectively.
+	DeviceInfo DeviceInfoJSON
 }
 
 // Features returns protocol.Features to be used to check test dependencies.
@@ -214,6 +227,15 @@ func (a *FeatureArgs) Features() *protocol.Features {
 	vars := make(map[string]string)
 	for k, v := range a.TestVars {
 		vars[k] = v
+	}
+	var deviceInfo *protocol.DeviceInfo
+	if a.DeviceInfo.Proto != nil {
+		deviceInfo = a.DeviceInfo.Proto
+	}
+	if a.DeviceConfigIds.Proto != nil {
+		deviceInfo = &protocol.DeviceInfo{
+			Ids: a.DeviceConfigIds.Proto,
+		}
 	}
 	return &protocol.Features{
 		CheckDeps: a.CheckDeps,
@@ -224,7 +246,7 @@ func (a *FeatureArgs) Features() *protocol.Features {
 		Hardware: &protocol.HardwareFeatures{
 			DeprecatedDeviceConfig: a.DeviceConfig.Proto,
 			HardwareFeatures:       a.HardwareFeatures.Proto,
-			DeviceConfigIds:        a.DeviceConfigIds.Proto,
+			DeviceInfo:             deviceInfo,
 		},
 		Vars:             vars,
 		MaybeMissingVars: a.MaybeMissingVars,

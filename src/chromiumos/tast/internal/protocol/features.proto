@@ -39,10 +39,16 @@ message DeviceConfigIds {
   string brand = 3;
 }
 
+// A message that replaces device.Config from device/config.proto.
+message DeviceInfo {
+  DeviceConfigIds ids = 1;
+  // SoC, CPU arch and power fields will be added here.
+}
+
 // HardwareFeatures represents a set of hardware features available for the
 // device model being tested.
 message HardwareFeatures {
   chromiumos.config.api.HardwareFeatures hardware_features = 1;
   device.Config deprecated_device_config = 2;
-  DeviceConfigIds device_config_ids = 3;
+  DeviceInfo device_info = 3;
 }

@@ -130,6 +130,9 @@ type Manager struct {
 	dataDir      string
 	artifactsURL string
 	all          []string // all the locations external data files can exist.
+	// inuse is a mutable field that maps external data files to the number
+	// of entities currently using it.
+	inuse map[string]int
 }
 
 // NewManager creates a new Manager.
@@ -159,7 +162,23 @@ func NewManager(ctx context.Context, dataDir, artifactsURL string) (*Manager, er
 		dataDir:      dataDir,
 		artifactsURL: artifactsURL,
 		all:          all,
+		inuse:        make(map[string]int),
 	}, nil
+}
+
+// Purgeable returns a list of external data file paths not needed by the
+// currently running entities. They can be deleted if the disk space is low.
+func (m *Manager) Purgeable() []string {
+	var res []string
+	for _, p := range m.all {
+		if m.inuse[p] > 0 {
+			continue
+		}
+		if _, err := os.Stat(p); err == nil {
+			res = append(res, p)
+		}
+	}
+	return res
 }
 
 // PrepareDownloads computes a list of external data files that need to be
@@ -170,20 +189,14 @@ func NewManager(ctx context.Context, dataDir, artifactsURL string) (*Manager, er
 // files are saved so that they can be read and reported by bundles later.
 //
 // PrepareDownloads returns a list of download job specifications that can be
-// passed to RunDownloads to perform actual downloads. It also returns a list of
-// external data file paths not needed to run the specified entities. They can be
-// deleted if the disk space is low.
-func (m *Manager) PrepareDownloads(ctx context.Context, entities []*protocol.Entity) (jobs []*DownloadJob, purgeable []string) {
+// passed to RunDownloads to perform actual downloads.
+//
+// release must be called after entities finish.
+func (m *Manager) PrepareDownloads(ctx context.Context, entities []*protocol.Entity) (jobs []*DownloadJob, release func()) {
 	urlToJob := make(map[string]*DownloadJob)
 	hasErr := false
 
-	// Initialize purgeableSet with all external data files under dataDir.
-	purgeableSet := make(map[string]struct{})
-	for _, p := range m.all {
-		if _, err := os.Stat(p); err == nil {
-			purgeableSet[p] = struct{}{}
-		}
-	}
+	var releaseFunc []func()
 
 	// Process tests.
 	for _, t := range entities {
@@ -218,7 +231,10 @@ func (m *Manager) PrepareDownloads(ctx context.Context, entities []*protocol.Ent
 			}
 
 			// This file is not purgeable.
-			delete(purgeableSet, destPath)
+			m.inuse[destPath]++
+			releaseFunc = append(releaseFunc, func() {
+				m.inuse[destPath]--
+			})
 
 			// Decide if we need to update the destination file.
 			needed := false
@@ -276,17 +292,15 @@ func (m *Manager) PrepareDownloads(ctx context.Context, entities []*protocol.Ent
 		return jobs[i].link.ComputedURL < jobs[j].link.ComputedURL
 	})
 
-	purgeable = make([]string, 0, len(purgeableSet))
-	for p := range purgeableSet {
-		purgeable = append(purgeable, p)
-	}
-	sort.Strings(purgeable)
-
 	testcontext.Logf(ctx, "Found %d external linked data file(s), need to download %d", len(urlToJob), len(jobs))
 	if hasErr {
 		testcontext.Log(ctx, "Encountered some errors on scanning external data link files, but continuing anyway; corresponding tests will fail")
 	}
-	return jobs, purgeable
+	return jobs, func() {
+		for _, f := range releaseFunc {
+			f()
+		}
+	}
 }
 
 // loadLink loads a JSON file of LinkData.

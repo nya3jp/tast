@@ -37,8 +37,8 @@ var idRegexp = regexp.MustCompile(`^[a-z0-9_-]+$`)
 // in the given list of names or not.
 func modelListed(f *protocol.HardwareFeatures, names ...string) (bool, error) {
 	var m string
-	if f.DeviceConfigIds != nil {
-		m = f.DeviceConfigIds.Model
+	if f.DeviceInfo != nil && f.DeviceInfo.Ids != nil {
+		m = f.DeviceInfo.Ids.Model
 	} else {
 		dc := f.GetDeprecatedDeviceConfig()
 		if dc == nil || dc.Id == nil || dc.Id.ModelId == nil {
@@ -60,8 +60,8 @@ func modelListed(f *protocol.HardwareFeatures, names ...string) (bool, error) {
 // is listed in the given list of names or not.
 func platformListed(f *protocol.HardwareFeatures, names ...string) (bool, error) {
 	var p string
-	if f.DeviceConfigIds != nil {
-		p = f.DeviceConfigIds.Platform
+	if f.DeviceInfo != nil && f.DeviceInfo.Ids != nil {
+		p = f.DeviceInfo.Ids.Platform
 	} else {
 		dc := f.GetDeprecatedDeviceConfig()
 		if dc == nil || dc.Id == nil || dc.Id.PlatformId == nil {

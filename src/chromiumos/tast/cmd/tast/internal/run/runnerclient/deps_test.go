@@ -44,7 +44,7 @@ func writeGetDUTInfoResult(w io.Writer, avail, unavail []string, dc *device.Conf
 // checkRunnerTestDepsArgs calls featureArgsFromConfig using cfg and verifies
 // that it sets runner args as specified per checkDeps, avail, and unavail.
 func checkRunnerTestDepsArgs(t *testing.T, cfg *config.Config, state *config.State, checkDeps bool,
-	avail, unavail []string, dc *device.Config, hf *configpb.HardwareFeatures, ids *protocol.DeviceConfigIds) {
+	avail, unavail []string, dc *device.Config, hf *configpb.HardwareFeatures, ids *protocol.DeviceConfigIds, info *protocol.DeviceInfo) {
 	t.Helper()
 	args := jsonprotocol.RunnerArgs{
 		Mode: jsonprotocol.RunnerRunTestsMode,
@@ -67,8 +67,8 @@ func checkRunnerTestDepsArgs(t *testing.T, cfg *config.Config, state *config.Sta
 				HardwareFeatures: jsonprotocol.HardwareFeaturesJSON{
 					Proto: hf,
 				},
-				DeviceConfigIds: jsonprotocol.DeviceConfigIdsJSON{
-					Proto: ids,
+				DeviceInfo: jsonprotocol.DeviceInfoJSON{
+					Proto: info,
 				},
 			},
 		},
@@ -111,6 +111,9 @@ func TestGetDUTInfo(t *testing.T) {
 		Model:    "model_id",
 		Brand:    "brand_id",
 	}
+	info := &protocol.DeviceInfo{
+		Ids: ids,
+	}
 	osVersion := "octopus-release/R86-13312.0.2020_07_02_1108"
 	defaultBuildArtifactsURL := "gs://chromeos-image-archive/octopus-release/R86-13312.0.2020_07_02_1108/"
 	td.RunFunc = func(args *jsonprotocol.RunnerArgs, stdout, stderr io.Writer) (status int) {
@@ -134,7 +137,7 @@ func TestGetDUTInfo(t *testing.T) {
 	if err := GetDUTInfo(context.Background(), &td.Cfg, &td.State, cc); err != nil {
 		t.Fatalf("GetDUTInfo(%+v) failed: %v", td.Cfg, err)
 	}
-	checkRunnerTestDepsArgs(t, &td.Cfg, &td.State, true, avail, unavail, dc, hf, ids)
+	checkRunnerTestDepsArgs(t, &td.Cfg, &td.State, true, avail, unavail, dc, hf, ids, info)
 
 	if td.State.OSVersion != osVersion {
 		t.Errorf("Unexpected OS version: got %+v, want %+v", td.State.OSVersion, osVersion)
@@ -211,7 +214,7 @@ func TestGetDUTInfoNoCheckTestDeps(t *testing.T) {
 	if err := GetDUTInfo(context.Background(), &td.Cfg, &td.State, cc); err != nil {
 		t.Fatalf("GetDUTInfo(%+v) failed: %v", td.Cfg, err)
 	}
-	checkRunnerTestDepsArgs(t, &td.Cfg, &td.State, false, nil, nil, nil, nil, nil)
+	checkRunnerTestDepsArgs(t, &td.Cfg, &td.State, false, nil, nil, nil, nil, nil, nil)
 }
 
 func TestGetSoftwareFeaturesNoFeatures(t *testing.T) {

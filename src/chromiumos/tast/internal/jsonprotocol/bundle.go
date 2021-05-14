@@ -222,9 +222,8 @@ func (a *FeatureArgs) Features() *protocol.Features {
 			Unavailable: a.UnavailableSoftwareFeatures,
 		},
 		Hardware: &protocol.HardwareFeatures{
-			DeprecatedDeviceConfig: a.DeviceConfig.Proto,
-			HardwareFeatures:       a.HardwareFeatures.Proto,
-			DeviceInfo:             a.DeviceInfo.Proto,
+			HardwareFeatures: a.HardwareFeatures.Proto,
+			DeviceInfo:       a.DeviceInfo.Proto,
 		},
 		Vars:             vars,
 		MaybeMissingVars: a.MaybeMissingVars,

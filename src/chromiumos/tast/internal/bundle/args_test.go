@@ -133,6 +133,9 @@ func TestMarshal(t *testing.T) {
 	if !proto.Equal(in.HardwareFeatures.Proto, out.HardwareFeatures.Proto) {
 		t.Errorf("HardwareFeatures did not match: want %v, got %v", in.HardwareFeatures.Proto, out.HardwareFeatures.Proto)
 	}
+	if !proto.Equal(in.DeviceInfo.Proto, out.DeviceInfo.Proto) {
+		t.Errorf("DeviceInfo did not match: want %v, got %v", in.DeviceConfigIds.Proto, out.DeviceInfo.Proto)
+	}
 	if !proto.Equal(in.DeviceConfigIds.Proto, out.DeviceConfigIds.Proto) {
 		t.Errorf("DeviceConfigIds did not match: want %v, got %v", in.DeviceConfigIds.Proto, out.DeviceConfigIds.Proto)
 	}

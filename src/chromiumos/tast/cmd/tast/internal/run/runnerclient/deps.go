@@ -16,6 +16,7 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/target"
 	"chromiumos/tast/internal/jsonprotocol"
+	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/timing"
 )
 
@@ -82,7 +83,13 @@ func GetDUTInfo(ctx context.Context, cfg *config.Config, state *config.State, cc
 		state.HardwareFeatures = res.HardwareFeatures
 	}
 	if res.DeviceConfigIds != nil {
-		state.DeviceConfigIds = res.DeviceConfigIds
+		// for the protocol backward compatibility
+		state.DeviceInfo = &protocol.DeviceInfo{
+			Ids: res.DeviceConfigIds,
+		}
+	}
+	if res.DeviceInfo != nil {
+		state.DeviceInfo = res.DeviceInfo
 	}
 	state.SoftwareFeatures = res.SoftwareFeatures
 	return nil
@@ -100,7 +107,7 @@ func featureArgsFromConfig(cfg *config.Config, state *config.State) *jsonprotoco
 		args.UnavailableSoftwareFeatures = state.SoftwareFeatures.Unavailable
 		args.DeviceConfig.Proto = state.DeviceConfig
 		args.HardwareFeatures.Proto = state.HardwareFeatures
-		args.DeviceConfigIds.Proto = state.DeviceConfigIds
+		args.DeviceInfo.Proto = state.DeviceInfo
 	}
 	return &args
 }

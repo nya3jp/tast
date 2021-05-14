@@ -45,10 +45,10 @@ func handleGetDUTInfo(args *jsonprotocol.RunnerArgs, scfg *StaticConfig, w io.Wr
 
 	var dc *device.Config
 	var hwFeatures *configpb.HardwareFeatures
-	var deviceIds *protocol.DeviceConfigIds
+	var deviceInfo *protocol.DeviceInfo
 	if args.GetDUTInfo.RequestDeviceConfig {
 		var ws []string
-		dc, hwFeatures, deviceIds, ws = newDeviceConfigAndHardwareFeatures()
+		dc, hwFeatures, deviceInfo, ws = newDeviceConfigAndHardwareFeatures()
 		warnings = append(warnings, ws...)
 	}
 
@@ -56,7 +56,7 @@ func handleGetDUTInfo(args *jsonprotocol.RunnerArgs, scfg *StaticConfig, w io.Wr
 		SoftwareFeatures:         features,
 		DeviceConfig:             dc,
 		HardwareFeatures:         hwFeatures,
-		DeviceConfigIds:          deviceIds,
+		DeviceInfo:               deviceInfo,
 		OSVersion:                scfg.OSVersion,
 		DefaultBuildArtifactsURL: scfg.DefaultBuildArtifactsURL,
 		Warnings:                 warnings,
@@ -174,7 +174,7 @@ func determineSoftwareFeatures(definitions map[string]string, useFlags []string,
 
 // newDeviceConfigAndHardwareFeatures returns a device.Config and api.HardwareFeatures instances
 // some of whose members are filled based on runtime information.
-func newDeviceConfigAndHardwareFeatures() (dc *device.Config, retFeatures *configpb.HardwareFeatures, retDeviceIds *protocol.DeviceConfigIds, warns []string) {
+func newDeviceConfigAndHardwareFeatures() (dc *device.Config, retFeatures *configpb.HardwareFeatures, retDeviceInfo *protocol.DeviceInfo, warns []string) {
 	crosConfig := func(path, prop string) (string, error) {
 		cmd := exec.Command("cros_config", path, prop)
 		var buf bytes.Buffer
@@ -231,10 +231,12 @@ func newDeviceConfigAndHardwareFeatures() (dc *device.Config, retFeatures *confi
 		Soc: info.soc,
 		Cpu: info.cpuArch,
 	}
-	deviceIds := &protocol.DeviceConfigIds{
-		Platform: platform,
-		Model:    model,
-		Brand:    brand,
+	deviceInfo := &protocol.DeviceInfo{
+		Ids: &protocol.DeviceConfigIds{
+			Platform: platform,
+			Model:    model,
+			Brand:    brand,
+		},
 	}
 	features := &configpb.HardwareFeatures{
 		Screen:             &configpb.HardwareFeatures_Screen{},
@@ -393,7 +395,7 @@ func newDeviceConfigAndHardwareFeatures() (dc *device.Config, retFeatures *confi
 	}
 	features.Storage.SizeGb = uint32(storageBytes / 1_000_000_000)
 
-	return config, features, deviceIds, warns
+	return config, features, deviceInfo, warns
 }
 
 type lscpuEntry struct {

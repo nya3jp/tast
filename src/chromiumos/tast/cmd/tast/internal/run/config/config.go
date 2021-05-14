@@ -146,9 +146,9 @@ type State struct {
 	StartedRun               bool                       // true if we got to the point where we started trying to execute tests
 	InitialSysInfo           *jsonprotocol.SysInfoState // initial state of system info (logs, crashes, etc.) on DUT before testing
 	SoftwareFeatures         *protocol.SoftwareFeatures // software features of the DUT
-	DeviceConfig             *device.Config             // hardware features of the DUT. Deprecated. Use HardwareFeatures instead.
+	DeviceConfig             *device.Config             // hardware features of the DUT. Deprecated. Use HardwareFeatures and DeviceInfo instead.
 	HardwareFeatures         *configpb.HardwareFeatures // hardware features of the DUT.
-	DeviceConfigIds          *protocol.DeviceConfigIds  // DUT hardware type (model, platform, brand).
+	DeviceInfo               *protocol.DeviceInfo       // DUT hardware information.
 	OSVersion                string                     // Chrome OS Version
 	FailuresCount            int                        // the number of test failures so far.
 	TLWConn                  *grpc.ClientConn           // TLW gRPC service connection

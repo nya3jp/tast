@@ -203,7 +203,7 @@ func (p *plan) run(ctx context.Context, out OutputStream) error {
 		return errors.Wrap(err, "failed to create new downloader")
 	}
 	defer dl.TearDown()
-	dl.BeforeRun(ctx, p.testsToRun())
+	dl.BeforeRun(ctx, p.entitiesToRun())
 
 	for _, s := range p.skips {
 		tout := newEntityOutputStream(out, s.test.EntityProto())
@@ -222,11 +222,8 @@ func (p *plan) run(ctx context.Context, out OutputStream) error {
 	return nil
 }
 
-func (p *plan) testsToRun() []*protocol.Entity {
-	var res []*protocol.Entity
-	for _, t := range p.fixtPlan.testsToRun() {
-		res = append(res, t.EntityProto())
-	}
+func (p *plan) entitiesToRun() []*protocol.Entity {
+	var res = p.fixtPlan.entitiesToRun()
 	for _, pp := range p.prePlans {
 		for _, t := range pp.testsToRun() {
 			res = append(res, t.EntityProto())
@@ -383,23 +380,28 @@ func (p *fixtPlan) run(ctx context.Context, out OutputStream, dl *downloader) er
 	return runFixtTree(ctx, tree, stack, p.pcfg, out, dl)
 }
 
-func (p *fixtPlan) testsToRun() []*testing.TestInstance {
-	var tests []*testing.TestInstance
+func (p *fixtPlan) entitiesToRun() []*protocol.Entity {
+	var entities []*protocol.Entity
 
 	for _, o := range p.orphans {
-		tests = append(tests, o.test)
+		entities = append(entities, o.test.EntityProto())
 	}
 
 	var traverse func(tree *fixtTree)
 	traverse = func(tree *fixtTree) {
-		tests = append(tests, tree.tests...)
+		if tree.fixt.Name != "" {
+			entities = append(entities, tree.fixt.EntityProto())
+		}
+		for _, t := range tree.tests {
+			entities = append(entities, t.EntityProto())
+		}
 		for _, subtree := range tree.children {
 			traverse(subtree)
 		}
 	}
 	traverse(p.tree)
 
-	return tests
+	return entities
 }
 
 // runFixtTree runs tests in a fixture tree.
@@ -415,6 +417,9 @@ func runFixtTree(ctx context.Context, tree *fixtTree, stack *FixtureStack, pcfg 
 			// Create a fixture-scoped context.
 			ctx, cancel := context.WithCancel(ctx)
 			defer cancel()
+
+			release := dl.BeforeEntity(ctx, tree.fixt.EntityProto())
+			defer release()
 
 			// Push a fixture to the stack. This will call SetUp if the fixture stack is green.
 			if err := stack.Push(ctx, tree.fixt); err != nil {
@@ -581,7 +586,7 @@ func runTest(ctx context.Context, t *testing.TestInstance, tout *entityOutputStr
 	tout.Start(outDir)
 	defer tout.End(nil, timingLog)
 
-	afterTest := dl.BeforeTest(ctx, t.EntityProto())
+	afterTest := dl.BeforeEntity(ctx, t.EntityProto())
 	defer afterTest()
 
 	if err := stack.MarkDirty(); err != nil {
@@ -669,10 +674,10 @@ func (d *downloader) BeforeRun(ctx context.Context, tests []*protocol.Entity) {
 // BeforeEntity must be called before running each entity. It downloads external
 // data files if Config.DownloadMode is DownloadLazy.
 //
-// afterTest must be called after test.
-func (d *downloader) BeforeTest(ctx context.Context, test *protocol.Entity) (afterTest func()) {
+// release must be called after entity finishes.
+func (d *downloader) BeforeEntity(ctx context.Context, entity *protocol.Entity) (release func()) {
 	if d.pcfg.DownloadMode == DownloadLazy {
-		return d.download(ctx, []*protocol.Entity{test})
+		return d.download(ctx, []*protocol.Entity{entity})
 	}
 	return func() {}
 }

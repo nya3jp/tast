@@ -639,6 +639,22 @@ func TestRunSkipStages(t *gotesting.T) {
 	}
 }
 
+func buildLink(t *gotesting.T, url, data string) string {
+	t.Helper()
+	hash := sha256.Sum256([]byte(data))
+	ld := &extdata.LinkData{
+		Type:      extdata.TypeStatic,
+		StaticURL: url,
+		Size:      int64(len(data)),
+		SHA256Sum: hex.EncodeToString(hash[:]),
+	}
+	b, err := json.Marshal(ld)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return string(b)
+}
+
 func TestRunExternalData(t *gotesting.T) {
 	const (
 		file1URL  = "gs://bucket/file1.txt"
@@ -673,26 +689,11 @@ func TestRunExternalData(t *gotesting.T) {
 			tmpDir := testutil.TempDir(t)
 			defer os.RemoveAll(tmpDir)
 
-			buildLink := func(url, data string) string {
-				hash := sha256.Sum256([]byte(data))
-				ld := &extdata.LinkData{
-					Type:      extdata.TypeStatic,
-					StaticURL: url,
-					Size:      int64(len(data)),
-					SHA256Sum: hex.EncodeToString(hash[:]),
-				}
-				b, err := json.Marshal(ld)
-				if err != nil {
-					t.Fatal(err)
-				}
-				return string(b)
-			}
-
 			dataDir := filepath.Join(tmpDir, "data")
 			if err := testutil.WriteFiles(dataDir, map[string]string{
-				file1Path + testing.ExternalLinkSuffix: buildLink(file1URL, file1Data),
-				file2Path + testing.ExternalLinkSuffix: buildLink(file2URL, file2Data),
-				file3Path + testing.ExternalLinkSuffix: buildLink(file3URL, ""),
+				file1Path + testing.ExternalLinkSuffix: buildLink(t, file1URL, file1Data),
+				file2Path + testing.ExternalLinkSuffix: buildLink(t, file2URL, file2Data),
+				file3Path + testing.ExternalLinkSuffix: buildLink(t, file3URL, ""),
 			}); err != nil {
 				t.Fatal("WriteFiles: ", err)
 			}
@@ -779,10 +780,10 @@ func TestRunExternalData(t *gotesting.T) {
 			}
 			wantFiles := map[string]string{
 				// file1.txt is not downloaded since pkg.Test1 is not run.
-				file1Path + testing.ExternalLinkSuffix:  buildLink(file1URL, file1Data),
+				file1Path + testing.ExternalLinkSuffix:  buildLink(t, file1URL, file1Data),
 				file2Path:                               file2Data,
-				file2Path + testing.ExternalLinkSuffix:  buildLink(file2URL, file2Data),
-				file3Path + testing.ExternalLinkSuffix:  buildLink(file3URL, ""),
+				file2Path + testing.ExternalLinkSuffix:  buildLink(t, file2URL, file2Data),
+				file3Path + testing.ExternalLinkSuffix:  buildLink(t, file3URL, ""),
 				file3Path + testing.ExternalErrorSuffix: "failed to download gs://bucket/file3.txt: file does not exist",
 			}
 			if diff := cmp.Diff(files, wantFiles); diff != "" {
@@ -793,6 +794,82 @@ func TestRunExternalData(t *gotesting.T) {
 				t.Errorf("Unexpected number of download attempts: got %d, want %d", numDownloads, tc.numDownloads)
 			}
 		})
+	}
+}
+
+func TestLazyDownloadPurgeable(t *gotesting.T) {
+	const (
+		file1URL  = "gs://bucket/file1.txt"
+		file1Path = "pkg/data/file1.txt"
+		file2URL  = "gs://bucket/file2.txt"
+		file2Path = "pkg/data/file2.txt"
+		file3URL  = "gs://bucket/file3.txt"
+		file3Path = "pkg/data/file3.txt"
+	)
+
+	ds, err := devservertest.NewServer(devservertest.Files([]*devservertest.File{
+		{URL: file1URL},
+		{URL: file2URL},
+		{URL: file3URL},
+	}))
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer ds.Close()
+
+	tmpDir := testutil.TempDir(t)
+	defer os.RemoveAll(tmpDir)
+
+	dataDir := filepath.Join(tmpDir, "data")
+	if err := testutil.WriteFiles(dataDir, map[string]string{
+		file1Path + testing.ExternalLinkSuffix: buildLink(t, file1URL, ""),
+		file2Path + testing.ExternalLinkSuffix: buildLink(t, file2URL, ""),
+		file3Path + testing.ExternalLinkSuffix: buildLink(t, file3URL, ""),
+		file3Path:                              "", // file3 alraedy exists
+	}); err != nil {
+		t.Fatal("WriteFiles: ", err)
+	}
+
+	ti := func(name string, data []string) *testing.TestInstance {
+		return &testing.TestInstance{
+			Name:    name,
+			Pkg:     "pkg",
+			Func:    func(ctx context.Context, s *testing.State) {},
+			Data:    data,
+			Timeout: time.Minute,
+		}
+	}
+	tests := []*testing.TestInstance{
+		ti("example.Tetst1", []string{"file1.txt"}),
+		ti("example.Tetst2", []string{"file2.txt"}),
+		ti("example.Tetst3", []string{"file2.txt", "file3.txt"}),
+		ti("example.Tetst4", []string{}),
+	}
+
+	var got [][]string
+
+	pcfg := &Config{
+		DataDir:      dataDir,
+		Devservers:   []string{ds.URL},
+		DownloadMode: DownloadLazy,
+		TestHook: func(ctx context.Context, s *testing.TestHookState) func(context.Context, *testing.TestHookState) {
+			got = append(got, s.Purgeable())
+			return nil
+		},
+	}
+
+	runTestsAndReadAll(t, tests, pcfg)
+
+	abs := func(p string) string { return filepath.Join(dataDir, p) }
+	want := [][]string{
+		{abs(file3Path)},
+		{abs(file1Path), abs(file3Path)},
+		{abs(file1Path)},
+		{abs(file1Path), abs(file2Path), abs(file3Path)},
+	}
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Error("Purgeable mismatch: (-got +want):\n", diff)
 	}
 }
 

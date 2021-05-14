@@ -111,6 +111,7 @@ type FixtureInstance struct {
 	PreTestTimeout  time.Duration
 	PostTestTimeout time.Duration
 	TearDownTimeout time.Duration
+	Data            []string
 	ServiceDeps     []string
 	Vars            []string
 }
@@ -122,16 +123,17 @@ func (f *FixtureInstance) Constraints() *EntityConstraints {
 	}
 }
 
-// EntityProto a protocol buffer message representation of TestInstance.
+// EntityProto returns a protocol buffer message representation of f.
 func (f *FixtureInstance) EntityProto() *protocol.Entity {
 	return &protocol.Entity{
 		Type:        protocol.EntityType_FIXTURE,
-		Name:        f.Name,
 		Package:     f.Pkg,
+		Name:        f.Name,
 		Description: f.Desc,
 		Fixture:     f.Parent,
 		Dependencies: &protocol.EntityDependencies{
-			Services: append([]string(nil), f.ServiceDeps...),
+			DataFiles: append([]string(nil), f.Data...),
+			Services:  append([]string(nil), f.ServiceDeps...),
 		},
 		Contacts: &protocol.EntityContacts{
 			Emails: append([]string(nil), f.Contacts...),

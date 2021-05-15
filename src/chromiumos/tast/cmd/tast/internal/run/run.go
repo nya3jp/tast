@@ -54,7 +54,7 @@ func errorStatusf(cfg *config.Config, code subcommands.ExitStatus, format string
 // Messages are logged using cfg.Logger as the run progresses.
 // If an error is encountered, status.ErrorMsg will be logged to cfg.Logger before returning,
 // but the caller may wish to log it again later to increase its prominence if additional messages are logged.
-func Run(ctx context.Context, cfg *config.Config, state *config.State) (status Status, results []*resultsjson.Result) {
+func Run(ctx context.Context, cfg *config.Config, state *config.State, cc *target.ConnCache) (status Status, results []*resultsjson.Result) {
 	defer func() {
 		// If we didn't get to the point where we started trying to run tests,
 		// report that to the caller so they can avoid writing a useless results dir.
@@ -62,9 +62,6 @@ func Run(ctx context.Context, cfg *config.Config, state *config.State) (status S
 			status.FailedBeforeRun = true
 		}
 	}()
-
-	cc := target.NewConnCache(cfg, cfg.Target)
-	defer cc.Close(ctx)
 
 	conn, err := cc.Conn(ctx)
 	if err != nil {

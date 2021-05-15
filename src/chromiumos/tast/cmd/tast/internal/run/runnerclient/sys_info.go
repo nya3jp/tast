@@ -54,7 +54,7 @@ func GetInitialSysInfo(ctx context.Context, cfg *config.Config, state *config.St
 // collectSysInfo writes system information generated on the DUT during testing to the results dir if
 // doing so was requested. This is called after testing and relies on the state saved by
 // GetInitialSysInfo.
-func collectSysInfo(ctx context.Context, cfg *config.Config, state *config.State) error {
+func collectSysInfo(ctx context.Context, cfg *config.Config, state *config.State, cc *target.ConnCache) error {
 	if !cfg.CollectSysInfo || state.InitialSysInfo == nil {
 		return nil
 	}
@@ -62,11 +62,6 @@ func collectSysInfo(ctx context.Context, cfg *config.Config, state *config.State
 	ctx, st := timing.Start(ctx, "collect_sys_info")
 	defer st.End()
 	cfg.Logger.Debug("Collecting system information")
-
-	// We have to create a new connection cache here since one created in
-	// Run is not available to WriteResults.
-	cc := target.NewConnCache(cfg, cfg.Target)
-	defer cc.Close(ctx)
 
 	conn, err := cc.Conn(ctx)
 	if err != nil {

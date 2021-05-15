@@ -19,6 +19,7 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run"
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
+	"chromiumos/tast/cmd/tast/internal/run/target"
 )
 
 // listCmd implements subcommands.Command to support listing tests.
@@ -91,7 +92,10 @@ func (lc *listCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{
 		return subcommands.ExitFailure
 	}
 
-	status, results := lc.wrapper.run(ctx, lc.cfg, &state)
+	cc := target.NewConnCache(lc.cfg, lc.cfg.Target)
+	defer cc.Close(ctx)
+
+	status, results := lc.wrapper.run(ctx, lc.cfg, &state, cc)
 	if status.ExitCode != subcommands.ExitSuccess {
 		os.Stderr.Write(b.Bytes())
 		return status.ExitCode

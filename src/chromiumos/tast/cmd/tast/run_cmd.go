@@ -18,6 +18,7 @@ import (
 	"chromiumos/tast/cmd/tast/internal/logging"
 	"chromiumos/tast/cmd/tast/internal/run"
 	"chromiumos/tast/cmd/tast/internal/run/config"
+	"chromiumos/tast/cmd/tast/internal/run/target"
 	"chromiumos/tast/ctxutil"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/command"
@@ -179,7 +180,10 @@ func (r *runCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{})
 		return subcommands.ExitFailure
 	}
 
-	status, results := r.wrapper.run(rctx, r.cfg, &state)
+	cc := target.NewConnCache(r.cfg, r.cfg.Target)
+	defer cc.Close(ctx)
+
+	status, results := r.wrapper.run(rctx, r.cfg, &state, cc)
 	allTestsRun := status.ExitCode == subcommands.ExitSuccess
 	if len(results) == 0 && len(r.cfg.TestNamesToSkip) == 0 && allTestsRun {
 		lg.Logf("No tests matched by pattern(s) %v", r.cfg.Patterns)
@@ -191,7 +195,7 @@ func (r *runCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{})
 	// if testing was interrupted, or even if no tests started due to the DUT not becoming ready:
 	// https://crbug.com/928445
 	if !status.FailedBeforeRun {
-		if err = r.wrapper.writeResults(ctx, r.cfg, &state, results, allTestsRun); err != nil {
+		if err = r.wrapper.writeResults(ctx, r.cfg, &state, results, allTestsRun, cc); err != nil {
 			msg := fmt.Sprintf("Failed to write results: %v", err)
 			if status.ExitCode == subcommands.ExitSuccess {
 				status = run.Status{ExitCode: subcommands.ExitFailure, ErrorMsg: msg}

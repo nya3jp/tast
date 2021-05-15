@@ -16,6 +16,7 @@ import (
 	"github.com/google/subcommands"
 
 	"chromiumos/tast/cmd/tast/internal/logging"
+	"chromiumos/tast/cmd/tast/internal/run"
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
 )
@@ -80,7 +81,17 @@ func (lc *listCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{
 	b := bytes.Buffer{}
 	lc.cfg.Logger = logging.NewSimple(&b, true, true)
 
-	status, results := lc.wrapper.run(ctx, lc.cfg, &config.State{})
+	state := config.State{}
+	if err := run.SetupGrpcServices(ctx, lc.cfg, &state); err != nil {
+		lg.Logf("Failed to set up GRPC servers: %v", err)
+		return subcommands.ExitFailure
+	}
+	if err := run.ResolveHosts(ctx, lc.cfg, &state); err != nil {
+		lg.Logf("Failed to resolve hosts: %v", err)
+		return subcommands.ExitFailure
+	}
+
+	status, results := lc.wrapper.run(ctx, lc.cfg, &state)
 	if status.ExitCode != subcommands.ExitSuccess {
 		os.Stderr.Write(b.Bytes())
 		return status.ExitCode

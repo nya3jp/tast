@@ -145,6 +145,7 @@ func TestRunDownloadPrivateBundlesWithTLW(t *gotesting.T) {
 	td.Cfg.Target = targetName
 	td.Cfg.TLWServer = tlwAddr
 	td.Cfg.Devservers = nil
+
 	testRunDownloadPrivateBundles(t, td)
 }
 
@@ -259,7 +260,14 @@ func testRunDownloadPrivateBundles(t *gotesting.T, td *fakerunner.LocalTestData)
 
 	td.Cfg.DownloadPrivateBundles = true
 
-	if status, _ := Run(context.Background(), &td.Cfg, &td.State); status.ExitCode != subcommands.ExitSuccess {
+	ctx := context.Background()
+	if err := SetupGrpcServices(ctx, &td.Cfg, &td.State); err != nil {
+		t.Errorf("Failed to set up GRPC servers: %v", err)
+	}
+	if err := ResolveHosts(ctx, &td.Cfg, &td.State); err != nil {
+		t.Errorf("Failed to resolve hosts: %v", err)
+	}
+	if status, _ := Run(ctx, &td.Cfg, &td.State); status.ExitCode != subcommands.ExitSuccess {
 		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.LogBuf.String())
 	}
 	if diff := cmp.Diff(dutsWithDownloadRequest, duts); diff != "" {
@@ -303,7 +311,14 @@ func TestRunTLW(t *gotesting.T) {
 	td.Cfg.Target = targetName
 	td.Cfg.TLWServer = tlwAddr
 
-	if status, _ := Run(context.Background(), &td.Cfg, &td.State); status.ExitCode != subcommands.ExitSuccess {
+	ctx := context.Background()
+	if err := SetupGrpcServices(ctx, &td.Cfg, &td.State); err != nil {
+		t.Errorf("Failed to set up GRPC servers: %v", err)
+	}
+	if err := ResolveHosts(ctx, &td.Cfg, &td.State); err != nil {
+		t.Errorf("Failed to resolve hosts: %v", err)
+	}
+	if status, _ := Run(ctx, &td.Cfg, &td.State); status.ExitCode != subcommands.ExitSuccess {
 		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.LogBuf.String())
 	}
 }
@@ -364,7 +379,11 @@ func TestRunWithReports_LogStream(t *gotesting.T) {
 		}
 		return 0
 	}
-	if status, _ := Run(context.Background(), &td.Cfg, &td.State); status.ExitCode != subcommands.ExitSuccess {
+	ctx := context.Background()
+	if err := SetupGrpcServices(ctx, &td.Cfg, &td.State); err != nil {
+		t.Errorf("Failed to set up GRPC servers: %v", err)
+	}
+	if status, _ := Run(ctx, &td.Cfg, &td.State); status.ExitCode != subcommands.ExitSuccess {
 		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.LogBuf.String())
 	}
 	if str := string(srv.GetLog(test1Name, test1Path)); !strings.Contains(str, test1LogText) {
@@ -446,7 +465,11 @@ func TestRunWithReports_ReportResult(t *gotesting.T) {
 		}
 		return 0
 	}
-	if status, _ := Run(context.Background(), &td.Cfg, &td.State); status.ExitCode != subcommands.ExitSuccess {
+	ctx := context.Background()
+	if err := SetupGrpcServices(ctx, &td.Cfg, &td.State); err != nil {
+		t.Errorf("Failed to set up GRPC servers: %v", err)
+	}
+	if status, _ := Run(ctx, &td.Cfg, &td.State); status.ExitCode != subcommands.ExitSuccess {
 		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.LogBuf.String())
 	}
 	test2ErrorTimeStamp, _ := ptypes.TimestampProto(test2ErrorTime)
@@ -544,7 +567,11 @@ func TestRunWithReports_ReportResultTerminate(t *gotesting.T) {
 		}
 		return 0
 	}
-	if status, _ := Run(context.Background(), &td.Cfg, &td.State); status.ExitCode != subcommands.ExitFailure {
+	ctx := context.Background()
+	if err := SetupGrpcServices(ctx, &td.Cfg, &td.State); err != nil {
+		t.Errorf("Failed to set up GRPC servers: %v", err)
+	}
+	if status, _ := Run(ctx, &td.Cfg, &td.State); status.ExitCode != subcommands.ExitFailure {
 		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitFailure, td.LogBuf.String())
 	}
 	test2ErrorTimeStamp, _ := ptypes.TimestampProto(test2ErrorTime)

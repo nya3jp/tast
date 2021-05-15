@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "99fc3965_15df8111",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-05-15T01:57:28Z",
+      "side": 1,
+      "message": "This CL uses a single connection for both running tests and reporting results. Please review.",
+      "revId": "6360f0e46abb53e50a5ffb76cfb26c5478fa5edf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

@@ -50,19 +50,6 @@ func errorStatusf(cfg *config.Config, code subcommands.ExitStatus, format string
 	return Status{ExitCode: code, ErrorMsg: msg}
 }
 
-func resolveHost(cfg *config.Config, target string) string {
-	alternateTarget, err := sshconfig.ResolveHost(target)
-	if err != nil {
-		cfg.Logger.Logf("Error in reading SSH configuaration files: %v", err)
-		return target
-	}
-	if alternateTarget != target {
-		cfg.Logger.Logf("Using target %v instead of %v to connect according to SSH configuration files",
-			alternateTarget, target)
-	}
-	return alternateTarget
-}
-
 // Run executes or lists tests per cfg and returns the results.
 // Messages are logged using cfg.Logger as the run progresses.
 // If an error is encountered, status.ErrorMsg will be logged to cfg.Logger before returning,
@@ -75,30 +62,6 @@ func Run(ctx context.Context, cfg *config.Config, state *config.State) (status S
 			status.FailedBeforeRun = true
 		}
 	}()
-
-	// Check if host name needs to be resolved.
-	cfg.Target = resolveHost(cfg, cfg.Target)
-	for role, dut := range cfg.CompanionDUTs {
-		cfg.CompanionDUTs[role] = resolveHost(cfg, dut)
-	}
-
-	if err := connectToTLW(ctx, cfg, state); err != nil {
-		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to connect to TLW server: %v", err), nil
-	}
-
-	if err := connectToReports(ctx, cfg, state); err != nil {
-		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to connect to Reports server: %v", err), nil
-	}
-
-	var err error
-	if cfg.Target, err = resolveTarget(ctx, state.TLWConn, cfg.Target); err != nil {
-		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to resolve target: %v", err), nil
-	}
-	for role, dut := range cfg.CompanionDUTs {
-		if cfg.CompanionDUTs[role], err = resolveTarget(ctx, state.TLWConn, dut); err != nil {
-			return errorStatusf(cfg, subcommands.ExitFailure, "Failed to resolve companion DUT %v : %v", dut, err), nil
-		}
-	}
 
 	cc := target.NewConnCache(cfg, cfg.Target)
 	defer cc.Close(ctx)
@@ -148,64 +111,6 @@ func Run(ctx context.Context, cfg *config.Config, state *config.State) (status S
 	default:
 		return errorStatusf(cfg, subcommands.ExitFailure, "Unhandled mode %d", cfg.Mode), nil
 	}
-}
-
-// connectToTLW connects to a TLW service if its address is provided, and stores
-// the connection to state.TLWConn.
-func connectToTLW(ctx context.Context, cfg *config.Config, state *config.State) error {
-	if cfg.TLWServer == "" {
-		return nil
-	}
-
-	conn, err := grpc.DialContext(ctx, cfg.TLWServer, grpc.WithInsecure())
-	if err != nil {
-		return err
-	}
-	state.TLWConn = conn
-	return nil
-}
-
-// connectToReports connects to the Reports server.
-func connectToReports(ctx context.Context, cfg *config.Config, state *config.State) error {
-	if cfg.ReportsServer == "" {
-		return nil
-	}
-	conn, err := grpc.DialContext(ctx, cfg.ReportsServer, grpc.WithInsecure())
-	if err != nil {
-		return err
-	}
-	state.ReportsConn = conn
-	return nil
-}
-
-// resolveTarget resolves cfg.Target using the TLW service if available.
-func resolveTarget(ctx context.Context, tlwConn *grpc.ClientConn, target string) (resolvedTarget string, err error) {
-	if tlwConn == nil {
-		return target, nil
-	}
-
-	var opts ssh.Options
-	if err := ssh.ParseTarget(target, &opts); err != nil {
-		return target, err
-	}
-	host, portStr, err := net.SplitHostPort(opts.Hostname)
-	if err != nil {
-		host = opts.Hostname
-		portStr = "22"
-	}
-	port, err := strconv.ParseUint(portStr, 10, 16)
-	if err != nil {
-		return target, err
-	}
-
-	// Use the OpenDutPort API to resolve the target.
-	req := &tls.OpenDutPortRequest{Name: host, Port: int32(port)}
-	res, err := tls.NewWiringClient(tlwConn).OpenDutPort(ctx, req)
-	if err != nil {
-		return target, err
-	}
-
-	return fmt.Sprintf("%s@%s:%d", opts.User, res.GetAddress(), res.GetPort()), nil
 }
 
 // startEphemeralDevserverForRemoteTests starts an ephemeral devserver for remote tests.
@@ -306,4 +211,105 @@ func runTests(ctx context.Context, cfg *config.Config, state *config.State, cc *
 	rres, err := runnerclient.RunRemoteTests(ctx, cfg, state)
 	results = append(results, rres...)
 	return results, err
+}
+
+// SetupGrpcServices sets up all Grpc Services in the current run.
+func SetupGrpcServices(ctx context.Context, cfg *config.Config, state *config.State) error {
+	if err := connectToTLW(ctx, cfg, state); err != nil {
+		return errors.Wrap(err, "failed to connect to TLW server")
+	}
+	if err := connectToReports(ctx, cfg, state); err != nil {
+		return errors.Wrap(err, "failed to connect to Reports server")
+	}
+	return nil
+}
+
+// ResolveHosts resolve all hosts in the current run.
+func ResolveHosts(ctx context.Context, cfg *config.Config, state *config.State) error {
+	// Check if host name needs to be resolved.
+	cfg.Target = resolveHost(cfg, cfg.Target)
+	for role, dut := range cfg.CompanionDUTs {
+		cfg.CompanionDUTs[role] = resolveHost(cfg, dut)
+	}
+	var err error
+	if cfg.Target, err = resolveTarget(ctx, state.TLWConn, cfg.Target); err != nil {
+		return errors.Wrap(err, "failed to resolve target")
+	}
+	for role, dut := range cfg.CompanionDUTs {
+		if cfg.CompanionDUTs[role], err = resolveTarget(ctx, state.TLWConn, dut); err != nil {
+			return errors.Wrapf(err, "failed to resolve companion DUT %v", dut)
+		}
+	}
+	return nil
+}
+
+func resolveHost(cfg *config.Config, target string) string {
+	alternateTarget, err := sshconfig.ResolveHost(target)
+	if err != nil {
+		cfg.Logger.Logf("Error in reading SSH configuaration files: %v", err)
+		return target
+	}
+	if alternateTarget != target {
+		cfg.Logger.Logf("Using target %v instead of %v to connect according to SSH configuration files",
+			alternateTarget, target)
+	}
+	return alternateTarget
+}
+
+// connectToTLW connects to a TLW service if its address is provided, and stores
+// the connection to state.TLWConn.
+func connectToTLW(ctx context.Context, cfg *config.Config, state *config.State) error {
+	if cfg.TLWServer == "" {
+		return nil
+	}
+
+	conn, err := grpc.DialContext(ctx, cfg.TLWServer, grpc.WithInsecure())
+	if err != nil {
+		return err
+	}
+	state.TLWConn = conn
+	return nil
+}
+
+// connectToReports connects to the Reports server.
+func connectToReports(ctx context.Context, cfg *config.Config, state *config.State) error {
+	if cfg.ReportsServer == "" {
+		return nil
+	}
+	conn, err := grpc.DialContext(ctx, cfg.ReportsServer, grpc.WithInsecure())
+	if err != nil {
+		return err
+	}
+	state.ReportsConn = conn
+	return nil
+}
+
+// resolveTarget resolves cfg.Target using the TLW service if available.
+func resolveTarget(ctx context.Context, tlwConn *grpc.ClientConn, target string) (resolvedTarget string, err error) {
+	if tlwConn == nil {
+		return target, nil
+	}
+
+	var opts ssh.Options
+	if err := ssh.ParseTarget(target, &opts); err != nil {
+		return target, err
+	}
+	host, portStr, err := net.SplitHostPort(opts.Hostname)
+	if err != nil {
+		host = opts.Hostname
+		portStr = "22"
+	}
+	port, err := strconv.ParseUint(portStr, 10, 16)
+	if err != nil {
+		return target, err
+	}
+
+	// Use the OpenDutPort API to resolve the target.
+	req := &tls.OpenDutPortRequest{Name: host, Port: int32(port)}
+	res, err := tls.NewWiringClient(tlwConn).OpenDutPort(ctx, req)
+	if err != nil {
+		return target, err
+	}
+
+	return fmt.Sprintf("%s@%s:%d", opts.User, res.GetAddress(), res.GetPort()), nil
 }

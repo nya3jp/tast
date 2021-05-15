@@ -170,6 +170,15 @@ func (r *runCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{})
 	rctx, rcancel := xcontext.WithDeadline(ctx, dl.Add(-wrt), errors.Errorf("%v: global timeout reached (%v)", context.DeadlineExceeded, r.timeout-wrt))
 	defer rcancel(context.Canceled)
 
+	if err := run.SetupGrpcServices(rctx, r.cfg, &state); err != nil {
+		lg.Logf("Failed to set up GRPC servers: %v", err)
+		return subcommands.ExitFailure
+	}
+	if err := run.ResolveHosts(rctx, r.cfg, &state); err != nil {
+		lg.Logf("Failed to resolve hosts: %v", err)
+		return subcommands.ExitFailure
+	}
+
 	status, results := r.wrapper.run(rctx, r.cfg, &state)
 	allTestsRun := status.ExitCode == subcommands.ExitSuccess
 	if len(results) == 0 && len(r.cfg.TestNamesToSkip) == 0 && allTestsRun {

@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0cdada35_232ee5b6",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-05-15T01:56:47Z",
+      "side": 1,
+      "message": "This CL moves codes for starting grpc servers and resolving host from run to config. Please review.",
+      "revId": "c8c3518b1bfb9bbaf8f8cd2cd3e0888ed9f84a2e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

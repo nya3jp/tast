@@ -77,7 +77,10 @@ func TestCollectSysInfo(t *testing.T) {
 		LogInodeSizes: map[uint64]int64{1: 2, 3: 4},
 		MinidumpPaths: []string{"foo.dmp", "bar.dmp"},
 	}
-	if err := collectSysInfo(context.Background(), &td.Cfg, &td.State); err != nil {
+	ctx := context.Background()
+	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
+	defer cc.Close(ctx)
+	if err := collectSysInfo(ctx, &td.Cfg, &td.State, cc); err != nil {
 		t.Fatalf("collectSysInfo(..., %+v) failed: %v", td.Cfg, err)
 	}
 

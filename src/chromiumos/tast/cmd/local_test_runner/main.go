@@ -154,6 +154,7 @@ func main() {
 			"ndk_translation":         "ndk_translation",
 			"ndk_translation64":       "ndk_translation64",
 			"nnapi":                   "nnapi",
+			"nnapi_vendor_driver":     "nnapi && !betty && !tast_vm",
 			"no_android":              "!arc",
 			"no_arm":                  "!arm",
 			"no_asan":                 "!asan",

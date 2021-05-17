@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9bf01a49_89f74102",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 10
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-05-17T05:39:37Z",
+      "side": 1,
+      "message": "I will abandon this change. \n\nHere is the reason that the change could not be merged:\n1. There is a bug in Tast framework that unintentionally skips some kind of tests on certain builders. b:188364384\n2. factory.Finalize test is probably unable to pass on those builders, but currently skipped in CQ  on those builders.\n\nWe need to update the protocol again with the next change:\nhttps://chromium-review.googlesource.com/c/chromiumos/platform/tast/+/2896430\nSo I would like to drop this change to avoid having another deprecated field.",
+      "revId": "72e0b6853294d762a5dd0375624eca5ddb4d9ba8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

@@ -82,6 +82,15 @@ func TestSkipOnModel(t *testing.T) {
 			&configpb.HardwareFeatures{},
 			tc.expectSatisfied)
 	}
+	verifyCondition(
+		t, c,
+		&device.Config{
+			Id: &device.ConfigId{
+				ModelId: nil, // when failed to get model Id
+			},
+		},
+		&configpb.HardwareFeatures{},
+		true)
 }
 
 func TestPlatform(t *testing.T) {

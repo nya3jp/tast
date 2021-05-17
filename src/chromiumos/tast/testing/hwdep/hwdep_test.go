@@ -77,6 +77,15 @@ func TestSkipOnModel(t *testing.T) {
 			&configpb.HardwareFeatures{},
 			tc.expectSatisfied)
 	}
+	verifyCondition(
+		t, c,
+		&protocol.DeprecatedDeviceConfig{
+			Id: &protocol.DeprecatedConfigId{
+				Model: "", // failed to get model Id
+			},
+		},
+		&configpb.HardwareFeatures{},
+		true)
 }
 
 func TestPlatform(t *testing.T) {

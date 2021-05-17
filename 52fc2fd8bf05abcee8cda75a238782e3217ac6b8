@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ca1401f7_d1f2d1b6",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 11
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-05-17T06:39:11Z",
+      "side": 1,
+      "message": "Patchset 9--\u003e11 updates the message type DeviceConfigIds --\u003e DeviceInfo{ConfigIds}\nhttps://chromium-review.googlesource.com/c/chromiumos/platform/tast/+/2807550/9..11\nso as to facilitate adding more fields there. PTAL.",
+      "revId": "52fc2fd8bf05abcee8cda75a238782e3217ac6b8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c329727e_5ec3b5d2",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 11
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-05-17T06:39:11Z",
+      "side": 1,
+      "message": "My hypothesis for the factory.Finalize failure is that f.DevicceConfigIds (in patchset 9) was not nil but empty message (containing a blank string in DeviceConfigIds.Model) and it changed behavior from the base commit. If the CQ dry run passes factory.Finalize with this patchset 11, it is likely to true.",
+      "range": {
+        "startLine": 40,
+        "startChar": 51,
+        "endLine": 40,
+        "endChar": 82
+      },
+      "revId": "52fc2fd8bf05abcee8cda75a238782e3217ac6b8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

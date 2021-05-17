@@ -109,7 +109,9 @@ func SkipOnModel(names ...string) Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) error {
 		listed, err := modelListed(f.GetDeprecatedDeviceConfig(), names...)
 		if err != nil {
-			return err
+			// Failed to get the model name.
+			// Run the test to report error if it fails on this device.
+			return nil
 		}
 		if listed {
 			return errors.New("ModelId matched with skip-on list")

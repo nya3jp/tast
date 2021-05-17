@@ -16,6 +16,23 @@
       "message": "This CL uses a single connection for both running tests and reporting results. Please review.",
       "revId": "6360f0e46abb53e50a5ffb76cfb26c5478fa5edf",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d1fb55b7_7e4ae781",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-05-17T02:08:08Z",
+      "side": 1,
+      "message": "Basically the approach lgtm, but will wait for crrev.com/c/2898740.\n",
+      "revId": "6360f0e46abb53e50a5ffb76cfb26c5478fa5edf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

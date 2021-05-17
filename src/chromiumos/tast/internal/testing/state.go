@@ -114,8 +114,8 @@ func (r *EntityRoot) newGlobalMixin(errPrefix string, hasError bool) *globalMixi
 	}
 }
 
-func (r *EntityRoot) newVarMixin() *varMixin {
-	return &varMixin{
+func (r *EntityRoot) newEntityMixin() *entityMixin {
+	return &entityMixin{
 		entityRoot: r,
 	}
 }
@@ -124,7 +124,7 @@ func (r *EntityRoot) newVarMixin() *varMixin {
 func (r *EntityRoot) NewFixtState() *FixtState {
 	return &FixtState{
 		globalMixin: r.newGlobalMixin("", r.HasError()),
-		varMixin:    r.newVarMixin(),
+		entityMixin: r.newEntityMixin(),
 		entityRoot:  r,
 	}
 }
@@ -183,7 +183,7 @@ func (r *TestEntityRoot) newTestMixin() *testMixin {
 func (r *TestEntityRoot) NewTestState() *State {
 	return &State{
 		globalMixin: r.entityRoot.newGlobalMixin("", r.HasError()),
-		varMixin:    r.entityRoot.newVarMixin(),
+		entityMixin: r.entityRoot.newEntityMixin(),
 		testMixin:   r.newTestMixin(),
 		testRoot:    r,
 	}
@@ -193,7 +193,7 @@ func (r *TestEntityRoot) NewTestState() *State {
 func (r *TestEntityRoot) NewPreState() *PreState {
 	return &PreState{
 		globalMixin: r.entityRoot.newGlobalMixin(preFailPrefix, r.HasError()),
-		varMixin:    r.entityRoot.newVarMixin(),
+		entityMixin: r.entityRoot.newEntityMixin(),
 		testMixin:   r.newTestMixin(),
 	}
 }
@@ -202,7 +202,7 @@ func (r *TestEntityRoot) NewPreState() *PreState {
 func (r *TestEntityRoot) NewTestHookState() *TestHookState {
 	return &TestHookState{
 		globalMixin: r.entityRoot.newGlobalMixin("", r.HasError()),
-		varMixin:    r.entityRoot.newVarMixin(),
+		entityMixin: r.entityRoot.newEntityMixin(),
 		testMixin:   r.newTestMixin(),
 	}
 }
@@ -418,16 +418,16 @@ func (s *globalMixin) recordError() {
 	s.hasError = true
 }
 
-// varMixin implements common methods for State types allowing to access
-// runtime variables.
-// A varMixin object must not be shared among multiple State objects.
-type varMixin struct {
+// entityMixin implements common methods for State types allowing to access
+// values entity declares, e.g. runtime variables.
+// A entityMixin object must not be shared among multiple State objects.
+type entityMixin struct {
 	entityRoot *EntityRoot
 }
 
 // Var returns the value for the named variable, which must have been registered via Vars.
 // If a value was not supplied at runtime via the -var flag to "tast run", ok will be false.
-func (s *varMixin) Var(name string) (val string, ok bool) {
+func (s *entityMixin) Var(name string) (val string, ok bool) {
 	seen := false
 	for _, n := range s.entityRoot.cst.allVars {
 		if n == name {
@@ -444,7 +444,7 @@ func (s *varMixin) Var(name string) (val string, ok bool) {
 }
 
 // RequiredVar is similar to Var but aborts the entity if the named variable was not supplied.
-func (s *varMixin) RequiredVar(name string) string {
+func (s *entityMixin) RequiredVar(name string) string {
 	val, ok := s.Var(name)
 	if !ok {
 		panic(fmt.Sprintf("Required variable %q not supplied via -var or -varsfile", name))
@@ -539,7 +539,7 @@ func (s *testMixin) TestName() string {
 // while a test is running.
 type State struct {
 	*globalMixin
-	*varMixin
+	*entityMixin
 	*testMixin
 	testRoot *TestEntityRoot
 	subtests []string // subtest names
@@ -559,7 +559,7 @@ func (s *State) Run(ctx context.Context, name string, run func(context.Context, 
 	ns := &State{
 		// Set hasError to false; State for a subtest always starts with no error.
 		globalMixin: s.testRoot.entityRoot.newGlobalMixin(strings.Join(subtests, "/")+": ", false),
-		varMixin:    s.testRoot.entityRoot.newVarMixin(),
+		entityMixin: s.testRoot.entityRoot.newEntityMixin(),
 		testMixin:   s.testRoot.newTestMixin(),
 		testRoot:    s.testRoot,
 		subtests:    subtests,
@@ -627,7 +627,7 @@ func (s *State) FixtValue() interface{} {
 // guidance on how to treat PreState in preconditions.
 type PreState struct {
 	*globalMixin
-	*varMixin
+	*entityMixin
 	*testMixin
 }
 
@@ -643,7 +643,7 @@ func (s *PreState) PreCtx() context.Context {
 // guidance on how to treat TestHookState in test hooks.
 type TestHookState struct {
 	*globalMixin
-	*varMixin
+	*entityMixin
 	*testMixin
 }
 
@@ -661,7 +661,7 @@ func (s *TestHookState) Purgeable() []string {
 // FixtState is the state the framework passes to Fixture.SetUp and Fixture.TearDown.
 type FixtState struct {
 	*globalMixin
-	*varMixin
+	*entityMixin
 
 	entityRoot *EntityRoot
 }

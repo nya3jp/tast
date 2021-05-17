@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5d634c70_a9cd9885",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 9
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-05-17T02:02:51Z",
+      "side": 1,
+      "message": "Still investigating.\n\nI think factory.Finalize failed because it was run on amd64-generic-direct-tast-vm and novato-arc64-direct-tast-vm builders. Looking some other cq run of other tests, the test has been skipped due to device.Config not having ModelId. This might have been unintended behavior in Tast.\n\nhttps://chromeos-swarming.appspot.com/task?id\u003d537d77768caa4d10\u0026o\u003dtrue\u0026w\u003dtrue\nhttps://chromeos-swarming.appspot.com/task?id\u003d537d77790fe7c410\u0026o\u003dtrue\u0026w\u003dtrue\n              fields: \u003c\n                key: \"humanReadableSummary\"\n                value: \u003c\n                  string_value: \"device.Config does not have ModelId\"\n                \u003e\n              \u003e\n              fields: \u003c\n                key: \"name\"\n                value: \u003c\n                  string_value: \"factory.Finalize\"\n                \u003e\n              \u003e\n              fields: \u003c\n                key: \"verdict\"\n                value: \u003c\n                  string_value: \"VERDICT_NO_VERDICT\"\n                \u003e\n              \u003e\n",
+      "revId": "8051383496e537540b013f5f44639a657b2948f3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

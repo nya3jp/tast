@@ -66,6 +66,7 @@ func TestSkipOnModel(t *testing.T) {
 		{"eve_signed", false},
 		{"kevin_signed", false},
 		{"nocturne_signed", true},
+		{"", true}, // failed to get model Id
 	} {
 		verifyCondition(
 			t, c,

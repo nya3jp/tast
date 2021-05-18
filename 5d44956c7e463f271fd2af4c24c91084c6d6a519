@@ -70,6 +70,30 @@
       },
       "revId": "5d44956c7e463f271fd2af4c24c91084c6d6a519",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7cbcae80_d684f1a9",
+        "filename": "src/chromiumos/tast/internal/testing/attr.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 161,
+      "author": {
+        "id": 1287257
+      },
+      "writtenOn": "2021-05-18T01:43:22Z",
+      "side": 1,
+      "message": "Hi Renuga, Never mind. I resolved it myself. It is working fine now. Thanks.",
+      "parentUuid": "81c1dd32_86d63927",
+      "range": {
+        "startLine": 152,
+        "startChar": 0,
+        "endLine": 161,
+        "endChar": 2
+      },
+      "revId": "5d44956c7e463f271fd2af4c24c91084c6d6a519",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

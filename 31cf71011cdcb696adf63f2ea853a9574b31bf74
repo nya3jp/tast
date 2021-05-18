@@ -16,6 +16,52 @@
       "message": "Sorry, for exposing the wrong object. Please see if the latest change is ok. Thanks.",
       "revId": "31cf71011cdcb696adf63f2ea853a9574b31bf74",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bc4a4dc2_0d7b7013",
+        "filename": "src/chromiumos/tast/internal/testing/state.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 196,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-05-18T04:18:52Z",
+      "side": 1,
+      "message": "Please avoid attaching entire State to Context.\n\n- State contains too many things. Attaching runtime variable values only should be fine.\n- There are several State-like types, e.g. FixtState. Current approach doesn\u0027t work for support libraries called from fixtures.",
+      "range": {
+        "startLine": 196,
+        "startChar": 5,
+        "endLine": 196,
+        "endChar": 24
+      },
+      "revId": "31cf71011cdcb696adf63f2ea853a9574b31bf74",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d27c36c1_fffaef55",
+        "filename": "src/chromiumos/tast/internal/testing/state.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 457,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-05-18T04:18:52Z",
+      "side": 1,
+      "message": "With this check, support libraries still cannot access runtime variables unless tests calling into them explicitly declare them.",
+      "range": {
+        "startLine": 449,
+        "startChar": 1,
+        "endLine": 457,
+        "endChar": 2
+      },
+      "revId": "31cf71011cdcb696adf63f2ea853a9574b31bf74",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

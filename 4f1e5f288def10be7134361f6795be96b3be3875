@@ -16,6 +16,23 @@
       "message": "Feedback has been addressed. Please review. Thanks.",
       "revId": "4f1e5f288def10be7134361f6795be96b3be3875",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d6a41aec_b47dd274",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-05-18T03:22:07Z",
+      "side": 1,
+      "message": "We should not make whole testing.State globally accessible.\n\nPlease read:\nhttps://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/code_review_comments.md#State\n",
+      "revId": "4f1e5f288def10be7134361f6795be96b3be3875",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

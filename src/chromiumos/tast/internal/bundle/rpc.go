@@ -25,6 +25,13 @@ func RunRPCServer(r io.Reader, w io.Writer, scfg *StaticConfig) error {
 		}
 		registerFixtureService(srv, reg)
 		protocol.RegisterTestServiceServer(srv, newTestServer(scfg))
+
+		// Setting values for global runtime variables.
+		if req.EntityInitParams != nil {
+			if err := reg.InitializeVars(req.EntityInitParams.Vars); err != nil {
+				return err
+			}
+		}
 		return nil
 	})
 }

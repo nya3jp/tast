@@ -30,8 +30,9 @@ import (
 
 func TestLocalSuccess(t *gotesting.T) {
 	t.Parallel()
+	localReg := testing.NewRegistry("bundle")
+	env := runtest.SetUp(t, runtest.WithLocalBundles(localReg))
 
-	env := runtest.SetUp(t)
 	ctx := env.Context()
 	cfg := env.Config()
 	state := env.State()
@@ -82,10 +83,12 @@ func TestLocalProxy(t *gotesting.T) {
 		return 1
 	}
 
-	env := runtest.SetUp(t, runtest.WithExtraSSHHandlers([]runtest.SSHHandler{
-		runtest.ExactMatchHandler(expCmd, fakeProc),
-		runtest.ExactMatchHandler(expCmd+" -rpc", fakeProc),
-	}))
+	localReg := testing.NewRegistry("bundle")
+	env := runtest.SetUp(t, runtest.WithLocalBundles(localReg),
+		runtest.WithExtraSSHHandlers([]runtest.SSHHandler{
+			runtest.ExactMatchHandler(expCmd, fakeProc),
+			runtest.ExactMatchHandler(expCmd+" -rpc", fakeProc),
+		}))
 	ctx := env.Context()
 	cfg := env.Config()
 	cfg.Proxy = config.ProxyEnv

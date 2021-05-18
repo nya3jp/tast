@@ -14,9 +14,10 @@ import (
 )
 
 // runRPCServer runs a runner RPC server.
-func runRPCServer(scfg *StaticConfig, r io.Reader, w io.Writer) error {
+func runRPCServer(scfg *StaticConfig, vars map[string]string, r io.Reader, w io.Writer) error {
 	return rpc.RunServer(r, w, nil, func(srv *grpc.Server, req *protocol.HandshakeRequest) error {
-		protocol.RegisterTestServiceServer(srv, newTestServer(scfg, req.GetRunnerInitParams()))
+		protocol.RegisterTestServiceServer(srv,
+			newTestServer(scfg, req.GetRunnerInitParams(), &protocol.EntityInitParams{Vars: vars}))
 		return nil
 	})
 }

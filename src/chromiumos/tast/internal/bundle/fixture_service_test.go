@@ -63,7 +63,7 @@ func startFakeFixtureService(ctx context.Context, t *gotesting.T, reg *testing.R
 
 	stopped := make(chan error, 1)
 	go func() {
-		stopped <- rpc.RunServer(sr, sw, nil, func(srv *grpc.Server, req *protocol.HandshakeRequest) error {
+		stopped <- rpc.RunServer(sr, sw, nil, nil, func(srv *grpc.Server, req *protocol.HandshakeRequest) error {
 			registerFixtureService(srv, reg)
 			return nil
 		})

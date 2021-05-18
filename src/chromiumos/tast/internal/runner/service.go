@@ -21,20 +21,23 @@ import (
 
 type testServer struct {
 	protocol.UnimplementedTestServiceServer
-	scfg   *StaticConfig
-	params *protocol.RunnerInitParams
+	scfg          *StaticConfig
+	runnerParams  *protocol.RunnerInitParams
+	serviceParams *protocol.UserServiceInitParams
 }
 
-func newTestServer(scfg *StaticConfig, params *protocol.RunnerInitParams) *testServer {
+func newTestServer(scfg *StaticConfig, runnerParams *protocol.RunnerInitParams, serviceParams *protocol.UserServiceInitParams) *testServer {
 	return &testServer{
-		scfg:   scfg,
-		params: params,
+		scfg:          scfg,
+		runnerParams:  runnerParams,
+		serviceParams: serviceParams,
 	}
 }
 
 func (s *testServer) ListEntities(ctx context.Context, req *protocol.ListEntitiesRequest) (*protocol.ListEntitiesResponse, error) {
 	var entities []*protocol.ResolvedEntity
-	if err := s.forEachBundle(ctx, func(ctx context.Context, ts protocol.TestServiceClient) error {
+	// ListEntities should not set runtime global information during handshake.
+	if err := s.forEachBundle(ctx, false, func(ctx context.Context, ts protocol.TestServiceClient) error {
 		res, err := ts.ListEntities(ctx, req) // pass through req
 		if err != nil {
 			return err
@@ -72,7 +75,7 @@ func (s *testServer) RunTests(srv protocol.TestService_RunTestsServer) error {
 		killStaleRunners(ctx, unix.SIGTERM)
 	}
 
-	return s.forEachBundle(ctx, func(ctx context.Context, ts protocol.TestServiceClient) error {
+	return s.forEachBundle(ctx, true, func(ctx context.Context, ts protocol.TestServiceClient) error {
 		st, err := ts.RunTests(ctx)
 		if err != nil {
 			return err
@@ -100,17 +103,22 @@ func (s *testServer) RunTests(srv protocol.TestService_RunTestsServer) error {
 	})
 }
 
-func (s *testServer) forEachBundle(ctx context.Context, f func(ctx context.Context, ts protocol.TestServiceClient) error) error {
-	bundlePaths, err := filepath.Glob(s.params.GetBundleGlob())
+func (s *testServer) forEachBundle(ctx context.Context, sendUserInit bool, f func(ctx context.Context, ts protocol.TestServiceClient) error) error {
+	bundlePaths, err := filepath.Glob(s.runnerParams.GetBundleGlob())
 	if err != nil {
 		return err
 	}
 	// Sort bundles for determinism.
 	sort.Strings(bundlePaths)
 
+	userInit := s.serviceParams
+	if !sendUserInit {
+		userInit = nil
+	}
 	for _, bundlePath := range bundlePaths {
 		if err := func() error {
-			cl, err := rpc.DialExec(ctx, bundlePath, true, &protocol.HandshakeRequest{})
+			cl, err := rpc.DialExec(ctx, bundlePath, true,
+				&protocol.HandshakeRequest{UserServiceInitParams: userInit})
 			if err != nil {
 				return err
 			}

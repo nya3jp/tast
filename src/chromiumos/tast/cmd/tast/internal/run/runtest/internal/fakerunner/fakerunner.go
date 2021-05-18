@@ -177,7 +177,7 @@ func (r *Runner) RunGRPC(stdin io.Reader, stdout, stderr io.Writer) int {
 	}
 	defer conn.Close()
 
-	rpc.RunServer(stdin, stdout, nil, func(srv *grpc.Server, req *protocol.HandshakeRequest) error {
+	rpc.RunServer(stdin, stdout, nil, nil, func(srv *grpc.Server, req *protocol.HandshakeRequest) error {
 		protocol.RegisterTestServiceServer(srv, newTestService(r.cfg, protocol.NewTestServiceClient(conn.Conn())))
 		return nil
 	})

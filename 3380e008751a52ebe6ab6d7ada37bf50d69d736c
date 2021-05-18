@@ -70,6 +70,30 @@
       },
       "revId": "3380e008751a52ebe6ab6d7ada37bf50d69d736c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cd89149b_2dedac7c",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-05-18T06:34:25Z",
+      "side": 1,
+      "message": "I looked into this. chromeos-base/chromeos-osrelease package contains /etc/os-release.d/*, and it is depended by target-chrome-os/target-chrome-os package.\nhttps://source.corp.google.com/chromeos_internal/src/private-overlays/chromeos-overlay/virtual/target-chrome-os/target-chrome-os-1.3.ebuild;l\u003d62\n\nNote that there is a different virtual package for \"Chromium OS\":\nhttps://source.corp.google.com/chromeos_public/src/third_party/chromiumos-overlay/virtual/target-chromium-os/target-chromium-os-9999.ebuild\n\nThat is why /etc/os-release.d (and /etc/os-release) doesn\u0027t exist on amd64-generic. It is a public board (Chromium OS).\n\nConsidering this, I suspect that that using \"tast_vm\" in this definition is actually wrong because we can run Chrome OS images on VM (e.g. betty). Can we use \"internal\" USE flag instead? IIUC it is a USE flag that is enabled for private boards.\n\nAlso, can you leave a code comment mentioning why we need additional USE flags to define fwupd software feature, also mentioning when we can remove the workaround (you mentioned in this review comment thread, and I think it\u0027s very useful as code comments).",
+      "parentUuid": "52078879_394b9507",
+      "range": {
+        "startLine": 121,
+        "startChar": 41,
+        "endLine": 121,
+        "endChar": 48
+      },
+      "revId": "3380e008751a52ebe6ab6d7ada37bf50d69d736c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

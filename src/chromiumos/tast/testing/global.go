@@ -45,3 +45,8 @@ func AddFixture(f *Fixture) {
 	pc, _, _, _ := runtime.Caller(1)
 	testing.GlobalRegistry().AddFixture(f, packageForPC(pc))
 }
+
+// AddVars adds global variables to global registry.
+func AddVars(vars map[string]interface{}) {
+	testing.GlobalRegistry().AddVars(vars)
+}

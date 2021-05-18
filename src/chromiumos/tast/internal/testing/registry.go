@@ -21,6 +21,7 @@ type Registry struct {
 	allServices []*Service
 	allPres     map[string]Precondition
 	allFixtures map[string]*FixtureInstance
+	allVars     map[string]interface{}
 }
 
 // NewRegistry returns a new test registry.
@@ -133,6 +134,15 @@ func (r *Registry) AddFixtureInstance(f *FixtureInstance) {
 	}())
 }
 
+// AddVars adds global variables to the registry.
+func (r *Registry) AddVars(vars map[string]interface{}) {
+	if len(r.allVars) > 0 {
+		r.RecordError(errors.New("global runtime variables has already been registered"))
+		return
+	}
+	r.allVars = vars
+}
+
 // AllTests returns copies of all registered tests.
 func (r *Registry) AllTests() []*TestInstance {
 	ts := make([]*TestInstance, len(r.allTests))
@@ -154,6 +164,11 @@ func (r *Registry) AllFixtures() map[string]*FixtureInstance {
 		fs[name] = f
 	}
 	return fs
+}
+
+// AllVars returns all registered global variables.
+func (r *Registry) AllVars() map[string]interface{} {
+	return r.allVars
 }
 
 // userCaller finds the caller of a registration function. It ignores framework

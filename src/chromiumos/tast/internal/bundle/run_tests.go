@@ -98,6 +98,13 @@ func runTests(ctx context.Context, srv protocol.TestService_RunTestsServer, cfg 
 	}
 	defer restoreTempDir()
 
+	globalVars := scfg.registry.AllVars()
+	if len(globalVars) > 0 {
+		if err := initializeGlobalVars(globalVars, cfg.Features.Infra.Vars); err != nil {
+			testcontext.Log(ctx, "Failed to initialz global runtime variables: ", err)
+		}
+	}
+
 	var postRunFunc func(context.Context) error
 
 	// Don't run runHook when remote fixtures are used.
@@ -188,6 +195,17 @@ func runTests(ctx context.Context, srv protocol.TestService_RunTestsServer, cfg 
 	if postRunFunc != nil {
 		if err := postRunFunc(ctx); err != nil {
 			return command.NewStatusErrorf(statusError, "post-run failed: %v", err)
+		}
+	}
+	return nil
+}
+
+// initializeGlobalVars sets the values for all global variables.
+func initializeGlobalVars(vars map[string]testing.Var, varValues map[string]string) error {
+	for _, v := range vars {
+		stringValue, ok := varValues[v.Name()]
+		if ok {
+			v.Unmarshal(stringValue)
 		}
 	}
 	return nil

@@ -37,6 +37,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "ca215a1c_f48ee5b6",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-05-18T08:05:31Z",
+      "side": 1,
+      "message": "Not for now, but I will work on one and let you to review later this week.",
+      "parentUuid": "3a90be9a_e97d412f",
+      "revId": "31cf71011cdcb696adf63f2ea853a9574b31bf74",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "bc4a4dc2_0d7b7013",
         "filename": "src/chromiumos/tast/internal/testing/state.go",
         "patchSetId": 3
@@ -48,6 +66,30 @@
       "writtenOn": "2021-05-18T04:18:52Z",
       "side": 1,
       "message": "Please avoid attaching entire State to Context.\n\n- State contains too many things. Attaching runtime variable values only should be fine.\n- There are several State-like types, e.g. FixtState. Current approach doesn\u0027t work for support libraries called from fixtures.",
+      "range": {
+        "startLine": 196,
+        "startChar": 5,
+        "endLine": 196,
+        "endChar": 24
+      },
+      "revId": "31cf71011cdcb696adf63f2ea853a9574b31bf74",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b01b7dfe_a77a3a10",
+        "filename": "src/chromiumos/tast/internal/testing/state.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 196,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-05-18T08:05:31Z",
+      "side": 1,
+      "message": "I removed the function and replaced it with NewContextWithVars. I have added support to the fixture vars but I need to work on a test to test it.",
+      "parentUuid": "bc4a4dc2_0d7b7013",
       "range": {
         "startLine": 196,
         "startChar": 5,

@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "41a55e34_2395a210",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-05-18T08:05:31Z",
+      "side": 1,
+      "message": "I have addressed some of the feedback, but I still need to enhance a test to test fixture variables. Are there any other types can define runtime variables? Please let me know. Thanks.",
+      "revId": "d365ce17ec4289ce8362449e15d3892767c0bdcd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d10a1ca5_f96f119f",
+        "filename": "src/chromiumos/tast/internal/extdata/extdata.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 196,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-05-18T08:04:07Z",
+      "side": 1,
+      "message": "\"PrepareDownloads\" was initially a stateless method that just computes a list of download jobs. With this change it also mutates the state of Manager to keep track of data files in use.\n\nI think these two operations, (1) computing files to download and (2) tracking files in use, are actually orthogonal, and can be better split into separate functions.\n\nFor example, what if we change methods of Manager to the following:\n\n func (m *Manager) StartEntity(entity *protocol.Entity)\n func (m *Manager) EndEntity(entity *protocol.Entity)\n func (m *Manager) PrepareDownloads(ctx context.Context) []*DownloadJob\n func (m *Manager) Purgeable() []string\n\nand use it like:\n\n m.StartEntity(test)\n defer m.EndEntity(test)\n\n if jobs :\u003d m.PrepareDownloads(ctx); len(jobs) \u003e 0 {\n   beforeDownload(ctx, m.Purgeable())\n   RunDownloads(ctx, jobs)\n }",
+      "range": {
+        "startLine": 196,
+        "startChar": 18,
+        "endLine": 196,
+        "endChar": 34
+      },
+      "revId": "81b2ae61716dd09e6d735b8ce5c81ec6c37e4256",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

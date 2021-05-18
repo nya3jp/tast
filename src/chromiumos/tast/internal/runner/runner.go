@@ -113,7 +113,7 @@ func Run(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, args *jsonp
 		}
 		return statusSuccess
 	case jsonprotocol.RunnerRPCMode:
-		if err := runRPCServer(scfg, stdin, stdout); err != nil {
+		if err := runRPCServer(scfg, nil, stdin, stdout); err != nil {
 			return command.WriteError(stderr, err)
 		}
 		return statusSuccess
@@ -145,7 +145,12 @@ func runTestsCompat(ctx context.Context, mw *control.MessageWriter, scfg *Static
 	if err != nil {
 		return err
 	}
-
+	vars := make(map[string]string)
+	if args.RunTests != nil {
+		for k, v := range args.RunTests.BundleArgs.TestVars {
+			vars[k] = v
+		}
+	}
 	// Start an in-process gRPC server.
 	sr, cw := io.Pipe()
 	cr, sw := io.Pipe()
@@ -153,7 +158,7 @@ func runTestsCompat(ctx context.Context, mw *control.MessageWriter, scfg *Static
 		cw.Close()
 		cr.Close()
 	}()
-	go runRPCServer(scfg, sr, sw)
+	go runRPCServer(scfg, vars, sr, sw)
 
 	params := &protocol.RunnerInitParams{
 		BundleGlob: args.RunTests.BundleGlob,

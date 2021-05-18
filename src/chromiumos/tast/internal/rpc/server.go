@@ -32,7 +32,7 @@ import (
 // HandshakeRequest.
 // RunServer blocks until the client connection is closed or it encounters an
 // error.
-func RunServer(r io.Reader, w io.Writer, svcs []*testing.Service, register func(srv *grpc.Server, req *protocol.HandshakeRequest) error) error {
+func RunServer(r io.Reader, w io.Writer, svcs []*testing.Service, initializeVars func(v map[string]string) error, register func(srv *grpc.Server, req *protocol.HandshakeRequest) error) error {
 	// In case w is stdout or stderr, writing data to it after it is closed
 	// causes SIGPIPE to be delivered to the process, which by default
 	// terminates the process without running deferred cleanup calls.
@@ -51,6 +51,13 @@ func RunServer(r io.Reader, w io.Writer, svcs []*testing.Service, register func(
 	// calls on service goroutines.
 	var calls sync.WaitGroup
 	defer calls.Wait()
+
+	// Setting values for global runtime variables.
+	if req.UserServiceInitParams != nil && initializeVars != nil {
+		if err := initializeVars(req.UserServiceInitParams.Vars); err != nil {
+			return err
+		}
+	}
 
 	// Start a remote logging server. It is used to forward logs from
 	// user-defined gRPC services via side channels.

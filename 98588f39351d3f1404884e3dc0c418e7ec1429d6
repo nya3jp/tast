@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0b07566e_9195b56d",
+        "filename": "src/chromiumos/tast/internal/testing/fixt.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 126,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-05-18T08:06:09Z",
+      "side": 1,
+      "message": "nit: returns?",
+      "range": {
+        "startLine": 126,
+        "startChar": 15,
+        "endLine": 126,
+        "endChar": 17
+      },
+      "revId": "98588f39351d3f1404884e3dc0c418e7ec1429d6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

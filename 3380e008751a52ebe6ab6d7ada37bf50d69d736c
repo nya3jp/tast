@@ -94,6 +94,30 @@
       },
       "revId": "3380e008751a52ebe6ab6d7ada37bf50d69d736c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "036f40e4_fa7afd25",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 1312379
+      },
+      "writtenOn": "2021-05-18T16:49:01Z",
+      "side": 1,
+      "message": "\u003e That is why /etc/os-release.d (and /etc/os-release) doesn\u0027t exist on amd64-generic. It is a public board (Chromium OS).\n\nTechnically /etc/os-release could exist without the /etc/os-release.d contents (this is what crrev.com/c/2893002 attempted to do before it got reverted)\n\nI updated the CL to use internal USE instead.",
+      "parentUuid": "cd89149b_2dedac7c",
+      "range": {
+        "startLine": 121,
+        "startChar": 41,
+        "endLine": 121,
+        "endChar": 48
+      },
+      "revId": "3380e008751a52ebe6ab6d7ada37bf50d69d736c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

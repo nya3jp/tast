@@ -124,6 +124,14 @@ func (f *FixtureInstance) Constraints() *EntityConstraints {
 	}
 }
 
+// AppendConstraints appends the EntityConstraints for this fixture to the given constraints
+// and returns new constraints.
+func (f *FixtureInstance) AppendConstraints(cst *EntityConstraints) *EntityConstraints {
+	return &EntityConstraints{
+		allVars: append(cst.allVars, f.Vars...),
+	}
+}
+
 // EntityProto returns a protocol buffer message representation of f.
 func (f *FixtureInstance) EntityProto() *protocol.Entity {
 	return &protocol.Entity{

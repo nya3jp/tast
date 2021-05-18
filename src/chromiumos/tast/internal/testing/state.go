@@ -453,6 +453,24 @@ func (s *entityMixin) RequiredVar(name string) string {
 	return val
 }
 
+// NewContextWithVars creates a context associated with runtime variables.
+func NewContextWithVars(ctx context.Context, s *State) context.Context {
+	var gv []string
+	for _, v := range globalVars {
+		gv = append(gv, v.Name)
+	}
+	rctx := testcontext.NewContextWithVars(ctx, s.entityMixin.entityRoot.cfg.Vars)
+	rctx = testcontext.NewContextWithAdditionalVarConstraints(rctx, gv)
+	rctx = testcontext.NewContextWithAdditionalVarConstraints(rctx, s.entityMixin.entityRoot.cst.allVars)
+	return rctx
+}
+
+// testMixin implements common methods for State types associated with a test.
+// A testMixin object must not be shared among multiple State objects.
+type testMixin struct {
+	testRoot *TestEntityRoot
+}
+
 // DataPath returns the absolute path to use to access a data file previously
 // registered via Data. It aborts the entity if the p was not declared.
 func (s *entityMixin) DataPath(p string) string {
@@ -499,12 +517,6 @@ func (d *dataFS) Open(name string) (http.File, error) {
 		return nil, err
 	}
 	return os.Open(path)
-}
-
-// testMixin implements common methods for State types associated with a test.
-// A testMixin object must not be shared among multiple State objects.
-type testMixin struct {
-	testRoot *TestEntityRoot
 }
 
 // OutDir returns a directory into which the entity may place arbitrary files
@@ -709,4 +721,9 @@ func (s *FixtTestState) OutDir() string {
 // the same metadata as the ctx passed to PreTest and PostTest.
 func (s *FixtTestState) TestContext() context.Context {
 	return s.testCtx
+}
+
+// NewContextWithAdditionalVarConstraints creates a new context with additional constraints to the current one.
+func NewContextWithAdditionalVarConstraints(ctx context.Context, cst *EntityConstraints) context.Context {
+	return testcontext.NewContextWithAdditionalVarConstraints(ctx, cst.allVars)
 }

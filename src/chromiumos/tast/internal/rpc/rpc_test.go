@@ -5,6 +5,7 @@
 package rpc
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -100,7 +101,7 @@ func newPingPair(ctx context.Context, t *gotesting.T, req *protocol.HandshakeReq
 
 	stopped := make(chan error, 1)
 	go func() {
-		stopped <- RunServer(sr, sw, []*testing.Service{pingSvc}, func(srv *grpc.Server, req *protocol.HandshakeRequest) error {
+		stopped <- RunServer(sr, sw, []*testing.Service{pingSvc}, nil, func(srv *grpc.Server, req *protocol.HandshakeRequest) error {
 			protocol.RegisterPingCoreServer(srv, &pingCoreServer{})
 			return nil
 		})
@@ -503,7 +504,7 @@ func TestRPCOverExec(t *gotesting.T) {
 
 	path := filepath.Join(dir, "rpc-server")
 	lo, err := fakeexec.CreateLoopback(path, func(_ []string, stdin io.Reader, stdout, _ io.WriteCloser) int {
-		if err := RunServer(stdin, stdout, nil, func(srv *grpc.Server, req *protocol.HandshakeRequest) error {
+		if err := RunServer(stdin, stdout, nil, nil, func(srv *grpc.Server, req *protocol.HandshakeRequest) error {
 			protocol.RegisterPingCoreServer(srv, &pingCoreServer{})
 			return nil
 		}); err != nil {
@@ -543,7 +544,7 @@ func (s *leakingPingServer) Ping(ctx context.Context, _ *empty.Empty) (*empty.Em
 }
 
 var leakingMain = fakeexec.NewAuxMain("rpc_new_session_test", func(_ struct{}) {
-	if err := RunServer(os.Stdin, os.Stdout, nil, func(srv *grpc.Server, req *protocol.HandshakeRequest) error {
+	if err := RunServer(os.Stdin, os.Stdout, nil, nil, func(srv *grpc.Server, req *protocol.HandshakeRequest) error {
 		protocol.RegisterPingCoreServer(srv, &leakingPingServer{})
 		return nil
 	}); err != nil {
@@ -627,7 +628,7 @@ func TestRPCOverSSH(t *gotesting.T) {
 	// Start a fake SSH server providing gRPC server.
 	td := sshtest.NewTestData(func(req *sshtest.ExecReq) {
 		req.Start(true)
-		if err := RunServer(req, req, nil, func(srv *grpc.Server, req *protocol.HandshakeRequest) error {
+		if err := RunServer(req, req, nil, nil, func(srv *grpc.Server, req *protocol.HandshakeRequest) error {
 			protocol.RegisterPingCoreServer(srv, &pingCoreServer{})
 			return nil
 		}); err != nil {
@@ -692,7 +693,7 @@ func (s *subprocessServer) Ping(ctx context.Context, _ *empty.Empty) (*empty.Emp
 }
 
 var stdioMain = fakeexec.NewAuxMain("rpc_stdio_test", func(path string) {
-	RunServer(os.Stdin, os.Stdout, nil, func(s *grpc.Server, req *protocol.HandshakeRequest) error {
+	RunServer(os.Stdin, os.Stdout, nil, nil, func(s *grpc.Server, req *protocol.HandshakeRequest) error {
 		protocol.RegisterPingCoreServer(s, &subprocessServer{path})
 		return nil
 	})
@@ -798,4 +799,58 @@ func TestRPCOverStdioSIGINT(t *gotesting.T) {
 	cmd.Process.Signal(unix.SIGINT)
 
 	waitSuccess(t)
+}
+
+type varType struct {
+	name  string
+	value string
+}
+
+func (v *varType) Unmarshal(data string) error {
+	v.value = data
+	return nil
+}
+
+func (v *varType) Name() string {
+	return v.name
+}
+
+func (v *varType) Value() string {
+	return v.value
+}
+
+func TestGlobalVars(t *gotesting.T) {
+	const (
+		testVar = "testVar"
+		testVal = "testVal"
+	)
+	v := varType{name: testVar}
+	req := protocol.HandshakeRequest{
+		UserServiceInitParams: &protocol.UserServiceInitParams{
+			Vars: map[string]string{testVar: testVal},
+		},
+	}
+	stdin := &bytes.Buffer{}
+	if err := sendRawMessage(stdin, &req); err != nil {
+		t.Fatal("Failed to sendRawMessage: ", err)
+	}
+	stdout := &bytes.Buffer{}
+	allVars := map[string]testing.Var{testVar: &v}
+	initialVars := func(values map[string]string) error {
+		for k, v := range allVars {
+			if val, ok := values[k]; ok {
+				if err := v.Unmarshal(val); err != nil {
+					return err
+				}
+			}
+		}
+		return nil
+	}
+	reg := func(srv *grpc.Server, req *protocol.HandshakeRequest) error { return nil }
+	if err := RunServer(stdin, stdout, nil, initialVars, reg); err != nil {
+		t.Fatal("RunServer failed: ", err)
+	}
+	if v.Value() != testVal {
+		t.Fatalf("v.Value() return %q; wanted %q", v.Value(), testVal)
+	}
 }

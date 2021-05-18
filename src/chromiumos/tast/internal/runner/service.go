@@ -21,14 +21,16 @@ import (
 
 type testServer struct {
 	protocol.UnimplementedTestServiceServer
-	scfg   *StaticConfig
-	params *protocol.RunnerInitParams
+	scfg          *StaticConfig
+	runnerParams  *protocol.RunnerInitParams
+	serviceParams *protocol.UserServiceInitParams
 }
 
-func newTestServer(scfg *StaticConfig, params *protocol.RunnerInitParams) *testServer {
+func newTestServer(scfg *StaticConfig, runnerParams *protocol.RunnerInitParams, serviceParams *protocol.UserServiceInitParams) *testServer {
 	return &testServer{
-		scfg:   scfg,
-		params: params,
+		scfg:          scfg,
+		runnerParams:  runnerParams,
+		serviceParams: serviceParams,
 	}
 }
 
@@ -101,7 +103,7 @@ func (s *testServer) RunTests(srv protocol.TestService_RunTestsServer) error {
 }
 
 func (s *testServer) forEachBundle(ctx context.Context, f func(ctx context.Context, ts protocol.TestServiceClient) error) error {
-	bundlePaths, err := filepath.Glob(s.params.GetBundleGlob())
+	bundlePaths, err := filepath.Glob(s.runnerParams.GetBundleGlob())
 	if err != nil {
 		return err
 	}
@@ -110,7 +112,8 @@ func (s *testServer) forEachBundle(ctx context.Context, f func(ctx context.Conte
 
 	for _, bundlePath := range bundlePaths {
 		if err := func() error {
-			cl, err := rpc.DialExec(ctx, bundlePath, true, &protocol.HandshakeRequest{})
+			cl, err := rpc.DialExec(ctx, bundlePath, true,
+				&protocol.HandshakeRequest{UserServiceInitParams: s.serviceParams})
 			if err != nil {
 				return err
 			}

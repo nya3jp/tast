@@ -761,6 +761,8 @@ func runTestWithRoot(ctx context.Context, t *testing.TestInstance, root *testing
 
 	ctx = root.NewContext(ctx)
 	testState := root.NewTestState()
+	ctx = testing.NewContextWithVars(ctx, testState)
+	ctx = testing.NewContextWithAdditionalVarConstraints(ctx, testing.GlobalRegistry().AllVars())
 
 	// First, perform setup and run the pre-test function.
 	if err := safeCall(ctx, codeName, preTestTimeout, pcfg.GracePeriod(), errorOnPanic(testState), func(ctx context.Context) {

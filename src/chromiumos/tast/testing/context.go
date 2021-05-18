@@ -10,6 +10,7 @@ import (
 	"fmt"
 
 	"chromiumos/tast/internal/testcontext"
+	"chromiumos/tast/internal/testing"
 )
 
 // ContextLog formats its arguments using default formatting and logs them via
@@ -60,4 +61,9 @@ func ContextOutDir(ctx context.Context) (dir string, ok bool) {
 // make sure tests declare proper dependencies.
 func ContextSoftwareDeps(ctx context.Context) ([]string, bool) {
 	return testcontext.SoftwareDeps(ctx)
+}
+
+// ContextTestState allows test libraries to access the current testing.State.
+func ContextTestState(ctx context.Context) (*State, bool) {
+	return testing.CurrentState(ctx)
 }

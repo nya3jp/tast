@@ -16,6 +16,24 @@
       "message": "I tried running ./fast_build.sh -T. I am getting message as, \"no Go files in /home/mthiyagarajan/chromiumos/src/platform/tast\". Reference CL: crrev.com/c/2812638. Please let me know if I am missing any. Thanks.",
       "revId": "1e1901356d28758cadcf6902a45f22ee0534db16",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7b8dffe0_9930d8cb",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 9
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1287257
+      },
+      "writtenOn": "2021-05-18T01:31:04Z",
+      "side": 1,
+      "message": "Hi Hsin-chen, As suggested, I ran the command under chroot under the path, ~/trunk/src/platform/tast $ ./fast_build.sh -T. It worked. Thanks.",
+      "parentUuid": "331635eb_1afd6f31",
+      "revId": "1e1901356d28758cadcf6902a45f22ee0534db16",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

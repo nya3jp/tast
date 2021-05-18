@@ -452,6 +452,12 @@ func (s *entityMixin) RequiredVar(name string) string {
 	return val
 }
 
+// NewContextWithVars creates a context associated with runtime variables.
+func NewContextWithVars(ctx context.Context, s *State) context.Context {
+	rctx := testcontext.NewContextWithVars(ctx, s.entityMixin.entityRoot.cfg.Vars)
+	return testcontext.NewContextWithAdditionalVarContraints(rctx, s.entityMixin.entityRoot.cst.allVars)
+}
+
 // testMixin implements common methods for State types associated with a test.
 // A testMixin object must not be shared among multiple State objects.
 type testMixin struct {
@@ -708,4 +714,9 @@ func (s *FixtTestState) OutDir() string {
 // the same metadata as the ctx passed to PreTest and PostTest.
 func (s *FixtTestState) TestContext() context.Context {
 	return s.testCtx
+}
+
+// NewContextWithAdditionalVarContraints creates a new context with additional contraints to the current one.
+func NewContextWithAdditionalVarContraints(ctx context.Context, cst *EntityConstraints) context.Context {
+	return testcontext.NewContextWithAdditionalVarContraints(ctx, cst.allVars)
 }

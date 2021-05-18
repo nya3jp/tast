@@ -926,3 +926,21 @@ func TestStateExports(t *gotesting.T) {
 		})
 	}
 }
+
+// TestContextState tests if NewContextWithState will return
+// a context to allow access on the current testing state.
+func TestContextState(t *gotesting.T) {
+	var out outputSink
+	root := NewTestEntityRoot(&TestInstance{Timeout: time.Minute}, &RuntimeConfig{}, &out)
+	s := root.NewTestState()
+	ctx := context.Background()
+	if _, ok := CurrentState(ctx); ok == true {
+		t.Error("CurrentState to return true for context without state")
+	}
+	ctx = NewContextWithState(ctx, s)
+	if state, ok := CurrentState(ctx); ok == false {
+		t.Error("Expected CurrentState to return true")
+	} else if state != s {
+		t.Error("CurrentState failed to return correct state")
+	}
+}

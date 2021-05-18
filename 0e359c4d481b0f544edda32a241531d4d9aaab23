@@ -16,6 +16,29 @@
       "message": "This CL makes the current testing.State accessible through context. Please let me know if we can use it to solve the issue of test libraries not able to access runtime variables.",
       "revId": "0e359c4d481b0f544edda32a241531d4d9aaab23",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0893c975_9907fbdd",
+        "filename": "src/chromiumos/tast/testing/context.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-05-18T02:47:34Z",
+      "side": 1,
+      "message": "Is this line a requirement to the caller before calling this function? If so, it\u0027d be better to state it clearly like \"caller must do X before Y\" or \"this function should be called after X\".",
+      "range": {
+        "startLine": 67,
+        "startChar": 2,
+        "endLine": 67,
+        "endChar": 47
+      },
+      "revId": "0e359c4d481b0f544edda32a241531d4d9aaab23",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

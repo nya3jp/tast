@@ -18,6 +18,23 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "3a90be9a_e97d412f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2021-05-18T05:56:28Z",
+      "side": 1,
+      "message": "Is there a document discussing pros/cons of making runtime variables globally accessible?",
+      "revId": "31cf71011cdcb696adf63f2ea853a9574b31bf74",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "bc4a4dc2_0d7b7013",

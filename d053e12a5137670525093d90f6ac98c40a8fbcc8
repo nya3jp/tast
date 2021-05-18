@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "48027ee6_2c2a2bcf",
+        "filename": "src/chromiumos/tast/internal/planner/fixt.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 392,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-05-18T08:19:40Z",
+      "side": 1,
+      "message": "Can we share this logic with tests?",
+      "range": {
+        "startLine": 392,
+        "startChar": 2,
+        "endLine": 392,
+        "endChar": 45
+      },
+      "revId": "d053e12a5137670525093d90f6ac98c40a8fbcc8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9337a40d_acffd27f",
+        "filename": "src/chromiumos/tast/internal/testing/state.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 464,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-05-18T08:19:40Z",
+      "side": 1,
+      "message": "nit: \"Data ... wasn\u0027t declared in Data\" can be a bit confusing as it\u0027s not clear what the latter \"Data\" means. How about \"Data ... wasn\u0027t declared on registration\"?",
+      "range": {
+        "startLine": 464,
+        "startChar": 44,
+        "endLine": 464,
+        "endChar": 51
+      },
+      "revId": "d053e12a5137670525093d90f6ac98c40a8fbcc8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

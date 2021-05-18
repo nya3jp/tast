@@ -5,6 +5,7 @@
 package rpc
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -426,7 +427,7 @@ func TestRPCSetVars(t *gotesting.T) {
 	exp := "value1"
 	req := &protocol.HandshakeRequest{
 		NeedUserServices: true,
-		UserServiceInitParams: &protocol.UserServiceInitParams{
+		EntityInitParams: &protocol.EntityInitParams{
 			Vars: map[string]string{key: exp},
 		},
 	}
@@ -814,4 +815,58 @@ func TestRPCOverStdioSIGINT(t *gotesting.T) {
 	cmd.Process.Signal(unix.SIGINT)
 
 	waitSuccess(t)
+}
+
+type varType struct {
+	name  string
+	value string
+}
+
+func (v *varType) Unmarshal(data string) error {
+	v.value = data
+	return nil
+}
+
+func (v *varType) Name() string {
+	return v.name
+}
+
+func (v *varType) Value() string {
+	return v.value
+}
+
+func TestGlobalVars(t *gotesting.T) {
+	const (
+		testVar = "testVar"
+		testVal = "testVal"
+	)
+	v := varType{name: testVar}
+	req := protocol.HandshakeRequest{
+		EntityInitParams: &protocol.EntityInitParams{
+			Vars: map[string]string{testVar: testVal},
+		},
+	}
+	stdin := &bytes.Buffer{}
+	if err := sendRawMessage(stdin, &req); err != nil {
+		t.Fatal("Failed to sendRawMessage: ", err)
+	}
+	stdout := &bytes.Buffer{}
+	allVars := map[string]testing.Var{testVar: &v}
+
+	reg := func(srv *grpc.Server, req *protocol.HandshakeRequest) error {
+		for k, v := range allVars {
+			if val, ok := req.EntityInitParams.Vars[k]; ok {
+				if err := v.Unmarshal(val); err != nil {
+					return err
+				}
+			}
+		}
+		return nil
+	}
+	if err := RunServer(stdin, stdout, nil, reg); err != nil {
+		t.Fatal("RunServer failed: ", err)
+	}
+	if v.Value() != testVal {
+		t.Fatalf("v.Value() return %q; wanted %q", v.Value(), testVal)
+	}
 }

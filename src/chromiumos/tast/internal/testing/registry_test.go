@@ -236,3 +236,15 @@ func TestAllFixtures(t *gotesting.T) {
 		t.Errorf("Result mismatch (-got +want):\n%v", diff)
 	}
 }
+
+// TestAllVars makes sure all registered global variables return correctly.
+func TestAllVars(t *gotesting.T) {
+	reg := NewRegistry()
+	allVars := []string{"a", "b", "c"}
+
+	reg.AddVars(allVars)
+
+	if diff := cmp.Diff(reg.AllVars(), allVars); diff != "" {
+		t.Errorf("Result mismatch (-got +want):\n%v", diff)
+	}
+}

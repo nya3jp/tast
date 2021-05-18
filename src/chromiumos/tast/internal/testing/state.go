@@ -189,6 +189,23 @@ func (r *TestEntityRoot) NewTestState() *State {
 	}
 }
 
+// stateKey is the type of the key used for attaching a state to a context.Context.
+type stateKey struct{}
+
+// NewContextWithState creates a context associated with state.
+func NewContextWithState(ctx context.Context, state *State) context.Context {
+	return context.WithValue(ctx, stateKey{}, state)
+}
+
+// CurrentState return the current testing.State with the context.
+func CurrentState(ctx context.Context) (state *State, exist bool) {
+	state, ok := ctx.Value(stateKey{}).(*State)
+	if !ok || state == nil {
+		return state, false
+	}
+	return state, true
+}
+
 // NewPreState creates a PreState for a precondition.
 func (r *TestEntityRoot) NewPreState() *PreState {
 	return &PreState{

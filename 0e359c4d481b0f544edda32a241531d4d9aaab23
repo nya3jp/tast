@@ -39,6 +39,30 @@
       },
       "revId": "0e359c4d481b0f544edda32a241531d4d9aaab23",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a2b8831d_9c9fb557",
+        "filename": "src/chromiumos/tast/testing/context.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-05-18T03:11:09Z",
+      "side": 1,
+      "message": "Oops. My bad. Fixed.",
+      "parentUuid": "0893c975_9907fbdd",
+      "range": {
+        "startLine": 67,
+        "startChar": 2,
+        "endLine": 67,
+        "endChar": 47
+      },
+      "revId": "0e359c4d481b0f544edda32a241531d4d9aaab23",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

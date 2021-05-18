@@ -237,3 +237,51 @@ func TestAllFixtures(t *gotesting.T) {
 		t.Errorf("Result mismatch (-got +want):\n%v", diff)
 	}
 }
+
+type varType struct {
+	name  string
+	value string
+}
+
+func (v *varType) Unmarshal(data string) error {
+	v.value = data
+	return nil
+}
+func (v *varType) Name() string {
+	return v.name
+}
+
+// TestAllVars makes sure all registered global variables return correctly.
+func TestAllVars(t *gotesting.T) {
+	reg := NewRegistry("bundle")
+	allVars := map[string]Var{
+		"a": &varType{name: "a"},
+		"b": &varType{name: "b"},
+		"c": &varType{name: "c"},
+	}
+	for _, v := range allVars {
+		reg.AddVar(v)
+		if errs := reg.Errors(); len(errs) > 0 {
+			t.Fatal("Registration failed: ", errs)
+		}
+	}
+	regAllVars := reg.AllVars()
+	for _, v := range allVars {
+		if _, ok := regAllVars[v.Name()]; !ok {
+			t.Errorf("Missing %q in registery.AllVars()", v.Name())
+		}
+	}
+}
+
+// TestRegisterVarOnce makes sure global variables can only be register once.
+func TestRegisterVarOnce(t *gotesting.T) {
+	reg := NewRegistry("bundle")
+	reg.AddVar(&varType{name: "a"})
+	if errs := reg.Errors(); len(errs) > 0 {
+		t.Fatal("Registration failed: ", errs)
+	}
+	reg.AddVar(&varType{name: "a"})
+	if errs := reg.Errors(); len(errs) == 0 {
+		t.Fatal("Variable registration was successful but failure was expected")
+	}
+}

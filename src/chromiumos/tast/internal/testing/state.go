@@ -464,6 +464,12 @@ func (s *entityMixin) DataPath(p string) string {
 	panic(fmt.Sprintf("Data %q wasn't declared on registration", p))
 }
 
+// testMixin implements common methods for State types associated with a test.
+// A testMixin object must not be shared among multiple State objects.
+type testMixin struct {
+	testRoot *TestEntityRoot
+}
+
 // DataFileSystem returns an http.FileSystem implementation that serves an entity's data files.
 //
 //	srv := httptest.NewServer(http.FileServer(s.DataFileSystem()))
@@ -499,12 +505,6 @@ func (d *dataFS) Open(name string) (http.File, error) {
 		return nil, err
 	}
 	return os.Open(path)
-}
-
-// testMixin implements common methods for State types associated with a test.
-// A testMixin object must not be shared among multiple State objects.
-type testMixin struct {
-	testRoot *TestEntityRoot
 }
 
 // OutDir returns a directory into which the entity may place arbitrary files

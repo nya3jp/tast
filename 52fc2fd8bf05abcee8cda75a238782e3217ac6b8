@@ -37,6 +37,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "af82bc75_4c404376",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 11
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-05-18T09:58:21Z",
+      "side": 1,
+      "message": "Got it. In order to remove device.Config, we need to actually add all the fields to the new struct rather than just ConfigIDs. I will try to merge this with crrev.com/c/2896221 and see how it looks.",
+      "parentUuid": "ddb87701_109e604a",
+      "revId": "52fc2fd8bf05abcee8cda75a238782e3217ac6b8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "c329727e_5ec3b5d2",
         "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
         "patchSetId": 11

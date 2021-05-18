@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c7bc3fde_449f93f3",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-05-18T02:08:24Z",
+      "side": 1,
+      "message": "This CL makes the current testing.State accessible through context. Please let me know if we can use it to solve the issue of test libraries not able to access runtime variables.",
+      "revId": "0e359c4d481b0f544edda32a241531d4d9aaab23",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

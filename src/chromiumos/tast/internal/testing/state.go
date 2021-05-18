@@ -189,6 +189,39 @@ func (r *TestEntityRoot) NewTestState() *State {
 	}
 }
 
+// varKey is the type of the key used for attaching a table of runtime variables to a context.Context.
+type varKey struct{}
+
+// allVarsKey is the type of the key used for attaching a table of all defined variables to a context.Context.
+type allVarsKey struct{}
+
+// NewContextWithVars creates a context associated with runtime variables.
+func NewContextWithVars(ctx context.Context, s *State, stackConstraints *EntityConstraints) context.Context {
+	rctx := context.WithValue(ctx, varKey{}, s.varMixin.entityRoot.cfg.Vars)
+	return context.WithValue(rctx, allVarsKey{}, append(s.varMixin.entityRoot.cst.allVars, stackConstraints.allVars...))
+}
+
+// ContextVar returns the value for the named variable in context, which must have been registered via Vars.
+func ContextVar(ctx context.Context, name string) (string, bool) {
+	seen := false
+	allVars, ok := ctx.Value(allVarsKey{}).([]string)
+	for _, n := range allVars {
+		if n == name {
+			seen = true
+			break
+		}
+	}
+	if !seen {
+		panic(fmt.Sprintf("Variable %q was not registered in testing.Test.Vars or in fixtures. Try adding the line 'Vars: []string{%q},' to your testing.Test{}", name, name))
+	}
+	vars, ok := ctx.Value(varKey{}).(map[string]string)
+	if !ok {
+		return "Empty table", false
+	}
+	val, ok := vars[name]
+	return val, ok
+}
+
 // NewPreState creates a PreState for a precondition.
 func (r *TestEntityRoot) NewPreState() *PreState {
 	return &PreState{

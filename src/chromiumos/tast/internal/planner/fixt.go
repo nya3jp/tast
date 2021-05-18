@@ -131,6 +131,15 @@ func (st *FixtureStack) Status() fixtureStatus {
 	return statusGreen
 }
 
+// Constraints returns the entire EntityConstraints of the fixture stack.
+func (st *FixtureStack) Constraints() *testing.EntityConstraints {
+	cst := &testing.EntityConstraints{}
+	for _, f := range st.stack {
+		cst = f.fixt.AppendConstraints(cst)
+	}
+	return cst
+}
+
 // Errors returns errors to be reported for tests depending on this fixture
 // stack.
 //

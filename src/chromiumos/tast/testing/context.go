@@ -10,6 +10,7 @@ import (
 	"fmt"
 
 	"chromiumos/tast/internal/testcontext"
+	"chromiumos/tast/internal/testing"
 )
 
 // ContextLog formats its arguments using default formatting and logs them via
@@ -60,4 +61,11 @@ func ContextOutDir(ctx context.Context) (dir string, ok bool) {
 // make sure tests declare proper dependencies.
 func ContextSoftwareDeps(ctx context.Context) ([]string, bool) {
 	return testcontext.SoftwareDeps(ctx)
+}
+
+// ContextVar allows test libraries to access a runtime variable thought context,
+// which was registered via Vars.
+// If a value was not supplied at runtime via the -var flag to "tast run", ok will be false.
+func ContextVar(ctx context.Context, name string) (string, bool) {
+	return testing.ContextVar(ctx, name)
 }

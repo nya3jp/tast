@@ -18,6 +18,23 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "ddb87701_109e604a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 11
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-05-18T06:48:06Z",
+      "side": 1,
+      "message": "As we chatted, I know think we can remove DeviceConfig entirely without keeping protocol compatibility, as long as we increment compat version number (which is needed anyway). Could you try that?\n",
+      "revId": "52fc2fd8bf05abcee8cda75a238782e3217ac6b8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "c329727e_5ec3b5d2",

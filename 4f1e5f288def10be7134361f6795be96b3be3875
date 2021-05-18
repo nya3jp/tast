@@ -33,6 +33,24 @@
       "message": "We should not make whole testing.State globally accessible.\n\nPlease read:\nhttps://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/code_review_comments.md#State\n",
       "revId": "4f1e5f288def10be7134361f6795be96b3be3875",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e684da56_4294524b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-05-18T03:25:12Z",
+      "side": 1,
+      "message": "Also go/tast-memo-context might help understanding what can be made accessible via context.Context.",
+      "parentUuid": "d6a41aec_b47dd274",
+      "revId": "4f1e5f288def10be7134361f6795be96b3be3875",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

@@ -236,3 +236,28 @@ func TestAllFixtures(t *gotesting.T) {
 		t.Errorf("Result mismatch (-got +want):\n%v", diff)
 	}
 }
+
+// TestAllVars makes sure all registered global variables return correctly.
+func TestAllVars(t *gotesting.T) {
+	reg := NewRegistry()
+	allVars := map[string]interface{}{"a": false, "b": "", "c": 1}
+
+	reg.AddVars(allVars)
+
+	if diff := cmp.Diff(reg.AllVars(), allVars); diff != "" {
+		t.Errorf("Result mismatch (-got +want):\n%v", diff)
+	}
+}
+
+// TestRegisterVarsOnce makes sure global variables can only be register once.
+func TestRegisterVarsOnce(t *gotesting.T) {
+	reg := NewRegistry()
+	reg.AddVars(map[string]interface{}{"a": false, "b": "", "c": 1})
+	if errs := reg.Errors(); len(errs) > 0 {
+		t.Fatal("Registration failed: ", errs)
+	}
+	reg.AddVars(map[string]interface{}{"d": false})
+	if errs := reg.Errors(); len(errs) == 0 {
+		t.Fatal("Variable registration was successful but failure was expected")
+	}
+}

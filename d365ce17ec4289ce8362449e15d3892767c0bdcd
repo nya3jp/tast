@@ -16,6 +16,75 @@
       "message": "I have addressed some of the feedback, but I still need to enhance a test to test fixture variables. Are there any other types can define runtime variables? Please let me know. Thanks.",
       "revId": "d365ce17ec4289ce8362449e15d3892767c0bdcd",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5785b1b6_892d3a4a",
+        "filename": "src/chromiumos/tast/internal/testing/state.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 193,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-05-18T10:04:27Z",
+      "side": 1,
+      "message": "All context-related functions live in internal/testcontext package. Could you move these symbols to the package and make sure they\u0027re aligned with existing one in the package?",
+      "range": {
+        "startLine": 192,
+        "startChar": 0,
+        "endLine": 193,
+        "endChar": 20
+      },
+      "revId": "d365ce17ec4289ce8362449e15d3892767c0bdcd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "dff041bf_bfd83adb",
+        "filename": "src/chromiumos/tast/internal/testing/state.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 199,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-05-18T10:04:27Z",
+      "side": 1,
+      "message": "State type is associated with a particular test, but runtime variable values are not really associated with a test.\n\nThis function should just take map[string]string representing runtime variable values.",
+      "range": {
+        "startLine": 199,
+        "startChar": 45,
+        "endLine": 199,
+        "endChar": 53
+      },
+      "revId": "d365ce17ec4289ce8362449e15d3892767c0bdcd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6ac55b69_8113ffee",
+        "filename": "src/chromiumos/tast/internal/testing/state.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 205,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-05-18T10:04:27Z",
+      "side": 1,
+      "message": "ContextVar shouldn\u0027t to check EntityConstraints - the point of the change is that support libraries can access arbitrary runtime variables without relying on what are declared in test/fixture metadata.",
+      "range": {
+        "startLine": 205,
+        "startChar": 5,
+        "endLine": 205,
+        "endChar": 15
+      },
+      "revId": "d365ce17ec4289ce8362449e15d3892767c0bdcd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

@@ -16,10 +16,12 @@ import (
 	"chromiumos/tast/internal/testing"
 )
 
+var count = 0
+
 // RunRPCServer runs the bundle as an RPC server.
 func RunRPCServer(r io.Reader, w io.Writer, scfg *StaticConfig) error {
 	reg := scfg.registry
-	return rpc.RunServer(r, w, reg.AllServices(), func(srv *grpc.Server, req *protocol.HandshakeRequest) error {
+	return rpc.RunServer(r, w, reg.AllServices(), reg.InitializeVars, func(srv *grpc.Server, req *protocol.HandshakeRequest) error {
 		if err := checkRegistrationErrors(reg); err != nil {
 			return err
 		}

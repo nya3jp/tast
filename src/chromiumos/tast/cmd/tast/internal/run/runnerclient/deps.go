@@ -9,7 +9,6 @@ import (
 	"errors"
 	"io/ioutil"
 	"path/filepath"
-	"strings"
 
 	"github.com/golang/protobuf/proto"
 
@@ -19,9 +18,9 @@ import (
 	"chromiumos/tast/internal/timing"
 )
 
-// deviceConfigFile is a file name containing the dump of obtained protocol.DeprecatedDeviceConfig of the DUT,
+// dutInfoFile is a file name containing the dump of obtained DUTInfo message,
 // which is directly under ResDir.
-const deviceConfigFile = "device-config.txt"
+const dutInfoFile = "dut-info.txt"
 
 // GetDUTInfo executes local_test_runner on the DUT to get a list of DUT info.
 // The info is used to check tests' dependencies.
@@ -73,12 +72,8 @@ func GetDUTInfo(ctx context.Context, cfg *config.Config, state *config.State, cc
 
 	info := res.Proto()
 
-	cfg.Logger.Debug("Software features supported by DUT: ", strings.Join(info.GetFeatures().GetSoftware().GetAvailable(), " "))
-	if dc := info.GetFeatures().GetHardware().GetDeprecatedDeviceConfig(); dc != nil {
-		cfg.Logger.Debug("Got DUT device.Config data; dumping to ", deviceConfigFile)
-		if err := ioutil.WriteFile(filepath.Join(cfg.ResDir, deviceConfigFile), []byte(proto.MarshalTextString(res.DeviceConfig)), 0644); err != nil {
-			cfg.Logger.Debugf("Failed to dump %s: %v", deviceConfigFile, err)
-		}
+	if err := ioutil.WriteFile(filepath.Join(cfg.ResDir, dutInfoFile), []byte(proto.MarshalTextString(info)), 0644); err != nil {
+		cfg.Logger.Debugf("Failed to dump DUTInfo: %v", err)
 	}
 
 	state.DUTInfo = info

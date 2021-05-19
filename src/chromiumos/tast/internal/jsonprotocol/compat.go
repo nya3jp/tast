@@ -96,3 +96,49 @@ func MustEntityWithRunnabilityInfoFromProto(e *protocol.ResolvedEntity) *EntityW
 	}
 	return ei
 }
+
+// RunnerGetDUTInfoResultFromProto converts protocol.GetDUTInfoResponse to
+// jsonprotocol.RunnerGetDUTInfoResult.
+func RunnerGetDUTInfoResultFromProto(res *protocol.GetDUTInfoResponse) *RunnerGetDUTInfoResult {
+	info := res.GetDutInfo()
+	return &RunnerGetDUTInfoResult{
+		SoftwareFeatures:         info.GetFeatures().GetSoftware(),
+		DeviceConfig:             info.GetFeatures().GetHardware().GetDeprecatedDeviceConfig(),
+		HardwareFeatures:         info.GetFeatures().GetHardware().GetHardwareFeatures(),
+		OSVersion:                info.GetOsVersion(),
+		DefaultBuildArtifactsURL: info.GetDefaultBuildArtifactsUrl(),
+	}
+}
+
+// RunnerGetSysInfoStateResultFromProto converts protocol.GetSysInfoStateResponse to
+// jsonprotocol.RunnerGetSysInfoStateResult.
+func RunnerGetSysInfoStateResultFromProto(res *protocol.GetSysInfoStateResponse) *RunnerGetSysInfoStateResult {
+	return &RunnerGetSysInfoStateResult{
+		State: *SysInfoStateFromProto(res.GetState()),
+	}
+}
+
+// RunnerCollectSysInfoResultFromProto converts protocol.CollectSysInfoResponse to
+// jsonprotocol.RunnerCollectSysInfoResult.
+func RunnerCollectSysInfoResultFromProto(res *protocol.CollectSysInfoResponse) *RunnerCollectSysInfoResult {
+	return &RunnerCollectSysInfoResult{
+		LogDir:   res.GetLogDir(),
+		CrashDir: res.GetCrashDir(),
+	}
+}
+
+// RunnerDownloadPrivateBundlesResultFromProto converts protocol.DownloadPrivateBundlesResponse to
+// jsonprotocol.RunnerDownloadPrivateBundlesResult.
+func RunnerDownloadPrivateBundlesResultFromProto(res *protocol.DownloadPrivateBundlesResponse) *RunnerDownloadPrivateBundlesResult {
+	return &RunnerDownloadPrivateBundlesResult{}
+}
+
+// SysInfoStateFromProto converts protocol.SysInfoState to
+// jsonprotocol.SysInfoState.
+func SysInfoStateFromProto(state *protocol.SysInfoState) *SysInfoState {
+	return &SysInfoState{
+		LogInodeSizes:    state.GetLogInodeSizes(),
+		UnifiedLogCursor: state.GetUnifiedLogCursor(),
+		MinidumpPaths:    state.GetMinidumpPaths(),
+	}
+}

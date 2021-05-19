@@ -118,6 +118,30 @@
       },
       "revId": "3380e008751a52ebe6ab6d7ada37bf50d69d736c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9e07eea4_f310b3e0",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 121,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-05-19T01:20:10Z",
+      "side": 1,
+      "message": "Thanks. As I commented earlier, I want a comment telling readers when this workaround can be removed. Can you file a bug to remove this workaround and add a TODO comment here?",
+      "parentUuid": "036f40e4_fa7afd25",
+      "range": {
+        "startLine": 121,
+        "startChar": 41,
+        "endLine": 121,
+        "endChar": 48
+      },
+      "revId": "3380e008751a52ebe6ab6d7ada37bf50d69d736c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

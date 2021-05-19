@@ -16,6 +16,98 @@
       "message": "PTAL",
       "revId": "281a8a40f506d06869c895444ac33c35c31e78ee",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2f9fae1f_73f7dc8f",
+        "filename": "src/chromiumos/tast/internal/protocol/features.proto",
+        "patchSetId": 15
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-05-19T03:12:33Z",
+      "side": 1,
+      "message": "I want this message to be named more specifically for a few reasons:\n\n- We don\u0027t want to add random fields to DeviceInfo (we should add them to api.HardwareFeatures instead). Nice to represent this in naming.\n- I\u0027m going to introduce DUTInfo message that contains all DUT system information messages (e.g. Features), which sounds similar to DeviceInfo.\n\nHow about naming it simply DeprecatedDeviceConfig? Then we can also keep using the same variable names, e.g. dc or deviceConfig, which reduces diff.",
+      "range": {
+        "startLine": 44,
+        "startChar": 8,
+        "endLine": 44,
+        "endChar": 18
+      },
+      "revId": "281a8a40f506d06869c895444ac33c35c31e78ee",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8a038533_6e48ecb9",
+        "filename": "src/chromiumos/tast/internal/protocol/features.proto",
+        "patchSetId": 15
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-05-19T03:12:33Z",
+      "side": 1,
+      "message": "Can you name fields identical to the original device.Config unless it has a clear win per code readability?\n\nFor example this field was renamed from id to ids, but it seems to increase number of diff unnecessarily.\n\nIt\u0027s okay to make changes if it has a win, e.g. converting device.PlatformId to a simple string makes code simpler.",
+      "range": {
+        "startLine": 45,
+        "startChar": 15,
+        "endLine": 45,
+        "endChar": 16
+      },
+      "revId": "281a8a40f506d06869c895444ac33c35c31e78ee",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "012a837a_4e6a2d09",
+        "filename": "src/chromiumos/tast/internal/protocol/features.proto",
+        "patchSetId": 15
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-05-19T03:12:33Z",
+      "side": 1,
+      "message": "Same applied to this message, maybe \"DeprecatedConfigIds\"",
+      "range": {
+        "startLine": 45,
+        "startChar": 2,
+        "endLine": 45,
+        "endChar": 11
+      },
+      "revId": "281a8a40f506d06869c895444ac33c35c31e78ee",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "71215a3d_428cd143",
+        "filename": "src/chromiumos/tast/internal/protocol/features.proto",
+        "patchSetId": 15
+      },
+      "lineNbr": 114,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-05-19T03:12:33Z",
+      "side": 1,
+      "message": "Let\u0027s avoid reusing field numbers. We can use \"reserve\" to delete a field.",
+      "range": {
+        "startLine": 114,
+        "startChar": 26,
+        "endLine": 114,
+        "endChar": 29
+      },
+      "revId": "281a8a40f506d06869c895444ac33c35c31e78ee",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

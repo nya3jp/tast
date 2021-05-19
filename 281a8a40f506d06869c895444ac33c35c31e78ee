@@ -41,6 +41,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "ad4b20be_d14c346c",
+        "filename": "src/chromiumos/tast/internal/protocol/features.proto",
+        "patchSetId": 15
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-05-19T05:26:51Z",
+      "side": 1,
+      "message": "Done\n\nThat sounds great idea, because we are replacing the message types.",
+      "parentUuid": "2f9fae1f_73f7dc8f",
+      "range": {
+        "startLine": 44,
+        "startChar": 8,
+        "endLine": 44,
+        "endChar": 18
+      },
+      "revId": "281a8a40f506d06869c895444ac33c35c31e78ee",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "8a038533_6e48ecb9",
@@ -87,6 +111,54 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "107871b6_668d4827",
+        "filename": "src/chromiumos/tast/internal/protocol/features.proto",
+        "patchSetId": 15
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-05-19T05:26:51Z",
+      "side": 1,
+      "message": "Changed to DeprecatedConfigId because the original name was \"ConfigId\".",
+      "parentUuid": "012a837a_4e6a2d09",
+      "range": {
+        "startLine": 45,
+        "startChar": 2,
+        "endLine": 45,
+        "endChar": 11
+      },
+      "revId": "281a8a40f506d06869c895444ac33c35c31e78ee",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "35d9801d_60cc67a2",
+        "filename": "src/chromiumos/tast/internal/protocol/features.proto",
+        "patchSetId": 15
+      },
+      "lineNbr": 45,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-05-19T05:26:51Z",
+      "side": 1,
+      "message": "Done.\nThe original names of the other fields are \"soc\", \"cpu\" and \"power\".",
+      "parentUuid": "8a038533_6e48ecb9",
+      "range": {
+        "startLine": 45,
+        "startChar": 15,
+        "endLine": 45,
+        "endChar": 16
+      },
+      "revId": "281a8a40f506d06869c895444ac33c35c31e78ee",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "71215a3d_428cd143",
@@ -100,6 +172,30 @@
       "writtenOn": "2021-05-19T03:12:33Z",
       "side": 1,
       "message": "Let\u0027s avoid reusing field numbers. We can use \"reserve\" to delete a field.",
+      "range": {
+        "startLine": 114,
+        "startChar": 26,
+        "endLine": 114,
+        "endChar": 29
+      },
+      "revId": "281a8a40f506d06869c895444ac33c35c31e78ee",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "cd710731_d3281788",
+        "filename": "src/chromiumos/tast/internal/protocol/features.proto",
+        "patchSetId": 15
+      },
+      "lineNbr": 114,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-05-19T05:26:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "71215a3d_428cd143",
       "range": {
         "startLine": 114,
         "startChar": 26,

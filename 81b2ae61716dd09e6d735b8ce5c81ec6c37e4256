@@ -22,6 +22,30 @@
       },
       "revId": "81b2ae61716dd09e6d735b8ce5c81ec6c37e4256",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7ad758b0_599c3edf",
+        "filename": "src/chromiumos/tast/internal/extdata/extdata.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 196,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2021-05-19T06:00:33Z",
+      "side": 1,
+      "message": "One problem with that method is that it might download the same artifact file multiple times.\n\nLet fixt be a fixture depending on an artifact x, and consider the following procedure.\nm.StartEntity(fixt)\nRunDownloads(m.PrepareDownloads()) // (1)\nm.StartEntity(test)\nRunDownloads(m.PrepareDownloads()) // (2)\n...\n\nIn (1) x will be downloaed, but also in (2), because m is not aware of what files are already downloaded in the current run, and thinks existing file x might be obsolete.\n\nIn the current approach there\u0027s not such a problem, because we call \nm.PrepareDownload() for the same entity only once.",
+      "parentUuid": "d10a1ca5_f96f119f",
+      "range": {
+        "startLine": 196,
+        "startChar": 18,
+        "endLine": 196,
+        "endChar": 34
+      },
+      "revId": "81b2ae61716dd09e6d735b8ce5c81ec6c37e4256",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

@@ -8,7 +8,6 @@ import (
 	"context"
 	"encoding/json"
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
@@ -134,16 +133,9 @@ func TestGetDUTInfo(t *testing.T) {
 		t.Errorf("Unexpected DefaultBuildArtifactsURL: got %+v, want %+v", url, defaultBuildArtifactsURL)
 	}
 
-	// Make sure device-config.txt is created.
-	if b, err := ioutil.ReadFile(filepath.Join(td.Cfg.ResDir, "device-config.txt")); err != nil {
-		t.Error("Failed to read device-config.txt: ", err)
-	} else {
-		var readDc protocol.DeprecatedDeviceConfig
-		if err := proto.UnmarshalText(string(b), &readDc); err != nil {
-			t.Error("Failed to unmarshal device config: ", err)
-		} else if !proto.Equal(dc, &readDc) {
-			t.Errorf("Unexpected device config: got %+v, want %+v", &readDc, dc)
-		}
+	// Make sure dut-info.txt is created.
+	if _, err := os.Stat(filepath.Join(td.Cfg.ResDir, dutInfoFile)); err != nil {
+		t.Errorf("Failed to stat %s: %v", dutInfoFile, err)
 	}
 
 	// The second call should fail, because it tries to update cfg's fields twice.
@@ -154,8 +146,8 @@ func TestGetDUTInfo(t *testing.T) {
 
 func TestGetDUTInfoNoDeviceConfig(t *testing.T) {
 	// If local_test_runner is older, it may not return protocol.DeprecatedDeviceConfig even if it is requested.
-	// For backward compatibility, it is not handled as an error case, but the device-config.txt
-	// won't be created.
+	// For backward compatibility, it is not handled as an error case, but the dut-info.txt
+	// will be created.
 	td := fakerunner.NewLocalTestData(t)
 	defer td.Close()
 
@@ -182,8 +174,8 @@ func TestGetDUTInfoNoDeviceConfig(t *testing.T) {
 		t.Fatalf("GetDUTInfo(%+v) failed: %v", td.Cfg, err)
 	}
 
-	// Make sure device-config.txt is created.
-	if _, err := os.Stat(filepath.Join(td.Cfg.ResDir, deviceConfigFile)); err == nil || !os.IsNotExist(err) {
+	// Make sure dut-info.txt is created.
+	if _, err := os.Stat(filepath.Join(td.Cfg.ResDir, dutInfoFile)); err != nil {
 		t.Error("Unexpected device config file: ", err)
 	}
 }

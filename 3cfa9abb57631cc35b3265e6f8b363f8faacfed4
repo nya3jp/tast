@@ -34,6 +34,24 @@
       "parentUuid": "43861eb9_610dde88",
       "revId": "3cfa9abb57631cc35b3265e6f8b363f8faacfed4",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "244a4df6_b6f69b43",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-05-20T07:34:28Z",
+      "side": 1,
+      "message": "Got it. I thought this CL could be submitted earlier by removing from the chain, but I got that this is not very urgent.",
+      "parentUuid": "fda1ce29_2dfad5d7",
+      "revId": "3cfa9abb57631cc35b3265e6f8b363f8faacfed4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

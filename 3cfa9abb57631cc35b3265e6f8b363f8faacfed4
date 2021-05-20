@@ -16,6 +16,24 @@
       "message": "Can this change be made separately from others in the relation chain?",
       "revId": "3cfa9abb57631cc35b3265e6f8b363f8faacfed4",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fda1ce29_2dfad5d7",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-05-20T04:50:29Z",
+      "side": 1,
+      "message": "It is possible, but may I know the motivation of your request?\n\nIt\u0027s in this relation chain just because including it on my working branch helps me running unit tests. I can move the change to a separate working branch, but then I lose my ability to run unit tests easily... so I hope I could keep this change in the relation chain.\n\nPlease note that a relation chain is ordered (bottom to top), and this change is on top of the chain, meaning that other changes can be submitted independently from this change.",
+      "parentUuid": "43861eb9_610dde88",
+      "revId": "3cfa9abb57631cc35b3265e6f8b363f8faacfed4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

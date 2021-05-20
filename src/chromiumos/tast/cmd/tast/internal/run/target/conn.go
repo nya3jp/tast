@@ -50,7 +50,7 @@ func newConn(ctx context.Context, cfg *config.Config, target string) (conn *Conn
 
 func (c *Conn) close(ctx context.Context) error {
 	var firstErr error
-	if err := c.svcs.close(ctx); err != nil && firstErr == nil {
+	if err := c.svcs.close(); err != nil && firstErr == nil {
 		firstErr = err
 	}
 	if err := c.sshConn.Close(ctx); err != nil {

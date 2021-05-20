@@ -85,7 +85,7 @@ func Run(ctx context.Context, cfg *config.Config, state *config.State, cc *targe
 		if err != nil {
 			return errorStatusf(cfg, subcommands.ExitFailure, "Failed to start ephemeral devserver for remote tests: %v", err), nil
 		}
-		defer es.Close(ctx)
+		defer es.Close()
 	}
 
 	if err := prepare.Prepare(ctx, cfg, state, conn); err != nil {

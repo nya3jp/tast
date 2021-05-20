@@ -31,6 +31,15 @@ func Install(t *gotesting.T, regs map[string]*testing.Registry) (bundleGlob stri
 	}
 	t.Cleanup(func() { os.RemoveAll(dir) })
 
+	InstallAt(t, dir, regs)
+	return filepath.Join(dir, "*")
+}
+
+// InstallAt is similar to Install, but it installs fake test bundles to the
+// specified directory.
+func InstallAt(t *gotesting.T, dir string, regs map[string]*testing.Registry) {
+	t.Helper()
+
 	for name, reg := range regs {
 		name, reg := name, reg
 		lo, err := fakeexec.CreateLoopback(filepath.Join(dir, name), func(args []string, stdin io.Reader, stdout, stderr io.WriteCloser) int {
@@ -41,5 +50,4 @@ func Install(t *gotesting.T, regs map[string]*testing.Registry) (bundleGlob stri
 		}
 		t.Cleanup(func() { lo.Close() })
 	}
-	return filepath.Join(dir, "*")
 }

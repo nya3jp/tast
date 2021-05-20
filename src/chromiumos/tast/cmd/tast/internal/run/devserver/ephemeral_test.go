@@ -5,7 +5,6 @@
 package devserver
 
 import (
-	"context"
 	"fmt"
 	"io/ioutil"
 	"net"
@@ -28,7 +27,7 @@ type testData struct {
 func (td *testData) Close() error {
 	os.Setenv("PATH", td.origPath)
 	os.RemoveAll(td.cacheDir)
-	return td.s.Close(context.Background())
+	return td.s.Close()
 }
 
 func (td *testData) Get(path string) (string, error) {

@@ -6,7 +6,6 @@
 package devserver
 
 import (
-	"context"
 	"fmt"
 	"html"
 	"io"
@@ -72,8 +71,8 @@ func NewEphemeral(lis net.Listener, cacheDir string, extraAllowedBuckets []strin
 }
 
 // Close shuts down the ephemeral devserver and releases associated resources.
-func (e *Ephemeral) Close(ctx context.Context) error {
-	return e.server.Shutdown(ctx)
+func (e *Ephemeral) Close() error {
+	return e.server.Close()
 }
 
 // handleIndex serves any requests not matched to any other routes.

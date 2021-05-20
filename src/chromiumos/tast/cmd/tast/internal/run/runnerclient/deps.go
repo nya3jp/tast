@@ -67,10 +67,14 @@ func GetDUTInfo(ctx context.Context, cfg *config.Config, state *config.State, cc
 		return errors.New("can't check test deps; no software features reported by DUT")
 	}
 
-	info := res.Proto(ctx, cfg.CheckTestDeps, cfg.TestVars, cfg.MaybeMissingVars)
+	for _, warn := range res.Warnings {
+		cfg.Logger.Log(warn)
+	}
 
-	cfg.Logger.Debug("Software features supported by DUT: ", strings.Join(info.GetFeatures().GetDut().GetSoftware().GetAvailable(), " "))
-	if dc := info.GetFeatures().GetDut().GetHardware().GetDeprecatedDeviceConfig(); dc != nil {
+	info := res.Proto()
+
+	cfg.Logger.Debug("Software features supported by DUT: ", strings.Join(info.GetFeatures().GetSoftware().GetAvailable(), " "))
+	if dc := info.GetFeatures().GetHardware().GetDeprecatedDeviceConfig(); dc != nil {
 		cfg.Logger.Debug("Got DUT device.Config data; dumping to ", deviceConfigFile)
 		if err := ioutil.WriteFile(filepath.Join(cfg.ResDir, deviceConfigFile), []byte(proto.MarshalTextString(res.DeviceConfig)), 0644); err != nil {
 			cfg.Logger.Debugf("Failed to dump %s: %v", deviceConfigFile, err)
@@ -83,7 +87,7 @@ func GetDUTInfo(ctx context.Context, cfg *config.Config, state *config.State, cc
 
 // featureArgsFromConfig returns feature arguments based on the configuration parameter.
 func featureArgsFromConfig(cfg *config.Config, state *config.State) *jsonprotocol.FeatureArgs {
-	f := state.DUTInfo.GetFeatures().GetDut()
+	f := state.DUTInfo.GetFeatures()
 	return &jsonprotocol.FeatureArgs{
 		CheckDeps:                   cfg.CheckTestDeps,
 		TestVars:                    cfg.TestVars,

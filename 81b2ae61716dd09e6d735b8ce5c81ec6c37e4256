@@ -46,6 +46,30 @@
       },
       "revId": "81b2ae61716dd09e6d735b8ce5c81ec6c37e4256",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "50d6de61_8c3af487",
+        "filename": "src/chromiumos/tast/internal/extdata/extdata.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 196,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-05-20T06:18:32Z",
+      "side": 1,
+      "message": "As long as the file is not broken, files should not be downloaded again (see \"verify\" function in this file).\n\nBut I see your point. In my suggested approach downloaded files are verified again and again per fixture/test runs. This can be costly for large files as we compute file content hash.\n\nSo the current approach sounds good to me. Thanks for explanation!",
+      "parentUuid": "7ad758b0_599c3edf",
+      "range": {
+        "startLine": 196,
+        "startChar": 18,
+        "endLine": 196,
+        "endChar": 34
+      },
+      "revId": "81b2ae61716dd09e6d735b8ce5c81ec6c37e4256",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

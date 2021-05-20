@@ -51,7 +51,7 @@ func startServices(ctx context.Context, cfg *config.Config, conn *ssh.Conn) (svc
 		}
 		defer func() {
 			if retErr != nil {
-				ephemeralDevserver.Close(ctx)
+				ephemeralDevserver.Close()
 			}
 		}()
 	}
@@ -63,7 +63,7 @@ func startServices(ctx context.Context, cfg *config.Config, conn *ssh.Conn) (svc
 	}, nil
 }
 
-func (s *Services) close(ctx context.Context) error {
+func (s *Services) close() error {
 	var firstErr error
 	if s.tlwForwarder != nil {
 		if err := s.tlwForwarder.Close(); err != nil && firstErr == nil {
@@ -71,7 +71,7 @@ func (s *Services) close(ctx context.Context) error {
 		}
 	}
 	if s.ephemeralDevserver != nil {
-		if err := s.ephemeralDevserver.Close(ctx); err != nil && firstErr == nil {
+		if err := s.ephemeralDevserver.Close(); err != nil && firstErr == nil {
 			firstErr = err
 		}
 	}

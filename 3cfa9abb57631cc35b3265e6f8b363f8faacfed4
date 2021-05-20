@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "43861eb9_610dde88",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-05-20T03:18:10Z",
+      "side": 1,
+      "message": "Can this change be made separately from others in the relation chain?",
+      "revId": "3cfa9abb57631cc35b3265e6f8b363f8faacfed4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

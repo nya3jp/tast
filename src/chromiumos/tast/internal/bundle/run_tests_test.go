@@ -204,7 +204,9 @@ func TestRunTestsRemoteData(t *gotesting.T) {
 			},
 		},
 		Features: &protocol.Features{
-			Vars: map[string]string{"var1": "value1"},
+			Infra: &protocol.InfraFeatures{
+				Vars: map[string]string{"var1": "value1"},
+			},
 		},
 	}
 
@@ -222,7 +224,7 @@ func TestRunTestsRemoteData(t *gotesting.T) {
 	if !reflect.DeepEqual(meta, expMeta) {
 		t.Errorf("Test got Meta %+v; want %+v", *meta, *expMeta)
 	}
-	expHint := testing.NewRPCHint(cfg.RemoteTestConfig.LocalBundleDir, cfg.Features.Vars)
+	expHint := testing.NewRPCHint(cfg.RemoteTestConfig.LocalBundleDir, cfg.Features.Infra.Vars)
 	if !reflect.DeepEqual(hint, expHint) {
 		t.Errorf("Test got RPCHint %+v; want %+v", *hint, *expHint)
 	}

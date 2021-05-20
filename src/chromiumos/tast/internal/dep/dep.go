@@ -30,12 +30,12 @@ func (d *Deps) Check(f *protocol.Features) (reasons []string, err error) {
 	}
 
 	// If f.MaybeMissingVars is empty, no variables are considered as missing.
-	maybeMissingVars, err := regexp.Compile("^" + f.GetMaybeMissingVars() + "$")
+	maybeMissingVars, err := regexp.Compile("^" + f.GetInfra().GetMaybeMissingVars() + "$")
 	if err != nil {
-		return nil, errors.Errorf("regex %v is invalid: %v", f.GetMaybeMissingVars(), err)
+		return nil, errors.Errorf("regex %v is invalid: %v", f.GetInfra().GetMaybeMissingVars(), err)
 	}
 
-	vars := f.GetVars()
+	vars := f.GetInfra().GetVars()
 	for _, v := range d.Var {
 		if _, ok := vars[v]; ok {
 			continue
@@ -44,13 +44,13 @@ func (d *Deps) Check(f *protocol.Features) (reasons []string, err error) {
 			reasons = append(reasons, fmt.Sprintf("runtime variable %v is missing and matches with %v", v, maybeMissingVars))
 			continue
 		}
-		if f.GetMaybeMissingVars() == "" {
+		if f.GetInfra().GetMaybeMissingVars() == "" {
 			return nil, errors.Errorf("runtime variable %v is missing", v)
 		}
 		return nil, errors.Errorf("runtime variable %v is missing and doesn't match with %v", v, maybeMissingVars)
 	}
 
-	missing, unknown := missingSoftwareDeps(d.Software, f.GetSoftware())
+	missing, unknown := missingSoftwareDeps(d.Software, f.GetDut().GetSoftware())
 	if len(unknown) > 0 {
 		return nil, errors.Errorf("unknown SoftwareDeps: %v", strings.Join(unknown, ", "))
 	}
@@ -58,7 +58,7 @@ func (d *Deps) Check(f *protocol.Features) (reasons []string, err error) {
 		reasons = append(reasons, fmt.Sprintf("missing SoftwareDeps: %s", strings.Join(missing, ", ")))
 	}
 
-	if err := d.Hardware.Satisfied(f.GetHardware()); err != nil {
+	if err := d.Hardware.Satisfied(f.GetDut().GetHardware()); err != nil {
 		for _, r := range err.Reasons {
 			reasons = append(reasons, r.Error())
 		}

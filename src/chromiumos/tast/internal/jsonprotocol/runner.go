@@ -326,13 +326,13 @@ func (r *RunnerGetDUTInfoResult) Proto(ctx context.Context, checkDeps bool, vars
 	return &protocol.DUTInfo{
 		Features: &protocol.Features{
 			CheckDeps: checkDeps,
-			Software:  r.SoftwareFeatures,
-			Hardware: &protocol.HardwareFeatures{
-				HardwareFeatures:       r.HardwareFeatures,
-				DeprecatedDeviceConfig: r.DeviceConfig,
+			Dut: &protocol.DUTFeatures{
+				Software: r.SoftwareFeatures,
+				Hardware: &protocol.HardwareFeatures{
+					HardwareFeatures:       r.HardwareFeatures,
+					DeprecatedDeviceConfig: r.DeviceConfig,
+				},
 			},
-			Vars:             vars,
-			MaybeMissingVars: maybeMissingVars,
 		},
 		OsVersion:                r.OSVersion,
 		DefaultBuildArtifactsUrl: r.DefaultBuildArtifactsURL,

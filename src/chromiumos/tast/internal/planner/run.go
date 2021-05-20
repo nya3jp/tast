@@ -607,7 +607,7 @@ func runTest(ctx context.Context, t *testing.TestInstance, tout *entityOutputStr
 	rcfg := &testing.RuntimeConfig{
 		DataDir:      filepath.Join(pcfg.DataDir, testing.RelativeDataDir(t.Pkg)),
 		OutDir:       outDir,
-		Vars:         pcfg.Features.GetVars(),
+		Vars:         pcfg.Features.GetInfra().GetVars(),
 		CloudStorage: testing.NewCloudStorage(pcfg.Devservers, pcfg.TLWServer, pcfg.DUTName),
 		RemoteData:   pcfg.RemoteData,
 		FixtCtx:      fixtCtx,

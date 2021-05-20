@@ -63,14 +63,16 @@ func features(availableSWs []string, model string) *protocol.Features {
 
 	return &protocol.Features{
 		CheckDeps: true,
-		Software: &protocol.SoftwareFeatures{
-			Available:   availableSWs,
-			Unavailable: unavailableSWs,
-		},
-		Hardware: &protocol.HardwareFeatures{
-			DeprecatedDeviceConfig: &protocol.DeprecatedDeviceConfig{
-				Id: &protocol.DeprecatedConfigId{
-					Model: model,
+		Dut: &protocol.DUTFeatures{
+			Software: &protocol.SoftwareFeatures{
+				Available:   availableSWs,
+				Unavailable: unavailableSWs,
+			},
+			Hardware: &protocol.HardwareFeatures{
+				DeprecatedDeviceConfig: &protocol.DeprecatedDeviceConfig{
+					Id: &protocol.DeprecatedConfigId{
+						Model: model,
+					},
 				},
 			},
 		},
@@ -628,9 +630,11 @@ func TestInstantiateNonPointerPrecondition(t *gotesting.T) {
 func TestSoftwareDeps(t *gotesting.T) {
 	fs := &protocol.Features{
 		CheckDeps: true,
-		Software: &protocol.SoftwareFeatures{
-			Available:   []string{"dep1", "dep2"},
-			Unavailable: []string{"dep0", "dep3"},
+		Dut: &protocol.DUTFeatures{
+			Software: &protocol.SoftwareFeatures{
+				Available:   []string{"dep1", "dep2"},
+				Unavailable: []string{"dep0", "dep3"},
+			},
 		},
 	}
 
@@ -669,10 +673,12 @@ func TestSoftwareDeps(t *gotesting.T) {
 func TestHardwareDeps(t *gotesting.T) {
 	fs := &protocol.Features{
 		CheckDeps: true,
-		Hardware: &protocol.HardwareFeatures{
-			DeprecatedDeviceConfig: &protocol.DeprecatedDeviceConfig{
-				Id: &protocol.DeprecatedConfigId{
-					Model: "samus",
+		Dut: &protocol.DUTFeatures{
+			Hardware: &protocol.HardwareFeatures{
+				DeprecatedDeviceConfig: &protocol.DeprecatedDeviceConfig{
+					Id: &protocol.DeprecatedConfigId{
+						Model: "samus",
+					},
 				},
 			},
 		},
@@ -709,22 +715,28 @@ func TestVarDeps(t *gotesting.T) {
 		name: "pass",
 		features: &protocol.Features{
 			CheckDeps: true,
-			Vars:      map[string]string{"foo": "val"},
+			Infra: &protocol.InfraFeatures{
+				Vars: map[string]string{"foo": "val"},
+			},
 		},
 		wantReasons: nil,
 	}, {
 		name: "fail",
 		features: &protocol.Features{
 			CheckDeps: true,
-			Vars:      map[string]string{},
+			Infra: &protocol.InfraFeatures{
+				Vars: map[string]string{},
+			},
 		},
 		wantErr: true,
 	}, {
 		name: "skip",
 		features: &protocol.Features{
-			CheckDeps:        true,
-			Vars:             map[string]string{},
-			MaybeMissingVars: `foo`,
+			CheckDeps: true,
+			Infra: &protocol.InfraFeatures{
+				Vars:             map[string]string{},
+				MaybeMissingVars: `foo`,
+			},
 		},
 		wantReasons: []string{"runtime variable foo is missing and matches with ^foo$"},
 	}} {

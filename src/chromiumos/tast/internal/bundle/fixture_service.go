@@ -139,12 +139,16 @@ func (s *fixtureService) pushAndPop(srv FixtureService_RunFixtureServer) (retErr
 		},
 		DownloadMode: downloadMode,
 		Features: &protocol.Features{
-			Vars: r.Config.TestVars,
-			Software: &protocol.SoftwareFeatures{
-				Available:   r.Config.AvailableSoftwareFeatures,
-				Unavailable: r.Config.UnavailableSoftwareFeatures,
+			Infra: &protocol.InfraFeatures{
+				Vars: r.Config.TestVars,
 			},
-			// TODO(oka): fill HardwareFeatures field.
+			Dut: &protocol.DUTFeatures{
+				Software: &protocol.SoftwareFeatures{
+					Available:   r.Config.AvailableSoftwareFeatures,
+					Unavailable: r.Config.UnavailableSoftwareFeatures,
+				},
+				// TODO(oka): fill HardwareFeatures field.
+			},
 		},
 	}
 	if r.Config.CustomGracePeriod != nil {

@@ -83,9 +83,11 @@ func TestTestServerListEntities(t *gotesting.T) {
 func TestTestServerListEntitiesTestSkips(t *gotesting.T) {
 	features := &protocol.Features{
 		CheckDeps: true,
-		Software: &protocol.SoftwareFeatures{
-			Available:   []string{"dep1"},
-			Unavailable: []string{"dep2"},
+		Dut: &protocol.DUTFeatures{
+			Software: &protocol.SoftwareFeatures{
+				Available:   []string{"dep1"},
+				Unavailable: []string{"dep2"},
+			},
 		},
 	}
 	t1 := &testing.TestInstance{Name: "pkg.Test1", SoftwareDeps: []string{"dep1"}}

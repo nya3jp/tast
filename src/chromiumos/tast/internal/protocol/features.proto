@@ -16,10 +16,23 @@ message Features {
   // satisfied by available features.
   bool check_deps = 5;
 
+  DUTFeatures dut = 6;
+  InfraFeatures infra = 7;
+
+  reserved 1 to 4;
+}
+
+// DUTFeatures represents a set of features the DUT provides.
+message DUTFeatures {
   SoftwareFeatures software = 1;
   HardwareFeatures hardware = 2;
-  map<string, string> vars = 3;
-  string maybe_missing_vars = 4;
+}
+
+// InfraFeatures represents a set of features made available by testing
+// infrastructure.
+message InfraFeatures {
+  map<string, string> vars = 1;
+  string maybe_missing_vars = 2;
 }
 
 // SoftwareFeatures represents a set of software features available for the

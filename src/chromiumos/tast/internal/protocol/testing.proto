@@ -297,7 +297,7 @@ message Skip { repeated string reasons = 1; }
 
 // DUTInfo holds DUT system information.
 message DUTInfo {
-  Features features = 1;
+  DUTFeatures features = 1;
   string os_version = 2;
   string default_build_artifacts_url = 3;
 }

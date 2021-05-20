@@ -33,6 +33,24 @@
       "message": "nit: Please change the subject to \"Add err!\u003d nil\"\n\nI think \"nill\" is a typo.",
       "revId": "ce6179a7efb45bee1a654ad0ddae00f690ac2977",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "483ad0c5_6016187a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1274627
+      },
+      "writtenOn": "2021-05-20T00:37:38Z",
+      "side": 1,
+      "message": "thanks !",
+      "parentUuid": "4dcc1c71_2fdf3996",
+      "revId": "ce6179a7efb45bee1a654ad0ddae00f690ac2977",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

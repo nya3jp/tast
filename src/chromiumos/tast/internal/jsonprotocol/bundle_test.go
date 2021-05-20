@@ -24,9 +24,13 @@ func TestFeatureArgsFeatures(t *testing.T) {
 	// Even if CheckDeps is false, vars is filled.
 	want := &protocol.Features{
 		CheckDeps: false,
-		Vars:      map[string]string{"a": "b"},
-		Software:  &protocol.SoftwareFeatures{},
-		Hardware:  &protocol.HardwareFeatures{},
+		Infra: &protocol.InfraFeatures{
+			Vars: map[string]string{"a": "b"},
+		},
+		Dut: &protocol.DUTFeatures{
+			Software: &protocol.SoftwareFeatures{},
+			Hardware: &protocol.HardwareFeatures{},
+		},
 	}
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Features conversion mismatch (-got +want):\n%s", diff)

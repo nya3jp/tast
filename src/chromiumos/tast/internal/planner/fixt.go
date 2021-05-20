@@ -198,7 +198,7 @@ func (st *FixtureStack) Push(ctx context.Context, fixt *testing.FixtureInstance)
 	rcfg := &testing.RuntimeConfig{
 		// TODO(crbug.com/1127165): Support DataDir.
 		OutDir:       outDir,
-		Vars:         st.cfg.Features.GetVars(),
+		Vars:         st.cfg.Features.GetInfra().GetVars(),
 		CloudStorage: testing.NewCloudStorage(st.cfg.Devservers, st.cfg.TLWServer, st.cfg.DUTName),
 		RemoteData:   st.cfg.RemoteData,
 		FixtValue:    st.Val(),

@@ -14,7 +14,9 @@ func TestCheckDeps(t *testing.T) {
 	d := &Deps{Var: []string{"xyz"}}
 	f := &protocol.Features{
 		CheckDeps: true,
-		Vars:      map[string]string{"abc": "def"},
+		Infra: &protocol.InfraFeatures{
+			Vars: map[string]string{"abc": "def"},
+		},
 	}
 	if _, err := d.Check(f); err == nil {
 		t.Error("Check with unsatisfied dependency unexpectedly succeeded")

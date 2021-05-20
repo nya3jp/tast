@@ -16,6 +16,24 @@
       "message": "Can this change be made independent of others in the relation chain?",
       "revId": "c313d8c8973f369fcaa2b8649415d0557898b312",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d3926482_9c9ee80c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-05-20T04:47:04Z",
+      "side": 1,
+      "message": "No, due to merge conflicts. crrev.com/c/2905153 also changes config.State.",
+      "parentUuid": "555cb634_58c2e902",
+      "revId": "c313d8c8973f369fcaa2b8649415d0557898b312",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

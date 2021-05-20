@@ -16,6 +16,40 @@
       "message": "ptal hidehiko@",
       "revId": "cf8430439a491149c44cc8b0c5861ee681507b56",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a3531453_dbe0b9c5",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2021-05-20T01:02:13Z",
+      "side": 1,
+      "message": "LGTM with a fix request.",
+      "revId": "cf8430439a491149c44cc8b0c5861ee681507b56",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2b63dbae_f8e4d01f",
+        "filename": "docs/codelab_3.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 250,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2021-05-20T01:02:13Z",
+      "side": 1,
+      "message": "nit: could you merge this with above line?",
+      "revId": "cf8430439a491149c44cc8b0c5861ee681507b56",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

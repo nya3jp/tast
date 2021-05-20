@@ -174,16 +174,20 @@ func (a *FeatureArgs) Features() *protocol.Features {
 	}
 	return &protocol.Features{
 		CheckDeps: a.CheckDeps,
-		Software: &protocol.SoftwareFeatures{
-			Available:   a.AvailableSoftwareFeatures,
-			Unavailable: a.UnavailableSoftwareFeatures,
+		Dut: &protocol.DUTFeatures{
+			Software: &protocol.SoftwareFeatures{
+				Available:   a.AvailableSoftwareFeatures,
+				Unavailable: a.UnavailableSoftwareFeatures,
+			},
+			Hardware: &protocol.HardwareFeatures{
+				DeprecatedDeviceConfig: a.DeviceConfig.Proto,
+				HardwareFeatures:       a.HardwareFeatures.Proto,
+			},
 		},
-		Hardware: &protocol.HardwareFeatures{
-			DeprecatedDeviceConfig: a.DeviceConfig.Proto,
-			HardwareFeatures:       a.HardwareFeatures.Proto,
+		Infra: &protocol.InfraFeatures{
+			Vars:             vars,
+			MaybeMissingVars: a.MaybeMissingVars,
 		},
-		Vars:             vars,
-		MaybeMissingVars: a.MaybeMissingVars,
 	}
 }
 

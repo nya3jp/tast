@@ -153,7 +153,7 @@ func runTests(ctx context.Context, srv protocol.TestService_RunTestsServer, cfg 
 				Target:   sshCfg.GetTarget(),
 				RunFlags: cfg.GetRemoteTestConfig().GetMetaTestConfig().GetRunFlags(),
 			},
-			RPCHint:       testing.NewRPCHint(cfg.GetRemoteTestConfig().GetLocalBundleDir(), cfg.GetFeatures().GetVars()),
+			RPCHint:       testing.NewRPCHint(cfg.GetRemoteTestConfig().GetLocalBundleDir(), cfg.GetFeatures().GetInfra().GetVars()),
 			DUT:           dt,
 			CompanionDUTs: companionDUTs,
 		}

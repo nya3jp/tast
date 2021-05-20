@@ -222,9 +222,11 @@ func TestRunSoftwareDeps(t *gotesting.T) {
 	cfg := &Config{
 		Features: &protocol.Features{
 			CheckDeps: true,
-			Software: &protocol.SoftwareFeatures{
-				Available:   []string{validDep},
-				Unavailable: []string{missingDep},
+			Dut: &protocol.DUTFeatures{
+				Software: &protocol.SoftwareFeatures{
+					Available:   []string{validDep},
+					Unavailable: []string{missingDep},
+				},
 			},
 		},
 	}
@@ -329,9 +331,11 @@ func TestRunVarDeps(t *gotesting.T) {
 
 			cfg := &Config{
 				Features: &protocol.Features{
-					CheckDeps:        true,
-					Vars:             vars,
-					MaybeMissingVars: tc.maybeMissingVars,
+					CheckDeps: true,
+					Infra: &protocol.InfraFeatures{
+						Vars:             vars,
+						MaybeMissingVars: tc.maybeMissingVars,
+					},
 				},
 			}
 
@@ -715,9 +719,11 @@ func TestRunExternalData(t *gotesting.T) {
 				DataDir: dataDir,
 				Features: &protocol.Features{
 					CheckDeps: true,
-					Software: &protocol.SoftwareFeatures{
-						Available:   []string{"dep2"},
-						Unavailable: []string{"dep1"},
+					Dut: &protocol.DUTFeatures{
+						Software: &protocol.SoftwareFeatures{
+							Available:   []string{"dep2"},
+							Unavailable: []string{"dep1"},
+						},
 					},
 				},
 				Devservers:   []string{ds.URL},
@@ -1475,9 +1481,11 @@ func TestRunFixtureVars(t *gotesting.T) {
 	cfg := &Config{
 		Fixtures: map[string]*testing.FixtureInstance{fixt.Name: fixt},
 		Features: &protocol.Features{
-			Vars: map[string]string{
-				declaredVarName:   declaredVarValue,
-				undeclaredVarName: "forbidden",
+			Infra: &protocol.InfraFeatures{
+				Vars: map[string]string{
+					declaredVarName:   declaredVarValue,
+					undeclaredVarName: "forbidden",
+				},
 			},
 		},
 	}
@@ -1597,8 +1605,10 @@ func TestRunPreconditionWithSkips(t *gotesting.T) {
 	cfg := &Config{
 		Features: &protocol.Features{
 			CheckDeps: true,
-			Software: &protocol.SoftwareFeatures{
-				Unavailable: []string{dep},
+			Dut: &protocol.DUTFeatures{
+				Software: &protocol.SoftwareFeatures{
+					Unavailable: []string{dep},
+				},
 			},
 		},
 	}
@@ -1803,9 +1813,11 @@ func TestRunPlan(t *gotesting.T) {
 	cfg := &Config{
 		Features: &protocol.Features{
 			CheckDeps: true,
-			Software: &protocol.SoftwareFeatures{
-				Available:   []string{"yes"},
-				Unavailable: []string{"no"},
+			Dut: &protocol.DUTFeatures{
+				Software: &protocol.SoftwareFeatures{
+					Available:   []string{"yes"},
+					Unavailable: []string{"no"},
+				},
 			},
 		},
 		Fixtures: map[string]*testing.FixtureInstance{

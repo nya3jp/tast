@@ -202,7 +202,7 @@ asynchronous and might not immediately update the UI tree.
 
 Next, we want to click on the "Set wallpaper" menu item:
 ```go
-if err := ui.LeftClick(nodewith.Name("Set wallpaper").Role(role.MenuItem))(ctx) {
+if err := ui.LeftClick(nodewith.Name("Set wallpaper").Role(role.MenuItem))(ctx); err != nil {
   s.Fatal(...)
 }
 ```
@@ -214,7 +214,7 @@ the time that we try to click it. To fix this, we will simply keep clicking the
 menu item until it no longer exists:
 ```go
 setWallpaperMenu := nodewith.Name("Set wallpaper").Role(role.MenuItem)
-if err := ui.LeftClickUntil(setWallpaperMenu, ui.Gone(setWallpaperMenu))(ctx) {
+if err := ui.LeftClickUntil(setWallpaperMenu, ui.Gone(setWallpaperMenu))(ctx); err != nil {
   s.Fatal(...)
 }
 ```
@@ -234,7 +234,7 @@ node id=301 role=listItem state={} parentID=245 childIds=[341]
       node id=343 role=inlineTextBox state={} parentID=342 childIds=[] name=Solid colors
 ```
 ```go
-if err := ui.LeftClick(nodewith.Name("Solid colors").Role(role.StaticText))(ctx) {
+if err := ui.LeftClick(nodewith.Name("Solid colors").Role(role.StaticText))(ctx); err != nil {
   s.Fatal(...)
 }
 ```
@@ -245,7 +245,7 @@ to pick:
 node id=355 role=listItem state={"focusable":true} parentID=264 childIds=[] name=Deep Purple
 ```
 ```go
-if err := ui.LeftClick(nodewith.Name("Deep Purple").Role(role.ListItem))(ctx) {
+if err := ui.LeftClick(nodewith.Name("Deep Purple").Role(role.ListItem))(ctx); err != nil {
   s.Fatal(...)
 }
 ```
@@ -262,7 +262,7 @@ wallpaper picker displays the name of the currently selected wallpaper:
 node id=412 role=staticText state={} parentID=206 childIds=[413] name=Deep Purple
 ```
 ```go
-if err := ui.WaitUntilExists(nodewith.Name("Deep Purple").Role(role.StaticText))(ctx) {
+if err := ui.WaitUntilExists(nodewith.Name("Deep Purple").Role(role.StaticText))(ctx); err != nil {
   s.Fatal(...)
 }
 ```

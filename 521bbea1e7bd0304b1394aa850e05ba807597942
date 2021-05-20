@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "dd092e5e_4553379e",
+        "filename": "docs/codelab_3.md",
+        "patchSetId": 3
+      },
+      "lineNbr": 218,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2021-05-20T02:05:31Z",
+      "side": 1,
+      "message": "I should have mentioned this line, too. Could you merge with the above line, too?",
+      "revId": "521bbea1e7bd0304b1394aa850e05ba807597942",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

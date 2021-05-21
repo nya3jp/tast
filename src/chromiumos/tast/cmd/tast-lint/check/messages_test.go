@@ -23,7 +23,7 @@ func Test(ctx context.Context, s *testing.State) {
 
 	// Bad messages:
 	s.Logf("Should use Log for single string arg")
-	s.Logf("Should use Log for single trailing %v", err)
+	s.Logf("Should use Log for single trailing %v", err) // allowed
 	s.Log("Shouldn't use trailing period.")
 	s.Log("Shouldn't contain\na newline")
 	s.Log("Should end with colon and space ", err)
@@ -36,7 +36,7 @@ func Test(ctx context.Context, s *testing.State) {
 	s.Errorf("Just a string")
 	s.Fatalf("Just a string")
 	testing.ContextLog(ctx, err)
-	testing.ContextLogf(ctx, "Should've used ContextLog: %v", err)
+	testing.ContextLogf(ctx, "Should've used ContextLog: %v", err) // allowed
 
 	// Good messages:
 	s.Log("Good single-arg message")
@@ -125,7 +125,6 @@ func Test(ctx context.Context, s *testing.State) {
 	issues := Messages(fs, f, false)
 	expects := []string{
 		`test.go:14:2: Use s.Log("<msg>") instead of s.Logf("<msg>")`,
-		`test.go:15:2: Use s.Log("<msg> ", val) instead of s.Logf("<msg> %v", val)`,
 		`test.go:16:2: s.Log string arg should not contain trailing punctuation`,
 		`test.go:17:2: s.Log string arg should not contain embedded newlines`,
 		`test.go:18:2: s.Log string arg should end with ": " when followed by error`,
@@ -136,7 +135,6 @@ func Test(ctx context.Context, s *testing.State) {
 		`test.go:25:2: Use s.Error("<msg>") instead of s.Errorf("<msg>")`,
 		`test.go:26:2: Use s.Fatal("<msg>") instead of s.Fatalf("<msg>")`,
 		`test.go:27:2: Use testing.ContextLog(ctx, "Something failed: ", err) instead of testing.ContextLog(ctx, err)`,
-		`test.go:28:2: Use testing.ContextLog(ctx, "<msg> ", val) instead of testing.ContextLogf(ctx, "<msg> %v", val)`,
 		`test.go:37:2: errors.New string arg should not contain trailing punctuation`,
 		`test.go:38:2: errors.New string arg should not contain embedded newlines`,
 		`test.go:39:2: Use errors.New("<msg>") instead of errors.Errorf("<msg>")`,
@@ -196,10 +194,6 @@ func Test(ctx context.Context, s *testing.State) {
 	errors.Wrap(err, fmt.Sprintf("foo (%d)", 42))
 	s.Logf(fmt.Sprintf("something %s", foo))
 
-	s.Logf("Should use Log for single trailing %v", err) // CASE 3->4
-	testing.ContextLogf(ctx, "Should've used ContextLog: %v", err)
-	s.Errorf("unexpected usage Errorf for single trailing %v", err) // CASE 3+4->10
-
 	s.Log("Should end with colon and space ", err)
 	s.Error("Should end with colon and space:", err)
 	s.Fatal("Should end with colon and space.", err)
@@ -258,10 +252,6 @@ func Test(ctx context.Context, s *testing.State) {
 	errors.Errorf("foo (%d)", 42)
 	errors.Wrapf(err, "foo (%d)", 42)
 	s.Logf("something %s", foo)
-
-	s.Log("Should use Log for single trailing: ", err) // CASE 3->4
-	testing.ContextLog(ctx, "Should've used ContextLog: ", err)
-	s.Error("Unexpected usage Errorf for single trailing: ", err) // CASE 3+4->10
 
 	s.Log("Should end with colon and space: ", err)
 	s.Error("Should end with colon and space: ", err)

@@ -154,20 +154,6 @@ func Messages(fs *token.FileSet, f *ast.File, fix bool) []*Issue {
 			}
 		}
 
-		// Used Logf("Got %v", i) instead of Log("Got ", i).
-		if !isErr && isFmt && len(args) == 2 && args[0].typ == stringArg && strings.HasSuffix(args[0].val, " %v") {
-			if !fix {
-				addIssue(fmt.Sprintf(`Use %v(%v"<msg> ", val) instead of %v(%v"<msg> %%v", val)`,
-					fmtMap[callName], argPrefix, callName, argPrefix), printfURL, true)
-			} else {
-				args[0].val = strings.TrimSuffix(args[0].val, "%v")
-				args[0].fixed = true
-				callName = fmtMap[callName]
-				funcName = strings.TrimPrefix(callName, recvName+".")
-				isFmt = false
-			}
-		}
-
 		// Used Log("Some error", err) instead of Log("Some error: ", err).
 		if !isFmt && !isErr && len(args) == 2 && args[0].typ == stringArg &&
 			args[1].typ == errorArg && !strings.HasSuffix(args[0].val, ": ") {

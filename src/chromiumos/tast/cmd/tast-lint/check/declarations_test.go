@@ -201,6 +201,24 @@ func TestDeclarationsVars(t *testing.T) {
 		}
 		verifyIssues(t, issues, expects)
 	}
+
+	code := fmt.Sprintf(initTmpl, `
+	testing.AddTest(&testing.Test{
+		Func:     DoStuff,
+		Desc:     "This description is fine",
+		Contacts: []string{"me@chromium.org"},
+		Vars:     []string{"a", "b"},
+		VarDeps:  []string{"c"},
+	})`) + `
+	func f() {
+		s.RequiredVar("a")
+	}`
+	f, fs := parse(code, declTestPath)
+	issues := Declarations(fs, f, false)
+	expects := []string{
+		declTestPath + `:8:22: "a" is used in s.RequiredVar; use VarDeps for registration`,
+	}
+	verifyIssues(t, issues, expects)
 }
 
 func TestDeclarationsSoftwareDeps(t *testing.T) {

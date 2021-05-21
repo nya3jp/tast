@@ -5,6 +5,7 @@
 package check
 
 import (
+	"fmt"
 	"go/ast"
 	"go/token"
 	"strconv"
@@ -44,16 +45,45 @@ func Declarations(fs *token.FileSet, f *ast.File, fix bool) []*Issue {
 		return nil
 	}
 
+	reqVars := requiredVars(f)
+
 	var issues []*Issue
 	for _, decl := range f.Decls {
-		issues = append(issues, verifyInit(fs, decl, fix)...)
+		issues = append(issues, verifyInit(fs, decl, fix, reqVars)...)
 	}
 	return issues
 }
 
+func requiredVars(f *ast.File) map[string]bool {
+	res := make(map[string]bool)
+
+	for _, node := range f.Decls {
+		decl, ok := node.(*ast.FuncDecl)
+		if !ok {
+			continue
+		}
+		ast.Walk(funcVisitor(func(n ast.Node) {
+			call, ok := n.(*ast.CallExpr)
+			if !ok {
+				return
+			}
+			if toQualifiedName(call.Fun) != "s.RequiredVar" {
+				return
+			}
+			s, ok := call.Args[0].(*ast.BasicLit)
+			if !ok {
+				// TODO(oka): process non-literals
+				return
+			}
+			res[s.Value] = true
+		}), decl.Body)
+	}
+	return res
+}
+
 // verifyInit checks init() function declared at node.
 // If the node is not init() function, returns nil.
-func verifyInit(fs *token.FileSet, node ast.Decl, fix bool) []*Issue {
+func verifyInit(fs *token.FileSet, node ast.Decl, fix bool, reqVars map[string]bool) []*Issue {
 	decl, ok := node.(*ast.FuncDecl)
 	if !ok || decl.Recv != nil || decl.Name.Name != "init" {
 		// Not an init() function declaration. Skip.
@@ -63,7 +93,7 @@ func verifyInit(fs *token.FileSet, node ast.Decl, fix bool) []*Issue {
 	if len(decl.Body.List) == 1 {
 		if estmt, ok := decl.Body.List[0].(*ast.ExprStmt); ok && isTestingAddTestCall(estmt.X) {
 			// X's type is already verified in isTestingAddTestCall().
-			return verifyAddTestCall(fs, estmt.X.(*ast.CallExpr), fix)
+			return verifyAddTestCall(fs, estmt.X.(*ast.CallExpr), fix, reqVars)
 		}
 	}
 
@@ -87,7 +117,7 @@ func verifyInit(fs *token.FileSet, node ast.Decl, fix bool) []*Issue {
 // verifyAddTestCall verifies testing.AddTest calls. Specifically
 // - testing.AddTest() can take a pointer of a testing.Test composite literal.
 // - verifies each element of testing.Test literal.
-func verifyAddTestCall(fs *token.FileSet, call *ast.CallExpr, fix bool) []*Issue {
+func verifyAddTestCall(fs *token.FileSet, call *ast.CallExpr, fix bool, reqVars map[string]bool) []*Issue {
 	if len(call.Args) != 1 {
 		// This should be checked by a compiler, so skipped.
 		return nil
@@ -133,7 +163,7 @@ func verifyAddTestCall(fs *token.FileSet, call *ast.CallExpr, fix bool) []*Issue
 		case "Attr":
 			issues = append(issues, verifyAttr(fs, kv.Value)...)
 		case "Vars":
-			issues = append(issues, verifyVars(fs, kv.Value)...)
+			issues = append(issues, verifyVars(fs, kv.Value, reqVars)...)
 		case "SoftwareDeps":
 			issues = append(issues, verifySoftwareDeps(fs, kv.Value)...)
 		case "Params":
@@ -244,8 +274,8 @@ func verifyAttr(fs *token.FileSet, node ast.Node) []*Issue {
 	return issues
 }
 
-func verifyVars(fs *token.FileSet, node ast.Node) []*Issue {
-	_, ok := node.(*ast.CompositeLit)
+func verifyVars(fs *token.FileSet, node ast.Node, reqVars map[string]bool) []*Issue {
+	array, ok := node.(*ast.CompositeLit)
 	if !ok {
 		return []*Issue{{
 			Pos:  fs.Position(node.Pos()),
@@ -253,7 +283,22 @@ func verifyVars(fs *token.FileSet, node ast.Node) []*Issue {
 			Link: testRegistrationURL,
 		}}
 	}
-	return nil
+	var issues []*Issue
+	for _, n := range array.Elts {
+		s, ok := n.(*ast.BasicLit)
+		if !ok {
+			continue
+		}
+		if !reqVars[s.Value] {
+			continue
+		}
+		issues = append(issues, &Issue{
+			Pos:  fs.Position(n.Pos()),
+			Msg:  fmt.Sprintf("%s is used in s.RequiredVar; use VarDeps for registration", s.Value),
+			Link: testRuntimeVariablesURL,
+		})
+	}
+	return issues
 }
 
 func verifySoftwareDeps(fs *token.FileSet, node ast.Node) []*Issue {

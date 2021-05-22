@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "eae66905_674aceda",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-05-22T01:44:57Z",
+      "side": 1,
+      "message": "I do not understand why we should remove the restriction to access the variable. Please see my comments. Also, I have moved context code to internal/testcontext. \n\nPlease take a look. Thanks.",
+      "revId": "0e290231f5caf1d78ba6879e3417e2074f6179d1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

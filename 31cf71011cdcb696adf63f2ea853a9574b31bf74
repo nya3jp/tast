@@ -100,6 +100,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "8d3a8614_e2aac26a",
+        "filename": "src/chromiumos/tast/internal/testing/state.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 196,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-05-22T01:44:57Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "b01b7dfe_a77a3a10",
+      "range": {
+        "startLine": 196,
+        "startChar": 5,
+        "endLine": 196,
+        "endChar": 24
+      },
+      "revId": "31cf71011cdcb696adf63f2ea853a9574b31bf74",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "d27c36c1_fffaef55",
@@ -113,6 +137,30 @@
       "writtenOn": "2021-05-18T04:18:52Z",
       "side": 1,
       "message": "With this check, support libraries still cannot access runtime variables unless tests calling into them explicitly declare them.",
+      "range": {
+        "startLine": 449,
+        "startChar": 1,
+        "endLine": 457,
+        "endChar": 2
+      },
+      "revId": "31cf71011cdcb696adf63f2ea853a9574b31bf74",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1b50c0d7_be6448eb",
+        "filename": "src/chromiumos/tast/internal/testing/state.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 457,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-05-22T01:44:57Z",
+      "side": 1,
+      "message": "Please see my comment above.",
+      "parentUuid": "d27c36c1_fffaef55",
       "range": {
         "startLine": 449,
         "startChar": 1,

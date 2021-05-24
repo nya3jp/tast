@@ -101,6 +101,8 @@ var (
 	errStdoutSet = errors.New("Stdout was already set")
 	errStderrSet = errors.New("Stderr was already set")
 	errNotWaited = errors.New("Wait was not yet called")
+	// ErrAbort is returned if the pipe is closed by the Abort method
+	ErrAbort = errors.New("aborted by client")
 )
 
 // Command returns the Cmd struct to execute the named program with the given arguments.
@@ -316,7 +318,7 @@ func (c *Cmd) DumpLog(ctx context.Context) error {
 // goroutine. After calling this method, Wait/Run/Output/CombinedOutput will
 // return immediately. This method can be called at most once.
 func (c *Cmd) Abort() {
-	c.closePipes(errors.New("aborted by client"))
+	c.closePipes(ErrAbort)
 	close(c.abort)
 }
 

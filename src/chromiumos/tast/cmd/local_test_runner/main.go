@@ -125,6 +125,7 @@ func main() {
 			"gpu_sandboxing":          `!"betty" && !"board:reven" && !"tast_vm"`, // no GPU sandboxing on VMs: https://crbug.com/914688
 			"graphics_debugfs":        `!"kernel-3_18"`,
 			"gsc":                     "cr50_onboard",
+			"hammerd":                 "hammerd",
 			"houdini":                 "houdini",
 			"houdini64":               "houdini64",
 			"hostap_hwsim":            "wifi_hostap_test",

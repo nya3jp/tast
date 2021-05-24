@@ -16,6 +16,24 @@
       "message": "question: in which situation does proc leak? (maybe when stdin close but the process continued running?)",
       "revId": "285e58620ff2cbac65a54fc598b0ad6a584c4705",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "08494d6b_2cd8bf61",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/runnerclient/remote.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 125,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-05-24T07:10:17Z",
+      "side": 1,
+      "message": "Yes, that\u0027s one scenario. I didn\u0027t fix it because the issue is not new...",
+      "parentUuid": "7a522f62_1a05e7e1",
+      "revId": "285e58620ff2cbac65a54fc598b0ad6a584c4705",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

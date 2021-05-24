@@ -5,6 +5,7 @@
 package rpc
 
 import (
+	"bufio"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -25,6 +26,7 @@ import (
 	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/timing"
 	"chromiumos/tast/ssh"
+	"chromiumos/tast/testing"
 )
 
 // SSHClient is a Tast gRPC client over an SSH connection.
@@ -58,9 +60,25 @@ func DialSSH(ctx context.Context, conn *ssh.Conn, path string, req *protocol.Han
 	if err != nil {
 		return nil, err
 	}
+	stderr, err := cmd.StderrPipe()
+	if err != nil {
+		return nil, err
+	}
 	if err := cmd.Start(ctx); err != nil {
 		return nil, errors.Wrap(err, "failed to connect to RPC service on DUT")
 	}
+	go func() {
+		scanner := bufio.NewScanner(stderr)
+		for scanner.Scan() {
+			testing.ContextLogf(ctx, "RPCSERVER: %s", scanner.Text())
+		}
+		if err := scanner.Err(); err != nil {
+			// ssh.ErrAbort is normal, that happens whenever the ssh connection closes.
+			if !errors.Is(err, ssh.ErrAbort) {
+				testing.ContextLogf(ctx, "Error reading RPCSERVER stderr: %s", err)
+			}
+		}
+	}()
 
 	c, err := NewClient(ctx, stdout, stdin, req)
 	if err != nil {

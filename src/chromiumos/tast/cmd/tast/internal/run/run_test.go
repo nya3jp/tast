@@ -27,6 +27,7 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/fakereports"
 	"chromiumos/tast/cmd/tast/internal/run/fakerunner"
 	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
+	"chromiumos/tast/cmd/tast/internal/run/runtest"
 	"chromiumos/tast/cmd/tast/internal/run/target"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/control"
@@ -36,56 +37,50 @@ import (
 	"chromiumos/tast/internal/runner"
 )
 
-func TestRunPartialRun(t *gotesting.T) {
-	td := fakerunner.NewLocalTestData(t)
-	defer td.Close()
-
-	// Set a nonexistent path for the remote runner so that it will fail.
-	td.Cfg.RunLocal = true
-	td.Cfg.RunRemote = true
-	const testName = "pkg.Test"
-	td.RunFunc = func(args *jsonprotocol.RunnerArgs, stdout, stderr io.Writer) (status int) {
-		switch args.Mode {
-		case jsonprotocol.RunnerRunTestsMode:
-			mw := control.NewMessageWriter(stdout)
-			mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 1})
-			mw.WriteMessage(&control.EntityStart{Time: time.Unix(2, 0), Info: jsonprotocol.EntityInfo{Name: testName}})
-			mw.WriteMessage(&control.EntityEnd{Time: time.Unix(3, 0), Name: testName})
-			mw.WriteMessage(&control.RunEnd{Time: time.Unix(4, 0), OutDir: ""})
-		case jsonprotocol.RunnerListTestsMode:
-			tests := []*jsonprotocol.EntityWithRunnabilityInfo{
-				{
-					EntityInfo: jsonprotocol.EntityInfo{
-						Name: testName,
-					},
-				},
-			}
-			runner.WriteListTestsResultAsJSON(stdout, tests)
-		}
-		return 0
-	}
-	td.Cfg.RemoteRunner = filepath.Join(td.TempDir, "missing_remote_test_runner")
-
+func TestRun(t *gotesting.T) {
 	ctx := context.Background()
-	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
+
+	env := runtest.SetUp(t)
+	cfg := env.Config()
+	state := env.State()
+
+	cc := target.NewConnCache(cfg, cfg.Target)
 	defer cc.Close(ctx)
-	status, _ := Run(ctx, &td.Cfg, &td.State, cc)
-	if status.ExitCode != subcommands.ExitFailure {
-		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitFailure, td.LogBuf.String())
+
+	if status, _ := Run(ctx, cfg, state, cc); status.ExitCode != subcommands.ExitSuccess {
+		t.Errorf("Run() = %v; want %v", status.ExitCode, subcommands.ExitSuccess)
+	}
+}
+
+func TestRunPartialRun(t *gotesting.T) {
+	ctx := context.Background()
+
+	env := runtest.SetUp(t)
+	cfg := env.Config()
+	// Set a nonexistent path for the remote runner so that it will fail.
+	cfg.RemoteRunner = filepath.Join(env.TempDir(), "missing_remote_test_runner")
+	state := env.State()
+
+	cc := target.NewConnCache(cfg, cfg.Target)
+	defer cc.Close(ctx)
+
+	if status, _ := Run(ctx, cfg, state, cc); status.ExitCode != subcommands.ExitFailure {
+		t.Errorf("Run() = %v; want %v", status.ExitCode, subcommands.ExitFailure)
 	}
 }
 
 func TestRunError(t *gotesting.T) {
-	td := fakerunner.NewLocalTestData(t)
-	defer td.Close()
-
-	td.Cfg.RunLocal = true
-	td.Cfg.KeyFile = "" // force SSH auth error
-
 	ctx := context.Background()
-	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
+
+	env := runtest.SetUp(t)
+	cfg := env.Config()
+	cfg.KeyFile = "" // force SSH auth error
+	state := env.State()
+
+	cc := target.NewConnCache(cfg, cfg.Target)
 	defer cc.Close(ctx)
-	if status, _ := Run(ctx, &td.Cfg, &td.State, cc); status.ExitCode != subcommands.ExitFailure {
+
+	if status, _ := Run(ctx, cfg, state, cc); status.ExitCode != subcommands.ExitFailure {
 		t.Errorf("Run() = %v; want %v", status, subcommands.ExitFailure)
 	} else if !status.FailedBeforeRun {
 		// local()'s initial connection attempt will fail, so we won't try to run tests.
@@ -1105,6 +1100,3 @@ func TestRunTestsSkipTests(t *gotesting.T) {
 		t.Errorf("runTests returned %d skipped tests; want %d", skipped, expectedSkipped)
 	}
 }
-
-// TODO(crbug.com/982171): Add a test that runs remote tests successfully.
-// This may require merging LocalTestData and RemoteTestData into one.

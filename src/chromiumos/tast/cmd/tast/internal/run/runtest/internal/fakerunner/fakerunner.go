@@ -14,14 +14,20 @@ package fakerunner
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
+	"path/filepath"
+
+	"google.golang.org/grpc"
 
 	"chromiumos/tast/cmd/tast/internal/run/runtest/internal/fakesshserver"
 	"chromiumos/tast/internal/fakeexec"
 	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/protocol"
+	"chromiumos/tast/internal/rpc"
 	"chromiumos/tast/internal/runner"
 	"chromiumos/tast/shutil"
 )
@@ -66,6 +72,7 @@ func New(cfg *Config) *Runner {
 func (r *Runner) SSHHandlers(path string) []fakesshserver.Handler {
 	return []fakesshserver.Handler{
 		fakesshserver.ExactMatchHandler(fmt.Sprintf("exec env %s", path), r.RunJSON),
+		fakesshserver.ExactMatchHandler(fmt.Sprintf("exec env %s -rpc", path), r.RunGRPC),
 	}
 }
 
@@ -75,6 +82,9 @@ func (r *Runner) Install(path string) (*fakeexec.Loopback, error) {
 	return fakeexec.CreateLoopback(path, func(args []string, stdin io.Reader, stdout, stderr io.WriteCloser) int {
 		if len(args) == 1 {
 			return r.RunJSON(stdin, stdout, stderr)
+		}
+		if len(args) == 2 && args[1] == "-rpc" {
+			return r.RunGRPC(stdin, stdout, stderr)
 		}
 		fmt.Fprintf(stderr, "ERROR: Unknown arguments: %s\n", shutil.EscapeSlice(args))
 		return 1
@@ -138,4 +148,120 @@ func (r *Runner) RunJSON(stdin io.Reader, stdout, stderr io.Writer) int {
 		fmt.Fprintf(stderr, "ERROR: Not implemented mode: %v\n", args.Mode)
 		return 1
 	}
+}
+
+// RunGRPC executes the fake test runner logic in gRPC protocol mode.
+func (r *Runner) RunGRPC(stdin io.Reader, stdout, stderr io.Writer) int {
+	// Start a local gRPC server.
+	sr, cw := io.Pipe()
+	cr, sw := io.Pipe()
+	done := make(chan struct{})
+	go func() {
+		defer close(done)
+		runner.Run([]string{"-rpc"}, sr, sw, ioutil.Discard, &jsonprotocol.RunnerArgs{}, r.cfg.StaticConfig)
+	}()
+	defer func() {
+		cw.Close()
+		cr.Close()
+		<-done
+	}()
+
+	conn, err := rpc.NewClient(context.Background(), cr, cw, &protocol.HandshakeRequest{
+		RunnerInitParams: &protocol.RunnerInitParams{
+			BundleGlob: filepath.Join(r.cfg.BundleDir, "*"),
+		},
+	})
+	if err != nil {
+		fmt.Fprintf(stderr, "ERROR: Failed to create a local gRPC server connection: %v\n", err)
+		return 1
+	}
+	defer conn.Close()
+
+	rpc.RunServer(stdin, stdout, nil, func(srv *grpc.Server, req *protocol.HandshakeRequest) error {
+		protocol.RegisterTestServiceServer(srv, newTestService(r.cfg, protocol.NewTestServiceClient(conn.Conn())))
+		return nil
+	})
+	return 0
+}
+
+type testService struct {
+	protocol.UnimplementedTestServiceServer
+	cfg *Config
+	cl  protocol.TestServiceClient
+}
+
+func newTestService(cfg *Config, cl protocol.TestServiceClient) *testService {
+	return &testService{cfg: cfg, cl: cl}
+}
+
+func (s *testService) ListEntities(ctx context.Context, req *protocol.ListEntitiesRequest) (*protocol.ListEntitiesResponse, error) {
+	return s.cl.ListEntities(ctx, req)
+}
+
+func (s *testService) RunTests(downstream protocol.TestService_RunTestsServer) error {
+	initReq, err := downstream.Recv()
+	if err != nil {
+		return err
+	}
+	s.cfg.OnRunTestsInit(initReq.GetRunTestsInit())
+
+	upstream, err := s.cl.RunTests(downstream.Context())
+	if err != nil {
+		return err
+	}
+	defer upstream.CloseSend()
+
+	if err := upstream.Send(initReq); err != nil {
+		return err
+	}
+
+	// Downstream -> Upstream
+	go func() {
+		for {
+			msg, err := downstream.Recv()
+			if err != nil {
+				return
+			}
+			if err := upstream.Send(msg); err != nil {
+				return
+			}
+		}
+	}()
+
+	// Upstream -> Downstream
+	done := make(chan error)
+	go func() {
+		done <- func() error {
+			for {
+				msg, err := upstream.Recv()
+				if err == io.EOF {
+					return nil
+				}
+				if err != nil {
+					return err
+				}
+				if err := downstream.Send(msg); err != nil {
+					return err
+				}
+			}
+		}()
+	}()
+
+	return <-done
+}
+
+func (s *testService) GetDUTInfo(ctx context.Context, req *protocol.GetDUTInfoRequest) (*protocol.GetDUTInfoResponse, error) {
+	return s.cfg.GetDUTInfo(req)
+}
+
+func (s *testService) GetSysInfoState(ctx context.Context, req *protocol.GetSysInfoStateRequest) (*protocol.GetSysInfoStateResponse, error) {
+	return s.cfg.GetSysInfoState(req)
+}
+
+func (s *testService) CollectSysInfo(ctx context.Context, req *protocol.CollectSysInfoRequest) (*protocol.CollectSysInfoResponse, error) {
+	return s.cfg.CollectSysInfo(req)
+}
+
+func (s *testService) DownloadPrivateBundles(ctx context.Context, req *protocol.DownloadPrivateBundlesRequest) (*protocol.DownloadPrivateBundlesResponse, error) {
+	return s.cfg.DownloadPrivateBundles(req)
 }

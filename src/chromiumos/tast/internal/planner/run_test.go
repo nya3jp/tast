@@ -377,6 +377,7 @@ func TestRunSkipStages(t *gotesting.T) {
 		doFatal        // call State.Fatal
 		doPanic        // call panic()
 		noCall         // stage should be skipped
+		doSkip         // call State.Skip
 	)
 
 	// testBehavior specifies the behavior of a test in each of its stages.
@@ -434,7 +435,57 @@ func TestRunSkipStages(t *gotesting.T) {
 			},
 		},
 		{
-			name: "pretest fails",
+			name: "errors",
+			tests: []testBehavior{
+				{pre1, pass, pass, doError, pass, pass},
+			},
+			want: []protocol.Event{
+				&protocol.EntityStartEvent{Entity: &protocol.Entity{Name: "0"}},
+				&protocol.EntityLogEvent{EntityName: "0", Text: "preTest: OK"},
+				&protocol.EntityLogEvent{EntityName: "0", Text: `Preparing precondition "pre1"`},
+				&protocol.EntityLogEvent{EntityName: "0", Text: "prepare: OK"},
+				&protocol.EntityErrorEvent{EntityName: "0", Error: &protocol.Error{Reason: "test: Intentional error"}},
+				&protocol.EntityLogEvent{EntityName: "0", Text: `Closing precondition "pre1"`},
+				&protocol.EntityLogEvent{EntityName: "0", Text: "close: OK"},
+				&protocol.EntityLogEvent{EntityName: "0", Text: "postTest: OK"},
+				&protocol.EntityEndEvent{EntityName: "0"},
+			},
+		},
+		{
+			name: "fatals",
+			tests: []testBehavior{
+				{pre1, pass, pass, doFatal, pass, pass},
+			},
+			want: []protocol.Event{
+				&protocol.EntityStartEvent{Entity: &protocol.Entity{Name: "0"}},
+				&protocol.EntityLogEvent{EntityName: "0", Text: "preTest: OK"},
+				&protocol.EntityLogEvent{EntityName: "0", Text: `Preparing precondition "pre1"`},
+				&protocol.EntityLogEvent{EntityName: "0", Text: "prepare: OK"},
+				&protocol.EntityErrorEvent{EntityName: "0", Error: &protocol.Error{Reason: "test: Intentional fatal"}},
+				&protocol.EntityLogEvent{EntityName: "0", Text: `Closing precondition "pre1"`},
+				&protocol.EntityLogEvent{EntityName: "0", Text: "close: OK"},
+				&protocol.EntityLogEvent{EntityName: "0", Text: "postTest: OK"},
+				&protocol.EntityEndEvent{EntityName: "0"},
+			},
+		},
+		{
+			name: "skips",
+			tests: []testBehavior{
+				{pre1, pass, pass, doSkip, pass, pass},
+			},
+			want: []protocol.Event{
+				&protocol.EntityStartEvent{Entity: &protocol.Entity{Name: "0"}},
+				&protocol.EntityLogEvent{EntityName: "0", Text: "preTest: OK"},
+				&protocol.EntityLogEvent{EntityName: "0", Text: `Preparing precondition "pre1"`},
+				&protocol.EntityLogEvent{EntityName: "0", Text: "prepare: OK"},
+				&protocol.EntityLogEvent{EntityName: "0", Text: `Closing precondition "pre1"`},
+				&protocol.EntityLogEvent{EntityName: "0", Text: "close: OK"},
+				&protocol.EntityLogEvent{EntityName: "0", Text: "postTest: OK"},
+				&protocol.EntityEndEvent{EntityName: "0", Skip: &protocol.Skip{Reasons: []string{"test: Intentional skip"}}},
+			},
+		},
+		{
+			name: "pretest errors",
 			tests: []testBehavior{
 				{pre1, doError, noCall, noCall, pass, pass},
 			},
@@ -445,6 +496,31 @@ func TestRunSkipStages(t *gotesting.T) {
 				&protocol.EntityLogEvent{EntityName: "0", Text: "close: OK"},
 				&protocol.EntityLogEvent{EntityName: "0", Text: "postTest: OK"},
 				&protocol.EntityEndEvent{EntityName: "0"},
+			},
+		},
+		{
+			name: "pretest fatals",
+			tests: []testBehavior{
+				{pre1, doFatal, noCall, noCall, pass, pass},
+			},
+			want: []protocol.Event{
+				&protocol.EntityStartEvent{Entity: &protocol.Entity{Name: "0"}},
+				&protocol.EntityErrorEvent{EntityName: "0", Error: &protocol.Error{Reason: "preTest: Intentional fatal"}},
+				&protocol.EntityLogEvent{EntityName: "0", Text: `Closing precondition "pre1"`},
+				&protocol.EntityLogEvent{EntityName: "0", Text: "close: OK"},
+				&protocol.EntityEndEvent{EntityName: "0"},
+			},
+		},
+		{
+			name: "pretest skips",
+			tests: []testBehavior{
+				{pre1, doSkip, noCall, noCall, pass, pass},
+			},
+			want: []protocol.Event{
+				&protocol.EntityStartEvent{Entity: &protocol.Entity{Name: "0"}},
+				&protocol.EntityLogEvent{EntityName: "0", Text: `Closing precondition "pre1"`},
+				&protocol.EntityLogEvent{EntityName: "0", Text: "close: OK"},
+				&protocol.EntityEndEvent{EntityName: "0", Skip: &protocol.Skip{Reasons: []string{"preTest: Intentional skip"}}},
 			},
 		},
 		{
@@ -461,7 +537,7 @@ func TestRunSkipStages(t *gotesting.T) {
 			},
 		},
 		{
-			name: "prepare fails",
+			name: "prepare errors",
 			tests: []testBehavior{
 				{pre1, pass, doError, noCall, pass, pass},
 			},
@@ -474,6 +550,37 @@ func TestRunSkipStages(t *gotesting.T) {
 				&protocol.EntityLogEvent{EntityName: "0", Text: "close: OK"},
 				&protocol.EntityLogEvent{EntityName: "0", Text: "postTest: OK"},
 				&protocol.EntityEndEvent{EntityName: "0"},
+			},
+		},
+		{
+			name: "prepare fatals",
+			tests: []testBehavior{
+				{pre1, pass, doFatal, noCall, pass, pass},
+			},
+			want: []protocol.Event{
+				&protocol.EntityStartEvent{Entity: &protocol.Entity{Name: "0"}},
+				&protocol.EntityLogEvent{EntityName: "0", Text: "preTest: OK"},
+				&protocol.EntityLogEvent{EntityName: "0", Text: `Preparing precondition "pre1"`},
+				&protocol.EntityErrorEvent{EntityName: "0", Error: &protocol.Error{Reason: "[Precondition failure] prepare: Intentional fatal"}},
+				&protocol.EntityLogEvent{EntityName: "0", Text: `Closing precondition "pre1"`},
+				&protocol.EntityLogEvent{EntityName: "0", Text: "close: OK"},
+				&protocol.EntityLogEvent{EntityName: "0", Text: "postTest: OK"},
+				&protocol.EntityEndEvent{EntityName: "0"},
+			},
+		},
+		{
+			name: "prepare skips",
+			tests: []testBehavior{
+				{pre1, pass, doSkip, noCall, pass, pass},
+			},
+			want: []protocol.Event{
+				&protocol.EntityStartEvent{Entity: &protocol.Entity{Name: "0"}},
+				&protocol.EntityLogEvent{EntityName: "0", Text: "preTest: OK"},
+				&protocol.EntityLogEvent{EntityName: "0", Text: `Preparing precondition "pre1"`},
+				&protocol.EntityLogEvent{EntityName: "0", Text: `Closing precondition "pre1"`},
+				&protocol.EntityLogEvent{EntityName: "0", Text: "close: OK"},
+				&protocol.EntityLogEvent{EntityName: "0", Text: "postTest: OK"},
+				&protocol.EntityEndEvent{EntityName: "0", Skip: &protocol.Skip{Reasons: []string{"prepare: Intentional skip"}}},
 			},
 		},
 		{
@@ -545,7 +652,7 @@ func TestRunSkipStages(t *gotesting.T) {
 			},
 		},
 		{
-			name: "first prepare fails",
+			name: "first prepare errors",
 			tests: []testBehavior{
 				{pre1, pass, doError, noCall, noCall, pass},
 				{pre1, pass, pass, pass, pass, pass},
@@ -568,12 +675,60 @@ func TestRunSkipStages(t *gotesting.T) {
 				&protocol.EntityEndEvent{EntityName: "1"},
 			},
 		},
+		{
+			name: "first prepare fatals",
+			tests: []testBehavior{
+				{pre1, pass, doFatal, noCall, noCall, pass},
+				{pre1, pass, pass, pass, pass, pass},
+			},
+			want: []protocol.Event{
+				&protocol.EntityStartEvent{Entity: &protocol.Entity{Name: "0"}},
+				&protocol.EntityLogEvent{EntityName: "0", Text: "preTest: OK"},
+				&protocol.EntityLogEvent{EntityName: "0", Text: `Preparing precondition "pre1"`},
+				&protocol.EntityErrorEvent{EntityName: "0", Error: &protocol.Error{Reason: "[Precondition failure] prepare: Intentional fatal"}},
+				&protocol.EntityLogEvent{EntityName: "0", Text: "postTest: OK"},
+				&protocol.EntityEndEvent{EntityName: "0"},
+				&protocol.EntityStartEvent{Entity: &protocol.Entity{Name: "1"}},
+				&protocol.EntityLogEvent{EntityName: "1", Text: "preTest: OK"},
+				&protocol.EntityLogEvent{EntityName: "1", Text: `Preparing precondition "pre1"`},
+				&protocol.EntityLogEvent{EntityName: "1", Text: "prepare: OK"},
+				&protocol.EntityLogEvent{EntityName: "1", Text: "test: OK"},
+				&protocol.EntityLogEvent{EntityName: "1", Text: `Closing precondition "pre1"`},
+				&protocol.EntityLogEvent{EntityName: "1", Text: "close: OK"},
+				&protocol.EntityLogEvent{EntityName: "1", Text: "postTest: OK"},
+				&protocol.EntityEndEvent{EntityName: "1"},
+			},
+		},
+		{
+			name: "first prepare skips",
+			tests: []testBehavior{
+				{pre1, pass, doSkip, noCall, noCall, pass},
+				{pre1, pass, pass, pass, pass, pass},
+			},
+			want: []protocol.Event{
+				&protocol.EntityStartEvent{Entity: &protocol.Entity{Name: "0"}},
+				&protocol.EntityLogEvent{EntityName: "0", Text: "preTest: OK"},
+				&protocol.EntityLogEvent{EntityName: "0", Text: `Preparing precondition "pre1"`},
+				&protocol.EntityLogEvent{EntityName: "0", Text: "postTest: OK"},
+				&protocol.EntityEndEvent{EntityName: "0", Skip: &protocol.Skip{Reasons: []string{"prepare: Intentional skip"}}},
+				&protocol.EntityStartEvent{Entity: &protocol.Entity{Name: "1"}},
+				&protocol.EntityLogEvent{EntityName: "1", Text: "preTest: OK"},
+				&protocol.EntityLogEvent{EntityName: "1", Text: `Preparing precondition "pre1"`},
+				&protocol.EntityLogEvent{EntityName: "1", Text: "prepare: OK"},
+				&protocol.EntityLogEvent{EntityName: "1", Text: "test: OK"},
+				&protocol.EntityLogEvent{EntityName: "1", Text: `Closing precondition "pre1"`},
+				&protocol.EntityLogEvent{EntityName: "1", Text: "close: OK"},
+				&protocol.EntityLogEvent{EntityName: "1", Text: "postTest: OK"},
+				&protocol.EntityEndEvent{EntityName: "1"},
+			},
+		},
 	} {
 		t.Run(tc.name, func(t *gotesting.T) {
 			type state interface {
 				Logf(fmt string, args ...interface{})
 				Errorf(fmt string, args ...interface{})
 				Fatalf(fmt string, args ...interface{})
+				Skipf(fmt string, args ...interface{})
 			}
 			doAction := func(s state, a action, stage string) {
 				switch a {
@@ -587,6 +742,8 @@ func TestRunSkipStages(t *gotesting.T) {
 					panic(fmt.Sprintf("%s: Intentional panic", stage))
 				case noCall:
 					t.Errorf("%s: Called unexpectedly", stage)
+				case doSkip:
+					s.Skipf("%s: Intentional skip", stage)
 				}
 			}
 

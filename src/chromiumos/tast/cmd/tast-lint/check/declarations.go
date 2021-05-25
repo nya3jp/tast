@@ -84,19 +84,22 @@ func verifyInit(fs *token.FileSet, node ast.Decl, fix bool) []*Issue {
 	return nil
 }
 
-// verifyAddTestCall verifies testing.AddTest calls. Specifically
-// - testing.AddTest() can take a pointer of a testing.Test composite literal.
-// - verifies each element of testing.Test literal.
-func verifyAddTestCall(fs *token.FileSet, call *ast.CallExpr, fix bool) []*Issue {
+type entityFields map[string]*ast.KeyValueExpr
+
+// registeredEntityFields returns a mapping from field name to value, or issues
+// on error.
+// call must be a registration of an entity, e.g. testing.AddTest or
+// testing.AddFixture.
+func registeredEntityFields(fs *token.FileSet, call *ast.CallExpr) (entityFields, []*Issue) {
 	if len(call.Args) != 1 {
 		// This should be checked by a compiler, so skipped.
-		return nil
+		return nil, nil
 	}
 
 	// Verify the argument is "&testing.Test{...}"
 	arg, ok := call.Args[0].(*ast.UnaryExpr)
 	if !ok || arg.Op != token.AND {
-		return []*Issue{{
+		return nil, []*Issue{{
 			Pos:  fs.Position(call.Args[0].Pos()),
 			Msg:  addTestArgLitMsg,
 			Link: testRegistrationURL,
@@ -104,16 +107,14 @@ func verifyAddTestCall(fs *token.FileSet, call *ast.CallExpr, fix bool) []*Issue
 	}
 	comp, ok := arg.X.(*ast.CompositeLit)
 	if !ok {
-		return []*Issue{{
+		return nil, []*Issue{{
 			Pos:  fs.Position(call.Args[0].Pos()),
 			Msg:  addTestArgLitMsg,
 			Link: testRegistrationURL,
 		}}
 	}
 
-	// The compiler should check the type. Skip it.
-	var issues []*Issue
-	var hasDesc, hasContacts bool
+	res := make(entityFields)
 	for _, el := range comp.Elts {
 		kv, ok := el.(*ast.KeyValueExpr)
 		if !ok {
@@ -123,42 +124,43 @@ func verifyAddTestCall(fs *token.FileSet, call *ast.CallExpr, fix bool) []*Issue
 		if !ok {
 			continue
 		}
-		switch ident.Name {
-		case "Desc":
-			hasDesc = true
-			issues = append(issues, verifyDesc(fs, kv, fix)...)
-		case "Contacts":
-			hasContacts = true
-			issues = append(issues, verifyContacts(fs, kv.Value)...)
-		case "Attr":
-			issues = append(issues, verifyAttr(fs, kv.Value)...)
-		case "Vars":
-			issues = append(issues, verifyVars(fs, kv.Value)...)
-		case "SoftwareDeps":
-			issues = append(issues, verifySoftwareDeps(fs, kv.Value)...)
-		case "Params":
-			issues = append(issues, verifyParams(fs, kv.Value)...)
-		}
+		res[ident.Name] = kv
+	}
+	return res, nil
+}
+
+// verifyAddTestCall verifies testing.AddTest calls. Specifically
+// - testing.AddTest() can take a pointer of a testing.Test composite literal.
+// - verifies each element of testing.Test literal.
+func verifyAddTestCall(fs *token.FileSet, call *ast.CallExpr, fix bool) []*Issue {
+	fields, issues := registeredEntityFields(fs, call)
+	if len(issues) > 0 {
+		return issues
 	}
 
-	if !hasDesc {
-		issues = append(issues, &Issue{
-			Pos:  fs.Position(arg.Pos()),
-			Msg:  noDescMsg,
-			Link: testRegistrationURL,
-		})
+	if kv, ok := fields["Attr"]; ok {
+		issues = append(issues, verifyAttr(fs, kv.Value)...)
 	}
-	if !hasContacts {
-		issues = append(issues, &Issue{
-			Pos:  fs.Position(arg.Pos()),
-			Msg:  noContactMsg,
-			Link: testRegistrationURL,
-		})
+	if kv, ok := fields["SoftwareDeps"]; ok {
+		issues = append(issues, verifySoftwareDeps(fs, kv.Value)...)
 	}
+	issues = append(issues, verifyVars(fs, fields)...)
+	issues = append(issues, verifyParams(fs, fields)...)
+	issues = append(issues, verifyDesc(fs, fields, call, fix)...)
+	issues = append(issues, verifyContacts(fs, fields, call)...)
+
 	return issues
 }
 
-func verifyDesc(fs *token.FileSet, kv *ast.KeyValueExpr, fix bool) []*Issue {
+func verifyDesc(fs *token.FileSet, fields entityFields, call *ast.CallExpr, fix bool) []*Issue {
+	kv, ok := fields["Desc"]
+	if !ok {
+		return []*Issue{{
+			Pos:  fs.Position(call.Args[0].Pos()),
+			Msg:  noDescMsg,
+			Link: testRegistrationURL,
+		}}
+	}
 	node := kv.Value
 	s, ok := toString(node)
 	if !ok {
@@ -198,11 +200,20 @@ func verifyDesc(fs *token.FileSet, kv *ast.KeyValueExpr, fix bool) []*Issue {
 	return nil
 }
 
-func verifyContacts(fs *token.FileSet, node ast.Node) []*Issue {
-	comp, ok := node.(*ast.CompositeLit)
+func verifyContacts(fs *token.FileSet, fields entityFields, call *ast.CallExpr) []*Issue {
+	kv, ok := fields["Contacts"]
 	if !ok {
 		return []*Issue{{
-			Pos:  fs.Position(node.Pos()),
+			Pos:  fs.Position(call.Args[0].Pos()),
+			Msg:  noContactMsg,
+			Link: testRegistrationURL,
+		}}
+	}
+
+	comp, ok := kv.Value.(*ast.CompositeLit)
+	if !ok {
+		return []*Issue{{
+			Pos:  fs.Position(kv.Value.Pos()),
 			Msg:  nonLiteralContactsMsg,
 			Link: testRegistrationURL,
 		}}
@@ -244,11 +255,15 @@ func verifyAttr(fs *token.FileSet, node ast.Node) []*Issue {
 	return issues
 }
 
-func verifyVars(fs *token.FileSet, node ast.Node) []*Issue {
-	_, ok := node.(*ast.CompositeLit)
+func verifyVars(fs *token.FileSet, fields entityFields) []*Issue {
+	kv, ok := fields["Vars"]
+	if !ok {
+		return nil
+	}
+	_, ok = kv.Value.(*ast.CompositeLit)
 	if !ok {
 		return []*Issue{{
-			Pos:  fs.Position(node.Pos()),
+			Pos:  fs.Position(kv.Value.Pos()),
 			Msg:  nonLiteralVarsMsg,
 			Link: testRegistrationURL,
 		}}
@@ -279,11 +294,16 @@ func verifySoftwareDeps(fs *token.FileSet, node ast.Node) []*Issue {
 	return issues
 }
 
-func verifyParams(fs *token.FileSet, node ast.Node) []*Issue {
-	comp, ok := node.(*ast.CompositeLit)
+func verifyParams(fs *token.FileSet, fields entityFields) []*Issue {
+	kv, ok := fields["Params"]
+	if !ok {
+		return nil
+	}
+
+	comp, ok := kv.Value.(*ast.CompositeLit)
 	if !ok {
 		return []*Issue{{
-			Pos:  fs.Position(node.Pos()),
+			Pos:  fs.Position(kv.Value.Pos()),
 			Msg:  nonLiteralParamsMsg,
 			Link: testParamTestURL,
 		}}

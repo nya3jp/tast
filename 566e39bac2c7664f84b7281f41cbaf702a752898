@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c1eebded_7b101061",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 9
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-05-25T03:27:47Z",
+      "side": 1,
+      "message": "I think allowing tests and libraries to use variables without declaration may cause issue. I suggest a different approach. I just checked in a new version to illustrate my idea. Please take a look. Thanks.",
+      "revId": "566e39bac2c7664f84b7281f41cbaf702a752898",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

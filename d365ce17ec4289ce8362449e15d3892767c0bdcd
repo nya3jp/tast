@@ -198,6 +198,30 @@
       },
       "revId": "d365ce17ec4289ce8362449e15d3892767c0bdcd",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7218ac93_3772fab9",
+        "filename": "src/chromiumos/tast/internal/testing/state.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 205,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-05-25T03:27:47Z",
+      "side": 1,
+      "message": "I would like to discuss an alternative approach. I think allowing tests and libraries to use any runtime variables without any declaration may cause issues. For example, we can have two libraries trying to access the same variable name while the variable means different things for the two libraries. I suggested that we keep the current mechanism but add a way for libraries to declare variables. I just check in my suggestion. It is just for discussion sake. Please take a look. Thanks.",
+      "parentUuid": "e32b6862_5328ab66",
+      "range": {
+        "startLine": 205,
+        "startChar": 5,
+        "endLine": 205,
+        "endChar": 15
+      },
+      "revId": "d365ce17ec4289ce8362449e15d3892767c0bdcd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

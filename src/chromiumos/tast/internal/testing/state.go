@@ -93,8 +93,10 @@ type EntityRoot struct {
 	cfg *RuntimeConfig             // details about how to run an entity
 	out OutputStream               // stream to which logging messages and errors are reported
 
-	mu       sync.Mutex // protects hasError
-	hasError bool       // true if any error was reported from any associated State object
+	mu          sync.Mutex // protects hasError
+	hasError    bool       // true if any error was reported from any associated State object
+	skipReasons []string   // The reasons the entity was skipped
+	isSkipped   bool       // true if the entity was skipped
 }
 
 // NewEntityRoot returns a new EntityRoot object.
@@ -140,6 +142,28 @@ func (r *EntityRoot) HasError() bool {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	return r.hasError
+}
+
+// Skipped reports whether the entity was skipped.
+func (r *EntityRoot) Skipped() bool {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	return r.isSkipped && !r.hasError
+}
+
+// SkippedReasons returns the reasons the entity was skipped.
+func (r *EntityRoot) SkippedReasons() []string {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	return r.skipReasons
+}
+
+// Skip records a reason that the entity was skipped.
+func (r *EntityRoot) Skip(reason string) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	r.skipReasons = append(r.skipReasons, reason)
+	r.isSkipped = true
 }
 
 // recordError records that the entity has reported an error.
@@ -225,6 +249,16 @@ func (r *TestEntityRoot) NewContext(ctx context.Context) context.Context {
 // HasError checks if any error has been reported.
 func (r *TestEntityRoot) HasError() bool {
 	return r.entityRoot.HasError()
+}
+
+// Skipped reports whether the entity was skipped.
+func (r *TestEntityRoot) Skipped() bool {
+	return r.entityRoot.Skipped() && !r.HasError()
+}
+
+// SkippedReasons returns the reasons the entity was skipped.
+func (r *TestEntityRoot) SkippedReasons() []string {
+	return r.entityRoot.SkippedReasons()
 }
 
 // SetPreValue sets a precondition value available to the test.
@@ -348,6 +382,19 @@ func (s *globalMixin) HasError() bool {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	return s.hasError
+}
+
+// Skip formats its arguments using default formatting and marks the entity
+// as being skipped (using the arguments as a reason for the skip), and immediately ends the entity
+func (s *globalMixin) Skip(args ...interface{}) {
+	s.entityRoot.Skip(fmt.Sprint(args...))
+	runtime.Goexit()
+}
+
+// Skipf is similar to Skip but formats its arguments using fmt.Sprintf.
+func (s *globalMixin) Skipf(format string, args ...interface{}) {
+	s.entityRoot.Skip(fmt.Sprintf(format, args...))
+	runtime.Goexit()
 }
 
 // errorSuffix matches the well-known error message suffixes for formatError.

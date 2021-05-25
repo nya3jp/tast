@@ -627,6 +627,10 @@ func runTest(ctx context.Context, t *testing.TestInstance, tout *entityOutputStr
 		return err
 	}
 
+	if root.Skipped() {
+		tout.End(root.SkippedReasons(), timingLog)
+	}
+
 	return nil
 }
 
@@ -795,7 +799,7 @@ func runTestWithRoot(ctx context.Context, t *testing.TestInstance, root *testing
 	}
 
 	// Prepare the test's precondition (if any) if setup was successful.
-	if !root.HasError() && t.Pre != nil {
+	if !root.HasError() && !root.Skipped() && t.Pre != nil {
 		preState := root.NewPreState()
 		if err := safeCall(ctx, codeName, t.Pre.Timeout(), pcfg.GracePeriod(), errorOnPanic(preState), func(ctx context.Context) {
 			preState.Logf("Preparing precondition %q", t.Pre)
@@ -805,7 +809,7 @@ func runTestWithRoot(ctx context.Context, t *testing.TestInstance, root *testing
 		}
 	}
 
-	if !root.HasError() {
+	if !root.HasError() && !root.Skipped() {
 		if err := func() error {
 			ctx, cancel := context.WithCancel(ctx)
 			defer cancel()
@@ -852,7 +856,6 @@ func runTestWithRoot(ctx context.Context, t *testing.TestInstance, root *testing
 			return err
 		}
 	}
-
 	return nil
 }
 

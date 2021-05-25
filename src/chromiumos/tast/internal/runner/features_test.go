@@ -281,3 +281,39 @@ func TestFindIntelSOC(t *testing.T) {
 		}
 	}
 }
+
+func TestFindMemorySize(t *testing.T) {
+	testCases := []struct {
+		input         []byte
+		expectSuccess bool
+		expectedSize  int64
+	}{
+		{
+			[]byte(`MemTotal:       185673752 kB
+			MemFree:         5761148 kB
+			`), true, 185673752000,
+		},
+		{
+			[]byte(`
+			MemFree:       11111111 kB
+			MemTotal:      12345678 kB
+			`), true, 12345678000,
+		},
+	}
+	for _, tc := range testCases {
+		r, err := findMemorySize(tc.input)
+		if !tc.expectSuccess {
+			if err == nil {
+				t.Errorf("Unexpectedly succeeded: input=%s", string(tc.input))
+			}
+			continue
+		}
+		if err != nil {
+			t.Errorf("Failed to find memory size: %v; input=%s", err, string(tc.input))
+			continue
+		}
+		if r != tc.expectedSize {
+			t.Errorf("Got %d, want %d; input=%s", r, tc.expectedSize, string(tc.input))
+		}
+	}
+}

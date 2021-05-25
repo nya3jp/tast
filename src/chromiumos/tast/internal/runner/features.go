@@ -233,6 +233,7 @@ func newDeviceConfigAndHardwareFeatures() (dc *protocol.DeprecatedDeviceConfig, 
 		Fingerprint:        &configpb.HardwareFeatures_Fingerprint{},
 		EmbeddedController: &configpb.HardwareFeatures_EmbeddedController{},
 		Storage:            &configpb.HardwareFeatures_Storage{},
+		Memory:             &configpb.HardwareFeatures_Memory{},
 	}
 
 	hasInternalDisplay := func() bool {
@@ -379,6 +380,19 @@ func newDeviceConfigAndHardwareFeatures() (dc *protocol.DeprecatedDeviceConfig, 
 	}
 	features.Storage.SizeGb = uint32(storageBytes / 1_000_000_000)
 
+	memoryBytes, err := func() (int64, error) {
+		b, err := ioutil.ReadFile("/proc/meminfo")
+		if err != nil {
+			return 0, err
+		}
+		return findMemorySize(b)
+	}()
+	if err != nil {
+		warns = append(warns, fmt.Sprintf("failed to get memory size: %v", err))
+	}
+	features.Memory.Profile = &configpb.Component_Memory_Profile{
+		SizeMegabytes: int32(memoryBytes / 1_000_000),
+	}
 	return config, features, warns
 }
 
@@ -754,4 +768,30 @@ func findDiskSize(jsonData []byte) (int64, error) {
 		return 0, errors.New("no disk device found")
 	}
 	return maxSize, nil
+}
+
+// findMemorySize parses a content of /proc/meminfo and returns the total memory size in bytes.
+func findMemorySize(meminfo []byte) (int64, error) {
+	r := bytes.NewReader(meminfo)
+	sc := bufio.NewScanner(r)
+	for sc.Scan() {
+		line := sc.Text()
+		tokens := strings.SplitN(line, ":", 2)
+		if len(tokens) != 2 || strings.TrimSpace(tokens[0]) != "MemTotal" {
+			continue
+		}
+		cap := strings.SplitN(strings.TrimSpace(tokens[1]), " ", 2)
+		if len(cap) != 2 {
+			return 0, fmt.Errorf("unexpected line format: input=%s", line)
+		}
+		if cap[1] != "kB" {
+			return 0, fmt.Errorf("unexpected unit: got %s, want kB; input=%s", cap[1], line)
+		}
+		val, err := strconv.ParseInt(cap[0], 10, 64)
+		if err != nil {
+			return 0, err
+		}
+		return val * 1_000, nil
+	}
+	return 0, fmt.Errorf("MemTotal not found; input=%q", string(meminfo))
 }

@@ -30,7 +30,7 @@ func init() {
 }
 `
 	f, fs := parse(code, declTestPath)
-	issues := Declarations(fs, f, false)
+	issues := TestDeclarations(fs, f, false)
 	verifyIssues(t, issues, nil)
 }
 
@@ -71,7 +71,7 @@ func TestDeclarationsOnlyTopLevelAddTest(t *testing.T) {
 	})`, declTestPath + ":4:2: " + notOnlyTopAddTestMsg}} {
 		code := fmt.Sprintf(initTmpl, tc.snip)
 		f, fs := parse(code, declTestPath)
-		issues := Declarations(fs, f, false)
+		issues := TestDeclarations(fs, f, false)
 		verifyIssues(t, issues, []string{tc.wantMsg})
 	}
 }
@@ -103,7 +103,7 @@ func TestDeclarationsDesc(t *testing.T) {
 	})`, declTestPath + ":6:13: " + badDescMsg}} {
 		code := fmt.Sprintf(initTmpl, tc.snip)
 		f, fs := parse(code, declTestPath)
-		issues := Declarations(fs, f, false)
+		issues := TestDeclarations(fs, f, false)
 		verifyIssues(t, issues, []string{tc.wantMsg})
 	}
 }
@@ -130,7 +130,7 @@ func TestDeclarationsContacts(t *testing.T) {
 	})`, declTestPath + ":7:13: " + nonLiteralContactsMsg}} {
 		code := fmt.Sprintf(initTmpl, tc.snip)
 		f, fs := parse(code, declTestPath)
-		issues := Declarations(fs, f, false)
+		issues := TestDeclarations(fs, f, false)
 		verifyIssues(t, issues, []string{tc.wantMsg})
 	}
 }
@@ -160,7 +160,7 @@ func TestDeclarationsAttr(t *testing.T) {
 	})`, declTestPath + ":8:22: " + nonLiteralAttrMsg}} {
 		code := fmt.Sprintf(initTmpl, tc.snip)
 		f, fs := parse(code, declTestPath)
-		issues := Declarations(fs, f, false)
+		issues := TestDeclarations(fs, f, false)
 		var expects []string
 		if tc.wantMsg != "" {
 			expects = append(expects, tc.wantMsg)
@@ -194,7 +194,7 @@ func TestDeclarationsVars(t *testing.T) {
 	})`}} {
 		code := fmt.Sprintf(initTmpl, tc.snip)
 		f, fs := parse(code, declTestPath)
-		issues := Declarations(fs, f, false)
+		issues := TestDeclarations(fs, f, false)
 		var expects []string
 		if tc.wantMsg != "" {
 			expects = append(expects, tc.wantMsg)
@@ -234,7 +234,7 @@ func TestDeclarationsSoftwareDeps(t *testing.T) {
 	})`, declTestPath + ":8:26: " + nonLiteralSoftwareDepsMsg}} {
 		code := fmt.Sprintf(initTmpl, tc.snip)
 		f, fs := parse(code, declTestPath)
-		issues := Declarations(fs, f, false)
+		issues := TestDeclarations(fs, f, false)
 		var expects []string
 		if tc.wantMsg != "" {
 			expects = append(expects, tc.wantMsg)
@@ -296,7 +296,7 @@ func TestDeclarationsParams(t *testing.T) {
 	}}} {
 		code := fmt.Sprintf(initTmpl, tc.snip)
 		f, fs := parse(code, declTestPath)
-		issues := Declarations(fs, f, false)
+		issues := TestDeclarations(fs, f, false)
 		verifyIssues(t, issues, tc.wantMsg)
 	}
 }
@@ -335,8 +335,62 @@ func TestAutoFixDeclarationDesc(t *testing.T) {
 		Desc:     "Not capitalized and ends with a period",
 		Contacts: []string{"me@chromium.org"},
 	})`}} {
-		verifyAutoFix(t, Declarations,
+		verifyAutoFix(t, TestDeclarations,
 			map[string]string{declTestPath: fmt.Sprintf(initTmpl, tc.cur)},
 			map[string]string{declTestPath: fmt.Sprintf(initTmpl, tc.want)})
 	}
+}
+
+func TestFixtureDeclarationsPass(t *testing.T) {
+	const code = `package pkg
+
+func init() {
+	testing.AddFixture(&testing.Fixture{
+		Name:            "fixtA",
+		Desc:            "Valid description",
+		Contacts:        []string{"me@chromium.org"},
+		Impl:            &fakeFixture{param: "A"},
+		SetUpTimeout:    fixtureTimeout,
+		TearDownTimeout: fixtureTimeout,
+		Vars:            []string{"foo", bar},
+	})
+
+	testing.AddFixture(&testing.Fixture{
+		Name:     "anotherFixt",
+		Desc:     "Valid description",
+		Contacts: []string{"me@chromium.org"},
+	})
+}
+`
+	f, fs := parse(code, declTestPath)
+	issues := FixtureDeclarations(fs, f, false)
+	verifyIssues(t, issues, nil)
+}
+
+func TestFixtureDeclarationsFailure(t *testing.T) {
+	const code = `package pkg
+
+func init() {
+	testing.AddFixture(&testing.Fixture{
+		Name: "fixtA",
+		Impl: &fakeFixture{param: "A"},
+	})
+	testing.AddFixture(&testing.Fixture{
+		Name:     "fixtB",
+		Contacts: contacts,
+		Desc:     desc,
+		Impl:     &fakeFixture{param: "B"},
+		Vars:     vars,
+	})
+}
+`
+	f, fs := parse(code, declTestPath)
+	issues := FixtureDeclarations(fs, f, false)
+	verifyIssues(t, issues, []string{
+		declTestPath + ":4:21: " + noDescMsg,
+		declTestPath + ":4:21: " + noContactMsg,
+		declTestPath + ":10:13: " + nonLiteralContactsMsg,
+		declTestPath + ":11:13: " + nonLiteralDescMsg,
+		declTestPath + ":13:13: " + nonLiteralVarsMsg,
+	})
 }

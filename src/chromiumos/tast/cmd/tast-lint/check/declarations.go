@@ -19,12 +19,12 @@ const (
 	notOnlyTopAddTestMsg = `testing.AddTest() should be the only top level statement of init()`
 	addTestArgLitMsg     = `testing.AddTest() should take &testing.Test{...} composite literal`
 
-	noDescMsg         = `Test should have its description`
-	nonLiteralDescMsg = `Test descriptions should be string literal`
-	badDescMsg        = `Test descriptions should be capitalized phrases without trailing punctuation, e.g. "Checks that foo is bar"`
+	noDescMsg         = `Desc field should be filled to describe the registered entity`
+	nonLiteralDescMsg = `Desc should be string literal`
+	badDescMsg        = `Desc should be capitalized phrases without trailing punctuation, e.g. "Checks that foo is bar"`
 
-	noContactMsg          = `Test should list owners' email addresses in Contacts field`
-	nonLiteralContactsMsg = `Test Contacts should be an array literal of string literals`
+	noContactMsg          = `Contacts field should exist to list owners' email addresses`
+	nonLiteralContactsMsg = `Contacts field should be an array literal of string literals`
 
 	nonLiteralAttrMsg         = `Test Attr should be an array literal of string literals`
 	nonLiteralVarsMsg         = `Test Vars should be an array literal of string literals or constants`
@@ -37,8 +37,8 @@ const (
 	testRuntimeVariablesURL = `https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#Runtime-variables`
 )
 
-// Declarations checks declarations of testing.Test structs.
-func Declarations(fs *token.FileSet, f *ast.File, fix bool) []*Issue {
+// TestDeclarations checks declarations of testing.Test structs.
+func TestDeclarations(fs *token.FileSet, f *ast.File, fix bool) []*Issue {
 	filename := fs.Position(f.Package).Filename
 	if !isEntryFile(filename) {
 		return nil
@@ -47,6 +47,33 @@ func Declarations(fs *token.FileSet, f *ast.File, fix bool) []*Issue {
 	var issues []*Issue
 	for _, decl := range f.Decls {
 		issues = append(issues, verifyInit(fs, decl, fix)...)
+	}
+	return issues
+}
+
+// FixtureDeclarations checks declarations of testing.Fixture structs.
+func FixtureDeclarations(fs *token.FileSet, f *ast.File, fix bool) []*Issue {
+	var issues []*Issue
+	for _, node := range f.Decls {
+		decl, ok := node.(*ast.FuncDecl)
+		if !ok || decl.Recv != nil || decl.Name.Name != "init" {
+			// Not an init() function declaration. Skip.
+			continue
+		}
+		for _, node := range decl.Body.List {
+			expr, ok := node.(*ast.ExprStmt)
+			if !ok {
+				continue
+			}
+			call, ok := expr.X.(*ast.CallExpr)
+			if !ok {
+				continue
+			}
+			if toQualifiedName(call.Fun) != "testing.AddFixture" {
+				continue
+			}
+			issues = append(issues, verifyAddFixtureCall(fs, call, fix)...)
+		}
 	}
 	return issues
 }
@@ -127,6 +154,17 @@ func registeredEntityFields(fs *token.FileSet, call *ast.CallExpr) (entityFields
 		res[ident.Name] = kv
 	}
 	return res, nil
+}
+
+func verifyAddFixtureCall(fs *token.FileSet, call *ast.CallExpr, fix bool) []*Issue {
+	fields, issues := registeredEntityFields(fs, call)
+	if len(issues) > 0 {
+		return issues
+	}
+	issues = append(issues, verifyVars(fs, fields)...)
+	issues = append(issues, verifyDesc(fs, fields, call, fix)...)
+	issues = append(issues, verifyContacts(fs, fields, call)...)
+	return issues
 }
 
 // verifyAddTestCall verifies testing.AddTest calls. Specifically

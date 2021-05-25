@@ -364,3 +364,28 @@ func TestMinStorage(t *testing.T) {
 			tc.expectSatisfied)
 	}
 }
+
+func TestMinMemory(t *testing.T) {
+	c := MinMemory(16000)
+	for _, tc := range []struct {
+		sizeMb          int32
+		expectSatisfied bool
+	}{
+		{0, false},
+		{15000, false},
+		{16000, true},
+		{32000, true},
+	} {
+		verifyCondition(
+			t, c,
+			nil,
+			&configpb.HardwareFeatures{
+				Memory: &configpb.HardwareFeatures_Memory{
+					Profile: &configpb.Component_Memory_Profile{
+						SizeMegabytes: tc.sizeMb,
+					},
+				},
+			},
+			tc.expectSatisfied)
+	}
+}

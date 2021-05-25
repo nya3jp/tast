@@ -453,6 +453,60 @@ func TestFatal(t *gotesting.T) {
 	}
 }
 
+func TestSkip(t *gotesting.T) {
+	var out outputSink
+	root := NewTestEntityRoot(&TestInstance{Timeout: time.Minute}, &RuntimeConfig{}, &out)
+	s := root.NewTestState()
+
+	// Log the skip message in a goroutine so the main goroutine that's running the test won't exit.
+	done := make(chan bool)
+	died := true
+	go func() {
+		defer close(done)
+		s.Skip("skip ", "msg")
+		died = false
+	}()
+	<-done
+
+	if !died {
+		t.Fatal("Test continued after call to Skip")
+	}
+
+	if !root.Skipped() {
+		t.Fatal("Root entity is not skipped")
+	}
+	if diff := cmp.Diff(root.SkippedReasons(), []string{"skip msg"}, outputDataCmpOpts...); diff != "" {
+		t.Errorf("Bad skip reasons (-got +want):\n%s", diff)
+	}
+}
+
+func TestSkipf(t *gotesting.T) {
+	var out outputSink
+	root := NewTestEntityRoot(&TestInstance{Timeout: time.Minute}, &RuntimeConfig{}, &out)
+	s := root.NewTestState()
+
+	// Log the skip message in a goroutine so the main goroutine that's running the test won't exit.
+	done := make(chan bool)
+	died := true
+	go func() {
+		defer close(done)
+		s.Skipf("skip %s", "msg")
+		died = false
+	}()
+	<-done
+
+	if !died {
+		t.Fatal("Test continued after call to Skipf")
+	}
+
+	if !root.Skipped() {
+		t.Fatal("Root entity is not skipped")
+	}
+	if diff := cmp.Diff(root.SkippedReasons(), []string{"skip msg"}, outputDataCmpOpts...); diff != "" {
+		t.Errorf("Bad skip reasons (-got +want):\n%s", diff)
+	}
+}
+
 func TestFatalInPrecondition(t *gotesting.T) {
 	var out outputSink
 	root := NewTestEntityRoot(&TestInstance{Timeout: time.Minute}, &RuntimeConfig{}, &out)
@@ -479,6 +533,33 @@ func TestFatalInPrecondition(t *gotesting.T) {
 	}
 	if diff := cmp.Diff(out.Data, exp, outputDataCmpOpts...); diff != "" {
 		t.Errorf("Bad test report (-got +want):\n%s", diff)
+	}
+}
+
+func TestSkipInPrecondition(t *gotesting.T) {
+	var out outputSink
+	root := NewTestEntityRoot(&TestInstance{Timeout: time.Minute}, &RuntimeConfig{}, &out)
+	s := root.NewPreState()
+
+	// Log the skip message in a goroutine so the main goroutine that's running the test won't exit.
+	done := make(chan bool)
+	died := true
+	go func() {
+		defer close(done)
+		s.Skipf("skip %s", "msg")
+		died = false
+	}()
+	<-done
+
+	if !died {
+		t.Fatal("Test continued after call to Skipf")
+	}
+
+	if !root.Skipped() {
+		t.Fatal("Root entity is not skipped")
+	}
+	if diff := cmp.Diff(root.SkippedReasons(), []string{"skip msg"}, outputDataCmpOpts...); diff != "" {
+		t.Errorf("Bad skip reasons (-got +want):\n%s", diff)
 	}
 }
 
@@ -806,6 +887,8 @@ func TestStateExports(t *gotesting.T) {
 				"RequiredVar",
 				"Run",
 				"ServiceDeps",
+				"Skip",
+				"Skipf",
 				"SoftwareDeps",
 				"TestName",
 				"Var",
@@ -831,6 +914,8 @@ func TestStateExports(t *gotesting.T) {
 				"RPCHint",
 				"RequiredVar",
 				"ServiceDeps",
+				"Skip",
+				"Skipf",
 				"SoftwareDeps",
 				"TestName",
 				"Var",
@@ -856,6 +941,8 @@ func TestStateExports(t *gotesting.T) {
 				"RPCHint",
 				"RequiredVar",
 				"ServiceDeps",
+				"Skip",
+				"Skipf",
 				"SoftwareDeps",
 				"TestName",
 				"Var",
@@ -882,6 +969,8 @@ func TestStateExports(t *gotesting.T) {
 				"ParentValue",
 				"RPCHint",
 				"RequiredVar",
+				"Skip",
+				"Skipf",
 				"Var",
 				// TODO(crbug.com/1035940): Provide access to services.
 			},
@@ -901,6 +990,8 @@ func TestStateExports(t *gotesting.T) {
 				"Logf",
 				"OutDir",
 				"RPCHint",
+				"Skip",
+				"Skipf",
 				"TestContext",
 			},
 		},

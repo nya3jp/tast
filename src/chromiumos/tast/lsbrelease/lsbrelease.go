@@ -69,6 +69,8 @@ var allowedPkgs = []string{
 	"chromiumos/tast/internal/runner",        // For SoftwareDeps check.
 	"chromiumos/tast/local/arc",              // For SDKVersion.
 	"chromiumos/tast/local/bundles/cros/arc", // For Version.
+	// TODO(crbug.com/1140906): Temporarily allowed until we remove extra tracing code that only runs on eve.
+	"chromiumos/tast/local/bundles/cros/lacros/gpucuj",
 	"chromiumos/tast/local/bundles/cros/platform/updateserver",
 	"chromiumos/tast/local/bundles/cros/health", // To confirm OS version can be parsed.
 	"chromiumos/tast/local/bundles/cros/system", // For Version.

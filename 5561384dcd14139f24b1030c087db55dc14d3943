@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "daf0a5d3_e87ac0d5",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/check/forbidden_calls.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1306673
+      },
+      "writtenOn": "2021-05-26T22:47:45Z",
+      "side": 0,
+      "message": "I think hasErrorsIdent was used to verify that we don\u0027t have any identifiers with \"errors\" name (constants, functions, variables, etc). It looks like you just don\u0027t handle it.\n\nCan you please add such test case as well?",
+      "range": {
+        "startLine": 28,
+        "startChar": 0,
+        "endLine": 28,
+        "endChar": 85
+      },
+      "revId": "5561384dcd14139f24b1030c087db55dc14d3943",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

@@ -1,0 +1,159 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "42264d5c_cce6ff47",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1306673
+      },
+      "writtenOn": "2021-05-26T22:47:45Z",
+      "side": 1,
+      "message": "nit: please try to make title up to 50 symbols",
+      "range": {
+        "startLine": 7,
+        "startChar": 0,
+        "endLine": 7,
+        "endChar": 92
+      },
+      "revId": "f26fba581e61e2e5079525ea4336a1477eea337b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0304211a_dcf03c0e",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1306673
+      },
+      "writtenOn": "2021-05-26T22:47:45Z",
+      "side": 1,
+      "message": "try to make each line up to 72 symbols to follow git best practice\n\nhttps://chris.beams.io/posts/git-commit/",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 9,
+        "endChar": 220
+      },
+      "revId": "f26fba581e61e2e5079525ea4336a1477eea337b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ee034faf_5cafb872",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1306673
+      },
+      "writtenOn": "2021-05-26T22:47:45Z",
+      "side": 1,
+      "message": "Try to follow \"Use the body to explain what and why vs. how\" ruls for description:\nhttps://chris.beams.io/posts/git-commit/#why-not-how",
+      "range": {
+        "startLine": 11,
+        "startChar": 0,
+        "endLine": 11,
+        "endChar": 282
+      },
+      "revId": "f26fba581e61e2e5079525ea4336a1477eea337b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0d29d3ad_ea9a05ad",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1306673
+      },
+      "writtenOn": "2021-05-26T22:47:45Z",
+      "side": 1,
+      "message": "Hi Bisakh, thanks for your CL!\n\nHere are some comments:",
+      "revId": "f26fba581e61e2e5079525ea4336a1477eea337b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ad06f3a2_64aaf18d",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/check/forbidden_calls.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 119,
+      "author": {
+        "id": 1306673
+      },
+      "writtenOn": "2021-05-26T22:47:45Z",
+      "side": 1,
+      "message": "nit: remove get prefix\nhttps://golang.org/doc/effective_go#Getters",
+      "range": {
+        "startLine": 119,
+        "startChar": 5,
+        "endLine": 119,
+        "endChar": 25
+      },
+      "revId": "f26fba581e61e2e5079525ea4336a1477eea337b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "667209dc_d77a1953",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/check/forbidden_calls.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 128,
+      "author": {
+        "id": 1306673
+      },
+      "writtenOn": "2021-05-26T22:47:45Z",
+      "side": 1,
+      "message": "nit: try to fail fast and have less spaghetti code\n\nfor example here you can do next:\n\n\n```\nif iPath !\u003d \"chromiumos/tast/errors\" {\n  continue\n}\n...\n\n```",
+      "range": {
+        "startLine": 128,
+        "startChar": 5,
+        "endLine": 128,
+        "endChar": 38
+      },
+      "revId": "f26fba581e61e2e5079525ea4336a1477eea337b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d455077e_58f1393e",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/check/forbidden_calls.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 133,
+      "author": {
+        "id": 1306673
+      },
+      "writtenOn": "2021-05-26T22:47:45Z",
+      "side": 1,
+      "message": "I think we don\u0027t want to import the same package twice. Also if there is an alias, then probably there is a reason for it (maybe there is another package with errors name)\n\nI think we even should fail if someone import errors as \".\" or \"_\". For now, maybe ignore such files?",
+      "range": {
+        "startLine": 133,
+        "startChar": 5,
+        "endLine": 133,
+        "endChar": 94
+      },
+      "revId": "f26fba581e61e2e5079525ea4336a1477eea337b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

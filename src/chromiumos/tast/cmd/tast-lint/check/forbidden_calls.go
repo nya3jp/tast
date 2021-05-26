@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"go/ast"
 	"go/token"
+	"strconv"
 
 	"golang.org/x/tools/go/ast/astutil"
 )
@@ -23,10 +24,9 @@ func ForbiddenCalls(fs *token.FileSet, f *ast.File, fix bool) []*Issue {
 	if src, err := formatASTNode(fs, f); err == nil {
 		fixable = goimportApplicable(src)
 	}
-	// If a file contains an ident node whose name is "errors", importing the package
-	// "chromium/tast/errors" could introduce a naming conflict.
-	// TODO: handle the case where these usages are already from "chromium/tast/errors".
-	usesErrors := hasErrorsIdent(f)
+	// If a file contains "chromium/tast/errors" import, it will check for available alias or
+	// reimport the package without a namespace conflict.
+	errorsAlias, usesErrors := getErrorsImportAlias(f)
 
 	astutil.Apply(f, func(c *astutil.Cursor) bool {
 		sel, ok := c.Node().(*ast.SelectorExpr)
@@ -58,16 +58,19 @@ func ForbiddenCalls(fs *token.FileSet, f *ast.File, fix bool) []*Issue {
 					Link:    "https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#Error-construction",
 					Fixable: fixable,
 				})
-			} else if fixable && !usesErrors {
+			} else if fixable {
 				c.Replace(&ast.SelectorExpr{
 					X: &ast.Ident{
-						Name: "errors",
+						Name: errorsAlias,
 					},
 					Sel: &ast.Ident{
 						Name: "Errorf",
 					},
 				})
-				importsRequired = append(importsRequired, "chromiumos/tast/errors")
+				// If it is already imported, re-import is not required.
+				if !usesErrors {
+					importsRequired = append(importsRequired, "chromiumos/tast/errors")
+				}
 			}
 		case "time.Sleep":
 			issues = append(issues, &Issue{
@@ -112,20 +115,31 @@ func ForbiddenCalls(fs *token.FileSet, f *ast.File, fix bool) []*Issue {
 	return issues
 }
 
-// hasErrorsIdent returns true if there is an identifier node whose name is "errors".
-func hasErrorsIdent(f *ast.File) bool {
-	hasErrors := false
-	ast.Inspect(f, func(node ast.Node) bool {
-		id, ok := node.(*ast.Ident)
-		if !ok {
-			return true
-		}
-		if id.Name == "errors" {
-			hasErrors = true
-			return false
-		}
-		return true
-	})
+// getErrorsImportAlias checks if errors package is imported and returns suitable import alias.
+func getErrorsImportAlias(f *ast.File) (string, bool) {
+	var isImported bool
+	importAlias := "errors"
 
-	return hasErrors
+	for _, imp := range f.Imports {
+		iPath, err := strconv.Unquote(imp.Path.Value)
+		if err != nil {
+			continue
+		}
+		if iPath == "chromiumos/tast/errors" {
+			if imp.Name != nil {
+				// Capture import alias
+				alias := imp.Name.Name
+				if alias == "." || alias == "_" {
+					// To avoid namespace collision (for Dot import) it's better to re-import errors package.
+					continue
+				} else {
+					importAlias = alias
+				}
+			}
+			isImported = true
+			// If no alias is present for errors import, we'll use it. No further iteration is required.
+			break
+		}
+	}
+	return importAlias, isImported
 }

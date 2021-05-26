@@ -48,11 +48,9 @@ func main() {
 func TestAutoFixForbiddenCalls(t *testing.T) {
 	files := make(map[string]string)
 	expects := make(map[string]string)
-	const filename1, filename2, filename3, filename4 = "foo.go", "bar.go", "baz.go", "dbus.go"
+	const filename1, filename2, filename3, filename4, filename5, filename6 = "foo.go", "bar.go", "baz.go", "dbus.go",
+		"errors.go", "errors_with_alias.go"
 
-	// fmt.Errorf -> chromiumos/tast/errors.Errorf cannot be
-	// automatically fixed in this file right now because it contains an
-	// "errors" identifier node.
 	files[filename1] = `package main
 
 import (
@@ -66,7 +64,6 @@ import (
 
 func main() {
 	fmt.Printf("foo")
-	// This is not fixable
 	fmt.Errorf("foo")
 	
 	errors.Errorf("foo")
@@ -91,8 +88,7 @@ import (
 
 func main() {
 	fmt.Printf("foo")
-	// This is not fixable
-	fmt.Errorf("foo")
+	errors.Errorf("foo")
 
 	errors.Errorf("foo")
 	time.Sleep(time.Second)
@@ -171,6 +167,55 @@ func main() {
 	dbusutil.SystemBusPrivate(dbus.WithHandler(nil))
 }
 `
+	files[filename5] = `package main
 
+import (
+	. "chromiumos/tast/errors"
+	"fmt"
+)
+
+func main() {
+	err := fmt.Errorf("random error")
+	Wrap(err, "wrapping error")
+}
+`
+	expects[filename5] = `package main
+
+import (
+	"chromiumos/tast/errors"
+	. "chromiumos/tast/errors"
+)
+
+func main() {
+	err := errors.Errorf("random error")
+	Wrap(err, "wrapping error")
+}
+`
+	files[filename6] = `package main
+
+import (
+	myerr "chromiumos/tast/errors"
+	"fmt"
+)
+
+func main() {
+	fmt.Printf("testing import aliases")
+	err := fmt.Errorf("random error")
+	myerr.Wrap(err, "wrapping error")
+}
+`
+	expects[filename6] = `package main
+
+import (
+	myerr "chromiumos/tast/errors"
+	"fmt"
+)
+
+func main() {
+	fmt.Printf("testing import aliases")
+	err := myerr.Errorf("random error")
+	myerr.Wrap(err, "wrapping error")
+}
+`
 	verifyAutoFix(t, ForbiddenCalls, files, expects)
 }

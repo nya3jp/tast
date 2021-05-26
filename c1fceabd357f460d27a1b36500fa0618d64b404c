@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5a828957_a3f84afb",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/check/declarations.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-05-26T08:27:07Z",
+      "side": 1,
+      "message": "It\u0027s nice to see the unit tests are unchanged. :)",
+      "revId": "c1fceabd357f460d27a1b36500fa0618d64b404c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

@@ -453,6 +453,17 @@ Parallels boot-up testing. Otherwise the same as group:crosbolt.`,
 			},
 		},
 	},
+	{
+		Name:     "typec",
+		Contacts: []string{"chromeos-power@google.com"},
+		Desc:     `USB Type C functional tests.`,
+		Subattrs: []*attr{
+			{
+				Name: "typec_lab",
+				Desc: `Indicates that this test should be run in a dedicated Type C lab setup.`,
+			},
+		},
+	},
 }
 
 // validGroupMap is the name-keyed map of validGroups.

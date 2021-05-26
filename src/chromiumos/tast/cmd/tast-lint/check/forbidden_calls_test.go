@@ -174,3 +174,27 @@ func main() {
 
 	verifyAutoFix(t, ForbiddenCalls, files, expects)
 }
+
+func TestForbiddenCalls_dbusutilFixException(t *testing.T) {
+	const (
+		code = `package pkg
+
+var _ = dbus.SystemBus()
+`
+		fixed = `package pkg
+
+import "chromiumos/tast/local/dbusutil"
+
+var _ = dbusutil.SystemBus()
+`
+		path  = "src/pkg/testfile.go"
+		code2 = `package dbusutil
+
+var _ = dbus.SystemBus()
+`
+		path2 = "src/chromiumos/tast/local/dbusutil/service.go"
+	)
+	verifyAutoFix(t, ForbiddenCalls, map[string]string{path: code}, map[string]string{path: fixed})
+	// Files in dbusutil package itself gets no update.
+	verifyAutoFix(t, ForbiddenCalls, map[string]string{path2: code2}, map[string]string{path2: code2})
+}

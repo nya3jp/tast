@@ -8,6 +8,8 @@ import (
 	"fmt"
 	"go/ast"
 	"go/token"
+	"strconv"
+	"unicode"
 
 	"golang.org/x/tools/go/ast/astutil"
 )
@@ -23,10 +25,8 @@ func ForbiddenCalls(fs *token.FileSet, f *ast.File, fix bool) []*Issue {
 	if src, err := formatASTNode(fs, f); err == nil {
 		fixable = goimportApplicable(src)
 	}
-	// If a file contains an ident node whose name is "errors", importing the package
-	// "chromium/tast/errors" could introduce a naming conflict.
-	// TODO: handle the case where these usages are already from "chromium/tast/errors".
-	usesErrors := hasErrorsIdent(f)
+	// checks for "chromiumos/tast/errors" import, if the file already has it, no reimport
+	chkImport, chkError := requireImportErrors(f)
 
 	astutil.Apply(f, func(c *astutil.Cursor) bool {
 		sel, ok := c.Node().(*ast.SelectorExpr)
@@ -52,13 +52,17 @@ func ForbiddenCalls(fs *token.FileSet, f *ast.File, fix bool) []*Issue {
 			}
 		case "fmt.Errorf":
 			if !fix {
+				msg := "chromiumos/tast/errors.Errorf should be used instead of fmt.Errorf"
+				if chkError != nil {
+					msg = fmt.Sprintf("%s. Also found error: %s", msg, chkError)
+				}
 				issues = append(issues, &Issue{
 					Pos:     fs.Position(x.Pos()),
-					Msg:     "chromiumos/tast/errors.Errorf should be used instead of fmt.Errorf",
+					Msg:     msg,
 					Link:    "https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#Error-construction",
-					Fixable: fixable,
+					Fixable: chkError == nil,
 				})
-			} else if fixable && !usesErrors {
+			} else if fixable && chkError == nil {
 				c.Replace(&ast.SelectorExpr{
 					X: &ast.Ident{
 						Name: "errors",
@@ -67,7 +71,10 @@ func ForbiddenCalls(fs *token.FileSet, f *ast.File, fix bool) []*Issue {
 						Name: "Errorf",
 					},
 				})
-				importsRequired = append(importsRequired, "chromiumos/tast/errors")
+
+				if !chkImport {
+					importsRequired = append(importsRequired, "chromiumos/tast/errors")
+				}
 			}
 		case "time.Sleep":
 			issues = append(issues, &Issue{
@@ -102,7 +109,9 @@ func ForbiddenCalls(fs *token.FileSet, f *ast.File, fix bool) []*Issue {
 	for _, pkg := range importsRequired {
 		astutil.AddImport(fs, f, pkg)
 	}
-	if len(importsRequired) > 0 {
+
+	// Rearrange Imports for new Imports or fmt.Errorf has been handled with conditional import.
+	if len(importsRequired) > 0 || (fix && chkError == nil) {
 		newf, err := ImportOrderAutoFix(fs, f)
 		if err != nil {
 			return issues
@@ -112,20 +121,58 @@ func ForbiddenCalls(fs *token.FileSet, f *ast.File, fix bool) []*Issue {
 	return issues
 }
 
-// hasErrorsIdent returns true if there is an identifier node whose name is "errors".
-func hasErrorsIdent(f *ast.File) bool {
-	hasErrors := false
+// hasIdentErrors returns true if there is an identifier node "errors" which is not a part of
+// "chromiumos/tast/errors" package otherwise false.
+func hasIdentErrors(f *ast.File) bool {
+	// if errors.[UPPERCASE]<Rest> -> from errors package
+	hasErrors, analyzenxt := false, false
 	ast.Inspect(f, func(node ast.Node) bool {
+		if hasErrors && !analyzenxt {
+			return false // overwrite prevention
+		}
 		id, ok := node.(*ast.Ident)
 		if !ok {
 			return true
 		}
+		if analyzenxt {
+			analyzenxt = false
+			if n := id.Name; len(n) > 0 && !unicode.IsUpper([]rune(n)[0]) {
+				return false // found independent errors node
+			}
+			hasErrors = false
+		}
 		if id.Name == "errors" {
 			hasErrors = true
-			return false
+			analyzenxt = true
 		}
 		return true
 	})
 
 	return hasErrors
+}
+
+// requireImportErrors checks if "chromiumos/tast/errors" package could imported or not.
+func requireImportErrors(f *ast.File) (bool, error) {
+	pkg := "chromiumos/tast/errors"
+	// checks for an existing independent identifier 'errors', if found manual fix is required
+	if hasIdentErrors(f) {
+		return false, fmt.Errorf("manual fix required, detected '%s' as an identifier", pkg)
+	}
+
+	for _, imp := range f.Imports { // iterate over existing imports
+		iPath, err := strconv.Unquote(imp.Path.Value)
+		if err != nil || iPath != pkg {
+			continue
+		}
+		// an existing import of "chromiumos/tast/errors" without alias
+		if imp.Name == nil {
+			return true, nil
+		}
+
+		if alias := imp.Name.Name; alias == "." || alias == "_" {
+			return false, fmt.Errorf("importing '%s' as '.' or '_' is highly discouraged, please fix it", pkg)
+		}
+		return false, fmt.Errorf("importing '%s' with alias when there is no name conflict, is highly discouraged", pkg)
+	}
+	return false, nil
 }

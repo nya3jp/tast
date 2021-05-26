@@ -16,6 +16,23 @@
       "message": "I think allowing tests and libraries to use variables without declaration may cause issue. I suggest a different approach. I just checked in a new version to illustrate my idea. Please take a look. Thanks.",
       "revId": "566e39bac2c7664f84b7281f41cbaf702a752898",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f5f6c49b_107d1c70",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 9
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-05-26T08:44:58Z",
+      "side": 1,
+      "message": "Thanks for the update. If I understand correctly, the proposal is to introduce a list of globally accessible runtime variables (defined in global_vars.go) and allow them to be accessible via context.Context and testing.ContextVar.\n\nI agree it\u0027s a good proposal. I\u0027m not very confident which approach is good (vs. all runtime variables accessible via context.Context). I\u0027d like both approaches to be described in the design doc and want it to be reviewed by wider audience, e.g. Tast reviewers since they know a lot more about reality of Tast tests.\n\nThat said, if we go this approach, I would like it to be slightly changed in the following way:\n\n1. I want to define the globally accessible runtime variable list in test bundles, not in the framework. The list depends very much on actual support libraries we have, so it is not good to hard-code the list in the framework. I think the simplest approach is to put the list in the bundlemain package and pass it to the framework via bundle.{Local,Remote}Delegate struct.\n\n2. I want to forbid calling testing.ContextVar to access runtime variables declared in entity metadata. It is because it is confusing if a function sometimes works but sometimes fails, because the function calls testing.ContextVar and the current entity must declare the runtime variable in order for the function to work properly. Those runtime variables can be still accessed via testing.State.Var anyway.\n",
+      "revId": "566e39bac2c7664f84b7281f41cbaf702a752898",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

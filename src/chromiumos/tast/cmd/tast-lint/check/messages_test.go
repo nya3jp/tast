@@ -231,7 +231,7 @@ func Test(ctx context.Context, s *testing.State) {
 
 	// Won't change below.
 	s.Log("Hello\x20world")
-
+	s.Log(args...)
 }
 `
 	expects[filename1] = `package pkg
@@ -294,7 +294,7 @@ func Test(ctx context.Context, s *testing.State) {
 
 	// Won't change below.
 	s.Log("Hello\x20world")
-
+	s.Log(args...)
 }
 `
 	const filename2 = "bar.go"

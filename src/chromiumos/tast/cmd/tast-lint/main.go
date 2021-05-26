@@ -28,7 +28,7 @@ import (
 )
 
 // getTargetFiles returns the list of files to run lint according to flags.
-func getTargetFiles(g *git.Git) ([]git.CommitFile, error) {
+func getTargetFiles(g *git.Git, deltaPath string) ([]git.CommitFile, error) {
 	if len(flag.Args()) == 0 && g.Commit != "" {
 		return g.ChangedFiles()
 	}
@@ -56,8 +56,19 @@ func getTargetFiles(g *git.Git) ([]git.CommitFile, error) {
 	default:
 		return nil, fmt.Errorf("please input valid status")
 	}
+
+	currAbs, err := filepath.Abs(".")
+	if err != nil {
+		return nil, err
+	}
 	var args []git.CommitFile
 	for _, p := range flag.Args() {
+		// If the CLI argument is an absolute path, creating filepath relative to git-root.
+		if filepath.IsAbs(p) {
+			p = filepath.Join(".", strings.TrimPrefix(p, currAbs))
+		} else {
+			p = filepath.Join(".", deltaPath, p)
+		}
 		args = append(args, git.CommitFile{Status: status, Path: p})
 	}
 	return args, nil
@@ -364,21 +375,50 @@ func report(issues []*check.Issue) {
 	}
 }
 
+// navigateGitRoot detects as well as change current directory to git root directory
+// and returns the path difference between these two directories with error (if any).
+func navigateGitRoot() (string, error) {
+	// Relative path of the top-level directory relative to the current
+	// directory (typically a sequence of "../", or an empty string)
+	cmd := exec.Command("git", "rev-parse", "--show-cdup")
+	cmd.Stderr = os.Stderr
+	out, err := cmd.Output()
+	if err != nil {
+		return "", fmt.Errorf("failed to locate git root: git rev-parse --show-cdup: %v", err)
+	}
+
+	gitRoot, err := filepath.Abs(strings.TrimRight(string(out), "\n"))
+	if err != nil {
+		return "", err
+	}
+	// Before changing directory, it's better to keep track of the current path for future use.
+	currDir, err := filepath.Abs(".")
+	if err != nil {
+		return "", err
+	}
+	// The relative path difference between the git root and current path (considers symlinks too).
+	deltaPath, err := filepath.Rel(gitRoot, currDir)
+	if err != nil {
+		return "", err
+	}
+	return deltaPath, os.Chdir(gitRoot)
+}
+
 func main() {
 	commit := flag.String("commit", "", "if set, checks files in the specified Git commit")
 	debug := flag.Bool("debug", false, "enables debug outputs")
 	fix := flag.Bool("fix", false, "modifies auto-fixable errors automatically")
 	flag.Parse()
 
-	// TODO(nya): Allow running lint from arbitrary directories.
-	// Currently git.go assumes the current directory is a Git root directory.
-	if _, err := os.Stat(".git"); err != nil {
-		panic("This tool can be run at a Git root directory only")
+	// Changing current directory to the Git root directory to aid the operations of git.go
+	deltaPath, err := navigateGitRoot()
+	if err != nil {
+		panic(fmt.Sprintf("Failed to navigate to the git root directory: %s", err))
 	}
 
 	g := git.New(".", *commit)
 
-	files, err := getTargetFiles(g)
+	files, err := getTargetFiles(g, deltaPath)
 	if err != nil {
 		panic(err)
 	}

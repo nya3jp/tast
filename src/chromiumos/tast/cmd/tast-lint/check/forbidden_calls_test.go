@@ -48,11 +48,9 @@ func main() {
 func TestAutoFixForbiddenCalls(t *testing.T) {
 	files := make(map[string]string)
 	expects := make(map[string]string)
-	const filename1, filename2, filename3, filename4 = "foo.go", "bar.go", "baz.go", "dbus.go"
+	const filename1, filename2, filename3, filename4, filename5, filename6, filename7 = "foo.go", "bar.go", "baz.go",
+		"dbus.go", "foo1.go", "bar1.go", "baz1.go"
 
-	// fmt.Errorf -> chromiumos/tast/errors.Errorf cannot be
-	// automatically fixed in this file right now because it contains an
-	// "errors" identifier node.
 	files[filename1] = `package main
 
 import (
@@ -66,9 +64,8 @@ import (
 
 func main() {
 	fmt.Printf("foo")
-	// This is not fixable
-	fmt.Errorf("foo")
-	
+	fmt.Errorf("foo") // This is fixable
+
 	errors.Errorf("foo")
 	time.Sleep(time.Second)
 	context.Background()
@@ -91,8 +88,7 @@ import (
 
 func main() {
 	fmt.Printf("foo")
-	// This is not fixable
-	fmt.Errorf("foo")
+	errors.Errorf("foo") // This is fixable
 
 	errors.Errorf("foo")
 	time.Sleep(time.Second)
@@ -171,6 +167,81 @@ func main() {
 	dbusutil.SystemBusPrivate(dbus.WithHandler(nil))
 }
 `
+	files[filename5] = `package main
+
+import (
+	. "chromiumos/tast/errors"
+
+	"fmt"
+)
+
+func main() {
+	New("import chromiumos/tast/errors with alias")
+	fmt.Errorf("This is not fixable")
+}`
+	expects[filename5] = `package main
+
+import (
+	. "chromiumos/tast/errors"
+
+	"fmt"
+)
+
+func main() {
+	New("import chromiumos/tast/errors with alias")
+	fmt.Errorf("This is not fixable")
+}
+`
+	files[filename6] = `package main
+
+import (
+	"fmt"
+
+	"chromiumos/tast/errors"
+)
+
+func foo() error {
+	return errors.New("foo")
+}
+
+func bar(n int) error {
+	return fmt.Errorf("%d", n) // fixable, uses existing import
+}`
+	expects[filename6] = `package main
+
+import (
+	"chromiumos/tast/errors"
+)
+
+func foo() error {
+	return errors.New("foo")
+}
+
+func bar(n int) error {
+	return errors.Errorf("%d", n) // fixable, uses existing import
+}`
+	files[filename7] = `package main
+
+import "fmt"
+
+func errors() bool {
+	return false
+}
+func main() {
+	fmt.Errorf("error") // Not fixable
+	errors()
+}`
+	expects[filename7] = `package main
+
+import "fmt"
+
+func errors() bool {
+	return false
+}
+func main() {
+	fmt.Errorf("error") // Not fixable
+	errors()
+}`
 
 	verifyAutoFix(t, ForbiddenCalls, files, expects)
 }

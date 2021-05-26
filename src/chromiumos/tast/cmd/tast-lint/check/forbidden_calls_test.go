@@ -48,11 +48,9 @@ func main() {
 func TestAutoFixForbiddenCalls(t *testing.T) {
 	files := make(map[string]string)
 	expects := make(map[string]string)
-	const filename1, filename2, filename3, filename4 = "foo.go", "bar.go", "baz.go", "dbus.go"
+	const filename1, filename2, filename3, filename4, filename5, filename6, filename7, filename8, filename9 = "foo.go",
+		"bar.go", "baz.go", "dbus.go", "foo1.go", "bar1.go", "baz1.go", "foo2.go", "bar2.go"
 
-	// fmt.Errorf -> chromiumos/tast/errors.Errorf cannot be
-	// automatically fixed in this file right now because it contains an
-	// "errors" identifier node.
 	files[filename1] = `package main
 
 import (
@@ -171,6 +169,133 @@ func main() {
 	dbusutil.SystemBusPrivate(dbus.WithHandler(nil))
 }
 `
+	files[filename5] = `package main
+
+import "fmt"
+
+func main(){
+	fmt.Println("checking import errors with alias")
+	errors := "hello from tast lint"
+	fmt.Errorf(errors)
+}
+`
+	expects[filename5] = `package main
+
+import (
+	"fmt"
+
+	errors1 "chromiumos/tast/errors"
+)
+
+func main() {
+	fmt.Println("checking import errors with alias")
+	errors := "hello from tast lint"
+	errors1.Errorf(errors)
+}
+`
+	files[filename6] = `package main
+
+import "fmt"
+
+func errors() bool{
+	return false	
+}
+func main(){
+	fmt.Println("import chromiumos/tast/errors with alias")
+	errors1 := "hello from tast lint"
+	errors()
+	fmt.Errorf(errors1)
+}
+`
+	expects[filename6] = `package main
+
+import (
+	"fmt"
+
+	errors2 "chromiumos/tast/errors"
+)
+
+func errors() bool {
+	return false
+}
+func main() {
+	fmt.Println("import chromiumos/tast/errors with alias")
+	errors1 := "hello from tast lint"
+	errors()
+	errors2.Errorf(errors1)
+}`
+	files[filename7] = `package main
+
+import (
+	. "chromiumos/tast/errors"
+
+	"fmt"
+)
+
+func main() {
+	New("import chromiumos/tast/errors with alias")
+	fmt.Errorf("This is not fixable")
+}`
+	expects[filename7] = `package main
+
+import (
+	. "chromiumos/tast/errors"
+
+	"fmt"
+)
+
+func main() {
+	New("import chromiumos/tast/errors with alias")
+	fmt.Errorf("This is not fixable")
+}
+`
+	files[filename8] = `package main
+
+import (
+	"fmt"
+
+	myerror "chromiumos/tast/errors"
+)
+
+func main() {
+	myerror.New("import chromiumos/tast/errors with alias")
+	fmt.Errorf("This is fixable with existing alias")
+}`
+	expects[filename8] = `package main
+
+import (
+	myerror "chromiumos/tast/errors"
+)
+
+func main() {
+	myerror.New("import chromiumos/tast/errors with alias")
+	myerror.Errorf("This is fixable with existing alias")
+}
+`
+	files[filename9] = `package main
+
+import (
+	errors "foo/bar/baz"
+
+	"fmt"
+)
+
+func main() {
+	errors.Foo("test")
+	fmt.Errorf("This is fixable")
+}`
+	expects[filename9] = `package main
+
+import (
+	errors "foo/bar/baz"
+
+	errors1 "chromiumos/tast/errors"
+)
+
+func main() {
+	errors.Foo("test")
+	errors1.Errorf("This is fixable")
+}`
 
 	verifyAutoFix(t, ForbiddenCalls, files, expects)
 }

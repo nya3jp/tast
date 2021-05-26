@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"go/ast"
 	"go/token"
+	"strconv"
 
 	"golang.org/x/tools/go/ast/astutil"
 )
@@ -16,17 +17,22 @@ import (
 func ForbiddenCalls(fs *token.FileSet, f *ast.File, fix bool) []*Issue {
 	isUnitTest := isUnitTestFile(fs.Position(f.Package).Filename)
 	var issues []*Issue
-	var importsRequired []string
+	// reqImport preserves the imports info with path and alias name
+	// eg. import name "path"
+	type reqImport struct {
+		path string
+		name string
+	}
+	var importsRequired []reqImport
 
 	// Being able to run goimports is a precondition to being able to make any fixes.
 	fixable := false
 	if src, err := formatASTNode(fs, f); err == nil {
 		fixable = goimportApplicable(src)
 	}
-	// If a file contains an ident node whose name is "errors", importing the package
-	// "chromium/tast/errors" could introduce a naming conflict.
-	// TODO: handle the case where these usages are already from "chromium/tast/errors".
-	usesErrors := hasErrorsIdent(f)
+	// If a file contains "chromiumos/tast/errors" import, it will check for available alias or it will generate
+	// suitable alias based on the current environment.
+	errAlias, errImported, errError := errorsImportAlias(f)
 
 	astutil.Apply(f, func(c *astutil.Cursor) bool {
 		sel, ok := c.Node().(*ast.SelectorExpr)
@@ -58,16 +64,33 @@ func ForbiddenCalls(fs *token.FileSet, f *ast.File, fix bool) []*Issue {
 					Link:    "https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#Error-construction",
 					Fixable: fixable,
 				})
-			} else if fixable && !usesErrors {
+			} else if errError != nil {
+				issues = append(issues, &Issue{
+					Pos:     fs.Position(x.Pos()),
+					Msg:     fmt.Sprintf("chromiumos/tast/errors.Errorf should be used instead of fmt.Errorf. %s", errError),
+					Link:    "https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#Error-construction",
+					Fixable: false,
+				})
+			} else if fixable {
 				c.Replace(&ast.SelectorExpr{
 					X: &ast.Ident{
-						Name: "errors",
+						Name: errAlias,
 					},
 					Sel: &ast.Ident{
 						Name: "Errorf",
 					},
 				})
-				importsRequired = append(importsRequired, "chromiumos/tast/errors")
+				// if it is not imported, import with suitable alias
+				if !errImported {
+					importAlias := errAlias
+					if importAlias == "errors" {
+						importAlias = ""
+					}
+					importsRequired = append(importsRequired, reqImport{
+						path: "chromiumos/tast/errors",
+						name: importAlias,
+					})
+				}
 			}
 		case "time.Sleep":
 			issues = append(issues, &Issue{
@@ -92,7 +115,7 @@ func ForbiddenCalls(fs *token.FileSet, f *ast.File, fix bool) []*Issue {
 						Name: methodName,
 					},
 				})
-				importsRequired = append(importsRequired, "chromiumos/tast/local/dbusutil")
+				importsRequired = append(importsRequired, reqImport{path: "chromiumos/tast/local/dbusutil"})
 			}
 		}
 
@@ -100,9 +123,15 @@ func ForbiddenCalls(fs *token.FileSet, f *ast.File, fix bool) []*Issue {
 	}, nil)
 
 	for _, pkg := range importsRequired {
-		astutil.AddImport(fs, f, pkg)
+		if pkg.name == "" {
+			astutil.AddImport(fs, f, pkg.path)
+		} else {
+			astutil.AddNamedImport(fs, f, pkg.name, pkg.path)
+		}
 	}
-	if len(importsRequired) > 0 {
+
+	// Rearrange Imports for new Imports or fmt.Errorf has been handled with conditional import.
+	if len(importsRequired) > 0 || (fix && errError == nil) {
 		newf, err := ImportOrderAutoFix(fs, f)
 		if err != nil {
 			return issues
@@ -112,15 +141,15 @@ func ForbiddenCalls(fs *token.FileSet, f *ast.File, fix bool) []*Issue {
 	return issues
 }
 
-// hasErrorsIdent returns true if there is an identifier node whose name is "errors".
-func hasErrorsIdent(f *ast.File) bool {
+// hasIdent returns true if there is an identifier node.
+func hasIdent(f *ast.File, identifier string) bool {
 	hasErrors := false
 	ast.Inspect(f, func(node ast.Node) bool {
 		id, ok := node.(*ast.Ident)
 		if !ok {
 			return true
 		}
-		if id.Name == "errors" {
+		if id.Name == identifier {
 			hasErrors = true
 			return false
 		}
@@ -128,4 +157,58 @@ func hasErrorsIdent(f *ast.File) bool {
 	})
 
 	return hasErrors
+}
+
+// errorsImportAlias checks if errors package is imported and returns suitable import alias.
+func errorsImportAlias(f *ast.File) (string, bool, error) {
+	var isImported bool
+	importAlias := ""
+
+	for _, imp := range f.Imports {
+		iPath, err := strconv.Unquote(imp.Path.Value)
+		if err != nil || iPath != "chromiumos/tast/errors" {
+			continue
+		}
+
+		// capture import alias
+		if imp.Name != nil {
+			alias := imp.Name.Name
+			// tast-lint won't handle errors if the "chromiumos/tast/errors" has been imported with dot or underscore import.
+			if alias == "." || alias == "_" {
+				return "", false, fmt.Errorf("tast-lint can't fix fmt.Errorf as errors has used as dot(\".\")" +
+					"underscore(\"_\") import")
+			}
+			importAlias = alias
+		}
+		isImported = true
+		break
+	}
+	// already imported with an alias. So tast-lint thinks the alias has been used in the program at least once.
+	// Else the go compiler will throw an error for non used imports.
+	if importAlias != "" {
+		return importAlias, isImported, nil
+	}
+	importAlias = "errors"
+	hasErrorsNode := hasIdent(f, importAlias)
+
+	if hasErrorsNode {
+		// already imported with no alias and there is a function or variable name errors. tast-lint won't resolve this.
+		if isImported {
+			return "", false, fmt.Errorf("manual fix is required. Name conflict detected, " +
+				"\"chromiumos/tast/errors\" with an unintended instance of 'errors' as an identifier")
+		}
+
+		// if "chromiumos/tast/errors" hasn't yet been imported tast-lint will try to come up with a unique alias.
+		for i := 1; i < 10; i++ {
+			importAlias = fmt.Sprintf("errors%d", i)
+			if !hasIdent(f, importAlias) {
+				// suitable alias found
+				return importAlias, isImported, nil
+			}
+		}
+		return "", false, fmt.Errorf("tast-lint tried to solve name conflict by using different import aliases" +
+			"but the program consists identifiers from errors1...10. Manual fix required")
+	}
+
+	return importAlias, isImported, nil
 }

@@ -8,6 +8,8 @@ import (
 	"fmt"
 	"go/ast"
 	"go/token"
+	"path/filepath"
+	"strings"
 
 	"golang.org/x/tools/go/ast/astutil"
 )
@@ -76,10 +78,16 @@ func ForbiddenCalls(fs *token.FileSet, f *ast.File, fix bool) []*Issue {
 				Link: "https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#Contexts-and-timeouts",
 			})
 		case "dbus.SystemBus", "dbus.SystemBusPrivate":
+			const packageToUse = "chromiumos/tast/local/dbusutil"
+
+			if strings.HasSuffix(filepath.Dir(fs.Position(f.Package).Filename), packageToUse) {
+				break // exempt dbusutil package itself from the check
+			}
+
 			if !fix {
 				issues = append(issues, &Issue{
 					Pos:     fs.Position(x.Pos()),
-					Msg:     fmt.Sprintf("dbus.%v may reorder signals; use chromiumos/tast/local/dbusutil.%v instead", methodName, methodName),
+					Msg:     fmt.Sprintf("dbus.%v may reorder signals; use %s.%v instead", methodName, packageToUse, methodName),
 					Link:    "https://github.com/godbus/dbus/issues/187",
 					Fixable: fixable,
 				})
@@ -92,7 +100,7 @@ func ForbiddenCalls(fs *token.FileSet, f *ast.File, fix bool) []*Issue {
 						Name: methodName,
 					},
 				})
-				importsRequired = append(importsRequired, "chromiumos/tast/local/dbusutil")
+				importsRequired = append(importsRequired, packageToUse)
 			}
 		}
 

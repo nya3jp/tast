@@ -363,16 +363,29 @@ func report(issues []*check.Issue) {
 	}
 }
 
+// navigateGitRoot detects as well as change current directory to git root directory.
+func navigateGitRoot() error {
+	// Absolute path of the top level directory in git tree. Throw error if not a part of git tree.
+	cmd := exec.Command("git", "rev-parse", "--show-toplevel")
+	var stdoutLog, stderrLog bytes.Buffer
+	cmd.Stderr = &stderrLog
+	cmd.Stdout = &stdoutLog
+	if err := cmd.Run(); err != nil {
+		return fmt.Errorf("%s: %s", err, stderrLog.String())
+	}
+	gitRoot := strings.TrimRight(stdoutLog.String(), "\n")
+	return os.Chdir(gitRoot)
+}
+
 func main() {
 	commit := flag.String("commit", "", "if set, checks files in the specified Git commit")
 	debug := flag.Bool("debug", false, "enables debug outputs")
 	fix := flag.Bool("fix", false, "modifies auto-fixable errors automatically")
 	flag.Parse()
 
-	// TODO(nya): Allow running lint from arbitrary directories.
-	// Currently git.go assumes the current directory is a Git root directory.
-	if _, err := os.Stat(".git"); err != nil {
-		panic("This tool can be run at a Git root directory only")
+	// Changing current directory to the Git root directory to aid the operations of git.go
+	if err := navigateGitRoot(); err != nil {
+		panic(fmt.Sprintf("Failed to navigate to the git root directory: %s", err))
 	}
 
 	g := git.New(".", *commit)

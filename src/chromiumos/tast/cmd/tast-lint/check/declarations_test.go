@@ -221,6 +221,67 @@ func TestDeclarationsVars(t *testing.T) {
 	verifyIssues(t, issues, expects)
 }
 
+func TestDeclarationsVars_Fix(t *testing.T) {
+	const tmpl = `package pkg
+
+func init() {
+	testing.AddTest(&testing.Test{
+		Func:     DoStuff,
+		Desc:     "This description is fine",
+		Contacts: []string{"me@chromium.org"},%s
+	})
+}
+
+func f() {%s
+}
+`
+	for i, tc := range []struct {
+		snipVars     string
+		snipReqVars  string
+		wantSnipVars string
+	}{{
+		snipVars: `
+		Vars:     []string{"a", "b"},
+		VarDeps:  []string{"c"},`,
+		snipReqVars: `
+	s.RequiredVar("a")`,
+		wantSnipVars: `
+		Vars:     []string{"b"},
+		VarDeps:  []string{"c", "a"},`,
+	}, {
+		snipVars: `
+		Vars:     []string{"a", "b"},
+		VarDeps:  []string{"c"},`,
+		snipReqVars: `
+	s.RequiredVar("a")
+	s.RequiredVar("b")`,
+		wantSnipVars: `
+		VarDeps:  []string{"c", "a", "b"},`,
+	}, {
+		snipVars: `
+		Vars:     []string{"a", "b"},`,
+		snipReqVars: `
+	s.RequiredVar("a")`,
+		wantSnipVars: `
+		Vars:     []string{"b"},
+		VarDeps:  []string{"a"},`,
+	}, {
+		snipVars: `
+		Vars:     []string{"a", "b"},`,
+		snipReqVars: `
+	s.RequiredVar("a")
+	s.RequiredVar("b")`,
+		wantSnipVars: `
+		VarDeps:  []string{"a", "b"},`,
+	}} {
+		t.Run(fmt.Sprintf("test%d", i), func(t *testing.T) {
+			code := fmt.Sprintf(tmpl, tc.snipVars, tc.snipReqVars)
+			want := fmt.Sprintf(tmpl, tc.wantSnipVars, tc.snipReqVars)
+			verifyAutoFix2(t, Declarations2, map[string]string{declTestPath: code}, map[string]string{declTestPath: want})
+		})
+	}
+}
+
 func TestDeclarationsSoftwareDeps(t *testing.T) {
 	for _, tc := range []struct {
 		snip    string

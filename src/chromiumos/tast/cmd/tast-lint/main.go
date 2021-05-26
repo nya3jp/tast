@@ -271,6 +271,9 @@ func checkFile(path git.CommitFile, data []byte, debug bool, fs *token.FileSet, 
 
 	if isTestFile(path.Path) {
 		issues = append(issues, check.Declarations(fs, f, fix)...)
+
+		fs, f, _ = check.Declarations2(fs, f, true)
+
 		issues = append(issues, check.Exports(fs, f)...)
 		issues = append(issues, check.ForbiddenBundleImports(fs, f)...)
 		issues = append(issues, check.ForbiddenCalls(fs, f, fix)...)
@@ -291,7 +294,7 @@ func checkFile(path git.CommitFile, data []byte, debug bool, fs *token.FileSet, 
 	issues = check.DropIgnoredIssues(issues, fs, f)
 
 	// Format modified tree.
-	if fix {
+	if true {
 		if err := func() error {
 			var buf bytes.Buffer
 			if err := format.Node(&buf, fs, f); err != nil {

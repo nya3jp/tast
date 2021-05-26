@@ -323,7 +323,8 @@ func Messages(fs *token.FileSet, f *ast.File, fix bool) []*Issue {
 						Name: funcName,
 					},
 				},
-				Args: newarg,
+				Args:     newarg,
+				Ellipsis: call.Ellipsis,
 			}
 			c.Replace(correct)
 		}

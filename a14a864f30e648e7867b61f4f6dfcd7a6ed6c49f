@@ -35,6 +35,23 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "7f810d3d_b0c22745",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1306673
+      },
+      "writtenOn": "2021-05-27T14:10:07Z",
+      "side": 1,
+      "message": "Hi Nya,\n\nCan you please take a look?\n\nThanks!",
+      "revId": "a14a864f30e648e7867b61f4f6dfcd7a6ed6c49f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "7981d481_13c683ee",
@@ -129,6 +146,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "6792c6ca_9c29c488",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 372,
+      "author": {
+        "id": 1306673
+      },
+      "writtenOn": "2021-05-27T14:10:07Z",
+      "side": 1,
+      "message": "Due to the documentation Output() usually returns exec.ExitError which contains Stderr if command stderr was nil:\nhttps://golang.org/pkg/os/exec/#Cmd.Output\n\nHere are some use cases in Tast codebase:\nhttps://source.chromium.org/search?q\u003dtast-tests%20exec.ExitError\n\nOTOH it looks a bit complicated, so let\u0027s keep existing approach.",
+      "parentUuid": "b2292473_6a6d80fc",
+      "range": {
+        "startLine": 372,
+        "startChar": 1,
+        "endLine": 372,
+        "endChar": 24
+      },
+      "revId": "a14a864f30e648e7867b61f4f6dfcd7a6ed6c49f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "b9354bb5_feba8a13",
@@ -166,6 +207,30 @@
       "side": 1,
       "message": "cmd.Run() returns just an error if any. So the code checks if the error is nil or not.",
       "parentUuid": "b9354bb5_feba8a13",
+      "range": {
+        "startLine": 374,
+        "startChar": 4,
+        "endLine": 374,
+        "endChar": 13
+      },
+      "revId": "a14a864f30e648e7867b61f4f6dfcd7a6ed6c49f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "335f30da_9764a987",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 374,
+      "author": {
+        "id": 1306673
+      },
+      "writtenOn": "2021-05-27T14:10:07Z",
+      "side": 1,
+      "message": "There might be many reasons why command failed, we should always return that error. \n\nPTAL on ProcessState String() implementation:\nhttps://golang.org/src/os/exec_posix.go?s\u003d2436:2474#L87",
+      "parentUuid": "61cf497a_dc40a5af",
       "range": {
         "startLine": 374,
         "startChar": 4,
@@ -265,6 +330,29 @@
         "startChar": 4,
         "endLine": 379,
         "endChar": 17
+      },
+      "revId": "a14a864f30e648e7867b61f4f6dfcd7a6ed6c49f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e3b8d8fd_5a631b76",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 383,
+      "author": {
+        "id": 1306673
+      },
+      "writtenOn": "2021-05-27T14:10:07Z",
+      "side": 1,
+      "message": "nit: this can be just\n\n`return os.Chdir(gitRoot)`",
+      "range": {
+        "startLine": 382,
+        "startChar": 1,
+        "endLine": 383,
+        "endChar": 11
       },
       "revId": "a14a864f30e648e7867b61f4f6dfcd7a6ed6c49f",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"

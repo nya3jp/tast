@@ -943,8 +943,8 @@ func TestWriteResultsWriteFiles(t *gotesting.T) {
 	cfg := *baseCfg
 	out := &bytes.Buffer{}
 	cfg.Logger = logging.NewSimple(out, false, false)
-	cfg.TestsToRun = results
 	var state config.State
+	state.TestsToRun = results
 	ctx := context.Background()
 	cc := target.NewConnCache(&cfg, cfg.Target)
 	defer cc.Close(ctx)
@@ -995,8 +995,8 @@ func TestWriteResultsUnmatchedGlobs(t *gotesting.T) {
 		out := &bytes.Buffer{}
 		cfg.Logger = logging.NewSimple(out, false, false)
 		cfg.Patterns = tc.patterns
-		cfg.TestsToRun = results
 		var state config.State
+		state.TestsToRun = results
 		ctx := context.Background()
 		cc := target.NewConnCache(&cfg, cfg.Target)
 		defer cc.Close(ctx)

@@ -29,6 +29,7 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/target"
 	"chromiumos/tast/internal/control"
 	"chromiumos/tast/internal/jsonprotocol"
+	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/timing"
 	"chromiumos/tast/testutil"
 )
@@ -686,7 +687,7 @@ func TestWriteResultsCollectSysInfo(t *gotesting.T) {
 		return 0
 	}
 	td.Cfg.CollectSysInfo = true
-	td.State.InitialSysInfo = &jsonprotocol.SysInfoState{}
+	td.State.InitialSysInfo = &protocol.SysInfoState{}
 	ctx := context.Background()
 	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
 	defer cc.Close(ctx)
@@ -703,7 +704,7 @@ func TestWriteResultsCollectSysInfoFailure(t *gotesting.T) {
 	// Report an error when collecting system info.
 	td.RunFunc = func(args *jsonprotocol.RunnerArgs, stdout, stderr io.Writer) (status int) { return 1 }
 	td.Cfg.CollectSysInfo = true
-	td.State.InitialSysInfo = &jsonprotocol.SysInfoState{}
+	td.State.InitialSysInfo = &protocol.SysInfoState{}
 	ctx := context.Background()
 	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
 	defer cc.Close(ctx)

@@ -389,7 +389,7 @@ func RunLocalTests(ctx context.Context, cfg *config.Config, state *config.State,
 	}
 
 	var tests []*resultsjson.Test
-	for _, t := range cfg.TestsToRun {
+	for _, t := range state.TestsToRun {
 		if t.BundleType == resultsjson.LocalBundle {
 			tests = append(tests, &t.Test)
 		}

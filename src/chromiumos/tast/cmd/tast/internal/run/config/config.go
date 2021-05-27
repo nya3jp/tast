@@ -70,10 +70,6 @@ type Config struct {
 	// ResDir is the path to the directory where test results should be written.
 	// It is only used for RunTestsMode.
 	ResDir string
-	// TestNamesToSkip are tests that match patterns but are not sent to runners to run.
-	TestNamesToSkip []string
-
-	TestsToRun []*resultsjson.Result // tests to be run
 
 	Mode     Mode   // action to perform
 	TastDir  string // base directory under which files are written
@@ -146,6 +142,8 @@ type State struct {
 	FailuresCount    int                        // the number of test failures so far.
 	TLWConn          *grpc.ClientConn           // TLW gRPC service connection
 	RemoteDevservers []string                   // list of devserver URLs used by remote tests.
+	TestNamesToSkip  []string                   // tests that match patterns but are not sent to runners to run
+	TestsToRun       []*resultsjson.Result      // tests to be run
 
 	// gRPC Reports Client related variables.
 	ReportsConn      *grpc.ClientConn       // Reports gRPC service connection.

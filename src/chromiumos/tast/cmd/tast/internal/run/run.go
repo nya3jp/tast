@@ -169,18 +169,18 @@ func runTests(ctx context.Context, cfg *config.Config, state *config.State, cc *
 		testsToSkip = nil
 	}
 
-	cfg.TestsToRun = testsToRun
-	cfg.TestNamesToSkip = nil
+	state.TestsToRun = testsToRun
+	state.TestNamesToSkip = nil
 	for _, t := range testsToSkip {
-		cfg.TestNamesToSkip = append(cfg.TestNamesToSkip, t.Name)
+		state.TestNamesToSkip = append(state.TestNamesToSkip, t.Name)
 	}
 	for _, t := range testsNotInShard {
-		cfg.TestNamesToSkip = append(cfg.TestNamesToSkip, t.Name)
+		state.TestNamesToSkip = append(state.TestNamesToSkip, t.Name)
 	}
 
 	if cfg.TotalShards > 1 {
 		cfg.Logger.Logf("Running shard %d/%d (tests %d/%d)", cfg.ShardIndex+1, cfg.TotalShards,
-			len(cfg.TestsToRun), len(cfg.TestsToRun)+len(cfg.TestNamesToSkip))
+			len(state.TestsToRun), len(state.TestsToRun)+len(state.TestNamesToSkip))
 	}
 	if len(testsToRun) == 0 {
 		// No tests to run.

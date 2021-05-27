@@ -163,7 +163,7 @@ func TestLocalCopyOutput(t *gotesting.T) {
 		t.Fatal(err)
 	}
 
-	td.Cfg.TestsToRun = []*resultsjson.Result{{Test: resultsjson.Test{
+	td.State.TestsToRun = []*resultsjson.Result{{Test: resultsjson.Test{
 		Name: testName,
 	}}}
 
@@ -216,7 +216,7 @@ func TestLocalWaitTimeout(t *gotesting.T) {
 
 	// Simulate local_test_runner writing control messages immediately but hanging before exiting.
 	td.RunDelay = time.Minute
-	td.Cfg.TestsToRun = []*resultsjson.Result{{Test: resultsjson.Test{Name: "pkg.Foo"}}}
+	td.State.TestsToRun = []*resultsjson.Result{{Test: resultsjson.Test{Name: "pkg.Foo"}}}
 	td.RunFunc = func(args *jsonprotocol.RunnerArgs, stdout, stderr io.Writer) (status int) {
 		switch args.Mode {
 		case jsonprotocol.RunnerRunTestsMode:
@@ -261,7 +261,7 @@ func TestLocalMaxFailures(t *gotesting.T) {
 		}
 		return 0
 	}
-	td.Cfg.TestsToRun = []*resultsjson.Result{{Test: resultsjson.Test{Name: "pkg.Test"}}}
+	td.State.TestsToRun = []*resultsjson.Result{{Test: resultsjson.Test{Name: "pkg.Test"}}}
 	td.Cfg.MaxTestFailures = 1
 	td.State.FailuresCount = 0
 
@@ -318,7 +318,7 @@ func TestFixturesDependency(t *gotesting.T) {
 		}
 		return 0
 	}
-	td.Cfg.TestsToRun = []*resultsjson.Result{
+	td.State.TestsToRun = []*resultsjson.Result{
 		{Test: resultsjson.Test{
 			Bundle:  "cros",
 			Fixture: "remoteFixt",

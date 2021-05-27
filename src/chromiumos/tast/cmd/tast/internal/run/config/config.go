@@ -135,13 +135,12 @@ type Config struct {
 
 // State hold state attributes which are accumulated over the course of the run.
 type State struct {
-	DUTInfo          *protocol.DUTInfo      // DUT information retrieved at the beginning of the current run
-	InitialSysInfo   *protocol.SysInfoState // initial state of system info (logs, crashes, etc.) on DUT before testing
-	FailuresCount    int                    // the number of test failures so far.
-	TLWConn          *grpc.ClientConn       // TLW gRPC service connection
-	RemoteDevservers []string               // list of devserver URLs used by remote tests.
-	TestNamesToSkip  []string               // tests that match patterns but are not sent to runners to run
-	TestsToRun       []*resultsjson.Result  // tests to be run
+	DUTInfo          *protocol.DUTInfo     // DUT information retrieved at the beginning of the current run
+	FailuresCount    int                   // the number of test failures so far.
+	TLWConn          *grpc.ClientConn      // TLW gRPC service connection
+	RemoteDevservers []string              // list of devserver URLs used by remote tests.
+	TestNamesToSkip  []string              // tests that match patterns but are not sent to runners to run
+	TestsToRun       []*resultsjson.Result // tests to be run
 
 	// gRPC Reports Client related variables.
 	ReportsConn      *grpc.ClientConn       // Reports gRPC service connection.

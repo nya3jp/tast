@@ -908,35 +908,36 @@ func TestRunTestsGetDUTInfo(t *gotesting.T) {
 	}
 }
 
-func TestRunTestsGetInitialSysInfo(t *gotesting.T) {
-	td := fakerunner.NewLocalTestData(t)
-	defer td.Close()
+func TestRunCollectSysInfo(t *gotesting.T) {
+	ctx := context.Background()
 
+	initState := &protocol.SysInfoState{
+		LogInodeSizes: map[uint64]int64{
+			12: 34,
+			56: 78,
+		},
+	}
 	called := false
 
-	td.RunFunc = func(args *jsonprotocol.RunnerArgs, stdout, stderr io.Writer) (status int) {
-		switch args.Mode {
-		case jsonprotocol.RunnerGetSysInfoStateMode:
-			// Just check that GetInitialSysInfo is called; details of args are
-			// tested in sys_info_test.go.
+	env := runtest.SetUp(t,
+		runtest.WithGetSysInfoState(func(req *protocol.GetSysInfoStateRequest) (*protocol.GetSysInfoStateResponse, error) {
+			return &protocol.GetSysInfoStateResponse{State: initState}, nil
+		}),
+		runtest.WithCollectSysInfo(func(req *protocol.CollectSysInfoRequest) (*protocol.CollectSysInfoResponse, error) {
 			called = true
-			json.NewEncoder(stdout).Encode(&jsonprotocol.RunnerGetSysInfoStateResult{})
-		default:
-			t.Errorf("Unexpected args.Mode = %v", args.Mode)
-		}
-		return 0
-	}
+			if diff := cmp.Diff(req.GetInitialState(), initState); diff != "" {
+				t.Errorf("SysInfoState mismatch (-got +want):\n%s", diff)
+			}
+			return &protocol.CollectSysInfoResponse{}, nil
+		}))
+	cfg := env.Config()
+	state := env.State()
 
-	td.Cfg.CollectSysInfo = true
-
-	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
-	defer cc.Close(context.Background())
-
-	if _, err := runTests(context.Background(), &td.Cfg, &td.State, cc); err != nil {
-		t.Error("runTests failed: ", err)
+	if _, err := Run(ctx, cfg, state); err != nil {
+		t.Errorf("Run failed: %v", err)
 	}
 	if !called {
-		t.Errorf("runTests did not call GetInitialSysInfo")
+		t.Error("CollectSysInfo was not called")
 	}
 }
 

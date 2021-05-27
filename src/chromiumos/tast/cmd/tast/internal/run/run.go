@@ -139,7 +139,8 @@ func runTests(ctx context.Context, cfg *config.Config, state *config.State, cc *
 		cfg.Logger.Logf("Target version: %v", ver)
 	}
 
-	if err := runnerclient.GetInitialSysInfo(ctx, cfg, state, cc); err != nil {
+	initialSysInfo, err := runnerclient.GetInitialSysInfo(ctx, cfg, cc)
+	if err != nil {
 		return nil, errors.Wrap(err, "failed to get initial sysinfo")
 	}
 
@@ -194,7 +195,7 @@ func runTests(ctx context.Context, cfg *config.Config, state *config.State, cc *
 			cfg.Logger.Logf("Failed to run tests: %v", retErr)
 		}
 		complete := retErr == nil
-		if err := runnerclient.WriteResults(ctx, cfg, state, results, complete, cc); err != nil {
+		if err := runnerclient.WriteResults(ctx, cfg, state, results, initialSysInfo, complete, cc); err != nil {
 			if retErr == nil {
 				retErr = errors.Wrap(err, "failed to write results")
 			} else {

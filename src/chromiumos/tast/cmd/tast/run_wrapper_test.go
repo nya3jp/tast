@@ -10,7 +10,6 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run"
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
-	"chromiumos/tast/cmd/tast/internal/run/target"
 )
 
 // stubRunWrapper is a stub implementation of runWrapper used for testing.
@@ -23,7 +22,7 @@ type stubRunWrapper struct {
 	runRes    []*resultsjson.Result // results to return from run
 }
 
-func (w *stubRunWrapper) run(ctx context.Context, cfg *config.Config, state *config.State, cc *target.ConnCache) (run.Status, []*resultsjson.Result) {
+func (w *stubRunWrapper) run(ctx context.Context, cfg *config.Config, state *config.State) (run.Status, []*resultsjson.Result) {
 	w.runCtx, w.runCfg, w.runState = ctx, cfg, state
 	return w.runStatus, w.runRes
 }

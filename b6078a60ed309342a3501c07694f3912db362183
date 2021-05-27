@@ -53,6 +53,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "9188acca_cdfa9844",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-05-27T08:39:42Z",
+      "side": 1,
+      "message": "Got it. I think it is OK as-is, but it may be better to ask someone else to verify the naming.",
+      "parentUuid": "12d248f2_71e05ba4",
+      "revId": "b6078a60ed309342a3501c07694f3912db362183",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "8d9ddbc7_21d1f977",

@@ -7,13 +7,11 @@ package main
 import (
 	"bytes"
 	"context"
-	"errors"
 	"flag"
 	"os"
 	"reflect"
 	"strings"
 	gotesting "testing"
-	"time"
 
 	"github.com/google/subcommands"
 
@@ -84,12 +82,6 @@ func TestRunResults(t *gotesting.T) {
 	if status := executeRunCmd(t, args, &wrapper, logging.NewDiscard()); status != subcommands.ExitSuccess {
 		t.Fatalf("runCmd.Execute(%v) returned status %v; want %v", args, status, subcommands.ExitSuccess)
 	}
-	if !reflect.DeepEqual(wrapper.writeRes, wrapper.runRes) {
-		t.Errorf("runCmd.Execute(%v) wrote results %v; want %v", args, wrapper.writeRes, wrapper.runRes)
-	}
-	if !wrapper.writeComplete {
-		t.Errorf("runCmd.Execute(%v) reported incomplete run", args)
-	}
 
 	// If -failfortests is passed, then a test failure should result in 1 being returned.
 	args = append([]string{"-failfortests"}, args...)
@@ -123,95 +115,5 @@ func TestRunExecFailure(t *gotesting.T) {
 		t.Errorf("runCmd.Execute(%v) didn't log any output", args)
 	} else if last := lines[len(lines)-1]; !strings.Contains(last, msg) {
 		t.Errorf("runCmd.Execute(%v) logged last line %q; wanted line containing error %q", args, last, msg)
-	}
-
-	// The partial results should still be written.
-	if !reflect.DeepEqual(wrapper.writeRes, wrapper.runRes) {
-		t.Errorf("runCmd.Execute(%v) wrote results %v; want %v", args, wrapper.writeRes, wrapper.runRes)
-	}
-	if wrapper.writeComplete {
-		t.Errorf("runCmd.Execute(%v) reported complete run", args)
-	}
-}
-
-func TestRunWriteFailure(t *gotesting.T) {
-	// If writing results fails, an error should be reported.
-	const msg = "writing failed"
-	wrapper := stubRunWrapper{
-		runRes:   []*resultsjson.Result{{Test: resultsjson.Test{Name: "pkg.LocalTest"}}},
-		writeErr: errors.New(msg),
-	}
-	args := []string{"root@example.net"}
-	b := bytes.Buffer{}
-	lg := logging.NewSimple(&b, true, true)
-	if status := executeRunCmd(t, args, &wrapper, lg); status != subcommands.ExitFailure {
-		t.Fatalf("runCmd.Execute(%v) returned status %v; want %v", args, status, subcommands.ExitFailure)
-	}
-
-	// The error should be included in the last line of output.
-	if lines := strings.Split(strings.TrimSpace(b.String()), "\n"); len(lines) == 0 {
-		t.Errorf("runCmd.Execute(%v) didn't log any output", args)
-	} else if last := lines[len(lines)-1]; !strings.Contains(last, msg) {
-		t.Errorf("runCmd.Execute(%v) logged last line %q; wanted line containing error %q", args, last, msg)
-	}
-}
-
-func TestRunWriteResultsWithZeroTests(t *gotesting.T) {
-	// If the runner reports failure without returning any test results, writeResults
-	// should still be called to ensure that system information is collected from the
-	// DUT: https://crbug.com/928445
-	wrapper := stubRunWrapper{
-		runRes:    []*resultsjson.Result{}, // no tests were executed
-		runStatus: run.Status{ExitCode: subcommands.ExitFailure, ErrorMsg: "testing failed"},
-	}
-	args := []string{"root@example.net"}
-	if status := executeRunCmd(t, args, &wrapper, logging.NewDiscard()); status != subcommands.ExitFailure {
-		t.Fatalf("runCmd.Execute(%v) returned status %v; want %v", args, status, subcommands.ExitFailure)
-	}
-	if wrapper.writeRes == nil {
-		t.Errorf("runCmd.Execute(%v) didn't call writeResults after getting empty test results", args)
-	}
-}
-
-func TestRunDontWriteResultsForEarlyFailure(t *gotesting.T) {
-	// If we fail before trying to run tests (e.g. during compilation),
-	// writeResults shouldn't be called.
-	wrapper := stubRunWrapper{
-		runRes: []*resultsjson.Result{}, // no tests were executed
-		runStatus: run.Status{
-			ExitCode:        subcommands.ExitFailure,
-			ErrorMsg:        "compilation failed",
-			FailedBeforeRun: true,
-		},
-	}
-	args := []string{"root@example.net"}
-	if status := executeRunCmd(t, args, &wrapper, logging.NewDiscard()); status != subcommands.ExitFailure {
-		t.Fatalf("runCmd.Execute(%v) returned status %v; want %v", args, status, subcommands.ExitFailure)
-	}
-	if wrapper.writeRes != nil {
-		t.Errorf("runCmd.Execute(%v) incorrectly called writeResults after compilation error", args)
-	}
-}
-
-func TestRunReserveTimeToWriteResults(t *gotesting.T) {
-	wrapper := stubRunWrapper{
-		runRes: []*resultsjson.Result{{Test: resultsjson.Test{Name: "pkg.Test"}}},
-	}
-	executeRunCmd(t, []string{"-timeout=3600", "root@example.net"}, &wrapper, logging.NewDiscard())
-
-	getDeadline := func(ctx context.Context, name string) time.Time {
-		if ctx == nil {
-			t.Fatalf("%s context not set", name)
-		}
-		dl, ok := ctx.Deadline()
-		if !ok {
-			t.Fatalf("%s context lacks deadline", name)
-		}
-		return dl
-	}
-	rdl := getDeadline(wrapper.runCtx, "run")
-	wdl := getDeadline(wrapper.writeCtx, "write")
-	if !rdl.Before(wdl) {
-		t.Errorf("Run deadline %v doesn't precede results-writing deadline %v", wdl, rdl)
 	}
 }

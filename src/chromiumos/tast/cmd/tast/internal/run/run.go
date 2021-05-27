@@ -58,7 +58,17 @@ func errorStatusf(cfg *config.Config, code subcommands.ExitStatus, format string
 // Messages are logged using cfg.Logger as the run progresses.
 // If an error is encountered, status.ErrorMsg will be logged to cfg.Logger before returning,
 // but the caller may wish to log it again later to increase its prominence if additional messages are logged.
-func Run(ctx context.Context, cfg *config.Config, state *config.State, cc *target.ConnCache) (status Status, results []*resultsjson.Result) {
+func Run(ctx context.Context, cfg *config.Config, state *config.State) (status Status, results []*resultsjson.Result) {
+	if err := setUpGRPCServices(ctx, cfg, state); err != nil {
+		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to set up gRPC servers: %v", err), nil
+	}
+	if err := resolveHosts(ctx, cfg, state); err != nil {
+		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to resolve hosts: %v", err), nil
+	}
+
+	cc := target.NewConnCache(cfg, cfg.Target)
+	defer cc.Close(ctx)
+
 	conn, err := cc.Conn(ctx)
 	if err != nil {
 		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to connect to %s: %v", cfg.Target, err), nil
@@ -234,8 +244,8 @@ func runTests(ctx context.Context, cfg *config.Config, state *config.State, cc *
 	return results, err
 }
 
-// SetupGrpcServices sets up all Grpc Services in the current run.
-func SetupGrpcServices(ctx context.Context, cfg *config.Config, state *config.State) error {
+// setUpGRPCServices sets up all Grpc Services in the current run.
+func setUpGRPCServices(ctx context.Context, cfg *config.Config, state *config.State) error {
 	if err := connectToTLW(ctx, cfg, state); err != nil {
 		return errors.Wrap(err, "failed to connect to TLW server")
 	}
@@ -245,8 +255,8 @@ func SetupGrpcServices(ctx context.Context, cfg *config.Config, state *config.St
 	return nil
 }
 
-// ResolveHosts resolve all hosts in the current run.
-func ResolveHosts(ctx context.Context, cfg *config.Config, state *config.State) error {
+// resolveHosts resolve all hosts in the current run.
+func resolveHosts(ctx context.Context, cfg *config.Config, state *config.State) error {
 	// Check if host name needs to be resolved.
 	cfg.Target = resolveHost(cfg, cfg.Target)
 	for role, dut := range cfg.CompanionDUTs {

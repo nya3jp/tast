@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"io"
 	"net"
+	"os"
 	"path/filepath"
 	"reflect"
 	"strconv"
@@ -23,10 +24,10 @@ import (
 	"go.chromium.org/chromiumos/config/go/api/test/tls"
 	"google.golang.org/grpc"
 
-	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/fakereports"
 	"chromiumos/tast/cmd/tast/internal/run/fakerunner"
 	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
+	"chromiumos/tast/cmd/tast/internal/run/runnerclient"
 	"chromiumos/tast/cmd/tast/internal/run/runtest"
 	"chromiumos/tast/cmd/tast/internal/run/target"
 	"chromiumos/tast/errors"
@@ -35,6 +36,7 @@ import (
 	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/runner"
+	"chromiumos/tast/internal/testing"
 )
 
 func TestRun(t *gotesting.T) {
@@ -49,6 +51,33 @@ func TestRun(t *gotesting.T) {
 
 	if status, _ := Run(ctx, cfg, state, cc); status.ExitCode != subcommands.ExitSuccess {
 		t.Errorf("Run() = %v; want %v", status.ExitCode, subcommands.ExitSuccess)
+	}
+
+	if _, err := os.Stat(filepath.Join(cfg.ResDir, runnerclient.ResultsFilename)); err != nil {
+		t.Errorf("Results were not saved: %v", err)
+	}
+}
+
+func TestRunNoTestToRun(t *gotesting.T) {
+	ctx := context.Background()
+
+	// No test in bundles.
+	env := runtest.SetUp(t, runtest.WithLocalBundle(testing.NewRegistry()), runtest.WithRemoteBundle(testing.NewRegistry()))
+	cfg := env.Config()
+	state := env.State()
+
+	cc := target.NewConnCache(cfg, cfg.Target)
+	defer cc.Close(ctx)
+
+	if status, _ := Run(ctx, cfg, state, cc); status.ExitCode != subcommands.ExitSuccess {
+		t.Errorf("Run() = %v; want %v", status.ExitCode, subcommands.ExitSuccess)
+	}
+
+	// Results are not written in the case no test was run.
+	if _, err := os.Stat(filepath.Join(cfg.ResDir, runnerclient.ResultsFilename)); err == nil {
+		t.Error("Results were saved despite there was no test to run")
+	} else if !os.IsNotExist(err) {
+		t.Errorf("Failed to check if results were saved: %v", err)
 	}
 }
 
@@ -82,9 +111,6 @@ func TestRunError(t *gotesting.T) {
 
 	if status, _ := Run(ctx, cfg, state, cc); status.ExitCode != subcommands.ExitFailure {
 		t.Errorf("Run() = %v; want %v", status, subcommands.ExitFailure)
-	} else if !status.FailedBeforeRun {
-		// local()'s initial connection attempt will fail, so we won't try to run tests.
-		t.Error("Run() incorrectly reported that failure did not occur before trying to run tests")
 	}
 }
 
@@ -890,26 +916,6 @@ func TestListTestsGetDUTInfo(t *gotesting.T) {
 	}
 	if !called {
 		t.Error("runTests did not call getSoftwareFeatures")
-	}
-}
-
-func TestRunTestsFailureBeforeRun(t *gotesting.T) {
-	td := fakerunner.NewLocalTestData(t)
-	defer td.Close()
-
-	// Make the runner always fail, and ask to check test deps so we'll get a failure before trying
-	// to run tests. local() shouldn't set StartedRun to true since we failed before then.
-	td.RunFunc = func(args *jsonprotocol.RunnerArgs, stdout, stderr io.Writer) (status int) { return 1 }
-	td.Cfg.CheckTestDeps = true
-
-	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
-	defer cc.Close(context.Background())
-
-	var state config.State
-	if _, err := runTests(context.Background(), &td.Cfg, &state, cc); err == nil {
-		t.Errorf("runTests unexpectedly passed")
-	} else if state.StartedRun {
-		t.Error("runTests incorrectly reported that run was started after early failure")
 	}
 }
 

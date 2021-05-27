@@ -168,11 +168,11 @@ func TestReadTestOutput(t *gotesting.T) {
 		},
 	}
 	var actRes []*resultsjson.Result
-	if err := json.Unmarshal([]byte(files[resultsFilename]), &actRes); err != nil {
-		t.Errorf("Failed to decode %v: %v", resultsFilename, err)
+	if err := json.Unmarshal([]byte(files[ResultsFilename]), &actRes); err != nil {
+		t.Errorf("Failed to decode %v: %v", ResultsFilename, err)
 	}
 	if diff := cmp.Diff(actRes, expRes); diff != "" {
-		t.Errorf("%v mismatch (-got +want):\n%s", resultsFilename, diff)
+		t.Errorf("%v mismatch (-got +want):\n%s", ResultsFilename, diff)
 	}
 
 	// The streamed results file should contain the same set of results.
@@ -282,11 +282,11 @@ func TestReadTestOutputSameEntity(t *gotesting.T) {
 	}
 
 	var expRes, actRes []*resultsjson.Result
-	if err := json.Unmarshal([]byte(files[resultsFilename]), &actRes); err != nil {
-		t.Errorf("Failed to decode %v: %v", resultsFilename, err)
+	if err := json.Unmarshal([]byte(files[ResultsFilename]), &actRes); err != nil {
+		t.Errorf("Failed to decode %v: %v", ResultsFilename, err)
 	}
 	if diff := cmp.Diff(actRes, expRes); diff != "" {
-		t.Errorf("%v mismatch (-got +want):\n%s", resultsFilename, diff)
+		t.Errorf("%v mismatch (-got +want):\n%s", ResultsFilename, diff)
 	}
 
 	streamRes := readStreamedResults(t, bytes.NewBufferString(files[streamedResultsFilename]))
@@ -366,11 +366,11 @@ func TestReadTestOutputConcurrentEntity(t *gotesting.T) {
 	}
 
 	var expRes, actRes []*resultsjson.Result
-	if err := json.Unmarshal([]byte(files[resultsFilename]), &actRes); err != nil {
-		t.Errorf("Failed to decode %v: %v", resultsFilename, err)
+	if err := json.Unmarshal([]byte(files[ResultsFilename]), &actRes); err != nil {
+		t.Errorf("Failed to decode %v: %v", ResultsFilename, err)
 	}
 	if diff := cmp.Diff(actRes, expRes); diff != "" {
-		t.Errorf("%v mismatch (-got +want):\n%s", resultsFilename, diff)
+		t.Errorf("%v mismatch (-got +want):\n%s", ResultsFilename, diff)
 	}
 
 	fixt1OutPath := filepath.Join(fixtureLogsDir, fixt1Name, fixt1OutFile)
@@ -506,11 +506,11 @@ func TestReadTestOutputAbortFixture(t *gotesting.T) {
 
 	var want []*resultsjson.Result // want = ([]*EntityResult)(nil); it's not equal to (interface{})(nil)
 	var got []*resultsjson.Result
-	if err := json.Unmarshal([]byte(files[resultsFilename]), &got); err != nil {
-		t.Errorf("Failed to decode %v: %v", resultsFilename, err)
+	if err := json.Unmarshal([]byte(files[ResultsFilename]), &got); err != nil {
+		t.Errorf("Failed to decode %v: %v", ResultsFilename, err)
 	}
 	if diff := cmp.Diff(got, want); diff != "" {
-		t.Errorf("%v mismatch (-got +want):\n%s", resultsFilename, diff)
+		t.Errorf("%v mismatch (-got +want):\n%s", ResultsFilename, diff)
 	}
 
 	streamRes := readStreamedResults(t, bytes.NewBufferString(files[streamedResultsFilename]))

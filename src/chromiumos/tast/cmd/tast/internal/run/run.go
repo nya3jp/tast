@@ -11,6 +11,7 @@ import (
 	"net"
 	"path/filepath"
 	"strconv"
+	"time"
 
 	"github.com/google/subcommands"
 	"go.chromium.org/chromiumos/config/go/api/test/tls"
@@ -25,7 +26,14 @@ import (
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/sshconfig"
+	"chromiumos/tast/internal/xcontext"
 	"chromiumos/tast/ssh"
+)
+
+const (
+	// maxPostReserve is maximum amount of time reserved for post-processing
+	// (e.g. writing results and collecting system info).
+	maxPostReserve = 15 * time.Second
 )
 
 // Status describes the result of a Run call.
@@ -34,19 +42,15 @@ type Status struct {
 	ExitCode subcommands.ExitStatus
 	// ErrorMsg describes the reason why the run failed.
 	ErrorMsg string
-	// FailedBeforeRun is true if a failure occurred before trying to run tests,
-	// e.g. while compiling tests. If so, the caller shouldn't write a results dir.
-	FailedBeforeRun bool
 }
 
 // successStatus describes a successful run.
 var successStatus = Status{}
 
 // errorStatusf returns a Status describing a failing run. format and args are combined to produce the error
-// message, which is both logged to cfg.Logger and included in the returned status.
+// message, which is included in the returned status.
 func errorStatusf(cfg *config.Config, code subcommands.ExitStatus, format string, args ...interface{}) Status {
 	msg := fmt.Sprintf(format, args...)
-	cfg.Logger.Log(msg)
 	return Status{ExitCode: code, ErrorMsg: msg}
 }
 
@@ -55,14 +59,6 @@ func errorStatusf(cfg *config.Config, code subcommands.ExitStatus, format string
 // If an error is encountered, status.ErrorMsg will be logged to cfg.Logger before returning,
 // but the caller may wish to log it again later to increase its prominence if additional messages are logged.
 func Run(ctx context.Context, cfg *config.Config, state *config.State, cc *target.ConnCache) (status Status, results []*resultsjson.Result) {
-	defer func() {
-		// If we didn't get to the point where we started trying to run tests,
-		// report that to the caller so they can avoid writing a useless results dir.
-		if status.ExitCode == subcommands.ExitFailure && !state.StartedRun {
-			status.FailedBeforeRun = true
-		}
-	}()
-
 	conn, err := cc.Conn(ctx)
 	if err != nil {
 		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to connect to %s: %v", cfg.Target, err), nil
@@ -143,7 +139,7 @@ func listTests(ctx context.Context, cfg *config.Config, state *config.State, cc 
 	return testsToRun, nil
 }
 
-func runTests(ctx context.Context, cfg *config.Config, state *config.State, cc *target.ConnCache) ([]*resultsjson.Result, error) {
+func runTests(ctx context.Context, cfg *config.Config, state *config.State, cc *target.ConnCache) (results []*resultsjson.Result, retErr error) {
 	if err := runnerclient.GetDUTInfo(ctx, cfg, state, cc); err != nil {
 		return nil, errors.Wrap(err, "failed to get DUT software features")
 	}
@@ -187,8 +183,36 @@ func runTests(ctx context.Context, cfg *config.Config, state *config.State, cc *
 		return nil, nil
 	}
 
-	var results []*resultsjson.Result
-	state.StartedRun = true
+	// Reserve a bit of time to write results and collect system info.
+	// Skip doing this if a very-short timeout was set, since it's confusing
+	// to get an immediate timeout in that case.
+	postCtx := ctx
+	if deadline, ok := ctx.Deadline(); ok {
+		postReserve := maxPostReserve
+		if time.Until(deadline) < 2*postReserve {
+			postReserve = 0
+		}
+		var cancel xcontext.CancelFunc
+		ctx, cancel = xcontext.WithDeadline(ctx, deadline.Add(-postReserve), errors.Errorf("%v: global timeout reached", context.DeadlineExceeded))
+		defer cancel(context.Canceled)
+	}
+
+	// Write results and collect system info after testing.
+	defer func() {
+		ctx := postCtx
+		if retErr != nil {
+			// Print the run error message before moving on to writing results.
+			cfg.Logger.Logf("Failed to run tests: %v", retErr)
+		}
+		complete := retErr == nil
+		if err := runnerclient.WriteResults(ctx, cfg, state, results, complete, cc); err != nil {
+			if retErr == nil {
+				retErr = errors.Wrap(err, "failed to write results")
+			} else {
+				cfg.Logger.Logf("Failed to write results: %v", err)
+			}
+		}
+	}()
 
 	if cfg.RunLocal {
 		lres, err := runnerclient.RunLocalTests(ctx, cfg, state, cc)

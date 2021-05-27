@@ -31,9 +31,9 @@ import (
 	"chromiumos/tast/internal/timing"
 )
 
+// These paths are relative to Config.ResDir.
 const (
-	// These paths are relative to Config.ResDir.
-	resultsFilename         = "results.json"           // file containing JSON array of EntityResult objects
+	ResultsFilename         = "results.json"           // file containing JSON array of EntityResult objects
 	resultsJUnitFilename    = "results.xml"            // file containing test result in the JUnit XML format
 	streamedResultsFilename = "streamed_results.jsonl" // file containing stream of newline-separated JSON EntityResult objects
 	systemLogsDir           = "system_logs"            // dir containing DUT's system logs
@@ -87,7 +87,7 @@ var errUserReqTermination = errors.Wrap(ErrTerminate, "user requested tast to te
 // If cfg.CollectSysInfo is true, system information generated on the DUT during testing
 // (e.g. logs and crashes) will also be written to the results dir.
 func WriteResults(ctx context.Context, cfg *config.Config, state *config.State, results []*resultsjson.Result, complete bool, cc *target.ConnCache) error {
-	f, err := os.Create(filepath.Join(cfg.ResDir, resultsFilename))
+	f, err := os.Create(filepath.Join(cfg.ResDir, ResultsFilename))
 	if err != nil {
 		return err
 	}

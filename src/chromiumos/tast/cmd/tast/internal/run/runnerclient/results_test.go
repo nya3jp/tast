@@ -29,7 +29,6 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/target"
 	"chromiumos/tast/internal/control"
 	"chromiumos/tast/internal/jsonprotocol"
-	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/timing"
 	"chromiumos/tast/testutil"
 )
@@ -129,7 +128,7 @@ func TestReadTestOutput(t *gotesting.T) {
 	ctx := context.Background()
 	cc := target.NewConnCache(&cfg, cfg.Target)
 	defer cc.Close(ctx)
-	if err = WriteResults(ctx, &cfg, &state, results, true, cc); err != nil {
+	if err = WriteResults(ctx, &cfg, &state, results, nil, true, cc); err != nil {
 		t.Fatal("WriteResults failed:", err)
 	}
 
@@ -273,7 +272,7 @@ func TestReadTestOutputSameEntity(t *gotesting.T) {
 	ctx := context.Background()
 	cc := target.NewConnCache(&cfg, cfg.Target)
 	defer cc.Close(ctx)
-	if err = WriteResults(ctx, &cfg, &state, results, true, cc); err != nil {
+	if err = WriteResults(ctx, &cfg, &state, results, nil, true, cc); err != nil {
 		t.Fatal("WriteResults failed:", err)
 	}
 
@@ -357,7 +356,7 @@ func TestReadTestOutputConcurrentEntity(t *gotesting.T) {
 	ctx := context.Background()
 	cc := target.NewConnCache(&cfg, cfg.Target)
 	defer cc.Close(ctx)
-	if err = WriteResults(ctx, &cfg, &state, results, true, cc); err != nil {
+	if err = WriteResults(ctx, &cfg, &state, results, nil, true, cc); err != nil {
 		t.Fatal("WriteResults failed:", err)
 	}
 
@@ -496,7 +495,7 @@ func TestReadTestOutputAbortFixture(t *gotesting.T) {
 	ctx := context.Background()
 	cc := target.NewConnCache(&cfg, cfg.Target)
 	defer cc.Close(ctx)
-	if err := WriteResults(ctx, &cfg, &state, results, true, cc); err != nil {
+	if err := WriteResults(ctx, &cfg, &state, results, nil, true, cc); err != nil {
 		t.Fatal("WriteResults failed:", err)
 	}
 
@@ -687,11 +686,10 @@ func TestWriteResultsCollectSysInfo(t *gotesting.T) {
 		return 0
 	}
 	td.Cfg.CollectSysInfo = true
-	td.State.InitialSysInfo = &protocol.SysInfoState{}
 	ctx := context.Background()
 	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
 	defer cc.Close(ctx)
-	if err := WriteResults(ctx, &td.Cfg, &td.State, nil, true, cc); err != nil {
+	if err := WriteResults(ctx, &td.Cfg, &td.State, nil, nil, true, cc); err != nil {
 		t.Fatal("WriteResults failed: ", err)
 	}
 }
@@ -704,11 +702,10 @@ func TestWriteResultsCollectSysInfoFailure(t *gotesting.T) {
 	// Report an error when collecting system info.
 	td.RunFunc = func(args *jsonprotocol.RunnerArgs, stdout, stderr io.Writer) (status int) { return 1 }
 	td.Cfg.CollectSysInfo = true
-	td.State.InitialSysInfo = &protocol.SysInfoState{}
 	ctx := context.Background()
 	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
 	defer cc.Close(ctx)
-	err := WriteResults(ctx, &td.Cfg, &td.State, nil, true, cc)
+	err := WriteResults(ctx, &td.Cfg, &td.State, nil, nil, true, cc)
 	if err == nil {
 		t.Fatal("WriteResults didn't report expected error")
 	}
@@ -949,7 +946,7 @@ func TestWriteResultsWriteFiles(t *gotesting.T) {
 	ctx := context.Background()
 	cc := target.NewConnCache(&cfg, cfg.Target)
 	defer cc.Close(ctx)
-	if err := WriteResults(ctx, &cfg, &state, results, true /* complete */, cc); err != nil {
+	if err := WriteResults(ctx, &cfg, &state, results, nil, true /* complete */, cc); err != nil {
 		t.Errorf("WriteResults() failed: %v", err)
 	}
 	if _, err := os.Stat(filepath.Join(td, "results.json")); err != nil {
@@ -1001,7 +998,7 @@ func TestWriteResultsUnmatchedGlobs(t *gotesting.T) {
 		ctx := context.Background()
 		cc := target.NewConnCache(&cfg, cfg.Target)
 		defer cc.Close(ctx)
-		if err := WriteResults(ctx, &cfg, &state, results, tc.complete, cc); err != nil {
+		if err := WriteResults(ctx, &cfg, &state, results, nil, tc.complete, cc); err != nil {
 			t.Errorf("WriteResults() failed for %v: %v", cfg.Patterns, err)
 			continue
 		}

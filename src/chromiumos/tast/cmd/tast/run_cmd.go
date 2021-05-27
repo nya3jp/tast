@@ -15,9 +15,7 @@ import (
 	"github.com/google/subcommands"
 
 	"chromiumos/tast/cmd/tast/internal/logging"
-	"chromiumos/tast/cmd/tast/internal/run"
 	"chromiumos/tast/cmd/tast/internal/run/config"
-	"chromiumos/tast/cmd/tast/internal/run/target"
 	"chromiumos/tast/ctxutil"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/command"
@@ -158,19 +156,7 @@ func (r *runCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{})
 	}
 	lg.Log("Writing results to ", r.cfg.ResDir)
 
-	if err := run.SetupGrpcServices(ctx, r.cfg, &state); err != nil {
-		lg.Logf("Failed to set up GRPC servers: %v", err)
-		return subcommands.ExitFailure
-	}
-	if err := run.ResolveHosts(ctx, r.cfg, &state); err != nil {
-		lg.Logf("Failed to resolve hosts: %v", err)
-		return subcommands.ExitFailure
-	}
-
-	cc := target.NewConnCache(r.cfg, r.cfg.Target)
-	defer cc.Close(ctx)
-
-	status, results := r.wrapper.run(ctx, r.cfg, &state, cc)
+	status, results := r.wrapper.run(ctx, r.cfg, &state)
 	allTestsRun := status.ExitCode == subcommands.ExitSuccess
 	if len(results) == 0 && len(state.TestNamesToSkip) == 0 && allTestsRun {
 		lg.Logf("No tests matched by pattern(s) %v", r.cfg.Patterns)

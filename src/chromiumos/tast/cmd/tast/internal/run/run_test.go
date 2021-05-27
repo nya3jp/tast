@@ -46,10 +46,7 @@ func TestRun(t *gotesting.T) {
 	cfg := env.Config()
 	state := env.State()
 
-	cc := target.NewConnCache(cfg, cfg.Target)
-	defer cc.Close(ctx)
-
-	if status, _ := Run(ctx, cfg, state, cc); status.ExitCode != subcommands.ExitSuccess {
+	if status, _ := Run(ctx, cfg, state); status.ExitCode != subcommands.ExitSuccess {
 		t.Errorf("Run() = %v; want %v", status.ExitCode, subcommands.ExitSuccess)
 	}
 
@@ -66,10 +63,7 @@ func TestRunNoTestToRun(t *gotesting.T) {
 	cfg := env.Config()
 	state := env.State()
 
-	cc := target.NewConnCache(cfg, cfg.Target)
-	defer cc.Close(ctx)
-
-	if status, _ := Run(ctx, cfg, state, cc); status.ExitCode != subcommands.ExitSuccess {
+	if status, _ := Run(ctx, cfg, state); status.ExitCode != subcommands.ExitSuccess {
 		t.Errorf("Run() = %v; want %v", status.ExitCode, subcommands.ExitSuccess)
 	}
 
@@ -90,10 +84,7 @@ func TestRunPartialRun(t *gotesting.T) {
 	cfg.RemoteRunner = filepath.Join(env.TempDir(), "missing_remote_test_runner")
 	state := env.State()
 
-	cc := target.NewConnCache(cfg, cfg.Target)
-	defer cc.Close(ctx)
-
-	if status, _ := Run(ctx, cfg, state, cc); status.ExitCode != subcommands.ExitFailure {
+	if status, _ := Run(ctx, cfg, state); status.ExitCode != subcommands.ExitFailure {
 		t.Errorf("Run() = %v; want %v", status.ExitCode, subcommands.ExitFailure)
 	}
 }
@@ -106,10 +97,7 @@ func TestRunError(t *gotesting.T) {
 	cfg.KeyFile = "" // force SSH auth error
 	state := env.State()
 
-	cc := target.NewConnCache(cfg, cfg.Target)
-	defer cc.Close(ctx)
-
-	if status, _ := Run(ctx, cfg, state, cc); status.ExitCode != subcommands.ExitFailure {
+	if status, _ := Run(ctx, cfg, state); status.ExitCode != subcommands.ExitFailure {
 		t.Errorf("Run() = %v; want %v", status, subcommands.ExitFailure)
 	}
 }
@@ -136,10 +124,7 @@ func TestRunEphemeralDevserver(t *gotesting.T) {
 	td.Cfg.Devservers = nil // clear the default mock devservers set in NewLocalTestData
 	td.Cfg.UseEphemeralDevserver = true
 
-	ctx := context.Background()
-	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
-	defer cc.Close(ctx)
-	if status, _ := Run(ctx, &td.Cfg, &td.State, cc); status.ExitCode != subcommands.ExitSuccess {
+	if status, _ := Run(context.Background(), &td.Cfg, &td.State); status.ExitCode != subcommands.ExitSuccess {
 		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.LogBuf.String())
 	}
 }
@@ -290,16 +275,7 @@ func testRunDownloadPrivateBundles(t *gotesting.T, td *fakerunner.LocalTestData)
 
 	td.Cfg.DownloadPrivateBundles = true
 
-	ctx := context.Background()
-	if err := SetupGrpcServices(ctx, &td.Cfg, &td.State); err != nil {
-		t.Errorf("Failed to set up GRPC servers: %v", err)
-	}
-	if err := ResolveHosts(ctx, &td.Cfg, &td.State); err != nil {
-		t.Errorf("Failed to resolve hosts: %v", err)
-	}
-	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
-	defer cc.Close(ctx)
-	if status, _ := Run(ctx, &td.Cfg, &td.State, cc); status.ExitCode != subcommands.ExitSuccess {
+	if status, _ := Run(context.Background(), &td.Cfg, &td.State); status.ExitCode != subcommands.ExitSuccess {
 		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.LogBuf.String())
 	}
 	if diff := cmp.Diff(dutsWithDownloadRequest, duts); diff != "" {
@@ -343,16 +319,7 @@ func TestRunTLW(t *gotesting.T) {
 	td.Cfg.Target = targetName
 	td.Cfg.TLWServer = tlwAddr
 
-	ctx := context.Background()
-	if err := SetupGrpcServices(ctx, &td.Cfg, &td.State); err != nil {
-		t.Errorf("Failed to set up GRPC servers: %v", err)
-	}
-	if err := ResolveHosts(ctx, &td.Cfg, &td.State); err != nil {
-		t.Errorf("Failed to resolve hosts: %v", err)
-	}
-	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
-	defer cc.Close(ctx)
-	if status, _ := Run(ctx, &td.Cfg, &td.State, cc); status.ExitCode != subcommands.ExitSuccess {
+	if status, _ := Run(context.Background(), &td.Cfg, &td.State); status.ExitCode != subcommands.ExitSuccess {
 		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.LogBuf.String())
 	}
 }
@@ -413,13 +380,7 @@ func TestRunWithReports_LogStream(t *gotesting.T) {
 		}
 		return 0
 	}
-	ctx := context.Background()
-	if err := SetupGrpcServices(ctx, &td.Cfg, &td.State); err != nil {
-		t.Errorf("Failed to set up GRPC servers: %v", err)
-	}
-	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
-	defer cc.Close(ctx)
-	if status, _ := Run(ctx, &td.Cfg, &td.State, cc); status.ExitCode != subcommands.ExitSuccess {
+	if status, _ := Run(context.Background(), &td.Cfg, &td.State); status.ExitCode != subcommands.ExitSuccess {
 		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.LogBuf.String())
 	}
 	if str := string(srv.GetLog(test1Name, test1Path)); !strings.Contains(str, test1LogText) {
@@ -501,13 +462,7 @@ func TestRunWithReports_ReportResult(t *gotesting.T) {
 		}
 		return 0
 	}
-	ctx := context.Background()
-	if err := SetupGrpcServices(ctx, &td.Cfg, &td.State); err != nil {
-		t.Errorf("Failed to set up GRPC servers: %v", err)
-	}
-	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
-	defer cc.Close(ctx)
-	if status, _ := Run(ctx, &td.Cfg, &td.State, cc); status.ExitCode != subcommands.ExitSuccess {
+	if status, _ := Run(context.Background(), &td.Cfg, &td.State); status.ExitCode != subcommands.ExitSuccess {
 		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.LogBuf.String())
 	}
 	test2ErrorTimeStamp, _ := ptypes.TimestampProto(test2ErrorTime)
@@ -605,13 +560,7 @@ func TestRunWithReports_ReportResultTerminate(t *gotesting.T) {
 		}
 		return 0
 	}
-	ctx := context.Background()
-	if err := SetupGrpcServices(ctx, &td.Cfg, &td.State); err != nil {
-		t.Errorf("Failed to set up GRPC servers: %v", err)
-	}
-	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
-	defer cc.Close(ctx)
-	if status, _ := Run(ctx, &td.Cfg, &td.State, cc); status.ExitCode != subcommands.ExitFailure {
+	if status, _ := Run(context.Background(), &td.Cfg, &td.State); status.ExitCode != subcommands.ExitFailure {
 		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitFailure, td.LogBuf.String())
 	}
 	test2ErrorTimeStamp, _ := ptypes.TimestampProto(test2ErrorTime)
@@ -691,10 +640,7 @@ func TestRunWithSkippedTests(t *gotesting.T) {
 		}
 		return 0
 	}
-	ctx := context.Background()
-	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
-	defer cc.Close(ctx)
-	status, results := Run(ctx, &td.Cfg, &td.State, cc)
+	status, results := Run(context.Background(), &td.Cfg, &td.State)
 	if status.ExitCode == subcommands.ExitFailure {
 		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.LogBuf.String())
 	}

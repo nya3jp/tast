@@ -1,0 +1,159 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d9cfacc1_fefe4356",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1306673
+      },
+      "writtenOn": "2021-05-27T07:54:43Z",
+      "side": 1,
+      "message": "Hi Bisakh,\n\nThanks for your CL! Here are some comments:",
+      "revId": "a14a864f30e648e7867b61f4f6dfcd7a6ed6c49f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7981d481_13c683ee",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 368,
+      "author": {
+        "id": 1306673
+      },
+      "writtenOn": "2021-05-27T07:54:43Z",
+      "side": 1,
+      "message": "nit: navigateGitRoot",
+      "range": {
+        "startLine": 368,
+        "startChar": 5,
+        "endLine": 368,
+        "endChar": 20
+      },
+      "revId": "a14a864f30e648e7867b61f4f6dfcd7a6ed6c49f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4b84bad2_5c47a9da",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 372,
+      "author": {
+        "id": 1306673
+      },
+      "writtenOn": "2021-05-27T07:54:43Z",
+      "side": 1,
+      "message": "nit: we can use cmd.Output() instead and don\u0027t provide Stderr",
+      "range": {
+        "startLine": 372,
+        "startChar": 1,
+        "endLine": 372,
+        "endChar": 24
+      },
+      "revId": "a14a864f30e648e7867b61f4f6dfcd7a6ed6c49f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b9354bb5_feba8a13",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 374,
+      "author": {
+        "id": 1306673
+      },
+      "writtenOn": "2021-05-27T07:54:43Z",
+      "side": 1,
+      "message": "we shouldn\u0027t ignore error here, anyway we are going to use Output() instead",
+      "range": {
+        "startLine": 374,
+        "startChar": 4,
+        "endLine": 374,
+        "endChar": 13
+      },
+      "revId": "a14a864f30e648e7867b61f4f6dfcd7a6ed6c49f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "4149173c_e0a31b92",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 378,
+      "author": {
+        "id": 1306673
+      },
+      "writtenOn": "2021-05-27T07:54:43Z",
+      "side": 1,
+      "message": "nit: maybe TrimRight will fit better here at least for readability? I think you only want to remove \\n from the end",
+      "range": {
+        "startLine": 378,
+        "startChar": 12,
+        "endLine": 378,
+        "endChar": 29
+      },
+      "revId": "a14a864f30e648e7867b61f4f6dfcd7a6ed6c49f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "894590a6_67b0fe54",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 379,
+      "author": {
+        "id": 1306673
+      },
+      "writtenOn": "2021-05-27T07:54:43Z",
+      "side": 1,
+      "message": "Can it really be an empty string? It looks like git command should fail if we are not in the git repo",
+      "range": {
+        "startLine": 379,
+        "startChar": 4,
+        "endLine": 379,
+        "endChar": 17
+      },
+      "revId": "a14a864f30e648e7867b61f4f6dfcd7a6ed6c49f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f498a69d_271856ce",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 394,
+      "author": {
+        "id": 1306673
+      },
+      "writtenOn": "2021-05-27T07:54:43Z",
+      "side": 1,
+      "message": "nit: maybe let\u0027s follow existing pattern by creating a string in panic message, e.g.\n\npanic(fmt.Sprintf(\"Failed to navigate to the git root directory: %v\", err))",
+      "range": {
+        "startLine": 394,
+        "startChar": 8,
+        "endLine": 394,
+        "endChar": 72
+      },
+      "revId": "a14a864f30e648e7867b61f4f6dfcd7a6ed6c49f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

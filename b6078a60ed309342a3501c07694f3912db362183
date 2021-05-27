@@ -37,6 +37,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "12d248f2_71e05ba4",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-05-27T08:27:08Z",
+      "side": 1,
+      "message": "The idea is like this:\n\n\"system info\" is a collection of system logs, e.g. /var/log/messages. So CollectSysInfo means to pull those log files. However we\u0027re interested in diff of those files between run start and run end, so we define \"state of system info\", a snapshot of system log files. This is called SysInfoState and represented as file sizes. GetSysInfoState is a method to obtain a snapshot.\n\nDoes this explanation make sense?",
+      "parentUuid": "5f8ffb39_2ba74ea5",
+      "revId": "b6078a60ed309342a3501c07694f3912db362183",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "8d9ddbc7_21d1f977",
         "filename": "src/chromiumos/tast/internal/protocol/testing.proto",
         "patchSetId": 2
@@ -48,6 +66,30 @@
       "writtenOn": "2021-05-27T07:14:09Z",
       "side": 1,
       "message": "copied from or copied to?",
+      "range": {
+        "startLine": 88,
+        "startChar": 29,
+        "endLine": 88,
+        "endChar": 56
+      },
+      "revId": "b6078a60ed309342a3501c07694f3912db362183",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "18c119a7_52946b7e",
+        "filename": "src/chromiumos/tast/internal/protocol/testing.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 88,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-05-27T08:27:08Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8d9ddbc7_21d1f977",
       "range": {
         "startLine": 88,
         "startChar": 29,

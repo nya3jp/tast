@@ -22,6 +22,30 @@
       },
       "revId": "5561384dcd14139f24b1030c087db55dc14d3943",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c9dde872_0dd27873",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/check/forbidden_calls.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1512082
+      },
+      "writtenOn": "2021-05-27T04:46:12Z",
+      "side": 0,
+      "message": "Hi, yeah I missed that edge case. Thought, the purpose of that function was to only check if error package is being used or not. \n\nHowever, it can be handled by this way, let me know how it sounds to you.\nIf there is a identifier node `errors` (Say var or another function) we will go for import with alias for \"errors\" package starting with \"errors\u003cuint\u003e\"(uint from 1 to ... until there is no name clash by that name).\ni.e kinda like this\n \n```\nimport errors1 \"chromiumos/tast/errors\"\n\nfunc test(){\n\terrors :\u003d \"hi there\"\n\terrors1.Errorf(errors)\n}\n```",
+      "parentUuid": "daf0a5d3_e87ac0d5",
+      "range": {
+        "startLine": 28,
+        "startChar": 0,
+        "endLine": 28,
+        "endChar": 85
+      },
+      "revId": "5561384dcd14139f24b1030c087db55dc14d3943",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

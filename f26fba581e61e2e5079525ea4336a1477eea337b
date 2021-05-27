@@ -89,6 +89,23 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "8ef99c54_bbf56b72",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1512082
+      },
+      "writtenOn": "2021-05-27T04:46:12Z",
+      "side": 1,
+      "message": "Thanks for the in-depth review. Liked it 👍",
+      "revId": "f26fba581e61e2e5079525ea4336a1477eea337b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "ad06f3a2_64aaf18d",
         "filename": "src/chromiumos/tast/cmd/tast-lint/check/forbidden_calls.go",
         "patchSetId": 1
@@ -135,6 +152,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "b89127a9_60393b51",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/check/forbidden_calls.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 128,
+      "author": {
+        "id": 1512082
+      },
+      "writtenOn": "2021-05-27T04:46:12Z",
+      "side": 1,
+      "message": "Sure. Thanks for the suggestion :)",
+      "parentUuid": "667209dc_d77a1953",
+      "range": {
+        "startLine": 128,
+        "startChar": 5,
+        "endLine": 128,
+        "endChar": 38
+      },
+      "revId": "f26fba581e61e2e5079525ea4336a1477eea337b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "d455077e_58f1393e",
         "filename": "src/chromiumos/tast/cmd/tast-lint/check/forbidden_calls.go",
         "patchSetId": 1
@@ -146,6 +187,30 @@
       "writtenOn": "2021-05-26T22:47:45Z",
       "side": 1,
       "message": "I think we don\u0027t want to import the same package twice. Also if there is an alias, then probably there is a reason for it (maybe there is another package with errors name)\n\nI think we even should fail if someone import errors as \".\" or \"_\". For now, maybe ignore such files?",
+      "range": {
+        "startLine": 133,
+        "startChar": 5,
+        "endLine": 133,
+        "endChar": 94
+      },
+      "revId": "f26fba581e61e2e5079525ea4336a1477eea337b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "be9e42e5_5d547290",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/check/forbidden_calls.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 133,
+      "author": {
+        "id": 1512082
+      },
+      "writtenOn": "2021-05-27T04:46:12Z",
+      "side": 1,
+      "message": "\u003e I think we don\u0027t want to import the same package twice. Also if there is an alias, then probably there is a reason for it (maybe there is another package with errors name)\n\u003e \n\u003e I think we even should fail if someone import errors as \".\" or \"_\". For now, maybe ignore such files?\n\n\nSounds good to me. But one thing, if there is another identifier with \"errors\" name, it will be handled by importing errors with a fresh alias. Generally, dot import is a bad practice, isn\u0027t it. Also using \"errors\" for side-effect is highly unlikely by \"_\" alias. Even if that happens, already we are handling import collision by using import aliases (my previous comment). So we may consider this as long as the syntax and the semantics is valid.\n\n```\nimport (\n\t. \"chromiumos/tast/errors\"\n\t_ \"chromiumos/tast/errors\"\n\terrors1 \"chromiumos/tast/errors\"\n)\n\nfunc test() {\n\terrors :\u003d \"hi there\"\n\terr :\u003d errors1.Errorf(errors) // notices \"errors\" is already a var, so import with errors1. [ earlier here fmt.Errorf was used ]\n\tWrap(err, \"valid syntax\") // using dot import\n}\n```\nPlease share your views. Thanks :)",
+      "parentUuid": "d455077e_58f1393e",
       "range": {
         "startLine": 133,
         "startChar": 5,

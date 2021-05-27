@@ -136,7 +136,6 @@ type Config struct {
 
 // State hold state attributes which are accumulated over the course of the run.
 type State struct {
-	StartedRun       bool                       // true if we got to the point where we started trying to execute tests
 	DUTInfo          *protocol.DUTInfo          // DUT information retrieved at the beginning of the current run
 	InitialSysInfo   *jsonprotocol.SysInfoState // initial state of system info (logs, crashes, etc.) on DUT before testing
 	FailuresCount    int                        // the number of test failures so far.

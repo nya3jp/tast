@@ -7,7 +7,6 @@ package main
 import (
 	"context"
 	"flag"
-	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -29,8 +28,6 @@ import (
 const (
 	fullLogName   = "full.txt"    // file in runConfig.resDir containing full output
 	timingLogName = "timing.json" // file in runConfig.resDir containing timing information
-
-	writeResultsTimeout = 15 * time.Second // time reserved for writing results when timeout is set
 )
 
 // runCmd implements subcommands.Command to support running tests.
@@ -161,21 +158,11 @@ func (r *runCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{})
 	}
 	lg.Log("Writing results to ", r.cfg.ResDir)
 
-	// If a deadline is set, reserve a bit of time to write results and collect system info.
-	// Skip doing this if a very-short timeout was set, since it's confusing to get an immediate timeout in that case.
-	var wrt time.Duration
-	if r.timeout > 2*writeResultsTimeout {
-		wrt = writeResultsTimeout
-	}
-	dl, _ := ctx.Deadline() // deadline is always set above
-	rctx, rcancel := xcontext.WithDeadline(ctx, dl.Add(-wrt), errors.Errorf("%v: global timeout reached (%v)", context.DeadlineExceeded, r.timeout-wrt))
-	defer rcancel(context.Canceled)
-
-	if err := run.SetupGrpcServices(rctx, r.cfg, &state); err != nil {
+	if err := run.SetupGrpcServices(ctx, r.cfg, &state); err != nil {
 		lg.Logf("Failed to set up GRPC servers: %v", err)
 		return subcommands.ExitFailure
 	}
-	if err := run.ResolveHosts(rctx, r.cfg, &state); err != nil {
+	if err := run.ResolveHosts(ctx, r.cfg, &state); err != nil {
 		lg.Logf("Failed to resolve hosts: %v", err)
 		return subcommands.ExitFailure
 	}
@@ -183,33 +170,17 @@ func (r *runCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{})
 	cc := target.NewConnCache(r.cfg, r.cfg.Target)
 	defer cc.Close(ctx)
 
-	status, results := r.wrapper.run(rctx, r.cfg, &state, cc)
+	status, results := r.wrapper.run(ctx, r.cfg, &state, cc)
 	allTestsRun := status.ExitCode == subcommands.ExitSuccess
 	if len(results) == 0 && len(state.TestNamesToSkip) == 0 && allTestsRun {
 		lg.Logf("No tests matched by pattern(s) %v", r.cfg.Patterns)
 		return subcommands.ExitFailure
 	}
 
-	// Write results as long as we at least tried to start executing tests.
-	// This step collects system information (e.g. logs and crashes), so we still want it to run
-	// if testing was interrupted, or even if no tests started due to the DUT not becoming ready:
-	// https://crbug.com/928445
-	if !status.FailedBeforeRun {
-		if err = r.wrapper.writeResults(ctx, r.cfg, &state, results, allTestsRun, cc); err != nil {
-			msg := fmt.Sprintf("Failed to write results: %v", err)
-			if status.ExitCode == subcommands.ExitSuccess {
-				status = run.Status{ExitCode: subcommands.ExitFailure, ErrorMsg: msg}
-			} else {
-				// Treat the earlier error as the "main" one, but also log the new one.
-				lg.Log(msg)
-			}
-		}
-
-		// Log the first line of the error as the last line of output to make it easy to see.
-		if status.ExitCode != subcommands.ExitSuccess {
-			if lines := strings.SplitN(status.ErrorMsg, "\n", 2); len(lines) >= 1 {
-				lg.Log(lines[0])
-			}
+	// Log the first line of the error as the last line of output to make it easy to see.
+	if status.ExitCode != subcommands.ExitSuccess {
+		if lines := strings.SplitN(status.ErrorMsg, "\n", 2); len(lines) >= 1 {
+			lg.Log(lines[0])
 		}
 	}
 

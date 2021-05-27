@@ -6,24 +6,21 @@ package runnerclient
 
 import (
 	"context"
-	"errors"
 	"path/filepath"
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/target"
 	"chromiumos/tast/internal/jsonprotocol"
+	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/timing"
 )
 
 // GetInitialSysInfo saves the initial state of the DUT's system information to cfg if
 // requested and if it hasn't already been saved. This is called before testing.
 // This updates state.InitialSysInfo, so calling twice won't work.
-func GetInitialSysInfo(ctx context.Context, cfg *config.Config, state *config.State, cc *target.ConnCache) error {
+func GetInitialSysInfo(ctx context.Context, cfg *config.Config, cc *target.ConnCache) (*protocol.SysInfoState, error) {
 	if !cfg.CollectSysInfo {
-		return nil
-	}
-	if state.InitialSysInfo != nil {
-		return errors.New("GetInitialSysInfo is already called")
+		return nil, nil
 	}
 
 	ctx, st := timing.Start(ctx, "initial_sys_info")
@@ -32,7 +29,7 @@ func GetInitialSysInfo(ctx context.Context, cfg *config.Config, state *config.St
 
 	conn, err := cc.Conn(ctx)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	var res jsonprotocol.RunnerGetSysInfoStateResult
@@ -42,21 +39,19 @@ func GetInitialSysInfo(ctx context.Context, cfg *config.Config, state *config.St
 		&jsonprotocol.RunnerArgs{Mode: jsonprotocol.RunnerGetSysInfoStateMode},
 		&res,
 	); err != nil {
-		return err
+		return nil, err
 	}
 
 	for _, warn := range res.Warnings {
 		cfg.Logger.Log("Error getting system info: ", warn)
 	}
-	state.InitialSysInfo = res.State.Proto()
-	return nil
+	return res.State.Proto(), nil
 }
 
 // collectSysInfo writes system information generated on the DUT during testing to the results dir if
-// doing so was requested. This is called after testing and relies on the state saved by
-// GetInitialSysInfo.
-func collectSysInfo(ctx context.Context, cfg *config.Config, state *config.State, cc *target.ConnCache) error {
-	if !cfg.CollectSysInfo || state.InitialSysInfo == nil {
+// doing so was requested.
+func collectSysInfo(ctx context.Context, cfg *config.Config, initialSysInfo *protocol.SysInfoState, cc *target.ConnCache) error {
+	if !cfg.CollectSysInfo {
 		return nil
 	}
 
@@ -75,7 +70,7 @@ func collectSysInfo(ctx context.Context, cfg *config.Config, state *config.State
 		localRunnerCommand(cfg, conn.SSHConn()),
 		&jsonprotocol.RunnerArgs{
 			Mode:           jsonprotocol.RunnerCollectSysInfoMode,
-			CollectSysInfo: &jsonprotocol.RunnerCollectSysInfoArgs{InitialState: *jsonprotocol.SysInfoStateFromProto(state.InitialSysInfo)},
+			CollectSysInfo: &jsonprotocol.RunnerCollectSysInfoArgs{InitialState: *jsonprotocol.SysInfoStateFromProto(initialSysInfo)},
 		},
 		&res,
 	); err != nil {

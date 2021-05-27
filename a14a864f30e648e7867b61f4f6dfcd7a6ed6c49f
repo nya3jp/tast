@@ -18,6 +18,23 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "57e788ca_637ffefb",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1512082
+      },
+      "writtenOn": "2021-05-27T08:32:39Z",
+      "side": 1,
+      "message": "Hi, thanks for the review. Let me know what you think :) ",
+      "revId": "a14a864f30e648e7867b61f4f6dfcd7a6ed6c49f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "7981d481_13c683ee",
@@ -31,6 +48,30 @@
       "writtenOn": "2021-05-27T07:54:43Z",
       "side": 1,
       "message": "nit: navigateGitRoot",
+      "range": {
+        "startLine": 368,
+        "startChar": 5,
+        "endLine": 368,
+        "endChar": 20
+      },
+      "revId": "a14a864f30e648e7867b61f4f6dfcd7a6ed6c49f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "88eae833_6056a686",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 368,
+      "author": {
+        "id": 1512082
+      },
+      "writtenOn": "2021-05-27T08:32:39Z",
+      "side": 1,
+      "message": "Okay",
+      "parentUuid": "7981d481_13c683ee",
       "range": {
         "startLine": 368,
         "startChar": 5,
@@ -66,6 +107,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "b2292473_6a6d80fc",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 372,
+      "author": {
+        "id": 1512082
+      },
+      "writtenOn": "2021-05-27T08:32:39Z",
+      "side": 1,
+      "message": "hi, cmd.Output() captures only stdout. The returned error is not elaborative (something like `exit status \u003cstatuscode\u003e`). The detailed error can be captured either by attaching a stderr buffer before the command execution or by using cmd.CombinedOutput(). I try to avoid the later one 😄",
+      "parentUuid": "4b84bad2_5c47a9da",
+      "range": {
+        "startLine": 372,
+        "startChar": 1,
+        "endLine": 372,
+        "endChar": 24
+      },
+      "revId": "a14a864f30e648e7867b61f4f6dfcd7a6ed6c49f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "b9354bb5_feba8a13",
         "filename": "src/chromiumos/tast/cmd/tast-lint/main.go",
         "patchSetId": 2
@@ -77,6 +142,30 @@
       "writtenOn": "2021-05-27T07:54:43Z",
       "side": 1,
       "message": "we shouldn\u0027t ignore error here, anyway we are going to use Output() instead",
+      "range": {
+        "startLine": 374,
+        "startChar": 4,
+        "endLine": 374,
+        "endChar": 13
+      },
+      "revId": "a14a864f30e648e7867b61f4f6dfcd7a6ed6c49f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "61cf497a_dc40a5af",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 374,
+      "author": {
+        "id": 1512082
+      },
+      "writtenOn": "2021-05-27T08:32:39Z",
+      "side": 1,
+      "message": "cmd.Run() returns just an error if any. So the code checks if the error is nil or not.",
+      "parentUuid": "b9354bb5_feba8a13",
       "range": {
         "startLine": 374,
         "startChar": 4,
@@ -112,6 +201,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "13e1ddb4_900571a2",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 378,
+      "author": {
+        "id": 1512082
+      },
+      "writtenOn": "2021-05-27T08:32:39Z",
+      "side": 1,
+      "message": "Maybe we don\u0027t need it at all, let me check once again with os.Chdir. Earlier on patchset 1 it was required to trim suffix \".git\" :)",
+      "parentUuid": "4149173c_e0a31b92",
+      "range": {
+        "startLine": 378,
+        "startChar": 12,
+        "endLine": 378,
+        "endChar": 29
+      },
+      "revId": "a14a864f30e648e7867b61f4f6dfcd7a6ed6c49f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "894590a6_67b0fe54",
         "filename": "src/chromiumos/tast/cmd/tast-lint/main.go",
         "patchSetId": 2
@@ -123,6 +236,30 @@
       "writtenOn": "2021-05-27T07:54:43Z",
       "side": 1,
       "message": "Can it really be an empty string? It looks like git command should fail if we are not in the git repo",
+      "range": {
+        "startLine": 379,
+        "startChar": 4,
+        "endLine": 379,
+        "endChar": 17
+      },
+      "revId": "a14a864f30e648e7867b61f4f6dfcd7a6ed6c49f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "22110848_a6c14f09",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 379,
+      "author": {
+        "id": 1512082
+      },
+      "writtenOn": "2021-05-27T08:32:39Z",
+      "side": 1,
+      "message": "Technically not with `git rev-parse --show-toplevel` as it returns absolute path. \nIn patchset 1, I was using `git rev-parse --git-dir` which in some case returns relative path. Removing in next patchset.",
+      "parentUuid": "894590a6_67b0fe54",
       "range": {
         "startLine": 379,
         "startChar": 4,
@@ -146,6 +283,30 @@
       "writtenOn": "2021-05-27T07:54:43Z",
       "side": 1,
       "message": "nit: maybe let\u0027s follow existing pattern by creating a string in panic message, e.g.\n\npanic(fmt.Sprintf(\"Failed to navigate to the git root directory: %v\", err))",
+      "range": {
+        "startLine": 394,
+        "startChar": 8,
+        "endLine": 394,
+        "endChar": 72
+      },
+      "revId": "a14a864f30e648e7867b61f4f6dfcd7a6ed6c49f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "34423104_e39c2ec9",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 394,
+      "author": {
+        "id": 1512082
+      },
+      "writtenOn": "2021-05-27T08:32:39Z",
+      "side": 1,
+      "message": "Sure.",
+      "parentUuid": "f498a69d_271856ce",
       "range": {
         "startLine": 394,
         "startChar": 8,

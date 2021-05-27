@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "88ebecfd_f6038b61",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-05-27T01:19:10Z",
+      "side": 1,
+      "message": "Tast doesn\u0027t support skip-at-runtime by design. If we need to skip tests, they should be described as SoftwareDeps/HardwareDeps/VarDeps.\n\nSee also:\nhttps://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/code_review_comments.md#test-dependencies\nhttps://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#device-dependencies\n",
+      "revId": "9317b5e4686336fcac397c8853c3ad3fd32c4cb8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

@@ -43,19 +43,15 @@ func TestGetInitialSysInfo(t *testing.T) {
 	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
 	defer cc.Close(context.Background())
 
-	if err := GetInitialSysInfo(context.Background(), &td.Cfg, &td.State, cc); err != nil {
+	initialSysInfo, err := GetInitialSysInfo(context.Background(), &td.Cfg, cc)
+	if err != nil {
 		t.Fatalf("GetInitialSysInfo(..., %+v) failed: %v", td.Cfg, err)
 	}
 
-	if td.State.InitialSysInfo == nil {
+	if initialSysInfo == nil {
 		t.Error("InitialSysInfo is nil")
-	} else if !reflect.DeepEqual(td.State.InitialSysInfo, res.State.Proto()) {
-		t.Errorf("InitialSysInfo is %+v; want %+v", td.State.InitialSysInfo, res.State.Proto())
-	}
-
-	// The second call should fail, because it tried to update cfg's field twice.
-	if err := GetInitialSysInfo(context.Background(), &td.Cfg, &td.State, cc); err == nil {
-		t.Fatal("Calling GetInitialSysInfo twice unexpectedly succeeded")
+	} else if !reflect.DeepEqual(initialSysInfo, res.State.Proto()) {
+		t.Errorf("InitialSysInfo is %+v; want %+v", initialSysInfo, res.State.Proto())
 	}
 }
 
@@ -63,10 +59,15 @@ func TestCollectSysInfo(t *testing.T) {
 	td := fakerunner.NewLocalTestData(t)
 	defer td.Close()
 
+	initialSysInfo := &protocol.SysInfoState{
+		LogInodeSizes: map[uint64]int64{1: 2, 3: 4},
+		MinidumpPaths: []string{"foo.dmp", "bar.dmp"},
+	}
+
 	td.RunFunc = func(args *jsonprotocol.RunnerArgs, stdout, stderr io.Writer) (status int) {
 		fakerunner.CheckArgs(t, args, &jsonprotocol.RunnerArgs{
 			Mode:           jsonprotocol.RunnerCollectSysInfoMode,
-			CollectSysInfo: &jsonprotocol.RunnerCollectSysInfoArgs{InitialState: *jsonprotocol.SysInfoStateFromProto(td.State.InitialSysInfo)},
+			CollectSysInfo: &jsonprotocol.RunnerCollectSysInfoArgs{InitialState: *jsonprotocol.SysInfoStateFromProto(initialSysInfo)},
 		})
 
 		json.NewEncoder(stdout).Encode(&jsonprotocol.RunnerCollectSysInfoResult{})
@@ -74,14 +75,10 @@ func TestCollectSysInfo(t *testing.T) {
 	}
 
 	td.Cfg.CollectSysInfo = true
-	td.State.InitialSysInfo = &protocol.SysInfoState{
-		LogInodeSizes: map[uint64]int64{1: 2, 3: 4},
-		MinidumpPaths: []string{"foo.dmp", "bar.dmp"},
-	}
 	ctx := context.Background()
 	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
 	defer cc.Close(ctx)
-	if err := collectSysInfo(ctx, &td.Cfg, &td.State, cc); err != nil {
+	if err := collectSysInfo(ctx, &td.Cfg, initialSysInfo, cc); err != nil {
 		t.Fatalf("collectSysInfo(..., %+v) failed: %v", td.Cfg, err)
 	}
 

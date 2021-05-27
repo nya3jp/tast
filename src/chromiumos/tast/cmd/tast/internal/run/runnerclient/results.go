@@ -86,7 +86,7 @@ var errUserReqTermination = errors.Wrap(ErrTerminate, "user requested tast to te
 // any tests failed) and false if it was aborted.
 // If cfg.CollectSysInfo is true, system information generated on the DUT during testing
 // (e.g. logs and crashes) will also be written to the results dir.
-func WriteResults(ctx context.Context, cfg *config.Config, state *config.State, results []*resultsjson.Result, complete bool, cc *target.ConnCache) error {
+func WriteResults(ctx context.Context, cfg *config.Config, state *config.State, results []*resultsjson.Result, initialSysInfo *protocol.SysInfoState, complete bool, cc *target.ConnCache) error {
 	f, err := os.Create(filepath.Join(cfg.ResDir, ResultsFilename))
 	if err != nil {
 		return err
@@ -95,7 +95,7 @@ func WriteResults(ctx context.Context, cfg *config.Config, state *config.State, 
 
 	// We don't want to bail out before writing test results if sys info collection fails,
 	// but we'll still return the error later.
-	sysInfoErr := collectSysInfo(ctx, cfg, state, cc)
+	sysInfoErr := collectSysInfo(ctx, cfg, initialSysInfo, cc)
 	if sysInfoErr != nil {
 		cfg.Logger.Log("Failed collecting system info: ", sysInfoErr)
 	}

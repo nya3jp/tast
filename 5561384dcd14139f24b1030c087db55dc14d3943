@@ -46,6 +46,30 @@
       },
       "revId": "5561384dcd14139f24b1030c087db55dc14d3943",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a7bd1bbb_375e59b2",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/check/forbidden_calls.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1306673
+      },
+      "writtenOn": "2021-05-27T08:18:02Z",
+      "side": 0,
+      "message": "I think we can just ignore such files and log error message. Nya, WDYT here?",
+      "parentUuid": "c9dde872_0dd27873",
+      "range": {
+        "startLine": 28,
+        "startChar": 0,
+        "endLine": 28,
+        "endChar": 85
+      },
+      "revId": "5561384dcd14139f24b1030c087db55dc14d3943",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

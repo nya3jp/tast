@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "232d00db_e63593d2",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-05-27T01:52:27Z",
+      "side": 1,
+      "message": "Could you elaborate on what kind of error messages you\u0027re interested in?\n\nIn general it is not easy to read from two pipes concurrently without races, so it\u0027s nicer if we could change the remote program to output errors to stdout instead.\n\nTast framework locks down stderr on starting test bundles (https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform/tast/src/chromiumos/tast/bundle/bundle.go) so user-defined gRPC services should not be able to write to stderr. There are a few cases where the framework writes to stderr, but in gRPC server mode, IIUC the only case is on registration errors (https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform/tast/src/chromiumos/tast/internal/bundle/bundle.go;drc\u003df81072fdff1c2b3172b973260b4ce4ff6b848668;l\u003d77). Is it what you\u0027re concerned about?",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 10,
+        "endChar": 30
+      },
+      "revId": "8ed47c4966c7a26830a0d33d660b72465fcbbae4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

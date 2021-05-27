@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "765bd9c9_138e314a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-05-27T02:52:21Z",
+      "side": 1,
+      "message": "I found that this CL resolves crbug.com/982171... removed the comment.\n",
+      "revId": "8a7e80acb5f99cff765c47d013f48c410ad03f48",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

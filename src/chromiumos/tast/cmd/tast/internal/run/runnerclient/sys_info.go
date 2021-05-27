@@ -48,7 +48,7 @@ func GetInitialSysInfo(ctx context.Context, cfg *config.Config, state *config.St
 	for _, warn := range res.Warnings {
 		cfg.Logger.Log("Error getting system info: ", warn)
 	}
-	state.InitialSysInfo = &res.State
+	state.InitialSysInfo = res.State.Proto()
 	return nil
 }
 
@@ -75,7 +75,7 @@ func collectSysInfo(ctx context.Context, cfg *config.Config, state *config.State
 		localRunnerCommand(cfg, conn.SSHConn()),
 		&jsonprotocol.RunnerArgs{
 			Mode:           jsonprotocol.RunnerCollectSysInfoMode,
-			CollectSysInfo: &jsonprotocol.RunnerCollectSysInfoArgs{InitialState: *state.InitialSysInfo},
+			CollectSysInfo: &jsonprotocol.RunnerCollectSysInfoArgs{InitialState: *jsonprotocol.SysInfoStateFromProto(state.InitialSysInfo)},
 		},
 		&res,
 	); err != nil {

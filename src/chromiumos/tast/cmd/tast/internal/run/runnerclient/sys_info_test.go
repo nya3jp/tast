@@ -14,6 +14,7 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/fakerunner"
 	"chromiumos/tast/cmd/tast/internal/run/target"
 	"chromiumos/tast/internal/jsonprotocol"
+	"chromiumos/tast/internal/protocol"
 )
 
 // This file uses types and functions from local_test.go.
@@ -48,8 +49,8 @@ func TestGetInitialSysInfo(t *testing.T) {
 
 	if td.State.InitialSysInfo == nil {
 		t.Error("InitialSysInfo is nil")
-	} else if !reflect.DeepEqual(*td.State.InitialSysInfo, res.State) {
-		t.Errorf("InitialSysInfo is %+v; want %+v", *td.State.InitialSysInfo, res.State)
+	} else if !reflect.DeepEqual(td.State.InitialSysInfo, res.State.Proto()) {
+		t.Errorf("InitialSysInfo is %+v; want %+v", td.State.InitialSysInfo, res.State.Proto())
 	}
 
 	// The second call should fail, because it tried to update cfg's field twice.
@@ -65,7 +66,7 @@ func TestCollectSysInfo(t *testing.T) {
 	td.RunFunc = func(args *jsonprotocol.RunnerArgs, stdout, stderr io.Writer) (status int) {
 		fakerunner.CheckArgs(t, args, &jsonprotocol.RunnerArgs{
 			Mode:           jsonprotocol.RunnerCollectSysInfoMode,
-			CollectSysInfo: &jsonprotocol.RunnerCollectSysInfoArgs{InitialState: *td.State.InitialSysInfo},
+			CollectSysInfo: &jsonprotocol.RunnerCollectSysInfoArgs{InitialState: *jsonprotocol.SysInfoStateFromProto(td.State.InitialSysInfo)},
 		})
 
 		json.NewEncoder(stdout).Encode(&jsonprotocol.RunnerCollectSysInfoResult{})
@@ -73,7 +74,7 @@ func TestCollectSysInfo(t *testing.T) {
 	}
 
 	td.Cfg.CollectSysInfo = true
-	td.State.InitialSysInfo = &jsonprotocol.SysInfoState{
+	td.State.InitialSysInfo = &protocol.SysInfoState{
 		LogInodeSizes: map[uint64]int64{1: 2, 3: 4},
 		MinidumpPaths: []string{"foo.dmp", "bar.dmp"},
 	}

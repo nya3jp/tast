@@ -71,6 +71,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "23f3f6d9_86e296f4",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-05-31T02:17:58Z",
+      "side": 1,
+      "message": "Sure. While I said offline that we can\u0027t change the gRPC method names, actually it\u0027s possible because we don\u0027t use gRPC between Tast CLI and test runners yet. So let me think about naming again, and if I come up with better names, let me prepare a separate CL.",
+      "parentUuid": "9188acca_cdfa9844",
+      "revId": "b6078a60ed309342a3501c07694f3912db362183",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "8d9ddbc7_21d1f977",

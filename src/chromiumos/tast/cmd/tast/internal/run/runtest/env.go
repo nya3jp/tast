@@ -182,6 +182,7 @@ func defaultHandlers(cfg *envConfig) []fakesshserver.Handler {
 		// Pass-through basic shell commands.
 		fakesshserver.ShellHandler("exec mkdir "),
 		fakesshserver.ShellHandler("exec tar "),
+		fakesshserver.ShellHandler("exec sha1sum "),
 		// Simulate boot_id.
 		fakesshserver.ExactMatchHandler("exec cat /proc/sys/kernel/random/boot_id", func(_ io.Reader, stdout, stderr io.Writer) int {
 			bootID, err := cfg.BootID()

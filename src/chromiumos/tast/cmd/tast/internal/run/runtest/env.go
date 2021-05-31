@@ -244,5 +244,9 @@ func defaultHandlers(cfg *dutConfig) []fakesshserver.Handler {
 			io.WriteString(stdout, "/sbin/init: ELF 64-bit LSB shared object, x86-64, version 1\n")
 			return 0
 		}),
+		// Do nothing on sync(1).
+		fakesshserver.ExactMatchHandler("exec sync", func(_ io.Reader, _, _ io.Writer) int {
+			return 0
+		}),
 	}
 }

@@ -31,8 +31,10 @@ func DownloadPrivateBundles(ctx context.Context, cfg *config.Config, conn *targe
 	}
 
 	var tlwServer string
+	var dutName string
 	if addr, ok := conn.Services().TLWAddr(); ok {
 		tlwServer = addr.String()
+		dutName = target
 	}
 
 	var res jsonprotocol.RunnerDownloadPrivateBundlesResult
@@ -44,7 +46,7 @@ func DownloadPrivateBundles(ctx context.Context, cfg *config.Config, conn *targe
 			DownloadPrivateBundles: &jsonprotocol.RunnerDownloadPrivateBundlesArgs{
 				Devservers:        localDevservers,
 				TLWServer:         tlwServer,
-				DUTName:           target,
+				DUTName:           dutName,
 				BuildArtifactsURL: cfg.BuildArtifactsURL,
 			},
 		},

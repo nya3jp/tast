@@ -6,7 +6,6 @@ package devserver
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"time"
 
@@ -21,9 +20,6 @@ func NewClient(ctx context.Context, devservers []string, tlwServer, dutName stri
 	if tlwServer != "" {
 		if len(devservers) > 0 {
 			return nil, fmt.Errorf("both tlwServer (%q) and devservers (%v) are set", tlwServer, devservers)
-		}
-		if dutName == "" {
-			return nil, errors.New("dutName should be set when TLW server is used")
 		}
 		cl, err := NewTLWClient(ctx, tlwServer, dutName)
 		if err != nil {

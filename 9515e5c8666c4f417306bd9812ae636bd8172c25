@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0dd6139a_4a783b80",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/main.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 377,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-05-31T09:03:14Z",
+      "side": 1,
+      "message": "If we call os.Chdir here, we fail to access relative file paths specified in command line. For example:\n\n cd src/chromiumos/tast/cmd/tast\n tast-lint ./main.go",
+      "revId": "9515e5c8666c4f417306bd9812ae636bd8172c25",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

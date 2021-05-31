@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package run
+package run_test
 
 import (
+	"bytes"
 	"context"
-	"encoding/json"
-	"io"
+	"fmt"
 	"net"
 	"os"
 	"path/filepath"
@@ -16,25 +16,22 @@ import (
 	gotesting "testing"
 	"time"
 
-	"github.com/golang/protobuf/ptypes"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"go.chromium.org/chromiumos/config/go/api/test/tls"
 	"google.golang.org/grpc"
 
+	"chromiumos/tast/cmd/tast/internal/logging"
+	"chromiumos/tast/cmd/tast/internal/run"
+	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/fakereports"
-	"chromiumos/tast/cmd/tast/internal/run/fakerunner"
 	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
 	"chromiumos/tast/cmd/tast/internal/run/runnerclient"
 	"chromiumos/tast/cmd/tast/internal/run/runtest"
 	"chromiumos/tast/cmd/tast/internal/run/target"
-	"chromiumos/tast/errors"
 	frameworkprotocol "chromiumos/tast/framework/protocol"
-	"chromiumos/tast/internal/control"
 	"chromiumos/tast/internal/faketlw"
-	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/protocol"
-	"chromiumos/tast/internal/runner"
 	"chromiumos/tast/internal/testing"
 )
 
@@ -45,7 +42,7 @@ func TestRun(t *gotesting.T) {
 	cfg := env.Config()
 	state := env.State()
 
-	if _, err := Run(ctx, cfg, state); err != nil {
+	if _, err := run.Run(ctx, cfg, state); err != nil {
 		t.Errorf("Run failed: %v", err)
 	}
 
@@ -62,7 +59,7 @@ func TestRunNoTestToRun(t *gotesting.T) {
 	cfg := env.Config()
 	state := env.State()
 
-	if _, err := Run(ctx, cfg, state); err != nil {
+	if _, err := run.Run(ctx, cfg, state); err != nil {
 		t.Errorf("Run failed: %v", err)
 	}
 
@@ -83,7 +80,7 @@ func TestRunPartialRun(t *gotesting.T) {
 	cfg.RemoteRunner = filepath.Join(env.TempDir(), "missing_remote_test_runner")
 	state := env.State()
 
-	if _, err := Run(ctx, cfg, state); err == nil {
+	if _, err := run.Run(ctx, cfg, state); err == nil {
 		t.Error("Run unexpectedly succeeded despite missing remote_test_runner")
 	}
 }
@@ -96,199 +93,165 @@ func TestRunError(t *gotesting.T) {
 	cfg.KeyFile = "" // force SSH auth error
 	state := env.State()
 
-	if _, err := Run(ctx, cfg, state); err == nil {
+	if _, err := run.Run(ctx, cfg, state); err == nil {
 		t.Error("Run unexpectedly succeeded despite unaccessible SSH server")
 	}
 }
 
 func TestRunEphemeralDevserver(t *gotesting.T) {
-	td := fakerunner.NewLocalTestData(t)
-	defer td.Close()
+	ctx := context.Background()
 
-	td.Cfg.RunLocal = true
-	td.RunFunc = func(args *jsonprotocol.RunnerArgs, stdout, stderr io.Writer) (status int) {
-		switch args.Mode {
-		case jsonprotocol.RunnerRunTestsMode:
-			if len(args.RunTests.Devservers) != 1 {
-				t.Errorf("Devservers=%#v; want 1 entry", args.RunTests.Devservers)
-			}
-			mw := control.NewMessageWriter(stdout)
-			mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
-			mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
-		case jsonprotocol.RunnerListTestsMode:
-			runner.WriteListTestsResultAsJSON(stdout, nil)
+	env := runtest.SetUp(t, runtest.WithOnRunLocalTestsInit(func(init *protocol.RunTestsInit) {
+		if ds := init.GetRunConfig().GetServiceConfig().GetDevservers(); len(ds) != 1 {
+			t.Errorf("Local runner: devservers=%#v; want 1 entry", ds)
 		}
-		return 0
-	}
-	td.Cfg.Devservers = nil // clear the default mock devservers set in NewLocalTestData
-	td.Cfg.UseEphemeralDevserver = true
+	}))
+	cfg := env.Config()
+	cfg.UseEphemeralDevserver = true
+	state := env.State()
 
-	if _, err := Run(context.Background(), &td.Cfg, &td.State); err != nil {
+	if _, err := run.Run(ctx, cfg, state); err != nil {
 		t.Errorf("Run failed: %v", err)
 	}
 }
 
 func TestRunDownloadPrivateBundles(t *gotesting.T) {
-	td := fakerunner.NewLocalTestData(t)
-	defer td.Close()
-	td.Cfg.Devservers = []string{"http://example.com:8080"}
-	testRunDownloadPrivateBundles(t, td)
+	const devserverURL = "http://example.com:8080"
+
+	called := make(map[string]struct{})
+	makeHandler := func(role string) runtest.DUTOption {
+		return runtest.WithDownloadPrivateBundles(func(req *protocol.DownloadPrivateBundlesRequest) (*protocol.DownloadPrivateBundlesResponse, error) {
+			called[role] = struct{}{}
+			want := &protocol.ServiceConfig{Devservers: []string{devserverURL}}
+			if diff := cmp.Diff(req.GetServiceConfig(), want); diff != "" {
+				t.Errorf("ServiceConfig mismatch (-got +want):\n%s", diff)
+			}
+			return &protocol.DownloadPrivateBundlesResponse{}, nil
+		})
+	}
+
+	env := runtest.SetUp(
+		t,
+		makeHandler("dut0"),
+		runtest.WithCompanionDUT("dut1", makeHandler("dut1")),
+		runtest.WithCompanionDUT("dut2", makeHandler("dut2")),
+	)
+	cfg := env.Config()
+	cfg.Devservers = []string{devserverURL}
+	cfg.DownloadPrivateBundles = true
+	state := env.State()
+
+	if _, err := run.Run(context.Background(), cfg, state); err != nil {
+		t.Errorf("Run failed: %v", err)
+	}
+
+	wantCalled := map[string]struct{}{"dut0": {}, "dut1": {}, "dut2": {}}
+	if diff := cmp.Diff(called, wantCalled); diff != "" {
+		t.Errorf("DownloadPrivateBundles not called (-got +want):\n%s", diff)
+	}
 }
 
 func TestRunDownloadPrivateBundlesWithTLW(t *gotesting.T) {
-	const targetName = "dut001"
-	td := fakerunner.NewLocalTestData(t)
-	defer td.Close()
+	const gsURL = "gs://a/b/c"
 
-	host, portStr, err := net.SplitHostPort(td.Cfg.Target)
-	if err != nil {
-		t.Fatal("net.SplitHostPort: ", err)
+	var tlwAddr string // filled in later
+	called := make(map[string]struct{})
+	makeHandler := func(role, name string) runtest.DUTOption {
+		return runtest.WithDownloadPrivateBundles(func(req *protocol.DownloadPrivateBundlesRequest) (*protocol.DownloadPrivateBundlesResponse, error) {
+			called[role] = struct{}{}
+
+			// We should get tlwDUTName as the TLW name.
+			// Due to a bug, an incorrect TLW name is given for now.
+			// TODO(b/191318903): Uncomment this check once the bug is fixed.
+			/*
+				if n := req.GetServiceConfig().GetTlwSelfName(); n != name {
+					t.Errorf("DownloadPrivateBundles: TLW name mismatch: got %q, want %q", n, name)
+				}
+			*/
+
+			// DownloadPrivateBundles is called on the DUT, thus we don't have
+			// direct access to the TLW server. Tast CLI should have set up SSH
+			// port forwarding.
+			if addr := req.GetServiceConfig().GetTlwServer(); addr == tlwAddr {
+				t.Errorf("DownloadPrivateBundles: TLW is not port-forwarded (%s)", addr)
+			}
+
+			// Make sure TLW is working over the forwarded port.
+			conn, err := grpc.Dial(req.GetServiceConfig().GetTlwServer(), grpc.WithInsecure())
+			if err != nil {
+				t.Errorf("DownloadPrivateBundles: Failed to connect to TLW server: %v", err)
+				return nil, nil
+			}
+			defer conn.Close()
+
+			cl := tls.NewWiringClient(conn)
+			// TODO(b/191318903): Use name as DutName.
+			if _, err = cl.CacheForDut(context.Background(), &tls.CacheForDutRequest{Url: gsURL, DutName: "dut0"}); err != nil {
+				t.Errorf("CacheForDut failed: %v", err)
+			}
+			return nil, nil
+		})
 	}
-	port, err := strconv.ParseUint(portStr, 10, 32)
-	if err != nil {
-		t.Fatal("strconv.ParseUint: ", err)
-	}
 
-	// Start a TLW server that resolves "dut001:22" to the real target addr/port.
-	stopFunc, tlwAddr := faketlw.StartWiringServer(t, faketlw.WithDUTPortMap(map[faketlw.NamePort]faketlw.NamePort{
-		{Name: targetName, Port: 22}: {Name: host, Port: int32(port)},
-	}), faketlw.WithCacheFileMap(map[string][]byte{"gs://a/b/c": []byte("abc")}),
-		faketlw.WithDUTName(targetName))
-	defer stopFunc()
+	env := runtest.SetUp(
+		t,
+		makeHandler("primary", "dut0"),
+		runtest.WithCompanionDUT("role1", makeHandler("role1", "dut1")),
+		runtest.WithCompanionDUT("role2", makeHandler("role2", "dut2")),
+	)
 
-	td.Cfg.Target = targetName
-	td.Cfg.TLWServer = tlwAddr
-	td.Cfg.Devservers = nil
+	cfg := env.Config()
 
-	testRunDownloadPrivateBundles(t, td)
-}
-
-func checkTLWServer(address string) error {
-	conn, err := grpc.Dial(address, grpc.WithInsecure())
-	if err != nil {
-		return errors.Wrapf(err, "failed to dial to %s", address)
-	}
-	defer conn.Close()
-	req := tls.CacheForDutRequest{Url: "gs://a/b/c", DutName: "dut001"}
-	cl := tls.NewWiringClient(conn)
-	ctx := context.Background()
-	if _, err = cl.CacheForDut(ctx, &req); err != nil {
-		return errors.Wrapf(err, "failed to call CacheForDut(%v)", req)
-	}
-	return nil
-}
-
-// TestRunDownloadPrivateBundlesWithCompanionDUTs makes sure private bundles would be downloaded.
-func TestRunDownloadPrivateBundlesWithCompanionDUTs(t *gotesting.T) {
-	td := fakerunner.NewLocalTestData(t, fakerunner.WithCompanionDUTRoles([]string{"cd1", "cd2"}))
-	defer td.Close()
-	td.Cfg.Devservers = []string{"http://example.com:8080"}
-	testRunDownloadPrivateBundles(t, td)
-}
-
-// TestRunDownloadPrivateBundlesWithCompanionDUTsAndTLW makes sure private bundles would be downloaded with TLw.
-func TestRunDownloadPrivateBundlesWithCompanionDUTsAndTLW(t *gotesting.T) {
-	const targetName = "dut001"
-	const companionRole = "compRole"
-	const companionDutName = "compDUT0"
-	td := fakerunner.NewLocalTestData(t, fakerunner.WithCompanionDUTRoles([]string{companionRole}))
-	defer td.Close()
-
-	var hosts []string
-	var ports []uint64
-	for _, server := range td.SrvData.Srvs {
-		host, portStr, err := net.SplitHostPort(server.Addr().String())
+	// Start a TLW server. This needs to be done after runtest.SetUp because
+	// the TLW server needs to know the address of the fake SSH server.
+	portMap := make(map[faketlw.NamePort]faketlw.NamePort)
+	for _, r := range []struct{ name, target string }{
+		{"dut0", cfg.Target},
+		{"dut1", cfg.CompanionDUTs["role1"]},
+		{"dut2", cfg.CompanionDUTs["role2"]},
+	} {
+		host, portStr, err := net.SplitHostPort(r.target)
 		if err != nil {
 			t.Fatal("net.SplitHostPort: ", err)
 		}
-		hosts = append(hosts, host)
-		port, err := strconv.ParseUint(portStr, 10, 32)
+		port, err := strconv.ParseInt(portStr, 10, 32)
 		if err != nil {
 			t.Fatal("strconv.ParseUint: ", err)
 		}
-		ports = append(ports, port)
+		portMap[faketlw.NamePort{Name: r.name, Port: 22}] = faketlw.NamePort{Name: host, Port: int32(port)}
 	}
-
-	// Start a TLW server that resolves "dut001:22" to the real target addr/port.
-	stopFunc, tlwAddr := faketlw.StartWiringServer(t, faketlw.WithDUTPortMap(map[faketlw.NamePort]faketlw.NamePort{
-		{Name: targetName, Port: 22}:       {Name: hosts[0], Port: int32(ports[0])},
-		{Name: companionDutName, Port: 22}: {Name: hosts[1], Port: int32(ports[1])},
-	}), faketlw.WithCacheFileMap(map[string][]byte{"gs://a/b/c": []byte("abc")}),
-		faketlw.WithDUTName(targetName))
+	stopFunc, tlwAddr := faketlw.StartWiringServer(
+		t,
+		faketlw.WithDUTName("dut0"),
+		faketlw.WithDUTPortMap(portMap),
+		faketlw.WithCacheFileMap(map[string][]byte{gsURL: []byte("abc")}),
+	)
 	defer stopFunc()
 
-	td.Cfg.Target = targetName
-	td.Cfg.TLWServer = tlwAddr
-	td.Cfg.Devservers = nil
-	td.Cfg.CompanionDUTs = map[string]string{companionRole: companionDutName}
-	testRunDownloadPrivateBundles(t, td)
-}
+	cfg.TLWServer = tlwAddr
+	cfg.Target = "dut0"
+	cfg.CompanionDUTs["role1"] = "dut1"
+	cfg.CompanionDUTs["role2"] = "dut2"
+	cfg.DownloadPrivateBundles = true
+	state := env.State()
 
-func testRunDownloadPrivateBundles(t *gotesting.T, td *fakerunner.LocalTestData) {
-	td.Cfg.RunLocal = true
-	duts := make(map[string]struct{})
-	for _, srv := range td.SrvData.Srvs {
-		duts[srv.Addr().String()] = struct{}{}
-	}
-	dutsWithDownloadRequest := make(map[string]struct{})
-	td.RunFunc = func(args *jsonprotocol.RunnerArgs, stdout, stderr io.Writer) (status int) {
-		switch args.Mode {
-		case jsonprotocol.RunnerRunTestsMode:
-			mw := control.NewMessageWriter(stdout)
-			mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
-			mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
-		case jsonprotocol.RunnerListTestsMode:
-			runner.WriteListTestsResultAsJSON(stdout, nil)
-		case jsonprotocol.RunnerDownloadPrivateBundlesMode:
-			dutName := args.DownloadPrivateBundles.DUTName
-			if strings.Contains(dutName, "@") {
-				userHost := strings.SplitN(dutName, "@", 2)
-				dutName = userHost[1]
-			}
-			if _, ok := duts[dutName]; !ok {
-				t.Errorf("got unknown DUT name %v while downloading private bundle", dutName)
-			}
-			dutsWithDownloadRequest[dutName] = struct{}{}
-			exp := jsonprotocol.RunnerDownloadPrivateBundlesArgs{
-				Devservers:        td.Cfg.Devservers,
-				DUTName:           args.DownloadPrivateBundles.DUTName,
-				BuildArtifactsURL: td.Cfg.BuildArtifactsURL,
-			}
-			if diff := cmp.Diff(exp, *args.DownloadPrivateBundles,
-				cmpopts.IgnoreFields(*args.DownloadPrivateBundles, "TLWServer")); diff != "" {
-				t.Errorf("got args %+v; want %+v; diff=%v", *args.DownloadPrivateBundles, exp, diff)
-			}
-			json.NewEncoder(stdout).Encode(&jsonprotocol.RunnerDownloadPrivateBundlesResult{})
-
-			if td.Cfg.TLWServer != "" {
-				// Try connecting to TLWServer through ssh port forwarding.
-				if err := checkTLWServer(args.DownloadPrivateBundles.TLWServer); err != nil {
-					t.Errorf("TLW server was not available: %v", err)
-				}
-			}
-		default:
-			t.Errorf("Unexpected args.Mode = %v", args.Mode)
-		}
-		return 0
-	}
-
-	td.Cfg.DownloadPrivateBundles = true
-
-	if _, err := Run(context.Background(), &td.Cfg, &td.State); err != nil {
+	if _, err := run.Run(context.Background(), cfg, state); err != nil {
 		t.Errorf("Run failed: %v", err)
 	}
-	if diff := cmp.Diff(dutsWithDownloadRequest, duts); diff != "" {
-		t.Errorf("got DUTs with download request %+v; want %+v; diff=%v", dutsWithDownloadRequest, duts, diff)
+	wantCalled := map[string]struct{}{"primary": {}, "role1": {}, "role2": {}}
+	if diff := cmp.Diff(called, wantCalled); diff != "" {
+		t.Errorf("DownloadPrivateBundles not called (-got +want):\n%s", diff)
 	}
 }
 
 func TestRunTLW(t *gotesting.T) {
-	const targetName = "the_dut"
+	ctx := context.Background()
 
-	td := fakerunner.NewLocalTestData(t)
-	defer td.Close()
+	env := runtest.SetUp(t)
+	cfg := env.Config()
+	state := env.State()
 
-	host, portStr, err := net.SplitHostPort(td.Cfg.Target)
+	host, portStr, err := net.SplitHostPort(cfg.Target)
 	if err != nil {
 		t.Fatal("net.SplitHostPort: ", err)
 	}
@@ -298,90 +261,63 @@ func TestRunTLW(t *gotesting.T) {
 	}
 
 	// Start a TLW server that resolves "the_dut:22" to the real target addr/port.
+	const targetName = "the_dut"
 	stopFunc, tlwAddr := faketlw.StartWiringServer(t, faketlw.WithDUTPortMap(map[faketlw.NamePort]faketlw.NamePort{
 		{Name: targetName, Port: 22}: {Name: host, Port: int32(port)},
 	}))
 	defer stopFunc()
 
-	td.Cfg.RunLocal = true
-	td.RunFunc = func(args *jsonprotocol.RunnerArgs, stdout, stderr io.Writer) (status int) {
-		switch args.Mode {
-		case jsonprotocol.RunnerRunTestsMode:
-			mw := control.NewMessageWriter(stdout)
-			mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
-			mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
-		case jsonprotocol.RunnerListTestsMode:
-			runner.WriteListTestsResultAsJSON(stdout, nil)
-		}
-		return 0
-	}
-	td.Cfg.Target = targetName
-	td.Cfg.TLWServer = tlwAddr
+	cfg.Target = targetName
+	cfg.TLWServer = tlwAddr
 
-	if _, err := Run(context.Background(), &td.Cfg, &td.State); err != nil {
+	if _, err := run.Run(ctx, cfg, state); err != nil {
 		t.Errorf("Run failed: %v", err)
 	}
 }
 
-// TestRunWithReports_LogStream tests Run() with fake Reports server and log stream.
+// TestRunWithReports_LogStream tests run.Run() with fake Reports server and log stream.
 func TestRunWithReports_LogStream(t *gotesting.T) {
+	ctx := context.Background()
+
 	srv, stopFunc, addr := fakereports.Start(t, 0)
 	defer stopFunc()
 
-	td := fakerunner.NewLocalTestData(t)
-	defer td.Close()
-	td.Cfg.ReportsServer = addr
-	td.Cfg.RunLocal = true
-
 	const (
-		resultDir = "/tmp/tast/results/latest"
-		test1Name = "foo.FirstTest"
-		// Log file path for a test. Composed by handleTestStart() in results.go.
+		bundleName   = "bundle"
+		test1Name    = "foo.FirstTest"
 		test1Path    = "tests/foo.FirstTest/log.txt"
-		test1Desc    = "First description"
 		test1LogText = "Here's a test log message"
 		test2Name    = "foo.SecondTest"
 		test2Path    = "tests/foo.SecondTest/log.txt"
-		test2Desc    = "Second description"
 		test2LogText = "Here's another test log message"
 	)
-	td.Cfg.ResDir = resultDir
-	tests := []*jsonprotocol.EntityWithRunnabilityInfo{
-		{
-			EntityInfo: jsonprotocol.EntityInfo{
-				Name: "pkg.Test_1",
-			},
-		},
-		{
-			EntityInfo: jsonprotocol.EntityInfo{
-				Name: "pkg.Test_2",
-			},
-		},
-	}
 
-	td.RunFunc = func(args *jsonprotocol.RunnerArgs, stdout, stderr io.Writer) (status int) {
-		switch args.Mode {
-		case jsonprotocol.RunnerRunTestsMode:
-			patterns := args.RunTests.BundleArgs.Patterns
-			mw := control.NewMessageWriter(stdout)
-			mw.WriteMessage(&control.RunStart{Time: time.Unix(0, 0), NumTests: len(patterns)})
-			mw.WriteMessage(&control.EntityStart{Time: time.Unix(10, 0), Info: jsonprotocol.EntityInfo{Name: test1Name}})
-			mw.WriteMessage(&control.EntityLog{Time: time.Unix(15, 0), Name: test1Name, Text: test1LogText})
-			mw.WriteMessage(&control.EntityEnd{Time: time.Unix(20, 0), Name: test1Name})
-			mw.WriteMessage(&control.EntityStart{Time: time.Unix(30, 0), Info: jsonprotocol.EntityInfo{Name: test2Name}})
-			mw.WriteMessage(&control.EntityLog{Time: time.Unix(35, 0), Name: test2Name, Text: test2LogText})
-			mw.WriteMessage(&control.EntityEnd{Time: time.Unix(40, 0), Name: test2Name})
-			mw.WriteMessage(&control.RunEnd{Time: time.Unix(50, 0), OutDir: ""})
-		case jsonprotocol.RunnerListTestsMode:
-			runner.WriteListTestsResultAsJSON(stdout, tests)
-		case jsonprotocol.RunnerListFixturesMode:
-			json.NewEncoder(stdout).Encode(&jsonprotocol.RunnerListFixturesResult{})
-		}
-		return 0
-	}
-	if _, err := Run(context.Background(), &td.Cfg, &td.State); err != nil {
+	localReg := testing.NewRegistry(bundleName)
+	localReg.AddTestInstance(&testing.TestInstance{
+		Name:    test1Name,
+		Timeout: time.Minute,
+		Func: func(ctx context.Context, s *testing.State) {
+			s.Log(test1LogText)
+		},
+	})
+	remoteReg := testing.NewRegistry(bundleName)
+	remoteReg.AddTestInstance(&testing.TestInstance{
+		Name:    test2Name,
+		Timeout: time.Minute,
+		Func: func(ctx context.Context, s *testing.State) {
+			s.Log(test2LogText)
+		},
+	})
+
+	env := runtest.SetUp(t, runtest.WithLocalBundles(localReg), runtest.WithRemoteBundles(remoteReg))
+	cfg := env.Config()
+	cfg.ReportsServer = addr
+	state := env.State()
+
+	if _, err := run.Run(ctx, cfg, state); err != nil {
 		t.Errorf("Run failed: %v", err)
 	}
+
 	if str := string(srv.GetLog(test1Name, test1Path)); !strings.Contains(str, test1LogText) {
 		t.Errorf("Expected log not received for test 1; got %q; should contain %q", str, test1LogText)
 	}
@@ -396,515 +332,389 @@ func TestRunWithReports_LogStream(t *gotesting.T) {
 	}
 }
 
-// TestRunWithReports_ReportResult tests Run() with fake Reports server and reporting results.
+// TestRunWithReports_ReportResult tests run.Run() with fake Reports server and reporting results.
 func TestRunWithReports_ReportResult(t *gotesting.T) {
 	srv, stopFunc, addr := fakereports.Start(t, 0)
 	defer stopFunc()
 
-	td := fakerunner.NewLocalTestData(t)
-	defer td.Close()
-	td.Cfg.ReportsServer = addr
-	td.Cfg.RunLocal = true
-
 	const (
-		test1Name       = "foo.FirstTest"
-		test1Desc       = "First description"
-		test2Name       = "foo.SecondTest"
-		test2Desc       = "Second description"
-		test3Name       = "foo.ThirdTest"
-		test3Desc       = "Third description"
-		test3SkipReason = "Test skip reason"
+		bundleName  = "bundle"
+		test1Name   = "pkg.Test1"
+		test2Name   = "pkg.Test2"
+		test3Name   = "pkg.Test3"
+		test2Error  = "Intentionally failed"
+		softwareDep = "swdep"
 	)
-	test2Error := jsonprotocol.Error{
-		Reason: "Intentionally failed",
-		File:   "/tmp/file.go",
-		Line:   21,
-		Stack:  "None",
-	}
-	test2ErrorTime := time.Unix(35, 0)
-	tests := []*jsonprotocol.EntityWithRunnabilityInfo{
-		{
-			EntityInfo: jsonprotocol.EntityInfo{
-				Name: test1Name,
-			},
-		},
-		{
-			EntityInfo: jsonprotocol.EntityInfo{
-				Name: test2Name,
-			},
-		},
-		{
-			EntityInfo: jsonprotocol.EntityInfo{
-				Name: test3Name,
-			},
-		},
-	}
 
-	td.RunFunc = func(args *jsonprotocol.RunnerArgs, stdout, stderr io.Writer) (status int) {
-		switch args.Mode {
-		case jsonprotocol.RunnerRunTestsMode:
-			patterns := args.RunTests.BundleArgs.Patterns
-			mw := control.NewMessageWriter(stdout)
-			mw.WriteMessage(&control.RunStart{Time: time.Unix(0, 0), NumTests: len(patterns)})
-			mw.WriteMessage(&control.EntityStart{Time: time.Unix(10, 0), Info: jsonprotocol.EntityInfo{Name: test1Name}})
-			mw.WriteMessage(&control.EntityEnd{Time: time.Unix(20, 0), Name: test1Name})
-			mw.WriteMessage(&control.EntityStart{Time: time.Unix(30, 0), Info: jsonprotocol.EntityInfo{Name: test2Name}})
-			mw.WriteMessage(&control.EntityError{Time: test2ErrorTime, Name: test2Name, Error: test2Error})
-			mw.WriteMessage(&control.EntityEnd{Time: time.Unix(40, 0), Name: test2Name})
-			mw.WriteMessage(&control.EntityStart{Time: time.Unix(45, 0), Info: jsonprotocol.EntityInfo{Name: test3Name}})
-			mw.WriteMessage(&control.EntityEnd{Time: time.Unix(50, 0), Name: test3Name, SkipReasons: []string{test3SkipReason}})
-			mw.WriteMessage(&control.RunEnd{Time: time.Unix(60, 0), OutDir: ""})
-		case jsonprotocol.RunnerListTestsMode:
-			runner.WriteListTestsResultAsJSON(stdout, tests)
-		case jsonprotocol.RunnerListFixturesMode:
-			json.NewEncoder(stdout).Encode(&jsonprotocol.RunnerListFixturesResult{})
-		}
-		return 0
-	}
-	if _, err := Run(context.Background(), &td.Cfg, &td.State); err != nil {
+	localReg := testing.NewRegistry(bundleName)
+	localReg.AddTestInstance(&testing.TestInstance{
+		Name:    test1Name,
+		Timeout: time.Minute,
+		Func:    func(ctx context.Context, s *testing.State) {},
+	})
+	localReg.AddTestInstance(&testing.TestInstance{
+		Name:    test2Name,
+		Timeout: time.Minute,
+		Func: func(ctx context.Context, s *testing.State) {
+			s.Error(test2Error)
+		},
+	})
+	localReg.AddTestInstance(&testing.TestInstance{
+		Name:         test3Name,
+		Timeout:      time.Minute,
+		SoftwareDeps: []string{softwareDep},
+		Func:         func(ctx context.Context, s *testing.State) {},
+	})
+	remoteReg := testing.NewRegistry(bundleName)
+
+	env := runtest.SetUp(
+		t,
+		runtest.WithLocalBundles(localReg),
+		runtest.WithRemoteBundles(remoteReg),
+		runtest.WithGetDUTInfo(func(req *protocol.GetDUTInfoRequest) (*protocol.GetDUTInfoResponse, error) {
+			return &protocol.GetDUTInfoResponse{
+				DutInfo: &protocol.DUTInfo{
+					Features: &protocol.DUTFeatures{
+						Software: &protocol.SoftwareFeatures{
+							Unavailable: []string{softwareDep},
+						},
+					},
+				},
+			}, nil
+		}),
+	)
+	cfg := env.Config()
+	cfg.ReportsServer = addr
+	state := env.State()
+
+	if _, err := run.Run(context.Background(), cfg, state); err != nil {
 		t.Errorf("Run failed: %v", err)
 	}
-	test2ErrorTimeStamp, _ := ptypes.TimestampProto(test2ErrorTime)
+
 	expectedResults := []*frameworkprotocol.ReportResultRequest{
-		{
-			Test: test1Name,
-		},
-		{
-			Test: test2Name,
-			Errors: []*frameworkprotocol.ErrorReport{
-				{
-					Time:   test2ErrorTimeStamp,
-					Reason: test2Error.Reason,
-					File:   test2Error.File,
-					Line:   int32(test2Error.Line),
-					Stack:  test2Error.Stack,
-				},
-			},
-		},
-		{
-			Test:       test3Name,
-			SkipReason: test3SkipReason,
-		},
+		{Test: test3Name, SkipReason: "missing SoftwareDeps: swdep"},
+		{Test: test1Name},
+		{Test: test2Name, Errors: []*frameworkprotocol.ErrorReport{{Reason: test2Error}}},
 	}
 	results := srv.Results()
-	if diff := cmp.Diff(results, expectedResults); diff != "" {
+	cmpOpt := cmpopts.IgnoreFields(frameworkprotocol.ErrorReport{}, "Time", "File", "Line", "Stack")
+	if diff := cmp.Diff(results, expectedResults, cmpOpt); diff != "" {
 		t.Errorf("Got unexpected results (-got +want):\n%s", diff)
 	}
-
 }
 
-// TestRunWithReports_ReportResultTerminate tests Run() stop testing after getting terminate
+// TestRunWithReports_ReportResultTerminate tests run.Run() stop testing after getting terminate
 // response from reports server.
 func TestRunWithReports_ReportResultTerminate(t *gotesting.T) {
 	srv, stopFunc, addr := fakereports.Start(t, 1)
 	defer stopFunc()
 
-	td := fakerunner.NewLocalTestData(t)
-	defer td.Close()
-	td.Cfg.ReportsServer = addr
-	td.Cfg.RunLocal = true
-
 	const (
-		test1Name       = "foo.FirstTest"
-		test1Desc       = "First description"
-		test2Name       = "foo.SecondTest"
-		test2Desc       = "Second description"
-		test3Name       = "foo.ThirdTest"
-		test3Desc       = "Third description"
-		test3SkipReason = "Test skip reason"
+		bundleName = "bundle"
+		test1Name  = "pkg.Test1"
+		test2Name  = "pkg.Test2"
+		test3Name  = "pkg.Test3"
+		test2Error = "Intentionally failed"
 	)
-	test2Error := jsonprotocol.Error{
-		Reason: "Intentionally failed",
-		File:   "/tmp/file.go",
-		Line:   21,
-		Stack:  "None",
-	}
-	test2ErrorTime := time.Unix(35, 0)
-	tests := []*jsonprotocol.EntityWithRunnabilityInfo{
-		{
-			EntityInfo: jsonprotocol.EntityInfo{
-				Name: test1Name,
-			},
-		},
-		{
-			EntityInfo: jsonprotocol.EntityInfo{
-				Name: test2Name,
-			},
-		},
-		{
-			EntityInfo: jsonprotocol.EntityInfo{
-				Name: test3Name,
-			},
-		},
-	}
 
-	td.RunFunc = func(args *jsonprotocol.RunnerArgs, stdout, stderr io.Writer) (status int) {
-		switch args.Mode {
-		case jsonprotocol.RunnerRunTestsMode:
-			patterns := args.RunTests.BundleArgs.Patterns
-			mw := control.NewMessageWriter(stdout)
-			mw.WriteMessage(&control.RunStart{Time: time.Unix(0, 0), NumTests: len(patterns)})
-			mw.WriteMessage(&control.EntityStart{Time: time.Unix(10, 0), Info: jsonprotocol.EntityInfo{Name: test1Name}})
-			mw.WriteMessage(&control.EntityEnd{Time: time.Unix(20, 0), Name: test1Name})
-			mw.WriteMessage(&control.EntityStart{Time: time.Unix(30, 0), Info: jsonprotocol.EntityInfo{Name: test2Name}})
-			mw.WriteMessage(&control.EntityError{Time: test2ErrorTime, Name: test2Name, Error: test2Error})
-			mw.WriteMessage(&control.EntityEnd{Time: time.Unix(40, 0), Name: test2Name})
-			mw.WriteMessage(&control.EntityStart{Time: time.Unix(45, 0), Info: jsonprotocol.EntityInfo{Name: test3Name}})
-			mw.WriteMessage(&control.EntityEnd{Time: time.Unix(50, 0), Name: test3Name, SkipReasons: []string{test3SkipReason}})
-			mw.WriteMessage(&control.RunEnd{Time: time.Unix(60, 0), OutDir: ""})
-		case jsonprotocol.RunnerListTestsMode:
-			runner.WriteListTestsResultAsJSON(stdout, tests)
-		case jsonprotocol.RunnerListFixturesMode:
-			json.NewEncoder(stdout).Encode(jsonprotocol.RunnerListFixturesResult{})
-		}
-		return 0
-	}
-	if _, err := Run(context.Background(), &td.Cfg, &td.State); err == nil {
+	localReg := testing.NewRegistry(bundleName)
+	localReg.AddTestInstance(&testing.TestInstance{
+		Name:    test1Name,
+		Timeout: time.Minute,
+		Func:    func(ctx context.Context, s *testing.State) {},
+	})
+	localReg.AddTestInstance(&testing.TestInstance{
+		Name:    test2Name,
+		Timeout: time.Minute,
+		Func: func(ctx context.Context, s *testing.State) {
+			s.Error(test2Error)
+		},
+	})
+	localReg.AddTestInstance(&testing.TestInstance{
+		Name:    test3Name,
+		Timeout: time.Minute,
+		Func:    func(ctx context.Context, s *testing.State) {},
+	})
+	remoteReg := testing.NewRegistry(bundleName)
+
+	env := runtest.SetUp(
+		t,
+		runtest.WithLocalBundles(localReg),
+		runtest.WithRemoteBundles(remoteReg),
+	)
+	cfg := env.Config()
+	cfg.ReportsServer = addr
+	state := env.State()
+
+	if _, err := run.Run(context.Background(), cfg, state); err == nil {
 		t.Error("Run unexpectedly succeeded despite termination request")
 	}
-	test2ErrorTimeStamp, _ := ptypes.TimestampProto(test2ErrorTime)
+
 	expectedResults := []*frameworkprotocol.ReportResultRequest{
-		{
-			Test: test1Name,
-		},
-		{
-			Test: test2Name,
-			Errors: []*frameworkprotocol.ErrorReport{
-				{
-					Time:   test2ErrorTimeStamp,
-					Reason: test2Error.Reason,
-					File:   test2Error.File,
-					Line:   int32(test2Error.Line),
-					Stack:  test2Error.Stack,
-				},
-			},
-		},
+		{Test: test1Name},
+		{Test: test2Name, Errors: []*frameworkprotocol.ErrorReport{{Reason: test2Error}}},
+		// pkg.Test3 is not run.
 	}
 	results := srv.Results()
-	if diff := cmp.Diff(results, expectedResults); diff != "" {
+	cmpOpt := cmpopts.IgnoreFields(frameworkprotocol.ErrorReport{}, "Time", "File", "Line", "Stack")
+	if diff := cmp.Diff(results, expectedResults, cmpOpt); diff != "" {
 		t.Errorf("Got unexpected results (-got +want):\n%s", diff)
 	}
-
 }
 
 // TestRunWithSkippedTests makes sure that tests with unsupported dependency
 // would be skipped.
 func TestRunWithSkippedTests(t *gotesting.T) {
-	td := fakerunner.NewLocalTestData(t)
-	defer td.Close()
+	const (
+		bundleName     = "bundle"
+		localTestName  = "pkg.LocalTest"
+		remoteTestName = "pkg.RemoteTest"
+		softwareDep    = "swdep"
+	)
 
-	td.Cfg.RunLocal = true
-	tests := []*jsonprotocol.EntityWithRunnabilityInfo{
-		{
-			EntityInfo: jsonprotocol.EntityInfo{
-				Name: "pkg.Supported_1",
-			},
-		},
-		{
-			EntityInfo: jsonprotocol.EntityInfo{
-				Name: "pkg.Unsupported_1",
-			},
-			SkipReason: "Not Supported",
-		},
-		{
-			EntityInfo: jsonprotocol.EntityInfo{
-				Name: "pkg.Supported_2",
-			},
-		},
-	}
-	td.RunFunc = func(args *jsonprotocol.RunnerArgs, stdout, stderr io.Writer) (status int) {
-		switch args.Mode {
-		case jsonprotocol.RunnerRunTestsMode:
-			patterns := args.RunTests.BundleArgs.Patterns
-			mw := control.NewMessageWriter(stdout)
-			var count int64 = 1
-			mw.WriteMessage(&control.RunStart{Time: time.Unix(count, 0), NumTests: len(patterns)})
-			for _, p := range patterns {
-				count = count + 1
-				mw.WriteMessage(&control.EntityStart{Time: time.Unix(count, 0), Info: jsonprotocol.EntityInfo{Name: p}})
-				count = count + 1
-				var skipReasons []string
-				if strings.HasPrefix(p, "pkg.Unsupported") {
-					skipReasons = append(skipReasons, "Not Supported")
-				}
-				mw.WriteMessage(&control.EntityEnd{Time: time.Unix(count, 0), Name: p, SkipReasons: skipReasons})
-			}
-			count = count + 1
+	// Both of two tests depends on a missing software feature, thus they
+	// are skipped.
 
-			mw.WriteMessage(&control.RunEnd{Time: time.Unix(count, 0), OutDir: ""})
-		case jsonprotocol.RunnerListTestsMode:
-			runner.WriteListTestsResultAsJSON(stdout, tests)
-		case jsonprotocol.RunnerListFixturesMode:
-			json.NewEncoder(stdout).Encode(&jsonprotocol.RunnerListFixturesResult{})
-		}
-		return 0
-	}
-	results, err := Run(context.Background(), &td.Cfg, &td.State)
+	localReg := testing.NewRegistry(bundleName)
+	localReg.AddTestInstance(&testing.TestInstance{
+		Name:         localTestName,
+		Timeout:      time.Minute,
+		SoftwareDeps: []string{softwareDep},
+		Func: func(ctx context.Context, s *testing.State) {
+			t.Errorf("%s was run despite unsatisfied dependency", localTestName)
+		},
+	})
+
+	remoteReg := testing.NewRegistry(bundleName)
+	remoteReg.AddTestInstance(&testing.TestInstance{
+		Name:         remoteTestName,
+		Timeout:      time.Minute,
+		SoftwareDeps: []string{softwareDep},
+		Func: func(ctx context.Context, s *testing.State) {
+			t.Errorf("%s was run despite unsatisfied dependency", remoteTestName)
+		},
+	})
+
+	env := runtest.SetUp(
+		t,
+		runtest.WithLocalBundles(localReg),
+		runtest.WithRemoteBundles(remoteReg),
+		runtest.WithGetDUTInfo(func(req *protocol.GetDUTInfoRequest) (*protocol.GetDUTInfoResponse, error) {
+			return &protocol.GetDUTInfoResponse{
+				DutInfo: &protocol.DUTInfo{
+					Features: &protocol.DUTFeatures{
+						Software: &protocol.SoftwareFeatures{
+							Unavailable: []string{softwareDep},
+						},
+					},
+				},
+			}, nil
+		}),
+	)
+	cfg := env.Config()
+	state := env.State()
+
+	results, err := run.Run(context.Background(), cfg, state)
 	if err != nil {
 		t.Errorf("Run failed: %v", err)
 	}
-	if len(results) != len(tests) {
-		t.Errorf("Got wrong number of results %v; want %v", len(results), len(tests))
-	}
-	for _, r := range results {
-		if strings.HasPrefix(r.Name, "pkg.Supported") {
-			if r.SkipReason != "" {
-				t.Errorf("Test %q has SkipReason %q; want none", r.Name, r.SkipReason)
-			}
-		} else if r.SkipReason == "" {
-			t.Errorf("Test %q has no SkipReason; want something", r.Name)
-
-		}
+	if len(results) != 2 {
+		t.Fatalf("Got %d results; want %d", len(results), 2)
 	}
 }
 
 // TestListTests make sure list test can list all tests.
-func TestListTests(t *gotesting.T) {
-	td := fakerunner.NewLocalTestData(t)
-	defer td.Close()
+func TestRunListTests(t *gotesting.T) {
+	const (
+		bundleName = "bundle"
 
-	tests := []*jsonprotocol.EntityWithRunnabilityInfo{
-		{
-			EntityInfo: jsonprotocol.EntityInfo{
-				Name: "pkg.Test",
-				Desc: "This is a test",
-				Attr: []string{"attr1", "attr2"},
-			},
-		},
-		{
-			EntityInfo: jsonprotocol.EntityInfo{
-				Name: "pkg.AnotherTest",
-				Desc: "Another test",
-			},
-		},
+		localTestName   = "pkg.LocalTest"
+		remoteTestName  = "pkg.RemoteTest"
+		skippedTestName = "pkg.SkippedTest"
+
+		missingSoftwareDep = "missing"
+	)
+
+	localTest := &testing.TestInstance{
+		Name:    localTestName,
+		Timeout: time.Minute,
+		Func:    func(ctx context.Context, s *testing.State) {},
 	}
+	localReg := testing.NewRegistry(bundleName)
+	localReg.AddTestInstance(localTest)
 
-	td.RunFunc = func(args *jsonprotocol.RunnerArgs, stdout, stderr io.Writer) (status int) {
-		fakerunner.CheckArgs(t, args, &jsonprotocol.RunnerArgs{
-			Mode:      jsonprotocol.RunnerListTestsMode,
-			ListTests: &jsonprotocol.RunnerListTestsArgs{BundleGlob: fakerunner.MockLocalBundleGlob},
-		})
-		runner.WriteListTestsResultAsJSON(stdout, tests)
-		return 0
+	remoteTest := &testing.TestInstance{
+		Name:    remoteTestName,
+		Timeout: time.Minute,
+		Func:    func(ctx context.Context, s *testing.State) {},
 	}
-	td.Cfg.TotalShards = 1
-	td.Cfg.RunLocal = true
+	skippedTest := &testing.TestInstance{
+		Name:         skippedTestName,
+		Timeout:      time.Minute,
+		SoftwareDeps: []string{missingSoftwareDep},
+		Func:         func(ctx context.Context, s *testing.State) {},
+	}
+	remoteReg := testing.NewRegistry(bundleName)
+	remoteReg.AddTestInstance(remoteTest)
+	remoteReg.AddTestInstance(skippedTest)
 
-	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
-	defer cc.Close(context.Background())
+	env := runtest.SetUp(
+		t,
+		runtest.WithLocalBundles(localReg),
+		runtest.WithRemoteBundles(remoteReg),
+		runtest.WithGetDUTInfo(func(req *protocol.GetDUTInfoRequest) (*protocol.GetDUTInfoResponse, error) {
+			return &protocol.GetDUTInfoResponse{
+				DutInfo: &protocol.DUTInfo{
+					Features: &protocol.DUTFeatures{
+						Software: &protocol.SoftwareFeatures{
+							Unavailable: []string{missingSoftwareDep},
+						},
+					},
+				},
+			}, nil
+		}),
+	)
+	cfg := env.Config()
+	cfg.Mode = config.ListTestsMode
+	state := env.State()
 
-	results, err := listTests(context.Background(), &td.Cfg, &td.State, cc)
+	results, err := run.Run(context.Background(), cfg, state)
 	if err != nil {
-		t.Error("Failed to list local tests: ", err)
-	}
-	expected := make([]*resultsjson.Result, len(tests))
-	for i := 0; i < len(tests); i++ {
-		expected[i] = &resultsjson.Result{Test: *resultsjson.NewTestFromEntityInfo(&tests[i].EntityInfo), SkipReason: tests[i].SkipReason}
-	}
-	if diff := cmp.Diff(results, expected); diff != "" {
-		t.Errorf("Unexpected list of local tests (-got +want):\n%s", diff)
-	}
-}
-
-// TestListTestsWithSharding make sure list test can list tests in specified shards.
-func TestListTestsWithSharding(t *gotesting.T) {
-	td := fakerunner.NewLocalTestData(t)
-	defer td.Close()
-
-	tests := []*jsonprotocol.EntityWithRunnabilityInfo{
-		{
-			EntityInfo: jsonprotocol.EntityInfo{
-				Name: "pkg.Test",
-				Desc: "This is a test",
-				Attr: []string{"attr1", "attr2"},
-			},
-		},
-		{
-			EntityInfo: jsonprotocol.EntityInfo{
-				Name: "pkg.AnotherTest",
-				Desc: "Another test",
-			},
-		},
+		t.Errorf("Run failed: %v", err)
 	}
 
-	td.RunFunc = func(args *jsonprotocol.RunnerArgs, stdout, stderr io.Writer) (status int) {
-		fakerunner.CheckArgs(t, args, &jsonprotocol.RunnerArgs{
-			Mode:      jsonprotocol.RunnerListTestsMode,
-			ListTests: &jsonprotocol.RunnerListTestsArgs{BundleGlob: fakerunner.MockLocalBundleGlob},
-		})
-
-		runner.WriteListTestsResultAsJSON(stdout, tests)
-		return 0
-	}
-	td.Cfg.TotalShards = 2
-	td.Cfg.RunLocal = true
-
-	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
-	defer cc.Close(context.Background())
-
-	for i := 0; i < td.Cfg.TotalShards; i++ {
-		td.Cfg.ShardIndex = i
-		results, err := listTests(context.Background(), &td.Cfg, &td.State, cc)
-		if err != nil {
-			t.Error("Failed to list local tests: ", err)
-		}
-		expected := []*resultsjson.Result{
-			{Test: *resultsjson.NewTestFromEntityInfo(&tests[i].EntityInfo), SkipReason: tests[i].SkipReason},
-		}
-		if diff := cmp.Diff(results, expected); diff != "" {
-			t.Errorf("Unexpected list of local tests (-got +want):\n%s", diff)
-		}
-	}
-}
-
-// TestListTestsWithSkippedTests make sure list test can list skipped tests correctly.
-func TestListTestsWithSkippedTests(t *gotesting.T) {
-	td := fakerunner.NewLocalTestData(t)
-	defer td.Close()
-
-	tests := []*jsonprotocol.EntityWithRunnabilityInfo{
-		{
-			EntityInfo: jsonprotocol.EntityInfo{
-				Name: "pkg.Test",
-				Desc: "This is a test",
-				Attr: []string{"attr1", "attr2"},
-			},
-		},
-		{
-			EntityInfo: jsonprotocol.EntityInfo{
-				Name: "pkg.AnotherTest",
-				Desc: "Another test",
-			},
-		},
-		{
-			EntityInfo: jsonprotocol.EntityInfo{
-				Name: "pkg.SkippedTest",
-				Desc: "Skipped test",
-			},
-			SkipReason: "Skip",
-		},
-	}
-
-	td.RunFunc = func(args *jsonprotocol.RunnerArgs, stdout, stderr io.Writer) (status int) {
-		fakerunner.CheckArgs(t, args, &jsonprotocol.RunnerArgs{
-			Mode:      jsonprotocol.RunnerListTestsMode,
-			ListTests: &jsonprotocol.RunnerListTestsArgs{BundleGlob: fakerunner.MockLocalBundleGlob},
-		})
-		runner.WriteListTestsResultAsJSON(stdout, tests)
-		return 0
-	}
-	td.Cfg.TotalShards = 2
-	td.Cfg.RunLocal = true
-
-	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
-	defer cc.Close(context.Background())
-
-	// Shard 0 should include all skipped tests.
-	td.Cfg.ShardIndex = 0
-	results, err := listTests(context.Background(), &td.Cfg, &td.State, cc)
-	if err != nil {
-		t.Error("Failed to list local tests: ", err)
-	}
+	localTestMeta, _ := resultsjson.NewTest(localTest.EntityProto())
+	remoteTestMeta, _ := resultsjson.NewTest(remoteTest.EntityProto())
+	skippedTestMeta, _ := resultsjson.NewTest(skippedTest.EntityProto())
 	expected := []*resultsjson.Result{
-		{Test: *resultsjson.NewTestFromEntityInfo(&tests[0].EntityInfo), SkipReason: tests[0].SkipReason},
-		{Test: *resultsjson.NewTestFromEntityInfo(&tests[2].EntityInfo), SkipReason: tests[2].SkipReason},
+		{Test: *localTestMeta, BundleType: resultsjson.LocalBundle},
+		{Test: *remoteTestMeta, BundleType: resultsjson.RemoteBundle},
+		{Test: *skippedTestMeta, SkipReason: "missing SoftwareDeps: missing", BundleType: resultsjson.RemoteBundle},
 	}
 	if diff := cmp.Diff(results, expected); diff != "" {
-		t.Errorf("Unexpected list of local tests in shard 0 (-got +want):\n%s", diff)
-	}
-
-	td.Cfg.ShardIndex = 1
-	// Shard 1 should have only one test
-	results, err = listTests(context.Background(), &td.Cfg, &td.State, cc)
-	if err != nil {
-		t.Error("Failed to list local tests: ", err)
-	}
-	expected = []*resultsjson.Result{
-		{Test: *resultsjson.NewTestFromEntityInfo(&tests[1].EntityInfo), SkipReason: tests[1].SkipReason},
-	}
-	if diff := cmp.Diff(results, expected); diff != "" {
-		t.Errorf("Unexpected list of local tests in shard 1 (-got +want):\n%s", diff)
+		t.Errorf("Unexpected results (-got +want):\n%s", diff)
 	}
 }
 
-// TestListTestsGetDUTInfo make sure GetDUTInfo is called when listTests is called.
-func TestListTestsGetDUTInfo(t *gotesting.T) {
-	td := fakerunner.NewLocalTestData(t)
-	defer td.Close()
+// TestRunListTestsWithSharding make sure list test can list tests in specified shards.
+func TestRunListTestsWithSharding(t *gotesting.T) {
+	const (
+		bundleName = "bundle"
 
-	called := false
+		localTestName   = "pkg.LocalTest"
+		remoteTestName  = "pkg.RemoteTest"
+		skippedTestName = "pkg.SkippedTest"
 
-	td.RunFunc = func(args *jsonprotocol.RunnerArgs, stdout, stderr io.Writer) (status int) {
-		switch args.Mode {
-		case jsonprotocol.RunnerGetDUTInfoMode:
-			// Just check that GetDUTInfo is called; details of args are
-			// tested in deps_test.go.
-			called = true
-			json.NewEncoder(stdout).Encode(&jsonprotocol.RunnerGetDUTInfoResult{
-				SoftwareFeatures: &protocol.SoftwareFeatures{
-					Available: []string{"foo"}, // must report non-empty features
-				},
-			})
-		default:
-			t.Errorf("Unexpected args.Mode = %v", args.Mode)
-		}
-		return 0
+		missingSoftwareDep = "missing"
+	)
+
+	localTest := &testing.TestInstance{
+		Name:    localTestName,
+		Timeout: time.Minute,
+		Func:    func(ctx context.Context, s *testing.State) {},
 	}
+	localReg := testing.NewRegistry(bundleName)
+	localReg.AddTestInstance(localTest)
 
-	td.Cfg.CheckTestDeps = true
+	remoteTest := &testing.TestInstance{
+		Name:    remoteTestName,
+		Timeout: time.Minute,
+		Func:    func(ctx context.Context, s *testing.State) {},
+	}
+	skippedTest := &testing.TestInstance{
+		Name:         skippedTestName,
+		Timeout:      time.Minute,
+		SoftwareDeps: []string{missingSoftwareDep},
+		Func:         func(ctx context.Context, s *testing.State) {},
+	}
+	remoteReg := testing.NewRegistry(bundleName)
+	remoteReg.AddTestInstance(remoteTest)
+	remoteReg.AddTestInstance(skippedTest)
 
-	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
+	env := runtest.SetUp(
+		t,
+		runtest.WithLocalBundles(localReg),
+		runtest.WithRemoteBundles(remoteReg),
+		runtest.WithGetDUTInfo(func(req *protocol.GetDUTInfoRequest) (*protocol.GetDUTInfoResponse, error) {
+			return &protocol.GetDUTInfoResponse{
+				DutInfo: &protocol.DUTInfo{
+					Features: &protocol.DUTFeatures{
+						Software: &protocol.SoftwareFeatures{
+							Unavailable: []string{missingSoftwareDep},
+						},
+					},
+				},
+			}, nil
+		}),
+	)
+	cfg := env.Config()
+	cfg.Mode = config.ListTestsMode
+	cfg.TotalShards = 2 // set the number of shards
+	state := env.State()
+
+	cc := target.NewConnCache(cfg, cfg.Target)
 	defer cc.Close(context.Background())
 
-	if _, err := listTests(context.Background(), &td.Cfg, &td.State, cc); err != nil {
-		t.Error("listTests failed: ", err)
-	}
-	if !called {
-		t.Error("runTests did not call getSoftwareFeatures")
+	localTestMeta, _ := resultsjson.NewTest(localTest.EntityProto())
+	remoteTestMeta, _ := resultsjson.NewTest(remoteTest.EntityProto())
+	skippedTestMeta, _ := resultsjson.NewTest(skippedTest.EntityProto())
+
+	for shardIndex, expected := range [][]*resultsjson.Result{
+		{
+			{Test: *localTestMeta, BundleType: resultsjson.LocalBundle},
+			{Test: *skippedTestMeta, SkipReason: "missing SoftwareDeps: missing", BundleType: resultsjson.RemoteBundle},
+		},
+		{
+			{Test: *remoteTestMeta, BundleType: resultsjson.RemoteBundle},
+		},
+	} {
+		t.Run(fmt.Sprintf("shard%d", shardIndex), func(t *gotesting.T) {
+			cfg.ShardIndex = shardIndex
+			state.DUTInfo = nil // clear cached DUTInfo
+
+			results, err := run.Run(context.Background(), cfg, state)
+			if err != nil {
+				t.Errorf("Run failed: %v", err)
+			}
+
+			if diff := cmp.Diff(results, expected); diff != "" {
+				t.Errorf("Unexpected results (-got +want):\n%s", diff)
+			}
+		})
 	}
 }
 
-func TestRunTestsGetDUTInfo(t *gotesting.T) {
-	td := fakerunner.NewLocalTestData(t)
-	defer td.Close()
+func TestRunPrintOSVersion(t *gotesting.T) {
+	const osVersion = "octopus-release/R86-13312.0.2020_07_02_1108"
 
-	called := false
-
-	osVersion := "octopus-release/R86-13312.0.2020_07_02_1108"
-
-	td.RunFunc = func(args *jsonprotocol.RunnerArgs, stdout, stderr io.Writer) (status int) {
-		switch args.Mode {
-		case jsonprotocol.RunnerGetDUTInfoMode:
-			// Just check that GetDUTInfo is called; details of args are
-			// tested in deps_test.go.
-			called = true
-			json.NewEncoder(stdout).Encode(&jsonprotocol.RunnerGetDUTInfoResult{
-				SoftwareFeatures: &protocol.SoftwareFeatures{
-					Available: []string{"foo"}, // must report non-empty features
+	env := runtest.SetUp(t, runtest.WithGetDUTInfo(func(req *protocol.GetDUTInfoRequest) (*protocol.GetDUTInfoResponse, error) {
+		return &protocol.GetDUTInfoResponse{
+			DutInfo: &protocol.DUTInfo{
+				Features: &protocol.DUTFeatures{
+					Software: &protocol.SoftwareFeatures{
+						// Must report non-empty features.
+						// TODO(b/187793617): Remove this once we fully migrate to the gRPC protocol and
+						// GetDUTInfo gets capable of returning errors.
+						Available: []string{"foo"},
+					},
 				},
-				OSVersion: osVersion,
-			})
-		default:
-			t.Errorf("Unexpected args.Mode = %v", args.Mode)
-		}
-		return 0
+				OsVersion: osVersion,
+			},
+		}, nil
+	}))
+
+	cfg := env.Config()
+	var logBuf bytes.Buffer
+	cfg.Logger = logging.NewSimple(&logBuf, false, false)
+	state := env.State()
+
+	if _, err := run.Run(context.Background(), cfg, state); err != nil {
+		t.Errorf("Run failed: %v", err)
 	}
 
-	td.Cfg.CheckTestDeps = true
-
-	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
-	defer cc.Close(context.Background())
-
-	if _, err := runTests(context.Background(), &td.Cfg, &td.State, cc); err != nil {
-		t.Error("runTests failed: ", err)
-	}
-
-	expectedOSVersion := "Target version: " + osVersion
-	if !strings.Contains(td.LogBuf.String(), expectedOSVersion) {
-		t.Errorf("Cannot find %q in log buffer %v", expectedOSVersion, td.LogBuf.String())
-	}
-	if !called {
-		t.Error("runTests did not call getSoftwareFeatures")
+	const expectedOSVersion = "Target version: " + osVersion
+	if !strings.Contains(logBuf.String(), expectedOSVersion) {
+		t.Errorf("Cannot find %q in log buffer %q", expectedOSVersion, logBuf.String())
 	}
 }
 
@@ -933,122 +743,10 @@ func TestRunCollectSysInfo(t *gotesting.T) {
 	cfg := env.Config()
 	state := env.State()
 
-	if _, err := Run(ctx, cfg, state); err != nil {
+	if _, err := run.Run(ctx, cfg, state); err != nil {
 		t.Errorf("Run failed: %v", err)
 	}
 	if !called {
 		t.Error("CollectSysInfo was not called")
-	}
-}
-
-// TestRunTestsSkipTests check if runTests skipping testings correctly.
-func TestRunTestsSkipTests(t *gotesting.T) {
-	tests := []*jsonprotocol.EntityWithRunnabilityInfo{
-		{
-			EntityInfo: jsonprotocol.EntityInfo{
-				Name:         "unsupported.Test0",
-				Desc:         "This is test 0",
-				SoftwareDeps: []string{"has_dep"},
-			},
-			SkipReason: "dependency not available",
-		},
-		{
-			EntityInfo: jsonprotocol.EntityInfo{Name: "pkg.Test1", Desc: "This is test 1"},
-		},
-		{
-			EntityInfo: jsonprotocol.EntityInfo{Name: "pkg.Test2", Desc: "This is test 2"},
-		},
-		{
-			EntityInfo: jsonprotocol.EntityInfo{Name: "pkg.Test3", Desc: "This is test 3"},
-		},
-		{
-			EntityInfo: jsonprotocol.EntityInfo{Name: "pkg.Test4", Desc: "This is test 4"},
-		},
-		{
-			EntityInfo: jsonprotocol.EntityInfo{
-				Name:         "unsupported.Test5",
-				Desc:         "This is test 5",
-				SoftwareDeps: []string{"has_dep"},
-			},
-			SkipReason: "dependency not available",
-		},
-		{
-			EntityInfo: jsonprotocol.EntityInfo{Name: "pkg.Test6", Desc: "This is test 6"},
-		},
-	}
-
-	td := fakerunner.NewLocalTestData(t)
-	defer td.Close()
-
-	td.RunFunc = func(args *jsonprotocol.RunnerArgs, stdout, stderr io.Writer) (status int) {
-		switch args.Mode {
-		case jsonprotocol.RunnerGetDUTInfoMode:
-			// Just check that GetDUTInfo is called; details of args are
-			// tested in deps_test.go.
-			json.NewEncoder(stdout).Encode(&jsonprotocol.RunnerGetDUTInfoResult{
-				SoftwareFeatures: &protocol.SoftwareFeatures{
-					Available: []string{"a_feature"},
-				},
-			})
-		case jsonprotocol.RunnerListTestsMode:
-			runner.WriteListTestsResultAsJSON(stdout, tests)
-		case jsonprotocol.RunnerRunTestsMode:
-			testNames := args.RunTests.BundleArgs.Patterns
-			mw := control.NewMessageWriter(stdout)
-			mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: len(testNames)})
-			count := int64(2)
-			for _, t := range testNames {
-				mw.WriteMessage(&control.EntityStart{Time: time.Unix(count, 0), Info: jsonprotocol.EntityInfo{Name: t}})
-				count++
-				var skipReasons []string
-				if strings.HasPrefix(t, "unsupported") {
-					skipReasons = append(skipReasons, "dependency not available")
-				}
-				mw.WriteMessage(&control.EntityEnd{Time: time.Unix(count, 0), Name: t, SkipReasons: skipReasons})
-				count++
-			}
-			mw.WriteMessage(&control.RunEnd{Time: time.Unix(count, 0)})
-		case jsonprotocol.RunnerListFixturesMode:
-			json.NewEncoder(stdout).Encode(&jsonprotocol.RunnerListFixturesResult{})
-		default:
-			t.Errorf("Unexpected args.Mode = %v", args.Mode)
-		}
-		return 0
-	}
-
-	// List matching tests instead of running them.
-	td.Cfg.LocalDataDir = "/tmp/data"
-	td.Cfg.Patterns = []string{"*Test*"}
-	td.Cfg.RunLocal = true
-	td.Cfg.TotalShards = 2
-	td.Cfg.CheckTestDeps = true
-
-	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
-	defer cc.Close(context.Background())
-
-	expectedPassed := 5
-	expectedSkipped := len(tests) - 5
-	passed := 0
-	skipped := 0
-	for shardIndex := 0; shardIndex < td.Cfg.TotalShards; shardIndex++ {
-		td.State.DUTInfo = nil
-		td.Cfg.ShardIndex = shardIndex
-		testResults, err := runTests(context.Background(), &td.Cfg, &td.State, cc)
-		if err != nil {
-			t.Fatal("Failed to run tests: ", err)
-		}
-		for _, t := range testResults {
-			if t.SkipReason == "" {
-				passed++
-			} else {
-				skipped++
-			}
-		}
-	}
-	if passed != expectedPassed {
-		t.Errorf("runTests returned %d passed tests; want %d", passed, expectedPassed)
-	}
-	if skipped != expectedSkipped {
-		t.Errorf("runTests returned %d skipped tests; want %d", skipped, expectedSkipped)
 	}
 }

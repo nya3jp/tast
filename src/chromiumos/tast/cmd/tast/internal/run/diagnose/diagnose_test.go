@@ -6,6 +6,7 @@ package diagnose_test
 
 import (
 	"context"
+	"io"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -14,14 +15,9 @@ import (
 	"github.com/google/go-cmp/cmp"
 
 	"chromiumos/tast/cmd/tast/internal/run/diagnose"
-	"chromiumos/tast/cmd/tast/internal/run/fakerunner"
+	"chromiumos/tast/cmd/tast/internal/run/runtest"
 	"chromiumos/tast/cmd/tast/internal/run/target"
-	"chromiumos/tast/internal/linuxssh"
 	"chromiumos/tast/testutil"
-)
-
-const (
-	anotherBootID = "ffffffff-ffff-ffff-ffff-ffffffffffff"
 )
 
 func loadTestData(t *testing.T, filename string) string {
@@ -36,32 +32,50 @@ func loadTestData(t *testing.T, filename string) string {
 	return string(b)
 }
 
-func TestReadBootID(t *testing.T) {
-	td := fakerunner.NewLocalTestData(t)
-	defer td.Close()
+func callSSHDrop(t *testing.T, rebooted bool, syslog, ramoops string) (msg, outDir string) {
+	currentBootID := "11111111"
+	env := runtest.SetUp(t,
+		runtest.WithBootID(func() (bootID string, err error) {
+			return currentBootID, nil
+		}),
+		runtest.WithExtraSSHHandlers([]runtest.SSHHandler{
+			runtest.ExactMatchHandler("exec croslog --quiet --boot=11111111 --lines=1000", func(_ io.Reader, stdout, _ io.Writer) int {
+				io.WriteString(stdout, syslog)
+				return 0
+			}),
+			runtest.ExactMatchHandler("exec cat /sys/fs/pstore/console-ramoops-0", func(_ io.Reader, stdout, _ io.Writer) int {
+				io.WriteString(stdout, ramoops)
+				return 0
+			}),
+		}),
+	)
+	cfg := env.Config()
 
-	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
+	cc := target.NewConnCache(cfg, cfg.Target)
 	defer cc.Close(context.Background())
 
-	conn, err := cc.Conn(context.Background())
-	if err != nil {
+	if _, err := cc.Conn(context.Background()); err != nil {
 		t.Fatal(err)
 	}
 
-	b, err := linuxssh.ReadBootID(context.Background(), conn.SSHConn())
-	if err != nil {
-		t.Fatal("ReadBootID failed: ", err)
+	if rebooted {
+		currentBootID = "22222222" // pretend rebooted
 	}
-	if b != fakerunner.DefaultBootID {
-		t.Errorf("ReadBootID returned %q; want %q", b, fakerunner.DefaultBootID)
+
+	outDir = filepath.Join(env.TempDir(), "diagnose")
+	if err := os.MkdirAll(outDir, 0777); err != nil {
+		t.Fatal(err)
 	}
+
+	msg = diagnose.SSHDrop(context.Background(), cfg, cc, outDir)
+	return msg, outDir
 }
 
 func TestSSHDropNotRecovered(t *testing.T) {
-	td := fakerunner.NewLocalTestData(t)
-	defer td.Close()
+	env := runtest.SetUp(t)
+	cfg := env.Config()
 
-	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
+	cc := target.NewConnCache(cfg, cfg.Target)
 	defer cc.Close(context.Background())
 
 	if _, err := cc.Conn(context.Background()); err != nil {
@@ -71,7 +85,7 @@ func TestSSHDropNotRecovered(t *testing.T) {
 	// Pass a canceled context to make reconnection fail.
 	ctx, cancel := context.WithCancel(context.Background())
 	cancel()
-	msg := diagnose.SSHDrop(ctx, &td.Cfg, cc, td.TempDir)
+	msg := diagnose.SSHDrop(ctx, cfg, cc, env.TempDir())
 	const exp = "target did not come back: context canceled"
 	if msg != exp {
 		t.Errorf("SSHDrop returned %q; want %q", msg, exp)
@@ -79,19 +93,7 @@ func TestSSHDropNotRecovered(t *testing.T) {
 }
 
 func TestSSHDropNoReboot(t *testing.T) {
-	td := fakerunner.NewLocalTestData(t)
-	defer td.Close()
-
-	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
-	defer cc.Close(context.Background())
-
-	if _, err := cc.Conn(context.Background()); err != nil {
-		t.Fatal(err)
-	}
-
-	// boot_id is not changed.
-
-	msg := diagnose.SSHDrop(context.Background(), &td.Cfg, cc, td.TempDir)
+	msg, _ := callSSHDrop(t, false, "", "")
 	const exp = "target did not reboot, probably network issue"
 	if msg != exp {
 		t.Errorf("SSHDrop returned %q; want %q", msg, exp)
@@ -99,20 +101,7 @@ func TestSSHDropNoReboot(t *testing.T) {
 }
 
 func TestSSHDropUnknownCrash(t *testing.T) {
-	td := fakerunner.NewLocalTestData(t)
-	defer td.Close()
-
-	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
-	defer cc.Close(context.Background())
-
-	if _, err := cc.Conn(context.Background()); err != nil {
-		t.Fatal(err)
-	}
-
-	// Change boot_id to simulate reboot.
-	td.BootID = anotherBootID
-
-	msg := diagnose.SSHDrop(context.Background(), &td.Cfg, cc, td.TempDir)
+	msg, _ := callSSHDrop(t, true, "", "")
 	const exp = "target rebooted for unknown crash"
 	if msg != exp {
 		t.Errorf("SSHDrop returned %q; want %q", msg, exp)
@@ -120,24 +109,11 @@ func TestSSHDropUnknownCrash(t *testing.T) {
 }
 
 func TestSSHDropNormalReboot(t *testing.T) {
-	td := fakerunner.NewLocalTestData(t)
-	defer td.Close()
-
-	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
-	defer cc.Close(context.Background())
-
-	if _, err := cc.Conn(context.Background()); err != nil {
-		t.Fatal(err)
-	}
-
-	// Simulate normal reboot.
-	td.BootID = anotherBootID
-	td.UnifiedLog = `...
+	const syslog = `...
 Apr 19 07:12:49 pre-shutdown[31389]: Shutting down for reboot: system-update
 ...
 `
-
-	msg := diagnose.SSHDrop(context.Background(), &td.Cfg, cc, td.TempDir)
+	msg, _ := callSSHDrop(t, true, syslog, "")
 	const exp = "target normally shut down for reboot (system-update)"
 	if msg != exp {
 		t.Errorf("SSHDrop returned %q; want %q", msg, exp)
@@ -145,20 +121,8 @@ Apr 19 07:12:49 pre-shutdown[31389]: Shutting down for reboot: system-update
 }
 
 func TestSSHDropKernelCrashBugX86(t *testing.T) {
-	td := fakerunner.NewLocalTestData(t)
-	defer td.Close()
-
-	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
-	defer cc.Close(context.Background())
-
-	if _, err := cc.Conn(context.Background()); err != nil {
-		t.Fatal(err)
-	}
-
-	td.BootID = anotherBootID
-	td.Ramoops = loadTestData(t, "ramoops_crash_x86.txt")
-
-	msg := diagnose.SSHDrop(context.Background(), &td.Cfg, cc, td.TempDir)
+	ramoops := loadTestData(t, "ramoops_crash_x86.txt")
+	msg, _ := callSSHDrop(t, true, "", ramoops)
 	const exp = "kernel crashed in i915_gem_execbuffer_relocate_vma+0x424/0x757"
 	if msg != exp {
 		t.Errorf("SSHDrop returned %q; want %q", msg, exp)
@@ -166,20 +130,8 @@ func TestSSHDropKernelCrashBugX86(t *testing.T) {
 }
 
 func TestSSHDropKernelCrashBugARM(t *testing.T) {
-	td := fakerunner.NewLocalTestData(t)
-	defer td.Close()
-
-	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
-	defer cc.Close(context.Background())
-
-	if _, err := cc.Conn(context.Background()); err != nil {
-		t.Fatal(err)
-	}
-
-	td.BootID = anotherBootID
-	td.Ramoops = loadTestData(t, "ramoops_crash_arm.txt")
-
-	msg := diagnose.SSHDrop(context.Background(), &td.Cfg, cc, td.TempDir)
+	ramoops := loadTestData(t, "ramoops_crash_arm.txt")
+	msg, _ := callSSHDrop(t, true, "", ramoops)
 	// TODO(nya): Improve the symbol extraction. In this case, do_raw_spin_lock or
 	// spin_bug seems to be a better choice for diagnosis.
 	const exp = "kernel crashed in _clear_bit+0x20/0x38"
@@ -189,20 +141,8 @@ func TestSSHDropKernelCrashBugARM(t *testing.T) {
 }
 
 func TestSSHDropKernelHungX86(t *testing.T) {
-	td := fakerunner.NewLocalTestData(t)
-	defer td.Close()
-
-	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
-	defer cc.Close(context.Background())
-
-	if _, err := cc.Conn(context.Background()); err != nil {
-		t.Fatal(err)
-	}
-
-	td.BootID = anotherBootID
-	td.Ramoops = loadTestData(t, "ramoops_hung_x86.txt")
-
-	msg := diagnose.SSHDrop(context.Background(), &td.Cfg, cc, td.TempDir)
+	ramoops := loadTestData(t, "ramoops_hung_x86.txt")
+	msg, _ := callSSHDrop(t, true, "", ramoops)
 	const exp = "kernel crashed: kswapd0:32 hung in jbd2_log_wait_commit+0xb9/0x13c"
 	if msg != exp {
 		t.Errorf("SSHDrop returned %q; want %q", msg, exp)
@@ -210,24 +150,12 @@ func TestSSHDropKernelHungX86(t *testing.T) {
 }
 
 func TestDiagnoseSSHSaveFiles(t *testing.T) {
-	td := fakerunner.NewLocalTestData(t)
-	defer td.Close()
+	const (
+		syslog  = "foo"
+		ramoops = "bar"
+	)
 
-	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
-	defer cc.Close(context.Background())
-
-	if _, err := cc.Conn(context.Background()); err != nil {
-		t.Fatal(err)
-	}
-
-	td.BootID = anotherBootID
-	td.UnifiedLog = "foo"
-	td.Ramoops = "bar"
-
-	outDir := filepath.Join(td.TempDir, "diagnosis")
-	os.MkdirAll(outDir, 0777)
-
-	diagnose.SSHDrop(context.Background(), &td.Cfg, cc, outDir)
+	_, outDir := callSSHDrop(t, true, syslog, ramoops)
 
 	files, err := testutil.ReadFiles(outDir)
 	if err != nil {

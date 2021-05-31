@@ -16,6 +16,23 @@
       "message": "Updated the patch to create all relevant directories.\n",
       "revId": "91461aa9b804f780d2e08fa27922bc5b383c56a6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "af0c3d41_28e3460f",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/runtest/env.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-05-31T12:52:11Z",
+      "side": 1,
+      "message": "How about reading the value from cfg, like cfg.TastDir, so that\n1. no need to join the paths again\n2. making sure cfg and actual dirs are consistent",
+      "revId": "91461aa9b804f780d2e08fa27922bc5b383c56a6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

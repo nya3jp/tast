@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package config
+package config_test
 
 import (
 	"flag"
@@ -15,11 +15,12 @@ import (
 	"github.com/google/go-cmp/cmp"
 
 	"chromiumos/tast/cmd/tast/internal/build"
+	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/testutil"
 )
 
 func TestConfigRunDefaults(t *testing.T) {
-	cfg := NewConfig(RunTestsMode, "", "")
+	cfg := config.NewConfig(config.RunTestsMode, "", "")
 	flags := flag.NewFlagSet("", flag.ContinueOnError)
 	cfg.SetFlags(flags)
 
@@ -33,7 +34,7 @@ func TestConfigRunDefaults(t *testing.T) {
 }
 
 func TestConfigListDefaults(t *testing.T) {
-	cfg := NewConfig(ListTestsMode, "", "")
+	cfg := config.NewConfig(config.ListTestsMode, "", "")
 	flags := flag.NewFlagSet("", flag.ContinueOnError)
 	cfg.SetFlags(flags)
 
@@ -47,7 +48,7 @@ func TestConfigListDefaults(t *testing.T) {
 }
 
 func TestConfigDeriveDefaultsNoBuild(t *testing.T) {
-	cfg := NewConfig(RunTestsMode, "", "")
+	cfg := config.NewConfig(config.RunTestsMode, "", "")
 	flags := flag.NewFlagSet("", flag.ContinueOnError)
 	cfg.SetFlags(flags)
 
@@ -75,7 +76,7 @@ func TestConfigDeriveDefaultsBuild(t *testing.T) {
 		t.Fatal("mkdir failed: ", err)
 	}
 
-	cfg := NewConfig(RunTestsMode, "", td)
+	cfg := config.NewConfig(config.RunTestsMode, "", td)
 	flags := flag.NewFlagSet("", flag.ContinueOnError)
 	cfg.SetFlags(flags)
 
@@ -109,7 +110,7 @@ func TestConfigDeriveDefaultsBuildNonStandardBundle(t *testing.T) {
 		t.Fatal("mkdir failed: ", err)
 	}
 
-	cfg := NewConfig(RunTestsMode, "", "")
+	cfg := config.NewConfig(config.RunTestsMode, "", "")
 	flags := flag.NewFlagSet("", flag.ContinueOnError)
 	cfg.SetFlags(flags)
 
@@ -143,7 +144,7 @@ func TestConfigDeriveDefaultsBuildMissingBundle(t *testing.T) {
 	td := testutil.TempDir(t)
 	defer os.RemoveAll(td)
 
-	cfg := NewConfig(RunTestsMode, "", td)
+	cfg := config.NewConfig(config.RunTestsMode, "", td)
 	flags := flag.NewFlagSet("", flag.ContinueOnError)
 	cfg.SetFlags(flags)
 
@@ -260,7 +261,7 @@ func TestConfigDeriveDefaultsVars(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			cfg := NewConfig(RunTestsMode, "", td)
+			cfg := config.NewConfig(config.RunTestsMode, "", td)
 			flags := flag.NewFlagSet("", flag.ContinueOnError)
 			cfg.SetFlags(flags)
 
@@ -288,7 +289,7 @@ func TestConfigDeriveDefaultsVars(t *testing.T) {
 }
 
 func TestConfigDeriveExtraAllowedBuckets(t *testing.T) {
-	cfg := NewConfig(RunTestsMode, "", "")
+	cfg := config.NewConfig(config.RunTestsMode, "", "")
 	flags := flag.NewFlagSet("", flag.ContinueOnError)
 	cfg.SetFlags(flags)
 
@@ -306,7 +307,7 @@ func TestConfigDeriveExtraAllowedBuckets(t *testing.T) {
 }
 
 func TestConfigLocalBundleGlob(t *testing.T) {
-	cfg := NewConfig(RunTestsMode, "", "")
+	cfg := config.NewConfig(config.RunTestsMode, "", "")
 	cfg.LocalBundleDir = "/mock/local_bundle_dir"
 	cfg.BuildBundle = "mock_build_bundle"
 
@@ -321,7 +322,7 @@ func TestConfigLocalBundleGlob(t *testing.T) {
 }
 
 func TestConfigRemoteBundleGlob(t *testing.T) {
-	cfg := NewConfig(RunTestsMode, "", "")
+	cfg := config.NewConfig(config.RunTestsMode, "", "")
 	cfg.RemoteBundleDir = "/mock/remote_bundle_dir"
 	cfg.BuildBundle = "mock_build_bundle"
 

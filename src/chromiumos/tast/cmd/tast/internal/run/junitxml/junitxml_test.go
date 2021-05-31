@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package junitxml
+package junitxml_test
 
 import (
 	"strings"
@@ -11,6 +11,7 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 
+	"chromiumos/tast/cmd/tast/internal/run/junitxml"
 	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
 )
 
@@ -64,7 +65,7 @@ func TestMarshal(t *gotesting.T) {
 			SkipReason: "",
 		},
 	}
-	x, err := Marshal(results)
+	x, err := junitxml.Marshal(results)
 	if err != nil {
 		t.Fatalf("Failed to marshal to XML: %s", err)
 	}

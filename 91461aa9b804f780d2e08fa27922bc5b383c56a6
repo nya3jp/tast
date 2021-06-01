@@ -33,6 +33,24 @@
       "message": "How about reading the value from cfg, like cfg.TastDir, so that\n1. no need to join the paths again\n2. making sure cfg and actual dirs are consistent",
       "revId": "91461aa9b804f780d2e08fa27922bc5b383c56a6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "727405c4_2ccb400d",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/runtest/env.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-06-01T05:28:28Z",
+      "side": 1,
+      "message": "Thanks for your suggestion. I agree it\u0027s nice to avoid repetition in general.\n\nFundamentally, config.Config holds parameters needed for Tast CLI to interact with the environment set up in advance, e.g. SSH key to use to connect to the DUT. Thus config.Config should be created after setting the environment. In fact, at this point it is not possible to fully construct config.Config (e.g. KeyFile field depends on SSHServer which is not yet started). Thus I\u0027m afraid that we cannot use config.Config here.\n\nI also considered introducing a new type holding directory paths, say envDirs. Then we can construct envDirs here (we only need rootDir to construct it), and store it to a field in Env and use it to fill config.Config afterwards. Though this approach would work, after giving it a try, I found that it is not very nice... it adds ~100 more lines with little benefit.\n\nSo at the end of the day I think the current way of inlining filepath.Join(rootDir, ...) is okay... What do you think?",
+      "parentUuid": "af0c3d41_28e3460f",
+      "revId": "91461aa9b804f780d2e08fa27922bc5b383c56a6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

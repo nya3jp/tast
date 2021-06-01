@@ -24,11 +24,13 @@ import (
 
 	"chromiumos/tast/cmd/tast/internal/logging"
 	"chromiumos/tast/cmd/tast/internal/run/config"
-	"chromiumos/tast/cmd/tast/internal/run/fakerunner"
 	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
+	"chromiumos/tast/cmd/tast/internal/run/runtest"
 	"chromiumos/tast/cmd/tast/internal/run/target"
+	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/control"
 	"chromiumos/tast/internal/jsonprotocol"
+	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/timing"
 	"chromiumos/tast/testutil"
 )
@@ -672,47 +674,61 @@ func TestReadTestOutputTimeout(t *gotesting.T) {
 }
 
 func TestWriteResultsCollectSysInfo(t *gotesting.T) {
-	// This test uses types and functions from local_test.go.
-	td := fakerunner.NewLocalTestData(t)
-	defer td.Close()
-
-	td.RunFunc = func(args *jsonprotocol.RunnerArgs, stdout, stderr io.Writer) (status int) {
-		fakerunner.CheckArgs(t, args, &jsonprotocol.RunnerArgs{
-			Mode:           jsonprotocol.RunnerCollectSysInfoMode,
-			CollectSysInfo: &jsonprotocol.RunnerCollectSysInfoArgs{},
-		})
-
-		json.NewEncoder(stdout).Encode(&jsonprotocol.RunnerCollectSysInfoResult{})
-		return 0
-	}
-	td.Cfg.CollectSysInfo = true
 	ctx := context.Background()
-	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
+
+	initialState := &protocol.SysInfoState{
+		LogInodeSizes: map[uint64]int64{1: 2, 3: 4},
+	}
+	called := false
+	env := runtest.SetUp(t, runtest.WithCollectSysInfo(func(req *protocol.CollectSysInfoRequest) (*protocol.CollectSysInfoResponse, error) {
+		called = true
+		if diff := cmp.Diff(req.GetInitialState(), initialState); diff != "" {
+			t.Errorf("CollectSysInfo: InitialState mismatch (-got +want):\n%s", diff)
+		}
+		return &protocol.CollectSysInfoResponse{}, nil
+	}))
+	cfg := env.Config()
+	state := env.State()
+
+	cc := target.NewConnCache(cfg, cfg.Target)
 	defer cc.Close(ctx)
-	if err := WriteResults(ctx, &td.Cfg, &td.State, nil, nil, true, cc); err != nil {
-		t.Fatal("WriteResults failed: ", err)
+
+	if err := WriteResults(ctx, cfg, state, nil, initialState, true, cc); err != nil {
+		t.Errorf("WriteResults failed: %v", err)
+	}
+	if !called {
+		t.Error("CollectSysInfo was not called")
 	}
 }
 
 func TestWriteResultsCollectSysInfoFailure(t *gotesting.T) {
-	// This test uses types and functions from local_test.go.
-	td := fakerunner.NewLocalTestData(t)
-	defer td.Close()
-
-	// Report an error when collecting system info.
-	td.RunFunc = func(args *jsonprotocol.RunnerArgs, stdout, stderr io.Writer) (status int) { return 1 }
-	td.Cfg.CollectSysInfo = true
 	ctx := context.Background()
-	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
+
+	called := false
+	env := runtest.SetUp(t, runtest.WithCollectSysInfo(func(req *protocol.CollectSysInfoRequest) (*protocol.CollectSysInfoResponse, error) {
+		called = true
+		// Report an error when collecting system info.
+		return nil, errors.New("failure")
+	}))
+	cfg := env.Config()
+	var logBuf bytes.Buffer
+	cfg.Logger = logging.NewSimple(&logBuf, false, false)
+	state := env.State()
+
+	cc := target.NewConnCache(cfg, cfg.Target)
 	defer cc.Close(ctx)
-	err := WriteResults(ctx, &td.Cfg, &td.State, nil, nil, true, cc)
+
+	err := WriteResults(ctx, cfg, state, nil, nil, true, cc)
 	if err == nil {
 		t.Fatal("WriteResults didn't report expected error")
 	}
+	if !called {
+		t.Error("CollectSysInfo was not called")
+	}
 
 	// The error should've been logged by WriteResults: https://crbug.com/937913
-	if !strings.Contains(td.LogBuf.String(), err.Error()) {
-		t.Errorf("WriteResults didn't log error %q in %q", err.Error(), td.LogBuf.String())
+	if !strings.Contains(logBuf.String(), err.Error()) {
+		t.Errorf("WriteResults didn't log error %q in %q", err.Error(), logBuf.String())
 	}
 }
 

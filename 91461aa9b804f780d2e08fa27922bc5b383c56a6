@@ -51,6 +51,24 @@
       "parentUuid": "af0c3d41_28e3460f",
       "revId": "91461aa9b804f780d2e08fa27922bc5b383c56a6",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "58b38db3_2493740d",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/runtest/env.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 70,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-06-01T08:32:20Z",
+      "side": 1,
+      "message": "Thanks for explanation.\nI was thinking this way based on my misinterpretation; I had confused defaultEnvConfig() with Config() in this file. Now I got that it is not fully initialized yet.",
+      "parentUuid": "727405c4_2ccb400d",
+      "revId": "91461aa9b804f780d2e08fa27922bc5b383c56a6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

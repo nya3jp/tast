@@ -5,119 +5,145 @@
 package runnerclient
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
+	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	gotesting "testing"
 	"time"
 
+	"github.com/golang/protobuf/ptypes"
 	"github.com/google/go-cmp/cmp"
-	"github.com/google/go-cmp/cmp/cmpopts"
 
-	"chromiumos/tast/cmd/tast/internal/run/fakerunner"
-	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
-	"chromiumos/tast/internal/control"
-	"chromiumos/tast/internal/jsonprotocol"
-	"chromiumos/tast/internal/planner"
-	"chromiumos/tast/testutil"
+	"chromiumos/tast/cmd/tast/internal/run/runtest"
+	"chromiumos/tast/internal/protocol"
+	"chromiumos/tast/internal/testing"
 )
 
-// runFakeRemoteRunner calls remote and records the RunnerArgs struct that was passed
-// to the fake runner.
-func runFakeRemoteRunner(t *gotesting.T, td *fakerunner.RemoteTestData) ([]*resultsjson.Result, error) {
-	res, rerr := RunRemoteTests(context.Background(), &td.Cfg, &td.State)
-
-	f, err := os.Open(filepath.Join(td.Dir, fakerunner.FakeRunnerArgsFile))
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer f.Close()
-
-	if err = json.NewDecoder(f).Decode(&td.Args); err != nil {
-		t.Fatal(err)
-	}
-
-	return res, rerr
-}
-
 func TestRemoteRun(t *gotesting.T) {
-	const testName = "pkg.Test"
+	const (
+		localTestName  = "pkg.LocalTest"
+		remoteTestName = "pkg.RemoteTest"
+	)
 
-	b := bytes.Buffer{}
-	mw := control.NewMessageWriter(&b)
-	mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 1})
-	mw.WriteMessage(&control.EntityStart{Time: time.Unix(2, 0), Info: jsonprotocol.EntityInfo{Name: testName}})
-	mw.WriteMessage(&control.EntityEnd{Time: time.Unix(3, 0), Name: testName})
-	mw.WriteMessage(&control.RunEnd{Time: time.Unix(4, 0), OutDir: ""})
-
-	td := fakerunner.NewRemoteTestData(t, b.String(), "", 0)
-	defer td.Close()
-
-	// Set some parameters that can be overridden by flags to arbitrary values.
-	td.Cfg.Build = false
-	td.Cfg.KeyFile = "/tmp/id_dsa"
-	td.Cfg.RemoteBundleDir = "/tmp/bundles"
-	td.Cfg.RemoteDataDir = "/tmp/data"
-	td.Cfg.RemoteOutDir = "/tmp/out"
-	td.Cfg.BuildArtifactsURL = fakerunner.MockBuildArtifactsURL
-	td.Cfg.TLWServer = "tlwserver"
-
-	res, err := runFakeRemoteRunner(t, td)
-	if err != nil {
-		t.Errorf("RunRemoteTests(%+v) failed: %v", td.Cfg, err)
-	}
-	if len(res) != 1 {
-		t.Errorf("RunRemoteTests(%+v) returned %v result(s); want 1", td.Cfg, len(res))
-	} else if res[0].Name != testName {
-		t.Errorf("RunRemoteTests(%+v) returned result for test %q; want %q", td.Cfg, res[0].Name, testName)
-	}
-
-	glob := filepath.Join(td.Cfg.RemoteBundleDir, "*")
 	exe, err := os.Executable()
 	if err != nil {
 		t.Fatal(err)
 	}
-	runFlags := []string{
-		"-build=false", // propagated from td.cfg.build
-		"-keyfile=" + td.Cfg.KeyFile,
-		"-keydir=",
-		"-remoterunner=" + td.Cfg.RemoteRunner,
-		"-remotebundledir=" + td.Cfg.RemoteBundleDir,
-		"-remotedatadir=" + td.Cfg.RemoteDataDir,
-		"-localrunner=" + td.Cfg.LocalRunner,
-		"-localbundledir=" + td.Cfg.LocalBundleDir,
-		"-localdatadir=" + td.Cfg.LocalDataDir,
-		"-devservers=" + strings.Join(td.Cfg.Devservers, ","),
-		"-buildartifactsurl=" + fakerunner.MockBuildArtifactsURL,
-	}
-	expArgs := jsonprotocol.RunnerArgs{
-		Mode: jsonprotocol.RunnerRunTestsMode,
-		RunTests: &jsonprotocol.RunnerRunTestsArgs{
-			BundleGlob: glob,
-			BundleArgs: jsonprotocol.BundleRunTestsArgs{
-				DataDir:        td.Cfg.RemoteDataDir,
-				OutDir:         td.Cfg.RemoteOutDir,
-				KeyFile:        td.Cfg.KeyFile,
-				TastPath:       exe,
-				RunFlags:       runFlags,
-				LocalBundleDir: fakerunner.MockLocalBundleDir,
-				FeatureArgs: jsonprotocol.FeatureArgs{
-					CheckDeps: false,
-				},
-				Devservers:        fakerunner.MockDevservers,
-				TLWServer:         td.Cfg.TLWServer,
-				BuildArtifactsURL: fakerunner.MockBuildArtifactsURL,
-				DownloadMode:      planner.DownloadLazy,
-				HeartbeatInterval: heartbeatInterval,
+
+	localReg := testing.NewRegistry()
+	localReg.AddTestInstance(&testing.TestInstance{
+		Name:    localTestName,
+		Timeout: time.Minute,
+		Func:    func(ctx context.Context, s *testing.State) {},
+	})
+	remoteReg := testing.NewRegistry()
+	remoteReg.AddTestInstance(&testing.TestInstance{
+		Name:    remoteTestName,
+		Timeout: time.Minute,
+		Func:    func(ctx context.Context, s *testing.State) {},
+	})
+
+	var gotInit *protocol.RunTestsInit
+	env := runtest.SetUp(t,
+		runtest.WithLocalBundle(localReg),
+		runtest.WithRemoteBundle(remoteReg),
+		runtest.WithOnRunRemoteTestsInit(func(init *protocol.RunTestsInit) {
+			gotInit = init
+		}),
+	)
+
+	cfg := env.Config()
+	cfg.BuildArtifactsURL = "gs://foo/bar"
+	// Use IPv4 loopback address with invalid port numbers so that they
+	// never resolve to valid destination.
+	cfg.Devservers = []string{"http://127.0.0.1:11111111", "http://127.0.0.1:22222222"}
+	cfg.TestVars = map[string]string{"abc": "def"}
+	cfg.MaybeMissingVars = "xyz"
+	state := env.State()
+	state.DUTInfo = &protocol.DUTInfo{
+		Features: &protocol.DUTFeatures{
+			Software: &protocol.SoftwareFeatures{
+				Available:   []string{"dep1", "dep2"},
+				Unavailable: []string{"dep3"},
 			},
-			BuildArtifactsURLDeprecated: fakerunner.MockBuildArtifactsURL,
+			Hardware: &protocol.HardwareFeatures{},
 		},
 	}
-	if diff := cmp.Diff(td.Args, expArgs, cmpopts.IgnoreUnexported(expArgs)); diff != "" {
-		t.Errorf("RunRemoteTests(%+v) passed unexpected args; diff (-got +want):\n%s", td.Cfg, diff)
+	state.RemoteDevservers = []string{"http://127.0.0.1:33333333", "http://127.0.0.1:44444444"}
+
+	results, err := RunRemoteTests(context.Background(), cfg, state)
+	if err != nil {
+		t.Errorf("RunRemoteTests failed: %v", err)
+	}
+	if len(results) != 1 {
+		t.Errorf("RunRemoteTests returned %v result(s); want 1", len(results))
+	} else if results[0].Name != remoteTestName {
+		t.Errorf("RunRemoteTests returned result for test %q; want %q", results[0].Name, remoteTestName)
+	}
+
+	wantInit := &protocol.RunTestsInit{
+		RunConfig: &protocol.RunConfig{
+			Tests: nil,
+			Features: &protocol.Features{
+				CheckDeps: true,
+				Dut:       state.DUTInfo.Features,
+				Infra: &protocol.InfraFeatures{
+					Vars:             cfg.TestVars,
+					MaybeMissingVars: cfg.MaybeMissingVars,
+				},
+			},
+			Dirs: &protocol.RunDirectories{
+				DataDir: cfg.RemoteDataDir,
+				OutDir:  cfg.RemoteOutDir,
+				TempDir: "",
+			},
+			ServiceConfig: &protocol.ServiceConfig{
+				Devservers:  state.RemoteDevservers,
+				TlwServer:   "",
+				TlwSelfName: "",
+			},
+			DataFileConfig: &protocol.DataFileConfig{
+				BuildArtifactsUrl: cfg.BuildArtifactsURL,
+				DownloadMode:      protocol.DownloadMode_BATCH,
+			},
+			RemoteTestConfig: &protocol.RemoteTestConfig{
+				LocalBundleDir: cfg.LocalBundleDir,
+				PrimaryDut: &protocol.DUTConfig{
+					SshConfig: &protocol.SSHConfig{
+						Target:  cfg.Target,
+						KeyFile: cfg.KeyFile,
+						KeyDir:  cfg.KeyDir,
+					},
+					TlwName: cfg.Target,
+				},
+				CompanionDuts: map[string]*protocol.DUTConfig{},
+				MetaTestConfig: &protocol.MetaTestConfig{
+					TastPath: exe,
+					RunFlags: []string{
+						"-build=" + strconv.FormatBool(cfg.Build),
+						"-keyfile=" + cfg.KeyFile,
+						"-keydir=" + cfg.KeyDir,
+						"-remoterunner=" + cfg.RemoteRunner,
+						"-remotebundledir=" + cfg.RemoteBundleDir,
+						"-remotedatadir=" + cfg.RemoteDataDir,
+						"-localrunner=" + cfg.LocalRunner,
+						"-localbundledir=" + cfg.LocalBundleDir,
+						"-localdatadir=" + cfg.LocalDataDir,
+						"-devservers=" + strings.Join(cfg.Devservers, ","),
+						"-buildartifactsurl=" + cfg.BuildArtifactsURL,
+					},
+				},
+			},
+			StartFixtureState: &protocol.StartFixtureState{},
+			HeartbeatInterval: ptypes.DurationProto(time.Second),
+			WaitUntilReady:    false,
+		},
+	}
+	if diff := cmp.Diff(gotInit, wantInit); diff != "" {
+		t.Errorf("RunTestsInit message mismatch (-got +want):\n%s", diff)
 	}
 }
 
@@ -126,89 +152,63 @@ func TestRemoteRunCopyOutput(t *gotesting.T) {
 		testName = "pkg.Test"
 		outFile  = "somefile.txt"
 		outData  = "somedata"
-		outName  = "pkg.Test.tmp1234"
 	)
 
-	outDir := testutil.TempDir(t)
-	defer os.RemoveAll(outDir)
+	reg := testing.NewRegistry()
+	reg.AddTestInstance(&testing.TestInstance{
+		Name:    testName,
+		Timeout: time.Minute,
+		Func: func(ctx context.Context, s *testing.State) {
+			if err := ioutil.WriteFile(filepath.Join(s.OutDir(), outFile), []byte(outData), 0644); err != nil {
+				s.Fatal("WriteFile failed: ", err)
+			}
+		},
+	})
 
-	b := bytes.Buffer{}
-	mw := control.NewMessageWriter(&b)
-	mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 1})
-	mw.WriteMessage(&control.EntityStart{Time: time.Unix(2, 0), Info: jsonprotocol.EntityInfo{Name: testName}, OutDir: filepath.Join(outDir, outName)})
-	mw.WriteMessage(&control.EntityEnd{Time: time.Unix(3, 0), Name: testName})
-	mw.WriteMessage(&control.RunEnd{Time: time.Unix(4, 0), OutDir: outDir})
+	env := runtest.SetUp(t,
+		runtest.WithLocalBundle(testing.NewRegistry()),
+		runtest.WithRemoteBundle(reg),
+	)
+	cfg := env.Config()
+	state := env.State()
 
-	td := fakerunner.NewRemoteTestData(t, b.String(), "", 0)
-	defer td.Close()
-
-	// Set some parameters that can be overridden by flags to arbitrary values.
-	td.Cfg.KeyFile = "/tmp/id_dsa"
-	td.Cfg.RemoteBundleDir = "/tmp/bundles"
-	td.Cfg.RemoteDataDir = "/tmp/data"
-	td.Cfg.RemoteOutDir = outDir
-
-	if err := testutil.WriteFiles(outDir, map[string]string{
-		filepath.Join(outName, outFile): outData,
-	}); err != nil {
-		t.Fatal(err)
+	if _, err := RunRemoteTests(context.Background(), cfg, state); err != nil {
+		t.Fatalf("RunRemoteTests failed: %v", err)
 	}
 
-	if _, err := runFakeRemoteRunner(t, td); err != nil {
-		t.Errorf("RunRemoteTests(%+v) failed: %v", td.Cfg, err)
-	}
-
-	files, err := testutil.ReadFiles(filepath.Join(td.Cfg.ResDir, testLogsDir))
+	out, err := ioutil.ReadFile(filepath.Join(cfg.ResDir, testLogsDir, testName, outFile))
 	if err != nil {
-		t.Fatal(err)
+		t.Fatalf("Failed to read output file: %v", err)
 	}
-	if out, ok := files[filepath.Join(testName, outFile)]; !ok {
-		t.Errorf("%s was not created", filepath.Join(testName, outFile))
-	} else if out != outData {
-		t.Errorf("%s was corrupted: got %q, want %q", filepath.Join(testName, outFile), out, outData)
-	}
-}
-
-// disabledTestRemoteFailure is temporarily disabled.
-// TODO(crbug.com/1003952): Re-enable this test after fixing a race condition.
-func disabledTestRemoteFailure(t *gotesting.T) {
-	// Make the test runner print a message to stderr and fail.
-	const errorMsg = "Whoops, something failed\n"
-	td := fakerunner.NewRemoteTestData(t, "", errorMsg, 1)
-	defer td.Close()
-
-	if _, err := runFakeRemoteRunner(t, td); err == nil {
-		t.Errorf("RunRemoteTests(%v) unexpectedly passed", td.Cfg)
-	} else if !strings.Contains(err.Error(), strings.TrimRight(errorMsg, "\n")) {
-		// The runner's error message should've been logged.
-		t.Errorf("RunRemoteTests(%v) didn't log runner error %q in %q", td.Cfg, errorMsg, err.Error())
+	if string(out) != outData {
+		t.Errorf("%s was corrupted: got %q, want %q", outFile, string(out), outData)
 	}
 }
 
 // TestRemoteMaxFailures makes sure that RunRemoteTests does not run any tests if maximum failures allowed has been reach.
 func TestRemoteMaxFailures(t *gotesting.T) {
-	outDir := testutil.TempDir(t)
-	defer os.RemoveAll(outDir)
+	reg := testing.NewRegistry()
+	for _, testName := range []string{"t1", "t2"} {
+		reg.AddTestInstance(&testing.TestInstance{
+			Name:    testName,
+			Timeout: time.Minute,
+			Func: func(ctx context.Context, s *testing.State) {
+				s.Error("Failed")
+			},
+		})
+	}
 
-	b := bytes.Buffer{}
-	mw := control.NewMessageWriter(&b)
-	mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 2})
-	mw.WriteMessage(&control.EntityStart{Time: time.Unix(2, 0), Info: jsonprotocol.EntityInfo{Name: "t1"}})
-	mw.WriteMessage(&control.EntityError{Time: time.Unix(3, 0), Name: "t1", Error: jsonprotocol.Error{Reason: "error"}})
-	mw.WriteMessage(&control.EntityEnd{Time: time.Unix(4, 0), Name: "t1"})
-	mw.WriteMessage(&control.EntityStart{Time: time.Unix(5, 0), Info: jsonprotocol.EntityInfo{Name: "t2"}})
-	mw.WriteMessage(&control.EntityEnd{Time: time.Unix(6, 0), Name: "t2"})
-	mw.WriteMessage(&control.RunEnd{Time: time.Unix(7, 0), OutDir: ""})
+	env := runtest.SetUp(t,
+		runtest.WithLocalBundle(testing.NewRegistry()),
+		runtest.WithRemoteBundle(reg),
+	)
+	cfg := env.Config()
+	cfg.MaxTestFailures = 1
+	state := env.State()
 
-	td := fakerunner.NewRemoteTestData(t, b.String(), "", 0)
-	defer td.Close()
-
-	td.Cfg.MaxTestFailures = 1
-	td.State.FailuresCount = 0
-
-	results, err := RunRemoteTests(context.Background(), &td.Cfg, &td.State)
+	results, err := RunRemoteTests(context.Background(), cfg, state)
 	if err == nil {
-		t.Errorf("RunRemoteTests(%+v, %+v) passed unexpectedly", td.Cfg, td.State)
+		t.Error("RunRemoteTests passed unexpectedly")
 	}
 	if len(results) != 1 {
 		t.Errorf("RunRemoteTests return %v results; want 1", len(results))

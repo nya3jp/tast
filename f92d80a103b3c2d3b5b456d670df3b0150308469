@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "759bcaa7_791afce8",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 188,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-06-01T10:49:15Z",
+      "side": 1,
+      "message": "let me see if I am getting this correct;\nIn the existing code, the new deadline is set to 15 seconds before the original deadline (when the whole timeout is \u003e30s). Otherwise, it is set to exactly before the original deadline (not reserving extra time for write results).\nWith this patch, the new deadline is set to MIN(1/2 of the remaining time from now, 15 seconds from now).\nSo it looks like a behavior change and it is not fully skipping doing this in case of very-short timeout.",
+      "revId": "f92d80a103b3c2d3b5b456d670df3b0150308469",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

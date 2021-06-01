@@ -68,6 +68,24 @@
       "message": "I don\u0027t have any code change yet, but please see my latest comment.\n\nAlso, I will prepare another CL to illustrate the other approach which allow users to access any variables whether it is defined or not. Thanks.",
       "revId": "566e39bac2c7664f84b7281f41cbaf702a752898",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f7dacad3_a6464168",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 9
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-06-01T07:31:32Z",
+      "side": 1,
+      "message": "We discussed this offline.\n\nLet me rephrase my concern. Let\u0027s say we have an exported utility function in a support library, e.g.\n\n package somelib\n\n func SomeFunc(ctx context.Context) error\n\nIf we allow accessing runtime variables defined in test/fixture/service metadata via context.Context, SomeFunc *might* do this and fail if the current test/fixture/service don\u0027t declare certain runtime variables. SomeFunc accepts certain Contexts but not other Contexts. This is something I think it\u0027s nice to avoid.\n\nThis problem won\u0027t be solved even we split the accessor function to ContextTestVar/ContextFixtVar/ContextBundleVar.",
+      "parentUuid": "68494074_a4d5d08d",
+      "revId": "566e39bac2c7664f84b7281f41cbaf702a752898",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

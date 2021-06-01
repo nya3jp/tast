@@ -22,6 +22,30 @@
       },
       "revId": "d0815d5eddd97b5fb77e2453dd8a8958edd0bc78",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9fb290ff_ab9a43f1",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/runtest/internal/fakerunner/fakerunner.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 201,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-06-01T05:28:22Z",
+      "side": 1,
+      "message": "Thanks for nice suggestion, renamed to upstream/downstream.",
+      "parentUuid": "46f4766c_475a0826",
+      "range": {
+        "startLine": 201,
+        "startChar": 31,
+        "endLine": 201,
+        "endChar": 37
+      },
+      "revId": "d0815d5eddd97b5fb77e2453dd8a8958edd0bc78",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

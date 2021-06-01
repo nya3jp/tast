@@ -334,6 +334,7 @@ func Wifi80211ax() Condition {
 		// Some models of boards excluded from the platform skip do not support
 		// 802.11ax. To be precise as possible, we will skip these models as well.
 		modelCondition := SkipOnModel(
+			"blipper",
 			"dirinboz",
 			"ezkinil",
 			"gumboz",
@@ -403,6 +404,7 @@ func WifiIntel() Condition {
 		// for now there is no better way to specify the exact hardware
 		// parameters needed for this dependency. (See crbug.com/1070299.)
 		modelCondition := SkipOnModel(
+			"blipper",
 			"blooglet",
 			"dirinboz",
 			"ezkinil",

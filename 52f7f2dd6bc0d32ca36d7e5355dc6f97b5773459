@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c1ae98b2_066a8b7c",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_test.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-06-01T10:54:36Z",
+      "side": 1,
+      "message": "Is this still needed here?",
+      "revId": "52f7f2dd6bc0d32ca36d7e5355dc6f97b5773459",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

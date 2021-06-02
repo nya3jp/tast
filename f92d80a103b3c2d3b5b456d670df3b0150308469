@@ -16,6 +16,24 @@
       "message": "let me see if I am getting this correct;\nIn the existing code, the new deadline is set to 15 seconds before the original deadline (when the whole timeout is \u003e30s). Otherwise, it is set to exactly before the original deadline (not reserving extra time for write results).\nWith this patch, the new deadline is set to MIN(1/2 of the remaining time from now, 15 seconds from now).\nSo it looks like a behavior change and it is not fully skipping doing this in case of very-short timeout.",
       "revId": "f92d80a103b3c2d3b5b456d670df3b0150308469",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7dab23be_42f62f94",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 188,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-06-02T02:04:05Z",
+      "side": 1,
+      "message": "You\u0027re right, I accidentally changed the logic here... While I think the current logic (dropping the post-processing reserve entirely when global timeout is short) is not optimal, I also think it\u0027s better to change the logic in a separate patch. I\u0027ve updated the patch to follow the original logic.",
+      "parentUuid": "759bcaa7_791afce8",
+      "revId": "f92d80a103b3c2d3b5b456d670df3b0150308469",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

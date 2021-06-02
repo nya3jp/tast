@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1e2c3cfe_b92ef20c",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-06-02T13:39:11Z",
+      "side": 1,
+      "message": "nit: Does this mean \"the contracts of the exported symbols by the tested code\"? I was a bit confused when I read it for the first time, as \"exported symbols\" may mean those by the unit test in the same package.",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 9,
+        "endChar": 57
+      },
+      "revId": "247fd9a06b4e1ffa17a75d4e3800c81f0f8b1d07",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

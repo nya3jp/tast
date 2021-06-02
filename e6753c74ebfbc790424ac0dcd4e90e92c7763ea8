@@ -18,6 +18,23 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "60fcc67a_2e59839f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1512082
+      },
+      "writtenOn": "2021-06-02T14:21:36Z",
+      "side": 1,
+      "message": "Thanks Oleh.",
+      "revId": "e6753c74ebfbc790424ac0dcd4e90e92c7763ea8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "62654df3_080d93fa",
@@ -31,6 +48,30 @@
       "writtenOn": "2021-06-02T13:55:39Z",
       "side": 1,
       "message": "I think it\u0027s preferred to use filepath.IsAbs instead\n\nhttps://golang.org/pkg/path/filepath/#IsAbs",
+      "range": {
+        "startLine": 66,
+        "startChar": 0,
+        "endLine": 66,
+        "endChar": 44
+      },
+      "revId": "e6753c74ebfbc790424ac0dcd4e90e92c7763ea8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1a1843d1_273e68fe",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/main.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1512082
+      },
+      "writtenOn": "2021-06-02T14:21:36Z",
+      "side": 1,
+      "message": "Noted. An extra condition but at the end of the day, we need relative path trimming the prefix (ifany), isn\u0027t it.",
+      "parentUuid": "62654df3_080d93fa",
       "range": {
         "startLine": 66,
         "startChar": 0,
@@ -66,6 +107,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "ef096076_18dce077",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/main.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1512082
+      },
+      "writtenOn": "2021-06-02T14:21:36Z",
+      "side": 1,
+      "message": "Yeah! It may contain, HasPrefix would be appropriate here (just wanted to avoid multiple checks with \".\u003c\u003e\", \"./\u003c\u003e\", \"/\u003c\u003e\" etc.). \nBtw, it\u0027s required when the path is Abs (no need to join the deltaPath, as it already contains after prefix has been trimmed). So I think we can put filepath.IsAbs as you suggested.",
+      "parentUuid": "a8237d81_a4ca5cbd",
+      "range": {
+        "startLine": 68,
+        "startChar": 5,
+        "endLine": 68,
+        "endChar": 41
+      },
+      "revId": "e6753c74ebfbc790424ac0dcd4e90e92c7763ea8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "2183f07d_a25e3370",
         "filename": "src/chromiumos/tast/cmd/tast-lint/main.go",
         "patchSetId": 4
@@ -77,6 +142,30 @@
       "writtenOn": "2021-06-02T13:55:39Z",
       "side": 1,
       "message": "Is it possible to pass here absolute path? If so, maybe it makes sense to always work with absolute paths?\n\nSo instead of deltaPath this function will get oldWorkDir parameter. if path is absolute, then we won\u0027t change it. If path is relative, we will join it with oldWorkDir. WDYT?",
+      "range": {
+        "startLine": 75,
+        "startChar": 53,
+        "endLine": 75,
+        "endChar": 60
+      },
+      "revId": "e6753c74ebfbc790424ac0dcd4e90e92c7763ea8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0767018e_b8607475",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/main.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 1512082
+      },
+      "writtenOn": "2021-06-02T14:21:36Z",
+      "side": 1,
+      "message": "\u003e Is it possible to pass here absolute path? If so, maybe it makes sense to always work with absolute paths?\n\u003e \n\nExactly, that\u0027s what my idea was initially. To be honest, giving a first glance at the CL will definitely give you a weird feeling of why I went for such hassle😂\n\nBut, absolute path doesn\u0027t work in tast-lint, it throws some strange error. I have shared the screenshots in the last comment.\nBy this deltaPath approach, I was able to put a band-aid on this. \"Everything is Relative\", lol.\n\n[branch main] Abs-failure\nhttps://drive.google.com/file/d/1_mK6RwM7-S8kDHEsaLxJpVGo8TT4xe7b/view?usp\u003dsharing\n\n[This CL] takes care of everything as it should be [need to fix the strings.Contains part as you pointed out]\nhttps://drive.google.com/file/d/1ckQvvHpCCbkVbB0x3siUSWRo-vm0Bsm0/view?usp\u003dsharing",
+      "parentUuid": "2183f07d_a25e3370",
       "range": {
         "startLine": 75,
         "startChar": 53,

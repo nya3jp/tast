@@ -210,6 +210,7 @@ func main() {
 			"use_fscrypt_v2":         "direncription_allow_v2",
 			"v4l2_codec":             "v4l2_codec",
 			"vaapi":                  "vaapi",
+			"vhost_user_devices":     `"vhost-user-devices"`,
 			// As the direct video decoder is transitioned in there is the need
 			// to run the legacy decoder to make sure it isn't broken and can be
 			// rolled back to if the direct decoder is having problems.  On some

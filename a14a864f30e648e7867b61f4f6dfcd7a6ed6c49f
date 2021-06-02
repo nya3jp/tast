@@ -170,6 +170,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "956b6207_c682adc2",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 372,
+      "author": {
+        "id": 1512082
+      },
+      "writtenOn": "2021-06-02T06:31:46Z",
+      "side": 1,
+      "message": "Hi, updated, to have a consistency with the exiting implementation.\nThanks for pointing out.",
+      "parentUuid": "6792c6ca_9c29c488",
+      "range": {
+        "startLine": 372,
+        "startChar": 1,
+        "endLine": 372,
+        "endChar": 24
+      },
+      "revId": "a14a864f30e648e7867b61f4f6dfcd7a6ed6c49f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "b9354bb5_feba8a13",
@@ -231,6 +255,30 @@
       "side": 1,
       "message": "There might be many reasons why command failed, we should always return that error. \n\nPTAL on ProcessState String() implementation:\nhttps://golang.org/src/os/exec_posix.go?s\u003d2436:2474#L87",
       "parentUuid": "61cf497a_dc40a5af",
+      "range": {
+        "startLine": 374,
+        "startChar": 4,
+        "endLine": 374,
+        "endChar": 13
+      },
+      "revId": "a14a864f30e648e7867b61f4f6dfcd7a6ed6c49f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0c906527_1f47e3f3",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 374,
+      "author": {
+        "id": 1512082
+      },
+      "writtenOn": "2021-06-02T06:31:46Z",
+      "side": 1,
+      "message": "Fixed.",
+      "parentUuid": "335f30da_9764a987",
       "range": {
         "startLine": 374,
         "startChar": 4,

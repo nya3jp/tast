@@ -16,6 +16,24 @@
       "message": "If we call os.Chdir here, we fail to access relative file paths specified in command line. For example:\n\n cd src/chromiumos/tast/cmd/tast\n tast-lint ./main.go",
       "revId": "9515e5c8666c4f417306bd9812ae636bd8172c25",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b85b2139_99899cc7",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/main.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 377,
+      "author": {
+        "id": 1512082
+      },
+      "writtenOn": "2021-06-02T06:31:46Z",
+      "side": 1,
+      "message": "Hi,\nThanks for pointing out. Fixed.\n\nAlso just FYI, there was a bug in the existing implementation (main branch). Even from the git root \n```\ntast-lint /\u003cabsolute_path\u003e/main.go\n```\ncauses panic on the main goroutine. But works fine with relate dir from the git root.\n\nThe CL also takes care of that.\n\nHere are some screenshots to help you better understand what I am talking about:\n\n[branch main] Abs-failure\nhttps://drive.google.com/file/d/1_mK6RwM7-S8kDHEsaLxJpVGo8TT4xe7b/view?usp\u003dsharing\n\n[This CL] takes care of everything as it should be\nhttps://drive.google.com/file/d/1ckQvvHpCCbkVbB0x3siUSWRo-vm0Bsm0/view?usp\u003dsharing",
+      "parentUuid": "0dd6139a_4a783b80",
+      "revId": "9515e5c8666c4f417306bd9812ae636bd8172c25",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

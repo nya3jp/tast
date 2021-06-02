@@ -16,8 +16,8 @@ import (
 	"github.com/google/subcommands"
 
 	"chromiumos/tast/cmd/tast/internal/logging"
-	"chromiumos/tast/cmd/tast/internal/run"
 	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
+	"chromiumos/tast/errors"
 	"chromiumos/tast/testutil"
 )
 
@@ -100,17 +100,17 @@ func TestRunExecFailure(t *gotesting.T) {
 	// If tests fail to be executed, an error should be reported.
 	const msg = "exec failed"
 	wrapper := stubRunWrapper{
-		runRes:    []*resultsjson.Result{{Test: resultsjson.Test{Name: "pkg.LocalTest"}}},
-		runStatus: run.Status{ExitCode: subcommands.ExitFailure, ErrorMsg: msg + "\nmore details"},
+		runRes: []*resultsjson.Result{{Test: resultsjson.Test{Name: "pkg.LocalTest"}}},
+		runErr: errors.New(msg),
 	}
 	args := []string{"root@example.net"}
 	b := bytes.Buffer{}
 	lg := logging.NewSimple(&b, true, true)
-	if status := executeRunCmd(t, args, &wrapper, lg); status != wrapper.runStatus.ExitCode {
-		t.Fatalf("runCmd.Execute(%v) returned status %v; want %v", args, status, wrapper.runStatus.ExitCode)
+	if status := executeRunCmd(t, args, &wrapper, lg); status != subcommands.ExitFailure {
+		t.Fatalf("runCmd.Execute(%v) returned status %v; want %v", args, status, subcommands.ExitFailure)
 	}
 
-	// The first line of the failure message should be in the last line of output.
+	// The error message should be in the last line of output.
 	if lines := strings.Split(strings.TrimSpace(b.String()), "\n"); len(lines) == 0 {
 		t.Errorf("runCmd.Execute(%v) didn't log any output", args)
 	} else if last := lines[len(lines)-1]; !strings.Contains(last, msg) {

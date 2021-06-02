@@ -7,7 +7,6 @@ package main
 import (
 	"context"
 
-	"chromiumos/tast/cmd/tast/internal/run"
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
 )
@@ -18,11 +17,11 @@ type stubRunWrapper struct {
 	runCfg   *config.Config  // config passed to run
 	runState *config.State   // state passed to run
 
-	runStatus run.Status            // status to return from run
-	runRes    []*resultsjson.Result // results to return from run
+	runRes []*resultsjson.Result // results to return from run
+	runErr error                 // error to return from run
 }
 
-func (w *stubRunWrapper) run(ctx context.Context, cfg *config.Config, state *config.State) (run.Status, []*resultsjson.Result) {
+func (w *stubRunWrapper) run(ctx context.Context, cfg *config.Config, state *config.State) ([]*resultsjson.Result, error) {
 	w.runCtx, w.runCfg, w.runState = ctx, cfg, state
-	return w.runStatus, w.runRes
+	return w.runRes, w.runErr
 }

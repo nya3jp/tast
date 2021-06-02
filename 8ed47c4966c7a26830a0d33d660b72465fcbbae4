@@ -22,6 +22,30 @@
       },
       "revId": "8ed47c4966c7a26830a0d33d660b72465fcbbae4",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a6a3a8ba_c34fe84b",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1483403
+      },
+      "writtenOn": "2021-06-02T15:20:52Z",
+      "side": 1,
+      "message": "stdout is used for the grpc channel, so errors cannot go there.\n\nI actually have some situations where the errors are not being picked up at all, the remote logging is not working, so I wrote the errors to stderr instead to see what they were. I don\u0027t plan to submit those changes, but since the registration errors also go to stderr, this seemed generally useful.",
+      "parentUuid": "232d00db_e63593d2",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 10,
+        "endChar": 30
+      },
+      "revId": "8ed47c4966c7a26830a0d33d660b72465fcbbae4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

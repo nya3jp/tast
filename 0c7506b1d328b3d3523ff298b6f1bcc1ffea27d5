@@ -16,6 +16,29 @@
       "message": "Removed CR+2 to ask for another iteration since I made non-trivial changes.\n\n1. Fixed a build error (oops)\n2. Fixed an issue where \"tast run\" prints duplicated error messages at the end of execution\n\nAbout 2... formerly errorStatusf printed messages to Logger as a side effect and it worked nicely to print a test error before proceeding to writing results. However, now that WriteResult is called within run.Run, the timing of side effect is moved to the very end of execution, thus we ended up printing the same message twice. The latest patchset removes the side effect from errorStatusf and instead adds an explicit logic to print a test error before calling WriteResults.\n",
       "revId": "0c7506b1d328b3d3523ff298b6f1bcc1ffea27d5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "fc35df80_151037bb",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 40,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-06-02T06:37:05Z",
+      "side": 1,
+      "message": "Note that Status is now not very useful... I\u0027m removing this type in crrev.com/c/2931544.",
+      "range": {
+        "startLine": 40,
+        "startChar": 5,
+        "endLine": 40,
+        "endChar": 11
+      },
+      "revId": "0c7506b1d328b3d3523ff298b6f1bcc1ffea27d5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

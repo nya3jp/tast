@@ -156,31 +156,27 @@ func (r *runCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{})
 	}
 	lg.Log("Writing results to ", r.cfg.ResDir)
 
-	status, results := r.wrapper.run(ctx, r.cfg, &state)
-	allTestsRun := status.ExitCode == subcommands.ExitSuccess
-	if len(results) == 0 && len(state.TestNamesToSkip) == 0 && allTestsRun {
-		lg.Logf("No tests matched by pattern(s) %v", r.cfg.Patterns)
-		return subcommands.ExitFailure
+	results, runErr := r.wrapper.run(ctx, r.cfg, &state)
+
+	if runErr == nil && len(results) == 0 && len(state.TestNamesToSkip) == 0 {
+		runErr = errors.Errorf("no tests matched by pattern(s) %v", r.cfg.Patterns)
 	}
 
-	// Log the first line of the error as the last line of output to make it easy to see.
-	if status.ExitCode != subcommands.ExitSuccess {
-		if lines := strings.SplitN(status.ErrorMsg, "\n", 2); len(lines) >= 1 {
-			lg.Log(lines[0])
-		}
+	if runErr != nil {
+		lg.Logf("Failed to run tests: %v", runErr)
+		return subcommands.ExitFailure
 	}
 
 	// If we would otherwise report success (indicating that we executed all tests) but
 	// -failfortests was passed (indicating that 1 should be returned for individual test failures),
 	// then we need to examine test results.
-	if status.ExitCode == subcommands.ExitSuccess && r.failForTests {
+	if r.failForTests {
 		for _, res := range results {
 			if len(res.Errors) > 0 {
-				status.ExitCode = subcommands.ExitFailure
-				break
+				return subcommands.ExitFailure
 			}
 		}
 	}
 
-	return status.ExitCode
+	return subcommands.ExitSuccess
 }

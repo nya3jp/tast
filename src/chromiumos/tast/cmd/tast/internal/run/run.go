@@ -13,7 +13,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/google/subcommands"
 	"go.chromium.org/chromiumos/config/go/api/test/tls"
 	"google.golang.org/grpc"
 
@@ -36,34 +35,14 @@ const (
 	maxPostReserve = 15 * time.Second
 )
 
-// Status describes the result of a Run call.
-type Status struct {
-	// ExitCode contains the exit code that should be used by the tast process.
-	ExitCode subcommands.ExitStatus
-	// ErrorMsg describes the reason why the run failed.
-	ErrorMsg string
-}
-
-// successStatus describes a successful run.
-var successStatus = Status{}
-
-// errorStatusf returns a Status describing a failing run. format and args are combined to produce the error
-// message, which is included in the returned status.
-func errorStatusf(cfg *config.Config, code subcommands.ExitStatus, format string, args ...interface{}) Status {
-	msg := fmt.Sprintf(format, args...)
-	return Status{ExitCode: code, ErrorMsg: msg}
-}
-
 // Run executes or lists tests per cfg and returns the results.
 // Messages are logged using cfg.Logger as the run progresses.
-// If an error is encountered, status.ErrorMsg will be logged to cfg.Logger before returning,
-// but the caller may wish to log it again later to increase its prominence if additional messages are logged.
-func Run(ctx context.Context, cfg *config.Config, state *config.State) (status Status, results []*resultsjson.Result) {
+func Run(ctx context.Context, cfg *config.Config, state *config.State) ([]*resultsjson.Result, error) {
 	if err := setUpGRPCServices(ctx, cfg, state); err != nil {
-		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to set up gRPC servers: %v", err), nil
+		return nil, errors.Wrap(err, "failed to set up gRPC servers")
 	}
 	if err := resolveHosts(ctx, cfg, state); err != nil {
-		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to resolve hosts: %v", err), nil
+		return nil, errors.Wrap(err, "failed to resolve hosts")
 	}
 
 	cc := target.NewConnCache(cfg, cfg.Target)
@@ -71,7 +50,7 @@ func Run(ctx context.Context, cfg *config.Config, state *config.State) (status S
 
 	conn, err := cc.Conn(ctx)
 	if err != nil {
-		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to connect to %s: %v", cfg.Target, err), nil
+		return nil, errors.Wrapf(err, "failed to connect to %s", cfg.Target)
 	}
 
 	if state.ReportsConn != nil {
@@ -79,7 +58,7 @@ func Run(ctx context.Context, cfg *config.Config, state *config.State) (status S
 		state.ReportsClient = cl
 		strm, err := cl.LogStream(ctx)
 		if err != nil {
-			return errorStatusf(cfg, subcommands.ExitFailure, "Failed to start LogStream streaming RPC: %v", err), nil
+			return nil, errors.Wrap(err, "failed to start LogStream streaming RPC")
 		}
 		defer strm.CloseAndRecv()
 		state.ReportsLogStream = strm
@@ -89,30 +68,30 @@ func Run(ctx context.Context, cfg *config.Config, state *config.State) (status S
 	if cfg.TLWServer == "" && cfg.RunRemote {
 		es, err := startEphemeralDevserverForRemoteTests(ctx, cfg, state)
 		if err != nil {
-			return errorStatusf(cfg, subcommands.ExitFailure, "Failed to start ephemeral devserver for remote tests: %v", err), nil
+			return nil, errors.Wrap(err, "failed to start ephemeral devserver for remote tests")
 		}
 		defer es.Close()
 	}
 
 	if err := prepare.Prepare(ctx, cfg, state, conn); err != nil {
-		return errorStatusf(cfg, subcommands.ExitFailure, "Failed to build and push: %v", err), nil
+		return nil, errors.Wrap(err, "failed to build and push")
 	}
 
 	switch cfg.Mode {
 	case config.ListTestsMode:
 		results, err := listTests(ctx, cfg, state, cc)
 		if err != nil {
-			return errorStatusf(cfg, subcommands.ExitFailure, "Failed to list tests: %v", err), nil
+			return nil, errors.Wrapf(err, "failed to list tests")
 		}
-		return successStatus, results
+		return results, nil
 	case config.RunTestsMode:
 		results, err := runTests(ctx, cfg, state, cc)
 		if err != nil {
-			return errorStatusf(cfg, subcommands.ExitFailure, "Failed to run tests: %v", err), results
+			return results, errors.Wrapf(err, "failed to run tests")
 		}
-		return successStatus, results
+		return results, nil
 	default:
-		return errorStatusf(cfg, subcommands.ExitFailure, "Unhandled mode %d", cfg.Mode), nil
+		return nil, errors.Errorf("unhandled mode %d", cfg.Mode)
 	}
 }
 

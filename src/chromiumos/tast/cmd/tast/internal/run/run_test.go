@@ -20,7 +20,6 @@ import (
 	"github.com/golang/protobuf/ptypes"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
-	"github.com/google/subcommands"
 	"go.chromium.org/chromiumos/config/go/api/test/tls"
 	"google.golang.org/grpc"
 
@@ -46,8 +45,8 @@ func TestRun(t *gotesting.T) {
 	cfg := env.Config()
 	state := env.State()
 
-	if status, _ := Run(ctx, cfg, state); status.ExitCode != subcommands.ExitSuccess {
-		t.Errorf("Run() = %v; want %v", status.ExitCode, subcommands.ExitSuccess)
+	if _, err := Run(ctx, cfg, state); err != nil {
+		t.Errorf("Run failed: %v", err)
 	}
 
 	if _, err := os.Stat(filepath.Join(cfg.ResDir, runnerclient.ResultsFilename)); err != nil {
@@ -63,8 +62,8 @@ func TestRunNoTestToRun(t *gotesting.T) {
 	cfg := env.Config()
 	state := env.State()
 
-	if status, _ := Run(ctx, cfg, state); status.ExitCode != subcommands.ExitSuccess {
-		t.Errorf("Run() = %v; want %v", status.ExitCode, subcommands.ExitSuccess)
+	if _, err := Run(ctx, cfg, state); err != nil {
+		t.Errorf("Run failed: %v", err)
 	}
 
 	// Results are not written in the case no test was run.
@@ -84,8 +83,8 @@ func TestRunPartialRun(t *gotesting.T) {
 	cfg.RemoteRunner = filepath.Join(env.TempDir(), "missing_remote_test_runner")
 	state := env.State()
 
-	if status, _ := Run(ctx, cfg, state); status.ExitCode != subcommands.ExitFailure {
-		t.Errorf("Run() = %v; want %v", status.ExitCode, subcommands.ExitFailure)
+	if _, err := Run(ctx, cfg, state); err == nil {
+		t.Error("Run unexpectedly succeeded despite missing remote_test_runner")
 	}
 }
 
@@ -97,8 +96,8 @@ func TestRunError(t *gotesting.T) {
 	cfg.KeyFile = "" // force SSH auth error
 	state := env.State()
 
-	if status, _ := Run(ctx, cfg, state); status.ExitCode != subcommands.ExitFailure {
-		t.Errorf("Run() = %v; want %v", status, subcommands.ExitFailure)
+	if _, err := Run(ctx, cfg, state); err == nil {
+		t.Error("Run unexpectedly succeeded despite unaccessible SSH server")
 	}
 }
 
@@ -124,8 +123,8 @@ func TestRunEphemeralDevserver(t *gotesting.T) {
 	td.Cfg.Devservers = nil // clear the default mock devservers set in NewLocalTestData
 	td.Cfg.UseEphemeralDevserver = true
 
-	if status, _ := Run(context.Background(), &td.Cfg, &td.State); status.ExitCode != subcommands.ExitSuccess {
-		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.LogBuf.String())
+	if _, err := Run(context.Background(), &td.Cfg, &td.State); err != nil {
+		t.Errorf("Run failed: %v", err)
 	}
 }
 
@@ -275,8 +274,8 @@ func testRunDownloadPrivateBundles(t *gotesting.T, td *fakerunner.LocalTestData)
 
 	td.Cfg.DownloadPrivateBundles = true
 
-	if status, _ := Run(context.Background(), &td.Cfg, &td.State); status.ExitCode != subcommands.ExitSuccess {
-		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.LogBuf.String())
+	if _, err := Run(context.Background(), &td.Cfg, &td.State); err != nil {
+		t.Errorf("Run failed: %v", err)
 	}
 	if diff := cmp.Diff(dutsWithDownloadRequest, duts); diff != "" {
 		t.Errorf("got DUTs with download request %+v; want %+v; diff=%v", dutsWithDownloadRequest, duts, diff)
@@ -319,8 +318,8 @@ func TestRunTLW(t *gotesting.T) {
 	td.Cfg.Target = targetName
 	td.Cfg.TLWServer = tlwAddr
 
-	if status, _ := Run(context.Background(), &td.Cfg, &td.State); status.ExitCode != subcommands.ExitSuccess {
-		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.LogBuf.String())
+	if _, err := Run(context.Background(), &td.Cfg, &td.State); err != nil {
+		t.Errorf("Run failed: %v", err)
 	}
 }
 
@@ -380,8 +379,8 @@ func TestRunWithReports_LogStream(t *gotesting.T) {
 		}
 		return 0
 	}
-	if status, _ := Run(context.Background(), &td.Cfg, &td.State); status.ExitCode != subcommands.ExitSuccess {
-		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.LogBuf.String())
+	if _, err := Run(context.Background(), &td.Cfg, &td.State); err != nil {
+		t.Errorf("Run failed: %v", err)
 	}
 	if str := string(srv.GetLog(test1Name, test1Path)); !strings.Contains(str, test1LogText) {
 		t.Errorf("Expected log not received for test 1; got %q; should contain %q", str, test1LogText)
@@ -462,8 +461,8 @@ func TestRunWithReports_ReportResult(t *gotesting.T) {
 		}
 		return 0
 	}
-	if status, _ := Run(context.Background(), &td.Cfg, &td.State); status.ExitCode != subcommands.ExitSuccess {
-		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.LogBuf.String())
+	if _, err := Run(context.Background(), &td.Cfg, &td.State); err != nil {
+		t.Errorf("Run failed: %v", err)
 	}
 	test2ErrorTimeStamp, _ := ptypes.TimestampProto(test2ErrorTime)
 	expectedResults := []*protocol.ReportResultRequest{
@@ -560,8 +559,8 @@ func TestRunWithReports_ReportResultTerminate(t *gotesting.T) {
 		}
 		return 0
 	}
-	if status, _ := Run(context.Background(), &td.Cfg, &td.State); status.ExitCode != subcommands.ExitFailure {
-		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitFailure, td.LogBuf.String())
+	if _, err := Run(context.Background(), &td.Cfg, &td.State); err == nil {
+		t.Error("Run unexpectedly succeeded despite termination request")
 	}
 	test2ErrorTimeStamp, _ := ptypes.TimestampProto(test2ErrorTime)
 	expectedResults := []*protocol.ReportResultRequest{
@@ -640,9 +639,9 @@ func TestRunWithSkippedTests(t *gotesting.T) {
 		}
 		return 0
 	}
-	status, results := Run(context.Background(), &td.Cfg, &td.State)
-	if status.ExitCode == subcommands.ExitFailure {
-		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.LogBuf.String())
+	results, err := Run(context.Background(), &td.Cfg, &td.State)
+	if err != nil {
+		t.Errorf("Run failed: %v", err)
 	}
 	if len(results) != len(tests) {
 		t.Errorf("Got wrong number of results %v; want %v", len(results), len(tests))

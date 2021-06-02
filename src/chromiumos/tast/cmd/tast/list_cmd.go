@@ -81,10 +81,10 @@ func (lc *listCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{
 	lc.cfg.Logger = logging.NewSimple(&b, true, true)
 
 	state := config.State{}
-	status, results := lc.wrapper.run(ctx, lc.cfg, &state)
-	if status.ExitCode != subcommands.ExitSuccess {
-		os.Stderr.Write(b.Bytes())
-		return status.ExitCode
+	results, err := lc.wrapper.run(ctx, lc.cfg, &state)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "ERROR: %v\n", err)
+		return subcommands.ExitFailure
 	}
 	tests := make([]*resultsjson.Test, len(results))
 	for i := range results {

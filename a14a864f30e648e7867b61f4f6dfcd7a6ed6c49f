@@ -336,6 +336,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "8727e79d_0290f493",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 378,
+      "author": {
+        "id": 1512082
+      },
+      "writtenOn": "2021-06-02T06:32:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "13e1ddb4_900571a2",
+      "range": {
+        "startLine": 378,
+        "startChar": 12,
+        "endLine": 378,
+        "endChar": 29
+      },
+      "revId": "a14a864f30e648e7867b61f4f6dfcd7a6ed6c49f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "894590a6_67b0fe54",
@@ -396,6 +420,30 @@
       "writtenOn": "2021-05-27T14:10:07Z",
       "side": 1,
       "message": "nit: this can be just\n\n`return os.Chdir(gitRoot)`",
+      "range": {
+        "startLine": 382,
+        "startChar": 1,
+        "endLine": 383,
+        "endChar": 11
+      },
+      "revId": "a14a864f30e648e7867b61f4f6dfcd7a6ed6c49f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "95b6edca_d49bf229",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/main.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 383,
+      "author": {
+        "id": 1512082
+      },
+      "writtenOn": "2021-06-02T06:32:43Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e3b8d8fd_5a631b76",
       "range": {
         "startLine": 382,
         "startChar": 1,

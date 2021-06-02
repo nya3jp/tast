@@ -16,6 +16,75 @@
       "message": "Thanks guys. Please let me know your views.",
       "revId": "e6753c74ebfbc790424ac0dcd4e90e92c7763ea8",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "62654df3_080d93fa",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/main.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 66,
+      "author": {
+        "id": 1306673
+      },
+      "writtenOn": "2021-06-02T13:55:39Z",
+      "side": 1,
+      "message": "I think it\u0027s preferred to use filepath.IsAbs instead\n\nhttps://golang.org/pkg/path/filepath/#IsAbs",
+      "range": {
+        "startLine": 66,
+        "startChar": 0,
+        "endLine": 66,
+        "endChar": 44
+      },
+      "revId": "e6753c74ebfbc790424ac0dcd4e90e92c7763ea8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a8237d81_a4ca5cbd",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/main.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1306673
+      },
+      "writtenOn": "2021-06-02T13:55:39Z",
+      "side": 1,
+      "message": "I think there still might be relative path which contains deltaPath\n\nfor example deltaPath is \"a\" and relPath is \"x/y/z/a/b/c/\"",
+      "range": {
+        "startLine": 68,
+        "startChar": 5,
+        "endLine": 68,
+        "endChar": 41
+      },
+      "revId": "e6753c74ebfbc790424ac0dcd4e90e92c7763ea8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2183f07d_a25e3370",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/main.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 75,
+      "author": {
+        "id": 1306673
+      },
+      "writtenOn": "2021-06-02T13:55:39Z",
+      "side": 1,
+      "message": "Is it possible to pass here absolute path? If so, maybe it makes sense to always work with absolute paths?\n\nSo instead of deltaPath this function will get oldWorkDir parameter. if path is absolute, then we won\u0027t change it. If path is relative, we will join it with oldWorkDir. WDYT?",
+      "range": {
+        "startLine": 75,
+        "startChar": 53,
+        "endLine": 75,
+        "endChar": 60
+      },
+      "revId": "e6753c74ebfbc790424ac0dcd4e90e92c7763ea8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

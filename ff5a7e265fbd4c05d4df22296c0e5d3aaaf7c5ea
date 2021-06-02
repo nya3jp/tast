@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "11ce54b3_7b2ae02d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1158184
+      },
+      "writtenOn": "2021-06-02T16:40:06Z",
+      "side": 1,
+      "message": "apps.LaunchReleaseNotesFromSettings.stable failure is a known ToT breakage http://issuetracker.google.com/189876057 not related to this CL -\u003e chumping",
+      "revId": "ff5a7e265fbd4c05d4df22296c0e5d3aaaf7c5ea",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

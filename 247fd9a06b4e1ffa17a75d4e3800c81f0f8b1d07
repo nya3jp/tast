@@ -22,6 +22,30 @@
       },
       "revId": "247fd9a06b4e1ffa17a75d4e3800c81f0f8b1d07",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2f707294_6e6e7d4d",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-06-03T01:51:23Z",
+      "side": 1,
+      "message": "Hmm? Unit test files (*_test.go) cannot export symbols. Precisely speaking, unit test files can define exported symbols (whose first letter is capital), but they cannot be imported from unit test files in other packages because *_test.go are built only for the package a unit test binary is being built for.",
+      "parentUuid": "1e2c3cfe_b92ef20c",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 9,
+        "endChar": 57
+      },
+      "revId": "247fd9a06b4e1ffa17a75d4e3800c81f0f8b1d07",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

@@ -46,6 +46,30 @@
       },
       "revId": "8ed47c4966c7a26830a0d33d660b72465fcbbae4",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "db50938a_c920c5fe",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-06-03T02:00:28Z",
+      "side": 1,
+      "message": "Would you mind sharing the code you tried to debug? It\u0027s odd that the standard logging mechanism doesn\u0027t work... if it is a bug we have to fix it. Also it\u0027s surprising for me that the current patch allows test code to write to stderr because the framework locks down stdin/stdout/stderr before running tests as I mentioned above. I\u0027m interested in stderr logging code you wrote to see why it worked, and how to fix the issue correctly.",
+      "parentUuid": "a6a3a8ba_c34fe84b",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 10,
+        "endChar": 30
+      },
+      "revId": "8ed47c4966c7a26830a0d33d660b72465fcbbae4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

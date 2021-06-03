@@ -15,13 +15,16 @@ import (
 func verifyCondition(t *testing.T, c Condition, dc *protocol.DeprecatedDeviceConfig, features *configpb.HardwareFeatures, expectSatisfied bool) {
 	t.Helper()
 
-	err := c.Satisfied(&protocol.HardwareFeatures{HardwareFeatures: features, DeprecatedDeviceConfig: dc})
+	satisfied, reason, err := c.Satisfied(&protocol.HardwareFeatures{HardwareFeatures: features, DeprecatedDeviceConfig: dc})
+	if err != nil {
+		t.Error("Error while evaluating condition: ", err)
+	}
 	if expectSatisfied {
-		if err != nil {
-			t.Error("Unexpectedly unsatisfied: ", err)
+		if !satisfied {
+			t.Error("Unexpectedly unsatisfied: ", reason)
 		}
 	} else {
-		if err == nil {
+		if satisfied {
 			t.Error("Unexpectedly satisfied")
 		}
 	}

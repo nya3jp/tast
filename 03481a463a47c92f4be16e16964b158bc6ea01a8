@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "457150c6_13369c1f",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/main.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 381,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-06-03T08:50:54Z",
+      "side": 1,
+      "message": "In general it is not safe to parse the result of CombinedOutput since stdout/stderr are interleaved.\nhttps://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/code_review_comments.md#CombinedOutput\n\nI think you can set stderr passthrough and call Output.\n\n cmd :\u003d exec.Command(...)\n cmd.Stderr \u003d os.Stderr\n out, err :\u003d cmd.Output()",
+      "range": {
+        "startLine": 381,
+        "startChar": 65,
+        "endLine": 381,
+        "endChar": 79
+      },
+      "revId": "03481a463a47c92f4be16e16964b158bc6ea01a8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5a34d92f_bb9f0975",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/main.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 387,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-06-03T08:50:54Z",
+      "side": 1,
+      "message": "I\u0027m not sure if it\u0027s useful to check if err is exec.ExitError... err.Error() should return reasonable error messages (e.g. \"exit status 123\"). Why don\u0027t we just make it simple like:\n\n return \"\", fmt.Errorf(\"failed to locate git root: git rev-parse --show-toplevel: %v\", err)",
+      "range": {
+        "startLine": 383,
+        "startChar": 2,
+        "endLine": 387,
+        "endChar": 25
+      },
+      "revId": "03481a463a47c92f4be16e16964b158bc6ea01a8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6c76e11b_065bfb6c",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/main.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 397,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-06-03T08:50:54Z",
+      "side": 1,
+      "message": "Since \"git rev-parse --show-toplevel\" might resolve symlinks, it\u0027s possible that currDir doesn\u0027t have gitRoot as a prefix. For example:\n \n [nya@yoru git]% ls -l\n total 4\n drwxr-xr-x 4 nya primarygroup 4096 Jun  3 08:47 a\n lrwxrwxrwx 1 nya primarygroup    1 Jun  3 08:47 b -\u003e a\n [nya@yoru git]% cd b/x\n [nya@yoru x]% git rev-parse --show-toplevel\n /usr/local/google/home/nya/tmp/git/a\n \nYou can call filepath.Abs to canonicalize file paths.\nhttps://pkg.go.dev/path/filepath#Abs",
+      "range": {
+        "startLine": 396,
+        "startChar": 2,
+        "endLine": 397,
+        "endChar": 50
+      },
+      "revId": "03481a463a47c92f4be16e16964b158bc6ea01a8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

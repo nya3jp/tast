@@ -32,6 +32,22 @@ func D(conds ...Condition) Deps {
 // idRegexp is the pattern that the given model/platform ID names should match with.
 var idRegexp = regexp.MustCompile(`^[a-z0-9_-]+$`)
 
+func satisfied() (bool, string, error) {
+	return true, "", nil
+}
+
+func unsatisfied(reason string) (bool, string, error) {
+	return false, reason, nil
+}
+
+func withError(err error) (bool, string, error) {
+	return false, "", err
+}
+
+func withErrorStr(s string) (bool, string, error) {
+	return false, "", errors.New(s)
+}
+
 // modelListed returns whether the model represented by a protocol.DeprecatedDeviceConfig is listed
 // in the given list of names or not.
 func modelListed(dc *protocol.DeprecatedDeviceConfig, names ...string) (bool, error) {
@@ -85,15 +101,20 @@ func Model(names ...string) Condition {
 			return Condition{Err: errors.Errorf("ModelId should match with %v: %q", idRegexp, n)}
 		}
 	}
-	return Condition{Satisfied: func(f *protocol.HardwareFeatures) error {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		listed, err := modelListed(f.GetDeprecatedDeviceConfig(), names...)
-		if err != nil {
-			return err
+		// Currently amd64-generic vm does not return a model ID.
+		// Treat it as a model that does not match any of the known ids.
+
+		// TODO(b:190010549): Propagate the error once amd64-generic vm is handled properly.
+		// if err != nil {
+		//   	 return withError(err)
+		// }
+
+		if err != nil || !listed {
+			return unsatisfied("ModelId did not match")
 		}
-		if !listed {
-			return errors.New("ModelId did not match")
-		}
-		return nil
+		return satisfied()
 	}}
 }
 
@@ -106,17 +127,17 @@ func SkipOnModel(names ...string) Condition {
 			return Condition{Err: errors.Errorf("ModelId should match with %v: %q", idRegexp, n)}
 		}
 	}
-	return Condition{Satisfied: func(f *protocol.HardwareFeatures) error {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		listed, err := modelListed(f.GetDeprecatedDeviceConfig(), names...)
 		if err != nil {
 			// Failed to get the model name.
 			// Run the test to report error if it fails on this device.
-			return nil
+			return satisfied()
 		}
 		if listed {
-			return errors.New("ModelId matched with skip-on list")
+			return unsatisfied("ModelId matched with skip-on list")
 		}
-		return nil
+		return satisfied()
 	}}
 }
 
@@ -129,15 +150,15 @@ func Platform(names ...string) Condition {
 			return Condition{Err: errors.Errorf("PlatformId should match with %v: %q", idRegexp, n)}
 		}
 	}
-	return Condition{Satisfied: func(f *protocol.HardwareFeatures) error {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		listed, err := platformListed(f.GetDeprecatedDeviceConfig(), names...)
 		if err != nil {
-			return err
+			return withError(err)
 		}
 		if !listed {
-			return errors.New("PlatformId did not match")
+			return unsatisfied("PlatformId did not match")
 		}
-		return nil
+		return satisfied()
 	}}
 }
 
@@ -150,30 +171,30 @@ func SkipOnPlatform(names ...string) Condition {
 			return Condition{Err: errors.Errorf("PlatformId should match with %v: %q", idRegexp, n)}
 		}
 	}
-	return Condition{Satisfied: func(f *protocol.HardwareFeatures) error {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		listed, err := platformListed(f.GetDeprecatedDeviceConfig(), names...)
 		if err != nil {
-			return err
+			return withError(err)
 		}
 		if listed {
-			return errors.New("PlatformId matched with skip-on list")
+			return unsatisfied("PlatformId matched with skip-on list")
 		}
-		return nil
+		return satisfied()
 	}}
 }
 
 // TouchScreen returns a hardware dependency condition that is satisfied
 // iff the DUT has touchscreen.
 func TouchScreen() Condition {
-	return Condition{Satisfied: func(f *protocol.HardwareFeatures) error {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return errors.New("DUT HardwareFeatures data is not given")
+			return withErrorStr("DUT HardwareFeatures data is not given")
 		}
 		if hf.GetScreen().GetTouchSupport() == configpb.HardwareFeatures_PRESENT {
-			return nil
+			return satisfied()
 		}
-		return errors.New("DUT does not have touchscreen")
+		return unsatisfied("DUT does not have touchscreen")
 	}, CEL: "dut.hardware_features.screen.touch_support == api.HardwareFeatures.Present.PRESENT",
 	}
 }
@@ -181,17 +202,17 @@ func TouchScreen() Condition {
 // ChromeEC returns a hardware dependency condition that is satisfied
 // iff the DUT has a present EC of the "Chrome EC" type.
 func ChromeEC() Condition {
-	return Condition{Satisfied: func(f *protocol.HardwareFeatures) error {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return errors.New("Did not find hardware features")
+			return withErrorStr("Did not find hardware features")
 		}
 		ecIsPresent := hf.GetEmbeddedController().GetPresent() == configpb.HardwareFeatures_PRESENT
 		ecIsChrome := hf.GetEmbeddedController().GetEcType() == configpb.HardwareFeatures_EmbeddedController_EC_CHROME
 		if ecIsPresent && ecIsChrome {
-			return nil
+			return satisfied()
 		}
-		return errors.New("DUT does not have chrome EC")
+		return unsatisfied("DUT does not have chrome EC")
 	}, CEL: "dut.hardware_features.embedded_controller.present == api.HardwareFeatures.Present.PRESENT && dut.hardware_features.embedded_controller.ec_type == api.HardwareFeatures.EmbeddedController.EmbeddedControllerType.EC_CHROME",
 	}
 }
@@ -199,15 +220,15 @@ func ChromeEC() Condition {
 // Fingerprint returns a hardware dependency condition that is satisfied
 // iff the DUT has fingerprint sensor.
 func Fingerprint() Condition {
-	return Condition{Satisfied: func(f *protocol.HardwareFeatures) error {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return errors.New("HardwareFeatures is not given")
+			return withErrorStr("HardwareFeatures is not given")
 		}
 		if hf.GetFingerprint().GetLocation() == configpb.HardwareFeatures_Fingerprint_NOT_PRESENT {
-			return errors.New("DUT does not have fingerprint sensor")
+			return unsatisfied("DUT does not have fingerprint sensor")
 		}
-		return nil
+		return satisfied()
 	}, CEL: "dut.hardware_features.fingerprint.location != api.HardwareFeatures.Fingerprint.Location.NOT_PRESENT",
 	}
 }
@@ -215,15 +236,15 @@ func Fingerprint() Condition {
 // NoFingerprint returns a hardware dependency condition that is satisfied
 // if the DUT doesn't have fingerprint sensor.
 func NoFingerprint() Condition {
-	return Condition{Satisfied: func(f *protocol.HardwareFeatures) error {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return errors.New("HardwareFeatures is not given")
+			return withErrorStr("HardwareFeatures is not given")
 		}
 		if hf.GetFingerprint().GetLocation() != configpb.HardwareFeatures_Fingerprint_NOT_PRESENT {
-			return errors.New("DUT has fingerprint sensor")
+			return unsatisfied("DUT has fingerprint sensor")
 		}
-		return nil
+		return satisfied()
 	}, CEL: "dut.hardware_features.fingerprint.location == api.HardwareFeatures.Fingerprint.Location.NOT_PRESENT",
 	}
 }
@@ -231,15 +252,15 @@ func NoFingerprint() Condition {
 // InternalDisplay returns a hardware dependency condition that is satisfied
 // iff the DUT has an internal display, e.g. Chromeboxes and Chromebits don't.
 func InternalDisplay() Condition {
-	return Condition{Satisfied: func(f *protocol.HardwareFeatures) error {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return errors.New("HardwareFeatures is not given")
+			return withErrorStr("HardwareFeatures is not given")
 		}
 		if hf.GetScreen().GetPanelProperties() != nil {
-			return nil
+			return satisfied()
 		}
-		return errors.New("DUT does not have an internal display")
+		return unsatisfied("DUT does not have an internal display")
 	}, CEL: "dut.hardware_features.screen.panel_properties.diagonal_milliinch != 0",
 	}
 }
@@ -259,7 +280,7 @@ func Wifi80211ac() Condition {
 func Wifi80211ax() Condition {
 	// Note: this is currently a blocklist.
 	// TODO(crbug.com/1070299): replace this when we have hwdep for WiFi chips.
-	return Condition{Satisfied: func(f *protocol.HardwareFeatures) error {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		// TODO(crbug.com/1115620): remove "Elm" and "Hana" after unibuild migration
 		// completed.
 		platformCondition := SkipOnPlatform(
@@ -330,8 +351,8 @@ func Wifi80211ax() Condition {
 			"winky",
 			"wizpig",
 			"yuna")
-		if err := platformCondition.Satisfied(f); err != nil {
-			return err
+		if satisfied, reason, err := platformCondition.Satisfied(f); err != nil || !satisfied {
+			return satisfied, reason, err
 		}
 		// Some models of boards excluded from the platform skip do not support
 		// 802.11ax. To be precise as possible, we will skip these models as well.
@@ -346,10 +367,10 @@ func Wifi80211ax() Condition {
 			"madoo",
 			"vilboz",
 		)
-		if err := modelCondition.Satisfied(f); err != nil {
-			return err
+		if satisfied, reason, err := modelCondition.Satisfied(f); err != nil || !satisfied {
+			return satisfied, reason, err
 		}
-		return nil
+		return satisfied()
 	}, CEL: "dut.hardware_features.wifi.supported_wlan_protocols.exists(x, x == api.Component.Wifi.WLANProtocol.IEEE_802_11_AX)",
 	}
 }
@@ -389,7 +410,7 @@ func WifiNotMarvell() Condition {
 func WifiIntel() Condition {
 	// TODO(crbug.com/1070299): we don't yet have relevant fields in device.Config
 	// about WiFi chip, so list the known platforms here for now.
-	return Condition{Satisfied: func(f *protocol.HardwareFeatures) error {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		// TODO(crbug.com/1115620): remove "Elm" and "Hana" after unibuild migration
 		// completed.
 		// NB: Devices in the "scarlet" family use the platform name "gru", so
@@ -398,8 +419,8 @@ func WifiIntel() Condition {
 			"asurada", "bob", "elm", "fievel", "gru", "grunt", "hana", "jacuzzi",
 			"kevin", "kukui", "oak", "strongbad", "tiger", "trogdor", "trogdor-kernelnext",
 		)
-		if err := platformCondition.Satisfied(f); err != nil {
-			return err
+		if satisfied, reason, err := platformCondition.Satisfied(f); err != nil || !satisfied {
+			return satisfied, reason, err
 		}
 		// NB: These exclusions are somewhat overly broad; for example, some
 		// (but not all) blooglet devices have Intel WiFi chips. However,
@@ -418,10 +439,10 @@ func WifiIntel() Condition {
 			"vilboz",
 			"vorticon",
 		)
-		if err := modelCondition.Satisfied(f); err != nil {
-			return err
+		if satisfied, reason, err := modelCondition.Satisfied(f); err != nil || !satisfied {
+			return satisfied, reason, err
 		}
-		return nil
+		return satisfied()
 	}, CEL: "not_implemented",
 	}
 }
@@ -431,21 +452,21 @@ func WifiIntel() Condition {
 func WifiQualcomm() Condition {
 	// TODO(crbug.com/1070299): we don't yet have relevant fields in device.Config
 	// about WiFi chip, so list the known platforms here for now.
-	return Condition{Satisfied: func(f *protocol.HardwareFeatures) error {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		platformCondition := Platform(
 			"grunt", "kukui", "scarlet", "strongbad", "trogdor", "trogdor-kernelnext",
 		)
-		if err := platformCondition.Satisfied(f); err != nil {
-			return err
+		if satisfied, reason, err := platformCondition.Satisfied(f); err != nil || !satisfied {
+			return satisfied, reason, err
 		}
 		// barla has Realtek WiFi chip.
 		modelCondition := SkipOnModel(
 			"barla",
 		)
-		if err := modelCondition.Satisfied(f); err != nil {
-			return err
+		if satisfied, reason, err := modelCondition.Satisfied(f); err != nil || !satisfied {
+			return satisfied, reason, err
 		}
-		return nil
+		return satisfied()
 	}, CEL: "not_implemented",
 	}
 }
@@ -461,15 +482,15 @@ func hasBattery(f *protocol.HardwareFeatures) (bool, error) {
 // Battery returns a hardware dependency condition that is satisfied iff the DUT
 // has a battery, e.g. Chromeboxes and Chromebits don't.
 func Battery() Condition {
-	return Condition{Satisfied: func(f *protocol.HardwareFeatures) error {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hasBattery, err := hasBattery(f)
 		if err != nil {
-			return err
+			return withError(err)
 		}
 		if !hasBattery {
-			return errors.New("DUT does not have a battery")
+			return unsatisfied("DUT does not have a battery")
 		}
-		return nil
+		return satisfied()
 	}}
 }
 
@@ -478,10 +499,10 @@ func Battery() Condition {
 // BayTrail) and Gen 8 GPUs (Broadwell, Braswell) for example, don't support
 // those.
 func SupportsNV12Overlays() Condition {
-	return Condition{Satisfied: func(f *protocol.HardwareFeatures) error {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		dc := f.GetDeprecatedDeviceConfig()
 		if dc == nil {
-			return errors.New("DeprecatedDeviceConfig is not given")
+			return withErrorStr("DeprecatedDeviceConfig is not given")
 		}
 		if dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_HASWELL ||
 			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_BAY_TRAIL ||
@@ -493,9 +514,9 @@ func SupportsNV12Overlays() Condition {
 			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_MT8173 ||
 			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_MT8176 ||
 			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_MT8183 {
-			return errors.New("SoC does not support NV12 Overlays")
+			return unsatisfied("SoC does not support NV12 Overlays")
 		}
-		return nil
+		return satisfied()
 	}}
 }
 
@@ -503,10 +524,10 @@ func SupportsNV12Overlays() Condition {
 // primary plane scanout. This is: Intel SOCs Kabylake and onwards, AMD SOCs
 // from Zork onwards (codified Picasso), and not ARM SOCs.
 func Supports30bppFramebuffer() Condition {
-	return Condition{Satisfied: func(f *protocol.HardwareFeatures) error {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		dc := f.GetDeprecatedDeviceConfig()
 		if dc == nil {
-			return errors.New("DeprecatedDeviceConfig is not given")
+			return withErrorStr("DeprecatedDeviceConfig is not given")
 		}
 		// Any ARM CPUs
 		if dc.GetCpu() == protocol.DeprecatedDeviceConfig_ARM ||
@@ -526,9 +547,9 @@ func Supports30bppFramebuffer() Condition {
 			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_SKYLAKE_Y ||
 			// AMD before Zork
 			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_STONEY_RIDGE {
-			return errors.New("SoC does not support scanning out 30bpp framebuffers")
+			return unsatisfied("SoC does not support scanning out 30bpp framebuffers")
 		}
-		return nil
+		return satisfied()
 	}}
 }
 
@@ -549,128 +570,128 @@ var modelsWithoutForceDischargeSupport = []string{
 // even though they have a battery since they does not support force discharge via ectool.
 // This is a complementary condition of NoForceDischarge.
 func ForceDischarge() Condition {
-	return Condition{Satisfied: func(f *protocol.HardwareFeatures) error {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hasBattery, err := hasBattery(f)
 		if err != nil {
-			return err
+			return withError(err)
 		}
 		if !hasBattery {
-			return errors.New("DUT does not have a battery")
+			return unsatisfied("DUT does not have a battery")
 		}
 		doesNotSupportForceDischarge, err := modelListed(f.GetDeprecatedDeviceConfig(), modelsWithoutForceDischargeSupport...)
 		if err != nil {
-			return err
+			return withError(err)
 		}
 		if doesNotSupportForceDischarge {
-			return errors.New("DUT has a battery but does not support force discharge")
+			return unsatisfied("DUT has a battery but does not support force discharge")
 		}
-		return nil
+		return satisfied()
 	}}
 }
 
 // NoForceDischarge is a complementary condition of ForceDischarge.
 func NoForceDischarge() Condition {
-	return Condition{Satisfied: func(f *protocol.HardwareFeatures) error {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		doesNotSupportForceDischarge, err := modelListed(f.GetDeprecatedDeviceConfig(), modelsWithoutForceDischargeSupport...)
 		if err != nil {
-			return err
+			return withError(err)
 		}
 		if doesNotSupportForceDischarge {
 			// Devices listed in modelsWithoutForceDischargeSupport
 			// are known to always satisfy this condition
-			return nil
+			return satisfied()
 		}
 		hasBattery, err := hasBattery(f)
 		if err != nil {
-			return err
+			return withError(err)
 		}
 		if hasBattery {
-			return errors.New("DUT supports force discharge")
+			return unsatisfied("DUT supports force discharge")
 		}
-		return nil
+		return satisfied()
 	}}
 }
 
 // X86 returns a hardware dependency condition matching x86 ABI compatible platform.
 func X86() Condition {
-	return Condition{Satisfied: func(f *protocol.HardwareFeatures) error {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		dc := f.GetDeprecatedDeviceConfig()
 		if dc == nil {
-			return errors.New("DeprecatedDeviceConfig is not given")
+			return withErrorStr("DeprecatedDeviceConfig is not given")
 		}
 		if dc.GetCpu() == protocol.DeprecatedDeviceConfig_X86 || dc.GetCpu() == protocol.DeprecatedDeviceConfig_X86_64 {
-			return nil
+			return satisfied()
 		}
-		return errors.New("DUT's CPU is not x86 compatible")
+		return unsatisfied("DUT's CPU is not x86 compatible")
 	}}
 }
 
 // NoX86 returns a hardware dependency condition matching non-x86 ABI compatible platform.
 func NoX86() Condition {
-	return Condition{Satisfied: func(f *protocol.HardwareFeatures) error {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		dc := f.GetDeprecatedDeviceConfig()
 		if dc == nil {
-			return errors.New("DeprecatedDeviceConfig is not given")
+			return withErrorStr("DeprecatedDeviceConfig is not given")
 		}
 		if dc.GetCpu() != protocol.DeprecatedDeviceConfig_X86 && dc.GetCpu() != protocol.DeprecatedDeviceConfig_X86_64 {
-			return nil
+			return satisfied()
 		}
-		return errors.New("DUT's CPU is x86 compatible")
+		return unsatisfied("DUT's CPU is x86 compatible")
 	}}
 }
 
 // Nvme returns a hardware dependency condition if the device has an NVMe
 // storage device.
 func Nvme() Condition {
-	return Condition{Satisfied: func(f *protocol.HardwareFeatures) error {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return errors.New("Did not find hardware features")
+			return withErrorStr("Did not find hardware features")
 		}
 		if hf.GetStorage().GetStorageType() == configpb.Component_Storage_NVME {
-			return nil
+			return satisfied()
 		}
-		return errors.New("DUT does not have an NVMe storage device")
+		return unsatisfied("DUT does not have an NVMe storage device")
 	}, CEL: "dut.hardware_features.storage.storage_type == api.Component.Storage.StorageType.NVME",
 	}
 }
 
 // MinStorage returns a hardware dependency condition requiring the minimum size of the storage in gigabytes.
 func MinStorage(reqGigabytes int) Condition {
-	return Condition{Satisfied: func(f *protocol.HardwareFeatures) error {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return errors.New("Did not find hardware features")
+			return withErrorStr("Did not find hardware features")
 		}
 		if hf.GetStorage() == nil {
-			return errors.New("Features.Storage was nil")
+			return withErrorStr("Features.Storage was nil")
 		}
 		s := hf.GetStorage().GetSizeGb()
 		if s < uint32(reqGigabytes) {
-			return fmt.Errorf("The total storage size is smaller than required; got %dGB, need %dGB", s, reqGigabytes)
+			return unsatisfied(fmt.Sprintf("The total storage size is smaller than required; got %dGB, need %dGB", s, reqGigabytes))
 		}
-		return nil
+		return satisfied()
 	}, CEL: "not_implemented",
 	}
 }
 
 // MinMemory returns a hardware dependency condition requiring the minimum size of the memory in megabytes.
 func MinMemory(reqMegabytes int) Condition {
-	return Condition{Satisfied: func(f *protocol.HardwareFeatures) error {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return errors.New("Did not find hardware features")
+			return withErrorStr("Did not find hardware features")
 		}
 		if hf.GetMemory() == nil {
-			return errors.New("Features.Memory was nil")
+			return withErrorStr("Features.Memory was nil")
 		}
 		if hf.GetMemory().GetProfile() == nil {
-			return errors.New("Features.Memory.Profile was nil")
+			return withErrorStr("Features.Memory.Profile was nil")
 		}
 		s := hf.GetMemory().GetProfile().GetSizeMegabytes()
 		if s < int32(reqMegabytes) {
-			return fmt.Errorf("The total memory size is smaller than required; got %dMB, need %dMB", s, reqMegabytes)
+			return unsatisfied(fmt.Sprintf("The total memory size is smaller than required; got %dMB, need %dMB", s, reqMegabytes))
 		}
-		return nil
+		return satisfied()
 	}}
 }

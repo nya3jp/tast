@@ -13,15 +13,22 @@ import (
 
 // success returns a HardwareCondition that is always satisfied.
 func success() HardwareCondition {
-	return HardwareCondition{Satisfied: func(f *protocol.HardwareFeatures) error {
-		return nil
+	return HardwareCondition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		return true, "", nil
 	}}
 }
 
 // fail returns a HardwareCondition that always fail to be satisfied.
 func fail() HardwareCondition {
-	return HardwareCondition{Satisfied: func(f *protocol.HardwareFeatures) error {
-		return errors.New("failed")
+	return HardwareCondition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		return false, "failed", nil
+	}}
+}
+
+// errCond returns a HardwareCondition that always returns error on evaluation.
+func errCond() HardwareCondition {
+	return HardwareCondition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		return false, "", errors.New("error in Satisfied()")
 	}}
 }
 
@@ -37,8 +44,10 @@ func TestHardwareDepsSuccess(t *testing.T) {
 	if err := d.Validate(); err != nil {
 		t.Fatal("Unexpected validation error: ", err)
 	}
-	if err := d.Satisfied(&protocol.HardwareFeatures{}); err != nil {
-		t.Error("Unexpected fail: ", err)
+	if result, err := d.Satisfied(&protocol.HardwareFeatures{}); err != nil {
+		t.Error("Unexpected error: ", err)
+	} else if result != nil {
+		t.Error("Unexpected fail: ", result)
 	}
 }
 
@@ -47,7 +56,9 @@ func TestHardwareDepsFail(t *testing.T) {
 	if err := d.Validate(); err != nil {
 		t.Fatal("Unexpected validateion error: ", err)
 	}
-	if err := d.Satisfied(&protocol.HardwareFeatures{}); err == nil {
+	if result, err := d.Satisfied(&protocol.HardwareFeatures{}); err != nil {
+		t.Error("Unexpected error: ", err)
+	} else if result == nil {
 		t.Error("Unexpected success")
 	}
 }
@@ -58,17 +69,21 @@ func TestHardwareDepsInvalid(t *testing.T) {
 		t.Error("Unexpected validation pass")
 	}
 	// Make sure d.Satisfied() won't crash.
-	if err := d.Satisfied(&protocol.HardwareFeatures{}); err == nil {
+	if result, err := d.Satisfied(&protocol.HardwareFeatures{}); err != nil {
+		t.Error("Unexpected error: ", err)
+	} else if result == nil {
 		t.Error("Unexpected success")
 	}
 }
 
 func TestHardwareDepsMultipleCondition(t *testing.T) {
 	d := NewHardwareDeps(success(), fail())
-	if err := d.Satisfied(&protocol.HardwareFeatures{}); err == nil {
+	if reasons, err := d.Satisfied(&protocol.HardwareFeatures{}); err != nil {
+		t.Error("Unexpected error: ", err)
+	} else if len(reasons) == 0 {
 		t.Error("Unexpected success")
-	} else if len(err.Reasons) != 1 {
-		t.Errorf("Unexpected number of reasons: got %+v", err.Reasons)
+	} else if len(reasons) != 1 {
+		t.Errorf("Unexpected number of reasons: got %+v", reasons)
 	}
 }
 
@@ -77,9 +92,18 @@ func TestMergeHardwareDeps(t *testing.T) {
 	d2 := NewHardwareDeps(fail())
 	d := MergeHardwareDeps(d1, d2)
 
-	if err := d.Satisfied(&protocol.HardwareFeatures{}); err == nil {
+	if reasons, err := d.Satisfied(&protocol.HardwareFeatures{}); err != nil {
+		t.Error("Unexpected error: ", err)
+	} else if len(reasons) == 0 {
 		t.Error("Unexpected success")
-	} else if len(err.Reasons) != 1 {
-		t.Errorf("Unexpected number of reasons: got %+v", err.Reasons)
+	} else if len(reasons) != 1 {
+		t.Errorf("Unexpected number of reasons: got %+v", reasons)
+	}
+}
+
+func TestHardwareDepsError(t *testing.T) {
+	d := NewHardwareDeps(errCond())
+	if _, err := d.Satisfied(&protocol.HardwareFeatures{}); err == nil {
+		t.Errorf("Unexpected success")
 	}
 }

@@ -7,7 +7,6 @@ package dep
 import (
 	"strings"
 
-	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/protocol"
 )
 
@@ -24,7 +23,7 @@ type HardwareDeps struct {
 type HardwareCondition struct {
 	// Satisfied is a pointer to a function which checks if the given HardwareFeatures satisfies
 	// the condition.
-	Satisfied func(f *protocol.HardwareFeatures) error
+	Satisfied func(f *protocol.HardwareFeatures) (satisifed bool, reason string, err error)
 
 	// CEL is the CEL expression denoting the condition.
 	CEL string
@@ -39,36 +38,34 @@ func NewHardwareDeps(conds ...HardwareCondition) HardwareDeps {
 	return HardwareDeps{conds: conds}
 }
 
-// UnsatisfiedError is reported when Satisfied() fails.
-type UnsatisfiedError struct {
-	*errors.E
+// UnsatisfiedReasons contain the detailed reasons why Satisfied failed. An empty list means success.
+type UnsatisfiedReasons []string
 
-	// Reasons contain the detailed reasons why Satisfied failed.
-	Reasons []error
-}
-
-// Satisfied returns nil if the given device.Config satisfies the dependencies,
+// Satisfied returns whether the condition is satisfied.
+// result is empty if the given device.Config satisfies the dependencies.
 // i.e., the test can run on the current device setup.
-// Otherwise, this returns an UnsatisfiedError instance, which contains a
-// collection of detailed errors in Reasons.
-func (d *HardwareDeps) Satisfied(f *protocol.HardwareFeatures) *UnsatisfiedError {
-	var reasons []error
+// A non-nil retErr is returned when failed to evaluate the condition.
+// Otherwise, the UnsatisfiedReasons instance contains a collection of reasons why any of the condition was not satsfied.
+func (d *HardwareDeps) Satisfied(f *protocol.HardwareFeatures) (result UnsatisfiedReasons, retErr error) {
+	var reasons UnsatisfiedReasons
 	for _, c := range d.conds {
 		if c.Satisfied == nil {
-			reasons = append(reasons, errors.New("Satisfied was nil"))
+			reasons = append(reasons, "Satisfied was nil")
 			continue
 		}
-		if err := c.Satisfied(f); err != nil {
-			reasons = append(reasons, err)
+		if satisfied, reason, err := c.Satisfied(f); err != nil {
+			return nil, err
+		} else if !satisfied {
+			if reason == "" {
+				reason = "(no reason given)"
+			}
+			reasons = append(reasons, reason)
 		}
 	}
 	if len(reasons) > 0 {
-		return &UnsatisfiedError{
-			E:       errors.New("HardwareDeps is not satisfied"),
-			Reasons: reasons,
-		}
+		return reasons, nil
 	}
-	return nil
+	return nil, nil
 }
 
 // Validate returns error if one of the conditions failed to be instantiated.

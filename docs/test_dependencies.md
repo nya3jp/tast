@@ -74,7 +74,6 @@ The following software features are defined:
     kernel crash)
 *   `diagnostics` - Boards that contain generic cross-platform
     [Diagnostic utilities].
-*   `display_backlight` - An internal display backlight.
 *   `dlc` - Support of [Downloadable Content] (DLC).
 *   `dmverity_stable` - Kernels with which dm-verity runs stably. See [b/172227689](https://b.corp.google.com/issues/172227689).
 *   `dmverity_unstable` - Kernels having known issue of dm-verity causing random crashes. See [b/172227689](https://b.corp.google.com/issues/172227689).

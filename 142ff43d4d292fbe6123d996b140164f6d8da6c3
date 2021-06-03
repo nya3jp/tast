@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "392cb706_d678e20b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 10
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-06-03T04:58:06Z",
+      "side": 1,
+      "message": "Please see if my latest change is ok for approach 1. I will work on approach 2 with a different CL. Thanks.",
+      "revId": "142ff43d4d292fbe6123d996b140164f6d8da6c3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

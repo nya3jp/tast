@@ -15,15 +15,26 @@ import (
 func verifyCondition(t *testing.T, c Condition, dc *protocol.DeprecatedDeviceConfig, features *configpb.HardwareFeatures, expectSatisfied bool) {
 	t.Helper()
 
-	err := c.Satisfied(&protocol.HardwareFeatures{HardwareFeatures: features, DeprecatedDeviceConfig: dc})
+	satisfied, reason, err := c.Satisfied(&protocol.HardwareFeatures{HardwareFeatures: features, DeprecatedDeviceConfig: dc})
+	if err != nil {
+		t.Error("Error while evaluating condition: ", err)
+	}
 	if expectSatisfied {
-		if err != nil {
-			t.Error("Unexpectedly unsatisfied: ", err)
+		if !satisfied {
+			t.Error("Unexpectedly unsatisfied: ", reason)
 		}
 	} else {
-		if err == nil {
+		if satisfied {
 			t.Error("Unexpectedly satisfied")
 		}
+	}
+}
+
+func expectError(t *testing.T, c Condition, dc *protocol.DeprecatedDeviceConfig, features *configpb.HardwareFeatures) {
+	t.Helper()
+	_, _, err := c.Satisfied(&protocol.HardwareFeatures{HardwareFeatures: features, DeprecatedDeviceConfig: dc})
+	if err == nil {
+		t.Errorf("Unexpectedly succeded")
 	}
 }
 
@@ -147,6 +158,10 @@ func TestTouchscreen(t *testing.T) {
 			},
 			tc.expectSatisfied)
 	}
+	expectError(
+		t, c,
+		&protocol.DeprecatedDeviceConfig{},
+		nil)
 }
 
 func TestChromeEC(t *testing.T) {
@@ -195,6 +210,10 @@ func TestChromeEC(t *testing.T) {
 			},
 			tc.expectSatisfied)
 	}
+	expectError(
+		t, c,
+		&protocol.DeprecatedDeviceConfig{},
+		nil)
 }
 
 func TestFingerprint(t *testing.T) {
@@ -217,6 +236,10 @@ func TestFingerprint(t *testing.T) {
 			},
 			tc.expectSatisfied)
 	}
+	expectError(
+		t, c,
+		&protocol.DeprecatedDeviceConfig{},
+		nil)
 }
 
 func TestNoFingerprint(t *testing.T) {
@@ -239,6 +262,10 @@ func TestNoFingerprint(t *testing.T) {
 			},
 			tc.expectSatisfied)
 	}
+	expectError(
+		t, c,
+		&protocol.DeprecatedDeviceConfig{},
+		nil)
 }
 
 func TestInternalDisplay(t *testing.T) {
@@ -284,6 +311,10 @@ func TestNvmeStorage(t *testing.T) {
 			},
 			tc.expectSatisfied)
 	}
+	expectError(
+		t, c,
+		&protocol.DeprecatedDeviceConfig{},
+		nil)
 }
 
 func TestCEL(t *testing.T) {
@@ -340,6 +371,10 @@ func TestWiFiIntel(t *testing.T) {
 			&configpb.HardwareFeatures{},
 			tc.expectSatisfied)
 	}
+	expectError(
+		t, c,
+		nil,
+		&configpb.HardwareFeatures{})
 }
 
 func TestMinStorage(t *testing.T) {
@@ -363,6 +398,10 @@ func TestMinStorage(t *testing.T) {
 			},
 			tc.expectSatisfied)
 	}
+	expectError(
+		t, c,
+		nil,
+		nil)
 }
 
 func TestMinMemory(t *testing.T) {
@@ -388,4 +427,8 @@ func TestMinMemory(t *testing.T) {
 			},
 			tc.expectSatisfied)
 	}
+	expectError(
+		t, c,
+		nil,
+		nil)
 }

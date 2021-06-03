@@ -58,8 +58,12 @@ func (d *Deps) Check(f *protocol.Features) (reasons []string, err error) {
 		reasons = append(reasons, fmt.Sprintf("missing SoftwareDeps: %s", strings.Join(missing, ", ")))
 	}
 
-	if err := d.Hardware.Satisfied(f.GetDut().GetHardware()); err != nil {
-		for _, r := range err.Reasons {
+	sat, err := d.Hardware.Satisfied(f.GetDut().GetHardware())
+	if err != nil {
+		return nil, err
+	}
+	if sat != nil {
+		for _, r := range sat.Reasons {
 			reasons = append(reasons, r.Error())
 		}
 	}

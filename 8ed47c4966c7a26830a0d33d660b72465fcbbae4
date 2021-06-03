@@ -70,6 +70,30 @@
       },
       "revId": "8ed47c4966c7a26830a0d33d660b72465fcbbae4",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ac8e2e42_a55d24f2",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1483403
+      },
+      "writtenOn": "2021-06-03T17:59:46Z",
+      "side": 1,
+      "message": "I wrote a new test, added some logging to BiosService, and could not see those logs.  So I added lots of logging everywhere, and passed the stderr down into newRemoteLoggingServer() so that remoteLoggingServer.Log could write the log message to stderr as well as the s.inbox.  And I saw my log messages.\n\nThe behavior I saw in the remoteLoggingClient was that it would call newRemoteLoggingClient and then immediately the goroutine calling st.Recv() would exit. I think it was getting the EOF, because I was logging all the other errors and there was none.\n\nI deleted all that excess logging, and moved on because I got the issue worked out that I was trying to do all the logging for in the first place resolved.\n\nBut for that test, I still never get any remote logs at all.\n\nIt all seems overly complex, just capturing stderr, and not using the remote logging grpc at all would be much simpler.",
+      "parentUuid": "db50938a_c920c5fe",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 10,
+        "endChar": 30
+      },
+      "revId": "8ed47c4966c7a26830a0d33d660b72465fcbbae4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

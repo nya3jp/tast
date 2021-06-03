@@ -102,7 +102,6 @@ func main() {
 			"crossystem":        `!"betty" && !"board:reven" && !"tast_vm"`, // VMs don't support few crossystem sub-commands: https://crbug.com/974615
 			"cups":              "cups",
 			"diagnostics":       `"diagnostics" && !"betty" && !"board:reven" && !"tast_vm"`, // VMs do not have hardware to diagnose. https://crbug.com/1126619
-			"display_backlight": "display_backlight",
 			"dlc":               "dlc && dlc_test",
 			"dptf":              "dptf",
 			"device_crash":      `!("board:samus")`, // Samus devices do not reliably come back after kernel crashes. crbug.com/1045821
@@ -188,7 +187,7 @@ func main() {
 			// Notice: The flag would be false when a board didn't have any attributes.
 			"reboot":                 `"*"`,
 			"rrm_support":            `!("kernel-3_18" || "kernel-4_4")`,
-			"screenshot":             "display_backlight && !rk3399", // screenshot command broken on RK3399: https://crbug.com/880597
+			"screenshot":             "!rk3399", // screenshot command broken on RK3399: https://crbug.com/880597
 			"selinux":                "selinux",
 			"selinux_current":        "selinux && !selinux_experimental",
 			"selinux_experimental":   "selinux && selinux_experimental",

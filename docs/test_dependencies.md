@@ -74,7 +74,6 @@ The following software features are defined:
     kernel crash)
 *   `diagnostics` - Boards that contain generic cross-platform
     [Diagnostic utilities].
-*   `display_backlight` - An internal display backlight.
 *   `dlc` - Support of [Downloadable Content] (DLC).
 *   `dmverity_stable` - Kernels with which dm-verity runs stably. See [b/172227689](https://b.corp.google.com/issues/172227689).
 *   `dmverity_unstable` - Kernels having known issue of dm-verity causing random crashes. See [b/172227689](https://b.corp.google.com/issues/172227689).
@@ -151,7 +150,6 @@ The following software features are defined:
 *   `racc` - Whether [Runtime AVL Compliance Check] is available.
 *   `reboot` - The ability to reboot reliably during a remote test.
 *   `rrm_support` - Driver support for 802.11k RRM.
-*   `screenshot` - The [screenshot command] can save screenshots.
 *   `selinux` - An SELinux-enabled board. All Android boards are
     SELinux-enabled.
 *   `selinux_current` - All SELinux-enabled boards except experimental boards.

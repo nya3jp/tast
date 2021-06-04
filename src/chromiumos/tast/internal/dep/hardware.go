@@ -5,8 +5,10 @@
 package dep
 
 import (
+	"context"
 	"strings"
 
+	"chromiumos/tast/dut"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/protocol"
 )
@@ -19,12 +21,23 @@ type HardwareDeps struct {
 	conds []HardwareCondition
 }
 
+// RuntimeState provides hardware conditions with information at runtime.
+type RuntimeState interface {
+	DUT() *dut.DUT
+	Var(name string) (val string, ok bool)
+}
+
 // HardwareCondition is exported as chromiumos/tast/testing/hwdep.Condition. Please find its document for details.
 // Either Satisfied or Err should be nil exclusively.
 type HardwareCondition struct {
 	// Satisfied is a pointer to a function which checks if the given HardwareFeatures satisfies
 	// the condition.
 	Satisfied func(f *protocol.HardwareFeatures) error
+
+	// SatisfiedRuntime is a pointer to an optional function which will be called just before the
+	// test runs to verify hardware features that can only be determined at runtime.
+	// Returns a skip reason string or an error. If the string is empty, than dep is satisfied.
+	SatisfiedRuntime func(ctx context.Context, s RuntimeState) (string, error)
 
 	// CEL is the CEL expression denoting the condition.
 	CEL string
@@ -55,7 +68,6 @@ func (d *HardwareDeps) Satisfied(f *protocol.HardwareFeatures) *UnsatisfiedError
 	var reasons []error
 	for _, c := range d.conds {
 		if c.Satisfied == nil {
-			reasons = append(reasons, errors.New("Satisfied was nil"))
 			continue
 		}
 		if err := c.Satisfied(f); err != nil {
@@ -69,6 +81,27 @@ func (d *HardwareDeps) Satisfied(f *protocol.HardwareFeatures) *UnsatisfiedError
 		}
 	}
 	return nil
+}
+
+// SatisfiedRuntime returns nil if the given device satisifies the runtime dependencies.
+// Otherwise, this returns an UnsatisfiedError instance, which contains a
+// collection of detailed errors in Reasons.
+func (d *HardwareDeps) SatisfiedRuntime(ctx context.Context, s RuntimeState) ([]string, error) {
+	var reasons []string
+	for _, c := range d.conds {
+		if c.SatisfiedRuntime == nil {
+			continue
+		}
+		if reason, err := c.SatisfiedRuntime(ctx, s); err != nil {
+			return nil, err
+		} else if reason != "" {
+			reasons = append(reasons, reason)
+		}
+	}
+	if len(reasons) > 0 {
+		return reasons, nil
+	}
+	return nil, nil
 }
 
 // Validate returns error if one of the conditions failed to be instantiated.

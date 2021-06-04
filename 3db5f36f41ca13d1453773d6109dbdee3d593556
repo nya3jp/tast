@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c770fa10_b68ed7e3",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1000479
+      },
+      "writtenOn": "2021-06-04T16:36:03Z",
+      "side": 1,
+      "message": "LGTM.  cc: nya as one of tast core members should be notified.",
+      "revId": "3db5f36f41ca13d1453773d6109dbdee3d593556",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

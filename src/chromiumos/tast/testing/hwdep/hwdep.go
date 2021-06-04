@@ -24,6 +24,9 @@ type Deps = dep.HardwareDeps
 // Condition represents one condition of hardware dependencies.
 type Condition = dep.HardwareCondition
 
+// RuntimeState provides access to test variables.
+type RuntimeState = dep.RuntimeState
+
 // D returns hardware dependencies representing the given Conditions.
 func D(conds ...Condition) Deps {
 	return dep.NewHardwareDeps(conds...)

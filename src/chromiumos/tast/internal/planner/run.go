@@ -619,6 +619,16 @@ func runTest(ctx context.Context, t *testing.TestInstance, tout *entityOutputStr
 	}
 	root := testing.NewTestEntityRoot(t, rcfg, tout)
 
+	if reasons, err := t.Deps().Hardware.SatisfiedRuntime(ctx, root.NewTestState()); err != nil {
+		err = errors.Wrap(err, "Runtime hwdeps failed")
+		msg := fmt.Sprint(err)
+		tout.Error(testing.NewError(err, msg, msg, 0))
+		return nil
+	} else if reasons != nil {
+		reportSkippedTest(tout, reasons, nil)
+		return nil
+	}
+
 	if err := runTestWithRoot(ctx, t, root, pcfg, stack, precfg); err != nil {
 		// If runTestWithRoot reported that the test didn't finish, print diagnostic messages.
 		msg := fmt.Sprintf("%v (see log for goroutine dump)", err)

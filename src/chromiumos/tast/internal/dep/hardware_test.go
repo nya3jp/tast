@@ -57,9 +57,9 @@ func TestHardwareDepsInvalid(t *testing.T) {
 	if err := d.Validate(); err == nil {
 		t.Error("Unexpected validation pass")
 	}
-	// Make sure d.Satisfied() won't crash.
-	if err := d.Satisfied(&protocol.HardwareFeatures{}); err == nil {
-		t.Error("Unexpected success")
+	// Make sure d.Satisfied() skips this dep
+	if err := d.Satisfied(&protocol.HardwareFeatures{}); err != nil {
+		t.Error("Unexpected fail: ", err)
 	}
 }
 

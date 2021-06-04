@@ -46,6 +46,30 @@
       },
       "revId": "247fd9a06b4e1ffa17a75d4e3800c81f0f8b1d07",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5fa37d2f_24edad6d",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-06-04T01:07:10Z",
+      "side": 1,
+      "message": "Updated to clarify this sentence somewhat.",
+      "parentUuid": "2f707294_6e6e7d4d",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 9,
+        "endChar": 57
+      },
+      "revId": "247fd9a06b4e1ffa17a75d4e3800c81f0f8b1d07",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

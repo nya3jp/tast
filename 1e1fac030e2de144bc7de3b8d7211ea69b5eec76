@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "adea5394_b48915e6",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-06-05T18:40:02Z",
+      "side": 1,
+      "message": "Hi Shuhei:\n\nI need guidance from you on this change. I want to make report.proto to be available to tools not under tast repo, such as testexecserver, to use. Here are a few questions that I have.\n\n1. Should I make it available in the first place? I don\u0027t see anything wrong with it but I want to check with you first.\n\n2. In my initial patch, I just pick the path \"src/chromiumos/tast/external/protocol. I am not sure if it is the path we want to use. Please let me what is the ideal location for the tast package to expose to non-tast tools.\n\n3. I think I need to add it to ebuild so it will be emerged, but I don\u0027t know how to do it. Please help.\n\nThanks.\n\nSeewai",
+      "revId": "1e1fac030e2de144bc7de3b8d7211ea69b5eec76",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

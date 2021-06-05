@@ -29,6 +29,7 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
 	"chromiumos/tast/cmd/tast/internal/run/target"
 	"chromiumos/tast/errors"
+	externalproto "chromiumos/tast/external/protocol"
 	"chromiumos/tast/internal/control"
 	"chromiumos/tast/internal/faketlw"
 	"chromiumos/tast/internal/jsonprotocol"
@@ -490,13 +491,13 @@ func TestRunWithReports_ReportResult(t *gotesting.T) {
 		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitSuccess, td.LogBuf.String())
 	}
 	test2ErrorTimeStamp, _ := ptypes.TimestampProto(test2ErrorTime)
-	expectedResults := []*protocol.ReportResultRequest{
+	expectedResults := []*externalproto.ReportResultRequest{
 		{
 			Test: test1Name,
 		},
 		{
 			Test: test2Name,
-			Errors: []*protocol.ErrorReport{
+			Errors: []*externalproto.ErrorReport{
 				{
 					Time:   test2ErrorTimeStamp,
 					Reason: test2Error.Reason,
@@ -594,13 +595,13 @@ func TestRunWithReports_ReportResultTerminate(t *gotesting.T) {
 		t.Errorf("Run() = %v; want %v (%v)", status.ExitCode, subcommands.ExitFailure, td.LogBuf.String())
 	}
 	test2ErrorTimeStamp, _ := ptypes.TimestampProto(test2ErrorTime)
-	expectedResults := []*protocol.ReportResultRequest{
+	expectedResults := []*externalproto.ReportResultRequest{
 		{
 			Test: test1Name,
 		},
 		{
 			Test: test2Name,
-			Errors: []*protocol.ErrorReport{
+			Errors: []*externalproto.ErrorReport{
 				{
 					Time:   test2ErrorTimeStamp,
 					Reason: test2Error.Reason,

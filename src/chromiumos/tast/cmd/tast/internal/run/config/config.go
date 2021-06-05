@@ -23,6 +23,7 @@ import (
 	"chromiumos/tast/cmd/tast/internal/logging"
 	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
 	"chromiumos/tast/errors"
+	externalproto "chromiumos/tast/external/protocol"
 	"chromiumos/tast/internal/command"
 	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/planner"
@@ -148,9 +149,9 @@ type State struct {
 	RemoteDevservers []string                   // list of devserver URLs used by remote tests.
 
 	// gRPC Reports Client related variables.
-	ReportsConn      *grpc.ClientConn       // Reports gRPC service connection.
-	ReportsClient    protocol.ReportsClient // Reports gRPC client.
-	ReportsLogStream protocol.Reports_LogStreamClient
+	ReportsConn      *grpc.ClientConn            // Reports gRPC service connection.
+	ReportsClient    externalproto.ReportsClient // Reports gRPC client.
+	ReportsLogStream externalproto.Reports_LogStreamClient
 }
 
 // NewConfig returns a new configuration for executing test runners in the supplied mode.

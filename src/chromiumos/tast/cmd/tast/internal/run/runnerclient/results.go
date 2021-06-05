@@ -24,9 +24,9 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
 	"chromiumos/tast/cmd/tast/internal/run/target"
 	"chromiumos/tast/errors"
+	"chromiumos/tast/external/protocol"
 	"chromiumos/tast/internal/control"
 	"chromiumos/tast/internal/jsonprotocol"
-	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/internal/timing"
 )

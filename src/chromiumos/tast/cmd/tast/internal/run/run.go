@@ -23,7 +23,7 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/runnerclient"
 	"chromiumos/tast/cmd/tast/internal/run/target"
 	"chromiumos/tast/errors"
-	"chromiumos/tast/internal/protocol"
+	"chromiumos/tast/external/protocol"
 	"chromiumos/tast/internal/sshconfig"
 	"chromiumos/tast/ssh"
 )

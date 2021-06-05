@@ -15,7 +15,7 @@ import (
 	"github.com/golang/protobuf/ptypes/empty"
 	"google.golang.org/grpc"
 
-	"chromiumos/tast/internal/protocol"
+	"chromiumos/tast/framework/protocol"
 )
 
 // Server provides a fake resports server to test reports client implementation.

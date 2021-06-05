@@ -24,6 +24,7 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
 	"chromiumos/tast/cmd/tast/internal/run/target"
 	"chromiumos/tast/errors"
+	frameworkprotocol "chromiumos/tast/framework/protocol"
 	"chromiumos/tast/internal/control"
 	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/protocol"
@@ -282,14 +283,14 @@ func (r *resultsHandler) handleRunEnd(ctx context.Context, msg *control.RunEnd) 
 }
 
 type logSender struct {
-	stream   protocol.Reports_LogStreamClient
+	stream   frameworkprotocol.Reports_LogStreamClient
 	testName string
 	logPath  string
 }
 
 // Write sends given bytes to LogStream streaming gRPC API with the test name.
 func (s *logSender) Write(p []byte) (n int, err error) {
-	req := protocol.LogStreamRequest{
+	req := frameworkprotocol.LogStreamRequest{
 		Test:    s.testName,
 		LogPath: s.logPath,
 		Data:    p,
@@ -405,7 +406,7 @@ func (r *resultsHandler) reportResult(ctx context.Context, res *resultsjson.Resu
 	if r.state.ReportsClient == nil {
 		return nil
 	}
-	request := &protocol.ReportResultRequest{
+	request := &frameworkprotocol.ReportResultRequest{
 		Test:       res.Name,
 		SkipReason: res.SkipReason,
 	}
@@ -414,7 +415,7 @@ func (r *resultsHandler) reportResult(ctx context.Context, res *resultsjson.Resu
 		if err != nil {
 			return err
 		}
-		request.Errors = append(request.Errors, &protocol.ErrorReport{
+		request.Errors = append(request.Errors, &frameworkprotocol.ErrorReport{
 			Time:   ts,
 			Reason: e.Reason,
 			File:   e.File,

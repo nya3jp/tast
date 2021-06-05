@@ -30,6 +30,7 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/runtest"
 	"chromiumos/tast/cmd/tast/internal/run/target"
 	"chromiumos/tast/errors"
+	frameworkprotocol "chromiumos/tast/framework/protocol"
 	"chromiumos/tast/internal/control"
 	"chromiumos/tast/internal/faketlw"
 	"chromiumos/tast/internal/jsonprotocol"
@@ -465,13 +466,13 @@ func TestRunWithReports_ReportResult(t *gotesting.T) {
 		t.Errorf("Run failed: %v", err)
 	}
 	test2ErrorTimeStamp, _ := ptypes.TimestampProto(test2ErrorTime)
-	expectedResults := []*protocol.ReportResultRequest{
+	expectedResults := []*frameworkprotocol.ReportResultRequest{
 		{
 			Test: test1Name,
 		},
 		{
 			Test: test2Name,
-			Errors: []*protocol.ErrorReport{
+			Errors: []*frameworkprotocol.ErrorReport{
 				{
 					Time:   test2ErrorTimeStamp,
 					Reason: test2Error.Reason,
@@ -563,13 +564,13 @@ func TestRunWithReports_ReportResultTerminate(t *gotesting.T) {
 		t.Error("Run unexpectedly succeeded despite termination request")
 	}
 	test2ErrorTimeStamp, _ := ptypes.TimestampProto(test2ErrorTime)
-	expectedResults := []*protocol.ReportResultRequest{
+	expectedResults := []*frameworkprotocol.ReportResultRequest{
 		{
 			Test: test1Name,
 		},
 		{
 			Test: test2Name,
-			Errors: []*protocol.ErrorReport{
+			Errors: []*frameworkprotocol.ErrorReport{
 				{
 					Time:   test2ErrorTimeStamp,
 					Reason: test2Error.Reason,

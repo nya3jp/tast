@@ -18,7 +18,7 @@ import (
 
 	"chromiumos/tast/cmd/tast_rtd/internal/fakerts"
 	"chromiumos/tast/cmd/tast_rtd/internal/result"
-	"chromiumos/tast/internal/protocol"
+	"chromiumos/tast/framework/protocol"
 )
 
 func TestReportsServer_LogStream(t *testing.T) {

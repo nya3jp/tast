@@ -14,7 +14,7 @@ import (
 	rtd "go.chromium.org/chromiumos/config/go/api/test/rtd/v1"
 
 	"chromiumos/tast/errors"
-	"chromiumos/tast/internal/protocol"
+	"chromiumos/tast/framework/protocol"
 )
 
 // MissingTestSkipReason message is used all tests that were not run by tast.

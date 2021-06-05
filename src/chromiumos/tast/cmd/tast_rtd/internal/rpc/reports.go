@@ -18,7 +18,7 @@ import (
 
 	"chromiumos/tast/cmd/tast_rtd/internal/result"
 	"chromiumos/tast/errors"
-	"chromiumos/tast/internal/protocol"
+	"chromiumos/tast/framework/protocol"
 )
 
 // ReportsServer implements the tast.internal.protocol.ReportsServer.

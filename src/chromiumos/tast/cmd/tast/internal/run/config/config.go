@@ -23,6 +23,7 @@ import (
 	"chromiumos/tast/cmd/tast/internal/logging"
 	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
 	"chromiumos/tast/errors"
+	frameworkprotocol "chromiumos/tast/framework/protocol"
 	"chromiumos/tast/internal/command"
 	"chromiumos/tast/internal/planner"
 	"chromiumos/tast/internal/protocol"
@@ -143,9 +144,9 @@ type State struct {
 	TestsToRun       []*resultsjson.Result // tests to be run
 
 	// gRPC Reports Client related variables.
-	ReportsConn      *grpc.ClientConn       // Reports gRPC service connection.
-	ReportsClient    protocol.ReportsClient // Reports gRPC client.
-	ReportsLogStream protocol.Reports_LogStreamClient
+	ReportsConn      *grpc.ClientConn                // Reports gRPC service connection.
+	ReportsClient    frameworkprotocol.ReportsClient // Reports gRPC client.
+	ReportsLogStream frameworkprotocol.Reports_LogStreamClient
 }
 
 // NewConfig returns a new configuration for executing test runners in the supplied mode.

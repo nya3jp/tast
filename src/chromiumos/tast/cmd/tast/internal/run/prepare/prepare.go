@@ -36,31 +36,19 @@ func Prepare(ctx context.Context, cfg *config.Config, state *config.State, conn 
 		return errors.New("-downloadprivatebundles requires -build=false")
 	}
 
-	targetArch, err := getTargetArch(ctx, cfg, conn.SSHConn())
-	if err != nil {
-		return fmt.Errorf("Failed to get architecture information from DUT %s: %v", cfg.Target, err)
-	}
-	if err := prepareDUT(ctx, cfg, state, conn, cfg.Target, targetArch); err != nil {
-		return err
+	if err := prepareDUT(ctx, cfg, state, conn, cfg.Target); err != nil {
+		return fmt.Errorf("failed to prepare primary DUT %s: %v", cfg.Target, err)
 	}
 
-	if len(cfg.CompanionDUTs) == 0 {
-		return nil
-	}
 	for _, dut := range cfg.CompanionDUTs {
 		cc := target.NewConnCache(cfg, dut)
+		defer cc.Close(ctx)
 		conn, err := cc.Conn(ctx)
 		if err != nil {
-			return fmt.Errorf("Failed to connect to %s: %v", dut, err)
+			return fmt.Errorf("failed to connect to companion DUT %s: %v", dut, err)
 		}
-		targetArch, err := getTargetArch(ctx, cfg, conn.SSHConn())
-		if err != nil {
-			return fmt.Errorf("Failed to get architecture information from DUT %s: %v", dut, err)
-		}
-		err = prepareDUT(ctx, cfg, state, conn, dut, targetArch)
-		cc.Close(ctx)
-		if err != nil {
-			return fmt.Errorf("Failed to build and push to companion DUT %v: %v", dut, err)
+		if err := prepareDUT(ctx, cfg, state, conn, dut); err != nil {
+			return fmt.Errorf("failed to prepare companion DUT %s: %v", dut, err)
 		}
 	}
 	return nil
@@ -69,10 +57,14 @@ func Prepare(ctx context.Context, cfg *config.Config, state *config.State, conn 
 // prepareDUT prepares the DUT for running tests. When instructed in cfg, it builds
 // and pushes the local test runner and test bundles, and downloads private test
 // bundles.
-func prepareDUT(ctx context.Context, cfg *config.Config, state *config.State, conn *target.Conn, target, targetArch string) error {
+func prepareDUT(ctx context.Context, cfg *config.Config, state *config.State, conn *target.Conn, target string) error {
 	written := false
 
 	if cfg.Build {
+		targetArch, err := getTargetArch(ctx, cfg, conn.SSHConn())
+		if err != nil {
+			return fmt.Errorf("failed to get architecture information: %v", err)
+		}
 		if err := buildAll(ctx, cfg, conn.SSHConn(), targetArch); err != nil {
 			return err
 		}

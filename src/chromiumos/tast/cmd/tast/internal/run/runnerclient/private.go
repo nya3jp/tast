@@ -23,6 +23,8 @@ func DownloadPrivateBundles(ctx context.Context, cfg *config.Config, conn *targe
 	ctx, st := timing.Start(ctx, "download_private_bundles")
 	defer st.End()
 
+	cfg.Logger.Debug("Downloading private bundles")
+
 	localDevservers := append([]string(nil), cfg.Devservers...)
 	if url, ok := conn.Services().EphemeralDevserverURL(); ok {
 		localDevservers = append(localDevservers, url)

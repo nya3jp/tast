@@ -41,6 +41,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "7b8383de_a261a32e",
+        "filename": "src/chromiumos/tast/external/protocol/doc.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-06-07T09:12:49Z",
+      "side": 1,
+      "message": "Oops, please ignore this message. I forgot to remove this draft.",
+      "parentUuid": "5336ead6_5d361fcc",
+      "revId": "021a8c416fbd37e5ee533ad5d9579cdd345e2afa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "7aa964de_c1fd2cc7",

@@ -138,6 +138,23 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "3376cb67_bb4405e3",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1512082
+      },
+      "writtenOn": "2021-06-07T17:44:51Z",
+      "side": 1,
+      "message": "Hi!! Sorry for the late reply :)",
+      "revId": "f26fba581e61e2e5079525ea4336a1477eea337b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "a49eeb91_245a1641",
@@ -364,6 +381,30 @@
       "side": 1,
       "message": "Ack",
       "parentUuid": "abc74fad_ce6a5c96",
+      "range": {
+        "startLine": 133,
+        "startChar": 5,
+        "endLine": 133,
+        "endChar": 94
+      },
+      "revId": "f26fba581e61e2e5079525ea4336a1477eea337b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9943dc7e_e5d19c1a",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/check/forbidden_calls.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 133,
+      "author": {
+        "id": 1512082
+      },
+      "writtenOn": "2021-06-07T17:44:51Z",
+      "side": 1,
+      "message": "Hi guys. Let\u0027s summarize the discussion. So\n1. For \".\" Dot and \"_\" underscore import, we will notify error.\n\n2. \n\u003e there might be an existing import whose package name is not obvious from an import path (for example, the package name of \"foo/bar/baz\" can be \"errors\"). Thus we don\u0027t need to try too hard to cover all edge cases.\n\nFor \"errors\" in both cases whether it has been imported with alias or used as a variable, I am still hopeful that we can tackle it. Both occurrences can be checked from the ast token-sets by type assertion with `ast.Ident` identifier.\n\n-------------------------------------------------------------------------------------\n\n\u003e However, it can be handled by this way, let me know how it sounds to you.\n\u003e If there is a identifier node `errors` (Say var or another function) we will go for import with alias for \"errors\" package starting with \"errors\u003cuint\u003e\"(uint from 1 to ... until there is no name clash by that name).\n\u003e i.e kinda like this\n\n```\nimport errors1 \"chromiumos/tast/errors\"\n\nfunc test(){\n\terrors :\u003d \"hi there\"\n\terrors1.Errorf(errors) // earlier it was fmt.Errorf\n}\n```\n\nTo be honest, I am more optimistic because it\u0027s the same way Goland from intellij handles collisions.\n\nWould love your feedback Nya, Oleh.\nThanks.",
+      "parentUuid": "5164175e_82abed81",
       "range": {
         "startLine": 133,
         "startChar": 5,

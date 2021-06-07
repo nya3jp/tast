@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3a777ab8_b2c1a236",
+        "filename": "src/chromiumos/tast/internal/dep/hardware.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-06-07T08:28:54Z",
+      "side": 1,
+      "message": "Let us drop E so as not to confuse UnsatisfiedError with conventional errors.\n\nMy recommendation is to change this to\n\n type UnsatisfiedReasons []string\n\nso that the satisfaction condition is written simply as len(reasons) \u003e 0.",
+      "range": {
+        "startLine": 44,
+        "startChar": 1,
+        "endLine": 44,
+        "endChar": 10
+      },
+      "revId": "b530d1e1df14e401efbd14a5995c7933cbd62419",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "aba94979_177ac38b",
+        "filename": "src/chromiumos/tast/internal/dep/hardware.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-06-07T08:28:54Z",
+      "side": 1,
+      "message": "It might be confusing to skip a test for an empty reason. What do you think about treating it as an error?",
+      "range": {
+        "startLine": 64,
+        "startChar": 11,
+        "endLine": 64,
+        "endChar": 24
+      },
+      "revId": "b530d1e1df14e401efbd14a5995c7933cbd62419",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "23fac459_d66c24f5",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-06-07T08:28:54Z",
+      "side": 1,
+      "message": "I like these utility functions :)",
+      "range": {
+        "startLine": 34,
+        "startChar": 0,
+        "endLine": 41,
+        "endChar": 1
+      },
+      "revId": "b530d1e1df14e401efbd14a5995c7933cbd62419",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

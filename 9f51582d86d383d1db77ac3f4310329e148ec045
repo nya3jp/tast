@@ -16,6 +16,52 @@
       "message": "This is CL is for the second approach of making runtime variables global accessible whether they are declared or not.",
       "revId": "9f51582d86d383d1db77ac3f4310329e148ec045",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8025df64_0561cc41",
+        "filename": "src/chromiumos/tast/internal/planner/run.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 764,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-06-07T08:58:58Z",
+      "side": 1,
+      "message": "This context is visible to tests, but not to fixtures and services.\n\nI think the best way is to put runtime variable values in protocol.HandshakeRequest and associate those values to context.Context in serverOpts.hook in src/c/t/internal/rpc/server.go. Then all entities (tests, fixtures and services) can see those values.",
+      "range": {
+        "startLine": 764,
+        "startChar": 1,
+        "endLine": 764,
+        "endChar": 49
+      },
+      "revId": "9f51582d86d383d1db77ac3f4310329e148ec045",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e3bb295f_6ad5ca05",
+        "filename": "src/chromiumos/tast/internal/testing/state.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 475,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-06-07T08:58:58Z",
+      "side": 1,
+      "message": "nit: no need to move this symbol",
+      "range": {
+        "startLine": 475,
+        "startChar": 5,
+        "endLine": 475,
+        "endChar": 14
+      },
+      "revId": "9f51582d86d383d1db77ac3f4310329e148ec045",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

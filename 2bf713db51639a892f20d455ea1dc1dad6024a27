@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ee995267_3d6696e9",
+        "filename": "src/chromiumos/tast/testing/hwdep/hwdep.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 135,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-06-07T09:32:02Z",
+      "side": 1,
+      "message": "This line is rebase update.",
+      "revId": "2bf713db51639a892f20d455ea1dc1dad6024a27",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "8813567e_c9507f23",
+        "filename": "src/chromiumos/tast/internal/dep/hardware.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 44,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-06-07T09:32:02Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3a777ab8_b2c1a236",
+      "range": {
+        "startLine": 44,
+        "startChar": 1,
+        "endLine": 44,
+        "endChar": 10
+      },
+      "revId": "b530d1e1df14e401efbd14a5995c7933cbd62419",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "aba94979_177ac38b",
@@ -37,6 +61,30 @@
       "writtenOn": "2021-06-07T08:28:54Z",
       "side": 1,
       "message": "It might be confusing to skip a test for an empty reason. What do you think about treating it as an error?",
+      "range": {
+        "startLine": 64,
+        "startChar": 11,
+        "endLine": 64,
+        "endChar": 24
+      },
+      "revId": "b530d1e1df14e401efbd14a5995c7933cbd62419",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "de6d2f2d_66103f2e",
+        "filename": "src/chromiumos/tast/internal/dep/hardware.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 64,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-06-07T09:32:02Z",
+      "side": 1,
+      "message": "Changed to modify the empty reason to make it less confusing.",
+      "parentUuid": "aba94979_177ac38b",
       "range": {
         "startLine": 64,
         "startChar": 11,

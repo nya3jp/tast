@@ -94,6 +94,30 @@
       },
       "revId": "8ed47c4966c7a26830a0d33d660b72465fcbbae4",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "04e68ee6_b69ede3d",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-06-07T07:47:06Z",
+      "side": 1,
+      "message": "It is concerning that you\u0027re not getting remote logs at all. Could you share a code with which I can reproduce the issue? I tried reproducing the issue with example.GRPC test, but had no luck.\n\nI agree that it would be handy if anything written to stderr are captured in logs. I filed b/190344665 to track this feature request. I doubt that its design will be just passing stderr through processes though.",
+      "parentUuid": "ac8e2e42_a55d24f2",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 10,
+        "endChar": 30
+      },
+      "revId": "8ed47c4966c7a26830a0d33d660b72465fcbbae4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

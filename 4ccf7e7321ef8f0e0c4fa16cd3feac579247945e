@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "7f50211c_c6f804fb",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1512082
+      },
+      "writtenOn": "2021-06-07T05:52:31Z",
+      "side": 1,
+      "message": "Hi. Thanks for the review. Let me know what you think.\n- Bisakh",
+      "revId": "4ccf7e7321ef8f0e0c4fa16cd3feac579247945e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

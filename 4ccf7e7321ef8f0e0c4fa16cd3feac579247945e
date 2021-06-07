@@ -16,6 +16,69 @@
       "message": "Hi. Thanks for the review. Let me know what you think.\n- Bisakh",
       "revId": "4ccf7e7321ef8f0e0c4fa16cd3feac579247945e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0f938792_c0c74474",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-06-07T07:07:54Z",
+      "side": 1,
+      "message": "LGTM with a nit, thanks for this change Bisakh!\n",
+      "revId": "4ccf7e7321ef8f0e0c4fa16cd3feac579247945e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "566f90ae_52d1636e",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/main.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 382,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-06-07T07:07:54Z",
+      "side": 1,
+      "message": "Good to know this!",
+      "range": {
+        "startLine": 382,
+        "startChar": 42,
+        "endLine": 382,
+        "endChar": 53
+      },
+      "revId": "4ccf7e7321ef8f0e0c4fa16cd3feac579247945e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f146b49c_8d4cd077",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/main.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 399,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-06-07T07:07:54Z",
+      "side": 1,
+      "message": "I recommend filepath.Rel for this - it\u0027s better than strings.TrimPrefix which silently ignores paths which don\u0027t have a common prefix.\nhttps://pkg.go.dev/path/filepath#Rel",
+      "range": {
+        "startLine": 399,
+        "startChar": 14,
+        "endLine": 399,
+        "endChar": 50
+      },
+      "revId": "4ccf7e7321ef8f0e0c4fa16cd3feac579247945e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

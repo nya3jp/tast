@@ -16,6 +16,24 @@
       "message": "Hi Shuhei:\n\nI need guidance from you on this change. I want to make report.proto to be available to tools not under tast repo, such as testexecserver, to use. Here are a few questions that I have.\n\n1. Should I make it available in the first place? I don\u0027t see anything wrong with it but I want to check with you first.\n\n2. In my initial patch, I just pick the path \"src/chromiumos/tast/external/protocol. I am not sure if it is the path we want to use. Please let me what is the ideal location for the tast package to expose to non-tast tools.\n\n3. I think I need to add it to ebuild so it will be emerged, but I don\u0027t know how to do it. Please help.\n\nThanks.\n\nSeewai",
       "revId": "1e1fac030e2de144bc7de3b8d7211ea69b5eec76",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7a3288e5_29f0b8d9",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-06-07T09:12:20Z",
+      "side": 1,
+      "message": "\u003e Hi Shuhei:\n\u003e \n\u003e I need guidance from you on this change. I want to make report.proto to be available to tools not under tast repo, such as testexecserver, to use. Here are a few questions that I have.\n\u003e \n\u003e 1. Should I make it available in the first place? I don\u0027t see anything wrong with it but I want to check with you first.\n\nYes, it sounds fine.\n\n\n\u003e 2. In my initial patch, I just pick the path \"src/chromiumos/tast/external/protocol. I am not sure if it is the path we want to use. Please let me what is the ideal location for the tast package to expose to non-tast tools.\n\nCan you try putting the package at chromiumos/tast/framework/protocol?\n\nI regret we put both framework codes and user code under the same package prefix, chromiumos/tast. I hope we can clearly split them someday like chromiumos/tast/framework vs. chromiumos/tast/user, though I\u0027m not sure when it will happen.\n\n\n\u003e 3. I think I need to add it to ebuild so it will be emerged, but I don\u0027t know how to do it. Please help.\n\nI think it\u0027s good to introduce a new ebuild that compiles and installs Go bindings of protocol buffers. \n\nThere are a few ebuilds you can take a look at, e.g.\n\nhttps://source.corp.google.com/chromeos_public/src/third_party/chromiumos-overlay/chromeos-base/policy-go-proto/policy-go-proto-9999.ebuild?q\u003dpackage:chromeos%20file:ebuild$%20proto%20file:chromeos-base\nhttps://source.corp.google.com/chromeos_public/src/third_party/chromiumos-overlay/chromeos-base/wilco-dtc-grpc-protos/wilco-dtc-grpc-protos-9999.ebuild?q\u003dpackage:chromeos%20file:ebuild$%20proto%20file:chromeos-base\nhttps://source.corp.google.com/chromeos_public/src/third_party/chromiumos-overlay/chromeos-base/hardware_verifier_proto/hardware_verifier_proto-9999.ebuild?q\u003dpackage:chromeos%20file:ebuild$%20proto%20file:chromeos-base",
+      "parentUuid": "adea5394_b48915e6",
+      "revId": "1e1fac030e2de144bc7de3b8d7211ea69b5eec76",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

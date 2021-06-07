@@ -1,0 +1,67 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "54794a43_40296a64",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/config/config.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-06-07T09:12:20Z",
+      "side": 1,
+      "message": "Maybe \"extprotocol\"? \"proto\" is often used to mention protocol buffers.",
+      "range": {
+        "startLine": 26,
+        "startChar": 1,
+        "endLine": 26,
+        "endChar": 14
+      },
+      "revId": "021a8c416fbd37e5ee533ad5d9579cdd345e2afa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5336ead6_5d361fcc",
+        "filename": "src/chromiumos/tast/external/protocol/doc.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-06-07T09:12:20Z",
+      "side": 1,
+      "message": "I think the best place would be simply chromiumos/tast/protocol. Of course I expect a lot of import name conflicts with chromiumos/tast/internal/protocol... maybe we can import chromiumos/tast/protocol with an alias, e.g. extprotocol.",
+      "revId": "021a8c416fbd37e5ee533ad5d9579cdd345e2afa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7aa964de_c1fd2cc7",
+        "filename": "src/chromiumos/tast/external/protocol/reports.proto",
+        "patchSetId": 2
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-06-07T09:12:20Z",
+      "side": 1,
+      "message": "We have to update this path as well.",
+      "range": {
+        "startLine": 12,
+        "startChar": 37,
+        "endLine": 12,
+        "endChar": 45
+      },
+      "revId": "021a8c416fbd37e5ee533ad5d9579cdd345e2afa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

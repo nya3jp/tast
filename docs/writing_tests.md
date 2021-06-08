@@ -1464,6 +1464,22 @@ if err := bc.CheckBoot(ctx, &req, &res); err != nil {
 [`rpc.Dial`]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/rpc#Dial
 [`grpc.ClientConn`]: https://godoc.org/google.golang.org/grpc#ClientConn
 
+### Remote performance measurements
+
+Use the `perf.Values.Proto` method to convert performance measurements into the
+`tast.common.perf.perfpb.Values` protocol buffer type. Then use the
+`perf.NewValuesFromProto` method to create a `perf.Values`; use
+`perf.Values.Merge` to combine multiple sources.
+
+For example, arc.PerfBoot generates performance values on the remote DUT in
+`PerfBootService.GetPerfValues` ([code](https://source.corp.google.com/search?q=file:perf_boot_service.go%20GetPerfValues\(&type=cs)),
+which returns a `tast.common.perf.perfpb.Values` on the gRPC call. The
+performance results are then saved in the `arc.PerfBoot` test ([code](http://cs/chromeos_public/src/platform/tast-tests/src/chromiumos/tast/remote/bundles/cros/arc/perf_boot.go)).
+
+Note the extra include path in `src/chromiumos/tast/services/cros/arc/gen.go`,
+which allows `tast.common.perf.perfpb.Values` to be used in
+`perf_boot_sevice.proto` with `import "values.proto";`.
+
 ### Notes on designing gRPC services
 
 Tast's gRPC services don't have to worry about protocol compatibility because

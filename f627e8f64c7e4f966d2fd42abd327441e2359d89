@@ -1,6 +1,29 @@
 {
   "comments": [
     {
+      "unresolved": true,
+      "key": {
+        "uuid": "52fd7a29_e57d10d9",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 2
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1306673
+      },
+      "writtenOn": "2021-06-08T19:10:40Z",
+      "side": 1,
+      "message": "I think we should not cover these corner cases because they are pretty rare and unusual, but it adds much more complexity to the CL and tast-lint. Nya, WDYT?",
+      "range": {
+        "startLine": 22,
+        "startChar": 0,
+        "endLine": 26,
+        "endChar": 0
+      },
+      "revId": "f627e8f64c7e4f966d2fd42abd327441e2359d89",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": false,
       "key": {
         "uuid": "b57ac83d_9fe0e30d",

@@ -97,6 +97,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "b671cfbb_8d3a3786",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1306673
+      },
+      "writtenOn": "2021-06-08T19:10:40Z",
+      "side": 1,
+      "message": "Looks like it\u0027s still more than 72.",
+      "parentUuid": "eefd7819_00b7f25d",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 9,
+        "endChar": 220
+      },
+      "revId": "f26fba581e61e2e5079525ea4336a1477eea337b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "ee034faf_5cafb872",
         "filename": "/COMMIT_MSG",
         "patchSetId": 1
@@ -567,6 +591,30 @@
       "side": 1,
       "message": "Hi guys. Let\u0027s summarize the discussion. So\n1. For \".\" Dot and \"_\" underscore import, we will notify error.\n\n2. \n\u003e there might be an existing import whose package name is not obvious from an import path (for example, the package name of \"foo/bar/baz\" can be \"errors\"). Thus we don\u0027t need to try too hard to cover all edge cases.\n\nFor \"errors\" in both cases whether it has been imported with alias or used as a variable, I am still hopeful that we can tackle it. Both occurrences can be checked from the ast token-sets by type assertion with `ast.Ident` identifier.\n\n-------------------------------------------------------------------------------------\n\n\u003e However, it can be handled by this way, let me know how it sounds to you.\n\u003e If there is a identifier node `errors` (Say var or another function) we will go for import with alias for \"errors\" package starting with \"errors\u003cuint\u003e\"(uint from 1 to ... until there is no name clash by that name).\n\u003e i.e kinda like this\n\n```\nimport errors1 \"chromiumos/tast/errors\"\n\nfunc test(){\n\terrors :\u003d \"hi there\"\n\terrors1.Errorf(errors) // earlier it was fmt.Errorf\n}\n```\n\nTo be honest, I am more optimistic because it\u0027s the same way Goland from intellij handles collisions.\n\nWould love your feedback Nya, Oleh.\nThanks.",
       "parentUuid": "5164175e_82abed81",
+      "range": {
+        "startLine": 133,
+        "startChar": 5,
+        "endLine": 133,
+        "endChar": 94
+      },
+      "revId": "f26fba581e61e2e5079525ea4336a1477eea337b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7bf2b9f2_14f9a099",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/check/forbidden_calls.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 133,
+      "author": {
+        "id": 1306673
+      },
+      "writtenOn": "2021-06-08T19:10:40Z",
+      "side": 1,
+      "message": "IMO using alias for `errors` package is something we should not handle just because nobody using it.\nPlease check here:\nhttps://source.chromium.org/search?q\u003d%22chromiumos%2Ftast%2Ferrors%22\u0026start\u003d1\n\nSo we basically should always import `errors` without alias and if there is already alias for this package, report error.",
+      "parentUuid": "9943dc7e_e5d19c1a",
       "range": {
         "startLine": 133,
         "startChar": 5,

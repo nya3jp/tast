@@ -245,6 +245,10 @@ Tests in this group are not used for build verification.
 				Name: "firmware_ec",
 				Desc: `A group of tests that test the EC firmware.`,
 			},
+			{
+				Name: "firmware_slow",
+				Desc: `A group of tests that takes a very long time to run.`,
+			},
 		},
 	},
 	{

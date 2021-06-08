@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "4f227d75_fda194bd",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1512082
+      },
+      "writtenOn": "2021-06-08T05:31:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "42264d5c_cce6ff47",
+      "range": {
+        "startLine": 7,
+        "startChar": 0,
+        "endLine": 7,
+        "endChar": 92
+      },
+      "revId": "f26fba581e61e2e5079525ea4336a1477eea337b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "0304211a_dcf03c0e",
@@ -47,6 +71,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "eefd7819_00b7f25d",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1512082
+      },
+      "writtenOn": "2021-06-08T05:31:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0304211a_dcf03c0e",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 9,
+        "endChar": 220
+      },
+      "revId": "f26fba581e61e2e5079525ea4336a1477eea337b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "ee034faf_5cafb872",
@@ -60,6 +108,30 @@
       "writtenOn": "2021-05-26T22:47:45Z",
       "side": 1,
       "message": "Try to follow \"Use the body to explain what and why vs. how\" ruls for description:\nhttps://chris.beams.io/posts/git-commit/#why-not-how",
+      "range": {
+        "startLine": 11,
+        "startChar": 0,
+        "endLine": 11,
+        "endChar": 282
+      },
+      "revId": "f26fba581e61e2e5079525ea4336a1477eea337b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "66e4dbc4_8479795c",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1512082
+      },
+      "writtenOn": "2021-06-08T05:31:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ee034faf_5cafb872",
       "range": {
         "startLine": 11,
         "startChar": 0,
@@ -155,6 +227,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "315e3d5b_d3ded722",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1512082
+      },
+      "writtenOn": "2021-06-08T05:31:24Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "8ef99c54_bbf56b72",
+      "revId": "f26fba581e61e2e5079525ea4336a1477eea337b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "a49eeb91_245a1641",
@@ -178,6 +268,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "af297db0_f5dcbe31",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/check/forbidden_calls.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1512082
+      },
+      "writtenOn": "2021-06-08T05:31:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "a49eeb91_245a1641",
+      "range": {
+        "startLine": 27,
+        "startChar": 24,
+        "endLine": 27,
+        "endChar": 32
+      },
+      "revId": "f26fba581e61e2e5079525ea4336a1477eea337b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "ad06f3a2_64aaf18d",
@@ -191,6 +305,30 @@
       "writtenOn": "2021-05-26T22:47:45Z",
       "side": 1,
       "message": "nit: remove get prefix\nhttps://golang.org/doc/effective_go#Getters",
+      "range": {
+        "startLine": 119,
+        "startChar": 5,
+        "endLine": 119,
+        "endChar": 25
+      },
+      "revId": "f26fba581e61e2e5079525ea4336a1477eea337b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "23851858_cbc8720f",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/check/forbidden_calls.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 119,
+      "author": {
+        "id": 1512082
+      },
+      "writtenOn": "2021-06-08T05:31:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ad06f3a2_64aaf18d",
       "range": {
         "startLine": 119,
         "startChar": 5,
@@ -262,6 +400,30 @@
       "side": 1,
       "message": "I don\u0027t say the fail-fast pattern is universally accepted practice (e.g. some functional languages tend to avoid early returns), but it\u0027s a recommended practice in Go.\nhttps://github.com/golang/go/wiki/CodeReviewComments#indent-error-flow",
       "parentUuid": "b89127a9_60393b51",
+      "range": {
+        "startLine": 128,
+        "startChar": 5,
+        "endLine": 128,
+        "endChar": 38
+      },
+      "revId": "f26fba581e61e2e5079525ea4336a1477eea337b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "39bd82da_96013385",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/check/forbidden_calls.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 128,
+      "author": {
+        "id": 1512082
+      },
+      "writtenOn": "2021-06-08T05:31:24Z",
+      "side": 1,
+      "message": "Thanks for the guide. The flow looks much cleaner now.",
+      "parentUuid": "41d6ebe7_5cd1aecc",
       "range": {
         "startLine": 128,
         "startChar": 5,

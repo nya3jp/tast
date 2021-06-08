@@ -70,6 +70,30 @@
       },
       "revId": "5561384dcd14139f24b1030c087db55dc14d3943",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "16ef703f_1ba9e5e1",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/check/forbidden_calls.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1512082
+      },
+      "writtenOn": "2021-06-08T05:31:24Z",
+      "side": 0,
+      "message": "Added such test cases.\nsee filename5, filename6 under forbidden_calls_test.go",
+      "parentUuid": "a7bd1bbb_375e59b2",
+      "range": {
+        "startLine": 28,
+        "startChar": 0,
+        "endLine": 28,
+        "endChar": 85
+      },
+      "revId": "5561384dcd14139f24b1030c087db55dc14d3943",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

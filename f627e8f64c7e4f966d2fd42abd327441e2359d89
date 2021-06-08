@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b57ac83d_9fe0e30d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1512082
+      },
+      "writtenOn": "2021-06-08T05:31:24Z",
+      "side": 1,
+      "message": "Hi guys. Updated it with patchset 2. Please review it when you have some time.\nThanks.\nBisakh : ) ",
+      "revId": "f627e8f64c7e4f966d2fd42abd327441e2359d89",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

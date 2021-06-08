@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d8f52c8f_4f085623",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-06-08T06:08:26Z",
+      "side": 1,
+      "message": "HI Shuhei:\n\nThanks for catching the bug. It is fixed. Please review again.\n\nSeewai\n",
+      "revId": "a6449efc9e98b72503e88cc1479a973b7ac8bdb6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

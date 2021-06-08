@@ -64,6 +64,54 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "b7b7fc36_1eacdad3",
+        "filename": "src/chromiumos/tast/framework/protocol/gen.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-06-08T06:08:26Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "78fc0470_04bfeb1f",
+      "range": {
+        "startLine": 11,
+        "startChar": 66,
+        "endLine": 11,
+        "endChar": 74
+      },
+      "revId": "4fb2b1554c9bf92dc2f6e01d93b4a2240d1e6d46",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b9cfa65e_4518172b",
+        "filename": "src/chromiumos/tast/framework/protocol/gen.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-06-08T06:08:26Z",
+      "side": 1,
+      "message": "Done. I have tested it with the latest patch. Thanks for catching the issue.",
+      "parentUuid": "6beb322b_3e7e171b",
+      "range": {
+        "startLine": 11,
+        "startChar": 0,
+        "endLine": 11,
+        "endChar": 2
+      },
+      "revId": "4fb2b1554c9bf92dc2f6e01d93b4a2240d1e6d46",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "2b3f464d_26430e8b",
@@ -77,6 +125,30 @@
       "writtenOn": "2021-06-08T05:48:10Z",
       "side": 1,
       "message": "framework",
+      "range": {
+        "startLine": 12,
+        "startChar": 37,
+        "endLine": 12,
+        "endChar": 45
+      },
+      "revId": "4fb2b1554c9bf92dc2f6e01d93b4a2240d1e6d46",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "180d6121_6073d1f4",
+        "filename": "src/chromiumos/tast/framework/protocol/reports.proto",
+        "patchSetId": 4
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-06-08T06:08:26Z",
+      "side": 1,
+      "message": "Oops. Thanks for catching this issue.",
+      "parentUuid": "2b3f464d_26430e8b",
       "range": {
         "startLine": 12,
         "startChar": 37,

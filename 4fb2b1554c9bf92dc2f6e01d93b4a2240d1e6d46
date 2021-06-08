@@ -16,6 +16,75 @@
       "message": "Hi Shuhei:\n\nThanks for the advice. I am able to make the tast report protocol available to non-tast tools. Please review.\n\nSeewai\n",
       "revId": "4fb2b1554c9bf92dc2f6e01d93b4a2240d1e6d46",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "78fc0470_04bfeb1f",
+        "filename": "src/chromiumos/tast/framework/protocol/gen.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-06-08T05:48:10Z",
+      "side": 1,
+      "message": "framework",
+      "range": {
+        "startLine": 11,
+        "startChar": 66,
+        "endLine": 11,
+        "endChar": 74
+      },
+      "revId": "4fb2b1554c9bf92dc2f6e01d93b4a2240d1e6d46",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6beb322b_3e7e171b",
+        "filename": "src/chromiumos/tast/framework/protocol/gen.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-06-08T05:48:10Z",
+      "side": 1,
+      "message": "Please make sure to try this command. reports.pb.go should be updated.",
+      "range": {
+        "startLine": 11,
+        "startChar": 0,
+        "endLine": 11,
+        "endChar": 2
+      },
+      "revId": "4fb2b1554c9bf92dc2f6e01d93b4a2240d1e6d46",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2b3f464d_26430e8b",
+        "filename": "src/chromiumos/tast/framework/protocol/reports.proto",
+        "patchSetId": 4
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-06-08T05:48:10Z",
+      "side": 1,
+      "message": "framework",
+      "range": {
+        "startLine": 12,
+        "startChar": 37,
+        "endLine": 12,
+        "endChar": 45
+      },
+      "revId": "4fb2b1554c9bf92dc2f6e01d93b4a2240d1e6d46",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

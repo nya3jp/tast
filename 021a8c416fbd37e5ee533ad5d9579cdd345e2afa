@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "69989637_595a1c63",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/config/config.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-06-08T03:30:30Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "54794a43_40296a64",
+      "range": {
+        "startLine": 26,
+        "startChar": 1,
+        "endLine": 26,
+        "endChar": 14
+      },
+      "revId": "021a8c416fbd37e5ee533ad5d9579cdd345e2afa",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "5336ead6_5d361fcc",

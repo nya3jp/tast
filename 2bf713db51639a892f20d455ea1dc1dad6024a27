@@ -41,6 +41,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "1ce387cb_509ae7f4",
+        "filename": "src/chromiumos/tast/internal/dep/hardware.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 49,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-06-08T04:23:10Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "1701161a_d8022571",
+      "range": {
+        "startLine": 49,
+        "startChar": 63,
+        "endLine": 49,
+        "endChar": 104
+      },
+      "revId": "2bf713db51639a892f20d455ea1dc1dad6024a27",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "46ac548c_47802b9f",
@@ -54,6 +78,30 @@
       "writtenOn": "2021-06-08T02:38:30Z",
       "side": 1,
       "message": "style: indent error flow\nhttps://github.com/golang/go/wiki/CodeReviewComments#indent-error-flow\n\n satisfied, reason, err :\u003d c.Satisfied(f)\n if err !\u003d nil {\n   return nil, err\n }\n if !satisfied {\n   ...\n }",
+      "range": {
+        "startLine": 56,
+        "startChar": 2,
+        "endLine": 59,
+        "endChar": 11
+      },
+      "revId": "2bf713db51639a892f20d455ea1dc1dad6024a27",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f8625ad6_117bf402",
+        "filename": "src/chromiumos/tast/internal/dep/hardware.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 59,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-06-08T04:23:10Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "46ac548c_47802b9f",
       "range": {
         "startLine": 56,
         "startChar": 2,
@@ -100,6 +148,30 @@
       "writtenOn": "2021-06-08T02:38:30Z",
       "side": 1,
       "message": "nit\u0026optional: I think we can just always return reasons, nil",
+      "range": {
+        "startLine": 65,
+        "startChar": 1,
+        "endLine": 68,
+        "endChar": 16
+      },
+      "revId": "2bf713db51639a892f20d455ea1dc1dad6024a27",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "40412cb6_adc78fac",
+        "filename": "src/chromiumos/tast/internal/dep/hardware.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-06-08T04:23:10Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "47b7c8ca_46d67ac1",
       "range": {
         "startLine": 65,
         "startChar": 1,

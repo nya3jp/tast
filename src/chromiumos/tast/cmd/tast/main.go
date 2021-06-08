@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
+	"runtime/pprof"
 
 	"github.com/google/subcommands"
 	"golang.org/x/crypto/ssh/terminal"
@@ -51,11 +52,17 @@ func installSignalHandler(lg *logging.Logger) {
 			if st != nil {
 				terminal.Restore(fd, st)
 			}
-			fmt.Fprintf(os.Stdout, "\nCaught %v signal; exiting\n", sig)
+			fmt.Fprintf(os.Stderr, "\nCaught %v signal; exiting\n", sig)
+			if sig == unix.SIGTERM {
+				fmt.Fprintf(os.Stderr, "\nDumping all goroutines...\n\n")
+				if p := pprof.Lookup("goroutine"); p != nil {
+					p.WriteTo(os.Stderr, 2)
+				}
+			}
 			os.Exit(1)
 		}
 	}()
-	signal.Notify(sc, unix.SIGINT, unix.SIGKILL)
+	signal.Notify(sc, unix.SIGINT, unix.SIGTERM)
 }
 
 // doMain implements the main body of the program. It's a separate function so

@@ -623,6 +623,30 @@
       },
       "revId": "f26fba581e61e2e5079525ea4336a1477eea337b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "33920868_ca40b4a1",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/check/forbidden_calls.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 133,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-06-09T02:30:35Z",
+      "side": 1,
+      "message": "I agree with Oleh. I think tast-lint and IDEs have different expectations for auto imports... IDEs expect that users continue to edit the code and rename auto-generated aliases as they go, but tast-lint is usually run at the very last stage of patch preparation (just before uploading patches to Gerrit) and users are likely to apply the suggested change as-is when it is available. And we don\u0027t want users to keep auto-generated aliases like errors1.\n\nIn that case I think tast-lint can just refuse to auto-fix. Then users are forced to think of a good alias to use.",
+      "parentUuid": "7bf2b9f2_14f9a099",
+      "range": {
+        "startLine": 133,
+        "startChar": 5,
+        "endLine": 133,
+        "endChar": 94
+      },
+      "revId": "f26fba581e61e2e5079525ea4336a1477eea337b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

@@ -95,6 +95,7 @@ The following software features are defined:
 *   `houdini64` - Availability of 64-bit Houdini library for ARC.
 *   `hostap_hwsim` - Whether system has the hostap project's test dependencies
     (scripts, daemons) installed and configured appropriately.
+*   `hps` - Whether the system has the hps daemon and tools, go/cros-hps.
 *    igt  - Boards that can run igt-gpu-tools tests
 *   `iioservice` - Whether the device has CrOS IIO Service running.
 *   `iwlwifi_rescan` - Ability to remove/rescan WiFi PCI device when the

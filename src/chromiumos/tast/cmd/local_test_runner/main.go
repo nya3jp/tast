@@ -129,6 +129,7 @@ func main() {
 			"houdini":                 "houdini",
 			"houdini64":               "houdini64",
 			"hostap_hwsim":            "wifi_hostap_test",
+			"hps":                     "hps",
 			"igt":                     `("video_cards_amdgpu" || "video_cards_intel") && ("kernel-5_4" || "kernel-5_10")`,
 			"iioservice":              "iioservice",
 			"iwlwifi_rescan":          "iwlwifi_rescan",

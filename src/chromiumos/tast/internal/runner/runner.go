@@ -54,6 +54,12 @@ const (
 func Run(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, args *jsonprotocol.RunnerArgs, scfg *StaticConfig) int {
 	// TODO(derat|nya): Consider applying timeout.
 	ctx := context.TODO()
+
+	// TODO(b/189332919): Remove this hack once we find the cause.
+	if os.Getenv("TAST_B189332919_STACK_TRACE_FD") == "3" {
+		command.InstallSignalHandler(os.NewFile(3, ""), func(os.Signal) {})
+	}
+
 	if err := readArgs(clArgs, stdin, stderr, args, scfg); err != nil {
 		return command.WriteError(stderr, err)
 	}

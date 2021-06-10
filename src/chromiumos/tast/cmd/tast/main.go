@@ -10,14 +10,12 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"os/signal"
-	"runtime/pprof"
 
 	"github.com/google/subcommands"
 	"golang.org/x/crypto/ssh/terminal"
-	"golang.org/x/sys/unix"
 
 	"chromiumos/tast/cmd/tast/internal/logging"
+	"chromiumos/tast/internal/command"
 )
 
 const (
@@ -45,24 +43,12 @@ func installSignalHandler(lg *logging.Logger) {
 		}
 	}
 
-	sc := make(chan os.Signal, signalChannelSize)
-	go func() {
-		for sig := range sc {
-			lg.Close()
-			if st != nil {
-				terminal.Restore(fd, st)
-			}
-			fmt.Fprintf(os.Stderr, "\nCaught %v signal; exiting\n", sig)
-			if sig == unix.SIGTERM {
-				fmt.Fprintf(os.Stderr, "\nDumping all goroutines...\n\n")
-				if p := pprof.Lookup("goroutine"); p != nil {
-					p.WriteTo(os.Stderr, 2)
-				}
-			}
-			os.Exit(1)
+	command.InstallSignalHandler(os.Stderr, func(os.Signal) {
+		lg.Close()
+		if st != nil {
+			terminal.Restore(fd, st)
 		}
-	}()
-	signal.Notify(sc, unix.SIGINT, unix.SIGTERM)
+	})
 }
 
 // doMain implements the main body of the program. It's a separate function so

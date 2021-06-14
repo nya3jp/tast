@@ -135,6 +135,10 @@ type Config struct {
 }
 
 // State hold state attributes which are accumulated over the course of the run.
+//
+// DO NOT add new fields to this struct. State makes it difficult to reason
+// about function contracts. Pass arguments explicitly instead.
+// This struct will be removed eventually (b/191230756).
 type State struct {
 	DUTInfo          *protocol.DUTInfo     // DUT information retrieved at the beginning of the current run
 	FailuresCount    int                   // the number of test failures so far.

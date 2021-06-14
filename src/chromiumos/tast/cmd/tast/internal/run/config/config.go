@@ -136,6 +136,9 @@ type Config struct {
 
 // State hold state attributes which are accumulated over the course of the run.
 type State struct {
+	// DO NOT add new fields to this struct. State makes it difficult to
+	// reason about function contracts.
+
 	DUTInfo          *protocol.DUTInfo     // DUT information retrieved at the beginning of the current run
 	FailuresCount    int                   // the number of test failures so far.
 	TLWConn          *grpc.ClientConn      // TLW gRPC service connection

@@ -119,6 +119,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "88a5624f_89df8e0a",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1512082
+      },
+      "writtenOn": "2021-06-15T17:31:48Z",
+      "side": 1,
+      "message": "Now it\u0027s okay : )\nthought it as 80",
+      "parentUuid": "b671cfbb_8d3a3786",
+      "range": {
+        "startLine": 9,
+        "startChar": 0,
+        "endLine": 9,
+        "endChar": 220
+      },
+      "revId": "f26fba581e61e2e5079525ea4336a1477eea337b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "ee034faf_5cafb872",
@@ -687,6 +711,30 @@
       "side": 1,
       "message": "I think a good target is to fix a case like this:\n\n import (\n   \"fmt\"\n   \n   \"chromiumos/tast/errors\"\n )\n \n func Foo() error {\n   return errors.New(\"foo\")\n }\n \n func Bar(n int) error {\n   return fmt.Errorf(\"%d\", n)\n }",
       "parentUuid": "ade3c5a9_d8c833c6",
+      "range": {
+        "startLine": 133,
+        "startChar": 5,
+        "endLine": 133,
+        "endChar": 94
+      },
+      "revId": "f26fba581e61e2e5079525ea4336a1477eea337b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9f047d4b_38e2bbe0",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/check/forbidden_calls.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 133,
+      "author": {
+        "id": 1512082
+      },
+      "writtenOn": "2021-06-15T17:31:48Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "3b652a09_ae45bc41",
       "range": {
         "startLine": 133,
         "startChar": 5,

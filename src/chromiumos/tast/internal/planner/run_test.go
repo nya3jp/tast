@@ -28,6 +28,7 @@ import (
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/testing"
+	"chromiumos/tast/internal/testing/testfixture"
 	"chromiumos/tast/testutil"
 )
 
@@ -713,13 +714,13 @@ func TestRunExternalData(t *gotesting.T) {
 			fixt := &testing.FixtureInstance{
 				Name: "fixt",
 				Pkg:  "pkg",
-				Impl: newFakeFixture(),
+				Impl: testfixture.New(),
 				Data: []string{"file3.txt"},
 			}
 			fixt2 := &testing.FixtureInstance{
 				Name: "fixt2",
 				Pkg:  "pkg",
-				Impl: newFakeFixture(),
+				Impl: testfixture.New(),
 				Data: []string{"fail.txt"},
 			}
 
@@ -911,13 +912,13 @@ func TestLazyDownloadPurgeable(t *gotesting.T) {
 			"fixt": {
 				Pkg:  "pkg",
 				Name: "fixt",
-				Impl: newFakeFixture(),
+				Impl: testfixture.New(),
 				Data: []string{"file3.txt"},
 			},
 			"fixt2": {
 				Pkg:  "pkg",
 				Name: "fixt2",
-				Impl: newFakeFixture(),
+				Impl: testfixture.New(),
 				Data: []string{},
 			},
 		},
@@ -959,43 +960,43 @@ func TestRunFixture(t *gotesting.T) {
 	)
 	fixt1 := &testing.FixtureInstance{
 		Name: "fixt1",
-		Impl: newFakeFixture(
-			withSetUp(func(ctx context.Context, s *testing.FixtState) interface{} {
+		Impl: testfixture.New(
+			testfixture.WithSetUp(func(ctx context.Context, s *testing.FixtState) interface{} {
 				testcontext.Log(ctx, "fixt1 SetUp")
 				return val1
 			}),
-			withReset(func(ctx context.Context) error {
+			testfixture.WithReset(func(ctx context.Context) error {
 				testcontext.Log(ctx, "fixt1 Reset")
 				return nil
 			}),
-			withPreTest(func(ctx context.Context, s *testing.FixtTestState) {
+			testfixture.WithPreTest(func(ctx context.Context, s *testing.FixtTestState) {
 				testcontext.Log(ctx, "fixt1 PreTest")
 			}),
-			withPostTest(func(ctx context.Context, s *testing.FixtTestState) {
+			testfixture.WithPostTest(func(ctx context.Context, s *testing.FixtTestState) {
 				testcontext.Log(ctx, "fixt1 PostTest")
 			}),
-			withTearDown(func(ctx context.Context, s *testing.FixtState) {
+			testfixture.WithTearDown(func(ctx context.Context, s *testing.FixtState) {
 				testcontext.Log(ctx, "fixt1 TearDown")
 			})),
 	}
 	fixt2 := &testing.FixtureInstance{
 		Name: "fixt2",
-		Impl: newFakeFixture(
-			withSetUp(func(ctx context.Context, s *testing.FixtState) interface{} {
+		Impl: testfixture.New(
+			testfixture.WithSetUp(func(ctx context.Context, s *testing.FixtState) interface{} {
 				testcontext.Log(ctx, "fixt2 SetUp")
 				return val2
 			}),
-			withReset(func(ctx context.Context) error {
+			testfixture.WithReset(func(ctx context.Context) error {
 				testcontext.Log(ctx, "fixt2 Reset")
 				return nil
 			}),
-			withPreTest(func(ctx context.Context, s *testing.FixtTestState) {
+			testfixture.WithPreTest(func(ctx context.Context, s *testing.FixtTestState) {
 				testcontext.Log(ctx, "fixt2 PreTest")
 			}),
-			withPostTest(func(ctx context.Context, s *testing.FixtTestState) {
+			testfixture.WithPostTest(func(ctx context.Context, s *testing.FixtTestState) {
 				testcontext.Log(ctx, "fixt2 PostTest")
 			}),
-			withTearDown(func(ctx context.Context, s *testing.FixtState) {
+			testfixture.WithTearDown(func(ctx context.Context, s *testing.FixtState) {
 				testcontext.Log(ctx, "fixt2 TearDown")
 			})),
 		Parent: "fixt1",
@@ -1079,44 +1080,44 @@ func TestRunFixture(t *gotesting.T) {
 func TestRunFixtureSetUpFailure(t *gotesting.T) {
 	fixt1 := &testing.FixtureInstance{
 		Name: "fixt1",
-		Impl: newFakeFixture(
-			withSetUp(func(ctx context.Context, s *testing.FixtState) interface{} {
+		Impl: testfixture.New(
+			testfixture.WithSetUp(func(ctx context.Context, s *testing.FixtState) interface{} {
 				s.Error("Setup failure 1")
 				s.Error("Setup failure 2")
 				return nil
 			}),
-			withReset(func(ctx context.Context) error {
+			testfixture.WithReset(func(ctx context.Context) error {
 				testcontext.Log(ctx, "fixt1 Reset")
 				return nil
 			}),
-			withPreTest(func(ctx context.Context, s *testing.FixtTestState) {
+			testfixture.WithPreTest(func(ctx context.Context, s *testing.FixtTestState) {
 				testcontext.Log(ctx, "fixt1 PreTest")
 			}),
-			withPostTest(func(ctx context.Context, s *testing.FixtTestState) {
+			testfixture.WithPostTest(func(ctx context.Context, s *testing.FixtTestState) {
 				testcontext.Log(ctx, "fixt1 PostTest")
 			}),
-			withTearDown(func(ctx context.Context, s *testing.FixtState) {
+			testfixture.WithTearDown(func(ctx context.Context, s *testing.FixtState) {
 				testcontext.Log(ctx, "fixt1 TearDown")
 			})),
 	}
 	fixt2 := &testing.FixtureInstance{
 		Name: "fixt2",
-		Impl: newFakeFixture(
-			withSetUp(func(ctx context.Context, s *testing.FixtState) interface{} {
+		Impl: testfixture.New(
+			testfixture.WithSetUp(func(ctx context.Context, s *testing.FixtState) interface{} {
 				testcontext.Log(ctx, "fixt2 SetUp")
 				return nil
 			}),
-			withReset(func(ctx context.Context) error {
+			testfixture.WithReset(func(ctx context.Context) error {
 				testcontext.Log(ctx, "fixt2 Reset")
 				return nil
 			}),
-			withPreTest(func(ctx context.Context, s *testing.FixtTestState) {
+			testfixture.WithPreTest(func(ctx context.Context, s *testing.FixtTestState) {
 				testcontext.Log(ctx, "fixt2 PreTest")
 			}),
-			withPostTest(func(ctx context.Context, s *testing.FixtTestState) {
+			testfixture.WithPostTest(func(ctx context.Context, s *testing.FixtTestState) {
 				testcontext.Log(ctx, "fixt2 PostTest")
 			}),
-			withTearDown(func(ctx context.Context, s *testing.FixtState) {
+			testfixture.WithTearDown(func(ctx context.Context, s *testing.FixtState) {
 				testcontext.Log(ctx, "fixt2 TearDown")
 			})),
 		Parent: "fixt1",
@@ -1180,8 +1181,8 @@ func TestRunFixtureSetUpFailure(t *gotesting.T) {
 func TestRunFixtureRemoteSetUpFailure(t *gotesting.T) {
 	cfg := &Config{
 		StartFixtureName: "remoteFixt",
-		StartFixtureImpl: newFakeFixture(
-			withSetUp(func(ctx context.Context, s *testing.FixtState) interface{} {
+		StartFixtureImpl: testfixture.New(
+			testfixture.WithSetUp(func(ctx context.Context, s *testing.FixtState) interface{} {
 				s.Error("Remote failure")
 				return nil
 			})),
@@ -1210,14 +1211,14 @@ func TestRunFixtureRemoteSetUpFailure(t *gotesting.T) {
 func TestRunFixtureResetFailure(t *gotesting.T) {
 	fixt1 := &testing.FixtureInstance{
 		Name: "fixt1",
-		Impl: newFakeFixture(withReset(func(ctx context.Context) error {
+		Impl: testfixture.New(testfixture.WithReset(func(ctx context.Context) error {
 			testcontext.Log(ctx, "Reset 1")
 			return errors.New("failure")
 		})),
 	}
 	fixt2 := &testing.FixtureInstance{
 		Name: "fixt2",
-		Impl: newFakeFixture(withReset(func(ctx context.Context) error {
+		Impl: testfixture.New(testfixture.WithReset(func(ctx context.Context) error {
 			testcontext.Log(ctx, "Reset 2")
 			return nil
 		})),
@@ -1288,14 +1289,14 @@ func TestRunFixtureResetFailure(t *gotesting.T) {
 func TestRunFixtureMinimumReset(t *gotesting.T) {
 	fixt1 := &testing.FixtureInstance{
 		Name: "fixt1",
-		Impl: newFakeFixture(withReset(func(ctx context.Context) error {
+		Impl: testfixture.New(testfixture.WithReset(func(ctx context.Context) error {
 			testcontext.Log(ctx, "Reset 1")
 			return nil
 		})),
 	}
 	fixt2 := &testing.FixtureInstance{
 		Name: "fixt2",
-		Impl: newFakeFixture(withReset(func(ctx context.Context) error {
+		Impl: testfixture.New(testfixture.WithReset(func(ctx context.Context) error {
 			testcontext.Log(ctx, "Reset 2")
 			return nil
 		})),
@@ -1303,7 +1304,7 @@ func TestRunFixtureMinimumReset(t *gotesting.T) {
 	}
 	fixt3 := &testing.FixtureInstance{
 		Name: "fixt3",
-		Impl: newFakeFixture(withReset(func(ctx context.Context) error {
+		Impl: testfixture.New(testfixture.WithReset(func(ctx context.Context) error {
 			testcontext.Log(ctx, "Reset 3")
 			return nil
 		})),
@@ -1409,12 +1410,12 @@ func TestRunFixtureMinimumReset(t *gotesting.T) {
 func TestRunFixtureMissing(t *gotesting.T) {
 	fixt1 := &testing.FixtureInstance{
 		Name:   "fixt1",
-		Impl:   newFakeFixture(),
+		Impl:   testfixture.New(),
 		Parent: "fixt0", // no such fixture
 	}
 	fixt2 := &testing.FixtureInstance{
 		Name:   "fixt2",
-		Impl:   newFakeFixture(),
+		Impl:   testfixture.New(),
 		Parent: "fixt1",
 	}
 	cfg := &Config{
@@ -1468,7 +1469,7 @@ func TestRunFixtureVars(t *gotesting.T) {
 
 	fixt := &testing.FixtureInstance{
 		Name: "fixt",
-		Impl: newFakeFixture(withSetUp(func(ctx context.Context, s *testing.FixtState) interface{} {
+		Impl: testfixture.New(testfixture.WithSetUp(func(ctx context.Context, s *testing.FixtState) interface{} {
 			func() {
 				defer func() {
 					if recover() != nil {
@@ -1524,7 +1525,7 @@ func TestRunFixtureTestContext(t *gotesting.T) {
 
 	fixt := &testing.FixtureInstance{
 		Name: "fixt",
-		Impl: newFakeFixture(withPreTest(func(ctx context.Context, s *testing.FixtTestState) {
+		Impl: testfixture.New(testfixture.WithPreTest(func(ctx context.Context, s *testing.FixtTestState) {
 			if err := s.TestContext().Err(); err != nil {
 				t.Errorf("s.TestContext() is canceled: %v", err)
 			}
@@ -1533,7 +1534,7 @@ func TestRunFixtureTestContext(t *gotesting.T) {
 				<-s.TestContext().Done()
 				wg.Done()
 			}()
-		}), withPostTest(func(ctx context.Context, s *testing.FixtTestState) {
+		}), testfixture.WithPostTest(func(ctx context.Context, s *testing.FixtTestState) {
 			if err := ctxPreTest.Err(); err != nil {
 				t.Errorf("Test context in PreTest is canceled: %v", err)
 			}
@@ -1544,7 +1545,7 @@ func TestRunFixtureTestContext(t *gotesting.T) {
 				<-s.TestContext().Done()
 				wg.Done()
 			}()
-		}), withTearDown(func(ctx context.Context, s *testing.FixtState) {
+		}), testfixture.WithTearDown(func(ctx context.Context, s *testing.FixtState) {
 			// TestContext must be cancelled as soon as PostTest finishes.
 			wg.Wait()
 		})),
@@ -1576,7 +1577,7 @@ func TestRunFixtureData(t *gotesting.T) {
 		Name: "fixt",
 		Pkg:  "pkg",
 		Data: []string{fileName},
-		Impl: newFakeFixture(withSetUp(func(ctx context.Context, s *testing.FixtState) interface{} {
+		Impl: testfixture.New(testfixture.WithSetUp(func(ctx context.Context, s *testing.FixtState) interface{} {
 			if got, want := s.DataPath(fileName), filepath.Join(dataDir, "pkg/data", fileName); got != want {
 				t.Errorf("s.DataPath(%q) = %v, want %v", fileName, got, want)
 			}
@@ -1603,7 +1604,7 @@ func TestRunFixtureData(t *gotesting.T) {
 				t.Errorf(`Got %v, want "42"`, got)
 			}
 			return nil
-		}), withTearDown(func(ctx context.Context, s *testing.FixtState) {
+		}), testfixture.WithTearDown(func(ctx context.Context, s *testing.FixtState) {
 			if got, want := s.DataPath(fileName), filepath.Join(dataDir, "pkg/data", fileName); got != want {
 				t.Errorf("s.DataPath(%q) = %v, want %v", fileName, got, want)
 			}
@@ -1893,8 +1894,8 @@ func TestAttachStateToContext(t *gotesting.T) {
 func TestRunPlan(t *gotesting.T) {
 	pre1 := &testPre{name: "pre1"}
 	pre2 := &testPre{name: "pre2"}
-	fixt1 := &testing.FixtureInstance{Name: "fixt1", Impl: newFakeFixture()}
-	fixt2 := &testing.FixtureInstance{Name: "fixt2", Impl: newFakeFixture(), Parent: "fixt1"}
+	fixt1 := &testing.FixtureInstance{Name: "fixt1", Impl: testfixture.New()}
+	fixt2 := &testing.FixtureInstance{Name: "fixt2", Impl: testfixture.New(), Parent: "fixt1"}
 	cfg := &Config{
 		Features: &protocol.Features{
 			CheckDeps: true,

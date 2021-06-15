@@ -43,7 +43,7 @@ func RunRemoteTests(ctx context.Context, cfg *config.Config, state *config.State
 	// local tests doesn't work, because if resulting names become empty, it
 	// instructs to run all the tests.
 	for i, t := range state.TestsToRun {
-		names[i] = t.Name
+		names[i] = t.GetEntity().GetName()
 	}
 	results, err := runTestsWithRetry(ctx, cfg, names, runTests, beforeRetry)
 	elapsed := time.Since(start)

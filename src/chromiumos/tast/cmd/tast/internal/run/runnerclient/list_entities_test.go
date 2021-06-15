@@ -9,12 +9,13 @@ import (
 	"fmt"
 	gotesting "testing"
 
+	"github.com/golang/protobuf/ptypes"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 
 	"chromiumos/tast/cmd/tast/internal/run/runtest"
 	"chromiumos/tast/cmd/tast/internal/run/target"
-	"chromiumos/tast/internal/jsonprotocol"
+	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testing"
 )
 
@@ -54,7 +55,7 @@ func TestFindPatternsForShard(t *gotesting.T) {
 				len(testsToRun), len(testsNotInShard), len(testsToSkip), len(tests))
 		}
 		for _, tr := range testsToRun {
-			name := tr.Name
+			name := tr.GetEntity().GetName()
 			if processed[name] {
 				t.Fatalf("Test %q is in more than one shard", name)
 			}
@@ -129,22 +130,34 @@ func TestListLocalTests(t *gotesting.T) {
 		t.Fatal("Failed to list local tests: ", err)
 	}
 
-	want := []*jsonprotocol.EntityWithRunnabilityInfo{
+	want := []*protocol.ResolvedEntity{
 		{
-			EntityInfo: jsonprotocol.EntityInfo{
-				Name: "pkg.Test",
-				Desc: "This is a test",
-				Attr: []string{"attr1", "attr2"},
+			Entity: &protocol.Entity{
+				Name:         "pkg.Test",
+				Description:  "This is a test",
+				Attributes:   []string{"attr1", "attr2"},
+				Dependencies: &protocol.EntityDependencies{},
+				Contacts:     &protocol.EntityContacts{},
+				LegacyData: &protocol.EntityLegacyData{
+					Timeout: ptypes.DurationProto(0),
+				},
 			},
+			Hops: 1,
 		},
 		{
-			EntityInfo: jsonprotocol.EntityInfo{
-				Name: "pkg.AnotherTest",
-				Desc: "Another test",
+			Entity: &protocol.Entity{
+				Name:         "pkg.AnotherTest",
+				Description:  "Another test",
+				Dependencies: &protocol.EntityDependencies{},
+				Contacts:     &protocol.EntityContacts{},
+				LegacyData: &protocol.EntityLegacyData{
+					Timeout: ptypes.DurationProto(0),
+				},
 			},
+			Hops: 1,
 		},
 	}
-	if diff := cmp.Diff(got, want, cmpopts.IgnoreFields(jsonprotocol.EntityInfo{}, "Bundle")); diff != "" {
+	if diff := cmp.Diff(got, want, cmpopts.IgnoreFields(protocol.EntityLegacyData{}, "Bundle")); diff != "" {
 		t.Errorf("Unexpected list of local tests (-got +want):\n%v", diff)
 	}
 }
@@ -173,25 +186,37 @@ func TestListRemoteTests(t *gotesting.T) {
 		t.Error("Failed to list remote tests: ", err)
 	}
 
-	want := []*jsonprotocol.EntityWithRunnabilityInfo{
+	want := []*protocol.ResolvedEntity{
 		{
-			EntityInfo: jsonprotocol.EntityInfo{
-				Name: "pkg.Test1",
-				Desc: "First description",
-				Attr: []string{"attr1", "attr2"},
-				Pkg:  "pkg",
+			Entity: &protocol.Entity{
+				Name:         "pkg.Test1",
+				Description:  "First description",
+				Attributes:   []string{"attr1", "attr2"},
+				Package:      "pkg",
+				Dependencies: &protocol.EntityDependencies{},
+				Contacts:     &protocol.EntityContacts{},
+				LegacyData: &protocol.EntityLegacyData{
+					Timeout: ptypes.DurationProto(0),
+				},
 			},
+			Hops: 0,
 		},
 		{
-			EntityInfo: jsonprotocol.EntityInfo{
-				Name: "pkg2.Test2",
-				Desc: "Second description",
-				Attr: []string{"attr3"},
-				Pkg:  "pkg2",
+			Entity: &protocol.Entity{
+				Name:         "pkg2.Test2",
+				Description:  "Second description",
+				Attributes:   []string{"attr3"},
+				Package:      "pkg2",
+				Dependencies: &protocol.EntityDependencies{},
+				Contacts:     &protocol.EntityContacts{},
+				LegacyData: &protocol.EntityLegacyData{
+					Timeout: ptypes.DurationProto(0),
+				},
 			},
+			Hops: 0,
 		},
 	}
-	if diff := cmp.Diff(got, want, cmpopts.IgnoreFields(jsonprotocol.EntityInfo{}, "Bundle")); diff != "" {
+	if diff := cmp.Diff(got, want, cmpopts.IgnoreFields(protocol.EntityLegacyData{}, "Bundle")); diff != "" {
 		t.Errorf("Unexpected list of remote tests (-got +want):\n%v", diff)
 	}
 }

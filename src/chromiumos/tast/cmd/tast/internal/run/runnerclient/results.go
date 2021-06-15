@@ -140,7 +140,7 @@ func WriteResults(ctx context.Context, cfg *config.Config, state *config.State, 
 	if complete {
 		var matchedTestNames []string
 		for _, t := range state.TestsToRun {
-			matchedTestNames = append(matchedTestNames, t.Name)
+			matchedTestNames = append(matchedTestNames, t.GetEntity().GetName())
 		}
 		matchedTestNames = append(matchedTestNames, state.TestNamesToSkip...)
 		// Let the user know if one or more of the globs that they supplied didn't match any tests.

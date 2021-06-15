@@ -10,15 +10,15 @@ import (
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/genericexec"
-	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
 	"chromiumos/tast/cmd/tast/internal/run/target"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/jsonprotocol"
+	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/ssh"
 )
 
 // FindTestsForShard finds the pattern for a subset of tests based on shard index.
-func FindTestsForShard(ctx context.Context, cfg *config.Config, state *config.State, cc *target.ConnCache) (testsToRun, testsToSkip, testsNotInShard []*resultsjson.Result, err error) {
+func FindTestsForShard(ctx context.Context, cfg *config.Config, state *config.State, cc *target.ConnCache) (testsToRun, testsToSkip, testsNotInShard []*protocol.ResolvedEntity, err error) {
 	tests, testsToSkip, err := listRunnableTests(ctx, cfg, state, cc)
 	if err != nil {
 		return nil, nil, nil, errors.Wrapf(err, "fails to find runnable tests for patterns %q", cfg.Patterns)
@@ -29,24 +29,24 @@ func FindTestsForShard(ctx context.Context, cfg *config.Config, state *config.St
 
 	const skipReason = "test is not in the specified shard"
 	for i := 0; i < startIndex; i++ {
-		tests[i].SkipReason = skipReason
+		tests[i].Skip = &protocol.Skip{Reasons: []string{skipReason}}
 		testsNotInShard = append(testsNotInShard, tests[i])
 	}
 	for i := endIndex; i < len(tests); i++ {
-		tests[i].SkipReason = skipReason
+		tests[i].Skip = &protocol.Skip{Reasons: []string{skipReason}}
 		testsNotInShard = append(testsNotInShard, tests[i])
 	}
 	return testsToRun, testsToSkip, testsNotInShard, nil
 }
 
 // listRunnableTests finds runnable tests that fit the cfg.Patterns.
-func listRunnableTests(ctx context.Context, cfg *config.Config, state *config.State, cc *target.ConnCache) (testsToInclude, testsToSkip []*resultsjson.Result, err error) {
+func listRunnableTests(ctx context.Context, cfg *config.Config, state *config.State, cc *target.ConnCache) (testsToInclude, testsToSkip []*protocol.ResolvedEntity, err error) {
 	tests, err := listAllTests(ctx, cfg, state, cc)
 	if err != nil {
 		return nil, nil, errors.Wrapf(err, "cannot list tests for patterns %q", cfg.Patterns)
 	}
 	for _, t := range tests {
-		if t.SkipReason == "" {
+		if len(t.GetSkip().GetReasons()) == 0 {
 			testsToInclude = append(testsToInclude, t)
 		} else {
 			testsToSkip = append(testsToSkip, t)
@@ -74,8 +74,8 @@ func findShardIndices(numTests, totalShards, shardIndex int) (startIndex, endInd
 }
 
 // listAllTests returns the whole tests whether they will be skipped or not..
-func listAllTests(ctx context.Context, cfg *config.Config, state *config.State, cc *target.ConnCache) ([]*resultsjson.Result, error) {
-	var tests []*resultsjson.Result
+func listAllTests(ctx context.Context, cfg *config.Config, state *config.State, cc *target.ConnCache) ([]*protocol.ResolvedEntity, error) {
+	var tests []*protocol.ResolvedEntity
 	if cfg.RunLocal {
 		conn, err := cc.Conn(ctx)
 		if err != nil {
@@ -85,39 +85,34 @@ func listAllTests(ctx context.Context, cfg *config.Config, state *config.State, 
 		if err != nil {
 			return nil, err
 		}
-		for _, t := range ts {
-			tests = append(tests, &resultsjson.Result{
-				Test:       *resultsjson.NewTestFromEntityInfo(&t.EntityInfo),
-				SkipReason: t.SkipReason,
-				BundleType: resultsjson.LocalBundle,
-			})
-		}
+		tests = append(tests, ts...)
 	}
 	if cfg.RunRemote {
 		ts, err := listRemoteTests(ctx, cfg, state)
 		if err != nil {
 			return nil, err
 		}
-		for _, t := range ts {
-			tests = append(tests, &resultsjson.Result{
-				Test:       *resultsjson.NewTestFromEntityInfo(&t.EntityInfo),
-				SkipReason: t.SkipReason,
-				BundleType: resultsjson.RemoteBundle,
-			})
-		}
+		tests = append(tests, ts...)
 	}
 	return tests, nil
 }
 
 // ListLocalTests returns a list of local tests to run.
-func ListLocalTests(ctx context.Context, cfg *config.Config, state *config.State, hst *ssh.Conn) ([]*jsonprotocol.EntityWithRunnabilityInfo, error) {
-	return runListTestsCommand(
-		ctx, localRunnerCommand(cfg, hst), cfg, state, cfg.LocalBundleGlob())
+func ListLocalTests(ctx context.Context, cfg *config.Config, state *config.State, hst *ssh.Conn) ([]*protocol.ResolvedEntity, error) {
+	entities, err := runListTestsCommand(ctx, localRunnerCommand(cfg, hst), cfg, state, cfg.LocalBundleGlob())
+	if err != nil {
+		return nil, err
+	}
+	// It is our responsibility to adjust hops.
+	for _, e := range entities {
+		e.Hops++
+	}
+	return entities, nil
 }
 
 // ListLocalFixtures returns a map from bundle to fixtures.
-func ListLocalFixtures(ctx context.Context, cfg *config.Config, hst *ssh.Conn) (map[string][]*jsonprotocol.EntityInfo, error) {
-	var localFixts jsonprotocol.RunnerListFixturesResult
+func ListLocalFixtures(ctx context.Context, cfg *config.Config, hst *ssh.Conn) (map[string][]*protocol.Entity, error) {
+	var res jsonprotocol.RunnerListFixturesResult
 	if err := runTestRunnerCommand(
 		ctx,
 		localRunnerCommand(cfg, hst), &jsonprotocol.RunnerArgs{
@@ -125,21 +120,21 @@ func ListLocalFixtures(ctx context.Context, cfg *config.Config, hst *ssh.Conn) (
 			ListFixtures: &jsonprotocol.RunnerListFixturesArgs{
 				BundleGlob: cfg.LocalBundleGlob(),
 			},
-		}, &localFixts); err != nil {
+		}, &res); err != nil {
 		return nil, fmt.Errorf("listing local fixtures: %v", err)
 	}
-	return localFixts.Fixtures, nil
+	return convertFixtureMap(res.Fixtures)
 }
 
 // listRemoteTests returns a list of remote tests to run.
-func listRemoteTests(ctx context.Context, cfg *config.Config, state *config.State) ([]*jsonprotocol.EntityWithRunnabilityInfo, error) {
+func listRemoteTests(ctx context.Context, cfg *config.Config, state *config.State) ([]*protocol.ResolvedEntity, error) {
 	return runListTestsCommand(
 		ctx, remoteRunnerCommand(cfg), cfg, state, cfg.RemoteBundleGlob())
 }
 
 // listRemoteFixtures returns a map from bundle to fixtures.
-func listRemoteFixtures(ctx context.Context, cfg *config.Config) (map[string][]*jsonprotocol.EntityInfo, error) {
-	var remoteFixts jsonprotocol.RunnerListFixturesResult
+func listRemoteFixtures(ctx context.Context, cfg *config.Config) (map[string][]*protocol.Entity, error) {
+	var res jsonprotocol.RunnerListFixturesResult
 	if err := runTestRunnerCommand(
 		ctx,
 		remoteRunnerCommand(cfg), &jsonprotocol.RunnerArgs{
@@ -147,13 +142,29 @@ func listRemoteFixtures(ctx context.Context, cfg *config.Config) (map[string][]*
 			ListFixtures: &jsonprotocol.RunnerListFixturesArgs{
 				BundleGlob: cfg.RemoteBundleGlob(),
 			},
-		}, &remoteFixts); err != nil {
+		}, &res); err != nil {
 		return nil, fmt.Errorf("listing remote fixtures: %v", err)
 	}
-	return remoteFixts.Fixtures, nil
+	return convertFixtureMap(res.Fixtures)
 }
 
-func runListTestsCommand(ctx context.Context, cmd genericexec.Cmd, cfg *config.Config, state *config.State, glob string) ([]*jsonprotocol.EntityWithRunnabilityInfo, error) {
+func convertFixtureMap(jsonFixtMap map[string][]*jsonprotocol.EntityInfo) (map[string][]*protocol.Entity, error) {
+	protoFixtMap := make(map[string][]*protocol.Entity)
+	for bundle, jsonFixts := range jsonFixtMap {
+		protoFixts := make([]*protocol.Entity, len(jsonFixts))
+		for i, jf := range jsonFixts {
+			pf, err := jf.Proto()
+			if err != nil {
+				return nil, err
+			}
+			protoFixts[i] = pf
+		}
+		protoFixtMap[bundle] = protoFixts
+	}
+	return protoFixtMap, nil
+}
+
+func runListTestsCommand(ctx context.Context, cmd genericexec.Cmd, cfg *config.Config, state *config.State, glob string) ([]*protocol.ResolvedEntity, error) {
 	args := &jsonprotocol.RunnerArgs{
 		Mode: jsonprotocol.RunnerListTestsMode,
 		ListTests: &jsonprotocol.RunnerListTestsArgs{
@@ -168,5 +179,13 @@ func runListTestsCommand(ctx context.Context, cmd genericexec.Cmd, cfg *config.C
 	if err := runTestRunnerCommand(ctx, cmd, args, &res); err != nil {
 		return nil, fmt.Errorf("listing tests %v: %v", cfg.Patterns, err)
 	}
-	return res, nil
+	tests := make([]*protocol.ResolvedEntity, len(res))
+	for i, r := range res {
+		t, err := r.Proto()
+		if err != nil {
+			return nil, err
+		}
+		tests[i] = t
+	}
+	return tests, nil
 }

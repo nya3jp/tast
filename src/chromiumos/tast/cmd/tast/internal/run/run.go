@@ -11,6 +11,7 @@ import (
 	"net"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"time"
 
 	"go.chromium.org/chromiumos/config/go/api/test/tls"
@@ -125,7 +126,25 @@ func listTests(ctx context.Context, cfg *config.Config, state *config.State, cc 
 	if cfg.ShardIndex == 0 {
 		testsToRun = append(testsToRun, testsToSkip...)
 	}
-	return testsToRun, nil
+
+	// Convert protocol.ResolvedEntity to resultsjson.Result.
+	results := make([]*resultsjson.Result, len(testsToRun))
+	for i, re := range testsToRun {
+		test, err := resultsjson.NewTest(re.GetEntity())
+		if err != nil {
+			return nil, err
+		}
+		bt := resultsjson.RemoteBundle
+		if re.GetHops() > 0 {
+			bt = resultsjson.LocalBundle
+		}
+		results[i] = &resultsjson.Result{
+			Test:       *test,
+			SkipReason: strings.Join(re.GetSkip().GetReasons(), ", "),
+			BundleType: bt,
+		}
+	}
+	return results, nil
 }
 
 func runTests(ctx context.Context, cfg *config.Config, state *config.State, cc *target.ConnCache) (results []*resultsjson.Result, retErr error) {
@@ -158,10 +177,10 @@ func runTests(ctx context.Context, cfg *config.Config, state *config.State, cc *
 	state.TestsToRun = testsToRun
 	state.TestNamesToSkip = nil
 	for _, t := range testsToSkip {
-		state.TestNamesToSkip = append(state.TestNamesToSkip, t.Name)
+		state.TestNamesToSkip = append(state.TestNamesToSkip, t.GetEntity().GetName())
 	}
 	for _, t := range testsNotInShard {
-		state.TestNamesToSkip = append(state.TestNamesToSkip, t.Name)
+		state.TestNamesToSkip = append(state.TestNamesToSkip, t.GetEntity().GetName())
 	}
 
 	if cfg.TotalShards > 1 {

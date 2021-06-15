@@ -292,7 +292,17 @@ message ErrorLocation {
 // from an original Entity and run time information.
 message ResolvedEntity {
   Entity entity = 1;
+
+  // Skips contains reasons why this test should be skipped. If it contains one
+  // or more reasons, the test should be skipped for unsatisfied dependencies.
+  // This field can be set only if the entity is a test.
   Skip skip = 2;
+
+  // Hops contains the number of remote connection hops from the current machine
+  // and the machine serving the entity.
+  // On the host machine, hops=0 means remote entities (on the host machine) and
+  // hops=1 means local entities (on the DUT).
+  int32 hops = 3;
 }
 
 // TimingLog is a protobuf presentation of a timing.Log.

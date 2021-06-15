@@ -38,6 +38,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "beaabbd5_4f0dc0a6",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1360092
+      },
+      "writtenOn": "2021-06-15T23:31:25Z",
+      "side": 1,
+      "message": "With the current setup, future tast test updates could create overlap within the test suites (e.g. the existing syzkaller test [1] is updated to add the \"group:syzcorpus\" attribute [2] as well).\n\nAdding \u0027-\"group:syzcorpus\"\u0027 to the test_expr in the tast suite control file [3] (and vice versa) would eliminate the possibility of overlap, but could lead to tests being left out of both suites accidentally.\n\nnya@ may know if there is a better solution for this but, given that we don\u0027t expect many (any?) other tests to be added to either suite, I don\u0027t think this should be a real problem.\n\n[1] http://cs/chromeos_public/src/platform/tast-tests/src/chromiumos/tast/remote/bundles/cros/syzkaller/wrapper.go?l\u003d92\n[2] https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/test_attributes.md#manually_added-attributes\n[3] http://cs/chromeos_public/src/third_party/autotest/files/server/site_tests/tast/control.syzkaller?l\u003d27",
+      "parentUuid": "76fe0210_81c9b654",
+      "revId": "b56c2ff9e5c9848e2b7293c2fa7c97ac5f3230ae",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "efc8154c_a102a308",
         "filename": "src/chromiumos/tast/internal/testing/attr.go",
         "patchSetId": 1

@@ -22,6 +22,12 @@ import (
 	"chromiumos/tast/internal/runner"
 )
 
+const (
+	// LocalTestRunnerPath is the path to the fake local test runner
+	// available on the SSH server.
+	LocalTestRunnerPath = "/fake/mock_local_test_runner"
+)
+
 // All paths are relative to rootDir.
 const (
 	tastDir   = "tast"
@@ -29,7 +35,6 @@ const (
 	trunkDir  = "trunk"
 	tempDir   = "tmp"
 
-	localTestRunnerPath  = "mock_local_test_runner"
 	remoteTestRunnerPath = "mock_remote_test_runner"
 
 	localBundleDir  = "bundles/local"
@@ -113,7 +118,7 @@ func SetUp(t *gotesting.T, opts ...EnvOption) *Env {
 	// Start a fake SSH server.
 	handlers := cfg.ExtraSSHHandlers
 	handlers = append(handlers, defaultHandlers(cfg)...)
-	handlers = append(handlers, localTestRunner.SSHHandlers(filepath.Join(rootDir, localTestRunnerPath))...)
+	handlers = append(handlers, localTestRunner.SSHHandlers(LocalTestRunnerPath)...)
 	sshServer := fakesshserver.Start(handlers)
 
 	// Create a State object that is cleaned up automatically.
@@ -159,7 +164,7 @@ func (e *Env) Config() *config.Config {
 		ResDir:              filepath.Join(e.rootDir, resultDir),
 		TastDir:             filepath.Join(e.rootDir, tastDir),
 		TrunkDir:            filepath.Join(e.rootDir, trunkDir),
-		LocalRunner:         filepath.Join(e.rootDir, localTestRunnerPath),
+		LocalRunner:         LocalTestRunnerPath,
 		LocalBundleDir:      filepath.Join(e.rootDir, localBundleDir),
 		LocalOutDir:         filepath.Join(e.rootDir, fmt.Sprintf("tmp/out/local.%d", randomID)),
 		RemoteRunner:        filepath.Join(e.rootDir, remoteTestRunnerPath),

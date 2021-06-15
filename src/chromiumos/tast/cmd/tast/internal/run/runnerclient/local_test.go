@@ -6,24 +6,24 @@ package runnerclient
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"os"
 	"path/filepath"
-	"strings"
 	gotesting "testing"
 	"time"
 
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
-	"chromiumos/tast/cmd/tast/internal/run/fakerunner"
+	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
+	"chromiumos/tast/cmd/tast/internal/run/runtest"
 	"chromiumos/tast/cmd/tast/internal/run/target"
-	"chromiumos/tast/internal/control"
-	"chromiumos/tast/internal/jsonprotocol"
-	"chromiumos/tast/internal/planner"
 	"chromiumos/tast/internal/protocol"
+	"chromiumos/tast/internal/testing"
+	"chromiumos/tast/internal/testing/testfixture"
 	"chromiumos/tast/shutil"
 	"chromiumos/tast/testutil"
 )
@@ -31,104 +31,73 @@ import (
 func TestLocalSuccess(t *gotesting.T) {
 	t.Parallel()
 
-	td := fakerunner.NewLocalTestData(t)
-	defer td.Close()
+	ctx := context.Background()
+	env := runtest.SetUp(t)
+	cfg := env.Config()
+	state := env.State()
 
-	td.RunFunc = func(args *jsonprotocol.RunnerArgs, stdout, stderr io.Writer) (status int) {
-		switch args.Mode {
-		case jsonprotocol.RunnerRunTestsMode:
-			fakerunner.CheckArgs(t, args, &jsonprotocol.RunnerArgs{
-				RunTests: &jsonprotocol.RunnerRunTestsArgs{
-					BundleArgs: jsonprotocol.BundleRunTestsArgs{
-						DataDir:           fakerunner.MockLocalDataDir,
-						OutDir:            fakerunner.MockLocalOutDir,
-						Devservers:        fakerunner.MockDevservers,
-						DUTName:           td.Cfg.Target,
-						BuildArtifactsURL: fakerunner.MockBuildArtifactsURL,
-						DownloadMode:      planner.DownloadLazy,
-						HeartbeatInterval: heartbeatInterval,
-					},
-					BundleGlob:                  fakerunner.MockLocalBundleGlob,
-					Devservers:                  fakerunner.MockDevservers,
-					BuildArtifactsURLDeprecated: fakerunner.MockBuildArtifactsURL,
-				},
-			})
+	cc := target.NewConnCache(cfg, cfg.Target)
+	defer cc.Close(ctx)
 
-			mw := control.NewMessageWriter(stdout)
-			mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
-			mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
-		case jsonprotocol.RunnerListFixturesMode:
-			json.NewEncoder(stdout).Encode(&jsonprotocol.RunnerListFixturesResult{})
-		}
-		return 0
-	}
-
-	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
-	defer cc.Close(context.Background())
-
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second) // avoid test being blocked indefinitely
+	ctx, cancel := context.WithTimeout(ctx, 10*time.Second) // avoid test being blocked indefinitely
 	defer cancel()
 
-	if _, err := RunLocalTests(ctx, &td.Cfg, &td.State, cc); err != nil {
-		t.Errorf("runLocalTest failed: %v", err)
+	if _, err := RunLocalTests(ctx, cfg, state, cc); err != nil {
+		t.Errorf("RunLocalTests failed: %v", err)
 	}
 }
 
 func TestLocalProxy(t *gotesting.T) {
-	t.Parallel()
-
-	td := fakerunner.NewLocalTestData(t)
-	defer td.Close()
-
-	td.RunFunc = func(args *jsonprotocol.RunnerArgs, stdout, stderr io.Writer) (status int) {
-		switch args.Mode {
-		case jsonprotocol.RunnerRunTestsMode:
-			mw := control.NewMessageWriter(stdout)
-			mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
-			mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
-		case jsonprotocol.RunnerListFixturesMode:
-			json.NewEncoder(stdout).Encode(&jsonprotocol.RunnerListFixturesResult{})
-		}
-		return 0
+	// Proxy environment variables should be prepended to the local_test_runner
+	// command line.
+	// (The variables are added in this order in local.go.)
+	envVars := []struct{ Name, Value string }{
+		{"HTTP_PROXY", "10.0.0.1:8000"},
+		{"HTTPS_PROXY", "10.0.0.1:8001"},
+		{"NO_PROXY", "foo.com, localhost, 127.0.0.0"},
 	}
 
 	// Configure proxy settings to forward to the DUT.
-	const (
-		httpProxy  = "10.0.0.1:8000"
-		httpsProxy = "10.0.0.1:8001"
-		noProxy    = "foo.com, localhost, 127.0.0.0"
-	)
-	for name, val := range map[string]string{
-		"HTTP_PROXY":  httpProxy,
-		"HTTPS_PROXY": httpsProxy,
-		"NO_PROXY":    noProxy,
-	} {
-		old := os.Getenv(name)
-		if err := os.Setenv(name, val); err != nil {
+	for _, v := range envVars {
+		old, ok := os.LookupEnv(v.Name)
+		if err := os.Setenv(v.Name, v.Value); err != nil {
 			t.Fatal(err)
 		}
-		if old != "" {
-			defer os.Setenv(name, old)
+		if !ok {
+			defer os.Unsetenv(v.Name)
+		} else {
+			defer os.Setenv(v.Name, old)
 		}
 	}
-	td.Cfg.Proxy = config.ProxyEnv
 
-	// Proxy environment variables should be prepended to the local_test_runner command line.
-	// (The variables are added in this order in local.go.)
-	td.ExpRunCmd = strings.Join([]string{
-		"exec",
-		"env",
-		shutil.Escape("HTTP_PROXY=" + httpProxy),
-		shutil.Escape("HTTPS_PROXY=" + httpsProxy),
-		shutil.Escape("NO_PROXY=" + noProxy),
-		fakerunner.MockLocalRunner,
-	}, " ")
+	envPairs := make([]string, len(envVars))
+	for i, v := range envVars {
+		envPairs[i] = fmt.Sprintf("%s=%s", v.Name, v.Value)
+	}
 
-	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
+	expCmd := fmt.Sprintf("exec env %s %s", shutil.EscapeSlice(envPairs), runtest.LocalTestRunnerPath)
+	called := false
+	fakeProc := func(_ io.Reader, _, _ io.Writer) int {
+		called = true
+		return 1
+	}
+
+	env := runtest.SetUp(t, runtest.WithExtraSSHHandlers([]runtest.SSHHandler{
+		runtest.ExactMatchHandler(expCmd, fakeProc),
+		runtest.ExactMatchHandler(expCmd+" -rpc", fakeProc),
+	}))
+	cfg := env.Config()
+	cfg.Proxy = config.ProxyEnv
+	state := env.State()
+
+	cc := target.NewConnCache(cfg, cfg.Target)
 	defer cc.Close(context.Background())
 
-	if _, err := RunLocalTests(context.Background(), &td.Cfg, &td.State, cc); err != nil {
-		t.Error("RunLocalTests failed: ", err)
+	if _, err := RunLocalTests(context.Background(), cfg, state, cc); err == nil {
+		t.Error("RunLocalTests unexpectedly succeeded")
+	}
+	if !called {
+		t.Error("local_test_runner was not called with expected environment variables")
 	}
 }
 
@@ -137,44 +106,33 @@ func TestLocalCopyOutput(t *gotesting.T) {
 		testName = "pkg.Test"
 		outFile  = "somefile.txt"
 		outData  = "somedata"
-		outName  = "pkg.Test.tmp1234"
 	)
 
-	td := fakerunner.NewLocalTestData(t)
-	defer td.Close()
+	reg := testing.NewRegistry("bundle")
+	reg.AddTestInstance(&testing.TestInstance{
+		Name:    testName,
+		Timeout: time.Minute,
+		Func: func(ctx context.Context, s *testing.State) {
+			ioutil.WriteFile(filepath.Join(s.OutDir(), outFile), []byte(outData), 0644)
+		},
+	})
 
-	td.RunFunc = func(args *jsonprotocol.RunnerArgs, stdout, stderr io.Writer) (status int) {
-		switch args.Mode {
-		case jsonprotocol.RunnerRunTestsMode:
-			mw := control.NewMessageWriter(stdout)
-			mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), TestNames: []string{testName}})
-			mw.WriteMessage(&control.EntityStart{Time: time.Unix(2, 0), Info: jsonprotocol.EntityInfo{Name: testName}, OutDir: filepath.Join(td.Cfg.LocalOutDir, outName)})
-			mw.WriteMessage(&control.EntityEnd{Time: time.Unix(3, 0), Name: testName})
-			mw.WriteMessage(&control.RunEnd{Time: time.Unix(4, 0), OutDir: td.Cfg.LocalOutDir})
-		case jsonprotocol.RunnerListFixturesMode:
-			json.NewEncoder(stdout).Encode(&jsonprotocol.RunnerListFixturesResult{})
-		}
-		return 0
-	}
+	env := runtest.SetUp(t, runtest.WithLocalBundles(reg))
+	cfg := env.Config()
+	state := env.State()
 
-	if err := testutil.WriteFiles(filepath.Join(td.HostDir, td.Cfg.LocalOutDir), map[string]string{
-		filepath.Join(outName, outFile): outData,
-	}); err != nil {
-		t.Fatal(err)
-	}
-
-	td.State.TestsToRun = []*protocol.ResolvedEntity{
+	state.TestsToRun = []*protocol.ResolvedEntity{
 		{Entity: &protocol.Entity{Name: testName}, Hops: 1},
 	}
 
-	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
+	cc := target.NewConnCache(cfg, cfg.Target)
 	defer cc.Close(context.Background())
 
-	if _, err := RunLocalTests(context.Background(), &td.Cfg, &td.State, cc); err != nil {
+	if _, err := RunLocalTests(context.Background(), cfg, state, cc); err != nil {
 		t.Fatalf("RunLocalTests failed: %v", err)
 	}
 
-	files, err := testutil.ReadFiles(filepath.Join(td.Cfg.ResDir, testLogsDir))
+	files, err := testutil.ReadFiles(filepath.Join(cfg.ResDir, testLogsDir))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -185,153 +143,170 @@ func TestLocalCopyOutput(t *gotesting.T) {
 	}
 }
 
-// TestLocalMaxFailures makes sure that RunLocalTests does not run any tests after maximum failures allowed has been reach.
+// TestLocalMaxFailures makes sure that RunLocalTests does not run any tests after maximum failures allowed has been reached.
 func TestLocalMaxFailures(t *gotesting.T) {
-	td := fakerunner.NewLocalTestData(t)
-	defer td.Close()
+	const (
+		testName1 = "pkg.Test1"
+		testName2 = "pkg.Test2"
+		testName3 = "pkg.Test3"
+	)
 
-	td.RunFunc = func(args *jsonprotocol.RunnerArgs, stdout, stderr io.Writer) (status int) {
-		switch args.Mode {
-		case jsonprotocol.RunnerRunTestsMode:
-			mw := control.NewMessageWriter(stdout)
-			mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 2})
-			mw.WriteMessage(&control.EntityStart{Time: time.Unix(2, 0), Info: jsonprotocol.EntityInfo{Name: "t1"}})
-			mw.WriteMessage(&control.EntityError{Time: time.Unix(3, 0), Name: "t1", Error: jsonprotocol.Error{Reason: "error"}})
-			mw.WriteMessage(&control.EntityEnd{Time: time.Unix(4, 0), Name: "t1"})
-			mw.WriteMessage(&control.EntityStart{Time: time.Unix(5, 0), Info: jsonprotocol.EntityInfo{Name: "t2"}})
-			mw.WriteMessage(&control.EntityEnd{Time: time.Unix(6, 0), Name: "t2"})
-			mw.WriteMessage(&control.RunEnd{Time: time.Unix(7, 0), OutDir: ""})
-		case jsonprotocol.RunnerListFixturesMode:
-			fmt.Fprintln(stdout, "{}") // no fixtures
-		}
-		return 0
+	reg := testing.NewRegistry("bundle")
+	for _, testName := range []string{testName1, testName2, testName3} {
+		reg.AddTestInstance(&testing.TestInstance{
+			Name:    testName,
+			Timeout: time.Minute,
+			Func: func(ctx context.Context, s *testing.State) {
+				s.Error("Error 1")
+				s.Error("Error 2")
+				s.Error("Error 3")
+			},
+		})
 	}
-	td.State.TestsToRun = []*protocol.ResolvedEntity{{Entity: &protocol.Entity{Name: "pkg.Test"}, Hops: 1}}
-	td.Cfg.MaxTestFailures = 1
-	td.State.FailuresCount = 0
 
-	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
+	env := runtest.SetUp(t, runtest.WithLocalBundles(reg))
+
+	cfg := env.Config()
+	cfg.MaxTestFailures = 2
+
+	state := env.State()
+	state.TestsToRun = []*protocol.ResolvedEntity{
+		{Entity: &protocol.Entity{Name: testName1}, Hops: 1},
+		{Entity: &protocol.Entity{Name: testName2}, Hops: 1},
+		{Entity: &protocol.Entity{Name: testName3}, Hops: 1},
+	}
+
+	cc := target.NewConnCache(cfg, cfg.Target)
 	defer cc.Close(context.Background())
 
-	results, err := RunLocalTests(context.Background(), &td.Cfg, &td.State, cc)
+	results, err := RunLocalTests(context.Background(), cfg, state, cc)
 	if err == nil {
 		t.Errorf("RunLocalTests() passed unexpectedly")
 	}
-	if len(results) != 1 {
-		t.Errorf("RunLocalTests return %v results; want 1", len(results))
+	if len(results) != 2 {
+		t.Errorf("RunLocalTests return %v results; want 2", len(results))
 	}
 }
 
 func TestFixturesDependency(t *gotesting.T) {
-	td := fakerunner.NewLocalTestData(t, fakerunner.WithFakeRemoteRunnerData([]*jsonprotocol.EntityInfo{
-		{Name: "remoteFixt"},
-		{Name: "failFixt"},
-		{Name: "tearDownFailFixt"},
-	}), fakerunner.WithFakeRemoteServerData(&fakerunner.FakeRemoteServerData{
-		Fixtures: map[string]*fakerunner.SerializableFakeFixture{
-			"remoteFixt":       {SetUpLog: "Hello", TearDownLog: "Bye"},
-			"failFixt":         {SetUpError: "Whoa"},
-			"tearDownFailFixt": {TearDownError: "Oops"},
-			// Local fixtures can be accidentally included (crbug/1179162).
-			"fixt1B": {},
-		},
-	}))
-	defer td.Close()
-
-	var gotRunArgs []*jsonprotocol.RunnerRunTestsArgs
-
-	td.RunFunc = func(args *jsonprotocol.RunnerArgs, stdout, stderr io.Writer) (status int) {
-		switch args.Mode {
-		case jsonprotocol.RunnerRunTestsMode:
-			gotRunArgs = append(gotRunArgs, args.RunTests)
-
-			mw := control.NewMessageWriter(stdout)
-			mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 1})
-			mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
-		case jsonprotocol.RunnerListFixturesMode:
-			json.NewEncoder(stdout).Encode(&jsonprotocol.RunnerListFixturesResult{
-				Fixtures: map[string][]*jsonprotocol.EntityInfo{
-					"/path/to/cros": {
-						&jsonprotocol.EntityInfo{Name: "fixt1B", Fixture: "remoteFixt"},
-						&jsonprotocol.EntityInfo{Name: "fixt2", Fixture: "failFixt"},
-						&jsonprotocol.EntityInfo{Name: "fixt3A", Fixture: "localFixt"},
-						&jsonprotocol.EntityInfo{Name: "fixt3B"},
-						&jsonprotocol.EntityInfo{Name: "localFixt"},
-					},
-				},
-			})
-		}
-		return 0
-	}
-
-	makeLocalTest := func(name, fixture string) *protocol.ResolvedEntity {
-		return &protocol.ResolvedEntity{
-			Entity: &protocol.Entity{
-				Name:       name,
-				Fixture:    fixture,
-				LegacyData: &protocol.EntityLegacyData{Bundle: "cros"},
-			},
-			Hops: 1,
-		}
-	}
-	td.State.TestsToRun = []*protocol.ResolvedEntity{
-		makeLocalTest("pkg.Test1A", "remoteFixt"),
-		makeLocalTest("pkg.Test1B", "fixt1B"), // depends on remoteFixt
-		makeLocalTest("pkg.Test2", "fixt2"),   // depends on failFixt
-		makeLocalTest("pkg.Test3A", "fixt3A"), // depends on localFixt
-		makeLocalTest("pkg.Test3B", "fixt3B"), // depends on nothing
-		makeLocalTest("pkg.Test3C", ""),
-		makeLocalTest("pkg.Test4", "tearDownFailFixt"),
+	remoteFixtures := []*testing.FixtureInstance{
 		{
-			// Remote tests should not be used on computing fixtures to run.
-			Entity: &protocol.Entity{
-				Name:       "pkg.RemoteTest",
-				Fixture:    "shouldNotRun",
-				LegacyData: &protocol.EntityLegacyData{Bundle: "cros"},
-			},
-			Hops: 0,
+			Name: "remoteFixt",
+			Impl: testfixture.New(
+				testfixture.WithSetUp(func(ctx context.Context, s *testing.FixtState) interface{} {
+					s.Log("Hello")
+					return nil
+				}),
+				testfixture.WithTearDown(func(ctx context.Context, s *testing.FixtState) {
+					s.Log("Bye")
+				}),
+			),
+		},
+		{
+			Name: "failFixt",
+			Impl: testfixture.New(testfixture.WithSetUp(func(ctx context.Context, s *testing.FixtState) interface{} {
+				s.Error("Whoa")
+				return nil
+			})),
+		},
+		{
+			Name: "tearDownFailFixt",
+			Impl: testfixture.New(testfixture.WithTearDown(func(ctx context.Context, s *testing.FixtState) {
+				s.Error("Oops")
+			})),
+		},
+		// The same fixture might be accidentally linked to both local
+		// test bundles and remote test bundles. In this case, a remote
+		// fixture is ignored (crbug.com/1179162).
+		{
+			Name: "fixt1B",
+			Impl: testfixture.New(),
 		},
 	}
+	localFixtures := []*testing.FixtureInstance{
+		{Name: "fixt1B", Parent: "remoteFixt", Impl: testfixture.New()},
+		{Name: "fixt2", Parent: "failFixt", Impl: testfixture.New()},
+		{Name: "fixt3A", Parent: "localFixt", Impl: testfixture.New()},
+		{Name: "fixt3B", Impl: testfixture.New()},
+		{Name: "localFixt", Impl: testfixture.New()},
+	}
+	nop := func(context.Context, *testing.State) {}
+	localTests := []*testing.TestInstance{
+		{Name: "pkg.Test1A", Fixture: "remoteFixt", Func: nop},
+		{Name: "pkg.Test1B", Fixture: "fixt1B", Func: nop}, // depends on remoteFixt
+		{Name: "pkg.Test2", Fixture: "fixt2", Func: nop},   // depends on failFixt
+		{Name: "pkg.Test3A", Fixture: "fixt3A", Func: nop}, // depends on localFixt
+		{Name: "pkg.Test3B", Fixture: "fixt3B", Func: nop}, // depends on nothing
+		{Name: "pkg.Test3C", Fixture: "", Func: nop},
+		{Name: "pkg.Test4", Fixture: "tearDownFailFixt", Func: nop},
+	}
+	remoteTests := []*testing.TestInstance{
+		// Remote tests are not used on computing fixtures to run.
+		{Name: "pkg.RemoteTest", Fixture: "shouldNotRun", Func: nop},
+	}
 
-	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
+	makeReg := func(tests []*testing.TestInstance, fixtures []*testing.FixtureInstance) *testing.Registry {
+		reg := testing.NewRegistry("bundle")
+		for _, t := range tests {
+			reg.AddTestInstance(t)
+		}
+		for _, f := range fixtures {
+			reg.AddFixtureInstance(f)
+		}
+		return reg
+	}
+
+	localReg := makeReg(localTests, localFixtures)
+	remoteReg := makeReg(remoteTests, remoteFixtures)
+
+	env := runtest.SetUp(t, runtest.WithLocalBundles(localReg), runtest.WithRemoteBundles(remoteReg))
+	cfg := env.Config()
+	state := env.State()
+
+	for _, t := range localTests {
+		state.TestsToRun = append(state.TestsToRun, &protocol.ResolvedEntity{
+			Entity: t.EntityProto(),
+			Hops:   1,
+		})
+	}
+	for _, t := range remoteTests {
+		state.TestsToRun = append(state.TestsToRun, &protocol.ResolvedEntity{
+			Entity: t.EntityProto(),
+			Hops:   0,
+		})
+	}
+
+	cc := target.NewConnCache(cfg, cfg.Target)
 	defer cc.Close(context.Background())
 
-	_, err := RunLocalTests(context.Background(), &td.Cfg, &td.State, cc)
+	got, err := RunLocalTests(context.Background(), cfg, state, cc)
 	if err != nil {
-		t.Fatalf("RunLocalTests(): %v", err)
+		t.Fatalf("RunLocalTests: %v", err)
 	}
 
-	// Test chunks are sorted by depending remote fixture name.
-	want := []*jsonprotocol.RunnerRunTestsArgs{
-		{BundleArgs: jsonprotocol.BundleRunTestsArgs{
-			Patterns: []string{"pkg.Test3A", "pkg.Test3B", "pkg.Test3C"},
-		}}, {BundleArgs: jsonprotocol.BundleRunTestsArgs{
-			Patterns:         []string{"pkg.Test2"},
-			StartFixtureName: "failFixt",
-			SetUpErrors:      []string{"Whoa"},
-		}}, {BundleArgs: jsonprotocol.BundleRunTestsArgs{
-			Patterns:         []string{"pkg.Test1A", "pkg.Test1B"},
-			StartFixtureName: "remoteFixt",
-		}}, {BundleArgs: jsonprotocol.BundleRunTestsArgs{
-			Patterns:         []string{"pkg.Test4"},
-			StartFixtureName: "tearDownFailFixt",
-		}},
-	}
-	for _, w := range want {
-		w.BundleGlob = fakerunner.MockLocalBundleGlob
-		w.Devservers = fakerunner.MockDevservers
-		w.BuildArtifactsURLDeprecated = fakerunner.MockBuildArtifactsURL
-
-		w.BundleArgs.DataDir = fakerunner.MockLocalDataDir
-		w.BundleArgs.OutDir = fakerunner.MockLocalOutDir
-		w.BundleArgs.Devservers = fakerunner.MockDevservers
-		w.BundleArgs.DUTName = td.Cfg.Target
-		w.BundleArgs.BuildArtifactsURL = fakerunner.MockBuildArtifactsURL
-		w.BundleArgs.DownloadMode = planner.DownloadLazy
-		w.BundleArgs.HeartbeatInterval = heartbeatInterval
+	want := []*resultsjson.Result{
+		// First, local tests not depending on remote fixtures are run.
+		{Test: resultsjson.Test{Name: "pkg.Test3C", Bundle: "bundle"}},
+		{Test: resultsjson.Test{Name: "pkg.Test3B", Bundle: "bundle"}},
+		{Test: resultsjson.Test{Name: "pkg.Test3A", Bundle: "bundle"}},
+		// Next, we run local tests depending on the remote fixture failFixt.
+		// Since the fixture fails to set up, these tests fail immediately.
+		{Test: resultsjson.Test{Name: "pkg.Test2", Bundle: "bundle"}, Errors: []resultsjson.Error{{Reason: "[Fixture failure] failFixt: Whoa"}}},
+		// Next, we run local tests depending on the remote fixture remoteFixt.
+		{Test: resultsjson.Test{Name: "pkg.Test1A", Bundle: "bundle"}},
+		{Test: resultsjson.Test{Name: "pkg.Test1B", Bundle: "bundle"}},
+		// Finally, we run local tests depending on the remote fixture
+		// tearDownFailFixt. Though the fixture fails to tear down, its failure
+		// is invisible.
+		{Test: resultsjson.Test{Name: "pkg.Test4", Bundle: "bundle"}},
 	}
 
-	if diff := cmp.Diff(gotRunArgs, want); diff != "" {
-		t.Errorf("RunnerArgs mismatch (-got +want):\n%v", diff)
+	opts := cmp.Options{
+		cmpopts.IgnoreFields(resultsjson.Result{}, "Start", "End", "OutDir"),
+		cmpopts.IgnoreFields(resultsjson.Test{}, "Fixture", "Timeout"),
+		cmpopts.IgnoreFields(resultsjson.Error{}, "Time", "File", "Line", "Stack"),
+	}
+	if diff := cmp.Diff(got, want, opts); diff != "" {
+		t.Errorf("Results mismatch (-got +want):\n%v", diff)
 	}
 }

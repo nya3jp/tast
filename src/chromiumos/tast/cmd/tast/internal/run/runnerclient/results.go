@@ -328,7 +328,7 @@ func (r *resultsHandler) handleTestStart(ctx context.Context, msg *control.Entit
 	finalOutDir := filepath.Join(r.cfg.ResDir, relFinalOutDir)
 	state := &entityState{
 		result: resultsjson.Result{
-			Test:   *resultsjson.NewTest(&msg.Info),
+			Test:   *resultsjson.NewTestFromEntityInfo(&msg.Info),
 			Start:  msg.Time,
 			OutDir: finalOutDir,
 		},

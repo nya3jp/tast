@@ -87,7 +87,7 @@ func listAllTests(ctx context.Context, cfg *config.Config, state *config.State, 
 		}
 		for _, t := range ts {
 			tests = append(tests, &resultsjson.Result{
-				Test:       *resultsjson.NewTest(&t.EntityInfo),
+				Test:       *resultsjson.NewTestFromEntityInfo(&t.EntityInfo),
 				SkipReason: t.SkipReason,
 				BundleType: resultsjson.LocalBundle,
 			})
@@ -100,7 +100,7 @@ func listAllTests(ctx context.Context, cfg *config.Config, state *config.State, 
 		}
 		for _, t := range ts {
 			tests = append(tests, &resultsjson.Result{
-				Test:       *resultsjson.NewTest(&t.EntityInfo),
+				Test:       *resultsjson.NewTestFromEntityInfo(&t.EntityInfo),
 				SkipReason: t.SkipReason,
 				BundleType: resultsjson.RemoteBundle,
 			})

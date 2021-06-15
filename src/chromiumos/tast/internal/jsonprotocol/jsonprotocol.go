@@ -10,7 +10,9 @@ import (
 	"fmt"
 	"time"
 
+	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/dep"
+	"chromiumos/tast/internal/protocol"
 )
 
 // EntityResult contains the results from a single entity.
@@ -74,6 +76,18 @@ func (t EntityType) String() string {
 		return "fixture"
 	default:
 		return fmt.Sprintf("unknown(%d)", int(t))
+	}
+}
+
+// Proto generates protocol.EntityType.
+func (t EntityType) Proto() (protocol.EntityType, error) {
+	switch t {
+	case EntityTest:
+		return protocol.EntityType_TEST, nil
+	case EntityFixture:
+		return protocol.EntityType_FIXTURE, nil
+	default:
+		return protocol.EntityType_TEST, errors.Errorf("unknown entity type %d", int(t))
 	}
 }
 

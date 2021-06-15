@@ -9,8 +9,11 @@ package resultsjson
 import (
 	"time"
 
+	"github.com/golang/protobuf/ptypes"
+
 	"chromiumos/tast/internal/dep"
 	"chromiumos/tast/internal/jsonprotocol"
+	"chromiumos/tast/internal/protocol"
 )
 
 // Test represents a test.
@@ -77,8 +80,42 @@ type Result struct {
 	BundleType BundleType `json:"-"`
 }
 
-// NewTest creates Test from EntityInfo.
-func NewTest(ei *jsonprotocol.EntityInfo) *Test {
+// NewTest creates Test from protocol.Entity.
+func NewTest(e *protocol.Entity) (*Test, error) {
+	typ, err := jsonprotocol.EntityTypeFromProto(e.GetType())
+	if err != nil {
+		return nil, err
+	}
+
+	var timeout time.Duration
+	if topb := e.GetLegacyData().GetTimeout(); topb != nil {
+		to, err := ptypes.Duration(topb)
+		if err != nil {
+			return nil, err
+		}
+		timeout = to
+	}
+
+	return &Test{
+		Name:         e.GetName(),
+		Pkg:          e.GetPackage(),
+		Desc:         e.GetDescription(),
+		Contacts:     e.GetContacts().GetEmails(),
+		Attr:         e.GetAttributes(),
+		Data:         e.GetDependencies().GetDataFiles(),
+		Vars:         e.GetLegacyData().GetVariables(),
+		VarDeps:      e.GetLegacyData().GetVariableDeps(),
+		SoftwareDeps: e.GetLegacyData().GetSoftwareDeps(),
+		ServiceDeps:  e.GetDependencies().GetServices(),
+		Fixture:      e.GetFixture(),
+		Timeout:      timeout,
+		Type:         typ,
+		Bundle:       e.GetLegacyData().GetBundle(),
+	}, nil
+}
+
+// NewTestFromEntityInfo creates Test from jsonprotocol.EntityInfo.
+func NewTestFromEntityInfo(ei *jsonprotocol.EntityInfo) *Test {
 	return &Test{
 		Name:         ei.Name,
 		Pkg:          ei.Pkg,

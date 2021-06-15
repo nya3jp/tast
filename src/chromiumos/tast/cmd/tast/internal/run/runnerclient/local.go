@@ -93,14 +93,14 @@ type bundleTests struct {
 
 type categorizedTests struct {
 	remoteFixt string
-	tests      []*resultsjson.Test
+	tests      []*protocol.Entity
 }
 
 // localTestsCategorizer categorizes local by the bundle path and the
 // depending remote fixture in this order. Results are sorted by
 // the bundle name, the depending remote fixture name, and the test name,
 // assuming the input is already sorted by the test name.
-type localTestsCategorizer func([]*resultsjson.Test) ([]*bundleTests, error)
+type localTestsCategorizer func([]*protocol.Entity) ([]*bundleTests, error)
 
 // newLocalTestsCategorizer creates a function which categorizes given local
 // tests by the bundle name and the remote fixture name tests depend on.
@@ -116,7 +116,7 @@ func newLocalTestsCategorizer(ctx context.Context, cfg *config.Config, hst *ssh.
 		bundle := filepath.Base(bundlePath)
 		localFixtParent[bundle] = make(map[string]string)
 		for _, f := range fs {
-			localFixtParent[bundle][f.Name] = f.Fixture
+			localFixtParent[bundle][f.GetName()] = f.GetFixture()
 		}
 	}
 
@@ -144,12 +144,12 @@ func newLocalTestsCategorizer(ctx context.Context, cfg *config.Config, hst *ssh.
 		rfs := make(map[string]struct{})
 		for _, fs := range remoteFixts {
 			for _, f := range fs {
-				if _, ok := lfs[f.Name]; ok {
+				if _, ok := lfs[f.GetName()]; ok {
 					continue
 				}
-				rfs[f.Name] = struct{}{}
-				if f.Fixture != "" {
-					return nil, fmt.Errorf(`nested remote fixtures are not supported; parent of %v is %v, want ""`, f.Name, f.Fixture)
+				rfs[f.GetName()] = struct{}{}
+				if f.GetFixture() != "" {
+					return nil, fmt.Errorf(`nested remote fixtures are not supported; parent of %v is %v, want ""`, f.GetName(), f.GetFixture())
 				}
 			}
 		}
@@ -183,18 +183,19 @@ func newLocalTestsCategorizer(ctx context.Context, cfg *config.Config, hst *ssh.
 		return dependingRemoteFixture(bundle, p)
 	}
 
-	categorizeLocalTests := func(localTests []*resultsjson.Test) ([]*bundleTests, error) {
+	categorizeLocalTests := func(localTests []*protocol.Entity) ([]*bundleTests, error) {
 		// bundle -> depending remote fixture -> tests
-		resMap := make(map[string]map[string][]*resultsjson.Test)
+		resMap := make(map[string]map[string][]*protocol.Entity)
 		for _, t := range localTests {
-			if resMap[t.Bundle] == nil {
-				resMap[t.Bundle] = make(map[string][]*resultsjson.Test)
+			b := t.GetLegacyData().GetBundle()
+			if resMap[b] == nil {
+				resMap[b] = make(map[string][]*protocol.Entity)
 			}
-			rf, err := dependingRemoteFixture(t.Bundle, t.Fixture)
+			rf, err := dependingRemoteFixture(b, t.GetFixture())
 			if err != nil {
-				return nil, fmt.Errorf("test %v: %v", t.Name, err)
+				return nil, fmt.Errorf("test %v: %v", t.GetName(), err)
 			}
-			resMap[t.Bundle][rf] = append(resMap[t.Bundle][rf], t)
+			resMap[b][rf] = append(resMap[b][rf], t)
 		}
 
 		var bundles []string
@@ -388,10 +389,10 @@ func RunLocalTests(ctx context.Context, cfg *config.Config, state *config.State,
 		return nil, err
 	}
 
-	var tests []*resultsjson.Test
+	var tests []*protocol.Entity
 	for _, t := range state.TestsToRun {
-		if t.BundleType == resultsjson.LocalBundle {
-			tests = append(tests, &t.Test)
+		if t.GetHops() > 0 {
+			tests = append(tests, t.GetEntity())
 		}
 	}
 	bundleRemoteFixtTests, err := categorize(tests)
@@ -411,7 +412,7 @@ func RunLocalTests(ctx context.Context, cfg *config.Config, state *config.State,
 
 			names := make([]string, len(tests))
 			for i, t := range tests {
-				names[i] = t.Name
+				names[i] = t.GetName()
 			}
 
 			// TODO(oka): write a unittest testing a connection to DUT is

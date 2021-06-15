@@ -958,7 +958,10 @@ func TestWriteResultsWriteFiles(t *gotesting.T) {
 	out := &bytes.Buffer{}
 	cfg.Logger = logging.NewSimple(out, false, false)
 	var state config.State
-	state.TestsToRun = results
+	state.TestsToRun = []*protocol.ResolvedEntity{
+		{Entity: &protocol.Entity{Name: "pkg.Test1"}},
+		{Entity: &protocol.Entity{Name: "pkg.Test2"}},
+	}
 	ctx := context.Background()
 	cc := target.NewConnCache(&cfg, cfg.Target)
 	defer cc.Close(ctx)
@@ -1010,7 +1013,10 @@ func TestWriteResultsUnmatchedGlobs(t *gotesting.T) {
 		cfg.Logger = logging.NewSimple(out, false, false)
 		cfg.Patterns = tc.patterns
 		var state config.State
-		state.TestsToRun = results
+		state.TestsToRun = []*protocol.ResolvedEntity{
+			{Entity: &protocol.Entity{Name: "pkg.Test1"}},
+			{Entity: &protocol.Entity{Name: "pkg.Test2"}},
+		}
 		ctx := context.Background()
 		cc := target.NewConnCache(&cfg, cfg.Target)
 		defer cc.Close(ctx)

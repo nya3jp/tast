@@ -33,8 +33,8 @@ import (
 )
 
 const (
-	defaultLocalRunnerWaitTimeout = 10 * time.Second // default timeout for waiting for local_test_runner to exit
-	heartbeatInterval             = time.Second      // interval for heartbeat messages
+	localRunnerWaitTimeout = 10 * time.Second // default timeout for waiting for local_test_runner to exit
+	heartbeatInterval      = time.Second      // interval for heartbeat messages
 )
 
 type remoteFixtureService struct {
@@ -554,11 +554,7 @@ func runLocalTestsOnce(ctx context.Context, cfg *config.Config, state *config.St
 
 	// Check that the runner exits successfully first so that we don't give a useless error
 	// about incorrectly-formed output instead of e.g. an error about the runner being missing.
-	timeout := defaultLocalRunnerWaitTimeout
-	if cfg.LocalRunnerWaitTimeout > 0 {
-		timeout = cfg.LocalRunnerWaitTimeout
-	}
-	wctx, wcancel := context.WithTimeout(ctx, timeout)
+	wctx, wcancel := context.WithTimeout(ctx, localRunnerWaitTimeout)
 	defer wcancel()
 	if err := proc.Wait(wctx); err != nil && !canceled {
 		return results, unstarted, stderrReader.appendToError(err, stderrTimeout)

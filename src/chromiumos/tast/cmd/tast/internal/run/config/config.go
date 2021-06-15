@@ -124,8 +124,7 @@ type Config struct {
 	DefaultVarsDirs  []string          // dirs containing default variable files
 	MaybeMissingVars string            // regex matching with variables which may be missing
 
-	MsgTimeout             time.Duration // timeout for reading control messages; default used if zero
-	LocalRunnerWaitTimeout time.Duration // timeout for waiting for local_test_runner to exit; default used if zero
+	MsgTimeout time.Duration // timeout for reading control messages; default used if zero
 
 	// Base path prepended to paths on hst when performing file copies. Only relevant for unit
 	// tests, which can set this to a temp dir in order to inspect files that are copied to hst and

@@ -404,6 +404,11 @@ Meta tests should be a subset of mainline critical tests.
 		Desc:     `A group of tests for internal and external storage qualification and testing.`,
 	},
 	{
+		Name:     "syzcorpus",
+		Contacts: []string{"zsm@google.com", "chromeos-kernel@google.com"},
+		Desc:     `Regression tests comprising of Syzkaller reproducers to test the kernel.`,
+	},
+	{
 		Name:     "syzkaller",
 		Contacts: []string{"zsm@google.com", "chromeos-kernel@google.com"},
 		Desc:     `A group of tests that utilize Syzkaller to fuzz the kernel.`,

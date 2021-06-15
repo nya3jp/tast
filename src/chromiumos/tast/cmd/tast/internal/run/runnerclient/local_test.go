@@ -185,61 +185,6 @@ func TestLocalCopyOutput(t *gotesting.T) {
 	}
 }
 
-func disabledTestLocalExecFailure(t *gotesting.T) {
-	td := fakerunner.NewLocalTestData(t)
-	defer td.Close()
-
-	const msg = "some failure message\n"
-
-	td.RunFunc = func(args *jsonprotocol.RunnerArgs, stdout, stderr io.Writer) (status int) {
-		mw := control.NewMessageWriter(stdout)
-		mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
-		mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0), OutDir: ""})
-		io.WriteString(stderr, msg)
-		return 1
-	}
-
-	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
-	defer cc.Close(context.Background())
-
-	if _, err := RunLocalTests(context.Background(), &td.Cfg, &td.State, cc); err == nil {
-		t.Error("RunLocalTests unexpectedly passed")
-	}
-	if !strings.Contains(td.LogBuf.String(), msg) {
-		t.Errorf("RunLocalTests logged %q; want substring %q", td.LogBuf.String(), msg)
-	}
-}
-
-func TestLocalWaitTimeout(t *gotesting.T) {
-	td := fakerunner.NewLocalTestData(t)
-	defer td.Close()
-
-	// Simulate local_test_runner writing control messages immediately but hanging before exiting.
-	td.RunDelay = time.Minute
-	td.State.TestsToRun = []*protocol.ResolvedEntity{{Entity: &protocol.Entity{Name: "pkg.Foo"}, Hops: 1}}
-	td.RunFunc = func(args *jsonprotocol.RunnerArgs, stdout, stderr io.Writer) (status int) {
-		switch args.Mode {
-		case jsonprotocol.RunnerRunTestsMode:
-			mw := control.NewMessageWriter(stdout)
-			mw.WriteMessage(&control.RunStart{Time: time.Unix(1, 0), NumTests: 0})
-			mw.WriteMessage(&control.RunEnd{Time: time.Unix(2, 0)})
-		case jsonprotocol.RunnerListFixturesMode:
-			json.NewEncoder(stdout).Encode(&jsonprotocol.RunnerListFixturesResult{})
-		}
-		return 0
-	}
-
-	// After setting a short wait timeout, an error should be reported.
-	td.Cfg.LocalRunnerWaitTimeout = time.Millisecond
-
-	cc := target.NewConnCache(&td.Cfg, td.Cfg.Target)
-	defer cc.Close(context.Background())
-
-	if _, err := RunLocalTests(context.Background(), &td.Cfg, &td.State, cc); err == nil {
-		t.Error("RunLocalTests unexpectedly passed")
-	}
-}
-
 // TestLocalMaxFailures makes sure that RunLocalTests does not run any tests after maximum failures allowed has been reach.
 func TestLocalMaxFailures(t *gotesting.T) {
 	td := fakerunner.NewLocalTestData(t)

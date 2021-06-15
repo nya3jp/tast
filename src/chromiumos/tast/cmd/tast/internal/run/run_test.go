@@ -700,7 +700,7 @@ func TestListTests(t *gotesting.T) {
 	}
 	expected := make([]*resultsjson.Result, len(tests))
 	for i := 0; i < len(tests); i++ {
-		expected[i] = &resultsjson.Result{Test: *resultsjson.NewTest(&tests[i].EntityInfo), SkipReason: tests[i].SkipReason}
+		expected[i] = &resultsjson.Result{Test: *resultsjson.NewTestFromEntityInfo(&tests[i].EntityInfo), SkipReason: tests[i].SkipReason}
 	}
 	if !reflect.DeepEqual(results, expected) {
 		t.Errorf("Unexpected list of local tests: got %+v; want %+v", results, expected)
@@ -750,7 +750,7 @@ func TestListTestsWithSharding(t *gotesting.T) {
 			t.Error("Failed to list local tests: ", err)
 		}
 		expected := []*resultsjson.Result{
-			{Test: *resultsjson.NewTest(&tests[i].EntityInfo), SkipReason: tests[i].SkipReason},
+			{Test: *resultsjson.NewTestFromEntityInfo(&tests[i].EntityInfo), SkipReason: tests[i].SkipReason},
 		}
 		if !reflect.DeepEqual(results, expected) {
 			t.Errorf("Unexpected list of local tests: got %+v; want %+v", results, expected)
@@ -807,8 +807,8 @@ func TestListTestsWithSkippedTests(t *gotesting.T) {
 		t.Error("Failed to list local tests: ", err)
 	}
 	expected := []*resultsjson.Result{
-		{Test: *resultsjson.NewTest(&tests[0].EntityInfo), SkipReason: tests[0].SkipReason},
-		{Test: *resultsjson.NewTest(&tests[2].EntityInfo), SkipReason: tests[2].SkipReason},
+		{Test: *resultsjson.NewTestFromEntityInfo(&tests[0].EntityInfo), SkipReason: tests[0].SkipReason},
+		{Test: *resultsjson.NewTestFromEntityInfo(&tests[2].EntityInfo), SkipReason: tests[2].SkipReason},
 	}
 	if !reflect.DeepEqual(results, expected) {
 		t.Errorf("Unexpected list of local tests in shard 0: got %+v; want %+v", results, expected)
@@ -821,7 +821,7 @@ func TestListTestsWithSkippedTests(t *gotesting.T) {
 		t.Error("Failed to list local tests: ", err)
 	}
 	expected = []*resultsjson.Result{
-		{Test: *resultsjson.NewTest(&tests[1].EntityInfo), SkipReason: tests[1].SkipReason},
+		{Test: *resultsjson.NewTestFromEntityInfo(&tests[1].EntityInfo), SkipReason: tests[1].SkipReason},
 	}
 	if !reflect.DeepEqual(results, expected) {
 		t.Errorf("Unexpected list of local tests in shard 1: got %+v; want %+v", results, expected)

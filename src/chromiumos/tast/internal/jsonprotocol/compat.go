@@ -15,16 +15,23 @@ import (
 	"chromiumos/tast/internal/protocol"
 )
 
+// EntityTypeFromProto converts protocol.EntityType to jsonprotocol.EntityType.
+func EntityTypeFromProto(t protocol.EntityType) (EntityType, error) {
+	switch t {
+	case protocol.EntityType_TEST:
+		return EntityTest, nil
+	case protocol.EntityType_FIXTURE:
+		return EntityFixture, nil
+	default:
+		return EntityTest, errors.Errorf("unknown entity type: %v", t)
+	}
+}
+
 // EntityInfoFromProto converts protocol.Entity to jsonprotocol.EntityInfo.
 func EntityInfoFromProto(e *protocol.Entity) (*EntityInfo, error) {
-	var tp EntityType
-	switch e.GetType() {
-	case protocol.EntityType_TEST:
-		tp = EntityTest
-	case protocol.EntityType_FIXTURE:
-		tp = EntityFixture
-	default:
-		return nil, errors.Errorf("unknown entity type: %v", e.GetType())
+	tp, err := EntityTypeFromProto(e.GetType())
+	if err != nil {
+		return nil, err
 	}
 
 	var timeout time.Duration

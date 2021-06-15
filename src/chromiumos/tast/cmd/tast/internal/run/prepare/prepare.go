@@ -21,7 +21,7 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/runnerclient"
 	"chromiumos/tast/cmd/tast/internal/run/target"
-	"chromiumos/tast/internal/jsonprotocol"
+	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/internal/timing"
 	"chromiumos/tast/ssh"
@@ -228,12 +228,12 @@ func pushExecutables(ctx context.Context, cfg *config.Config, hst *ssh.Conn, tar
 	return nil
 }
 
-func allNeededFixtures(fixtures []*jsonprotocol.EntityInfo, tests []*jsonprotocol.EntityWithRunnabilityInfo) []*jsonprotocol.EntityInfo {
-	m := make(map[string]*jsonprotocol.EntityInfo)
+func allNeededFixtures(fixtures []*protocol.Entity, tests []*protocol.ResolvedEntity) []*protocol.Entity {
+	m := make(map[string]*protocol.Entity)
 	for _, e := range fixtures {
-		m[e.Name] = e
+		m[e.GetName()] = e
 	}
-	var res []*jsonprotocol.EntityInfo
+	var res []*protocol.Entity
 	var dfs func(string)
 	dfs = func(name string) {
 		if name == "" {
@@ -245,10 +245,10 @@ func allNeededFixtures(fixtures []*jsonprotocol.EntityInfo, tests []*jsonprotoco
 		}
 		res = append(res, e)
 		delete(m, name)
-		dfs(e.Fixture)
+		dfs(e.GetFixture())
 	}
 	for _, t := range tests {
-		dfs(t.Fixture)
+		dfs(t.GetEntity().GetFixture())
 	}
 	return res
 }
@@ -263,7 +263,7 @@ func getDataFilePaths(ctx context.Context, cfg *config.Config, state *config.Sta
 
 	cfg.Logger.Debug("Getting data file list from target")
 
-	var entities []*jsonprotocol.EntityInfo // all entities needed to run tests
+	var entities []*protocol.Entity // all entities needed to run tests
 
 	// Add tests to entities.
 	ts, err := runnerclient.ListLocalTests(ctx, cfg, state, hst)
@@ -271,7 +271,7 @@ func getDataFilePaths(ctx context.Context, cfg *config.Config, state *config.Sta
 		return nil, err
 	}
 	for _, t := range ts {
-		entities = append(entities, &t.EntityInfo)
+		entities = append(entities, t.GetEntity())
 	}
 
 	// Add fixtures tests use to entities.
@@ -286,8 +286,8 @@ func getDataFilePaths(ctx context.Context, cfg *config.Config, state *config.Sta
 	// Compute data that entities may use.
 	seenPaths := make(map[string]struct{})
 	for _, e := range entities {
-		for _, p := range e.Data {
-			full := filepath.Clean(filepath.Join(testing.RelativeDataDir(e.Pkg), p))
+		for _, p := range e.GetDependencies().GetDataFiles() {
+			full := filepath.Clean(filepath.Join(testing.RelativeDataDir(e.GetPackage()), p))
 			if _, ok := seenPaths[full]; ok {
 				continue
 			}

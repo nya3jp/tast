@@ -11,7 +11,6 @@ import (
 	"net"
 	"os"
 	"path/filepath"
-	"reflect"
 	"strconv"
 	"strings"
 	gotesting "testing"
@@ -702,8 +701,8 @@ func TestListTests(t *gotesting.T) {
 	for i := 0; i < len(tests); i++ {
 		expected[i] = &resultsjson.Result{Test: *resultsjson.NewTestFromEntityInfo(&tests[i].EntityInfo), SkipReason: tests[i].SkipReason}
 	}
-	if !reflect.DeepEqual(results, expected) {
-		t.Errorf("Unexpected list of local tests: got %+v; want %+v", results, expected)
+	if diff := cmp.Diff(results, expected); diff != "" {
+		t.Errorf("Unexpected list of local tests (-got +want):\n%s", diff)
 	}
 }
 
@@ -752,8 +751,8 @@ func TestListTestsWithSharding(t *gotesting.T) {
 		expected := []*resultsjson.Result{
 			{Test: *resultsjson.NewTestFromEntityInfo(&tests[i].EntityInfo), SkipReason: tests[i].SkipReason},
 		}
-		if !reflect.DeepEqual(results, expected) {
-			t.Errorf("Unexpected list of local tests: got %+v; want %+v", results, expected)
+		if diff := cmp.Diff(results, expected); diff != "" {
+			t.Errorf("Unexpected list of local tests (-got +want):\n%s", diff)
 		}
 	}
 }
@@ -810,8 +809,8 @@ func TestListTestsWithSkippedTests(t *gotesting.T) {
 		{Test: *resultsjson.NewTestFromEntityInfo(&tests[0].EntityInfo), SkipReason: tests[0].SkipReason},
 		{Test: *resultsjson.NewTestFromEntityInfo(&tests[2].EntityInfo), SkipReason: tests[2].SkipReason},
 	}
-	if !reflect.DeepEqual(results, expected) {
-		t.Errorf("Unexpected list of local tests in shard 0: got %+v; want %+v", results, expected)
+	if diff := cmp.Diff(results, expected); diff != "" {
+		t.Errorf("Unexpected list of local tests in shard 0 (-got +want):\n%s", diff)
 	}
 
 	td.Cfg.ShardIndex = 1
@@ -823,8 +822,8 @@ func TestListTestsWithSkippedTests(t *gotesting.T) {
 	expected = []*resultsjson.Result{
 		{Test: *resultsjson.NewTestFromEntityInfo(&tests[1].EntityInfo), SkipReason: tests[1].SkipReason},
 	}
-	if !reflect.DeepEqual(results, expected) {
-		t.Errorf("Unexpected list of local tests in shard 1: got %+v; want %+v", results, expected)
+	if diff := cmp.Diff(results, expected); diff != "" {
+		t.Errorf("Unexpected list of local tests in shard 1 (-got +want):\n%s", diff)
 	}
 }
 

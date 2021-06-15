@@ -10,6 +10,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/golang/protobuf/ptypes"
+
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/dep"
 	"chromiumos/tast/internal/protocol"
@@ -113,9 +115,57 @@ type EntityInfo struct {
 	Bundle string `json:"bundle,omitempty"`
 }
 
+// Proto generates protocol.Entity.
+func (e *EntityInfo) Proto() (*protocol.Entity, error) {
+	typ, err := e.Type.Proto()
+	if err != nil {
+		return nil, err
+	}
+	return &protocol.Entity{
+		Type:        typ,
+		Name:        e.Name,
+		Package:     e.Pkg,
+		Attributes:  e.Attr,
+		Description: e.Desc,
+		Fixture:     e.Fixture,
+		Dependencies: &protocol.EntityDependencies{
+			DataFiles: e.Data,
+			Services:  e.ServiceDeps,
+		},
+		Contacts: &protocol.EntityContacts{
+			Emails: e.Contacts,
+		},
+		LegacyData: &protocol.EntityLegacyData{
+			Timeout:      ptypes.DurationProto(e.Timeout),
+			Variables:    e.Vars,
+			VariableDeps: e.VarDeps,
+			SoftwareDeps: e.SoftwareDeps,
+			Bundle:       e.Bundle,
+		},
+	}, nil
+}
+
 // EntityWithRunnabilityInfo is a JSON-serializable description of information of an entity to be used for listing test.
 type EntityWithRunnabilityInfo struct {
 	// See TestInstance for details of the fields.
 	EntityInfo
 	SkipReason string `json:"skipReason"`
+}
+
+// Proto generates protocol.ResolvedEntity.
+func (e *EntityWithRunnabilityInfo) Proto() (*protocol.ResolvedEntity, error) {
+	pe, err := e.EntityInfo.Proto()
+	if err != nil {
+		return nil, err
+	}
+	var skip *protocol.Skip
+	if e.SkipReason != "" {
+		skip = &protocol.Skip{
+			Reasons: []string{e.SkipReason},
+		}
+	}
+	return &protocol.ResolvedEntity{
+		Entity: pe,
+		Skip:   skip,
+	}, nil
 }

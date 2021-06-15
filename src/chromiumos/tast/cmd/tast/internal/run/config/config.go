@@ -21,7 +21,6 @@ import (
 
 	"chromiumos/tast/cmd/tast/internal/build"
 	"chromiumos/tast/cmd/tast/internal/logging"
-	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
 	"chromiumos/tast/errors"
 	frameworkprotocol "chromiumos/tast/framework/protocol"
 	"chromiumos/tast/internal/command"
@@ -139,12 +138,12 @@ type State struct {
 	// DO NOT add new fields to this struct. State makes it difficult to
 	// reason about function contracts.
 
-	DUTInfo          *protocol.DUTInfo     // DUT information retrieved at the beginning of the current run
-	FailuresCount    int                   // the number of test failures so far.
-	TLWConn          *grpc.ClientConn      // TLW gRPC service connection
-	RemoteDevservers []string              // list of devserver URLs used by remote tests.
-	TestNamesToSkip  []string              // tests that match patterns but are not sent to runners to run
-	TestsToRun       []*resultsjson.Result // tests to be run
+	DUTInfo          *protocol.DUTInfo          // DUT information retrieved at the beginning of the current run
+	FailuresCount    int                        // the number of test failures so far.
+	TLWConn          *grpc.ClientConn           // TLW gRPC service connection
+	RemoteDevservers []string                   // list of devserver URLs used by remote tests.
+	TestNamesToSkip  []string                   // tests that match patterns but are not sent to runners to run
+	TestsToRun       []*protocol.ResolvedEntity // tests to be run
 
 	// gRPC Reports Client related variables.
 	ReportsConn      *grpc.ClientConn                // Reports gRPC service connection.

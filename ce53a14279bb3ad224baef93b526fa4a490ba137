@@ -16,6 +16,24 @@
       "message": "could you update document, too? (go/tast-deps).",
       "revId": "ce53a14279bb3ad224baef93b526fa4a490ba137",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5db42e31_b4a12916",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 131,
+      "author": {
+        "id": 1377969
+      },
+      "writtenOn": "2021-06-15T01:18:09Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "ceaec912_f911b425",
+      "revId": "ce53a14279bb3ad224baef93b526fa4a490ba137",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

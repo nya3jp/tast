@@ -16,6 +16,24 @@
       "message": "daemon and host tools",
       "revId": "cff5916819043e35450a2bec95b329f3092e7bac",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "4a336c1a_4bec84c8",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1377969
+      },
+      "writtenOn": "2021-06-15T01:18:09Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "54c3e2c8_fbf94b26",
+      "revId": "cff5916819043e35450a2bec95b329f3092e7bac",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

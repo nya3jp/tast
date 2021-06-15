@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "76fe0210_81c9b654",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1263546
+      },
+      "writtenOn": "2021-06-15T22:59:14Z",
+      "side": 1,
+      "message": "I\u0027m trying to avoid an overlap between the syzkaller and syzcorpus test suites(so that the syzkaller test suite fuzzes the kernel for a specific amount of time; and the syzcorpus test suite has a different duration).\nWhile the syzkaller test suite can stay in postsubmit for perpetuity; id like to try and explore moving syzcorpus to cq if it is proves to be reliable enough in postsubmit.\n\nI assumed that having a seperate test suite would enforce that the test suites are exclusive; is there something else that should be done?",
+      "parentUuid": "73c1c1ff_600bf45d",
+      "revId": "b56c2ff9e5c9848e2b7293c2fa7c97ac5f3230ae",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "efc8154c_a102a308",
@@ -31,6 +49,30 @@
       "writtenOn": "2021-06-15T22:41:00Z",
       "side": 1,
       "message": "Same as my comment on the related CL-- if you can find a concise way to differentiate the syzcorpus/syzkaller attributes in this description, that could help reduce future confusion.\n\nIf the only difference is the use of sykaller reproducers in syzcorpus, then maybe adding \"(no reproducers)\" or similar to the syzkaller attr. description would be enough.",
+      "range": {
+        "startLine": 409,
+        "startChar": 12,
+        "endLine": 409,
+        "endChar": 81
+      },
+      "revId": "b56c2ff9e5c9848e2b7293c2fa7c97ac5f3230ae",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3e07f8f6_123c8ee2",
+        "filename": "src/chromiumos/tast/internal/testing/attr.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 409,
+      "author": {
+        "id": 1263546
+      },
+      "writtenOn": "2021-06-15T22:59:14Z",
+      "side": 1,
+      "message": "I see, I\u0027ve changed it to \"Regression tests comprising of Syzkaller reproducers to test the kernel.\"",
+      "parentUuid": "efc8154c_a102a308",
       "range": {
         "startLine": 409,
         "startChar": 12,

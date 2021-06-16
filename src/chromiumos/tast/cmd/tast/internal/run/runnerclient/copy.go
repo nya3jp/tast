@@ -17,7 +17,7 @@ import (
 // src is appended to cfg.HstCopyBasePath to support unit tests.
 func moveFromHost(ctx context.Context, cfg *config.Config, hst *ssh.Conn, src, dst string) error {
 	src = filepath.Join(cfg.HstCopyBasePath, src)
-	if err := linuxssh.GetFile(ctx, hst, src, dst); err != nil {
+	if err := linuxssh.GetFile(ctx, hst, src, dst, linuxssh.PreserveSymlinks); err != nil {
 		return err
 	}
 	if out, err := hst.Command("rm", "-rf", "--", src).Output(ctx); err != nil {

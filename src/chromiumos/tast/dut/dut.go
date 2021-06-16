@@ -68,7 +68,7 @@ func New(target, keyFile, keyDir string, beforeReboot func(context.Context, *DUT
 // is stale. Always call Conn to get the present connection.
 //
 // Examples:
-//  linuxssh.GetFile(ctx, d.Conn(), src, dst)
+//  linuxssh.GetFile(ctx, d.Conn(), src, dst, linuxssh.PreserveSymlinks)
 //  d.Conn().Command("uptime")
 func (d *DUT) Conn() *ssh.Conn {
 	return d.hst
@@ -125,9 +125,9 @@ func (d *DUT) Command(name string, args ...string) *ssh.Cmd {
 // a destination directory into which it will be copied. dst will be replaced
 // if it already exists.
 //
-// DEPRECATED: use linuxssh.GetFile(ctx, d.Conn(), src, dst)
+// DEPRECATED: use linuxssh.GetFile(ctx, d.Conn(), src, dst, linuxssh.PreserveSymlinks)
 func (d *DUT) GetFile(ctx context.Context, src, dst string) error {
-	return linuxssh.GetFile(ctx, d.hst, src, dst)
+	return linuxssh.GetFile(ctx, d.hst, src, dst, linuxssh.PreserveSymlinks)
 }
 
 // WaitUnreachable waits for the DUT to become unreachable.

@@ -25,11 +25,21 @@ import (
 	"chromiumos/tast/ssh"
 )
 
+// SymlinkPolicy describes how symbolic links should be handled by PutFiles.
+type SymlinkPolicy int
+
+const (
+	// PreserveSymlinks indicates that symlinks should be preserved during the copy.
+	PreserveSymlinks SymlinkPolicy = iota
+	// DereferenceSymlinks indicates that symlinks should be dereferenced and turned into normal files.
+	DereferenceSymlinks
+)
+
 // GetFile copies a file or directory from the host to the local machine.
 // dst is the full destination name for the file or directory being copied, not
 // a destination directory into which it will be copied. dst will be replaced
 // if it already exists.
-func GetFile(ctx context.Context, s *ssh.Conn, src, dst string) error {
+func GetFile(ctx context.Context, s *ssh.Conn, src, dst string, symlinkPolicy SymlinkPolicy) error {
 	src = filepath.Clean(src)
 	dst = filepath.Clean(dst)
 
@@ -44,7 +54,12 @@ func GetFile(ctx context.Context, s *ssh.Conn, src, dst string) error {
 	defer os.RemoveAll(td)
 
 	sb := filepath.Base(src)
-	rcmd := s.Command("tar", "-c", "--gzip", "-C", filepath.Dir(src), sb)
+	taropts := []string{"-c", "--gzip", "-C", filepath.Dir(src)}
+	if symlinkPolicy == DereferenceSymlinks {
+		taropts = append(taropts, "--dereference")
+	}
+	taropts = append(taropts, sb)
+	rcmd := s.Command("tar", taropts...)
 	p, err := rcmd.StdoutPipe()
 	if err != nil {
 		return fmt.Errorf("failed to get stdout pipe: %v", err)
@@ -66,16 +81,6 @@ func GetFile(ctx context.Context, s *ssh.Conn, src, dst string) error {
 	}
 	return nil
 }
-
-// SymlinkPolicy describes how symbolic links should be handled by PutFiles.
-type SymlinkPolicy = int
-
-const (
-	// PreserveSymlinks indicates that symlinks should be preserved during the copy.
-	PreserveSymlinks SymlinkPolicy = iota
-	// DereferenceSymlinks indicates that symlinks should be dereferenced and turned into normal files.
-	DereferenceSymlinks
-)
 
 // findChangedFiles returns a subset of files that differ between the local machine
 // and the remote machine. This function is intended for use when pushing files to s;

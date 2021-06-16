@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f8ed53cc_71ac1f0a",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/config/config.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-06-16T09:07:58Z",
+      "side": 1,
+      "message": "Is this struct going to be deprecated and removed?\nIf not, I suggest describing the reason that we needed to have this struct, which may simultaneously describe a possible exception case that a field might be added in the future (although we don\u0027t want to).",
+      "revId": "966295ae8fb2d51aab8f331b4240219f01875d16",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

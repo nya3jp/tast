@@ -249,6 +249,10 @@ Tests in this group are not used for build verification.
 				Name: "firmware_slow",
 				Desc: `A group of tests that takes a very long time to run.`,
 			},
+			{
+				Name: "firmware_ccd",
+				Desc: `Indicates a test which requires a servo with CCD. I.e. A servo_v4 or equivalent.`,
+			},
 		},
 	},
 	{

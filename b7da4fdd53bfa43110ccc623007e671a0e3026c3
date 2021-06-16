@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1b2c2f8c_633496b5",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/runnerclient/list_entities_test.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 194,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-06-16T08:26:37Z",
+      "side": 1,
+      "message": "question; How does this fail if this field is not ignored? (I could not find a code line that sets this field below listRemoteTests so far, so I guessed it is filled with zero value from decoding whereas the |want| has nil.)\nIgnoring the field makes much sense to me, as we are only testing the entityInfo here.",
+      "range": {
+        "startLine": 194,
+        "startChar": 80,
+        "endLine": 194,
+        "endChar": 88
+      },
+      "revId": "b7da4fdd53bfa43110ccc623007e671a0e3026c3",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

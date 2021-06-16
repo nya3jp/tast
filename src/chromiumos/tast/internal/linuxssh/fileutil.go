@@ -44,7 +44,7 @@ func GetFile(ctx context.Context, s *ssh.Conn, src, dst string) error {
 	defer os.RemoveAll(td)
 
 	sb := filepath.Base(src)
-	rcmd := s.Command("tar", "-c", "--gzip", "-C", filepath.Dir(src), sb)
+	rcmd := s.Command("tar", "--dereference", "-c", "--gzip", "-C", filepath.Dir(src), sb)
 	p, err := rcmd.StdoutPipe()
 	if err != nil {
 		return fmt.Errorf("failed to get stdout pipe: %v", err)

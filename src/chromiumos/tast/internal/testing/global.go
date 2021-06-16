@@ -4,13 +4,18 @@
 
 package testing
 
+import (
+	"os"
+	"path/filepath"
+)
+
 var globalRegistry *Registry // singleton, initialized on first use
 
 // GlobalRegistry returns a global registry containing tests
 // registered by calls to AddTest.
 func GlobalRegistry() *Registry {
 	if globalRegistry == nil {
-		globalRegistry = NewRegistry()
+		globalRegistry = NewRegistry(filepath.Base(os.Args[0]))
 	}
 	return globalRegistry
 }

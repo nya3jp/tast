@@ -147,7 +147,7 @@ func runFakeRemoteFixtureServer() int {
 		log.Fatalf("os.Args[1] = %v, want -rpc", os.Args[1])
 	}
 
-	reg := testing.NewRegistry()
+	reg := testing.NewRegistry("bundle")
 
 	func() {
 		b, err := ioutil.ReadFile(filepath.Join(filepath.Dir(os.Args[0]), fakeRemoteServerDataPath))

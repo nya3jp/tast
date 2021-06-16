@@ -41,7 +41,7 @@ func TestPushDataFiles(t *gotesting.T) {
 	)
 
 	// Make the local test bundle list two tests containing the first three files (with overlap).
-	reg := testing.NewRegistry()
+	reg := testing.NewRegistry("bundle")
 	reg.AddTestInstance(&testing.TestInstance{
 		Name:    category + ".Test1",
 		Pkg:     categoryPkg,
@@ -70,7 +70,7 @@ func TestPushDataFiles(t *gotesting.T) {
 		Data: []string{file3},
 	})
 
-	env := runtest.SetUp(t, runtest.WithLocalBundle(reg), runtest.WithExtraSSHHandlers([]runtest.SSHHandler{
+	env := runtest.SetUp(t, runtest.WithLocalBundles(reg), runtest.WithExtraSSHHandlers([]runtest.SSHHandler{
 		// Allow rm commands with relative paths.
 		func(cmd string) (runtest.SSHProcess, bool) {
 			if !regexp.MustCompile(`^cd .*; exec rm `).MatchString(cmd) {

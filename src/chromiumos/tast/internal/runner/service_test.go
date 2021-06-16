@@ -57,14 +57,14 @@ func TestTestServerListEntities(t *gotesting.T) {
 	f1 := &testing.FixtureInstance{Name: "fixt1"}
 	f2 := &testing.FixtureInstance{Name: "fixt2"}
 
-	reg1 := testing.NewRegistry()
-	reg2 := testing.NewRegistry()
+	reg1 := testing.NewRegistry("a")
+	reg2 := testing.NewRegistry("b")
 	reg1.AddTestInstance(t1)
 	reg2.AddTestInstance(t2)
 	reg1.AddFixtureInstance(f1)
 	reg2.AddFixtureInstance(f2)
 
-	bundleGlob := fakebundle.Install(t, map[string]*testing.Registry{"a": reg1, "b": reg2})
+	bundleGlob := fakebundle.Install(t, reg1, reg2)
 
 	cl := startTestServer(t, &protocol.RunnerInitParams{BundleGlob: bundleGlob})
 
@@ -110,13 +110,13 @@ func TestTestServerRunTests(t *gotesting.T) {
 		Timeout: time.Minute,
 	}
 
-	reg1 := testing.NewRegistry()
+	reg1 := testing.NewRegistry("bundle1")
 	reg1.AddTestInstance(test1)
 	reg1.AddTestInstance(test2)
-	reg2 := testing.NewRegistry()
+	reg2 := testing.NewRegistry("bundle2")
 	reg2.AddTestInstance(test3)
 
-	bundleGlob := fakebundle.Install(t, map[string]*testing.Registry{"bundle1": reg1, "bundle2": reg2})
+	bundleGlob := fakebundle.Install(t, reg1, reg2)
 
 	cl := startTestServer(t, &protocol.RunnerInitParams{BundleGlob: bundleGlob})
 

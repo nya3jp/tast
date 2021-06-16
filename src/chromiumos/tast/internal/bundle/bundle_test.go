@@ -9,8 +9,6 @@ import (
 	"context"
 	"encoding/json"
 	"io/ioutil"
-	"os"
-	"path/filepath"
 	gotesting "testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -20,7 +18,7 @@ import (
 )
 
 func TestRunList(t *gotesting.T) {
-	reg := testing.NewRegistry()
+	reg := testing.NewRegistry("bundle")
 
 	f := func(context.Context, *testing.State) {}
 	tests := []*testing.TestInstance{
@@ -72,7 +70,7 @@ func TestRunListWithDep(t *gotesting.T) {
 		missingDep = "missing"
 	)
 
-	reg := testing.NewRegistry()
+	reg := testing.NewRegistry("bundle")
 
 	f := func(context.Context, *testing.State) {}
 	tests := []*testing.TestInstance{
@@ -127,7 +125,7 @@ func TestRunListWithDep(t *gotesting.T) {
 }
 
 func TestRunListFixtures(t *gotesting.T) {
-	reg := testing.NewRegistry()
+	reg := testing.NewRegistry("bundle")
 
 	fixts := []*testing.FixtureInstance{
 		{Name: "b", Parent: "a"},
@@ -152,13 +150,12 @@ func TestRunListFixtures(t *gotesting.T) {
 		t.Fatalf("json.Unmarshal(%q): %v", stdout.String(), err)
 	}
 
-	bundle := filepath.Base(os.Args[0])
 	newEntityInfo := func(name, fixture string) *jsonprotocol.EntityInfo {
 		return &jsonprotocol.EntityInfo{
 			Type:    jsonprotocol.EntityFixture,
 			Name:    name,
 			Fixture: fixture,
-			Bundle:  bundle,
+			Bundle:  reg.Name(),
 		}
 	}
 	want := []*jsonprotocol.EntityInfo{
@@ -173,7 +170,7 @@ func TestRunListFixtures(t *gotesting.T) {
 }
 
 func TestRunRegistrationError(t *gotesting.T) {
-	reg := testing.NewRegistry()
+	reg := testing.NewRegistry("bundle")
 	const name = "cat.MyTest"
 	reg.AddTestInstance(&testing.TestInstance{Name: name, Func: testFunc})
 

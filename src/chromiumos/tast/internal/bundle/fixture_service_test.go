@@ -196,7 +196,7 @@ func TestFixtureServiceResponses(t *gotesting.T) {
 		},
 	} {
 		t.Run(tc.name, func(t *gotesting.T) {
-			reg := testing.NewRegistry()
+			reg := testing.NewRegistry("bundle")
 
 			reg.AddFixtureInstance(&testing.FixtureInstance{Name: "fake", Impl: tc.fixt})
 
@@ -287,7 +287,7 @@ func TestFixtureServiceParameters(t *gotesting.T) {
 		// TODO(oka): Consider testing TlwServer, DutName, BuildArtifactsUrl and DownloadMode.
 	}
 
-	reg := testing.NewRegistry()
+	reg := testing.NewRegistry("bundle")
 
 	reg.AddFixtureInstance(&testing.FixtureInstance{
 		Name:         "fake",
@@ -353,7 +353,7 @@ func TestFixtureServiceDefaultTempDir(t *gotesting.T) {
 	td := sshtest.NewTestData(nil)
 	defer td.Close()
 
-	reg := testing.NewRegistry()
+	reg := testing.NewRegistry("bundle")
 
 	// If TempDir is not set, fixture service should create a temporary
 	// directory for fixtures to use, and remove it after the pop operation.
@@ -435,7 +435,7 @@ func TestFixtureServiceDefaultTempDir(t *gotesting.T) {
 }
 
 func TestFixtureServiceNoSuchFixture(t *gotesting.T) {
-	reg := testing.NewRegistry()
+	reg := testing.NewRegistry("bundle")
 
 	rfcl, stop := startFakeFixtureService(context.Background(), t, reg)
 	defer stop()
@@ -466,7 +466,7 @@ func TestFixtureServiceNoSuchFixture(t *gotesting.T) {
 }
 
 func TestFixtureServiceTimeout(t *gotesting.T) {
-	reg := testing.NewRegistry()
+	reg := testing.NewRegistry("bundle")
 
 	c := make(chan struct{})
 	defer close(c)
@@ -510,7 +510,7 @@ func TestFixtureServiceTimeout(t *gotesting.T) {
 }
 
 func TestFixtureServiceWrongRequestOrder(t *gotesting.T) {
-	reg := testing.NewRegistry()
+	reg := testing.NewRegistry("bundle")
 	reg.AddFixtureInstance(&testing.FixtureInstance{Name: "fake", Impl: &fakeFixture{}})
 
 	td := sshtest.NewTestData(nil)

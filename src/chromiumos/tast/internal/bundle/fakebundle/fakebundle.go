@@ -22,7 +22,7 @@ import (
 // On success, it returns a file path glob matching test bundle executables.
 // Installed files are cleaned up automatically when the current unit test
 // finishes.
-func Install(t *gotesting.T, regs map[string]*testing.Registry) (bundleGlob string) {
+func Install(t *gotesting.T, regs ...*testing.Registry) (bundleGlob string) {
 	t.Helper()
 
 	dir, err := ioutil.TempDir("", "tast-fakebundles.")
@@ -31,18 +31,18 @@ func Install(t *gotesting.T, regs map[string]*testing.Registry) (bundleGlob stri
 	}
 	t.Cleanup(func() { os.RemoveAll(dir) })
 
-	InstallAt(t, dir, regs)
+	InstallAt(t, dir, regs...)
 	return filepath.Join(dir, "*")
 }
 
 // InstallAt is similar to Install, but it installs fake test bundles to the
 // specified directory.
-func InstallAt(t *gotesting.T, dir string, regs map[string]*testing.Registry) {
+func InstallAt(t *gotesting.T, dir string, regs ...*testing.Registry) {
 	t.Helper()
 
-	for name, reg := range regs {
-		name, reg := name, reg
-		lo, err := fakeexec.CreateLoopback(filepath.Join(dir, name), func(args []string, stdin io.Reader, stdout, stderr io.WriteCloser) int {
+	for _, reg := range regs {
+		reg := reg
+		lo, err := fakeexec.CreateLoopback(filepath.Join(dir, reg.Name()), func(args []string, stdin io.Reader, stdout, stderr io.WriteCloser) int {
 			return bundle.Local(args[1:], stdin, stdout, stderr, reg, bundle.Delegate{})
 		})
 		if err != nil {

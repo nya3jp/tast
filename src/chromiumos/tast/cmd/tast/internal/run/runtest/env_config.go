@@ -22,8 +22,8 @@ type envConfig struct {
 	DownloadPrivateBundles func(req *protocol.DownloadPrivateBundlesRequest) (*protocol.DownloadPrivateBundlesResponse, error)
 	OnRunLocalTestsInit    func(init *protocol.RunTestsInit)
 	OnRunRemoteTestsInit   func(init *protocol.RunTestsInit)
-	LocalBundles           map[string]*testing.Registry
-	RemoteBundles          map[string]*testing.Registry
+	LocalBundles           []*testing.Registry
+	RemoteBundles          []*testing.Registry
 }
 
 // EnvOption can be passed to SetUp to customize the testing environment.
@@ -92,38 +92,29 @@ func WithOnRunRemoteTestsInit(f func(init *protocol.RunTestsInit)) EnvOption {
 }
 
 // WithLocalBundles specifies fake local test bundles to be installed.
-func WithLocalBundles(bs map[string]*testing.Registry) EnvOption {
+func WithLocalBundles(bs ...*testing.Registry) EnvOption {
 	return func(cfg *envConfig) {
 		cfg.LocalBundles = bs
 	}
 }
 
-// WithLocalBundle specifies a fake local test bundle to be installed.
-func WithLocalBundle(reg *testing.Registry) EnvOption {
-	return WithLocalBundles(map[string]*testing.Registry{"bundle": reg})
-}
-
 // WithRemoteBundles specifies fake remote test bundles to be installed.
-func WithRemoteBundles(bs map[string]*testing.Registry) EnvOption {
+func WithRemoteBundles(bs ...*testing.Registry) EnvOption {
 	return func(cfg *envConfig) {
 		cfg.RemoteBundles = bs
 	}
 }
 
-// WithRemoteBundle specifies a fake remote test bundle to be installed.
-func WithRemoteBundle(reg *testing.Registry) EnvOption {
-	return WithRemoteBundles(map[string]*testing.Registry{"bundle": reg})
-}
-
 // defaultEnvConfig returns envConfig that is used by default.
 func defaultEnvConfig() *envConfig {
-	localReg := testing.NewRegistry()
+	const defaultBundleName = "bundle"
+	localReg := testing.NewRegistry(defaultBundleName)
 	localReg.AddTestInstance(&testing.TestInstance{
 		Name:    "example.Local",
 		Func:    func(ctx context.Context, s *testing.State) {},
 		Timeout: time.Minute,
 	})
-	remoteReg := testing.NewRegistry()
+	remoteReg := testing.NewRegistry(defaultBundleName)
 	remoteReg.AddTestInstance(&testing.TestInstance{
 		Name:    "example.Remote",
 		Func:    func(ctx context.Context, s *testing.State) {},
@@ -161,7 +152,7 @@ func defaultEnvConfig() *envConfig {
 		},
 		OnRunLocalTestsInit:  func(init *protocol.RunTestsInit) {},
 		OnRunRemoteTestsInit: func(init *protocol.RunTestsInit) {},
-		LocalBundles:         map[string]*testing.Registry{"bundle": localReg},
-		RemoteBundles:        map[string]*testing.Registry{"bundle": remoteReg},
+		LocalBundles:         []*testing.Registry{localReg},
+		RemoteBundles:        []*testing.Registry{remoteReg},
 	}
 }

@@ -80,8 +80,8 @@ func SetUp(t *gotesting.T, opts ...EnvOption) *Env {
 	}
 
 	// Install fake bundle executables.
-	fakebundle.InstallAt(t, filepath.Join(rootDir, localBundleDir), cfg.LocalBundles)
-	fakebundle.InstallAt(t, filepath.Join(rootDir, remoteBundleDir), cfg.RemoteBundles)
+	fakebundle.InstallAt(t, filepath.Join(rootDir, localBundleDir), cfg.LocalBundles...)
+	fakebundle.InstallAt(t, filepath.Join(rootDir, remoteBundleDir), cfg.RemoteBundles...)
 
 	// Create a fake local test runner.
 	localTestRunner := fakerunner.New(&fakerunner.Config{

@@ -91,7 +91,9 @@ func getTestName(bundleNum, testNum int) string {
 // to get the desired behavior, and then tests are registered and executed via the
 // bundle package's Local function.
 func runFakeBundle() int {
-	parts := strings.Split(filepath.Base(os.Args[0]), "-")
+	bundleName := filepath.Base(os.Args[0])
+
+	parts := strings.Split(bundleName, "-")
 	if len(parts) != 3 {
 		log.Fatalf("Unparsable filename %q", os.Args[0])
 	}
@@ -100,7 +102,7 @@ func runFakeBundle() int {
 		log.Fatalf("Bad bundle number %q in filename %q", parts[1], os.Args[0])
 	}
 
-	reg := testing.NewRegistry()
+	reg := testing.NewRegistry(bundleName)
 	reg.AddFixtureInstance(fakeFixture1)
 	reg.AddFixtureInstance(fakeFixture2)
 

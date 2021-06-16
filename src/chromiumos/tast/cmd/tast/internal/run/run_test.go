@@ -58,7 +58,7 @@ func TestRunNoTestToRun(t *gotesting.T) {
 	ctx := context.Background()
 
 	// No test in bundles.
-	env := runtest.SetUp(t, runtest.WithLocalBundle(testing.NewRegistry()), runtest.WithRemoteBundle(testing.NewRegistry()))
+	env := runtest.SetUp(t, runtest.WithLocalBundles(testing.NewRegistry("bundle")), runtest.WithRemoteBundles(testing.NewRegistry("bundle")))
 	cfg := env.Config()
 	state := env.State()
 

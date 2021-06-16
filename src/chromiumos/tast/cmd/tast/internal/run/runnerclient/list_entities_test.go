@@ -11,7 +11,6 @@ import (
 
 	"github.com/golang/protobuf/ptypes"
 	"github.com/google/go-cmp/cmp"
-	"github.com/google/go-cmp/cmp/cmpopts"
 
 	"chromiumos/tast/cmd/tast/internal/run/runtest"
 	"chromiumos/tast/cmd/tast/internal/run/target"
@@ -30,12 +29,12 @@ func TestFindPatternsForShard(t *gotesting.T) {
 		{Name: "pkg.Test6", Desc: "This is test 6"},
 	}
 
-	reg := testing.NewRegistry()
+	reg := testing.NewRegistry("bundle")
 	for _, t := range tests {
 		reg.AddTestInstance(t)
 	}
 
-	env := runtest.SetUp(t, runtest.WithLocalBundle(reg), runtest.WithRemoteBundle(testing.NewRegistry()))
+	env := runtest.SetUp(t, runtest.WithLocalBundles(reg), runtest.WithRemoteBundles(testing.NewRegistry("bundle")))
 	cfg := env.Config()
 	cfg.TotalShards = 3
 	state := env.State()
@@ -102,7 +101,7 @@ func TestFindShardIndices(t *gotesting.T) {
 }
 
 func TestListLocalTests(t *gotesting.T) {
-	reg := testing.NewRegistry()
+	reg := testing.NewRegistry("bundle")
 	reg.AddTestInstance(&testing.TestInstance{
 		Name: "pkg.Test",
 		Desc: "This is a test",
@@ -113,7 +112,7 @@ func TestListLocalTests(t *gotesting.T) {
 		Desc: "Another test",
 	})
 
-	env := runtest.SetUp(t, runtest.WithLocalBundle(reg))
+	env := runtest.SetUp(t, runtest.WithLocalBundles(reg))
 	cfg := env.Config()
 	state := env.State()
 
@@ -140,6 +139,7 @@ func TestListLocalTests(t *gotesting.T) {
 				Contacts:     &protocol.EntityContacts{},
 				LegacyData: &protocol.EntityLegacyData{
 					Timeout: ptypes.DurationProto(0),
+					Bundle:  "bundle",
 				},
 			},
 			Hops: 1,
@@ -152,18 +152,19 @@ func TestListLocalTests(t *gotesting.T) {
 				Contacts:     &protocol.EntityContacts{},
 				LegacyData: &protocol.EntityLegacyData{
 					Timeout: ptypes.DurationProto(0),
+					Bundle:  "bundle",
 				},
 			},
 			Hops: 1,
 		},
 	}
-	if diff := cmp.Diff(got, want, cmpopts.IgnoreFields(protocol.EntityLegacyData{}, "Bundle")); diff != "" {
+	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected list of local tests (-got +want):\n%v", diff)
 	}
 }
 
 func TestListRemoteTests(t *gotesting.T) {
-	reg := testing.NewRegistry()
+	reg := testing.NewRegistry("bundle")
 	reg.AddTestInstance(&testing.TestInstance{
 		Name: "pkg.Test1",
 		Desc: "First description",
@@ -177,7 +178,7 @@ func TestListRemoteTests(t *gotesting.T) {
 		Pkg:  "pkg2",
 	})
 
-	env := runtest.SetUp(t, runtest.WithRemoteBundle(reg))
+	env := runtest.SetUp(t, runtest.WithRemoteBundles(reg))
 	cfg := env.Config()
 	state := env.State()
 
@@ -197,6 +198,7 @@ func TestListRemoteTests(t *gotesting.T) {
 				Contacts:     &protocol.EntityContacts{},
 				LegacyData: &protocol.EntityLegacyData{
 					Timeout: ptypes.DurationProto(0),
+					Bundle:  "bundle",
 				},
 			},
 			Hops: 0,
@@ -211,12 +213,13 @@ func TestListRemoteTests(t *gotesting.T) {
 				Contacts:     &protocol.EntityContacts{},
 				LegacyData: &protocol.EntityLegacyData{
 					Timeout: ptypes.DurationProto(0),
+					Bundle:  "bundle",
 				},
 			},
 			Hops: 0,
 		},
 	}
-	if diff := cmp.Diff(got, want, cmpopts.IgnoreFields(protocol.EntityLegacyData{}, "Bundle")); diff != "" {
+	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected list of remote tests (-got +want):\n%v", diff)
 	}
 }

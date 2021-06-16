@@ -48,7 +48,7 @@ func TestTestServerListEntities(t *gotesting.T) {
 	f1 := &testing.FixtureInstance{Name: "fixt1"}
 	f2 := &testing.FixtureInstance{Name: "fixt2"}
 
-	reg := testing.NewRegistry()
+	reg := testing.NewRegistry("bundle")
 	reg.AddTestInstance(t1)
 	reg.AddTestInstance(t2)
 	reg.AddFixtureInstance(f1)
@@ -94,7 +94,7 @@ func TestTestServerListEntitiesTestSkips(t *gotesting.T) {
 	t2 := &testing.TestInstance{Name: "pkg.Test2", SoftwareDeps: []string{"dep2"}}
 	t3 := &testing.TestInstance{Name: "pkg.Test3", SoftwareDeps: []string{"dep3"}}
 
-	reg := testing.NewRegistry()
+	reg := testing.NewRegistry("bundle")
 	reg.AddTestInstance(t1)
 	reg.AddTestInstance(t2)
 	reg.AddTestInstance(t3)

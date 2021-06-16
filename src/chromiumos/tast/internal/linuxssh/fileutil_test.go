@@ -63,7 +63,7 @@ func TestGetFileRegular(t *testing.T) {
 
 	srcFile := filepath.Join(srcDir, "file")
 	dstFile := filepath.Join(tmpDir, "file.copy")
-	if err := GetFile(td.Ctx, td.Hst, srcFile, dstFile); err != nil {
+	if err := GetFile(td.Ctx, td.Hst, srcFile, dstFile, PreserveSymlinks); err != nil {
 		t.Fatal(err)
 	}
 	if err := checkFile(dstFile, files["file"]); err != nil {
@@ -71,7 +71,71 @@ func TestGetFileRegular(t *testing.T) {
 	}
 
 	// GetFile should overwrite local files.
-	if err := GetFile(td.Ctx, td.Hst, srcFile, dstFile); err != nil {
+	if err := GetFile(td.Ctx, td.Hst, srcFile, dstFile, PreserveSymlinks); err != nil {
+		t.Error(err)
+	}
+
+	// Using DereferenceSymlinks should make no difference for regular files
+	srcFile = filepath.Join(srcDir, "file")
+	dstFile = filepath.Join(tmpDir, "file.dereference")
+	if err := GetFile(td.Ctx, td.Hst, srcFile, dstFile, DereferenceSymlinks); err != nil {
+		t.Fatal(err)
+	}
+	if err := checkFile(dstFile, files["file"]); err != nil {
+		t.Error(err)
+	}
+
+	// GetFile should overwrite local files.
+	if err := GetFile(td.Ctx, td.Hst, srcFile, dstFile, DereferenceSymlinks); err != nil {
+		t.Error(err)
+	}
+}
+
+func TestGetFileRegularSymlink(t *testing.T) {
+	t.Parallel()
+	td := sshtest.NewTestDataConn(t)
+	defer td.Close()
+
+	files := map[string]string{"file": "foo"}
+	tmpDir, srcDir := initFileTest(t, files)
+	defer os.RemoveAll(tmpDir)
+
+	if err := os.Symlink("file", filepath.Join(srcDir, "link")); err != nil {
+		t.Fatal(err)
+	}
+
+	srcFile := filepath.Join(srcDir, "link")
+	dstFile := filepath.Join(tmpDir, "link.preserve")
+	if err := GetFile(td.Ctx, td.Hst, srcFile, dstFile, PreserveSymlinks); err != nil {
+		t.Fatal(err)
+	}
+	if linkname, err := os.Readlink(dstFile); err != nil {
+		t.Error(err)
+	} else if linkname != "file" {
+		t.Error("Expected symlink to file, got ", linkname)
+	}
+
+	// GetFile should overwrite local files.
+	if err := GetFile(td.Ctx, td.Hst, srcFile, dstFile, PreserveSymlinks); err != nil {
+		t.Error(err)
+	}
+
+	srcFile = filepath.Join(srcDir, "link")
+	dstFile = filepath.Join(tmpDir, "link.dereference")
+	if err := GetFile(td.Ctx, td.Hst, srcFile, dstFile, DereferenceSymlinks); err != nil {
+		t.Fatal(err)
+	}
+	if err := checkFile(dstFile, files["file"]); err != nil {
+		t.Error(err)
+	}
+	if fi, err := os.Lstat(dstFile); err != nil {
+		t.Error(err)
+	} else if fi.Mode()&os.ModeSymlink != 0 {
+		t.Error("Expected regular file, found symlink")
+	}
+
+	// GetFile should overwrite local files.
+	if err := GetFile(td.Ctx, td.Hst, srcFile, dstFile, DereferenceSymlinks); err != nil {
 		t.Error(err)
 	}
 }
@@ -87,18 +151,81 @@ func TestGetFileDir(t *testing.T) {
 	}
 	tmpDir, srcDir := initFileTest(t, files)
 	defer os.RemoveAll(tmpDir)
+	if err := os.Symlink("myfile", filepath.Join(srcDir, "filelink")); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Symlink("mydir", filepath.Join(srcDir, "dirlink")); err != nil {
+		t.Fatal(err)
+	}
+	topDirLink := filepath.Join(filepath.Dir(srcDir), "topdirlink")
+	if err := os.Symlink(filepath.Base(srcDir), topDirLink); err != nil {
+		t.Fatal(err)
+	}
 
 	// Copy the full source directory.
 	dstDir := filepath.Join(tmpDir, "dst")
-	if err := GetFile(td.Ctx, td.Hst, srcDir, dstDir); err != nil {
+	if err := GetFile(td.Ctx, td.Hst, srcDir, dstDir, PreserveSymlinks); err != nil {
 		t.Fatal(err)
 	}
 	if err := checkDir(dstDir, files); err != nil {
 		t.Error(err)
 	}
-
+	if linkname, err := os.Readlink(filepath.Join(dstDir, "filelink")); err != nil {
+		t.Error(err)
+	} else if linkname != "myfile" {
+		t.Error("Expected symlink to myfile, got ", linkname)
+	}
+	if linkname, err := os.Readlink(filepath.Join(dstDir, "dirlink")); err != nil {
+		t.Error(err)
+	} else if linkname != "mydir" {
+		t.Error("Expected symlink to mydir, got ", linkname)
+	}
 	// GetFile should overwrite local dirs.
-	if err := GetFile(td.Ctx, td.Hst, srcDir, dstDir); err != nil {
+	if err := GetFile(td.Ctx, td.Hst, srcDir, dstDir, PreserveSymlinks); err != nil {
+		t.Error(err)
+	}
+
+	// Copy the link to the full source directory.
+	dstDir = filepath.Join(tmpDir, "dst.toplink")
+	if err := GetFile(td.Ctx, td.Hst, topDirLink, dstDir, PreserveSymlinks); err != nil {
+		t.Fatal(err)
+	}
+	if linkname, err := os.Readlink(dstDir); err != nil {
+		t.Error(err)
+	} else if linkname != filepath.Base(srcDir) {
+		t.Errorf("Expected symlink to %s, got %s", filepath.Base(srcDir), linkname)
+	}
+	// GetFile should overwrite local dirs.
+	if err := GetFile(td.Ctx, td.Hst, topDirLink, dstDir, PreserveSymlinks); err != nil {
+		t.Error(err)
+	}
+
+	files["filelink"] = files["myfile"]
+	files["dirlink/file"] = files["mydir/file"]
+
+	// Copy the full source directory dereferencing symlinks
+	dstDir = filepath.Join(tmpDir, "dst.deference")
+	if err := GetFile(td.Ctx, td.Hst, srcDir, dstDir, DereferenceSymlinks); err != nil {
+		t.Fatal(err)
+	}
+	if err := checkDir(dstDir, files); err != nil {
+		t.Error(err)
+	}
+	// GetFile should overwrite local dirs.
+	if err := GetFile(td.Ctx, td.Hst, srcDir, dstDir, DereferenceSymlinks); err != nil {
+		t.Error(err)
+	}
+
+	// Copy the full source directory dereferencing symlinks
+	dstDir = filepath.Join(tmpDir, "dst.toplink.deference")
+	if err := GetFile(td.Ctx, td.Hst, topDirLink, dstDir, DereferenceSymlinks); err != nil {
+		t.Fatal(err)
+	}
+	if err := checkDir(dstDir, files); err != nil {
+		t.Error(err)
+	}
+	// GetFile should overwrite local dirs.
+	if err := GetFile(td.Ctx, td.Hst, topDirLink, dstDir, DereferenceSymlinks); err != nil {
 		t.Error(err)
 	}
 }
@@ -115,7 +242,7 @@ func TestGetFileTimeout(t *testing.T) {
 	srcFile := filepath.Join(srcDir, "file")
 	dstFile := filepath.Join(tmpDir, "file")
 	td.ExecTimeout = sshtest.StartTimeout
-	if err := GetFile(td.Ctx, td.Hst, srcFile, dstFile); err == nil {
+	if err := GetFile(td.Ctx, td.Hst, srcFile, dstFile, PreserveSymlinks); err == nil {
 		t.Errorf("GetFile() with expired context didn't return error")
 	}
 }
@@ -351,7 +478,7 @@ func TestGetFilePerms(t *testing.T) {
 
 		srcFile := filepath.Join(srcDir, f.filename)
 		dstFile := filepath.Join(tmpDir, f.filename+".copy")
-		if err := GetFile(td.Ctx, td.Hst, srcFile, dstFile); err != nil {
+		if err := GetFile(td.Ctx, td.Hst, srcFile, dstFile, PreserveSymlinks); err != nil {
 			t.Fatal(err)
 		}
 		info, err := os.Stat(dstFile)

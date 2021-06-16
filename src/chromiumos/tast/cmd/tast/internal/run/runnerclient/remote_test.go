@@ -33,13 +33,13 @@ func TestRemoteRun(t *gotesting.T) {
 		t.Fatal(err)
 	}
 
-	localReg := testing.NewRegistry()
+	localReg := testing.NewRegistry("bundle")
 	localReg.AddTestInstance(&testing.TestInstance{
 		Name:    localTestName,
 		Timeout: time.Minute,
 		Func:    func(ctx context.Context, s *testing.State) {},
 	})
-	remoteReg := testing.NewRegistry()
+	remoteReg := testing.NewRegistry("bundle")
 	remoteReg.AddTestInstance(&testing.TestInstance{
 		Name:    remoteTestName,
 		Timeout: time.Minute,
@@ -48,8 +48,8 @@ func TestRemoteRun(t *gotesting.T) {
 
 	var gotInit *protocol.RunTestsInit
 	env := runtest.SetUp(t,
-		runtest.WithLocalBundle(localReg),
-		runtest.WithRemoteBundle(remoteReg),
+		runtest.WithLocalBundles(localReg),
+		runtest.WithRemoteBundles(remoteReg),
 		runtest.WithOnRunRemoteTestsInit(func(init *protocol.RunTestsInit) {
 			gotInit = init
 		}),
@@ -154,7 +154,7 @@ func TestRemoteRunCopyOutput(t *gotesting.T) {
 		outData  = "somedata"
 	)
 
-	reg := testing.NewRegistry()
+	reg := testing.NewRegistry("bundle")
 	reg.AddTestInstance(&testing.TestInstance{
 		Name:    testName,
 		Timeout: time.Minute,
@@ -166,8 +166,8 @@ func TestRemoteRunCopyOutput(t *gotesting.T) {
 	})
 
 	env := runtest.SetUp(t,
-		runtest.WithLocalBundle(testing.NewRegistry()),
-		runtest.WithRemoteBundle(reg),
+		runtest.WithLocalBundles(testing.NewRegistry("bundle")),
+		runtest.WithRemoteBundles(reg),
 	)
 	cfg := env.Config()
 	state := env.State()
@@ -187,7 +187,7 @@ func TestRemoteRunCopyOutput(t *gotesting.T) {
 
 // TestRemoteMaxFailures makes sure that RunRemoteTests does not run any tests if maximum failures allowed has been reach.
 func TestRemoteMaxFailures(t *gotesting.T) {
-	reg := testing.NewRegistry()
+	reg := testing.NewRegistry("bundle")
 	for _, testName := range []string{"t1", "t2"} {
 		reg.AddTestInstance(&testing.TestInstance{
 			Name:    testName,
@@ -199,8 +199,8 @@ func TestRemoteMaxFailures(t *gotesting.T) {
 	}
 
 	env := runtest.SetUp(t,
-		runtest.WithLocalBundle(testing.NewRegistry()),
-		runtest.WithRemoteBundle(reg),
+		runtest.WithLocalBundles(testing.NewRegistry("bundle")),
+		runtest.WithRemoteBundles(reg),
 	)
 	cfg := env.Config()
 	cfg.MaxTestFailures = 1

@@ -7,7 +7,6 @@ package testing
 import (
 	"fmt"
 	"io"
-	"os"
 	"path/filepath"
 	"reflect"
 	"regexp"
@@ -81,6 +80,11 @@ type TestInstance struct {
 	Pre          Precondition
 	Fixture      string
 	Timeout      time.Duration
+
+	// Bundle is the name of the test bundle this test belongs to.
+	// This field is empty initially, and later set when the test is added
+	// to testing.Registry.
+	Bundle string
 }
 
 // instantiate creates one or more TestInstance from t.
@@ -477,7 +481,7 @@ func (t *TestInstance) EntityProto() *protocol.Entity {
 			Variables:    append([]string(nil), t.Vars...),
 			VariableDeps: append([]string(nil), t.VarDeps...),
 			SoftwareDeps: append([]string(nil), t.SoftwareDeps...),
-			Bundle:       filepath.Base(os.Args[0]),
+			Bundle:       t.Bundle,
 		},
 	}
 }

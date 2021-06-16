@@ -6,8 +6,6 @@ package testing
 
 import (
 	"context"
-	"os"
-	"path/filepath"
 	"regexp"
 	"time"
 
@@ -114,6 +112,11 @@ type FixtureInstance struct {
 	Data            []string
 	ServiceDeps     []string
 	Vars            []string
+
+	// Bundle is the name of the test bundle this test belongs to.
+	// This field is empty initially, and later set when the test is added
+	// to testing.Registry.
+	Bundle string
 }
 
 // Constraints returns EntityConstraints for this fixture.
@@ -141,7 +144,7 @@ func (f *FixtureInstance) EntityProto() *protocol.Entity {
 		},
 		LegacyData: &protocol.EntityLegacyData{
 			Variables: append([]string(nil), f.Vars...),
-			Bundle:    filepath.Base(os.Args[0]),
+			Bundle:    f.Bundle,
 		},
 	}
 }

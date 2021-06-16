@@ -16,14 +16,6 @@ import (
 	"chromiumos/tast/ssh"
 )
 
-// GetFile copies a file or directory from the host to the local machine.
-// dst is the full destination name for the file or directory being copied, not
-// a destination directory into which it will be copied. dst will be replaced
-// if it already exists.
-func GetFile(ctx context.Context, s *ssh.Conn, src, dst string) error {
-	return linuxssh.GetFile(ctx, s, src, dst)
-}
-
 // SymlinkPolicy describes how symbolic links should be handled by PutFiles.
 type SymlinkPolicy = linuxssh.SymlinkPolicy
 
@@ -33,6 +25,14 @@ const (
 	// DereferenceSymlinks indicates that symlinks should be dereferenced and turned into normal files.
 	DereferenceSymlinks = linuxssh.DereferenceSymlinks
 )
+
+// GetFile copies a file or directory from the host to the local machine.
+// dst is the full destination name for the file or directory being copied, not
+// a destination directory into which it will be copied. dst will be replaced
+// if it already exists.
+func GetFile(ctx context.Context, s *ssh.Conn, src, dst string, symlinkPolicy SymlinkPolicy) error {
+	return linuxssh.GetFile(ctx, s, src, dst, symlinkPolicy)
+}
 
 // PutFiles copies files on the local machine to the host. files describes
 // a mapping from a local file path to a remote file path. For example, the call:

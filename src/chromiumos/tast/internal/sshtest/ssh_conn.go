@@ -89,18 +89,6 @@ func NewTestDataConn(t *testing.T) *TestDataConn {
 		t.Fatal(err)
 	}
 
-	// Automatically abort the test if it takes too long time.
-	go func() {
-		const timeout = 10 * time.Second
-		select {
-		case <-td.Ctx.Done():
-			return
-		case <-time.After(timeout):
-		}
-		t.Errorf("Test blocked for %v", timeout)
-		td.Cancel()
-	}()
-
 	return td
 }
 

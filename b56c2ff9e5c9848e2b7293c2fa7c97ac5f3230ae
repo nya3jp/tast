@@ -54,6 +54,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "cab65b8d_b4a71ba8",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1263546
+      },
+      "writtenOn": "2021-06-16T01:06:26Z",
+      "side": 1,
+      "message": "Ah, I see, I think there might be a misunderstanding. The syzkaller test in [1] will not be run as part of \"group:syzcorpus\"; the new group will correspond to this  other tast test[2]. I don\u0027t plan on having \"group:syzcorpus\" in [1].\n\n[1] http://cs/chromeos_public/src/platform/tast-tests/src/chromiumos/tast/remote/bundles/cros/syzkaller/wrapper.go?l\u003d92\n[2] https://chromium-review.googlesource.com/c/chromiumos/platform/tast-tests/+/2949913",
+      "parentUuid": "beaabbd5_4f0dc0a6",
+      "revId": "b56c2ff9e5c9848e2b7293c2fa7c97ac5f3230ae",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "efc8154c_a102a308",

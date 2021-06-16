@@ -5,8 +5,6 @@
 package testing
 
 import (
-	"os"
-	"path/filepath"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -23,6 +21,7 @@ func TestFixtureEntityProto(t *testing.T) {
 		Parent:      "system.Booted",
 		Data:        []string{"data.txt"},
 		ServiceDeps: []string{"chrome.Service"},
+		Bundle:      "bundle",
 	}
 	got := fixt.EntityProto()
 	want := &protocol.Entity{
@@ -39,7 +38,7 @@ func TestFixtureEntityProto(t *testing.T) {
 			Emails: []string{"a@example.com", "b@example.com"},
 		},
 		LegacyData: &protocol.EntityLegacyData{
-			Bundle: filepath.Base(os.Args[0]),
+			Bundle: "bundle",
 		},
 	}
 	if diff := cmp.Diff(got, want); diff != "" {

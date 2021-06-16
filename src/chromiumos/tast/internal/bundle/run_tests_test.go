@@ -65,7 +65,7 @@ func TestRunTests(t *gotesting.T) {
 		errorMsg    = "error"
 	)
 
-	reg := testing.NewRegistry()
+	reg := testing.NewRegistry("bundle")
 	reg.AddTestInstance(&testing.TestInstance{
 		Name:    name1,
 		Func:    func(context.Context, *testing.State) {},
@@ -163,7 +163,7 @@ func TestRunTests(t *gotesting.T) {
 
 func TestRunTestsNoTests(t *gotesting.T) {
 	// RunTests should report success when no test is executed.
-	cl := startTestServer(t, NewStaticConfig(testing.NewRegistry(), 0, Delegate{}))
+	cl := startTestServer(t, NewStaticConfig(testing.NewRegistry("bundle"), 0, Delegate{}))
 	if _, err := protocoltest.RunTestsForEvents(cl, &protocol.RunConfig{}, false); err != nil {
 		t.Fatalf("RunTests failed for empty tests: %v", err)
 	}
@@ -173,7 +173,7 @@ func TestRunTestsRemoteData(t *gotesting.T) {
 	td := sshtest.NewTestData(nil)
 	defer td.Close()
 
-	reg := testing.NewRegistry()
+	reg := testing.NewRegistry("bundle")
 
 	var (
 		meta *testing.Meta
@@ -239,7 +239,7 @@ func TestRunTestsOutDir(t *gotesting.T) {
 
 	outDir := filepath.Join(td, "out")
 
-	cl := startTestServer(t, NewStaticConfig(testing.NewRegistry(), 0, Delegate{}))
+	cl := startTestServer(t, NewStaticConfig(testing.NewRegistry("bundle"), 0, Delegate{}))
 	cfg := &protocol.RunConfig{
 		Dirs: &protocol.RunDirectories{
 			OutDir: outDir,
@@ -271,7 +271,7 @@ func TestRunTestsStartFixture(t *gotesting.T) {
 		Tests:             []string{testName},
 		StartFixtureState: &protocol.StartFixtureState{Name: "foo"},
 	}
-	reg := testing.NewRegistry()
+	reg := testing.NewRegistry("bundle")
 	reg.AddTestInstance(&testing.TestInstance{
 		Fixture: "foo",
 		Name:    testName,
@@ -310,7 +310,7 @@ func TestRunTestsStartFixture(t *gotesting.T) {
 }
 
 func TestRunTestsReadyFunc(t *gotesting.T) {
-	reg := testing.NewRegistry()
+	reg := testing.NewRegistry("bundle")
 	reg.AddTestInstance(&testing.TestInstance{Name: "pkg.Test", Func: func(context.Context, *testing.State) {}})
 
 	// Ensure that a successful ready function is executed.
@@ -348,7 +348,7 @@ func TestRunTestsReadyFunc(t *gotesting.T) {
 }
 
 func TestRunTestsReadyFuncDisabled(t *gotesting.T) {
-	reg := testing.NewRegistry()
+	reg := testing.NewRegistry("bundle")
 	reg.AddTestInstance(&testing.TestInstance{Name: "pkg.Test", Func: func(context.Context, *testing.State) {}})
 
 	// The ready function should be skipped if WaitUntilReady is false.
@@ -372,7 +372,7 @@ func TestRunTestsReadyFuncDisabled(t *gotesting.T) {
 }
 
 func TestRunTestsTestHook(t *gotesting.T) {
-	reg := testing.NewRegistry()
+	reg := testing.NewRegistry("bundle")
 	reg.AddTestInstance(&testing.TestInstance{Name: "pkg.Test", Func: func(context.Context, *testing.State) {}})
 
 	cfg := &protocol.RunConfig{}
@@ -398,7 +398,7 @@ func TestRunTestsTestHook(t *gotesting.T) {
 }
 
 func TestRunTestsRunHook(t *gotesting.T) {
-	reg := testing.NewRegistry()
+	reg := testing.NewRegistry("bundle")
 	reg.AddTestInstance(&testing.TestInstance{Name: "pkg.Test", Func: func(context.Context, *testing.State) {}})
 
 	cfg := &protocol.RunConfig{}
@@ -428,7 +428,7 @@ func TestRunTestsRemoteCantConnect(t *gotesting.T) {
 	td := sshtest.NewTestData(nil)
 	defer td.Close()
 
-	reg := testing.NewRegistry()
+	reg := testing.NewRegistry("bundle")
 	reg.AddTestInstance(&testing.TestInstance{Name: "pkg.Test", Func: func(context.Context, *testing.State) {}})
 
 	// RunTests should fail if the initial connection to the DUT couldn't be
@@ -473,7 +473,7 @@ func TestRunTestsRemoteDUT(t *gotesting.T) {
 
 	// Register a test that runs a command on the DUT and saves its output.
 	realOutput := ""
-	reg := testing.NewRegistry()
+	reg := testing.NewRegistry("bundle")
 	reg.AddTestInstance(&testing.TestInstance{Name: "pkg.Test", Func: func(ctx context.Context, s *testing.State) {
 		dt := s.DUT()
 		out, err := dt.Command(cmd).Output(ctx)
@@ -521,7 +521,7 @@ func TestRunTestsRemoteReconnectBetweenTests(t *gotesting.T) {
 	}
 
 	var conn1, conn2 bool
-	reg := testing.NewRegistry()
+	reg := testing.NewRegistry("bundle")
 	reg.AddTestInstance(&testing.TestInstance{Name: "pkg.Test1", Func: makeFunc(&conn1)})
 	reg.AddTestInstance(&testing.TestInstance{Name: "pkg.Test2", Func: makeFunc(&conn2)})
 
@@ -552,7 +552,7 @@ func TestRunTestsRemoteBeforeReboot(t *gotesting.T) {
 	td := sshtest.NewTestData(nil)
 	defer td.Close()
 
-	reg := testing.NewRegistry()
+	reg := testing.NewRegistry("bundle")
 	reg.AddTestInstance(&testing.TestInstance{Name: "pkg.Test1", Func: func(ctx context.Context, s *testing.State) {
 		s.DUT().Reboot(ctx)
 		s.DUT().Reboot(ctx)
@@ -609,7 +609,7 @@ func TestRunTestsRemoteCompanionDUTs(t *gotesting.T) {
 
 	// Register a test that runs a command on the DUT and saves its output.
 	realOutput := ""
-	reg := testing.NewRegistry()
+	reg := testing.NewRegistry("bundle")
 	const role = "role"
 	reg.AddTestInstance(&testing.TestInstance{Name: "pkg.Test", Func: func(ctx context.Context, s *testing.State) {
 		dt := s.CompanionDUT(role)
@@ -655,7 +655,7 @@ func TestTestsToRunSortTests(t *gotesting.T) {
 		test3 = "pkg.Test3"
 	)
 
-	reg := testing.NewRegistry()
+	reg := testing.NewRegistry("bundle")
 	reg.AddTestInstance(&testing.TestInstance{Name: test2, Func: testFunc})
 	reg.AddTestInstance(&testing.TestInstance{Name: test3, Func: testFunc})
 	reg.AddTestInstance(&testing.TestInstance{Name: test1, Func: testFunc})
@@ -682,7 +682,7 @@ func TestTestsToRunTestTimeouts(t *gotesting.T) {
 		defaultTimeout = 30 * time.Second
 	)
 
-	reg := testing.NewRegistry()
+	reg := testing.NewRegistry("bundle")
 	reg.AddTestInstance(&testing.TestInstance{Name: name1, Func: testFunc, Timeout: customTimeout})
 	reg.AddTestInstance(&testing.TestInstance{Name: name2, Func: testFunc})
 

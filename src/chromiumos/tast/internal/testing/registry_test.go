@@ -13,6 +13,13 @@ import (
 	"google.golang.org/grpc"
 )
 
+// REGISTRYTEST is a public test function with a name that's chosen to be
+// appropriate for this file's name (registry_test.go). The obvious choice,
+// "RegistryTest", is unavailable since Go's testing package will interpret it
+// as itself being a unit test, so let's just pretend that "registry" and "test"
+// are acronyms.
+func REGISTRYTEST(context.Context, *State) {}
+
 // testsEqual returns true if a and b contain tests with matching fields.
 // This is useful when comparing slices that contain copies of the same underlying tests.
 func testsEqual(a, b []*TestInstance) bool {
@@ -45,7 +52,7 @@ func getDupeTestPtrs(a, b []*TestInstance) []*TestInstance {
 }
 
 func TestAllTests(t *gotesting.T) {
-	reg := NewRegistry()
+	reg := NewRegistry("bundle")
 	allTests := []*TestInstance{
 		{Name: "test.Foo", Func: func(context.Context, *State) {}},
 		{Name: "test.Bar", Func: func(context.Context, *State) {}},
@@ -68,7 +75,7 @@ func TestAllTests(t *gotesting.T) {
 
 func TestAddTestDuplicateName(t *gotesting.T) {
 	const name = "test.Foo"
-	reg := NewRegistry()
+	reg := NewRegistry("bundle")
 	reg.AddTestInstance(&TestInstance{Name: name, Func: func(context.Context, *State) {}})
 	if errs := reg.Errors(); len(errs) > 0 {
 		t.Fatal("Failed to add initial test: ", errs)
@@ -80,21 +87,18 @@ func TestAddTestDuplicateName(t *gotesting.T) {
 }
 
 func TestAddTestModifyOriginal(t *gotesting.T) {
-	reg := NewRegistry()
-	const origName = "test.OldName"
+	reg := NewRegistry("bundle")
 	const origDep = "olddep"
-	test := &TestInstance{
-		Name:         origName,
-		Func:         func(context.Context, *State) {},
+	test := &Test{
+		Func:         REGISTRYTEST,
 		SoftwareDeps: []string{origDep},
 	}
-	reg.AddTestInstance(test)
+	reg.AddTest(test)
 	if errs := reg.Errors(); len(errs) > 0 {
 		t.Fatal("Registration failed: ", errs)
 	}
 
-	// Change the original Test struct's name and modify the dependency slice's data.
-	test.Name = "test.NewName"
+	// Change the original Test struct's dependency slice's data.
 	test.SoftwareDeps[0] = "newdep"
 
 	// The test returned by the registry should still contain the original information.
@@ -102,16 +106,13 @@ func TestAddTestModifyOriginal(t *gotesting.T) {
 	if len(tests) != 1 {
 		t.Fatalf("AllTests returned %v; wanted 1 test: ", tests)
 	}
-	if tests[0].Name != origName {
-		t.Errorf("Test.Name is %q; want %q", tests[0].Name, origName)
-	}
 	if want := []string{origDep}; !reflect.DeepEqual(tests[0].SoftwareDeps, want) {
 		t.Errorf("Test.Deps is %v; want %v", tests[0].SoftwareDeps, want)
 	}
 }
 
 func TestAddTestConflictingPre(t *gotesting.T) {
-	reg := NewRegistry()
+	reg := NewRegistry("bundle")
 
 	// There are different preconditions with the same name. Registering tests
 	// using them should result in errors.
@@ -148,7 +149,7 @@ func TestAddTestConflictingPre(t *gotesting.T) {
 
 func TestAddFixtureDuplicateName(t *gotesting.T) {
 	const name = "foo"
-	reg := NewRegistry()
+	reg := NewRegistry("bundle")
 	reg.AddFixture(&Fixture{Name: name}, "pkg")
 	if errs := reg.Errors(); len(errs) > 0 {
 		t.Fatalf("Fixture registration failed: %v", errs)
@@ -179,7 +180,7 @@ func TestAddFixtureInvalidName(t *gotesting.T) {
 		{"chromeLoggedIn", true},
 		{"ieee1394", true},
 	} {
-		reg := NewRegistry()
+		reg := NewRegistry("bundle")
 		reg.AddFixture(&Fixture{Name: tc.name}, "pkg")
 		errs := reg.Errors()
 		if tc.ok && len(errs) > 0 {
@@ -192,7 +193,7 @@ func TestAddFixtureInvalidName(t *gotesting.T) {
 }
 
 func TestAllServices(t *gotesting.T) {
-	reg := NewRegistry()
+	reg := NewRegistry("bundle")
 	allSvcs := []*Service{
 		{Register: func(*grpc.Server, *ServiceState) {}},
 		{Register: func(*grpc.Server, *ServiceState) {}},
@@ -213,7 +214,7 @@ func TestAllServices(t *gotesting.T) {
 }
 
 func TestAllFixtures(t *gotesting.T) {
-	reg := NewRegistry()
+	reg := NewRegistry("bundle")
 	allFixts := []*Fixture{
 		{Name: "a"},
 		{Name: "b"},
@@ -228,9 +229,9 @@ func TestAllFixtures(t *gotesting.T) {
 	}
 
 	want := map[string]*FixtureInstance{
-		"a": {Name: "a", Pkg: "pkg"},
-		"b": {Name: "b", Pkg: "pkg"},
-		"c": {Name: "c", Pkg: "pkg"},
+		"a": {Name: "a", Pkg: "pkg", Bundle: "bundle"},
+		"b": {Name: "b", Pkg: "pkg", Bundle: "bundle"},
+		"c": {Name: "c", Pkg: "pkg", Bundle: "bundle"},
 	}
 	if diff := cmp.Diff(reg.AllFixtures(), want); diff != "" {
 		t.Errorf("Result mismatch (-got +want):\n%v", diff)

@@ -16,6 +16,115 @@
       "message": "Thanks guys. Please let me know for any changes. \n- Bisakh",
       "revId": "476e0b759a4e4202fafc425e8a21c95e76c2ac20",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ee94ab11_e4071476",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/check/forbidden_calls.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-06-16T06:36:04Z",
+      "side": 1,
+      "message": "style: Please start line comment sentences with capital letters. You can start end-of-line comments with lower letters.\n\nExamples:\n\n // This is a comment.\n foo()\n \n bar() // this is a comment\n\nc.f. https://github.com/golang/go/wiki/CodeReviewComments#comment-sentences",
+      "revId": "476e0b759a4e4202fafc425e8a21c95e76c2ac20",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7498f332_02046c61",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/check/forbidden_calls.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-06-16T06:36:04Z",
+      "side": 1,
+      "message": "This approach needs to maintain the state across multiple ast.Inspect callback invocations (i.e. analyzenxt).\n\nIIUC ast.Inspect does not define the exact order of child nodes to visit (e.g. when inspecting \"foo.bar\", does it visit \"foo\" earlier than \"bar\"?).\nhttps://golang.org/pkg/go/ast/#Inspect\n\nThus I\u0027m afraid that it is difficult to ensure correctness of the logic.\n\nInstead I recommend removing the state from the callback. For example, a possible approach would be:\n\n- If the current node is \"errors.*\", it is safe, so skip the entire subtree (by returning false).\n- If the current node is \"errors\", then it is a conflicting symbol, so set hasErrors \u003d true.",
+      "range": {
+        "startLine": 127,
+        "startChar": 1,
+        "endLine": 127,
+        "endChar": 54
+      },
+      "revId": "476e0b759a4e4202fafc425e8a21c95e76c2ac20",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "37fe19a1_3d635e22",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/check/forbidden_calls.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 156,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-06-16T06:36:04Z",
+      "side": 1,
+      "message": "nit: const pkg \u003d ...",
+      "range": {
+        "startLine": 156,
+        "startChar": 1,
+        "endLine": 156,
+        "endChar": 7
+      },
+      "revId": "476e0b759a4e4202fafc425e8a21c95e76c2ac20",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "aa3905e6_27caf924",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/check/forbidden_calls.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 159,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-06-16T06:36:04Z",
+      "side": 1,
+      "message": "I guess you meant \"errors\" instead of \"chromiumos/tast/errors\" here?",
+      "range": {
+        "startLine": 159,
+        "startChar": 58,
+        "endLine": 159,
+        "endChar": 62
+      },
+      "revId": "476e0b759a4e4202fafc425e8a21c95e76c2ac20",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "25865ffc_71dca09b",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/check/forbidden_calls.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 162,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-06-16T06:36:04Z",
+      "side": 1,
+      "message": "This is a trivial comment so it can be removed.",
+      "range": {
+        "startLine": 162,
+        "startChar": 32,
+        "endLine": 162,
+        "endChar": 65
+      },
+      "revId": "476e0b759a4e4202fafc425e8a21c95e76c2ac20",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

@@ -7,9 +7,7 @@ package testing
 import (
 	"bytes"
 	"context"
-	"os"
 	"os/exec"
-	"path/filepath"
 	"strings"
 	gotesting "testing"
 	"time"
@@ -771,6 +769,7 @@ func TestTestInstanceEntityProto(t *gotesting.T) {
 		ServiceDeps:  []string{"svc1", "svc2"},
 		Fixture:      "fixt",
 		Timeout:      time.Hour,
+		Bundle:       "bundle",
 	}
 
 	got := test.EntityProto()
@@ -792,7 +791,7 @@ func TestTestInstanceEntityProto(t *gotesting.T) {
 			VariableDeps: []string{"vardep1"},
 			SoftwareDeps: []string{"dep1", "dep2"},
 			Timeout:      ptypes.DurationProto(time.Hour),
-			Bundle:       filepath.Base(os.Args[0]),
+			Bundle:       "bundle",
 		},
 	}
 	if diff := cmp.Diff(got, want); diff != "" {

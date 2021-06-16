@@ -30,12 +30,12 @@ func TestFindPatternsForShard(t *gotesting.T) {
 		{Name: "pkg.Test6", Desc: "This is test 6"},
 	}
 
-	reg := testing.NewRegistry()
+	reg := testing.NewRegistry("bundle")
 	for _, t := range tests {
 		reg.AddTestInstance(t)
 	}
 
-	env := runtest.SetUp(t, runtest.WithLocalBundle(reg), runtest.WithRemoteBundle(testing.NewRegistry()))
+	env := runtest.SetUp(t, runtest.WithLocalBundles(reg), runtest.WithRemoteBundles(testing.NewRegistry("bundle")))
 	cfg := env.Config()
 	cfg.TotalShards = 3
 	state := env.State()
@@ -102,7 +102,7 @@ func TestFindShardIndices(t *gotesting.T) {
 }
 
 func TestListLocalTests(t *gotesting.T) {
-	reg := testing.NewRegistry()
+	reg := testing.NewRegistry("bundle")
 	reg.AddTestInstance(&testing.TestInstance{
 		Name: "pkg.Test",
 		Desc: "This is a test",
@@ -113,7 +113,7 @@ func TestListLocalTests(t *gotesting.T) {
 		Desc: "Another test",
 	})
 
-	env := runtest.SetUp(t, runtest.WithLocalBundle(reg))
+	env := runtest.SetUp(t, runtest.WithLocalBundles(reg))
 	cfg := env.Config()
 	state := env.State()
 
@@ -163,7 +163,7 @@ func TestListLocalTests(t *gotesting.T) {
 }
 
 func TestListRemoteTests(t *gotesting.T) {
-	reg := testing.NewRegistry()
+	reg := testing.NewRegistry("bundle")
 	reg.AddTestInstance(&testing.TestInstance{
 		Name: "pkg.Test1",
 		Desc: "First description",
@@ -177,7 +177,7 @@ func TestListRemoteTests(t *gotesting.T) {
 		Pkg:  "pkg2",
 	})
 
-	env := runtest.SetUp(t, runtest.WithRemoteBundle(reg))
+	env := runtest.SetUp(t, runtest.WithRemoteBundles(reg))
 	cfg := env.Config()
 	state := env.State()
 

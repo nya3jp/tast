@@ -366,8 +366,6 @@ func TestRunVarDeps(t *gotesting.T) {
 	}
 }
 
-var bundleName = filepath.Base(os.Args[0])
-
 func TestRunSkipStages(t *gotesting.T) {
 	// action specifies an action performed in a stage.
 	type action int

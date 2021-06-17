@@ -6,6 +6,7 @@ package runtest
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"chromiumos/tast/internal/protocol"
@@ -14,6 +15,16 @@ import (
 
 // envConfig contains configurations of the testing environment.
 type envConfig struct {
+	OnRunRemoteTestsInit func(init *protocol.RunTestsInit)
+	LocalBundles         []*testing.Registry
+	RemoteBundles        []*testing.Registry
+
+	PrimaryDUT    *dutConfig
+	CompanionDUTs map[string]*dutConfig
+}
+
+// dutConfig contains configurations of a fake DUT.
+type dutConfig struct {
 	BootID                 func() (bootID string, err error)
 	ExtraSSHHandlers       []SSHHandler
 	GetDUTInfo             func(req *protocol.GetDUTInfoRequest) (*protocol.GetDUTInfoResponse, error)
@@ -21,64 +32,74 @@ type envConfig struct {
 	CollectSysInfo         func(req *protocol.CollectSysInfoRequest) (*protocol.CollectSysInfoResponse, error)
 	DownloadPrivateBundles func(req *protocol.DownloadPrivateBundlesRequest) (*protocol.DownloadPrivateBundlesResponse, error)
 	OnRunLocalTestsInit    func(init *protocol.RunTestsInit)
-	OnRunRemoteTestsInit   func(init *protocol.RunTestsInit)
-	LocalBundles           []*testing.Registry
-	RemoteBundles          []*testing.Registry
 }
 
 // EnvOption can be passed to SetUp to customize the testing environment.
 type EnvOption func(*envConfig)
 
+func (o EnvOption) applyToEnvConfig(cfg *envConfig) { o(cfg) }
+
+// DUTOption can be passed to SetUp to configure the primary DUT, or to
+// WithCompanionDUT to configure a companion DUT.
+type DUTOption func(*dutConfig)
+
+func (o DUTOption) applyToEnvConfig(cfg *envConfig) { o(cfg.PrimaryDUT) }
+
+// EnvOrDUTOption is an interface satisfied by EnvOption and DUTOption.
+type EnvOrDUTOption interface {
+	applyToEnvConfig(cfg *envConfig)
+}
+
 // WithBootID specifies a function called to compute a boot ID.
-func WithBootID(f func() (bootID string, err error)) EnvOption {
-	return func(cfg *envConfig) {
+func WithBootID(f func() (bootID string, err error)) DUTOption {
+	return func(cfg *dutConfig) {
 		cfg.BootID = f
 	}
 }
 
 // WithExtraSSHHandlers specifies extra SSH handlers installed to a fake SSH
 // server.
-func WithExtraSSHHandlers(handlers []SSHHandler) EnvOption {
-	return func(cfg *envConfig) {
+func WithExtraSSHHandlers(handlers []SSHHandler) DUTOption {
+	return func(cfg *dutConfig) {
 		cfg.ExtraSSHHandlers = handlers
 	}
 }
 
 // WithGetDUTInfo specifies a function that implements GetDUTInfo handler.
-func WithGetDUTInfo(f func(req *protocol.GetDUTInfoRequest) (*protocol.GetDUTInfoResponse, error)) EnvOption {
-	return func(cfg *envConfig) {
+func WithGetDUTInfo(f func(req *protocol.GetDUTInfoRequest) (*protocol.GetDUTInfoResponse, error)) DUTOption {
+	return func(cfg *dutConfig) {
 		cfg.GetDUTInfo = f
 	}
 }
 
 // WithGetSysInfoState specifies a function that implements GetSysInfoState
 // handler.
-func WithGetSysInfoState(f func(req *protocol.GetSysInfoStateRequest) (*protocol.GetSysInfoStateResponse, error)) EnvOption {
-	return func(cfg *envConfig) {
+func WithGetSysInfoState(f func(req *protocol.GetSysInfoStateRequest) (*protocol.GetSysInfoStateResponse, error)) DUTOption {
+	return func(cfg *dutConfig) {
 		cfg.GetSysInfoState = f
 	}
 }
 
 // WithCollectSysInfo specifies a function that implements CollectSysInfo
 // handler.
-func WithCollectSysInfo(f func(req *protocol.CollectSysInfoRequest) (*protocol.CollectSysInfoResponse, error)) EnvOption {
-	return func(cfg *envConfig) {
+func WithCollectSysInfo(f func(req *protocol.CollectSysInfoRequest) (*protocol.CollectSysInfoResponse, error)) DUTOption {
+	return func(cfg *dutConfig) {
 		cfg.CollectSysInfo = f
 	}
 }
 
 // WithDownloadPrivateBundles specifies a function that implements
 // DownloadPrivateBundles handler.
-func WithDownloadPrivateBundles(f func(req *protocol.DownloadPrivateBundlesRequest) (*protocol.DownloadPrivateBundlesResponse, error)) EnvOption {
-	return func(cfg *envConfig) {
+func WithDownloadPrivateBundles(f func(req *protocol.DownloadPrivateBundlesRequest) (*protocol.DownloadPrivateBundlesResponse, error)) DUTOption {
+	return func(cfg *dutConfig) {
 		cfg.DownloadPrivateBundles = f
 	}
 }
 
 // WithOnRunLocalTestsInit specifies a function that is called on the beginning
 // of RunTests for the local test runner.
-func WithOnRunLocalTestsInit(f func(init *protocol.RunTestsInit)) EnvOption {
-	return func(cfg *envConfig) {
+func WithOnRunLocalTestsInit(f func(init *protocol.RunTestsInit)) DUTOption {
+	return func(cfg *dutConfig) {
 		cfg.OnRunLocalTestsInit = f
 	}
 }
@@ -105,6 +126,20 @@ func WithRemoteBundles(bs ...*testing.Registry) EnvOption {
 	}
 }
 
+// WithCompanionDUT adds a companion DUT.
+func WithCompanionDUT(role string, opts ...DUTOption) EnvOption {
+	return func(cfg *envConfig) {
+		if _, ok := cfg.CompanionDUTs[role]; ok {
+			panic(fmt.Sprintf("WithCompanionDUT: Duplicated companion DUT role %q", role))
+		}
+		dcfg := defaultDUTConfig(len(cfg.CompanionDUTs) + 1)
+		for _, opt := range opts {
+			opt(dcfg)
+		}
+		cfg.CompanionDUTs[role] = dcfg
+	}
+}
+
 // defaultEnvConfig returns envConfig that is used by default.
 func defaultEnvConfig() *envConfig {
 	const defaultBundleName = "bundle"
@@ -122,8 +157,20 @@ func defaultEnvConfig() *envConfig {
 	})
 
 	return &envConfig{
+		OnRunRemoteTestsInit: func(init *protocol.RunTestsInit) {},
+		LocalBundles:         []*testing.Registry{localReg},
+		RemoteBundles:        []*testing.Registry{remoteReg},
+		PrimaryDUT:           defaultDUTConfig(0),
+		CompanionDUTs:        make(map[string]*dutConfig),
+	}
+}
+
+// defaultDUTConfig returns dutConfig that is used by default.
+// dutID should be 0 for the primary DUT, 1+ for companion DUTs.
+func defaultDUTConfig(dutID int) *dutConfig {
+	return &dutConfig{
 		BootID: func() (bootID string, err error) {
-			return "01234567-89ab-cdef-0123-456789abcdef", nil
+			return fmt.Sprintf("bootID-for-server-%d", dutID), nil
 		},
 		GetDUTInfo: func(req *protocol.GetDUTInfoRequest) (*protocol.GetDUTInfoResponse, error) {
 			return &protocol.GetDUTInfoResponse{
@@ -150,9 +197,6 @@ func defaultEnvConfig() *envConfig {
 		DownloadPrivateBundles: func(req *protocol.DownloadPrivateBundlesRequest) (*protocol.DownloadPrivateBundlesResponse, error) {
 			return &protocol.DownloadPrivateBundlesResponse{}, nil
 		},
-		OnRunLocalTestsInit:  func(init *protocol.RunTestsInit) {},
-		OnRunRemoteTestsInit: func(init *protocol.RunTestsInit) {},
-		LocalBundles:         []*testing.Registry{localReg},
-		RemoteBundles:        []*testing.Registry{remoteReg},
+		OnRunLocalTestsInit: func(init *protocol.RunTestsInit) {},
 	}
 }

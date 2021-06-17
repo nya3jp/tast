@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "05120acc_e2c6c88d",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1483403
+      },
+      "writtenOn": "2021-06-17T18:44:51Z",
+      "side": 1,
+      "message": "Oh, I was confused by the output of tar tvzf. \n\ntar --dereference -c --gzip -C /var/log servod_9999 | tar tvfz -\n\nhrw-r--r-- root/root         0 2021-06-16 21:22 servod_9999/latest.DEBUG link to servod_9999/log.2021-06-16--14-25-25.146.DEBUG",
+      "parentUuid": "c729e60d_0d0547ac",
+      "range": {
+        "startLine": 17,
+        "startChar": 0,
+        "endLine": 17,
+        "endChar": 52
+      },
+      "revId": "092a55b7a63bc4d5c93f5701e10c1b17d311d829",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "0fed3679_d96814f2",
@@ -37,6 +61,24 @@
       "writtenOn": "2021-06-17T02:19:33Z",
       "side": 1,
       "message": "Would you mind adding unit tests?",
+      "revId": "092a55b7a63bc4d5c93f5701e10c1b17d311d829",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2ba37e31_e62bebbd",
+        "filename": "src/chromiumos/tast/internal/linuxssh/fileutil.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1483403
+      },
+      "writtenOn": "2021-06-17T18:44:51Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0fed3679_d96814f2",
       "revId": "092a55b7a63bc4d5c93f5701e10c1b17d311d829",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }

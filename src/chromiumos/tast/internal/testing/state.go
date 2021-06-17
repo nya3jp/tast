@@ -63,6 +63,7 @@ import (
 
 	"chromiumos/tast/dut"
 	"chromiumos/tast/errors"
+	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/timing"
 )
@@ -93,17 +94,19 @@ type EntityRoot struct {
 	cfg *RuntimeConfig             // details about how to run an entity
 	out OutputStream               // stream to which logging messages and errors are reported
 
-	mu       sync.Mutex // protects hasError
-	hasError bool       // true if any error was reported from any associated State object
+	mu          sync.Mutex // protects hasError
+	hasError    bool       // true if any error was reported from any associated State object
+	dutFeatures *protocol.DUTFeatures
 }
 
 // NewEntityRoot returns a new EntityRoot object.
-func NewEntityRoot(ce *testcontext.CurrentEntity, cst *EntityConstraints, cfg *RuntimeConfig, out OutputStream) *EntityRoot {
+func NewEntityRoot(ce *testcontext.CurrentEntity, cst *EntityConstraints, cfg *RuntimeConfig, out OutputStream, dutFeatures *protocol.DUTFeatures) *EntityRoot {
 	return &EntityRoot{
-		ce:  ce,
-		cst: cst,
-		cfg: cfg,
-		out: out,
+		ce:          ce,
+		cst:         cst,
+		cfg:         cfg,
+		out:         out,
+		dutFeatures: dutFeatures,
 	}
 }
 
@@ -161,7 +164,7 @@ type TestEntityRoot struct {
 }
 
 // NewTestEntityRoot returns a new TestEntityRoot object.
-func NewTestEntityRoot(test *TestInstance, cfg *RuntimeConfig, out OutputStream) *TestEntityRoot {
+func NewTestEntityRoot(test *TestInstance, cfg *RuntimeConfig, out OutputStream, dutFeatures *protocol.DUTFeatures) *TestEntityRoot {
 	ce := &testcontext.CurrentEntity{
 		OutDir:          cfg.OutDir,
 		HasSoftwareDeps: true,
@@ -169,7 +172,7 @@ func NewTestEntityRoot(test *TestInstance, cfg *RuntimeConfig, out OutputStream)
 		ServiceDeps:     test.ServiceDeps,
 	}
 	return &TestEntityRoot{
-		entityRoot: NewEntityRoot(ce, test.Constraints(), cfg, out),
+		entityRoot: NewEntityRoot(ce, test.Constraints(), cfg, out, dutFeatures),
 		test:       test,
 	}
 }
@@ -470,6 +473,11 @@ func (s *entityMixin) DataPath(p string) string {
 //	defer srv.Close()
 //	resp, err := http.Get(srv.URL+"/data_file.html")
 func (s *entityMixin) DataFileSystem() *dataFS { return (*dataFS)(s) }
+
+// DUTFeatures returns the features about the DUT.
+func (s *entityMixin) DUTFeatures() *protocol.DUTFeatures {
+	return s.entityRoot.dutFeatures
+}
 
 // dataFS implements http.FileSystem.
 type dataFS entityMixin

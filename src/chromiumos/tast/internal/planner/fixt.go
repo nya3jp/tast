@@ -206,7 +206,7 @@ func (st *FixtureStack) Push(ctx context.Context, fixt *testing.FixtureInstance)
 		FixtCtx:      ctx,
 	}
 
-	root := testing.NewEntityRoot(ce, fixt.Constraints(), rcfg, fout)
+	root := testing.NewEntityRoot(ce, fixt.Constraints(), rcfg, fout, st.cfg.Features.Dut)
 	f := newStatefulFixture(fixt, root, fout, st.cfg)
 	st.stack = append(st.stack, f)
 

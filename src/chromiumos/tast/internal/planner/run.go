@@ -617,7 +617,7 @@ func runTest(ctx context.Context, t *testing.TestInstance, tout *entityOutputStr
 		// Recomputing purgeable on each test costs O(|purgeable| * |tests|) overall.
 		Purgeable: dl.m.Purgeable(),
 	}
-	root := testing.NewTestEntityRoot(t, rcfg, tout)
+	root := testing.NewTestEntityRoot(t, rcfg, tout, pcfg.Features.Dut)
 
 	if err := runTestWithRoot(ctx, t, root, pcfg, stack, precfg); err != nil {
 		// If runTestWithRoot reported that the test didn't finish, print diagnostic messages.

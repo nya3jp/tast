@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9cd740e9_5a337c83",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/runnerclient/local_test.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-06-17T09:49:45Z",
+      "side": 1,
+      "message": "I guess we are changing this test to exercise the failure path, because a success case is already done by TestLocalSuccess.",
+      "revId": "676576d4403df9ec829f090acef7a9b54bac56b9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "6b002df4_44cc8ada",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/runnerclient/local_test.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 221,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-06-17T09:49:45Z",
+      "side": 1,
+      "message": "I am not very familiar with fixtures, but this looks like having the name collision with the other local fixture. How does this work?",
+      "range": {
+        "startLine": 218,
+        "startChar": 0,
+        "endLine": 221,
+        "endChar": 27
+      },
+      "revId": "676576d4403df9ec829f090acef7a9b54bac56b9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

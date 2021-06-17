@@ -6,6 +6,8 @@ package runtest
 
 import (
 	"context"
+	"crypto/x509"
+	"encoding/pem"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -20,6 +22,7 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/runtest/internal/fakesshserver"
 	"chromiumos/tast/internal/bundle/fakebundle"
 	"chromiumos/tast/internal/runner"
+	"chromiumos/tast/internal/sshtest"
 )
 
 const (
@@ -39,6 +42,8 @@ const (
 
 	localBundleDir  = "bundles/local"
 	remoteBundleDir = "bundles/remote"
+
+	keyFile = "id_rsa"
 )
 
 // Env contains information needed to interact with the testing environment
@@ -115,11 +120,26 @@ func SetUp(t *gotesting.T, opts ...EnvOption) *Env {
 	}
 	t.Cleanup(func() { lo.Close() })
 
+	// Generate an SSH key pair.
+	userKey, hostKey := sshtest.MustGenerateKeys()
+	keyData := pem.EncodeToMemory(&pem.Block{
+		Type:    "RSA PRIVATE KEY",
+		Headers: nil,
+		Bytes:   x509.MarshalPKCS1PrivateKey(userKey),
+	})
+	if err := ioutil.WriteFile(filepath.Join(rootDir, keyFile), keyData, 0600); err != nil {
+		t.Fatal(err)
+	}
+
 	// Start a fake SSH server.
 	handlers := cfg.ExtraSSHHandlers
 	handlers = append(handlers, defaultHandlers(cfg)...)
 	handlers = append(handlers, localTestRunner.SSHHandlers(LocalTestRunnerPath)...)
-	sshServer := fakesshserver.Start(handlers)
+	sshServer, err := fakesshserver.Start(&userKey.PublicKey, hostKey, handlers)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { sshServer.Stop() })
 
 	// Create a State object that is cleaned up automatically.
 	state := &config.State{}
@@ -159,7 +179,7 @@ func (e *Env) Config() *config.Config {
 		TotalShards: 1,
 		// Fill info to access a fake SSH server.
 		Target:  e.sshServer.Addr().String(),
-		KeyFile: e.sshServer.KeyFile(),
+		KeyFile: filepath.Join(e.rootDir, keyFile),
 		// Set default directory paths to use.
 		ResDir:              filepath.Join(e.rootDir, resultDir),
 		TastDir:             filepath.Join(e.rootDir, tastDir),

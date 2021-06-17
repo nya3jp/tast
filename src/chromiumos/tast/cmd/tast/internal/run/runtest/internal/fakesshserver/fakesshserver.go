@@ -6,6 +6,7 @@
 package fakesshserver
 
 import (
+	"crypto/rsa"
 	"io"
 	"net"
 	"os/exec"
@@ -61,7 +62,7 @@ func ShellHandler(prefix string) Handler {
 
 // Server maintains resources related to a fake SSH server.
 type Server struct {
-	testData *sshtest.TestData
+	server *sshtest.SSHServer
 }
 
 // Start starts a new fake SSH server.
@@ -69,8 +70,8 @@ type Server struct {
 // Note: This function does not use the functional option pattern. This package
 // is internal to the runtest package so it is easy to rewrite all callers when
 // we introduce new configuration values.
-func Start(handlers []Handler) *Server {
-	server := sshtest.NewTestData(func(req *sshtest.ExecReq) {
+func Start(userKey *rsa.PublicKey, hostKey *rsa.PrivateKey, handlers []Handler) (*Server, error) {
+	server, err := sshtest.NewSSHServer(userKey, hostKey, func(req *sshtest.ExecReq) {
 		for _, handler := range handlers {
 			cmd, ok := handler(req.Cmd)
 			if !ok {
@@ -83,19 +84,16 @@ func Start(handlers []Handler) *Server {
 		}
 		req.Start(false)
 	})
-	return &Server{
-		testData: server,
+	if err != nil {
+		return nil, err
 	}
+	return &Server{server: server}, nil
 }
 
 // Stop stops the fake SSH server.
 func (s *Server) Stop() {
-	s.testData.Close()
+	s.server.Close()
 }
 
 // Addr returns the address the server listens to.
-func (s *Server) Addr() net.Addr { return s.testData.Srvs[0].Addr() }
-
-// KeyFile returns a path to a file containing the SSH user private key granted
-// to access the server.
-func (s *Server) KeyFile() string { return s.testData.UserKeyFile }
+func (s *Server) Addr() net.Addr { return s.server.Addr() }

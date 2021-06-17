@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c729e60d_0d0547ac",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-06-17T02:19:33Z",
+      "side": 1,
+      "message": "In my local testing symlinks under a directory were resolved. Am I missing something?\n\n [nya@yoru tartest]% ls -l src    \n total 4\n -rw-r--r-- 1 nya primarygroup 5 Jun 17 02:05 normal\n lrwxrwxrwx 1 nya primarygroup 6 Jun 17 02:02 symlink -\u003e normal\n\n [nya@yoru tartest]% ls -l dst\n total 0\n\n [nya@yoru tartest]% tar --dereference -c --gzip -C src . | tar -x --gzip --no-same-owner -p -C dst\n\n [nya@yoru tartest]% ls -l dst\n total 8\n -rw-r--r-- 2 nya primarygroup 5 Jun 17 02:05 normal\n -rw-r--r-- 2 nya primarygroup 5 Jun 17 02:05 symlink",
+      "range": {
+        "startLine": 17,
+        "startChar": 0,
+        "endLine": 17,
+        "endChar": 52
+      },
+      "revId": "092a55b7a63bc4d5c93f5701e10c1b17d311d829",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0fed3679_d96814f2",
+        "filename": "src/chromiumos/tast/internal/linuxssh/fileutil.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 47,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-06-17T02:19:33Z",
+      "side": 1,
+      "message": "Would you mind adding unit tests?",
+      "revId": "092a55b7a63bc4d5c93f5701e10c1b17d311d829",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

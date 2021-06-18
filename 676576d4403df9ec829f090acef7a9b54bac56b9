@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "6a652aae_074f8af0",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/runnerclient/local_test.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 82,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-06-18T02:15:44Z",
+      "side": 1,
+      "message": "Yes that\u0027s right. Unfortunately, this case is difficult to test with the fake runner provided by the runtest package.",
+      "parentUuid": "9cd740e9_5a337c83",
+      "revId": "676576d4403df9ec829f090acef7a9b54bac56b9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "6b002df4_44cc8ada",
@@ -31,6 +49,30 @@
       "writtenOn": "2021-06-17T09:49:45Z",
       "side": 1,
       "message": "I am not very familiar with fixtures, but this looks like having the name collision with the other local fixture. How does this work?",
+      "range": {
+        "startLine": 218,
+        "startChar": 0,
+        "endLine": 221,
+        "endChar": 27
+      },
+      "revId": "676576d4403df9ec829f090acef7a9b54bac56b9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a590ea10_f3f93d44",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/runnerclient/local_test.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 221,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-06-18T02:15:44Z",
+      "side": 1,
+      "message": "This is the case where a local fixture is linked to both a local bundle and a remote bundle.\n\nThis can happen sometimes because it\u0027s too easy to link a fixture to a bundle (just importing the package). For tests we avoid unintentional links by forbidding imports between bundle packages (i.e. it is forbidden by tast-lint to import chromiumos/tast/{local,remote}/bundles/$bundle/$category package from anywhere). However, fixtures are defined usually in support packages, so it\u0027s undesirable but possible that a fixture is accidentally linked.\n\nI\u0027m not sure if the current approach to disambiguate a fixture is the best. We may want to enforce import rules more strictly to avoid accidental linkage of fixtures. But currently the framework has a workaround to choose from the two.",
+      "parentUuid": "6b002df4_44cc8ada",
       "range": {
         "startLine": 218,
         "startChar": 0,

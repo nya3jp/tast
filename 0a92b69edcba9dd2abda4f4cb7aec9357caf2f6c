@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6e4b28ef_f3cb5cfe",
+        "filename": "src/chromiumos/tast/internal/testing/global.go",
+        "patchSetId": 5
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-06-18T02:06:06Z",
+      "side": 1,
+      "message": "Fixed a bug: filepath.Base was missing here.",
+      "range": {
+        "startLine": 18,
+        "startChar": 31,
+        "endLine": 18,
+        "endChar": 45
+      },
+      "revId": "0a92b69edcba9dd2abda4f4cb7aec9357caf2f6c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

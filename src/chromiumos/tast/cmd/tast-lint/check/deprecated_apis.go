@@ -60,6 +60,26 @@ func DeprecatedAPIs(fs *token.FileSet, f *ast.File) []*Issue {
 			alternative: "context",
 			link:        "https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#Contexts-and-timeouts",
 		},
+		{
+			pkg:         "chromiumos/tast/local/chrome/ui",
+			alternative: "chromiumos/tast/local/chrome/uiauto",
+			link:        "https://b.corp.google.com/issues/178020071",
+		},
+		{
+			pkg:         "chromiumos/tast/local/chrome/ui/filesapp",
+			alternative: "chromiumos/tast/local/chrome/uiauto/filesapp",
+			link:        "https://b.corp.google.com/issues/178020071",
+		},
+		{
+			pkg:         "chromiumos/tast/local/chrome/ui/mouse",
+			alternative: "chromiumos/tast/local/chrome/uiauto/mouse",
+			link:        "https://b.corp.google.com/issues/178020071",
+		},
+		{
+			pkg:         "chromiumos/tast/local/chrome/ui/pointer",
+			alternative: "chromiumos/tast/local/chrome/uiauto/pointer",
+			link:        "https://b.corp.google.com/issues/178020071",
+		},
 	})
 }
 

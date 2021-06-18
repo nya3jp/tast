@@ -16,6 +16,24 @@
       "message": "This approach looks pretty nice!\n\nI feel like we\u0027re getting closer to the approach of gflags (https://github.com/gflags/gflags): we ask users to register globally accessible runtime variables on global initialization. If we think in this way, we will be interested in pulling more ideas from gflags, e.g.\n\n- Conflict detection: raise an error if multiple runtime variables with the same name are registered\n- Safe access: declare a global variable per runtime variable registration and allow accessing its value without repeating its name, eliminating chance of typo\n- Typed values: declare a type (e.g. int) and return a parsed value\n\nAlso, we should make sure runtime variables are not registered in the middle of execution. For example we don\u0027t want people to write code like this:\n\n func GetVar(ctx context.Context) string {\n   const varName \u003d \"foo.bar\"\n   testing.AddVar([]string{varName})\n   return testing.ContextVar(ctx, varName)\n }\n\nActually this issue also applies to existing registry methods (AddTest/AddFixture/AddService), but I\u0027m afraid that AddVar is more likely to be abused in this way.",
       "revId": "711e2b43c04f11dfd961b6febaa508a167f50fb1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "751670cf_34da47ca",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 11
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-06-18T23:17:59Z",
+      "side": 1,
+      "message": "Please see my latest change in attempt to address your concern:\n\n\u003e Conflict detection: raise an error if multiple runtime variables with the same name are registered\n\nThis addressed in vars_test.go in the tast-tests CL.\nhttps://chromium-review.googlesource.com/c/chromiumos/platform/tast-tests/+/2902377\nIf there are multiple variables with the same names, the unit tests will fail.\n\n\u003e Safe access: declare a global variable per runtime variable registration and allow accessing its value without repeating its name, eliminating chance of typo\n\nThis is also addressed in the CL:\nhttps://chromium-review.googlesource.com/c/chromiumos/platform/tast-tests/+/2902377\nThe change is in vars.go\n\n\u003e Typed values: declare a type (e.g. int) and return a parsed value\nI have added \"Type\" file in vars.go (see the other CL).\nThe new parameter is used to make sure the runtime variable type is exactly the same as the declaration. \n\nPlease see: https://chromium-review.googlesource.com/c/chromiumos/platform/tast/+/2902118/13/src/chromiumos/tast/internal/testcontext/context.go",
+      "parentUuid": "01d56c34_02d68cd5",
+      "revId": "711e2b43c04f11dfd961b6febaa508a167f50fb1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

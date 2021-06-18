@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "be9316e6_a101a220",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 13
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-06-18T23:17:59Z",
+      "side": 1,
+      "message": "Hi Shuhei:\n\nPlease take a look at my comments and latest code change and see if they addressed the requirement you mentioned in your comment. Thanks.\n\nSeewai\n",
+      "revId": "fb2edcdd5e7820f709148b10137c571e3f59a75c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

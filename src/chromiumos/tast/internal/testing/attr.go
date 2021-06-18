@@ -257,6 +257,10 @@ Tests in this group are not used for build verification.
 				Name: "firmware_ccd",
 				Desc: `Indicates a test which requires a servo with CCD. I.e. A servo_v4 or equivalent.`,
 			},
+			{
+				Name: "firmware_usb",
+				Desc: `Indicates a test which requires a working USB stick attached to the servo.`,
+			},
 		},
 	},
 	{

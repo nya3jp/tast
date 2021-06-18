@@ -105,6 +105,30 @@
       },
       "revId": "676576d4403df9ec829f090acef7a9b54bac56b9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "38a45786_88001b12",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/runnerclient/local_test.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 221,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-06-18T09:59:04Z",
+      "side": 1,
+      "message": "Hmm, according to crbug.com/1179162, new import between local and remote packages is no longer allowed. So I guess this logic is not triggered in production today.\n\nAnyway, IIUC the behavior is to ignore fixtures in remote bundles if they are also in local bundles. Let me improve the comment.",
+      "parentUuid": "eb3052fa_94e53bd7",
+      "range": {
+        "startLine": 218,
+        "startChar": 0,
+        "endLine": 221,
+        "endChar": 27
+      },
+      "revId": "676576d4403df9ec829f090acef7a9b54bac56b9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

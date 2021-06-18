@@ -81,6 +81,30 @@
       },
       "revId": "676576d4403df9ec829f090acef7a9b54bac56b9",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "eb3052fa_94e53bd7",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/runnerclient/local_test.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 221,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-06-18T07:26:24Z",
+      "side": 1,
+      "message": "If it is expected that this fixture is not actually used by the local test (pkg.Test1B), how about\n- adding comment here that this local fixture is not actually picked up with the test data\n- or having this fixture always fail to make sure it is not actually picked up?",
+      "parentUuid": "a590ea10_f3f93d44",
+      "range": {
+        "startLine": 218,
+        "startChar": 0,
+        "endLine": 221,
+        "endChar": 27
+      },
+      "revId": "676576d4403df9ec829f090acef7a9b54bac56b9",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

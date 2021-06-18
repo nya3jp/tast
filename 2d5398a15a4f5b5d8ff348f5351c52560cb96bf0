@@ -43,6 +43,30 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "cf5a5e9c_f062cc39",
+        "filename": "src/chromiumos/tast/internal/linuxssh/fileutil.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1483403
+      },
+      "writtenOn": "2021-06-18T14:49:06Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "9ad197aa_af96a0a4",
+      "range": {
+        "startLine": 29,
+        "startChar": 0,
+        "endLine": 29,
+        "endChar": 24
+      },
+      "revId": "2d5398a15a4f5b5d8ff348f5351c52560cb96bf0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "4d001a70_06e9e3ad",
         "filename": "src/chromiumos/tast/internal/linuxssh/fileutil.go",
         "patchSetId": 2
@@ -71,6 +95,30 @@
       "writtenOn": "2021-06-18T07:32:12Z",
       "side": 1,
       "message": "sb is appended later.",
+      "range": {
+        "startLine": 57,
+        "startChar": 62,
+        "endLine": 57,
+        "endChar": 64
+      },
+      "revId": "2d5398a15a4f5b5d8ff348f5351c52560cb96bf0",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9cdbf73b_e3987a7c",
+        "filename": "src/chromiumos/tast/internal/linuxssh/fileutil.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1483403
+      },
+      "writtenOn": "2021-06-18T14:49:06Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "d065a509_be067687",
       "range": {
         "startLine": 57,
         "startChar": 62,

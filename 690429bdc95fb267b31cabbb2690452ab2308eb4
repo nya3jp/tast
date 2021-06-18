@@ -1,0 +1,262 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d7901d79_c5606e56",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 761,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-06-18T06:30:37Z",
+      "side": 0,
+      "message": "This test is removed.\n\nTestRunListTests exercises a skipped test instead.",
+      "range": {
+        "startLine": 761,
+        "startChar": 5,
+        "endLine": 761,
+        "endChar": 34
+      },
+      "revId": "690429bdc95fb267b31cabbb2690452ab2308eb4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3c04fe57_09eacb49",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 831,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-06-18T06:30:37Z",
+      "side": 0,
+      "message": "This test is removed because it tests behavior rather than results.\n\nInstead, TestRunListTests now exercises a skiped test, which needs successful GetDUTInfo in order to pass.",
+      "range": {
+        "startLine": 831,
+        "startChar": 5,
+        "endLine": 831,
+        "endChar": 28
+      },
+      "revId": "690429bdc95fb267b31cabbb2690452ab2308eb4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9a36b477_dca8e945",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 867,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-06-18T06:30:37Z",
+      "side": 0,
+      "message": "This test is renamed to TestRunPrintOSVersion.",
+      "range": {
+        "startLine": 867,
+        "startChar": 5,
+        "endLine": 867,
+        "endChar": 27
+      },
+      "revId": "690429bdc95fb267b31cabbb2690452ab2308eb4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "876340cb_48c7ad13",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 945,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-06-18T06:30:37Z",
+      "side": 0,
+      "message": "This test is removed due to duplication with TestRunWithSkippedTests.",
+      "range": {
+        "startLine": 945,
+        "startChar": 5,
+        "endLine": 945,
+        "endChar": 26
+      },
+      "revId": "690429bdc95fb267b31cabbb2690452ab2308eb4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "fb915a8d_7766bbde",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 131,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-06-18T06:30:37Z",
+      "side": 0,
+      "message": "This test now exercises companion DUTs as well.",
+      "range": {
+        "startLine": 131,
+        "startChar": 5,
+        "endLine": 131,
+        "endChar": 34
+      },
+      "revId": "690429bdc95fb267b31cabbb2690452ab2308eb4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2eeab7b2_664be340",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 138,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-06-18T06:30:37Z",
+      "side": 0,
+      "message": "This test now exercises companion DUTs as well.",
+      "range": {
+        "startLine": 138,
+        "startChar": 5,
+        "endLine": 138,
+        "endChar": 41
+      },
+      "revId": "690429bdc95fb267b31cabbb2690452ab2308eb4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "46e6a9bf_73b306a5",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 166,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-06-18T06:30:37Z",
+      "side": 0,
+      "message": "This function is inlined as there is now only one caller.",
+      "range": {
+        "startLine": 166,
+        "startChar": 5,
+        "endLine": 166,
+        "endChar": 19
+      },
+      "revId": "690429bdc95fb267b31cabbb2690452ab2308eb4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9435ccea_c8204568",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 182,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-06-18T06:30:37Z",
+      "side": 0,
+      "message": "This test is removed. Instead, TestRunDownloadPrivateBundles exercises companion DUTs as well.",
+      "revId": "690429bdc95fb267b31cabbb2690452ab2308eb4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "12334883_ed62ffc8",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 190,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-06-18T06:30:37Z",
+      "side": 0,
+      "message": "This test is removed. Instead, TestRunDownloadPrivateBundlesWithTLW exercises companion DUTs as well.",
+      "revId": "690429bdc95fb267b31cabbb2690452ab2308eb4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5065cc5c_ce1fb40f",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 662,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-06-18T06:30:37Z",
+      "side": 0,
+      "message": "This test is renamed to TestRunListTests. It also exercises a skipped test as well.",
+      "range": {
+        "startLine": 662,
+        "startChar": 5,
+        "endLine": 662,
+        "endChar": 18
+      },
+      "revId": "690429bdc95fb267b31cabbb2690452ab2308eb4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "70d8f298_00354526",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 710,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-06-18T06:30:37Z",
+      "side": 0,
+      "message": "This is renamed to TestRunListTestsWithSharding.",
+      "range": {
+        "startLine": 710,
+        "startChar": 5,
+        "endLine": 710,
+        "endChar": 30
+      },
+      "revId": "690429bdc95fb267b31cabbb2690452ab2308eb4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d69be300_2350e8e0",
+        "filename": "src/chromiumos/tast/internal/devserver/devserver.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-06-18T06:30:37Z",
+      "side": 0,
+      "message": "This change is required for TestRunTLW to pass. When requesting CacheForDut for the host machine (not for a DUT), it is right to pass an empty DUT name.",
+      "revId": "690429bdc95fb267b31cabbb2690452ab2308eb4",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

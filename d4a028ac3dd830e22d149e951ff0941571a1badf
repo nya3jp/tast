@@ -1,0 +1,72 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "db434b53_58afb134",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-06-18T06:30:37Z",
+      "side": 1,
+      "message": "This is a final patch that eliminates use of the old fakerunner package!\n\nI know this patch is large. If it helps, I\u0027m happy to split it to multiple patches, though I guess I can just do trivial splitting (per test cases).\n",
+      "revId": "d4a028ac3dd830e22d149e951ff0941571a1badf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "db40e6b4_3f68500d",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 163,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-06-18T06:30:37Z",
+      "side": 1,
+      "message": "This is a bug I uncovered while rewriting unit tests. The issue is tracked at b/191318903.",
+      "revId": "d4a028ac3dd830e22d149e951ff0941571a1badf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "346123b7_95567e49",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/runnerclient/private.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 37,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-06-18T06:30:37Z",
+      "side": 1,
+      "message": "This is required for TestRunDownloadPrivateBundlesWithTLW to pass. When we don\u0027t use TLW, we should not fill RunnerDownloadPrivateBundlesArgs.DUTName.",
+      "revId": "d4a028ac3dd830e22d149e951ff0941571a1badf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e96b3f97_f6ba3f28",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/runtest/env.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 247,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-06-18T06:30:37Z",
+      "side": 1,
+      "message": "This is required for TestRunDownloadPrivateBundles to pass because Tast CLI runs \"sync\" at the end of install private bundles.",
+      "revId": "d4a028ac3dd830e22d149e951ff0941571a1badf",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

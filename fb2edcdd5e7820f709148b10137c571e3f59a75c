@@ -16,6 +16,23 @@
       "message": "Hi Shuhei:\n\nPlease take a look at my comments and latest code change and see if they addressed the requirement you mentioned in your comment. Thanks.\n\nSeewai\n",
       "revId": "fb2edcdd5e7820f709148b10137c571e3f59a75c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "87bf1efc_3630aeae",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 13
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-06-19T01:49:44Z",
+      "side": 1,
+      "message": "I forgot to discuss the following point.\n\n\u003e Also, we should make sure runtime variables are not registered in the middle of execution.\n\nThere is a check in the latest patch that variables are only able to added once in bulk. Any other attempt will be resulted in error.",
+      "revId": "fb2edcdd5e7820f709148b10137c571e3f59a75c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

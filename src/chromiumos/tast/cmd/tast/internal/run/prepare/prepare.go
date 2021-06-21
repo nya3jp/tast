@@ -21,6 +21,7 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/runnerclient"
 	"chromiumos/tast/cmd/tast/internal/run/target"
+	"chromiumos/tast/internal/linuxssh"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/internal/timing"
@@ -219,7 +220,7 @@ func pushExecutables(ctx context.Context, cfg *config.Config, hst *ssh.Conn, tar
 
 	cfg.Logger.Log("Pushing executables to target")
 	start := time.Now()
-	bytes, err := pushToHost(ctx, cfg, hst, files)
+	bytes, err := linuxssh.PutFiles(ctx, hst, files, linuxssh.DereferenceSymlinks)
 	if err != nil {
 		return err
 	}
@@ -339,12 +340,12 @@ func pushDataFiles(ctx context.Context, cfg *config.Config, hst *ssh.Conn, destD
 	}
 
 	start := time.Now()
-	wsBytes, err := pushToHost(ctx, cfg, hst, files)
+	wsBytes, err := linuxssh.PutFiles(ctx, hst, files, linuxssh.DereferenceSymlinks)
 	if err != nil {
 		return err
 	}
 	if len(delPaths) > 0 {
-		if err = deleteFromHost(ctx, cfg, hst, destDir, delPaths); err != nil {
+		if err = linuxssh.DeleteTree(ctx, hst, destDir, delPaths); err != nil {
 			return err
 		}
 	}

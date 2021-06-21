@@ -6,7 +6,6 @@ package runnerclient
 
 import (
 	"context"
-	"path/filepath"
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/internal/linuxssh"
@@ -16,7 +15,6 @@ import (
 // moveFromHost copies the tree rooted at src on hst to dst on the local system and deletes src from hst.
 // src is appended to cfg.HstCopyBasePath to support unit tests.
 func moveFromHost(ctx context.Context, cfg *config.Config, hst *ssh.Conn, src, dst string) error {
-	src = filepath.Join(cfg.HstCopyBasePath, src)
 	if err := linuxssh.GetFile(ctx, hst, src, dst, linuxssh.PreserveSymlinks); err != nil {
 		return err
 	}

@@ -125,11 +125,6 @@ type Config struct {
 	MaybeMissingVars string            // regex matching with variables which may be missing
 
 	MsgTimeout time.Duration // timeout for reading control messages; default used if zero
-
-	// Base path prepended to paths on hst when performing file copies. Only relevant for unit
-	// tests, which can set this to a temp dir in order to inspect files that are copied to hst and
-	// control the files that are copied from it.
-	HstCopyBasePath string
 }
 
 // State hold state attributes which are accumulated over the course of the run.

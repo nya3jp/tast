@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "11a7bd31_922d4db9",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 15
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-06-22T16:54:45Z",
+      "side": 1,
+      "message": "I just resolved the conflict with the latest registry.",
+      "revId": "3bd2f490ee633b1f395d7d1c9e35e635ceb7235a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

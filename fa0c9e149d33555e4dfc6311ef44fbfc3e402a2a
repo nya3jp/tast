@@ -1,0 +1,142 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e261c572_659ed647",
+        "filename": "docs/codelab_3.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 53,
+      "author": {
+        "id": 1390967
+      },
+      "writtenOn": "2021-06-22T21:54:15Z",
+      "side": 1,
+      "message": "The test is using the chromeLoggedIn fixture now, guess we should change the precondition references here too",
+      "range": {
+        "startLine": 53,
+        "startChar": 0,
+        "endLine": 53,
+        "endChar": 30
+      },
+      "revId": "fa0c9e149d33555e4dfc6311ef44fbfc3e402a2a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "954a762f_37d7be61",
+        "filename": "docs/codelab_3.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 67,
+      "author": {
+        "id": 1390967
+      },
+      "writtenOn": "2021-06-22T21:54:15Z",
+      "side": 1,
+      "message": "Fixture: \"chromeLoggedIn\"",
+      "range": {
+        "startLine": 67,
+        "startChar": 2,
+        "endLine": 67,
+        "endChar": 33
+      },
+      "revId": "fa0c9e149d33555e4dfc6311ef44fbfc3e402a2a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e18976f1_a7062be1",
+        "filename": "docs/codelab_3.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 72,
+      "author": {
+        "id": 1390967
+      },
+      "writtenOn": "2021-06-22T21:54:15Z",
+      "side": 1,
+      "message": "FixtValue()",
+      "range": {
+        "startLine": 72,
+        "startChar": 9,
+        "endLine": 72,
+        "endChar": 19
+      },
+      "revId": "fa0c9e149d33555e4dfc6311ef44fbfc3e402a2a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cbdab93d_014aa5f4",
+        "filename": "docs/codelab_3.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 278,
+      "author": {
+        "id": 1390967
+      },
+      "writtenOn": "2021-06-22T21:54:15Z",
+      "side": 1,
+      "message": "2021?",
+      "range": {
+        "startLine": 278,
+        "startChar": 13,
+        "endLine": 278,
+        "endChar": 17
+      },
+      "revId": "fa0c9e149d33555e4dfc6311ef44fbfc3e402a2a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "315ffad0_6755bf3c",
+        "filename": "docs/codelab_3.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 305,
+      "author": {
+        "id": 1390967
+      },
+      "writtenOn": "2021-06-22T21:54:15Z",
+      "side": 1,
+      "message": "here too",
+      "range": {
+        "startLine": 305,
+        "startChar": 2,
+        "endLine": 305,
+        "endChar": 33
+      },
+      "revId": "fa0c9e149d33555e4dfc6311ef44fbfc3e402a2a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "efe079f1_b0e5bce9",
+        "filename": "docs/codelab_3.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 310,
+      "author": {
+        "id": 1390967
+      },
+      "writtenOn": "2021-06-22T21:54:15Z",
+      "side": 1,
+      "message": "same",
+      "range": {
+        "startLine": 310,
+        "startChar": 9,
+        "endLine": 310,
+        "endChar": 19
+      },
+      "revId": "fa0c9e149d33555e4dfc6311ef44fbfc3e402a2a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

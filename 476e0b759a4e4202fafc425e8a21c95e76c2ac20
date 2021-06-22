@@ -100,6 +100,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "b578e54f_516d7ea7",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/check/forbidden_calls.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 127,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-06-22T10:11:04Z",
+      "side": 1,
+      "message": "Pruning all SelectorExpr subtrees sounds clever!",
+      "parentUuid": "83dc28df_3bc37173",
+      "range": {
+        "startLine": 127,
+        "startChar": 1,
+        "endLine": 127,
+        "endChar": 54
+      },
+      "revId": "476e0b759a4e4202fafc425e8a21c95e76c2ac20",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "37fe19a1_3d635e22",

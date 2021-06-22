@@ -16,6 +16,86 @@
       "message": "Thanks Bisakh, LGTM! I defer to Oleh.\n",
       "revId": "f08f5dc589879548ffee863b325138017e45aa5d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2b25db1e_adaecc43",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1306673
+      },
+      "writtenOn": "2021-06-22T14:51:55Z",
+      "side": 1,
+      "message": "Thanks Bisakh,\n\nLGTM % nits!",
+      "revId": "f08f5dc589879548ffee863b325138017e45aa5d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "22015509_32919a76",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/check/forbidden_calls.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1306673
+      },
+      "writtenOn": "2021-06-22T14:51:55Z",
+      "side": 1,
+      "message": "nit: let\u0027s also document that it also checks whether there is \"errors\" identifier?",
+      "range": {
+        "startLine": 27,
+        "startChar": 4,
+        "endLine": 27,
+        "endChar": 46
+      },
+      "revId": "f08f5dc589879548ffee863b325138017e45aa5d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "0af76197_33d9e502",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/check/forbidden_calls.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1306673
+      },
+      "writtenOn": "2021-06-22T14:51:55Z",
+      "side": 1,
+      "message": "nit: this name is a bit confusing, I usually expect that variable with \"has\" prefix has boolean type and variable with \"Err\"/\"err\" suffix has error type.\n\nMaybe rename it to smth like \"errorsErr\"/\"errorsImportErr\"?",
+      "range": {
+        "startLine": 28,
+        "startChar": 12,
+        "endLine": 28,
+        "endChar": 20
+      },
+      "revId": "f08f5dc589879548ffee863b325138017e45aa5d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c6ecfc6a_576340d8",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/check/forbidden_calls.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 150,
+      "author": {
+        "id": 1306673
+      },
+      "writtenOn": "2021-06-22T14:51:55Z",
+      "side": 1,
+      "message": "nit: I think it makes sense to move it closer to the first use, e.g. before line 155. \n\nImagine that this function will return at line 152. Then there is no sense in that constant and no need to initialise it. I am not sure whether Go compiler will optimise it.",
+      "revId": "f08f5dc589879548ffee863b325138017e45aa5d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

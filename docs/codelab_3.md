@@ -50,13 +50,13 @@ import "chromiumos/tast/local/chrome/uiauto"
 ## Simple Starter Test
 
 A good starting point for most chrome.Automation tests is to use the
-chrome.LoggedIn() precondition and then force the test to fail and give you a
+"chromeLoggedIn" fixture and then force the test to fail and give you a
 dump of the Accessibility tree. That way you can look at the tree and decide what
 node you want to interact with. Here is some sample code:
 ```go
 func init() {
 	testing.AddTest(&testing.Test{
-		Func: ChangeWallpaper,
+		Func: Change,
 		Desc: "Follows the user flow to change the wallpaper",
 		Contacts: []string{
 			"my-group@chromium.org",
@@ -64,12 +64,12 @@ func init() {
 		},
 		Attr:         []string{"group:mainline", "informational"},
 		SoftwareDeps: []string{"chrome"},
-		Pre:          chrome.LoggedIn(),
+		Fixture:      "chromeLoggedIn",
 	})
 }
 
-func ChangeWallpaper(ctx context.Context, s *testing.State) {
-	cr := s.PreValue().(*chrome.Chrome)
+func Change(ctx context.Context, s *testing.State) {
+	cr := s.FixtValue().(*chrome.Chrome)
 	tconn, err := cr.TestAPIConn(ctx)
 	if err != nil {
 		s.Fatal("Failed to create Test API connection: ", err)
@@ -275,11 +275,11 @@ one chain of operations.
 [uiauto.Combine]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/chrome/uiauto#Combine
 
 ```go
-// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Copyright 2021 The Chromium OS Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package ui
+package wallpaper
 
 import (
 	"context"
@@ -295,19 +295,19 @@ import (
 
 func init() {
 	testing.AddTest(&testing.Test{
-		Func: ChangeWallpaper,
+		Func: Change,
 		Desc: "Follows the user flow to change the wallpaper",
 		Contacts: []string{
 			"chromeos-sw-engprod@google.com",
 		},
 		Attr:         []string{"group:mainline", "informational"},
 		SoftwareDeps: []string{"chrome"},
-		Pre:          chrome.LoggedIn(),
+		Fixture:      "chromeLoggedIn",
 	})
 }
 
-func ChangeWallpaper(ctx context.Context, s *testing.State) {
-	cr := s.PreValue().(*chrome.Chrome)
+func Change(ctx context.Context, s *testing.State) {
+	cr := s.FixtValue().(*chrome.Chrome)
 	tconn, err := cr.TestAPIConn(ctx)
 	if err != nil {
 		s.Fatal("Failed to create Test API connection: ", err)

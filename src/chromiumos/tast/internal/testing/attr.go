@@ -235,7 +235,11 @@ Tests in this group are not used for build verification.
 			},
 			{
 				Name: "firmware_experimental",
-				Desc: `Firmware tests that are not yet stabilized.`,
+				Desc: `Firmware tests that might break the DUTs in the lab.`,
+			},
+			{
+				Name: "firmware_unstable",
+				Desc: `Firmware tests that are not yet stabilized, but won't break DUTs.`,
 			},
 			{
 				Name: "firmware_smoke",

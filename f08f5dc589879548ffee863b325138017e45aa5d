@@ -58,6 +58,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "9e47c066_5dd903e7",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/check/forbidden_calls.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1512082
+      },
+      "writtenOn": "2021-06-22T19:19:37Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "22015509_32919a76",
+      "range": {
+        "startLine": 27,
+        "startChar": 4,
+        "endLine": 27,
+        "endChar": 46
+      },
+      "revId": "f08f5dc589879548ffee863b325138017e45aa5d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "0af76197_33d9e502",
@@ -81,6 +105,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "18964458_f340a673",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/check/forbidden_calls.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1512082
+      },
+      "writtenOn": "2021-06-22T19:19:37Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "0af76197_33d9e502",
+      "range": {
+        "startLine": 28,
+        "startChar": 12,
+        "endLine": 28,
+        "endChar": 20
+      },
+      "revId": "f08f5dc589879548ffee863b325138017e45aa5d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "c6ecfc6a_576340d8",
@@ -94,6 +142,24 @@
       "writtenOn": "2021-06-22T14:51:55Z",
       "side": 1,
       "message": "nit: I think it makes sense to move it closer to the first use, e.g. before line 155. \n\nImagine that this function will return at line 152. Then there is no sense in that constant and no need to initialise it. I am not sure whether Go compiler will optimise it.",
+      "revId": "f08f5dc589879548ffee863b325138017e45aa5d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0386be3e_cb6aa946",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/check/forbidden_calls.go",
+        "patchSetId": 6
+      },
+      "lineNbr": 150,
+      "author": {
+        "id": 1512082
+      },
+      "writtenOn": "2021-06-22T19:19:37Z",
+      "side": 1,
+      "message": "Done.\nIf I remember correctly, compilers generally makes some code optimization at compilation time. During this period, constant folding and constant propagation takes place (platform independent). Basically, instead of allocating memory for a constant, it just replaces the constant with actual content where the it has been referenced.",
+      "parentUuid": "c6ecfc6a_576340d8",
       "revId": "f08f5dc589879548ffee863b325138017e45aa5d",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }

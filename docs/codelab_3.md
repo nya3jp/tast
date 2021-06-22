@@ -56,7 +56,7 @@ node you want to interact with. Here is some sample code:
 ```go
 func init() {
 	testing.AddTest(&testing.Test{
-		Func: ChangeWallpaper,
+		Func: Change,
 		Desc: "Follows the user flow to change the wallpaper",
 		Contacts: []string{
 			"my-group@chromium.org",
@@ -68,7 +68,7 @@ func init() {
 	})
 }
 
-func ChangeWallpaper(ctx context.Context, s *testing.State) {
+func Change(ctx context.Context, s *testing.State) {
 	cr := s.PreValue().(*chrome.Chrome)
 	tconn, err := cr.TestAPIConn(ctx)
 	if err != nil {
@@ -279,7 +279,7 @@ one chain of operations.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package ui
+package wallpaper
 
 import (
 	"context"
@@ -295,7 +295,7 @@ import (
 
 func init() {
 	testing.AddTest(&testing.Test{
-		Func: ChangeWallpaper,
+		Func: Change,
 		Desc: "Follows the user flow to change the wallpaper",
 		Contacts: []string{
 			"chromeos-sw-engprod@google.com",
@@ -306,7 +306,7 @@ func init() {
 	})
 }
 
-func ChangeWallpaper(ctx context.Context, s *testing.State) {
+func Change(ctx context.Context, s *testing.State) {
 	cr := s.PreValue().(*chrome.Chrome)
 	tconn, err := cr.TestAPIConn(ctx)
 	if err != nil {

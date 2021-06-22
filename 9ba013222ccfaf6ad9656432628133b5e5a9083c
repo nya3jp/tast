@@ -16,6 +16,69 @@
       "message": "Thanks, Guys.",
       "revId": "9ba013222ccfaf6ad9656432628133b5e5a9083c",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3ddff29a_51acda9b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 7
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1306673
+      },
+      "writtenOn": "2021-06-22T21:42:12Z",
+      "side": 1,
+      "message": "Thanks Bisakh, LGMT % nit!",
+      "revId": "9ba013222ccfaf6ad9656432628133b5e5a9083c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5a2acef4_fdbf9358",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/check/forbidden_calls.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1306673
+      },
+      "writtenOn": "2021-06-22T21:42:12Z",
+      "side": 1,
+      "message": "same",
+      "range": {
+        "startLine": 28,
+        "startChar": 80,
+        "endLine": 28,
+        "endChar": 81
+      },
+      "revId": "9ba013222ccfaf6ad9656432628133b5e5a9083c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2d998a76_394f06e7",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/check/forbidden_calls.go",
+        "patchSetId": 7
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1306673
+      },
+      "writtenOn": "2021-06-22T21:42:12Z",
+      "side": 1,
+      "message": "nit: please add space before (",
+      "range": {
+        "startLine": 28,
+        "startChar": 24,
+        "endLine": 28,
+        "endChar": 25
+      },
+      "revId": "9ba013222ccfaf6ad9656432628133b5e5a9083c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

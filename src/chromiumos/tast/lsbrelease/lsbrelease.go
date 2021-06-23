@@ -80,6 +80,7 @@ var allowedPkgs = []string{
 	"chromiumos/tast/local/screenshot", // For Board.
 	"chromiumos/tast/lsbrelease",
 	"chromiumos/tast/remote/bundles/cros/firmware", // For finding firmware file.
+	"chromiumos/tast/remote/firmware",              // For checking USB images
 	"chromiumos/tast/remote/firmware/reporters",    // For Board.
 	"main", // for local_test_runner
 }

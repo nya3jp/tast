@@ -198,6 +198,7 @@ The following software features are defined:
     the DTC (Diagnostic and Telemetry Controller) VM, a special EC interface,
     and a dock firmware updater.
 *   `wired_8021x` - The ability to use 802.1X for authentication over Ethernet.
+*   `wireguard` - The ability to run a WireGuard VPN.
 *   `no_kernel_upstream` - Skip boards with continuously-rebased kernel.
 
 [amd64]: https://en.wikipedia.org/wiki/X86-64

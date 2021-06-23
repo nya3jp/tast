@@ -236,7 +236,9 @@ func main() {
 			"wifi":        `!"betty" && !"board:reven" && !"tast_vm" && !"nyan_kitty"`,
 			"wilco":       "wilco",
 			"wired_8021x": "wired_8021x",
-			"wpa3_sae":    "wpa3_sae",
+			// WireGuard is only supported on 5.10+ kernels.
+			"wireguard": `!("kernel-3_18" || "kernel-4_4" || "kernel-4_14" || "kernel-4_19" || "kernel-5_4")`,
+			"wpa3_sae":  "wpa3_sae",
 		},
 		// The autotest-capability package tries to install this to /etc but it's diverted to /usr/local.
 		AutotestCapabilityDir:   autocaps.DefaultCapabilityDir,

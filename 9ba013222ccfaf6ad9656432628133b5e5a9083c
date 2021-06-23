@@ -35,6 +35,23 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "ad392e47_8db67e0f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 7
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1512082
+      },
+      "writtenOn": "2021-06-23T18:35:53Z",
+      "side": 1,
+      "message": "Hi Guys, I\u0027m getting either 404 or PERMISSION_DENIED to all the urls shared by CQ bot. It would be great if you could share it.\nBtw, how is the failure of HW test related to this CL on linting. Not quite sure though. However a small look up yields this",
+      "revId": "9ba013222ccfaf6ad9656432628133b5e5a9083c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "5a2acef4_fdbf9358",

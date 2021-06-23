@@ -52,6 +52,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "feae3339_00b61c0d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 7
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1512082
+      },
+      "writtenOn": "2021-06-23T18:36:30Z",
+      "side": 1,
+      "message": "🔥➜ tast-tests git:(main) ✗ tast-lint local_tests/wifi/udev_rename.go  \nFollowing errors should be modified by yourself:\n  local_tests/wifi/udev_rename.go:218:1: exported function UdevRename should have comment or be unexported",
+      "parentUuid": "ad392e47_8db67e0f",
+      "revId": "9ba013222ccfaf6ad9656432628133b5e5a9083c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "5a2acef4_fdbf9358",

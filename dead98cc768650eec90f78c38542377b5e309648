@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "e6821f5b_a9f4bc66",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2021-06-23T01:01:01Z",
+      "side": 1,
+      "message": "LGTM",
+      "revId": "dead98cc768650eec90f78c38542377b5e309648",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "27dcd61d_ba98808f",
+        "filename": "src/chromiumos/tast/internal/testing/attr.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 242,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2021-06-23T01:01:01Z",
+      "side": 1,
+      "message": "Thanks for this description. With this mention, it is easier to understand the diff between experimental and unstable.",
+      "range": {
+        "startLine": 242,
+        "startChar": 55,
+        "endLine": 242,
+        "endChar": 76
+      },
+      "revId": "dead98cc768650eec90f78c38542377b5e309648",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

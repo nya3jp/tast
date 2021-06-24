@@ -35,6 +35,23 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "cbaf9520_ab718ad2",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 15
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-06-24T22:44:19Z",
+      "side": 1,
+      "message": "I have a question regarding type-safe. Please see my comment. Thanks.",
+      "revId": "3bd2f490ee633b1f395d7d1c9e35e635ceb7235a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "d0d589a3_0ae0e55e",
@@ -60,6 +77,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "fdb97c25_ab621f8f",
+        "filename": "src/chromiumos/tast/testing/context.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-06-24T22:44:19Z",
+      "side": 1,
+      "message": "Just for discussion purpose. I already have this check in testcontext.ContextVar:\n\n\tif reflect.PtrTo(reflect.TypeOf(valType)) !\u003d reflect.TypeOf(val) {\n\t\tpanic(fmt.Sprintf(\"Mismatched value type for %q got %v; wanted *%T\\n\", name, val, valType))\n\t}\n\t\nWould it be sufficient to make it type-safe?",
+      "parentUuid": "d0d589a3_0ae0e55e",
+      "range": {
+        "startLine": 68,
+        "startChar": 50,
+        "endLine": 68,
+        "endChar": 64
+      },
+      "revId": "3bd2f490ee633b1f395d7d1c9e35e635ceb7235a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "d8d65939_a774b899",
         "filename": "src/chromiumos/tast/testing/global.go",
         "patchSetId": 15
@@ -71,6 +112,24 @@
       "writtenOn": "2021-06-24T09:46:36Z",
       "side": 1,
       "message": "As you may know, today, there are two mechanisms for test bundles to pass initialization parameters to the framework:\n\n1. testing.Registry (i.e. testing.AddTest, testing.AddFixture, ...)\n2. bundle.Delegate (passed to bundle.LocalDefault/RemoteDefault in the bundlemain package)\n\nWhen adding a new initialization parameter (in this case, valid runtime variables), which mechanism to use depends on the characteristics of the new parameter.\n\n- With testing.Registry, registrations can be split across many files (e.g. testing.AddTest is called in many files). This is useful if there are many users adding/modifying/removing registrations and conflicts are expected if registrations are put in a single file.\n- With bundle.Delegate, we have only one place where parameters are configured (the bundlemain package). This is useful if we want to keep all registrations in a single place.\n\nSo, in the case of runtime variables, IMO:\n\n- If runtime variable definitions scatter across files, we should use testing.Registry\n- If runtime variable definitions stay in a single file, we should use bundle.Delegate",
+      "revId": "3bd2f490ee633b1f395d7d1c9e35e635ceb7235a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "11366bef_c5420dad",
+        "filename": "src/chromiumos/tast/testing/global.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-06-24T22:44:19Z",
+      "side": 1,
+      "message": "I will check how to use it with bundle.Delegate.",
+      "parentUuid": "d8d65939_a774b899",
       "revId": "3bd2f490ee633b1f395d7d1c9e35e635ceb7235a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }

@@ -70,6 +70,23 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "06838012_1601e575",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 7
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1306673
+      },
+      "writtenOn": "2021-06-24T08:39:20Z",
+      "side": 1,
+      "message": "Hi Bisakh,\n\nCan you please resolve 2 comments to be able to merge CL?\n\nThanks,\nOleh",
+      "revId": "9ba013222ccfaf6ad9656432628133b5e5a9083c",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "5a2acef4_fdbf9358",

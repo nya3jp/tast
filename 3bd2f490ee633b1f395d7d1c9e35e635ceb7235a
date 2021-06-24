@@ -16,6 +16,63 @@
       "message": "I just resolved the conflict with the latest registry.",
       "revId": "3bd2f490ee633b1f395d7d1c9e35e635ceb7235a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f562d5bd_9301e3d0",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 15
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-06-24T09:46:36Z",
+      "side": 1,
+      "message": "Hi Seewai, thanks for the update.\n\nYour PoCs surfaced many points to discuss. Thank you for this work!\n\nIMO, design decision points include:\n\n- Associating vars to context.Context vs. making vars globally accessible without context.Context\n- Scattering registrations to multiple files/packages vs. keeping registrationgs in a single file/package\n- Whether to support typed runtime variables (e.g. int)\n- Whether to support safe access (typo caught in build-time)\n\nI\u0027d like you to discuss these points in your design doc.\n",
+      "revId": "3bd2f490ee633b1f395d7d1c9e35e635ceb7235a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d0d589a3_0ae0e55e",
+        "filename": "src/chromiumos/tast/testing/context.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-06-24T09:46:36Z",
+      "side": 1,
+      "message": "This is a type-unsafe API. For example we can pass *int for a string runtime variable.\n\nFor type-safe APIs, we have to duplicate functions for different types, e.g. https://pkg.go.dev/flag\n\nBut supporting non-string types is a stretch goal. I recommend focusing on strings for now. Sorry for my earlier distracting comment.",
+      "range": {
+        "startLine": 68,
+        "startChar": 50,
+        "endLine": 68,
+        "endChar": 64
+      },
+      "revId": "3bd2f490ee633b1f395d7d1c9e35e635ceb7235a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d8d65939_a774b899",
+        "filename": "src/chromiumos/tast/testing/global.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-06-24T09:46:36Z",
+      "side": 1,
+      "message": "As you may know, today, there are two mechanisms for test bundles to pass initialization parameters to the framework:\n\n1. testing.Registry (i.e. testing.AddTest, testing.AddFixture, ...)\n2. bundle.Delegate (passed to bundle.LocalDefault/RemoteDefault in the bundlemain package)\n\nWhen adding a new initialization parameter (in this case, valid runtime variables), which mechanism to use depends on the characteristics of the new parameter.\n\n- With testing.Registry, registrations can be split across many files (e.g. testing.AddTest is called in many files). This is useful if there are many users adding/modifying/removing registrations and conflicts are expected if registrations are put in a single file.\n- With bundle.Delegate, we have only one place where parameters are configured (the bundlemain package). This is useful if we want to keep all registrations in a single place.\n\nSo, in the case of runtime variables, IMO:\n\n- If runtime variable definitions scatter across files, we should use testing.Registry\n- If runtime variable definitions stay in a single file, we should use bundle.Delegate",
+      "revId": "3bd2f490ee633b1f395d7d1c9e35e635ceb7235a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

@@ -34,6 +34,24 @@
       "parentUuid": "01d56c34_02d68cd5",
       "revId": "711e2b43c04f11dfd961b6febaa508a167f50fb1",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "73a4bf17_1cefc620",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 11
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-06-24T09:46:36Z",
+      "side": 1,
+      "message": "I\u0027m afraid that I asked too many things in the earlier comment. While I really want conflict detection, other two (safe access \u0026 typed values) are stretch goal and we don\u0027t need them immediately.",
+      "parentUuid": "751670cf_34da47ca",
+      "revId": "711e2b43c04f11dfd961b6febaa508a167f50fb1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

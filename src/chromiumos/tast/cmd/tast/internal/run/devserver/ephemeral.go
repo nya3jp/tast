@@ -177,6 +177,7 @@ func defaultAllowedBuckets() map[string]struct{} {
 		"chromiumos-test-assets-public": {},
 		"termina-component-testing":     {},
 		"cros-containers-staging":       {},
+		"perfetto":                      {},
 	}
 }
 

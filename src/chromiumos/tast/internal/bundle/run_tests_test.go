@@ -755,3 +755,31 @@ func TestPrepareTempDir(t *gotesting.T) {
 		t.Error("restore must preserve the temporary directory: ", err)
 	}
 }
+
+// TestRunTestsInitialGlobalVars makes sure it will call the initialGlobalVars if it is not nil.
+func TestRunTestsInitialGlobalVars(t *gotesting.T) {
+	reg := testing.NewRegistry("bundle")
+	reg.AddTestInstance(&testing.TestInstance{Name: "pkg.Test", Func: func(context.Context, *testing.State) {}})
+
+	cfg := &protocol.RunConfig{
+		Features: &protocol.Features{
+			Infra: &protocol.InfraFeatures{
+				Vars: map[string]string{"var1": "value1"},
+			},
+		},
+	}
+	var runInit bool
+	scfg := NewStaticConfig(reg, time.Minute, Delegate{
+		InitialGlobalVars: func(vars map[string]string) error {
+			runInit = true
+			return nil
+		},
+	})
+	cl := startTestServer(t, scfg)
+	if _, err := protocoltest.RunTestsForEvents(cl, cfg, false); err != nil {
+		t.Fatalf("RunTests failed: %v", err)
+	}
+	if !runInit {
+		t.Error("RunTests didn't run InitialGlobalVars")
+	}
+}

@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ca36f296_aa4f141b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-06-25T23:04:20Z",
+      "side": 1,
+      "message": "Hi Shuhei:\n\nPlease look at this new approach by using Delegate. This approach does not need to use context. Use can access the variable directly and it is type safe. I understand that you think we should remove type-safe from the requirement, but please take a look. I can easily remove all other type supports if you think I should remove it.\n\nThanks.\n\nSeewai\n",
+      "revId": "f13b2a0eaf78f435f6be59b85d0db6836bb7edcd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

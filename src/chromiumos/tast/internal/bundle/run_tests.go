@@ -23,6 +23,7 @@ import (
 	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/internal/timing"
+	test "chromiumos/tast/testing"
 )
 
 // testsToRun returns a sorted list of tests to run for the given patterns.
@@ -97,6 +98,12 @@ func runTests(ctx context.Context, srv protocol.TestService_RunTestsServer, cfg 
 		return err
 	}
 	defer restoreTempDir()
+
+	if len(scfg.globalVars) > 0 {
+		if err := initializeGlobalVars(scfg.globalVars, cfg.Features.Infra.Vars); err != nil {
+			testcontext.Log(ctx, "Failed to initialz global runtime variables: ", err)
+		}
+	}
 
 	var postRunFunc func(context.Context) error
 
@@ -188,6 +195,17 @@ func runTests(ctx context.Context, srv protocol.TestService_RunTestsServer, cfg 
 	if postRunFunc != nil {
 		if err := postRunFunc(ctx); err != nil {
 			return command.NewStatusErrorf(statusError, "post-run failed: %v", err)
+		}
+	}
+	return nil
+}
+
+// initializeGlobalVars sets the values for all global variables.
+func initializeGlobalVars(vars []test.Var, varValues map[string]string) error {
+	for _, v := range vars {
+		stringValue, ok := varValues[v.Name()]
+		if ok {
+			v.Unmarshal(stringValue)
 		}
 	}
 	return nil

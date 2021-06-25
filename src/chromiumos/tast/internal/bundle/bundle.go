@@ -17,6 +17,7 @@ import (
 	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/testing"
+	test "chromiumos/tast/testing"
 )
 
 const (
@@ -63,6 +64,9 @@ type Delegate struct {
 	// reasonable timeout at the beginning of the hook to avoid blocking
 	// for long time.
 	BeforeDownload func(ctx context.Context)
+
+	// GlobalVars stores information for global runtime variables.
+	GlobalVars []test.Var
 }
 
 // run reads a JSON-marshaled BundleArgs struct from stdin and performs the requested action.
@@ -161,6 +165,8 @@ type StaticConfig struct {
 	// defaultTestTimeout contains the default maximum time allotted to each test.
 	// It is only used if testing.Test.Timeout is unset.
 	defaultTestTimeout time.Duration
+	// globalVars stores information for global runtime variables.
+	globalVars []test.Var
 }
 
 // NewStaticConfig constructs StaticConfig from given parameters.
@@ -186,5 +192,6 @@ func NewStaticConfig(reg *testing.Registry, defaultTestTimeout time.Duration, d 
 		beforeReboot:       d.BeforeReboot,
 		beforeDownload:     d.BeforeDownload,
 		defaultTestTimeout: defaultTestTimeout,
+		globalVars:         d.GlobalVars,
 	}
 }

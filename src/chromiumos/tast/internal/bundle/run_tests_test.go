@@ -24,6 +24,7 @@ import (
 	"chromiumos/tast/internal/sshtest"
 	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/testing"
+	test "chromiumos/tast/testing"
 	"chromiumos/tast/testutil"
 )
 
@@ -753,5 +754,40 @@ func TestPrepareTempDir(t *gotesting.T) {
 
 	if _, err := os.Stat(tmpDir); err != nil {
 		t.Error("restore must preserve the temporary directory: ", err)
+	}
+}
+
+// TestInitializeGlobalVars makes sure it will call the initializeGlobalVars if it is not nil.
+func TestInitializeGlobalVars(t *gotesting.T) {
+	reg := testing.NewRegistry("bundle")
+	reg.AddTestInstance(&testing.TestInstance{Name: "pkg.Test", Func: func(context.Context, *testing.State) {}})
+
+	const (
+		varName              = "var1"
+		uninitializedVarName = "var2"
+		varVal               = "value1"
+	)
+	cfg := &protocol.RunConfig{
+		Features: &protocol.Features{
+			Infra: &protocol.InfraFeatures{
+				Vars: map[string]string{varName: varVal},
+			},
+		},
+	}
+	strVar := test.NewVarString(varName, "test")
+	uninitializedVar := test.NewVarString(uninitializedVarName, "uninitialized")
+	scfg := NewStaticConfig(reg, time.Minute,
+		Delegate{GlobalVars: []test.Var{strVar, uninitializedVar}})
+	cl := startTestServer(t, scfg)
+	if _, err := protocoltest.RunTestsForEvents(cl, cfg, false); err != nil {
+		t.Fatalf("RunTests failed: %v", err)
+	}
+	val, ok := strVar.Value()
+	if val != varVal || !ok {
+		t.Errorf("strVar.Value() returned (%q, %v); wanted (%q, true)", val, ok, varVal)
+	}
+	val, ok = uninitializedVar.Value()
+	if ok {
+		t.Error("strVar.Value() returned true; wanted false")
 	}
 }

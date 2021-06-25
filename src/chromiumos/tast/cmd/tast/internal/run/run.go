@@ -49,11 +49,6 @@ func Run(ctx context.Context, cfg *config.Config, state *config.State) ([]*resul
 	cc := target.NewConnCache(cfg, cfg.Target)
 	defer cc.Close(ctx)
 
-	conn, err := cc.Conn(ctx)
-	if err != nil {
-		return nil, errors.Wrapf(err, "failed to connect to %s", cfg.Target)
-	}
-
 	if state.ReportsConn != nil {
 		cl := protocol.NewReportsClient(state.ReportsConn)
 		state.ReportsClient = cl
@@ -74,7 +69,7 @@ func Run(ctx context.Context, cfg *config.Config, state *config.State) ([]*resul
 		defer es.Close()
 	}
 
-	if err := prepare.Prepare(ctx, cfg, state, conn); err != nil {
+	if err := prepare.Prepare(ctx, cfg, state, cc); err != nil {
 		return nil, errors.Wrap(err, "failed to build and push")
 	}
 

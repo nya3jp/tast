@@ -30,25 +30,25 @@ import (
 
 // Prepare prepares target DUT and companion DUTs for running tests. When instructed in cfg, it builds
 // and pushes the local test runner and test bundles, and downloads private test bundles.
-func Prepare(ctx context.Context, cfg *config.Config, state *config.State, conn *target.Conn) error {
+func Prepare(ctx context.Context, cfg *config.Config, state *config.State, cc *target.ConnCache) error {
+	if !cfg.Build && !cfg.DownloadPrivateBundles {
+		// Return without connecting to the DUT if we have nothing to do.
+		return nil
+	}
 	if cfg.Build && cfg.DownloadPrivateBundles {
 		// Usually it makes no sense to download prebuilt private bundles when
 		// building and pushing a fresh test bundle.
 		return errors.New("-downloadprivatebundles requires -build=false")
 	}
 
-	if err := prepareDUT(ctx, cfg, state, conn, cfg.Target); err != nil {
+	if err := prepareDUT(ctx, cfg, state, cc, cfg.Target); err != nil {
 		return fmt.Errorf("failed to prepare primary DUT %s: %v", cfg.Target, err)
 	}
 
 	for _, dut := range cfg.CompanionDUTs {
 		cc := target.NewConnCache(cfg, dut)
 		defer cc.Close(ctx)
-		conn, err := cc.Conn(ctx)
-		if err != nil {
-			return fmt.Errorf("failed to connect to companion DUT %s: %v", dut, err)
-		}
-		if err := prepareDUT(ctx, cfg, state, conn, dut); err != nil {
+		if err := prepareDUT(ctx, cfg, state, cc, dut); err != nil {
 			return fmt.Errorf("failed to prepare companion DUT %s: %v", dut, err)
 		}
 	}
@@ -58,8 +58,11 @@ func Prepare(ctx context.Context, cfg *config.Config, state *config.State, conn 
 // prepareDUT prepares the DUT for running tests. When instructed in cfg, it builds
 // and pushes the local test runner and test bundles, and downloads private test
 // bundles.
-func prepareDUT(ctx context.Context, cfg *config.Config, state *config.State, conn *target.Conn, target string) error {
-	written := false
+func prepareDUT(ctx context.Context, cfg *config.Config, state *config.State, cc *target.ConnCache, target string) error {
+	conn, err := cc.Conn(ctx)
+	if err != nil {
+		return fmt.Errorf("failed to connect to %s: %v", target, err)
+	}
 
 	if cfg.Build {
 		targetArch, err := getTargetArch(ctx, cfg, conn.SSHConn())
@@ -72,14 +75,12 @@ func prepareDUT(ctx context.Context, cfg *config.Config, state *config.State, co
 		if err := pushAll(ctx, cfg, state, conn.SSHConn(), targetArch); err != nil {
 			return err
 		}
-		written = true
 	}
 
 	if cfg.DownloadPrivateBundles {
 		if err := runnerclient.DownloadPrivateBundles(ctx, cfg, conn, target); err != nil {
 			return fmt.Errorf("failed downloading private bundles: %v", err)
 		}
-		written = true
 	}
 
 	// TODO(crbug.com/982181): Consider downloading external data files here.
@@ -87,10 +88,8 @@ func prepareDUT(ctx context.Context, cfg *config.Config, state *config.State, co
 	// After writing files to the DUT, run sync to make sure the written files are persisted
 	// even if the DUT crashes later. This is important especially when we push local_test_runner
 	// because it can appear as zero-byte binary after a crash and subsequent sysinfo phase fails.
-	if written {
-		if err := conn.SSHConn().Command("sync").Run(ctx); err != nil {
-			return fmt.Errorf("failed to sync disk writes: %v", err)
-		}
+	if err := conn.SSHConn().Command("sync").Run(ctx); err != nil {
+		return fmt.Errorf("failed to sync disk writes: %v", err)
 	}
 	return nil
 }

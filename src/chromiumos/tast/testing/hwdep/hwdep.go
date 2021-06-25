@@ -404,6 +404,17 @@ func WifiNotMarvell() Condition {
 	return c
 }
 
+// WifiNotMarvell8997 returns a hardware dependency condition that is satisfied if
+// the DUT is not using Marvell 8997 chipsets.
+func WifiNotMarvell8997() Condition {
+	// TODO(crbug.com/1070299): replace this when we have hwdep for WiFi chips.
+	c := SkipOnPlatform(
+		"bob", "kevin",
+	)
+	c.CEL = "not_implemented"
+	return c
+}
+
 // WifiIntel returns a hardware dependency condition that if satisfied, indicates
 // that a device uses Intel WiFi. It is not guaranteed that the condition will be
 // satisfied for all devices with Intel WiFi.

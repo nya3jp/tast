@@ -63,6 +63,10 @@ type Delegate struct {
 	// reasonable timeout at the beginning of the hook to avoid blocking
 	// for long time.
 	BeforeDownload func(ctx context.Context)
+
+	// InitializeGlobalVars is called at the beginning of a bundle execution
+	// to initialized the values for all global runtime variables if it is not nil.
+	InitializeGlobalVars func(map[string]string) error
 }
 
 // run reads a JSON-marshaled BundleArgs struct from stdin and performs the requested action.
@@ -161,6 +165,9 @@ type StaticConfig struct {
 	// defaultTestTimeout contains the default maximum time allotted to each test.
 	// It is only used if testing.Test.Timeout is unset.
 	defaultTestTimeout time.Duration
+	// InitializeGlobalVars is called at the beginning of a bundle execution
+	// to initialized the values for all global runtime variables if it is not nil.
+	initializeGlobalVars func(map[string]string) error
 }
 
 // NewStaticConfig constructs StaticConfig from given parameters.
@@ -182,9 +189,10 @@ func NewStaticConfig(reg *testing.Registry, defaultTestTimeout time.Duration, d 
 			}
 			return d.RunHook(ctx)
 		},
-		testHook:           d.TestHook,
-		beforeReboot:       d.BeforeReboot,
-		beforeDownload:     d.BeforeDownload,
-		defaultTestTimeout: defaultTestTimeout,
+		testHook:             d.TestHook,
+		beforeReboot:         d.BeforeReboot,
+		beforeDownload:       d.BeforeDownload,
+		defaultTestTimeout:   defaultTestTimeout,
+		initializeGlobalVars: d.InitializeGlobalVars,
 	}
 }

@@ -554,7 +554,7 @@ func moveTestOutputData(crf copyAndRemoveFunc, outDir, dstDir string) error {
 }
 
 // handleMessage handles generic control messages from test runners.
-func (r *resultsHandler) handleMessage(ctx context.Context, msg interface{}) error {
+func (r *resultsHandler) handleMessage(ctx context.Context, msg control.Msg) error {
 	switch v := msg.(type) {
 	case *control.RunStart:
 		return r.handleRunStart(ctx, v)
@@ -583,7 +583,7 @@ func (r *resultsHandler) handleMessage(ctx context.Context, msg interface{}) err
 // It returns results from executed tests and the names of tests that should have been
 // run but were not started (likely due to an error). unstarted is nil if the list of
 // tests was unavailable; see readTestOutput.
-func (r *resultsHandler) processMessages(ctx context.Context, mch <-chan interface{}, ech <-chan error) (
+func (r *resultsHandler) processMessages(ctx context.Context, mch <-chan control.Msg, ech <-chan error) (
 	results []*resultsjson.Result, unstarted []string, err error) {
 	// If a test is incomplete when we finish reading messages, rewrite its entry at the
 	// end of the streamed results file to make sure that all of its errors are recorded.
@@ -750,7 +750,7 @@ func (w *streamedResultsWriter) write(res *resultsjson.Result, update bool) erro
 // readMessages reads serialized control messages from r and passes them
 // via mch. If an error is encountered, it is passed via ech and no more
 // reads are performed. Channels are closed before returning.
-func readMessages(r io.Reader, mch chan<- interface{}, ech chan<- error) {
+func readMessages(r io.Reader, mch chan<- control.Msg, ech chan<- error) {
 	mr := control.NewMessageReader(r)
 	for mr.More() {
 		msg, err := mr.ReadMessage()
@@ -779,7 +779,7 @@ func readTestOutput(ctx context.Context, cfg *config.Config, state *config.State
 	}
 	defer rh.close()
 
-	mch := make(chan interface{})
+	mch := make(chan control.Msg)
 	ech := make(chan error)
 	go readMessages(r, mch, ech)
 

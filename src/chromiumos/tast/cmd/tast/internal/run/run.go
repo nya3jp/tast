@@ -22,6 +22,7 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/prepare"
 	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
 	"chromiumos/tast/cmd/tast/internal/run/runnerclient"
+	"chromiumos/tast/cmd/tast/internal/run/sharding"
 	"chromiumos/tast/cmd/tast/internal/run/target"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/framework/protocol"
@@ -114,17 +115,17 @@ func listTests(ctx context.Context, cfg *config.Config, state *config.State, cc 
 	if err := runnerclient.GetDUTInfo(ctx, cfg, state, cc); err != nil {
 		return nil, err
 	}
-	testsToRun, testsToSkip, _, err := runnerclient.FindTestsForShard(ctx, cfg, state, cc)
+
+	tests, err := runnerclient.ListTests(ctx, cfg, state, cc)
 	if err != nil {
 		return nil, err
 	}
-	if cfg.ShardIndex == 0 {
-		testsToRun = append(testsToRun, testsToSkip...)
-	}
+
+	shard := sharding.Compute(tests, cfg.ShardIndex, cfg.TotalShards)
 
 	// Convert protocol.ResolvedEntity to resultsjson.Result.
-	results := make([]*resultsjson.Result, len(testsToRun))
-	for i, re := range testsToRun {
+	results := make([]*resultsjson.Result, len(shard.Included))
+	for i, re := range shard.Included {
 		test, err := resultsjson.NewTest(re.GetEntity())
 		if err != nil {
 			return nil, err
@@ -158,23 +159,16 @@ func runTests(ctx context.Context, cfg *config.Config, state *config.State, cc *
 		return nil, errors.Wrap(err, "failed to get initial sysinfo")
 	}
 
-	testsToRun, testsToSkip, testsNotInShard, err := runnerclient.FindTestsForShard(ctx, cfg, state, cc)
+	tests, err := runnerclient.ListTests(ctx, cfg, state, cc)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to get test patterns for specified shard")
+		return nil, err
 	}
 
-	// We include all tests to be skipped in shard 0
-	if cfg.ShardIndex == 0 {
-		testsToRun = append(testsToRun, testsToSkip...)
-		testsToSkip = nil
-	}
+	shard := sharding.Compute(tests, cfg.ShardIndex, cfg.TotalShards)
 
-	state.TestsToRun = testsToRun
+	state.TestsToRun = shard.Included
 	state.TestNamesToSkip = nil
-	for _, t := range testsToSkip {
-		state.TestNamesToSkip = append(state.TestNamesToSkip, t.GetEntity().GetName())
-	}
-	for _, t := range testsNotInShard {
+	for _, t := range shard.Excluded {
 		state.TestNamesToSkip = append(state.TestNamesToSkip, t.GetEntity().GetName())
 	}
 
@@ -182,7 +176,7 @@ func runTests(ctx context.Context, cfg *config.Config, state *config.State, cc *
 		cfg.Logger.Logf("Running shard %d/%d (tests %d/%d)", cfg.ShardIndex+1, cfg.TotalShards,
 			len(state.TestsToRun), len(state.TestsToRun)+len(state.TestNamesToSkip))
 	}
-	if len(testsToRun) == 0 {
+	if len(state.TestsToRun) == 0 {
 		// No tests to run.
 		return nil, nil
 	}

@@ -6,7 +6,6 @@ package runnerclient
 
 import (
 	"context"
-	"fmt"
 	gotesting "testing"
 
 	"github.com/golang/protobuf/ptypes"
@@ -17,88 +16,6 @@ import (
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testing"
 )
-
-func TestFindPatternsForShard(t *gotesting.T) {
-	tests := []*testing.TestInstance{
-		{Name: "pkg.Test0", Desc: "This is test 0"},
-		{Name: "pkg.Test1", Desc: "This is test 1"},
-		{Name: "pkg.Test2", Desc: "This is test 2"},
-		{Name: "pkg.Test3", Desc: "This is test 3"},
-		{Name: "pkg.Test4", Desc: "This is test 4"},
-		{Name: "pkg.Test5", Desc: "This is test 5"},
-		{Name: "pkg.Test6", Desc: "This is test 6"},
-	}
-
-	reg := testing.NewRegistry("bundle")
-	for _, t := range tests {
-		reg.AddTestInstance(t)
-	}
-
-	env := runtest.SetUp(t, runtest.WithLocalBundles(reg), runtest.WithRemoteBundles(testing.NewRegistry("bundle")))
-	cfg := env.Config()
-	cfg.TotalShards = 3
-	state := env.State()
-
-	cc := target.NewConnCache(cfg, cfg.Target)
-	defer cc.Close(context.Background())
-
-	processed := make(map[string]bool)
-	for shardIndex := 0; shardIndex < cfg.TotalShards; shardIndex++ {
-		cfg.ShardIndex = shardIndex
-		testsToRun, testsToSkip, testsNotInShard, err := FindTestsForShard(context.Background(), cfg, state, cc)
-		if err != nil {
-			t.Fatal("Failed to find tests for shard: ", err)
-		}
-		if len(testsToRun)+len(testsNotInShard)+len(testsToSkip) != len(tests) {
-			t.Fatalf("The sum of numbers of tests in the shard (%v), outside the shard (%v) and skipped tests(%v) does not match the number of tests (%v)",
-				len(testsToRun), len(testsNotInShard), len(testsToSkip), len(tests))
-		}
-		for _, tr := range testsToRun {
-			name := tr.GetEntity().GetName()
-			if processed[name] {
-				t.Fatalf("Test %q is in more than one shard", name)
-			}
-			processed[name] = true
-		}
-	}
-	if len(processed) != len(tests) {
-		t.Fatal("Some tests are missing")
-	}
-}
-
-// testFindShardIndices tests whether the function findShardIndices returning the correct indices.
-func testFindShardIndices(numTests, totalShards, shardIndex, wantedStartIndex, wantedEndIndex int) (err error) {
-	startIndex, endIndex := findShardIndices(numTests, totalShards, shardIndex)
-	if startIndex != wantedStartIndex || endIndex != wantedEndIndex {
-		return fmt.Errorf("findShardIndices(%v, %v, %v)=(%v, %v); want (%v, %v)",
-			numTests, totalShards, shardIndex, startIndex, endIndex, wantedStartIndex, wantedEndIndex)
-	}
-	return nil
-}
-
-// TestFindShardIndices makes sure findShardIndices return expected indices.
-func TestFindShardIndices(t *gotesting.T) {
-	t.Parallel()
-	tests := []struct {
-		purpose                                                               string
-		totalTests, totalShards, shardIndex, wantedStartIndex, wantedEndIndex int
-	}{
-		{"the last shard of an evenly distributed shards", 9, 3, 0, 0, 3},
-		{"the middle shard of an evenly distributed shards", 9, 3, 1, 3, 6},
-		{"the last shard of an evenly distributed shards", 9, 3, 2, 6, 9},
-		{"the first shard of an unevenly distributed shards", 11, 3, 0, 0, 4},
-		{"the middle shard of an unevenly distributed shards", 11, 3, 1, 4, 8},
-		{"the last shard of an unevenly distributed shards", 11, 3, 2, 8, 11},
-		{"the case that there are more shards than tests and specified shard has a test", 9, 10, 0, 0, 1},
-		{"the case that there are more shards than tests and specified shard has no test", 9, 10, 9, 9, 9},
-		{"the case that the shard index is greater than the number of tests", 9, 12, 11, 9, 9},
-	}
-	for _, tt := range tests {
-		if err := testFindShardIndices(tt.totalTests, tt.totalShards, tt.shardIndex, tt.wantedStartIndex, tt.wantedEndIndex); err != nil {
-			t.Errorf("Failed in testing for %v: %v", tt.purpose, err)
-		}
-	}
-}
 
 func TestListLocalTests(t *gotesting.T) {
 	reg := testing.NewRegistry("bundle")

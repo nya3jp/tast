@@ -61,7 +61,7 @@ func Run(ctx context.Context, cfg *config.Config, state *config.State) ([]*resul
 	}
 
 	// Always start an ephemeral devserver for remote tests if TLWServer is not specified.
-	if cfg.TLWServer == "" && cfg.RunRemote {
+	if cfg.TLWServer == "" {
 		es, err := startEphemeralDevserverForRemoteTests(ctx, cfg, state)
 		if err != nil {
 			return nil, errors.Wrap(err, "failed to start ephemeral devserver for remote tests")
@@ -218,21 +218,14 @@ func runTests(ctx context.Context, cfg *config.Config, state *config.State, cc *
 		}
 	}()
 
-	if cfg.RunLocal {
-		lres, err := runnerclient.RunLocalTests(ctx, cfg, state, cc)
-		results = append(results, lres...)
-		if err != nil {
-			// TODO(derat): While test runners are always supposed to report success even if tests fail,
-			// it'd probably be better to run both types here even if one fails.
-			return results, err
-		}
+	lres, err := runnerclient.RunLocalTests(ctx, cfg, state, cc)
+	results = append(results, lres...)
+	if err != nil {
+		// TODO(derat): While test runners are always supposed to report success even if tests fail,
+		// it'd probably be better to run both types here even if one fails.
+		return results, err
 	}
 
-	if !cfg.RunRemote {
-		return results, nil
-	}
-
-	// Run remote tests and merge the results.
 	rres, err := runnerclient.RunRemoteTests(ctx, cfg, state)
 	results = append(results, rres...)
 	return results, err

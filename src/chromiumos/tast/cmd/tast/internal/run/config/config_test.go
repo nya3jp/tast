@@ -14,7 +14,6 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 
-	"chromiumos/tast/cmd/tast/internal/build"
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/testutil"
 )
@@ -57,12 +56,6 @@ func TestConfigDeriveDefaultsNoBuild(t *testing.T) {
 	if err := cfg.DeriveDefaults(); err != nil {
 		t.Error("DeriveDefaults failed: ", err)
 	}
-	if !cfg.RunLocal {
-		t.Error("RunLocal is false; want true")
-	}
-	if !cfg.RunRemote {
-		t.Error("RunRemote is false; want true")
-	}
 }
 
 func TestConfigDeriveDefaultsBuild(t *testing.T) {
@@ -70,11 +63,6 @@ func TestConfigDeriveDefaultsBuild(t *testing.T) {
 
 	td := testutil.TempDir(t)
 	defer os.RemoveAll(td)
-
-	// Create the local bundle package.
-	if err := os.MkdirAll(filepath.Join(td, "src/platform/tast-tests/src", build.LocalBundlePkgPathPrefix, buildBundle), 0755); err != nil {
-		t.Fatal("mkdir failed: ", err)
-	}
 
 	cfg := config.NewConfig(config.RunTestsMode, "", td)
 	flags := flag.NewFlagSet("", flag.ContinueOnError)
@@ -91,11 +79,8 @@ func TestConfigDeriveDefaultsBuild(t *testing.T) {
 	if cfg.LocalBundleDir == "" {
 		t.Error("LocalBundleDir is not set")
 	}
-	if !cfg.RunLocal {
-		t.Error("RunLocal is false; want true")
-	}
-	if cfg.RunRemote {
-		t.Error("RunRemote is true; want false")
+	if cfg.RemoteBundleDir == "" {
+		t.Error("RemoteBundleDir is not set")
 	}
 }
 
@@ -104,11 +89,6 @@ func TestConfigDeriveDefaultsBuildNonStandardBundle(t *testing.T) {
 
 	td := testutil.TempDir(t)
 	defer os.RemoveAll(td)
-
-	// Create the remote bundle package.
-	if err := os.MkdirAll(filepath.Join(td, "src", build.RemoteBundlePkgPathPrefix, buildBundle), 0755); err != nil {
-		t.Fatal("mkdir failed: ", err)
-	}
 
 	cfg := config.NewConfig(config.RunTestsMode, "", "")
 	flags := flag.NewFlagSet("", flag.ContinueOnError)
@@ -130,11 +110,11 @@ func TestConfigDeriveDefaultsBuildNonStandardBundle(t *testing.T) {
 	if cfg.LocalBundleDir == "" {
 		t.Error("LocalBundleDir is not set")
 	}
-	if cfg.RunLocal {
-		t.Error("RunLocal is true; want false")
+	if cfg.LocalBundleDir == "" {
+		t.Error("LocalBundleDir is not set")
 	}
-	if !cfg.RunRemote {
-		t.Error("RunRemote is false; want true")
+	if cfg.RemoteBundleDir == "" {
+		t.Error("RemoteBundleDir is not set")
 	}
 }
 

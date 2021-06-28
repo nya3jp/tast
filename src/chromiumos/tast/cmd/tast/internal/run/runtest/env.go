@@ -167,10 +167,8 @@ func (e *Env) Config() *config.Config {
 		// Logs are sent to unit test logs by default.
 		Logger: e.logger,
 		// Run all available tests.
-		Mode:      config.RunTestsMode,
-		Patterns:  []string{"*"},
-		RunLocal:  true,
-		RunRemote: true,
+		Mode:     config.RunTestsMode,
+		Patterns: []string{"*"},
 		// Use prebuilt test bundles.
 		Build: false,
 		// Enable typical pre-flight checks.

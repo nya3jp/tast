@@ -74,9 +74,6 @@ type Config struct {
 	TastDir  string // base directory under which files are written
 	TrunkDir string // path to Chrome OS checkout
 
-	RunLocal  bool // whether to run local tests
-	RunRemote bool // whether to run remote tests
-
 	Build bool // rebuild (and push, for local tests) a single test bundle
 
 	// Variables in this section take effect when build=true.
@@ -330,16 +327,6 @@ func (c *Config) DeriveDefaults() error {
 		setIfEmpty(&c.RemoteBundleDir, filepath.Join(c.BuildOutDir, build.ArchHost, build.RemoteBundleBuildSubdir))
 		// Remote data files are read from the source checkout directly.
 		setIfEmpty(&c.RemoteDataDir, filepath.Join(c.BuildWorkspace, "src"))
-		// Build and run local/remote tests only when the corresponding package exists.
-		if _, err := os.Stat(filepath.Join(c.BuildWorkspace, "src", build.LocalBundlePkgPathPrefix, c.BuildBundle)); err == nil {
-			c.RunLocal = true
-		}
-		if _, err := os.Stat(filepath.Join(c.BuildWorkspace, "src", build.RemoteBundlePkgPathPrefix, c.BuildBundle)); err == nil {
-			c.RunRemote = true
-		}
-		if !c.RunLocal && !c.RunRemote {
-			return fmt.Errorf("could not find bundle %q at %s", c.BuildBundle, c.BuildWorkspace)
-		}
 	} else {
 		// If -build=false, default values are paths to files installed by Portage.
 		setIfEmpty(&c.LocalRunner, "/usr/local/bin/local_test_runner")
@@ -348,9 +335,6 @@ func (c *Config) DeriveDefaults() error {
 		setIfEmpty(&c.RemoteRunner, "/usr/bin/remote_test_runner")
 		setIfEmpty(&c.RemoteBundleDir, "/usr/libexec/tast/bundles/remote")
 		setIfEmpty(&c.RemoteDataDir, "/usr/share/tast/data")
-		// Always run both local and remote tests.
-		c.RunLocal = true
-		c.RunRemote = true
 	}
 	// TODO(crbug/1177189): we assume there's only one remote bundle. Consider
 	// removing the restriction.

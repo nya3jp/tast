@@ -1,8 +1,8 @@
 # Tast Test Attributes (go/tast-attr)
 
-Tests may specify attributes via the `Attr` field in [testing.Test]. Attributes
-are free-form strings, but this document enumerates well-known attributes with
-established meanings.
+Tests may specify attributes via the `Attr` field in [testing.Test]. Leaving
+`Attr` field empty [disables] the test. Attributes are free-form strings, but
+this document enumerates well-known attributes with established meanings.
 
 ## Manually-added attributes
 
@@ -86,3 +86,4 @@ select which tests to run.
 [software dependency]: test_dependencies.md
 [name]: writing_tests.md#Test-names
 [Running Tests]: running_tests.md
+[disables]: writing_tests.md#Disabling-test

@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8688db90_49fa962d",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 26,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-06-28T07:38:24Z",
+      "side": 1,
+      "message": "Could you work with Oleh to file a bug for tracking purpose?",
+      "range": {
+        "startLine": 26,
+        "startChar": 0,
+        "endLine": 26,
+        "endChar": 8
+      },
+      "revId": "346babcd98fef07641ba63c13935e051072b17cb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "927f79ba_5a7d39e6",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-06-28T07:38:24Z",
+      "side": 1,
+      "message": "It is difficult to evaluate the design of this kind of general utilities without actual use cases. I\u0027d like you to modify several existing tests to use the new utility function to demonstrate usefulness.\n\nAlso, could you put these utility functions somewhere in platform/tast-tests repo? Recently we\u0027re careful about adding new exported functions to the framework repo (platform/tast) since we expect framework APIs to have higher standard of compatibility requirements and it\u0027s difficult to change them later.\n",
+      "revId": "346babcd98fef07641ba63c13935e051072b17cb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

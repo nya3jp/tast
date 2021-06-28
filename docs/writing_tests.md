@@ -125,6 +125,14 @@ The `SoftwareDeps` field lists [software dependencies] that should be satisfied
 in order for the test to run. Its value should be an array literal of string
 literals or (possibly qualified) identifiers which are constant value.
 
+#### Disabling test
+
+If test has no attributes assigned it will not be run. Effictively it will be
+disabled.
+If existing test needs to be disabled create a ticket explaining the reason
+and under what circumstances the test can be enabled. Leave a comment in the
+test source file linking the ticket.
+
 [Contacts]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#Test
 [attributes]: test_attributes.md
 [software dependencies]: test_dependencies.md

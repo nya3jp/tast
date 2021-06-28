@@ -68,7 +68,7 @@ If local and remote packages should share the same code, put them in `chromiumos
 
 ### Test registration
 
-A test needs to be registred by calling `testing.AddTest()` in the test entry
+A test needs to be registered by calling `testing.AddTest()` in the test entry
 file, which is located directly under a category package. The registration
 needs to be done in `init()` function in the file. The registration should be
 declarative, which means:
@@ -124,6 +124,14 @@ string literals.
 The `SoftwareDeps` field lists [software dependencies] that should be satisfied
 in order for the test to run. Its value should be an array literal of string
 literals or (possibly qualified) identifiers which are constant value.
+
+#### Disabling tests
+
+If a test has no `group:*` attribute assigned it will be effectively disabled,
+it will not be run by any automation.
+If a test needs to be disabled leave a comment in the test source with the
+reason. If applicable, create a bug explaining under what circumstances the
+test can be enabled.
 
 [Contacts]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#Test
 [attributes]: test_attributes.md

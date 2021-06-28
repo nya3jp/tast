@@ -13,8 +13,8 @@ Zero or more `group:*` attributes can be set to a test to assign it to
 *groups*. A group is a collection of tests having similar purposes or
 characteristics, often (but not necessarily) scheduled together.
 In automated testing, tests to run are usually selected by groups.
-This means that a test will not run in automated testing if it belongs
-to no group.
+If a test belongs to no group, it has no attribute `group:*` assigned, that
+means it will be [disabled] in automated testing.
 
 Some groups define *extra attributes* which annotate tests with extra
 information. They can be set if a test belongs to corresponding groups.
@@ -86,3 +86,4 @@ select which tests to run.
 [software dependency]: test_dependencies.md
 [name]: writing_tests.md#Test-names
 [Running Tests]: running_tests.md
+[disabled]: writing_tests.md#Disabling-test

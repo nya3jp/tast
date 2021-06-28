@@ -105,28 +105,24 @@ func buildAll(ctx context.Context, cfg *config.Config, hst *ssh.Conn, targetArch
 			Workspaces: cfg.CommonWorkspaces(),
 			Out:        filepath.Join(cfg.BuildOutDir, targetArch, path.Base(build.LocalRunnerPkg)),
 		},
-	}
-
-	if cfg.RunLocal {
-		tgts = append(tgts, &build.Target{
+		{
 			Pkg:        path.Join(build.LocalBundlePkgPathPrefix, cfg.BuildBundle),
 			Arch:       targetArch,
 			Workspaces: cfg.BundleWorkspaces(),
 			Out:        filepath.Join(cfg.BuildOutDir, targetArch, build.LocalBundleBuildSubdir, cfg.BuildBundle),
-		})
-	}
-	if cfg.RunRemote {
-		tgts = append(tgts, &build.Target{
+		},
+		{
 			Pkg:        build.RemoteRunnerPkg,
 			Arch:       build.ArchHost,
 			Workspaces: cfg.CommonWorkspaces(),
 			Out:        cfg.RemoteRunner,
-		}, &build.Target{
+		},
+		{
 			Pkg:        path.Join(build.RemoteBundlePkgPathPrefix, cfg.BuildBundle),
 			Arch:       build.ArchHost,
 			Workspaces: cfg.BundleWorkspaces(),
 			Out:        filepath.Join(cfg.RemoteBundleDir, cfg.BuildBundle),
-		})
+		},
 	}
 
 	var names []string
@@ -184,7 +180,7 @@ func pushAll(ctx context.Context, cfg *config.Config, state *config.State, hst *
 		return fmt.Errorf("failed to push local executables: %v", err)
 	}
 
-	if !cfg.RunLocal || cfg.Mode == config.ListTestsMode {
+	if cfg.Mode == config.ListTestsMode {
 		return nil
 	}
 
@@ -208,10 +204,8 @@ func pushExecutables(ctx context.Context, cfg *config.Config, hst *ssh.Conn, tar
 	// local_test_runner is required even if we are running only remote tests,
 	// e.g. to compute software dependencies.
 	files := map[string]string{
-		filepath.Join(srcDir, path.Base(build.LocalRunnerPkg)): cfg.LocalRunner,
-	}
-	if cfg.RunLocal {
-		files[filepath.Join(srcDir, build.LocalBundleBuildSubdir, cfg.BuildBundle)] = filepath.Join(cfg.LocalBundleDir, cfg.BuildBundle)
+		filepath.Join(srcDir, path.Base(build.LocalRunnerPkg)):               cfg.LocalRunner,
+		filepath.Join(srcDir, build.LocalBundleBuildSubdir, cfg.BuildBundle): filepath.Join(cfg.LocalBundleDir, cfg.BuildBundle),
 	}
 
 	ctx, st := timing.Start(ctx, "push_executables")

@@ -43,7 +43,7 @@ func startServices(ctx context.Context, cfg *config.Config, conn *ssh.Conn) (svc
 				tlwForwarder.Close()
 			}
 		}()
-	} else if cfg.UseEphemeralDevserver && cfg.RunLocal && len(cfg.Devservers) == 0 {
+	} else if cfg.UseEphemeralDevserver && len(cfg.Devservers) == 0 {
 		var err error
 		ephemeralDevserver, ephemeralDevserverURL, err = startEphemeralDevserver(cfg, conn)
 		if err != nil {

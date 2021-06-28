@@ -75,26 +75,19 @@ func findShardIndices(numTests, totalShards, shardIndex int) (startIndex, endInd
 
 // listAllTests returns the whole tests whether they will be skipped or not..
 func listAllTests(ctx context.Context, cfg *config.Config, state *config.State, cc *target.ConnCache) ([]*protocol.ResolvedEntity, error) {
-	var tests []*protocol.ResolvedEntity
-	if cfg.RunLocal {
-		conn, err := cc.Conn(ctx)
-		if err != nil {
-			return nil, err
-		}
-		ts, err := ListLocalTests(ctx, cfg, state, conn.SSHConn())
-		if err != nil {
-			return nil, err
-		}
-		tests = append(tests, ts...)
+	conn, err := cc.Conn(ctx)
+	if err != nil {
+		return nil, err
 	}
-	if cfg.RunRemote {
-		ts, err := listRemoteTests(ctx, cfg, state)
-		if err != nil {
-			return nil, err
-		}
-		tests = append(tests, ts...)
+	localTests, err := ListLocalTests(ctx, cfg, state, conn.SSHConn())
+	if err != nil {
+		return nil, err
 	}
-	return tests, nil
+	remoteTests, err := listRemoteTests(ctx, cfg, state)
+	if err != nil {
+		return nil, err
+	}
+	return append(localTests, remoteTests...), nil
 }
 
 // ListLocalTests returns a list of local tests to run.

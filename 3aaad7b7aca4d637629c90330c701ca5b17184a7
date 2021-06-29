@@ -92,6 +92,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "920d29de_63a8cb49",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 128,
+      "author": {
+        "id": 1459973
+      },
+      "writtenOn": "2021-06-29T12:33:06Z",
+      "side": 1,
+      "message": "Indeed Chrome CI doesn\u0027t not capture everything. \n\nI would like to use a statement that points out that test will not be executed in the scope of continuous testing that is executed on the infrastructure. Also, it would be great if the message was precise enough that someone not familiar with Tast would get it what disabling tests means.\n\nI changed the description to \"If test has no attributes assigned it will not be run in an automated manner on Chrome / Chrome OS infrastructure.\"",
+      "parentUuid": "30ca304f_c9c3f22c",
+      "revId": "3aaad7b7aca4d637629c90330c701ca5b17184a7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "8f2490d8_866e4251",
         "filename": "docs/writing_tests.md",
         "patchSetId": 2

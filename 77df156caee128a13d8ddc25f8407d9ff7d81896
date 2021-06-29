@@ -39,6 +39,30 @@
       },
       "revId": "77df156caee128a13d8ddc25f8407d9ff7d81896",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6bcfa6c8_7a86a7cf",
+        "filename": "src/chromiumos/tast/dut/dut.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 100,
+      "author": {
+        "id": 1483403
+      },
+      "writtenOn": "2021-06-29T21:04:17Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "56bda0e1_8bdbdc5b",
+      "range": {
+        "startLine": 100,
+        "startChar": 22,
+        "endLine": 100,
+        "endChar": 50
+      },
+      "revId": "77df156caee128a13d8ddc25f8407d9ff7d81896",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

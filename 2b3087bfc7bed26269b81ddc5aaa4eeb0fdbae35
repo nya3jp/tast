@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8eb5cf54_f497883a",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 221,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-06-29T09:48:53Z",
+      "side": 1,
+      "message": "I think this is also acceptable, but this comment line might be redundant as the function name is self-descriptive. Same for the RunRemoteTests.",
+      "revId": "2b3087bfc7bed26269b81ddc5aaa4eeb0fdbae35",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

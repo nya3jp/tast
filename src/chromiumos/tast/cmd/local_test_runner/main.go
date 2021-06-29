@@ -156,6 +156,7 @@ func main() {
 			"nnapi":                   "nnapi",
 			"nnapi_vendor_driver":     "nnapi && !betty && !tast_vm",
 			"no_android":              "!arc",
+			"no_arc_x86":              "!(amd64 && cheets_user)",
 			"no_arm":                  "!arm",
 			"no_asan":                 "!asan",
 			"no_ath10k_4_4":           `!("board:scarlet" && "kernel-4_4")`, // board scarlet with kernel 4.4 has a version of ath10k without certain features.

@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "613e4f86_33659c07",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 1
+      },
+      "lineNbr": 116,
+      "author": {
+        "id": 1459973
+      },
+      "writtenOn": "2021-06-29T09:29:39Z",
+      "side": 1,
+      "message": "I suggest to also change \u0027have to\u0027 to \u0027may\u0027. WDYT?",
+      "range": {
+        "startLine": 116,
+        "startChar": 6,
+        "endLine": 116,
+        "endChar": 13
+      },
+      "revId": "52da5742456a98dc52af49d89fcdd502830bedd6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

@@ -227,10 +227,9 @@ func main() {
 			// But we haven't enable this feature on builders. For now, just disable
 			// vm_host feature for VM builds. The kvm_transition flag indicates the
 			// board may not work with VMs without a cold reboot b/134764918.
-			"vm_host":   "kvm_host && !tast_vm && !kvm_transition",
-			"vp9_smoke": "!rk3399", // RK3399 crashes on playing unsupported VP9 profile: https://crbug.com/971032
-			"vulkan":    "vulkan",
-			"watchdog":  `watchdog`,
+			"vm_host":  "kvm_host && !tast_vm && !kvm_transition",
+			"vulkan":   "vulkan",
+			"watchdog": `watchdog`,
 			// nyan_kitty is skipped as its WiFi device is unresolvably flaky (crrev.com/c/944502),
 			// exhibiting very similar symptoms to crbug.com/693724, b/65858242, b/36264732.
 			"wifi":        `!"betty" && !"board:reven" && !"tast_vm" && !"nyan_kitty"`,

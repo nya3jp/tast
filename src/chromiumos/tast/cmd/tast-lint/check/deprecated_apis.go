@@ -37,18 +37,6 @@ func DeprecatedAPIs(fs *token.FileSet, f *ast.File) []*Issue {
 			link:        "https://crbug.com/1119252",
 		},
 		{
-			pkg:         "chromiumos/tast/bundle",
-			ident:       "LocalDelegate",
-			alternative: "Delegate",
-			link:        "https://crbug.com/1134060",
-		},
-		{
-			pkg:         "chromiumos/tast/bundle",
-			ident:       "RemoteDelegate",
-			alternative: "Delegate",
-			link:        "https://crbug.com/1134060",
-		},
-		{
 			pkg:         "chromiumos/tast/local/policyutil/pre",
 			ident:       "User",
 			alternative: "chromiumos/tast/local/policyutil/fixtures",

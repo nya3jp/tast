@@ -11,11 +11,6 @@ import (
 	"chromiumos/tast/internal/testing"
 )
 
-// LocalDelegate injects several functions as a part of local test bundle framework implementation.
-//
-// Deprecated: Use Delegate.
-type LocalDelegate = Delegate
-
 // LocalDefault implements the main function for local test bundles.
 //
 // Usually the Main function of a local test bundles should just this function,

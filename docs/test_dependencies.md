@@ -188,8 +188,6 @@ The following software features are defined:
     this feature excludes that version for known flakiness. See
     [this bug](https://b.corp.google.com/issues/172224081) for context.
 *   `vm_host` - The ability to [run virtual machines].
-*   `vp9_smoke` - The ability to stay alive playing a VP9 video with hardware
-    acceleration even for a profile which the driver doesn't support.
 *   `vulkan` - Whether [Vulkan] is enabled.
 *   `watchdog` - watchdog daemon
 *   `wifi` - If this DUT has WiFi device.

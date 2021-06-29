@@ -1,0 +1,61 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "7787edb7_de6c0a72",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 128,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2021-06-29T09:53:09Z",
+      "side": 1,
+      "message": "Also link to (+ maybe take the description from there, it\u0027s clearer)\nhttps://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/test_attributes.md",
+      "revId": "3aaad7b7aca4d637629c90330c701ca5b17184a7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "8f2490d8_866e4251",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 132,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2021-06-29T09:53:09Z",
+      "side": 1,
+      "message": "Maybe bug?",
+      "range": {
+        "startLine": 132,
+        "startChar": 47,
+        "endLine": 132,
+        "endChar": 53
+      },
+      "revId": "3aaad7b7aca4d637629c90330c701ca5b17184a7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "12387ba8_6c7cdf54",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 132,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2021-06-29T09:53:09Z",
+      "side": 1,
+      "message": "Maybe a comment is sufficient if the test is designed to only be executed manually.",
+      "revId": "3aaad7b7aca4d637629c90330c701ca5b17184a7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

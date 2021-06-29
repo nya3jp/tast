@@ -11,11 +11,6 @@ import (
 	"chromiumos/tast/internal/testing"
 )
 
-// RemoteDelegate injects functions as a part of remote test bundle framework implementation.
-//
-// Deprecated: Use Delegate.
-type RemoteDelegate = Delegate
-
 // RemoteDefault implements the main function for remote test bundles.
 //
 // Usually the Main function of a remote test bundles should just this function,

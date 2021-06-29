@@ -98,6 +98,24 @@
       "parentUuid": "927f79ba_5a7d39e6",
       "revId": "346babcd98fef07641ba63c13935e051072b17cb",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9fc92a29_e91a6f0f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-06-29T08:38:58Z",
+      "side": 1,
+      "message": "In general I recommend to put utilities in the smallest scope needed for existing callers. That is...\n\n- If a utility is called from a single package only, we should keep it package-private.\n- If a utility is called from tests in a particular category (e.g. chromiumos/tast/local/bundles/cros/ui/**/*.go), we should keep it a subpackage (e.g. chromiumos/tast/local/bundles/cros/ui/subpkg/subpkg.go).\n- If a utility is called from tests and support libraries of the same theme (e.g. network-related code), we should keep it in a support library for the theme (e.g. chromiumos/tast/local/network).\n- If a utility is called from everywhere, we can consider putting it under more generic package, e.g. chromiumos/tast/common/timeoututil.\n\nThe point here is that we decide this from actual callers, not from possible callers... so even if a utility is designed to be generally useful, it\u0027s good to start from minimal scope.\n\nThis is because it\u0027s often the case that we don\u0027t realize design problems until we attempt to call it from many different places. Also we often end up deciding that we want to keep a utility private to specific scope (e.g. \"let\u0027s keep this context-related utility private to network-related codes because it\u0027s useful to hard-code network-related knowledge to the library\"). This decision gets very difficult to make if we put utilities in larger scope from the first place.\n\nSo, as for this CL, if the only usage is in power_service.go, it\u0027s best to keep it private to the file. You can move it to larger scopes as it gets more callers of it.",
+      "parentUuid": "8f7728e5_60ee76bc",
+      "revId": "346babcd98fef07641ba63c13935e051072b17cb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

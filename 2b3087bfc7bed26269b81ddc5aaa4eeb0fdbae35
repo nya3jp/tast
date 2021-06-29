@@ -16,6 +16,24 @@
       "message": "I think this is also acceptable, but this comment line might be redundant as the function name is self-descriptive. Same for the RunRemoteTests.",
       "revId": "2b3087bfc7bed26269b81ddc5aaa4eeb0fdbae35",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1feb12fa_f84757a1",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 221,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-06-29T09:51:42Z",
+      "side": 1,
+      "message": "Makes sense, let me just drop these comments.",
+      "parentUuid": "8eb5cf54_f497883a",
+      "revId": "2b3087bfc7bed26269b81ddc5aaa4eeb0fdbae35",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

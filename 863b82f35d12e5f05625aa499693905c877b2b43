@@ -1,0 +1,38 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "44f390aa_91e155e2",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-06-29T18:16:21Z",
+      "side": 1,
+      "message": "Looks good. I only have one question. Please take a look at my comment. ",
+      "revId": "863b82f35d12e5f05625aa499693905c877b2b43",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "82277bd2_cff46674",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run_test.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 665,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-06-29T18:16:21Z",
+      "side": 1,
+      "message": "Why does the order matter here?",
+      "revId": "863b82f35d12e5f05625aa499693905c877b2b43",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

@@ -56,6 +56,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "6ef03b2d_638b9624",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 128,
+      "author": {
+        "id": 1459973
+      },
+      "writtenOn": "2021-06-29T11:41:14Z",
+      "side": 1,
+      "message": "yeah, exactly - one can still run the test manually. I wanted to highlight that disabling affects Chrome CI:\n\"If test has no attributes assigned it will not be run on Chrome CI\"\n\nNot sure if \"Chrome CI\" is the right phrase here as it refers to tests in Chrome, doesn\u0027t it?",
+      "parentUuid": "c138387a_7a1b0fde",
+      "revId": "3aaad7b7aca4d637629c90330c701ca5b17184a7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "8f2490d8_866e4251",
         "filename": "docs/writing_tests.md",
         "patchSetId": 2

@@ -38,6 +38,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "c138387a_7a1b0fde",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 128,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2021-06-29T11:04:34Z",
+      "side": 1,
+      "message": "You can still run tests manually, bypassing groups.\ninformational only makes sense together with group:mainline AFAIK.\n\nThere used to be a disabled attribute, but it was removed in favour of removing the groups.",
+      "parentUuid": "f63d65ea_e66a4047",
+      "revId": "3aaad7b7aca4d637629c90330c701ca5b17184a7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "8f2490d8_866e4251",
         "filename": "docs/writing_tests.md",
         "patchSetId": 2

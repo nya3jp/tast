@@ -74,6 +74,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "30ca304f_c9c3f22c",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 128,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2021-06-29T11:49:42Z",
+      "side": 1,
+      "message": "\"Chrome CI\" is very specific and not complete. We also have \"Chrome OS CI\" at least.\n\nI like \"automated testing\" as it\u0027s vague enough to cover everything.",
+      "parentUuid": "6ef03b2d_638b9624",
+      "revId": "3aaad7b7aca4d637629c90330c701ca5b17184a7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "8f2490d8_866e4251",
         "filename": "docs/writing_tests.md",
         "patchSetId": 2

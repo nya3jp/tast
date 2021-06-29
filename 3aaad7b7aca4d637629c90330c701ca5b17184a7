@@ -20,6 +20,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "f63d65ea_e66a4047",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 128,
+      "author": {
+        "id": 1459973
+      },
+      "writtenOn": "2021-06-29T10:45:35Z",
+      "side": 1,
+      "message": "test attributes says:\n\"n automated testing, tests to run are usually selected by groups. This means that a test will not run in automated testing if it belongs to no group.\"\n\nIt is not clear to me that this disables test as it says:\n- test are run usually by group. Meaning there are some other ways tests are run\n- it is enough to remove \"group:*\" attribute but leave e.g. \"informational\" to disable the test. Is that the case?\n\nI am thinking what about having actually explicit attribute to disable tests? Like\ngroup:disabled ?",
+      "parentUuid": "7787edb7_de6c0a72",
+      "revId": "3aaad7b7aca4d637629c90330c701ca5b17184a7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "8f2490d8_866e4251",
         "filename": "docs/writing_tests.md",
         "patchSetId": 2
@@ -54,6 +72,48 @@
       "writtenOn": "2021-06-29T09:53:09Z",
       "side": 1,
       "message": "Maybe a comment is sufficient if the test is designed to only be executed manually.",
+      "revId": "3aaad7b7aca4d637629c90330c701ca5b17184a7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "30c30c3f_63cda96b",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 132,
+      "author": {
+        "id": 1459973
+      },
+      "writtenOn": "2021-06-29T10:45:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "8f2490d8_866e4251",
+      "range": {
+        "startLine": 132,
+        "startChar": 47,
+        "endLine": 132,
+        "endChar": 53
+      },
+      "revId": "3aaad7b7aca4d637629c90330c701ca5b17184a7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "00ca9304_80c360f6",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 132,
+      "author": {
+        "id": 1459973
+      },
+      "writtenOn": "2021-06-29T10:45:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "12387ba8_6c7cdf54",
       "revId": "3aaad7b7aca4d637629c90330c701ca5b17184a7",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }

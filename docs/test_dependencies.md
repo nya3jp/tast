@@ -122,6 +122,7 @@ The following software features are defined:
 *   `no_android` - The inability to run Android apps. This is the opposite of
     the `android` feature; DUTs will have exactly one of these two features.
 *   `no_asan` - Build was not built with Address Sanitizer. Similar to `aslr`.
+*   `no_ath10k_4_4` - Skip boards using the ath10k/ar10k driver on kernel 4.4, as they are missing certain features (b/138406224).
 *   `no_borealis_host` - Boards which is not designed to host borealis.
 *   `no_elm_hana_3_18` - Skip boards elm and hana with kernel-3.18 as they have
     issue performing WiFi scan. See [b/172211349](https://b.corp.google.com/issues/172211349).

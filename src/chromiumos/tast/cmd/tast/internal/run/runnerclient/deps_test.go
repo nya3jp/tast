@@ -20,7 +20,7 @@ import (
 )
 
 func TestGetDUTInfo(t *testing.T) {
-	dutInfo := &protocol.DUTInfo{
+	want := &protocol.DUTInfo{
 		Features: &protocol.DUTFeatures{
 			Software: &protocol.SoftwareFeatures{
 				Available:   []string{"dep1", "dep2"},
@@ -58,32 +58,27 @@ func TestGetDUTInfo(t *testing.T) {
 		if diff := cmp.Diff(req.GetExtraUseFlags(), extraUseFlags); diff != "" {
 			t.Errorf("ExtraUseFlags mismatch (-got +want):\n%s", diff)
 		}
-		return &protocol.GetDUTInfoResponse{DutInfo: dutInfo}, nil
+		return &protocol.GetDUTInfoResponse{DutInfo: want}, nil
 	}))
 	cfg := env.Config()
 	cfg.CheckTestDeps = true
 	cfg.ExtraUSEFlags = extraUseFlags
-	state := env.State()
 
 	cc := target.NewConnCache(cfg, cfg.Target)
 	defer cc.Close(context.Background())
 
-	if err := GetDUTInfo(context.Background(), cfg, state, cc); err != nil {
+	got, err := GetDUTInfo(context.Background(), cfg, cc)
+	if err != nil {
 		t.Fatalf("GetDUTInfo failed: %v", err)
 	}
 
-	if diff := cmp.Diff(state.DUTInfo, dutInfo, cmp.Comparer(proto.Equal)); diff != "" {
+	if diff := cmp.Diff(got, want, cmp.Comparer(proto.Equal)); diff != "" {
 		t.Errorf("DUTInfo mismatch (-got +want):\n%s", diff)
 	}
 
 	// Make sure dut-info.txt is created.
 	if _, err := os.Stat(filepath.Join(cfg.ResDir, dutInfoFile)); err != nil {
 		t.Errorf("Failed to stat %s: %v", dutInfoFile, err)
-	}
-
-	// The second call should fail, because it tries to update cfg's fields twice.
-	if err := GetDUTInfo(context.Background(), cfg, state, cc); err == nil {
-		t.Fatal("Calling GetDUTInfo twice unexpectedly succeeded")
 	}
 }
 
@@ -94,7 +89,6 @@ func TestGetDUTInfoNoCheckTestDeps(t *testing.T) {
 	}))
 	cfg := env.Config()
 	cfg.CheckTestDeps = true
-	state := env.State()
 
 	// With "never", the runner shouldn't be called and dependencies shouldn't be checked.
 	cfg.CheckTestDeps = false
@@ -102,7 +96,7 @@ func TestGetDUTInfoNoCheckTestDeps(t *testing.T) {
 	cc := target.NewConnCache(cfg, cfg.Target)
 	defer cc.Close(context.Background())
 
-	if err := GetDUTInfo(context.Background(), cfg, state, cc); err != nil {
+	if _, err := GetDUTInfo(context.Background(), cfg, cc); err != nil {
 		t.Fatalf("GetDUTInfo failed: %v", err)
 	}
 }
@@ -122,12 +116,11 @@ func TestGetSoftwareFeaturesNoFeatures(t *testing.T) {
 	cfg := env.Config()
 	// "always" should fail if the runner doesn't know about any features.
 	cfg.CheckTestDeps = true
-	state := env.State()
 
 	cc := target.NewConnCache(cfg, cfg.Target)
 	defer cc.Close(context.Background())
 
-	if err := GetDUTInfo(context.Background(), cfg, state, cc); err == nil {
+	if _, err := GetDUTInfo(context.Background(), cfg, cc); err == nil {
 		t.Fatal("getSoftwareFeatures succeeded unexpectedly")
 	}
 }

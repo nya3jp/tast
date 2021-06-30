@@ -365,7 +365,7 @@ func runFixtureAndTests(ctx context.Context, cfg *config.Config, conn *target.Co
 // RunLocalTests executes tests as described by cfg on hst and returns the
 // results. It is only used for RunnerRunTestsMode.
 // It can return partial results and an error when error happens mid-tests.
-func RunLocalTests(ctx context.Context, cfg *config.Config, state *config.State, cc *target.ConnCache) (res []*resultsjson.Result, retErr error) {
+func RunLocalTests(ctx context.Context, cfg *config.Config, state *config.State, dutInfo *protocol.DUTInfo, cc *target.ConnCache) (res []*resultsjson.Result, retErr error) {
 	ctx, st := timing.Start(ctx, "run_local_tests")
 	defer st.End()
 
@@ -418,7 +418,7 @@ func RunLocalTests(ctx context.Context, cfg *config.Config, state *config.State,
 			// TODO(oka): write a unittest testing a connection to DUT is
 			// ensured for remote fixture.
 			if err := runFixtureAndTests(ctx, cfg, conn, rf.cl, remoteFixt, func(ctx context.Context, setUpErrs []string) error {
-				res, err := runLocalTestsForFixture(ctx, names, remoteFixt, setUpErrs, cfg, state, cc)
+				res, err := runLocalTestsForFixture(ctx, names, remoteFixt, setUpErrs, cfg, state, dutInfo, cc)
 				entityResults = append(entityResults, res...)
 				return err
 			}); err != nil {
@@ -435,7 +435,7 @@ func RunLocalTests(ctx context.Context, cfg *config.Config, state *config.State,
 // runLocalTestsForFixture runs given local tests in between remote fixture
 // set up and tear down.
 // It can return partial results and an error when error happens mid-tests.
-func runLocalTestsForFixture(ctx context.Context, names []string, remoteFixt string, setUpErrs []string, cfg *config.Config, state *config.State, cc *target.ConnCache) ([]*resultsjson.Result, error) {
+func runLocalTestsForFixture(ctx context.Context, names []string, remoteFixt string, setUpErrs []string, cfg *config.Config, state *config.State, dutInfo *protocol.DUTInfo, cc *target.ConnCache) ([]*resultsjson.Result, error) {
 	conn, err := cc.Conn(ctx)
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed to connect to %s; remoteFixt = %q", cfg.Target, remoteFixt)
@@ -449,7 +449,7 @@ func runLocalTestsForFixture(ctx context.Context, names []string, remoteFixt str
 		return true
 	}
 	runTests := func(ctx context.Context, patterns []string) (results []*resultsjson.Result, unstarted []string, err error) {
-		return runLocalTestsOnce(ctx, cfg, state, cc, conn, patterns, remoteFixt, setUpErrs)
+		return runLocalTestsOnce(ctx, cfg, state, dutInfo, cc, conn, patterns, remoteFixt, setUpErrs)
 	}
 
 	results, err := runTestsWithRetry(ctx, cfg, names, runTests, beforeRetry)
@@ -479,7 +479,7 @@ func startLocalRunner(ctx context.Context, cfg *config.Config, hst *ssh.Conn, ar
 // Results from started tests and the names of tests that should have been
 // started but weren't (in the order in which they should've been run) are
 // returned.
-func runLocalTestsOnce(ctx context.Context, cfg *config.Config, state *config.State, cc *target.ConnCache, conn *target.Conn, patterns []string, startFixtureName string, setUpErrs []string) (
+func runLocalTestsOnce(ctx context.Context, cfg *config.Config, state *config.State, dutInfo *protocol.DUTInfo, cc *target.ConnCache, conn *target.Conn, patterns []string, startFixtureName string, setUpErrs []string) (
 	results []*resultsjson.Result, unstarted []string, err error) {
 	ctx, st := timing.Start(ctx, "run_local_tests_once")
 	defer st.End()
@@ -505,7 +505,7 @@ func runLocalTestsOnce(ctx context.Context, cfg *config.Config, state *config.St
 		Mode: jsonprotocol.RunnerRunTestsMode,
 		RunTests: &jsonprotocol.RunnerRunTestsArgs{
 			BundleArgs: jsonprotocol.BundleRunTestsArgs{
-				FeatureArgs:       *featureArgsFromConfig(cfg, state),
+				FeatureArgs:       *jsonprotocol.FeatureArgsFromProto(cfg.Features(dutInfo.GetFeatures())),
 				Patterns:          patterns,
 				DataDir:           cfg.LocalDataDir,
 				OutDir:            cfg.LocalOutDir,

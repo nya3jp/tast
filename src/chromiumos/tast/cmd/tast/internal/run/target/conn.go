@@ -27,6 +27,7 @@ const (
 type Conn struct {
 	sshConn *ssh.Conn
 	svcs    *Services
+	target  string
 }
 
 func newConn(ctx context.Context, cfg *config.Config, target string) (conn *Conn, retErr error) {
@@ -45,7 +46,11 @@ func newConn(ctx context.Context, cfg *config.Config, target string) (conn *Conn
 		return nil, err
 	}
 
-	return &Conn{sshConn: sshConn, svcs: svcs}, nil
+	return &Conn{
+		sshConn: sshConn,
+		svcs:    svcs,
+		target:  target,
+	}, nil
 }
 
 func (c *Conn) close(ctx context.Context) error {
@@ -72,6 +77,11 @@ func (c *Conn) Healthy(ctx context.Context) error {
 		return errors.Wrap(err, "target connection is broken")
 	}
 	return nil
+}
+
+// Target returns a connection spec as [<user>@]host[:<port>].
+func (c *Conn) Target() string {
+	return c.target
 }
 
 func dialSSH(ctx context.Context, cfg *config.Config, target string) (*ssh.Conn, error) {

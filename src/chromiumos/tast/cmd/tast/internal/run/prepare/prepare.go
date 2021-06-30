@@ -41,14 +41,14 @@ func Prepare(ctx context.Context, cfg *config.Config, cc *target.ConnCache) erro
 		return errors.New("-downloadprivatebundles requires -build=false")
 	}
 
-	if err := prepareDUT(ctx, cfg, cc, cfg.Target); err != nil {
+	if err := prepareDUT(ctx, cfg, cc); err != nil {
 		return fmt.Errorf("failed to prepare primary DUT %s: %v", cfg.Target, err)
 	}
 
 	for _, dut := range cfg.CompanionDUTs {
 		cc := target.NewConnCache(cfg, dut)
 		defer cc.Close(ctx)
-		if err := prepareDUT(ctx, cfg, cc, dut); err != nil {
+		if err := prepareDUT(ctx, cfg, cc); err != nil {
 			return fmt.Errorf("failed to prepare companion DUT %s: %v", dut, err)
 		}
 	}
@@ -58,10 +58,10 @@ func Prepare(ctx context.Context, cfg *config.Config, cc *target.ConnCache) erro
 // prepareDUT prepares the DUT for running tests. When instructed in cfg, it builds
 // and pushes the local test runner and test bundles, and downloads private test
 // bundles.
-func prepareDUT(ctx context.Context, cfg *config.Config, cc *target.ConnCache, target string) error {
+func prepareDUT(ctx context.Context, cfg *config.Config, cc *target.ConnCache) error {
 	conn, err := cc.Conn(ctx)
 	if err != nil {
-		return fmt.Errorf("failed to connect to %s: %v", target, err)
+		return fmt.Errorf("failed to connect to %s: %v", cc.Target(), err)
 	}
 
 	if cfg.Build {
@@ -78,7 +78,7 @@ func prepareDUT(ctx context.Context, cfg *config.Config, cc *target.ConnCache, t
 	}
 
 	if cfg.DownloadPrivateBundles {
-		if err := runnerclient.DownloadPrivateBundles(ctx, cfg, conn, target); err != nil {
+		if err := runnerclient.DownloadPrivateBundles(ctx, cfg, conn); err != nil {
 			return fmt.Errorf("failed downloading private bundles: %v", err)
 		}
 	}

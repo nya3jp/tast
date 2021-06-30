@@ -110,6 +110,24 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "1e346e11_a18a1a3e",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 128,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-06-30T08:59:02Z",
+      "side": 1,
+      "message": "We run tests on Android infrastructure as well, so it might be misleading to say \"Chrome / Chrome OS infrastructure\"... 😂",
+      "parentUuid": "920d29de_63a8cb49",
+      "revId": "3aaad7b7aca4d637629c90330c701ca5b17184a7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "8f2490d8_866e4251",
         "filename": "docs/writing_tests.md",
         "patchSetId": 2

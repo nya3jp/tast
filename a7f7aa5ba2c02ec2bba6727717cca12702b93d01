@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "216750b0_988cb675",
+        "filename": "docs/test_attributes.md",
+        "patchSetId": 4
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-06-30T08:59:02Z",
+      "side": 1,
+      "message": "This sentence is similar to what you\u0027re adding. I wonder if we can clean them up.",
+      "range": {
+        "startLine": 15,
+        "startChar": 0,
+        "endLine": 17,
+        "endChar": 12
+      },
+      "revId": "a7f7aa5ba2c02ec2bba6727717cca12702b93d01",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

@@ -42,7 +42,7 @@ func TestLocalSuccess(t *gotesting.T) {
 	ctx, cancel := context.WithTimeout(ctx, 10*time.Second) // avoid test being blocked indefinitely
 	defer cancel()
 
-	if _, err := RunLocalTests(ctx, cfg, state, cc); err != nil {
+	if _, err := RunLocalTests(ctx, cfg, state, nil, cc); err != nil {
 		t.Errorf("RunLocalTests failed: %v", err)
 	}
 }
@@ -93,7 +93,7 @@ func TestLocalProxy(t *gotesting.T) {
 	cc := target.NewConnCache(cfg, cfg.Target)
 	defer cc.Close(context.Background())
 
-	if _, err := RunLocalTests(context.Background(), cfg, state, cc); err == nil {
+	if _, err := RunLocalTests(context.Background(), cfg, state, nil, cc); err == nil {
 		t.Error("RunLocalTests unexpectedly succeeded")
 	}
 	if !called {
@@ -128,7 +128,7 @@ func TestLocalCopyOutput(t *gotesting.T) {
 	cc := target.NewConnCache(cfg, cfg.Target)
 	defer cc.Close(context.Background())
 
-	if _, err := RunLocalTests(context.Background(), cfg, state, cc); err != nil {
+	if _, err := RunLocalTests(context.Background(), cfg, state, nil, cc); err != nil {
 		t.Fatalf("RunLocalTests failed: %v", err)
 	}
 
@@ -179,7 +179,7 @@ func TestLocalMaxFailures(t *gotesting.T) {
 	cc := target.NewConnCache(cfg, cfg.Target)
 	defer cc.Close(context.Background())
 
-	results, err := RunLocalTests(context.Background(), cfg, state, cc)
+	results, err := RunLocalTests(context.Background(), cfg, state, nil, cc)
 	if err == nil {
 		t.Errorf("RunLocalTests() passed unexpectedly")
 	}
@@ -279,7 +279,7 @@ func TestFixturesDependency(t *gotesting.T) {
 	cc := target.NewConnCache(cfg, cfg.Target)
 	defer cc.Close(context.Background())
 
-	got, err := RunLocalTests(context.Background(), cfg, state, cc)
+	got, err := RunLocalTests(context.Background(), cfg, state, nil, cc)
 	if err != nil {
 		t.Fatalf("RunLocalTests: %v", err)
 	}

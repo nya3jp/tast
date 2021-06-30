@@ -63,7 +63,8 @@ func TestRemoteRun(t *gotesting.T) {
 	cfg.TestVars = map[string]string{"abc": "def"}
 	cfg.MaybeMissingVars = "xyz"
 	state := env.State()
-	state.DUTInfo = &protocol.DUTInfo{
+	state.RemoteDevservers = []string{"http://127.0.0.1:33333333", "http://127.0.0.1:44444444"}
+	dutInfo := &protocol.DUTInfo{
 		Features: &protocol.DUTFeatures{
 			Software: &protocol.SoftwareFeatures{
 				Available:   []string{"dep1", "dep2"},
@@ -72,9 +73,8 @@ func TestRemoteRun(t *gotesting.T) {
 			Hardware: &protocol.HardwareFeatures{},
 		},
 	}
-	state.RemoteDevservers = []string{"http://127.0.0.1:33333333", "http://127.0.0.1:44444444"}
 
-	results, err := RunRemoteTests(context.Background(), cfg, state)
+	results, err := RunRemoteTests(context.Background(), cfg, state, dutInfo)
 	if err != nil {
 		t.Errorf("RunRemoteTests failed: %v", err)
 	}
@@ -89,7 +89,7 @@ func TestRemoteRun(t *gotesting.T) {
 			Tests: nil,
 			Features: &protocol.Features{
 				CheckDeps: true,
-				Dut:       state.DUTInfo.Features,
+				Dut:       dutInfo.Features,
 				Infra: &protocol.InfraFeatures{
 					Vars:             cfg.TestVars,
 					MaybeMissingVars: cfg.MaybeMissingVars,
@@ -172,7 +172,7 @@ func TestRemoteRunCopyOutput(t *gotesting.T) {
 	cfg := env.Config()
 	state := env.State()
 
-	if _, err := RunRemoteTests(context.Background(), cfg, state); err != nil {
+	if _, err := RunRemoteTests(context.Background(), cfg, state, nil); err != nil {
 		t.Fatalf("RunRemoteTests failed: %v", err)
 	}
 
@@ -206,7 +206,7 @@ func TestRemoteMaxFailures(t *gotesting.T) {
 	cfg.MaxTestFailures = 1
 	state := env.State()
 
-	results, err := RunRemoteTests(context.Background(), cfg, state)
+	results, err := RunRemoteTests(context.Background(), cfg, state, nil)
 	if err == nil {
 		t.Error("RunRemoteTests passed unexpectedly")
 	}

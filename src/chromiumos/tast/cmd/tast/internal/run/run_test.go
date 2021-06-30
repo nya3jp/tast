@@ -670,7 +670,6 @@ func TestRunListTestsWithSharding(t *gotesting.T) {
 	} {
 		t.Run(fmt.Sprintf("shard%d", shardIndex), func(t *gotesting.T) {
 			cfg.ShardIndex = shardIndex
-			state.DUTInfo = nil // clear cached DUTInfo
 
 			results, err := run.Run(context.Background(), cfg, state)
 			if err != nil {

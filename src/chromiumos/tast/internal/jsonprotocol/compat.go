@@ -149,3 +149,16 @@ func SysInfoStateFromProto(state *protocol.SysInfoState) *SysInfoState {
 		MinidumpPaths:    state.GetMinidumpPaths(),
 	}
 }
+
+// FeatureArgsFromProto converts protocol.Features to jsonprotocol.FeatureArgs.
+func FeatureArgsFromProto(f *protocol.Features) *FeatureArgs {
+	return &FeatureArgs{
+		TestVars:                    f.GetInfra().GetVars(),
+		MaybeMissingVars:            f.GetInfra().GetMaybeMissingVars(),
+		CheckDeps:                   f.GetCheckDeps(),
+		AvailableSoftwareFeatures:   f.GetDut().GetSoftware().GetAvailable(),
+		UnavailableSoftwareFeatures: f.GetDut().GetSoftware().GetUnavailable(),
+		DeviceConfig:                DeviceConfigJSON{Proto: f.GetDut().GetHardware().GetDeprecatedDeviceConfig()},
+		HardwareFeatures:            HardwareFeaturesJSON{Proto: f.GetDut().GetHardware().GetHardwareFeatures()},
+	}
+}

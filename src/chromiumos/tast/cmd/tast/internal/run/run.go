@@ -70,13 +70,13 @@ func Run(ctx context.Context, cfg *config.Config, state *config.State) ([]*resul
 		defer es.Close()
 	}
 
-	if err := prepare.Prepare(ctx, cfg, state, cc); err != nil {
+	if err := prepare.Prepare(ctx, cfg, cc); err != nil {
 		return nil, errors.Wrap(err, "failed to build and push")
 	}
 
 	switch cfg.Mode {
 	case config.ListTestsMode:
-		results, err := listTests(ctx, cfg, state, cc)
+		results, err := listTests(ctx, cfg, cc)
 		if err != nil {
 			return nil, errors.Wrapf(err, "failed to list tests")
 		}
@@ -111,12 +111,13 @@ func startEphemeralDevserverForRemoteTests(ctx context.Context, cfg *config.Conf
 }
 
 // listTests returns the whole tests to run.
-func listTests(ctx context.Context, cfg *config.Config, state *config.State, cc *target.ConnCache) ([]*resultsjson.Result, error) {
-	if err := runnerclient.GetDUTInfo(ctx, cfg, state, cc); err != nil {
+func listTests(ctx context.Context, cfg *config.Config, cc *target.ConnCache) ([]*resultsjson.Result, error) {
+	dutInfo, err := runnerclient.GetDUTInfo(ctx, cfg, cc)
+	if err != nil {
 		return nil, err
 	}
 
-	tests, err := runnerclient.ListTests(ctx, cfg, state, cc)
+	tests, err := runnerclient.ListTests(ctx, cfg, dutInfo, cc)
 	if err != nil {
 		return nil, err
 	}
@@ -144,11 +145,12 @@ func listTests(ctx context.Context, cfg *config.Config, state *config.State, cc 
 }
 
 func runTests(ctx context.Context, cfg *config.Config, state *config.State, cc *target.ConnCache) (results []*resultsjson.Result, retErr error) {
-	if err := runnerclient.GetDUTInfo(ctx, cfg, state, cc); err != nil {
+	dutInfo, err := runnerclient.GetDUTInfo(ctx, cfg, cc)
+	if err != nil {
 		return nil, errors.Wrap(err, "failed to get DUT software features")
 	}
 
-	if ver := state.DUTInfo.GetOsVersion(); ver == "" {
+	if ver := dutInfo.GetOsVersion(); ver == "" {
 		cfg.Logger.Log("Target version: not available from target")
 	} else {
 		cfg.Logger.Logf("Target version: %v", ver)
@@ -159,7 +161,7 @@ func runTests(ctx context.Context, cfg *config.Config, state *config.State, cc *
 		return nil, errors.Wrap(err, "failed to get initial sysinfo")
 	}
 
-	tests, err := runnerclient.ListTests(ctx, cfg, state, cc)
+	tests, err := runnerclient.ListTests(ctx, cfg, dutInfo, cc)
 	if err != nil {
 		return nil, err
 	}
@@ -212,7 +214,7 @@ func runTests(ctx context.Context, cfg *config.Config, state *config.State, cc *
 		}
 	}()
 
-	lres, err := runnerclient.RunLocalTests(ctx, cfg, state, cc)
+	lres, err := runnerclient.RunLocalTests(ctx, cfg, state, dutInfo, cc)
 	results = append(results, lres...)
 	if err != nil {
 		// TODO(derat): While test runners are always supposed to report success even if tests fail,
@@ -220,7 +222,7 @@ func runTests(ctx context.Context, cfg *config.Config, state *config.State, cc *
 		return results, err
 	}
 
-	rres, err := runnerclient.RunRemoteTests(ctx, cfg, state)
+	rres, err := runnerclient.RunRemoteTests(ctx, cfg, state, dutInfo)
 	results = append(results, rres...)
 	return results, err
 }

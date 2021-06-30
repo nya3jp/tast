@@ -130,7 +130,6 @@ type Config struct {
 // about function contracts. Pass arguments explicitly instead.
 // This struct will be removed eventually (b/191230756).
 type State struct {
-	DUTInfo          *protocol.DUTInfo          // DUT information retrieved at the beginning of the current run
 	FailuresCount    int                        // the number of test failures so far.
 	TLWConn          *grpc.ClientConn           // TLW gRPC service connection
 	RemoteDevservers []string                   // list of devserver URLs used by remote tests.
@@ -452,6 +451,18 @@ func (c *Config) LocalBundleGlob() string {
 // RemoteBundleGlob returns a file path glob that matches remote test bundle executables.
 func (c *Config) RemoteBundleGlob() string {
 	return c.bundleGlob(c.RemoteBundleDir)
+}
+
+// Features constructs Features from Config and protocol.DUTFeatures.
+func (c *Config) Features(dut *protocol.DUTFeatures) *protocol.Features {
+	return &protocol.Features{
+		CheckDeps: c.CheckTestDeps,
+		Infra: &protocol.InfraFeatures{
+			Vars:             c.TestVars,
+			MaybeMissingVars: c.MaybeMissingVars,
+		},
+		Dut: dut,
+	}
 }
 
 func (c *Config) bundleGlob(dir string) string {

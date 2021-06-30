@@ -17,16 +17,16 @@ import (
 )
 
 // ListTests returns a list of all tests (including both local and remote tests).
-func ListTests(ctx context.Context, cfg *config.Config, state *config.State, cc *target.ConnCache) ([]*protocol.ResolvedEntity, error) {
+func ListTests(ctx context.Context, cfg *config.Config, dutInfo *protocol.DUTInfo, cc *target.ConnCache) ([]*protocol.ResolvedEntity, error) {
 	conn, err := cc.Conn(ctx)
 	if err != nil {
 		return nil, err
 	}
-	localTests, err := ListLocalTests(ctx, cfg, state, conn.SSHConn())
+	localTests, err := ListLocalTests(ctx, cfg, dutInfo, conn.SSHConn())
 	if err != nil {
 		return nil, err
 	}
-	remoteTests, err := listRemoteTests(ctx, cfg, state)
+	remoteTests, err := listRemoteTests(ctx, cfg, dutInfo)
 	if err != nil {
 		return nil, err
 	}
@@ -34,8 +34,8 @@ func ListTests(ctx context.Context, cfg *config.Config, state *config.State, cc 
 }
 
 // ListLocalTests returns a list of local tests to run.
-func ListLocalTests(ctx context.Context, cfg *config.Config, state *config.State, hst *ssh.Conn) ([]*protocol.ResolvedEntity, error) {
-	entities, err := runListTestsCommand(ctx, localRunnerCommand(cfg, hst), cfg, state, cfg.LocalBundleGlob())
+func ListLocalTests(ctx context.Context, cfg *config.Config, dutInfo *protocol.DUTInfo, hst *ssh.Conn) ([]*protocol.ResolvedEntity, error) {
+	entities, err := runListTestsCommand(ctx, localRunnerCommand(cfg, hst), cfg, dutInfo, cfg.LocalBundleGlob())
 	if err != nil {
 		return nil, err
 	}
@@ -63,9 +63,9 @@ func ListLocalFixtures(ctx context.Context, cfg *config.Config, hst *ssh.Conn) (
 }
 
 // listRemoteTests returns a list of remote tests to run.
-func listRemoteTests(ctx context.Context, cfg *config.Config, state *config.State) ([]*protocol.ResolvedEntity, error) {
+func listRemoteTests(ctx context.Context, cfg *config.Config, dutInfo *protocol.DUTInfo) ([]*protocol.ResolvedEntity, error) {
 	return runListTestsCommand(
-		ctx, remoteRunnerCommand(cfg), cfg, state, cfg.RemoteBundleGlob())
+		ctx, remoteRunnerCommand(cfg), cfg, dutInfo, cfg.RemoteBundleGlob())
 }
 
 // listRemoteFixtures returns a map from bundle to fixtures.
@@ -100,12 +100,12 @@ func convertFixtureMap(jsonFixtMap map[string][]*jsonprotocol.EntityInfo) (map[s
 	return protoFixtMap, nil
 }
 
-func runListTestsCommand(ctx context.Context, cmd genericexec.Cmd, cfg *config.Config, state *config.State, glob string) ([]*protocol.ResolvedEntity, error) {
+func runListTestsCommand(ctx context.Context, cmd genericexec.Cmd, cfg *config.Config, dutInfo *protocol.DUTInfo, glob string) ([]*protocol.ResolvedEntity, error) {
 	args := &jsonprotocol.RunnerArgs{
 		Mode: jsonprotocol.RunnerListTestsMode,
 		ListTests: &jsonprotocol.RunnerListTestsArgs{
 			BundleArgs: jsonprotocol.BundleListTestsArgs{
-				FeatureArgs: *featureArgsFromConfig(cfg, state),
+				FeatureArgs: *jsonprotocol.FeatureArgsFromProto(cfg.Features(dutInfo.GetFeatures())),
 				Patterns:    cfg.Patterns,
 			},
 			BundleGlob: glob,

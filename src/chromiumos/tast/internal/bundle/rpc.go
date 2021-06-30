@@ -29,6 +29,19 @@ func RunRPCServer(r io.Reader, w io.Writer, scfg *StaticConfig) error {
 	})
 }
 
+// RunRPCServerTCP runs the bundle as an RPC server listening on TCP.
+func RunRPCServerTCP(port int, scfg *StaticConfig) error {
+	reg := scfg.registry
+	return rpc.RunTCPServer(port, reg.AllServices(), func(srv *grpc.Server, req *protocol.HandshakeRequest) error {
+		if err := checkRegistrationErrors(reg); err != nil {
+			return err
+		}
+		registerFixtureService(srv, reg)
+		protocol.RegisterTestServiceServer(srv, newTestServer(scfg))
+		return nil
+	})
+}
+
 func checkRegistrationErrors(reg *testing.Registry) error {
 	if errs := reg.Errors(); len(errs) > 0 {
 		msgs := make([]string, len(errs))

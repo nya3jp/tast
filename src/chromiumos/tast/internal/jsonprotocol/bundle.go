@@ -33,6 +33,8 @@ const (
 	// BundleListFixturesMode indicates that the bundle should write information about all the fixtures
 	// to stdout as a JSON array of testing.EntityInfo structs and exit.
 	BundleListFixturesMode BundleRunMode = 4
+	// BundleRPCMode indicates that the bundle should run a gRPC server on TCP.
+	BundleRPCModeTCP BundleRunMode = 5
 )
 
 // BundleArgs is used to pass arguments from test runners to test bundles.

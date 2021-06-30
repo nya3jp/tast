@@ -133,6 +133,11 @@ func run(ctx context.Context, clArgs []string, stdin io.Reader, stdout, stderr i
 			return command.WriteError(stderr, err)
 		}
 		return statusSuccess
+	case jsonprotocol.BundleRPCModeTCP:
+		if err := RunRPCServerTCP(4444, scfg); err != nil {
+			return command.WriteError(stderr, err)
+		}
+		return statusSuccess
 	default:
 		return command.WriteError(stderr, command.NewStatusErrorf(statusBadArgs, "invalid mode %v", args.Mode))
 	}

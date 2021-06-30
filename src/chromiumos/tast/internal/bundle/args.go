@@ -33,6 +33,7 @@ func readArgs(clArgs []string, stdin io.Reader, stderr io.Writer) (*jsonprotocol
 		dump := flags.Bool("dumptests", false, "dump all tests as a JSON-marshaled array of testing.Test structs")
 		exportMetadata := flags.Bool("exportmetadata", false, "export all test metadata as a protobuf-marshaled message")
 		rpc := flags.Bool("rpc", false, "run gRPC server")
+		rpctcp := flags.Bool("rpctcp", false, "run gRPC server listening on TCP")
 		if err := flags.Parse(clArgs); err != nil {
 			return nil, command.NewStatusErrorf(statusBadArgs, "%v", err)
 		}
@@ -50,6 +51,11 @@ func readArgs(clArgs []string, stdin io.Reader, stderr io.Writer) (*jsonprotocol
 		if *rpc {
 			return &jsonprotocol.BundleArgs{
 				Mode: jsonprotocol.BundleRPCMode,
+			}, nil
+		}
+		if *rpctcp {
+			return &jsonprotocol.BundleArgs{
+				Mode: jsonprotocol.BundleRPCModeTCP,
 			}, nil
 		}
 	}

@@ -30,7 +30,7 @@ import (
 
 // Prepare prepares target DUT and companion DUTs for running tests. When instructed in cfg, it builds
 // and pushes the local test runner and test bundles, and downloads private test bundles.
-func Prepare(ctx context.Context, cfg *config.Config, state *config.State, cc *target.ConnCache) error {
+func Prepare(ctx context.Context, cfg *config.Config, cc *target.ConnCache) error {
 	if !cfg.Build && !cfg.DownloadPrivateBundles {
 		// Return without connecting to the DUT if we have nothing to do.
 		return nil
@@ -41,14 +41,14 @@ func Prepare(ctx context.Context, cfg *config.Config, state *config.State, cc *t
 		return errors.New("-downloadprivatebundles requires -build=false")
 	}
 
-	if err := prepareDUT(ctx, cfg, state, cc, cfg.Target); err != nil {
+	if err := prepareDUT(ctx, cfg, cc, cfg.Target); err != nil {
 		return fmt.Errorf("failed to prepare primary DUT %s: %v", cfg.Target, err)
 	}
 
 	for _, dut := range cfg.CompanionDUTs {
 		cc := target.NewConnCache(cfg, dut)
 		defer cc.Close(ctx)
-		if err := prepareDUT(ctx, cfg, state, cc, dut); err != nil {
+		if err := prepareDUT(ctx, cfg, cc, dut); err != nil {
 			return fmt.Errorf("failed to prepare companion DUT %s: %v", dut, err)
 		}
 	}
@@ -58,7 +58,7 @@ func Prepare(ctx context.Context, cfg *config.Config, state *config.State, cc *t
 // prepareDUT prepares the DUT for running tests. When instructed in cfg, it builds
 // and pushes the local test runner and test bundles, and downloads private test
 // bundles.
-func prepareDUT(ctx context.Context, cfg *config.Config, state *config.State, cc *target.ConnCache, target string) error {
+func prepareDUT(ctx context.Context, cfg *config.Config, cc *target.ConnCache, target string) error {
 	conn, err := cc.Conn(ctx)
 	if err != nil {
 		return fmt.Errorf("failed to connect to %s: %v", target, err)
@@ -72,7 +72,7 @@ func prepareDUT(ctx context.Context, cfg *config.Config, state *config.State, cc
 		if err := buildAll(ctx, cfg, conn.SSHConn(), targetArch); err != nil {
 			return err
 		}
-		if err := pushAll(ctx, cfg, state, conn.SSHConn(), targetArch); err != nil {
+		if err := pushAll(ctx, cfg, conn.SSHConn(), targetArch); err != nil {
 			return err
 		}
 	}
@@ -170,7 +170,7 @@ func getTargetArch(ctx context.Context, cfg *config.Config, hst *ssh.Conn) (targ
 // and local test data files to the DUT if necessary. If cfg.mode is
 // ListTestsMode data files are not pushed since they are not needed to build
 // a list of tests.
-func pushAll(ctx context.Context, cfg *config.Config, state *config.State, hst *ssh.Conn, targetArch string) error {
+func pushAll(ctx context.Context, cfg *config.Config, hst *ssh.Conn, targetArch string) error {
 	ctx, st := timing.Start(ctx, "push")
 	defer st.End()
 
@@ -184,7 +184,7 @@ func pushAll(ctx context.Context, cfg *config.Config, state *config.State, hst *
 		return nil
 	}
 
-	paths, err := getDataFilePaths(ctx, cfg, state, hst)
+	paths, err := getDataFilePaths(ctx, cfg, hst)
 	if err != nil {
 		return fmt.Errorf("failed to get data file list: %v", err)
 	}
@@ -250,7 +250,7 @@ func allNeededFixtures(fixtures []*protocol.Entity, tests []*protocol.ResolvedEn
 // getDataFilePaths returns the paths to data files needed for running
 // cfg.Patterns on hst. The returned paths are relative to the package root,
 // e.g. "chromiumos/tast/local/bundle/<bundle>/<category>/data/<filename>".
-func getDataFilePaths(ctx context.Context, cfg *config.Config, state *config.State, hst *ssh.Conn) (
+func getDataFilePaths(ctx context.Context, cfg *config.Config, hst *ssh.Conn) (
 	paths []string, err error) {
 	ctx, st := timing.Start(ctx, "get_data_paths")
 	defer st.End()
@@ -260,7 +260,12 @@ func getDataFilePaths(ctx context.Context, cfg *config.Config, state *config.Sta
 	var entities []*protocol.Entity // all entities needed to run tests
 
 	// Add tests to entities.
-	ts, err := runnerclient.ListLocalTests(ctx, cfg, state, hst)
+	// We pass nil DUTInfo here because we don't have a DUTInfo yet. This is
+	// okay but suboptimal; we have to push data files for tests to be
+	// skipped.
+	// TODO(b/192433910): Retrieve DUTInfo in advance and push necessary
+	// data files only.
+	ts, err := runnerclient.ListLocalTests(ctx, cfg, nil, hst)
 	if err != nil {
 		return nil, err
 	}

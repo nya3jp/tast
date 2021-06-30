@@ -95,3 +95,8 @@ func (cc *ConnCache) Conn(ctx context.Context) (conn *Conn, retErr error) {
 func (cc *ConnCache) InitBootID() string {
 	return cc.initBootID
 }
+
+// Target returns a connection spec as [<user>@]host[:<port>].
+func (cc *ConnCache) Target() string {
+	return cc.target
+}

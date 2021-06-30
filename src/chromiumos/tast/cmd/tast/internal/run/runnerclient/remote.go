@@ -17,11 +17,12 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
 	"chromiumos/tast/internal/jsonprotocol"
+	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/timing"
 )
 
 // RunRemoteTests runs the remote test runner and reads its output.
-func RunRemoteTests(ctx context.Context, cfg *config.Config, state *config.State) ([]*resultsjson.Result, error) {
+func RunRemoteTests(ctx context.Context, cfg *config.Config, state *config.State, dutInfo *protocol.DUTInfo) ([]*resultsjson.Result, error) {
 	ctx, st := timing.Start(ctx, "run_remote_tests")
 	defer st.End()
 
@@ -33,7 +34,7 @@ func RunRemoteTests(ctx context.Context, cfg *config.Config, state *config.State
 	defer os.Remove(cfg.RemoteOutDir)
 
 	runTests := func(ctx context.Context, patterns []string) (results []*resultsjson.Result, unstarted []string, err error) {
-		return runRemoteTestsOnce(ctx, cfg, state, patterns)
+		return runRemoteTestsOnce(ctx, cfg, state, dutInfo, patterns)
 	}
 	beforeRetry := func(ctx context.Context) bool { return true }
 
@@ -57,7 +58,7 @@ func RunRemoteTests(ctx context.Context, cfg *config.Config, state *config.State
 // Results from started tests and the names of tests that should have been
 // started but weren't (in the order in which they should've been run) are
 // returned.
-func runRemoteTestsOnce(ctx context.Context, cfg *config.Config, state *config.State, patterns []string) (results []*resultsjson.Result, unstarted []string, err error) {
+func runRemoteTestsOnce(ctx context.Context, cfg *config.Config, state *config.State, dutInfo *protocol.DUTInfo, patterns []string) (results []*resultsjson.Result, unstarted []string, err error) {
 	ctx, st := timing.Start(ctx, "run_remote_tests_once")
 	defer st.End()
 
@@ -68,7 +69,7 @@ func runRemoteTestsOnce(ctx context.Context, cfg *config.Config, state *config.S
 
 	buildArtifactsURL := cfg.BuildArtifactsURL
 	if buildArtifactsURL == "" {
-		buildArtifactsURL = state.DUTInfo.GetDefaultBuildArtifactsUrl()
+		buildArtifactsURL = dutInfo.GetDefaultBuildArtifactsUrl()
 	}
 
 	runFlags := []string{
@@ -91,7 +92,7 @@ func runRemoteTestsOnce(ctx context.Context, cfg *config.Config, state *config.S
 		Mode: jsonprotocol.RunnerRunTestsMode,
 		RunTests: &jsonprotocol.RunnerRunTestsArgs{
 			BundleArgs: jsonprotocol.BundleRunTestsArgs{
-				FeatureArgs:       *featureArgsFromConfig(cfg, state),
+				FeatureArgs:       *jsonprotocol.FeatureArgsFromProto(cfg.Features(dutInfo.GetFeatures())),
 				Patterns:          patterns,
 				DataDir:           cfg.RemoteDataDir,
 				OutDir:            cfg.RemoteOutDir,

@@ -80,7 +80,6 @@ func TestPushDataFiles(t *gotesting.T) {
 		},
 	}))
 	cfg := env.Config()
-	state := env.State()
 
 	// Create a fake source checkout and write the data files to it. Just use their names as their contents.
 	cfg.BuildWorkspace = filepath.Join(env.TempDir(), "ws")
@@ -125,7 +124,7 @@ func TestPushDataFiles(t *gotesting.T) {
 	// getDataFilePaths should list the tests and return the files needed by them.
 	cfg.BuildBundle = bundleName
 	cfg.Patterns = []string{pattern}
-	paths, err := getDataFilePaths(context.Background(), cfg, state, conn.SSHConn())
+	paths, err := getDataFilePaths(context.Background(), cfg, conn.SSHConn())
 	if err != nil {
 		t.Fatal("getDataFilePaths() failed: ", err)
 	}

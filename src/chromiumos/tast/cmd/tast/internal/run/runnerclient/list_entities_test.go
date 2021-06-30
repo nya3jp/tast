@@ -31,7 +31,6 @@ func TestListLocalTests(t *gotesting.T) {
 
 	env := runtest.SetUp(t, runtest.WithLocalBundles(reg))
 	cfg := env.Config()
-	state := env.State()
 
 	cc := target.NewConnCache(cfg, cfg.Target)
 	defer cc.Close(context.Background())
@@ -41,7 +40,7 @@ func TestListLocalTests(t *gotesting.T) {
 		t.Fatal(err)
 	}
 
-	got, err := ListLocalTests(context.Background(), cfg, state, conn.SSHConn())
+	got, err := ListLocalTests(context.Background(), cfg, nil, conn.SSHConn())
 	if err != nil {
 		t.Fatal("Failed to list local tests: ", err)
 	}
@@ -97,9 +96,8 @@ func TestListRemoteTests(t *gotesting.T) {
 
 	env := runtest.SetUp(t, runtest.WithRemoteBundles(reg))
 	cfg := env.Config()
-	state := env.State()
 
-	got, err := listRemoteTests(context.Background(), cfg, state)
+	got, err := listRemoteTests(context.Background(), cfg, nil)
 	if err != nil {
 		t.Error("Failed to list remote tests: ", err)
 	}

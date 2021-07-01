@@ -27,11 +27,8 @@ const (
 	mdMaxStreams           = 32         // max streams to read from minidump file
 	mdReleaseStreamType    = 0x47670005 // minidump stream type used for /etc/lsb-release data
 	mdReleaseStreamMaxSize = 4096       // max bytes to read from mdReleaseStreamType streams
+	mdCrashpadStreamType   = 0x43500001 // minidump stream type used for MDRawCrashpadInfo, which contains Crashpad annotations
 )
-
-// ErrReleaseInfoNotFound is returned, when a minidump does not contain /etc/lsb-release stream.
-// The caller can recover if necessary information can be obtained in another way.
-var ErrReleaseInfoNotFound = errors.New("no lsb-release stream")
 
 // missingRegexp extracts module paths and IDs from messages logged by minidump_stackwalk.
 var missingRegexp *regexp.Regexp
@@ -232,31 +229,132 @@ func readMinidumpStreamInfo(f *os.File) ([]mdStreamInfo, error) {
 	return infos, nil
 }
 
-// GetMinidumpReleaseInfo returns the contents of /etc/lsb-release if it
-// is present in f, a minidump file. The Linux version of Breakpad includes
-// this information in crashes, but Crashpad, which is used by Chrome, doesn't.
-func GetMinidumpReleaseInfo(f *os.File) (string, error) {
-	infos, err := readMinidumpStreamInfo(f)
-	if err != nil {
+// readMdUtf8String reads Crashpad annotations strings stored in
+// a minidump file.
+// See https://chromium.googlesource.com/chromium/src/+/main/third_party/crashpad/crashpad/minidump/minidump_extensions.h
+// for details.
+func readMdUtf8String(f *os.File, offset uint32) (string, error) {
+	if _, err := f.Seek(int64(offset), 0); err != nil {
 		return "", err
 	}
-	var releaseInfo *mdStreamInfo
-	for _, info := range infos {
-		if info.streamType == mdReleaseStreamType {
-			releaseInfo = &info
-			break
-		}
-	}
-	if releaseInfo == nil {
-		return "", ErrReleaseInfoNotFound
-	}
-
-	if _, err = f.Seek(int64(releaseInfo.offset), 0); err != nil {
+	// Strings are stored as follows:
+	//   0x00 length length in bytes (not character), not including the final \0 (4 bytes)
+	//   0x04 buffer
+	var length uint32
+	if err := binary.Read(f, binary.LittleEndian, &length); err != nil {
 		return "", err
 	}
-	b := make([]byte, releaseInfo.size)
-	if _, err = io.ReadFull(f, b); err != nil {
+	b := make([]byte, length)
+	if _, err := io.ReadFull(f, b); err != nil {
 		return "", err
 	}
 	return string(b), nil
+}
+
+// readCrashpadAnnotations returns all Crashpad annotations available in a minidump.
+func readCrashpadAnnotations(f *os.File, crashpadInfo *mdStreamInfo) (map[string]string, error) {
+	// Crashpad info header structure:
+	//   0x00 version                       (4 bytes)
+	//   0x04 report id                     (16 bytes)
+	//   0x14 client id                     (16 bytes)
+	//   0x24 annotations dictionary size   (4 bytes)
+	//   0x28 annotations dictionary offset (4 bytes)
+	//   ...
+	// We only need to the offset to annotations.
+	f.Seek(int64(crashpadInfo.offset+0x28), 0)
+	var dictionaryOffset uint32
+	if err := binary.Read(f, binary.LittleEndian, &dictionaryOffset); err != nil {
+		return nil, err
+	}
+
+	// Annotation dictionary structure:
+	//   0x00 item count (4 bytes)
+	//   0x04 key_1      (4 bytes)
+	//   0x08 value_1    (4 bytes)
+	//   0x0C key_2      (4 bytes)
+	//   0x10 value_2    (4 bytes)
+	//   ...
+	//   Keys and values are offsets in the file.
+	f.Seek(int64(dictionaryOffset), 0)
+	var count uint32
+	binary.Read(f, binary.LittleEndian, &count)
+	keys := make([]uint32, count)
+	values := make([]uint32, count)
+	for i := 0; i < int(count); i++ {
+		if err := binary.Read(f, binary.LittleEndian, &keys[i]); err != nil {
+			return nil, err
+		}
+		if err := binary.Read(f, binary.LittleEndian, &values[i]); err != nil {
+			return nil, err
+		}
+	}
+
+	// We use offsets to read the actual strings.
+	annotations := make(map[string]string)
+	for i := 0; i < int(count); i++ {
+		var k, v string
+		var err error
+		if k, err = readMdUtf8String(f, keys[i]); err != nil {
+			return nil, err
+		}
+		if v, err = readMdUtf8String(f, values[i]); err != nil {
+			return nil, err
+		}
+		annotations[k] = v
+	}
+	return annotations, nil
+}
+
+// MinidumpReleaseInfo contain ChromeOS version information extracted from
+// a minidump file. It can contain the contents of /etc/lsb-release,
+// crashpad annotation, or none of the above.
+type MinidumpReleaseInfo struct {
+	EtcLsbRelease       string
+	CrashpadAnnotations map[string]string
+}
+
+// GetMinidumpReleaseInfo returns the contents of /etc/lsb-release if it
+// is present in f, a minidump file. The Linux version of Breakpad includes
+// this information in crashes, but Crashpad, which is used by Chrome, doesn't.
+func GetMinidumpReleaseInfo(f *os.File) (*MinidumpReleaseInfo, error) {
+	infos, err := readMinidumpStreamInfo(f)
+	if err != nil {
+		return nil, err
+	}
+
+	var releaseInfo *mdStreamInfo
+	var crashpadInfo *mdStreamInfo
+	for i, info := range infos {
+		switch info.streamType {
+		case mdReleaseStreamType:
+			releaseInfo = &infos[i]
+		case mdCrashpadStreamType:
+			crashpadInfo = &infos[i]
+		}
+	}
+
+	var simpleAnnotations map[string]string
+	if crashpadInfo != nil {
+		simpleAnnotations, err = readCrashpadAnnotations(f, crashpadInfo)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	var etcLsbRelease string
+	if releaseInfo != nil {
+		if _, err = f.Seek(int64(releaseInfo.offset), 0); err != nil {
+			return nil, err
+		}
+		b := make([]byte, releaseInfo.size)
+		if _, err = io.ReadFull(f, b); err != nil {
+			return nil, err
+		}
+		etcLsbRelease = string(b)
+	}
+
+	return &MinidumpReleaseInfo{
+		EtcLsbRelease:       etcLsbRelease,
+		CrashpadAnnotations: simpleAnnotations,
+	}, nil
 }

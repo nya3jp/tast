@@ -95,6 +95,26 @@ func TestSymbolize(t *testing.T) {
 				}
 			},
 		},
+		// {
+		// 	// TODO(ttylenda): update test file
+		// 	desc:         "crashpad-annotations_buildroot",
+		// 	minidumpPath: "breakpad/testdata/chrome.20210623.151414.90501.10909.dmp",
+		// 	verifyLog: func(t *testing.T, loggingBuf *bytes.Buffer) {
+		// 		if log := loggingBuf.String(); !strings.Contains(log, "Extracting 4 symbol file(s) from gs://chromeos-image-archive/name-release/R12-34.0.0/debug_breakpad.tar.xz") {
+		// 			t.Errorf("expected that symbols would be download, but it did not happen; log: %q", log)
+		// 		}
+		// 	},
+		// },
+		// {
+		// 	// TODO(ttylenda): update test file
+		// 	desc:         "crashpad-annotations_builderpath",
+		// 	minidumpPath: "breakpad/testdata/chrome.20210623.151414.90501.10909.dmp",
+		// 	verifyLog: func(t *testing.T, loggingBuf *bytes.Buffer) {
+		// 		if log := loggingBuf.String(); !strings.Contains(log, "Extracting 4 symbol file(s) from gs://chromeos-image-archive/name-release/R12-34.0.0/debug_breakpad.tar.xz") {
+		// 			t.Errorf("expected that symbols would be download, but it did not happen; log: %q", log)
+		// 		}
+		// 	},
+		// },
 	}
 	for _, tt := range tests {
 		t.Run(tt.desc, func(t *testing.T) {

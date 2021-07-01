@@ -34,3 +34,8 @@ bytes.
 
 `chrome.20210406.155226.62533.9042.dmp` was produced by visiting chrome:crash
 on betty VM.
+
+## chrome.20210706.000145.15087.8090.dmp
+
+`chrome.20210706.000145.15087.8090.dmp` was produced by visiting chrome:crash
+on betty VM. It contains Crashpad annotations.

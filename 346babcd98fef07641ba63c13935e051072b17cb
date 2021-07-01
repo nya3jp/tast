@@ -116,6 +116,24 @@
       "parentUuid": "8f7728e5_60ee76bc",
       "revId": "346babcd98fef07641ba63c13935e051072b17cb",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b27fde99_2adc6352",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1306673
+      },
+      "writtenOn": "2021-07-01T15:50:42Z",
+      "side": 1,
+      "message": "Completely agree with Nya.\n\nAs we discussed offline, there are no huge benefits of using this helper type. Bisakh is going to abandon this CL.",
+      "parentUuid": "9fc92a29_e91a6f0f",
+      "revId": "346babcd98fef07641ba63c13935e051072b17cb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

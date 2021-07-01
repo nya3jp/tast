@@ -126,6 +126,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "f78839d2_7b9a138f",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 128,
+      "author": {
+        "id": 1459973
+      },
+      "writtenOn": "2021-07-01T13:39:48Z",
+      "side": 1,
+      "message": "Got it. I see how much I don\u0027t know about our tests. Thanks for all the input.",
+      "parentUuid": "1e346e11_a18a1a3e",
+      "revId": "3aaad7b7aca4d637629c90330c701ca5b17184a7",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "8f2490d8_866e4251",

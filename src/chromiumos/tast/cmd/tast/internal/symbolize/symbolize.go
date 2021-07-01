@@ -50,14 +50,9 @@ func SymbolizeCrash(path string, w io.Writer, cfg Config) error { // NOLINT
 		defer os.Remove(dumpPath)
 	}
 
-	ri, err := getMinidumpReleaseInfo(dumpPath)
+	ri, err := getMinidumpReleaseInfo(&cfg, dumpPath)
 	if err != nil {
-		if err == breakpad.ErrReleaseInfoNotFound {
-			cfg.Logger.Debug(err)
-			ri = newEmptyReleaseInfo()
-		} else {
-			return fmt.Errorf("failed to get release info from %v: %v", dumpPath, err)
-		}
+		return fmt.Errorf("failed to get release info from %v: %v", dumpPath, err)
 	}
 	if ri.isEmpty() && cfg.BuildRoot == "" && cfg.BuilderPath == "" {
 		return errors.New("minidump does not contain release info, please supply --builderpath or --buildroot parameter to fix this error")
@@ -153,7 +148,7 @@ func getMinidumpPath(cfg *Config, path string) (string, error) {
 }
 
 // getMinidumpReleaseInfo returns release information contained in the minidump file at path.
-func getMinidumpReleaseInfo(path string) (*releaseInfo, error) {
+func getMinidumpReleaseInfo(cfg *Config, path string) (*releaseInfo, error) {
 	f, err := os.Open(path)
 	if err != nil {
 		return nil, err
@@ -164,5 +159,22 @@ func getMinidumpReleaseInfo(path string) (*releaseInfo, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	// We do not expect minidumps with both /etc/lsb-release and Crashpad
+	// annotations, but will log both if given such a file.
+	found := false
+	if data.EtcLsbRelease != "" {
+		found = true
+		cfg.Logger.Debug("Found /etc/lsb-release.")
+	}
+	if data.CrashpadAnnotations != nil {
+		found = true
+		// Crashpad annotation may or may not contains board and builder path, so print them.
+		cfg.Logger.Debugf("Found Crashpad annotations: %v", data.CrashpadAnnotations)
+	}
+	if !found {
+		cfg.Logger.Debug("Minidump does not contain /etc/lsb-release or Crashpad annotations.")
+	}
+
 	return getReleaseInfo(data), nil
 }

@@ -7,6 +7,7 @@ package symbolize
 import (
 	"bytes"
 
+	"chromiumos/tast/cmd/tast/internal/symbolize/breakpad"
 	"chromiumos/tast/lsbrelease"
 )
 
@@ -29,14 +30,19 @@ func newEmptyReleaseInfo() *releaseInfo {
 	return &releaseInfo{"", ""}
 }
 
-// getReleaseInfo parses data (typically the contents of /etc/lsb-release)
+// getReleaseInfo parses data (the contents of /etc/lsb-release or Crashpad annotations)
 // and returns information about the system image.
-func getReleaseInfo(data string) *releaseInfo {
+func getReleaseInfo(data *breakpad.MinidumpReleaseInfo) *releaseInfo {
 	var info releaseInfo
-	kvs, err := lsbrelease.Parse(bytes.NewBufferString(data))
-	if err == nil {
-		info.board = kvs[lsbrelease.Board]
-		info.builderPath = kvs[lsbrelease.BuilderPath]
+	if data.EtcLsbRelease != "" {
+		kvs, err := lsbrelease.Parse(bytes.NewBufferString(data.EtcLsbRelease))
+		if err == nil {
+			info.board = kvs[lsbrelease.Board]
+			info.builderPath = kvs[lsbrelease.BuilderPath]
+		}
+	} else {
+		info.board = data.CrashpadAnnotations["chromeos-board"]
+		info.builderPath = data.CrashpadAnnotations["chromeos-builder-path"]
 	}
 	return &info
 }

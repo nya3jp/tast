@@ -95,6 +95,16 @@ func TestSymbolize(t *testing.T) {
 				}
 			},
 		},
+		{
+			// Crashpad dumps with chromeos-* annotations do not require extra arguments.
+			desc:         "crashpad-annotations",
+			minidumpPath: "breakpad/testdata/chrome.20210706.000145.15087.8090.dmp",
+			verifyLog: func(t *testing.T, loggingBuf *bytes.Buffer) {
+				if log := loggingBuf.String(); !strings.Contains(log, "Extracting 5 symbol file(s) from gs://chromeos-image-archive/betty-release/R93-14070.0.0/debug_breakpad.tar.xz") {
+					t.Errorf("expected that symbols would be download, but it did not happen; log: %q", log)
+				}
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.desc, func(t *testing.T) {

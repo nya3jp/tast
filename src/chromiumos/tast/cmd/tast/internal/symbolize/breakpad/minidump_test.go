@@ -20,6 +20,9 @@ const (
 	// Relative path to checked-in minidump file used for testing.
 	minidumpPath = "testdata/abort.20180103.145440.12345.20827.dmp"
 
+	// Minidump with Crashpad annotations.
+	minidumpCrashpadPath = "testdata/chrome.20210623.151414.90501.10909.dmp"
+
 	// Relative path to checked-in executable with debugging symbols.
 	abortDebugPath = "testdata/abort.debug"
 
@@ -113,19 +116,49 @@ func TestIsMinidump(t *testing.T) {
 }
 
 func TestGetMinidumpReleaseInfo(t *testing.T) {
-	f, err := os.Open(minidumpPath)
-	if err != nil {
-		t.Fatal(err)
+	tests := []struct {
+		desc       string
+		path       string
+		verifyFunc func(*testing.T, *MinidumpReleaseInfo)
+	}{
+		{
+			desc: "with_etc_lsb-release",
+			path: minidumpPath,
+			verifyFunc: func(t *testing.T, ri *MinidumpReleaseInfo) {
+				// Just check that the returned data starts and ends correctly.
+				if !strings.HasPrefix(ri.EtcLsbRelease, "CHROMEOS_RELEASE_APPID=") ||
+					!strings.HasSuffix(ri.EtcLsbRelease, ".google.com:8080/update\n") {
+					t.Errorf("GetMinidumpReleaseInfo returned unexpected result %q", ri)
+				}
+			},
+		},
+		{
+			desc: "with_crashpad_annotations",
+			path: minidumpCrashpadPath,
+			verifyFunc: func(t *testing.T, ri *MinidumpReleaseInfo) {
+				if board := ri.CrashpadSimpleAnnotations["lsb-release-board"]; board != "betty" {
+					t.Errorf("Expected lsb-release-board = betty, got: %s", board)
+				}
+				if builderPath := ri.CrashpadSimpleAnnotations["lsb-release-builder-path"]; builderPath != "betty-release/R93-14040.0.0" {
+					t.Errorf("Expected lsb-release-builder-path = betty, got: %s", builderPath)
+				}
+			},
+		},
 	}
-	defer f.Close()
+	for _, test := range tests {
+		t.Run(test.desc, func(t *testing.T) {
+			f, err := os.Open(test.path)
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer f.Close()
 
-	ri, err := GetMinidumpReleaseInfo(f)
-	if err != nil {
-		t.Fatal(err)
-	}
-	// Just check that the returned data starts and ends correctly.
-	if !strings.HasPrefix(ri, "CHROMEOS_RELEASE_APPID=") ||
-		!strings.HasSuffix(ri, ".google.com:8080/update\n") {
-		t.Errorf("GetMinidumpReleaseInfo returned unexpected string %q", ri)
+			ri, err := GetMinidumpReleaseInfo(f)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			test.verifyFunc(t, ri)
+		})
 	}
 }

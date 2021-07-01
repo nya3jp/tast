@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "5424cfa7_764175d3",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 3
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-07-01T02:13:10Z",
+      "side": 1,
+      "message": "I have reorganized the data structure and removed every variable type except string type. Please take a look. I will work on the document tomorrow before the meeting. Thanks.",
+      "revId": "64ec0b0d4cab979878ded5363a1555a36442864d",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

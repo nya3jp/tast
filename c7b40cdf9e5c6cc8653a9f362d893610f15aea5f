@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "af4fbd3e_bda28948",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1426782
+      },
+      "writtenOn": "2021-07-02T21:48:54Z",
+      "side": 1,
+      "message": "TOT already approved and merged and approval for R92 fetched on b/191114345",
+      "revId": "c7b40cdf9e5c6cc8653a9f362d893610f15aea5f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

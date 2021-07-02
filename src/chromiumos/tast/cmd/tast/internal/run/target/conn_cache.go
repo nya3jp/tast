@@ -9,6 +9,7 @@ import (
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/internal/linuxssh"
+	"chromiumos/tast/internal/logging"
 )
 
 // ConnCache manages a cached connection to the target.
@@ -58,7 +59,7 @@ func (cc *ConnCache) Conn(ctx context.Context) (conn *Conn, retErr error) {
 		if err == nil {
 			return cc.conn, nil
 		}
-		cc.cfg.Logger.Logf("Target connection is unhealthy: %v; reconnecting", err)
+		logging.Infof(ctx, "Target connection is unhealthy: %v; reconnecting", err)
 		cc.Close(ctx)
 	}
 

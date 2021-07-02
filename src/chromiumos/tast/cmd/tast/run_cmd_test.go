@@ -5,7 +5,6 @@
 package main
 
 import (
-	"bytes"
 	"context"
 	"flag"
 	"os"
@@ -15,14 +14,15 @@ import (
 
 	"github.com/google/subcommands"
 
-	"chromiumos/tast/cmd/tast/internal/logging"
 	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
 	"chromiumos/tast/errors"
+	"chromiumos/tast/internal/logging"
+	"chromiumos/tast/internal/logging/loggingtest"
 	"chromiumos/tast/testutil"
 )
 
 // executeRunCmd creates a runCmd and executes it using the supplied args, wrapper, and Logger.
-func executeRunCmd(t *gotesting.T, args []string, wrapper *stubRunWrapper, lg *logging.Logger) subcommands.ExitStatus {
+func executeRunCmd(t *gotesting.T, args []string, wrapper *stubRunWrapper, logger logging.Logger) subcommands.ExitStatus {
 	td := testutil.TempDir(t)
 	defer os.RemoveAll(td)
 
@@ -34,7 +34,12 @@ func executeRunCmd(t *gotesting.T, args []string, wrapper *stubRunWrapper, lg *l
 		t.Fatal(err)
 	}
 	flags.Set("build", "false") // DeriveDefaults fails if -build=true and bundle dirs are missing
-	status := cmd.Execute(logging.NewContext(context.Background(), lg), flags)
+
+	ctx := context.Background()
+	if logger != nil {
+		ctx = logging.AttachLogger(ctx, logger)
+	}
+	status := cmd.Execute(ctx, flags)
 
 	if wrapper.runRes != nil && wrapper.runCfg == nil {
 		t.Fatalf("runCmd.Execute(%v) unexpectedly didn't run tests", args)
@@ -52,7 +57,7 @@ func TestRunConfig(t *gotesting.T) {
 	)
 	args := []string{target, test1, test2}
 	wrapper := stubRunWrapper{runRes: []*resultsjson.Result{}}
-	executeRunCmd(t, args, &wrapper, logging.NewDiscard())
+	executeRunCmd(t, args, &wrapper, nil)
 	if wrapper.runCfg.Target != target {
 		t.Errorf("runCmd.Execute(%v) passed target %q; want %q", args, wrapper.runCfg.Target, target)
 	}
@@ -65,7 +70,7 @@ func TestRunNoResults(t *gotesting.T) {
 	// The run should fail if no tests were matched.
 	args := []string{"root@example.net"}
 	wrapper := stubRunWrapper{runRes: []*resultsjson.Result{}}
-	if status := executeRunCmd(t, args, &wrapper, logging.NewDiscard()); status != subcommands.ExitFailure {
+	if status := executeRunCmd(t, args, &wrapper, nil); status != subcommands.ExitFailure {
 		t.Fatalf("runCmd.Execute(%v) returned status %v; want %v", args, status, subcommands.ExitFailure)
 	}
 }
@@ -79,19 +84,19 @@ func TestRunResults(t *gotesting.T) {
 		},
 	}}
 	args := []string{"root@example.net"}
-	if status := executeRunCmd(t, args, &wrapper, logging.NewDiscard()); status != subcommands.ExitSuccess {
+	if status := executeRunCmd(t, args, &wrapper, nil); status != subcommands.ExitSuccess {
 		t.Fatalf("runCmd.Execute(%v) returned status %v; want %v", args, status, subcommands.ExitSuccess)
 	}
 
 	// If -failfortests is passed, then a test failure should result in 1 being returned.
 	args = append([]string{"-failfortests"}, args...)
-	if status := executeRunCmd(t, args, &wrapper, logging.NewDiscard()); status != subcommands.ExitFailure {
+	if status := executeRunCmd(t, args, &wrapper, nil); status != subcommands.ExitFailure {
 		t.Fatalf("runCmd.Execute(%v) returned status %v for failing test; want %v", args, status, subcommands.ExitFailure)
 	}
 
 	// If the test passed, we should return 0 with -failfortests.
 	wrapper.runRes[0].Errors = nil
-	if status := executeRunCmd(t, args, &wrapper, logging.NewDiscard()); status != subcommands.ExitSuccess {
+	if status := executeRunCmd(t, args, &wrapper, nil); status != subcommands.ExitSuccess {
 		t.Fatalf("runCmd.Execute(%v) returned status %v for successful test; want %v", args, status, subcommands.ExitSuccess)
 	}
 }
@@ -104,14 +109,14 @@ func TestRunExecFailure(t *gotesting.T) {
 		runErr: errors.New(msg),
 	}
 	args := []string{"root@example.net"}
-	b := bytes.Buffer{}
-	lg := logging.NewSimple(&b, true, true)
-	if status := executeRunCmd(t, args, &wrapper, lg); status != subcommands.ExitFailure {
+	logger := loggingtest.NewLogger(t, logging.LevelDebug)
+	if status := executeRunCmd(t, args, &wrapper, logger); status != subcommands.ExitFailure {
 		t.Fatalf("runCmd.Execute(%v) returned status %v; want %v", args, status, subcommands.ExitFailure)
 	}
 
 	// The error message should be in the last line of output.
-	if lines := strings.Split(strings.TrimSpace(b.String()), "\n"); len(lines) == 0 {
+	lines := logger.Logs()
+	if len(lines) == 0 {
 		t.Errorf("runCmd.Execute(%v) didn't log any output", args)
 	} else if last := lines[len(lines)-1]; !strings.Contains(last, msg) {
 		t.Errorf("runCmd.Execute(%v) logged last line %q; wanted line containing error %q", args, last, msg)

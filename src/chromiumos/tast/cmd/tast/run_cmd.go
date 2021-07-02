@@ -14,11 +14,11 @@ import (
 
 	"github.com/google/subcommands"
 
-	"chromiumos/tast/cmd/tast/internal/logging"
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/ctxutil"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/command"
+	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/timing"
 	"chromiumos/tast/internal/xcontext"
 )
@@ -71,11 +71,6 @@ func (r *runCmd) SetFlags(f *flag.FlagSet) {
 }
 
 func (r *runCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{}) subcommands.ExitStatus {
-	lg, ok := logging.FromContext(ctx)
-	if !ok {
-		panic("logger not attached to context")
-	}
-
 	ctx, cancel := xcontext.WithTimeout(ctx, r.timeout, errors.Errorf("%v: global timeout reached (%v)", context.DeadlineExceeded, r.timeout))
 	defer cancel(context.Canceled)
 
@@ -87,19 +82,19 @@ func (r *runCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{})
 	ctx, st := timing.Start(ctx, "exec")
 
 	if len(f.Args()) == 0 {
-		lg.Log("Missing target.\n\n" + r.Usage())
+		logging.Info(ctx, "Missing target.\n\n"+r.Usage())
 		return subcommands.ExitUsageError
 	}
 
 	updateLatest := r.cfg.ResDir == ""
 
 	if err := r.cfg.DeriveDefaults(); err != nil {
-		lg.Log("Failed to derive defaults: ", err)
+		logging.Info(ctx, "Failed to derive defaults: ", err)
 		return subcommands.ExitUsageError
 	}
 
 	if err := os.MkdirAll(r.cfg.ResDir, 0755); err != nil {
-		lg.Log(err)
+		logging.Info(ctx, err)
 		return subcommands.ExitFailure
 	}
 
@@ -108,7 +103,7 @@ func (r *runCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{})
 		link := filepath.Join(filepath.Dir(r.cfg.ResDir), "latest")
 		os.Remove(link)
 		if err := os.Symlink(filepath.Base(r.cfg.ResDir), link); err != nil {
-			lg.Log("Failed to create results symlink: ", err)
+			logging.Info(ctx, "Failed to create results symlink: ", err)
 		}
 	}
 
@@ -117,44 +112,37 @@ func (r *runCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{})
 		st.End()
 		f, err := os.Create(filepath.Join(r.cfg.ResDir, timingLogName))
 		if err != nil {
-			lg.Log(err)
+			logging.Info(ctx, err)
 			return
 		}
 		defer f.Close()
 		if err := tl.WritePretty(f); err != nil {
-			lg.Log(err)
+			logging.Info(ctx, err)
 		}
 	}()
 
 	// Log the full output of the command to disk.
 	fullLog, err := os.Create(filepath.Join(r.cfg.ResDir, fullLogName))
 	if err != nil {
-		lg.Log(err)
+		logging.Info(ctx, err)
 		return subcommands.ExitFailure
 	}
-	if err = lg.AddWriter(fullLog, true); err != nil {
-		lg.Log(err)
-		return subcommands.ExitFailure
-	}
-	defer func() {
-		if err := lg.RemoveWriter(fullLog); err != nil {
-			lg.Log(err)
-		}
-		fullLog.Close()
-	}()
+	defer fullLog.Close()
 
-	lg.Log("Command line: ", strings.Join(os.Args, " "))
+	logger := logging.NewSinkLogger(logging.LevelDebug, true, logging.NewWriterSink(fullLog))
+	ctx = logging.AttachLogger(ctx, logger)
+
+	logging.Info(ctx, "Command line: ", strings.Join(os.Args, " "))
 	r.cfg.Target = f.Args()[0]
 	r.cfg.Patterns = f.Args()[1:]
-	r.cfg.Logger = lg
 
 	if r.cfg.KeyFile != "" {
-		lg.Debug("Using SSH key ", r.cfg.KeyFile)
+		logging.Debug(ctx, "Using SSH key ", r.cfg.KeyFile)
 	}
 	if r.cfg.KeyDir != "" {
-		lg.Debug("Using SSH dir ", r.cfg.KeyDir)
+		logging.Debug(ctx, "Using SSH dir ", r.cfg.KeyDir)
 	}
-	lg.Log("Writing results to ", r.cfg.ResDir)
+	logging.Info(ctx, "Writing results to ", r.cfg.ResDir)
 
 	results, runErr := r.wrapper.run(ctx, r.cfg, &state)
 
@@ -163,7 +151,7 @@ func (r *runCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{})
 	}
 
 	if runErr != nil {
-		lg.Logf("Failed to run tests: %v", runErr)
+		logging.Infof(ctx, "Failed to run tests: %v", runErr)
 		return subcommands.ExitFailure
 	}
 

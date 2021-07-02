@@ -22,7 +22,6 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 
-	"chromiumos/tast/cmd/tast/internal/logging"
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
 	"chromiumos/tast/cmd/tast/internal/run/runtest"
@@ -30,6 +29,8 @@ import (
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/control"
 	"chromiumos/tast/internal/jsonprotocol"
+	"chromiumos/tast/internal/logging"
+	"chromiumos/tast/internal/logging/loggingtest"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/timing"
 	"chromiumos/tast/testutil"
@@ -114,20 +115,21 @@ func TestReadTestOutput(t *gotesting.T) {
 	mw.WriteMessage(&control.EntityEnd{Time: test3EndTime, Name: test3Name, SkipReasons: []string{skipReason}})
 	mw.WriteMessage(&control.RunEnd{Time: runEndTime, OutDir: outDir})
 
-	var logBuf bytes.Buffer
+	logger := loggingtest.NewLogger(t, logging.LevelInfo) // drop debug messages
+	ctx := logging.AttachLogger(context.Background(), logger)
+
 	cfg := config.Config{
-		Logger: logging.NewSimple(&logBuf, false, false), // drop debug messages
 		ResDir: filepath.Join(tempDir, "results"),
 	}
 	var state config.State
-	results, unstartedTests, err := readTestOutput(context.Background(), &cfg, &state, &b, os.Rename, nil)
+	results, unstartedTests, err := readTestOutput(ctx, &cfg, &state, &b, os.Rename, nil)
 	if err != nil {
 		t.Fatal("readTestOutput failed:", err)
 	}
 	if len(unstartedTests) != 0 {
 		t.Errorf("readTestOutput reported unstarted tests %v", unstartedTests)
 	}
-	ctx := context.Background()
+
 	cc := target.NewConnCache(&cfg, cfg.Target)
 	defer cc.Close(ctx)
 	if err = WriteResults(ctx, &cfg, &state, results, nil, true, cc); err != nil {
@@ -207,7 +209,7 @@ func TestReadTestOutput(t *gotesting.T) {
 
 	// With non-verbose logging, the global log should include run and test messages and
 	// failure/skip reasons but should skip stack traces.
-	logData := logBuf.String()
+	logData := logger.String()
 	if !strings.Contains(logData, runLogText) {
 		t.Errorf("Run log message %q not included in log %q", runLogText, logData)
 	}
@@ -258,9 +260,7 @@ func TestReadTestOutputSameEntity(t *gotesting.T) {
 	mw.WriteMessage(&control.EntityEnd{Time: epoch, Name: fixtName})
 	mw.WriteMessage(&control.RunEnd{Time: epoch})
 
-	var logBuf bytes.Buffer
 	cfg := config.Config{
-		Logger: logging.NewSimple(&logBuf, false, false),
 		ResDir: filepath.Join(tempDir, "results"),
 	}
 	var state config.State
@@ -342,9 +342,7 @@ func TestReadTestOutputConcurrentEntity(t *gotesting.T) {
 	mw.WriteMessage(&control.EntityEnd{Time: epoch, Name: fixt1Name})
 	mw.WriteMessage(&control.RunEnd{Time: epoch})
 
-	var logBuf bytes.Buffer
 	cfg := config.Config{
-		Logger: logging.NewSimple(&logBuf, false, false),
 		ResDir: filepath.Join(tempDir, "results"),
 	}
 	var state config.State
@@ -419,7 +417,6 @@ func TestReadTestOutputTimingLog(t *gotesting.T) {
 	defer os.RemoveAll(td)
 
 	cfg := config.Config{
-		Logger: logging.NewSimple(&bytes.Buffer{}, false, false),
 		ResDir: td,
 	}
 	var state config.State
@@ -481,9 +478,7 @@ func TestReadTestOutputAbortFixture(t *gotesting.T) {
 	mw.WriteMessage(&control.EntityStart{Time: epoch, Info: jsonprotocol.EntityInfo{Name: fixt1Name, Type: jsonprotocol.EntityFixture}, OutDir: filepath.Join(outDir, fixt1OutDir)})
 	mw.WriteMessage(&control.EntityStart{Time: epoch, Info: jsonprotocol.EntityInfo{Name: fixt2Name, Type: jsonprotocol.EntityFixture}, OutDir: filepath.Join(outDir, fixt2OutDir)})
 
-	var logBuf bytes.Buffer
 	cfg := config.Config{
-		Logger: logging.NewSimple(&logBuf, false, false),
 		ResDir: filepath.Join(tempDir, "results"),
 	}
 	var state config.State
@@ -536,7 +531,7 @@ func TestPerTestLogContainsRunError(t *gotesting.T) {
 	mw.WriteMessage(&control.EntityStart{Time: time.Unix(2, 0), Info: jsonprotocol.EntityInfo{Name: testName}})
 	mw.WriteMessage(&control.RunError{Time: time.Unix(3, 0), Error: jsonprotocol.Error{Reason: errorMsg}})
 
-	cfg := config.Config{Logger: logging.NewSimple(&bytes.Buffer{}, false, false), ResDir: td}
+	cfg := config.Config{ResDir: td}
 	var state config.State
 	if _, _, err := readTestOutput(context.Background(), &cfg, &state, &b, noOpCopyAndRemove, nil); err == nil {
 		t.Fatal("readTestOutput didn't report run error")
@@ -622,7 +617,6 @@ func TestValidateMessages(t *gotesting.T) {
 			mw.WriteMessage(msg)
 		}
 		cfg := config.Config{
-			Logger: logging.NewSimple(&bytes.Buffer{}, false, false),
 			ResDir: filepath.Join(tempDir, tc.desc),
 		}
 		var state config.State
@@ -651,7 +645,6 @@ func TestReadTestOutputTimeout(t *gotesting.T) {
 
 	// When the message timeout is hit, an error should be reported.
 	cfg := config.Config{
-		Logger:     logging.NewSimple(&bytes.Buffer{}, false, false),
 		ResDir:     tempDir,
 		MsgTimeout: time.Millisecond,
 	}
@@ -708,9 +701,9 @@ func TestWriteResultsCollectSysInfoFailure(t *gotesting.T) {
 		return nil, errors.New("failure")
 	}))
 	ctx := env.Context()
+	logger := loggingtest.NewLogger(t, logging.LevelInfo)
+	ctx = logging.AttachLoggerNoPropagation(ctx, logger)
 	cfg := env.Config()
-	var logBuf bytes.Buffer
-	cfg.Logger = logging.NewSimple(&logBuf, false, false)
 	state := env.State()
 
 	cc := target.NewConnCache(cfg, cfg.Target)
@@ -725,8 +718,8 @@ func TestWriteResultsCollectSysInfoFailure(t *gotesting.T) {
 	}
 
 	// The error should've been logged by WriteResults: https://crbug.com/937913
-	if !strings.Contains(logBuf.String(), err.Error()) {
-		t.Errorf("WriteResults didn't log error %q in %q", err.Error(), logBuf.String())
+	if logs := logger.String(); !strings.Contains(logs, err.Error()) {
+		t.Errorf("WriteResults didn't log error %q in %q", err.Error(), logs)
 	}
 }
 
@@ -774,7 +767,6 @@ func TestWritePartialResults(t *gotesting.T) {
 	mw.WriteMessage(&control.EntityError{Time: test2Error, Name: test2Name, Error: jsonprotocol.Error{Reason: test2Reason}})
 
 	cfg := config.Config{
-		Logger: logging.NewSimple(&bytes.Buffer{}, false, false),
 		ResDir: filepath.Join(tempDir, "results"),
 	}
 	var state config.State
@@ -913,7 +905,6 @@ func TestUnfinishedTest(t *gotesting.T) {
 		}
 
 		cfg := config.Config{
-			Logger: logging.NewSimple(&bytes.Buffer{}, false, false),
 			ResDir: filepath.Join(tempDir, strconv.Itoa(i)),
 		}
 		var state config.State
@@ -953,8 +944,6 @@ func TestWriteResultsWriteFiles(t *gotesting.T) {
 		{Test: resultsjson.Test{Name: "pkg.Test2"}},
 	}
 	cfg := *baseCfg
-	out := &bytes.Buffer{}
-	cfg.Logger = logging.NewSimple(out, false, false)
 	var state config.State
 	state.TestsToRun = []*protocol.ResolvedEntity{
 		{Entity: &protocol.Entity{Name: "pkg.Test1"}},
@@ -1006,16 +995,16 @@ func TestWriteResultsUnmatchedGlobs(t *gotesting.T) {
 		{[]string{"pkg.Test1", "pkg.Foo*"}, true, []string{"pkg.Foo*"}}, // exact matches, glob fails
 		{[]string{"pkg.*", "foo.Bar"}, false, nil},                      // missing glob, but run incomplete
 	} {
+		logger := loggingtest.NewLogger(t, logging.LevelInfo)
+		ctx := logging.AttachLogger(context.Background(), logger)
+
 		cfg := *baseCfg
-		out := &bytes.Buffer{}
-		cfg.Logger = logging.NewSimple(out, false, false)
 		cfg.Patterns = tc.patterns
 		var state config.State
 		state.TestsToRun = []*protocol.ResolvedEntity{
 			{Entity: &protocol.Entity{Name: "pkg.Test1"}},
 			{Entity: &protocol.Entity{Name: "pkg.Test2"}},
 		}
-		ctx := context.Background()
 		cc := target.NewConnCache(&cfg, cfg.Target)
 		defer cc.Close(ctx)
 		if err := WriteResults(ctx, &cfg, &state, results, nil, tc.complete, cc); err != nil {
@@ -1024,7 +1013,7 @@ func TestWriteResultsUnmatchedGlobs(t *gotesting.T) {
 		}
 
 		var unmatched []string
-		if ms := re.FindStringSubmatch(out.String()); ms != nil {
+		if ms := re.FindStringSubmatch(logger.String()); ms != nil {
 			for _, ln := range strings.Split(strings.TrimRight(ms[1], "\n"), "\n") {
 				unmatched = append(unmatched, ln[2:])
 			}
@@ -1114,9 +1103,7 @@ func TestMaxTestFailures(t *gotesting.T) {
 	mw.WriteMessage(&control.EntityEnd{Time: test4EndTime, Name: test4Name, SkipReasons: []string{skipReason}})
 	mw.WriteMessage(&control.RunEnd{Time: runEndTime, OutDir: outDir})
 
-	var logBuf bytes.Buffer
 	cfg := config.Config{
-		Logger:          logging.NewSimple(&logBuf, false, false), // drop debug messages
 		ResDir:          filepath.Join(tempDir, "results"),
 		MaxTestFailures: 2,
 	}

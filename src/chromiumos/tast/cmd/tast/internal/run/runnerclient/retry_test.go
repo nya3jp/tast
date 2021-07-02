@@ -7,10 +7,8 @@ package runnerclient
 import (
 	"context"
 	"errors"
-	"io/ioutil"
 	"testing"
 
-	"chromiumos/tast/cmd/tast/internal/logging"
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
 )
@@ -46,7 +44,6 @@ func beforeRetrySuccess(ctx context.Context) bool {
 
 func TestRunTestsWithRetry(t *testing.T) {
 	cfg := &config.Config{
-		Logger:               logging.NewSimple(ioutil.Discard, false, false),
 		ContinueAfterFailure: true,
 	}
 
@@ -62,7 +59,6 @@ func TestRunTestsWithRetry(t *testing.T) {
 
 func TestRunTestsWithRetryNoRetry(t *testing.T) {
 	cfg := &config.Config{
-		Logger:               logging.NewSimple(ioutil.Discard, false, false),
 		ContinueAfterFailure: false, // disable retry
 	}
 
@@ -78,7 +74,6 @@ func TestRunTestsWithRetryNoRetry(t *testing.T) {
 
 func TestRunTestsWithRetryNoUnstarted(t *testing.T) {
 	cfg := &config.Config{
-		Logger:               logging.NewSimple(ioutil.Discard, false, false),
 		ContinueAfterFailure: true,
 	}
 
@@ -94,7 +89,6 @@ func TestRunTestsWithRetryNoUnstarted(t *testing.T) {
 
 func TestRunTestsWithRetryStuck(t *testing.T) {
 	cfg := &config.Config{
-		Logger:               logging.NewSimple(ioutil.Discard, false, false),
 		ContinueAfterFailure: true,
 	}
 
@@ -110,7 +104,6 @@ func TestRunTestsWithRetryStuck(t *testing.T) {
 
 func TestRunTestsWithRetryBeforeRetry(t *testing.T) {
 	cfg := &config.Config{
-		Logger:               logging.NewSimple(ioutil.Discard, false, false),
 		ContinueAfterFailure: true,
 	}
 

@@ -134,6 +134,24 @@
       "parentUuid": "9fc92a29_e91a6f0f",
       "revId": "346babcd98fef07641ba63c13935e051072b17cb",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ba9baa83_4434d641",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1512082
+      },
+      "writtenOn": "2021-07-02T19:19:59Z",
+      "side": 1,
+      "message": "Sure, I\u0027m abandoning it. Thanks Nya for the awesome advice. I\u0027ll try to stick to such good practices.\n\nThank you guys for the review. I really appreciate it.\n-Bisakh",
+      "parentUuid": "b27fde99_2adc6352",
+      "revId": "346babcd98fef07641ba63c13935e051072b17cb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

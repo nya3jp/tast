@@ -14,9 +14,9 @@ import (
 	"golang.org/x/sys/unix"
 
 	"chromiumos/tast/errors"
+	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/rpc"
-	"chromiumos/tast/internal/testcontext"
 )
 
 type testServer struct {
@@ -49,7 +49,7 @@ func (s *testServer) ListEntities(ctx context.Context, req *protocol.ListEntitie
 
 func (s *testServer) RunTests(srv protocol.TestService_RunTestsServer) error {
 	ctx := srv.Context()
-	ctx = testcontext.WithLogger(ctx, func(msg string) {
+	logger := logging.NewSinkLogger(logging.LevelInfo, false, logging.NewFuncSink(func(msg string) {
 		srv.Send(&protocol.RunTestsResponse{
 			Type: &protocol.RunTestsResponse_RunLog{
 				RunLog: &protocol.RunLogEvent{
@@ -58,7 +58,9 @@ func (s *testServer) RunTests(srv protocol.TestService_RunTestsServer) error {
 				},
 			},
 		})
-	})
+	}))
+	// Logs from RunTests should not be routed to protocol.Logging service.
+	ctx = logging.AttachLoggerNoPropagation(ctx, logger)
 
 	initReq, err := srv.Recv()
 	if err != nil {

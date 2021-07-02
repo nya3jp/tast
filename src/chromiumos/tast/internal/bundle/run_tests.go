@@ -18,6 +18,7 @@ import (
 	"chromiumos/tast/dut"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/command"
+	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/planner"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testcontext"
@@ -58,9 +59,9 @@ func runTests(ctx context.Context, srv protocol.TestService_RunTestsServer, cfg 
 	})
 
 	ew := newEventWriter(srv)
-	ctx = testcontext.WithLogger(ctx, func(msg string) {
-		ew.RunLog(msg)
-	})
+
+	logger := logging.NewSinkLogger(logging.LevelInfo, false, logging.NewFuncSink(func(msg string) { ew.RunLog(msg) }))
+	ctx = logging.AttachLogger(ctx, logger)
 
 	tests, err := testsToRun(scfg, cfg.GetTests())
 	if err != nil {
@@ -115,14 +116,14 @@ func runTests(ctx context.Context, srv protocol.TestService_RunTestsServer, cfg 
 
 	var rd *testing.RemoteData
 	if rcfg := cfg.GetRemoteTestConfig(); rcfg != nil {
-		testcontext.Log(ctx, "Connecting to DUT")
+		logging.Info(ctx, "Connecting to DUT")
 		sshCfg := rcfg.GetPrimaryDut().GetSshConfig()
 		dt, err := connectToTarget(ctx, sshCfg.GetTarget(), sshCfg.GetKeyFile(), sshCfg.GetKeyDir(), scfg.beforeReboot)
 		if err != nil {
 			return command.NewStatusErrorf(statusError, "failed to connect to DUT: %v", err)
 		}
 		defer func() {
-			testcontext.Log(ctx, "Disconnecting from DUT")
+			logging.Info(ctx, "Disconnecting from DUT")
 			// It is okay to ignore the error since we've finished testing at this point.
 			dt.Close(ctx)
 		}()
@@ -132,7 +133,7 @@ func runTests(ctx context.Context, srv protocol.TestService_RunTestsServer, cfg 
 			if len(companionDUTs) == 0 {
 				return
 			}
-			testcontext.Log(ctx, "Disconnecting from companion DUTs")
+			logging.Info(ctx, "Disconnecting from companion DUTs")
 			// It is okay to ignore the error since we've finished testing at this point.
 			for _, dut := range rd.CompanionDUTs {
 				dut.Close(ctx)

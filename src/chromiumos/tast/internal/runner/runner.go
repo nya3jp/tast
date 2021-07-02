@@ -27,9 +27,9 @@ import (
 	"chromiumos/tast/internal/command"
 	"chromiumos/tast/internal/control"
 	"chromiumos/tast/internal/jsonprotocol"
+	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/rpc"
-	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/internal/timing"
 )
@@ -416,13 +416,13 @@ func killStaleRunners(ctx context.Context, sig unix.Signal) {
 	ourPID := os.Getpid()
 	ourExe, err := os.Executable()
 	if err != nil {
-		testcontext.Log(ctx, "Failed to look up current executable: ", err)
+		logging.Info(ctx, "Failed to look up current executable: ", err)
 		return
 	}
 
 	procs, err := process.Processes()
 	if err != nil {
-		testcontext.Log(ctx, "Failed to list processes while looking for stale runners: ", err)
+		logging.Info(ctx, "Failed to list processes while looking for stale runners: ", err)
 		return
 	}
 	for _, proc := range procs {
@@ -432,9 +432,9 @@ func killStaleRunners(ctx context.Context, sig unix.Signal) {
 		if exe, err := proc.Exe(); err != nil || exe != ourExe {
 			continue
 		}
-		testcontext.Logf(ctx, "Sending signal %d to stale %v process group %d", sig, ourExe, proc.Pid)
+		logging.Infof(ctx, "Sending signal %d to stale %v process group %d", sig, ourExe, proc.Pid)
 		if err := unix.Kill(int(-proc.Pid), sig); err != nil {
-			testcontext.Logf(ctx, "Failed killing process group %d: %v", proc.Pid, err)
+			logging.Infof(ctx, "Failed killing process group %d: %v", proc.Pid, err)
 		}
 	}
 }

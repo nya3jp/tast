@@ -150,6 +150,11 @@ func SetUp(t *gotesting.T, opts ...EnvOrDUTOption) *Env {
 	}
 }
 
+// Context returns a background context.
+func (e *Env) Context() context.Context {
+	return context.Background()
+}
+
 // TempDir returns a directory path where callers can save arbitrary temporary
 // files. This directory is cleared on the end of the current unit test.
 func (e *Env) TempDir() string { return filepath.Join(e.rootDir, tempDir) }

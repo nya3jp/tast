@@ -31,8 +31,8 @@ import (
 func TestLocalSuccess(t *gotesting.T) {
 	t.Parallel()
 
-	ctx := context.Background()
 	env := runtest.SetUp(t)
+	ctx := env.Context()
 	cfg := env.Config()
 	state := env.State()
 
@@ -86,14 +86,15 @@ func TestLocalProxy(t *gotesting.T) {
 		runtest.ExactMatchHandler(expCmd, fakeProc),
 		runtest.ExactMatchHandler(expCmd+" -rpc", fakeProc),
 	}))
+	ctx := env.Context()
 	cfg := env.Config()
 	cfg.Proxy = config.ProxyEnv
 	state := env.State()
 
 	cc := target.NewConnCache(cfg, cfg.Target)
-	defer cc.Close(context.Background())
+	defer cc.Close(ctx)
 
-	if _, err := RunLocalTests(context.Background(), cfg, state, nil, cc); err == nil {
+	if _, err := RunLocalTests(ctx, cfg, state, nil, cc); err == nil {
 		t.Error("RunLocalTests unexpectedly succeeded")
 	}
 	if !called {
@@ -118,6 +119,7 @@ func TestLocalCopyOutput(t *gotesting.T) {
 	})
 
 	env := runtest.SetUp(t, runtest.WithLocalBundles(reg))
+	ctx := env.Context()
 	cfg := env.Config()
 	state := env.State()
 
@@ -126,9 +128,9 @@ func TestLocalCopyOutput(t *gotesting.T) {
 	}
 
 	cc := target.NewConnCache(cfg, cfg.Target)
-	defer cc.Close(context.Background())
+	defer cc.Close(ctx)
 
-	if _, err := RunLocalTests(context.Background(), cfg, state, nil, cc); err != nil {
+	if _, err := RunLocalTests(ctx, cfg, state, nil, cc); err != nil {
 		t.Fatalf("RunLocalTests failed: %v", err)
 	}
 
@@ -165,7 +167,7 @@ func TestLocalMaxFailures(t *gotesting.T) {
 	}
 
 	env := runtest.SetUp(t, runtest.WithLocalBundles(reg))
-
+	ctx := env.Context()
 	cfg := env.Config()
 	cfg.MaxTestFailures = 2
 
@@ -177,9 +179,9 @@ func TestLocalMaxFailures(t *gotesting.T) {
 	}
 
 	cc := target.NewConnCache(cfg, cfg.Target)
-	defer cc.Close(context.Background())
+	defer cc.Close(ctx)
 
-	results, err := RunLocalTests(context.Background(), cfg, state, nil, cc)
+	results, err := RunLocalTests(ctx, cfg, state, nil, cc)
 	if err == nil {
 		t.Errorf("RunLocalTests() passed unexpectedly")
 	}
@@ -260,6 +262,7 @@ func TestFixturesDependency(t *gotesting.T) {
 	remoteReg := makeReg(remoteTests, remoteFixtures)
 
 	env := runtest.SetUp(t, runtest.WithLocalBundles(localReg), runtest.WithRemoteBundles(remoteReg))
+	ctx := env.Context()
 	cfg := env.Config()
 	state := env.State()
 
@@ -277,9 +280,9 @@ func TestFixturesDependency(t *gotesting.T) {
 	}
 
 	cc := target.NewConnCache(cfg, cfg.Target)
-	defer cc.Close(context.Background())
+	defer cc.Close(ctx)
 
-	got, err := RunLocalTests(context.Background(), cfg, state, nil, cc)
+	got, err := RunLocalTests(ctx, cfg, state, nil, cc)
 	if err != nil {
 		t.Fatalf("RunLocalTests: %v", err)
 	}

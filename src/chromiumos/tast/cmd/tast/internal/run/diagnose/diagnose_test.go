@@ -49,12 +49,13 @@ func callSSHDrop(t *testing.T, rebooted bool, syslog, ramoops string) (msg, outD
 			}),
 		}),
 	)
+	ctx := env.Context()
 	cfg := env.Config()
 
 	cc := target.NewConnCache(cfg, cfg.Target)
-	defer cc.Close(context.Background())
+	defer cc.Close(ctx)
 
-	if _, err := cc.Conn(context.Background()); err != nil {
+	if _, err := cc.Conn(ctx); err != nil {
 		t.Fatal(err)
 	}
 
@@ -67,23 +68,24 @@ func callSSHDrop(t *testing.T, rebooted bool, syslog, ramoops string) (msg, outD
 		t.Fatal(err)
 	}
 
-	msg = diagnose.SSHDrop(context.Background(), cfg, cc, outDir)
+	msg = diagnose.SSHDrop(ctx, cfg, cc, outDir)
 	return msg, outDir
 }
 
 func TestSSHDropNotRecovered(t *testing.T) {
 	env := runtest.SetUp(t)
+	ctx := env.Context()
 	cfg := env.Config()
 
 	cc := target.NewConnCache(cfg, cfg.Target)
-	defer cc.Close(context.Background())
+	defer cc.Close(ctx)
 
-	if _, err := cc.Conn(context.Background()); err != nil {
+	if _, err := cc.Conn(ctx); err != nil {
 		t.Fatal(err)
 	}
 
 	// Pass a canceled context to make reconnection fail.
-	ctx, cancel := context.WithCancel(context.Background())
+	ctx, cancel := context.WithCancel(ctx)
 	cancel()
 	msg := diagnose.SSHDrop(ctx, cfg, cc, env.TempDir())
 	const exp = "target did not come back: context canceled"

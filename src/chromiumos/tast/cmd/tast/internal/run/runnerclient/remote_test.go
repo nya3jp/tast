@@ -54,7 +54,7 @@ func TestRemoteRun(t *gotesting.T) {
 			gotInit = init
 		}),
 	)
-
+	ctx := env.Context()
 	cfg := env.Config()
 	cfg.BuildArtifactsURL = "gs://foo/bar"
 	// Use IPv4 loopback address with invalid port numbers so that they
@@ -74,7 +74,7 @@ func TestRemoteRun(t *gotesting.T) {
 		},
 	}
 
-	results, err := RunRemoteTests(context.Background(), cfg, state, dutInfo)
+	results, err := RunRemoteTests(ctx, cfg, state, dutInfo)
 	if err != nil {
 		t.Errorf("RunRemoteTests failed: %v", err)
 	}
@@ -169,10 +169,11 @@ func TestRemoteRunCopyOutput(t *gotesting.T) {
 		runtest.WithLocalBundles(testing.NewRegistry("bundle")),
 		runtest.WithRemoteBundles(reg),
 	)
+	ctx := env.Context()
 	cfg := env.Config()
 	state := env.State()
 
-	if _, err := RunRemoteTests(context.Background(), cfg, state, nil); err != nil {
+	if _, err := RunRemoteTests(ctx, cfg, state, nil); err != nil {
 		t.Fatalf("RunRemoteTests failed: %v", err)
 	}
 
@@ -202,11 +203,12 @@ func TestRemoteMaxFailures(t *gotesting.T) {
 		runtest.WithLocalBundles(testing.NewRegistry("bundle")),
 		runtest.WithRemoteBundles(reg),
 	)
+	ctx := env.Context()
 	cfg := env.Config()
 	cfg.MaxTestFailures = 1
 	state := env.State()
 
-	results, err := RunRemoteTests(context.Background(), cfg, state, nil)
+	results, err := RunRemoteTests(ctx, cfg, state, nil)
 	if err == nil {
 		t.Error("RunRemoteTests passed unexpectedly")
 	}

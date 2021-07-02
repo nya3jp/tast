@@ -14,7 +14,7 @@ import (
 	"golang.org/x/crypto/ssh"
 
 	"chromiumos/tast/errors"
-	"chromiumos/tast/internal/testcontext"
+	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/shutil"
 )
 
@@ -304,8 +304,8 @@ func (c *Cmd) DumpLog(ctx context.Context) error {
 	if c.state != stateDone {
 		return errNotWaited
 	}
-	testcontext.Log(ctx, "Command: ", shutil.EscapeSlice(c.Args))
-	testcontext.Log(ctx, "Uncaptured output:\n", c.log.String())
+	logging.Info(ctx, "Command: ", shutil.EscapeSlice(c.Args))
+	logging.Info(ctx, "Uncaptured output:\n", c.log.String())
 	return nil
 }
 

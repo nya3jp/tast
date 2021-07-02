@@ -15,7 +15,7 @@ import (
 
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/linuxssh"
-	"chromiumos/tast/internal/testcontext"
+	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/testingutil"
 	"chromiumos/tast/ssh"
 )
@@ -97,12 +97,12 @@ func (d *DUT) Connect(ctx context.Context) error {
 	d.Disconnect(ctx)
 
 	var err error
-	testcontext.Log(ctx, "Trying DUT SSH connection to ", d.sopt.Hostname)
+	logging.Info(ctx, "Trying DUT SSH connection to ", d.sopt.Hostname)
 	d.hst, err = ssh.New(ctx, &d.sopt)
 	if err != nil {
 		return err
 	}
-	testcontext.Log(ctx, "Opened DUT SSH connection to ", d.sopt.Hostname)
+	logging.Info(ctx, "Opened DUT SSH connection to ", d.sopt.Hostname)
 	return nil
 }
 
@@ -113,7 +113,7 @@ func (d *DUT) Disconnect(ctx context.Context) error {
 		return nil
 	}
 	defer func() { d.hst = nil }()
-	testcontext.Log(ctx, "Closing DUT SSH connection to ", d.sopt.Hostname)
+	logging.Info(ctx, "Closing DUT SSH connection to ", d.sopt.Hostname)
 	return d.hst.Close(ctx)
 }
 

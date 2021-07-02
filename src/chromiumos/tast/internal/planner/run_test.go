@@ -25,6 +25,7 @@ import (
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/devserver/devservertest"
 	"chromiumos/tast/internal/extdata"
+	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/testing"
@@ -962,42 +963,42 @@ func TestRunFixture(t *gotesting.T) {
 		Name: "fixt1",
 		Impl: testfixture.New(
 			testfixture.WithSetUp(func(ctx context.Context, s *testing.FixtState) interface{} {
-				testcontext.Log(ctx, "fixt1 SetUp")
+				logging.Info(ctx, "fixt1 SetUp")
 				return val1
 			}),
 			testfixture.WithReset(func(ctx context.Context) error {
-				testcontext.Log(ctx, "fixt1 Reset")
+				logging.Info(ctx, "fixt1 Reset")
 				return nil
 			}),
 			testfixture.WithPreTest(func(ctx context.Context, s *testing.FixtTestState) {
-				testcontext.Log(ctx, "fixt1 PreTest")
+				logging.Info(ctx, "fixt1 PreTest")
 			}),
 			testfixture.WithPostTest(func(ctx context.Context, s *testing.FixtTestState) {
-				testcontext.Log(ctx, "fixt1 PostTest")
+				logging.Info(ctx, "fixt1 PostTest")
 			}),
 			testfixture.WithTearDown(func(ctx context.Context, s *testing.FixtState) {
-				testcontext.Log(ctx, "fixt1 TearDown")
+				logging.Info(ctx, "fixt1 TearDown")
 			})),
 	}
 	fixt2 := &testing.FixtureInstance{
 		Name: "fixt2",
 		Impl: testfixture.New(
 			testfixture.WithSetUp(func(ctx context.Context, s *testing.FixtState) interface{} {
-				testcontext.Log(ctx, "fixt2 SetUp")
+				logging.Info(ctx, "fixt2 SetUp")
 				return val2
 			}),
 			testfixture.WithReset(func(ctx context.Context) error {
-				testcontext.Log(ctx, "fixt2 Reset")
+				logging.Info(ctx, "fixt2 Reset")
 				return nil
 			}),
 			testfixture.WithPreTest(func(ctx context.Context, s *testing.FixtTestState) {
-				testcontext.Log(ctx, "fixt2 PreTest")
+				logging.Info(ctx, "fixt2 PreTest")
 			}),
 			testfixture.WithPostTest(func(ctx context.Context, s *testing.FixtTestState) {
-				testcontext.Log(ctx, "fixt2 PostTest")
+				logging.Info(ctx, "fixt2 PostTest")
 			}),
 			testfixture.WithTearDown(func(ctx context.Context, s *testing.FixtState) {
-				testcontext.Log(ctx, "fixt2 TearDown")
+				logging.Info(ctx, "fixt2 TearDown")
 			})),
 		Parent: "fixt1",
 	}
@@ -1087,38 +1088,38 @@ func TestRunFixtureSetUpFailure(t *gotesting.T) {
 				return nil
 			}),
 			testfixture.WithReset(func(ctx context.Context) error {
-				testcontext.Log(ctx, "fixt1 Reset")
+				logging.Info(ctx, "fixt1 Reset")
 				return nil
 			}),
 			testfixture.WithPreTest(func(ctx context.Context, s *testing.FixtTestState) {
-				testcontext.Log(ctx, "fixt1 PreTest")
+				logging.Info(ctx, "fixt1 PreTest")
 			}),
 			testfixture.WithPostTest(func(ctx context.Context, s *testing.FixtTestState) {
-				testcontext.Log(ctx, "fixt1 PostTest")
+				logging.Info(ctx, "fixt1 PostTest")
 			}),
 			testfixture.WithTearDown(func(ctx context.Context, s *testing.FixtState) {
-				testcontext.Log(ctx, "fixt1 TearDown")
+				logging.Info(ctx, "fixt1 TearDown")
 			})),
 	}
 	fixt2 := &testing.FixtureInstance{
 		Name: "fixt2",
 		Impl: testfixture.New(
 			testfixture.WithSetUp(func(ctx context.Context, s *testing.FixtState) interface{} {
-				testcontext.Log(ctx, "fixt2 SetUp")
+				logging.Info(ctx, "fixt2 SetUp")
 				return nil
 			}),
 			testfixture.WithReset(func(ctx context.Context) error {
-				testcontext.Log(ctx, "fixt2 Reset")
+				logging.Info(ctx, "fixt2 Reset")
 				return nil
 			}),
 			testfixture.WithPreTest(func(ctx context.Context, s *testing.FixtTestState) {
-				testcontext.Log(ctx, "fixt2 PreTest")
+				logging.Info(ctx, "fixt2 PreTest")
 			}),
 			testfixture.WithPostTest(func(ctx context.Context, s *testing.FixtTestState) {
-				testcontext.Log(ctx, "fixt2 PostTest")
+				logging.Info(ctx, "fixt2 PostTest")
 			}),
 			testfixture.WithTearDown(func(ctx context.Context, s *testing.FixtState) {
-				testcontext.Log(ctx, "fixt2 TearDown")
+				logging.Info(ctx, "fixt2 TearDown")
 			})),
 		Parent: "fixt1",
 	}
@@ -1212,14 +1213,14 @@ func TestRunFixtureResetFailure(t *gotesting.T) {
 	fixt1 := &testing.FixtureInstance{
 		Name: "fixt1",
 		Impl: testfixture.New(testfixture.WithReset(func(ctx context.Context) error {
-			testcontext.Log(ctx, "Reset 1")
+			logging.Info(ctx, "Reset 1")
 			return errors.New("failure")
 		})),
 	}
 	fixt2 := &testing.FixtureInstance{
 		Name: "fixt2",
 		Impl: testfixture.New(testfixture.WithReset(func(ctx context.Context) error {
-			testcontext.Log(ctx, "Reset 2")
+			logging.Info(ctx, "Reset 2")
 			return nil
 		})),
 		Parent: "fixt1",
@@ -1290,14 +1291,14 @@ func TestRunFixtureMinimumReset(t *gotesting.T) {
 	fixt1 := &testing.FixtureInstance{
 		Name: "fixt1",
 		Impl: testfixture.New(testfixture.WithReset(func(ctx context.Context) error {
-			testcontext.Log(ctx, "Reset 1")
+			logging.Info(ctx, "Reset 1")
 			return nil
 		})),
 	}
 	fixt2 := &testing.FixtureInstance{
 		Name: "fixt2",
 		Impl: testfixture.New(testfixture.WithReset(func(ctx context.Context) error {
-			testcontext.Log(ctx, "Reset 2")
+			logging.Info(ctx, "Reset 2")
 			return nil
 		})),
 		Parent: "fixt1",
@@ -1305,7 +1306,7 @@ func TestRunFixtureMinimumReset(t *gotesting.T) {
 	fixt3 := &testing.FixtureInstance{
 		Name: "fixt3",
 		Impl: testfixture.New(testfixture.WithReset(func(ctx context.Context) error {
-			testcontext.Log(ctx, "Reset 3")
+			logging.Info(ctx, "Reset 3")
 			return nil
 		})),
 		Parent: "fixt1",
@@ -1723,7 +1724,7 @@ func TestRunPreconditionContext(t *gotesting.T) {
 			}
 		}
 
-		testcontext.Log(pctx, "Log via PreCtx")
+		logging.Info(pctx, "Log via PreCtx")
 
 		if _, ok := testcontext.SoftwareDeps(pctx); !ok {
 			t.Error("ContextSoftwareDeps unavailable")
@@ -1872,8 +1873,8 @@ func TestAttachStateToContext(t *gotesting.T) {
 	tests := []*testing.TestInstance{{
 		Name: "pkg.Test",
 		Func: func(ctx context.Context, s *testing.State) {
-			testcontext.Log(ctx, "msg ", 1)
-			testcontext.Logf(ctx, "msg %d", 2)
+			logging.Info(ctx, "msg ", 1)
+			logging.Infof(ctx, "msg %d", 2)
 		},
 		Timeout: time.Minute,
 	}}

@@ -12,8 +12,8 @@ import (
 
 	"github.com/google/subcommands"
 
-	"chromiumos/tast/cmd/tast/internal/logging"
 	"chromiumos/tast/cmd/tast/internal/symbolize"
+	"chromiumos/tast/internal/logging"
 )
 
 // symbolizeCmd implements subcommands.Command to support symbolizing crashes.
@@ -42,20 +42,14 @@ func (s *symbolizeCmd) SetFlags(f *flag.FlagSet) {
 }
 
 func (s *symbolizeCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{}) subcommands.ExitStatus {
-	lg, ok := logging.FromContext(ctx)
-	if !ok {
-		panic("logger not attached to context")
-	}
-
 	if len(f.Args()) != 1 {
 		fmt.Fprintf(os.Stderr, s.Usage())
 		return subcommands.ExitUsageError
 	}
 
-	s.cfg.Logger = lg
 	path := f.Args()[0]
-	if err := symbolize.SymbolizeCrash(path, os.Stdout, s.cfg); err != nil {
-		lg.Logf("Failed to symbolize %v: %v", path, err)
+	if err := symbolize.SymbolizeCrash(ctx, path, os.Stdout, s.cfg); err != nil {
+		logging.Infof(ctx, "Failed to symbolize %v: %v", path, err)
 	}
 	return subcommands.ExitSuccess
 }

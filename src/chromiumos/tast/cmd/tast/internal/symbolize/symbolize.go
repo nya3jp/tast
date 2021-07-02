@@ -7,6 +7,7 @@ package symbolize
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"fmt"
 	"io"
@@ -14,14 +15,12 @@ import (
 	"os"
 	"path/filepath"
 
-	"chromiumos/tast/cmd/tast/internal/logging"
 	"chromiumos/tast/cmd/tast/internal/symbolize/breakpad"
+	"chromiumos/tast/internal/logging"
 )
 
 // Config contains parameters used when symbolizing crash files.
 type Config struct {
-	// Logger is used to log progress and errors.
-	Logger *logging.Logger
 	// SymbolDir contains a directory used to store symbol files.
 	SymbolDir string
 	// BuilderPath, for example, "betty-release/R91-13892.0.0", identifies the location
@@ -36,12 +35,12 @@ type Config struct {
 // SymbolizeCrash attempts to symbolize a crash file.
 // path can contain either raw minidump data or a Chrome crash report.
 // The (possibly-unsuccessfully-)symbolized data is written to w.
-func SymbolizeCrash(path string, w io.Writer, cfg Config) error { // NOLINT
+func SymbolizeCrash(ctx context.Context, path string, w io.Writer, cfg Config) error { // NOLINT
 	if cfg.SymbolDir == "" {
 		return errors.New("symbol directory not supplied")
 	}
 
-	dumpPath, err := getMinidumpPath(&cfg, path)
+	dumpPath, err := getMinidumpPath(ctx, path)
 	if err != nil {
 		return fmt.Errorf("failed to get minidump: %v", err)
 	}
@@ -53,7 +52,7 @@ func SymbolizeCrash(path string, w io.Writer, cfg Config) error { // NOLINT
 	ri, err := getMinidumpReleaseInfo(dumpPath)
 	if err != nil {
 		if err == breakpad.ErrReleaseInfoNotFound {
-			cfg.Logger.Debug(err)
+			logging.Debug(ctx, err)
 			ri = newEmptyReleaseInfo()
 		} else {
 			return fmt.Errorf("failed to get release info from %v: %v", dumpPath, err)
@@ -62,7 +61,7 @@ func SymbolizeCrash(path string, w io.Writer, cfg Config) error { // NOLINT
 	if ri.isEmpty() && cfg.BuildRoot == "" && cfg.BuilderPath == "" {
 		return errors.New("minidump does not contain release info, please supply --builderpath or --buildroot parameter to fix this error")
 	}
-	cfg.Logger.Debugf("Got board %q and builder path %q from minidump", ri.board, ri.builderPath)
+	logging.Debugf(ctx, "Got board %q and builder path %q from minidump", ri.board, ri.builderPath)
 	if cfg.BuildRoot == "" {
 		cfg.BuildRoot = filepath.Join("/build", ri.board)
 	}
@@ -70,7 +69,7 @@ func SymbolizeCrash(path string, w io.Writer, cfg Config) error { // NOLINT
 		cfg.BuilderPath = ri.builderPath
 	}
 
-	cfg.Logger.Debugf("Walking %v with symbol dir %v", dumpPath, cfg.SymbolDir)
+	logging.Debugf(ctx, "Walking %v with symbol dir %v", dumpPath, cfg.SymbolDir)
 	b := bytes.Buffer{}
 	missing, err := breakpad.WalkMinidump(dumpPath, cfg.SymbolDir, &b)
 	if err != nil {
@@ -81,14 +80,14 @@ func SymbolizeCrash(path string, w io.Writer, cfg Config) error { // NOLINT
 	if len(missing) > 0 {
 		if cfg.BuilderPath != "" {
 			url := breakpad.GetSymbolsURL(cfg.BuilderPath)
-			cfg.Logger.Debugf("Extracting %v symbol file(s) from %v", len(missing), url)
+			logging.Debugf(ctx, "Extracting %v symbol file(s) from %v", len(missing), url)
 			if created, err = breakpad.DownloadSymbols(url, cfg.SymbolDir, missing); err != nil {
 				// Keep going so we can print what we have.
-				cfg.Logger.Logf("Failed to get symbols from %v: %v", url, err)
+				logging.Infof(ctx, "Failed to get symbols from %v: %v", url, err)
 			}
 		} else {
-			cfg.Logger.Debugf("Generating %v symbol file(s) from %v", len(missing), cfg.BuildRoot)
-			created = createSymbolFiles(&cfg, missing)
+			logging.Debugf(ctx, "Generating %v symbol file(s) from %v", len(missing), cfg.BuildRoot)
+			created = createSymbolFiles(ctx, &cfg, missing)
 		}
 	}
 
@@ -100,7 +99,7 @@ func SymbolizeCrash(path string, w io.Writer, cfg Config) error { // NOLINT
 	}
 
 	// Otherwise, walk the minidump again.
-	cfg.Logger.Debugf("Walking %v again with %v new symbol file(s)", dumpPath, created)
+	logging.Debugf(ctx, "Walking %v again with %v new symbol file(s)", dumpPath, created)
 	if _, err = breakpad.WalkMinidump(dumpPath, cfg.SymbolDir, w); err != nil {
 		return fmt.Errorf("failed to re-walk %v: %v", dumpPath, err)
 	}
@@ -110,7 +109,7 @@ func SymbolizeCrash(path string, w io.Writer, cfg Config) error { // NOLINT
 // getMinidumpPath returns the path to a file containing minidump data from path.
 // If path contains raw minidump data, it will be returned directly.
 // If path contains a Chrome crash report, its minidump data will be written to a temporary file.
-func getMinidumpPath(cfg *Config, path string) (string, error) {
+func getMinidumpPath(ctx context.Context, path string) (string, error) {
 	f, err := os.Open(path)
 	if err != nil {
 		return "", err
@@ -121,7 +120,7 @@ func getMinidumpPath(cfg *Config, path string) (string, error) {
 	if isDump, err := breakpad.IsMinidump(f); err != nil {
 		return "", err
 	} else if isDump {
-		cfg.Logger.Debugf("Using minidump file %v", path)
+		logging.Debugf(ctx, "Using minidump file %v", path)
 		return path, nil
 	}
 
@@ -144,7 +143,7 @@ func getMinidumpPath(cfg *Config, path string) (string, error) {
 	}
 	defer tf.Close()
 
-	cfg.Logger.Debugf("Writing minidump data from %v to %v", path, tf.Name())
+	logging.Debugf(ctx, "Writing minidump data from %v to %v", path, tf.Name())
 	if _, err = io.CopyN(tf, f, int64(dumpLen)); err != nil {
 		os.Remove(tf.Name())
 		return "", err

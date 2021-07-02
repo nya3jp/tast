@@ -22,6 +22,7 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/runnerclient"
 	"chromiumos/tast/cmd/tast/internal/run/target"
 	"chromiumos/tast/internal/linuxssh"
+	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/internal/timing"
@@ -129,12 +130,12 @@ func buildAll(ctx context.Context, cfg *config.Config, hst *ssh.Conn, targetArch
 	for _, tgt := range tgts {
 		names = append(names, path.Base(tgt.Pkg))
 	}
-	cfg.Logger.Logf("Building %s", strings.Join(names, ", "))
+	logging.Infof(ctx, "Building %s", strings.Join(names, ", "))
 	start := time.Now()
 	if err := build.Build(ctx, cfg.BuildCfg(), tgts); err != nil {
 		return fmt.Errorf("build failed: %v", err)
 	}
-	cfg.Logger.Logf("Built in %v", time.Now().Sub(start).Round(time.Millisecond))
+	logging.Infof(ctx, "Built in %v", time.Now().Sub(start).Round(time.Millisecond))
 	return nil
 }
 
@@ -144,7 +145,7 @@ func buildAll(ctx context.Context, cfg *config.Config, hst *ssh.Conn, targetArch
 func getTargetArch(ctx context.Context, cfg *config.Config, hst *ssh.Conn) (targetArch string, err error) {
 	ctx, st := timing.Start(ctx, "get_arch")
 	defer st.End()
-	cfg.Logger.Debug("Getting architecture from target")
+	logging.Debug(ctx, "Getting architecture from target")
 
 	// Get the userland architecture by inspecting an arbitrary binary on the target.
 	out, err := hst.Command("file", "-b", "-L", "/sbin/init").CombinedOutput(ctx)
@@ -210,13 +211,13 @@ func pushExecutables(ctx context.Context, cfg *config.Config, hst *ssh.Conn, tar
 	ctx, st := timing.Start(ctx, "push_executables")
 	defer st.End()
 
-	cfg.Logger.Log("Pushing executables to target")
+	logging.Info(ctx, "Pushing executables to target")
 	start := time.Now()
 	bytes, err := linuxssh.PutFiles(ctx, hst, files, linuxssh.DereferenceSymlinks)
 	if err != nil {
 		return err
 	}
-	cfg.Logger.Logf("Pushed executables in %v (sent %s)",
+	logging.Infof(ctx, "Pushed executables in %v (sent %s)",
 		time.Now().Sub(start).Round(time.Millisecond), formatBytes(bytes))
 	return nil
 }
@@ -254,7 +255,7 @@ func getDataFilePaths(ctx context.Context, cfg *config.Config, hst *ssh.Conn) (
 	ctx, st := timing.Start(ctx, "get_data_paths")
 	defer st.End()
 
-	cfg.Logger.Debug("Getting data file list from target")
+	logging.Debug(ctx, "Getting data file list from target")
 
 	var entities []*protocol.Entity // all entities needed to run tests
 
@@ -294,7 +295,7 @@ func getDataFilePaths(ctx context.Context, cfg *config.Config, hst *ssh.Conn) (
 		}
 	}
 
-	cfg.Logger.Debugf("Got data file list with %v file(s)", len(paths))
+	logging.Debugf(ctx, "Got data file list with %v file(s)", len(paths))
 	return paths, nil
 }
 
@@ -307,7 +308,7 @@ func pushDataFiles(ctx context.Context, cfg *config.Config, hst *ssh.Conn, destD
 	ctx, st := timing.Start(ctx, "push_data")
 	defer st.End()
 
-	cfg.Logger.Log("Pushing data files to target")
+	logging.Info(ctx, "Pushing data files to target")
 
 	srcDir := filepath.Join(cfg.BuildWorkspace, "src")
 
@@ -346,7 +347,7 @@ func pushDataFiles(ctx context.Context, cfg *config.Config, hst *ssh.Conn, destD
 			return err
 		}
 	}
-	cfg.Logger.Logf("Pushed data files in %v (sent %s)",
+	logging.Infof(ctx, "Pushed data files in %v (sent %s)",
 		time.Now().Sub(start).Round(time.Millisecond), formatBytes(wsBytes))
 	return nil
 }

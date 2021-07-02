@@ -6,12 +6,9 @@ package testcontext
 
 import (
 	"context"
-	"fmt"
-)
 
-// loggerKey is the type of the key used for attaching a LoggerFunc to a
-// context.Context.
-type loggerKey struct{}
+	"chromiumos/tast/internal/logging"
+)
 
 // LoggerFunc is the type of a function to emit log messages.
 type LoggerFunc = func(msg string)
@@ -19,29 +16,25 @@ type LoggerFunc = func(msg string)
 // WithLogger creates a context associated with logger. The returned context can
 // be used to call Log/Logf.
 func WithLogger(ctx context.Context, logger LoggerFunc) context.Context {
-	return context.WithValue(ctx, loggerKey{}, logger)
+	return logging.AttachLoggerNoPropagation(ctx, logging.NewSinkLogger(logging.LevelInfo, false, logging.NewFuncSink(logger)))
 }
 
 // Logger extracts a logger from a context.
 func Logger(ctx context.Context) (LoggerFunc, bool) {
-	logger, ok := ctx.Value(loggerKey{}).(LoggerFunc)
-	return logger, ok
+	if !logging.HasLogger(ctx) {
+		return nil, false
+	}
+	return func(msg string) {
+		logging.Info(ctx, msg)
+	}, true
 }
 
 // Log formats its arguments using default formatting and logs them via ctx.
 func Log(ctx context.Context, args ...interface{}) {
-	logger, ok := Logger(ctx)
-	if !ok {
-		return
-	}
-	logger(fmt.Sprint(args...))
+	logging.Info(ctx, args...)
 }
 
 // Logf is similar to Log but formats its arguments using fmt.Sprintf.
 func Logf(ctx context.Context, format string, args ...interface{}) {
-	logger, ok := Logger(ctx)
-	if !ok {
-		return
-	}
-	logger(fmt.Sprintf(format, args...))
+	logging.Infof(ctx, format, args...)
 }

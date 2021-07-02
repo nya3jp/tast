@@ -20,6 +20,7 @@ import (
 	"google.golang.org/grpc/reflection"
 
 	"chromiumos/tast/errors"
+	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/testing"
@@ -55,7 +56,7 @@ func RunServer(r io.Reader, w io.Writer, svcs []*testing.Service, register func(
 	// Start a remote logging server. It is used to forward logs from
 	// user-defined gRPC services via side channels.
 	ls := newRemoteLoggingServer()
-	srv := grpc.NewServer(serverOpts(ls.Log, &calls)...)
+	srv := grpc.NewServer(serverOpts(logging.NewFuncSink(ls.Log), &calls)...)
 
 	// Register core services.
 	reflection.Register(srv)
@@ -69,7 +70,8 @@ func RunServer(r io.Reader, w io.Writer, svcs []*testing.Service, register func(
 
 	// Register user-defined gRPC services if requested.
 	if req.GetNeedUserServices() {
-		ctx := testcontext.WithLogger(ctx, ls.Log)
+		logger := logging.NewSinkLogger(logging.LevelInfo, false, logging.NewFuncSink(ls.Log))
+		ctx = logging.AttachLogger(ctx, logger)
 		vars := req.GetUserServiceInitParams().GetVars()
 		for _, svc := range svcs {
 			svc.Register(srv, testing.NewServiceState(ctx, testing.NewServiceRoot(svc, vars)))
@@ -130,7 +132,7 @@ func (s *serverStreamWithContext) Context() context.Context {
 var _ grpc.ServerStream = (*serverStreamWithContext)(nil)
 
 // serverOpts returns gRPC server-side interceptors to manipulate context.
-func serverOpts(logger testcontext.LoggerFunc, calls *sync.WaitGroup) []grpc.ServerOption {
+func serverOpts(sink logging.Sink, calls *sync.WaitGroup) []grpc.ServerOption {
 	// hook is called on every gRPC method call.
 	// It returns a Context to be passed to a gRPC method, a function to be
 	// called on the end of the gRPC method call to compute trailers, and
@@ -156,7 +158,7 @@ func serverOpts(logger testcontext.LoggerFunc, calls *sync.WaitGroup) []grpc.Ser
 			return nil, nil, err
 		}
 
-		ctx = testcontext.WithLogger(ctx, logger)
+		ctx = logging.AttachLogger(ctx, logging.NewSinkLogger(logging.LevelInfo, false, sink))
 		ctx = testcontext.WithCurrentEntity(ctx, incomingCurrentContext(md, outDir))
 		tl := timing.NewLog()
 		ctx = timing.NewContext(ctx, tl)
@@ -166,17 +168,17 @@ func serverOpts(logger testcontext.LoggerFunc, calls *sync.WaitGroup) []grpc.Ser
 
 			b, err := json.Marshal(tl)
 			if err != nil {
-				logger(fmt.Sprint("Failed to marshal timing JSON: ", err))
+				sink.Log(fmt.Sprint("Failed to marshal timing JSON: ", err))
 			} else {
 				md[metadataTiming] = []string{string(b)}
 			}
 
 			// Send metadataOutDir only if some files were saved in order to avoid extra round-trips.
 			if fis, err := ioutil.ReadDir(outDir); err != nil {
-				logger(fmt.Sprint("gRPC output directory is corrupted: ", err))
+				sink.Log(fmt.Sprint("gRPC output directory is corrupted: ", err))
 			} else if len(fis) == 0 {
 				if err := os.RemoveAll(outDir); err != nil {
-					logger(fmt.Sprint("Failed to remove gRPC output directory: ", err))
+					sink.Log(fmt.Sprint("Failed to remove gRPC output directory: ", err))
 				}
 			} else {
 				md[metadataOutDir] = []string{outDir}

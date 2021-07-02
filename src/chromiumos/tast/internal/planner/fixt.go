@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"path/filepath"
 
+	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/testing"
@@ -194,7 +195,7 @@ func (st *FixtureStack) Push(ctx context.Context, fixt *testing.FixtureInstance)
 	ei := fixt.EntityProto()
 	fout := newEntityOutputStream(st.out, ei)
 
-	ctx = testing.NewContext(ctx, ce, func(msg string) { fout.Log(msg) })
+	ctx = testing.NewContext(ctx, ce, logging.NewFuncSink(func(msg string) { fout.Log(msg) }))
 
 	rcfg := &testing.RuntimeConfig{
 		DataDir:      filepath.Join(st.cfg.DataDir, testing.RelativeDataDir(fixt.Pkg)),
@@ -468,7 +469,7 @@ func (f *statefulFixture) RunPreTest(ctx context.Context, troot *testing.TestEnt
 		return fmt.Errorf("BUG: RunPreTest called for a %v fixture", status)
 	}
 
-	ctx = f.newTestContext(ctx, troot, troot.Logger())
+	ctx = f.newTestContext(ctx, troot, troot.LogSink())
 	s := troot.NewFixtTestState(ctx)
 	name := fmt.Sprintf("%s:PreTest", f.fixt.Name)
 
@@ -482,7 +483,7 @@ func (f *statefulFixture) RunPostTest(ctx context.Context, troot *testing.TestEn
 		return fmt.Errorf("BUG: RunPostTest called for a %v fixture", status)
 	}
 
-	ctx = f.newTestContext(ctx, troot, troot.Logger())
+	ctx = f.newTestContext(ctx, troot, troot.LogSink())
 	s := troot.NewFixtTestState(ctx)
 	name := fmt.Sprintf("%s:PostTest", f.fixt.Name)
 
@@ -492,7 +493,7 @@ func (f *statefulFixture) RunPostTest(ctx context.Context, troot *testing.TestEn
 }
 
 // newTestContext returns a Context to be passed to PreTest/PostTest of a fixture.
-func (f *statefulFixture) newTestContext(ctx context.Context, troot *testing.TestEntityRoot, logger func(msg string)) context.Context {
+func (f *statefulFixture) newTestContext(ctx context.Context, troot *testing.TestEntityRoot, sink logging.Sink) context.Context {
 	ce := &testcontext.CurrentEntity{
 		// OutDir is from the test so that test hooks can save files just like tests.
 		OutDir: troot.OutDir(),
@@ -502,7 +503,7 @@ func (f *statefulFixture) newTestContext(ctx context.Context, troot *testing.Tes
 		// SoftwareDeps is unavailable because fixtures can't declare software dependencies.
 		HasSoftwareDeps: false,
 	}
-	return testing.NewContext(ctx, ce, logger)
+	return testing.NewContext(ctx, ce, sink)
 }
 
 // rewriteErrorsForTest rewrites error messages reported by a fixture to be

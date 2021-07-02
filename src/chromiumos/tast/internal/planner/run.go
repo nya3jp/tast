@@ -21,6 +21,7 @@ import (
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/devserver"
 	"chromiumos/tast/internal/extdata"
+	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/testing"
@@ -496,7 +497,7 @@ func (p *prePlan) run(ctx context.Context, out OutputStream, dl *downloader) err
 		ServiceDeps:     append([]string(nil), p.tests[0].ServiceDeps...),
 	}
 	plog := newPreLogger(out)
-	pctx, cancel := context.WithCancel(testing.NewContext(ctx, ec, plog.Log))
+	pctx, cancel := context.WithCancel(testing.NewContext(ctx, ec, logging.NewFuncSink(plog.Log)))
 	defer cancel()
 
 	// Create an empty fixture stack. Tests using preconditions can't depend on

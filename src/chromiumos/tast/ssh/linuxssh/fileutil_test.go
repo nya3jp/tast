@@ -11,8 +11,9 @@ import (
 	"path/filepath"
 	"testing"
 
+	"chromiumos/tast/internal/logging"
+	"chromiumos/tast/internal/logging/loggingtest"
 	"chromiumos/tast/internal/sshtest"
-	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/testutil"
 )
 
@@ -23,7 +24,7 @@ func TestReadFile(t *testing.T) {
 	td := sshtest.NewTestDataConn(t)
 	defer td.Close()
 
-	ctx := testcontext.WithLogger(context.Background(), func(msg string) { t.Log(msg) }) // for debug
+	ctx := logging.AttachLogger(context.Background(), loggingtest.NewLogger(t, logging.LevelInfo)) // for debug
 
 	dir := testutil.TempDir(t)
 	defer os.RemoveAll(dir)
@@ -51,7 +52,7 @@ func TestWriteFile(t *testing.T) {
 	td := sshtest.NewTestDataConn(t)
 	defer td.Close()
 
-	ctx := testcontext.WithLogger(context.Background(), func(msg string) { t.Log(msg) }) // for debug
+	ctx := logging.AttachLogger(context.Background(), loggingtest.NewLogger(t, logging.LevelInfo)) // for debug
 
 	dir := testutil.TempDir(t)
 	defer os.RemoveAll(dir)

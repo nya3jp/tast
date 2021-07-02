@@ -19,10 +19,10 @@ import (
 
 	"chromiumos/tast/dut"
 	"chromiumos/tast/errors"
+	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/protocol/protocoltest"
 	"chromiumos/tast/internal/sshtest"
-	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/testutil"
 )
@@ -100,10 +100,10 @@ func TestRunTests(t *gotesting.T) {
 	scfg := NewStaticConfig(reg, 0, Delegate{
 		RunHook: func(ctx context.Context) (func(context.Context) error, error) {
 			preRunCalls++
-			testcontext.Log(ctx, preRunMsg)
+			logging.Info(ctx, preRunMsg)
 			return func(ctx context.Context) error {
 				postRunCalls++
-				testcontext.Log(ctx, postRunMsg)
+				logging.Info(ctx, postRunMsg)
 				return nil
 			}, nil
 		},

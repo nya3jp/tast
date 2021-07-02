@@ -63,6 +63,7 @@ import (
 
 	"chromiumos/tast/dut"
 	"chromiumos/tast/errors"
+	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/timing"
 )
@@ -132,7 +133,7 @@ func (r *EntityRoot) NewFixtState() *FixtState {
 
 // NewContext creates a new context associated with the entity.
 func (r *EntityRoot) NewContext(ctx context.Context) context.Context {
-	return NewContext(ctx, r.ce, func(msg string) { r.out.Log(msg) })
+	return NewContext(ctx, r.ce, logging.NewFuncSink(func(msg string) { r.out.Log(msg) }))
 }
 
 // HasError checks if any error has been reported.
@@ -238,14 +239,15 @@ func (r *TestEntityRoot) OutDir() string {
 	return r.entityRoot.cfg.OutDir
 }
 
-// Logger returns logger for the test entity.
-func (r *TestEntityRoot) Logger() func(string) {
-	return func(msg string) { r.entityRoot.out.Log(msg) }
+// LogSink returns a logging sink for the test entity.
+func (r *TestEntityRoot) LogSink() logging.Sink {
+	return logging.NewFuncSink(func(msg string) { r.entityRoot.out.Log(msg) })
 }
 
 // NewContext returns a context.Context to be used for the entity.
-func NewContext(ctx context.Context, ec *testcontext.CurrentEntity, log func(msg string)) context.Context {
-	ctx = testcontext.WithLogger(ctx, log)
+func NewContext(ctx context.Context, ec *testcontext.CurrentEntity, sink logging.Sink) context.Context {
+	logger := logging.NewSinkLogger(logging.LevelInfo, false, sink)
+	ctx = logging.AttachLoggerNoPropagation(ctx, logger)
 	ctx = testcontext.WithCurrentEntity(ctx, ec)
 	return ctx
 }

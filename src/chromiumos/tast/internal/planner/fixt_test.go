@@ -15,6 +15,7 @@ import (
 	"github.com/google/go-cmp/cmp/cmpopts"
 
 	"chromiumos/tast/errors"
+	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/testing"
@@ -485,26 +486,26 @@ func TestFixtureStackOutputGreen(t *gotesting.T) {
 			Name: fmt.Sprintf("fixt%d", id),
 			Impl: testfixture.New(
 				testfixture.WithSetUp(func(ctx context.Context, s *testing.FixtState) interface{} {
-					testcontext.Logf(ctx, "SetUp %d via Context", id)
-					testcontext.Logf(s.FixtContext(), "SetUp %d via Fixture-scoped Context", id)
+					logging.Infof(ctx, "SetUp %d via Context", id)
+					logging.Infof(s.FixtContext(), "SetUp %d via Fixture-scoped Context", id)
 					s.Logf("SetUp %d via State", id)
 					return nil
 				}),
 				testfixture.WithReset(func(ctx context.Context) error {
-					testcontext.Logf(ctx, "Reset %d via Context", id)
+					logging.Infof(ctx, "Reset %d via Context", id)
 					return nil
 				}),
 				testfixture.WithPreTest(func(ctx context.Context, s *testing.FixtTestState) {
-					testcontext.Logf(ctx, "PreTest %d via Context", id)
+					logging.Infof(ctx, "PreTest %d via Context", id)
 					s.Logf("PreTest %d via State", id)
 				}),
 				testfixture.WithPostTest(func(ctx context.Context, s *testing.FixtTestState) {
-					testcontext.Logf(ctx, "PostTest %d via Context", id)
+					logging.Infof(ctx, "PostTest %d via Context", id)
 					s.Logf("PostTest %d via State", id)
 				}),
 				testfixture.WithTearDown(func(ctx context.Context, s *testing.FixtState) {
-					testcontext.Logf(ctx, "TearDown %d via Context", id)
-					testcontext.Logf(s.FixtContext(), "TearDown %d via Fixture-scoped Context", id)
+					logging.Infof(ctx, "TearDown %d via Context", id)
+					logging.Infof(s.FixtContext(), "TearDown %d via Fixture-scoped Context", id)
 					s.Logf("TearDown %d via State", id)
 				})),
 		}
@@ -581,18 +582,18 @@ func TestFixtureStackOutputRed(t *gotesting.T) {
 			Name: fmt.Sprintf("fixt%d", id),
 			Impl: testfixture.New(
 				testfixture.WithSetUp(func(ctx context.Context, s *testing.FixtState) interface{} {
-					testcontext.Logf(ctx, "SetUp %d", id)
+					logging.Infof(ctx, "SetUp %d", id)
 					if !setUp {
 						s.Errorf("SetUp %d failure", id)
 					}
 					return nil
 				}),
 				testfixture.WithReset(func(ctx context.Context) error {
-					testcontext.Logf(ctx, "Reset %d", id)
+					logging.Infof(ctx, "Reset %d", id)
 					return nil
 				}),
 				testfixture.WithTearDown(func(ctx context.Context, s *testing.FixtState) {
-					testcontext.Logf(ctx, "TearDown %d", id)
+					logging.Infof(ctx, "TearDown %d", id)
 				})),
 		}
 	}
@@ -652,18 +653,18 @@ func TestFixtureStackOutputYellow(t *gotesting.T) {
 			Name: fmt.Sprintf("fixt%d", id),
 			Impl: testfixture.New(
 				testfixture.WithSetUp(func(ctx context.Context, s *testing.FixtState) interface{} {
-					testcontext.Logf(ctx, "SetUp %d", id)
+					logging.Infof(ctx, "SetUp %d", id)
 					return nil
 				}),
 				testfixture.WithReset(func(ctx context.Context) error {
-					testcontext.Logf(ctx, "Reset %d", id)
+					logging.Infof(ctx, "Reset %d", id)
 					if !reset {
 						return errors.New("failure")
 					}
 					return nil
 				}),
 				testfixture.WithTearDown(func(ctx context.Context, s *testing.FixtState) {
-					testcontext.Logf(ctx, "TearDown %d", id)
+					logging.Infof(ctx, "TearDown %d", id)
 				})),
 		}
 	}

@@ -21,7 +21,7 @@ import (
 	"strings"
 	"time"
 
-	"chromiumos/tast/internal/testcontext"
+	"chromiumos/tast/internal/logging"
 )
 
 var errNotStaged = errors.New("no staged file found")
@@ -160,7 +160,7 @@ func (c *RealClient) Open(ctx context.Context, gsURL string) (io.ReadCloser, err
 
 	// Use an already staged file if there is any.
 	if dsURL, err := c.findStaged(sctx, bucket, path); err == nil {
-		testcontext.Logf(ctx, "Downloading %s via %s (already staged)", gsURL, dsURL)
+		logging.Infof(ctx, "Downloading %s via %s (already staged)", gsURL, dsURL)
 		r, err := c.openStaged(ctx, dsURL, bucket, path)
 		if err != nil {
 			return nil, fmt.Errorf("failed to download from %s: %v", dsURL, err)
@@ -172,7 +172,7 @@ func (c *RealClient) Open(ctx context.Context, gsURL string) (io.ReadCloser, err
 
 	// Choose a devserver and download the file via it.
 	dsURL := c.chooseServer(gsURL)
-	testcontext.Logf(ctx, "Downloading %s via %s (newly staging)", gsURL, dsURL)
+	logging.Infof(ctx, "Downloading %s via %s (newly staging)", gsURL, dsURL)
 	if err := c.stage(ctx, dsURL, bucket, path); err != nil {
 		if os.IsNotExist(err) {
 			return nil, err
@@ -300,14 +300,14 @@ func (c *RealClient) stage(ctx context.Context, dsURL, bucket, gsPath string) er
 
 		elapsed := time.Now().Sub(start)
 		if remaining := c.stageRetryWaits[i] - elapsed; remaining > 0 {
-			testcontext.Logf(ctx, "Retry stage in %v: %v", remaining.Round(time.Millisecond), err)
+			logging.Infof(ctx, "Retry stage in %v: %v", remaining.Round(time.Millisecond), err)
 			select {
 			case <-time.After(remaining):
 			case <-ctx.Done():
 				return ctx.Err()
 			}
 		} else {
-			testcontext.Logf(ctx, "Retrying stage: %v", err)
+			logging.Infof(ctx, "Retrying stage: %v", err)
 		}
 	}
 }

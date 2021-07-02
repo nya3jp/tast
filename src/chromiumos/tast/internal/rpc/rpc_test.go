@@ -26,6 +26,7 @@ import (
 
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/fakeexec"
+	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/sshtest"
 	"chromiumos/tast/internal/testcontext"
@@ -131,6 +132,19 @@ func newPingPair(ctx context.Context, t *gotesting.T, req *protocol.HandshakeReq
 		rpcClient:  cl,
 		stopServer: stopServer,
 	}
+}
+
+type channelSink struct {
+	ch chan<- string
+}
+
+func newChannelSink() (*channelSink, <-chan string) {
+	ch := make(chan string)
+	return &channelSink{ch: ch}, ch
+}
+
+func (s *channelSink) Log(msg string) {
+	s.ch <- msg
 }
 
 func TestRPCSuccess(t *gotesting.T) {
@@ -283,16 +297,17 @@ func TestRPCForwardCurrentEntity(t *gotesting.T) {
 func TestRPCForwardLogs(t *gotesting.T) {
 	const exp = "hello"
 
-	logs := make(chan string, 1)
 	ctx := context.Background()
-	ctx = testcontext.WithLogger(ctx, func(msg string) { logs <- msg })
+	sink, logs := newChannelSink()
+	ctx = logging.AttachLogger(ctx, logging.NewSinkLogger(logging.LevelDebug, false, sink))
 	ctx = testcontext.WithCurrentEntity(ctx, &testcontext.CurrentEntity{})
 	req := &protocol.HandshakeRequest{NeedUserServices: true}
 
 	called := false
 	svc := newPingService(func(ctx context.Context, s *testing.ServiceState) error {
 		called = true
-		testcontext.Log(ctx, exp)
+		logging.Debug(ctx, "world") // not delivered
+		logging.Info(ctx, exp)
 		return nil
 	})
 
@@ -447,16 +462,17 @@ func TestRPCSetVars(t *gotesting.T) {
 func TestRPCServiceScopedContext(t *gotesting.T) {
 	const exp = "hello"
 
-	logs := make(chan string, 1)
 	ctx := context.Background()
-	ctx = testcontext.WithLogger(ctx, func(msg string) { logs <- msg })
+	sink, logs := newChannelSink()
+	ctx = logging.AttachLogger(ctx, logging.NewSinkLogger(logging.LevelDebug, false, sink))
 	ctx = testcontext.WithCurrentEntity(ctx, &testcontext.CurrentEntity{})
 	req := &protocol.HandshakeRequest{NeedUserServices: true}
 
 	called := false
 	svc := newPingService(func(ctx context.Context, s *testing.ServiceState) error {
 		called = true
-		testcontext.Log(s.ServiceContext(), exp)
+		logging.Debug(ctx, "world") // not delivered
+		logging.Info(s.ServiceContext(), exp)
 		return nil
 	})
 

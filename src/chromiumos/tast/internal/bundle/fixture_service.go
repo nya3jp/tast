@@ -14,9 +14,9 @@ import (
 	"github.com/golang/protobuf/ptypes/empty"
 	"google.golang.org/grpc"
 
+	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/planner"
 	"chromiumos/tast/internal/protocol"
-	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/internal/timing"
 )
@@ -106,13 +106,13 @@ func (s *fixtureService) pushAndPop(srv FixtureService_RunFixtureServer) (retErr
 	}
 	defer restoreTempDir()
 
-	testcontext.Log(ctx, "Connecting to DUT")
+	logging.Info(ctx, "Connecting to DUT")
 	dt, err := connectToTarget(ctx, r.Config.Target, r.Config.KeyFile, r.Config.KeyDir, nil)
 	if err != nil {
 		return fmt.Errorf("push %v: %v", r.Name, err)
 	}
 	defer func() {
-		testcontext.Log(ctx, "Disconnecting from DUT")
+		logging.Info(ctx, "Disconnecting from DUT")
 		// It is OK to ignore the error since we've finished running fixture at this point.
 		dt.Close(ctx)
 	}()
@@ -176,7 +176,7 @@ func (s *fixtureService) pushAndPop(srv FixtureService_RunFixtureServer) (retErr
 	}
 
 	if !dt.Connected(ctx) {
-		testcontext.Log(ctx, "Reconnecting to DUT")
+		logging.Info(ctx, "Reconnecting to DUT")
 		if err := dt.Connect(ctx); err != nil {
 			return fmt.Errorf("pop %v: %v", r.Name, err)
 		}

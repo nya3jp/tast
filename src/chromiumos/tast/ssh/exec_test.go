@@ -19,8 +19,8 @@ import (
 
 	cryptossh "golang.org/x/crypto/ssh"
 
+	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/sshtest"
-	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/ssh"
 	"chromiumos/tast/testutil"
 )
@@ -536,9 +536,10 @@ func TestDumpLogOnError(t *testing.T) {
 
 		var log bytes.Buffer
 
-		ctx := testcontext.WithLogger(context.Background(), func(msg string) {
+		logger := logging.NewSinkLogger(logging.LevelInfo, false, logging.NewFuncSink(func(msg string) {
 			fmt.Fprint(&log, msg)
-		})
+		}))
+		ctx := logging.AttachLogger(context.Background(), logger)
 		var err error
 		if tc.f != nil {
 			err = tc.f(cmd)(ctx, ssh.DumpLogOnError)

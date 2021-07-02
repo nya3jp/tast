@@ -15,7 +15,6 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/shirou/gopsutil/process"
@@ -25,9 +24,9 @@ import (
 	"chromiumos/tast/internal/command"
 	"chromiumos/tast/internal/devserver"
 	"chromiumos/tast/internal/jsonprotocol"
+	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/rpc"
-	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/testing"
 )
 
@@ -253,12 +252,10 @@ func handleDownloadPrivateBundles(ctx context.Context, args *jsonprotocol.Runner
 	}
 
 	var logs []string
-	var mu sync.Mutex
-	ctx = testcontext.WithLogger(ctx, func(msg string) {
-		mu.Lock()
-		defer mu.Unlock()
+	logger := logging.NewSinkLogger(logging.LevelInfo, false, logging.NewFuncSink(func(msg string) {
 		logs = append(logs, fmt.Sprintf("[%s] %s", time.Now().Format("15:04:05.000"), msg))
-	})
+	}))
+	ctx = logging.AttachLogger(ctx, logger)
 
 	defer func() {
 		res := &jsonprotocol.RunnerDownloadPrivateBundlesResult{Messages: logs}
@@ -272,7 +269,7 @@ func handleDownloadPrivateBundles(ctx context.Context, args *jsonprotocol.Runner
 
 	// Download the archive via devserver.
 	archiveURL := args.DownloadPrivateBundles.BuildArtifactsURL + "tast_bundles.tar.bz2"
-	testcontext.Logf(ctx, "Downloading private bundles from %s", archiveURL)
+	logging.Infof(ctx, "Downloading private bundles from %s", archiveURL)
 	cl, err := devserver.NewClient(ctx, args.DownloadPrivateBundles.Devservers,
 		args.DownloadPrivateBundles.TLWServer,
 		args.DownloadPrivateBundles.DUTName)
@@ -307,9 +304,9 @@ func handleDownloadPrivateBundles(ctx context.Context, args *jsonprotocol.Runner
 		if err := cmd.Run(); err != nil {
 			return fmt.Errorf("failed to extract %s: %v", strings.Join(cmd.Args, " "), err)
 		}
-		testcontext.Log(ctx, "Download finished successfully")
+		logging.Info(ctx, "Download finished successfully")
 	} else if os.IsNotExist(err) {
-		testcontext.Log(ctx, "Private bundles not found")
+		logging.Info(ctx, "Private bundles not found")
 	} else {
 		return fmt.Errorf("failed to download %s: %v", archiveURL, err)
 	}

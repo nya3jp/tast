@@ -6,10 +6,12 @@ package testing
 
 import (
 	"context"
-	"reflect"
 	"testing"
 
-	"chromiumos/tast/internal/testcontext"
+	"github.com/google/go-cmp/cmp"
+
+	"chromiumos/tast/internal/logging"
+	"chromiumos/tast/internal/logging/loggingtest"
 )
 
 func TestContextLogger(t *testing.T) {
@@ -19,11 +21,8 @@ func TestContextLogger(t *testing.T) {
 		t.Errorf("Expected logger to not be available from background context")
 	}
 
-	var logs []string
-	logger := func(msg string) {
-		logs = append(logs, msg)
-	}
-	ctx = testcontext.WithLogger(ctx, logger)
+	logger := loggingtest.NewLogger(t, logging.LevelInfo)
+	ctx = logging.AttachLogger(ctx, logger)
 
 	logger2, ok := ContextLogger(ctx)
 	if !ok {
@@ -32,7 +31,7 @@ func TestContextLogger(t *testing.T) {
 
 	const testLog = "foo"
 	logger2.Print(testLog)
-	if exp := []string{testLog}; !reflect.DeepEqual(logs, exp) {
-		t.Errorf("Print did not work as expected: got %v, want %v", logs, exp)
+	if diff := cmp.Diff(logger.Logs(), []string{testLog}); diff != "" {
+		t.Errorf("Log mismatch (-got +want):\n%s", diff)
 	}
 }

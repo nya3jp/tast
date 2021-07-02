@@ -18,10 +18,10 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"google.golang.org/grpc"
 
+	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/rpc"
 	"chromiumos/tast/internal/sshtest"
-	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/testutil"
 )
@@ -156,7 +156,7 @@ func TestFixtureServiceResponses(t *gotesting.T) {
 			fixt: &fakeFixture{
 				setUp: func(ctx context.Context, s *testing.FixtState) interface{} {
 					s.Log("SetUp")
-					testcontext.Log(ctx, "SetUp context log")
+					logging.Info(ctx, "SetUp context log")
 					return nil
 				},
 				tearDown: func(ctx context.Context, s *testing.FixtState) {

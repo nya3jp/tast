@@ -9,7 +9,7 @@ import (
 	"fmt"
 	"time"
 
-	"chromiumos/tast/internal/testcontext"
+	"chromiumos/tast/internal/logging"
 )
 
 // NewClient creates a Client from a list of devservers or a TLW server.
@@ -25,11 +25,11 @@ func NewClient(ctx context.Context, devservers []string, tlwServer, dutName stri
 		if err != nil {
 			return nil, err
 		}
-		testcontext.Log(ctx, "Devserver status: using TLW client")
+		logging.Info(ctx, "Devserver status: using TLW client")
 		return cl, nil
 	}
 	if len(devservers) == 0 {
-		testcontext.Log(ctx, "Devserver status: using pseudo client")
+		logging.Info(ctx, "Devserver status: using pseudo client")
 		return NewPseudoClient(), nil
 	}
 
@@ -38,6 +38,6 @@ func NewClient(ctx context.Context, devservers []string, tlwServer, dutName stri
 	defer cancel()
 
 	cl := NewRealClient(ctx, devservers, nil)
-	testcontext.Logf(ctx, "Devserver status: %s", cl.Status())
+	logging.Infof(ctx, "Devserver status: %s", cl.Status())
 	return cl, nil
 }

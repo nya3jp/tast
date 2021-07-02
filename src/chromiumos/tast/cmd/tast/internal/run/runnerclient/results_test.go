@@ -674,8 +674,6 @@ func TestReadTestOutputTimeout(t *gotesting.T) {
 }
 
 func TestWriteResultsCollectSysInfo(t *gotesting.T) {
-	ctx := context.Background()
-
 	initialState := &protocol.SysInfoState{
 		LogInodeSizes: map[uint64]int64{1: 2, 3: 4},
 	}
@@ -687,6 +685,7 @@ func TestWriteResultsCollectSysInfo(t *gotesting.T) {
 		}
 		return &protocol.CollectSysInfoResponse{}, nil
 	}))
+	ctx := env.Context()
 	cfg := env.Config()
 	state := env.State()
 
@@ -702,14 +701,13 @@ func TestWriteResultsCollectSysInfo(t *gotesting.T) {
 }
 
 func TestWriteResultsCollectSysInfoFailure(t *gotesting.T) {
-	ctx := context.Background()
-
 	called := false
 	env := runtest.SetUp(t, runtest.WithCollectSysInfo(func(req *protocol.CollectSysInfoRequest) (*protocol.CollectSysInfoResponse, error) {
 		called = true
 		// Report an error when collecting system info.
 		return nil, errors.New("failure")
 	}))
+	ctx := env.Context()
 	cfg := env.Config()
 	var logBuf bytes.Buffer
 	cfg.Logger = logging.NewSimple(&logBuf, false, false)

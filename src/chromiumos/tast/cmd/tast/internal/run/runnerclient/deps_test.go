@@ -5,7 +5,6 @@
 package runnerclient
 
 import (
-	"context"
 	"os"
 	"path/filepath"
 	"testing"
@@ -60,14 +59,15 @@ func TestGetDUTInfo(t *testing.T) {
 		}
 		return &protocol.GetDUTInfoResponse{DutInfo: want}, nil
 	}))
+	ctx := env.Context()
 	cfg := env.Config()
 	cfg.CheckTestDeps = true
 	cfg.ExtraUSEFlags = extraUseFlags
 
 	cc := target.NewConnCache(cfg, cfg.Target)
-	defer cc.Close(context.Background())
+	defer cc.Close(ctx)
 
-	got, err := GetDUTInfo(context.Background(), cfg, cc)
+	got, err := GetDUTInfo(ctx, cfg, cc)
 	if err != nil {
 		t.Fatalf("GetDUTInfo failed: %v", err)
 	}
@@ -87,6 +87,7 @@ func TestGetDUTInfoNoCheckTestDeps(t *testing.T) {
 		t.Error("GetDUTInfo called unexpectedly")
 		return &protocol.GetDUTInfoResponse{}, nil
 	}))
+	ctx := env.Context()
 	cfg := env.Config()
 	cfg.CheckTestDeps = true
 
@@ -94,9 +95,9 @@ func TestGetDUTInfoNoCheckTestDeps(t *testing.T) {
 	cfg.CheckTestDeps = false
 
 	cc := target.NewConnCache(cfg, cfg.Target)
-	defer cc.Close(context.Background())
+	defer cc.Close(ctx)
 
-	if _, err := GetDUTInfo(context.Background(), cfg, cc); err != nil {
+	if _, err := GetDUTInfo(ctx, cfg, cc); err != nil {
 		t.Fatalf("GetDUTInfo failed: %v", err)
 	}
 }
@@ -113,14 +114,15 @@ func TestGetSoftwareFeaturesNoFeatures(t *testing.T) {
 			},
 		}, nil
 	}))
+	ctx := env.Context()
 	cfg := env.Config()
 	// "always" should fail if the runner doesn't know about any features.
 	cfg.CheckTestDeps = true
 
 	cc := target.NewConnCache(cfg, cfg.Target)
-	defer cc.Close(context.Background())
+	defer cc.Close(ctx)
 
-	if _, err := GetDUTInfo(context.Background(), cfg, cc); err == nil {
+	if _, err := GetDUTInfo(ctx, cfg, cc); err == nil {
 		t.Fatal("getSoftwareFeatures succeeded unexpectedly")
 	}
 }

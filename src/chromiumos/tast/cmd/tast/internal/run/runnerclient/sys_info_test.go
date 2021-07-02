@@ -5,7 +5,6 @@
 package runnerclient
 
 import (
-	"context"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -16,8 +15,6 @@ import (
 )
 
 func TestGetInitialSysInfo(t *testing.T) {
-	ctx := context.Background()
-
 	wantState := &protocol.SysInfoState{
 		LogInodeSizes: map[uint64]int64{1: 2, 3: 4},
 		MinidumpPaths: []string{"foo.dmp", "bar.dmp"},
@@ -25,12 +22,13 @@ func TestGetInitialSysInfo(t *testing.T) {
 	env := runtest.SetUp(t, runtest.WithGetSysInfoState(func(req *protocol.GetSysInfoStateRequest) (*protocol.GetSysInfoStateResponse, error) {
 		return &protocol.GetSysInfoStateResponse{State: wantState}, nil
 	}))
+	ctx := env.Context()
 	cfg := env.Config()
 
 	cc := target.NewConnCache(cfg, cfg.Target)
 	defer cc.Close(ctx)
 
-	gotState, err := GetInitialSysInfo(context.Background(), cfg, cc)
+	gotState, err := GetInitialSysInfo(ctx, cfg, cc)
 	if err != nil {
 		t.Fatalf("GetInitialSysInfo failed: %v", err)
 	}
@@ -41,8 +39,6 @@ func TestGetInitialSysInfo(t *testing.T) {
 }
 
 func TestCollectSysInfo(t *testing.T) {
-	ctx := context.Background()
-
 	initialState := &protocol.SysInfoState{
 		LogInodeSizes: map[uint64]int64{1: 2, 3: 4},
 		MinidumpPaths: []string{"foo.dmp", "bar.dmp"},
@@ -55,6 +51,7 @@ func TestCollectSysInfo(t *testing.T) {
 		}
 		return &protocol.CollectSysInfoResponse{}, nil
 	}))
+	ctx := env.Context()
 	cfg := env.Config()
 
 	cc := target.NewConnCache(cfg, cfg.Target)

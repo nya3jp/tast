@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "cf62b676_5fe1b834",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-07-02T10:12:24Z",
+      "side": 1,
+      "message": "LGTM, I defer to Victor.\nThanks for improving the doc :) ",
+      "revId": "a79dd8785e3235286abe082c4bccb21cb274ae19",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

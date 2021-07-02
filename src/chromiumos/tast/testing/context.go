@@ -9,6 +9,7 @@ import (
 	"context"
 	"fmt"
 
+	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/testcontext"
 )
 
@@ -17,17 +18,17 @@ import (
 // providing support for tests. If testing.State is available, just call
 // State.Log or State.Logf instead.
 func ContextLog(ctx context.Context, args ...interface{}) {
-	testcontext.Log(ctx, args...)
+	logging.Info(ctx, args...)
 }
 
 // ContextLogf is similar to ContextLog but formats its arguments using fmt.Sprintf.
 func ContextLogf(ctx context.Context, format string, args ...interface{}) {
-	testcontext.Logf(ctx, format, args...)
+	logging.Infof(ctx, format, args...)
 }
 
 // Logger allows test helpers to log messages when no context.Context or testing.State is available.
 type Logger struct {
-	logger testcontext.LoggerFunc
+	logger func(msg string)
 }
 
 // Print formats its arguments using default formatting and logs them.
@@ -42,11 +43,10 @@ func (l *Logger) Printf(format string, args ...interface{}) {
 
 // ContextLogger returns Logger from a context.
 func ContextLogger(ctx context.Context) (*Logger, bool) {
-	logger, ok := testcontext.Logger(ctx)
-	if !ok {
+	if !logging.HasLogger(ctx) {
 		return nil, false
 	}
-	return &Logger{logger}, true
+	return &Logger{func(msg string) { logging.Info(ctx, msg) }}, true
 }
 
 // ContextOutDir is similar to OutDir but takes context instead. It is intended to be

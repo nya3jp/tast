@@ -17,6 +17,7 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
 	"chromiumos/tast/internal/jsonprotocol"
+	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/timing"
 )
@@ -48,7 +49,7 @@ func RunRemoteTests(ctx context.Context, cfg *config.Config, state *config.State
 	}
 	results, err := runTestsWithRetry(ctx, cfg, names, runTests, beforeRetry)
 	elapsed := time.Since(start)
-	cfg.Logger.Logf("Ran %v remote test(s) in %v", len(results), elapsed.Round(time.Millisecond))
+	logging.Infof(ctx, "Ran %v remote test(s) in %v", len(results), elapsed.Round(time.Millisecond))
 	return results, err
 }
 
@@ -118,7 +119,7 @@ func runRemoteTestsOnce(ctx context.Context, cfg *config.Config, state *config.S
 	args.FillDeprecated()
 
 	cmd := remoteRunnerCommand(cfg)
-	cfg.Logger.Logf("Starting %v locally", cfg.RemoteRunner)
+	logging.Infof(ctx, "Starting %v locally", cfg.RemoteRunner)
 	proc, err := cmd.Interact(ctx, nil)
 	if err != nil {
 		return nil, nil, err

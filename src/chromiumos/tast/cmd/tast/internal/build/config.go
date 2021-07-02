@@ -4,18 +4,12 @@
 
 package build
 
-import (
-	"chromiumos/tast/cmd/tast/internal/logging"
-)
-
 // ArchHost represents the host architecture. It can be set in Target.Arch to
 // instruct to use the host toolchains.
 const ArchHost = "host"
 
 // Config describes a configuration for building an executable package.
 type Config struct {
-	// Logger is used to log informational messages.
-	Logger *logging.Logger
 	// CheckBuildDeps indicates whether to check that build dependencies are installed and up-to-date in
 	// the host sysroot.
 	CheckBuildDeps bool

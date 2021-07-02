@@ -20,7 +20,6 @@ import (
 	"google.golang.org/grpc"
 
 	"chromiumos/tast/cmd/tast/internal/build"
-	"chromiumos/tast/cmd/tast/internal/logging"
 	"chromiumos/tast/errors"
 	frameworkprotocol "chromiumos/tast/framework/protocol"
 	"chromiumos/tast/internal/command"
@@ -56,8 +55,6 @@ const (
 
 // Config contains shared configuration information for running or listing tests.
 type Config struct {
-	// Logger is used to log progress.
-	Logger *logging.Logger
 	// KeyFile is the path to a private SSH key to use to connect to the target device.
 	KeyFile string
 	// KeyDir is a directory containing private SSH keys (typically $HOME/.ssh).
@@ -404,7 +401,6 @@ func (c *Config) DeriveDefaults() error {
 // BuildCfg returns a build.Config.
 func (c *Config) BuildCfg() *build.Config {
 	return &build.Config{
-		Logger:             c.Logger,
 		CheckBuildDeps:     c.CheckPortageDeps,
 		CheckDepsCachePath: filepath.Join(c.BuildOutDir, checkDepsCacheFile),
 		InstallPortageDeps: c.InstallPortageDeps,

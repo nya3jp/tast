@@ -141,7 +141,6 @@ func buildAll(ctx context.Context, cfg *config.Config, hst *ssh.Conn, targetArch
 // getTargetArch queries hst for its userland architecture and return the result.
 // Note that this can be different from the kernel architecture
 // returned by "uname -m" on some boards (e.g. aarch64 kernel with armv7l userland).
-// TODO(crbug.com/982184): Get rid of this function.
 func getTargetArch(ctx context.Context, cfg *config.Config, hst *ssh.Conn) (targetArch string, err error) {
 	ctx, st := timing.Start(ctx, "get_arch")
 	defer st.End()

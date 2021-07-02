@@ -22,6 +22,30 @@
       },
       "revId": "b36b1304f05e22d50834d351ae85052db7fcb45e",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "48388da5_39b25281",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/run.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 28,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-07-02T02:54:45Z",
+      "side": 1,
+      "message": "Oh, in an unuploaded earlier version of this patch I had to rename it to import chromiumos/tast/internal/protocol, but it doesn\u0027t apply now. Let me revert this change for now.",
+      "parentUuid": "849082b9_77c53632",
+      "range": {
+        "startLine": 28,
+        "startChar": 1,
+        "endLine": 28,
+        "endChar": 18
+      },
+      "revId": "b36b1304f05e22d50834d351ae85052db7fcb45e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

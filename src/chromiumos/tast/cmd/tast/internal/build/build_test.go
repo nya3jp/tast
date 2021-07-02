@@ -5,7 +5,6 @@
 package build
 
 import (
-	"bytes"
 	"context"
 	"fmt"
 	"os"
@@ -14,7 +13,6 @@ import (
 	"path/filepath"
 	"testing"
 
-	"chromiumos/tast/cmd/tast/internal/logging"
 	"chromiumos/tast/testutil"
 )
 
@@ -54,9 +52,7 @@ func TestBuild(t *testing.T) {
 
 	outDir := filepath.Join(td, "out")
 
-	cfg := &Config{
-		Logger: logging.NewSimple(&bytes.Buffer{}, false, false),
-	}
+	cfg := &Config{}
 	tgt := &Target{
 		Pkg:  mainPkgName,
 		Arch: ArchHost,
@@ -105,9 +101,7 @@ func main() {
 
 	outDir := filepath.Join(td, "out")
 
-	cfg := &Config{
-		Logger: logging.NewSimple(&bytes.Buffer{}, false, false),
-	}
+	cfg := &Config{}
 	tgts := []*Target{
 		{
 			Pkg:        pkg1,
@@ -145,9 +139,7 @@ func TestBuildBadWorkspace(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	cfg := &Config{
-		Logger: logging.NewSimple(&bytes.Buffer{}, false, false),
-	}
+	cfg := &Config{}
 	tgt := &Target{
 		Pkg:        "good",
 		Arch:       ArchHost,

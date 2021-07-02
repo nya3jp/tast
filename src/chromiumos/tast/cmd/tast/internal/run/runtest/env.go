@@ -17,11 +17,12 @@ import (
 	"path/filepath"
 	gotesting "testing"
 
-	"chromiumos/tast/cmd/tast/internal/logging"
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/runtest/internal/fakerunner"
 	"chromiumos/tast/cmd/tast/internal/run/runtest/internal/fakesshserver"
 	"chromiumos/tast/internal/bundle/fakebundle"
+	"chromiumos/tast/internal/logging"
+	"chromiumos/tast/internal/logging/loggingtest"
 	"chromiumos/tast/internal/runner"
 	"chromiumos/tast/internal/sshtest"
 )
@@ -50,7 +51,7 @@ const (
 // Env contains information needed to interact with the testing environment
 // set up.
 type Env struct {
-	logger           *logging.Logger
+	logger           *loggingtest.Logger
 	rootDir          string
 	primaryServer    *fakesshserver.Server
 	companionServers map[string]*fakesshserver.Server
@@ -142,7 +143,7 @@ func SetUp(t *gotesting.T, opts ...EnvOrDUTOption) *Env {
 	t.Cleanup(func() { state.Close(context.Background()) })
 
 	return &Env{
-		logger:           logging.NewSimple(newTestLogWriter(t), false, true),
+		logger:           loggingtest.NewLogger(t, logging.LevelInfo),
 		rootDir:          rootDir,
 		primaryServer:    primaryServer,
 		companionServers: companionServers,
@@ -150,9 +151,10 @@ func SetUp(t *gotesting.T, opts ...EnvOrDUTOption) *Env {
 	}
 }
 
-// Context returns a background context.
+// Context returns a background context. loggingtest.Logger is attached to the
+// context so that logs are routed to unit test logs.
 func (e *Env) Context() context.Context {
-	return context.Background()
+	return logging.AttachLogger(context.Background(), e.logger)
 }
 
 // TempDir returns a directory path where callers can save arbitrary temporary
@@ -169,8 +171,6 @@ func (e *Env) Config() *config.Config {
 		companionDUTs[role] = server.Addr().String()
 	}
 	return &config.Config{
-		// Logs are sent to unit test logs by default.
-		Logger: e.logger,
 		// Run all available tests.
 		Mode:     config.RunTestsMode,
 		Patterns: []string{"*"},

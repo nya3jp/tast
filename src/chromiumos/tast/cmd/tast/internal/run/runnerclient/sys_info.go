@@ -11,6 +11,7 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/target"
 	"chromiumos/tast/internal/jsonprotocol"
+	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/timing"
 )
@@ -25,7 +26,7 @@ func GetInitialSysInfo(ctx context.Context, cfg *config.Config, cc *target.ConnC
 
 	ctx, st := timing.Start(ctx, "initial_sys_info")
 	defer st.End()
-	cfg.Logger.Debug("Getting initial system state")
+	logging.Debug(ctx, "Getting initial system state")
 
 	conn, err := cc.Conn(ctx)
 	if err != nil {
@@ -43,7 +44,7 @@ func GetInitialSysInfo(ctx context.Context, cfg *config.Config, cc *target.ConnC
 	}
 
 	for _, warn := range res.Warnings {
-		cfg.Logger.Log("Error getting system info: ", warn)
+		logging.Info(ctx, "Error getting system info: ", warn)
 	}
 	return res.State.Proto(), nil
 }
@@ -57,7 +58,7 @@ func collectSysInfo(ctx context.Context, cfg *config.Config, initialSysInfo *pro
 
 	ctx, st := timing.Start(ctx, "collect_sys_info")
 	defer st.End()
-	cfg.Logger.Debug("Collecting system information")
+	logging.Debug(ctx, "Collecting system information")
 
 	conn, err := cc.Conn(ctx)
 	if err != nil {
@@ -78,17 +79,17 @@ func collectSysInfo(ctx context.Context, cfg *config.Config, initialSysInfo *pro
 	}
 
 	for _, warn := range res.Warnings {
-		cfg.Logger.Log(warn)
+		logging.Info(ctx, warn)
 	}
 
 	if len(res.LogDir) != 0 {
 		if err := moveFromHost(ctx, cfg, conn.SSHConn(), res.LogDir, filepath.Join(cfg.ResDir, systemLogsDir)); err != nil {
-			cfg.Logger.Log("Failed to copy system logs: ", err)
+			logging.Info(ctx, "Failed to copy system logs: ", err)
 		}
 	}
 	if len(res.CrashDir) != 0 {
 		if err := moveFromHost(ctx, cfg, conn.SSHConn(), res.CrashDir, filepath.Join(cfg.ResDir, crashesDir)); err != nil {
-			cfg.Logger.Log("Failed to copy crashes: ", err)
+			logging.Info(ctx, "Failed to copy crashes: ", err)
 		}
 	}
 	return nil

@@ -9,6 +9,7 @@ import (
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/internal/linuxssh"
+	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/ssh"
 )
 
@@ -19,7 +20,7 @@ func moveFromHost(ctx context.Context, cfg *config.Config, hst *ssh.Conn, src, d
 		return err
 	}
 	if out, err := hst.Command("rm", "-rf", "--", src).Output(ctx); err != nil {
-		cfg.Logger.Logf("Failed cleaning %s: %v\n%s", src, err, out)
+		logging.Infof(ctx, "Failed cleaning %s: %v\n%s", src, err, out)
 	}
 	return nil
 }

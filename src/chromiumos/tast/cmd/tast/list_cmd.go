@@ -5,19 +5,19 @@
 package main
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"flag"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"os"
 
 	"github.com/google/subcommands"
 
-	"chromiumos/tast/cmd/tast/internal/logging"
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
+	"chromiumos/tast/internal/logging"
 )
 
 // listCmd implements subcommands.Command to support listing tests.
@@ -61,24 +61,19 @@ func (lc *listCmd) SetFlags(f *flag.FlagSet) {
 }
 
 func (lc *listCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{}) subcommands.ExitStatus {
-	lg, ok := logging.FromContext(ctx)
-	if !ok {
-		panic("logger not attached to context")
-	}
-
 	if len(f.Args()) == 0 {
-		lg.Log("Missing target.\n\n" + lc.Usage())
+		logging.Info(ctx, "Missing target.\n\n"+lc.Usage())
 		return subcommands.ExitUsageError
 	}
 	if err := lc.cfg.DeriveDefaults(); err != nil {
-		lg.Log("Failed to derive defaults: ", err)
+		logging.Info(ctx, "Failed to derive defaults: ", err)
 		return subcommands.ExitUsageError
 	}
 	lc.cfg.Target = f.Args()[0]
 	lc.cfg.Patterns = f.Args()[1:]
 
-	b := bytes.Buffer{}
-	lc.cfg.Logger = logging.NewSimple(&b, true, true)
+	logger := logging.NewSinkLogger(logging.LevelDebug, true, logging.NewWriterSink(ioutil.Discard))
+	ctx = logging.AttachLoggerNoPropagation(ctx, logger)
 
 	state := config.State{}
 	results, err := lc.wrapper.run(ctx, lc.cfg, &state)
@@ -92,7 +87,7 @@ func (lc *listCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{
 	}
 
 	if err := lc.printTests(tests); err != nil {
-		lg.Log("Failed to write tests: ", err)
+		logging.Info(ctx, "Failed to write tests: ", err)
 		return subcommands.ExitFailure
 	}
 	return subcommands.ExitSuccess

@@ -13,6 +13,7 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/devserver"
 	"chromiumos/tast/errors"
+	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/ssh"
 )
 
@@ -33,7 +34,7 @@ func startServices(ctx context.Context, cfg *config.Config, conn *ssh.Conn) (svc
 	if cfg.TLWServer != "" {
 		var err error
 		tlwForwarder, err = conn.ForwardRemoteToLocal("tcp", "127.0.0.1:0", cfg.TLWServer, func(e error) {
-			cfg.Logger.Logf("TLW server port forwarding failed: %v", e)
+			logging.Infof(ctx, "TLW server port forwarding failed: %v", e)
 		})
 		if err != nil {
 			return nil, errors.Wrap(err, "failed to set up remote-to-local port forwarding for TLW server")

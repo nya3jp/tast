@@ -10,6 +10,7 @@ import (
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/errors"
+	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/timing"
 	"chromiumos/tast/ssh"
 )
@@ -87,7 +88,7 @@ func (c *Conn) Target() string {
 func dialSSH(ctx context.Context, cfg *config.Config, target string) (*ssh.Conn, error) {
 	ctx, st := timing.Start(ctx, "connect")
 	defer st.End()
-	cfg.Logger.Logf("Connecting to %s", target)
+	logging.Infof(ctx, "Connecting to %s", target)
 
 	opts := &ssh.Options{
 		ConnectTimeout:       sshConnectTimeout,
@@ -95,7 +96,7 @@ func dialSSH(ctx context.Context, cfg *config.Config, target string) (*ssh.Conn,
 		ConnectRetryInterval: sshRetryInterval,
 		KeyFile:              cfg.KeyFile,
 		KeyDir:               cfg.KeyDir,
-		WarnFunc:             func(s string) { cfg.Logger.Log(s) },
+		WarnFunc:             func(s string) { logging.Info(ctx, s) },
 	}
 	if err := ssh.ParseTarget(target, opts); err != nil {
 		return nil, err

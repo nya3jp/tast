@@ -10,6 +10,7 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/target"
 	"chromiumos/tast/internal/jsonprotocol"
+	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/timing"
 )
 
@@ -23,7 +24,7 @@ func DownloadPrivateBundles(ctx context.Context, cfg *config.Config, conn *targe
 	ctx, st := timing.Start(ctx, "download_private_bundles")
 	defer st.End()
 
-	cfg.Logger.Debug("Downloading private bundles")
+	logging.Debug(ctx, "Downloading private bundles")
 
 	localDevservers := append([]string(nil), cfg.Devservers...)
 	if url, ok := conn.Services().EphemeralDevserverURL(); ok {
@@ -56,7 +57,7 @@ func DownloadPrivateBundles(ctx context.Context, cfg *config.Config, conn *targe
 	}
 
 	for _, msg := range res.Messages {
-		cfg.Logger.Log(msg)
+		logging.Info(ctx, msg)
 	}
 	return nil
 }

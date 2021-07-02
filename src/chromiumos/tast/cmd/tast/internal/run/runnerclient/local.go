@@ -25,6 +25,7 @@ import (
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/bundle"
 	"chromiumos/tast/internal/jsonprotocol"
+	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/planner"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/rpc"
@@ -261,14 +262,8 @@ func runFixtureAndTests(ctx context.Context, cfg *config.Config, conn *target.Co
 
 	if remoteFixt != "" {
 		handleResponses := func() (fixtErrs []*bundle.RunFixtureError, retErr error) {
-			if err := cfg.Logger.AddWriter(fixtLogFile, true); err != nil {
-				return nil, fmt.Errorf("handle fixture log: %v", err)
-			}
-			defer func() {
-				if err := cfg.Logger.RemoveWriter(fixtLogFile); err != nil && retErr == nil {
-					retErr = fmt.Errorf("handle fixture log: %v", err)
-				}
-			}()
+			logger := logging.NewSinkLogger(logging.LevelInfo, true, logging.NewWriterSink(fixtLogFile))
+			ctx := logging.AttachLogger(ctx, logger)
 
 			for {
 				msg, err := rfcl.Recv()
@@ -286,12 +281,12 @@ func runFixtureAndTests(ctx context.Context, cfg *config.Config, conn *target.Co
 				case *bundle.RunFixtureResponse_Error:
 					fixtErrs = append(fixtErrs, v.Error)
 
-					cfg.Logger.Logf("[%s] Error at %s:%d: %s", ts, filepath.Base(v.Error.File), v.Error.Line, v.Error.Reason)
+					logging.Infof(ctx, "[%s] Error at %s:%d: %s", ts, filepath.Base(v.Error.File), v.Error.Line, v.Error.Reason)
 					if v.Error.Stack != "" {
-						cfg.Logger.Logf("[%s] Stack trace:\n%s", ts, v.Error.Stack)
+						logging.Infof(ctx, "[%s] Stack trace:\n%s", ts, v.Error.Stack)
 					}
 				case *bundle.RunFixtureResponse_Log:
-					cfg.Logger.Logf("[%s] %s", ts, v.Log)
+					logging.Infof(ctx, "[%s] %s", ts, v.Log)
 				case *bundle.RunFixtureResponse_RequestDone:
 					return
 				}
@@ -404,7 +399,7 @@ func RunLocalTests(ctx context.Context, cfg *config.Config, state *config.State,
 
 	var entityResults []*resultsjson.Result
 	for _, bt := range bundleRemoteFixtTests {
-		cfg.Logger.Logf("Running tests in bundle %v", bt.bundle)
+		logging.Infof(ctx, "Running tests in bundle %v", bt.bundle)
 
 		for _, fixtTests := range bt.tests {
 			remoteFixt := fixtTests.remoteFixt
@@ -427,7 +422,7 @@ func RunLocalTests(ctx context.Context, cfg *config.Config, state *config.State,
 		}
 	}
 	elapsed := time.Since(start)
-	cfg.Logger.Logf("Ran %v local test(s) in %v", len(entityResults), elapsed.Round(time.Millisecond))
+	logging.Infof(ctx, "Ran %v local test(s) in %v", len(entityResults), elapsed.Round(time.Millisecond))
 
 	return entityResults, nil
 }
@@ -443,7 +438,7 @@ func runLocalTestsForFixture(ctx context.Context, names []string, remoteFixt str
 	beforeRetry := func(ctx context.Context) bool {
 		var connErr error
 		if conn, connErr = cc.Conn(ctx); connErr != nil {
-			cfg.Logger.Log("Failed reconnecting to target: ", connErr)
+			logging.Info(ctx, "Failed reconnecting to target: ", connErr)
 			return false
 		}
 		return true

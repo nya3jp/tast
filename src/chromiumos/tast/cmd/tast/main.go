@@ -14,8 +14,8 @@ import (
 	"github.com/google/subcommands"
 	"golang.org/x/crypto/ssh/terminal"
 
-	"chromiumos/tast/cmd/tast/internal/logging"
 	"chromiumos/tast/internal/command"
+	"chromiumos/tast/internal/logging"
 )
 
 const (
@@ -26,25 +26,28 @@ const (
 var Version = "<unknown>"
 
 // newLogger creates a logging.Logger based on the supplied command-line flags.
-func newLogger(verbose, logTime bool) *logging.Logger {
-	return logging.NewSimple(os.Stdout, logTime, verbose)
+func newLogger(verbose, logTime bool) *logging.SinkLogger {
+	level := logging.LevelInfo
+	if verbose {
+		level = logging.LevelDebug
+	}
+	return logging.NewSinkLogger(level, logTime, logging.NewWriterSink(os.Stdout))
 }
 
 // installSignalHandler starts a goroutine that attempts to do some minimal
 // cleanup when the process is being terminated by a signal (which prevents
 // deferred functions from running).
-func installSignalHandler(lg *logging.Logger) {
+func installSignalHandler(ctx context.Context) {
 	var st *terminal.State
 	fd := int(os.Stdin.Fd())
 	if terminal.IsTerminal(fd) {
 		var err error
 		if st, err = terminal.GetState(fd); err != nil {
-			lg.Log("Failed to get terminal state: ", err)
+			logging.Info(ctx, "Failed to get terminal state: ", err)
 		}
 	}
 
 	command.InstallSignalHandler(os.Stderr, func(os.Signal) {
-		lg.Close()
 		if st != nil {
 			terminal.Restore(fd, st)
 		}
@@ -72,11 +75,10 @@ func doMain() int {
 		return 0
 	}
 
-	lg := newLogger(*verbose, *logTime)
-	defer lg.Close()
-	ctx := logging.NewContext(context.Background(), lg)
+	logger := newLogger(*verbose, *logTime)
+	ctx := logging.AttachLogger(context.Background(), logger)
 
-	installSignalHandler(lg)
+	installSignalHandler(ctx)
 
 	return int(subcommands.Execute(ctx))
 }

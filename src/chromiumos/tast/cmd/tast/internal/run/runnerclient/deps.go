@@ -15,6 +15,7 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/target"
 	"chromiumos/tast/internal/jsonprotocol"
+	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/timing"
 )
@@ -33,7 +34,7 @@ func GetDUTInfo(ctx context.Context, cfg *config.Config, cc *target.ConnCache) (
 
 	ctx, st := timing.Start(ctx, "get_dut_info")
 	defer st.End()
-	cfg.Logger.Debug("Getting DUT info")
+	logging.Debug(ctx, "Getting DUT info")
 
 	conn, err := cc.Conn(ctx)
 	if err != nil {
@@ -61,18 +62,18 @@ func GetDUTInfo(ctx context.Context, cfg *config.Config, cc *target.ConnCache) (
 	// TODO(b/187793617): Remove this check once we migrate to gRPC protocol
 	// and GetDUTInfo gets ability to return errors.
 	if res.SoftwareFeatures == nil {
-		cfg.Logger.Debug("No software features reported by DUT -- non-test image?")
+		logging.Debug(ctx, "No software features reported by DUT -- non-test image?")
 		return nil, errors.New("can't check test deps; no software features reported by DUT")
 	}
 
 	for _, warn := range res.Warnings {
-		cfg.Logger.Log(warn)
+		logging.Info(ctx, warn)
 	}
 
 	info := res.Proto()
 
 	if err := ioutil.WriteFile(filepath.Join(cfg.ResDir, dutInfoFile), []byte(proto.MarshalTextString(info)), 0644); err != nil {
-		cfg.Logger.Debugf("Failed to dump DUTInfo: %v", err)
+		logging.Debugf(ctx, "Failed to dump DUTInfo: %v", err)
 	}
 
 	return info, nil

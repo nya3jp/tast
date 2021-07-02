@@ -27,6 +27,7 @@ import (
 	frameworkprotocol "chromiumos/tast/framework/protocol"
 	"chromiumos/tast/internal/control"
 	"chromiumos/tast/internal/jsonprotocol"
+	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/internal/timing"
@@ -60,8 +61,14 @@ type entityState struct {
 	// logFile is a file handle of the log file for the entity.
 	logFile *os.File
 
+	// logger is the SinkLogger that writes to logFile.
+	logger *logging.SinkLogger
+
 	// logReportWriter writes log through the Reports.LogStream streaming gRPC.
 	logReportWriter *logSender
+
+	// reportLogger is the SinkLogger that writes to logReportWriter.
+	reportLogger *logging.SinkLogger
 
 	// IntermediateOutDir is a directory path on the target where intermediate
 	// output files for the test is saved.
@@ -81,7 +88,7 @@ var ErrTerminate = errors.New("testing jobs will be terminated")
 var errUserReqTermination = errors.Wrap(ErrTerminate, "user requested tast to terminate testing")
 
 // WriteResults writes results (including errors) to a JSON file in the results directory.
-// It additionally logs each test's status to cfg.Logger.
+// It additionally logs each test's status via ctx.
 // The cfg arg should be the same one that was passed to Run earlier.
 // The complete arg should be true if the run finished successfully (regardless of whether
 // any tests failed) and false if it was aborted.
@@ -98,7 +105,7 @@ func WriteResults(ctx context.Context, cfg *config.Config, state *config.State, 
 	// but we'll still return the error later.
 	sysInfoErr := collectSysInfo(ctx, cfg, initialSysInfo, cc)
 	if sysInfoErr != nil {
-		cfg.Logger.Log("Failed collecting system info: ", sysInfoErr)
+		logging.Info(ctx, "Failed collecting system info: ", sysInfoErr)
 	}
 
 	enc := json.NewEncoder(f)
@@ -115,23 +122,23 @@ func WriteResults(ctx context.Context, cfg *config.Config, state *config.State, 
 	}
 
 	sep := strings.Repeat("-", 80)
-	cfg.Logger.Log(sep)
+	logging.Info(ctx, sep)
 
 	for _, res := range results {
 		pn := fmt.Sprintf("%-"+strconv.Itoa(ml)+"s", res.Name)
 		if len(res.Errors) == 0 {
 			if res.SkipReason == "" {
-				cfg.Logger.Log(pn + "  [ PASS ]")
+				logging.Info(ctx, pn+"  [ PASS ]")
 			} else {
-				cfg.Logger.Log(pn + "  [ SKIP ] " + res.SkipReason)
+				logging.Info(ctx, pn+"  [ SKIP ] "+res.SkipReason)
 			}
 		} else {
 			const failStr = "  [ FAIL ] "
 			for i, te := range res.Errors {
 				if i == 0 {
-					cfg.Logger.Log(pn + failStr + te.Reason)
+					logging.Info(ctx, pn+failStr+te.Reason)
 				} else {
-					cfg.Logger.Log(strings.Repeat(" ", ml+len(failStr)) + te.Reason)
+					logging.Info(ctx, strings.Repeat(" ", ml+len(failStr))+te.Reason)
 				}
 			}
 		}
@@ -145,24 +152,24 @@ func WriteResults(ctx context.Context, cfg *config.Config, state *config.State, 
 		matchedTestNames = append(matchedTestNames, state.TestNamesToSkip...)
 		// Let the user know if one or more of the globs that they supplied didn't match any tests.
 		if pats := unmatchedTestPatterns(cfg.Patterns, matchedTestNames); len(pats) > 0 {
-			cfg.Logger.Log("")
-			cfg.Logger.Log("One or more test patterns did not match any tests:")
+			logging.Info(ctx, "")
+			logging.Info(ctx, "One or more test patterns did not match any tests:")
 			for _, p := range pats {
-				cfg.Logger.Log("  " + p)
+				logging.Info(ctx, "  "+p)
 			}
 		}
 	} else {
 		// If the run didn't finish, log an additional message after the individual results
 		// to make it clearer that all is not well.
-		cfg.Logger.Log("")
-		cfg.Logger.Log("Run did not finish successfully; results are incomplete")
+		logging.Info(ctx, "")
+		logging.Info(ctx, "Run did not finish successfully; results are incomplete")
 	}
 
 	if err := WriteJUnitResults(ctx, cfg, results); err != nil {
 		return err
 	}
-	cfg.Logger.Log(sep)
-	cfg.Logger.Log("Results saved to ", cfg.ResDir)
+	logging.Info(ctx, sep)
+	logging.Info(ctx, "Results saved to ", cfg.ResDir)
 	return sysInfoErr
 }
 
@@ -190,8 +197,9 @@ type diagnoseRunErrorFunc func(ctx context.Context, outDir string) string
 
 // resultsHandler processes the output from a test binary.
 type resultsHandler struct {
-	cfg   *config.Config
-	state *config.State
+	cfg     *config.Config
+	state   *config.State
+	loggers *logging.MultiLogger
 
 	runStart, runEnd time.Time               // test-runner-reported times at which run started and ended
 	numTests         int                     // total number of tests that are expected to run
@@ -211,6 +219,7 @@ func newResultsHandler(cfg *config.Config, state *config.State, crf copyAndRemov
 	r := &resultsHandler{
 		cfg:       cfg,
 		state:     state,
+		loggers:   logging.NewMultiLogger(),
 		currents:  make(map[string]*entityState),
 		seenTimes: make(map[string]int),
 		crf:       crf,
@@ -231,7 +240,7 @@ func newResultsHandler(cfg *config.Config, state *config.State, crf copyAndRemov
 
 func (r *resultsHandler) close() {
 	for _, state := range r.currents {
-		r.cfg.Logger.RemoveWriter(state.logFile)
+		r.loggers.RemoveLogger(state.logger)
 		state.logFile.Close()
 	}
 	r.currents = nil
@@ -256,7 +265,7 @@ func (r *resultsHandler) handleRunStart(ctx context.Context, msg *control.RunSta
 
 // handleRunLog handles RunLog control messages from test runners.
 func (r *resultsHandler) handleRunLog(ctx context.Context, msg *control.RunLog) error {
-	r.cfg.Logger.Logf("[%s] %s", msg.Time.Format(testOutputTimeFmt), msg.Text)
+	logging.Infof(ctx, "[%s] %s", msg.Time.Format(testOutputTimeFmt), msg.Text)
 	return nil
 }
 
@@ -355,27 +364,26 @@ func (r *resultsHandler) handleTestStart(ctx context.Context, msg *control.Entit
 		return err
 	}
 	state.logFile = f
-	if err := r.cfg.Logger.AddWriter(state.logFile, true); err != nil {
-		return err
-	}
+	state.logger = logging.NewSinkLogger(logging.LevelDebug, true, logging.NewWriterSink(state.logFile))
+	r.loggers.AddLogger(state.logger)
+
 	if r.state.ReportsLogStream != nil {
 		state.logReportWriter = &logSender{
 			stream:   r.state.ReportsLogStream,
 			testName: msg.Info.Name,
 			logPath:  filepath.Join(relFinalOutDir, testLogFilename),
 		}
-		if err := r.cfg.Logger.AddWriter(state.logReportWriter, true); err != nil {
-			return err
-		}
+		state.reportLogger = logging.NewSinkLogger(logging.LevelDebug, true, logging.NewWriterSink(state.logReportWriter))
+		r.loggers.AddLogger(state.reportLogger)
 	}
 
-	r.cfg.Logger.Logf("Started %v %s", state.result.Type, state.result.Name)
+	logging.Infof(ctx, "Started %v %s", state.result.Type, state.result.Name)
 	return nil
 }
 
 // handleTestLog handles EntityLog control messages from test runners.
 func (r *resultsHandler) handleTestLog(ctx context.Context, msg *control.EntityLog) error {
-	r.cfg.Logger.Logf("[%s] %s", msg.Time.Format(testOutputTimeFmt), msg.Text)
+	logging.Infof(ctx, "[%s] %s", msg.Time.Format(testOutputTimeFmt), msg.Text)
 	return nil
 }
 
@@ -395,9 +403,9 @@ func (r *resultsHandler) handleTestError(ctx context.Context, msg *control.Entit
 	})
 
 	ts := msg.Time.Format(testOutputTimeFmt)
-	r.cfg.Logger.Logf("[%s] Error at %s:%d: %s", ts, filepath.Base(msg.Error.File), msg.Error.Line, msg.Error.Reason)
+	logging.Infof(ctx, "[%s] Error at %s:%d: %s", ts, filepath.Base(msg.Error.File), msg.Error.Line, msg.Error.Reason)
 	if msg.Error.Stack != "" {
-		r.cfg.Logger.Logf("[%s] Stack trace:\n%s", ts, msg.Error.Stack)
+		logging.Infof(ctx, "[%s] Stack trace:\n%s", ts, msg.Error.Stack)
 	}
 	return nil
 }
@@ -441,14 +449,14 @@ func (r *resultsHandler) handleTestEnd(ctx context.Context, msg *control.EntityE
 	if r.stage != nil {
 		if msg.TimingLog != nil {
 			if err := r.stage.Import(msg.TimingLog); err != nil {
-				r.cfg.Logger.Logf("Failed importing timing log for %v: %v", msg.Name, err)
+				logging.Infof(ctx, "Failed importing timing log for %v: %v", msg.Name, err)
 			}
 		}
 		r.stage.End()
 	}
 
 	if len(msg.DeprecatedMissingSoftwareDeps) == 0 && len(msg.SkipReasons) == 0 {
-		r.cfg.Logger.Logf("Completed %v %s in %v with %d error(s)",
+		logging.Infof(ctx, "Completed %v %s in %v with %d error(s)",
 			state.result.Type, msg.Name, msg.Time.Sub(state.result.Start).Round(time.Millisecond), len(state.result.Errors))
 	} else {
 		var reasons []string
@@ -459,7 +467,7 @@ func (r *resultsHandler) handleTestEnd(ctx context.Context, msg *control.EntityE
 			reasons = append(reasons, msg.SkipReasons...)
 		}
 		state.result.SkipReason = strings.Join(reasons, ", ")
-		r.cfg.Logger.Logf("Skipped test %s due to missing dependencies: %s", msg.Name, state.result.SkipReason)
+		logging.Infof(ctx, "Skipped test %s due to missing dependencies: %s", msg.Name, state.result.SkipReason)
 	}
 
 	state.result.End = msg.Time
@@ -477,17 +485,13 @@ func (r *resultsHandler) handleTestEnd(ctx context.Context, msg *control.EntityE
 		}
 	}
 
-	if err := r.cfg.Logger.RemoveWriter(state.logFile); err != nil {
-		r.cfg.Logger.Log(err)
-	}
+	r.loggers.RemoveLogger(state.logger)
 	if err := state.logFile.Close(); err != nil {
-		r.cfg.Logger.Log(err)
+		logging.Info(ctx, err)
 	}
 
 	if state.logReportWriter != nil {
-		if err := r.cfg.Logger.RemoveWriter(state.logReportWriter); err != nil {
-			r.cfg.Logger.Log(err)
-		}
+		r.loggers.RemoveLogger(state.reportLogger)
 		state.logReportWriter = nil
 	}
 
@@ -498,7 +502,7 @@ func (r *resultsHandler) handleTestEnd(ctx context.Context, msg *control.EntityE
 			defer r.pullers.Done()
 			if err := moveTestOutputData(r.crf, state.IntermediateOutDir, state.FinalOutDir); err != nil {
 				// This may be written to a log of an irrelevant test.
-				r.cfg.Logger.Logf("Failed to copy output data of %s: %v", state.result.Name, err)
+				logging.Infof(ctx, "Failed to copy output data of %s: %v", state.result.Name, err)
 			}
 		}()
 	}
@@ -585,6 +589,8 @@ func (r *resultsHandler) handleMessage(ctx context.Context, msg control.Msg) err
 // tests was unavailable; see readTestOutput.
 func (r *resultsHandler) processMessages(ctx context.Context, mch <-chan control.Msg, ech <-chan error) (
 	results []*resultsjson.Result, unstarted []string, err error) {
+	ctx = logging.AttachLogger(ctx, r.loggers)
+
 	// If a test is incomplete when we finish reading messages, rewrite its entry at the
 	// end of the streamed results file to make sure that all of its errors are recorded.
 	defer func() {
@@ -679,7 +685,7 @@ func (r *resultsHandler) processMessages(ctx context.Context, mch <-chan control
 
 		// Log the message. If the error interrupted a test, the message will be written to the test's
 		// log, and we also save it as an error within the test's result.
-		r.cfg.Logger.Log(msg)
+		logging.Info(ctx, msg)
 		if lastState != nil {
 			lastState.result.Errors = append(lastState.result.Errors, resultsjson.Error{
 				Time:   time.Now(),

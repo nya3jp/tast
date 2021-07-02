@@ -5,6 +5,7 @@
 package symbolize
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"runtime"
@@ -12,6 +13,7 @@ import (
 	"sync/atomic"
 
 	"chromiumos/tast/cmd/tast/internal/symbolize/breakpad"
+	"chromiumos/tast/internal/logging"
 )
 
 // symbolFileInfo contains a module's path and corresponding Breakpad ID. See breakpad.ModuleInfo.
@@ -35,7 +37,7 @@ func createSymbolFile(fi *symbolFileInfo, symDir, buildRoot string) error {
 // createSymbolFiles attempts to create a symbol file within cfg.SymbolDir for each file listed in sf.
 // Debug binaries should be located within cfg.BuildRoot.
 // The number of symbol files that were successfully created is returned.
-func createSymbolFiles(cfg *Config, sf breakpad.SymbolFileMap) (created int) {
+func createSymbolFiles(ctx context.Context, cfg *Config, sf breakpad.SymbolFileMap) (created int) {
 	ch := make(chan *symbolFileInfo) // passes work to goroutines
 	wg := sync.WaitGroup{}           // used to wait for goroutines
 	var nc int32
@@ -47,9 +49,9 @@ func createSymbolFiles(cfg *Config, sf breakpad.SymbolFileMap) (created int) {
 			for fi := range ch {
 				err := createSymbolFile(fi, cfg.SymbolDir, cfg.BuildRoot)
 				if err != nil {
-					cfg.Logger.Debugf("Failed to generate symbol file for %v with ID %v: %v", fi.path, fi.id, err)
+					logging.Debugf(ctx, "Failed to generate symbol file for %v with ID %v: %v", fi.path, fi.id, err)
 				} else {
-					cfg.Logger.Debugf("Generated symbol file for %v with ID %v", fi.path, fi.id)
+					logging.Debugf(ctx, "Generated symbol file for %v with ID %v", fi.path, fi.id)
 					atomic.AddInt32(&nc, 1)
 				}
 			}

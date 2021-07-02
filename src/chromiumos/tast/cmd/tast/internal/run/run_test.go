@@ -5,7 +5,6 @@
 package run_test
 
 import (
-	"bytes"
 	"context"
 	"fmt"
 	"net"
@@ -21,7 +20,6 @@ import (
 	"go.chromium.org/chromiumos/config/go/api/test/tls"
 	"google.golang.org/grpc"
 
-	"chromiumos/tast/cmd/tast/internal/logging"
 	"chromiumos/tast/cmd/tast/internal/run"
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/fakereports"
@@ -31,6 +29,8 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/target"
 	frameworkprotocol "chromiumos/tast/framework/protocol"
 	"chromiumos/tast/internal/faketlw"
+	"chromiumos/tast/internal/logging"
+	"chromiumos/tast/internal/logging/loggingtest"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testing"
 )
@@ -702,9 +702,9 @@ func TestRunPrintOSVersion(t *gotesting.T) {
 		}, nil
 	}))
 	ctx := env.Context()
+	logger := loggingtest.NewLogger(t, logging.LevelInfo)
+	ctx = logging.AttachLoggerNoPropagation(ctx, logger)
 	cfg := env.Config()
-	var logBuf bytes.Buffer
-	cfg.Logger = logging.NewSimple(&logBuf, false, false)
 	state := env.State()
 
 	if _, err := run.Run(ctx, cfg, state); err != nil {
@@ -712,8 +712,8 @@ func TestRunPrintOSVersion(t *gotesting.T) {
 	}
 
 	const expectedOSVersion = "Target version: " + osVersion
-	if !strings.Contains(logBuf.String(), expectedOSVersion) {
-		t.Errorf("Cannot find %q in log buffer %q", expectedOSVersion, logBuf.String())
+	if logs := logger.String(); !strings.Contains(logs, expectedOSVersion) {
+		t.Errorf("Cannot find %q in log buffer %q", expectedOSVersion, logs)
 	}
 }
 

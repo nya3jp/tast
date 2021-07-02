@@ -11,6 +11,7 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
 	"chromiumos/tast/errors"
+	"chromiumos/tast/internal/logging"
 )
 
 // runTestsFunc is a function to run local/remote tests matched with patterns.
@@ -38,7 +39,7 @@ func runTestsWithRetry(ctx context.Context, cfg *config.Config, patterns []strin
 		if rerr == nil {
 			break
 		}
-		cfg.Logger.Logf("Test runner failed: %v", rerr)
+		logging.Infof(ctx, "Test runner failed: %v", rerr)
 		// If test is terminated due to any reason such as reaching the maximum number failures,
 		// we should not attempt to run tests again.
 		// If we do not have this check here, local test will fail in beforeRetry when it tries
@@ -66,7 +67,7 @@ func runTestsWithRetry(ctx context.Context, cfg *config.Config, patterns []strin
 			return allResults, rerr
 		}
 
-		cfg.Logger.Logf("Trying to run %v remaining test(s)", len(unstarted))
+		logging.Infof(ctx, "Trying to run %v remaining test(s)", len(unstarted))
 
 		if !beforeRetry(ctx) {
 			return allResults, rerr

@@ -5,12 +5,11 @@
 package symbolize
 
 import (
-	"bytes"
+	"context"
 	"os"
 	"path/filepath"
 	"testing"
 
-	"chromiumos/tast/cmd/tast/internal/logging"
 	"chromiumos/tast/cmd/tast/internal/symbolize/breakpad"
 	"chromiumos/tast/testutil"
 )
@@ -25,7 +24,6 @@ func TestCreateSymbolFiles(t *testing.T) {
 		"/lib64/libutil-2.23.so": "0A356B7CFBCF5319947461F231A7D17C0",
 	}
 	cfg := Config{
-		Logger:    logging.NewSimple(&bytes.Buffer{}, false, true),
 		SymbolDir: filepath.Join(td, "symbols"),
 		BuildRoot: filepath.Join(td, "build"),
 	}
@@ -47,7 +45,7 @@ func TestCreateSymbolFiles(t *testing.T) {
 		}
 	}
 
-	if created := createSymbolFiles(&cfg, symMap); created != len(symMap) {
+	if created := createSymbolFiles(context.Background(), &cfg, symMap); created != len(symMap) {
 		t.Errorf("createSymbolFiles(%v, %v) = %v; want %v", cfg, symMap, created, len(symMap))
 	}
 	for lib, id := range symMap {

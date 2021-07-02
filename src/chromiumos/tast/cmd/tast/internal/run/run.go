@@ -26,6 +26,7 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/target"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/framework/protocol"
+	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/sshconfig"
 	"chromiumos/tast/internal/xcontext"
 	"chromiumos/tast/ssh"
@@ -38,7 +39,7 @@ const (
 )
 
 // Run executes or lists tests per cfg and returns the results.
-// Messages are logged using cfg.Logger as the run progresses.
+// Messages are logged via ctx as the run progresses.
 func Run(ctx context.Context, cfg *config.Config, state *config.State) ([]*resultsjson.Result, error) {
 	if err := setUpGRPCServices(ctx, cfg, state); err != nil {
 		return nil, errors.Wrap(err, "failed to set up gRPC servers")
@@ -106,7 +107,7 @@ func startEphemeralDevserverForRemoteTests(ctx context.Context, cfg *config.Conf
 	}
 
 	state.RemoteDevservers = []string{fmt.Sprintf("http://%s", lis.Addr())}
-	cfg.Logger.Log("Starting ephemeral devserver at ", state.RemoteDevservers[0], " for remote tests")
+	logging.Info(ctx, "Starting ephemeral devserver at ", state.RemoteDevservers[0], " for remote tests")
 	return es, nil
 }
 
@@ -151,9 +152,9 @@ func runTests(ctx context.Context, cfg *config.Config, state *config.State, cc *
 	}
 
 	if ver := dutInfo.GetOsVersion(); ver == "" {
-		cfg.Logger.Log("Target version: not available from target")
+		logging.Info(ctx, "Target version: not available from target")
 	} else {
-		cfg.Logger.Logf("Target version: %v", ver)
+		logging.Infof(ctx, "Target version: %v", ver)
 	}
 
 	initialSysInfo, err := runnerclient.GetInitialSysInfo(ctx, cfg, cc)
@@ -175,7 +176,7 @@ func runTests(ctx context.Context, cfg *config.Config, state *config.State, cc *
 	}
 
 	if cfg.TotalShards > 1 {
-		cfg.Logger.Logf("Running shard %d/%d (tests %d/%d)", cfg.ShardIndex+1, cfg.TotalShards,
+		logging.Infof(ctx, "Running shard %d/%d (tests %d/%d)", cfg.ShardIndex+1, cfg.TotalShards,
 			len(state.TestsToRun), len(state.TestsToRun)+len(state.TestNamesToSkip))
 	}
 	if len(state.TestsToRun) == 0 {
@@ -202,14 +203,14 @@ func runTests(ctx context.Context, cfg *config.Config, state *config.State, cc *
 		ctx := postCtx
 		if retErr != nil {
 			// Print the run error message before moving on to writing results.
-			cfg.Logger.Logf("Failed to run tests: %v", retErr)
+			logging.Infof(ctx, "Failed to run tests: %v", retErr)
 		}
 		complete := retErr == nil
 		if err := runnerclient.WriteResults(ctx, cfg, state, results, initialSysInfo, complete, cc); err != nil {
 			if retErr == nil {
 				retErr = errors.Wrap(err, "failed to write results")
 			} else {
-				cfg.Logger.Logf("Failed to write results: %v", err)
+				logging.Infof(ctx, "Failed to write results: %v", err)
 			}
 		}
 	}()
@@ -241,9 +242,9 @@ func setUpGRPCServices(ctx context.Context, cfg *config.Config, state *config.St
 // resolveHosts resolve all hosts in the current run.
 func resolveHosts(ctx context.Context, cfg *config.Config, state *config.State) error {
 	// Check if host name needs to be resolved.
-	cfg.Target = resolveHost(cfg, cfg.Target)
+	cfg.Target = resolveHost(ctx, cfg.Target)
 	for role, dut := range cfg.CompanionDUTs {
-		cfg.CompanionDUTs[role] = resolveHost(cfg, dut)
+		cfg.CompanionDUTs[role] = resolveHost(ctx, dut)
 	}
 	var err error
 	if cfg.Target, err = resolveTarget(ctx, state.TLWConn, cfg.Target); err != nil {
@@ -257,14 +258,14 @@ func resolveHosts(ctx context.Context, cfg *config.Config, state *config.State) 
 	return nil
 }
 
-func resolveHost(cfg *config.Config, target string) string {
+func resolveHost(ctx context.Context, target string) string {
 	alternateTarget, err := sshconfig.ResolveHost(target)
 	if err != nil {
-		cfg.Logger.Logf("Error in reading SSH configuaration files: %v", err)
+		logging.Infof(ctx, "Error in reading SSH configuaration files: %v", err)
 		return target
 	}
 	if alternateTarget != target {
-		cfg.Logger.Logf("Using target %v instead of %v to connect according to SSH configuration files",
+		logging.Infof(ctx, "Using target %v instead of %v to connect according to SSH configuration files",
 			alternateTarget, target)
 	}
 	return alternateTarget

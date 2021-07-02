@@ -16,7 +16,7 @@ import (
 
 	"golang.org/x/sync/errgroup"
 
-	"chromiumos/tast/cmd/tast/internal/logging"
+	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/timing"
 	"chromiumos/tast/shutil"
 )
@@ -49,10 +49,10 @@ func Build(ctx context.Context, cfg *Config, tgts []*Target) error {
 			return fmt.Errorf("failed checking build deps: %v", err)
 		} else if len(missing) > 0 {
 			if !cfg.InstallPortageDeps {
-				logMissingDeps(cfg.Logger, missing, cmds)
+				logMissingDeps(ctx, missing, cmds)
 				return errors.New("missing build dependencies")
 			}
-			if err := installMissingDeps(ctx, cfg.Logger, missing, cmds); err != nil {
+			if err := installMissingDeps(ctx, missing, cmds); err != nil {
 				return err
 			}
 		}
@@ -63,7 +63,7 @@ func Build(ctx context.Context, cfg *Config, tgts []*Target) error {
 	for _, tgt := range tgts {
 		tgt := tgt // bind to iteration-scoped variable
 		g.Go(func() error {
-			if err := buildOne(ctx, cfg.Logger, tgt); err != nil {
+			if err := buildOne(ctx, tgt); err != nil {
 				return fmt.Errorf("failed to build %s: %v", tgt.Pkg, err)
 			}
 			return nil
@@ -73,7 +73,7 @@ func Build(ctx context.Context, cfg *Config, tgts []*Target) error {
 }
 
 // buildOne builds one executable.
-func buildOne(ctx context.Context, log *logging.Logger, tgt *Target) error {
+func buildOne(ctx context.Context, tgt *Target) error {
 	ctx, st := timing.Start(ctx, filepath.Base(tgt.Pkg))
 	defer st.End()
 
@@ -103,7 +103,7 @@ func buildOne(ctx context.Context, log *logging.Logger, tgt *Target) error {
 	cmd.Env = append(cmd.Env, archEnvs...)
 
 	if out, err := cmd.CombinedOutput(); err != nil {
-		writeMultiline(log, string(out))
+		writeMultiline(ctx, string(out))
 		return err
 	}
 	return nil
@@ -111,34 +111,34 @@ func buildOne(ctx context.Context, log *logging.Logger, tgt *Target) error {
 
 // logMissingDeps prints logs describing how to run cmds to install the listed missing packages.
 // missing and cmds should be produced by checkDeps.
-func logMissingDeps(log *logging.Logger, missing []string, cmds [][]string) {
-	log.Log("The following dependencies are not installed:")
+func logMissingDeps(ctx context.Context, missing []string, cmds [][]string) {
+	logging.Info(ctx, "The following dependencies are not installed:")
 	for _, dep := range missing {
-		log.Log("  ", dep)
+		logging.Info(ctx, "  ", dep)
 	}
-	log.Log()
-	log.Log("To install them, please run the following in your chroot:")
+	logging.Info(ctx)
+	logging.Info(ctx, "To install them, please run the following in your chroot:")
 	for _, cmd := range cmds {
-		log.Log("  ", shutil.EscapeSlice(cmd))
+		logging.Info(ctx, "  ", shutil.EscapeSlice(cmd))
 	}
-	log.Log()
+	logging.Info(ctx)
 }
 
 // installMissingDeps attempts to install the supplied missing packages by running cmds in sequence.
 // Progress is logged using log. missing and cmds should be produced by checkDeps.
-func installMissingDeps(ctx context.Context, log *logging.Logger, missing []string, cmds [][]string) error {
+func installMissingDeps(ctx context.Context, missing []string, cmds [][]string) error {
 	ctx, st := timing.Start(ctx, "install_deps")
 	defer st.End()
 
-	log.Log("Installing missing dependencies:")
+	logging.Info(ctx, "Installing missing dependencies:")
 	for _, dep := range missing {
-		log.Log("  ", dep)
+		logging.Info(ctx, "  ", dep)
 	}
 	for _, cmd := range cmds {
-		log.Logf("Running %s", shutil.EscapeSlice(cmd))
+		logging.Infof(ctx, "Running %s", shutil.EscapeSlice(cmd))
 		if out, err := exec.CommandContext(ctx, cmd[0], cmd[1:]...).CombinedOutput(); err != nil {
-			log.Logf("Failed running %s", shutil.EscapeSlice(cmd))
-			writeMultiline(log, string(out))
+			logging.Infof(ctx, "Failed running %s", shutil.EscapeSlice(cmd))
+			writeMultiline(ctx, string(out))
 			return fmt.Errorf("failed running %s: %v", shutil.EscapeSlice(cmd), err)
 		}
 	}
@@ -146,11 +146,11 @@ func installMissingDeps(ctx context.Context, log *logging.Logger, missing []stri
 }
 
 // writeMultiline writes multiline text s to log.
-func writeMultiline(log *logging.Logger, s string) {
+func writeMultiline(ctx context.Context, s string) {
 	if s == "" {
 		return
 	}
 	for _, line := range strings.Split(strings.TrimSuffix(s, "\n"), "\n") {
-		log.Log(line)
+		logging.Info(ctx, line)
 	}
 }

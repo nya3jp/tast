@@ -17,6 +17,7 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/target"
 	"chromiumos/tast/internal/linuxssh"
+	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/testingutil"
 	"chromiumos/tast/ssh"
 )
@@ -29,7 +30,7 @@ func SSHDrop(ctx context.Context, cfg *config.Config, cc *target.ConnCache, outD
 		return "failed to diagnose: initial boot_id is not available"
 	}
 
-	cfg.Logger.Log("Reconnecting to diagnose lost SSH connection")
+	logging.Info(ctx, "Reconnecting to diagnose lost SSH connection")
 	const reconnectTimeout = time.Minute
 	var conn *target.Conn
 	if err := testingutil.Poll(ctx, func(ctx context.Context) error {
@@ -78,12 +79,12 @@ func diagnoseReboot(ctx context.Context, cfg *config.Config, cc *target.ConnCach
 	denseBootID := strings.Replace(cc.InitBootID(), "-", "", -1)
 	out, err := hst.Command("croslog", "--quiet", "--boot="+denseBootID, "--lines=1000").Output(ctx)
 	if err != nil {
-		cfg.Logger.Log("Failed to execute croslog command: ", err)
+		logging.Info(ctx, "Failed to execute croslog command: ", err)
 		out, err = hst.Command("journalctl", "--quiet", "--boot="+denseBootID, "--lines=1000").Output(ctx)
 		if err != nil {
-			cfg.Logger.Log("Failed to execute journalctl command: ", err)
+			logging.Info(ctx, "Failed to execute journalctl command: ", err)
 		} else {
-			cfg.Logger.Log("Fell back to journalctl command")
+			logging.Info(ctx, "Fell back to journalctl command")
 		}
 	}
 	logs := string(out)
@@ -91,7 +92,7 @@ func diagnoseReboot(ctx context.Context, cfg *config.Config, cc *target.ConnCach
 	if logs != "" {
 		const fn = "unified-logs.before-reboot.txt"
 		if err := ioutil.WriteFile(filepath.Join(outDir, fn), []byte(logs), 0666); err != nil {
-			cfg.Logger.Logf("Failed to save %s: %v", fn, err)
+			logging.Infof(ctx, "Failed to save %s: %v", fn, err)
 		}
 	}
 
@@ -101,7 +102,7 @@ func diagnoseReboot(ctx context.Context, cfg *config.Config, cc *target.ConnCach
 	if err != nil {
 		out, err = hst.Command("cat", "/sys/fs/pstore/console-ramoops").Output(ctx)
 		if err != nil {
-			cfg.Logger.Log("console-ramoops not found")
+			logging.Info(ctx, "console-ramoops not found")
 		}
 	}
 	ramOops := string(out)
@@ -109,7 +110,7 @@ func diagnoseReboot(ctx context.Context, cfg *config.Config, cc *target.ConnCach
 	if ramOops != "" {
 		const fn = "console-ramoops.txt"
 		if err := ioutil.WriteFile(filepath.Join(outDir, fn), []byte(ramOops), 0666); err != nil {
-			cfg.Logger.Logf("Failed to save %s: %v", fn, err)
+			logging.Infof(ctx, "Failed to save %s: %v", fn, err)
 		}
 	}
 

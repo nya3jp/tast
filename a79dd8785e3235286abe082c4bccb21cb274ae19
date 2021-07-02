@@ -16,6 +16,46 @@
       "message": "LGTM, I defer to Victor.\nThanks for improving the doc :) ",
       "revId": "a79dd8785e3235286abe082c4bccb21cb274ae19",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "77e241df_bb0046ab",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 6
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2021-07-02T11:24:37Z",
+      "side": 1,
+      "message": "LGTM % final nit",
+      "revId": "a79dd8785e3235286abe082c4bccb21cb274ae19",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "737fd7a9_b3e9d700",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 6
+      },
+      "lineNbr": 128,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2021-07-02T11:24:37Z",
+      "side": 1,
+      "message": "minor nit: tests",
+      "range": {
+        "startLine": 128,
+        "startChar": 15,
+        "endLine": 128,
+        "endChar": 19
+      },
+      "revId": "a79dd8785e3235286abe082c4bccb21cb274ae19",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

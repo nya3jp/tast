@@ -5,7 +5,6 @@
 package runnerclient
 
 import (
-	"context"
 	gotesting "testing"
 
 	"github.com/golang/protobuf/ptypes"
@@ -30,17 +29,18 @@ func TestListLocalTests(t *gotesting.T) {
 	})
 
 	env := runtest.SetUp(t, runtest.WithLocalBundles(reg))
+	ctx := env.Context()
 	cfg := env.Config()
 
 	cc := target.NewConnCache(cfg, cfg.Target)
-	defer cc.Close(context.Background())
+	defer cc.Close(ctx)
 
-	conn, err := cc.Conn(context.Background())
+	conn, err := cc.Conn(ctx)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	got, err := ListLocalTests(context.Background(), cfg, nil, conn.SSHConn())
+	got, err := ListLocalTests(ctx, cfg, nil, conn.SSHConn())
 	if err != nil {
 		t.Fatal("Failed to list local tests: ", err)
 	}
@@ -95,9 +95,10 @@ func TestListRemoteTests(t *gotesting.T) {
 	})
 
 	env := runtest.SetUp(t, runtest.WithRemoteBundles(reg))
+	ctx := env.Context()
 	cfg := env.Config()
 
-	got, err := listRemoteTests(context.Background(), cfg, nil)
+	got, err := listRemoteTests(ctx, cfg, nil)
 	if err != nil {
 		t.Error("Failed to list remote tests: ", err)
 	}

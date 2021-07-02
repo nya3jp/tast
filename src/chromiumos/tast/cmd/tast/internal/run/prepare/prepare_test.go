@@ -5,7 +5,6 @@
 package prepare
 
 import (
-	"context"
 	"io/ioutil"
 	"path/filepath"
 	"regexp"
@@ -79,6 +78,7 @@ func TestPushDataFiles(t *gotesting.T) {
 			return runtest.ShellHandler("")(cmd)
 		},
 	}))
+	ctx := env.Context()
 	cfg := env.Config()
 
 	// Create a fake source checkout and write the data files to it. Just use their names as their contents.
@@ -114,9 +114,9 @@ func TestPushDataFiles(t *gotesting.T) {
 
 	// Connect to the target.
 	cc := target.NewConnCache(cfg, cfg.Target)
-	defer cc.Close(context.Background())
+	defer cc.Close(ctx)
 
-	conn, err := cc.Conn(context.Background())
+	conn, err := cc.Conn(ctx)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -124,7 +124,7 @@ func TestPushDataFiles(t *gotesting.T) {
 	// getDataFilePaths should list the tests and return the files needed by them.
 	cfg.BuildBundle = bundleName
 	cfg.Patterns = []string{pattern}
-	paths, err := getDataFilePaths(context.Background(), cfg, conn.SSHConn())
+	paths, err := getDataFilePaths(ctx, cfg, conn.SSHConn())
 	if err != nil {
 		t.Fatal("getDataFilePaths() failed: ", err)
 	}
@@ -142,7 +142,7 @@ func TestPushDataFiles(t *gotesting.T) {
 	}
 
 	// pushDataFiles should copy the required files to the DUT.
-	if err = pushDataFiles(context.Background(), cfg, conn.SSHConn(), localDataDir, paths); err != nil {
+	if err = pushDataFiles(ctx, cfg, conn.SSHConn(), localDataDir, paths); err != nil {
 		t.Fatal("pushDataFiles() failed: ", err)
 	}
 	expData := map[string]string{

@@ -36,9 +36,8 @@ import (
 )
 
 func TestRun(t *gotesting.T) {
-	ctx := context.Background()
-
 	env := runtest.SetUp(t)
+	ctx := env.Context()
 	cfg := env.Config()
 	state := env.State()
 
@@ -52,10 +51,9 @@ func TestRun(t *gotesting.T) {
 }
 
 func TestRunNoTestToRun(t *gotesting.T) {
-	ctx := context.Background()
-
 	// No test in bundles.
 	env := runtest.SetUp(t, runtest.WithLocalBundles(testing.NewRegistry("bundle")), runtest.WithRemoteBundles(testing.NewRegistry("bundle")))
+	ctx := env.Context()
 	cfg := env.Config()
 	state := env.State()
 
@@ -72,9 +70,8 @@ func TestRunNoTestToRun(t *gotesting.T) {
 }
 
 func TestRunPartialRun(t *gotesting.T) {
-	ctx := context.Background()
-
 	env := runtest.SetUp(t)
+	ctx := env.Context()
 	cfg := env.Config()
 	// Set a nonexistent path for the remote runner so that it will fail.
 	cfg.RemoteRunner = filepath.Join(env.TempDir(), "missing_remote_test_runner")
@@ -86,9 +83,8 @@ func TestRunPartialRun(t *gotesting.T) {
 }
 
 func TestRunError(t *gotesting.T) {
-	ctx := context.Background()
-
 	env := runtest.SetUp(t)
+	ctx := env.Context()
 	cfg := env.Config()
 	cfg.KeyFile = "" // force SSH auth error
 	state := env.State()
@@ -99,13 +95,12 @@ func TestRunError(t *gotesting.T) {
 }
 
 func TestRunEphemeralDevserver(t *gotesting.T) {
-	ctx := context.Background()
-
 	env := runtest.SetUp(t, runtest.WithOnRunLocalTestsInit(func(init *protocol.RunTestsInit) {
 		if ds := init.GetRunConfig().GetServiceConfig().GetDevservers(); len(ds) != 1 {
 			t.Errorf("Local runner: devservers=%#v; want 1 entry", ds)
 		}
 	}))
+	ctx := env.Context()
 	cfg := env.Config()
 	cfg.UseEphemeralDevserver = true
 	state := env.State()
@@ -136,12 +131,13 @@ func TestRunDownloadPrivateBundles(t *gotesting.T) {
 		runtest.WithCompanionDUT("dut1", makeHandler("dut1")),
 		runtest.WithCompanionDUT("dut2", makeHandler("dut2")),
 	)
+	ctx := env.Context()
 	cfg := env.Config()
 	cfg.Devservers = []string{devserverURL}
 	cfg.DownloadPrivateBundles = true
 	state := env.State()
 
-	if _, err := run.Run(context.Background(), cfg, state); err != nil {
+	if _, err := run.Run(ctx, cfg, state); err != nil {
 		t.Errorf("Run failed: %v", err)
 	}
 
@@ -200,6 +196,7 @@ func TestRunDownloadPrivateBundlesWithTLW(t *gotesting.T) {
 		runtest.WithCompanionDUT("role2", makeHandler("role2", "dut2")),
 	)
 
+	ctx := env.Context()
 	cfg := env.Config()
 
 	// Start a TLW server. This needs to be done after runtest.SetUp because
@@ -235,7 +232,7 @@ func TestRunDownloadPrivateBundlesWithTLW(t *gotesting.T) {
 	cfg.DownloadPrivateBundles = true
 	state := env.State()
 
-	if _, err := run.Run(context.Background(), cfg, state); err != nil {
+	if _, err := run.Run(ctx, cfg, state); err != nil {
 		t.Errorf("Run failed: %v", err)
 	}
 	wantCalled := map[string]struct{}{"primary": {}, "role1": {}, "role2": {}}
@@ -245,9 +242,8 @@ func TestRunDownloadPrivateBundlesWithTLW(t *gotesting.T) {
 }
 
 func TestRunTLW(t *gotesting.T) {
-	ctx := context.Background()
-
 	env := runtest.SetUp(t)
+	ctx := env.Context()
 	cfg := env.Config()
 	state := env.State()
 
@@ -277,8 +273,6 @@ func TestRunTLW(t *gotesting.T) {
 
 // TestRunWithReports_LogStream tests run.Run() with fake Reports server and log stream.
 func TestRunWithReports_LogStream(t *gotesting.T) {
-	ctx := context.Background()
-
 	srv, stopFunc, addr := fakereports.Start(t, 0)
 	defer stopFunc()
 
@@ -310,6 +304,7 @@ func TestRunWithReports_LogStream(t *gotesting.T) {
 	})
 
 	env := runtest.SetUp(t, runtest.WithLocalBundles(localReg), runtest.WithRemoteBundles(remoteReg))
+	ctx := env.Context()
 	cfg := env.Config()
 	cfg.ReportsServer = addr
 	state := env.State()
@@ -383,11 +378,12 @@ func TestRunWithReports_ReportResult(t *gotesting.T) {
 			}, nil
 		}),
 	)
+	ctx := env.Context()
 	cfg := env.Config()
 	cfg.ReportsServer = addr
 	state := env.State()
 
-	if _, err := run.Run(context.Background(), cfg, state); err != nil {
+	if _, err := run.Run(ctx, cfg, state); err != nil {
 		t.Errorf("Run failed: %v", err)
 	}
 
@@ -442,11 +438,12 @@ func TestRunWithReports_ReportResultTerminate(t *gotesting.T) {
 		runtest.WithLocalBundles(localReg),
 		runtest.WithRemoteBundles(remoteReg),
 	)
+	ctx := env.Context()
 	cfg := env.Config()
 	cfg.ReportsServer = addr
 	state := env.State()
 
-	if _, err := run.Run(context.Background(), cfg, state); err == nil {
+	if _, err := run.Run(ctx, cfg, state); err == nil {
 		t.Error("Run unexpectedly succeeded despite termination request")
 	}
 
@@ -511,10 +508,11 @@ func TestRunWithSkippedTests(t *gotesting.T) {
 			}, nil
 		}),
 	)
+	ctx := env.Context()
 	cfg := env.Config()
 	state := env.State()
 
-	results, err := run.Run(context.Background(), cfg, state)
+	results, err := run.Run(ctx, cfg, state)
 	if err != nil {
 		t.Errorf("Run failed: %v", err)
 	}
@@ -574,11 +572,12 @@ func TestRunListTests(t *gotesting.T) {
 			}, nil
 		}),
 	)
+	ctx := env.Context()
 	cfg := env.Config()
 	cfg.Mode = config.ListTestsMode
 	state := env.State()
 
-	results, err := run.Run(context.Background(), cfg, state)
+	results, err := run.Run(ctx, cfg, state)
 	if err != nil {
 		t.Errorf("Run failed: %v", err)
 	}
@@ -647,13 +646,14 @@ func TestRunListTestsWithSharding(t *gotesting.T) {
 			}, nil
 		}),
 	)
+	ctx := env.Context()
 	cfg := env.Config()
 	cfg.Mode = config.ListTestsMode
 	cfg.TotalShards = 2 // set the number of shards
 	state := env.State()
 
 	cc := target.NewConnCache(cfg, cfg.Target)
-	defer cc.Close(context.Background())
+	defer cc.Close(ctx)
 
 	localTestMeta, _ := resultsjson.NewTest(localTest.EntityProto())
 	remoteTestMeta, _ := resultsjson.NewTest(remoteTest.EntityProto())
@@ -671,7 +671,7 @@ func TestRunListTestsWithSharding(t *gotesting.T) {
 		t.Run(fmt.Sprintf("shard%d", shardIndex), func(t *gotesting.T) {
 			cfg.ShardIndex = shardIndex
 
-			results, err := run.Run(context.Background(), cfg, state)
+			results, err := run.Run(ctx, cfg, state)
 			if err != nil {
 				t.Errorf("Run failed: %v", err)
 			}
@@ -701,13 +701,13 @@ func TestRunPrintOSVersion(t *gotesting.T) {
 			},
 		}, nil
 	}))
-
+	ctx := env.Context()
 	cfg := env.Config()
 	var logBuf bytes.Buffer
 	cfg.Logger = logging.NewSimple(&logBuf, false, false)
 	state := env.State()
 
-	if _, err := run.Run(context.Background(), cfg, state); err != nil {
+	if _, err := run.Run(ctx, cfg, state); err != nil {
 		t.Errorf("Run failed: %v", err)
 	}
 
@@ -718,8 +718,6 @@ func TestRunPrintOSVersion(t *gotesting.T) {
 }
 
 func TestRunCollectSysInfo(t *gotesting.T) {
-	ctx := context.Background()
-
 	initState := &protocol.SysInfoState{
 		LogInodeSizes: map[uint64]int64{
 			12: 34,
@@ -739,6 +737,7 @@ func TestRunCollectSysInfo(t *gotesting.T) {
 			}
 			return &protocol.CollectSysInfoResponse{}, nil
 		}))
+	ctx := env.Context()
 	cfg := env.Config()
 	state := env.State()
 

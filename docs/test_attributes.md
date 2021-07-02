@@ -86,4 +86,4 @@ select which tests to run.
 [software dependency]: test_dependencies.md
 [name]: writing_tests.md#Test-names
 [Running Tests]: running_tests.md
-[disabled]: writing_tests.md#Disabling-test
+[disabled]: writing_tests.md#Disabling-tests

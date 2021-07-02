@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c9b21ec2_4ff9ebe0",
+        "filename": "docs/test_attributes.md",
+        "patchSetId": 5
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2021-07-02T05:33:08Z",
+      "side": 1,
+      "message": "nit: maybe use ,\n\ngroup, it has no attribute `group:*` assigned, that",
+      "range": {
+        "startLine": 16,
+        "startChar": 30,
+        "endLine": 16,
+        "endChar": 31
+      },
+      "revId": "e717c4de352838fb7242f25d41c3a31a7909646a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "756f64f4_dee7cac1",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 5
+      },
+      "lineNbr": 131,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2021-07-02T05:33:08Z",
+      "side": 1,
+      "message": "To help the flow of the paragraph, maybe replace with:\n\neffectively be disabled, it will not be run by any automation.",
+      "range": {
+        "startLine": 130,
+        "startChar": 54,
+        "endLine": 131,
+        "endChar": 49
+      },
+      "revId": "e717c4de352838fb7242f25d41c3a31a7909646a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5a5351b6_0d338648",
+        "filename": "docs/writing_tests.md",
+        "patchSetId": 5
+      },
+      "lineNbr": 133,
+      "author": {
+        "id": 1368736
+      },
+      "writtenOn": "2021-07-02T05:33:08Z",
+      "side": 1,
+      "message": "nit: ,",
+      "range": {
+        "startLine": 133,
+        "startChar": 21,
+        "endLine": 133,
+        "endChar": 22
+      },
+      "revId": "e717c4de352838fb7242f25d41c3a31a7909646a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

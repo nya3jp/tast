@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "38998fed_39659f3e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 17
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-07-03T19:49:51Z",
+      "side": 1,
+      "message": "In this version, I reorganized the functions so that Unmarshal will be able to called outside tast. Also, I made the variable registration to be done when variable is created to avoid tast_lint rule of allowing only AddTest in init.",
+      "revId": "5f6e60949c352109763d3d45b7b8992fe4f44669",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

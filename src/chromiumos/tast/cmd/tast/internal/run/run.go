@@ -132,14 +132,9 @@ func listTests(ctx context.Context, cfg *config.Config, cc *target.ConnCache) ([
 		if err != nil {
 			return nil, err
 		}
-		bt := resultsjson.RemoteBundle
-		if re.GetHops() > 0 {
-			bt = resultsjson.LocalBundle
-		}
 		results[i] = &resultsjson.Result{
 			Test:       *test,
 			SkipReason: strings.Join(re.GetSkip().GetReasons(), ", "),
-			BundleType: bt,
 		}
 	}
 	return results, nil

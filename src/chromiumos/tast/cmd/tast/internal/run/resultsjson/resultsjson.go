@@ -73,11 +73,6 @@ type Result struct {
 	// SkipReason contains a human-readable explanation of why the test was skipped.
 	// It is empty if the test actually ran.
 	SkipReason string `json:"skipReason"`
-	// BundleType is the location of the entity; whether it's in a remote or
-	// a local bundle. This field should not be used outside run package.
-	// TODO(crbug/1189989): Remove this field; drop TestsToRun from
-	// Config and add two fields LocalTestsToRun and RemoteTestsToRun to State.
-	BundleType BundleType `json:"-"`
 }
 
 // NewTest creates Test from protocol.Entity.

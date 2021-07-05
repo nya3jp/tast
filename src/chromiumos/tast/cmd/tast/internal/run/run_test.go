@@ -586,9 +586,9 @@ func TestRunListTests(t *gotesting.T) {
 	remoteTestMeta, _ := resultsjson.NewTest(remoteTest.EntityProto())
 	skippedTestMeta, _ := resultsjson.NewTest(skippedTest.EntityProto())
 	expected := []*resultsjson.Result{
-		{Test: *skippedTestMeta, SkipReason: "missing SoftwareDeps: missing", BundleType: resultsjson.RemoteBundle},
-		{Test: *localTestMeta, BundleType: resultsjson.LocalBundle},
-		{Test: *remoteTestMeta, BundleType: resultsjson.RemoteBundle},
+		{Test: *skippedTestMeta, SkipReason: "missing SoftwareDeps: missing"},
+		{Test: *localTestMeta},
+		{Test: *remoteTestMeta},
 	}
 	if diff := cmp.Diff(results, expected); diff != "" {
 		t.Errorf("Unexpected results (-got +want):\n%s", diff)
@@ -661,11 +661,11 @@ func TestRunListTestsWithSharding(t *gotesting.T) {
 
 	for shardIndex, expected := range [][]*resultsjson.Result{
 		{
-			{Test: *skippedTestMeta, SkipReason: "missing SoftwareDeps: missing", BundleType: resultsjson.RemoteBundle},
-			{Test: *localTestMeta, BundleType: resultsjson.LocalBundle},
+			{Test: *skippedTestMeta, SkipReason: "missing SoftwareDeps: missing"},
+			{Test: *localTestMeta},
 		},
 		{
-			{Test: *remoteTestMeta, BundleType: resultsjson.RemoteBundle},
+			{Test: *remoteTestMeta},
 		},
 	} {
 		t.Run(fmt.Sprintf("shard%d", shardIndex), func(t *gotesting.T) {

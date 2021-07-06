@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "c16edced_e84c3cb6",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 5
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1355869
+      },
+      "writtenOn": "2021-07-06T07:36:53Z",
+      "side": 1,
+      "message": "I verified the CL again locally by running the following command:\n\n~/go/bin/tast --verbose symbolize chrome.20210706.000145.15087.8090.dmp\n\nIt prints a stack trace containing chrome!blink::internal::CrashIntentionally(), which is expected as it was obtained by visiting chrome:crash.",
+      "revId": "83b1dff27aef7ddbd4223a3006b9daaddd034a0f",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

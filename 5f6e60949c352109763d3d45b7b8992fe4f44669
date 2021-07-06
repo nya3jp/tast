@@ -51,6 +51,63 @@
       "message": "Fixed a type in my last comment.",
       "revId": "5f6e60949c352109763d3d45b7b8992fe4f44669",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "eb9f53e5_49743260",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 17
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-07-06T05:40:01Z",
+      "side": 1,
+      "message": "Looks good! Here are comments about public API first.",
+      "revId": "5f6e60949c352109763d3d45b7b8992fe4f44669",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ec4522dd_d6173686",
+        "filename": "src/chromiumos/tast/testing/vars.go",
+        "patchSetId": 17
+      },
+      "lineNbr": 10,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-07-06T05:40:01Z",
+      "side": 1,
+      "message": "We should re-export testing.Var since it appears as a parameter of AddVar.\n\n type Var \u003d testing.Var",
+      "revId": "5f6e60949c352109763d3d45b7b8992fe4f44669",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ceff8587_323c3d6a",
+        "filename": "src/chromiumos/tast/testing/vars.go",
+        "patchSetId": 17
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-07-06T05:40:01Z",
+      "side": 1,
+      "message": "What is expected use cases of this method? Do you come up with any potential abuse of this method?",
+      "range": {
+        "startLine": 22,
+        "startChar": 20,
+        "endLine": 22,
+        "endChar": 25
+      },
+      "revId": "5f6e60949c352109763d3d45b7b8992fe4f44669",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

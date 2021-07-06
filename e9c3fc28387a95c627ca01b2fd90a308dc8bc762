@@ -298,6 +298,30 @@
       },
       "revId": "e9c3fc28387a95c627ca01b2fd90a308dc8bc762",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "41bb9f6c_9e1d2ce6",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/symbolize/symbolize.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 173,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-07-06T07:16:08Z",
+      "side": 1,
+      "message": "Oh I see, thanks for the explanation!",
+      "parentUuid": "5f0c51ec_a5c457b3",
+      "range": {
+        "startLine": 164,
+        "startChar": 1,
+        "endLine": 173,
+        "endChar": 12
+      },
+      "revId": "e9c3fc28387a95c627ca01b2fd90a308dc8bc762",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

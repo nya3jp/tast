@@ -336,6 +336,9 @@ func TestCEL(t *testing.T) {
 		{D(WifiMACAddrRandomize()), "not_implemented"},
 		{D(WifiNotMarvell()), "not_implemented"},
 		{D(Nvme()), "dut.hardware_features.storage.storage_type == api.Component.Storage.StorageType.NVME"},
+		{D(Microphone()), "(dut.hardware_features.audio.lid_microphone.value > 0 || dut.hardware_features.audio.base_microphone.value > 0)"},
+		{D(Speaker()), "has(dut.hardware_features.audio.speaker_amplifier)"},
+		{D(Microphone(), Speaker()), "(dut.hardware_features.audio.lid_microphone.value > 0 || dut.hardware_features.audio.base_microphone.value > 0) && has(dut.hardware_features.audio.speaker_amplifier)"},
 
 		{D(TouchScreen(), Fingerprint()),
 			"dut.hardware_features.screen.touch_support == api.HardwareFeatures.Present.PRESENT && dut.hardware_features.fingerprint.location != api.HardwareFeatures.Fingerprint.Location.NOT_PRESENT"},
@@ -432,4 +435,57 @@ func TestMinMemory(t *testing.T) {
 		t, c,
 		nil,
 		nil)
+}
+
+func TestMicrophone(t *testing.T) {
+	c := Microphone()
+
+	for _, tc := range []struct {
+		lidMicrophone   uint32
+		baseMicrophone  uint32
+		expectSatisfied bool
+	}{
+		{0, 0, false},
+		{0, 1, true},
+		{0, 2, true},
+		{1, 0, true},
+		{1, 1, true},
+		{1, 2, true},
+		{2, 0, true},
+		{2, 1, true},
+		{2, 2, true},
+	} {
+		verifyCondition(
+			t, c,
+			&protocol.DeprecatedDeviceConfig{},
+			&configpb.HardwareFeatures{
+				Audio: &configpb.HardwareFeatures_Audio{
+					LidMicrophone:  &configpb.HardwareFeatures_Count{Value: tc.lidMicrophone},
+					BaseMicrophone: &configpb.HardwareFeatures_Count{Value: tc.baseMicrophone},
+				},
+			},
+			tc.expectSatisfied)
+	}
+}
+
+func TestSpeaker(t *testing.T) {
+	c := Speaker()
+
+	for _, tc := range []struct {
+		speakerAmplifier *configpb.Component_Amplifier
+		expectSatisfied  bool
+	}{
+		{&configpb.Component_Amplifier{}, true},
+		{nil, false},
+	} {
+		verifyCondition(
+			t, c,
+			&protocol.DeprecatedDeviceConfig{},
+			&configpb.HardwareFeatures{
+				Audio: &configpb.HardwareFeatures_Audio{
+					SpeakerAmplifier: tc.speakerAmplifier,
+				},
+			},
+			tc.expectSatisfied)
+	}
 }

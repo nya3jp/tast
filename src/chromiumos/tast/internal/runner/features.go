@@ -234,6 +234,7 @@ func newDeviceConfigAndHardwareFeatures() (dc *protocol.DeprecatedDeviceConfig, 
 		EmbeddedController: &configpb.HardwareFeatures_EmbeddedController{},
 		Storage:            &configpb.HardwareFeatures_Storage{},
 		Memory:             &configpb.HardwareFeatures_Memory{},
+		Audio:              &configpb.HardwareFeatures_Audio{},
 	}
 
 	hasInternalDisplay := func() bool {
@@ -393,6 +394,25 @@ func newDeviceConfigAndHardwareFeatures() (dc *protocol.DeprecatedDeviceConfig, 
 	features.Memory.Profile = &configpb.Component_Memory_Profile{
 		SizeMegabytes: int32(memoryBytes / 1_000_000),
 	}
+
+	lidMicrophone, err := matchCrasDeviceType(`(INTERNAL|FRONT)_MIC`)
+	if err != nil {
+		warns = append(warns, fmt.Sprintf("failed to get lid microphone: %v", err))
+	}
+	features.Audio.LidMicrophone = lidMicrophone
+	baseMicrophone, err := matchCrasDeviceType(`REAR_MIC`)
+	if err != nil {
+		warns = append(warns, fmt.Sprintf("failed to get base microphone: %v", err))
+	}
+	features.Audio.BaseMicrophone = baseMicrophone
+	speaker, err := matchCrasDeviceType(`INTERNAL_SPEAKER`)
+	if err != nil {
+		warns = append(warns, fmt.Sprintf("failed to get speaker: %v", err))
+	}
+	if speaker.GetValue() > 0 {
+		features.Audio.SpeakerAmplifier = &configpb.Component_Amplifier{}
+	}
+
 	return config, features, warns
 }
 
@@ -796,4 +816,15 @@ func findMemorySize(meminfo []byte) (int64, error) {
 		return val * 1_000, nil
 	}
 	return 0, fmt.Errorf("MemTotal not found; input=%q", string(meminfo))
+}
+
+func matchCrasDeviceType(pattern string) (*configpb.HardwareFeatures_Count, error) {
+	b, err := exec.Command("cras_test_client").Output()
+	if err != nil {
+		return nil, err
+	}
+	if regexp.MustCompile(pattern).Match(b) {
+		return &configpb.HardwareFeatures_Count{Value: 1}, nil
+	}
+	return &configpb.HardwareFeatures_Count{Value: 0}, nil
 }

@@ -16,6 +16,41 @@
       "message": "In this version, I reorganized the functions so that Unmarshal will be able to called outside tast. Also, I made the variable registration to be done when variable is created to avoid tast_lint rule of allowing only AddTest in init.",
       "revId": "5f6e60949c352109763d3d45b7b8992fe4f44669",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d69fd9da_359c3d27",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 17
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-07-06T05:33:52Z",
+      "side": 1,
+      "message": "There is an error in my comment. Correct way is\nIn this version, I reorganized the functions so that Unmarshal will NOT be able to called outside tast. Also, I made the variable registration to be done when variable is created to avoid tast_lint rule of allowing only AddTest in init.",
+      "parentUuid": "38998fed_39659f3e",
+      "revId": "5f6e60949c352109763d3d45b7b8992fe4f44669",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "50c1fa8c_0d9480c5",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 17
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-07-06T05:33:52Z",
+      "side": 1,
+      "message": "Fixed a type in my last comment.",
+      "revId": "5f6e60949c352109763d3d45b7b8992fe4f44669",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

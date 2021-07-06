@@ -1,0 +1,159 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "fc334957_1a91de9d",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 4
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-07-06T05:22:10Z",
+      "side": 1,
+      "message": "Thanks! Looks mostly good.\n",
+      "revId": "e9c3fc28387a95c627ca01b2fd90a308dc8bc762",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "bc53992b_0ac57d8b",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/symbolize/breakpad/minidump.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 235,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-07-06T05:22:10Z",
+      "side": 1,
+      "message": "style: readMDUTF8String or readMinidumpUTF8String\nhttps://github.com/golang/go/wiki/CodeReviewComments#initialisms",
+      "range": {
+        "startLine": 235,
+        "startChar": 5,
+        "endLine": 235,
+        "endChar": 21
+      },
+      "revId": "e9c3fc28387a95c627ca01b2fd90a308dc8bc762",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "5e23f2f3_8936ee3e",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/symbolize/breakpad/minidump.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 236,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-07-06T05:22:10Z",
+      "side": 1,
+      "message": "Let\u0027s use a constant: io.SeekStart\nhttps://pkg.go.dev/io#pkg-constants",
+      "range": {
+        "startLine": 236,
+        "startChar": 36,
+        "endLine": 236,
+        "endChar": 37
+      },
+      "revId": "e9c3fc28387a95c627ca01b2fd90a308dc8bc762",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b60ec803_d5d1bb91",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/symbolize/breakpad/minidump.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 263,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-07-06T05:22:10Z",
+      "side": 1,
+      "message": "Could you check errors from Seek?",
+      "range": {
+        "startLine": 263,
+        "startChar": 1,
+        "endLine": 263,
+        "endChar": 9
+      },
+      "revId": "e9c3fc28387a95c627ca01b2fd90a308dc8bc762",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2daa2583_a8aebd25",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/symbolize/breakpad/minidump.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 279,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-07-06T05:22:10Z",
+      "side": 1,
+      "message": "same here (Seek and Read)",
+      "range": {
+        "startLine": 277,
+        "startChar": 1,
+        "endLine": 279,
+        "endChar": 11
+      },
+      "revId": "e9c3fc28387a95c627ca01b2fd90a308dc8bc762",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "09b7b7b1_a769c842",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/symbolize/breakpad/minidump.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 295,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-07-06T05:22:10Z",
+      "side": 1,
+      "message": "nit: We can avoid empty declarations by simply:\n\n k, err :\u003d ...\n if err !\u003d nil { ... }\n v, err :\u003d ...\n if err !\u003d nil { ... }\n annotations[k] \u003d v",
+      "range": {
+        "startLine": 294,
+        "startChar": 2,
+        "endLine": 295,
+        "endChar": 15
+      },
+      "revId": "e9c3fc28387a95c627ca01b2fd90a308dc8bc762",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a74b000e_c249cbbb",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/symbolize/symbolize.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 173,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-07-06T05:22:10Z",
+      "side": 1,
+      "message": "nit: Why don\u0027t we just if-else or switch?",
+      "range": {
+        "startLine": 164,
+        "startChar": 1,
+        "endLine": 173,
+        "endChar": 12
+      },
+      "revId": "e9c3fc28387a95c627ca01b2fd90a308dc8bc762",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

@@ -336,6 +336,8 @@ func TestCEL(t *testing.T) {
 		{D(WifiMACAddrRandomize()), "not_implemented"},
 		{D(WifiNotMarvell()), "not_implemented"},
 		{D(Nvme()), "dut.hardware_features.storage.storage_type == api.Component.Storage.StorageType.NVME"},
+		{D(Microphone()), "dut.hardware_features.form_factor.form_factor != api.HardwareFeatures.FormFactor.CHROMEBIT && dut.hardware_features.form_factor.form_factor != api.HardwareFeatures.FormFactor.CHROMEBOX && dut.hardware_features.form_factor.form_factor != api.HardwareFeatures.FormFactor.FORM_FACTOR_UNKNOWN"},
+		{D(Speaker()), "dut.hardware_features.form_factor.form_factor != api.HardwareFeatures.FormFactor.CHROMEBIT && dut.hardware_features.form_factor.form_factor != api.HardwareFeatures.FormFactor.CHROMEBOX && dut.hardware_features.form_factor.form_factor != api.HardwareFeatures.FormFactor.FORM_FACTOR_UNKNOWN"},
 
 		{D(TouchScreen(), Fingerprint()),
 			"dut.hardware_features.screen.touch_support == api.HardwareFeatures.Present.PRESENT && dut.hardware_features.fingerprint.location != api.HardwareFeatures.Fingerprint.Location.NOT_PRESENT"},
@@ -432,4 +434,60 @@ func TestMinMemory(t *testing.T) {
 		t, c,
 		nil,
 		nil)
+}
+
+func TestMicrophone(t *testing.T) {
+	c := Microphone()
+
+	for _, tc := range []struct {
+		FormFactor      configpb.HardwareFeatures_FormFactor_FormFactorType
+		expectSatisfied bool
+	}{
+		{configpb.HardwareFeatures_FormFactor_FORM_FACTOR_UNKNOWN, false},
+		{configpb.HardwareFeatures_FormFactor_CLAMSHELL, true},
+		{configpb.HardwareFeatures_FormFactor_CONVERTIBLE, true},
+		{configpb.HardwareFeatures_FormFactor_DETACHABLE, true},
+		{configpb.HardwareFeatures_FormFactor_CHROMEBASE, true},
+		{configpb.HardwareFeatures_FormFactor_CHROMEBOX, false},
+		{configpb.HardwareFeatures_FormFactor_CHROMEBIT, false},
+		{configpb.HardwareFeatures_FormFactor_CHROMESLATE, true},
+	} {
+		verifyCondition(
+			t, c,
+			&protocol.DeprecatedDeviceConfig{},
+			&configpb.HardwareFeatures{
+				FormFactor: &configpb.HardwareFeatures_FormFactor{
+					FormFactor: tc.FormFactor,
+				},
+			},
+			tc.expectSatisfied)
+	}
+}
+
+func TestSpeaker(t *testing.T) {
+	c := Speaker()
+
+	for _, tc := range []struct {
+		FormFactor      configpb.HardwareFeatures_FormFactor_FormFactorType
+		expectSatisfied bool
+	}{
+		{configpb.HardwareFeatures_FormFactor_FORM_FACTOR_UNKNOWN, false},
+		{configpb.HardwareFeatures_FormFactor_CLAMSHELL, true},
+		{configpb.HardwareFeatures_FormFactor_CONVERTIBLE, true},
+		{configpb.HardwareFeatures_FormFactor_DETACHABLE, true},
+		{configpb.HardwareFeatures_FormFactor_CHROMEBASE, true},
+		{configpb.HardwareFeatures_FormFactor_CHROMEBOX, false},
+		{configpb.HardwareFeatures_FormFactor_CHROMEBIT, false},
+		{configpb.HardwareFeatures_FormFactor_CHROMESLATE, true},
+	} {
+		verifyCondition(
+			t, c,
+			&protocol.DeprecatedDeviceConfig{},
+			&configpb.HardwareFeatures{
+				FormFactor: &configpb.HardwareFeatures_FormFactor{
+					FormFactor: tc.FormFactor,
+				},
+			},
+			tc.expectSatisfied)
+	}
 }

@@ -234,6 +234,7 @@ func newDeviceConfigAndHardwareFeatures() (dc *protocol.DeprecatedDeviceConfig, 
 		EmbeddedController: &configpb.HardwareFeatures_EmbeddedController{},
 		Storage:            &configpb.HardwareFeatures_Storage{},
 		Memory:             &configpb.HardwareFeatures_Memory{},
+		FormFactor:         &configpb.HardwareFeatures_FormFactor{},
 	}
 
 	hasInternalDisplay := func() bool {
@@ -393,6 +394,29 @@ func newDeviceConfigAndHardwareFeatures() (dc *protocol.DeprecatedDeviceConfig, 
 	features.Memory.Profile = &configpb.Component_Memory_Profile{
 		SizeMegabytes: int32(memoryBytes / 1_000_000),
 	}
+	formFactor, err := func() (configpb.HardwareFeatures_FormFactor_FormFactorType, error) {
+		out, err := crosConfig("/hardware-properties", "form-factor")
+		if err != nil {
+			return configpb.HardwareFeatures_FormFactor_FORM_FACTOR_UNKNOWN, err
+		}
+		// The form factors reported by cros_config do not match those used by
+		// Boxster; clamshell, convertible, detachable and tablet all report
+		// "CHROMEBOOK". Some may also report "REFERENCE". Until this is resolved,
+		// report those as convertible - the form factor least likely to result in
+		// tests being incorrectly skipped.
+		if out == "CHROMEBOOK" || out == "REFERENCE" {
+			return configpb.HardwareFeatures_FormFactor_CONVERTIBLE, nil
+		}
+		if formFactor, ok := configpb.HardwareFeatures_FormFactor_FormFactorType_value[out]; ok {
+			return configpb.HardwareFeatures_FormFactor_FormFactorType(formFactor), nil
+		}
+		return configpb.HardwareFeatures_FormFactor_FORM_FACTOR_UNKNOWN, errors.Errorf("Unknown form factor %v", out)
+	}()
+	if err != nil {
+		warns = append(warns, fmt.Sprintf("failed to get form factor: %v", err))
+	}
+	features.FormFactor.FormFactor = formFactor
+
 	return config, features, warns
 }
 

@@ -706,3 +706,43 @@ func MinMemory(reqMegabytes int) Condition {
 		return satisfied()
 	}}
 }
+
+// Speaker returns a hardware dependency condition that is satisfied iff the DUT has a speaker.
+func Speaker() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("Did not find hardware features")
+		}
+		switch hf.GetFormFactor().GetFormFactor() {
+		case configpb.HardwareFeatures_FormFactor_CHROMEBIT:
+			fallthrough
+		case configpb.HardwareFeatures_FormFactor_CHROMEBOX:
+			fallthrough
+		case configpb.HardwareFeatures_FormFactor_FORM_FACTOR_UNKNOWN:
+			return unsatisfied("DUT does not have speaker")
+		}
+		return satisfied()
+	}, CEL: "dut.hardware_features.form_factor.form_factor != api.HardwareFeatures.FormFactor.CHROMEBIT && dut.hardware_features.form_factor.form_factor != api.HardwareFeatures.FormFactor.CHROMEBOX && dut.hardware_features.form_factor.form_factor != api.HardwareFeatures.FormFactor.FORM_FACTOR_UNKNOWN",
+	}
+}
+
+// Microphone returns a hardware dependency condition that is satisfied iff the DUT has a microphone.
+func Microphone() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("Did not find hardware features")
+		}
+		switch hf.GetFormFactor().GetFormFactor() {
+		case configpb.HardwareFeatures_FormFactor_CHROMEBIT:
+			fallthrough
+		case configpb.HardwareFeatures_FormFactor_CHROMEBOX:
+			fallthrough
+		case configpb.HardwareFeatures_FormFactor_FORM_FACTOR_UNKNOWN:
+			return unsatisfied("DUT does not have microphone")
+		}
+		return satisfied()
+	}, CEL: "dut.hardware_features.form_factor.form_factor != api.HardwareFeatures.FormFactor.CHROMEBIT && dut.hardware_features.form_factor.form_factor != api.HardwareFeatures.FormFactor.CHROMEBOX && dut.hardware_features.form_factor.form_factor != api.HardwareFeatures.FormFactor.FORM_FACTOR_UNKNOWN",
+	}
+}

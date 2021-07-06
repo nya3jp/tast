@@ -706,3 +706,33 @@ func MinMemory(reqMegabytes int) Condition {
 		return satisfied()
 	}}
 }
+
+// Speaker returns a hardware dependency condition that is satisfied iff the DUT has a speaker.
+func Speaker() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("Did not find hardware features")
+		}
+		if hf.GetAudio().GetSpeakerAmplifier() != nil {
+			return satisfied()
+		}
+		return unsatisfied("DUT does not have speaker")
+	}, CEL: "has(dut.hardware_features.audio.speaker_amplifier)",
+	}
+}
+
+// Microphone returns a hardware dependency condition that is satisfied iff the DUT has a microphone.
+func Microphone() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("Did not find hardware features")
+		}
+		if hf.GetAudio().GetLidMicrophone().GetValue() > 0 || hf.GetAudio().GetBaseMicrophone().GetValue() > 0 {
+			return satisfied()
+		}
+		return unsatisfied("DUT does not have microphone")
+	}, CEL: "(dut.hardware_features.audio.lid_microphone.value > 0 || dut.hardware_features.audio.base_microphone.value > 0)",
+	}
+}

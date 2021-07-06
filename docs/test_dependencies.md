@@ -34,8 +34,6 @@ The following software features are defined:
 *   `aslr` - Address space layout randomization, which mitigates buffer-overflow
     attacks, is functional (this is not true for builds with [AddressSanitizer]
     instrumentation built in).
-*   `audio_play` - The ability to play audio.
-*   `audio_record` - The ability to record audio.
 *   `autotest-capability:foo` - An [Autotest capability] named `foo`. See below.
 *   `biometrics_daemon` - The ability to process fingerprint authentication.
     This implies the presence of the `biod` package.

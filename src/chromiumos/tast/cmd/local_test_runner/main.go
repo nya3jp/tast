@@ -70,9 +70,7 @@ func main() {
 			"arc_launched_64bit": `"!arc-launched-32bit-abi"`,
 			"arc_pstore":         "arc && arcvm && amd64",
 			"arm":                `"arm" || "arm64"`,
-			"aslr":               "!asan",                        // ASan instrumentation breaks ASLR
-			"audio_play":         "internal_speaker && !tast_vm", // VMs and some boards don't have a speaker
-			"audio_record":       "internal_mic && !tast_vm",     // VMs don't have a mic
+			"aslr":               "!asan", // ASan instrumentation breaks ASLR
 			"biometrics_daemon":  "biod",
 			"borealis_host":      "borealis_host",
 			"breakpad":           "force_breakpad",

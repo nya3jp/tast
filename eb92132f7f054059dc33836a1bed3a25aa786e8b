@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "1ea0310d_6201de74",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2021-07-07T16:28:19Z",
+      "side": 1,
+      "message": "PTAL, yamaguchi-san as the primary expert of f20 HW deps?\n\nAt least this looks not what we should have in ideal world. We expect to have actually hardware characteristics for microphone/speaker, instead.\nSam, did you talk to CrOS infra team to add them? Did you hear any recommendation from them, and is this the result? If not, could you start the discussion with holding on this?",
+      "revId": "eb92132f7f054059dc33836a1bed3a25aa786e8b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

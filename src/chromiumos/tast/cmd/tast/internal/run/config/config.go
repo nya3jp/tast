@@ -196,9 +196,6 @@ func (c *Config) SetFlags(f *flag.FlagSet) {
 	f.IntVar(&c.TotalShards, "totalshards", 1, "total number of shards to be used in a test run")
 	f.IntVar(&c.ShardIndex, "shardindex", 0, "the index of shard to used in the current run")
 
-	f.StringVar(&c.LocalRunner, "localrunner", "", "executable that runs local test bundles")
-	f.StringVar(&c.LocalBundleDir, "localbundledir", "", "directory containing builtin local test bundles")
-	f.StringVar(&c.LocalDataDir, "localdatadir", "", "directory containing builtin local test data")
 	f.StringVar(&c.LocalOutDir, "localoutdir", "", "directory where intermediate test outputs are written")
 
 	// These are configurable since files may be installed elsewhere when running in the lab.
@@ -319,18 +316,18 @@ func (c *Config) DeriveDefaults() error {
 	if c.Build {
 		// If -build=true, use different paths than -build=false to avoid overwriting
 		// Portage-managed files.
-		setIfEmpty(&c.LocalRunner, "/usr/local/libexec/tast/bin_pushed/local_test_runner")
-		setIfEmpty(&c.LocalBundleDir, "/usr/local/libexec/tast/bundles/local_pushed")
-		setIfEmpty(&c.LocalDataDir, "/usr/local/share/tast/data_pushed")
+		c.LocalRunner = "/usr/local/libexec/tast/bin_pushed/local_test_runner"
+		c.LocalBundleDir = "/usr/local/libexec/tast/bundles/local_pushed"
+		c.LocalDataDir = "/usr/local/share/tast/data_pushed"
 		setIfEmpty(&c.RemoteRunner, filepath.Join(c.BuildOutDir, build.ArchHost, "remote_test_runner"))
 		setIfEmpty(&c.RemoteBundleDir, filepath.Join(c.BuildOutDir, build.ArchHost, build.RemoteBundleBuildSubdir))
 		// Remote data files are read from the source checkout directly.
 		setIfEmpty(&c.RemoteDataDir, filepath.Join(c.BuildWorkspace, "src"))
 	} else {
 		// If -build=false, default values are paths to files installed by Portage.
-		setIfEmpty(&c.LocalRunner, "/usr/local/bin/local_test_runner")
-		setIfEmpty(&c.LocalBundleDir, "/usr/local/libexec/tast/bundles/local")
-		setIfEmpty(&c.LocalDataDir, "/usr/local/share/tast/data")
+		c.LocalRunner = "/usr/local/bin/local_test_runner"
+		c.LocalBundleDir = "/usr/local/libexec/tast/bundles/local"
+		c.LocalDataDir = "/usr/local/share/tast/data"
 		setIfEmpty(&c.RemoteRunner, "/usr/bin/remote_test_runner")
 		setIfEmpty(&c.RemoteBundleDir, "/usr/libexec/tast/bundles/remote")
 		setIfEmpty(&c.RemoteDataDir, "/usr/share/tast/data")

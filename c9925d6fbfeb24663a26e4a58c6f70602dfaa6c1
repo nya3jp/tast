@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "12ab3e5f_37557d3b",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1113991
+      },
+      "writtenOn": "2021-07-08T16:39:39Z",
+      "side": 1,
+      "message": "LGTM, thanks!\n\ntast-owners@ PTAL\n\nchromeos-gfx@ FYI",
+      "revId": "c9925d6fbfeb24663a26e4a58c6f70602dfaa6c1",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

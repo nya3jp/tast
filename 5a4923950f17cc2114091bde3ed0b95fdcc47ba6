@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cea970a8_deb14379",
+        "filename": "src/chromiumos/tast/internal/logging/context.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2021-07-08T05:41:44Z",
+      "side": 1,
+      "message": "I wonder if we can remove the option and make another function for an exceptional case. e.g. AttachLoggerWithoutPropagation().\nThis would make the code simpler for majority of the case.\nI feel that in most of the case we want to propagate, though I\u0027m not very sure.",
+      "range": {
+        "startLine": 19,
+        "startChar": 54,
+        "endLine": 19,
+        "endChar": 63
+      },
+      "revId": "5a4923950f17cc2114091bde3ed0b95fdcc47ba6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "b364869a_cbf8e787",
+        "filename": "src/chromiumos/tast/internal/logging/context_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2021-07-08T05:41:44Z",
+      "side": 1,
+      "message": "Could you check if multiple arguments are passed they are space-separated?",
+      "range": {
+        "startLine": 20,
+        "startChar": 9,
+        "endLine": 20,
+        "endChar": 13
+      },
+      "revId": "5a4923950f17cc2114091bde3ed0b95fdcc47ba6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "fb65d99d_1c9eb9bc",
+        "filename": "src/chromiumos/tast/internal/logging/logger.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2021-07-08T05:41:44Z",
+      "side": 1,
+      "message": "qq: is the debug level log emitted when -verbose flag is set on tast CLI?",
+      "range": {
+        "startLine": 18,
+        "startChar": 1,
+        "endLine": 18,
+        "endChar": 11
+      },
+      "revId": "5a4923950f17cc2114091bde3ed0b95fdcc47ba6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

@@ -18,9 +18,9 @@ import (
 	"github.com/google/go-cmp/cmp/cmpopts"
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
+	"chromiumos/tast/cmd/tast/internal/run/driver"
 	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
 	"chromiumos/tast/cmd/tast/internal/run/runtest"
-	"chromiumos/tast/cmd/tast/internal/run/target"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/internal/testing/testfixture"
@@ -36,13 +36,16 @@ func TestLocalSuccess(t *gotesting.T) {
 	cfg := env.Config()
 	state := env.State()
 
-	cc := target.NewConnCache(cfg, cfg.Target)
-	defer cc.Close(ctx)
+	drv, err := driver.New(ctx, cfg, cfg.Target)
+	if err != nil {
+		t.Fatalf("driver.New failed: %v", err)
+	}
+	defer drv.Close(ctx)
 
 	ctx, cancel := context.WithTimeout(ctx, 10*time.Second) // avoid test being blocked indefinitely
 	defer cancel()
 
-	if _, err := RunLocalTests(ctx, cfg, state, nil, cc); err != nil {
+	if _, err := RunLocalTests(ctx, cfg, state, nil, drv); err != nil {
 		t.Errorf("RunLocalTests failed: %v", err)
 	}
 }
@@ -91,10 +94,13 @@ func TestLocalProxy(t *gotesting.T) {
 	cfg.Proxy = config.ProxyEnv
 	state := env.State()
 
-	cc := target.NewConnCache(cfg, cfg.Target)
-	defer cc.Close(ctx)
+	drv, err := driver.New(ctx, cfg, cfg.Target)
+	if err != nil {
+		t.Fatalf("driver.New failed: %v", err)
+	}
+	defer drv.Close(ctx)
 
-	if _, err := RunLocalTests(ctx, cfg, state, nil, cc); err == nil {
+	if _, err := RunLocalTests(ctx, cfg, state, nil, drv); err == nil {
 		t.Error("RunLocalTests unexpectedly succeeded")
 	}
 	if !called {
@@ -127,10 +133,13 @@ func TestLocalCopyOutput(t *gotesting.T) {
 		{Entity: &protocol.Entity{Name: testName}, Hops: 1},
 	}
 
-	cc := target.NewConnCache(cfg, cfg.Target)
-	defer cc.Close(ctx)
+	drv, err := driver.New(ctx, cfg, cfg.Target)
+	if err != nil {
+		t.Fatalf("driver.New failed: %v", err)
+	}
+	defer drv.Close(ctx)
 
-	if _, err := RunLocalTests(ctx, cfg, state, nil, cc); err != nil {
+	if _, err := RunLocalTests(ctx, cfg, state, nil, drv); err != nil {
 		t.Fatalf("RunLocalTests failed: %v", err)
 	}
 
@@ -178,10 +187,13 @@ func TestLocalMaxFailures(t *gotesting.T) {
 		{Entity: &protocol.Entity{Name: testName3}, Hops: 1},
 	}
 
-	cc := target.NewConnCache(cfg, cfg.Target)
-	defer cc.Close(ctx)
+	drv, err := driver.New(ctx, cfg, cfg.Target)
+	if err != nil {
+		t.Fatalf("driver.New failed: %v", err)
+	}
+	defer drv.Close(ctx)
 
-	results, err := RunLocalTests(ctx, cfg, state, nil, cc)
+	results, err := RunLocalTests(ctx, cfg, state, nil, drv)
 	if err == nil {
 		t.Errorf("RunLocalTests() passed unexpectedly")
 	}
@@ -279,10 +291,13 @@ func TestFixturesDependency(t *gotesting.T) {
 		})
 	}
 
-	cc := target.NewConnCache(cfg, cfg.Target)
-	defer cc.Close(ctx)
+	drv, err := driver.New(ctx, cfg, cfg.Target)
+	if err != nil {
+		t.Fatalf("driver.New failed: %v", err)
+	}
+	defer drv.Close(ctx)
 
-	got, err := RunLocalTests(ctx, cfg, state, nil, cc)
+	got, err := RunLocalTests(ctx, cfg, state, nil, drv)
 	if err != nil {
 		t.Fatalf("RunLocalTests: %v", err)
 	}

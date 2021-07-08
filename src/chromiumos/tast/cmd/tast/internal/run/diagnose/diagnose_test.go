@@ -15,8 +15,8 @@ import (
 	"github.com/google/go-cmp/cmp"
 
 	"chromiumos/tast/cmd/tast/internal/run/diagnose"
+	"chromiumos/tast/cmd/tast/internal/run/driver"
 	"chromiumos/tast/cmd/tast/internal/run/runtest"
-	"chromiumos/tast/cmd/tast/internal/run/target"
 	"chromiumos/tast/testutil"
 )
 
@@ -52,12 +52,11 @@ func callSSHDrop(t *testing.T, rebooted bool, syslog, ramoops string) (msg, outD
 	ctx := env.Context()
 	cfg := env.Config()
 
-	cc := target.NewConnCache(cfg, cfg.Target)
-	defer cc.Close(ctx)
-
-	if _, err := cc.Conn(ctx); err != nil {
-		t.Fatal(err)
+	drv, err := driver.New(ctx, cfg, cfg.Target)
+	if err != nil {
+		t.Fatalf("driver.New failed: %v", err)
 	}
+	defer drv.Close(ctx)
 
 	if rebooted {
 		currentBootID = "22222222" // pretend rebooted
@@ -68,7 +67,7 @@ func callSSHDrop(t *testing.T, rebooted bool, syslog, ramoops string) (msg, outD
 		t.Fatal(err)
 	}
 
-	msg = diagnose.SSHDrop(ctx, cfg, cc, outDir)
+	msg = diagnose.SSHDrop(ctx, drv, outDir)
 	return msg, outDir
 }
 
@@ -77,17 +76,16 @@ func TestSSHDropNotRecovered(t *testing.T) {
 	ctx := env.Context()
 	cfg := env.Config()
 
-	cc := target.NewConnCache(cfg, cfg.Target)
-	defer cc.Close(ctx)
-
-	if _, err := cc.Conn(ctx); err != nil {
-		t.Fatal(err)
+	drv, err := driver.New(ctx, cfg, cfg.Target)
+	if err != nil {
+		t.Fatalf("driver.New failed: %v", err)
 	}
+	defer drv.Close(ctx)
 
 	// Pass a canceled context to make reconnection fail.
 	ctx, cancel := context.WithCancel(ctx)
 	cancel()
-	msg := diagnose.SSHDrop(ctx, cfg, cc, env.TempDir())
+	msg := diagnose.SSHDrop(ctx, drv, env.TempDir())
 	const exp = "target did not come back: context canceled"
 	if msg != exp {
 		t.Errorf("SSHDrop returned %q; want %q", msg, exp)

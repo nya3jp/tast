@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "828d7db0_85922b7e",
+        "filename": "src/chromiumos/tast/internal/testcontext/logging.go",
+        "patchSetId": 3
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-07-08T07:43:46Z",
+      "side": 1,
+      "message": "I found a compile error in earlier PS :(",
+      "range": {
+        "startLine": 19,
+        "startChar": 103,
+        "endLine": 19,
+        "endChar": 114
+      },
+      "revId": "948cbab662de6af4cfd387961363f62c24e138d8",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

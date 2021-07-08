@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "712f226d_51f75efa",
+        "filename": "src/chromiumos/tast/internal/logging/context.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-07-08T07:43:46Z",
+      "side": 1,
+      "message": "I like the idea to distinguish the two cases - they have important difference. Let me do so.",
+      "parentUuid": "cea970a8_deb14379",
+      "range": {
+        "startLine": 19,
+        "startChar": 54,
+        "endLine": 19,
+        "endChar": 63
+      },
+      "revId": "5a4923950f17cc2114091bde3ed0b95fdcc47ba6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "b364869a_cbf8e787",
@@ -47,6 +71,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "f0530bd2_ad737d98",
+        "filename": "src/chromiumos/tast/internal/logging/context_test.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-07-08T07:43:46Z",
+      "side": 1,
+      "message": "Sure. BTW, fmt.Sprint arguments are not always space-separated:\n\n\u003e Spaces are added between operands when neither is a string.\nhttps://pkg.go.dev/fmt#Sprint",
+      "parentUuid": "b364869a_cbf8e787",
+      "range": {
+        "startLine": 20,
+        "startChar": 9,
+        "endLine": 20,
+        "endChar": 13
+      },
+      "revId": "5a4923950f17cc2114091bde3ed0b95fdcc47ba6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "fb65d99d_1c9eb9bc",
@@ -60,6 +108,30 @@
       "writtenOn": "2021-07-08T05:41:44Z",
       "side": 1,
       "message": "qq: is the debug level log emitted when -verbose flag is set on tast CLI?",
+      "range": {
+        "startLine": 18,
+        "startChar": 1,
+        "endLine": 18,
+        "endChar": 11
+      },
+      "revId": "5a4923950f17cc2114091bde3ed0b95fdcc47ba6",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2d752d72_fe378ffc",
+        "filename": "src/chromiumos/tast/internal/logging/logger.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 18,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-07-08T07:43:46Z",
+      "side": 1,
+      "message": "Yes.\n\nIn Tast CLI we use both logging.Info and logging.Debug. Debug logs are written to console depending on -verbose. As explained in the CL description of crrev.com/c/3005670, log files (e.g. full.txt) will always contain debug logs.\n\nIn non-CLI part of Tast, we only use logging.Info.",
+      "parentUuid": "fb65d99d_1c9eb9bc",
       "range": {
         "startLine": 18,
         "startChar": 1,

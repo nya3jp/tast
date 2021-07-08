@@ -10,7 +10,7 @@ import (
 	"context"
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
-	"chromiumos/tast/cmd/tast/internal/run/target"
+	"chromiumos/tast/cmd/tast/internal/run/driver/internal/target"
 	"chromiumos/tast/ssh"
 )
 

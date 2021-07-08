@@ -8,12 +8,14 @@ package run
 import (
 	"context"
 	"fmt"
+	"io/ioutil"
 	"net"
 	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/golang/protobuf/proto"
 	"go.chromium.org/chromiumos/config/go/api/test/tls"
 	"google.golang.org/grpc"
 
@@ -36,6 +38,10 @@ const (
 	// maxPostReserve is maximum amount of time reserved for post-processing
 	// (e.g. writing results and collecting system info).
 	maxPostReserve = 15 * time.Second
+
+	// DUTInfoFile is a file name containing the dump of obtained DUTInfo message,
+	// which is directly under ResDir.
+	DUTInfoFile = "dut-info.txt"
 )
 
 // Run executes or lists tests per cfg and returns the results.
@@ -116,7 +122,7 @@ func startEphemeralDevserverForRemoteTests(ctx context.Context, cfg *config.Conf
 
 // listTests returns the whole tests to run.
 func listTests(ctx context.Context, cfg *config.Config, drv *driver.Driver) ([]*resultsjson.Result, error) {
-	dutInfo, err := runnerclient.GetDUTInfo(ctx, cfg, drv)
+	dutInfo, err := drv.GetDUTInfo(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -144,9 +150,13 @@ func listTests(ctx context.Context, cfg *config.Config, drv *driver.Driver) ([]*
 }
 
 func runTests(ctx context.Context, cfg *config.Config, state *config.State, drv *driver.Driver) (results []*resultsjson.Result, retErr error) {
-	dutInfo, err := runnerclient.GetDUTInfo(ctx, cfg, drv)
+	dutInfo, err := drv.GetDUTInfo(ctx)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to get DUT software features")
+	}
+
+	if err := ioutil.WriteFile(filepath.Join(cfg.ResDir, DUTInfoFile), []byte(proto.MarshalTextString(dutInfo)), 0644); err != nil {
+		logging.Debugf(ctx, "Failed to dump DUTInfo: %v", err)
 	}
 
 	if ver := dutInfo.GetOsVersion(); ver == "" {

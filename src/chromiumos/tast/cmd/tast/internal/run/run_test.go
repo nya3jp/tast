@@ -684,7 +684,7 @@ func TestRunListTestsWithSharding(t *gotesting.T) {
 	}
 }
 
-func TestRunPrintOSVersion(t *gotesting.T) {
+func TestRunDumpDUTInfo(t *gotesting.T) {
 	const osVersion = "octopus-release/R86-13312.0.2020_07_02_1108"
 
 	env := runtest.SetUp(t, runtest.WithGetDUTInfo(func(req *protocol.GetDUTInfoRequest) (*protocol.GetDUTInfoResponse, error) {
@@ -715,6 +715,11 @@ func TestRunPrintOSVersion(t *gotesting.T) {
 	const expectedOSVersion = "Target version: " + osVersion
 	if logs := logger.String(); !strings.Contains(logs, expectedOSVersion) {
 		t.Errorf("Cannot find %q in log buffer %q", expectedOSVersion, logs)
+	}
+
+	// Make sure dut-info.txt is created.
+	if _, err := os.Stat(filepath.Join(cfg.ResDir, run.DUTInfoFile)); err != nil {
+		t.Errorf("Failed to stat %s: %v", run.DUTInfoFile, err)
 	}
 }
 

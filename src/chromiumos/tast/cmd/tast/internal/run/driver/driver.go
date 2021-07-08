@@ -8,9 +8,14 @@ package driver
 
 import (
 	"context"
+	"fmt"
+	"os"
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
+	"chromiumos/tast/cmd/tast/internal/run/driver/internal/runnerclient"
 	"chromiumos/tast/cmd/tast/internal/run/driver/internal/target"
+	"chromiumos/tast/cmd/tast/internal/run/genericexec"
+	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/ssh"
 )
 
@@ -89,4 +94,25 @@ func (d *Driver) ReconnectIfNeeded(ctx context.Context) error {
 	}
 	d.conn = conn
 	return nil
+}
+
+func (d *Driver) localClient() *runnerclient.JSONClient {
+	var args []string
+	if d.cfg.Proxy == config.ProxyEnv {
+		// Proxy-related variables can be either uppercase or lowercase.
+		// See https://golang.org/pkg/net/http/#ProxyFromEnvironment.
+		for _, name := range []string{
+			"HTTP_PROXY", "HTTPS_PROXY", "NO_PROXY",
+			"http_proxy", "https_proxy", "no_proxy",
+		} {
+			if val := os.Getenv(name); val != "" {
+				args = append(args, fmt.Sprintf("%s=%s", name, val))
+			}
+		}
+	}
+	args = append(args, d.cfg.LocalRunner)
+
+	cmd := genericexec.CommandSSH(d.conn.SSHConn(), "env", args...)
+	params := &protocol.RunnerInitParams{BundleGlob: d.cfg.LocalBundleGlob()}
+	return runnerclient.NewJSONClient(cmd, params, 1)
 }

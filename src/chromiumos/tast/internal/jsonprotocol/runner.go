@@ -344,18 +344,20 @@ func (r *RunnerGetDUTInfoResult) UnmarshalJSON(b []byte) error {
 	return nil
 }
 
-// Proto generates protocol.DUTInfo.
-func (r *RunnerGetDUTInfoResult) Proto() *protocol.DUTInfo {
-	return &protocol.DUTInfo{
-		Features: &protocol.DUTFeatures{
-			Software: r.SoftwareFeatures,
-			Hardware: &protocol.HardwareFeatures{
-				HardwareFeatures:       r.HardwareFeatures,
-				DeprecatedDeviceConfig: r.DeviceConfig,
+// Proto generates protocol.GetDUTInfoResponse.
+func (r *RunnerGetDUTInfoResult) Proto() *protocol.GetDUTInfoResponse {
+	return &protocol.GetDUTInfoResponse{
+		DutInfo: &protocol.DUTInfo{
+			Features: &protocol.DUTFeatures{
+				Software: r.SoftwareFeatures,
+				Hardware: &protocol.HardwareFeatures{
+					HardwareFeatures:       r.HardwareFeatures,
+					DeprecatedDeviceConfig: r.DeviceConfig,
+				},
 			},
+			OsVersion:                r.OSVersion,
+			DefaultBuildArtifactsUrl: r.DefaultBuildArtifactsURL,
 		},
-		OsVersion:                r.OSVersion,
-		DefaultBuildArtifactsUrl: r.DefaultBuildArtifactsURL,
 	}
 }
 

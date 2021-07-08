@@ -2,11 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package runnerclient
+package driver_test
 
 import (
-	"os"
-	"path/filepath"
 	"testing"
 
 	"github.com/golang/protobuf/proto"
@@ -18,7 +16,7 @@ import (
 	"chromiumos/tast/internal/protocol"
 )
 
-func TestGetDUTInfo(t *testing.T) {
+func TestDriver_GetDUTInfo(t *testing.T) {
 	want := &protocol.DUTInfo{
 		Features: &protocol.DUTFeatures{
 			Software: &protocol.SoftwareFeatures{
@@ -70,7 +68,7 @@ func TestGetDUTInfo(t *testing.T) {
 	}
 	defer drv.Close(ctx)
 
-	got, err := GetDUTInfo(ctx, cfg, drv)
+	got, err := drv.GetDUTInfo(ctx)
 	if err != nil {
 		t.Fatalf("GetDUTInfo failed: %v", err)
 	}
@@ -78,14 +76,9 @@ func TestGetDUTInfo(t *testing.T) {
 	if diff := cmp.Diff(got, want, cmp.Comparer(proto.Equal)); diff != "" {
 		t.Errorf("DUTInfo mismatch (-got +want):\n%s", diff)
 	}
-
-	// Make sure dut-info.txt is created.
-	if _, err := os.Stat(filepath.Join(cfg.ResDir, dutInfoFile)); err != nil {
-		t.Errorf("Failed to stat %s: %v", dutInfoFile, err)
-	}
 }
 
-func TestGetDUTInfoNoCheckTestDeps(t *testing.T) {
+func TestDriver_GetDUTInfo_NoCheckTestDeps(t *testing.T) {
 	env := runtest.SetUp(t, runtest.WithGetDUTInfo(func(req *protocol.GetDUTInfoRequest) (*protocol.GetDUTInfoResponse, error) {
 		t.Error("GetDUTInfo called unexpectedly")
 		return &protocol.GetDUTInfoResponse{}, nil
@@ -103,12 +96,12 @@ func TestGetDUTInfoNoCheckTestDeps(t *testing.T) {
 	}
 	defer drv.Close(ctx)
 
-	if _, err := GetDUTInfo(ctx, cfg, drv); err != nil {
+	if _, err := drv.GetDUTInfo(ctx); err != nil {
 		t.Fatalf("GetDUTInfo failed: %v", err)
 	}
 }
 
-func TestGetSoftwareFeaturesNoFeatures(t *testing.T) {
+func TestDriver_GetDUTInfo_NoFeatures(t *testing.T) {
 	env := runtest.SetUp(t, runtest.WithGetDUTInfo(func(req *protocol.GetDUTInfoRequest) (*protocol.GetDUTInfoResponse, error) {
 		return &protocol.GetDUTInfoResponse{
 			DutInfo: &protocol.DUTInfo{
@@ -131,7 +124,7 @@ func TestGetSoftwareFeaturesNoFeatures(t *testing.T) {
 	}
 	defer drv.Close(ctx)
 
-	if _, err := GetDUTInfo(ctx, cfg, drv); err == nil {
+	if _, err := drv.GetDUTInfo(ctx); err == nil {
 		t.Fatal("getSoftwareFeatures succeeded unexpectedly")
 	}
 }

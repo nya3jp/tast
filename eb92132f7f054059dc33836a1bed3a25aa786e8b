@@ -16,6 +16,23 @@
       "message": "PTAL, yamaguchi-san as the primary expert of f20 HW deps?\n\nAt least this looks not what we should have in ideal world. We expect to have actually hardware characteristics for microphone/speaker, instead.\nSam, did you talk to CrOS infra team to add them? Did you hear any recommendation from them, and is this the result? If not, could you start the discussion with holding on this?",
       "revId": "eb92132f7f054059dc33836a1bed3a25aa786e8b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "33a1b035_084b24ae",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-07-08T01:24:26Z",
+      "side": 1,
+      "message": "I have similar pespective as Hidehiko.\nAll hadrware dependency should be based on information inside config.api.Component now. (sorry that the document was slightly outdated, I will update it soon)\nPlease contact the CrOS infra team to make sure speaker/microphone features are supported and added to api.Component struct.\n\nF20 scheduler can use information added in this struct, ConfigBundle (this is a necessary but not sufficient condition; we also write mapping somewhere else later)\nhttps://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/config/proto/chromiumos/config/payload/config_bundle.proto;l\u003d26?q\u003dchromiumos.config.payload.ConfigBundle\nAmong the fields there, in case of hardware deps, api.Component would be the right place for speaker/mic IIUC.\nhttps://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/config/proto/chromiumos/config/api/component.proto;l\u003d15\n",
+      "revId": "eb92132f7f054059dc33836a1bed3a25aa786e8b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

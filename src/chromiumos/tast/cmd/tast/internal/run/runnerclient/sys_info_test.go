@@ -9,8 +9,8 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 
+	"chromiumos/tast/cmd/tast/internal/run/driver"
 	"chromiumos/tast/cmd/tast/internal/run/runtest"
-	"chromiumos/tast/cmd/tast/internal/run/target"
 	"chromiumos/tast/internal/protocol"
 )
 
@@ -25,10 +25,13 @@ func TestGetInitialSysInfo(t *testing.T) {
 	ctx := env.Context()
 	cfg := env.Config()
 
-	cc := target.NewConnCache(cfg, cfg.Target)
-	defer cc.Close(ctx)
+	drv, err := driver.New(ctx, cfg, cfg.Target)
+	if err != nil {
+		t.Fatalf("driver.New failed: %v", err)
+	}
+	defer drv.Close(ctx)
 
-	gotState, err := GetInitialSysInfo(ctx, cfg, cc)
+	gotState, err := GetInitialSysInfo(ctx, cfg, drv)
 	if err != nil {
 		t.Fatalf("GetInitialSysInfo failed: %v", err)
 	}
@@ -54,10 +57,13 @@ func TestCollectSysInfo(t *testing.T) {
 	ctx := env.Context()
 	cfg := env.Config()
 
-	cc := target.NewConnCache(cfg, cfg.Target)
-	defer cc.Close(ctx)
+	drv, err := driver.New(ctx, cfg, cfg.Target)
+	if err != nil {
+		t.Fatalf("driver.New failed: %v", err)
+	}
+	defer drv.Close(ctx)
 
-	if err := collectSysInfo(ctx, cfg, initialState, cc); err != nil {
+	if err := collectSysInfo(ctx, cfg, initialState, drv); err != nil {
 		t.Fatalf("collectSysInfo failed: %v", err)
 	}
 	if !called {

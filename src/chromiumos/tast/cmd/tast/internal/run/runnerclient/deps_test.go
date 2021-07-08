@@ -13,8 +13,8 @@ import (
 	"github.com/google/go-cmp/cmp"
 	configpb "go.chromium.org/chromiumos/config/go/api"
 
+	"chromiumos/tast/cmd/tast/internal/run/driver"
 	"chromiumos/tast/cmd/tast/internal/run/runtest"
-	"chromiumos/tast/cmd/tast/internal/run/target"
 	"chromiumos/tast/internal/protocol"
 )
 
@@ -64,10 +64,13 @@ func TestGetDUTInfo(t *testing.T) {
 	cfg.CheckTestDeps = true
 	cfg.ExtraUSEFlags = extraUseFlags
 
-	cc := target.NewConnCache(cfg, cfg.Target)
-	defer cc.Close(ctx)
+	drv, err := driver.New(ctx, cfg, cfg.Target)
+	if err != nil {
+		t.Fatalf("driver.New failed: %v", err)
+	}
+	defer drv.Close(ctx)
 
-	got, err := GetDUTInfo(ctx, cfg, cc)
+	got, err := GetDUTInfo(ctx, cfg, drv)
 	if err != nil {
 		t.Fatalf("GetDUTInfo failed: %v", err)
 	}
@@ -94,10 +97,13 @@ func TestGetDUTInfoNoCheckTestDeps(t *testing.T) {
 	// With "never", the runner shouldn't be called and dependencies shouldn't be checked.
 	cfg.CheckTestDeps = false
 
-	cc := target.NewConnCache(cfg, cfg.Target)
-	defer cc.Close(ctx)
+	drv, err := driver.New(ctx, cfg, cfg.Target)
+	if err != nil {
+		t.Fatalf("driver.New failed: %v", err)
+	}
+	defer drv.Close(ctx)
 
-	if _, err := GetDUTInfo(ctx, cfg, cc); err != nil {
+	if _, err := GetDUTInfo(ctx, cfg, drv); err != nil {
 		t.Fatalf("GetDUTInfo failed: %v", err)
 	}
 }
@@ -119,10 +125,13 @@ func TestGetSoftwareFeaturesNoFeatures(t *testing.T) {
 	// "always" should fail if the runner doesn't know about any features.
 	cfg.CheckTestDeps = true
 
-	cc := target.NewConnCache(cfg, cfg.Target)
-	defer cc.Close(ctx)
+	drv, err := driver.New(ctx, cfg, cfg.Target)
+	if err != nil {
+		t.Fatalf("driver.New failed: %v", err)
+	}
+	defer drv.Close(ctx)
 
-	if _, err := GetDUTInfo(ctx, cfg, cc); err == nil {
+	if _, err := GetDUTInfo(ctx, cfg, drv); err == nil {
 		t.Fatal("getSoftwareFeatures succeeded unexpectedly")
 	}
 }

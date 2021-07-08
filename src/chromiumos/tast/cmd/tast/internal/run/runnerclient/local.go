@@ -18,9 +18,9 @@ import (
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/diagnose"
+	"chromiumos/tast/cmd/tast/internal/run/driver"
 	"chromiumos/tast/cmd/tast/internal/run/genericexec"
 	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
-	"chromiumos/tast/cmd/tast/internal/run/target"
 	"chromiumos/tast/ctxutil"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/bundle"
@@ -106,8 +106,8 @@ type localTestsCategorizer func([]*protocol.Entity) ([]*bundleTests, error)
 // newLocalTestsCategorizer creates a function which categorizes given local
 // tests by the bundle name and the remote fixture name tests depend on.
 // It computes by listing all the fixtures in the bundles designated by cfg.
-func newLocalTestsCategorizer(ctx context.Context, cfg *config.Config, hst *ssh.Conn) (localTestsCategorizer, error) {
-	localFixts, err := ListLocalFixtures(ctx, cfg, hst)
+func newLocalTestsCategorizer(ctx context.Context, cfg *config.Config, drv *driver.Driver) (localTestsCategorizer, error) {
+	localFixts, err := ListLocalFixtures(ctx, cfg, drv)
 	if err != nil {
 		return nil, err
 	}
@@ -230,7 +230,7 @@ func newLocalTestsCategorizer(ctx context.Context, cfg *config.Config, hst *ssh.
 // runFixtureAndTests runs fixture methods before and after runTests.
 // fixtErr will be non-nil if fixture errors happen.
 // It also stores fixture logs to a file under "fixtures" dir in cfg.ResDir.
-func runFixtureAndTests(ctx context.Context, cfg *config.Config, conn *target.Conn, rfcl bundle.FixtureService_RunFixtureClient, remoteFixt string, runTests func(ctx context.Context, fixtErr []string) error) (retErr error) {
+func runFixtureAndTests(ctx context.Context, cfg *config.Config, drv *driver.Driver, rfcl bundle.FixtureService_RunFixtureClient, remoteFixt string, runTests func(ctx context.Context, fixtErr []string) error) (retErr error) {
 	fixtResDir := filepath.Join(cfg.ResDir, "fixtures", remoteFixt)
 	// TODO(oka) rename testLogFilename to entityLogFilename
 	fixtLogPath := filepath.Join(fixtResDir, testLogFilename)
@@ -294,7 +294,7 @@ func runFixtureAndTests(ctx context.Context, cfg *config.Config, conn *target.Co
 		}
 
 		var tlwServer string
-		if addr, ok := conn.Services().TLWAddr(); ok {
+		if addr, ok := drv.Services().TLWAddr(); ok {
 			tlwServer = addr.String()
 		}
 
@@ -360,14 +360,9 @@ func runFixtureAndTests(ctx context.Context, cfg *config.Config, conn *target.Co
 // RunLocalTests executes tests as described by cfg on hst and returns the
 // results. It is only used for RunnerRunTestsMode.
 // It can return partial results and an error when error happens mid-tests.
-func RunLocalTests(ctx context.Context, cfg *config.Config, state *config.State, dutInfo *protocol.DUTInfo, cc *target.ConnCache) (res []*resultsjson.Result, retErr error) {
+func RunLocalTests(ctx context.Context, cfg *config.Config, state *config.State, dutInfo *protocol.DUTInfo, drv *driver.Driver) (res []*resultsjson.Result, retErr error) {
 	ctx, st := timing.Start(ctx, "run_local_tests")
 	defer st.End()
-
-	conn, err := cc.Conn(ctx)
-	if err != nil {
-		return nil, errors.Wrapf(err, "failed to connect to %s", cfg.Target)
-	}
 
 	rf, err := newRemoteFixtureService(ctx, cfg)
 	if err != nil {
@@ -379,7 +374,7 @@ func RunLocalTests(ctx context.Context, cfg *config.Config, state *config.State,
 		}
 	}()
 
-	categorize, err := newLocalTestsCategorizer(ctx, cfg, conn.SSHConn())
+	categorize, err := newLocalTestsCategorizer(ctx, cfg, drv)
 	if err != nil {
 		return nil, err
 	}
@@ -412,8 +407,8 @@ func RunLocalTests(ctx context.Context, cfg *config.Config, state *config.State,
 
 			// TODO(oka): write a unittest testing a connection to DUT is
 			// ensured for remote fixture.
-			if err := runFixtureAndTests(ctx, cfg, conn, rf.cl, remoteFixt, func(ctx context.Context, setUpErrs []string) error {
-				res, err := runLocalTestsForFixture(ctx, names, remoteFixt, setUpErrs, cfg, state, dutInfo, cc)
+			if err := runFixtureAndTests(ctx, cfg, drv, rf.cl, remoteFixt, func(ctx context.Context, setUpErrs []string) error {
+				res, err := runLocalTestsForFixture(ctx, names, remoteFixt, setUpErrs, cfg, state, dutInfo, drv)
 				entityResults = append(entityResults, res...)
 				return err
 			}); err != nil {
@@ -430,21 +425,16 @@ func RunLocalTests(ctx context.Context, cfg *config.Config, state *config.State,
 // runLocalTestsForFixture runs given local tests in between remote fixture
 // set up and tear down.
 // It can return partial results and an error when error happens mid-tests.
-func runLocalTestsForFixture(ctx context.Context, names []string, remoteFixt string, setUpErrs []string, cfg *config.Config, state *config.State, dutInfo *protocol.DUTInfo, cc *target.ConnCache) ([]*resultsjson.Result, error) {
-	conn, err := cc.Conn(ctx)
-	if err != nil {
-		return nil, errors.Wrapf(err, "failed to connect to %s; remoteFixt = %q", cfg.Target, remoteFixt)
-	}
+func runLocalTestsForFixture(ctx context.Context, names []string, remoteFixt string, setUpErrs []string, cfg *config.Config, state *config.State, dutInfo *protocol.DUTInfo, drv *driver.Driver) ([]*resultsjson.Result, error) {
 	beforeRetry := func(ctx context.Context) bool {
-		var connErr error
-		if conn, connErr = cc.Conn(ctx); connErr != nil {
-			logging.Info(ctx, "Failed reconnecting to target: ", connErr)
+		if err := drv.ReconnectIfNeeded(ctx); err != nil {
+			logging.Info(ctx, "Failed reconnecting to target: ", err)
 			return false
 		}
 		return true
 	}
 	runTests := func(ctx context.Context, patterns []string) (results []*resultsjson.Result, unstarted []string, err error) {
-		return runLocalTestsOnce(ctx, cfg, state, dutInfo, cc, conn, patterns, remoteFixt, setUpErrs)
+		return runLocalTestsOnce(ctx, cfg, state, dutInfo, drv, patterns, remoteFixt, setUpErrs)
 	}
 
 	results, err := runTestsWithRetry(ctx, cfg, names, runTests, beforeRetry)
@@ -474,7 +464,7 @@ func startLocalRunner(ctx context.Context, cfg *config.Config, hst *ssh.Conn, ar
 // Results from started tests and the names of tests that should have been
 // started but weren't (in the order in which they should've been run) are
 // returned.
-func runLocalTestsOnce(ctx context.Context, cfg *config.Config, state *config.State, dutInfo *protocol.DUTInfo, cc *target.ConnCache, conn *target.Conn, patterns []string, startFixtureName string, setUpErrs []string) (
+func runLocalTestsOnce(ctx context.Context, cfg *config.Config, state *config.State, dutInfo *protocol.DUTInfo, drv *driver.Driver, patterns []string, startFixtureName string, setUpErrs []string) (
 	results []*resultsjson.Result, unstarted []string, err error) {
 	ctx, st := timing.Start(ctx, "run_local_tests_once")
 	defer st.End()
@@ -482,17 +472,17 @@ func runLocalTestsOnce(ctx context.Context, cfg *config.Config, state *config.St
 	// Older local_test_runner does not create the specified output directory.
 	// TODO(crbug.com/1000549): Delete this workaround after 20191001.
 	// This workaround costs one round-trip time to the DUT.
-	if err := conn.SSHConn().Command("mkdir", "-p", cfg.LocalOutDir).Run(ctx); err != nil {
+	if err := drv.SSHConn().Command("mkdir", "-p", cfg.LocalOutDir).Run(ctx); err != nil {
 		return nil, nil, err
 	}
 
 	localDevservers := append([]string(nil), cfg.Devservers...)
-	if url, ok := conn.Services().EphemeralDevserverURL(); ok {
+	if url, ok := drv.Services().EphemeralDevserverURL(); ok {
 		localDevservers = append(localDevservers, url)
 	}
 
 	var tlwServer string
-	if addr, ok := conn.Services().TLWAddr(); ok {
+	if addr, ok := drv.Services().TLWAddr(); ok {
 		tlwServer = addr.String()
 	}
 
@@ -520,7 +510,7 @@ func runLocalTestsOnce(ctx context.Context, cfg *config.Config, state *config.St
 		},
 	}
 
-	proc, err := startLocalRunner(ctx, cfg, conn.SSHConn(), &args)
+	proc, err := startLocalRunner(ctx, cfg, drv.SSHConn(), &args)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -530,10 +520,10 @@ func runLocalTestsOnce(ctx context.Context, cfg *config.Config, state *config.St
 	stderrReader := newFirstLineReader(proc.Stderr())
 
 	crf := func(src, dst string) error {
-		return moveFromHost(ctx, cfg, conn.SSHConn(), src, dst)
+		return moveFromHost(ctx, cfg, drv.SSHConn(), src, dst)
 	}
 	df := func(ctx context.Context, outDir string) string {
-		return diagnoseLocalRunError(ctx, cfg, cc, conn.SSHConn(), outDir)
+		return diagnoseLocalRunError(ctx, drv, outDir)
 	}
 
 	ctx, cancel := context.WithCancel(ctx)
@@ -560,12 +550,12 @@ func runLocalTestsOnce(ctx context.Context, cfg *config.Config, state *config.St
 // diagnoseLocalRunError is used to attempt to diagnose the cause of an error encountered
 // while running local tests. It returns a string that can be returned by a diagnoseRunErrorFunc.
 // Files useful for diagnosis might be saved under outDir.
-func diagnoseLocalRunError(ctx context.Context, cfg *config.Config, cc *target.ConnCache, hst *ssh.Conn, outDir string) string {
-	if ctxutil.DeadlineBefore(ctx, time.Now().Add(target.SSHPingTimeout)) {
+func diagnoseLocalRunError(ctx context.Context, drv *driver.Driver, outDir string) string {
+	if ctxutil.DeadlineBefore(ctx, time.Now().Add(driver.SSHPingTimeout)) {
 		return ""
 	}
-	if err := hst.Ping(ctx, target.SSHPingTimeout); err == nil {
+	if err := drv.SSHConn().Ping(ctx, driver.SSHPingTimeout); err == nil {
 		return ""
 	}
-	return "Lost SSH connection: " + diagnose.SSHDrop(ctx, cfg, cc, outDir)
+	return "Lost SSH connection: " + diagnose.SSHDrop(ctx, drv, outDir)
 }

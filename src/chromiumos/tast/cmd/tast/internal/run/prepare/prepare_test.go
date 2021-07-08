@@ -12,8 +12,8 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 
+	"chromiumos/tast/cmd/tast/internal/run/driver"
 	"chromiumos/tast/cmd/tast/internal/run/runtest"
-	"chromiumos/tast/cmd/tast/internal/run/target"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/testutil"
 )
@@ -113,18 +113,16 @@ func TestPushDataFiles(t *gotesting.T) {
 	}
 
 	// Connect to the target.
-	cc := target.NewConnCache(cfg, cfg.Target)
-	defer cc.Close(ctx)
-
-	conn, err := cc.Conn(ctx)
+	drv, err := driver.New(ctx, cfg, cfg.Target)
 	if err != nil {
-		t.Fatal(err)
+		t.Fatalf("driver.New failed: %v", err)
 	}
+	defer drv.Close(ctx)
 
 	// getDataFilePaths should list the tests and return the files needed by them.
 	cfg.BuildBundle = bundleName
 	cfg.Patterns = []string{pattern}
-	paths, err := getDataFilePaths(ctx, cfg, conn.SSHConn())
+	paths, err := getDataFilePaths(ctx, cfg, drv)
 	if err != nil {
 		t.Fatal("getDataFilePaths() failed: ", err)
 	}
@@ -142,7 +140,7 @@ func TestPushDataFiles(t *gotesting.T) {
 	}
 
 	// pushDataFiles should copy the required files to the DUT.
-	if err = pushDataFiles(ctx, cfg, conn.SSHConn(), localDataDir, paths); err != nil {
+	if err = pushDataFiles(ctx, cfg, drv.SSHConn(), localDataDir, paths); err != nil {
 		t.Fatal("pushDataFiles() failed: ", err)
 	}
 	expData := map[string]string{

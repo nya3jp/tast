@@ -9,20 +9,15 @@ import (
 	"fmt"
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
+	"chromiumos/tast/cmd/tast/internal/run/driver"
 	"chromiumos/tast/cmd/tast/internal/run/genericexec"
-	"chromiumos/tast/cmd/tast/internal/run/target"
 	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/protocol"
-	"chromiumos/tast/ssh"
 )
 
 // ListTests returns a list of all tests (including both local and remote tests).
-func ListTests(ctx context.Context, cfg *config.Config, dutInfo *protocol.DUTInfo, cc *target.ConnCache) ([]*protocol.ResolvedEntity, error) {
-	conn, err := cc.Conn(ctx)
-	if err != nil {
-		return nil, err
-	}
-	localTests, err := ListLocalTests(ctx, cfg, dutInfo, conn.SSHConn())
+func ListTests(ctx context.Context, cfg *config.Config, dutInfo *protocol.DUTInfo, drv *driver.Driver) ([]*protocol.ResolvedEntity, error) {
+	localTests, err := ListLocalTests(ctx, cfg, dutInfo, drv)
 	if err != nil {
 		return nil, err
 	}
@@ -34,8 +29,8 @@ func ListTests(ctx context.Context, cfg *config.Config, dutInfo *protocol.DUTInf
 }
 
 // ListLocalTests returns a list of local tests to run.
-func ListLocalTests(ctx context.Context, cfg *config.Config, dutInfo *protocol.DUTInfo, hst *ssh.Conn) ([]*protocol.ResolvedEntity, error) {
-	entities, err := runListTestsCommand(ctx, localRunnerCommand(cfg, hst), cfg, dutInfo, cfg.LocalBundleGlob())
+func ListLocalTests(ctx context.Context, cfg *config.Config, dutInfo *protocol.DUTInfo, drv *driver.Driver) ([]*protocol.ResolvedEntity, error) {
+	entities, err := runListTestsCommand(ctx, localRunnerCommand(cfg, drv.SSHConn()), cfg, dutInfo, cfg.LocalBundleGlob())
 	if err != nil {
 		return nil, err
 	}
@@ -47,11 +42,11 @@ func ListLocalTests(ctx context.Context, cfg *config.Config, dutInfo *protocol.D
 }
 
 // ListLocalFixtures returns a map from bundle to fixtures.
-func ListLocalFixtures(ctx context.Context, cfg *config.Config, hst *ssh.Conn) (map[string][]*protocol.Entity, error) {
+func ListLocalFixtures(ctx context.Context, cfg *config.Config, drv *driver.Driver) (map[string][]*protocol.Entity, error) {
 	var res jsonprotocol.RunnerListFixturesResult
 	if err := runTestRunnerCommand(
 		ctx,
-		localRunnerCommand(cfg, hst), &jsonprotocol.RunnerArgs{
+		localRunnerCommand(cfg, drv.SSHConn()), &jsonprotocol.RunnerArgs{
 			Mode: jsonprotocol.RunnerListFixturesMode,
 			ListFixtures: &jsonprotocol.RunnerListFixturesArgs{
 				BundleGlob: cfg.LocalBundleGlob(),

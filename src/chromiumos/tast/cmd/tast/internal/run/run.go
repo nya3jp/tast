@@ -19,11 +19,11 @@ import (
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/devserver"
+	"chromiumos/tast/cmd/tast/internal/run/driver"
 	"chromiumos/tast/cmd/tast/internal/run/prepare"
 	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
 	"chromiumos/tast/cmd/tast/internal/run/runnerclient"
 	"chromiumos/tast/cmd/tast/internal/run/sharding"
-	"chromiumos/tast/cmd/tast/internal/run/target"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/framework/protocol"
 	"chromiumos/tast/internal/logging"
@@ -48,9 +48,6 @@ func Run(ctx context.Context, cfg *config.Config, state *config.State) ([]*resul
 		return nil, errors.Wrap(err, "failed to resolve hosts")
 	}
 
-	cc := target.NewConnCache(cfg, cfg.Target)
-	defer cc.Close(ctx)
-
 	if state.ReportsConn != nil {
 		cl := protocol.NewReportsClient(state.ReportsConn)
 		state.ReportsClient = cl
@@ -71,19 +68,25 @@ func Run(ctx context.Context, cfg *config.Config, state *config.State) ([]*resul
 		defer es.Close()
 	}
 
-	if err := prepare.Prepare(ctx, cfg, cc); err != nil {
+	drv, err := driver.New(ctx, cfg, cfg.Target)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to connect to target")
+	}
+	defer drv.Close(ctx)
+
+	if err := prepare.Prepare(ctx, cfg, drv); err != nil {
 		return nil, errors.Wrap(err, "failed to build and push")
 	}
 
 	switch cfg.Mode {
 	case config.ListTestsMode:
-		results, err := listTests(ctx, cfg, cc)
+		results, err := listTests(ctx, cfg, drv)
 		if err != nil {
 			return nil, errors.Wrapf(err, "failed to list tests")
 		}
 		return results, nil
 	case config.RunTestsMode:
-		results, err := runTests(ctx, cfg, state, cc)
+		results, err := runTests(ctx, cfg, state, drv)
 		if err != nil {
 			return results, errors.Wrapf(err, "failed to run tests")
 		}
@@ -112,13 +115,13 @@ func startEphemeralDevserverForRemoteTests(ctx context.Context, cfg *config.Conf
 }
 
 // listTests returns the whole tests to run.
-func listTests(ctx context.Context, cfg *config.Config, cc *target.ConnCache) ([]*resultsjson.Result, error) {
-	dutInfo, err := runnerclient.GetDUTInfo(ctx, cfg, cc)
+func listTests(ctx context.Context, cfg *config.Config, drv *driver.Driver) ([]*resultsjson.Result, error) {
+	dutInfo, err := runnerclient.GetDUTInfo(ctx, cfg, drv)
 	if err != nil {
 		return nil, err
 	}
 
-	tests, err := runnerclient.ListTests(ctx, cfg, dutInfo, cc)
+	tests, err := runnerclient.ListTests(ctx, cfg, dutInfo, drv)
 	if err != nil {
 		return nil, err
 	}
@@ -140,8 +143,8 @@ func listTests(ctx context.Context, cfg *config.Config, cc *target.ConnCache) ([
 	return results, nil
 }
 
-func runTests(ctx context.Context, cfg *config.Config, state *config.State, cc *target.ConnCache) (results []*resultsjson.Result, retErr error) {
-	dutInfo, err := runnerclient.GetDUTInfo(ctx, cfg, cc)
+func runTests(ctx context.Context, cfg *config.Config, state *config.State, drv *driver.Driver) (results []*resultsjson.Result, retErr error) {
+	dutInfo, err := runnerclient.GetDUTInfo(ctx, cfg, drv)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to get DUT software features")
 	}
@@ -152,12 +155,12 @@ func runTests(ctx context.Context, cfg *config.Config, state *config.State, cc *
 		logging.Infof(ctx, "Target version: %v", ver)
 	}
 
-	initialSysInfo, err := runnerclient.GetInitialSysInfo(ctx, cfg, cc)
+	initialSysInfo, err := runnerclient.GetInitialSysInfo(ctx, cfg, drv)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to get initial sysinfo")
 	}
 
-	tests, err := runnerclient.ListTests(ctx, cfg, dutInfo, cc)
+	tests, err := runnerclient.ListTests(ctx, cfg, dutInfo, drv)
 	if err != nil {
 		return nil, err
 	}
@@ -201,7 +204,14 @@ func runTests(ctx context.Context, cfg *config.Config, state *config.State, cc *
 			logging.Infof(ctx, "Failed to run tests: %v", retErr)
 		}
 		complete := retErr == nil
-		if err := runnerclient.WriteResults(ctx, cfg, state, results, initialSysInfo, complete, cc); err != nil {
+
+		// The DUT might have rebooted during tests. Try reconnecting
+		// before proceeding to WriteResults.
+		if err := drv.ReconnectIfNeeded(ctx); err != nil {
+			logging.Infof(ctx, "Failed to reconnect to DUT: %v", err)
+		}
+
+		if err := runnerclient.WriteResults(ctx, cfg, state, results, initialSysInfo, complete, drv); err != nil {
 			if retErr == nil {
 				retErr = errors.Wrap(err, "failed to write results")
 			} else {
@@ -210,7 +220,7 @@ func runTests(ctx context.Context, cfg *config.Config, state *config.State, cc *
 		}
 	}()
 
-	lres, err := runnerclient.RunLocalTests(ctx, cfg, state, dutInfo, cc)
+	lres, err := runnerclient.RunLocalTests(ctx, cfg, state, dutInfo, drv)
 	results = append(results, lres...)
 	if err != nil {
 		// TODO(derat): While test runners are always supposed to report success even if tests fail,

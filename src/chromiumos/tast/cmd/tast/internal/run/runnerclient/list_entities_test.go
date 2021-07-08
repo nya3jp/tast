@@ -10,8 +10,8 @@ import (
 	"github.com/golang/protobuf/ptypes"
 	"github.com/google/go-cmp/cmp"
 
+	"chromiumos/tast/cmd/tast/internal/run/driver"
 	"chromiumos/tast/cmd/tast/internal/run/runtest"
-	"chromiumos/tast/cmd/tast/internal/run/target"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testing"
 )
@@ -32,15 +32,13 @@ func TestListLocalTests(t *gotesting.T) {
 	ctx := env.Context()
 	cfg := env.Config()
 
-	cc := target.NewConnCache(cfg, cfg.Target)
-	defer cc.Close(ctx)
-
-	conn, err := cc.Conn(ctx)
+	drv, err := driver.New(ctx, cfg, cfg.Target)
 	if err != nil {
-		t.Fatal(err)
+		t.Fatalf("driver.New failed: %v", err)
 	}
+	defer drv.Close(ctx)
 
-	got, err := ListLocalTests(ctx, cfg, nil, conn.SSHConn())
+	got, err := ListLocalTests(ctx, cfg, nil, drv)
 	if err != nil {
 		t.Fatal("Failed to list local tests: ", err)
 	}

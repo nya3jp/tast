@@ -8,7 +8,7 @@ import (
 	"context"
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
-	"chromiumos/tast/cmd/tast/internal/run/target"
+	"chromiumos/tast/cmd/tast/internal/run/driver"
 	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/timing"
@@ -20,28 +20,28 @@ import (
 // An archive contains Go executables of local test bundles and their associated
 // internal data files and external data link files. Note that remote test
 // bundles are not included in archives.
-func DownloadPrivateBundles(ctx context.Context, cfg *config.Config, conn *target.Conn) error {
+func DownloadPrivateBundles(ctx context.Context, cfg *config.Config, drv *driver.Driver) error {
 	ctx, st := timing.Start(ctx, "download_private_bundles")
 	defer st.End()
 
 	logging.Debug(ctx, "Downloading private bundles")
 
 	localDevservers := append([]string(nil), cfg.Devservers...)
-	if url, ok := conn.Services().EphemeralDevserverURL(); ok {
+	if url, ok := drv.Services().EphemeralDevserverURL(); ok {
 		localDevservers = append(localDevservers, url)
 	}
 
 	var tlwServer string
 	var dutName string
-	if addr, ok := conn.Services().TLWAddr(); ok {
+	if addr, ok := drv.Services().TLWAddr(); ok {
 		tlwServer = addr.String()
-		dutName = conn.Target()
+		dutName = drv.Target()
 	}
 
 	var res jsonprotocol.RunnerDownloadPrivateBundlesResult
 	if err := runTestRunnerCommand(
 		ctx,
-		localRunnerCommand(cfg, conn.SSHConn()),
+		localRunnerCommand(cfg, drv.SSHConn()),
 		&jsonprotocol.RunnerArgs{
 			Mode: jsonprotocol.RunnerDownloadPrivateBundlesMode,
 			DownloadPrivateBundles: &jsonprotocol.RunnerDownloadPrivateBundlesArgs{

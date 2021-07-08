@@ -14,6 +14,11 @@ import (
 	"chromiumos/tast/ssh"
 )
 
+const (
+	// SSHPingTimeout is the timeout for checking if SSH connection to DUT is open.
+	SSHPingTimeout = target.SSHPingTimeout
+)
+
 // Services owns services exposed to a target device by SSH port forwarding.
 type Services = target.Services
 

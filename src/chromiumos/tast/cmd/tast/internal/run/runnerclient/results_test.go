@@ -23,9 +23,9 @@ import (
 	"github.com/google/go-cmp/cmp/cmpopts"
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
+	"chromiumos/tast/cmd/tast/internal/run/driver"
 	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
 	"chromiumos/tast/cmd/tast/internal/run/runtest"
-	"chromiumos/tast/cmd/tast/internal/run/target"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/control"
 	"chromiumos/tast/internal/jsonprotocol"
@@ -125,10 +125,13 @@ func TestReadTestOutput(t *gotesting.T) {
 		t.Errorf("readTestOutput reported unstarted tests %v", unstartedTests)
 	}
 
-	cc := target.NewConnCache(cfg, cfg.Target)
-	defer cc.Close(ctx)
+	drv, err := driver.New(ctx, cfg, cfg.Target)
+	if err != nil {
+		t.Fatalf("driver.New failed: %v", err)
+	}
+	defer drv.Close(ctx)
 
-	if err := WriteResults(ctx, cfg, state, results, nil, true, cc); err != nil {
+	if err := WriteResults(ctx, cfg, state, results, nil, true, drv); err != nil {
 		t.Fatal("WriteResults failed:", err)
 	}
 
@@ -265,10 +268,13 @@ func TestReadTestOutputSameEntity(t *gotesting.T) {
 		t.Errorf("readTestOutput reported unstarted tests %v", unstartedTests)
 	}
 
-	cc := target.NewConnCache(cfg, cfg.Target)
-	defer cc.Close(ctx)
+	drv, err := driver.New(ctx, cfg, cfg.Target)
+	if err != nil {
+		t.Fatalf("driver.New failed: %v", err)
+	}
+	defer drv.Close(ctx)
 
-	if err := WriteResults(ctx, cfg, state, results, nil, true, cc); err != nil {
+	if err := WriteResults(ctx, cfg, state, results, nil, true, drv); err != nil {
 		t.Fatal("WriteResults failed:", err)
 	}
 
@@ -345,10 +351,13 @@ func TestReadTestOutputConcurrentEntity(t *gotesting.T) {
 		t.Errorf("readTestOutput reported unstarted tests %v", unstartedTests)
 	}
 
-	cc := target.NewConnCache(cfg, cfg.Target)
-	defer cc.Close(ctx)
+	drv, err := driver.New(ctx, cfg, cfg.Target)
+	if err != nil {
+		t.Fatalf("driver.New failed: %v", err)
+	}
+	defer drv.Close(ctx)
 
-	if err = WriteResults(ctx, cfg, state, results, nil, true, cc); err != nil {
+	if err := WriteResults(ctx, cfg, state, results, nil, true, drv); err != nil {
 		t.Fatal("WriteResults failed:", err)
 	}
 
@@ -475,10 +484,13 @@ func TestReadTestOutputAbortFixture(t *gotesting.T) {
 		t.Errorf("readTestOutput reported unstarted tests %v", unstartedTests)
 	}
 
-	cc := target.NewConnCache(cfg, cfg.Target)
-	defer cc.Close(ctx)
+	drv, err := driver.New(ctx, cfg, cfg.Target)
+	if err != nil {
+		t.Fatalf("driver.New failed: %v", err)
+	}
+	defer drv.Close(ctx)
 
-	if err := WriteResults(ctx, cfg, state, results, nil, true, cc); err != nil {
+	if err := WriteResults(ctx, cfg, state, results, nil, true, drv); err != nil {
 		t.Fatal("WriteResults failed:", err)
 	}
 
@@ -668,10 +680,13 @@ func TestWriteResultsCollectSysInfo(t *gotesting.T) {
 	cfg := env.Config()
 	state := env.State()
 
-	cc := target.NewConnCache(cfg, cfg.Target)
-	defer cc.Close(ctx)
+	drv, err := driver.New(ctx, cfg, cfg.Target)
+	if err != nil {
+		t.Fatalf("driver.New failed: %v", err)
+	}
+	defer drv.Close(ctx)
 
-	if err := WriteResults(ctx, cfg, state, nil, initialState, true, cc); err != nil {
+	if err := WriteResults(ctx, cfg, state, nil, initialState, true, drv); err != nil {
 		t.Errorf("WriteResults failed: %v", err)
 	}
 	if !called {
@@ -692,10 +707,13 @@ func TestWriteResultsCollectSysInfoFailure(t *gotesting.T) {
 	cfg := env.Config()
 	state := env.State()
 
-	cc := target.NewConnCache(cfg, cfg.Target)
-	defer cc.Close(ctx)
+	drv, err := driver.New(ctx, cfg, cfg.Target)
+	if err != nil {
+		t.Fatalf("driver.New failed: %v", err)
+	}
+	defer drv.Close(ctx)
 
-	err := WriteResults(ctx, cfg, state, nil, nil, true, cc)
+	err = WriteResults(ctx, cfg, state, nil, nil, true, drv)
 	if err == nil {
 		t.Fatal("WriteResults didn't report expected error")
 	}
@@ -933,10 +951,13 @@ func TestWriteResultsWriteFiles(t *gotesting.T) {
 		{Entity: &protocol.Entity{Name: "pkg.Test2"}},
 	}
 
-	cc := target.NewConnCache(cfg, cfg.Target)
-	defer cc.Close(ctx)
+	drv, err := driver.New(ctx, cfg, cfg.Target)
+	if err != nil {
+		t.Fatalf("driver.New failed: %v", err)
+	}
+	defer drv.Close(ctx)
 
-	if err := WriteResults(ctx, cfg, state, results, nil, true /* complete */, cc); err != nil {
+	if err := WriteResults(ctx, cfg, state, results, nil, true /* complete */, drv); err != nil {
 		t.Errorf("WriteResults() failed: %v", err)
 	}
 
@@ -988,10 +1009,13 @@ func TestWriteResultsUnmatchedGlobs(t *gotesting.T) {
 			{Entity: &protocol.Entity{Name: "pkg.Test2"}},
 		}
 
-		cc := target.NewConnCache(cfg, cfg.Target)
-		defer cc.Close(ctx)
+		drv, err := driver.New(ctx, cfg, cfg.Target)
+		if err != nil {
+			t.Fatalf("driver.New failed: %v", err)
+		}
+		defer drv.Close(ctx)
 
-		if err := WriteResults(ctx, cfg, &state, results, nil, tc.complete, cc); err != nil {
+		if err := WriteResults(ctx, cfg, &state, results, nil, tc.complete, drv); err != nil {
 			t.Errorf("WriteResults() failed for %v: %v", cfg.Patterns, err)
 			continue
 		}

@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
-	"chromiumos/tast/cmd/tast/internal/run/target"
+	"chromiumos/tast/cmd/tast/internal/run/driver"
 	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/protocol"
@@ -19,7 +19,7 @@ import (
 // GetInitialSysInfo saves the initial state of the DUT's system information to cfg if
 // requested and if it hasn't already been saved. This is called before testing.
 // This updates state.InitialSysInfo, so calling twice won't work.
-func GetInitialSysInfo(ctx context.Context, cfg *config.Config, cc *target.ConnCache) (*protocol.SysInfoState, error) {
+func GetInitialSysInfo(ctx context.Context, cfg *config.Config, drv *driver.Driver) (*protocol.SysInfoState, error) {
 	if !cfg.CollectSysInfo {
 		return nil, nil
 	}
@@ -28,15 +28,10 @@ func GetInitialSysInfo(ctx context.Context, cfg *config.Config, cc *target.ConnC
 	defer st.End()
 	logging.Debug(ctx, "Getting initial system state")
 
-	conn, err := cc.Conn(ctx)
-	if err != nil {
-		return nil, err
-	}
-
 	var res jsonprotocol.RunnerGetSysInfoStateResult
 	if err := runTestRunnerCommand(
 		ctx,
-		localRunnerCommand(cfg, conn.SSHConn()),
+		localRunnerCommand(cfg, drv.SSHConn()),
 		&jsonprotocol.RunnerArgs{Mode: jsonprotocol.RunnerGetSysInfoStateMode},
 		&res,
 	); err != nil {
@@ -51,7 +46,7 @@ func GetInitialSysInfo(ctx context.Context, cfg *config.Config, cc *target.ConnC
 
 // collectSysInfo writes system information generated on the DUT during testing to the results dir if
 // doing so was requested.
-func collectSysInfo(ctx context.Context, cfg *config.Config, initialSysInfo *protocol.SysInfoState, cc *target.ConnCache) error {
+func collectSysInfo(ctx context.Context, cfg *config.Config, initialSysInfo *protocol.SysInfoState, drv *driver.Driver) error {
 	if !cfg.CollectSysInfo {
 		return nil
 	}
@@ -60,15 +55,10 @@ func collectSysInfo(ctx context.Context, cfg *config.Config, initialSysInfo *pro
 	defer st.End()
 	logging.Debug(ctx, "Collecting system information")
 
-	conn, err := cc.Conn(ctx)
-	if err != nil {
-		return err
-	}
-
 	var res jsonprotocol.RunnerCollectSysInfoResult
 	if err := runTestRunnerCommand(
 		ctx,
-		localRunnerCommand(cfg, conn.SSHConn()),
+		localRunnerCommand(cfg, drv.SSHConn()),
 		&jsonprotocol.RunnerArgs{
 			Mode:           jsonprotocol.RunnerCollectSysInfoMode,
 			CollectSysInfo: &jsonprotocol.RunnerCollectSysInfoArgs{InitialState: *jsonprotocol.SysInfoStateFromProto(initialSysInfo)},
@@ -83,12 +73,12 @@ func collectSysInfo(ctx context.Context, cfg *config.Config, initialSysInfo *pro
 	}
 
 	if len(res.LogDir) != 0 {
-		if err := moveFromHost(ctx, cfg, conn.SSHConn(), res.LogDir, filepath.Join(cfg.ResDir, systemLogsDir)); err != nil {
+		if err := moveFromHost(ctx, cfg, drv.SSHConn(), res.LogDir, filepath.Join(cfg.ResDir, systemLogsDir)); err != nil {
 			logging.Info(ctx, "Failed to copy system logs: ", err)
 		}
 	}
 	if len(res.CrashDir) != 0 {
-		if err := moveFromHost(ctx, cfg, conn.SSHConn(), res.CrashDir, filepath.Join(cfg.ResDir, crashesDir)); err != nil {
+		if err := moveFromHost(ctx, cfg, drv.SSHConn(), res.CrashDir, filepath.Join(cfg.ResDir, crashesDir)); err != nil {
 			logging.Info(ctx, "Failed to copy crashes: ", err)
 		}
 	}

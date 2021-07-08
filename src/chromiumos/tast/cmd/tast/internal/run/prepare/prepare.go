@@ -19,8 +19,8 @@ import (
 
 	"chromiumos/tast/cmd/tast/internal/build"
 	"chromiumos/tast/cmd/tast/internal/run/config"
+	"chromiumos/tast/cmd/tast/internal/run/driver"
 	"chromiumos/tast/cmd/tast/internal/run/runnerclient"
-	"chromiumos/tast/cmd/tast/internal/run/target"
 	"chromiumos/tast/internal/linuxssh"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/protocol"
@@ -31,7 +31,7 @@ import (
 
 // Prepare prepares target DUT and companion DUTs for running tests. When instructed in cfg, it builds
 // and pushes the local test runner and test bundles, and downloads private test bundles.
-func Prepare(ctx context.Context, cfg *config.Config, cc *target.ConnCache) error {
+func Prepare(ctx context.Context, cfg *config.Config, primaryDriver *driver.Driver) error {
 	if !cfg.Build && !cfg.DownloadPrivateBundles {
 		// Return without connecting to the DUT if we have nothing to do.
 		return nil
@@ -42,14 +42,17 @@ func Prepare(ctx context.Context, cfg *config.Config, cc *target.ConnCache) erro
 		return errors.New("-downloadprivatebundles requires -build=false")
 	}
 
-	if err := prepareDUT(ctx, cfg, cc); err != nil {
+	if err := prepareDUT(ctx, cfg, primaryDriver); err != nil {
 		return fmt.Errorf("failed to prepare primary DUT %s: %v", cfg.Target, err)
 	}
 
 	for _, dut := range cfg.CompanionDUTs {
-		cc := target.NewConnCache(cfg, dut)
-		defer cc.Close(ctx)
-		if err := prepareDUT(ctx, cfg, cc); err != nil {
+		companionDriver, err := driver.New(ctx, cfg, dut)
+		if err != nil {
+			return fmt.Errorf("failed to connect to companion DUT %s: %v", dut, err)
+		}
+		defer companionDriver.Close(ctx)
+		if err := prepareDUT(ctx, cfg, companionDriver); err != nil {
 			return fmt.Errorf("failed to prepare companion DUT %s: %v", dut, err)
 		}
 	}
@@ -59,27 +62,22 @@ func Prepare(ctx context.Context, cfg *config.Config, cc *target.ConnCache) erro
 // prepareDUT prepares the DUT for running tests. When instructed in cfg, it builds
 // and pushes the local test runner and test bundles, and downloads private test
 // bundles.
-func prepareDUT(ctx context.Context, cfg *config.Config, cc *target.ConnCache) error {
-	conn, err := cc.Conn(ctx)
-	if err != nil {
-		return fmt.Errorf("failed to connect to %s: %v", cc.Target(), err)
-	}
-
+func prepareDUT(ctx context.Context, cfg *config.Config, drv *driver.Driver) error {
 	if cfg.Build {
-		targetArch, err := getTargetArch(ctx, cfg, conn.SSHConn())
+		targetArch, err := getTargetArch(ctx, cfg, drv.SSHConn())
 		if err != nil {
 			return fmt.Errorf("failed to get architecture information: %v", err)
 		}
-		if err := buildAll(ctx, cfg, conn.SSHConn(), targetArch); err != nil {
+		if err := buildAll(ctx, cfg, targetArch); err != nil {
 			return err
 		}
-		if err := pushAll(ctx, cfg, conn.SSHConn(), targetArch); err != nil {
+		if err := pushAll(ctx, cfg, drv, targetArch); err != nil {
 			return err
 		}
 	}
 
 	if cfg.DownloadPrivateBundles {
-		if err := runnerclient.DownloadPrivateBundles(ctx, cfg, conn); err != nil {
+		if err := runnerclient.DownloadPrivateBundles(ctx, cfg, drv); err != nil {
 			return fmt.Errorf("failed downloading private bundles: %v", err)
 		}
 	}
@@ -89,14 +87,14 @@ func prepareDUT(ctx context.Context, cfg *config.Config, cc *target.ConnCache) e
 	// After writing files to the DUT, run sync to make sure the written files are persisted
 	// even if the DUT crashes later. This is important especially when we push local_test_runner
 	// because it can appear as zero-byte binary after a crash and subsequent sysinfo phase fails.
-	if err := conn.SSHConn().Command("sync").Run(ctx); err != nil {
+	if err := drv.SSHConn().Command("sync").Run(ctx); err != nil {
 		return fmt.Errorf("failed to sync disk writes: %v", err)
 	}
 	return nil
 }
 
 // buildAll builds Go binaries as instructed in cfg.
-func buildAll(ctx context.Context, cfg *config.Config, hst *ssh.Conn, targetArch string) error {
+func buildAll(ctx context.Context, cfg *config.Config, targetArch string) error {
 	// local_test_runner is required even if we are running only remote tests,
 	// e.g. to compute software dependencies.
 	tgts := []*build.Target{
@@ -170,13 +168,13 @@ func getTargetArch(ctx context.Context, cfg *config.Config, hst *ssh.Conn) (targ
 // and local test data files to the DUT if necessary. If cfg.mode is
 // ListTestsMode data files are not pushed since they are not needed to build
 // a list of tests.
-func pushAll(ctx context.Context, cfg *config.Config, hst *ssh.Conn, targetArch string) error {
+func pushAll(ctx context.Context, cfg *config.Config, drv *driver.Driver, targetArch string) error {
 	ctx, st := timing.Start(ctx, "push")
 	defer st.End()
 
 	// Push executables first. New test bundle is needed later to get the list of
 	// data files to push.
-	if err := pushExecutables(ctx, cfg, hst, targetArch); err != nil {
+	if err := pushExecutables(ctx, cfg, drv.SSHConn(), targetArch); err != nil {
 		return fmt.Errorf("failed to push local executables: %v", err)
 	}
 
@@ -184,12 +182,12 @@ func pushAll(ctx context.Context, cfg *config.Config, hst *ssh.Conn, targetArch 
 		return nil
 	}
 
-	paths, err := getDataFilePaths(ctx, cfg, hst)
+	paths, err := getDataFilePaths(ctx, cfg, drv)
 	if err != nil {
 		return fmt.Errorf("failed to get data file list: %v", err)
 	}
 	if len(paths) > 0 {
-		if err := pushDataFiles(ctx, cfg, hst, cfg.LocalDataDir, paths); err != nil {
+		if err := pushDataFiles(ctx, cfg, drv.SSHConn(), cfg.LocalDataDir, paths); err != nil {
 			return fmt.Errorf("failed to push data files: %v", err)
 		}
 	}
@@ -250,8 +248,7 @@ func allNeededFixtures(fixtures []*protocol.Entity, tests []*protocol.ResolvedEn
 // getDataFilePaths returns the paths to data files needed for running
 // cfg.Patterns on hst. The returned paths are relative to the package root,
 // e.g. "chromiumos/tast/local/bundle/<bundle>/<category>/data/<filename>".
-func getDataFilePaths(ctx context.Context, cfg *config.Config, hst *ssh.Conn) (
-	paths []string, err error) {
+func getDataFilePaths(ctx context.Context, cfg *config.Config, drv *driver.Driver) (paths []string, err error) {
 	ctx, st := timing.Start(ctx, "get_data_paths")
 	defer st.End()
 
@@ -265,7 +262,7 @@ func getDataFilePaths(ctx context.Context, cfg *config.Config, hst *ssh.Conn) (
 	// skipped.
 	// TODO(b/192433910): Retrieve DUTInfo in advance and push necessary
 	// data files only.
-	ts, err := runnerclient.ListLocalTests(ctx, cfg, nil, hst)
+	ts, err := runnerclient.ListLocalTests(ctx, cfg, nil, drv)
 	if err != nil {
 		return nil, err
 	}
@@ -274,7 +271,7 @@ func getDataFilePaths(ctx context.Context, cfg *config.Config, hst *ssh.Conn) (
 	}
 
 	// Add fixtures tests use to entities.
-	localFixts, err := runnerclient.ListLocalFixtures(ctx, cfg, hst)
+	localFixts, err := runnerclient.ListLocalFixtures(ctx, cfg, drv)
 	if err != nil {
 		return nil, fmt.Errorf("ListLocalFixtures: %v", err)
 	}

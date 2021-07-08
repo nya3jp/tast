@@ -26,7 +26,6 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
 	"chromiumos/tast/cmd/tast/internal/run/runnerclient"
 	"chromiumos/tast/cmd/tast/internal/run/runtest"
-	"chromiumos/tast/cmd/tast/internal/run/target"
 	frameworkprotocol "chromiumos/tast/framework/protocol"
 	"chromiumos/tast/internal/devserver/devservertest"
 	"chromiumos/tast/internal/faketlw"
@@ -656,9 +655,6 @@ func TestRunListTestsWithSharding(t *gotesting.T) {
 	cfg.Mode = config.ListTestsMode
 	cfg.TotalShards = 2 // set the number of shards
 	state := env.State()
-
-	cc := target.NewConnCache(cfg, cfg.Target)
-	defer cc.Close(ctx)
 
 	localTestMeta, _ := resultsjson.NewTest(localTest.EntityProto())
 	remoteTestMeta, _ := resultsjson.NewTest(remoteTest.EntityProto())

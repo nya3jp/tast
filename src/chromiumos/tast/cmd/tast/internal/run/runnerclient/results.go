@@ -20,9 +20,9 @@ import (
 	"github.com/golang/protobuf/ptypes"
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
+	"chromiumos/tast/cmd/tast/internal/run/driver"
 	"chromiumos/tast/cmd/tast/internal/run/junitxml"
 	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
-	"chromiumos/tast/cmd/tast/internal/run/target"
 	"chromiumos/tast/errors"
 	frameworkprotocol "chromiumos/tast/framework/protocol"
 	"chromiumos/tast/internal/control"
@@ -94,7 +94,7 @@ var errUserReqTermination = errors.Wrap(ErrTerminate, "user requested tast to te
 // any tests failed) and false if it was aborted.
 // If cfg.CollectSysInfo is true, system information generated on the DUT during testing
 // (e.g. logs and crashes) will also be written to the results dir.
-func WriteResults(ctx context.Context, cfg *config.Config, state *config.State, results []*resultsjson.Result, initialSysInfo *protocol.SysInfoState, complete bool, cc *target.ConnCache) error {
+func WriteResults(ctx context.Context, cfg *config.Config, state *config.State, results []*resultsjson.Result, initialSysInfo *protocol.SysInfoState, complete bool, drv *driver.Driver) error {
 	f, err := os.Create(filepath.Join(cfg.ResDir, ResultsFilename))
 	if err != nil {
 		return err
@@ -103,7 +103,7 @@ func WriteResults(ctx context.Context, cfg *config.Config, state *config.State, 
 
 	// We don't want to bail out before writing test results if sys info collection fails,
 	// but we'll still return the error later.
-	sysInfoErr := collectSysInfo(ctx, cfg, initialSysInfo, cc)
+	sysInfoErr := collectSysInfo(ctx, cfg, initialSysInfo, drv)
 	if sysInfoErr != nil {
 		logging.Info(ctx, "Failed collecting system info: ", sysInfoErr)
 	}

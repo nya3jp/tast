@@ -14,45 +14,40 @@ import (
 	"strings"
 	"time"
 
-	"chromiumos/tast/cmd/tast/internal/run/config"
-	"chromiumos/tast/cmd/tast/internal/run/target"
+	"chromiumos/tast/cmd/tast/internal/run/driver"
 	"chromiumos/tast/internal/linuxssh"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/testingutil"
-	"chromiumos/tast/ssh"
 )
 
 // SSHDrop diagnoses a SSH connection drop during local test runs
 // and returns a diagnosis message. Files useful for diagnosis might be saved
 // under outDir.
-func SSHDrop(ctx context.Context, cfg *config.Config, cc *target.ConnCache, outDir string) string {
-	if cc.InitBootID() == "" {
+func SSHDrop(ctx context.Context, drv *driver.Driver, outDir string) string {
+	if drv.InitBootID() == "" {
 		return "failed to diagnose: initial boot_id is not available"
 	}
 
 	logging.Info(ctx, "Reconnecting to diagnose lost SSH connection")
 	const reconnectTimeout = time.Minute
-	var conn *target.Conn
 	if err := testingutil.Poll(ctx, func(ctx context.Context) error {
-		var err error
-		conn, err = cc.Conn(ctx)
-		return err
+		return drv.ReconnectIfNeeded(ctx)
 	}, &testingutil.PollOptions{Timeout: reconnectTimeout}); err != nil {
 		return fmt.Sprint("target did not come back: ", err)
 	}
 
 	// Compare boot_id to see if the target rebooted.
-	bootID, err := linuxssh.ReadBootID(ctx, conn.SSHConn())
+	bootID, err := linuxssh.ReadBootID(ctx, drv.SSHConn())
 	if err != nil {
 		return fmt.Sprint("failed to diagnose: failed to read boot_id: ", err)
 	}
 
-	if bootID == cc.InitBootID() {
+	if bootID == drv.InitBootID() {
 		return "target did not reboot, probably network issue"
 	}
 
 	// Target rebooted.
-	return diagnoseReboot(ctx, cfg, cc, conn.SSHConn(), outDir)
+	return diagnoseReboot(ctx, drv, outDir)
 }
 
 var (
@@ -74,13 +69,15 @@ var (
 // diagnoseReboot diagnoses the target reboot during local test runs
 // and returns a diagnosis message. Files useful for diagnosis might be saved
 // under outDir.
-func diagnoseReboot(ctx context.Context, cfg *config.Config, cc *target.ConnCache, hst *ssh.Conn, outDir string) string {
+func diagnoseReboot(ctx context.Context, drv *driver.Driver, outDir string) string {
+	conn := drv.SSHConn()
+
 	// Read the unified system log just before the reboot.
-	denseBootID := strings.Replace(cc.InitBootID(), "-", "", -1)
-	out, err := hst.Command("croslog", "--quiet", "--boot="+denseBootID, "--lines=1000").Output(ctx)
+	denseBootID := strings.Replace(drv.InitBootID(), "-", "", -1)
+	out, err := conn.Command("croslog", "--quiet", "--boot="+denseBootID, "--lines=1000").Output(ctx)
 	if err != nil {
 		logging.Info(ctx, "Failed to execute croslog command: ", err)
-		out, err = hst.Command("journalctl", "--quiet", "--boot="+denseBootID, "--lines=1000").Output(ctx)
+		out, err = conn.Command("journalctl", "--quiet", "--boot="+denseBootID, "--lines=1000").Output(ctx)
 		if err != nil {
 			logging.Info(ctx, "Failed to execute journalctl command: ", err)
 		} else {
@@ -98,9 +95,9 @@ func diagnoseReboot(ctx context.Context, cfg *config.Config, cc *target.ConnCach
 
 	// Read console-ramoops. Its path varies by systems, and it might not exist
 	// for normal reboots.
-	out, err = hst.Command("cat", "/sys/fs/pstore/console-ramoops-0").Output(ctx)
+	out, err = conn.Command("cat", "/sys/fs/pstore/console-ramoops-0").Output(ctx)
 	if err != nil {
-		out, err = hst.Command("cat", "/sys/fs/pstore/console-ramoops").Output(ctx)
+		out, err = conn.Command("cat", "/sys/fs/pstore/console-ramoops").Output(ctx)
 		if err != nil {
 			logging.Info(ctx, "console-ramoops not found")
 		}

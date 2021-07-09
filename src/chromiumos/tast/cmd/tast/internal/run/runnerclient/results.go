@@ -103,7 +103,7 @@ func WriteResults(ctx context.Context, cfg *config.Config, state *config.State, 
 
 	// We don't want to bail out before writing test results if sys info collection fails,
 	// but we'll still return the error later.
-	sysInfoErr := collectSysInfo(ctx, cfg, initialSysInfo, drv)
+	sysInfoErr := drv.CollectSysInfo(ctx, initialSysInfo)
 	if sysInfoErr != nil {
 		logging.Info(ctx, "Failed collecting system info: ", sysInfoErr)
 	}

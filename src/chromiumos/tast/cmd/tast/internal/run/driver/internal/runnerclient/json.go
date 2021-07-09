@@ -61,6 +61,38 @@ func (c *JSONClient) GetDUTInfo(ctx context.Context, req *protocol.GetDUTInfoReq
 	return res.Proto(), nil
 }
 
+// GetSysInfoState collects the sysinfo state of the DUT.
+func (c *JSONClient) GetSysInfoState(ctx context.Context, req *protocol.GetSysInfoStateRequest) (*protocol.GetSysInfoStateResponse, error) {
+	args := &jsonprotocol.RunnerArgs{
+		Mode: jsonprotocol.RunnerGetSysInfoStateMode,
+	}
+	var res jsonprotocol.RunnerGetSysInfoStateResult
+	if err := c.runBatch(ctx, args, &res); err != nil {
+		return nil, errors.Wrap(err, "getting sysinfo state")
+	}
+	for _, warn := range res.Warnings {
+		logging.Info(ctx, warn)
+	}
+	return res.Proto(), nil
+}
+
+// CollectSysInfo collects the sysinfo, considering diff from the given initial
+// sysinfo state.
+func (c *JSONClient) CollectSysInfo(ctx context.Context, req *protocol.CollectSysInfoRequest) (*protocol.CollectSysInfoResponse, error) {
+	args := &jsonprotocol.RunnerArgs{
+		Mode:           jsonprotocol.RunnerCollectSysInfoMode,
+		CollectSysInfo: &jsonprotocol.RunnerCollectSysInfoArgs{InitialState: *jsonprotocol.SysInfoStateFromProto(req.GetInitialState())},
+	}
+	var res jsonprotocol.RunnerCollectSysInfoResult
+	if err := c.runBatch(ctx, args, &res); err != nil {
+		return nil, errors.Wrap(err, "collecting sysinfo")
+	}
+	for _, warn := range res.Warnings {
+		logging.Info(ctx, warn)
+	}
+	return res.Proto(), nil
+}
+
 func (c *JSONClient) runBatch(ctx context.Context, args *jsonprotocol.RunnerArgs, out interface{}) error {
 	args.FillDeprecated()
 

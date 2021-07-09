@@ -165,7 +165,7 @@ func runTests(ctx context.Context, cfg *config.Config, state *config.State, drv 
 		logging.Infof(ctx, "Target version: %v", ver)
 	}
 
-	initialSysInfo, err := runnerclient.GetInitialSysInfo(ctx, cfg, drv)
+	initialSysInfo, err := drv.GetSysInfoState(ctx)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to get initial sysinfo")
 	}

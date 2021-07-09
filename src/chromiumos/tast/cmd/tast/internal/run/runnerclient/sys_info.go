@@ -11,6 +11,7 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/driver"
 	"chromiumos/tast/internal/jsonprotocol"
+	"chromiumos/tast/internal/linuxssh"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/timing"
@@ -73,12 +74,12 @@ func collectSysInfo(ctx context.Context, cfg *config.Config, initialSysInfo *pro
 	}
 
 	if len(res.LogDir) != 0 {
-		if err := moveFromHost(ctx, cfg, drv.SSHConn(), res.LogDir, filepath.Join(cfg.ResDir, systemLogsDir)); err != nil {
+		if err := linuxssh.GetAndDeleteFile(ctx, drv.SSHConn(), res.LogDir, filepath.Join(cfg.ResDir, systemLogsDir), linuxssh.PreserveSymlinks); err != nil {
 			logging.Info(ctx, "Failed to copy system logs: ", err)
 		}
 	}
 	if len(res.CrashDir) != 0 {
-		if err := moveFromHost(ctx, cfg, drv.SSHConn(), res.CrashDir, filepath.Join(cfg.ResDir, crashesDir)); err != nil {
+		if err := linuxssh.GetAndDeleteFile(ctx, drv.SSHConn(), res.CrashDir, filepath.Join(cfg.ResDir, crashesDir), linuxssh.PreserveSymlinks); err != nil {
 			logging.Info(ctx, "Failed to copy crashes: ", err)
 		}
 	}

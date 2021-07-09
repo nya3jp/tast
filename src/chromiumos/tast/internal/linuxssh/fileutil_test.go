@@ -537,3 +537,29 @@ func TestPutFilesPerm(t *testing.T) {
 		}
 	}
 }
+
+func TestGetAndDeleteFile(t *testing.T) {
+	t.Parallel()
+	td := sshtest.NewTestDataConn(t)
+	defer td.Close()
+
+	files := map[string]string{"file": "foo"}
+	tmpDir, srcDir := initFileTest(t, files)
+	defer os.RemoveAll(tmpDir)
+
+	srcFile := filepath.Join(srcDir, "file")
+	dstFile := filepath.Join(tmpDir, "file.copy")
+	if err := linuxssh.GetAndDeleteFile(td.Ctx, td.Hst, srcFile, dstFile, linuxssh.PreserveSymlinks); err != nil {
+		t.Fatal(err)
+	}
+	if err := checkFile(dstFile, files["file"]); err != nil {
+		t.Error(err)
+	}
+
+	// TestGetAndDeleteFile should have removed the original file.
+	if _, err := os.Stat(srcFile); err == nil {
+		t.Error("GetAndDeleteFile did not delete a file")
+	} else if !os.IsNotExist(err) {
+		t.Error(err)
+	}
+}

@@ -51,6 +51,24 @@
       "parentUuid": "33a1b035_084b24ae",
       "revId": "eb92132f7f054059dc33836a1bed3a25aa786e8b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "2e606b46_1d0b49f4",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-07-09T12:17:47Z",
+      "side": 1,
+      "message": "I have added people from infra team to the reviewers of the other change. IIUC the way in which F20 RTD tests must export the hardware dependency is being changed and I asking for double check about it.",
+      "parentUuid": "a768502d_6262d667",
+      "revId": "eb92132f7f054059dc33836a1bed3a25aa786e8b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

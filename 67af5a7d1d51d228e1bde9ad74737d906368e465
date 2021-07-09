@@ -3,6 +3,23 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "915e44e4_565a7146",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-07-09T04:32:59Z",
+      "side": 1,
+      "message": "We need to add:\n\n Cq-Depend: chromium:2994958",
+      "revId": "67af5a7d1d51d228e1bde9ad74737d906368e465",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "aa498c4d_a1e19ca0",
         "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
         "patchSetId": 1

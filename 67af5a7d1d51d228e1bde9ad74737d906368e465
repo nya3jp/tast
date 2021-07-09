@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "8b46138a_935e0b0c",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1287257
+      },
+      "writtenOn": "2021-07-09T18:54:31Z",
+      "side": 1,
+      "message": "I think, you meant Cq-Depend: chromium:3016139",
+      "parentUuid": "915e44e4_565a7146",
+      "revId": "67af5a7d1d51d228e1bde9ad74737d906368e465",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "aa498c4d_a1e19ca0",
@@ -43,6 +61,30 @@
     {
       "unresolved": false,
       "key": {
+        "uuid": "653435e5_0dd44412",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 55,
+      "author": {
+        "id": 1287257
+      },
+      "writtenOn": "2021-07-09T18:54:31Z",
+      "side": 1,
+      "message": "Ack",
+      "parentUuid": "aa498c4d_a1e19ca0",
+      "range": {
+        "startLine": 55,
+        "startChar": 3,
+        "endLine": 55,
+        "endChar": 59
+      },
+      "revId": "67af5a7d1d51d228e1bde9ad74737d906368e465",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
         "uuid": "b9078d68_310d8042",
         "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
         "patchSetId": 1
@@ -54,6 +96,30 @@
       "writtenOn": "2021-07-09T04:28:37Z",
       "side": 1,
       "message": "Did it finally work? Nice to know that. :)",
+      "range": {
+        "startLine": 161,
+        "startChar": 3,
+        "endLine": 161,
+        "endChar": 56
+      },
+      "revId": "67af5a7d1d51d228e1bde9ad74737d906368e465",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "f3ccc658_6a792798",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 161,
+      "author": {
+        "id": 1287257
+      },
+      "writtenOn": "2021-07-09T18:54:31Z",
+      "side": 1,
+      "message": "yes. It did work:) \nThanks for the suggestions!",
+      "parentUuid": "b9078d68_310d8042",
       "range": {
         "startLine": 161,
         "startChar": 3,

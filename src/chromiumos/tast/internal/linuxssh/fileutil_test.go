@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package linuxssh
+package linuxssh_test
 
 import (
 	"fmt"
@@ -12,6 +12,7 @@ import (
 	"reflect"
 	"testing"
 
+	"chromiumos/tast/internal/linuxssh"
 	"chromiumos/tast/internal/sshtest"
 	"chromiumos/tast/testutil"
 )
@@ -63,7 +64,7 @@ func TestGetFileRegular(t *testing.T) {
 
 	srcFile := filepath.Join(srcDir, "file")
 	dstFile := filepath.Join(tmpDir, "file.copy")
-	if err := GetFile(td.Ctx, td.Hst, srcFile, dstFile, PreserveSymlinks); err != nil {
+	if err := linuxssh.GetFile(td.Ctx, td.Hst, srcFile, dstFile, linuxssh.PreserveSymlinks); err != nil {
 		t.Fatal(err)
 	}
 	if err := checkFile(dstFile, files["file"]); err != nil {
@@ -71,14 +72,14 @@ func TestGetFileRegular(t *testing.T) {
 	}
 
 	// GetFile should overwrite local files.
-	if err := GetFile(td.Ctx, td.Hst, srcFile, dstFile, PreserveSymlinks); err != nil {
+	if err := linuxssh.GetFile(td.Ctx, td.Hst, srcFile, dstFile, linuxssh.PreserveSymlinks); err != nil {
 		t.Error(err)
 	}
 
 	// Using DereferenceSymlinks should make no difference for regular files
 	srcFile = filepath.Join(srcDir, "file")
 	dstFile = filepath.Join(tmpDir, "file.dereference")
-	if err := GetFile(td.Ctx, td.Hst, srcFile, dstFile, DereferenceSymlinks); err != nil {
+	if err := linuxssh.GetFile(td.Ctx, td.Hst, srcFile, dstFile, linuxssh.DereferenceSymlinks); err != nil {
 		t.Fatal(err)
 	}
 	if err := checkFile(dstFile, files["file"]); err != nil {
@@ -86,7 +87,7 @@ func TestGetFileRegular(t *testing.T) {
 	}
 
 	// GetFile should overwrite local files.
-	if err := GetFile(td.Ctx, td.Hst, srcFile, dstFile, DereferenceSymlinks); err != nil {
+	if err := linuxssh.GetFile(td.Ctx, td.Hst, srcFile, dstFile, linuxssh.DereferenceSymlinks); err != nil {
 		t.Error(err)
 	}
 }
@@ -106,7 +107,7 @@ func TestGetFileRegularSymlink(t *testing.T) {
 
 	srcFile := filepath.Join(srcDir, "link")
 	dstFile := filepath.Join(tmpDir, "link.preserve")
-	if err := GetFile(td.Ctx, td.Hst, srcFile, dstFile, PreserveSymlinks); err != nil {
+	if err := linuxssh.GetFile(td.Ctx, td.Hst, srcFile, dstFile, linuxssh.PreserveSymlinks); err != nil {
 		t.Fatal(err)
 	}
 	if linkname, err := os.Readlink(dstFile); err != nil {
@@ -116,13 +117,13 @@ func TestGetFileRegularSymlink(t *testing.T) {
 	}
 
 	// GetFile should overwrite local files.
-	if err := GetFile(td.Ctx, td.Hst, srcFile, dstFile, PreserveSymlinks); err != nil {
+	if err := linuxssh.GetFile(td.Ctx, td.Hst, srcFile, dstFile, linuxssh.PreserveSymlinks); err != nil {
 		t.Error(err)
 	}
 
 	srcFile = filepath.Join(srcDir, "link")
 	dstFile = filepath.Join(tmpDir, "link.dereference")
-	if err := GetFile(td.Ctx, td.Hst, srcFile, dstFile, DereferenceSymlinks); err != nil {
+	if err := linuxssh.GetFile(td.Ctx, td.Hst, srcFile, dstFile, linuxssh.DereferenceSymlinks); err != nil {
 		t.Fatal(err)
 	}
 	if err := checkFile(dstFile, files["file"]); err != nil {
@@ -135,7 +136,7 @@ func TestGetFileRegularSymlink(t *testing.T) {
 	}
 
 	// GetFile should overwrite local files.
-	if err := GetFile(td.Ctx, td.Hst, srcFile, dstFile, DereferenceSymlinks); err != nil {
+	if err := linuxssh.GetFile(td.Ctx, td.Hst, srcFile, dstFile, linuxssh.DereferenceSymlinks); err != nil {
 		t.Error(err)
 	}
 }
@@ -164,7 +165,7 @@ func TestGetFileDir(t *testing.T) {
 
 	// Copy the full source directory.
 	dstDir := filepath.Join(tmpDir, "dst")
-	if err := GetFile(td.Ctx, td.Hst, srcDir, dstDir, PreserveSymlinks); err != nil {
+	if err := linuxssh.GetFile(td.Ctx, td.Hst, srcDir, dstDir, linuxssh.PreserveSymlinks); err != nil {
 		t.Fatal(err)
 	}
 	if err := checkDir(dstDir, files); err != nil {
@@ -181,13 +182,13 @@ func TestGetFileDir(t *testing.T) {
 		t.Error("Expected symlink to mydir, got ", linkname)
 	}
 	// GetFile should overwrite local dirs.
-	if err := GetFile(td.Ctx, td.Hst, srcDir, dstDir, PreserveSymlinks); err != nil {
+	if err := linuxssh.GetFile(td.Ctx, td.Hst, srcDir, dstDir, linuxssh.PreserveSymlinks); err != nil {
 		t.Error(err)
 	}
 
 	// Copy the link to the full source directory.
 	dstDir = filepath.Join(tmpDir, "dst.toplink")
-	if err := GetFile(td.Ctx, td.Hst, topDirLink, dstDir, PreserveSymlinks); err != nil {
+	if err := linuxssh.GetFile(td.Ctx, td.Hst, topDirLink, dstDir, linuxssh.PreserveSymlinks); err != nil {
 		t.Fatal(err)
 	}
 	if linkname, err := os.Readlink(dstDir); err != nil {
@@ -196,7 +197,7 @@ func TestGetFileDir(t *testing.T) {
 		t.Errorf("Expected symlink to %s, got %s", filepath.Base(srcDir), linkname)
 	}
 	// GetFile should overwrite local dirs.
-	if err := GetFile(td.Ctx, td.Hst, topDirLink, dstDir, PreserveSymlinks); err != nil {
+	if err := linuxssh.GetFile(td.Ctx, td.Hst, topDirLink, dstDir, linuxssh.PreserveSymlinks); err != nil {
 		t.Error(err)
 	}
 
@@ -205,27 +206,27 @@ func TestGetFileDir(t *testing.T) {
 
 	// Copy the full source directory dereferencing symlinks
 	dstDir = filepath.Join(tmpDir, "dst.deference")
-	if err := GetFile(td.Ctx, td.Hst, srcDir, dstDir, DereferenceSymlinks); err != nil {
+	if err := linuxssh.GetFile(td.Ctx, td.Hst, srcDir, dstDir, linuxssh.DereferenceSymlinks); err != nil {
 		t.Fatal(err)
 	}
 	if err := checkDir(dstDir, files); err != nil {
 		t.Error(err)
 	}
 	// GetFile should overwrite local dirs.
-	if err := GetFile(td.Ctx, td.Hst, srcDir, dstDir, DereferenceSymlinks); err != nil {
+	if err := linuxssh.GetFile(td.Ctx, td.Hst, srcDir, dstDir, linuxssh.DereferenceSymlinks); err != nil {
 		t.Error(err)
 	}
 
 	// Copy the full source directory dereferencing symlinks
 	dstDir = filepath.Join(tmpDir, "dst.toplink.deference")
-	if err := GetFile(td.Ctx, td.Hst, topDirLink, dstDir, DereferenceSymlinks); err != nil {
+	if err := linuxssh.GetFile(td.Ctx, td.Hst, topDirLink, dstDir, linuxssh.DereferenceSymlinks); err != nil {
 		t.Fatal(err)
 	}
 	if err := checkDir(dstDir, files); err != nil {
 		t.Error(err)
 	}
 	// GetFile should overwrite local dirs.
-	if err := GetFile(td.Ctx, td.Hst, topDirLink, dstDir, DereferenceSymlinks); err != nil {
+	if err := linuxssh.GetFile(td.Ctx, td.Hst, topDirLink, dstDir, linuxssh.DereferenceSymlinks); err != nil {
 		t.Error(err)
 	}
 }
@@ -242,7 +243,7 @@ func TestGetFileTimeout(t *testing.T) {
 	srcFile := filepath.Join(srcDir, "file")
 	dstFile := filepath.Join(tmpDir, "file")
 	td.ExecTimeout = sshtest.StartTimeout
-	if err := GetFile(td.Ctx, td.Hst, srcFile, dstFile, PreserveSymlinks); err == nil {
+	if err := linuxssh.GetFile(td.Ctx, td.Hst, srcFile, dstFile, linuxssh.PreserveSymlinks); err == nil {
 		t.Errorf("GetFile() with expired context didn't return error")
 	}
 }
@@ -277,13 +278,13 @@ func TestPutFiles(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if n, err := PutFiles(td.Ctx, td.Hst, map[string]string{
+	if n, err := linuxssh.PutFiles(td.Ctx, td.Hst, map[string]string{
 		filepath.Join(srcDir, "file1"):             filepath.Join(dstDir, "newfile1"),           // rename to preserve orig file
 		filepath.Join(srcDir, "dir/file2"):         filepath.Join(dstDir, "dir/file2"),          // overwrite orig file
 		filepath.Join(srcDir, "dir2/subdir/file3"): filepath.Join(dstDir, "dir2/subdir2/file3"), // rename subdir
 		filepath.Join(srcDir, weirdSrcName):        filepath.Join(dstDir, "file5"),              // check that regexp chars are escaped
 		filepath.Join(srcDir, "file6"):             filepath.Join(dstDir, weirdDstName),         // check that replacement chars are also escaped
-	}, PreserveSymlinks); err != nil {
+	}, linuxssh.PreserveSymlinks); err != nil {
 		t.Fatal(err)
 	} else if n <= 0 {
 		t.Errorf("Copied non-positive %v bytes", n)
@@ -326,11 +327,11 @@ func TestPutFilesUnchanged(t *testing.T) {
 	}
 
 	// No bytes should be sent since the dest dir already contains the renamed source files.
-	if n, err := PutFiles(td.Ctx, td.Hst, map[string]string{
+	if n, err := linuxssh.PutFiles(td.Ctx, td.Hst, map[string]string{
 		filepath.Join(srcDir, "src1"):        filepath.Join(dstDir, "dst1"),
 		filepath.Join(srcDir, "dir/src2"):    filepath.Join(dstDir, "dir/dst2"),
 		filepath.Join(srcDir, "dir 2/src 3"): filepath.Join(dstDir, "dir 2/dst 3"),
-	}, PreserveSymlinks); err != nil {
+	}, linuxssh.PreserveSymlinks); err != nil {
 		t.Fatal(err)
 	} else if n != 0 {
 		t.Errorf("PutFiles() copied %v bytes; want 0", n)
@@ -347,9 +348,9 @@ func TestPutFilesTimeout(t *testing.T) {
 	defer os.RemoveAll(tmpDir)
 	dstDir := filepath.Join(tmpDir, "dst")
 	td.ExecTimeout = sshtest.EndTimeout
-	if _, err := PutFiles(td.Ctx, td.Hst, map[string]string{
+	if _, err := linuxssh.PutFiles(td.Ctx, td.Hst, map[string]string{
 		filepath.Join(srcDir, "file"): filepath.Join(dstDir, "file"),
-	}, PreserveSymlinks); err == nil {
+	}, linuxssh.PreserveSymlinks); err == nil {
 		t.Errorf("PutFiles() with expired context didn't return error")
 	}
 }
@@ -378,10 +379,10 @@ func TestPutFilesSymlinks(t *testing.T) {
 
 	// PreserveSymlinks should copy symlinks directly.
 	dstDir := filepath.Join(tmpDir, "dst_preserve")
-	if _, err := PutFiles(td.Ctx, td.Hst, map[string]string{
+	if _, err := linuxssh.PutFiles(td.Ctx, td.Hst, map[string]string{
 		filepath.Join(srcDir, link): filepath.Join(dstDir, link),
-	}, PreserveSymlinks); err != nil {
-		t.Error("PutFiles failed with PreserveSymlinks: ", err)
+	}, linuxssh.PreserveSymlinks); err != nil {
+		t.Error("PutFiles failed with linuxssh.PreserveSymlinks: ", err)
 	} else {
 		dstFile := filepath.Join(dstDir, link)
 		if fi, err := os.Lstat(dstFile); err != nil {
@@ -397,9 +398,9 @@ func TestPutFilesSymlinks(t *testing.T) {
 
 	// DereferenceSymlinks should copy symlinks' targets while preserving the original mode.
 	dstDir = filepath.Join(tmpDir, "dst_deref")
-	if _, err := PutFiles(td.Ctx, td.Hst, map[string]string{
+	if _, err := linuxssh.PutFiles(td.Ctx, td.Hst, map[string]string{
 		filepath.Join(srcDir, link): filepath.Join(dstDir, link),
-	}, DereferenceSymlinks); err != nil {
+	}, linuxssh.DereferenceSymlinks); err != nil {
 		t.Error("PutFiles failed with DereferenceSymlinks: ", err)
 	} else {
 		dstFile := filepath.Join(dstDir, link)
@@ -432,7 +433,7 @@ func TestDeleteTree(t *testing.T) {
 	tmpDir, baseDir := initFileTest(t, files)
 	defer os.RemoveAll(tmpDir)
 
-	if err := DeleteTree(td.Ctx, td.Hst, baseDir, []string{"file1", "dir", "file9"}); err != nil {
+	if err := linuxssh.DeleteTree(td.Ctx, td.Hst, baseDir, []string{"file1", "dir", "file9"}); err != nil {
 		t.Fatal(err)
 	}
 
@@ -450,7 +451,7 @@ func TestDeleteTreeOutside(t *testing.T) {
 	tmpDir, baseDir := initFileTest(t, nil)
 	defer os.RemoveAll(tmpDir)
 
-	if err := DeleteTree(td.Ctx, td.Hst, baseDir, []string{"dir/../../outside"}); err == nil {
+	if err := linuxssh.DeleteTree(td.Ctx, td.Hst, baseDir, []string{"dir/../../outside"}); err == nil {
 		t.Error("DeleteTree succeeded; should fail")
 	}
 }
@@ -478,7 +479,7 @@ func TestGetFilePerms(t *testing.T) {
 
 		srcFile := filepath.Join(srcDir, f.filename)
 		dstFile := filepath.Join(tmpDir, f.filename+".copy")
-		if err := GetFile(td.Ctx, td.Hst, srcFile, dstFile, PreserveSymlinks); err != nil {
+		if err := linuxssh.GetFile(td.Ctx, td.Hst, srcFile, dstFile, linuxssh.PreserveSymlinks); err != nil {
 			t.Fatal(err)
 		}
 		info, err := os.Stat(dstFile)
@@ -516,11 +517,11 @@ func TestPutFilesPerm(t *testing.T) {
 	}
 
 	dstDir := filepath.Join(tmpDir, "dst")
-	if n, err := PutFiles(td.Ctx, td.Hst, map[string]string{
+	if n, err := linuxssh.PutFiles(td.Ctx, td.Hst, map[string]string{
 		filepath.Join(srcDir, "rofile"): filepath.Join(dstDir, "rofile"),
 		filepath.Join(srcDir, "rwfile"): filepath.Join(dstDir, "rwfile"),
 		filepath.Join(srcDir, "exec"):   filepath.Join(dstDir, "exec"),
-	}, PreserveSymlinks); err != nil {
+	}, linuxssh.PreserveSymlinks); err != nil {
 		t.Fatal(err)
 	} else if n <= 0 {
 		t.Errorf("Copied non-positive %v bytes", n)

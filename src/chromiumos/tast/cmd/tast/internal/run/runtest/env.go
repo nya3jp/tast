@@ -232,6 +232,7 @@ func defaultHandlers(cfg *dutConfig) []fakesshserver.Handler {
 		fakesshserver.ShellHandler("exec mkdir "),
 		fakesshserver.ShellHandler("exec tar "),
 		fakesshserver.ShellHandler("exec sha1sum "),
+		fakesshserver.ShellHandler("exec rm -rf -- "),
 		// Simulate boot_id.
 		fakesshserver.ExactMatchHandler("exec cat /proc/sys/kernel/random/boot_id", func(_ io.Reader, stdout, stderr io.Writer) int {
 			bootID, err := cfg.BootID()

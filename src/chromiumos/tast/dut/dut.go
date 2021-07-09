@@ -97,7 +97,6 @@ func (d *DUT) Connect(ctx context.Context) error {
 	d.Disconnect(ctx)
 
 	var err error
-	logging.Info(ctx, "Trying DUT SSH connection to ", d.sopt.Hostname)
 	d.hst, err = ssh.New(ctx, &d.sopt)
 	if err != nil {
 		return err
@@ -138,12 +137,17 @@ func (d *DUT) GetFile(ctx context.Context, src, dst string) error {
 }
 
 // WaitUnreachable waits for the DUT to become unreachable.
-// It requires that a connection is already established to the DUT.
 func (d *DUT) WaitUnreachable(ctx context.Context) error {
 	if d.hst == nil {
-		return errors.New("not connected")
+		if err := d.Connect(ctx); err != nil {
+			// Return the context's error instead of the one returned by Connect:
+			// we should return an error if the context's deadline expired,
+			// while returning nil if only Connect returned an error.
+			return ctx.Err()
+		}
 	}
 
+	logging.Infof(ctx, "Waiting for %s to be unreachable.", d.sopt.Hostname)
 	for {
 		if err := d.hst.Ping(ctx, pingTimeout); err != nil {
 			// Return the context's error instead of the one returned by Ping:
@@ -164,6 +168,7 @@ func (d *DUT) WaitUnreachable(ctx context.Context) error {
 // WaitConnect connects to the DUT, waiting for it to become reachable.
 // If a connection already exists, it is closed first.
 func (d *DUT) WaitConnect(ctx context.Context) error {
+	logging.Infof(ctx, "Waiting for %s to connect.", d.sopt.Hostname)
 	for {
 		err := d.Connect(ctx)
 		if err == nil {

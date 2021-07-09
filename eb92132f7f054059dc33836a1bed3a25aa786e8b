@@ -33,6 +33,24 @@
       "message": "I have similar pespective as Hidehiko.\nAll hadrware dependency should be based on information inside config.api.Component now. (sorry that the document was slightly outdated, I will update it soon)\nPlease contact the CrOS infra team to make sure speaker/microphone features are supported and added to api.Component struct.\n\nF20 scheduler can use information added in this struct, ConfigBundle (this is a necessary but not sufficient condition; we also write mapping somewhere else later)\nhttps://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/config/proto/chromiumos/config/payload/config_bundle.proto;l\u003d26?q\u003dchromiumos.config.payload.ConfigBundle\nAmong the fields there, in case of hardware deps, api.Component would be the right place for speaker/mic IIUC.\nhttps://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/config/proto/chromiumos/config/api/component.proto;l\u003d15\n",
       "revId": "eb92132f7f054059dc33836a1bed3a25aa786e8b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "a768502d_6262d667",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1116026
+      },
+      "writtenOn": "2021-07-09T08:05:28Z",
+      "side": 1,
+      "message": "Done in CL:3015906 as fields in the Audio hw feature. The microphone counts seem like they fit there (and could be useful when aligning audio software configs more with hw topology); having two speaker amplifier fields seems a bit awkward though.",
+      "parentUuid": "33a1b035_084b24ae",
+      "revId": "eb92132f7f054059dc33836a1bed3a25aa786e8b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

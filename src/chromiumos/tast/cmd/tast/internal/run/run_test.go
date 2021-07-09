@@ -28,6 +28,7 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/runtest"
 	"chromiumos/tast/cmd/tast/internal/run/target"
 	frameworkprotocol "chromiumos/tast/framework/protocol"
+	"chromiumos/tast/internal/devserver/devservertest"
 	"chromiumos/tast/internal/faketlw"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/logging/loggingtest"
@@ -111,13 +112,17 @@ func TestRunEphemeralDevserver(t *gotesting.T) {
 }
 
 func TestRunDownloadPrivateBundles(t *gotesting.T) {
-	const devserverURL = "http://example.com:8080"
+	ds, err := devservertest.NewServer()
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer ds.Close()
 
 	called := make(map[string]struct{})
 	makeHandler := func(role string) runtest.DUTOption {
 		return runtest.WithDownloadPrivateBundles(func(req *protocol.DownloadPrivateBundlesRequest) (*protocol.DownloadPrivateBundlesResponse, error) {
 			called[role] = struct{}{}
-			want := &protocol.ServiceConfig{Devservers: []string{devserverURL}}
+			want := &protocol.ServiceConfig{Devservers: []string{ds.URL}}
 			if diff := cmp.Diff(req.GetServiceConfig(), want); diff != "" {
 				t.Errorf("ServiceConfig mismatch (-got +want):\n%s", diff)
 			}
@@ -133,7 +138,7 @@ func TestRunDownloadPrivateBundles(t *gotesting.T) {
 	)
 	ctx := env.Context()
 	cfg := env.Config()
-	cfg.Devservers = []string{devserverURL}
+	cfg.Devservers = []string{ds.URL}
 	cfg.DownloadPrivateBundles = true
 	state := env.State()
 

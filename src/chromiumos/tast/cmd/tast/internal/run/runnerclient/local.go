@@ -25,6 +25,7 @@ import (
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/bundle"
 	"chromiumos/tast/internal/jsonprotocol"
+	"chromiumos/tast/internal/linuxssh"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/planner"
 	"chromiumos/tast/internal/protocol"
@@ -520,7 +521,7 @@ func runLocalTestsOnce(ctx context.Context, cfg *config.Config, state *config.St
 	stderrReader := newFirstLineReader(proc.Stderr())
 
 	crf := func(src, dst string) error {
-		return moveFromHost(ctx, cfg, drv.SSHConn(), src, dst)
+		return linuxssh.GetAndDeleteFile(ctx, drv.SSHConn(), src, dst, linuxssh.PreserveSymlinks)
 	}
 	df := func(ctx context.Context, outDir string) string {
 		return diagnoseLocalRunError(ctx, drv, outDir)

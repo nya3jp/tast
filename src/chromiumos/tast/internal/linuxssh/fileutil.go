@@ -22,6 +22,7 @@ import (
 	cryptossh "golang.org/x/crypto/ssh"
 	"golang.org/x/sys/unix"
 
+	"chromiumos/tast/errors"
 	"chromiumos/tast/ssh"
 )
 
@@ -316,6 +317,18 @@ func DeleteTree(ctx context.Context, s *ssh.Conn, baseDir string, files []string
 	cmd.Dir = baseDir
 	if err := cmd.Run(ctx); err != nil {
 		return fmt.Errorf("running remote rm failed: %v", err)
+	}
+	return nil
+}
+
+// GetAndDeleteFile is similar to GetFile, but it also deletes a remote file
+// when it is successfully copied.
+func GetAndDeleteFile(ctx context.Context, s *ssh.Conn, src, dst string, policy SymlinkPolicy) error {
+	if err := GetFile(ctx, s, src, dst, policy); err != nil {
+		return err
+	}
+	if err := s.Command("rm", "-rf", "--", src).Run(ctx); err != nil {
+		return errors.Wrap(err, "delete failed")
 	}
 	return nil
 }

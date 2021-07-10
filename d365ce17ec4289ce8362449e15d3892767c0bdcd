@@ -222,6 +222,30 @@
       },
       "revId": "d365ce17ec4289ce8362449e15d3892767c0bdcd",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "9fbd06ae_fbfb7399",
+        "filename": "src/chromiumos/tast/internal/testing/state.go",
+        "patchSetId": 4
+      },
+      "lineNbr": 205,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-07-10T16:48:47Z",
+      "side": 1,
+      "message": "I think this discussion is outdated. Mark as Resolved.",
+      "parentUuid": "7218ac93_3772fab9",
+      "range": {
+        "startLine": 205,
+        "startChar": 5,
+        "endLine": 205,
+        "endChar": 15
+      },
+      "revId": "d365ce17ec4289ce8362449e15d3892767c0bdcd",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

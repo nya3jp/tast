@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "497847e5_7468555c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 20
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-07-10T16:48:47Z",
+      "side": 1,
+      "message": "Hi Shuhei:\n\nPlease check if my latest changes addressed all your concerns.\n\nThanks.\n\nSeewai\n",
+      "revId": "0183dab912f03d91009a260d02210ee0c10a308e",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

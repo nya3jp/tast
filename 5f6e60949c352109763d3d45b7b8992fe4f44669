@@ -104,6 +104,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "fd72d2a6_7126309e",
+        "filename": "src/chromiumos/tast/internal/bundle/run_tests.go",
+        "patchSetId": 17
+      },
+      "lineNbr": 101,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-07-10T16:48:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "2ec93e6c_94396ecf",
+      "revId": "5f6e60949c352109763d3d45b7b8992fe4f44669",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "861e23aa_230ce34d",
@@ -117,6 +135,30 @@
       "writtenOn": "2021-07-06T06:09:26Z",
       "side": 1,
       "message": "This condition is not necessary.",
+      "range": {
+        "startLine": 102,
+        "startChar": 1,
+        "endLine": 102,
+        "endChar": 25
+      },
+      "revId": "5f6e60949c352109763d3d45b7b8992fe4f44669",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "59cc33db_9f4aa6ab",
+        "filename": "src/chromiumos/tast/internal/bundle/run_tests.go",
+        "patchSetId": 17
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-07-10T16:48:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "861e23aa_230ce34d",
       "range": {
         "startLine": 102,
         "startChar": 1,
@@ -150,6 +192,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "ced3bb2b_179098af",
+        "filename": "src/chromiumos/tast/internal/bundle/run_tests.go",
+        "patchSetId": 17
+      },
+      "lineNbr": 208,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-07-10T16:48:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e28d5705_d3d2ed13",
+      "range": {
+        "startLine": 208,
+        "startChar": 3,
+        "endLine": 208,
+        "endChar": 10
+      },
+      "revId": "5f6e60949c352109763d3d45b7b8992fe4f44669",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "e3fa0340_72ae602e",
@@ -163,6 +229,30 @@
       "writtenOn": "2021-07-06T06:09:26Z",
       "side": 1,
       "message": "We have to introduce a mechanism to \"freeze\" a registry so that users cannot register new vars only on initialization time.",
+      "range": {
+        "startLine": 16,
+        "startChar": 0,
+        "endLine": 16,
+        "endChar": 22
+      },
+      "revId": "5f6e60949c352109763d3d45b7b8992fe4f44669",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "0dc8cf89_5094fda7",
+        "filename": "src/chromiumos/tast/internal/testing/registry.go",
+        "patchSetId": 17
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-07-10T16:48:47Z",
+      "side": 1,
+      "message": "I have added a flag to make sure that registry will only initialize vars once. Please check.",
+      "parentUuid": "e3fa0340_72ae602e",
       "range": {
         "startLine": 16,
         "startChar": 0,
@@ -196,6 +286,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "a85917fe_588a58bc",
+        "filename": "src/chromiumos/tast/internal/testing/registry.go",
+        "patchSetId": 17
+      },
+      "lineNbr": 172,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-07-10T16:48:47Z",
+      "side": 1,
+      "message": "I removed the direct access the local member. Please take a look if it is ok. Thanks.",
+      "parentUuid": "fe14d2c1_2630d37b",
+      "range": {
+        "startLine": 172,
+        "startChar": 7,
+        "endLine": 172,
+        "endChar": 17
+      },
+      "revId": "5f6e60949c352109763d3d45b7b8992fe4f44669",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "724c6f21_1af4d942",
@@ -209,6 +323,30 @@
       "writtenOn": "2021-07-06T06:09:26Z",
       "side": 1,
       "message": "nit: No need to move this struct.",
+      "range": {
+        "startLine": 467,
+        "startChar": 3,
+        "endLine": 467,
+        "endChar": 12
+      },
+      "revId": "5f6e60949c352109763d3d45b7b8992fe4f44669",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "417ca120_dba3eaa1",
+        "filename": "src/chromiumos/tast/internal/testing/state.go",
+        "patchSetId": 17
+      },
+      "lineNbr": 467,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-07-10T16:48:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "724c6f21_1af4d942",
       "range": {
         "startLine": 467,
         "startChar": 3,
@@ -242,6 +380,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "9ef224c6_de10a0e5",
+        "filename": "src/chromiumos/tast/internal/testing/vars.go",
+        "patchSetId": 17
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-07-10T16:48:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "90258c4b_06c4bc34",
+      "range": {
+        "startLine": 21,
+        "startChar": 5,
+        "endLine": 21,
+        "endChar": 12
+      },
+      "revId": "5f6e60949c352109763d3d45b7b8992fe4f44669",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "340800ee_d4588b6e",
@@ -265,6 +427,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "8db5993b_94a28bfe",
+        "filename": "src/chromiumos/tast/internal/testing/vars.go",
+        "patchSetId": 17
+      },
+      "lineNbr": 42,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-07-10T16:48:47Z",
+      "side": 1,
+      "message": "I just reorganized the code a bit. Please take a look and see if it addresses your concern. Thanks.",
+      "parentUuid": "340800ee_d4588b6e",
+      "range": {
+        "startLine": 42,
+        "startChar": 1,
+        "endLine": 42,
+        "endChar": 16
+      },
+      "revId": "5f6e60949c352109763d3d45b7b8992fe4f44669",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "b73a68f6_54f2f785",
@@ -278,6 +464,30 @@
       "writtenOn": "2021-07-06T06:09:26Z",
       "side": 1,
       "message": "This function is not actually used.",
+      "range": {
+        "startLine": 50,
+        "startChar": 5,
+        "endLine": 50,
+        "endChar": 11
+      },
+      "revId": "5f6e60949c352109763d3d45b7b8992fe4f44669",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "8fe72acf_57852ceb",
+        "filename": "src/chromiumos/tast/testing/global.go",
+        "patchSetId": 17
+      },
+      "lineNbr": 50,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-07-10T16:48:47Z",
+      "side": 1,
+      "message": "Oops! I forgot to remove it",
+      "parentUuid": "b73a68f6_54f2f785",
       "range": {
         "startLine": 50,
         "startChar": 5,
@@ -346,6 +556,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "184c53b1_229c92b1",
+        "filename": "src/chromiumos/tast/testing/vars.go",
+        "patchSetId": 17
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-07-10T16:48:47Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5744c33d_ff4a563d",
+      "range": {
+        "startLine": 17,
+        "startChar": 5,
+        "endLine": 17,
+        "endChar": 17
+      },
+      "revId": "5f6e60949c352109763d3d45b7b8992fe4f44669",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "ceff8587_323c3d6a",
@@ -359,6 +593,30 @@
       "writtenOn": "2021-07-06T05:40:01Z",
       "side": 1,
       "message": "What is expected use cases of this method? Do you come up with any potential abuse of this method?",
+      "range": {
+        "startLine": 22,
+        "startChar": 20,
+        "endLine": 22,
+        "endChar": 25
+      },
+      "revId": "5f6e60949c352109763d3d45b7b8992fe4f44669",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "b2aa5d06_735d9a16",
+        "filename": "src/chromiumos/tast/testing/vars.go",
+        "patchSetId": 17
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-07-10T16:48:47Z",
+      "side": 1,
+      "message": "I think users may want to log the name and value of the variable in their tests. Since the declaration may not be in the same file as the usage of the variable, I think it may be helpful for user to log informaiton regarding runtime variables.",
+      "parentUuid": "ceff8587_323c3d6a",
       "range": {
         "startLine": 22,
         "startChar": 20,

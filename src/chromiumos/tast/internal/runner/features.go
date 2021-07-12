@@ -502,6 +502,8 @@ func findARMSOC() (protocol.DeprecatedDeviceConfig_SOC, error) {
 			switch socID {
 			case "jep106:0426:8192":
 				return protocol.DeprecatedDeviceConfig_SOC_MT8192, nil
+			case "jep106:0426:8195":
+				return protocol.DeprecatedDeviceConfig_SOC_MT8195, nil
 			default:
 				return protocol.DeprecatedDeviceConfig_SOC_UNSPECIFIED, errors.Errorf("unknown ARM model: %s", socID)
 			}

@@ -223,7 +223,7 @@ func main() {
 			// Except for grunt, which supports drm_atomic, but does not support NV12
 			// on any plane (b/192623156).
 			// TODO(mcasas): query in advance for NV12 format DRM Plane support.
-			"video_overlays":      `"drm_atomic" && !("board:grunt" || "board:grunt-kernelnext")`,
+			"video_overlays":      `"drm_atomic" && !("board:grunt" || "board:grunt-kernelnext" || "board:grunt-arc-r")`,
 			"virtual_usb_printer": `!"kernel-4_4"`,
 			// Some VM builds actually can run nested VM with right host configuration.
 			// But we haven't enable this feature on builders. For now, just disable

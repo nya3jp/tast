@@ -6,7 +6,7 @@
 
 ### Test names
 
-Tests are identified by names like `ui.ChromeLogin` or `platform.ConnectToDBus`.
+Tests are identified by names like `login.Chrome` or `platform.ConnectToDBus`.
 The portion before the period, called the _category_, is the final component of
 the test's package name, while the portion after the period is the name of the
 exported Go function that implements the test.

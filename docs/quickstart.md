@@ -74,7 +74,7 @@ local state.
 In your chroot, run the following:
 
 ```sh
-tast -verbose run -build=false <test-device-ip> ui.ChromeLogin
+tast -verbose run -build=false <test-device-ip> login.Chrome
 ```
 
 You should see output scroll by on your workstation, and on the Chrome OS
@@ -94,7 +94,7 @@ In your chroot, run the same command as before **but without the `-build=false`
 argument**:
 
 ```sh
-tast -verbose run <test-device-ip> ui.ChromeLogin
+tast -verbose run <test-device-ip> login.Chrome
 ```
 
 This time, the command will take a bit longer (but build objects will be
@@ -123,7 +123,7 @@ if _, err = cr.NewConn(ctx, "https://www.google.com/"); err != nil {
 Back in your chroot, run `tast` again:
 
 ```sh
-tast -verbose run <test-device-ip> ui.ChromeLogin
+tast -verbose run <test-device-ip> login.Chrome
 ```
 
 This time, the test should additionally open a Google search page.

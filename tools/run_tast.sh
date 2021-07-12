@@ -21,7 +21,7 @@ Additional flags for "tast run" may be supplied, most notably:
 
 Positional arguments:
   target   DUT as "host", "host:port", or "user@host:port"
-  pattern  test pattern as a test name (e.g. "ui.ChromeLogin"),
+  pattern  test pattern as a test name (e.g. "login.Chrome"),
            wildcard (e.g. "power.*"), or parentheses-surrounded
            test attribute expression (e.g. "(bvt && chrome)")
 EOF

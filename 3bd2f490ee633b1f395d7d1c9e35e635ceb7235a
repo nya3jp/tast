@@ -52,6 +52,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "38091bd0_0e894c8a",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 15
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-07-12T23:39:56Z",
+      "side": 1,
+      "message": "I have addressed them in https://docs.google.com/document/d/1n_zmkfXXur2VTg_9CzrZdSyblN8O0FwZsMKu4m8As-c/\n\nPlease review.",
+      "parentUuid": "f562d5bd_9301e3d0",
+      "revId": "3bd2f490ee633b1f395d7d1c9e35e635ceb7235a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "d0d589a3_0ae0e55e",
@@ -113,6 +131,30 @@
       "side": 1,
       "message": "The point is the timing of type checks - it is a run-time check, not a compile-time check. It\u0027s nicer to catch issues earlier.",
       "parentUuid": "fdb97c25_ab621f8f",
+      "range": {
+        "startLine": 68,
+        "startChar": 50,
+        "endLine": 68,
+        "endChar": 64
+      },
+      "revId": "3bd2f490ee633b1f395d7d1c9e35e635ceb7235a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ca5072f3_371e72ee",
+        "filename": "src/chromiumos/tast/testing/context.go",
+        "patchSetId": 15
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-07-12T23:39:56Z",
+      "side": 1,
+      "message": "The code was removed.",
+      "parentUuid": "00d75d0c_58f59938",
       "range": {
         "startLine": 68,
         "startChar": 50,

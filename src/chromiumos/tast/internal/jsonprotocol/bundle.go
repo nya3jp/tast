@@ -149,6 +149,11 @@ type FeatureArgs struct {
 	// regex, the test is skipped instead of failing.
 	// If empty, no tests are skipped due to missing vars.
 	MaybeMissingVars string `json:"maybeMissingVars,omitempty"`
+	// NoTestInProgFile specifies whether or not to generate test-in-prog file for each test
+	// for crash reporter.
+	NoTestInProgFile bool `json:"noTestInProgFile,omitempty"`
+	// CrashPrefix is the prefix string used to generate the test-in-prog file content.
+	CrashPrefix string `json:"crashPrefix,omitempty"`
 	// CheckDeps indicates whether test runners should skip tests whose
 	// dependencies are not satisfied by available features.
 	CheckDeps bool `json:"checkSoftwareDeps,omitempty"`
@@ -187,6 +192,8 @@ func (a *FeatureArgs) Features() *protocol.Features {
 		Infra: &protocol.InfraFeatures{
 			Vars:             vars,
 			MaybeMissingVars: a.MaybeMissingVars,
+			NoTestInProgFile: a.NoTestInProgFile,
+			CrashPrefix:      a.CrashPrefix,
 		},
 	}
 }

@@ -33,6 +33,8 @@ message DUTFeatures {
 message InfraFeatures {
   map<string, string> vars = 1;
   string maybe_missing_vars = 2;
+  bool no_test_in_prog_file = 3;
+  string crash_prefix = 4;
 }
 
 // SoftwareFeatures represents a set of software features available for the

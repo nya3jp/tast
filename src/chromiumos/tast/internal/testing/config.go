@@ -36,6 +36,11 @@ type RuntimeConfig struct {
 	// Purgeable is a list of file paths which are not used for now and thus
 	// can be deleted if the disk space is low.
 	Purgeable []string
+	// NoTestInProgFile specifies whether or not to generate a test-in-prog file for
+	// each test for crash reporter.
+	NoTestInProgFile bool
+	// CrashPrefix is a prefix string used when generating test-in-prog file content.
+	CrashPrefix string
 }
 
 // RemoteData contains information relevant to remote entities.

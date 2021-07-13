@@ -118,6 +118,9 @@ type Config struct {
 	DefaultVarsDirs  []string          // dirs containing default variable files
 	MaybeMissingVars string            // regex matching with variables which may be missing
 
+	NoTestInProgFile bool   // whether to generate test-in-prog file for crash reporter
+	CrashPrefix      string // the prefix string used in test-in-prog file
+
 	MsgTimeout time.Duration // timeout for reading control messages; default used if zero
 }
 
@@ -259,6 +262,9 @@ func (c *Config) SetFlags(f *flag.FlagSet) {
 			return nil
 		})
 		f.Var(&compDUTs, "companiondut", `role to companion DUT, as "role:address" (can be repeated)`)
+
+		f.BoolVar(&c.NoTestInProgFile, "notestinprogfile", false, "not to generate test-in-prog file for crash reporter")
+		f.StringVar(&c.CrashPrefix, "crashprefix", "", "the prefix string used in test-in-prog file")
 	}
 }
 
@@ -456,6 +462,8 @@ func (c *Config) Features(dut *protocol.DUTFeatures) *protocol.Features {
 		Infra: &protocol.InfraFeatures{
 			Vars:             c.TestVars,
 			MaybeMissingVars: c.MaybeMissingVars,
+			NoTestInProgFile: c.NoTestInProgFile,
+			CrashPrefix:      c.CrashPrefix,
 		},
 		Dut: dut,
 	}

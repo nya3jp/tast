@@ -617,6 +617,9 @@ func runTest(ctx context.Context, t *testing.TestInstance, tout *entityOutputStr
 		// TODO(crbug.com/1106218): Make sure this approach is scalable.
 		// Recomputing purgeable on each test costs O(|purgeable| * |tests|) overall.
 		Purgeable: dl.m.Purgeable(),
+
+		NoTestInProgFile: pcfg.Features.GetInfra().GetNoTestInProgFile(),
+		CrashPrefix:      pcfg.Features.GetInfra().GetCrashPrefix(),
 	}
 	root := testing.NewTestEntityRoot(t, rcfg, tout)
 

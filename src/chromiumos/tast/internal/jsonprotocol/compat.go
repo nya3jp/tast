@@ -155,6 +155,8 @@ func FeatureArgsFromProto(f *protocol.Features) *FeatureArgs {
 	return &FeatureArgs{
 		TestVars:                    f.GetInfra().GetVars(),
 		MaybeMissingVars:            f.GetInfra().GetMaybeMissingVars(),
+		NoTestInProgFile:            f.GetInfra().GetNoTestInProgFile(),
+		CrashPrefix:                 f.GetInfra().GetCrashPrefix(),
 		CheckDeps:                   f.GetCheckDeps(),
 		AvailableSoftwareFeatures:   f.GetDut().GetSoftware().GetAvailable(),
 		UnavailableSoftwareFeatures: f.GetDut().GetSoftware().GetUnavailable(),

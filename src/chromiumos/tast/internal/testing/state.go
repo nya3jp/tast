@@ -661,6 +661,18 @@ func (s *TestHookState) Purgeable() []string {
 	return append([]string(nil), s.testRoot.entityRoot.cfg.Purgeable...)
 }
 
+// NoTestInProgFile returns whether or not to generate the test-in-prog file for the
+// current test for crash reporter.
+func (s *TestHookState) NoTestInProgFile() bool {
+	return s.testRoot.entityRoot.cfg.NoTestInProgFile
+}
+
+// CrashPrefix returns the prefix string used when generating test-in-prog file content
+// for crash reporter.
+func (s *TestHookState) CrashPrefix() string {
+	return s.testRoot.entityRoot.cfg.CrashPrefix
+}
+
 // FixtState is the state the framework passes to Fixture.SetUp and Fixture.TearDown.
 type FixtState struct {
 	*globalMixin

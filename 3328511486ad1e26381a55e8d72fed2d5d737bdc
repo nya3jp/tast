@@ -56,6 +56,30 @@
       },
       "revId": "3328511486ad1e26381a55e8d72fed2d5d737bdc",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e35ee4f2_7bb141df",
+        "filename": "src/chromiumos/tast/cmd/local_test_runner/main.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 225,
+      "author": {
+        "id": 1123598
+      },
+      "writtenOn": "2021-07-13T02:08:03Z",
+      "side": 1,
+      "message": "Question posted to tast-users:\nhttps://groups.google.com/a/chromium.org/g/tast-users/c/_b7s4iTGlvY/m/RzjsUjCFAwAJ",
+      "parentUuid": "995748d0_e76a9f8a",
+      "range": {
+        "startLine": 225,
+        "startChar": 44,
+        "endLine": 225,
+        "endChar": 110
+      },
+      "revId": "3328511486ad1e26381a55e8d72fed2d5d737bdc",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

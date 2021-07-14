@@ -69,6 +69,24 @@
       "parentUuid": "a768502d_6262d667",
       "revId": "eb92132f7f054059dc33836a1bed3a25aa786e8b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "d1dc3508_3897dbc3",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1116026
+      },
+      "writtenOn": "2021-07-14T04:36:01Z",
+      "side": 1,
+      "message": "I\u0027m not entirely certain, but my impression on CL:3015906 is we can proceed as is for now and adjust as needed later.",
+      "parentUuid": "2e606b46_1d0b49f4",
+      "revId": "eb92132f7f054059dc33836a1bed3a25aa786e8b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

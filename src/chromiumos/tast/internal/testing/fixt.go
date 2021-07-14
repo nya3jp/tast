@@ -17,7 +17,7 @@ import (
 type Fixture struct {
 	// Name is the name of the fixture.
 	// Tests and fixtures use the name to specify the fixture.
-	// TODO(oka): We may want to decide the naming convention of the name, e.g. snake case.
+	// The name must be camelCase starting with a lowercase letter and containing only digits and letters.
 	Name string
 
 	// Desc is the description of the fixture.

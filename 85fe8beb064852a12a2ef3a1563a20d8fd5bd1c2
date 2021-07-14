@@ -16,6 +16,184 @@
       "message": "I have addressed unresolved comments. Please review.",
       "revId": "85fe8beb064852a12a2ef3a1563a20d8fd5bd1c2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "2db033de_608bfa1f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 21
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-07-14T08:03:51Z",
+      "side": 1,
+      "message": "Looks nice!\n\nI have one important discussion topic, see my comment in src/chromiumos/tast/testing/vars.go. I want oka@\u0027s inputs on this.\n",
+      "revId": "85fe8beb064852a12a2ef3a1563a20d8fd5bd1c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f3070675_318c2ee3",
+        "filename": "src/chromiumos/tast/internal/bundle/rpc.go",
+        "patchSetId": 21
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-07-14T08:03:51Z",
+      "side": 1,
+      "message": "I guess you left this var by accident :)",
+      "range": {
+        "startLine": 19,
+        "startChar": 0,
+        "endLine": 19,
+        "endChar": 13
+      },
+      "revId": "85fe8beb064852a12a2ef3a1563a20d8fd5bd1c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "580e3dd2_14758e99",
+        "filename": "src/chromiumos/tast/internal/rpc/server.go",
+        "patchSetId": 21
+      },
+      "lineNbr": 57,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-07-14T08:03:51Z",
+      "side": 1,
+      "message": "We already have a mechanism to call back for per-server customization: \"register\" in the existing function arguments.\n\nCould you move this logic to bundle.RunRPCServer?\n\nNote that, as I wrote in another comment, we don\u0027t need this logic in test_runners.",
+      "range": {
+        "startLine": 57,
+        "startChar": 27,
+        "endLine": 57,
+        "endChar": 57
+      },
+      "revId": "85fe8beb064852a12a2ef3a1563a20d8fd5bd1c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "749daa2a_d9e438c7",
+        "filename": "src/chromiumos/tast/internal/rpc/server.go",
+        "patchSetId": 21
+      },
+      "lineNbr": 80,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-07-14T08:03:51Z",
+      "side": 1,
+      "message": "UserServiceInitParams was named because the message was meant to be consumed only when we\u0027re starting a gRPC server serving user-defined gRPC services.\n\nNow that we need to pass runtime variable values via HandshakeRequest on running tests as well, we have to rename the message.\n\nCould you rename it to EntityInitParams?",
+      "range": {
+        "startLine": 80,
+        "startChar": 14,
+        "endLine": 80,
+        "endChar": 38
+      },
+      "revId": "85fe8beb064852a12a2ef3a1563a20d8fd5bd1c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "3b32f0cd_d95f1242",
+        "filename": "src/chromiumos/tast/internal/runner/rpc.go",
+        "patchSetId": 21
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-07-14T08:03:51Z",
+      "side": 1,
+      "message": "test_runner never runs user code directly, so we don\u0027t need to set runtime variables. We just have to make sure runtime variables are passed through to test bundles.",
+      "range": {
+        "startLine": 17,
+        "startChar": 38,
+        "endLine": 17,
+        "endChar": 61
+      },
+      "revId": "85fe8beb064852a12a2ef3a1563a20d8fd5bd1c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "1e0f509f_eb24699c",
+        "filename": "src/chromiumos/tast/internal/testing/registry.go",
+        "patchSetId": 21
+      },
+      "lineNbr": 175,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-07-14T08:03:51Z",
+      "side": 1,
+      "message": "An empty map is valid, there\u0027s no reason to treat it specially.",
+      "range": {
+        "startLine": 173,
+        "startChar": 0,
+        "endLine": 175,
+        "endChar": 2
+      },
+      "revId": "85fe8beb064852a12a2ef3a1563a20d8fd5bd1c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f85e74d2_54445d30",
+        "filename": "src/chromiumos/tast/internal/testing/vars.go",
+        "patchSetId": 21
+      },
+      "lineNbr": 19,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-07-14T08:03:51Z",
+      "side": 1,
+      "message": "Could you remove this function and call GlobalRegistry().AddVar() in chromiumos/tast/testing? Note that GlobalRegistry() is currently not called from any function in chromiumos/tast/internal/testing.",
+      "range": {
+        "startLine": 16,
+        "startChar": 0,
+        "endLine": 19,
+        "endChar": 1
+      },
+      "revId": "85fe8beb064852a12a2ef3a1563a20d8fd5bd1c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "044588c9_d228f4cb",
+        "filename": "src/chromiumos/tast/testing/vars.go",
+        "patchSetId": 21
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-07-14T08:03:51Z",
+      "side": 1,
+      "message": "I wonder if we should accept a default value here.\n\nUntil today, default values were set in yaml files in platform/tast-tests/vars. But a downside of this approach was that a runtime variable definition and its default value are described in far places.\n\nI remember that one reason we decided to put default values in yaml files was that we didn\u0027t have a central place for runtime variable definitions. For example two tests could declare the same runtime variable, and it\u0027s not obvious how to handle the case where the two tests declare conflicting default values. With the new proposal, we\u0027ll got a central place for a runtime variable definition, so we no longer have a problem.\n\noka@ WDYT?",
+      "range": {
+        "startLine": 17,
+        "startChar": 24,
+        "endLine": 17,
+        "endChar": 35
+      },
+      "revId": "85fe8beb064852a12a2ef3a1563a20d8fd5bd1c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

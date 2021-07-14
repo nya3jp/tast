@@ -625,6 +625,30 @@
       },
       "revId": "5f6e60949c352109763d3d45b7b8992fe4f44669",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "eb5a76a0_3f03956d",
+        "filename": "src/chromiumos/tast/testing/vars.go",
+        "patchSetId": 17
+      },
+      "lineNbr": 22,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-07-14T08:03:51Z",
+      "side": 1,
+      "message": "Ack, makes sense.",
+      "parentUuid": "b2aa5d06_735d9a16",
+      "range": {
+        "startLine": 22,
+        "startChar": 20,
+        "endLine": 22,
+        "endChar": 25
+      },
+      "revId": "5f6e60949c352109763d3d45b7b8992fe4f44669",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

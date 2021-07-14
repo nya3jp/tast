@@ -16,7 +16,7 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
-	testpb "go.chromium.org/chromiumos/config/go/api/test/metadata/v1"
+	"go.chromium.org/chromiumos/config/go/test/api"
 
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/dep"
@@ -429,25 +429,34 @@ func (t *TestInstance) Deps() *dep.Deps {
 }
 
 // Proto converts test metadata of TestInstance into a protobuf message.
-func (t *TestInstance) Proto() *testpb.Test {
-	r := testpb.Test{
-		Name:          remoteTestDriverName + "/tests/" + t.Name,
-		Informational: &testpb.Informational{},
-	}
+func (t *TestInstance) Proto() *api.TestCaseMetadata {
+	var tags []*api.TestCase_Tag
 	for _, a := range t.Attr {
-		r.Attributes = append(r.Attributes, &testpb.Attribute{Name: a})
+		tags = append(tags, &api.TestCase_Tag{Value: a})
 	}
-	hwdepConstraint := t.HardwareDeps.CEL()
-	if hwdepConstraint != "" {
-		r.DutConstraint = &testpb.DUTConstraint{
-			Config: &testpb.DUTConfigConstraint{
-				Expression: hwdepConstraint,
-			},
-		}
-	}
+	var owners []*api.Contact
 	for _, email := range t.Contacts {
-		c := testpb.Contact{Type: &testpb.Contact_Email{Email: email}}
-		r.Informational.Authors = append(r.Informational.Authors, &c)
+		owners = append(owners, &api.Contact{Email: email})
+	}
+	r := api.TestCaseMetadata{
+		TestCase: &api.TestCase{
+			Id: &api.TestCase_Id{
+				// TODO: Determine the correct naming convention for id.
+				Value: remoteTestDriverName + "/tests/" + t.Name,
+			},
+			Name: t.Name,
+			Tags: tags,
+		},
+		TestCaseExec: &api.TestCaseExec{
+			TestHarness: &api.TestHarness{
+				TestHarnessType: &api.TestHarness_Tast_{
+					Tast: &api.TestHarness_Tast{},
+				},
+			},
+		},
+		TestCaseInfo: &api.TestCaseInfo{
+			Owners: owners,
+		},
 	}
 	return &r
 }
@@ -488,13 +497,10 @@ func (t *TestInstance) EntityProto() *protocol.Entity {
 
 // WriteTestsAsProto exports test metadata in the protobuf format defined by infra.
 func WriteTestsAsProto(w io.Writer, ts []*TestInstance) error {
-	var result testpb.Specification
-	var driver testpb.RemoteTestDriver
-	driver.Name = remoteTestDriverName
+	var result api.TestCaseMetadataList
 	for _, src := range ts {
-		driver.Tests = append(driver.Tests, src.Proto())
+		result.Values = append(result.Values, src.Proto())
 	}
-	result.RemoteTestDrivers = append(result.RemoteTestDrivers, &driver)
 	d, err := proto.Marshal(&result)
 	if err != nil {
 		return errors.Wrap(err, "Failed to marshalize the proto")

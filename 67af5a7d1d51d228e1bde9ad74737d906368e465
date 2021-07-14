@@ -36,6 +36,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "0788f6d3_7c37f78b",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 1
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-07-14T06:42:31Z",
+      "side": 1,
+      "message": "You\u0027re right :)",
+      "parentUuid": "8b46138a_935e0b0c",
+      "revId": "67af5a7d1d51d228e1bde9ad74737d906368e465",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "aa498c4d_a1e19ca0",

@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "10b0049b_f081968c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-07-14T03:21:48Z",
+      "side": 1,
+      "message": "This CL is to have tast to output the latest F20 metadata file format. Please review. Thanks.",
+      "revId": "586cc16a909c8b2939fea9d8149eef602bfed038",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

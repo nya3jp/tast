@@ -51,6 +51,24 @@
       "parentUuid": "57c56b45_cca4acbe",
       "revId": "6794f88317ef2816c2d4f71921669fc54e548544",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "cb0c0b52_213398c2",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1400377
+      },
+      "writtenOn": "2021-07-14T15:57:07Z",
+      "side": 1,
+      "message": "Thanks Shuhei. I can feel the cumbersome when making these changes to add just a flag. Making runtime vars available to supporting lib is definitely a more scalable solution. But just my two cents, if possible, probably a new flag like --feature\u003dxxx is much clearer to allow runtime configuration to be accessed by supporting libs?\n\nAlso, currently test-in-prog file is written only during test case execution. Are there hooks for fixture so we can touch this file before and after fixture is running?\n\nI think we can wait until your new feature is ready to continue these two CLs.",
+      "parentUuid": "8d343d2a_194b3555",
+      "revId": "6794f88317ef2816c2d4f71921669fc54e548544",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

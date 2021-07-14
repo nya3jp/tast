@@ -16,6 +16,23 @@
       "message": "Hi Shuhei and Miriam, this is a solution to allow tast to generate test-in-prog file for crash reporter with customized prefix. Please check if this is the right way to do it. Thanks! (Another CL review will be sent for test-tests)",
       "revId": "6794f88317ef2816c2d4f71921669fc54e548544",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "57c56b45_cca4acbe",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-07-14T06:52:57Z",
+      "side": 1,
+      "message": "I like to avoid adding new CLI flags just for certain use cases as it\u0027s not scalable. The best way is to use runtime variables, but unfortunately you cannot access them \n\nWe\u0027re actively working on a feature to make runtime variables accessible from support libraries and test hooks. With the feature you can use -var\u003d to pass a custom prefix to test hooks.\n\nHow urgent is this work? Do you think you can wait until the feature lands?\n",
+      "revId": "6794f88317ef2816c2d4f71921669fc54e548544",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

@@ -7,8 +7,6 @@ package testing
 import (
 	"bytes"
 	"context"
-	"os/exec"
-	"strings"
 	gotesting "testing"
 	"time"
 
@@ -16,7 +14,7 @@ import (
 	"github.com/golang/protobuf/ptypes"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
-	testpb "go.chromium.org/chromiumos/config/go/api/test/metadata/v1"
+	"go.chromium.org/chromiumos/config/go/test/api"
 
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/testing/hwdep"
@@ -861,84 +859,41 @@ func TestWriteTestsAsProto(t *gotesting.T) {
 			},
 		},
 	}
-	expected := testpb.Specification{
-		RemoteTestDrivers: []*testpb.RemoteTestDriver{
+	expected := api.TestCaseMetadataList{
+		Values: []*api.TestCaseMetadata{
 			{
-				Name: "remoteTestDrivers/tast",
-				Tests: []*testpb.Test{
-					{
-						Name: "remoteTestDrivers/tast/tests/test001",
-						Attributes: []*testpb.Attribute{
-							{Name: "attr1"},
-							{Name: "attr2"},
+				TestCase: &api.TestCase{
+					Id: &api.TestCase_Id{
+						Value: "remoteTestDrivers/tast/tests/test001",
+					},
+					Name: "test001",
+					Tags: []*api.TestCase_Tag{
+						{Value: "attr1"},
+						{Value: "attr2"},
+					},
+				},
+				TestCaseExec: &api.TestCaseExec{
+					TestHarness: &api.TestHarness{
+						TestHarnessType: &api.TestHarness_Tast_{
+							Tast: &api.TestHarness_Tast{},
 						},
-
-						// dutconstraint is tested separately in TestHardwareDepsCEL.
-
-						Informational: &testpb.Informational{
-							Authors: []*testpb.Contact{
-								{Type: &testpb.Contact_Email{Email: "someone1@chromium.org"}},
-								{Type: &testpb.Contact_Email{Email: "someone2@chromium.org"}},
-							},
-						},
+					},
+				},
+				TestCaseInfo: &api.TestCaseInfo{
+					Owners: []*api.Contact{
+						{Email: "someone1@chromium.org"},
+						{Email: "someone2@chromium.org"},
 					},
 				},
 			},
 		},
 	}
+
 	var b bytes.Buffer
 	WriteTestsAsProto(&b, in)
-	var actual testpb.Specification
+	var actual api.TestCaseMetadataList
 	proto.Unmarshal(b.Bytes(), &actual)
 	if !cmp.Equal(expected, actual, cmp.Comparer(proto.Equal)) {
 		t.Errorf("WriteTestsAsProto(%v): got %v; want %v", in, actual, expected)
-	}
-}
-
-func TestWriteTestMetadataWithTCLint(t *gotesting.T) {
-	in := []*TestInstance{
-		{
-			Name: "test001",
-			Attr: []string{"attr1", "attr2"},
-			HardwareDeps: hwdep.D(
-				hwdep.TouchScreen(),
-				hwdep.Fingerprint(),
-				hwdep.InternalDisplay(),
-			),
-			Contacts: []string{
-				"someone1@chromium.org",
-				"someone2@chromium.org",
-			},
-		}, {
-			Name: "test002",
-			HardwareDeps: hwdep.D(
-				hwdep.ChromeEC(),
-				hwdep.Wifi80211ac(),
-				hwdep.Wifi80211ax(),
-			),
-		}, {
-			Name: "test003",
-			HardwareDeps: hwdep.D(
-				hwdep.Nvme(),
-			),
-		},
-	}
-
-	var b bytes.Buffer
-	if err := WriteTestsAsProto(&b, in); err != nil {
-		t.Fatal("Failed to export metadata as protobuf message")
-	}
-	cmd := exec.Command("/usr/bin/tclint", "metadata", "-binary", "/dev/stdin")
-	cmd.Stdin = &b
-	t.Log("Verifying output with tclint")
-	ob, err := cmd.CombinedOutput()
-	output := string(ob)
-	if err != nil {
-		t.Fatalf("Failed on tclint: %v\n%s", err, output)
-	}
-	// TODO(yamaguchi): Remove below when tclint returns non-zero exit code
-	//     on linting errors after crrev.com/c/2166542
-	if !strings.Contains(output, "All clean!") {
-		t.Fatalf("Failed on tclint: %v\n%s", err, output)
 	}
 }

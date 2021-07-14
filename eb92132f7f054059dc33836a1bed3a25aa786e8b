@@ -87,6 +87,24 @@
       "parentUuid": "2e606b46_1d0b49f4",
       "revId": "eb92132f7f054059dc33836a1bed3a25aa786e8b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "463a41ff_331f00cb",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1166720
+      },
+      "writtenOn": "2021-07-14T07:13:24Z",
+      "side": 1,
+      "message": "I agreed, I haven\u0027t understood the total architecutre of giving and maintaing test labels, but there are already a bunch of hwdep features done in the same way as this (existing HardwaFeatures message), so we should be able to migrate those things later if needed.",
+      "parentUuid": "d1dc3508_3897dbc3",
+      "revId": "eb92132f7f054059dc33836a1bed3a25aa786e8b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

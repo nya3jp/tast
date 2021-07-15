@@ -77,7 +77,7 @@ func prepareDUT(ctx context.Context, cfg *config.Config, drv *driver.Driver) err
 	}
 
 	if cfg.DownloadPrivateBundles {
-		if err := runnerclient.DownloadPrivateBundles(ctx, cfg, drv); err != nil {
+		if err := drv.DownloadPrivateBundles(ctx); err != nil {
 			return fmt.Errorf("failed downloading private bundles: %v", err)
 		}
 	}

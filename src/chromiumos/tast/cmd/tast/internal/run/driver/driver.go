@@ -116,3 +116,9 @@ func (d *Driver) localClient() *runnerclient.JSONClient {
 	params := &protocol.RunnerInitParams{BundleGlob: d.cfg.LocalBundleGlob()}
 	return runnerclient.NewJSONClient(cmd, params, 1)
 }
+
+func (d *Driver) remoteClient() *runnerclient.JSONClient {
+	cmd := genericexec.CommandExec(d.cfg.RemoteRunner)
+	params := &protocol.RunnerInitParams{BundleGlob: d.cfg.RemoteBundleGlob()}
+	return runnerclient.NewJSONClient(cmd, params, 0)
+}

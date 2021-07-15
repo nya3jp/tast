@@ -69,6 +69,24 @@
       "parentUuid": "8d343d2a_194b3555",
       "revId": "6794f88317ef2816c2d4f71921669fc54e548544",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "63ff219e_3e075ada",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-07-15T03:04:37Z",
+      "side": 1,
+      "message": "Well, I agree there might have been better wording than \"runtime variables\", but it\u0027s difficult to change it now because it\u0027s part of the interface between Tast and many different infrastructure systems. I\u0027m not brave enough to change it now. :(\n\nWe have a plan to replace most of test hooks with fixtures. But I guess test hooks will survive, particularly for cases like this (crash reporter hook).\n\nThanks for your patience. The tracking bug is b/187795655, and the discussion is happening on WIP CL crrev.com/c/2902118.",
+      "parentUuid": "cb0c0b52_213398c2",
+      "revId": "6794f88317ef2816c2d4f71921669fc54e548544",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

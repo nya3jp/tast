@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "eee3bbfa_45cd289f",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1115919
+      },
+      "writtenOn": "2021-07-15T11:18:27Z",
+      "side": 1,
+      "message": "Oka-san, can we have a lint rule for this?",
+      "revId": "258dd940ae963e7ad66edaab7b6bd9eac5cc5f6a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

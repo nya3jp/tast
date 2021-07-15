@@ -17,8 +17,6 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
-	"go.chromium.org/chromiumos/config/go/api/test/tls"
-	"google.golang.org/grpc"
 
 	"chromiumos/tast/cmd/tast/internal/run"
 	"chromiumos/tast/cmd/tast/internal/run/config"
@@ -146,100 +144,6 @@ func TestRunDownloadPrivateBundles(t *gotesting.T) {
 	}
 
 	wantCalled := map[string]struct{}{"dut0": {}, "dut1": {}, "dut2": {}}
-	if diff := cmp.Diff(called, wantCalled); diff != "" {
-		t.Errorf("DownloadPrivateBundles not called (-got +want):\n%s", diff)
-	}
-}
-
-func TestRunDownloadPrivateBundlesWithTLW(t *gotesting.T) {
-	const gsURL = "gs://a/b/c"
-
-	var tlwAddr string // filled in later
-	called := make(map[string]struct{})
-	makeHandler := func(role, name string) runtest.DUTOption {
-		return runtest.WithDownloadPrivateBundles(func(req *protocol.DownloadPrivateBundlesRequest) (*protocol.DownloadPrivateBundlesResponse, error) {
-			called[role] = struct{}{}
-
-			// We should get tlwDUTName as the TLW name.
-			// Due to a bug, an incorrect TLW name is given for now.
-			// TODO(b/191318903): Uncomment this check once the bug is fixed.
-			/*
-				if n := req.GetServiceConfig().GetTlwSelfName(); n != name {
-					t.Errorf("DownloadPrivateBundles: TLW name mismatch: got %q, want %q", n, name)
-				}
-			*/
-
-			// DownloadPrivateBundles is called on the DUT, thus we don't have
-			// direct access to the TLW server. Tast CLI should have set up SSH
-			// port forwarding.
-			if addr := req.GetServiceConfig().GetTlwServer(); addr == tlwAddr {
-				t.Errorf("DownloadPrivateBundles: TLW is not port-forwarded (%s)", addr)
-			}
-
-			// Make sure TLW is working over the forwarded port.
-			conn, err := grpc.Dial(req.GetServiceConfig().GetTlwServer(), grpc.WithInsecure())
-			if err != nil {
-				t.Errorf("DownloadPrivateBundles: Failed to connect to TLW server: %v", err)
-				return nil, nil
-			}
-			defer conn.Close()
-
-			cl := tls.NewWiringClient(conn)
-			// TODO(b/191318903): Use name as DutName.
-			if _, err = cl.CacheForDut(context.Background(), &tls.CacheForDutRequest{Url: gsURL, DutName: "dut0"}); err != nil {
-				t.Errorf("CacheForDut failed: %v", err)
-			}
-			return nil, nil
-		})
-	}
-
-	env := runtest.SetUp(
-		t,
-		makeHandler("primary", "dut0"),
-		runtest.WithCompanionDUT("role1", makeHandler("role1", "dut1")),
-		runtest.WithCompanionDUT("role2", makeHandler("role2", "dut2")),
-	)
-
-	ctx := env.Context()
-	cfg := env.Config()
-
-	// Start a TLW server. This needs to be done after runtest.SetUp because
-	// the TLW server needs to know the address of the fake SSH server.
-	portMap := make(map[faketlw.NamePort]faketlw.NamePort)
-	for _, r := range []struct{ name, target string }{
-		{"dut0", cfg.Target},
-		{"dut1", cfg.CompanionDUTs["role1"]},
-		{"dut2", cfg.CompanionDUTs["role2"]},
-	} {
-		host, portStr, err := net.SplitHostPort(r.target)
-		if err != nil {
-			t.Fatal("net.SplitHostPort: ", err)
-		}
-		port, err := strconv.ParseInt(portStr, 10, 32)
-		if err != nil {
-			t.Fatal("strconv.ParseUint: ", err)
-		}
-		portMap[faketlw.NamePort{Name: r.name, Port: 22}] = faketlw.NamePort{Name: host, Port: int32(port)}
-	}
-	stopFunc, tlwAddr := faketlw.StartWiringServer(
-		t,
-		faketlw.WithDUTName("dut0"),
-		faketlw.WithDUTPortMap(portMap),
-		faketlw.WithCacheFileMap(map[string][]byte{gsURL: []byte("abc")}),
-	)
-	defer stopFunc()
-
-	cfg.TLWServer = tlwAddr
-	cfg.Target = "dut0"
-	cfg.CompanionDUTs["role1"] = "dut1"
-	cfg.CompanionDUTs["role2"] = "dut2"
-	cfg.DownloadPrivateBundles = true
-	state := env.State()
-
-	if _, err := run.Run(ctx, cfg, state); err != nil {
-		t.Errorf("Run failed: %v", err)
-	}
-	wantCalled := map[string]struct{}{"primary": {}, "role1": {}, "role2": {}}
 	if diff := cmp.Diff(called, wantCalled); diff != "" {
 		t.Errorf("DownloadPrivateBundles not called (-got +want):\n%s", diff)
 	}

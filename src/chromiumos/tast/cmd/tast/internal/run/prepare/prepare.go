@@ -20,7 +20,6 @@ import (
 	"chromiumos/tast/cmd/tast/internal/build"
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/driver"
-	"chromiumos/tast/cmd/tast/internal/run/runnerclient"
 	"chromiumos/tast/internal/linuxssh"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/protocol"
@@ -220,12 +219,12 @@ func pushExecutables(ctx context.Context, cfg *config.Config, hst *ssh.Conn, tar
 	return nil
 }
 
-func allNeededFixtures(fixtures []*protocol.Entity, tests []*protocol.ResolvedEntity) []*protocol.Entity {
-	m := make(map[string]*protocol.Entity)
+func allNeededFixtures(fixtures, tests []*protocol.ResolvedEntity) []*protocol.ResolvedEntity {
+	m := make(map[string]*protocol.ResolvedEntity)
 	for _, e := range fixtures {
-		m[e.GetName()] = e
+		m[e.GetEntity().GetName()] = e
 	}
-	var res []*protocol.Entity
+	var res []*protocol.ResolvedEntity
 	var dfs func(string)
 	dfs = func(name string) {
 		if name == "" {
@@ -237,7 +236,7 @@ func allNeededFixtures(fixtures []*protocol.Entity, tests []*protocol.ResolvedEn
 		}
 		res = append(res, e)
 		delete(m, name)
-		dfs(e.GetFixture())
+		dfs(e.GetEntity().GetFixture())
 	}
 	for _, t := range tests {
 		dfs(t.GetEntity().GetFixture())
@@ -254,7 +253,7 @@ func getDataFilePaths(ctx context.Context, cfg *config.Config, drv *driver.Drive
 
 	logging.Debug(ctx, "Getting data file list from target")
 
-	var entities []*protocol.Entity // all entities needed to run tests
+	var entities []*protocol.ResolvedEntity // all entities needed to run tests
 
 	// Add tests to entities.
 	// We pass nil DUTInfo here because we don't have a DUTInfo yet. This is
@@ -262,28 +261,27 @@ func getDataFilePaths(ctx context.Context, cfg *config.Config, drv *driver.Drive
 	// skipped.
 	// TODO(b/192433910): Retrieve DUTInfo in advance and push necessary
 	// data files only.
-	ts, err := runnerclient.ListLocalTests(ctx, cfg, nil, drv)
+	tests, err := drv.ListMatchedLocalTests(ctx, nil)
 	if err != nil {
 		return nil, err
 	}
-	for _, t := range ts {
-		entities = append(entities, t.GetEntity())
-	}
+	entities = append(entities, tests...)
 
 	// Add fixtures tests use to entities.
-	localFixts, err := runnerclient.ListLocalFixtures(ctx, cfg, drv)
+	// Note that we don't need to disambiguate fixtures from multiple test
+	// bundles since this code path gets called only when -build=true and
+	// thus only a single test bundle is considered.
+	fixtures, err := drv.ListLocalFixtures(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("ListLocalFixtures: %v", err)
 	}
-	if fixts, ok := localFixts[filepath.Join(cfg.LocalBundleDir, cfg.BuildBundle)]; ok {
-		entities = append(entities, allNeededFixtures(fixts, ts)...)
-	}
+	entities = append(entities, allNeededFixtures(fixtures, tests)...)
 
 	// Compute data that entities may use.
 	seenPaths := make(map[string]struct{})
 	for _, e := range entities {
-		for _, p := range e.GetDependencies().GetDataFiles() {
-			full := filepath.Clean(filepath.Join(testing.RelativeDataDir(e.GetPackage()), p))
+		for _, p := range e.GetEntity().GetDependencies().GetDataFiles() {
+			full := filepath.Clean(filepath.Join(testing.RelativeDataDir(e.GetEntity().GetPackage()), p))
 			if _, ok := seenPaths[full]; ok {
 				continue
 			}

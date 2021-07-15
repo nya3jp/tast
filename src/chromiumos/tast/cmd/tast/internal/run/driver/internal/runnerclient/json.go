@@ -10,6 +10,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"sort"
 
 	"chromiumos/tast/cmd/tast/internal/run/genericexec"
 	"chromiumos/tast/errors"
@@ -113,6 +114,75 @@ func (c *JSONClient) DownloadPrivateBundles(ctx context.Context, req *protocol.D
 		logging.Info(ctx, warn)
 	}
 	return nil
+}
+
+// ListTests enumerates tests matching patterns.
+func (c *JSONClient) ListTests(ctx context.Context, patterns []string, features *protocol.Features) ([]*protocol.ResolvedEntity, error) {
+	args := &jsonprotocol.RunnerArgs{
+		Mode: jsonprotocol.RunnerListTestsMode,
+		ListTests: &jsonprotocol.RunnerListTestsArgs{
+			BundleArgs: jsonprotocol.BundleListTestsArgs{
+				FeatureArgs: *jsonprotocol.FeatureArgsFromProto(features),
+				Patterns:    patterns,
+			},
+			BundleGlob: c.params.GetBundleGlob(),
+		},
+	}
+	var res jsonprotocol.RunnerListTestsResult
+	if err := c.runBatch(ctx, args, &res); err != nil {
+		return nil, errors.Wrap(err, "failed to list tests")
+	}
+
+	tests := make([]*protocol.ResolvedEntity, len(res))
+	for i, r := range res {
+		e, err := r.Proto()
+		if err != nil {
+			return nil, err
+		}
+		e.Hops = int32(c.hops)
+		tests[i] = e
+	}
+	return tests, nil
+}
+
+// ListFixtures enumerates all fixtures.
+func (c *JSONClient) ListFixtures(ctx context.Context) ([]*protocol.ResolvedEntity, error) {
+	args := &jsonprotocol.RunnerArgs{
+		Mode: jsonprotocol.RunnerListFixturesMode,
+		ListFixtures: &jsonprotocol.RunnerListFixturesArgs{
+			BundleGlob: c.params.GetBundleGlob(),
+		},
+	}
+	var res jsonprotocol.RunnerListFixturesResult
+	if err := c.runBatch(ctx, args, &res); err != nil {
+		return nil, errors.Wrap(err, "failed to list fixtures")
+	}
+
+	var fixtures []*protocol.ResolvedEntity
+	for _, fs := range res.Fixtures {
+		for _, f := range fs {
+			e, err := f.Proto()
+			if err != nil {
+				return nil, err
+			}
+			fixtures = append(fixtures, &protocol.ResolvedEntity{
+				Entity: e,
+				Hops:   int32(c.hops),
+			})
+		}
+	}
+
+	// In JSON protocol, the order of fixtures is unstable. Sort them here
+	// for better reproducibility.
+	sort.Slice(fixtures, func(i, j int) bool {
+		ea, eb := fixtures[i].GetEntity(), fixtures[j].GetEntity()
+		if a, b := ea.GetLegacyData().GetBundle(), eb.GetLegacyData().GetBundle(); a != b {
+			return a < b
+		}
+		return ea.GetName() < eb.GetName()
+	})
+
+	return fixtures, nil
 }
 
 func (c *JSONClient) runBatch(ctx context.Context, args *jsonprotocol.RunnerArgs, out interface{}) error {

@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "3035513f_9730b70e",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 22
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-07-15T18:59:25Z",
+      "side": 1,
+      "message": "All comments have been addressed except two. We should have a meeting to discuss those two comments. Thanks.",
+      "revId": "a119278e7f86d69ce0d02dad6f3dcad7e78de0cb",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

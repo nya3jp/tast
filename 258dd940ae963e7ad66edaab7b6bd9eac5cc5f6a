@@ -16,6 +16,24 @@
       "message": "Oka-san, can we have a lint rule for this?",
       "revId": "258dd940ae963e7ad66edaab7b6bd9eac5cc5f6a",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d45783e9_42289fb2",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1483403
+      },
+      "writtenOn": "2021-07-15T15:32:29Z",
+      "side": 1,
+      "message": "It is enforced at runtime, so it should be caught by running unit tests.",
+      "parentUuid": "eee3bbfa_45cd289f",
+      "revId": "258dd940ae963e7ad66edaab7b6bd9eac5cc5f6a",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

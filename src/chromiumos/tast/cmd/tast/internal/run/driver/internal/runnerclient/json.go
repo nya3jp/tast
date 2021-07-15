@@ -93,6 +93,28 @@ func (c *JSONClient) CollectSysInfo(ctx context.Context, req *protocol.CollectSy
 	return res.Proto(), nil
 }
 
+// DownloadPrivateBundles downloads and installs a private test bundle archive
+// corresponding to the target version, if one has not been installed yet.
+func (c *JSONClient) DownloadPrivateBundles(ctx context.Context, req *protocol.DownloadPrivateBundlesRequest) error {
+	args := &jsonprotocol.RunnerArgs{
+		Mode: jsonprotocol.RunnerDownloadPrivateBundlesMode,
+		DownloadPrivateBundles: &jsonprotocol.RunnerDownloadPrivateBundlesArgs{
+			Devservers:        req.GetServiceConfig().GetDevservers(),
+			TLWServer:         req.GetServiceConfig().GetTlwServer(),
+			DUTName:           req.GetServiceConfig().GetTlwSelfName(),
+			BuildArtifactsURL: req.GetBuildArtifactUrl(),
+		},
+	}
+	var res jsonprotocol.RunnerDownloadPrivateBundlesResult
+	if err := c.runBatch(ctx, args, &res); err != nil {
+		return errors.Wrap(err, "downloading private bundles")
+	}
+	for _, warn := range res.Messages {
+		logging.Info(ctx, warn)
+	}
+	return nil
+}
+
 func (c *JSONClient) runBatch(ctx context.Context, args *jsonprotocol.RunnerArgs, out interface{}) error {
 	args.FillDeprecated()
 

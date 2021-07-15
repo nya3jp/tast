@@ -127,7 +127,7 @@ func listTests(ctx context.Context, cfg *config.Config, drv *driver.Driver) ([]*
 		return nil, err
 	}
 
-	tests, err := runnerclient.ListTests(ctx, cfg, dutInfo, drv)
+	tests, err := drv.ListMatchedTests(ctx, cfg.Features(dutInfo.GetFeatures()))
 	if err != nil {
 		return nil, err
 	}
@@ -170,7 +170,7 @@ func runTests(ctx context.Context, cfg *config.Config, state *config.State, drv 
 		return nil, errors.Wrap(err, "failed to get initial sysinfo")
 	}
 
-	tests, err := runnerclient.ListTests(ctx, cfg, dutInfo, drv)
+	tests, err := drv.ListMatchedTests(ctx, cfg.Features(dutInfo.GetFeatures()))
 	if err != nil {
 		return nil, err
 	}

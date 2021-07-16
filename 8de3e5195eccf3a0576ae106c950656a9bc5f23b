@@ -18,6 +18,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "57211b82_6a9d0b5a",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/target/conn.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 38,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-07-16T07:01:26Z",
+      "side": 1,
+      "message": "I agree it\u0027s nice to keep an error from dialSSH.\n\nLet me use errors.Errorf to better format messages - people usually take a look at the first and last part of an error message, so it\u0027s better to put the diagnosis message at last.",
+      "parentUuid": "93f8da1d_ee09a6a5",
+      "revId": "8de3e5195eccf3a0576ae106c950656a9bc5f23b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "bb4a9e2d_eb56f2ac",
@@ -35,6 +53,24 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "eec22843_98f9cbba",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/target/diagnose.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 21,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-07-16T07:01:26Z",
+      "side": 1,
+      "message": "I considered returning error, but it sounded odd because diagnoseNetwork would return a non-nil error when it successfully diagnoses the problem.",
+      "parentUuid": "bb4a9e2d_eb56f2ac",
+      "revId": "8de3e5195eccf3a0576ae106c950656a9bc5f23b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "22d23ced_69b2a6c5",
@@ -48,6 +84,24 @@
       "writtenOn": "2021-07-16T06:41:43Z",
       "side": 1,
       "message": "is this empty (same value as the no-issue case) because it is already covered by the error message from dialSSH?",
+      "revId": "8de3e5195eccf3a0576ae106c950656a9bc5f23b",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "af347208_18ecc1cd",
+        "filename": "src/chromiumos/tast/cmd/tast/internal/run/target/diagnose.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 25,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-07-16T07:01:26Z",
+      "side": 1,
+      "message": "Yes. But I admit that it\u0027s not good to suppress errors. I changed the function to return (string, error) instead so that the caller can decide.",
+      "parentUuid": "22d23ced_69b2a6c5",
       "revId": "8de3e5195eccf3a0576ae106c950656a9bc5f23b",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }

@@ -34,7 +34,12 @@ type Conn struct {
 func newConn(ctx context.Context, cfg *config.Config, target string) (conn *Conn, retErr error) {
 	sshConn, err := dialSSH(ctx, cfg, target)
 	if err != nil {
-		return nil, err
+		msg, diagErr := diagnoseNetwork(ctx, target)
+		if diagErr != nil {
+			logging.Info(ctx, "Failed to run network diagnosis: ", diagErr)
+			return nil, err
+		}
+		return nil, errors.Errorf("%v; network diagnosis: %s", err, msg)
 	}
 	defer func() {
 		if retErr != nil {

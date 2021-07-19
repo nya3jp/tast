@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "897d248a_fe6d3bb4",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2021-07-19T04:45:10Z",
+      "side": 1,
+      "message": "Sorry, but the ebuild files must be updated to make fixtures data work on bots.\nI\u0027m working on it on https://chromium-review.googlesource.com/c/chromiumos/overlays/chromiumos-overlay/+/2975193.",
+      "revId": "807c4bae529514d8ab8a5bcaadd8de4df0fe1e81",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

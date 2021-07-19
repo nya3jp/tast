@@ -27,7 +27,7 @@ const (
 	nonLiteralContactsMsg = `Contacts field should be an array literal of string literals`
 
 	nonLiteralAttrMsg         = `Test Attr should be an array literal of string literals`
-	nonLiteralVarsMsg         = `Test Vars should be an array literal of string literals or constants`
+	nonLiteralVarsMsg         = `Test Vars should be an array literal of string literals or constants, or append(array literal, ConstList...)`
 	nonLiteralSoftwareDepsMsg = `Test SoftwareDeps should be an array literal of string literals or (possibly qualified) identifiers`
 	nonLiteralParamsMsg       = `Test Params should be an array literal of Param struct literals`
 	nonLiteralParamNameMsg    = `Name of Param should be a string literal`
@@ -293,13 +293,34 @@ func verifyAttr(fs *token.FileSet, node ast.Node) []*Issue {
 	return issues
 }
 
+func isValidVarList(expr ast.Expr) bool {
+	if _, ok := expr.(*ast.CompositeLit); ok {
+		return true
+	}
+	if callExpr, ok := expr.(*ast.CallExpr); ok {
+		fun, ok := callExpr.Fun.(*ast.Ident)
+		if !ok || fun.Name != "append" {
+			return false
+		}
+		for _, arg := range callExpr.Args {
+			if !isValidVarList(arg) {
+				return false
+			}
+		}
+		return true
+	}
+	// Since the type of the expression is a list, any selector must be a list constant.
+	_, ok := expr.(*ast.SelectorExpr)
+	return ok
+}
+
 func verifyVars(fs *token.FileSet, fields entityFields) []*Issue {
 	kv, ok := fields["Vars"]
 	if !ok {
 		return nil
 	}
-	_, ok = kv.Value.(*ast.CompositeLit)
-	if !ok {
+
+	if !isValidVarList(kv.Value) {
 		return []*Issue{{
 			Pos:  fs.Position(kv.Value.Pos()),
 			Msg:  nonLiteralVarsMsg,

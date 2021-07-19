@@ -386,6 +386,30 @@
       },
       "revId": "85fe8beb064852a12a2ef3a1563a20d8fd5bd1c2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "c39cb864_1803083b",
+        "filename": "src/chromiumos/tast/testing/vars.go",
+        "patchSetId": 21
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2021-07-19T07:27:17Z",
+      "side": 1,
+      "message": "I see. I agree that we can convert non-secret runtime variables that are currently defined as .yaml files in tast-tests repository to Go code.",
+      "parentUuid": "f22cd4a1_6d715998",
+      "range": {
+        "startLine": 17,
+        "startChar": 24,
+        "endLine": 17,
+        "endChar": 35
+      },
+      "revId": "85fe8beb064852a12a2ef3a1563a20d8fd5bd1c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

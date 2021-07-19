@@ -39,7 +39,10 @@ func newConn(ctx context.Context, cfg *config.Config, target string) (conn *Conn
 			logging.Info(ctx, "Failed to run network diagnosis: ", diagErr)
 			return nil, err
 		}
-		return nil, errors.Errorf("%v; network diagnosis: %s", err, msg)
+		if msg == "" {
+			msg = "no issues found"
+		}
+		return nil, errors.Errorf("%v (network diagnosis: %s)", err, msg)
 	}
 	defer func() {
 		if retErr != nil {

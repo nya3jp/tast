@@ -105,6 +105,24 @@
       "parentUuid": "3e0fdcf6_d30ea829",
       "revId": "6794f88317ef2816c2d4f71921669fc54e548544",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "29504c66_e8e00b51",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1400377
+      },
+      "writtenOn": "2021-07-19T18:44:18Z",
+      "side": 1,
+      "message": "Hi Miriam, the tast tests category (audio, video, ui, etc) are pre-defined when designing the tests and cannot be moved to other categories during test. So if two teams run the same tests, based on current design, they will be marked with the same test name for crash reporter and the crash report web will have the same data field.",
+      "parentUuid": "6994a5c2_953e9329",
+      "revId": "6794f88317ef2816c2d4f71921669fc54e548544",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

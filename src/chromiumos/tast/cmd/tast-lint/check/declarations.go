@@ -27,7 +27,7 @@ const (
 	nonLiteralContactsMsg = `Contacts field should be an array literal of string literals`
 
 	nonLiteralAttrMsg         = `Test Attr should be an array literal of string literals`
-	nonLiteralVarsMsg         = `Test Vars should be an array literal of string literals or constants`
+	nonLiteralVarsMsg         = `Test Vars should be an array literal of string literals or constants, or append(array literal, ConstList...)`
 	nonLiteralSoftwareDepsMsg = `Test SoftwareDeps should be an array literal of string literals or (possibly qualified) identifiers`
 	nonLiteralParamsMsg       = `Test Params should be an array literal of Param struct literals`
 	nonLiteralParamNameMsg    = `Name of Param should be a string literal`
@@ -293,13 +293,47 @@ func verifyAttr(fs *token.FileSet, node ast.Node) []*Issue {
 	return issues
 }
 
+func isValidVar(expr ast.Expr) bool {
+	_, isString := expr.(*ast.BasicLit)
+	_, isIdent := expr.(*ast.Ident)
+	_, isSelector := expr.(*ast.SelectorExpr)
+	return isString || isSelector || isIdent
+}
+
+func isValidVarList(expr ast.Expr) bool {
+	_, isSelector := expr.(*ast.SelectorExpr)
+	_, isCompositeLit := expr.(*ast.CompositeLit)
+	if isSelector || isCompositeLit {
+		return true
+	}
+	if callExpr, ok := expr.(*ast.CallExpr); ok {
+		fun, ok := callExpr.Fun.(*ast.Ident)
+		if !ok || fun.Name != "append" {
+			return false
+		}
+		for i, arg := range callExpr.Args {
+			isVarList := i == 0 || (i == len(callExpr.Args)-1 && callExpr.Ellipsis != token.NoPos)
+			if isVarList && !isValidVarList(arg) {
+				return false
+			}
+			if !isVarList && !isValidVar(arg) {
+				return false
+			}
+		}
+		return true
+	}
+	// Since the type of the expression is a list, any selector must be a list constant.
+	_, ok := expr.(*ast.SelectorExpr)
+	return ok
+}
+
 func verifyVars(fs *token.FileSet, fields entityFields) []*Issue {
 	kv, ok := fields["Vars"]
 	if !ok {
 		return nil
 	}
-	_, ok = kv.Value.(*ast.CompositeLit)
-	if !ok {
+
+	if !isValidVarList(kv.Value) {
 		return []*Issue{{
 			Pos:  fs.Position(kv.Value.Pos()),
 			Msg:  nonLiteralVarsMsg,

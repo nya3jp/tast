@@ -174,24 +174,66 @@ func TestDeclarationsVars(t *testing.T) {
 		snip    string
 		wantMsg string
 	}{{snip: `
+		testing.AddTest(&testing.Test{
+			Func:     DoStuff,
+			Desc:     "This description is fine",
+			Contacts: []string{"me@chromium.org"},
+			Vars:     []string{"this", "is", "valid", "vars"},
+		})`}, {snip: `
+		testing.AddTest(&testing.Test{
+			Func:     DoStuff,
+			Desc:     "This description is fine",
+			Contacts: []string{"me@chromium.org"},
+			Vars:     append([]string{"this", "is", "valid", "vars", localConstant}, foo.BarList...),
+		})`}, {snip: `
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
 		Desc:     "This description is fine",
 		Contacts: []string{"me@chromium.org"},
-		Vars:     []string{"this", "is", "valid", "vars"},
+		Vars:     append(foo.BarList, "this", "is", "valid", "vars", localConstant),
+	})`}, {snip: `
+	testing.AddTest(&testing.Test{
+		Func:     DoStuff,
+		Desc:     "This description is fine",
+		Contacts: []string{"me@chromium.org"},
+		Vars:     foo.BarList,
+	})`}, {snip: `
+	testing.AddTest(&testing.Test{
+		Func:     DoStuff,
+		Desc:     "This description is fine",
+		Contacts: []string{"me@chromium.org"},
+		Vars:     append(foo.BarList, bar.Baz...),
+	})`}, {snip: `
+	testing.AddTest(&testing.Test{
+		Func:     DoStuff,
+		Desc:     "This description is fine",
+		Contacts: []string{"me@chromium.org"},
+		Vars:     []string{foo.BarConstant, localConstant},
+	})`}, {snip: `
+	testing.AddTest(&testing.Test{
+		Func:     DoStuff,
+		Desc:     "This description is fine",
+		Contacts: []string{"me@chromium.org"},
+		Vars:     append(foo.BazList, localConstant),
 	})`}, {`
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
 		Desc:     "This description is fine",
 		Contacts: []string{"me@chromium.org"},
-		Vars:     foobar,  // non array literal.
-	})`, declTestPath + ":8:13: " + nonLiteralVarsMsg}, {snip: `
+		Vars:     append(foo.BarList, localList...),
+	})`, declTestPath + ":8:13: " + nonLiteralVarsMsg}, {`
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
 		Desc:     "This description is fine",
 		Contacts: []string{"me@chromium.org"},
-		Vars:     []string{foo.Bar, someConstant}, // this is valid
-	})`}} {
+		Vars:     localList,
+	})`, declTestPath + ":8:13: " + nonLiteralVarsMsg}, {`
+	testing.AddTest(&testing.Test{
+		Func:     DoStuff,
+		Desc:     "This description is fine",
+		Contacts: []string{"me@chromium.org"},
+		Vars:     append(localList, "foo", "bar"),
+	})`, declTestPath + ":8:13: " + nonLiteralVarsMsg}} {
 		code := fmt.Sprintf(initTmpl, tc.snip)
 		f, fs := parse(code, declTestPath)
 		issues := TestDeclarations(fs, f, false)

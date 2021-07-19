@@ -338,6 +338,30 @@
       },
       "revId": "85fe8beb064852a12a2ef3a1563a20d8fd5bd1c2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "9e0e57a0_75e1aaf6",
+        "filename": "src/chromiumos/tast/testing/vars.go",
+        "patchSetId": 21
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1150179
+      },
+      "writtenOn": "2021-07-19T05:11:16Z",
+      "side": 1,
+      "message": "I wonder how we can support secret runtime variables with that mechanism.\n\nCurrently the default values of secret runtime variables are defined in a private repository (tast-tests-private) with .yaml files. Tast CLI provides the values to public bundles if they are available at runtime. This is due to the requirement that the default values of secret runtime variables (e.g. passwords) must not be committed to public repositories.\n\nI think the point is that if we support secret runtime variables with RegisterVarString, there must be a way for public Go code to depend on private Go code, only when that\u0027s available. I\u0027m not sure if that\u0027s possible or not.",
+      "parentUuid": "044588c9_d228f4cb",
+      "range": {
+        "startLine": 17,
+        "startChar": 24,
+        "endLine": 17,
+        "endChar": 35
+      },
+      "revId": "85fe8beb064852a12a2ef3a1563a20d8fd5bd1c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

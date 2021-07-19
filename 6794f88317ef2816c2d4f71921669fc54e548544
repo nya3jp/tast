@@ -87,6 +87,24 @@
       "parentUuid": "cb0c0b52_213398c2",
       "revId": "6794f88317ef2816c2d4f71921669fc54e548544",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "6994a5c2_953e9329",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 1
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1305461
+      },
+      "writtenOn": "2021-07-19T18:13:49Z",
+      "side": 1,
+      "message": "As a workaround, is it possible to move all relevant tests to the same directory, so that tast will automatically add the same prefix to them?",
+      "parentUuid": "3e0fdcf6_d30ea829",
+      "revId": "6794f88317ef2816c2d4f71921669fc54e548544",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

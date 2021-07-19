@@ -362,6 +362,30 @@
       },
       "revId": "85fe8beb064852a12a2ef3a1563a20d8fd5bd1c2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "f22cd4a1_6d715998",
+        "filename": "src/chromiumos/tast/testing/vars.go",
+        "patchSetId": 21
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-07-19T06:42:00Z",
+      "side": 1,
+      "message": "I think we can still use YAML files in private repos to provide secret values. Those values are not exactly \"default values\"; they\u0027re conditionally passed to test bundles only when they\u0027re run on private configurations.",
+      "parentUuid": "9e0e57a0_75e1aaf6",
+      "range": {
+        "startLine": 17,
+        "startChar": 24,
+        "endLine": 17,
+        "endChar": 35
+      },
+      "revId": "85fe8beb064852a12a2ef3a1563a20d8fd5bd1c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

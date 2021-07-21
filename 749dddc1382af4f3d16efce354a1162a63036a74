@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "ea2b5c9e_eb29d92c",
+        "filename": "/PATCHSET_LEVEL",
+        "patchSetId": 23
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-07-21T22:09:15Z",
+      "side": 1,
+      "message": "I have changed the interface to accept a default value. Please review. Thanks.\n",
+      "revId": "749dddc1382af4f3d16efce354a1162a63036a74",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

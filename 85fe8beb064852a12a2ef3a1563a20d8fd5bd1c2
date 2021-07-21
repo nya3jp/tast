@@ -458,6 +458,30 @@
       },
       "revId": "85fe8beb064852a12a2ef3a1563a20d8fd5bd1c2",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "a83d3ead_4f5b1f57",
+        "filename": "src/chromiumos/tast/testing/vars.go",
+        "patchSetId": 21
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1431492
+      },
+      "writtenOn": "2021-07-21T22:09:15Z",
+      "side": 1,
+      "message": "I have changed the interface to accept a default value. Please review. Thanks.",
+      "parentUuid": "71bb852c_f33eaced",
+      "range": {
+        "startLine": 17,
+        "startChar": 24,
+        "endLine": 17,
+        "endChar": 35
+      },
+      "revId": "85fe8beb064852a12a2ef3a1563a20d8fd5bd1c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }
   ]
 }

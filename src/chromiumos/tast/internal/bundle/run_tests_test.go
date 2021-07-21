@@ -476,7 +476,7 @@ func TestRunTestsRemoteDUT(t *gotesting.T) {
 	reg := testing.NewRegistry("bundle")
 	reg.AddTestInstance(&testing.TestInstance{Name: "pkg.Test", Func: func(ctx context.Context, s *testing.State) {
 		dt := s.DUT()
-		out, err := dt.Command(cmd).Output(ctx)
+		out, err := dt.Conn().CommandContext(ctx, cmd).Output()
 		if err != nil {
 			s.Fatalf("Got error when running %q: %v", cmd, err)
 		}
@@ -613,7 +613,7 @@ func TestRunTestsRemoteCompanionDUTs(t *gotesting.T) {
 	const role = "role"
 	reg.AddTestInstance(&testing.TestInstance{Name: "pkg.Test", Func: func(ctx context.Context, s *testing.State) {
 		dt := s.CompanionDUT(role)
-		out, err := dt.Command(cmd).Output(ctx)
+		out, err := dt.Conn().CommandContext(ctx, cmd).Output()
 		if err != nil {
 			s.Fatalf("Got error when running %q: %v", cmd, err)
 		}

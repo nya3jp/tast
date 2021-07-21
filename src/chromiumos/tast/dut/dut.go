@@ -70,7 +70,7 @@ func New(target, keyFile, keyDir string, beforeReboot func(context.Context, *DUT
 //
 // Examples:
 //  linuxssh.GetFile(ctx, d.Conn(), src, dst, linuxssh.PreserveSymlinks)
-//  d.Conn().Command("uptime")
+//  d.Conn().CommandContext("uptime")
 func (d *DUT) Conn() *ssh.Conn {
 	return d.hst
 }
@@ -120,7 +120,7 @@ func (d *DUT) Disconnect(ctx context.Context) error {
 //
 // See https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/host#Command
 //
-// DEPRECATED: use d.Conn().Command
+// DEPRECATED: use d.Conn().CommandContext
 func (d *DUT) Command(name string, args ...string) *ssh.Cmd {
 	// It is fine even if d.hst is nil; subsequent method calls will just fail.
 	return d.hst.Command(name, args...)
@@ -195,7 +195,7 @@ func (d *DUT) Reboot(ctx context.Context) error {
 		}
 	}
 	readBootID := func(ctx context.Context) (string, error) {
-		out, err := d.Command("cat", "/proc/sys/kernel/random/boot_id").Output(ctx)
+		out, err := d.Conn().CommandContext(ctx, "cat", "/proc/sys/kernel/random/boot_id").Output()
 		if err != nil {
 			return "", err
 		}
@@ -211,7 +211,7 @@ func (d *DUT) Reboot(ctx context.Context) error {
 	// if the network interface of the DUT goes down before the SSH command finishes.
 	rebootCtx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
-	d.Command("reboot").Run(rebootCtx) // ignore the error
+	d.Conn().CommandContext(rebootCtx, "reboot").Run() // ignore the error
 
 	if err := testingutil.Poll(ctx, func(ctx context.Context) error {
 		// Set a short timeout to the iteration in case of any SSH operations

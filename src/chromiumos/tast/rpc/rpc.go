@@ -28,8 +28,9 @@ type Client struct {
 }
 
 // Close closes the connection.
+// TODO(b/3042409): Remove ctx param from this method.
 func (c *Client) Close(ctx context.Context) error {
-	return c.cl.Close(ctx)
+	return c.cl.Close()
 }
 
 // Dial establishes a gRPC connection to the test bundle executable named

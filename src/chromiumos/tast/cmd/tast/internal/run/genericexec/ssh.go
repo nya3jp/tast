@@ -32,16 +32,22 @@ func CommandSSH(conn *ssh.Conn, name string, baseArgs ...string) *SSHCmd {
 
 // Run runs a remote command synchronously. See Cmd.Run for details.
 func (c *SSHCmd) Run(ctx context.Context, extraArgs []string, stdin io.Reader, stdout, stderr io.Writer) error {
-	cmd := c.conn.Command(c.name, append(c.baseArgs, extraArgs...)...)
+	cmd := c.conn.CommandContext(ctx, c.name, append(c.baseArgs, extraArgs...)...)
 	cmd.Stdin = stdin
 	cmd.Stdout = stdout
 	cmd.Stderr = stderr
-	return cmd.Run(ctx)
+	return cmd.Run()
 }
 
 // Interact runs a remote command asynchronously. See Cmd.Interact for details.
-func (c *SSHCmd) Interact(ctx context.Context, extraArgs []string) (Process, error) {
-	cmd := c.conn.Command(c.name, append(c.baseArgs, extraArgs...)...)
+func (c *SSHCmd) Interact(ctx context.Context, extraArgs []string) (p Process, retErr error) {
+	ctx, cancel := context.WithCancel(ctx)
+	defer func() {
+		if retErr != nil {
+			cancel()
+		}
+	}()
+	cmd := c.conn.CommandContext(ctx, c.name, append(c.baseArgs, extraArgs...)...)
 	stdin, err := cmd.StdinPipe()
 	if err != nil {
 		return nil, err
@@ -54,7 +60,7 @@ func (c *SSHCmd) Interact(ctx context.Context, extraArgs []string) (Process, err
 	if err != nil {
 		return nil, err
 	}
-	if err := cmd.Start(ctx); err != nil {
+	if err := cmd.Start(); err != nil {
 		return nil, err
 	}
 
@@ -66,6 +72,7 @@ func (c *SSHCmd) Interact(ctx context.Context, extraArgs []string) (Process, err
 
 	return &SSHProcess{
 		cmd:    cmd,
+		cancel: cancel,
 		stdin:  stdin,
 		stdout: stdout,
 		stderr: stderr,
@@ -74,7 +81,8 @@ func (c *SSHCmd) Interact(ctx context.Context, extraArgs []string) (Process, err
 
 // SSHProcess represents a remotely running process over SSH.
 type SSHProcess struct {
-	cmd    *ssh.Cmd
+	cmd    *ssh.CmdCtx
+	cancel context.CancelFunc
 	stdin  io.WriteCloser
 	stdout io.ReadCloser
 	stderr io.ReadCloser
@@ -93,5 +101,18 @@ func (p *SSHProcess) Stderr() io.ReadCloser { return p.stderr }
 
 // Wait waits for the process to exit. See Process.Wait for details.
 func (p *SSHProcess) Wait(ctx context.Context) error {
-	return p.cmd.Wait(ctx)
+	exited := make(chan struct{})
+	defer close(exited)
+
+	// Cancel the context passed to exec.CommandContext to kill the
+	// process.
+	go func() {
+		select {
+		case <-ctx.Done():
+		case <-exited:
+		}
+		p.cancel()
+	}()
+
+	return p.cmd.Wait()
 }

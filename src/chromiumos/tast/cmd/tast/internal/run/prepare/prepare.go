@@ -86,7 +86,7 @@ func prepareDUT(ctx context.Context, cfg *config.Config, drv *driver.Driver) err
 	// After writing files to the DUT, run sync to make sure the written files are persisted
 	// even if the DUT crashes later. This is important especially when we push local_test_runner
 	// because it can appear as zero-byte binary after a crash and subsequent sysinfo phase fails.
-	if err := drv.SSHConn().Command("sync").Run(ctx); err != nil {
+	if err := drv.SSHConn().CommandContext(ctx, "sync").Run(); err != nil {
 		return fmt.Errorf("failed to sync disk writes: %v", err)
 	}
 	return nil
@@ -145,7 +145,7 @@ func getTargetArch(ctx context.Context, cfg *config.Config, hst *ssh.Conn) (targ
 	logging.Debug(ctx, "Getting architecture from target")
 
 	// Get the userland architecture by inspecting an arbitrary binary on the target.
-	out, err := hst.Command("file", "-b", "-L", "/sbin/init").CombinedOutput(ctx)
+	out, err := hst.CommandContext(ctx, "file", "-b", "-L", "/sbin/init").CombinedOutput()
 	if err != nil {
 		return targetArch, fmt.Errorf("file command failed: %v (output: %q)", err, string(out))
 	}

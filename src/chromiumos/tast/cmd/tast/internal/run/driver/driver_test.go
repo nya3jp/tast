@@ -49,7 +49,7 @@ func TestDriver(t *testing.T) {
 	if bootID := drv.InitBootID(); bootID != fakeBootID {
 		t.Errorf("InitBootID() = %q; want %q", bootID, fakeBootID)
 	}
-	if err := drv.SSHConn().Command(fakeCommand).Run(ctx); err != nil {
+	if err := drv.SSHConn().CommandContext(ctx, fakeCommand).Run(); err != nil {
 		t.Errorf("Command(%q).Run() failed: %v", fakeCommand, err)
 	}
 }

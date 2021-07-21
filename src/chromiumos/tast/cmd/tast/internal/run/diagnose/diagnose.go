@@ -74,10 +74,10 @@ func diagnoseReboot(ctx context.Context, drv *driver.Driver, outDir string) stri
 
 	// Read the unified system log just before the reboot.
 	denseBootID := strings.Replace(drv.InitBootID(), "-", "", -1)
-	out, err := conn.Command("croslog", "--quiet", "--boot="+denseBootID, "--lines=1000").Output(ctx)
+	out, err := conn.CommandContext(ctx, "croslog", "--quiet", "--boot="+denseBootID, "--lines=1000").Output()
 	if err != nil {
 		logging.Info(ctx, "Failed to execute croslog command: ", err)
-		out, err = conn.Command("journalctl", "--quiet", "--boot="+denseBootID, "--lines=1000").Output(ctx)
+		out, err = conn.CommandContext(ctx, "journalctl", "--quiet", "--boot="+denseBootID, "--lines=1000").Output()
 		if err != nil {
 			logging.Info(ctx, "Failed to execute journalctl command: ", err)
 		} else {
@@ -95,9 +95,9 @@ func diagnoseReboot(ctx context.Context, drv *driver.Driver, outDir string) stri
 
 	// Read console-ramoops. Its path varies by systems, and it might not exist
 	// for normal reboots.
-	out, err = conn.Command("cat", "/sys/fs/pstore/console-ramoops-0").Output(ctx)
+	out, err = conn.CommandContext(ctx, "cat", "/sys/fs/pstore/console-ramoops-0").Output()
 	if err != nil {
-		out, err = conn.Command("cat", "/sys/fs/pstore/console-ramoops").Output(ctx)
+		out, err = conn.CommandContext(ctx, "cat", "/sys/fs/pstore/console-ramoops").Output()
 		if err != nil {
 			logging.Info(ctx, "console-ramoops not found")
 		}

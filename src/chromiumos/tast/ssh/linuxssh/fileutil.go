@@ -50,7 +50,7 @@ func PutFiles(ctx context.Context, s *ssh.Conn, files map[string]string,
 
 // ReadFile reads the file on the path and returns the contents.
 func ReadFile(ctx context.Context, conn *ssh.Conn, path string) ([]byte, error) {
-	return conn.Command("cat", path).Output(ctx, ssh.DumpLogOnError)
+	return conn.CommandContext(ctx, "cat", path).Output(ssh.DumpLogOnError)
 }
 
 // WriteFile writes data to the file on the path. If the file does not exist,
@@ -58,7 +58,7 @@ func ReadFile(ctx context.Context, conn *ssh.Conn, path string) ([]byte, error) 
 // before writing, without changing permissions.
 // Unlike ioutil.WriteFile, it doesn't apply umask on perm.
 func WriteFile(ctx context.Context, conn *ssh.Conn, path string, data []byte, perm os.FileMode) error {
-	cmd := conn.Command("sh", "-c", `test -e "$0"; r=$?; cat > "$0"; if [ $r = 1 ]; then chmod "$1" "$0"; fi`, path, fmt.Sprintf("%o", perm&os.ModePerm))
+	cmd := conn.CommandContext(ctx, "sh", "-c", `test -e "$0"; r=$?; cat > "$0"; if [ $r = 1 ]; then chmod "$1" "$0"; fi`, path, fmt.Sprintf("%o", perm&os.ModePerm))
 	cmd.Stdin = bytes.NewBuffer(data)
-	return cmd.Run(ctx, ssh.DumpLogOnError)
+	return cmd.Run(ssh.DumpLogOnError)
 }

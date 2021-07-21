@@ -13,7 +13,7 @@ import (
 
 // ReadBootID reads the current boot_id at hst.
 func ReadBootID(ctx context.Context, hst *ssh.Conn) (string, error) {
-	out, err := hst.Command("cat", "/proc/sys/kernel/random/boot_id").Output(ctx)
+	out, err := hst.CommandContext(ctx, "cat", "/proc/sys/kernel/random/boot_id").Output()
 	if err != nil {
 		return "", err
 	}

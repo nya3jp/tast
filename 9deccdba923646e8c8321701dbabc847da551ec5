@@ -41,6 +41,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "c0155e7e_5ef5d1b4",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/check/declarations.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 296,
+      "author": {
+        "id": 1450817
+      },
+      "writtenOn": "2021-07-21T07:41:09Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "5be3fce2_1c7947fb",
+      "range": {
+        "startLine": 295,
+        "startChar": 0,
+        "endLine": 296,
+        "endChar": 41
+      },
+      "revId": "9deccdba923646e8c8321701dbabc847da551ec5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "226ce82a_11aa0a29",
@@ -64,6 +88,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "78fd0c83_5e7684c3",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/check/declarations.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 309,
+      "author": {
+        "id": 1450817
+      },
+      "writtenOn": "2021-07-21T07:41:09Z",
+      "side": 1,
+      "message": "It does now",
+      "parentUuid": "226ce82a_11aa0a29",
+      "range": {
+        "startLine": 305,
+        "startChar": 2,
+        "endLine": 309,
+        "endChar": 3
+      },
+      "revId": "9deccdba923646e8c8321701dbabc847da551ec5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "2c97c5bc_554f4e98",
@@ -77,6 +125,30 @@
       "writtenOn": "2021-07-21T06:45:09Z",
       "side": 1,
       "message": "What happens to\n\n append(someList, \"foo\", \"bar\")\n \nwhere someList is a locally defined []string var?",
+      "range": {
+        "startLine": 313,
+        "startChar": 1,
+        "endLine": 313,
+        "endChar": 34
+      },
+      "revId": "9deccdba923646e8c8321701dbabc847da551ec5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": false,
+      "key": {
+        "uuid": "d59ef856_bb996e9b",
+        "filename": "src/chromiumos/tast/cmd/tast-lint/check/declarations.go",
+        "patchSetId": 1
+      },
+      "lineNbr": 313,
+      "author": {
+        "id": 1450817
+      },
+      "writtenOn": "2021-07-21T07:41:09Z",
+      "side": 1,
+      "message": "Ah, hadn\u0027t caught that. I\u0027ve disallowed it now, since it should be only libraries that define a list.",
+      "parentUuid": "2c97c5bc_554f4e98",
       "range": {
         "startLine": 313,
         "startChar": 1,

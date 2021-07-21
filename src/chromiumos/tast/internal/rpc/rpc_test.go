@@ -670,7 +670,7 @@ func TestRPCOverSSH(t *gotesting.T) {
 		t.Fatalf("DialSSH failed: %v", err)
 	}
 	defer func() {
-		if err := conn.Close(ctx); err != nil {
+		if err := conn.Close(); err != nil {
 			t.Errorf("Close failed: %v", err)
 		}
 	}()

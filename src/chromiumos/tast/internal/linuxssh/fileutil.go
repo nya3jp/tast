@@ -59,15 +59,15 @@ func GetFile(ctx context.Context, s *ssh.Conn, src, dst string, symlinkPolicy Sy
 		taropts = append(taropts, "--dereference")
 	}
 	taropts = append(taropts, sb)
-	rcmd := s.Command("tar", taropts...)
+	rcmd := s.CommandContext(ctx, "tar", taropts...)
 	p, err := rcmd.StdoutPipe()
 	if err != nil {
 		return fmt.Errorf("failed to get stdout pipe: %v", err)
 	}
-	if err := rcmd.Start(ctx); err != nil {
+	if err := rcmd.Start(); err != nil {
 		return fmt.Errorf("running remote tar failed: %v", err)
 	}
-	defer rcmd.Wait(ctx)
+	defer rcmd.Wait()
 	defer rcmd.Abort()
 
 	cmd := exec.CommandContext(ctx, "/bin/tar", "-x", "--gzip", "--no-same-owner", "-p", "-C", td)
@@ -138,7 +138,7 @@ func findChangedFiles(ctx context.Context, s *ssh.Conn, files map[string]string)
 // getRemoteSHA1s returns SHA1s for the files paths on s.
 // Missing files are excluded from the returned map.
 func getRemoteSHA1s(ctx context.Context, s *ssh.Conn, paths []string) (map[string]string, error) {
-	out, err := s.Command("sha1sum", paths...).Output(ctx)
+	out, err := s.CommandContext(ctx, "sha1sum", paths...).Output()
 	if err != nil {
 		// TODO(derat): Find a classier way to ignore missing files.
 		if _, ok := err.(*cryptossh.ExitError); !ok {
@@ -277,10 +277,10 @@ func PutFiles(ctx context.Context, s *ssh.Conn, files map[string]string,
 	defer cmd.Wait()
 	defer unix.Kill(cmd.Process.Pid, unix.SIGKILL)
 
-	rcmd := s.Command("tar", "-x", "--gzip", "--no-same-owner", "--recursive-unlink", "-p", "-C", "/")
+	rcmd := s.CommandContext(ctx, "tar", "-x", "--gzip", "--no-same-owner", "--recursive-unlink", "-p", "-C", "/")
 	cr := &countingReader{r: p}
 	rcmd.Stdin = cr
-	if err := rcmd.Run(ctx, ssh.DumpLogOnError); err != nil {
+	if err := rcmd.Run(ssh.DumpLogOnError); err != nil {
 		return 0, fmt.Errorf("remote tar failed: %v", err)
 	}
 	return cr.bytes, nil
@@ -312,9 +312,9 @@ func DeleteTree(ctx context.Context, s *ssh.Conn, baseDir string, files []string
 		cfs = append(cfs, cf)
 	}
 
-	cmd := s.Command("rm", append([]string{"-rf", "--"}, cfs...)...)
+	cmd := s.CommandContext(ctx, "rm", append([]string{"-rf", "--"}, cfs...)...)
 	cmd.Dir = baseDir
-	if err := cmd.Run(ctx); err != nil {
+	if err := cmd.Run(); err != nil {
 		return fmt.Errorf("running remote rm failed: %v", err)
 	}
 	return nil

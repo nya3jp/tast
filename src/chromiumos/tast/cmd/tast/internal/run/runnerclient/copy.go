@@ -19,7 +19,7 @@ func moveFromHost(ctx context.Context, cfg *config.Config, hst *ssh.Conn, src, d
 	if err := linuxssh.GetFile(ctx, hst, src, dst, linuxssh.PreserveSymlinks); err != nil {
 		return err
 	}
-	if out, err := hst.Command("rm", "-rf", "--", src).Output(ctx); err != nil {
+	if out, err := hst.CommandContext(ctx, "rm", "-rf", "--", src).Output(); err != nil {
 		logging.Infof(ctx, "Failed cleaning %s: %v\n%s", src, err, out)
 	}
 	return nil

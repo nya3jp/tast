@@ -77,10 +77,10 @@ var (
 func diagnoseReboot(ctx context.Context, cfg *config.Config, cc *target.ConnCache, hst *ssh.Conn, outDir string) string {
 	// Read the unified system log just before the reboot.
 	denseBootID := strings.Replace(cc.InitBootID(), "-", "", -1)
-	out, err := hst.Command("croslog", "--quiet", "--boot="+denseBootID, "--lines=1000").Output(ctx)
+	out, err := hst.CommandContext(ctx, "croslog", "--quiet", "--boot="+denseBootID, "--lines=1000").Output()
 	if err != nil {
 		logging.Info(ctx, "Failed to execute croslog command: ", err)
-		out, err = hst.Command("journalctl", "--quiet", "--boot="+denseBootID, "--lines=1000").Output(ctx)
+		out, err = hst.CommandContext(ctx, "journalctl", "--quiet", "--boot="+denseBootID, "--lines=1000").Output()
 		if err != nil {
 			logging.Info(ctx, "Failed to execute journalctl command: ", err)
 		} else {
@@ -98,9 +98,9 @@ func diagnoseReboot(ctx context.Context, cfg *config.Config, cc *target.ConnCach
 
 	// Read console-ramoops. Its path varies by systems, and it might not exist
 	// for normal reboots.
-	out, err = hst.Command("cat", "/sys/fs/pstore/console-ramoops-0").Output(ctx)
+	out, err = hst.CommandContext(ctx, "cat", "/sys/fs/pstore/console-ramoops-0").Output()
 	if err != nil {
-		out, err = hst.Command("cat", "/sys/fs/pstore/console-ramoops").Output(ctx)
+		out, err = hst.CommandContext(ctx, "cat", "/sys/fs/pstore/console-ramoops").Output()
 		if err != nil {
 			logging.Info(ctx, "console-ramoops not found")
 		}

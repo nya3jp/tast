@@ -482,7 +482,7 @@ func runLocalTestsOnce(ctx context.Context, cfg *config.Config, state *config.St
 	// Older local_test_runner does not create the specified output directory.
 	// TODO(crbug.com/1000549): Delete this workaround after 20191001.
 	// This workaround costs one round-trip time to the DUT.
-	if err := conn.SSHConn().Command("mkdir", "-p", cfg.LocalOutDir).Run(ctx); err != nil {
+	if err := conn.SSHConn().CommandContext(ctx, "mkdir", "-p", cfg.LocalOutDir).Run(); err != nil {
 		return nil, nil, err
 	}
 

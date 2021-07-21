@@ -30,7 +30,7 @@ import (
 // SSHClient is a Tast gRPC client over an SSH connection.
 type SSHClient struct {
 	cl  *GenericClient
-	cmd *ssh.Cmd
+	cmd *ssh.CmdCtx
 }
 
 // Conn returns a gRPC connection.
@@ -39,17 +39,17 @@ func (c *SSHClient) Conn() *grpc.ClientConn {
 }
 
 // Close closes this client.
-func (c *SSHClient) Close(ctx context.Context) error {
+func (c *SSHClient) Close() error {
 	closeErr := c.cl.Close()
 	c.cmd.Abort()
 	// Ignore errors from Wait since Abort above causes it to return context.Canceled.
-	c.cmd.Wait(ctx)
+	c.cmd.Wait()
 	return closeErr
 }
 
 // DialSSH establishes a gRPC connection to an executable on a remote machine.
 func DialSSH(ctx context.Context, conn *ssh.Conn, path string, req *protocol.HandshakeRequest) (*SSHClient, error) {
-	cmd := conn.Command(path, "-rpc")
+	cmd := conn.CommandContext(ctx, path, "-rpc")
 	stdin, err := cmd.StdinPipe()
 	if err != nil {
 		return nil, err
@@ -58,14 +58,14 @@ func DialSSH(ctx context.Context, conn *ssh.Conn, path string, req *protocol.Han
 	if err != nil {
 		return nil, err
 	}
-	if err := cmd.Start(ctx); err != nil {
+	if err := cmd.Start(); err != nil {
 		return nil, errors.Wrap(err, "failed to connect to RPC service on DUT")
 	}
 
 	c, err := NewClient(ctx, stdout, stdin, req)
 	if err != nil {
 		cmd.Abort()
-		cmd.Wait(ctx)
+		cmd.Wait()
 		return nil, err
 	}
 	return &SSHClient{

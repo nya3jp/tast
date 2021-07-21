@@ -30,7 +30,7 @@ import (
 // SSHClient is a Tast gRPC client over an SSH connection.
 type SSHClient struct {
 	cl  *GenericClient
-	cmd *ssh.CmdCtx
+	cmd *ssh.Cmd
 }
 
 // Conn returns a gRPC connection.

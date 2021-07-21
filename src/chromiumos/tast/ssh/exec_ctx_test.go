@@ -499,28 +499,28 @@ func TestDumpLogOnErrorCtx(t *testing.T) {
 	type cmd2 func(...ssh.RunOption) ([]byte, error)
 
 	for i, tc := range []struct {
-		f          func(c *ssh.CmdCtx) cmd
-		f2         func(c *ssh.CmdCtx) cmd2
+		f          func(c *ssh.Cmd) cmd
+		f2         func(c *ssh.Cmd) cmd2
 		fail       bool
 		wantStdout bool
 		wantStderr bool
 	}{{
-		f:          func(c *ssh.CmdCtx) cmd { return c.Run },
+		f:          func(c *ssh.Cmd) cmd { return c.Run },
 		fail:       true,
 		wantStdout: true,
 		wantStderr: true,
 	}, {
-		f:          func(c *ssh.CmdCtx) cmd { return c.Run },
+		f:          func(c *ssh.Cmd) cmd { return c.Run },
 		fail:       false,
 		wantStdout: false,
 		wantStderr: false,
 	}, {
-		f2:         func(c *ssh.CmdCtx) cmd2 { return c.Output },
+		f2:         func(c *ssh.Cmd) cmd2 { return c.Output },
 		fail:       true,
 		wantStdout: false,
 		wantStderr: true,
 	}, {
-		f2:         func(c *ssh.CmdCtx) cmd2 { return c.CombinedOutput },
+		f2:         func(c *ssh.Cmd) cmd2 { return c.CombinedOutput },
 		fail:       true,
 		wantStdout: false,
 		wantStderr: false,

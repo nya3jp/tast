@@ -81,7 +81,7 @@ func (c *SSHCmd) Interact(ctx context.Context, extraArgs []string) (p Process, r
 
 // SSHProcess represents a remotely running process over SSH.
 type SSHProcess struct {
-	cmd    *ssh.CmdCtx
+	cmd    *ssh.Cmd
 	cancel context.CancelFunc
 	stdin  io.WriteCloser
 	stdout io.ReadCloser

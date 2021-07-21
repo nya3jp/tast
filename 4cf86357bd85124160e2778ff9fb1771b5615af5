@@ -24,6 +24,30 @@
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     },
     {
+      "unresolved": false,
+      "key": {
+        "uuid": "7aaa7fbf_53f24e20",
+        "filename": "src/chromiumos/tast/exec/exec.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1483403
+      },
+      "writtenOn": "2021-07-21T16:55:53Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "e58edaba_9996b762",
+      "range": {
+        "startLine": 20,
+        "startChar": 0,
+        "endLine": 20,
+        "endChar": 60
+      },
+      "revId": "4cf86357bd85124160e2778ff9fb1771b5615af5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
       "unresolved": true,
       "key": {
         "uuid": "57bdda3c_09e1eb28",
@@ -37,6 +61,24 @@
       "writtenOn": "2021-07-21T08:15:31Z",
       "side": 1,
       "message": "This file is mostly a fork of exec.go. What\u0027s your plan about ssh.Cmd?\n\nIf you going to migrate existing users of ssh.Cmd to ssh.CmdCtx and remove ssh.Cmd, then I think it\u0027s okay to keep two impls for short time period. But otherwise it\u0027s going to be painful to maintain two.",
+      "revId": "4cf86357bd85124160e2778ff9fb1771b5615af5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "ce83716d_12eaee14",
+        "filename": "src/chromiumos/tast/ssh/exec_ctx.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1483403
+      },
+      "writtenOn": "2021-07-21T16:55:53Z",
+      "side": 1,
+      "message": "Yes, I plan to migrate existing users. Let me go ahead and upload some cls for those migrations to make things clear.\n\nThere might be a problem if someone is actually using the contexts to set separate deadlines on different calls.",
+      "parentUuid": "57bdda3c_09e1eb28",
       "revId": "4cf86357bd85124160e2778ff9fb1771b5615af5",
       "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
     }

@@ -53,9 +53,6 @@ type Cmd struct {
 	ctx context.Context
 }
 
-// CmdCtx is an alias for Cmd
-type CmdCtx = Cmd
-
 // cmdState represents a state of a Cmd. cmdState is used to prevent typical misuse of
 // Cmd methods, though it does not catch all concurrent cases.
 type cmdState int

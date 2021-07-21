@@ -116,16 +116,6 @@ func (d *DUT) Disconnect(ctx context.Context) error {
 	return d.hst.Close(ctx)
 }
 
-// Command returns the Cmd struct to execute the named program with the given arguments.
-//
-// See https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/host#Command
-//
-// DEPRECATED: use d.Conn().CommandContext
-func (d *DUT) Command(name string, args ...string) *ssh.Cmd {
-	// It is fine even if d.hst is nil; subsequent method calls will just fail.
-	return d.hst.Command(name, args...)
-}
-
 // GetFile copies a file or directory from the DUT to the local machine.
 // dst is the full destination name for the file or directory being copied, not
 // a destination directory into which it will be copied. dst will be replaced

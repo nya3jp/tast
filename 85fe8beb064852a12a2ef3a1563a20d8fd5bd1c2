@@ -272,6 +272,30 @@
     {
       "unresolved": true,
       "key": {
+        "uuid": "36a9fe45_4e3aea15",
+        "filename": "src/chromiumos/tast/internal/testing/registry.go",
+        "patchSetId": 21
+      },
+      "lineNbr": 175,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-07-21T06:57:46Z",
+      "side": 1,
+      "message": "I see, yes that\u0027s possible. I\u0027m afraid that technically it\u0027s even possible that multiple instances of the same test bundle are initialized concurrently in unit tests.",
+      "parentUuid": "d84fb642_8883c13c",
+      "range": {
+        "startLine": 173,
+        "startChar": 0,
+        "endLine": 175,
+        "endChar": 2
+      },
+      "revId": "85fe8beb064852a12a2ef3a1563a20d8fd5bd1c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
         "uuid": "f85e74d2_54445d30",
         "filename": "src/chromiumos/tast/internal/testing/vars.go",
         "patchSetId": 21
@@ -402,6 +426,30 @@
       "side": 1,
       "message": "I see. I agree that we can convert non-secret runtime variables that are currently defined as .yaml files in tast-tests repository to Go code.",
       "parentUuid": "f22cd4a1_6d715998",
+      "range": {
+        "startLine": 17,
+        "startChar": 24,
+        "endLine": 17,
+        "endChar": 35
+      },
+      "revId": "85fe8beb064852a12a2ef3a1563a20d8fd5bd1c2",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "71bb852c_f33eaced",
+        "filename": "src/chromiumos/tast/testing/vars.go",
+        "patchSetId": 21
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-07-21T06:57:46Z",
+      "side": 1,
+      "message": "OK. Then Seewai, could you add a default parameter?",
+      "parentUuid": "c39cb864_1803083b",
       "range": {
         "startLine": 17,
         "startChar": 24,

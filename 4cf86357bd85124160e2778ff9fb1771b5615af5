@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "e58edaba_9996b762",
+        "filename": "src/chromiumos/tast/exec/exec.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-07-21T08:15:31Z",
+      "side": 1,
+      "message": "Go interfaces belong to users, not to implementers. So I think it\u0027s nice to avoid defining an interface here.\n\nc.f.\nhttps://github.com/golang/go/wiki/CodeReviewComments#interfaces\nhttp://go/go-style/decisions#interfaces",
+      "range": {
+        "startLine": 20,
+        "startChar": 0,
+        "endLine": 20,
+        "endChar": 60
+      },
+      "revId": "4cf86357bd85124160e2778ff9fb1771b5615af5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    },
+    {
+      "unresolved": true,
+      "key": {
+        "uuid": "57bdda3c_09e1eb28",
+        "filename": "src/chromiumos/tast/ssh/exec_ctx.go",
+        "patchSetId": 2
+      },
+      "lineNbr": 0,
+      "author": {
+        "id": 1118346
+      },
+      "writtenOn": "2021-07-21T08:15:31Z",
+      "side": 1,
+      "message": "This file is mostly a fork of exec.go. What\u0027s your plan about ssh.Cmd?\n\nIf you going to migrate existing users of ssh.Cmd to ssh.CmdCtx and remove ssh.Cmd, then I think it\u0027s okay to keep two impls for short time period. But otherwise it\u0027s going to be painful to maintain two.",
+      "revId": "4cf86357bd85124160e2778ff9fb1771b5615af5",
+      "serverId": "3ce6091f-6c88-37e8-8c75-72f92ae8dfba"
+    }
+  ]
+}

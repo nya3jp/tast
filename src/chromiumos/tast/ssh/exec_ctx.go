@@ -19,10 +19,10 @@ import (
 	"chromiumos/tast/shutil"
 )
 
-// CmdCtx represents an external command being prepared or run on a remote host.
+// Cmd represents an external command being prepared or run on a remote host.
 //
 // This type implements the almost exactly the same interface as Cmd in os/exec.
-type CmdCtx struct {
+type Cmd struct {
 	// Args holds command line arguments, including the command as Args[0].
 	Args []string
 
@@ -52,6 +52,9 @@ type CmdCtx struct {
 	// ctx is the context given to Command that specifies the timeout of the external command.
 	ctx context.Context
 }
+
+// CmdCtx is an alias for Cmd
+type CmdCtx = Cmd
 
 // cmdState represents a state of a Cmd. cmdState is used to prevent typical misuse of
 // Cmd methods, though it does not catch all concurrent cases.
@@ -107,8 +110,8 @@ var (
 // It is fine to call this method with nil receiver; subsequent method calls will just fail.
 //
 // See: https://godoc.org/os/exec#Command
-func (s *Conn) CommandContext(ctx context.Context, name string, args ...string) *CmdCtx {
-	return &CmdCtx{
+func (s *Conn) CommandContext(ctx context.Context, name string, args ...string) *Cmd {
+	return &Cmd{
 		Args:  append([]string{name}, args...),
 		ssh:   s,
 		abort: make(chan struct{}),
@@ -121,7 +124,7 @@ func (s *Conn) CommandContext(ctx context.Context, name string, args ...string) 
 // The command is aborted when ctx's deadline is reached.
 //
 // See: https://godoc.org/os/exec#Cmd.Run
-func (c *CmdCtx) Run(opts ...RunOption) error {
+func (c *Cmd) Run(opts ...RunOption) error {
 	if err := c.Start(); err != nil {
 		return err
 	}
@@ -134,7 +137,7 @@ func (c *CmdCtx) Run(opts ...RunOption) error {
 // The command is aborted when ctx's deadline is reached.
 //
 // See: https://godoc.org/os/exec#Cmd.Output
-func (c *CmdCtx) Output(opts ...RunOption) ([]byte, error) {
+func (c *Cmd) Output(opts ...RunOption) ([]byte, error) {
 	if c.Stdout != nil {
 		return nil, errStdoutSet
 	}
@@ -151,7 +154,7 @@ func (c *CmdCtx) Output(opts ...RunOption) ([]byte, error) {
 // The command is aborted when ctx's deadline is reached.
 //
 // See: https://godoc.org/os/exec#Cmd.CombinedOutput
-func (c *CmdCtx) CombinedOutput(opts ...RunOption) ([]byte, error) {
+func (c *Cmd) CombinedOutput(opts ...RunOption) ([]byte, error) {
 	if c.Stdout != nil {
 		return nil, errStdoutSet
 	}
@@ -178,7 +181,7 @@ func (c *CmdCtx) CombinedOutput(opts ...RunOption) ([]byte, error) {
 // may block until you close the pipe explicitly.
 //
 // See: https://godoc.org/os/exec#Cmd.StdinPipe
-func (c *CmdCtx) StdinPipe() (io.WriteCloser, error) {
+func (c *Cmd) StdinPipe() (io.WriteCloser, error) {
 	if c.state != stateNew {
 		return nil, errors.New("stdin must be set up before starting process")
 	}
@@ -201,7 +204,7 @@ func (c *CmdCtx) StdinPipe() (io.WriteCloser, error) {
 // details.
 //
 // See: https://godoc.org/os/exec#Cmd.StdoutPipe
-func (c *CmdCtx) StdoutPipe() (io.ReadCloser, error) {
+func (c *Cmd) StdoutPipe() (io.ReadCloser, error) {
 	if c.state != stateNew {
 		return nil, errors.New("stdout must be set up before starting process")
 	}
@@ -225,7 +228,7 @@ func (c *CmdCtx) StdoutPipe() (io.ReadCloser, error) {
 // details.
 //
 // See: https://godoc.org/os/exec#Cmd.StderrPipe
-func (c *CmdCtx) StderrPipe() (io.ReadCloser, error) {
+func (c *Cmd) StderrPipe() (io.ReadCloser, error) {
 	if c.state != stateNew {
 		return nil, errors.New("stderr must be set up before starting process")
 	}
@@ -242,7 +245,7 @@ func (c *CmdCtx) StderrPipe() (io.ReadCloser, error) {
 // Start starts the specified command but does not wait for it to complete.
 //
 // See: https://godoc.org/os/exec#Cmd.Start
-func (c *CmdCtx) Start() error {
+func (c *Cmd) Start() error {
 	if c.Stdout == nil {
 		c.Stdout = &c.log
 	}
@@ -274,7 +277,7 @@ func (c *CmdCtx) Start() error {
 // it is not called in parallel.
 //
 // See: https://godoc.org/os/exec#Cmd.Wait
-func (c *CmdCtx) Wait(opts ...RunOption) error {
+func (c *Cmd) Wait(opts ...RunOption) error {
 	if c.state != stateStarted {
 		return errors.New("process not active")
 	}
@@ -295,7 +298,7 @@ func (c *CmdCtx) Wait(opts ...RunOption) error {
 // output.
 //
 // This function must be called after Wait.
-func (c *CmdCtx) DumpLog(ctx context.Context) error {
+func (c *Cmd) DumpLog(ctx context.Context) error {
 	if c.state != stateDone {
 		return errNotWaited
 	}
@@ -310,13 +313,13 @@ func (c *CmdCtx) DumpLog(ctx context.Context) error {
 // call this method while calling Wait/Run/Output/CombinedOutput in another
 // goroutine. After calling this method, Wait/Run/Output/CombinedOutput will
 // return immediately. This method can be called at most once.
-func (c *CmdCtx) Abort() {
+func (c *Cmd) Abort() {
 	c.closePipes(errors.New("aborted by client"))
 	close(c.abort)
 }
 
 // startSession starts a new SSH session and sets c.sess.
-func (c *CmdCtx) startSession(ctx context.Context) error {
+func (c *Cmd) startSession(ctx context.Context) error {
 	if c.state != stateNew {
 		return errors.New("can not start sessions multiple times")
 	}
@@ -351,7 +354,7 @@ func (c *CmdCtx) startSession(ctx context.Context) error {
 }
 
 // setupSession sets up pipes for a new session sess.
-func (c *CmdCtx) setupSession(sess *ssh.Session) error {
+func (c *Cmd) setupSession(sess *ssh.Session) error {
 	var copiers []func() // functions to run on background goroutines to copy pipe data
 
 	sess.Stdin = c.Stdin
@@ -420,7 +423,7 @@ func (w *safeWriter) Write(b []byte) (int, error) {
 
 // waitAndClose runs f which waits for the command to finish, and close the
 // session.
-func (c *CmdCtx) waitAndClose(f func() error) error {
+func (c *Cmd) waitAndClose(f func() error) error {
 	if c.state != stateStarted {
 		return fmt.Errorf("waitAndClose called in invalid state (%v)", c.state)
 	}
@@ -458,7 +461,7 @@ func (c *CmdCtx) waitAndClose(f func() error) error {
 
 // closePipes closes the pipes created by StdoutPipe and StderrPipe.
 // It is safe to call this method multiple times concurrently.
-func (c *CmdCtx) closePipes(err error) {
+func (c *Cmd) closePipes(err error) {
 	c.onceClose.Do(func() {
 		if c.stdoutPipe != nil {
 			c.stdoutPipe.CloseWithError(err)
@@ -470,6 +473,6 @@ func (c *CmdCtx) closePipes(err error) {
 }
 
 // buildCmd builds a shell command in a platform-specific manner.
-func (c *CmdCtx) buildCmd(dir string, args []string) string {
+func (c *Cmd) buildCmd(dir string, args []string) string {
 	return c.ssh.platform.BuildShellCommand(dir, args)
 }

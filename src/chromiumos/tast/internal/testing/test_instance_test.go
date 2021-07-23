@@ -864,7 +864,7 @@ func TestWriteTestsAsProto(t *gotesting.T) {
 			{
 				TestCase: &api.TestCase{
 					Id: &api.TestCase_Id{
-						Value: "remoteTestDrivers/tast/tests/test001",
+						Value: testHarnessPrefix + "." + "test001",
 					},
 					Name: "test001",
 					Tags: []*api.TestCase_Tag{

@@ -30,7 +30,7 @@ const (
 	testBundleAttrPrefix = "bundle:" // prefix for auto-added attribute containing bundle name
 	testDepAttrPrefix    = "dep:"    // prefix for auto-added attribute containing software dependency
 
-	remoteTestDriverName = "remoteTestDrivers/tast" // Remote test driver name in infra
+	testHarnessPrefix = "tast" // prefix for test id of test metadata
 )
 
 // TestInstance represents a test instance registered to the framework.
@@ -441,8 +441,7 @@ func (t *TestInstance) Proto() *api.TestCaseMetadata {
 	r := api.TestCaseMetadata{
 		TestCase: &api.TestCase{
 			Id: &api.TestCase_Id{
-				// TODO: Determine the correct naming convention for id.
-				Value: remoteTestDriverName + "/tests/" + t.Name,
+				Value: testHarnessPrefix + "." + t.Name,
 			},
 			Name: t.Name,
 			Tags: tags,

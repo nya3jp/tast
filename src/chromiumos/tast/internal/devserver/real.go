@@ -172,7 +172,7 @@ func (c *RealClient) Open(ctx context.Context, gsURL string) (io.ReadCloser, err
 
 	// Choose a devserver and download the file via it.
 	dsURL := c.chooseServer(gsURL)
-	logging.Infof(ctx, "Downloading %s via %s (newly staging)", gsURL, dsURL)
+	logging.Infof(ctx, "Staging %s to %s", gsURL, dsURL)
 	if err := c.stage(ctx, dsURL, bucket, path); err != nil {
 		if os.IsNotExist(err) {
 			return nil, err
@@ -185,6 +185,7 @@ func (c *RealClient) Open(ctx context.Context, gsURL string) (io.ReadCloser, err
 		return nil, fmt.Errorf("failed to stage on %s: %v", dsURL, err)
 	}
 
+	logging.Infof(ctx, "Downloading %s via %s (newly staged)", gsURL, dsURL)
 	r, err := c.openStaged(ctx, dsURL, bucket, path)
 	if err != nil {
 		return nil, fmt.Errorf("failed to download from %s: %v", dsURL, err)

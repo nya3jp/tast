@@ -52,8 +52,14 @@ const (
 // clArgs should typically be os.Args[1:].
 // The caller should exit with the returned status code.
 func Run(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, args *jsonprotocol.RunnerArgs, scfg *StaticConfig) int {
-	// TODO(derat|nya): Consider applying timeout.
-	ctx := context.TODO()
+	ctx := context.Background()
+
+	if scfg.EnableSyslog {
+		if l, err := logging.NewSyslogLogger(); err == nil {
+			defer l.Close()
+			ctx = logging.AttachLogger(ctx, l)
+		}
+	}
 
 	// TODO(b/189332919): Remove this hack once we find the cause.
 	if os.Getenv("TAST_B189332919_STACK_TRACE_FD") == "3" {

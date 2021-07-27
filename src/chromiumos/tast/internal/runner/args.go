@@ -38,6 +38,10 @@ type StaticConfig struct {
 	// when using RunnerRunTestsMode. This can help prevent confusing failures if multiple test jobs are
 	// incorrectly scheduled on the same DUT: https://crbug.com/941829
 	KillStaleRunners bool
+	// EnableSyslog specifies whether to copy logs to syslog. It should be
+	// always enabled on production, but can be disabled in unit tests to
+	// avoid spamming syslog.
+	EnableSyslog bool
 
 	// SystemLogDir contains the directory where information is logged by syslog and other daemons.
 	SystemLogDir string

@@ -41,6 +41,7 @@ func main() {
 	scfg := runner.StaticConfig{
 		Type:                  runner.LocalRunner,
 		KillStaleRunners:      true,
+		EnableSyslog:          true,
 		SystemLogDir:          "/var/log",
 		SystemLogExcludes:     []string{"journal"}, // journald binary logs: https://crbug.com/931951
 		UnifiedLogSubdir:      "unified",           // destination for exported unified system logs

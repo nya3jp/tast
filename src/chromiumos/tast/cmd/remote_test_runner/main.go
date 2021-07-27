@@ -27,6 +27,7 @@ func main() {
 	scfg := runner.StaticConfig{
 		Type:             runner.RemoteRunner,
 		KillStaleRunners: true,
+		EnableSyslog:     true,
 	}
 	os.Exit(runner.Run(os.Args[1:], os.Stdin, os.Stdout, os.Stderr, &args, &scfg))
 }

@@ -489,3 +489,29 @@ func TestSpeaker(t *testing.T) {
 			tc.expectSatisfied)
 	}
 }
+
+func TestPrivacyScreen(t *testing.T) {
+	c := PrivacyScreen()
+
+	for _, tc := range []struct {
+		PrivacyScreen   configpb.HardwareFeatures_Present
+		expectSatisfied bool
+	}{
+		{configpb.HardwareFeatures_PRESENT, true},
+		{configpb.HardwareFeatures_NOT_PRESENT, false},
+	} {
+		verifyCondition(
+			t, c,
+			&protocol.DeprecatedDeviceConfig{},
+			&configpb.HardwareFeatures{
+				PrivacyScreen: &configpb.HardwareFeatures_PrivacyScreen{
+					Present: tc.PrivacyScreen,
+				},
+			},
+			tc.expectSatisfied)
+	}
+	expectError(
+		t, c,
+		&protocol.DeprecatedDeviceConfig{},
+		nil)
+}

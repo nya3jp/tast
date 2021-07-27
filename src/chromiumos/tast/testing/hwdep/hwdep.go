@@ -752,3 +752,18 @@ func Microphone() Condition {
 	}, CEL: "(dut.hardware_features.audio.lid_microphone.value > 0 || dut.hardware_features.audio.base_microphone.value > 0)",
 	}
 }
+
+// PrivacyScreen returns a hardware dependency condition that is satisfied iff the DUT has a privacy screen.
+func PrivacyScreen() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("Did not find hardware features")
+		}
+		if hf.GetPrivacyScreen().GetPresent() != configpb.HardwareFeatures_PRESENT {
+			return unsatisfied("DUT does not have privacy screen")
+		}
+		return satisfied()
+	}, CEL: "dut.hardware_features.privacy_screen.present == api.HardwareFeatures.Present.PRESENT",
+	}
+}

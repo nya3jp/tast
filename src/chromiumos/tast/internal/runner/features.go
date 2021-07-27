@@ -235,6 +235,7 @@ func newDeviceConfigAndHardwareFeatures() (dc *protocol.DeprecatedDeviceConfig, 
 		Storage:            &configpb.HardwareFeatures_Storage{},
 		Memory:             &configpb.HardwareFeatures_Memory{},
 		Audio:              &configpb.HardwareFeatures_Audio{},
+		PrivacyScreen:      &configpb.HardwareFeatures_PrivacyScreen{},
 	}
 
 	hasInternalDisplay := func() bool {
@@ -411,6 +412,22 @@ func newDeviceConfigAndHardwareFeatures() (dc *protocol.DeprecatedDeviceConfig, 
 	}
 	if speaker.GetValue() > 0 {
 		features.Audio.SpeakerAmplifier = &configpb.Component_Amplifier{}
+	}
+
+	hasPrivacyScreen := func() bool {
+		// Get list of connectors.
+		value, err := exec.Command("modetest", "-c").Output()
+		if err != nil {
+			warns = append(warns, fmt.Sprintf("failed to get connectors: %v", err))
+			return false
+		}
+		// Check if privacy-screen prop is present.
+		result := strings.Contains(string(value), "privacy-screen:")
+
+		return result
+	}()
+	if hasPrivacyScreen {
+		features.PrivacyScreen.Present = configpb.HardwareFeatures_PRESENT
 	}
 
 	return config, features, warns

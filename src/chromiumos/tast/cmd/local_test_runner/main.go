@@ -195,7 +195,6 @@ func main() {
 			"smartdim":               "smartdim",
 			"smartctl":               "nvme || sata",
 			"storage_wearout_detect": `"storage_wearout_detect" && !"betty" && !"board:reven" && !"tast_vm"`, // Skip wearout checks for VMs and eMMC < 5.0
-			"tablet_mode":            "touchview",
 			"tablet_form_factor":     "tablet_form_factor",
 			"tpm":                    "!mocktpm",
 			"tpm1":                   "!mocktpm && !tpm2", // Indicate tpm1.2 is available

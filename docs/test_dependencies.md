@@ -164,8 +164,6 @@ The following software features are defined:
 *   `smartdim` - Use smart dim to defer the imminent screen dimming.
 *   `smartctl` - Ability to run smartctl software utility.
 *   `storage_wearout_detect` - The ability to measure storage device health.
-*   `tablet_mode` - The ability to enter tablet mode. The device is either
-    a convertible device or a tablet device.
 *   `tablet_form_factor` - The device's primary form factor is tablet
 *   `tpm` - A [Trusted Platform Module] chip.
 *   `tpm1` - Indicate a Trusted Platform Module supporting TPMv1.2 is available. Note that TPMv2 is not backward compatible.

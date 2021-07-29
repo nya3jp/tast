@@ -28,7 +28,7 @@ const (
 
 	nonLiteralAttrMsg         = `Test Attr should be an array literal of string literals`
 	nonLiteralVarsMsg         = `Test Vars should be an array literal of string literals or constants, or append(array literal, ConstList...)`
-	nonLiteralSoftwareDepsMsg = `Test SoftwareDeps should be an array literal of string literals or (possibly qualified) identifiers`
+	nonLiteralSoftwareDepsMsg = `Test SoftwareDeps should be an array literal of string literals or constants, or append(array literal, ConstList...)`
 	nonLiteralParamsMsg       = `Test Params should be an array literal of Param struct literals`
 	nonLiteralParamNameMsg    = `Name of Param should be a string literal`
 
@@ -293,19 +293,27 @@ func verifyAttr(fs *token.FileSet, node ast.Node) []*Issue {
 	return issues
 }
 
-func isValidVar(expr ast.Expr) bool {
+func isStaticString(expr ast.Expr) bool {
 	_, isString := expr.(*ast.BasicLit)
 	_, isIdent := expr.(*ast.Ident)
 	_, isSelector := expr.(*ast.SelectorExpr)
 	return isString || isSelector || isIdent
 }
 
-func isValidVarList(expr ast.Expr) bool {
+func isStaticStringList(expr ast.Expr) bool {
 	_, isSelector := expr.(*ast.SelectorExpr)
-	_, isCompositeLit := expr.(*ast.CompositeLit)
-	if isSelector || isCompositeLit {
+	if isSelector {
 		return true
 	}
+	if compositeLit, ok := expr.(*ast.CompositeLit); ok {
+		for _, arg := range compositeLit.Elts {
+			if !isStaticString(arg) {
+				return false
+			}
+		}
+		return true
+	}
+
 	if callExpr, ok := expr.(*ast.CallExpr); ok {
 		fun, ok := callExpr.Fun.(*ast.Ident)
 		if !ok || fun.Name != "append" {
@@ -313,10 +321,10 @@ func isValidVarList(expr ast.Expr) bool {
 		}
 		for i, arg := range callExpr.Args {
 			isVarList := i == 0 || (i == len(callExpr.Args)-1 && callExpr.Ellipsis != token.NoPos)
-			if isVarList && !isValidVarList(arg) {
+			if isVarList && !isStaticStringList(arg) {
 				return false
 			}
-			if !isVarList && !isValidVar(arg) {
+			if !isVarList && !isStaticString(arg) {
 				return false
 			}
 		}
@@ -333,7 +341,7 @@ func verifyVars(fs *token.FileSet, fields entityFields) []*Issue {
 		return nil
 	}
 
-	if !isValidVarList(kv.Value) {
+	if !isStaticStringList(kv.Value) {
 		return []*Issue{{
 			Pos:  fs.Position(kv.Value.Pos()),
 			Msg:  nonLiteralVarsMsg,
@@ -343,27 +351,15 @@ func verifyVars(fs *token.FileSet, fields entityFields) []*Issue {
 	return nil
 }
 
-func verifySoftwareDeps(fs *token.FileSet, node ast.Node) []*Issue {
-	comp, ok := node.(*ast.CompositeLit)
-	if !ok {
+func verifySoftwareDeps(fs *token.FileSet, node ast.Expr) []*Issue {
+	if !isStaticStringList(node) {
 		return []*Issue{{
 			Pos:  fs.Position(node.Pos()),
 			Msg:  nonLiteralSoftwareDepsMsg,
 			Link: testRegistrationURL,
 		}}
 	}
-
-	var issues []*Issue
-	for _, el := range comp.Elts {
-		if !isStringLiteralOrIdent(el) {
-			issues = append(issues, &Issue{
-				Pos:  fs.Position(el.Pos()),
-				Msg:  nonLiteralSoftwareDepsMsg,
-				Link: testRegistrationURL,
-			})
-		}
-	}
-	return issues
+	return nil
 }
 
 func verifyParams(fs *token.FileSet, fields entityFields) []*Issue {

@@ -261,6 +261,42 @@ func TestDeclarationsSoftwareDeps(t *testing.T) {
 		Desc:         "This description is fine",
 		Contacts:     []string{"me@chromium.org"},
 		SoftwareDeps: []string{qualified.variable, is, "allowed"},
+	})`}, {snip: `
+	testing.AddTest(&testing.Test{
+		Func:     DoStuff,
+		Desc:     "This description is fine",
+		Contacts: []string{"me@chromium.org"},
+		SoftwareDeps:     append([]string{"this", "is", "valid", localConstant}, foo.BarList...),
+	})`}, {snip: `
+	testing.AddTest(&testing.Test{
+		Func:     DoStuff,
+		Desc:     "This description is fine",
+		Contacts: []string{"me@chromium.org"},
+		SoftwareDeps:     append(foo.BarList, "this", "is", "valid", localConstant),
+	})`}, {snip: `
+	testing.AddTest(&testing.Test{
+		Func:     DoStuff,
+		Desc:     "This description is fine",
+		Contacts: []string{"me@chromium.org"},
+		SoftwareDeps:     foo.BarList,
+	})`}, {snip: `
+	testing.AddTest(&testing.Test{
+		Func:     DoStuff,
+		Desc:     "This description is fine",
+		Contacts: []string{"me@chromium.org"},
+		SoftwareDeps:     append(foo.BarList, bar.Baz...),
+	})`}, {snip: `
+	testing.AddTest(&testing.Test{
+		Func:     DoStuff,
+		Desc:     "This description is fine",
+		Contacts: []string{"me@chromium.org"},
+		SoftwareDeps:     []string{foo.BarConstant, localConstant},
+	})`}, {snip: `
+	testing.AddTest(&testing.Test{
+		Func:     DoStuff,
+		Desc:     "This description is fine",
+		Contacts: []string{"me@chromium.org"},
+		SoftwareDeps:     append(foo.BazList, localConstant),
 	})`}, {`
 	testing.AddTest(&testing.Test{
 		Func:         DoStuff,
@@ -273,7 +309,7 @@ func TestDeclarationsSoftwareDeps(t *testing.T) {
 		Desc:         "This description is fine",
 		Contacts:     []string{"me@chromium.org"},
 		SoftwareDeps: []string{fun()},  // invocation is not allowed.
-	})`, declTestPath + ":8:26: " + nonLiteralSoftwareDepsMsg}} {
+	})`, declTestPath + ":8:17: " + nonLiteralSoftwareDepsMsg}} {
 		code := fmt.Sprintf(initTmpl, tc.snip)
 		f, fs := parse(code, declTestPath)
 		issues := TestDeclarations(fs, f, false)
@@ -334,7 +370,7 @@ func TestDeclarationsParams(t *testing.T) {
 		declTestPath + ":11:23: " + nonLiteralAttrMsg,
 		declTestPath + ":13:32: " + nonLiteralAttrMsg,
 		declTestPath + ":15:23: " + nonLiteralSoftwareDepsMsg,
-		declTestPath + ":17:32: " + nonLiteralSoftwareDepsMsg,
+		declTestPath + ":17:23: " + nonLiteralSoftwareDepsMsg,
 	}}} {
 		code := fmt.Sprintf(initTmpl, tc.snip)
 		f, fs := parse(code, declTestPath)

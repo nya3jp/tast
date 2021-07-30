@@ -259,6 +259,8 @@ func (c *Config) SetFlags(f *flag.FlagSet) {
 		td := command.NewEnumFlag(vals, func(v int) { c.proxy = proxyMode(v) }, "env")
 		desc := fmt.Sprintf("proxy settings used by the DUT (%s; default %q)", td.QuotedValues(), td.Default())
 		f.Var(td, "proxy", desc)
+
+		f.String("maybemissingvars", "", "Ignored flag which exists for fixing b/191779650")
 	} else {
 		c.checkTestDeps = false
 	}

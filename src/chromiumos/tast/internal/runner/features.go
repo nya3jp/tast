@@ -236,6 +236,7 @@ func newDeviceConfigAndHardwareFeatures() (dc *protocol.DeprecatedDeviceConfig, 
 		Memory:             &configpb.HardwareFeatures_Memory{},
 		Audio:              &configpb.HardwareFeatures_Audio{},
 		PrivacyScreen:      &configpb.HardwareFeatures_PrivacyScreen{},
+		Soc:                &configpb.HardwareFeatures_Soc{},
 	}
 
 	hasInternalDisplay := func() bool {
@@ -428,6 +429,33 @@ func newDeviceConfigAndHardwareFeatures() (dc *protocol.DeprecatedDeviceConfig, 
 	}()
 	if hasPrivacyScreen {
 		features.PrivacyScreen.Present = configpb.HardwareFeatures_PRESENT
+	}
+
+	cpuSMT, err := func() (bool, error) {
+		// NB: this sysfs API exists only on kernel >=4.19 (b/195061310). But we don't
+		// target SMT-specific tests on earlier kernels.
+		b, err := ioutil.ReadFile("/sys/devices/system/cpu/smt/control")
+		if err != nil {
+			if os.IsNotExist(err) {
+				return false, nil
+			}
+			return false, errors.Wrap(err, "failed to read SMT control file")
+		}
+		s := strings.TrimSpace(string(b))
+		switch s {
+		case "on", "off", "forceoff":
+			return true, nil
+		case "notsupported", "notimplemented":
+			return false, nil
+		default:
+			return false, errors.Errorf("unknown SMT control status: %q", s)
+		}
+	}()
+	if err != nil {
+		warns = append(warns, fmt.Sprintf("failed to determine CPU SMT features: %v", err))
+	}
+	if cpuSMT {
+		features.Soc.Features = append(features.Soc.Features, configpb.Component_Soc_SMT)
 	}
 
 	return config, features, warns

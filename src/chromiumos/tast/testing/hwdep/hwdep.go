@@ -217,6 +217,24 @@ func ChromeEC() Condition {
 	}
 }
 
+// CPUSupportsSMT returns a hardware dependency condition that is satisfied iff the DUT supports
+// Symmetric Multi-Threading.
+func CPUSupportsSMT() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("HardwareFeatures is not given")
+		}
+		for _, f := range hf.GetSoc().Features {
+			if f == configpb.Component_Soc_SMT {
+				return satisfied()
+			}
+		}
+		return unsatisfied("CPU does not have SMT support")
+	}, CEL: "dut.hardware_features.soc.features.exists(x, x == api.Component.Soc.Features.SMT)",
+	}
+}
+
 // ECHibernate returns a hardware dependency condition that is satisfied
 // iff the EC has the ability to hibernate.
 func ECHibernate() Condition {

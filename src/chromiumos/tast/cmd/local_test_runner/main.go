@@ -77,9 +77,8 @@ func main() {
 			// daisy variants' cameras don't support 1280x720.
 			"camera_720p": "!snow && !skate && !spring",
 			// Some boards might not support the camera/video/audio components required by the camera app.
-			// TODO(b/177195002): Remove kukui-kernelnext.
 			// TODO(b/185087278): Remove soraka-libcamera.
-			"camera_app":      `!("board:volteer-kernelnext" || "board:kukui-kernelnext" || "board:soraka-libcamera")`,
+			"camera_app":      `!("board:volteer-kernelnext" || "board:soraka-libcamera")`,
 			"camera_legacy":   `!"arc-camera1" && !"arc-camera3"`,
 			"cert_provision":  "cert_provision",
 			"chrome":          "!chromeless_tty && !rialto",

@@ -13,7 +13,6 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
-	"regexp"
 	"strconv"
 	"strings"
 	gotesting "testing"
@@ -967,69 +966,6 @@ func TestWriteResultsWriteFiles(t *gotesting.T) {
 	// Just check that the file is written. The content is tested in junit_results_test.go
 	if _, err := os.Stat(filepath.Join(cfg.ResDir, "results.xml")); err != nil {
 		t.Errorf("Result XML file not generated: %v", err)
-	}
-}
-
-func TestWriteResultsUnmatchedGlobs(t *gotesting.T) {
-	env := runtest.SetUp(t)
-	ctx := env.Context()
-	cfg := env.Config()
-
-	// Report that two tests were executed.
-	results := []*resultsjson.Result{
-		{Test: resultsjson.Test{Name: "pkg.Test1"}},
-		{Test: resultsjson.Test{Name: "pkg.Test2"}},
-	}
-
-	// This matches the message logged by WriteResults followed by patterns that
-	// are each indented by two spaces.
-	re := regexp.MustCompile(
-		`One or more test patterns did not match any tests:\n((?:  [^\n]+\n)+)`)
-
-	for _, tc := range []struct {
-		patterns  []string // requested test patterns
-		complete  bool     // whether run was complete
-		unmatched []string // expected unmatched patterns; nil if none expected
-	}{
-		{[]string{"pkg.Test1", "pkg.Test2"}, true, nil},                 // multiple exacts match
-		{[]string{"pkg.*1", "pkg.*2"}, true, nil},                       // multiple globs match
-		{[]string{"pkg.Test*"}, true, nil},                              // single glob matches
-		{[]string{"pkg.Missing"}, true, []string{"pkg.Missing"}},        // single exact fails
-		{[]string{"foo", "bar"}, true, []string{"foo", "bar"}},          // multiple exacts fail
-		{[]string{"pkg.Test1", "pkg.Foo*"}, true, []string{"pkg.Foo*"}}, // exact matches, glob fails
-		{[]string{"pkg.*", "foo.Bar"}, false, nil},                      // missing glob, but run incomplete
-	} {
-		logger := loggingtest.NewLogger(t, logging.LevelInfo)
-		ctx := logging.AttachLoggerNoPropagation(ctx, logger)
-
-		cfg.Patterns = tc.patterns
-		var state config.State
-		state.TestsToRun = []*protocol.ResolvedEntity{
-			{Entity: &protocol.Entity{Name: "pkg.Test1"}},
-			{Entity: &protocol.Entity{Name: "pkg.Test2"}},
-		}
-
-		drv, err := driver.New(ctx, cfg, cfg.Target)
-		if err != nil {
-			t.Fatalf("driver.New failed: %v", err)
-		}
-		defer drv.Close(ctx)
-
-		if err := WriteResults(ctx, cfg, &state, results, nil, tc.complete, drv); err != nil {
-			t.Errorf("WriteResults() failed for %v: %v", cfg.Patterns, err)
-			continue
-		}
-
-		var unmatched []string
-		if ms := re.FindStringSubmatch(logger.String()); ms != nil {
-			for _, ln := range strings.Split(strings.TrimRight(ms[1], "\n"), "\n") {
-				unmatched = append(unmatched, ln[2:])
-			}
-		}
-		if !reflect.DeepEqual(unmatched, tc.unmatched) {
-			t.Errorf("WriteResults() with patterns %v and complete=%v logged unmatched patterns %v; want %v",
-				tc.patterns, tc.complete, unmatched, tc.unmatched)
-		}
 	}
 }
 

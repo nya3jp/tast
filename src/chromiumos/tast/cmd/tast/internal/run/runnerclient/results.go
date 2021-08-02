@@ -29,7 +29,6 @@ import (
 	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/protocol"
-	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/internal/timing"
 )
 
@@ -144,21 +143,7 @@ func WriteResults(ctx context.Context, cfg *config.Config, state *config.State, 
 		}
 	}
 
-	if complete {
-		var matchedTestNames []string
-		for _, t := range state.TestsToRun {
-			matchedTestNames = append(matchedTestNames, t.GetEntity().GetName())
-		}
-		matchedTestNames = append(matchedTestNames, state.TestNamesToSkip...)
-		// Let the user know if one or more of the globs that they supplied didn't match any tests.
-		if pats := unmatchedTestPatterns(cfg.Patterns, matchedTestNames); len(pats) > 0 {
-			logging.Info(ctx, "")
-			logging.Info(ctx, "One or more test patterns did not match any tests:")
-			for _, p := range pats {
-				logging.Info(ctx, "  "+p)
-			}
-		}
-	} else {
+	if !complete {
 		// If the run didn't finish, log an additional message after the individual results
 		// to make it clearer that all is not well.
 		logging.Info(ctx, "")
@@ -790,34 +775,4 @@ func readTestOutput(ctx context.Context, cfg *config.Config, state *config.State
 	go readMessages(r, mch, ech)
 
 	return rh.processMessages(ctx, mch, ech)
-}
-
-// unmatchedTestPatterns returns any glob test patterns in the supplied slice
-// that failed to match any tests.
-func unmatchedTestPatterns(patterns, testNames []string) []string {
-	// TODO(derat): Consider also checking attribute expressions.
-	if m, err := testing.NewMatcher(patterns); err != nil || m.NeedAttrs() {
-		return nil
-	}
-
-	var unmatched []string
-	for _, p := range patterns {
-		re, err := testing.NewTestGlobRegexp(p)
-		if err != nil {
-			// Ignore bad globs -- these should've been caught earlier by the test bundles.
-			continue
-		}
-
-		matched := false
-		for _, name := range testNames {
-			if re.MatchString(name) {
-				matched = true
-				break
-			}
-		}
-		if !matched {
-			unmatched = append(unmatched, p)
-		}
-	}
-	return unmatched
 }

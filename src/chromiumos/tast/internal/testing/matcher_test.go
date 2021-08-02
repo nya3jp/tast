@@ -7,6 +7,8 @@ package testing_test
 import (
 	gotesting "testing"
 
+	"github.com/google/go-cmp/cmp"
+
 	"chromiumos/tast/internal/testing"
 )
 
@@ -55,6 +57,75 @@ func TestMatcherBadPatterns(t *gotesting.T) {
 	} {
 		if _, err := testing.NewMatcher([]string{pat}); err == nil {
 			t.Errorf("NewMatcher unexpectedly succeeded for %q", pat)
+		}
+	}
+}
+
+func TestMatcherUnmatchedPatternsNames(t *gotesting.T) {
+	// Test a combination of all, none, and some tests found, mixed with wildcards and expressions.
+	for _, tc := range []struct {
+		tests []string
+		pats  []string
+		want  []string
+	}{
+		{
+			tests: []string{"example.Pass"},
+			pats:  []string{"foo.bar", "example.Pass"},
+			want:  []string{"foo.bar"},
+		},
+		{
+			tests: []string{"example.Pass"},
+			pats:  []string{"foo.bar", "example.Pass", "bar.foo"},
+			want:  []string{"bar.foo", "foo.bar"},
+		},
+		{
+			tests: []string{},
+			pats:  []string{"foo.bar", "example.Pass", "bar.foo"},
+			want:  []string{"bar.foo", "example.Pass", "foo.bar"},
+		},
+		{
+			tests: []string{"example.Pass"},
+			pats:  []string{"example.*", "foo.*"},
+			want:  []string{"foo.*"},
+		},
+		{
+			tests: []string{"example.Pass"},
+			pats:  []string{"example.*", "foo.*", "bar.*"},
+			want:  []string{"bar.*", "foo.*"},
+		},
+		{
+			tests: []string{},
+			pats:  []string{"example.*", "foo.*", "bar.*"},
+			want:  []string{"bar.*", "example.*", "foo.*"},
+		},
+		{
+			tests: []string{"example.Pass", "foo.bar"},
+			pats:  []string{"example.*", "foo.bar"},
+			want:  []string(nil),
+		},
+		{
+			tests: []string{"example.Pass"},
+			pats:  []string{"example.*", "foo.bar"},
+			want:  []string{"foo.bar"},
+		},
+		{
+			tests: []string{"foo.bar"},
+			pats:  []string{"example.*", "foo.bar"},
+			want:  []string{"example.*"},
+		},
+		{
+			tests: []string{},
+			pats:  []string{"(\"name:NotExist.Pass\")"},
+			want:  []string(nil),
+		},
+	} {
+		m, err := testing.NewMatcher(tc.pats)
+		if err != nil {
+			t.Fatalf("Failed to compile %q: %v", tc.pats, err)
+		}
+		unmatched := m.UnmatchedPatterns(tc.tests)
+		if diff := cmp.Diff(unmatched, tc.want); diff != "" {
+			t.Errorf("UnmatchedPatterns returned unexpected patterns with tests %s, patterns %s (-got +want):\n%s", tc.tests, tc.pats, diff)
 		}
 	}
 }

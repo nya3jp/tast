@@ -27,9 +27,11 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/runnerclient"
 	"chromiumos/tast/cmd/tast/internal/run/sharding"
 	"chromiumos/tast/errors"
-	"chromiumos/tast/framework/protocol"
+	frameworkprotocol "chromiumos/tast/framework/protocol"
 	"chromiumos/tast/internal/logging"
+	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/sshconfig"
+	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/internal/xcontext"
 	"chromiumos/tast/ssh"
 )
@@ -55,7 +57,7 @@ func Run(ctx context.Context, cfg *config.Config, state *config.State) ([]*resul
 	}
 
 	if state.ReportsConn != nil {
-		cl := protocol.NewReportsClient(state.ReportsConn)
+		cl := frameworkprotocol.NewReportsClient(state.ReportsConn)
 		state.ReportsClient = cl
 		strm, err := cl.LogStream(ctx)
 		if err != nil {
@@ -149,6 +151,24 @@ func listTests(ctx context.Context, cfg *config.Config, drv *driver.Driver) ([]*
 	return results, nil
 }
 
+// verifyTestNames returns nil if all given test names have a match.
+func verifyTestNames(patterns []string, tests []*protocol.ResolvedEntity) error {
+	// Make a map of given test names (NOT patterns).
+	m, err := testing.NewMatcher(patterns)
+	if err != nil {
+		return errors.Wrap(err, "failed parsing test patterns")
+	}
+	var testNames []string
+	for _, t := range tests {
+		testNames = append(testNames, t.Entity.Name)
+	}
+	unmatched := m.UnmatchedPatterns(testNames)
+	if len(unmatched) != 0 {
+		return errors.Errorf("specified tests not found: %s", strings.Join(unmatched, ", "))
+	}
+	return nil
+}
+
 func runTests(ctx context.Context, cfg *config.Config, state *config.State, drv *driver.Driver) (results []*resultsjson.Result, retErr error) {
 	dutInfo, err := drv.GetDUTInfo(ctx)
 	if err != nil {
@@ -172,6 +192,10 @@ func runTests(ctx context.Context, cfg *config.Config, state *config.State, drv 
 
 	tests, err := drv.ListMatchedTests(ctx, cfg.Features(dutInfo.GetFeatures()))
 	if err != nil {
+		return nil, err
+	}
+
+	if err := verifyTestNames(cfg.Patterns, tests); err != nil {
 		return nil, err
 	}
 

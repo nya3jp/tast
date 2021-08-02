@@ -7,6 +7,7 @@ package testing
 import (
 	"fmt"
 	"regexp"
+	"sort"
 	"strings"
 	"unicode"
 
@@ -16,7 +17,7 @@ import (
 // Matcher holds compiled patterns to match tests.
 type Matcher struct {
 	names map[string]struct{}
-	globs []*regexp.Regexp
+	globs map[string]*regexp.Regexp
 	exprs []*expr.Expr
 }
 
@@ -26,16 +27,6 @@ func NewMatcher(pats []string) (*Matcher, error) {
 		return compileExpr(pats[0][1 : len(pats[0])-1])
 	}
 	return compileGlobs(pats)
-}
-
-// NeedAttrs returns if attributes are needed to correctly perform matches.
-//
-// This method exists only for historical reasons to allow Tast CLI to match
-// tests only when attribute expressions are not used.
-//
-// DEPRECATED: Do not use this method. Always pass correct attrs to Match.
-func (m *Matcher) NeedAttrs() bool {
-	return len(m.exprs) > 0
 }
 
 // Match matches a test.
@@ -67,16 +58,15 @@ func compileExpr(s string) (*Matcher, error) {
 func compileGlobs(pats []string) (*Matcher, error) {
 	// If the pattern is empty, return a matcher that matches anything.
 	if len(pats) == 0 {
-		return &Matcher{globs: []*regexp.Regexp{regexp.MustCompile("")}}, nil
+		pats = []string{"*"}
 	}
-
 	// Print a helpful error message if it looks like the user wanted an attribute expression.
 	if len(pats) == 1 && (strings.Contains(pats[0], "&&") || strings.Contains(pats[0], "||")) {
 		return nil, fmt.Errorf("attr expr %q must be within parentheses", pats[0])
 	}
 
 	names := make(map[string]struct{})
-	var globs []*regexp.Regexp
+	globs := make(map[string]*regexp.Regexp)
 	for _, pat := range pats {
 		hasWildcard, err := validateGlob(pat)
 		if err != nil {
@@ -87,7 +77,7 @@ func compileGlobs(pats []string) (*Matcher, error) {
 			if err != nil {
 				return nil, err
 			}
-			globs = append(globs, glob)
+			globs[pat] = glob
 		} else {
 			names[pat] = struct{}{}
 		}
@@ -129,4 +119,42 @@ func NewTestGlobRegexp(glob string) (*regexp.Regexp, error) {
 		return nil, err
 	}
 	return compileGlob(glob)
+}
+
+// UnmatchedPatterns returns a list of test name patterns (exact or wildcards) in the matcher that do not match any of supplied test names.
+// This method always returns nil if the pattern in the matcher is an attribute expression.
+func (m *Matcher) UnmatchedPatterns(tests []string) []string {
+	if len(m.exprs) > 0 {
+		return nil
+	}
+
+	matched := make(map[string]struct{})
+	for k, g := range m.globs {
+		for _, t := range tests {
+			if g.MatchString(t) {
+				matched[k] = struct{}{}
+				break
+			}
+		}
+	}
+	for _, t := range tests {
+		if _, ok := m.names[t]; ok {
+			matched[t] = struct{}{}
+		}
+	}
+
+	var notFoundList []string
+	for k := range m.globs {
+		if _, ok := matched[k]; !ok {
+			notFoundList = append(notFoundList, k)
+		}
+	}
+	for n := range m.names {
+		if _, ok := matched[n]; !ok {
+			notFoundList = append(notFoundList, n)
+		}
+	}
+
+	sort.Strings(notFoundList)
+	return notFoundList
 }

@@ -53,6 +53,7 @@ func TestRunNoTestToRun(t *gotesting.T) {
 	env := runtest.SetUp(t, runtest.WithLocalBundles(testing.NewRegistry("bundle")), runtest.WithRemoteBundles(testing.NewRegistry("bundle")))
 	ctx := env.Context()
 	cfg := env.Config()
+	cfg.Patterns = []string{"(foobar)"} // an attribute expression matching no test
 	state := env.State()
 
 	if _, err := run.Run(ctx, cfg, state); err != nil {
@@ -704,5 +705,67 @@ func TestRunWithGlobalRuntimeVars(t *gotesting.T) {
 		if v.Value() != cfg.TestVars[v.Name()] {
 			t.Errorf("Run set global runtime variable %q to %q; want %q", v.Name(), v.Value(), cfg.TestVars[v.Name()])
 		}
+	}
+}
+
+// TestRunWithVerifyTestNameFail tests that an err is raised when non-existent test is given during a list.
+func TestRunWithVerifyTestNameFail(t *gotesting.T) {
+	const (
+		bundleName    = "bundle"
+		localTestName = "pkg.LocalTest"
+	)
+
+	localReg := testing.NewRegistry(bundleName)
+	localReg.AddTestInstance(&testing.TestInstance{
+		Name:    localTestName,
+		Timeout: time.Minute,
+		Func: func(ctx context.Context, s *testing.State) {
+			t.Errorf("%s was run despite bad name", localTestName)
+		},
+	})
+
+	env := runtest.SetUp(
+		t,
+		runtest.WithLocalBundles(localReg),
+	)
+	ctx := env.Context()
+	cfg := env.Config()
+	state := env.State()
+	cfg.Patterns = []string{"pkg.LocalTest", "pkg.NonExistingTest"}
+
+	_, err := run.Run(ctx, cfg, state)
+	if err == nil {
+		t.Errorf("Run did not err on missing pattern")
+	}
+}
+
+// TestRunWithVerifyTestPatternRuns tests that when a pattern is provided the test will not err on test matching.
+func TestRunWithVerifyTestPatternRuns(t *gotesting.T) {
+	const (
+		bundleName    = "bundle"
+		localTestName = "pkg.LocalTest"
+	)
+
+	localReg := testing.NewRegistry(bundleName)
+	localReg.AddTestInstance(&testing.TestInstance{
+		Name:    localTestName,
+		Timeout: time.Minute,
+		Func: func(ctx context.Context, s *testing.State) {
+			t.Errorf("%s was run despite bad name", localTestName)
+		},
+	})
+
+	env := runtest.SetUp(
+		t,
+		runtest.WithLocalBundles(localReg),
+	)
+	ctx := env.Context()
+	cfg := env.Config()
+	state := env.State()
+	cfg.Patterns = []string{`("name:pkg.LocalTest" || "name:pkg.NonExistingTest")`}
+
+	_, err := run.Run(ctx, cfg, state)
+	if err != nil {
+		t.Errorf("Unexpected err during test patten search: %s", err)
 	}
 }

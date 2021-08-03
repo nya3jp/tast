@@ -164,7 +164,10 @@ func runTestsCompat(ctx context.Context, mw *control.MessageWriter, scfg *Static
 	params := &protocol.RunnerInitParams{
 		BundleGlob: args.RunTests.BundleGlob,
 	}
-	conn, err := rpc.NewClient(ctx, cr, cw, &protocol.HandshakeRequest{RunnerInitParams: params})
+	conn, err := rpc.NewClient(ctx, cr, cw, &protocol.HandshakeRequest{
+		RunnerInitParams: params,
+		EntityInitParams: &protocol.EntityInitParams{Vars: args.RunTests.BundleArgs.TestVars},
+	})
 	if err != nil {
 		return errors.Wrap(err, "failed to connect to in-process gRPC server")
 	}

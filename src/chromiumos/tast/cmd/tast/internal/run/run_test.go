@@ -658,3 +658,51 @@ func TestRunCollectSysInfo(t *gotesting.T) {
 		t.Error("CollectSysInfo was not called")
 	}
 }
+
+// TestRunWithGlobalRuntimeVars tests run time variables are correctly pass on to the tests.
+func TestRunWithGlobalRuntimeVars(t *gotesting.T) {
+	localReg := testing.NewRegistry("bundle")
+	remoteReg := testing.NewRegistry("bundle")
+
+	var1 := testing.NewVarString("var1", "", "description")
+	localReg.AddVar(var1)
+	var2 := testing.NewVarString("var2", "", "description")
+	localReg.AddVar(var2)
+	var3 := testing.NewVarString("var3", "", "description")
+	remoteReg.AddVar(var3)
+	var4 := testing.NewVarString("var4", "", "description")
+	remoteReg.AddVar(var4)
+
+	localTest := &testing.TestInstance{
+		Name: "localTest",
+		Func: func(ctx context.Context, s *testing.State) {},
+	}
+	remoteTest := &testing.TestInstance{
+		Name: "remoteTest",
+		Func: func(ctx context.Context, s *testing.State) {},
+	}
+
+	localReg.AddTestInstance(localTest)
+	remoteReg.AddTestInstance(remoteTest)
+
+	env := runtest.SetUp(t, runtest.WithLocalBundles(localReg), runtest.WithRemoteBundles(remoteReg))
+	ctx := env.Context()
+	cfg := env.Config()
+	state := env.State()
+
+	// The variable var1 and var3 will have non-default values.
+	cfg.TestVars = map[string]string{
+		"var1": "value1",
+		"var3": "value3",
+	}
+
+	if _, err := run.Run(ctx, cfg, state); err != nil {
+		t.Errorf("Run failed: %v", err)
+	}
+	vars := []*testing.VarString{var1, var2, var3, var4}
+	for _, v := range vars {
+		if v.Value() != cfg.TestVars[v.Name()] {
+			t.Errorf("Run set global runtime variable %q to %q; want %q", v.Name(), v.Value(), cfg.TestVars[v.Name()])
+		}
+	}
+}

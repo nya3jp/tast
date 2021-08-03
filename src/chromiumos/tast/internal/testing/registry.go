@@ -9,18 +9,23 @@ import (
 	"runtime"
 	"strings"
 
+	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
+
 	"chromiumos/tast/errors"
 )
 
 // Registry holds tests and services.
 type Registry struct {
-	name        string
-	errors      []error
-	allTests    []*TestInstance
-	testNames   map[string]struct{} // names of registered tests
-	allServices []*Service
-	allPres     map[string]Precondition
-	allFixtures map[string]*FixtureInstance
+	name         string
+	errors       []error
+	allTests     []*TestInstance
+	testNames    map[string]struct{} // names of registered tests
+	allServices  []*Service
+	allPres      map[string]Precondition
+	allFixtures  map[string]*FixtureInstance
+	allVars      map[string]Var    // all registered global runtime variables
+	varRawValues map[string]string // raw values of global runtime variables
 }
 
 // NewRegistry returns a new test registry.
@@ -30,6 +35,7 @@ func NewRegistry(name string) *Registry {
 		testNames:   make(map[string]struct{}),
 		allPres:     make(map[string]Precondition),
 		allFixtures: make(map[string]*FixtureInstance),
+		allVars:     make(map[string]Var),
 	}
 }
 
@@ -133,6 +139,18 @@ func (r *Registry) AddFixtureInstance(f *FixtureInstance) {
 	}())
 }
 
+// AddVar adds global variables to the registry.
+func (r *Registry) AddVar(v Var) {
+	r.RecordError(func() error {
+		name := v.Name()
+		if _, ok := r.allVars[name]; ok {
+			return fmt.Errorf("global runtime variable %q has already been registered", v.Name())
+		}
+		r.allVars[name] = v
+		return nil
+	}())
+}
+
 // AllTests returns copies of all registered tests.
 func (r *Registry) AllTests() []*TestInstance {
 	ts := make([]*TestInstance, len(r.allTests))
@@ -168,4 +186,28 @@ func userCaller() (file string, line int) {
 		}
 		return file, line
 	}
+}
+
+// InitializeVars initializes all registered global variables.
+func (r *Registry) InitializeVars(values map[string]string) error {
+	if r.varRawValues != nil {
+		if !cmp.Equal(values, r.varRawValues, cmpopts.EquateEmpty()) {
+			return errors.New("global runtime variables can only be initialized once")
+		}
+		return nil
+	}
+	// Save raw values for future comparison.
+	r.varRawValues = make(map[string]string)
+	for k, v := range values {
+		r.varRawValues[k] = v
+	}
+	// Set value for each variable.
+	for _, v := range r.allVars {
+		if stringValue, ok := values[v.Name()]; ok {
+			if err := v.Unmarshal(stringValue); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
 }

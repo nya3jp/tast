@@ -237,3 +237,116 @@ func TestAllFixtures(t *gotesting.T) {
 		t.Errorf("Result mismatch (-got +want):\n%v", diff)
 	}
 }
+
+type varType struct {
+	name  string
+	value string
+}
+
+func (v *varType) Unmarshal(data string) error {
+	v.value = data
+	return nil
+}
+func (v *varType) Name() string {
+	return v.name
+}
+
+// TestAllVars makes sure all registered global variables return correctly.
+func TestAllVars(t *gotesting.T) {
+	reg := NewRegistry("bundle")
+	allVars := map[string]Var{
+		"a": &varType{name: "a"},
+		"b": &varType{name: "b"},
+		"c": &varType{name: "c"},
+	}
+	for _, v := range allVars {
+		reg.AddVar(v)
+		if errs := reg.Errors(); len(errs) > 0 {
+			t.Fatal("Registration failed: ", errs)
+		}
+	}
+	// Make sure we cannot register all the registered variable again.
+	var i int
+	for n, v := range allVars {
+		reg.AddVar(v)
+		i++
+		if errs := reg.Errors(); len(errs) != i {
+			t.Fatalf("Registration of the variable %q for the second time should result in failure", n)
+		}
+	}
+}
+
+// TestAddVarOnce makes sure global variables can only be register once.
+func TestAddVarOnce(t *gotesting.T) {
+	reg := NewRegistry("bundle")
+	reg.AddVar(&varType{name: "a"})
+	if errs := reg.Errors(); len(errs) > 0 {
+		t.Fatal("Registration failed: ", errs)
+	}
+	reg.AddVar(&varType{name: "a"})
+	if errs := reg.Errors(); len(errs) == 0 {
+		t.Fatal("Variable registration was successful but failure was expected")
+	}
+}
+
+// TestInitializeVarsOnce makes sure global variables can only be initialized once.
+func TestInitializeVarsOnce(t *gotesting.T) {
+	reg := NewRegistry("bundle")
+	v := varType{name: "a"}
+	reg.AddVar(&v)
+	vars := map[string]string{"a": "value"}
+	if err := reg.InitializeVars(vars); err != nil {
+		t.Fatal("InitializeVars failed: ", err)
+	}
+	if err := reg.InitializeVars(vars); err != nil {
+		t.Fatal("Failed to call InitializeVars twice with the same value: ", err)
+	}
+	if v.value != "value" {
+		t.Fatalf("Got %q for v.value; wanted value", v.value)
+	}
+	vars["a"] = "another value"
+	if err := reg.InitializeVars(vars); err == nil {
+		t.Fatal("Got no error when InitializeVars was called the second time with different value")
+	}
+}
+
+// TestInitializeVars tests if InitializeVars works correctly.
+func TestInitializeVars(t *gotesting.T) {
+
+	const (
+		name1       = `var1`
+		name2       = `var2`
+		val1        = `value1`
+		val2        = `value2`
+		defaultVal1 = `v1`
+		defaultVal2 = `v2`
+	)
+	values := map[string]string{
+		name1: val1,
+		name2: val2,
+	}
+	reg := NewRegistry("bundle")
+	v1 := NewVarString(name1, val1, "")
+	v2 := NewVarString(name2, val2, "")
+	reg.AddVar(v1)
+	reg.AddVar(v2)
+
+	stringVars := map[string]*VarString{
+		name1: v1,
+		name2: v2,
+	}
+
+	if err := reg.InitializeVars(values); err != nil {
+		t.Fatal("Failed to call InitializeVars: ", err)
+	}
+	for k, v := range stringVars {
+		expectedVal, ok := values[k]
+		if !ok {
+			t.Error("Failed to find variable ", k)
+		}
+		val := v.Value()
+		if val != expectedVal {
+			t.Errorf("Variable %q has value %q; want %q", k, val, expectedVal)
+		}
+	}
+}

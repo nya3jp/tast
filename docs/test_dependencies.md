@@ -139,6 +139,7 @@ The following software features are defined:
     [OCI] containers.
 *   `ocr` - [Optical Character Recognition Service] daemon.
 *   `ondevice_handwriting` - On-device handwriting recognition support in `ml_service`.
+*   `pinweaver` - Pinweaver support, either by GSC or Intel CSME.
     This implies `ml_service`.
 *   `play_store` - Boards where Google Play Store is supported.
 *   `plugin_vm` - The ability to run Plugin VMs.

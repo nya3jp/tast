@@ -64,7 +64,7 @@ func Dial(ctx context.Context, d *dut.DUT, h *testing.RPCHint, bundleName string
 	bundlePath := filepath.Join(testing.ExtractLocalBundleDir(h), bundleName)
 	req := &protocol.HandshakeRequest{
 		NeedUserServices: true,
-		UserServiceInitParams: &protocol.UserServiceInitParams{
+		EntityInitParams: &protocol.EntityInitParams{
 			Vars: testing.ExtractTestVars(h),
 		},
 	}

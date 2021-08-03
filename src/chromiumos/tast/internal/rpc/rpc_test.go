@@ -426,7 +426,7 @@ func TestRPCSetVars(t *gotesting.T) {
 	exp := "value1"
 	req := &protocol.HandshakeRequest{
 		NeedUserServices: true,
-		UserServiceInitParams: &protocol.UserServiceInitParams{
+		EntityInitParams: &protocol.EntityInitParams{
 			Vars: map[string]string{key: exp},
 		},
 	}

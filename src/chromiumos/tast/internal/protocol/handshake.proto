@@ -13,13 +13,13 @@ option go_package = "chromiumos/tast/internal/protocol";
 message HandshakeRequest {
   // Whether to initialize user-defined gRPC services.
   bool need_user_services = 1;
-  UserServiceInitParams user_service_init_params = 2;
+  EntityInitParams entity_init_params = 2;
   RunnerInitParams runner_init_params = 3;
 }
 
-// UserServiceInitParams contains parameters needed to initialize user-defined
-// gRPC services.
-message UserServiceInitParams {
+// EntityInitParams contains parameters needed to initialize user-defined
+// entities.
+message EntityInitParams {
   // Runtime variables.
   map<string, string> vars = 1;
 }

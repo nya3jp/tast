@@ -138,6 +138,8 @@ The following software features are defined:
 *   `oci` - The ability to use the `run_oci` program to execute code within
     [OCI] containers.
 *   `ocr` - [Optical Character Recognition Service] daemon.
+*   `ondevice_document_scanner` - On-device document scanner support in `ml_service`.
+    This implies `ml_service`.
 *   `ondevice_handwriting` - On-device handwriting recognition support in `ml_service`.
 *   `pinweaver` - Pinweaver support, either by GSC or Intel CSME.
     This implies `ml_service`.

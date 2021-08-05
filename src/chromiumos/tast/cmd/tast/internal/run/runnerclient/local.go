@@ -433,6 +433,12 @@ func RunLocalTests(ctx context.Context, cfg *config.Config, state *config.State,
 // set up and tear down.
 // It can return partial results and an error when error happens mid-tests.
 func runLocalTestsForFixture(ctx context.Context, names []string, remoteFixt string, setUpErrs []string, cfg *config.Config, state *config.State, dutInfo *protocol.DUTInfo, drv *driver.Driver) ([]*resultsjson.Result, error) {
+	// Reconnect if needed because a remote fixture may have disrupted
+	// the SSH connection.
+	if err := drv.ReconnectIfNeeded(ctx); err != nil {
+		return nil, errors.Wrap(err, "failed reconnecting to target")
+	}
+
 	beforeRetry := func(ctx context.Context) bool {
 		if err := drv.ReconnectIfNeeded(ctx); err != nil {
 			logging.Info(ctx, "Failed reconnecting to target: ", err)

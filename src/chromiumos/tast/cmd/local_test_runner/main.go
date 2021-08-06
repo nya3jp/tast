@@ -219,10 +219,8 @@ func main() {
 			"video_decoder_legacy_supported": `!("board:strongbad" || "board:trogdor" || "board:trogdor-kernelnext")`,
 			// drm_atomic is a necessary but not sufficient condition to support
 			// video_overlays; in practice, they tend to be enabled at the same time.
-			// Except for grunt, which supports drm_atomic, but does not support NV12
-			// on any plane (b/192623156).
-			// TODO(mcasas): query in advance for NV12 format DRM Plane support.
-			"video_overlays":      `"drm_atomic" && !("board:grunt" || "board:grunt-kernelnext" || "board:grunt-arc-r")`,
+			// Generally you should use the more restrictive hwdep.SupportsNV12Overlays().
+			"video_overlays":      "drm_atomic",
 			"virtual_usb_printer": `!"kernel-4_4"`,
 			// Some VM builds actually can run nested VM with right host configuration.
 			// But we haven't enable this feature on builders. For now, just disable

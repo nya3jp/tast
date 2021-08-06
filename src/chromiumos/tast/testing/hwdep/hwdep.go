@@ -538,6 +538,7 @@ func SupportsNV12Overlays() Condition {
 			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_SKYLAKE_U ||
 			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_SKYLAKE_Y ||
 			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_APOLLO_LAKE ||
+			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_STONEY_RIDGE ||
 			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_MT8173 ||
 			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_MT8176 ||
 			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_MT8183 ||

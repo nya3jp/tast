@@ -540,7 +540,9 @@ func SupportsNV12Overlays() Condition {
 			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_APOLLO_LAKE ||
 			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_MT8173 ||
 			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_MT8176 ||
-			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_MT8183 {
+			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_MT8183 ||
+			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_MT8192 ||
+			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_MT8195 {
 			return unsatisfied("SoC does not support NV12 Overlays")
 		}
 		return satisfied()

@@ -72,7 +72,7 @@ func DownloadSymbols(url, destDir string, files SymbolFileMap) (created int, err
 	return created, nil
 }
 
-// writeSymbolFiles creates a new file (including parent directory) at p
+// writeSymbolFile creates a new file (including parent directory) at p
 // and copies data from r into it until io.EOF is reached.
 func writeSymbolFile(p string, r io.Reader) error {
 	if err := os.MkdirAll(filepath.Dir(p), 0755); err != nil {
@@ -102,9 +102,11 @@ func newArchiveStreamer(src string) (*archiveStreamer, error) {
 	// use it instead of gsutil. The Go standard library doesn't support xz, though, so
 	// some of this will need to happen out of process regardless.
 	as := archiveStreamer{
-		gs: exec.Command("gsutil", "cp", src, "-"),
+		gs: exec.Command("gsutil", "cp", src, "/dev/stdout"),
 		xz: exec.Command("xz", "-d"),
 	}
+	as.gs.Stderr = os.Stderr
+	as.xz.Stderr = os.Stderr
 
 	var err error
 	if as.xz.Stdin, err = as.gs.StdoutPipe(); err != nil {

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package devservertest
+package devservertest_test
 
 import (
 	"bytes"
@@ -15,10 +15,12 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
+
+	"chromiumos/tast/internal/devserver/devservertest"
 )
 
 func TestCheckHealth(t *testing.T) {
-	s, err := NewServer()
+	s, err := devservertest.NewServer()
 	if err != nil {
 		t.Fatal("NewServer: ", err)
 	}
@@ -36,7 +38,7 @@ func TestCheckHealth(t *testing.T) {
 }
 
 func TestCheckHealthDown(t *testing.T) {
-	s, err := NewServer(Down())
+	s, err := devservertest.NewServer(devservertest.Down())
 	if err != nil {
 		t.Fatal("NewServer: ", err)
 	}
@@ -55,12 +57,12 @@ func TestCheckHealthDown(t *testing.T) {
 
 func TestStage(t *testing.T) {
 	const archiveURL = "gs://bucket/path/to"
-	files := []*File{
+	files := []*devservertest.File{
 		{URL: archiveURL + "/file1.txt", Data: []byte("data1")},
 		{URL: archiveURL + "/file2.txt", Data: []byte("data2")},
 		{URL: archiveURL + "/file3.txt", Data: []byte("data3"), Staged: true},
 	}
-	s, err := NewServer(Files(files))
+	s, err := devservertest.NewServer(devservertest.Files(files))
 	if err != nil {
 		t.Fatal("NewServer: ", err)
 	}
@@ -210,8 +212,8 @@ func TestStageHook(t *testing.T) {
 		return nil
 	}
 
-	files := []*File{{URL: "gs://bucket/pass"}, {URL: "gs://bucket/fail"}}
-	s, err := NewServer(Files(files), StageHook(stageHook))
+	files := []*devservertest.File{{URL: "gs://bucket/pass"}, {URL: "gs://bucket/fail"}}
+	s, err := devservertest.NewServer(devservertest.Files(files), devservertest.StageHook(stageHook))
 	if err != nil {
 		t.Fatal("NewServer: ", err)
 	}
@@ -248,12 +250,12 @@ func TestStageHook(t *testing.T) {
 func TestDownloadPartialContent(t *testing.T) {
 	const data = "abcdefghijklmnopqrstuvwxyz"
 
-	files := []*File{{
+	files := []*devservertest.File{{
 		URL:    "gs://bucket/file",
 		Data:   []byte(data),
 		Staged: true,
 	}}
-	s, err := NewServer(Files(files))
+	s, err := devservertest.NewServer(devservertest.Files(files))
 	if err != nil {
 		t.Fatal("NewServer: ", err)
 	}
@@ -290,12 +292,12 @@ func TestAbortDownloadAfter(t *testing.T) {
 		capSize  = 123
 	)
 
-	files := []*File{{
+	files := []*devservertest.File{{
 		URL:    "gs://bucket/file",
 		Data:   bytes.Repeat([]byte{'a'}, fullSize),
 		Staged: true,
 	}}
-	s, err := NewServer(Files(files), AbortDownloadAfter(capSize))
+	s, err := devservertest.NewServer(devservertest.Files(files), devservertest.AbortDownloadAfter(capSize))
 	if err != nil {
 		t.Fatal("NewServer: ", err)
 	}
@@ -328,8 +330,8 @@ func TestAbortDownloadAfter(t *testing.T) {
 }
 
 func TestNegotiate(t *testing.T) {
-	files := []*File{{URL: "gs://bucket/file.txt", Staged: true}}
-	s, err := NewServer(Files(files))
+	files := []*devservertest.File{{URL: "gs://bucket/file.txt", Staged: true}}
+	s, err := devservertest.NewServer(devservertest.Files(files))
 	if err != nil {
 		t.Fatal("NewServer: ", err)
 	}
@@ -365,8 +367,8 @@ func TestNegotiate(t *testing.T) {
 }
 
 func TestPathEscape(t *testing.T) {
-	files := []*File{{URL: "gs://bucket/path/to/some%20file%2521"}}
-	s, err := NewServer(Files(files))
+	files := []*devservertest.File{{URL: "gs://bucket/path/to/some%20file%2521"}}
+	s, err := devservertest.NewServer(devservertest.Files(files))
 	if err != nil {
 		t.Fatal("NewServer: ", err)
 	}

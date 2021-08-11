@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package control
+package control_test
 
 import (
 	"bytes"
@@ -16,37 +16,38 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 
+	"chromiumos/tast/internal/control"
 	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/timing"
 )
 
 func TestWriteAndRead(t *gotesting.T) {
-	msgs := []Msg{
-		&RunStart{time.Unix(1, 0), []string{"pkg.MyTest"}, 1},
-		&RunLog{time.Unix(2, 0), "run message"},
-		&EntityStart{time.Unix(3, 0), jsonprotocol.EntityInfo{
+	msgs := []control.Msg{
+		&control.RunStart{time.Unix(1, 0), []string{"pkg.MyTest"}, 1},
+		&control.RunLog{time.Unix(2, 0), "run message"},
+		&control.EntityStart{time.Unix(3, 0), jsonprotocol.EntityInfo{
 			Name: "pkg.MyTest",
 			Desc: "test description",
 			Attr: []string{"attr1", "attr2"},
 		}, "/tmp/out/test1"},
-		&EntityLog{time.Unix(4, 0), "here's a log message", "pkg.MyTest"},
-		&EntityError{time.Unix(5, 0), jsonprotocol.Error{Reason: "whoops", File: "file.go", Line: 20, Stack: "stack"}, "pkg.MyTest"},
-		&EntityEnd{time.Unix(6, 0), "pkg.MyTest", []string{"dep"}, []string{"errHwdep"}, timing.NewLog()},
-		&RunEnd{time.Unix(7, 0), "/tmp/out"},
-		&RunError{time.Unix(8, 0), jsonprotocol.Error{Reason: "whoops again", File: "file2.go", Line: 30, Stack: "stack 2"}, 1},
-		&Heartbeat{Time: time.Unix(9, 0)},
+		&control.EntityLog{time.Unix(4, 0), "here's a log message", "pkg.MyTest"},
+		&control.EntityError{time.Unix(5, 0), jsonprotocol.Error{Reason: "whoops", File: "file.go", Line: 20, Stack: "stack"}, "pkg.MyTest"},
+		&control.EntityEnd{time.Unix(6, 0), "pkg.MyTest", []string{"dep"}, []string{"errHwdep"}, timing.NewLog()},
+		&control.RunEnd{time.Unix(7, 0), "/tmp/out"},
+		&control.RunError{time.Unix(8, 0), jsonprotocol.Error{Reason: "whoops again", File: "file2.go", Line: 30, Stack: "stack 2"}, 1},
+		&control.Heartbeat{Time: time.Unix(9, 0)},
 	}
 
 	b := bytes.Buffer{}
-	mw := NewMessageWriter(&b)
+	mw := control.NewMessageWriter(&b)
 	for _, msg := range msgs {
 		if err := mw.WriteMessage(msg); err != nil {
 			t.Errorf("WriteMessage() failed for %v: %v", msg, err)
 		}
 	}
 
-	act := make([]Msg, 0)
-	mr := NewMessageReader(&b)
+	act := make([]control.Msg, 0)
+	mr := control.NewMessageReader(&b)
 	for mr.More() {
 		if msg, err := mr.ReadMessage(); err != nil {
 			t.Errorf("ReadMessage() failed on %d: %v", len(act), err)
@@ -75,7 +76,7 @@ func TestConcurrentWrites(t *gotesting.T) {
 	func() {
 		defer w.Close()
 
-		mw := NewMessageWriter(w)
+		mw := control.NewMessageWriter(w)
 
 		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Millisecond)
 		defer cancel()
@@ -94,7 +95,7 @@ func TestConcurrentWrites(t *gotesting.T) {
 					case <-ctx.Done():
 						return
 					default:
-						mw.WriteMessage(&Heartbeat{Time: time.Now()})
+						mw.WriteMessage(&control.Heartbeat{Time: time.Now()})
 					}
 				}
 			}()
@@ -104,7 +105,7 @@ func TestConcurrentWrites(t *gotesting.T) {
 		go func() {
 			defer close(done)
 
-			mr := NewMessageReader(r)
+			mr := control.NewMessageReader(r)
 			for mr.More() {
 				if _, err := mr.ReadMessage(); err != nil {
 					t.Error("Corrupted message found: ", err)

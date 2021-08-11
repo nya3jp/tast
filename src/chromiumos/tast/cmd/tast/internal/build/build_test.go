@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package build
+package build_test
 
 import (
 	"context"
@@ -13,6 +13,7 @@ import (
 	"path/filepath"
 	"testing"
 
+	"chromiumos/tast/cmd/tast/internal/build"
 	"chromiumos/tast/testutil"
 )
 
@@ -52,10 +53,10 @@ func TestBuild(t *testing.T) {
 
 	outDir := filepath.Join(td, "out")
 
-	cfg := &Config{}
-	tgt := &Target{
+	cfg := &build.Config{}
+	tgt := &build.Target{
 		Pkg:  mainPkgName,
-		Arch: ArchHost,
+		Arch: build.ArchHost,
 		Workspaces: []string{
 			filepath.Join(td, testDir),
 			filepath.Join(td, commonDir),
@@ -64,7 +65,7 @@ func TestBuild(t *testing.T) {
 		Out: filepath.Join(outDir, path.Base(mainPkgName)),
 	}
 
-	if err := Build(context.Background(), cfg, []*Target{tgt}); err != nil {
+	if err := build.Build(context.Background(), cfg, []*build.Target{tgt}); err != nil {
 		t.Fatal("Failed to build: ", err)
 	}
 
@@ -101,23 +102,23 @@ func main() {
 
 	outDir := filepath.Join(td, "out")
 
-	cfg := &Config{}
-	tgts := []*Target{
+	cfg := &build.Config{}
+	tgts := []*build.Target{
 		{
 			Pkg:        pkg1,
-			Arch:       ArchHost,
+			Arch:       build.ArchHost,
 			Workspaces: []string{filepath.Join(td, wsDir)},
 			Out:        filepath.Join(outDir, pkg1),
 		},
 		{
 			Pkg:        pkg2,
-			Arch:       ArchHost,
+			Arch:       build.ArchHost,
 			Workspaces: []string{filepath.Join(td, wsDir)},
 			Out:        filepath.Join(outDir, pkg2),
 		},
 	}
 
-	if err := Build(context.Background(), cfg, tgts); err != nil {
+	if err := build.Build(context.Background(), cfg, tgts); err != nil {
 		t.Fatal("Failed to build: ", err)
 	}
 
@@ -139,21 +140,21 @@ func TestBuildBadWorkspace(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	cfg := &Config{}
-	tgt := &Target{
+	cfg := &build.Config{}
+	tgt := &build.Target{
 		Pkg:        "good",
-		Arch:       ArchHost,
+		Arch:       build.ArchHost,
 		Workspaces: []string{filepath.Join(td, "ws1")},
 		Out:        filepath.Join(td, "out/good"),
 	}
 
-	if err := Build(context.Background(), cfg, []*Target{tgt}); err != nil {
+	if err := build.Build(context.Background(), cfg, []*build.Target{tgt}); err != nil {
 		t.Fatal("Failed to build: ", err)
 	}
 
 	tgt.Workspaces = append(tgt.Workspaces, filepath.Join(td, "ws2"))
 
-	if err := Build(context.Background(), cfg, []*Target{tgt}); err == nil {
+	if err := build.Build(context.Background(), cfg, []*build.Target{tgt}); err == nil {
 		t.Fatal("Building with invalid workspace unexpectedly succeeded")
 	}
 }

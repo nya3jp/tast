@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package testing
+package testing_test
 
 import (
 	"context"
@@ -25,6 +25,7 @@ import (
 
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/protocol"
+	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/testutil"
 )
 
@@ -59,7 +60,7 @@ var outputDataCmpOpts = []cmp.Option{
 
 func TestLog(t *gotesting.T) {
 	var out outputSink
-	root := NewTestEntityRoot(&TestInstance{Timeout: time.Minute}, &RuntimeConfig{}, &out)
+	root := testing.NewTestEntityRoot(&testing.TestInstance{Timeout: time.Minute}, &testing.RuntimeConfig{}, &out)
 	s := root.NewTestState()
 	s.Log("msg ", 1)
 	s.Logf("msg %d", 2)
@@ -71,14 +72,14 @@ func TestLog(t *gotesting.T) {
 
 func TestNestedRun(t *gotesting.T) {
 	var out outputSink
-	root := NewTestEntityRoot(&TestInstance{Timeout: time.Minute}, &RuntimeConfig{}, &out)
+	root := testing.NewTestEntityRoot(&testing.TestInstance{Timeout: time.Minute}, &testing.RuntimeConfig{}, &out)
 	s := root.NewTestState()
 	ctx := context.Background()
 
-	s.Run(ctx, "p1", func(ctx context.Context, s *State) {
+	s.Run(ctx, "p1", func(ctx context.Context, s *testing.State) {
 		s.Log("msg ", 1)
 
-		s.Run(ctx, "p2", func(ctx context.Context, s *State) {
+		s.Run(ctx, "p2", func(ctx context.Context, s *testing.State) {
 			s.Log("msg ", 2)
 		})
 
@@ -102,17 +103,17 @@ func TestNestedRun(t *gotesting.T) {
 
 func TestRunReturn(t *gotesting.T) {
 	var out outputSink
-	root := NewTestEntityRoot(&TestInstance{Timeout: time.Minute}, &RuntimeConfig{}, &out)
+	root := testing.NewTestEntityRoot(&testing.TestInstance{Timeout: time.Minute}, &testing.RuntimeConfig{}, &out)
 	s := root.NewTestState()
 	ctx := context.Background()
 
-	if res := s.Run(ctx, "p1", func(ctx context.Context, s *State) {
+	if res := s.Run(ctx, "p1", func(ctx context.Context, s *testing.State) {
 		s.Fatal("fail")
 	}); res != false {
 		t.Error("Expected failure to return false")
 	}
 
-	if res := s.Run(ctx, "p2", func(ctx context.Context, s *State) {
+	if res := s.Run(ctx, "p2", func(ctx context.Context, s *testing.State) {
 		s.Log("ok")
 	}); res != true {
 		t.Error("Expected success to return true")
@@ -135,21 +136,21 @@ func TestRunReturn(t *gotesting.T) {
 
 func TestParallelRun(t *gotesting.T) {
 	var out outputSink
-	root := NewTestEntityRoot(&TestInstance{Timeout: time.Minute}, &RuntimeConfig{}, &out)
+	root := testing.NewTestEntityRoot(&testing.TestInstance{Timeout: time.Minute}, &testing.RuntimeConfig{}, &out)
 	s := root.NewTestState()
 	ctx := context.Background()
 
 	var wg sync.WaitGroup
 	wg.Add(2)
-	s.Run(ctx, "r", func(ctx context.Context, s *State) {
+	s.Run(ctx, "r", func(ctx context.Context, s *testing.State) {
 		go func() {
-			s.Run(ctx, "t1", func(ctx context.Context, s *State) {
+			s.Run(ctx, "t1", func(ctx context.Context, s *testing.State) {
 				s.Log("msg ", 1)
 			})
 			wg.Done()
 		}()
 		go func() {
-			s.Run(ctx, "t2", func(ctx context.Context, s *State) {
+			s.Run(ctx, "t2", func(ctx context.Context, s *testing.State) {
 				s.Log("msg ", 2)
 			})
 			wg.Done()
@@ -183,7 +184,7 @@ func TestParallelRun(t *gotesting.T) {
 
 func TestReportError(t *gotesting.T) {
 	var out outputSink
-	root := NewTestEntityRoot(&TestInstance{Timeout: time.Minute}, &RuntimeConfig{}, &out)
+	root := testing.NewTestEntityRoot(&testing.TestInstance{Timeout: time.Minute}, &testing.RuntimeConfig{}, &out)
 	s := root.NewTestState()
 
 	// Keep these lines next to each other (see below comparison).
@@ -217,7 +218,7 @@ func TestReportError(t *gotesting.T) {
 		if exp := "error "; !strings.HasPrefix(lines[0], exp) {
 			t.Errorf("First line of stack trace %q doesn't start with %q", string(e.GetLocation().GetStack()), exp)
 		}
-		if exp := fmt.Sprintf("\tat chromiumos/tast/internal/testing.TestReportError (%s:%d)", filepath.Base(e.GetLocation().GetFile()), e.GetLocation().GetLine()); lines[1] != exp {
+		if exp := fmt.Sprintf("\tat chromiumos/tast/internal/testing_test.TestReportError (%s:%d)", filepath.Base(e.GetLocation().GetFile()), e.GetLocation().GetLine()); lines[1] != exp {
 			t.Errorf("Second line of stack trace %q doesn't match %q", string(e.GetLocation().GetStack()), exp)
 		}
 	}
@@ -225,7 +226,7 @@ func TestReportError(t *gotesting.T) {
 
 func TestInheritError(t *gotesting.T) {
 	var out outputSink
-	root := NewTestEntityRoot(&TestInstance{Timeout: time.Minute}, &RuntimeConfig{}, &out)
+	root := testing.NewTestEntityRoot(&testing.TestInstance{Timeout: time.Minute}, &testing.RuntimeConfig{}, &out)
 
 	s1 := root.NewTestState()
 	if s1.HasError() {
@@ -243,7 +244,7 @@ func TestInheritError(t *gotesting.T) {
 	}
 
 	// Subtest State should not inherit the error status from the parent state.
-	s2.Run(context.Background(), "subtest", func(ctx context.Context, s2s *State) {
+	s2.Run(context.Background(), "subtest", func(ctx context.Context, s2s *testing.State) {
 		if s2s.HasError() {
 			t.Error("Subtest State: HasError()=true initially; want false")
 		}
@@ -256,7 +257,7 @@ func TestInheritError(t *gotesting.T) {
 
 func TestReportErrorInPrecondition(t *gotesting.T) {
 	var out outputSink
-	root := NewTestEntityRoot(&TestInstance{Timeout: time.Minute}, &RuntimeConfig{}, &out)
+	root := testing.NewTestEntityRoot(&testing.TestInstance{Timeout: time.Minute}, &testing.RuntimeConfig{}, &out)
 	s := root.NewPreState()
 
 	// Keep these lines next to each other (see below comparison).
@@ -271,7 +272,7 @@ func TestReportErrorInPrecondition(t *gotesting.T) {
 	if e0 == nil || e1 == nil {
 		t.Fatal("Got nil error(s)")
 	}
-	if act, exp := []string{e0.Reason, e1.Reason}, []string{preFailPrefix + "error 1", preFailPrefix + "error 2"}; !reflect.DeepEqual(act, exp) {
+	if act, exp := []string{e0.Reason, e1.Reason}, []string{"[Precondition failure] error 1", "[Precondition failure] error 2"}; !reflect.DeepEqual(act, exp) {
 		t.Errorf("Got reasons %v; want %v", act, exp)
 	}
 	if _, fn, _, _ := runtime.Caller(0); e0.GetLocation().GetFile() != fn || e1.GetLocation().GetFile() != fn {
@@ -287,10 +288,10 @@ func TestReportErrorInPrecondition(t *gotesting.T) {
 			t.Errorf("Stack trace %q contains fewer than 2 lines", string(e.GetLocation().GetStack()))
 			continue
 		}
-		if exp := preFailPrefix + "error "; !strings.HasPrefix(lines[0], exp) {
+		if exp := "[Precondition failure] error "; !strings.HasPrefix(lines[0], exp) {
 			t.Errorf("First line of stack trace %q doesn't start with %q", string(e.GetLocation().GetStack()), exp)
 		}
-		if exp := fmt.Sprintf("\tat chromiumos/tast/internal/testing.TestReportErrorInPrecondition (%s:%d)", filepath.Base(e.GetLocation().GetFile()), e.GetLocation().GetLine()); lines[1] != exp {
+		if exp := fmt.Sprintf("\tat chromiumos/tast/internal/testing_test.TestReportErrorInPrecondition (%s:%d)", filepath.Base(e.GetLocation().GetFile()), e.GetLocation().GetLine()); lines[1] != exp {
 			t.Errorf("Second line of stack trace %q doesn't match %q", string(e.GetLocation().GetStack()), exp)
 		}
 	}
@@ -302,7 +303,7 @@ func errorFunc() error {
 
 func TestExtractErrorSimple(t *gotesting.T) {
 	var out outputSink
-	root := NewTestEntityRoot(&TestInstance{Timeout: time.Minute}, &RuntimeConfig{}, &out)
+	root := testing.NewTestEntityRoot(&testing.TestInstance{Timeout: time.Minute}, &testing.RuntimeConfig{}, &out)
 	s := root.NewTestState()
 
 	err := errorFunc()
@@ -317,17 +318,17 @@ func TestExtractErrorSimple(t *gotesting.T) {
 	if exp := "meow"; e.Reason != exp {
 		t.Errorf("Error message %q is not %q", e.Reason, exp)
 	}
-	if exp := "meow\n\tat chromiumos/tast/internal/testing.TestExtractErrorSimple"; !strings.HasPrefix(e.GetLocation().GetStack(), exp) {
+	if exp := "meow\n\tat chromiumos/tast/internal/testing_test.TestExtractErrorSimple"; !strings.HasPrefix(e.GetLocation().GetStack(), exp) {
 		t.Errorf("Stack trace %q doesn't start with %q", e.GetLocation().GetStack(), exp)
 	}
-	if exp := "meow\n\tat chromiumos/tast/internal/testing.errorFunc"; !strings.Contains(e.GetLocation().GetStack(), exp) {
+	if exp := "meow\n\tat chromiumos/tast/internal/testing_test.errorFunc"; !strings.Contains(e.GetLocation().GetStack(), exp) {
 		t.Errorf("Stack trace %q doesn't contain %q", e.GetLocation().GetStack(), exp)
 	}
 }
 
 func TestExtractErrorHeuristic(t *gotesting.T) {
 	var out outputSink
-	root := NewTestEntityRoot(&TestInstance{Timeout: time.Minute}, &RuntimeConfig{}, &out)
+	root := testing.NewTestEntityRoot(&testing.TestInstance{Timeout: time.Minute}, &testing.RuntimeConfig{}, &out)
 	s := root.NewTestState()
 
 	err := errorFunc()
@@ -344,10 +345,10 @@ func TestExtractErrorHeuristic(t *gotesting.T) {
 		if exp := "Failed something  "; !strings.HasPrefix(e.Reason, exp) {
 			t.Errorf("Error message %q doesn't start with %q", e.Reason, exp)
 		}
-		if exp := "Failed something\n\tat chromiumos/tast/internal/testing.TestExtractErrorHeuristic"; !strings.HasPrefix(e.GetLocation().GetStack(), exp) {
+		if exp := "Failed something\n\tat chromiumos/tast/internal/testing_test.TestExtractErrorHeuristic"; !strings.HasPrefix(e.GetLocation().GetStack(), exp) {
 			t.Errorf("Stack trace %q doesn't start with %q", e.GetLocation().GetStack(), exp)
 		}
-		if exp := "\nmeow\n\tat chromiumos/tast/internal/testing.errorFunc"; !strings.Contains(e.GetLocation().GetStack(), exp) {
+		if exp := "\nmeow\n\tat chromiumos/tast/internal/testing_test.errorFunc"; !strings.Contains(e.GetLocation().GetStack(), exp) {
 			t.Errorf("Stack trace %q doesn't contain %q", e.GetLocation().GetStack(), exp)
 		}
 	}
@@ -355,12 +356,12 @@ func TestExtractErrorHeuristic(t *gotesting.T) {
 
 func TestRunUsePrefix(t *gotesting.T) {
 	var out outputSink
-	root := NewTestEntityRoot(&TestInstance{Timeout: time.Minute}, &RuntimeConfig{}, &out)
+	root := testing.NewTestEntityRoot(&testing.TestInstance{Timeout: time.Minute}, &testing.RuntimeConfig{}, &out)
 	s := root.NewTestState()
 
 	ctx := context.Background()
-	s.Run(ctx, "f1", func(ctx context.Context, s *State) {
-		s.Run(ctx, "f2", func(ctx context.Context, s *State) {
+	s.Run(ctx, "f1", func(ctx context.Context, s *testing.State) {
+		s.Run(ctx, "f2", func(ctx context.Context, s *testing.State) {
 			s.Errorf("error %s", "msg")
 		})
 	})
@@ -389,7 +390,7 @@ func TestRunUsePrefix(t *gotesting.T) {
 
 func TestRunNonFatal(t *gotesting.T) {
 	var out outputSink
-	root := NewTestEntityRoot(&TestInstance{Timeout: time.Minute}, &RuntimeConfig{}, &out)
+	root := testing.NewTestEntityRoot(&testing.TestInstance{Timeout: time.Minute}, &testing.RuntimeConfig{}, &out)
 	s := root.NewTestState()
 
 	// Log the fatal message in a goroutine so the main goroutine that's running the test won't exit.
@@ -399,7 +400,7 @@ func TestRunNonFatal(t *gotesting.T) {
 		defer close(done)
 
 		ctx := context.Background()
-		s.Run(ctx, "f", func(ctx context.Context, s *State) {
+		s.Run(ctx, "f", func(ctx context.Context, s *testing.State) {
 			s.Fatal("fatal msg")
 		})
 
@@ -426,7 +427,7 @@ func TestRunNonFatal(t *gotesting.T) {
 
 func TestFatal(t *gotesting.T) {
 	var out outputSink
-	root := NewTestEntityRoot(&TestInstance{Timeout: time.Minute}, &RuntimeConfig{}, &out)
+	root := testing.NewTestEntityRoot(&testing.TestInstance{Timeout: time.Minute}, &testing.RuntimeConfig{}, &out)
 	s := root.NewTestState()
 
 	// Log the fatal message in a goroutine so the main goroutine that's running the test won't exit.
@@ -455,7 +456,7 @@ func TestFatal(t *gotesting.T) {
 
 func TestFatalInPrecondition(t *gotesting.T) {
 	var out outputSink
-	root := NewTestEntityRoot(&TestInstance{Timeout: time.Minute}, &RuntimeConfig{}, &out)
+	root := testing.NewTestEntityRoot(&testing.TestInstance{Timeout: time.Minute}, &testing.RuntimeConfig{}, &out)
 	s := root.NewPreState()
 
 	// Log the fatal message in a goroutine so the main goroutine that's running the test won't exit.
@@ -474,7 +475,7 @@ func TestFatalInPrecondition(t *gotesting.T) {
 
 	exp := outputData{
 		Errs: []*protocol.Error{
-			{Reason: preFailPrefix + "fatal msg"},
+			{Reason: "[Precondition failure] fatal msg"},
 		},
 	}
 	if diff := cmp.Diff(out.Data, exp, outputDataCmpOpts...); diff != "" {
@@ -486,7 +487,7 @@ func TestDataPathDeclared(t *gotesting.T) {
 	const (
 		dataDir = "/tmp/data"
 	)
-	test := TestInstance{
+	test := testing.TestInstance{
 		Timeout: time.Minute,
 		Data:    []string{"foo", "foo/bar", "foo/baz"},
 	}
@@ -496,7 +497,7 @@ func TestDataPathDeclared(t *gotesting.T) {
 		{"foo/bar", filepath.Join(dataDir, "foo/bar")},
 	} {
 		var out outputSink
-		root := NewTestEntityRoot(&test, &RuntimeConfig{DataDir: dataDir}, &out)
+		root := testing.NewTestEntityRoot(&test, &testing.RuntimeConfig{DataDir: dataDir}, &out)
 		s := root.NewTestState()
 		if act := s.DataPath(tc.in); act != tc.exp {
 			t.Errorf("DataPath(%q) = %q; want %q", tc.in, act, tc.exp)
@@ -506,11 +507,11 @@ func TestDataPathDeclared(t *gotesting.T) {
 
 func TestDataPathNotDeclared(t *gotesting.T) {
 	var out outputSink
-	test := TestInstance{
+	test := testing.TestInstance{
 		Timeout: time.Minute,
 		Data:    []string{"foo"},
 	}
-	root := NewTestEntityRoot(&test, &RuntimeConfig{DataDir: "/data"}, &out)
+	root := testing.NewTestEntityRoot(&test, &testing.RuntimeConfig{DataDir: "/data"}, &out)
 	s := root.NewTestState()
 
 	// Request an undeclared data path to cause a panic.
@@ -541,9 +542,9 @@ func TestDataFileServer(t *gotesting.T) {
 		t.Fatal(err)
 	}
 
-	test := TestInstance{Data: []string{file1}}
+	test := testing.TestInstance{Data: []string{file1}}
 	var out outputSink
-	root := NewTestEntityRoot(&test, &RuntimeConfig{DataDir: td}, &out)
+	root := testing.NewTestEntityRoot(&test, &testing.RuntimeConfig{DataDir: td}, &out)
 	s := root.NewTestState()
 
 	srv := httptest.NewServer(http.FileServer(s.DataFileSystem()))
@@ -594,10 +595,10 @@ func TestVars(t *gotesting.T) {
 		unregValue = "unreg value"
 	)
 
-	test := &TestInstance{Vars: []string{validName, unsetName}}
-	cfg := &RuntimeConfig{Vars: map[string]string{validName: validValue, unregName: unregValue}}
+	test := &testing.TestInstance{Vars: []string{validName, unsetName}}
+	cfg := &testing.RuntimeConfig{Vars: map[string]string{validName: validValue, unregName: unregValue}}
 	var out outputSink
-	root := NewTestEntityRoot(test, cfg, &out)
+	root := testing.NewTestEntityRoot(test, cfg, &out)
 	s := root.NewTestState()
 
 	for _, tc := range []struct {
@@ -649,10 +650,10 @@ func TestVars(t *gotesting.T) {
 }
 
 func TestMeta(t *gotesting.T) {
-	meta := Meta{TastPath: "/foo/bar", Target: "example.net", RunFlags: []string{"-foo", "-bar"}}
-	getMeta := func(test *TestInstance, cfg *RuntimeConfig) (meta *Meta, ok bool) {
+	meta := testing.Meta{TastPath: "/foo/bar", Target: "example.net", RunFlags: []string{"-foo", "-bar"}}
+	getMeta := func(test *testing.TestInstance, cfg *testing.RuntimeConfig) (meta *testing.Meta, ok bool) {
 		var out outputSink
-		root := NewTestEntityRoot(test, cfg, &out)
+		root := testing.NewTestEntityRoot(test, cfg, &out)
 		s := root.NewTestState()
 
 		// Meta can panic, so run with recover.
@@ -670,7 +671,7 @@ func TestMeta(t *gotesting.T) {
 	)
 
 	// Meta info should be provided to tests in the "meta" package.
-	if m, ok := getMeta(&TestInstance{Name: metaTest}, &RuntimeConfig{RemoteData: &RemoteData{Meta: &meta}}); !ok {
+	if m, ok := getMeta(&testing.TestInstance{Name: metaTest}, &testing.RuntimeConfig{RemoteData: &testing.RemoteData{Meta: &meta}}); !ok {
 		t.Errorf("Meta() panicked for %v", metaTest)
 	} else if m == nil {
 		t.Errorf("Meta() = nil for %v", metaTest)
@@ -679,14 +680,14 @@ func TestMeta(t *gotesting.T) {
 	}
 
 	// Tests not in the "meta" package shouldn't have access to meta info.
-	if m, ok := getMeta(&TestInstance{Name: nonMetaTest}, &RuntimeConfig{RemoteData: &RemoteData{Meta: &meta}}); ok {
+	if m, ok := getMeta(&testing.TestInstance{Name: nonMetaTest}, &testing.RuntimeConfig{RemoteData: &testing.RemoteData{Meta: &meta}}); ok {
 		t.Errorf("Meta() didn't panic for %v", nonMetaTest)
 	} else if m != nil {
 		t.Errorf("Meta() = %+v for %v", *m, nonMetaTest)
 	}
 
 	// Check that newState doesn't crash or somehow get a non-nil Meta struct when initially passed a nil struct.
-	if m, ok := getMeta(&TestInstance{Name: metaTest}, &RuntimeConfig{}); ok {
+	if m, ok := getMeta(&testing.TestInstance{Name: metaTest}, &testing.RuntimeConfig{}); ok {
 		t.Error("Meta() didn't panic for nil info")
 	} else if m != nil {
 		t.Errorf("Meta() = %+v despite nil info", *m)
@@ -694,10 +695,10 @@ func TestMeta(t *gotesting.T) {
 }
 
 func TestRPCHint(t *gotesting.T) {
-	hint := NewRPCHint("/path/to/bundles", map[string]string{"var": "value"})
-	getHint := func(test *TestInstance, cfg *RuntimeConfig) (hint *RPCHint, ok bool) {
+	hint := testing.NewRPCHint("/path/to/bundles", map[string]string{"var": "value"})
+	getHint := func(test *testing.TestInstance, cfg *testing.RuntimeConfig) (hint *testing.RPCHint, ok bool) {
 		var out outputSink
-		root := NewTestEntityRoot(test, cfg, &out)
+		root := testing.NewTestEntityRoot(test, cfg, &out)
 		s := root.NewTestState()
 
 		// RPCHint can panic, so run with recover.
@@ -715,7 +716,7 @@ func TestRPCHint(t *gotesting.T) {
 	)
 
 	// RPCHint should be provided to remote tests.
-	if h, ok := getHint(&TestInstance{Name: remoteTest}, &RuntimeConfig{RemoteData: &RemoteData{RPCHint: hint}}); !ok {
+	if h, ok := getHint(&testing.TestInstance{Name: remoteTest}, &testing.RuntimeConfig{RemoteData: &testing.RemoteData{RPCHint: hint}}); !ok {
 		t.Errorf("RPCHint() panicked for %v", remoteTest)
 	} else if h == nil {
 		t.Errorf("RPCHint() = nil for %v", remoteTest)
@@ -724,7 +725,7 @@ func TestRPCHint(t *gotesting.T) {
 	}
 
 	// Local tests shouldn't have access to RPCHint.
-	if h, ok := getHint(&TestInstance{Name: localTest}, &RuntimeConfig{}); ok {
+	if h, ok := getHint(&testing.TestInstance{Name: localTest}, &testing.RuntimeConfig{}); ok {
 		t.Errorf("RPCHint() didn't panic for %v", localTest)
 	} else if h != nil {
 		t.Errorf("RPCHint() = %+v for %v", *h, localTest)
@@ -732,9 +733,9 @@ func TestRPCHint(t *gotesting.T) {
 }
 
 func TestDUT(t *gotesting.T) {
-	callDUT := func(test *TestInstance, cfg *RuntimeConfig) (ok bool) {
+	callDUT := func(test *testing.TestInstance, cfg *testing.RuntimeConfig) (ok bool) {
 		var out outputSink
-		root := NewTestEntityRoot(test, cfg, &out)
+		root := testing.NewTestEntityRoot(test, cfg, &out)
 		s := root.NewTestState()
 
 		// DUT can panic, so run with recover.
@@ -754,21 +755,21 @@ func TestDUT(t *gotesting.T) {
 	)
 
 	// DUT should be provided to remote tests.
-	if ok := callDUT(&TestInstance{Name: remoteTest}, &RuntimeConfig{RemoteData: &RemoteData{}}); !ok {
+	if ok := callDUT(&testing.TestInstance{Name: remoteTest}, &testing.RuntimeConfig{RemoteData: &testing.RemoteData{}}); !ok {
 		t.Errorf("DUT() panicked for %v", remoteTest)
 	}
 
 	// Local tests shouldn't have access to DUT.
-	if ok := callDUT(&TestInstance{Name: localTest}, &RuntimeConfig{}); ok {
+	if ok := callDUT(&testing.TestInstance{Name: localTest}, &testing.RuntimeConfig{}); ok {
 		t.Errorf("DUT() didn't panic for %v", localTest)
 	}
 }
 
 func TestCloudStorage(t *gotesting.T) {
-	want := NewCloudStorage(nil, "", "")
+	want := testing.NewCloudStorage(nil, "", "")
 
 	var out outputSink
-	root := NewTestEntityRoot(&TestInstance{Name: "example.Test"}, &RuntimeConfig{CloudStorage: want}, &out)
+	root := testing.NewTestEntityRoot(&testing.TestInstance{Name: "example.Test"}, &testing.RuntimeConfig{CloudStorage: want}, &out)
 	s := root.NewTestState()
 	got := s.CloudStorage()
 
@@ -783,7 +784,7 @@ func TestStateExports(t *gotesting.T) {
 		methods []string
 	}{
 		{
-			State{},
+			testing.State{},
 			[]string{
 				"CloudStorage",
 				"CompanionDUT",
@@ -812,7 +813,7 @@ func TestStateExports(t *gotesting.T) {
 			},
 		},
 		{
-			PreState{},
+			testing.PreState{},
 			[]string{
 				"CloudStorage",
 				"CompanionDUT",
@@ -837,7 +838,7 @@ func TestStateExports(t *gotesting.T) {
 			},
 		},
 		{
-			TestHookState{},
+			testing.TestHookState{},
 			[]string{
 				"CloudStorage",
 				"CompanionDUT",
@@ -862,7 +863,7 @@ func TestStateExports(t *gotesting.T) {
 			},
 		},
 		{
-			FixtState{},
+			testing.FixtState{},
 			[]string{
 				"CloudStorage",
 				"CompanionDUT",
@@ -887,7 +888,7 @@ func TestStateExports(t *gotesting.T) {
 			},
 		},
 		{
-			FixtTestState{},
+			testing.FixtTestState{},
 			[]string{
 				"CloudStorage",
 				"CompanionDUT",

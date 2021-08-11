@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package linuxssh
+package linuxssh_test
 
 import (
 	"context"
@@ -14,6 +14,7 @@ import (
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/logging/loggingtest"
 	"chromiumos/tast/internal/sshtest"
+	"chromiumos/tast/ssh/linuxssh"
 	"chromiumos/tast/testutil"
 )
 
@@ -33,7 +34,7 @@ func TestReadFile(t *testing.T) {
 	testutil.WriteFiles(dir, files)
 
 	for _, f := range []string{"foo.txt", strangeFileName} {
-		b, err := ReadFile(ctx, td.Hst, filepath.Join(dir, f))
+		b, err := linuxssh.ReadFile(ctx, td.Hst, filepath.Join(dir, f))
 		if err != nil {
 			t.Errorf("ReadFile(%q): %v", f, err)
 		}
@@ -42,7 +43,7 @@ func TestReadFile(t *testing.T) {
 		}
 	}
 
-	if _, err := ReadFile(ctx, td.Hst, "not.exist"); err == nil {
+	if _, err := linuxssh.ReadFile(ctx, td.Hst, "not.exist"); err == nil {
 		t.Errorf("ReadFile succeeds, want error")
 	}
 }
@@ -76,20 +77,20 @@ func TestWriteFile(t *testing.T) {
 	if err := ioutil.WriteFile(path1, []byte("previous content"), 0644); err != nil {
 		t.Fatal(err)
 	}
-	if err := WriteFile(ctx, td.Hst, path1, []byte("new content"), 0755); err != nil {
+	if err := linuxssh.WriteFile(ctx, td.Hst, path1, []byte("new content"), 0755); err != nil {
 		t.Errorf("WriteFile: %v", err)
 	}
 	checkFile(path1, "new content", 0644)
 
 	path2 := filepath.Join(dir, "new.txt")
-	if err := WriteFile(ctx, td.Hst, path2, []byte("a"), 0755); err != nil {
+	if err := linuxssh.WriteFile(ctx, td.Hst, path2, []byte("a"), 0755); err != nil {
 		t.Errorf("WriteFile: %v", err)
 	}
 	checkFile(path2, "a", 0755)
 
 	// Arbitrary filename and permissions should work.
 	path3 := filepath.Join(dir, strangeFileName)
-	if err := WriteFile(ctx, td.Hst, path3, []byte("b"), 0473); err != nil {
+	if err := linuxssh.WriteFile(ctx, td.Hst, path3, []byte("b"), 0473); err != nil {
 		t.Errorf("WriteFile: %v", err)
 	}
 	checkFile(path3, "b", 0473)

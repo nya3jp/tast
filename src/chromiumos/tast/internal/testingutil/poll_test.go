@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package testingutil
+package testingutil_test
 
 import (
 	"context"
@@ -11,18 +11,20 @@ import (
 	"strings"
 	gotesting "testing"
 	"time"
+
+	"chromiumos/tast/internal/testingutil"
 )
 
 func TestPoll(t *gotesting.T) {
 	const expCalls = 5
 	numCalls := 0
-	err := Poll(context.Background(), func(ctx context.Context) error {
+	err := testingutil.Poll(context.Background(), func(ctx context.Context) error {
 		numCalls++
 		if numCalls < expCalls {
 			return fmt.Errorf("intentional error #%d", numCalls)
 		}
 		return nil
-	}, &PollOptions{Interval: time.Millisecond})
+	}, &testingutil.PollOptions{Interval: time.Millisecond})
 
 	if err != nil {
 		t.Error("Poll reported error: ", err)
@@ -40,16 +42,16 @@ func TestPollBreak(t *gotesting.T) {
 	)
 	numCalls := 0
 	mainError := errors.New("break the poll")
-	err := Poll(context.Background(), func(ctx context.Context) error {
+	err := testingutil.Poll(context.Background(), func(ctx context.Context) error {
 		numCalls++
 		if numCalls == expCalls {
-			return PollBreak(mainError)
+			return testingutil.PollBreak(mainError)
 		}
 		if numCalls < maxCalls {
 			return fmt.Errorf("intentional error #%d", numCalls)
 		}
 		return nil
-	}, &PollOptions{Interval: time.Millisecond})
+	}, &testingutil.PollOptions{Interval: time.Millisecond})
 
 	if err == nil {
 		t.Error("Poll succeeded unintentionally")
@@ -67,7 +69,7 @@ func TestPollCanceledContext(t *gotesting.T) {
 	cancel()
 
 	numCalls := 0
-	err := Poll(ctx, func(ctx context.Context) error {
+	err := testingutil.Poll(ctx, func(ctx context.Context) error {
 		numCalls++
 		return nil
 	}, nil)
@@ -84,8 +86,8 @@ func TestPollTimeout(t *gotesting.T) {
 	// Poll should always invoke the provided function before checking whether the timeout
 	// has been reached.
 	numCalls := 0
-	opts := &PollOptions{Timeout: time.Millisecond}
-	err := Poll(context.Background(), func(ctx context.Context) error {
+	opts := &testingutil.PollOptions{Timeout: time.Millisecond}
+	err := testingutil.Poll(context.Background(), func(ctx context.Context) error {
 		numCalls++
 		<-ctx.Done()
 		return nil
@@ -99,7 +101,7 @@ func TestPollTimeout(t *gotesting.T) {
 
 	numCalls = 0
 	const msg = "foo"
-	err = Poll(context.Background(), func(ctx context.Context) error {
+	err = testingutil.Poll(context.Background(), func(ctx context.Context) error {
 		numCalls++
 		<-ctx.Done()
 		return errors.New(msg)
@@ -123,7 +125,7 @@ func TestPollUseNonContextError(t *gotesting.T) {
 	// instead of a useless one about the context.
 	var msg = "foo"
 	numCalls := 0
-	err := Poll(ctx, func(ctx context.Context) error {
+	err := testingutil.Poll(ctx, func(ctx context.Context) error {
 		numCalls++
 		if numCalls == 1 {
 			return errors.New(msg)

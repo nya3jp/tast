@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package sshconfig
+package sshconfig_test
 
 import (
 	"fmt"
@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 	"testing"
 
+	"chromiumos/tast/internal/sshconfig"
 	"chromiumos/tast/testutil"
 )
 
@@ -20,7 +21,7 @@ func testForResolveHostFromDefaultConfig(t *testing.T, input, expected string) {
 	// firstConfigFile defines the name of the second config file used in most unit tests in this file.
 	secondConfigFile := "testdata/config2_d/config"
 	// fileParams defines which config files to read and which base directory to used for include files.
-	fileParams := []FileParam{
+	fileParams := []sshconfig.FileParam{
 		{
 			Path:    firstConfigFile,
 			BaseDir: filepath.Dir(firstConfigFile),
@@ -66,7 +67,7 @@ func TestResolveHostFromFilesNoScope(t *testing.T) {
 	}); err != nil {
 		t.Fatal(err)
 	}
-	fileParams := []FileParam{
+	fileParams := []sshconfig.FileParam{
 		{
 			Path:    configPath,
 			BaseDir: td,
@@ -170,20 +171,20 @@ func TestResolveHostFromFilesWithLoop(t *testing.T) {
 	}); err != nil {
 		t.Fatal(err)
 	}
-	fileParams := []FileParam{
+	fileParams := []sshconfig.FileParam{
 		{
 			Path:    configPath,
 			BaseDir: td,
 		},
 	}
-	if _, err := ResolveHostFromFiles("hana", fileParams); err == nil {
+	if _, err := sshconfig.ResolveHostFromFiles("hana", fileParams); err == nil {
 		t.Fatalf("Expecting a loop error in reading %v but get no error", configPath)
 	}
 }
 
 // testResolveHostFromFiles runs a test that does not expect an error.
-func testResolveHostFromFiles(t *testing.T, input, expected string, fileParams []FileParam) {
-	resolvedHost, err := ResolveHostFromFiles(input, fileParams)
+func testResolveHostFromFiles(t *testing.T, input, expected string, fileParams []sshconfig.FileParam) {
+	resolvedHost, err := sshconfig.ResolveHostFromFiles(input, fileParams)
 	if err != nil {
 		t.Fatalf("Encounter error while calling ResolveHostFromFiles(%q, %q): %v", input, fileParams, err)
 	}

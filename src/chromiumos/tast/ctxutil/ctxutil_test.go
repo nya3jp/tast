@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package ctxutil
+package ctxutil_test
 
 import (
 	"context"
 	"testing"
 	"time"
+
+	"chromiumos/tast/ctxutil"
 )
 
 // runAndGetDeadline passes ctx and d to f (e.g. OptionalTimeout or Shorten) and returns
@@ -31,14 +33,14 @@ func TestShortenExistingDeadline(t *testing.T) {
 	const d = 5 * time.Second // shortening duration
 	orig, _ := ctx.Deadline()
 	want := orig.Add(-d)
-	if dl := runAndGetDeadline(ctx, Shorten, d); !dl.Equal(want) {
+	if dl := runAndGetDeadline(ctx, ctxutil.Shorten, d); !dl.Equal(want) {
 		t.Errorf("Shorten returned deadline %v for %v duration with original %v deadline; want %v", dl, d, orig, want)
 	}
 }
 
 func TestShortenNoDeadline(t *testing.T) {
 	const d = 5 * time.Second
-	if dl := runAndGetDeadline(context.Background(), Shorten, d); !dl.IsZero() {
+	if dl := runAndGetDeadline(context.Background(), ctxutil.Shorten, d); !dl.IsZero() {
 		t.Errorf("Shorten returned deadline %v for %v duration with no existing deadline; want 0", dl, d)
 	}
 }
@@ -60,7 +62,7 @@ func TestDeadlineBefore(t *testing.T) {
 			ctx, cancel = context.WithDeadline(ctx, tc.dl)
 			defer cancel()
 		}
-		if before := DeadlineBefore(ctx, now); before != tc.before {
+		if before := ctxutil.DeadlineBefore(ctx, now); before != tc.before {
 			t.Errorf("DeadlineBefore(%v, %v) = %v; want %v", tc.dl, now, before, tc.before)
 		}
 	}

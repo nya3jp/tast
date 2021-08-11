@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package fsutil
+package fsutil_test
 
 import (
 	"io/ioutil"
@@ -12,6 +12,7 @@ import (
 
 	"golang.org/x/sys/unix"
 
+	"chromiumos/tast/fsutil"
 	"chromiumos/tast/testutil"
 )
 
@@ -55,7 +56,7 @@ func TestCopyFile(t *testing.T) {
 	defer os.RemoveAll(td)
 
 	dst := filepath.Join(td, "dst.txt")
-	if err := CopyFile(src, dst); err != nil {
+	if err := fsutil.CopyFile(src, dst); err != nil {
 		t.Fatalf("CopyFile(%q, %q) failed: %v", src, dst, err)
 	}
 
@@ -71,7 +72,7 @@ func TestMoveFile(t *testing.T) {
 	defer os.RemoveAll(td)
 
 	dst := filepath.Join(td, "dst.txt")
-	if err := MoveFile(src, dst); err != nil {
+	if err := fsutil.MoveFile(src, dst); err != nil {
 		t.Fatalf("MoveFile(%q, %q) failed: %v", src, dst, err)
 	}
 
@@ -115,7 +116,7 @@ func TestMoveFileAcrossFilesystems(t *testing.T) {
 	dst := df.Name()
 	defer os.Remove(dst)
 
-	if err := MoveFile(src, dst); err != nil {
+	if err := fsutil.MoveFile(src, dst); err != nil {
 		t.Fatalf("MoveFile(%q, %q) failed: %v", src, dst, err)
 	}
 
@@ -138,10 +139,10 @@ func TestCopyFileOrMoveFileWithDir(t *testing.T) {
 	}
 
 	// Both functions should reject directories.
-	if err := CopyFile(src, filepath.Join(td, "copyDst")); err == nil {
+	if err := fsutil.CopyFile(src, filepath.Join(td, "copyDst")); err == nil {
 		t.Error("CopyFile unexpectedly succeeded for directory ", src)
 	}
-	if err := MoveFile(src, filepath.Join(td, "moveDst")); err == nil {
+	if err := fsutil.MoveFile(src, filepath.Join(td, "moveDst")); err == nil {
 		t.Error("MoveFile unexpectedly succeeded for directory ", src)
 	}
 }

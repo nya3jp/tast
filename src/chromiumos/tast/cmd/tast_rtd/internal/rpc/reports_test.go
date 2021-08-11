@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package rpc
+package rpc_test
 
 import (
 	"context"
@@ -13,11 +13,12 @@ import (
 	structpb "github.com/golang/protobuf/ptypes/struct"
 	"github.com/google/go-cmp/cmp"
 	resultspb "go.chromium.org/chromiumos/config/go/api/test/results/v2"
-	rtd "go.chromium.org/chromiumos/config/go/api/test/rtd/v1"
+	"go.chromium.org/chromiumos/config/go/api/test/rtd/v1"
 	"google.golang.org/grpc"
 
 	"chromiumos/tast/cmd/tast_rtd/internal/fakerts"
 	"chromiumos/tast/cmd/tast_rtd/internal/result"
+	"chromiumos/tast/cmd/tast_rtd/internal/rpc"
 	"chromiumos/tast/framework/protocol"
 )
 
@@ -51,7 +52,7 @@ func TestReportsServer_LogStream(t *testing.T) {
 		testName1: requestName1,
 		testName2: requestName2,
 	}
-	srv, err := NewReportsServer(0, psClient, testsToRequests)
+	srv, err := rpc.NewReportsServer(0, psClient, testsToRequests)
 	if err != nil {
 		t.Fatalf("Failed to start Reports server: %v", err)
 	}
@@ -242,7 +243,7 @@ func TestReportsServer_ReportResult(t *testing.T) {
 	}
 
 	// Setting up reports server and client
-	reportsServer, err := NewReportsServer(0, psClient, testsToRequests)
+	reportsServer, err := rpc.NewReportsServer(0, psClient, testsToRequests)
 	if err != nil {
 		t.Fatalf("Failed to start Reports server: %v", err)
 	}
@@ -319,7 +320,7 @@ func TestReportsServer_ReportResultWithTerminate(t *testing.T) {
 	}
 
 	// Setting up reports server and client
-	reportsServer, err := NewReportsServer(0, psClient, testsToRequests)
+	reportsServer, err := rpc.NewReportsServer(0, psClient, testsToRequests)
 	if err != nil {
 		t.Fatalf("Failed to start Reports server: %v", err)
 	}

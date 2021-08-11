@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package lsbrelease
+package lsbrelease_test
 
 import (
 	"bytes"
 	"reflect"
 	"testing"
+
+	"chromiumos/tast/lsbrelease"
 )
 
 func TestParse(t *testing.T) {
@@ -31,7 +33,7 @@ RANDOM_QUOTES = '"
 		"SINGLE_QUOTES": `'sin gle'`,
 		"RANDOM_QUOTES": `'"`,
 	}
-	kvs, err := Parse(bytes.NewBufferString(data))
+	kvs, err := lsbrelease.Parse(bytes.NewBufferString(data))
 	if err != nil {
 		t.Fatal("Parse failed: ", err)
 	}

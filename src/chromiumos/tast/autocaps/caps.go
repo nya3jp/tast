@@ -23,14 +23,15 @@ import (
 	"path/filepath"
 	"regexp"
 
-	yaml "gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v2"
 )
 
 const (
 	// DefaultCapabilityDir is the directory where yaml files are installed by autotest-capability.
 	DefaultCapabilityDir = "/usr/local/etc/autotest-capability"
 
-	managedFile = "managed-capabilities.yaml" // file listing all known capabilities
+	// ManagedFile is a path to the file listing all know capabilities.
+	ManagedFile = "managed-capabilities.yaml"
 )
 
 // State describes the state of a capability.
@@ -80,7 +81,7 @@ func Read(dir string, info *SysInfo) (map[string]State, error) {
 	}
 
 	var managed []string
-	if err := decodeYAMLFile(filepath.Join(dir, managedFile), &managed); err != nil {
+	if err := decodeYAMLFile(filepath.Join(dir, ManagedFile), &managed); err != nil {
 		return nil, err
 	}
 

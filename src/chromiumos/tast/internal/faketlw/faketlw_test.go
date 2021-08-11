@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package faketlw
+package faketlw_test
 
 import (
 	"context"
@@ -16,14 +16,16 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	"chromiumos/tast/internal/faketlw"
 )
 
 func TestWiringServer_OpenDutPort(t *testing.T) {
 	ctx := context.Background()
 
-	src := NamePort{Name: "foo", Port: 1234}
-	dst := NamePort{Name: "bar", Port: 2345}
-	stopFunc, addr := StartWiringServer(t, WithDUTPortMap(map[NamePort]NamePort{src: dst}))
+	src := faketlw.NamePort{Name: "foo", Port: 1234}
+	dst := faketlw.NamePort{Name: "bar", Port: 2345}
+	stopFunc, addr := faketlw.StartWiringServer(t, faketlw.WithDUTPortMap(map[faketlw.NamePort]faketlw.NamePort{src: dst}))
 	defer stopFunc()
 
 	conn, err := grpc.Dial(addr, grpc.WithInsecure())
@@ -54,7 +56,7 @@ func TestWiringServer_CacheForDut(t *testing.T) {
 	fileMap := map[string][]byte{
 		"gs://foo/bar/baz": []byte("content of foo/bar/baz"),
 	}
-	stopFunc, addr := StartWiringServer(t, WithCacheFileMap(fileMap), WithDUTName("dut001"))
+	stopFunc, addr := faketlw.StartWiringServer(t, faketlw.WithCacheFileMap(fileMap), faketlw.WithDUTName("dut001"))
 	defer stopFunc()
 
 	conn, err := grpc.Dial(addr, grpc.WithInsecure())
@@ -110,7 +112,7 @@ func TestWiringServer_CacheForDut_Errors(t *testing.T) {
 	fileMap := map[string][]byte{
 		"gs://foo/bar/baz": []byte("content of foo/bar/baz"),
 	}
-	stopFunc, addr := StartWiringServer(t, WithCacheFileMap(fileMap), WithDUTName("dut001"))
+	stopFunc, addr := faketlw.StartWiringServer(t, faketlw.WithCacheFileMap(fileMap), faketlw.WithDUTName("dut001"))
 	defer stopFunc()
 
 	conn, err := grpc.Dial(addr, grpc.WithInsecure())

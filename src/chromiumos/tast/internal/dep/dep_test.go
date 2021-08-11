@@ -2,16 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package dep
+package dep_test
 
 import (
 	"testing"
 
+	"chromiumos/tast/internal/dep"
 	"chromiumos/tast/internal/protocol"
 )
 
 func TestCheckDeps(t *testing.T) {
-	d := &Deps{Var: []string{"xyz"}}
+	d := &dep.Deps{Var: []string{"xyz"}}
 	f := &protocol.Features{
 		CheckDeps: true,
 		Infra: &protocol.InfraFeatures{

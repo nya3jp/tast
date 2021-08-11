@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package logs
+package logs_test
 
 import (
 	"io/ioutil"
@@ -11,13 +11,14 @@ import (
 	"reflect"
 	"testing"
 
+	"chromiumos/tast/internal/logs"
 	"chromiumos/tast/testutil"
 )
 
 // getUpdates passes sizes to CopyLogFileUpdates to get file updates within dir
 // and then returns the copied data as a map from relative filename to content,
 // along with a set containing all copied relative paths (including empty files and broken symlinks).
-func getUpdates(dir string, exclude []string, sizes InodeSizes) (
+func getUpdates(dir string, exclude []string, sizes logs.InodeSizes) (
 	updates map[string]string, paths map[string]struct{}, warnings map[string]error, err error) {
 	var dest string
 	if dest, err = ioutil.TempDir("", "tast_logs."); err != nil {
@@ -25,7 +26,7 @@ func getUpdates(dir string, exclude []string, sizes InodeSizes) (
 	}
 	defer os.RemoveAll(dest)
 
-	warns, err := CopyLogFileUpdates(dir, dest, exclude, sizes)
+	warns, err := logs.CopyLogFileUpdates(dir, dest, exclude, sizes)
 	if err != nil {
 		return nil, nil, warns, err
 	}
@@ -65,7 +66,7 @@ func TestCopyUpdates(t *testing.T) {
 		"baked_goods/fresh_crumbs",
 		"toppings",
 	}
-	sizes, _, err := GetLogInodeSizes(sd, exclude)
+	sizes, _, err := logs.GetLogInodeSizes(sd, exclude)
 	if err != nil {
 		t.Fatal(err)
 	}

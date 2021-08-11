@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package command
+package command_test
 
 import (
 	"flag"
@@ -12,6 +12,8 @@ import (
 	"strconv"
 	"testing"
 	"time"
+
+	"chromiumos/tast/internal/command"
 )
 
 func TestDurationFlag(t *testing.T) {
@@ -30,7 +32,7 @@ func TestDurationFlag(t *testing.T) {
 		var d time.Duration
 		fs := flag.NewFlagSet("", flag.ContinueOnError)
 		fs.SetOutput(ioutil.Discard)
-		fs.Var(NewDurationFlag(tc.units, &d, tc.def), "flag", "usage")
+		fs.Var(command.NewDurationFlag(tc.units, &d, tc.def), "flag", "usage")
 
 		if err := fs.Parse(tc.args); err != nil {
 			t.Errorf("%v produced error: %v", tc.args, err)
@@ -43,7 +45,7 @@ func TestDurationFlag(t *testing.T) {
 func ExampleDurationFlag() {
 	var dest time.Duration
 	flags := flag.NewFlagSet("", flag.ContinueOnError)
-	flags.Var(NewDurationFlag(time.Second, &dest, 5*time.Second), "flag", "usage")
+	flags.Var(command.NewDurationFlag(time.Second, &dest, 5*time.Second), "flag", "usage")
 
 	// When the flag isn't supplied, the default is used.
 	flags.Parse([]string{})
@@ -84,7 +86,7 @@ func TestEnumFlag(t *testing.T) {
 		f := func(v int) { val = testEnum(v) }
 		fs := flag.NewFlagSet("", flag.ContinueOnError)
 		fs.SetOutput(ioutil.Discard)
-		fs.Var(NewEnumFlag(valid, f, tc.def), "flag", "usage")
+		fs.Var(command.NewEnumFlag(valid, f, tc.def), "flag", "usage")
 
 		if err := fs.Parse(tc.args); err != nil && !tc.expErr {
 			t.Errorf("%v produced error: %v", tc.args, err)
@@ -107,7 +109,7 @@ func ExampleEnumFlag() {
 	valid := map[string]int{"foo": int(foo), "bar": int(bar)}
 	assign := func(v int) { dest = enum(v) }
 	flags := flag.NewFlagSet("", flag.ContinueOnError)
-	flags.Var(NewEnumFlag(valid, assign, "foo"), "flag", "usage")
+	flags.Var(command.NewEnumFlag(valid, assign, "foo"), "flag", "usage")
 
 	// When the flag isn't supplied, the default is used.
 	flags.Parse([]string{})
@@ -141,7 +143,7 @@ func TestListFlag(t *testing.T) {
 		f := func(v []string) { vals = v }
 		fs := flag.NewFlagSet("", flag.ContinueOnError)
 		fs.SetOutput(ioutil.Discard)
-		fs.Var(NewListFlag(tc.sep, f, tc.def), "flag", "usage")
+		fs.Var(command.NewListFlag(tc.sep, f, tc.def), "flag", "usage")
 
 		if err := fs.Parse(tc.args); err != nil {
 			t.Errorf("%v produced error: %v", tc.args, err)
@@ -155,7 +157,7 @@ func ExampleListFlag() {
 	var dest []string
 	assign := func(v []string) { dest = v }
 	flags := flag.NewFlagSet("", flag.ContinueOnError)
-	flags.Var(NewListFlag(",", assign, []string{"a", "b"}), "flag", "usage")
+	flags.Var(command.NewListFlag(",", assign, []string{"a", "b"}), "flag", "usage")
 
 	// When the flag isn't supplied, the default is used.
 	flags.Parse([]string{})
@@ -172,7 +174,7 @@ func ExampleListFlag() {
 
 func ExampleRepeatedFlag() {
 	var dest []int
-	rf := RepeatedFlag(func(v string) error {
+	rf := command.RepeatedFlag(func(v string) error {
 		i, err := strconv.Atoi(v)
 		if err != nil {
 			return err

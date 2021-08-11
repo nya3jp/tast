@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package expr
+package expr_test
 
 import (
 	"fmt"
 	"strings"
 	"testing"
+
+	"chromiumos/tast/internal/expr"
 )
 
 func TestGoodExpr(t *testing.T) {
@@ -36,7 +38,7 @@ func TestGoodExpr(t *testing.T) {
 		{"\"a:*b*\"", "a:cbd", true},
 		{"\"a:*b*\"", "a:", false},
 	} {
-		e, err := New(tc.expr)
+		e, err := expr.New(tc.expr)
 		if err != nil {
 			t.Errorf("New(%q) failed: %v", tc.expr, err)
 		}
@@ -55,14 +57,14 @@ func TestBadExpr(t *testing.T) {
 		"(a && b",
 		"a:b",
 	} {
-		if _, err := New(s); err == nil {
-			t.Errorf("New(%q) unexpectedly succeeded", s)
+		if _, err := expr.New(s); err == nil {
+			t.Errorf("expr.New(%q) unexpectedly succeeded", s)
 		}
 	}
 }
 
 func ExampleExpr() {
-	e, _ := New("a && (b || c) && !d")
+	e, _ := expr.New("a && (b || c) && !d")
 	for _, attrs := range [][]string{
 		{"a"},
 		{"a", "b"},
@@ -83,7 +85,7 @@ func ExampleExpr() {
 }
 
 func ExampleExpr_quoted() {
-	e, _ := New("\"attr-hyphen\" && \"attr space\" && attr_under")
+	e, _ := expr.New("\"attr-hyphen\" && \"attr space\" && attr_under")
 	if e.Matches([]string{"attr-hyphen", "attr space", "attr_under"}) {
 		fmt.Println("matched")
 	}
@@ -91,7 +93,7 @@ func ExampleExpr_quoted() {
 }
 
 func ExampleExpr_wildcard() {
-	e, _ := New("\"foo:*\" && !\"*bar\"")
+	e, _ := expr.New("\"foo:*\" && !\"*bar\"")
 	for _, attrs := range [][]string{
 		{"foo:"},
 		{"foo:a"},

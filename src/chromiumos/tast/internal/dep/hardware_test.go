@@ -2,32 +2,33 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package dep
+package dep_test
 
 import (
 	"testing"
 
 	"chromiumos/tast/errors"
+	"chromiumos/tast/internal/dep"
 	"chromiumos/tast/internal/protocol"
 )
 
 // success returns a HardwareCondition that is always satisfied.
-func success() HardwareCondition {
-	return HardwareCondition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+func success() dep.HardwareCondition {
+	return dep.HardwareCondition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		return true, "", nil
 	}}
 }
 
 // fail returns a HardwareCondition that always fail to be satisfied.
-func fail() HardwareCondition {
-	return HardwareCondition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+func fail() dep.HardwareCondition {
+	return dep.HardwareCondition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		return false, "failed", nil
 	}}
 }
 
 // errCond returns a HardwareCondition that always returns error on evaluation.
-func errCond() HardwareCondition {
-	return HardwareCondition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+func errCond() dep.HardwareCondition {
+	return dep.HardwareCondition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		return false, "", errors.New("error in Satisfied()")
 	}}
 }
@@ -35,12 +36,12 @@ func errCond() HardwareCondition {
 // invalid returns a HardwareCondition that always fail to be validated.
 // This emulates, e.g., the situation that invalid argument is
 // passed to a factory function to instantiate a HardwareCondition.
-func invalid() HardwareCondition {
-	return HardwareCondition{Err: errors.New("invalid condition")}
+func invalid() dep.HardwareCondition {
+	return dep.HardwareCondition{Err: errors.New("invalid condition")}
 }
 
 func TestHardwareDepsSuccess(t *testing.T) {
-	d := NewHardwareDeps(success())
+	d := dep.NewHardwareDeps(success())
 	if err := d.Validate(); err != nil {
 		t.Fatal("Unexpected validation error: ", err)
 	}
@@ -52,7 +53,7 @@ func TestHardwareDepsSuccess(t *testing.T) {
 }
 
 func TestHardwareDepsFail(t *testing.T) {
-	d := NewHardwareDeps(fail())
+	d := dep.NewHardwareDeps(fail())
 	if err := d.Validate(); err != nil {
 		t.Fatal("Unexpected validateion error: ", err)
 	}
@@ -64,7 +65,7 @@ func TestHardwareDepsFail(t *testing.T) {
 }
 
 func TestHardwareDepsInvalid(t *testing.T) {
-	d := NewHardwareDeps(invalid())
+	d := dep.NewHardwareDeps(invalid())
 	if err := d.Validate(); err == nil {
 		t.Error("Unexpected validation pass")
 	}
@@ -77,7 +78,7 @@ func TestHardwareDepsInvalid(t *testing.T) {
 }
 
 func TestHardwareDepsMultipleCondition(t *testing.T) {
-	d := NewHardwareDeps(success(), fail())
+	d := dep.NewHardwareDeps(success(), fail())
 	if reasons, err := d.Satisfied(&protocol.HardwareFeatures{}); err != nil {
 		t.Error("Unexpected error: ", err)
 	} else if len(reasons) == 0 {
@@ -88,9 +89,9 @@ func TestHardwareDepsMultipleCondition(t *testing.T) {
 }
 
 func TestMergeHardwareDeps(t *testing.T) {
-	d1 := NewHardwareDeps(success())
-	d2 := NewHardwareDeps(fail())
-	d := MergeHardwareDeps(d1, d2)
+	d1 := dep.NewHardwareDeps(success())
+	d2 := dep.NewHardwareDeps(fail())
+	d := dep.MergeHardwareDeps(d1, d2)
 
 	if reasons, err := d.Satisfied(&protocol.HardwareFeatures{}); err != nil {
 		t.Error("Unexpected error: ", err)
@@ -102,7 +103,7 @@ func TestMergeHardwareDeps(t *testing.T) {
 }
 
 func TestHardwareDepsError(t *testing.T) {
-	d := NewHardwareDeps(errCond())
+	d := dep.NewHardwareDeps(errCond())
 	if _, err := d.Satisfied(&protocol.HardwareFeatures{}); err == nil {
 		t.Errorf("Unexpected success")
 	}

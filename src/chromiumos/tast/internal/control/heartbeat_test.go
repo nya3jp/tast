@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package control
+package control_test
 
 import (
 	"io"
@@ -10,6 +10,8 @@ import (
 	"os"
 	"testing"
 	"time"
+
+	"chromiumos/tast/internal/control"
 )
 
 func TestHeartbeatWriter(t *testing.T) {
@@ -24,13 +26,13 @@ func TestHeartbeatWriter(t *testing.T) {
 	}
 	defer r.Close()
 
-	mr := NewMessageReader(r)
+	mr := control.NewMessageReader(r)
 
 	func() {
 		defer w.Close()
 
-		mw := NewMessageWriter(w)
-		hbw := NewHeartbeatWriter(mw, time.Nanosecond)
+		mw := control.NewMessageWriter(w)
+		hbw := control.NewHeartbeatWriter(mw, time.Nanosecond)
 		// Don't defer hbw.Close() here; it deadlocks if the buffer is full.
 		// Leaking a goroutine is better than being unable to report errors.
 
@@ -40,14 +42,14 @@ func TestHeartbeatWriter(t *testing.T) {
 			if err != nil {
 				t.Fatal("ReadMessage failed: ", err)
 			}
-			if _, ok := msg.(*Heartbeat); !ok {
+			if _, ok := msg.(*control.Heartbeat); !ok {
 				t.Fatalf("ReadMessage returned %T; want *control.Heartbeat", msg)
 			}
 		}
 
 		go func() {
 			hbw.Stop()
-			mw.WriteMessage(&RunEnd{})
+			mw.WriteMessage(&control.RunEnd{})
 		}()
 
 		for {
@@ -55,9 +57,9 @@ func TestHeartbeatWriter(t *testing.T) {
 			if err != nil {
 				t.Fatal("ReadMessage failed: ", err)
 			}
-			if _, ok := msg.(*RunEnd); ok {
+			if _, ok := msg.(*control.RunEnd); ok {
 				break
-			} else if _, ok := msg.(*Heartbeat); !ok {
+			} else if _, ok := msg.(*control.Heartbeat); !ok {
 				t.Fatalf("ReadMessage returned %T; want *control.Heartbeat", msg)
 			}
 		}
@@ -77,9 +79,9 @@ func TestHeartbeatWriterZeroInterval(t *testing.T) {
 	r, w := io.Pipe()
 	defer r.Close()
 
-	mw := NewMessageWriter(w)
+	mw := control.NewMessageWriter(w)
 	// With zero interval, HeartbeatWriter should not write messages.
-	hbw := NewHeartbeatWriter(mw, 0)
+	hbw := control.NewHeartbeatWriter(mw, 0)
 
 	go func() {
 		// Sleep for a moment to allow the background goroutine to write a message
@@ -99,8 +101,8 @@ func TestHeartbeatWriterZeroInterval(t *testing.T) {
 }
 
 func TestHeartbeatWriterMultipleStop(t *testing.T) {
-	mw := NewMessageWriter(ioutil.Discard)
-	hbw := NewHeartbeatWriter(mw, time.Second)
+	mw := control.NewMessageWriter(ioutil.Discard)
+	hbw := control.NewHeartbeatWriter(mw, time.Second)
 
 	// It is safe to call Stop multiple times.
 	hbw.Stop()

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package git
+package git_test
 
 import (
 	"io/ioutil"
@@ -12,6 +12,7 @@ import (
 	"reflect"
 	"testing"
 
+	"chromiumos/tast/cmd/tast-lint/git"
 	"chromiumos/tast/testutil"
 )
 
@@ -145,16 +146,16 @@ func TestChangedFilesInHistory(t *testing.T) {
 	repoDir := newTestRepo(t)
 	defer os.RemoveAll(repoDir)
 
-	g := New(repoDir, "HEAD")
+	g := git.New(repoDir, "HEAD")
 	fns, err := g.ChangedFiles()
 	if err != nil {
 		t.Fatal("ChangedFiles failed: ", err)
 	}
-	if exp := []CommitFile{
-		{Deleted, deleteName},
-		{Added, newName},
-		{Added, symlinkName},
-		{Modified, testName},
+	if exp := []git.CommitFile{
+		{git.Deleted, deleteName},
+		{git.Added, newName},
+		{git.Added, symlinkName},
+		{git.Modified, testName},
 	}; !reflect.DeepEqual(fns, exp) {
 		t.Errorf("ChangedFiles() = %q; want %q", fns, exp)
 	}
@@ -165,7 +166,7 @@ func TestChangedFilesInWorkTree(t *testing.T) {
 	repoDir := newTestRepo(t)
 	defer os.RemoveAll(repoDir)
 
-	g := New(repoDir, "")
+	g := git.New(repoDir, "")
 	if _, err := g.ChangedFiles(); err == nil {
 		t.Error("ChangedFiles unexpectedly succeeded")
 	}
@@ -176,7 +177,7 @@ func TestReadFileInHistory(t *testing.T) {
 	repoDir := newTestRepo(t)
 	defer os.RemoveAll(repoDir)
 
-	g := New(repoDir, "HEAD")
+	g := git.New(repoDir, "HEAD")
 
 	if out, err := g.ReadFile(testName); err != nil {
 		t.Errorf("ReadFile(%q) failed: %v", testName, err)
@@ -194,7 +195,7 @@ func TestReadFileInWorkTree(t *testing.T) {
 	repoDir := newTestRepo(t)
 	defer os.RemoveAll(repoDir)
 
-	g := New(repoDir, "")
+	g := git.New(repoDir, "")
 
 	if out, err := g.ReadFile(testName); err != nil {
 		t.Errorf("ReadFile(%q) workContent: %v", testName, err)
@@ -213,7 +214,7 @@ func TestListDirInHistory(t *testing.T) {
 	repoDir := newTestRepo(t)
 	defer os.RemoveAll(repoDir)
 
-	g := New(repoDir, "HEAD")
+	g := git.New(repoDir, "HEAD")
 
 	if fns, err := g.ListDir(""); err != nil {
 		t.Errorf("ListDir(%q) failed: %v", "", err)
@@ -231,7 +232,7 @@ func TestListDirInWorkTree(t *testing.T) {
 	repoDir := newTestRepo(t)
 	defer os.RemoveAll(repoDir)
 
-	g := New(repoDir, "")
+	g := git.New(repoDir, "")
 
 	if fns, err := g.ListDir(""); err != nil {
 		t.Errorf("ListDir(%q) failed: %v", "", err)
@@ -258,7 +259,7 @@ func testIsSymlink(t *testing.T, commit string) {
 	repoDir := newTestRepo(t)
 	defer os.RemoveAll(repoDir)
 
-	g := New(repoDir, commit)
+	g := git.New(repoDir, commit)
 
 	for _, tc := range []struct {
 		file string

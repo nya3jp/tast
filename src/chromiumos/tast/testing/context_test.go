@@ -2,29 +2,30 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package testing
+package testing_test
 
 import (
 	"context"
-	"testing"
+	gotesting "testing"
 
 	"github.com/google/go-cmp/cmp"
 
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/logging/loggingtest"
+	"chromiumos/tast/testing"
 )
 
-func TestContextLogger(t *testing.T) {
+func TestContextLogger(t *gotesting.T) {
 	ctx := context.Background()
 
-	if _, ok := ContextLogger(ctx); ok {
+	if _, ok := testing.ContextLogger(ctx); ok {
 		t.Errorf("Expected logger to not be available from background context")
 	}
 
 	logger := loggingtest.NewLogger(t, logging.LevelInfo)
 	ctx = logging.AttachLogger(ctx, logger)
 
-	logger2, ok := ContextLogger(ctx)
+	logger2, ok := testing.ContextLogger(ctx)
 	if !ok {
 		t.Errorf("Expected logger to be available")
 	}

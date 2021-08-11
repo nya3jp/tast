@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package shutil
+package shutil_test
 
 import (
 	"testing"
+
+	"chromiumos/tast/shutil"
 )
 
 func TestEscape(t *testing.T) {
@@ -27,7 +29,7 @@ func TestEscape(t *testing.T) {
 		{`=foo`, `'=foo'`},
 		{`Tast's`, `'Tast'"'"'s'`},
 	} {
-		if s := Escape(c.in); s != c.exp {
+		if s := shutil.Escape(c.in); s != c.exp {
 			t.Errorf("Escape(%q) = %q; want %q", c.in, s, c.exp)
 		}
 	}

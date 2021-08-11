@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package hwdep
+package hwdep_test
 
 import (
 	"testing"
@@ -10,9 +10,10 @@ import (
 	configpb "go.chromium.org/chromiumos/config/go/api"
 
 	"chromiumos/tast/internal/protocol"
+	"chromiumos/tast/testing/hwdep"
 )
 
-func verifyCondition(t *testing.T, c Condition, dc *protocol.DeprecatedDeviceConfig, features *configpb.HardwareFeatures, expectSatisfied bool) {
+func verifyCondition(t *testing.T, c hwdep.Condition, dc *protocol.DeprecatedDeviceConfig, features *configpb.HardwareFeatures, expectSatisfied bool) {
 	t.Helper()
 
 	satisfied, reason, err := c.Satisfied(&protocol.HardwareFeatures{HardwareFeatures: features, DeprecatedDeviceConfig: dc})
@@ -30,7 +31,7 @@ func verifyCondition(t *testing.T, c Condition, dc *protocol.DeprecatedDeviceCon
 	}
 }
 
-func expectError(t *testing.T, c Condition, dc *protocol.DeprecatedDeviceConfig, features *configpb.HardwareFeatures) {
+func expectError(t *testing.T, c hwdep.Condition, dc *protocol.DeprecatedDeviceConfig, features *configpb.HardwareFeatures) {
 	t.Helper()
 	_, _, err := c.Satisfied(&protocol.HardwareFeatures{HardwareFeatures: features, DeprecatedDeviceConfig: dc})
 	if err == nil {
@@ -39,7 +40,7 @@ func expectError(t *testing.T, c Condition, dc *protocol.DeprecatedDeviceConfig,
 }
 
 func TestModel(t *testing.T) {
-	c := Model("eve", "kevin")
+	c := hwdep.Model("eve", "kevin")
 
 	for _, tc := range []struct {
 		model           string
@@ -65,7 +66,7 @@ func TestModel(t *testing.T) {
 }
 
 func TestSkipOnModel(t *testing.T) {
-	c := SkipOnModel("eve", "kevin")
+	c := hwdep.SkipOnModel("eve", "kevin")
 
 	for _, tc := range []struct {
 		model           string
@@ -92,7 +93,7 @@ func TestSkipOnModel(t *testing.T) {
 }
 
 func TestPlatform(t *testing.T) {
-	c := Platform("eve", "kevin")
+	c := hwdep.Platform("eve", "kevin")
 
 	for _, tc := range []struct {
 		platform        string
@@ -116,7 +117,7 @@ func TestPlatform(t *testing.T) {
 }
 
 func TestSkipOnPlatform(t *testing.T) {
-	c := SkipOnPlatform("eve", "kevin")
+	c := hwdep.SkipOnPlatform("eve", "kevin")
 
 	for _, tc := range []struct {
 		platform        string
@@ -140,7 +141,7 @@ func TestSkipOnPlatform(t *testing.T) {
 }
 
 func TestTouchscreen(t *testing.T) {
-	c := TouchScreen()
+	c := hwdep.TouchScreen()
 
 	for _, tc := range []struct {
 		TouchSupport    configpb.HardwareFeatures_Present
@@ -166,7 +167,7 @@ func TestTouchscreen(t *testing.T) {
 }
 
 func TestChromeEC(t *testing.T) {
-	c := ChromeEC()
+	c := hwdep.ChromeEC()
 
 	// Verify ECType defined with Boxster.
 	for _, tc := range []struct {
@@ -218,7 +219,7 @@ func TestChromeEC(t *testing.T) {
 }
 
 func TestFingerprint(t *testing.T) {
-	c := Fingerprint()
+	c := hwdep.Fingerprint()
 
 	for _, tc := range []struct {
 		Fingerprint     configpb.HardwareFeatures_Fingerprint_Location
@@ -244,7 +245,7 @@ func TestFingerprint(t *testing.T) {
 }
 
 func TestNoFingerprint(t *testing.T) {
-	c := NoFingerprint()
+	c := hwdep.NoFingerprint()
 
 	for _, tc := range []struct {
 		Fingerprint     configpb.HardwareFeatures_Fingerprint_Location
@@ -270,7 +271,7 @@ func TestNoFingerprint(t *testing.T) {
 }
 
 func TestInternalDisplay(t *testing.T) {
-	c := InternalDisplay()
+	c := hwdep.InternalDisplay()
 
 	for _, tc := range []struct {
 		PanelProperties *configpb.Component_DisplayPanel_Properties
@@ -292,7 +293,7 @@ func TestInternalDisplay(t *testing.T) {
 }
 
 func TestNvmeStorage(t *testing.T) {
-	c := Nvme()
+	c := hwdep.Nvme()
 
 	for _, tc := range []struct {
 		StorageType     configpb.Component_Storage_StorageType
@@ -320,29 +321,29 @@ func TestNvmeStorage(t *testing.T) {
 
 func TestCEL(t *testing.T) {
 	for i, c := range []struct {
-		input    Deps
+		input    hwdep.Deps
 		expected string
 	}{
-		{D(Model("model1", "model2")), "not_implemented"},
-		{D(SkipOnModel("model1", "model2")), "not_implemented"},
-		{D(Platform("platform_id1", "platform_id2")), "not_implemented"},
-		{D(SkipOnPlatform("platform_id1", "platform_id2")), "not_implemented"},
-		{D(TouchScreen()), "dut.hardware_features.screen.touch_support == api.HardwareFeatures.Present.PRESENT"},
-		{D(Fingerprint()), "dut.hardware_features.fingerprint.location != api.HardwareFeatures.Fingerprint.Location.NOT_PRESENT"},
-		{D(NoFingerprint()), "dut.hardware_features.fingerprint.location == api.HardwareFeatures.Fingerprint.Location.NOT_PRESENT"},
-		{D(InternalDisplay()), "dut.hardware_features.screen.panel_properties.diagonal_milliinch != 0"},
-		{D(Wifi80211ac()), "dut.hardware_features.wifi.supported_wlan_protocols.exists(x, x == api.Component.Wifi.WLANProtocol.IEEE_802_11_AC)"},
-		{D(Wifi80211ax()), "dut.hardware_features.wifi.supported_wlan_protocols.exists(x, x == api.Component.Wifi.WLANProtocol.IEEE_802_11_AX)"},
-		{D(WifiMACAddrRandomize()), "not_implemented"},
-		{D(WifiNotMarvell()), "not_implemented"},
-		{D(Nvme()), "dut.hardware_features.storage.storage_type == api.Component.Storage.StorageType.NVME"},
-		{D(Microphone()), "(dut.hardware_features.audio.lid_microphone.value > 0 || dut.hardware_features.audio.base_microphone.value > 0)"},
-		{D(Speaker()), "has(dut.hardware_features.audio.speaker_amplifier)"},
-		{D(Microphone(), Speaker()), "(dut.hardware_features.audio.lid_microphone.value > 0 || dut.hardware_features.audio.base_microphone.value > 0) && has(dut.hardware_features.audio.speaker_amplifier)"},
+		{hwdep.D(hwdep.Model("model1", "model2")), "not_implemented"},
+		{hwdep.D(hwdep.SkipOnModel("model1", "model2")), "not_implemented"},
+		{hwdep.D(hwdep.Platform("platform_id1", "platform_id2")), "not_implemented"},
+		{hwdep.D(hwdep.SkipOnPlatform("platform_id1", "platform_id2")), "not_implemented"},
+		{hwdep.D(hwdep.TouchScreen()), "dut.hardware_features.screen.touch_support == api.HardwareFeatures.Present.PRESENT"},
+		{hwdep.D(hwdep.Fingerprint()), "dut.hardware_features.fingerprint.location != api.HardwareFeatures.Fingerprint.Location.NOT_PRESENT"},
+		{hwdep.D(hwdep.NoFingerprint()), "dut.hardware_features.fingerprint.location == api.HardwareFeatures.Fingerprint.Location.NOT_PRESENT"},
+		{hwdep.D(hwdep.InternalDisplay()), "dut.hardware_features.screen.panel_properties.diagonal_milliinch != 0"},
+		{hwdep.D(hwdep.Wifi80211ac()), "dut.hardware_features.wifi.supported_wlan_protocols.exists(x, x == api.Component.Wifi.WLANProtocol.IEEE_802_11_AC)"},
+		{hwdep.D(hwdep.Wifi80211ax()), "dut.hardware_features.wifi.supported_wlan_protocols.exists(x, x == api.Component.Wifi.WLANProtocol.IEEE_802_11_AX)"},
+		{hwdep.D(hwdep.WifiMACAddrRandomize()), "not_implemented"},
+		{hwdep.D(hwdep.WifiNotMarvell()), "not_implemented"},
+		{hwdep.D(hwdep.Nvme()), "dut.hardware_features.storage.storage_type == api.Component.Storage.StorageType.NVME"},
+		{hwdep.D(hwdep.Microphone()), "(dut.hardware_features.audio.lid_microphone.value > 0 || dut.hardware_features.audio.base_microphone.value > 0)"},
+		{hwdep.D(hwdep.Speaker()), "has(dut.hardware_features.audio.speaker_amplifier)"},
+		{hwdep.D(hwdep.Microphone(), hwdep.Speaker()), "(dut.hardware_features.audio.lid_microphone.value > 0 || dut.hardware_features.audio.base_microphone.value > 0) && has(dut.hardware_features.audio.speaker_amplifier)"},
 
-		{D(TouchScreen(), Fingerprint()),
+		{hwdep.D(hwdep.TouchScreen(), hwdep.Fingerprint()),
 			"dut.hardware_features.screen.touch_support == api.HardwareFeatures.Present.PRESENT && dut.hardware_features.fingerprint.location != api.HardwareFeatures.Fingerprint.Location.NOT_PRESENT"},
-		{D(Model("model1", "model2"), SkipOnPlatform("id1", "id2")), "not_implemented && not_implemented"},
+		{hwdep.D(hwdep.Model("model1", "model2"), hwdep.SkipOnPlatform("id1", "id2")), "not_implemented && not_implemented"},
 	} {
 		actual := c.input.CEL()
 		if actual != c.expected {
@@ -352,7 +353,7 @@ func TestCEL(t *testing.T) {
 }
 
 func TestWiFiIntel(t *testing.T) {
-	c := WifiIntel()
+	c := hwdep.WifiIntel()
 
 	for _, tc := range []struct {
 		platform        string
@@ -382,7 +383,7 @@ func TestWiFiIntel(t *testing.T) {
 }
 
 func TestMinStorage(t *testing.T) {
-	c := MinStorage(16)
+	c := hwdep.MinStorage(16)
 	for _, tc := range []struct {
 		sizeGb          uint32
 		expectSatisfied bool
@@ -409,7 +410,7 @@ func TestMinStorage(t *testing.T) {
 }
 
 func TestMinMemory(t *testing.T) {
-	c := MinMemory(16000)
+	c := hwdep.MinMemory(16000)
 	for _, tc := range []struct {
 		sizeMb          int32
 		expectSatisfied bool
@@ -438,7 +439,7 @@ func TestMinMemory(t *testing.T) {
 }
 
 func TestMicrophone(t *testing.T) {
-	c := Microphone()
+	c := hwdep.Microphone()
 
 	for _, tc := range []struct {
 		lidMicrophone   uint32
@@ -469,7 +470,7 @@ func TestMicrophone(t *testing.T) {
 }
 
 func TestSpeaker(t *testing.T) {
-	c := Speaker()
+	c := hwdep.Speaker()
 
 	for _, tc := range []struct {
 		speakerAmplifier *configpb.Component_Amplifier
@@ -491,7 +492,7 @@ func TestSpeaker(t *testing.T) {
 }
 
 func TestPrivacyScreen(t *testing.T) {
-	c := PrivacyScreen()
+	c := hwdep.PrivacyScreen()
 
 	for _, tc := range []struct {
 		PrivacyScreen   configpb.HardwareFeatures_Present

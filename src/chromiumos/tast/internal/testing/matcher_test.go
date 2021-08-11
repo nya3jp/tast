@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package testing
+package testing_test
 
 import (
-	"testing"
+	gotesting "testing"
+
+	"chromiumos/tast/internal/testing"
 )
 
-func TestMatcher(t *testing.T) {
+func TestMatcher(t *gotesting.T) {
 	for _, tc := range []struct {
 		pats []string
 		want bool
@@ -35,7 +37,7 @@ func TestMatcher(t *testing.T) {
 		{[]string{`("attr1")`}, true},
 		{[]string{`("a*1")`}, true},
 	} {
-		m, err := NewMatcher(tc.pats)
+		m, err := testing.NewMatcher(tc.pats)
 		if err != nil {
 			t.Fatalf("Failed to compile %q: %v", tc.pats, err)
 		}
@@ -45,13 +47,13 @@ func TestMatcher(t *testing.T) {
 	}
 }
 
-func TestMatcherBadPatterns(t *testing.T) {
+func TestMatcherBadPatterns(t *gotesting.T) {
 	for _, pat := range []string{
 		"[]",
 		"(",
 		"test-Fo.",
 	} {
-		if _, err := NewMatcher([]string{pat}); err == nil {
+		if _, err := testing.NewMatcher([]string{pat}); err == nil {
 			t.Errorf("NewMatcher unexpectedly succeeded for %q", pat)
 		}
 	}

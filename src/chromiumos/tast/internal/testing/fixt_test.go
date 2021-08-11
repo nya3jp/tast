@@ -2,18 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package testing
+package testing_test
 
 import (
-	"testing"
+	gotesting "testing"
 
 	"github.com/google/go-cmp/cmp"
 
 	"chromiumos/tast/internal/protocol"
+	"chromiumos/tast/internal/testing"
 )
 
-func TestFixtureEntityProto(t *testing.T) {
-	fixt := &FixtureInstance{
+func TestFixtureEntityProto(t *gotesting.T) {
+	fixt := &testing.FixtureInstance{
 		Pkg:         "pkg",
 		Name:        "chrome.LoggedIn",
 		Desc:        "Make sure logged into a Chrome session",

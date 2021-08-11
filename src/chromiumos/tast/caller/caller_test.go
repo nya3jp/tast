@@ -2,28 +2,32 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package caller
+package caller_test
 
-import "testing"
+import (
+	"testing"
+
+	"chromiumos/tast/caller"
+)
 
 func TestGet(t *testing.T) {
-	const exp = "chromiumos/tast/caller.TestGet"
-	if name := Get(1); name != exp {
+	const exp = "chromiumos/tast/caller_test.TestGet"
+	if name := caller.Get(1); name != exp {
 		t.Errorf("Get(1) = %q; want %q", name, exp)
 	}
 }
 
 func TestGetSkip(t *testing.T) {
-	const exp = "chromiumos/tast/caller.TestGetSkip"
+	const exp = "chromiumos/tast/caller_test.TestGetSkip"
 	func() {
-		if name := Get(2); name != exp {
+		if name := caller.Get(2); name != exp {
 			t.Errorf("Get(2) = %q; want %q", name, exp)
 		}
 	}()
 }
 
 func TestCheckPass(t *testing.T) {
-	Check(1, []string{"chromiumos/tast/caller"})
+	caller.Check(1, []string{"chromiumos/tast/caller_test"})
 }
 
 func TestCheckPanic(t *testing.T) {
@@ -32,5 +36,5 @@ func TestCheckPanic(t *testing.T) {
 			t.Error("Check(1) did not panic")
 		}
 	}()
-	Check(1, []string{"chromiumos/tast/foobar"})
+	caller.Check(1, []string{"chromiumos/tast/foobar"})
 }

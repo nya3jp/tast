@@ -2,21 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package timing
+package timing_test
 
 import (
 	"context"
 	"testing"
+
+	"chromiumos/tast/internal/timing"
 )
 
 func TestContext(t *testing.T) {
-	if cl, cs, ok := FromContext(context.Background()); ok || cl != nil || cs != nil {
+	if cl, cs, ok := timing.FromContext(context.Background()); ok || cl != nil || cs != nil {
 		t.Errorf("FromContext(%v) = (%v, %v, %v); want (%v, %v, %v)", context.Background(), cl, cs, ok, nil, nil, false)
 	}
 
-	l := NewLog()
-	ctx := NewContext(context.Background(), l)
-	if cl, cs, ok := FromContext(ctx); !ok || cl != l || cs != l.Root {
+	l := timing.NewLog()
+	ctx := timing.NewContext(context.Background(), l)
+	if cl, cs, ok := timing.FromContext(ctx); !ok || cl != l || cs != l.Root {
 		t.Errorf("FromContext(%v) = (%v, %v, %v); want (%v, %v, %v)", ctx, cl, cs, ok, l, &l.Root, true)
 	}
 }
@@ -24,15 +26,15 @@ func TestContext(t *testing.T) {
 func TestStartNil(t *testing.T) {
 	// Start should be okay with receiving a context without a Log attached to it,
 	// and Stage.End should be okay with a nil receiver.
-	_, st := Start(context.Background(), "mystage")
+	_, st := timing.Start(context.Background(), "mystage")
 	st.End()
 }
 
 func TestStartSeq(t *testing.T) {
-	l := NewLog()
-	ctx := NewContext(context.Background(), l)
-	ctx1, st1 := Start(ctx, "stage1")
-	_, st2 := Start(ctx1, "stage2")
+	l := timing.NewLog()
+	ctx := timing.NewContext(context.Background(), l)
+	ctx1, st1 := timing.Start(ctx, "stage1")
+	_, st2 := timing.Start(ctx1, "stage2")
 	st2.End()
 	st1.End()
 
@@ -50,10 +52,10 @@ func TestStartSeq(t *testing.T) {
 }
 
 func TestStartPar(t *testing.T) {
-	l := NewLog()
-	ctx := NewContext(context.Background(), l)
-	_, st1 := Start(ctx, "stage1")
-	_, st2 := Start(ctx, "stage2")
+	l := timing.NewLog()
+	ctx := timing.NewContext(context.Background(), l)
+	_, st1 := timing.Start(ctx, "stage1")
+	_, st2 := timing.Start(ctx, "stage2")
 	st2.End()
 	st1.End()
 

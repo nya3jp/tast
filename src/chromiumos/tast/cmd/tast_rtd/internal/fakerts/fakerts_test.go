@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package fakerts
+package fakerts_test
 
 import (
 	"context"
@@ -10,12 +10,14 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 	resultspb "go.chromium.org/chromiumos/config/go/api/test/results/v2"
-	rtd "go.chromium.org/chromiumos/config/go/api/test/rtd/v1"
+	"go.chromium.org/chromiumos/config/go/api/test/rtd/v1"
 	"google.golang.org/grpc"
+
+	"chromiumos/tast/cmd/tast_rtd/internal/fakerts"
 )
 
 func TestProgressSink_ReportLog(t *testing.T) {
-	srv, addr, err := StartProgressSink(context.Background(), 0)
+	srv, addr, err := fakerts.StartProgressSink(context.Background(), 0)
 	if err != nil {
 		t.Fatal("Failed to start fake ProgressSink server: ", err)
 	}
@@ -87,7 +89,7 @@ func TestProgressSink_ReportLog(t *testing.T) {
 
 // TestProgressSink_ReportResult makes sure the fake progress sink can handle ReportResult API.
 func TestProgressSink_ReportResult(t *testing.T) {
-	srv, addr, err := StartProgressSink(context.Background(), 0)
+	srv, addr, err := fakerts.StartProgressSink(context.Background(), 0)
 	if err != nil {
 		t.Fatal("Failed to start fake ProgressSink server: ", err)
 	}
@@ -119,7 +121,7 @@ func TestProgressSink_ReportResult(t *testing.T) {
 // TestProgressSink_ReportResultFailureCount makes sure the fake progress sink would set
 // the terminate flag when maximum failures allowed has reached.
 func TestProgressSink_ReportResultFailureCount(t *testing.T) {
-	srv, addr, err := StartProgressSink(context.Background(), 1)
+	srv, addr, err := fakerts.StartProgressSink(context.Background(), 1)
 	if err != nil {
 		t.Fatal("Failed to start fake ProgressSink server: ", err)
 	}

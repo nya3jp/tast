@@ -744,6 +744,28 @@ func MinMemory(reqMegabytes int) Condition {
 	}}
 }
 
+// MaxMemory returns a hardware dependency condition requiring no more than the
+// maximum size of the memory in megabytes.
+func MaxMemory(reqMegabytes int) Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("Did not find hardware features")
+		}
+		if hf.GetMemory() == nil {
+			return withErrorStr("Features.Memory was nil")
+		}
+		if hf.GetMemory().GetProfile() == nil {
+			return withErrorStr("Features.Memory.Profile was nil")
+		}
+		s := hf.GetMemory().GetProfile().GetSizeMegabytes()
+		if s > int32(reqMegabytes) {
+			return unsatisfied(fmt.Sprintf("The total memory size is larger than required; got %dMB, need <= %dMB", s, reqMegabytes))
+		}
+		return satisfied()
+	}}
+}
+
 // Speaker returns a hardware dependency condition that is satisfied iff the DUT has a speaker.
 func Speaker() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {

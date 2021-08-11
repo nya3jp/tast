@@ -50,12 +50,16 @@ func Test(ctx context.Context, s *testing.State) {
 	errors.Errorf("should use New for single string arg")
 	errors.Errorf("should use Wrap: %v", err)
 	errors.Errorf("should use Wrapf %s: %v", "here", err)
+	errors.Wrap(err, "shouldn't use trailing colon:")
+	errors.Wrap(err, "shouldn't use trailing colon: ")
+	errors.Wrap(err, "shouldn't use trailing colon:  ")
 
 	// Good errors:
 	errors.New("normal message")
 	errors.Errorf("need Errorf for multiple values: %v", true)
 	errors.Errorf("also okay for custom formatting: %d", 1)
 	errors.Wrapf(err, "this is okay: %v", 3)
+	errors.Wrap(err, "this is okay")
 
 	// Bad quoting:
 	s.Logf("Read value '%s'", "blah")
@@ -142,27 +146,30 @@ func Test(ctx context.Context, s *testing.State) {
 		`test.go:39:2: Use errors.New("<msg>") instead of errors.Errorf("<msg>")`,
 		`test.go:40:2: Use errors.Wrap(err, "<msg>") instead of errors.Errorf("<msg>: %v", err)`,
 		`test.go:41:2: Use errors.Wrapf(err, "<msg>", ...) instead of errors.Errorf("<msg>: %v", ..., err)`,
-		`test.go:50:2: Use %q to quote values instead of manually quoting them`,
-		`test.go:51:2: Use %q to quote values instead of manually quoting them`,
-		`test.go:59:2: The number of verbs in format literal mismatches with the number of arguments`,
-		`test.go:60:2: The number of verbs in format literal mismatches with the number of arguments`,
-		`test.go:61:2: The number of verbs in format literal mismatches with the number of arguments`,
-		`test.go:69:2: Error message should have some surrounding context, so must not empty`,
-		`test.go:70:2: Error message should have some surrounding context, so must not empty`,
-		`test.go:71:2: Error message should have some surrounding context, so must not empty`,
-		`test.go:72:2: Error message should have some surrounding context, so must not empty`,
-		`test.go:80:2: Test failure messages should be capitalized`,
-		`test.go:82:2: Test failure messages should be capitalized`,
-		`test.go:84:2: Log messages should be capitalized`,
-		`test.go:86:2: Log messages should be capitalized`,
-		`test.go:88:2: Messages of the error type should not be capitalized`,
-		`test.go:90:2: Messages of the error type should not be capitalized`,
-		`test.go:97:2: Use s.Errorf(...) instead of s.Error(fmt.Sprintf(...))`,
-		`test.go:98:2: Use errors.Errorf(...) instead of errors.New(fmt.Sprintf(...))`,
-		`test.go:99:2: Use errors.Wrapf(err, ...) instead of errors.Wrap(err, fmt.Sprintf(...))`,
-		`test.go:105:2: s.Error has verbs in the first string (do you mean s.Errorf?)`,
-		`test.go:106:2: errors.Wrap has verbs in the first string (do you mean errors.Wrapf?)`,
-		`test.go:107:2: testing.ContextLog has verbs in the first string (do you mean testing.ContextLogf?)`,
+		`test.go:42:2: Use errors.Wrap(err, "shouldn't use trailing colon") instead of errors.Wrap(err, "shouldn't use trailing colon:")`,
+		`test.go:43:2: Use errors.Wrap(err, "shouldn't use trailing colon") instead of errors.Wrap(err, "shouldn't use trailing colon: ")`,
+		`test.go:44:2: Use errors.Wrap(err, "shouldn't use trailing colon") instead of errors.Wrap(err, "shouldn't use trailing colon:  ")`,
+		`test.go:54:2: Use %q to quote values instead of manually quoting them`,
+		`test.go:55:2: Use %q to quote values instead of manually quoting them`,
+		`test.go:63:2: The number of verbs in format literal mismatches with the number of arguments`,
+		`test.go:64:2: The number of verbs in format literal mismatches with the number of arguments`,
+		`test.go:65:2: The number of verbs in format literal mismatches with the number of arguments`,
+		`test.go:73:2: Error message should have some surrounding context, so must not empty`,
+		`test.go:74:2: Error message should have some surrounding context, so must not empty`,
+		`test.go:75:2: Error message should have some surrounding context, so must not empty`,
+		`test.go:76:2: Error message should have some surrounding context, so must not empty`,
+		`test.go:84:2: Test failure messages should be capitalized`,
+		`test.go:86:2: Test failure messages should be capitalized`,
+		`test.go:88:2: Log messages should be capitalized`,
+		`test.go:90:2: Log messages should be capitalized`,
+		`test.go:92:2: Messages of the error type should not be capitalized`,
+		`test.go:94:2: Messages of the error type should not be capitalized`,
+		`test.go:101:2: Use s.Errorf(...) instead of s.Error(fmt.Sprintf(...))`,
+		`test.go:102:2: Use errors.Errorf(...) instead of errors.New(fmt.Sprintf(...))`,
+		`test.go:103:2: Use errors.Wrapf(err, ...) instead of errors.Wrap(err, fmt.Sprintf(...))`,
+		`test.go:109:2: s.Error has verbs in the first string (do you mean s.Errorf?)`,
+		`test.go:110:2: errors.Wrap has verbs in the first string (do you mean errors.Wrapf?)`,
+		`test.go:111:2: testing.ContextLog has verbs in the first string (do you mean testing.ContextLogf?)`,
 	}
 	verifyIssues(t, issues, expects)
 }

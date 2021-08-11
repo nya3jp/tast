@@ -209,6 +209,19 @@ func Messages(fs *token.FileSet, f *ast.File, fix bool) []*Issue {
 			}
 		}
 
+		// Used errors.Wrap(err, "something failed: ") instead of errors.Wrap(err, "something failed").
+		if callName == "errors.Wrap" && len(args) == 1 && args[0].typ == stringArg &&
+			strings.HasSuffix(strings.TrimSpace(args[0].val), ":") {
+			messageTrimmed := strings.TrimSuffix(strings.TrimSpace(args[0].val), ":")
+			if !fix {
+				addIssue(fmt.Sprintf(`Use errors.Wrap(err, "%v") instead of errors.Wrap(err, "%v")`,
+					messageTrimmed, args[0].val), errPkgURL, true)
+			} else {
+				args[0].val = messageTrimmed
+				args[0].fixed = true
+			}
+		}
+
 		// Used Log(err) instead of Log("Some error: ", err).
 		if !isErr && len(args) == 1 && args[0].typ == errorArg {
 			addIssue(fmt.Sprintf(`Use %v(%v"Something failed: ", err) instead of %v(%verr)`,

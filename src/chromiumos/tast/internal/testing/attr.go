@@ -215,7 +215,7 @@ Tests in this group are not used for build verification.
 	},
 	{
 		Name:     "enrollment",
-		Contacts: []string{"vsavu@google.com", "chromeos-commercial-stability@google.com"},
+		Contacts: []string{"vsavu@google.com", "chromeos-commercial-remote-management@google.com"},
 		Desc:     `A group of tests performing enrollment and will clobber the stateful partition.`,
 	},
 	{

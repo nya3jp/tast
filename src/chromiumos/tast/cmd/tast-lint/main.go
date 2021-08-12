@@ -71,13 +71,13 @@ func getTargetFiles(g *git.Git, deltaPath string) ([]git.CommitFile, error) {
 
 // isSupportPackageFile checks if a file path is of support packages.
 func isSupportPackageFile(path string) bool {
-	return isTestFile(path) &&
+	return isUserFile(path) &&
 		!strings.Contains(path, "src/chromiumos/tast/local/bundles/") &&
 		!strings.Contains(path, "src/chromiumos/tast/remote/bundles/")
 }
 
-// isTestFile checks if a file path is under Tast test directories.
-func isTestFile(path string) bool {
+// isUserFile checks if a file path is under the Tast user code directories.
+func isUserFile(path string) bool {
 	path, err := filepath.Abs(path)
 	if err != nil {
 		return false
@@ -90,7 +90,9 @@ func isTestFile(path string) bool {
 	}
 
 	return strings.Contains(path, "src/chromiumos/tast/local/") ||
-		strings.Contains(path, "src/chromiumos/tast/remote/")
+		strings.Contains(path, "src/chromiumos/tast/remote/") ||
+		strings.Contains(path, "src/chromiumos/tast/common/") ||
+		strings.Contains(path, "src/chromiumos/tast/services/")
 }
 
 // hasFmtError runs gofmt to see if code has any formatting error.
@@ -276,7 +278,7 @@ func checkFile(path git.CommitFile, data []byte, debug bool, fs *token.FileSet, 
 		}
 	}
 
-	if isTestFile(path.Path) {
+	if isUserFile(path.Path) {
 		issues = append(issues, check.TestDeclarations(fs, f, fix)...)
 		issues = append(issues, check.Exports(fs, f)...)
 		issues = append(issues, check.ForbiddenBundleImports(fs, f)...)

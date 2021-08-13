@@ -5,6 +5,13 @@
 #
 # Runs the go command with environment suitable for dealing with Tast code.
 
+if ! which go > /dev/null; then
+  echo "*** Golang go command was not available. Please do either:
+  run update_chroot if you are running the command inside CrOS chroot, or
+  install 'go' command (Go language) to a location listed in \$PATH otherwise."
+  exit 1
+fi
+
 readonly trunk_dir="$(realpath -e "$(dirname "$0")/../../../..")"
 
 # Go workspaces containing the Tast source code.

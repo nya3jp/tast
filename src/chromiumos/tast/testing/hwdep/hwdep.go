@@ -481,6 +481,8 @@ func WifiIntel() Condition {
 			"jelboz360",
 			"lantis",
 			"madoo",
+			"pirette",
+			"pirika",
 			"vilboz",
 			"vorticon",
 		)

@@ -107,9 +107,9 @@ See [Running Tests] for more information.
 ## Modify a test
 
 Now, let's modify the test. In your Chrome OS checkout, go to
-`src/platform/tast-tests/src/chromiumos/tast/local/bundles/cros/ui` and open
-`chrome_login.go` (for convenience, there's also a `local_tests` symlink at the
-top of `tast-tests`). The `ChromeLogin` function here will run directly on the
+`src/platform/tast-tests/src/chromiumos/tast/local/bundles/cros/login` and open
+`chrome.go` (for convenience, there's also a `local_tests` symlink at the
+top of `tast-tests`). The `Chrome` function here will run directly on the
 test device.
 
 At the end of the anonymous function inside `testChromeLogin`, add the following code:

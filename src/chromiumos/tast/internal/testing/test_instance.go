@@ -223,10 +223,10 @@ func autoAttrs(name, pkg string, deps dep.SoftwareDeps) []string {
 
 // testFuncInfo contains information about a TestFunc.
 type testFuncInfo struct {
-	pkg      string // package name, e.g. "chromiumos/tast/local/bundles/cros/ui"
-	category string // Tast category name, e.g. "ui". The last component of pkg
-	name     string // function name, e.g. "ChromeLogin"
-	file     string // full source path, e.g. "/home/user/chromeos/src/platform/tast-tests/.../ui/chrome_login.go"
+	pkg      string // package name, e.g. "chromiumos/tast/local/bundles/cros/login"
+	category string // Tast category name, e.g. "login". The last component of pkg
+	name     string // function name, e.g. "Chrome"
+	file     string // full source path, e.g. "/home/user/chromeos/src/platform/tast-tests/.../login/chrome.go"
 }
 
 // getTestFuncInfo returns info about f.

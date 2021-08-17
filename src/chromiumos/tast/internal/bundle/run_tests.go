@@ -182,6 +182,13 @@ func runTests(ctx context.Context, srv protocol.TestService_RunTestsServer, cfg 
 		StartFixtureImpl:  &stubFixture{setUpErrors: cfg.GetStartFixtureState().GetErrors()},
 	}
 
+	// TODO: The following log is to help debug b/196052967.
+	// It should be removed after we find the root cause for b/196052967.
+	software := pcfg.Features.GetDut().GetSoftware()
+	if software != nil {
+		logging.Infof(ctx, "Dut Software Dependencies %+v", software)
+	}
+
 	if err := planner.RunTests(ctx, tests, ew, pcfg); err != nil {
 		return command.NewStatusErrorf(statusError, "run failed: %v", err)
 	}

@@ -188,7 +188,7 @@ than one action in a row.
 
 ## Dealing With a Race Condition
 
-Now if we look at `ui_tree.txt`, we can see the see the right click menu:
+Now if we look at `ui_tree.txt`, we can see the right click menu:
 ```
 node id=118 role=menuListPopup state={"vertical":true} parentID=117 childIds=[119,121,124] className=SubmenuView
   node id=119 role=menuItem state={} parentID=118 childIds=[] name=Autohide shelf className=MenuItemView
@@ -249,6 +249,56 @@ if err := ui.LeftClick(nodewith.Name("Deep Purple").Role(role.ListItem))(ctx); e
   s.Fatal(...)
 }
 ```
+
+## Scrolling to Target
+
+We found the above code fails to find the "Deep Purple" node on some device
+models. We examined and found that the "Solid color" list item was not visible
+without scrolling. This could be verified either by seeing the DUT screen or
+by seeing the node having "offscreen" state true:
+```
+    node id=169 role=listItem state={"offscreen":true} parentID=106 childIds=[229]
+      node id=229 role=genericContainer state={"offscreen":true} parentID=169 childIds=[230]
+        node id=230 role=staticText state={"offscreen":true} parentID=229 childIds=[231] name=Solid colors
+          node id=231 role=inlineTextBox state={"offscreen":true} parentID=230 childIds=[] name=Solid colors
+```
+
+This happened due to different screen sizes of devices, which affects the
+window size. In order to make this test more robust, we need to make the item
+visible before clicking:
+
+```go
+if err := ui.MakeVisible(nodewith.Name("Solid colors").Role(role.InlineTextBox))(ctx); err != nil {
+  s.Fatal(...)
+}
+// same as the previsous section
+if err := ui.LeftClick(nodewith.Name("Solid colors").Role(role.StaticText))(ctx); err != nil {
+  s.Fatal(...)
+}
+```
+
+However, there is still a race with this. The list items are loaded
+asynchronously. (You may be able to see only the first item is shown in the
+list and then the others are loaded few seconds later.)
+So the item may not exist in the accessibility tree yet, right after previous
+step. Therefore we will wait until the item appears:
+
+```go
+solidColorsMenu := nodewith.Name("Solid colors").Role(role.StaticText)
+if err := ui.WaitUntilExists(solidColorsMenu)(ctx); err != nil {
+  s.Fatal(...)
+}
+if err := ui.MakeVisible(solidColorsMenu)(ctx); err != nil {
+  s.Fatal(...)
+}
+if err := ui.LeftClick(solidColorsMenu)(ctx); err != nil {
+  s.Fatal(...)
+}
+```
+
+Note that `ui.LeftClick` has integrated logic to wait until the target is
+stable (i.e. exists and its position kept unchanged) but `MakeVisible`
+doesn't.
 
 ## Ensuring the Background Changed
 
@@ -316,12 +366,15 @@ func Change(ctx context.Context, s *testing.State) {
 
 	ui := uiauto.New(tconn)
 	setWallpaperMenu := nodewith.Name("Set wallpaper").Role(role.MenuItem)
+	solidColorsMenu := nodewith.Name("Solid colors").Role(role.StaticText)
 	if err := uiauto.Combine("change the wallpaper",
 		ui.RightClick(nodewith.ClassName("WallpaperView")),
 		// This button takes a bit before it is clickable.
 		// Keep clicking it until the click is received and the menu closes.
 		ui.WithInterval(500*time.Millisecond).LeftClickUntil(setWallpaperMenu, ui.Gone(setWallpaperMenu)),
-		ui.LeftClick(nodewith.Name("Solid colors").Role(role.StaticText)),
+		ui.WaitUntilExists(solidColorsMenu),
+		ui.MakeVisible(solidColorsMenu),
+		ui.LeftClick(solidColorsMenu),
 		ui.LeftClick(nodewith.Name("Deep Purple").Role(role.ListItem)),
 		// Ensure that "Deep Purple" text is displayed.
 		// The UI displays the name of the currently set wallpaper.

@@ -399,6 +399,8 @@ func Wifi80211ax() Condition {
 			"jelboz360",
 			"lantis",
 			"madoo",
+			"pirette",
+			"pirika",
 			"vilboz",
 		)
 		if satisfied, reason, err := modelCondition.Satisfied(f); err != nil || !satisfied {

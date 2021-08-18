@@ -373,16 +373,17 @@ third_party/autotest/files/server/site_tests/tast/control.runtime-probe
 				Name: "cellular_unstable",
 				Desc: `Identifies Cellular tests that are unstable. Used to skip tests running on stable suites and/or the CQ.`,
 			},
-		},
-	},
-	{
-		Name:     "cellular_multisim",
-		Contacts: []string{"chromeos-cellular-team@google.com"},
-		Desc:     `The group of Cellular tests to be run on hardware with a builtin Cellular modem, a provisioned pSIM slot, and an eSIM slot with multiple provisioned profiles.`,
-		Subattrs: []*attr{
 			{
-				Name: "cellular_multisim_unstable",
-				Desc: `Identifies multisim Cellular tests that are unstable. Used to skip tests running on stable suites and/or the CQ.`,
+				Name: "cellular_sim_active",
+				Desc: `Identifies Cellular tests that need an active sim.`,
+			},
+			{
+				Name: "cellular_sim_dual_active",
+				Desc: `Identifies Cellular tests that need active sim's on two slots.`,
+			},
+			{
+				Name: "cellular_sim_roaming",
+				Desc: `Identifies Cellular tests that need a roaming sim.`,
 			},
 		},
 	},

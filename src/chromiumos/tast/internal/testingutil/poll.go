@@ -66,6 +66,9 @@ func Poll(ctx context.Context, f func(context.Context) error, opts *PollOptions)
 		}
 
 		if e, ok := err.(*pollBreak); ok {
+			if ctx.Err() != nil && lastErr != nil {
+				return errors.Wrapf(lastErr, "%s; last error follows", e.err)
+			}
 			return e.err
 		}
 
@@ -80,7 +83,10 @@ func Poll(ctx context.Context, f func(context.Context) error, opts *PollOptions)
 		select {
 		case <-time.After(interval):
 		case <-ctx.Done():
-			return errors.Wrapf(lastErr, "%s; last error follows", ctx.Err())
+			if lastErr != nil {
+				return errors.Wrapf(lastErr, "%s; last error follows", ctx.Err())
+			}
+			return ctx.Err()
 		}
 	}
 }

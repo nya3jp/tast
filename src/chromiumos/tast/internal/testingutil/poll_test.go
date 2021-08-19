@@ -116,6 +116,57 @@ func TestPollTimeout(t *gotesting.T) {
 	}
 }
 
+func TestPollTimeoutLastError(t *gotesting.T) {
+	opts := &testingutil.PollOptions{
+		Timeout:  time.Minute,
+		Interval: time.Nanosecond,
+	}
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	first := true
+	const msg = "this is a test error message"
+	if err := testingutil.Poll(ctx, func(ctx context.Context) error {
+		if first {
+			first = false
+			return errors.New(msg)
+		}
+		cancel()
+		<-ctx.Done()
+		return ctx.Err()
+	}, opts); err == nil {
+		t.Error("Poll didn't return expected error for timeout with failing func")
+	} else if !strings.Contains(err.Error(), msg) {
+		t.Errorf("Poll returned error %q, which doesn't contain func error %q", err.Error(), msg)
+	}
+
+	ctx, cancel = context.WithCancel(context.Background())
+	first = true
+	if err := testingutil.Poll(ctx, func(ctx context.Context) error {
+		if first {
+			first = false
+			return errors.New(msg)
+		}
+		cancel()
+		<-ctx.Done()
+		return testingutil.PollBreak(ctx.Err())
+	}, opts); err == nil {
+		t.Error("Poll didn't return expected error for timeout with failing func")
+	} else if !strings.Contains(err.Error(), msg) {
+		t.Errorf("Poll returned error %q, which doesn't contain func error %q", err.Error(), msg)
+	}
+
+	ctx, cancel = context.WithCancel(context.Background())
+	if err := testingutil.Poll(ctx, func(ctx context.Context) error {
+		cancel()
+		<-ctx.Done()
+		return testingutil.PollBreak(ctx.Err())
+	}, opts); err == nil {
+		t.Error("Poll didn't return expected error for timeout with failing func")
+	} else if err != ctx.Err() {
+		t.Errorf("Poll returned unexpected error: got %v; want %v", err, ctx.Err())
+	}
+}
+
 func TestPollUseNonContextError(t *gotesting.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()

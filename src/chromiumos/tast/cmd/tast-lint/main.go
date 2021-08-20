@@ -29,49 +29,44 @@ import (
 
 // getTargetFiles returns the list of files to run lint according to flags.
 func getTargetFiles(g *git.Git, deltaPath string) ([]git.CommitFile, error) {
-	if len(flag.Args()) == 0 && g.Commit != "" {
-		return g.ChangedFiles()
-	}
+	args := flag.Args()
+	if len(args) == 0 {
+		// If -commit is set, check changed files.
+		if g.Commit != "" {
+			return g.ChangedFiles()
+		}
 
-	var statusStr string
-	flag.StringVar(&statusStr, "status", "M", "File Status")
-	var status git.CommitStatus
-	switch statusStr {
-	case "A":
-		status = git.Added
-	case "C":
-		status = git.Copied
-	case "D":
-		status = git.Deleted
-	case "M":
-		status = git.Modified
-	case "R":
-		status = git.Renamed
-	case "T":
-		status = git.TypeChanged
-	case "U":
-		status = git.Unmerged
-	case "X":
-		status = git.Unknown
-	default:
-		return nil, fmt.Errorf("please input valid status")
+		// Otherwise, treat as if all files in the checkout were specified.
+		if err := filepath.Walk(".", func(path string, info os.FileInfo, err error) error {
+			if err != nil {
+				return err
+			}
+			if info.Mode()&os.ModeType != 0 {
+				// Skip non-regular files.
+				return nil
+			}
+			args = append(args, path)
+			return nil
+		}); err != nil {
+			return nil, err
+		}
 	}
 
 	currAbs, err := filepath.Abs(".")
 	if err != nil {
 		return nil, err
 	}
-	var args []git.CommitFile
-	for _, p := range flag.Args() {
+	var files []git.CommitFile
+	for _, p := range args {
 		// If the CLI argument is an absolute path, creating filepath relative to git-root.
 		if filepath.IsAbs(p) {
 			p = filepath.Join(".", strings.TrimPrefix(p, currAbs))
 		} else {
 			p = filepath.Join(".", deltaPath, p)
 		}
-		args = append(args, git.CommitFile{Status: status, Path: p})
+		files = append(files, git.CommitFile{Status: git.Modified, Path: p})
 	}
-	return args, nil
+	return files, nil
 }
 
 // isSupportPackageFile checks if a file path is of support packages.

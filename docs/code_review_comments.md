@@ -94,18 +94,18 @@ func httpGet(url string) ([]byte, error) { ... }
 [`context.Context`]: https://godoc.org/context
 
 
-## Preconditions
+## Fixtures
 
-Whenever possible, use [preconditions] rather than calling setup functions by
-yourself. Preconditions speeds up testing when multiple tests sharing the same
-precondition are run at a time (e.g. in the commit queue).
+Whenever possible, use [fixtures] rather than calling setup functions by
+yourself. Fixtures speeds up testing when multiple tests sharing the same
+fixtures are run at a time (e.g. in the commit queue).
 
 ```go
 // GOOD
 func init() {
 	testing.AddTest(&testing.Test{
 		Func: Example,
-		Pre: chrome.LoggedIn(),
+		Fixture: "chromeLoggedIn",
 		...
 	})
 }
@@ -122,9 +122,9 @@ func Example(ctx context.Context, s *testing.State) {
 }
 ```
 
-See also [a section in the Writing Tests document](writing_tests.md#preconditions).
+See also [a section in the Writing Tests document](writing_tests.md#Fixtures).
 
-[preconditions]: writing_tests.md#preconditions
+[fixtures]: writing_tests.md#Fixtures
 
 
 ## Sleep
@@ -183,10 +183,6 @@ In many cases you can avoid passing [`testing.State`] to a function:
 *   If a function needs to write to the output directory, just pass the path
     returned by [`testing.State.OutDir`]. Alternatively you can pass a
     [`context.Context`] and call [`testing.ContextOutDir`].
-
-As an exception, support libraries implementing preconditions can refer
-[`testing.State`] because it is absolutely necessary. Please feel free to send
-a change to add your package to [the allowlist in tast-lint].
 
 [gRPC services]: https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#Remote-procedure-calls-with-gRPC
 [`testing.State`]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#State

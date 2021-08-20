@@ -470,7 +470,7 @@ _within_ multiple tests.
 
 *** aside
 If all the time-consuming setup in your test suite is covered by a tast
-[precondition], then splitting your test into multiple fine-grained tests
+[fixtures], then splitting your test into multiple fine-grained tests
 will incur negligible overhead.
 ***
 
@@ -480,7 +480,7 @@ will incur negligible overhead.
 [TotT 520]: http://go/tott/520
 [Unit Testing Best Practices Do's and Don'ts]: http://go/unit-test-practices#behavior-testing-dos-and-donts
 [Errors and Logging]: #errors-and-logging
-[precondition]: #preconditions
+[fixtures]: #Fixtures
 
 ### Device dependencies
 
@@ -534,42 +534,137 @@ dependencies.
 [chrome.New]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/chrome#New
 [tast-users mailing list]: https://groups.google.com/a/chromium.org/forum/#!forum/tast-users
 
-### Preconditions
+### Fixtures
 
 Sometimes a lengthy setup process (e.g. restarting Chrome and logging in, which
 takes at least 6-7 seconds) is needed by multiple tests. Rather than running the
 same setup for each of those tests, tests can declare the shared setup, which is
-named "precondition" in Tast.
+named "fixtures" in Tast.
 
-Tests sharing the same precondition run consecutively. `Prepare()` of the
-precondition runs just before each test function, and `Close()` is called once
-just after the last of them completes. Each test can declare its precondition by
-setting [testing.Test.Pre] an instance that implements [testing.Precondition].
-The instance `Prepare()` returns can be obtained by calling `s.PreValue()` in
-the test. Because `PreValue()` returns an `interface{}`, type assertion is
-needed to cast it to the actual type.
+Tests sharing the same fixture run consecutively. A fixture implements several
+_lifecycle methods_ that are called by the framework as it executes tests
+associated with the fixture. `SetUp()` of the fixture runs once just before the
+first of them starts, and `TearDown()` is called once just after the last of
+them completes. `Reset()` runs after each but the last test to roll back changes
+a test made to the environment.
 
-For example, rather than calling [chrome.New] at the beginning of each test,
-tests can declare that they require a logged-in Chrome instance by setting
-[testing.Test.Pre] to [chrome.LoggedIn] in `init()`. This enables Tast to just
-perform login once and then share the same Chrome instance with all tests that
-specify the precondition. See the [chrome.LoggedIn] documentation for more
-details, and [example.ChromeDisplay] for a test using the precondition.
+* Fixture `SetUp()`
+* Test 1 runs
+* Fixture `Reset()`
+* Test 2 runs
+* Fixture `Reset()`
+* ...
+* Fixture `Reset()`
+* Test N runs
+* Fixture `TearDown()`
 
-If you want a new Chrome precondition with custom options, call
-[chrome.NewPrecondition] from a single place in your test package and save the
-precondition as a global variable so that all of your tests can use it when
-registering themselves. It's best to initialize and store the precondition in a
-subpackage so it can be shared by multiple test files.
-For example, see [video tests' pre subpackage].
+`Reset()` should be a light-weight and idempotent operation. If it fails
+(returns a non-nil error), framework falls back to `TearDown()` and `SetUp()` to
+completely restart the fixture.
+Tests should not leave too much change on system environment, so that the next
+`Reset()` does not fail.
 
-[testing.Test.Pre]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#Test.Pre
-[testing.Precondition]: https://chromium.git.corp.google.com/chromiumos/platform/tast/+/main/src/chromiumos/tast/testing/pre.go
+*** aside
+Currently Reset errors do not mark a test as failed. We plan to change this
+behavior in the future ([b/187795248](http://b/187795248)).
+***
+
+Fixtures also have `PreTest()` and `PostTest()` methods, which run before and
+after each test. They get called with [`testing.FixtTestState`] with which you
+can report errors as a test. It's a good place to set up logging for individual
+test for example.
+
+For details of these fixture lifecycle methods, please see the GoDoc
+[`testing.FixtureImpl`].
+
+Each test can declare its fixture by setting [`testing.Test.Fixture`] an fixture
+name. The fixture's `SetUp()` returns an arbitrary value that can be obtained by
+calling `s.FixtValue()` in the test. Because `s.FixtValue()` returns an
+`interface{}`, type assertion is needed to cast it to the actual type.
+
+Fixtures are composable. A fixture can declare its parent fixture with
+`testing.Fixture.Parent`. Parent's `SetUp()` is executed before the fixture's
+`SetUp()` is executed, parent's `TearDown()` is executed after the fixtures's
+`TearDown()`, and so on. Fixtures can use the parent's value in the same way
+tests use it.
+
+Local tests/fixtures can depend on a remote fixture if they live in test bundles
+with the same name (e.g. local `cros` and remote `cros`). Currently we have
+several limitations though ([b/187957164](http://b/187957164)):
+
+- Only `SetUp()` and `TearDown()` are called for the remote fixture.
+  Reset/PreTest/PostTest implementations should be empty as they're not called.
+- The remote fixture cannot have a parent fixture.
+- Fixture value is not transferred from remote to local. s.FixtValue() returns
+  nil for a local test/fixture depending on a remote fixture.
+- Only `cros` bundles are supported.
+
+Fixtures are registered by calling [`testing.AddFixture`] with [`testing.Fixture`]
+struct in `init()`. `testing.Fixture.Name` specifies the fixture name,
+`testing.Fixture.Impl` specifies implementation of the fixture,
+`testing.Fixture.Parent` specifies the parent fixture if any,
+`testing.Fixture.SetUpTimeout` and the like specify methods' timeout,
+and the other fields are analogous to `testing.Test`.
+
+Fixtures can be registered outside bundles directory. It's best to initialize
+and register fixtures outside bundles if it is shared by tests in multiple
+categories.
+
+#### Examples
+
+* Rather than calling [chrome.New] at the beginning of each test, tests can
+declare that they require a logged-in Chrome instance by setting
+[`testing.Test.Fixture`] to "[chromeLoggedIn]" in `init()`. This enables Tast to
+just perform login once and then share the same Chrome instance with all tests
+that specify the fixture. See the [chromeLoggedIn] documentation for more
+details, and [example.ChromeFixture] for a test using the fixture.
+
+* If you want a new Chrome fixture with custom options, call
+[`testing.AddFixture`] from [chrome/fixture.go] with different options, and give
+it a unique name.
+
+#### Theory behind fixtures
+
+On designing composable fixtures, understanding the theory behind fixtures might
+help.
+
+Let us think of a space representing all possible system states. A fixture's
+purpose is to change the current system state to be in a certain subspace. For
+example, the fixture [chromeLoggedIn]'s purpose is to provide a clean
+environment similar to soon after logging into a Chrome session. This can be
+rephased that there's a subspace where "the system state is clean similar to
+soon after logging into a Chrome session" and the fixture's designed to change
+the system state to some point inside the subspace.
+
+To denote these concepts a bit formally: let `U` be a space representing all
+possible system states. Let `f` be a function that maps a fixture to its target
+system state subspace. Then, for any fixture `X`, `f(X) ⊆ U`. Note that `f(F)`
+is a subspace of `U`, not a point in `U`; there can be some degrees of freedom
+in a resulting system state.
+
+A fixture's property is as follows: if a test depends on a fixture `F` directly
+or indirectly, it can assume that the system state is in `f(F)` on its start.
+This also applies to fixtures: if a fixture depends on a fixture `F` directly or
+indirectly, it can assume that the system state is in `f(F)` on its setup.
+
+To fulfill this property, all fixtures should satisfy the following rule: if a
+fixture `X` has a child fixture `Y`, then `f(X) ⊇ f(Y)`. Otherwise, calling
+`Y`'s reset may put the system state to one not accepted by `X`, failing to
+fulfill the aforementioned property.
+
+#### Preconditions
+
+Preconditions, predecessor of fixtures, are not recommended for new tests.
+
+[`testing.Fixture`]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/internal/testing#Fixture
+[`testing.FixtureImpl`]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/internal/testing#FixtureImpl
+[`testing.FixtTestState`]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/internal/testing#FixtTestState
 [chrome.New]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/chrome#New
-[chrome.LoggedIn]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/chrome#LoggedIn
-[example.ChromeDisplay]: https://chromium.git.corp.google.com/chromiumos/platform/tast-tests/+/main/src/chromiumos/tast/local/bundles/cros/example/chrome_display.go
-[chrome.NewPrecondition]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/chrome#NewPrecondition
-[video tests' pre subpackage]: https://chromium.git.corp.google.com/chromiumos/platform/tast-tests/+/refs/heads/main/src/chromiumos/tast/local/media/pre
+[chromeLoggedIn]: https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform/tast-tests/src/chromiumos/tast/local/chrome/fixture.go
+[`testing.Test.Fixture`]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/internal/testing#Test.Fixture
+[chrome/fixture.go]: https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform/tast-tests/src/chromiumos/tast/local/chrome/fixture.go
+[example.ChromeFixture]: https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform/tast-tests/src/chromiumos/tast/local/bundles/cros/example/chrome_fixture.go
+[`testing.AddFixture`]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#AddFixture
 
 ## Common testing patterns
 

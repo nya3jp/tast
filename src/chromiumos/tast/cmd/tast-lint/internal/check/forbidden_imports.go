@@ -32,36 +32,38 @@ func ForbiddenImports(fs *token.FileSet, f *ast.File) []*Issue {
 	}
 
 	// local <-> remote, common -> {local, remote} dependencies are forbidden.
-	const (
-		localPkg  = "chromiumos/tast/local"
-		remotePkg = "chromiumos/tast/remote"
-	)
 	path := fs.File(f.Pos()).Name()
-	localFile := strings.Contains(path, localPkg)
-	remoteFile := strings.Contains(path, remotePkg)
-	for _, im := range f.Imports {
-		p, err := strconv.Unquote(im.Path.Value)
-		if err != nil {
-			continue
-		}
+	if !isUnitTestFile(path) {
+		const (
+			localPkg  = "chromiumos/tast/local"
+			remotePkg = "chromiumos/tast/remote"
+		)
+		localFile := strings.Contains(path, localPkg)
+		remoteFile := strings.Contains(path, remotePkg)
+		for _, im := range f.Imports {
+			p, err := strconv.Unquote(im.Path.Value)
+			if err != nil {
+				continue
+			}
 
-		importLocal := strings.HasPrefix(p, localPkg)
-		importRemote := strings.HasPrefix(p, remotePkg)
+			importLocal := strings.HasPrefix(p, localPkg)
+			importRemote := strings.HasPrefix(p, remotePkg)
 
-		const link = "https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#Code-location"
-		if !localFile && importLocal {
-			issues = append(issues, &Issue{
-				Pos:  fs.Position(im.Pos()),
-				Msg:  fmt.Sprintf("Non-local package should not import local package %v", p),
-				Link: link,
-			})
-		}
-		if !remoteFile && importRemote {
-			issues = append(issues, &Issue{
-				Pos:  fs.Position(im.Pos()),
-				Msg:  fmt.Sprintf("Non-remote package should not import remote package %v", p),
-				Link: link,
-			})
+			const link = "https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#Code-location"
+			if !localFile && importLocal {
+				issues = append(issues, &Issue{
+					Pos:  fs.Position(im.Pos()),
+					Msg:  fmt.Sprintf("Non-local package should not import local package %v", p),
+					Link: link,
+				})
+			}
+			if !remoteFile && importRemote {
+				issues = append(issues, &Issue{
+					Pos:  fs.Position(im.Pos()),
+					Msg:  fmt.Sprintf("Non-remote package should not import remote package %v", p),
+					Link: link,
+				})
+			}
 		}
 	}
 

@@ -60,6 +60,9 @@ import (
 			"src/chromiumos/tast/common/testfile.go:5:2: Non-local package should not import local package chromiumos/tast/local/foo",
 			"src/chromiumos/tast/common/testfile.go:6:2: Non-remote package should not import remote package chromiumos/tast/remote/foo",
 		},
+	}, {
+		filepath: "src/chromiumos/tast/common/testfile_test.go",
+		want:     nil,
 	}} {
 		f, fs := parse(code, tc.filepath)
 		issues := ForbiddenImports(fs, f)

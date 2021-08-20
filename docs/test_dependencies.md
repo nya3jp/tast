@@ -179,7 +179,6 @@ The following software features are defined:
 *   `use_fscrypt_v2` - The board is set to use v2 fscrypt policy for user vault.
 *   `v4l2_codec` - Whether or not v4l2 video acceleration API is supported by this DUT.
 *   `vaapi` - Whether or not VA-API is supported by this DUT.
-*   `vhost_user_devices` - Whether vhost-user device executables are installed.
 *   `video_decoder_direct` - The platform uses the VideoDecoder (VD) by default.
 *   `video_decoder_legacy` - The platform used the VideoDecodeAccelerator (VDA) by default.
 *   `video_decoder_legacy_supported` - Is the VDA is supported on this platform.

@@ -61,7 +61,7 @@ func Run(ctx context.Context, cfg *config.Config, state *config.State) ([]*resul
 	}
 
 	// Always start an ephemeral devserver for remote tests if TLWServer is not specified.
-	if cfg.TLWServer == "" {
+	if cfg.TLWServer() == "" {
 		es, err := startEphemeralDevserverForRemoteTests(ctx, cfg, state)
 		if err != nil {
 			return nil, errors.Wrap(err, "failed to start ephemeral devserver for remote tests")
@@ -69,7 +69,7 @@ func Run(ctx context.Context, cfg *config.Config, state *config.State) ([]*resul
 		defer es.Close()
 	}
 
-	drv, err := driver.New(ctx, cfg, cfg.Target)
+	drv, err := driver.New(ctx, cfg, cfg.Target())
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to connect to target")
 	}
@@ -79,7 +79,7 @@ func Run(ctx context.Context, cfg *config.Config, state *config.State) ([]*resul
 		return nil, errors.Wrap(err, "failed to build and push")
 	}
 
-	switch cfg.Mode {
+	switch cfg.Mode() {
 	case config.ListTestsMode:
 		results, err := listTests(ctx, cfg, drv)
 		if err != nil {
@@ -93,7 +93,7 @@ func Run(ctx context.Context, cfg *config.Config, state *config.State) ([]*resul
 		}
 		return results, nil
 	default:
-		return nil, errors.Errorf("unhandled mode %d", cfg.Mode)
+		return nil, errors.Errorf("unhandled mode %d", cfg.Mode())
 	}
 }
 
@@ -104,8 +104,8 @@ func startEphemeralDevserverForRemoteTests(ctx context.Context, cfg *config.Conf
 		return nil, fmt.Errorf("failed to listen to a local port: %v", err)
 	}
 
-	cacheDir := filepath.Join(cfg.TastDir, "devserver", "static")
-	es, err := devserver.NewEphemeral(lis, cacheDir, cfg.ExtraAllowedBuckets)
+	cacheDir := filepath.Join(cfg.TastDir(), "devserver", "static")
+	es, err := devserver.NewEphemeral(lis, cacheDir, cfg.ExtraAllowedBuckets())
 	if err != nil {
 		return nil, err
 	}
@@ -127,7 +127,7 @@ func listTests(ctx context.Context, cfg *config.Config, drv *driver.Driver) ([]*
 		return nil, err
 	}
 
-	shard := sharding.Compute(tests, cfg.ShardIndex, cfg.TotalShards)
+	shard := sharding.Compute(tests, cfg.ShardIndex(), cfg.TotalShards())
 
 	// Convert protocol.ResolvedEntity to resultsjson.Result.
 	results := make([]*resultsjson.Result, len(shard.Included))
@@ -168,7 +168,7 @@ func runTests(ctx context.Context, cfg *config.Config, state *config.State, drv 
 		return nil, errors.Wrap(err, "failed to get DUT software features")
 	}
 
-	if err := ioutil.WriteFile(filepath.Join(cfg.ResDir, DUTInfoFile), []byte(proto.MarshalTextString(dutInfo)), 0644); err != nil {
+	if err := ioutil.WriteFile(filepath.Join(cfg.ResDir(), DUTInfoFile), []byte(proto.MarshalTextString(dutInfo)), 0644); err != nil {
 		logging.Debugf(ctx, "Failed to dump DUTInfo: %v", err)
 	}
 
@@ -188,11 +188,11 @@ func runTests(ctx context.Context, cfg *config.Config, state *config.State, drv 
 		return nil, err
 	}
 
-	if err := verifyTestNames(cfg.Patterns, tests); err != nil {
+	if err := verifyTestNames(cfg.Patterns(), tests); err != nil {
 		return nil, err
 	}
 
-	shard := sharding.Compute(tests, cfg.ShardIndex, cfg.TotalShards)
+	shard := sharding.Compute(tests, cfg.ShardIndex(), cfg.TotalShards())
 
 	state.TestsToRun = shard.Included
 	state.TestNamesToSkip = nil
@@ -200,8 +200,8 @@ func runTests(ctx context.Context, cfg *config.Config, state *config.State, drv 
 		state.TestNamesToSkip = append(state.TestNamesToSkip, t.GetEntity().GetName())
 	}
 
-	if cfg.TotalShards > 1 {
-		logging.Infof(ctx, "Running shard %d/%d (tests %d/%d)", cfg.ShardIndex+1, cfg.TotalShards,
+	if cfg.TotalShards() > 1 {
+		logging.Infof(ctx, "Running shard %d/%d (tests %d/%d)", cfg.ShardIndex()+1, cfg.TotalShards(),
 			len(state.TestsToRun), len(state.TestsToRun)+len(state.TestNamesToSkip))
 	}
 	if len(state.TestsToRun) == 0 {
@@ -274,11 +274,11 @@ func setUpGRPCServices(ctx context.Context, cfg *config.Config, state *config.St
 // connectToTLW connects to a TLW service if its address is provided, and stores
 // the connection to state.TLWConn.
 func connectToTLW(ctx context.Context, cfg *config.Config, state *config.State) error {
-	if cfg.TLWServer == "" {
+	if cfg.TLWServer() == "" {
 		return nil
 	}
 
-	conn, err := grpc.DialContext(ctx, cfg.TLWServer, grpc.WithInsecure())
+	conn, err := grpc.DialContext(ctx, cfg.TLWServer(), grpc.WithInsecure())
 	if err != nil {
 		return err
 	}
@@ -288,10 +288,10 @@ func connectToTLW(ctx context.Context, cfg *config.Config, state *config.State) 
 
 // connectToReports connects to the Reports server.
 func connectToReports(ctx context.Context, cfg *config.Config, state *config.State) error {
-	if cfg.ReportsServer == "" {
+	if cfg.ReportsServer() == "" {
 		return nil
 	}
-	conn, err := grpc.DialContext(ctx, cfg.ReportsServer, grpc.WithInsecure())
+	conn, err := grpc.DialContext(ctx, cfg.ReportsServer(), grpc.WithInsecure())
 	if err != nil {
 		return err
 	}

@@ -95,7 +95,7 @@ func TestReadTestOutput(t *gotesting.T) {
 	cfg := env.Config(nil)
 	state := env.State()
 
-	if err := testutil.WriteFiles(cfg.RemoteOutDir, map[string]string{
+	if err := testutil.WriteFiles(cfg.RemoteOutDir(), map[string]string{
 		filepath.Join(test1Name, test1OutFile): test1OutData,
 		filepath.Join(test2Name, test2OutFile): test2OutData,
 	}); err != nil {
@@ -106,15 +106,15 @@ func TestReadTestOutput(t *gotesting.T) {
 	mw := control.NewMessageWriter(&b)
 	mw.WriteMessage(&control.RunStart{Time: runStartTime, TestNames: []string{test1Name, test2Name, test3Name}, NumTests: 3})
 	mw.WriteMessage(&control.RunLog{Time: runLogTime, Text: runLogText})
-	mw.WriteMessage(&control.EntityStart{Time: test1StartTime, Info: jsonprotocol.EntityInfo{Name: test1Name, Desc: test1Desc}, OutDir: filepath.Join(cfg.RemoteOutDir, test1Name)})
+	mw.WriteMessage(&control.EntityStart{Time: test1StartTime, Info: jsonprotocol.EntityInfo{Name: test1Name, Desc: test1Desc}, OutDir: filepath.Join(cfg.RemoteOutDir(), test1Name)})
 	mw.WriteMessage(&control.EntityLog{Time: test1LogTime, Name: test1Name, Text: test1LogText})
 	mw.WriteMessage(&control.EntityEnd{Time: test1EndTime, Name: test1Name})
-	mw.WriteMessage(&control.EntityStart{Time: test2StartTime, Info: jsonprotocol.EntityInfo{Name: test2Name, Desc: test2Desc}, OutDir: filepath.Join(cfg.RemoteOutDir, test2Name)})
+	mw.WriteMessage(&control.EntityStart{Time: test2StartTime, Info: jsonprotocol.EntityInfo{Name: test2Name, Desc: test2Desc}, OutDir: filepath.Join(cfg.RemoteOutDir(), test2Name)})
 	mw.WriteMessage(&control.EntityError{Time: test2ErrorTime, Name: test2Name, Error: jsonprotocol.Error{Reason: test2ErrorReason, File: test2ErrorFile, Line: test2ErrorLine, Stack: test2ErrorStack}})
 	mw.WriteMessage(&control.EntityEnd{Time: test2EndTime, Name: test2Name})
 	mw.WriteMessage(&control.EntityStart{Time: test3StartTime, Info: jsonprotocol.EntityInfo{Name: test3Name, Desc: test3Desc}})
 	mw.WriteMessage(&control.EntityEnd{Time: test3EndTime, Name: test3Name, SkipReasons: []string{skipReason}})
-	mw.WriteMessage(&control.RunEnd{Time: runEndTime, OutDir: cfg.RemoteOutDir})
+	mw.WriteMessage(&control.RunEnd{Time: runEndTime, OutDir: cfg.RemoteOutDir()})
 
 	results, unstartedTests, err := readTestOutput(ctx, cfg, state, &b, os.Rename, nil)
 	if err != nil {
@@ -124,7 +124,7 @@ func TestReadTestOutput(t *gotesting.T) {
 		t.Errorf("readTestOutput reported unstarted tests %v", unstartedTests)
 	}
 
-	drv, err := driver.New(ctx, cfg, cfg.Target)
+	drv, err := driver.New(ctx, cfg, cfg.Target())
 	if err != nil {
 		t.Fatalf("driver.New failed: %v", err)
 	}
@@ -134,7 +134,7 @@ func TestReadTestOutput(t *gotesting.T) {
 		t.Fatal("WriteResults failed:", err)
 	}
 
-	files, err := testutil.ReadFiles(cfg.ResDir)
+	files, err := testutil.ReadFiles(cfg.ResDir())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -144,7 +144,7 @@ func TestReadTestOutput(t *gotesting.T) {
 			Test:   resultsjson.Test{Name: test1Name, Desc: test1Desc},
 			Start:  test1StartTime,
 			End:    test1EndTime,
-			OutDir: filepath.Join(cfg.ResDir, testLogsDir, test1Name),
+			OutDir: filepath.Join(cfg.ResDir(), testLogsDir, test1Name),
 		},
 		{
 			Test: resultsjson.Test{Name: test2Name, Desc: test2Desc},
@@ -159,14 +159,14 @@ func TestReadTestOutput(t *gotesting.T) {
 			},
 			Start:  test2StartTime,
 			End:    test2EndTime,
-			OutDir: filepath.Join(cfg.ResDir, testLogsDir, test2Name),
+			OutDir: filepath.Join(cfg.ResDir(), testLogsDir, test2Name),
 		},
 		{
 			Test:       resultsjson.Test{Name: test3Name, Desc: test3Desc},
 			Start:      test3StartTime,
 			End:        test3EndTime,
 			SkipReason: skipReason,
-			OutDir:     filepath.Join(cfg.ResDir, testLogsDir, test3Name),
+			OutDir:     filepath.Join(cfg.ResDir(), testLogsDir, test3Name),
 		},
 	}
 	var actRes []*resultsjson.Result
@@ -243,7 +243,7 @@ func TestReadTestOutputSameEntity(t *gotesting.T) {
 	cfg := env.Config(nil)
 	state := env.State()
 
-	if err := testutil.WriteFiles(cfg.RemoteOutDir, map[string]string{
+	if err := testutil.WriteFiles(cfg.RemoteOutDir(), map[string]string{
 		filepath.Join(fixt1OutDir, fixt1OutFile): fixt1OutData,
 		filepath.Join(fixt2OutDir, fixt2OutFile): fixt2OutData,
 	}); err != nil {
@@ -253,9 +253,9 @@ func TestReadTestOutputSameEntity(t *gotesting.T) {
 	b := bytes.Buffer{}
 	mw := control.NewMessageWriter(&b)
 	mw.WriteMessage(&control.RunStart{Time: epoch})
-	mw.WriteMessage(&control.EntityStart{Time: epoch, Info: jsonprotocol.EntityInfo{Name: fixtName, Type: jsonprotocol.EntityFixture}, OutDir: filepath.Join(cfg.RemoteOutDir, fixt1OutDir)})
+	mw.WriteMessage(&control.EntityStart{Time: epoch, Info: jsonprotocol.EntityInfo{Name: fixtName, Type: jsonprotocol.EntityFixture}, OutDir: filepath.Join(cfg.RemoteOutDir(), fixt1OutDir)})
 	mw.WriteMessage(&control.EntityEnd{Time: epoch, Name: fixtName})
-	mw.WriteMessage(&control.EntityStart{Time: epoch, Info: jsonprotocol.EntityInfo{Name: fixtName, Type: jsonprotocol.EntityFixture}, OutDir: filepath.Join(cfg.RemoteOutDir, fixt2OutDir)})
+	mw.WriteMessage(&control.EntityStart{Time: epoch, Info: jsonprotocol.EntityInfo{Name: fixtName, Type: jsonprotocol.EntityFixture}, OutDir: filepath.Join(cfg.RemoteOutDir(), fixt2OutDir)})
 	mw.WriteMessage(&control.EntityEnd{Time: epoch, Name: fixtName})
 	mw.WriteMessage(&control.RunEnd{Time: epoch})
 
@@ -267,7 +267,7 @@ func TestReadTestOutputSameEntity(t *gotesting.T) {
 		t.Errorf("readTestOutput reported unstarted tests %v", unstartedTests)
 	}
 
-	drv, err := driver.New(ctx, cfg, cfg.Target)
+	drv, err := driver.New(ctx, cfg, cfg.Target())
 	if err != nil {
 		t.Fatalf("driver.New failed: %v", err)
 	}
@@ -277,7 +277,7 @@ func TestReadTestOutputSameEntity(t *gotesting.T) {
 		t.Fatal("WriteResults failed:", err)
 	}
 
-	files, err := testutil.ReadFiles(cfg.ResDir)
+	files, err := testutil.ReadFiles(cfg.ResDir())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -324,7 +324,7 @@ func TestReadTestOutputConcurrentEntity(t *gotesting.T) {
 	cfg := env.Config(nil)
 	state := env.State()
 
-	if err := testutil.WriteFiles(cfg.RemoteOutDir, map[string]string{
+	if err := testutil.WriteFiles(cfg.RemoteOutDir(), map[string]string{
 		filepath.Join(fixt1Name, fixt1OutFile): fixt1OutData,
 		filepath.Join(fixt2Name, fixt2OutFile): fixt2OutData,
 	}); err != nil {
@@ -334,8 +334,8 @@ func TestReadTestOutputConcurrentEntity(t *gotesting.T) {
 	b := bytes.Buffer{}
 	mw := control.NewMessageWriter(&b)
 	mw.WriteMessage(&control.RunStart{Time: epoch})
-	mw.WriteMessage(&control.EntityStart{Time: epoch, Info: jsonprotocol.EntityInfo{Name: fixt1Name, Type: jsonprotocol.EntityFixture}, OutDir: filepath.Join(cfg.RemoteOutDir, fixt1Name)})
-	mw.WriteMessage(&control.EntityStart{Time: epoch, Info: jsonprotocol.EntityInfo{Name: fixt2Name, Type: jsonprotocol.EntityFixture}, OutDir: filepath.Join(cfg.RemoteOutDir, fixt2Name)})
+	mw.WriteMessage(&control.EntityStart{Time: epoch, Info: jsonprotocol.EntityInfo{Name: fixt1Name, Type: jsonprotocol.EntityFixture}, OutDir: filepath.Join(cfg.RemoteOutDir(), fixt1Name)})
+	mw.WriteMessage(&control.EntityStart{Time: epoch, Info: jsonprotocol.EntityInfo{Name: fixt2Name, Type: jsonprotocol.EntityFixture}, OutDir: filepath.Join(cfg.RemoteOutDir(), fixt2Name)})
 	mw.WriteMessage(&control.EntityLog{Time: epoch, Name: fixt1Name, Text: fixt1LogText})
 	mw.WriteMessage(&control.EntityError{Time: epoch, Name: fixt2Name, Error: jsonprotocol.Error{Reason: fixt2ErrText}})
 	mw.WriteMessage(&control.EntityEnd{Time: epoch, Name: fixt2Name})
@@ -350,7 +350,7 @@ func TestReadTestOutputConcurrentEntity(t *gotesting.T) {
 		t.Errorf("readTestOutput reported unstarted tests %v", unstartedTests)
 	}
 
-	drv, err := driver.New(ctx, cfg, cfg.Target)
+	drv, err := driver.New(ctx, cfg, cfg.Target())
 	if err != nil {
 		t.Fatalf("driver.New failed: %v", err)
 	}
@@ -360,7 +360,7 @@ func TestReadTestOutputConcurrentEntity(t *gotesting.T) {
 		t.Fatal("WriteResults failed:", err)
 	}
 
-	files, err := testutil.ReadFiles(cfg.ResDir)
+	files, err := testutil.ReadFiles(cfg.ResDir())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -416,11 +416,11 @@ func TestReadTestOutputTimingLog(t *gotesting.T) {
 	td := testutil.TempDir(t)
 	defer os.RemoveAll(td)
 
-	cfg := config.Config{
+	cfg := (&config.MutableConfig{
 		ResDir: td,
-	}
+	}).Freeze()
 	var state config.State
-	if _, _, err := readTestOutput(ctx, &cfg, &state, &b, noOpCopyAndRemove, nil); err != nil {
+	if _, _, err := readTestOutput(ctx, cfg, &state, &b, noOpCopyAndRemove, nil); err != nil {
 		t.Fatal("readTestOutput failed: ", err)
 	}
 
@@ -472,8 +472,8 @@ func TestReadTestOutputAbortFixture(t *gotesting.T) {
 	b := bytes.Buffer{}
 	mw := control.NewMessageWriter(&b)
 	mw.WriteMessage(&control.RunStart{Time: epoch})
-	mw.WriteMessage(&control.EntityStart{Time: epoch, Info: jsonprotocol.EntityInfo{Name: fixt1Name, Type: jsonprotocol.EntityFixture}, OutDir: filepath.Join(cfg.RemoteOutDir, fixt1OutDir)})
-	mw.WriteMessage(&control.EntityStart{Time: epoch, Info: jsonprotocol.EntityInfo{Name: fixt2Name, Type: jsonprotocol.EntityFixture}, OutDir: filepath.Join(cfg.RemoteOutDir, fixt2OutDir)})
+	mw.WriteMessage(&control.EntityStart{Time: epoch, Info: jsonprotocol.EntityInfo{Name: fixt1Name, Type: jsonprotocol.EntityFixture}, OutDir: filepath.Join(cfg.RemoteOutDir(), fixt1OutDir)})
+	mw.WriteMessage(&control.EntityStart{Time: epoch, Info: jsonprotocol.EntityInfo{Name: fixt2Name, Type: jsonprotocol.EntityFixture}, OutDir: filepath.Join(cfg.RemoteOutDir(), fixt2OutDir)})
 
 	results, unstartedTests, err := readTestOutput(ctx, cfg, state, &b, os.Rename, nil)
 	if err == nil {
@@ -483,7 +483,7 @@ func TestReadTestOutputAbortFixture(t *gotesting.T) {
 		t.Errorf("readTestOutput reported unstarted tests %v", unstartedTests)
 	}
 
-	drv, err := driver.New(ctx, cfg, cfg.Target)
+	drv, err := driver.New(ctx, cfg, cfg.Target())
 	if err != nil {
 		t.Fatalf("driver.New failed: %v", err)
 	}
@@ -493,7 +493,7 @@ func TestReadTestOutputAbortFixture(t *gotesting.T) {
 		t.Fatal("WriteResults failed:", err)
 	}
 
-	files, err := testutil.ReadFiles(cfg.ResDir)
+	files, err := testutil.ReadFiles(cfg.ResDir())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -528,9 +528,9 @@ func TestPerTestLogContainsRunError(t *gotesting.T) {
 	mw.WriteMessage(&control.EntityStart{Time: time.Unix(2, 0), Info: jsonprotocol.EntityInfo{Name: testName}})
 	mw.WriteMessage(&control.RunError{Time: time.Unix(3, 0), Error: jsonprotocol.Error{Reason: errorMsg}})
 
-	cfg := config.Config{ResDir: td}
+	cfg := (&config.MutableConfig{ResDir: td}).Freeze()
 	var state config.State
-	if _, _, err := readTestOutput(context.Background(), &cfg, &state, &b, noOpCopyAndRemove, nil); err == nil {
+	if _, _, err := readTestOutput(context.Background(), cfg, &state, &b, noOpCopyAndRemove, nil); err == nil {
 		t.Fatal("readTestOutput didn't report run error")
 	} else if !strings.Contains(err.Error(), errorMsg) {
 		t.Fatalf("readTestOutput error %q doesn't contain %q", err.Error(), errorMsg)
@@ -613,11 +613,11 @@ func TestValidateMessages(t *gotesting.T) {
 		for _, msg := range tc.msgs {
 			mw.WriteMessage(msg)
 		}
-		cfg := config.Config{
+		cfg := (&config.MutableConfig{
 			ResDir: filepath.Join(tempDir, tc.desc),
-		}
+		}).Freeze()
 		var state config.State
-		if results, _, err := readTestOutput(context.Background(), &cfg, &state, &b, noOpCopyAndRemove, nil); err == nil {
+		if results, _, err := readTestOutput(context.Background(), cfg, &state, &b, noOpCopyAndRemove, nil); err == nil {
 			t.Errorf("readTestOutput didn't fail for %s", tc.desc)
 		} else {
 			var resultNames []string
@@ -641,24 +641,27 @@ func TestReadTestOutputTimeout(t *gotesting.T) {
 	defer pw.Close()
 
 	// When the message timeout is hit, an error should be reported.
-	cfg := config.Config{
+	cfg := (&config.MutableConfig{
 		ResDir:     tempDir,
 		MsgTimeout: time.Millisecond,
-	}
+	}).Freeze()
 	var state config.State
-	if _, _, err := readTestOutput(context.Background(), &cfg, &state, pr, noOpCopyAndRemove, nil); err == nil {
+	if _, _, err := readTestOutput(context.Background(), cfg, &state, pr, noOpCopyAndRemove, nil); err == nil {
 		t.Error("readTestOutput didn't return error for message timeout")
 	}
 
 	// An error should also be reported for a canceled context.
-	cfg.MsgTimeout = time.Minute
+	cfg = (&config.MutableConfig{
+		ResDir:     tempDir,
+		MsgTimeout: time.Minute,
+	}).Freeze()
 	ctx, cancel := context.WithCancel(context.Background())
 	cancel()
 	start := time.Now()
-	if _, _, err := readTestOutput(ctx, &cfg, &state, pr, noOpCopyAndRemove, nil); err == nil {
+	if _, _, err := readTestOutput(ctx, cfg, &state, pr, noOpCopyAndRemove, nil); err == nil {
 		t.Error("readTestOutput didn't return error for canceled context")
 	}
-	if elapsed := time.Now().Sub(start); elapsed >= cfg.MsgTimeout {
+	if elapsed := time.Now().Sub(start); elapsed >= cfg.MsgTimeout() {
 		t.Error("readTestOutput used message timeout instead of noticing context was canceled")
 	}
 }
@@ -679,7 +682,7 @@ func TestWriteResultsCollectSysInfo(t *gotesting.T) {
 	cfg := env.Config(nil)
 	state := env.State()
 
-	drv, err := driver.New(ctx, cfg, cfg.Target)
+	drv, err := driver.New(ctx, cfg, cfg.Target())
 	if err != nil {
 		t.Fatalf("driver.New failed: %v", err)
 	}
@@ -706,7 +709,7 @@ func TestWriteResultsCollectSysInfoFailure(t *gotesting.T) {
 	cfg := env.Config(nil)
 	state := env.State()
 
-	drv, err := driver.New(ctx, cfg, cfg.Target)
+	drv, err := driver.New(ctx, cfg, cfg.Target())
 	if err != nil {
 		t.Fatalf("driver.New failed: %v", err)
 	}
@@ -769,18 +772,18 @@ func TestWritePartialResults(t *gotesting.T) {
 	mw.WriteMessage(&control.EntityStart{Time: test2Start, Info: jsonprotocol.EntityInfo{Name: test2Name}, OutDir: filepath.Join(outDir, test2Name)})
 	mw.WriteMessage(&control.EntityError{Time: test2Error, Name: test2Name, Error: jsonprotocol.Error{Reason: test2Reason}})
 
-	cfg := config.Config{
+	cfg := (&config.MutableConfig{
 		ResDir: filepath.Join(tempDir, "results"),
-	}
+	}).Freeze()
 	var state config.State
-	results, unstarted, err := readTestOutput(context.Background(), &cfg, &state, &b, os.Rename, nil)
+	results, unstarted, err := readTestOutput(context.Background(), cfg, &state, &b, os.Rename, nil)
 	if err == nil {
 		t.Fatal("readTestOutput unexpectedly succeeded")
 	}
 	if expUnstarted := []string{test3Name}; !reflect.DeepEqual(unstarted, expUnstarted) {
 		t.Errorf("readTestOutput returned unstarted tests %v; want %v", unstarted, expUnstarted)
 	}
-	files, err := testutil.ReadFiles(cfg.ResDir)
+	files, err := testutil.ReadFiles(cfg.ResDir())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -790,7 +793,7 @@ func TestWritePartialResults(t *gotesting.T) {
 			Test:   resultsjson.Test{Name: test1Name},
 			Start:  test1Start,
 			End:    test1End,
-			OutDir: filepath.Join(cfg.ResDir, testLogsDir, test1Name),
+			OutDir: filepath.Join(cfg.ResDir(), testLogsDir, test1Name),
 		},
 		// No EntityEnd message was received for the second test, so its entry in the streamed results
 		// file should have an empty end time. The error should be included, though.
@@ -802,7 +805,7 @@ func TestWritePartialResults(t *gotesting.T) {
 				{Reason: fmt.Sprintf("Got global error: %v", noRunEndMsg)},
 				{Reason: incompleteTestMsg},
 			},
-			OutDir: filepath.Join(cfg.ResDir, testLogsDir, test2Name),
+			OutDir: filepath.Join(cfg.ResDir(), testLogsDir, test2Name),
 		},
 	}
 	if diff := cmp.Diff(streamRes, expRes, cmpopts.IgnoreFields(resultsjson.Error{}, "Time")); diff != "" {
@@ -830,10 +833,10 @@ func TestWritePartialResults(t *gotesting.T) {
 	mw.WriteMessage(&control.RunEnd{Time: run2End})
 
 	// The results for the third test should be appended to the existing streamed results file.
-	if _, _, err := readTestOutput(context.Background(), &cfg, &state, &b, os.Rename, nil); err != nil {
+	if _, _, err := readTestOutput(context.Background(), cfg, &state, &b, os.Rename, nil); err != nil {
 		t.Error("readTestOutput failed: ", err)
 	}
-	if files, err = testutil.ReadFiles(cfg.ResDir); err != nil {
+	if files, err = testutil.ReadFiles(cfg.ResDir()); err != nil {
 		t.Fatal(err)
 	}
 	streamRes = readStreamedResults(t, bytes.NewBufferString(files[streamedResultsFilename]))
@@ -841,7 +844,7 @@ func TestWritePartialResults(t *gotesting.T) {
 		Test:   resultsjson.Test{Name: test4Name},
 		Start:  test4Start,
 		End:    test4End,
-		OutDir: filepath.Join(cfg.ResDir, testLogsDir, test4Name),
+		OutDir: filepath.Join(cfg.ResDir(), testLogsDir, test4Name),
 	})
 	if diff := cmp.Diff(streamRes, expRes, cmpopts.IgnoreFields(resultsjson.Error{}, "Time")); diff != "" {
 		t.Errorf("%v mismatch (-got +want):\n%s", streamedResultsFilename, diff)
@@ -907,11 +910,11 @@ func TestUnfinishedTest(t *gotesting.T) {
 			mw.WriteMessage(&control.RunError{Time: tm, Error: jsonprotocol.Error{Reason: runMsg, File: runFile, Line: runLine}})
 		}
 
-		cfg := config.Config{
+		cfg := (&config.MutableConfig{
 			ResDir: filepath.Join(tempDir, strconv.Itoa(i)),
-		}
+		}).Freeze()
 		var state config.State
-		res, _, err := readTestOutput(context.Background(), &cfg, &state, &b, os.Rename, tc.diagFunc)
+		res, _, err := readTestOutput(context.Background(), cfg, &state, &b, os.Rename, tc.diagFunc)
 		if err == nil {
 			t.Error("readTestOutput unexpectedly succeeded")
 			continue
@@ -950,7 +953,7 @@ func TestWriteResultsWriteFiles(t *gotesting.T) {
 		{Entity: &protocol.Entity{Name: "pkg.Test2"}},
 	}
 
-	drv, err := driver.New(ctx, cfg, cfg.Target)
+	drv, err := driver.New(ctx, cfg, cfg.Target())
 	if err != nil {
 		t.Fatalf("driver.New failed: %v", err)
 	}
@@ -960,11 +963,11 @@ func TestWriteResultsWriteFiles(t *gotesting.T) {
 		t.Errorf("WriteResults() failed: %v", err)
 	}
 
-	if _, err := os.Stat(filepath.Join(cfg.ResDir, "results.json")); err != nil {
+	if _, err := os.Stat(filepath.Join(cfg.ResDir(), "results.json")); err != nil {
 		t.Errorf("Result JSON file not generated: %v", err)
 	}
 	// Just check that the file is written. The content is tested in junit_results_test.go
-	if _, err := os.Stat(filepath.Join(cfg.ResDir, "results.xml")); err != nil {
+	if _, err := os.Stat(filepath.Join(cfg.ResDir(), "results.xml")); err != nil {
 		t.Errorf("Result XML file not generated: %v", err)
 	}
 }
@@ -1047,12 +1050,12 @@ func TestMaxTestFailures(t *gotesting.T) {
 	mw.WriteMessage(&control.EntityEnd{Time: test4EndTime, Name: test4Name, SkipReasons: []string{skipReason}})
 	mw.WriteMessage(&control.RunEnd{Time: runEndTime, OutDir: outDir})
 
-	cfg := config.Config{
+	cfg := (&config.MutableConfig{
 		ResDir:          filepath.Join(tempDir, "results"),
 		MaxTestFailures: 2,
-	}
+	}).Freeze()
 	var state config.State
-	results, unstartedTests, err := readTestOutput(context.Background(), &cfg, &state, &b, os.Rename, nil)
+	results, unstartedTests, err := readTestOutput(context.Background(), cfg, &state, &b, os.Rename, nil)
 	if err == nil {
 		t.Fatal("readTestOutput expected an error failure when maximum number of failed tests has reached, but did not get any error.")
 	}

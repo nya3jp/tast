@@ -58,7 +58,7 @@ func TestDriver_CollectSysInfo(t *testing.T) {
 	ctx := env.Context()
 	cfg := env.Config(nil)
 
-	drv, err := driver.New(ctx, cfg, cfg.Target)
+	drv, err := driver.New(ctx, cfg, cfg.Target())
 	if err != nil {
 		t.Fatalf("driver.New failed: %v", err)
 	}
@@ -73,7 +73,7 @@ func TestDriver_CollectSysInfo(t *testing.T) {
 		t.Fatalf("CollectSysInfo failed: %v", err)
 	}
 
-	gotLogs, err := testutil.ReadFiles(filepath.Join(cfg.ResDir, driver.SystemLogsDir))
+	gotLogs, err := testutil.ReadFiles(filepath.Join(cfg.ResDir(), driver.SystemLogsDir))
 	if err != nil {
 		t.Fatalf("Failed to read log dir: %v", err)
 	}
@@ -81,7 +81,7 @@ func TestDriver_CollectSysInfo(t *testing.T) {
 		t.Errorf("Logs mismatch (-got +want):\n%s", diff)
 	}
 
-	gotCrashes, err := testutil.ReadFiles(filepath.Join(cfg.ResDir, driver.CrashesDir))
+	gotCrashes, err := testutil.ReadFiles(filepath.Join(cfg.ResDir(), driver.CrashesDir))
 	if err != nil {
 		t.Fatalf("Failed to read crash dir: %v", err)
 	}

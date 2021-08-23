@@ -31,9 +31,9 @@ func startServices(ctx context.Context, cfg *config.Config, conn *ssh.Conn) (svc
 	var ephemeralDevserver *devserver.Ephemeral
 	var ephemeralDevserverURL string
 
-	if cfg.TLWServer != "" {
+	if cfg.TLWServer() != "" {
 		var err error
-		tlwForwarder, err = conn.ForwardRemoteToLocal("tcp", "127.0.0.1:0", cfg.TLWServer, func(e error) {
+		tlwForwarder, err = conn.ForwardRemoteToLocal("tcp", "127.0.0.1:0", cfg.TLWServer(), func(e error) {
 			logging.Infof(ctx, "TLW server port forwarding failed: %v", e)
 		})
 		if err != nil {
@@ -44,7 +44,7 @@ func startServices(ctx context.Context, cfg *config.Config, conn *ssh.Conn) (svc
 				tlwForwarder.Close()
 			}
 		}()
-	} else if cfg.UseEphemeralDevserver && len(cfg.Devservers) == 0 {
+	} else if cfg.UseEphemeralDevserver() && len(cfg.Devservers()) == 0 {
 		var err error
 		ephemeralDevserver, ephemeralDevserverURL, err = startEphemeralDevserver(cfg, conn)
 		if err != nil {
@@ -108,8 +108,8 @@ func startEphemeralDevserver(cfg *config.Config, conn *ssh.Conn) (ds *devserver.
 		}
 	}()
 
-	cacheDir := filepath.Join(cfg.TastDir, "devserver", "static")
-	ds, err = devserver.NewEphemeral(lis, cacheDir, cfg.ExtraAllowedBuckets)
+	cacheDir := filepath.Join(cfg.TastDir(), "devserver", "static")
+	ds, err = devserver.NewEphemeral(lis, cacheDir, cfg.ExtraAllowedBuckets())
 	if err != nil {
 		return nil, "", err
 	}

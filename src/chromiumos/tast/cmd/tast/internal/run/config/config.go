@@ -53,73 +53,230 @@ const (
 	checkDepsCacheFile = "check_deps_cache.v2.json"      // file in BuildOutDir where dependency-checking results are cached
 )
 
-// Config contains shared configuration information for running or listing tests.
-type Config struct {
-	// KeyFile is the path to a private SSH key to use to connect to the target device.
-	KeyFile string
-	// KeyDir is a directory containing private SSH keys (typically $HOME/.ssh).
-	KeyDir string
-	// Target is the target device for testing, in the form "[<user>@]host[:<port>]".
-	Target string
-	// Patterns specifies the patterns of tests to operate against.
+// MutableConfig is similar to Config, but its fields are mutable.
+// Call Freeze to obtain a Config from MutableConfig.
+type MutableConfig struct {
+	// See Config for descriptions of these fields.
+
+	KeyFile  string
+	KeyDir   string
+	Target   string
 	Patterns []string
-	// ResDir is the path to the directory where test results should be written.
-	// It is only used for RunTestsMode.
-	ResDir string
+	ResDir   string
 
-	Mode     Mode   // action to perform
-	TastDir  string // base directory under which files are written
-	TrunkDir string // path to Chrome OS checkout
+	Mode     Mode
+	TastDir  string
+	TrunkDir string
 
-	Build bool // rebuild (and push, for local tests) a single test bundle
+	Build bool
 
-	// Variables in this section take effect when build=true.
-	BuildBundle        string // name of the test bundle to rebuild (e.g. "cros")
-	BuildWorkspace     string // path to workspace containing test bundle source code
-	BuildOutDir        string // path to base directory under which executables are stored
-	CheckPortageDeps   bool   // check whether test bundle's dependencies are installed before building
-	InstallPortageDeps bool   // install old or missing test bundle dependencies; no-op if CheckPortageDeps is false
+	BuildBundle        string
+	BuildWorkspace     string
+	BuildOutDir        string
+	CheckPortageDeps   bool
+	InstallPortageDeps bool
 
-	UseEphemeralDevserver  bool                 // start an ephemeral devserver if no devserver is specified
-	ExtraAllowedBuckets    []string             // extra Google Cloud Storage buckets ephemeral devserver is allowed to access
-	Devservers             []string             // list of devserver URLs; set by -devservers but may be dynamically modified
-	BuildArtifactsURL      string               // Google Cloud Storage URL of build artifacts
-	DownloadPrivateBundles bool                 // whether to download private bundles if missing
-	DownloadMode           planner.DownloadMode // strategy to download external data files
-	TLWServer              string               // address of the TLW server if available
-	ReportsServer          string               // address of Reports server if available
-	CompanionDUTs          map[string]string    // role to address mapping of companion DUTs.
+	UseEphemeralDevserver  bool
+	ExtraAllowedBuckets    []string
+	Devservers             []string
+	BuildArtifactsURL      string
+	DownloadPrivateBundles bool
+	DownloadMode           planner.DownloadMode
+	TLWServer              string
+	ReportsServer          string
+	CompanionDUTs          map[string]string
 
-	LocalRunner    string // path to executable that runs local test bundles
-	LocalBundleDir string // dir where packaged local test bundles are installed
-	LocalDataDir   string // dir containing packaged local test data
-	LocalOutDir    string // dir where intermediate outputs of local tests are written
+	LocalRunner    string
+	LocalBundleDir string
+	LocalDataDir   string
+	LocalOutDir    string
 
-	RemoteRunner        string // path to executable that runs remote test bundles
-	RemoteBundleDir     string // dir where packaged remote test bundles are installed
-	RemoteFixtureServer string // path to executable that runs remote fixture server
-	RemoteDataDir       string // dir containing packaged remote test data
-	RemoteOutDir        string // dir where intermediate outputs of remote tests are written
+	RemoteRunner        string
+	RemoteBundleDir     string
+	RemoteFixtureServer string
+	RemoteDataDir       string
+	RemoteOutDir        string
 
-	TotalShards int // total number of shards to be used in a test run
-	ShardIndex  int // specifies the index of shard to used in the current run
+	TotalShards int
+	ShardIndex  int
 
-	SSHRetries           int       // number of SSH connect retries
-	ContinueAfterFailure bool      // try to run remaining local tests after bundle/DUT crash or lost SSH connection
-	CheckTestDeps        bool      // whether test dependencies should be checked
-	WaitUntilReady       bool      // whether to wait for DUT to be ready before running tests
-	ExtraUSEFlags        []string  // additional USE flags to inject when determining features
-	Proxy                ProxyMode // how proxies should be used
-	CollectSysInfo       bool      // collect system info (logs, crashes, etc.) generated during testing
-	MaxTestFailures      int       // maximum number of test failures
+	SSHRetries           int
+	ContinueAfterFailure bool
+	CheckTestDeps        bool
+	WaitUntilReady       bool
+	ExtraUSEFlags        []string
+	Proxy                ProxyMode
+	CollectSysInfo       bool
+	MaxTestFailures      int
 
-	TestVars         map[string]string // names and values of variables used to pass out-of-band data to tests
-	VarsFiles        []string          // paths to variable files
-	DefaultVarsDirs  []string          // dirs containing default variable files
-	MaybeMissingVars string            // regex matching with variables which may be missing
+	TestVars         map[string]string
+	VarsFiles        []string
+	DefaultVarsDirs  []string
+	MaybeMissingVars string
 
-	MsgTimeout time.Duration // timeout for reading control messages; default used if zero
+	MsgTimeout time.Duration
 }
+
+// Config contains shared configuration information for running or listing tests.
+// All Config values are frozen and cannot be altered after construction.
+type Config struct {
+	m *MutableConfig
+}
+
+// KeyFile is the path to a private SSH key to use to connect to the target device.
+func (c *Config) KeyFile() string { return c.m.KeyFile }
+
+// KeyDir is a directory containing private SSH keys (typically $HOME/.ssh).
+func (c *Config) KeyDir() string { return c.m.KeyDir }
+
+// Target is the target device for testing, in the form "[<user>@]host[:<port>]".
+func (c *Config) Target() string { return c.m.Target }
+
+// Patterns specifies the patterns of tests to operate against.
+func (c *Config) Patterns() []string { return append([]string(nil), c.m.Patterns...) }
+
+// ResDir is the path to the directory where test results should be written. It is only used for RunTestsMode.
+func (c *Config) ResDir() string { return c.m.ResDir }
+
+// Mode is action to perform.
+func (c *Config) Mode() Mode { return c.m.Mode }
+
+// TastDir is base directory under which files are written.
+func (c *Config) TastDir() string { return c.m.TastDir }
+
+// TrunkDir is path to Chrome OS checkout.
+func (c *Config) TrunkDir() string { return c.m.TrunkDir }
+
+// Build is rebuild (and push, for local tests) a single test bundle.
+func (c *Config) Build() bool { return c.m.Build }
+
+// BuildBundle is name of the test bundle to rebuild (e.g. "cros").
+func (c *Config) BuildBundle() string { return c.m.BuildBundle }
+
+// BuildWorkspace is path to workspace containing test bundle source code.
+func (c *Config) BuildWorkspace() string { return c.m.BuildWorkspace }
+
+// BuildOutDir is path to base directory under which executables are stored.
+func (c *Config) BuildOutDir() string { return c.m.BuildOutDir }
+
+// CheckPortageDeps is check whether test bundle's dependencies are installed before building.
+func (c *Config) CheckPortageDeps() bool { return c.m.CheckPortageDeps }
+
+// InstallPortageDeps is install old or missing test bundle dependencies; no-op if CheckPortageDeps is false.
+func (c *Config) InstallPortageDeps() bool { return c.m.InstallPortageDeps }
+
+// UseEphemeralDevserver is start an ephemeral devserver if no devserver is specified.
+func (c *Config) UseEphemeralDevserver() bool { return c.m.UseEphemeralDevserver }
+
+// ExtraAllowedBuckets is extra Google Cloud Storage buckets ephemeral devserver is allowed to access.
+func (c *Config) ExtraAllowedBuckets() []string {
+	return append([]string(nil), c.m.ExtraAllowedBuckets...)
+}
+
+// Devservers is list of devserver URLs; set by -devservers but may be dynamically modified.
+func (c *Config) Devservers() []string { return append([]string(nil), c.m.Devservers...) }
+
+// BuildArtifactsURL is Google Cloud Storage URL of build artifacts.
+func (c *Config) BuildArtifactsURL() string { return c.m.BuildArtifactsURL }
+
+// DownloadPrivateBundles is whether to download private bundles if missing.
+func (c *Config) DownloadPrivateBundles() bool { return c.m.DownloadPrivateBundles }
+
+// DownloadMode is strategy to download external data files.
+func (c *Config) DownloadMode() planner.DownloadMode { return c.m.DownloadMode }
+
+// TLWServer is address of the TLW server if available.
+func (c *Config) TLWServer() string { return c.m.TLWServer }
+
+// ReportsServer is address of Reports server if available.
+func (c *Config) ReportsServer() string { return c.m.ReportsServer }
+
+// CompanionDUTs is role to address mapping of companion DUTs..
+func (c *Config) CompanionDUTs() map[string]string {
+	duts := make(map[string]string)
+	for k, v := range c.m.CompanionDUTs {
+		duts[k] = v
+	}
+	return duts
+}
+
+// LocalRunner is path to executable that runs local test bundles.
+func (c *Config) LocalRunner() string { return c.m.LocalRunner }
+
+// LocalBundleDir is dir where packaged local test bundles are installed.
+func (c *Config) LocalBundleDir() string { return c.m.LocalBundleDir }
+
+// LocalDataDir is dir containing packaged local test data.
+func (c *Config) LocalDataDir() string { return c.m.LocalDataDir }
+
+// LocalOutDir is dir where intermediate outputs of local tests are written.
+func (c *Config) LocalOutDir() string { return c.m.LocalOutDir }
+
+// RemoteRunner is path to executable that runs remote test bundles.
+func (c *Config) RemoteRunner() string { return c.m.RemoteRunner }
+
+// RemoteBundleDir is dir where packaged remote test bundles are installed.
+func (c *Config) RemoteBundleDir() string { return c.m.RemoteBundleDir }
+
+// RemoteFixtureServer is path to executable that runs remote fixture server.
+func (c *Config) RemoteFixtureServer() string { return c.m.RemoteFixtureServer }
+
+// RemoteDataDir is dir containing packaged remote test data.
+func (c *Config) RemoteDataDir() string { return c.m.RemoteDataDir }
+
+// RemoteOutDir is dir where intermediate outputs of remote tests are written.
+func (c *Config) RemoteOutDir() string { return c.m.RemoteOutDir }
+
+// TotalShards is total number of shards to be used in a test run.
+func (c *Config) TotalShards() int { return c.m.TotalShards }
+
+// ShardIndex is specifies the index of shard to used in the current run.
+func (c *Config) ShardIndex() int { return c.m.ShardIndex }
+
+// SSHRetries is number of SSH connect retries.
+func (c *Config) SSHRetries() int { return c.m.SSHRetries }
+
+// ContinueAfterFailure is try to run remaining local tests after bundle/DUT crash or lost SSH connection.
+func (c *Config) ContinueAfterFailure() bool { return c.m.ContinueAfterFailure }
+
+// CheckTestDeps is whether test dependencies should be checked.
+func (c *Config) CheckTestDeps() bool { return c.m.CheckTestDeps }
+
+// WaitUntilReady is whether to wait for DUT to be ready before running tests.
+func (c *Config) WaitUntilReady() bool { return c.m.WaitUntilReady }
+
+// ExtraUSEFlags is additional USE flags to inject when determining features.
+func (c *Config) ExtraUSEFlags() []string { return append([]string(nil), c.m.ExtraUSEFlags...) }
+
+// Proxy is how proxies should be used.
+func (c *Config) Proxy() ProxyMode { return c.m.Proxy }
+
+// CollectSysInfo is collect system info (logs, crashes, etc.) generated during testing.
+func (c *Config) CollectSysInfo() bool { return c.m.CollectSysInfo }
+
+// MaxTestFailures is maximum number of test failures.
+func (c *Config) MaxTestFailures() int { return c.m.MaxTestFailures }
+
+// TestVars is names and values of variables used to pass out-of-band data to tests.
+func (c *Config) TestVars() map[string]string {
+	vars := make(map[string]string)
+	for k, v := range c.m.TestVars {
+		vars[k] = v
+	}
+	return vars
+}
+
+// VarsFiles is paths to variable files.
+func (c *Config) VarsFiles() []string { return append([]string(nil), c.m.VarsFiles...) }
+
+// DefaultVarsDirs is dirs containing default variable files.
+func (c *Config) DefaultVarsDirs() []string { return append([]string(nil), c.m.DefaultVarsDirs...) }
+
+// MaybeMissingVars is regex matching with variables which may be missing.
+func (c *Config) MaybeMissingVars() string { return c.m.MaybeMissingVars }
+
+// MsgTimeout is timeout for reading control messages; default used if zero.
+func (c *Config) MsgTimeout() time.Duration { return c.m.MsgTimeout }
 
 // State hold state attributes which are accumulated over the course of the run.
 //
@@ -139,12 +296,12 @@ type State struct {
 	ReportsLogStream frameworkprotocol.Reports_LogStreamClient
 }
 
-// NewConfig returns a new configuration for executing test runners in the supplied mode.
+// NewMutableConfig returns a new configuration for executing test runners in the supplied mode.
 // It sets fields that are required by SetFlags.
 // tastDir is the base directory under which files are written (e.g. /tmp/tast).
 // trunkDir is the path to the Chrome OS checkout (within the chroot).
-func NewConfig(mode Mode, tastDir, trunkDir string) *Config {
-	return &Config{
+func NewMutableConfig(mode Mode, tastDir, trunkDir string) *MutableConfig {
+	return &MutableConfig{
 		Mode:          mode,
 		TastDir:       tastDir,
 		TrunkDir:      trunkDir,
@@ -154,7 +311,7 @@ func NewConfig(mode Mode, tastDir, trunkDir string) *Config {
 }
 
 // SetFlags adds common run-related flags to f that store values in Config.
-func (c *Config) SetFlags(f *flag.FlagSet) {
+func (c *MutableConfig) SetFlags(f *flag.FlagSet) {
 	kf := filepath.Join(c.TrunkDir, defaultKeyFile)
 	if _, err := os.Stat(kf); err != nil {
 		kf = ""
@@ -289,7 +446,7 @@ func (s *State) Close(ctx context.Context) error {
 
 // DeriveDefaults sets default config values to unset members, possibly deriving from
 // already set members. It should be called after non-default values are set to c.
-func (c *Config) DeriveDefaults() error {
+func (c *MutableConfig) DeriveDefaults() error {
 	setIfEmpty := func(p *string, s string) {
 		if *p == "" {
 			*p = s
@@ -398,12 +555,17 @@ func (c *Config) DeriveDefaults() error {
 	return nil
 }
 
+// Freeze returns a frozen configuration object.
+func (c *MutableConfig) Freeze() *Config {
+	return &Config{m: c}
+}
+
 // BuildCfg returns a build.Config.
 func (c *Config) BuildCfg() *build.Config {
 	return &build.Config{
-		CheckBuildDeps:     c.CheckPortageDeps,
-		CheckDepsCachePath: filepath.Join(c.BuildOutDir, checkDepsCacheFile),
-		InstallPortageDeps: c.InstallPortageDeps,
+		CheckBuildDeps:     c.CheckPortageDeps(),
+		CheckDepsCachePath: filepath.Join(c.BuildOutDir(), checkDepsCacheFile),
+		InstallPortageDeps: c.InstallPortageDeps(),
 		TastWorkspace:      c.tastWorkspace(),
 	}
 }
@@ -418,13 +580,13 @@ func (c *Config) CommonWorkspaces() []string {
 
 // tastWorkspace returns the Go workspace containing the Tast framework.
 func (c *Config) tastWorkspace() string {
-	return filepath.Join(c.TrunkDir, "src/platform/tast")
+	return filepath.Join(c.TrunkDir(), "src/platform/tast")
 }
 
 // crosTestWorkspace returns the Go workspace containing standard test-related code.
 // This workspace also contains the default "cros" test bundles.
 func (c *Config) crosTestWorkspace() string {
-	return filepath.Join(c.TrunkDir, "src/platform/tast-tests")
+	return filepath.Join(c.TrunkDir(), "src/platform/tast-tests")
 }
 
 // BundleWorkspaces returns Go workspaces containing source code needed to build c.BuildBundle.
@@ -433,29 +595,29 @@ func (c *Config) BundleWorkspaces() []string {
 	ws = append(ws, c.CommonWorkspaces()...)
 
 	// If a custom test bundle workspace was specified, prepend it.
-	if c.BuildWorkspace != ws[0] {
-		ws = append([]string{c.BuildWorkspace}, ws...)
+	if c.BuildWorkspace() != ws[0] {
+		ws = append([]string{c.BuildWorkspace()}, ws...)
 	}
 	return ws
 }
 
 // LocalBundleGlob returns a file path glob that matches local test bundle executables.
 func (c *Config) LocalBundleGlob() string {
-	return c.bundleGlob(c.LocalBundleDir)
+	return c.bundleGlob(c.LocalBundleDir())
 }
 
 // RemoteBundleGlob returns a file path glob that matches remote test bundle executables.
 func (c *Config) RemoteBundleGlob() string {
-	return c.bundleGlob(c.RemoteBundleDir)
+	return c.bundleGlob(c.RemoteBundleDir())
 }
 
 // Features constructs Features from Config and protocol.DUTFeatures.
 func (c *Config) Features(dut *protocol.DUTFeatures) *protocol.Features {
 	return &protocol.Features{
-		CheckDeps: c.CheckTestDeps,
+		CheckDeps: c.CheckTestDeps(),
 		Infra: &protocol.InfraFeatures{
-			Vars:             c.TestVars,
-			MaybeMissingVars: c.MaybeMissingVars,
+			Vars:             c.TestVars(),
+			MaybeMissingVars: c.MaybeMissingVars(),
 		},
 		Dut: dut,
 	}
@@ -463,8 +625,8 @@ func (c *Config) Features(dut *protocol.DUTFeatures) *protocol.Features {
 
 func (c *Config) bundleGlob(dir string) string {
 	last := "*"
-	if c.Build {
-		last = c.BuildBundle
+	if c.Build() {
+		last = c.BuildBundle()
 	}
 	return filepath.Join(dir, last)
 }

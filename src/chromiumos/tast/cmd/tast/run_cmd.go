@@ -30,17 +30,17 @@ const (
 
 // runCmd implements subcommands.Command to support running tests.
 type runCmd struct {
-	cfg          *config.Config // shared config for running tests
-	wrapper      runWrapper     // can be set by tests to stub out calls to run package
-	failForTests bool           // exit with 1 if any individual tests fail
-	timeout      time.Duration  // overall timeout; 0 if no timeout
+	cfg          *config.MutableConfig // shared config for running tests
+	wrapper      runWrapper            // can be set by tests to stub out calls to run package
+	failForTests bool                  // exit with 1 if any individual tests fail
+	timeout      time.Duration         // overall timeout; 0 if no timeout
 }
 
 var _ = subcommands.Command(&runCmd{})
 
 func newRunCmd(trunkDir string) *runCmd {
 	return &runCmd{
-		cfg:     config.NewConfig(config.RunTestsMode, tastDir, trunkDir),
+		cfg:     config.NewMutableConfig(config.RunTestsMode, tastDir, trunkDir),
 		wrapper: &realRunWrapper{},
 	}
 }
@@ -144,7 +144,7 @@ func (r *runCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{})
 	}
 	logging.Info(ctx, "Writing results to ", r.cfg.ResDir)
 
-	results, runErr := r.wrapper.run(ctx, r.cfg, &state)
+	results, runErr := r.wrapper.run(ctx, r.cfg.Freeze(), &state)
 
 	if runErr == nil && len(results) == 0 && len(state.TestNamesToSkip) == 0 {
 		runErr = errors.Errorf("no tests matched by pattern(s) %v", r.cfg.Patterns)

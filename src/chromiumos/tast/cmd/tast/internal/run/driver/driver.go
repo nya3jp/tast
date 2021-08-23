@@ -101,7 +101,7 @@ func (d *Driver) ReconnectIfNeeded(ctx context.Context) error {
 
 func (d *Driver) localClient() *runnerclient.JSONClient {
 	var args []string
-	if d.cfg.Proxy == config.ProxyEnv {
+	if d.cfg.Proxy() == config.ProxyEnv {
 		// Proxy-related variables can be either uppercase or lowercase.
 		// See https://golang.org/pkg/net/http/#ProxyFromEnvironment.
 		for _, name := range []string{
@@ -113,7 +113,7 @@ func (d *Driver) localClient() *runnerclient.JSONClient {
 			}
 		}
 	}
-	args = append(args, d.cfg.LocalRunner)
+	args = append(args, d.cfg.LocalRunner())
 
 	cmd := genericexec.CommandSSH(d.conn.SSHConn(), "env", args...)
 	params := &protocol.RunnerInitParams{BundleGlob: d.cfg.LocalBundleGlob()}
@@ -121,7 +121,7 @@ func (d *Driver) localClient() *runnerclient.JSONClient {
 }
 
 func (d *Driver) remoteClient() *runnerclient.JSONClient {
-	cmd := genericexec.CommandExec(d.cfg.RemoteRunner)
+	cmd := genericexec.CommandExec(d.cfg.RemoteRunner())
 	params := &protocol.RunnerInitParams{BundleGlob: d.cfg.RemoteBundleGlob()}
 	return runnerclient.NewJSONClient(cmd, params, 0)
 }

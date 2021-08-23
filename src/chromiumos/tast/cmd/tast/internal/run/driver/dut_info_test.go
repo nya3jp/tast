@@ -59,12 +59,12 @@ func TestDriver_GetDUTInfo(t *testing.T) {
 		return &protocol.GetDUTInfoResponse{DutInfo: want}, nil
 	}))
 	ctx := env.Context()
-	cfg := env.Config(func(cfg *config.Config) {
+	cfg := env.Config(func(cfg *config.MutableConfig) {
 		cfg.CheckTestDeps = true
 		cfg.ExtraUSEFlags = extraUseFlags
 	})
 
-	drv, err := driver.New(ctx, cfg, cfg.Target)
+	drv, err := driver.New(ctx, cfg, cfg.Target())
 	if err != nil {
 		t.Fatalf("driver.New failed: %v", err)
 	}
@@ -86,12 +86,12 @@ func TestDriver_GetDUTInfo_NoCheckTestDeps(t *testing.T) {
 		return &protocol.GetDUTInfoResponse{}, nil
 	}))
 	ctx := env.Context()
-	cfg := env.Config(func(cfg *config.Config) {
+	cfg := env.Config(func(cfg *config.MutableConfig) {
 		// With "never", the runner shouldn't be called and dependencies shouldn't be checked.
 		cfg.CheckTestDeps = false
 	})
 
-	drv, err := driver.New(ctx, cfg, cfg.Target)
+	drv, err := driver.New(ctx, cfg, cfg.Target())
 	if err != nil {
 		t.Fatalf("driver.New failed: %v", err)
 	}
@@ -115,12 +115,12 @@ func TestDriver_GetDUTInfo_NoFeatures(t *testing.T) {
 		}, nil
 	}))
 	ctx := env.Context()
-	cfg := env.Config(func(cfg *config.Config) {
+	cfg := env.Config(func(cfg *config.MutableConfig) {
 		// "always" should fail if the runner doesn't know about any features.
 		cfg.CheckTestDeps = true
 	})
 
-	drv, err := driver.New(ctx, cfg, cfg.Target)
+	drv, err := driver.New(ctx, cfg, cfg.Target())
 	if err != nil {
 		t.Fatalf("driver.New failed: %v", err)
 	}

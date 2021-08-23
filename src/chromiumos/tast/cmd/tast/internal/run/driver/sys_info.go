@@ -27,7 +27,7 @@ const (
 
 // GetSysInfoState collects the sysinfo state of the DUT.
 func (d *Driver) GetSysInfoState(ctx context.Context) (*protocol.SysInfoState, error) {
-	if !d.cfg.CollectSysInfo {
+	if !d.cfg.CollectSysInfo() {
 		return nil, nil
 	}
 
@@ -46,7 +46,7 @@ func (d *Driver) GetSysInfoState(ctx context.Context) (*protocol.SysInfoState, e
 // CollectSysInfo collects the sysinfo, considering diff from the given initial
 // sysinfo state.
 func (d *Driver) CollectSysInfo(ctx context.Context, initialSysInfo *protocol.SysInfoState) (retErr error) {
-	if !d.cfg.CollectSysInfo {
+	if !d.cfg.CollectSysInfo() {
 		return nil
 	}
 
@@ -63,12 +63,12 @@ func (d *Driver) CollectSysInfo(ctx context.Context, initialSysInfo *protocol.Sy
 	}
 
 	if logDir := res.GetLogDir(); logDir != "" {
-		if err := linuxssh.GetAndDeleteFile(ctx, d.SSHConn(), logDir, filepath.Join(d.cfg.ResDir, SystemLogsDir), linuxssh.PreserveSymlinks); err != nil {
+		if err := linuxssh.GetAndDeleteFile(ctx, d.SSHConn(), logDir, filepath.Join(d.cfg.ResDir(), SystemLogsDir), linuxssh.PreserveSymlinks); err != nil {
 			return errors.Wrap(err, "failed to copy system logs")
 		}
 	}
 	if crashDir := res.GetCrashDir(); crashDir != "" {
-		if err := linuxssh.GetAndDeleteFile(ctx, d.SSHConn(), crashDir, filepath.Join(d.cfg.ResDir, CrashesDir), linuxssh.PreserveSymlinks); err != nil {
+		if err := linuxssh.GetAndDeleteFile(ctx, d.SSHConn(), crashDir, filepath.Join(d.cfg.ResDir(), CrashesDir), linuxssh.PreserveSymlinks); err != nil {
 			return errors.Wrap(err, "failed to copy crashes")
 		}
 	}

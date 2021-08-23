@@ -94,7 +94,7 @@ var errUserReqTermination = errors.Wrap(ErrTerminate, "user requested tast to te
 // If cfg.CollectSysInfo is true, system information generated on the DUT during testing
 // (e.g. logs and crashes) will also be written to the results dir.
 func WriteResults(ctx context.Context, cfg *config.Config, state *config.State, results []*resultsjson.Result, initialSysInfo *protocol.SysInfoState, complete bool, drv *driver.Driver) error {
-	f, err := os.Create(filepath.Join(cfg.ResDir, ResultsFilename))
+	f, err := os.Create(filepath.Join(cfg.ResDir(), ResultsFilename))
 	if err != nil {
 		return err
 	}
@@ -154,7 +154,7 @@ func WriteResults(ctx context.Context, cfg *config.Config, state *config.State, 
 		return err
 	}
 	logging.Info(ctx, sep)
-	logging.Info(ctx, "Results saved to ", cfg.ResDir)
+	logging.Info(ctx, "Results saved to ", cfg.ResDir())
 	return sysInfoErr
 }
 
@@ -164,7 +164,7 @@ func WriteJUnitResults(cctx context.Context, cfg *config.Config, results []*resu
 	if err != nil {
 		return err
 	}
-	if err := ioutil.WriteFile(filepath.Join(cfg.ResDir, resultsJUnitFilename), b, 0644); err != nil {
+	if err := ioutil.WriteFile(filepath.Join(cfg.ResDir(), resultsJUnitFilename), b, 0644); err != nil {
 		return errors.Wrapf(err, "Failed to write JUnit result XML file")
 	}
 	return nil
@@ -212,10 +212,10 @@ func newResultsHandler(cfg *config.Config, state *config.State, crf copyAndRemov
 	}
 
 	var err error
-	if err = os.MkdirAll(r.cfg.ResDir, 0755); err != nil {
+	if err = os.MkdirAll(r.cfg.ResDir(), 0755); err != nil {
 		return nil, err
 	}
-	fn := filepath.Join(r.cfg.ResDir, streamedResultsFilename)
+	fn := filepath.Join(r.cfg.ResDir(), streamedResultsFilename)
 	if r.streamWriter, err = newStreamedResultsWriter(fn); err != nil {
 		return nil, err
 	}
@@ -319,7 +319,7 @@ func (r *resultsHandler) handleTestStart(ctx context.Context, msg *control.Entit
 	}
 	r.seenTimes[msg.Info.Name]++
 
-	finalOutDir := filepath.Join(r.cfg.ResDir, relFinalOutDir)
+	finalOutDir := filepath.Join(r.cfg.ResDir(), relFinalOutDir)
 	state := &entityState{
 		result: resultsjson.Result{
 			Test:   *resultsjson.NewTestFromEntityInfo(&msg.Info),
@@ -597,8 +597,8 @@ func (r *resultsHandler) processMessages(ctx context.Context, mch <-chan control
 	}()
 
 	timeout := defaultMsgTimeout
-	if r.cfg.MsgTimeout > 0 {
-		timeout = r.cfg.MsgTimeout
+	if r.cfg.MsgTimeout() > 0 {
+		timeout = r.cfg.MsgTimeout()
 	}
 
 	runErr := func() error {
@@ -615,8 +615,8 @@ func (r *resultsHandler) processMessages(ctx context.Context, mch <-chan control
 				if r.terminated {
 					return errUserReqTermination
 				}
-				if r.cfg.MaxTestFailures > 0 && r.state.FailuresCount >= r.cfg.MaxTestFailures {
-					return errors.Wrapf(ErrTerminate, "the maximum number of test failures (%v) reached", r.cfg.MaxTestFailures)
+				if r.cfg.MaxTestFailures() > 0 && r.state.FailuresCount >= r.cfg.MaxTestFailures() {
+					return errors.Wrapf(ErrTerminate, "the maximum number of test failures (%v) reached", r.cfg.MaxTestFailures())
 				}
 			case err := <-ech:
 				return err
@@ -659,7 +659,7 @@ func (r *resultsHandler) processMessages(ctx context.Context, mch <-chan control
 		}
 
 		if r.diagFunc != nil {
-			outDir := r.cfg.ResDir
+			outDir := r.cfg.ResDir()
 			if lastState != nil {
 				outDir = lastState.FinalOutDir
 			}

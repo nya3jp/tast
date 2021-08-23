@@ -30,12 +30,12 @@ func TestDriver_DownloadPrivateBundles_Disabled(t *testing.T) {
 		}),
 	)
 	ctx := env.Context()
-	cfg := env.Config(func(cfg *config.Config) {
+	cfg := env.Config(func(cfg *config.MutableConfig) {
 		cfg.DownloadPrivateBundles = false // disable downloading private bundles
 		cfg.BuildArtifactsURL = "gs://build-artifacts/foo/bar"
 	})
 
-	drv, err := driver.New(ctx, cfg, cfg.Target)
+	drv, err := driver.New(ctx, cfg, cfg.Target())
 	if err != nil {
 		t.Fatalf("driver.New failed: %v", err)
 	}
@@ -68,13 +68,13 @@ func TestDriver_DownloadPrivateBundles_Devservers(t *testing.T) {
 		}),
 	)
 	ctx := env.Context()
-	cfg := env.Config(func(cfg *config.Config) {
+	cfg := env.Config(func(cfg *config.MutableConfig) {
 		cfg.DownloadPrivateBundles = true
 		cfg.Devservers = devservers
 		cfg.BuildArtifactsURL = buildArtifactsURL
 	})
 
-	drv, err := driver.New(ctx, cfg, cfg.Target)
+	drv, err := driver.New(ctx, cfg, cfg.Target())
 	if err != nil {
 		t.Fatalf("driver.New failed: %v", err)
 	}
@@ -111,13 +111,13 @@ func TestDriver_DownloadPrivateBundles_EphemeralDevserver(t *testing.T) {
 		}),
 	)
 	ctx := env.Context()
-	cfg := env.Config(func(cfg *config.Config) {
+	cfg := env.Config(func(cfg *config.MutableConfig) {
 		cfg.DownloadPrivateBundles = true
 		cfg.UseEphemeralDevserver = true
 		cfg.BuildArtifactsURL = buildArtifactsURL
 	})
 
-	drv, err := driver.New(ctx, cfg, cfg.Target)
+	drv, err := driver.New(ctx, cfg, cfg.Target())
 	if err != nil {
 		t.Fatalf("driver.New failed: %v", err)
 	}
@@ -185,13 +185,13 @@ func TestDriver_DownloadPrivateBundles_TLW(t *testing.T) {
 		}),
 	)
 	ctx := env.Context()
-	cfg := env.Config(func(cfg *config.Config) {
+	cfg := env.Config(func(cfg *config.MutableConfig) {
 		cfg.DownloadPrivateBundles = true
 		cfg.TLWServer = tlwAddr
 		cfg.BuildArtifactsURL = buildArtifactsURL
 	})
 
-	drv, err := driver.New(ctx, cfg, cfg.Target)
+	drv, err := driver.New(ctx, cfg, cfg.Target())
 	if err != nil {
 		t.Fatalf("driver.New failed: %v", err)
 	}

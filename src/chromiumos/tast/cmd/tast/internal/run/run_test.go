@@ -40,7 +40,7 @@ func TestRun(t *gotesting.T) {
 		t.Errorf("Run failed: %v", err)
 	}
 
-	if _, err := os.Stat(filepath.Join(cfg.ResDir, runnerclient.ResultsFilename)); err != nil {
+	if _, err := os.Stat(filepath.Join(cfg.ResDir(), runnerclient.ResultsFilename)); err != nil {
 		t.Errorf("Results were not saved: %v", err)
 	}
 }
@@ -49,7 +49,7 @@ func TestRunNoTestToRun(t *gotesting.T) {
 	// No test in bundles.
 	env := runtest.SetUp(t, runtest.WithLocalBundles(testing.NewRegistry("bundle")), runtest.WithRemoteBundles(testing.NewRegistry("bundle")))
 	ctx := env.Context()
-	cfg := env.Config(func(cfg *config.Config) {
+	cfg := env.Config(func(cfg *config.MutableConfig) {
 		cfg.Patterns = []string{"(foobar)"} // an attribute expression matching no test
 	})
 	state := env.State()
@@ -59,7 +59,7 @@ func TestRunNoTestToRun(t *gotesting.T) {
 	}
 
 	// Results are not written in the case no test was run.
-	if _, err := os.Stat(filepath.Join(cfg.ResDir, runnerclient.ResultsFilename)); err == nil {
+	if _, err := os.Stat(filepath.Join(cfg.ResDir(), runnerclient.ResultsFilename)); err == nil {
 		t.Error("Results were saved despite there was no test to run")
 	} else if !os.IsNotExist(err) {
 		t.Errorf("Failed to check if results were saved: %v", err)
@@ -69,7 +69,7 @@ func TestRunNoTestToRun(t *gotesting.T) {
 func TestRunPartialRun(t *gotesting.T) {
 	env := runtest.SetUp(t)
 	ctx := env.Context()
-	cfg := env.Config(func(cfg *config.Config) {
+	cfg := env.Config(func(cfg *config.MutableConfig) {
 		// Set a nonexistent path for the remote runner so that it will fail.
 		cfg.RemoteRunner = filepath.Join(env.TempDir(), "missing_remote_test_runner")
 	})
@@ -83,7 +83,7 @@ func TestRunPartialRun(t *gotesting.T) {
 func TestRunError(t *gotesting.T) {
 	env := runtest.SetUp(t)
 	ctx := env.Context()
-	cfg := env.Config(func(cfg *config.Config) {
+	cfg := env.Config(func(cfg *config.MutableConfig) {
 		cfg.KeyFile = "" // force SSH auth error
 	})
 	state := env.State()
@@ -100,7 +100,7 @@ func TestRunEphemeralDevserver(t *gotesting.T) {
 		}
 	}))
 	ctx := env.Context()
-	cfg := env.Config(func(cfg *config.Config) {
+	cfg := env.Config(func(cfg *config.MutableConfig) {
 		cfg.UseEphemeralDevserver = true
 	})
 	state := env.State()
@@ -136,7 +136,7 @@ func TestRunDownloadPrivateBundles(t *gotesting.T) {
 		runtest.WithCompanionDUT("dut2", makeHandler("dut2")),
 	)
 	ctx := env.Context()
-	cfg := env.Config(func(cfg *config.Config) {
+	cfg := env.Config(func(cfg *config.MutableConfig) {
 		cfg.Devservers = []string{ds.URL}
 		cfg.DownloadPrivateBundles = true
 	})
@@ -186,7 +186,7 @@ func TestRunWithReports_LogStream(t *gotesting.T) {
 
 	env := runtest.SetUp(t, runtest.WithLocalBundles(localReg), runtest.WithRemoteBundles(remoteReg))
 	ctx := env.Context()
-	cfg := env.Config(func(cfg *config.Config) {
+	cfg := env.Config(func(cfg *config.MutableConfig) {
 		cfg.ReportsServer = addr
 	})
 	state := env.State()
@@ -261,7 +261,7 @@ func TestRunWithReports_ReportResult(t *gotesting.T) {
 		}),
 	)
 	ctx := env.Context()
-	cfg := env.Config(func(cfg *config.Config) {
+	cfg := env.Config(func(cfg *config.MutableConfig) {
 		cfg.ReportsServer = addr
 	})
 	state := env.State()
@@ -322,7 +322,7 @@ func TestRunWithReports_ReportResultTerminate(t *gotesting.T) {
 		runtest.WithRemoteBundles(remoteReg),
 	)
 	ctx := env.Context()
-	cfg := env.Config(func(cfg *config.Config) {
+	cfg := env.Config(func(cfg *config.MutableConfig) {
 		cfg.ReportsServer = addr
 	})
 	state := env.State()
@@ -457,7 +457,7 @@ func TestRunListTests(t *gotesting.T) {
 		}),
 	)
 	ctx := env.Context()
-	cfg := env.Config(func(cfg *config.Config) {
+	cfg := env.Config(func(cfg *config.MutableConfig) {
 		cfg.Mode = config.ListTestsMode
 	})
 	state := env.State()
@@ -548,7 +548,7 @@ func TestRunListTestsWithSharding(t *gotesting.T) {
 		},
 	} {
 		t.Run(fmt.Sprintf("shard%d", shardIndex), func(t *gotesting.T) {
-			cfg := env.Config(func(cfg *config.Config) {
+			cfg := env.Config(func(cfg *config.MutableConfig) {
 				cfg.Mode = config.ListTestsMode
 				cfg.TotalShards = 2
 				cfg.ShardIndex = shardIndex
@@ -600,7 +600,7 @@ func TestRunDumpDUTInfo(t *gotesting.T) {
 	}
 
 	// Make sure dut-info.txt is created.
-	if _, err := os.Stat(filepath.Join(cfg.ResDir, run.DUTInfoFile)); err != nil {
+	if _, err := os.Stat(filepath.Join(cfg.ResDir(), run.DUTInfoFile)); err != nil {
 		t.Errorf("Failed to stat %s: %v", run.DUTInfoFile, err)
 	}
 }
@@ -665,7 +665,7 @@ func TestRunWithGlobalRuntimeVars(t *gotesting.T) {
 
 	env := runtest.SetUp(t, runtest.WithLocalBundles(localReg), runtest.WithRemoteBundles(remoteReg))
 	ctx := env.Context()
-	cfg := env.Config(func(cfg *config.Config) {
+	cfg := env.Config(func(cfg *config.MutableConfig) {
 		cfg.TestVars = map[string]string{
 			"var1": "value1",
 			"var3": "value3",
@@ -680,8 +680,8 @@ func TestRunWithGlobalRuntimeVars(t *gotesting.T) {
 	}
 	vars := []*testing.VarString{var1, var2, var3, var4}
 	for _, v := range vars {
-		if v.Value() != cfg.TestVars[v.Name()] {
-			t.Errorf("Run set global runtime variable %q to %q; want %q", v.Name(), v.Value(), cfg.TestVars[v.Name()])
+		if v.Value() != cfg.TestVars()[v.Name()] {
+			t.Errorf("Run set global runtime variable %q to %q; want %q", v.Name(), v.Value(), cfg.TestVars()[v.Name()])
 		}
 	}
 }
@@ -707,7 +707,7 @@ func TestRunWithVerifyTestNameFail(t *gotesting.T) {
 		runtest.WithLocalBundles(localReg),
 	)
 	ctx := env.Context()
-	cfg := env.Config(func(cfg *config.Config) {
+	cfg := env.Config(func(cfg *config.MutableConfig) {
 		cfg.Patterns = []string{"pkg.LocalTest", "pkg.NonExistingTest"}
 	})
 	state := env.State()
@@ -739,7 +739,7 @@ func TestRunWithVerifyTestPatternRuns(t *gotesting.T) {
 		runtest.WithLocalBundles(localReg),
 	)
 	ctx := env.Context()
-	cfg := env.Config(func(cfg *config.Config) {
+	cfg := env.Config(func(cfg *config.MutableConfig) {
 		cfg.Patterns = []string{`("name:pkg.LocalTest" || "name:pkg.NonExistingTest")`}
 	})
 	state := env.State()

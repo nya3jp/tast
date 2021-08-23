@@ -18,8 +18,8 @@ import (
 	"chromiumos/tast/testutil"
 )
 
-func TestConfigRunDefaults(t *testing.T) {
-	cfg := config.NewConfig(config.RunTestsMode, "", "")
+func TestMutableConfigRunDefaults(t *testing.T) {
+	cfg := config.NewMutableConfig(config.RunTestsMode, "", "")
 	flags := flag.NewFlagSet("", flag.ContinueOnError)
 	cfg.SetFlags(flags)
 
@@ -32,8 +32,8 @@ func TestConfigRunDefaults(t *testing.T) {
 	}
 }
 
-func TestConfigListDefaults(t *testing.T) {
-	cfg := config.NewConfig(config.ListTestsMode, "", "")
+func TestMutableConfigListDefaults(t *testing.T) {
+	cfg := config.NewMutableConfig(config.ListTestsMode, "", "")
 	flags := flag.NewFlagSet("", flag.ContinueOnError)
 	cfg.SetFlags(flags)
 
@@ -46,8 +46,8 @@ func TestConfigListDefaults(t *testing.T) {
 	}
 }
 
-func TestConfigDeriveDefaultsNoBuild(t *testing.T) {
-	cfg := config.NewConfig(config.RunTestsMode, "", "")
+func TestMutableConfigDeriveDefaultsNoBuild(t *testing.T) {
+	cfg := config.NewMutableConfig(config.RunTestsMode, "", "")
 	flags := flag.NewFlagSet("", flag.ContinueOnError)
 	cfg.SetFlags(flags)
 
@@ -58,13 +58,13 @@ func TestConfigDeriveDefaultsNoBuild(t *testing.T) {
 	}
 }
 
-func TestConfigDeriveDefaultsBuild(t *testing.T) {
+func TestMutableConfigDeriveDefaultsBuild(t *testing.T) {
 	const buildBundle = "cros"
 
 	td := testutil.TempDir(t)
 	defer os.RemoveAll(td)
 
-	cfg := config.NewConfig(config.RunTestsMode, "", td)
+	cfg := config.NewMutableConfig(config.RunTestsMode, "", td)
 	flags := flag.NewFlagSet("", flag.ContinueOnError)
 	cfg.SetFlags(flags)
 
@@ -84,13 +84,13 @@ func TestConfigDeriveDefaultsBuild(t *testing.T) {
 	}
 }
 
-func TestConfigDeriveDefaultsBuildNonStandardBundle(t *testing.T) {
+func TestMutableConfigDeriveDefaultsBuildNonStandardBundle(t *testing.T) {
 	const buildBundle = "nonstandardbundle"
 
 	td := testutil.TempDir(t)
 	defer os.RemoveAll(td)
 
-	cfg := config.NewConfig(config.RunTestsMode, "", "")
+	cfg := config.NewMutableConfig(config.RunTestsMode, "", "")
 	flags := flag.NewFlagSet("", flag.ContinueOnError)
 	cfg.SetFlags(flags)
 
@@ -118,13 +118,13 @@ func TestConfigDeriveDefaultsBuildNonStandardBundle(t *testing.T) {
 	}
 }
 
-func TestConfigDeriveDefaultsBuildMissingBundle(t *testing.T) {
+func TestMutableConfigDeriveDefaultsBuildMissingBundle(t *testing.T) {
 	const buildBundle = "nosuchbundle"
 
 	td := testutil.TempDir(t)
 	defer os.RemoveAll(td)
 
-	cfg := config.NewConfig(config.RunTestsMode, "", td)
+	cfg := config.NewMutableConfig(config.RunTestsMode, "", td)
 	flags := flag.NewFlagSet("", flag.ContinueOnError)
 	cfg.SetFlags(flags)
 
@@ -136,7 +136,7 @@ func TestConfigDeriveDefaultsBuildMissingBundle(t *testing.T) {
 	}
 }
 
-func TestConfigDeriveDefaultsVars(t *testing.T) {
+func TestMutableConfigDeriveDefaultsVars(t *testing.T) {
 	for _, tc := range []struct {
 		name      string
 		vars      map[string]string
@@ -241,7 +241,7 @@ func TestConfigDeriveDefaultsVars(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			cfg := config.NewConfig(config.RunTestsMode, "", td)
+			cfg := config.NewMutableConfig(config.RunTestsMode, "", td)
 			flags := flag.NewFlagSet("", flag.ContinueOnError)
 			cfg.SetFlags(flags)
 
@@ -268,8 +268,8 @@ func TestConfigDeriveDefaultsVars(t *testing.T) {
 	}
 }
 
-func TestConfigDeriveExtraAllowedBuckets(t *testing.T) {
-	cfg := config.NewConfig(config.RunTestsMode, "", "")
+func TestMutableConfigDeriveExtraAllowedBuckets(t *testing.T) {
+	cfg := config.NewMutableConfig(config.RunTestsMode, "", "")
 	flags := flag.NewFlagSet("", flag.ContinueOnError)
 	cfg.SetFlags(flags)
 
@@ -282,36 +282,36 @@ func TestConfigDeriveExtraAllowedBuckets(t *testing.T) {
 	}
 	want := []string{"bucket1", "bucket2", "bucket3"}
 	if got := cfg.ExtraAllowedBuckets; !reflect.DeepEqual(got, want) {
-		t.Errorf("cfg.ExtraAllowedBuckets = %q; want %q", got, want)
+		t.Errorf("cfg.ExtraAllowedBuckets() = %q; want %q", got, want)
 	}
 }
 
 func TestConfigLocalBundleGlob(t *testing.T) {
-	cfg := config.NewConfig(config.RunTestsMode, "", "")
+	cfg := config.NewMutableConfig(config.RunTestsMode, "", "")
 	cfg.LocalBundleDir = "/mock/local_bundle_dir"
 	cfg.BuildBundle = "mock_build_bundle"
 
 	cfg.Build = true
-	if g := cfg.LocalBundleGlob(); g != "/mock/local_bundle_dir/mock_build_bundle" {
+	if g := cfg.Freeze().LocalBundleGlob(); g != "/mock/local_bundle_dir/mock_build_bundle" {
 		t.Fatalf(`Unexpected build LocalBundleGlob: got %q; want "/mock/local_bundle_dir/mock_bundle_dir"`, g)
 	}
 	cfg.Build = false
-	if g := cfg.LocalBundleGlob(); g != "/mock/local_bundle_dir/*" {
+	if g := cfg.Freeze().LocalBundleGlob(); g != "/mock/local_bundle_dir/*" {
 		t.Fatalf(`Unexpected non-build LocalBundleGlob: got %q; want "/mock/local_bundle_dir/*"`, g)
 	}
 }
 
 func TestConfigRemoteBundleGlob(t *testing.T) {
-	cfg := config.NewConfig(config.RunTestsMode, "", "")
+	cfg := config.NewMutableConfig(config.RunTestsMode, "", "")
 	cfg.RemoteBundleDir = "/mock/remote_bundle_dir"
 	cfg.BuildBundle = "mock_build_bundle"
 
 	cfg.Build = true
-	if g := cfg.RemoteBundleGlob(); g != "/mock/remote_bundle_dir/mock_build_bundle" {
+	if g := cfg.Freeze().RemoteBundleGlob(); g != "/mock/remote_bundle_dir/mock_build_bundle" {
 		t.Fatalf(`Unexpected build RemoteBundleGlob: got %q; want "/mock/remote_bundle_dir/mock_bundle_dir"`, g)
 	}
 	cfg.Build = false
-	if g := cfg.RemoteBundleGlob(); g == "/mock/remote_budnle_dir/*" {
+	if g := cfg.Freeze().RemoteBundleGlob(); g == "/mock/remote_budnle_dir/*" {
 		t.Fatalf(`Unexpected non-build RemoteBundleGlob: got %q, want "/mock/remote_budnle_dir/*"`, g)
 	}
 }

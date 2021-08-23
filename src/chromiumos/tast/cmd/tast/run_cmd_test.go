@@ -58,11 +58,11 @@ func TestRunConfig(t *gotesting.T) {
 	args := []string{target, test1, test2}
 	wrapper := stubRunWrapper{runRes: []*resultsjson.Result{}}
 	executeRunCmd(t, args, &wrapper, nil)
-	if wrapper.runCfg.Target != target {
-		t.Errorf("runCmd.Execute(%v) passed target %q; want %q", args, wrapper.runCfg.Target, target)
+	if wrapper.runCfg.Target() != target {
+		t.Errorf("runCmd.Execute(%v) passed target %q; want %q", args, wrapper.runCfg.Target(), target)
 	}
-	if exp := []string{test1, test2}; !reflect.DeepEqual(wrapper.runCfg.Patterns, exp) {
-		t.Errorf("runCmd.Execute(%v) passed patterns %v; want %v", args, wrapper.runCfg.Patterns, exp)
+	if exp := []string{test1, test2}; !reflect.DeepEqual(wrapper.runCfg.Patterns(), exp) {
+		t.Errorf("runCmd.Execute(%v) passed patterns %v; want %v", args, wrapper.runCfg.Patterns(), exp)
 	}
 }
 

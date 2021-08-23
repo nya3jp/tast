@@ -52,7 +52,7 @@ func callSSHDrop(t *testing.T, rebooted bool, syslog, ramoops string) (msg, outD
 	ctx := env.Context()
 	cfg := env.Config(nil)
 
-	drv, err := driver.New(ctx, cfg, cfg.Target)
+	drv, err := driver.New(ctx, cfg, cfg.Target())
 	if err != nil {
 		t.Fatalf("driver.New failed: %v", err)
 	}
@@ -76,7 +76,7 @@ func TestSSHDropNotRecovered(t *testing.T) {
 	ctx := env.Context()
 	cfg := env.Config(nil)
 
-	drv, err := driver.New(ctx, cfg, cfg.Target)
+	drv, err := driver.New(ctx, cfg, cfg.Target())
 	if err != nil {
 		t.Fatalf("driver.New failed: %v", err)
 	}

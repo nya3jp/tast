@@ -63,7 +63,7 @@ func runTestsWithRetry(ctx context.Context, cfg *config.Config, patterns []strin
 			break
 		}
 		// If we don't want to try again, or we'd just be doing the same thing that we did last time, give up.
-		if !cfg.ContinueAfterFailure || reflect.DeepEqual(patterns, unstarted) {
+		if !cfg.ContinueAfterFailure() || reflect.DeepEqual(patterns, unstarted) {
 			return allResults, rerr
 		}
 

@@ -31,21 +31,21 @@ import (
 // Prepare prepares target DUT and companion DUTs for running tests. When instructed in cfg, it builds
 // and pushes the local test runner and test bundles, and downloads private test bundles.
 func Prepare(ctx context.Context, cfg *config.Config, primaryDriver *driver.Driver) error {
-	if !cfg.Build && !cfg.DownloadPrivateBundles {
+	if !cfg.Build() && !cfg.DownloadPrivateBundles() {
 		// Return without connecting to the DUT if we have nothing to do.
 		return nil
 	}
-	if cfg.Build && cfg.DownloadPrivateBundles {
+	if cfg.Build() && cfg.DownloadPrivateBundles() {
 		// Usually it makes no sense to download prebuilt private bundles when
 		// building and pushing a fresh test bundle.
 		return errors.New("-downloadprivatebundles requires -build=false")
 	}
 
 	if err := prepareDUT(ctx, cfg, primaryDriver); err != nil {
-		return fmt.Errorf("failed to prepare primary DUT %s: %v", cfg.Target, err)
+		return fmt.Errorf("failed to prepare primary DUT %s: %v", cfg.Target(), err)
 	}
 
-	for _, dut := range cfg.CompanionDUTs {
+	for _, dut := range cfg.CompanionDUTs() {
 		companionDriver, err := driver.New(ctx, cfg, dut)
 		if err != nil {
 			return fmt.Errorf("failed to connect to companion DUT %s: %v", dut, err)
@@ -62,7 +62,7 @@ func Prepare(ctx context.Context, cfg *config.Config, primaryDriver *driver.Driv
 // and pushes the local test runner and test bundles, and downloads private test
 // bundles.
 func prepareDUT(ctx context.Context, cfg *config.Config, drv *driver.Driver) error {
-	if cfg.Build {
+	if cfg.Build() {
 		targetArch, err := getTargetArch(ctx, cfg, drv.SSHConn())
 		if err != nil {
 			return fmt.Errorf("failed to get architecture information: %v", err)
@@ -75,7 +75,7 @@ func prepareDUT(ctx context.Context, cfg *config.Config, drv *driver.Driver) err
 		}
 	}
 
-	if cfg.DownloadPrivateBundles {
+	if cfg.DownloadPrivateBundles() {
 		if err := drv.DownloadPrivateBundles(ctx); err != nil {
 			return fmt.Errorf("failed downloading private bundles: %v", err)
 		}
@@ -101,25 +101,25 @@ func buildAll(ctx context.Context, cfg *config.Config, targetArch string) error 
 			Pkg:        build.LocalRunnerPkg,
 			Arch:       targetArch,
 			Workspaces: cfg.CommonWorkspaces(),
-			Out:        filepath.Join(cfg.BuildOutDir, targetArch, path.Base(build.LocalRunnerPkg)),
+			Out:        filepath.Join(cfg.BuildOutDir(), targetArch, path.Base(build.LocalRunnerPkg)),
 		},
 		{
-			Pkg:        path.Join(build.LocalBundlePkgPathPrefix, cfg.BuildBundle),
+			Pkg:        path.Join(build.LocalBundlePkgPathPrefix, cfg.BuildBundle()),
 			Arch:       targetArch,
 			Workspaces: cfg.BundleWorkspaces(),
-			Out:        filepath.Join(cfg.BuildOutDir, targetArch, build.LocalBundleBuildSubdir, cfg.BuildBundle),
+			Out:        filepath.Join(cfg.BuildOutDir(), targetArch, build.LocalBundleBuildSubdir, cfg.BuildBundle()),
 		},
 		{
 			Pkg:        build.RemoteRunnerPkg,
 			Arch:       build.ArchHost,
 			Workspaces: cfg.CommonWorkspaces(),
-			Out:        cfg.RemoteRunner,
+			Out:        cfg.RemoteRunner(),
 		},
 		{
-			Pkg:        path.Join(build.RemoteBundlePkgPathPrefix, cfg.BuildBundle),
+			Pkg:        path.Join(build.RemoteBundlePkgPathPrefix, cfg.BuildBundle()),
 			Arch:       build.ArchHost,
 			Workspaces: cfg.BundleWorkspaces(),
-			Out:        filepath.Join(cfg.RemoteBundleDir, cfg.BuildBundle),
+			Out:        filepath.Join(cfg.RemoteBundleDir(), cfg.BuildBundle()),
 		},
 	}
 
@@ -177,7 +177,7 @@ func pushAll(ctx context.Context, cfg *config.Config, drv *driver.Driver, target
 		return fmt.Errorf("failed to push local executables: %v", err)
 	}
 
-	if cfg.Mode == config.ListTestsMode {
+	if cfg.Mode() == config.ListTestsMode {
 		return nil
 	}
 
@@ -186,7 +186,7 @@ func pushAll(ctx context.Context, cfg *config.Config, drv *driver.Driver, target
 		return fmt.Errorf("failed to get data file list: %v", err)
 	}
 	if len(paths) > 0 {
-		if err := pushDataFiles(ctx, cfg, drv.SSHConn(), cfg.LocalDataDir, paths); err != nil {
+		if err := pushDataFiles(ctx, cfg, drv.SSHConn(), cfg.LocalDataDir(), paths); err != nil {
 			return fmt.Errorf("failed to push data files: %v", err)
 		}
 	}
@@ -196,13 +196,13 @@ func pushAll(ctx context.Context, cfg *config.Config, drv *driver.Driver, target
 // pushExecutables pushes the freshly built local test runner, local test bundle
 // executable to the DUT if necessary.
 func pushExecutables(ctx context.Context, cfg *config.Config, hst *ssh.Conn, targetArch string) error {
-	srcDir := filepath.Join(cfg.BuildOutDir, targetArch)
+	srcDir := filepath.Join(cfg.BuildOutDir(), targetArch)
 
 	// local_test_runner is required even if we are running only remote tests,
 	// e.g. to compute software dependencies.
 	files := map[string]string{
-		filepath.Join(srcDir, path.Base(build.LocalRunnerPkg)):               cfg.LocalRunner,
-		filepath.Join(srcDir, build.LocalBundleBuildSubdir, cfg.BuildBundle): filepath.Join(cfg.LocalBundleDir, cfg.BuildBundle),
+		filepath.Join(srcDir, path.Base(build.LocalRunnerPkg)):                 cfg.LocalRunner(),
+		filepath.Join(srcDir, build.LocalBundleBuildSubdir, cfg.BuildBundle()): filepath.Join(cfg.LocalBundleDir(), cfg.BuildBundle()),
 	}
 
 	ctx, st := timing.Start(ctx, "push_executables")
@@ -305,7 +305,7 @@ func pushDataFiles(ctx context.Context, cfg *config.Config, hst *ssh.Conn, destD
 
 	logging.Info(ctx, "Pushing data files to target")
 
-	srcDir := filepath.Join(cfg.BuildWorkspace, "src")
+	srcDir := filepath.Join(cfg.BuildWorkspace(), "src")
 
 	// All paths are relative to the bundle dir.
 	var copyPaths, delPaths, missingPaths []string

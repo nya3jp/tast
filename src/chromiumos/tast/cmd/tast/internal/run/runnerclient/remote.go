@@ -27,12 +27,12 @@ func RunRemoteTests(ctx context.Context, cfg *config.Config, state *config.State
 	ctx, st := timing.Start(ctx, "run_remote_tests")
 	defer st.End()
 
-	if err := os.MkdirAll(cfg.RemoteOutDir, 0777); err != nil {
+	if err := os.MkdirAll(cfg.RemoteOutDir(), 0777); err != nil {
 		return nil, fmt.Errorf("failed to create output dir: %v", err)
 	}
 	// At the end of tests RemoteOutDir should be empty. Otherwise os.Remove
 	// fails and the directory is left for debugging.
-	defer os.Remove(cfg.RemoteOutDir)
+	defer os.Remove(cfg.RemoteOutDir())
 
 	runTests := func(ctx context.Context, patterns []string) (results []*resultsjson.Result, unstarted []string, err error) {
 		return runRemoteTestsOnce(ctx, cfg, state, dutInfo, patterns)
@@ -68,25 +68,25 @@ func runRemoteTestsOnce(ctx context.Context, cfg *config.Config, state *config.S
 		return nil, nil, err
 	}
 
-	buildArtifactsURL := cfg.BuildArtifactsURL
+	buildArtifactsURL := cfg.BuildArtifactsURL()
 	if buildArtifactsURL == "" {
 		buildArtifactsURL = dutInfo.GetDefaultBuildArtifactsUrl()
 	}
 
 	runFlags := []string{
-		"-build=" + strconv.FormatBool(cfg.Build),
-		"-keyfile=" + cfg.KeyFile,
-		"-keydir=" + cfg.KeyDir,
-		"-remoterunner=" + cfg.RemoteRunner,
-		"-remotebundledir=" + cfg.RemoteBundleDir,
-		"-remotedatadir=" + cfg.RemoteDataDir,
-		"-localrunner=" + cfg.LocalRunner,
-		"-localbundledir=" + cfg.LocalBundleDir,
-		"-localdatadir=" + cfg.LocalDataDir,
-		"-devservers=" + strings.Join(cfg.Devservers, ","),
+		"-build=" + strconv.FormatBool(cfg.Build()),
+		"-keyfile=" + cfg.KeyFile(),
+		"-keydir=" + cfg.KeyDir(),
+		"-remoterunner=" + cfg.RemoteRunner(),
+		"-remotebundledir=" + cfg.RemoteBundleDir(),
+		"-remotedatadir=" + cfg.RemoteDataDir(),
+		"-localrunner=" + cfg.LocalRunner(),
+		"-localbundledir=" + cfg.LocalBundleDir(),
+		"-localdatadir=" + cfg.LocalDataDir(),
+		"-devservers=" + strings.Join(cfg.Devservers(), ","),
 		"-buildartifactsurl=" + buildArtifactsURL,
 	}
-	for role, dut := range cfg.CompanionDUTs {
+	for role, dut := range cfg.CompanionDUTs() {
 		runFlags = append(runFlags, fmt.Sprintf("-companiondut=%s:%s", role, dut))
 	}
 	args := jsonprotocol.RunnerArgs{
@@ -95,21 +95,21 @@ func runRemoteTestsOnce(ctx context.Context, cfg *config.Config, state *config.S
 			BundleArgs: jsonprotocol.BundleRunTestsArgs{
 				FeatureArgs:       *jsonprotocol.FeatureArgsFromProto(cfg.Features(dutInfo.GetFeatures())),
 				Patterns:          patterns,
-				DataDir:           cfg.RemoteDataDir,
-				OutDir:            cfg.RemoteOutDir,
-				Target:            cfg.Target,
-				KeyFile:           cfg.KeyFile,
-				KeyDir:            cfg.KeyDir,
+				DataDir:           cfg.RemoteDataDir(),
+				OutDir:            cfg.RemoteOutDir(),
+				Target:            cfg.Target(),
+				KeyFile:           cfg.KeyFile(),
+				KeyDir:            cfg.KeyDir(),
 				TastPath:          exe,
 				RunFlags:          runFlags,
-				LocalBundleDir:    cfg.LocalBundleDir,
+				LocalBundleDir:    cfg.LocalBundleDir(),
 				Devservers:        state.RemoteDevservers,
-				TLWServer:         cfg.TLWServer,
-				DUTName:           cfg.Target,
+				TLWServer:         cfg.TLWServer(),
+				DUTName:           cfg.Target(),
 				HeartbeatInterval: heartbeatInterval,
-				DownloadMode:      cfg.DownloadMode,
+				DownloadMode:      cfg.DownloadMode(),
 				BuildArtifactsURL: buildArtifactsURL,
-				CompanionDUTs:     cfg.CompanionDUTs,
+				CompanionDUTs:     cfg.CompanionDUTs(),
 			},
 			BundleGlob: cfg.RemoteBundleGlob(),
 		},
@@ -119,7 +119,7 @@ func runRemoteTestsOnce(ctx context.Context, cfg *config.Config, state *config.S
 	args.FillDeprecated()
 
 	cmd := remoteRunnerCommand(cfg)
-	logging.Infof(ctx, "Starting %v locally", cfg.RemoteRunner)
+	logging.Infof(ctx, "Starting %v locally", cfg.RemoteRunner())
 	proc, err := cmd.Interact(ctx, nil)
 	if err != nil {
 		return nil, nil, err

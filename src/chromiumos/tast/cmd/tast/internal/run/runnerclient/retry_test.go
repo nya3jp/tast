@@ -43,9 +43,9 @@ func beforeRetrySuccess(ctx context.Context) bool {
 }
 
 func TestRunTestsWithRetry(t *testing.T) {
-	cfg := &config.Config{
+	cfg := (&config.MutableConfig{
 		ContinueAfterFailure: true,
-	}
+	}).Freeze()
 
 	patterns := []string{"test1", "test2", "test3"}
 	results, err := runTestsWithRetry(context.Background(), cfg, patterns, runFirstTest, beforeRetrySuccess)
@@ -58,9 +58,9 @@ func TestRunTestsWithRetry(t *testing.T) {
 }
 
 func TestRunTestsWithRetryNoRetry(t *testing.T) {
-	cfg := &config.Config{
+	cfg := (&config.MutableConfig{
 		ContinueAfterFailure: false, // disable retry
-	}
+	}).Freeze()
 
 	patterns := []string{"test1", "test2", "test3"}
 	results, err := runTestsWithRetry(context.Background(), cfg, patterns, runFirstTest, beforeRetrySuccess)
@@ -73,9 +73,9 @@ func TestRunTestsWithRetryNoRetry(t *testing.T) {
 }
 
 func TestRunTestsWithRetryNoUnstarted(t *testing.T) {
-	cfg := &config.Config{
+	cfg := (&config.MutableConfig{
 		ContinueAfterFailure: true,
-	}
+	}).Freeze()
 
 	patterns := []string{"test1", "test2", "test3"}
 	results, err := runTestsWithRetry(context.Background(), cfg, patterns, runFirstTestNoUnstarted, beforeRetrySuccess)
@@ -88,9 +88,9 @@ func TestRunTestsWithRetryNoUnstarted(t *testing.T) {
 }
 
 func TestRunTestsWithRetryStuck(t *testing.T) {
-	cfg := &config.Config{
+	cfg := (&config.MutableConfig{
 		ContinueAfterFailure: true,
-	}
+	}).Freeze()
 
 	patterns := []string{"test1", "test2", "test3"}
 	results, err := runTestsWithRetry(context.Background(), cfg, patterns, runNoTestWithUnstarted, beforeRetrySuccess)
@@ -103,9 +103,9 @@ func TestRunTestsWithRetryStuck(t *testing.T) {
 }
 
 func TestRunTestsWithRetryBeforeRetry(t *testing.T) {
-	cfg := &config.Config{
+	cfg := (&config.MutableConfig{
 		ContinueAfterFailure: true,
-	}
+	}).Freeze()
 
 	beforeRetryFailure := func(ctx context.Context) bool {
 		return false

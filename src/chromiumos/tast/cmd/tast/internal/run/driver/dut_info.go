@@ -15,7 +15,7 @@ import (
 
 // GetDUTInfo retrieves various DUT information needed for test execution.
 func (d *Driver) GetDUTInfo(ctx context.Context) (*protocol.DUTInfo, error) {
-	if !d.cfg.CheckTestDeps {
+	if !d.cfg.CheckTestDeps() {
 		return nil, nil
 	}
 
@@ -23,7 +23,7 @@ func (d *Driver) GetDUTInfo(ctx context.Context) (*protocol.DUTInfo, error) {
 	defer st.End()
 	logging.Debug(ctx, "Getting DUT info")
 
-	req := &protocol.GetDUTInfoRequest{ExtraUseFlags: d.cfg.ExtraUSEFlags}
+	req := &protocol.GetDUTInfoRequest{ExtraUseFlags: d.cfg.ExtraUSEFlags()}
 	res, err := d.localClient().GetDUTInfo(ctx, req)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to retrieve DUT info")

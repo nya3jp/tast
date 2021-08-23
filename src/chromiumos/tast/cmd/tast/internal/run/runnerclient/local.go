@@ -48,11 +48,11 @@ type remoteFixtureService struct {
 // returns fixture service connecting to it. The caller should call rf.close
 // to gracefully stop the server and the client.
 func newRemoteFixtureService(ctx context.Context, cfg *config.Config) (rf *remoteFixtureService, retErr error) {
-	if _, err := os.Stat(cfg.RemoteFixtureServer); os.IsNotExist(err) {
+	if _, err := os.Stat(cfg.RemoteFixtureServer()); os.IsNotExist(err) {
 		return nil, fmt.Errorf("newRemoteFixtureService: %v", err)
 	}
 
-	rpcCL, err := rpc.DialExec(ctx, cfg.RemoteFixtureServer, false, &protocol.HandshakeRequest{})
+	rpcCL, err := rpc.DialExec(ctx, cfg.RemoteFixtureServer(), false, &protocol.HandshakeRequest{})
 
 	if err != nil {
 		return nil, fmt.Errorf("rpc.NewClient: %v", err)
@@ -65,7 +65,7 @@ func newRemoteFixtureService(ctx context.Context, cfg *config.Config) (rf *remot
 
 	cl, err := bundle.NewFixtureServiceClient(rpcCL.Conn()).RunFixture(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("RunFixture agasint %v: %v", cfg.RemoteFixtureServer, err)
+		return nil, fmt.Errorf("RunFixture agasint %v: %v", cfg.RemoteFixtureServer(), err)
 	}
 	return &remoteFixtureService{
 		rpcCL: rpcCL,
@@ -238,7 +238,7 @@ func newLocalTestsCategorizer(ctx context.Context, cfg *config.Config, drv *driv
 // fixtErr will be non-nil if fixture errors happen.
 // It also stores fixture logs to a file under "fixtures" dir in cfg.ResDir.
 func runFixtureAndTests(ctx context.Context, cfg *config.Config, drv *driver.Driver, rfcl bundle.FixtureService_RunFixtureClient, remoteFixt string, runTests func(ctx context.Context, fixtErr []string) error) (retErr error) {
-	fixtResDir := filepath.Join(cfg.ResDir, "fixtures", remoteFixt)
+	fixtResDir := filepath.Join(cfg.ResDir(), "fixtures", remoteFixt)
 	// TODO(oka) rename testLogFilename to entityLogFilename
 	fixtLogPath := filepath.Join(fixtResDir, testLogFilename)
 
@@ -256,13 +256,13 @@ func runFixtureAndTests(ctx context.Context, cfg *config.Config, drv *driver.Dri
 	}()
 
 	var dm bundle.RunFixtureConfig_PlannerDownloadMode
-	switch cfg.DownloadMode {
+	switch cfg.DownloadMode() {
 	case planner.DownloadBatch:
 		dm = bundle.RunFixtureConfig_BATCH
 	case planner.DownloadLazy:
 		dm = bundle.RunFixtureConfig_LAZY
 	default:
-		return fmt.Errorf("unknown mode %v", cfg.DownloadMode)
+		return fmt.Errorf("unknown mode %v", cfg.DownloadMode())
 	}
 
 	var pushErrs []string
@@ -311,19 +311,19 @@ func runFixtureAndTests(ctx context.Context, cfg *config.Config, drv *driver.Dri
 				Push: &bundle.RunFixturePushRequest{
 					Name: remoteFixt,
 					Config: &bundle.RunFixtureConfig{
-						TestVars:          cfg.TestVars,
-						DataDir:           cfg.RemoteDataDir,
-						OutDir:            cfg.RemoteOutDir,
+						TestVars:          cfg.TestVars(),
+						DataDir:           cfg.RemoteDataDir(),
+						OutDir:            cfg.RemoteOutDir(),
 						TempDir:           "", // empty for fixture service to create it
-						Target:            cfg.Target,
-						KeyFile:           cfg.KeyFile,
-						KeyDir:            cfg.KeyDir,
-						LocalBundleDir:    cfg.LocalBundleDir,
+						Target:            cfg.Target(),
+						KeyFile:           cfg.KeyFile(),
+						KeyDir:            cfg.KeyDir(),
+						LocalBundleDir:    cfg.LocalBundleDir(),
 						CheckSoftwareDeps: false,
-						Devservers:        cfg.Devservers,
+						Devservers:        cfg.Devservers(),
 						TlwServer:         tlwServer,
-						DutName:           cfg.Target,
-						BuildArtifactsUrl: cfg.BuildArtifactsURL,
+						DutName:           cfg.Target(),
+						BuildArtifactsUrl: cfg.BuildArtifactsURL(),
 						DownloadMode:      dm,
 					},
 				},
@@ -485,11 +485,11 @@ func runLocalTestsOnce(ctx context.Context, cfg *config.Config, state *config.St
 	// Older local_test_runner does not create the specified output directory.
 	// TODO(crbug.com/1000549): Delete this workaround after 20191001.
 	// This workaround costs one round-trip time to the DUT.
-	if err := drv.SSHConn().CommandContext(ctx, "mkdir", "-p", cfg.LocalOutDir).Run(); err != nil {
+	if err := drv.SSHConn().CommandContext(ctx, "mkdir", "-p", cfg.LocalOutDir()).Run(); err != nil {
 		return nil, nil, err
 	}
 
-	localDevservers := append([]string(nil), cfg.Devservers...)
+	localDevservers := append([]string(nil), cfg.Devservers()...)
 	if url, ok := drv.Services().EphemeralDevserverURL(); ok {
 		localDevservers = append(localDevservers, url)
 	}
@@ -505,18 +505,18 @@ func runLocalTestsOnce(ctx context.Context, cfg *config.Config, state *config.St
 			BundleArgs: jsonprotocol.BundleRunTestsArgs{
 				FeatureArgs:       *jsonprotocol.FeatureArgsFromProto(cfg.Features(dutInfo.GetFeatures())),
 				Patterns:          patterns,
-				DataDir:           cfg.LocalDataDir,
-				OutDir:            cfg.LocalOutDir,
+				DataDir:           cfg.LocalDataDir(),
+				OutDir:            cfg.LocalOutDir(),
 				Devservers:        localDevservers,
 				TLWServer:         tlwServer,
-				DUTName:           cfg.Target,
-				WaitUntilReady:    cfg.WaitUntilReady,
+				DUTName:           cfg.Target(),
+				WaitUntilReady:    cfg.WaitUntilReady(),
 				HeartbeatInterval: heartbeatInterval,
-				BuildArtifactsURL: cfg.BuildArtifactsURL,
-				DownloadMode:      cfg.DownloadMode,
+				BuildArtifactsURL: cfg.BuildArtifactsURL(),
+				DownloadMode:      cfg.DownloadMode(),
 				StartFixtureName:  startFixtureName,
 				SetUpErrors:       setUpErrs,
-				CompanionDUTs:     cfg.CompanionDUTs,
+				CompanionDUTs:     cfg.CompanionDUTs(),
 			},
 			BundleGlob: cfg.LocalBundleGlob(),
 			Devservers: localDevservers,

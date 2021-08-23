@@ -56,7 +56,7 @@ func TestRemoteRun(t *gotesting.T) {
 		}),
 	)
 	ctx := env.Context()
-	cfg := env.Config(func(cfg *config.Config) {
+	cfg := env.Config(func(cfg *config.MutableConfig) {
 		cfg.BuildArtifactsURL = "gs://foo/bar"
 		// Use IPv4 loopback address with invalid port numbers so that they
 		// never resolve to valid destination.
@@ -93,13 +93,13 @@ func TestRemoteRun(t *gotesting.T) {
 				CheckDeps: true,
 				Dut:       dutInfo.Features,
 				Infra: &protocol.InfraFeatures{
-					Vars:             cfg.TestVars,
-					MaybeMissingVars: cfg.MaybeMissingVars,
+					Vars:             cfg.TestVars(),
+					MaybeMissingVars: cfg.MaybeMissingVars(),
 				},
 			},
 			Dirs: &protocol.RunDirectories{
-				DataDir: cfg.RemoteDataDir,
-				OutDir:  cfg.RemoteOutDir,
+				DataDir: cfg.RemoteDataDir(),
+				OutDir:  cfg.RemoteOutDir(),
 				TempDir: "",
 			},
 			ServiceConfig: &protocol.ServiceConfig{
@@ -108,34 +108,34 @@ func TestRemoteRun(t *gotesting.T) {
 				TlwSelfName: "",
 			},
 			DataFileConfig: &protocol.DataFileConfig{
-				BuildArtifactsUrl: cfg.BuildArtifactsURL,
+				BuildArtifactsUrl: cfg.BuildArtifactsURL(),
 				DownloadMode:      protocol.DownloadMode_BATCH,
 			},
 			RemoteTestConfig: &protocol.RemoteTestConfig{
-				LocalBundleDir: cfg.LocalBundleDir,
+				LocalBundleDir: cfg.LocalBundleDir(),
 				PrimaryDut: &protocol.DUTConfig{
 					SshConfig: &protocol.SSHConfig{
-						Target:  cfg.Target,
-						KeyFile: cfg.KeyFile,
-						KeyDir:  cfg.KeyDir,
+						Target:  cfg.Target(),
+						KeyFile: cfg.KeyFile(),
+						KeyDir:  cfg.KeyDir(),
 					},
-					TlwName: cfg.Target,
+					TlwName: cfg.Target(),
 				},
 				CompanionDuts: map[string]*protocol.DUTConfig{},
 				MetaTestConfig: &protocol.MetaTestConfig{
 					TastPath: exe,
 					RunFlags: []string{
-						"-build=" + strconv.FormatBool(cfg.Build),
-						"-keyfile=" + cfg.KeyFile,
-						"-keydir=" + cfg.KeyDir,
-						"-remoterunner=" + cfg.RemoteRunner,
-						"-remotebundledir=" + cfg.RemoteBundleDir,
-						"-remotedatadir=" + cfg.RemoteDataDir,
-						"-localrunner=" + cfg.LocalRunner,
-						"-localbundledir=" + cfg.LocalBundleDir,
-						"-localdatadir=" + cfg.LocalDataDir,
-						"-devservers=" + strings.Join(cfg.Devservers, ","),
-						"-buildartifactsurl=" + cfg.BuildArtifactsURL,
+						"-build=" + strconv.FormatBool(cfg.Build()),
+						"-keyfile=" + cfg.KeyFile(),
+						"-keydir=" + cfg.KeyDir(),
+						"-remoterunner=" + cfg.RemoteRunner(),
+						"-remotebundledir=" + cfg.RemoteBundleDir(),
+						"-remotedatadir=" + cfg.RemoteDataDir(),
+						"-localrunner=" + cfg.LocalRunner(),
+						"-localbundledir=" + cfg.LocalBundleDir(),
+						"-localdatadir=" + cfg.LocalDataDir(),
+						"-devservers=" + strings.Join(cfg.Devservers(), ","),
+						"-buildartifactsurl=" + cfg.BuildArtifactsURL(),
 					},
 				},
 			},
@@ -179,7 +179,7 @@ func TestRemoteRunCopyOutput(t *gotesting.T) {
 		t.Fatalf("RunRemoteTests failed: %v", err)
 	}
 
-	out, err := ioutil.ReadFile(filepath.Join(cfg.ResDir, testLogsDir, testName, outFile))
+	out, err := ioutil.ReadFile(filepath.Join(cfg.ResDir(), testLogsDir, testName, outFile))
 	if err != nil {
 		t.Fatalf("Failed to read output file: %v", err)
 	}
@@ -206,7 +206,7 @@ func TestRemoteMaxFailures(t *gotesting.T) {
 		runtest.WithRemoteBundles(reg),
 	)
 	ctx := env.Context()
-	cfg := env.Config(func(cfg *config.Config) {
+	cfg := env.Config(func(cfg *config.MutableConfig) {
 		cfg.MaxTestFailures = 1
 	})
 	state := env.State()

@@ -13,11 +13,11 @@ import (
 
 // ListMatchedTests enumerates tests matched with the user-supplied patterns.
 func (d *Driver) ListMatchedTests(ctx context.Context, features *protocol.Features) ([]*protocol.ResolvedEntity, error) {
-	local, err := d.localClient().ListTests(ctx, d.cfg.Patterns, features)
+	local, err := d.localClient().ListTests(ctx, d.cfg.Patterns(), features)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to list local tests")
 	}
-	remote, err := d.remoteClient().ListTests(ctx, d.cfg.Patterns, features)
+	remote, err := d.remoteClient().ListTests(ctx, d.cfg.Patterns(), features)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to list remote tests")
 	}
@@ -27,7 +27,7 @@ func (d *Driver) ListMatchedTests(ctx context.Context, features *protocol.Featur
 // ListMatchedLocalTests enumerates local tests matched with the user-supplied
 // patterns.
 func (d *Driver) ListMatchedLocalTests(ctx context.Context, features *protocol.Features) ([]*protocol.ResolvedEntity, error) {
-	tests, err := d.localClient().ListTests(ctx, d.cfg.Patterns, features)
+	tests, err := d.localClient().ListTests(ctx, d.cfg.Patterns(), features)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to list local tests")
 	}

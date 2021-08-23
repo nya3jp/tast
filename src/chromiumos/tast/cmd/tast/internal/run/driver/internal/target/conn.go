@@ -100,17 +100,17 @@ func dialSSH(ctx context.Context, cfg *config.Config, target string) (*ssh.Conn,
 
 	opts := &ssh.Options{
 		ConnectTimeout:       sshConnectTimeout,
-		ConnectRetries:       cfg.SSHRetries,
+		ConnectRetries:       cfg.SSHRetries(),
 		ConnectRetryInterval: sshRetryInterval,
-		KeyFile:              cfg.KeyFile,
-		KeyDir:               cfg.KeyDir,
+		KeyFile:              cfg.KeyFile(),
+		KeyDir:               cfg.KeyDir(),
 		WarnFunc:             func(s string) { logging.Info(ctx, s) },
 	}
 	if err := ssh.ParseTarget(target, opts); err != nil {
 		return nil, err
 	}
 
-	ctx, cancel := context.WithTimeout(ctx, sshConnectTimeout*time.Duration(cfg.SSHRetries+1))
+	ctx, cancel := context.WithTimeout(ctx, sshConnectTimeout*time.Duration(cfg.SSHRetries()+1))
 	defer cancel()
 
 	conn, err := ssh.New(ctx, opts)

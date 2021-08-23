@@ -164,13 +164,13 @@ func (e *Env) TempDir() string { return filepath.Join(e.rootDir, tempDir) }
 // Config returns a Config struct with reasonable default values to be used in
 // unit tests. Callers can pass non-nil mod to alter values of a returned Config
 // struct if needed to customize Tast CLI component behavior.
-func (e *Env) Config(mod func(cfg *config.Config)) *config.Config {
+func (e *Env) Config(mod func(cfg *config.MutableConfig)) *config.Config {
 	randomID := rand.Int31()
 	companionDUTs := make(map[string]string)
 	for role, server := range e.companionServers {
 		companionDUTs[role] = server.Addr().String()
 	}
-	cfg := &config.Config{
+	cfg := &config.MutableConfig{
 		// Run all available tests.
 		Mode:     config.RunTestsMode,
 		Patterns: []string{"*"},
@@ -200,7 +200,7 @@ func (e *Env) Config(mod func(cfg *config.Config)) *config.Config {
 	if mod != nil {
 		mod(cfg)
 	}
-	return cfg
+	return cfg.Freeze()
 }
 
 // State returns a State struct to be used in unit tests. It is cleaned up on

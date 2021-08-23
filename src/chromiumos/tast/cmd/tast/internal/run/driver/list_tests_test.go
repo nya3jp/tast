@@ -45,11 +45,11 @@ func newDriverForListingTests(t *gotesting.T) (context.Context, *driver.Driver, 
 
 	env := runtest.SetUp(t, runtest.WithLocalBundles(local1, local2), runtest.WithRemoteBundles(remote1, remote2))
 	ctx := env.Context()
-	cfg := env.Config(func(cfg *config.Config) {
+	cfg := env.Config(func(cfg *config.MutableConfig) {
 		cfg.Patterns = []string{"(yes)"}
 	})
 
-	drv, err := driver.New(ctx, cfg, cfg.Target)
+	drv, err := driver.New(ctx, cfg, cfg.Target())
 	if err != nil {
 		t.Fatalf("driver.New failed: %v", err)
 	}

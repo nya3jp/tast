@@ -22,10 +22,10 @@ import (
 
 // listCmd implements subcommands.Command to support listing tests.
 type listCmd struct {
-	json    bool           // marshal tests to JSON instead of just printing names
-	cfg     *config.Config // shared config for listing tests
-	wrapper runWrapper     // wraps calls to run package
-	stdout  io.Writer      // where to write tests
+	json    bool                  // marshal tests to JSON instead of just printing names
+	cfg     *config.MutableConfig // shared config for listing tests
+	wrapper runWrapper            // wraps calls to run package
+	stdout  io.Writer             // where to write tests
 }
 
 var _ = subcommands.Command(&runCmd{})
@@ -33,7 +33,7 @@ var _ = subcommands.Command(&runCmd{})
 // newListCmd returns a new listCmd that will write tests to stdout.
 func newListCmd(stdout io.Writer, trunkDir string) *listCmd {
 	return &listCmd{
-		cfg:     config.NewConfig(config.ListTestsMode, tastDir, trunkDir),
+		cfg:     config.NewMutableConfig(config.ListTestsMode, tastDir, trunkDir),
 		wrapper: &realRunWrapper{},
 		stdout:  stdout,
 	}
@@ -76,7 +76,7 @@ func (lc *listCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{
 	ctx = logging.AttachLoggerNoPropagation(ctx, logger)
 
 	state := config.State{}
-	results, err := lc.wrapper.run(ctx, lc.cfg, &state)
+	results, err := lc.wrapper.run(ctx, lc.cfg.Freeze(), &state)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "ERROR: %v\n", err)
 		return subcommands.ExitFailure

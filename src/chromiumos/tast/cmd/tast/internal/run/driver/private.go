@@ -16,7 +16,7 @@ import (
 // DownloadPrivateBundles downloads and installs a private test bundle archive
 // corresponding to the target version, if one has not been installed yet.
 func (d *Driver) DownloadPrivateBundles(ctx context.Context) error {
-	if !d.cfg.DownloadPrivateBundles {
+	if !d.cfg.DownloadPrivateBundles() {
 		return nil
 	}
 
@@ -25,7 +25,7 @@ func (d *Driver) DownloadPrivateBundles(ctx context.Context) error {
 
 	logging.Debug(ctx, "Downloading private bundles")
 
-	devservers := append([]string(nil), d.cfg.Devservers...)
+	devservers := append([]string(nil), d.cfg.Devservers()...)
 	if url, ok := d.conn.Services().EphemeralDevserverURL(); ok {
 		devservers = append(devservers, url)
 	}
@@ -42,7 +42,7 @@ func (d *Driver) DownloadPrivateBundles(ctx context.Context) error {
 			TlwServer:   tlwServer,
 			TlwSelfName: tlwSelfName,
 		},
-		BuildArtifactUrl: d.cfg.BuildArtifactsURL,
+		BuildArtifactUrl: d.cfg.BuildArtifactsURL(),
 	}
 
 	if err := d.localClient().DownloadPrivateBundles(ctx, req); err != nil {

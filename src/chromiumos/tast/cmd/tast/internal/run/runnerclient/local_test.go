@@ -36,7 +36,7 @@ func TestLocalSuccess(t *gotesting.T) {
 	cfg := env.Config(nil)
 	state := env.State()
 
-	drv, err := driver.New(ctx, cfg, cfg.Target)
+	drv, err := driver.New(ctx, cfg, cfg.Target())
 	if err != nil {
 		t.Fatalf("driver.New failed: %v", err)
 	}
@@ -90,12 +90,12 @@ func TestLocalProxy(t *gotesting.T) {
 		runtest.ExactMatchHandler(expCmd+" -rpc", fakeProc),
 	}))
 	ctx := env.Context()
-	cfg := env.Config(func(cfg *config.Config) {
+	cfg := env.Config(func(cfg *config.MutableConfig) {
 		cfg.Proxy = config.ProxyEnv
 	})
 	state := env.State()
 
-	drv, err := driver.New(ctx, cfg, cfg.Target)
+	drv, err := driver.New(ctx, cfg, cfg.Target())
 	if err != nil {
 		t.Fatalf("driver.New failed: %v", err)
 	}
@@ -134,7 +134,7 @@ func TestLocalCopyOutput(t *gotesting.T) {
 		{Entity: &protocol.Entity{Name: testName}, Hops: 1},
 	}
 
-	drv, err := driver.New(ctx, cfg, cfg.Target)
+	drv, err := driver.New(ctx, cfg, cfg.Target())
 	if err != nil {
 		t.Fatalf("driver.New failed: %v", err)
 	}
@@ -144,7 +144,7 @@ func TestLocalCopyOutput(t *gotesting.T) {
 		t.Fatalf("RunLocalTests failed: %v", err)
 	}
 
-	files, err := testutil.ReadFiles(filepath.Join(cfg.ResDir, testLogsDir))
+	files, err := testutil.ReadFiles(filepath.Join(cfg.ResDir(), testLogsDir))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -178,7 +178,7 @@ func TestLocalMaxFailures(t *gotesting.T) {
 
 	env := runtest.SetUp(t, runtest.WithLocalBundles(reg))
 	ctx := env.Context()
-	cfg := env.Config(func(cfg *config.Config) {
+	cfg := env.Config(func(cfg *config.MutableConfig) {
 		cfg.MaxTestFailures = 2
 	})
 
@@ -189,7 +189,7 @@ func TestLocalMaxFailures(t *gotesting.T) {
 		{Entity: &protocol.Entity{Name: testName3}, Hops: 1},
 	}
 
-	drv, err := driver.New(ctx, cfg, cfg.Target)
+	drv, err := driver.New(ctx, cfg, cfg.Target())
 	if err != nil {
 		t.Fatalf("driver.New failed: %v", err)
 	}
@@ -293,7 +293,7 @@ func TestFixturesDependency(t *gotesting.T) {
 		})
 	}
 
-	drv, err := driver.New(ctx, cfg, cfg.Target)
+	drv, err := driver.New(ctx, cfg, cfg.Target())
 	if err != nil {
 		t.Fatalf("driver.New failed: %v", err)
 	}

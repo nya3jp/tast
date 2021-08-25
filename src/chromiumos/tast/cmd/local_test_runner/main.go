@@ -69,12 +69,13 @@ func main() {
 			"arc_camera3":        `"arc-camera3"`,
 			"arc_launched_32bit": `"arc-launched-32bit-abi"`,
 			"arc_launched_64bit": `"!arc-launched-32bit-abi"`,
-			"arc_pstore":         "arc && arcvm && amd64",
-			"arm":                `"arm" || "arm64"`,
-			"aslr":               "!asan", // ASan instrumentation breaks ASLR
-			"biometrics_daemon":  "biod",
-			"borealis_host":      "borealis_host",
-			"breakpad":           "force_breakpad",
+			// TODO(b/197806652): Replace arc_pstore with android_vm.
+			"arc_pstore":        "arc && arcvm",
+			"arm":               `"arm" || "arm64"`,
+			"aslr":              "!asan", // ASan instrumentation breaks ASLR
+			"biometrics_daemon": "biod",
+			"borealis_host":     "borealis_host",
+			"breakpad":          "force_breakpad",
 			// daisy variants' cameras don't support 1280x720.
 			"camera_720p": "!snow && !skate && !spring",
 			// Some boards might not support the camera/video/audio components required by the camera app.

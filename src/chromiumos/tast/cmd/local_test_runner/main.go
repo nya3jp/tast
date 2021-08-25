@@ -147,6 +147,7 @@ func main() {
 			"microcode":                 `!"betty" && !"board:reven" && !"tast_vm"`,
 			"ml_benchmark_drivers":      "ml_benchmark_drivers",
 			"ml_service":                "ml_service",
+			"modemfwd":                  "modemfwd",
 			"mosys":                     `!"betty" && !"board:reven" && !"tast_vm"`,
 			"nacl":                      "nacl",
 			"ndk_translation":           "ndk_translation",

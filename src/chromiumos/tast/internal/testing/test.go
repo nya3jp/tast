@@ -86,7 +86,8 @@ type Test struct {
 	Fixture string
 
 	// Timeout contains the maximum duration for which Func may run before the test is aborted.
-	// This should almost always be omitted when defining tests; a reasonable default will be used.
+	// This should almost always be set. If not specified, a reasonable default will be used,
+	// but tests should not depend on it.
 	// This field is serialized as an integer nanosecond count.
 	Timeout time.Duration
 

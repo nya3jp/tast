@@ -299,6 +299,25 @@ func InternalDisplay() Condition {
 	}
 }
 
+// Keyboard returns a hardware dependency condition that is satisfied
+// iff the DUT has an keyboard, e.g. Chromeboxes and Chromebits don't.
+// Tablets might have a removable keyboard.
+func Keyboard() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("HardwareFeatures is not given")
+		}
+		if hf.GetKeyboard() == nil ||
+			hf.GetKeyboard().KeyboardType == configpb.HardwareFeatures_Keyboard_KEYBOARD_TYPE_UNKNOWN ||
+			hf.GetKeyboard().KeyboardType == configpb.HardwareFeatures_Keyboard_NONE {
+			return unsatisfied("DUT does not have a keyboard")
+		}
+		return satisfied()
+	}, CEL: "dut.hardware_features.keyboard.keyboard_type != 0 && dut.hardware_features.keyboard.keyboard_type != 2",
+	}
+}
+
 // Wifi80211ac returns a hardware dependency condition that is satisfied
 // iff the DUT's WiFi module supports 802.11ac.
 func Wifi80211ac() Condition {

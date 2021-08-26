@@ -516,3 +516,42 @@ func TestPrivacyScreen(t *testing.T) {
 		&protocol.DeprecatedDeviceConfig{},
 		nil)
 }
+
+func TestKeyboard(t *testing.T) {
+	c := hwdep.Keyboard()
+
+	for _, tc := range []struct {
+		features        *configpb.HardwareFeatures
+		expectSatisfied bool
+	}{
+		{&configpb.HardwareFeatures{}, false},
+		{&configpb.HardwareFeatures{
+			Keyboard: &configpb.HardwareFeatures_Keyboard{},
+		}, false},
+		{&configpb.HardwareFeatures{
+			Keyboard: &configpb.HardwareFeatures_Keyboard{
+				KeyboardType: configpb.HardwareFeatures_Keyboard_DETACHABLE,
+			},
+		}, true},
+		{&configpb.HardwareFeatures{
+			Keyboard: &configpb.HardwareFeatures_Keyboard{
+				KeyboardType: configpb.HardwareFeatures_Keyboard_INTERNAL,
+			},
+		}, true},
+		{&configpb.HardwareFeatures{
+			Keyboard: &configpb.HardwareFeatures_Keyboard{
+				KeyboardType: configpb.HardwareFeatures_Keyboard_NONE,
+			},
+		}, false},
+	} {
+		verifyCondition(
+			t, c,
+			&protocol.DeprecatedDeviceConfig{},
+			tc.features,
+			tc.expectSatisfied)
+	}
+	expectError(
+		t, c,
+		&protocol.DeprecatedDeviceConfig{},
+		nil)
+}

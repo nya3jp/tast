@@ -374,6 +374,10 @@ third_party/autotest/files/server/site_tests/tast/control.runtime-probe
 				Desc: `Identifies Cellular tests that are unstable. Used to skip tests running on stable suites and/or the CQ.`,
 			},
 			{
+				Name: "cellular_cq",
+				Desc: `Identifies Cellular tests for the cellular commit queue suite.`,
+			},
+			{
 				Name: "cellular_sim_active",
 				Desc: `Identifies Cellular tests that need an active sim.`,
 			},

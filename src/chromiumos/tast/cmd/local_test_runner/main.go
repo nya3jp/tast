@@ -113,7 +113,8 @@ func main() {
 			// TODO(https://crbug.com/1122066): remove guado-cfm and rikku-cfm when they're no longer necessary
 			"ec_crash":                `!(("board:asuka" || "board:banon" || "board:caroline" || "board:caroline-kernelnext" || "board:cave" || "board:celes" || "board:chell" || "board:cyan" || "board:edgar" || "board:kefka" || "board:reks" || "board:relm" || "board:sentry" || "board:terra" || "board:ultima" || "board:wizpig") || ("board:drallion" || "board:sarien") || ("board:guado" || "board:guado-cfm" || "board:tidus" || "board:rikku" || "board:rikku-cfm" || "board:veyron_fievel" || "board:veyron_tiger") || "board:nocturne")`,
 			"endorsement":             `!"betty" && !"board:reven" && !"tast_vm"`, // VMs don't have valid endorsement certificate.
-			"firewall":                "!moblab",                                  // Moblab has relaxed iptables rules
+			"factory_flow":            "!no_factory_flow",
+			"firewall":                "!moblab", // Moblab has relaxed iptables rules
 			"flashrom":                `!"betty" && !"board:reven" && !"tast_vm"`,
 			"fwupd":                   "fwupd",                                    // have sys-apps/fwupd installed.
 			"gboard_decoder":          "gboard_decoder",                           // have IME mojo service installed.

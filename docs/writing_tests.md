@@ -1060,24 +1060,62 @@ external data files.
 Occasionally tests need to access dynamic or secret data (i.e. *out-of-band*
 data), and that's when runtime variables become useful.
 
-To use runtime variables, in your test's `testing.AddTest` call, set the
-`testing.Test` struct's `Vars` or `VarDeps` field to contain a slice of runtime
-variables. `Vars` specifies optional runtime variables, and `VarDeps` specifies
-required runtime variables to run the test.
-`VarDeps` should be the default choice, and `Vars` should be used only when
-there's a fallback in case the variables are missing.
+### Setting values
+
+To set runtime variables, add (possibly repeated) `-var=name=value` flags to
+`tast run`.
+
+### Accessing values
+
+Tast users can access runtime variables in two different ways. One way
+is to declare global runtime variables which can be used by all testing
+entities: services, fixtures, library functions and tests. Other entities
+can use the variables by importing the package that defines the variables.
+The other way is to declare test runtime variables which can be used by
+fixture and tests.
+
+#### Global runtime variables (recommended for new code)
+To declare a global runtime variable, use testing.RegisterVarString in an
+entity. It should be a top-level variable declaration which should include
+the name of the variable, default value and description. A duplicate of the
+variable name in the same bundle will result in an error during registration
+when a bundle starts.  Other files can access the variable by importing the
+package that contains the declaration of the variable.
+
+Example:
+
+```go
+package example
+
+...
+
+var exampleStrVar = testing.RegisterVarString(
+        "example.AccessVars.globalString",
+        "Default value",
+        "An example variable of string type",
+)
+
+...
+
+func AccessVars(ctx context.Context, s *testing.State) {
+        strVal := exampleStrVar.Value()
+}
+```
+
+All variables should have the prefix “<package_name>.” to avoid name collision.
+If one violates this convention, runtime error will happen.
+
+#### Test runtime variables
+To declare test runtime variables, set the `testing.Test` struct's `Vars`
+(deprecated) or `VarDeps` field inside your tests' `testing.AddTest` call.
+`Vars` specifies optional runtime variables, and `VarDeps` specifies required
+runtime variables to run the test. `VarDeps` should be the default choice,
+and `Vars` should be used only when there's a fallback in case the variables
+are missing.
 
 `Vars` and `VarDeps` should be an array literal of string literals or constants.
 The test can later access the values by calling `s.Var` or `s.RequiredVar`
 methods.
-
-When runtime variables in `VarDeps` are missing, by default the test fails
-before it runs. `-maybemissingvars=<regex>` can be used to specify possibly
-missing runtime variables and if every missing runtime variable in `VarDeps`
-matches with the regex, the test is skipped.
-
-To set runtime variables, add (possibly repeated) `-var=name=value` flags to
-`tast run`.
 
 For variables only used in a single test, prefix them with the test name
 (e.g. `arc.Boot.foo` for a variable used only in `arc.Boot`).
@@ -1092,6 +1130,17 @@ Other variables should follow these rules:
 * Any tests can access `foo.something`
 
 If one violates this convention, runtime error will happen.
+
+### Skipping tests if a variable is not set.
+
+If you wish to skip tests if a variable is not set, your should use
+`VarDeps` field inside those tests' `testing.AddTest` call regardless which
+methods you choose to access the variable.
+
+When runtime variables in `VarDeps` are missing, by default the test fails
+before it runs. `-maybemissingvars=<regex>` can be used to specify possibly
+missing runtime variables and if every missing runtime variable in `VarDeps`
+matches with the regex, the test is skipped.
 
 ### Secret variables
 

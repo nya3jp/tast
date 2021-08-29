@@ -43,7 +43,7 @@ func (v *VarString) Name() string {
 	return v.v.Name()
 }
 
-// Value returns value of a variable and a flag to indicate whether the value is initialized.
+// Value returns value of the variable.
 func (v *VarString) Value() string {
 	return v.v.Value()
 }

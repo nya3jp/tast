@@ -11,12 +11,10 @@ import (
 	"io/ioutil"
 	"net"
 	"path/filepath"
-	"strconv"
 	"strings"
 	"time"
 
 	"github.com/golang/protobuf/proto"
-	"go.chromium.org/chromiumos/config/go/api/test/tls"
 	"google.golang.org/grpc"
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
@@ -33,7 +31,6 @@ import (
 	"chromiumos/tast/internal/sshconfig"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/internal/xcontext"
-	"chromiumos/tast/ssh"
 )
 
 const (
@@ -285,15 +282,6 @@ func resolveHosts(ctx context.Context, cfg *config.Config, state *config.State) 
 	for role, dut := range cfg.CompanionDUTs {
 		cfg.CompanionDUTs[role] = resolveHost(ctx, dut)
 	}
-	var err error
-	if cfg.Target, err = resolveTarget(ctx, state.TLWConn, cfg.Target); err != nil {
-		return errors.Wrap(err, "failed to resolve target")
-	}
-	for role, dut := range cfg.CompanionDUTs {
-		if cfg.CompanionDUTs[role], err = resolveTarget(ctx, state.TLWConn, dut); err != nil {
-			return errors.Wrapf(err, "failed to resolve companion DUT %v", dut)
-		}
-	}
 	return nil
 }
 
@@ -336,34 +324,4 @@ func connectToReports(ctx context.Context, cfg *config.Config, state *config.Sta
 	}
 	state.ReportsConn = conn
 	return nil
-}
-
-// resolveTarget resolves cfg.Target using the TLW service if available.
-func resolveTarget(ctx context.Context, tlwConn *grpc.ClientConn, target string) (resolvedTarget string, err error) {
-	if tlwConn == nil {
-		return target, nil
-	}
-
-	var opts ssh.Options
-	if err := ssh.ParseTarget(target, &opts); err != nil {
-		return target, err
-	}
-	host, portStr, err := net.SplitHostPort(opts.Hostname)
-	if err != nil {
-		host = opts.Hostname
-		portStr = "22"
-	}
-	port, err := strconv.ParseUint(portStr, 10, 16)
-	if err != nil {
-		return target, err
-	}
-
-	// Use the OpenDutPort API to resolve the target.
-	req := &tls.OpenDutPortRequest{Name: host, Port: int32(port)}
-	res, err := tls.NewWiringClient(tlwConn).OpenDutPort(ctx, req)
-	if err != nil {
-		return target, err
-	}
-
-	return fmt.Sprintf("%s@%s:%d", opts.User, res.GetAddress(), res.GetPort()), nil
 }

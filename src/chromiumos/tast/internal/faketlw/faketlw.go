@@ -31,21 +31,12 @@ type NamePort struct {
 }
 
 type wiringServerConfig struct {
-	dutPortMap   map[NamePort]NamePort
 	cacheFileMap map[string][]byte
 	dutName      string
 }
 
 // WiringServerOption is an option passed to NewWiringServer to customize WiringServer.
 type WiringServerOption func(cfg *wiringServerConfig)
-
-// WithDUTPortMap returns an option that sets the name/port map used to resolve
-// OpenDutPort requests.
-func WithDUTPortMap(m map[NamePort]NamePort) WiringServerOption {
-	return func(cfg *wiringServerConfig) {
-		cfg.dutPortMap = m
-	}
-}
 
 // WithCacheFileMap returns an option that sets the files to be fetched by
 // CacheForDUT requests.
@@ -105,12 +96,7 @@ func (s *WiringServer) Shutdown() {
 
 // OpenDutPort implements tls.WiringServer.OpenDutPort.
 func (s *WiringServer) OpenDutPort(ctx context.Context, req *tls.OpenDutPortRequest) (*tls.OpenDutPortResponse, error) {
-	src := NamePort{Name: req.GetName(), Port: req.GetPort()}
-	dst, ok := s.cfg.dutPortMap[src]
-	if !ok {
-		return nil, fmt.Errorf("not found in DUT port map: %s:%d", src.Name, src.Port)
-	}
-	return &tls.OpenDutPortResponse{Address: dst.Name, Port: dst.Port}, nil
+	return nil, status.Error(codes.Unimplemented, "not implemented")
 }
 
 // CacheForDut implements tls WiringServer.CacheForDUT

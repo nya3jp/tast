@@ -7,10 +7,8 @@ package run_test
 import (
 	"context"
 	"fmt"
-	"net"
 	"os"
 	"path/filepath"
-	"strconv"
 	"strings"
 	gotesting "testing"
 	"time"
@@ -26,7 +24,6 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/runtest"
 	frameworkprotocol "chromiumos/tast/framework/protocol"
 	"chromiumos/tast/internal/devserver/devservertest"
-	"chromiumos/tast/internal/faketlw"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/logging/loggingtest"
 	"chromiumos/tast/internal/protocol"
@@ -147,36 +144,6 @@ func TestRunDownloadPrivateBundles(t *gotesting.T) {
 	wantCalled := map[string]struct{}{"dut0": {}, "dut1": {}, "dut2": {}}
 	if diff := cmp.Diff(called, wantCalled); diff != "" {
 		t.Errorf("DownloadPrivateBundles not called (-got +want):\n%s", diff)
-	}
-}
-
-func TestRunTLW(t *gotesting.T) {
-	env := runtest.SetUp(t)
-	ctx := env.Context()
-	cfg := env.Config()
-	state := env.State()
-
-	host, portStr, err := net.SplitHostPort(cfg.Target)
-	if err != nil {
-		t.Fatal("net.SplitHostPort: ", err)
-	}
-	port, err := strconv.ParseUint(portStr, 10, 32)
-	if err != nil {
-		t.Fatal("strconv.ParseUint: ", err)
-	}
-
-	// Start a TLW server that resolves "the_dut:22" to the real target addr/port.
-	const targetName = "the_dut"
-	stopFunc, tlwAddr := faketlw.StartWiringServer(t, faketlw.WithDUTPortMap(map[faketlw.NamePort]faketlw.NamePort{
-		{Name: targetName, Port: 22}: {Name: host, Port: int32(port)},
-	}))
-	defer stopFunc()
-
-	cfg.Target = targetName
-	cfg.TLWServer = tlwAddr
-
-	if _, err := run.Run(ctx, cfg, state); err != nil {
-		t.Errorf("Run failed: %v", err)
 	}
 }
 

@@ -92,7 +92,7 @@ func TestReadTestOutput(t *gotesting.T) {
 	env := runtest.SetUp(t)
 	logger := loggingtest.NewLogger(t, logging.LevelInfo) // drop debug messages
 	ctx := logging.AttachLoggerNoPropagation(env.Context(), logger)
-	cfg := env.Config()
+	cfg := env.Config(nil)
 	state := env.State()
 
 	if err := testutil.WriteFiles(cfg.RemoteOutDir, map[string]string{
@@ -240,7 +240,7 @@ func TestReadTestOutputSameEntity(t *gotesting.T) {
 
 	env := runtest.SetUp(t)
 	ctx := env.Context()
-	cfg := env.Config()
+	cfg := env.Config(nil)
 	state := env.State()
 
 	if err := testutil.WriteFiles(cfg.RemoteOutDir, map[string]string{
@@ -321,7 +321,7 @@ func TestReadTestOutputConcurrentEntity(t *gotesting.T) {
 
 	env := runtest.SetUp(t)
 	ctx := env.Context()
-	cfg := env.Config()
+	cfg := env.Config(nil)
 	state := env.State()
 
 	if err := testutil.WriteFiles(cfg.RemoteOutDir, map[string]string{
@@ -466,7 +466,7 @@ func TestReadTestOutputAbortFixture(t *gotesting.T) {
 
 	env := runtest.SetUp(t)
 	ctx := env.Context()
-	cfg := env.Config()
+	cfg := env.Config(nil)
 	state := env.State()
 
 	b := bytes.Buffer{}
@@ -676,7 +676,7 @@ func TestWriteResultsCollectSysInfo(t *gotesting.T) {
 		return &protocol.CollectSysInfoResponse{}, nil
 	}))
 	ctx := env.Context()
-	cfg := env.Config()
+	cfg := env.Config(nil)
 	state := env.State()
 
 	drv, err := driver.New(ctx, cfg, cfg.Target)
@@ -703,7 +703,7 @@ func TestWriteResultsCollectSysInfoFailure(t *gotesting.T) {
 	ctx := env.Context()
 	logger := loggingtest.NewLogger(t, logging.LevelInfo)
 	ctx = logging.AttachLoggerNoPropagation(ctx, logger)
-	cfg := env.Config()
+	cfg := env.Config(nil)
 	state := env.State()
 
 	drv, err := driver.New(ctx, cfg, cfg.Target)
@@ -937,7 +937,7 @@ func TestUnfinishedTest(t *gotesting.T) {
 func TestWriteResultsWriteFiles(t *gotesting.T) {
 	env := runtest.SetUp(t)
 	ctx := env.Context()
-	cfg := env.Config()
+	cfg := env.Config(nil)
 	state := env.State()
 
 	// Report that two tests were executed.

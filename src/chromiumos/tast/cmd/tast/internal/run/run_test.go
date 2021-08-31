@@ -33,7 +33,7 @@ import (
 func TestRun(t *gotesting.T) {
 	env := runtest.SetUp(t)
 	ctx := env.Context()
-	cfg := env.Config()
+	cfg := env.Config(nil)
 	state := env.State()
 
 	if _, err := run.Run(ctx, cfg, state); err != nil {
@@ -49,8 +49,9 @@ func TestRunNoTestToRun(t *gotesting.T) {
 	// No test in bundles.
 	env := runtest.SetUp(t, runtest.WithLocalBundles(testing.NewRegistry("bundle")), runtest.WithRemoteBundles(testing.NewRegistry("bundle")))
 	ctx := env.Context()
-	cfg := env.Config()
-	cfg.Patterns = []string{"(foobar)"} // an attribute expression matching no test
+	cfg := env.Config(func(cfg *config.Config) {
+		cfg.Patterns = []string{"(foobar)"} // an attribute expression matching no test
+	})
 	state := env.State()
 
 	if _, err := run.Run(ctx, cfg, state); err != nil {
@@ -68,9 +69,10 @@ func TestRunNoTestToRun(t *gotesting.T) {
 func TestRunPartialRun(t *gotesting.T) {
 	env := runtest.SetUp(t)
 	ctx := env.Context()
-	cfg := env.Config()
-	// Set a nonexistent path for the remote runner so that it will fail.
-	cfg.RemoteRunner = filepath.Join(env.TempDir(), "missing_remote_test_runner")
+	cfg := env.Config(func(cfg *config.Config) {
+		// Set a nonexistent path for the remote runner so that it will fail.
+		cfg.RemoteRunner = filepath.Join(env.TempDir(), "missing_remote_test_runner")
+	})
 	state := env.State()
 
 	if _, err := run.Run(ctx, cfg, state); err == nil {
@@ -81,8 +83,9 @@ func TestRunPartialRun(t *gotesting.T) {
 func TestRunError(t *gotesting.T) {
 	env := runtest.SetUp(t)
 	ctx := env.Context()
-	cfg := env.Config()
-	cfg.KeyFile = "" // force SSH auth error
+	cfg := env.Config(func(cfg *config.Config) {
+		cfg.KeyFile = "" // force SSH auth error
+	})
 	state := env.State()
 
 	if _, err := run.Run(ctx, cfg, state); err == nil {
@@ -97,8 +100,9 @@ func TestRunEphemeralDevserver(t *gotesting.T) {
 		}
 	}))
 	ctx := env.Context()
-	cfg := env.Config()
-	cfg.UseEphemeralDevserver = true
+	cfg := env.Config(func(cfg *config.Config) {
+		cfg.UseEphemeralDevserver = true
+	})
 	state := env.State()
 
 	if _, err := run.Run(ctx, cfg, state); err != nil {
@@ -132,9 +136,10 @@ func TestRunDownloadPrivateBundles(t *gotesting.T) {
 		runtest.WithCompanionDUT("dut2", makeHandler("dut2")),
 	)
 	ctx := env.Context()
-	cfg := env.Config()
-	cfg.Devservers = []string{ds.URL}
-	cfg.DownloadPrivateBundles = true
+	cfg := env.Config(func(cfg *config.Config) {
+		cfg.Devservers = []string{ds.URL}
+		cfg.DownloadPrivateBundles = true
+	})
 	state := env.State()
 
 	if _, err := run.Run(ctx, cfg, state); err != nil {
@@ -181,8 +186,9 @@ func TestRunWithReports_LogStream(t *gotesting.T) {
 
 	env := runtest.SetUp(t, runtest.WithLocalBundles(localReg), runtest.WithRemoteBundles(remoteReg))
 	ctx := env.Context()
-	cfg := env.Config()
-	cfg.ReportsServer = addr
+	cfg := env.Config(func(cfg *config.Config) {
+		cfg.ReportsServer = addr
+	})
 	state := env.State()
 
 	if _, err := run.Run(ctx, cfg, state); err != nil {
@@ -255,8 +261,9 @@ func TestRunWithReports_ReportResult(t *gotesting.T) {
 		}),
 	)
 	ctx := env.Context()
-	cfg := env.Config()
-	cfg.ReportsServer = addr
+	cfg := env.Config(func(cfg *config.Config) {
+		cfg.ReportsServer = addr
+	})
 	state := env.State()
 
 	if _, err := run.Run(ctx, cfg, state); err != nil {
@@ -315,8 +322,9 @@ func TestRunWithReports_ReportResultTerminate(t *gotesting.T) {
 		runtest.WithRemoteBundles(remoteReg),
 	)
 	ctx := env.Context()
-	cfg := env.Config()
-	cfg.ReportsServer = addr
+	cfg := env.Config(func(cfg *config.Config) {
+		cfg.ReportsServer = addr
+	})
 	state := env.State()
 
 	if _, err := run.Run(ctx, cfg, state); err == nil {
@@ -385,7 +393,7 @@ func TestRunWithSkippedTests(t *gotesting.T) {
 		}),
 	)
 	ctx := env.Context()
-	cfg := env.Config()
+	cfg := env.Config(nil)
 	state := env.State()
 
 	results, err := run.Run(ctx, cfg, state)
@@ -449,8 +457,9 @@ func TestRunListTests(t *gotesting.T) {
 		}),
 	)
 	ctx := env.Context()
-	cfg := env.Config()
-	cfg.Mode = config.ListTestsMode
+	cfg := env.Config(func(cfg *config.Config) {
+		cfg.Mode = config.ListTestsMode
+	})
 	state := env.State()
 
 	results, err := run.Run(ctx, cfg, state)
@@ -523,9 +532,6 @@ func TestRunListTestsWithSharding(t *gotesting.T) {
 		}),
 	)
 	ctx := env.Context()
-	cfg := env.Config()
-	cfg.Mode = config.ListTestsMode
-	cfg.TotalShards = 2 // set the number of shards
 	state := env.State()
 
 	localTestMeta, _ := resultsjson.NewTest(localTest.EntityProto())
@@ -542,7 +548,11 @@ func TestRunListTestsWithSharding(t *gotesting.T) {
 		},
 	} {
 		t.Run(fmt.Sprintf("shard%d", shardIndex), func(t *gotesting.T) {
-			cfg.ShardIndex = shardIndex
+			cfg := env.Config(func(cfg *config.Config) {
+				cfg.Mode = config.ListTestsMode
+				cfg.TotalShards = 2
+				cfg.ShardIndex = shardIndex
+			})
 
 			results, err := run.Run(ctx, cfg, state)
 			if err != nil {
@@ -577,7 +587,7 @@ func TestRunDumpDUTInfo(t *gotesting.T) {
 	ctx := env.Context()
 	logger := loggingtest.NewLogger(t, logging.LevelInfo)
 	ctx = logging.AttachLoggerNoPropagation(ctx, logger)
-	cfg := env.Config()
+	cfg := env.Config(nil)
 	state := env.State()
 
 	if _, err := run.Run(ctx, cfg, state); err != nil {
@@ -616,7 +626,7 @@ func TestRunCollectSysInfo(t *gotesting.T) {
 			return &protocol.CollectSysInfoResponse{}, nil
 		}))
 	ctx := env.Context()
-	cfg := env.Config()
+	cfg := env.Config(nil)
 	state := env.State()
 
 	if _, err := run.Run(ctx, cfg, state); err != nil {
@@ -655,14 +665,15 @@ func TestRunWithGlobalRuntimeVars(t *gotesting.T) {
 
 	env := runtest.SetUp(t, runtest.WithLocalBundles(localReg), runtest.WithRemoteBundles(remoteReg))
 	ctx := env.Context()
-	cfg := env.Config()
+	cfg := env.Config(func(cfg *config.Config) {
+		cfg.TestVars = map[string]string{
+			"var1": "value1",
+			"var3": "value3",
+		}
+	})
 	state := env.State()
 
 	// The variable var1 and var3 will have non-default values.
-	cfg.TestVars = map[string]string{
-		"var1": "value1",
-		"var3": "value3",
-	}
 
 	if _, err := run.Run(ctx, cfg, state); err != nil {
 		t.Errorf("Run failed: %v", err)
@@ -696,9 +707,10 @@ func TestRunWithVerifyTestNameFail(t *gotesting.T) {
 		runtest.WithLocalBundles(localReg),
 	)
 	ctx := env.Context()
-	cfg := env.Config()
+	cfg := env.Config(func(cfg *config.Config) {
+		cfg.Patterns = []string{"pkg.LocalTest", "pkg.NonExistingTest"}
+	})
 	state := env.State()
-	cfg.Patterns = []string{"pkg.LocalTest", "pkg.NonExistingTest"}
 
 	_, err := run.Run(ctx, cfg, state)
 	if err == nil {
@@ -727,9 +739,10 @@ func TestRunWithVerifyTestPatternRuns(t *gotesting.T) {
 		runtest.WithLocalBundles(localReg),
 	)
 	ctx := env.Context()
-	cfg := env.Config()
+	cfg := env.Config(func(cfg *config.Config) {
+		cfg.Patterns = []string{`("name:pkg.LocalTest" || "name:pkg.NonExistingTest")`}
+	})
 	state := env.State()
-	cfg.Patterns = []string{`("name:pkg.LocalTest" || "name:pkg.NonExistingTest")`}
 
 	_, err := run.Run(ctx, cfg, state)
 	if err != nil {

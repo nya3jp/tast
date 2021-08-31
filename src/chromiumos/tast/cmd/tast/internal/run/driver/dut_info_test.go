@@ -11,6 +11,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 	configpb "go.chromium.org/chromiumos/config/go/api"
 
+	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/driver"
 	"chromiumos/tast/cmd/tast/internal/run/runtest"
 	"chromiumos/tast/internal/protocol"
@@ -58,9 +59,10 @@ func TestDriver_GetDUTInfo(t *testing.T) {
 		return &protocol.GetDUTInfoResponse{DutInfo: want}, nil
 	}))
 	ctx := env.Context()
-	cfg := env.Config()
-	cfg.CheckTestDeps = true
-	cfg.ExtraUSEFlags = extraUseFlags
+	cfg := env.Config(func(cfg *config.Config) {
+		cfg.CheckTestDeps = true
+		cfg.ExtraUSEFlags = extraUseFlags
+	})
 
 	drv, err := driver.New(ctx, cfg, cfg.Target)
 	if err != nil {
@@ -84,11 +86,10 @@ func TestDriver_GetDUTInfo_NoCheckTestDeps(t *testing.T) {
 		return &protocol.GetDUTInfoResponse{}, nil
 	}))
 	ctx := env.Context()
-	cfg := env.Config()
-	cfg.CheckTestDeps = true
-
-	// With "never", the runner shouldn't be called and dependencies shouldn't be checked.
-	cfg.CheckTestDeps = false
+	cfg := env.Config(func(cfg *config.Config) {
+		// With "never", the runner shouldn't be called and dependencies shouldn't be checked.
+		cfg.CheckTestDeps = false
+	})
 
 	drv, err := driver.New(ctx, cfg, cfg.Target)
 	if err != nil {
@@ -114,9 +115,10 @@ func TestDriver_GetDUTInfo_NoFeatures(t *testing.T) {
 		}, nil
 	}))
 	ctx := env.Context()
-	cfg := env.Config()
-	// "always" should fail if the runner doesn't know about any features.
-	cfg.CheckTestDeps = true
+	cfg := env.Config(func(cfg *config.Config) {
+		// "always" should fail if the runner doesn't know about any features.
+		cfg.CheckTestDeps = true
+	})
 
 	drv, err := driver.New(ctx, cfg, cfg.Target)
 	if err != nil {

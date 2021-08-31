@@ -56,7 +56,7 @@ func TestDriver_CollectSysInfo(t *testing.T) {
 		}),
 	)
 	ctx := env.Context()
-	cfg := env.Config()
+	cfg := env.Config(nil)
 
 	drv, err := driver.New(ctx, cfg, cfg.Target)
 	if err != nil {

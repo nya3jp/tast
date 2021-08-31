@@ -17,6 +17,7 @@ import (
 	"github.com/golang/protobuf/ptypes"
 	"github.com/google/go-cmp/cmp"
 
+	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/runtest"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testing"
@@ -55,13 +56,14 @@ func TestRemoteRun(t *gotesting.T) {
 		}),
 	)
 	ctx := env.Context()
-	cfg := env.Config()
-	cfg.BuildArtifactsURL = "gs://foo/bar"
-	// Use IPv4 loopback address with invalid port numbers so that they
-	// never resolve to valid destination.
-	cfg.Devservers = []string{"http://127.0.0.1:11111111", "http://127.0.0.1:22222222"}
-	cfg.TestVars = map[string]string{"abc": "def"}
-	cfg.MaybeMissingVars = "xyz"
+	cfg := env.Config(func(cfg *config.Config) {
+		cfg.BuildArtifactsURL = "gs://foo/bar"
+		// Use IPv4 loopback address with invalid port numbers so that they
+		// never resolve to valid destination.
+		cfg.Devservers = []string{"http://127.0.0.1:11111111", "http://127.0.0.1:22222222"}
+		cfg.TestVars = map[string]string{"abc": "def"}
+		cfg.MaybeMissingVars = "xyz"
+	})
 	state := env.State()
 	state.RemoteDevservers = []string{"http://127.0.0.1:33333333", "http://127.0.0.1:44444444"}
 	dutInfo := &protocol.DUTInfo{
@@ -170,7 +172,7 @@ func TestRemoteRunCopyOutput(t *gotesting.T) {
 		runtest.WithRemoteBundles(reg),
 	)
 	ctx := env.Context()
-	cfg := env.Config()
+	cfg := env.Config(nil)
 	state := env.State()
 
 	if _, err := RunRemoteTests(ctx, cfg, state, nil); err != nil {
@@ -204,8 +206,9 @@ func TestRemoteMaxFailures(t *gotesting.T) {
 		runtest.WithRemoteBundles(reg),
 	)
 	ctx := env.Context()
-	cfg := env.Config()
-	cfg.MaxTestFailures = 1
+	cfg := env.Config(func(cfg *config.Config) {
+		cfg.MaxTestFailures = 1
+	})
 	state := env.State()
 
 	results, err := RunRemoteTests(ctx, cfg, state, nil)

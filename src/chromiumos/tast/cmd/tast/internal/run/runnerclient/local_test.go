@@ -33,7 +33,7 @@ func TestLocalSuccess(t *gotesting.T) {
 
 	env := runtest.SetUp(t)
 	ctx := env.Context()
-	cfg := env.Config()
+	cfg := env.Config(nil)
 	state := env.State()
 
 	drv, err := driver.New(ctx, cfg, cfg.Target)
@@ -90,8 +90,9 @@ func TestLocalProxy(t *gotesting.T) {
 		runtest.ExactMatchHandler(expCmd+" -rpc", fakeProc),
 	}))
 	ctx := env.Context()
-	cfg := env.Config()
-	cfg.Proxy = config.ProxyEnv
+	cfg := env.Config(func(cfg *config.Config) {
+		cfg.Proxy = config.ProxyEnv
+	})
 	state := env.State()
 
 	drv, err := driver.New(ctx, cfg, cfg.Target)
@@ -126,7 +127,7 @@ func TestLocalCopyOutput(t *gotesting.T) {
 
 	env := runtest.SetUp(t, runtest.WithLocalBundles(reg))
 	ctx := env.Context()
-	cfg := env.Config()
+	cfg := env.Config(nil)
 	state := env.State()
 
 	state.TestsToRun = []*protocol.ResolvedEntity{
@@ -177,8 +178,9 @@ func TestLocalMaxFailures(t *gotesting.T) {
 
 	env := runtest.SetUp(t, runtest.WithLocalBundles(reg))
 	ctx := env.Context()
-	cfg := env.Config()
-	cfg.MaxTestFailures = 2
+	cfg := env.Config(func(cfg *config.Config) {
+		cfg.MaxTestFailures = 2
+	})
 
 	state := env.State()
 	state.TestsToRun = []*protocol.ResolvedEntity{
@@ -275,7 +277,7 @@ func TestFixturesDependency(t *gotesting.T) {
 
 	env := runtest.SetUp(t, runtest.WithLocalBundles(localReg), runtest.WithRemoteBundles(remoteReg))
 	ctx := env.Context()
-	cfg := env.Config()
+	cfg := env.Config(nil)
 	state := env.State()
 
 	for _, t := range localTests {

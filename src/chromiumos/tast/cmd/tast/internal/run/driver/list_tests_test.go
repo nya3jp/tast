@@ -11,6 +11,7 @@ import (
 	"github.com/golang/protobuf/ptypes"
 	"github.com/google/go-cmp/cmp"
 
+	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/driver"
 	"chromiumos/tast/cmd/tast/internal/run/runtest"
 	"chromiumos/tast/internal/protocol"
@@ -44,8 +45,9 @@ func newDriverForListingTests(t *gotesting.T) (context.Context, *driver.Driver, 
 
 	env := runtest.SetUp(t, runtest.WithLocalBundles(local1, local2), runtest.WithRemoteBundles(remote1, remote2))
 	ctx := env.Context()
-	cfg := env.Config()
-	cfg.Patterns = []string{"(yes)"}
+	cfg := env.Config(func(cfg *config.Config) {
+		cfg.Patterns = []string{"(yes)"}
+	})
 
 	drv, err := driver.New(ctx, cfg, cfg.Target)
 	if err != nil {

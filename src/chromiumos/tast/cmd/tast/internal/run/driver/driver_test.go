@@ -31,7 +31,7 @@ func TestDriver(t *testing.T) {
 		}),
 	)
 	ctx := env.Context()
-	cfg := env.Config()
+	cfg := env.Config(nil)
 
 	drv, err := driver.New(ctx, cfg, cfg.Target)
 	if err != nil {
@@ -58,7 +58,7 @@ func TestDriver_ReconnectIfNeeded(t *testing.T) {
 	const pingTimeout = 10 * time.Second
 	env := runtest.SetUp(t)
 	ctx := env.Context()
-	cfg := env.Config()
+	cfg := env.Config(nil)
 
 	drv, err := driver.New(ctx, cfg, cfg.Target)
 	if err != nil {

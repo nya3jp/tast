@@ -12,6 +12,7 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 
+	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/driver"
 	"chromiumos/tast/cmd/tast/internal/run/runtest"
 	"chromiumos/tast/internal/testing"
@@ -79,10 +80,14 @@ func TestPushDataFiles(t *gotesting.T) {
 		},
 	}))
 	ctx := env.Context()
-	cfg := env.Config()
+	cfg := env.Config(func(cfg *config.Config) {
+		cfg.BuildWorkspace = filepath.Join(env.TempDir(), "ws")
+		cfg.LocalDataDir = filepath.Join(env.TempDir(), "mock_local_data")
+		cfg.BuildBundle = bundleName
+		cfg.Patterns = []string{pattern}
+	})
 
 	// Create a fake source checkout and write the data files to it. Just use their names as their contents.
-	cfg.BuildWorkspace = filepath.Join(env.TempDir(), "ws")
 	srcFiles := map[string]string{
 		file1:        file1,
 		file2:        file2,
@@ -103,12 +108,10 @@ func TestPushDataFiles(t *gotesting.T) {
 	}
 
 	// Prepare a fake destination directory.
-	localDataDir := filepath.Join(env.TempDir(), "mock_local_data")
-	cfg.LocalDataDir = localDataDir
 	dstFiles := map[string]string{
 		extLinkFile2: extLinkFile2,
 	}
-	if err := testutil.WriteFiles(filepath.Join(localDataDir, testing.RelativeDataDir(categoryPkg)), dstFiles); err != nil {
+	if err := testutil.WriteFiles(filepath.Join(cfg.LocalDataDir, testing.RelativeDataDir(categoryPkg)), dstFiles); err != nil {
 		t.Fatal(err)
 	}
 
@@ -120,8 +123,6 @@ func TestPushDataFiles(t *gotesting.T) {
 	defer drv.Close(ctx)
 
 	// getDataFilePaths should list the tests and return the files needed by them.
-	cfg.BuildBundle = bundleName
-	cfg.Patterns = []string{pattern}
 	paths, err := getDataFilePaths(ctx, cfg, drv)
 	if err != nil {
 		t.Fatal("getDataFilePaths() failed: ", err)
@@ -140,7 +141,7 @@ func TestPushDataFiles(t *gotesting.T) {
 	}
 
 	// pushDataFiles should copy the required files to the DUT.
-	if err = pushDataFiles(ctx, cfg, drv.SSHConn(), localDataDir, paths); err != nil {
+	if err = pushDataFiles(ctx, cfg, drv.SSHConn(), cfg.LocalDataDir, paths); err != nil {
 		t.Fatal("pushDataFiles() failed: ", err)
 	}
 	expData := map[string]string{
@@ -152,12 +153,12 @@ func TestPushDataFiles(t *gotesting.T) {
 		filepath.Join(testing.RelativeDataDir(fixtPkg), file1):            file1,
 		filepath.Join(testing.RelativeDataDir(fixtPkg), file2):            file2,
 	}
-	if data, err := testutil.ReadFiles(localDataDir); err != nil {
+	if data, err := testutil.ReadFiles(cfg.LocalDataDir); err != nil {
 		t.Error(err)
 	} else if diff := cmp.Diff(data, expData); diff != "" {
 		t.Fatalf("pushDataFiles() copied files unmatch (-got +want):\n%v", diff)
 	}
-	if _, err := ioutil.ReadFile(filepath.Join(localDataDir, testing.RelativeDataDir(categoryPkg), extFile1)); err == nil {
+	if _, err := ioutil.ReadFile(filepath.Join(cfg.LocalDataDir, testing.RelativeDataDir(categoryPkg), extFile1)); err == nil {
 		t.Errorf("pushDataFiles() unexpectedly copied %s", extFile1)
 	}
 }

@@ -50,7 +50,7 @@ func callSSHDrop(t *testing.T, rebooted bool, syslog, ramoops string) (msg, outD
 		}),
 	)
 	ctx := env.Context()
-	cfg := env.Config()
+	cfg := env.Config(nil)
 
 	drv, err := driver.New(ctx, cfg, cfg.Target)
 	if err != nil {
@@ -74,7 +74,7 @@ func callSSHDrop(t *testing.T, rebooted bool, syslog, ramoops string) (msg, outD
 func TestSSHDropNotRecovered(t *testing.T) {
 	env := runtest.SetUp(t)
 	ctx := env.Context()
-	cfg := env.Config()
+	cfg := env.Config(nil)
 
 	drv, err := driver.New(ctx, cfg, cfg.Target)
 	if err != nil {

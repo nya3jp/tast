@@ -10,7 +10,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"chromiumos/tast/internal/sshconfig"
+	"chromiumos/tast/cmd/tast/internal/run/driver/internal/sshconfig"
 	"chromiumos/tast/testutil"
 )
 

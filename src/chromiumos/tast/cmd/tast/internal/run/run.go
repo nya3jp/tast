@@ -28,7 +28,6 @@ import (
 	frameworkprotocol "chromiumos/tast/framework/protocol"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/protocol"
-	"chromiumos/tast/internal/sshconfig"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/internal/xcontext"
 )
@@ -48,9 +47,6 @@ const (
 func Run(ctx context.Context, cfg *config.Config, state *config.State) ([]*resultsjson.Result, error) {
 	if err := setUpGRPCServices(ctx, cfg, state); err != nil {
 		return nil, errors.Wrap(err, "failed to set up gRPC servers")
-	}
-	if err := resolveHosts(ctx, cfg, state); err != nil {
-		return nil, errors.Wrap(err, "failed to resolve hosts")
 	}
 
 	if state.ReportsConn != nil {
@@ -273,29 +269,6 @@ func setUpGRPCServices(ctx context.Context, cfg *config.Config, state *config.St
 		return errors.Wrap(err, "failed to connect to Reports server")
 	}
 	return nil
-}
-
-// resolveHosts resolve all hosts in the current run.
-func resolveHosts(ctx context.Context, cfg *config.Config, state *config.State) error {
-	// Check if host name needs to be resolved.
-	cfg.Target = resolveHost(ctx, cfg.Target)
-	for role, dut := range cfg.CompanionDUTs {
-		cfg.CompanionDUTs[role] = resolveHost(ctx, dut)
-	}
-	return nil
-}
-
-func resolveHost(ctx context.Context, target string) string {
-	alternateTarget, err := sshconfig.ResolveHost(target)
-	if err != nil {
-		logging.Infof(ctx, "Error in reading SSH configuaration files: %v", err)
-		return target
-	}
-	if alternateTarget != target {
-		logging.Infof(ctx, "Using target %v instead of %v to connect according to SSH configuration files",
-			alternateTarget, target)
-	}
-	return alternateTarget
 }
 
 // connectToTLW connects to a TLW service if its address is provided, and stores

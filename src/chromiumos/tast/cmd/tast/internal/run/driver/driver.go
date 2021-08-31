@@ -13,8 +13,10 @@ import (
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/driver/internal/runnerclient"
+	"chromiumos/tast/cmd/tast/internal/run/driver/internal/sshconfig"
 	"chromiumos/tast/cmd/tast/internal/run/driver/internal/target"
 	"chromiumos/tast/cmd/tast/internal/run/genericexec"
+	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/ssh"
 )
@@ -42,8 +44,9 @@ type Driver struct {
 }
 
 // New establishes a new connection to the target device and returns a Driver.
-func New(ctx context.Context, cfg *config.Config, tgt string) (*Driver, error) {
-	cc := target.NewConnCache(cfg, tgt)
+func New(ctx context.Context, cfg *config.Config, rawTarget string) (*Driver, error) {
+	resolvedTarget := resolveSSHConfig(ctx, rawTarget)
+	cc := target.NewConnCache(cfg, resolvedTarget)
 	conn, err := cc.Conn(ctx)
 	if err != nil {
 		cc.Close(ctx)
@@ -121,4 +124,17 @@ func (d *Driver) remoteClient() *runnerclient.JSONClient {
 	cmd := genericexec.CommandExec(d.cfg.RemoteRunner)
 	params := &protocol.RunnerInitParams{BundleGlob: d.cfg.RemoteBundleGlob()}
 	return runnerclient.NewJSONClient(cmd, params, 0)
+}
+
+func resolveSSHConfig(ctx context.Context, target string) string {
+	alternateTarget, err := sshconfig.ResolveHost(target)
+	if err != nil {
+		logging.Infof(ctx, "Error in reading SSH configuaration files: %v", err)
+		return target
+	}
+	if alternateTarget != target {
+		logging.Infof(ctx, "Using target %v instead of %v to connect according to SSH configuration files",
+			alternateTarget, target)
+	}
+	return alternateTarget
 }

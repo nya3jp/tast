@@ -81,7 +81,7 @@ The following software features are defined:
 *   `ec_crash` - Boards that have EC firmware, implement the `crash` EC command,
     and produce a panicinfo file after a crash.
 *   `endorsement` - Whether the system have a valid endorsement certificate.
-*   `factory_flow`- Device is subject to the factory flow (e.g. most devices). TODO: Provide more documentation [b/197621714](https://b.corp.google.com/issues/197621714).
+*   `factory_flow`- Device is subject to the [go/chromeos-factory-flow](http://go/chromeos-factory-flow) (e.g. most devices).
 *   `firewall` - Standard Chrome OS network firewall rules.
 *   `flashrom` - Userspace utility to update firmware.
 *   `gboard_decoder` - Whether Gboard built-in decoder is installed.

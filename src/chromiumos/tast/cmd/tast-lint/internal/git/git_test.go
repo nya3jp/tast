@@ -12,7 +12,7 @@ import (
 	"reflect"
 	"testing"
 
-	"chromiumos/tast/cmd/tast-lint/git"
+	"chromiumos/tast/cmd/tast-lint/internal/git"
 	"chromiumos/tast/testutil"
 )
 

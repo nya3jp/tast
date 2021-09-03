@@ -472,8 +472,13 @@ func newDeviceConfigAndHardwareFeatures() (dc *protocol.DeprecatedDeviceConfig, 
 	if err != nil {
 		warns = append(warns, fmt.Sprintf("failed to get speaker: %v", err))
 	}
+
 	if speaker.GetValue() > 0 || expectAudio {
-		features.Audio.SpeakerAmplifier = &configpb.Component_Amplifier{}
+		amp, err := findSpeakerAmplifier()
+		if err != nil {
+			warns = append(warns, fmt.Sprintf("failed to get amp: %v", err))
+		}
+		features.Audio.SpeakerAmplifier = amp
 	}
 
 	hasPrivacyScreen := func() bool {
@@ -922,4 +927,44 @@ func matchCrasDeviceType(pattern string) (*configpb.HardwareFeatures_Count, erro
 		return &configpb.HardwareFeatures_Count{Value: 1}, nil
 	}
 	return &configpb.HardwareFeatures_Count{Value: 0}, nil
+}
+
+// findSpeakerAmplifier parses a content of in "/sys/kernel/debug/asoc/components"
+// and returns the speaker amplifier used.
+func findSpeakerAmplifier() (*configpb.Component_Amplifier, error) {
+
+	// This sys path exists only on kernel >=4.14. But we don't
+	// target amp tests on earlier kernels.
+	f, err := os.Open("/sys/kernel/debug/asoc/components")
+	if err != nil {
+		return &configpb.Component_Amplifier{}, err
+	}
+	defer f.Close()
+	scanner := bufio.NewScanner(f)
+	for scanner.Scan() {
+		amp, found := matchSpeakerAmplifier(scanner.Text())
+		if found {
+			return amp, nil
+		}
+	}
+	return &configpb.Component_Amplifier{}, nil
+}
+
+var ampsRegexp = map[string]*regexp.Regexp{
+	configpb.HardwareFeatures_Audio_MAX98357.String(): regexp.MustCompile(`^(i2c-)?ma?x98357a?((:\d*)|([_-]?\d*))?$`),
+	configpb.HardwareFeatures_Audio_MAX98373.String(): regexp.MustCompile(`^(i2c-)?ma?x98373((:\d*)|([_-]?\d*))?$`),
+	configpb.HardwareFeatures_Audio_MAX98360.String(): regexp.MustCompile(`^(i2c-)?ma?x98360a?((:\d*)|([_-]?\d*))?$`),
+	configpb.HardwareFeatures_Audio_RT1015.String():   regexp.MustCompile(`^(i2c-)?((rtl?)|(10ec))?1015(\.\d*)?((:\d*)|([_-]?\d*))?$`),
+	configpb.HardwareFeatures_Audio_RT1015P.String():  regexp.MustCompile(`^(i2c-)?(rtl?)?(10ec)?1015p(\.\d*)?((:\d*)|([_-]?\d*))?$`),
+	configpb.HardwareFeatures_Audio_ALC1011.String():  regexp.MustCompile(`^(i2c-)?((rtl?)|(10ec))?1011(\.\d*)?((:\d*)|([_-]?\d*))?$`),
+	configpb.HardwareFeatures_Audio_MAX98390.String(): regexp.MustCompile(`^(i2c-)?ma?x98390((:\d*)|([_-]?\d*))?$`),
+}
+
+func matchSpeakerAmplifier(line string) (*configpb.Component_Amplifier, bool) {
+	for amp, re := range ampsRegexp {
+		if re.MatchString(strings.ToLower(line)) {
+			return &configpb.Component_Amplifier{Name: amp}, true
+		}
+	}
+	return nil, false
 }

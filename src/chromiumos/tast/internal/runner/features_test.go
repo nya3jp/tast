@@ -11,6 +11,8 @@ import (
 	"reflect"
 	"testing"
 
+	configpb "go.chromium.org/chromiumos/config/go/api"
+
 	"chromiumos/tast/autocaps"
 	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/protocol"
@@ -317,6 +319,76 @@ func TestFindMemorySize(t *testing.T) {
 		}
 		if r != tc.expectedSize {
 			t.Errorf("Got %d, want %d; input=%s", r, tc.expectedSize, string(tc.input))
+		}
+	}
+}
+
+func TestFindSpeakerAmplifier(t *testing.T) {
+	testCases := []struct {
+		input  string
+		expect string
+	}{
+		{
+			"MX98357A:00",
+			configpb.HardwareFeatures_Audio_MAX98357.String(),
+		},
+		{
+			"max98357a",
+			configpb.HardwareFeatures_Audio_MAX98357.String(),
+		},
+		{
+			"max98357a_1",
+			configpb.HardwareFeatures_Audio_MAX98357.String(),
+		},
+		{
+			"i2c-mx98357a:00",
+			configpb.HardwareFeatures_Audio_MAX98357.String(),
+		},
+		{
+			"i2c-MX98373:00",
+			configpb.HardwareFeatures_Audio_MAX98373.String(),
+		},
+		{
+			"MX98360A",
+			configpb.HardwareFeatures_Audio_MAX98360.String(),
+		},
+		{
+			"RTL1015",
+			configpb.HardwareFeatures_Audio_RT1015.String(),
+		},
+		{
+			"i2c-10EC1015:00",
+			configpb.HardwareFeatures_Audio_RT1015.String(),
+		},
+		{
+			"rt1015.6-0028",
+			configpb.HardwareFeatures_Audio_RT1015.String(),
+		},
+		{
+			"rt1015p",
+			configpb.HardwareFeatures_Audio_RT1015P.String(),
+		},
+		{
+			"rt1015p_1",
+			configpb.HardwareFeatures_Audio_RT1015P.String(),
+		},
+		{
+			"i2c-10EC1011:02",
+			configpb.HardwareFeatures_Audio_ALC1011.String(),
+		},
+		{
+			"i2c-MX98390:00",
+			configpb.HardwareFeatures_Audio_MAX98390.String(),
+		},
+	}
+	for _, tc := range testCases {
+		amp, match := matchSpeakerAmplifier(tc.input)
+		if !match {
+			t.Errorf("Failed to match amplifer; input=%s", string(tc.input))
+			continue
+		}
+		if amp.GetName() != tc.expect {
+			t.Errorf("Got %s, expect %s: input=%s", amp.GetName(), tc.expect, tc.input)
 		}
 	}
 }

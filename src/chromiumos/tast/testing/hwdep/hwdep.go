@@ -833,3 +833,27 @@ func PrivacyScreen() Condition {
 	}, CEL: "dut.hardware_features.privacy_screen.present == api.HardwareFeatures.Present.PRESENT",
 	}
 }
+
+var smartAmps = []string{
+	configpb.HardwareFeatures_Audio_MAX98373.String(),
+	configpb.HardwareFeatures_Audio_MAX98390.String(),
+}
+
+// SmartAmp returns a hardware dependency condition that is satisfied iff the DUT
+// has smart amplifier.
+func SmartAmp() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("Did not find hardware features")
+		}
+		if hf.GetAudio().GetSpeakerAmplifier() != nil {
+			for _, amp := range smartAmps {
+				if amp == hf.GetAudio().GetSpeakerAmplifier().GetName() {
+					return satisfied()
+				}
+			}
+		}
+		return unsatisfied("DUT does not has smart amp :" + hf.GetAudio().GetSpeakerAmplifier().GetName())
+	}}
+}

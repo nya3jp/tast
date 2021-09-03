@@ -24,12 +24,12 @@ import (
 
 	"chromiumos/tast/cmd/tast-lint/internal/check"
 	"chromiumos/tast/cmd/tast-lint/internal/git"
+	"chromiumos/tast/errors"
 	"chromiumos/tast/shutil"
 )
 
 // getTargetFiles returns the list of files to run lint according to flags.
-func getTargetFiles(g *git.Git, deltaPath string) ([]git.CommitFile, error) {
-	args := flag.Args()
+func getTargetFiles(g *git.Git, deltaPath string, args []string) ([]git.CommitFile, error) {
 	if len(args) == 0 {
 		// If -commit is set, check changed files.
 		if g.Commit != "" {
@@ -37,6 +37,7 @@ func getTargetFiles(g *git.Git, deltaPath string) ([]git.CommitFile, error) {
 		}
 
 		// Otherwise, treat as if all files in the checkout were specified.
+		args = nil // avoid clobbering args
 		if err := filepath.Walk(".", func(path string, info os.FileInfo, err error) error {
 			if err != nil {
 				return err
@@ -401,33 +402,43 @@ func navigateGitRoot() (string, error) {
 	return deltaPath, os.Chdir(gitRoot)
 }
 
+var errNoTarget = errors.New("no target to check")
+
+func run(commit string, debug, fix bool, args []string) ([]*check.Issue, error) {
+	// Changing current directory to the Git root directory to aid the operations of git.go
+	deltaPath, err := navigateGitRoot()
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to navigate to the git root directory")
+	}
+
+	g := git.New(".", commit)
+
+	files, err := getTargetFiles(g, deltaPath, args)
+	if err != nil {
+		return nil, err
+	}
+	if len(files) == 0 {
+		return nil, errNoTarget
+	}
+
+	return checkAll(g, files, debug, fix)
+}
+
 func main() {
 	commit := flag.String("commit", "", "if set, checks files in the specified Git commit")
 	debug := flag.Bool("debug", false, "enables debug outputs")
 	fix := flag.Bool("fix", false, "modifies auto-fixable errors automatically")
 	flag.Parse()
 
-	// Changing current directory to the Git root directory to aid the operations of git.go
-	deltaPath, err := navigateGitRoot()
-	if err != nil {
-		panic(fmt.Sprintf("Failed to navigate to the git root directory: %s", err))
-	}
-
-	g := git.New(".", *commit)
-
-	files, err := getTargetFiles(g, deltaPath)
-	if err != nil {
-		panic(err)
-	}
-	if len(files) == 0 {
+	issues, err := run(*commit, *debug, *fix, flag.Args())
+	if err == errNoTarget {
 		flag.Usage()
 		return
 	}
-
-	issues, err := checkAll(g, files, *debug, *fix)
 	if err != nil {
 		panic(err)
 	}
+
 	if len(issues) > 0 && !*fix {
 		// categorize issues
 		fixable, unfixable := categorizeIssues(issues)

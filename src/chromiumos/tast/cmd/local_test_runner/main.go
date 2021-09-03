@@ -97,9 +97,9 @@ func main() {
 			"cros_internal":     "internal",
 			"crosvm_gpu":        `"crosvm-gpu" && "virtio_gpu"`,
 			"crosvm_no_gpu":     `!"crosvm-gpu" || !"virtio_gpu"`,
-			"crossystem":        `!"betty" && !"board:reven" && !"tast_vm"`, // VMs don't support few crossystem sub-commands: https://crbug.com/974615
+			"crossystem":        `!"betty" && !"tast_vm"`, // VMs don't support few crossystem sub-commands: https://crbug.com/974615
 			"cups":              "cups",
-			"diagnostics":       `"diagnostics" && !"betty" && !"board:reven" && !"tast_vm"`, // VMs do not have hardware to diagnose. https://crbug.com/1126619
+			"diagnostics":       `"diagnostics" && !"betty" && !"tast_vm"`, // VMs do not have hardware to diagnose. https://crbug.com/1126619
 			"dlc":               "dlc && dlc_test",
 			"dptf":              "dptf",
 			"device_crash":      `!("board:samus")`, // Samus devices do not reliably come back after kernel crashes. crbug.com/1045821
@@ -113,14 +113,14 @@ func main() {
 			// nocturne only sporadically captures EC panics. crbug.com/1135798
 			// TODO(https://crbug.com/1122066): remove guado-cfm and rikku-cfm when they're no longer necessary
 			"ec_crash":                `!(("board:asuka" || "board:banon" || "board:caroline" || "board:caroline-kernelnext" || "board:cave" || "board:celes" || "board:chell" || "board:cyan" || "board:edgar" || "board:kefka" || "board:reks" || "board:relm" || "board:sentry" || "board:terra" || "board:ultima" || "board:wizpig") || ("board:drallion" || "board:sarien") || ("board:guado" || "board:guado-cfm" || "board:tidus" || "board:rikku" || "board:rikku-cfm" || "board:veyron_fievel" || "board:veyron_tiger") || "board:nocturne")`,
-			"endorsement":             `!"betty" && !"board:reven" && !"tast_vm"`, // VMs don't have valid endorsement certificate.
+			"endorsement":             `!"betty" && !"tast_vm"`, // VMs don't have valid endorsement certificate.
 			"factory_flow":            "!no_factory_flow",
 			"firewall":                "!moblab", // Moblab has relaxed iptables rules
-			"flashrom":                `!"betty" && !"board:reven" && !"tast_vm"`,
-			"fwupd":                   "fwupd",                                    // have sys-apps/fwupd installed.
-			"gboard_decoder":          "gboard_decoder",                           // have IME mojo service installed.
-			"google_virtual_keyboard": "chrome_internal && internal && !moblab",   // doesn't work on Moblab: https://crbug.com/949912
-			"gpu_sandboxing":          `!"betty" && !"board:reven" && !"tast_vm"`, // no GPU sandboxing on VMs: https://crbug.com/914688
+			"flashrom":                `!"betty" && !"tast_vm"`,
+			"fwupd":                   "fwupd",                                  // have sys-apps/fwupd installed.
+			"gboard_decoder":          "gboard_decoder",                         // have IME mojo service installed.
+			"google_virtual_keyboard": "chrome_internal && internal && !moblab", // doesn't work on Moblab: https://crbug.com/949912
+			"gpu_sandboxing":          `!"betty" && !"tast_vm"`,                 // no GPU sandboxing on VMs: https://crbug.com/914688
 			"graphics_debugfs":        `!"kernel-3_18"`,
 			"gsc":                     "cr50_onboard",
 			"hammerd":                 "hammerd",
@@ -131,26 +131,26 @@ func main() {
 			"igt":                     `("video_cards_amdgpu" || "video_cards_intel" || "video_cards_msm") && ("kernel-5_4" || "kernel-5_10")`,
 			"iioservice":              "iioservice",
 			"iwlwifi_rescan":          "iwlwifi_rescan",
-			"lacros":                  "!arm && !arm64",                                                 // TODO(crbug.com/1144013): Expand this (and below lacros_*) to include arm as well.
-			"lacros_stable":           `!"arm" && !"arm64" && !"tast_vm" && !"betty" && !"board:reven"`, // TODO(b/183969803): Remove this.
-			"lacros_unstable":         `!"arm" && !"arm64" && ("tast_vm" || "betty" || "board:reven")`,  // TODO(b/183969803): Remove this.
+			"lacros":                  "!arm && !arm64",                               // TODO(crbug.com/1144013): Expand this (and below lacros_*) to include arm as well.
+			"lacros_stable":           `!"arm" && !"arm64" && !"tast_vm" && !"betty"`, // TODO(b/183969803): Remove this.
+			"lacros_unstable":         `!"arm" && !"arm64" && ("tast_vm" || "betty")`, // TODO(b/183969803): Remove this.
 			"lock_core_pattern":       `"kernel-3_18"`,
 			"manatee":                 "manatee",
 			"mbo":                     "mbo",
 			// QEMU has implemented memfd_create, but we haven't updated
 			// to a release with the change (https://bugs.launchpad.net/qemu/+bug/1734792).
 			// Remove "|| betty || tast_vm" from list when we upgrade.
-			"memfd_create": `!("betty" || "board:reven" || "tast_vm")`,
+			"memfd_create": `!("betty" || "tast_vm")`,
 			"memd":         "memd",
 			// Only official builds are considered to have metrics consent.
 			// See: ChromeCrashReporterClient::GetCollectStatsConsent()
 			// Also metrics consent needs TPM (crbug.com/1035197).
 			"metrics_consent":           "chrome_internal && !mocktpm && !tast_vm",
-			"microcode":                 `!"betty" && !"board:reven" && !"tast_vm"`,
+			"microcode":                 `!"betty" && !"tast_vm"`,
 			"ml_benchmark_drivers":      "ml_benchmark_drivers",
 			"ml_service":                "ml_service",
 			"modemfwd":                  "modemfwd",
-			"mosys":                     `!"betty" && !"board:reven" && !"tast_vm"`,
+			"mosys":                     `!"betty" && !"tast_vm"`,
 			"nacl":                      "nacl",
 			"ndk_translation":           "ndk_translation",
 			"ndk_translation64":         "ndk_translation64",
@@ -168,7 +168,7 @@ func main() {
 			"no_kernel_upstream":        `!"kernel-upstream"`,
 			"no_msan":                   "!msan",
 			"no_ondevice_handwriting":   "!ml_service || !ondevice_handwriting",
-			"no_qemu":                   `!"betty" && !"board:reven" && !"tast_vm"`,
+			"no_qemu":                   `!"betty" && !"tast_vm"`,
 			"no_symlink_mount":          "!lxc", // boards using LXC set CONFIG_SECURITY_CHROMIUMOS_NO_SYMLINK_MOUNT=n
 			"no_tablet_form_factor":     "!tablet_form_factor",
 			"no_ubsan":                  "!ubsan",
@@ -182,8 +182,8 @@ func main() {
 			"plugin_vm":                 "pita", // boards that can run Plugin VM.
 			"proprietary_codecs":        "chrome_internal || chrome_media",
 			"protected_content":         "cdm_factory_daemon",
-			"pstore":                    `!"betty" && !"board:reven" && !"tast_vm"`, // These boards don't support pstore: https://crbug.com/971899
-			"qemu":                      `"betty" || "board:reven" || "tast_vm"`,
+			"pstore":                    `!"betty" && !"tast_vm"`, // These boards don't support pstore: https://crbug.com/971899
+			"qemu":                      `"betty" || "tast_vm"`,
 			"racc":                      "racc",
 			// weird missing-runner-after-reboot bug: https://crbug.com/909955
 			// TODO(yich): This is a workaround to enable reboot flag on all boards.
@@ -200,7 +200,7 @@ func main() {
 			"sirenia":                "sirenia && !manatee",
 			"smartdim":               "smartdim",
 			"smartctl":               "nvme || sata",
-			"storage_wearout_detect": `"storage_wearout_detect" && !"betty" && !"board:reven" && !"tast_vm"`, // Skip wearout checks for VMs and eMMC < 5.0
+			"storage_wearout_detect": `"storage_wearout_detect" && !"betty" && !"tast_vm"`, // Skip wearout checks for VMs and eMMC < 5.0
 			"tablet_form_factor":     "tablet_form_factor",
 			"tpm":                    "!mocktpm",
 			"tpm1":                   "!mocktpm && !tpm2", // Indicate tpm1.2 is available
@@ -234,7 +234,7 @@ func main() {
 			"watchdog": `watchdog`,
 			// nyan_kitty is skipped as its WiFi device is unresolvably flaky (crrev.com/c/944502),
 			// exhibiting very similar symptoms to crbug.com/693724, b/65858242, b/36264732.
-			"wifi":        `!"betty" && !"board:reven" && !"tast_vm" && !"nyan_kitty"`,
+			"wifi":        `!"betty" && !"tast_vm" && !"nyan_kitty"`,
 			"wilco":       "wilco",
 			"wired_8021x": "wired_8021x",
 			// WireGuard is only supported on 5.10+ kernels.

@@ -502,6 +502,25 @@ Parallels boot-up testing. Otherwise the same as group:crosbolt.`,
 			},
 		},
 	},
+	{
+		Name:     "borealis",
+		Contacts: []string{"chromeos-gaming@google.com"},
+		Desc:     `Borealis related tests.`,
+		Subattrs: []*attr{
+			{
+				Name: "borealis_perbuild",
+				Desc: `Indicate this test should be scheduled per build.`,
+			},
+			{
+				Name: "borealis_nightly",
+				Desc: `Indicate this test should be scheduled per day.`,
+			},
+			{
+				Name: "borealis_weekly",
+				Desc: `Indicate this test should be scheduled per week.`,
+			},
+		},
+	},
 }
 
 // validGroupMap is the name-keyed map of validGroups.

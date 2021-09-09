@@ -573,6 +573,10 @@ func findARMSOC() (protocol.DeprecatedDeviceConfig_SOC, error) {
 			// Trim trailing \x00 and \n
 			socID := strings.TrimRight(string(c), "\x00\n")
 			switch socID {
+			case "jep106:0070:7180":
+				return protocol.DeprecatedDeviceConfig_SOC_SC7180, nil
+			case "jep106:0070:7280":
+				return protocol.DeprecatedDeviceConfig_SOC_SC7280, nil
 			case "jep106:0426:8192":
 				return protocol.DeprecatedDeviceConfig_SOC_MT8192, nil
 			case "jep106:0426:8195":

@@ -47,6 +47,8 @@ usage() {
 Quickly builds the tast executable or its unit tests.
 
 Usage: ${CMD}                             Builds tast to ${TAST_OUT}.
+       ${CMD} -d                          Builds tast with debugging symbols to
+                                          ${TAST_OUT}.
        ${CMD} -b <pkg> -o <path>          Builds <pkg> to <path>.
        ${CMD} [-v] -T                     Tests all packages.
        ${CMD} [-v] [-r <regex>] -t <pkg>  Tests <pkg>.
@@ -83,7 +85,11 @@ get_test_pkgs() {
 run_build() {
   local pkg="${1}"
   local dest="${2}"
-  go build -i -pkgdir "${PKGDIR}" -o "${dest}" "${pkg}"
+  if [[ "${debug}" == 0 ]]; then
+    go build -i -pkgdir "${PKGDIR}" -o "${dest}" "${pkg}"
+  else
+    go build -gcflags="all=-N -l" -i -pkgdir "${PKGDIR}" -o "${dest}" "${pkg}"
+  fi
 }
 
 # Checks one or more packages.
@@ -118,13 +124,19 @@ verbose_flag=
 # Test regex list for unit testing.
 test_regex=
 
-while getopts "CTb:c:ho:r:t:v-" opt; do
+# Whether to build and run a debug package.
+debug=0
+
+while getopts "CTdb:c:ho:r:t:v-" opt; do
   case "${opt}" in
     C)
       check_pkg=all
       ;;
     T)
       test_pkg=all
+      ;;
+    d)
+      debug=1
       ;;
     b)
       build_pkg="${OPTARG}"

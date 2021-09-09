@@ -547,9 +547,9 @@ func findSOC(parsed lscpuResult) (protocol.DeprecatedDeviceConfig_SOC, error) {
 
 	switch vendorID {
 	case "ARM":
-		return findARMSOC()
+		fallthrough
 	case "Qualcomm":
-		return findQualcommSOC(&parsed)
+		return findARMSOC()
 	case "GenuineIntel":
 		return findIntelSOC(&parsed)
 	case "AuthenticAMD":
@@ -610,21 +610,6 @@ func findARMSOC() (protocol.DeprecatedDeviceConfig_SOC, error) {
 		return protocol.DeprecatedDeviceConfig_SOC_RK3399, nil
 	default:
 		return protocol.DeprecatedDeviceConfig_SOC_UNSPECIFIED, errors.Errorf("unknown ARM model: %s", model)
-	}
-}
-
-// findQualcommSOC returns a Qualcomm SOC configuration based on "Model" field.
-func findQualcommSOC(parsed *lscpuResult) (protocol.DeprecatedDeviceConfig_SOC, error) {
-	model, ok := parsed.find("Model:")
-	if !ok {
-		return protocol.DeprecatedDeviceConfig_SOC_UNSPECIFIED, errors.New("failed to find Qualcomm model")
-	}
-
-	switch model {
-	case "14":
-		return protocol.DeprecatedDeviceConfig_SOC_SC7180, nil
-	default:
-		return protocol.DeprecatedDeviceConfig_SOC_UNSPECIFIED, errors.Errorf("unknown Qualcomm model: %s", model)
 	}
 }
 

@@ -407,11 +407,19 @@ func newDeviceConfigAndHardwareFeatures() (dc *protocol.DeprecatedDeviceConfig, 
 		warns = append(warns, fmt.Sprintf("failed to get base microphone: %v", err))
 	}
 	features.Audio.BaseMicrophone = baseMicrophone
+	formFactor, err := crosConfig("/hardware-properties", "form-factor")
+	if err != nil {
+		warns = append(warns, fmt.Sprintf("failed to get form factor: %v", err))
+	}
+	expectAudio := formFactor == "CHROMEBOOK" || formFactor == "CHROMEBASE" || formFactor == "REFERENCE"
+	if features.Audio.LidMicrophone.Value == 0 && features.Audio.BaseMicrophone.Value == 0 && expectAudio {
+		features.Audio.LidMicrophone.Value = 1
+	}
 	speaker, err := matchCrasDeviceType(`INTERNAL_SPEAKER`)
 	if err != nil {
 		warns = append(warns, fmt.Sprintf("failed to get speaker: %v", err))
 	}
-	if speaker.GetValue() > 0 {
+	if speaker.GetValue() > 0 || expectAudio {
 		features.Audio.SpeakerAmplifier = &configpb.Component_Amplifier{}
 	}
 

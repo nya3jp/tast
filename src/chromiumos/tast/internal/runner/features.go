@@ -237,6 +237,63 @@ func newDeviceConfigAndHardwareFeatures() (dc *protocol.DeprecatedDeviceConfig, 
 		Audio:              &configpb.HardwareFeatures_Audio{},
 		PrivacyScreen:      &configpb.HardwareFeatures_PrivacyScreen{},
 		Soc:                &configpb.HardwareFeatures_Soc{},
+		Keyboard:           &configpb.HardwareFeatures_Keyboard{},
+		FormFactor:         &configpb.HardwareFeatures_FormFactor{},
+	}
+
+	formFactor, err := func() (string, error) {
+		out, err := crosConfig("/hardware-properties", "form-factor")
+		if err != nil {
+			return "", err
+		}
+		return out, nil
+	}()
+	if err != nil {
+		warns = append(warns, fmt.Sprintf("unknown /hardware-properties/form-factor: %v", err))
+	}
+	lidConvertible, err := func() (string, error) {
+		out, err := crosConfig("/hardware-properties", "is-lid-convertible")
+		if err != nil {
+			return "", err
+		}
+		return out, nil
+	}()
+	if err != nil {
+		warns = append(warns, fmt.Sprintf("unknown /hardware-properties/is-lid-convertible: %v", err))
+	}
+	detachableBasePath, err := func() (string, error) {
+		out, err := crosConfig("/detachable-base", "usb-path")
+		if err != nil {
+			return "", err
+		}
+		return out, nil
+	}()
+	if err != nil {
+		warns = append(warns, fmt.Sprintf("unknown /detachable-base/usbpath: %v", err))
+	}
+	if formFactorEnum, ok := configpb.HardwareFeatures_FormFactor_FormFactorType_value[formFactor]; ok {
+		features.FormFactor.FormFactor = configpb.HardwareFeatures_FormFactor_FormFactorType(formFactorEnum)
+	} else if formFactor == "CHROMEBOOK" {
+		// Gru devices have formFactor=="CHROMEBOOK", detachableBasePath=="", lidConvertible="", but are really CHROMESLATE
+		if platform == "Gru" {
+			features.FormFactor.FormFactor = configpb.HardwareFeatures_FormFactor_CHROMESLATE
+		} else if detachableBasePath != "" {
+			features.FormFactor.FormFactor = configpb.HardwareFeatures_FormFactor_DETACHABLE
+		} else if lidConvertible == "true" {
+			features.FormFactor.FormFactor = configpb.HardwareFeatures_FormFactor_CONVERTIBLE
+		} else {
+			features.FormFactor.FormFactor = configpb.HardwareFeatures_FormFactor_CLAMSHELL
+		}
+	} else {
+		warns = append(warns, fmt.Sprintf("form factor not found: %v", formFactor))
+	}
+	switch features.FormFactor.FormFactor {
+	case configpb.HardwareFeatures_FormFactor_CHROMEBASE, configpb.HardwareFeatures_FormFactor_CHROMEBIT, configpb.HardwareFeatures_FormFactor_CHROMEBOX, configpb.HardwareFeatures_FormFactor_CHROMESLATE:
+		features.Keyboard.KeyboardType = configpb.HardwareFeatures_Keyboard_NONE
+	case configpb.HardwareFeatures_FormFactor_CLAMSHELL, configpb.HardwareFeatures_FormFactor_CONVERTIBLE:
+		features.Keyboard.KeyboardType = configpb.HardwareFeatures_Keyboard_INTERNAL
+	case configpb.HardwareFeatures_FormFactor_DETACHABLE:
+		features.Keyboard.KeyboardType = configpb.HardwareFeatures_Keyboard_DETACHABLE
 	}
 
 	hasInternalDisplay := func() bool {
@@ -407,10 +464,6 @@ func newDeviceConfigAndHardwareFeatures() (dc *protocol.DeprecatedDeviceConfig, 
 		warns = append(warns, fmt.Sprintf("failed to get base microphone: %v", err))
 	}
 	features.Audio.BaseMicrophone = baseMicrophone
-	formFactor, err := crosConfig("/hardware-properties", "form-factor")
-	if err != nil {
-		warns = append(warns, fmt.Sprintf("failed to get form factor: %v", err))
-	}
 	expectAudio := formFactor == "CHROMEBOOK" || formFactor == "CHROMEBASE" || formFactor == "REFERENCE"
 	if features.Audio.LidMicrophone.Value == 0 && features.Audio.BaseMicrophone.Value == 0 && expectAudio {
 		features.Audio.LidMicrophone.Value = 1

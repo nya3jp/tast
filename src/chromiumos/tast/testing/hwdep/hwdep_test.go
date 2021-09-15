@@ -555,3 +555,38 @@ func TestKeyboard(t *testing.T) {
 		&protocol.DeprecatedDeviceConfig{},
 		nil)
 }
+
+func TestSmartAmpBootTimeCalibration(t *testing.T) {
+	c := hwdep.SmartAmpBootTimeCalibration()
+
+	for _, tc := range []struct {
+		features        *configpb.HardwareFeatures
+		expectSatisfied bool
+	}{
+		{&configpb.HardwareFeatures{}, false},
+		{&configpb.HardwareFeatures{
+			Audio: &configpb.HardwareFeatures_Audio{
+				SpeakerAmplifier: &configpb.Component_Amplifier{
+					Features: []configpb.Component_Amplifier_Feature{configpb.Component_Amplifier_FEATURE_UNKNOWN},
+				},
+			},
+		}, false},
+		{&configpb.HardwareFeatures{
+			Audio: &configpb.HardwareFeatures_Audio{
+				SpeakerAmplifier: &configpb.Component_Amplifier{
+					Features: []configpb.Component_Amplifier_Feature{configpb.Component_Amplifier_BOOT_TIME_CALIBRATION},
+				},
+			},
+		}, true},
+	} {
+		verifyCondition(
+			t, c,
+			&protocol.DeprecatedDeviceConfig{},
+			tc.features,
+			tc.expectSatisfied)
+	}
+	expectError(
+		t, c,
+		&protocol.DeprecatedDeviceConfig{},
+		nil)
+}

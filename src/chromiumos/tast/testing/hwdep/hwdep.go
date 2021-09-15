@@ -857,3 +857,22 @@ func SmartAmp() Condition {
 		return unsatisfied("DUT does not has smart amp :" + hf.GetAudio().GetSpeakerAmplifier().GetName())
 	}}
 }
+
+// SmartAmpBootTimeCalibration returns a hardware dependency condition that is satisfied iff
+// the DUT enables boot time calibration for smart amplifier.
+func SmartAmpBootTimeCalibration() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("Did not find hardware features")
+		}
+		if hf.GetAudio().GetSpeakerAmplifier() != nil {
+			for _, feature := range hf.GetAudio().GetSpeakerAmplifier().GetFeatures() {
+				if feature == configpb.Component_Amplifier_BOOT_TIME_CALIBRATION {
+					return satisfied()
+				}
+			}
+		}
+		return unsatisfied("DUT does not enable smart amp boot time calibration")
+	}}
+}

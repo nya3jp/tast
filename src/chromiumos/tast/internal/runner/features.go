@@ -474,7 +474,8 @@ func newDeviceConfigAndHardwareFeatures() (dc *protocol.DeprecatedDeviceConfig, 
 	}
 
 	if speaker.GetValue() > 0 || expectAudio {
-		amp, err := findSpeakerAmplifier()
+		model := strings.TrimSuffix(strings.ToLower(config.Id.Model), "_signed")
+		amp, err := findSpeakerAmplifier(model)
 		if err != nil {
 			warns = append(warns, fmt.Sprintf("failed to get amp: %v", err))
 		}
@@ -931,7 +932,7 @@ func matchCrasDeviceType(pattern string) (*configpb.HardwareFeatures_Count, erro
 
 // findSpeakerAmplifier parses a content of in "/sys/kernel/debug/asoc/components"
 // and returns the speaker amplifier used.
-func findSpeakerAmplifier() (*configpb.Component_Amplifier, error) {
+func findSpeakerAmplifier(model string) (*configpb.Component_Amplifier, error) {
 
 	// This sys path exists only on kernel >=4.14. But we don't
 	// target amp tests on earlier kernels.
@@ -944,7 +945,11 @@ func findSpeakerAmplifier() (*configpb.Component_Amplifier, error) {
 	for scanner.Scan() {
 		amp, found := matchSpeakerAmplifier(scanner.Text())
 		if found {
-			return amp, nil
+			enabled, err := bootTimeCalibration(model)
+			if enabled {
+				amp.Features = append(amp.Features, configpb.Component_Amplifier_BOOT_TIME_CALIBRATION)
+			}
+			return amp, err
 		}
 	}
 	return &configpb.Component_Amplifier{}, nil
@@ -967,4 +972,27 @@ func matchSpeakerAmplifier(line string) (*configpb.Component_Amplifier, bool) {
 		}
 	}
 	return nil, false
+}
+
+// bootTimeCalibration returns whether the boot time calibration is
+// enabled by parsing the sound_card_init config.
+func bootTimeCalibration(model string) (bool, error) {
+
+	path := "/etc/sound_card_init/" + model + ".yaml"
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		// Regard config non-existence as boot_time_calibration disabled.
+		return false, nil
+	}
+	b, err := ioutil.ReadFile(path)
+	if err != nil {
+		return false, errors.New("failed to read sound_card_init config")
+	}
+	re := regexp.MustCompile("boot_time_calibration_enabled: (true|false)")
+	match := re.Find([]byte(b))
+	if match == nil {
+		return false, errors.New("invalid sound_card_init config")
+	}
+	const N = len("boot_time_calibration_enabled: ")
+	enabled := string(match[N:])
+	return enabled == "true", nil
 }

@@ -38,6 +38,6 @@ export CGO_ENABLED=0
 export GOPIE=0
 
 # Disable Go modules. Go 1.16+ enables Go modules by default.
-export GO111MODULE=auto
+export GO111MODULE=off
 
 exec go "$@"

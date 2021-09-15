@@ -32,6 +32,7 @@ readonly TAST_RTD_OUT="${GOHOME}/bin/tast_rtd"
 # installed to /usr/lib/gopath (dev-go/crypto, dev-go/subcommand, etc.) need to
 # be emerged beforehand.
 export GOPATH="$(IFS=:; echo "${SRCDIRS[*]}"):/usr/lib/gopath"
+export GO111MODULE=off # enforce GOPATH mode
 
 # Disable cgo and PIE on building Tast binaries. See:
 # https://crbug.com/976196

@@ -99,6 +99,8 @@ func buildOne(ctx context.Context, tgt *Target) error {
 		// https://crbug.com/976196
 		// https://github.com/golang/go/issues/30986#issuecomment-475626018
 		"CGO_ENABLED=0",
+		// Tast in Chrome OS is built in GOPATH mode.
+		"GO111MODULE=off",
 		"GOPIE=0")
 	cmd.Env = append(cmd.Env, archEnvs...)
 

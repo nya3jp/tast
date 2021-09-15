@@ -201,7 +201,7 @@ func (st *FixtureStack) Push(ctx context.Context, fixt *testing.FixtureInstance)
 		DataDir:      filepath.Join(st.cfg.DataDir, testing.RelativeDataDir(fixt.Pkg)),
 		OutDir:       outDir,
 		Vars:         st.cfg.Features.GetInfra().GetVars(),
-		CloudStorage: testing.NewCloudStorage(st.cfg.Devservers, st.cfg.TLWServer, st.cfg.DUTName),
+		CloudStorage: testing.NewCloudStorage(st.cfg.Devservers, st.cfg.TLWServer, st.cfg.DUTName, st.cfg.BuildArtifactsURL),
 		RemoteData:   st.cfg.RemoteData,
 		FixtValue:    st.Val(),
 		FixtCtx:      ctx,

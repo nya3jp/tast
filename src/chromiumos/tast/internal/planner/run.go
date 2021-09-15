@@ -609,7 +609,7 @@ func runTest(ctx context.Context, t *testing.TestInstance, tout *entityOutputStr
 		DataDir:      filepath.Join(pcfg.DataDir, testing.RelativeDataDir(t.Pkg)),
 		OutDir:       outDir,
 		Vars:         pcfg.Features.GetInfra().GetVars(),
-		CloudStorage: testing.NewCloudStorage(pcfg.Devservers, pcfg.TLWServer, pcfg.DUTName),
+		CloudStorage: testing.NewCloudStorage(pcfg.Devservers, pcfg.TLWServer, pcfg.DUTName, pcfg.BuildArtifactsURL),
 		RemoteData:   pcfg.RemoteData,
 		FixtCtx:      fixtCtx,
 		FixtValue:    stack.Val(),

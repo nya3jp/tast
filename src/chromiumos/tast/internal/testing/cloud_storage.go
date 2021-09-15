@@ -7,6 +7,7 @@ package testing
 import (
 	"context"
 	"io"
+	"strings"
 	"sync"
 
 	"chromiumos/tast/internal/devserver"
@@ -18,30 +19,38 @@ type CloudStorage struct {
 	// This is usually newClientForURLs, but might be different in unit tests.
 	newClient func(ctx context.Context) (devserver.Client, error)
 
-	once    sync.Once
-	cl      devserver.Client
-	initErr error
+	once              sync.Once
+	cl                devserver.Client
+	initErr           error
+	buildArtifactsURL string
 }
 
 // NewCloudStorage constructs a new CloudStorage from a list of Devserver URLs.
 // This function is for the framework; tests should call testing.State.CloudStorage
 // to get an instance.
-func NewCloudStorage(devservers []string, tlwServer, dutName string) *CloudStorage {
+func NewCloudStorage(devservers []string, tlwServer, dutName, buildArtifactsURL string) *CloudStorage {
 	return &CloudStorage{
 		newClient: func(ctx context.Context) (devserver.Client, error) {
 			return newClientForURLs(ctx, devservers, tlwServer, dutName)
 		},
+		buildArtifactsURL: buildArtifactsURL,
 	}
 }
 
 // Open opens a file on Google Cloud Storage for read. Callers are responsible for
 // closing the returned io.ReadCloser.
+// Urls that start with build-artifact:/// will be treated as relative to the BuildArtifactsURL
+// passed to tast in the --buildartifactsurl argument.
 func (c *CloudStorage) Open(ctx context.Context, url string) (io.ReadCloser, error) {
 	c.once.Do(func() {
 		c.cl, c.initErr = c.newClient(ctx)
 	})
 	if c.initErr != nil {
 		return nil, c.initErr
+	}
+	buildArtifactPrefix := "build-artifact:///"
+	if strings.HasPrefix(url, buildArtifactPrefix) {
+		url = c.buildArtifactsURL + strings.TrimPrefix(url, buildArtifactPrefix)
 	}
 	return c.cl.Open(ctx, url)
 }

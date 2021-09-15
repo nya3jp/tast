@@ -16,7 +16,7 @@ import (
 )
 
 func TestNewCloudStorage(t *testing.T) {
-	cs := NewCloudStorage(nil, "", "")
+	cs := NewCloudStorage(nil, "", "", "")
 	if cs == nil {
 		t.Error("NewCloudStorage returned nil")
 	}
@@ -25,7 +25,7 @@ func TestNewCloudStorage(t *testing.T) {
 func TestNewCloudStorageTLW(t *testing.T) {
 	stopFunc, addr := faketlw.StartWiringServer(t)
 	defer stopFunc()
-	cs := NewCloudStorage(nil, addr, "dutName001")
+	cs := NewCloudStorage(nil, addr, "dutName001", "gs://fake-repo/board-release/R12-3.4.5/")
 	if cs == nil {
 		t.Error("NewCloudStorage returned nil")
 	}
@@ -49,6 +49,36 @@ func TestCloudStorageOpen(t *testing.T) {
 	r, err := cs.Open(context.Background(), fakeURL)
 	if err != nil {
 		t.Fatalf("Open failed for %q: %v", fakeURL, err)
+	}
+	defer r.Close()
+	b, err := ioutil.ReadAll(r)
+	if err != nil {
+		t.Fatal("ReadAll failed: ", err)
+	}
+	if s := string(b); s != fakeContent {
+		t.Fatalf("Got content %q, want %q", s, fakeContent)
+	}
+}
+
+func TestCloudStorageOpenRelative(t *testing.T) {
+	const (
+		fakeURL     = "gs://a/b/c"
+		fakeContent = "hello"
+	)
+
+	// Create CloudStorage using a fake devserver client.
+	cs := &CloudStorage{
+		newClient: func(ctx context.Context) (devserver.Client, error) {
+			return devserver.NewFakeClient(map[string][]byte{
+				fakeURL: []byte(fakeContent),
+			}), nil
+		},
+		buildArtifactsURL: "gs://a/b/",
+	}
+
+	r, err := cs.Open(context.Background(), "build-artifact:///c")
+	if err != nil {
+		t.Fatalf("Open failed for %q: %v", "build-artifact:///c", err)
 	}
 	defer r.Close()
 	b, err := ioutil.ReadAll(r)

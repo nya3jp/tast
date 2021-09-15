@@ -127,3 +127,47 @@ func TestTestServerListEntitiesTestSkips(t *gotesting.T) {
 		t.Errorf("ListEntitiesResponse mismatch (-got +want):\n%s", diff)
 	}
 }
+
+func TestTestServerListEntitiesStartFixtureNames(t *gotesting.T) {
+	t1 := &testing.TestInstance{Name: "test.Default"}
+	t2 := &testing.TestInstance{Name: "test.DirectExternal", Fixture: "external"}
+	t3 := &testing.TestInstance{Name: "test.IndirectExternal", Fixture: "fixt.IndirectExternal"}
+	f1 := &testing.FixtureInstance{Name: "fixt.Default"}
+	f2 := &testing.FixtureInstance{Name: "fixt.DirectExternal", Parent: "external"}
+	f3 := &testing.FixtureInstance{Name: "fixt.IndirectExternal", Parent: "fixt.DirectExternal"}
+
+	reg := testing.NewRegistry("bundle")
+	reg.AddTestInstance(t1)
+	reg.AddTestInstance(t2)
+	reg.AddTestInstance(t3)
+	reg.AddFixtureInstance(f1)
+	reg.AddFixtureInstance(f2)
+	reg.AddFixtureInstance(f3)
+
+	scfg := NewStaticConfig(reg, 0, Delegate{})
+
+	cl := startTestServer(t, scfg)
+
+	// Call ListEntities.
+	got, err := cl.ListEntities(context.Background(), &protocol.ListEntitiesRequest{})
+	if err != nil {
+		t.Fatalf("ListEntities failed: %v", err)
+	}
+
+	want := &protocol.ListEntitiesResponse{
+		Entities: []*protocol.ResolvedEntity{
+			{Entity: f1.EntityProto()},
+			{Entity: f2.EntityProto(), StartFixtureName: "external"},
+			{Entity: f3.EntityProto(), StartFixtureName: "external"},
+			{Entity: t1.EntityProto()},
+			{Entity: t2.EntityProto(), StartFixtureName: "external"},
+			{Entity: t3.EntityProto(), StartFixtureName: "external"},
+		},
+	}
+	sorter := func(a, b *protocol.ResolvedEntity) bool {
+		return a.GetEntity().GetName() < b.GetEntity().GetName()
+	}
+	if diff := cmp.Diff(got, want, cmpopts.SortSlices(sorter)); diff != "" {
+		t.Errorf("ListEntitiesResponse mismatch (-got +want):\n%s", diff)
+	}
+}

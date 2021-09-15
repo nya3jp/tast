@@ -118,6 +118,13 @@ func (c *JSONClient) DownloadPrivateBundles(ctx context.Context, req *protocol.D
 
 // ListTests enumerates tests matching patterns.
 func (c *JSONClient) ListTests(ctx context.Context, patterns []string, features *protocol.Features) ([]*protocol.ResolvedEntity, error) {
+	fixtures, err := c.ListFixtures(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to list fixtures for tests")
+	}
+
+	graph := newFixtureGraphFromResolvedEntities(fixtures)
+
 	args := &jsonprotocol.RunnerArgs{
 		Mode: jsonprotocol.RunnerListTestsMode,
 		ListTests: &jsonprotocol.RunnerListTestsArgs{
@@ -135,11 +142,10 @@ func (c *JSONClient) ListTests(ctx context.Context, patterns []string, features 
 
 	tests := make([]*protocol.ResolvedEntity, len(res))
 	for i, r := range res {
-		e, err := r.Proto()
+		e, err := r.Proto(int32(c.hops), graph.FindStart(r.Bundle, r.Fixture))
 		if err != nil {
 			return nil, err
 		}
-		e.Hops = int32(c.hops)
 		tests[i] = e
 	}
 	return tests, nil
@@ -158,16 +164,19 @@ func (c *JSONClient) ListFixtures(ctx context.Context) ([]*protocol.ResolvedEnti
 		return nil, errors.Wrap(err, "failed to list fixtures")
 	}
 
+	graph := newFixtureGraphFromListFixturesResult(&res)
+
 	var fixtures []*protocol.ResolvedEntity
-	for _, fs := range res.Fixtures {
+	for bundle, fs := range res.Fixtures {
 		for _, f := range fs {
 			e, err := f.Proto()
 			if err != nil {
 				return nil, err
 			}
 			fixtures = append(fixtures, &protocol.ResolvedEntity{
-				Entity: e,
-				Hops:   int32(c.hops),
+				Entity:           e,
+				Hops:             int32(c.hops),
+				StartFixtureName: graph.FindStart(bundle, f.Fixture),
 			})
 		}
 	}

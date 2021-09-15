@@ -153,7 +153,7 @@ type EntityWithRunnabilityInfo struct {
 }
 
 // Proto generates protocol.ResolvedEntity.
-func (e *EntityWithRunnabilityInfo) Proto() (*protocol.ResolvedEntity, error) {
+func (e *EntityWithRunnabilityInfo) Proto(hops int32, startFixtureName string) (*protocol.ResolvedEntity, error) {
 	pe, err := e.EntityInfo.Proto()
 	if err != nil {
 		return nil, err
@@ -165,7 +165,9 @@ func (e *EntityWithRunnabilityInfo) Proto() (*protocol.ResolvedEntity, error) {
 		}
 	}
 	return &protocol.ResolvedEntity{
-		Entity: pe,
-		Skip:   skip,
+		Entity:           pe,
+		Skip:             skip,
+		Hops:             hops,
+		StartFixtureName: startFixtureName,
 	}, nil
 }

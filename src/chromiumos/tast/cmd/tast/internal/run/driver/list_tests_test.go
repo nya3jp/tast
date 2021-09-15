@@ -22,26 +22,26 @@ func newDriverForListingTests(t *gotesting.T) (context.Context, *driver.Driver, 
 	local1 := testing.NewRegistry("bundle1")
 	local1.AddTestInstance(&testing.TestInstance{Name: "pkg.Local1", Attr: []string{"yes"}})
 	local1.AddTestInstance(&testing.TestInstance{Name: "pkg.Local2", Attr: []string{"no"}})
-	local1.AddFixtureInstance(&testing.FixtureInstance{Name: "fixt.Local1"})
-	local1.AddFixtureInstance(&testing.FixtureInstance{Name: "fixt.Local2"})
+	local1.AddFixtureInstance(&testing.FixtureInstance{Name: "fixt.LocalA", Parent: "fixt.RemoteA"})
+	local1.AddFixtureInstance(&testing.FixtureInstance{Name: "fixt.LocalB", Parent: "fixt.LocalA"})
 
 	remote1 := testing.NewRegistry("bundle1")
 	remote1.AddTestInstance(&testing.TestInstance{Name: "pkg.Remote1", Attr: []string{"no"}})
 	remote1.AddTestInstance(&testing.TestInstance{Name: "pkg.Remote2", Attr: []string{"yes"}})
-	remote1.AddFixtureInstance(&testing.FixtureInstance{Name: "fixt.Remote1"})
-	remote1.AddFixtureInstance(&testing.FixtureInstance{Name: "fixt.Remote2"})
+	remote1.AddFixtureInstance(&testing.FixtureInstance{Name: "fixt.RemoteA", Parent: "fixt.RemoteB"})
+	remote1.AddFixtureInstance(&testing.FixtureInstance{Name: "fixt.RemoteB"})
 
 	local2 := testing.NewRegistry("bundle2")
 	local2.AddTestInstance(&testing.TestInstance{Name: "pkg.Local3", Attr: []string{"yes"}, VarDeps: []string{"var"}})
 	local2.AddTestInstance(&testing.TestInstance{Name: "pkg.Local4", Attr: []string{"no"}})
-	local2.AddFixtureInstance(&testing.FixtureInstance{Name: "fixt.Local3"})
-	local2.AddFixtureInstance(&testing.FixtureInstance{Name: "fixt.Local4"})
+	local2.AddFixtureInstance(&testing.FixtureInstance{Name: "fixt.LocalA", Parent: "fixt.LocalB"})
+	local2.AddFixtureInstance(&testing.FixtureInstance{Name: "fixt.LocalB", Parent: "fixt.RemoteB"})
 
 	remote2 := testing.NewRegistry("bundle2")
 	remote2.AddTestInstance(&testing.TestInstance{Name: "pkg.Remote3", Attr: []string{"no"}, VarDeps: []string{"var"}})
 	remote2.AddTestInstance(&testing.TestInstance{Name: "pkg.Remote4", Attr: []string{"yes"}})
-	remote2.AddFixtureInstance(&testing.FixtureInstance{Name: "fixt.Remote3"})
-	remote2.AddFixtureInstance(&testing.FixtureInstance{Name: "fixt.Remote4"})
+	remote2.AddFixtureInstance(&testing.FixtureInstance{Name: "fixt.RemoteA"})
+	remote2.AddFixtureInstance(&testing.FixtureInstance{Name: "fixt.RemoteB", Parent: "fixt.RemoteA"})
 
 	env := runtest.SetUp(t, runtest.WithLocalBundles(local1, local2), runtest.WithRemoteBundles(remote1, remote2))
 	ctx := env.Context()
@@ -78,11 +78,12 @@ func makeResolvedEntityForTest(bundle string, hops int32, name, attr string, var
 	}
 }
 
-func makeResolvedEntityForFixture(bundle string, hops int32, name string) *protocol.ResolvedEntity {
+func makeResolvedEntityForFixture(bundle string, hops int32, name, parent, start string) *protocol.ResolvedEntity {
 	return &protocol.ResolvedEntity{
 		Entity: &protocol.Entity{
 			Type:         protocol.EntityType_FIXTURE,
 			Name:         name,
+			Fixture:      parent,
 			Dependencies: &protocol.EntityDependencies{},
 			Contacts:     &protocol.EntityContacts{},
 			LegacyData: &protocol.EntityLegacyData{
@@ -90,7 +91,8 @@ func makeResolvedEntityForFixture(bundle string, hops int32, name string) *proto
 				Bundle:  bundle,
 			},
 		},
-		Hops: hops,
+		Hops:             hops,
+		StartFixtureName: start,
 	}
 }
 
@@ -139,10 +141,10 @@ func TestDriver_ListLocalFixtures(t *gotesting.T) {
 	}
 
 	want := []*protocol.ResolvedEntity{
-		makeResolvedEntityForFixture("bundle1", 1, "fixt.Local1"),
-		makeResolvedEntityForFixture("bundle1", 1, "fixt.Local2"),
-		makeResolvedEntityForFixture("bundle2", 1, "fixt.Local3"),
-		makeResolvedEntityForFixture("bundle2", 1, "fixt.Local4"),
+		makeResolvedEntityForFixture("bundle1", 1, "fixt.LocalA", "fixt.RemoteA", "fixt.RemoteA"),
+		makeResolvedEntityForFixture("bundle1", 1, "fixt.LocalB", "fixt.LocalA", "fixt.RemoteA"),
+		makeResolvedEntityForFixture("bundle2", 1, "fixt.LocalA", "fixt.LocalB", "fixt.RemoteB"),
+		makeResolvedEntityForFixture("bundle2", 1, "fixt.LocalB", "fixt.RemoteB", "fixt.RemoteB"),
 	}
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected list of tests (-got +want):\n%v", diff)
@@ -158,10 +160,10 @@ func TestDriver_ListRemoteFixtures(t *gotesting.T) {
 	}
 
 	want := []*protocol.ResolvedEntity{
-		makeResolvedEntityForFixture("bundle1", 0, "fixt.Remote1"),
-		makeResolvedEntityForFixture("bundle1", 0, "fixt.Remote2"),
-		makeResolvedEntityForFixture("bundle2", 0, "fixt.Remote3"),
-		makeResolvedEntityForFixture("bundle2", 0, "fixt.Remote4"),
+		makeResolvedEntityForFixture("bundle1", 0, "fixt.RemoteA", "fixt.RemoteB", ""),
+		makeResolvedEntityForFixture("bundle1", 0, "fixt.RemoteB", "", ""),
+		makeResolvedEntityForFixture("bundle2", 0, "fixt.RemoteA", "", ""),
+		makeResolvedEntityForFixture("bundle2", 0, "fixt.RemoteB", "fixt.RemoteA", ""),
 	}
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected list of tests (-got +want):\n%v", diff)

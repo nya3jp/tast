@@ -303,6 +303,10 @@ message ResolvedEntity {
   // On the host machine, hops=0 means remote entities (on the host machine) and
   // hops=1 means local entities (on the DUT).
   int32 hops = 3;
+
+  // StartFixtureName is the name of the fixture that needs to be set up
+  // externally in order to run this entity.
+  string start_fixture_name = 4;
 }
 
 // TimingLog is a protobuf presentation of a timing.Log.

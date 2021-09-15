@@ -42,11 +42,15 @@ func (s *testServer) RunTests(srv protocol.TestService_RunTestsServer) error {
 }
 
 func listEntities(reg *testing.Registry, features *protocol.Features) []*protocol.ResolvedEntity {
+	fixtures := reg.AllFixtures()
+	starts := buildStartFixtureMap(fixtures)
+
 	var resolved []*protocol.ResolvedEntity
 
-	for _, f := range reg.AllFixtures() {
+	for _, f := range fixtures {
 		resolved = append(resolved, &protocol.ResolvedEntity{
-			Entity: f.EntityProto(),
+			Entity:           f.EntityProto(),
+			StartFixtureName: starts[f.Name],
 		})
 	}
 
@@ -58,10 +62,41 @@ func listEntities(reg *testing.Registry, features *protocol.Features) []*protoco
 		if reasons, err := t.Deps().Check(features); err == nil && len(reasons) > 0 {
 			skip = &protocol.Skip{Reasons: reasons}
 		}
+		start, ok := starts[t.Fixture]
+		if !ok {
+			start = t.Fixture
+		}
 		resolved = append(resolved, &protocol.ResolvedEntity{
-			Entity: t.EntityProto(),
-			Skip:   skip,
+			Entity:           t.EntityProto(),
+			Skip:             skip,
+			StartFixtureName: start,
 		})
 	}
 	return resolved
+}
+
+func buildStartFixtureMap(fixtures map[string]*testing.FixtureInstance) map[string]string {
+	starts := make(map[string]string)
+
+	// findStart is a recursive function to find a start fixture of f.
+	// It fills in results to starts for memoization.
+	var findStart func(f *testing.FixtureInstance) string
+	findStart = func(f *testing.FixtureInstance) string {
+		if start, ok := starts[f.Name]; ok {
+			return start // memoize
+		}
+		var start string
+		if parent, ok := fixtures[f.Parent]; ok {
+			start = findStart(parent)
+		} else {
+			start = f.Parent
+		}
+		starts[f.Name] = start
+		return start
+	}
+
+	for _, f := range fixtures {
+		findStart(f)
+	}
+	return starts
 }

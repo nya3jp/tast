@@ -16,7 +16,7 @@ func TestRegisterVarString(t *gotesting.T) {
 	value := "default"
 	reg := testing.NewRegistry("bundle")
 	pc, _, _, _ := runtime.Caller(0)
-	v, err := registerVarString(reg, varName, value, "desc", pc)
+	v, err := registerVarString(reg, varName, value, "desc", runtime.FuncForPC(pc).Name())
 	if err != nil {
 		t.Fatal("Failed to call registerVarString: ", err)
 	}
@@ -33,7 +33,7 @@ func TestRegisterVarStringBadName(t *gotesting.T) {
 	value := "default"
 	reg := testing.NewRegistry("bundle")
 	pc, _, _, _ := runtime.Caller(0)
-	_, err := registerVarString(reg, varName, value, "desc", pc)
+	_, err := registerVarString(reg, varName, value, "desc", runtime.FuncForPC(pc).Name())
 	if err == nil {
 		t.Fatal("Failed to get an error from registerVarString when variable name is not following convention.")
 	}

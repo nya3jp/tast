@@ -6,9 +6,10 @@ package testing
 
 import (
 	"fmt"
-	"runtime"
 	"strings"
 
+	"chromiumos/tast/caller"
+	"chromiumos/tast/internal/packages"
 	"chromiumos/tast/internal/testing"
 )
 
@@ -20,8 +21,8 @@ type VarString struct {
 // RegisterVarString creates and registers a new VarString
 func RegisterVarString(name, defaultValue, desc string) *VarString {
 	reg := testing.GlobalRegistry()
-	pc, _, _, _ := runtime.Caller(1)
-	v, err := registerVarString(reg, name, defaultValue, desc, pc)
+	callerFunc := caller.Get(2)
+	v, err := registerVarString(reg, name, defaultValue, desc, callerFunc)
 	if err != nil {
 		reg.RecordError(err)
 	}
@@ -29,8 +30,8 @@ func RegisterVarString(name, defaultValue, desc string) *VarString {
 }
 
 // registerVarString creates and registers a new VarString
-func registerVarString(reg *testing.Registry, name, defaultValue, desc string, pc uintptr) (*VarString, error) {
-	if !checkVarName(runtime.FuncForPC(pc).Name(), name) {
+func registerVarString(reg *testing.Registry, name, defaultValue, desc, callerFunc string) (*VarString, error) {
+	if !checkVarName(callerFunc, name) {
 		return nil, fmt.Errorf("Global runtime variable %q does not follow naming convention <pkg>.<rest_of_name>", name)
 	}
 	v := testing.NewVarString(name, defaultValue, desc)
@@ -50,9 +51,7 @@ func (v *VarString) Value() string {
 
 // checkVarName check if variable name follows naming convention.
 func checkVarName(funcName, name string) bool {
-	splitFuncName := strings.Split(funcName, ".")
-	pkgName := splitFuncName[len(splitFuncName)-2]
-	splitPkgName := strings.Split(pkgName, "/")
-	pkgBaseName := splitPkgName[len(splitPkgName)-1]
-	return strings.HasPrefix(name, pkgBaseName+".")
+	pkg, _ := packages.SplitFuncName(funcName)
+	base := pkg[strings.LastIndex(pkg, "/")+1:]
+	return strings.HasPrefix(name, base+".")
 }

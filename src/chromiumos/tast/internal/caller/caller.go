@@ -9,7 +9,6 @@ import (
 	"fmt"
 	"path"
 	"runtime"
-	"strings"
 
 	"chromiumos/tast/internal/packages"
 )
@@ -47,12 +46,13 @@ func Get(skip int) string {
 }
 
 // Check is the implementation of the same-name public function.
+// Check uses packages.Same to compare two packages.
 func Check(skip int, pkgs []string) {
 	caller := Get(skip + 1)
 
-	callerPkg := caller[0:strings.LastIndex(caller, ".")]
+	callerPkg, _ := packages.SplitFuncName(caller)
 	for _, pkg := range pkgs {
-		if packages.Normalize(callerPkg) == packages.Normalize(pkg) {
+		if packages.Same(callerPkg, pkg) {
 			return
 		}
 	}

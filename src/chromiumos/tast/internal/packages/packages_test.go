@@ -74,3 +74,27 @@ func TestSplitFuncName(t *testing.T) {
 		})
 	}
 }
+
+func TestSame(t *testing.T) {
+	var (
+		foo      = filepath.Join(packages.FrameworkPrefix, "foo")
+		oldFoo   = filepath.Join(packages.OldFrameworkPrefix, "foo")
+		otherFoo = "foo"
+		bar      = filepath.Join(packages.FrameworkPrefix, "bar")
+	)
+
+	for _, tc := range []struct {
+		x    string
+		y    string
+		want bool
+	}{
+		{foo, foo, true},
+		{foo, oldFoo, true},
+		{foo, otherFoo, false},
+		{foo, bar, false},
+	} {
+		if got := packages.Same(tc.x, tc.y); got != tc.want {
+			t.Errorf("Same(%q, %q) = %v want %v", tc.x, tc.y, got, tc.want)
+		}
+	}
+}

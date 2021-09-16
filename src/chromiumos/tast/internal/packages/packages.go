@@ -33,3 +33,8 @@ func SplitFuncName(fn string) (fullPkg, name string) {
 	lastPkgAndFunc := strings.SplitN(fn[lastSlash+1:], ".", 2)
 	return fn[0:lastSlash+1] + lastPkgAndFunc[0], lastPkgAndFunc[1]
 }
+
+// Same returns true if x and y are identical after normalization.
+func Same(x, y string) bool {
+	return Normalize(x) == Normalize(y)
+}

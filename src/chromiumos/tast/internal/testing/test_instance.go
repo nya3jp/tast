@@ -20,6 +20,7 @@ import (
 
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/dep"
+	"chromiumos/tast/internal/packages"
 	"chromiumos/tast/internal/protocol"
 )
 
@@ -239,20 +240,17 @@ func getTestFuncInfo(f TestFunc) (*testFuncInfo, error) {
 	if rf == nil {
 		return nil, errors.New("failed to get function from PC")
 	}
-	p := strings.SplitN(rf.Name(), ".", 2)
-	if len(p) != 2 {
-		return nil, fmt.Errorf("didn't find package.function in %q", rf.Name())
-	}
+	p, name := packages.SplitFuncName(rf.Name())
 
-	cs := strings.Split(p[0], "/")
+	cs := strings.Split(p, "/")
 	if len(cs) < 2 {
-		return nil, fmt.Errorf("failed to split package %q into at least two components", p[0])
+		return nil, fmt.Errorf("failed to split package %q into at least two components", p)
 	}
 
 	info := &testFuncInfo{
-		pkg:      p[0],
+		pkg:      p,
 		category: cs[len(cs)-1],
-		name:     p[1],
+		name:     name,
 	}
 	info.file, _ = rf.FileLine(pc)
 	return info, nil

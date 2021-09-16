@@ -13,6 +13,7 @@ import (
 	"github.com/google/go-cmp/cmp/cmpopts"
 
 	"chromiumos/tast/errors"
+	"chromiumos/tast/internal/packages"
 )
 
 // Registry holds tests and services.
@@ -180,8 +181,9 @@ func userCaller() (file string, line int) {
 	for skip := 1; ; skip++ {
 		pc, file, line, _ := runtime.Caller(skip)
 		f := runtime.FuncForPC(pc)
-		if strings.HasPrefix(f.Name(), "chromiumos/tast/internal/") ||
-			strings.HasPrefix(f.Name(), "chromiumos/tast/testing.") {
+		name := packages.Normalize(f.Name())
+		if strings.HasPrefix(name, packages.FrameworkPrefix+"internal/") ||
+			strings.HasPrefix(name, packages.FrameworkPrefix+"testing.") {
 			continue
 		}
 		return file, line

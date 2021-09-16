@@ -94,7 +94,7 @@ func runGoimports(in []byte) ([]byte, error) {
 		panic("goimports not found. Please install.")
 	}
 
-	cmd := exec.Command("goimports", "--local=chromiumos/")
+	cmd := exec.Command("goimports", "--local=chromiumos/,go.chromium.org/tast")
 	cmd.Stdin = bytes.NewBuffer(in)
 	out, err := cmd.Output()
 	if err != nil {

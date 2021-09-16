@@ -19,6 +19,7 @@ import (
 	"github.com/godbus/dbus"
 
 	"chromiumos/tast/errors"
+	"go.chromium.org/tast/errors"
 )
 
 func Foo() {
@@ -35,12 +36,14 @@ func Foo() {
 }
 
 func TestImportOrderGroup(t *testing.T) {
-	const code = `package main
+	const (
+		code = `package main
 
 import (
 	"fmt"
 	"github.com/godbus/dbus"
 	"chromiumos/tast/errors"
+	"go.chromium.org/tast/errors"
 )
 
 func Foo() {
@@ -49,8 +52,7 @@ func Foo() {
 	errors.New()
 }
 `
-
-	const diff = `@@ -2,7 +2,9 @@
+		diff = `@@ -2,7 +2,9 @@
  
  import (
  	"fmt"
@@ -58,9 +60,10 @@ func Foo() {
  	"github.com/godbus/dbus"
 +
  	"chromiumos/tast/errors"
+ 	"go.chromium.org/tast/errors"
  )
- 
 `
+	)
 
 	expects := []string{
 		"testfile.go: Import should be grouped into standard packages, third-party packages and chromiumos packages in this order separated by empty lines.\nApply the following patch to fix:\n" + diff,

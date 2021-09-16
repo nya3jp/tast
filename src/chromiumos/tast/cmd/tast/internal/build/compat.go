@@ -10,8 +10,11 @@ import (
 	"go/ast"
 	"go/parser"
 	"go/token"
+	"os"
 	"path/filepath"
 	"strconv"
+
+	"chromiumos/tast/internal/packages"
 )
 
 // sourceCompatVersion describes the compatibility version of the Tast source code.
@@ -22,16 +25,22 @@ import (
 //
 // This number must be incremented when a framework change breaks "tast run -build"
 // with combination of older tast binary and newer source code.
-const sourceCompatVersion = 7
+const sourceCompatVersion = 8
 
-// compatGoPath is the path to this file, relative to the workspace root.
-const compatGoPath = "src/chromiumos/tast/cmd/tast/internal/build/compat.go"
+// compatGoPath is the path to this file.
+const compatGoPath = "cmd/tast/internal/build/compat.go"
 
 // checkSourceCompat checks if the Tast source code has the same sourceCompatVersion
 // as what we know. workspace is the path to the Go workspace containing the Tast
 // framework.
 func checkSourceCompat(workspace string) error {
-	ver, err := readSourceCompatVersion(filepath.Join(workspace, compatGoPath))
+	path := filepath.Join(workspace, compatGoPath)
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		// Inspect older and newer location of this file so that compatibility
+		// check doesn't fail after we move this file.
+		path = filepath.Join(workspace, "src", packages.OldFrameworkPrefix, compatGoPath)
+	}
+	ver, err := readSourceCompatVersion(path)
 	if err != nil {
 		return fmt.Errorf("failed to get sourceCompatVersion: %v", err)
 	}

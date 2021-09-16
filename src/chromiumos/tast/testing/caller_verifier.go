@@ -8,8 +8,6 @@ import (
 	"fmt"
 	"regexp"
 	"runtime"
-
-	"chromiumos/tast/internal/packages"
 )
 
 // callerVerifier is to verify testing.AddTest() function callers.
@@ -45,10 +43,4 @@ func (v *callerVerifier) verifyAndRegister(pc uintptr) error {
 	v.files[file] = struct{}{}
 
 	return nil
-}
-
-func packageForPC(pc uintptr) string {
-	rf := runtime.FuncForPC(pc)
-	p, _ := packages.SplitFuncName(rf.Name())
-	return p
 }

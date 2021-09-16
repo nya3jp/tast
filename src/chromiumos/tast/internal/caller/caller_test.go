@@ -31,19 +31,19 @@ func redirect(f func()) {
 	f()
 }
 
-func TestGetWithIgnore(t *testing.T) {
+func TestFuncWithIgnore(t *testing.T) {
 	redirect(func() {
-		const exp = packages.FrameworkPrefix + "internal/caller_test.TestGetWithIgnore"
+		const exp = packages.FrameworkPrefix + "internal/caller_test.TestFuncWithIgnore"
 		// GetWithIgnore <- this <- redirect <- TestGetWithIgnore
-		if name := caller.GetWithIgnore(3, func(curFN, nextFN string) bool {
+		if f, _ := caller.FuncWithIgnore(3, func(curFN, nextFN string) bool {
 			return false
-		}); packages.Normalize(name) != exp {
-			t.Errorf("GetWithIsRedirect(3) = %q; want %q", name, exp)
+		}); packages.Normalize(f.Name()) != exp {
+			t.Errorf("FuncWithIgnore(3) = %q; want %q", f.Name(), exp)
 		}
-		if name := caller.GetWithIgnore(2, func(curFN, nextFN string) bool {
+		if f, _ := caller.FuncWithIgnore(2, func(curFN, nextFN string) bool {
 			return packages.Normalize(curFN) == packages.FrameworkPrefix+"internal/caller_test.redirect"
-		}); packages.Normalize(name) != exp {
-			t.Errorf("GetWithIsRedirect(2) = %q; want %q", name, exp)
+		}); packages.Normalize(f.Name()) != exp {
+			t.Errorf("FuncWithIgnore(2) = %q; want %q", f.Name(), exp)
 		}
 	})
 }

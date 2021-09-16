@@ -19,30 +19,41 @@ func isRedirect(curFN, nextFN string) bool {
 	return packages.Normalize(curFN) == packages.Normalize(nextFN)
 }
 
-// GetWithIgnore is Get with custom ignore function. If ignore returns true,
+// FuncWithIgnore is Get with custom ignore function. If ignore returns true,
 // the function is ignored on counting the number of skips.
 // This method is exported for unit testing.
-func GetWithIgnore(skip int, ignore func(curFN, nextFN string) bool) string {
-	var stack []string
-	for i := 0; i <= skip; i++ {
-		pc, _, _, ok := runtime.Caller(len(stack))
+func FuncWithIgnore(skip int, ignore func(curFN, nextFN string) bool) (*runtime.Func, uintptr) {
+	var callStack []string
+	skipCount := 0
+	for {
+		pc, _, _, ok := runtime.Caller(len(callStack))
 		if !ok {
 			panic("Could not decide the caller")
 		}
-		stack = append(stack, runtime.FuncForPC(pc).Name())
-		n := len(stack)
+		f := runtime.FuncForPC(pc)
+		callStack = append(callStack, f.Name())
 
-		if n >= 2 && ignore(stack[n-1], stack[n-2]) {
+		if n := len(callStack); n >= 2 && ignore(callStack[n-1], callStack[n-2]) {
 			// Ignore the function on counting the number of skips.
-			i--
+			continue
 		}
+		if skipCount == skip {
+			return f, pc
+		}
+		skipCount++
 	}
-	return stack[len(stack)-1]
 }
 
 // Get is the implementation of the same-name public function.
 func Get(skip int) string {
-	return GetWithIgnore(skip+1, isRedirect)
+	f, _ := FuncWithIgnore(skip+1, isRedirect)
+	return f.Name()
+}
+
+// Func is similar to Get but returns *runtime.Func and program counter of
+// the caller.
+func Func(skip int) (*runtime.Func, uintptr) {
+	return FuncWithIgnore(skip+1, isRedirect)
 }
 
 // Check is the implementation of the same-name public function.

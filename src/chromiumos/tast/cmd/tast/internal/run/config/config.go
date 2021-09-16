@@ -20,6 +20,7 @@ import (
 	"google.golang.org/grpc"
 
 	"chromiumos/tast/cmd/tast/internal/build"
+	"chromiumos/tast/cmd/tast/internal/run/driverdata"
 	"chromiumos/tast/errors"
 	frameworkprotocol "chromiumos/tast/framework/protocol"
 	"chromiumos/tast/internal/command"
@@ -288,7 +289,7 @@ type State struct {
 	TLWConn          *grpc.ClientConn           // TLW gRPC service connection
 	RemoteDevservers []string                   // list of devserver URLs used by remote tests.
 	TestNamesToSkip  []string                   // tests that match patterns but are not sent to runners to run
-	TestsToRun       []*protocol.ResolvedEntity // tests to be run
+	TestsToRun       []*driverdata.BundleEntity // tests to be run
 
 	// gRPC Reports Client related variables.
 	ReportsConn      *grpc.ClientConn                // Reports gRPC service connection.

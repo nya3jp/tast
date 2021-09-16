@@ -949,9 +949,9 @@ func TestWriteResultsWriteFiles(t *gotesting.T) {
 		{Test: resultsjson.Test{Name: "pkg.Test1"}},
 		{Test: resultsjson.Test{Name: "pkg.Test2"}},
 	}
-	state.TestsToRun = []*protocol.ResolvedEntity{
-		{Entity: &protocol.Entity{Name: "pkg.Test1"}},
-		{Entity: &protocol.Entity{Name: "pkg.Test2"}},
+	state.TestsToRun = []*driver.BundleEntity{
+		{Resolved: &protocol.ResolvedEntity{Entity: &protocol.Entity{Name: "pkg.Test1"}}},
+		{Resolved: &protocol.ResolvedEntity{Entity: &protocol.Entity{Name: "pkg.Test2"}}},
 	}
 
 	drv, err := driver.New(ctx, cfg, cfg.Target())

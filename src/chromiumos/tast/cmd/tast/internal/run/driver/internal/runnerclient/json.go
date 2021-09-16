@@ -12,6 +12,7 @@ import (
 	"fmt"
 	"sort"
 
+	"chromiumos/tast/cmd/tast/internal/run/driverdata"
 	"chromiumos/tast/cmd/tast/internal/run/genericexec"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/jsonprotocol"
@@ -117,13 +118,13 @@ func (c *JSONClient) DownloadPrivateBundles(ctx context.Context, req *protocol.D
 }
 
 // ListTests enumerates tests matching patterns.
-func (c *JSONClient) ListTests(ctx context.Context, patterns []string, features *protocol.Features) ([]*protocol.ResolvedEntity, error) {
+func (c *JSONClient) ListTests(ctx context.Context, patterns []string, features *protocol.Features) ([]*driverdata.BundleEntity, error) {
 	fixtures, err := c.ListFixtures(ctx)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to list fixtures for tests")
 	}
 
-	graph := newFixtureGraphFromResolvedEntities(fixtures)
+	graph := newFixtureGraphFromBundleEntities(fixtures)
 
 	args := &jsonprotocol.RunnerArgs{
 		Mode: jsonprotocol.RunnerListTestsMode,
@@ -140,19 +141,22 @@ func (c *JSONClient) ListTests(ctx context.Context, patterns []string, features 
 		return nil, errors.Wrap(err, "failed to list tests")
 	}
 
-	tests := make([]*protocol.ResolvedEntity, len(res))
+	tests := make([]*driverdata.BundleEntity, len(res))
 	for i, r := range res {
 		e, err := r.Proto(int32(c.hops), graph.FindStart(r.Bundle, r.Fixture))
 		if err != nil {
 			return nil, err
 		}
-		tests[i] = e
+		tests[i] = &driverdata.BundleEntity{
+			Bundle:   r.Bundle,
+			Resolved: e,
+		}
 	}
 	return tests, nil
 }
 
 // ListFixtures enumerates all fixtures.
-func (c *JSONClient) ListFixtures(ctx context.Context) ([]*protocol.ResolvedEntity, error) {
+func (c *JSONClient) ListFixtures(ctx context.Context) ([]*driverdata.BundleEntity, error) {
 	args := &jsonprotocol.RunnerArgs{
 		Mode: jsonprotocol.RunnerListFixturesMode,
 		ListFixtures: &jsonprotocol.RunnerListFixturesArgs{
@@ -166,17 +170,20 @@ func (c *JSONClient) ListFixtures(ctx context.Context) ([]*protocol.ResolvedEnti
 
 	graph := newFixtureGraphFromListFixturesResult(&res)
 
-	var fixtures []*protocol.ResolvedEntity
+	var fixtures []*driverdata.BundleEntity
 	for bundle, fs := range res.Fixtures {
 		for _, f := range fs {
 			e, err := f.Proto()
 			if err != nil {
 				return nil, err
 			}
-			fixtures = append(fixtures, &protocol.ResolvedEntity{
-				Entity:           e,
-				Hops:             int32(c.hops),
-				StartFixtureName: graph.FindStart(bundle, f.Fixture),
+			fixtures = append(fixtures, &driverdata.BundleEntity{
+				Bundle: f.Bundle,
+				Resolved: &protocol.ResolvedEntity{
+					Entity:           e,
+					Hops:             int32(c.hops),
+					StartFixtureName: graph.FindStart(bundle, f.Fixture),
+				},
 			})
 		}
 	}
@@ -184,7 +191,7 @@ func (c *JSONClient) ListFixtures(ctx context.Context) ([]*protocol.ResolvedEnti
 	// In JSON protocol, the order of fixtures is unstable. Sort them here
 	// for better reproducibility.
 	sort.Slice(fixtures, func(i, j int) bool {
-		ea, eb := fixtures[i].GetEntity(), fixtures[j].GetEntity()
+		ea, eb := fixtures[i].Resolved.GetEntity(), fixtures[j].Resolved.GetEntity()
 		if a, b := ea.GetLegacyData().GetBundle(), eb.GetLegacyData().GetBundle(); a != b {
 			return a < b
 		}

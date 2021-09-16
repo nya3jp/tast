@@ -22,7 +22,6 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/driver"
 	"chromiumos/tast/internal/linuxssh"
 	"chromiumos/tast/internal/logging"
-	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/internal/timing"
 	"chromiumos/tast/ssh"
@@ -219,12 +218,12 @@ func pushExecutables(ctx context.Context, cfg *config.Config, hst *ssh.Conn, tar
 	return nil
 }
 
-func allNeededFixtures(fixtures, tests []*protocol.ResolvedEntity) []*protocol.ResolvedEntity {
-	m := make(map[string]*protocol.ResolvedEntity)
+func allNeededFixtures(fixtures, tests []*driver.BundleEntity) []*driver.BundleEntity {
+	m := make(map[string]*driver.BundleEntity)
 	for _, e := range fixtures {
-		m[e.GetEntity().GetName()] = e
+		m[e.Resolved.GetEntity().GetName()] = e
 	}
-	var res []*protocol.ResolvedEntity
+	var res []*driver.BundleEntity
 	var dfs func(string)
 	dfs = func(name string) {
 		if name == "" {
@@ -236,10 +235,10 @@ func allNeededFixtures(fixtures, tests []*protocol.ResolvedEntity) []*protocol.R
 		}
 		res = append(res, e)
 		delete(m, name)
-		dfs(e.GetEntity().GetFixture())
+		dfs(e.Resolved.GetEntity().GetFixture())
 	}
 	for _, t := range tests {
-		dfs(t.GetEntity().GetFixture())
+		dfs(t.Resolved.GetEntity().GetFixture())
 	}
 	return res
 }
@@ -253,7 +252,7 @@ func getDataFilePaths(ctx context.Context, cfg *config.Config, drv *driver.Drive
 
 	logging.Debug(ctx, "Getting data file list from target")
 
-	var entities []*protocol.ResolvedEntity // all entities needed to run tests
+	var entities []*driver.BundleEntity // all entities needed to run tests
 
 	// Add tests to entities.
 	// We pass nil DUTInfo here because we don't have a DUTInfo yet. This is
@@ -280,8 +279,8 @@ func getDataFilePaths(ctx context.Context, cfg *config.Config, drv *driver.Drive
 	// Compute data that entities may use.
 	seenPaths := make(map[string]struct{})
 	for _, e := range entities {
-		for _, p := range e.GetEntity().GetDependencies().GetDataFiles() {
-			full := filepath.Clean(filepath.Join(testing.RelativeDataDir(e.GetEntity().GetPackage()), p))
+		for _, p := range e.Resolved.GetEntity().GetDependencies().GetDataFiles() {
+			full := filepath.Clean(filepath.Join(testing.RelativeDataDir(e.Resolved.GetEntity().GetPackage()), p))
 			if _, ok := seenPaths[full]; ok {
 				continue
 			}

@@ -6,7 +6,7 @@
 package sharding
 
 import (
-	"chromiumos/tast/internal/protocol"
+	"chromiumos/tast/cmd/tast/internal/run/driver"
 )
 
 // Shard represents a set of tests included/excluded in a shard.
@@ -14,17 +14,17 @@ type Shard struct {
 	// Included is a list of tests in the shard and to be requested to run.
 	// This may include tests that will be skipped due to unsatisfied
 	// dependencies.
-	Included []*protocol.ResolvedEntity
+	Included []*driver.BundleEntity
 
 	// Excluded is a list of tests not in the shard and to be ignored.
-	Excluded []*protocol.ResolvedEntity
+	Excluded []*driver.BundleEntity
 }
 
 // Compute computes a set of tests to include/exclude in the specified shard.
-func Compute(tests []*protocol.ResolvedEntity, shardIndex, totalShards int) *Shard {
-	var runs, skips []*protocol.ResolvedEntity
+func Compute(tests []*driver.BundleEntity, shardIndex, totalShards int) *Shard {
+	var runs, skips []*driver.BundleEntity
 	for _, t := range tests {
-		if len(t.GetSkip().GetReasons()) == 0 {
+		if len(t.Resolved.GetSkip().GetReasons()) == 0 {
 			runs = append(runs, t)
 		} else {
 			skips = append(skips, t)
@@ -33,7 +33,7 @@ func Compute(tests []*protocol.ResolvedEntity, shardIndex, totalShards int) *Sha
 
 	startIndex, endIndex := shardIndices(len(runs), shardIndex, totalShards)
 
-	var includes, excludes []*protocol.ResolvedEntity
+	var includes, excludes []*driver.BundleEntity
 	// Shard 0 contains all skipped tests.
 	if shardIndex == 0 {
 		includes = skips

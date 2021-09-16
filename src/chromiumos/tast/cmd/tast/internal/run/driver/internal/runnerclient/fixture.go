@@ -5,8 +5,8 @@
 package runnerclient
 
 import (
+	"chromiumos/tast/cmd/tast/internal/run/driverdata"
 	"chromiumos/tast/internal/jsonprotocol"
-	"chromiumos/tast/internal/protocol"
 )
 
 // fixtureGraph is a collection of entity graphs that cover fixtures in all
@@ -38,16 +38,16 @@ func (g *fixtureGraph) FindStart(bundle, name string) string {
 	}
 }
 
-// newFixtureGraphFromResolvedEntities constructs fixtureGraph from
-// ResolvedEntity.
-func newFixtureGraphFromResolvedEntities(fixtures []*protocol.ResolvedEntity) *fixtureGraph {
+// newFixtureGraphFromBundleEntities constructs fixtureGraph from
+// BundleEntity.
+func newFixtureGraphFromBundleEntities(fixtures []*driverdata.BundleEntity) *fixtureGraph {
 	starts := make(map[fixtureKey]string)
 	for _, f := range fixtures {
 		key := fixtureKey{
-			Bundle: f.GetEntity().GetLegacyData().GetBundle(),
-			Name:   f.GetEntity().GetName(),
+			Bundle: f.Bundle,
+			Name:   f.Resolved.GetEntity().GetName(),
 		}
-		starts[key] = f.GetStartFixtureName()
+		starts[key] = f.Resolved.GetStartFixtureName()
 	}
 	return &fixtureGraph{ascendants: starts}
 }

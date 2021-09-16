@@ -15,6 +15,7 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/driver/internal/runnerclient"
 	"chromiumos/tast/cmd/tast/internal/run/driver/internal/sshconfig"
 	"chromiumos/tast/cmd/tast/internal/run/driver/internal/target"
+	"chromiumos/tast/cmd/tast/internal/run/driverdata"
 	"chromiumos/tast/cmd/tast/internal/run/genericexec"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/protocol"
@@ -28,6 +29,9 @@ const (
 
 // Services owns services exposed to a target device by SSH port forwarding.
 type Services = target.Services
+
+// BundleEntity is a pair of a ResolvedEntity and its bundle name.
+type BundleEntity = driverdata.BundleEntity
 
 // Driver implements communications with local/remote executables related to
 // Tast.

@@ -130,8 +130,8 @@ func TestLocalCopyOutput(t *gotesting.T) {
 	cfg := env.Config(nil)
 	state := env.State()
 
-	state.TestsToRun = []*protocol.ResolvedEntity{
-		{Entity: &protocol.Entity{Name: testName}, Hops: 1},
+	state.TestsToRun = []*driver.BundleEntity{
+		{Bundle: "bundle", Resolved: &protocol.ResolvedEntity{Entity: &protocol.Entity{Name: testName}, Hops: 1}},
 	}
 
 	drv, err := driver.New(ctx, cfg, cfg.Target())
@@ -183,10 +183,10 @@ func TestLocalMaxFailures(t *gotesting.T) {
 	})
 
 	state := env.State()
-	state.TestsToRun = []*protocol.ResolvedEntity{
-		{Entity: &protocol.Entity{Name: testName1}, Hops: 1},
-		{Entity: &protocol.Entity{Name: testName2}, Hops: 1},
-		{Entity: &protocol.Entity{Name: testName3}, Hops: 1},
+	state.TestsToRun = []*driver.BundleEntity{
+		{Bundle: "bundle", Resolved: &protocol.ResolvedEntity{Entity: &protocol.Entity{Name: testName1}, Hops: 1}},
+		{Bundle: "bundle", Resolved: &protocol.ResolvedEntity{Entity: &protocol.Entity{Name: testName2}, Hops: 1}},
+		{Bundle: "bundle", Resolved: &protocol.ResolvedEntity{Entity: &protocol.Entity{Name: testName3}, Hops: 1}},
 	}
 
 	drv, err := driver.New(ctx, cfg, cfg.Target())
@@ -281,15 +281,21 @@ func TestFixturesDependency(t *gotesting.T) {
 	state := env.State()
 
 	for _, t := range localTests {
-		state.TestsToRun = append(state.TestsToRun, &protocol.ResolvedEntity{
-			Entity: t.EntityProto(),
-			Hops:   1,
+		state.TestsToRun = append(state.TestsToRun, &driver.BundleEntity{
+			Bundle: "bundle",
+			Resolved: &protocol.ResolvedEntity{
+				Entity: t.EntityProto(),
+				Hops:   1,
+			},
 		})
 	}
 	for _, t := range remoteTests {
-		state.TestsToRun = append(state.TestsToRun, &protocol.ResolvedEntity{
-			Entity: t.EntityProto(),
-			Hops:   0,
+		state.TestsToRun = append(state.TestsToRun, &driver.BundleEntity{
+			Bundle: "bundle",
+			Resolved: &protocol.ResolvedEntity{
+				Entity: t.EntityProto(),
+				Hops:   0,
+			},
 		})
 	}
 

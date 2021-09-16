@@ -115,11 +115,10 @@ func newLocalTestsCategorizer(ctx context.Context, cfg *config.Config, drv *driv
 	// bundle -> fixture -> parent
 	localFixtParent := make(map[string]map[string]string)
 	for _, f := range localFixts {
-		bundle := f.GetEntity().GetLegacyData().GetBundle()
-		if _, ok := localFixtParent[bundle]; !ok {
-			localFixtParent[bundle] = make(map[string]string)
+		if _, ok := localFixtParent[f.Bundle]; !ok {
+			localFixtParent[f.Bundle] = make(map[string]string)
 		}
-		localFixtParent[bundle][f.GetEntity().GetName()] = f.GetEntity().GetFixture()
+		localFixtParent[f.Bundle][f.Resolved.GetEntity().GetName()] = f.Resolved.GetEntity().GetFixture()
 	}
 
 	remoteFixts, err := drv.ListRemoteFixtures(ctx)
@@ -128,10 +127,9 @@ func newLocalTestsCategorizer(ctx context.Context, cfg *config.Config, drv *driv
 	}
 
 	// TODO(crbug/1177189): allow multiple bundles to define remote fixtures.
-	remoteFixtMap := make(map[string][]*protocol.ResolvedEntity)
+	remoteFixtMap := make(map[string][]*driver.BundleEntity)
 	for _, f := range remoteFixts {
-		bundle := f.GetEntity().GetLegacyData().GetBundle()
-		remoteFixtMap[bundle] = append(remoteFixtMap[bundle], f)
+		remoteFixtMap[f.Bundle] = append(remoteFixtMap[f.Bundle], f)
 	}
 	if len(remoteFixtMap) > 1 {
 		return nil, fmt.Errorf("multiple (%v) bundles define remote fixtures; want <= 1", len(remoteFixtMap))
@@ -152,12 +150,12 @@ func newLocalTestsCategorizer(ctx context.Context, cfg *config.Config, drv *driv
 		rfs := make(map[string]struct{})
 		for _, fs := range remoteFixtMap {
 			for _, f := range fs {
-				if _, ok := lfs[f.GetEntity().GetName()]; ok {
+				if _, ok := lfs[f.Resolved.GetEntity().GetName()]; ok {
 					continue
 				}
-				rfs[f.GetEntity().GetName()] = struct{}{}
-				if f.GetEntity().GetFixture() != "" {
-					return nil, fmt.Errorf(`nested remote fixtures are not supported; parent of %v is %v, want ""`, f.GetEntity().GetName(), f.GetEntity().GetFixture())
+				rfs[f.Resolved.GetEntity().GetName()] = struct{}{}
+				if f.Resolved.GetEntity().GetFixture() != "" {
+					return nil, fmt.Errorf(`nested remote fixtures are not supported; parent of %v is %v, want ""`, f.Resolved.GetEntity().GetName(), f.Resolved.GetEntity().GetFixture())
 				}
 			}
 		}
@@ -388,8 +386,8 @@ func RunLocalTests(ctx context.Context, cfg *config.Config, state *config.State,
 
 	var tests []*protocol.Entity
 	for _, t := range state.TestsToRun {
-		if t.GetHops() > 0 {
-			tests = append(tests, t.GetEntity())
+		if t.Resolved.GetHops() > 0 {
+			tests = append(tests, t.Resolved.GetEntity())
 		}
 	}
 	bundleRemoteFixtTests, err := categorize(tests)

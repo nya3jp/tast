@@ -27,7 +27,6 @@ import (
 	"chromiumos/tast/errors"
 	frameworkprotocol "chromiumos/tast/framework/protocol"
 	"chromiumos/tast/internal/logging"
-	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/internal/xcontext"
 )
@@ -129,23 +128,23 @@ func listTests(ctx context.Context, cfg *config.Config, drv *driver.Driver) ([]*
 
 	shard := sharding.Compute(tests, cfg.ShardIndex(), cfg.TotalShards())
 
-	// Convert protocol.ResolvedEntity to resultsjson.Result.
+	// Convert driver.BundleEntity to resultsjson.Result.
 	results := make([]*resultsjson.Result, len(shard.Included))
 	for i, re := range shard.Included {
-		test, err := resultsjson.NewTest(re.GetEntity())
+		test, err := resultsjson.NewTest(re.Resolved.GetEntity())
 		if err != nil {
 			return nil, err
 		}
 		results[i] = &resultsjson.Result{
 			Test:       *test,
-			SkipReason: strings.Join(re.GetSkip().GetReasons(), ", "),
+			SkipReason: strings.Join(re.Resolved.GetSkip().GetReasons(), ", "),
 		}
 	}
 	return results, nil
 }
 
 // verifyTestNames returns nil if all given test names have a match.
-func verifyTestNames(patterns []string, tests []*protocol.ResolvedEntity) error {
+func verifyTestNames(patterns []string, tests []*driver.BundleEntity) error {
 	// Make a map of given test names (NOT patterns).
 	m, err := testing.NewMatcher(patterns)
 	if err != nil {
@@ -153,7 +152,7 @@ func verifyTestNames(patterns []string, tests []*protocol.ResolvedEntity) error 
 	}
 	var testNames []string
 	for _, t := range tests {
-		testNames = append(testNames, t.Entity.Name)
+		testNames = append(testNames, t.Resolved.GetEntity().GetName())
 	}
 	unmatched := m.UnmatchedPatterns(testNames)
 	if len(unmatched) != 0 {
@@ -197,7 +196,7 @@ func runTests(ctx context.Context, cfg *config.Config, state *config.State, drv 
 	state.TestsToRun = shard.Included
 	state.TestNamesToSkip = nil
 	for _, t := range shard.Excluded {
-		state.TestNamesToSkip = append(state.TestNamesToSkip, t.GetEntity().GetName())
+		state.TestNamesToSkip = append(state.TestNamesToSkip, t.Resolved.GetEntity().GetName())
 	}
 
 	if cfg.TotalShards() > 1 {

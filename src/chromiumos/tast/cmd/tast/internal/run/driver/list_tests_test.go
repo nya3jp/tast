@@ -60,39 +60,45 @@ func newDriverForListingTests(t *gotesting.T) (context.Context, *driver.Driver, 
 	return ctx, drv, features
 }
 
-func makeResolvedEntityForTest(bundle string, hops int32, name, attr string, varDeps []string) *protocol.ResolvedEntity {
-	return &protocol.ResolvedEntity{
-		Entity: &protocol.Entity{
-			Type:         protocol.EntityType_TEST,
-			Name:         name,
-			Attributes:   []string{attr},
-			Dependencies: &protocol.EntityDependencies{},
-			Contacts:     &protocol.EntityContacts{},
-			LegacyData: &protocol.EntityLegacyData{
-				Timeout:      ptypes.DurationProto(0),
-				Bundle:       bundle,
-				VariableDeps: varDeps,
+func makeBundleEntityForTest(bundle string, hops int32, name, attr string, varDeps []string) *driver.BundleEntity {
+	return &driver.BundleEntity{
+		Bundle: bundle,
+		Resolved: &protocol.ResolvedEntity{
+			Entity: &protocol.Entity{
+				Type:         protocol.EntityType_TEST,
+				Name:         name,
+				Attributes:   []string{attr},
+				Dependencies: &protocol.EntityDependencies{},
+				Contacts:     &protocol.EntityContacts{},
+				LegacyData: &protocol.EntityLegacyData{
+					Timeout:      ptypes.DurationProto(0),
+					Bundle:       bundle,
+					VariableDeps: varDeps,
+				},
 			},
+			Hops: hops,
 		},
-		Hops: hops,
 	}
 }
 
-func makeResolvedEntityForFixture(bundle string, hops int32, name, parent, start string) *protocol.ResolvedEntity {
-	return &protocol.ResolvedEntity{
-		Entity: &protocol.Entity{
-			Type:         protocol.EntityType_FIXTURE,
-			Name:         name,
-			Fixture:      parent,
-			Dependencies: &protocol.EntityDependencies{},
-			Contacts:     &protocol.EntityContacts{},
-			LegacyData: &protocol.EntityLegacyData{
-				Timeout: ptypes.DurationProto(0),
-				Bundle:  bundle,
+func makeBundleEntityForFixture(bundle string, hops int32, name, parent, start string) *driver.BundleEntity {
+	return &driver.BundleEntity{
+		Bundle: bundle,
+		Resolved: &protocol.ResolvedEntity{
+			Entity: &protocol.Entity{
+				Type:         protocol.EntityType_FIXTURE,
+				Name:         name,
+				Fixture:      parent,
+				Dependencies: &protocol.EntityDependencies{},
+				Contacts:     &protocol.EntityContacts{},
+				LegacyData: &protocol.EntityLegacyData{
+					Timeout: ptypes.DurationProto(0),
+					Bundle:  bundle,
+				},
 			},
+			Hops:             hops,
+			StartFixtureName: start,
 		},
-		Hops:             hops,
-		StartFixtureName: start,
 	}
 }
 
@@ -104,11 +110,11 @@ func TestDriver_ListMatchedTests(t *gotesting.T) {
 		t.Fatal("ListMatchedTests failed: ", err)
 	}
 
-	want := []*protocol.ResolvedEntity{
-		makeResolvedEntityForTest("bundle1", 1, "pkg.Local1", "yes", nil),
-		makeResolvedEntityForTest("bundle2", 1, "pkg.Local3", "yes", []string{"var"}),
-		makeResolvedEntityForTest("bundle1", 0, "pkg.Remote2", "yes", nil),
-		makeResolvedEntityForTest("bundle2", 0, "pkg.Remote4", "yes", nil),
+	want := []*driver.BundleEntity{
+		makeBundleEntityForTest("bundle1", 1, "pkg.Local1", "yes", nil),
+		makeBundleEntityForTest("bundle2", 1, "pkg.Local3", "yes", []string{"var"}),
+		makeBundleEntityForTest("bundle1", 0, "pkg.Remote2", "yes", nil),
+		makeBundleEntityForTest("bundle2", 0, "pkg.Remote4", "yes", nil),
 	}
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected list of tests (-got +want):\n%v", diff)
@@ -123,9 +129,9 @@ func TestDriver_ListMatchedLocalTests(t *gotesting.T) {
 		t.Fatal("ListMatchedLocalTests failed: ", err)
 	}
 
-	want := []*protocol.ResolvedEntity{
-		makeResolvedEntityForTest("bundle1", 1, "pkg.Local1", "yes", nil),
-		makeResolvedEntityForTest("bundle2", 1, "pkg.Local3", "yes", []string{"var"}),
+	want := []*driver.BundleEntity{
+		makeBundleEntityForTest("bundle1", 1, "pkg.Local1", "yes", nil),
+		makeBundleEntityForTest("bundle2", 1, "pkg.Local3", "yes", []string{"var"}),
 	}
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected list of tests (-got +want):\n%v", diff)
@@ -140,11 +146,11 @@ func TestDriver_ListLocalFixtures(t *gotesting.T) {
 		t.Fatal("ListLocalFixtures failed: ", err)
 	}
 
-	want := []*protocol.ResolvedEntity{
-		makeResolvedEntityForFixture("bundle1", 1, "fixt.LocalA", "fixt.RemoteA", "fixt.RemoteA"),
-		makeResolvedEntityForFixture("bundle1", 1, "fixt.LocalB", "fixt.LocalA", "fixt.RemoteA"),
-		makeResolvedEntityForFixture("bundle2", 1, "fixt.LocalA", "fixt.LocalB", "fixt.RemoteB"),
-		makeResolvedEntityForFixture("bundle2", 1, "fixt.LocalB", "fixt.RemoteB", "fixt.RemoteB"),
+	want := []*driver.BundleEntity{
+		makeBundleEntityForFixture("bundle1", 1, "fixt.LocalA", "fixt.RemoteA", "fixt.RemoteA"),
+		makeBundleEntityForFixture("bundle1", 1, "fixt.LocalB", "fixt.LocalA", "fixt.RemoteA"),
+		makeBundleEntityForFixture("bundle2", 1, "fixt.LocalA", "fixt.LocalB", "fixt.RemoteB"),
+		makeBundleEntityForFixture("bundle2", 1, "fixt.LocalB", "fixt.RemoteB", "fixt.RemoteB"),
 	}
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected list of tests (-got +want):\n%v", diff)
@@ -159,11 +165,11 @@ func TestDriver_ListRemoteFixtures(t *gotesting.T) {
 		t.Fatal("ListRemoteFixtures failed: ", err)
 	}
 
-	want := []*protocol.ResolvedEntity{
-		makeResolvedEntityForFixture("bundle1", 0, "fixt.RemoteA", "fixt.RemoteB", ""),
-		makeResolvedEntityForFixture("bundle1", 0, "fixt.RemoteB", "", ""),
-		makeResolvedEntityForFixture("bundle2", 0, "fixt.RemoteA", "", ""),
-		makeResolvedEntityForFixture("bundle2", 0, "fixt.RemoteB", "fixt.RemoteA", ""),
+	want := []*driver.BundleEntity{
+		makeBundleEntityForFixture("bundle1", 0, "fixt.RemoteA", "fixt.RemoteB", ""),
+		makeBundleEntityForFixture("bundle1", 0, "fixt.RemoteB", "", ""),
+		makeBundleEntityForFixture("bundle2", 0, "fixt.RemoteA", "", ""),
+		makeBundleEntityForFixture("bundle2", 0, "fixt.RemoteB", "fixt.RemoteA", ""),
 	}
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Errorf("Unexpected list of tests (-got +want):\n%v", diff)

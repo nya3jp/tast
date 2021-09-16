@@ -11,23 +11,27 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 
+	"chromiumos/tast/cmd/tast/internal/run/driver"
 	"chromiumos/tast/cmd/tast/internal/run/sharding"
 	"chromiumos/tast/internal/protocol"
 )
 
-// makeTests creates a list of ResolvedEntity from pattern.
-// For each character in the pattern, a ResolvedEntity having the character as
+// makeTests creates a list of BundleEntity from pattern.
+// For each character in the pattern, a BundleEntity having the character as
 // its name is created. If a character is lower-cased, it is marked as skipped.
-func makeTests(pattern string) []*protocol.ResolvedEntity {
-	var tests []*protocol.ResolvedEntity
+func makeTests(pattern string) []*driver.BundleEntity {
+	var tests []*driver.BundleEntity
 	for _, ch := range pattern {
-		t := &protocol.ResolvedEntity{
-			Entity: &protocol.Entity{
-				Name: string(ch),
+		t := &driver.BundleEntity{
+			Bundle: "bundle",
+			Resolved: &protocol.ResolvedEntity{
+				Entity: &protocol.Entity{
+					Name: string(ch),
+				},
 			},
 		}
 		if unicode.IsLower(ch) {
-			t.Skip = &protocol.Skip{Reasons: []string{"Skip it"}}
+			t.Resolved.Skip = &protocol.Skip{Reasons: []string{"Skip it"}}
 		}
 		tests = append(tests, t)
 	}
@@ -37,7 +41,7 @@ func makeTests(pattern string) []*protocol.ResolvedEntity {
 func TestCompute(t *gotesting.T) {
 	for _, tc := range []struct {
 		name   string
-		tests  []*protocol.ResolvedEntity
+		tests  []*driver.BundleEntity
 		shards []*sharding.Shard
 	}{
 		{

@@ -127,6 +127,10 @@ Tests in this group are not used for build verification.
 				Desc: `Indicates that this test should run on audio/video analysis pool.`,
 			},
 			{
+				Name: "graphics_igt",
+				Desc: `Indicates that this test is running igt-gpu-tools.`,
+			},
+			{
 				Name: "graphics_video_platformdecoding",
 				Desc: `Indicates that this test is exercising platform video decoding abilities.`,
 			},

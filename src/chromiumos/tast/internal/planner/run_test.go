@@ -1179,6 +1179,63 @@ func TestRunFixtureSetUpFailure(t *gotesting.T) {
 	}
 }
 
+func TestRunFixturePreTestFailure(t *gotesting.T) {
+	fixt1 := &testing.FixtureInstance{
+		Name: "fixt1",
+		Impl: testfixture.New(
+			testfixture.WithPreTest(func(ctx context.Context, s *testing.FixtTestState) {
+				logging.Info(ctx, "fixt1 PreTest")
+			}),
+			testfixture.WithPostTest(func(ctx context.Context, s *testing.FixtTestState) {
+				logging.Info(ctx, "fixt1 PostTest")
+			})),
+	}
+	fixt2 := &testing.FixtureInstance{
+		Name: "fixt2",
+		Impl: testfixture.New(
+			testfixture.WithPreTest(func(ctx context.Context, s *testing.FixtTestState) {
+				s.Error("fixt2 PreTest fail")
+			}),
+			testfixture.WithPostTest(func(ctx context.Context, s *testing.FixtTestState) {
+				logging.Info(ctx, "fixt2 PostTest")
+			})),
+		Parent: "fixt1",
+	}
+	cfg := &Config{
+		Fixtures: map[string]*testing.FixtureInstance{
+			fixt1.Name: fixt1,
+			fixt2.Name: fixt2,
+		},
+	}
+
+	tests := []*testing.TestInstance{{
+		Name:    "pkg.Test",
+		Fixture: "fixt2",
+		Func: func(ctx context.Context, s *testing.State) {
+			s.Log("Test")
+		},
+		Timeout: time.Minute,
+	}}
+
+	msgs := runTestsAndReadAll(t, tests, cfg)
+
+	want := []protocol.Event{
+		&protocol.EntityStartEvent{Entity: fixt1.EntityProto()},
+		&protocol.EntityStartEvent{Entity: fixt2.EntityProto()},
+		&protocol.EntityStartEvent{Entity: tests[0].EntityProto()},
+		&protocol.EntityLogEvent{EntityName: tests[0].Name, Text: "fixt1 PreTest"},
+		&protocol.EntityErrorEvent{EntityName: tests[0].Name, Error: &protocol.Error{Reason: "fixt2 PreTest fail"}},
+		// fixt2 PostTest and test should not run.
+		&protocol.EntityLogEvent{EntityName: tests[0].Name, Text: "fixt1 PostTest"},
+		&protocol.EntityEndEvent{EntityName: tests[0].Name},
+		&protocol.EntityEndEvent{EntityName: fixt2.Name},
+		&protocol.EntityEndEvent{EntityName: fixt1.Name},
+	}
+	if diff := cmp.Diff(msgs, want); diff != "" {
+		t.Error("Output mismatch (-got +want):\n", diff)
+	}
+}
+
 func TestRunFixtureRemoteSetUpFailure(t *gotesting.T) {
 	cfg := &Config{
 		StartFixtureName: "remoteFixt",

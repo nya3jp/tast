@@ -274,32 +274,32 @@ func (st *FixtureStack) Reset(ctx context.Context) error {
 }
 
 // PreTest runs PreTests on the fixtures.
-func (st *FixtureStack) PreTest(ctx context.Context, troot *testing.TestEntityRoot) error {
+// It returns a post test hook that runs PostTests on the fixtures.
+func (st *FixtureStack) PreTest(ctx context.Context, troot *testing.TestEntityRoot) (func(context.Context, *testing.TestEntityRoot) error, error) {
 	if status := st.Status(); status != statusGreen {
-		return fmt.Errorf("BUG: PreTest called for a %v fixture", status)
+		return nil, fmt.Errorf("BUG: PreTest called for a %v fixture", status)
 	}
 
+	var postTests []func(context.Context, *testing.TestEntityRoot) error
 	for _, f := range st.stack {
-		if err := f.RunPreTest(ctx, troot); err != nil {
-			return err
+		pt, err := f.RunPreTest(ctx, troot)
+		if err != nil {
+			return nil, err
 		}
-	}
-	return nil
-}
-
-// PostTest runs PostTests on the fixtures.
-func (st *FixtureStack) PostTest(ctx context.Context, troot *testing.TestEntityRoot) error {
-	if status := st.Status(); status != statusGreen {
-		return fmt.Errorf("BUG: PostTest called for a %v fixture", status)
+		postTests = append(postTests, pt)
 	}
 
-	for i := len(st.stack) - 1; i >= 0; i-- {
-		f := st.stack[i]
-		if err := f.RunPostTest(ctx, troot); err != nil {
-			return err
+	return func(ctx context.Context, troot *testing.TestEntityRoot) error {
+		if status := st.Status(); status != statusGreen {
+			return fmt.Errorf("BUG: PostTest called for a %v fixture", status)
 		}
-	}
-	return nil
+		for i := len(postTests) - 1; i >= 0; i-- {
+			if err := postTests[i](ctx, troot); err != nil {
+				return err
+			}
+		}
+		return nil
+	}, nil
 }
 
 // MarkDirty marks the fixture stack dirty. It returns an error if the stack is
@@ -464,21 +464,35 @@ func (f *statefulFixture) RunReset(ctx context.Context) error {
 	return nil
 }
 
-func (f *statefulFixture) RunPreTest(ctx context.Context, troot *testing.TestEntityRoot) error {
+// RunPreTest runs PreTest on the fixture. It returns a post test hook.
+func (f *statefulFixture) RunPreTest(ctx context.Context, troot *testing.TestEntityRoot) (func(context.Context, *testing.TestEntityRoot) error, error) {
 	if status := f.Status(); status != statusGreen {
-		return fmt.Errorf("BUG: RunPreTest called for a %v fixture", status)
+		return nil, fmt.Errorf("BUG: RunPreTest called for a %v fixture", status)
+	}
+
+	doNothing := func(context.Context, *testing.TestEntityRoot) error { return nil }
+	if troot.HasError() {
+		// If errors are already reported, PreTest and PostTest will not run.
+		return doNothing, nil
 	}
 
 	ctx = f.newTestContext(ctx, troot, troot.LogSink())
 	s := troot.NewFixtTestState(ctx)
 	name := fmt.Sprintf("%s:PreTest", f.fixt.Name)
-
-	return safeCall(ctx, name, f.fixt.PreTestTimeout, defaultGracePeriod, errorOnPanic(s), func(ctx context.Context) {
+	if err := safeCall(ctx, name, f.fixt.PreTestTimeout, defaultGracePeriod, errorOnPanic(s), func(ctx context.Context) {
 		f.fixt.Impl.PreTest(ctx, s)
-	})
+	}); err != nil {
+		return nil, err
+	}
+
+	if troot.HasError() {
+		// If errors are reported in PreTest, PostTest will not run.
+		return doNothing, nil
+	}
+	return f.runPostTest, nil
 }
 
-func (f *statefulFixture) RunPostTest(ctx context.Context, troot *testing.TestEntityRoot) error {
+func (f *statefulFixture) runPostTest(ctx context.Context, troot *testing.TestEntityRoot) error {
 	if status := f.Status(); status != statusGreen {
 		return fmt.Errorf("BUG: RunPostTest called for a %v fixture", status)
 	}

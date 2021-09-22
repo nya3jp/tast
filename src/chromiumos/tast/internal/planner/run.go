@@ -806,31 +806,32 @@ func runTestWithRoot(ctx context.Context, t *testing.TestInstance, root *testing
 		}
 	}
 
-	if !root.HasError() {
-		if err := func() error {
-			ctx, cancel := context.WithCancel(ctx)
-			defer cancel()
+	if err := func() error {
+		ctx, cancel := context.WithCancel(ctx)
+		defer cancel()
 
-			// Run fixture pre-test hooks.
-			if err := stack.PreTest(ctx, root); err != nil {
-				return err
-			}
+		// Run fixture pre-test hooks.
+		postTest, err := stack.PreTest(ctx, root)
+		if err != nil {
+			return err
+		}
 
+		if !root.HasError() {
 			// Run the test function itself.
 			if err := safeCall(ctx, codeName, t.Timeout, timeoutOrDefault(t.ExitTimeout, pcfg.GracePeriod()), errorOnPanic(testState), func(ctx context.Context) {
 				t.Func(ctx, testState)
 			}); err != nil {
 				return err
 			}
+		}
 
-			// Run fixture post-test hooks.
-			if err := stack.PostTest(ctx, root); err != nil {
-				return err
-			}
-			return nil
-		}(); err != nil {
+		// Run fixture post-test hooks.
+		if err := postTest(ctx, root); err != nil {
 			return err
 		}
+		return nil
+	}(); err != nil {
+		return err
 	}
 
 	// If this is the final test using this precondition, close it

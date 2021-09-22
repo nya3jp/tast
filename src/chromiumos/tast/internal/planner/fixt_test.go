@@ -266,10 +266,11 @@ func TestFixtureStackContext(t *gotesting.T) {
 	if err := stack.Reset(ctx); err != nil {
 		t.Fatal("Reset: ", err)
 	}
-	if err := stack.PreTest(ctx, troot); err != nil {
+	postTest, err := stack.PreTest(ctx, troot)
+	if err != nil {
 		t.Fatal("PreTest: ", err)
 	}
-	if err := stack.PostTest(ctx, troot); err != nil {
+	if err := postTest(ctx, troot); err != nil {
 		t.Fatal("PostTest: ", err)
 	}
 	if err := stack.Pop(ctx); err != nil {
@@ -329,10 +330,11 @@ func TestFixtureStackState(t *gotesting.T) {
 	if err := stack.Push(ctx, fixt); err != nil {
 		t.Fatal("Push: ", err)
 	}
-	if err := stack.PreTest(ctx, troot); err != nil {
+	postTest, err := stack.PreTest(ctx, troot)
+	if err != nil {
 		t.Fatal("PreTest: ", err)
 	}
-	if err := stack.PostTest(ctx, troot); err != nil {
+	if err := postTest(ctx, troot); err != nil {
 		t.Fatal("PostTest: ", err)
 	}
 	if err := stack.Pop(ctx); err != nil {
@@ -519,10 +521,11 @@ func TestFixtureStackOutputGreen(t *gotesting.T) {
 	if err := stack.Push(ctx, fixt2); err != nil {
 		t.Fatal("Push 2: ", err)
 	}
-	if err := stack.PreTest(ctx, troot); err != nil {
+	postTest, err := stack.PreTest(ctx, troot)
+	if err != nil {
 		t.Fatal("PreTest: ", err)
 	}
-	if err := stack.PostTest(ctx, troot); err != nil {
+	if err := postTest(ctx, troot); err != nil {
 		t.Fatal("PostTest: ", err)
 	}
 	if err := stack.Reset(ctx); err != nil {

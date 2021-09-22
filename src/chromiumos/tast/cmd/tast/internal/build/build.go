@@ -91,8 +91,11 @@ func buildOne(ctx context.Context, tgt *Target) error {
 		return fmt.Errorf("unknown arch %q", tgt.Arch)
 	}
 
-	const ldFlags = "-ldflags=-s -w"
-	cmd := exec.Command("go", "build", ldFlags, "-o", tgt.Out, tgt.Pkg)
+	flags := "-ldflags=-s -w"
+	if tgt.Debug {
+		flags = "-gcflags=all=-N -l"
+	}
+	cmd := exec.Command("go", "build", flags, "-o", tgt.Out, tgt.Pkg)
 	cmd.Env = append(os.Environ(),
 		"GOPATH="+strings.Join(tgt.Workspaces, ":"),
 		// Disable cgo and PIE on building Tast binaries. See:

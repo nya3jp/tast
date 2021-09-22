@@ -13,6 +13,7 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/devserver"
 	"chromiumos/tast/errors"
+	"chromiumos/tast/internal/debugger"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/ssh"
 )
@@ -55,6 +56,14 @@ func startServices(ctx context.Context, cfg *config.Config, conn *ssh.Conn) (svc
 				ephemeralDevserver.Close()
 			}
 		}()
+
+		for _, debugPort := range []int{cfg.DebuggerPort(debugger.LocalTestRunner), cfg.DebuggerPort(debugger.LocalBundle)} {
+			if debugPort != 0 {
+				if err := debugger.ForwardPort(ctx, conn, debugPort); err != nil {
+					return nil, err
+				}
+			}
+		}
 	}
 
 	return &Services{

@@ -95,3 +95,24 @@ func TestKeyDir(t *testing.T) {
 	}
 	hst.Close(context.Background())
 }
+func TestGenerateRemoteAddress(t *testing.T) {
+	t.Parallel()
+	srv, err := sshtest.NewSSHServer(&userKey.PublicKey, hostKey, func(*sshtest.ExecReq) {})
+	if err != nil {
+		t.Fatal("Failed starting server: ", err)
+	}
+	defer srv.Close()
+
+	ctx := context.Background()
+	hst, err := sshtest.ConnectToServer(ctx, srv, userKey, &ssh.Options{})
+	if err != nil {
+		t.Fatal("Unexpectedly unable to connect to server: ", err)
+	}
+	defer hst.Close(ctx)
+
+	got, err := hst.GenerateRemoteAddress(2345)
+	want := "127.0.0.1:2345"
+	if got != want {
+		t.Fatalf("hst.GenerateRemoteAddress(2345) = %q, want: %q", got, want)
+	}
+}

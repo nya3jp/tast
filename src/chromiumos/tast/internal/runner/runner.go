@@ -226,7 +226,7 @@ func runTestsCompat(ctx context.Context, mw *control.MessageWriter, scfg *Static
 		return errors.Wrap(err, "RunTests: failed to call")
 	}
 
-	initReq := &protocol.RunTestsRequest{Type: &protocol.RunTestsRequest_RunTestsInit{RunTestsInit: &protocol.RunTestsInit{RunConfig: rcfg}}}
+	initReq := &protocol.RunTestsRequest{Type: &protocol.RunTestsRequest_RunTestsInit{RunTestsInit: &protocol.RunTestsInit{RunConfig: rcfg, DebugPort: uint32(args.RunTests.DebugPort)}}}
 	if err := srv.Send(initReq); err != nil {
 		return errors.Wrap(err, "RunTests: failed to send initial request")
 	}

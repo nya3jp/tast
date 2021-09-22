@@ -7,7 +7,6 @@ package runnerclient
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"os"
 	"strconv"
@@ -15,7 +14,10 @@ import (
 	"time"
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
+	"chromiumos/tast/cmd/tast/internal/run/genericexec"
 	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
+	"chromiumos/tast/errors"
+	"chromiumos/tast/internal/debugger"
 	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/protocol"
@@ -112,17 +114,27 @@ func runRemoteTestsOnce(ctx context.Context, cfg *config.Config, state *config.S
 				CompanionDUTs:     cfg.CompanionDUTs(),
 			},
 			BundleGlob: cfg.RemoteBundleGlob(),
+			DebugPort:  cfg.DebuggerPort(debugger.RemoteBundle),
 		},
 	}
 
 	// Backfill deprecated fields in case we're executing an old test runner.
 	args.FillDeprecated()
 
-	cmd := remoteRunnerCommand(cfg)
+	debugPort := cfg.DebuggerPort(debugger.RemoteTestRunner)
+	if err := debugger.FindPreemptiveDebuggerErrors(debugPort); err != nil {
+		return nil, nil, err
+	}
+	cmdName, cmdArgs := debugger.RewriteDebugCommand(debugPort, cfg.RemoteRunner())
+	cmd := genericexec.CommandExec(cmdName, cmdArgs...)
+
 	logging.Infof(ctx, "Starting %v locally", cfg.RemoteRunner())
 	proc, err := cmd.Interact(ctx, nil)
 	if err != nil {
 		return nil, nil, err
+	}
+	if debugPort != 0 {
+		logging.Infof(ctx, "Waiting for debugger for remote test runner on port %d", debugPort)
 	}
 	// TODO(b/187793617): Fix leak of proc.
 

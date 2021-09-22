@@ -296,6 +296,22 @@ func (s *Conn) NewForwarder(localAddr, remoteAddr string, errFunc func(error)) (
 	return s.ForwardLocalToRemote("tcp", localAddr, remoteAddr, errFunc)
 }
 
+// GenerateRemoteAddress generates an address corresponding to the same one as
+// we are currently connected to, but on a different port.
+func (s *Conn) GenerateRemoteAddress(port int) (string, error) {
+	host, _, err := net.SplitHostPort(s.cl.RemoteAddr().String())
+	if err != nil {
+		return "", err
+	}
+	return fmt.Sprintf("%s:%d", host, port), nil
+}
+
+// Dial initiates a connection to the addr from the remote host.
+// The resulting connection has a zero LocalAddr() and RemoteAddr().
+func (s *Conn) Dial(addr, net string) (net.Conn, error) {
+	return s.cl.Dial(addr, net)
+}
+
 func checkSupportedNetwork(network string) error {
 	allowList := map[string]struct{}{
 		"tcp":  {},

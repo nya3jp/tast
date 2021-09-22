@@ -24,6 +24,7 @@ import (
 	"chromiumos/tast/ctxutil"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/bundle"
+	"chromiumos/tast/internal/debugger"
 	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/linuxssh"
 	"chromiumos/tast/internal/logging"
@@ -54,7 +55,7 @@ func newRemoteFixtureService(ctx context.Context, cfg *config.Config) (rf *remot
 		return nil, fmt.Errorf("newRemoteFixtureService: %v", err)
 	}
 
-	rpcCL, err := rpc.DialExec(ctx, serverPath, false, &protocol.HandshakeRequest{})
+	rpcCL, err := rpc.DialExec(ctx, serverPath, 0, false, &protocol.HandshakeRequest{})
 
 	if err != nil {
 		return nil, fmt.Errorf("rpc.NewClient: %v", err)
@@ -460,10 +461,19 @@ func runLocalTestsForFixture(ctx context.Context, names []string, remoteFixt str
 func startLocalRunner(ctx context.Context, cfg *config.Config, hst *ssh.Conn, args *jsonprotocol.RunnerArgs) (genericexec.Process, error) {
 	args.FillDeprecated()
 
-	cmd := localRunnerCommand(cfg, hst)
+	debugPort := cfg.DebuggerPort(debugger.LocalTestRunner)
+	// Ideally we'd like to check that the port is available on the remote machine,
+	// but there's no easy way to do that. We would have to run something like lsof
+	// and parse the results here.
+	cmdName, cmdArgs := debugger.RewriteDebugCommand(debugPort, cfg.LocalRunner())
+	cmd := genericexec.CommandSSH(hst, "env", append(append(localTestRunnerEnvVars(cfg), cmdName), cmdArgs...)...)
+
 	proc, err := cmd.Interact(ctx, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to start local_test_runner: %v", err)
+	}
+	if debugPort != 0 {
+		logging.Infof(ctx, "Waiting for debugger for local_test_runner on port %d", debugPort)
 	}
 
 	go json.NewEncoder(proc.Stdin()).Encode(args)
@@ -520,8 +530,12 @@ func runLocalTestsOnce(ctx context.Context, cfg *config.Config, state *config.St
 			},
 			BundleGlob: cfg.LocalBundleGlob(),
 			Devservers: localDevservers,
+			DebugPort:  cfg.DebuggerPort(debugger.LocalBundle),
 		},
 	}
+
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
 
 	proc, err := startLocalRunner(ctx, cfg, drv.SSHConn(), &args)
 	if err != nil {
@@ -538,9 +552,6 @@ func runLocalTestsOnce(ctx context.Context, cfg *config.Config, state *config.St
 	df := func(ctx context.Context, outDir string) string {
 		return diagnoseLocalRunError(ctx, drv, outDir)
 	}
-
-	ctx, cancel := context.WithCancel(ctx)
-	defer cancel()
 
 	results, unstarted, rerr := readTestOutput(ctx, cfg, state, proc.Stdout(), crf, df)
 

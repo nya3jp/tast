@@ -144,6 +144,8 @@ type RunnerRunTestsArgs struct {
 	// If it is empty, DefaultBuildArtifactsURL in runner.Config is used.
 	// DEPRECATED: Use bundle.BundleRunTestsArgs.BuildArtifactsURL instead.
 	BuildArtifactsURLDeprecated string `json:"buildArtifactsUrl,omitempty"`
+	// DebugPort is the port which the debugger for the test bundle will listen on.
+	DebugPort int `json:"debugPort"`
 }
 
 // RunnerListTestsArgs is nested within RunnerArgs and contains arguments used by RunnerListTestsMode.

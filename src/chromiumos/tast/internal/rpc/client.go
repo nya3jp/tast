@@ -21,6 +21,8 @@ import (
 	"google.golang.org/grpc/status"
 
 	"chromiumos/tast/errors"
+	"chromiumos/tast/internal/debugger"
+	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/timing"
@@ -126,8 +128,12 @@ func (c *ExecClient) Close() error {
 // DialExec establishes a gRPC connection to an executable on host.
 // If newSession is true, a new session is created for the subprocess and its
 // descendants so that all of them are killed on closing Client.
-func DialExec(ctx context.Context, path string, newSession bool, req *protocol.HandshakeRequest) (*ExecClient, error) {
-	cmd := exec.CommandContext(ctx, path, "-rpc")
+func DialExec(ctx context.Context, path string, debugPort int, newSession bool, req *protocol.HandshakeRequest) (*ExecClient, error) {
+	if err := debugger.FindPreemptiveDebuggerErrors(debugPort); err != nil {
+		return nil, err
+	}
+	name, args := debugger.RewriteDebugCommand(debugPort, path, "-rpc")
+	cmd := exec.CommandContext(ctx, name, args...)
 	stdin, err := cmd.StdinPipe()
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed to run %s for RPC", path)
@@ -142,6 +148,9 @@ func DialExec(ctx context.Context, path string, newSession bool, req *protocol.H
 	}
 	if err := cmd.Start(); err != nil {
 		return nil, errors.Wrapf(err, "failed to run %s for RPC", path)
+	}
+	if debugPort > 0 {
+		logging.Infof(ctx, "Waiting for debugger on port %d", debugPort)
 	}
 	c, err := NewClient(ctx, stdout, stdin, req)
 	if err != nil {

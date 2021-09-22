@@ -154,7 +154,13 @@ message EntityLegacyData {
   string bundle = 5;
 }
 
-message RunTestsInit { RunConfig run_config = 1; }
+message RunTestsInit {
+  RunConfig run_config = 1;
+
+  // DebugPort is the port which the debugger for the test bundle will listen
+  // on. Note that this field is only used for test runners, and not bundles.
+  uint32 debug_port = 10;
+}
 
 // RunConfig contains parameters needed to run tests in a test bundle.
 message RunConfig {

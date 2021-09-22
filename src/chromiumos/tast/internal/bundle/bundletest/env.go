@@ -182,6 +182,7 @@ func (e *Env) DialRemoteBundle(ctx context.Context, t *gotesting.T, name string)
 	cl, err := rpc.DialExec(
 		ctx,
 		filepath.Join(e.rootDir, remoteBundleDir, name),
+		0,
 		false,
 		&protocol.HandshakeRequest{
 			BundleInitParams: &protocol.BundleInitParams{

@@ -13,14 +13,21 @@ import (
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/genericexec"
+	"chromiumos/tast/internal/debugger"
 	"chromiumos/tast/internal/jsonprotocol"
-	"chromiumos/tast/ssh"
 )
 
-func localRunnerCommand(cfg *config.Config, hst *ssh.Conn) *genericexec.SSHCmd {
+// localTestRunnerEnvVars returns a list of environment variables to be
+// passed to the local test runner.
+func localTestRunnerEnvVars(cfg *config.Config) []string {
+	var execArgs []string
+	// The delve debugger attempts to write to a directory not on the stateful partition.
+	// This ensures it instead writes to the stateful partition.
+	if cfg.DebuggerPort(debugger.LocalTestRunner) > 0 || cfg.DebuggerPort(debugger.LocalBundle) > 0 {
+		execArgs = append(execArgs, "XDG_CONFIG_HOME=/mnt/stateful_partition/xdg_config")
+	}
 	// Set proxy-related environment variables for local_test_runner so it will use them
 	// when accessing network.
-	execArgs := []string{"env"}
 	if cfg.Proxy() == config.ProxyEnv {
 		// Proxy-related variables can be either uppercase or lowercase.
 		// See https://golang.org/pkg/net/http/#ProxyFromEnvironment.
@@ -33,13 +40,7 @@ func localRunnerCommand(cfg *config.Config, hst *ssh.Conn) *genericexec.SSHCmd {
 			}
 		}
 	}
-	execArgs = append(execArgs, cfg.LocalRunner())
-
-	return genericexec.CommandSSH(hst, execArgs[0], execArgs[1:]...)
-}
-
-func remoteRunnerCommand(cfg *config.Config) *genericexec.ExecCmd {
-	return genericexec.CommandExec(cfg.RemoteRunner())
+	return execArgs
 }
 
 // runTestRunnerCommand executes the given test_runner r. The test_runner reads

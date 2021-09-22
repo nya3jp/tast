@@ -37,4 +37,6 @@ type Target struct {
 	Workspaces []string
 	// Out is the path to save a built executable to.
 	Out string
+	// Debug is a flag indicating whether the binary should be built with debug symbols.
+	Debug bool
 }

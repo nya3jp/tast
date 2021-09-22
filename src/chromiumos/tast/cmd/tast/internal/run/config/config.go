@@ -14,6 +14,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 
@@ -24,6 +25,7 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/reporting"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/command"
+	"chromiumos/tast/internal/debugger"
 	"chromiumos/tast/internal/planner"
 	"chromiumos/tast/internal/protocol"
 )
@@ -115,7 +117,8 @@ type MutableConfig struct {
 	DefaultVarsDirs  []string
 	MaybeMissingVars string
 
-	MsgTimeout time.Duration
+	MsgTimeout    time.Duration
+	DebuggerPorts map[debugger.DebugTarget]int
 }
 
 // Config contains shared configuration information for running or listing tests.
@@ -247,6 +250,11 @@ func (c *Config) CheckTestDeps() bool { return c.m.CheckTestDeps }
 // WaitUntilReady is whether to wait for DUT to be ready before running tests.
 func (c *Config) WaitUntilReady() bool { return c.m.WaitUntilReady }
 
+// DebuggerPort is a mapping from binary to the port we want to debug said binary on.
+func (c *Config) DebuggerPort(debugPort debugger.DebugTarget) int {
+	return c.m.DebuggerPorts[debugPort]
+}
+
 // ExtraUSEFlags is additional USE flags to inject when determining features.
 func (c *Config) ExtraUSEFlags() []string { return append([]string(nil), c.m.ExtraUSEFlags...) }
 
@@ -361,6 +369,30 @@ func (c *MutableConfig) SetFlags(f *flag.FlagSet) {
 	// Both listing and running test requires checking dependency due to sharding.
 	// This flag is only used for testing or debugging purpose.
 	f.BoolVar(&c.CheckTestDeps, "checktestdeps", true, "skip tests with software dependencies unsatisfied by DUT")
+
+	c.DebuggerPorts = map[debugger.DebugTarget]int{
+		debugger.LocalBundle:      0,
+		debugger.RemoteBundle:     0,
+		debugger.LocalTestRunner:  0,
+		debugger.RemoteTestRunner: 0,
+	}
+	debuggerFlag := command.RepeatedFlag(func(v string) error {
+		parts := strings.SplitN(v, ":", 2)
+		if len(parts) != 2 {
+			return errors.New("attachdebugger flag must take the form 'local:2345', 'remote:2346', or similar")
+		}
+		target := debugger.DebugTarget(parts[0])
+		if _, ok := c.DebuggerPorts[target]; !ok {
+			return fmt.Errorf("unknown debug target '%s' - valid targets are %s, %s, %s, and %s", target, debugger.LocalBundle, debugger.RemoteBundle, debugger.LocalTestRunner, debugger.RemoteTestRunner)
+		}
+		port, err := strconv.Atoi(parts[1])
+		if err != nil {
+			return errors.New("attachdebugger flag must take the form 'local:2345', 'remote:2346', or similar")
+		}
+		c.DebuggerPorts[target] = port
+		return nil
+	})
+	f.Var(&debuggerFlag, "attachdebugger", "start up the delve debugger for a process and wait for a process to attach on a given port")
 
 	// Some flags are only relevant if we're running tests rather than listing them.
 	if c.Mode == RunTestsMode {
@@ -546,6 +578,14 @@ func (c *MutableConfig) DeriveDefaults() error {
 	}
 	if c.ShardIndex < 0 || c.ShardIndex >= c.TotalShards {
 		return fmt.Errorf("shard index %v is out of range", c.ShardIndex)
+	}
+
+	if !c.Build {
+		for _, port := range c.DebuggerPorts {
+			if port != 0 {
+				return errors.New("-build=false and -attachdebugger are mutually exclusive (you can't attach the debugger to something that wasn't built with debugging symbols)")
+			}
+		}
 	}
 
 	return nil

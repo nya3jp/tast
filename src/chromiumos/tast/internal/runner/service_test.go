@@ -121,7 +121,7 @@ func TestTestServerRunTests(t *gotesting.T) {
 	cl := startTestServer(t, &protocol.RunnerInitParams{BundleGlob: bundleGlob})
 
 	// Call RunTests.
-	events, err := protocoltest.RunTestsForEvents(context.Background(), cl, nil)
+	events, err := protocoltest.RunTestsForEvents(context.Background(), cl, &protocol.RunConfig{})
 	if err != nil {
 		t.Fatalf("RunTests failed: %v", err)
 	}

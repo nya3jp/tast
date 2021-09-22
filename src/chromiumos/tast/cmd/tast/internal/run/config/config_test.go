@@ -15,6 +15,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
+	"chromiumos/tast/internal/debugger"
 	"chromiumos/tast/testutil"
 )
 
@@ -313,5 +314,81 @@ func TestConfigRemoteBundleGlob(t *testing.T) {
 	cfg.Build = false
 	if g := cfg.Freeze().RemoteBundleGlob(); g == "/mock/remote_budnle_dir/*" {
 		t.Fatalf(`Unexpected non-build RemoteBundleGlob: got %q, want "/mock/remote_budnle_dir/*"`, g)
+	}
+}
+
+func TestConfigAttachDebugger(t *testing.T) {
+	for _, tc := range []struct {
+		name      string
+		args      []string
+		want      map[debugger.DebugTarget]int
+		wantError bool
+	}{
+		{
+			name: "empty",
+			args: []string{},
+			want: map[debugger.DebugTarget]int{
+				debugger.LocalBundle:      0,
+				debugger.RemoteBundle:     0,
+				debugger.LocalTestRunner:  0,
+				debugger.RemoteTestRunner: 0,
+			},
+		}, {
+			name: "single",
+			args: []string{"-attachdebugger=local:2345"},
+			want: map[debugger.DebugTarget]int{
+				debugger.LocalBundle:      2345,
+				debugger.RemoteBundle:     0,
+				debugger.LocalTestRunner:  0,
+				debugger.RemoteTestRunner: 0,
+			},
+		}, {
+			name: "many",
+			args: []string{"-attachdebugger=local:2345", "-attachdebugger=remote:2346", "-attachdebugger=local-test-runner:2347", "-attachdebugger=remote-test-runner:2348"},
+			want: map[debugger.DebugTarget]int{
+				debugger.LocalBundle:      2345,
+				debugger.RemoteBundle:     2346,
+				debugger.LocalTestRunner:  2347,
+				debugger.RemoteTestRunner: 2348,
+			},
+		}, {
+			name:      "invalid-name-only",
+			args:      []string{"-attachdebugger=local"},
+			wantError: true,
+		}, {
+			name:      "invalid-port-only",
+			args:      []string{"-attachdebugger=:2345"},
+			wantError: true,
+		}, {
+			name:      "invalid-unknown-target",
+			args:      []string{"-attachdebugger=unknown:2348"},
+			wantError: true,
+		}, {
+			name:      "invalid-mutually-exclusive",
+			args:      []string{"-attachdebugger=local:2345", "-build=false"},
+			wantError: true,
+		},
+	} {
+		cfg := config.NewMutableConfig(config.RunTestsMode, "", "")
+		flags := flag.NewFlagSet("", flag.ContinueOnError)
+		cfg.SetFlags(flags)
+		reflect.DeepEqual("string", []string{})
+
+		err := flags.Parse(tc.args)
+		if err == nil {
+			err = cfg.DeriveDefaults()
+		}
+		if tc.wantError {
+			if err == nil {
+				t.Fatalf(`Expected an error to be thrown in %s, but it succeeded`, tc.name)
+			}
+		} else {
+			if err != nil {
+				t.Fatalf(`Unexpected error in %s: %s`, tc.name, err.Error())
+			}
+			if got := cfg.DebuggerPorts; !reflect.DeepEqual(got, tc.want) {
+				t.Errorf("cfg.DebuggerPorts = %q; want %q", got, tc.want)
+			}
+		}
 	}
 }

@@ -517,6 +517,10 @@ Parallels boot-up testing. Otherwise the same as group:crosbolt.`,
 		Desc:     `Borealis related tests.`,
 		Subattrs: []*attr{
 			{
+				Name: "borealis_cq",
+				Desc: `Indicate this test should be scheduled on cq.`,
+			},
+			{
 				Name: "borealis_perbuild",
 				Desc: `Indicate this test should be scheduled per build.`,
 			},

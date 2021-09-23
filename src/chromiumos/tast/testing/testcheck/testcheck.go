@@ -13,12 +13,24 @@ import (
 	"chromiumos/tast/internal/testing"
 )
 
+// SetAllTestsforTest sets all tests to use in this package. This is mainly used in unittest for testing purpose.
+func SetAllTestsforTest(tests []*testing.TestInstance) func() {
+	allTests = func() []*testing.TestInstance {
+		return tests
+	}
+	return func() {
+		allTests = testing.GlobalRegistry().AllTests
+	}
+}
+
 // TestFilter defines the condition whether or not the test should be checked.
 type TestFilter func(t *testing.TestInstance) bool
 
+var allTests func() []*testing.TestInstance = testing.GlobalRegistry().AllTests
+
 func getTests(t *gotesting.T, f TestFilter) []*testing.TestInstance {
 	var tests []*testing.TestInstance
-	for _, tst := range testing.GlobalRegistry().AllTests() {
+	for _, tst := range allTests() {
 		if f(tst) {
 			tests = append(tests, tst)
 		}
@@ -46,6 +58,27 @@ func Timeout(t *gotesting.T, f TestFilter, minTimeout time.Duration) {
 	for _, tst := range getTests(t, f) {
 		if tst.Timeout < minTimeout {
 			t.Errorf("%s: timeout is too short (%v < %v)", tst.Name, tst.Timeout, minTimeout)
+		}
+	}
+}
+
+// Attr checks that tests matched by f declare requiredAttr as Attr.
+// requiredAttr is a list of items which the test's Attr must have.
+// Each item is one or '|'-connected multiple attr names, and Attr must contain at least one of them.
+func Attr(t *gotesting.T, f TestFilter, requiredAttr []string) {
+	for _, tst := range getTests(t, f) {
+		attr := make(map[string]struct{})
+		for _, at := range tst.Attr {
+			attr[at] = struct{}{}
+		}
+	CheckLoop:
+		for _, at := range requiredAttr {
+			for _, item := range strings.Split(at, "|") {
+				if _, ok := attr[item]; ok {
+					continue CheckLoop
+				}
+			}
+			t.Errorf("%s: missing attribute %q", tst.Name, at)
 		}
 	}
 }

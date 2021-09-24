@@ -118,7 +118,7 @@ func TestRunTests(t *gotesting.T) {
 		},
 	})
 
-	cl := startTestServer(t, scfg)
+	cl := startTestServer(t, scfg, &protocol.HandshakeRequest{})
 
 	events, err := protocoltest.RunTestsForEvents(cl, cfg, true)
 	if err != nil {
@@ -163,7 +163,7 @@ func TestRunTests(t *gotesting.T) {
 
 func TestRunTestsNoTests(t *gotesting.T) {
 	// RunTests should report success when no test is executed.
-	cl := startTestServer(t, NewStaticConfig(testing.NewRegistry("bundle"), 0, Delegate{}))
+	cl := startTestServer(t, NewStaticConfig(testing.NewRegistry("bundle"), 0, Delegate{}), &protocol.HandshakeRequest{})
 	if _, err := protocoltest.RunTestsForEvents(cl, &protocol.RunConfig{}, false); err != nil {
 		t.Fatalf("RunTests failed for empty tests: %v", err)
 	}
@@ -190,41 +190,47 @@ func TestRunTestsRemoteData(t *gotesting.T) {
 	})
 
 	cfg := &protocol.RunConfig{
-		RemoteTestConfig: &protocol.RemoteTestConfig{
-			PrimaryDut: &protocol.DUTConfig{
-				SshConfig: &protocol.SSHConfig{
-					Target:  td.Srvs[0].Addr().String(),
-					KeyFile: td.UserKeyFile,
-				},
-			},
-			LocalBundleDir: "/mock/local/bundles",
-			MetaTestConfig: &protocol.MetaTestConfig{
-				TastPath: "/bogus/tast",
-				RunFlags: []string{"-flag1", "-flag2"},
-			},
-		},
 		Features: &protocol.Features{
 			Infra: &protocol.InfraFeatures{
 				Vars: map[string]string{"var1": "value1"},
 			},
 		},
 	}
+	hr := &protocol.HandshakeRequest{
+		BundleInitParams: &protocol.BundleInitParams{
+			BundleConfig: &protocol.BundleConfig{
+				PrimaryTarget: &protocol.TargetDevice{
+					DutConfig: &protocol.DUTConfig{
+						SshConfig: &protocol.SSHConfig{
+							Target:  td.Srvs[0].Addr().String(),
+							KeyFile: td.UserKeyFile,
+						},
+					},
+					BundleDir: "/mock/local/bundles",
+				},
+				MetaTestConfig: &protocol.MetaTestConfig{
+					TastPath: "/bogus/tast",
+					RunFlags: []string{"-flag1", "-flag2"},
+				},
+			},
+		},
+	}
 
-	cl := startTestServer(t, NewStaticConfig(reg, time.Minute, Delegate{}))
+	cl := startTestServer(t, NewStaticConfig(reg, time.Minute, Delegate{}), hr)
 	if _, err := protocoltest.RunTestsForEvents(cl, cfg, false); err != nil {
 		t.Fatalf("RunTests failed: %v", err)
 	}
 
 	// The test should have access to information related to remote tests.
 	expMeta := &testing.Meta{
-		Target:   cfg.RemoteTestConfig.PrimaryDut.SshConfig.Target,
-		TastPath: cfg.RemoteTestConfig.MetaTestConfig.TastPath,
-		RunFlags: cfg.RemoteTestConfig.MetaTestConfig.RunFlags,
+		Target:   hr.BundleInitParams.BundleConfig.PrimaryTarget.DutConfig.SshConfig.Target,
+		TastPath: hr.BundleInitParams.BundleConfig.MetaTestConfig.TastPath,
+		RunFlags: hr.BundleInitParams.BundleConfig.MetaTestConfig.RunFlags,
 	}
-	if !reflect.DeepEqual(meta, expMeta) {
-		t.Errorf("Test got Meta %+v; want %+v", *meta, *expMeta)
+	if diff := cmp.Diff(meta, expMeta); diff != "" {
+		t.Errorf("Meta mismtach; (-got +want)\n%v", diff)
 	}
-	expHint := testing.NewRPCHint(cfg.RemoteTestConfig.LocalBundleDir, cfg.Features.Infra.Vars)
+	expHint := testing.NewRPCHint(hr.BundleInitParams.BundleConfig.PrimaryTarget.BundleDir, cfg.Features.Infra.Vars)
 	if !reflect.DeepEqual(hint, expHint) {
 		t.Errorf("Test got RPCHint %+v; want %+v", *hint, *expHint)
 	}
@@ -239,7 +245,7 @@ func TestRunTestsOutDir(t *gotesting.T) {
 
 	outDir := filepath.Join(td, "out")
 
-	cl := startTestServer(t, NewStaticConfig(testing.NewRegistry("bundle"), 0, Delegate{}))
+	cl := startTestServer(t, NewStaticConfig(testing.NewRegistry("bundle"), 0, Delegate{}), &protocol.HandshakeRequest{})
 	cfg := &protocol.RunConfig{
 		Dirs: &protocol.RunDirectories{
 			OutDir: outDir,
@@ -283,7 +289,7 @@ func TestRunTestsStartFixture(t *gotesting.T) {
 			return nil, nil
 		},
 	})
-	cl := startTestServer(t, scfg)
+	cl := startTestServer(t, scfg, &protocol.HandshakeRequest{})
 	if _, err := protocoltest.RunTestsForEvents(cl, cfg, false); err != nil {
 		t.Fatalf("RunTests failed: %v", err)
 	}
@@ -300,7 +306,7 @@ func TestRunTestsStartFixture(t *gotesting.T) {
 			return nil, nil
 		},
 	})
-	cl = startTestServer(t, scfg)
+	cl = startTestServer(t, scfg, &protocol.HandshakeRequest{})
 	if _, err := protocoltest.RunTestsForEvents(cl, cfg, false); err != nil {
 		t.Fatalf("RunTests failed: %v", err)
 	}
@@ -324,7 +330,7 @@ func TestRunTestsReadyFunc(t *gotesting.T) {
 			return nil
 		},
 	})
-	cl := startTestServer(t, scfg)
+	cl := startTestServer(t, scfg, &protocol.HandshakeRequest{})
 	if _, err := protocoltest.RunTestsForEvents(cl, cfg, false); err != nil {
 		t.Fatalf("RunTests failed: %v", err)
 	}
@@ -337,7 +343,7 @@ func TestRunTestsReadyFunc(t *gotesting.T) {
 	scfg = NewStaticConfig(reg, time.Minute, Delegate{
 		Ready: func(context.Context) error { return errors.New(msg) },
 	})
-	cl = startTestServer(t, scfg)
+	cl = startTestServer(t, scfg, &protocol.HandshakeRequest{})
 	_, err := protocoltest.RunTestsForEvents(cl, cfg, false)
 	if err == nil {
 		t.Fatal("RunTests unexpectedly succeeded despite ready hook failure")
@@ -362,7 +368,7 @@ func TestRunTestsReadyFuncDisabled(t *gotesting.T) {
 			return nil
 		},
 	})
-	cl := startTestServer(t, scfg)
+	cl := startTestServer(t, scfg, &protocol.HandshakeRequest{})
 	if _, err := protocoltest.RunTestsForEvents(cl, cfg, false); err != nil {
 		t.Fatalf("RunTests failed: %v", err)
 	}
@@ -385,7 +391,7 @@ func TestRunTestsTestHook(t *gotesting.T) {
 			}
 		},
 	})
-	cl := startTestServer(t, scfg)
+	cl := startTestServer(t, scfg, &protocol.HandshakeRequest{})
 	if _, err := protocoltest.RunTestsForEvents(cl, cfg, false); err != nil {
 		t.Fatalf("RunTests failed: %v", err)
 	}
@@ -412,7 +418,7 @@ func TestRunTestsRunHook(t *gotesting.T) {
 			}, nil
 		},
 	})
-	cl := startTestServer(t, scfg)
+	cl := startTestServer(t, scfg, &protocol.HandshakeRequest{})
 	if _, err := protocoltest.RunTestsForEvents(cl, cfg, false); err != nil {
 		t.Fatalf("RunTests failed: %v", err)
 	}
@@ -433,17 +439,23 @@ func TestRunTestsRemoteCantConnect(t *gotesting.T) {
 
 	// RunTests should fail if the initial connection to the DUT couldn't be
 	// established since the user key wasn't passed.
-	cfg := &protocol.RunConfig{
-		RemoteTestConfig: &protocol.RemoteTestConfig{
-			PrimaryDut: &protocol.DUTConfig{
-				SshConfig: &protocol.SSHConfig{
-					Target: td.Srvs[0].Addr().String(),
-					// KeyFile is missing.
+	cfg := &protocol.RunConfig{}
+	hr := &protocol.HandshakeRequest{
+		BundleInitParams: &protocol.BundleInitParams{
+			BundleConfig: &protocol.BundleConfig{
+				PrimaryTarget: &protocol.TargetDevice{
+					DutConfig: &protocol.DUTConfig{
+						SshConfig: &protocol.SSHConfig{
+							Target: td.Srvs[0].Addr().String(),
+							// KeyFile is missing.
+						},
+					},
 				},
 			},
 		},
 	}
-	cl := startTestServer(t, NewStaticConfig(reg, time.Minute, Delegate{}))
+
+	cl := startTestServer(t, NewStaticConfig(reg, time.Minute, Delegate{}), hr)
 	_, err := protocoltest.RunTestsForEvents(cl, cfg, false)
 	if err == nil {
 		t.Fatal("RunTests unexpectedly succeeded despite unconnectable server")
@@ -483,17 +495,23 @@ func TestRunTestsRemoteDUT(t *gotesting.T) {
 		realOutput = string(out)
 	}})
 
-	cfg := &protocol.RunConfig{
-		RemoteTestConfig: &protocol.RemoteTestConfig{
-			PrimaryDut: &protocol.DUTConfig{
-				SshConfig: &protocol.SSHConfig{
-					Target:  td.Srvs[0].Addr().String(),
-					KeyFile: td.UserKeyFile,
+	hr := &protocol.HandshakeRequest{
+		BundleInitParams: &protocol.BundleInitParams{
+			BundleConfig: &protocol.BundleConfig{
+				PrimaryTarget: &protocol.TargetDevice{
+					DutConfig: &protocol.DUTConfig{
+						SshConfig: &protocol.SSHConfig{
+							Target:  td.Srvs[0].Addr().String(),
+							KeyFile: td.UserKeyFile,
+						},
+					},
 				},
 			},
 		},
 	}
-	cl := startTestServer(t, NewStaticConfig(reg, time.Minute, Delegate{}))
+
+	cfg := &protocol.RunConfig{}
+	cl := startTestServer(t, NewStaticConfig(reg, time.Minute, Delegate{}), hr)
 	if _, err := protocoltest.RunTestsForEvents(cl, cfg, false); err != nil {
 		t.Fatalf("RunTests failed: %v", err)
 	}
@@ -525,17 +543,23 @@ func TestRunTestsRemoteReconnectBetweenTests(t *gotesting.T) {
 	reg.AddTestInstance(&testing.TestInstance{Name: "pkg.Test1", Func: makeFunc(&conn1)})
 	reg.AddTestInstance(&testing.TestInstance{Name: "pkg.Test2", Func: makeFunc(&conn2)})
 
-	cfg := &protocol.RunConfig{
-		RemoteTestConfig: &protocol.RemoteTestConfig{
-			PrimaryDut: &protocol.DUTConfig{
-				SshConfig: &protocol.SSHConfig{
-					Target:  td.Srvs[0].Addr().String(),
-					KeyFile: td.UserKeyFile,
+	cfg := &protocol.RunConfig{}
+	hr := &protocol.HandshakeRequest{
+		BundleInitParams: &protocol.BundleInitParams{
+			BundleConfig: &protocol.BundleConfig{
+				PrimaryTarget: &protocol.TargetDevice{
+					DutConfig: &protocol.DUTConfig{
+						SshConfig: &protocol.SSHConfig{
+							Target:  td.Srvs[0].Addr().String(),
+							KeyFile: td.UserKeyFile,
+						},
+					},
 				},
 			},
 		},
 	}
-	cl := startTestServer(t, NewStaticConfig(reg, time.Minute, Delegate{}))
+
+	cl := startTestServer(t, NewStaticConfig(reg, time.Minute, Delegate{}), hr)
 	if _, err := protocoltest.RunTestsForEvents(cl, cfg, false); err != nil {
 		t.Fatalf("RunTests failed: %v", err)
 	}
@@ -558,16 +582,22 @@ func TestRunTestsRemoteBeforeReboot(t *gotesting.T) {
 		s.DUT().Reboot(ctx)
 	}})
 
-	cfg := &protocol.RunConfig{
-		RemoteTestConfig: &protocol.RemoteTestConfig{
-			PrimaryDut: &protocol.DUTConfig{
-				SshConfig: &protocol.SSHConfig{
-					Target:  td.Srvs[0].Addr().String(),
-					KeyFile: td.UserKeyFile,
+	cfg := &protocol.RunConfig{}
+	hr := &protocol.HandshakeRequest{
+		BundleInitParams: &protocol.BundleInitParams{
+			BundleConfig: &protocol.BundleConfig{
+				PrimaryTarget: &protocol.TargetDevice{
+					DutConfig: &protocol.DUTConfig{
+						SshConfig: &protocol.SSHConfig{
+							Target:  td.Srvs[0].Addr().String(),
+							KeyFile: td.UserKeyFile,
+						},
+					},
 				},
 			},
 		},
 	}
+
 	ranBeforeRebootCount := 0
 	scfg := NewStaticConfig(reg, time.Minute, Delegate{
 		BeforeReboot: func(context.Context, *dut.DUT) error {
@@ -576,7 +606,7 @@ func TestRunTestsRemoteBeforeReboot(t *gotesting.T) {
 		},
 	})
 
-	cl := startTestServer(t, scfg)
+	cl := startTestServer(t, scfg, hr)
 	if _, err := protocoltest.RunTestsForEvents(cl, cfg, false); err != nil {
 		t.Fatalf("RunTests failed: %v", err)
 	}
@@ -620,26 +650,31 @@ func TestRunTestsRemoteCompanionDUTs(t *gotesting.T) {
 		realOutput = string(out)
 	}})
 
-	cfg := &protocol.RunConfig{
-		RemoteTestConfig: &protocol.RemoteTestConfig{
-			PrimaryDut: &protocol.DUTConfig{
-				SshConfig: &protocol.SSHConfig{
-					Target:  td.Srvs[0].Addr().String(),
-					KeyFile: td.UserKeyFile,
+	cfg := &protocol.RunConfig{}
+	hr := &protocol.HandshakeRequest{
+		BundleInitParams: &protocol.BundleInitParams{
+			BundleConfig: &protocol.BundleConfig{
+				PrimaryTarget: &protocol.TargetDevice{
+					DutConfig: &protocol.DUTConfig{
+						SshConfig: &protocol.SSHConfig{
+							Target:  td.Srvs[0].Addr().String(),
+							KeyFile: td.UserKeyFile,
+						},
+					},
 				},
-			},
-			CompanionDuts: map[string]*protocol.DUTConfig{
-				role: {
-					SshConfig: &protocol.SSHConfig{
-						Target:  td.Srvs[1].Addr().String(),
-						KeyFile: td.UserKeyFile,
+				CompanionDuts: map[string]*protocol.DUTConfig{
+					role: {
+						SshConfig: &protocol.SSHConfig{
+							Target:  td.Srvs[1].Addr().String(),
+							KeyFile: td.UserKeyFile,
+						},
 					},
 				},
 			},
 		},
 	}
 
-	cl := startTestServer(t, NewStaticConfig(reg, time.Minute, Delegate{}))
+	cl := startTestServer(t, NewStaticConfig(reg, time.Minute, Delegate{}), hr)
 	if _, err := protocoltest.RunTestsForEvents(cl, cfg, false); err != nil {
 		t.Fatalf("RunTests failed: %v", err)
 	}

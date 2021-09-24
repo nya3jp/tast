@@ -262,8 +262,8 @@ type BundleRunTestsArgs struct {
 }
 
 // Proto generates protocol.RunConfig.
-func (a *BundleRunTestsArgs) Proto() *protocol.RunConfig {
-	var remoteCfg *protocol.RemoteTestConfig
+func (a *BundleRunTestsArgs) Proto() (*protocol.RunConfig, *protocol.BundleConfig) {
+	var bundleConfig *protocol.BundleConfig
 	var tlwSelfName string
 	// We consider that BundleRunTestsArgs is for remote tests if Target is
 	// non-empty.
@@ -280,17 +280,19 @@ func (a *BundleRunTestsArgs) Proto() *protocol.RunConfig {
 				},
 			}
 		}
-		remoteCfg = &protocol.RemoteTestConfig{
-			PrimaryDut: &protocol.DUTConfig{
-				SshConfig: &protocol.SSHConfig{
-					Target:  a.Target,
-					KeyFile: a.KeyFile,
-					KeyDir:  a.KeyDir,
+		bundleConfig = &protocol.BundleConfig{
+			PrimaryTarget: &protocol.TargetDevice{
+				DutConfig: &protocol.DUTConfig{
+					SshConfig: &protocol.SSHConfig{
+						Target:  a.Target,
+						KeyFile: a.KeyFile,
+						KeyDir:  a.KeyDir,
+					},
+					TlwName: a.DUTName,
 				},
-				TlwName: a.DUTName,
+				BundleDir: a.LocalBundleDir,
 			},
-			CompanionDuts:  companionDUTs,
-			LocalBundleDir: a.LocalBundleDir,
+			CompanionDuts: companionDUTs,
 			MetaTestConfig: &protocol.MetaTestConfig{
 				TastPath: a.TastPath,
 				RunFlags: a.RunFlags,
@@ -320,14 +322,13 @@ func (a *BundleRunTestsArgs) Proto() *protocol.RunConfig {
 			DownloadMode:      a.DownloadMode.Proto(),
 			BuildArtifactsUrl: a.BuildArtifactsURL,
 		},
-		RemoteTestConfig: remoteCfg,
 		StartFixtureState: &protocol.StartFixtureState{
 			Name:   a.StartFixtureName,
 			Errors: startFixtErrors,
 		},
 		HeartbeatInterval: ptypes.DurationProto(a.HeartbeatInterval),
 		WaitUntilReady:    a.WaitUntilReady,
-	}
+	}, bundleConfig
 }
 
 // BundleListTestsArgs is nested within BundleArgs and contains arguments used by BundleListTestsMode.

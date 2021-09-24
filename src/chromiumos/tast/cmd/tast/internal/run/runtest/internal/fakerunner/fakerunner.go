@@ -47,7 +47,7 @@ type Config struct {
 	// DownloadPrivateBundles implements the DownloadPrivateBundles handler.
 	DownloadPrivateBundles func(req *protocol.DownloadPrivateBundlesRequest) (*protocol.DownloadPrivateBundlesResponse, error)
 	// OnRunTestsInit is called on the beginning of RunTests.
-	OnRunTestsInit func(init *protocol.RunTestsInit)
+	OnRunTestsInit func(init *protocol.RunTestsInit, bcfg *protocol.BundleConfig)
 }
 
 // Runner represents a fake test runner.
@@ -101,9 +101,10 @@ func (r *Runner) RunJSON(stdin io.Reader, stdout, stderr io.Writer) int {
 
 	switch args.Mode {
 	case jsonprotocol.RunnerRunTestsMode:
+		rcfg, bcfg := args.RunTests.BundleArgs.Proto()
 		r.cfg.OnRunTestsInit(&protocol.RunTestsInit{
-			RunConfig: args.RunTests.BundleArgs.Proto(),
-		})
+			RunConfig: rcfg,
+		}, bcfg)
 		fallthrough
 	case jsonprotocol.RunnerListTestsMode, jsonprotocol.RunnerListFixturesMode:
 		argsData, _ := json.Marshal(&args) // should always succeed
@@ -178,7 +179,7 @@ func (r *Runner) RunGRPC(stdin io.Reader, stdout, stderr io.Writer) int {
 	defer conn.Close()
 
 	rpc.RunServer(stdin, stdout, nil, func(srv *grpc.Server, req *protocol.HandshakeRequest) error {
-		protocol.RegisterTestServiceServer(srv, newTestService(r.cfg, protocol.NewTestServiceClient(conn.Conn())))
+		protocol.RegisterTestServiceServer(srv, newTestService(r.cfg, protocol.NewTestServiceClient(conn.Conn()), req.GetBundleInitParams().GetBundleConfig()))
 		return nil
 	})
 	return 0
@@ -186,12 +187,13 @@ func (r *Runner) RunGRPC(stdin io.Reader, stdout, stderr io.Writer) int {
 
 type testService struct {
 	protocol.UnimplementedTestServiceServer
-	cfg *Config
-	cl  protocol.TestServiceClient
+	cfg  *Config
+	bcfg *protocol.BundleConfig
+	cl   protocol.TestServiceClient
 }
 
-func newTestService(cfg *Config, cl protocol.TestServiceClient) *testService {
-	return &testService{cfg: cfg, cl: cl}
+func newTestService(cfg *Config, cl protocol.TestServiceClient, bcfg *protocol.BundleConfig) *testService {
+	return &testService{cfg: cfg, bcfg: bcfg, cl: cl}
 }
 
 func (s *testService) ListEntities(ctx context.Context, req *protocol.ListEntitiesRequest) (*protocol.ListEntitiesResponse, error) {
@@ -203,7 +205,7 @@ func (s *testService) RunTests(downstream protocol.TestService_RunTestsServer) e
 	if err != nil {
 		return err
 	}
-	s.cfg.OnRunTestsInit(initReq.GetRunTestsInit())
+	s.cfg.OnRunTestsInit(initReq.GetRunTestsInit(), s.bcfg)
 
 	upstream, err := s.cl.RunTests(downstream.Context())
 	if err != nil {

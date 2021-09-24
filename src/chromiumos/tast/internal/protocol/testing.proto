@@ -10,7 +10,6 @@ import "google/protobuf/duration.proto";
 import "google/protobuf/timestamp.proto";
 
 import "features.proto";
-import "handshake.proto";
 
 option go_package = "chromiumos/tast/internal/protocol";
 
@@ -160,7 +159,7 @@ message RunConfig {
   Features features = 3;
   ServiceConfig service_config = 4;
   DataFileConfig data_file_config = 5;
-  RemoteTestConfig remote_test_config = 6;
+  reserved 6;
   StartFixtureState start_fixture_state = 7;
 
   // HeartbeatInterval is the interval in seconds at which heartbeat messages
@@ -221,17 +220,6 @@ message DataFileConfig {
   // BuildArtifactsUrl is the URL of Google Cloud Storage directory, ending with
   // a slash, containing build artifacts for the current Chrome OS image.
   string build_artifacts_url = 2;
-}
-
-// RemoteTestConfig contains parameters needed by remote tests.
-message RemoteTestConfig {
-  DUTConfig primary_dut = 1;
-  map<string, DUTConfig> companion_duts = 2;
-  // LocalBundleDir is the directory on the DUT where local test bundle
-  // executables are located. This path is used by remote tests to invoke gRPC
-  // services in local test bundles.
-  string local_bundle_dir = 3;
-  MetaTestConfig meta_test_config = 4;
 }
 
 // StartFixtureState contains information of a start fixture.

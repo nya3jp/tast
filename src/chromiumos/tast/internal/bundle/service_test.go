@@ -21,7 +21,7 @@ import (
 // startTestServer starts an in-process gRPC server and returns a connection as
 // TestServiceClient. On completion of the current test, resources are released
 // automatically.
-func startTestServer(t *gotesting.T, scfg *StaticConfig) protocol.TestServiceClient {
+func startTestServer(t *gotesting.T, scfg *StaticConfig, req *protocol.HandshakeRequest) protocol.TestServiceClient {
 	sr, cw := io.Pipe()
 	cr, sw := io.Pipe()
 	t.Cleanup(func() {
@@ -31,7 +31,7 @@ func startTestServer(t *gotesting.T, scfg *StaticConfig) protocol.TestServiceCli
 
 	go run(context.Background(), []string{"-rpc"}, sr, sw, ioutil.Discard, scfg)
 
-	conn, err := rpc.NewClient(context.Background(), cr, cw, &protocol.HandshakeRequest{})
+	conn, err := rpc.NewClient(context.Background(), cr, cw, req)
 	if err != nil {
 		t.Fatalf("Failed to connect to in-process gRPC server: %v", err)
 	}
@@ -56,7 +56,7 @@ func TestTestServerListEntities(t *gotesting.T) {
 
 	scfg := NewStaticConfig(reg, 0, Delegate{})
 
-	cl := startTestServer(t, scfg)
+	cl := startTestServer(t, scfg, &protocol.HandshakeRequest{})
 
 	// Call ListEntities.
 	got, err := cl.ListEntities(context.Background(), &protocol.ListEntitiesRequest{})
@@ -101,7 +101,7 @@ func TestTestServerListEntitiesTestSkips(t *gotesting.T) {
 
 	scfg := NewStaticConfig(reg, 0, Delegate{})
 
-	cl := startTestServer(t, scfg)
+	cl := startTestServer(t, scfg, &protocol.HandshakeRequest{})
 
 	// Call ListEntities.
 	got, err := cl.ListEntities(context.Background(), &protocol.ListEntitiesRequest{Features: features})
@@ -146,7 +146,7 @@ func TestTestServerListEntitiesStartFixtureNames(t *gotesting.T) {
 
 	scfg := NewStaticConfig(reg, 0, Delegate{})
 
-	cl := startTestServer(t, scfg)
+	cl := startTestServer(t, scfg, &protocol.HandshakeRequest{})
 
 	// Call ListEntities.
 	got, err := cl.ListEntities(context.Background(), &protocol.ListEntitiesRequest{})

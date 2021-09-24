@@ -48,11 +48,13 @@ func TestRemoteRun(t *gotesting.T) {
 	})
 
 	var gotInit *protocol.RunTestsInit
+	var gotBundleConfig *protocol.BundleConfig
 	env := runtest.SetUp(t,
 		runtest.WithLocalBundles(localReg),
 		runtest.WithRemoteBundles(remoteReg),
-		runtest.WithOnRunRemoteTestsInit(func(init *protocol.RunTestsInit) {
+		runtest.WithOnRunRemoteTestsInit(func(init *protocol.RunTestsInit, bcfg *protocol.BundleConfig) {
 			gotInit = init
+			gotBundleConfig = bcfg
 		}),
 	)
 	ctx := env.Context()
@@ -86,6 +88,40 @@ func TestRemoteRun(t *gotesting.T) {
 		t.Errorf("RunRemoteTests returned result for test %q; want %q", results[0].Name, remoteTestName)
 	}
 
+	wantBundleConfig := &protocol.BundleConfig{
+		PrimaryTarget: &protocol.TargetDevice{
+			BundleDir: cfg.LocalBundleDir(),
+			DutConfig: &protocol.DUTConfig{
+				SshConfig: &protocol.SSHConfig{
+					Target:  cfg.Target(),
+					KeyFile: cfg.KeyFile(),
+					KeyDir:  cfg.KeyDir(),
+				},
+				TlwName: cfg.Target(),
+			},
+		},
+		CompanionDuts: map[string]*protocol.DUTConfig{},
+		MetaTestConfig: &protocol.MetaTestConfig{
+			TastPath: exe,
+			RunFlags: []string{
+				"-build=" + strconv.FormatBool(cfg.Build()),
+				"-keyfile=" + cfg.KeyFile(),
+				"-keydir=" + cfg.KeyDir(),
+				"-remoterunner=" + cfg.RemoteRunner(),
+				"-remotebundledir=" + cfg.RemoteBundleDir(),
+				"-remotedatadir=" + cfg.RemoteDataDir(),
+				"-localrunner=" + cfg.LocalRunner(),
+				"-localbundledir=" + cfg.LocalBundleDir(),
+				"-localdatadir=" + cfg.LocalDataDir(),
+				"-devservers=" + strings.Join(cfg.Devservers(), ","),
+				"-buildartifactsurl=" + cfg.BuildArtifactsURL(),
+			},
+		},
+	}
+	if diff := cmp.Diff(gotBundleConfig, wantBundleConfig); diff != "" {
+		t.Errorf("BundleConfig message mismatch (-got +want):\n%s", diff)
+	}
+
 	wantInit := &protocol.RunTestsInit{
 		RunConfig: &protocol.RunConfig{
 			Tests: nil,
@@ -110,34 +146,6 @@ func TestRemoteRun(t *gotesting.T) {
 			DataFileConfig: &protocol.DataFileConfig{
 				BuildArtifactsUrl: cfg.BuildArtifactsURL(),
 				DownloadMode:      protocol.DownloadMode_BATCH,
-			},
-			RemoteTestConfig: &protocol.RemoteTestConfig{
-				LocalBundleDir: cfg.LocalBundleDir(),
-				PrimaryDut: &protocol.DUTConfig{
-					SshConfig: &protocol.SSHConfig{
-						Target:  cfg.Target(),
-						KeyFile: cfg.KeyFile(),
-						KeyDir:  cfg.KeyDir(),
-					},
-					TlwName: cfg.Target(),
-				},
-				CompanionDuts: map[string]*protocol.DUTConfig{},
-				MetaTestConfig: &protocol.MetaTestConfig{
-					TastPath: exe,
-					RunFlags: []string{
-						"-build=" + strconv.FormatBool(cfg.Build()),
-						"-keyfile=" + cfg.KeyFile(),
-						"-keydir=" + cfg.KeyDir(),
-						"-remoterunner=" + cfg.RemoteRunner(),
-						"-remotebundledir=" + cfg.RemoteBundleDir(),
-						"-remotedatadir=" + cfg.RemoteDataDir(),
-						"-localrunner=" + cfg.LocalRunner(),
-						"-localbundledir=" + cfg.LocalBundleDir(),
-						"-localdatadir=" + cfg.LocalDataDir(),
-						"-devservers=" + strings.Join(cfg.Devservers(), ","),
-						"-buildartifactsurl=" + cfg.BuildArtifactsURL(),
-					},
-				},
 			},
 			StartFixtureState: &protocol.StartFixtureState{},
 			HeartbeatInterval: ptypes.DurationProto(time.Second),

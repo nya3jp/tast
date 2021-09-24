@@ -161,12 +161,17 @@ func runTestsCompat(ctx context.Context, mw *control.MessageWriter, scfg *Static
 	}()
 	go runRPCServer(scfg, sr, sw)
 
+	rcfg, bcfg := bundleArgs.RunTests.Proto()
+
 	params := &protocol.RunnerInitParams{
 		BundleGlob: args.RunTests.BundleGlob,
 	}
 	conn, err := rpc.NewClient(ctx, cr, cw, &protocol.HandshakeRequest{
 		RunnerInitParams: params,
-		BundleInitParams: &protocol.BundleInitParams{Vars: args.RunTests.BundleArgs.TestVars},
+		BundleInitParams: &protocol.BundleInitParams{
+			Vars:         args.RunTests.BundleArgs.TestVars,
+			BundleConfig: bcfg,
+		},
 	})
 	if err != nil {
 		return errors.Wrap(err, "failed to connect to in-process gRPC server")
@@ -221,8 +226,7 @@ func runTestsCompat(ctx context.Context, mw *control.MessageWriter, scfg *Static
 		return errors.Wrap(err, "RunTests: failed to call")
 	}
 
-	cfg := bundleArgs.RunTests.Proto()
-	initReq := &protocol.RunTestsRequest{Type: &protocol.RunTestsRequest_RunTestsInit{RunTestsInit: &protocol.RunTestsInit{RunConfig: cfg}}}
+	initReq := &protocol.RunTestsRequest{Type: &protocol.RunTestsRequest_RunTestsInit{RunTestsInit: &protocol.RunTestsInit{RunConfig: rcfg}}}
 	if err := srv.Send(initReq); err != nil {
 		return errors.Wrap(err, "RunTests: failed to send initial request")
 	}

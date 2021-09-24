@@ -15,7 +15,7 @@ import (
 
 // envConfig contains configurations of the testing environment.
 type envConfig struct {
-	OnRunRemoteTestsInit func(init *protocol.RunTestsInit)
+	OnRunRemoteTestsInit func(init *protocol.RunTestsInit, bcfg *protocol.BundleConfig)
 	LocalBundles         []*testing.Registry
 	RemoteBundles        []*testing.Registry
 
@@ -31,7 +31,7 @@ type dutConfig struct {
 	GetSysInfoState        func(req *protocol.GetSysInfoStateRequest) (*protocol.GetSysInfoStateResponse, error)
 	CollectSysInfo         func(req *protocol.CollectSysInfoRequest) (*protocol.CollectSysInfoResponse, error)
 	DownloadPrivateBundles func(req *protocol.DownloadPrivateBundlesRequest) (*protocol.DownloadPrivateBundlesResponse, error)
-	OnRunLocalTestsInit    func(init *protocol.RunTestsInit)
+	OnRunLocalTestsInit    func(init *protocol.RunTestsInit, bcfg *protocol.BundleConfig)
 }
 
 // EnvOption can be passed to SetUp to customize the testing environment.
@@ -98,7 +98,7 @@ func WithDownloadPrivateBundles(f func(req *protocol.DownloadPrivateBundlesReque
 
 // WithOnRunLocalTestsInit specifies a function that is called on the beginning
 // of RunTests for the local test runner.
-func WithOnRunLocalTestsInit(f func(init *protocol.RunTestsInit)) DUTOption {
+func WithOnRunLocalTestsInit(f func(init *protocol.RunTestsInit, bcfg *protocol.BundleConfig)) DUTOption {
 	return func(cfg *dutConfig) {
 		cfg.OnRunLocalTestsInit = f
 	}
@@ -106,7 +106,7 @@ func WithOnRunLocalTestsInit(f func(init *protocol.RunTestsInit)) DUTOption {
 
 // WithOnRunRemoteTestsInit specifies a function that is called on the beginning
 // of RunTests for the remote test runner.
-func WithOnRunRemoteTestsInit(f func(init *protocol.RunTestsInit)) EnvOption {
+func WithOnRunRemoteTestsInit(f func(init *protocol.RunTestsInit, bcfg *protocol.BundleConfig)) EnvOption {
 	return func(cfg *envConfig) {
 		cfg.OnRunRemoteTestsInit = f
 	}
@@ -157,7 +157,7 @@ func defaultEnvConfig() *envConfig {
 	})
 
 	return &envConfig{
-		OnRunRemoteTestsInit: func(init *protocol.RunTestsInit) {},
+		OnRunRemoteTestsInit: func(init *protocol.RunTestsInit, bcfg *protocol.BundleConfig) {},
 		LocalBundles:         []*testing.Registry{localReg},
 		RemoteBundles:        []*testing.Registry{remoteReg},
 		PrimaryDUT:           defaultDUTConfig(0),
@@ -197,6 +197,6 @@ func defaultDUTConfig(dutID int) *dutConfig {
 		DownloadPrivateBundles: func(req *protocol.DownloadPrivateBundlesRequest) (*protocol.DownloadPrivateBundlesResponse, error) {
 			return &protocol.DownloadPrivateBundlesResponse{}, nil
 		},
-		OnRunLocalTestsInit: func(init *protocol.RunTestsInit) {},
+		OnRunLocalTestsInit: func(init *protocol.RunTestsInit, bcfg *protocol.BundleConfig) {},
 	}
 }

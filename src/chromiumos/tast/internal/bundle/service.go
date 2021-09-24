@@ -15,10 +15,11 @@ import (
 type testServer struct {
 	protocol.UnimplementedTestServiceServer
 	scfg *StaticConfig
+	bcfg *protocol.BundleConfig
 }
 
-func newTestServer(scfg *StaticConfig) *testServer {
-	return &testServer{scfg: scfg}
+func newTestServer(scfg *StaticConfig, bcfg *protocol.BundleConfig) *testServer {
+	return &testServer{scfg: scfg, bcfg: bcfg}
 }
 
 func (s *testServer) ListEntities(ctx context.Context, req *protocol.ListEntitiesRequest) (*protocol.ListEntitiesResponse, error) {
@@ -36,29 +37,8 @@ func (s *testServer) RunTests(srv protocol.TestService_RunTestsServer) error {
 	if _, ok := initReq.GetType().(*protocol.RunTestsRequest_RunTestsInit); !ok {
 		return errors.Errorf("RunTests: unexpected initial request message: got %T, want %T", initReq.GetType(), &protocol.RunTestsRequest_RunTestsInit{})
 	}
-	init := initReq.GetRunTestsInit()
 
-	rcfg := init.GetRunConfig()
-	// Convert RemoteTestsConfig to BundleConfig
-	bcfg := extractBundleConfig(rcfg)
-
-	return runTests(ctx, srv, rcfg, s.scfg, bcfg)
-}
-
-func extractBundleConfig(rcfg *protocol.RunConfig) *protocol.BundleConfig {
-	var bcfg *protocol.BundleConfig
-	if rcfg.GetRemoteTestConfig() != nil {
-		bcfg = &protocol.BundleConfig{
-			PrimaryTarget: &protocol.TargetDevice{
-				DutConfig: rcfg.GetRemoteTestConfig().GetPrimaryDut(),
-				BundleDir: rcfg.GetRemoteTestConfig().GetLocalBundleDir(),
-			},
-			CompanionDuts:  rcfg.GetRemoteTestConfig().GetCompanionDuts(),
-			MetaTestConfig: rcfg.GetRemoteTestConfig().GetMetaTestConfig(),
-		}
-		rcfg.RemoteTestConfig = nil
-	}
-	return bcfg
+	return runTests(ctx, srv, initReq.GetRunTestsInit().GetRunConfig(), s.scfg, s.bcfg)
 }
 
 func listEntities(reg *testing.Registry, features *protocol.Features) []*protocol.ResolvedEntity {

@@ -476,7 +476,7 @@ func TestRunOutputFiles(t *gotesting.T) {
 }
 
 func TestRunEphemeralDevserver(t *gotesting.T) {
-	env := runtest.SetUp(t, runtest.WithOnRunLocalTestsInit(func(init *protocol.RunTestsInit) {
+	env := runtest.SetUp(t, runtest.WithOnRunLocalTestsInit(func(init *protocol.RunTestsInit, _ *protocol.BundleConfig) {
 		if ds := init.GetRunConfig().GetServiceConfig().GetDevservers(); len(ds) != 1 {
 			t.Errorf("Local runner: devservers=%#v; want 1 entry", ds)
 		}

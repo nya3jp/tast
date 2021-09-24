@@ -47,14 +47,18 @@ usage() {
   cat - <<EOF >&2
 Quickly builds the tast executable or its unit tests.
 
-Usage: ${CMD}                             Builds tast to ${TAST_OUT}.
-       ${CMD} -d                          Builds tast with debugging symbols to
-                                          ${TAST_OUT}.
-       ${CMD} -b <pkg> -o <path>          Builds <pkg> to <path>.
-       ${CMD} [-v] -T                     Tests all packages.
-       ${CMD} [-v] [-r <regex>] -t <pkg>  Tests <pkg>.
-       ${CMD} -C                          Checks all code using "go vet".
-       ${CMD} -c <pkg>                    Checks <pkg>'s code.
+Usage:
+ ${CMD}                                               Builds tast to
+ ${CMD//?/ }                                               ${TAST_OUT}.
+ ${CMD} -d                                            Builds tast with
+ ${CMD//?/ }                                               debugging symbols to
+ ${CMD//?/ }                                               ${TAST_OUT}.
+ ${CMD} -b <pkg> -o <path>                            Builds <pkg> to <path>.
+ ${CMD} [-v] -T [-- <gotest opts>]                    Tests all packages.
+ ${CMD} [-v] [-r <regex>] -t <pkg> [-- <gotest opts>] Tests <pkg>.
+ ${CMD} -C                                            Checks all code using
+ ${CMD//?/ }                                               "go vet".
+ ${CMD} -c <pkg>                                      Checks <pkg>'s code.
 
 EOF
   exit 1

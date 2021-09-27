@@ -128,7 +128,7 @@ func main() {
 			"houdini64":               "houdini64",
 			"hostap_hwsim":            "wifi_hostap_test",
 			"hps":                     "hps",
-			"igt":                     `("video_cards_amdgpu" || "video_cards_intel" || "video_cards_msm") && ("kernel-5_4" || "kernel-5_10")`,
+			"igt":                     `("video_cards_amdgpu" || "video_cards_intel" || "video_cards_mediatek" || "video_cards_msm") && ("kernel-5_4" || "kernel-5_10")`,
 			"iioservice":              "iioservice",
 			"iwlwifi_rescan":          "iwlwifi_rescan",
 			"lacros":                  "!arm && !arm64",                               // TODO(crbug.com/1144013): Expand this (and below lacros_*) to include arm as well.

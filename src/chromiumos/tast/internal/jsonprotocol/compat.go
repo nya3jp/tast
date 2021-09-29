@@ -12,6 +12,7 @@ import (
 	"github.com/golang/protobuf/ptypes"
 
 	"chromiumos/tast/errors"
+	"chromiumos/tast/internal/planner"
 	"chromiumos/tast/internal/protocol"
 )
 
@@ -161,4 +162,48 @@ func FeatureArgsFromProto(f *protocol.Features) *FeatureArgs {
 		DeviceConfig:                DeviceConfigJSON{Proto: f.GetDut().GetHardware().GetDeprecatedDeviceConfig()},
 		HardwareFeatures:            HardwareFeaturesJSON{Proto: f.GetDut().GetHardware().GetHardwareFeatures()},
 	}
+}
+
+// BundleRunTestsArgsFromProto creates jsonprotocol.BundleRunTestsArgs from
+// protocol.BundleConfig and protocol.RunConfig.
+func BundleRunTestsArgsFromProto(bcfg *protocol.BundleConfig, rcfg *protocol.RunConfig) (*BundleRunTestsArgs, error) {
+	downloadMode, err := planner.DownloadModeFromProto(rcfg.GetDataFileConfig().GetDownloadMode())
+	if err != nil {
+		return nil, err
+	}
+	heartbeatInterval, err := ptypes.Duration(rcfg.GetHeartbeatInterval())
+	if err != nil {
+		return nil, err
+	}
+	companionDUTs := make(map[string]string)
+	for name, dutCfg := range bcfg.GetCompanionDuts() {
+		companionDUTs[name] = dutCfg.GetSshConfig().GetTarget()
+	}
+	var setupErrors []string
+	for _, e := range rcfg.GetStartFixtureState().GetErrors() {
+		setupErrors = append(setupErrors, e.GetReason())
+	}
+	return &BundleRunTestsArgs{
+		FeatureArgs:       *FeatureArgsFromProto(rcfg.GetFeatures()),
+		Patterns:          rcfg.GetTests(),
+		DataDir:           rcfg.GetDirs().GetDataDir(),
+		OutDir:            rcfg.GetDirs().GetOutDir(),
+		TempDir:           rcfg.GetDirs().GetTempDir(),
+		Target:            bcfg.GetPrimaryTarget().GetDutConfig().GetSshConfig().GetTarget(),
+		KeyFile:           bcfg.GetPrimaryTarget().GetDutConfig().GetSshConfig().GetKeyFile(),
+		KeyDir:            bcfg.GetPrimaryTarget().GetDutConfig().GetSshConfig().GetKeyDir(),
+		TastPath:          bcfg.GetMetaTestConfig().GetTastPath(),
+		RunFlags:          bcfg.GetMetaTestConfig().GetRunFlags(),
+		LocalBundleDir:    bcfg.GetPrimaryTarget().GetBundleDir(),
+		Devservers:        rcfg.GetServiceConfig().GetDevservers(),
+		TLWServer:         rcfg.GetServiceConfig().GetTlwServer(),
+		DUTName:           rcfg.GetServiceConfig().GetTlwSelfName(),
+		CompanionDUTs:     companionDUTs,
+		BuildArtifactsURL: rcfg.GetDataFileConfig().GetBuildArtifactsUrl(),
+		DownloadMode:      downloadMode,
+		WaitUntilReady:    rcfg.GetWaitUntilReady(),
+		HeartbeatInterval: heartbeatInterval,
+		SetUpErrors:       setupErrors,
+		StartFixtureName:  rcfg.GetStartFixtureState().GetName(),
+	}, nil
 }

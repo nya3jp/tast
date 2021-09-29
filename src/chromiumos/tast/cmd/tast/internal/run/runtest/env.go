@@ -19,8 +19,8 @@ import (
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/runtest/internal/fakerunner"
-	"chromiumos/tast/cmd/tast/internal/run/runtest/internal/fakesshserver"
 	"chromiumos/tast/internal/bundle/fakebundle"
+	"chromiumos/tast/internal/fakesshserver"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/logging/loggingtest"
 	"chromiumos/tast/internal/runner"

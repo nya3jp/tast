@@ -6,7 +6,7 @@ package runtest
 
 import (
 	"chromiumos/tast/cmd/tast/internal/run/runtest/internal/fakerunner"
-	"chromiumos/tast/cmd/tast/internal/run/runtest/internal/fakesshserver"
+	"chromiumos/tast/internal/fakesshserver"
 )
 
 // Runner represents a fake test runner.

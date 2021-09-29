@@ -23,8 +23,8 @@ import (
 
 	"google.golang.org/grpc"
 
-	"chromiumos/tast/cmd/tast/internal/run/runtest/internal/fakesshserver"
 	"chromiumos/tast/internal/fakeexec"
+	"chromiumos/tast/internal/fakesshserver"
 	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/rpc"

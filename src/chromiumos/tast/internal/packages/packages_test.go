@@ -6,6 +6,7 @@ package packages_test
 
 import (
 	"path/filepath"
+	"runtime"
 	"testing"
 
 	"chromiumos/tast/internal/packages"
@@ -31,18 +32,45 @@ func TestNormalize(t *testing.T) {
 	}
 }
 
+func callerFuncName(t *testing.T) string {
+	pc, _, _, ok := runtime.Caller(1)
+	if !ok {
+		t.Fatal("runtime.Caller(0) failed")
+	}
+	return runtime.FuncForPC(pc).Name()
+}
+
+type someStruct struct{}
+
+func (*someStruct) method(t *testing.T) string {
+	return callerFuncName(t)
+}
+
 func TestSplitFuncName(t *testing.T) {
-	for _, pkg := range []string{
-		filepath.Join(packages.FrameworkPrefix, "foo"),
-		filepath.Join(packages.OldFrameworkPrefix, "foo"),
+	fn1 := callerFuncName(t)
+	fn2 := (&someStruct{}).method(t)
+	fn3 := func() string {
+		return callerFuncName(t)
+	}()
+
+	for _, tc := range []struct {
+		fn                string
+		wantNormalizedPkg string
+		wantName          string
+	}{
+		{"go.chromium.org/tast/foo.Bar", "go.chromium.org/tast/foo", "Bar"},
+		{fn1, "go.chromium.org/tast/internal/packages_test", "TestSplitFuncName"},
+		{fn2, "go.chromium.org/tast/internal/packages_test", "(*someStruct).method"},
+		{fn3, "go.chromium.org/tast/internal/packages_test", "TestSplitFuncName.func1"},
 	} {
-		fn := pkg + ".Bar"
-		gotPkg, gotName := packages.SplitFuncName(fn)
-		if gotPkg != pkg {
-			t.Errorf("SplitFuncName(%q).0 = %q want %q", fn, gotPkg, pkg)
-		}
-		if gotName != "Bar" {
-			t.Errorf("SplitFuncName(%q).1 = %q want %q", fn, gotName, "Bar")
-		}
+		t.Run(tc.fn, func(t *testing.T) {
+			gotPkg, gotName := packages.SplitFuncName(tc.fn)
+			if got := packages.Normalize(gotPkg); got != tc.wantNormalizedPkg {
+				t.Errorf("Got normalized package %q want %q", got, tc.wantNormalizedPkg)
+			}
+			if gotName != tc.wantName {
+				t.Errorf("Got name %q want %q", gotName, tc.wantName)
+			}
+		})
 	}
 }

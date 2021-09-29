@@ -29,6 +29,7 @@ func Normalize(s string) string {
 
 // SplitFuncName splits runtime.Func.Name() into package and function name.
 func SplitFuncName(fn string) (fullPkg, name string) {
-	dot := strings.LastIndex(fn, ".")
-	return fn[0:dot], fn[dot+1:]
+	lastSlash := strings.LastIndex(fn, "/")
+	lastPkgAndFunc := strings.SplitN(fn[lastSlash+1:], ".", 2)
+	return fn[0:lastSlash+1] + lastPkgAndFunc[0], lastPkgAndFunc[1]
 }

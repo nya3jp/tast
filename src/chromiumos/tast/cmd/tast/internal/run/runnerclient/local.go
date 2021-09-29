@@ -48,11 +48,13 @@ type remoteFixtureService struct {
 // returns fixture service connecting to it. The caller should call rf.close
 // to gracefully stop the server and the client.
 func newRemoteFixtureService(ctx context.Context, cfg *config.Config) (rf *remoteFixtureService, retErr error) {
-	if _, err := os.Stat(cfg.RemoteFixtureServer()); os.IsNotExist(err) {
+	serverPath := filepath.Join(cfg.RemoteBundleDir(), cfg.PrimaryBundle())
+
+	if _, err := os.Stat(serverPath); os.IsNotExist(err) {
 		return nil, fmt.Errorf("newRemoteFixtureService: %v", err)
 	}
 
-	rpcCL, err := rpc.DialExec(ctx, cfg.RemoteFixtureServer(), false, &protocol.HandshakeRequest{})
+	rpcCL, err := rpc.DialExec(ctx, serverPath, false, &protocol.HandshakeRequest{})
 
 	if err != nil {
 		return nil, fmt.Errorf("rpc.NewClient: %v", err)
@@ -65,7 +67,7 @@ func newRemoteFixtureService(ctx context.Context, cfg *config.Config) (rf *remot
 
 	cl, err := bundle.NewFixtureServiceClient(rpcCL.Conn()).RunFixture(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("RunFixture agasint %v: %v", cfg.RemoteFixtureServer(), err)
+		return nil, fmt.Errorf("RunFixture against %v: %v", serverPath, err)
 	}
 	return &remoteFixtureService{
 		rpcCL: rpcCL,

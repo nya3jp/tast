@@ -92,11 +92,11 @@ type MutableConfig struct {
 	LocalDataDir   string
 	LocalOutDir    string
 
-	RemoteRunner        string
-	RemoteBundleDir     string
-	RemoteFixtureServer string
-	RemoteDataDir       string
-	RemoteOutDir        string
+	RemoteRunner    string
+	RemoteBundleDir string
+	PrimaryBundle   string
+	RemoteDataDir   string
+	RemoteOutDir    string
 
 	TotalShards int
 	ShardIndex  int
@@ -219,8 +219,9 @@ func (c *Config) RemoteRunner() string { return c.m.RemoteRunner }
 // RemoteBundleDir is dir where packaged remote test bundles are installed.
 func (c *Config) RemoteBundleDir() string { return c.m.RemoteBundleDir }
 
-// RemoteFixtureServer is path to executable that runs remote fixture server.
-func (c *Config) RemoteFixtureServer() string { return c.m.RemoteFixtureServer }
+// PrimaryBundle is the name of the primary bundle that remote fixtures are
+// linked to.
+func (c *Config) PrimaryBundle() string { return c.m.PrimaryBundle }
 
 // RemoteDataDir is dir containing packaged remote test data.
 func (c *Config) RemoteDataDir() string { return c.m.RemoteDataDir }
@@ -492,7 +493,7 @@ func (c *MutableConfig) DeriveDefaults() error {
 	}
 	// TODO(crbug/1177189): we assume there's only one remote bundle. Consider
 	// removing the restriction.
-	c.RemoteFixtureServer = filepath.Join(c.RemoteBundleDir, "cros")
+	c.PrimaryBundle = "cros"
 
 	// Apply -varsfile.
 	for _, path := range c.VarsFiles {

@@ -186,16 +186,16 @@ func (e *Env) Config(mod func(cfg *config.MutableConfig)) *config.Config {
 		KeyFile:       filepath.Join(e.rootDir, keyFile),
 		CompanionDUTs: companionDUTs,
 		// Set default directory paths to use.
-		ResDir:              filepath.Join(e.rootDir, resultDir),
-		TastDir:             filepath.Join(e.rootDir, tastDir),
-		TrunkDir:            filepath.Join(e.rootDir, trunkDir),
-		LocalRunner:         LocalTestRunnerPath,
-		LocalBundleDir:      filepath.Join(e.rootDir, localBundleDir),
-		LocalOutDir:         filepath.Join(e.rootDir, fmt.Sprintf("tmp/out/local.%d", randomID)),
-		RemoteRunner:        filepath.Join(e.rootDir, remoteTestRunnerPath),
-		RemoteBundleDir:     filepath.Join(e.rootDir, remoteBundleDir),
-		RemoteOutDir:        filepath.Join(e.rootDir, fmt.Sprintf("tmp/out/remote.%d", randomID)),
-		RemoteFixtureServer: filepath.Join(e.rootDir, remoteBundleDir, "bundle"),
+		ResDir:          filepath.Join(e.rootDir, resultDir),
+		TastDir:         filepath.Join(e.rootDir, tastDir),
+		TrunkDir:        filepath.Join(e.rootDir, trunkDir),
+		LocalRunner:     LocalTestRunnerPath,
+		LocalBundleDir:  filepath.Join(e.rootDir, localBundleDir),
+		LocalOutDir:     filepath.Join(e.rootDir, fmt.Sprintf("tmp/out/local.%d", randomID)),
+		RemoteRunner:    filepath.Join(e.rootDir, remoteTestRunnerPath),
+		RemoteBundleDir: filepath.Join(e.rootDir, remoteBundleDir),
+		RemoteOutDir:    filepath.Join(e.rootDir, fmt.Sprintf("tmp/out/remote.%d", randomID)),
+		PrimaryBundle:   "bundle",
 	}
 	if mod != nil {
 		mod(cfg)

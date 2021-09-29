@@ -78,6 +78,7 @@ var allowedPkgs = []string{
 	"chromiumos/tast/local/bundles/cros/autoupdate", // For autoupdate and rollback tests.
 	"chromiumos/tast/local/bundles/cros/health",     // To confirm OS version can be parsed.
 	"chromiumos/tast/local/bundles/cros/system",     // For Version.
+	"chromiumos/tast/local/chrome/crossdevice",
 	"chromiumos/tast/local/crash",
 	"chromiumos/tast/local/graphics/trace",
 	"chromiumos/tast/local/rialto",

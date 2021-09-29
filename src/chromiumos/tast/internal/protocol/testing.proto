@@ -40,7 +40,11 @@ service TestService {
       returns (DownloadPrivateBundlesResponse) {}
 }
 
-message ListEntitiesRequest { Features features = 1; }
+message ListEntitiesRequest {
+  Features features = 1;
+  // Recursive specifies whether to list entities on target bundles recursively.
+  bool recursive = 2;
+}
 
 message ListEntitiesResponse {
   // Entities is a list of entities available on the server. The order of
@@ -50,6 +54,8 @@ message ListEntitiesResponse {
 
 message RunTestsRequest {
   oneof type { RunTestsInit run_tests_init = 1; }
+  // Recursive specifies whether to run tests on target bundles recursively.
+  bool recursive = 2;
 }
 
 message RunTestsResponse {

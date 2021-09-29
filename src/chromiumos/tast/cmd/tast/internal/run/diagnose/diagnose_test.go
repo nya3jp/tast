@@ -17,6 +17,7 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/diagnose"
 	"chromiumos/tast/cmd/tast/internal/run/driver"
 	"chromiumos/tast/cmd/tast/internal/run/runtest"
+	"chromiumos/tast/internal/fakesshserver"
 	"chromiumos/tast/testutil"
 )
 
@@ -38,12 +39,12 @@ func callSSHDrop(t *testing.T, rebooted bool, syslog, ramoops string) (msg, outD
 		runtest.WithBootID(func() (bootID string, err error) {
 			return currentBootID, nil
 		}),
-		runtest.WithExtraSSHHandlers([]runtest.SSHHandler{
-			runtest.ExactMatchHandler("exec croslog --quiet --boot=11111111 --lines=1000", func(_ io.Reader, stdout, _ io.Writer) int {
+		runtest.WithExtraSSHHandlers([]fakesshserver.Handler{
+			fakesshserver.ExactMatchHandler("exec croslog --quiet --boot=11111111 --lines=1000", func(_ io.Reader, stdout, _ io.Writer) int {
 				io.WriteString(stdout, syslog)
 				return 0
 			}),
-			runtest.ExactMatchHandler("exec cat /sys/fs/pstore/console-ramoops-0", func(_ io.Reader, stdout, _ io.Writer) int {
+			fakesshserver.ExactMatchHandler("exec cat /sys/fs/pstore/console-ramoops-0", func(_ io.Reader, stdout, _ io.Writer) int {
 				io.WriteString(stdout, ramoops)
 				return 0
 			}),

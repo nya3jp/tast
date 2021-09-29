@@ -11,6 +11,7 @@ import (
 
 	"chromiumos/tast/cmd/tast/internal/run/driver"
 	"chromiumos/tast/cmd/tast/internal/run/runtest"
+	"chromiumos/tast/internal/fakesshserver"
 )
 
 func TestDriver(t *testing.T) {
@@ -24,8 +25,8 @@ func TestDriver(t *testing.T) {
 		runtest.WithBootID(func() (string, error) {
 			return fakeBootID, nil
 		}),
-		runtest.WithExtraSSHHandlers([]runtest.SSHHandler{
-			runtest.ExactMatchHandler("exec "+fakeCommand, func(_ io.Reader, _, _ io.Writer) int {
+		runtest.WithExtraSSHHandlers([]fakesshserver.Handler{
+			fakesshserver.ExactMatchHandler("exec "+fakeCommand, func(_ io.Reader, _, _ io.Writer) int {
 				return 0
 			}),
 		}),

@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"time"
 
+	"chromiumos/tast/internal/fakesshserver"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testing"
 )
@@ -26,7 +27,7 @@ type envConfig struct {
 // dutConfig contains configurations of a fake DUT.
 type dutConfig struct {
 	BootID                 func() (bootID string, err error)
-	ExtraSSHHandlers       []SSHHandler
+	ExtraSSHHandlers       []fakesshserver.Handler
 	GetDUTInfo             func(req *protocol.GetDUTInfoRequest) (*protocol.GetDUTInfoResponse, error)
 	GetSysInfoState        func(req *protocol.GetSysInfoStateRequest) (*protocol.GetSysInfoStateResponse, error)
 	CollectSysInfo         func(req *protocol.CollectSysInfoRequest) (*protocol.CollectSysInfoResponse, error)
@@ -59,7 +60,7 @@ func WithBootID(f func() (bootID string, err error)) DUTOption {
 
 // WithExtraSSHHandlers specifies extra SSH handlers installed to a fake SSH
 // server.
-func WithExtraSSHHandlers(handlers []SSHHandler) DUTOption {
+func WithExtraSSHHandlers(handlers []fakesshserver.Handler) DUTOption {
 	return func(cfg *dutConfig) {
 		cfg.ExtraSSHHandlers = handlers
 	}

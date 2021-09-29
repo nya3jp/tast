@@ -21,6 +21,7 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/driver"
 	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
 	"chromiumos/tast/cmd/tast/internal/run/runtest"
+	"chromiumos/tast/internal/fakesshserver"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/internal/testing/testfixture"
@@ -85,9 +86,9 @@ func TestLocalProxy(t *gotesting.T) {
 		return 1
 	}
 
-	env := runtest.SetUp(t, runtest.WithExtraSSHHandlers([]runtest.SSHHandler{
-		runtest.ExactMatchHandler(expCmd, fakeProc),
-		runtest.ExactMatchHandler(expCmd+" -rpc", fakeProc),
+	env := runtest.SetUp(t, runtest.WithExtraSSHHandlers([]fakesshserver.Handler{
+		fakesshserver.ExactMatchHandler(expCmd, fakeProc),
+		fakesshserver.ExactMatchHandler(expCmd+" -rpc", fakeProc),
 	}))
 	ctx := env.Context()
 	cfg := env.Config(func(cfg *config.MutableConfig) {

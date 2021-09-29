@@ -15,6 +15,7 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/driver"
 	"chromiumos/tast/cmd/tast/internal/run/runtest"
+	"chromiumos/tast/internal/fakesshserver"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/testutil"
 )
@@ -70,13 +71,13 @@ func TestPushDataFiles(t *gotesting.T) {
 		Data: []string{file3},
 	})
 
-	env := runtest.SetUp(t, runtest.WithLocalBundles(reg), runtest.WithExtraSSHHandlers([]runtest.SSHHandler{
+	env := runtest.SetUp(t, runtest.WithLocalBundles(reg), runtest.WithExtraSSHHandlers([]fakesshserver.Handler{
 		// Allow rm commands with relative paths.
-		func(cmd string) (runtest.SSHProcess, bool) {
+		func(cmd string) (fakesshserver.Process, bool) {
 			if !regexp.MustCompile(`^cd .*; exec rm `).MatchString(cmd) {
 				return nil, false
 			}
-			return runtest.ShellHandler("")(cmd)
+			return fakesshserver.ShellHandler("")(cmd)
 		},
 	}))
 	ctx := env.Context()

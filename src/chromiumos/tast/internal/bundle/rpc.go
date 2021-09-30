@@ -26,9 +26,9 @@ func RunRPCServer(r io.Reader, w io.Writer, scfg *StaticConfig) error {
 		registerFixtureService(srv, reg)
 		protocol.RegisterTestServiceServer(srv, newTestServer(scfg))
 		// TODO(b/187793617): Remove this check once we fully migrate to gRPC-based protocol.
-		// The check is currently needed because EntityInitParams is not available for some JSON-based protocol methods.
-		if req.GetEntityInitParams() != nil {
-			if err := reg.InitializeVars(req.GetEntityInitParams().GetVars()); err != nil {
+		// The check is currently needed because BundleInitParams is not available for some JSON-based protocol methods.
+		if req.GetBundleInitParams() != nil {
+			if err := reg.InitializeVars(req.GetBundleInitParams().GetVars()); err != nil {
 				return err
 			}
 		}

@@ -23,22 +23,22 @@ type testServer struct {
 	protocol.UnimplementedTestServiceServer
 	scfg         *StaticConfig
 	runnerParams *protocol.RunnerInitParams
-	entityParams *protocol.EntityInitParams
+	bundleParams *protocol.BundleInitParams
 }
 
-func newTestServer(scfg *StaticConfig, runnerParams *protocol.RunnerInitParams, entityParams *protocol.EntityInitParams) *testServer {
+func newTestServer(scfg *StaticConfig, runnerParams *protocol.RunnerInitParams, bundleParams *protocol.BundleInitParams) *testServer {
 	return &testServer{
 		scfg:         scfg,
 		runnerParams: runnerParams,
-		entityParams: entityParams,
+		bundleParams: bundleParams,
 	}
 }
 
 func (s *testServer) ListEntities(ctx context.Context, req *protocol.ListEntitiesRequest) (*protocol.ListEntitiesResponse, error) {
 	var entities []*protocol.ResolvedEntity
 	// ListEntities should not set runtime global information during handshake.
-	// TODO(b/187793617): Always pass s.entityParams to bundles once we fully migrate to gRPC-based protocol.
-	// This workaround is currently needed because EntityInitParams is unavailable when this method is called internally for handling JSON-based protocol methods.
+	// TODO(b/187793617): Always pass s.bundleParams to bundles once we fully migrate to gRPC-based protocol.
+	// This workaround is currently needed because BundleInitParams is unavailable when this method is called internally for handling JSON-based protocol methods.
 	if err := s.forEachBundle(ctx, nil, func(ctx context.Context, ts protocol.TestServiceClient) error {
 		res, err := ts.ListEntities(ctx, req) // pass through req
 		if err != nil {
@@ -79,7 +79,7 @@ func (s *testServer) RunTests(srv protocol.TestService_RunTestsServer) error {
 		killStaleRunners(ctx, unix.SIGTERM)
 	}
 
-	return s.forEachBundle(ctx, s.entityParams, func(ctx context.Context, ts protocol.TestServiceClient) error {
+	return s.forEachBundle(ctx, s.bundleParams, func(ctx context.Context, ts protocol.TestServiceClient) error {
 		st, err := ts.RunTests(ctx)
 		if err != nil {
 			return err
@@ -107,7 +107,7 @@ func (s *testServer) RunTests(srv protocol.TestService_RunTestsServer) error {
 	})
 }
 
-func (s *testServer) forEachBundle(ctx context.Context, entityParams *protocol.EntityInitParams, f func(ctx context.Context, ts protocol.TestServiceClient) error) error {
+func (s *testServer) forEachBundle(ctx context.Context, bundleParams *protocol.BundleInitParams, f func(ctx context.Context, ts protocol.TestServiceClient) error) error {
 	bundlePaths, err := filepath.Glob(s.runnerParams.GetBundleGlob())
 	if err != nil {
 		return err
@@ -118,7 +118,7 @@ func (s *testServer) forEachBundle(ctx context.Context, entityParams *protocol.E
 	for _, bundlePath := range bundlePaths {
 		if err := func() error {
 			cl, err := rpc.DialExec(ctx, bundlePath, true,
-				&protocol.HandshakeRequest{EntityInitParams: entityParams})
+				&protocol.HandshakeRequest{BundleInitParams: bundleParams})
 			if err != nil {
 				return err
 			}

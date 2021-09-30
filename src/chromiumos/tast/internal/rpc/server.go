@@ -72,7 +72,7 @@ func RunServer(r io.Reader, w io.Writer, svcs []*testing.Service, register func(
 	if req.GetNeedUserServices() {
 		logger := logging.NewSinkLogger(logging.LevelInfo, false, logging.NewFuncSink(ls.Log))
 		ctx = logging.AttachLogger(ctx, logger)
-		vars := req.GetEntityInitParams().GetVars()
+		vars := req.GetBundleInitParams().GetVars()
 		for _, svc := range svcs {
 			svc.Register(srv, testing.NewServiceState(ctx, testing.NewServiceRoot(svc, vars)))
 		}

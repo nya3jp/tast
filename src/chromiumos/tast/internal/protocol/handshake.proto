@@ -13,16 +13,8 @@ option go_package = "chromiumos/tast/internal/protocol";
 message HandshakeRequest {
   // Whether to initialize user-defined gRPC services.
   bool need_user_services = 1;
-  EntityInitParams entity_init_params = 2;
+  BundleInitParams bundle_init_params = 2;
   RunnerInitParams runner_init_params = 3;
-  BundleInitParams bundle_init_params = 4;
-}
-
-// EntityInitParams contains parameters needed to initialize user-defined
-// entities.
-message EntityInitParams {
-  // Runtime variables.
-  map<string, string> vars = 1;
 }
 
 // HandshakeResponse is a response to an HandshakeRequest message.
@@ -38,17 +30,20 @@ message HandshakeError {
   string reason = 1;
 }
 
+// BundleInitParams contains parameters needed to initialize bundles.
+message BundleInitParams {
+  // Runtime variables.
+  map<string, string> vars = 1;
+
+  // BundleConfigs represents all the bundles to run.
+  BundleConfig bundle_config = 2;
+}
+
 // RunnerInitParams contains information needed to initialize test runners.
 message RunnerInitParams {
   // A file path glob that matches test bundle executables.
   // Example: "/usr/local/libexec/tast/bundles/local/*"
   string bundle_glob = 1;
-}
-
-message BundleInitParams {
-  // BundleConfigs represents all the bundles to run.
-  // For bundle servers, this must be a singleton.
-  BundleConfig bundle_config = 1;
 }
 
 message BundleConfig {

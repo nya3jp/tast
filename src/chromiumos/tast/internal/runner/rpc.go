@@ -17,7 +17,7 @@ import (
 func runRPCServer(scfg *StaticConfig, r io.Reader, w io.Writer) error {
 	return rpc.RunServer(r, w, nil, func(srv *grpc.Server, req *protocol.HandshakeRequest) error {
 		protocol.RegisterTestServiceServer(srv, newTestServer(scfg,
-			req.GetRunnerInitParams(), req.GetEntityInitParams()))
+			req.GetRunnerInitParams(), req.GetBundleInitParams()))
 		return nil
 	})
 }

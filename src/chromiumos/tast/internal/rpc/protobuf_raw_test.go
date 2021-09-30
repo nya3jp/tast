@@ -18,7 +18,7 @@ func TestProtobufRaw(t *testing.T) {
 
 	// Send two messages.
 	msgSent1 := &protocol.HandshakeRequest{
-		EntityInitParams: &protocol.EntityInitParams{
+		BundleInitParams: &protocol.BundleInitParams{
 			Vars: map[string]string{"key1": "value1"},
 		},
 	}

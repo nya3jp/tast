@@ -8,6 +8,7 @@ import (
 	"context"
 
 	"chromiumos/tast/errors"
+	"chromiumos/tast/internal/bundle/bundleclient"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testing"
 )
@@ -23,8 +24,25 @@ func newTestServer(scfg *StaticConfig, bcfg *protocol.BundleConfig) *testServer 
 }
 
 func (s *testServer) ListEntities(ctx context.Context, req *protocol.ListEntitiesRequest) (*protocol.ListEntitiesResponse, error) {
-	resolved := listEntities(s.scfg.registry, req.GetFeatures())
-	return &protocol.ListEntitiesResponse{Entities: resolved}, nil
+	res := &protocol.ListEntitiesResponse{Entities: listEntities(s.scfg.registry, req.GetFeatures())}
+	if !req.Recursive || s.bcfg.GetPrimaryTarget() == nil {
+		return res, nil
+	}
+	cl, err := bundleclient.New(ctx, s.bcfg.PrimaryTarget, s.scfg.registry.Name(), &protocol.HandshakeRequest{})
+	if err != nil {
+		return res, err
+	}
+	defer cl.Close(ctx)
+	es, err := cl.TestService().ListEntities(ctx, req)
+	if err != nil {
+		return res, err
+	}
+
+	for _, e := range es.Entities {
+		e.Hops++
+		res.Entities = append(res.Entities, e)
+	}
+	return res, nil
 }
 
 func (s *testServer) RunTests(srv protocol.TestService_RunTestsServer) error {

@@ -141,3 +141,46 @@ func TestTestServerListEntitiesStartFixtureNames(t *gotesting.T) {
 		t.Errorf("ListEntitiesResponse mismatch (-got +want):\n%s", diff)
 	}
 }
+
+func TestTestServerListEntitiesRecursive(t *gotesting.T) {
+	t1 := &testing.TestInstance{Name: "pkg.Test1"}
+	t2 := &testing.TestInstance{Name: "pkg.Test2"}
+	f1 := &testing.FixtureInstance{Name: "fixt1"}
+	f2 := &testing.FixtureInstance{Name: "fixt2"}
+
+	reg := testing.NewRegistry("cros")
+	reg.AddTestInstance(t1)
+	reg.AddFixtureInstance(f1)
+
+	targetReg := testing.NewRegistry("cros")
+	targetReg.AddTestInstance(t2)
+	targetReg.AddFixtureInstance(f2)
+
+	env := bundletest.SetUp(t,
+		bundletest.WithRemoteBundles(reg),
+		bundletest.WithLocalBundles(targetReg),
+	)
+	cl := protocol.NewTestServiceClient(env.DialRemoteBundle(context.Background(), t, reg.Name()))
+
+	got, err := cl.ListEntities(context.Background(), &protocol.ListEntitiesRequest{
+		Recursive: true,
+	})
+	if err != nil {
+		t.Fatalf("ListEntities failed: %v", err)
+	}
+
+	want := &protocol.ListEntitiesResponse{
+		Entities: []*protocol.ResolvedEntity{
+			{Entity: f1.EntityProto()},
+			{Entity: f2.EntityProto(), Hops: 1},
+			{Entity: t1.EntityProto()},
+			{Entity: t2.EntityProto(), Hops: 1},
+		},
+	}
+	sorter := func(a, b *protocol.ResolvedEntity) bool {
+		return a.GetEntity().GetName() < b.GetEntity().GetName()
+	}
+	if diff := cmp.Diff(got, want, cmpopts.SortSlices(sorter)); diff != "" {
+		t.Errorf("ListEntitiesResponse mismatch (-got +want):\n%s", diff)
+	}
+}

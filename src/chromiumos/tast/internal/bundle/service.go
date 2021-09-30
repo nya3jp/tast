@@ -38,7 +38,27 @@ func (s *testServer) RunTests(srv protocol.TestService_RunTestsServer) error {
 	}
 	init := initReq.GetRunTestsInit()
 
-	return runTests(ctx, srv, init.GetRunConfig(), s.scfg)
+	rcfg := init.GetRunConfig()
+	// Convert RemoteTestsConfig to BundleConfig
+	bcfg := extractBundleConfig(rcfg)
+
+	return runTests(ctx, srv, rcfg, s.scfg, bcfg)
+}
+
+func extractBundleConfig(rcfg *protocol.RunConfig) *protocol.BundleConfig {
+	var bcfg *protocol.BundleConfig
+	if rcfg.GetRemoteTestConfig() != nil {
+		bcfg = &protocol.BundleConfig{
+			PrimaryTarget: &protocol.TargetDevice{
+				DutConfig: rcfg.GetRemoteTestConfig().GetPrimaryDut(),
+				BundleDir: rcfg.GetRemoteTestConfig().GetLocalBundleDir(),
+			},
+			CompanionDuts:  rcfg.GetRemoteTestConfig().GetCompanionDuts(),
+			MetaTestConfig: rcfg.GetRemoteTestConfig().GetMetaTestConfig(),
+		}
+		rcfg.RemoteTestConfig = nil
+	}
+	return bcfg
 }
 
 func listEntities(reg *testing.Registry, features *protocol.Features) []*protocol.ResolvedEntity {

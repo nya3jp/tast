@@ -15,6 +15,7 @@ message HandshakeRequest {
   bool need_user_services = 1;
   EntityInitParams entity_init_params = 2;
   RunnerInitParams runner_init_params = 3;
+  BundleInitParams bundle_init_params = 4;
 }
 
 // EntityInitParams contains parameters needed to initialize user-defined
@@ -42,4 +43,58 @@ message RunnerInitParams {
   // A file path glob that matches test bundle executables.
   // Example: "/usr/local/libexec/tast/bundles/local/*"
   string bundle_glob = 1;
+}
+
+message BundleInitParams {
+  // BundleConfigs represents all the bundles to run.
+  // For bundle servers, this must be a singleton.
+  BundleConfig bundle_config = 1;
+}
+
+message BundleConfig {
+  // PrimaryTarget is the target device for remote tests.
+  TargetDevice primary_target = 1;
+  map<string, DUTConfig> companion_duts = 2;
+  MetaTestConfig meta_test_config = 3;
+}
+
+// TargetDevice represents a local bundle on which remote tests invoke services.
+message TargetDevice {
+  // DutConfig describes the DUT containing local bundles.
+  DUTConfig dut_config = 1;
+  // BundleDir represents the directory on which the target bundle exists.
+  string bundle_dir = 2;
+}
+
+// DUTConfig describes a DUT.
+message DUTConfig {
+  // SshConfig contains information needed to connect to the DUT via SSH.
+  SSHConfig ssh_config = 1;
+  // TlwName contains the name of the DUT recognized by the TLW service.
+  // This must be set when TLW API is used.
+  string tlw_name = 2;
+}
+
+// SSHConfig contains information needed to connect to the DUT via SSH.
+message SSHConfig {
+  // Target is a connection spec as [<user>@]host[:<port>].
+  string target = 1;
+  // KeyFile is a path to the SSH private key to use to connect to the target.
+  string key_file = 2;
+  // KeyDir is a path to the directory containing SSH private keys
+  // (typically $HOME/.ssh).
+  string key_dir = 3;
+}
+
+// MetaTestConfig contains parameters needed by meta tests (tests that
+// exercise Tast itself).
+message MetaTestConfig {
+  // TastPath contains the path to the tast binary that was executed to initiate
+  // testing.
+  string tast_path = 1;
+  // RunFlags contains a subset of the flags that were passed to the "tast run"
+  // command. The included flags are ones that are necessary for core
+  // functionality, e.g. paths to binaries used by the tast process and
+  // credentials for reconnecting to the DUT.
+  repeated string run_flags = 2;
 }

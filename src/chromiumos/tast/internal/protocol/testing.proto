@@ -10,6 +10,7 @@ import "google/protobuf/duration.proto";
 import "google/protobuf/timestamp.proto";
 
 import "features.proto";
+import "handshake.proto";
 
 option go_package = "chromiumos/tast/internal/protocol";
 
@@ -231,39 +232,6 @@ message RemoteTestConfig {
   // services in local test bundles.
   string local_bundle_dir = 3;
   MetaTestConfig meta_test_config = 4;
-}
-
-// DUTConfig describes a DUT.
-message DUTConfig {
-  // SshConfig contains information needed to connect to the DUT via SSH.
-  SSHConfig ssh_config = 1;
-  // TlwName contains the name of the DUT recognized by the TLW service.
-  // This must be set when TLW API is used.
-  string tlw_name = 2;
-}
-
-// SSHConfig contains information needed to connect to the DUT via SSH.
-message SSHConfig {
-  // Target is a connection spec as [<user>@]host[:<port>].
-  string target = 1;
-  // KeyFile is a path to the SSH private key to use to connect to the target.
-  string key_file = 2;
-  // KeyDir is a path to the directory containing SSH private keys
-  // (typically $HOME/.ssh).
-  string key_dir = 3;
-}
-
-// MetaTestConfig contains parameters needed by meta tests (tests that
-// exercise Tast itself).
-message MetaTestConfig {
-  // TastPath contains the path to the tast binary that was executed to initiate
-  // testing.
-  string tast_path = 1;
-  // RunFlags contains a subset of the flags that were passed to the "tast run"
-  // command. The included flags are ones that are necessary for core
-  // functionality, e.g. paths to binaries used by the tast process and
-  // credentials for reconnecting to the DUT.
-  repeated string run_flags = 2;
 }
 
 // StartFixtureState contains information of a start fixture.

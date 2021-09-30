@@ -53,7 +53,11 @@ func testsToRun(scfg *StaticConfig, patterns []string) ([]*testing.TestInstance,
 //
 // If an error is encountered in the test harness (as opposed to in a test), an error is returned.
 // Otherwise, nil is returned (test errors will be reported via EntityError control messages).
-func runTests(ctx context.Context, srv protocol.TestService_RunTestsServer, cfg *protocol.RunConfig, scfg *StaticConfig) error {
+func runTests(ctx context.Context, srv protocol.TestService_RunTestsServer, cfg *protocol.RunConfig, scfg *StaticConfig, bcfg *protocol.BundleConfig) error {
+	if cfg.GetRemoteTestConfig() != nil {
+		return fmt.Errorf("BUG: use BundleConfig instead of RemoteTestConfig")
+	}
+
 	ctx = testcontext.WithPrivateData(ctx, testcontext.PrivateData{
 		WaitUntilReady: cfg.GetWaitUntilReady(),
 	})
@@ -115,9 +119,9 @@ func runTests(ctx context.Context, srv protocol.TestService_RunTestsServer, cfg 
 	}
 
 	var rd *testing.RemoteData
-	if rcfg := cfg.GetRemoteTestConfig(); rcfg != nil {
+	if pt := bcfg.GetPrimaryTarget(); pt != nil {
 		logging.Info(ctx, "Connecting to DUT")
-		sshCfg := rcfg.GetPrimaryDut().GetSshConfig()
+		sshCfg := pt.GetDutConfig().GetSshConfig()
 		dt, err := connectToTarget(ctx, sshCfg.GetTarget(), sshCfg.GetKeyFile(), sshCfg.GetKeyDir(), scfg.beforeReboot)
 		if err != nil {
 			return command.NewStatusErrorf(statusError, "failed to connect to DUT: %v", err)
@@ -139,7 +143,7 @@ func runTests(ctx context.Context, srv protocol.TestService_RunTestsServer, cfg 
 				dut.Close(ctx)
 			}
 		}()
-		for role, dut := range rcfg.GetCompanionDuts() {
+		for role, dut := range bcfg.GetCompanionDuts() {
 			sshCfg := dut.GetSshConfig()
 			d, err := connectToTarget(ctx, sshCfg.GetTarget(), sshCfg.GetKeyFile(), sshCfg.GetKeyDir(), scfg.beforeReboot)
 			if err != nil {
@@ -150,11 +154,11 @@ func runTests(ctx context.Context, srv protocol.TestService_RunTestsServer, cfg 
 
 		rd = &testing.RemoteData{
 			Meta: &testing.Meta{
-				TastPath: cfg.GetRemoteTestConfig().GetMetaTestConfig().GetTastPath(),
+				TastPath: bcfg.GetMetaTestConfig().GetTastPath(),
 				Target:   sshCfg.GetTarget(),
-				RunFlags: cfg.GetRemoteTestConfig().GetMetaTestConfig().GetRunFlags(),
+				RunFlags: bcfg.GetMetaTestConfig().GetRunFlags(),
 			},
-			RPCHint:       testing.NewRPCHint(cfg.GetRemoteTestConfig().GetLocalBundleDir(), cfg.GetFeatures().GetInfra().GetVars()),
+			RPCHint:       testing.NewRPCHint(pt.GetBundleDir(), cfg.GetFeatures().GetInfra().GetVars()),
 			DUT:           dt,
 			CompanionDUTs: companionDUTs,
 		}

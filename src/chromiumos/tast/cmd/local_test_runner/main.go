@@ -157,6 +157,7 @@ func main() {
 			"nnapi":                     "nnapi",
 			"nnapi_vendor_driver":       "nnapi && !betty && !tast_vm",
 			"no_android":                "!arc",
+			"no_arc_userdebug":          "!(cheets_userdebug || cheets_userdebug_64)",
 			"no_arc_x86":                "!(amd64 && cheets_user)",
 			"no_arm":                    "!arm",
 			"no_asan":                   "!asan",

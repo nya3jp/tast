@@ -24,29 +24,27 @@ func newTestServer(scfg *StaticConfig, bundleParams *protocol.BundleInitParams) 
 }
 
 func (s *testServer) ListEntities(ctx context.Context, req *protocol.ListEntitiesRequest) (*protocol.ListEntitiesResponse, error) {
-	res := &protocol.ListEntitiesResponse{Entities: listEntities(s.scfg.registry, req.GetFeatures())}
-	if !req.Recursive {
-		return res, nil
-	}
-	primaryTarget := s.bundleParams.GetBundleConfig().GetPrimaryTarget()
-	if primaryTarget == nil {
-		return res, nil
-	}
-	cl, err := bundleclient.New(ctx, primaryTarget, s.scfg.registry.Name(), &protocol.HandshakeRequest{})
-	if err != nil {
-		return res, err
-	}
-	defer cl.Close(ctx)
-	es, err := cl.TestService().ListEntities(ctx, req)
-	if err != nil {
-		return res, err
-	}
+	var entities []*protocol.ResolvedEntity
+	if req.Recursive {
+		var cl *bundleclient.Client
+		if s.bundleParams.GetBundleConfig() != nil {
+			var err error
+			cl, err = bundleclient.New(ctx, s.bundleParams.GetBundleConfig().GetPrimaryTarget(), s.scfg.registry.Name(), &protocol.HandshakeRequest{})
+			if err != nil {
+				return nil, err
+			}
+			defer cl.Close(ctx)
+		}
 
-	for _, e := range es.Entities {
-		e.Hops++
-		res.Entities = append(res.Entities, e)
+		var err error
+		entities, err = listEntitiesRecursive(ctx, s.scfg.registry, req.Features, cl)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		entities = listEntities(s.scfg.registry, req.Features)
 	}
-	return res, nil
+	return &protocol.ListEntitiesResponse{Entities: entities}, nil
 }
 
 func (s *testServer) RunTests(srv protocol.TestService_RunTestsServer) error {
@@ -61,6 +59,28 @@ func (s *testServer) RunTests(srv protocol.TestService_RunTestsServer) error {
 	}
 
 	return runTests(ctx, srv, initReq.GetRunTestsInit().GetRunConfig(), s.scfg, s.bundleParams.GetBundleConfig())
+}
+
+// listEntitiesRecursive lists all the entities this bundle has.
+// If cl is non-nil it also lists all the entities in the bundle cl points to.
+func listEntitiesRecursive(ctx context.Context, reg *testing.Registry, features *protocol.Features, cl *bundleclient.Client) ([]*protocol.ResolvedEntity, error) {
+	entities := listEntities(reg, features)
+	if cl == nil {
+		return entities, nil
+	}
+	es, err := cl.TestService().ListEntities(ctx, &protocol.ListEntitiesRequest{
+		Features:  features,
+		Recursive: true,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	for _, e := range es.Entities {
+		e.Hops++
+		entities = append(entities, e)
+	}
+	return entities, nil
 }
 
 func listEntities(reg *testing.Registry, features *protocol.Features) []*protocol.ResolvedEntity {

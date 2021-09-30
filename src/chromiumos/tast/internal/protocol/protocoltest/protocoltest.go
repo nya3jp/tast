@@ -48,13 +48,13 @@ func WithEntityLogs() Option {
 // RunTestsForEvents calls RunTests on cl with cfg and returns a slice of
 // events. wantLogs specifies whether RunLogEvent and EntityLogEvent should be
 // included in the result.
-func RunTestsForEvents(cl protocol.TestServiceClient, rcfg *protocol.RunConfig, opts ...Option) ([]protocol.Event, error) {
+func RunTestsForEvents(ctx context.Context, cl protocol.TestServiceClient, rcfg *protocol.RunConfig, opts ...Option) ([]protocol.Event, error) {
 	var cfg config
 	for _, o := range opts {
 		o(&cfg)
 	}
 
-	srv, err := cl.RunTests(context.Background())
+	srv, err := cl.RunTests(ctx)
 	if err != nil {
 		return nil, err
 	}

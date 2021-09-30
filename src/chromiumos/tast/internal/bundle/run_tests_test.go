@@ -146,7 +146,7 @@ func TestRunTests(t *gotesting.T) {
 
 	cl := startTestServer(t, scfg, &protocol.HandshakeRequest{})
 
-	events, err := protocoltest.RunTestsForEvents(cl, cfg,
+	events, err := protocoltest.RunTestsForEvents(context.Background(), cl, cfg,
 		protocoltest.WithRunLogs(),
 		protocoltest.WithEntityLogs(),
 	)
@@ -193,7 +193,7 @@ func TestRunTests(t *gotesting.T) {
 func TestRunTestsNoTests(t *gotesting.T) {
 	// RunTests should report success when no test is executed.
 	cl := startTestServer(t, NewStaticConfig(testing.NewRegistry("bundle"), 0, Delegate{}), &protocol.HandshakeRequest{})
-	if _, err := protocoltest.RunTestsForEvents(cl, &protocol.RunConfig{}); err != nil {
+	if _, err := protocoltest.RunTestsForEvents(context.Background(), cl, &protocol.RunConfig{}); err != nil {
 		t.Fatalf("RunTests failed for empty tests: %v", err)
 	}
 }
@@ -246,7 +246,7 @@ func TestRunTestsRemoteData(t *gotesting.T) {
 	}
 
 	cl := startTestServer(t, NewStaticConfig(reg, time.Minute, Delegate{}), hr)
-	if _, err := protocoltest.RunTestsForEvents(cl, cfg); err != nil {
+	if _, err := protocoltest.RunTestsForEvents(context.Background(), cl, cfg); err != nil {
 		t.Fatalf("RunTests failed: %v", err)
 	}
 
@@ -280,7 +280,7 @@ func TestRunTestsOutDir(t *gotesting.T) {
 			OutDir: outDir,
 		},
 	}
-	if _, err := protocoltest.RunTestsForEvents(cl, cfg); err != nil {
+	if _, err := protocoltest.RunTestsForEvents(context.Background(), cl, cfg); err != nil {
 		t.Fatalf("RunTests failed: %v", err)
 	}
 
@@ -319,7 +319,7 @@ func TestRunTestsStartFixture(t *gotesting.T) {
 		},
 	})
 	cl := startTestServer(t, scfg, &protocol.HandshakeRequest{})
-	if _, err := protocoltest.RunTestsForEvents(cl, cfg); err != nil {
+	if _, err := protocoltest.RunTestsForEvents(context.Background(), cl, cfg); err != nil {
 		t.Fatalf("RunTests failed: %v", err)
 	}
 
@@ -336,7 +336,7 @@ func TestRunTestsStartFixture(t *gotesting.T) {
 		},
 	})
 	cl = startTestServer(t, scfg, &protocol.HandshakeRequest{})
-	if _, err := protocoltest.RunTestsForEvents(cl, cfg); err != nil {
+	if _, err := protocoltest.RunTestsForEvents(context.Background(), cl, cfg); err != nil {
 		t.Fatalf("RunTests failed: %v", err)
 	}
 	if !called {
@@ -360,7 +360,7 @@ func TestRunTestsReadyFunc(t *gotesting.T) {
 		},
 	})
 	cl := startTestServer(t, scfg, &protocol.HandshakeRequest{})
-	if _, err := protocoltest.RunTestsForEvents(cl, cfg); err != nil {
+	if _, err := protocoltest.RunTestsForEvents(context.Background(), cl, cfg); err != nil {
 		t.Fatalf("RunTests failed: %v", err)
 	}
 	if !ranReady {
@@ -373,7 +373,7 @@ func TestRunTestsReadyFunc(t *gotesting.T) {
 		Ready: func(context.Context) error { return errors.New(msg) },
 	})
 	cl = startTestServer(t, scfg, &protocol.HandshakeRequest{})
-	_, err := protocoltest.RunTestsForEvents(cl, cfg)
+	_, err := protocoltest.RunTestsForEvents(context.Background(), cl, cfg)
 	if err == nil {
 		t.Fatal("RunTests unexpectedly succeeded despite ready hook failure")
 	}
@@ -398,7 +398,7 @@ func TestRunTestsReadyFuncDisabled(t *gotesting.T) {
 		},
 	})
 	cl := startTestServer(t, scfg, &protocol.HandshakeRequest{})
-	if _, err := protocoltest.RunTestsForEvents(cl, cfg); err != nil {
+	if _, err := protocoltest.RunTestsForEvents(context.Background(), cl, cfg); err != nil {
 		t.Fatalf("RunTests failed: %v", err)
 	}
 	if ranReady {
@@ -421,7 +421,7 @@ func TestRunTestsTestHook(t *gotesting.T) {
 		},
 	})
 	cl := startTestServer(t, scfg, &protocol.HandshakeRequest{})
-	if _, err := protocoltest.RunTestsForEvents(cl, cfg); err != nil {
+	if _, err := protocoltest.RunTestsForEvents(context.Background(), cl, cfg); err != nil {
 		t.Fatalf("RunTests failed: %v", err)
 	}
 	if !ranPre {
@@ -448,7 +448,7 @@ func TestRunTestsRunHook(t *gotesting.T) {
 		},
 	})
 	cl := startTestServer(t, scfg, &protocol.HandshakeRequest{})
-	if _, err := protocoltest.RunTestsForEvents(cl, cfg); err != nil {
+	if _, err := protocoltest.RunTestsForEvents(context.Background(), cl, cfg); err != nil {
 		t.Fatalf("RunTests failed: %v", err)
 	}
 	if !ranPre {
@@ -485,7 +485,7 @@ func TestRunTestsRemoteCantConnect(t *gotesting.T) {
 	}
 
 	cl := startTestServer(t, NewStaticConfig(reg, time.Minute, Delegate{}), hr)
-	_, err := protocoltest.RunTestsForEvents(cl, cfg)
+	_, err := protocoltest.RunTestsForEvents(context.Background(), cl, cfg)
 	if err == nil {
 		t.Fatal("RunTests unexpectedly succeeded despite unconnectable server")
 	}
@@ -541,7 +541,7 @@ func TestRunTestsRemoteDUT(t *gotesting.T) {
 
 	cfg := &protocol.RunConfig{}
 	cl := startTestServer(t, NewStaticConfig(reg, time.Minute, Delegate{}), hr)
-	if _, err := protocoltest.RunTestsForEvents(cl, cfg); err != nil {
+	if _, err := protocoltest.RunTestsForEvents(context.Background(), cl, cfg); err != nil {
 		t.Fatalf("RunTests failed: %v", err)
 	}
 
@@ -589,7 +589,7 @@ func TestRunTestsRemoteReconnectBetweenTests(t *gotesting.T) {
 	}
 
 	cl := startTestServer(t, NewStaticConfig(reg, time.Minute, Delegate{}), hr)
-	if _, err := protocoltest.RunTestsForEvents(cl, cfg); err != nil {
+	if _, err := protocoltest.RunTestsForEvents(context.Background(), cl, cfg); err != nil {
 		t.Fatalf("RunTests failed: %v", err)
 	}
 	if !conn1 {
@@ -636,7 +636,7 @@ func TestRunTestsRemoteBeforeReboot(t *gotesting.T) {
 	})
 
 	cl := startTestServer(t, scfg, hr)
-	if _, err := protocoltest.RunTestsForEvents(cl, cfg); err != nil {
+	if _, err := protocoltest.RunTestsForEvents(context.Background(), cl, cfg); err != nil {
 		t.Fatalf("RunTests failed: %v", err)
 	}
 
@@ -704,7 +704,7 @@ func TestRunTestsRemoteCompanionDUTs(t *gotesting.T) {
 	}
 
 	cl := startTestServer(t, NewStaticConfig(reg, time.Minute, Delegate{}), hr)
-	if _, err := protocoltest.RunTestsForEvents(cl, cfg); err != nil {
+	if _, err := protocoltest.RunTestsForEvents(context.Background(), cl, cfg); err != nil {
 		t.Fatalf("RunTests failed: %v", err)
 	}
 	if realOutput != output {

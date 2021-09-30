@@ -665,7 +665,7 @@ func TestRPCOverSSH(t *gotesting.T) {
 	defer sshConn.Close(ctx)
 
 	// Connect to the server and try calling a method.
-	conn, err := DialSSH(ctx, sshConn, "", &protocol.HandshakeRequest{})
+	conn, err := DialSSH(ctx, sshConn, "", &protocol.HandshakeRequest{}, false)
 	if err != nil {
 		t.Fatalf("DialSSH failed: %v", err)
 	}

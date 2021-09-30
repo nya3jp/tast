@@ -68,7 +68,7 @@ func Dial(ctx context.Context, d *dut.DUT, h *testing.RPCHint, bundleName string
 			Vars: testing.ExtractTestVars(h),
 		},
 	}
-	cl, err := rpc.DialSSH(ctx, d.Conn(), bundlePath, req)
+	cl, err := rpc.DialSSH(ctx, d.Conn(), bundlePath, req, false)
 	if err != nil {
 		return nil, err
 	}

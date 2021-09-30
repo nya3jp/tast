@@ -48,8 +48,24 @@ func (c *SSHClient) Close() error {
 }
 
 // DialSSH establishes a gRPC connection to an executable on a remote machine.
-func DialSSH(ctx context.Context, conn *ssh.Conn, path string, req *protocol.HandshakeRequest) (*SSHClient, error) {
-	cmd := conn.CommandContext(ctx, path, "-rpc")
+// proxy if true indicates that HTTP proxy environment variables should be forwarded.
+func DialSSH(ctx context.Context, conn *ssh.Conn, path string, req *protocol.HandshakeRequest, proxy bool) (*SSHClient, error) {
+	args := []string{path, "-rpc"}
+	if proxy {
+		var envArgs []string
+		// Proxy-related variables can be either uppercase or lowercase.
+		// See https://golang.org/pkg/net/http/#ProxyFromEnvironment.
+		for _, name := range []string{
+			"HTTP_PROXY", "HTTPS_PROXY", "NO_PROXY",
+			"http_proxy", "https_proxy", "no_proxy",
+		} {
+			if val := os.Getenv(name); val != "" {
+				envArgs = append(envArgs, fmt.Sprintf("%s=%s", name, val))
+			}
+		}
+		args = append(append([]string{"env"}, envArgs...), args...)
+	}
+	cmd := conn.CommandContext(ctx, args[0], args[1:]...)
 	stdin, err := cmd.StdinPipe()
 	if err != nil {
 		return nil, err

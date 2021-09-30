@@ -6,29 +6,15 @@ package bundle_test
 
 import (
 	"context"
-	"path/filepath"
 	gotesting "testing"
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 
-	"chromiumos/tast/internal/bundle/fakebundle"
+	"chromiumos/tast/internal/bundle/bundletest"
 	"chromiumos/tast/internal/protocol"
-	"chromiumos/tast/internal/rpc"
 	"chromiumos/tast/internal/testing"
 )
-
-func setUp(t *gotesting.T, reg *testing.Registry) protocol.TestServiceClient {
-	tempDir := t.TempDir()
-
-	fakebundle.InstallAt(t, tempDir, reg)
-	rpcClient, err := rpc.DialExec(context.Background(), filepath.Join(tempDir, reg.Name()), false, &protocol.HandshakeRequest{})
-	if err != nil {
-		t.Fatal(err)
-	}
-	t.Cleanup(func() { rpcClient.Close() })
-	return protocol.NewTestServiceClient(rpcClient.Conn())
-}
 
 func TestTestServiceListEntities(t *gotesting.T) {
 	t1 := &testing.TestInstance{Name: "pkg.Test1"}
@@ -42,7 +28,9 @@ func TestTestServiceListEntities(t *gotesting.T) {
 	reg.AddFixtureInstance(f1)
 	reg.AddFixtureInstance(f2)
 
-	cl := setUp(t, reg)
+	env := bundletest.SetUp(t, bundletest.WithRemoteBundles(reg))
+	cl := protocol.NewTestServiceClient(env.DialRemoteBundle(context.Background(), t, reg.Name()))
+
 	got, err := cl.ListEntities(context.Background(), &protocol.ListEntitiesRequest{})
 	if err != nil {
 		t.Fatalf("ListEntities failed: %v", err)
@@ -83,7 +71,8 @@ func TestTestServerListEntitiesTestSkips(t *gotesting.T) {
 	reg.AddTestInstance(t2)
 	reg.AddTestInstance(t3)
 
-	cl := setUp(t, reg)
+	env := bundletest.SetUp(t, bundletest.WithRemoteBundles(reg))
+	cl := protocol.NewTestServiceClient(env.DialRemoteBundle(context.Background(), t, reg.Name()))
 
 	// Call ListEntities.
 	got, err := cl.ListEntities(context.Background(), &protocol.ListEntitiesRequest{Features: features})
@@ -126,7 +115,8 @@ func TestTestServerListEntitiesStartFixtureNames(t *gotesting.T) {
 	reg.AddFixtureInstance(f2)
 	reg.AddFixtureInstance(f3)
 
-	cl := setUp(t, reg)
+	env := bundletest.SetUp(t, bundletest.WithRemoteBundles(reg))
+	cl := protocol.NewTestServiceClient(env.DialRemoteBundle(context.Background(), t, reg.Name()))
 
 	// Call ListEntities.
 	got, err := cl.ListEntities(context.Background(), &protocol.ListEntitiesRequest{})

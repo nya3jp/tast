@@ -6,9 +6,6 @@ package runtest
 
 import (
 	"context"
-	"crypto/rsa"
-	"crypto/x509"
-	"encoding/pem"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -19,12 +16,11 @@ import (
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/runtest/internal/fakerunner"
-	"chromiumos/tast/internal/bundle/fakebundle"
+	"chromiumos/tast/internal/bundle/bundletest"
 	"chromiumos/tast/internal/fakesshserver"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/logging/loggingtest"
 	"chromiumos/tast/internal/runner"
-	"chromiumos/tast/internal/sshtest"
 )
 
 const (
@@ -41,21 +37,15 @@ const (
 	tempDir   = "tmp"
 
 	remoteTestRunnerPath = "mock_remote_test_runner"
-
-	localBundleDir  = "bundles/local"
-	remoteBundleDir = "bundles/remote"
-
-	keyFile = "id_rsa"
 )
 
 // Env contains information needed to interact with the testing environment
 // set up.
 type Env struct {
-	logger           *loggingtest.Logger
-	rootDir          string
-	primaryServer    *fakesshserver.Server
-	companionServers map[string]*fakesshserver.Server
-	state            *config.State
+	rootDir   string
+	bundleEnv *bundletest.Env
+	logger    *loggingtest.Logger
+	state     *config.State
 }
 
 // SetUp sets up a testing environment for Tast CLI.
@@ -84,21 +74,63 @@ func SetUp(t *gotesting.T, opts ...EnvOrDUTOption) *Env {
 		resultDir,
 		trunkDir,
 		tempDir,
-		localBundleDir,
-		remoteBundleDir,
 	} {
 		if err := os.MkdirAll(filepath.Join(rootDir, dir), 0755); err != nil {
 			t.Fatal(err)
 		}
 	}
 
-	// Install fake bundle executables.
-	fakebundle.InstallAt(t, filepath.Join(rootDir, localBundleDir), cfg.LocalBundles...)
-	fakebundle.InstallAt(t, filepath.Join(rootDir, remoteBundleDir), cfg.RemoteBundles...)
+	// dutConfigLazy creates a dut config with a handler which can be lazily
+	// updated. We need this because otherwise we have a cyclic dependency:
+	// (1) As bundletest packages is designed so that returned environment is
+	//     immutable, adding extra SSH handlers after SetUp is called is not
+	//     possible. (bundles depend on handlers)
+	// (2) Fake runners are set up with knowledge about bundles. This is only
+	//     known after SetUp is called. (runner depends on bundles)
+	// (3) SSH handlers need to be set up with knowledge about the runner.
+	//     (handlers depend on runner)
+	// Here we are breaking (3) with lazy SSH handlers.
+	dutConfigLazy := func() (_ *bundletest.DUTConfig, setHandlers func([]fakesshserver.Handler)) {
+		var handlers []fakesshserver.Handler
+		return &bundletest.DUTConfig{
+				ExtraSSHHandlers: []fakesshserver.Handler{
+					func(cmd string) (fakesshserver.Process, bool) {
+						for _, h := range handlers {
+							p, ok := h(cmd)
+							if ok {
+								return p, ok
+							}
+						}
+						return nil, false
+					},
+				},
+			}, func(hs []fakesshserver.Handler) {
+				handlers = hs
+			}
+	}
+
+	primaryDUT, primarySetHandlers := dutConfigLazy()
+	companionDUTs := make(map[string]*bundletest.DUTConfig)
+	companionSetHandlers := make(map[string]func([]fakesshserver.Handler))
+	for role := range cfg.CompanionDUTs {
+		companionDUTs[role], companionSetHandlers[role] = dutConfigLazy()
+	}
+
+	bundleEnv := bundletest.SetUp(t,
+		bundletest.WithLocalBundles(cfg.LocalBundles...),
+		bundletest.WithRemoteBundles(cfg.RemoteBundles...),
+		bundletest.WithPrimaryDUT(primaryDUT),
+		bundletest.WithCompanionDUTs(companionDUTs),
+	)
+
+	primarySetHandlers(runnerSSHHandlers(bundleEnv.LocalBundleDir(), cfg.PrimaryDUT))
+	for role, dcfg := range cfg.CompanionDUTs {
+		companionSetHandlers[role](runnerSSHHandlers(bundleEnv.LocalBundleDir(), dcfg))
+	}
 
 	// Create a fake remote test runner.
 	remoteTestRunner := fakerunner.New(&fakerunner.Config{
-		BundleDir: filepath.Join(rootDir, remoteBundleDir),
+		BundleDir: filepath.Join(rootDir, bundleEnv.RemoteBundleDir()),
 		StaticConfig: &runner.StaticConfig{
 			Type: runner.RemoteRunner,
 		},
@@ -110,45 +142,33 @@ func SetUp(t *gotesting.T, opts ...EnvOrDUTOption) *Env {
 	}
 	t.Cleanup(func() { lo.Close() })
 
-	// Generate an SSH key pair.
-	userKey, hostKey := sshtest.MustGenerateKeys()
-	keyData := pem.EncodeToMemory(&pem.Block{
-		Type:    "RSA PRIVATE KEY",
-		Headers: nil,
-		Bytes:   x509.MarshalPKCS1PrivateKey(userKey),
-	})
-	if err := ioutil.WriteFile(filepath.Join(rootDir, keyFile), keyData, 0600); err != nil {
-		t.Fatal(err)
-	}
-
-	// Start fake SSH servers.
-	primaryServer, err := startServer(rootDir, cfg.PrimaryDUT, &userKey.PublicKey, hostKey)
-	if err != nil {
-		t.Fatal(err)
-	}
-	t.Cleanup(func() { primaryServer.Stop() })
-
-	companionServers := make(map[string]*fakesshserver.Server)
-	for role, dcfg := range cfg.CompanionDUTs {
-		server, err := startServer(rootDir, dcfg, &userKey.PublicKey, hostKey)
-		if err != nil {
-			t.Fatal(err)
-		}
-		t.Cleanup(func() { server.Stop() })
-		companionServers[role] = server
-	}
-
 	// Create a State object that is cleaned up automatically.
 	state := &config.State{}
 	t.Cleanup(func() { state.Close(context.Background()) })
 
 	return &Env{
-		logger:           loggingtest.NewLogger(t, logging.LevelInfo),
-		rootDir:          rootDir,
-		primaryServer:    primaryServer,
-		companionServers: companionServers,
-		state:            state,
+		rootDir:   rootDir,
+		bundleEnv: bundleEnv,
+		logger:    loggingtest.NewLogger(t, logging.LevelInfo),
+		state:     state,
 	}
+}
+
+func runnerSSHHandlers(localBundleDir string, dcfg *dutConfig) []fakesshserver.Handler {
+	hs := fakerunner.New(&fakerunner.Config{
+		BundleDir: localBundleDir,
+		StaticConfig: &runner.StaticConfig{
+			Type: runner.LocalRunner,
+		},
+		GetDUTInfo:             dcfg.GetDUTInfo,
+		GetSysInfoState:        dcfg.GetSysInfoState,
+		CollectSysInfo:         dcfg.CollectSysInfo,
+		DownloadPrivateBundles: dcfg.DownloadPrivateBundles,
+		OnRunTestsInit:         dcfg.OnRunLocalTestsInit,
+	}).SSHHandlers(LocalTestRunnerPath)
+	hs = append(hs, defaultHandlers(dcfg)...)
+	hs = append(hs, dcfg.ExtraSSHHandlers...)
+	return hs
 }
 
 // Context returns a background context. loggingtest.Logger is attached to the
@@ -166,10 +186,6 @@ func (e *Env) TempDir() string { return filepath.Join(e.rootDir, tempDir) }
 // struct if needed to customize Tast CLI component behavior.
 func (e *Env) Config(mod func(cfg *config.MutableConfig)) *config.Config {
 	randomID := rand.Int31()
-	companionDUTs := make(map[string]string)
-	for role, server := range e.companionServers {
-		companionDUTs[role] = server.Addr().String()
-	}
 	cfg := &config.MutableConfig{
 		// Run all available tests.
 		Mode:     config.RunTestsMode,
@@ -182,18 +198,18 @@ func (e *Env) Config(mod func(cfg *config.MutableConfig)) *config.Config {
 		// This is the only shard.
 		TotalShards: 1,
 		// Fill info to access fake SSH servers.
-		Target:        e.primaryServer.Addr().String(),
-		KeyFile:       filepath.Join(e.rootDir, keyFile),
-		CompanionDUTs: companionDUTs,
+		Target:        e.bundleEnv.PrimaryServer(),
+		KeyFile:       e.bundleEnv.KeyFile(),
+		CompanionDUTs: e.bundleEnv.CompanionDUTs(),
 		// Set default directory paths to use.
 		ResDir:          filepath.Join(e.rootDir, resultDir),
 		TastDir:         filepath.Join(e.rootDir, tastDir),
 		TrunkDir:        filepath.Join(e.rootDir, trunkDir),
 		LocalRunner:     LocalTestRunnerPath,
-		LocalBundleDir:  filepath.Join(e.rootDir, localBundleDir),
+		LocalBundleDir:  e.bundleEnv.LocalBundleDir(),
 		LocalOutDir:     filepath.Join(e.rootDir, fmt.Sprintf("tmp/out/local.%d", randomID)),
 		RemoteRunner:    filepath.Join(e.rootDir, remoteTestRunnerPath),
-		RemoteBundleDir: filepath.Join(e.rootDir, remoteBundleDir),
+		RemoteBundleDir: e.bundleEnv.RemoteBundleDir(),
 		RemoteOutDir:    filepath.Join(e.rootDir, fmt.Sprintf("tmp/out/remote.%d", randomID)),
 		PrimaryBundle:   "bundle",
 	}
@@ -207,25 +223,6 @@ func (e *Env) Config(mod func(cfg *config.MutableConfig)) *config.Config {
 // the end of the current unit test.
 func (e *Env) State() *config.State {
 	return e.state
-}
-
-// startServer starts a fake SSH server with a fake local test runner installed.
-func startServer(rootDir string, cfg *dutConfig, userKey *rsa.PublicKey, hostKey *rsa.PrivateKey) (*fakesshserver.Server, error) {
-	runner := fakerunner.New(&fakerunner.Config{
-		BundleDir: filepath.Join(rootDir, localBundleDir),
-		StaticConfig: &runner.StaticConfig{
-			Type: runner.LocalRunner,
-		},
-		GetDUTInfo:             cfg.GetDUTInfo,
-		GetSysInfoState:        cfg.GetSysInfoState,
-		CollectSysInfo:         cfg.CollectSysInfo,
-		DownloadPrivateBundles: cfg.DownloadPrivateBundles,
-		OnRunTestsInit:         cfg.OnRunLocalTestsInit,
-	})
-	handlers := cfg.ExtraSSHHandlers
-	handlers = append(handlers, defaultHandlers(cfg)...)
-	handlers = append(handlers, runner.SSHHandlers(LocalTestRunnerPath)...)
-	return fakesshserver.Start(userKey, hostKey, handlers)
 }
 
 // defaultHandlers returns SSH handlers to be installed to a fake SSH server by

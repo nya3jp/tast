@@ -26,8 +26,8 @@ type envConfig struct {
 
 // dutConfig contains configurations of a fake DUT.
 type dutConfig struct {
-	BootID                 func() (bootID string, err error)
 	ExtraSSHHandlers       []fakesshserver.Handler
+	BootID                 func() (bootID string, err error)
 	GetDUTInfo             func(req *protocol.GetDUTInfoRequest) (*protocol.GetDUTInfoResponse, error)
 	GetSysInfoState        func(req *protocol.GetSysInfoStateRequest) (*protocol.GetSysInfoStateResponse, error)
 	CollectSysInfo         func(req *protocol.CollectSysInfoRequest) (*protocol.CollectSysInfoResponse, error)

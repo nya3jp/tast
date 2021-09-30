@@ -27,10 +27,33 @@ var EventCmpOpts = []cmp.Option{
 	cmpopts.IgnoreFields(protocol.Error{}, "Location"),
 }
 
+type config struct {
+	wantRunLogs    bool
+	wantEntityLogs bool
+}
+
+// Option represents an option to RunTestsForEvents.
+type Option func(*config)
+
+// WithRunLogs instructs to include RunLogEvents to the result.
+func WithRunLogs() Option {
+	return func(cfg *config) { cfg.wantRunLogs = true }
+}
+
+// WithEntityLogs instructs to include EntityLogEvents to the result.
+func WithEntityLogs() Option {
+	return func(cfg *config) { cfg.wantEntityLogs = true }
+}
+
 // RunTestsForEvents calls RunTests on cl with cfg and returns a slice of
 // events. wantLogs specifies whether RunLogEvent and EntityLogEvent should be
 // included in the result.
-func RunTestsForEvents(cl protocol.TestServiceClient, cfg *protocol.RunConfig, wantLogs bool) ([]protocol.Event, error) {
+func RunTestsForEvents(cl protocol.TestServiceClient, rcfg *protocol.RunConfig, opts ...Option) ([]protocol.Event, error) {
+	var cfg config
+	for _, o := range opts {
+		o(&cfg)
+	}
+
 	srv, err := cl.RunTests(context.Background())
 	if err != nil {
 		return nil, err
@@ -39,7 +62,7 @@ func RunTestsForEvents(cl protocol.TestServiceClient, cfg *protocol.RunConfig, w
 	req := &protocol.RunTestsRequest{
 		Type: &protocol.RunTestsRequest_RunTestsInit{
 			RunTestsInit: &protocol.RunTestsInit{
-				RunConfig: cfg,
+				RunConfig: rcfg,
 			},
 		},
 	}
@@ -62,13 +85,11 @@ func RunTestsForEvents(cl protocol.TestServiceClient, cfg *protocol.RunConfig, w
 			continue
 		}
 
-		if !wantLogs {
-			if _, ok := e.(*protocol.RunLogEvent); ok {
-				continue
-			}
-			if _, ok := e.(*protocol.EntityLogEvent); ok {
-				continue
-			}
+		if _, ok := e.(*protocol.RunLogEvent); ok && !cfg.wantRunLogs {
+			continue
+		}
+		if _, ok := e.(*protocol.EntityLogEvent); ok && !cfg.wantEntityLogs {
+			continue
 		}
 
 		es = append(es, e)

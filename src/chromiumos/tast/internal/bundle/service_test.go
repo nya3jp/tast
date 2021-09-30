@@ -2,47 +2,35 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package bundle
+package bundle_test
 
 import (
 	"context"
-	"io"
-	"io/ioutil"
+	"path/filepath"
 	gotesting "testing"
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 
+	"chromiumos/tast/internal/bundle/fakebundle"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/rpc"
 	"chromiumos/tast/internal/testing"
 )
 
-// startTestServer starts an in-process gRPC server and returns a connection as
-// TestServiceClient. On completion of the current test, resources are released
-// automatically.
-func startTestServer(t *gotesting.T, scfg *StaticConfig, req *protocol.HandshakeRequest) protocol.TestServiceClient {
-	sr, cw := io.Pipe()
-	cr, sw := io.Pipe()
-	t.Cleanup(func() {
-		cw.Close()
-		cr.Close()
-	})
+func setUp(t *gotesting.T, reg *testing.Registry) protocol.TestServiceClient {
+	tempDir := t.TempDir()
 
-	go run(context.Background(), []string{"-rpc"}, sr, sw, ioutil.Discard, scfg)
-
-	conn, err := rpc.NewClient(context.Background(), cr, cw, req)
+	fakebundle.InstallAt(t, tempDir, reg)
+	rpcClient, err := rpc.DialExec(context.Background(), filepath.Join(tempDir, reg.Name()), false, &protocol.HandshakeRequest{})
 	if err != nil {
-		t.Fatalf("Failed to connect to in-process gRPC server: %v", err)
+		t.Fatal(err)
 	}
-	t.Cleanup(func() {
-		conn.Close()
-	})
-
-	return protocol.NewTestServiceClient(conn.Conn())
+	t.Cleanup(func() { rpcClient.Close() })
+	return protocol.NewTestServiceClient(rpcClient.Conn())
 }
 
-func TestTestServerListEntities(t *gotesting.T) {
+func TestTestServiceListEntities(t *gotesting.T) {
 	t1 := &testing.TestInstance{Name: "pkg.Test1"}
 	t2 := &testing.TestInstance{Name: "pkg.Test2"}
 	f1 := &testing.FixtureInstance{Name: "fixt1"}
@@ -54,11 +42,7 @@ func TestTestServerListEntities(t *gotesting.T) {
 	reg.AddFixtureInstance(f1)
 	reg.AddFixtureInstance(f2)
 
-	scfg := NewStaticConfig(reg, 0, Delegate{})
-
-	cl := startTestServer(t, scfg, &protocol.HandshakeRequest{})
-
-	// Call ListEntities.
+	cl := setUp(t, reg)
 	got, err := cl.ListEntities(context.Background(), &protocol.ListEntitiesRequest{})
 	if err != nil {
 		t.Fatalf("ListEntities failed: %v", err)
@@ -99,9 +83,7 @@ func TestTestServerListEntitiesTestSkips(t *gotesting.T) {
 	reg.AddTestInstance(t2)
 	reg.AddTestInstance(t3)
 
-	scfg := NewStaticConfig(reg, 0, Delegate{})
-
-	cl := startTestServer(t, scfg, &protocol.HandshakeRequest{})
+	cl := setUp(t, reg)
 
 	// Call ListEntities.
 	got, err := cl.ListEntities(context.Background(), &protocol.ListEntitiesRequest{Features: features})
@@ -144,9 +126,7 @@ func TestTestServerListEntitiesStartFixtureNames(t *gotesting.T) {
 	reg.AddFixtureInstance(f2)
 	reg.AddFixtureInstance(f3)
 
-	scfg := NewStaticConfig(reg, 0, Delegate{})
-
-	cl := startTestServer(t, scfg, &protocol.HandshakeRequest{})
+	cl := setUp(t, reg)
 
 	// Call ListEntities.
 	got, err := cl.ListEntities(context.Background(), &protocol.ListEntitiesRequest{})

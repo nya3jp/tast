@@ -6,6 +6,7 @@ package bundle
 
 import (
 	"context"
+	"io"
 	"io/ioutil"
 	"log"
 	"os"
@@ -22,10 +23,35 @@ import (
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/protocol/protocoltest"
+	"chromiumos/tast/internal/rpc"
 	"chromiumos/tast/internal/sshtest"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/testutil"
 )
+
+// startTestServer starts an in-process gRPC server and returns a connection as
+// TestServiceClient. On completion of the current test, resources are released
+// automatically.
+func startTestServer(t *gotesting.T, scfg *StaticConfig, req *protocol.HandshakeRequest) protocol.TestServiceClient {
+	sr, cw := io.Pipe()
+	cr, sw := io.Pipe()
+	t.Cleanup(func() {
+		cw.Close()
+		cr.Close()
+	})
+
+	go run(context.Background(), []string{"-rpc"}, sr, sw, ioutil.Discard, scfg)
+
+	conn, err := rpc.NewClient(context.Background(), cr, cw, req)
+	if err != nil {
+		t.Fatalf("Failed to connect to in-process gRPC server: %v", err)
+	}
+	t.Cleanup(func() {
+		conn.Close()
+	})
+
+	return protocol.NewTestServiceClient(conn.Conn())
+}
 
 var testFunc = func(context.Context, *testing.State) {}
 

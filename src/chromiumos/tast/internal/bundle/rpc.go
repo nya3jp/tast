@@ -24,7 +24,7 @@ func RunRPCServer(r io.Reader, w io.Writer, scfg *StaticConfig) error {
 			return err
 		}
 		registerFixtureService(srv, reg)
-		protocol.RegisterTestServiceServer(srv, newTestServer(scfg, req.GetBundleInitParams().GetBundleConfig()))
+		protocol.RegisterTestServiceServer(srv, newTestServer(scfg, req.GetBundleInitParams()))
 		// TODO(b/187793617): Remove this check once we fully migrate to gRPC-based protocol.
 		// The check is currently needed because BundleInitParams is not available for some JSON-based protocol methods.
 		if req.GetBundleInitParams() != nil {

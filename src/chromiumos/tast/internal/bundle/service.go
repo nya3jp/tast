@@ -15,20 +15,24 @@ import (
 
 type testServer struct {
 	protocol.UnimplementedTestServiceServer
-	scfg *StaticConfig
-	bcfg *protocol.BundleConfig
+	scfg         *StaticConfig
+	bundleParams *protocol.BundleInitParams
 }
 
-func newTestServer(scfg *StaticConfig, bcfg *protocol.BundleConfig) *testServer {
-	return &testServer{scfg: scfg, bcfg: bcfg}
+func newTestServer(scfg *StaticConfig, bundleParams *protocol.BundleInitParams) *testServer {
+	return &testServer{scfg: scfg, bundleParams: bundleParams}
 }
 
 func (s *testServer) ListEntities(ctx context.Context, req *protocol.ListEntitiesRequest) (*protocol.ListEntitiesResponse, error) {
 	res := &protocol.ListEntitiesResponse{Entities: listEntities(s.scfg.registry, req.GetFeatures())}
-	if !req.Recursive || s.bcfg.GetPrimaryTarget() == nil {
+	if !req.Recursive {
 		return res, nil
 	}
-	cl, err := bundleclient.New(ctx, s.bcfg.PrimaryTarget, s.scfg.registry.Name(), &protocol.HandshakeRequest{})
+	primaryTarget := s.bundleParams.GetBundleConfig().GetPrimaryTarget()
+	if primaryTarget == nil {
+		return res, nil
+	}
+	cl, err := bundleclient.New(ctx, primaryTarget, s.scfg.registry.Name(), &protocol.HandshakeRequest{})
 	if err != nil {
 		return res, err
 	}
@@ -56,7 +60,7 @@ func (s *testServer) RunTests(srv protocol.TestService_RunTestsServer) error {
 		return errors.Errorf("RunTests: unexpected initial request message: got %T, want %T", initReq.GetType(), &protocol.RunTestsRequest_RunTestsInit{})
 	}
 
-	return runTests(ctx, srv, initReq.GetRunTestsInit().GetRunConfig(), s.scfg, s.bcfg)
+	return runTests(ctx, srv, initReq.GetRunTestsInit().GetRunConfig(), s.scfg, s.bundleParams.GetBundleConfig())
 }
 
 func listEntities(reg *testing.Registry, features *protocol.Features) []*protocol.ResolvedEntity {

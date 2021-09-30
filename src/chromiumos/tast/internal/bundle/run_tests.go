@@ -53,7 +53,7 @@ func testsToRun(scfg *StaticConfig, patterns []string) ([]*testing.TestInstance,
 //
 // If an error is encountered in the test harness (as opposed to in a test), an error is returned.
 // Otherwise, nil is returned (test errors will be reported via EntityError control messages).
-func runTests(ctx context.Context, srv protocol.TestService_RunTestsServer, cfg *protocol.RunConfig, scfg *StaticConfig, bcfg *protocol.BundleConfig) error {
+func runTests(ctx context.Context, srv protocol.TestService_RunTestsServer, cfg *protocol.RunConfig, scfg *StaticConfig, bcfg *protocol.BundleConfig) (retErr error) {
 	ctx = testcontext.WithPrivateData(ctx, testcontext.PrivateData{
 		WaitUntilReady: cfg.GetWaitUntilReady(),
 	})
@@ -68,97 +68,21 @@ func runTests(ctx context.Context, srv protocol.TestService_RunTestsServer, cfg 
 		return err
 	}
 
-	// Set up output directory.
-	// OutDir can be empty if the caller is not interested in output
-	// files, e.g. in unit tests.
-	if outDir := cfg.GetDirs().GetOutDir(); outDir != "" {
-		if err := os.MkdirAll(outDir, 0755); err != nil {
-			return errors.Wrap(err, "failed to create output directory")
-		}
-		// Call os.Chmod again to ensure permission. The mode passed to
-		// os.MkdirAll is modified by umask, so we need an explicit chmod.
-		if err := os.Chmod(outDir, 0755); err != nil {
-			return errors.Wrap(err, "failed to chmod output directory")
-		}
-	}
-
-	// Set up temporary directory.
-	tempDir := cfg.GetDirs().GetTempDir()
-	if tempDir == "" {
-		var err error
-		tempDir, err = defaultTempDir()
-		if err != nil {
-			return err
-		}
-		defer os.RemoveAll(tempDir)
-	}
-
-	restoreTempDir, err := prepareTempDir(tempDir)
+	env, err := setUpTestEnvironment(ctx, scfg, cfg, bcfg)
 	if err != nil {
 		return err
 	}
-	defer restoreTempDir()
-
-	var postRunFunc func(context.Context) error
-
-	// Don't run runHook when remote fixtures are used.
-	// The runHook for local bundles (ready.Wait) may reset the state remote
-	// fixtures just have set up, e.g. enterprise enrollment.
-	// TODO(crbug/1184567): consider long term plan about interactions between
-	// remote fixtures and run hooks.
-	if scfg.runHook != nil && cfg.GetStartFixtureState().GetName() == "" {
-		var err error
-		postRunFunc, err = scfg.runHook(ctx)
-		if err != nil {
-			return command.NewStatusErrorf(statusError, "pre-run failed: %v", err)
+	defer func() {
+		if err := env.close(ctx); err != nil && retErr == nil {
+			retErr = err
 		}
+	}()
+
+	connEnv, err := setUpConnection(ctx, scfg, cfg, bcfg)
+	if err != nil {
+		return err
 	}
-
-	var rd *testing.RemoteData
-	if pt := bcfg.GetPrimaryTarget(); pt != nil {
-		logging.Info(ctx, "Connecting to DUT")
-		sshCfg := pt.GetDutConfig().GetSshConfig()
-		dt, err := connectToTarget(ctx, sshCfg.GetTarget(), sshCfg.GetKeyFile(), sshCfg.GetKeyDir(), scfg.beforeReboot)
-		if err != nil {
-			return command.NewStatusErrorf(statusError, "failed to connect to DUT: %v", err)
-		}
-		defer func() {
-			logging.Info(ctx, "Disconnecting from DUT")
-			// It is okay to ignore the error since we've finished testing at this point.
-			dt.Close(ctx)
-		}()
-
-		companionDUTs := make(map[string]*dut.DUT)
-		defer func() {
-			if len(companionDUTs) == 0 {
-				return
-			}
-			logging.Info(ctx, "Disconnecting from companion DUTs")
-			// It is okay to ignore the error since we've finished testing at this point.
-			for _, dut := range rd.CompanionDUTs {
-				dut.Close(ctx)
-			}
-		}()
-		for role, dut := range bcfg.GetCompanionDuts() {
-			sshCfg := dut.GetSshConfig()
-			d, err := connectToTarget(ctx, sshCfg.GetTarget(), sshCfg.GetKeyFile(), sshCfg.GetKeyDir(), scfg.beforeReboot)
-			if err != nil {
-				return command.NewStatusErrorf(statusError, "failed to connect to companion DUT %v: %v", sshCfg.GetTarget(), err)
-			}
-			companionDUTs[role] = d
-		}
-
-		rd = &testing.RemoteData{
-			Meta: &testing.Meta{
-				TastPath: bcfg.GetMetaTestConfig().GetTastPath(),
-				Target:   sshCfg.GetTarget(),
-				RunFlags: bcfg.GetMetaTestConfig().GetRunFlags(),
-			},
-			RPCHint:       testing.NewRPCHint(pt.GetBundleDir(), cfg.GetFeatures().GetInfra().GetVars()),
-			DUT:           dt,
-			CompanionDUTs: companionDUTs,
-		}
-	}
+	defer connEnv.close(ctx)
 
 	mode, err := planner.DownloadModeFromProto(cfg.GetDataFileConfig().GetDownloadMode())
 	if err != nil {
@@ -173,7 +97,7 @@ func runTests(ctx context.Context, srv protocol.TestService_RunTestsServer, cfg 
 		TLWServer:         cfg.GetServiceConfig().GetTlwServer(),
 		DUTName:           cfg.GetServiceConfig().GetTlwSelfName(),
 		BuildArtifactsURL: cfg.GetDataFileConfig().GetBuildArtifactsUrl(),
-		RemoteData:        rd,
+		RemoteData:        connEnv.rd,
 		TestHook:          scfg.testHook,
 		DownloadMode:      mode,
 		BeforeDownload:    scfg.beforeDownload,
@@ -184,12 +108,6 @@ func runTests(ctx context.Context, srv protocol.TestService_RunTestsServer, cfg 
 
 	if err := planner.RunTests(ctx, tests, ew, pcfg); err != nil {
 		return command.NewStatusErrorf(statusError, "run failed: %v", err)
-	}
-
-	if postRunFunc != nil {
-		if err := postRunFunc(ctx); err != nil {
-			return command.NewStatusErrorf(statusError, "post-run failed: %v", err)
-		}
 	}
 	return nil
 }
@@ -345,3 +263,160 @@ func (*stubFixture) TearDown(ctx context.Context, s *testing.FixtState)     {}
 func (*stubFixture) Reset(ctx context.Context) error                        { return nil }
 func (*stubFixture) PreTest(ctx context.Context, s *testing.FixtTestState)  {}
 func (*stubFixture) PostTest(ctx context.Context, s *testing.FixtTestState) {}
+
+type connectionEnv struct {
+	rd *testing.RemoteData
+}
+
+func (c *connectionEnv) close(ctx context.Context) {
+	if c.rd == nil {
+		return
+	}
+	logging.Info(ctx, "Disconnecting from DUT")
+	// It is okay to ignore the error since we've finished testing at this point.
+	c.rd.DUT.Close(ctx)
+	for _, d := range c.rd.CompanionDUTs {
+		d.Close(ctx)
+	}
+}
+
+// setUpConnection sets up a connection to a test bundle in another device bcfg
+// specifies. Caller must call close after use.
+func setUpConnection(ctx context.Context, scfg *StaticConfig, cfg *protocol.RunConfig, bcfg *protocol.BundleConfig) (_ *connectionEnv, retErr error) {
+	pt := bcfg.GetPrimaryTarget()
+	if pt == nil {
+		return &connectionEnv{}, nil
+	}
+
+	logging.Info(ctx, "Connecting to DUT")
+	sshCfg := pt.GetDutConfig().GetSshConfig()
+	dt, err := connectToTarget(ctx, sshCfg.GetTarget(), sshCfg.GetKeyFile(), sshCfg.GetKeyDir(), scfg.beforeReboot)
+	if err != nil {
+		return nil, command.NewStatusErrorf(statusError, "failed to connect to DUT: %v", err)
+	}
+	defer func() {
+		if retErr != nil {
+			dt.Close(ctx)
+		}
+	}()
+
+	companionDUTs := make(map[string]*dut.DUT)
+	for role, dut := range bcfg.GetCompanionDuts() {
+		sshCfg := dut.GetSshConfig()
+		d, err := connectToTarget(ctx, sshCfg.GetTarget(), sshCfg.GetKeyFile(), sshCfg.GetKeyDir(), scfg.beforeReboot)
+		if err != nil {
+			return nil, command.NewStatusErrorf(statusError, "failed to connect to companion DUT %v: %v", sshCfg.GetTarget(), err)
+		}
+		defer func() {
+			if retErr != nil {
+				d.Close(ctx)
+			}
+		}()
+		companionDUTs[role] = d
+	}
+	return &connectionEnv{
+		&testing.RemoteData{
+			Meta: &testing.Meta{
+				TastPath: bcfg.GetMetaTestConfig().GetTastPath(),
+				Target:   sshCfg.GetTarget(),
+				RunFlags: bcfg.GetMetaTestConfig().GetRunFlags(),
+			},
+			RPCHint:       testing.NewRPCHint(pt.GetBundleDir(), cfg.GetFeatures().GetInfra().GetVars()),
+			DUT:           dt,
+			CompanionDUTs: companionDUTs,
+		},
+	}, nil
+}
+
+type testEnv struct {
+	tempDir        string
+	removeTempDir  bool
+	restoreTempDir func()
+
+	postRunFunc func(context.Context) error
+}
+
+func (e *testEnv) close(ctx context.Context) error {
+	var firstErr error
+
+	if e.postRunFunc != nil {
+		if err := e.postRunFunc(ctx); err != nil && firstErr == nil {
+			firstErr = command.NewStatusErrorf(statusError, "post-run failed: %v", err)
+		}
+	}
+	e.restoreTempDir()
+	if e.removeTempDir {
+		if err := os.RemoveAll(e.tempDir); err != nil && firstErr == nil {
+			firstErr = err
+		}
+	}
+	return firstErr
+}
+
+// setUpTestEnvironment sets up testing environment.
+// It creates output/temp directories and runs runHooks.
+// Caller must call close after use.
+func setUpTestEnvironment(ctx context.Context, scfg *StaticConfig, cfg *protocol.RunConfig, bcfg *protocol.BundleConfig) (_ *testEnv, retErr error) {
+	// Set up output directory.
+	// OutDir can be empty if the caller is not interested in output
+	// files, e.g. in unit tests.
+	if outDir := cfg.GetDirs().GetOutDir(); outDir != "" {
+		if err := os.MkdirAll(outDir, 0755); err != nil {
+			return nil, errors.Wrap(err, "failed to create output directory")
+		}
+		// Call os.Chmod again to ensure permission. The mode passed to
+		// os.MkdirAll is modified by umask, so we need an explicit chmod.
+		if err := os.Chmod(outDir, 0755); err != nil {
+			return nil, errors.Wrap(err, "failed to chmod output directory")
+		}
+	}
+
+	// Set up temporary directory.
+	tempDir := cfg.GetDirs().GetTempDir()
+	var removeTempDir bool
+	if tempDir == "" {
+		var err error
+		tempDir, err = defaultTempDir()
+		if err != nil {
+			return nil, err
+		}
+		removeTempDir = true
+	}
+	defer func() {
+		if retErr != nil {
+			if removeTempDir {
+				os.RemoveAll(tempDir)
+			}
+		}
+	}()
+
+	restoreTempDir, err := prepareTempDir(tempDir)
+	if err != nil {
+		return nil, err
+	}
+	defer func() {
+		if retErr != nil {
+			restoreTempDir()
+		}
+	}()
+
+	var postRunFunc func(context.Context) error
+	// Don't run runHook when remote fixtures are used.
+	// The runHook for local bundles (ready.Wait) may reset the state remote
+	// fixtures just have set up, e.g. enterprise enrollment.
+	// TODO(crbug/1184567): consider long term plan about interactions between
+	// remote fixtures and run hooks.
+	if scfg.runHook != nil && cfg.GetStartFixtureState().GetName() == "" {
+		var err error
+		postRunFunc, err = scfg.runHook(ctx)
+		if err != nil {
+			return nil, command.NewStatusErrorf(statusError, "pre-run failed: %v", err)
+		}
+	}
+	return &testEnv{
+		tempDir:        tempDir,
+		removeTempDir:  removeTempDir,
+		restoreTempDir: restoreTempDir,
+		postRunFunc:    postRunFunc,
+	}, nil
+}

@@ -28,6 +28,13 @@ import (
 	"chromiumos/tast/internal/logging"
 )
 
+// PullFunc is a function that pulls test output files to the local file system.
+// It should be passed to processor.New to specify how to pull output files.
+// Note that a source file path might be on a remote machine if the test runner
+// is running on a remote machine. A destination file path is always on the host
+// file system.
+type PullFunc func(src, dst string) error
+
 // Processor processes entity execution events.
 type Processor struct {
 	*preprocessor  // embed to pass through test events to preprocessor
@@ -43,11 +50,13 @@ var (
 // resDir is a path to the directory where test execution results are written.
 // multiplexer should be a MultiLogger attached to the context passed to
 // Processor method calls.
-func New(resDir string, multiplexer *logging.MultiLogger) *Processor {
+func New(resDir string, multiplexer *logging.MultiLogger, pull PullFunc) *Processor {
 	resultsHandler := newResultsHandler()
 	preprocessor := newPreprocessor(resDir, []handler{
 		newLoggingHandler(multiplexer),
 		resultsHandler,
+		// copyOutputHandler should come last as it can block RunEnd for a while.
+		newCopyOutputHandler(pull),
 	})
 	return &Processor{
 		preprocessor:   preprocessor,

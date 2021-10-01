@@ -6,11 +6,13 @@ package processor_test
 
 import (
 	"context"
+	"os"
 	"time"
 
 	"github.com/golang/protobuf/ptypes"
 
 	"chromiumos/tast/cmd/tast/internal/run/driver/internal/processor"
+	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/protocol"
 )
 
@@ -46,4 +48,13 @@ func runProcessor(ctx context.Context, proc *processor.Processor, events []proto
 		}
 		return endErr
 	}())
+}
+
+// nopPull is a PullFunc to be used in unit tests not interested in test
+// outputs.
+func nopPull(src, dst string) error {
+	if src != "" {
+		return errors.New("nopPull: source directory must be empty")
+	}
+	return os.MkdirAll(dst, 0755)
 }

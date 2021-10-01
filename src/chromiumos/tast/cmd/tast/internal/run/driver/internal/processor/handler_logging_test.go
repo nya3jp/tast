@@ -66,7 +66,7 @@ func TestLoggingHandler(t *testing.T) {
 	ctx = logging.AttachLogger(ctx, logger)
 	ctx = logging.AttachLogger(ctx, multiplexer)
 
-	proc := processor.New(resDir, multiplexer)
+	proc := processor.New(resDir, multiplexer, nopPull)
 	runProcessor(ctx, proc, events, nil)
 
 	// Everything is logged via ctx.

@@ -25,6 +25,7 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/driver/internal/bundleclient"
 	"chromiumos/tast/cmd/tast/internal/run/driver/internal/runnerclient"
 	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
+	"chromiumos/tast/internal/logging"
 )
 
 // Processor processes entity execution events.
@@ -40,9 +41,12 @@ var (
 
 // New creates a new Processor.
 // resDir is a path to the directory where test execution results are written.
-func New(resDir string) *Processor {
+// multiplexer should be a MultiLogger attached to the context passed to
+// Processor method calls.
+func New(resDir string, multiplexer *logging.MultiLogger) *Processor {
 	resultsHandler := newResultsHandler()
 	preprocessor := newPreprocessor(resDir, []handler{
+		newLoggingHandler(multiplexer),
 		resultsHandler,
 	})
 	return &Processor{

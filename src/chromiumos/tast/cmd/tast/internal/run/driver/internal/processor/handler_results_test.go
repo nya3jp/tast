@@ -13,6 +13,7 @@ import (
 
 	"chromiumos/tast/cmd/tast/internal/run/driver/internal/processor"
 	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
+	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/protocol"
 )
 
@@ -35,7 +36,7 @@ func TestResultsHandler(t *testing.T) {
 		&protocol.EntityEndEvent{Time: epochpb, EntityName: "fixture"},
 	}
 
-	proc := processor.New(resDir)
+	proc := processor.New(resDir, logging.NewMultiLogger())
 	runProcessor(context.Background(), proc, events, nil)
 
 	got := proc.Results()

@@ -356,6 +356,19 @@ func newDeviceConfigAndHardwareFeatures() (dc *protocol.DeprecatedDeviceConfig, 
 	if _, err := os.Stat("/dev/cros_ec"); err == nil {
 		features.EmbeddedController.Present = configpb.HardwareFeatures_PRESENT
 		features.EmbeddedController.EcType = configpb.HardwareFeatures_EmbeddedController_EC_CHROME
+		// Check for EC_FEATURE_TYPEC_CMD.
+		output, err := exec.Command("ectool", "inventory").Output()
+		if err != nil {
+			features.EmbeddedController.FeatureTypecCmd = configpb.HardwareFeatures_PRESENT_UNKNOWN
+		} else {
+			// The presence of the integer "41" in the inventory output is a sufficient check, since 41 is
+			// the bit position associated with this feature.
+			if bytes.Contains(output, []byte("41")) {
+				features.EmbeddedController.FeatureTypecCmd = configpb.HardwareFeatures_PRESENT
+			} else {
+				features.EmbeddedController.FeatureTypecCmd = configpb.HardwareFeatures_NOT_PRESENT
+			}
+		}
 	}
 
 	// TODO(b/173741162): Pull storage information from boxster config and add

@@ -398,6 +398,14 @@ third_party/autotest/files/server/site_tests/tast/control.runtime-probe
 				Name: "cellular_sim_roaming",
 				Desc: `Identifies Cellular tests that need a roaming sim.`,
 			},
+			{
+				Name: "cellular_sim_prod_esim",
+				Desc: `Identifies Cellular tests that need an esim with a prod CI.`,
+			},
+			{
+				Name: "cellular_sim_test_esim",
+				Desc: `Identifies Cellular tests that need an esim with a test CI.`,
+			},
 		},
 	},
 	{

@@ -188,6 +188,7 @@ The following software features are defined:
 *   `video_decoder_legacy` - The platform used the VideoDecodeAccelerator (VDA) by default.
 *   `video_decoder_legacy_supported` - Is the VDA is supported on this platform.
 *   `video_overlays` - The kernel [DRM/KMS] version atomic commits and the underlying hardware display controller support the NV12 DRM Plane format needed to promote videos to [hardware overlays].
+*   `virtual_susupend_time_injection` - The platform supports KVM virtual suspend time injection.
 *   `virtual_usb_printer` - Whether or not the device can run tests that
     use [virtual USB printing][virtual-usb-printer-readme]. Note that
     while the necessary kernel modules are available on kernel v4.4,

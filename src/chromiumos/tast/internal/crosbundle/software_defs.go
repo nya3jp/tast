@@ -183,8 +183,13 @@ var softwareFeatureDefs = map[string]string{
 	// drm_atomic is a necessary but not sufficient condition to support
 	// video_overlays; in practice, they tend to be enabled at the same time.
 	// Generally you should use the more restrictive hwdep.SupportsNV12Overlays().
-	"video_overlays":      "drm_atomic",
-	"virtual_usb_printer": `!"kernel-4_4"`,
+	"video_overlays": "drm_atomic",
+	// virtual_susupend_time_injection swdep is used to limit the arc.Suspend.* tests to
+	// run only on the boards that supports KVM virtual suspend time injection.
+	// TODO(b/202091291): Remove virtual_susupend_time_injection swdep once it is supported
+	// on all boards.
+	"virtual_susupend_time_injection": `amd64`,
+	"virtual_usb_printer":             `!"kernel-4_4"`,
 	// Some VM builds actually can run nested VM with right host configuration.
 	// But we haven't enable this feature on builders. For now, just disable
 	// vm_host feature for VM builds. The kvm_transition flag indicates the

@@ -53,7 +53,7 @@ func SymbolizeCrash(ctx context.Context, path string, w io.Writer, cfg Config) e
 	if err != nil {
 		return fmt.Errorf("failed to get release info from %v: %v", dumpPath, err)
 	}
-	if ri.isEmpty() && cfg.BuildRoot == "" && cfg.BuilderPath == "" {
+	if !ri.hasBuildInfo() && cfg.BuildRoot == "" && cfg.BuilderPath == "" {
 		return errors.New("minidump does not contain release info, please supply --builderpath or --buildroot parameter to fix this error")
 	}
 	logging.Debugf(ctx, "Got board %q and builder path %q from minidump", ri.board, ri.builderPath)
@@ -79,6 +79,16 @@ func SymbolizeCrash(ctx context.Context, path string, w io.Writer, cfg Config) e
 			if created, err = breakpad.DownloadSymbols(url, cfg.SymbolDir, missing); err != nil {
 				// Keep going so we can print what we have.
 				logging.Infof(ctx, "Failed to get symbols from %v: %v", url, err)
+			}
+			if ri.lacrosVersion != "" {
+				lacrosURL := breakpad.GetLacrosSymbolsURL(ri.lacrosVersion)
+				logging.Debugf(ctx, "Extracting Lacros symbols from %v", lacrosURL)
+				err := breakpad.DownloadLacrosSymbols(lacrosURL, cfg.SymbolDir)
+				if err != nil {
+					return fmt.Errorf("cannot obtain Lacros symbols: %v", err)
+				}
+				// DownloadLacrosSymbols creates exactly one file.
+				created++
 			}
 		} else {
 			logging.Debugf(ctx, "Generating %v symbol file(s) from %v", len(missing), cfg.BuildRoot)
@@ -175,5 +185,5 @@ func getMinidumpReleaseInfo(ctx context.Context, path string) (*releaseInfo, err
 		logging.Debug(ctx, "Minidump does not contain /etc/lsb-release or Crashpad annotations.")
 	}
 
-	return getReleaseInfo(data), nil
+	return getReleaseInfo(data)
 }

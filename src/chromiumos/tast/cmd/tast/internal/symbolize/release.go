@@ -6,6 +6,7 @@ package symbolize
 
 import (
 	"bytes"
+	"errors"
 
 	"chromiumos/tast/cmd/tast/internal/symbolize/breakpad"
 	"chromiumos/tast/lsbrelease"
@@ -18,21 +19,28 @@ type releaseInfo struct {
 	// builderPath contains the path to the built image as specified by
 	// CHROMEOS_RELEASE_BUILDER_PATH, e.g. "cave-release/R65-10286.0.0".
 	builderPath string
+	// lacrosVersion is non-empty on minidumps from Lacros Chrome and contains
+	// the version as specified in the "ver" Crashpad annotation.
+	lacrosVersion string
 }
 
-// isEmpty is true if both board and builderPath are empty.
-func (ri *releaseInfo) isEmpty() bool {
-	return ri.board == "" && ri.builderPath == ""
+// hasBuildInfo is true if both board or builderPath are populated.
+func (ri *releaseInfo) hasBuildInfo() bool {
+	return ri.board != "" || ri.builderPath != ""
 }
 
 // newEmptyReleaseInfo returns a releaseInfo with empty components.
 func newEmptyReleaseInfo() *releaseInfo {
-	return &releaseInfo{"", ""}
+	return &releaseInfo{
+		board:         "",
+		builderPath:   "",
+		lacrosVersion: "",
+	}
 }
 
 // getReleaseInfo parses data (the contents of /etc/lsb-release or Crashpad annotations)
 // and returns information about the system image.
-func getReleaseInfo(data *breakpad.MinidumpReleaseInfo) *releaseInfo {
+func getReleaseInfo(data *breakpad.MinidumpReleaseInfo) (*releaseInfo, error) {
 	var info releaseInfo
 	if data.EtcLsbRelease != "" {
 		kvs, err := lsbrelease.Parse(bytes.NewBufferString(data.EtcLsbRelease))
@@ -43,6 +51,12 @@ func getReleaseInfo(data *breakpad.MinidumpReleaseInfo) *releaseInfo {
 	} else {
 		info.board = data.CrashpadAnnotations["chromeos-board"]
 		info.builderPath = data.CrashpadAnnotations["chromeos-builder-path"]
+		if data.CrashpadAnnotations["prod"] == "Chrome_Lacros" {
+			info.lacrosVersion = data.CrashpadAnnotations["ver"]
+			if info.lacrosVersion == "" {
+				return nil, errors.New("Lacros Chrome does not specify the version")
+			}
+		}
 	}
-	return &info
+	return &info, nil
 }

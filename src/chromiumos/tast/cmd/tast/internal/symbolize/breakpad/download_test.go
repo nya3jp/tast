@@ -12,6 +12,7 @@ import (
 	"reflect"
 	"testing"
 
+	"chromiumos/tast/cmd/tast/internal/symbolize/fakecmd"
 	"chromiumos/tast/testutil"
 )
 
@@ -80,5 +81,29 @@ func TestDownloadSymbols(t *testing.T) {
 	}
 	if !reflect.DeepEqual(act, exp) {
 		t.Errorf("DownloadSymbols(%q, %q, %v) wrote %v; want %v", af, od, wanted, act, exp)
+	}
+}
+
+func TestDownloadLacrosSymbols(t *testing.T) {
+	cleanUp, err := fakecmd.Install("../fakecmd/scripts/gsutil")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer cleanUp()
+
+	td := testutil.TempDir(t)
+	defer os.RemoveAll(td)
+
+	if err := exec.Command("cp", "testdata/lacros_debug.zip", td).Run(); err != nil {
+		t.Errorf("Cannot copy lacros_debug.zip to the test directory %s, error: %v", td, err)
+	}
+
+	if err := DownloadLacrosSymbols("gs://ignored", td); err != nil {
+		t.Errorf("DownloadLacrosSymbol failed: %v", err)
+	}
+
+	symbolFile := filepath.Join(td, "chrome/BE886B771A8C5C0AE60EBE6406B6E48F0/chrome.sym")
+	if _, err := os.Stat(symbolFile); err != nil {
+		t.Errorf("Symbol file not generated: %v", err)
 	}
 }

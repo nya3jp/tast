@@ -6,23 +6,39 @@ package breakpad
 
 import (
 	"archive/tar"
+	"bufio"
+	"errors"
 	"fmt"
 	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
+	"strings"
 )
 
 const (
-	imageArchiveBaseURL   = "gs://chromeos-image-archive" // contains build artifacts
-	imageArchiveFilename  = "debug_breakpad.tar.xz"       // filename within builder path
-	imageArchiveTarPrefix = "debug/breakpad/"             // prefix for symbol dir in .tar.xz
+	imageArchiveBaseURL        = "gs://chromeos-image-archive"         // contains build artifacts
+	imageArchiveFilename       = "debug_breakpad.tar.xz"               // filename within builder path
+	imageArchiveTarPrefix      = "debug/breakpad/"                     // prefix for symbol dir in .tar.xz
+	lacrosSymbolArchiveBaseURL = "gs://chrome-unsigned/desktop-5c0tCh" // gs:// location with Lacros symbols
+	lacrosSymbolArchivePath    = "lacros64/lacros_debug.zip"           // path to Lacros symbols archive
 )
+
+// moduleRegex extracts module ID from the output of dump_syms -i.
+var moduleRegexp = regexp.MustCompile(`MODULE \S+ \S+ ([0-9A-F]+) (\S+)\.debug`)
 
 // GetSymbolsURL returns the Cloud Storage URL of the .tar.xz file containing Breakpad
 // debug symbols for builderPath (e.g. "cave-release/R65-10286.0.0").
 func GetSymbolsURL(builderPath string) string {
 	return fmt.Sprintf("%s/%s/%s", imageArchiveBaseURL, builderPath, imageArchiveFilename)
+}
+
+// GetLacrosSymbolsURL returns the Cloud Storage URL of the file containing
+// ELF debug symbols of Lacros Chrome for a particular version, for example,
+// "95.0.4637.0".
+func GetLacrosSymbolsURL(version string) string {
+	return fmt.Sprintf("%s/%s/%s", lacrosSymbolArchiveBaseURL, version, lacrosSymbolArchivePath)
 }
 
 // DownloadSymbols downloads url (see GetSymbolsURL) and extracts the symbol files specified
@@ -70,6 +86,70 @@ func DownloadSymbols(url, destDir string, files SymbolFileMap) (created int, err
 	}
 
 	return created, nil
+}
+
+// DownloadLacrosSymbols downloads the specified url and extract symbols to
+// the destDir. On success, exactly one file is created.
+func DownloadLacrosSymbols(url, destDir string) error {
+	if err := os.MkdirAll(destDir, 0755); err != nil {
+		return err
+	}
+
+	// Download lacros_debug.zip.
+	lacrosDebugZip := filepath.Join(destDir, "lacros_debug.zip")
+	defer os.Remove(lacrosDebugZip)
+	if err := exec.Command("gsutil", "cp", url, destDir).Run(); err != nil {
+		return err
+	}
+
+	// Unzip it.
+	chromeDebug := filepath.Join(destDir, "chrome.debug")
+	defer os.Remove(chromeDebug)
+	if err := exec.Command("unzip", "-d", destDir, lacrosDebugZip).Run(); err != nil {
+		return err
+	}
+
+	// Run dump_syms -i to determine the module ID. It is needed for to build
+	// directory structure for minidump_stackwalk.
+	moduleStdout, err := exec.Command("dump_syms", "-i", chromeDebug).Output()
+	if err != nil {
+		return err
+	}
+	sc := bufio.NewScanner(strings.NewReader(string(moduleStdout)))
+	var module string
+	for sc.Scan() {
+		if m := moduleRegexp.FindStringSubmatch(sc.Text()); m != nil {
+			module = m[1]
+			break
+		}
+	}
+	if module == "" {
+		return errors.New("could not determine the module ID")
+	}
+
+	moduleDir := filepath.Join(destDir, "chrome", module)
+	if err := os.MkdirAll(moduleDir, 0755); err != nil {
+		return err
+	}
+
+	// Convert ELF to Breakpad format with dump_syms.
+	chromeSym := filepath.Join(moduleDir, "chrome.sym")
+	if _, err := os.Stat(chromeSym); os.IsNotExist(err) {
+		dumpSyms := exec.Command("dump_syms", chromeDebug)
+		symFile, err := os.Create(chromeSym)
+		if err != nil {
+			return err
+		}
+		defer symFile.Close()
+		dumpSyms.Stdout = symFile
+		if err := dumpSyms.Run(); err != nil {
+			return err
+		}
+	} else if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // writeSymbolFile creates a new file (including parent directory) at p

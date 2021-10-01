@@ -39,3 +39,26 @@ on betty VM.
 
 `chrome.20210706.000145.15087.8090.dmp` was produced by visiting chrome:crash
 on betty VM. It contains Crashpad annotations.
+
+## lacros\_debug.zip
+
+lacros\_debug.zip simulates a real file found on gs://. It was created from
+a simple C++ program.
+
+```c
+// chrome.cc
+#include <iostream>
+
+int main(int argc, char* argv[]) {
+  return 0;
+}
+```
+
+The program was compiled as follows:
+
+```sh
+g++ -g chrome.cc -o chrome.debug
+dump_syms -i chrome.debug # Find the module ID, which we verify in the test.
+zip lacros_debug.zip chrome.debug
+```
+

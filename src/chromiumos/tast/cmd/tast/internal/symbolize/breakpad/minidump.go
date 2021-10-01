@@ -31,15 +31,12 @@ const (
 )
 
 // missingRegexp extracts module paths and IDs from messages logged by minidump_stackwalk.
-var missingRegexp *regexp.Regexp
-
-func init() {
-	// minidump_stackwalk writes a message like the following to stderr for each missing symbol file:
-	//   2017-12-07 11:05:36: stackwalker.cc:103: INFO: Couldn't load symbols for: /lib64/libc-2.23.so|7219A63C9901FA247C197BCFED143B110
-	//   2017-12-07 11:05:36: stackwalker.cc:103: INFO: Couldn't load symbols for: /usr/lib64/libevent_core-2.1.so.6.0.2|3F4224A41349B3B9600315956E3D6CA70
-	// The hexadecimal string at the end corresponds to ModuleInfo.ID.
-	missingRegexp = regexp.MustCompile("Couldn't load symbols for:\\s+([^|]+)\\|(\\S+)")
-}
+//
+// minidump_stackwalk writes a message like the following to stderr for each missing symbol file:
+//   2017-12-07 11:05:36: stackwalker.cc:103: INFO: Couldn't load symbols for: /lib64/libc-2.23.so|7219A63C9901FA247C197BCFED143B110
+//   2017-12-07 11:05:36: stackwalker.cc:103: INFO: Couldn't load symbols for: /usr/lib64/libevent_core-2.1.so.6.0.2|3F4224A41349B3B9600315956E3D6CA70
+// The hexadecimal string at the end corresponds to ModuleInfo.ID.
+var missingRegexp = regexp.MustCompile(`Couldn't load symbols for:\s+([^|]+)\|(\S+)`)
 
 // ModuleInfo contains data from a Breakpad symbol file's MODULE record.
 // See https://chromium.googlesource.com/breakpad/breakpad/+/HEAD/docs/symbol_files.md#records-1 for details.

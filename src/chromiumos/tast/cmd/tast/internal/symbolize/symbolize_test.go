@@ -7,44 +7,19 @@ package symbolize
 import (
 	"bytes"
 	"context"
-	"os"
-	"path/filepath"
 	"strings"
 	"testing"
 
+	"chromiumos/tast/cmd/tast/internal/symbolize/fakecmd"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/logging/loggingtest"
 )
 
-// installFakeGsutil puts a fake, no-op gsutil in the PATH
-// and returns a clean up function.
-func installFakeGsutil(t *testing.T) func() {
-	const (
-		path   = "PATH"
-		gsutil = "breakpad/testdata/gsutil"
-	)
-
-	// Make the fake gsutil executable. This also ensures the file exists.
-	err := os.Chmod(gsutil, 0700)
-	if err != nil {
-		t.Fatalf("cannot chmod gsutil: %q", err)
-	}
-
-	gsutilDir, err := filepath.Abs(filepath.Dir(gsutil))
-	if err != nil {
-		t.Fatalf("cannot find absolute path to the fake gsutil: %q", err)
-	}
-
-	origPath := os.Getenv(path)
-	os.Setenv(path, gsutilDir+":"+origPath)
-
-	return func() {
-		os.Setenv(path, origPath)
-	}
-}
-
 func TestSymbolize(t *testing.T) {
-	cleanUp := installFakeGsutil(t)
+	cleanUp, err := fakecmd.Install("fakecmd/scripts/gsutil")
+	if err != nil {
+		t.Fatal(err)
+	}
 	defer cleanUp()
 
 	const crashpadMDMP = "breakpad/testdata/chrome.20210406.155226.62533.9042.dmp"
@@ -104,6 +79,19 @@ func TestSymbolize(t *testing.T) {
 			verifyLog: func(t *testing.T, log string) {
 				if !strings.Contains(log, "Extracting 5 symbol file(s) from gs://chromeos-image-archive/betty-release/R93-14070.0.0/debug_breakpad.tar.xz") {
 					t.Errorf("expected that symbols would be download, but it did not happen; log: %q", log)
+				}
+			},
+		},
+		{
+			// We download additional symbols for Lacros minidumps.
+			desc:         "lacros",
+			minidumpPath: "breakpad/testdata/chrome.20210929.052823.26188.4743.dmp",
+			// No-op. In tests, downloading Lacros debug symbols crashes,
+			// which is fine, and having non-nil verifyError lets us ignore it.
+			verifyError: func(t *testing.T, err error) {},
+			verifyLog: func(t *testing.T, log string) {
+				if !strings.Contains(log, "Extracting Lacros symbols from gs://chrome-unsigned/desktop-5c0tCh/95.0.4637.0/lacros64/lacros_debug.zip") {
+					t.Errorf("expected that Lacros symbols would be download, but it did not happen; log: %q", log)
 				}
 			},
 		},

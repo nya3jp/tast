@@ -11,7 +11,6 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -101,48 +100,12 @@ func WriteResults(ctx context.Context, cfg *config.Config, state *config.State, 
 		return err
 	}
 
-	ml := 0
-	for _, res := range results {
-		if len(res.Name) > ml {
-			ml = len(res.Name)
-		}
-	}
-
-	sep := strings.Repeat("-", 80)
-	logging.Info(ctx, sep)
-
-	for _, res := range results {
-		pn := fmt.Sprintf("%-"+strconv.Itoa(ml)+"s", res.Name)
-		if len(res.Errors) == 0 {
-			if res.SkipReason == "" {
-				logging.Info(ctx, pn+"  [ PASS ]")
-			} else {
-				logging.Info(ctx, pn+"  [ SKIP ] "+res.SkipReason)
-			}
-		} else {
-			const failStr = "  [ FAIL ] "
-			for i, te := range res.Errors {
-				if i == 0 {
-					logging.Info(ctx, pn+failStr+te.Reason)
-				} else {
-					logging.Info(ctx, strings.Repeat(" ", ml+len(failStr))+te.Reason)
-				}
-			}
-		}
-	}
-
-	if !complete {
-		// If the run didn't finish, log an additional message after the individual results
-		// to make it clearer that all is not well.
-		logging.Info(ctx, "")
-		logging.Info(ctx, "Run did not finish successfully; results are incomplete")
-	}
-
 	if err := reporting.WriteJUnitXMLResults(filepath.Join(cfg.ResDir(), reporting.JUnitXMLFilename), results); err != nil {
 		return err
 	}
-	logging.Info(ctx, sep)
-	logging.Info(ctx, "Results saved to ", cfg.ResDir())
+
+	reporting.WriteResultsToLogs(ctx, results, cfg.ResDir(), complete)
+
 	return sysInfoErr
 }
 

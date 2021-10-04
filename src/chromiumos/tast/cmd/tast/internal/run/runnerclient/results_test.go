@@ -23,6 +23,7 @@ import (
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/driver"
+	"chromiumos/tast/cmd/tast/internal/run/reporting"
 	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
 	"chromiumos/tast/cmd/tast/internal/run/runtest"
 	"chromiumos/tast/errors"
@@ -178,9 +179,9 @@ func TestReadTestOutput(t *gotesting.T) {
 	}
 
 	// The streamed results file should contain the same set of results.
-	streamRes := readStreamedResults(t, bytes.NewBufferString(files[streamedResultsFilename]))
+	streamRes := readStreamedResults(t, bytes.NewBufferString(files[reporting.StreamedResultsFilename]))
 	if diff := cmp.Diff(streamRes, expRes); diff != "" {
-		t.Errorf("%v mismatch (-got +want):\n%s", streamedResultsFilename, diff)
+		t.Errorf("%v mismatch (-got +want):\n%s", reporting.StreamedResultsFilename, diff)
 	}
 
 	test1LogPath := filepath.Join(testLogsDir, test1Name, testLogFilename)
@@ -290,9 +291,9 @@ func TestReadTestOutputSameEntity(t *gotesting.T) {
 		t.Errorf("%v mismatch (-got +want):\n%s", ResultsFilename, diff)
 	}
 
-	streamRes := readStreamedResults(t, bytes.NewBufferString(files[streamedResultsFilename]))
+	streamRes := readStreamedResults(t, bytes.NewBufferString(files[reporting.StreamedResultsFilename]))
 	if diff := cmp.Diff(streamRes, expRes); diff != "" {
-		t.Errorf("%v mismatch (-got +want):\n%s", streamedResultsFilename, diff)
+		t.Errorf("%v mismatch (-got +want):\n%s", reporting.StreamedResultsFilename, diff)
 	}
 
 	fixt1OutPath := filepath.Join(fixtureLogsDir, fixtName, fixt1OutFile)
@@ -507,9 +508,9 @@ func TestReadTestOutputAbortFixture(t *gotesting.T) {
 		t.Errorf("%v mismatch (-got +want):\n%s", ResultsFilename, diff)
 	}
 
-	streamRes := readStreamedResults(t, bytes.NewBufferString(files[streamedResultsFilename]))
+	streamRes := readStreamedResults(t, bytes.NewBufferString(files[reporting.StreamedResultsFilename]))
 	if diff := cmp.Diff(streamRes, want); diff != "" {
-		t.Errorf("%v mismatch (-got +want):\n%s", streamedResultsFilename, diff)
+		t.Errorf("%v mismatch (-got +want):\n%s", reporting.StreamedResultsFilename, diff)
 	}
 }
 
@@ -787,7 +788,7 @@ func TestWritePartialResults(t *gotesting.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	streamRes := readStreamedResults(t, bytes.NewBufferString(files[streamedResultsFilename]))
+	streamRes := readStreamedResults(t, bytes.NewBufferString(files[reporting.StreamedResultsFilename]))
 	expRes := []*resultsjson.Result{
 		{
 			Test:   resultsjson.Test{Name: test1Name},
@@ -809,7 +810,7 @@ func TestWritePartialResults(t *gotesting.T) {
 		},
 	}
 	if diff := cmp.Diff(streamRes, expRes, cmpopts.IgnoreFields(resultsjson.Error{}, "Time")); diff != "" {
-		t.Errorf("%v mismatch (-got +want):\n%s", streamedResultsFilename, diff)
+		t.Errorf("%v mismatch (-got +want):\n%s", reporting.StreamedResultsFilename, diff)
 	}
 
 	// The returned results should contain the same data.
@@ -839,7 +840,7 @@ func TestWritePartialResults(t *gotesting.T) {
 	if files, err = testutil.ReadFiles(cfg.ResDir()); err != nil {
 		t.Fatal(err)
 	}
-	streamRes = readStreamedResults(t, bytes.NewBufferString(files[streamedResultsFilename]))
+	streamRes = readStreamedResults(t, bytes.NewBufferString(files[reporting.StreamedResultsFilename]))
 	expRes = append(expRes, &resultsjson.Result{
 		Test:   resultsjson.Test{Name: test4Name},
 		Start:  test4Start,
@@ -847,7 +848,7 @@ func TestWritePartialResults(t *gotesting.T) {
 		OutDir: filepath.Join(cfg.ResDir(), testLogsDir, test4Name),
 	})
 	if diff := cmp.Diff(streamRes, expRes, cmpopts.IgnoreFields(resultsjson.Error{}, "Time")); diff != "" {
-		t.Errorf("%v mismatch (-got +want):\n%s", streamedResultsFilename, diff)
+		t.Errorf("%v mismatch (-got +want):\n%s", reporting.StreamedResultsFilename, diff)
 	}
 
 	// Output files for the earlier run should not be clobbered.

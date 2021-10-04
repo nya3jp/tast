@@ -22,6 +22,7 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/driver"
 	"chromiumos/tast/cmd/tast/internal/run/junitxml"
+	"chromiumos/tast/cmd/tast/internal/run/reporting"
 	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
 	"chromiumos/tast/errors"
 	frameworkprotocol "chromiumos/tast/framework/protocol"
@@ -34,13 +35,12 @@ import (
 
 // These paths are relative to Config.ResDir.
 const (
-	ResultsFilename         = "results.json"           // file containing JSON array of EntityResult objects
-	resultsJUnitFilename    = "results.xml"            // file containing test result in the JUnit XML format
-	streamedResultsFilename = "streamed_results.jsonl" // file containing stream of newline-separated JSON EntityResult objects
-	systemLogsDir           = "system_logs"            // dir containing DUT's system logs
-	crashesDir              = "crashes"                // dir containing DUT's crashes
-	testLogsDir             = "tests"                  // dir containing dirs with details about individual tests
-	fixtureLogsDir          = "fixtures"               // dir containins dirs with details about individual fixtures
+	ResultsFilename      = "results.json" // file containing JSON array of EntityResult objects
+	resultsJUnitFilename = "results.xml"  // file containing test result in the JUnit XML format
+	systemLogsDir        = "system_logs"  // dir containing DUT's system logs
+	crashesDir           = "crashes"      // dir containing DUT's crashes
+	testLogsDir          = "tests"        // dir containing dirs with details about individual tests
+	fixtureLogsDir       = "fixtures"     // dir containins dirs with details about individual fixtures
 
 	testLogFilename         = "log.txt"      // file in testLogsDir/<test> containing test-specific log messages
 	testOutputTimeFmt       = "15:04:05.000" // format for timestamps attached to test output
@@ -186,18 +186,18 @@ type resultsHandler struct {
 	state   *config.State
 	loggers *logging.MultiLogger
 
-	runStart, runEnd time.Time               // test-runner-reported times at which run started and ended
-	numTests         int                     // total number of tests that are expected to run
-	testsToRun       []string                // names of tests that will be run in their expected order
-	results          []*resultsjson.Result   // information about tests seen so far; the last element can be ongoing and shared with current
-	currents         map[string]*entityState // currently-running entities, if any
-	seenTimes        map[string]int          // count of entity names seen so far
-	stage            *timing.Stage           // current test's timing stage
-	crf              copyAndRemoveFunc       // function used to copy and remove files from DUT
-	diagFunc         diagnoseRunErrorFunc    // called to diagnose run errors; may be nil
-	streamWriter     *streamedResultsWriter  // used to write results as control messages are read
-	pullers          sync.WaitGroup          // used to wait for puller goroutines
-	terminated       bool                    // testing will be terminated.
+	runStart, runEnd time.Time                 // test-runner-reported times at which run started and ended
+	numTests         int                       // total number of tests that are expected to run
+	testsToRun       []string                  // names of tests that will be run in their expected order
+	results          []*resultsjson.Result     // information about tests seen so far; the last element can be ongoing and shared with current
+	currents         map[string]*entityState   // currently-running entities, if any
+	seenTimes        map[string]int            // count of entity names seen so far
+	stage            *timing.Stage             // current test's timing stage
+	crf              copyAndRemoveFunc         // function used to copy and remove files from DUT
+	diagFunc         diagnoseRunErrorFunc      // called to diagnose run errors; may be nil
+	streamWriter     *reporting.StreamedWriter // used to write results as control messages are read
+	pullers          sync.WaitGroup            // used to wait for puller goroutines
+	terminated       bool                      // testing will be terminated.
 }
 
 func newResultsHandler(cfg *config.Config, state *config.State, crf copyAndRemoveFunc, df diagnoseRunErrorFunc) (*resultsHandler, error) {
@@ -215,8 +215,8 @@ func newResultsHandler(cfg *config.Config, state *config.State, crf copyAndRemov
 	if err = os.MkdirAll(r.cfg.ResDir(), 0755); err != nil {
 		return nil, err
 	}
-	fn := filepath.Join(r.cfg.ResDir(), streamedResultsFilename)
-	if r.streamWriter, err = newStreamedResultsWriter(fn); err != nil {
+	fn := filepath.Join(r.cfg.ResDir(), reporting.StreamedResultsFilename)
+	if r.streamWriter, err = reporting.NewStreamedWriter(fn); err != nil {
 		return nil, err
 	}
 
@@ -229,7 +229,7 @@ func (r *resultsHandler) close() {
 		state.logFile.Close()
 	}
 	r.currents = nil
-	r.streamWriter.close()
+	r.streamWriter.Close()
 }
 
 // handleRunStart handles RunStart control messages from test runners.
@@ -336,7 +336,7 @@ func (r *resultsHandler) handleTestStart(ctx context.Context, msg *control.Entit
 		r.results = append(r.results, &state.result)
 
 		// Write a partial EntityResult object to record that we started the test.
-		if err := r.streamWriter.write(&state.result, false); err != nil {
+		if err := r.streamWriter.Write(&state.result, false); err != nil {
 			return err
 		}
 	}
@@ -465,7 +465,7 @@ func (r *resultsHandler) handleTestEnd(ctx context.Context, msg *control.EntityE
 		if err := r.reportResult(ctx, &state.result); err != nil {
 			return err
 		}
-		if err := r.streamWriter.write(&state.result, true); err != nil {
+		if err := r.streamWriter.Write(&state.result, true); err != nil {
 			return err
 		}
 	}
@@ -586,7 +586,7 @@ func (r *resultsHandler) processMessages(ctx context.Context, mch <-chan control
 			})
 			if state.result.Type == jsonprotocol.EntityTest {
 				r.state.FailuresCount++
-				r.streamWriter.write(&state.result, true)
+				r.streamWriter.Write(&state.result, true)
 				r.reportResult(ctx, &state.result)
 			}
 		}
@@ -685,57 +685,6 @@ func (r *resultsHandler) processMessages(ctx context.Context, mch <-chan control
 	}
 
 	return r.results, unstarted, nil
-}
-
-// streamedResultsWriter is used by resultsHandler to write a stream of JSON-marshaled TestResults
-// objects to a file.
-type streamedResultsWriter struct {
-	f          *os.File
-	enc        *json.Encoder
-	lastOffset int64 // file offset of the start of the last-written result
-}
-
-// newStreamedResultsWriter creates and returns a new streamedResultsWriter for writing to
-// a file at path p. If the file already exists, new results are appended to it.
-func newStreamedResultsWriter(p string) (*streamedResultsWriter, error) {
-	f, err := os.OpenFile(p, os.O_WRONLY|os.O_CREATE, 0666)
-	if err != nil {
-		return nil, err
-	}
-	eof, err := f.Seek(0, io.SeekEnd)
-	if err != nil {
-		f.Close()
-		return nil, err
-	}
-	return &streamedResultsWriter{f: f, enc: json.NewEncoder(f), lastOffset: eof}, nil
-}
-
-func (w *streamedResultsWriter) close() {
-	w.f.Close()
-}
-
-// write writes the JSON-marshaled representation of res to the file.
-// If update is true, the previous result that was written by this instance is overwritten.
-// Concurrent calls are not supported (note that tests are run serially, and runners send
-// control messages to the tast process serially as well).
-func (w *streamedResultsWriter) write(res *resultsjson.Result, update bool) error {
-	var err error
-	if update {
-		// If we're replacing the last record, seek back to the beginning of it and leave the saved offset unmodified.
-		if _, err = w.f.Seek(w.lastOffset, io.SeekStart); err != nil {
-			return err
-		}
-		if err = w.f.Truncate(w.lastOffset); err != nil {
-			return err
-		}
-	} else {
-		// Otherwise, use Seek to record the current offset before we write.
-		if w.lastOffset, err = w.f.Seek(0, io.SeekCurrent); err != nil {
-			return err
-		}
-	}
-
-	return w.enc.Encode(res)
 }
 
 // readMessages reads serialized control messages from r and passes them

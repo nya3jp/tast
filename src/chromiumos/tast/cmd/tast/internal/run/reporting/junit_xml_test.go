@@ -2,20 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package junitxml_test
+package reporting_test
 
 import (
+	"io/ioutil"
+	"path/filepath"
 	"strings"
 	gotesting "testing"
 	"time"
 
 	"github.com/google/go-cmp/cmp"
 
-	"chromiumos/tast/cmd/tast/internal/run/junitxml"
+	"chromiumos/tast/cmd/tast/internal/run/reporting"
 	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
 )
 
-func TestMarshal(t *gotesting.T) {
+func TestWriteJUnitXMLResults(t *gotesting.T) {
 	passedTest := resultsjson.Test{
 		Name:    "example.Pass",
 		Pkg:     "chromiumos/tast/local/bundles/cros/example",
@@ -65,10 +67,19 @@ func TestMarshal(t *gotesting.T) {
 			SkipReason: "",
 		},
 	}
-	x, err := junitxml.Marshal(results)
-	if err != nil {
-		t.Fatalf("Failed to marshal to XML: %s", err)
+
+	tmpDir := t.TempDir()
+	path := filepath.Join(tmpDir, "results.xml")
+
+	if err := reporting.WriteJUnitXMLResults(path, results); err != nil {
+		t.Fatalf("Failed to save to XML: %s", err)
 	}
+
+	x, err := ioutil.ReadFile(path)
+	if err != nil {
+		t.Fatalf("Failed to read XML: %v", err)
+	}
+
 	s := strings.Split(string(x), "\n")
 	expected := strings.Split(
 		`<testsuites>

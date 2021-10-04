@@ -2,16 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Package junitxml implements generating JUnit-like XML test reports.
-package junitxml
+package reporting
 
 import (
 	"encoding/xml"
 	"fmt"
+	"io/ioutil"
 	"time"
 
 	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
 )
+
+// JUnitXMLFilename is a file name to be used with WriteJUnitXMLResults.
+const JUnitXMLFilename = "results.xml"
 
 // testSuites is the top leve XML element of JUnit result.
 type testSuites struct {
@@ -58,8 +61,8 @@ type skipped struct {
 	Type    string `xml:"type,attr,omitempty"`
 }
 
-// Marshal marshalizes the Tast test results into JUnit XML format.
-func Marshal(results []*resultsjson.Result) ([]byte, error) {
+// WriteJUnitXMLResults saves Tast test results to path in the JUnit XML format.
+func WriteJUnitXMLResults(path string, results []*resultsjson.Result) error {
 	suites := testSuites{
 		XMLName: xml.Name{Local: "testsuites"},
 		TestSuite: testSuite{
@@ -102,5 +105,10 @@ func Marshal(results []*resultsjson.Result) ([]byte, error) {
 	}
 	suite.Skipped = skips
 	suite.Failures = failures
-	return xml.MarshalIndent(suites, "", "  ")
+
+	data, err := xml.MarshalIndent(suites, "", "  ")
+	if err != nil {
+		return err
+	}
+	return ioutil.WriteFile(path, data, 0644)
 }

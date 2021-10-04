@@ -20,7 +20,6 @@ import (
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/driver"
-	"chromiumos/tast/cmd/tast/internal/run/junitxml"
 	"chromiumos/tast/cmd/tast/internal/run/reporting"
 	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
 	"chromiumos/tast/errors"
@@ -34,11 +33,10 @@ import (
 
 // These paths are relative to Config.ResDir.
 const (
-	resultsJUnitFilename = "results.xml" // file containing test result in the JUnit XML format
-	systemLogsDir        = "system_logs" // dir containing DUT's system logs
-	crashesDir           = "crashes"     // dir containing DUT's crashes
-	testLogsDir          = "tests"       // dir containing dirs with details about individual tests
-	fixtureLogsDir       = "fixtures"    // dir containins dirs with details about individual fixtures
+	systemLogsDir  = "system_logs" // dir containing DUT's system logs
+	crashesDir     = "crashes"     // dir containing DUT's crashes
+	testLogsDir    = "tests"       // dir containing dirs with details about individual tests
+	fixtureLogsDir = "fixtures"    // dir containins dirs with details about individual fixtures
 
 	testLogFilename         = "log.txt"      // file in testLogsDir/<test> containing test-specific log messages
 	testOutputTimeFmt       = "15:04:05.000" // format for timestamps attached to test output
@@ -140,24 +138,12 @@ func WriteResults(ctx context.Context, cfg *config.Config, state *config.State, 
 		logging.Info(ctx, "Run did not finish successfully; results are incomplete")
 	}
 
-	if err := WriteJUnitResults(ctx, cfg, results); err != nil {
+	if err := reporting.WriteJUnitXMLResults(filepath.Join(cfg.ResDir(), reporting.JUnitXMLFilename), results); err != nil {
 		return err
 	}
 	logging.Info(ctx, sep)
 	logging.Info(ctx, "Results saved to ", cfg.ResDir())
 	return sysInfoErr
-}
-
-// WriteJUnitResults writes the test results into a JUnit XML format.
-func WriteJUnitResults(cctx context.Context, cfg *config.Config, results []*resultsjson.Result) error {
-	b, err := junitxml.Marshal(results)
-	if err != nil {
-		return err
-	}
-	if err := ioutil.WriteFile(filepath.Join(cfg.ResDir(), resultsJUnitFilename), b, 0644); err != nil {
-		return errors.Wrapf(err, "Failed to write JUnit result XML file")
-	}
-	return nil
 }
 
 // copyAndRemoveFunc copies src on a DUT to dst on the local machine and then

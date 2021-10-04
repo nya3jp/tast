@@ -19,8 +19,8 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run"
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/fakereports"
+	"chromiumos/tast/cmd/tast/internal/run/reporting"
 	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
-	"chromiumos/tast/cmd/tast/internal/run/runnerclient"
 	"chromiumos/tast/cmd/tast/internal/run/runtest"
 	frameworkprotocol "chromiumos/tast/framework/protocol"
 	"chromiumos/tast/internal/devserver/devservertest"
@@ -40,7 +40,7 @@ func TestRun(t *gotesting.T) {
 		t.Errorf("Run failed: %v", err)
 	}
 
-	if _, err := os.Stat(filepath.Join(cfg.ResDir(), runnerclient.ResultsFilename)); err != nil {
+	if _, err := os.Stat(filepath.Join(cfg.ResDir(), reporting.LegacyResultsFilename)); err != nil {
 		t.Errorf("Results were not saved: %v", err)
 	}
 }
@@ -59,7 +59,7 @@ func TestRunNoTestToRun(t *gotesting.T) {
 	}
 
 	// Results are not written in the case no test was run.
-	if _, err := os.Stat(filepath.Join(cfg.ResDir(), runnerclient.ResultsFilename)); err == nil {
+	if _, err := os.Stat(filepath.Join(cfg.ResDir(), reporting.LegacyResultsFilename)); err == nil {
 		t.Error("Results were saved despite there was no test to run")
 	} else if !os.IsNotExist(err) {
 		t.Errorf("Failed to check if results were saved: %v", err)

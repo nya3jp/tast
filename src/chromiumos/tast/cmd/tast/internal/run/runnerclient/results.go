@@ -6,7 +6,6 @@ package runnerclient
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -35,12 +34,11 @@ import (
 
 // These paths are relative to Config.ResDir.
 const (
-	ResultsFilename      = "results.json" // file containing JSON array of EntityResult objects
-	resultsJUnitFilename = "results.xml"  // file containing test result in the JUnit XML format
-	systemLogsDir        = "system_logs"  // dir containing DUT's system logs
-	crashesDir           = "crashes"      // dir containing DUT's crashes
-	testLogsDir          = "tests"        // dir containing dirs with details about individual tests
-	fixtureLogsDir       = "fixtures"     // dir containins dirs with details about individual fixtures
+	resultsJUnitFilename = "results.xml" // file containing test result in the JUnit XML format
+	systemLogsDir        = "system_logs" // dir containing DUT's system logs
+	crashesDir           = "crashes"     // dir containing DUT's crashes
+	testLogsDir          = "tests"       // dir containing dirs with details about individual tests
+	fixtureLogsDir       = "fixtures"    // dir containins dirs with details about individual fixtures
 
 	testLogFilename         = "log.txt"      // file in testLogsDir/<test> containing test-specific log messages
 	testOutputTimeFmt       = "15:04:05.000" // format for timestamps attached to test output
@@ -94,12 +92,6 @@ var errUserReqTermination = errors.Wrap(ErrTerminate, "user requested tast to te
 // If cfg.CollectSysInfo is true, system information generated on the DUT during testing
 // (e.g. logs and crashes) will also be written to the results dir.
 func WriteResults(ctx context.Context, cfg *config.Config, state *config.State, results []*resultsjson.Result, initialSysInfo *protocol.SysInfoState, complete bool, drv *driver.Driver) error {
-	f, err := os.Create(filepath.Join(cfg.ResDir(), ResultsFilename))
-	if err != nil {
-		return err
-	}
-	defer f.Close()
-
 	// We don't want to bail out before writing test results if sys info collection fails,
 	// but we'll still return the error later.
 	sysInfoErr := drv.CollectSysInfo(ctx, initialSysInfo)
@@ -107,9 +99,7 @@ func WriteResults(ctx context.Context, cfg *config.Config, state *config.State, 
 		logging.Info(ctx, "Failed collecting system info: ", sysInfoErr)
 	}
 
-	enc := json.NewEncoder(f)
-	enc.SetIndent("", "  ")
-	if err = enc.Encode(results); err != nil {
+	if err := reporting.WriteLegacyResults(filepath.Join(cfg.ResDir(), reporting.LegacyResultsFilename), results); err != nil {
 		return err
 	}
 

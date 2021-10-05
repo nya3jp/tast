@@ -542,6 +542,11 @@ Parallels boot-up testing. Otherwise the same as group:crosbolt.`,
 			},
 		},
 	},
+	{
+		Name:     "cross-device",
+		Contacts: []string{"chromeos-sw-engprod@google.com"},
+		Desc:     `A group of tests that test Cross Device functionality between CrOS and Android devices.`,
+	},
 }
 
 // validGroupMap is the name-keyed map of validGroups.

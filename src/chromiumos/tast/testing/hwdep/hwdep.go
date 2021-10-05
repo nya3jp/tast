@@ -18,6 +18,18 @@ import (
 	"chromiumos/tast/internal/protocol"
 )
 
+// These are form factor values that can be passed to FormFactor and SkipOnFormFactor.
+const (
+	FormFactorUnknown = configpb.HardwareFeatures_FormFactor_FORM_FACTOR_UNKNOWN
+	Clamshell         = configpb.HardwareFeatures_FormFactor_CLAMSHELL
+	Convertible       = configpb.HardwareFeatures_FormFactor_CONVERTIBLE
+	Detachable        = configpb.HardwareFeatures_FormFactor_DETACHABLE
+	Chromebase        = configpb.HardwareFeatures_FormFactor_CHROMEBASE
+	Chromebox         = configpb.HardwareFeatures_FormFactor_CHROMEBOX
+	Chromebit         = configpb.HardwareFeatures_FormFactor_CHROMEBIT
+	Chromeslate       = configpb.HardwareFeatures_FormFactor_CHROMESLATE
+)
+
 // Deps holds hardware dependencies all of which need to be satisfied to run a test.
 type Deps = dep.HardwareDeps
 
@@ -891,5 +903,48 @@ func SmartAmpBootTimeCalibration() Condition {
 			}
 		}
 		return unsatisfied("DUT does not enable smart amp boot time calibration")
+	}}
+}
+
+// formFactorListed returns whether the form factor represented by a configpb.HardwareFeatures
+// is listed in the given list of form factor values.
+func formFactorListed(hf *configpb.HardwareFeatures, ffList ...configpb.HardwareFeatures_FormFactor_FormFactorType) bool {
+	for _, ffValue := range ffList {
+		if hf.GetFormFactor().FormFactor == ffValue {
+			return true
+		}
+	}
+	return false
+}
+
+// FormFactor returns a hardware dependency condition that is satisfied
+// iff the DUT's form factor is one of the given values.
+func FormFactor(ffList ...configpb.HardwareFeatures_FormFactor_FormFactorType) Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("HardwareFeatures is not given")
+		}
+		listed := formFactorListed(hf, ffList...)
+		if !listed {
+			return unsatisfied("Form factor did not match")
+		}
+		return satisfied()
+	}}
+}
+
+// SkipOnFormFactor returns a hardware dependency condition that is satisfied
+// iff the DUT's form factor is none of the give values.
+func SkipOnFormFactor(ffList ...configpb.HardwareFeatures_FormFactor_FormFactorType) Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("HardwareFeatures is not given")
+		}
+		listed := formFactorListed(hf, ffList...)
+		if listed {
+			return unsatisfied("Form factor matched to SkipOn list")
+		}
+		return satisfied()
 	}}
 }

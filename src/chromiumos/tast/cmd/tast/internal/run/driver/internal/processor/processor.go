@@ -55,6 +55,7 @@ func New(resDir string, multiplexer *logging.MultiLogger, pull PullFunc) *Proces
 	preprocessor := newPreprocessor(resDir, []handler{
 		newLoggingHandler(multiplexer),
 		resultsHandler,
+		newStreamedResultsHandler(resDir),
 		// copyOutputHandler should come last as it can block RunEnd for a while.
 		newCopyOutputHandler(pull),
 	})

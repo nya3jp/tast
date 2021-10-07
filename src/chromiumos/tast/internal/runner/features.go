@@ -465,7 +465,7 @@ func newDeviceConfigAndHardwareFeatures() (dc *protocol.DeprecatedDeviceConfig, 
 	}
 	features.Audio.BaseMicrophone = baseMicrophone
 	expectAudio := formFactor == "CHROMEBOOK" || formFactor == "CHROMEBASE" || formFactor == "REFERENCE"
-	if features.Audio.LidMicrophone.Value == 0 && features.Audio.BaseMicrophone.Value == 0 && expectAudio {
+	if features.Audio.LidMicrophone != nil && features.Audio.BaseMicrophone != nil && features.Audio.LidMicrophone.Value == 0 && features.Audio.BaseMicrophone.Value == 0 && expectAudio {
 		features.Audio.LidMicrophone.Value = 1
 	}
 	speaker, err := matchCrasDeviceType(`INTERNAL_SPEAKER`)

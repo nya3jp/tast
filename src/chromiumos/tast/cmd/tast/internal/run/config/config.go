@@ -487,6 +487,8 @@ func (c *MutableConfig) DeriveDefaults() error {
 	// removing the restriction.
 	c.PrimaryBundle = "cros"
 
+	c.MsgTimeout = time.Minute
+
 	// Apply -varsfile.
 	for _, path := range c.VarsFiles {
 		if err := readAndMergeVarsFile(c.TestVars, path, errorOnDuplicate); err != nil {

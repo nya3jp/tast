@@ -13,6 +13,7 @@ import (
 	"os"
 	"path/filepath"
 	gotesting "testing"
+	"time"
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/runtest/internal/fakerunner"
@@ -212,6 +213,8 @@ func (e *Env) Config(mod func(cfg *config.MutableConfig)) *config.Config {
 		RemoteBundleDir: e.bundleEnv.RemoteBundleDir(),
 		RemoteOutDir:    filepath.Join(e.rootDir, fmt.Sprintf("tmp/out/remote.%d", randomID)),
 		PrimaryBundle:   "bundle",
+		// Set the message timeout long enough.
+		MsgTimeout: time.Minute,
 	}
 	if mod != nil {
 		mod(cfg)

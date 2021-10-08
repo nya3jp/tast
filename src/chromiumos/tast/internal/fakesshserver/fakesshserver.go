@@ -66,10 +66,6 @@ type Server struct {
 }
 
 // Start starts a new fake SSH server.
-//
-// Note: This function does not use the functional option pattern. This package
-// is internal to the runtest package so it is easy to rewrite all callers when
-// we introduce new configuration values.
 func Start(userKey *rsa.PublicKey, hostKey *rsa.PrivateKey, handlers []Handler) (*Server, error) {
 	server, err := sshtest.NewSSHServer(userKey, hostKey, func(req *sshtest.ExecReq) {
 		for _, handler := range handlers {

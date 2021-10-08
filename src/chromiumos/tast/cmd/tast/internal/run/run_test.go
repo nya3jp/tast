@@ -5,8 +5,11 @@
 package run_test
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -29,6 +32,26 @@ import (
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testing"
 )
+
+// resultsCmpOpts is a common options used to compare []*resultsjson.Result.
+var resultsCmpOpts = []cmp.Option{
+	cmpopts.IgnoreFields(resultsjson.Result{}, "Start", "End"),
+	cmpopts.IgnoreFields(resultsjson.Test{}, "Timeout"),
+	cmpopts.IgnoreFields(resultsjson.Error{}, "Time", "File", "Line", "Stack"),
+}
+
+func unmarshalStreamedResults(b []byte) ([]*resultsjson.Result, error) {
+	decoder := json.NewDecoder(bytes.NewBuffer(b))
+	var results []*resultsjson.Result
+	for decoder.More() {
+		var r resultsjson.Result
+		if err := decoder.Decode(&r); err != nil {
+			return nil, err
+		}
+		results = append(results, &r)
+	}
+	return results, nil
+}
 
 func TestRun(t *gotesting.T) {
 	env := runtest.SetUp(t)
@@ -90,6 +113,365 @@ func TestRunError(t *gotesting.T) {
 
 	if _, err := run.Run(ctx, cfg, state); err == nil {
 		t.Error("Run unexpectedly succeeded despite unaccessible SSH server")
+	}
+}
+
+func TestRunResults(t *gotesting.T) {
+	localPass := &testing.TestInstance{
+		Name:    "local.Pass",
+		Timeout: time.Minute,
+		Func:    func(ctx context.Context, s *testing.State) {},
+	}
+	localFail := &testing.TestInstance{
+		Name:    "local.Fail",
+		Timeout: time.Minute,
+		Func: func(ctx context.Context, s *testing.State) {
+			s.Error("Failed")
+		},
+	}
+	localSkip := &testing.TestInstance{
+		Name:         "local.Skip",
+		Timeout:      time.Minute,
+		SoftwareDeps: []string{"missing"},
+		Func:         func(ctx context.Context, s *testing.State) {},
+	}
+	localReg := testing.NewRegistry("bundle")
+	localReg.AddTestInstance(localPass)
+	localReg.AddTestInstance(localFail)
+	localReg.AddTestInstance(localSkip)
+
+	remotePass := &testing.TestInstance{
+		Name:    "remote.Pass",
+		Timeout: time.Minute,
+		Func:    func(ctx context.Context, s *testing.State) {},
+	}
+	remoteFail := &testing.TestInstance{
+		Name:    "remote.Fail",
+		Timeout: time.Minute,
+		Func: func(ctx context.Context, s *testing.State) {
+			s.Error("Failed")
+		},
+	}
+	remoteSkip := &testing.TestInstance{
+		Name:         "remote.Skip",
+		Timeout:      time.Minute,
+		SoftwareDeps: []string{"missing"},
+		Func:         func(ctx context.Context, s *testing.State) {},
+	}
+	remoteReg := testing.NewRegistry("bundle")
+	remoteReg.AddTestInstance(remotePass)
+	remoteReg.AddTestInstance(remoteFail)
+	remoteReg.AddTestInstance(remoteSkip)
+
+	env := runtest.SetUp(
+		t,
+		runtest.WithLocalBundles(localReg),
+		runtest.WithRemoteBundles(remoteReg),
+		runtest.WithGetDUTInfo(func(req *protocol.GetDUTInfoRequest) (*protocol.GetDUTInfoResponse, error) {
+			return &protocol.GetDUTInfoResponse{
+				DutInfo: &protocol.DUTInfo{
+					Features: &protocol.DUTFeatures{
+						Software: &protocol.SoftwareFeatures{
+							Unavailable: []string{"missing"},
+						},
+					},
+				},
+			}, nil
+		}),
+	)
+	ctx := env.Context()
+	cfg := env.Config(nil)
+	state := env.State()
+
+	results, err := run.Run(ctx, cfg, state)
+	if err != nil {
+		t.Errorf("Run failed: %v", err)
+	}
+
+	expected := []*resultsjson.Result{
+		{
+			Test: resultsjson.Test{
+				Name:         "local.Skip",
+				SoftwareDeps: []string{"missing"},
+				Timeout:      time.Minute,
+				Bundle:       "bundle",
+			},
+			OutDir:     filepath.Join(cfg.ResDir(), "tests/local.Skip"),
+			SkipReason: "missing SoftwareDeps: missing",
+		},
+		{
+			Test: resultsjson.Test{
+				Name:    "local.Fail",
+				Timeout: time.Minute,
+				Bundle:  "bundle",
+			},
+			OutDir: filepath.Join(cfg.ResDir(), "tests/local.Fail"),
+			Errors: []resultsjson.Error{{Reason: "Failed"}},
+		},
+		{
+			Test: resultsjson.Test{
+				Name:    "local.Pass",
+				Timeout: time.Minute,
+				Bundle:  "bundle",
+			},
+			OutDir: filepath.Join(cfg.ResDir(), "tests/local.Pass"),
+		},
+		{
+			Test: resultsjson.Test{
+				Name:         "remote.Skip",
+				SoftwareDeps: []string{"missing"},
+				Timeout:      time.Minute,
+				Bundle:       "bundle",
+			},
+			SkipReason: "missing SoftwareDeps: missing",
+			OutDir:     filepath.Join(cfg.ResDir(), "tests/remote.Skip"),
+		},
+		{
+			Test: resultsjson.Test{
+				Name:    "remote.Fail",
+				Timeout: time.Minute,
+				Bundle:  "bundle",
+			},
+			Errors: []resultsjson.Error{{Reason: "Failed"}},
+			OutDir: filepath.Join(cfg.ResDir(), "tests/remote.Fail"),
+		},
+		{
+			Test: resultsjson.Test{
+				Name:    "remote.Pass",
+				Timeout: time.Minute,
+				Bundle:  "bundle",
+			},
+			OutDir: filepath.Join(cfg.ResDir(), "tests/remote.Pass"),
+		},
+	}
+
+	// Results returned from the function call.
+	if diff := cmp.Diff(results, expected, resultsCmpOpts...); diff != "" {
+		t.Errorf("Returned results mismatch (-got +want):\n%s", diff)
+	}
+
+	// Results in results.json.
+	if b, err := ioutil.ReadFile(filepath.Join(cfg.ResDir(), reporting.LegacyResultsFilename)); err != nil {
+		t.Errorf("Failed to read %s: %v", reporting.LegacyResultsFilename, err)
+	} else if err := json.Unmarshal(b, &results); err != nil {
+		t.Errorf("Failed to parse %s: %v", reporting.LegacyResultsFilename, err)
+	} else if diff := cmp.Diff(results, expected, resultsCmpOpts...); diff != "" {
+		t.Errorf("%s mismatch (-got +want):\n%s", reporting.LegacyResultsFilename, diff)
+	}
+
+	// Results in streamed_results.json.
+	if b, err := ioutil.ReadFile(filepath.Join(cfg.ResDir(), reporting.StreamedResultsFilename)); err != nil {
+		t.Errorf("Failed to read %s: %v", reporting.StreamedResultsFilename, err)
+	} else if results, err := unmarshalStreamedResults(b); err != nil {
+		t.Errorf("Failed to parse %s: %v", reporting.StreamedResultsFilename, err)
+	} else if diff := cmp.Diff(results, expected, resultsCmpOpts...); diff != "" {
+		t.Errorf("%s mismatch (-got +want):\n%s", reporting.StreamedResultsFilename, diff)
+	}
+}
+
+func TestRunLogs(t *gotesting.T) {
+	localPass := &testing.TestInstance{
+		Name:    "local.Pass",
+		Timeout: time.Minute,
+		Func: func(ctx context.Context, s *testing.State) {
+			s.Log("Hello from local.Pass")
+		},
+	}
+	localFail := &testing.TestInstance{
+		Name:    "local.Fail",
+		Timeout: time.Minute,
+		Func: func(ctx context.Context, s *testing.State) {
+			s.Error("Oops from local.Fail")
+		},
+	}
+	localSkip := &testing.TestInstance{
+		Name:         "local.Skip",
+		Timeout:      time.Minute,
+		SoftwareDeps: []string{"missing"},
+		Func:         func(ctx context.Context, s *testing.State) {},
+	}
+	localReg := testing.NewRegistry("bundle")
+	localReg.AddTestInstance(localPass)
+	localReg.AddTestInstance(localFail)
+	localReg.AddTestInstance(localSkip)
+
+	remotePass := &testing.TestInstance{
+		Name:    "remote.Pass",
+		Timeout: time.Minute,
+		Func: func(ctx context.Context, s *testing.State) {
+			s.Log("Hello from remote.Pass")
+		},
+	}
+	remoteFail := &testing.TestInstance{
+		Name:    "remote.Fail",
+		Timeout: time.Minute,
+		Func: func(ctx context.Context, s *testing.State) {
+			s.Error("Oops from remote.Fail")
+		},
+	}
+	remoteSkip := &testing.TestInstance{
+		Name:         "remote.Skip",
+		Timeout:      time.Minute,
+		SoftwareDeps: []string{"missing"},
+		Func:         func(ctx context.Context, s *testing.State) {},
+	}
+	remoteReg := testing.NewRegistry("bundle")
+	remoteReg.AddTestInstance(remotePass)
+	remoteReg.AddTestInstance(remoteFail)
+	remoteReg.AddTestInstance(remoteSkip)
+
+	env := runtest.SetUp(
+		t,
+		runtest.WithLocalBundles(localReg),
+		runtest.WithRemoteBundles(remoteReg),
+		runtest.WithGetDUTInfo(func(req *protocol.GetDUTInfoRequest) (*protocol.GetDUTInfoResponse, error) {
+			return &protocol.GetDUTInfoResponse{
+				DutInfo: &protocol.DUTInfo{
+					Features: &protocol.DUTFeatures{
+						Software: &protocol.SoftwareFeatures{
+							Unavailable: []string{"missing"},
+						},
+					},
+				},
+			}, nil
+		}),
+	)
+	logger := loggingtest.NewLogger(t, logging.LevelInfo) // drop debug messages
+	ctx := logging.AttachLoggerNoPropagation(env.Context(), logger)
+	cfg := env.Config(nil)
+	state := env.State()
+
+	if _, err := run.Run(ctx, cfg, state); err != nil {
+		t.Errorf("Run failed: %v", err)
+	}
+
+	// Inspect per-test log files.
+	for _, tc := range []struct {
+		relPath string
+		want    string
+	}{
+		// local.Skip
+		{"tests/local.Skip/log.txt", "Started test local.Skip"},
+		{"tests/local.Skip/log.txt", "Skipped test local.Skip due to missing dependencies: missing SoftwareDeps: missing"},
+		// local.Fail
+		{"tests/local.Fail/log.txt", "Started test local.Fail"},
+		{"tests/local.Fail/log.txt", "Oops from local.Fail"},
+		{"tests/local.Fail/log.txt", "Completed test local.Fail"},
+		// local.Pass
+		{"tests/local.Pass/log.txt", "Started test local.Pass"},
+		{"tests/local.Pass/log.txt", "Hello from local.Pass"},
+		{"tests/local.Pass/log.txt", "Completed test local.Pass"},
+		// remote.Skip
+		{"tests/remote.Skip/log.txt", "Started test remote.Skip"},
+		{"tests/remote.Skip/log.txt", "Skipped test remote.Skip due to missing dependencies: missing SoftwareDeps: missing"},
+		// remote.Fail
+		{"tests/remote.Fail/log.txt", "Started test remote.Fail"},
+		{"tests/remote.Fail/log.txt", "Oops from remote.Fail"},
+		{"tests/remote.Fail/log.txt", "Completed test remote.Fail"},
+		// remote.Pass
+		{"tests/remote.Pass/log.txt", "Started test remote.Pass"},
+		{"tests/remote.Pass/log.txt", "Hello from remote.Pass"},
+		{"tests/remote.Pass/log.txt", "Completed test remote.Pass"},
+	} {
+		b, err := ioutil.ReadFile(filepath.Join(cfg.ResDir(), tc.relPath))
+		if err != nil {
+			t.Errorf("Failed to read %s: %v", tc.relPath, err)
+			continue
+		}
+		got := string(b)
+		if !strings.Contains(got, tc.want) {
+			t.Errorf("%s doesn't contain an expected string: got %q, want %q", tc.relPath, got, tc.want)
+		}
+	}
+
+	// Inspect full logs.
+	fullLogs := logger.String()
+	for _, msg := range []string{
+		// local.Skip
+		"Started test local.Skip",
+		"Skipped test local.Skip due to missing dependencies: missing SoftwareDeps: missing",
+		// local.Pass
+		"Started test local.Pass",
+		"Hello from local.Pass",
+		"Completed test local.Pass",
+		// local.Fail
+		"Started test local.Fail",
+		"Oops from local.Fail",
+		"Completed test local.Fail",
+		// remote.Skip
+		"Started test remote.Skip",
+		"Skipped test remote.Skip due to missing dependencies: missing SoftwareDeps: missing",
+		// remote.Pass
+		"Started test remote.Pass",
+		"Hello from remote.Pass",
+		"Completed test remote.Pass",
+		// remote.Fail
+		"Started test remote.Fail",
+		"Oops from remote.Fail",
+		"Completed test remote.Fail",
+	} {
+		if !strings.Contains(fullLogs, msg) {
+			// Note: Full logs have been already sent to unit test logs by
+			// loggingtest.Logger, so we don't print fullLogs here.
+			t.Errorf("Full logs doesn't contain %q", msg)
+		}
+	}
+}
+
+func TestRunOutputFiles(t *gotesting.T) {
+	localOut := &testing.TestInstance{
+		Name:    "local.Out",
+		Timeout: time.Minute,
+		Func: func(ctx context.Context, s *testing.State) {
+			if err := ioutil.WriteFile(filepath.Join(s.OutDir(), "out.txt"), []byte("Hello from local.Out"), 0644); err != nil {
+				t.Errorf("local.Out: failed to write out.txt: %v", err)
+			}
+		},
+	}
+	localReg := testing.NewRegistry("bundle")
+	localReg.AddTestInstance(localOut)
+
+	remoteOut := &testing.TestInstance{
+		Name:    "remote.Out",
+		Timeout: time.Minute,
+		Func: func(ctx context.Context, s *testing.State) {
+			if err := ioutil.WriteFile(filepath.Join(s.OutDir(), "out.txt"), []byte("Hello from remote.Out"), 0644); err != nil {
+				t.Errorf("remote.Out: failed to write out.txt: %v", err)
+			}
+		},
+	}
+	remoteReg := testing.NewRegistry("bundle")
+	remoteReg.AddTestInstance(remoteOut)
+
+	env := runtest.SetUp(
+		t,
+		runtest.WithLocalBundles(localReg),
+		runtest.WithRemoteBundles(remoteReg),
+	)
+	ctx := env.Context()
+	cfg := env.Config(nil)
+	state := env.State()
+
+	if _, err := run.Run(ctx, cfg, state); err != nil {
+		t.Errorf("Run failed: %v", err)
+	}
+
+	for _, tc := range []struct {
+		relPath string
+		want    string
+	}{
+		{"tests/local.Out/out.txt", "Hello from local.Out"},
+		{"tests/remote.Out/out.txt", "Hello from remote.Out"},
+	} {
+		b, err := ioutil.ReadFile(filepath.Join(cfg.ResDir(), tc.relPath))
+		if err != nil {
+			t.Errorf("Failed to read %s: %v", tc.relPath, err)
+			continue
+		}
+		got := string(b)
+		if got != tc.want {
+			t.Errorf("%s mismatch: got %q, want %q", tc.relPath, got, tc.want)
+		}
 	}
 }
 

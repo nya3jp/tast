@@ -7,11 +7,13 @@ package processor
 import (
 	"context"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"strings"
 	"time"
 
+	"chromiumos/tast/cmd/tast/internal/run/reporting"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/protocol"
 )
@@ -21,8 +23,11 @@ const testOutputTimeFmt = "15:04:05.000" // format for timestamps attached to te
 // loggingHandler emits logs for test execution events.
 type loggingHandler struct {
 	baseHandler
+	resDir      string
 	multiplexer *logging.MultiLogger
-	loggers     []*entityLogger
+	client      *reporting.RPCClient
+
+	loggers []*entityLogger
 }
 
 type entityLogger struct {
@@ -38,8 +43,12 @@ var _ handler = &loggingHandler{}
 // should be attached to the context passed to Processor method calls.
 // loggingHandler will add/remove additional loggers to/from multiplexer to save
 // per-entity logs.
-func newLoggingHandler(multiplexer *logging.MultiLogger) *loggingHandler {
-	return &loggingHandler{multiplexer: multiplexer}
+func newLoggingHandler(resDir string, multiplexer *logging.MultiLogger, client *reporting.RPCClient) *loggingHandler {
+	return &loggingHandler{
+		resDir:      resDir,
+		multiplexer: multiplexer,
+		client:      client,
+	}
 }
 
 func (h *loggingHandler) EntityStart(ctx context.Context, ei *entityInfo) error {
@@ -48,8 +57,17 @@ func (h *loggingHandler) EntityStart(ctx context.Context, ei *entityInfo) error 
 		return err
 	}
 
+	writers := []io.Writer{f}
+	if ei.Entity.GetType() == protocol.EntityType_TEST {
+		relPath, err := filepath.Rel(h.resDir, f.Name())
+		if err != nil {
+			return err
+		}
+		writers = append(writers, h.client.NewTestLogWriter(ei.Entity.GetName(), relPath))
+	}
+
 	logger := &entityLogger{
-		Logger: logging.NewSinkLogger(logging.LevelDebug, true, logging.NewWriterSink(f)),
+		Logger: logging.NewSinkLogger(logging.LevelDebug, true, logging.NewWriterSink(io.MultiWriter(writers...))),
 		File:   f,
 	}
 	h.loggers = append(h.loggers, logger)

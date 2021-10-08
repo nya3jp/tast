@@ -16,6 +16,8 @@ import (
 	"github.com/google/go-cmp/cmp"
 
 	"chromiumos/tast/cmd/tast/internal/run/driver/internal/processor"
+	"chromiumos/tast/cmd/tast/internal/run/fakereports"
+	"chromiumos/tast/cmd/tast/internal/run/reporting"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/logging/loggingtest"
 	"chromiumos/tast/internal/protocol"
@@ -66,7 +68,7 @@ func TestLoggingHandler(t *testing.T) {
 	ctx = logging.AttachLogger(ctx, logger)
 	ctx = logging.AttachLogger(ctx, multiplexer)
 
-	proc := processor.New(resDir, multiplexer, nopDiagnose, nopPull, nil)
+	proc := processor.New(resDir, multiplexer, nopDiagnose, nopPull, nil, nil)
 	runProcessor(ctx, proc, events, nil)
 
 	// Everything is logged via ctx.
@@ -140,5 +142,54 @@ Completed test pkg.Test2 in 0s with 0 error(s)
 		if diff := cmp.Diff(got, tc.want); diff != "" {
 			t.Errorf("%s mismatch (-got +want)\n:%s", tc.path, diff)
 		}
+	}
+}
+
+func TestLoggingHandler_RPCLogs(t *testing.T) {
+	resDir := t.TempDir()
+
+	const (
+		test1Log = "this is a log from the first test"
+		test2Log = "this is a log from the second test"
+	)
+	events := []protocol.Event{
+		&protocol.EntityStartEvent{Time: epochpb, Entity: &protocol.Entity{Name: "test1"}},
+		&protocol.EntityLogEvent{Time: epochpb, EntityName: "test1", Text: test1Log},
+		&protocol.EntityEndEvent{Time: epochpb, EntityName: "test1"},
+		&protocol.EntityStartEvent{Time: epochpb, Entity: &protocol.Entity{Name: "test2"}},
+		&protocol.EntityLogEvent{Time: epochpb, EntityName: "test2", Text: test2Log},
+		&protocol.EntityEndEvent{Time: epochpb, EntityName: "test2"},
+	}
+
+	srv, stopFunc, addr := fakereports.Start(t, 0)
+	defer stopFunc()
+
+	client, err := reporting.NewRPCClient(context.Background(), addr)
+	if err != nil {
+		t.Fatalf("Failed to connect to RPC results server: %v", err)
+	}
+	defer client.Close()
+
+	logger := loggingtest.NewLogger(t, logging.LevelDebug)
+	multiplexer := logging.NewMultiLogger()
+
+	ctx := context.Background()
+	ctx = logging.AttachLogger(ctx, logger)
+	ctx = logging.AttachLogger(ctx, multiplexer)
+
+	proc := processor.New(resDir, multiplexer, nopDiagnose, nopPull, nil, client)
+	runProcessor(ctx, proc, events, nil)
+
+	if got := string(srv.GetLog("test1", "tests/test1/log.txt")); !strings.Contains(got, test1Log) {
+		t.Errorf("Expected log not received for test 1; got %q; should contain %q", got, test1Log)
+	}
+	if got := string(srv.GetLog("test2", "tests/test2/log.txt")); !strings.Contains(got, test2Log) {
+		t.Errorf("Expected log not received for test 2; got %q; should contain %q", got, test2Log)
+	}
+	if got := string(srv.GetLog("test1", "tests/test1/log.txt")); strings.Contains(got, test2Log) {
+		t.Errorf("Unexpected log found in test 1 log; got %q; should not contain %q", got, test2Log)
+	}
+	if got := string(srv.GetLog("test2", "tests/test2/log.txt")); strings.Contains(got, test1Log) {
+		t.Errorf("Unexpected log found in test 2 log; got %q; should not contain %q", got, test1Log)
 	}
 }

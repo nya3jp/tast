@@ -49,7 +49,7 @@ func TestFailFastHandler(t *testing.T) {
 	// Abort after 2 test failures.
 	counter := failfast.NewCounter(2)
 
-	proc := processor.New(resDir, logging.NewMultiLogger(), nopDiagnose, nopPull, counter)
+	proc := processor.New(resDir, logging.NewMultiLogger(), nopDiagnose, nopPull, counter, nil)
 	runProcessor(context.Background(), proc, events, nil)
 
 	got := proc.Results()

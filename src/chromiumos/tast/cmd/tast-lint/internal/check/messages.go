@@ -38,8 +38,8 @@ const (
 
 // argInfo holds type, value and node of the argument.
 type argInfo struct {
-	typ argType
-	val string
+	typ   argType
+	val   string
 	fixed bool
 	node  ast.Expr
 }

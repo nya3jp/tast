@@ -15,14 +15,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/golang/protobuf/ptypes"
-
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/driver"
 	"chromiumos/tast/cmd/tast/internal/run/reporting"
 	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
 	"chromiumos/tast/errors"
-	frameworkprotocol "chromiumos/tast/framework/protocol"
 	"chromiumos/tast/internal/control"
 	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/logging"
@@ -57,9 +54,6 @@ type entityState struct {
 
 	// logger is the SinkLogger that writes to logFile.
 	logger *logging.SinkLogger
-
-	// logReportWriter writes log through the Reports.LogStream streaming gRPC.
-	logReportWriter *logSender
 
 	// reportLogger is the SinkLogger that writes to logReportWriter.
 	reportLogger *logging.SinkLogger
@@ -215,25 +209,6 @@ func (r *resultsHandler) handleRunEnd(ctx context.Context, msg *control.RunEnd) 
 	return nil
 }
 
-type logSender struct {
-	stream   frameworkprotocol.Reports_LogStreamClient
-	testName string
-	logPath  string
-}
-
-// Write sends given bytes to LogStream streaming gRPC API with the test name.
-func (s *logSender) Write(p []byte) (n int, err error) {
-	req := frameworkprotocol.LogStreamRequest{
-		Test:    s.testName,
-		LogPath: s.logPath,
-		Data:    p,
-	}
-	if err := s.stream.Send(&req); err != nil {
-		return 0, err
-	}
-	return len(p), nil
-}
-
 // handleTestStart handles EntityStart control messages from test runners.
 func (r *resultsHandler) handleTestStart(ctx context.Context, msg *control.EntityStart) error {
 	if r.runStart.IsZero() {
@@ -291,15 +266,9 @@ func (r *resultsHandler) handleTestStart(ctx context.Context, msg *control.Entit
 	state.logger = logging.NewSinkLogger(logging.LevelDebug, true, logging.NewWriterSink(state.logFile))
 	r.loggers.AddLogger(state.logger)
 
-	if r.state.ReportsLogStream != nil {
-		state.logReportWriter = &logSender{
-			stream:   r.state.ReportsLogStream,
-			testName: msg.Info.Name,
-			logPath:  filepath.Join(relFinalOutDir, testLogFilename),
-		}
-		state.reportLogger = logging.NewSinkLogger(logging.LevelDebug, true, logging.NewWriterSink(state.logReportWriter))
-		r.loggers.AddLogger(state.reportLogger)
-	}
+	reportWriter := r.state.ReportClient.NewTestLogWriter(msg.Info.Name, filepath.Join(relFinalOutDir, testLogFilename))
+	state.reportLogger = logging.NewSinkLogger(logging.LevelDebug, true, logging.NewWriterSink(reportWriter))
+	r.loggers.AddLogger(state.reportLogger)
 
 	logging.Infof(ctx, "Started %v %s", state.result.Type, state.result.Name)
 	return nil
@@ -335,32 +304,12 @@ func (r *resultsHandler) handleTestError(ctx context.Context, msg *control.Entit
 }
 
 func (r *resultsHandler) reportResult(ctx context.Context, res *resultsjson.Result) error {
-	if r.state.ReportsClient == nil {
-		return nil
+	err := r.state.ReportClient.ReportResult(ctx, res)
+	if err == reporting.ErrTerminate {
+		r.terminated = true
+		err = nil
 	}
-	request := &frameworkprotocol.ReportResultRequest{
-		Test:       res.Name,
-		SkipReason: res.SkipReason,
-	}
-	for _, e := range res.Errors {
-		ts, err := ptypes.TimestampProto(e.Time)
-		if err != nil {
-			return err
-		}
-		request.Errors = append(request.Errors, &frameworkprotocol.ErrorReport{
-			Time:   ts,
-			Reason: e.Reason,
-			File:   e.File,
-			Line:   int32(e.Line),
-			Stack:  e.Stack,
-		})
-	}
-	rspn, err := r.state.ReportsClient.ReportResult(ctx, request)
-	if err != nil {
-		return err
-	}
-	r.terminated = rspn.Terminate
-	return nil
+	return err
 }
 
 func (r *resultsHandler) handleTestEnd(ctx context.Context, msg *control.EntityEnd) error {
@@ -414,9 +363,9 @@ func (r *resultsHandler) handleTestEnd(ctx context.Context, msg *control.EntityE
 		logging.Info(ctx, err)
 	}
 
-	if state.logReportWriter != nil {
+	if state.reportLogger != nil {
 		r.loggers.RemoveLogger(state.reportLogger)
-		state.logReportWriter = nil
+		state.reportLogger = nil
 	}
 
 	// Pull finished test output files in a separate goroutine.

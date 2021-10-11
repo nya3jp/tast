@@ -21,8 +21,8 @@ import (
 
 	"chromiumos/tast/cmd/tast/internal/build"
 	"chromiumos/tast/cmd/tast/internal/run/driverdata"
+	"chromiumos/tast/cmd/tast/internal/run/reporting"
 	"chromiumos/tast/errors"
-	frameworkprotocol "chromiumos/tast/framework/protocol"
 	"chromiumos/tast/internal/command"
 	"chromiumos/tast/internal/planner"
 	"chromiumos/tast/internal/protocol"
@@ -291,11 +291,7 @@ type State struct {
 	RemoteDevservers []string                   // list of devserver URLs used by remote tests.
 	TestNamesToSkip  []string                   // tests that match patterns but are not sent to runners to run
 	TestsToRun       []*driverdata.BundleEntity // tests to be run
-
-	// gRPC Reports Client related variables.
-	ReportsConn      *grpc.ClientConn                // Reports gRPC service connection.
-	ReportsClient    frameworkprotocol.ReportsClient // Reports gRPC client.
-	ReportsLogStream frameworkprotocol.Reports_LogStreamClient
+	ReportClient     *reporting.RPCClient       // client for test result reporting via gRPC
 }
 
 // NewMutableConfig returns a new configuration for executing test runners in the supplied mode.
@@ -436,12 +432,8 @@ func (s *State) Close(ctx context.Context) error {
 		}
 		s.TLWConn = nil
 	}
-	if s.ReportsConn != nil {
-		if err := s.ReportsConn.Close(); err != nil && firstErr == nil {
-			firstErr = err
-		}
-		s.ReportsConn = nil
-		s.ReportsClient = nil
+	if err := s.ReportClient.Close(); err != nil && firstErr == nil {
+		firstErr = err
 	}
 	return firstErr
 }

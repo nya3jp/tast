@@ -21,11 +21,11 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/devserver"
 	"chromiumos/tast/cmd/tast/internal/run/driver"
 	"chromiumos/tast/cmd/tast/internal/run/prepare"
+	"chromiumos/tast/cmd/tast/internal/run/reporting"
 	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
 	"chromiumos/tast/cmd/tast/internal/run/runnerclient"
 	"chromiumos/tast/cmd/tast/internal/run/sharding"
 	"chromiumos/tast/errors"
-	frameworkprotocol "chromiumos/tast/framework/protocol"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/internal/xcontext"
@@ -46,17 +46,6 @@ const (
 func Run(ctx context.Context, cfg *config.Config, state *config.State) ([]*resultsjson.Result, error) {
 	if err := setUpGRPCServices(ctx, cfg, state); err != nil {
 		return nil, errors.Wrap(err, "failed to set up gRPC servers")
-	}
-
-	if state.ReportsConn != nil {
-		cl := frameworkprotocol.NewReportsClient(state.ReportsConn)
-		state.ReportsClient = cl
-		strm, err := cl.LogStream(ctx)
-		if err != nil {
-			return nil, errors.Wrap(err, "failed to start LogStream streaming RPC")
-		}
-		defer strm.CloseAndRecv()
-		state.ReportsLogStream = strm
 	}
 
 	// Always start an ephemeral devserver for remote tests if TLWServer is not specified.
@@ -287,13 +276,10 @@ func connectToTLW(ctx context.Context, cfg *config.Config, state *config.State) 
 
 // connectToReports connects to the Reports server.
 func connectToReports(ctx context.Context, cfg *config.Config, state *config.State) error {
-	if cfg.ReportsServer() == "" {
-		return nil
-	}
-	conn, err := grpc.DialContext(ctx, cfg.ReportsServer(), grpc.WithInsecure())
+	cl, err := reporting.NewRPCClient(ctx, cfg.ReportsServer())
 	if err != nil {
 		return err
 	}
-	state.ReportsConn = conn
+	state.ReportClient = cl
 	return nil
 }

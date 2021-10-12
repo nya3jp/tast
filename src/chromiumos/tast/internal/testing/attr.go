@@ -251,11 +251,11 @@ Tests in this group are not used for build verification.
 			},
 			{
 				Name: "firmware_smoke",
-				Desc: `A group of tests that exercise the basic firmware testing libraries.`,
+				Desc: `A group of tests that exercise the basic firmware testing libraries. Equivalent to autotest suite:faft_smoke.`,
 			},
 			{
 				Name: "firmware_ec",
-				Desc: `A group of tests that test the EC firmware.`,
+				Desc: `A group of tests that test the EC firmware. Equivalent to autotest suite:faft_ec & suite:faft_ec_fw_qual.`,
 			},
 			{
 				Name: "firmware_slow",

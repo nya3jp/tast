@@ -523,7 +523,10 @@ func (r *resultsHandler) processMessages(ctx context.Context, mch <-chan control
 				Time:   time.Now(),
 				Reason: incompleteTestMsg,
 			})
+
 			if state.result.Type == jsonprotocol.EntityTest {
+				// Ensure an end time is set properly and isn't default time epoch
+				state.result.End = time.Now()
 				r.state.FailuresCount++
 				r.streamWriter.Write(&state.result, true)
 				r.reportResult(ctx, &state.result)

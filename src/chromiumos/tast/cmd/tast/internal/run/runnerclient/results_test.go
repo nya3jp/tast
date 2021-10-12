@@ -730,6 +730,34 @@ func TestWriteResultsCollectSysInfoFailure(t *gotesting.T) {
 	}
 }
 
+// customResultComparator is necessary due to partial result test has some results that fill end time via 'time.Now()'.
+// This comparator allows us to specify how we check these. For results with dynamic end time, just make sure it is non-zero
+func customResultComparator(actual, exp []*resultsjson.Result) string {
+	diff := ""
+	if len(actual) == len(exp) {
+		for i := 0; i < len(actual); i++ {
+			// For "hung" tests, expected End is zero as we cannot predict when time.Now() will execute. Skip check of End and make sure actual is
+			// non-zero in this case.
+			if exp[i].End.IsZero() {
+				diff = cmp.Diff(actual[i], exp[i], cmpopts.IgnoreFields(resultsjson.Error{}, "Time"), cmpopts.IgnoreFields(resultsjson.Result{}, "End"))
+				if actual[i].End.IsZero() {
+					diff = fmt.Sprintf("readTestOutput returned zero end time %v", actual[i].End)
+				}
+			} else {
+				diff = cmp.Diff(actual[i], exp[i], cmpopts.IgnoreFields(resultsjson.Error{}, "Time"))
+			}
+
+			if diff != "" {
+				return diff
+			}
+		}
+
+		return diff
+	}
+
+	return cmp.Diff(actual, exp, cmpopts.IgnoreFields(resultsjson.Error{}, "Time"))
+}
+
 func TestWritePartialResults(t *gotesting.T) {
 	const (
 		test1Name    = "pkg.Test1"
@@ -796,8 +824,8 @@ func TestWritePartialResults(t *gotesting.T) {
 			End:    test1End,
 			OutDir: filepath.Join(cfg.ResDir(), testLogsDir, test1Name),
 		},
-		// No EntityEnd message was received for the second test, so its entry in the streamed results
-		// file should have an empty end time. The error should be included, though.
+		// No EntityEnd message was received for the second test, its entry's End will
+		// be filled with the time as test run was aborted.
 		{
 			Test:  resultsjson.Test{Name: test2Name},
 			Start: test2Start,
@@ -809,12 +837,13 @@ func TestWritePartialResults(t *gotesting.T) {
 			OutDir: filepath.Join(cfg.ResDir(), testLogsDir, test2Name),
 		},
 	}
-	if diff := cmp.Diff(streamRes, expRes, cmpopts.IgnoreFields(resultsjson.Error{}, "Time")); diff != "" {
+
+	if diff := customResultComparator(streamRes, expRes); diff != "" {
 		t.Errorf("%v mismatch (-got +want):\n%s", reporting.StreamedResultsFilename, diff)
 	}
 
 	// The returned results should contain the same data.
-	if diff := cmp.Diff(results, expRes, cmpopts.IgnoreFields(resultsjson.Error{}, "Time")); diff != "" {
+	if diff := customResultComparator(results, expRes); diff != "" {
 		t.Errorf("Returned results mismatch (-got +want):\n%s", diff)
 	}
 
@@ -847,7 +876,8 @@ func TestWritePartialResults(t *gotesting.T) {
 		End:    test4End,
 		OutDir: filepath.Join(cfg.ResDir(), testLogsDir, test4Name),
 	})
-	if diff := cmp.Diff(streamRes, expRes, cmpopts.IgnoreFields(resultsjson.Error{}, "Time")); diff != "" {
+
+	if diff := customResultComparator(streamRes, expRes); diff != "" {
 		t.Errorf("%v mismatch (-got +want):\n%s", reporting.StreamedResultsFilename, diff)
 	}
 
@@ -928,8 +958,8 @@ func TestUnfinishedTest(t *gotesting.T) {
 		if !res[0].Start.Equal(tm) {
 			t.Errorf("readTestOutput returned start time %v; want %v", res[0].Start, tm)
 		}
-		if !res[0].End.IsZero() {
-			t.Errorf("readTestOutput returned non-zero end time %v", res[0].End)
+		if res[0].End.IsZero() {
+			t.Errorf("readTestOutput returned zero end time %v", res[0].End)
 		}
 		// Ignore timestamps since run errors contain time.Now.
 		if !cmp.Equal(res[0].Errors, tc.expErrs, cmpopts.IgnoreFields(resultsjson.Error{}, "Time")) {

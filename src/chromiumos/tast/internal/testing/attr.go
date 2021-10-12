@@ -547,6 +547,25 @@ Parallels boot-up testing. Otherwise the same as group:crosbolt.`,
 		Contacts: []string{"chromeos-sw-engprod@google.com"},
 		Desc:     `A group of tests that test Cross Device functionality between CrOS and Android devices.`,
 	},
+	{
+		Name:     "hps",
+		Contacts: []string{"chromeos-hps-swe@google.com"},
+		Desc:     `HPS related tests.`,
+		Subattrs: []*attr{
+			{
+				Name: "hps_perbuild",
+				Desc: `Indicate this test should be scheduled per build.`,
+			},
+			{
+				Name: "hps_nightly",
+				Desc: `Indicate this test should be scheduled per day.`,
+			},
+			{
+				Name: "hps_weekly",
+				Desc: `Indicate this test should be scheduled per week.`,
+			},
+		},
+	},
 }
 
 // validGroupMap is the name-keyed map of validGroups.

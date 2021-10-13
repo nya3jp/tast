@@ -217,6 +217,23 @@ func ChromeEC() Condition {
 	}
 }
 
+// ECFeatureTypecCmd returns a hardware dependency condition that is satisfied
+// iff the DUT has an EC which supports the EC_FEATURE_TYPEC_CMD feature flag.
+func ECFeatureTypecCmd() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("Did not find hardware features")
+		}
+		// We only return unsatisfied if we know for sure that the EC doesn't support the feature flag.
+		// In cases where the result is UNKNOWN, we allow the test to continue and fail.
+		if hf.GetEmbeddedController().GetFeatureTypecCmd() == configpb.HardwareFeatures_NOT_PRESENT {
+			return unsatisfied("DUT EC does not support EC_FEATURE_TYPEC_CMD")
+		}
+		return satisfied()
+	}}
+}
+
 // CPUSupportsSMT returns a hardware dependency condition that is satisfied iff the DUT supports
 // Symmetric Multi-Threading.
 func CPUSupportsSMT() Condition {

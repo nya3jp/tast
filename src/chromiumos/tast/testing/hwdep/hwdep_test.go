@@ -218,6 +218,34 @@ func TestChromeEC(t *testing.T) {
 		nil)
 }
 
+func TestECFFeatureTypecCmd(t *testing.T) {
+	c := hwdep.ECFeatureTypecCmd()
+
+	// Verify ECType defined with Boxster.
+	for _, tc := range []struct {
+		ECFeatureTypecCmd configpb.HardwareFeatures_Present
+		expectSatisfied   bool
+	}{
+		{configpb.HardwareFeatures_PRESENT, true},
+		{configpb.HardwareFeatures_PRESENT_UNKNOWN, true},
+		{configpb.HardwareFeatures_NOT_PRESENT, false},
+	} {
+		verifyCondition(
+			t, c,
+			&protocol.DeprecatedDeviceConfig{},
+			&configpb.HardwareFeatures{
+				EmbeddedController: &configpb.HardwareFeatures_EmbeddedController{
+					FeatureTypecCmd: tc.ECFeatureTypecCmd,
+				},
+			},
+			tc.expectSatisfied)
+	}
+	expectError(
+		t, c,
+		&protocol.DeprecatedDeviceConfig{},
+		nil)
+}
+
 func TestFingerprint(t *testing.T) {
 	c := hwdep.Fingerprint()
 

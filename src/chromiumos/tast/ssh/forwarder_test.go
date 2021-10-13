@@ -45,12 +45,15 @@ func TestForwarder(t *testing.T) {
 
 		b := make([]byte, len(sendData))
 		if _, err := io.ReadFull(remote, b); err != nil {
-			t.Fatal("Read failed:", err)
+			t.Error("Read failed:", err)
+			return
 		} else if string(b) != sendData {
-			t.Fatalf("Read %q; want %q", b, sendData)
+			t.Errorf("Read %q; want %q", b, sendData)
+			return
 		}
 		if _, err := io.WriteString(remote, recvData); err != nil {
-			t.Fatalf("Writing %q failed: %v", recvData, err)
+			t.Errorf("Writing %q failed: %v", recvData, err)
+			return
 		}
 	}()
 

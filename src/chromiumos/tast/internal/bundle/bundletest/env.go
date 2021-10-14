@@ -9,11 +9,9 @@ import (
 	"crypto/rsa"
 	"crypto/x509"
 	"encoding/pem"
-	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"testing"
 	gotesting "testing"
 
 	"google.golang.org/grpc"
@@ -23,6 +21,8 @@ import (
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/rpc"
 	"chromiumos/tast/internal/sshtest"
+	"chromiumos/tast/internal/testing"
+	"chromiumos/tast/testutil"
 )
 
 // Env contains information needed to interact with the testing environment
@@ -31,11 +31,16 @@ type Env struct {
 	rootDir          string
 	primaryServer    *fakesshserver.Server
 	companionServers map[string]*fakesshserver.Server
+	cfg              *config
 }
 
 var (
 	localBundleDir  = "bundles/local"
 	remoteBundleDir = "bundles/remote"
+	localDataDir    = "localdata"
+	remoteDataDir   = "remotedata"
+	localOutDir     = "tmp/out/local"
+	remoteOutDir    = "tmp/out/remote"
 
 	keyFile = "id_rsa"
 )
@@ -44,9 +49,9 @@ var (
 // handles to interact with the environment that has been set up.
 // connect instructs to make connections to remote bundles.
 func SetUp(t *gotesting.T, opts ...Option) *Env {
-	var cfg config
+	cfg := &config{}
 	for _, o := range opts {
-		o(&cfg)
+		o(cfg)
 	}
 
 	rootDir := t.TempDir()
@@ -57,8 +62,7 @@ func SetUp(t *gotesting.T, opts ...Option) *Env {
 	}
 
 	// Set up local bundles.
-	fullLocalBundleDir := filepath.Join(rootDir, localBundleDir)
-	fakebundle.InstallAt(t, fullLocalBundleDir, cfg.localBundles...)
+	fakebundle.InstallAt(t, filepath.Join(rootDir, localBundleDir), cfg.localBundles...)
 
 	userKey, hostKey := sshtest.MustGenerateKeys()
 	keyData := pem.EncodeToMemory(&pem.Block{
@@ -70,7 +74,7 @@ func SetUp(t *gotesting.T, opts ...Option) *Env {
 		t.Fatal(err)
 	}
 
-	primaryServer, err := startServer(userKey.PublicKey, fullLocalBundleDir, hostKey, cfg.primaryDUT)
+	primaryServer, err := startServer(userKey.PublicKey, rootDir, hostKey, cfg.primaryDUT)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -79,7 +83,7 @@ func SetUp(t *gotesting.T, opts ...Option) *Env {
 	companionServers := make(map[string]*fakesshserver.Server)
 
 	for role, dcfg := range cfg.companionDUTs {
-		srv, err := startServer(userKey.PublicKey, fullLocalBundleDir, hostKey, dcfg)
+		srv, err := startServer(userKey.PublicKey, rootDir, hostKey, dcfg)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -90,16 +94,31 @@ func SetUp(t *gotesting.T, opts ...Option) *Env {
 
 	// Set up remote bundles.
 	fakebundle.InstallAt(t, filepath.Join(rootDir, remoteBundleDir), cfg.remoteBundles...)
+
+	// Set up data files.
+	if err := testutil.WriteFiles(filepath.Join(rootDir, localDataDir), cfg.localData); err != nil {
+		t.Fatal(err)
+	}
+	if err := testutil.WriteFiles(filepath.Join(rootDir, remoteDataDir), cfg.remoteData); err != nil {
+		t.Fatal(err)
+	}
+
 	return &Env{
 		rootDir:          rootDir,
 		primaryServer:    primaryServer,
 		companionServers: companionServers,
+		cfg:              cfg,
 	}
 }
 
-func startServer(user rsa.PublicKey, bundleDir string, host *rsa.PrivateKey, dcfg *DUTConfig) (*fakesshserver.Server, error) {
+func startServer(user rsa.PublicKey, rootDir string, host *rsa.PrivateKey, dcfg *DUTConfig) (*fakesshserver.Server, error) {
+	bundleDir := filepath.Join(rootDir, localBundleDir)
+	outDir := filepath.Join(rootDir, localOutDir)
 	hs := []fakesshserver.Handler{
-		fakesshserver.ShellHandler(fmt.Sprintf("exec env %s", bundleDir)),
+		fakesshserver.ShellHandler("exec env " + bundleDir),
+		// linuxssh.GetAndDeleteFile
+		fakesshserver.ShellHandler("exec tar -c --gzip -C " + outDir),
+		fakesshserver.ShellHandler("exec rm -rf -- " + outDir),
 	}
 	if dcfg != nil {
 		hs = append(hs, dcfg.ExtraSSHHandlers...)
@@ -122,6 +141,28 @@ func (e *Env) LocalBundleDir() string {
 	return filepath.Join(e.rootDir, localBundleDir)
 }
 
+// RemoteDataDir returns absolute path of the remote bundle directory.
+func (e *Env) RemoteDataDir() string {
+	return filepath.Join(e.rootDir, remoteDataDir)
+}
+
+// LocalDataDir returns absolute path of the local bundle directory.
+func (e *Env) LocalDataDir() string {
+	return filepath.Join(e.rootDir, localDataDir)
+}
+
+// RemoteOutDir returns the absolute path to the remote bundle's temporary output
+// directory.
+func (e *Env) RemoteOutDir() string {
+	return filepath.Join(e.rootDir, remoteOutDir)
+}
+
+// LocalOutDir returns the absolute path to the local bundle's temporary output
+// directory.
+func (e *Env) LocalOutDir() string {
+	return filepath.Join(e.rootDir, localOutDir)
+}
+
 // PrimaryServer returns primary server address.
 func (e *Env) PrimaryServer() string {
 	return e.primaryServer.Addr().String()
@@ -137,7 +178,7 @@ func (e *Env) CompanionDUTs() map[string]string {
 }
 
 // DialRemoteBundle makes a connection to the remote bundle with the given name.
-func (e *Env) DialRemoteBundle(ctx context.Context, t *testing.T, name string) *grpc.ClientConn {
+func (e *Env) DialRemoteBundle(ctx context.Context, t *gotesting.T, name string) *grpc.ClientConn {
 	cl, err := rpc.DialExec(
 		ctx,
 		filepath.Join(e.rootDir, remoteBundleDir, name),
@@ -164,4 +205,29 @@ func (e *Env) DialRemoteBundle(ctx context.Context, t *testing.T, name string) *
 	}
 	t.Cleanup(func() { cl.Close() })
 	return cl.Conn()
+}
+
+// RunConfig returns a RunConfig struct with reasonable default values to be
+// used in unit tests.
+func (e *Env) RunConfig() *protocol.RunConfig {
+	var tests []string
+	for _, reg := range append(append(([]*testing.Registry)(nil), e.cfg.localBundles...), e.cfg.remoteBundles...) {
+		for _, t := range reg.AllTests() {
+			tests = append(tests, t.Name)
+		}
+	}
+	return &protocol.RunConfig{
+		Tests: tests,
+		Features: &protocol.Features{
+			CheckDeps: true,
+		},
+		Dirs: &protocol.RunDirectories{
+			DataDir: e.RemoteDataDir(),
+			OutDir:  e.RemoteOutDir(),
+			PrimaryTarget: &protocol.RunDirectories{
+				DataDir: e.LocalDataDir(),
+				OutDir:  e.LocalOutDir(),
+			},
+		},
+	}
 }

@@ -22,7 +22,7 @@ type Client struct {
 	cl  *rpc.SSHClient
 }
 
-// Close closes the underlying connetions.
+// Close closes the underlying connections.
 func (c *Client) Close(ctx context.Context) error {
 	err := c.cl.Close()
 	err2 := c.hst.Close(ctx)
@@ -35,6 +35,11 @@ func (c *Client) Close(ctx context.Context) error {
 // TestService returns test service client.
 func (c *Client) TestService() protocol.TestServiceClient {
 	return protocol.NewTestServiceClient(c.cl.Conn())
+}
+
+// SSHConn returns the underlying SSH connection.
+func (c *Client) SSHConn() *ssh.Conn {
+	return c.hst
 }
 
 // New creates a client connecting to a bundle in a different machine.

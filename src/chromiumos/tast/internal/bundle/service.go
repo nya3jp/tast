@@ -25,7 +25,7 @@ func newTestServer(scfg *StaticConfig, bundleParams *protocol.BundleInitParams) 
 
 func (s *testServer) ListEntities(ctx context.Context, req *protocol.ListEntitiesRequest) (*protocol.ListEntitiesResponse, error) {
 	var entities []*protocol.ResolvedEntity
-	if req.Recursive {
+	if req.GetRecursive() {
 		var cl *bundleclient.Client
 		if s.bundleParams.GetBundleConfig() != nil {
 			var err error
@@ -58,6 +58,9 @@ func (s *testServer) RunTests(srv protocol.TestService_RunTestsServer) error {
 		return errors.Errorf("RunTests: unexpected initial request message: got %T, want %T", initReq.GetType(), &protocol.RunTestsRequest_RunTestsInit{})
 	}
 
+	if initReq.GetRecursive() {
+		return runTestsRecursive(ctx, srv, initReq.GetRunTestsInit().GetRunConfig(), s.scfg, s.bundleParams)
+	}
 	return runTests(ctx, srv, initReq.GetRunTestsInit().GetRunConfig(), s.scfg, s.bundleParams.GetBundleConfig())
 }
 

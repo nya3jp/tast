@@ -45,10 +45,20 @@ func WithEntityLogs() Option {
 	return func(cfg *config) { cfg.wantEntityLogs = true }
 }
 
+// RunTestsRecursiveForEvents is similar to RunTestsForEvents, but calls
+// RunTests with a recursive flag.
+func RunTestsRecursiveForEvents(ctx context.Context, cl protocol.TestServiceClient, rcfg *protocol.RunConfig, opts ...Option) ([]protocol.Event, error) {
+	return runTestsForEvents(ctx, cl, rcfg, true, opts...)
+}
+
 // RunTestsForEvents calls RunTests on cl with cfg and returns a slice of
 // events. wantLogs specifies whether RunLogEvent and EntityLogEvent should be
 // included in the result.
 func RunTestsForEvents(ctx context.Context, cl protocol.TestServiceClient, rcfg *protocol.RunConfig, opts ...Option) ([]protocol.Event, error) {
+	return runTestsForEvents(ctx, cl, rcfg, false, opts...)
+}
+
+func runTestsForEvents(ctx context.Context, cl protocol.TestServiceClient, rcfg *protocol.RunConfig, recursive bool, opts ...Option) ([]protocol.Event, error) {
 	var cfg config
 	for _, o := range opts {
 		o(&cfg)
@@ -65,10 +75,12 @@ func RunTestsForEvents(ctx context.Context, cl protocol.TestServiceClient, rcfg 
 				RunConfig: rcfg,
 			},
 		},
+		Recursive: recursive,
 	}
 	if err := srv.Send(req); err != nil {
 		return nil, errors.Wrap(err, "failed to send RunTestsInit")
 	}
+	defer srv.CloseSend()
 
 	var es []protocol.Event
 	for {

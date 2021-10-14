@@ -190,6 +190,8 @@ message RunDirectories {
   // TempDir is the path to the directory under which temporary files for tests
   // are written.
   string temp_dir = 3;
+  // PrimaryTarget is the run directories of the primary target.
+  RunDirectories primary_target = 4;
 }
 
 // ServiceConfig contains configurations of external services available to

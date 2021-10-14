@@ -12,6 +12,8 @@ import (
 type config struct {
 	localBundles  []*testing.Registry
 	remoteBundles []*testing.Registry
+	localData     map[string]string
+	remoteData    map[string]string
 	primaryDUT    *DUTConfig
 	companionDUTs map[string]*DUTConfig
 }
@@ -35,6 +37,22 @@ func WithLocalBundles(reg ...*testing.Registry) Option {
 func WithRemoteBundles(reg ...*testing.Registry) Option {
 	return func(cfg *config) {
 		cfg.remoteBundles = reg
+	}
+}
+
+// WithLocalData specifies local data. m should be a mapping from filepath to
+// file content, where filepath is relative to the local data directory.
+func WithLocalData(m map[string]string) Option {
+	return func(cfg *config) {
+		cfg.localData = m
+	}
+}
+
+// WithRemoteData specifies remote data. m should be a mapping from filepath to
+// file content, where filepath is relative to the remote data directory.
+func WithRemoteData(m map[string]string) Option {
+	return func(cfg *config) {
+		cfg.remoteData = m
 	}
 }
 

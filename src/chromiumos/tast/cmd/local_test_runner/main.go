@@ -173,6 +173,7 @@ func main() {
 			"no_symlink_mount":          "!lxc", // boards using LXC set CONFIG_SECURITY_CHROMIUMOS_NO_SYMLINK_MOUNT=n
 			"no_tablet_form_factor":     "!tablet_form_factor",
 			"no_ubsan":                  "!ubsan",
+			"no_vulkan":                 "!vulkan",
 			"nvme":                      "nvme",
 			"oci":                       "containers && !moblab", // run_oci doesn't work on Moblab: https://crbug.com/951691
 			"ocr":                       "ocr",

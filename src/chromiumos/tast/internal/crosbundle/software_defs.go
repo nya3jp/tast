@@ -86,9 +86,9 @@ var softwareFeatureDefs = map[string]string{
 	"igt":                     `("video_cards_amdgpu" || "video_cards_intel" || "video_cards_mediatek" || "video_cards_msm") && ("kernel-5_4" || "kernel-5_10")`,
 	"iioservice":              "iioservice",
 	"iwlwifi_rescan":          "iwlwifi_rescan",
-	"lacros":                  "!arm && !arm64",                               // TODO(crbug.com/1144013): Expand this (and below lacros_*) to include arm as well.
-	"lacros_stable":           `!"arm" && !"arm64" && !"tast_vm" && !"betty"`, // TODO(b/183969803): Remove this.
-	"lacros_unstable":         `!"arm" && !"arm64" && ("tast_vm" || "betty")`, // TODO(b/183969803): Remove this.
+	"lacros":                  "!chromeless_tty && !rialto",
+	"lacros_stable":           `!chromeless_tty && !rialto && !"tast_vm" && !"betty" && !arm && !arm64`, // TODO(b/183969803): Remove this. TODO(crbug.com/1267118): Let ARM run as stable.
+	"lacros_unstable":         `!chromeless_tty && !rialto && ("tast_vm" || "betty" || arm || arm64)`,   // TODO(b/183969803): Remove this. TODO(crbug.com/1267118): Let ARM run as stable.
 	"lock_core_pattern":       `"kernel-3_18"`,
 	"manatee":                 "manatee",
 	"mbo":                     "mbo",

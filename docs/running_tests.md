@@ -187,7 +187,7 @@ In a window outside the chroot do,
 
 ```shell
 gcert  # Once a day
-ssh -L `<port>`:127.0.0.1:22 root@<dut> # One session for each DUT
+ssh -L <port>:127.0.0.1:22 root@<dut> # One session for each DUT
 ```
 
 Any port is fine as long as it is not used by other applications. Leave the ssh session on.
@@ -195,5 +195,5 @@ Any port is fine as long as it is not used by other applications. Leave the ssh 
 In another window inside chroot:
 
 ```shell
-tast run 127.0.0.1:`<port>` <test>
+tast run 127.0.0.1:<port> <test>
 ```

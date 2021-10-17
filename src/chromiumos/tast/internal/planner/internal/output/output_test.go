@@ -8,6 +8,7 @@ import (
 	gotesting "testing"
 
 	"github.com/google/go-cmp/cmp"
+	"google.golang.org/protobuf/testing/protocmp"
 
 	"chromiumos/tast/internal/planner/internal/output"
 	"chromiumos/tast/internal/planner/internal/output/outputtest"
@@ -35,7 +36,7 @@ func TestTestOutputStream(t *gotesting.T) {
 		&protocol.EntityLogEvent{EntityName: "pkg.Test", Text: "world"},
 		&protocol.EntityEndEvent{EntityName: "pkg.Test"},
 	}
-	if diff := cmp.Diff(got, want); diff != "" {
+	if diff := cmp.Diff(got, want, protocmp.Transform()); diff != "" {
 		t.Error("Output mismatch (-got +want):\n", diff)
 	}
 }
@@ -75,7 +76,7 @@ func TestTestOutputStreamErrors(t *gotesting.T) {
 		{Reason: "error1", Location: &protocol.ErrorLocation{File: "test1.go"}},
 		{Reason: "error2", Location: &protocol.ErrorLocation{File: "test2.go"}},
 	}
-	if diff := cmp.Diff(got, want); diff != "" {
+	if diff := cmp.Diff(got, want, protocmp.Transform()); diff != "" {
 		t.Error("Errors mismatch (-got +want):\n", diff)
 	}
 }

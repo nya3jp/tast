@@ -12,7 +12,7 @@ import (
 	gotesting "testing"
 
 	"github.com/google/go-cmp/cmp"
-	"github.com/google/go-cmp/cmp/cmpopts"
+	"google.golang.org/protobuf/testing/protocmp"
 
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/logging"
@@ -470,7 +470,7 @@ func TestFixtureStackErrors(t *gotesting.T) {
 			t.Fatalf("Step %d: %v", i, err)
 		}
 		got := stack.Errors()
-		if diff := cmp.Diff(got, step.want, cmpopts.IgnoreFields(protocol.Error{}, "Location")); diff != "" {
+		if diff := cmp.Diff(got, step.want, protocmp.Transform(), protocmp.IgnoreFields(&protocol.Error{}, "location")); diff != "" {
 			t.Fatalf("Step %d: Errors mismatch (-got +want):\n%s", i, diff)
 		}
 	}
@@ -570,7 +570,7 @@ func TestFixtureStackOutputGreen(t *gotesting.T) {
 		&protocol.EntityLogEvent{EntityName: "fixt1", Text: "TearDown 1 via State"},
 		&protocol.EntityEndEvent{EntityName: "fixt1"},
 	}
-	if diff := cmp.Diff(msgs, want); diff != "" {
+	if diff := cmp.Diff(msgs, want, protocmp.Transform()); diff != "" {
 		t.Error("Output mismatch (-got +want):\n", diff)
 	}
 }
@@ -641,7 +641,7 @@ func TestFixtureStackOutputRed(t *gotesting.T) {
 		&protocol.EntityLogEvent{EntityName: "fixt1", Text: "TearDown 1"},
 		&protocol.EntityEndEvent{EntityName: "fixt1"},
 	}
-	if diff := cmp.Diff(msgs, want); diff != "" {
+	if diff := cmp.Diff(msgs, want, protocmp.Transform()); diff != "" {
 		t.Error("Output mismatch (-got +want):\n", diff)
 	}
 }
@@ -719,7 +719,7 @@ func TestFixtureStackOutputYellow(t *gotesting.T) {
 		&protocol.EntityLogEvent{EntityName: "fixt1", Text: "TearDown 1"},
 		&protocol.EntityEndEvent{EntityName: "fixt1"},
 	}
-	if diff := cmp.Diff(msgs, want); diff != "" {
+	if diff := cmp.Diff(msgs, want, protocmp.Transform()); diff != "" {
 		t.Error("Output mismatch (-got +want):\n", diff)
 	}
 }

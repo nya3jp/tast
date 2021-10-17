@@ -12,7 +12,7 @@ import (
 	"time"
 
 	"github.com/google/go-cmp/cmp"
-	"github.com/google/go-cmp/cmp/cmpopts"
+	"google.golang.org/protobuf/testing/protocmp"
 
 	"chromiumos/tast/internal/bundle/fakebundle"
 	"chromiumos/tast/internal/jsonprotocol"
@@ -85,7 +85,7 @@ func TestTestServerListEntities(t *gotesting.T) {
 	sorter := func(a, b *protocol.ResolvedEntity) bool {
 		return a.GetEntity().GetName() < b.GetEntity().GetName()
 	}
-	if diff := cmp.Diff(got, want, cmpopts.SortSlices(sorter)); diff != "" {
+	if diff := cmp.Diff(got, want, protocmp.Transform(), protocmp.SortRepeated(sorter)); diff != "" {
 		t.Errorf("ListEntitiesResponse mismatch (-got +want):\n%s", diff)
 	}
 }

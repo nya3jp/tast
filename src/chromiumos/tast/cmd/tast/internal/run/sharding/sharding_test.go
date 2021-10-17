@@ -10,6 +10,7 @@ import (
 	"unicode"
 
 	"github.com/google/go-cmp/cmp"
+	"google.golang.org/protobuf/testing/protocmp"
 
 	"chromiumos/tast/cmd/tast/internal/run/driver"
 	"chromiumos/tast/cmd/tast/internal/run/sharding"
@@ -94,7 +95,7 @@ func TestCompute(t *gotesting.T) {
 			for index, want := range tc.shards {
 				t.Run(fmt.Sprintf("shard%d", index), func(t *gotesting.T) {
 					got := sharding.Compute(tc.tests, index, len(tc.shards))
-					if diff := cmp.Diff(got, want); diff != "" {
+					if diff := cmp.Diff(got, want, protocmp.Transform()); diff != "" {
 						t.Errorf("Mismatch (-got +want):\n%s", diff)
 					}
 				})

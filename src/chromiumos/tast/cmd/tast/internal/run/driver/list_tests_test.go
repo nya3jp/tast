@@ -10,7 +10,7 @@ import (
 
 	"github.com/golang/protobuf/ptypes"
 	"github.com/google/go-cmp/cmp"
-	"github.com/google/go-cmp/cmp/cmpopts"
+	"google.golang.org/protobuf/testing/protocmp"
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/driver"
@@ -116,7 +116,7 @@ func TestDriver_ListMatchedTests(t *gotesting.T) {
 		makeBundleEntityForTest("bundle1", 0, "pkg.Remote2", "yes", nil),
 		makeBundleEntityForTest("bundle2", 0, "pkg.Remote4", "yes", nil),
 	}
-	if diff := cmp.Diff(got, want); diff != "" {
+	if diff := cmp.Diff(got, want, protocmp.Transform()); diff != "" {
 		t.Errorf("Unexpected list of tests (-got +want):\n%v", diff)
 	}
 }
@@ -133,7 +133,7 @@ func TestDriver_ListMatchedLocalTests(t *gotesting.T) {
 		makeBundleEntityForTest("bundle1", 1, "pkg.Local1", "yes", nil),
 		makeBundleEntityForTest("bundle2", 1, "pkg.Local3", "yes", []string{"var"}),
 	}
-	if diff := cmp.Diff(got, want); diff != "" {
+	if diff := cmp.Diff(got, want, protocmp.Transform()); diff != "" {
 		t.Errorf("Unexpected list of tests (-got +want):\n%v", diff)
 	}
 }
@@ -152,7 +152,7 @@ func TestDriver_ListLocalFixtures(t *gotesting.T) {
 		makeBundleEntityForFixture("bundle2", 1, "fixt.LocalA", "fixt.LocalB", "fixt.RemoteB"),
 		makeBundleEntityForFixture("bundle2", 1, "fixt.LocalB", "fixt.RemoteB", "fixt.RemoteB"),
 	}
-	if diff := cmp.Diff(got, want, cmpopts.IgnoreFields(protocol.EntityLegacyData{}, "Timeout")); diff != "" {
+	if diff := cmp.Diff(got, want, protocmp.Transform(), protocmp.IgnoreFields(&protocol.EntityLegacyData{}, "timeout")); diff != "" {
 		t.Errorf("Unexpected list of tests (-got +want):\n%v", diff)
 	}
 }
@@ -171,7 +171,7 @@ func TestDriver_ListRemoteFixtures(t *gotesting.T) {
 		makeBundleEntityForFixture("bundle2", 0, "fixt.RemoteA", "", ""),
 		makeBundleEntityForFixture("bundle2", 0, "fixt.RemoteB", "fixt.RemoteA", ""),
 	}
-	if diff := cmp.Diff(got, want, cmpopts.IgnoreFields(protocol.EntityLegacyData{}, "Timeout")); diff != "" {
+	if diff := cmp.Diff(got, want, protocmp.Transform(), protocmp.IgnoreFields(&protocol.EntityLegacyData{}, "timeout")); diff != "" {
 		t.Errorf("Unexpected list of tests (-got +want):\n%v", diff)
 	}
 }

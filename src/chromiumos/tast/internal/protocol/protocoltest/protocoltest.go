@@ -12,7 +12,7 @@ import (
 
 	"github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/google/go-cmp/cmp"
-	"github.com/google/go-cmp/cmp/cmpopts"
+	"google.golang.org/protobuf/testing/protocmp"
 
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/protocol"
@@ -21,10 +21,11 @@ import (
 // EventCmpOpts is a list of options to be passed to cmp.Diff to compare
 // protocol.Event slices ignoring non-deterministic fields.
 var EventCmpOpts = []cmp.Option{
-	cmpopts.IgnoreTypes(&timestamp.Timestamp{}),
-	cmpopts.IgnoreFields(protocol.EntityStartEvent{}, "OutDir"),
-	cmpopts.IgnoreFields(protocol.EntityEndEvent{}, "TimingLog"),
-	cmpopts.IgnoreFields(protocol.Error{}, "Location"),
+	protocmp.Transform(),
+	protocmp.IgnoreMessages(&timestamp.Timestamp{}),
+	protocmp.IgnoreFields(&protocol.EntityStartEvent{}, "out_dir"),
+	protocmp.IgnoreFields(&protocol.EntityEndEvent{}, "timing_log"),
+	protocmp.IgnoreFields(&protocol.Error{}, "location"),
 }
 
 type config struct {

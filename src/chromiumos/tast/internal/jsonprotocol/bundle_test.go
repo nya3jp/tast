@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
+	"google.golang.org/protobuf/testing/protocmp"
 
 	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/protocol"
@@ -32,7 +33,7 @@ func TestFeatureArgsFeatures(t *testing.T) {
 			Hardware: &protocol.HardwareFeatures{},
 		},
 	}
-	if diff := cmp.Diff(got, want); diff != "" {
+	if diff := cmp.Diff(got, want, protocmp.Transform()); diff != "" {
 		t.Errorf("Features conversion mismatch (-got +want):\n%s", diff)
 	}
 }

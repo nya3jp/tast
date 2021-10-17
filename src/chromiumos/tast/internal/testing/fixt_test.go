@@ -8,6 +8,7 @@ import (
 	gotesting "testing"
 
 	"github.com/google/go-cmp/cmp"
+	"google.golang.org/protobuf/testing/protocmp"
 
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testing"
@@ -42,7 +43,7 @@ func TestFixtureEntityProto(t *gotesting.T) {
 			Bundle: "bundle",
 		},
 	}
-	if diff := cmp.Diff(got, want); diff != "" {
+	if diff := cmp.Diff(got, want, protocmp.Transform()); diff != "" {
 		t.Errorf("EntityProto(%#v) mismatch (-got +want):\n%s", fixt, diff)
 	}
 }

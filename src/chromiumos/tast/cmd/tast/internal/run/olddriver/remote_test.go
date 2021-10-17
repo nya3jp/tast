@@ -16,6 +16,7 @@ import (
 
 	"github.com/golang/protobuf/ptypes"
 	"github.com/google/go-cmp/cmp"
+	"google.golang.org/protobuf/testing/protocmp"
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/runtest"
@@ -118,7 +119,7 @@ func TestRemoteRun(t *gotesting.T) {
 			},
 		},
 	}
-	if diff := cmp.Diff(gotBundleConfig, wantBundleConfig); diff != "" {
+	if diff := cmp.Diff(gotBundleConfig, wantBundleConfig, protocmp.Transform()); diff != "" {
 		t.Errorf("BundleConfig message mismatch (-got +want):\n%s", diff)
 	}
 
@@ -152,7 +153,7 @@ func TestRemoteRun(t *gotesting.T) {
 			WaitUntilReady:    false,
 		},
 	}
-	if diff := cmp.Diff(gotInit, wantInit); diff != "" {
+	if diff := cmp.Diff(gotInit, wantInit, protocmp.Transform()); diff != "" {
 		t.Errorf("RunTestsInit message mismatch (-got +want):\n%s", diff)
 	}
 }

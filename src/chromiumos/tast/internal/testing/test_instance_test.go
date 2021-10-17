@@ -15,6 +15,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"go.chromium.org/chromiumos/config/go/test/api"
+	"google.golang.org/protobuf/testing/protocmp"
 
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/testing/hwdep"
@@ -792,7 +793,7 @@ func TestTestInstanceEntityProto(t *gotesting.T) {
 			Bundle:       "bundle",
 		},
 	}
-	if diff := cmp.Diff(got, want); diff != "" {
+	if diff := cmp.Diff(got, want, protocmp.Transform()); diff != "" {
 		t.Errorf("Got unexpected Entity (-got +want):\n%s", diff)
 	}
 }

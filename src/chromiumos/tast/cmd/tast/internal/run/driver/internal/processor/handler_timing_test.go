@@ -9,7 +9,7 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
-	"github.com/google/go-cmp/cmp/cmpopts"
+	"google.golang.org/protobuf/testing/protocmp"
 
 	"chromiumos/tast/cmd/tast/internal/run/driver/internal/processor"
 	"chromiumos/tast/internal/logging"
@@ -65,7 +65,7 @@ func TestTimingHandler(t *testing.T) {
 		},
 		// Fixture's timing info is currently not recorded.
 	}}}
-	if diff := cmp.Diff(got, want, cmpopts.IgnoreFields(protocol.TimingStage{}, "StartTime", "EndTime")); diff != "" {
+	if diff := cmp.Diff(got, want, protocmp.Transform(), protocmp.IgnoreFields(&protocol.TimingStage{}, "start_time", "end_time")); diff != "" {
 		t.Errorf("Timing logs mismatch (-got +want):\n%s", diff)
 	}
 }

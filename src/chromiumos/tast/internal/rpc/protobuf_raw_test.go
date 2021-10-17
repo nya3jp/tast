@@ -42,9 +42,9 @@ func TestProtobufRaw(t *testing.T) {
 		}
 	}
 	if !proto.Equal(msgSent1, msgReceived1) {
-		t.Errorf("Received message: %v; want %v", *msgReceived1, *msgSent1)
+		t.Errorf("Received message: %v; want %v", msgReceived1, msgSent1)
 	}
 	if !proto.Equal(msgSent2, msgReceived2) {
-		t.Errorf("Received message: %v; want %v", *msgReceived2, *msgSent2)
+		t.Errorf("Received message: %v; want %v", msgReceived2, msgSent2)
 	}
 }

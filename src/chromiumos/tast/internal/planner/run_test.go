@@ -21,6 +21,7 @@ import (
 	"time"
 
 	"github.com/google/go-cmp/cmp"
+	"google.golang.org/protobuf/testing/protocmp"
 
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/devserver/devservertest"
@@ -86,7 +87,7 @@ func TestRunSuccess(t *gotesting.T) {
 		&protocol.EntityStartEvent{Entity: tests[0].EntityProto(), OutDir: filepath.Join(od, "pkg.Test")},
 		&protocol.EntityEndEvent{EntityName: tests[0].Name},
 	}
-	if diff := cmp.Diff(msgs, want); diff != "" {
+	if diff := cmp.Diff(msgs, want, protocmp.Transform()); diff != "" {
 		t.Error("Output mismatch (-got +want):\n", diff)
 	}
 
@@ -109,7 +110,7 @@ func TestRunPanic(t *gotesting.T) {
 		&protocol.EntityErrorEvent{EntityName: "pkg.Test", Error: &protocol.Error{Reason: "Panic: intentional panic"}},
 		&protocol.EntityEndEvent{EntityName: "pkg.Test"},
 	}
-	if diff := cmp.Diff(msgs, want); diff != "" {
+	if diff := cmp.Diff(msgs, want, protocmp.Transform()); diff != "" {
 		t.Error("Output mismatch (-got +want):\n", diff)
 	}
 }
@@ -133,7 +134,7 @@ func TestRunDeadline(t *gotesting.T) {
 		&protocol.EntityErrorEvent{EntityName: "pkg.Test", Error: &protocol.Error{Reason: "Saw timeout within test"}},
 		&protocol.EntityEndEvent{EntityName: "pkg.Test"},
 	}
-	if diff := cmp.Diff(msgs, want); diff != "" {
+	if diff := cmp.Diff(msgs, want, protocmp.Transform()); diff != "" {
 		t.Error("Output mismatch (-got +want):\n", diff)
 	}
 }
@@ -175,7 +176,7 @@ func TestRunLogAfterTimeout(t *gotesting.T) {
 		&protocol.EntityLogEvent{EntityName: "pkg.Test", Text: "Dumping all goroutines"},
 		// A goroutine dump follows. Do not compare them as the content is undeterministic.
 	}
-	if diff := cmp.Diff(msgs[:len(want)], want); diff != "" {
+	if diff := cmp.Diff(msgs[:len(want)], want, protocmp.Transform()); diff != "" {
 		t.Error("Output mismatch (-got +want):\n", diff)
 	}
 }
@@ -207,7 +208,7 @@ func TestRunLateWriteFromGoroutine(t *gotesting.T) {
 		// Log message from the goroutine is not reported.
 		&protocol.EntityEndEvent{EntityName: tests[0].Name},
 	}
-	if diff := cmp.Diff(msgs, want); diff != "" {
+	if diff := cmp.Diff(msgs, want, protocmp.Transform()); diff != "" {
 		t.Error("Output mismatch (-got +want):\n", diff)
 	}
 }
@@ -248,7 +249,7 @@ func TestRunSoftwareDeps(t *gotesting.T) {
 		&protocol.EntityStartEvent{Entity: test1.EntityProto()},
 		&protocol.EntityEndEvent{EntityName: test1.Name},
 	}
-	if diff := cmp.Diff(msgs, want); diff != "" {
+	if diff := cmp.Diff(msgs, want, protocmp.Transform()); diff != "" {
 		t.Error("Output mismatch (-got +want):\n", diff)
 	}
 }
@@ -395,9 +396,12 @@ func TestRunSkipStages(t *gotesting.T) {
 	pre1 := &testPre{name: "pre1"}
 	pre2 := &testPre{name: "pre2"}
 
-	evcmp := cmp.Comparer(func(a, b *protocol.EntityStartEvent) bool {
-		return a.GetEntity().GetName() == b.GetEntity().GetName()
-	})
+	evcmps := []cmp.Option{
+		protocmp.Transform(),
+		protocmp.IgnoreEmptyMessages(),
+		protocmp.IgnoreFields(&protocol.Entity{}, "legacy_data"),
+		protocmp.IgnoreFields(&protocol.EntityStartEvent{}, "out_dir"),
+	}
 
 	for _, tc := range []struct {
 		name  string
@@ -640,7 +644,7 @@ func TestRunSkipStages(t *gotesting.T) {
 				},
 			}
 			msgs := runTestsAndReadAll(t, tests, pcfg)
-			if diff := cmp.Diff(msgs, tc.want, evcmp); diff != "" {
+			if diff := cmp.Diff(msgs, tc.want, evcmps...); diff != "" {
 				t.Error("Output mismatch (-got +want):\n", diff)
 			}
 		})
@@ -820,7 +824,7 @@ func TestRunExternalData(t *gotesting.T) {
 				&protocol.EntityErrorEvent{EntityName: tests[3].Name, Error: &protocol.Error{Reason: "[Fixture failure] fixt2: Required data file fail.txt missing: failed to download gs://bucket/fail.txt: file does not exist"}},
 				&protocol.EntityEndEvent{EntityName: tests[3].Name},
 			}
-			if diff := cmp.Diff(msgs, want); diff != "" {
+			if diff := cmp.Diff(msgs, want, protocmp.Transform()); diff != "" {
 				t.Error("Output mismatch (-got +want):\n", diff)
 			}
 
@@ -1074,7 +1078,7 @@ func TestRunFixture(t *gotesting.T) {
 		&protocol.EntityLogEvent{EntityName: fixt1.Name, Text: "fixt1 TearDown"},
 		&protocol.EntityEndEvent{EntityName: fixt1.Name},
 	}
-	if diff := cmp.Diff(msgs, want); diff != "" {
+	if diff := cmp.Diff(msgs, want, protocmp.Transform()); diff != "" {
 		t.Error("Output mismatch (-got +want):\n", diff)
 	}
 }
@@ -1175,7 +1179,7 @@ func TestRunFixtureSetUpFailure(t *gotesting.T) {
 		&protocol.EntityErrorEvent{EntityName: tests[2].Name, Error: &protocol.Error{Reason: "[Fixture failure] fixt1: Setup failure 2"}},
 		&protocol.EntityEndEvent{EntityName: tests[2].Name},
 	}
-	if diff := cmp.Diff(msgs, want); diff != "" {
+	if diff := cmp.Diff(msgs, want, protocmp.Transform()); diff != "" {
 		t.Error("Output mismatch (-got +want):\n", diff)
 	}
 }
@@ -1232,7 +1236,7 @@ func TestRunFixturePreTestFailure(t *gotesting.T) {
 		&protocol.EntityEndEvent{EntityName: fixt2.Name},
 		&protocol.EntityEndEvent{EntityName: fixt1.Name},
 	}
-	if diff := cmp.Diff(msgs, want); diff != "" {
+	if diff := cmp.Diff(msgs, want, protocmp.Transform()); diff != "" {
 		t.Error("Output mismatch (-got +want):\n", diff)
 	}
 }
@@ -1262,7 +1266,7 @@ func TestRunFixtureRemoteSetUpFailure(t *gotesting.T) {
 		&protocol.EntityErrorEvent{Error: &protocol.Error{Reason: "[Fixture failure] remoteFixt: Remote failure"}, EntityName: "pkg.Test"},
 		&protocol.EntityEndEvent{EntityName: tests[0].Name},
 	}
-	if diff := cmp.Diff(msgs, want); diff != "" {
+	if diff := cmp.Diff(msgs, want, protocmp.Transform()); diff != "" {
 		t.Error("Output mismatch (-got +want):\n", diff)
 	}
 }
@@ -1340,7 +1344,7 @@ func TestRunFixtureResetFailure(t *gotesting.T) {
 		&protocol.EntityEndEvent{EntityName: fixt2.Name},
 		&protocol.EntityEndEvent{EntityName: fixt1.Name},
 	}
-	if diff := cmp.Diff(msgs, want); diff != "" {
+	if diff := cmp.Diff(msgs, want, protocmp.Transform()); diff != "" {
 		t.Error("Output mismatch (-got +want):\n", diff)
 	}
 }
@@ -1461,7 +1465,7 @@ func TestRunFixtureMinimumReset(t *gotesting.T) {
 		&protocol.EntityEndEvent{EntityName: fixt3.Name},
 		&protocol.EntityEndEvent{EntityName: fixt1.Name},
 	}
-	if diff := cmp.Diff(msgs, want); diff != "" {
+	if diff := cmp.Diff(msgs, want, protocmp.Transform()); diff != "" {
 		t.Error("Output mismatch (-got +want):\n", diff)
 	}
 }
@@ -1514,7 +1518,7 @@ func TestRunFixtureMissing(t *gotesting.T) {
 		&protocol.EntityStartEvent{Entity: tests[0].EntityProto()},
 		&protocol.EntityEndEvent{EntityName: tests[0].Name},
 	}
-	if diff := cmp.Diff(msgs, want); diff != "" {
+	if diff := cmp.Diff(msgs, want, protocmp.Transform()); diff != "" {
 		t.Error("Output mismatch (-got +want):\n", diff)
 	}
 }
@@ -1717,7 +1721,7 @@ func TestRunPrecondition(t *gotesting.T) {
 		&protocol.EntityLogEvent{EntityName: tests[0].Name, Text: `Closing precondition "pre"`},
 		&protocol.EntityEndEvent{EntityName: tests[0].Name},
 	}
-	if diff := cmp.Diff(msgs, want); diff != "" {
+	if diff := cmp.Diff(msgs, want, protocmp.Transform()); diff != "" {
 		t.Error("Output mismatch (-got +want):\n", diff)
 	}
 }
@@ -1827,7 +1831,7 @@ func TestRunPreconditionContext(t *gotesting.T) {
 		&protocol.EntityLogEvent{EntityName: tests[1].Name, Text: `Closing precondition "pre"`},
 		&protocol.EntityEndEvent{EntityName: tests[1].Name},
 	}
-	if diff := cmp.Diff(msgs, want); diff != "" {
+	if diff := cmp.Diff(msgs, want, protocmp.Transform()); diff != "" {
 		t.Error("Output mismatch (-got +want):\n", diff)
 	}
 	if prevCtx.Err() == nil {
@@ -1945,7 +1949,7 @@ func TestAttachStateToContext(t *gotesting.T) {
 		&protocol.EntityLogEvent{EntityName: tests[0].Name, Text: "msg 2"},
 		&protocol.EntityEndEvent{EntityName: tests[0].Name},
 	}
-	if diff := cmp.Diff(msgs, want); diff != "" {
+	if diff := cmp.Diff(msgs, want, protocmp.Transform()); diff != "" {
 		t.Error("Output mismatch (-got +want):\n", diff)
 	}
 }

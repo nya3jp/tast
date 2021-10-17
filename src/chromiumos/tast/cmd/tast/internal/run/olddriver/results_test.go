@@ -20,6 +20,7 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
+	"google.golang.org/protobuf/testing/protocmp"
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/driver"
@@ -674,7 +675,7 @@ func TestWriteResultsCollectSysInfo(t *gotesting.T) {
 	called := false
 	env := runtest.SetUp(t, runtest.WithCollectSysInfo(func(req *protocol.CollectSysInfoRequest) (*protocol.CollectSysInfoResponse, error) {
 		called = true
-		if diff := cmp.Diff(req.GetInitialState(), initialState, cmpopts.IgnoreFields(protocol.SysInfoState{}, "XXX_sizecache")); diff != "" {
+		if diff := cmp.Diff(req.GetInitialState(), initialState, protocmp.Transform()); diff != "" {
 			t.Errorf("CollectSysInfo: InitialState mismatch (-got +want):\n%s", diff)
 		}
 		return &protocol.CollectSysInfoResponse{}, nil

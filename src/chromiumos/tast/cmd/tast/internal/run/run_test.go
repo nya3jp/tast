@@ -18,6 +18,7 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
+	"google.golang.org/protobuf/testing/protocmp"
 
 	"chromiumos/tast/cmd/tast/internal/run"
 	"chromiumos/tast/cmd/tast/internal/run/config"
@@ -504,7 +505,7 @@ func TestRunDownloadPrivateBundles(t *gotesting.T) {
 		return runtest.WithDownloadPrivateBundles(func(req *protocol.DownloadPrivateBundlesRequest) (*protocol.DownloadPrivateBundlesResponse, error) {
 			called[role] = struct{}{}
 			want := &protocol.ServiceConfig{Devservers: []string{ds.URL}}
-			if diff := cmp.Diff(req.GetServiceConfig(), want); diff != "" {
+			if diff := cmp.Diff(req.GetServiceConfig(), want, protocmp.Transform()); diff != "" {
 				t.Errorf("ServiceConfig mismatch (-got +want):\n%s", diff)
 			}
 			return &protocol.DownloadPrivateBundlesResponse{}, nil
@@ -1002,7 +1003,7 @@ func TestRunCollectSysInfo(t *gotesting.T) {
 		}),
 		runtest.WithCollectSysInfo(func(req *protocol.CollectSysInfoRequest) (*protocol.CollectSysInfoResponse, error) {
 			called = true
-			if diff := cmp.Diff(req.GetInitialState(), initState, cmpopts.IgnoreFields(protocol.SysInfoState{}, "XXX_sizecache")); diff != "" {
+			if diff := cmp.Diff(req.GetInitialState(), initState, protocmp.Transform()); diff != "" {
 				t.Errorf("SysInfoState mismatch (-got +want):\n%s", diff)
 			}
 			return &protocol.CollectSysInfoResponse{}, nil

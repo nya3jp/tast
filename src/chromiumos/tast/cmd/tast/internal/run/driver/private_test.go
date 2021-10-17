@@ -12,6 +12,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"go.chromium.org/chromiumos/config/go/api/test/tls"
 	"google.golang.org/grpc"
+	"google.golang.org/protobuf/testing/protocmp"
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/driver"
@@ -61,7 +62,7 @@ func TestDriver_DownloadPrivateBundles_Devservers(t *testing.T) {
 				},
 				BuildArtifactUrl: buildArtifactsURL,
 			}
-			if diff := cmp.Diff(req, want); diff != "" {
+			if diff := cmp.Diff(req, want, protocmp.Transform()); diff != "" {
 				t.Errorf("DownloadPrivateBundlesRequest mismatch (-got +want):\n%s", diff)
 			}
 			return &protocol.DownloadPrivateBundlesResponse{}, nil

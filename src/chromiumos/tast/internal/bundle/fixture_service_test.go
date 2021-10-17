@@ -17,6 +17,7 @@ import (
 	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/google/go-cmp/cmp"
 	"google.golang.org/grpc"
+	"google.golang.org/protobuf/testing/protocmp"
 
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/protocol"
@@ -248,7 +249,7 @@ func TestFixtureServiceResponses(t *gotesting.T) {
 				rfcl.Send(req)
 				got = append(got, responses())
 			}
-			if diff := cmp.Diff(got, tc.wantResults); diff != "" {
+			if diff := cmp.Diff(got, tc.wantResults, protocmp.Transform()); diff != "" {
 				t.Errorf("Results mismatch (-got +want):\n%v", diff)
 			}
 

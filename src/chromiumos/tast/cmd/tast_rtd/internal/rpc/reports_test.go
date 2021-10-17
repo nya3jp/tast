@@ -15,6 +15,7 @@ import (
 	resultspb "go.chromium.org/chromiumos/config/go/api/test/results/v2"
 	"go.chromium.org/chromiumos/config/go/api/test/rtd/v1"
 	"google.golang.org/grpc"
+	"google.golang.org/protobuf/testing/protocmp"
 
 	"chromiumos/tast/cmd/tast_rtd/internal/fakerts"
 	"chromiumos/tast/cmd/tast_rtd/internal/result"
@@ -264,7 +265,7 @@ func TestReportsServer_ReportResult(t *testing.T) {
 			t.Errorf("ReportResult(ctx, %+v) returned true; wanted false", r)
 		}
 		resultsAtSink := psServer.Results()
-		if diff := cmp.Diff(resultsAtSink[i], expectedResults[i]); diff != "" {
+		if diff := cmp.Diff(resultsAtSink[i], expectedResults[i], protocmp.Transform()); diff != "" {
 			t.Errorf("Got unexpected argument from request %q (-got +want):\n%s", expectedResults[i].Request, diff)
 		}
 	}
@@ -275,7 +276,7 @@ func TestReportsServer_ReportResult(t *testing.T) {
 	}
 	resultsAtSink := psServer.Results()
 	index := len(expectedResults) - 1
-	if diff := cmp.Diff(resultsAtSink[index], expectedResults[index]); diff != "" {
+	if diff := cmp.Diff(resultsAtSink[index], expectedResults[index], protocmp.Transform()); diff != "" {
 		t.Errorf("Got unexpected argument from request %q (-got +want):\n%s", expectedResults[index].Request, diff)
 	}
 }

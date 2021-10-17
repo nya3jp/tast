@@ -14,6 +14,7 @@ import (
 	"github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
+	"google.golang.org/protobuf/testing/protocmp"
 
 	"chromiumos/tast/internal/protocol"
 )
@@ -284,7 +285,7 @@ func TestProto(t *testing.T) {
 			}},
 		},
 	}
-	if diff := cmp.Diff(got, want); diff != "" {
+	if diff := cmp.Diff(got, want, protocmp.Transform()); diff != "" {
 		t.Errorf("Proto mismatch (-got +want):\n%s", diff)
 	}
 }

@@ -21,7 +21,7 @@ import (
 	"time"
 
 	"github.com/google/go-cmp/cmp"
-	"github.com/google/go-cmp/cmp/cmpopts"
+	"google.golang.org/protobuf/testing/protocmp"
 
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/protocol"
@@ -55,7 +55,8 @@ func (r *outputSink) Error(e *protocol.Error) error {
 }
 
 var outputDataCmpOpts = []cmp.Option{
-	cmpopts.IgnoreFields(protocol.Error{}, "Location"),
+	protocmp.Transform(),
+	protocmp.IgnoreFields(&protocol.Error{}, "location"),
 }
 
 func TestLog(t *gotesting.T) {

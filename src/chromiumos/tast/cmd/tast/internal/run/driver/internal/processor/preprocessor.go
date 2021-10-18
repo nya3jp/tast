@@ -46,8 +46,9 @@ type preprocessor struct {
 	diagnose DiagnoseFunc
 	handlers []handler
 
-	stack     []*entityState
-	seenTimes map[string]int
+	stack      []*entityState
+	seenTimes  map[string]int
+	fatalError *fatalError
 }
 
 var (
@@ -250,6 +251,30 @@ func (p *preprocessor) RunEnd(ctx context.Context, runErr error) {
 	for _, h := range p.handlers {
 		h.RunEnd(ctx)
 	}
+
+	// If runErr is *fatalError, save it.
+	var fe *fatalError
+	if errors.As(runErr, &fe) {
+		p.fatalError = fe
+	}
+}
+
+// FatalError returns a fatal error of the overall test execution if any.
+//
+// An error is considered fatal only if it should prevent the caller from
+// retrying test execution any further. An example fatal error is that we've
+// seen more test failures than allowed by the -maxtestfailures flag and should
+// abort test execution immediately.
+//
+// Most errors are considered non-fatal and should be retried, e.g. test bundle
+// crashes. Anyway, regardless of whether a test execution error is fatal or
+// not, it's also reported as a test error so that it is visible in test
+// results.
+func (p *preprocessor) FatalError() error {
+	if p.fatalError == nil {
+		return nil
+	}
+	return p.fatalError
 }
 
 // stateTop returns entityState of the most recently started running entity.

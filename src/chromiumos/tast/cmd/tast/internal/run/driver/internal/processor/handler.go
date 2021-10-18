@@ -70,6 +70,16 @@ func newResult(ei *entityInfo, r *entityResult) (*resultsjson.Result, error) {
 	}, nil
 }
 
+// fatalError is an error returned by handler when it saw a fatal error and the
+// caller should not retry test execution.
+type fatalError struct {
+	*errors.E
+}
+
+func newFatalError(err error) *fatalError {
+	return &fatalError{E: errors.Wrap(err, "terminating test execution")}
+}
+
 type handler interface {
 	RunStart(ctx context.Context) error
 	EntityStart(ctx context.Context, ei *entityInfo) error

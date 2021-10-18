@@ -56,6 +56,10 @@ func TestStreamedResultsHandler(t *testing.T) {
 	proc := processor.New(resDir, logging.NewMultiLogger(), nopDiagnose, nopPull, nil, nil)
 	runProcessor(context.Background(), proc, events, nil)
 
+	if err := proc.FatalError(); err != nil {
+		t.Errorf("Processor had a fatal error: %v", err)
+	}
+
 	b, err := ioutil.ReadFile(filepath.Join(resDir, reporting.StreamedResultsFilename))
 	if err != nil {
 		t.Fatalf("Failed to read %s: %v", reporting.StreamedResultsFilename, err)

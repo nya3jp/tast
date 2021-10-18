@@ -42,6 +42,10 @@ func TestPreprocessor_SameEntity(t *testing.T) {
 	proc := processor.New(resDir, logging.NewMultiLogger(), nopDiagnose, nopPull, nil, nil)
 	runProcessor(context.Background(), proc, events, errors.New("something went wrong"))
 
+	if err := proc.FatalError(); err != nil {
+		t.Errorf("Processor had a fatal error: %v", err)
+	}
+
 	// Output directories are created with suffixes to avoid conflicts.
 	for _, relPath := range []string{
 		"fixtures/fixture",
@@ -73,6 +77,10 @@ func TestPreprocessor_MissingEntityEnd(t *testing.T) {
 
 	proc := processor.New(resDir, logger, nopDiagnose, nopPull, nil, nil)
 	runProcessor(ctx, proc, events, errors.New("something went wrong"))
+
+	if err := proc.FatalError(); err != nil {
+		t.Errorf("Processor had a fatal error: %v", err)
+	}
 
 	// loggingHandler should be notified for artificially generated
 	// EntityEnd events for the two entities.
@@ -119,6 +127,10 @@ func TestPreprocessor_UnmatchedEntityEvent(t *testing.T) {
 			proc := processor.New(resDir, logger, nopDiagnose, nopPull, nil, nil)
 			runProcessor(ctx, proc, events, nil)
 
+			if err := proc.FatalError(); err != nil {
+				t.Errorf("Processor had a fatal error: %v", err)
+			}
+
 			b, err := ioutil.ReadFile(filepath.Join(resDir, "tests/test1/log.txt"))
 			if err != nil {
 				t.Fatalf("Failed to read log.txt: %v", err)
@@ -158,6 +170,10 @@ func TestPreprocessor_Diagnose(t *testing.T) {
 
 	proc := processor.New(resDir, logger, fakeDiagnose, nopPull, nil, nil)
 	runProcessor(ctx, proc, events, errors.New("something went wrong"))
+
+	if err := proc.FatalError(); err != nil {
+		t.Errorf("Processor had a fatal error: %v", err)
+	}
 
 	got := proc.Results()
 	want := []*resultsjson.Result{

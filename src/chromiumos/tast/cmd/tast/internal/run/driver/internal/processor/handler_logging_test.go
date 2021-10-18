@@ -71,6 +71,10 @@ func TestLoggingHandler(t *testing.T) {
 	proc := processor.New(resDir, multiplexer, nopDiagnose, nopPull, nil, nil)
 	runProcessor(ctx, proc, events, nil)
 
+	if err := proc.FatalError(); err != nil {
+		t.Errorf("Processor had a fatal error: %v", err)
+	}
+
 	// Everything is logged via ctx.
 	const wantGlobalLogs = `Started fixture fixture
 [00:00:00.000] This is a log from the fixture
@@ -179,6 +183,10 @@ func TestLoggingHandler_RPCLogs(t *testing.T) {
 
 	proc := processor.New(resDir, multiplexer, nopDiagnose, nopPull, nil, client)
 	runProcessor(ctx, proc, events, nil)
+
+	if err := proc.FatalError(); err != nil {
+		t.Errorf("Processor had a fatal error: %v", err)
+	}
 
 	if got := string(srv.GetLog("test1", "tests/test1/log.txt")); !strings.Contains(got, test1Log) {
 		t.Errorf("Expected log not received for test 1; got %q; should contain %q", got, test1Log)

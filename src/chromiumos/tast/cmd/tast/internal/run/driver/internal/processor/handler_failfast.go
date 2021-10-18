@@ -37,8 +37,7 @@ func (h *failFastHandler) EntityEnd(ctx context.Context, ei *entityInfo, r *enti
 	if len(r.Errors) > 0 {
 		h.counter.Increment()
 		if err := h.counter.Check(); err != nil {
-			// TODO(b/187793617): Suppress retries in this case.
-			return err
+			return newFatalError(err)
 		}
 	}
 	return nil

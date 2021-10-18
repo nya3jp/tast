@@ -209,7 +209,7 @@ func (d *Driver) runLocalTestsOnce(ctx context.Context, tests []*BundleEntity, s
 
 	proc := processor.New(d.cfg.ResDir(), multiplexer, diag, pull, args.Counter, args.Client)
 	d.localClient().RunTests(ctx, bcfg, rcfg, d.cfg.MsgTimeout(), proc)
-	return proc.Results(), nil
+	return proc.Results(), proc.FatalError()
 }
 
 func (d *Driver) runRemoteTests(ctx context.Context, tests []*BundleEntity, args *runTestsArgs) ([]*resultsjson.Result, error) {
@@ -231,7 +231,7 @@ func (d *Driver) runRemoteTestsOnce(ctx context.Context, tests []*BundleEntity, 
 
 	proc := processor.New(d.cfg.ResDir(), multiplexer, nopDiagnose, os.Rename, args.Counter, args.Client)
 	d.remoteClient().RunTests(ctx, bcfg, rcfg, d.cfg.MsgTimeout(), proc)
-	return proc.Results(), nil
+	return proc.Results(), proc.FatalError()
 }
 
 func (d *Driver) newConfigsForLocalTests(tests []*BundleEntity, state *protocol.StartFixtureState, dutInfo *protocol.DUTInfo) (*protocol.BundleConfig, *protocol.RunConfig) {

@@ -50,6 +50,10 @@ func TestRPCResultsHandler_Results(t *testing.T) {
 	proc := processor.New(resDir, logging.NewMultiLogger(), nopDiagnose, nopPull, nil, client)
 	runProcessor(context.Background(), proc, events, nil)
 
+	if err := proc.FatalError(); err != nil {
+		t.Errorf("Processor had a fatal error: %v", err)
+	}
+
 	got := srv.Results()
 	want := []*frameworkprotocol.ReportResultRequest{
 		{
@@ -106,6 +110,10 @@ func TestRPCResultsHandler_Terminate(t *testing.T) {
 
 	proc := processor.New(resDir, logging.NewMultiLogger(), nopDiagnose, nopPull, nil, client)
 	runProcessor(context.Background(), proc, events, nil)
+
+	if err := proc.FatalError(); err == nil {
+		t.Error("Processor did not see fatal errors unexpectedly")
+	}
 
 	got := srv.Results()
 	want := []*frameworkprotocol.ReportResultRequest{

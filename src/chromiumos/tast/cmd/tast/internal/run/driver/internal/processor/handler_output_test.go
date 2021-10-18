@@ -52,6 +52,10 @@ func TestCopyOutputHandler(t *testing.T) {
 	proc := processor.New(resDir, logging.NewMultiLogger(), nopDiagnose, os.Rename, nil, nil)
 	runProcessor(context.Background(), proc, events, nil)
 
+	if err := proc.FatalError(); err != nil {
+		t.Errorf("Processor had a fatal error: %v", err)
+	}
+
 	files, err := testutil.ReadFiles(resDir)
 	if err != nil {
 		t.Fatal(err)

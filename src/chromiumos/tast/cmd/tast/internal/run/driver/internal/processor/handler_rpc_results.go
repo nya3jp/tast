@@ -34,7 +34,9 @@ func (h *rpcResultsHandler) EntityEnd(ctx context.Context, ei *entityInfo, r *en
 	}
 
 	if err := h.client.ReportResult(ctx, result); err != nil {
-		// TODO(b/187793617): Suppress retries in this case.
+		if err == reporting.ErrTerminate {
+			return newFatalError(err)
+		}
 		return err
 	}
 	return nil

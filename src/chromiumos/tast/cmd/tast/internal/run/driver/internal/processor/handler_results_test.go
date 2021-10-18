@@ -39,6 +39,10 @@ func TestResultsHandler(t *testing.T) {
 	proc := processor.New(resDir, logging.NewMultiLogger(), nopDiagnose, nopPull, nil, nil)
 	runProcessor(context.Background(), proc, events, nil)
 
+	if err := proc.FatalError(); err != nil {
+		t.Errorf("Processor had a fatal error: %v", err)
+	}
+
 	got := proc.Results()
 	want := []*resultsjson.Result{
 		{

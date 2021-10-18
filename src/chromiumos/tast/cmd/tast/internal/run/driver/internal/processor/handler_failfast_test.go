@@ -52,6 +52,10 @@ func TestFailFastHandler(t *testing.T) {
 	proc := processor.New(resDir, logging.NewMultiLogger(), nopDiagnose, nopPull, counter, nil)
 	runProcessor(context.Background(), proc, events, nil)
 
+	if err := proc.FatalError(); err == nil {
+		t.Error("Processor did not see fatal errors unexpectedly")
+	}
+
 	got := proc.Results()
 	want := []*resultsjson.Result{
 		{

@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net"
+	"os"
 	"path/filepath"
 	"strings"
 	"time"
@@ -209,6 +210,45 @@ func runTests(ctx context.Context, cfg *config.Config, state *config.State, drv 
 		var cancel xcontext.CancelFunc
 		ctx, cancel = xcontext.WithDeadline(ctx, deadline.Add(-postReserve), errors.Errorf("%v: global timeout reached", context.DeadlineExceeded))
 		defer cancel(context.Canceled)
+	}
+
+	if os.Getenv("TAST_EXP_NEW_DRIVER") == "1" {
+		// Write results and collect system info after testing.
+		defer func() {
+			ctx := postCtx
+			if retErr != nil {
+				// Print the run error message before moving on to writing results.
+				logging.Infof(ctx, "Failed to run tests: %v", retErr)
+			}
+
+			// The DUT might have rebooted during tests. Try reconnecting
+			// before proceeding to CollectSysInfo.
+			if err := drv.ReconnectIfNeeded(ctx); err != nil {
+				logging.Infof(ctx, "Failed to reconnect to DUT: %v", err)
+			}
+
+			// We don't want to bail out before writing test results if sysinfo
+			// collection fails, but we'll still return the error later.
+			if err := drv.CollectSysInfo(ctx, initialSysInfo); err != nil {
+				logging.Infof(ctx, "Failed collecting system info: %v", err)
+				if retErr == nil {
+					retErr = errors.Wrap(err, "failed collecting system info")
+				}
+			}
+
+			if err := reporting.WriteLegacyResults(filepath.Join(cfg.ResDir(), reporting.LegacyResultsFilename), results); err != nil {
+				logging.Infof(ctx, "Failed writing %s: %v", reporting.LegacyResultsFilename, err)
+			}
+
+			if err := reporting.WriteJUnitXMLResults(filepath.Join(cfg.ResDir(), reporting.JUnitXMLFilename), results); err != nil {
+				logging.Infof(ctx, "Failed writing %s: %v", reporting.JUnitXMLFilename, err)
+			}
+
+			complete := retErr == nil
+			reporting.WriteResultsToLogs(ctx, results, cfg.ResDir(), complete)
+		}()
+
+		return drv.RunTests(ctx, shard.Included, dutInfo, state.ReportClient, state.RemoteDevservers)
 	}
 
 	// Write results and collect system info after testing.

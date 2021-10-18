@@ -43,23 +43,18 @@ type BundleEntity = driverdata.BundleEntity
 type Driver struct {
 	cfg *config.Config
 	cc  *target.ConnCache
-
-	conn *target.Conn // always non-nil
 }
 
 // New establishes a new connection to the target device and returns a Driver.
 func New(ctx context.Context, cfg *config.Config, rawTarget string) (*Driver, error) {
 	resolvedTarget := resolveSSHConfig(ctx, rawTarget)
-	cc := target.NewConnCache(cfg, resolvedTarget)
-	conn, err := cc.Conn(ctx)
+	cc, err := target.NewConnCache(ctx, cfg, resolvedTarget)
 	if err != nil {
-		cc.Close(ctx)
 		return nil, err
 	}
 	return &Driver{
-		cfg:  cfg,
-		cc:   cc,
-		conn: conn,
+		cfg: cfg,
+		cc:  cc,
 	}, nil
 }
 
@@ -82,25 +77,21 @@ func (d *Driver) InitBootID() string {
 // SSHConn returns ssh.Conn for the current connection.
 // The return value may change after calling non-getter methods.
 func (d *Driver) SSHConn() *ssh.Conn {
-	return d.conn.SSHConn()
+	return d.cc.Conn().SSHConn()
 }
 
 // Services returns a Services object that owns various services exposed to the
 // target device.
 // The return value may change after calling non-getter methods.
 func (d *Driver) Services() *Services {
-	return d.conn.Services()
+	return d.cc.Conn().Services()
 }
 
 // ReconnectIfNeeded ensures that the current connection is healthy, and
 // otherwise it re-establishes a connection.
 func (d *Driver) ReconnectIfNeeded(ctx context.Context) error {
-	conn, err := d.cc.Conn(ctx)
-	if err != nil {
-		return err
-	}
-	d.conn = conn
-	return nil
+	_, err := d.cc.EnsureConn(ctx)
+	return err
 }
 
 func (d *Driver) localClient() *runnerclient.JSONClient {
@@ -119,7 +110,7 @@ func (d *Driver) localClient() *runnerclient.JSONClient {
 	}
 	args = append(args, d.cfg.LocalRunner())
 
-	cmd := genericexec.CommandSSH(d.conn.SSHConn(), "env", args...)
+	cmd := genericexec.CommandSSH(d.cc.Conn().SSHConn(), "env", args...)
 	params := &protocol.RunnerInitParams{BundleGlob: d.cfg.LocalBundleGlob()}
 	return runnerclient.NewJSONClient(cmd, params, 1)
 }

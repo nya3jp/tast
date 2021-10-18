@@ -26,12 +26,12 @@ func (d *Driver) DownloadPrivateBundles(ctx context.Context) error {
 	logging.Debug(ctx, "Downloading private bundles")
 
 	devservers := append([]string(nil), d.cfg.Devservers()...)
-	if url, ok := d.conn.Services().EphemeralDevserverURL(); ok {
+	if url, ok := d.cc.Conn().Services().EphemeralDevserverURL(); ok {
 		devservers = append(devservers, url)
 	}
 
 	var tlwServer, tlwSelfName string
-	if addr, ok := d.conn.Services().TLWAddr(); ok {
+	if addr, ok := d.cc.Conn().Services().TLWAddr(); ok {
 		tlwServer = addr.String()
 		// TODO: Fix TLW name. Connection spec is not a right choice.
 		tlwSelfName = d.cc.ConnectionSpec()

@@ -16,54 +16,17 @@ import (
 //
 // ConnCache is not goroutine-safe.
 type ConnCache struct {
-	cfg    *config.Config
-	target string
-
-	conn       *Conn
+	cfg        *config.Config
+	target     string
 	initBootID string
+
+	conn *Conn // always non-nil
 }
 
-// NewConnCache creates a new cache. Call Close when it is no longer needed.
-func NewConnCache(cfg *config.Config, target string) *ConnCache {
-	return &ConnCache{cfg: cfg, target: target}
-}
-
-// Close closes a cached connection if any.
-func (cc *ConnCache) Close(ctx context.Context) error {
-	if cc.conn == nil {
-		return nil
-	}
-	err := cc.conn.close(ctx)
-	cc.conn = nil
-	return err
-}
-
-// Conn returns a cached connection to the target if it is available and
-// healthy. Otherwise Conn creates a new connection.
-//
-// Even when ConnCache has a cached connection, getting it with Conn has slight
-// performance hit because it checks the connection health by sending SSH ping.
-// Unless you expect connection drops (e.g. after running test bundles), try to
-// keep using a returned connection. As a corollary, there is nothing wrong with
-// functions taking both ConnCache and ssh.Conn as arguments.
-//
-// Be aware that calling Conn may invalidate a connection previously returned
-// from the function.
-//
-// A connection returned from this function is owned by ConnCache. Do not call
-// its Close.
-func (cc *ConnCache) Conn(ctx context.Context) (conn *Conn, retErr error) {
-	// If we already have a connection, reuse it if it's still open.
-	if cc.conn != nil {
-		err := cc.conn.Healthy(ctx)
-		if err == nil {
-			return cc.conn, nil
-		}
-		logging.Infof(ctx, "Target connection is unhealthy: %v; reconnecting", err)
-		cc.Close(ctx)
-	}
-
-	conn, err := newConn(ctx, cc.cfg, cc.target)
+// NewConnCache establishes a new connection to target and return a ConnCache.
+// Call Close when it is no longer needed.
+func NewConnCache(ctx context.Context, cfg *config.Config, target string) (cc *ConnCache, retErr error) {
+	conn, err := newConn(ctx, cfg, target)
 	if err != nil {
 		return nil, err
 	}
@@ -73,22 +36,64 @@ func (cc *ConnCache) Conn(ctx context.Context) (conn *Conn, retErr error) {
 		}
 	}()
 
-	// If this is the first time to connect to the target, save boot ID for
-	// comparison later.
-	var bootID string
-	if cc.initBootID == "" {
-		bootID, err = linuxssh.ReadBootID(ctx, conn.SSHConn())
-		if err != nil {
-			return nil, err
-		}
+	bootID, err := linuxssh.ReadBootID(ctx, conn.SSHConn())
+	if err != nil {
+		return nil, err
 	}
 
-	cc.conn = conn
-	if cc.initBootID == "" {
-		cc.initBootID = bootID
+	return &ConnCache{
+		cfg:        cfg,
+		target:     target,
+		initBootID: bootID,
+		conn:       conn,
+	}, nil
+}
+
+// Close closes a cached connection.
+func (cc *ConnCache) Close(ctx context.Context) error {
+	err := cc.conn.close(ctx)
+	cc.conn = nil
+	return err
+}
+
+// Conn returns a cached connection to the target.
+//
+// A connection returned from this function is owned by ConnCache. Do not call
+// its Close.
+func (cc *ConnCache) Conn() *Conn {
+	return cc.conn
+}
+
+// EnsureConn returns a cached connection to the target if it is available and
+// healthy. Otherwise EnsureConn creates a new connection.
+//
+// Even when ConnCache has a cached connection, getting it with EnsureConn has
+// slight performance hit because it checks the connection health by sending SSH
+// ping. Unless you expect connection drops (e.g. after running test bundles),
+// use Conn instead to get a cached connection without checking connection
+// health.
+//
+// Be aware that calling EnsureConn may invalidate a connection previously
+// returned from Conn/EnsureConn.
+//
+// A connection returned from this function is owned by ConnCache. Do not call
+// its Close.
+func (cc *ConnCache) EnsureConn(ctx context.Context) (conn *Conn, retErr error) {
+	err := cc.conn.Healthy(ctx)
+	if err == nil {
+		return cc.conn, nil
+	}
+	logging.Infof(ctx, "Target connection is unhealthy: %v; reconnecting", err)
+
+	newConn, err := newConn(ctx, cc.cfg, cc.target)
+	if err != nil {
+		return nil, err
 	}
 
-	return cc.conn, nil
+	cc.conn.close(ctx)
+	cc.conn = newConn
+
+	return newConn, nil
 }
 
 // InitBootID returns a boot ID string obtained on the first successful

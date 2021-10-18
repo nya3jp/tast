@@ -15,6 +15,7 @@ import (
 	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/internal/timing"
+	"chromiumos/tast/internal/usercode"
 )
 
 // fixtureStatus represents a status of a fixture, as well as that of a fixture
@@ -387,7 +388,7 @@ func (f *statefulFixture) RunSetUp(ctx context.Context) error {
 	f.fout.Start(s.OutDir())
 
 	var val interface{}
-	if err := safeCall(ctx, name, f.fixt.SetUpTimeout, f.cfg.GracePeriod(), errorOnPanic(s), func(ctx context.Context) {
+	if err := usercode.SafeCall(ctx, name, f.fixt.SetUpTimeout, f.cfg.GracePeriod(), usercode.ErrorOnPanic(s), func(ctx context.Context) {
 		entityPreCheck(f.fixt.Data, s)
 		if s.HasError() {
 			return
@@ -423,7 +424,7 @@ func (f *statefulFixture) RunTearDown(ctx context.Context) error {
 	s := f.root.NewFixtState()
 	name := fmt.Sprintf("%s:TearDown", f.fixt.Name)
 
-	if err := safeCall(ctx, name, f.fixt.TearDownTimeout, f.cfg.GracePeriod(), errorOnPanic(s), func(ctx context.Context) {
+	if err := usercode.SafeCall(ctx, name, f.fixt.TearDownTimeout, f.cfg.GracePeriod(), usercode.ErrorOnPanic(s), func(ctx context.Context) {
 		f.fixt.Impl.TearDown(ctx, s)
 	}); err != nil {
 		return err
@@ -451,7 +452,7 @@ func (f *statefulFixture) RunReset(ctx context.Context) error {
 		resetErr = fmt.Errorf("panic: %v", val)
 	}
 
-	if err := safeCall(ctx, name, f.fixt.ResetTimeout, f.cfg.GracePeriod(), onPanic, func(ctx context.Context) {
+	if err := usercode.SafeCall(ctx, name, f.fixt.ResetTimeout, f.cfg.GracePeriod(), onPanic, func(ctx context.Context) {
 		resetErr = f.fixt.Impl.Reset(ctx)
 	}); err != nil {
 		return err
@@ -479,7 +480,7 @@ func (f *statefulFixture) RunPreTest(ctx context.Context, troot *testing.TestEnt
 	ctx = f.newTestContext(ctx, troot, troot.LogSink())
 	s := troot.NewFixtTestState(ctx)
 	name := fmt.Sprintf("%s:PreTest", f.fixt.Name)
-	if err := safeCall(ctx, name, f.fixt.PreTestTimeout, defaultGracePeriod, errorOnPanic(s), func(ctx context.Context) {
+	if err := usercode.SafeCall(ctx, name, f.fixt.PreTestTimeout, defaultGracePeriod, usercode.ErrorOnPanic(s), func(ctx context.Context) {
 		f.fixt.Impl.PreTest(ctx, s)
 	}); err != nil {
 		return nil, err
@@ -501,7 +502,7 @@ func (f *statefulFixture) runPostTest(ctx context.Context, troot *testing.TestEn
 	s := troot.NewFixtTestState(ctx)
 	name := fmt.Sprintf("%s:PostTest", f.fixt.Name)
 
-	return safeCall(ctx, name, f.fixt.PostTestTimeout, defaultGracePeriod, errorOnPanic(s), func(ctx context.Context) {
+	return usercode.SafeCall(ctx, name, f.fixt.PostTestTimeout, defaultGracePeriod, usercode.ErrorOnPanic(s), func(ctx context.Context) {
 		f.fixt.Impl.PostTest(ctx, s)
 	})
 }

@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package planner
+// Package usercode provides utilities to interact with user-defined code.
+package usercode
 
 import (
 	"context"
@@ -12,51 +13,51 @@ import (
 	"chromiumos/tast/errors"
 )
 
-const defaultGracePeriod = 30 * time.Second // default recommended grace period for safeCall
+// PanicHandler specifies how to handle panics in SafeCall.
+type PanicHandler func(val interface{})
 
-// panicHandler specifies how to handle panics in safeCall.
-type panicHandler func(val interface{})
-
-type errorReporter interface {
+// ErrorReporter is the interface for reporting errors. It is implemented by
+// testing.State and its sibling types.
+type ErrorReporter interface {
 	Error(args ...interface{})
 }
 
-// errorOnPanic returns a panicHandler that reports a panic via e.
-func errorOnPanic(e errorReporter) panicHandler {
+// ErrorOnPanic returns a PanicHandler that reports a panic via e.
+func ErrorOnPanic(e ErrorReporter) PanicHandler {
 	return func(val interface{}) {
 		e.Error("Panic: ", val)
 	}
 }
 
-// safeCall runs a function f on a goroutine to protect callers from its
+// SafeCall runs a function f on a goroutine to protect callers from its
 // possible bad behavior.
 //
-// safeCall calls f with a context having a specified timeout. If f does not
-// return before the timeout, safeCall further waits for gracePeriod to allow
+// SafeCall calls f with a context having a specified timeout. If f does not
+// return before the timeout, SafeCall further waits for gracePeriod to allow
 // some clean up. If f does not return after timeout + gracePeriod or ctx is
-// canceled before f finishes, safeCall abandons the goroutine and immediately
+// canceled before f finishes, SafeCall abandons the goroutine and immediately
 // returns an error. name is included in an error message to explain which user
 // code did not return.
 //
-// If f panics, safeCall calls a panic handler ph to handle it. safeCall will
+// If f panics, SafeCall calls a panic handler ph to handle it. SafeCall will
 // not call ph if it decides to abandon f, even if f panics later.
 //
 // If f calls runtime.Goexit, it is handled just like the function returns
 // normally.
 //
-// safeCall returns an error only if execution of f was abandoned for some
+// SafeCall returns an error only if execution of f was abandoned for some
 // reasons (e.g. f ignored the timeout, ctx was canceled). In other cases, it
 // returns nil.
-func safeCall(ctx context.Context, name string, timeout, gracePeriod time.Duration, ph panicHandler, f func(ctx context.Context)) error {
+func SafeCall(ctx context.Context, name string, timeout, gracePeriod time.Duration, ph PanicHandler, f func(ctx context.Context)) error {
 	// Two goroutines race for a token below.
 	// The main goroutine attempts to take a token when it sees timeout
-	// or context cancellation. If it successfully takes a token, safeCall
+	// or context cancellation. If it successfully takes a token, SafeCall
 	// returns immediately without waiting for f to finish, and ph will
 	// never be called.
 	// A background goroutine attempts to take a token when it finishes
 	// calling f. If it successfully takes a token, it calls recover and
 	// ph (if it recovered from a panic). Until the goroutine finishes
-	// safeCall will not return.
+	// SafeCall will not return.
 
 	var token uintptr
 	// takeToken returns true if it is called first time.
@@ -74,7 +75,7 @@ func safeCall(ctx context.Context, name string, timeout, gracePeriod time.Durati
 			// Always call recover to avoid crashing the process.
 			val := recover()
 
-			// If the main goroutine already returned from safeCall, do not call ph.
+			// If the main goroutine already returned from SafeCall, do not call ph.
 			if !takeToken() {
 				return
 			}
@@ -92,7 +93,7 @@ func safeCall(ctx context.Context, name string, timeout, gracePeriod time.Durati
 		f(ctx)
 	}()
 
-	// Block returning from safeCall if the background goroutine is still calling ph.
+	// Block returning from SafeCall if the background goroutine is still calling ph.
 	defer func() {
 		if !takeToken() {
 			<-done

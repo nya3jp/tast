@@ -25,6 +25,7 @@ import (
 	"context"
 
 	"chromiumos/tast/cmd/tast/internal/run/driver/internal/bundleclient"
+	"chromiumos/tast/cmd/tast/internal/run/driver/internal/failfast"
 	"chromiumos/tast/cmd/tast/internal/run/driver/internal/runnerclient"
 	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
 	"chromiumos/tast/internal/logging"
@@ -59,13 +60,14 @@ var (
 // resDir is a path to the directory where test execution results are written.
 // multiplexer should be a MultiLogger attached to the context passed to
 // Processor method calls.
-func New(resDir string, multiplexer *logging.MultiLogger, diagnose DiagnoseFunc, pull PullFunc) *Processor {
+func New(resDir string, multiplexer *logging.MultiLogger, diagnose DiagnoseFunc, pull PullFunc, counter *failfast.Counter) *Processor {
 	resultsHandler := newResultsHandler()
 	preprocessor := newPreprocessor(resDir, diagnose, []handler{
 		newLoggingHandler(multiplexer),
 		newTimingHandler(),
 		resultsHandler,
 		newStreamedResultsHandler(resDir),
+		newFailFastHandler(counter),
 		// copyOutputHandler should come last as it can block RunEnd for a while.
 		newCopyOutputHandler(pull),
 	})

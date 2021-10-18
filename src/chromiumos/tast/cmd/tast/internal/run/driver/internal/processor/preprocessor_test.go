@@ -39,7 +39,7 @@ func TestPreprocessor_SameEntity(t *testing.T) {
 		&protocol.EntityEndEvent{Time: epochpb, EntityName: "fixture"},
 	}
 
-	proc := processor.New(resDir, logging.NewMultiLogger(), nopDiagnose, nopPull)
+	proc := processor.New(resDir, logging.NewMultiLogger(), nopDiagnose, nopPull, nil)
 	runProcessor(context.Background(), proc, events, errors.New("something went wrong"))
 
 	// Output directories are created with suffixes to avoid conflicts.
@@ -71,7 +71,7 @@ func TestPreprocessor_MissingEntityEnd(t *testing.T) {
 	logger := logging.NewMultiLogger()
 	ctx := logging.AttachLogger(context.Background(), logger)
 
-	proc := processor.New(resDir, logger, nopDiagnose, nopPull)
+	proc := processor.New(resDir, logger, nopDiagnose, nopPull, nil)
 	runProcessor(ctx, proc, events, errors.New("something went wrong"))
 
 	// loggingHandler should be notified for artificially generated
@@ -116,7 +116,7 @@ func TestPreprocessor_UnmatchedEntityEvent(t *testing.T) {
 			logger := logging.NewMultiLogger()
 			ctx := logging.AttachLogger(context.Background(), logger)
 
-			proc := processor.New(resDir, logger, nopDiagnose, nopPull)
+			proc := processor.New(resDir, logger, nopDiagnose, nopPull, nil)
 			runProcessor(ctx, proc, events, nil)
 
 			b, err := ioutil.ReadFile(filepath.Join(resDir, "tests/test1/log.txt"))
@@ -156,7 +156,7 @@ func TestPreprocessor_Diagnose(t *testing.T) {
 	logger := logging.NewMultiLogger()
 	ctx := logging.AttachLogger(context.Background(), logger)
 
-	proc := processor.New(resDir, logger, fakeDiagnose, nopPull)
+	proc := processor.New(resDir, logger, fakeDiagnose, nopPull, nil)
 	runProcessor(ctx, proc, events, errors.New("something went wrong"))
 
 	got := proc.Results()

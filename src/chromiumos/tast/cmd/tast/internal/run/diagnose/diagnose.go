@@ -14,40 +14,52 @@ import (
 	"strings"
 	"time"
 
-	"chromiumos/tast/cmd/tast/internal/run/driver"
 	"chromiumos/tast/internal/linuxssh"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/testingutil"
+	"chromiumos/tast/ssh"
 )
+
+// ConnCache is an interface satisfied by driver.Driver. The interface avoids
+// circular dependencies between diagnose and driver.
+//
+// TODO(b/187793617): Move this package to driver/internal/ and replace this
+// interface with target.ConnCache once the driver package becomes the only
+// importer of this package.
+type ConnCache interface {
+	InitBootID() string
+	SSHConn() *ssh.Conn
+	ReconnectIfNeeded(ctx context.Context) error
+}
 
 // SSHDrop diagnoses a SSH connection drop during local test runs
 // and returns a diagnosis message. Files useful for diagnosis might be saved
 // under outDir.
-func SSHDrop(ctx context.Context, drv *driver.Driver, outDir string) string {
-	if drv.InitBootID() == "" {
+func SSHDrop(ctx context.Context, cc ConnCache, outDir string) string {
+	if cc.InitBootID() == "" {
 		return "failed to diagnose: initial boot_id is not available"
 	}
 
 	logging.Info(ctx, "Reconnecting to diagnose lost SSH connection")
 	const reconnectTimeout = time.Minute
 	if err := testingutil.Poll(ctx, func(ctx context.Context) error {
-		return drv.ReconnectIfNeeded(ctx)
+		return cc.ReconnectIfNeeded(ctx)
 	}, &testingutil.PollOptions{Timeout: reconnectTimeout}); err != nil {
 		return fmt.Sprint("target did not come back: ", err)
 	}
 
 	// Compare boot_id to see if the target rebooted.
-	bootID, err := linuxssh.ReadBootID(ctx, drv.SSHConn())
+	bootID, err := linuxssh.ReadBootID(ctx, cc.SSHConn())
 	if err != nil {
 		return fmt.Sprint("failed to diagnose: failed to read boot_id: ", err)
 	}
 
-	if bootID == drv.InitBootID() {
+	if bootID == cc.InitBootID() {
 		return "target did not reboot, probably network issue"
 	}
 
 	// Target rebooted.
-	return diagnoseReboot(ctx, drv, outDir)
+	return diagnoseReboot(ctx, cc, outDir)
 }
 
 var (
@@ -69,11 +81,11 @@ var (
 // diagnoseReboot diagnoses the target reboot during local test runs
 // and returns a diagnosis message. Files useful for diagnosis might be saved
 // under outDir.
-func diagnoseReboot(ctx context.Context, drv *driver.Driver, outDir string) string {
-	conn := drv.SSHConn()
+func diagnoseReboot(ctx context.Context, cc ConnCache, outDir string) string {
+	conn := cc.SSHConn()
 
 	// Read the unified system log just before the reboot.
-	denseBootID := strings.Replace(drv.InitBootID(), "-", "", -1)
+	denseBootID := strings.Replace(cc.InitBootID(), "-", "", -1)
 	out, err := conn.CommandContext(ctx, "croslog", "--quiet", "--boot="+denseBootID, "--lines=1000").Output()
 	if err != nil {
 		logging.Info(ctx, "Failed to execute croslog command: ", err)

@@ -16,8 +16,10 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/driver"
 	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
 	"chromiumos/tast/cmd/tast/internal/run/runtest"
+	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/internal/testing/testfixture"
+	"chromiumos/tast/internal/usercode"
 )
 
 // resultsCmpOpts is a common options used to compare []resultsjson.Result.
@@ -208,6 +210,133 @@ func TestDriver_RunTests_RemoteFixture(t *gotesting.T) {
 				Fixture: "fixture.Remote1",
 			},
 		},
+	}
+	if diff := cmp.Diff(got, want, resultsCmpOpts...); diff != "" {
+		t.Errorf("Results mismatch (-got +want):\n%s", diff)
+	}
+}
+
+func TestDriver_RunTests_RetryTests(t *gotesting.T) {
+	bundleLocal := testing.NewRegistry("bundle")
+	for _, name := range []string{"test.Local1", "test.Local2", "test.Local3"} {
+		bundleLocal.AddTestInstance(&testing.TestInstance{
+			Name:    name,
+			Timeout: time.Minute,
+			Func: func(ctx context.Context, s *testing.State) {
+				// Simulate a test bundle crash.
+				usercode.ForceErrorForTesting(errors.New("intentional crash"))
+			},
+		})
+	}
+	bundleRemote := testing.NewRegistry("bundle")
+
+	env := runtest.SetUp(
+		t,
+		runtest.WithLocalBundles(bundleLocal),
+		runtest.WithRemoteBundles(bundleRemote),
+	)
+	ctx := env.Context()
+	cfg := env.Config(nil)
+
+	drv, err := driver.New(ctx, cfg, cfg.Target())
+	if err != nil {
+		t.Fatalf("driver.New failed: %v", err)
+	}
+	defer drv.Close(ctx)
+
+	tests, err := drv.ListMatchedTests(ctx, nil)
+	if err != nil {
+		t.Fatalf("ListMatchedTests failed: %v", err)
+	}
+
+	got, err := drv.RunTests(ctx, tests, nil, nil, nil)
+	if err != nil {
+		t.Errorf("RunTests failed: %v", err)
+	}
+
+	want := []*resultsjson.Result{
+		{
+			Test: resultsjson.Test{
+				Name:   "test.Local1",
+				Bundle: "bundle",
+			},
+			Errors: []resultsjson.Error{{Reason: "intentional crash (see log for goroutine dump)"}},
+		},
+		{
+			Test: resultsjson.Test{
+				Name:   "test.Local2",
+				Bundle: "bundle",
+			},
+			Errors: []resultsjson.Error{{Reason: "intentional crash (see log for goroutine dump)"}},
+		},
+		{
+			Test: resultsjson.Test{
+				Name:   "test.Local3",
+				Bundle: "bundle",
+			},
+			Errors: []resultsjson.Error{{Reason: "intentional crash (see log for goroutine dump)"}},
+		},
+	}
+	if diff := cmp.Diff(got, want, resultsCmpOpts...); diff != "" {
+		t.Errorf("Results mismatch (-got +want):\n%s", diff)
+	}
+}
+
+func TestDriver_RunTests_MaxTestFailures(t *gotesting.T) {
+	bundleLocal := testing.NewRegistry("bundle")
+	for _, name := range []string{"test.Local1", "test.Local2", "test.Local3"} {
+		bundleLocal.AddTestInstance(&testing.TestInstance{
+			Name:    name,
+			Timeout: time.Minute,
+			Func: func(ctx context.Context, s *testing.State) {
+				s.Error("Failure")
+			},
+		})
+	}
+	bundleRemote := testing.NewRegistry("bundle")
+
+	env := runtest.SetUp(
+		t,
+		runtest.WithLocalBundles(bundleLocal),
+		runtest.WithRemoteBundles(bundleRemote),
+	)
+	ctx := env.Context()
+	cfg := env.Config(func(cfg *config.MutableConfig) {
+		cfg.MaxTestFailures = 2
+	})
+
+	drv, err := driver.New(ctx, cfg, cfg.Target())
+	if err != nil {
+		t.Fatalf("driver.New failed: %v", err)
+	}
+	defer drv.Close(ctx)
+
+	tests, err := drv.ListMatchedTests(ctx, nil)
+	if err != nil {
+		t.Fatalf("ListMatchedTests failed: %v", err)
+	}
+
+	got, err := drv.RunTests(ctx, tests, nil, nil, nil)
+	if err == nil {
+		t.Error("RunTests unexpectedly succeeded")
+	}
+
+	want := []*resultsjson.Result{
+		{
+			Test: resultsjson.Test{
+				Name:   "test.Local1",
+				Bundle: "bundle",
+			},
+			Errors: []resultsjson.Error{{Reason: "Failure"}},
+		},
+		{
+			Test: resultsjson.Test{
+				Name:   "test.Local2",
+				Bundle: "bundle",
+			},
+			Errors: []resultsjson.Error{{Reason: "Failure"}},
+		},
+		// Third test is missing.
 	}
 	if diff := cmp.Diff(got, want, resultsCmpOpts...); diff != "" {
 		t.Errorf("Results mismatch (-got +want):\n%s", diff)

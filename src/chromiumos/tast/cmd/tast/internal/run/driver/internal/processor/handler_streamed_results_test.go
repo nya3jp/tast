@@ -53,7 +53,7 @@ func TestStreamedResultsHandler(t *testing.T) {
 		&protocol.EntityEndEvent{Time: epochpb, EntityName: "fixture"},
 	}
 
-	proc := processor.New(resDir, logging.NewMultiLogger(), nopPull)
+	proc := processor.New(resDir, logging.NewMultiLogger(), nopDiagnose, nopPull)
 	runProcessor(context.Background(), proc, events, nil)
 
 	b, err := ioutil.ReadFile(filepath.Join(resDir, reporting.StreamedResultsFilename))

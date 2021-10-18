@@ -13,7 +13,11 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
+
 	"chromiumos/tast/cmd/tast/internal/run/driver/internal/processor"
+	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/protocol"
@@ -35,7 +39,7 @@ func TestPreprocessor_SameEntity(t *testing.T) {
 		&protocol.EntityEndEvent{Time: epochpb, EntityName: "fixture"},
 	}
 
-	proc := processor.New(resDir, logging.NewMultiLogger(), nopPull)
+	proc := processor.New(resDir, logging.NewMultiLogger(), nopDiagnose, nopPull)
 	runProcessor(context.Background(), proc, events, errors.New("something went wrong"))
 
 	// Output directories are created with suffixes to avoid conflicts.
@@ -67,7 +71,7 @@ func TestPreprocessor_MissingEntityEnd(t *testing.T) {
 	logger := logging.NewMultiLogger()
 	ctx := logging.AttachLogger(context.Background(), logger)
 
-	proc := processor.New(resDir, logger, nopPull)
+	proc := processor.New(resDir, logger, nopDiagnose, nopPull)
 	runProcessor(ctx, proc, events, errors.New("something went wrong"))
 
 	// loggingHandler should be notified for artificially generated
@@ -112,7 +116,7 @@ func TestPreprocessor_UnmatchedEntityEvent(t *testing.T) {
 			logger := logging.NewMultiLogger()
 			ctx := logging.AttachLogger(context.Background(), logger)
 
-			proc := processor.New(resDir, logger, nopPull)
+			proc := processor.New(resDir, logger, nopDiagnose, nopPull)
 			runProcessor(ctx, proc, events, nil)
 
 			b, err := ioutil.ReadFile(filepath.Join(resDir, "tests/test1/log.txt"))
@@ -126,5 +130,55 @@ func TestPreprocessor_UnmatchedEntityEvent(t *testing.T) {
 				t.Errorf("Log doesn't contain an expected message: got %q, want %q", got, want)
 			}
 		})
+	}
+}
+
+func TestPreprocessor_Diagnose(t *testing.T) {
+	resDir := t.TempDir()
+
+	fakeDiagnose := func(ctx context.Context, outDir string) string {
+		wantDir := filepath.Join(resDir, "tests/test2")
+		if outDir != wantDir {
+			t.Errorf("fakeDiagnose: Unexpected output directory: got %q, want %q", outDir, wantDir)
+		}
+		return "detailed diagnosis"
+	}
+
+	events := []protocol.Event{
+		// First test starts and passes.
+		&protocol.EntityStartEvent{Time: epochpb, Entity: &protocol.Entity{Name: "test1"}},
+		&protocol.EntityEndEvent{Time: epochpb, EntityName: "test1"},
+		// Second test starts.
+		&protocol.EntityStartEvent{Time: epochpb, Entity: &protocol.Entity{Name: "test2"}},
+		// Test runner crashes.
+	}
+
+	logger := logging.NewMultiLogger()
+	ctx := logging.AttachLogger(context.Background(), logger)
+
+	proc := processor.New(resDir, logger, fakeDiagnose, nopPull)
+	runProcessor(ctx, proc, events, errors.New("something went wrong"))
+
+	got := proc.Results()
+	want := []*resultsjson.Result{
+		{
+			Test:   resultsjson.Test{Name: "test1"},
+			OutDir: filepath.Join(resDir, "tests", "test1"),
+		},
+		{
+			Test:   resultsjson.Test{Name: "test2"},
+			OutDir: filepath.Join(resDir, "tests", "test2"),
+			Errors: []resultsjson.Error{
+				{Reason: "detailed diagnosis"},
+				{Reason: "Test did not finish"},
+			},
+		},
+	}
+	resultCmpOpts := []cmp.Option{
+		cmpopts.IgnoreFields(resultsjson.Result{}, "Start", "End"),
+		cmpopts.IgnoreFields(resultsjson.Error{}, "Time"),
+	}
+	if diff := cmp.Diff(got, want, resultCmpOpts...); diff != "" {
+		t.Fatalf("Results mismatch (-got +want):\n%s", diff)
 	}
 }

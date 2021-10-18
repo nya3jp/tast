@@ -58,3 +58,8 @@ func nopPull(src, dst string) error {
 	}
 	return os.MkdirAll(dst, 0755)
 }
+
+// nopDiagnose is a DiagnoseFunc that does nothing.
+func nopDiagnose(ctx context.Context, outDir string) string {
+	return ""
+}

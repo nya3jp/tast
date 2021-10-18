@@ -43,6 +43,7 @@ func (s *entityState) EntityInfo() *entityInfo {
 // See the comments in processor.go for details.
 type preprocessor struct {
 	resDir   string
+	diagnose DiagnoseFunc
 	handlers []handler
 
 	stack     []*entityState
@@ -54,9 +55,10 @@ var (
 	_ bundleclient.RunFixtureOutput = &preprocessor{}
 )
 
-func newPreprocessor(resDir string, handlers []handler) *preprocessor {
+func newPreprocessor(resDir string, diagnose DiagnoseFunc, handlers []handler) *preprocessor {
 	return &preprocessor{
 		resDir:    resDir,
+		diagnose:  diagnose,
 		handlers:  handlers,
 		seenTimes: make(map[string]int),
 	}
@@ -197,8 +199,18 @@ func (p *preprocessor) RunLog(ctx context.Context, ev *protocol.RunLogEvent) err
 
 func (p *preprocessor) RunEnd(ctx context.Context, runErr error) {
 	if runErr != nil {
-		// TODO: Run diagnosis
 		msg := fmt.Sprintf("Got global error: %v", runErr)
+
+		// Run diagnosis and replace the error message if it could give a more
+		// detailed explanation.
+		diagDir := p.resDir
+		if len(p.stack) > 0 {
+			diagDir = p.stateTop().FinalOutDir
+		}
+		if diagMsg := p.diagnose(ctx, diagDir); diagMsg != "" {
+			msg = diagMsg
+		}
+
 		logging.Info(ctx, msg)
 
 		// Attribute a run failure to the most recently started entity.

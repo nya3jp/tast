@@ -22,11 +22,20 @@
 package processor
 
 import (
+	"context"
+
 	"chromiumos/tast/cmd/tast/internal/run/driver/internal/bundleclient"
 	"chromiumos/tast/cmd/tast/internal/run/driver/internal/runnerclient"
 	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
 	"chromiumos/tast/internal/logging"
 )
+
+// DiagnoseFunc is a function called after a run error is encountered while
+// reading test results to get additional information about the cause of the
+// error. An empty string should be returned if additional information is
+// unavailable.
+// outDir is a path to a directory where extra output files can be written.
+type DiagnoseFunc func(ctx context.Context, outDir string) string
 
 // PullFunc is a function that pulls test output files to the local file system.
 // It should be passed to processor.New to specify how to pull output files.
@@ -50,9 +59,9 @@ var (
 // resDir is a path to the directory where test execution results are written.
 // multiplexer should be a MultiLogger attached to the context passed to
 // Processor method calls.
-func New(resDir string, multiplexer *logging.MultiLogger, pull PullFunc) *Processor {
+func New(resDir string, multiplexer *logging.MultiLogger, diagnose DiagnoseFunc, pull PullFunc) *Processor {
 	resultsHandler := newResultsHandler()
-	preprocessor := newPreprocessor(resDir, []handler{
+	preprocessor := newPreprocessor(resDir, diagnose, []handler{
 		newLoggingHandler(multiplexer),
 		newTimingHandler(),
 		resultsHandler,

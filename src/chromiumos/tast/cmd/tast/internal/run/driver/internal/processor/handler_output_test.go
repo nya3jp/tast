@@ -49,7 +49,7 @@ func TestCopyOutputHandler(t *testing.T) {
 		&protocol.EntityEndEvent{Time: epochpb, EntityName: "fixture"},
 	}
 
-	proc := processor.New(resDir, logging.NewMultiLogger(), os.Rename)
+	proc := processor.New(resDir, logging.NewMultiLogger(), nopDiagnose, os.Rename)
 	runProcessor(context.Background(), proc, events, nil)
 
 	files, err := testutil.ReadFiles(resDir)

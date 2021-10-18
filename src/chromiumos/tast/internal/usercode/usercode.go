@@ -66,6 +66,7 @@ func SafeCall(ctx context.Context, name string, timeout, gracePeriod time.Durati
 	}
 
 	done := make(chan struct{}) // closed when the background goroutine finishes
+	var callErr error           // an error to be returned by a user function call
 
 	// Start a background goroutine that calls into the user code.
 	go func() {
@@ -75,17 +76,35 @@ func SafeCall(ctx context.Context, name string, timeout, gracePeriod time.Durati
 			// Always call recover to avoid crashing the process.
 			val := recover()
 
-			// If the main goroutine already returned from SafeCall, do not call ph.
-			if !takeToken() {
+			// Declare that the user function finished.
+			// If the timeout was already reached, return immediately.
+			if finishWins := takeToken(); !finishWins {
 				return
 			}
 
-			// If we recovered from a panic, call ph. Note that we must call
-			// ph on this goroutine to include the panic location in the
-			// stack trace.
-			if val != nil {
+			// If the timeout is not reached yet, proceed with panic handling.
+			// The main goroutine waits this handling to complete.
+			callErr = func() error {
+				// If the user code didn't panic, return success.
+				if val == nil {
+					return nil
+				}
+
+				// Handle forced errors.
+				if fe, ok := val.(forcedError); ok {
+					return fe.err
+				}
+
+				// Call ph to handle panic. Note that we must call ph on
+				// this goroutine to include the panic location in the
+				// stack trace.
 				ph(val)
-			}
+
+				// Always returning nil here is a bit weird, but we don't
+				// have a use case of PanicHandler returning errors as of
+				// today.
+				return nil
+			}()
 		}()
 
 		ctx, cancel := context.WithTimeout(ctx, timeout)
@@ -93,23 +112,41 @@ func SafeCall(ctx context.Context, name string, timeout, gracePeriod time.Durati
 		f(ctx)
 	}()
 
-	// Block returning from SafeCall if the background goroutine is still calling ph.
-	defer func() {
-		if !takeToken() {
-			<-done
-		}
-	}()
-
 	// Allow f to clean up after timeout for gracePeriod.
 	tm := time.NewTimer(timeout + gracePeriod)
 	defer tm.Stop()
 
-	select {
-	case <-done:
-		return nil
-	case <-tm.C:
-		return errors.Errorf("%s did not return on timeout", name)
-	case <-ctx.Done():
-		return ctx.Err()
+	// Wait until the user function call finishes or the timeout is reached.
+	waitErr := func() error {
+		select {
+		case <-done:
+			return nil
+		case <-tm.C:
+			return errors.Errorf("%s did not return on timeout", name)
+		case <-ctx.Done():
+			return ctx.Err()
+		}
+	}()
+
+	// Declare that the timeout was reached.
+	if timeoutWins := takeToken(); timeoutWins {
+		return waitErr
 	}
+
+	// If the user function call was already finished, wait for the panic
+	// handling to complete and return its result.
+	<-done
+	return callErr
+}
+
+type forcedError struct {
+	err error
+}
+
+// ForceErrorForTesting always panics. If the current function is called by
+// SafeCall, it forces SafeCall to return an error.
+// This function is to be used by unit tests which want to simulate SafeCall
+// errors reliably.
+func ForceErrorForTesting(err error) {
+	panic(forcedError{err})
 }

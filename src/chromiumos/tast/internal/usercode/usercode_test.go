@@ -11,6 +11,7 @@ import (
 	"testing"
 	"time"
 
+	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/usercode"
 )
 
@@ -113,5 +114,15 @@ func TestSafeCallPanicAfterAbandon(t *testing.T) {
 		panic("panicking")
 	}); err == nil {
 		t.Fatal("SafeCall returned success on timeout")
+	}
+}
+
+func TestSafeCallForceErrorForTesting(t *testing.T) {
+	myError := errors.New("my error")
+
+	if err := usercode.SafeCall(context.Background(), "", time.Hour, 0, failOnPanic(t), func(ctx context.Context) {
+		usercode.ForceErrorForTesting(myError)
+	}); err != myError {
+		t.Errorf("SafeCall: %v; want %v", err, myError)
 	}
 }

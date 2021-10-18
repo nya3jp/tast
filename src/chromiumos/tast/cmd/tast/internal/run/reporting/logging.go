@@ -65,4 +65,14 @@ func WriteResultsToLogs(ctx context.Context, results []*resultsjson.Result, resD
 			}
 		}
 	}
+
+	if !complete {
+		// If the run didn't finish, log an additional message after the individual results
+		// to make it clearer that all is not well.
+		logging.Info(ctx, "")
+		logging.Info(ctx, "Run did not finish successfully; results are incomplete")
+	}
+
+	logging.Info(ctx, sep)
+	logging.Info(ctx, "Results saved to ", resDir)
 }

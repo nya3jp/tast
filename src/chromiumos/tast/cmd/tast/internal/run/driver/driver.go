@@ -10,8 +10,10 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"path/filepath"
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
+	"chromiumos/tast/cmd/tast/internal/run/driver/internal/bundleclient"
 	"chromiumos/tast/cmd/tast/internal/run/driver/internal/runnerclient"
 	"chromiumos/tast/cmd/tast/internal/run/driver/internal/sshconfig"
 	"chromiumos/tast/cmd/tast/internal/run/driver/internal/target"
@@ -119,6 +121,11 @@ func (d *Driver) remoteClient() *runnerclient.JSONClient {
 	cmd := genericexec.CommandExec(d.cfg.RemoteRunner())
 	params := &protocol.RunnerInitParams{BundleGlob: d.cfg.RemoteBundleGlob()}
 	return runnerclient.NewJSONClient(cmd, params, 0)
+}
+
+func (d *Driver) remoteBundleClient(bundle string) *bundleclient.Client {
+	cmd := genericexec.CommandExec(filepath.Join(d.cfg.RemoteBundleDir(), bundle))
+	return bundleclient.New(cmd)
 }
 
 func resolveSSHConfig(ctx context.Context, target string) string {

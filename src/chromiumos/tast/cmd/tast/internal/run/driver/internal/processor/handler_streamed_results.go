@@ -7,7 +7,6 @@ package processor
 import (
 	"context"
 	"path/filepath"
-	"strings"
 
 	"chromiumos/tast/cmd/tast/internal/run/reporting"
 	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
@@ -58,32 +57,12 @@ func (h *streamedResultsHandler) EntityEnd(ctx context.Context, ei *entityInfo, 
 		return nil
 	}
 
-	t, err := resultsjson.NewTest(ei.Entity)
+	result, err := newResult(ei, r)
 	if err != nil {
 		return err
 	}
-	var errors []resultsjson.Error
-	for _, e := range r.Errors {
-		errors = append(errors, resultsjson.Error{
-			Time:   e.Time,
-			Reason: e.Error.GetReason(),
-			File:   e.Error.GetLocation().GetFile(),
-			Line:   int(e.Error.GetLocation().GetLine()),
-			Stack:  e.Error.GetLocation().GetStack(),
-		})
-	}
-	var skipReason string
-	if r.Skip != nil {
-		skipReason = strings.Join(r.Skip.Reasons, ", ")
-	}
-	return h.writer.Write(&resultsjson.Result{
-		Test:       *t,
-		Start:      r.Start,
-		End:        r.End,
-		OutDir:     ei.FinalOutDir,
-		Errors:     errors,
-		SkipReason: skipReason,
-	}, true)
+
+	return h.writer.Write(result, true)
 }
 
 func (h *streamedResultsHandler) RunEnd(ctx context.Context) {

@@ -6,10 +6,8 @@ package processor
 
 import (
 	"context"
-	"strings"
 
 	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
-	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/protocol"
 )
 
@@ -37,29 +35,11 @@ func (h *resultsHandler) EntityEnd(ctx context.Context, ei *entityInfo, r *entit
 		return nil
 	}
 
-	test, err := resultsjson.NewTest(ei.Entity)
+	result, err := newResult(ei, r)
 	if err != nil {
-		logging.Info(ctx, "Failed converting protocol.Entity to resultsjson.Test: ", err)
+		return err
 	}
 
-	var errors []resultsjson.Error
-	for _, e := range r.Errors {
-		errors = append(errors, resultsjson.Error{
-			Time:   e.Time,
-			Reason: e.Error.GetReason(),
-			File:   e.Error.GetLocation().GetFile(),
-			Line:   int(e.Error.GetLocation().GetLine()),
-			Stack:  e.Error.GetLocation().GetStack(),
-		})
-	}
-
-	h.results = append(h.results, &resultsjson.Result{
-		Test:       *test,
-		Errors:     errors,
-		Start:      r.Start,
-		End:        r.End,
-		OutDir:     ei.FinalOutDir,
-		SkipReason: strings.Join(r.Skip.GetReasons(), ", "),
-	})
+	h.results = append(h.results, result)
 	return nil
 }

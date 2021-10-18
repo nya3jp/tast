@@ -6,8 +6,11 @@ package processor
 
 import (
 	"context"
+	"strings"
 	"time"
 
+	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
+	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/protocol"
 )
 
@@ -34,6 +37,37 @@ type entityResult struct {
 	Skip      *protocol.Skip
 	Errors    []*errorEntry
 	TimingLog *protocol.TimingLog
+}
+
+func newResult(ei *entityInfo, r *entityResult) (*resultsjson.Result, error) {
+	if ei.Entity.GetType() != protocol.EntityType_TEST {
+		return nil, errors.Errorf("BUG: cannot create result for %v", ei.Entity.GetType())
+	}
+
+	test, err := resultsjson.NewTest(ei.Entity)
+	if err != nil {
+		return nil, err
+	}
+
+	var es []resultsjson.Error
+	for _, e := range r.Errors {
+		es = append(es, resultsjson.Error{
+			Time:   e.Time,
+			Reason: e.Error.GetReason(),
+			File:   e.Error.GetLocation().GetFile(),
+			Line:   int(e.Error.GetLocation().GetLine()),
+			Stack:  e.Error.GetLocation().GetStack(),
+		})
+	}
+
+	return &resultsjson.Result{
+		Test:       *test,
+		Errors:     es,
+		Start:      r.Start,
+		End:        r.End,
+		OutDir:     ei.FinalOutDir,
+		SkipReason: strings.Join(r.Skip.GetReasons(), ", "),
+	}, nil
 }
 
 type handler interface {

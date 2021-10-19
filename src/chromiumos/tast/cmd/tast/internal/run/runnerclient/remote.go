@@ -97,7 +97,7 @@ func runRemoteTestsOnce(ctx context.Context, cfg *config.Config, state *config.S
 				Patterns:          patterns,
 				DataDir:           cfg.RemoteDataDir(),
 				OutDir:            cfg.RemoteOutDir(),
-				Target:            cfg.Target(),
+				ConnectionSpec:    cfg.Target(), // TODO(b/200213384): This is wrong.
 				KeyFile:           cfg.KeyFile(),
 				KeyDir:            cfg.KeyDir(),
 				TastPath:          exe,

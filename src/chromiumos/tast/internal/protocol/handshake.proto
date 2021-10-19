@@ -72,8 +72,8 @@ message DUTConfig {
 
 // SSHConfig contains information needed to connect to the DUT via SSH.
 message SSHConfig {
-  // Target is a connection spec as [<user>@]host[:<port>].
-  string target = 1;
+  // ConnectionSpec is a connection spec as [<user>@]host[:<port>].
+  string connection_spec = 1;
   // KeyFile is a path to the SSH private key to use to connect to the target.
   string key_file = 2;
   // KeyDir is a path to the directory containing SSH private keys

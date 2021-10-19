@@ -314,8 +314,8 @@ func runFixtureAndTests(ctx context.Context, cfg *config.Config, drv *driver.Dri
 						TestVars:          cfg.TestVars(),
 						DataDir:           cfg.RemoteDataDir(),
 						OutDir:            cfg.RemoteOutDir(),
-						TempDir:           "", // empty for fixture service to create it
-						Target:            cfg.Target(),
+						TempDir:           "",           // empty for fixture service to create it
+						ConnectionSpec:    cfg.Target(), // TODO(b/200213384): This is wrong.
 						KeyFile:           cfg.KeyFile(),
 						KeyDir:            cfg.KeyDir(),
 						LocalBundleDir:    cfg.LocalBundleDir(),

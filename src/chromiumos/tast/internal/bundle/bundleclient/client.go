@@ -44,7 +44,7 @@ func (c *Client) TestService() protocol.TestServiceClient {
 func New(ctx context.Context, target *protocol.TargetDevice, name string, hr *protocol.HandshakeRequest) (_ *Client, retErr error) {
 	var opts ssh.Options
 	scfg := target.GetDutConfig().GetSshConfig()
-	if err := ssh.ParseTarget(scfg.GetTarget(), &opts); err != nil {
+	if err := ssh.ParseTarget(scfg.GetConnectionSpec(), &opts); err != nil {
 		return nil, err
 	}
 	opts.ConnectTimeout = 10 * time.Second
@@ -53,7 +53,7 @@ func New(ctx context.Context, target *protocol.TargetDevice, name string, hr *pr
 
 	hst, err := ssh.New(ctx, &opts)
 	if err != nil {
-		return nil, errors.Wrapf(err, "connecting to %s", scfg.GetTarget())
+		return nil, errors.Wrapf(err, "connecting to %s", scfg.GetConnectionSpec())
 	}
 	defer func() {
 		if retErr != nil {

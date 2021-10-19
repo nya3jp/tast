@@ -231,8 +231,8 @@ func TestRunTestsRemoteData(t *gotesting.T) {
 				PrimaryTarget: &protocol.TargetDevice{
 					DutConfig: &protocol.DUTConfig{
 						SshConfig: &protocol.SSHConfig{
-							Target:  td.Srvs[0].Addr().String(),
-							KeyFile: td.UserKeyFile,
+							ConnectionSpec: td.Srvs[0].Addr().String(),
+							KeyFile:        td.UserKeyFile,
 						},
 					},
 					BundleDir: "/mock/local/bundles",
@@ -252,9 +252,10 @@ func TestRunTestsRemoteData(t *gotesting.T) {
 
 	// The test should have access to information related to remote tests.
 	expMeta := &testing.Meta{
-		Target:   hr.BundleInitParams.BundleConfig.PrimaryTarget.DutConfig.SshConfig.Target,
-		TastPath: hr.BundleInitParams.BundleConfig.MetaTestConfig.TastPath,
-		RunFlags: hr.BundleInitParams.BundleConfig.MetaTestConfig.RunFlags,
+		Target:         hr.BundleInitParams.BundleConfig.PrimaryTarget.DutConfig.SshConfig.ConnectionSpec,
+		TastPath:       hr.BundleInitParams.BundleConfig.MetaTestConfig.TastPath,
+		RunFlags:       hr.BundleInitParams.BundleConfig.MetaTestConfig.RunFlags,
+		ConnectionSpec: hr.BundleInitParams.BundleConfig.PrimaryTarget.DutConfig.SshConfig.ConnectionSpec,
 	}
 	if diff := cmp.Diff(meta, expMeta); diff != "" {
 		t.Errorf("Meta mismtach; (-got +want)\n%v", diff)
@@ -475,7 +476,7 @@ func TestRunTestsRemoteCantConnect(t *gotesting.T) {
 				PrimaryTarget: &protocol.TargetDevice{
 					DutConfig: &protocol.DUTConfig{
 						SshConfig: &protocol.SSHConfig{
-							Target: td.Srvs[0].Addr().String(),
+							ConnectionSpec: td.Srvs[0].Addr().String(),
 							// KeyFile is missing.
 						},
 					},
@@ -530,8 +531,8 @@ func TestRunTestsRemoteDUT(t *gotesting.T) {
 				PrimaryTarget: &protocol.TargetDevice{
 					DutConfig: &protocol.DUTConfig{
 						SshConfig: &protocol.SSHConfig{
-							Target:  td.Srvs[0].Addr().String(),
-							KeyFile: td.UserKeyFile,
+							ConnectionSpec: td.Srvs[0].Addr().String(),
+							KeyFile:        td.UserKeyFile,
 						},
 					},
 				},
@@ -579,8 +580,8 @@ func TestRunTestsRemoteReconnectBetweenTests(t *gotesting.T) {
 				PrimaryTarget: &protocol.TargetDevice{
 					DutConfig: &protocol.DUTConfig{
 						SshConfig: &protocol.SSHConfig{
-							Target:  td.Srvs[0].Addr().String(),
-							KeyFile: td.UserKeyFile,
+							ConnectionSpec: td.Srvs[0].Addr().String(),
+							KeyFile:        td.UserKeyFile,
 						},
 					},
 				},
@@ -618,8 +619,8 @@ func TestRunTestsRemoteBeforeReboot(t *gotesting.T) {
 				PrimaryTarget: &protocol.TargetDevice{
 					DutConfig: &protocol.DUTConfig{
 						SshConfig: &protocol.SSHConfig{
-							Target:  td.Srvs[0].Addr().String(),
-							KeyFile: td.UserKeyFile,
+							ConnectionSpec: td.Srvs[0].Addr().String(),
+							KeyFile:        td.UserKeyFile,
 						},
 					},
 				},
@@ -686,16 +687,16 @@ func TestRunTestsRemoteCompanionDUTs(t *gotesting.T) {
 				PrimaryTarget: &protocol.TargetDevice{
 					DutConfig: &protocol.DUTConfig{
 						SshConfig: &protocol.SSHConfig{
-							Target:  td.Srvs[0].Addr().String(),
-							KeyFile: td.UserKeyFile,
+							ConnectionSpec: td.Srvs[0].Addr().String(),
+							KeyFile:        td.UserKeyFile,
 						},
 					},
 				},
 				CompanionDuts: map[string]*protocol.DUTConfig{
 					role: {
 						SshConfig: &protocol.SSHConfig{
-							Target:  td.Srvs[1].Addr().String(),
-							KeyFile: td.UserKeyFile,
+							ConnectionSpec: td.Srvs[1].Addr().String(),
+							KeyFile:        td.UserKeyFile,
 						},
 					},
 				},

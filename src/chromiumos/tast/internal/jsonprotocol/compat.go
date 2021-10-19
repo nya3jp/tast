@@ -177,7 +177,7 @@ func BundleRunTestsArgsFromProto(bcfg *protocol.BundleConfig, rcfg *protocol.Run
 	}
 	companionDUTs := make(map[string]string)
 	for name, dutCfg := range bcfg.GetCompanionDuts() {
-		companionDUTs[name] = dutCfg.GetSshConfig().GetTarget()
+		companionDUTs[name] = dutCfg.GetSshConfig().GetConnectionSpec()
 	}
 	var setupErrors []string
 	for _, e := range rcfg.GetStartFixtureState().GetErrors() {
@@ -189,7 +189,7 @@ func BundleRunTestsArgsFromProto(bcfg *protocol.BundleConfig, rcfg *protocol.Run
 		DataDir:           rcfg.GetDirs().GetDataDir(),
 		OutDir:            rcfg.GetDirs().GetOutDir(),
 		TempDir:           rcfg.GetDirs().GetTempDir(),
-		Target:            bcfg.GetPrimaryTarget().GetDutConfig().GetSshConfig().GetTarget(),
+		ConnectionSpec:    bcfg.GetPrimaryTarget().GetDutConfig().GetSshConfig().GetConnectionSpec(),
 		KeyFile:           bcfg.GetPrimaryTarget().GetDutConfig().GetSshConfig().GetKeyFile(),
 		KeyDir:            bcfg.GetPrimaryTarget().GetDutConfig().GetSshConfig().GetKeyDir(),
 		TastPath:          bcfg.GetMetaTestConfig().GetTastPath(),

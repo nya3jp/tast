@@ -207,9 +207,9 @@ type BundleRunTestsArgs struct {
 	// TempDir is the path to the directory under which temporary files for tests are written.
 	TempDir string `json:"tempDir,omitempty"`
 
-	// Target is the DUT connection spec as [<user>@]host[:<port>].
+	// ConnectionSpec is the DUT connection spec as [<user>@]host[:<port>].
 	// It is only relevant for remote tests.
-	Target string `json:"target,omitempty"`
+	ConnectionSpec string `json:"target,omitempty"`
 	// KeyFile is the path to the SSH private key to use to connect to the DUT.
 	// It is only relevant for remote tests.
 	KeyFile string `json:"keyFile,omitempty"`
@@ -265,18 +265,18 @@ type BundleRunTestsArgs struct {
 func (a *BundleRunTestsArgs) Proto() (*protocol.RunConfig, *protocol.BundleConfig) {
 	var bundleConfig *protocol.BundleConfig
 	var tlwSelfName string
-	// We consider that BundleRunTestsArgs is for remote tests if Target is
+	// We consider that BundleRunTestsArgs is for remote tests if ConnectionSpec is
 	// non-empty.
-	if a.Target == "" {
+	if a.ConnectionSpec == "" {
 		tlwSelfName = a.DUTName
 	} else {
 		companionDUTs := make(map[string]*protocol.DUTConfig)
 		for role, addr := range a.CompanionDUTs {
 			companionDUTs[role] = &protocol.DUTConfig{
 				SshConfig: &protocol.SSHConfig{
-					Target:  addr,
-					KeyFile: a.KeyFile,
-					KeyDir:  a.KeyDir,
+					ConnectionSpec: addr,
+					KeyFile:        a.KeyFile,
+					KeyDir:         a.KeyDir,
 				},
 			}
 		}
@@ -284,9 +284,9 @@ func (a *BundleRunTestsArgs) Proto() (*protocol.RunConfig, *protocol.BundleConfi
 			PrimaryTarget: &protocol.TargetDevice{
 				DutConfig: &protocol.DUTConfig{
 					SshConfig: &protocol.SSHConfig{
-						Target:  a.Target,
-						KeyFile: a.KeyFile,
-						KeyDir:  a.KeyDir,
+						ConnectionSpec: a.ConnectionSpec,
+						KeyFile:        a.KeyFile,
+						KeyDir:         a.KeyDir,
 					},
 					TlwName: a.DUTName,
 				},

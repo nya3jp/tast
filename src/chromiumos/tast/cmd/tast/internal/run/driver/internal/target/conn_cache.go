@@ -97,7 +97,7 @@ func (cc *ConnCache) InitBootID() string {
 	return cc.initBootID
 }
 
-// Target returns a connection spec as [<user>@]host[:<port>].
-func (cc *ConnCache) Target() string {
+// ConnectionSpec returns a connection spec as [<user>@]host[:<port>].
+func (cc *ConnCache) ConnectionSpec() string {
 	return cc.target
 }

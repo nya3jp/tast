@@ -93,9 +93,9 @@ func TestRemoteRun(t *gotesting.T) {
 			BundleDir: cfg.LocalBundleDir(),
 			DutConfig: &protocol.DUTConfig{
 				SshConfig: &protocol.SSHConfig{
-					Target:  cfg.Target(),
-					KeyFile: cfg.KeyFile(),
-					KeyDir:  cfg.KeyDir(),
+					ConnectionSpec: cfg.Target(),
+					KeyFile:        cfg.KeyFile(),
+					KeyDir:         cfg.KeyDir(),
 				},
 				TlwName: cfg.Target(),
 			},

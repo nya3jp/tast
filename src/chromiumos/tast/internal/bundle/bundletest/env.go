@@ -148,9 +148,9 @@ func (e *Env) DialRemoteBundle(ctx context.Context, t *testing.T, name string) *
 					PrimaryTarget: &protocol.TargetDevice{
 						DutConfig: &protocol.DUTConfig{
 							SshConfig: &protocol.SSHConfig{
-								Target:  e.PrimaryServer(),
-								KeyFile: filepath.Join(e.rootDir, keyFile),
-								KeyDir:  e.rootDir,
+								ConnectionSpec: e.PrimaryServer(),
+								KeyFile:        filepath.Join(e.rootDir, keyFile),
+								KeyDir:         e.rootDir,
 							},
 						},
 						BundleDir: e.LocalBundleDir(),

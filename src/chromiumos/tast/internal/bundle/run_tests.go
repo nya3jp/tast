@@ -192,12 +192,12 @@ func (ew *eventWriter) EntityEnd(ei *protocol.Entity, skipReasons []string, timi
 }
 
 // connectToTarget connects to the target DUT and returns its connection.
-func connectToTarget(ctx context.Context, target, keyFile, keyDir string, beforeReboot func(context.Context, *dut.DUT) error) (_ *dut.DUT, retErr error) {
-	if target == "" {
-		return nil, errors.New("target not supplied")
+func connectToTarget(ctx context.Context, spec, keyFile, keyDir string, beforeReboot func(context.Context, *dut.DUT) error) (_ *dut.DUT, retErr error) {
+	if spec == "" {
+		return nil, errors.New("connection spec not supplied")
 	}
 
-	dt, err := dut.New(target, keyFile, keyDir, beforeReboot)
+	dt, err := dut.New(spec, keyFile, keyDir, beforeReboot)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create connection: %v", err)
 	}
@@ -290,7 +290,7 @@ func setUpConnection(ctx context.Context, scfg *StaticConfig, cfg *protocol.RunC
 
 	logging.Info(ctx, "Connecting to DUT")
 	sshCfg := pt.GetDutConfig().GetSshConfig()
-	dt, err := connectToTarget(ctx, sshCfg.GetTarget(), sshCfg.GetKeyFile(), sshCfg.GetKeyDir(), scfg.beforeReboot)
+	dt, err := connectToTarget(ctx, sshCfg.GetConnectionSpec(), sshCfg.GetKeyFile(), sshCfg.GetKeyDir(), scfg.beforeReboot)
 	if err != nil {
 		return nil, command.NewStatusErrorf(statusError, "failed to connect to DUT: %v", err)
 	}
@@ -303,9 +303,9 @@ func setUpConnection(ctx context.Context, scfg *StaticConfig, cfg *protocol.RunC
 	companionDUTs := make(map[string]*dut.DUT)
 	for role, dut := range bcfg.GetCompanionDuts() {
 		sshCfg := dut.GetSshConfig()
-		d, err := connectToTarget(ctx, sshCfg.GetTarget(), sshCfg.GetKeyFile(), sshCfg.GetKeyDir(), scfg.beforeReboot)
+		d, err := connectToTarget(ctx, sshCfg.GetConnectionSpec(), sshCfg.GetKeyFile(), sshCfg.GetKeyDir(), scfg.beforeReboot)
 		if err != nil {
-			return nil, command.NewStatusErrorf(statusError, "failed to connect to companion DUT %v: %v", sshCfg.GetTarget(), err)
+			return nil, command.NewStatusErrorf(statusError, "failed to connect to companion DUT %v: %v", sshCfg.GetConnectionSpec(), err)
 		}
 		defer func() {
 			if retErr != nil {
@@ -317,9 +317,10 @@ func setUpConnection(ctx context.Context, scfg *StaticConfig, cfg *protocol.RunC
 	return &connectionEnv{
 		&testing.RemoteData{
 			Meta: &testing.Meta{
-				TastPath: bcfg.GetMetaTestConfig().GetTastPath(),
-				Target:   sshCfg.GetTarget(),
-				RunFlags: bcfg.GetMetaTestConfig().GetRunFlags(),
+				TastPath:       bcfg.GetMetaTestConfig().GetTastPath(),
+				Target:         sshCfg.GetConnectionSpec(),
+				RunFlags:       bcfg.GetMetaTestConfig().GetRunFlags(),
+				ConnectionSpec: sshCfg.GetConnectionSpec(),
 			},
 			RPCHint:       testing.NewRPCHint(pt.GetBundleDir(), cfg.GetFeatures().GetInfra().GetVars()),
 			DUT:           dt,

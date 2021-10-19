@@ -524,7 +524,7 @@ func WifiIntel() Condition {
 		// NB: Devices in the "scarlet" family use the platform name "gru", so
 		// "gru" is being used here to represent "scarlet" devices.
 		platformCondition := SkipOnPlatform(
-			"asurada", "bob", "cherry", "elm", "fievel", "gru", "grunt", "hana", "jacuzzi",
+			"asurada", "bob", "cherry", "elm", "fievel", "gru", "grunt", "hana", "herobrine", "jacuzzi",
 			"kevin", "kukui", "oak", "strongbad", "tiger", "trogdor", "trogdor-kernelnext",
 		)
 		if satisfied, reason, err := platformCondition.Satisfied(f); err != nil || !satisfied {

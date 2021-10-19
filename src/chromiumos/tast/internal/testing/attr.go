@@ -238,32 +238,36 @@ Tests in this group are not used for build verification.
 		Desc:     `A group of tests for firmware (AP, EC, GSC)`,
 		Subattrs: []*attr{
 			{
+				Name: "firmware_bios",
+				Desc: `A group of tests that test the AP firmware. Equivalent to autotest suite:faft_bios & suite:faft_bios_ro_qual & suite:faft_bios_rw_qual.`,
+			},
+			{
+				Name: "firmware_ccd",
+				Desc: `Indicates a test which requires a servo with CCD. I.e. A servo_v4 or equivalent.`,
+			},
+			{
 				Name: "firmware_cr50",
 				Desc: `Indicates that this is a test of the Google Security Chip firmware (Cr50).`,
-			},
-			{
-				Name: "firmware_experimental",
-				Desc: `Firmware tests that might break the DUTs in the lab.`,
-			},
-			{
-				Name: "firmware_unstable",
-				Desc: `Firmware tests that are not yet stabilized, but won't break DUTs.`,
-			},
-			{
-				Name: "firmware_smoke",
-				Desc: `A group of tests that exercise the basic firmware testing libraries. Equivalent to autotest suite:faft_smoke.`,
 			},
 			{
 				Name: "firmware_ec",
 				Desc: `A group of tests that test the EC firmware. Equivalent to autotest suite:faft_ec & suite:faft_ec_fw_qual.`,
 			},
 			{
+				Name: "firmware_experimental",
+				Desc: `Firmware tests that might break the DUTs in the lab.`,
+			},
+			{
 				Name: "firmware_slow",
 				Desc: `A group of tests that takes a very long time to run.`,
 			},
 			{
-				Name: "firmware_ccd",
-				Desc: `Indicates a test which requires a servo with CCD. I.e. A servo_v4 or equivalent.`,
+				Name: "firmware_smoke",
+				Desc: `A group of tests that exercise the basic firmware testing libraries. Equivalent to autotest suite:faft_smoke.`,
+			},
+			{
+				Name: "firmware_unstable",
+				Desc: `Firmware tests that are not yet stabilized, but won't break DUTs.`,
 			},
 			{
 				Name: "firmware_usb",

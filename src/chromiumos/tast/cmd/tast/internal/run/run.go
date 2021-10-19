@@ -212,7 +212,7 @@ func runTests(ctx context.Context, cfg *config.Config, state *config.State, drv 
 		defer cancel(context.Canceled)
 	}
 
-	if os.Getenv("TAST_EXP_NEW_DRIVER") == "1" {
+	if os.Getenv("TAST_EXP_NEW_DRIVER") != "0" {
 		// Write results and collect system info after testing.
 		defer func() {
 			ctx := postCtx

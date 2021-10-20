@@ -68,9 +68,9 @@ func (d *Driver) Close(ctx context.Context) error {
 	return d.cc.Close(ctx)
 }
 
-// ConnectionSpec returns a connection spec as [<user>@]host[:<port>].
-func (d *Driver) ConnectionSpec() string {
-	return d.cc.ConnectionSpec()
+// Target returns a connection spec as [<user>@]host[:<port>].
+func (d *Driver) Target() string {
+	return d.cc.Target()
 }
 
 // InitBootID returns a boot ID string obtained on the first successful

@@ -155,7 +155,7 @@ errors, including the failure of an individual test.
 			true, "wait until DUT is ready before running tests")
 
 		if scfg.Type == RemoteRunner {
-			flags.StringVar(&args.RunTests.BundleArgs.ConnectionSpec, "target",
+			flags.StringVar(&args.RunTests.BundleArgs.Target, "target",
 				"", "DUT connection spec as \"[<user>@]host[:<port>]\"")
 			flags.StringVar(&args.RunTests.BundleArgs.KeyFile, "keyfile",
 				"", "path to SSH private key to use for connecting to DUT")

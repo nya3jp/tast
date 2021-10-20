@@ -33,8 +33,7 @@ func (d *Driver) DownloadPrivateBundles(ctx context.Context) error {
 	var tlwServer, tlwSelfName string
 	if addr, ok := d.conn.Services().TLWAddr(); ok {
 		tlwServer = addr.String()
-		// TODO: Fix TLW name. Connection spec is not a right choice.
-		tlwSelfName = d.cc.ConnectionSpec()
+		tlwSelfName = d.cc.Target()
 	}
 
 	req := &protocol.DownloadPrivateBundlesRequest{

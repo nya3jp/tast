@@ -133,8 +133,8 @@ func TestFixtureServiceResponses(t *gotesting.T) {
 				Push: &RunFixturePushRequest{
 					Name: "fake",
 					Config: &RunFixtureConfig{
-						ConnectionSpec: td.Srvs[0].Addr().String(),
-						KeyFile:        td.UserKeyFile,
+						Target:  td.Srvs[0].Addr().String(),
+						KeyFile: td.UserKeyFile,
 					},
 				},
 			},
@@ -270,9 +270,9 @@ func TestFixtureServiceParameters(t *gotesting.T) {
 	defer os.RemoveAll(tmpDir)
 
 	cfg := &RunFixtureConfig{
-		TempDir:        filepath.Join(tmpDir, "tmp"),
-		ConnectionSpec: td.Srvs[0].Addr().String(),
-		KeyFile:        td.UserKeyFile,
+		TempDir: filepath.Join(tmpDir, "tmp"),
+		Target:  td.Srvs[0].Addr().String(),
+		KeyFile: td.UserKeyFile,
 
 		OutDir:         filepath.Join(tmpDir, "out"),
 		TestVars:       map[string]string{"var": "value"},
@@ -358,9 +358,9 @@ func TestFixtureServiceDefaultTempDir(t *gotesting.T) {
 	// If TempDir is not set, fixture service should create a temporary
 	// directory for fixtures to use, and remove it after the pop operation.
 	cfg := &RunFixtureConfig{
-		TempDir:        "",
-		ConnectionSpec: td.Srvs[0].Addr().String(),
-		KeyFile:        td.UserKeyFile,
+		TempDir: "",
+		Target:  td.Srvs[0].Addr().String(),
+		KeyFile: td.UserKeyFile,
 	}
 
 	origTempDir := os.TempDir()
@@ -450,9 +450,9 @@ func TestFixtureServiceNoSuchFixture(t *gotesting.T) {
 			Push: &RunFixturePushRequest{
 				Name: "noSuchFixture",
 				Config: &RunFixtureConfig{
-					OutDir:         tmpDir,
-					ConnectionSpec: td.Srvs[0].Addr().String(),
-					KeyFile:        td.UserKeyFile,
+					OutDir:  tmpDir,
+					Target:  td.Srvs[0].Addr().String(),
+					KeyFile: td.UserKeyFile,
 				},
 			},
 		},
@@ -494,7 +494,7 @@ func TestFixtureServiceTimeout(t *gotesting.T) {
 				Config: &RunFixtureConfig{
 					TempDir:           tmpDir,
 					OutDir:            tmpDir,
-					ConnectionSpec:    td.Srvs[0].Addr().String(),
+					Target:            td.Srvs[0].Addr().String(),
 					KeyFile:           td.UserKeyFile,
 					CustomGracePeriod: ptypes.DurationProto(time.Millisecond),
 				},
@@ -521,8 +521,8 @@ func TestFixtureServiceWrongRequestOrder(t *gotesting.T) {
 			Push: &RunFixturePushRequest{
 				Name: "fake",
 				Config: &RunFixtureConfig{
-					ConnectionSpec: td.Srvs[0].Addr().String(),
-					KeyFile:        td.UserKeyFile,
+					Target:  td.Srvs[0].Addr().String(),
+					KeyFile: td.UserKeyFile,
 				},
 			},
 		},

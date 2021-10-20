@@ -53,8 +53,8 @@ message RunFixtureConfig {
   // fixtures are written.
   string temp_dir = 4;
 
-  // ConnectionSpec is the DUT connection spec as [<user>@]host[:<port>].
-  string connection_spec = 5;
+  // Target is the DUT connection spec as [<user>@]host[:<port>].
+  string target = 5;
   // KeyFile is the path to the SSH private key to use to connect to the DUT.
   string key_file = 6;
   // KeyDir is the directory containing SSH private keys (typically $HOME/.ssh).

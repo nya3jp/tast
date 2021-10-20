@@ -44,10 +44,8 @@ func TestDriver(t *testing.T) {
 		}
 	}()
 
-	// TODO: Mock SSH config resolution. If localhost is in the config, this
-	// check can fail.
-	if spec := drv.ConnectionSpec(); spec != cfg.Target() {
-		t.Errorf("ConnectionSpec() = %q; want %q", spec, cfg.Target())
+	if target := drv.Target(); target != cfg.Target() {
+		t.Errorf("Target() = %q; want %q", target, cfg.Target())
 	}
 	if bootID := drv.InitBootID(); bootID != fakeBootID {
 		t.Errorf("InitBootID() = %q; want %q", bootID, fakeBootID)

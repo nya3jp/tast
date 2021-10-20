@@ -56,12 +56,9 @@ type Meta struct {
 	// TastPath contains the absolute path to the tast executable.
 	TastPath string
 	// Target contains information about the DUT as "[<user>@]host[:<port>]".
-	// DEPRECATED: Use ConnectionSpec instead.
 	Target string
 	// Flags contains flags that should be passed to the tast command's "list" and "run" subcommands.
 	RunFlags []string
-	// ConnectionSpec contains information about the DUT as "[<user>@]host[:<port>]".
-	ConnectionSpec string
 }
 
 // clone returns a deep copy of m.

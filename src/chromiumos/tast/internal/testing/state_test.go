@@ -650,12 +650,7 @@ func TestVars(t *gotesting.T) {
 }
 
 func TestMeta(t *gotesting.T) {
-	meta := testing.Meta{
-		TastPath:       "/foo/bar",
-		Target:         "example.net",
-		RunFlags:       []string{"-foo", "-bar"},
-		ConnectionSpec: "example.net",
-	}
+	meta := testing.Meta{TastPath: "/foo/bar", Target: "example.net", RunFlags: []string{"-foo", "-bar"}}
 	getMeta := func(test *testing.TestInstance, cfg *testing.RuntimeConfig) (meta *testing.Meta, ok bool) {
 		var out outputSink
 		root := testing.NewTestEntityRoot(test, cfg, &out)

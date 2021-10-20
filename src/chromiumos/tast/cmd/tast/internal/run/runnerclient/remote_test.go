@@ -78,7 +78,7 @@ func TestRemoteRun(t *gotesting.T) {
 		},
 	}
 
-	results, err := RunRemoteTests(ctx, cfg, state, dutInfo)
+	results, err := RunRemoteTests(ctx, cfg, state, dutInfo, cfg.Target())
 	if err != nil {
 		t.Errorf("RunRemoteTests failed: %v", err)
 	}
@@ -183,7 +183,7 @@ func TestRemoteRunCopyOutput(t *gotesting.T) {
 	cfg := env.Config(nil)
 	state := env.State()
 
-	if _, err := RunRemoteTests(ctx, cfg, state, nil); err != nil {
+	if _, err := RunRemoteTests(ctx, cfg, state, nil, cfg.Target()); err != nil {
 		t.Fatalf("RunRemoteTests failed: %v", err)
 	}
 
@@ -219,7 +219,7 @@ func TestRemoteMaxFailures(t *gotesting.T) {
 	})
 	state := env.State()
 
-	results, err := RunRemoteTests(ctx, cfg, state, nil)
+	results, err := RunRemoteTests(ctx, cfg, state, nil, cfg.Target())
 	if err == nil {
 		t.Error("RunRemoteTests passed unexpectedly")
 	}

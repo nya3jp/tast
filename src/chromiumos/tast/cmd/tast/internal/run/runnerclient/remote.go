@@ -23,7 +23,7 @@ import (
 )
 
 // RunRemoteTests runs the remote test runner and reads its output.
-func RunRemoteTests(ctx context.Context, cfg *config.Config, state *config.State, dutInfo *protocol.DUTInfo) ([]*resultsjson.Result, error) {
+func RunRemoteTests(ctx context.Context, cfg *config.Config, state *config.State, dutInfo *protocol.DUTInfo, spec string) ([]*resultsjson.Result, error) {
 	ctx, st := timing.Start(ctx, "run_remote_tests")
 	defer st.End()
 
@@ -35,7 +35,7 @@ func RunRemoteTests(ctx context.Context, cfg *config.Config, state *config.State
 	defer os.Remove(cfg.RemoteOutDir())
 
 	runTests := func(ctx context.Context, patterns []string) (results []*resultsjson.Result, unstarted []string, err error) {
-		return runRemoteTestsOnce(ctx, cfg, state, dutInfo, patterns)
+		return runRemoteTestsOnce(ctx, cfg, state, dutInfo, spec, patterns)
 	}
 	beforeRetry := func(ctx context.Context) bool { return true }
 
@@ -59,7 +59,7 @@ func RunRemoteTests(ctx context.Context, cfg *config.Config, state *config.State
 // Results from started tests and the names of tests that should have been
 // started but weren't (in the order in which they should've been run) are
 // returned.
-func runRemoteTestsOnce(ctx context.Context, cfg *config.Config, state *config.State, dutInfo *protocol.DUTInfo, patterns []string) (results []*resultsjson.Result, unstarted []string, err error) {
+func runRemoteTestsOnce(ctx context.Context, cfg *config.Config, state *config.State, dutInfo *protocol.DUTInfo, spec string, patterns []string) (results []*resultsjson.Result, unstarted []string, err error) {
 	ctx, st := timing.Start(ctx, "run_remote_tests_once")
 	defer st.End()
 
@@ -97,7 +97,7 @@ func runRemoteTestsOnce(ctx context.Context, cfg *config.Config, state *config.S
 				Patterns:          patterns,
 				DataDir:           cfg.RemoteDataDir(),
 				OutDir:            cfg.RemoteOutDir(),
-				ConnectionSpec:    cfg.Target(), // TODO(b/200213384): This is wrong.
+				ConnectionSpec:    spec,
 				KeyFile:           cfg.KeyFile(),
 				KeyDir:            cfg.KeyDir(),
 				TastPath:          exe,

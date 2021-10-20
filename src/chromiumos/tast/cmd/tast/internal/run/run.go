@@ -243,7 +243,7 @@ func runTests(ctx context.Context, cfg *config.Config, state *config.State, drv 
 		return results, err
 	}
 
-	rres, err := runnerclient.RunRemoteTests(ctx, cfg, state, dutInfo)
+	rres, err := runnerclient.RunRemoteTests(ctx, cfg, state, dutInfo, drv.ConnectionSpec())
 	results = append(results, rres...)
 	return results, err
 }

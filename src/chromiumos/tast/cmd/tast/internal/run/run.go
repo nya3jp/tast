@@ -21,10 +21,10 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/devserver"
 	"chromiumos/tast/cmd/tast/internal/run/driver"
+	"chromiumos/tast/cmd/tast/internal/run/olddriver"
 	"chromiumos/tast/cmd/tast/internal/run/prepare"
 	"chromiumos/tast/cmd/tast/internal/run/reporting"
 	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
-	"chromiumos/tast/cmd/tast/internal/run/runnerclient"
 	"chromiumos/tast/cmd/tast/internal/run/sharding"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/logging"
@@ -266,7 +266,7 @@ func runTests(ctx context.Context, cfg *config.Config, state *config.State, drv 
 			logging.Infof(ctx, "Failed to reconnect to DUT: %v", err)
 		}
 
-		if err := runnerclient.WriteResults(ctx, cfg, state, results, initialSysInfo, complete, drv); err != nil {
+		if err := olddriver.WriteResults(ctx, cfg, state, results, initialSysInfo, complete, drv); err != nil {
 			if retErr == nil {
 				retErr = errors.Wrap(err, "failed to write results")
 			} else {
@@ -275,7 +275,7 @@ func runTests(ctx context.Context, cfg *config.Config, state *config.State, drv 
 		}
 	}()
 
-	lres, err := runnerclient.RunLocalTests(ctx, cfg, state, dutInfo, drv)
+	lres, err := olddriver.RunLocalTests(ctx, cfg, state, dutInfo, drv)
 	results = append(results, lres...)
 	if err != nil {
 		// TODO(derat): While test runners are always supposed to report success even if tests fail,
@@ -283,7 +283,7 @@ func runTests(ctx context.Context, cfg *config.Config, state *config.State, drv 
 		return results, err
 	}
 
-	rres, err := runnerclient.RunRemoteTests(ctx, cfg, state, dutInfo, drv.ConnectionSpec())
+	rres, err := olddriver.RunRemoteTests(ctx, cfg, state, dutInfo, drv.ConnectionSpec())
 	results = append(results, rres...)
 	return results, err
 }

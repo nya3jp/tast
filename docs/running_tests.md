@@ -178,7 +178,7 @@ DUT:
 
 ```shell
 stop ui
-rm -rf /var/lib/whitelist '/home/chronos/Local State'
+rm -rf /var/lib/devicesettings '/home/chronos/Local State'
 start ui
 ```
 ## Googlers Only: Running tests on a leased DUT from the lab

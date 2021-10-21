@@ -6,7 +6,11 @@ package check
 
 import (
 	"fmt"
+	"go/ast"
+	"go/token"
 	"testing"
+
+	"go.chromium.org/tast/cmd/tast-lint/internal/git"
 )
 
 const declTestPath = "src/chromiumos/tast/local/bundles/cros/example/do_stuff.go"
@@ -30,7 +34,7 @@ func init() {
 }
 `
 	f, fs := parse(code, declTestPath)
-	issues := TestDeclarations(fs, f, false)
+	issues := TestDeclarations(fs, f, git.CommitFile{}, false)
 	verifyIssues(t, issues, nil)
 }
 
@@ -71,7 +75,7 @@ func TestDeclarationsOnlyTopLevelAddTest(t *testing.T) {
 	})`, declTestPath + ":4:2: " + notOnlyTopAddTestMsg}} {
 		code := fmt.Sprintf(initTmpl, tc.snip)
 		f, fs := parse(code, declTestPath)
-		issues := TestDeclarations(fs, f, false)
+		issues := TestDeclarations(fs, f, git.CommitFile{}, false)
 		verifyIssues(t, issues, []string{tc.wantMsg})
 	}
 }
@@ -103,7 +107,7 @@ func TestDeclarationsDesc(t *testing.T) {
 	})`, declTestPath + ":6:13: " + badDescMsg}} {
 		code := fmt.Sprintf(initTmpl, tc.snip)
 		f, fs := parse(code, declTestPath)
-		issues := TestDeclarations(fs, f, false)
+		issues := TestDeclarations(fs, f, git.CommitFile{}, false)
 		verifyIssues(t, issues, []string{tc.wantMsg})
 	}
 }
@@ -130,7 +134,7 @@ func TestDeclarationsContacts(t *testing.T) {
 	})`, declTestPath + ":7:13: " + nonLiteralContactsMsg}} {
 		code := fmt.Sprintf(initTmpl, tc.snip)
 		f, fs := parse(code, declTestPath)
-		issues := TestDeclarations(fs, f, false)
+		issues := TestDeclarations(fs, f, git.CommitFile{}, false)
 		verifyIssues(t, issues, []string{tc.wantMsg})
 	}
 }
@@ -160,7 +164,7 @@ func TestDeclarationsAttr(t *testing.T) {
 	})`, declTestPath + ":8:22: " + nonLiteralAttrMsg}} {
 		code := fmt.Sprintf(initTmpl, tc.snip)
 		f, fs := parse(code, declTestPath)
-		issues := TestDeclarations(fs, f, false)
+		issues := TestDeclarations(fs, f, git.CommitFile{}, false)
 		var expects []string
 		if tc.wantMsg != "" {
 			expects = append(expects, tc.wantMsg)
@@ -236,7 +240,7 @@ func TestDeclarationsVars(t *testing.T) {
 	})`, declTestPath + ":8:13: " + nonLiteralVarsMsg}} {
 		code := fmt.Sprintf(initTmpl, tc.snip)
 		f, fs := parse(code, declTestPath)
-		issues := TestDeclarations(fs, f, false)
+		issues := TestDeclarations(fs, f, git.CommitFile{}, false)
 		var expects []string
 		if tc.wantMsg != "" {
 			expects = append(expects, tc.wantMsg)
@@ -252,67 +256,77 @@ func TestDeclarationsSoftwareDeps(t *testing.T) {
 	}{{snip: `
 	testing.AddTest(&testing.Test{
 		Func:         DoStuff,
+		LacrosStatus: testing.LacrosVariantUnneeded,
 		Desc:         "This description is fine",
 		Contacts:     []string{"me@chromium.org"},
 		SoftwareDeps: []string{"this", "is", "valid", "dep"},
 	})`}, {snip: `
 	testing.AddTest(&testing.Test{
 		Func:         DoStuff,
+		LacrosStatus: testing.LacrosVariantUnneeded,
 		Desc:         "This description is fine",
 		Contacts:     []string{"me@chromium.org"},
 		SoftwareDeps: []string{qualified.variable, is, "allowed"},
 	})`}, {snip: `
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
+		LacrosStatus: testing.LacrosVariantUnneeded,
 		Desc:     "This description is fine",
 		Contacts: []string{"me@chromium.org"},
 		SoftwareDeps:     append([]string{"this", "is", "valid", localConstant}, foo.BarList...),
 	})`}, {snip: `
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
+		LacrosStatus: testing.LacrosVariantUnneeded,
 		Desc:     "This description is fine",
 		Contacts: []string{"me@chromium.org"},
 		SoftwareDeps:     append(foo.BarList, "this", "is", "valid", localConstant),
 	})`}, {snip: `
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
+		LacrosStatus: testing.LacrosVariantUnneeded,
 		Desc:     "This description is fine",
 		Contacts: []string{"me@chromium.org"},
 		SoftwareDeps:     foo.BarList,
 	})`}, {snip: `
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
+		LacrosStatus: testing.LacrosVariantUnneeded,
 		Desc:     "This description is fine",
 		Contacts: []string{"me@chromium.org"},
 		SoftwareDeps:     append(foo.BarList, bar.Baz...),
 	})`}, {snip: `
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
+		LacrosStatus: testing.LacrosVariantUnneeded,
 		Desc:     "This description is fine",
 		Contacts: []string{"me@chromium.org"},
 		SoftwareDeps:     []string{foo.BarConstant, localConstant},
 	})`}, {snip: `
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
+		LacrosStatus: testing.LacrosVariantUnneeded,
 		Desc:     "This description is fine",
 		Contacts: []string{"me@chromium.org"},
 		SoftwareDeps:     append(foo.BazList, localConstant),
 	})`}, {`
 	testing.AddTest(&testing.Test{
 		Func:         DoStuff,
+		LacrosStatus: testing.LacrosVariantUnneeded,
 		Desc:         "This description is fine",
 		Contacts:     []string{"me@chromium.org"},
 		SoftwareDeps: foobar,  // non array literal.
-	})`, declTestPath + ":8:17: " + nonLiteralSoftwareDepsMsg}, {`
+	})`, declTestPath + ":9:17: " + nonLiteralSoftwareDepsMsg}, {`
 	testing.AddTest(&testing.Test{
 		Func:         DoStuff,
+		LacrosStatus: testing.LacrosVariantUnneeded,
 		Desc:         "This description is fine",
 		Contacts:     []string{"me@chromium.org"},
 		SoftwareDeps: []string{fun()},  // invocation is not allowed.
-	})`, declTestPath + ":8:17: " + nonLiteralSoftwareDepsMsg}} {
+	})`, declTestPath + ":9:17: " + nonLiteralSoftwareDepsMsg}} {
 		code := fmt.Sprintf(initTmpl, tc.snip)
 		f, fs := parse(code, declTestPath)
-		issues := TestDeclarations(fs, f, false)
+		issues := TestDeclarations(fs, f, git.CommitFile{}, false)
 		var expects []string
 		if tc.wantMsg != "" {
 			expects = append(expects, tc.wantMsg)
@@ -328,6 +342,7 @@ func TestDeclarationsParams(t *testing.T) {
 	}{{snip: `
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
+		LacrosStatus: testing.LacrosVariantUnneeded,
 		Desc:     "This description is fine",
 		Contacts: []string{"me@chromium.org"},
 		Params: []Param{{
@@ -340,18 +355,21 @@ func TestDeclarationsParams(t *testing.T) {
 	})`}, {`
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
+		LacrosStatus: testing.LacrosVariantUnneeded,
 		Desc:     "This description is fine",
 		Contacts: []string{"me@chromium.org"},
 		Params:   variableParams,
-	})`, []string{declTestPath + ":8:13: " + nonLiteralParamsMsg}}, {`
+	})`, []string{declTestPath + ":9:13: " + nonLiteralParamsMsg}}, {`
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
+		LacrosStatus: testing.LacrosVariantUnneeded,
 		Desc:     "This description is fine",
 		Contacts: []string{"me@chromium.org"},
 		Params:   []Param{variableParamStruct},
-	})`, []string{declTestPath + ":8:21: " + nonLiteralParamsMsg}}, {`
+	})`, []string{declTestPath + ":9:21: " + nonLiteralParamsMsg}}, {`
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
+		LacrosStatus: testing.LacrosVariantUnneeded,
 		Desc:     "This description is fine",
 		Contacts: []string{"me@chromium.org"},
 		Params: []Param{{
@@ -366,15 +384,15 @@ func TestDeclarationsParams(t *testing.T) {
 			ExtraSoftwareDeps: []string{fun()},
 		}},
 	})`, []string{
-		declTestPath + ":9:10: " + nonLiteralParamNameMsg,
-		declTestPath + ":11:23: " + nonLiteralAttrMsg,
-		declTestPath + ":13:32: " + nonLiteralAttrMsg,
-		declTestPath + ":15:23: " + nonLiteralSoftwareDepsMsg,
-		declTestPath + ":17:23: " + nonLiteralSoftwareDepsMsg,
+		declTestPath + ":10:10: " + nonLiteralParamNameMsg,
+		declTestPath + ":12:23: " + nonLiteralAttrMsg,
+		declTestPath + ":14:32: " + nonLiteralAttrMsg,
+		declTestPath + ":16:23: " + nonLiteralSoftwareDepsMsg,
+		declTestPath + ":18:23: " + nonLiteralSoftwareDepsMsg,
 	}}} {
 		code := fmt.Sprintf(initTmpl, tc.snip)
 		f, fs := parse(code, declTestPath)
-		issues := TestDeclarations(fs, f, false)
+		issues := TestDeclarations(fs, f, git.CommitFile{}, false)
 		verifyIssues(t, issues, tc.wantMsg)
 	}
 }
@@ -413,7 +431,9 @@ func TestAutoFixDeclarationDesc(t *testing.T) {
 		Desc:     "Not capitalized and ends with a period",
 		Contacts: []string{"me@chromium.org"},
 	})`}} {
-		verifyAutoFix(t, TestDeclarations,
+		verifyAutoFix(t, func(fs *token.FileSet, f *ast.File, fix bool) []*Issue {
+			return TestDeclarations(fs, f, git.CommitFile{}, fix)
+		},
 			map[string]string{declTestPath: fmt.Sprintf(initTmpl, tc.cur)},
 			map[string]string{declTestPath: fmt.Sprintf(initTmpl, tc.want)})
 	}

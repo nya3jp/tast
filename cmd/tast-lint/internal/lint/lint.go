@@ -278,7 +278,7 @@ func checkFile(path git.CommitFile, data []byte, debug bool, fs *token.FileSet, 
 	}
 
 	if isUserFile(path.Path) {
-		issues = append(issues, check.TestDeclarations(fs, f, fix)...)
+		issues = append(issues, check.TestDeclarations(fs, f, path, fix)...)
 		issues = append(issues, check.Exports(fs, f)...)
 		issues = append(issues, check.ForbiddenBundleImports(fs, f)...)
 		issues = append(issues, check.ForbiddenCalls(fs, f, fix)...)

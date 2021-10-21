@@ -12,6 +12,8 @@ import (
 	"unicode"
 
 	"golang.org/x/tools/go/ast/astutil"
+
+	"go.chromium.org/tast/cmd/tast-lint/internal/git"
 )
 
 // Exposed here for unit tests.
@@ -38,7 +40,7 @@ const (
 )
 
 // TestDeclarations checks declarations of testing.Test structs.
-func TestDeclarations(fs *token.FileSet, f *ast.File, fix bool) []*Issue {
+func TestDeclarations(fs *token.FileSet, f *ast.File, path git.CommitFile, fix bool) []*Issue {
 	filename := fs.Position(f.Package).Filename
 	if !isEntryFile(filename) {
 		return nil
@@ -46,7 +48,7 @@ func TestDeclarations(fs *token.FileSet, f *ast.File, fix bool) []*Issue {
 
 	var issues []*Issue
 	for _, decl := range f.Decls {
-		issues = append(issues, verifyInit(fs, decl, fix)...)
+		issues = append(issues, verifyInit(fs, decl, path, fix)...)
 	}
 	return issues
 }
@@ -80,7 +82,7 @@ func FixtureDeclarations(fs *token.FileSet, f *ast.File, fix bool) []*Issue {
 
 // verifyInit checks init() function declared at node.
 // If the node is not init() function, returns nil.
-func verifyInit(fs *token.FileSet, node ast.Decl, fix bool) []*Issue {
+func verifyInit(fs *token.FileSet, node ast.Decl, path git.CommitFile, fix bool) []*Issue {
 	decl, ok := node.(*ast.FuncDecl)
 	if !ok || decl.Recv != nil || decl.Name.Name != "init" {
 		// Not an init() function declaration. Skip.
@@ -90,7 +92,7 @@ func verifyInit(fs *token.FileSet, node ast.Decl, fix bool) []*Issue {
 	if len(decl.Body.List) == 1 {
 		if estmt, ok := decl.Body.List[0].(*ast.ExprStmt); ok && isTestingAddTestCall(estmt.X) {
 			// X's type is already verified in isTestingAddTestCall().
-			return verifyAddTestCall(fs, estmt.X.(*ast.CallExpr), fix)
+			return verifyAddTestCall(fs, estmt.X.(*ast.CallExpr), path, fix)
 		}
 	}
 
@@ -170,7 +172,7 @@ func verifyAddFixtureCall(fs *token.FileSet, call *ast.CallExpr, fix bool) []*Is
 // verifyAddTestCall verifies testing.AddTest calls. Specifically
 // - testing.AddTest() can take a pointer of a testing.Test composite literal.
 // - verifies each element of testing.Test literal.
-func verifyAddTestCall(fs *token.FileSet, call *ast.CallExpr, fix bool) []*Issue {
+func verifyAddTestCall(fs *token.FileSet, call *ast.CallExpr, path git.CommitFile, fix bool) []*Issue {
 	fields, issues := registeredEntityFields(fs, call)
 	if len(issues) > 0 {
 		return issues
@@ -186,6 +188,7 @@ func verifyAddTestCall(fs *token.FileSet, call *ast.CallExpr, fix bool) []*Issue
 	issues = append(issues, verifyParams(fs, fields)...)
 	issues = append(issues, verifyDesc(fs, fields, call, fix)...)
 	issues = append(issues, verifyContacts(fs, fields, call)...)
+	issues = append(issues, verifyLacrosStatus(fs, fields, path, call, fix)...)
 
 	return issues
 }

@@ -97,7 +97,25 @@ type Test struct {
 	// ServiceDeps contains a list of RPC service names in local test bundles that this remote test
 	// will access. This field is valid only for remote tests.
 	ServiceDeps []string
+
+	// LacrosStatus indicates whether lacros variants have been considered for this test or not.
+	LacrosStatus LacrosMetadata
 }
+
+// LacrosMetadata indicates whether lacros variants have been considered for this test or not.
+type LacrosMetadata int
+
+const (
+	// LacrosVariantUnknown indicates that this test has not yet been checked as to whether it requires a lacros variant.
+	// New tests should not use this value, i.e. new tests should always consider lacros.
+	LacrosVariantUnknown = iota
+	// LacrosVariantNeeded indicates that a lacros variant for this is needed but hasn't been created yet.
+	LacrosVariantNeeded
+	// LacrosVariantExists indicates that all required lacros variants for this test have been created.
+	LacrosVariantExists
+	// LacrosVariantUnneeded indicates that lacros variants for this test are not needed.
+	LacrosVariantUnneeded
+)
 
 // Param defines parameters for a parameterized test case.
 // See also https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#Parameterized-tests

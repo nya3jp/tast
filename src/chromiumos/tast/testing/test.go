@@ -31,3 +31,15 @@ type Param = testing.Param
 // may register multiple test instances at once if testing.Test passed to the
 // function has non-empty Params field.
 type TestInstance = testing.TestInstance
+
+const (
+	// LacrosVariantUnknown indicates that this test has not yet been checked as to whether it requires a lacros variant.
+	// New tests should not use this value, i.e. new tests should always consider lacros.
+	LacrosVariantUnknown = testing.LacrosVariantUnknown
+	// LacrosVariantNeeded indicates that a lacros variant for this is needed but hasn't been created yet.
+	LacrosVariantNeeded = testing.LacrosVariantNeeded
+	// LacrosVariantExists indicates that all required lacros variants for this test have been created.
+	LacrosVariantExists = testing.LacrosVariantExists
+	// LacrosVariantUnneeded indicates that lacros variants for this test are not needed.
+	LacrosVariantUnneeded = testing.LacrosVariantUnneeded
+)

@@ -22,12 +22,16 @@ import (
 	"chromiumos/tast/internal/devserver"
 	"chromiumos/tast/internal/extdata"
 	"chromiumos/tast/internal/logging"
+	"chromiumos/tast/internal/planner/internal/output"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/internal/timing"
 	"chromiumos/tast/internal/usercode"
 )
+
+// OutputStream is an interface to report streamed outputs of multiple entity runs.
+type OutputStream = output.Stream
 
 const (
 	preTestTimeout  = 3 * time.Minute // timeout for RuntimeConfig.TestHook
@@ -201,7 +205,7 @@ func buildPlan(tests []*testing.TestInstance, pcfg *Config) (*plan, error) {
 	return &plan{skips, fixtPlan, prePlans, pcfg}, nil
 }
 
-func (p *plan) run(ctx context.Context, out OutputStream) error {
+func (p *plan) run(ctx context.Context, out output.Stream) error {
 	dl, err := newDownloader(ctx, p.pcfg)
 	if err != nil {
 		return errors.Wrap(err, "failed to create new downloader")
@@ -210,7 +214,7 @@ func (p *plan) run(ctx context.Context, out OutputStream) error {
 	dl.BeforeRun(ctx, p.entitiesToRun())
 
 	for _, s := range p.skips {
-		tout := newEntityOutputStream(out, s.test.EntityProto())
+		tout := output.NewEntityStream(out, s.test.EntityProto())
 		reportSkippedTest(tout, s.reasons, s.err)
 	}
 
@@ -353,7 +357,7 @@ func buildFixtPlan(tests []*testing.TestInstance, pcfg *Config) (*fixtPlan, erro
 	}
 	const infinite = 24 * time.Hour // a day is considered infinite
 	tree.fixt = &testing.FixtureInstance{
-		// Do not set Name of a start fixture. entityOutputStream do not emit
+		// Do not set Name of a start fixture. output.EntityOutputStream do not emit
 		// EntityStart/EntityEnd for unnamed entities.
 		Impl: impl,
 		// Set infinite timeouts to all lifecycle methods. In production, the
@@ -373,9 +377,9 @@ func buildFixtPlan(tests []*testing.TestInstance, pcfg *Config) (*fixtPlan, erro
 	return &fixtPlan{pcfg: pcfg, tree: tree, orphans: orphans}, nil
 }
 
-func (p *fixtPlan) run(ctx context.Context, out OutputStream, dl *downloader) error {
+func (p *fixtPlan) run(ctx context.Context, out output.Stream, dl *downloader) error {
 	for _, o := range p.orphans {
-		tout := newEntityOutputStream(out, o.test.EntityProto())
+		tout := output.NewEntityStream(out, o.test.EntityProto())
 		reportOrphanTest(tout, o.missingFixtName)
 	}
 
@@ -410,7 +414,7 @@ func (p *fixtPlan) entitiesToRun() []*protocol.Entity {
 
 // runFixtTree runs tests in a fixture tree.
 // tree is modified as tests are run.
-func runFixtTree(ctx context.Context, tree *fixtTree, stack *FixtureStack, pcfg *Config, out OutputStream, dl *downloader) error {
+func runFixtTree(ctx context.Context, tree *fixtTree, stack *FixtureStack, pcfg *Config, out output.Stream, dl *downloader) error {
 	// Note about invariants:
 	// On entering this function, if the fixture stack is green, it is clean.
 	// Thus we don't need to reset fixtures before running a next test.
@@ -436,7 +440,7 @@ func runFixtTree(ctx context.Context, tree *fixtTree, stack *FixtureStack, pcfg 
 			for stack.Status() != statusYellow && len(tree.tests) > 0 {
 				t := tree.tests[0]
 				tree.tests = tree.tests[1:]
-				tout := newEntityOutputStream(out, t.EntityProto())
+				tout := output.NewEntityStream(out, t.EntityProto())
 				if err := runTest(ctx, t, tout, pcfg, &preConfig{}, stack, dl); err != nil {
 					return err
 				}
@@ -491,7 +495,7 @@ func buildPrePlan(tests []*testing.TestInstance, pcfg *Config) *prePlan {
 	return &prePlan{tests[0].Pre, tests, pcfg}
 }
 
-func (p *prePlan) run(ctx context.Context, out OutputStream, dl *downloader) error {
+func (p *prePlan) run(ctx context.Context, out output.Stream, dl *downloader) error {
 	// Create a precondition-scoped context.
 	ec := &testcontext.CurrentEntity{
 		// OutDir is not available for a precondition-scoped context.
@@ -510,7 +514,7 @@ func (p *prePlan) run(ctx context.Context, out OutputStream, dl *downloader) err
 	for i, t := range p.tests {
 		ti := t.EntityProto()
 		plog.SetCurrentTest(ti)
-		tout := newEntityOutputStream(out, ti)
+		tout := output.NewEntityStream(out, ti)
 		precfg := &preConfig{
 			ctx:   pctx,
 			close: p.pre != nil && i == len(p.tests)-1,
@@ -532,20 +536,20 @@ func (p *prePlan) testsToRun() []*testing.TestInstance {
 }
 
 // preLogger is a logger behind precondition-scoped contexts. It emits
-// precondition logs to OutputStream just as if they are emitted by a currently
+// precondition logs to output.OutputStream just as if they are emitted by a currently
 // running test. Call SetCurrentTest to set a current test.
 type preLogger struct {
-	out OutputStream
+	out output.Stream
 
 	mu sync.Mutex
 	ti *protocol.Entity
 }
 
-func newPreLogger(out OutputStream) *preLogger {
+func newPreLogger(out output.Stream) *preLogger {
 	return &preLogger{out: out}
 }
 
-// Log emits a log message to OutputStream just as if it is emitted by the
+// Log emits a log message to output.OutputStream just as if it is emitted by the
 // current test. SetCurrentTest must be called before calling this method.
 func (l *preLogger) Log(msg string) {
 	l.mu.Lock()
@@ -575,7 +579,7 @@ type preConfig struct {
 //
 // runTest runs a test on a goroutine. If a test does not finish after reaching
 // its timeout, this function returns with an error without waiting for its finish.
-func runTest(ctx context.Context, t *testing.TestInstance, tout *entityOutputStream, pcfg *Config, precfg *preConfig, stack *FixtureStack, dl *downloader) error {
+func runTest(ctx context.Context, t *testing.TestInstance, tout *output.EntityStream, pcfg *Config, precfg *preConfig, stack *FixtureStack, dl *downloader) error {
 	fixtCtx := ctx
 
 	// Attach a log that the test can use to report timing events.
@@ -871,7 +875,7 @@ func timeoutOrDefault(timeout, def time.Duration) time.Duration {
 
 // reportOrphanTest is called instead of runTest for a test that depends on
 // a missing fixture directly or indirectly.
-func reportOrphanTest(tout *entityOutputStream, missingFixtName string) {
+func reportOrphanTest(tout *output.EntityStream, missingFixtName string) {
 	tout.Start("")
 	_, fn, ln, _ := runtime.Caller(0)
 	tout.Error(&protocol.Error{
@@ -886,7 +890,7 @@ func reportOrphanTest(tout *entityOutputStream, missingFixtName string) {
 
 // reportSkippedTest is called instead of runTest for a test that is skipped due to
 // having unsatisfied dependencies.
-func reportSkippedTest(tout *entityOutputStream, reasons []string, err error) {
+func reportSkippedTest(tout *output.EntityStream, reasons []string, err error) {
 	tout.Start("")
 	if err == nil {
 		tout.End(reasons, timing.NewLog())
@@ -909,7 +913,7 @@ func reportSkippedTest(tout *entityOutputStream, reasons []string, err error) {
 }
 
 // dumpGoroutines dumps all goroutines to tout.
-func dumpGoroutines(tout *entityOutputStream) {
+func dumpGoroutines(tout *output.EntityStream) {
 	tout.Log("Dumping all goroutines")
 	if err := func() error {
 		p := pprof.Lookup("goroutine")

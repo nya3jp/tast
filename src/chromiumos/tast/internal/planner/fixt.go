@@ -11,6 +11,7 @@ import (
 	"path/filepath"
 
 	"chromiumos/tast/internal/logging"
+	"chromiumos/tast/internal/planner/internal/output"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/testing"
@@ -113,14 +114,14 @@ func (s fixtureStatus) String() string {
 // before running a test to make sure Reset is called for sure between tests.
 type FixtureStack struct {
 	cfg *Config
-	out OutputStream
+	out output.Stream
 
 	stack []*statefulFixture // fixtures on a traverse path, root to leaf
 	dirty bool
 }
 
 // NewFixtureStack creates a new empty fixture stack.
-func NewFixtureStack(cfg *Config, out OutputStream) *FixtureStack {
+func NewFixtureStack(cfg *Config, out output.Stream) *FixtureStack {
 	return &FixtureStack{cfg: cfg, out: out}
 }
 
@@ -194,7 +195,7 @@ func (st *FixtureStack) Push(ctx context.Context, fixt *testing.FixtureInstance)
 		ServiceDeps: fixt.ServiceDeps,
 	}
 	ei := fixt.EntityProto()
-	fout := newEntityOutputStream(st.out, ei)
+	fout := output.NewEntityStream(st.out, ei)
 
 	ctx = testing.NewContext(ctx, ce, logging.NewFuncSink(func(msg string) { fout.Log(msg) }))
 
@@ -330,7 +331,7 @@ type statefulFixture struct {
 
 	fixt *testing.FixtureInstance
 	root *testing.EntityRoot
-	fout *entityOutputStream
+	fout *output.EntityStream
 
 	status fixtureStatus
 	errs   []*protocol.Error
@@ -338,7 +339,7 @@ type statefulFixture struct {
 }
 
 // newStatefulFixture creates a new statefulFixture.
-func newStatefulFixture(fixt *testing.FixtureInstance, root *testing.EntityRoot, fout *entityOutputStream, cfg *Config) *statefulFixture {
+func newStatefulFixture(fixt *testing.FixtureInstance, root *testing.EntityRoot, fout *output.EntityStream, cfg *Config) *statefulFixture {
 	return &statefulFixture{
 		cfg:    cfg,
 		fixt:   fixt,

@@ -1,77 +1,24 @@
-// Copyright 2020 The Chromium OS Authors. All rights reserved.
+// Copyright 2021 The Chromium OS Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package planner
+package output_test
 
 import (
 	gotesting "testing"
 
 	"github.com/google/go-cmp/cmp"
 
+	"chromiumos/tast/internal/planner/internal/output"
+	"chromiumos/tast/internal/planner/internal/output/outputtest"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/timing"
 )
 
-type outputSink struct {
-	msgs []protocol.Event
-}
-
-func newOutputSink() *outputSink {
-	return &outputSink{}
-}
-
-func (s *outputSink) RunLog(msg string) error {
-	s.msgs = append(s.msgs, &protocol.RunLogEvent{
-		Text: msg,
-	})
-	return nil
-}
-
-func (s *outputSink) EntityStart(ei *protocol.Entity, outDir string) error {
-	s.msgs = append(s.msgs, &protocol.EntityStartEvent{
-		Entity: ei,
-		OutDir: outDir,
-	})
-	return nil
-}
-
-func (s *outputSink) EntityLog(ei *protocol.Entity, msg string) error {
-	s.msgs = append(s.msgs, &protocol.EntityLogEvent{
-		EntityName: ei.GetName(),
-		Text:       msg,
-	})
-	return nil
-}
-
-func (s *outputSink) EntityError(ei *protocol.Entity, e *protocol.Error) error {
-	s.msgs = append(s.msgs, &protocol.EntityErrorEvent{
-		EntityName: ei.GetName(),
-		// Clear Error fields except for Reason.
-		Error: &protocol.Error{Reason: e.GetReason()},
-	})
-	return nil
-}
-
-func (s *outputSink) EntityEnd(ei *protocol.Entity, skipReasons []string, timingLog *timing.Log) error {
-	// Drop timingLog.
-	var skip *protocol.Skip
-	if len(skipReasons) > 0 {
-		skip = &protocol.Skip{Reasons: skipReasons}
-	}
-	s.msgs = append(s.msgs, &protocol.EntityEndEvent{EntityName: ei.GetName(), Skip: skip})
-	return nil
-}
-
-// ReadAll reads all control messages written to the sink.
-func (s *outputSink) ReadAll() []protocol.Event {
-	return s.msgs
-}
-
 func TestTestOutputStream(t *gotesting.T) {
-	sink := newOutputSink()
+	sink := outputtest.NewSink()
 	test := &protocol.Entity{Name: "pkg.Test"}
-	tout := newEntityOutputStream(sink, test)
+	tout := output.NewEntityStream(sink, test)
 
 	tout.Start("/tmp/out")
 	tout.Log("hello")
@@ -94,9 +41,9 @@ func TestTestOutputStream(t *gotesting.T) {
 }
 
 func TestTestOutputStreamUnnamedEntity(t *gotesting.T) {
-	sink := newOutputSink()
+	sink := outputtest.NewSink()
 	test := &protocol.Entity{} // unnamed entity
-	tout := newEntityOutputStream(sink, test)
+	tout := output.NewEntityStream(sink, test)
 
 	tout.Start("/tmp/out")
 	tout.Log("hello")
@@ -113,9 +60,9 @@ func TestTestOutputStreamUnnamedEntity(t *gotesting.T) {
 }
 
 func TestTestOutputStreamErrors(t *gotesting.T) {
-	sink := newOutputSink()
+	sink := outputtest.NewSink()
 	test := &protocol.Entity{Name: "pkg.Test"}
-	tout := newEntityOutputStream(sink, test)
+	tout := output.NewEntityStream(sink, test)
 
 	tout.Start("/tmp/out")
 	tout.Error(&protocol.Error{Reason: "error1", Location: &protocol.ErrorLocation{File: "test1.go"}})

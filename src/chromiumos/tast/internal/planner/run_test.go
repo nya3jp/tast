@@ -26,6 +26,7 @@ import (
 	"chromiumos/tast/internal/devserver/devservertest"
 	"chromiumos/tast/internal/extdata"
 	"chromiumos/tast/internal/logging"
+	"chromiumos/tast/internal/planner/internal/output/outputtest"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/testing"
@@ -37,7 +38,7 @@ import (
 func runTestsAndReadAll(t *gotesting.T, tests []*testing.TestInstance, pcfg *Config) []protocol.Event {
 	t.Helper()
 
-	sink := newOutputSink()
+	sink := outputtest.NewSink()
 	if err := RunTests(context.Background(), tests, sink, pcfg); err != nil {
 		t.Logf("RunTests: %v", err) // improve debuggability
 	}

@@ -16,6 +16,8 @@ import (
 
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/logging"
+	"chromiumos/tast/internal/planner/internal/output"
+	"chromiumos/tast/internal/planner/internal/output/outputtest"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/testing"
@@ -25,7 +27,7 @@ import (
 
 // TestFixtureStackInitStatus checks the initial status of a fixture stack.
 func TestFixtureStackInitStatus(t *gotesting.T) {
-	stack := NewFixtureStack(&Config{}, newOutputSink())
+	stack := NewFixtureStack(&Config{}, outputtest.NewSink())
 
 	if got := stack.Status(); got != statusGreen {
 		t.Fatalf("Initial status is %v; want %v", got, statusGreen)
@@ -36,7 +38,7 @@ func TestFixtureStackInitStatus(t *gotesting.T) {
 // stack on pushing healthy fixtures.
 func TestFixtureStackStatusTransitionGreen(t *gotesting.T) {
 	ctx := context.Background()
-	stack := NewFixtureStack(&Config{}, newOutputSink())
+	stack := NewFixtureStack(&Config{}, outputtest.NewSink())
 
 	pushGreen := func() error {
 		return stack.Push(ctx, &testing.FixtureInstance{Impl: testfixture.New()})
@@ -73,7 +75,7 @@ func TestFixtureStackStatusTransitionGreen(t *gotesting.T) {
 // stack on pushing a fixture that fails to set up.
 func TestFixtureStackStatusTransitionRed(t *gotesting.T) {
 	ctx := context.Background()
-	stack := NewFixtureStack(&Config{}, newOutputSink())
+	stack := NewFixtureStack(&Config{}, outputtest.NewSink())
 
 	pushGreen := func() error {
 		return stack.Push(ctx, &testing.FixtureInstance{Impl: testfixture.New()})
@@ -122,7 +124,7 @@ func TestFixtureStackStatusTransitionRed(t *gotesting.T) {
 // stack on pushing a fixture that fails to reset.
 func TestFixtureStackStatusTransitionYellow(t *gotesting.T) {
 	ctx := context.Background()
-	stack := NewFixtureStack(&Config{}, newOutputSink())
+	stack := NewFixtureStack(&Config{}, outputtest.NewSink())
 
 	pushGreen := func() error {
 		return stack.Push(ctx, &testing.FixtureInstance{Impl: testfixture.New()})
@@ -165,7 +167,7 @@ func TestFixtureStackStatusTransitionYellow(t *gotesting.T) {
 // TestFixtureStackMarkDirty tests dirtiness check of fixture stacks.
 func TestFixtureStackMarkDirty(t *gotesting.T) {
 	ctx := context.Background()
-	stack := NewFixtureStack(&Config{}, newOutputSink())
+	stack := NewFixtureStack(&Config{}, outputtest.NewSink())
 
 	if err := stack.MarkDirty(); err != nil {
 		t.Errorf("MarkDirty failed for initial stack: %v", err)
@@ -196,7 +198,7 @@ func TestFixtureStackContext(t *gotesting.T) {
 	baseOutDir := testutil.TempDir(t)
 	defer os.RemoveAll(baseOutDir)
 
-	stack := NewFixtureStack(&Config{OutDir: baseOutDir}, newOutputSink())
+	stack := NewFixtureStack(&Config{OutDir: baseOutDir}, outputtest.NewSink())
 
 	fixtureOutDir := filepath.Join(baseOutDir, fixtureName)
 	testOutDir := filepath.Join(baseOutDir, "pkg.Test")
@@ -287,7 +289,7 @@ func TestFixtureStackState(t *gotesting.T) {
 	}
 
 	ctx := context.Background()
-	stack := NewFixtureStack(&Config{RemoteData: rd}, newOutputSink())
+	stack := NewFixtureStack(&Config{RemoteData: rd}, outputtest.NewSink())
 
 	type stateLike interface {
 		RPCHint() *testing.RPCHint
@@ -350,7 +352,7 @@ func TestFixtureStackVal(t *gotesting.T) {
 	)
 
 	ctx := context.Background()
-	stack := NewFixtureStack(&Config{}, newOutputSink())
+	stack := NewFixtureStack(&Config{}, outputtest.NewSink())
 
 	if val := stack.Val(); val != nil {
 		t.Errorf("Init: Val() = %v; want nil", val)
@@ -421,7 +423,7 @@ func TestFixtureStackVal(t *gotesting.T) {
 // TestFixtureStackErrors tests Errors method.
 func TestFixtureStackErrors(t *gotesting.T) {
 	ctx := context.Background()
-	stack := NewFixtureStack(&Config{}, newOutputSink())
+	stack := NewFixtureStack(&Config{}, outputtest.NewSink())
 
 	id := 0
 	pushGreen := func() error {
@@ -478,9 +480,9 @@ func TestFixtureStackErrors(t *gotesting.T) {
 // are healthy.
 func TestFixtureStackOutputGreen(t *gotesting.T) {
 	ctx := context.Background()
-	sink := newOutputSink()
+	sink := outputtest.NewSink()
 	ti := &testing.TestInstance{Name: "pkg.Test"}
-	troot := testing.NewTestEntityRoot(ti, &testing.RuntimeConfig{}, newEntityOutputStream(sink, ti.EntityProto()))
+	troot := testing.NewTestEntityRoot(ti, &testing.RuntimeConfig{}, output.NewEntityStream(sink, ti.EntityProto()))
 	stack := NewFixtureStack(&Config{}, sink)
 
 	newLoggingFixture := func(id int) *testing.FixtureInstance {
@@ -577,7 +579,7 @@ func TestFixtureStackOutputGreen(t *gotesting.T) {
 // to set up.
 func TestFixtureStackOutputRed(t *gotesting.T) {
 	ctx := context.Background()
-	sink := newOutputSink()
+	sink := outputtest.NewSink()
 	stack := NewFixtureStack(&Config{}, sink)
 
 	newLoggingFixture := func(id int, setUp bool) *testing.FixtureInstance {
@@ -648,7 +650,7 @@ func TestFixtureStackOutputRed(t *gotesting.T) {
 // fails to reset.
 func TestFixtureStackOutputYellow(t *gotesting.T) {
 	ctx := context.Background()
-	sink := newOutputSink()
+	sink := outputtest.NewSink()
 	stack := NewFixtureStack(&Config{}, sink)
 
 	newLoggingFixture := func(id int, reset bool) *testing.FixtureInstance {

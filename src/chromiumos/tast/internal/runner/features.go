@@ -576,13 +576,13 @@ func cpuInfo() (cpuConfig, error) {
 	if err := json.Unmarshal(b, &parsed); err != nil {
 		return errInfo, errors.Wrap(err, "failed to parse lscpu result")
 	}
-	soc, err := findSOC(parsed)
-	if err != nil {
-		return errInfo, errors.Wrap(err, "failed to find SOC")
-	}
 	arch, err := findArchitecture(parsed)
 	if err != nil {
 		return errInfo, errors.Wrap(err, "failed to find CPU architecture")
+	}
+	soc, err := findSOC(parsed)
+	if err != nil {
+		return cpuConfig{arch, protocol.DeprecatedDeviceConfig_SOC_UNSPECIFIED}, errors.Wrap(err, "failed to find SOC")
 	}
 	return cpuConfig{arch, soc}, nil
 }

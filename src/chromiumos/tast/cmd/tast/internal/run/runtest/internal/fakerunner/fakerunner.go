@@ -19,7 +19,6 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"path/filepath"
 
 	"google.golang.org/grpc"
 
@@ -167,18 +166,19 @@ func (r *Runner) RunGRPC(stdin io.Reader, stdout, stderr io.Writer) int {
 		<-done
 	}()
 
-	conn, err := rpc.NewClient(context.Background(), cr, cw, &protocol.HandshakeRequest{
-		RunnerInitParams: &protocol.RunnerInitParams{
-			BundleGlob: filepath.Join(r.cfg.BundleDir, "*"),
-		},
-	})
-	if err != nil {
-		fmt.Fprintf(stderr, "ERROR: Failed to create a local gRPC server connection: %v\n", err)
-		return 1
-	}
-	defer conn.Close()
+	var conn *rpc.GenericClient
+	defer func() {
+		if conn != nil {
+			conn.Close()
+		}
+	}()
 
 	rpc.RunServer(stdin, stdout, nil, func(srv *grpc.Server, req *protocol.HandshakeRequest) error {
+		var err error
+		conn, err = rpc.NewClient(context.Background(), cr, cw, req)
+		if err != nil {
+			return err
+		}
 		protocol.RegisterTestServiceServer(srv, newTestService(r.cfg, protocol.NewTestServiceClient(conn.Conn()), req.GetBundleInitParams().GetBundleConfig()))
 		return nil
 	})

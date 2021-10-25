@@ -480,7 +480,7 @@ func (f *statefulFixture) RunPreTest(ctx context.Context, troot *testing.TestEnt
 	ctx = f.newTestContext(ctx, troot, troot.LogSink())
 	s := troot.NewFixtTestState(ctx)
 	name := fmt.Sprintf("%s:PreTest", f.fixt.Name)
-	if err := usercode.SafeCall(ctx, name, f.fixt.PreTestTimeout, defaultGracePeriod, usercode.ErrorOnPanic(s), func(ctx context.Context) {
+	if err := usercode.SafeCall(ctx, name, f.fixt.PreTestTimeout, f.cfg.GracePeriod(), usercode.ErrorOnPanic(s), func(ctx context.Context) {
 		f.fixt.Impl.PreTest(ctx, s)
 	}); err != nil {
 		return nil, err
@@ -502,7 +502,7 @@ func (f *statefulFixture) runPostTest(ctx context.Context, troot *testing.TestEn
 	s := troot.NewFixtTestState(ctx)
 	name := fmt.Sprintf("%s:PostTest", f.fixt.Name)
 
-	return usercode.SafeCall(ctx, name, f.fixt.PostTestTimeout, defaultGracePeriod, usercode.ErrorOnPanic(s), func(ctx context.Context) {
+	return usercode.SafeCall(ctx, name, f.fixt.PostTestTimeout, f.cfg.GracePeriod(), usercode.ErrorOnPanic(s), func(ctx context.Context) {
 		f.fixt.Impl.PostTest(ctx, s)
 	})
 }

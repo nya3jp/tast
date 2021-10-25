@@ -357,6 +357,13 @@ func Wifi80211ac() Condition {
 	return SkipOnPlatform("kip", "guado")
 }
 
+// WifiWEP returns a hardware dependency condition that is satisfied
+// iff the DUT's WiFi module supports WEP.
+func WifiWEP() Condition {
+	c := SkipOnPlatform("herobrine") // Herobrine uses WCN6750 chipset, which does not support WEP.
+	return c
+}
+
 // Wifi80211ax returns a hardware dependency condition that is satisfied
 // iff the DUT's WiFi module supports 802.11ax.
 func Wifi80211ax() Condition {

@@ -10,6 +10,7 @@ import (
 
 	"github.com/golang/protobuf/ptypes"
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/driver"
@@ -92,8 +93,7 @@ func makeBundleEntityForFixture(bundle string, hops int32, name, parent, start s
 				Dependencies: &protocol.EntityDependencies{},
 				Contacts:     &protocol.EntityContacts{},
 				LegacyData: &protocol.EntityLegacyData{
-					Timeout: ptypes.DurationProto(0),
-					Bundle:  bundle,
+					Bundle: bundle,
 				},
 			},
 			Hops:             hops,
@@ -152,7 +152,7 @@ func TestDriver_ListLocalFixtures(t *gotesting.T) {
 		makeBundleEntityForFixture("bundle2", 1, "fixt.LocalA", "fixt.LocalB", "fixt.RemoteB"),
 		makeBundleEntityForFixture("bundle2", 1, "fixt.LocalB", "fixt.RemoteB", "fixt.RemoteB"),
 	}
-	if diff := cmp.Diff(got, want); diff != "" {
+	if diff := cmp.Diff(got, want, cmpopts.IgnoreFields(protocol.EntityLegacyData{}, "Timeout")); diff != "" {
 		t.Errorf("Unexpected list of tests (-got +want):\n%v", diff)
 	}
 }
@@ -171,7 +171,7 @@ func TestDriver_ListRemoteFixtures(t *gotesting.T) {
 		makeBundleEntityForFixture("bundle2", 0, "fixt.RemoteA", "", ""),
 		makeBundleEntityForFixture("bundle2", 0, "fixt.RemoteB", "fixt.RemoteA", ""),
 	}
-	if diff := cmp.Diff(got, want); diff != "" {
+	if diff := cmp.Diff(got, want, cmpopts.IgnoreFields(protocol.EntityLegacyData{}, "Timeout")); diff != "" {
 		t.Errorf("Unexpected list of tests (-got +want):\n%v", diff)
 	}
 }

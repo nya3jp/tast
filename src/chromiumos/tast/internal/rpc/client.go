@@ -195,7 +195,7 @@ func (c *GenericClient) Close() error {
 // and w.
 // Callers are responsible for closing the underlying connection of r/w after
 // the client is closed.
-func NewClient(ctx context.Context, r io.Reader, w io.Writer, req *protocol.HandshakeRequest) (_ *GenericClient, retErr error) {
+func NewClient(ctx context.Context, r io.Reader, w io.Writer, req *protocol.HandshakeRequest, opts ...grpc.DialOption) (_ *GenericClient, retErr error) {
 	if err := sendRawMessage(w, req); err != nil {
 		return nil, err
 	}
@@ -207,7 +207,7 @@ func NewClient(ctx context.Context, r io.Reader, w io.Writer, req *protocol.Hand
 		return nil, errors.Errorf("bundle returned error: %s", res.Error.GetReason())
 	}
 
-	conn, err := NewPipeClientConn(ctx, r, w, clientOpts()...)
+	conn, err := NewPipeClientConn(ctx, r, w, append(clientOpts(), opts...)...)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to establish RPC connection")
 	}

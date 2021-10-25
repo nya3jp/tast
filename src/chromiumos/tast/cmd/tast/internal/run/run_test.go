@@ -1002,7 +1002,7 @@ func TestRunCollectSysInfo(t *gotesting.T) {
 		}),
 		runtest.WithCollectSysInfo(func(req *protocol.CollectSysInfoRequest) (*protocol.CollectSysInfoResponse, error) {
 			called = true
-			if diff := cmp.Diff(req.GetInitialState(), initState); diff != "" {
+			if diff := cmp.Diff(req.GetInitialState(), initState, cmpopts.IgnoreFields(protocol.SysInfoState{}, "XXX_sizecache")); diff != "" {
 				t.Errorf("SysInfoState mismatch (-got +want):\n%s", diff)
 			}
 			return &protocol.CollectSysInfoResponse{}, nil

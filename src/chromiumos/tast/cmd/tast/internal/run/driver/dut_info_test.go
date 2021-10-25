@@ -101,32 +101,3 @@ func TestDriver_GetDUTInfo_NoCheckTestDeps(t *testing.T) {
 		t.Fatalf("GetDUTInfo failed: %v", err)
 	}
 }
-
-func TestDriver_GetDUTInfo_NoFeatures(t *testing.T) {
-	env := runtest.SetUp(t, runtest.WithGetDUTInfo(func(req *protocol.GetDUTInfoRequest) (*protocol.GetDUTInfoResponse, error) {
-		return &protocol.GetDUTInfoResponse{
-			DutInfo: &protocol.DUTInfo{
-				Features: &protocol.DUTFeatures{
-					Software: &protocol.SoftwareFeatures{
-						Available: nil,
-					},
-				},
-			},
-		}, nil
-	}))
-	ctx := env.Context()
-	cfg := env.Config(func(cfg *config.MutableConfig) {
-		// "always" should fail if the runner doesn't know about any features.
-		cfg.CheckTestDeps = true
-	})
-
-	drv, err := driver.New(ctx, cfg, cfg.Target())
-	if err != nil {
-		t.Fatalf("driver.New failed: %v", err)
-	}
-	defer drv.Close(ctx)
-
-	if _, err := drv.GetDUTInfo(ctx); err == nil {
-		t.Fatal("getSoftwareFeatures succeeded unexpectedly")
-	}
-}

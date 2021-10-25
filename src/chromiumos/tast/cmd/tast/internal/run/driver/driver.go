@@ -96,7 +96,21 @@ func (d *Driver) ReconnectIfNeeded(ctx context.Context) error {
 	return err
 }
 
-func (d *Driver) localClient() *runnerclient.JSONClient {
+var useGRPC = os.Getenv("TAST_EXP_USE_GRPC") == "1"
+
+// runnerClient is an interface implemented by runnerclient.JSONClient and
+// runnerclient.GRPCClient.
+type runnerClient interface {
+	GetDUTInfo(ctx context.Context, req *protocol.GetDUTInfoRequest) (*protocol.GetDUTInfoResponse, error)
+	GetSysInfoState(ctx context.Context, req *protocol.GetSysInfoStateRequest) (*protocol.GetSysInfoStateResponse, error)
+	CollectSysInfo(ctx context.Context, req *protocol.CollectSysInfoRequest) (*protocol.CollectSysInfoResponse, error)
+	DownloadPrivateBundles(ctx context.Context, req *protocol.DownloadPrivateBundlesRequest) error
+	ListTests(ctx context.Context, patterns []string, features *protocol.Features) ([]*driverdata.BundleEntity, error)
+	ListFixtures(ctx context.Context) ([]*driverdata.BundleEntity, error)
+	RunTests(ctx context.Context, bcfg *protocol.BundleConfig, rcfg *protocol.RunConfig, out runnerclient.RunTestsOutput)
+}
+
+func (d *Driver) localClient() runnerClient {
 	var args []string
 	if d.cfg.Proxy() == config.ProxyEnv {
 		// Proxy-related variables can be either uppercase or lowercase.
@@ -114,12 +128,18 @@ func (d *Driver) localClient() *runnerclient.JSONClient {
 
 	cmd := genericexec.CommandSSH(d.cc.Conn().SSHConn(), "env", args...)
 	params := &protocol.RunnerInitParams{BundleGlob: d.cfg.LocalBundleGlob()}
+	if useGRPC {
+		return runnerclient.NewGRPCClient(cmd, params, d.cfg.MsgTimeout(), 1)
+	}
 	return runnerclient.NewJSONClient(cmd, params, d.cfg.MsgTimeout(), 1)
 }
 
-func (d *Driver) remoteClient() *runnerclient.JSONClient {
+func (d *Driver) remoteClient() runnerClient {
 	cmd := genericexec.CommandExec(d.cfg.RemoteRunner())
 	params := &protocol.RunnerInitParams{BundleGlob: d.cfg.RemoteBundleGlob()}
+	if useGRPC {
+		return runnerclient.NewGRPCClient(cmd, params, d.cfg.MsgTimeout(), 0)
+	}
 	return runnerclient.NewJSONClient(cmd, params, d.cfg.MsgTimeout(), 0)
 }
 

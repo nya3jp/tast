@@ -9,6 +9,7 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 
 	"chromiumos/tast/cmd/tast/internal/run/driver"
 	"chromiumos/tast/cmd/tast/internal/run/runtest"
@@ -36,7 +37,7 @@ func TestDriver_CollectSysInfo(t *testing.T) {
 		}),
 		runtest.WithCollectSysInfo(func(req *protocol.CollectSysInfoRequest) (*protocol.CollectSysInfoResponse, error) {
 			// Ensure SysInfoState matches.
-			if diff := cmp.Diff(req.GetInitialState(), fakeState); diff != "" {
+			if diff := cmp.Diff(req.GetInitialState(), fakeState, cmpopts.IgnoreFields(protocol.SysInfoState{}, "XXX_sizecache")); diff != "" {
 				t.Errorf("CollectSysInfo: InitialState mismatch (-got +want):\n%s", diff)
 			}
 

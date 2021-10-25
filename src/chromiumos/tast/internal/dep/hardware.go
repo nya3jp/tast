@@ -23,7 +23,7 @@ type HardwareDeps struct {
 type HardwareCondition struct {
 	// Satisfied is a pointer to a function which checks if the given HardwareFeatures satisfies
 	// the condition.
-	Satisfied func(f *protocol.HardwareFeatures) (satisifed bool, reason string, err error)
+	Satisfied func(f *protocol.HardwareFeatures) (satisfied bool, reason string, err error)
 
 	// CEL is the CEL expression denoting the condition.
 	CEL string
@@ -45,7 +45,7 @@ type UnsatisfiedReasons []string
 // UnsatisfiedReasons is empty if the given device.Config satisfies the dependencies.
 // i.e., the test can run on the current device setup.
 // A non-nil error is returned when failed to evaluate the condition.
-// Otherwise, the UnsatisfiedReasons instance contains a collection of reasons why any of the condition was not satsfied.
+// Otherwise, the UnsatisfiedReasons instance contains a collection of reasons why any of the condition was not satisfied.
 func (d *HardwareDeps) Satisfied(f *protocol.HardwareFeatures) (UnsatisfiedReasons, error) {
 	var reasons UnsatisfiedReasons
 	for _, c := range d.conds {

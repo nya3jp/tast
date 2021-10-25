@@ -64,6 +64,7 @@ import (
 	"chromiumos/tast/dut"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/logging"
+	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/timing"
 )
@@ -84,8 +85,8 @@ func NewEntityCondition() *EntityCondition {
 	return &EntityCondition{hasError: false}
 }
 
-// recordError record that an error has been reported for the entity.
-func (c *EntityCondition) recordError() {
+// RecordError record that an error has been reported for the entity.
+func (c *EntityCondition) RecordError() {
 	c.mu.Lock()
 	c.hasError = true
 	c.mu.Unlock()
@@ -168,7 +169,7 @@ func (r *EntityRoot) hasError() bool {
 
 // recordError records that the entity has reported an error.
 func (r *EntityRoot) recordError() {
-	r.condition.recordError()
+	r.condition.RecordError()
 }
 
 // TestEntityRoot is the root of all State objects associated with a test.
@@ -194,6 +195,11 @@ func NewTestEntityRoot(test *TestInstance, cfg *RuntimeConfig, out OutputStream,
 		entityRoot: NewEntityRoot(ce, test.Constraints(), cfg, out, condition),
 		test:       test,
 	}
+}
+
+// EntityProto returns the test being run as a protocol.Entity.
+func (r *TestEntityRoot) EntityProto() *protocol.Entity {
+	return r.test.EntityProto()
 }
 
 func (r *TestEntityRoot) newTestMixin() *testMixin {

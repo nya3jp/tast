@@ -220,6 +220,10 @@ message ServiceConfig {
   // TlwSelfName is a "DUT name" that identifies the current machine.
   // It is empty for remote tests.
   string tlw_self_name = 3;
+
+  // TlwPrimaryTargetName is a "DUT name" of the primary target.
+  // It is empty if a primary target doesn't exist.
+  string tlw_primary_target_name = 4;
 }
 
 // DownloadMode specifies a strategy to download external data files.
@@ -383,7 +387,10 @@ message StackPreTest {
   bool has_error = 2;
 }
 
-message StackPostTest { Entity entity = 1; }
+message StackPostTest {
+  Entity entity = 1;
+  bool has_error = 2;
+}
 
 message StackGetStatus {}
 
@@ -395,9 +402,12 @@ message StackOperationResponse {
   // FatalError is an framework internal error happened during operation.
   string fatal_error = 1;
   // Status is a response for StackGetStatus request.
+  // It's also populated in Reset's response.
   StackStatus status = 2;
   // Errors is a response for StackGetErrors request.
   repeated Error errors = 3;
+  // TestHasError is a response for StackPreTest and StackPostTest request.
+  bool test_has_error = 4;
 }
 
 enum StackStatus {

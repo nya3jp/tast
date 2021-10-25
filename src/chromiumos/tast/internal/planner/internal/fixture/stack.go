@@ -5,7 +5,11 @@
 // Package fixture provides fixture stack data structure.
 package fixture
 
-import "fmt"
+import (
+	"fmt"
+
+	"chromiumos/tast/internal/protocol"
+)
 
 // Status represents a status of a fixture, as well as that of a fixture
 // stack. See comments around InternalStack for details.
@@ -31,5 +35,31 @@ func (s Status) String() string {
 		return "yellow"
 	default:
 		return fmt.Sprintf("unknown(%d)", int(s))
+	}
+}
+
+func (s Status) proto() protocol.StackStatus {
+	switch s {
+	case StatusGreen:
+		return protocol.StackStatus_GREEN
+	case StatusRed:
+		return protocol.StackStatus_RED
+	case StatusYellow:
+		return protocol.StackStatus_YELLOW
+	default:
+		panic(fmt.Sprintf("BUG: unknown status %v", s))
+	}
+}
+
+func statusFromProto(s protocol.StackStatus) Status {
+	switch s {
+	case protocol.StackStatus_GREEN:
+		return StatusGreen
+	case protocol.StackStatus_RED:
+		return StatusRed
+	case protocol.StackStatus_YELLOW:
+		return StatusYellow
+	default:
+		panic(fmt.Sprintf("BUG: unknown status %v", s))
 	}
 }

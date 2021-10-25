@@ -53,7 +53,10 @@ message ListEntitiesResponse {
 }
 
 message RunTestsRequest {
-  oneof type { RunTestsInit run_tests_init = 1; }
+  oneof type {
+    RunTestsInit run_tests_init = 1;
+    StackOperationResponse stack_operation_response = 3;
+  }
   reserved 2;
 }
 
@@ -64,6 +67,7 @@ message RunTestsResponse {
     EntityLogEvent entity_log = 3;
     EntityErrorEvent entity_error = 4;
     EntityEndEvent entity_end = 5;
+    StackOperationRequest stack_operation = 6;
   }
 }
 
@@ -359,4 +363,45 @@ message SysInfoState {
 
   // MinidumpPaths contains absolute paths to minidump crash files.
   repeated string minidump_paths = 3;
+}
+
+message StackOperationRequest {
+  oneof type {
+    StackReset reset = 1;
+    StackPreTest pre_test = 2;
+    StackPostTest post_test = 3;
+    StackGetStatus status = 4;
+    StackSetDirty set_dirty = 5;
+    StackGetErrors errors = 6;
+  }
+}
+
+message StackReset {}
+
+message StackPreTest {
+  Entity entity = 1;
+  bool has_error = 2;
+}
+
+message StackPostTest { Entity entity = 1; }
+
+message StackGetStatus {}
+
+message StackSetDirty { bool dirty = 1; }
+
+message StackGetErrors {}
+
+message StackOperationResponse {
+  // FatalError is an framework internal error happened during operation.
+  string fatal_error = 1;
+  // Status is a response for StackGetStatus request.
+  StackStatus status = 2;
+  // Errors is a response for StackGetErrors request.
+  repeated Error errors = 3;
+}
+
+enum StackStatus {
+  GREEN = 0;
+  RED = 1;
+  YELLOW = 2;
 }

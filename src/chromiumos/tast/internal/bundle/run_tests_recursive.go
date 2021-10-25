@@ -237,9 +237,9 @@ func runLocalTests(
 					HeartbeatInterval: rcfg.GetHeartbeatInterval(),
 					WaitUntilReady:    rcfg.GetWaitUntilReady(),
 				},
+				Recursive: true,
 			},
 		},
-		Recursive: true,
 	}); err != nil {
 		return err
 	}

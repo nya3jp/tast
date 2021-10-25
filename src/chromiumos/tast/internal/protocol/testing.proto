@@ -54,8 +54,7 @@ message ListEntitiesResponse {
 
 message RunTestsRequest {
   oneof type { RunTestsInit run_tests_init = 1; }
-  // Recursive specifies whether to run tests on target bundles recursively.
-  bool recursive = 2;
+  reserved 2;
 }
 
 message RunTestsResponse {
@@ -156,6 +155,8 @@ message EntityLegacyData {
 
 message RunTestsInit {
   RunConfig run_config = 1;
+  // Recursive specifies whether to run tests on target bundles recursively.
+  bool recursive = 2;
 
   // DebugPort is the port which the debugger for the test bundle will listen
   // on. Note that this field is only used for test runners, and not bundles.

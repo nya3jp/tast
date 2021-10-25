@@ -58,7 +58,7 @@ func (s *testServer) RunTests(srv protocol.TestService_RunTestsServer) error {
 		return errors.Errorf("RunTests: unexpected initial request message: got %T, want %T", initReq.GetType(), &protocol.RunTestsRequest_RunTestsInit{})
 	}
 
-	if initReq.GetRecursive() {
+	if initReq.GetRunTestsInit().GetRecursive() {
 		return runTestsRecursive(ctx, srv, initReq.GetRunTestsInit().GetRunConfig(), s.scfg, s.bundleParams)
 	}
 	return runTests(ctx, srv, initReq.GetRunTestsInit().GetRunConfig(), s.scfg, s.bundleParams.GetBundleConfig())

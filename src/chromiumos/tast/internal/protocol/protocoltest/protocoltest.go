@@ -73,9 +73,9 @@ func runTestsForEvents(ctx context.Context, cl protocol.TestServiceClient, rcfg 
 		Type: &protocol.RunTestsRequest_RunTestsInit{
 			RunTestsInit: &protocol.RunTestsInit{
 				RunConfig: rcfg,
+				Recursive: recursive,
 			},
 		},
-		Recursive: recursive,
 	}
 	if err := srv.Send(req); err != nil {
 		return nil, errors.Wrap(err, "failed to send RunTestsInit")

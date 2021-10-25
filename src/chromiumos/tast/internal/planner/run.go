@@ -9,8 +9,6 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
-	"os"
 	"path/filepath"
 	"runtime"
 	"runtime/pprof"
@@ -22,6 +20,8 @@ import (
 	"chromiumos/tast/internal/devserver"
 	"chromiumos/tast/internal/extdata"
 	"chromiumos/tast/internal/logging"
+	"chromiumos/tast/internal/planner/internal/entity"
+	"chromiumos/tast/internal/planner/internal/fixture"
 	"chromiumos/tast/internal/planner/internal/output"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testcontext"
@@ -33,11 +33,20 @@ import (
 // OutputStream is an interface to report streamed outputs of multiple entity runs.
 type OutputStream = output.Stream
 
+// FixtureStack maintains a stack of fixtures and their states.
+type FixtureStack = fixture.InternalStack
+
+// NewFixtureStack creates a new empty fixture stack.
+func NewFixtureStack(cfg *Config, out OutputStream) *FixtureStack {
+	return fixture.NewInternalStack(cfg.FixtureConfig(), out)
+}
+
 const (
 	preTestTimeout  = 3 * time.Minute // timeout for RuntimeConfig.TestHook
 	postTestTimeout = 3 * time.Minute // timeout for a closure returned by RuntimeConfig.TestHook
 
-	defaultGracePeriod = 30 * time.Second // default recommended grace period for SafeCall
+	// DefaultGracePeriod is default recommended grace period for SafeCall.
+	DefaultGracePeriod = 30 * time.Second
 )
 
 // DownloadMode specifies a strategy to download external data files.
@@ -128,7 +137,23 @@ func (c *Config) GracePeriod() time.Duration {
 	if c.CustomGracePeriod != nil {
 		return *c.CustomGracePeriod
 	}
-	return defaultGracePeriod
+	return DefaultGracePeriod
+}
+
+// FixtureConfig returns a fixture config derived from c.
+func (c *Config) FixtureConfig() *fixture.Config {
+	return &fixture.Config{
+		DataDir:           c.DataDir,
+		OutDir:            c.OutDir,
+		Vars:              c.Features.GetInfra().GetVars(),
+		Devservers:        c.Devservers,
+		TLWServer:         c.TLWServer,
+		DUTName:           c.DUTName,
+		BuildArtifactsURL: c.BuildArtifactsURL,
+		RemoteData:        c.RemoteData,
+		StartFixtureName:  c.StartFixtureName,
+		GracePeriod:       c.GracePeriod(),
+	}
 }
 
 // RunTests runs a set of tests, writing outputs to out.
@@ -358,7 +383,7 @@ func buildFixtPlan(tests []*testing.TestInstance, pcfg *Config) (*fixtPlan, erro
 	const infinite = 24 * time.Hour // a day is considered infinite
 	tree.fixt = &testing.FixtureInstance{
 		// Do not set Name of a start fixture. output.EntityOutputStream do not emit
-		// EntityStart/EntityEnd for unnamed entities.
+		// EntityStart/EntityEnd for unnamed entity.
 		Impl: impl,
 		// Set infinite timeouts to all lifecycle methods. In production, the
 		// start fixture may communicate with the host machine to trigger remote
@@ -384,7 +409,7 @@ func (p *fixtPlan) run(ctx context.Context, out output.Stream, dl *downloader) e
 	}
 
 	tree := p.tree.Clone()
-	stack := NewFixtureStack(p.pcfg, out)
+	stack := fixture.NewInternalStack(p.pcfg.FixtureConfig(), out)
 	return runFixtTree(ctx, tree, stack, p.pcfg, out, dl)
 }
 
@@ -414,7 +439,7 @@ func (p *fixtPlan) entitiesToRun() []*protocol.Entity {
 
 // runFixtTree runs tests in a fixture tree.
 // tree is modified as tests are run.
-func runFixtTree(ctx context.Context, tree *fixtTree, stack *FixtureStack, pcfg *Config, out output.Stream, dl *downloader) error {
+func runFixtTree(ctx context.Context, tree *fixtTree, stack *fixture.InternalStack, pcfg *Config, out output.Stream, dl *downloader) error {
 	// Note about invariants:
 	// On entering this function, if the fixture stack is green, it is clean.
 	// Thus we don't need to reset fixtures before running a next test.
@@ -437,7 +462,7 @@ func runFixtTree(ctx context.Context, tree *fixtTree, stack *FixtureStack, pcfg 
 			// returning an error because it happens only when the timeout is ignored.
 
 			// Run direct child tests first.
-			for stack.Status() != statusYellow && len(tree.tests) > 0 {
+			for stack.Status() != fixture.StatusYellow && len(tree.tests) > 0 {
 				t := tree.tests[0]
 				tree.tests = tree.tests[1:]
 				tout := output.NewEntityStream(out, t.EntityProto())
@@ -452,7 +477,7 @@ func runFixtTree(ctx context.Context, tree *fixtTree, stack *FixtureStack, pcfg 
 			}
 
 			// Run child fixtures recursively.
-			for stack.Status() != statusYellow && len(tree.children) > 0 {
+			for stack.Status() != fixture.StatusYellow && len(tree.children) > 0 {
 				subtree := tree.children[0]
 				if err := runFixtTree(ctx, subtree, stack, pcfg, out, dl); err != nil {
 					return err
@@ -462,7 +487,7 @@ func runFixtTree(ctx context.Context, tree *fixtTree, stack *FixtureStack, pcfg 
 				if subtree.Empty() {
 					tree.children = tree.children[1:]
 				}
-				if stack.Status() != statusYellow && !tree.Empty() {
+				if stack.Status() != fixture.StatusYellow && !tree.Empty() {
 					if err := stack.Reset(ctx); err != nil {
 						return err
 					}
@@ -508,8 +533,8 @@ func (p *prePlan) run(ctx context.Context, out output.Stream, dl *downloader) er
 	defer cancel()
 
 	// Create an empty fixture stack. Tests using preconditions can't depend on
-	// fixtures.
-	stack := NewFixtureStack(p.pcfg, out)
+	// fixture.
+	stack := fixture.NewInternalStack(p.pcfg.FixtureConfig(), out)
 
 	for i, t := range p.tests {
 		ti := t.EntityProto()
@@ -579,14 +604,14 @@ type preConfig struct {
 //
 // runTest runs a test on a goroutine. If a test does not finish after reaching
 // its timeout, this function returns with an error without waiting for its finish.
-func runTest(ctx context.Context, t *testing.TestInstance, tout *output.EntityStream, pcfg *Config, precfg *preConfig, stack *FixtureStack, dl *downloader) error {
+func runTest(ctx context.Context, t *testing.TestInstance, tout *output.EntityStream, pcfg *Config, precfg *preConfig, stack *fixture.InternalStack, dl *downloader) error {
 	fixtCtx := ctx
 
 	// Attach a log that the test can use to report timing events.
 	timingLog := timing.NewLog()
 	ctx = timing.NewContext(ctx, timingLog)
 
-	outDir, err := createEntityOutDir(pcfg.OutDir, t.Name)
+	outDir, err := entity.CreateOutDir(pcfg.OutDir, t.Name)
 	if err != nil {
 		return err
 	}
@@ -602,13 +627,13 @@ func runTest(ctx context.Context, t *testing.TestInstance, tout *output.EntitySt
 	}
 
 	switch stack.Status() {
-	case statusGreen:
-	case statusRed:
+	case fixture.StatusGreen:
+	case fixture.StatusRed:
 		for _, e := range stack.Errors() {
 			tout.Error(e)
 		}
 		return nil
-	case statusYellow:
+	case fixture.StatusYellow:
 		return errors.New("BUG: Cannot run a test on a yellow fixture stack")
 	}
 
@@ -701,66 +726,11 @@ func (d *downloader) download(ctx context.Context, entities []*protocol.Entity) 
 	return release
 }
 
-func createEntityOutDir(baseDir, name string) (string, error) {
-	// baseDir can be blank for unit tests.
-	if baseDir == "" {
-		return "", nil
-	}
-
-	if err := os.MkdirAll(baseDir, 0755); err != nil {
-		return "", err
-	}
-
-	var outDir string
-	// First try to make a fixed-name directory. This allows unit tests to be deterministic.
-	if err := os.Mkdir(filepath.Join(baseDir, name), 0755); err == nil {
-		outDir = filepath.Join(baseDir, name)
-	} else if os.IsExist(err) {
-		// The directory already exists. Use ioutil.TempDir to create a randomly named one.
-		var err error
-		outDir, err = ioutil.TempDir(baseDir, name+".")
-		if err != nil {
-			return "", err
-		}
-	} else {
-		return "", err
-	}
-
-	// Make the directory world-writable so that tests can create files as other users,
-	// and set the sticky bit to prevent users from deleting other users' files.
-	// (The mode passed to os.MkdirAll is modified by umask, so we need an explicit chmod.)
-	if err := os.Chmod(outDir, 0777|os.ModeSticky); err != nil {
-		return "", err
-	}
-	return outDir, nil
-}
-
-type entityState interface {
-	DataPath(p string) string
-	Errorf(fmt string, args ...interface{})
-}
-
-func entityPreCheck(data []string, s entityState) {
-	// Make sure all required data files exist.
-	for _, fn := range data {
-		fp := s.DataPath(fn)
-		if _, err := os.Stat(fp); err == nil {
-			continue
-		}
-		ep := fp + testing.ExternalErrorSuffix
-		if data, err := ioutil.ReadFile(ep); err == nil {
-			s.Errorf("Required data file %s missing: %s", fn, string(data))
-		} else {
-			s.Errorf("Required data file %s missing", fn)
-		}
-	}
-}
-
 // runTestWithRoot runs a test with TestEntityRoot.
 //
 // The time allotted to the test is generally the sum of t.Timeout and t.ExitTimeout, but
 // additional time may be allotted for preconditions and pre/post-test hooks.
-func runTestWithRoot(ctx context.Context, t *testing.TestInstance, root *testing.TestEntityRoot, pcfg *Config, stack *FixtureStack, precfg *preConfig) error {
+func runTestWithRoot(ctx context.Context, t *testing.TestInstance, root *testing.TestEntityRoot, pcfg *Config, stack *fixture.InternalStack, precfg *preConfig) error {
 	// codeName is included in error messages if the user code ignores the timeout.
 	// For compatibility, the same fixed name is used for tests, preconditions and test hooks.
 	const codeName = "Test"
@@ -779,7 +749,7 @@ func runTestWithRoot(ctx context.Context, t *testing.TestInstance, root *testing
 			testState.Fatal("Invalid timeout ", t.Timeout)
 		}
 
-		entityPreCheck(t.Data, testState)
+		entity.PreCheck(t.Data, testState)
 		if testState.HasError() {
 			return
 		}

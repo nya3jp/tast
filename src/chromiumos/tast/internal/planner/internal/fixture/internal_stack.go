@@ -2,15 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package planner
+package fixture
 
 import (
 	"context"
 	"errors"
 	"fmt"
 	"path/filepath"
+	"time"
 
 	"chromiumos/tast/internal/logging"
+	"chromiumos/tast/internal/planner/internal/entity"
 	"chromiumos/tast/internal/planner/internal/output"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testcontext"
@@ -19,31 +21,24 @@ import (
 	"chromiumos/tast/internal/usercode"
 )
 
-// fixtureStatus represents a status of a fixture, as well as that of a fixture
-// stack. See comments around FixtureStack for details.
-type fixtureStatus int
-
-const (
-	statusRed    fixtureStatus = iota // fixture is not set up or torn down
-	statusGreen                       // fixture is set up
-	statusYellow                      // fixture is set up but last reset failed
-)
-
-// String converts fixtureStatus to a string for debugging.
-func (s fixtureStatus) String() string {
-	switch s {
-	case statusRed:
-		return "red"
-	case statusGreen:
-		return "green"
-	case statusYellow:
-		return "yellow"
-	default:
-		return fmt.Sprintf("unknown(%d)", int(s))
-	}
+// Config contains details about how to run fixtures.
+type Config struct {
+	// DataDir and other fields are subset of the fields in planner.Config.
+	// See its description for details.
+	DataDir           string
+	OutDir            string
+	Vars              map[string]string
+	Devservers        []string
+	TLWServer         string
+	DUTName           string
+	BuildArtifactsURL string
+	RemoteData        *testing.RemoteData
+	StartFixtureName  string
+	// GracePeriod specifies the grace period after fixture timeout.
+	GracePeriod time.Duration
 }
 
-// FixtureStack maintains a stack of fixtures and their states.
+// InternalStack maintains a stack of fixtures in the current bundle and their states.
 //
 // A fixture stack corresponds to a path from the root of a fixture tree. As we
 // traverse a fixture tree, a new child fixture is pushed to the stack by Push,
@@ -71,7 +66,7 @@ func (s fixtureStatus) String() string {
 //   | +-----------------------+                          |
 //   +----------------------------------------------------+
 //
-// FixtureStack maintains the following invariants about fixture statuses:
+// InternalStack maintains the following invariants about fixture statuses:
 //
 //  1. When there is a yellow fixture in the stack, no other fixtures are red.
 //  2. When there is no yellow fixture in the stack, there is an integer k
@@ -112,7 +107,7 @@ func (s fixtureStatus) String() string {
 // can be marked dirty with MarkDirty. It is an error to call MarkDirty on a
 // dirty stack. The dirty flag can be cleared by Reset. MarkDirty can be called
 // before running a test to make sure Reset is called for sure between tests.
-type FixtureStack struct {
+type InternalStack struct {
 	cfg *Config
 	out output.Stream
 
@@ -120,19 +115,19 @@ type FixtureStack struct {
 	dirty bool
 }
 
-// NewFixtureStack creates a new empty fixture stack.
-func NewFixtureStack(cfg *Config, out output.Stream) *FixtureStack {
-	return &FixtureStack{cfg: cfg, out: out}
+// NewInternalStack creates a new empty fixture stack.
+func NewInternalStack(cfg *Config, out output.Stream) *InternalStack {
+	return &InternalStack{cfg: cfg, out: out}
 }
 
 // Status returns the current status of the fixture stack.
-func (st *FixtureStack) Status() fixtureStatus {
+func (st *InternalStack) Status() Status {
 	for _, f := range st.stack {
-		if s := f.Status(); s != statusGreen {
+		if s := f.Status(); s != StatusGreen {
 			return s
 		}
 	}
-	return statusGreen
+	return StatusGreen
 }
 
 // Errors returns errors to be reported for tests depending on this fixture
@@ -144,9 +139,9 @@ func (st *FixtureStack) Status() fixtureStatus {
 // the following way:
 //
 //  [Fixture failure] (fixture name): (original error message)
-func (st *FixtureStack) Errors() []*protocol.Error {
+func (st *InternalStack) Errors() []*protocol.Error {
 	for _, f := range st.stack {
-		if f.Status() == statusRed {
+		if f.Status() == StatusRed {
 			return f.Errors()
 		}
 	}
@@ -156,11 +151,11 @@ func (st *FixtureStack) Errors() []*protocol.Error {
 // Val returns the fixture value of the top fixture.
 //
 // If the fixture stack is empty or red, it returns nil.
-func (st *FixtureStack) Val() interface{} {
+func (st *InternalStack) Val() interface{} {
 	if len(st.stack) == 0 {
 		return nil
 	}
-	if st.Status() == statusRed {
+	if st.Status() == StatusRed {
 		return nil
 	}
 	return st.top().Val()
@@ -175,15 +170,15 @@ func (st *FixtureStack) Val() interface{} {
 // and the resulting fixture stack is red.
 //
 // It is an error to call Push for a yellow fixture stack.
-func (st *FixtureStack) Push(ctx context.Context, fixt *testing.FixtureInstance) error {
+func (st *InternalStack) Push(ctx context.Context, fixt *testing.FixtureInstance) error {
 	status := st.Status()
-	if status == statusYellow {
+	if status == StatusYellow {
 		return errors.New("BUG: fixture must not be pushed to a yellow stack")
 	}
 
 	var outDir string
 	if fixt.Name != "" {
-		dir, err := createEntityOutDir(st.cfg.OutDir, fixt.Name)
+		dir, err := entity.CreateOutDir(st.cfg.OutDir, fixt.Name)
 		if err != nil {
 			return err
 		}
@@ -202,7 +197,7 @@ func (st *FixtureStack) Push(ctx context.Context, fixt *testing.FixtureInstance)
 	rcfg := &testing.RuntimeConfig{
 		DataDir:      filepath.Join(st.cfg.DataDir, testing.RelativeDataDir(fixt.Pkg)),
 		OutDir:       outDir,
-		Vars:         st.cfg.Features.GetInfra().GetVars(),
+		Vars:         st.cfg.Vars,
 		CloudStorage: testing.NewCloudStorage(st.cfg.Devservers, st.cfg.TLWServer, st.cfg.DUTName, st.cfg.BuildArtifactsURL),
 		RemoteData:   st.cfg.RemoteData,
 		FixtValue:    st.Val(),
@@ -213,7 +208,7 @@ func (st *FixtureStack) Push(ctx context.Context, fixt *testing.FixtureInstance)
 	f := newStatefulFixture(fixt, root, fout, st.cfg)
 	st.stack = append(st.stack, f)
 
-	if status == statusGreen {
+	if status == StatusGreen {
 		if err := st.top().RunSetUp(ctx); err != nil {
 			return err
 		}
@@ -224,10 +219,10 @@ func (st *FixtureStack) Push(ctx context.Context, fixt *testing.FixtureInstance)
 // Pop removes the top-most fixture from the fixture stack.
 //
 // If the top-most fixture is green or yellow, its TearDown method is called.
-func (st *FixtureStack) Pop(ctx context.Context) error {
+func (st *InternalStack) Pop(ctx context.Context) error {
 	f := st.top()
 	st.stack = st.stack[:len(st.stack)-1]
-	if f.Status() != statusRed {
+	if f.Status() != StatusRed {
 		if err := f.RunTearDown(ctx); err != nil {
 			return err
 		}
@@ -249,14 +244,14 @@ func (st *FixtureStack) Pop(ctx context.Context) error {
 //
 // If the stack is red, Reset does nothing. If the stack is yellow, it is an
 // error to call this method.
-func (st *FixtureStack) Reset(ctx context.Context) error {
+func (st *InternalStack) Reset(ctx context.Context) error {
 	st.dirty = false
 
 	switch st.Status() {
-	case statusGreen:
-	case statusRed:
+	case StatusGreen:
+	case StatusRed:
 		return nil
-	case statusYellow:
+	case StatusYellow:
 		return errors.New("BUG: Reset called for a yellow fixture stack")
 	}
 
@@ -265,10 +260,10 @@ func (st *FixtureStack) Reset(ctx context.Context) error {
 			return err
 		}
 		switch f.Status() {
-		case statusGreen:
-		case statusRed:
+		case StatusGreen:
+		case StatusRed:
 			return errors.New("BUG: fixture is red after calling Reset")
-		case statusYellow:
+		case StatusYellow:
 			return nil
 		}
 	}
@@ -277,8 +272,8 @@ func (st *FixtureStack) Reset(ctx context.Context) error {
 
 // PreTest runs PreTests on the fixtures.
 // It returns a post test hook that runs PostTests on the fixtures.
-func (st *FixtureStack) PreTest(ctx context.Context, troot *testing.TestEntityRoot) (func(context.Context, *testing.TestEntityRoot) error, error) {
-	if status := st.Status(); status != statusGreen {
+func (st *InternalStack) PreTest(ctx context.Context, troot *testing.TestEntityRoot) (func(context.Context, *testing.TestEntityRoot) error, error) {
+	if status := st.Status(); status != StatusGreen {
 		return nil, fmt.Errorf("BUG: PreTest called for a %v fixture", status)
 	}
 
@@ -292,7 +287,7 @@ func (st *FixtureStack) PreTest(ctx context.Context, troot *testing.TestEntityRo
 	}
 
 	return func(ctx context.Context, troot *testing.TestEntityRoot) error {
-		if status := st.Status(); status != statusGreen {
+		if status := st.Status(); status != StatusGreen {
 			return fmt.Errorf("BUG: PostTest called for a %v fixture", status)
 		}
 		for i := len(postTests) - 1; i >= 0; i-- {
@@ -309,7 +304,7 @@ func (st *FixtureStack) PreTest(ctx context.Context, troot *testing.TestEntityRo
 //
 // The dirty flag can be cleared by calling Reset. MarkDirty can be called
 // before running a test to make sure Reset is called for sure between tests.
-func (st *FixtureStack) MarkDirty() error {
+func (st *InternalStack) MarkDirty() error {
 	if st.dirty {
 		return errors.New("BUG: MarkDirty called for a dirty stack")
 	}
@@ -318,7 +313,7 @@ func (st *FixtureStack) MarkDirty() error {
 }
 
 // top returns the stateful fixture at the top of the stack.
-func (st *FixtureStack) top() *statefulFixture {
+func (st *InternalStack) top() *statefulFixture {
 	if len(st.stack) == 0 {
 		panic("BUG: top called for an empty stack")
 	}
@@ -333,7 +328,7 @@ type statefulFixture struct {
 	root *testing.EntityRoot
 	fout *output.EntityStream
 
-	status fixtureStatus
+	status Status
 	errs   []*protocol.Error
 	val    interface{} // val returned by SetUp
 }
@@ -345,7 +340,7 @@ func newStatefulFixture(fixt *testing.FixtureInstance, root *testing.EntityRoot,
 		fixt:   fixt,
 		root:   root,
 		fout:   fout,
-		status: statusRed,
+		status: StatusRed,
 	}
 }
 
@@ -355,7 +350,7 @@ func (f *statefulFixture) Name() string {
 }
 
 // Status returns the current status of the fixture.
-func (f *statefulFixture) Status() fixtureStatus {
+func (f *statefulFixture) Status() Status {
 	return f.status
 }
 
@@ -378,7 +373,7 @@ func (f *statefulFixture) Val() interface{} {
 
 // RunSetUp calls SetUp of the fixture with a proper context and timeout.
 func (f *statefulFixture) RunSetUp(ctx context.Context) error {
-	if f.Status() != statusRed {
+	if f.Status() != StatusRed {
 		return errors.New("BUG: RunSetUp called for a non-red fixture")
 	}
 
@@ -389,8 +384,8 @@ func (f *statefulFixture) RunSetUp(ctx context.Context) error {
 	f.fout.Start(s.OutDir())
 
 	var val interface{}
-	if err := usercode.SafeCall(ctx, name, f.fixt.SetUpTimeout, f.cfg.GracePeriod(), usercode.ErrorOnPanic(s), func(ctx context.Context) {
-		entityPreCheck(f.fixt.Data, s)
+	if err := usercode.SafeCall(ctx, name, f.fixt.SetUpTimeout, f.cfg.GracePeriod, usercode.ErrorOnPanic(s), func(ctx context.Context) {
+		entity.PreCheck(f.fixt.Data, s)
 		if s.HasError() {
 			return
 		}
@@ -410,14 +405,14 @@ func (f *statefulFixture) RunSetUp(ctx context.Context) error {
 		return nil
 	}
 
-	f.status = statusGreen
+	f.status = StatusGreen
 	f.val = val
 	return nil
 }
 
 // RunTearDown calls TearDown of the fixture with a proper context and timeout.
 func (f *statefulFixture) RunTearDown(ctx context.Context) error {
-	if f.Status() == statusRed {
+	if f.Status() == StatusRed {
 		return errors.New("BUG: RunTearDown called for a red fixture")
 	}
 
@@ -425,7 +420,7 @@ func (f *statefulFixture) RunTearDown(ctx context.Context) error {
 	s := f.root.NewFixtState()
 	name := fmt.Sprintf("%s:TearDown", f.fixt.Name)
 
-	if err := usercode.SafeCall(ctx, name, f.fixt.TearDownTimeout, f.cfg.GracePeriod(), usercode.ErrorOnPanic(s), func(ctx context.Context) {
+	if err := usercode.SafeCall(ctx, name, f.fixt.TearDownTimeout, f.cfg.GracePeriod, usercode.ErrorOnPanic(s), func(ctx context.Context) {
 		f.fixt.Impl.TearDown(ctx, s)
 	}); err != nil {
 		return err
@@ -434,14 +429,14 @@ func (f *statefulFixture) RunTearDown(ctx context.Context) error {
 	// TODO(crbug.com/1127169): Support timing log.
 	f.fout.End(nil, timing.NewLog())
 
-	f.status = statusRed
+	f.status = StatusRed
 	f.val = nil
 	return nil
 }
 
 // RunReset calls Reset of the fixture with a proper context and timeout.
 func (f *statefulFixture) RunReset(ctx context.Context) error {
-	if f.Status() != statusGreen {
+	if f.Status() != StatusGreen {
 		return errors.New("BUG: RunReset called for a non-green fixture")
 	}
 
@@ -453,14 +448,14 @@ func (f *statefulFixture) RunReset(ctx context.Context) error {
 		resetErr = fmt.Errorf("panic: %v", val)
 	}
 
-	if err := usercode.SafeCall(ctx, name, f.fixt.ResetTimeout, f.cfg.GracePeriod(), onPanic, func(ctx context.Context) {
+	if err := usercode.SafeCall(ctx, name, f.fixt.ResetTimeout, f.cfg.GracePeriod, onPanic, func(ctx context.Context) {
 		resetErr = f.fixt.Impl.Reset(ctx)
 	}); err != nil {
 		return err
 	}
 
 	if resetErr != nil {
-		f.status = statusYellow
+		f.status = StatusYellow
 		f.fout.Log(fmt.Sprintf("Fixture failed to reset: %v; recovering", resetErr))
 	}
 	return nil
@@ -468,7 +463,7 @@ func (f *statefulFixture) RunReset(ctx context.Context) error {
 
 // RunPreTest runs PreTest on the fixture. It returns a post test hook.
 func (f *statefulFixture) RunPreTest(ctx context.Context, troot *testing.TestEntityRoot) (func(context.Context, *testing.TestEntityRoot) error, error) {
-	if status := f.Status(); status != statusGreen {
+	if status := f.Status(); status != StatusGreen {
 		return nil, fmt.Errorf("BUG: RunPreTest called for a %v fixture", status)
 	}
 
@@ -481,7 +476,7 @@ func (f *statefulFixture) RunPreTest(ctx context.Context, troot *testing.TestEnt
 	ctx = f.newTestContext(ctx, troot, troot.LogSink())
 	s := troot.NewFixtTestState(ctx)
 	name := fmt.Sprintf("%s:PreTest", f.fixt.Name)
-	if err := usercode.SafeCall(ctx, name, f.fixt.PreTestTimeout, f.cfg.GracePeriod(), usercode.ErrorOnPanic(s), func(ctx context.Context) {
+	if err := usercode.SafeCall(ctx, name, f.fixt.PreTestTimeout, f.cfg.GracePeriod, usercode.ErrorOnPanic(s), func(ctx context.Context) {
 		f.fixt.Impl.PreTest(ctx, s)
 	}); err != nil {
 		return nil, err
@@ -495,7 +490,7 @@ func (f *statefulFixture) RunPreTest(ctx context.Context, troot *testing.TestEnt
 }
 
 func (f *statefulFixture) runPostTest(ctx context.Context, troot *testing.TestEntityRoot) error {
-	if status := f.Status(); status != statusGreen {
+	if status := f.Status(); status != StatusGreen {
 		return fmt.Errorf("BUG: RunPostTest called for a %v fixture", status)
 	}
 
@@ -503,7 +498,7 @@ func (f *statefulFixture) runPostTest(ctx context.Context, troot *testing.TestEn
 	s := troot.NewFixtTestState(ctx)
 	name := fmt.Sprintf("%s:PostTest", f.fixt.Name)
 
-	return usercode.SafeCall(ctx, name, f.fixt.PostTestTimeout, f.cfg.GracePeriod(), usercode.ErrorOnPanic(s), func(ctx context.Context) {
+	return usercode.SafeCall(ctx, name, f.fixt.PostTestTimeout, f.cfg.GracePeriod, usercode.ErrorOnPanic(s), func(ctx context.Context) {
 		f.fixt.Impl.PostTest(ctx, s)
 	})
 }

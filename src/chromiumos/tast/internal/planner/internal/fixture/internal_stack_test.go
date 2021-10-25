@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package planner
+package fixture_test
 
 import (
 	"context"
@@ -16,6 +16,8 @@ import (
 
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/logging"
+	"chromiumos/tast/internal/planner"
+	"chromiumos/tast/internal/planner/internal/fixture"
 	"chromiumos/tast/internal/planner/internal/output"
 	"chromiumos/tast/internal/planner/internal/output/outputtest"
 	"chromiumos/tast/internal/protocol"
@@ -25,20 +27,20 @@ import (
 	"chromiumos/tast/testutil"
 )
 
-// TestFixtureStackInitStatus checks the initial status of a fixture stack.
-func TestFixtureStackInitStatus(t *gotesting.T) {
-	stack := NewFixtureStack(&Config{}, outputtest.NewSink())
+// TestInternalStackInitStatus checks the initial status of a fixture stack.
+func TestInternalStackInitStatus(t *gotesting.T) {
+	stack := fixture.NewInternalStack(&fixture.Config{GracePeriod: planner.DefaultGracePeriod}, outputtest.NewSink())
 
-	if got := stack.Status(); got != statusGreen {
-		t.Fatalf("Initial status is %v; want %v", got, statusGreen)
+	if got := stack.Status(); got != fixture.StatusGreen {
+		t.Fatalf("Initial status is %v; want %v", got, fixture.StatusGreen)
 	}
 }
 
-// TestFixtureStackStatusTransitionGreen tests status transition of a fixture
-// stack on pushing healthy fixtures.
-func TestFixtureStackStatusTransitionGreen(t *gotesting.T) {
+// TestInternalStackStatusTransitionGreen tests status transition of a fixture
+// stack on pushing healthy fixture.
+func TestInternalStackStatusTransitionGreen(t *gotesting.T) {
 	ctx := context.Background()
-	stack := NewFixtureStack(&Config{}, outputtest.NewSink())
+	stack := fixture.NewInternalStack(&fixture.Config{GracePeriod: planner.DefaultGracePeriod}, outputtest.NewSink())
 
 	pushGreen := func() error {
 		return stack.Push(ctx, &testing.FixtureInstance{Impl: testfixture.New()})
@@ -52,15 +54,15 @@ func TestFixtureStackStatusTransitionGreen(t *gotesting.T) {
 
 	for i, step := range []struct {
 		f    func() error
-		want fixtureStatus
+		want fixture.Status
 	}{
-		{pushGreen, statusGreen},
-		{pushGreen, statusGreen},
-		{pushGreen, statusGreen},
-		{reset, statusGreen},
-		{pop, statusGreen},
-		{pop, statusGreen},
-		{pop, statusGreen},
+		{pushGreen, fixture.StatusGreen},
+		{pushGreen, fixture.StatusGreen},
+		{pushGreen, fixture.StatusGreen},
+		{reset, fixture.StatusGreen},
+		{pop, fixture.StatusGreen},
+		{pop, fixture.StatusGreen},
+		{pop, fixture.StatusGreen},
 	} {
 		if err := step.f(); err != nil {
 			t.Fatalf("Step %d: %v", i, err)
@@ -71,11 +73,11 @@ func TestFixtureStackStatusTransitionGreen(t *gotesting.T) {
 	}
 }
 
-// TestFixtureStackStatusTransitionRed tests status transition of a fixture
+// TestInternalStackStatusTransitionRed tests status transition of a fixture
 // stack on pushing a fixture that fails to set up.
-func TestFixtureStackStatusTransitionRed(t *gotesting.T) {
+func TestInternalStackStatusTransitionRed(t *gotesting.T) {
 	ctx := context.Background()
-	stack := NewFixtureStack(&Config{}, outputtest.NewSink())
+	stack := fixture.NewInternalStack(&fixture.Config{GracePeriod: planner.DefaultGracePeriod}, outputtest.NewSink())
 
 	pushGreen := func() error {
 		return stack.Push(ctx, &testing.FixtureInstance{Impl: testfixture.New()})
@@ -94,22 +96,22 @@ func TestFixtureStackStatusTransitionRed(t *gotesting.T) {
 
 	for i, step := range []struct {
 		f    func() error
-		want fixtureStatus
+		want fixture.Status
 	}{
-		{pushGreen, statusGreen},
-		{pushGreen, statusGreen},
-		{pushGreen, statusGreen},
-		{pushRed, statusRed},
-		{pushGreen, statusRed},
-		{pushGreen, statusRed},
-		{pushGreen, statusRed},
-		{pop, statusRed},
-		{pop, statusRed},
-		{pop, statusRed},
-		{pop, statusGreen},
-		{pop, statusGreen},
-		{pop, statusGreen},
-		{pop, statusGreen},
+		{pushGreen, fixture.StatusGreen},
+		{pushGreen, fixture.StatusGreen},
+		{pushGreen, fixture.StatusGreen},
+		{pushRed, fixture.StatusRed},
+		{pushGreen, fixture.StatusRed},
+		{pushGreen, fixture.StatusRed},
+		{pushGreen, fixture.StatusRed},
+		{pop, fixture.StatusRed},
+		{pop, fixture.StatusRed},
+		{pop, fixture.StatusRed},
+		{pop, fixture.StatusGreen},
+		{pop, fixture.StatusGreen},
+		{pop, fixture.StatusGreen},
+		{pop, fixture.StatusGreen},
 	} {
 		if err := step.f(); err != nil {
 			t.Fatalf("Step %d: %v", i, err)
@@ -120,11 +122,11 @@ func TestFixtureStackStatusTransitionRed(t *gotesting.T) {
 	}
 }
 
-// TestFixtureStackStatusTransitionYellow tests status transition of a fixture
+// TestInternalStackStatusTransitionYellow tests status transition of a fixture
 // stack on pushing a fixture that fails to reset.
-func TestFixtureStackStatusTransitionYellow(t *gotesting.T) {
+func TestInternalStackStatusTransitionYellow(t *gotesting.T) {
 	ctx := context.Background()
-	stack := NewFixtureStack(&Config{}, outputtest.NewSink())
+	stack := fixture.NewInternalStack(&fixture.Config{GracePeriod: planner.DefaultGracePeriod}, outputtest.NewSink())
 
 	pushGreen := func() error {
 		return stack.Push(ctx, &testing.FixtureInstance{Impl: testfixture.New()})
@@ -145,15 +147,15 @@ func TestFixtureStackStatusTransitionYellow(t *gotesting.T) {
 
 	for i, step := range []struct {
 		f    func() error
-		want fixtureStatus
+		want fixture.Status
 	}{
-		{pushGreen, statusGreen},
-		{pushYellow, statusGreen},
-		{pushGreen, statusGreen},
-		{reset, statusYellow},
-		{pop, statusYellow},
-		{pop, statusGreen},
-		{pop, statusGreen},
+		{pushGreen, fixture.StatusGreen},
+		{pushYellow, fixture.StatusGreen},
+		{pushGreen, fixture.StatusGreen},
+		{reset, fixture.StatusYellow},
+		{pop, fixture.StatusYellow},
+		{pop, fixture.StatusGreen},
+		{pop, fixture.StatusGreen},
 	} {
 		if err := step.f(); err != nil {
 			t.Fatalf("Step %d: %v", i, err)
@@ -164,10 +166,10 @@ func TestFixtureStackStatusTransitionYellow(t *gotesting.T) {
 	}
 }
 
-// TestFixtureStackMarkDirty tests dirtiness check of fixture stacks.
-func TestFixtureStackMarkDirty(t *gotesting.T) {
+// TestInternalStackMarkDirty tests dirtiness check of fixture stacks.
+func TestInternalStackMarkDirty(t *gotesting.T) {
 	ctx := context.Background()
-	stack := NewFixtureStack(&Config{}, outputtest.NewSink())
+	stack := fixture.NewInternalStack(&fixture.Config{GracePeriod: planner.DefaultGracePeriod}, outputtest.NewSink())
 
 	if err := stack.MarkDirty(); err != nil {
 		t.Errorf("MarkDirty failed for initial stack: %v", err)
@@ -188,8 +190,8 @@ func TestFixtureStackMarkDirty(t *gotesting.T) {
 	}
 }
 
-// TestFixtureStackContext checks context.Context passed to fixture methods.
-func TestFixtureStackContext(t *gotesting.T) {
+// TestInternalStackContext checks context.Context passed to fixture methods.
+func TestInternalStackContext(t *gotesting.T) {
 	const fixtureName = "fixt"
 	serviceDeps := []string{"svc1", "svc2"}
 
@@ -198,7 +200,7 @@ func TestFixtureStackContext(t *gotesting.T) {
 	baseOutDir := testutil.TempDir(t)
 	defer os.RemoveAll(baseOutDir)
 
-	stack := NewFixtureStack(&Config{OutDir: baseOutDir}, outputtest.NewSink())
+	stack := fixture.NewInternalStack(&fixture.Config{OutDir: baseOutDir, GracePeriod: planner.DefaultGracePeriod}, outputtest.NewSink())
 
 	fixtureOutDir := filepath.Join(baseOutDir, fixtureName)
 	testOutDir := filepath.Join(baseOutDir, "pkg.Test")
@@ -280,8 +282,8 @@ func TestFixtureStackContext(t *gotesting.T) {
 	}
 }
 
-// TestFixtureStackState checks state objects passed to fixture methods.
-func TestFixtureStackState(t *gotesting.T) {
+// TestInternalStackState checks state objects passed to fixture methods.
+func TestInternalStackState(t *gotesting.T) {
 	const localBundleDir = "/path/to/local/bundles"
 
 	rd := &testing.RemoteData{
@@ -289,7 +291,7 @@ func TestFixtureStackState(t *gotesting.T) {
 	}
 
 	ctx := context.Background()
-	stack := NewFixtureStack(&Config{RemoteData: rd}, outputtest.NewSink())
+	stack := fixture.NewInternalStack(&fixture.Config{RemoteData: rd, GracePeriod: planner.DefaultGracePeriod}, outputtest.NewSink())
 
 	type stateLike interface {
 		RPCHint() *testing.RPCHint
@@ -344,15 +346,15 @@ func TestFixtureStackState(t *gotesting.T) {
 	}
 }
 
-// TestFixtureStackVal tests that fixture values are passed around correctly.
-func TestFixtureStackVal(t *gotesting.T) {
+// TestInternalStackVal tests that fixture values are passed around correctly.
+func TestInternalStackVal(t *gotesting.T) {
 	const (
 		val1 = "val1"
 		val2 = "val2"
 	)
 
 	ctx := context.Background()
-	stack := NewFixtureStack(&Config{}, outputtest.NewSink())
+	stack := fixture.NewInternalStack(&fixture.Config{GracePeriod: planner.DefaultGracePeriod}, outputtest.NewSink())
 
 	if val := stack.Val(); val != nil {
 		t.Errorf("Init: Val() = %v; want nil", val)
@@ -391,20 +393,20 @@ func TestFixtureStackVal(t *gotesting.T) {
 	}
 
 	// Call Reset. Even if the stack is yellow, Val still succeeds.
-	if s := stack.Status(); s != statusGreen {
-		t.Errorf("After Push 2: Status() = %v; want %v", s, statusGreen)
+	if s := stack.Status(); s != fixture.StatusGreen {
+		t.Errorf("After Push 2: fixture.Status() = %v; want %v", s, fixture.StatusGreen)
 	}
 	if err := stack.Reset(ctx); err != nil {
 		t.Fatal("Reset: ", err)
 	}
-	if s := stack.Status(); s != statusYellow {
-		t.Errorf("After Reset: Status() = %v; want %v", s, statusYellow)
+	if s := stack.Status(); s != fixture.StatusYellow {
+		t.Errorf("After Reset: fixture.Status() = %v; want %v", s, fixture.StatusYellow)
 	}
 	if val := stack.Val(); val != val2 {
 		t.Errorf("After Reset: Val() = %v; want %v", val, val2)
 	}
 
-	// Pop fixtures.
+	// Pop fixture.
 	if err := stack.Pop(ctx); err != nil {
 		t.Fatal("Pop 2: ", err)
 	}
@@ -420,10 +422,10 @@ func TestFixtureStackVal(t *gotesting.T) {
 	}
 }
 
-// TestFixtureStackErrors tests Errors method.
-func TestFixtureStackErrors(t *gotesting.T) {
+// TestInternalStackErrors tests Errors method.
+func TestInternalStackErrors(t *gotesting.T) {
 	ctx := context.Background()
-	stack := NewFixtureStack(&Config{}, outputtest.NewSink())
+	stack := fixture.NewInternalStack(&fixture.Config{GracePeriod: planner.DefaultGracePeriod}, outputtest.NewSink())
 
 	id := 0
 	pushGreen := func() error {
@@ -476,14 +478,14 @@ func TestFixtureStackErrors(t *gotesting.T) {
 	}
 }
 
-// TestFixtureStackOutputGreen tests control message outputs when all fixtures
+// TestInternalStackOutputGreen tests control message outputs when all fixtures
 // are healthy.
-func TestFixtureStackOutputGreen(t *gotesting.T) {
+func TestInternalStackOutputGreen(t *gotesting.T) {
 	ctx := context.Background()
 	sink := outputtest.NewSink()
 	ti := &testing.TestInstance{Name: "pkg.Test"}
 	troot := testing.NewTestEntityRoot(ti, &testing.RuntimeConfig{}, output.NewEntityStream(sink, ti.EntityProto()))
-	stack := NewFixtureStack(&Config{}, sink)
+	stack := fixture.NewInternalStack(&fixture.Config{GracePeriod: planner.DefaultGracePeriod}, sink)
 
 	newLoggingFixture := func(id int) *testing.FixtureInstance {
 		return &testing.FixtureInstance{
@@ -575,12 +577,12 @@ func TestFixtureStackOutputGreen(t *gotesting.T) {
 	}
 }
 
-// TestFixtureStackOutputRed tests control message outputs when a fixture fails
+// TestInternalStackOutputRed tests control message outputs when a fixture fails
 // to set up.
-func TestFixtureStackOutputRed(t *gotesting.T) {
+func TestInternalStackOutputRed(t *gotesting.T) {
 	ctx := context.Background()
 	sink := outputtest.NewSink()
-	stack := NewFixtureStack(&Config{}, sink)
+	stack := fixture.NewInternalStack(&fixture.Config{GracePeriod: planner.DefaultGracePeriod}, sink)
 
 	newLoggingFixture := func(id int, setUp bool) *testing.FixtureInstance {
 		return &testing.FixtureInstance{
@@ -606,7 +608,7 @@ func TestFixtureStackOutputRed(t *gotesting.T) {
 	fixt2 := newLoggingFixture(2, false)
 	fixt3 := newLoggingFixture(3, true)
 
-	// Push and pop three fixtures. Second fixture fails to set up.
+	// Push and pop three fixture. Second fixture fails to set up.
 	if err := stack.Push(ctx, fixt1); err != nil {
 		t.Fatal("Push 1: ", err)
 	}
@@ -646,12 +648,12 @@ func TestFixtureStackOutputRed(t *gotesting.T) {
 	}
 }
 
-// TestFixtureStackOutputYellow tests control message outputs when a fixture
+// TestInternalStackOutputYellow tests control message outputs when a fixture
 // fails to reset.
-func TestFixtureStackOutputYellow(t *gotesting.T) {
+func TestInternalStackOutputYellow(t *gotesting.T) {
 	ctx := context.Background()
 	sink := outputtest.NewSink()
-	stack := NewFixtureStack(&Config{}, sink)
+	stack := fixture.NewInternalStack(&fixture.Config{GracePeriod: planner.DefaultGracePeriod}, sink)
 
 	newLoggingFixture := func(id int, reset bool) *testing.FixtureInstance {
 		return &testing.FixtureInstance{
@@ -677,7 +679,7 @@ func TestFixtureStackOutputYellow(t *gotesting.T) {
 	fixt2 := newLoggingFixture(2, false)
 	fixt3 := newLoggingFixture(3, true)
 
-	// Push and pop three fixtures. Second fixture fails to reset.
+	// Push and pop three fixture. Second fixture fails to reset.
 	if err := stack.Push(ctx, fixt1); err != nil {
 		t.Fatal("Push 1: ", err)
 	}

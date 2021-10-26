@@ -110,25 +110,17 @@ func runTestsRecursive(ctx context.Context, srv protocol.TestService_RunTestsSer
 		}
 	}()
 
-	mode, err := planner.DownloadModeFromProto(rcfg.GetDataFileConfig().GetDownloadMode())
-	if err != nil {
-		return command.NewStatusErrorf(statusError, "%v", err)
-	}
 	pcfg := &planner.Config{
-		DataDir:           rcfg.GetDirs().GetDataDir(),
-		OutDir:            rcfg.GetDirs().GetOutDir(),
-		Features:          rcfg.GetFeatures(),
-		Devservers:        rcfg.GetServiceConfig().GetDevservers(),
-		TLWServer:         rcfg.GetServiceConfig().GetTlwServer(),
-		DUTName:           rcfg.GetServiceConfig().GetTlwSelfName(),
-		BuildArtifactsURL: rcfg.GetDataFileConfig().GetBuildArtifactsUrl(),
-		RemoteData:        connEnv.rd,
-		TestHook:          scfg.testHook,
-		DownloadMode:      mode,
-		BeforeDownload:    scfg.beforeDownload,
-		Fixtures:          scfg.registry.AllFixtures(),
-		StartFixtureName:  rcfg.GetStartFixtureState().GetName(),
-		StartFixtureImpl:  &stubFixture{setUpErrors: rcfg.GetStartFixtureState().GetErrors()},
+		Dirs:             rcfg.GetDirs(),
+		Features:         rcfg.GetFeatures(),
+		Service:          rcfg.GetServiceConfig(),
+		DataFile:         rcfg.GetDataFileConfig(),
+		RemoteData:       connEnv.rd,
+		TestHook:         scfg.testHook,
+		BeforeDownload:   scfg.beforeDownload,
+		Fixtures:         scfg.registry.AllFixtures(),
+		StartFixtureName: rcfg.GetStartFixtureState().GetName(),
+		StartFixtureImpl: &stubFixture{setUpErrors: rcfg.GetStartFixtureState().GetErrors()},
 	}
 
 	// Run all the tests with Hops > 0 (i.e. local tests).

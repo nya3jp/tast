@@ -117,27 +117,33 @@ func (s *fixtureService) pushAndPop(srv FixtureService_RunFixtureServer) (retErr
 		dt.Close(ctx)
 	}()
 
-	var downloadMode planner.DownloadMode
+	var downloadMode protocol.DownloadMode
 	switch r.Config.DownloadMode {
 	case RunFixtureConfig_BATCH:
-		downloadMode = planner.DownloadBatch
+		downloadMode = protocol.DownloadMode_BATCH
 	case RunFixtureConfig_LAZY:
-		downloadMode = planner.DownloadLazy
+		downloadMode = protocol.DownloadMode_LAZY
 	}
 
 	pcfg := &planner.Config{
-		DataDir:           r.Config.DataDir,
-		OutDir:            r.Config.OutDir,
-		Devservers:        r.Config.Devservers,
-		TLWServer:         r.Config.TlwServer,
-		DUTName:           r.Config.DutName,
-		BuildArtifactsURL: r.Config.BuildArtifactsUrl,
+		Dirs: &protocol.RunDirectories{
+			DataDir: r.Config.DataDir,
+			OutDir:  r.Config.OutDir,
+		},
+		Service: &protocol.ServiceConfig{
+			Devservers:  r.Config.Devservers,
+			TlwServer:   r.Config.TlwServer,
+			TlwSelfName: r.Config.DutName,
+		},
+		DataFile: &protocol.DataFileConfig{
+			BuildArtifactsUrl: r.Config.BuildArtifactsUrl,
+			DownloadMode:      downloadMode,
+		},
 		RemoteData: &testing.RemoteData{
 			RPCHint: testing.NewRPCHint(r.Config.LocalBundleDir, r.Config.TestVars),
 			DUT:     dt,
 			// TODO(oka): fill Meta field.
 		},
-		DownloadMode: downloadMode,
 		Features: &protocol.Features{
 			Infra: &protocol.InfraFeatures{
 				Vars: r.Config.TestVars,

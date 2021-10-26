@@ -84,26 +84,17 @@ func runTests(ctx context.Context, srv protocol.TestService_RunTestsServer, cfg 
 	}
 	defer connEnv.close(ctx)
 
-	mode, err := planner.DownloadModeFromProto(cfg.GetDataFileConfig().GetDownloadMode())
-	if err != nil {
-		return command.NewStatusErrorf(statusError, "%v", err)
-	}
-
 	pcfg := &planner.Config{
-		DataDir:           cfg.GetDirs().GetDataDir(),
-		OutDir:            cfg.GetDirs().GetOutDir(),
-		Features:          cfg.GetFeatures(),
-		Devservers:        cfg.GetServiceConfig().GetDevservers(),
-		TLWServer:         cfg.GetServiceConfig().GetTlwServer(),
-		DUTName:           cfg.GetServiceConfig().GetTlwSelfName(),
-		BuildArtifactsURL: cfg.GetDataFileConfig().GetBuildArtifactsUrl(),
-		RemoteData:        connEnv.rd,
-		TestHook:          scfg.testHook,
-		DownloadMode:      mode,
-		BeforeDownload:    scfg.beforeDownload,
-		Fixtures:          scfg.registry.AllFixtures(),
-		StartFixtureName:  cfg.GetStartFixtureState().GetName(),
-		StartFixtureImpl:  &stubFixture{setUpErrors: cfg.GetStartFixtureState().GetErrors()},
+		Dirs:             cfg.GetDirs(),
+		Features:         cfg.GetFeatures(),
+		Service:          cfg.GetServiceConfig(),
+		DataFile:         cfg.GetDataFileConfig(),
+		RemoteData:       connEnv.rd,
+		TestHook:         scfg.testHook,
+		BeforeDownload:   scfg.beforeDownload,
+		Fixtures:         scfg.registry.AllFixtures(),
+		StartFixtureName: cfg.GetStartFixtureState().GetName(),
+		StartFixtureImpl: &stubFixture{setUpErrors: cfg.GetStartFixtureState().GetErrors()},
 	}
 
 	if err := planner.RunTests(ctx, tests, ew, pcfg); err != nil {

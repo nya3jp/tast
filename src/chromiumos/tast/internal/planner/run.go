@@ -50,6 +50,9 @@ const (
 )
 
 // DownloadMode specifies a strategy to download external data files.
+// TODO(oka): DownloadMode is used only in packages other than planner, and
+// should be removed eventually. Currently it's used in JSON protocol, so it
+// might be good to remove it after GRPC migration has finished.
 type DownloadMode int
 
 const (
@@ -87,29 +90,26 @@ func (m DownloadMode) Proto() protocol.DownloadMode {
 
 // Config contains details about how the planner should run tests.
 type Config struct {
-	// DataDir is the path to the base directory containing test data files.
-	DataDir string
-	// OutDir is the path to the base directory under which tests should write output files.
-	OutDir string
+	// Dirs holds several directory paths important for running tests.
+	Dirs *protocol.RunDirectories
+
 	// Features contains software/hardware features the DUT has, and runtime variables.
 	Features *protocol.Features
-	// Devservers contains URLs of devservers that can be used to download files.
-	Devservers []string
-	// TLWServer is the address of TLW server
-	TLWServer string
-	// DUTName is the name given by the infra scheduler
-	DUTName string
-	// BuildArtifactsURL is the URL of Google Cloud Storage directory, ending with a slash,
-	// containing build artifacts for the current Chrome OS image.
-	BuildArtifactsURL string
+
+	// ServiceConfig contains configurations of external services available to
+	// Tast framework and Tast tests.
+	Service *protocol.ServiceConfig
+
+	// DataFileConfig contains configurations about data files.
+	DataFile *protocol.DataFileConfig
+
 	// RemoteData contains information relevant to remote tests.
 	// It is nil for local tests.
 	RemoteData *testing.RemoteData
 	// TestHook is run before TestInstance.Func (and TestInstance.Pre.Prepare, when applicable) if non-nil.
 	// The returned closure is executed after a test if not nil.
 	TestHook func(context.Context, *testing.TestHookState) func(context.Context, *testing.TestHookState)
-	// DownloadMode specifies a strategy to download external data files.
-	DownloadMode DownloadMode
+
 	// BeforeDownload specifies a function called before downloading external data files.
 	// It is ignored if it is nil.
 	BeforeDownload func(context.Context)
@@ -143,13 +143,11 @@ func (c *Config) GracePeriod() time.Duration {
 // FixtureConfig returns a fixture config derived from c.
 func (c *Config) FixtureConfig() *fixture.Config {
 	return &fixture.Config{
-		DataDir:           c.DataDir,
-		OutDir:            c.OutDir,
+		DataDir:           c.Dirs.GetDataDir(),
+		OutDir:            c.Dirs.GetOutDir(),
 		Vars:              c.Features.GetInfra().GetVars(),
-		Devservers:        c.Devservers,
-		TLWServer:         c.TLWServer,
-		DUTName:           c.DUTName,
-		BuildArtifactsURL: c.BuildArtifactsURL,
+		Service:           c.Service,
+		BuildArtifactsURL: c.DataFile.GetBuildArtifactsUrl(),
 		RemoteData:        c.RemoteData,
 		StartFixtureName:  c.StartFixtureName,
 		GracePeriod:       c.GracePeriod(),
@@ -611,7 +609,7 @@ func runTest(ctx context.Context, t *testing.TestInstance, tout *output.EntitySt
 	timingLog := timing.NewLog()
 	ctx = timing.NewContext(ctx, timingLog)
 
-	outDir, err := entity.CreateOutDir(pcfg.OutDir, t.Name)
+	outDir, err := entity.CreateOutDir(pcfg.Dirs.GetOutDir(), t.Name)
 	if err != nil {
 		return err
 	}
@@ -638,14 +636,19 @@ func runTest(ctx context.Context, t *testing.TestInstance, tout *output.EntitySt
 	}
 
 	rcfg := &testing.RuntimeConfig{
-		DataDir:      filepath.Join(pcfg.DataDir, testing.RelativeDataDir(t.Pkg)),
-		OutDir:       outDir,
-		Vars:         pcfg.Features.GetInfra().GetVars(),
-		CloudStorage: testing.NewCloudStorage(pcfg.Devservers, pcfg.TLWServer, pcfg.DUTName, pcfg.BuildArtifactsURL),
-		RemoteData:   pcfg.RemoteData,
-		FixtCtx:      fixtCtx,
-		FixtValue:    stack.Val(),
-		PreCtx:       precfg.ctx,
+		DataDir: filepath.Join(pcfg.Dirs.GetDataDir(), testing.RelativeDataDir(t.Pkg)),
+		OutDir:  outDir,
+		Vars:    pcfg.Features.GetInfra().GetVars(),
+		CloudStorage: testing.NewCloudStorage(
+			pcfg.Service.GetDevservers(),
+			pcfg.Service.GetTlwServer(),
+			pcfg.Service.GetTlwSelfName(),
+			pcfg.DataFile.GetBuildArtifactsUrl(),
+		),
+		RemoteData: pcfg.RemoteData,
+		FixtCtx:    fixtCtx,
+		FixtValue:  stack.Val(),
+		PreCtx:     precfg.ctx,
 		// TODO(crbug.com/1106218): Make sure this approach is scalable.
 		// Recomputing purgeable on each test costs O(|purgeable| * |tests|) overall.
 		Purgeable: dl.m.Purgeable(),
@@ -673,12 +676,17 @@ type downloader struct {
 }
 
 func newDownloader(ctx context.Context, pcfg *Config) (*downloader, error) {
-	cl, err := devserver.NewClient(ctx, pcfg.Devservers, pcfg.TLWServer, pcfg.DUTName)
+	cl, err := devserver.NewClient(
+		ctx,
+		pcfg.Service.GetDevservers(),
+		pcfg.Service.GetTlwServer(),
+		pcfg.Service.GetTlwSelfName(),
+	)
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed to create new client [devservers=%v, TLWServer=%s]",
-			pcfg.Devservers, pcfg.TLWServer)
+			pcfg.Service.GetDevservers(), pcfg.Service.GetTlwServer())
 	}
-	m, err := extdata.NewManager(ctx, pcfg.DataDir, pcfg.BuildArtifactsURL)
+	m, err := extdata.NewManager(ctx, pcfg.Dirs.GetDataDir(), pcfg.DataFile.GetBuildArtifactsUrl())
 	if err != nil {
 		return nil, err
 	}
@@ -698,7 +706,7 @@ func (d *downloader) TearDown() error {
 // BeforeRun must be called before running a set of tests. It downloads external
 // data files if Config.DownloadMode is DownloadBatch.
 func (d *downloader) BeforeRun(ctx context.Context, tests []*protocol.Entity) {
-	if d.pcfg.DownloadMode == DownloadBatch {
+	if d.pcfg.DataFile.GetDownloadMode() == protocol.DownloadMode_BATCH {
 		// Ignore release because no data files are to be purged.
 		d.download(ctx, tests)
 	}
@@ -709,7 +717,7 @@ func (d *downloader) BeforeRun(ctx context.Context, tests []*protocol.Entity) {
 //
 // release must be called after entity finishes.
 func (d *downloader) BeforeEntity(ctx context.Context, entity *protocol.Entity) (release func()) {
-	if d.pcfg.DownloadMode == DownloadLazy {
+	if d.pcfg.DataFile.GetDownloadMode() == protocol.DownloadMode_LAZY {
 		return d.download(ctx, []*protocol.Entity{entity})
 	}
 	return func() {}
@@ -721,7 +729,7 @@ func (d *downloader) download(ctx context.Context, entities []*protocol.Entity) 
 		if d.beforeDownload != nil {
 			d.beforeDownload(ctx)
 		}
-		extdata.RunDownloads(ctx, d.pcfg.DataDir, jobs, d.cl)
+		extdata.RunDownloads(ctx, d.pcfg.Dirs.GetDataDir(), jobs, d.cl)
 	}
 	return release
 }

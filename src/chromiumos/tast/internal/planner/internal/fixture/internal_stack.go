@@ -28,9 +28,7 @@ type Config struct {
 	DataDir           string
 	OutDir            string
 	Vars              map[string]string
-	Devservers        []string
-	TLWServer         string
-	DUTName           string
+	Service           *protocol.ServiceConfig
 	BuildArtifactsURL string
 	RemoteData        *testing.RemoteData
 	StartFixtureName  string
@@ -195,13 +193,18 @@ func (st *InternalStack) Push(ctx context.Context, fixt *testing.FixtureInstance
 	ctx = testing.NewContext(ctx, ce, logging.NewFuncSink(func(msg string) { fout.Log(msg) }))
 
 	rcfg := &testing.RuntimeConfig{
-		DataDir:      filepath.Join(st.cfg.DataDir, testing.RelativeDataDir(fixt.Pkg)),
-		OutDir:       outDir,
-		Vars:         st.cfg.Vars,
-		CloudStorage: testing.NewCloudStorage(st.cfg.Devservers, st.cfg.TLWServer, st.cfg.DUTName, st.cfg.BuildArtifactsURL),
-		RemoteData:   st.cfg.RemoteData,
-		FixtValue:    st.Val(),
-		FixtCtx:      ctx,
+		DataDir: filepath.Join(st.cfg.DataDir, testing.RelativeDataDir(fixt.Pkg)),
+		OutDir:  outDir,
+		Vars:    st.cfg.Vars,
+		CloudStorage: testing.NewCloudStorage(
+			st.cfg.Service.GetDevservers(),
+			st.cfg.Service.GetTlwServer(),
+			st.cfg.Service.GetTlwSelfName(),
+			st.cfg.BuildArtifactsURL,
+		),
+		RemoteData: st.cfg.RemoteData,
+		FixtValue:  st.Val(),
+		FixtCtx:    ctx,
 	}
 
 	root := testing.NewEntityRoot(ce, fixt.Constraints(), rcfg, fout)

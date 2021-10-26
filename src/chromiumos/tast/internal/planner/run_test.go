@@ -81,7 +81,7 @@ func TestRunSuccess(t *gotesting.T) {
 		Timeout: time.Minute,
 	}}
 
-	msgs := runTestsAndReadAll(t, tests, &Config{OutDir: od})
+	msgs := runTestsAndReadAll(t, tests, &Config{Dirs: &protocol.RunDirectories{OutDir: od}})
 
 	want := []protocol.Event{
 		&protocol.EntityStartEvent{Entity: tests[0].EntityProto(), OutDir: filepath.Join(od, "pkg.Test")},
@@ -635,7 +635,7 @@ func TestRunSkipStages(t *gotesting.T) {
 			defer os.RemoveAll(outDir)
 
 			pcfg := &Config{
-				OutDir: outDir,
+				Dirs: &protocol.RunDirectories{OutDir: outDir},
 				TestHook: func(ctx context.Context, s *testing.TestHookState) func(context.Context, *testing.TestHookState) {
 					doAction(s, currentBehavior(s).preTestAction, "preTest")
 					return func(ctx context.Context, s *testing.TestHookState) {
@@ -685,11 +685,11 @@ func TestRunExternalData(t *gotesting.T) {
 
 	for _, tc := range []struct {
 		name         string
-		mode         DownloadMode
+		mode         protocol.DownloadMode
 		numDownloads int
 	}{
-		{"batch", DownloadBatch, 1},
-		{"lazy", DownloadLazy, 4},
+		{"batch", protocol.DownloadMode_BATCH, 1},
+		{"lazy", protocol.DownloadMode_LAZY, 4},
 	} {
 		t.Run(tc.name, func(t *gotesting.T) {
 			ds, err := devservertest.NewServer(devservertest.Files([]*devservertest.File{
@@ -731,7 +731,7 @@ func TestRunExternalData(t *gotesting.T) {
 			}
 
 			pcfg := &Config{
-				DataDir: dataDir,
+				Dirs: &protocol.RunDirectories{DataDir: dataDir},
 				Features: &protocol.Features{
 					CheckDeps: true,
 					Dut: &protocol.DUTFeatures{
@@ -741,8 +741,12 @@ func TestRunExternalData(t *gotesting.T) {
 						},
 					},
 				},
-				Devservers:   []string{ds.URL},
-				DownloadMode: tc.mode,
+				Service: &protocol.ServiceConfig{
+					Devservers: []string{ds.URL},
+				},
+				DataFile: &protocol.DataFileConfig{
+					DownloadMode: tc.mode,
+				},
 				BeforeDownload: func(ctx context.Context) {
 					numDownloads++
 				},
@@ -768,12 +772,12 @@ func TestRunExternalData(t *gotesting.T) {
 						fp := filepath.Join(dataDir, downloadFailPath+testing.ExternalErrorSuffix)
 						_, err := os.Stat(fp)
 						switch tc.mode {
-						case DownloadBatch:
+						case protocol.DownloadMode_BATCH:
 							// In DownloadBatch mode, external data files for Test3 are already downloaded.
 							if err != nil {
 								t.Errorf("In Test2: %v; want present", err)
 							}
-						case DownloadLazy:
+						case protocol.DownloadMode_LAZY:
 							// In DownloadLazy mode, external data files for Test3 are not downloaded yet.
 							if err == nil {
 								t.Errorf("In Test2: %s exists; want missing", fp)
@@ -907,9 +911,9 @@ func TestLazyDownloadPurgeable(t *gotesting.T) {
 	var got [][]string
 
 	pcfg := &Config{
-		DataDir:      dataDir,
-		Devservers:   []string{ds.URL},
-		DownloadMode: DownloadLazy,
+		Dirs:     &protocol.RunDirectories{DataDir: dataDir},
+		Service:  &protocol.ServiceConfig{Devservers: []string{ds.URL}},
+		DataFile: &protocol.DataFileConfig{DownloadMode: protocol.DownloadMode_LAZY},
 		TestHook: func(ctx context.Context, s *testing.TestHookState) func(context.Context, *testing.TestHookState) {
 			got = append(got, s.Purgeable())
 			return nil
@@ -1683,7 +1687,7 @@ func TestRunFixtureData(t *gotesting.T) {
 
 	cfg := &Config{
 		Fixtures: map[string]*testing.FixtureInstance{fixt.Name: fixt},
-		DataDir:  dataDir,
+		Dirs:     &protocol.RunDirectories{DataDir: dataDir},
 	}
 
 	runTestsAndReadAll(t, tests, cfg)

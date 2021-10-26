@@ -31,6 +31,11 @@ func newCopyOutputHandler(pull PullFunc) *copyOutputHandler {
 }
 
 func (h *copyOutputHandler) EntityEnd(ctx context.Context, ei *entityInfo, r *entityResult) error {
+	// IntermediateOutDir can be empty for skipped tests.
+	if ei.IntermediateOutDir == "" {
+		return nil
+	}
+
 	// Pull finished test output files in a separate goroutine.
 	h.pullers.Add(1)
 	go func() {

@@ -8,6 +8,7 @@ import (
 	"context"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"chromiumos/tast/cmd/tast/internal/run/driver/internal/processor"
@@ -46,6 +47,8 @@ func TestCopyOutputHandler(t *testing.T) {
 		&protocol.EntityStartEvent{Time: epochpb, Entity: &protocol.Entity{Name: "fixture", Type: protocol.EntityType_FIXTURE}, OutDir: fixtureOutDir},
 		&protocol.EntityStartEvent{Time: epochpb, Entity: &protocol.Entity{Name: "test"}, OutDir: testOutDir},
 		&protocol.EntityEndEvent{Time: epochpb, EntityName: "test"},
+		&protocol.EntityStartEvent{Time: epochpb, Entity: &protocol.Entity{Name: "skip"}},
+		&protocol.EntityEndEvent{Time: epochpb, EntityName: "skip", Skip: &protocol.Skip{Reasons: []string{"somehow"}}},
 		&protocol.EntityEndEvent{Time: epochpb, EntityName: "fixture"},
 	}
 
@@ -69,6 +72,13 @@ func TestCopyOutputHandler(t *testing.T) {
 	} {
 		if got := files[path]; got != want {
 			t.Errorf("%s mismatch: got %q, want %q", path, got, want)
+		}
+	}
+
+	// No file should be copied for OutDir-less entity.
+	for path := range files {
+		if strings.HasPrefix(path, "tests/skip/") && path != "tests/skip/log.txt" {
+			t.Errorf("Excess file found: %s", path)
 		}
 	}
 }

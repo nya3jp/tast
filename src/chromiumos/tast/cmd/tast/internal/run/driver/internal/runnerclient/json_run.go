@@ -49,7 +49,7 @@ type RunTestsOutput interface {
 // RunTests requests to run tests according to the given RunConfig.
 // Test execution events are streamed back via out. See RunTestsOutput for
 // details.
-func (c *JSONClient) RunTests(ctx context.Context, bcfg *protocol.BundleConfig, rcfg *protocol.RunConfig, msgTimeout time.Duration, out RunTestsOutput) {
+func (c *JSONClient) RunTests(ctx context.Context, bcfg *protocol.BundleConfig, rcfg *protocol.RunConfig, out RunTestsOutput) {
 	// Call RunEnd exactly once on returning from this method.
 	out.RunEnd(ctx, func() (runErr error) {
 		// Make sure all subprocesses and goroutines exit upon returning from
@@ -108,7 +108,7 @@ func (c *JSONClient) RunTests(ctx context.Context, bcfg *protocol.BundleConfig, 
 		go readControlMessages(ctx, proc.Stdout(), msgs, errs)
 
 		for {
-			err := processControlMessage(ctx, msgs, errs, msgTimeout, out)
+			err := processControlMessage(ctx, msgs, errs, c.msgTimeout, out)
 			if err == io.EOF {
 				return nil
 			}

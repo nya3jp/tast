@@ -210,7 +210,7 @@ func (d *Driver) runLocalTestsOnce(ctx context.Context, tests []*BundleEntity, s
 	}
 
 	proc := processor.New(d.cfg.ResDir(), multiplexer, diag, pull, args.Counter, args.Client)
-	d.localClient().RunTests(ctx, bcfg, rcfg, d.cfg.MsgTimeout(), proc)
+	d.localClient().RunTests(ctx, bcfg, rcfg, proc)
 	return proc.Results(), proc.FatalError()
 }
 
@@ -234,7 +234,7 @@ func (d *Driver) runRemoteTestsOnce(ctx context.Context, tests []*BundleEntity, 
 	ctx = logging.AttachLogger(ctx, multiplexer)
 
 	proc := processor.New(d.cfg.ResDir(), multiplexer, nopDiagnose, os.Rename, args.Counter, args.Client)
-	d.remoteClient().RunTests(ctx, bcfg, rcfg, d.cfg.MsgTimeout(), proc)
+	d.remoteClient().RunTests(ctx, bcfg, rcfg, proc)
 	return proc.Results(), proc.FatalError()
 }
 

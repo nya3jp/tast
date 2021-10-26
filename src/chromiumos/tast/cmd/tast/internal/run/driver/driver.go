@@ -114,13 +114,13 @@ func (d *Driver) localClient() *runnerclient.JSONClient {
 
 	cmd := genericexec.CommandSSH(d.cc.Conn().SSHConn(), "env", args...)
 	params := &protocol.RunnerInitParams{BundleGlob: d.cfg.LocalBundleGlob()}
-	return runnerclient.NewJSONClient(cmd, params, 1)
+	return runnerclient.NewJSONClient(cmd, params, d.cfg.MsgTimeout(), 1)
 }
 
 func (d *Driver) remoteClient() *runnerclient.JSONClient {
 	cmd := genericexec.CommandExec(d.cfg.RemoteRunner())
 	params := &protocol.RunnerInitParams{BundleGlob: d.cfg.RemoteBundleGlob()}
-	return runnerclient.NewJSONClient(cmd, params, 0)
+	return runnerclient.NewJSONClient(cmd, params, d.cfg.MsgTimeout(), 0)
 }
 
 func (d *Driver) remoteBundleClient(bundle string) *bundleclient.Client {

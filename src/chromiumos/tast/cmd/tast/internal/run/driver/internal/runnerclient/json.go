@@ -11,6 +11,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"sort"
+	"time"
 
 	"chromiumos/tast/cmd/tast/internal/run/driverdata"
 	"chromiumos/tast/cmd/tast/internal/run/genericexec"
@@ -22,17 +23,19 @@ import (
 
 // JSONClient is a JSON-protocol client to test_runner.
 type JSONClient struct {
-	cmd    genericexec.Cmd
-	params *protocol.RunnerInitParams
-	hops   int
+	cmd        genericexec.Cmd
+	params     *protocol.RunnerInitParams
+	msgTimeout time.Duration
+	hops       int
 }
 
 // NewJSONClient creates a new JSONClient.
-func NewJSONClient(cmd genericexec.Cmd, params *protocol.RunnerInitParams, hops int) *JSONClient {
+func NewJSONClient(cmd genericexec.Cmd, params *protocol.RunnerInitParams, msgTimeout time.Duration, hops int) *JSONClient {
 	return &JSONClient{
-		cmd:    cmd,
-		params: params,
-		hops:   hops,
+		cmd:        cmd,
+		params:     params,
+		msgTimeout: msgTimeout,
+		hops:       hops,
 	}
 }
 

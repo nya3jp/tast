@@ -12,6 +12,8 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/google/go-cmp/cmp"
+
 	"chromiumos/tast/internal/linuxssh"
 	"chromiumos/tast/internal/sshtest"
 	"chromiumos/tast/testutil"
@@ -561,5 +563,64 @@ func TestGetAndDeleteFile(t *testing.T) {
 		t.Error("GetAndDeleteFile did not delete a file")
 	} else if !os.IsNotExist(err) {
 		t.Error(err)
+	}
+}
+
+func TestGetAndDeleteFilesInDir(t *testing.T) {
+	t.Parallel()
+	td := sshtest.NewTestDataConn(t)
+	defer td.Close()
+
+	files := map[string]string{
+		"dir/a": "a",
+		"b":     "b",
+	}
+	tmpDir, srcDir := initFileTest(t, files)
+	defer os.RemoveAll(tmpDir)
+
+	dstDir := filepath.Join(tmpDir, "dst")
+	if err := testutil.WriteFiles(dstDir, map[string]string{"c": "c"}); err != nil {
+		t.Fatal(err)
+	}
+	if err := linuxssh.GetAndDeleteFilesInDir(td.Ctx, td.Hst, srcDir, dstDir, linuxssh.PreserveSymlinks); err != nil {
+		t.Fatal(err)
+	}
+	m, err := testutil.ReadFiles(dstDir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if diff := cmp.Diff(m, map[string]string{
+		"dir/a": "a",
+		"b":     "b",
+		"c":     "c",
+	}); diff != "" {
+		t.Errorf("Files mismatch (-got +want):\n%v", diff)
+	}
+	// TestGetAndDeleteFile should have removed the original file.
+	if _, err := os.Stat(srcDir); err == nil {
+		t.Error("GetAndDeleteFile did not delete a file")
+	} else if !os.IsNotExist(err) {
+		t.Error(err)
+	}
+}
+
+func TestGetAndDeleteFilesInDirMakesDirectory(t *testing.T) {
+	t.Parallel()
+	td := sshtest.NewTestDataConn(t)
+	defer td.Close()
+
+	tmpDir, srcDir := initFileTest(t, map[string]string{})
+	defer os.RemoveAll(tmpDir)
+
+	dstDir := filepath.Join(tmpDir, "dst")
+	if _, err := os.Stat(dstDir); !os.IsNotExist(err) {
+		t.Fatalf("os.Stat(%q) = %v, want not exist", dstDir, err)
+	}
+
+	if err := linuxssh.GetAndDeleteFilesInDir(td.Ctx, td.Hst, srcDir, dstDir, linuxssh.PreserveSymlinks); err != nil {
+		t.Fatal(err)
+	}
+	if info, err := os.Stat(dstDir); err != nil || !info.IsDir() {
+		t.Errorf("GetAndDeleteFile did not create a directory: %v", err)
 	}
 }

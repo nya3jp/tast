@@ -47,12 +47,37 @@ func GetFile(ctx context.Context, s *ssh.Conn, src, dst string, symlinkPolicy Sy
 	if err := os.RemoveAll(dst); err != nil {
 		return err
 	}
+
+	path, close, err := getFile(ctx, s, src, dst, symlinkPolicy)
+	if err != nil {
+		return err
+	}
+	defer close()
+
+	if err := os.Rename(path, dst); err != nil {
+		return fmt.Errorf("moving local file failed: %v", err)
+	}
+	return nil
+}
+
+// getFile copies a file or directory from the host to the local machine.
+// It creates a temporary directory under the directory of dst, and copies
+// src to it. It returns the filepath where src has been copied to.
+// Caller must call close to remove the temporary directory.
+func getFile(ctx context.Context, s *ssh.Conn, src, dst string, symlinkPolicy SymlinkPolicy) (path string, close func() error, retErr error) {
 	// Create a temporary directory alongside the destination path.
 	td, err := ioutil.TempDir(filepath.Dir(dst), filepath.Base(dst)+".")
 	if err != nil {
-		return fmt.Errorf("creating local temp dir failed: %v", err)
+		return "", nil, fmt.Errorf("creating local temp dir failed: %v", err)
 	}
-	defer os.RemoveAll(td)
+	defer func() {
+		if retErr != nil {
+			os.RemoveAll(td)
+		}
+	}()
+	close = func() error {
+		return os.RemoveAll(td)
+	}
 
 	sb := filepath.Base(src)
 	taropts := []string{"-c", "--gzip", "-C", filepath.Dir(src)}
@@ -63,10 +88,10 @@ func GetFile(ctx context.Context, s *ssh.Conn, src, dst string, symlinkPolicy Sy
 	rcmd := s.CommandContext(ctx, "tar", taropts...)
 	p, err := rcmd.StdoutPipe()
 	if err != nil {
-		return fmt.Errorf("failed to get stdout pipe: %v", err)
+		return "", nil, fmt.Errorf("failed to get stdout pipe: %v", err)
 	}
 	if err := rcmd.Start(); err != nil {
-		return fmt.Errorf("running remote tar failed: %v", err)
+		return "", nil, fmt.Errorf("running remote tar failed: %v", err)
 	}
 	defer rcmd.Wait()
 	defer rcmd.Abort()
@@ -74,13 +99,9 @@ func GetFile(ctx context.Context, s *ssh.Conn, src, dst string, symlinkPolicy Sy
 	cmd := exec.CommandContext(ctx, "/bin/tar", "-x", "--gzip", "--no-same-owner", "-p", "-C", td)
 	cmd.Stdin = p
 	if err := cmd.Run(); err != nil {
-		return fmt.Errorf("running local tar failed: %v", err)
+		return "", nil, fmt.Errorf("running local tar failed: %v", err)
 	}
-
-	if err := os.Rename(filepath.Join(td, sb), dst); err != nil {
-		return fmt.Errorf("moving local file failed: %v", err)
-	}
-	return nil
+	return filepath.Join(td, sb), close, nil
 }
 
 // findChangedFiles returns a subset of files that differ between the local machine
@@ -327,6 +348,44 @@ func GetAndDeleteFile(ctx context.Context, s *ssh.Conn, src, dst string, policy 
 	if err := GetFile(ctx, s, src, dst, policy); err != nil {
 		return err
 	}
+	if err := s.CommandContext(ctx, "rm", "-rf", "--", src).Run(); err != nil {
+		return errors.Wrap(err, "delete failed")
+	}
+	return nil
+}
+
+// GetAndDeleteFilesInDir copies all files in dst to src, assuming both
+// dst and src are directories.
+// It deletes the remote directory if all the files are successfully copied.
+func GetAndDeleteFilesInDir(ctx context.Context, s *ssh.Conn, src, dst string, policy SymlinkPolicy) error {
+	dir, close, err := getFile(ctx, s, src, dst, policy)
+	if err != nil {
+		return err
+	}
+	defer close()
+
+	if err := os.MkdirAll(dst, 0755); err != nil {
+		return err
+	}
+	if err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if info.IsDir() {
+			return nil
+		}
+		dstPath := filepath.Join(dst, strings.TrimPrefix(path, dir))
+		if err := os.MkdirAll(filepath.Dir(dstPath), 0755); err != nil {
+			return err
+		}
+		if err := os.Rename(path, dstPath); err != nil {
+			return err
+		}
+		return nil
+	}); err != nil {
+		return err
+	}
+
 	if err := s.CommandContext(ctx, "rm", "-rf", "--", src).Run(); err != nil {
 		return errors.Wrap(err, "delete failed")
 	}

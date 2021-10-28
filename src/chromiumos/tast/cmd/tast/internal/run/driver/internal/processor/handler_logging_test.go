@@ -149,7 +149,7 @@ Completed test pkg.Test2 in 0s with 0 error(s)
 	}
 }
 
-func TestLoggingHandler_RPCLogs(t *testing.T) {
+func DISABLED_TestLoggingHandler_RPCLogs(t *testing.T) { // disabled for flakiness: b/204035101
 	resDir := t.TempDir()
 
 	const (

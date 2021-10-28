@@ -111,6 +111,7 @@ type MutableConfig struct {
 	Proxy                ProxyMode
 	CollectSysInfo       bool
 	MaxTestFailures      int
+	ExcludeSkipped       bool
 
 	TestVars         map[string]string
 	VarsFiles        []string
@@ -249,6 +250,9 @@ func (c *Config) ContinueAfterFailure() bool { return c.m.ContinueAfterFailure }
 // CheckTestDeps is whether test dependencies should be checked.
 func (c *Config) CheckTestDeps() bool { return c.m.CheckTestDeps }
 
+// ExcludeSkipped is whether tests which would be skipped are excluded.
+func (c *Config) ExcludeSkipped() bool { return c.m.ExcludeSkipped }
+
 // WaitUntilReady is whether to wait for DUT to be ready before running tests.
 func (c *Config) WaitUntilReady() bool { return c.m.WaitUntilReady }
 
@@ -374,6 +378,10 @@ func (c *MutableConfig) SetFlags(f *flag.FlagSet) {
 	// Both listing and running test requires checking dependency due to sharding.
 	// This flag is only used for testing or debugging purpose.
 	f.BoolVar(&c.CheckTestDeps, "checktestdeps", true, "skip tests with software dependencies unsatisfied by DUT")
+
+	// Both listing and running test requires filtering and excluding tests that will be
+	// skipped. This flag can be used with tast list or tast run to exclude skipped tests
+	f.BoolVar(&c.ExcludeSkipped, "excludeskipped", false, "exclude skipped tests from the list or run operation")
 
 	c.DebuggerPorts = map[debugger.DebugTarget]int{
 		debugger.LocalBundle:      0,

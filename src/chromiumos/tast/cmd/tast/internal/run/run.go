@@ -114,6 +114,23 @@ func startEphemeralDevserverForRemoteTests(ctx context.Context, cfg *config.Conf
 	return es, nil
 }
 
+func removeSkippedTestsFromBundle(bundle []*driver.BundleEntity) ([]*driver.BundleEntity, []*driver.BundleEntity) {
+	var filteredBundle []*driver.BundleEntity
+	var skippedBundle []*driver.BundleEntity
+	for _, re := range bundle {
+		// Guard clause to not add test that would be skipped
+		// if the ExcludeSkipped flag is set
+		if len(re.Resolved.GetSkip().GetReasons()) > 0 {
+			skippedBundle = append(skippedBundle, re)
+			continue
+		}
+
+		filteredBundle = append(filteredBundle, re)
+	}
+
+	return filteredBundle, skippedBundle
+}
+
 // listTests returns the whole tests to run.
 func listTests(ctx context.Context, cfg *config.Config, drv *driver.Driver) ([]*resultsjson.Result, error) {
 	dutInfo, err := drv.GetDUTInfo(ctx)
@@ -128,9 +145,16 @@ func listTests(ctx context.Context, cfg *config.Config, drv *driver.Driver) ([]*
 
 	shard := sharding.Compute(tests, cfg.ShardIndex(), cfg.TotalShards())
 
+	var testsToPrint []*driver.BundleEntity
+	if cfg.ExcludeSkipped() {
+		testsToPrint, _ = removeSkippedTestsFromBundle(shard.Included)
+	} else {
+		testsToPrint = shard.Included
+	}
+
 	// Convert driver.BundleEntity to resultsjson.Result.
-	results := make([]*resultsjson.Result, len(shard.Included))
-	for i, re := range shard.Included {
+	results := make([]*resultsjson.Result, len(testsToPrint))
+	for i, re := range testsToPrint {
 		test, err := resultsjson.NewTest(re.Resolved.GetEntity())
 		if err != nil {
 			return nil, err
@@ -193,9 +217,20 @@ func runTests(ctx context.Context, cfg *config.Config, state *config.State, drv 
 
 	shard := sharding.Compute(tests, cfg.ShardIndex(), cfg.TotalShards())
 
-	state.TestsToRun = shard.Included
+	var testsToRun []*driver.BundleEntity
+	var testsToSkip []*driver.BundleEntity
+	if cfg.ExcludeSkipped() {
+		testsToRun, testsToSkip = removeSkippedTestsFromBundle(shard.Included)
+	} else {
+		testsToRun = shard.Included
+	}
+
+	state.TestsToRun = testsToRun
 	state.TestNamesToSkip = nil
 	for _, t := range shard.Excluded {
+		state.TestNamesToSkip = append(state.TestNamesToSkip, t.Resolved.GetEntity().GetName())
+	}
+	for _, t := range testsToSkip {
 		state.TestNamesToSkip = append(state.TestNamesToSkip, t.Resolved.GetEntity().GetName())
 	}
 

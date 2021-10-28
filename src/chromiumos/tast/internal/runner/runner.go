@@ -29,7 +29,6 @@ import (
 	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/protocol"
-	"chromiumos/tast/internal/rpc"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/internal/timing"
 )
@@ -152,33 +151,23 @@ func runTestsCompat(ctx context.Context, mw *control.MessageWriter, scfg *Static
 		return err
 	}
 
-	// Start an in-process gRPC server.
-	sr, cw := io.Pipe()
-	cr, sw := io.Pipe()
-	defer func() {
-		cw.Close()
-		cr.Close()
-	}()
-	go runRPCServer(scfg, sr, sw)
-
 	rcfg, bcfg := bundleArgs.RunTests.Proto()
 
-	params := &protocol.RunnerInitParams{
-		BundleGlob: args.RunTests.BundleGlob,
-	}
-	conn, err := rpc.NewClient(ctx, cr, cw, &protocol.HandshakeRequest{
-		RunnerInitParams: params,
+	compat, err := startCompatServer(ctx, scfg, &protocol.HandshakeRequest{
+		RunnerInitParams: &protocol.RunnerInitParams{
+			BundleGlob: args.RunTests.BundleGlob,
+		},
 		BundleInitParams: &protocol.BundleInitParams{
 			Vars:         args.RunTests.BundleArgs.TestVars,
 			BundleConfig: bcfg,
 		},
 	})
 	if err != nil {
-		return errors.Wrap(err, "failed to connect to in-process gRPC server")
+		return err
 	}
-	defer conn.Close()
+	defer compat.Close()
 
-	cl := protocol.NewTestServiceClient(conn.Conn())
+	cl := compat.Client()
 
 	// Enumerate tests to run.
 	res, err := cl.ListEntities(ctx, &protocol.ListEntitiesRequest{Features: bundleArgs.RunTests.Features()})

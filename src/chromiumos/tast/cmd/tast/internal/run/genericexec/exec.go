@@ -35,7 +35,10 @@ func (c *ExecCmd) Run(ctx context.Context, extraArgs []string, stdin io.Reader, 
 	cmd.Stderr = stderr
 	// Set FD 3 to the real stderr so that the subprocess can write stack
 	// traces.
-	// TODO(b/189332919): Remove this hack once we find the cause.
+	// TODO(b/189332919): Remove this hack and write stack traces to stderr
+	// once we finish migrating to gRPC-based protocol. This hack is needed
+	// because JSON-based protocol is designed to write messages to stderr
+	// in case of errors and thus Tast CLI consumes stderr.
 	cmd.ExtraFiles = []*os.File{os.Stderr}
 	cmd.Env = append(os.Environ(), "TAST_B189332919_STACK_TRACE_FD=3")
 	return cmd.Run()

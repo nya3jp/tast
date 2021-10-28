@@ -7,6 +7,8 @@ package bundleclient
 
 import (
 	"context"
+	"io"
+	"os"
 
 	"google.golang.org/grpc"
 
@@ -65,6 +67,9 @@ func (c *Client) dial(ctx context.Context, req *protocol.HandshakeRequest) (_ *r
 			proc.Wait(ctx)
 		}
 	}()
+
+	// Pass through stderr.
+	go io.Copy(os.Stderr, proc.Stderr())
 
 	conn, err := rpc.NewClient(ctx, proc.Stdout(), proc.Stdin(), req)
 	if err != nil {

@@ -6,6 +6,8 @@ package runnerclient
 
 import (
 	"context"
+	"io"
+	"os"
 	"sort"
 	"time"
 
@@ -76,6 +78,9 @@ func (c *GRPCClient) dial(ctx context.Context, req *protocol.HandshakeRequest) (
 			proc.Wait(ctx)
 		}
 	}()
+
+	// Pass through stderr.
+	go io.Copy(os.Stderr, proc.Stderr())
 
 	opts := []grpc.DialOption{
 		grpc.WithKeepaliveParams(keepalive.ClientParameters{

@@ -60,7 +60,10 @@ func Run(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, args *jsonp
 		}
 	}
 
-	// TODO(b/189332919): Remove this hack once we find the cause.
+	// TODO(b/189332919): Remove this hack and write stack traces to stderr
+	// once we finish migrating to gRPC-based protocol. This hack is needed
+	// because JSON-based protocol is designed to write messages to stderr
+	// in case of errors and thus Tast CLI consumes stderr.
 	if os.Getenv("TAST_B189332919_STACK_TRACE_FD") == "3" {
 		command.InstallSignalHandler(os.NewFile(3, ""), func(os.Signal) {})
 	}

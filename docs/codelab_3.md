@@ -15,8 +15,7 @@ The [chrome.automation] library uses the Chrome Accessibility Tree to view and
 control the current state of the UI. The Accessibility Tree has access to:
 * The Chrome Browser
 * The ChromeOS Desktop UI
-<!-- TODO(crbug/1135046) Replace "Native Apps" by more appropriate term. -->
-* Native Apps
+* Chrome OS packaged apps
 * Web Apps/PWAs
 
 That being said, it does not have access to UI elements in containers or VMs

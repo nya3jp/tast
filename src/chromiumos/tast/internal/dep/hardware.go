@@ -5,8 +5,6 @@
 package dep
 
 import (
-	"strings"
-
 	"chromiumos/tast/internal/protocol"
 )
 
@@ -24,9 +22,6 @@ type HardwareCondition struct {
 	// Satisfied is a pointer to a function which checks if the given HardwareFeatures satisfies
 	// the condition.
 	Satisfied func(f *protocol.HardwareFeatures) (satisfied bool, reason string, err error)
-
-	// CEL is the CEL expression denoting the condition.
-	CEL string
 
 	// Err is an error to be reported on Test registration
 	// if instantiation of HardwareCondition fails.
@@ -75,24 +70,6 @@ func (d *HardwareDeps) Validate() error {
 		}
 	}
 	return nil
-}
-
-// CEL returns the CEL expression that reflects the conditions.
-func (d *HardwareDeps) CEL() string {
-	var allConds []string
-	for _, c := range d.conds {
-		if c.CEL == "" {
-			// Condition not supported by infra.
-			// For example, some tests are made to skip on a certain board,
-			// but those should be implemented as a more generic device feature.
-
-			// Tentative placeholder to make the evaluation fail in infra.
-			allConds = append(allConds, "not_implemented")
-			continue
-		}
-		allConds = append(allConds, c.CEL)
-	}
-	return strings.Join(allConds, " && ")
 }
 
 // MergeHardwareDeps merges two HardwareDeps instance into one HardwareDeps instance.

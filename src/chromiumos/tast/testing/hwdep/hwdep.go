@@ -207,7 +207,7 @@ func TouchScreen() Condition {
 			return satisfied()
 		}
 		return unsatisfied("DUT does not have touchscreen")
-	}, CEL: "dut.hardware_features.screen.touch_support == api.HardwareFeatures.Present.PRESENT",
+	},
 	}
 }
 
@@ -225,7 +225,7 @@ func ChromeEC() Condition {
 			return satisfied()
 		}
 		return unsatisfied("DUT does not have chrome EC")
-	}, CEL: "dut.hardware_features.embedded_controller.present == api.HardwareFeatures.Present.PRESENT && dut.hardware_features.embedded_controller.ec_type == api.HardwareFeatures.EmbeddedController.EmbeddedControllerType.EC_CHROME",
+	},
 	}
 }
 
@@ -243,7 +243,8 @@ func ECFeatureTypecCmd() Condition {
 			return unsatisfied("DUT EC does not support EC_FEATURE_TYPEC_CMD")
 		}
 		return satisfied()
-	}}
+	},
+	}
 }
 
 // CPUSupportsSMT returns a hardware dependency condition that is satisfied iff the DUT supports
@@ -260,7 +261,7 @@ func CPUSupportsSMT() Condition {
 			}
 		}
 		return unsatisfied("CPU does not have SMT support")
-	}, CEL: "dut.hardware_features.soc.features.exists(x, x == api.Component.Soc.Features.SMT)",
+	},
 	}
 }
 
@@ -277,7 +278,8 @@ func ECHibernate() Condition {
 			return unsatisfied("DUT does not support EC hibernate")
 		}
 		return satisfied()
-	}}
+	},
+	}
 }
 
 // Fingerprint returns a hardware dependency condition that is satisfied
@@ -292,7 +294,7 @@ func Fingerprint() Condition {
 			return unsatisfied("DUT does not have fingerprint sensor")
 		}
 		return satisfied()
-	}, CEL: "dut.hardware_features.fingerprint.location != api.HardwareFeatures.Fingerprint.Location.NOT_PRESENT",
+	},
 	}
 }
 
@@ -308,7 +310,7 @@ func NoFingerprint() Condition {
 			return unsatisfied("DUT has fingerprint sensor")
 		}
 		return satisfied()
-	}, CEL: "dut.hardware_features.fingerprint.location == api.HardwareFeatures.Fingerprint.Location.NOT_PRESENT",
+	},
 	}
 }
 
@@ -324,7 +326,7 @@ func InternalDisplay() Condition {
 			return satisfied()
 		}
 		return unsatisfied("DUT does not have an internal display")
-	}, CEL: "dut.hardware_features.screen.panel_properties.diagonal_milliinch != 0",
+	},
 	}
 }
 
@@ -343,7 +345,7 @@ func Keyboard() Condition {
 			return unsatisfied("DUT does not have a keyboard")
 		}
 		return satisfied()
-	}, CEL: "dut.hardware_features.keyboard.keyboard_type != 0 && dut.hardware_features.keyboard.keyboard_type != 2",
+	},
 	}
 }
 
@@ -352,9 +354,7 @@ func Keyboard() Condition {
 func Wifi80211ac() Condition {
 	// Some of guado and kip SKUs do not support 802.11ac.
 	// TODO(crbug.com/1070299): replace this when we have hwdep for WiFi chips.
-	c := SkipOnPlatform("kip", "guado")
-	c.CEL = "dut.hardware_features.wifi.supported_wlan_protocols.exists(x, x == api.Component.Wifi.WLANProtocol.IEEE_802_11_AC)"
-	return c
+	return SkipOnPlatform("kip", "guado")
 }
 
 // Wifi80211ax returns a hardware dependency condition that is satisfied
@@ -455,7 +455,7 @@ func Wifi80211ax() Condition {
 			return satisfied, reason, err
 		}
 		return satisfied()
-	}, CEL: "dut.hardware_features.wifi.supported_wlan_protocols.exists(x, x == api.Component.Wifi.WLANProtocol.IEEE_802_11_AX)",
+	},
 	}
 }
 
@@ -463,7 +463,7 @@ func Wifi80211ax() Condition {
 // iff the DUT support WiFi MAC Address Randomization.
 func WifiMACAddrRandomize() Condition {
 	// TODO(crbug.com/1070299): replace this when we have hwdep for WiFi chips.
-	c := SkipOnPlatform(
+	return SkipOnPlatform(
 		// mwifiex in 3.10 kernel does not support it.
 		"kitty",
 		// Broadcom driver has only NL80211_FEATURE_SCHED_SCAN_RANDOM_MAC_ADDR
@@ -471,8 +471,6 @@ func WifiMACAddrRandomize() Condition {
 		// for all supported scan types.
 		"mickey", "minnie", "speedy",
 	)
-	c.CEL = "not_implemented"
-	return c
 }
 
 // WifiNotMarvell returns a hardware dependency condition that is satisfied iff
@@ -480,23 +478,19 @@ func WifiMACAddrRandomize() Condition {
 func WifiNotMarvell() Condition {
 	// TODO(crbug.com/1070299): we don't yet have relevant fields in device.Config
 	// about WiFi chip, so list the known platforms here for now.
-	c := SkipOnPlatform(
+	return SkipOnPlatform(
 		"bob", "kevin", "oak", "elm", "hana", "kitty",
 		"mighty", "jaq", "fievel", "tiger", "jerry",
 	)
-	c.CEL = "not_implemented"
-	return c
 }
 
 // WifiNotMarvell8997 returns a hardware dependency condition that is satisfied if
 // the DUT is not using Marvell 8997 chipsets.
 func WifiNotMarvell8997() Condition {
 	// TODO(crbug.com/1070299): replace this when we have hwdep for WiFi chips.
-	c := SkipOnPlatform(
+	return SkipOnPlatform(
 		"bob", "kevin",
 	)
-	c.CEL = "not_implemented"
-	return c
 }
 
 // WifiIntel returns a hardware dependency condition that if satisfied, indicates
@@ -540,7 +534,7 @@ func WifiIntel() Condition {
 			return satisfied, reason, err
 		}
 		return satisfied()
-	}, CEL: "not_implemented",
+	},
 	}
 }
 
@@ -564,7 +558,7 @@ func WifiQualcomm() Condition {
 			return satisfied, reason, err
 		}
 		return satisfied()
-	}, CEL: "not_implemented",
+	},
 	}
 }
 
@@ -588,7 +582,8 @@ func Battery() Condition {
 			return unsatisfied("DUT does not have a battery")
 		}
 		return satisfied()
-	}}
+	},
+	}
 }
 
 // SupportsNV12Overlays says true if the SoC supports NV12 hardware overlays,
@@ -617,7 +612,8 @@ func SupportsNV12Overlays() Condition {
 			return unsatisfied("SoC does not support NV12 Overlays")
 		}
 		return satisfied()
-	}}
+	},
+	}
 }
 
 // Supports30bppFramebuffer says true if the SoC supports 30bpp color depth
@@ -752,8 +748,7 @@ func Nvme() Condition {
 			return satisfied()
 		}
 		return unsatisfied("DUT does not have an NVMe storage device")
-	}, CEL: "dut.hardware_features.storage.storage_type == api.Component.Storage.StorageType.NVME",
-	}
+	}}
 }
 
 // MinStorage returns a hardware dependency condition requiring the minimum size of the storage in gigabytes.
@@ -771,8 +766,7 @@ func MinStorage(reqGigabytes int) Condition {
 			return unsatisfied(fmt.Sprintf("The total storage size is smaller than required; got %dGB, need %dGB", s, reqGigabytes))
 		}
 		return satisfied()
-	}, CEL: "not_implemented",
-	}
+	}}
 }
 
 // MinMemory returns a hardware dependency condition requiring the minimum size of the memory in megabytes.
@@ -829,7 +823,7 @@ func Speaker() Condition {
 			return satisfied()
 		}
 		return unsatisfied("DUT does not have speaker")
-	}, CEL: "has(dut.hardware_features.audio.speaker_amplifier)",
+	},
 	}
 }
 
@@ -844,7 +838,7 @@ func Microphone() Condition {
 			return satisfied()
 		}
 		return unsatisfied("DUT does not have microphone")
-	}, CEL: "(dut.hardware_features.audio.lid_microphone.value > 0 || dut.hardware_features.audio.base_microphone.value > 0)",
+	},
 	}
 }
 
@@ -859,7 +853,7 @@ func PrivacyScreen() Condition {
 			return unsatisfied("DUT does not have privacy screen")
 		}
 		return satisfied()
-	}, CEL: "dut.hardware_features.privacy_screen.present == api.HardwareFeatures.Present.PRESENT",
+	},
 	}
 }
 

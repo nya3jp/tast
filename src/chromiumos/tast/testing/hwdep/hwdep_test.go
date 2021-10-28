@@ -347,39 +347,6 @@ func TestNvmeStorage(t *testing.T) {
 		nil)
 }
 
-func TestCEL(t *testing.T) {
-	for i, c := range []struct {
-		input    hwdep.Deps
-		expected string
-	}{
-		{hwdep.D(hwdep.Model("model1", "model2")), "not_implemented"},
-		{hwdep.D(hwdep.SkipOnModel("model1", "model2")), "not_implemented"},
-		{hwdep.D(hwdep.Platform("platform_id1", "platform_id2")), "not_implemented"},
-		{hwdep.D(hwdep.SkipOnPlatform("platform_id1", "platform_id2")), "not_implemented"},
-		{hwdep.D(hwdep.TouchScreen()), "dut.hardware_features.screen.touch_support == api.HardwareFeatures.Present.PRESENT"},
-		{hwdep.D(hwdep.Fingerprint()), "dut.hardware_features.fingerprint.location != api.HardwareFeatures.Fingerprint.Location.NOT_PRESENT"},
-		{hwdep.D(hwdep.NoFingerprint()), "dut.hardware_features.fingerprint.location == api.HardwareFeatures.Fingerprint.Location.NOT_PRESENT"},
-		{hwdep.D(hwdep.InternalDisplay()), "dut.hardware_features.screen.panel_properties.diagonal_milliinch != 0"},
-		{hwdep.D(hwdep.Wifi80211ac()), "dut.hardware_features.wifi.supported_wlan_protocols.exists(x, x == api.Component.Wifi.WLANProtocol.IEEE_802_11_AC)"},
-		{hwdep.D(hwdep.Wifi80211ax()), "dut.hardware_features.wifi.supported_wlan_protocols.exists(x, x == api.Component.Wifi.WLANProtocol.IEEE_802_11_AX)"},
-		{hwdep.D(hwdep.WifiMACAddrRandomize()), "not_implemented"},
-		{hwdep.D(hwdep.WifiNotMarvell()), "not_implemented"},
-		{hwdep.D(hwdep.Nvme()), "dut.hardware_features.storage.storage_type == api.Component.Storage.StorageType.NVME"},
-		{hwdep.D(hwdep.Microphone()), "(dut.hardware_features.audio.lid_microphone.value > 0 || dut.hardware_features.audio.base_microphone.value > 0)"},
-		{hwdep.D(hwdep.Speaker()), "has(dut.hardware_features.audio.speaker_amplifier)"},
-		{hwdep.D(hwdep.Microphone(), hwdep.Speaker()), "(dut.hardware_features.audio.lid_microphone.value > 0 || dut.hardware_features.audio.base_microphone.value > 0) && has(dut.hardware_features.audio.speaker_amplifier)"},
-
-		{hwdep.D(hwdep.TouchScreen(), hwdep.Fingerprint()),
-			"dut.hardware_features.screen.touch_support == api.HardwareFeatures.Present.PRESENT && dut.hardware_features.fingerprint.location != api.HardwareFeatures.Fingerprint.Location.NOT_PRESENT"},
-		{hwdep.D(hwdep.Model("model1", "model2"), hwdep.SkipOnPlatform("id1", "id2")), "not_implemented && not_implemented"},
-	} {
-		actual := c.input.CEL()
-		if actual != c.expected {
-			t.Errorf("TestCEL[%d]: got %q; want %q", i, actual, c.expected)
-		}
-	}
-}
-
 func TestWiFiIntel(t *testing.T) {
 	c := hwdep.WifiIntel()
 

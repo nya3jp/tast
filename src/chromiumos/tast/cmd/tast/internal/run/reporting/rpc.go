@@ -52,7 +52,8 @@ func NewRPCClient(ctx context.Context, addr string) (cl *RPCClient, retErr error
 	}, nil
 }
 
-// Close closes the underlying connection of the RPCClient.
+// Close waits until the server acknowledges delivery of all logs messages, and
+// closes the underlying connection of the RPCClient.
 func (c *RPCClient) Close() error {
 	if c == nil {
 		return nil
@@ -60,6 +61,9 @@ func (c *RPCClient) Close() error {
 
 	var firstErr error
 	if err := c.stream.CloseSend(); err != nil && firstErr == nil {
+		firstErr = err
+	}
+	if _, err := c.stream.CloseAndRecv(); err != nil && firstErr == nil {
 		firstErr = err
 	}
 	if err := c.conn.Close(); err != nil && firstErr == nil {

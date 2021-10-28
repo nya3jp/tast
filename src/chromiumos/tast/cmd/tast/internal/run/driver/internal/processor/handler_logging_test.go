@@ -149,7 +149,7 @@ Completed test pkg.Test2 in 0s with 0 error(s)
 	}
 }
 
-func DISABLED_TestLoggingHandler_RPCLogs(t *testing.T) { // disabled for flakiness: b/204035101
+func TestLoggingHandler_RPCLogs(t *testing.T) {
 	resDir := t.TempDir()
 
 	const (
@@ -172,7 +172,11 @@ func DISABLED_TestLoggingHandler_RPCLogs(t *testing.T) { // disabled for flakine
 	if err != nil {
 		t.Fatalf("Failed to connect to RPC results server: %v", err)
 	}
-	defer client.Close()
+	defer func() {
+		if client != nil {
+			client.Close()
+		}
+	}()
 
 	logger := loggingtest.NewLogger(t, logging.LevelDebug)
 	multiplexer := logging.NewMultiLogger()
@@ -187,6 +191,10 @@ func DISABLED_TestLoggingHandler_RPCLogs(t *testing.T) { // disabled for flakine
 	if err := proc.FatalError(); err != nil {
 		t.Errorf("Processor had a fatal error: %v", err)
 	}
+
+	// Ensure all log messages have been delivered to the server.
+	client.Close()
+	client = nil
 
 	if got := string(srv.GetLog("test1", "tests/test1/log.txt")); !strings.Contains(got, test1Log) {
 		t.Errorf("Expected log not received for test 1; got %q; should contain %q", got, test1Log)

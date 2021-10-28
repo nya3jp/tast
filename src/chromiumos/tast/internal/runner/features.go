@@ -21,15 +21,15 @@ func handleGetDUTInfo(ctx context.Context, args *jsonprotocol.RunnerArgs, scfg *
 	logger := newArrayLogger()
 	ctx = logging.AttachLogger(ctx, logger)
 
-	req := args.GetDUTInfo.Proto()
+	compat, err := startCompatServer(ctx, scfg, &protocol.HandshakeRequest{})
+	if err != nil {
+		return err
+	}
+	defer compat.Close()
 
-	res := &protocol.GetDUTInfoResponse{}
-	if f := scfg.GetDUTInfo; f != nil {
-		var err error
-		res, err = f(ctx, req)
-		if err != nil {
-			return err
-		}
+	res, err := compat.Client().GetDUTInfo(ctx, args.GetDUTInfo.Proto())
+	if err != nil {
+		return err
 	}
 
 	jres := jsonprotocol.RunnerGetDUTInfoResultFromProto(res)

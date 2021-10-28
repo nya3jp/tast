@@ -7,13 +7,18 @@ package runner
 import (
 	"context"
 	"io"
+	"io/ioutil"
+	"os"
+	"os/exec"
 	"path/filepath"
 	"sort"
+	"strings"
 
 	"github.com/golang/protobuf/ptypes"
 	"golang.org/x/sys/unix"
 
 	"chromiumos/tast/errors"
+	"chromiumos/tast/internal/devserver"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/rpc"
@@ -32,6 +37,90 @@ func newTestServer(scfg *StaticConfig, runnerParams *protocol.RunnerInitParams, 
 		runnerParams: runnerParams,
 		bundleParams: bundleParams,
 	}
+}
+
+func (s *testServer) GetDUTInfo(ctx context.Context, req *protocol.GetDUTInfoRequest) (*protocol.GetDUTInfoResponse, error) {
+	if s.scfg.GetDUTInfo == nil {
+		return &protocol.GetDUTInfoResponse{}, nil
+	}
+	return s.scfg.GetDUTInfo(ctx, req)
+}
+
+func (s *testServer) GetSysInfoState(ctx context.Context, req *protocol.GetSysInfoStateRequest) (*protocol.GetSysInfoStateResponse, error) {
+	if s.scfg.GetSysInfoState == nil {
+		return &protocol.GetSysInfoStateResponse{}, nil
+	}
+	return s.scfg.GetSysInfoState(ctx, req)
+}
+
+func (s *testServer) CollectSysInfo(ctx context.Context, req *protocol.CollectSysInfoRequest) (*protocol.CollectSysInfoResponse, error) {
+	if s.scfg.CollectSysInfo == nil {
+		return &protocol.CollectSysInfoResponse{}, nil
+	}
+	return s.scfg.CollectSysInfo(ctx, req)
+}
+
+func (s *testServer) DownloadPrivateBundles(ctx context.Context, req *protocol.DownloadPrivateBundlesRequest) (*protocol.DownloadPrivateBundlesResponse, error) {
+	if s.scfg.PrivateBundlesStampPath == "" {
+		return nil, errors.New("this test runner is not configured for private bundles")
+	}
+
+	if req.GetBuildArtifactUrl() == "" {
+		return nil, errors.New("failed to determine the build artifacts URL (non-official image?)")
+	}
+
+	// If the stamp file exists, private bundles have been already downloaded.
+	if _, err := os.Stat(s.scfg.PrivateBundlesStampPath); err == nil {
+		return &protocol.DownloadPrivateBundlesResponse{}, nil
+	}
+
+	// Download the archive via devserver.
+	archiveURL := req.GetBuildArtifactUrl() + "tast_bundles.tar.bz2"
+	logging.Infof(ctx, "Downloading private bundles from %s", archiveURL)
+	cl, err := devserver.NewClient(ctx, req.GetServiceConfig().GetDevservers(), req.GetServiceConfig().GetTlwServer(), req.GetServiceConfig().GetTlwSelfName())
+	if err != nil {
+		return nil, errors.Wrapf(err, "failed to create new client [devservers=%v, TLWServer=%s]",
+			req.GetServiceConfig().GetDevservers(), req.GetServiceConfig().GetTlwServer())
+	}
+	defer cl.TearDown()
+
+	r, err := cl.Open(ctx, archiveURL)
+	if err != nil {
+		return nil, err
+	}
+	defer r.Close()
+
+	tf, err := ioutil.TempFile("", "tast_bundles.")
+	if err != nil {
+		return nil, err
+	}
+	defer os.Remove(tf.Name())
+
+	_, err = io.Copy(tf, r)
+
+	if cerr := tf.Close(); err == nil {
+		err = cerr
+	}
+
+	if err == nil {
+		// Extract the archive, and touch the stamp file.
+		cmd := exec.Command("tar", "xf", tf.Name())
+		cmd.Dir = "/usr/local"
+		if err := cmd.Run(); err != nil {
+			return nil, errors.Errorf("failed to extract %s: %v", strings.Join(cmd.Args, " "), err)
+		}
+		logging.Info(ctx, "Download finished successfully")
+	} else if os.IsNotExist(err) {
+		logging.Info(ctx, "Private bundles not found")
+	} else {
+		return nil, errors.Errorf("failed to download %s: %v", archiveURL, err)
+	}
+
+	if err := ioutil.WriteFile(s.scfg.PrivateBundlesStampPath, nil, 0644); err != nil {
+		return nil, err
+	}
+
+	return &protocol.DownloadPrivateBundlesResponse{}, nil
 }
 
 func (s *testServer) ListEntities(ctx context.Context, req *protocol.ListEntitiesRequest) (*protocol.ListEntitiesResponse, error) {

@@ -20,15 +20,15 @@ func handleGetSysInfoState(ctx context.Context, scfg *StaticConfig, w io.Writer)
 	logger := newArrayLogger()
 	ctx = logging.AttachLogger(ctx, logger)
 
-	req := &protocol.GetSysInfoStateRequest{}
+	compat, err := startCompatServer(ctx, scfg, &protocol.HandshakeRequest{})
+	if err != nil {
+		return err
+	}
+	defer compat.Close()
 
-	res := &protocol.GetSysInfoStateResponse{}
-	if f := scfg.GetSysInfoState; f != nil {
-		var err error
-		res, err = f(ctx, req)
-		if err != nil {
-			return err
-		}
+	res, err := compat.Client().GetSysInfoState(ctx, &protocol.GetSysInfoStateRequest{})
+	if err != nil {
+		return err
 	}
 
 	jres := jsonprotocol.RunnerGetSysInfoStateResultFromProto(res)
@@ -43,15 +43,15 @@ func handleCollectSysInfo(ctx context.Context, args *jsonprotocol.RunnerArgs, sc
 	logger := newArrayLogger()
 	ctx = logging.AttachLogger(ctx, logger)
 
-	req := args.CollectSysInfo.Proto()
+	compat, err := startCompatServer(ctx, scfg, &protocol.HandshakeRequest{})
+	if err != nil {
+		return err
+	}
+	defer compat.Close()
 
-	res := &protocol.CollectSysInfoResponse{}
-	if f := scfg.CollectSysInfo; f != nil {
-		var err error
-		res, err = f(ctx, req)
-		if err != nil {
-			return err
-		}
+	res, err := compat.Client().CollectSysInfo(ctx, args.CollectSysInfo.Proto())
+	if err != nil {
+		return err
 	}
 
 	jres := jsonprotocol.RunnerCollectSysInfoResultFromProto(res)

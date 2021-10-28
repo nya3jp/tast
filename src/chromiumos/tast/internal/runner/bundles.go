@@ -9,20 +9,15 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"sort"
-	"strings"
 	"time"
 
 	"github.com/shirou/gopsutil/process"
 	"golang.org/x/sys/unix"
 
-	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/command"
-	"chromiumos/tast/internal/devserver"
 	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/protocol"
@@ -243,73 +238,28 @@ func killSession(sid int, sig unix.Signal) {
 // handleDownloadPrivateBundles handles a RunnerDownloadPrivateBundlesMode request from args
 // and JSON-marshals a RunnerDownloadPrivateBundlesResult struct to w.
 func handleDownloadPrivateBundles(ctx context.Context, args *jsonprotocol.RunnerArgs, scfg *StaticConfig, stdout io.Writer) error {
-	if scfg.PrivateBundlesStampPath == "" {
-		return errors.New("this test runner is not configured for private bundles")
-	}
-
-	if args.DownloadPrivateBundles.BuildArtifactsURL == "" {
-		return errors.New("failed to determine the build artifacts URL (non-official image?)")
-	}
-
 	var logs []string
 	logger := logging.NewSinkLogger(logging.LevelInfo, false, logging.NewFuncSink(func(msg string) {
 		logs = append(logs, fmt.Sprintf("[%s] %s", time.Now().Format("15:04:05.000"), msg))
 	}))
 	ctx = logging.AttachLogger(ctx, logger)
 
-	defer func() {
-		res := &jsonprotocol.RunnerDownloadPrivateBundlesResult{Messages: logs}
-		json.NewEncoder(stdout).Encode(res)
-	}()
-
-	// If the stamp file exists, private bundles have been already downloaded.
-	if _, err := os.Stat(scfg.PrivateBundlesStampPath); err == nil {
-		return nil
-	}
-
-	// Download the archive via devserver.
-	archiveURL := args.DownloadPrivateBundles.BuildArtifactsURL + "tast_bundles.tar.bz2"
-	logging.Infof(ctx, "Downloading private bundles from %s", archiveURL)
-	cl, err := devserver.NewClient(ctx, args.DownloadPrivateBundles.Devservers,
-		args.DownloadPrivateBundles.TLWServer,
-		args.DownloadPrivateBundles.DUTName)
-	if err != nil {
-		return errors.Wrapf(err, "failed to create new client [devservers=%v, TLWServer=%s]",
-			args.DownloadPrivateBundles.Devservers, args.DownloadPrivateBundles.TLWServer)
-	}
-	defer cl.TearDown()
-
-	r, err := cl.Open(ctx, archiveURL)
+	compat, err := startCompatServer(ctx, scfg, &protocol.HandshakeRequest{})
 	if err != nil {
 		return err
 	}
-	defer r.Close()
+	defer compat.Close()
 
-	tf, err := ioutil.TempFile("", "tast_bundles.")
+	res, err := compat.Client().DownloadPrivateBundles(ctx, args.DownloadPrivateBundles.Proto())
 	if err != nil {
 		return err
 	}
-	defer os.Remove(tf.Name())
 
-	_, err = io.Copy(tf, r)
+	jres := jsonprotocol.RunnerDownloadPrivateBundlesResultFromProto(res)
+	jres.Messages = logs
 
-	if cerr := tf.Close(); err == nil {
-		err = cerr
+	if err := json.NewEncoder(stdout).Encode(jres); err != nil {
+		return command.NewStatusErrorf(statusError, "failed to serialize into JSON: %v", err)
 	}
-
-	if err == nil {
-		// Extract the archive, and touch the stamp file.
-		cmd := exec.Command("tar", "xf", tf.Name())
-		cmd.Dir = "/usr/local"
-		if err := cmd.Run(); err != nil {
-			return fmt.Errorf("failed to extract %s: %v", strings.Join(cmd.Args, " "), err)
-		}
-		logging.Info(ctx, "Download finished successfully")
-	} else if os.IsNotExist(err) {
-		logging.Info(ctx, "Private bundles not found")
-	} else {
-		return fmt.Errorf("failed to download %s: %v", archiveURL, err)
-	}
-
-	return ioutil.WriteFile(scfg.PrivateBundlesStampPath, nil, 0644)
+	return nil
 }

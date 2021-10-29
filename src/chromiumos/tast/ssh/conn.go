@@ -303,7 +303,7 @@ func (s *Conn) GenerateRemoteAddress(port int) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return fmt.Sprintf("%s:%d", host, port), nil
+	return net.JoinHostPort(host, fmt.Sprint(port)), nil
 }
 
 // Dial initiates a connection to the addr from the remote host.

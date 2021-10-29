@@ -97,7 +97,7 @@ func init() {
 		Contacts:     []string{"me@chromium.org"},
 		Attr:         []string{"group:mainline", "informational"},
 		SoftwareDeps: []string{"chrome"},
-		Timeout:      3 * time.Minute, // optional
+		Timeout:      3 * time.Minute,
 	})
 }
 
@@ -124,6 +124,10 @@ string literals.
 The `SoftwareDeps` field lists [software dependencies] that should be satisfied
 in order for the test to run. Its value should be an array literal of string
 literals or (possibly qualified) identifiers which are constant value.
+
+Tests should always set the `Timeout` field to specify the maximum duration for
+which Func may run before the test is aborted. If not specified, a reasonable
+default will be used, but tests should not depend on it.
 
 #### Disabling tests
 

@@ -47,10 +47,13 @@ type Driver struct {
 	cc  *target.ConnCache
 }
 
+// DUTAction provide a interface to help tast to perform action on DUT.
+type DUTAction = target.DUTAction
+
 // New establishes a new connection to the target device and returns a Driver.
-func New(ctx context.Context, cfg *config.Config, rawTarget string) (*Driver, error) {
+func New(ctx context.Context, cfg *config.Config, rawTarget string, dutAction DUTAction) (*Driver, error) {
 	resolvedTarget := resolveSSHConfig(ctx, rawTarget)
-	cc, err := target.NewConnCache(ctx, cfg, resolvedTarget)
+	cc, err := target.NewConnCache(ctx, cfg, resolvedTarget, dutAction)
 	if err != nil {
 		return nil, err
 	}

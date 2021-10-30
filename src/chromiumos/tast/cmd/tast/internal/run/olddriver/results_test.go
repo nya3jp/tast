@@ -126,7 +126,7 @@ func TestReadTestOutput(t *gotesting.T) {
 		t.Errorf("readTestOutput reported unstarted tests %v", unstartedTests)
 	}
 
-	drv, err := driver.New(ctx, cfg, cfg.Target())
+	drv, err := driver.New(ctx, cfg, cfg.Target(), nil)
 	if err != nil {
 		t.Fatalf("driver.New failed: %v", err)
 	}
@@ -269,7 +269,7 @@ func TestReadTestOutputSameEntity(t *gotesting.T) {
 		t.Errorf("readTestOutput reported unstarted tests %v", unstartedTests)
 	}
 
-	drv, err := driver.New(ctx, cfg, cfg.Target())
+	drv, err := driver.New(ctx, cfg, cfg.Target(), nil)
 	if err != nil {
 		t.Fatalf("driver.New failed: %v", err)
 	}
@@ -352,7 +352,7 @@ func TestReadTestOutputConcurrentEntity(t *gotesting.T) {
 		t.Errorf("readTestOutput reported unstarted tests %v", unstartedTests)
 	}
 
-	drv, err := driver.New(ctx, cfg, cfg.Target())
+	drv, err := driver.New(ctx, cfg, cfg.Target(), nil)
 	if err != nil {
 		t.Fatalf("driver.New failed: %v", err)
 	}
@@ -485,7 +485,7 @@ func TestReadTestOutputAbortFixture(t *gotesting.T) {
 		t.Errorf("readTestOutput reported unstarted tests %v", unstartedTests)
 	}
 
-	drv, err := driver.New(ctx, cfg, cfg.Target())
+	drv, err := driver.New(ctx, cfg, cfg.Target(), nil)
 	if err != nil {
 		t.Fatalf("driver.New failed: %v", err)
 	}
@@ -684,7 +684,7 @@ func TestWriteResultsCollectSysInfo(t *gotesting.T) {
 	cfg := env.Config(nil)
 	state := env.State()
 
-	drv, err := driver.New(ctx, cfg, cfg.Target())
+	drv, err := driver.New(ctx, cfg, cfg.Target(), nil)
 	if err != nil {
 		t.Fatalf("driver.New failed: %v", err)
 	}
@@ -711,7 +711,7 @@ func TestWriteResultsCollectSysInfoFailure(t *gotesting.T) {
 	cfg := env.Config(nil)
 	state := env.State()
 
-	drv, err := driver.New(ctx, cfg, cfg.Target())
+	drv, err := driver.New(ctx, cfg, cfg.Target(), nil)
 	if err != nil {
 		t.Fatalf("driver.New failed: %v", err)
 	}
@@ -985,7 +985,7 @@ func TestWriteResultsWriteFiles(t *gotesting.T) {
 		{Resolved: &protocol.ResolvedEntity{Entity: &protocol.Entity{Name: "pkg.Test2"}}},
 	}
 
-	drv, err := driver.New(ctx, cfg, cfg.Target())
+	drv, err := driver.New(ctx, cfg, cfg.Target(), nil)
 	if err != nil {
 		t.Fatalf("driver.New failed: %v", err)
 	}

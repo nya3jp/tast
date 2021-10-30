@@ -117,7 +117,7 @@ func TestPushDataFiles(t *gotesting.T) {
 	}
 
 	// Connect to the target.
-	drv, err := driver.New(ctx, cfg, cfg.Target())
+	drv, err := driver.New(ctx, cfg, cfg.Target(), nil)
 	if err != nil {
 		t.Fatalf("driver.New failed: %v", err)
 	}

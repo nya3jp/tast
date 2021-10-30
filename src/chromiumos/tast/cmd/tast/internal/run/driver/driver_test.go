@@ -34,7 +34,7 @@ func TestDriver(t *testing.T) {
 	ctx := env.Context()
 	cfg := env.Config(nil)
 
-	drv, err := driver.New(ctx, cfg, cfg.Target())
+	drv, err := driver.New(ctx, cfg, cfg.Target(), nil)
 	if err != nil {
 		t.Fatalf("driver.New failed: %v", err)
 	}
@@ -63,7 +63,7 @@ func TestDriver_ReconnectIfNeeded(t *testing.T) {
 	ctx := env.Context()
 	cfg := env.Config(nil)
 
-	drv, err := driver.New(ctx, cfg, cfg.Target())
+	drv, err := driver.New(ctx, cfg, cfg.Target(), nil)
 	if err != nil {
 		t.Fatalf("driver.New failed: %v", err)
 	}

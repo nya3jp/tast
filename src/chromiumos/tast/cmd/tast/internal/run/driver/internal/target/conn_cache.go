@@ -6,6 +6,7 @@ package target
 
 import (
 	"context"
+	"time"
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/internal/linuxssh"
@@ -19,13 +20,20 @@ type ConnCache struct {
 	cfg        *config.Config
 	target     string
 	initBootID string
+	dutAction  DUTAction
 
 	conn *Conn // always non-nil
 }
 
+// DUTAction provides an interface to provide action on a DUT.
+type DUTAction interface {
+	// Reboot a DUt.
+	HardReboot(ctx context.Context) error
+}
+
 // NewConnCache establishes a new connection to target and return a ConnCache.
 // Call Close when it is no longer needed.
-func NewConnCache(ctx context.Context, cfg *config.Config, target string) (cc *ConnCache, retErr error) {
+func NewConnCache(ctx context.Context, cfg *config.Config, target string, dutAction DUTAction) (cc *ConnCache, retErr error) {
 	conn, err := newConn(ctx, cfg, target)
 	if err != nil {
 		return nil, err
@@ -46,6 +54,7 @@ func NewConnCache(ctx context.Context, cfg *config.Config, target string) (cc *C
 		target:     target,
 		initBootID: bootID,
 		conn:       conn,
+		dutAction:  dutAction,
 	}, nil
 }
 
@@ -85,15 +94,30 @@ func (cc *ConnCache) EnsureConn(ctx context.Context) (conn *Conn, retErr error) 
 	}
 	logging.Infof(ctx, "Target connection is unhealthy: %v; reconnecting", err)
 
-	newConn, err := newConn(ctx, cc.cfg, cc.target)
+	// use a context with short timeout to try reconnection and close.
+	shortCtx, cancel := context.WithTimeout(ctx, 5*time.Minute)
+	defer cancel()
+	newConnection, err := newConn(shortCtx, cc.cfg, cc.target)
 	if err != nil {
-		return nil, err
+		if cc.dutAction != nil {
+			// If we have control of the DUt, reboot the DUT.
+			logging.Info(ctx, "Reboot target before reconnecting")
+			if err := cc.dutAction.HardReboot(ctx); err != nil {
+				logging.Infof(ctx, "Fail to reboot target: %v", err)
+			}
+			// Sleep for 3 minutes to make sure everything is up.
+			time.Sleep(time.Minute * 3)
+			newConnection, err = newConn(shortCtx, cc.cfg, cc.target)
+		}
+		if err != nil {
+			return nil, err
+		}
 	}
 
-	cc.conn.close(ctx)
-	cc.conn = newConn
+	cc.conn.close(shortCtx)
+	cc.conn = newConnection
 
-	return newConn, nil
+	return newConnection, nil
 }
 
 // InitBootID returns a boot ID string obtained on the first successful

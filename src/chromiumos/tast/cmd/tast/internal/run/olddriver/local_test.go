@@ -37,7 +37,7 @@ func TestLocalSuccess(t *gotesting.T) {
 	cfg := env.Config(nil)
 	state := env.State()
 
-	drv, err := driver.New(ctx, cfg, cfg.Target())
+	drv, err := driver.New(ctx, cfg, cfg.Target(), nil)
 	if err != nil {
 		t.Fatalf("driver.New failed: %v", err)
 	}
@@ -96,7 +96,7 @@ func TestLocalProxy(t *gotesting.T) {
 	})
 	state := env.State()
 
-	drv, err := driver.New(ctx, cfg, cfg.Target())
+	drv, err := driver.New(ctx, cfg, cfg.Target(), nil)
 	if err != nil {
 		t.Fatalf("driver.New failed: %v", err)
 	}
@@ -135,7 +135,7 @@ func TestLocalCopyOutput(t *gotesting.T) {
 		{Bundle: "bundle", Resolved: &protocol.ResolvedEntity{Entity: &protocol.Entity{Name: testName}, Hops: 1}},
 	}
 
-	drv, err := driver.New(ctx, cfg, cfg.Target())
+	drv, err := driver.New(ctx, cfg, cfg.Target(), nil)
 	if err != nil {
 		t.Fatalf("driver.New failed: %v", err)
 	}
@@ -190,7 +190,7 @@ func TestLocalMaxFailures(t *gotesting.T) {
 		{Bundle: "bundle", Resolved: &protocol.ResolvedEntity{Entity: &protocol.Entity{Name: testName3}, Hops: 1}},
 	}
 
-	drv, err := driver.New(ctx, cfg, cfg.Target())
+	drv, err := driver.New(ctx, cfg, cfg.Target(), nil)
 	if err != nil {
 		t.Fatalf("driver.New failed: %v", err)
 	}
@@ -300,7 +300,7 @@ func TestFixturesDependency(t *gotesting.T) {
 		})
 	}
 
-	drv, err := driver.New(ctx, cfg, cfg.Target())
+	drv, err := driver.New(ctx, cfg, cfg.Target(), nil)
 	if err != nil {
 		t.Fatalf("driver.New failed: %v", err)
 	}

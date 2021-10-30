@@ -64,7 +64,7 @@ func TestDriver_GetDUTInfo(t *testing.T) {
 		cfg.ExtraUSEFlags = extraUseFlags
 	})
 
-	drv, err := driver.New(ctx, cfg, cfg.Target())
+	drv, err := driver.New(ctx, cfg, cfg.Target(), nil)
 	if err != nil {
 		t.Fatalf("driver.New failed: %v", err)
 	}
@@ -91,7 +91,7 @@ func TestDriver_GetDUTInfo_NoCheckTestDeps(t *testing.T) {
 		cfg.CheckTestDeps = false
 	})
 
-	drv, err := driver.New(ctx, cfg, cfg.Target())
+	drv, err := driver.New(ctx, cfg, cfg.Target(), nil)
 	if err != nil {
 		t.Fatalf("driver.New failed: %v", err)
 	}

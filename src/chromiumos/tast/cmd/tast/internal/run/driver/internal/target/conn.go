@@ -93,6 +93,7 @@ func (c *Conn) Target() string {
 	return c.target
 }
 
+// dialSSH uses ssh to connect to target which in the format host:port.
 func dialSSH(ctx context.Context, cfg *config.Config, target string) (*ssh.Conn, error) {
 	ctx, st := timing.Start(ctx, "connect")
 	defer st.End()

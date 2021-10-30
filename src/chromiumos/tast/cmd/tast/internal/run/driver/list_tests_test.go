@@ -50,7 +50,7 @@ func newDriverForListingTests(t *gotesting.T) (context.Context, *driver.Driver, 
 		cfg.Patterns = []string{"(yes)"}
 	})
 
-	drv, err := driver.New(ctx, cfg, cfg.Target())
+	drv, err := driver.New(ctx, cfg, cfg.Target(), nil)
 	if err != nil {
 		t.Fatalf("driver.New failed: %v", err)
 	}

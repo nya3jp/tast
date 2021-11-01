@@ -71,7 +71,7 @@ func RunServer(r io.Reader, w io.Writer, svcs []*testing.Service, register func(
 	// Register user-defined gRPC services if requested.
 	if req.GetNeedUserServices() {
 		logger := logging.NewSinkLogger(logging.LevelInfo, false, logging.NewFuncSink(ls.Log))
-		ctx = logging.AttachLogger(ctx, logger)
+		ctx := logging.AttachLogger(ctx, logger)
 		vars := req.GetBundleInitParams().GetVars()
 		for _, svc := range svcs {
 			svc.Register(srv, testing.NewServiceState(ctx, testing.NewServiceRoot(svc, vars)))
@@ -138,6 +138,10 @@ func serverOpts(sink logging.Sink, calls *sync.WaitGroup) []grpc.ServerOption {
 	// called on the end of the gRPC method call to compute trailers, and
 	// possibly an error.
 	hook := func(ctx context.Context, method string) (context.Context, func() metadata.MD, error) {
+		// Forward all uncaptured logs via LoggingService.
+		ctx = logging.AttachLogger(ctx, logging.NewSinkLogger(logging.LevelInfo, false, sink))
+
+		// If the method call is for core services, there is no more thing to do.
 		if !isUserMethod(method) {
 			return ctx, func() metadata.MD { return nil }, nil
 		}
@@ -158,7 +162,6 @@ func serverOpts(sink logging.Sink, calls *sync.WaitGroup) []grpc.ServerOption {
 			return nil, nil, err
 		}
 
-		ctx = logging.AttachLogger(ctx, logging.NewSinkLogger(logging.LevelInfo, false, sink))
 		ctx = testcontext.WithCurrentEntity(ctx, incomingCurrentContext(md, outDir))
 		tl := timing.NewLog()
 		ctx = timing.NewContext(ctx, tl)

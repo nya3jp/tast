@@ -61,7 +61,7 @@ func runTests(ctx context.Context, srv protocol.TestService_RunTestsServer, cfg 
 	ew := newEventWriter(srv)
 
 	logger := logging.NewSinkLogger(logging.LevelInfo, false, logging.NewFuncSink(func(msg string) { ew.RunLog(msg) }))
-	ctx = logging.AttachLogger(ctx, logger)
+	ctx = logging.AttachLoggerNoPropagation(ctx, logger)
 
 	tests, err := testsToRun(scfg, cfg.GetTests())
 	if err != nil {

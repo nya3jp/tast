@@ -62,7 +62,7 @@ func runTestsRecursive(ctx context.Context, srv protocol.TestService_RunTestsSer
 
 	ew := newEventWriter(srv)
 
-	ctx = logging.AttachLogger(ctx, logging.NewSinkLogger(logging.LevelInfo, false, logging.NewFuncSink(func(msg string) {
+	ctx = logging.AttachLoggerNoPropagation(ctx, logging.NewSinkLogger(logging.LevelInfo, false, logging.NewFuncSink(func(msg string) {
 		ew.RunLog(msg)
 	})))
 

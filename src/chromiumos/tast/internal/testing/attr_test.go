@@ -71,6 +71,9 @@ func TestCheckKnownAttrs(t *testing.T) {
 			attrs: []string{"group:enrollment"},
 		},
 		{
+			attrs: []string{"group:dpanel-end2end"},
+		},
+		{
 			attrs: []string{"group:input-tools"},
 		},
 		{

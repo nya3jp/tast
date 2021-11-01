@@ -230,6 +230,7 @@ func NewClient(ctx context.Context, r io.Reader, w io.Writer, req *protocol.Hand
 
 var alwaysAllowedServices = []string{
 	"tast.cros.baserpc.FaillogService",
+	"tast.cros.baserpc.FileSystem",
 }
 
 // clientOpts returns gRPC client-side interceptors to manipulate context.

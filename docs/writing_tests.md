@@ -109,8 +109,8 @@ func DoSomething(ctx context.Context, s *testing.State) {
 Tests have to specify the descriptions in `Desc`, which should be a string literal.
 
 Tests have to specify email addresses of persons and groups who are familiar
-with those tests in [Contacts]. At least one personal email address of an active
-committer should be specified so that we can file bugs or ask for code reviews.
+with those tests in [Contacts]. At least one personal or email group address of active
+committer(s) should be specified so that we can file bugs or ask for code reviews.
 The `Contacts` fields should be an array literal of string literals.
 
 Tests have to specify [attributes] to describe how they are used in Chrome OS

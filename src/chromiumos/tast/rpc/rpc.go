@@ -33,12 +33,12 @@ func (c *Client) Close(ctx context.Context) error {
 	return c.cl.Close()
 }
 
-// Dial establishes a gRPC connection to the test bundle executable named
-// bundleName using d and h.
+// Dial establishes a gRPC connection to the test bundle executable
+// using d and h.
 //
 // Example:
 //
-//  cl, err := rpc.Dial(ctx, d, s.RPCHint(), "cros")
+//  cl, err := rpc.Dial(ctx, d, s.RPCHint())
 //  if err != nil {
 //  	return err
 //  }
@@ -50,18 +50,15 @@ func (c *Client) Close(ctx context.Context) error {
 //  if err != nil {
 //  	return err
 //  }
-func Dial(ctx context.Context, d *dut.DUT, h *testing.RPCHint, bundleName string) (*Client, error) {
-	// Reject dial to a local test bundle with a different name.
-	// TODO(b/185755639): Consider dropping bundleName argument entirely.
+func Dial(ctx context.Context, d *dut.DUT, h *testing.RPCHint) (*Client, error) {
 	exe, err := os.Executable()
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to get self bundle name")
 	}
-	if selfName := filepath.Base(exe); bundleName != selfName {
-		return nil, errors.Errorf("cross-bundle gRPC connections are not supported: remote=%q, local=%q", selfName, bundleName)
-	}
 
-	bundlePath := filepath.Join(testing.ExtractLocalBundleDir(h), bundleName)
+	selfName := filepath.Base(exe)
+
+	bundlePath := filepath.Join(testing.ExtractLocalBundleDir(h), selfName)
 	req := &protocol.HandshakeRequest{
 		NeedUserServices: true,
 		BundleInitParams: &protocol.BundleInitParams{

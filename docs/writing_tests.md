@@ -1602,7 +1602,7 @@ On success, it returns a struct containing [`grpc.ClientConn`] with which
 you can construct gRPC stubs.
 
 ```go
-cl, err := rpc.Dial(ctx, s.DUT(), s.RPCHint(), "cros")
+cl, err := rpc.Dial(ctx, s.DUT(), s.RPCHint())
 if err != nil {
     s.Fatal("Failed to connect to the RPC service on the DUT: ", err)
 }

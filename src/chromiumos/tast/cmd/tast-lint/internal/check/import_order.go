@@ -91,7 +91,7 @@ func trimImportEmptyLine(in []byte) []byte {
 func runGoimports(in []byte) ([]byte, error) {
 	_, err := exec.LookPath("goimports")
 	if err != nil {
-		panic("goimports not found. Please install.")
+		panic("goimports not found. Please install. If already installed, check that GOPATH[0]/bin is in your PATH.")
 	}
 
 	cmd := exec.Command("goimports", "--local=chromiumos/,go.chromium.org/tast")

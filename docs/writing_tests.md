@@ -1097,7 +1097,7 @@ before running Tast tests to prevent stale files from being served.
 
 [external link format]: https://chromium.googlesource.com/chromiumos/platform/tast/+/main/src/chromiumos/tast/internal/extdata/extdata.go
 [example.DataFiles]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/main/src/chromiumos/tast/local/bundles/cros/example/data_files.go
-[build artifacts of Chrome OS]: https://goto.google.com/cros-build/google-storage
+[build artifacts of Chrome OS]: https://goto.google.com/cros-build-google-storage
 [`gsutil cp`]: https://cloud.google.com/storage/docs/gsutil/commands/cp
 
 ### Internal vs. external

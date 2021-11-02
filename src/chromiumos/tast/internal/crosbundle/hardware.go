@@ -7,6 +7,7 @@ package crosbundle
 import (
 	"bufio"
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -21,12 +22,13 @@ import (
 	configpb "go.chromium.org/chromiumos/config/go/api"
 
 	"chromiumos/tast/errors"
+	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/protocol"
 )
 
 // DetectHardwareFeatures returns a device.Config and api.HardwareFeatures instances
 // some of whose members are filled based on runtime information.
-func DetectHardwareFeatures() (dc *protocol.DeprecatedDeviceConfig, retFeatures *configpb.HardwareFeatures, warns []string) {
+func DetectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, error) {
 	crosConfig := func(path, prop string) (string, error) {
 		cmd := exec.Command("cros_config", path, prop)
 		var buf bytes.Buffer
@@ -46,7 +48,7 @@ func DetectHardwareFeatures() (dc *protocol.DeprecatedDeviceConfig, retFeatures 
 		return out, nil
 	}()
 	if err != nil {
-		warns = append(warns, fmt.Sprintf("unknown platform-id: %v", err))
+		logging.Infof(ctx, "Unknown platform-id: %v", err)
 	}
 	model, err := func() (string, error) {
 		out, err := crosConfig("/", "name")
@@ -56,7 +58,7 @@ func DetectHardwareFeatures() (dc *protocol.DeprecatedDeviceConfig, retFeatures 
 		return out, nil
 	}()
 	if err != nil {
-		warns = append(warns, fmt.Sprintf("unknown model-id: %v", err))
+		logging.Infof(ctx, "Unknown model-id: %v", err)
 	}
 	brand, err := func() (string, error) {
 		out, err := crosConfig("/", "brand-code")
@@ -66,12 +68,12 @@ func DetectHardwareFeatures() (dc *protocol.DeprecatedDeviceConfig, retFeatures 
 		return out, nil
 	}()
 	if err != nil {
-		warns = append(warns, fmt.Sprintf("unknown brand-id: %v", err))
+		logging.Infof(ctx, "Unknown brand-id: %v", err)
 	}
 
 	info, err := cpuInfo()
 	if err != nil {
-		warns = append(warns, fmt.Sprintf("unknown CPU information: %v", err))
+		logging.Infof(ctx, "Unknown CPU information: %v", err)
 	}
 
 	config := &protocol.DeprecatedDeviceConfig{
@@ -104,7 +106,7 @@ func DetectHardwareFeatures() (dc *protocol.DeprecatedDeviceConfig, retFeatures 
 		return out, nil
 	}()
 	if err != nil {
-		warns = append(warns, fmt.Sprintf("unknown /hardware-properties/form-factor: %v", err))
+		logging.Infof(ctx, "Unknown /hardware-properties/form-factor: %v", err)
 	}
 	lidConvertible, err := func() (string, error) {
 		out, err := crosConfig("/hardware-properties", "is-lid-convertible")
@@ -114,7 +116,7 @@ func DetectHardwareFeatures() (dc *protocol.DeprecatedDeviceConfig, retFeatures 
 		return out, nil
 	}()
 	if err != nil {
-		warns = append(warns, fmt.Sprintf("unknown /hardware-properties/is-lid-convertible: %v", err))
+		logging.Infof(ctx, "Unknown /hardware-properties/is-lid-convertible: %v", err)
 	}
 	detachableBasePath, err := func() (string, error) {
 		out, err := crosConfig("/detachable-base", "usb-path")
@@ -124,7 +126,7 @@ func DetectHardwareFeatures() (dc *protocol.DeprecatedDeviceConfig, retFeatures 
 		return out, nil
 	}()
 	if err != nil {
-		warns = append(warns, fmt.Sprintf("unknown /detachable-base/usbpath: %v", err))
+		logging.Infof(ctx, "Unknown /detachable-base/usbpath: %v", err)
 	}
 	if formFactorEnum, ok := configpb.HardwareFeatures_FormFactor_FormFactorType_value[formFactor]; ok {
 		features.FormFactor.FormFactor = configpb.HardwareFeatures_FormFactor_FormFactorType(formFactorEnum)
@@ -140,7 +142,7 @@ func DetectHardwareFeatures() (dc *protocol.DeprecatedDeviceConfig, retFeatures 
 			features.FormFactor.FormFactor = configpb.HardwareFeatures_FormFactor_CLAMSHELL
 		}
 	} else {
-		warns = append(warns, fmt.Sprintf("form factor not found: %v", formFactor))
+		logging.Infof(ctx, "Form factor not found: %v", formFactor)
 	}
 	switch features.FormFactor.FormFactor {
 	case configpb.HardwareFeatures_FormFactor_CHROMEBASE, configpb.HardwareFeatures_FormFactor_CHROMEBIT, configpb.HardwareFeatures_FormFactor_CHROMEBOX, configpb.HardwareFeatures_FormFactor_CHROMESLATE:
@@ -261,7 +263,7 @@ func DetectHardwareFeatures() (dc *protocol.DeprecatedDeviceConfig, retFeatures 
 		config.Power = protocol.DeprecatedDeviceConfig_POWER_SUPPLY_UNSPECIFIED
 		files, err := ioutil.ReadDir(sysFsPowerSupplyPath)
 		if err != nil {
-			warns = append(warns, fmt.Sprintf("failed to read %v: %v", sysFsPowerSupplyPath, err))
+			logging.Infof(ctx, "Failed to read %v: %v", sysFsPowerSupplyPath, err)
 			return
 		}
 		for _, file := range files {
@@ -269,7 +271,7 @@ func DetectHardwareFeatures() (dc *protocol.DeprecatedDeviceConfig, retFeatures 
 			supplyTypeBytes, err := ioutil.ReadFile(path.Join(devPath, "type"))
 			supplyType := strings.TrimSuffix(string(supplyTypeBytes), "\n")
 			if err != nil {
-				warns = append(warns, fmt.Sprintf("failed to read supply type of %v: %v", devPath, err))
+				logging.Infof(ctx, "Failed to read supply type of %v: %v", devPath, err)
 				continue
 			}
 			if strings.HasPrefix(supplyType, "Battery") {
@@ -277,7 +279,7 @@ func DetectHardwareFeatures() (dc *protocol.DeprecatedDeviceConfig, retFeatures 
 				supplyScope := strings.TrimSuffix(string(supplyScopeBytes), "\n")
 				if err != nil && !os.IsNotExist(err) {
 					// Ignore NotExist error since /sys/class/power_supply/*/scope may not exist
-					warns = append(warns, fmt.Sprintf("failed to read supply type of %v: %v", devPath, err))
+					logging.Infof(ctx, "Failed to read supply type of %v: %v", devPath, err)
 					continue
 				}
 				if strings.HasPrefix(string(supplyScope), "Device") {
@@ -289,7 +291,7 @@ func DetectHardwareFeatures() (dc *protocol.DeprecatedDeviceConfig, retFeatures 
 				break
 			}
 			if !isACPower[supplyType] {
-				warns = append(warns, fmt.Sprintf("Unknown supply type %v for %v", supplyType, devPath))
+				logging.Infof(ctx, "Unknown supply type %v for %v", supplyType, devPath)
 				continue
 			}
 			config.Power = protocol.DeprecatedDeviceConfig_POWER_SUPPLY_AC_ONLY
@@ -304,7 +306,7 @@ func DetectHardwareFeatures() (dc *protocol.DeprecatedDeviceConfig, retFeatures 
 		return findDiskSize(b)
 	}()
 	if err != nil {
-		warns = append(warns, fmt.Sprintf("failed to get disk size: %v", err))
+		logging.Infof(ctx, "Failed to get disk size: %v", err)
 	}
 	features.Storage.SizeGb = uint32(storageBytes / 1_000_000_000)
 
@@ -316,7 +318,7 @@ func DetectHardwareFeatures() (dc *protocol.DeprecatedDeviceConfig, retFeatures 
 		return findMemorySize(b)
 	}()
 	if err != nil {
-		warns = append(warns, fmt.Sprintf("failed to get memory size: %v", err))
+		logging.Infof(ctx, "Failed to get memory size: %v", err)
 	}
 	features.Memory.Profile = &configpb.Component_Memory_Profile{
 		SizeMegabytes: int32(memoryBytes / 1_000_000),
@@ -324,12 +326,12 @@ func DetectHardwareFeatures() (dc *protocol.DeprecatedDeviceConfig, retFeatures 
 
 	lidMicrophone, err := matchCrasDeviceType(`(INTERNAL|FRONT)_MIC`)
 	if err != nil {
-		warns = append(warns, fmt.Sprintf("failed to get lid microphone: %v", err))
+		logging.Infof(ctx, "Failed to get lid microphone: %v", err)
 	}
 	features.Audio.LidMicrophone = lidMicrophone
 	baseMicrophone, err := matchCrasDeviceType(`REAR_MIC`)
 	if err != nil {
-		warns = append(warns, fmt.Sprintf("failed to get base microphone: %v", err))
+		logging.Infof(ctx, "Failed to get base microphone: %v", err)
 	}
 	features.Audio.BaseMicrophone = baseMicrophone
 	expectAudio := formFactor == "CHROMEBOOK" || formFactor == "CHROMEBASE" || formFactor == "REFERENCE"
@@ -338,14 +340,14 @@ func DetectHardwareFeatures() (dc *protocol.DeprecatedDeviceConfig, retFeatures 
 	}
 	speaker, err := matchCrasDeviceType(`INTERNAL_SPEAKER`)
 	if err != nil {
-		warns = append(warns, fmt.Sprintf("failed to get speaker: %v", err))
+		logging.Infof(ctx, "Failed to get speaker: %v", err)
 	}
 
 	if speaker.GetValue() > 0 || expectAudio {
 		model := strings.TrimSuffix(strings.ToLower(config.Id.Model), "_signed")
 		amp, err := findSpeakerAmplifier(model)
 		if err != nil {
-			warns = append(warns, fmt.Sprintf("failed to get amp: %v", err))
+			logging.Infof(ctx, "Failed to get amp: %v", err)
 		}
 		features.Audio.SpeakerAmplifier = amp
 	}
@@ -354,7 +356,7 @@ func DetectHardwareFeatures() (dc *protocol.DeprecatedDeviceConfig, retFeatures 
 		// Get list of connectors.
 		value, err := exec.Command("modetest", "-c").Output()
 		if err != nil {
-			warns = append(warns, fmt.Sprintf("failed to get connectors: %v", err))
+			logging.Infof(ctx, "Failed to get connectors: %v", err)
 			return false
 		}
 		// Check if privacy-screen prop is present.
@@ -387,13 +389,16 @@ func DetectHardwareFeatures() (dc *protocol.DeprecatedDeviceConfig, retFeatures 
 		}
 	}()
 	if err != nil {
-		warns = append(warns, fmt.Sprintf("failed to determine CPU SMT features: %v", err))
+		logging.Infof(ctx, "Failed to determine CPU SMT features: %v", err)
 	}
 	if cpuSMT {
 		features.Soc.Features = append(features.Soc.Features, configpb.Component_Soc_SMT)
 	}
 
-	return config, features, warns
+	return &protocol.HardwareFeatures{
+		HardwareFeatures:       features,
+		DeprecatedDeviceConfig: config,
+	}, nil
 }
 
 type lscpuEntry struct {

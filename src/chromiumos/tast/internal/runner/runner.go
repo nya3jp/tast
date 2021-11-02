@@ -82,7 +82,7 @@ func Run(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, args *jsonp
 		}
 		return statusSuccess
 	case jsonprotocol.RunnerGetDUTInfoMode:
-		if err := handleGetDUTInfo(args, scfg, stdout); err != nil {
+		if err := handleGetDUTInfo(ctx, args, scfg, stdout); err != nil {
 			return command.WriteError(stderr, err)
 		}
 		return statusSuccess

@@ -35,10 +35,10 @@ func main() {
 	)
 
 	params := genutil.Params{
-		PackageName: "runner",
+		PackageName: "crosbundle",
 		RepoName:    "Linux kernel",
-		PreludeCode: `//go:generate ` + goSh + ` run ` + thisFile + ` ../../../../../../../third_party/kernel/v5.4/arch/x86/include/asm/intel-family.h generated_intel_family.go
-//go:generate ` + goSh + ` fmt generated_intel_family.go`,
+		PreludeCode: `//go:generate ` + goSh + ` run ` + thisFile + ` ../../../../../../../third_party/kernel/v5.4/arch/x86/include/asm/intel-family.h hardware_intel_family.go
+//go:generate ` + goSh + ` fmt hardware_intel_family.go`,
 		CopyrightYear:  2020,
 		MainGoFilePath: thisFile,
 

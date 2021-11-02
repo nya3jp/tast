@@ -26,9 +26,9 @@ import (
 	"chromiumos/tast/internal/protocol"
 )
 
-// DetectHardwareFeatures returns a device.Config and api.HardwareFeatures instances
+// detectHardwareFeatures returns a device.Config and api.HardwareFeatures instances
 // some of whose members are filled based on runtime information.
-func DetectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, error) {
+func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, error) {
 	crosConfig := func(path, prop string) (string, error) {
 		cmd := exec.Command("cros_config", path, prop)
 		var buf bytes.Buffer

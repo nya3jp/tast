@@ -513,54 +513,6 @@ func TestRunFailForTestErrorWhenRunManually(t *gotesting.T) {
 	}
 }
 
-func TestCheckDepsWhenRunManually(t *gotesting.T) {
-	bd := createBundleSymlinks(t, []bool{true})
-	defer os.RemoveAll(bd)
-
-	// Write a file containing a list of USE flags.
-	const useFlagsFile = "use_flags.txt"
-	td := testutil.TempDir(t)
-	defer os.RemoveAll(td)
-	if err := testutil.WriteFiles(td, map[string]string{
-		useFlagsFile: "flag1\nflag2\n",
-	}); err != nil {
-		t.Fatal(err)
-	}
-
-	args := jsonprotocol.RunnerArgs{RunTests: &jsonprotocol.RunnerRunTestsArgs{BundleGlob: filepath.Join(bd, "*")}}
-	scfg := StaticConfig{
-		Type:         LocalRunner,
-		USEFlagsFile: filepath.Join(td, useFlagsFile),
-		SoftwareFeatureDefinitions: map[string]string{
-			"both":    "flag1 && flag2",
-			"neither": "!flag1 && !flag2",
-			"third":   "flag3",
-		},
-	}
-	status, _, stderr, sig := callRun(t, []string{"-extrauseflags=flag3,flag4", "(!foo)"}, nil, &args, &scfg)
-	if status != statusSuccess {
-		println(stderr.String())
-		t.Fatalf("%s = %v; want %v", sig, status, statusSuccess)
-	}
-
-	// Use args.BundleArgs to determine what would be passed to test bundles.
-	bundleArgs, err := args.BundleArgs(jsonprotocol.BundleRunTestsMode)
-	if err != nil {
-		t.Fatal("BundleArgs failed: ", err)
-	}
-	if !bundleArgs.RunTests.CheckDeps {
-		t.Errorf("%s wouldn't request checking test deps", sig)
-	}
-	if exp := []string{"both", "third"}; !reflect.DeepEqual(bundleArgs.RunTests.AvailableSoftwareFeatures, exp) {
-		t.Errorf("%s would pass available features %v; want %v",
-			sig, bundleArgs.RunTests.AvailableSoftwareFeatures, exp)
-	}
-	if exp := []string{"neither"}; !reflect.DeepEqual(bundleArgs.RunTests.UnavailableSoftwareFeatures, exp) {
-		t.Errorf("%s would pass unavailable features %v; want %v",
-			sig, bundleArgs.RunTests.UnavailableSoftwareFeatures, exp)
-	}
-}
-
 func TestSkipBundlesWithoutMatchedTests(t *gotesting.T) {
 	dir := createBundleSymlinks(t, []bool{true}, []bool{true})
 	defer os.RemoveAll(dir)

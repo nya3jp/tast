@@ -20,15 +20,20 @@ import (
 	"chromiumos/tast/lsbrelease"
 )
 
-const autotestCapPrefix = "autotest-capability:" // prefix for autotest-capability feature names
+const (
+	// autotestCapPrefix is the prefix for autotest-capability feature names.
+	autotestCapPrefix = "autotest-capability:"
 
-// DetectSoftwareFeatures implements the main function of RunnerGetDUTInfoMode (i.e., except input/output
+	// useFlagsFile is the path to the file containing USE flags enabled for
+	// the board.
+	// The tast-use-flags package attempts to install this file to /etc,
+	// but it gets diverted to /usr/local since it's installed for test images.
+	useFlagsFile = "/usr/local/etc/tast_use_flags.txt"
+)
+
+// detectSoftwareFeatures implements the main function of RunnerGetDUTInfoMode (i.e., except input/output
 // conversion for RPC).
-func DetectSoftwareFeatures(ctx context.Context, definitions map[string]string, useFlagsFile, lsbReleaseFile string, extraUSEFlags []string, autotestCapsDir string) (*protocol.SoftwareFeatures, error) {
-	if useFlagsFile == "" {
-		return nil, errors.New("feature enumeration unsupported")
-	}
-
+func detectSoftwareFeatures(ctx context.Context, extraUSEFlags []string) (*protocol.SoftwareFeatures, error) {
 	// If the file listing USE flags doesn't exist, we're probably running on a non-test
 	// image. Return an empty response to signal that to the caller.
 	if _, err := os.Stat(useFlagsFile); os.IsNotExist(err) {
@@ -41,9 +46,7 @@ func DetectSoftwareFeatures(ctx context.Context, definitions map[string]string, 
 	}
 	flags = append(flags, extraUSEFlags...)
 
-	if lsbReleaseFile == "" {
-		logging.Info(ctx, "lsb-release path is not specified; board names in software feature definitions will not work")
-	} else if lr, err := lsbrelease.LoadFrom(lsbReleaseFile); err != nil {
+	if lr, err := lsbrelease.LoadFrom(lsbrelease.Path); err != nil {
 		logging.Infof(ctx, "Failed to read lsbrelease; board names in software feature definitions will not work: %v", err)
 	} else if board, ok := lr[lsbrelease.Board]; !ok {
 		logging.Infof(ctx, "Failed to find boardname in lsbrelease; board names in software feature definitions will not work")
@@ -51,16 +54,13 @@ func DetectSoftwareFeatures(ctx context.Context, definitions map[string]string, 
 		flags = append(flags, "board:"+board)
 	}
 
-	var autotestCaps map[string]autocaps.State
-	if autotestCapsDir != "" {
-		if ac, err := autocaps.Read(autotestCapsDir, nil); err != nil {
-			logging.Infof(ctx, "%s: %v", autotestCapsDir, err)
-		} else {
-			autotestCaps = ac
-		}
+	autotestCaps, err := autocaps.Read(autocaps.DefaultCapabilityDir, nil)
+	if err != nil {
+		logging.Infof(ctx, "%s: %v", autocaps.DefaultCapabilityDir, err)
+
 	}
 
-	features, err := determineSoftwareFeatures(definitions, flags, autotestCaps)
+	features, err := determineSoftwareFeatures(softwareFeatureDefs, flags, autotestCaps)
 	if err != nil {
 		return nil, err
 	}

@@ -13,9 +13,9 @@ import (
 	"os"
 	"path/filepath"
 
-	"chromiumos/tast/autocaps"
 	"chromiumos/tast/internal/command"
 	"chromiumos/tast/internal/jsonprotocol"
+	"chromiumos/tast/internal/protocol"
 )
 
 // RunnerType describes the type of test runner that is using this package.
@@ -58,48 +58,35 @@ type StaticConfig struct {
 	// CleanupLogsPausedPath is a path to the marker file on the DUT to pause log cleanup.
 	CleanupLogsPausedPath string
 
-	// USEFlagsFile contains the path to a file listing a subset of USE flags that were set when building
-	// the system image. These USE flags are used by expressions in SoftwareFeatureDefinitions to determine
-	// available software features.
-	USEFlagsFile string
-	// LSBReleaseFile contains the path to the lsb-release file to determine board name used for
-	// the expressions in SoftwareFeatureDefinitions.
-	LSBReleaseFile string
-	// SoftwareFeatureDefinitions maps from software feature names (e.g. "myfeature") to boolean expressions
-	// used to compose them from USE flags (e.g. "a && !(b || c)"). The USE flags used in these expressions
-	// must be listed in USEFlagsFile if they were set when building the system image.
-	// See chromiumos/tast/internal/expr for details about expression syntax.
-	SoftwareFeatureDefinitions map[string]string
-	// AutotestCapabilityDir contains the path to a directory containing autotest-capability YAML files used to
-	// define the DUT's capabilities for the purpose of determining which video tests it is able to run.
-	// See https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/HEAD/chromeos-base/autotest-capability-default/
-	// and the autocaps package for more information.
-	AutotestCapabilityDir string
-	// DefaultBuildArtifactsURL is the URL of Google Cloud Storage directory, ending with a slash,
-	// containing build artifacts for the current Chrome OS image. It can be empty if the image is
-	// not built by an official builder.
-	DefaultBuildArtifactsURL string
+	// GetDUTInfo is a function to respond to GetDUTInfo RPC.
+	// If it is nil, an empty GetDUTInfoResponse is always returned.
+	GetDUTInfo func(ctx context.Context, req *protocol.GetDUTInfoRequest) (*protocol.GetDUTInfoResponse, error)
+
+	// DeprecatedDefaultBuildArtifactsURL is a function that computes the
+	// default build artifacts URL.
+	// If it is nil, an empty default build artifacts URL is used, which
+	// will cause all build artifact downloads to fail.
+	// DEPRECATED: Do not call this function except in fillDefaults.
+	// Instead, Tast CLI should call GetDUTInfo RPC method first to know the
+	// default URL and pass it in later requests.
+	DeprecatedDefaultBuildArtifactsURL func() string
+
 	// PrivateBundlesStampPath contains the path to a stamp file indicating private test bundles have been
 	// successfully downloaded and installed before. This prevents downloading private test bundles for
 	// every runner invocation.
 	PrivateBundlesStampPath string
-	// OSVersion contains the value of CHROMEOS_RELEASE_BUILDER_PATH in /etc/lsb-release
-	// or combination of CHROMEOS_RELEASE_BOARD, CHROMEOS_RELEASE_CHROME_MILESTONE,
-	// CHROMEOS_RELEASE_BUILD_TYPE and CHROMEOS_RELEASE_VERSION if CHROMEOS_RELEASE_BUILDER_PATH
-	// is not available in /etc/lsb-release
-	OSVersion string
 }
 
 // fillDefaults fills unset fields with default values from cfg.
 func (c *StaticConfig) fillDefaults(a *jsonprotocol.RunnerArgs) {
 	switch a.Mode {
 	case jsonprotocol.RunnerRunTestsMode:
-		if a.RunTests.BundleArgs.BuildArtifactsURL == "" {
-			a.RunTests.BundleArgs.BuildArtifactsURL = c.DefaultBuildArtifactsURL
+		if a.RunTests.BundleArgs.BuildArtifactsURL == "" && c.DeprecatedDefaultBuildArtifactsURL != nil {
+			a.RunTests.BundleArgs.BuildArtifactsURL = c.DeprecatedDefaultBuildArtifactsURL()
 		}
 	case jsonprotocol.RunnerDownloadPrivateBundlesMode:
-		if a.DownloadPrivateBundles.BuildArtifactsURL == "" {
-			a.DownloadPrivateBundles.BuildArtifactsURL = c.DefaultBuildArtifactsURL
+		if a.DownloadPrivateBundles.BuildArtifactsURL == "" && c.DeprecatedDefaultBuildArtifactsURL != nil {
+			a.DownloadPrivateBundles.BuildArtifactsURL = c.DeprecatedDefaultBuildArtifactsURL()
 		}
 	}
 }
@@ -177,8 +164,19 @@ errors, including the failure of an individual test.
 		// When the runner is executed by the "tast run" command, the list of software features (used to skip
 		// unsupported tests) is passed in after having been gathered by an earlier call to local_test_runner
 		// with RunnerGetDUTInfoMode. When the runner is executed directly, gather the list here instead.
-		if err := setManualDepsArgs(args, scfg, extraUSEFlags); err != nil {
-			return err
+		if scfg.GetDUTInfo != nil {
+			req := &protocol.GetDUTInfoRequest{ExtraUseFlags: extraUSEFlags}
+			res, err := scfg.GetDUTInfo(context.Background(), req)
+			if err != nil {
+				return err
+			}
+
+			fs := res.GetDutInfo().GetFeatures().GetSoftware()
+			args.RunTests.BundleArgs.CheckDeps = true
+			args.RunTests.BundleArgs.AvailableSoftwareFeatures = fs.GetAvailable()
+			args.RunTests.BundleArgs.UnavailableSoftwareFeatures = fs.GetUnavailable()
+			// Historically we set software features only. Do not bother to
+			// improve hardware feature support in direct mode.
 		}
 	}
 
@@ -196,38 +194,5 @@ errors, including the failure of an individual test.
 	// Use deprecated fields if they were supplied by an old tast binary.
 	args.PromoteDeprecated()
 
-	return nil
-}
-
-// setManualDepsArgs sets dependency/feature-related fields in args.RunTests appropriately for a manual
-// run (i.e. when the runner is executed directly with command-line flags rather than via "tast run").
-func setManualDepsArgs(args *jsonprotocol.RunnerArgs, scfg *StaticConfig, extraUSEFlags []string) error {
-	if scfg.USEFlagsFile == "" {
-		return nil
-	}
-	if _, err := os.Stat(scfg.USEFlagsFile); os.IsNotExist(err) {
-		return nil
-	}
-
-	useFlags, err := readUSEFlagsFile(scfg.USEFlagsFile)
-	if err != nil {
-		return command.NewStatusErrorf(statusError, "%v", err)
-	}
-	useFlags = append(useFlags, extraUSEFlags...)
-
-	var autotestCaps map[string]autocaps.State
-	if scfg.AutotestCapabilityDir != "" {
-		// Ignore errors. autotest-capability is outside of Tast's control, and it's probably better to let
-		// some unsupported video tests fail instead of making the whole run fail.
-		autotestCaps, _ = autocaps.Read(scfg.AutotestCapabilityDir, nil)
-	}
-
-	features, err := determineSoftwareFeatures(scfg.SoftwareFeatureDefinitions, useFlags, autotestCaps)
-	if err != nil {
-		return command.NewStatusErrorf(statusError, "%v", err)
-	}
-	args.RunTests.BundleArgs.CheckDeps = true
-	args.RunTests.BundleArgs.AvailableSoftwareFeatures = features.Available
-	args.RunTests.BundleArgs.UnavailableSoftwareFeatures = features.Unavailable
 	return nil
 }

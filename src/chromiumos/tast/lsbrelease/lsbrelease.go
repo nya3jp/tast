@@ -68,6 +68,7 @@ const (
 // allowedPkgs is the list of Go packages that can use this package.
 var allowedPkgs = []string{
 	"chromiumos/tast/cmd/tast/internal/symbolize",
+	"chromiumos/tast/internal/crosbundle",    // For software feature detection.
 	"chromiumos/tast/internal/runner",        // For SoftwareDeps check.
 	"chromiumos/tast/local/arc",              // For SDKVersion.
 	"chromiumos/tast/local/bundles/cros/arc", // For Version.
@@ -89,7 +90,6 @@ var allowedPkgs = []string{
 	"chromiumos/tast/remote/bundles/cros/omaha/request", // To replicate update_engine behavior.
 	"chromiumos/tast/remote/firmware",                   // For checking USB images
 	"chromiumos/tast/remote/firmware/reporters",         // For Board.
-	"main", // for local_test_runner
 }
 
 // Load loads /etc/lsb-release and returns a parsed key-value map.

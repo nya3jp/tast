@@ -5,93 +5,70 @@
 package runner
 
 import (
+	"context"
 	"encoding/json"
-	"os"
-	"path/filepath"
-	"reflect"
 	"testing"
 
+	"github.com/google/go-cmp/cmp"
+	"google.golang.org/protobuf/testing/protocmp"
+
 	"chromiumos/tast/internal/jsonprotocol"
+	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/protocol"
-	"chromiumos/tast/testutil"
 )
 
 func TestGetDUTInfo(t *testing.T) {
-	td := testutil.TempDir(t)
-	defer os.RemoveAll(td)
-
-	if err := testutil.WriteFiles(td, map[string]string{
-		"use_flags":  "# here's a comment\nfoo\nbar\n",
-		"lsbrelease": "CHROMEOS_RELEASE_BOARD=betty\n",
-	}); err != nil {
-		t.Fatal(err)
-	}
-
-	osVersion := "octopus-release/R86-13312.0.2020_07_02_1108"
+	extraUseFlags := []string{"foo", "bar", "baz"}
 	scfg := StaticConfig{
-		Type:           LocalRunner,
-		USEFlagsFile:   filepath.Join(td, "use_flags"),
-		LSBReleaseFile: filepath.Join(td, "lsbrelease"),
-		SoftwareFeatureDefinitions: map[string]string{
-			"foobar":       "foo && bar",
-			"not_foo":      "!foo",
-			"other":        "baz",
-			"foo_glob":     "\"f*\"",
-			"not_bar_glob": "!\"b*\"",
-			"board":        `"board:betty"`,
-			"not_board":    `"board:eve"`,
+		Type: LocalRunner,
+		GetDUTInfo: func(ctx context.Context, req *protocol.GetDUTInfoRequest) (*protocol.GetDUTInfoResponse, error) {
+			logging.Infof(ctx, "Some logs")
+			if diff := cmp.Diff(req.GetExtraUseFlags(), extraUseFlags); diff != "" {
+				t.Errorf("Unexpected extra USE flags (-got +want):\n%s", diff)
+			}
+			return &protocol.GetDUTInfoResponse{
+				DutInfo: &protocol.DUTInfo{
+					Features: &protocol.DUTFeatures{
+						Software: &protocol.SoftwareFeatures{
+							Available:   []string{"a", "b", "c"},
+							Unavailable: []string{"x", "y", "z"},
+						},
+					},
+					OsVersion:                "octopus-release/R86-13312.0.2020_07_02_1108",
+					DefaultBuildArtifactsUrl: "gs://foo/bar",
+				},
+			}, nil
 		},
-		OSVersion: osVersion,
 	}
+
 	status, stdout, _, sig := callRun(
 		t, nil,
 		&jsonprotocol.RunnerArgs{
 			Mode: jsonprotocol.RunnerGetDUTInfoMode,
 			GetDUTInfo: &jsonprotocol.RunnerGetDUTInfoArgs{
-				ExtraUSEFlags: []string{"baz"},
+				ExtraUSEFlags: extraUseFlags,
 			},
 		},
 		nil, &scfg)
 	if status != statusSuccess {
 		t.Fatalf("%v = %v; want %v", sig, status, statusSuccess)
 	}
-	var res jsonprotocol.RunnerGetDUTInfoResult
-	if err := json.NewDecoder(stdout).Decode(&res); err != nil {
-		t.Fatalf("%v gave bad output: %v", sig, err)
-	}
-	exp := jsonprotocol.RunnerGetDUTInfoResult{
-		SoftwareFeatures: &protocol.SoftwareFeatures{
-			Available:   []string{"board", "foo_glob", "foobar", "other"},
-			Unavailable: []string{"not_bar_glob", "not_board", "not_foo"},
-		},
-		OSVersion: osVersion,
-	}
-	if !reflect.DeepEqual(res, exp) {
-		t.Errorf("%v wrote result %+v; want %+v", sig, res, exp)
-	}
-}
 
-func TestGetSoftwareFeaturesNoFile(t *testing.T) {
-	// If the file listing USE flags was missing, an empty result should be returned.
-	scfg := StaticConfig{
-		Type:                       LocalRunner,
-		USEFlagsFile:               "/tmp/nonexistent_use_flags_file.txt",
-		SoftwareFeatureDefinitions: map[string]string{"foo": "bar"},
-	}
-	args := &jsonprotocol.RunnerArgs{
-		Mode:       jsonprotocol.RunnerGetDUTInfoMode,
-		GetDUTInfo: &jsonprotocol.RunnerGetDUTInfoArgs{},
-	}
-	status, stdout, _, sig := callRun(t, nil, args, nil, &scfg)
-	if status != statusSuccess {
-		t.Fatalf("%v = %v; want %v", sig, status, statusSuccess)
-	}
-	var res jsonprotocol.RunnerGetDUTInfoResult
-	if err := json.NewDecoder(stdout).Decode(&res); err != nil {
+	var got *jsonprotocol.RunnerGetDUTInfoResult
+	if err := json.NewDecoder(stdout).Decode(&got); err != nil {
 		t.Fatalf("%v gave bad output: %v", sig, err)
 	}
-	exp := jsonprotocol.RunnerGetDUTInfoResult{}
-	if !reflect.DeepEqual(res, exp) {
-		t.Errorf("%v wrote result %+v; want %+v", sig, res, exp)
+
+	want := &jsonprotocol.RunnerGetDUTInfoResult{
+		SoftwareFeatures: &protocol.SoftwareFeatures{
+			Available:   []string{"a", "b", "c"},
+			Unavailable: []string{"x", "y", "z"},
+		},
+		OSVersion:                "octopus-release/R86-13312.0.2020_07_02_1108",
+		DefaultBuildArtifactsURL: "gs://foo/bar",
+		Warnings:                 []string{"Some logs"},
+	}
+	if diff := cmp.Diff(got, want, protocmp.Transform()); diff != "" {
+		t.Errorf("%v wrote unexpected result (-got +want):\n%s", sig, diff)
 	}
 }

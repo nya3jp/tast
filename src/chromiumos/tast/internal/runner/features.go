@@ -10,7 +10,6 @@ import (
 	"io"
 
 	"chromiumos/tast/internal/command"
-	"chromiumos/tast/internal/crosbundle"
 	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/protocol"
@@ -22,35 +21,21 @@ func handleGetDUTInfo(ctx context.Context, args *jsonprotocol.RunnerArgs, scfg *
 	logger := newArrayLogger()
 	ctx = logging.AttachLogger(ctx, logger)
 
-	softwareFeatures, err := crosbundle.DetectSoftwareFeatures(
-		ctx, scfg.SoftwareFeatureDefinitions, scfg.USEFlagsFile, scfg.LSBReleaseFile, args.GetDUTInfo.ExtraUSEFlags, scfg.AutotestCapabilityDir)
-	if err != nil {
-		return err
-	}
+	req := args.GetDUTInfo.Proto()
 
-	var hardwareFeatures *protocol.HardwareFeatures
-	if args.GetDUTInfo.RequestDeviceConfig {
+	res := &protocol.GetDUTInfoResponse{}
+	if f := scfg.GetDUTInfo; f != nil {
 		var err error
-		hardwareFeatures, err = crosbundle.DetectHardwareFeatures(ctx)
+		res, err = f(ctx, req)
 		if err != nil {
 			return err
 		}
 	}
 
-	dutInfo := &protocol.DUTInfo{
-		Features: &protocol.DUTFeatures{
-			Software: softwareFeatures,
-			Hardware: hardwareFeatures,
-		},
-		OsVersion:                scfg.OSVersion,
-		DefaultBuildArtifactsUrl: scfg.DefaultBuildArtifactsURL,
-	}
-	res := &protocol.GetDUTInfoResponse{DutInfo: dutInfo}
-
 	jres := jsonprotocol.RunnerGetDUTInfoResultFromProto(res)
 	jres.Warnings = logger.Logs()
 
-	if err := json.NewEncoder(w).Encode(&res); err != nil {
+	if err := json.NewEncoder(w).Encode(jres); err != nil {
 		return command.NewStatusErrorf(statusError, "failed to serialize into JSON: %v", err)
 	}
 	return nil

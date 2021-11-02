@@ -20,12 +20,10 @@ import (
 	"strings"
 	"time"
 
-	"chromiumos/tast/autocaps"
 	"chromiumos/tast/internal/crash"
 	"chromiumos/tast/internal/crosbundle"
 	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/runner"
-	"chromiumos/tast/lsbrelease"
 	"chromiumos/tast/shutil"
 )
 
@@ -40,37 +38,18 @@ func main() {
 		},
 	}
 	scfg := runner.StaticConfig{
-		Type:                  runner.LocalRunner,
-		KillStaleRunners:      true,
-		EnableSyslog:          true,
-		SystemLogDir:          "/var/log",
-		SystemLogExcludes:     []string{"journal"}, // journald binary logs: https://crbug.com/931951
-		UnifiedLogSubdir:      "unified",           // destination for exported unified system logs
-		SystemInfoFunc:        writeSystemInfo,     // save additional system info at end of run
-		SystemCrashDirs:       crash.DefaultDirs(),
-		CleanupLogsPausedPath: "/var/lib/cleanup_logs_paused",
-		// The tast-use-flags package attempts to install this file to /etc,
-		// but it gets diverted to /usr/local since it's installed for test images.
-		USEFlagsFile:               "/usr/local/etc/tast_use_flags.txt",
-		LSBReleaseFile:             lsbrelease.Path,
-		SoftwareFeatureDefinitions: crosbundle.SoftwareFeatureDefs,
-		// The autotest-capability package tries to install this to /etc but it's diverted to /usr/local.
-		AutotestCapabilityDir:   autocaps.DefaultCapabilityDir,
-		PrivateBundlesStampPath: "/usr/local/share/tast/.private-bundles-downloaded",
-	}
-	if kvs, err := lsbrelease.Load(); err == nil {
-		if bp := kvs[lsbrelease.BuilderPath]; bp != "" {
-			scfg.DefaultBuildArtifactsURL = "gs://chromeos-image-archive/" + bp + "/"
-			scfg.OSVersion = bp
-		} else {
-			// Sometimes CHROMEOS_RELEASE_BUILDER_PATH is not in /etc/lsb-release.
-			// Make up the string in this case
-			board := kvs[lsbrelease.Board]
-			osVersion := kvs[lsbrelease.Version]
-			milestone := kvs[lsbrelease.Milestone]
-			buildType := kvs[lsbrelease.BuildType]
-			scfg.OSVersion = fmt.Sprintf("%vR%v-%v (%v)", board, milestone, osVersion, buildType)
-		}
+		Type:                               runner.LocalRunner,
+		KillStaleRunners:                   true,
+		EnableSyslog:                       true,
+		SystemLogDir:                       "/var/log",
+		SystemLogExcludes:                  []string{"journal"}, // journald binary logs: https://crbug.com/931951
+		UnifiedLogSubdir:                   "unified",           // destination for exported unified system logs
+		SystemInfoFunc:                     writeSystemInfo,     // save additional system info at end of run
+		SystemCrashDirs:                    crash.DefaultDirs(),
+		CleanupLogsPausedPath:              "/var/lib/cleanup_logs_paused",
+		GetDUTInfo:                         crosbundle.GetDUTInfo,
+		DeprecatedDefaultBuildArtifactsURL: crosbundle.DeprecatedDefaultBuildArtifactsURL,
+		PrivateBundlesStampPath:            "/usr/local/share/tast/.private-bundles-downloaded",
 	}
 	os.Exit(runner.Run(os.Args[1:], os.Stdin, os.Stdout, os.Stderr, &args, &scfg))
 }

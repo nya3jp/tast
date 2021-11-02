@@ -1,2 +1,2 @@
 # Tast reviewers can approve changes to software dependency definitions.
-per-file test_dependencies.md = file:/src/chromiumos/tast/cmd/local_test_runner/OWNERS
+per-file test_dependencies.md = file:chromiumos/platform/tast-tests:/OWNERS

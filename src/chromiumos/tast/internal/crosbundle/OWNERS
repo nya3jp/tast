@@ -1,2 +1,2 @@
 # Tast reviewers can approve changes to software dependency definitions.
-include chromiumos/platform/tast-tests:/OWNERS
+per-file software_defs.go = file:chromiumos/platform/tast-tests:/OWNERS

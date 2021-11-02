@@ -242,7 +242,7 @@ additional meaning beyond the original intent, add a `biometrics_daemon` feature
 that precisely communicates the test's actual requirement.
 
 Features are composed from USE flags and board names, which are statically
-defined when the system image is built. [local_test_runner] lists boolean
+defined when the system image is built. [software_defs.go] lists boolean
 expressions that are used to generate features; for example, an imaginary
 feature named `hd_audio` with the expression
 
@@ -280,7 +280,7 @@ the correct order.
 If you're having trouble finding a way to specify your test's dependencies,
 please ask for help on the [tast-users mailing list].
 
-[local_test_runner]: https://chromium.googlesource.com/chromiumos/platform/tast/+/main/src/chromiumos/tast/cmd/local_test_runner/main.go
+[software_defs.go]: https://chromium.googlesource.com/chromiumos/platform/tast/+/main/src/chromiumos/tast/internal/crosbundle/software_defs.go
 [tast-use-flags]: https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/main/chromeos-base/tast-use-flags/
 [Cq-Depend]: https://chromium.googlesource.com/chromiumos/docs/+/main/contributing.md#cq-depend
 [tast-users mailing list]: https://groups.google.com/a/chromium.org/forum/#!forum/tast-user

@@ -30,6 +30,7 @@ type ConnCache interface {
 	InitBootID() string
 	SSHConn() *ssh.Conn
 	ReconnectIfNeeded(ctx context.Context) error
+	DefaultTimeout() time.Duration
 }
 
 // SSHDrop diagnoses a SSH connection drop during local test runs
@@ -41,10 +42,9 @@ func SSHDrop(ctx context.Context, cc ConnCache, outDir string) string {
 	}
 
 	logging.Info(ctx, "Reconnecting to diagnose lost SSH connection")
-	const reconnectTimeout = time.Minute
 	if err := testingutil.Poll(ctx, func(ctx context.Context) error {
 		return cc.ReconnectIfNeeded(ctx)
-	}, &testingutil.PollOptions{Timeout: reconnectTimeout}); err != nil {
+	}, &testingutil.PollOptions{Timeout: cc.DefaultTimeout()}); err != nil {
 		return fmt.Sprint("target did not come back: ", err)
 	}
 

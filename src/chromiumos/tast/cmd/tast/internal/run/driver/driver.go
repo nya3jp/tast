@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"time"
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/driver/internal/bundleclient"
@@ -97,6 +98,11 @@ func (d *Driver) Services() *Services {
 func (d *Driver) ReconnectIfNeeded(ctx context.Context) error {
 	_, err := d.cc.EnsureConn(ctx)
 	return err
+}
+
+// DefaultTimeout returns the default timeout for connection operations.
+func (d *Driver) DefaultTimeout() time.Duration {
+	return d.cc.DefaultTimeout()
 }
 
 var useGRPC = os.Getenv("TAST_EXP_USE_GRPC") == "1"

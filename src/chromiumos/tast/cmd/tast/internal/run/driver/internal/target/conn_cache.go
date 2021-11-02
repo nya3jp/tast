@@ -11,6 +11,7 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/internal/linuxssh"
 	"chromiumos/tast/internal/logging"
+	"chromiumos/tast/internal/testingutil"
 )
 
 // ConnCache manages a cached connection to the target.
@@ -94,27 +95,30 @@ func (cc *ConnCache) EnsureConn(ctx context.Context) (conn *Conn, retErr error) 
 	}
 	logging.Infof(ctx, "Target connection is unhealthy: %v; reconnecting", err)
 
-	// use a context with short timeout to try reconnection and close.
-	shortCtx, cancel := context.WithTimeout(ctx, 5*time.Minute)
-	defer cancel()
-	newConnection, err := newConn(shortCtx, cc.cfg, cc.target)
+	newConnection, err := newConn(ctx, cc.cfg, cc.target)
 	if err != nil {
+		// b/205333029: Move the code for rebooting to somewhere else when we support servod for multiple DUT.
 		if cc.dutAction != nil {
-			// If we have control of the DUt, reboot the DUT.
+			// If we have a way, reboot the DUT.
 			logging.Info(ctx, "Reboot target before reconnecting")
-			if err := cc.dutAction.HardReboot(ctx); err != nil {
-				logging.Infof(ctx, "Fail to reboot target: %v", err)
+			if rebootErr := cc.dutAction.HardReboot(ctx); rebootErr != nil {
+				logging.Infof(ctx, "Fail to reboot target: %v", rebootErr)
 			}
-			// Sleep for 3 minutes to make sure everything is up.
-			time.Sleep(time.Minute * 3)
-			newConnection, err = newConn(shortCtx, cc.cfg, cc.target)
+			shortCtx, cancel := context.WithTimeout(ctx, time.Minute*3)
+			defer cancel()
+			if err := testingutil.Poll(shortCtx, func(ctx context.Context) error {
+				newConnection, err = newConn(ctx, cc.cfg, cc.target)
+				return err
+			}, &testingutil.PollOptions{Timeout: cc.DefaultTimeout()}); err != nil {
+				logging.Infof(ctx, "Fail to reconnect after reboot target: %v", err)
+			}
 		}
 		if err != nil {
 			return nil, err
 		}
 	}
 
-	cc.conn.close(shortCtx)
+	cc.conn.close(ctx)
 	cc.conn = newConnection
 
 	return newConnection, nil
@@ -129,4 +133,12 @@ func (cc *ConnCache) InitBootID() string {
 // ConnectionSpec returns a connection spec as [<user>@]host[:<port>].
 func (cc *ConnCache) ConnectionSpec() string {
 	return cc.target
+}
+
+// DefaultTimeout returns the default timeout for connection operations.
+func (cc *ConnCache) DefaultTimeout() time.Duration {
+	if cc.dutAction != nil {
+		return time.Minute * 5
+	}
+	return time.Minute
 }

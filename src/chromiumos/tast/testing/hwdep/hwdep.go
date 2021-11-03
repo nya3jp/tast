@@ -476,20 +476,32 @@ func WifiMACAddrRandomize() Condition {
 // WifiNotMarvell returns a hardware dependency condition that is satisfied iff
 // the DUT's not using a Marvell WiFi chip.
 func WifiNotMarvell() Condition {
-	// TODO(crbug.com/1070299): we don't yet have relevant fields in device.Config
+	// TODO(b/187699768): we don't yet have relevant fields in device.Config
 	// about WiFi chip, so list the known platforms here for now.
+	// TODO(b/187699664): remove "Elm" and "Hana" after unibuild migration
+	// completed.
 	return SkipOnPlatform(
-		"bob", "kevin", "oak", "elm", "hana", "kitty",
-		"mighty", "jaq", "fievel", "tiger", "jerry",
+		"bob", "kevin", "oak", "elm", "hana", "fievel", "tiger",
 	)
 }
 
 // WifiNotMarvell8997 returns a hardware dependency condition that is satisfied if
 // the DUT is not using Marvell 8997 chipsets.
 func WifiNotMarvell8997() Condition {
-	// TODO(crbug.com/1070299): replace this when we have hwdep for WiFi chips.
+	// TODO(b/187699768): replace this when we have hwdep for WiFi chips.
 	return SkipOnPlatform(
 		"bob", "kevin",
+	)
+}
+
+// WifiMarvell returns a hardware dependency condition that is satisfied if the
+// the DUT is using a Marvell WiFi chip.
+func WifiMarvell() Condition {
+	// TODO(b/187699768): replace this when we have hwdep for WiFi chips.
+	// TODO(b/187699664): remove "Elm" and "Hana" after unibuild migration
+	// completed.
+	return Platform(
+		"bob", "kevin", "oak", "elm", "hana", "fievel", "tiger",
 	)
 }
 

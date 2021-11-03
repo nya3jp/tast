@@ -954,3 +954,22 @@ func SkipOnFormFactor(ffList ...configpb.HardwareFeatures_FormFactor_FormFactorT
 		return satisfied()
 	}}
 }
+
+// SupportsV4L2StatefulVideoDecoding says true if the SoC supports the V4L2
+// stateful video decoding kernel API. Examples of this are MTK8173 and
+// Qualcomm devices (7180, etc). In general, we prefer to use stateless
+// decoding APIs, so listing them individually makes sense.
+func SupportsV4L2StatefulVideoDecoding() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		dc := f.GetDeprecatedDeviceConfig()
+		if dc == nil {
+			return withErrorStr("DeprecatedDeviceConfig is not given")
+		}
+		if dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_MT8173 ||
+			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_SC7180 ||
+			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_SC7280 {
+			return satisfied()
+		}
+		return unsatisfied("SoC does not support V4L2 Stateful HW video decoding")
+	}}
+}

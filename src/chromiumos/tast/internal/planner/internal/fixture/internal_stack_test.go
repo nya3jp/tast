@@ -262,19 +262,17 @@ func TestInternalStackContext(t *gotesting.T) {
 		ServiceDeps: serviceDeps,
 	}
 
-	troot := testing.NewTestEntityRoot(&testing.TestInstance{}, &testing.RuntimeConfig{OutDir: testOutDir}, nil)
-
 	if err := stack.Push(ctx, fixt); err != nil {
 		t.Fatal("Push: ", err)
 	}
 	if err := stack.Reset(ctx); err != nil {
 		t.Fatal("Reset: ", err)
 	}
-	postTest, err := stack.PreTest(ctx, troot)
+	postTest, err := stack.PreTest(ctx, testOutDir, nil, testing.NewEntityCondition())
 	if err != nil {
 		t.Fatal("PreTest: ", err)
 	}
-	if err := postTest(ctx, troot); err != nil {
+	if err := postTest(ctx); err != nil {
 		t.Fatal("PostTest: ", err)
 	}
 	if err := stack.Pop(ctx); err != nil {
@@ -329,16 +327,14 @@ func TestInternalStackState(t *gotesting.T) {
 		Impl: ff,
 	}
 
-	troot := testing.NewTestEntityRoot(&testing.TestInstance{}, &testing.RuntimeConfig{RemoteData: rd}, nil)
-
 	if err := stack.Push(ctx, fixt); err != nil {
 		t.Fatal("Push: ", err)
 	}
-	postTest, err := stack.PreTest(ctx, troot)
+	postTest, err := stack.PreTest(ctx, "", nil, testing.NewEntityCondition())
 	if err != nil {
 		t.Fatal("PreTest: ", err)
 	}
-	if err := postTest(ctx, troot); err != nil {
+	if err := postTest(ctx); err != nil {
 		t.Fatal("PostTest: ", err)
 	}
 	if err := stack.Pop(ctx); err != nil {
@@ -484,7 +480,8 @@ func TestInternalStackOutputGreen(t *gotesting.T) {
 	ctx := context.Background()
 	sink := outputtest.NewSink()
 	ti := &testing.TestInstance{Name: "pkg.Test"}
-	troot := testing.NewTestEntityRoot(ti, &testing.RuntimeConfig{}, output.NewEntityStream(sink, ti.EntityProto()))
+
+	out := output.NewEntityStream(sink, ti.EntityProto())
 	stack := fixture.NewInternalStack(&fixture.Config{GracePeriod: planner.DefaultGracePeriod}, sink)
 
 	newLoggingFixture := func(id int) *testing.FixtureInstance {
@@ -525,11 +522,11 @@ func TestInternalStackOutputGreen(t *gotesting.T) {
 	if err := stack.Push(ctx, fixt2); err != nil {
 		t.Fatal("Push 2: ", err)
 	}
-	postTest, err := stack.PreTest(ctx, troot)
+	postTest, err := stack.PreTest(ctx, "", out, testing.NewEntityCondition())
 	if err != nil {
 		t.Fatal("PreTest: ", err)
 	}
-	if err := postTest(ctx, troot); err != nil {
+	if err := postTest(ctx); err != nil {
 		t.Fatal("PostTest: ", err)
 	}
 	if err := stack.Reset(ctx); err != nil {

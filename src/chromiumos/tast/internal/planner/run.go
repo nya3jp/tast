@@ -635,27 +635,15 @@ func runTest(ctx context.Context, t *testing.TestInstance, tout *output.EntitySt
 		return errors.New("BUG: Cannot run a test on a yellow fixture stack")
 	}
 
-	rcfg := &testing.RuntimeConfig{
-		DataDir: filepath.Join(pcfg.Dirs.GetDataDir(), testing.RelativeDataDir(t.Pkg)),
-		OutDir:  outDir,
-		Vars:    pcfg.Features.GetInfra().GetVars(),
-		CloudStorage: testing.NewCloudStorage(
-			pcfg.Service.GetDevservers(),
-			pcfg.Service.GetTlwServer(),
-			pcfg.Service.GetTlwSelfName(),
-			pcfg.DataFile.GetBuildArtifactsUrl(),
-		),
-		RemoteData: pcfg.RemoteData,
-		FixtCtx:    fixtCtx,
-		FixtValue:  stack.Val(),
-		PreCtx:     precfg.ctx,
+	tcfg := &testConfig{
+		test:    t,
+		outDir:  outDir,
+		fixtCtx: fixtCtx,
 		// TODO(crbug.com/1106218): Make sure this approach is scalable.
 		// Recomputing purgeable on each test costs O(|purgeable| * |tests|) overall.
-		Purgeable: dl.m.Purgeable(),
+		purgeable: dl.m.Purgeable(),
 	}
-	root := testing.NewTestEntityRoot(t, rcfg, tout)
-
-	if err := runTestWithRoot(ctx, t, root, pcfg, stack, precfg); err != nil {
+	if err := runTestWithConfig(ctx, tcfg, pcfg, stack, precfg, tout); err != nil {
 		// If runTestWithRoot reported that the test didn't finish, print diagnostic messages.
 		msg := fmt.Sprintf("%v (see log for goroutine dump)", err)
 		tout.Error(testing.NewError(nil, msg, msg, 0))
@@ -734,30 +722,55 @@ func (d *downloader) download(ctx context.Context, entities []*protocol.Entity) 
 	return release
 }
 
-// runTestWithRoot runs a test with TestEntityRoot.
+type testConfig struct {
+	test      *testing.TestInstance
+	outDir    string
+	fixtCtx   context.Context
+	purgeable []string
+}
+
+// runTestWithConfig runs a test on the given configs.
 //
 // The time allotted to the test is generally the sum of t.Timeout and t.ExitTimeout, but
 // additional time may be allotted for preconditions and pre/post-test hooks.
-func runTestWithRoot(ctx context.Context, t *testing.TestInstance, root *testing.TestEntityRoot, pcfg *Config, stack *fixture.InternalStack, precfg *preConfig) error {
+func runTestWithConfig(ctx context.Context, tcfg *testConfig, pcfg *Config, stack *fixture.InternalStack, precfg *preConfig, out testing.OutputStream) error {
 	// codeName is included in error messages if the user code ignores the timeout.
 	// For compatibility, the same fixed name is used for tests, preconditions and test hooks.
 	const codeName = "Test"
 
 	var postTestFunc func(ctx context.Context, s *testing.TestHookState)
 
-	ctx = root.NewContext(ctx)
-	testState := root.NewTestState()
+	condition := testing.NewEntityCondition()
+	rcfg := &testing.RuntimeConfig{
+		DataDir: filepath.Join(pcfg.Dirs.GetDataDir(), testing.RelativeDataDir(tcfg.test.Pkg)),
+		OutDir:  tcfg.outDir,
+		Vars:    pcfg.Features.GetInfra().GetVars(),
+		CloudStorage: testing.NewCloudStorage(
+			pcfg.Service.GetDevservers(),
+			pcfg.Service.GetTlwServer(),
+			pcfg.Service.GetTlwSelfName(),
+			pcfg.DataFile.GetBuildArtifactsUrl(),
+		),
+		RemoteData: pcfg.RemoteData,
+		FixtCtx:    tcfg.fixtCtx,
+		FixtValue:  stack.Val(),
+		PreCtx:     precfg.ctx,
+		Purgeable:  tcfg.purgeable,
+	}
+	troot := testing.NewTestEntityRoot(tcfg.test, rcfg, out, condition)
+	ctx = troot.NewContext(ctx)
+	testState := troot.NewTestState()
 
 	// First, perform setup and run the pre-test function.
 	if err := usercode.SafeCall(ctx, codeName, preTestTimeout, pcfg.GracePeriod(), usercode.ErrorOnPanic(testState), func(ctx context.Context) {
 		// The test bundle is responsible for ensuring t.Timeout is nonzero before calling Run,
 		// but we call s.Fatal instead of panicking since it's arguably nicer to report individual
 		// test failures instead of aborting the entire run.
-		if t.Timeout <= 0 {
-			testState.Fatal("Invalid timeout ", t.Timeout)
+		if tcfg.test.Timeout <= 0 {
+			testState.Fatal("Invalid timeout ", tcfg.test.Timeout)
 		}
 
-		entity.PreCheck(t.Data, testState)
+		entity.PreCheck(tcfg.test.Data, testState)
 		if testState.HasError() {
 			return
 		}
@@ -774,18 +787,18 @@ func runTestWithRoot(ctx context.Context, t *testing.TestInstance, root *testing
 		}
 
 		if pcfg.TestHook != nil {
-			postTestFunc = pcfg.TestHook(ctx, root.NewTestHookState())
+			postTestFunc = pcfg.TestHook(ctx, troot.NewTestHookState())
 		}
 	}); err != nil {
 		return err
 	}
 
 	// Prepare the test's precondition (if any) if setup was successful.
-	if !root.HasError() && t.Pre != nil {
-		preState := root.NewPreState()
-		if err := usercode.SafeCall(ctx, codeName, t.Pre.Timeout(), pcfg.GracePeriod(), usercode.ErrorOnPanic(preState), func(ctx context.Context) {
-			preState.Logf("Preparing precondition %q", t.Pre)
-			root.SetPreValue(t.Pre.Prepare(ctx, preState))
+	if !condition.HasError() && tcfg.test.Pre != nil {
+		preState := troot.NewPreState()
+		if err := usercode.SafeCall(ctx, codeName, tcfg.test.Pre.Timeout(), pcfg.GracePeriod(), usercode.ErrorOnPanic(preState), func(ctx context.Context) {
+			preState.Logf("Preparing precondition %q", tcfg.test.Pre)
+			troot.SetPreValue(tcfg.test.Pre.Prepare(ctx, preState))
 		}); err != nil {
 			return err
 		}
@@ -796,22 +809,22 @@ func runTestWithRoot(ctx context.Context, t *testing.TestInstance, root *testing
 		defer cancel()
 
 		// Run fixture pre-test hooks.
-		postTest, err := stack.PreTest(ctx, root)
+		postTest, err := stack.PreTest(ctx, tcfg.outDir, out, condition)
 		if err != nil {
 			return err
 		}
 
-		if !root.HasError() {
+		if !condition.HasError() {
 			// Run the test function itself.
-			if err := usercode.SafeCall(ctx, codeName, t.Timeout, timeoutOrDefault(t.ExitTimeout, pcfg.GracePeriod()), usercode.ErrorOnPanic(testState), func(ctx context.Context) {
-				t.Func(ctx, testState)
+			if err := usercode.SafeCall(ctx, codeName, tcfg.test.Timeout, timeoutOrDefault(tcfg.test.ExitTimeout, pcfg.GracePeriod()), usercode.ErrorOnPanic(testState), func(ctx context.Context) {
+				tcfg.test.Func(ctx, testState)
 			}); err != nil {
 				return err
 			}
 		}
 
 		// Run fixture post-test hooks.
-		if err := postTest(ctx, root); err != nil {
+		if err := postTest(ctx); err != nil {
 			return err
 		}
 		return nil
@@ -820,12 +833,12 @@ func runTestWithRoot(ctx context.Context, t *testing.TestInstance, root *testing
 	}
 
 	// If this is the final test using this precondition, close it
-	// (even if setup, t.Pre.Prepare, or t.Func failed).
+	// (even if setup, tcfg.test.Pre.Prepare, or tcfg.test.Func failed).
 	if precfg.close {
-		preState := root.NewPreState()
-		if err := usercode.SafeCall(ctx, codeName, t.Pre.Timeout(), pcfg.GracePeriod(), usercode.ErrorOnPanic(preState), func(ctx context.Context) {
-			preState.Logf("Closing precondition %q", t.Pre.String())
-			t.Pre.Close(ctx, preState)
+		preState := troot.NewPreState()
+		if err := usercode.SafeCall(ctx, codeName, tcfg.test.Pre.Timeout(), pcfg.GracePeriod(), usercode.ErrorOnPanic(preState), func(ctx context.Context) {
+			preState.Logf("Closing precondition %q", tcfg.test.Pre.String())
+			tcfg.test.Pre.Close(ctx, preState)
 		}); err != nil {
 			return err
 		}
@@ -834,7 +847,7 @@ func runTestWithRoot(ctx context.Context, t *testing.TestInstance, root *testing
 	// Finally, run the post-test functions unconditionally.
 	if postTestFunc != nil {
 		if err := usercode.SafeCall(ctx, codeName, postTestTimeout, pcfg.GracePeriod(), usercode.ErrorOnPanic(testState), func(ctx context.Context) {
-			postTestFunc(ctx, root.NewTestHookState())
+			postTestFunc(ctx, troot.NewTestHookState())
 		}); err != nil {
 			return err
 		}

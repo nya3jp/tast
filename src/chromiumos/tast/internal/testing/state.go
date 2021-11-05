@@ -73,6 +73,32 @@ const (
 	preFailPrefix = "[Precondition failure] " // the prefix used then a precondition failure is logged.
 )
 
+// EntityCondition stores mutable condition of an entity.
+type EntityCondition struct {
+	mu       sync.Mutex
+	hasError bool
+}
+
+// NewEntityCondition creates a new EntityCondition
+func NewEntityCondition() *EntityCondition {
+	return &EntityCondition{hasError: false}
+}
+
+// recordError record that an error has been reported for the entity.
+func (c *EntityCondition) recordError() {
+	c.mu.Lock()
+	c.hasError = true
+	c.mu.Unlock()
+}
+
+// HasError returns whether an error has been reported for the entity.
+func (c *EntityCondition) HasError() bool {
+	c.mu.Lock()
+	res := c.hasError
+	c.mu.Unlock()
+	return res
+}
+
 // EntityConstraints represents constraints imposed to an entity.
 // For example, a test can only access runtime variables declared on its
 // registration. This struct carries a list of declared runtime variables to be
@@ -89,22 +115,21 @@ type EntityConstraints struct {
 // objects for an entity from the same EntityRoot.
 // EntityRoot must be kept private to the framework.
 type EntityRoot struct {
-	ce  *testcontext.CurrentEntity // current entity info to be available via context.Context
-	cst *EntityConstraints         // constraints for the entity
-	cfg *RuntimeConfig             // details about how to run an entity
-	out OutputStream               // stream to which logging messages and errors are reported
-
-	mu       sync.Mutex // protects hasError
-	hasError bool       // true if any error was reported from any associated State object
+	ce        *testcontext.CurrentEntity // current entity info to be available via context.Context
+	cst       *EntityConstraints         // constraints for the entity
+	cfg       *RuntimeConfig             // details about how to run an entity
+	out       OutputStream               // stream to which logging messages and errors are reported
+	condition *EntityCondition
 }
 
 // NewEntityRoot returns a new EntityRoot object.
-func NewEntityRoot(ce *testcontext.CurrentEntity, cst *EntityConstraints, cfg *RuntimeConfig, out OutputStream) *EntityRoot {
+func NewEntityRoot(ce *testcontext.CurrentEntity, cst *EntityConstraints, cfg *RuntimeConfig, out OutputStream, condition *EntityCondition) *EntityRoot {
 	return &EntityRoot{
-		ce:  ce,
-		cst: cst,
-		cfg: cfg,
-		out: out,
+		ce:        ce,
+		cst:       cst,
+		cfg:       cfg,
+		out:       out,
+		condition: condition,
 	}
 }
 
@@ -125,7 +150,7 @@ func (r *EntityRoot) newEntityMixin() *entityMixin {
 // NewFixtState creates a FixtState for a fixture.
 func (r *EntityRoot) NewFixtState() *FixtState {
 	return &FixtState{
-		globalMixin: r.newGlobalMixin("", r.HasError()),
+		globalMixin: r.newGlobalMixin("", r.hasError()),
 		entityMixin: r.newEntityMixin(),
 		entityRoot:  r,
 	}
@@ -136,18 +161,14 @@ func (r *EntityRoot) NewContext(ctx context.Context) context.Context {
 	return NewContext(ctx, r.ce, logging.NewFuncSink(func(msg string) { r.out.Log(msg) }))
 }
 
-// HasError checks if any error has been reported.
-func (r *EntityRoot) HasError() bool {
-	r.mu.Lock()
-	defer r.mu.Unlock()
-	return r.hasError
+// hasError checks if any error has been reported.
+func (r *EntityRoot) hasError() bool {
+	return r.condition.HasError()
 }
 
 // recordError records that the entity has reported an error.
 func (r *EntityRoot) recordError() {
-	r.mu.Lock()
-	defer r.mu.Unlock()
-	r.hasError = true
+	r.condition.recordError()
 }
 
 // TestEntityRoot is the root of all State objects associated with a test.
@@ -162,7 +183,7 @@ type TestEntityRoot struct {
 }
 
 // NewTestEntityRoot returns a new TestEntityRoot object.
-func NewTestEntityRoot(test *TestInstance, cfg *RuntimeConfig, out OutputStream) *TestEntityRoot {
+func NewTestEntityRoot(test *TestInstance, cfg *RuntimeConfig, out OutputStream, condition *EntityCondition) *TestEntityRoot {
 	ce := &testcontext.CurrentEntity{
 		OutDir:          cfg.OutDir,
 		HasSoftwareDeps: true,
@@ -170,7 +191,7 @@ func NewTestEntityRoot(test *TestInstance, cfg *RuntimeConfig, out OutputStream)
 		ServiceDeps:     test.ServiceDeps,
 	}
 	return &TestEntityRoot{
-		entityRoot: NewEntityRoot(ce, test.Constraints(), cfg, out),
+		entityRoot: NewEntityRoot(ce, test.Constraints(), cfg, out, condition),
 		test:       test,
 	}
 }
@@ -184,7 +205,7 @@ func (r *TestEntityRoot) newTestMixin() *testMixin {
 // NewTestState creates a State for a test.
 func (r *TestEntityRoot) NewTestState() *State {
 	return &State{
-		globalMixin: r.entityRoot.newGlobalMixin("", r.HasError()),
+		globalMixin: r.entityRoot.newGlobalMixin("", r.hasError()),
 		entityMixin: r.entityRoot.newEntityMixin(),
 		testMixin:   r.newTestMixin(),
 		testRoot:    r,
@@ -194,7 +215,7 @@ func (r *TestEntityRoot) NewTestState() *State {
 // NewPreState creates a PreState for a precondition.
 func (r *TestEntityRoot) NewPreState() *PreState {
 	return &PreState{
-		globalMixin: r.entityRoot.newGlobalMixin(preFailPrefix, r.HasError()),
+		globalMixin: r.entityRoot.newGlobalMixin(preFailPrefix, r.hasError()),
 		entityMixin: r.entityRoot.newEntityMixin(),
 		testMixin:   r.newTestMixin(),
 	}
@@ -203,18 +224,9 @@ func (r *TestEntityRoot) NewPreState() *PreState {
 // NewTestHookState creates a TestHookState for a test hook.
 func (r *TestEntityRoot) NewTestHookState() *TestHookState {
 	return &TestHookState{
-		globalMixin: r.entityRoot.newGlobalMixin("", r.HasError()),
+		globalMixin: r.entityRoot.newGlobalMixin("", r.hasError()),
 		entityMixin: r.entityRoot.newEntityMixin(),
 		testMixin:   r.newTestMixin(),
-	}
-}
-
-// NewFixtTestState creates a FixtTestState for a test.
-// ctx should have the same lifetime as the test, including PreTest and PostTest.
-func (r *TestEntityRoot) NewFixtTestState(ctx context.Context) *FixtTestState {
-	return &FixtTestState{
-		globalMixin: r.entityRoot.newGlobalMixin("", r.HasError()),
-		testCtx:     ctx,
 	}
 }
 
@@ -223,9 +235,8 @@ func (r *TestEntityRoot) NewContext(ctx context.Context) context.Context {
 	return r.entityRoot.NewContext(ctx)
 }
 
-// HasError checks if any error has been reported.
-func (r *TestEntityRoot) HasError() bool {
-	return r.entityRoot.HasError()
+func (r *TestEntityRoot) hasError() bool {
+	return r.entityRoot.hasError()
 }
 
 // SetPreValue sets a precondition value available to the test.
@@ -233,15 +244,51 @@ func (r *TestEntityRoot) SetPreValue(val interface{}) {
 	r.preValue = val
 }
 
-// OutDir returns a directory into which the entity may place arbitrary files
-// that should be included with the test results.
-func (r *TestEntityRoot) OutDir() string {
-	return r.entityRoot.cfg.OutDir
-}
-
 // LogSink returns a logging sink for the test entity.
 func (r *TestEntityRoot) LogSink() logging.Sink {
 	return logging.NewFuncSink(func(msg string) { r.entityRoot.out.Log(msg) })
+}
+
+// FixtTestEntityRoot is the root of all State objects associated with a test
+// and a fixture. Such state is only FixtTestState.
+// FixtTestEntityRoot must be kept private to the framework.
+type FixtTestEntityRoot struct {
+	entityRoot *EntityRoot
+}
+
+// NewFixtTestEntityRoot creates a new FixtTestEntityRoot.
+func NewFixtTestEntityRoot(fixture *FixtureInstance, cfg *RuntimeConfig, out OutputStream, condition *EntityCondition) *FixtTestEntityRoot {
+	ce := &testcontext.CurrentEntity{
+		OutDir:          cfg.OutDir, // test outDir
+		HasSoftwareDeps: false,
+	}
+	return &FixtTestEntityRoot{
+		entityRoot: NewEntityRoot(ce, fixture.Constraints(), cfg, out, condition),
+	}
+}
+
+func (r *FixtTestEntityRoot) hasError() bool {
+	return r.entityRoot.hasError()
+}
+
+// LogSink returns a logging sink for the entity.
+func (r *FixtTestEntityRoot) LogSink() logging.Sink {
+	return logging.NewFuncSink(func(msg string) { r.entityRoot.out.Log(msg) })
+}
+
+// OutDir returns a directory into which the entity may place arbitrary files
+// that should be included with the test results.
+func (r *FixtTestEntityRoot) OutDir() string {
+	return r.entityRoot.cfg.OutDir
+}
+
+// NewFixtTestState creates a FixtTestState.
+// ctx should have the same lifetime as the test, including PreTest and PostTest.
+func (r *FixtTestEntityRoot) NewFixtTestState(ctx context.Context) *FixtTestState {
+	return &FixtTestState{
+		globalMixin: r.entityRoot.newGlobalMixin("", r.hasError()),
+		testCtx:     ctx,
+	}
 }
 
 // NewContext returns a context.Context to be used for the entity.

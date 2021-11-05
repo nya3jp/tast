@@ -191,23 +191,13 @@ func (st *InternalStack) Push(ctx context.Context, fixt *testing.FixtureInstance
 	fout := output.NewEntityStream(st.out, ei)
 
 	ctx = testing.NewContext(ctx, ce, logging.NewFuncSink(func(msg string) { fout.Log(msg) }))
-
-	rcfg := &testing.RuntimeConfig{
-		DataDir: filepath.Join(st.cfg.DataDir, testing.RelativeDataDir(fixt.Pkg)),
-		OutDir:  outDir,
-		Vars:    st.cfg.Vars,
-		CloudStorage: testing.NewCloudStorage(
-			st.cfg.Service.GetDevservers(),
-			st.cfg.Service.GetTlwServer(),
-			st.cfg.Service.GetTlwSelfName(),
-			st.cfg.BuildArtifactsURL,
-		),
-		RemoteData: st.cfg.RemoteData,
-		FixtValue:  st.Val(),
-		FixtCtx:    ctx,
-	}
-
-	root := testing.NewEntityRoot(ce, fixt.Constraints(), rcfg, fout)
+	root := testing.NewEntityRoot(
+		ce,
+		fixt.Constraints(),
+		st.newRuntimeConfig(ctx, outDir, fixt),
+		fout,
+		testing.NewEntityCondition(),
+	)
 	f := newStatefulFixture(fixt, root, fout, st.cfg)
 	st.stack = append(st.stack, f)
 
@@ -275,26 +265,27 @@ func (st *InternalStack) Reset(ctx context.Context) error {
 
 // PreTest runs PreTests on the fixtures.
 // It returns a post test hook that runs PostTests on the fixtures.
-func (st *InternalStack) PreTest(ctx context.Context, troot *testing.TestEntityRoot) (func(context.Context, *testing.TestEntityRoot) error, error) {
+func (st *InternalStack) PreTest(ctx context.Context, outDir string, out testing.OutputStream, condition *testing.EntityCondition) (func(ctx context.Context) error, error) {
 	if status := st.Status(); status != StatusGreen {
 		return nil, fmt.Errorf("BUG: PreTest called for a %v fixture", status)
 	}
 
-	var postTests []func(context.Context, *testing.TestEntityRoot) error
+	var postTests []func(context.Context) error
 	for _, f := range st.stack {
-		pt, err := f.RunPreTest(ctx, troot)
+		rcfg := st.newRuntimeConfig(ctx, outDir, f.fixt)
+		pt, err := f.RunPreTest(ctx, rcfg, out, condition)
 		if err != nil {
 			return nil, err
 		}
 		postTests = append(postTests, pt)
 	}
 
-	return func(ctx context.Context, troot *testing.TestEntityRoot) error {
+	return func(ctx context.Context) error {
 		if status := st.Status(); status != StatusGreen {
 			return fmt.Errorf("BUG: PostTest called for a %v fixture", status)
 		}
 		for i := len(postTests) - 1; i >= 0; i-- {
-			if err := postTests[i](ctx, troot); err != nil {
+			if err := postTests[i](ctx); err != nil {
 				return err
 			}
 		}
@@ -321,6 +312,23 @@ func (st *InternalStack) top() *statefulFixture {
 		panic("BUG: top called for an empty stack")
 	}
 	return st.stack[len(st.stack)-1]
+}
+
+func (st *InternalStack) newRuntimeConfig(ctx context.Context, outDir string, fixt *testing.FixtureInstance) *testing.RuntimeConfig {
+	return &testing.RuntimeConfig{
+		DataDir: filepath.Join(st.cfg.DataDir, testing.RelativeDataDir(fixt.Pkg)),
+		OutDir:  outDir,
+		Vars:    st.cfg.Vars,
+		CloudStorage: testing.NewCloudStorage(
+			st.cfg.Service.GetDevservers(),
+			st.cfg.Service.GetTlwServer(),
+			st.cfg.Service.GetTlwSelfName(),
+			st.cfg.BuildArtifactsURL,
+		),
+		RemoteData: st.cfg.RemoteData,
+		FixtValue:  st.Val(),
+		FixtCtx:    ctx,
+	}
 }
 
 // statefulFixture holds a fixture and some extra variables tracking its states.
@@ -465,49 +473,55 @@ func (f *statefulFixture) RunReset(ctx context.Context) error {
 }
 
 // RunPreTest runs PreTest on the fixture. It returns a post test hook.
-func (f *statefulFixture) RunPreTest(ctx context.Context, troot *testing.TestEntityRoot) (func(context.Context, *testing.TestEntityRoot) error, error) {
+func (f *statefulFixture) RunPreTest(ctx context.Context, rcfg *testing.RuntimeConfig, out testing.OutputStream, condition *testing.EntityCondition) (func(ctx context.Context) error, error) {
 	if status := f.Status(); status != StatusGreen {
 		return nil, fmt.Errorf("BUG: RunPreTest called for a %v fixture", status)
 	}
 
-	doNothing := func(context.Context, *testing.TestEntityRoot) error { return nil }
-	if troot.HasError() {
+	doNothing := func(context.Context) error { return nil }
+	if condition.HasError() {
 		// If errors are already reported, PreTest and PostTest will not run.
 		return doNothing, nil
 	}
 
-	ctx = f.newTestContext(ctx, troot, troot.LogSink())
-	s := troot.NewFixtTestState(ctx)
+	froot := testing.NewFixtTestEntityRoot(f.fixt, rcfg, out, condition)
+	ctx = f.newTestContext(ctx, froot, froot.LogSink())
+	s := froot.NewFixtTestState(ctx)
 	name := fmt.Sprintf("%s:PreTest", f.fixt.Name)
 	if err := usercode.SafeCall(ctx, name, f.fixt.PreTestTimeout, f.cfg.GracePeriod, usercode.ErrorOnPanic(s), func(ctx context.Context) {
 		f.fixt.Impl.PreTest(ctx, s)
 	}); err != nil {
 		return nil, err
 	}
-
-	if troot.HasError() {
+	if condition.HasError() {
 		// If errors are reported in PreTest, PostTest will not run.
 		return doNothing, nil
 	}
-	return f.runPostTest, nil
+	return func(ctx context.Context) error {
+		return f.runPostTest(ctx, rcfg, out, condition)
+	}, nil
 }
 
-func (f *statefulFixture) runPostTest(ctx context.Context, troot *testing.TestEntityRoot) error {
+func (f *statefulFixture) runPostTest(ctx context.Context, rcfg *testing.RuntimeConfig, out testing.OutputStream, condition *testing.EntityCondition) error {
 	if status := f.Status(); status != StatusGreen {
 		return fmt.Errorf("BUG: RunPostTest called for a %v fixture", status)
 	}
 
-	ctx = f.newTestContext(ctx, troot, troot.LogSink())
-	s := troot.NewFixtTestState(ctx)
+	froot := testing.NewFixtTestEntityRoot(f.fixt, rcfg, out, condition)
+	ctx = f.newTestContext(ctx, froot, froot.LogSink())
+	s := froot.NewFixtTestState(ctx)
 	name := fmt.Sprintf("%s:PostTest", f.fixt.Name)
 
-	return usercode.SafeCall(ctx, name, f.fixt.PostTestTimeout, f.cfg.GracePeriod, usercode.ErrorOnPanic(s), func(ctx context.Context) {
+	if err := usercode.SafeCall(ctx, name, f.fixt.PostTestTimeout, f.cfg.GracePeriod, usercode.ErrorOnPanic(s), func(ctx context.Context) {
 		f.fixt.Impl.PostTest(ctx, s)
-	})
+	}); err != nil {
+		return err
+	}
+	return nil
 }
 
 // newTestContext returns a Context to be passed to PreTest/PostTest of a fixture.
-func (f *statefulFixture) newTestContext(ctx context.Context, troot *testing.TestEntityRoot, sink logging.Sink) context.Context {
+func (f *statefulFixture) newTestContext(ctx context.Context, troot *testing.FixtTestEntityRoot, sink logging.Sink) context.Context {
 	ce := &testcontext.CurrentEntity{
 		// OutDir is from the test so that test hooks can save files just like tests.
 		OutDir: troot.OutDir(),

@@ -980,3 +980,8 @@ func SupportsV4L2StatefulVideoDecoding() Condition {
 		return unsatisfied("SoC does not support V4L2 Stateful HW video decoding")
 	}}
 }
+
+// Lid returns a hardware dependency condition that is satisfied iff the DUT's form factor has a lid.
+func Lid() Condition {
+	return FormFactor(Clamshell, Convertible, Detachable)
+}

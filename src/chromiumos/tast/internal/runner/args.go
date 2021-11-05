@@ -43,24 +43,17 @@ type StaticConfig struct {
 	// avoid spamming syslog.
 	EnableSyslog bool
 
-	// SystemLogDir contains the directory where information is logged by syslog and other daemons.
-	SystemLogDir string
-	// SystemLogExcludes contains relative paths of directories and files in SystemLogDir to exclude.
-	SystemLogExcludes []string
-	// UnifiedLogSubdir contains the subdirectory within RunnerCollectSysInfoResult.LogDir where unified system logs will be written.
-	// No system logs will be be collected if this is empty.
-	UnifiedLogSubdir string `json:"-"`
-	// SystemInfoFunc contains a function that will be executed to gather additional system info.
-	// The information should be written to dir.
-	SystemInfoFunc func(ctx context.Context, dir string) error
-	// SystemCrashDirs contains directories where crash dumps are written when processes crash.
-	SystemCrashDirs []string
-	// CleanupLogsPausedPath is a path to the marker file on the DUT to pause log cleanup.
-	CleanupLogsPausedPath string
-
 	// GetDUTInfo is a function to respond to GetDUTInfo RPC.
 	// If it is nil, an empty GetDUTInfoResponse is always returned.
 	GetDUTInfo func(ctx context.Context, req *protocol.GetDUTInfoRequest) (*protocol.GetDUTInfoResponse, error)
+
+	// GetSysInfoState is a function to respond to GetSysInfoState RPC.
+	// If it is nil, an empty GetSysInfoStateResponse is always returned.
+	GetSysInfoState func(ctx context.Context, req *protocol.GetSysInfoStateRequest) (*protocol.GetSysInfoStateResponse, error)
+
+	// CollectSysInfo is a function to respond to CollectSysInfo RPC.
+	// If it is nil, an empty CollectSysInfoResponse is always returned.
+	CollectSysInfo func(ctx context.Context, req *protocol.CollectSysInfoRequest) (*protocol.CollectSysInfoResponse, error)
 
 	// DeprecatedDefaultBuildArtifactsURL is a function that computes the
 	// default build artifacts URL.

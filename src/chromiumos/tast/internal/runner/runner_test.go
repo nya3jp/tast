@@ -10,7 +10,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -275,112 +274,6 @@ func TestRunListTestsNoBundles(t *gotesting.T) {
 	}
 	if stderr.Len() == 0 {
 		t.Errorf("%s didn't write error to stderr", sig)
-	}
-}
-
-func TestRunSysInfo(t *gotesting.T) {
-	td := testutil.TempDir(t)
-	defer os.RemoveAll(td)
-
-	const (
-		logsDir    = "logs"
-		crashesDir = "crashes"
-
-		// Written before GetSysInfoState.
-		oldLogFile   = "1.txt"
-		oldLogData   = "first log"
-		oldCrashFile = "1.dmp"
-		oldCrashData = "first crash"
-
-		// Written after GetSysInfoState.
-		newLogFile   = "2.txt"
-		newLogData   = "second log"
-		newCrashFile = "2.dmp"
-		newCrashData = "second crash"
-
-		// Written by SystemInfoFunc.
-		customLogFile = "custom.txt"
-		customLogData = "custom data"
-	)
-	if err := testutil.WriteFiles(td, map[string]string{
-		filepath.Join(logsDir, oldLogFile):      oldLogData,
-		filepath.Join(crashesDir, oldCrashFile): oldCrashData,
-	}); err != nil {
-		t.Fatal(err)
-	}
-
-	// Get the initial state.
-	scfg := StaticConfig{
-		Type:         LocalRunner,
-		SystemLogDir: filepath.Join(td, logsDir),
-		SystemInfoFunc: func(ctx context.Context, dir string) error {
-			return ioutil.WriteFile(filepath.Join(dir, customLogFile), []byte(customLogData), 0644)
-		},
-		SystemCrashDirs:       []string{filepath.Join(td, crashesDir)},
-		CleanupLogsPausedPath: filepath.Join(td, "cleanup_logs_paused"),
-	}
-	status, stdout, _, sig := callRun(t, nil, &jsonprotocol.RunnerArgs{Mode: jsonprotocol.RunnerGetSysInfoStateMode}, nil, &scfg)
-	if status != statusSuccess {
-		t.Fatalf("%s = %v; want %v", sig, status, statusSuccess)
-	}
-	var getRes jsonprotocol.RunnerGetSysInfoStateResult
-	if err := json.NewDecoder(stdout).Decode(&getRes); err != nil {
-		t.Fatalf("%v gave bad output: %v", sig, err)
-	}
-	if len(getRes.Warnings) > 0 {
-		t.Errorf("%v produced warning(s): %v", sig, getRes.Warnings)
-	}
-
-	if _, err := os.Stat(scfg.CleanupLogsPausedPath); err != nil {
-		t.Errorf("Cleanup logs paused file not created: %v", err)
-	}
-
-	if err := testutil.WriteFiles(td, map[string]string{
-		filepath.Join(logsDir, newLogFile):      newLogData,
-		filepath.Join(crashesDir, newCrashFile): newCrashData,
-	}); err != nil {
-		t.Fatal(err)
-	}
-
-	// Now collect system info.
-	args := jsonprotocol.RunnerArgs{
-		Mode:           jsonprotocol.RunnerCollectSysInfoMode,
-		CollectSysInfo: &jsonprotocol.RunnerCollectSysInfoArgs{InitialState: getRes.State},
-	}
-	if status, stdout, _, sig = callRun(t, nil, &args, nil, &scfg); status != statusSuccess {
-		t.Fatalf("%s = %v; want %v", sig, status, statusSuccess)
-	}
-	var collectRes jsonprotocol.RunnerCollectSysInfoResult
-	if err := json.NewDecoder(stdout).Decode(&collectRes); err != nil {
-		t.Fatalf("%v gave bad output: %v", sig, err)
-	}
-	if len(collectRes.Warnings) > 0 {
-		t.Errorf("%v produced warning(s): %v", sig, collectRes.Warnings)
-	}
-	defer os.RemoveAll(collectRes.LogDir)
-	defer os.RemoveAll(collectRes.CrashDir)
-
-	// The newly-written files should have been copied into the returned temp dirs.
-	if act, err := testutil.ReadFiles(collectRes.LogDir); err != nil {
-		t.Error(err)
-	} else {
-		if exp := map[string]string{
-			newLogFile:    newLogData,
-			customLogFile: customLogData,
-		}; !reflect.DeepEqual(act, exp) {
-			t.Errorf("%v collected logs %v; want %v", sig, act, exp)
-		}
-	}
-	if act, err := testutil.ReadFiles(collectRes.CrashDir); err != nil {
-		t.Error(err)
-	} else {
-		if exp := map[string]string{newCrashFile: newCrashData}; !reflect.DeepEqual(act, exp) {
-			t.Errorf("%v collected crashes %v; want %v", sig, act, exp)
-		}
-	}
-
-	if _, err := os.Stat(scfg.CleanupLogsPausedPath); !os.IsNotExist(err) {
-		t.Errorf("Cleanup logs paused file not deleted: %v", err)
 	}
 }
 

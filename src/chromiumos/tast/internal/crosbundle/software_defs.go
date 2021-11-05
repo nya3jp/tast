@@ -33,13 +33,14 @@ var SoftwareFeatureDefs = map[string]string{
 	"camera_720p": "!snow && !skate && !spring",
 	// Some boards might not support the camera/video/audio components required by the camera app.
 	// TODO(b/185087278): Remove soraka-libcamera.
-	"camera_app":      `!("board:volteer-kernelnext" || "board:soraka-libcamera")`,
-	"camera_legacy":   `!"arc-camera1" && !"arc-camera3"`,
-	"cert_provision":  "cert_provision",
-	"chrome":          "!chromeless_tty && !rialto",
-	"chrome_internal": "chrome_internal",
-	"chromeless":      "chromeless_tty || rialto",
-	"coresched":       "coresched",
+	"camera_app":            `!("board:volteer-kernelnext" || "board:soraka-libcamera")`,
+	"camera_feature_hdrnet": "camera_feature_hdrnet",
+	"camera_legacy":         `!"arc-camera1" && !"arc-camera3"`,
+	"cert_provision":        "cert_provision",
+	"chrome":                "!chromeless_tty && !rialto",
+	"chrome_internal":       "chrome_internal",
+	"chromeless":            "chromeless_tty || rialto",
+	"coresched":             "coresched",
 	// TODO(b/174890060) Remove asuka, caroline, cave, chell, lars, sentry
 	// TODO(b/174888780) Remove kernel-4_4 once arm64 kernel reporting is fixed
 	// TODO(b/174889440) Remove hana, elm

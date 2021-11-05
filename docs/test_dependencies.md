@@ -79,6 +79,7 @@ The following software features are defined:
 *   `dptf` - Support of [Intel Dynamic Platform and Thermal Framework] (DPTF).
 *   `drivefs` - Google Drive support enabled.
 *   `drm_atomic` - The [DRM/KMS] kernel subsystem supports atomic commits.
+*   `drm_trace` - The [DRM/KMS] kernel subsystem supports tracing using tracefs.
 *   `ec_crash` - Boards that have EC firmware, implement the `crash` EC command,
     and produce a panicinfo file after a crash.
 *   `endorsement` - Whether the system have a valid endorsement certificate.

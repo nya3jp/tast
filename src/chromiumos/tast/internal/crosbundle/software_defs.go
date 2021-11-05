@@ -61,6 +61,7 @@ var SoftwareFeatureDefs = map[string]string{
 	"dmverity_unstable": `!("kernel-3_18" || "kernel-4_4" || "kernel-4_14")`,
 	"drivefs":           "drivefs",
 	"drm_atomic":        "drm_atomic",
+	"drm_trace":         `("kernel-5_4" || "kernel-5_10")`,
 	// asuka, banon, caroline, cave, celes, chell, cyan, edgar, kefka, reks, relm, sentry, terra, ultima, and wizpig have buggy EC firmware and cannot capture crash reports. b/172228823
 	// drallion and sarien have do not support the "crash" EC command. crbug.com/1123716
 	// guado, tidus, rikku, veyron_fievel, and veyron_tiger do not have EC firmware. crbug.com/1123716. TODO(crbug.com/1124554) Use an EC hardware dep for these rather than a software dep.

@@ -86,10 +86,10 @@ var allowedPkgs = []string{
 	"chromiumos/tast/local/screenshot", // For Board.
 	"chromiumos/tast/lsbrelease",
 	"chromiumos/tast/lsbrelease_test",
-	"chromiumos/tast/remote/bundles/cros/firmware",      // For finding firmware file.
-	"chromiumos/tast/remote/bundles/cros/omaha/request", // To replicate update_engine behavior.
-	"chromiumos/tast/remote/firmware",                   // For checking USB images
-	"chromiumos/tast/remote/firmware/reporters",         // For Board.
+	"chromiumos/tast/remote/bundles/cros/firmware",     // For finding firmware file.
+	"chromiumos/tast/remote/bundles/cros/omaha/params", // To replicate update_engine behavior.
+	"chromiumos/tast/remote/firmware",                  // For checking USB images
+	"chromiumos/tast/remote/firmware/reporters",        // For Board.
 }
 
 // Load loads /etc/lsb-release and returns a parsed key-value map.

@@ -119,6 +119,8 @@ type MutableConfig struct {
 
 	MsgTimeout    time.Duration
 	DebuggerPorts map[debugger.DebugTarget]int
+
+	Retries int
 }
 
 // Config contains shared configuration information for running or listing tests.
@@ -288,6 +290,9 @@ func (c *Config) MaybeMissingVars() string { return c.m.MaybeMissingVars }
 // MsgTimeout is timeout for reading control messages; default used if zero.
 func (c *Config) MsgTimeout() time.Duration { return c.m.MsgTimeout }
 
+// Retries is the number of retries for failing tests
+func (c *Config) Retries() int { return c.m.Retries }
+
 // State hold state attributes which are accumulated over the course of the run.
 //
 // DO NOT add new fields to this struct. State makes it difficult to reason
@@ -446,6 +451,8 @@ func (c *MutableConfig) SetFlags(f *flag.FlagSet) {
 			return nil
 		})
 		f.Var(&compDUTs, "companiondut", `role to companion DUT, as "role:address" (can be repeated)`)
+		f.IntVar(&c.Retries, "retries", 0, `number of times to retry a failing test`)
+
 	}
 }
 

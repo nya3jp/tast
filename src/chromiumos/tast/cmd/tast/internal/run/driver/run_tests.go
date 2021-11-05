@@ -119,7 +119,6 @@ func (d *Driver) runLocalTestsWithRemoteFixture(ctx context.Context, tests []*Bu
 	if start == "" {
 		return d.runLocalTestsWithRetry(ctx, tests, &protocol.StartFixtureState{}, args)
 	}
-
 	runCfg, err := d.newRunFixtureConfig()
 	if err != nil {
 		return nil, err
@@ -185,7 +184,7 @@ func (d *Driver) runLocalTestsWithRetry(ctx context.Context, tests []*BundleEnti
 	runTestsOnce := func(ctx context.Context, tests []*BundleEntity) ([]*resultsjson.Result, error) {
 		return d.runLocalTestsOnce(ctx, tests, state, args)
 	}
-	return runTestsWithRetry(ctx, tests, runTestsOnce)
+	return runTestsWithRetry(ctx, tests, runTestsOnce, d.cfg.Retries())
 }
 
 func (d *Driver) runLocalTestsOnce(ctx context.Context, tests []*BundleEntity, state *protocol.StartFixtureState, args *runTestsArgs) ([]*resultsjson.Result, error) {
@@ -222,7 +221,7 @@ func (d *Driver) runRemoteTests(ctx context.Context, tests []*BundleEntity, args
 	runTestsOnce := func(ctx context.Context, tests []*BundleEntity) ([]*resultsjson.Result, error) {
 		return d.runRemoteTestsOnce(ctx, tests, args)
 	}
-	return runTestsWithRetry(ctx, tests, runTestsOnce)
+	return runTestsWithRetry(ctx, tests, runTestsOnce, d.cfg.Retries())
 }
 
 func (d *Driver) runRemoteTestsOnce(ctx context.Context, tests []*BundleEntity, args *runTestsArgs) ([]*resultsjson.Result, error) {
@@ -427,11 +426,16 @@ type runTestsOnceFunc func(ctx context.Context, tests []*BundleEntity) ([]*resul
 // runTestsWithRetry runs tests in a loop. If runTestsOnce returns insufficient
 // results, it calls beforeRetry, followed by runTestsOnce again to restart
 // testing.
-func runTestsWithRetry(ctx context.Context, allTests []*BundleEntity, runTestsOnce runTestsOnceFunc) ([]*resultsjson.Result, error) {
+// Additionally, this will honor the retry CLI flag.
+func runTestsWithRetry(ctx context.Context, allTests []*BundleEntity, runTestsOnce runTestsOnceFunc, retryn int) ([]*resultsjson.Result, error) {
 	var allResults []*resultsjson.Result
 	unstarted := make(map[string]struct{})
+
+	logging.Infof(ctx, "Allowing up to %v retries", retryn)
+	retries := make(map[string]int)
 	for _, t := range allTests {
 		unstarted[t.Resolved.GetEntity().GetName()] = struct{}{}
+		retries[t.Resolved.GetEntity().GetName()] = retryn
 	}
 
 	for {
@@ -445,22 +449,32 @@ func runTestsWithRetry(ctx context.Context, allTests []*BundleEntity, runTestsOn
 
 		// Run tests once.
 		results, err := runTestsOnce(ctx, tests)
-		allResults = append(allResults, results...)
 		if err != nil {
+			allResults = append(allResults, results...)
 			return allResults, err
 		}
 
-		// Update the test list and return success if we ran all tests.
-		for _, r := range results {
-			delete(unstarted, r.Test.Name)
-		}
-		if len(unstarted) == 0 {
-			return allResults, nil
-		}
-
 		// Abort to avoid infinite retries if no test ran in the last attempt.
+		// Note: this needs to happen above the results modifications as if there
+		// is 1 failing test & we strip that fail then we return rather than retry.
 		if len(results) == 0 {
 			return allResults, errors.New("no test ran in the last attempt")
+		}
+
+		// Update the results and unstarted list based on retries/failures.
+		for _, r := range results {
+			if len(r.Errors) > 0 && retries[r.Test.Name] > 0 {
+				logging.Infof(ctx, "Retrying %v due to failure", r.Test.Name)
+				retries[r.Test.Name]--
+				continue
+			}
+			allResults = append(allResults, r)
+			delete(unstarted, r.Test.Name)
+		}
+
+		// Return success if we ran all tests and there are no more retries.
+		if len(unstarted) == 0 {
+			return allResults, nil
 		}
 
 		logging.Infof(ctx, "Trying to run %v remaining test(s)", len(unstarted))

@@ -5,7 +5,11 @@
 package driver_test
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
+	"io/ioutil"
+	"path/filepath"
 	gotesting "testing"
 	"time"
 
@@ -14,6 +18,7 @@ import (
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/driver"
+	"chromiumos/tast/cmd/tast/internal/run/reporting"
 	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
 	"chromiumos/tast/cmd/tast/internal/run/runtest"
 	"chromiumos/tast/errors"
@@ -340,5 +345,161 @@ func TestDriver_RunTests_MaxTestFailures(t *gotesting.T) {
 	}
 	if diff := cmp.Diff(got, want, resultsCmpOpts...); diff != "" {
 		t.Errorf("Results mismatch (-got +want):\n%s", diff)
+	}
+}
+
+func unmarshalStreamedResults(b []byte) ([]*resultsjson.Result, error) {
+	decoder := json.NewDecoder(bytes.NewBuffer(b))
+	var results []*resultsjson.Result
+	for decoder.More() {
+		var r resultsjson.Result
+		if err := decoder.Decode(&r); err != nil {
+			return nil, err
+		}
+		results = append(results, &r)
+	}
+	return results, nil
+}
+
+func TestDriver_RunTests_WithRetries(t *gotesting.T) {
+	bundleLocal := testing.NewRegistry("bundle")
+
+	bundleLocal.AddTestInstance(&testing.TestInstance{
+		Name:    "test.Local1",
+		Timeout: time.Minute,
+		Func: func(ctx context.Context, s *testing.State) {
+			s.Error("Failure")
+		},
+	})
+	bundleLocal.AddTestInstance(&testing.TestInstance{
+		Name:    "test.Local2",
+		Timeout: time.Minute,
+		Func:    func(ctx context.Context, s *testing.State) {},
+	})
+	bundleRemote := testing.NewRegistry("bundle")
+
+	bundleRemote.AddTestInstance(&testing.TestInstance{
+		Name:    "test.Remote1",
+		Timeout: time.Minute,
+		Func: func(ctx context.Context, s *testing.State) {
+			s.Error("Failure")
+		},
+	})
+	bundleRemote.AddTestInstance(&testing.TestInstance{
+		Name:    "test.Remote2",
+		Timeout: time.Minute,
+		Func:    func(ctx context.Context, s *testing.State) {},
+	})
+
+	env := runtest.SetUp(
+		t,
+		runtest.WithLocalBundles(bundleLocal),
+		runtest.WithRemoteBundles(bundleRemote),
+	)
+	ctx := env.Context()
+	cfg := env.Config(func(cfg *config.MutableConfig) {
+		cfg.Retries = 1
+	})
+
+	drv, err := driver.New(ctx, cfg, cfg.Target(), nil)
+	if err != nil {
+		t.Fatalf("driver.New failed: %v", err)
+	}
+	defer drv.Close(ctx)
+
+	tests, err := drv.ListMatchedTests(ctx, nil)
+	if err != nil {
+		t.Fatalf("ListMatchedTests failed: %v", err)
+	}
+
+	got, err := drv.RunTests(ctx, tests, nil, nil, nil)
+	if err != nil {
+		t.Errorf("RunTests failed: %v", err)
+	}
+	// Test results should only have 1 result per test in it...
+	want := []*resultsjson.Result{
+		{
+			Test: resultsjson.Test{
+				Name:   "test.Local2",
+				Bundle: "bundle",
+			},
+		},
+		{
+			Test: resultsjson.Test{
+				Name:   "test.Local1",
+				Bundle: "bundle",
+			},
+			Errors: []resultsjson.Error{{Reason: "Failure"}},
+		},
+
+		{
+			Test: resultsjson.Test{
+				Name:   "test.Remote2",
+				Bundle: "bundle",
+			},
+		},
+		{
+			Test: resultsjson.Test{
+				Name:   "test.Remote1",
+				Bundle: "bundle",
+			},
+			Errors: []resultsjson.Error{{Reason: "Failure"}},
+		},
+	}
+	if diff := cmp.Diff(got, want, resultsCmpOpts...); diff != "" {
+		t.Errorf("Results mismatch (-got +want):\n%s", diff)
+	}
+
+	// The streamed json Results should show the retries.
+	jsonWant := []*resultsjson.Result{
+		{
+			Test: resultsjson.Test{
+				Name:   "test.Local1",
+				Bundle: "bundle",
+			},
+			Errors: []resultsjson.Error{{Reason: "Failure"}},
+		},
+		{
+			Test: resultsjson.Test{
+				Name:   "test.Local2",
+				Bundle: "bundle",
+			},
+		},
+		{
+			Test: resultsjson.Test{
+				Name:   "test.Local1",
+				Bundle: "bundle",
+			},
+			Errors: []resultsjson.Error{{Reason: "Failure"}},
+		},
+		{
+			Test: resultsjson.Test{
+				Name:   "test.Remote1",
+				Bundle: "bundle",
+			},
+			Errors: []resultsjson.Error{{Reason: "Failure"}},
+		},
+		{
+			Test: resultsjson.Test{
+				Name:   "test.Remote2",
+				Bundle: "bundle",
+			},
+		},
+		{
+			Test: resultsjson.Test{
+				Name:   "test.Remote1",
+				Bundle: "bundle",
+			},
+			Errors: []resultsjson.Error{{Reason: "Failure"}},
+		},
+	}
+
+	// Results in streamed_results.json.
+	if b, err := ioutil.ReadFile(filepath.Join(cfg.ResDir(), reporting.StreamedResultsFilename)); err != nil {
+		t.Errorf("Failed to read %s: %v", reporting.StreamedResultsFilename, err)
+	} else if results, err := unmarshalStreamedResults(b); err != nil {
+		t.Errorf("Failed to parse %s: %v", reporting.StreamedResultsFilename, err)
+	} else if diff := cmp.Diff(results, jsonWant, resultsCmpOpts...); diff != "" {
+		t.Errorf("%s mismatch (-got +want):\n%s", reporting.StreamedResultsFilename, diff)
 	}
 }

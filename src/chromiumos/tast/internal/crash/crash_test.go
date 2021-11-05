@@ -5,6 +5,7 @@
 package crash_test
 
 import (
+	"context"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -80,7 +81,7 @@ func TestCopyNewFiles(t *testing.T) {
 	}
 	op := []string{b0.abs}
 	np := []string{a0.abs, a1.abs, a2.abs, b0.abs, c0.abs, d0.abs, d1.abs, d2.abs}
-	if _, err := crash.CopyNewFiles(dd, np, op); err != nil {
+	if err := crash.CopyNewFiles(context.Background(), dd, np, op); err != nil {
 		t.Fatalf("CopyNewFiles(%v, %v, %v) failed: %v", dd, np, op, err)
 	}
 

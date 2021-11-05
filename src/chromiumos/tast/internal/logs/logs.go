@@ -6,12 +6,15 @@
 package logs
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"os"
 	"path/filepath"
 	"strings"
 	"syscall"
+
+	"chromiumos/tast/internal/logging"
 )
 
 // InodeSizes maps from inode to file size.
@@ -21,14 +24,12 @@ type InodeSizes map[uint64]int64
 // to size in bytes for all regular files. warnings contains non-fatal errors
 // that were accounted, keyed by path. Exclude lists relative paths of directories
 // and files to skip.
-func GetLogInodeSizes(dir string, exclude []string) (
-	inodes InodeSizes, warnings map[string]error, err error) {
-	inodes = make(InodeSizes)
-	warnings = make(map[string]error)
+func GetLogInodeSizes(ctx context.Context, dir string, exclude []string) (InodeSizes, error) {
+	inodes := make(InodeSizes)
 
 	wf := func(p string, info os.FileInfo, err error) error {
 		if err != nil {
-			warnings[p] = err
+			logging.Infof(ctx, "%s: %v", p, err)
 			return nil
 		}
 		if skip, walkErr := shouldSkip(p, dir, info, exclude); skip {
@@ -40,16 +41,16 @@ func GetLogInodeSizes(dir string, exclude []string) (
 
 		stat, ok := info.Sys().(*syscall.Stat_t)
 		if !ok {
-			warnings[p] = fmt.Errorf("can't get inode for %s", p)
+			logging.Infof(ctx, "Can't get inode for %s", p)
 			return nil
 		}
 		inodes[stat.Ino] = info.Size()
 		return nil
 	}
 	if err := filepath.Walk(dir, wf); err != nil {
-		return nil, warnings, err
+		return nil, err
 	}
-	return inodes, warnings, nil
+	return inodes, nil
 }
 
 // CopyLogFileUpdates takes origSizes, the result of an earlier call to
@@ -58,16 +59,14 @@ func GetLogInodeSizes(dir string, exclude []string) (
 // paths of directories and files to skip. A nil or empty size map may be
 // passed to copy all files in their entirety. warnings contains non-fatal
 // errors that were accounted, keyed by path.
-func CopyLogFileUpdates(src, dst string, exclude []string, origSizes InodeSizes) (
-	warnings map[string]error, err error) {
-	warnings = make(map[string]error)
-	if err = os.MkdirAll(dst, 0755); err != nil {
-		return warnings, err
+func CopyLogFileUpdates(ctx context.Context, src, dst string, exclude []string, origSizes InodeSizes) error {
+	if err := os.MkdirAll(dst, 0755); err != nil {
+		return err
 	}
 
-	err = filepath.Walk(src, func(sp string, info os.FileInfo, err error) error {
+	return filepath.Walk(src, func(sp string, info os.FileInfo, err error) error {
 		if err != nil {
-			warnings[sp] = err
+			logging.Infof(ctx, "%s: %v", sp, err)
 			return nil
 		}
 		if skip, walkErr := shouldSkip(sp, src, info, exclude); skip {
@@ -79,7 +78,7 @@ func CopyLogFileUpdates(src, dst string, exclude []string, origSizes InodeSizes)
 
 		stat, ok := info.Sys().(*syscall.Stat_t)
 		if !ok {
-			warnings[sp] = fmt.Errorf("can't get inode for %s", sp)
+			logging.Infof(ctx, "Can't get inode for %s", sp)
 			return nil
 		}
 		var origSize int64
@@ -90,7 +89,7 @@ func CopyLogFileUpdates(src, dst string, exclude []string, origSizes InodeSizes)
 			return nil
 		}
 		if info.Size() < origSize {
-			warnings[sp] = fmt.Errorf("%s is shorter than original (now %d, original %d), copying all instead of diff", sp, info.Size(), origSize)
+			logging.Infof(ctx, "%s is shorter than original (now %d, original %d), copying all instead of diff", sp, info.Size(), origSize)
 			origSize = 0
 		}
 
@@ -101,13 +100,13 @@ func CopyLogFileUpdates(src, dst string, exclude []string, origSizes InodeSizes)
 
 		sf, err := os.Open(sp)
 		if err != nil {
-			warnings[sp] = err
+			logging.Infof(ctx, "%s: %v", sp, err)
 			return nil
 		}
 		defer sf.Close()
 
 		if _, err = sf.Seek(origSize, 0); err != nil {
-			warnings[sp] = err
+			logging.Infof(ctx, "%s: %v", sp, err)
 			return nil
 		}
 
@@ -118,11 +117,10 @@ func CopyLogFileUpdates(src, dst string, exclude []string, origSizes InodeSizes)
 		defer df.Close()
 
 		if _, err = io.Copy(df, sf); err != nil {
-			warnings[sp] = err
+			logging.Infof(ctx, "%s: %v", sp, err)
 		}
 		return nil
 	})
-	return warnings, err
 }
 
 // shouldSkip is a helper function called from a filepath.WalkFunc to check if the supplied absolute

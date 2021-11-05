@@ -7,7 +7,6 @@ package runner
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"io"
 	"io/ioutil"
 	"os"
@@ -16,6 +15,7 @@ import (
 	"chromiumos/tast/internal/command"
 	"chromiumos/tast/internal/crash"
 	"chromiumos/tast/internal/jsonprotocol"
+	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/logs"
 )
 
@@ -27,43 +27,53 @@ const (
 // handleGetSysInfoState gets information about the system's current state (e.g. log files
 // and crash reports) and writes a JSON-marshaled RunnerGetSysInfoStateResult struct to w.
 func handleGetSysInfoState(ctx context.Context, scfg *StaticConfig, w io.Writer) error {
+	logger := newArrayLogger()
+	ctx = logging.AttachLogger(ctx, logger)
+
 	if scfg.SystemLogDir == "" || len(scfg.SystemCrashDirs) == 0 {
 		return command.NewStatusErrorf(statusBadArgs, "system info collection unsupported")
 	}
 
-	res := jsonprotocol.RunnerGetSysInfoStateResult{}
-
 	if err := suspendLogCleanup(scfg.CleanupLogsPausedPath); err != nil {
-		res.Warnings = append(res.Warnings, fmt.Sprintf("Failed to pause log cleanup: %v", err))
+		logging.Infof(ctx, "Failed to pause log cleanup: %v", err)
 	}
 
-	var err error
-	var warnings map[string]error
-	if res.State.LogInodeSizes, warnings, err = logs.GetLogInodeSizes(
-		scfg.SystemLogDir, scfg.SystemLogExcludes); err != nil {
+	logInodeSizes, err := logs.GetLogInodeSizes(ctx, scfg.SystemLogDir, scfg.SystemLogExcludes)
+	if err != nil {
 		return err
 	}
-	for p, warning := range warnings {
-		res.Warnings = append(res.Warnings, fmt.Sprintf("%s: %v", p, warning))
-	}
 
+	var unifiedLogCursor string
 	if scfg.UnifiedLogSubdir != "" {
-		if res.State.UnifiedLogCursor, err = logs.GetUnifiedLogCursor(ctx); err != nil {
+		unifiedLogCursor, err = logs.GetUnifiedLogCursor(ctx)
+		if err != nil {
 			// croslog may not be installed, so just warn about errors.
-			res.Warnings = append(res.Warnings, fmt.Sprintf("Failed to get unified system log cursor: %v", err))
+			logging.Infof(ctx, "Failed to get unified system log cursor: %v", err)
 		}
 	}
 
-	if res.State.MinidumpPaths, err = getMinidumps(scfg.SystemCrashDirs); err != nil {
+	minidumpPaths, err := getMinidumps(scfg.SystemCrashDirs)
+	if err != nil {
 		return err
 	}
 
+	res := &jsonprotocol.RunnerGetSysInfoStateResult{
+		State: jsonprotocol.SysInfoState{
+			LogInodeSizes:    logInodeSizes,
+			UnifiedLogCursor: unifiedLogCursor,
+			MinidumpPaths:    minidumpPaths,
+		},
+		Warnings: logger.Logs(),
+	}
 	return json.NewEncoder(w).Encode(res)
 }
 
 // handleCollectSysInfo copies system information that was written after args.CollectSysInfo.InitialState
 // was generated into temporary directories and writes a JSON-marshaled RunnerCollectSysInfoResult struct to w.
 func handleCollectSysInfo(ctx context.Context, args *jsonprotocol.RunnerArgs, scfg *StaticConfig, w io.Writer) error {
+	logger := newArrayLogger()
+	ctx = logging.AttachLogger(ctx, logger)
+
 	if scfg.SystemLogDir == "" || len(scfg.SystemCrashDirs) == 0 {
 		return command.NewStatusErrorf(statusBadArgs, "system info collection unsupported")
 	}
@@ -72,38 +82,33 @@ func handleCollectSysInfo(ctx context.Context, args *jsonprotocol.RunnerArgs, sc
 	if cmdArgs == nil {
 		return command.NewStatusErrorf(statusBadArgs, "missing system info args")
 	}
-	res := jsonprotocol.RunnerCollectSysInfoResult{}
 
 	// Collect syslog logs.
-	var err error
-	if res.LogDir, err = ioutil.TempDir("", "tast_logs."); err != nil {
+	logDir, err := ioutil.TempDir("", "tast_logs.")
+	if err != nil {
 		return err
 	}
-	var warnings map[string]error
-	if warnings, err = logs.CopyLogFileUpdates(scfg.SystemLogDir, res.LogDir, scfg.SystemLogExcludes,
+	if err := logs.CopyLogFileUpdates(ctx, scfg.SystemLogDir, logDir, scfg.SystemLogExcludes,
 		cmdArgs.InitialState.LogInodeSizes); err != nil {
 		return err
-	}
-	for p, w := range warnings {
-		res.Warnings = append(res.Warnings, fmt.Sprintf("%s: %v", p, w))
 	}
 
 	// Write system logs into a subdirectory.
 	if subdir := scfg.UnifiedLogSubdir; subdir != "" {
 		if cursor := cmdArgs.InitialState.UnifiedLogCursor; cursor != "" {
-			if err := writeUnifiedLog(ctx, filepath.Join(res.LogDir, subdir, unifiedCompactLogFileName), cursor, logs.CompactLogFormat); err != nil {
-				res.Warnings = append(res.Warnings, fmt.Sprintf("Failed to collect compact unified system log entries: %v", err))
+			if err := writeUnifiedLog(ctx, filepath.Join(logDir, subdir, unifiedCompactLogFileName), cursor, logs.CompactLogFormat); err != nil {
+				logging.Infof(ctx, "Failed to collect compact unified system log entries: %v", err)
 			}
-			if err := writeUnifiedLog(ctx, filepath.Join(res.LogDir, subdir, unifiedExportLogFileName), cursor, logs.GzippedExportLogFormat); err != nil {
-				res.Warnings = append(res.Warnings, fmt.Sprintf("Failed to collect exported unified system log entries: %v", err))
+			if err := writeUnifiedLog(ctx, filepath.Join(logDir, subdir, unifiedExportLogFileName), cursor, logs.GzippedExportLogFormat); err != nil {
+				logging.Infof(ctx, "Failed to collect exported unified system log entries: %v", err)
 			}
 		}
 	}
 
 	// Collect additional information.
 	if scfg.SystemInfoFunc != nil {
-		if err := scfg.SystemInfoFunc(ctx, res.LogDir); err != nil {
-			res.Warnings = append(res.Warnings, fmt.Sprintf("Failed to collect additional system info: %v", err))
+		if err := scfg.SystemInfoFunc(ctx, logDir); err != nil {
+			logging.Infof(ctx, "Failed to collect additional system info: %v", err)
 		}
 	}
 
@@ -112,22 +117,25 @@ func handleCollectSysInfo(ctx context.Context, args *jsonprotocol.RunnerArgs, sc
 	if err != nil {
 		return err
 	}
-	if res.CrashDir, err = ioutil.TempDir("", "tast_crashes."); err != nil {
+	crashDir, err := ioutil.TempDir("", "tast_crashes.")
+	if err != nil {
 		return err
 	}
-	if warnings, err = crash.CopyNewFiles(res.CrashDir, dumps, cmdArgs.InitialState.MinidumpPaths); err != nil {
+	if err := crash.CopyNewFiles(ctx, crashDir, dumps, cmdArgs.InitialState.MinidumpPaths); err != nil {
 		return err
-	}
-	for p, w := range warnings {
-		res.Warnings = append(res.Warnings, fmt.Sprintf("%s: %v", p, w))
 	}
 	// TODO(derat): Decide if it's worthwhile to call crash.CopySystemInfo here to get /etc/lsb-release.
 	// Doing so makes it harder to exercise this code in unit tests.
 
 	if err := resumeLogCleanup(scfg.CleanupLogsPausedPath); err != nil {
-		res.Warnings = append(res.Warnings, fmt.Sprintf("Failed to resume log cleanup: %v", err))
+		logging.Infof(ctx, "Failed to resume log cleanup: %v", err)
 	}
 
+	res := &jsonprotocol.RunnerCollectSysInfoResult{
+		LogDir:   logDir,
+		CrashDir: crashDir,
+		Warnings: logger.Logs(),
+	}
 	return json.NewEncoder(w).Encode(res)
 }
 

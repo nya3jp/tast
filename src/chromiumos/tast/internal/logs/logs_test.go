@@ -5,12 +5,18 @@
 package logs_test
 
 import (
+	"context"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"reflect"
 	"testing"
 
+	"github.com/google/go-cmp/cmp"
+
+	"chromiumos/tast/internal/logging"
+	"chromiumos/tast/internal/logging/loggingtest"
 	"chromiumos/tast/internal/logs"
 	"chromiumos/tast/testutil"
 )
@@ -18,21 +24,20 @@ import (
 // getUpdates passes sizes to CopyLogFileUpdates to get file updates within dir
 // and then returns the copied data as a map from relative filename to content,
 // along with a set containing all copied relative paths (including empty files and broken symlinks).
-func getUpdates(dir string, exclude []string, sizes logs.InodeSizes) (
-	updates map[string]string, paths map[string]struct{}, warnings map[string]error, err error) {
-	var dest string
-	if dest, err = ioutil.TempDir("", "tast_logs."); err != nil {
-		return nil, nil, nil, err
+func getUpdates(ctx context.Context, dir string, exclude []string, sizes logs.InodeSizes) (
+	updates map[string]string, paths map[string]struct{}, err error) {
+	dest, err := ioutil.TempDir("", "tast_logs.")
+	if err != nil {
+		return nil, nil, err
 	}
 	defer os.RemoveAll(dest)
 
-	warns, err := logs.CopyLogFileUpdates(dir, dest, exclude, sizes)
-	if err != nil {
-		return nil, nil, warns, err
+	if err := logs.CopyLogFileUpdates(ctx, dir, dest, exclude, sizes); err != nil {
+		return nil, nil, err
 	}
 
 	if updates, err = testutil.ReadFiles(dest); err != nil {
-		return nil, nil, warns, err
+		return nil, nil, err
 	}
 
 	paths = make(map[string]struct{})
@@ -42,10 +47,13 @@ func getUpdates(dir string, exclude []string, sizes logs.InodeSizes) (
 		}
 		return err
 	})
-	return updates, paths, warns, err
+	return updates, paths, err
 }
 
 func TestCopyUpdates(t *testing.T) {
+	logger := loggingtest.NewLogger(t, logging.LevelDebug)
+	ctx := logging.AttachLogger(context.Background(), logger)
+
 	sd := testutil.TempDir(t)
 	defer os.RemoveAll(sd)
 
@@ -66,17 +74,17 @@ func TestCopyUpdates(t *testing.T) {
 		"baked_goods/fresh_crumbs",
 		"toppings",
 	}
-	sizes, _, err := logs.GetLogInodeSizes(sd, exclude)
+	sizes, err := logs.GetLogInodeSizes(ctx, sd, exclude)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	updates, _, warnings, err := getUpdates(sd, exclude, sizes)
+	updates, _, err := getUpdates(ctx, sd, exclude, sizes)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(warnings) != 0 {
-		t.Errorf("getUpdates(%q, %v) returned warnings: %v", sd, sizes, warnings)
+	if len(logger.Logs()) != 0 {
+		t.Errorf("getUpdates(%q, %v) emitted warnings", sd, sizes)
 	}
 	if len(updates) != 0 {
 		t.Errorf("getUpdates(%q, %v) = %v; want none", sd, sizes, updates)
@@ -136,7 +144,7 @@ func TestCopyUpdates(t *testing.T) {
 		"baked_goods/breads.old": "ciabatta\n",
 		"baked_goods/breads":     "sourdough\n",
 	}
-	updates, paths, warnings, err := getUpdates(sd, exclude, sizes)
+	updates, paths, err := getUpdates(ctx, sd, exclude, sizes)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -149,14 +157,14 @@ func TestCopyUpdates(t *testing.T) {
 		}
 	}
 
-	// Expect 1 warning
-	truncated := filepath.Join(sd, "fish")
-	if _, ok := warnings[truncated]; ok {
-		delete(warnings, truncated)
-	} else {
-		t.Errorf("getUpdates(%q, %v) expected warning not found: %v", sd, sizes, warnings)
+	// Expect 1 warning.
+	got := logger.Logs()
+	want := []string{
+		fmt.Sprintf(
+			"%s is shorter than original (now 7, original 12), copying all instead of diff",
+			filepath.Join(sd, "fish")),
 	}
-	if len(warnings) != 0 {
-		t.Errorf("getUpdates(%q, %v) returned unexpected warnings: %v", sd, sizes, warnings)
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("getUpdates(%q, %v) emitted unexpected warnings (-got +want):\n%s", sd, sizes, diff)
 	}
 }

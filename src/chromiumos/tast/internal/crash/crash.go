@@ -6,11 +6,13 @@
 package crash
 
 import (
+	"context"
 	"os"
 	"path/filepath"
 	"strings"
 
 	"chromiumos/tast/fsutil"
+	"chromiumos/tast/internal/logging"
 )
 
 const (
@@ -107,13 +109,12 @@ func GetCrashes(dirs ...string) ([]string, error) {
 // If maxPerExec is positive, it limits the maximum number of files that will be copied
 // for each base executable. The returned warnings map contains non-fatal errors keyed by
 // crash file paths.
-func CopyNewFiles(dstDir string, newPaths, oldPaths []string) (warnings map[string]error, err error) {
+func CopyNewFiles(ctx context.Context, dstDir string, newPaths, oldPaths []string) error {
 	oldMap := make(map[string]struct{}, len(oldPaths))
 	for _, p := range oldPaths {
 		oldMap[p] = struct{}{}
 	}
 
-	warnings = make(map[string]error)
 	for _, sp := range newPaths {
 		if _, ok := oldMap[sp]; ok {
 			continue
@@ -125,10 +126,10 @@ func CopyNewFiles(dstDir string, newPaths, oldPaths []string) (warnings map[stri
 		}
 
 		if err := fsutil.CopyFile(sp, filepath.Join(dstDir, filepath.Base(sp))); err != nil {
-			warnings[sp] = err
+			logging.Infof(ctx, "%s: %v", sp, err)
 		}
 	}
-	return warnings, nil
+	return nil
 }
 
 // CopySystemInfo copies system information relevant to crash dumps (e.g. lsb-release) into dstDir.

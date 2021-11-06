@@ -58,6 +58,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"runtime"
+	"sort"
 	"strings"
 	"sync"
 
@@ -712,6 +713,19 @@ type TestHookState struct {
 // assume that deleting an 1GB file frees 1GB space.
 func (s *TestHookState) Purgeable() []string {
 	return append([]string(nil), s.testRoot.entityRoot.cfg.Purgeable...)
+}
+
+// CompanionDUTRoles returns an alphabetically sorted array of
+// companion DUT roles.
+func (s *TestHookState) CompanionDUTRoles() []string {
+	duts := s.testRoot.entityRoot.cfg.RemoteData.CompanionDUTs
+
+	roles := make([]string, 0, len(duts))
+	for k := range duts {
+		roles = append(roles, k)
+	}
+	sort.Strings(roles)
+	return roles
 }
 
 // FixtState is the state the framework passes to Fixture.SetUp and Fixture.TearDown.

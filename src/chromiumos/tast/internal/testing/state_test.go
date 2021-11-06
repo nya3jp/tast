@@ -848,6 +848,7 @@ func TestStateExports(t *gotesting.T) {
 			[]string{
 				"CloudStorage",
 				"CompanionDUT",
+				"CompanionDUTRoles",
 				"DUT",
 				"DataFileSystem",
 				"DataPath",

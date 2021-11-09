@@ -54,6 +54,10 @@ type Test struct {
 	// for commonly-used attributes.
 	Attr []string
 
+	// Labels contains freeform text labels describing the test.
+	// This should not be used other than Tast and tests.
+	Labels []string
+
 	// Data contains paths of data files needed by the test, relative to a "data" subdirectory within the
 	// directory in which Func is located.
 	Data []string
@@ -129,6 +133,10 @@ type Param struct {
 	// ExtraAttr contains freeform text attributes describing the test,
 	// in addition to Attr declared in the enclosing Test.
 	ExtraAttr []string
+
+	// ExtraLabels contains freeform text labels describing the test,
+	// in addition to Label declared in the enclosing Test.
+	ExtraLabels []string
 
 	// ExtraData contains paths of data files needed by the test case of this
 	// param in addition to Data declared in the enclosing Test.

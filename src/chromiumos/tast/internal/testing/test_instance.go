@@ -70,6 +70,7 @@ type TestInstance struct {
 	Desc         string
 	Contacts     []string
 	Attr         []string
+	Labels       []string
 	Data         []string
 	Vars         []string
 	VarDeps      []string
@@ -190,6 +191,8 @@ func newTestInstance(t *Test, p *Param) (*TestInstance, error) {
 		return nil, fmt.Errorf("timeout is negative (%v)", timeout)
 	}
 
+	labels := append(append([]string(nil), t.Labels...), p.ExtraLabels...)
+
 	return &TestInstance{
 		Name:         name,
 		Pkg:          info.pkg,
@@ -198,6 +201,7 @@ func newTestInstance(t *Test, p *Param) (*TestInstance, error) {
 		Desc:         t.Desc,
 		Contacts:     append([]string(nil), t.Contacts...),
 		Attr:         attrs,
+		Labels:       labels,
 		Data:         data,
 		Vars:         append([]string(nil), t.Vars...),
 		VarDeps:      append([]string(nil), t.VarDeps...),

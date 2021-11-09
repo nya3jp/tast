@@ -6,6 +6,7 @@
 package testcheck
 
 import (
+	"fmt"
 	"strings"
 	gotesting "testing"
 	"time"
@@ -103,4 +104,77 @@ func SoftwareDeps(t *gotesting.T, f TestFilter, requiredDeps []string) {
 			t.Errorf("%s: missing software dependency %q", tst.Name, d)
 		}
 	}
+}
+
+// EntityType represents a type of an entity, such as a test or a fixture.
+type EntityType int
+
+const (
+	// Test represents that an entity is a test.
+	Test EntityType = iota
+	// Fixture represents that an entity is a fixture.
+	Fixture
+)
+
+func (e EntityType) String() string {
+	switch e {
+	case Test:
+		return "test"
+	case Fixture:
+		return "fixture"
+	default:
+		return fmt.Sprintf("unknown(%d)", e)
+	}
+}
+
+// Entity represents a node in the dependency graph of tests and fixtures.
+type Entity struct {
+	Type   EntityType
+	Name   string
+	Parent string
+	Labels map[string]struct{}
+	Attrs  map[string]struct{}
+}
+
+// HasLabel returns whether the node has given label.
+func (e *Entity) HasLabel(name string) bool {
+	_, ok := e.Labels[name]
+	return ok
+}
+
+// HasAttr returns whether the node has given Attr.
+func (e *Entity) HasAttr(name string) bool {
+	_, ok := e.Attrs[name]
+	return ok
+}
+
+// Entities gives all dependency data of all tests.
+func Entities() map[string]Entity {
+	stringSet := func(list []string) map[string]struct{} {
+		m := make(map[string]struct{})
+		for _, v := range list {
+			m[v] = struct{}{}
+		}
+		return m
+	}
+	result := make(map[string]Entity)
+	for _, tst := range allTests() {
+		result[tst.Name] = Entity{
+			Type:   Test,
+			Name:   tst.Name,
+			Parent: tst.Fixture,
+			Labels: stringSet(tst.Labels),
+			Attrs:  stringSet(tst.Attr),
+		}
+	}
+	for n, f := range testing.GlobalRegistry().AllFixtures() {
+		result[n] = Entity{
+			Type:   Fixture,
+			Name:   n,
+			Parent: f.Parent,
+			Labels: stringSet(f.Labels),
+			Attrs:  nil,
+		}
+	}
+	return result
 }

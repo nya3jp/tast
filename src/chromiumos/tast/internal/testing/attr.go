@@ -188,6 +188,11 @@ Tests in this group are not used for build verification.
 		},
 	},
 	{
+		Name:     "arc-data-snapshot",
+		Contacts: []string{"pbond@google.com", "arc-commercial@google.com"},
+		Desc:     `A group of ARC data snapshot tests that run on DUTs.`,
+	},
+	{
 		Name:     "camerabox",
 		Contacts: []string{"chromeos-camera-eng@google.com"},
 		Desc:     `The group of camera tests to be run with Camerabox fixture.`,

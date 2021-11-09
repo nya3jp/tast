@@ -28,6 +28,8 @@ type CurrentEntity struct {
 	SoftwareDeps []string
 	// ServiceDeps is a list of service dependencies declared in the current entity.
 	ServiceDeps []string
+	// Labels is a list of labels declared in the current entity.
+	Labels []string
 }
 
 // WithCurrentEntity attaches CurrentEntity to context.Context. This function can't
@@ -69,4 +71,28 @@ func ServiceDeps(ctx context.Context) ([]string, bool) {
 		return nil, false
 	}
 	return append([]string(nil), ec.ServiceDeps...), true
+}
+
+// EnsureLabel ensures the current entity declares a label in its metadata.
+// Otherwise it will panic.
+func EnsureLabel(ctx context.Context, label string) {
+	ec, ok := ctx.Value(currentEntityKey{}).(*CurrentEntity)
+	if !ok {
+		panic("Context is not associated with an entity")
+	}
+	for _, s := range ec.Labels {
+		if s == label {
+			return
+		}
+	}
+	panic("Expected label " + label + " not found in the entity")
+}
+
+// Labels returns the labels of current entity.
+func Labels(ctx context.Context) (labels []string, ok bool) {
+	ec, ok := ctx.Value(currentEntityKey{}).(*CurrentEntity)
+	if !ok {
+		return nil, ok
+	}
+	return ec.Labels, ok
 }

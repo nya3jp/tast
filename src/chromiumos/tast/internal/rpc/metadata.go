@@ -16,6 +16,7 @@ import (
 const (
 	metadataSoftwareDeps    = "tast-testcontext-softwaredeps"
 	metadataHasSoftwareDeps = "tast-testcontext-hassoftwaredeps"
+	metadataLabels          = "tast-testcontext-labels"
 	metadataTiming          = "tast-timing"
 	metadataOutDir          = "tast-outdir"
 	metadataLogLastSeq      = "tast-log-last-seq"
@@ -25,8 +26,10 @@ const (
 // It is called on gRPC clients to forward CurrentEntity over gRPC.
 func outgoingMetadata(ctx context.Context) metadata.MD {
 	swDeps, hasSwDeps := testcontext.SoftwareDeps(ctx)
+	labels, _ := testcontext.Labels(ctx)
 	md := metadata.MD{
 		metadataSoftwareDeps: swDeps,
+		metadataLabels:       labels,
 	}
 	if hasSwDeps {
 		md[metadataHasSoftwareDeps] = []string{"1"}
@@ -39,10 +42,12 @@ func outgoingMetadata(ctx context.Context) metadata.MD {
 func incomingCurrentContext(md metadata.MD, outDir string) *testcontext.CurrentEntity {
 	hasSoftwareDeps := len(md[metadataHasSoftwareDeps]) > 0
 	softwareDeps := md[metadataSoftwareDeps]
+	labels := md[metadataLabels]
 	return &testcontext.CurrentEntity{
 		OutDir:          outDir,
 		HasSoftwareDeps: hasSoftwareDeps,
 		SoftwareDeps:    softwareDeps,
 		// ServiceDeps is not forwarded.
+		Labels: labels,
 	}
 }

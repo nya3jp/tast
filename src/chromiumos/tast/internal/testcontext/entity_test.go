@@ -9,6 +9,8 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/google/go-cmp/cmp"
+
 	"chromiumos/tast/internal/testcontext"
 )
 
@@ -80,5 +82,69 @@ func TestServiceDeps(t *testing.T) {
 		t.Error("ServiceDeps failed for context with CurrentEntity")
 	} else if !reflect.DeepEqual(serviceDeps, testServiceDeps) {
 		t.Errorf("ServiceDeps = %q; want %q", serviceDeps, testServiceDeps)
+	}
+}
+
+func TestEnsureLable(t *testing.T) {
+	const testLabel = "test_label"
+
+	ctx := context.Background()
+
+	var panicked bool
+	func() {
+		defer func() {
+			if recover() != nil {
+				panicked = true
+			}
+		}()
+		testcontext.EnsureLabel(ctx, testLabel)
+	}()
+	if !panicked {
+		t.Error("EnsureLabel unexpectedly succeeded for context with no labels")
+	}
+
+	ec := &testcontext.CurrentEntity{Labels: []string{"unrelated_label"}}
+	ctx = testcontext.WithCurrentEntity(ctx, ec)
+	panicked = false
+	func() {
+		defer func() {
+			if recover() != nil {
+				panicked = true
+			}
+		}()
+		testcontext.EnsureLabel(ctx, testLabel)
+	}()
+	if !panicked {
+		t.Error("EnsureLabel unexpectedly succeeded for context without expected label")
+	}
+
+	ec = &testcontext.CurrentEntity{Labels: []string{testLabel}}
+	ctx = testcontext.WithCurrentEntity(ctx, ec)
+	func() {
+		defer func() {
+			err := recover()
+			if err != nil {
+				t.Error("EnsureLabel unexpectedly failed for context with the expected label: ", err)
+			}
+		}()
+		testcontext.EnsureLabel(ctx, testLabel)
+	}()
+}
+
+func TestLabels(t *testing.T) {
+	testLabels := []string{"label1", "label2"}
+	ec := &testcontext.CurrentEntity{Labels: testLabels}
+	ctx := testcontext.WithCurrentEntity(context.Background(), ec)
+	labels, ok := testcontext.Labels(ctx)
+	if !ok {
+		t.Error("Labels not returned for a context associated with an entity")
+	} else if diff := cmp.Diff(labels, testLabels); diff != "" {
+		t.Errorf("Labels returned unexpected content (-got +want):\n%s", diff)
+	}
+
+	// Context not associated with an entity
+	ctx = context.Background()
+	if labels, ok := testcontext.Labels(ctx); ok {
+		t.Errorf("Labels returned for a context not associated with entity: %s", labels)
 	}
 }

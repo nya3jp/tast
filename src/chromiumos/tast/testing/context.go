@@ -61,3 +61,9 @@ func ContextOutDir(ctx context.Context) (dir string, ok bool) {
 func ContextSoftwareDeps(ctx context.Context) ([]string, bool) {
 	return testcontext.SoftwareDeps(ctx)
 }
+
+// ContextEnsureLabel ensures the current entity declares a label in its metadata.
+// Otherwise it will panic.
+func ContextEnsureLabel(ctx context.Context, label string) {
+	testcontext.EnsureLabel(ctx, label)
+}

@@ -186,6 +186,7 @@ func (st *InternalStack) Push(ctx context.Context, fixt *testing.FixtureInstance
 	ce := &testcontext.CurrentEntity{
 		OutDir:      outDir,
 		ServiceDeps: fixt.ServiceDeps,
+		Labels:      fixt.Labels,
 	}
 	ei := fixt.EntityProto()
 	fout := output.NewEntityStream(st.out, ei)
@@ -531,6 +532,8 @@ func (f *statefulFixture) newTestContext(ctx context.Context, troot *testing.Fix
 		ServiceDeps: f.fixt.ServiceDeps,
 		// SoftwareDeps is unavailable because fixtures can't declare software dependencies.
 		HasSoftwareDeps: false,
+		// Labels is from the fixture so that each user function can check them.
+		Labels: f.fixt.Labels,
 	}
 	return testing.NewContext(ctx, ce, sink)
 }

@@ -2117,3 +2117,148 @@ func TestRunPlan(t *gotesting.T) {
 		})
 	}
 }
+
+type fixtureSteps string
+
+const (
+	fixtureSetup    fixtureSteps = "setup"
+	fixtureReset    fixtureSteps = "reset"
+	fixturePreTest  fixtureSteps = "preTest"
+	fixturePostTest fixtureSteps = "postTest"
+	fixtureTearDown fixtureSteps = "tearDown"
+)
+
+var allFixtureSteps = []fixtureSteps{
+	fixtureSetup, fixtureReset, fixturePreTest, fixturePostTest, fixtureTearDown,
+}
+
+// recordingFixture is a FixtureImpl that records the labels passed to each function.
+type recordingFixture struct {
+	called        map[fixtureSteps]bool
+	msgs          map[fixtureSteps]string
+	expectedLabel string
+}
+
+func newRecordingFixture(label string) recordingFixture {
+	return recordingFixture{
+		called:        make(map[fixtureSteps]bool),
+		msgs:          make(map[fixtureSteps]string),
+		expectedLabel: label,
+	}
+}
+
+func (f *recordingFixture) SetUp(ctx context.Context, s *testing.FixtState) interface{} {
+	// Recover from panic to continue testing other entities and lifecycle methods.
+	defer func() {
+		if e := recover(); e != nil {
+			f.msgs[fixtureSetup] = e.(string)
+		}
+	}()
+	f.called[fixtureSetup] = true
+	testcontext.EnsureLabel(ctx, f.expectedLabel)
+	return nil
+}
+
+func (f *recordingFixture) Reset(ctx context.Context) error {
+	defer func() {
+		if e := recover(); e != nil {
+			f.msgs[fixtureReset] = e.(string)
+		}
+	}()
+	f.called[fixtureReset] = true
+	testcontext.EnsureLabel(ctx, f.expectedLabel)
+	return nil
+}
+
+func (f *recordingFixture) PreTest(ctx context.Context, s *testing.FixtTestState) {
+	defer func() {
+		if e := recover(); e != nil {
+			f.msgs[fixturePreTest] = e.(string)
+		}
+	}()
+	f.called[fixturePreTest] = true
+	testcontext.EnsureLabel(ctx, f.expectedLabel)
+}
+
+func (f *recordingFixture) PostTest(ctx context.Context, s *testing.FixtTestState) {
+	defer func() {
+		if e := recover(); e != nil {
+			f.msgs[fixturePostTest] = e.(string)
+		}
+	}()
+	f.called[fixturePostTest] = true
+	testcontext.EnsureLabel(ctx, f.expectedLabel)
+}
+
+func (f *recordingFixture) TearDown(ctx context.Context, s *testing.FixtState) {
+	defer func() {
+		if e := recover(); e != nil {
+			f.msgs[fixtureSetup] = e.(string)
+		}
+	}()
+	f.called[fixtureTearDown] = true
+	testcontext.EnsureLabel(ctx, f.expectedLabel)
+}
+
+// TestRunEnsureLabel verifies that Labels can be read in tests and fixtures via the context variable.
+func TestRunEnsureLabel(t *gotesting.T) {
+	fixtureLabel1 := "label in fixture 1"
+	fixtureLabel2 := "label in fixture 2"
+	fixtureLabel3 := "label in fixture 3"
+	testLabel := "label_in_test"
+	impl1 := newRecordingFixture(fixtureLabel1)
+	fixt1 := &testing.FixtureInstance{Name: "fixt1", Impl: &impl1, Labels: []string{fixtureLabel1}}
+	impl2 := newRecordingFixture(fixtureLabel2)
+	fixt2 := &testing.FixtureInstance{Name: "fixt2", Impl: &impl2, Labels: []string{fixtureLabel2}, Parent: "fixt1"}
+	impl3 := newRecordingFixture(fixtureLabel3)
+	fixt3 := &testing.FixtureInstance{Name: "fixt3", Impl: &impl3, Labels: []string{fixtureLabel3}, Parent: "fixt2"}
+	cfg := &Config{
+		Features: &protocol.Features{},
+		Fixtures: map[string]*testing.FixtureInstance{
+			fixt1.Name: fixt1,
+			fixt2.Name: fixt2,
+			fixt3.Name: fixt3,
+		},
+	}
+
+	// run 2 tests for the same fixture to run Reset() of the fixtures
+	tests := []*testing.TestInstance{{
+		Name:    "pkg.TestWithFixture1",
+		Func:    func(context.Context, *testing.State) {},
+		Timeout: time.Minute,
+		Fixture: "fixt3",
+		Labels:  []string{"irrelevant_label"},
+	}, {
+		Name: "pkg.TestWithFixture2",
+		Func: func(ctx context.Context, _ *testing.State) {
+			defer func() {
+				if err := recover(); err != nil {
+					t.Error("Failed to ensure label in TestWithFixture2:", err)
+				}
+			}()
+			testcontext.EnsureLabel(ctx, testLabel)
+		},
+		Timeout: time.Minute,
+		Fixture: "fixt3",
+		Labels:  []string{testLabel},
+	}}
+	_ = runTestsAndReadAll(t, tests, cfg)
+
+	for _, f := range []struct {
+		name string
+		fixt *recordingFixture
+	}{
+		{"1", &impl1},
+		{"2", &impl2},
+		{"3", &impl3},
+	} {
+		for _, step := range allFixtureSteps {
+			if called, _ := f.fixt.called[step]; !called {
+				t.Errorf("fixture %s step=%s not called", f.name, step)
+			}
+			if msg, panicked := f.fixt.msgs[step]; panicked {
+				t.Errorf("fixture %s step=%s failed: %s", f.name, step, msg)
+			}
+		}
+	}
+}

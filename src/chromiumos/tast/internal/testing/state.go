@@ -191,6 +191,7 @@ func NewTestEntityRoot(test *TestInstance, cfg *RuntimeConfig, out OutputStream,
 		HasSoftwareDeps: true,
 		SoftwareDeps:    test.SoftwareDeps,
 		ServiceDeps:     test.ServiceDeps,
+		Labels:          test.Labels,
 	}
 	return &TestEntityRoot{
 		entityRoot: NewEntityRoot(ce, test.Constraints(), cfg, out, condition),
@@ -268,6 +269,7 @@ func NewFixtTestEntityRoot(fixture *FixtureInstance, cfg *RuntimeConfig, out Out
 	ce := &testcontext.CurrentEntity{
 		OutDir:          cfg.OutDir, // test outDir
 		HasSoftwareDeps: false,
+		Labels:          fixture.Labels,
 	}
 	return &FixtTestEntityRoot{
 		entityRoot: NewEntityRoot(ce, fixture.Constraints(), cfg, out, condition),

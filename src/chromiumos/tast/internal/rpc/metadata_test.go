@@ -20,6 +20,7 @@ func TestOutgoingMetadata(t *gotesting.T) {
 		HasSoftwareDeps: true,
 		SoftwareDeps:    []string{"chrome", "android_p"},
 		ServiceDeps:     []string{"tast.core.Ping"},
+		Labels:          []string{"label"},
 	}
 
 	ctx := testcontext.WithCurrentEntity(context.Background(), ec)
@@ -28,6 +29,7 @@ func TestOutgoingMetadata(t *gotesting.T) {
 	exp := metadata.MD{
 		metadataSoftwareDeps:    ec.SoftwareDeps,
 		metadataHasSoftwareDeps: []string{"1"},
+		metadataLabels:          []string{"label"},
 	}
 	if diff := cmp.Diff(md, exp); diff != "" {
 		t.Errorf("outgoingMetadata returned unexpected MD (-got +want):\n%s", diff)
@@ -45,6 +47,7 @@ func TestOutgoingMetadataNoSoftwareDeps(t *gotesting.T) {
 
 	exp := metadata.MD{
 		metadataSoftwareDeps: nil,
+		metadataLabels:       nil,
 	}
 	if diff := cmp.Diff(md, exp); diff != "" {
 		t.Errorf("outgoingMetadata returned unexpected MD (-got +want):\n%s", diff)
@@ -56,6 +59,7 @@ func TestIncomingCurrentEntity(t *gotesting.T) {
 	md := metadata.MD{
 		metadataHasSoftwareDeps: []string{"1"},
 		metadataSoftwareDeps:    []string{"chrome", "android_p"},
+		metadataLabels:          []string{"label"},
 	}
 
 	ec := incomingCurrentContext(md, outDir)
@@ -64,6 +68,7 @@ func TestIncomingCurrentEntity(t *gotesting.T) {
 		OutDir:          outDir,
 		HasSoftwareDeps: true,
 		SoftwareDeps:    md[metadataSoftwareDeps],
+		Labels:          md[metadataLabels],
 	}
 	if diff := cmp.Diff(ec, exp); diff != "" {
 		t.Errorf("incomingCurrentContext returned unexpected CurrentEntity (-got +want):\n%s", diff)

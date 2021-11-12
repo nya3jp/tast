@@ -64,26 +64,27 @@ EOF
   exit 1
 }
 
-# Prints all checkable packages.
-get_check_pkgs() {
+# Prints all packages containing a file with the given suffix.
+get_pkgs_with_file_suffix() {
+  local suffix="$1"
+
   local dir
   for dir in "${SRCDIRS[@]}"; do
     if [[ -d "${dir}/src" ]]; then
       (cd "${dir}/src"
-       find -name '*.go' | xargs dirname | sort | uniq | cut -b 3-)
+       find . -name "*${suffix}" -exec dirname {} + | sort | uniq | cut -b 3-)
     fi
   done
 }
 
+# Prints all checkable packages.
+get_check_pkgs() {
+  get_pkgs_with_file_suffix ".go"
+}
+
 # Prints all testable packages.
 get_test_pkgs() {
-  local dir
-  for dir in "${SRCDIRS[@]}"; do
-    if [[ -d "${dir}/src" ]]; then
-      (cd "${dir}/src"
-       find -name '*_test.go' | xargs dirname | sort | uniq | cut -b 3-)
-    fi
-  done
+  get_pkgs_with_file_suffix "_test.go"
 }
 
 # Builds an executable package to a destination path.

@@ -46,6 +46,13 @@ func TestCompute(t *gotesting.T) {
 		shards []*sharding.Shard
 	}{
 		{
+			"single",
+			makeTests("AxyBCzEF"),
+			[]*sharding.Shard{
+				{Included: makeTests("AxyBCzEF"), Excluded: makeTests("")},
+			},
+		},
+		{
 			"even",
 			makeTests("ABCDEFGHI"),
 			[]*sharding.Shard{
@@ -67,18 +74,18 @@ func TestCompute(t *gotesting.T) {
 			"skips",
 			makeTests("AxByCzD"),
 			[]*sharding.Shard{
-				{Included: makeTests("xyzAB"), Excluded: makeTests("CD")},
-				{Included: makeTests("C"), Excluded: makeTests("xyzABD")},
-				{Included: makeTests("D"), Excluded: makeTests("xyzABC")},
+				{Included: makeTests("AxB"), Excluded: makeTests("yCzD")},
+				{Included: makeTests("yCz"), Excluded: makeTests("AxBD")},
+				{Included: makeTests("D"), Excluded: makeTests("AxByCz")},
 			},
 		},
 		{
 			"sparse",
 			makeTests("AxB"),
 			[]*sharding.Shard{
-				{Included: makeTests("xA"), Excluded: makeTests("B")},
-				{Included: makeTests("B"), Excluded: makeTests("xA")},
-				{Included: makeTests(""), Excluded: makeTests("xAB")},
+				{Included: makeTests("A"), Excluded: makeTests("xB")},
+				{Included: makeTests("x"), Excluded: makeTests("AB")},
+				{Included: makeTests("B"), Excluded: makeTests("Ax")},
 			},
 		},
 		{

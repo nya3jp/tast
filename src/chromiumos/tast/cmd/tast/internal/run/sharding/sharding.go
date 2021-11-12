@@ -22,42 +22,34 @@ type Shard struct {
 
 // Compute computes a set of tests to include/exclude in the specified shard.
 func Compute(tests []*driver.BundleEntity, shardIndex, totalShards int) *Shard {
-	var runs, skips []*driver.BundleEntity
-	for _, t := range tests {
-		if len(t.Resolved.GetSkip().GetReasons()) == 0 {
-			runs = append(runs, t)
+	var startIdx, endIdx, shardSpan int
+
+	if len(tests)%totalShards > 0 {
+		// If # of tests is not evenly divisible by totalShards, then
+		// shard span is rounded up.
+		// [Example] Tests: A,B,C,D,E,F,G  || totalShards=3 -> then shardSpan=3.
+		// Shard0=A,B,C; Shard1=D,E,F; Shard2=G
+		shardSpan = (len(tests) / totalShards) + 1
+	} else {
+		shardSpan = (len(tests) / totalShards)
+	}
+
+	startIdx = shardIndex * shardSpan
+	if shardIndex+1 == totalShards {
+		// This is the last index
+		endIdx = len(tests) - 1
+	} else {
+		endIdx = (shardIndex+1)*shardSpan - 1
+	}
+
+	var includes, excludes []*driver.BundleEntity
+	for i, test := range tests {
+		if i >= startIdx && i <= endIdx {
+			includes = append(includes, test)
 		} else {
-			skips = append(skips, t)
+			excludes = append(excludes, test)
 		}
 	}
 
-	startIndex, endIndex := shardIndices(len(runs), shardIndex, totalShards)
-
-	var includes, excludes []*driver.BundleEntity
-	// Shard 0 contains all skipped tests.
-	if shardIndex == 0 {
-		includes = skips
-	} else {
-		excludes = skips
-	}
-	includes = append(includes, runs[startIndex:endIndex]...)
-	excludes = append(append(excludes, runs[:startIndex]...), runs[endIndex:]...)
 	return &Shard{Included: includes, Excluded: excludes}
-}
-
-func shardIndices(numTests, shardIndex, totalShards int) (startIndex, endIndex int) {
-	numTestsPerShard := numTests / totalShards
-	extraTests := numTests % totalShards
-
-	// The number of tests would be different for different shard index.
-	if shardIndex < extraTests {
-		// First few shards will have one extra test.
-		numTestsPerShard++
-		startIndex = shardIndex * numTestsPerShard
-	} else {
-		startIndex = shardIndex*numTestsPerShard + extraTests
-	}
-
-	endIndex = startIndex + numTestsPerShard
-	return startIndex, endIndex
 }

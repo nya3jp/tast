@@ -7,7 +7,7 @@ package shutil_test
 import (
 	"testing"
 
-	"chromiumos/tast/shutil"
+	"go.chromium.org/tast/shutil"
 )
 
 func TestEscape(t *testing.T) {

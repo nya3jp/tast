@@ -72,7 +72,7 @@ get_pkgs_with_file_suffix() {
   for dir in "${SRCDIRS[@]}"; do
     if [[ -d "${dir}/src" ]]; then
       (cd "${dir}/src"
-       find . -name "*${suffix}" -exec dirname {} + | sort | uniq | cut -b 3-)
+      find -L . -name "*${suffix}" -exec dirname {} + | sort | uniq | cut -b 3-)
     fi
   done
 }

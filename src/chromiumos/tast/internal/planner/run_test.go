@@ -1278,17 +1278,35 @@ func TestRunFixtureRemoteSetUpFailure(t *gotesting.T) {
 func TestRunFixtureResetFailure(t *gotesting.T) {
 	fixt1 := &testing.FixtureInstance{
 		Name: "fixt1",
-		Impl: testfixture.New(testfixture.WithReset(func(ctx context.Context) error {
-			logging.Info(ctx, "Reset 1")
-			return errors.New("failure")
-		})),
+		Impl: testfixture.New(
+			testfixture.WithSetUp(func(ctx context.Context, s *testing.FixtState) interface{} {
+				logging.Info(ctx, "SetUp 1")
+				return nil
+			}),
+			testfixture.WithTearDown(func(ctx context.Context, s *testing.FixtState) {
+				logging.Info(ctx, "TearDown 1")
+			}),
+			testfixture.WithReset(func(ctx context.Context) error {
+				logging.Info(ctx, "Reset 1")
+				return errors.New("failure") // always fail
+			}),
+		),
 	}
 	fixt2 := &testing.FixtureInstance{
 		Name: "fixt2",
-		Impl: testfixture.New(testfixture.WithReset(func(ctx context.Context) error {
-			logging.Info(ctx, "Reset 2")
-			return nil
-		})),
+		Impl: testfixture.New(
+			testfixture.WithSetUp(func(ctx context.Context, s *testing.FixtState) interface{} {
+				logging.Info(ctx, "SetUp 2")
+				return nil
+			}),
+			testfixture.WithTearDown(func(ctx context.Context, s *testing.FixtState) {
+				logging.Info(ctx, "TearDown 2")
+			}),
+			testfixture.WithReset(func(ctx context.Context) error {
+				logging.Info(ctx, "Reset 2")
+				return nil // always succeed
+			}),
+		),
 		Parent: "fixt1",
 	}
 	cfg := &Config{
@@ -1318,6 +1336,13 @@ func TestRunFixtureResetFailure(t *gotesting.T) {
 			s.Log("Test 2")
 		},
 		Timeout: time.Minute,
+	}, {
+		Name:    "pkg.Test3",
+		Fixture: "fixt2",
+		Func: func(ctx context.Context, s *testing.State) {
+			s.Log("Test 3")
+		},
+		Timeout: time.Minute,
 	}}
 
 	msgs := runTestsAndReadAll(t, tests, cfg)
@@ -1329,23 +1354,45 @@ func TestRunFixtureResetFailure(t *gotesting.T) {
 		&protocol.EntityEndEvent{EntityName: tests[0].Name},
 		// fixt1 sets up successfully.
 		&protocol.EntityStartEvent{Entity: fixt1.EntityProto()},
+		&protocol.EntityLogEvent{EntityName: fixt1.Name, Text: "SetUp 1"},
 		// pkg.Test1 runs successfully.
 		&protocol.EntityStartEvent{Entity: tests[1].EntityProto()},
 		&protocol.EntityLogEvent{EntityName: tests[1].Name, Text: "Test 1"},
 		&protocol.EntityEndEvent{EntityName: tests[1].Name},
-		// fixt1 fails to reset. It is torn down.
+		// fixt1 fails to reset. It is restarted.
 		&protocol.EntityLogEvent{EntityName: fixt1.Name, Text: "Reset 1"},
 		&protocol.EntityLogEvent{EntityName: fixt1.Name, Text: "Fixture failed to reset: failure; recovering"},
+		&protocol.EntityLogEvent{EntityName: fixt1.Name, Text: "TearDown 1"},
 		&protocol.EntityEndEvent{EntityName: fixt1.Name},
+		// fixt1 and fixt2 set up successfully.
 		&protocol.EntityStartEvent{Entity: fixt1.EntityProto()},
-		// fixt2 sets up successfully.
+		&protocol.EntityLogEvent{EntityName: fixt1.Name, Text: "SetUp 1"},
 		&protocol.EntityStartEvent{Entity: fixt2.EntityProto()},
+		&protocol.EntityLogEvent{EntityName: fixt2.Name, Text: "SetUp 2"},
 		// pkg.Test2 runs successfully.
 		&protocol.EntityStartEvent{Entity: tests[2].EntityProto()},
 		&protocol.EntityLogEvent{EntityName: tests[2].Name, Text: "Test 2"},
 		&protocol.EntityEndEvent{EntityName: tests[2].Name},
-		// Fixtures are torn down.
+		// fixt1 fails to reset. fixt1 and fixt2 are restarted.
+		&protocol.EntityLogEvent{EntityName: fixt1.Name, Text: "Reset 1"},
+		&protocol.EntityLogEvent{EntityName: fixt1.Name, Text: "Fixture failed to reset: failure; recovering"},
+		&protocol.EntityLogEvent{EntityName: fixt2.Name, Text: "TearDown 2"},
 		&protocol.EntityEndEvent{EntityName: fixt2.Name},
+		&protocol.EntityLogEvent{EntityName: fixt1.Name, Text: "TearDown 1"},
+		&protocol.EntityEndEvent{EntityName: fixt1.Name},
+		// fixt1 and fixt2 set up successfully.
+		&protocol.EntityStartEvent{Entity: fixt1.EntityProto()},
+		&protocol.EntityLogEvent{EntityName: fixt1.Name, Text: "SetUp 1"},
+		&protocol.EntityStartEvent{Entity: fixt2.EntityProto()},
+		&protocol.EntityLogEvent{EntityName: fixt2.Name, Text: "SetUp 2"},
+		// pkg.Test3 runs successfully.
+		&protocol.EntityStartEvent{Entity: tests[3].EntityProto()},
+		&protocol.EntityLogEvent{EntityName: tests[3].Name, Text: "Test 3"},
+		&protocol.EntityEndEvent{EntityName: tests[3].Name},
+		// Fixtures are torn down.
+		&protocol.EntityLogEvent{EntityName: fixt2.Name, Text: "TearDown 2"},
+		&protocol.EntityEndEvent{EntityName: fixt2.Name},
+		&protocol.EntityLogEvent{EntityName: fixt1.Name, Text: "TearDown 1"},
 		&protocol.EntityEndEvent{EntityName: fixt1.Name},
 	}
 	if diff := cmp.Diff(msgs, want, protocmp.Transform()); diff != "" {

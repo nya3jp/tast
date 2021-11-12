@@ -443,7 +443,7 @@ func runFixtTree(ctx context.Context, tree *fixtTree, stack *fixture.InternalSta
 	// Thus we don't need to reset fixtures before running a next test.
 	// On returning from this function, if the fixture stack was green and the
 	// fixture tree was non-empty on entering this function, the stack is dirty.
-	for !tree.Empty() {
+	for !tree.Empty() && stack.Status() != fixture.StatusYellow {
 		if err := func() error {
 			// Create a fixture-scoped context.
 			ctx, cancel := context.WithCancel(ctx)

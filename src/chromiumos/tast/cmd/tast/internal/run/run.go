@@ -10,7 +10,6 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net"
-	"os"
 	"path/filepath"
 	"strings"
 	"time"
@@ -21,7 +20,6 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/devserver"
 	"chromiumos/tast/cmd/tast/internal/run/driver"
-	"chromiumos/tast/cmd/tast/internal/run/olddriver"
 	"chromiumos/tast/cmd/tast/internal/run/prepare"
 	"chromiumos/tast/cmd/tast/internal/run/reporting"
 	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
@@ -257,45 +255,6 @@ func runTests(ctx context.Context, cfg *config.Config, state *config.State, drv 
 		defer cancel(context.Canceled)
 	}
 
-	if os.Getenv("TAST_EXP_NEW_DRIVER") != "0" {
-		// Write results and collect system info after testing.
-		defer func() {
-			ctx := postCtx
-			if retErr != nil {
-				// Print the run error message before moving on to writing results.
-				logging.Infof(ctx, "Failed to run tests: %v", retErr)
-			}
-
-			// The DUT might have rebooted during tests. Try reconnecting
-			// before proceeding to CollectSysInfo.
-			if err := drv.ReconnectIfNeeded(ctx); err != nil {
-				logging.Infof(ctx, "Failed to reconnect to DUT: %v", err)
-			}
-
-			// We don't want to bail out before writing test results if sysinfo
-			// collection fails, but we'll still return the error later.
-			if err := drv.CollectSysInfo(ctx, initialSysInfo); err != nil {
-				logging.Infof(ctx, "Failed collecting system info: %v", err)
-				if retErr == nil {
-					retErr = errors.Wrap(err, "failed collecting system info")
-				}
-			}
-
-			if err := reporting.WriteLegacyResults(filepath.Join(cfg.ResDir(), reporting.LegacyResultsFilename), results); err != nil {
-				logging.Infof(ctx, "Failed writing %s: %v", reporting.LegacyResultsFilename, err)
-			}
-
-			if err := reporting.WriteJUnitXMLResults(filepath.Join(cfg.ResDir(), reporting.JUnitXMLFilename), results); err != nil {
-				logging.Infof(ctx, "Failed writing %s: %v", reporting.JUnitXMLFilename, err)
-			}
-
-			complete := retErr == nil
-			reporting.WriteResultsToLogs(ctx, results, cfg.ResDir(), complete)
-		}()
-
-		return drv.RunTests(ctx, shard.Included, dutInfo, state.ReportClient, state.RemoteDevservers)
-	}
-
 	// Write results and collect system info after testing.
 	defer func() {
 		ctx := postCtx
@@ -303,34 +262,35 @@ func runTests(ctx context.Context, cfg *config.Config, state *config.State, drv 
 			// Print the run error message before moving on to writing results.
 			logging.Infof(ctx, "Failed to run tests: %v", retErr)
 		}
-		complete := retErr == nil
 
 		// The DUT might have rebooted during tests. Try reconnecting
-		// before proceeding to WriteResults.
+		// before proceeding to CollectSysInfo.
 		if err := drv.ReconnectIfNeeded(ctx); err != nil {
 			logging.Infof(ctx, "Failed to reconnect to DUT: %v", err)
 		}
 
-		if err := olddriver.WriteResults(ctx, cfg, state, results, initialSysInfo, complete, drv); err != nil {
+		// We don't want to bail out before writing test results if sysinfo
+		// collection fails, but we'll still return the error later.
+		if err := drv.CollectSysInfo(ctx, initialSysInfo); err != nil {
+			logging.Infof(ctx, "Failed collecting system info: %v", err)
 			if retErr == nil {
-				retErr = errors.Wrap(err, "failed to write results")
-			} else {
-				logging.Infof(ctx, "Failed to write results: %v", err)
+				retErr = errors.Wrap(err, "failed collecting system info")
 			}
 		}
+
+		if err := reporting.WriteLegacyResults(filepath.Join(cfg.ResDir(), reporting.LegacyResultsFilename), results); err != nil {
+			logging.Infof(ctx, "Failed writing %s: %v", reporting.LegacyResultsFilename, err)
+		}
+
+		if err := reporting.WriteJUnitXMLResults(filepath.Join(cfg.ResDir(), reporting.JUnitXMLFilename), results); err != nil {
+			logging.Infof(ctx, "Failed writing %s: %v", reporting.JUnitXMLFilename, err)
+		}
+
+		complete := retErr == nil
+		reporting.WriteResultsToLogs(ctx, results, cfg.ResDir(), complete)
 	}()
 
-	lres, err := olddriver.RunLocalTests(ctx, cfg, state, dutInfo, drv)
-	results = append(results, lres...)
-	if err != nil {
-		// TODO(derat): While test runners are always supposed to report success even if tests fail,
-		// it'd probably be better to run both types here even if one fails.
-		return results, err
-	}
-
-	rres, err := olddriver.RunRemoteTests(ctx, cfg, state, dutInfo, drv.ConnectionSpec())
-	results = append(results, rres...)
-	return results, err
+	return drv.RunTests(ctx, shard.Included, dutInfo, state.ReportClient, state.RemoteDevservers)
 }
 
 // setUpGRPCServices sets up all Grpc Services in the current run.

@@ -7,6 +7,7 @@ package rpc
 import (
 	"context"
 	"io"
+	"sync"
 
 	"google.golang.org/grpc"
 
@@ -21,6 +22,10 @@ import (
 type remoteLoggingClient struct {
 	stopCh chan struct{} // closed when Close is called to stop the streaming RPC call
 	doneCh chan error    // closed when the streaming RPC call is done
+
+	mu      sync.Mutex        // protects other fields
+	lastSeq uint64            // last observed sequence ID
+	waiters []chan<- struct{} // channels waiting for logs
 }
 
 // newRemoteLoggingClient constructs remoteLoggingClient using conn. logger is
@@ -47,30 +52,64 @@ func newRemoteLoggingClient(ctx context.Context, conn *grpc.ClientConn) (*remote
 		st.CloseSend()
 	}()
 
-	// Start a goroutine to call logger for every received ReadLogsResponse.
-	go func() {
-		doneCh <- func() error {
-			for {
-				res, err := st.Recv()
-				if err != nil {
-					if err == io.EOF {
-						return nil
-					}
-					return err
-				}
-				logging.Info(ctx, res.Entry.Msg)
-			}
-		}()
-	}()
-
-	return &remoteLoggingClient{
+	l := &remoteLoggingClient{
 		stopCh: stopCh,
 		doneCh: doneCh,
-	}, nil
+	}
+
+	// Start a goroutine to call logger for every received ReadLogsResponse.
+	go l.runBackground(ctx, st)
+
+	return l, nil
+}
+
+// Wait waits until an entry of the specified sequence ID is received.
+func (l *remoteLoggingClient) Wait(ctx context.Context, seq uint64) error {
+	for {
+		l.mu.Lock()
+		if l.lastSeq >= seq {
+			l.mu.Unlock()
+			return nil
+		}
+		// Wait for next entry.
+		waiter := make(chan struct{})
+		l.waiters = append(l.waiters, waiter)
+		l.mu.Unlock()
+
+		select {
+		case <-ctx.Done():
+			return ctx.Err()
+		case <-waiter:
+		}
+	}
 }
 
 // Close finishes the remote logging.
 func (l *remoteLoggingClient) Close() error {
 	close(l.stopCh)
 	return <-l.doneCh
+}
+
+func (l *remoteLoggingClient) runBackground(ctx context.Context, st protocol.Logging_ReadLogsClient) {
+	l.doneCh <- func() error {
+		for {
+			res, err := st.Recv()
+			if err != nil {
+				if err == io.EOF {
+					return nil
+				}
+				return err
+			}
+
+			logging.Info(ctx, res.Entry.GetMsg())
+
+			l.mu.Lock()
+			l.lastSeq = res.Entry.GetSeq()
+			for _, w := range l.waiters {
+				close(w)
+			}
+			l.waiters = nil
+			l.mu.Unlock()
+		}
+	}()
 }

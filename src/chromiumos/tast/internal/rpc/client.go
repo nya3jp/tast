@@ -11,7 +11,9 @@ import (
 	"io"
 	"os"
 	"os/exec"
+	"strconv"
 	"strings"
+	"sync/atomic"
 
 	"github.com/shirou/gopsutil/process"
 	"golang.org/x/sys/unix"
@@ -207,7 +209,8 @@ func NewClient(ctx context.Context, r io.Reader, w io.Writer, req *protocol.Hand
 		return nil, errors.Errorf("bundle returned error: %s", res.Error.GetReason())
 	}
 
-	conn, err := NewPipeClientConn(ctx, r, w, append(clientOpts(), opts...)...)
+	lazyLog := newLazyRemoteLoggingClient()
+	conn, err := NewPipeClientConn(ctx, r, w, append(clientOpts(lazyLog), opts...)...)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to establish RPC connection")
 	}
@@ -222,6 +225,8 @@ func NewClient(ctx context.Context, r io.Reader, w io.Writer, req *protocol.Hand
 		return nil, errors.Wrap(err, "failed to start remote logging")
 	}
 
+	lazyLog.SetClient(log)
+
 	return &GenericClient{
 		conn: conn,
 		log:  log,
@@ -234,42 +239,45 @@ var alwaysAllowedServices = []string{
 }
 
 // clientOpts returns gRPC client-side interceptors to manipulate context.
-func clientOpts() []grpc.DialOption {
+func clientOpts(lazyLog *lazyRemoteLoggingClient) []grpc.DialOption {
 	// hook is called on every gRPC method call.
 	// It returns a Context to be passed to a gRPC invocation, a function to be
 	// called on the end of the gRPC method call to process trailers, and
 	// possibly an error.
 	hook := func(ctx context.Context, cc *grpc.ClientConn, method string) (context.Context, func(metadata.MD) error, error) {
-		if !isUserMethod(method) {
-			return ctx, func(metadata.MD) error { return nil }, nil
-		}
-
-		// Reject an outgoing RPC call if its service is not declared in ServiceDeps.
-		svcs, ok := testcontext.ServiceDeps(ctx)
-		if !ok {
-			return nil, nil, status.Errorf(codes.FailedPrecondition, "refusing to call %s because ServiceDeps is unavailable (using a wrong context?)", method)
-		}
-		svcs = append(svcs, alwaysAllowedServices...)
-		matched := false
-		for _, svc := range svcs {
-			if strings.HasPrefix(method, fmt.Sprintf("/%s/", svc)) {
-				matched = true
-				break
+		if isUserMethod(method) {
+			// Reject an outgoing RPC call if its service is not declared in ServiceDeps.
+			svcs, ok := testcontext.ServiceDeps(ctx)
+			if !ok {
+				return nil, nil, status.Errorf(codes.FailedPrecondition, "refusing to call %s because ServiceDeps is unavailable (using a wrong context?)", method)
 			}
-		}
-		if !matched {
-			return nil, nil, status.Errorf(codes.FailedPrecondition, "refusing to call %s because it is not declared in ServiceDeps", method)
+			svcs = append(svcs, alwaysAllowedServices...)
+			matched := false
+			for _, svc := range svcs {
+				if strings.HasPrefix(method, fmt.Sprintf("/%s/", svc)) {
+					matched = true
+					break
+				}
+			}
+			if !matched {
+				return nil, nil, status.Errorf(codes.FailedPrecondition, "refusing to call %s because it is not declared in ServiceDeps", method)
+			}
 		}
 
 		after := func(trailer metadata.MD) error {
 			var firstErr error
-			if err := processTimingTrailer(ctx, trailer.Get(metadataTiming)); err != nil && firstErr == nil {
+			if isUserMethod(method) {
+				if err := processTimingTrailer(ctx, trailer.Get(metadataTiming)); err != nil && firstErr == nil {
+					firstErr = err
+				}
+				if err := processOutDirTrailer(ctx, cc, trailer.Get(metadataOutDir)); err != nil && firstErr == nil {
+					firstErr = err
+				}
+			}
+			if err := processLoggingTrailer(ctx, lazyLog, trailer.Get(metadataLogLastSeq)); err != nil && firstErr == nil {
 				firstErr = err
 			}
-			if err := processOutDirTrailer(ctx, cc, trailer.Get(metadataOutDir)); err != nil && firstErr == nil {
-				firstErr = err
-			}
-			return nil
+			return firstErr
 		}
 		return metadata.NewOutgoingContext(ctx, outgoingMetadata(ctx)), after, nil
 	}
@@ -342,6 +350,25 @@ func processOutDirTrailer(ctx context.Context, cc *grpc.ClientConn, values []str
 	return nil
 }
 
+func processLoggingTrailer(ctx context.Context, lazyLog *lazyRemoteLoggingClient, values []string) error {
+	if len(values) == 0 {
+		return nil
+	}
+	if len(values) >= 2 {
+		return errors.Errorf("gRPC trailer %s contains %d values", metadataLogLastSeq, len(values))
+	}
+
+	seq, err := strconv.ParseUint(values[0], 10, 64)
+	if err != nil {
+		return errors.Wrapf(err, "failed to parse gRPC trailer %s", metadataLogLastSeq)
+	}
+
+	if err := lazyLog.Wait(ctx, seq); err != nil {
+		return errors.Wrap(err, "failed to wait for pending logs")
+	}
+	return nil
+}
+
 // clientStreamWithAfter wraps grpc.ClientStream with a function to be called
 // on the end of the streaming call.
 type clientStreamWithAfter struct {
@@ -365,6 +392,32 @@ func (s *clientStreamWithAfter) RecvMsg(m interface{}) error {
 		retErr = err
 	}
 	return retErr
+}
+
+// lazyRemoteLoggingClient wraps remoteLoggingClient for lazy initialization.
+// We have to install logging hooks on starting a gRPC connection, but
+// remoteLoggingClient can be started only after a gRPC connection is ready.
+// lazyRemoteLoggingClient allows logging hooks to access remoteLoggingClient
+// after it becomes available.
+// lazyRemoteLoggingClient is goroutine-safe.
+type lazyRemoteLoggingClient struct {
+	client atomic.Value
+}
+
+func newLazyRemoteLoggingClient() *lazyRemoteLoggingClient {
+	return &lazyRemoteLoggingClient{}
+}
+
+func (l *lazyRemoteLoggingClient) SetClient(client *remoteLoggingClient) {
+	l.client.Store(client)
+}
+
+func (l *lazyRemoteLoggingClient) Wait(ctx context.Context, seq uint64) error {
+	client, ok := l.client.Load().(*remoteLoggingClient)
+	if !ok {
+		return nil
+	}
+	return client.Wait(ctx, seq)
 }
 
 // killSession makes a best-effort attempt to kill all processes in session sid.

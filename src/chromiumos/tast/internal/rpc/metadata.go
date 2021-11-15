@@ -18,6 +18,7 @@ const (
 	metadataHasSoftwareDeps = "tast-testcontext-hassoftwaredeps"
 	metadataTiming          = "tast-timing"
 	metadataOutDir          = "tast-outdir"
+	metadataLogLastSeq      = "tast-log-last-seq"
 )
 
 // outgoingMetadata extracts CurrentEntity from ctx and converts it to metadata.MD.

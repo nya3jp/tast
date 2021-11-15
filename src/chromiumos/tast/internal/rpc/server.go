@@ -12,6 +12,7 @@ import (
 	"io/ioutil"
 	"os"
 	"os/signal"
+	"strconv"
 	"sync"
 
 	"golang.org/x/sys/unix"
@@ -56,7 +57,7 @@ func RunServer(r io.Reader, w io.Writer, svcs []*testing.Service, register func(
 	// Start a remote logging server. It is used to forward logs from
 	// user-defined gRPC services via side channels.
 	ls := newRemoteLoggingServer()
-	srv := grpc.NewServer(serverOpts(logging.NewFuncSink(ls.Log), &calls)...)
+	srv := grpc.NewServer(serverOpts(ls, &calls)...)
 
 	// Register core services.
 	reflection.Register(srv)
@@ -132,60 +133,64 @@ func (s *serverStreamWithContext) Context() context.Context {
 var _ grpc.ServerStream = (*serverStreamWithContext)(nil)
 
 // serverOpts returns gRPC server-side interceptors to manipulate context.
-func serverOpts(sink logging.Sink, calls *sync.WaitGroup) []grpc.ServerOption {
+func serverOpts(ls *remoteLoggingServer, calls *sync.WaitGroup) []grpc.ServerOption {
 	// hook is called on every gRPC method call.
 	// It returns a Context to be passed to a gRPC method, a function to be
 	// called on the end of the gRPC method call to compute trailers, and
 	// possibly an error.
 	hook := func(ctx context.Context, method string) (context.Context, func() metadata.MD, error) {
 		// Forward all uncaptured logs via LoggingService.
-		ctx = logging.AttachLogger(ctx, logging.NewSinkLogger(logging.LevelInfo, false, sink))
+		ctx = logging.AttachLogger(ctx, logging.NewSinkLogger(logging.LevelInfo, false, logging.NewFuncSink(ls.Log)))
 
-		// If the method call is for core services, there is no more thing to do.
-		if !isUserMethod(method) {
-			return ctx, func() metadata.MD { return nil }, nil
+		var outDir string
+		var tl *timing.Log
+		if isUserMethod(method) {
+			md, ok := metadata.FromIncomingContext(ctx)
+			if !ok {
+				return nil, nil, errors.New("metadata not available")
+			}
+
+			var err error
+			outDir, err = ioutil.TempDir("", "rpc-outdir.")
+			if err != nil {
+				return nil, nil, err
+			}
+
+			// Make the directory world-writable so that tests can create files as other users,
+			// and set the sticky bit to prevent users from deleting other users' files.
+			if err := os.Chmod(outDir, 0777|os.ModeSticky); err != nil {
+				return nil, nil, err
+			}
+
+			ctx = testcontext.WithCurrentEntity(ctx, incomingCurrentContext(md, outDir))
+			tl = timing.NewLog()
+			ctx = timing.NewContext(ctx, tl)
 		}
-
-		md, ok := metadata.FromIncomingContext(ctx)
-		if !ok {
-			return nil, nil, errors.New("metadata not available")
-		}
-
-		outDir, err := ioutil.TempDir("", "rpc-outdir.")
-		if err != nil {
-			return nil, nil, err
-		}
-
-		// Make the directory world-writable so that tests can create files as other users,
-		// and set the sticky bit to prevent users from deleting other users' files.
-		if err := os.Chmod(outDir, 0777|os.ModeSticky); err != nil {
-			return nil, nil, err
-		}
-
-		ctx = testcontext.WithCurrentEntity(ctx, incomingCurrentContext(md, outDir))
-		tl := timing.NewLog()
-		ctx = timing.NewContext(ctx, tl)
 
 		trailer := func() metadata.MD {
 			md := make(metadata.MD)
 
-			b, err := json.Marshal(tl)
-			if err != nil {
-				sink.Log(fmt.Sprint("Failed to marshal timing JSON: ", err))
-			} else {
-				md[metadataTiming] = []string{string(b)}
+			if isUserMethod(method) {
+				b, err := json.Marshal(tl)
+				if err != nil {
+					logging.Info(ctx, "Failed to marshal timing JSON: ", err)
+				} else {
+					md[metadataTiming] = []string{string(b)}
+				}
+
+				// Send metadataOutDir only if some files were saved in order to avoid extra round-trips.
+				if fis, err := ioutil.ReadDir(outDir); err != nil {
+					logging.Info(ctx, "gRPC output directory is corrupted: ", err)
+				} else if len(fis) == 0 {
+					if err := os.RemoveAll(outDir); err != nil {
+						logging.Info(ctx, "Failed to remove gRPC output directory: ", err)
+					}
+				} else {
+					md[metadataOutDir] = []string{outDir}
+				}
 			}
 
-			// Send metadataOutDir only if some files were saved in order to avoid extra round-trips.
-			if fis, err := ioutil.ReadDir(outDir); err != nil {
-				sink.Log(fmt.Sprint("gRPC output directory is corrupted: ", err))
-			} else if len(fis) == 0 {
-				if err := os.RemoveAll(outDir); err != nil {
-					sink.Log(fmt.Sprint("Failed to remove gRPC output directory: ", err))
-				}
-			} else {
-				md[metadataOutDir] = []string{outDir}
-			}
+			md[metadataLogLastSeq] = []string{strconv.FormatUint(ls.LastSeq(), 10)}
 			return md
 		}
 		return ctx, trailer, nil

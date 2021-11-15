@@ -25,4 +25,10 @@ message ReadLogsResponse {
   LogEntry entry = 1;
 }
 
-message LogEntry { string msg = 1; }
+message LogEntry {
+  // Msg is a logged message.
+  string msg = 1;
+  // Seq is an ID of the log entry. It is a sequentially increasing number
+  // starting from 1.
+  uint64 seq = 2;
+}

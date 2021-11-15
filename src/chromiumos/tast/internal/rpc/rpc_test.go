@@ -139,7 +139,9 @@ type channelSink struct {
 }
 
 func newChannelSink() (*channelSink, <-chan string) {
-	ch := make(chan string)
+	// Allocate an arbitrary large buffer to avoid unit tests from hanging
+	// when they don't read all messages.
+	ch := make(chan string, 1000)
 	return &channelSink{ch: ch}, ch
 }
 
@@ -324,8 +326,13 @@ func TestRPCForwardLogs(t *gotesting.T) {
 		t.Error("onPing not called")
 	}
 
-	if msg := <-logs; msg != exp {
-		t.Errorf("Got log %q; want %q", msg, exp)
+	select {
+	case msg := <-logs:
+		if msg != exp {
+			t.Errorf("Got log %q; want %q", msg, exp)
+		}
+	default:
+		t.Error("Logs unavailable immediately on RPC completion")
 	}
 }
 

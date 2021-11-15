@@ -34,7 +34,7 @@ func handleGetSysInfoState(ctx context.Context, scfg *StaticConfig, w io.Writer)
 	jres := jsonprotocol.RunnerGetSysInfoStateResultFromProto(res)
 	jres.Warnings = logger.Logs()
 
-	return json.NewEncoder(w).Encode(res)
+	return json.NewEncoder(w).Encode(jres)
 }
 
 // handleCollectSysInfo copies system information that was written after args.CollectSysInfo.InitialState
@@ -57,5 +57,5 @@ func handleCollectSysInfo(ctx context.Context, args *jsonprotocol.RunnerArgs, sc
 	jres := jsonprotocol.RunnerCollectSysInfoResultFromProto(res)
 	jres.Warnings = logger.Logs()
 
-	return json.NewEncoder(w).Encode(res)
+	return json.NewEncoder(w).Encode(jres)
 }

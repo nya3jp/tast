@@ -42,7 +42,7 @@
 
 # \bmitm\b              - clean
 
-\bnative
+# \bnative              - clean
 #    - see crbug/1135046
 
 # \bred.?line           - clean

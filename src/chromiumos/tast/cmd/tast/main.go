@@ -18,10 +18,6 @@ import (
 	"chromiumos/tast/internal/logging"
 )
 
-const (
-	signalChannelSize = 3 // capacity of channel used to intercept signals
-)
-
 // Version is the version info of this command. It is filled in during emerge.
 var Version = "<unknown>"
 

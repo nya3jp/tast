@@ -29,15 +29,6 @@ func (ri *releaseInfo) hasBuildInfo() bool {
 	return ri.board != "" || ri.builderPath != ""
 }
 
-// newEmptyReleaseInfo returns a releaseInfo with empty components.
-func newEmptyReleaseInfo() *releaseInfo {
-	return &releaseInfo{
-		board:         "",
-		builderPath:   "",
-		lacrosVersion: "",
-	}
-}
-
 // getReleaseInfo parses data (the contents of /etc/lsb-release or Crashpad annotations)
 // and returns information about the system image.
 func getReleaseInfo(data *breakpad.MinidumpReleaseInfo) (*releaseInfo, error) {

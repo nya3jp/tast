@@ -22,12 +22,11 @@ import (
 )
 
 const (
-	debugSuffix            = ".debug"   // suffix that Chrome OS build process adds to files with debugging symbols
-	mdMagic                = "MDMP"     // magic bytes occurring at the beginning of minidump files
-	mdMaxStreams           = 32         // max streams to read from minidump file
-	mdReleaseStreamType    = 0x47670005 // minidump stream type used for /etc/lsb-release data
-	mdReleaseStreamMaxSize = 4096       // max bytes to read from mdReleaseStreamType streams
-	mdCrashpadStreamType   = 0x43500001 // minidump stream type used for Crashpad metadata
+	debugSuffix          = ".debug"   // suffix that Chrome OS build process adds to files with debugging symbols
+	mdMagic              = "MDMP"     // magic bytes occurring at the beginning of minidump files
+	mdMaxStreams         = 32         // max streams to read from minidump file
+	mdReleaseStreamType  = 0x47670005 // minidump stream type used for /etc/lsb-release data
+	mdCrashpadStreamType = 0x43500001 // minidump stream type used for Crashpad metadata
 )
 
 // missingRegexp extracts module paths and IDs from messages logged by minidump_stackwalk.

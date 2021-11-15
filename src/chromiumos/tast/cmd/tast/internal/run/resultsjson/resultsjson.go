@@ -44,16 +44,6 @@ type Error struct {
 	Stack  string    `json:"stack"`
 }
 
-// BundleType indicates local or remote bundle type.
-type BundleType int
-
-const (
-	// LocalBundle is local bundle type.
-	LocalBundle BundleType = iota
-	// RemoteBundle is remote bundle type.
-	RemoteBundle
-)
-
 // Result represents the result of a single test.
 type Result struct {
 	// Test contains basic information about the test.
@@ -107,24 +97,4 @@ func NewTest(e *protocol.Entity) (*Test, error) {
 		Type:         typ,
 		Bundle:       e.GetLegacyData().GetBundle(),
 	}, nil
-}
-
-// NewTestFromEntityInfo creates Test from jsonprotocol.EntityInfo.
-func NewTestFromEntityInfo(ei *jsonprotocol.EntityInfo) *Test {
-	return &Test{
-		Name:         ei.Name,
-		Pkg:          ei.Pkg,
-		Desc:         ei.Desc,
-		Contacts:     ei.Contacts,
-		Attr:         ei.Attr,
-		Data:         ei.Data,
-		Vars:         ei.Vars,
-		VarDeps:      ei.VarDeps,
-		SoftwareDeps: ei.SoftwareDeps,
-		ServiceDeps:  ei.ServiceDeps,
-		Fixture:      ei.Fixture,
-		Timeout:      ei.Timeout,
-		Type:         ei.Type,
-		Bundle:       ei.Bundle,
-	}
 }

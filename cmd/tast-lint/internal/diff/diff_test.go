@@ -7,7 +7,7 @@ package diff_test
 import (
 	"testing"
 
-	"chromiumos/tast/cmd/tast-lint/internal/diff"
+	"go.chromium.org/tast/cmd/tast-lint/internal/diff"
 )
 
 func TestDiff(t *testing.T) {

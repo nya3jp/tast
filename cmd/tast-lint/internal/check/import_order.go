@@ -13,7 +13,7 @@ import (
 	"os/exec"
 	"regexp"
 
-	"chromiumos/tast/cmd/tast-lint/internal/diff"
+	"go.chromium.org/tast/cmd/tast-lint/internal/diff"
 )
 
 // commentInImportRegexp matches a comment inside an import block.

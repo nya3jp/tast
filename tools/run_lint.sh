@@ -9,7 +9,7 @@ readonly tast_root="${repo_root}/src/platform/tast"
 
 export GOBIN="${tast_root}/bin"
 
-if ! "${tast_root}/tools/go.sh" install chromiumos/tast/cmd/tast-lint; then
+if ! "${tast_root}/tools/go.sh" install go.chromium.org/tast/cmd/tast-lint; then
   echo "*** Failed to build and install tast-lint."
   exit 1
 fi

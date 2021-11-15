@@ -12,8 +12,8 @@ import (
 	"reflect"
 	"testing"
 
-	"chromiumos/tast/cmd/tast-lint/internal/git"
-	"chromiumos/tast/testutil"
+	"go.chromium.org/tast/cmd/tast-lint/internal/git"
+	"go.chromium.org/tast/testutil"
 )
 
 const (

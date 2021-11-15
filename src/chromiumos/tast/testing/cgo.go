@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 // Build this file only when cgo is enabled.
+//go:build cgo
 // +build cgo
 
 package testing

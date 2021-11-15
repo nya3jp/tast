@@ -25,6 +25,4 @@ message ReadLogsResponse {
   LogEntry entry = 1;
 }
 
-message LogEntry {
-  string msg = 1;
-}
+message LogEntry { string msg = 1; }

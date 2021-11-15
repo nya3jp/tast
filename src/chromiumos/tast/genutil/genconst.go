@@ -44,8 +44,11 @@ type GroupSpec struct {
 	Desc     string // human-readable group description used in comment
 }
 
+// LineParser is a type to parse a line.
 type LineParser func(line string) (name, sval string, ok bool)
 
+// GenerateConstants reads consts from input and generate output Go source file
+// using a text/template.
 func GenerateConstants(input, output string, params Params) error {
 	repoPath, err := gitRelPath(input)
 	if err != nil {

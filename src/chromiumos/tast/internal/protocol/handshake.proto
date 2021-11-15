@@ -26,9 +26,7 @@ message HandshakeResponse {
 }
 
 // HandshakeError describes a failed handshake result.
-message HandshakeError {
-  string reason = 1;
-}
+message HandshakeError { string reason = 1; }
 
 // BundleInitParams contains parameters needed to initialize bundles.
 message BundleInitParams {

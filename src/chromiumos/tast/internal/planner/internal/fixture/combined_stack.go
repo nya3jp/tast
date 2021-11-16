@@ -20,11 +20,11 @@ type CombinedStack struct {
 }
 
 // NewCombinedStack creates a new CombinedStack.
-func NewCombinedStack(ctx context.Context, parent *ExternalStack, child *InternalStack) (*CombinedStack, error) {
+func NewCombinedStack(parent *ExternalStack, child *InternalStack) *CombinedStack {
 	return &CombinedStack{
 		parent: parent,
 		child:  child,
-	}, nil
+	}
 }
 
 // Status returns the current status of the fixture stack.

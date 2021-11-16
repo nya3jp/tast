@@ -23,7 +23,7 @@ import (
 )
 
 // testEntitiesToRun returns a sorted list of tests to run for the given names.
-func testEntitiesToRun(allEntities []*protocol.ResolvedEntity, names []string) ([]*protocol.ResolvedEntity, error) {
+func testEntitiesToRun(allEntities []*protocol.ResolvedEntity, names []string) []*protocol.ResolvedEntity {
 	nameSet := make(map[string]struct{})
 	for _, name := range names {
 		nameSet[name] = struct{}{}
@@ -44,7 +44,7 @@ func testEntitiesToRun(allEntities []*protocol.ResolvedEntity, names []string) (
 		}
 		return tests[i].Entity.Name < tests[j].Entity.Name
 	})
-	return tests, nil
+	return tests
 }
 
 // runTestsRecursive runs tests per rcfg and scfg and writes responses to srv.
@@ -90,10 +90,7 @@ func runTestsRecursive(ctx context.Context, srv protocol.TestService_RunTestsSer
 	if err != nil {
 		return err
 	}
-	testEntities, err := testEntitiesToRun(es, rcfg.GetTests())
-	if err != nil {
-		return err
-	}
+	testEntities := testEntitiesToRun(es, rcfg.GetTests())
 
 	connEnv, err := setUpConnection(ctx, scfg, rcfg, bcfg)
 	if err != nil {

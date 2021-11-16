@@ -22,17 +22,17 @@ import (
 	"chromiumos/tast/internal/testing"
 )
 
-// GRPCClient is a GRPC-protocol client to test_runner.
-type GRPCClient struct {
+// Client is a GRPC-protocol client to test_runner.
+type Client struct {
 	cmd        genericexec.Cmd
 	params     *protocol.RunnerInitParams
 	msgTimeout time.Duration
 	hops       int
 }
 
-// NewGRPCClient creates a new GRPCClient.
-func NewGRPCClient(cmd genericexec.Cmd, params *protocol.RunnerInitParams, msgTimeout time.Duration, hops int) *GRPCClient {
-	return &GRPCClient{
+// New creates a new Client.
+func New(cmd genericexec.Cmd, params *protocol.RunnerInitParams, msgTimeout time.Duration, hops int) *Client {
+	return &Client{
 		cmd:        cmd,
 		params:     params,
 		msgTimeout: msgTimeout,
@@ -67,7 +67,7 @@ func (c *rpcConn) Conn() *grpc.ClientConn {
 }
 
 // dial connects to the test runner and returned an established gRPC connection.
-func (c *GRPCClient) dial(ctx context.Context, req *protocol.HandshakeRequest) (_ *rpcConn, retErr error) {
+func (c *Client) dial(ctx context.Context, req *protocol.HandshakeRequest) (_ *rpcConn, retErr error) {
 	proc, err := c.cmd.Interact(ctx, []string{"-rpc"})
 	if err != nil {
 		return nil, err
@@ -101,7 +101,7 @@ func (c *GRPCClient) dial(ctx context.Context, req *protocol.HandshakeRequest) (
 }
 
 // GetDUTInfo retrieves various DUT information needed for test execution.
-func (c *GRPCClient) GetDUTInfo(ctx context.Context, req *protocol.GetDUTInfoRequest) (res *protocol.GetDUTInfoResponse, retErr error) {
+func (c *Client) GetDUTInfo(ctx context.Context, req *protocol.GetDUTInfoRequest) (res *protocol.GetDUTInfoResponse, retErr error) {
 	defer func() {
 		if retErr != nil {
 			retErr = errors.Wrap(retErr, "getting DUT info")
@@ -119,7 +119,7 @@ func (c *GRPCClient) GetDUTInfo(ctx context.Context, req *protocol.GetDUTInfoReq
 }
 
 // GetSysInfoState collects the sysinfo state of the DUT.
-func (c *GRPCClient) GetSysInfoState(ctx context.Context, req *protocol.GetSysInfoStateRequest) (res *protocol.GetSysInfoStateResponse, retErr error) {
+func (c *Client) GetSysInfoState(ctx context.Context, req *protocol.GetSysInfoStateRequest) (res *protocol.GetSysInfoStateResponse, retErr error) {
 	defer func() {
 		if retErr != nil {
 			retErr = errors.Wrap(retErr, "getting sysinfo state")
@@ -138,7 +138,7 @@ func (c *GRPCClient) GetSysInfoState(ctx context.Context, req *protocol.GetSysIn
 
 // CollectSysInfo collects the sysinfo, considering diff from the given initial
 // sysinfo state.
-func (c *GRPCClient) CollectSysInfo(ctx context.Context, req *protocol.CollectSysInfoRequest) (res *protocol.CollectSysInfoResponse, retErr error) {
+func (c *Client) CollectSysInfo(ctx context.Context, req *protocol.CollectSysInfoRequest) (res *protocol.CollectSysInfoResponse, retErr error) {
 	defer func() {
 		if retErr != nil {
 			retErr = errors.Wrap(retErr, "collecting sysinfo")
@@ -157,7 +157,7 @@ func (c *GRPCClient) CollectSysInfo(ctx context.Context, req *protocol.CollectSy
 
 // DownloadPrivateBundles downloads and installs a private test bundle archive
 // corresponding to the target version, if one has not been installed yet.
-func (c *GRPCClient) DownloadPrivateBundles(ctx context.Context, req *protocol.DownloadPrivateBundlesRequest) (retErr error) {
+func (c *Client) DownloadPrivateBundles(ctx context.Context, req *protocol.DownloadPrivateBundlesRequest) (retErr error) {
 	defer func() {
 		if retErr != nil {
 			retErr = errors.Wrap(retErr, "downloading private bundles")
@@ -176,7 +176,7 @@ func (c *GRPCClient) DownloadPrivateBundles(ctx context.Context, req *protocol.D
 }
 
 // ListTests enumerates tests matching patterns.
-func (c *GRPCClient) ListTests(ctx context.Context, patterns []string, features *protocol.Features) (tests []*drivercore.BundleEntity, retErr error) {
+func (c *Client) ListTests(ctx context.Context, patterns []string, features *protocol.Features) (tests []*drivercore.BundleEntity, retErr error) {
 	defer func() {
 		if retErr != nil {
 			retErr = errors.Wrap(retErr, "listing tests")
@@ -221,7 +221,7 @@ func (c *GRPCClient) ListTests(ctx context.Context, patterns []string, features 
 }
 
 // ListFixtures enumerates all fixtures.
-func (c *GRPCClient) ListFixtures(ctx context.Context) (fixtures []*drivercore.BundleEntity, retErr error) {
+func (c *Client) ListFixtures(ctx context.Context) (fixtures []*drivercore.BundleEntity, retErr error) {
 	defer func() {
 		if retErr != nil {
 			retErr = errors.Wrap(retErr, "listing fixtures")

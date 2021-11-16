@@ -103,21 +103,7 @@ func (d *Driver) DefaultTimeout() time.Duration {
 	return d.cc.DefaultTimeout()
 }
 
-var useGRPC = os.Getenv("TAST_EXP_USE_GRPC") != "0"
-
-// runnerClient is an interface implemented by runnerclient.JSONClient and
-// runnerclient.GRPCClient.
-type runnerClient interface {
-	GetDUTInfo(ctx context.Context, req *protocol.GetDUTInfoRequest) (*protocol.GetDUTInfoResponse, error)
-	GetSysInfoState(ctx context.Context, req *protocol.GetSysInfoStateRequest) (*protocol.GetSysInfoStateResponse, error)
-	CollectSysInfo(ctx context.Context, req *protocol.CollectSysInfoRequest) (*protocol.CollectSysInfoResponse, error)
-	DownloadPrivateBundles(ctx context.Context, req *protocol.DownloadPrivateBundlesRequest) error
-	ListTests(ctx context.Context, patterns []string, features *protocol.Features) ([]*drivercore.BundleEntity, error)
-	ListFixtures(ctx context.Context) ([]*drivercore.BundleEntity, error)
-	RunTests(ctx context.Context, bcfg *protocol.BundleConfig, rcfg *protocol.RunConfig, out runnerclient.RunTestsOutput)
-}
-
-func (d *Driver) localClient() runnerClient {
+func (d *Driver) localClient() *runnerclient.Client {
 	var args []string
 	// The delve debugger attempts to write to a directory not on the stateful partition.
 	// This ensures it instead writes to the stateful partition.
@@ -140,19 +126,13 @@ func (d *Driver) localClient() runnerClient {
 
 	cmd := genericexec.CommandSSH(d.cc.Conn().SSHConn(), "env", args...)
 	params := &protocol.RunnerInitParams{BundleGlob: d.cfg.LocalBundleGlob()}
-	if useGRPC {
-		return runnerclient.NewGRPCClient(cmd, params, d.cfg.MsgTimeout(), 1)
-	}
-	return runnerclient.NewJSONClient(cmd, params, d.cfg.MsgTimeout(), 1)
+	return runnerclient.New(cmd, params, d.cfg.MsgTimeout(), 1)
 }
 
-func (d *Driver) remoteClient() runnerClient {
+func (d *Driver) remoteClient() *runnerclient.Client {
 	cmd := genericexec.CommandExec(d.cfg.RemoteRunner())
 	params := &protocol.RunnerInitParams{BundleGlob: d.cfg.RemoteBundleGlob()}
-	if useGRPC {
-		return runnerclient.NewGRPCClient(cmd, params, d.cfg.MsgTimeout(), 0)
-	}
-	return runnerclient.NewJSONClient(cmd, params, d.cfg.MsgTimeout(), 0)
+	return runnerclient.New(cmd, params, d.cfg.MsgTimeout(), 0)
 }
 
 func (d *Driver) remoteBundleClient(bundle string) *bundleclient.Client {

@@ -13,9 +13,7 @@
 package fakerunner
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -24,7 +22,6 @@ import (
 
 	"chromiumos/tast/internal/fakeexec"
 	"chromiumos/tast/internal/fakesshserver"
-	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/rpc"
 	"chromiumos/tast/internal/runner"
@@ -70,7 +67,6 @@ func New(cfg *Config) *Runner {
 // Use this method to install this as a fake local test runner.
 func (r *Runner) SSHHandlers(path string) []fakesshserver.Handler {
 	return []fakesshserver.Handler{
-		fakesshserver.ExactMatchHandler(fmt.Sprintf("exec env %s", path), r.RunJSON),
 		fakesshserver.ExactMatchHandler(fmt.Sprintf("exec env %s -rpc", path), r.RunGRPC),
 	}
 }
@@ -79,75 +75,12 @@ func (r *Runner) SSHHandlers(path string) []fakesshserver.Handler {
 // Call this method to install this as a fake remote test runner.
 func (r *Runner) Install(path string) (*fakeexec.Loopback, error) {
 	return fakeexec.CreateLoopback(path, func(args []string, stdin io.Reader, stdout, stderr io.WriteCloser) int {
-		if len(args) == 1 {
-			return r.RunJSON(stdin, stdout, stderr)
-		}
 		if len(args) == 2 && args[1] == "-rpc" {
 			return r.RunGRPC(stdin, stdout, stderr)
 		}
 		fmt.Fprintf(stderr, "ERROR: Unknown arguments: %s\n", shutil.EscapeSlice(args))
 		return 1
 	})
-}
-
-// RunJSON executes the fake test runner logic in JSON protocol mode.
-func (r *Runner) RunJSON(stdin io.Reader, stdout, stderr io.Writer) int {
-	var args jsonprotocol.RunnerArgs
-	if err := json.NewDecoder(stdin).Decode(&args); err != nil {
-		fmt.Fprintf(stderr, "ERROR: %v\n", err)
-		return 1
-	}
-
-	switch args.Mode {
-	case jsonprotocol.RunnerRunTestsMode:
-		rcfg, bcfg := args.RunTests.BundleArgs.Proto()
-		r.cfg.OnRunTestsInit(&protocol.RunTestsInit{
-			RunConfig: rcfg,
-		}, bcfg)
-		fallthrough
-	case jsonprotocol.RunnerListTestsMode, jsonprotocol.RunnerListFixturesMode:
-		argsData, _ := json.Marshal(&args) // should always succeed
-		return runner.Run(nil, bytes.NewBuffer(argsData), stdout, stderr, r.cfg.StaticConfig)
-	case jsonprotocol.RunnerGetDUTInfoMode:
-		req := args.GetDUTInfo.Proto()
-		res, err := r.cfg.GetDUTInfo(req)
-		if err != nil {
-			fmt.Fprintf(stderr, "ERROR: GetDUTInfo: %v\n", err)
-			return 1
-		}
-		json.NewEncoder(stdout).Encode(jsonprotocol.RunnerGetDUTInfoResultFromProto(res))
-		return 0
-	case jsonprotocol.RunnerGetSysInfoStateMode:
-		req := &protocol.GetSysInfoStateRequest{}
-		res, err := r.cfg.GetSysInfoState(req)
-		if err != nil {
-			fmt.Fprintf(stderr, "ERROR: GetSysInfoState: %v\n", err)
-			return 1
-		}
-		json.NewEncoder(stdout).Encode(jsonprotocol.RunnerGetSysInfoStateResultFromProto(res))
-		return 0
-	case jsonprotocol.RunnerCollectSysInfoMode:
-		req := args.CollectSysInfo.Proto()
-		res, err := r.cfg.CollectSysInfo(req)
-		if err != nil {
-			fmt.Fprintf(stderr, "ERROR: CollectSysInfo: %v\n", err)
-			return 1
-		}
-		json.NewEncoder(stdout).Encode(jsonprotocol.RunnerCollectSysInfoResultFromProto(res))
-		return 0
-	case jsonprotocol.RunnerDownloadPrivateBundlesMode:
-		req := args.DownloadPrivateBundles.Proto()
-		res, err := r.cfg.DownloadPrivateBundles(req)
-		if err != nil {
-			fmt.Fprintf(stderr, "ERROR: DownloadPrivateBundles: %v\n", err)
-			return 1
-		}
-		json.NewEncoder(stdout).Encode(jsonprotocol.RunnerDownloadPrivateBundlesResultFromProto(res))
-		return 0
-	default:
-		fmt.Fprintf(stderr, "ERROR: Not implemented mode: %v\n", args.Mode)
-		return 1
-	}
 }
 
 // RunGRPC executes the fake test runner logic in gRPC protocol mode.

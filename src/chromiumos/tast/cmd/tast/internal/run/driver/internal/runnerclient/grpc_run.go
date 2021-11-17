@@ -26,7 +26,7 @@ func (c *GRPCClient) RunTests(ctx context.Context, bcfg *protocol.BundleConfig, 
 		// This must come first since we have to call RunStart even if we
 		// fail to start running tests.
 		if err := out.RunStart(ctx); err != nil {
-			return err
+			return errors.Wrap(err, "starting test driver")
 		}
 
 		conn, err := c.dial(ctx, &protocol.HandshakeRequest{
@@ -37,14 +37,14 @@ func (c *GRPCClient) RunTests(ctx context.Context, bcfg *protocol.BundleConfig, 
 			},
 		})
 		if err != nil {
-			return err
+			return errors.Wrap(err, "starting test bundle")
 		}
 		defer conn.Close(ctx)
 
 		cl := protocol.NewTestServiceClient(conn.Conn())
 		stream, err := cl.RunTests(ctx)
 		if err != nil {
-			return err
+			return errors.Wrap(err, "starting test run")
 		}
 		defer stream.CloseSend()
 
@@ -52,7 +52,7 @@ func (c *GRPCClient) RunTests(ctx context.Context, bcfg *protocol.BundleConfig, 
 			RunConfig: rcfg,
 		}
 		if err := stream.Send(&protocol.RunTestsRequest{Type: &protocol.RunTestsRequest_RunTestsInit{RunTestsInit: init}}); err != nil {
-			return errors.Wrap(err, "starting test run")
+			return errors.Wrap(err, "initializing test run")
 		}
 
 		for {
@@ -61,7 +61,7 @@ func (c *GRPCClient) RunTests(ctx context.Context, bcfg *protocol.BundleConfig, 
 				return nil
 			}
 			if err != nil {
-				return err
+				return errors.Wrap(err, "connection to test bundle broken")
 			}
 			if err := handleEvent(ctx, res, out); err != nil {
 				return err

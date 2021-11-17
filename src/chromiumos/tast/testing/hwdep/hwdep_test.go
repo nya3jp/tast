@@ -585,3 +585,36 @@ func TestSmartAmpBootTimeCalibration(t *testing.T) {
 		&protocol.DeprecatedDeviceConfig{},
 		nil)
 }
+
+func TestDisplayPortConverter(t *testing.T) {
+	c := hwdep.DisplayPortConverter("PS175", "RTD2142")
+
+	for _, tc := range []struct {
+		features        *configpb.HardwareFeatures
+		expectSatisfied bool
+	}{
+		{&configpb.HardwareFeatures{}, false},
+		{&configpb.HardwareFeatures{
+			DpConverter: &configpb.HardwareFeatures_DisplayPortConverter{
+				Converters: []*configpb.Component_DisplayPortConverter{
+					&configpb.Component_DisplayPortConverter{Name: "RTD2141B"},
+				},
+			},
+		}, false},
+		{&configpb.HardwareFeatures{
+			DpConverter: &configpb.HardwareFeatures_DisplayPortConverter{
+				Converters: []*configpb.Component_DisplayPortConverter{
+					&configpb.Component_DisplayPortConverter{Name: "RTD2141B"},
+					&configpb.Component_DisplayPortConverter{Name: "PS175"},
+				},
+			},
+		}, true},
+	} {
+		verifyCondition(t, c, &protocol.DeprecatedDeviceConfig{},
+			tc.features, tc.expectSatisfied)
+	}
+	expectError(
+		t, c,
+		&protocol.DeprecatedDeviceConfig{},
+		nil)
+}

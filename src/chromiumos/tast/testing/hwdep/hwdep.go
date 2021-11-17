@@ -985,3 +985,23 @@ func SupportsV4L2StatefulVideoDecoding() Condition {
 func Lid() Condition {
 	return FormFactor(Clamshell, Convertible, Detachable)
 }
+
+// DisplayPortConverter is satisfied if a DP converter with one of the given names
+// is present.
+func DisplayPortConverter(names ...string) Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("HardwareFeatures is not given")
+		}
+
+		for _, name := range names {
+			for _, conv := range hf.GetDpConverter().GetConverters() {
+				if conv.GetName() == name {
+					return satisfied()
+				}
+			}
+		}
+		return unsatisfied("DP converter did not match")
+	}}
+}

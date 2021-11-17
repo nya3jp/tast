@@ -84,8 +84,9 @@ func (c *GRPCClient) dial(ctx context.Context, req *protocol.HandshakeRequest) (
 
 	opts := []grpc.DialOption{
 		grpc.WithKeepaliveParams(keepalive.ClientParameters{
+			// Note: Timeout is ignored if it is longer than Time.
 			Time:    c.msgTimeout,
-			Timeout: 5 * time.Second,
+			Timeout: c.msgTimeout,
 		}),
 	}
 	conn, err := rpc.NewClient(ctx, proc.Stdout(), proc.Stdin(), req, opts...)

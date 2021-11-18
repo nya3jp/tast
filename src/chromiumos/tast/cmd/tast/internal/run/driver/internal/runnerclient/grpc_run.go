@@ -82,6 +82,8 @@ func handleEvent(ctx context.Context, res *protocol.RunTestsResponse, out RunTes
 		return out.EntityError(ctx, t.EntityError)
 	case *protocol.RunTestsResponse_EntityEnd:
 		return out.EntityEnd(ctx, t.EntityEnd)
+	case *protocol.RunTestsResponse_Heartbeat:
+		return nil
 	default:
 		return errors.Errorf("unknown event type %T", res.GetType())
 	}

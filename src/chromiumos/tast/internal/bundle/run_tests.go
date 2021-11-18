@@ -15,6 +15,7 @@ import (
 	"sync"
 
 	"github.com/golang/protobuf/ptypes"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"chromiumos/tast/dut"
 	"chromiumos/tast/errors"
@@ -60,6 +61,9 @@ func runTests(ctx context.Context, srv protocol.TestService_RunTestsServer, cfg 
 	})
 
 	ew := newEventWriter(srv)
+
+	hbw := newHeartbeatWriter(ew)
+	defer hbw.Stop()
 
 	logger := logging.NewSinkLogger(logging.LevelInfo, false, logging.NewFuncSink(func(msg string) { ew.RunLog(msg) }))
 	ctx = logging.AttachLoggerNoPropagation(ctx, logger)
@@ -191,6 +195,14 @@ func (ew *eventWriter) EntityEnd(ei *protocol.Entity, skipReasons []string, timi
 		EntityName: ei.GetName(),
 		Skip:       skip,
 		TimingLog:  tlpb,
+	}}})
+}
+
+func (ew *eventWriter) Heartbeat() error {
+	ew.mu.Lock()
+	defer ew.mu.Unlock()
+	return ew.srv.Send(&protocol.RunTestsResponse{Type: &protocol.RunTestsResponse_Heartbeat{Heartbeat: &protocol.HeartbeatEvent{
+		Time: timestamppb.Now(),
 	}}})
 }
 

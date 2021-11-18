@@ -62,6 +62,9 @@ func runTestsRecursive(ctx context.Context, srv protocol.TestService_RunTestsSer
 
 	ew := newEventWriter(srv)
 
+	hbw := newHeartbeatWriter(ew)
+	defer hbw.Stop()
+
 	ctx = logging.AttachLoggerNoPropagation(ctx, logging.NewSinkLogger(logging.LevelInfo, false, logging.NewFuncSink(func(msg string) {
 		ew.RunLog(msg)
 	})))

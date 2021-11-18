@@ -68,6 +68,7 @@ message RunTestsResponse {
     EntityErrorEvent entity_error = 4;
     EntityEndEvent entity_end = 5;
     StackOperationRequest stack_operation = 6;
+    HeartbeatEvent heartbeat = 7;
   }
 }
 
@@ -415,3 +416,5 @@ enum StackStatus {
   RED = 1;
   YELLOW = 2;
 }
+
+message HeartbeatEvent { google.protobuf.Timestamp time = 1; }

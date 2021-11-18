@@ -86,12 +86,16 @@ var softwareFeatureDefs = map[string]string{
 	"igt":                     `("video_cards_amdgpu" || "video_cards_intel" || "video_cards_mediatek" || "video_cards_msm") && ("kernel-5_4" || "kernel-5_10")`,
 	"iioservice":              "iioservice",
 	"iwlwifi_rescan":          "iwlwifi_rescan",
-	"lacros":                  "!chromeless_tty && !rialto",
-	"lacros_stable":           `!chromeless_tty && !rialto && !"tast_vm" && !"betty" && !arm && !arm64`, // TODO(b/183969803): Remove this. TODO(crbug.com/1267118): Let ARM run as stable.
-	"lacros_unstable":         `!chromeless_tty && !rialto && ("tast_vm" || "betty" || arm || arm64)`,   // TODO(b/183969803): Remove this. TODO(crbug.com/1267118): Let ARM run as stable.
-	"lock_core_pattern":       `"kernel-3_18"`,
-	"manatee":                 "manatee",
-	"mbo":                     "mbo",
+	// Lacros variants.
+	// veyron does not support rootfs lacros entirely. b/204888294
+	// TODO(crbug.com/1267118): Let ARM run as stable
+	// TODO(b/183969803): Remove lacros_stable and lacros_unstable eventually.
+	"lacros":            `!chromeless_tty && !rialto && !("board:veyron_fievel" || "board:veyron_tiger")`,
+	"lacros_stable":     `!chromeless_tty && !rialto && !("board:veyron_fievel" || "board:veyron_tiger") && !"tast_vm" && !"betty" && !arm && !arm64`,
+	"lacros_unstable":   `!chromeless_tty && !rialto && !("board:veyron_fievel" || "board:veyron_tiger") && ("tast_vm" || "betty" || arm || arm64)`,
+	"lock_core_pattern": `"kernel-3_18"`,
+	"manatee":           "manatee",
+	"mbo":               "mbo",
 	// QEMU has implemented memfd_create, but we haven't updated
 	// to a release with the change (https://bugs.launchpad.net/qemu/+bug/1734792).
 	// Remove "|| betty || tast_vm" from list when we upgrade.

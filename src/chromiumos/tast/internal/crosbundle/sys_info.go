@@ -180,6 +180,7 @@ func writeSystemInfo(ctx context.Context, dir string) error {
 		"hostname.txt":     {"hostname"},
 		"uptime.txt":       {"uptime"},
 		"losetup.txt":      {"losetup"},
+		"lscpu.txt":        {"lscpu"},
 		"df.txt":           {"df", "-mP"},
 		"dmesg.txt":        {"dmesg"},
 	}

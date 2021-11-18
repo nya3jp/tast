@@ -12,6 +12,7 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
+	"sync"
 
 	"github.com/golang/protobuf/ptypes"
 
@@ -110,6 +111,7 @@ func runTests(ctx context.Context, srv protocol.TestService_RunTestsServer, cfg 
 type eventWriter struct {
 	srv protocol.TestService_RunTestsServer
 	lg  *syslog.Writer
+	mu  sync.Mutex // used to synchronize Send calls to srv
 }
 
 func newEventWriter(srv protocol.TestService_RunTestsServer) *eventWriter {
@@ -119,6 +121,8 @@ func newEventWriter(srv protocol.TestService_RunTestsServer) *eventWriter {
 }
 
 func (ew *eventWriter) RunLog(msg string) error {
+	ew.mu.Lock()
+	defer ew.mu.Unlock()
 	if ew.lg != nil {
 		ew.lg.Info(msg)
 	}
@@ -129,6 +133,8 @@ func (ew *eventWriter) RunLog(msg string) error {
 }
 
 func (ew *eventWriter) EntityStart(ei *protocol.Entity, outDir string) error {
+	ew.mu.Lock()
+	defer ew.mu.Unlock()
 	if ew.lg != nil {
 		ew.lg.Info(fmt.Sprintf("%s: ======== start", ei.Name))
 	}
@@ -140,6 +146,8 @@ func (ew *eventWriter) EntityStart(ei *protocol.Entity, outDir string) error {
 }
 
 func (ew *eventWriter) EntityLog(ei *protocol.Entity, msg string) error {
+	ew.mu.Lock()
+	defer ew.mu.Unlock()
 	if ew.lg != nil {
 		ew.lg.Info(fmt.Sprintf("%s: %s", ei.Name, msg))
 	}
@@ -151,6 +159,8 @@ func (ew *eventWriter) EntityLog(ei *protocol.Entity, msg string) error {
 }
 
 func (ew *eventWriter) EntityError(ei *protocol.Entity, e *protocol.Error) error {
+	ew.mu.Lock()
+	defer ew.mu.Unlock()
 	if ew.lg != nil {
 		loc := e.GetLocation()
 		ew.lg.Info(fmt.Sprintf("%s: Error at %s:%d: %s", ei.GetName(), filepath.Base(loc.GetFile()), loc.GetLine(), e.GetReason()))
@@ -163,6 +173,8 @@ func (ew *eventWriter) EntityError(ei *protocol.Entity, e *protocol.Error) error
 }
 
 func (ew *eventWriter) EntityEnd(ei *protocol.Entity, skipReasons []string, timingLog *timing.Log) error {
+	ew.mu.Lock()
+	defer ew.mu.Unlock()
 	if ew.lg != nil {
 		ew.lg.Info(fmt.Sprintf("%s: ======== end", ei.GetName()))
 	}

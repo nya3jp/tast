@@ -265,6 +265,7 @@ func (d *Driver) newConfigsForLocalTests(tests []*BundleEntity, state *protocol.
 		Dirs: &protocol.RunDirectories{
 			DataDir: d.cfg.LocalDataDir(),
 			OutDir:  d.cfg.LocalOutDir(),
+			TempDir: d.cfg.LocalTempDir(),
 		},
 		Features: d.cfg.Features(dutInfo.GetFeatures()),
 		ServiceConfig: &protocol.ServiceConfig{
@@ -352,6 +353,7 @@ func (d *Driver) newConfigsForRemoteTests(tests []*BundleEntity, dutInfo *protoc
 		Dirs: &protocol.RunDirectories{
 			DataDir: d.cfg.RemoteDataDir(),
 			OutDir:  d.cfg.RemoteOutDir(),
+			TempDir: d.cfg.RemoteTempDir(),
 		},
 		Features: d.cfg.Features(dutInfo.GetFeatures()),
 		ServiceConfig: &protocol.ServiceConfig{

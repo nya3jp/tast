@@ -9,6 +9,7 @@ import (
 	"context"
 	"encoding/json"
 	"io/ioutil"
+	"os"
 	"path/filepath"
 	gotesting "testing"
 	"time"
@@ -25,6 +26,7 @@ import (
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/internal/testing/testfixture"
 	"chromiumos/tast/internal/usercode"
+	"chromiumos/tast/testutil"
 )
 
 // resultsCmpOpts is a common options used to compare []resultsjson.Result.
@@ -501,5 +503,61 @@ func TestDriver_RunTests_WithRetries(t *gotesting.T) {
 		t.Errorf("Failed to parse %s: %v", reporting.StreamedResultsFilename, err)
 	} else if diff := cmp.Diff(results, jsonWant, resultsCmpOpts...); diff != "" {
 		t.Errorf("%s mismatch (-got +want):\n%s", reporting.StreamedResultsFilename, diff)
+	}
+}
+
+func TestDriver_RunTests_TempDirs(t *gotesting.T) {
+	tempRoot := testutil.TempDir(t)
+	localTemp := filepath.Join(tempRoot, "local")
+	remoteTemp := filepath.Join(tempRoot, "remote")
+
+	localTest := &testing.TestInstance{
+		Name:    "local.Tmp",
+		Timeout: time.Minute,
+		Func: func(ctx context.Context, s *testing.State) {
+			if td := os.TempDir(); td != localTemp {
+				t.Errorf("Unexpected local TMPDIR: got %s, want %s", td, localTemp)
+			}
+		},
+	}
+	localReg := testing.NewRegistry("bundle")
+	localReg.AddTestInstance(localTest)
+
+	remoteTest := &testing.TestInstance{
+		Name:    "remote.Tmp",
+		Timeout: time.Minute,
+		Func: func(ctx context.Context, s *testing.State) {
+			if td := os.TempDir(); td != remoteTemp {
+				t.Errorf("Unexpected remote TMPDIR: got %s, want %s", td, remoteTemp)
+			}
+		},
+	}
+	remoteReg := testing.NewRegistry("bundle")
+	remoteReg.AddTestInstance(remoteTest)
+
+	env := runtest.SetUp(
+		t,
+		runtest.WithLocalBundles(localReg),
+		runtest.WithRemoteBundles(remoteReg),
+	)
+	ctx := env.Context()
+	cfg := env.Config(func(cfg *config.MutableConfig) {
+		cfg.LocalTempDir = localTemp
+		cfg.RemoteTempDir = remoteTemp
+	})
+
+	drv, err := driver.New(ctx, cfg, cfg.Target(), nil)
+	if err != nil {
+		t.Fatalf("driver.New failed: %v", err)
+	}
+	defer drv.Close(ctx)
+
+	tests, err := drv.ListMatchedTests(ctx, nil)
+	if err != nil {
+		t.Fatalf("ListMatchedTests failed: %v", err)
+	}
+
+	if _, err := drv.RunTests(ctx, tests, nil, nil, nil); err != nil {
+		t.Errorf("RunTests failed: %v", err)
 	}
 }

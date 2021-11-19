@@ -93,12 +93,14 @@ type MutableConfig struct {
 	LocalBundleDir string
 	LocalDataDir   string
 	LocalOutDir    string
+	LocalTempDir   string
 
 	RemoteRunner    string
 	RemoteBundleDir string
 	PrimaryBundle   string
 	RemoteDataDir   string
 	RemoteOutDir    string
+	RemoteTempDir   string
 
 	TotalShards int
 	ShardIndex  int
@@ -219,6 +221,9 @@ func (c *Config) LocalDataDir() string { return c.m.LocalDataDir }
 // LocalOutDir is dir where intermediate outputs of local tests are written.
 func (c *Config) LocalOutDir() string { return c.m.LocalOutDir }
 
+// LocalTempDir is dir where temporary files of local tests are written.
+func (c *Config) LocalTempDir() string { return c.m.LocalTempDir }
+
 // RemoteRunner is path to executable that runs remote test bundles.
 func (c *Config) RemoteRunner() string { return c.m.RemoteRunner }
 
@@ -234,6 +239,9 @@ func (c *Config) RemoteDataDir() string { return c.m.RemoteDataDir }
 
 // RemoteOutDir is dir where intermediate outputs of remote tests are written.
 func (c *Config) RemoteOutDir() string { return c.m.RemoteOutDir }
+
+// RemoteTempDir is dir where temporary files of remote tests are written.
+func (c *Config) RemoteTempDir() string { return c.m.RemoteTempDir }
 
 // TotalShards is total number of shards to be used in a test run.
 func (c *Config) TotalShards() int { return c.m.TotalShards }
@@ -369,11 +377,13 @@ func (c *MutableConfig) SetFlags(f *flag.FlagSet) {
 	f.StringVar(&c.LocalBundleDir, "localbundledir", "", "directory containing builtin local test bundles")
 	f.StringVar(&c.LocalDataDir, "localdatadir", "", "directory containing builtin local test data")
 	f.StringVar(&c.LocalOutDir, "localoutdir", "", "directory where intermediate test outputs are written")
+	f.StringVar(&c.LocalTempDir, "localtempdir", "/usr/local/tmp/tast/run_tmp", "directory where local test temporary files are written")
 
 	// These are configurable since files may be installed elsewhere when running in the lab.
 	f.StringVar(&c.RemoteRunner, "remoterunner", "", "executable that runs remote test bundles")
 	f.StringVar(&c.RemoteBundleDir, "remotebundledir", "", "directory containing builtin remote test bundles")
 	f.StringVar(&c.RemoteDataDir, "remotedatadir", "", "directory containing builtin remote test data")
+	f.StringVar(&c.RemoteTempDir, "remotetempdir", "", "directory where remote test temporary files are written")
 
 	// Both listing and running test requires checking dependency due to sharding.
 	// This flag is only used for testing or debugging purpose.

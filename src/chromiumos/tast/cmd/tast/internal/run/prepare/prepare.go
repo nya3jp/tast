@@ -45,9 +45,8 @@ func Prepare(ctx context.Context, cfg *config.Config, primaryDriver *driver.Driv
 		return fmt.Errorf("failed to prepare primary DUT %s: %v", cfg.Target(), err)
 	}
 
-	for _, dut := range cfg.CompanionDUTs() {
-		// TODO: b/199942055 -- add servo support when we support servo in multi-DUT case.
-		companionDriver, err := driver.New(ctx, cfg, dut, nil)
+	for role, dut := range cfg.CompanionDUTs() {
+		companionDriver, err := driver.New(ctx, cfg, dut, role)
 		if err != nil {
 			return fmt.Errorf("failed to connect to companion DUT %s: %v", dut, err)
 		}

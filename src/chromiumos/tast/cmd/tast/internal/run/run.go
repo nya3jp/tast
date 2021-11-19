@@ -56,17 +56,7 @@ func Run(ctx context.Context, cfg *config.Config, state *config.DeprecatedState)
 		defer es.Close()
 	}
 
-	var dutAction driver.DUTAction
-	varTable := cfg.TestVars()
-	if servoSpec, ok := varTable["servo"]; ok {
-		var err error
-		dutAction, err = driver.NewDUTActionServo(cfg, servoSpec)
-		if err != nil {
-			logging.Info(ctx, "Error in starting a servo connection: ", err)
-		}
-	}
-
-	drv, err := driver.New(ctx, cfg, cfg.Target(), dutAction)
+	drv, err := driver.New(ctx, cfg, cfg.Target(), "")
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to connect to target")
 	}

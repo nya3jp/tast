@@ -36,7 +36,7 @@ func TestDriver_DownloadPrivateBundles_Disabled(t *testing.T) {
 		cfg.BuildArtifactsURL = "gs://build-artifacts/foo/bar"
 	})
 
-	drv, err := driver.New(ctx, cfg, cfg.Target(), nil)
+	drv, err := driver.New(ctx, cfg, cfg.Target(), "")
 	if err != nil {
 		t.Fatalf("driver.New failed: %v", err)
 	}
@@ -75,7 +75,7 @@ func TestDriver_DownloadPrivateBundles_Devservers(t *testing.T) {
 		cfg.BuildArtifactsURL = buildArtifactsURL
 	})
 
-	drv, err := driver.New(ctx, cfg, cfg.Target(), nil)
+	drv, err := driver.New(ctx, cfg, cfg.Target(), "")
 	if err != nil {
 		t.Fatalf("driver.New failed: %v", err)
 	}
@@ -118,7 +118,7 @@ func TestDriver_DownloadPrivateBundles_EphemeralDevserver(t *testing.T) {
 		cfg.BuildArtifactsURL = buildArtifactsURL
 	})
 
-	drv, err := driver.New(ctx, cfg, cfg.Target(), nil)
+	drv, err := driver.New(ctx, cfg, cfg.Target(), "")
 	if err != nil {
 		t.Fatalf("driver.New failed: %v", err)
 	}
@@ -192,7 +192,7 @@ func TestDriver_DownloadPrivateBundles_TLW(t *testing.T) {
 		cfg.BuildArtifactsURL = buildArtifactsURL
 	})
 
-	drv, err := driver.New(ctx, cfg, cfg.Target(), nil)
+	drv, err := driver.New(ctx, cfg, cfg.Target(), "")
 	if err != nil {
 		t.Fatalf("driver.New failed: %v", err)
 	}

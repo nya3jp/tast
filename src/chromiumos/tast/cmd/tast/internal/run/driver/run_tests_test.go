@@ -74,7 +74,7 @@ func TestDriver_RunTests(t *gotesting.T) {
 	ctx := env.Context()
 	cfg := env.Config(func(cfg *config.MutableConfig) {})
 
-	drv, err := driver.New(ctx, cfg, cfg.Target(), nil)
+	drv, err := driver.New(ctx, cfg, cfg.Target(), "")
 	if err != nil {
 		t.Fatalf("driver.New failed: %v", err)
 	}
@@ -183,7 +183,7 @@ func TestDriver_RunTests_RemoteFixture(t *gotesting.T) {
 		cfg.PrimaryBundle = "bundle1"
 	})
 
-	drv, err := driver.New(ctx, cfg, cfg.Target(), nil)
+	drv, err := driver.New(ctx, cfg, cfg.Target(), "")
 	if err != nil {
 		t.Fatalf("driver.New failed: %v", err)
 	}
@@ -245,7 +245,7 @@ func TestDriver_RunTests_RetryTests(t *gotesting.T) {
 	ctx := env.Context()
 	cfg := env.Config(nil)
 
-	drv, err := driver.New(ctx, cfg, cfg.Target(), nil)
+	drv, err := driver.New(ctx, cfg, cfg.Target(), "")
 	if err != nil {
 		t.Fatalf("driver.New failed: %v", err)
 	}
@@ -312,7 +312,7 @@ func TestDriver_RunTests_MaxTestFailures(t *gotesting.T) {
 		cfg.MaxTestFailures = 2
 	})
 
-	drv, err := driver.New(ctx, cfg, cfg.Target(), nil)
+	drv, err := driver.New(ctx, cfg, cfg.Target(), "")
 	if err != nil {
 		t.Fatalf("driver.New failed: %v", err)
 	}
@@ -403,7 +403,7 @@ func TestDriver_RunTests_WithRetries(t *gotesting.T) {
 		cfg.Retries = 1
 	})
 
-	drv, err := driver.New(ctx, cfg, cfg.Target(), nil)
+	drv, err := driver.New(ctx, cfg, cfg.Target(), "")
 	if err != nil {
 		t.Fatalf("driver.New failed: %v", err)
 	}
@@ -546,7 +546,7 @@ func TestDriver_RunTests_TempDirs(t *gotesting.T) {
 		cfg.RemoteTempDir = remoteTemp
 	})
 
-	drv, err := driver.New(ctx, cfg, cfg.Target(), nil)
+	drv, err := driver.New(ctx, cfg, cfg.Target(), "")
 	if err != nil {
 		t.Fatalf("driver.New failed: %v", err)
 	}

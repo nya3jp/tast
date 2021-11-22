@@ -590,6 +590,11 @@ Parallels boot-up testing. Otherwise the same as group:crosbolt.`,
 		Contacts: []string{"lamzin@google.com", "cros-oem-services-team@google.com"},
 		Desc:     `A group of Wilco tests that require a solomon dock connected to the DUT.`,
 	},
+	{
+		Name:     "autoupdate",
+		Contacts: []string{"gabormagda@google.com", "cros-engprod-muc@google.com"},
+		Desc:     `A group of tests that require the installation of a new OS image version.`,
+	},
 }
 
 // validGroupMap is the name-keyed map of validGroups.

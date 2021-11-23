@@ -211,20 +211,27 @@ message RunDirectories {
 message ServiceConfig {
   // Devservers is a list of devserver URLs (e.g. "https://1.2.3.4:5678").
   // Devservers are used to download data files from Google Cloud Storage with
-  // cache. It is ignored if TlwServer is available.
+  // cache. It is ignored if DUT Server is available.
   repeated string devservers = 1;
 
   // TlwServer is an address of a TLW server (e.g. "1.2.3.4:5678").
   // When this is set, it takes precedence over Devservers.
+  // Note: Obsolete.
   string tlw_server = 2;
 
   // TlwSelfName is a "DUT name" that identifies the current machine.
   // It is empty for remote tests.
+  // Note: Obsolete.
   string tlw_self_name = 3;
 
   // TlwPrimaryTargetName is a "DUT name" of the primary target.
   // It is empty if a primary target doesn't exist.
+  // Note: Obsolete.
   string tlw_primary_target_name = 4;
+
+  // DutServer is an address of a DUT server (e.g. "1.2.3.4:5678").
+  // When this is set, it takes precedence over Devservers.
+  string dut_server = 5;
 }
 
 // DownloadMode specifies a strategy to download external data files.

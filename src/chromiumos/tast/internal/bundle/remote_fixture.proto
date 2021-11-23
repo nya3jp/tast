@@ -87,6 +87,8 @@ message RunFixtureConfig {
   }
   PlannerDownloadMode download_mode = 16;
 
+  string dut_server = 17;
+
   // TODO(oka): add device_config and hardware_features to support hardware
   // deps. Hint: config/api/topology.proto and device/config.proto define them.
 

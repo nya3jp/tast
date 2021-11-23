@@ -669,6 +669,7 @@ func newDownloader(ctx context.Context, pcfg *Config) (*downloader, error) {
 		pcfg.Service.GetDevservers(),
 		pcfg.Service.GetTlwServer(),
 		pcfg.Service.GetTlwSelfName(),
+		pcfg.Service.GetDutServer(),
 	)
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed to create new client [devservers=%v, TLWServer=%s]",
@@ -749,6 +750,7 @@ func runTestWithConfig(ctx context.Context, tcfg *testConfig, pcfg *Config, stac
 			pcfg.Service.GetDevservers(),
 			pcfg.Service.GetTlwServer(),
 			pcfg.Service.GetTlwSelfName(),
+			pcfg.Service.GetDutServer(),
 			pcfg.DataFile.GetBuildArtifactsUrl(),
 		),
 		RemoteData: pcfg.RemoteData,

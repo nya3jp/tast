@@ -23,16 +23,32 @@ import (
 // SSH connection.
 type Services struct {
 	tlwForwarder          *ssh.Forwarder
+	dutServerForwarder    *ssh.Forwarder
 	ephemeralDevserver    *devserver.Ephemeral
 	ephemeralDevserverURL string
 }
 
-func startServices(ctx context.Context, cfg *config.Config, conn *ssh.Conn) (svcs *Services, retErr error) {
+func startServices(ctx context.Context, cfg *config.Config, conn *ssh.Conn, dutServer string) (svcs *Services, retErr error) {
 	var tlwForwarder *ssh.Forwarder
+	var dutServerForwarder *ssh.Forwarder
 	var ephemeralDevserver *devserver.Ephemeral
 	var ephemeralDevserverURL string
 
-	if cfg.TLWServer() != "" {
+	if dutServer != "" {
+		var err error
+		dutServerForwarder, err = conn.ForwardRemoteToLocal("tcp", "127.0.0.1:0", dutServer, func(e error) {
+			logging.Infof(ctx, "DUT server port forwarding failed: %v", e)
+		})
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to set up remote-to-local port forwarding for DUT server")
+		}
+		defer func() {
+			if retErr != nil {
+				dutServerForwarder.Close()
+			}
+		}()
+	} else if cfg.TLWServer() != "" {
+		// TODO: remove TLW after we make sure we don't need TLW server anymore.
 		var err error
 		tlwForwarder, err = conn.ForwardRemoteToLocal("tcp", "127.0.0.1:0", cfg.TLWServer(), func(e error) {
 			logging.Infof(ctx, "TLW server port forwarding failed: %v", e)
@@ -68,6 +84,7 @@ func startServices(ctx context.Context, cfg *config.Config, conn *ssh.Conn) (svc
 
 	return &Services{
 		tlwForwarder:          tlwForwarder,
+		dutServerForwarder:    dutServerForwarder,
 		ephemeralDevserver:    ephemeralDevserver,
 		ephemeralDevserverURL: ephemeralDevserverURL,
 	}, nil
@@ -75,6 +92,11 @@ func startServices(ctx context.Context, cfg *config.Config, conn *ssh.Conn) (svc
 
 func (s *Services) close() error {
 	var firstErr error
+	if s.dutServerForwarder != nil {
+		if err := s.dutServerForwarder.Close(); err != nil && firstErr == nil {
+			firstErr = err
+		}
+	}
 	if s.tlwForwarder != nil {
 		if err := s.tlwForwarder.Close(); err != nil && firstErr == nil {
 			firstErr = err
@@ -86,6 +108,15 @@ func (s *Services) close() error {
 		}
 	}
 	return firstErr
+}
+
+// DUTServerAddr returns the address of port-forwarded TLW service accessible from the
+// target, if available.
+func (s *Services) DUTServerAddr() (addr net.Addr, ok bool) {
+	if s.dutServerForwarder == nil {
+		return nil, false
+	}
+	return s.dutServerForwarder.ListenAddr(), true
 }
 
 // TLWAddr returns the address of port-forwarded TLW service accessible from the

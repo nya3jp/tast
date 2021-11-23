@@ -105,6 +105,7 @@ func (c *JSONClient) DownloadPrivateBundles(ctx context.Context, req *protocol.D
 		Mode: jsonprotocol.RunnerDownloadPrivateBundlesMode,
 		DownloadPrivateBundles: &jsonprotocol.RunnerDownloadPrivateBundlesArgs{
 			Devservers:        req.GetServiceConfig().GetDevservers(),
+			DUTServer:         req.GetServiceConfig().GetDutServer(),
 			TLWServer:         req.GetServiceConfig().GetTlwServer(),
 			DUTName:           req.GetServiceConfig().GetTlwSelfName(),
 			BuildArtifactsURL: req.GetBuildArtifactUrl(),

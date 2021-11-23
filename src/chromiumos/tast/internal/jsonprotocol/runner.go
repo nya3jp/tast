@@ -388,6 +388,10 @@ type RunnerDownloadPrivateBundlesArgs struct {
 	// Devservers contains URLs of devservers that can be used to download files.
 	Devservers []string `json:"devservers,omitempty"`
 
+	// DUTServer contains host and port name of DUT server that can be used for downloading files.
+	// When this is set, it takes precedence over Devservers.
+	DUTServer string `json:"dutserver,omitempty"`
+
 	// TLWServer contains host and port name of TLW server that can be used for downloading files.
 	// When this is set, it takes precedence over Devservers.
 	TLWServer string `json:"tlsServer,omitempty"`
@@ -407,6 +411,7 @@ func (a *RunnerDownloadPrivateBundlesArgs) Proto() *protocol.DownloadPrivateBund
 	return &protocol.DownloadPrivateBundlesRequest{
 		ServiceConfig: &protocol.ServiceConfig{
 			Devservers:  a.Devservers,
+			DutServer:   a.DUTServer,
 			TlwServer:   a.TLWServer,
 			TlwSelfName: a.DUTName,
 		},

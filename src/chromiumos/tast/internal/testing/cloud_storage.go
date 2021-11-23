@@ -28,10 +28,10 @@ type CloudStorage struct {
 // NewCloudStorage constructs a new CloudStorage from a list of Devserver URLs.
 // This function is for the framework; tests should call testing.State.CloudStorage
 // to get an instance.
-func NewCloudStorage(devservers []string, tlwServer, dutName, buildArtifactsURL string) *CloudStorage {
+func NewCloudStorage(devservers []string, tlwServer, dutName, dutServer, buildArtifactsURL string) *CloudStorage {
 	return &CloudStorage{
 		newClient: func(ctx context.Context) (devserver.Client, error) {
-			return newClientForURLs(ctx, devservers, tlwServer, dutName)
+			return newClientForURLs(ctx, devservers, tlwServer, dutName, dutServer)
 		},
 		buildArtifactsURL: buildArtifactsURL,
 	}
@@ -55,6 +55,6 @@ func (c *CloudStorage) Open(ctx context.Context, url string) (io.ReadCloser, err
 	return c.cl.Open(ctx, url)
 }
 
-func newClientForURLs(ctx context.Context, urls []string, tlwServer, dutName string) (devserver.Client, error) {
-	return devserver.NewClient(ctx, urls, tlwServer, dutName)
+func newClientForURLs(ctx context.Context, urls []string, tlwServer, dutName, dutServer string) (devserver.Client, error) {
+	return devserver.NewClient(ctx, urls, tlwServer, dutName, dutServer)
 }

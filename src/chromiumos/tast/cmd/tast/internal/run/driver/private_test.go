@@ -6,11 +6,13 @@ package driver_test
 
 import (
 	"context"
+	"fmt"
 	"testing"
 	"time"
 
 	"github.com/google/go-cmp/cmp"
 	"go.chromium.org/chromiumos/config/go/api/test/tls"
+	"go.chromium.org/chromiumos/config/go/test/api"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/testing/protocmp"
 
@@ -18,6 +20,7 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/driver"
 	"chromiumos/tast/cmd/tast/internal/run/runtest"
 	"chromiumos/tast/internal/devserver"
+	"chromiumos/tast/internal/fakedutserver"
 	"chromiumos/tast/internal/faketlw"
 	"chromiumos/tast/internal/protocol"
 )
@@ -190,6 +193,83 @@ func TestDriver_DownloadPrivateBundles_TLW(t *testing.T) {
 		cfg.DownloadPrivateBundles = true
 		cfg.TLWServer = tlwAddr
 		cfg.BuildArtifactsURL = buildArtifactsURL
+	})
+
+	drv, err := driver.New(ctx, cfg, cfg.Target(), "")
+	if err != nil {
+		t.Fatalf("driver.New failed: %v", err)
+	}
+	defer drv.Close(ctx)
+
+	if err := drv.DownloadPrivateBundles(ctx); err != nil {
+		t.Fatalf("DownloadPrivateBundles failed: %v", err)
+	}
+	if !called {
+		t.Error("DownloadPrivateBundles not called")
+	}
+}
+
+func TestDriver_DownloadPrivateBundles_DUTServer(t *testing.T) {
+	const (
+		buildArtifactsURL  = "gs://build-artifacts/foo/bar"
+		archiveURL         = "gs://build-artifacts/foo/bar/tast-bundles.zip"
+		buildArtifactsDest = "build-artifacts/foo/bar"
+	)
+
+	stopFunc, dutServerAddr := fakedutserver.Start(
+		t,
+		fakedutserver.WithCacheFileMap(map[string][]byte{archiveURL: []byte("abc")}),
+	)
+	defer stopFunc()
+
+	called := false
+	env := runtest.SetUp(
+		t,
+		runtest.WithDownloadPrivateBundles(func(req *protocol.DownloadPrivateBundlesRequest) (*protocol.DownloadPrivateBundlesResponse, error) {
+			called = true
+
+			if url := req.GetBuildArtifactUrl(); url != buildArtifactsURL {
+				t.Errorf("DownloadPrivateBundles: build artifacts URL mismatch: got %q, want %q", url, buildArtifactsURL)
+			}
+
+			// DownloadPrivateBundles is called on the DUT, thus we don't have
+			// direct access to the TLW server. Tast CLI should have set up SSH
+			// port forwarding.
+			if addr := req.GetServiceConfig().GetDutServer(); addr == dutServerAddr {
+				t.Errorf("DownloadPrivateBundles: Dut server is not port-forwarded (%s)", addr)
+			}
+
+			// Make sure DUT server is working over the forwarded port.
+			conn, err := grpc.Dial(req.GetServiceConfig().GetDutServer(), grpc.WithInsecure())
+			if err != nil {
+				t.Errorf("DownloadPrivateBundles: failed to connect to Dut server: %v", err)
+				return nil, nil
+			}
+			defer conn.Close()
+
+			// verify GS URL format.
+			dest := t.TempDir()
+			cl := api.NewDutServiceClient(conn)
+			cacheReq := &api.CacheRequest{
+				DestinationPath: dest,
+				Source: &api.CacheRequest_GsFile{
+					GsFile: &api.CacheRequest_GSFile{
+						SourcePath: archiveURL,
+					},
+				},
+			}
+			fmt.Printf("dest dir: %s\n", dest)
+			if _, err := cl.Cache(context.Background(), cacheReq); err != nil {
+				t.Errorf("DownloadPrivateBundles: Cache failed: %v", err)
+			}
+			return &protocol.DownloadPrivateBundlesResponse{}, nil
+		}),
+	)
+	ctx := env.Context()
+	cfg := env.Config(func(cfg *config.MutableConfig) {
+		cfg.DownloadPrivateBundles = true
+		cfg.BuildArtifactsURL = buildArtifactsURL
+		cfg.TestVars = map[string]string{"servers.dut": fmt.Sprintf(":%s", dutServerAddr)}
 	})
 
 	drv, err := driver.New(ctx, cfg, cfg.Target(), "")

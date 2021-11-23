@@ -37,9 +37,15 @@ func (d *Driver) DownloadPrivateBundles(ctx context.Context) error {
 		tlwSelfName = d.cc.ConnectionSpec()
 	}
 
+	var dutServer string
+	if addr, ok := d.cc.Conn().Services().DUTServerAddr(); ok {
+		dutServer = addr.String()
+	}
+
 	req := &protocol.DownloadPrivateBundlesRequest{
 		ServiceConfig: &protocol.ServiceConfig{
 			Devservers:  devservers,
+			DutServer:   dutServer,
 			TlwServer:   tlwServer,
 			TlwSelfName: tlwSelfName,
 		},

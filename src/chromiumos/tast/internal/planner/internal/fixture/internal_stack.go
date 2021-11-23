@@ -323,6 +323,7 @@ func (st *InternalStack) newRuntimeConfig(ctx context.Context, outDir string, fi
 			st.cfg.Service.GetDevservers(),
 			st.cfg.Service.GetTlwServer(),
 			st.cfg.Service.GetTlwSelfName(),
+			st.cfg.Service.GetDutServer(),
 			st.cfg.BuildArtifactsURL,
 		),
 		RemoteData: st.cfg.RemoteData,

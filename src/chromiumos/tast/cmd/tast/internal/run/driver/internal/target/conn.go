@@ -31,7 +31,7 @@ type Conn struct {
 	target  string
 }
 
-func newConn(ctx context.Context, cfg *config.Config, target string) (conn *Conn, retErr error) {
+func newConn(ctx context.Context, cfg *config.Config, target, dutServer string) (conn *Conn, retErr error) {
 	sshConn, err := dialSSH(ctx, cfg, target)
 	if err != nil {
 		msg, diagErr := diagnoseNetwork(ctx, target)
@@ -50,7 +50,7 @@ func newConn(ctx context.Context, cfg *config.Config, target string) (conn *Conn
 		}
 	}()
 
-	svcs, err := startServices(ctx, cfg, sshConn)
+	svcs, err := startServices(ctx, cfg, sshConn, dutServer)
 	if err != nil {
 		return nil, err
 	}

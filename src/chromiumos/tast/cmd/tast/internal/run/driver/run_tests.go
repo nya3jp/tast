@@ -259,6 +259,11 @@ func (d *Driver) newConfigsForLocalTests(tests []*BundleEntity, state *protocol.
 		tlwSelfName = d.cfg.Target()
 	}
 
+	var dutServer string
+	if addr, ok := d.cc.Conn().Services().DUTServerAddr(); ok {
+		dutServer = addr.String()
+	}
+
 	bcfg := &protocol.BundleConfig{}
 	rcfg := &protocol.RunConfig{
 		Tests: testNames,
@@ -270,6 +275,7 @@ func (d *Driver) newConfigsForLocalTests(tests []*BundleEntity, state *protocol.
 		Features: d.cfg.Features(dutInfo.GetFeatures()),
 		ServiceConfig: &protocol.ServiceConfig{
 			Devservers:  devservers,
+			DutServer:   dutServer, // Only pass in DUT server for local tests.
 			TlwServer:   tlwServer,
 			TlwSelfName: tlwSelfName,
 		},
@@ -359,6 +365,8 @@ func (d *Driver) newConfigsForRemoteTests(tests []*BundleEntity, dutInfo *protoc
 		ServiceConfig: &protocol.ServiceConfig{
 			Devservers: remoteDevservers,
 			TlwServer:  d.cfg.TLWServer(),
+			// DutServer is intentally left blank here because this config is only used by
+			// remote fixture which will use devserver or ephemeral server to download files.
 		},
 		DataFileConfig: &protocol.DataFileConfig{
 			DownloadMode:      d.cfg.DownloadMode().Proto(),
@@ -396,6 +404,8 @@ func (d *Driver) newRunFixtureConfig() (*bundle.RunFixtureConfig, error) {
 		LocalBundleDir:    d.cfg.LocalBundleDir(),
 		CheckSoftwareDeps: false,
 		Devservers:        d.cfg.Devservers(),
+		// DutServer is intentally left blank here because this config is only used by
+		// remote fixture which will use devserver or ephemeral server to download files.
 		TlwServer:         tlwServer,
 		DutName:           d.cfg.Target(),
 		BuildArtifactsUrl: d.cfg.BuildArtifactsURL(),

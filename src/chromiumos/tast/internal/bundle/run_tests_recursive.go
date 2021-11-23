@@ -218,6 +218,7 @@ func runLocalTests(
 					Features: rcfg.GetFeatures(),
 					ServiceConfig: &protocol.ServiceConfig{
 						Devservers:  rcfg.GetServiceConfig().GetDevservers(),
+						DutServer:   rcfg.GetServiceConfig().GetDutServer(),
 						TlwServer:   rcfg.GetServiceConfig().GetTlwServer(),
 						TlwSelfName: "", // TODO: fill it
 					},

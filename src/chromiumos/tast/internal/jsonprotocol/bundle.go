@@ -231,6 +231,8 @@ type BundleRunTestsArgs struct {
 
 	// Devservers contains URLs of devservers that can be used to download files.
 	Devservers []string `json:"devservers,omitempty"`
+	// DUTServer contains address of DUT server which serves DUT service APIs.
+	DUTServer string `json:"dutServer,omitempty"`
 	// TLWServer contains address of Test Lab Service Wiring APIs.
 	TLWServer string `json:"tlwServer,omitempty"`
 	// DUTName contains given DUT identifier to be passed to TLS Wiring API.
@@ -315,6 +317,7 @@ func (a *BundleRunTestsArgs) Proto() (*protocol.RunConfig, *protocol.BundleConfi
 		Features: a.Features(),
 		ServiceConfig: &protocol.ServiceConfig{
 			Devservers:  a.Devservers,
+			DutServer:   a.DUTServer,
 			TlwServer:   a.TLWServer,
 			TlwSelfName: tlwSelfName,
 		},

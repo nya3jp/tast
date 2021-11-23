@@ -196,6 +196,7 @@ func BundleRunTestsArgsFromProto(bcfg *protocol.BundleConfig, rcfg *protocol.Run
 		RunFlags:          bcfg.GetMetaTestConfig().GetRunFlags(),
 		LocalBundleDir:    bcfg.GetPrimaryTarget().GetBundleDir(),
 		Devservers:        rcfg.GetServiceConfig().GetDevservers(),
+		DUTServer:         rcfg.GetServiceConfig().GetDutServer(),
 		TLWServer:         rcfg.GetServiceConfig().GetTlwServer(),
 		DUTName:           rcfg.GetServiceConfig().GetTlwSelfName(),
 		CompanionDUTs:     companionDUTs,

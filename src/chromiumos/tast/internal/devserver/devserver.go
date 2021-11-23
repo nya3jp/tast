@@ -12,11 +12,23 @@ import (
 	"chromiumos/tast/internal/logging"
 )
 
-// NewClient creates a Client from a list of devservers or a TLW server.
+// NewClient creates a Client from a list of devservers, DUT server or a TLW server.
+// If dutServer is non-empty, DUTServiceClient is returned.
 // If tlwServer is non-empty, TLWClient is returned.
 // If devserver contains 1 or more element, RealClient is returned.
 // If the oth are empty, PseudoClient is returned.
-func NewClient(ctx context.Context, devservers []string, tlwServer, dutName string) (Client, error) {
+func NewClient(ctx context.Context, devservers []string, tlwServer, dutName, dutServer string) (Client, error) {
+	if dutServer != "" {
+		if len(devservers) > 0 {
+			return nil, fmt.Errorf("both dutServer (%q) and devservers (%v) are set", dutServer, devservers)
+		}
+		cl, err := NewDUTServiceClient(ctx, dutServer)
+		if err != nil {
+			return nil, err
+		}
+		logging.Info(ctx, "Devserver status: using DUT service client")
+		return cl, nil
+	}
 	if tlwServer != "" {
 		if len(devservers) > 0 {
 			return nil, fmt.Errorf("both tlwServer (%q) and devservers (%v) are set", tlwServer, devservers)

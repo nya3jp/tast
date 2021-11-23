@@ -21,21 +21,15 @@ type ConnCache struct {
 	cfg        *config.Config
 	target     string
 	initBootID string
-	dutAction  DUTAction
-
-	conn *Conn // always non-nil
-}
-
-// DUTAction provides an interface to provide action on a DUT.
-type DUTAction interface {
-	// Reboot a DUt.
-	HardReboot(ctx context.Context) error
+	helper     *dutHelper
+	conn       *Conn // always non-nil
 }
 
 // NewConnCache establishes a new connection to target and return a ConnCache.
 // Call Close when it is no longer needed.
-func NewConnCache(ctx context.Context, cfg *config.Config, target string, dutAction DUTAction) (cc *ConnCache, retErr error) {
-	conn, err := newConn(ctx, cfg, target)
+func NewConnCache(ctx context.Context, cfg *config.Config, target, role string) (cc *ConnCache, retErr error) {
+	helper := newDUTHelper(ctx, cfg, role)
+	conn, err := newConn(ctx, cfg, target, helper.dutServer)
 	if err != nil {
 		return nil, err
 	}
@@ -55,7 +49,7 @@ func NewConnCache(ctx context.Context, cfg *config.Config, target string, dutAct
 		target:     target,
 		initBootID: bootID,
 		conn:       conn,
-		dutAction:  dutAction,
+		helper:     helper,
 	}, nil
 }
 
@@ -95,19 +89,19 @@ func (cc *ConnCache) EnsureConn(ctx context.Context) (conn *Conn, retErr error) 
 	}
 	logging.Infof(ctx, "Target connection is unhealthy: %v; reconnecting", err)
 
-	newConnection, err := newConn(ctx, cc.cfg, cc.target)
+	newConnection, err := newConn(ctx, cc.cfg, cc.target, cc.helper.dutServer)
 	if err != nil {
 		// b/205333029: Move the code for rebooting to somewhere else when we support servod for multiple DUT.
-		if cc.dutAction != nil {
+		if cc.helper != nil {
 			// If we have a way, reboot the DUT.
 			logging.Info(ctx, "Reboot target before reconnecting")
-			if rebootErr := cc.dutAction.HardReboot(ctx); rebootErr != nil {
+			if rebootErr := cc.helper.HardReboot(ctx); rebootErr != nil {
 				logging.Infof(ctx, "Fail to reboot target: %v", rebootErr)
 			}
 			shortCtx, cancel := context.WithTimeout(ctx, time.Minute*3)
 			defer cancel()
 			if err := testingutil.Poll(shortCtx, func(ctx context.Context) error {
-				newConnection, err = newConn(ctx, cc.cfg, cc.target)
+				newConnection, err = newConn(ctx, cc.cfg, cc.target, cc.helper.dutServer)
 				return err
 			}, &testingutil.PollOptions{Timeout: cc.DefaultTimeout()}); err != nil {
 				logging.Infof(ctx, "Fail to reconnect after reboot target: %v", err)
@@ -137,7 +131,7 @@ func (cc *ConnCache) ConnectionSpec() string {
 
 // DefaultTimeout returns the default timeout for connection operations.
 func (cc *ConnCache) DefaultTimeout() time.Duration {
-	if cc.dutAction != nil {
+	if cc.helper != nil {
 		return time.Minute * 5
 	}
 	return time.Minute

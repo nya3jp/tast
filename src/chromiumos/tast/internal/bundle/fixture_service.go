@@ -132,6 +132,7 @@ func (s *fixtureService) pushAndPop(srv FixtureService_RunFixtureServer) (retErr
 		},
 		Service: &protocol.ServiceConfig{
 			Devservers:  r.Config.Devservers,
+			DutServer:   r.Config.DutServer,
 			TlwServer:   r.Config.TlwServer,
 			TlwSelfName: r.Config.DutName,
 		},

@@ -77,7 +77,11 @@ func (s *testServer) DownloadPrivateBundles(ctx context.Context, req *protocol.D
 	// Download the archive via devserver.
 	archiveURL := req.GetBuildArtifactUrl() + "tast_bundles.tar.bz2"
 	logging.Infof(ctx, "Downloading private bundles from %s", archiveURL)
-	cl, err := devserver.NewClient(ctx, req.GetServiceConfig().GetDevservers(), req.GetServiceConfig().GetTlwServer(), req.GetServiceConfig().GetTlwSelfName())
+	cl, err := devserver.NewClient(
+		ctx, req.GetServiceConfig().GetDevservers(),
+		req.GetServiceConfig().GetTlwServer(), req.GetServiceConfig().GetTlwSelfName(),
+		req.ServiceConfig.GetDutServer(),
+	)
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed to create new client [devservers=%v, TLWServer=%s]",
 			req.GetServiceConfig().GetDevservers(), req.GetServiceConfig().GetTlwServer())

@@ -305,12 +305,13 @@ func (c *Config) MsgTimeout() time.Duration { return c.m.MsgTimeout }
 // Retries is the number of retries for failing tests
 func (c *Config) Retries() int { return c.m.Retries }
 
-// State hold state attributes which are accumulated over the course of the run.
+// DeprecatedState hold state attributes which are accumulated over the course
+// of the run.
 //
-// DO NOT add new fields to this struct. State makes it difficult to reason
-// about function contracts. Pass arguments explicitly instead.
-// This struct will be removed eventually (b/191230756).
-type State struct {
+// DEPRECATED: DO NOT add new fields to this struct. DeprecatedState makes it
+// difficult to reason about function contracts. Pass arguments explicitly
+// instead. This struct will be removed eventually (b/191230756).
+type DeprecatedState struct {
 	FailuresCount    int                        // the number of test failures so far.
 	TLWConn          *grpc.ClientConn           // TLW gRPC service connection
 	RemoteDevservers []string                   // list of devserver URLs used by remote tests.
@@ -481,7 +482,7 @@ func (f funcValue) String() string     { return "" }
 
 // Close releases the config's resources (e.g. cached SSH connections).
 // It should be called at the completion of testing.
-func (s *State) Close(ctx context.Context) error {
+func (s *DeprecatedState) Close(ctx context.Context) error {
 	var firstErr error
 	if s.TLWConn != nil {
 		if err := s.TLWConn.Close(); err != nil && firstErr == nil {

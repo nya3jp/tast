@@ -42,7 +42,7 @@ const (
 
 // Run executes or lists tests per cfg and returns the results.
 // Messages are logged via ctx as the run progresses.
-func Run(ctx context.Context, cfg *config.Config, state *config.State) ([]*resultsjson.Result, error) {
+func Run(ctx context.Context, cfg *config.Config, state *config.DeprecatedState) ([]*resultsjson.Result, error) {
 	if err := setUpGRPCServices(ctx, cfg, state); err != nil {
 		return nil, errors.Wrap(err, "failed to set up gRPC servers")
 	}
@@ -95,7 +95,7 @@ func Run(ctx context.Context, cfg *config.Config, state *config.State) ([]*resul
 }
 
 // startEphemeralDevserverForRemoteTests starts an ephemeral devserver for remote tests.
-func startEphemeralDevserverForRemoteTests(ctx context.Context, cfg *config.Config, state *config.State) (*devserver.Ephemeral, error) {
+func startEphemeralDevserverForRemoteTests(ctx context.Context, cfg *config.Config, state *config.DeprecatedState) (*devserver.Ephemeral, error) {
 	lis, err := net.Listen("tcp", "localhost:0")
 	if err != nil {
 		return nil, fmt.Errorf("failed to listen to a local port: %v", err)
@@ -183,7 +183,7 @@ func verifyTestNames(patterns []string, tests []*driver.BundleEntity) error {
 	return nil
 }
 
-func runTests(ctx context.Context, cfg *config.Config, state *config.State, drv *driver.Driver) (results []*resultsjson.Result, retErr error) {
+func runTests(ctx context.Context, cfg *config.Config, state *config.DeprecatedState, drv *driver.Driver) (results []*resultsjson.Result, retErr error) {
 	dutInfo, err := drv.GetDUTInfo(ctx)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to get DUT software features")
@@ -294,7 +294,7 @@ func runTests(ctx context.Context, cfg *config.Config, state *config.State, drv 
 }
 
 // setUpGRPCServices sets up all Grpc Services in the current run.
-func setUpGRPCServices(ctx context.Context, cfg *config.Config, state *config.State) error {
+func setUpGRPCServices(ctx context.Context, cfg *config.Config, state *config.DeprecatedState) error {
 	if err := connectToTLW(ctx, cfg, state); err != nil {
 		return errors.Wrap(err, "failed to connect to TLW server")
 	}
@@ -306,7 +306,7 @@ func setUpGRPCServices(ctx context.Context, cfg *config.Config, state *config.St
 
 // connectToTLW connects to a TLW service if its address is provided, and stores
 // the connection to state.TLWConn.
-func connectToTLW(ctx context.Context, cfg *config.Config, state *config.State) error {
+func connectToTLW(ctx context.Context, cfg *config.Config, state *config.DeprecatedState) error {
 	if cfg.TLWServer() == "" {
 		return nil
 	}
@@ -320,7 +320,7 @@ func connectToTLW(ctx context.Context, cfg *config.Config, state *config.State) 
 }
 
 // connectToReports connects to the Reports server.
-func connectToReports(ctx context.Context, cfg *config.Config, state *config.State) error {
+func connectToReports(ctx context.Context, cfg *config.Config, state *config.DeprecatedState) error {
 	cl, err := reporting.NewRPCClient(ctx, cfg.ReportsServer())
 	if err != nil {
 		return err

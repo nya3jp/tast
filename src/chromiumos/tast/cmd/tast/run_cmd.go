@@ -74,7 +74,7 @@ func (r *runCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{})
 	ctx, cancel := xcontext.WithTimeout(ctx, r.timeout, errors.Errorf("%v: global timeout reached (%v)", context.DeadlineExceeded, r.timeout))
 	defer cancel(context.Canceled)
 
-	var state config.State
+	var state config.DeprecatedState
 	defer state.Close(ctx)
 
 	tl := timing.NewLog()

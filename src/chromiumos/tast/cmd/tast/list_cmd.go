@@ -75,7 +75,7 @@ func (lc *listCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{
 	logger := logging.NewSinkLogger(logging.LevelDebug, true, logging.NewWriterSink(ioutil.Discard))
 	ctx = logging.AttachLoggerNoPropagation(ctx, logger)
 
-	state := config.State{}
+	state := config.DeprecatedState{}
 	results, err := lc.wrapper.run(ctx, lc.cfg.Freeze(), &state)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "ERROR: %v\n", err)

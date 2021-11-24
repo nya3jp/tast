@@ -46,7 +46,7 @@ type Env struct {
 	rootDir   string
 	bundleEnv *bundletest.Env
 	logger    *loggingtest.Logger
-	state     *config.State
+	state     *config.DeprecatedState
 }
 
 // SetUp sets up a testing environment for Tast CLI.
@@ -143,8 +143,8 @@ func SetUp(t *gotesting.T, opts ...EnvOrDUTOption) *Env {
 	}
 	t.Cleanup(func() { lo.Close() })
 
-	// Create a State object that is cleaned up automatically.
-	state := &config.State{}
+	// Create a DeprecatedState object that is cleaned up automatically.
+	state := &config.DeprecatedState{}
 	t.Cleanup(func() { state.Close(context.Background()) })
 
 	return &Env{
@@ -224,7 +224,7 @@ func (e *Env) Config(mod func(cfg *config.MutableConfig)) *config.Config {
 
 // State returns a State struct to be used in unit tests. It is cleaned up on
 // the end of the current unit test.
-func (e *Env) State() *config.State {
+func (e *Env) State() *config.DeprecatedState {
 	return e.state
 }
 

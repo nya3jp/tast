@@ -15,7 +15,6 @@ import (
 	"time"
 
 	"github.com/golang/protobuf/proto"
-	"google.golang.org/grpc"
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/devserver"
@@ -284,27 +283,9 @@ func runTests(ctx context.Context, cfg *config.Config, state *config.DeprecatedS
 
 // setUpGRPCServices sets up all Grpc Services in the current run.
 func setUpGRPCServices(ctx context.Context, cfg *config.Config, state *config.DeprecatedState) error {
-	if err := connectToTLW(ctx, cfg, state); err != nil {
-		return errors.Wrap(err, "failed to connect to TLW server")
-	}
 	if err := connectToReports(ctx, cfg, state); err != nil {
 		return errors.Wrap(err, "failed to connect to Reports server")
 	}
-	return nil
-}
-
-// connectToTLW connects to a TLW service if its address is provided, and stores
-// the connection to state.TLWConn.
-func connectToTLW(ctx context.Context, cfg *config.Config, state *config.DeprecatedState) error {
-	if cfg.TLWServer() == "" {
-		return nil
-	}
-
-	conn, err := grpc.DialContext(ctx, cfg.TLWServer(), grpc.WithInsecure())
-	if err != nil {
-		return err
-	}
-	state.TLWConn = conn
 	return nil
 }
 

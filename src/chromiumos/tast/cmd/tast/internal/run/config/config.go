@@ -18,8 +18,6 @@ import (
 	"strings"
 	"time"
 
-	"google.golang.org/grpc"
-
 	"chromiumos/tast/cmd/tast/internal/build"
 	"chromiumos/tast/cmd/tast/internal/run/reporting"
 	"chromiumos/tast/errors"
@@ -311,7 +309,6 @@ func (c *Config) Retries() int { return c.m.Retries }
 // difficult to reason about function contracts. Pass arguments explicitly
 // instead. This struct will be removed eventually (b/191230756).
 type DeprecatedState struct {
-	TLWConn          *grpc.ClientConn     // TLW gRPC service connection
 	RemoteDevservers []string             // list of devserver URLs used by remote tests.
 	TestNamesToSkip  []string             // tests that match patterns but are not sent to runners to run
 	ReportClient     *reporting.RPCClient // client for test result reporting via gRPC
@@ -480,17 +477,7 @@ func (f funcValue) String() string     { return "" }
 // Close releases the config's resources (e.g. cached SSH connections).
 // It should be called at the completion of testing.
 func (s *DeprecatedState) Close(ctx context.Context) error {
-	var firstErr error
-	if s.TLWConn != nil {
-		if err := s.TLWConn.Close(); err != nil && firstErr == nil {
-			firstErr = err
-		}
-		s.TLWConn = nil
-	}
-	if err := s.ReportClient.Close(); err != nil && firstErr == nil {
-		firstErr = err
-	}
-	return firstErr
+	return s.ReportClient.Close()
 }
 
 // DeriveDefaults sets default config values to unset members, possibly deriving from

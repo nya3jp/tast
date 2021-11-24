@@ -51,11 +51,16 @@ func (s *remoteLoggingServer) ReadLogs(srv protocol.Logging_ReadLogsServer) erro
 
 	defer func() {
 		s.mu.Lock()
-		defer s.mu.Unlock()
 		close(s.inbox)
 		s.inbox = nil
-		// Read all remaining logs to stop the bufferedRelay goroutine.
-		for range logs {
+		s.mu.Unlock()
+
+		// Process all remaining logs before finishing the stream to
+		// transfer them to the client, as well as to stop the
+		// bufferedRelay goroutine.
+		for e := range logs {
+			// Send by best effort.
+			_ = srv.Send(&protocol.ReadLogsResponse{Entry: e})
 		}
 	}()
 

@@ -178,7 +178,7 @@ also returns an error. The error indicates that the timezone on the DUT is not
 the expected timezone.
 
 The full implementation of the local service can be found
-[here](https://osscs.corp.google.com/chromiumos/chromiumos/codesearch/+/main:src/platform/tast-tests/src/chromiumos/tast/local/bundles/cros/policy/system_timezone_service.go)
+[here](https://osscs.corp.google.com/chromiumos/chromiumos/codesearch/+/03b1d8d64180a8e6f5c073c683cd3ba070adf1f8:src/platform/tast-tests/src/chromiumos/tast/local/bundles/cros/policy/system_timezone_service.go)
 
 ## Remote test
 
@@ -248,4 +248,4 @@ func SystemTimezone(ctx context.Context, s *testing.State) {
 ```
 
 The full implementation of the remote test can be found
-[here](https://osscs.corp.google.com/chromiumos/chromiumos/codesearch/+/main:src/platform/tast-tests/src/chromiumos/tast/remote/bundles/cros/policy/system_timezone.go).
+[here](https://osscs.corp.google.com/chromiumos/chromiumos/codesearch/+/03b1d8d64180a8e6f5c073c683cd3ba070adf1f8:src/platform/tast-tests/src/chromiumos/tast/remote/bundles/cros/policy/system_timezone.go).

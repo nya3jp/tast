@@ -223,7 +223,6 @@ func runTests(ctx context.Context, cfg *config.Config, state *config.DeprecatedS
 		testsToRun = shard.Included
 	}
 
-	state.TestsToRun = testsToRun
 	state.TestNamesToSkip = nil
 	for _, t := range shard.Excluded {
 		state.TestNamesToSkip = append(state.TestNamesToSkip, t.Resolved.GetEntity().GetName())
@@ -234,9 +233,9 @@ func runTests(ctx context.Context, cfg *config.Config, state *config.DeprecatedS
 
 	if cfg.TotalShards() > 1 {
 		logging.Infof(ctx, "Running shard %d/%d (tests %d/%d)", cfg.ShardIndex()+1, cfg.TotalShards(),
-			len(state.TestsToRun), len(state.TestsToRun)+len(state.TestNamesToSkip))
+			len(testsToRun), len(testsToRun)+len(state.TestNamesToSkip))
 	}
-	if len(state.TestsToRun) == 0 {
+	if len(testsToRun) == 0 {
 		// No tests to run.
 		return nil, nil
 	}

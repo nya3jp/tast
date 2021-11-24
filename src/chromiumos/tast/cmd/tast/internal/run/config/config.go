@@ -21,7 +21,6 @@ import (
 	"google.golang.org/grpc"
 
 	"chromiumos/tast/cmd/tast/internal/build"
-	"chromiumos/tast/cmd/tast/internal/run/driverdata"
 	"chromiumos/tast/cmd/tast/internal/run/reporting"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/command"
@@ -312,12 +311,10 @@ func (c *Config) Retries() int { return c.m.Retries }
 // difficult to reason about function contracts. Pass arguments explicitly
 // instead. This struct will be removed eventually (b/191230756).
 type DeprecatedState struct {
-	FailuresCount    int                        // the number of test failures so far.
-	TLWConn          *grpc.ClientConn           // TLW gRPC service connection
-	RemoteDevservers []string                   // list of devserver URLs used by remote tests.
-	TestNamesToSkip  []string                   // tests that match patterns but are not sent to runners to run
-	TestsToRun       []*driverdata.BundleEntity // tests to be run
-	ReportClient     *reporting.RPCClient       // client for test result reporting via gRPC
+	TLWConn          *grpc.ClientConn     // TLW gRPC service connection
+	RemoteDevservers []string             // list of devserver URLs used by remote tests.
+	TestNamesToSkip  []string             // tests that match patterns but are not sent to runners to run
+	ReportClient     *reporting.RPCClient // client for test result reporting via gRPC
 }
 
 // NewMutableConfig returns a new configuration for executing test runners in the supplied mode.

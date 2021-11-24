@@ -11,6 +11,7 @@ import (
 
 	"google.golang.org/grpc"
 
+	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/protocol"
 )
@@ -20,8 +21,10 @@ import (
 //
 // It is used by gRPC clients to receive logs from gRPC services.
 type remoteLoggingClient struct {
-	stopCh chan struct{} // closed when Close is called to stop the streaming RPC call
-	doneCh chan error    // closed when the streaming RPC call is done
+	stream protocol.Logging_ReadLogsClient
+	doneCh chan struct{} // closed when the streaming RPC call is done
+
+	runErr error // set when doneCh is closed
 
 	mu      sync.Mutex        // protects other fields
 	lastSeq uint64            // last observed sequence ID
@@ -32,33 +35,24 @@ type remoteLoggingClient struct {
 // called for every received ReadLogsResponse.
 func newRemoteLoggingClient(ctx context.Context, conn *grpc.ClientConn) (*remoteLoggingClient, error) {
 	cl := protocol.NewLoggingClient(conn)
-	st, err := cl.ReadLogs(ctx)
+	stream, err := cl.ReadLogs(ctx)
 	if err != nil {
 		return nil, err
 	}
 
 	// Read the initial response to check success and make sure we have been
 	// subscribed to logs.
-	if _, err := st.Recv(); err != nil {
+	if _, err := stream.Recv(); err != nil {
 		return nil, err
 	}
 
-	stopCh := make(chan struct{})
-	doneCh := make(chan error)
-
-	// Call CloseSend when Close is called.
-	go func() {
-		<-stopCh
-		st.CloseSend()
-	}()
-
 	l := &remoteLoggingClient{
-		stopCh: stopCh,
-		doneCh: doneCh,
+		stream: stream,
+		doneCh: make(chan struct{}),
 	}
 
 	// Start a goroutine to call logger for every received ReadLogsResponse.
-	go l.runBackground(ctx, st)
+	go l.runBackground(ctx)
 
 	return l, nil
 }
@@ -79,6 +73,8 @@ func (l *remoteLoggingClient) Wait(ctx context.Context, seq uint64) error {
 		select {
 		case <-ctx.Done():
 			return ctx.Err()
+		case <-l.doneCh:
+			return errors.New("logging stream closed")
 		case <-waiter:
 		}
 	}
@@ -86,14 +82,17 @@ func (l *remoteLoggingClient) Wait(ctx context.Context, seq uint64) error {
 
 // Close finishes the remote logging.
 func (l *remoteLoggingClient) Close() error {
-	close(l.stopCh)
-	return <-l.doneCh
+	l.stream.CloseSend()
+	<-l.doneCh
+	return l.runErr
 }
 
-func (l *remoteLoggingClient) runBackground(ctx context.Context, st protocol.Logging_ReadLogsClient) {
-	l.doneCh <- func() error {
+func (l *remoteLoggingClient) runBackground(ctx context.Context) {
+	defer close(l.doneCh)
+
+	l.runErr = func() error {
 		for {
-			res, err := st.Recv()
+			res, err := l.stream.Recv()
 			if err != nil {
 				if err == io.EOF {
 					return nil

@@ -216,13 +216,13 @@ func listFixtures(bundleGlob string) (map[string][]*jsonprotocol.EntityInfo, *co
 func killSession(sid int, sig unix.Signal) {
 	const maxPasses = 3
 	for i := 0; i < maxPasses; i++ {
-		procs, err := process.Processes()
+		pids, err := process.Pids()
 		if err != nil {
 			return
 		}
 		n := 0
-		for _, proc := range procs {
-			pid := int(proc.Pid)
+		for _, pid := range pids {
+			pid := int(pid)
 			if s, err := unix.Getsid(pid); err == nil && s == sid {
 				unix.Kill(pid, sig)
 				n++

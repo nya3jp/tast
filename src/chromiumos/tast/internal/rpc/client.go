@@ -430,13 +430,13 @@ func (l *lazyRemoteLoggingClient) Wait(ctx context.Context, seq uint64) error {
 func killSession(sid int) {
 	const maxPasses = 3
 	for i := 0; i < maxPasses; i++ {
-		procs, err := process.Processes()
+		pids, err := process.Pids()
 		if err != nil {
 			return
 		}
 		n := 0
-		for _, proc := range procs {
-			pid := int(proc.Pid)
+		for _, pid := range pids {
+			pid := int(pid)
 			if s, err := unix.Getsid(pid); err == nil && s == sid {
 				unix.Kill(pid, unix.SIGKILL)
 				n++

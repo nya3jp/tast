@@ -15,6 +15,7 @@ import (
 	"path/filepath"
 	"reflect"
 	"strconv"
+	"sync"
 	gotesting "testing"
 	"time"
 
@@ -334,6 +335,46 @@ func TestRPCForwardLogs(t *gotesting.T) {
 	default:
 		t.Error("Logs unavailable immediately on RPC completion")
 	}
+}
+
+// TestRPCForwardLogsAsyncStress is a regression test for b/207577797.
+// It exercises the scenario where a remote server emits a log in parallel to
+// finishing a remote method call and/or the RPC connection is closed.
+func TestRPCForwardLogsAsyncStress(t *gotesting.T) {
+	// n is number of attempts. n=1000 takes less than one second on modern
+	// machines.
+	const n = 1000
+
+	var wg sync.WaitGroup
+	wg.Add(n)
+
+	for i := 0; i < n; i++ {
+		go func() {
+			defer wg.Done()
+
+			ctx := context.Background()
+			ctx = testcontext.WithCurrentEntity(ctx, &testcontext.CurrentEntity{})
+			req := &protocol.HandshakeRequest{NeedUserServices: true}
+
+			svc := newPingService(func(ctx context.Context, s *testing.ServiceState) error {
+				logging.Info(ctx, "hello")
+				go logging.Info(ctx, "world") // emit asynchronously
+				return nil
+			})
+
+			pp := newPingPair(ctx, t, req, svc)
+			defer pp.Close()
+
+			callCtx := testcontext.WithCurrentEntity(ctx, &testcontext.CurrentEntity{
+				ServiceDeps: []string{pingUserServiceName},
+			})
+			if _, err := pp.UserClient.Ping(callCtx, &empty.Empty{}); err != nil {
+				t.Error("Ping failed: ", err)
+			}
+		}()
+	}
+
+	wg.Wait()
 }
 
 func TestRPCForwardTiming(t *gotesting.T) {

@@ -15,10 +15,10 @@ import (
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/driver/internal/bundleclient"
+	"chromiumos/tast/cmd/tast/internal/run/driver/internal/drivercore"
 	"chromiumos/tast/cmd/tast/internal/run/driver/internal/runnerclient"
 	"chromiumos/tast/cmd/tast/internal/run/driver/internal/sshconfig"
 	"chromiumos/tast/cmd/tast/internal/run/driver/internal/target"
-	"chromiumos/tast/cmd/tast/internal/run/driverdata"
 	"chromiumos/tast/cmd/tast/internal/run/genericexec"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/protocol"
@@ -34,7 +34,7 @@ const (
 type Services = target.Services
 
 // BundleEntity is a pair of a ResolvedEntity and its bundle name.
-type BundleEntity = driverdata.BundleEntity
+type BundleEntity = drivercore.BundleEntity
 
 // Driver implements communications with local/remote executables related to
 // Tast.
@@ -114,8 +114,8 @@ type runnerClient interface {
 	GetSysInfoState(ctx context.Context, req *protocol.GetSysInfoStateRequest) (*protocol.GetSysInfoStateResponse, error)
 	CollectSysInfo(ctx context.Context, req *protocol.CollectSysInfoRequest) (*protocol.CollectSysInfoResponse, error)
 	DownloadPrivateBundles(ctx context.Context, req *protocol.DownloadPrivateBundlesRequest) error
-	ListTests(ctx context.Context, patterns []string, features *protocol.Features) ([]*driverdata.BundleEntity, error)
-	ListFixtures(ctx context.Context) ([]*driverdata.BundleEntity, error)
+	ListTests(ctx context.Context, patterns []string, features *protocol.Features) ([]*drivercore.BundleEntity, error)
+	ListFixtures(ctx context.Context) ([]*drivercore.BundleEntity, error)
 	RunTests(ctx context.Context, bcfg *protocol.BundleConfig, rcfg *protocol.RunConfig, out runnerclient.RunTestsOutput)
 }
 

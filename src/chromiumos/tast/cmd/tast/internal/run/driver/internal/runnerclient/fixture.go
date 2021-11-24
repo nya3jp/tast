@@ -5,7 +5,7 @@
 package runnerclient
 
 import (
-	"chromiumos/tast/cmd/tast/internal/run/driverdata"
+	"chromiumos/tast/cmd/tast/internal/run/driver/internal/drivercore"
 	"chromiumos/tast/internal/jsonprotocol"
 )
 
@@ -40,7 +40,7 @@ func (g *fixtureGraph) FindStart(bundle, name string) string {
 
 // newFixtureGraphFromBundleEntities constructs fixtureGraph from
 // BundleEntity.
-func newFixtureGraphFromBundleEntities(fixtures []*driverdata.BundleEntity) *fixtureGraph {
+func newFixtureGraphFromBundleEntities(fixtures []*drivercore.BundleEntity) *fixtureGraph {
 	starts := make(map[fixtureKey]string)
 	for _, f := range fixtures {
 		key := fixtureKey{

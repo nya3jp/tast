@@ -14,7 +14,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/keepalive"
 
-	"chromiumos/tast/cmd/tast/internal/run/driverdata"
+	"chromiumos/tast/cmd/tast/internal/run/driver/internal/drivercore"
 	"chromiumos/tast/cmd/tast/internal/run/genericexec"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/protocol"
@@ -176,7 +176,7 @@ func (c *GRPCClient) DownloadPrivateBundles(ctx context.Context, req *protocol.D
 }
 
 // ListTests enumerates tests matching patterns.
-func (c *GRPCClient) ListTests(ctx context.Context, patterns []string, features *protocol.Features) (tests []*driverdata.BundleEntity, retErr error) {
+func (c *GRPCClient) ListTests(ctx context.Context, patterns []string, features *protocol.Features) (tests []*drivercore.BundleEntity, retErr error) {
 	defer func() {
 		if retErr != nil {
 			retErr = errors.Wrap(retErr, "listing tests")
@@ -212,7 +212,7 @@ func (c *GRPCClient) ListTests(ctx context.Context, patterns []string, features 
 			continue
 		}
 		e.Hops = int32(c.hops)
-		tests = append(tests, &driverdata.BundleEntity{
+		tests = append(tests, &drivercore.BundleEntity{
 			Bundle:   e.GetEntity().GetLegacyData().GetBundle(),
 			Resolved: e,
 		})
@@ -221,7 +221,7 @@ func (c *GRPCClient) ListTests(ctx context.Context, patterns []string, features 
 }
 
 // ListFixtures enumerates all fixtures.
-func (c *GRPCClient) ListFixtures(ctx context.Context) (fixtures []*driverdata.BundleEntity, retErr error) {
+func (c *GRPCClient) ListFixtures(ctx context.Context) (fixtures []*drivercore.BundleEntity, retErr error) {
 	defer func() {
 		if retErr != nil {
 			retErr = errors.Wrap(retErr, "listing fixtures")
@@ -251,7 +251,7 @@ func (c *GRPCClient) ListFixtures(ctx context.Context) (fixtures []*driverdata.B
 			continue
 		}
 		e.Hops = int32(c.hops)
-		fixtures = append(fixtures, &driverdata.BundleEntity{
+		fixtures = append(fixtures, &drivercore.BundleEntity{
 			Bundle:   e.GetEntity().GetLegacyData().GetBundle(),
 			Resolved: e,
 		})

@@ -13,7 +13,7 @@ import (
 	"sort"
 	"time"
 
-	"chromiumos/tast/cmd/tast/internal/run/driverdata"
+	"chromiumos/tast/cmd/tast/internal/run/driver/internal/drivercore"
 	"chromiumos/tast/cmd/tast/internal/run/genericexec"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/jsonprotocol"
@@ -121,7 +121,7 @@ func (c *JSONClient) DownloadPrivateBundles(ctx context.Context, req *protocol.D
 }
 
 // ListTests enumerates tests matching patterns.
-func (c *JSONClient) ListTests(ctx context.Context, patterns []string, features *protocol.Features) ([]*driverdata.BundleEntity, error) {
+func (c *JSONClient) ListTests(ctx context.Context, patterns []string, features *protocol.Features) ([]*drivercore.BundleEntity, error) {
 	fixtures, err := c.ListFixtures(ctx)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to list fixtures for tests")
@@ -144,13 +144,13 @@ func (c *JSONClient) ListTests(ctx context.Context, patterns []string, features 
 		return nil, errors.Wrap(err, "failed to list tests")
 	}
 
-	tests := make([]*driverdata.BundleEntity, len(res))
+	tests := make([]*drivercore.BundleEntity, len(res))
 	for i, r := range res {
 		e, err := r.Proto(int32(c.hops), graph.FindStart(r.Bundle, r.Fixture))
 		if err != nil {
 			return nil, err
 		}
-		tests[i] = &driverdata.BundleEntity{
+		tests[i] = &drivercore.BundleEntity{
 			Bundle:   r.Bundle,
 			Resolved: e,
 		}
@@ -159,7 +159,7 @@ func (c *JSONClient) ListTests(ctx context.Context, patterns []string, features 
 }
 
 // ListFixtures enumerates all fixtures.
-func (c *JSONClient) ListFixtures(ctx context.Context) ([]*driverdata.BundleEntity, error) {
+func (c *JSONClient) ListFixtures(ctx context.Context) ([]*drivercore.BundleEntity, error) {
 	args := &jsonprotocol.RunnerArgs{
 		Mode: jsonprotocol.RunnerListFixturesMode,
 		ListFixtures: &jsonprotocol.RunnerListFixturesArgs{
@@ -173,14 +173,14 @@ func (c *JSONClient) ListFixtures(ctx context.Context) ([]*driverdata.BundleEnti
 
 	graph := newFixtureGraphFromListFixturesResult(&res)
 
-	var fixtures []*driverdata.BundleEntity
+	var fixtures []*drivercore.BundleEntity
 	for bundle, fs := range res.Fixtures {
 		for _, f := range fs {
 			e, err := f.Proto()
 			if err != nil {
 				return nil, err
 			}
-			fixtures = append(fixtures, &driverdata.BundleEntity{
+			fixtures = append(fixtures, &drivercore.BundleEntity{
 				Bundle: f.Bundle,
 				Resolved: &protocol.ResolvedEntity{
 					Entity:           e,

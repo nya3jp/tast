@@ -2,7 +2,7 @@
 
 > This document assumes that you've already gone through [Codelab #1].
 
-This codelab follows the creation of a remote Tast test and a [gRPC](go/grpc) service
+This codelab follows the creation of a remote Tast test and a [gRPC](https://grpc.io) service
 used by the test.
 
 [Codelab #1]: codelab_1.md
@@ -32,7 +32,7 @@ parts:
 
 ## gRPC services
 
-The gRPC services are created using [protocol buffers](go/proto-gdh)
+The gRPC services are created using [protocol buffers](https://developers.google.com/protocol-buffers)
 to define their signatures, their respective request and response message types.
 We create a proto file with the definition in the folder in
 `tast-tests/src/chromiumos/tast/services/cros` that corresponds to the test.

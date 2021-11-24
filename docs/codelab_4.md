@@ -212,7 +212,7 @@ func init() {
 			"googler@google.com", // Test author
 			"googler-team@google.com",
 		},
-		Attr:         []string{"group:mainline", "informational"},
+		Attr:         []string{"group:enrollment"},
 		SoftwareDeps: []string{"chrome"},
 		ServiceDeps:  []string{"tast.cros.policy.PolicyService", "tast.cros.policy.SystemTimezoneService"},
 		Timeout:      7 * time.Minute,

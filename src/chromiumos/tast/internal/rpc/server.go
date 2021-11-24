@@ -190,7 +190,9 @@ func serverOpts(ls *remoteLoggingServer, calls *sync.WaitGroup) []grpc.ServerOpt
 				}
 			}
 
-			md[metadataLogLastSeq] = []string{strconv.FormatUint(ls.LastSeq(), 10)}
+			if !isLoggingMethod(method) {
+				md[metadataLogLastSeq] = []string{strconv.FormatUint(ls.LastSeq(), 10)}
+			}
 			return md
 		}
 		return ctx, trailer, nil

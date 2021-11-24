@@ -274,8 +274,10 @@ func clientOpts(lazyLog *lazyRemoteLoggingClient) []grpc.DialOption {
 					firstErr = err
 				}
 			}
-			if err := processLoggingTrailer(ctx, lazyLog, trailer.Get(metadataLogLastSeq)); err != nil && firstErr == nil {
-				firstErr = err
+			if !isLoggingMethod(method) {
+				if err := processLoggingTrailer(ctx, lazyLog, trailer.Get(metadataLogLastSeq)); err != nil && firstErr == nil {
+					firstErr = err
+				}
 			}
 			return firstErr
 		}

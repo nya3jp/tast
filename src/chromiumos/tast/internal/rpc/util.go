@@ -12,3 +12,8 @@ import (
 func isUserMethod(name string) bool {
 	return !strings.HasPrefix(name, "/tast.core.")
 }
+
+// isLoggingMethod checks if a gRPC method belongs to the logging gRPC service.
+func isLoggingMethod(name string) bool {
+	return strings.HasPrefix(name, "/tast.core.Logging/")
+}

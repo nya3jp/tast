@@ -25,7 +25,7 @@ import (
 //
 // This number must be incremented when a framework change breaks "tast run -build"
 // with combination of older tast binary and newer source code.
-const sourceCompatVersion = 8
+const sourceCompatVersion = 9
 
 // compatGoPath is the path to this file.
 const compatGoPath = "cmd/tast/internal/build/compat.go"

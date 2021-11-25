@@ -105,7 +105,7 @@ func (d *Driver) DefaultTimeout() time.Duration {
 	return d.cc.DefaultTimeout()
 }
 
-var useGRPC = os.Getenv("TAST_EXP_USE_GRPC") != "0"
+var useGRPC = os.Getenv("TAST_EXP_USE_GRPC") == "1"
 
 // runnerClient is an interface implemented by runnerclient.JSONClient and
 // runnerclient.GRPCClient.

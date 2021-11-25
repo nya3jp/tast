@@ -15,7 +15,6 @@ import (
 	"google.golang.org/protobuf/testing/protocmp"
 
 	"chromiumos/tast/internal/bundle/fakebundle"
-	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/protocol/protocoltest"
 	"chromiumos/tast/internal/rpc"
@@ -31,7 +30,7 @@ func startTestServer(t *gotesting.T, params *protocol.RunnerInitParams) protocol
 	done := make(chan struct{})
 	go func() {
 		defer close(done)
-		Run([]string{"-rpc"}, sr, sw, ioutil.Discard, &jsonprotocol.RunnerArgs{}, &StaticConfig{})
+		Run([]string{"-rpc"}, sr, sw, ioutil.Discard, &StaticConfig{})
 	}()
 	t.Cleanup(func() {
 		cw.Close()

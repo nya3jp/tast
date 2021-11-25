@@ -107,7 +107,7 @@ func (r *Runner) RunJSON(stdin io.Reader, stdout, stderr io.Writer) int {
 		fallthrough
 	case jsonprotocol.RunnerListTestsMode, jsonprotocol.RunnerListFixturesMode:
 		argsData, _ := json.Marshal(&args) // should always succeed
-		return runner.Run(nil, bytes.NewBuffer(argsData), stdout, stderr, &args, r.cfg.StaticConfig)
+		return runner.Run(nil, bytes.NewBuffer(argsData), stdout, stderr, r.cfg.StaticConfig)
 	case jsonprotocol.RunnerGetDUTInfoMode:
 		req := args.GetDUTInfo.Proto()
 		res, err := r.cfg.GetDUTInfo(req)
@@ -158,7 +158,7 @@ func (r *Runner) RunGRPC(stdin io.Reader, stdout, stderr io.Writer) int {
 	done := make(chan struct{})
 	go func() {
 		defer close(done)
-		runner.Run([]string{"-rpc"}, sr, sw, ioutil.Discard, &jsonprotocol.RunnerArgs{}, r.cfg.StaticConfig)
+		runner.Run([]string{"-rpc"}, sr, sw, ioutil.Discard, r.cfg.StaticConfig)
 	}()
 	defer func() {
 		cw.Close()

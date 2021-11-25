@@ -136,15 +136,12 @@ func newBufferWithArgs(t *gotesting.T, args *jsonprotocol.RunnerArgs) *bytes.Buf
 
 // callRun calls Run using the supplied arguments and returns its output, status, and a signature that can
 // be used in error messages.
-func callRun(t *gotesting.T, clArgs []string, stdinArgs, defaultArgs *jsonprotocol.RunnerArgs, scfg *StaticConfig) (
+func callRun(t *gotesting.T, clArgs []string, stdinArgs *jsonprotocol.RunnerArgs, scfg *StaticConfig) (
 	status int, stdout, stderr *bytes.Buffer, sig string) {
-	if defaultArgs == nil {
-		defaultArgs = &jsonprotocol.RunnerArgs{}
-	}
 	sig = fmt.Sprintf("Run(%v, %+v)", clArgs, stdinArgs)
 	stdout = &bytes.Buffer{}
 	stderr = &bytes.Buffer{}
-	return Run(clArgs, newBufferWithArgs(t, stdinArgs), stdout, stderr, defaultArgs, scfg), stdout, stderr, sig
+	return Run(clArgs, newBufferWithArgs(t, stdinArgs), stdout, stderr, scfg), stdout, stderr, sig
 }
 
 // readAllMessages reads and returns a slice of pointers to control messages
@@ -183,7 +180,7 @@ func TestRunListTests(t *gotesting.T) {
 		Mode:      jsonprotocol.RunnerListTestsMode,
 		ListTests: &jsonprotocol.RunnerListTestsArgs{BundleGlob: filepath.Join(dir, "*")},
 	}
-	status, stdout, stderr, sig := callRun(t, nil, &args, nil, &StaticConfig{Type: LocalRunner})
+	status, stdout, stderr, sig := callRun(t, nil, &args, &StaticConfig{Type: LocalRunner})
 	if status != statusSuccess {
 		t.Fatalf("%s = %v; want %v", sig, status, statusSuccess)
 	}
@@ -223,7 +220,7 @@ func TestRunListFixtures(t *gotesting.T) {
 			BundleGlob: filepath.Join(dir, "*"),
 		},
 	}
-	status, stdout, _, sig := callRun(t, nil, &args, nil, &StaticConfig{Type: LocalRunner})
+	status, stdout, _, sig := callRun(t, nil, &args, &StaticConfig{Type: LocalRunner})
 	if status != statusSuccess {
 		t.Fatalf("%s = %v; want %v", sig, status, statusSuccess)
 	}
@@ -247,7 +244,7 @@ func TestRunListFixtures(t *gotesting.T) {
 	}
 
 	// Test errors
-	status, _, _, sig = callRun(t, nil, &jsonprotocol.RunnerArgs{Mode: jsonprotocol.RunnerListFixturesMode /* ListFixtures is nil */}, nil, &StaticConfig{Type: LocalRunner})
+	status, _, _, sig = callRun(t, nil, &jsonprotocol.RunnerArgs{Mode: jsonprotocol.RunnerListFixturesMode /* ListFixtures is nil */}, &StaticConfig{Type: LocalRunner})
 	if status != statusBadArgs {
 		t.Fatalf("%s = %v; want %v", sig, status, statusBadArgs)
 	}
@@ -265,7 +262,7 @@ func TestRunListTestsNoBundles(t *gotesting.T) {
 	// The runner should only exit with 0 and report errors via control messages on stdout when it's
 	// performing an actual test run. Since we're only listing tests, it should instead exit with an
 	// error (and write the error to stderr, although that's not checked here).
-	status, stdout, stderr, sig := callRun(t, nil, &args, nil, &StaticConfig{Type: LocalRunner})
+	status, stdout, stderr, sig := callRun(t, nil, &args, &StaticConfig{Type: LocalRunner})
 	if status != statusNoBundles {
 		t.Errorf("%s = %v; want %v", sig, status, statusNoBundles)
 	}
@@ -283,7 +280,7 @@ func TestRunTests(t *gotesting.T) {
 
 	// Run should execute multiple test bundles and merge their output correctly.
 	args := &jsonprotocol.RunnerArgs{RunTests: &jsonprotocol.RunnerRunTestsArgs{BundleGlob: filepath.Join(dir, "*")}}
-	status, stdout, stderr, sig := callRun(t, nil, args, nil, &StaticConfig{Type: LocalRunner})
+	status, stdout, stderr, sig := callRun(t, nil, args, &StaticConfig{Type: LocalRunner})
 	if status != statusSuccess {
 		t.Fatalf("%s = %v; want %v", sig, status, statusSuccess)
 	}
@@ -343,7 +340,7 @@ func TestRunTests(t *gotesting.T) {
 }
 
 func TestInvalidFlag(t *gotesting.T) {
-	status, stdout, stderr, sig := callRun(t, []string{"-bogus"}, nil, nil, &StaticConfig{Type: LocalRunner})
+	status, stdout, stderr, sig := callRun(t, []string{"-bogus"}, nil, &StaticConfig{Type: LocalRunner})
 	if status != statusBadArgs {
 		t.Errorf("%s = %v; want %v", sig, status, statusBadArgs)
 	}
@@ -361,7 +358,7 @@ func TestRunNoTests(t *gotesting.T) {
 
 	// RunTests should fail when run manually with a pattern is passed that doesn't match any tests.
 	clArgs := []string{"-bundles=" + filepath.Join(dir, "*"), "bogus.SomeTest"}
-	status, stdout, stderr, sig := callRun(t, clArgs, nil, nil, &StaticConfig{Type: LocalRunner})
+	status, stdout, stderr, sig := callRun(t, clArgs, nil, &StaticConfig{Type: LocalRunner})
 	if status == 0 {
 		t.Errorf("%s = %v; want non-zero", sig, status)
 	}
@@ -380,7 +377,7 @@ func TestRunNoTests(t *gotesting.T) {
 		},
 	}
 	scfg := &StaticConfig{Type: LocalRunner}
-	if status, stdout, stderr, sig = callRun(t, nil, args, nil, scfg); status != statusSuccess {
+	if status, stdout, stderr, sig = callRun(t, nil, args, scfg); status != statusSuccess {
 		t.Errorf("%s = %v; want %v", sig, status, statusSuccess)
 	}
 	if gotRunError(readAllMessages(t, stdout)) {
@@ -397,7 +394,7 @@ func TestRunFailForTestErrorWhenRunManually(t *gotesting.T) {
 
 	// RunTests should fail when a bundle reports failure while run manually.
 	clArgs := []string{"-bundles=" + filepath.Join(dir, "*")}
-	status, _, stderr, sig := callRun(t, clArgs, nil, nil, &StaticConfig{Type: LocalRunner})
+	status, _, stderr, sig := callRun(t, clArgs, nil, &StaticConfig{Type: LocalRunner})
 	if status != statusTestFailed {
 		t.Errorf("%s = %v; want %v", sig, status, statusTestFailed)
 	}
@@ -414,7 +411,7 @@ func TestSkipBundlesWithoutMatchedTests(t *gotesting.T) {
 	// match any tests in the bundle. Pass the name of the test in the first bundle and
 	// check that the run succeeds (i.e. the second bundle wasn't executed).
 	clArgs := []string{"-bundles=" + filepath.Join(dir, "*"), getTestName(0, 0)}
-	status, _, _, sig := callRun(t, clArgs, nil, nil, &StaticConfig{Type: LocalRunner})
+	status, _, _, sig := callRun(t, clArgs, nil, &StaticConfig{Type: LocalRunner})
 	if status != statusSuccess {
 		t.Errorf("%s = %v; want %v", sig, status, statusSuccess)
 	}
@@ -431,7 +428,7 @@ func TestRunTestsUseRequestedOutDir(t *gotesting.T) {
 			BundleGlob: filepath.Join(bundleDir, "*"),
 			BundleArgs: jsonprotocol.BundleRunTestsArgs{OutDir: outDir},
 		},
-	}, nil, &StaticConfig{Type: LocalRunner})
+	}, &StaticConfig{Type: LocalRunner})
 	if status != statusSuccess {
 		t.Fatalf("%s = %v; want %v", sig, status, statusSuccess)
 	}

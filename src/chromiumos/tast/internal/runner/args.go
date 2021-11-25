@@ -68,6 +68,14 @@ type StaticConfig struct {
 	// successfully downloaded and installed before. This prevents downloading private test bundles for
 	// every runner invocation.
 	PrivateBundlesStampPath string
+
+	// DeprecatedDirectRunDefaults is default configuration values used when
+	// the user executes a test runner directly to run tests.
+	//
+	// DEPRECATED: Direct test execution is deprecated. Tast tests should be
+	// always initiated with Tast CLI, in which case default values here are
+	// ignored.
+	DeprecatedDirectRunDefaults DeprecatedDirectRunDefaults
 }
 
 // fillDefaults fills unset fields with default values from cfg.
@@ -84,15 +92,42 @@ func (c *StaticConfig) fillDefaults(a *jsonprotocol.RunnerArgs) {
 	}
 }
 
+// DeprecatedDirectRunDefaults contains default configuration values used when
+// the user executes a test runner directly to run tests.
+//
+// DEPRECATED: Direct test execution is deprecated. Tast tests should be always
+// initiated with Tast CLI, in which case default values here are ignored.
+type DeprecatedDirectRunDefaults struct {
+	// BundleGlob is a glob-style path matching test bundles to execute.
+	BundleGlob string
+
+	// DataDir is the path to the directory containing test data files.
+	DataDir string
+
+	// TempDir is the path to the directory under which temporary files for
+	// tests are written.
+	TempDir string
+}
+
 // readArgs parses runtime arguments.
 // clArgs contains command-line arguments and is typically os.Args[1:].
 // args contains default values for arguments and is further populated by parsing clArgs or
 // (if clArgs is empty, as is the case when a runner is executed by the tast command) by
 // decoding a JSON-marshaled RunnerArgs struct from stdin.
-func readArgs(clArgs []string, stdin io.Reader, stderr io.Writer, args *jsonprotocol.RunnerArgs, scfg *StaticConfig) error {
+func readArgs(clArgs []string, stdin io.Reader, stderr io.Writer, scfg *StaticConfig) (*jsonprotocol.RunnerArgs, error) {
+	args := &jsonprotocol.RunnerArgs{
+		RunTests: &jsonprotocol.RunnerRunTestsArgs{
+			BundleGlob: scfg.DeprecatedDirectRunDefaults.BundleGlob,
+			BundleArgs: jsonprotocol.BundleRunTestsArgs{
+				DataDir: scfg.DeprecatedDirectRunDefaults.DataDir,
+				TempDir: scfg.DeprecatedDirectRunDefaults.TempDir,
+			},
+		},
+	}
+
 	if len(clArgs) == 0 {
 		if err := json.NewDecoder(stdin).Decode(args); err != nil {
-			return command.NewStatusErrorf(statusBadArgs, "failed to decode args from stdin: %v", err)
+			return nil, command.NewStatusErrorf(statusBadArgs, "failed to decode args from stdin: %v", err)
 		}
 		args.Report = true
 	} else {
@@ -144,12 +179,12 @@ errors, including the failure of an individual test.
 		}
 
 		if err := flags.Parse(clArgs); err != nil {
-			return command.NewStatusErrorf(statusBadArgs, "%v", err)
+			return nil, command.NewStatusErrorf(statusBadArgs, "%v", err)
 		}
 
 		if *rpc {
 			args.Mode = jsonprotocol.RunnerRPCMode
-			return nil
+			return args, nil
 		}
 
 		args.RunTests.BundleArgs.Patterns = flags.Args()
@@ -161,7 +196,7 @@ errors, including the failure of an individual test.
 			req := &protocol.GetDUTInfoRequest{ExtraUseFlags: extraUSEFlags}
 			res, err := scfg.GetDUTInfo(context.Background(), req)
 			if err != nil {
-				return err
+				return nil, err
 			}
 
 			fs := res.GetDutInfo().GetFeatures().GetSoftware()
@@ -179,7 +214,7 @@ errors, including the failure of an individual test.
 		(args.Mode == jsonprotocol.RunnerGetDUTInfoMode && args.GetDUTInfo == nil) ||
 		(args.Mode == jsonprotocol.RunnerDownloadPrivateBundlesMode && args.DownloadPrivateBundles == nil) ||
 		(args.Mode == jsonprotocol.RunnerListFixturesMode && args.ListFixtures == nil) {
-		return command.NewStatusErrorf(statusBadArgs, "args not set for mode %v", args.Mode)
+		return nil, command.NewStatusErrorf(statusBadArgs, "args not set for mode %v", args.Mode)
 	}
 
 	scfg.fillDefaults(args)
@@ -187,5 +222,5 @@ errors, including the failure of an individual test.
 	// Use deprecated fields if they were supplied by an old tast binary.
 	args.PromoteDeprecated()
 
-	return nil
+	return args, nil
 }

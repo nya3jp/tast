@@ -49,7 +49,7 @@ func TestGetDUTInfo(t *testing.T) {
 				ExtraUSEFlags: extraUseFlags,
 			},
 		},
-		nil, &scfg)
+		&scfg)
 	if status != statusSuccess {
 		t.Fatalf("%v = %v; want %v", sig, status, statusSuccess)
 	}

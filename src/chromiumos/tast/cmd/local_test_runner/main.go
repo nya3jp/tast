@@ -14,20 +14,10 @@ import (
 	"os"
 
 	"chromiumos/tast/internal/crosbundle"
-	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/runner"
 )
 
 func main() {
-	args := jsonprotocol.RunnerArgs{
-		RunTests: &jsonprotocol.RunnerRunTestsArgs{
-			BundleGlob: "/usr/local/libexec/tast/bundles/local/*",
-			BundleArgs: jsonprotocol.BundleRunTestsArgs{
-				DataDir: "/usr/local/share/tast/data",
-				TempDir: "/usr/local/tmp/tast/run_tmp",
-			},
-		},
-	}
 	scfg := runner.StaticConfig{
 		Type:                               runner.LocalRunner,
 		KillStaleRunners:                   true,
@@ -37,6 +27,11 @@ func main() {
 		CollectSysInfo:                     crosbundle.CollectSysInfo,
 		DeprecatedDefaultBuildArtifactsURL: crosbundle.DeprecatedDefaultBuildArtifactsURL,
 		PrivateBundlesStampPath:            "/usr/local/share/tast/.private-bundles-downloaded",
+		DeprecatedDirectRunDefaults: runner.DeprecatedDirectRunDefaults{
+			BundleGlob: "/usr/local/libexec/tast/bundles/local/*",
+			DataDir:    "/usr/local/share/tast/data",
+			TempDir:    "/usr/local/tmp/tast/run_tmp",
+		},
 	}
-	os.Exit(runner.Run(os.Args[1:], os.Stdin, os.Stdout, os.Stderr, &args, &scfg))
+	os.Exit(runner.Run(os.Args[1:], os.Stdin, os.Stdout, os.Stderr, &scfg))
 }

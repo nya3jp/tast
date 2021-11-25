@@ -11,23 +11,18 @@ package main
 import (
 	"os"
 
-	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/runner"
 )
 
 func main() {
-	args := jsonprotocol.RunnerArgs{
-		RunTests: &jsonprotocol.RunnerRunTestsArgs{
-			BundleGlob: "/usr/libexec/tast/bundles/remote/*", // default glob matching test bundles
-			BundleArgs: jsonprotocol.BundleRunTestsArgs{
-				DataDir: "/usr/share/tast/data", // default dir containing test data
-			},
-		},
-	}
 	scfg := runner.StaticConfig{
 		Type:             runner.RemoteRunner,
 		KillStaleRunners: true,
 		EnableSyslog:     true,
+		DeprecatedDirectRunDefaults: runner.DeprecatedDirectRunDefaults{
+			BundleGlob: "/usr/libexec/tast/bundles/remote/*", // default glob matching test bundles
+			DataDir:    "/usr/share/tast/data",               // default dir containing test data
+		},
 	}
-	os.Exit(runner.Run(os.Args[1:], os.Stdin, os.Stdout, os.Stderr, &args, &scfg))
+	os.Exit(runner.Run(os.Args[1:], os.Stdin, os.Stdout, os.Stderr, &scfg))
 }

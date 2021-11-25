@@ -50,7 +50,7 @@ const (
 // Default arguments may be passed via args, which is filled with the additional args that are read.
 // clArgs should typically be os.Args[1:].
 // The caller should exit with the returned status code.
-func Run(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, args *jsonprotocol.RunnerArgs, scfg *StaticConfig) int {
+func Run(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, scfg *StaticConfig) int {
 	ctx := context.Background()
 
 	if scfg.EnableSyslog {
@@ -68,7 +68,8 @@ func Run(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, args *jsonp
 		command.InstallSignalHandler(os.NewFile(3, ""), func(os.Signal) {})
 	}
 
-	if err := readArgs(clArgs, stdin, stderr, args, scfg); err != nil {
+	args, err := readArgs(clArgs, stdin, stderr, scfg)
+	if err != nil {
 		return command.WriteError(stderr, err)
 	}
 

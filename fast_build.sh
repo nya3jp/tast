@@ -189,5 +189,4 @@ elif [ -n "${check_pkg}" ]; then
   fi
 else
   run_build "${TAST_PKG}" "${TAST_OUT}"
-  run_build "${TAST_RTD_PKG}" "${TAST_RTD_OUT}"
 fi

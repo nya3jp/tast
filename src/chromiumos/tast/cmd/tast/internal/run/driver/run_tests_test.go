@@ -99,18 +99,18 @@ func TestDriver_RunTests(t *gotesting.T) {
 		},
 		{
 			Test: resultsjson.Test{
+				Name:   "test.Remote1",
+				Bundle: "bundle1",
+			},
+		},
+		{
+			Test: resultsjson.Test{
 				Name:   "test.Local2",
 				Bundle: "bundle2",
 			},
 			Errors: []resultsjson.Error{{
 				Reason: "Failed",
 			}},
-		},
-		{
-			Test: resultsjson.Test{
-				Name:   "test.Remote1",
-				Bundle: "bundle1",
-			},
 		},
 		{
 			Test: resultsjson.Test{
@@ -202,6 +202,13 @@ func TestDriver_RunTests_RemoteFixture(t *gotesting.T) {
 	want := []*resultsjson.Result{
 		{
 			Test: resultsjson.Test{
+				Name:    "test.Local1",
+				Bundle:  "bundle1",
+				Fixture: "fixture.Remote1",
+			},
+		},
+		{
+			Test: resultsjson.Test{
 				Name:    "test.Local2",
 				Bundle:  "bundle2",
 				Fixture: "fixture.Remote2",
@@ -209,13 +216,6 @@ func TestDriver_RunTests_RemoteFixture(t *gotesting.T) {
 			Errors: []resultsjson.Error{{
 				Reason: "Local-remote fixture dependencies are not yet supported in non-primary bundles (b/187957164)",
 			}},
-		},
-		{
-			Test: resultsjson.Test{
-				Name:    "test.Local1",
-				Bundle:  "bundle1",
-				Fixture: "fixture.Remote1",
-			},
 		},
 	}
 	if diff := cmp.Diff(got, want, resultsCmpOpts...); diff != "" {

@@ -41,8 +41,30 @@ type runTestsArgs struct {
 	RemoteDevservers []string
 }
 
-// RunTests runs specified tests.
+// RunTests runs specified tests per bundle.
 func (d *Driver) RunTests(ctx context.Context, tests []*BundleEntity, dutInfo *protocol.DUTInfo, client *reporting.RPCClient, remoteDevservers []string) ([]*resultsjson.Result, error) {
+	testsPerBundle := make(map[string][]*protocol.ResolvedEntity)
+	for _, t := range tests {
+		testsPerBundle[t.Bundle] = append(testsPerBundle[t.Bundle], t.Resolved)
+	}
+	bundles := make([]string, 0, len(testsPerBundle))
+	for b := range testsPerBundle {
+		bundles = append(bundles, b)
+	}
+	sort.Strings(bundles)
+	var results []*resultsjson.Result
+	for _, bundle := range bundles {
+		res, err := d.runTests(ctx, bundle, testsPerBundle[bundle], dutInfo, client, remoteDevservers)
+		results = append(results, res...)
+		if err != nil {
+			return results, err
+		}
+	}
+	return results, nil
+}
+
+// runTests runs specified tests. It can return non-nil results even on errors.
+func (d *Driver) runTests(ctx context.Context, bundle string, tests []*protocol.ResolvedEntity, dutInfo *protocol.DUTInfo, client *reporting.RPCClient, remoteDevservers []string) ([]*resultsjson.Result, error) {
 	localTests, remoteTests, err := splitTests(tests)
 	if err != nil {
 		return nil, err
@@ -56,7 +78,7 @@ func (d *Driver) RunTests(ctx context.Context, tests []*BundleEntity, dutInfo *p
 	}
 
 	// Note: These methods can return non-nil results even on errors.
-	localResults, err := d.runLocalTests(ctx, localTests, args)
+	localResults, err := d.runLocalTests(ctx, bundle, localTests, args)
 	if err != nil {
 		return localResults, err
 	}
@@ -64,7 +86,7 @@ func (d *Driver) RunTests(ctx context.Context, tests []*BundleEntity, dutInfo *p
 	return append(localResults, remoteResults...), err
 }
 
-func (d *Driver) runLocalTests(ctx context.Context, tests []*BundleEntity, args *runTestsArgs) ([]*resultsjson.Result, error) {
+func (d *Driver) runLocalTests(ctx context.Context, bundle string, tests []*protocol.ResolvedEntity, args *runTestsArgs) ([]*resultsjson.Result, error) {
 	// If there is no local test to run, return early without connecting to
 	// remote test bundles.
 	if len(tests) == 0 {
@@ -74,14 +96,14 @@ func (d *Driver) runLocalTests(ctx context.Context, tests []*BundleEntity, args 
 	// We don't yet support inter-machine fixture dependencies except for
 	// the primary bundle (aka "cros"). Thus
 	var results []*resultsjson.Result
-	testsByStart := make(map[string][]*BundleEntity)
+	testsByStart := make(map[string][]*protocol.ResolvedEntity)
 	for _, t := range tests {
-		start := t.Resolved.GetStartFixtureName()
-		if t.Bundle == d.cfg.PrimaryBundle() || start == "" {
+		start := t.GetStartFixtureName()
+		if bundle == d.cfg.PrimaryBundle() || start == "" {
 			testsByStart[start] = append(testsByStart[start], t)
 		} else {
 			// Generate a failure result immediately.
-			rjTest, err := resultsjson.NewTest(t.Resolved.GetEntity())
+			rjTest, err := resultsjson.NewTest(t.GetEntity())
 			if err != nil {
 				return results, err
 			}
@@ -115,7 +137,7 @@ func (d *Driver) runLocalTests(ctx context.Context, tests []*BundleEntity, args 
 	return results, nil
 }
 
-func (d *Driver) runLocalTestsWithRemoteFixture(ctx context.Context, tests []*BundleEntity, start string, args *runTestsArgs) (results []*resultsjson.Result, retErr error) {
+func (d *Driver) runLocalTestsWithRemoteFixture(ctx context.Context, tests []*protocol.ResolvedEntity, start string, args *runTestsArgs) (results []*resultsjson.Result, retErr error) {
 	if start == "" {
 		return d.runLocalTestsWithRetry(ctx, tests, &protocol.StartFixtureState{}, args)
 	}
@@ -180,14 +202,14 @@ func (d *Driver) runLocalTestsWithRemoteFixture(ctx context.Context, tests []*Bu
 	return d.runLocalTestsWithRetry(ctx, tests, ticket.StartFixtureState(), args)
 }
 
-func (d *Driver) runLocalTestsWithRetry(ctx context.Context, tests []*BundleEntity, state *protocol.StartFixtureState, args *runTestsArgs) ([]*resultsjson.Result, error) {
-	runTestsOnce := func(ctx context.Context, tests []*BundleEntity) ([]*resultsjson.Result, error) {
+func (d *Driver) runLocalTestsWithRetry(ctx context.Context, tests []*protocol.ResolvedEntity, state *protocol.StartFixtureState, args *runTestsArgs) ([]*resultsjson.Result, error) {
+	runTestsOnce := func(ctx context.Context, tests []*protocol.ResolvedEntity) ([]*resultsjson.Result, error) {
 		return d.runLocalTestsOnce(ctx, tests, state, args)
 	}
 	return runTestsWithRetry(ctx, tests, runTestsOnce, d.cfg.Retries())
 }
 
-func (d *Driver) runLocalTestsOnce(ctx context.Context, tests []*BundleEntity, state *protocol.StartFixtureState, args *runTestsArgs) ([]*resultsjson.Result, error) {
+func (d *Driver) runLocalTestsOnce(ctx context.Context, tests []*protocol.ResolvedEntity, state *protocol.StartFixtureState, args *runTestsArgs) ([]*resultsjson.Result, error) {
 	if err := d.ReconnectIfNeeded(ctx); err != nil {
 		return nil, err
 	}
@@ -213,18 +235,18 @@ func (d *Driver) runLocalTestsOnce(ctx context.Context, tests []*BundleEntity, s
 	return proc.Results(), proc.FatalError()
 }
 
-func (d *Driver) runRemoteTests(ctx context.Context, tests []*BundleEntity, args *runTestsArgs) ([]*resultsjson.Result, error) {
+func (d *Driver) runRemoteTests(ctx context.Context, tests []*protocol.ResolvedEntity, args *runTestsArgs) ([]*resultsjson.Result, error) {
 	if len(tests) == 0 {
 		return nil, nil
 	}
 
-	runTestsOnce := func(ctx context.Context, tests []*BundleEntity) ([]*resultsjson.Result, error) {
+	runTestsOnce := func(ctx context.Context, tests []*protocol.ResolvedEntity) ([]*resultsjson.Result, error) {
 		return d.runRemoteTestsOnce(ctx, tests, args)
 	}
 	return runTestsWithRetry(ctx, tests, runTestsOnce, d.cfg.Retries())
 }
 
-func (d *Driver) runRemoteTestsOnce(ctx context.Context, tests []*BundleEntity, args *runTestsArgs) ([]*resultsjson.Result, error) {
+func (d *Driver) runRemoteTestsOnce(ctx context.Context, tests []*protocol.ResolvedEntity, args *runTestsArgs) ([]*resultsjson.Result, error) {
 	bcfg, rcfg, err := d.newConfigsForRemoteTests(tests, args.DUTInfo, args.RemoteDevservers)
 	if err != nil {
 		return nil, err
@@ -237,10 +259,10 @@ func (d *Driver) runRemoteTestsOnce(ctx context.Context, tests []*BundleEntity, 
 	return proc.Results(), proc.FatalError()
 }
 
-func (d *Driver) newConfigsForLocalTests(tests []*BundleEntity, state *protocol.StartFixtureState, dutInfo *protocol.DUTInfo) (*protocol.BundleConfig, *protocol.RunConfig) {
+func (d *Driver) newConfigsForLocalTests(tests []*protocol.ResolvedEntity, state *protocol.StartFixtureState, dutInfo *protocol.DUTInfo) (*protocol.BundleConfig, *protocol.RunConfig) {
 	var testNames []string
 	for _, t := range tests {
-		testNames = append(testNames, t.Resolved.GetEntity().GetName())
+		testNames = append(testNames, t.GetEntity().GetName())
 	}
 
 	buildArtifactsURL := d.cfg.BuildArtifactsURLOverride()
@@ -290,7 +312,7 @@ func (d *Driver) newConfigsForLocalTests(tests []*BundleEntity, state *protocol.
 	return bcfg, rcfg
 }
 
-func (d *Driver) newConfigsForRemoteTests(tests []*BundleEntity, dutInfo *protocol.DUTInfo, remoteDevservers []string) (*protocol.BundleConfig, *protocol.RunConfig, error) {
+func (d *Driver) newConfigsForRemoteTests(tests []*protocol.ResolvedEntity, dutInfo *protocol.DUTInfo, remoteDevservers []string) (*protocol.BundleConfig, *protocol.RunConfig, error) {
 	exe, err := os.Executable()
 	if err != nil {
 		return nil, nil, err
@@ -298,7 +320,7 @@ func (d *Driver) newConfigsForRemoteTests(tests []*BundleEntity, dutInfo *protoc
 
 	var testNames []string
 	for _, t := range tests {
-		testNames = append(testNames, t.Resolved.GetEntity().GetName())
+		testNames = append(testNames, t.GetEntity().GetName())
 	}
 
 	companionDUTs := make(map[string]*protocol.DUTConfig)
@@ -418,15 +440,15 @@ func (d *Driver) newRunFixtureConfig(dutInfo *protocol.DUTInfo) (*bundle.RunFixt
 	}, nil
 }
 
-func splitTests(tests []*BundleEntity) (localTests, remoteTests []*BundleEntity, err error) {
+func splitTests(tests []*protocol.ResolvedEntity) (localTests, remoteTests []*protocol.ResolvedEntity, err error) {
 	for _, t := range tests {
-		switch t.Resolved.GetHops() {
+		switch t.GetHops() {
 		case 0:
 			remoteTests = append(remoteTests, t)
 		case 1:
 			localTests = append(localTests, t)
 		default:
-			return nil, nil, errors.Errorf("unsupported hop %d for test %s", t.Resolved.GetHops(), t.Resolved.GetEntity().GetName())
+			return nil, nil, errors.Errorf("unsupported hop %d for test %s", t.GetHops(), t.GetEntity().GetName())
 		}
 	}
 	return localTests, remoteTests, nil
@@ -438,28 +460,28 @@ func nopDiagnose(ctx context.Context, outDir string) string {
 }
 
 // runTestsOnceFunc is a function to run tests once.
-type runTestsOnceFunc func(ctx context.Context, tests []*BundleEntity) ([]*resultsjson.Result, error)
+type runTestsOnceFunc func(ctx context.Context, tests []*protocol.ResolvedEntity) ([]*resultsjson.Result, error)
 
 // runTestsWithRetry runs tests in a loop. If runTestsOnce returns insufficient
 // results, it calls beforeRetry, followed by runTestsOnce again to restart
 // testing.
 // Additionally, this will honor the retry CLI flag.
-func runTestsWithRetry(ctx context.Context, allTests []*BundleEntity, runTestsOnce runTestsOnceFunc, retryn int) ([]*resultsjson.Result, error) {
+func runTestsWithRetry(ctx context.Context, allTests []*protocol.ResolvedEntity, runTestsOnce runTestsOnceFunc, retryn int) ([]*resultsjson.Result, error) {
 	var allResults []*resultsjson.Result
 	unstarted := make(map[string]struct{})
 
 	logging.Infof(ctx, "Allowing up to %v retries", retryn)
 	retries := make(map[string]int)
 	for _, t := range allTests {
-		unstarted[t.Resolved.GetEntity().GetName()] = struct{}{}
-		retries[t.Resolved.GetEntity().GetName()] = retryn
+		unstarted[t.GetEntity().GetName()] = struct{}{}
+		retries[t.GetEntity().GetName()] = retryn
 	}
 
 	for {
 		// Compute tests to run.
-		tests := make([]*BundleEntity, 0, len(unstarted))
+		tests := make([]*protocol.ResolvedEntity, 0, len(unstarted))
 		for _, t := range allTests {
-			if _, ok := unstarted[t.Resolved.GetEntity().GetName()]; ok {
+			if _, ok := unstarted[t.GetEntity().GetName()]; ok {
 				tests = append(tests, t)
 			}
 		}

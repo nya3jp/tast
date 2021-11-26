@@ -96,6 +96,7 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		Soc:                &configpb.HardwareFeatures_Soc{},
 		Keyboard:           &configpb.HardwareFeatures_Keyboard{},
 		FormFactor:         &configpb.HardwareFeatures_FormFactor{},
+		DpConverter:        &configpb.HardwareFeatures_DisplayPortConverter{},
 	}
 
 	formFactor, err := func() (string, error) {
@@ -394,6 +395,24 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 	if cpuSMT {
 		features.Soc.Features = append(features.Soc.Features, configpb.Component_Soc_SMT)
 	}
+
+	func() {
+		// Probe for presence of DisplayPort converters
+		devices := map[string]string{
+			"i2c-10EC2141:00": "RTD2141B",
+			"i2c-10EC2142:00": "RTD2142",
+			"i2c-1AF80175:00": "PS175",
+		}
+		for f, name := range devices {
+			path := filepath.Join("/sys/bus/i2c/devices", f)
+			if _, err := os.Stat(path); err != nil {
+				continue
+			}
+			features.DpConverter.Converters = append(features.DpConverter.Converters, &configpb.Component_DisplayPortConverter{
+				Name: name,
+			})
+		}
+	}()
 
 	return &protocol.HardwareFeatures{
 		HardwareFeatures:       features,

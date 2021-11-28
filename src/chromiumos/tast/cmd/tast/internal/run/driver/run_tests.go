@@ -83,7 +83,7 @@ func (d *Driver) runTests(ctx context.Context, bundle string, tests []*protocol.
 	if err != nil {
 		return localResults, err
 	}
-	remoteResults, err := d.runRemoteTests(ctx, remoteTests, args)
+	remoteResults, err := d.runRemoteTests(ctx, bundle, remoteTests, args)
 	return append(localResults, remoteResults...), err
 }
 
@@ -236,18 +236,18 @@ func (d *Driver) runLocalTestsOnce(ctx context.Context, bundle string, tests []*
 	return proc.Results(), proc.FatalError()
 }
 
-func (d *Driver) runRemoteTests(ctx context.Context, tests []*protocol.ResolvedEntity, args *runTestsArgs) ([]*resultsjson.Result, error) {
+func (d *Driver) runRemoteTests(ctx context.Context, bundle string, tests []*protocol.ResolvedEntity, args *runTestsArgs) ([]*resultsjson.Result, error) {
 	if len(tests) == 0 {
 		return nil, nil
 	}
 
 	runTestsOnce := func(ctx context.Context, tests []*protocol.ResolvedEntity) ([]*resultsjson.Result, error) {
-		return d.runRemoteTestsOnce(ctx, tests, args)
+		return d.runRemoteTestsOnce(ctx, bundle, tests, args)
 	}
 	return runTestsWithRetry(ctx, tests, runTestsOnce, d.cfg.Retries())
 }
 
-func (d *Driver) runRemoteTestsOnce(ctx context.Context, tests []*protocol.ResolvedEntity, args *runTestsArgs) ([]*resultsjson.Result, error) {
+func (d *Driver) runRemoteTestsOnce(ctx context.Context, bundle string, tests []*protocol.ResolvedEntity, args *runTestsArgs) ([]*resultsjson.Result, error) {
 	bcfg, rcfg, err := d.newConfigsForRemoteTests(tests, args.DUTInfo, args.RemoteDevservers)
 	if err != nil {
 		return nil, err
@@ -256,7 +256,7 @@ func (d *Driver) runRemoteTestsOnce(ctx context.Context, tests []*protocol.Resol
 	ctx = logging.AttachLogger(ctx, multiplexer)
 
 	proc := processor.New(d.cfg.ResDir(), multiplexer, nopDiagnose, os.Rename, args.Counter, args.Client)
-	d.remoteRunnerClient().RunTests(ctx, bcfg, rcfg, proc)
+	d.remoteBundleClient(bundle).RunTests(ctx, bcfg, rcfg, proc)
 	return proc.Results(), proc.FatalError()
 }
 

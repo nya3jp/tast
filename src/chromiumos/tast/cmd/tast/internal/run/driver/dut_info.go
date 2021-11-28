@@ -24,7 +24,7 @@ func (d *Driver) GetDUTInfo(ctx context.Context) (*protocol.DUTInfo, error) {
 	logging.Debug(ctx, "Getting DUT info")
 
 	req := &protocol.GetDUTInfoRequest{ExtraUseFlags: d.cfg.ExtraUSEFlags()}
-	res, err := d.localClient().GetDUTInfo(ctx, req)
+	res, err := d.localRunnerClient().GetDUTInfo(ctx, req)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to retrieve DUT info")
 	}

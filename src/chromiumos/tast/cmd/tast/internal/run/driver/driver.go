@@ -103,7 +103,7 @@ func (d *Driver) DefaultTimeout() time.Duration {
 	return d.cc.DefaultTimeout()
 }
 
-func (d *Driver) localClient() *runnerclient.Client {
+func (d *Driver) localCommand(exec string) *genericexec.SSHCmd {
 	var args []string
 	// The delve debugger attempts to write to a directory not on the stateful partition.
 	// This ensures it instead writes to the stateful partition.
@@ -122,14 +122,24 @@ func (d *Driver) localClient() *runnerclient.Client {
 			}
 		}
 	}
-	args = append(args, d.cfg.LocalRunner())
+	args = append(args, exec)
 
 	cmd := genericexec.CommandSSH(d.cc.Conn().SSHConn(), "env", args...)
+	return cmd
+}
+
+func (d *Driver) localRunnerClient() *runnerclient.Client {
+	cmd := d.localCommand(d.cfg.LocalRunner())
 	params := &protocol.RunnerInitParams{BundleGlob: d.cfg.LocalBundleGlob()}
 	return runnerclient.New(cmd, params, d.cfg.MsgTimeout(), 1)
 }
 
-func (d *Driver) remoteClient() *runnerclient.Client {
+func (d *Driver) localBundleClient(bundle string) *bundleclient.Client {
+	cmd := d.localCommand(filepath.Join(d.cfg.LocalBundleDir(), bundle))
+	return bundleclient.New(cmd)
+}
+
+func (d *Driver) remoteRunnerClient() *runnerclient.Client {
 	cmd := genericexec.CommandExec(d.cfg.RemoteRunner())
 	params := &protocol.RunnerInitParams{BundleGlob: d.cfg.RemoteBundleGlob()}
 	return runnerclient.New(cmd, params, d.cfg.MsgTimeout(), 0)

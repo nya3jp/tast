@@ -57,7 +57,7 @@ func (d *Driver) DownloadPrivateBundles(ctx context.Context, dutInfo *protocol.D
 		BuildArtifactUrl: buildArtifactsURL,
 	}
 
-	if err := d.localClient().DownloadPrivateBundles(ctx, req); err != nil {
+	if err := d.localRunnerClient().DownloadPrivateBundles(ctx, req); err != nil {
 		return errors.Wrap(err, "failed to download private bundles")
 	}
 	return nil

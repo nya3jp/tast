@@ -36,7 +36,7 @@ func (d *Driver) GetSysInfoState(ctx context.Context) (*protocol.SysInfoState, e
 	logging.Debug(ctx, "Getting initial system state")
 
 	req := &protocol.GetSysInfoStateRequest{}
-	res, err := d.localClient().GetSysInfoState(ctx, req)
+	res, err := d.localRunnerClient().GetSysInfoState(ctx, req)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to get system info state")
 	}
@@ -57,7 +57,7 @@ func (d *Driver) CollectSysInfo(ctx context.Context, initialSysInfo *protocol.Sy
 	req := &protocol.CollectSysInfoRequest{
 		InitialState: initialSysInfo,
 	}
-	res, err := d.localClient().CollectSysInfo(ctx, req)
+	res, err := d.localRunnerClient().CollectSysInfo(ctx, req)
 	if err != nil {
 		return errors.Wrap(err, "failed to collect system info")
 	}

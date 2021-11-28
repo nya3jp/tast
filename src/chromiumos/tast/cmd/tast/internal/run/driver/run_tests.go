@@ -129,7 +129,7 @@ func (d *Driver) runLocalTests(ctx context.Context, bundle string, tests []*prot
 	sort.Strings(starts)
 
 	for _, start := range starts {
-		subresults, err := d.runLocalTestsWithRemoteFixture(ctx, testsByStart[start], start, args)
+		subresults, err := d.runLocalTestsWithRemoteFixture(ctx, bundle, testsByStart[start], start, args)
 		results = append(results, subresults...)
 		if err != nil {
 			return results, err
@@ -138,9 +138,9 @@ func (d *Driver) runLocalTests(ctx context.Context, bundle string, tests []*prot
 	return results, nil
 }
 
-func (d *Driver) runLocalTestsWithRemoteFixture(ctx context.Context, tests []*protocol.ResolvedEntity, start string, args *runTestsArgs) (results []*resultsjson.Result, retErr error) {
+func (d *Driver) runLocalTestsWithRemoteFixture(ctx context.Context, bundle string, tests []*protocol.ResolvedEntity, start string, args *runTestsArgs) (results []*resultsjson.Result, retErr error) {
 	if start == "" {
-		return d.runLocalTestsWithRetry(ctx, tests, &protocol.StartFixtureState{}, args)
+		return d.runLocalTestsWithRetry(ctx, bundle, tests, &protocol.StartFixtureState{}, args)
 	}
 	runCfg, err := d.newRunFixtureConfig(args.DUTInfo)
 	if err != nil {
@@ -200,17 +200,17 @@ func (d *Driver) runLocalTestsWithRemoteFixture(ctx context.Context, tests []*pr
 		}
 	}()
 
-	return d.runLocalTestsWithRetry(ctx, tests, ticket.StartFixtureState(), args)
+	return d.runLocalTestsWithRetry(ctx, bundle, tests, ticket.StartFixtureState(), args)
 }
 
-func (d *Driver) runLocalTestsWithRetry(ctx context.Context, tests []*protocol.ResolvedEntity, state *protocol.StartFixtureState, args *runTestsArgs) ([]*resultsjson.Result, error) {
+func (d *Driver) runLocalTestsWithRetry(ctx context.Context, bundle string, tests []*protocol.ResolvedEntity, state *protocol.StartFixtureState, args *runTestsArgs) ([]*resultsjson.Result, error) {
 	runTestsOnce := func(ctx context.Context, tests []*protocol.ResolvedEntity) ([]*resultsjson.Result, error) {
-		return d.runLocalTestsOnce(ctx, tests, state, args)
+		return d.runLocalTestsOnce(ctx, bundle, tests, state, args)
 	}
 	return runTestsWithRetry(ctx, tests, runTestsOnce, d.cfg.Retries())
 }
 
-func (d *Driver) runLocalTestsOnce(ctx context.Context, tests []*protocol.ResolvedEntity, state *protocol.StartFixtureState, args *runTestsArgs) ([]*resultsjson.Result, error) {
+func (d *Driver) runLocalTestsOnce(ctx context.Context, bundle string, tests []*protocol.ResolvedEntity, state *protocol.StartFixtureState, args *runTestsArgs) ([]*resultsjson.Result, error) {
 	if err := d.ReconnectIfNeeded(ctx); err != nil {
 		return nil, err
 	}
@@ -232,7 +232,7 @@ func (d *Driver) runLocalTestsOnce(ctx context.Context, tests []*protocol.Resolv
 	}
 
 	proc := processor.New(d.cfg.ResDir(), multiplexer, diag, pull, args.Counter, args.Client)
-	d.localClient().RunTests(ctx, bcfg, rcfg, proc)
+	d.localBundleClient(bundle).RunTests(ctx, bcfg, rcfg, proc)
 	return proc.Results(), proc.FatalError()
 }
 
@@ -256,7 +256,7 @@ func (d *Driver) runRemoteTestsOnce(ctx context.Context, tests []*protocol.Resol
 	ctx = logging.AttachLogger(ctx, multiplexer)
 
 	proc := processor.New(d.cfg.ResDir(), multiplexer, nopDiagnose, os.Rename, args.Counter, args.Client)
-	d.remoteClient().RunTests(ctx, bcfg, rcfg, proc)
+	d.remoteRunnerClient().RunTests(ctx, bcfg, rcfg, proc)
 	return proc.Results(), proc.FatalError()
 }
 

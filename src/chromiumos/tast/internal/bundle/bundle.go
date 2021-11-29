@@ -8,11 +8,11 @@ import (
 	"context"
 	"encoding/json"
 	"io"
-	"sort"
 	"strings"
 	"time"
 
 	"chromiumos/tast/dut"
+	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/command"
 	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/testcontext"
@@ -69,7 +69,7 @@ type Delegate struct {
 // Default arguments may be specified via args, which will also be updated from stdin.
 // The caller should exit with the returned status code.
 func run(ctx context.Context, clArgs []string, stdin io.Reader, stdout, stderr io.Writer, scfg *StaticConfig) int {
-	args, err := readArgs(clArgs, stdin, stderr)
+	args, err := readArgs(clArgs, stderr)
 	if err != nil {
 		return command.WriteError(stderr, err)
 	}
@@ -83,66 +83,59 @@ func run(ctx context.Context, clArgs []string, stdin io.Reader, stdout, stderr i
 		return command.WriteError(stderr, err)
 	}
 
-	switch args.Mode {
-	case jsonprotocol.BundleListTestsMode:
-		tests, err := testsToRun(scfg, args.ListTests.Patterns)
-		if err != nil {
-			return command.WriteError(stderr, err)
-		}
-		var infos []*jsonprotocol.EntityWithRunnabilityInfo
-		features := args.ListTests.Features()
-		for _, test := range tests {
-			// If we encounter errors while checking test dependencies,
-			// treat the test as not skipped. When we actually try to
-			// run the test later, it will fail with errors.
-			var skipReason string
-			if reasons, err := test.Deps().Check(features); err == nil && len(reasons) > 0 {
-				skipReason = strings.Join(append([]string(nil), reasons...), ", ")
-			}
-			infos = append(infos, &jsonprotocol.EntityWithRunnabilityInfo{
-				EntityInfo: *jsonprotocol.MustEntityInfoFromProto(test.EntityProto()),
-				SkipReason: skipReason,
-			})
-		}
-		if err := json.NewEncoder(stdout).Encode(infos); err != nil {
-			return command.WriteError(stderr, err)
-		}
-		return statusSuccess
-	case jsonprotocol.BundleListFixturesMode:
-		fixts := scfg.registry.AllFixtures()
-		var infos []*jsonprotocol.EntityInfo
-		for _, f := range fixts {
-			infos = append(infos, jsonprotocol.MustEntityInfoFromProto(f.EntityProto()))
-		}
-		sort.Slice(infos, func(i, j int) bool { return infos[i].Name < infos[j].Name })
-		if err := json.NewEncoder(stdout).Encode(infos); err != nil {
-			return command.WriteError(stderr, err)
-		}
-		return statusSuccess
-	case jsonprotocol.BundleExportMetadataMode:
+	switch args.mode {
+	case modeDumpTests:
 		tests, err := testsToRun(scfg, nil)
 		if err != nil {
 			return command.WriteError(stderr, err)
 		}
-		if err := testing.WriteTestsAsProto(stdout, tests); err != nil {
-			return command.WriteError(stderr, err)
+		switch args.dumpFormat {
+		case dumpFormatLegacyJSON:
+			if err := writeTestsAsLegacyJSON(stdout, tests); err != nil {
+				return command.WriteError(stderr, err)
+			}
+			return statusSuccess
+		case dumpFormatProto:
+			if err := testing.WriteTestsAsProto(stdout, tests); err != nil {
+				return command.WriteError(stderr, err)
+			}
+		default:
+			return command.WriteError(stderr, errors.Errorf("invalid dump format %v", args.dumpFormat))
 		}
 		return statusSuccess
-	case jsonprotocol.BundleRPCMode:
+	case modeRPC:
 		if err := RunRPCServer(stdin, stdout, scfg); err != nil {
 			return command.WriteError(stderr, err)
 		}
 		return statusSuccess
-	case jsonprotocol.BundleRPCTCPServerMode:
-		port := args.RPCTCPServer.Port
-		handshakeReq := args.RPCTCPServer.HandshakeRequest
+	case modeRPCTCP:
+		port := args.port
+		handshakeReq := args.handshake
 		if err := RunRPCServerTCP(port, handshakeReq, scfg); err != nil {
 			return command.WriteError(stderr, err)
 		}
 		return statusSuccess
 	default:
-		return command.WriteError(stderr, command.NewStatusErrorf(statusBadArgs, "invalid mode %v", args.Mode))
+		return command.WriteError(stderr, command.NewStatusErrorf(statusBadArgs, "invalid mode %v", args.mode))
 	}
+}
+
+func writeTestsAsLegacyJSON(w io.Writer, tests []*testing.TestInstance) error {
+	var infos []*jsonprotocol.EntityWithRunnabilityInfo
+	for _, test := range tests {
+		// If we encounter errors while checking test dependencies,
+		// treat the test as not skipped. When we actually try to
+		// run the test later, it will fail with errors.
+		var skipReason string
+		if reasons, err := test.Deps().Check(nil); err == nil && len(reasons) > 0 {
+			skipReason = strings.Join(append([]string(nil), reasons...), ", ")
+		}
+		infos = append(infos, &jsonprotocol.EntityWithRunnabilityInfo{
+			EntityInfo: *jsonprotocol.MustEntityInfoFromProto(test.EntityProto()),
+			SkipReason: skipReason,
+		})
+	}
+	return json.NewEncoder(w).Encode(infos)
 }
 
 // StaticConfig contains configurations unique to a test bundle.

@@ -11,13 +11,11 @@ import (
 	"io/ioutil"
 	gotesting "testing"
 
-	"github.com/google/go-cmp/cmp"
-
 	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/testing"
 )
 
-func TestRunList(t *gotesting.T) {
+func TestDumpTestsJSON(t *gotesting.T) {
 	reg := testing.NewRegistry("bundle")
 
 	f := func(context.Context, *testing.State) {}
@@ -42,19 +40,8 @@ func TestRunList(t *gotesting.T) {
 		t.Fatal(err)
 	}
 
-	// BundleListTestsMode should result in tests being JSON-marshaled to stdout.
-	stdin := newBufferWithArgs(t, &jsonprotocol.BundleArgs{Mode: jsonprotocol.BundleListTestsMode, ListTests: &jsonprotocol.BundleListTestsArgs{}})
-	stdout := &bytes.Buffer{}
-	if status := run(context.Background(), nil, stdin, stdout, &bytes.Buffer{}, NewStaticConfig(reg, 0, Delegate{})); status != statusSuccess {
-		t.Fatalf("run() returned status %v; want %v", status, statusSuccess)
-	}
-	if stdout.String() != exp.String() {
-		t.Errorf("run() wrote %q; want %q", stdout.String(), exp.String())
-	}
-
-	// The -dumptests command-line flag should do the same thing.
 	clArgs := []string{"-dumptests"}
-	stdout.Reset()
+	stdout := &bytes.Buffer{}
 	if status := run(context.Background(), clArgs, &bytes.Buffer{}, stdout, &bytes.Buffer{}, NewStaticConfig(reg, 0, Delegate{})); status != statusSuccess {
 		t.Fatalf("run(%v) returned status %v; want %v", clArgs, status, statusSuccess)
 	}
@@ -63,113 +50,7 @@ func TestRunList(t *gotesting.T) {
 	}
 }
 
-// TestRunListWithDep tests run.run for listing test with dependency check.
-func TestRunListWithDep(t *gotesting.T) {
-	const (
-		validDep   = "valid"
-		missingDep = "missing"
-	)
-
-	reg := testing.NewRegistry("bundle")
-
-	f := func(context.Context, *testing.State) {}
-	tests := []*testing.TestInstance{
-		{Name: "pkg.Test", Func: f, SoftwareDeps: []string{validDep}},
-		{Name: "pkg.Test2", Func: f, SoftwareDeps: []string{missingDep}},
-	}
-
-	expectedPassTests := map[string]struct{}{tests[0].Name: {}}
-	expectedSkipTests := map[string]struct{}{tests[1].Name: {}}
-
-	for _, test := range tests {
-		reg.AddTestInstance(test)
-	}
-
-	args := jsonprotocol.BundleArgs{
-		Mode: jsonprotocol.BundleListTestsMode,
-		ListTests: &jsonprotocol.BundleListTestsArgs{
-			FeatureArgs: jsonprotocol.FeatureArgs{
-				CheckDeps:                   true,
-				TestVars:                    map[string]string{},
-				AvailableSoftwareFeatures:   []string{validDep},
-				UnavailableSoftwareFeatures: []string{missingDep},
-			},
-		},
-	}
-
-	// BundleListTestsMode should result in tests being JSON-marshaled to stdout.
-	stdin := newBufferWithArgs(t, &args)
-	stdout := &bytes.Buffer{}
-	if status := run(context.Background(), nil, stdin, stdout, &bytes.Buffer{}, NewStaticConfig(reg, 0, Delegate{})); status != statusSuccess {
-		t.Fatalf("run() returned status %v; want %v", status, statusSuccess)
-	}
-	var ts []jsonprotocol.EntityWithRunnabilityInfo
-	if err := json.Unmarshal(stdout.Bytes(), &ts); err != nil {
-		t.Fatalf("unmarshal output %q: %v", stdout.String(), err)
-	}
-	if len(ts) != len(tests) {
-		t.Fatalf("run() returned %v entities; want %v", len(ts), len(tests))
-	}
-	for _, test := range ts {
-		if _, ok := expectedPassTests[test.Name]; ok {
-			if test.SkipReason != "" {
-				t.Fatalf("run() returned test %q with skip reason %q; want none", test.Name, test.SkipReason)
-			}
-		}
-		if _, ok := expectedSkipTests[test.Name]; ok {
-			if test.SkipReason == "" {
-				t.Fatalf("run() returned test %q with no skip reason; want %q", test.Name, test.SkipReason)
-			}
-		}
-	}
-}
-
-func TestRunListFixtures(t *gotesting.T) {
-	reg := testing.NewRegistry("bundle")
-
-	fixts := []*testing.FixtureInstance{
-		{Name: "b", Parent: "a"},
-		{Name: "c"},
-		{Name: "d"},
-		{Name: "a"},
-	}
-
-	for _, f := range fixts {
-		reg.AddFixtureInstance(f)
-	}
-
-	// BundleListFixturesMode should output JSON-marshaled fixtures to stdout.
-	stdin := newBufferWithArgs(t, &jsonprotocol.BundleArgs{Mode: jsonprotocol.BundleListFixturesMode})
-	stdout := &bytes.Buffer{}
-	if status := run(context.Background(), nil, stdin, stdout, &bytes.Buffer{}, NewStaticConfig(reg, 0, Delegate{})); status != statusSuccess {
-		t.Fatalf("run() = %v, want %v", status, statusSuccess)
-	}
-
-	got := make([]*jsonprotocol.EntityInfo, 0)
-	if err := json.Unmarshal(stdout.Bytes(), &got); err != nil {
-		t.Fatalf("json.Unmarshal(%q): %v", stdout.String(), err)
-	}
-
-	newEntityInfo := func(name, fixture string) *jsonprotocol.EntityInfo {
-		return &jsonprotocol.EntityInfo{
-			Type:    jsonprotocol.EntityFixture,
-			Name:    name,
-			Fixture: fixture,
-			Bundle:  reg.Name(),
-		}
-	}
-	want := []*jsonprotocol.EntityInfo{
-		newEntityInfo("a", ""),
-		newEntityInfo("b", "a"),
-		newEntityInfo("c", ""),
-		newEntityInfo("d", ""),
-	}
-	if diff := cmp.Diff(got, want); diff != "" {
-		t.Errorf("Output mismatch (-got +want): %v", diff)
-	}
-}
-
-func TestRunRegistrationError(t *gotesting.T) {
+func TestDumpTestsJSON_RegistrationErrors(t *gotesting.T) {
 	reg := testing.NewRegistry("bundle")
 	const name = "cat.MyTest"
 	reg.AddTestInstance(&testing.TestInstance{Name: name, Func: testFunc})
@@ -177,8 +58,8 @@ func TestRunRegistrationError(t *gotesting.T) {
 	// Adding a test with same name should generate an error.
 	reg.AddTestInstance(&testing.TestInstance{Name: name, Func: testFunc})
 
-	stdin := newBufferWithArgs(t, &jsonprotocol.BundleArgs{Mode: jsonprotocol.BundleListTestsMode, ListTests: &jsonprotocol.BundleListTestsArgs{}})
-	if status := run(context.Background(), nil, stdin, ioutil.Discard, ioutil.Discard, NewStaticConfig(reg, 0, Delegate{})); status != statusBadTests {
+	clArgs := []string{"-dumptests"}
+	if status := run(context.Background(), clArgs, &bytes.Buffer{}, ioutil.Discard, ioutil.Discard, NewStaticConfig(reg, 0, Delegate{})); status != statusBadTests {
 		t.Errorf("run() with bad test returned status %v; want %v", status, statusBadTests)
 	}
 }

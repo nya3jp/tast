@@ -75,7 +75,6 @@ func (r *runCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{})
 	defer cancel(context.Canceled)
 
 	var state config.DeprecatedState
-	defer state.Close(ctx)
 
 	tl := timing.NewLog()
 	ctx = timing.NewContext(ctx, tl)

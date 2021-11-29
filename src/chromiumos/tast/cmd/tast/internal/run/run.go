@@ -43,9 +43,11 @@ const (
 // Run executes or lists tests per cfg and returns the results.
 // Messages are logged via ctx as the run progresses.
 func Run(ctx context.Context, cfg *config.Config, state *config.DeprecatedState) ([]*resultsjson.Result, error) {
-	if err := setUpGRPCServices(ctx, cfg, state); err != nil {
+	reportClient, err := reporting.NewRPCClient(ctx, cfg.ReportsServer())
+	if err != nil {
 		return nil, errors.Wrap(err, "failed to set up gRPC servers")
 	}
+	defer reportClient.Close()
 
 	// Always start an ephemeral devserver for remote tests if TLWServer is not specified.
 	if cfg.TLWServer() == "" {
@@ -75,7 +77,7 @@ func Run(ctx context.Context, cfg *config.Config, state *config.DeprecatedState)
 		}
 		return results, nil
 	case config.RunTestsMode:
-		results, err := runTests(ctx, cfg, state, drv, dutInfo)
+		results, err := runTests(ctx, cfg, state, drv, reportClient, dutInfo)
 		if err != nil {
 			return results, errors.Wrapf(err, "failed to run tests")
 		}
@@ -169,7 +171,7 @@ func verifyTestNames(patterns []string, tests []*driver.BundleEntity) error {
 	return nil
 }
 
-func runTests(ctx context.Context, cfg *config.Config, state *config.DeprecatedState, drv *driver.Driver, dutInfo *protocol.DUTInfo) (results []*resultsjson.Result, retErr error) {
+func runTests(ctx context.Context, cfg *config.Config, state *config.DeprecatedState, drv *driver.Driver, client *reporting.RPCClient, dutInfo *protocol.DUTInfo) (results []*resultsjson.Result, retErr error) {
 	if err := ioutil.WriteFile(filepath.Join(cfg.ResDir(), DUTInfoFile), []byte(proto.MarshalTextString(dutInfo)), 0644); err != nil {
 		logging.Debugf(ctx, "Failed to dump DUTInfo: %v", err)
 	}
@@ -270,23 +272,5 @@ func runTests(ctx context.Context, cfg *config.Config, state *config.DeprecatedS
 		reporting.WriteResultsToLogs(ctx, results, cfg.ResDir(), complete)
 	}()
 
-	return drv.RunTests(ctx, shard.Included, dutInfo, state.ReportClient, state.RemoteDevservers)
-}
-
-// setUpGRPCServices sets up all Grpc Services in the current run.
-func setUpGRPCServices(ctx context.Context, cfg *config.Config, state *config.DeprecatedState) error {
-	if err := connectToReports(ctx, cfg, state); err != nil {
-		return errors.Wrap(err, "failed to connect to Reports server")
-	}
-	return nil
-}
-
-// connectToReports connects to the Reports server.
-func connectToReports(ctx context.Context, cfg *config.Config, state *config.DeprecatedState) error {
-	cl, err := reporting.NewRPCClient(ctx, cfg.ReportsServer())
-	if err != nil {
-		return err
-	}
-	state.ReportClient = cl
-	return nil
+	return drv.RunTests(ctx, shard.Included, dutInfo, client, state.RemoteDevservers)
 }

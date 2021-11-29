@@ -7,7 +7,6 @@
 package config
 
 import (
-	"context"
 	"flag"
 	"fmt"
 	"net/url"
@@ -19,7 +18,6 @@ import (
 	"time"
 
 	"chromiumos/tast/cmd/tast/internal/build"
-	"chromiumos/tast/cmd/tast/internal/run/reporting"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/command"
 	"chromiumos/tast/internal/debugger"
@@ -311,9 +309,8 @@ func (c *Config) Retries() int { return c.m.Retries }
 // difficult to reason about function contracts. Pass arguments explicitly
 // instead. This struct will be removed eventually (b/191230756).
 type DeprecatedState struct {
-	RemoteDevservers []string             // list of devserver URLs used by remote tests.
-	TestNamesToSkip  []string             // tests that match patterns but are not sent to runners to run
-	ReportClient     *reporting.RPCClient // client for test result reporting via gRPC
+	RemoteDevservers []string // list of devserver URLs used by remote tests.
+	TestNamesToSkip  []string // tests that match patterns but are not sent to runners to run
 }
 
 // NewMutableConfig returns a new configuration for executing test runners in the supplied mode.
@@ -473,12 +470,6 @@ type funcValue func(string) error // implements flag.Value
 
 func (f funcValue) Set(s string) error { return f(s) }
 func (f funcValue) String() string     { return "" }
-
-// Close releases the config's resources (e.g. cached SSH connections).
-// It should be called at the completion of testing.
-func (s *DeprecatedState) Close(ctx context.Context) error {
-	return s.ReportClient.Close()
-}
 
 // DeriveDefaults sets default config values to unset members, possibly deriving from
 // already set members. It should be called after non-default values are set to c.

@@ -145,7 +145,6 @@ func SetUp(t *gotesting.T, opts ...EnvOrDUTOption) *Env {
 
 	// Create a DeprecatedState object that is cleaned up automatically.
 	state := &config.DeprecatedState{}
-	t.Cleanup(func() { state.Close(context.Background()) })
 
 	return &Env{
 		rootDir:   rootDir,

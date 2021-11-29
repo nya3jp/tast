@@ -36,7 +36,7 @@ func TestDriver_DownloadPrivateBundles_Disabled(t *testing.T) {
 	ctx := env.Context()
 	cfg := env.Config(func(cfg *config.MutableConfig) {
 		cfg.DownloadPrivateBundles = false // disable downloading private bundles
-		cfg.BuildArtifactsURL = "gs://build-artifacts/foo/bar"
+		cfg.BuildArtifactsURLOverride = "gs://build-artifacts/foo/bar"
 	})
 
 	drv, err := driver.New(ctx, cfg, cfg.Target(), "")
@@ -75,7 +75,7 @@ func TestDriver_DownloadPrivateBundles_Devservers(t *testing.T) {
 	cfg := env.Config(func(cfg *config.MutableConfig) {
 		cfg.DownloadPrivateBundles = true
 		cfg.Devservers = devservers
-		cfg.BuildArtifactsURL = buildArtifactsURL
+		cfg.BuildArtifactsURLOverride = buildArtifactsURL
 	})
 
 	drv, err := driver.New(ctx, cfg, cfg.Target(), "")
@@ -118,7 +118,7 @@ func TestDriver_DownloadPrivateBundles_EphemeralDevserver(t *testing.T) {
 	cfg := env.Config(func(cfg *config.MutableConfig) {
 		cfg.DownloadPrivateBundles = true
 		cfg.UseEphemeralDevserver = true
-		cfg.BuildArtifactsURL = buildArtifactsURL
+		cfg.BuildArtifactsURLOverride = buildArtifactsURL
 	})
 
 	drv, err := driver.New(ctx, cfg, cfg.Target(), "")
@@ -192,7 +192,7 @@ func TestDriver_DownloadPrivateBundles_TLW(t *testing.T) {
 	cfg := env.Config(func(cfg *config.MutableConfig) {
 		cfg.DownloadPrivateBundles = true
 		cfg.TLWServer = tlwAddr
-		cfg.BuildArtifactsURL = buildArtifactsURL
+		cfg.BuildArtifactsURLOverride = buildArtifactsURL
 	})
 
 	drv, err := driver.New(ctx, cfg, cfg.Target(), "")
@@ -268,7 +268,7 @@ func TestDriver_DownloadPrivateBundles_DUTServer(t *testing.T) {
 	ctx := env.Context()
 	cfg := env.Config(func(cfg *config.MutableConfig) {
 		cfg.DownloadPrivateBundles = true
-		cfg.BuildArtifactsURL = buildArtifactsURL
+		cfg.BuildArtifactsURLOverride = buildArtifactsURL
 		cfg.TestVars = map[string]string{"servers.dut": fmt.Sprintf(":%s", dutServerAddr)}
 	})
 

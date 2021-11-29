@@ -276,7 +276,7 @@ func TestMutableConfigDeriveExtraAllowedBuckets(t *testing.T) {
 
 	cfg.Build = false
 	cfg.ExtraAllowedBuckets = []string{"bucket1", "bucket2"}
-	cfg.BuildArtifactsURL = "gs://bucket3/dir/"
+	cfg.BuildArtifactsURLOverride = "gs://bucket3/dir/"
 
 	if err := cfg.DeriveDefaults(); err != nil {
 		t.Error("DeriveDefaults failed: ", err)

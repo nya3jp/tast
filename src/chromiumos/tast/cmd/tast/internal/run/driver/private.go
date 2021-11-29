@@ -49,7 +49,7 @@ func (d *Driver) DownloadPrivateBundles(ctx context.Context) error {
 			TlwServer:   tlwServer,
 			TlwSelfName: tlwSelfName,
 		},
-		BuildArtifactUrl: d.cfg.BuildArtifactsURL(),
+		BuildArtifactUrl: d.cfg.BuildArtifactsURLOverride(), // TODO(b/207721470): Fix
 	}
 
 	if err := d.localClient().DownloadPrivateBundles(ctx, req); err != nil {

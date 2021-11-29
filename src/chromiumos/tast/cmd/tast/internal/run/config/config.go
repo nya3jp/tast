@@ -76,15 +76,15 @@ type MutableConfig struct {
 	CheckPortageDeps   bool
 	InstallPortageDeps bool
 
-	UseEphemeralDevserver  bool
-	ExtraAllowedBuckets    []string
-	Devservers             []string
-	BuildArtifactsURL      string
-	DownloadPrivateBundles bool
-	DownloadMode           planner.DownloadMode
-	TLWServer              string
-	ReportsServer          string
-	CompanionDUTs          map[string]string
+	UseEphemeralDevserver     bool
+	ExtraAllowedBuckets       []string
+	Devservers                []string
+	BuildArtifactsURLOverride string
+	DownloadPrivateBundles    bool
+	DownloadMode              planner.DownloadMode
+	TLWServer                 string
+	ReportsServer             string
+	CompanionDUTs             map[string]string
 
 	LocalRunner    string
 	LocalBundleDir string
@@ -182,8 +182,10 @@ func (c *Config) ExtraAllowedBuckets() []string {
 // Devservers is list of devserver URLs; set by -devservers but may be dynamically modified.
 func (c *Config) Devservers() []string { return append([]string(nil), c.m.Devservers...) }
 
-// BuildArtifactsURL is Google Cloud Storage URL of build artifacts.
-func (c *Config) BuildArtifactsURL() string { return c.m.BuildArtifactsURL }
+// BuildArtifactsURLOverride is Google Cloud Storage URL of build artifacts
+// specified in the command line. If it is empty, it should be detected from
+// the DUT.
+func (c *Config) BuildArtifactsURLOverride() string { return c.m.BuildArtifactsURLOverride }
 
 // DownloadPrivateBundles is whether to download private bundles if missing.
 func (c *Config) DownloadPrivateBundles() bool { return c.m.DownloadPrivateBundles }
@@ -351,7 +353,7 @@ func (c *MutableConfig) SetFlags(f *flag.FlagSet) {
 	f.Var(command.NewListFlag(",", func(v []string) { c.Devservers = v }, nil), "devservers", "comma-separated list of devserver URLs")
 	f.BoolVar(&c.UseEphemeralDevserver, "ephemeraldevserver", true, "start an ephemeral devserver if no devserver is specified")
 	f.Var(command.NewListFlag(",", func(v []string) { c.ExtraAllowedBuckets = v }, nil), "extraallowedbuckets", "comma-separated list of extra Google Cloud Storage buckets ephemeral devserver is allowed to access")
-	f.StringVar(&c.BuildArtifactsURL, "buildartifactsurl", "", "override Google Cloud Storage URL of build artifacts (implies -extraallowedbuckets)")
+	f.StringVar(&c.BuildArtifactsURLOverride, "buildartifactsurl", "", "override Google Cloud Storage URL of build artifacts (implies -extraallowedbuckets)")
 	f.BoolVar(&c.DownloadPrivateBundles, "downloadprivatebundles", false, "download private bundles if missing")
 	ddfs := map[string]int{
 		"batch": int(planner.DownloadBatch),
@@ -568,13 +570,13 @@ func (c *MutableConfig) DeriveDefaults() error {
 	}
 	mergeVars(c.TestVars, defaultVars, skipOnDuplicate) // -var and -varsfile override defaults
 
-	if c.BuildArtifactsURL != "" {
-		if !strings.HasSuffix(c.BuildArtifactsURL, "/") {
+	if c.BuildArtifactsURLOverride != "" {
+		if !strings.HasSuffix(c.BuildArtifactsURLOverride, "/") {
 			return errors.New("-buildartifactsurl must end with a slash")
 		}
 
 		// Add the bucket to the extra allowed bucket list.
-		u, err := url.Parse(c.BuildArtifactsURL)
+		u, err := url.Parse(c.BuildArtifactsURLOverride)
 		if err != nil {
 			return fmt.Errorf("failed to parse -buildartifactsurl: %v", err)
 		}

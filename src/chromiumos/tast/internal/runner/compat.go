@@ -7,35 +7,11 @@ package runner
 import (
 	"context"
 	"io"
-	"sync"
-	"time"
 
 	"chromiumos/tast/errors"
-	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/rpc"
 )
-
-type arrayLogger struct {
-	mu   sync.Mutex
-	logs []string
-}
-
-func (l *arrayLogger) Log(level logging.Level, ts time.Time, msg string) {
-	l.mu.Lock()
-	defer l.mu.Unlock()
-	l.logs = append(l.logs, msg)
-}
-
-func (l *arrayLogger) Logs() []string {
-	l.mu.Lock()
-	defer l.mu.Unlock()
-	return append([]string(nil), l.logs...)
-}
-
-func newArrayLogger() *arrayLogger {
-	return &arrayLogger{}
-}
 
 type compatServer struct {
 	cw   *io.PipeWriter

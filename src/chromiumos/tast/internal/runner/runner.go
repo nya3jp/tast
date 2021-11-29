@@ -6,42 +6,36 @@ package runner
 
 import (
 	"context"
-	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
-	"runtime"
-	"runtime/debug"
 	"sort"
 	"strings"
 	"time"
 
-	"github.com/golang/protobuf/ptypes"
 	"github.com/shirou/gopsutil/process"
 	"golang.org/x/sys/unix"
 
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/command"
-	"chromiumos/tast/internal/control"
 	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testing"
-	"chromiumos/tast/internal/timing"
 )
 
 const (
-	statusSuccess      = 0 // runner was successful
-	statusError        = 1 // unspecified error was encountered
-	statusBadArgs      = 2 // bad arguments were passed to the runner
-	_                  = 3 // deprecated
-	_                  = 4 // deprecated
-	statusBundleFailed = 5 // test bundle exited with nonzero status
-	statusTestFailed   = 6 // one or more tests failed during manual run
-	_                  = 7 // deprecated
-	_                  = 8 // deprecated
+	statusSuccess    = 0 // runner was successful
+	_                = 1 // deprecated
+	statusBadArgs    = 2 // bad arguments were passed to the runner
+	_                = 3 // deprecated
+	_                = 4 // deprecated
+	_                = 5 // deprecated
+	statusTestFailed = 6 // one or more tests failed during manual run
+	_                = 7 // deprecated
+	_                = 8 // deprecated
 )
 
 // Run reads command-line flags from clArgs and performs the requested action.
@@ -72,7 +66,7 @@ func Run(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, scfg *Stati
 
 	switch args.Mode {
 	case jsonprotocol.RunnerRunTestsMode:
-		if err := runTestsAndLog(ctx, args, scfg, stdout); err != nil {
+		if err := deprecatedDirectRun(ctx, args, scfg, stdout); err != nil {
 			return command.WriteError(stderr, err)
 		}
 		return statusSuccess
@@ -93,20 +87,9 @@ func Run(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, scfg *Stati
 	}
 }
 
-// runTestsAndReport runs bundles serially to perform testing and writes control messages to stdout.
-// Fatal errors are reported via RunError messages, while test errors are reported via EntityError messages.
-func runTestsAndReport(ctx context.Context, args *jsonprotocol.RunnerArgs, scfg *StaticConfig, stdout io.Writer) {
-	mw := control.NewMessageWriter(stdout)
+func deprecatedDirectRun(ctx context.Context, args *jsonprotocol.RunnerArgs, scfg *StaticConfig, stdout io.Writer) error {
+	lg := log.New(stdout, "", log.LstdFlags)
 
-	hbw := control.NewHeartbeatWriter(mw, args.RunTests.BundleArgs.HeartbeatInterval)
-	defer hbw.Stop()
-
-	if err := runTestsCompat(ctx, mw, scfg, args); err != nil {
-		mw.WriteMessage(newRunErrorMessagef(statusError, "%v", err))
-	}
-}
-
-func runTestsCompat(ctx context.Context, mw *control.MessageWriter, scfg *StaticConfig, args *jsonprotocol.RunnerArgs) error {
 	bundleArgs, err := args.BundleArgs(jsonprotocol.BundleRunTestsMode)
 	if err != nil {
 		return errors.Wrap(err, "failed constructing bundle args")
@@ -153,8 +136,6 @@ func runTestsCompat(ctx context.Context, mw *control.MessageWriter, scfg *Static
 	}
 	sort.Strings(testNames)
 
-	mw.WriteMessage(&control.RunStart{Time: time.Now(), TestNames: testNames, NumTests: len(testNames)})
-
 	// We expect to not match any tests if both local and remote tests are being run but the
 	// user specified a pattern that matched only local or only remote tests rather than tests
 	// of both types. Don't bother creating an out dir in that case.
@@ -182,11 +163,23 @@ func runTestsCompat(ctx context.Context, mw *control.MessageWriter, scfg *Static
 		return errors.Wrap(err, "RunTests: failed to send initial request")
 	}
 
+	numTests := 0
+	testFailed := false              // true if error seen for current test
+	var failedTests []string         // names of tests with errors
+	var startTime, endTime time.Time // start of first test and end of last test
+
 	// Keep reading responses and convert them to control messages.
 	for {
 		res, err := srv.Recv()
 		if err == io.EOF {
-			mw.WriteMessage(&control.RunEnd{Time: time.Now(), OutDir: bundleArgs.RunTests.OutDir})
+			lg.Printf("Ran %d test(s) in %v", numTests, endTime.Sub(startTime).Round(time.Millisecond))
+			if len(failedTests) > 0 {
+				lg.Printf("%d failed:", len(failedTests))
+				for _, t := range failedTests {
+					lg.Print("  " + t)
+				}
+				return command.NewStatusErrorf(statusTestFailed, "test(s) failed")
+			}
 			return nil
 		}
 		if err != nil {
@@ -195,78 +188,33 @@ func runTestsCompat(ctx context.Context, mw *control.MessageWriter, scfg *Static
 
 		switch res := res.GetType().(type) {
 		case *protocol.RunTestsResponse_RunLog:
-			r := res.RunLog
-			ts, err := ptypes.Timestamp(r.GetTime())
-			if err != nil {
-				return err
-			}
-			mw.WriteMessage(&control.RunLog{Time: ts, Text: r.GetText()})
+			lg.Print(res.RunLog.GetText())
 		case *protocol.RunTestsResponse_EntityStart:
-			r := res.EntityStart
-			ts, err := ptypes.Timestamp(r.GetTime())
-			if err != nil {
-				return err
+			lg.Print("Running ", res.EntityStart.GetEntity().GetName())
+			testFailed = false
+			if numTests == 0 {
+				startTime = res.EntityStart.GetTime().AsTime()
 			}
-			ei, err := jsonprotocol.EntityInfoFromProto(r.GetEntity())
-			if err != nil {
-				return err
-			}
-			mw.WriteMessage(&control.EntityStart{Time: ts, Info: *ei, OutDir: r.GetOutDir()})
 		case *protocol.RunTestsResponse_EntityLog:
-			r := res.EntityLog
-			ts, err := ptypes.Timestamp(r.GetTime())
-			if err != nil {
-				return err
-			}
-			mw.WriteMessage(&control.EntityLog{Time: ts, Name: r.GetEntityName(), Text: r.GetText()})
+			lg.Print(res.EntityLog.GetText())
 		case *protocol.RunTestsResponse_EntityError:
-			r := res.EntityError
-			ts, err := ptypes.Timestamp(r.GetTime())
-			if err != nil {
-				return err
-			}
-			mw.WriteMessage(&control.EntityError{Time: ts, Name: r.GetEntityName(), Error: *jsonprotocol.ErrorFromProto(r.GetError())})
+			e := res.EntityError.GetError()
+			lg.Printf("Error: [%s:%d] %v", filepath.Base(e.GetLocation().GetFile()), e.GetLocation().GetLine(), e.GetReason())
+			testFailed = true
 		case *protocol.RunTestsResponse_EntityEnd:
-			r := res.EntityEnd
-			ts, err := ptypes.Timestamp(r.GetTime())
-			if err != nil {
-				return err
+			reasons := res.EntityEnd.GetSkip().GetReasons()
+			if len(reasons) > 0 {
+				lg.Printf("Skipped %s for missing deps: %s", res.EntityEnd.GetEntityName(), strings.Join(reasons, ", "))
+			} else {
+				lg.Print("Finished ", res.EntityEnd.GetEntityName())
 			}
-			timingLog, err := timing.LogFromProto(r.GetTimingLog())
-			if err != nil {
-				return err
+			lg.Print(strings.Repeat("-", 80))
+			if testFailed {
+				failedTests = append(failedTests, res.EntityEnd.GetEntityName())
 			}
-			mw.WriteMessage(&control.EntityEnd{Time: ts, Name: r.GetEntityName(), SkipReasons: r.GetSkip().GetReasons(), TimingLog: timingLog})
+			numTests++
+			endTime = res.EntityEnd.GetTime().AsTime()
 		}
-	}
-}
-
-// runTestsAndLog runs bundles serially to perform testing and logs human-readable results to stdout.
-// Errors are returned both for fatal errors and for errors in individual tests.
-func runTestsAndLog(ctx context.Context, args *jsonprotocol.RunnerArgs, scfg *StaticConfig, stdout io.Writer) *command.StatusError {
-	lg := log.New(stdout, "", log.LstdFlags)
-
-	pr, pw := io.Pipe()
-	ch := make(chan *command.StatusError, 1)
-	go func() { ch <- logMessages(pr, lg) }()
-
-	runTestsAndReport(ctx, args, scfg, pw)
-	pw.Close()
-	return <-ch
-}
-
-// newRunErrorMessagef returns a new RunError control message.
-func newRunErrorMessagef(status int, format string, args ...interface{}) *control.RunError {
-	_, fn, ln, _ := runtime.Caller(1)
-	return &control.RunError{
-		Time: time.Now(),
-		Error: jsonprotocol.Error{
-			Reason: fmt.Sprintf(format, args...),
-			File:   fn,
-			Line:   ln,
-			Stack:  string(debug.Stack()),
-		},
-		Status: status,
 	}
 }
 
@@ -308,70 +256,6 @@ func setUpBaseOutDir(args *jsonprotocol.BundleArgs) (created bool, err error) {
 		return created, err
 	}
 	return created, nil
-}
-
-// logMessages reads control messages from r and logs them to lg.
-// It is used to print human-readable test output when the runner is executed manually rather
-// than via the tast command. An error is returned if any EntityError messages are read.
-func logMessages(r io.Reader, lg *log.Logger) *command.StatusError {
-	numTests := 0
-	testFailed := false              // true if error seen for current test
-	var failedTests []string         // names of tests with errors
-	var startTime, endTime time.Time // start of first test and end of last test
-
-	mr := control.NewMessageReader(r)
-	for mr.More() {
-		msg, err := mr.ReadMessage()
-		if err != nil {
-			return command.NewStatusErrorf(statusBundleFailed, "bundle produced bad output: %v", err)
-		}
-		switch v := msg.(type) {
-		case *control.RunLog:
-			lg.Print(v.Text)
-		case *control.RunError:
-			return command.NewStatusErrorf(v.Status, "error: [%s:%d] %v", filepath.Base(v.Error.File), v.Error.Line, v.Error.Reason)
-		case *control.EntityStart:
-			lg.Print("Running ", v.Info.Name)
-			testFailed = false
-			if numTests == 0 {
-				startTime = v.Time
-			}
-		case *control.EntityLog:
-			lg.Print(v.Text)
-		case *control.EntityError:
-			lg.Printf("Error: [%s:%d] %v", filepath.Base(v.Error.File), v.Error.Line, v.Error.Reason)
-			testFailed = true
-		case *control.EntityEnd:
-			var reasons []string
-			if len(v.DeprecatedMissingSoftwareDeps) > 0 {
-				reasons = append(reasons, "missing SoftwareDeps: "+strings.Join(v.DeprecatedMissingSoftwareDeps, " "))
-			}
-			if len(v.SkipReasons) > 0 {
-				reasons = append(reasons, v.SkipReasons...)
-			}
-			if len(reasons) > 0 {
-				lg.Printf("Skipped %s for missing deps: %s", v.Name, strings.Join(reasons, ", "))
-			} else {
-				lg.Print("Finished ", v.Name)
-			}
-			lg.Print(strings.Repeat("-", 80))
-			if testFailed {
-				failedTests = append(failedTests, v.Name)
-			}
-			numTests++
-			endTime = v.Time
-		}
-	}
-
-	lg.Printf("Ran %d test(s) in %v", numTests, endTime.Sub(startTime).Round(time.Millisecond))
-	if len(failedTests) > 0 {
-		lg.Printf("%d failed:", len(failedTests))
-		for _, t := range failedTests {
-			lg.Print("  " + t)
-		}
-		return command.NewStatusErrorf(statusTestFailed, "test(s) failed")
-	}
-	return nil
 }
 
 // killStaleRunners sends sig to the process groups of any other processes sharing

@@ -7,20 +7,15 @@ package runner
 import (
 	"bytes"
 	"context"
-	"encoding/json"
 	"fmt"
-	"io"
 	"log"
 	"os"
 	"path/filepath"
-	"reflect"
 	"strconv"
 	"strings"
 	gotesting "testing"
 
 	"chromiumos/tast/internal/bundle"
-	"chromiumos/tast/internal/control"
-	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/testutil"
 )
@@ -119,111 +114,31 @@ func runFakeBundle() int {
 	return bundle.Local(os.Args[1:], os.Stdin, os.Stdout, os.Stderr, reg, bundle.Delegate{})
 }
 
-// newBufferWithArgs returns a buffer containing the JSON representation of args.
-func newBufferWithArgs(t *gotesting.T, args *jsonprotocol.RunnerArgs) *bytes.Buffer {
-	b := &bytes.Buffer{}
-	if args != nil {
-		if err := json.NewEncoder(b).Encode(args); err != nil {
-			t.Fatal(err)
-		}
-	}
-	return b
-}
-
 // callRun calls Run using the supplied arguments and returns its output, status, and a signature that can
 // be used in error messages.
-func callRun(t *gotesting.T, clArgs []string, stdinArgs *jsonprotocol.RunnerArgs, scfg *StaticConfig) (
-	status int, stdout, stderr *bytes.Buffer, sig string) {
-	sig = fmt.Sprintf("Run(%v, %+v)", clArgs, stdinArgs)
+func callRun(clArgs []string, scfg *StaticConfig) (status int, stdout, stderr *bytes.Buffer, sig string) {
+	sig = fmt.Sprintf("Run(%v)", clArgs)
 	stdout = &bytes.Buffer{}
 	stderr = &bytes.Buffer{}
-	return Run(clArgs, newBufferWithArgs(t, stdinArgs), stdout, stderr, scfg), stdout, stderr, sig
+	return Run(clArgs, &bytes.Buffer{}, stdout, stderr, scfg), stdout, stderr, sig
 }
 
-// readAllMessages reads and returns a slice of pointers to control messages
-// from r. It reports a fatal test error if any problems are encountered.
-func readAllMessages(t *gotesting.T, r io.Reader) []interface{} {
-	msgs := make([]interface{}, 0)
-	mr := control.NewMessageReader(r)
-	for mr.More() {
-		msg, err := mr.ReadMessage()
-		if err != nil {
-			t.Fatalf("ReadMessage failed: %v", err)
-		}
-		msgs = append(msgs, msg)
-	}
-	return msgs
-}
-
-// gotRunError returns true if there is a control.RunError message in msgs,
-// a slice of pointers to control messages.
-func gotRunError(msgs []interface{}) bool {
-	for _, msg := range msgs {
-		if _, ok := msg.(*control.RunError); ok {
-			return true
-		}
-	}
-	return false
-}
-
-func TestRunTests(t *gotesting.T) {
-	dir := createBundleSymlinks(t, []bool{false, true}, []bool{true})
+func TestRun_DeprecatedDirectRun(t *gotesting.T) {
+	dir := createBundleSymlinks(t, []bool{true, true}, []bool{true})
 	defer os.RemoveAll(dir)
 
 	// Run should execute multiple test bundles and merge their output correctly.
-	args := &jsonprotocol.RunnerArgs{RunTests: &jsonprotocol.RunnerRunTestsArgs{BundleGlob: filepath.Join(dir, "*")}}
-	status, stdout, stderr, sig := callRun(t, nil, args, &StaticConfig{Type: LocalRunner})
+	clArgs := []string{"-bundles=" + filepath.Join(dir, "*")}
+	status, stdout, stderr, sig := callRun(clArgs, &StaticConfig{Type: LocalRunner})
+
 	if status != statusSuccess {
-		t.Fatalf("%s = %v; want %v", sig, status, statusSuccess)
+		t.Errorf("%s = %v; want %v", sig, status, statusSuccess)
 	}
 
-	msgs := readAllMessages(t, stdout)
-	if rs, ok := msgs[0].(*control.RunStart); !ok {
-		t.Errorf("First message not RunStart: %v", msgs[0])
-	} else {
-		// Construct names for both tests in bundle 0 and the single test in bundle 1.
-		expNames := []string{getTestName(0, 0), getTestName(0, 1), getTestName(1, 0)}
-		if !reflect.DeepEqual(rs.TestNames, expNames) {
-			t.Errorf("RunStart included test names %v; want %v", rs.TestNames, expNames)
-		}
-		if rs.NumTests != 3 {
-			t.Errorf("RunStart reported %v test(s); want 3", rs.NumTests)
-		}
-	}
-	if re, ok := msgs[len(msgs)-1].(*control.RunEnd); !ok {
-		t.Errorf("Last message not RunEnd: %v", msgs[len(msgs)-1])
-	} else {
-		if fi, err := os.Stat(re.OutDir); os.IsNotExist(err) {
-			t.Errorf("RunEnd out dir %q doesn't exist", re.OutDir)
-		} else {
-			if mode := fi.Mode() & os.ModePerm; mode != 0755 {
-				t.Errorf("Out dir %v has mode 0%o; want 0%o", re.OutDir, mode, 0755)
-			}
-			os.RemoveAll(re.OutDir)
-		}
-	}
-
-	// Check that the right number of tests are reported as started and failed and that bundles and tests are sorted.
-	// (Bundle names are included in these test names, so we can verify sorting by just comparing names.)
-	tests := make(map[string]struct{})
-	failed := make(map[string]struct{})
-	var name string
-	for _, msg := range msgs {
-		if ts, ok := msg.(*control.EntityStart); ok {
-			if ts.Info.Name < name {
-				t.Errorf("Saw unsorted test %q after %q", ts.Info.Name, name)
-			}
-			name = ts.Info.Name
-			tests[name] = struct{}{}
-		} else if _, ok := msg.(*control.EntityError); ok {
-			failed[name] = struct{}{}
-		}
-	}
-	if len(tests) != 3 {
-		t.Errorf("Got EntityStart messages for %v test(s); want 3", len(tests))
-	}
-	if len(failed) != 1 {
-		t.Errorf("Got EntityError messages for %v test(s); want 1", len(failed))
+	const want = "Ran 3 test(s)"
+	logs := stdout.String()
+	if !strings.Contains(logs, want) {
+		t.Errorf("%q not found in logs", want)
 	}
 
 	if stderr.Len() != 0 {
@@ -231,8 +146,8 @@ func TestRunTests(t *gotesting.T) {
 	}
 }
 
-func TestInvalidFlag(t *gotesting.T) {
-	status, stdout, stderr, sig := callRun(t, []string{"-bogus"}, nil, &StaticConfig{Type: LocalRunner})
+func TestRun_DeprecatedDirectRun_InvalidFlag(t *gotesting.T) {
+	status, stdout, stderr, sig := callRun([]string{"-bogus"}, &StaticConfig{Type: LocalRunner})
 	if status != statusBadArgs {
 		t.Errorf("%s = %v; want %v", sig, status, statusBadArgs)
 	}
@@ -244,13 +159,13 @@ func TestInvalidFlag(t *gotesting.T) {
 	}
 }
 
-func TestRunNoTests(t *gotesting.T) {
+func TestRun_DeprecatedDirectRun_NoTests(t *gotesting.T) {
 	dir := createBundleSymlinks(t, []bool{true})
 	defer os.RemoveAll(dir)
 
 	// RunTests should fail when run manually with a pattern is passed that doesn't match any tests.
 	clArgs := []string{"-bundles=" + filepath.Join(dir, "*"), "bogus.SomeTest"}
-	status, stdout, stderr, sig := callRun(t, clArgs, nil, &StaticConfig{Type: LocalRunner})
+	status, stdout, stderr, sig := callRun(clArgs, &StaticConfig{Type: LocalRunner})
 	if status == 0 {
 		t.Errorf("%s = %v; want non-zero", sig, status)
 	}
@@ -260,33 +175,15 @@ func TestRunNoTests(t *gotesting.T) {
 	if stderr.Len() == 0 {
 		t.Errorf("%s didn't write error to stderr", sig)
 	}
-
-	// If the command was run by the tast command, it should exit with success.
-	args := &jsonprotocol.RunnerArgs{
-		RunTests: &jsonprotocol.RunnerRunTestsArgs{
-			BundleArgs: jsonprotocol.BundleRunTestsArgs{Patterns: []string{"bogus.SomeTest"}},
-			BundleGlob: filepath.Join(dir, "*"),
-		},
-	}
-	scfg := &StaticConfig{Type: LocalRunner}
-	if status, stdout, stderr, sig = callRun(t, nil, args, scfg); status != statusSuccess {
-		t.Errorf("%s = %v; want %v", sig, status, statusSuccess)
-	}
-	if gotRunError(readAllMessages(t, stdout)) {
-		t.Errorf("%s wrote RunError message", sig)
-	}
-	if stderr.Len() != 0 {
-		t.Errorf("%s wrote %q to stderr", sig, stderr.String())
-	}
 }
 
-func TestRunFailForTestErrorWhenRunManually(t *gotesting.T) {
+func TestRun_DeprecatedDirectRun_FailForTestError(t *gotesting.T) {
 	dir := createBundleSymlinks(t, []bool{true, false, true})
 	defer os.RemoveAll(dir)
 
 	// RunTests should fail when a bundle reports failure while run manually.
 	clArgs := []string{"-bundles=" + filepath.Join(dir, "*")}
-	status, _, stderr, sig := callRun(t, clArgs, nil, &StaticConfig{Type: LocalRunner})
+	status, _, stderr, sig := callRun(clArgs, &StaticConfig{Type: LocalRunner})
 	if status != statusTestFailed {
 		t.Errorf("%s = %v; want %v", sig, status, statusTestFailed)
 	}
@@ -295,7 +192,7 @@ func TestRunFailForTestErrorWhenRunManually(t *gotesting.T) {
 	}
 }
 
-func TestSkipBundlesWithoutMatchedTests(t *gotesting.T) {
+func TestRun_DeprecatedDirectRun_SkipBundlesWithoutMatchedTests(t *gotesting.T) {
 	dir := createBundleSymlinks(t, []bool{true}, []bool{true})
 	defer os.RemoveAll(dir)
 
@@ -303,35 +200,29 @@ func TestSkipBundlesWithoutMatchedTests(t *gotesting.T) {
 	// match any tests in the bundle. Pass the name of the test in the first bundle and
 	// check that the run succeeds (i.e. the second bundle wasn't executed).
 	clArgs := []string{"-bundles=" + filepath.Join(dir, "*"), getTestName(0, 0)}
-	status, _, _, sig := callRun(t, clArgs, nil, &StaticConfig{Type: LocalRunner})
+	status, _, _, sig := callRun(clArgs, &StaticConfig{Type: LocalRunner})
 	if status != statusSuccess {
 		t.Errorf("%s = %v; want %v", sig, status, statusSuccess)
 	}
 }
 
-func TestRunTestsUseRequestedOutDir(t *gotesting.T) {
+func TestRun_DeprecatedDirectRun_UseRequestedOutDir(t *gotesting.T) {
 	bundleDir := createBundleSymlinks(t, []bool{true})
 	defer os.RemoveAll(bundleDir)
 	outDir := testutil.TempDir(t)
 	defer os.RemoveAll(outDir)
 
-	status, stdout, _, sig := callRun(t, nil, &jsonprotocol.RunnerArgs{
-		RunTests: &jsonprotocol.RunnerRunTestsArgs{
-			BundleGlob: filepath.Join(bundleDir, "*"),
-			BundleArgs: jsonprotocol.BundleRunTestsArgs{OutDir: outDir},
-		},
-	}, &StaticConfig{Type: LocalRunner})
+	clArgs := []string{
+		"-bundles=" + filepath.Join(bundleDir, "*"),
+		"-outdir=" + outDir,
+	}
+	status, _, _, sig := callRun(clArgs, &StaticConfig{Type: LocalRunner})
 	if status != statusSuccess {
 		t.Fatalf("%s = %v; want %v", sig, status, statusSuccess)
 	}
 
-	msgs := readAllMessages(t, stdout)
-	if re, ok := msgs[len(msgs)-1].(*control.RunEnd); !ok {
-		t.Errorf("Last message not RunEnd: %v", msgs[len(msgs)-1])
-	} else {
-		// The RunEnd message should contain the out dir that we originally requested.
-		if re.OutDir != outDir {
-			t.Errorf("RunEnd.OutDir = %q; want %q", re.OutDir, outDir)
-		}
+	testOutDir := filepath.Join(outDir, getTestName(0, 0))
+	if _, err := os.Stat(testOutDir); err != nil {
+		t.Errorf("%s doesn't exist: %v", testOutDir, err)
 	}
 }

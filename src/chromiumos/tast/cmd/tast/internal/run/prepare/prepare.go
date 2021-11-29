@@ -23,61 +23,68 @@ import (
 	"chromiumos/tast/internal/debugger"
 	"chromiumos/tast/internal/linuxssh"
 	"chromiumos/tast/internal/logging"
+	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/internal/timing"
 	"chromiumos/tast/ssh"
 )
 
-// Prepare prepares target DUT and companion DUTs for running tests. When instructed in cfg, it builds
-// and pushes the local test runner and test bundles, and downloads private test bundles.
-func Prepare(ctx context.Context, cfg *config.Config, primaryDriver *driver.Driver) error {
-	if !cfg.Build() && !cfg.DownloadPrivateBundles() {
-		// Return without connecting to the DUT if we have nothing to do.
-		return nil
-	}
+// Prepare prepares target DUT and companion DUTs for running tests.
+// When instructed in cfg, it builds and pushes the local test runner and test
+// bundles, and downloads private test bundles.
+// It returns the DUTInfo for the primary DUT.
+func Prepare(ctx context.Context, cfg *config.Config, primaryDriver *driver.Driver) (*protocol.DUTInfo, error) {
 	if cfg.Build() && cfg.DownloadPrivateBundles() {
 		// Usually it makes no sense to download prebuilt private bundles when
 		// building and pushing a fresh test bundle.
-		return errors.New("-downloadprivatebundles requires -build=false")
+		return nil, errors.New("-downloadprivatebundles requires -build=false")
 	}
 
-	if err := prepareDUT(ctx, cfg, primaryDriver); err != nil {
-		return fmt.Errorf("failed to prepare primary DUT %s: %v", cfg.Target(), err)
+	dutInfo, err := prepareDUT(ctx, cfg, primaryDriver)
+	if err != nil {
+		return nil, fmt.Errorf("failed to prepare primary DUT %s: %v", cfg.Target(), err)
 	}
 
 	for role, dut := range cfg.CompanionDUTs() {
 		companionDriver, err := driver.New(ctx, cfg, dut, role)
 		if err != nil {
-			return fmt.Errorf("failed to connect to companion DUT %s: %v", dut, err)
+			return nil, fmt.Errorf("failed to connect to companion DUT %s: %v", dut, err)
 		}
 		defer companionDriver.Close(ctx)
-		if err := prepareDUT(ctx, cfg, companionDriver); err != nil {
-			return fmt.Errorf("failed to prepare companion DUT %s: %v", dut, err)
+		if _, err := prepareDUT(ctx, cfg, companionDriver); err != nil {
+			return nil, fmt.Errorf("failed to prepare companion DUT %s: %v", dut, err)
 		}
 	}
-	return nil
+	return dutInfo, nil
 }
 
-// prepareDUT prepares the DUT for running tests. When instructed in cfg, it builds
-// and pushes the local test runner and test bundles, and downloads private test
-// bundles.
-func prepareDUT(ctx context.Context, cfg *config.Config, drv *driver.Driver) error {
+// prepareDUT prepares the DUT for running tests. When instructed in cfg, it
+// builds and pushes the local test runner and test bundles, and downloads
+// private test bundles.
+func prepareDUT(ctx context.Context, cfg *config.Config, drv *driver.Driver) (*protocol.DUTInfo, error) {
 	if cfg.Build() {
 		targetArch, err := getTargetArch(ctx, cfg, drv.SSHConn())
 		if err != nil {
-			return fmt.Errorf("failed to get architecture information: %v", err)
+			return nil, fmt.Errorf("failed to get architecture information: %v", err)
 		}
 		if err := buildAll(ctx, cfg, targetArch); err != nil {
-			return err
+			return nil, err
 		}
 		if err := pushAll(ctx, cfg, drv, targetArch); err != nil {
-			return err
+			return nil, err
 		}
 	}
 
+	// Now that local_test_runner is prepared, we can retrieve DUTInfo.
+	// It is needed in DownloadPrivateBundles below.
+	dutInfo, err := drv.GetDUTInfo(ctx)
+	if err != nil {
+		return nil, err
+	}
+
 	if cfg.DownloadPrivateBundles() {
-		if err := drv.DownloadPrivateBundles(ctx); err != nil {
-			return fmt.Errorf("failed downloading private bundles: %v", err)
+		if err := drv.DownloadPrivateBundles(ctx, dutInfo); err != nil {
+			return nil, fmt.Errorf("failed downloading private bundles: %v", err)
 		}
 	}
 
@@ -87,9 +94,9 @@ func prepareDUT(ctx context.Context, cfg *config.Config, drv *driver.Driver) err
 	// even if the DUT crashes later. This is important especially when we push local_test_runner
 	// because it can appear as zero-byte binary after a crash and subsequent sysinfo phase fails.
 	if err := drv.SSHConn().CommandContext(ctx, "sync").Run(); err != nil {
-		return fmt.Errorf("failed to sync disk writes: %v", err)
+		return nil, fmt.Errorf("failed to sync disk writes: %v", err)
 	}
-	return nil
+	return dutInfo, nil
 }
 
 // buildAll builds Go binaries as instructed in cfg.

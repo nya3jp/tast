@@ -15,7 +15,7 @@ import (
 
 // DownloadPrivateBundles downloads and installs a private test bundle archive
 // corresponding to the target version, if one has not been installed yet.
-func (d *Driver) DownloadPrivateBundles(ctx context.Context) error {
+func (d *Driver) DownloadPrivateBundles(ctx context.Context, dutInfo *protocol.DUTInfo) error {
 	if !d.cfg.DownloadPrivateBundles() {
 		return nil
 	}
@@ -42,6 +42,11 @@ func (d *Driver) DownloadPrivateBundles(ctx context.Context) error {
 		dutServer = addr.String()
 	}
 
+	buildArtifactsURL := d.cfg.BuildArtifactsURLOverride()
+	if buildArtifactsURL == "" {
+		buildArtifactsURL = dutInfo.GetDefaultBuildArtifactsUrl()
+	}
+
 	req := &protocol.DownloadPrivateBundlesRequest{
 		ServiceConfig: &protocol.ServiceConfig{
 			Devservers:  devservers,
@@ -49,7 +54,7 @@ func (d *Driver) DownloadPrivateBundles(ctx context.Context) error {
 			TlwServer:   tlwServer,
 			TlwSelfName: tlwSelfName,
 		},
-		BuildArtifactUrl: d.cfg.BuildArtifactsURLOverride(), // TODO(b/207721470): Fix
+		BuildArtifactUrl: buildArtifactsURL,
 	}
 
 	if err := d.localClient().DownloadPrivateBundles(ctx, req); err != nil {

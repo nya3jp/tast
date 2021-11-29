@@ -25,6 +25,7 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/sharding"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/logging"
+	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/internal/xcontext"
 )
@@ -61,19 +62,20 @@ func Run(ctx context.Context, cfg *config.Config, state *config.DeprecatedState)
 	}
 	defer drv.Close(ctx)
 
-	if err := prepare.Prepare(ctx, cfg, drv); err != nil {
+	dutInfo, err := prepare.Prepare(ctx, cfg, drv)
+	if err != nil {
 		return nil, errors.Wrap(err, "failed to build and push")
 	}
 
 	switch cfg.Mode() {
 	case config.ListTestsMode:
-		results, err := listTests(ctx, cfg, drv)
+		results, err := listTests(ctx, cfg, drv, dutInfo)
 		if err != nil {
 			return nil, errors.Wrapf(err, "failed to list tests")
 		}
 		return results, nil
 	case config.RunTestsMode:
-		results, err := runTests(ctx, cfg, state, drv)
+		results, err := runTests(ctx, cfg, state, drv, dutInfo)
 		if err != nil {
 			return results, errors.Wrapf(err, "failed to run tests")
 		}
@@ -119,12 +121,7 @@ func removeSkippedTestsFromBundle(bundle []*driver.BundleEntity) ([]*driver.Bund
 }
 
 // listTests returns the whole tests to run.
-func listTests(ctx context.Context, cfg *config.Config, drv *driver.Driver) ([]*resultsjson.Result, error) {
-	dutInfo, err := drv.GetDUTInfo(ctx)
-	if err != nil {
-		return nil, err
-	}
-
+func listTests(ctx context.Context, cfg *config.Config, drv *driver.Driver, dutInfo *protocol.DUTInfo) ([]*resultsjson.Result, error) {
 	tests, err := drv.ListMatchedTests(ctx, cfg.Features(dutInfo.GetFeatures()))
 	if err != nil {
 		return nil, err
@@ -172,12 +169,7 @@ func verifyTestNames(patterns []string, tests []*driver.BundleEntity) error {
 	return nil
 }
 
-func runTests(ctx context.Context, cfg *config.Config, state *config.DeprecatedState, drv *driver.Driver) (results []*resultsjson.Result, retErr error) {
-	dutInfo, err := drv.GetDUTInfo(ctx)
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to get DUT software features")
-	}
-
+func runTests(ctx context.Context, cfg *config.Config, state *config.DeprecatedState, drv *driver.Driver, dutInfo *protocol.DUTInfo) (results []*resultsjson.Result, retErr error) {
 	if err := ioutil.WriteFile(filepath.Join(cfg.ResDir(), DUTInfoFile), []byte(proto.MarshalTextString(dutInfo)), 0644); err != nil {
 		logging.Debugf(ctx, "Failed to dump DUTInfo: %v", err)
 	}

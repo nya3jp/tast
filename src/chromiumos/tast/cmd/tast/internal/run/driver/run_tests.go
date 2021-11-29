@@ -119,7 +119,7 @@ func (d *Driver) runLocalTestsWithRemoteFixture(ctx context.Context, tests []*Bu
 	if start == "" {
 		return d.runLocalTestsWithRetry(ctx, tests, &protocol.StartFixtureState{}, args)
 	}
-	runCfg, err := d.newRunFixtureConfig()
+	runCfg, err := d.newRunFixtureConfig(args.DUTInfo)
 	if err != nil {
 		return nil, err
 	}
@@ -377,10 +377,15 @@ func (d *Driver) newConfigsForRemoteTests(tests []*BundleEntity, dutInfo *protoc
 	return bcfg, rcfg, nil
 }
 
-func (d *Driver) newRunFixtureConfig() (*bundle.RunFixtureConfig, error) {
+func (d *Driver) newRunFixtureConfig(dutInfo *protocol.DUTInfo) (*bundle.RunFixtureConfig, error) {
 	var tlwServer string
 	if addr, ok := d.cc.Conn().Services().TLWAddr(); ok {
 		tlwServer = addr.String()
+	}
+
+	buildArtifactsURL := d.cfg.BuildArtifactsURLOverride()
+	if buildArtifactsURL == "" {
+		buildArtifactsURL = dutInfo.GetDefaultBuildArtifactsUrl()
 	}
 
 	var dm bundle.RunFixtureConfig_PlannerDownloadMode
@@ -408,7 +413,7 @@ func (d *Driver) newRunFixtureConfig() (*bundle.RunFixtureConfig, error) {
 		// remote fixture which will use devserver or ephemeral server to download files.
 		TlwServer:         tlwServer,
 		DutName:           d.cfg.Target(),
-		BuildArtifactsUrl: d.cfg.BuildArtifactsURLOverride(), // TODO(b/207721470): Fix
+		BuildArtifactsUrl: buildArtifactsURL,
 		DownloadMode:      dm,
 	}, nil
 }

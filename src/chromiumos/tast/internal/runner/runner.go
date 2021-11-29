@@ -20,7 +20,6 @@ import (
 
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/command"
-	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testing"
@@ -65,51 +64,34 @@ func Run(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, scfg *Stati
 	}
 
 	switch args.Mode {
-	case jsonprotocol.RunnerRunTestsMode:
-		if err := deprecatedDirectRun(ctx, args, scfg, stdout); err != nil {
+	case modeDeprecatedDirectRun:
+		if err := deprecatedDirectRun(ctx, &args.DeprecatedDirectRunConfig, scfg, stdout); err != nil {
 			return command.WriteError(stderr, err)
 		}
 		return statusSuccess
-	case jsonprotocol.RunnerRPCMode:
+	case modeRPC:
 		if err := runRPCServer(scfg, stdin, stdout); err != nil {
 			return command.WriteError(stderr, err)
 		}
 		return statusSuccess
-	case jsonprotocol.RunnerGetSysInfoStateMode,
-		jsonprotocol.RunnerCollectSysInfoMode,
-		jsonprotocol.RunnerGetDUTInfoMode,
-		jsonprotocol.RunnerListTestsMode,
-		jsonprotocol.RunnerListFixturesMode,
-		jsonprotocol.RunnerDownloadPrivateBundlesMode:
-		return command.WriteError(stderr, command.NewStatusErrorf(statusBadArgs, "mode %v has been removed in this version of test runner; use a properly versioned Tast CLI", args.Mode))
 	default:
 		return command.WriteError(stderr, command.NewStatusErrorf(statusBadArgs, "invalid mode %v", args.Mode))
 	}
 }
 
-func deprecatedDirectRun(ctx context.Context, args *jsonprotocol.RunnerArgs, scfg *StaticConfig, stdout io.Writer) error {
+func deprecatedDirectRun(ctx context.Context, drcfg *DeprecatedDirectRunConfig, scfg *StaticConfig, stdout io.Writer) error {
 	lg := log.New(stdout, "", log.LstdFlags)
 
-	bundleArgs, err := args.BundleArgs(jsonprotocol.BundleRunTestsMode)
-	if err != nil {
-		return errors.Wrap(err, "failed constructing bundle args")
-	}
-
-	matcher, err := testing.NewMatcher(bundleArgs.RunTests.Patterns)
+	matcher, err := testing.NewMatcher(drcfg.Patterns)
 	if err != nil {
 		return err
 	}
 
-	rcfg, bcfg := bundleArgs.RunTests.Proto()
-
 	compat, err := startCompatServer(ctx, scfg, &protocol.HandshakeRequest{
 		RunnerInitParams: &protocol.RunnerInitParams{
-			BundleGlob: args.RunTests.BundleGlob,
+			BundleGlob: drcfg.BundleGlob,
 		},
-		BundleInitParams: &protocol.BundleInitParams{
-			Vars:         args.RunTests.BundleArgs.TestVars,
-			BundleConfig: bcfg,
-		},
+		BundleInitParams: &protocol.BundleInitParams{},
 	})
 	if err != nil {
 		return err
@@ -119,7 +101,7 @@ func deprecatedDirectRun(ctx context.Context, args *jsonprotocol.RunnerArgs, scf
 	cl := compat.Client()
 
 	// Enumerate tests to run.
-	res, err := cl.ListEntities(ctx, &protocol.ListEntitiesRequest{Features: bundleArgs.RunTests.Features()})
+	res, err := cl.ListEntities(ctx, &protocol.ListEntitiesRequest{Features: drcfg.RunConfig(nil).GetFeatures()})
 	if err != nil {
 		return errors.Wrap(err, "failed to enumerate entities in bundles")
 	}
@@ -143,13 +125,15 @@ func deprecatedDirectRun(ctx context.Context, args *jsonprotocol.RunnerArgs, scf
 		return errors.New("no tests matched")
 	}
 
-	created, err := setUpBaseOutDir(bundleArgs)
+	rcfg := drcfg.RunConfig(testNames)
+
+	created, err := setUpBaseOutDir(rcfg)
 	if err != nil {
 		return errors.Wrap(err, "failed to set up base out dir")
 	}
 	// If the runner was executed manually and an out dir wasn't specified, clean up the temp dir that was created.
 	if created {
-		defer os.RemoveAll(bundleArgs.RunTests.OutDir)
+		defer os.RemoveAll(rcfg.GetDirs().GetOutDir())
 	}
 
 	// Call RunTests method and send the initial request.
@@ -158,7 +142,7 @@ func deprecatedDirectRun(ctx context.Context, args *jsonprotocol.RunnerArgs, scf
 		return errors.Wrap(err, "RunTests: failed to call")
 	}
 
-	initReq := &protocol.RunTestsRequest{Type: &protocol.RunTestsRequest_RunTestsInit{RunTestsInit: &protocol.RunTestsInit{RunConfig: rcfg, DebugPort: uint32(args.RunTests.DebugPort)}}}
+	initReq := &protocol.RunTestsRequest{Type: &protocol.RunTestsRequest_RunTestsInit{RunTestsInit: &protocol.RunTestsInit{RunConfig: rcfg}}}
 	if err := srv.Send(initReq); err != nil {
 		return errors.Wrap(err, "RunTests: failed to send initial request")
 	}
@@ -218,30 +202,25 @@ func deprecatedDirectRun(ctx context.Context, args *jsonprotocol.RunnerArgs, scf
 	}
 }
 
-// setUpBaseOutDir creates and assigns a temporary directory if args.RunTests.OutDir is empty.
+// setUpBaseOutDir creates and assigns a temporary directory if rcfg.Dirs.OutDir is empty.
 // It also ensures that the dir is accessible to all users. The returned boolean created
 // indicates whether a new directory was created.
-func setUpBaseOutDir(args *jsonprotocol.BundleArgs) (created bool, err error) {
+func setUpBaseOutDir(rcfg *protocol.RunConfig) (created bool, err error) {
 	defer func() {
 		if err != nil && created {
-			os.RemoveAll(args.RunTests.OutDir)
+			os.RemoveAll(rcfg.GetDirs().GetOutDir())
 			created = false
 		}
 	}()
 
-	// TODO(crbug.com/1000549): Stop handling empty OutDir here.
-	// Latest tast command always sets OutDir. The only cases where OutDir is unset are
-	// (1) the runner is run manually or (2) the runner is run by an old tast command.
-	// Once old tast commands disappear, we can handle the manual run case specially,
-	// then we can avoid setting OutDir here in the middle of the runner execution.
-	if args.RunTests.OutDir == "" {
-		if args.RunTests.OutDir, err = ioutil.TempDir("", "tast_out."); err != nil {
+	if rcfg.GetDirs().GetOutDir() == "" {
+		if rcfg.GetDirs().OutDir, err = ioutil.TempDir("", "tast_out."); err != nil {
 			return false, err
 		}
 		created = true
 	} else {
-		if _, err := os.Stat(args.RunTests.OutDir); os.IsNotExist(err) {
-			if err := os.MkdirAll(args.RunTests.OutDir, 0755); err != nil {
+		if _, err := os.Stat(rcfg.GetDirs().GetOutDir()); os.IsNotExist(err) {
+			if err := os.MkdirAll(rcfg.GetDirs().GetOutDir(), 0755); err != nil {
 				return false, err
 			}
 			created = true
@@ -252,7 +231,7 @@ func setUpBaseOutDir(args *jsonprotocol.BundleArgs) (created bool, err error) {
 
 	// Make the directory traversable in case a test wants to write a file as another user.
 	// (Note that we can't guarantee that all the parent directories are also accessible, though.)
-	if err := os.Chmod(args.RunTests.OutDir, 0755); err != nil {
+	if err := os.Chmod(rcfg.GetDirs().GetOutDir(), 0755); err != nil {
 		return created, err
 	}
 	return created, nil

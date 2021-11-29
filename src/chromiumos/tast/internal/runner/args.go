@@ -13,7 +13,6 @@ import (
 	"path/filepath"
 
 	"chromiumos/tast/internal/command"
-	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/protocol"
 )
 
@@ -65,38 +64,110 @@ type StaticConfig struct {
 	// DEPRECATED: Direct test execution is deprecated. Tast tests should be
 	// always initiated with Tast CLI, in which case default values here are
 	// ignored.
-	DeprecatedDirectRunDefaults DeprecatedDirectRunDefaults
+	DeprecatedDirectRunDefaults DeprecatedDirectRunConfig
 }
 
-// DeprecatedDirectRunDefaults contains default configuration values used when
-// the user executes a test runner directly to run tests.
+// mode denotes the execution mode of the test runner.
+type mode int
+
+const (
+	// modeRPC is the standard execution mode of the test runner to start
+	// a gRPC server on stdin/stdout.
+	modeRPC mode = iota
+
+	// modeDeprecatedDirectRun is the deprecated execution mode of the test
+	// runner to allow users to run local tests directly on the DUT without
+	// Tast CLI.
+	modeDeprecatedDirectRun
+)
+
+// parsedArgs holds the results of command line parsing.
+type parsedArgs struct {
+	Mode mode
+
+	// DeprecatedDirectRunConfig contains configuration values used when
+	// the user executes a test runner directly to run tests.
+	//
+	// DEPRECATED: Direct test execution is deprecated. Tast tests should be
+	// always initiated with Tast CLI.
+	DeprecatedDirectRunConfig DeprecatedDirectRunConfig
+}
+
+// DeprecatedDirectRunConfig contains configuration values used when the user
+// executes a test runner directly to run tests.
 //
 // DEPRECATED: Direct test execution is deprecated. Tast tests should be always
-// initiated with Tast CLI, in which case default values here are ignored.
-type DeprecatedDirectRunDefaults struct {
+// initiated with Tast CLI.
+type DeprecatedDirectRunConfig struct {
 	// BundleGlob is a glob-style path matching test bundles to execute.
 	BundleGlob string
-
 	// DataDir is the path to the directory containing test data files.
 	DataDir string
-
 	// TempDir is the path to the directory under which temporary files for
 	// tests are written.
 	TempDir string
+
+	// Patterns contains patterns (either empty to run all tests, exactly one attribute expression,
+	// or one or more globs) describing which tests to run.
+	Patterns []string
+	// OutDir is the path to the base directory under which tests should write output files.
+	OutDir string
+	// Devservers contains URLs of devservers that can be used to download files.
+	Devservers []string
+	// WaitUntilReady indicates that the test bundle's "ready" function (see ReadyFunc) should
+	// be executed before any tests are executed.
+	WaitUntilReady bool
+	// ConnectionSpec is the DUT connection spec as [<user>@]host[:<port>].
+	// It is only relevant for remote tests.
+	ConnectionSpec string
+	// KeyFile is the path to the SSH private key to use to connect to the DUT.
+	// It is only relevant for remote tests.
+	KeyFile string
+	// KeyDir is the directory containing SSH private keys (typically $HOME/.ssh).
+	// It is only relevant for remote tests.
+	KeyDir string
+	// CheckDeps indicates whether test runners should skip tests whose
+	// dependencies are not satisfied by available features.
+	CheckDeps bool
+	// AvailableSoftwareFeatures contains a list of software features supported by the DUT.
+	AvailableSoftwareFeatures []string
+	// UnavailableSoftwareFeatures contains a list of software features supported by the DUT.
+	UnavailableSoftwareFeatures []string
+}
+
+// RunConfig generates protocol.RunConfig.
+// Tests should be a resolved list of test names according to a.Patterns.
+func (c *DeprecatedDirectRunConfig) RunConfig(tests []string) *protocol.RunConfig {
+	return &protocol.RunConfig{
+		Tests: tests,
+		Dirs: &protocol.RunDirectories{
+			DataDir: c.DataDir,
+			OutDir:  c.OutDir,
+			TempDir: c.TempDir,
+		},
+		Features: &protocol.Features{
+			CheckDeps: c.CheckDeps,
+			Dut: &protocol.DUTFeatures{
+				Software: &protocol.SoftwareFeatures{
+					Available:   c.AvailableSoftwareFeatures,
+					Unavailable: c.UnavailableSoftwareFeatures,
+				},
+			},
+		},
+		ServiceConfig: &protocol.ServiceConfig{
+			Devservers: c.Devservers,
+		},
+		DataFileConfig: &protocol.DataFileConfig{},
+		WaitUntilReady: c.WaitUntilReady,
+	}
 }
 
 // parseArgs parses runtime arguments.
 // clArgs contains command-line arguments and is typically os.Args[1:].
-func parseArgs(clArgs []string, stderr io.Writer, scfg *StaticConfig) (*jsonprotocol.RunnerArgs, error) {
-	args := &jsonprotocol.RunnerArgs{
-		Mode: jsonprotocol.RunnerRunTestsMode,
-		RunTests: &jsonprotocol.RunnerRunTestsArgs{
-			BundleGlob: scfg.DeprecatedDirectRunDefaults.BundleGlob,
-			BundleArgs: jsonprotocol.BundleRunTestsArgs{
-				DataDir: scfg.DeprecatedDirectRunDefaults.DataDir,
-				TempDir: scfg.DeprecatedDirectRunDefaults.TempDir,
-			},
-		},
+func parseArgs(clArgs []string, stderr io.Writer, scfg *StaticConfig) (*parsedArgs, error) {
+	args := &parsedArgs{
+		Mode:                      modeDeprecatedDirectRun,
+		DeprecatedDirectRunConfig: scfg.DeprecatedDirectRunDefaults,
 	}
 
 	// Expose a limited amount of configurability via command-line flags to support running test runners manually.
@@ -119,25 +190,25 @@ errors, including the failure of an individual test.
 		flags.PrintDefaults()
 	}
 	rpc := flags.Bool("rpc", false, "run gRPC server")
-	flags.StringVar(&args.RunTests.BundleGlob, "bundles",
-		args.RunTests.BundleGlob, "glob matching test bundles")
-	flags.StringVar(&args.RunTests.BundleArgs.DataDir, "datadir",
-		args.RunTests.BundleArgs.DataDir, "directory containing data files")
-	flags.StringVar(&args.RunTests.BundleArgs.OutDir, "outdir",
-		args.RunTests.BundleArgs.OutDir, "base directory to write output files to")
-	flags.Var(command.NewListFlag(",", func(v []string) { args.RunTests.Devservers = v }, nil),
+	flags.StringVar(&args.DeprecatedDirectRunConfig.BundleGlob, "bundles",
+		args.DeprecatedDirectRunConfig.BundleGlob, "glob matching test bundles")
+	flags.StringVar(&args.DeprecatedDirectRunConfig.DataDir, "datadir",
+		args.DeprecatedDirectRunConfig.DataDir, "directory containing data files")
+	flags.StringVar(&args.DeprecatedDirectRunConfig.OutDir, "outdir",
+		args.DeprecatedDirectRunConfig.OutDir, "base directory to write output files to")
+	flags.Var(command.NewListFlag(",", func(v []string) { args.DeprecatedDirectRunConfig.Devservers = v }, nil),
 		"devservers", "comma-separated list of devserver URLs")
 	flags.Var(command.NewListFlag(",", func(v []string) { extraUSEFlags = v }, nil),
 		"extrauseflags", "comma-separated list of additional USE flags to inject when checking test dependencies")
-	flags.BoolVar(&args.RunTests.BundleArgs.WaitUntilReady, "waituntilready",
+	flags.BoolVar(&args.DeprecatedDirectRunConfig.WaitUntilReady, "waituntilready",
 		true, "wait until DUT is ready before running tests")
 
 	if scfg.Type == RemoteRunner {
-		flags.StringVar(&args.RunTests.BundleArgs.ConnectionSpec, "target",
+		flags.StringVar(&args.DeprecatedDirectRunConfig.ConnectionSpec, "target",
 			"", "DUT connection spec as \"[<user>@]host[:<port>]\"")
-		flags.StringVar(&args.RunTests.BundleArgs.KeyFile, "keyfile",
+		flags.StringVar(&args.DeprecatedDirectRunConfig.KeyFile, "keyfile",
 			"", "path to SSH private key to use for connecting to DUT")
-		flags.StringVar(&args.RunTests.BundleArgs.KeyDir, "keydir",
+		flags.StringVar(&args.DeprecatedDirectRunConfig.KeyDir, "keydir",
 			"", "directory containing SSH private keys (typically $HOME/.ssh)")
 	}
 
@@ -146,11 +217,11 @@ errors, including the failure of an individual test.
 	}
 
 	if *rpc {
-		args.Mode = jsonprotocol.RunnerRPCMode
+		args.Mode = modeRPC
 		return args, nil
 	}
 
-	args.RunTests.BundleArgs.Patterns = flags.Args()
+	args.DeprecatedDirectRunConfig.Patterns = flags.Args()
 
 	// When the runner is executed by the "tast run" command, the list of software features (used to skip
 	// unsupported tests) is passed in after having been gathered by an earlier call to local_test_runner
@@ -163,9 +234,9 @@ errors, including the failure of an individual test.
 		}
 
 		fs := res.GetDutInfo().GetFeatures().GetSoftware()
-		args.RunTests.BundleArgs.CheckDeps = true
-		args.RunTests.BundleArgs.AvailableSoftwareFeatures = fs.GetAvailable()
-		args.RunTests.BundleArgs.UnavailableSoftwareFeatures = fs.GetUnavailable()
+		args.DeprecatedDirectRunConfig.CheckDeps = true
+		args.DeprecatedDirectRunConfig.AvailableSoftwareFeatures = fs.GetAvailable()
+		args.DeprecatedDirectRunConfig.UnavailableSoftwareFeatures = fs.GetUnavailable()
 		// Historically we set software features only. Do not bother to
 		// improve hardware feature support in direct mode.
 	}

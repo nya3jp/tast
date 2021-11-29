@@ -19,7 +19,7 @@ func main() {
 		Type:             runner.RemoteRunner,
 		KillStaleRunners: true,
 		EnableSyslog:     true,
-		DeprecatedDirectRunDefaults: runner.DeprecatedDirectRunDefaults{
+		DeprecatedDirectRunDefaults: runner.DeprecatedDirectRunConfig{
 			BundleGlob: "/usr/libexec/tast/bundles/remote/*", // default glob matching test bundles
 			DataDir:    "/usr/share/tast/data",               // default dir containing test data
 		},

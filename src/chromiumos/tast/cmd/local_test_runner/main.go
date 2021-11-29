@@ -26,7 +26,7 @@ func main() {
 		GetSysInfoState:         crosbundle.GetSysInfoState,
 		CollectSysInfo:          crosbundle.CollectSysInfo,
 		PrivateBundlesStampPath: "/usr/local/share/tast/.private-bundles-downloaded",
-		DeprecatedDirectRunDefaults: runner.DeprecatedDirectRunDefaults{
+		DeprecatedDirectRunDefaults: runner.DeprecatedDirectRunConfig{
 			BundleGlob: "/usr/local/libexec/tast/bundles/local/*",
 			DataDir:    "/usr/local/share/tast/data",
 			TempDir:    "/usr/local/tmp/tast/run_tmp",

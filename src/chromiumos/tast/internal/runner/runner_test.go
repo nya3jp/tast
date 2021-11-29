@@ -14,13 +14,9 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
-	"sort"
 	"strconv"
 	"strings"
 	gotesting "testing"
-
-	"github.com/google/go-cmp/cmp"
-	"github.com/google/go-cmp/cmp/cmpopts"
 
 	"chromiumos/tast/internal/bundle"
 	"chromiumos/tast/internal/control"
@@ -168,110 +164,6 @@ func gotRunError(msgs []interface{}) bool {
 		}
 	}
 	return false
-}
-
-func TestRunListTests(t *gotesting.T) {
-	// Create one bundle with two tests, one with three, and one with just one.
-	dir := createBundleSymlinks(t, []bool{true, true}, []bool{true, true, true}, []bool{true})
-	defer os.RemoveAll(dir)
-
-	// All six tests should be printed.
-	args := jsonprotocol.RunnerArgs{
-		Mode:      jsonprotocol.RunnerListTestsMode,
-		ListTests: &jsonprotocol.RunnerListTestsArgs{BundleGlob: filepath.Join(dir, "*")},
-	}
-	status, stdout, stderr, sig := callRun(t, nil, &args, &StaticConfig{Type: LocalRunner})
-	if status != statusSuccess {
-		t.Fatalf("%s = %v; want %v", sig, status, statusSuccess)
-	}
-
-	var tests []*jsonprotocol.EntityWithRunnabilityInfo
-	if err := json.Unmarshal(stdout.Bytes(), &tests); err != nil {
-		t.Fatalf("%s printed unparsable output %q", sig, stdout.String())
-	}
-	if len(tests) != 6 {
-		t.Errorf("%s printed %v test(s); want 6: %v", sig, len(tests), stdout.String())
-	}
-	if stderr.Len() != 0 {
-		t.Errorf("%s wrote to stderr: %q", sig, stderr.String())
-	}
-
-	bundleCounts := make(map[string]int)
-	for _, test := range tests {
-		bundleCounts[test.Bundle]++
-	}
-	var counts []int
-	for _, v := range bundleCounts {
-		counts = append(counts, v)
-	}
-	sort.Ints(counts)
-	if want := []int{1, 2, 3}; !reflect.DeepEqual(counts, want) {
-		t.Errorf("counts = %v, want %v", counts, want)
-	}
-}
-
-func TestRunListFixtures(t *gotesting.T) {
-	dir := createBundleSymlinks(t, []bool{true})
-	defer os.RemoveAll(dir)
-
-	args := jsonprotocol.RunnerArgs{
-		Mode: jsonprotocol.RunnerListFixturesMode,
-		ListFixtures: &jsonprotocol.RunnerListFixturesArgs{
-			BundleGlob: filepath.Join(dir, "*"),
-		},
-	}
-	status, stdout, _, sig := callRun(t, nil, &args, &StaticConfig{Type: LocalRunner})
-	if status != statusSuccess {
-		t.Fatalf("%s = %v; want %v", sig, status, statusSuccess)
-	}
-
-	var got jsonprotocol.RunnerListFixturesResult
-	if err := json.Unmarshal(stdout.Bytes(), &got); err != nil {
-		t.Fatalf("%s printed unparsable output %q", sig, stdout.String())
-	}
-
-	bundle := fmt.Sprintf("%s-0-p", bundlePrefix)
-	bundlePath := filepath.Join(dir, bundle)
-	want := jsonprotocol.RunnerListFixturesResult{Fixtures: map[string][]*jsonprotocol.EntityInfo{
-		bundlePath: {
-			{Name: "fake1", Type: jsonprotocol.EntityFixture, Bundle: bundle},
-			{Name: "fake2", Fixture: "fake1", Type: jsonprotocol.EntityFixture, Bundle: bundle},
-		},
-	}}
-	sortEntities := cmpopts.SortSlices(func(a, b *jsonprotocol.EntityInfo) bool { return a.Name < b.Name })
-	if diff := cmp.Diff(got, want, sortEntities); diff != "" {
-		t.Fatal("Result mismatch (-want +got): ", diff)
-	}
-
-	// Test errors
-	status, _, _, sig = callRun(t, nil, &jsonprotocol.RunnerArgs{Mode: jsonprotocol.RunnerListFixturesMode /* ListFixtures is nil */}, &StaticConfig{Type: LocalRunner})
-	if status != statusBadArgs {
-		t.Fatalf("%s = %v; want %v", sig, status, statusBadArgs)
-	}
-}
-
-func TestRunListTestsNoBundles(t *gotesting.T) {
-	// Don't create any bundles; this should make the runner fail.
-	dir := createBundleSymlinks(t)
-	defer os.RemoveAll(dir)
-
-	args := jsonprotocol.RunnerArgs{
-		Mode:      jsonprotocol.RunnerListTestsMode,
-		ListTests: &jsonprotocol.RunnerListTestsArgs{BundleGlob: filepath.Join(dir, "*")},
-	}
-	// The runner should only exit with 0 and report errors via control messages on stdout when it's
-	// performing an actual test run. Since we're only listing tests, it should instead exit with an
-	// error (and write the error to stderr, although that's not checked here).
-	status, stdout, stderr, sig := callRun(t, nil, &args, &StaticConfig{Type: LocalRunner})
-	if status != statusNoBundles {
-		t.Errorf("%s = %v; want %v", sig, status, statusNoBundles)
-	}
-	if stdout.Len() != 0 {
-		t.Errorf("%s wrote %q to stdout; want nothing (error should go to stderr)", sig, stdout.String())
-	}
-	if stderr.Len() == 0 {
-		t.Errorf("%s didn't write error to stderr", sig)
-	}
 }
 
 func TestRunTests(t *gotesting.T) {

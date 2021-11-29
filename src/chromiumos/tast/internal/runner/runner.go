@@ -6,7 +6,6 @@ package runner
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -37,7 +36,7 @@ const (
 	statusSuccess      = 0 // runner was successful
 	statusError        = 1 // unspecified error was encountered
 	statusBadArgs      = 2 // bad arguments were passed to the runner
-	statusNoBundles    = 3 // glob passed to runner didn't match any bundles
+	_                  = 3 // deprecated
 	_                  = 4 // deprecated
 	statusBundleFailed = 5 // test bundle exited with nonzero status
 	statusTestFailed   = 6 // one or more tests failed during manual run
@@ -74,40 +73,6 @@ func Run(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, scfg *Stati
 	}
 
 	switch args.Mode {
-	case jsonprotocol.RunnerGetSysInfoStateMode:
-		if err := handleGetSysInfoState(ctx, scfg, stdout); err != nil {
-			return command.WriteError(stderr, err)
-		}
-		return statusSuccess
-	case jsonprotocol.RunnerCollectSysInfoMode:
-		if err := handleCollectSysInfo(ctx, args, scfg, stdout); err != nil {
-			return command.WriteError(stderr, err)
-		}
-		return statusSuccess
-	case jsonprotocol.RunnerGetDUTInfoMode:
-		if err := handleGetDUTInfo(ctx, args, scfg, stdout); err != nil {
-			return command.WriteError(stderr, err)
-		}
-		return statusSuccess
-	case jsonprotocol.RunnerListTestsMode:
-		_, tests, err := getBundlesAndTests(args)
-		if err != nil {
-			return command.WriteError(stderr, err)
-		}
-		if err := WriteListTestsResultAsJSON(stdout, tests); err != nil {
-			return command.WriteError(stderr, err)
-		}
-		return statusSuccess
-	case jsonprotocol.RunnerListFixturesMode:
-		fixts, err := listFixtures(args.ListFixtures.BundleGlob)
-		if err != nil {
-			return command.WriteError(stderr, err)
-		}
-		res := &jsonprotocol.RunnerListFixturesResult{Fixtures: fixts}
-		if err := json.NewEncoder(stdout).Encode(res); err != nil {
-			return command.WriteError(stderr, err)
-		}
-		return statusSuccess
 	case jsonprotocol.RunnerRunTestsMode:
 		if args.Report {
 			// Success is always reported when running tests on behalf of the tast command.
@@ -116,16 +81,18 @@ func Run(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, scfg *Stati
 			return command.WriteError(stderr, err)
 		}
 		return statusSuccess
-	case jsonprotocol.RunnerDownloadPrivateBundlesMode:
-		if err := handleDownloadPrivateBundles(ctx, args, scfg, stdout); err != nil {
-			return command.WriteError(stderr, err)
-		}
-		return statusSuccess
 	case jsonprotocol.RunnerRPCMode:
 		if err := runRPCServer(scfg, stdin, stdout); err != nil {
 			return command.WriteError(stderr, err)
 		}
 		return statusSuccess
+	case jsonprotocol.RunnerGetSysInfoStateMode,
+		jsonprotocol.RunnerCollectSysInfoMode,
+		jsonprotocol.RunnerGetDUTInfoMode,
+		jsonprotocol.RunnerListTestsMode,
+		jsonprotocol.RunnerListFixturesMode,
+		jsonprotocol.RunnerDownloadPrivateBundlesMode:
+		return command.WriteError(stderr, command.NewStatusErrorf(statusBadArgs, "mode %v has been removed in this version of test runner; use a properly versioned Tast CLI", args.Mode))
 	default:
 		return command.WriteError(stderr, command.NewStatusErrorf(statusBadArgs, "invalid mode %v", args.Mode))
 	}
@@ -443,12 +410,4 @@ func killStaleRunners(ctx context.Context, sig unix.Signal) {
 			logging.Infof(ctx, "Failed killing process group %d: %v", proc.Pid, err)
 		}
 	}
-}
-
-// WriteListTestsResultAsJSON packs given parameters as a ListTestsResult, and
-// writes it to w in JSON format. This function is exported for unit tests to
-// implement fake runner.
-func WriteListTestsResultAsJSON(w io.Writer, tests []*jsonprotocol.EntityWithRunnabilityInfo) error {
-	var r jsonprotocol.RunnerListTestsResult = tests
-	return json.NewEncoder(w).Encode(r)
 }

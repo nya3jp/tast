@@ -54,19 +54,3 @@ func GetDUTInfo(ctx context.Context, req *protocol.GetDUTInfoRequest) (*protocol
 		},
 	}, nil
 }
-
-// DeprecatedDefaultBuildArtifactsURL returns the default build artifacts URL.
-// DEPRECATED: Do not call this function except in local_test_runner main.
-// Instead, Tast CLI should call GetDUTInfo RPC method first to know the
-// default URL and pass it in later requests.
-func DeprecatedDefaultBuildArtifactsURL() string {
-	kvs, err := lsbrelease.Load()
-	if err != nil {
-		return ""
-	}
-	bp := kvs[lsbrelease.BuilderPath]
-	if bp == "" {
-		return ""
-	}
-	return "gs://chromeos-image-archive/" + bp + "/"
-}

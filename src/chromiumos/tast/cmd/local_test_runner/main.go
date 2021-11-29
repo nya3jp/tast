@@ -19,14 +19,13 @@ import (
 
 func main() {
 	scfg := runner.StaticConfig{
-		Type:                               runner.LocalRunner,
-		KillStaleRunners:                   true,
-		EnableSyslog:                       true,
-		GetDUTInfo:                         crosbundle.GetDUTInfo,
-		GetSysInfoState:                    crosbundle.GetSysInfoState,
-		CollectSysInfo:                     crosbundle.CollectSysInfo,
-		DeprecatedDefaultBuildArtifactsURL: crosbundle.DeprecatedDefaultBuildArtifactsURL,
-		PrivateBundlesStampPath:            "/usr/local/share/tast/.private-bundles-downloaded",
+		Type:                    runner.LocalRunner,
+		KillStaleRunners:        true,
+		EnableSyslog:            true,
+		GetDUTInfo:              crosbundle.GetDUTInfo,
+		GetSysInfoState:         crosbundle.GetSysInfoState,
+		CollectSysInfo:          crosbundle.CollectSysInfo,
+		PrivateBundlesStampPath: "/usr/local/share/tast/.private-bundles-downloaded",
 		DeprecatedDirectRunDefaults: runner.DeprecatedDirectRunDefaults{
 			BundleGlob: "/usr/local/libexec/tast/bundles/local/*",
 			DataDir:    "/usr/local/share/tast/data",

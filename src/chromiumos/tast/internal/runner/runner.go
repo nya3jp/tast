@@ -44,11 +44,9 @@ const (
 	_                  = 8 // deprecated
 )
 
-// Run reads command-line flags from clArgs (in the case of a manual run) or a JSON-marshaled
-// RunnerArgs struct from stdin (when run by the tast command) and performs the requested action.
-// Default arguments may be passed via args, which is filled with the additional args that are read.
-// clArgs should typically be os.Args[1:].
-// The caller should exit with the returned status code.
+// Run reads command-line flags from clArgs and performs the requested action.
+// clArgs should typically be os.Args[1:]. The caller should exit with the
+// returned status code.
 func Run(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, scfg *StaticConfig) int {
 	ctx := context.Background()
 
@@ -67,17 +65,14 @@ func Run(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, scfg *Stati
 		command.InstallSignalHandler(os.NewFile(3, ""), func(os.Signal) {})
 	}
 
-	args, err := readArgs(clArgs, stdin, stderr, scfg)
+	args, err := parseArgs(clArgs, stderr, scfg)
 	if err != nil {
 		return command.WriteError(stderr, err)
 	}
 
 	switch args.Mode {
 	case jsonprotocol.RunnerRunTestsMode:
-		if args.Report {
-			// Success is always reported when running tests on behalf of the tast command.
-			runTestsAndReport(ctx, args, scfg, stdout)
-		} else if err := runTestsAndLog(ctx, args, scfg, stdout); err != nil {
+		if err := runTestsAndLog(ctx, args, scfg, stdout); err != nil {
 			return command.WriteError(stderr, err)
 		}
 		return statusSuccess
@@ -164,11 +159,7 @@ func runTestsCompat(ctx context.Context, mw *control.MessageWriter, scfg *Static
 	// user specified a pattern that matched only local or only remote tests rather than tests
 	// of both types. Don't bother creating an out dir in that case.
 	if len(testNames) == 0 {
-		if !args.Report {
-			return errors.New("no tests matched")
-		}
-		mw.WriteMessage(&control.RunEnd{Time: time.Now(), OutDir: bundleArgs.RunTests.OutDir})
-		return nil
+		return errors.New("no tests matched")
 	}
 
 	created, err := setUpBaseOutDir(bundleArgs)
@@ -176,7 +167,7 @@ func runTestsCompat(ctx context.Context, mw *control.MessageWriter, scfg *Static
 		return errors.Wrap(err, "failed to set up base out dir")
 	}
 	// If the runner was executed manually and an out dir wasn't specified, clean up the temp dir that was created.
-	if !args.Report && created {
+	if created {
 		defer os.RemoveAll(bundleArgs.RunTests.OutDir)
 	}
 

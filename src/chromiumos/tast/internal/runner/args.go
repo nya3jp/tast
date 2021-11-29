@@ -6,7 +6,6 @@ package runner
 
 import (
 	"context"
-	"encoding/json"
 	"flag"
 	"fmt"
 	"io"
@@ -55,15 +54,6 @@ type StaticConfig struct {
 	// If it is nil, an empty CollectSysInfoResponse is always returned.
 	CollectSysInfo func(ctx context.Context, req *protocol.CollectSysInfoRequest) (*protocol.CollectSysInfoResponse, error)
 
-	// DeprecatedDefaultBuildArtifactsURL is a function that computes the
-	// default build artifacts URL.
-	// If it is nil, an empty default build artifacts URL is used, which
-	// will cause all build artifact downloads to fail.
-	// DEPRECATED: Do not call this function except in fillDefaults.
-	// Instead, Tast CLI should call GetDUTInfo RPC method first to know the
-	// default URL and pass it in later requests.
-	DeprecatedDefaultBuildArtifactsURL func() string
-
 	// PrivateBundlesStampPath contains the path to a stamp file indicating private test bundles have been
 	// successfully downloaded and installed before. This prevents downloading private test bundles for
 	// every runner invocation.
@@ -76,20 +66,6 @@ type StaticConfig struct {
 	// always initiated with Tast CLI, in which case default values here are
 	// ignored.
 	DeprecatedDirectRunDefaults DeprecatedDirectRunDefaults
-}
-
-// fillDefaults fills unset fields with default values from cfg.
-func (c *StaticConfig) fillDefaults(a *jsonprotocol.RunnerArgs) {
-	switch a.Mode {
-	case jsonprotocol.RunnerRunTestsMode:
-		if a.RunTests.BundleArgs.BuildArtifactsURL == "" && c.DeprecatedDefaultBuildArtifactsURL != nil {
-			a.RunTests.BundleArgs.BuildArtifactsURL = c.DeprecatedDefaultBuildArtifactsURL()
-		}
-	case jsonprotocol.RunnerDownloadPrivateBundlesMode:
-		if a.DownloadPrivateBundles.BuildArtifactsURL == "" && c.DeprecatedDefaultBuildArtifactsURL != nil {
-			a.DownloadPrivateBundles.BuildArtifactsURL = c.DeprecatedDefaultBuildArtifactsURL()
-		}
-	}
 }
 
 // DeprecatedDirectRunDefaults contains default configuration values used when
@@ -109,13 +85,11 @@ type DeprecatedDirectRunDefaults struct {
 	TempDir string
 }
 
-// readArgs parses runtime arguments.
+// parseArgs parses runtime arguments.
 // clArgs contains command-line arguments and is typically os.Args[1:].
-// args contains default values for arguments and is further populated by parsing clArgs or
-// (if clArgs is empty, as is the case when a runner is executed by the tast command) by
-// decoding a JSON-marshaled RunnerArgs struct from stdin.
-func readArgs(clArgs []string, stdin io.Reader, stderr io.Writer, scfg *StaticConfig) (*jsonprotocol.RunnerArgs, error) {
+func parseArgs(clArgs []string, stderr io.Writer, scfg *StaticConfig) (*jsonprotocol.RunnerArgs, error) {
 	args := &jsonprotocol.RunnerArgs{
+		Mode: jsonprotocol.RunnerRunTestsMode,
 		RunTests: &jsonprotocol.RunnerRunTestsArgs{
 			BundleGlob: scfg.DeprecatedDirectRunDefaults.BundleGlob,
 			BundleArgs: jsonprotocol.BundleRunTestsArgs{
@@ -125,22 +99,11 @@ func readArgs(clArgs []string, stdin io.Reader, stderr io.Writer, scfg *StaticCo
 		},
 	}
 
-	if len(clArgs) == 0 {
-		if err := json.NewDecoder(stdin).Decode(args); err != nil {
-			return nil, command.NewStatusErrorf(statusBadArgs, "failed to decode args from stdin: %v", err)
-		}
-		args.Report = true
-	} else {
-		// Expose a limited amount of configurability via command-line flags to support running test runners manually.
-		args.Mode = jsonprotocol.RunnerRunTestsMode
-		if args.RunTests == nil {
-			args.RunTests = &jsonprotocol.RunnerRunTestsArgs{}
-		}
-		var extraUSEFlags []string
-
-		flags := flag.NewFlagSet("", flag.ContinueOnError)
-		flags.SetOutput(stderr)
-		const usage = `Usage: %s [flag]... [pattern]...
+	// Expose a limited amount of configurability via command-line flags to support running test runners manually.
+	var extraUSEFlags []string
+	flags := flag.NewFlagSet("", flag.ContinueOnError)
+	flags.SetOutput(stderr)
+	const usage = `Usage: %s [flag]... [pattern]...
 
 Run Tast tests matched by zero or more patterns.
 
@@ -151,76 +114,60 @@ Exits with 0 if all tests passed and with a non-zero exit code for all other
 errors, including the failure of an individual test.
 
 `
-		flags.Usage = func() {
-			fmt.Fprintf(stderr, usage, filepath.Base(os.Args[0]))
-			flags.PrintDefaults()
-		}
-		rpc := flags.Bool("rpc", false, "run gRPC server")
-		flags.StringVar(&args.RunTests.BundleGlob, "bundles",
-			args.RunTests.BundleGlob, "glob matching test bundles")
-		flags.StringVar(&args.RunTests.BundleArgs.DataDir, "datadir",
-			args.RunTests.BundleArgs.DataDir, "directory containing data files")
-		flags.StringVar(&args.RunTests.BundleArgs.OutDir, "outdir",
-			args.RunTests.BundleArgs.OutDir, "base directory to write output files to")
-		flags.Var(command.NewListFlag(",", func(v []string) { args.RunTests.Devservers = v }, nil),
-			"devservers", "comma-separated list of devserver URLs")
-		flags.Var(command.NewListFlag(",", func(v []string) { extraUSEFlags = v }, nil),
-			"extrauseflags", "comma-separated list of additional USE flags to inject when checking test dependencies")
-		flags.BoolVar(&args.RunTests.BundleArgs.WaitUntilReady, "waituntilready",
-			true, "wait until DUT is ready before running tests")
+	flags.Usage = func() {
+		fmt.Fprintf(stderr, usage, filepath.Base(os.Args[0]))
+		flags.PrintDefaults()
+	}
+	rpc := flags.Bool("rpc", false, "run gRPC server")
+	flags.StringVar(&args.RunTests.BundleGlob, "bundles",
+		args.RunTests.BundleGlob, "glob matching test bundles")
+	flags.StringVar(&args.RunTests.BundleArgs.DataDir, "datadir",
+		args.RunTests.BundleArgs.DataDir, "directory containing data files")
+	flags.StringVar(&args.RunTests.BundleArgs.OutDir, "outdir",
+		args.RunTests.BundleArgs.OutDir, "base directory to write output files to")
+	flags.Var(command.NewListFlag(",", func(v []string) { args.RunTests.Devservers = v }, nil),
+		"devservers", "comma-separated list of devserver URLs")
+	flags.Var(command.NewListFlag(",", func(v []string) { extraUSEFlags = v }, nil),
+		"extrauseflags", "comma-separated list of additional USE flags to inject when checking test dependencies")
+	flags.BoolVar(&args.RunTests.BundleArgs.WaitUntilReady, "waituntilready",
+		true, "wait until DUT is ready before running tests")
 
-		if scfg.Type == RemoteRunner {
-			flags.StringVar(&args.RunTests.BundleArgs.ConnectionSpec, "target",
-				"", "DUT connection spec as \"[<user>@]host[:<port>]\"")
-			flags.StringVar(&args.RunTests.BundleArgs.KeyFile, "keyfile",
-				"", "path to SSH private key to use for connecting to DUT")
-			flags.StringVar(&args.RunTests.BundleArgs.KeyDir, "keydir",
-				"", "directory containing SSH private keys (typically $HOME/.ssh)")
-		}
-
-		if err := flags.Parse(clArgs); err != nil {
-			return nil, command.NewStatusErrorf(statusBadArgs, "%v", err)
-		}
-
-		if *rpc {
-			args.Mode = jsonprotocol.RunnerRPCMode
-			return args, nil
-		}
-
-		args.RunTests.BundleArgs.Patterns = flags.Args()
-
-		// When the runner is executed by the "tast run" command, the list of software features (used to skip
-		// unsupported tests) is passed in after having been gathered by an earlier call to local_test_runner
-		// with RunnerGetDUTInfoMode. When the runner is executed directly, gather the list here instead.
-		if scfg.GetDUTInfo != nil {
-			req := &protocol.GetDUTInfoRequest{ExtraUseFlags: extraUSEFlags}
-			res, err := scfg.GetDUTInfo(context.Background(), req)
-			if err != nil {
-				return nil, err
-			}
-
-			fs := res.GetDutInfo().GetFeatures().GetSoftware()
-			args.RunTests.BundleArgs.CheckDeps = true
-			args.RunTests.BundleArgs.AvailableSoftwareFeatures = fs.GetAvailable()
-			args.RunTests.BundleArgs.UnavailableSoftwareFeatures = fs.GetUnavailable()
-			// Historically we set software features only. Do not bother to
-			// improve hardware feature support in direct mode.
-		}
+	if scfg.Type == RemoteRunner {
+		flags.StringVar(&args.RunTests.BundleArgs.ConnectionSpec, "target",
+			"", "DUT connection spec as \"[<user>@]host[:<port>]\"")
+		flags.StringVar(&args.RunTests.BundleArgs.KeyFile, "keyfile",
+			"", "path to SSH private key to use for connecting to DUT")
+		flags.StringVar(&args.RunTests.BundleArgs.KeyDir, "keydir",
+			"", "directory containing SSH private keys (typically $HOME/.ssh)")
 	}
 
-	if (args.Mode == jsonprotocol.RunnerRunTestsMode && args.RunTests == nil) ||
-		(args.Mode == jsonprotocol.RunnerListTestsMode && args.ListTests == nil) ||
-		(args.Mode == jsonprotocol.RunnerCollectSysInfoMode && args.CollectSysInfo == nil) ||
-		(args.Mode == jsonprotocol.RunnerGetDUTInfoMode && args.GetDUTInfo == nil) ||
-		(args.Mode == jsonprotocol.RunnerDownloadPrivateBundlesMode && args.DownloadPrivateBundles == nil) ||
-		(args.Mode == jsonprotocol.RunnerListFixturesMode && args.ListFixtures == nil) {
-		return nil, command.NewStatusErrorf(statusBadArgs, "args not set for mode %v", args.Mode)
+	if err := flags.Parse(clArgs); err != nil {
+		return nil, command.NewStatusErrorf(statusBadArgs, "%v", err)
 	}
 
-	scfg.fillDefaults(args)
+	if *rpc {
+		args.Mode = jsonprotocol.RunnerRPCMode
+		return args, nil
+	}
 
-	// Use deprecated fields if they were supplied by an old tast binary.
-	args.PromoteDeprecated()
+	args.RunTests.BundleArgs.Patterns = flags.Args()
 
+	// When the runner is executed by the "tast run" command, the list of software features (used to skip
+	// unsupported tests) is passed in after having been gathered by an earlier call to local_test_runner
+	// with RunnerGetDUTInfoMode. When the runner is executed directly, gather the list here instead.
+	if scfg.GetDUTInfo != nil {
+		req := &protocol.GetDUTInfoRequest{ExtraUseFlags: extraUSEFlags}
+		res, err := scfg.GetDUTInfo(context.Background(), req)
+		if err != nil {
+			return nil, err
+		}
+
+		fs := res.GetDutInfo().GetFeatures().GetSoftware()
+		args.RunTests.BundleArgs.CheckDeps = true
+		args.RunTests.BundleArgs.AvailableSoftwareFeatures = fs.GetAvailable()
+		args.RunTests.BundleArgs.UnavailableSoftwareFeatures = fs.GetUnavailable()
+		// Historically we set software features only. Do not bother to
+		// improve hardware feature support in direct mode.
+	}
 	return args, nil
 }

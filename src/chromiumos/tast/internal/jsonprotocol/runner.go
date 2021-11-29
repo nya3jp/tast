@@ -66,12 +66,6 @@ type RunnerArgs struct {
 	GetDUTInfo *RunnerGetDUTInfoArgs `json:"getSoftwareFeatures,omitempty"`
 	// DownloadPrivateBundles contains arguments used by RunnerDownloadPrivateBundlesMode.
 	DownloadPrivateBundles *RunnerDownloadPrivateBundlesArgs `json:"downloadPrivateBundles,omitempty"`
-
-	// Report is set to true by readArgs if status should be reported via control messages rather
-	// than human-readable log messages. This is true when args were supplied via stdin rather than
-	// command-line flags, indicating that the runner was executed by the tast command. It's only relevant
-	// for RunnerRunTestsMode.
-	Report bool `json:"-"`
 }
 
 // BundleArgs creates a bundle.BundleArgs appropriate for running bundles in the supplied mode.

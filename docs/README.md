@@ -28,6 +28,7 @@
 ## Tast framework
 
 *   [Overview](overview.md)
+*   [Architecture Guide](ARCHITECTURE.md)
 *   [Design Principles](design_principles.md)
 *   [Modifying Tast](modifying_tast.md)
 *   [Test Validation](test_validation.md)

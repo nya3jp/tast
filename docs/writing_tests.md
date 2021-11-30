@@ -143,13 +143,13 @@ test can be enabled.
 
 ### Adding new test categories
 
-When adding a new test category, you must update the test bundle's `main.go`
-file (either [local/bundles/cros/main.go] or [remote/bundles/cros/main.go]) to
+When adding a new test category, you must update the test bundle's `imports.go`
+file (either [local/bundles/cros/imports.go] or [remote/bundles/cros/imports.go]) to
 underscore-import the new package so its `init` functions will be executed to
 register tests.
 
-[local/bundles/cros/main.go]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/chromiumos/tast/local/bundles/cros/main.go
-[remote/bundles/cros/main.go]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/chromiumos/tast/remote/bundles/cros/main.go
+[local/bundles/cros/imports.go]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/chromiumos/tast/local/bundles/cros/imports.go
+[remote/bundles/cros/imports.go]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/chromiumos/tast/remote/bundles/cros/imports.go
 
 ## Coding style and best practices
 

@@ -68,24 +68,19 @@ func (cc *ConnCache) Conn() *Conn {
 	return cc.conn
 }
 
-// EnsureConn returns a cached connection to the target if it is available and
-// healthy. Otherwise EnsureConn creates a new connection.
+// EnsureConn ensures a cached connection to the target is available and
+// healthy, possibly creating a new connection.
 //
-// Even when ConnCache has a cached connection, getting it with EnsureConn has
-// slight performance hit because it checks the connection health by sending SSH
-// ping. Unless you expect connection drops (e.g. after running test bundles),
-// use Conn instead to get a cached connection without checking connection
-// health.
+// EnsureConn has slight performance hit because it checks the connection health
+// by sending SSH ping. Unless you expect connection drops (e.g. after running
+// test bundles), use Conn without calling this method.
 //
 // Be aware that calling EnsureConn may invalidate a connection previously
-// returned from Conn/EnsureConn.
-//
-// A connection returned from this function is owned by ConnCache. Do not call
-// its Close.
-func (cc *ConnCache) EnsureConn(ctx context.Context) (conn *Conn, retErr error) {
+// returned from Conn.
+func (cc *ConnCache) EnsureConn(ctx context.Context) error {
 	err := cc.conn.Healthy(ctx)
 	if err == nil {
-		return cc.conn, nil
+		return nil
 	}
 	logging.Infof(ctx, "Target connection is unhealthy: %v; reconnecting", err)
 
@@ -108,14 +103,14 @@ func (cc *ConnCache) EnsureConn(ctx context.Context) (conn *Conn, retErr error) 
 			}
 		}
 		if err != nil {
-			return nil, err
+			return err
 		}
 	}
 
 	cc.conn.close(ctx)
 	cc.conn = newConnection
 
-	return newConnection, nil
+	return nil
 }
 
 // InitBootID returns a boot ID string obtained on the first successful

@@ -136,6 +136,15 @@ func (c *Config) KeyDir() string { return c.m.KeyDir }
 // Target is the target device for testing, in the form "[<user>@]host[:<port>]".
 func (c *Config) Target() string { return c.m.Target }
 
+// ProtoSSHConfig returns an SSHConfig proto.
+func (c *Config) ProtoSSHConfig() *protocol.SSHConfig {
+	return &protocol.SSHConfig{
+		ConnectionSpec: c.Target(),
+		KeyFile:        c.KeyFile(),
+		KeyDir:         c.KeyDir(),
+	}
+}
+
 // Patterns specifies the patterns of tests to operate against.
 func (c *Config) Patterns() []string { return append([]string(nil), c.m.Patterns...) }
 
@@ -261,9 +270,13 @@ func (c *Config) ExcludeSkipped() bool { return c.m.ExcludeSkipped }
 // WaitUntilReady is whether to wait for DUT to be ready before running tests.
 func (c *Config) WaitUntilReady() bool { return c.m.WaitUntilReady }
 
-// DebuggerPort is a mapping from binary to the port we want to debug said binary on.
-func (c *Config) DebuggerPort(debugPort debugger.DebugTarget) int {
-	return c.m.DebuggerPorts[debugPort]
+// DebuggerPorts is a mapping from binary to the port we want to debug said binary on.
+func (c *Config) DebuggerPorts() map[debugger.DebugTarget]int {
+	m := make(map[debugger.DebugTarget]int)
+	for k, v := range c.m.DebuggerPorts {
+		m[k] = v
+	}
+	return m
 }
 
 // ExtraUSEFlags is additional USE flags to inject when determining features.

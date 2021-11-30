@@ -8,7 +8,6 @@ import (
 	"context"
 	"time"
 
-	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/internal/linuxssh"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/testingutil"
@@ -18,7 +17,7 @@ import (
 //
 // ConnCache is not goroutine-safe.
 type ConnCache struct {
-	cfg        *config.Config
+	cfg        *Config
 	target     string
 	initBootID string
 	helper     *dutHelper
@@ -27,8 +26,8 @@ type ConnCache struct {
 
 // NewConnCache establishes a new connection to target and return a ConnCache.
 // Call Close when it is no longer needed.
-func NewConnCache(ctx context.Context, cfg *config.Config, target, role string) (cc *ConnCache, retErr error) {
-	helper := newDUTHelper(ctx, cfg, role)
+func NewConnCache(ctx context.Context, cfg *Config, target, role string) (cc *ConnCache, retErr error) {
+	helper := newDUTHelper(ctx, cfg.SSHConfig, cfg.TastVars, role)
 	conn, err := newConn(ctx, cfg, target, helper.dutServer)
 	if err != nil {
 		return nil, err

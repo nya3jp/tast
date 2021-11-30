@@ -8,9 +8,9 @@ import (
 	"context"
 	"time"
 
-	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/logging"
+	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/timing"
 	"chromiumos/tast/ssh"
 )
@@ -31,8 +31,16 @@ type Conn struct {
 	target  string
 }
 
-func newConn(ctx context.Context, cfg *config.Config, target, dutServer string) (conn *Conn, retErr error) {
-	sshConn, err := dialSSH(ctx, cfg, target)
+// Config contains configs for creating connection.
+type Config struct {
+	SSHConfig     *protocol.SSHConfig
+	Retries       int
+	TastVars      map[string]string
+	ServiceConfig *ServiceConfig
+}
+
+func newConn(ctx context.Context, cfg *Config, target, dutServer string) (conn *Conn, retErr error) {
+	sshConn, err := dialSSH(ctx, cfg.SSHConfig, target, cfg.Retries)
 	if err != nil {
 		msg, diagErr := diagnoseNetwork(ctx, target)
 		if diagErr != nil {
@@ -49,8 +57,7 @@ func newConn(ctx context.Context, cfg *config.Config, target, dutServer string) 
 			sshConn.Close(ctx)
 		}
 	}()
-
-	svcs, err := startServices(ctx, cfg, sshConn, dutServer)
+	svcs, err := startServices(ctx, cfg.ServiceConfig, sshConn, dutServer)
 	if err != nil {
 		return nil, err
 	}
@@ -94,24 +101,24 @@ func (c *Conn) Target() string {
 }
 
 // dialSSH uses ssh to connect to target which in the format host:port.
-func dialSSH(ctx context.Context, cfg *config.Config, target string) (*ssh.Conn, error) {
+func dialSSH(ctx context.Context, cfg *protocol.SSHConfig, target string, retries int) (*ssh.Conn, error) {
 	ctx, st := timing.Start(ctx, "connect")
 	defer st.End()
 	logging.Infof(ctx, "Connecting to %s", target)
 
 	opts := &ssh.Options{
 		ConnectTimeout:       sshConnectTimeout,
-		ConnectRetries:       cfg.SSHRetries(),
+		ConnectRetries:       retries,
 		ConnectRetryInterval: sshRetryInterval,
-		KeyFile:              cfg.KeyFile(),
-		KeyDir:               cfg.KeyDir(),
+		KeyFile:              cfg.GetKeyFile(),
+		KeyDir:               cfg.GetKeyDir(),
 		WarnFunc:             func(s string) { logging.Info(ctx, s) },
 	}
 	if err := ssh.ParseTarget(target, opts); err != nil {
 		return nil, err
 	}
 
-	ctx, cancel := context.WithTimeout(ctx, sshConnectTimeout*time.Duration(cfg.SSHRetries()+1))
+	ctx, cancel := context.WithTimeout(ctx, sshConnectTimeout*time.Duration(retries+1))
 	defer cancel()
 
 	conn, err := ssh.New(ctx, opts)

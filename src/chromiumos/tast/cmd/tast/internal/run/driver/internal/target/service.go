@@ -10,7 +10,6 @@ import (
 	"net"
 	"path/filepath"
 
-	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/devserver"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/debugger"
@@ -28,7 +27,17 @@ type Services struct {
 	ephemeralDevserverURL string
 }
 
-func startServices(ctx context.Context, cfg *config.Config, conn *ssh.Conn, dutServer string) (svcs *Services, retErr error) {
+// ServiceConfig contains configs for creating a service.
+type ServiceConfig struct {
+	TLWServer             string
+	UseEphemeralDevserver bool
+	Devservers            []string
+	TastDir               string
+	ExtraAllowedBuckets   []string
+	DebuggerPorts         map[debugger.DebugTarget]int
+}
+
+func startServices(ctx context.Context, cfg *ServiceConfig, conn *ssh.Conn, dutServer string) (svcs *Services, retErr error) {
 	var tlwForwarder *ssh.Forwarder
 	var dutServerForwarder *ssh.Forwarder
 	var ephemeralDevserver *devserver.Ephemeral
@@ -47,10 +56,10 @@ func startServices(ctx context.Context, cfg *config.Config, conn *ssh.Conn, dutS
 				dutServerForwarder.Close()
 			}
 		}()
-	} else if cfg.TLWServer() != "" {
+	} else if cfg.TLWServer != "" {
 		// TODO: remove TLW after we make sure we don't need TLW server anymore.
 		var err error
-		tlwForwarder, err = conn.ForwardRemoteToLocal("tcp", "127.0.0.1:0", cfg.TLWServer(), func(e error) {
+		tlwForwarder, err = conn.ForwardRemoteToLocal("tcp", "127.0.0.1:0", cfg.TLWServer, func(e error) {
 			logging.Infof(ctx, "TLW server port forwarding failed: %v", e)
 		})
 		if err != nil {
@@ -61,7 +70,7 @@ func startServices(ctx context.Context, cfg *config.Config, conn *ssh.Conn, dutS
 				tlwForwarder.Close()
 			}
 		}()
-	} else if cfg.UseEphemeralDevserver() && len(cfg.Devservers()) == 0 {
+	} else if cfg.UseEphemeralDevserver && len(cfg.Devservers) == 0 {
 		var err error
 		ephemeralDevserver, ephemeralDevserverURL, err = startEphemeralDevserver(cfg, conn)
 		if err != nil {
@@ -73,11 +82,13 @@ func startServices(ctx context.Context, cfg *config.Config, conn *ssh.Conn, dutS
 			}
 		}()
 
-		for _, debugPort := range []int{cfg.DebuggerPort(debugger.LocalTestRunner), cfg.DebuggerPort(debugger.LocalBundle)} {
-			if debugPort != 0 {
-				if err := debugger.ForwardPort(ctx, conn, debugPort); err != nil {
-					return nil, err
-				}
+		for _, dt := range []debugger.DebugTarget{debugger.LocalTestRunner, debugger.LocalBundle} {
+			debugPort, ok := cfg.DebuggerPorts[dt]
+			if !ok || debugPort == 0 {
+				continue
+			}
+			if err := debugger.ForwardPort(ctx, conn, debugPort); err != nil {
+				return nil, err
 			}
 		}
 	}
@@ -137,7 +148,7 @@ func (s *Services) EphemeralDevserverURL() (url string, ok bool) {
 	return s.ephemeralDevserverURL, true
 }
 
-func startEphemeralDevserver(cfg *config.Config, conn *ssh.Conn) (ds *devserver.Ephemeral, url string, retErr error) {
+func startEphemeralDevserver(cfg *ServiceConfig, conn *ssh.Conn) (ds *devserver.Ephemeral, url string, retErr error) {
 	lis, err := conn.ListenTCP(&net.TCPAddr{IP: net.IPv4(127, 0, 0, 1)})
 	if err != nil {
 		return nil, "", fmt.Errorf("failed to reverse-forward a port: %v", err)
@@ -148,8 +159,8 @@ func startEphemeralDevserver(cfg *config.Config, conn *ssh.Conn) (ds *devserver.
 		}
 	}()
 
-	cacheDir := filepath.Join(cfg.TastDir(), "devserver", "static")
-	ds, err = devserver.NewEphemeral(lis, cacheDir, cfg.ExtraAllowedBuckets())
+	cacheDir := filepath.Join(cfg.TastDir, "devserver", "static")
+	ds, err = devserver.NewEphemeral(lis, cacheDir, cfg.ExtraAllowedBuckets)
 	if err != nil {
 		return nil, "", err
 	}

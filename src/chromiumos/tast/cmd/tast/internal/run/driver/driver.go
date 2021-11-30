@@ -52,7 +52,22 @@ type Driver struct {
 // New establishes a new connection to the target device and returns a Driver.
 func New(ctx context.Context, cfg *config.Config, rawTarget, role string) (*Driver, error) {
 	resolvedTarget := resolveSSHConfig(ctx, rawTarget)
-	cc, err := target.NewConnCache(ctx, cfg, resolvedTarget, role)
+
+	scfg := &target.ServiceConfig{
+		TLWServer:             cfg.TLWServer(),
+		UseEphemeralDevserver: cfg.UseEphemeralDevserver(),
+		Devservers:            cfg.Devservers(),
+		TastDir:               cfg.TastDir(),
+		ExtraAllowedBuckets:   cfg.ExtraAllowedBuckets(),
+		DebuggerPorts:         cfg.DebuggerPorts(),
+	}
+	tcfg := &target.Config{
+		SSHConfig:     cfg.ProtoSSHConfig(),
+		Retries:       cfg.Retries(),
+		TastVars:      cfg.TestVars(),
+		ServiceConfig: scfg,
+	}
+	cc, err := target.NewConnCache(ctx, tcfg, resolvedTarget, role)
 	if err != nil {
 		return nil, err
 	}
@@ -106,7 +121,7 @@ func (d *Driver) localCommand(exec string) *genericexec.SSHCmd {
 	var args []string
 	// The delve debugger attempts to write to a directory not on the stateful partition.
 	// This ensures it instead writes to the stateful partition.
-	if d.cfg.DebuggerPort(debugger.LocalBundle) != 0 {
+	if d.cfg.DebuggerPorts()[debugger.LocalBundle] != 0 {
 		args = append(args, "XDG_CONFIG_HOME=/mnt/stateful_partition/xdg_config")
 	}
 	if d.cfg.Proxy() == config.ProxyEnv {

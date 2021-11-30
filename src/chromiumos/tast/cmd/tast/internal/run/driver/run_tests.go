@@ -309,7 +309,7 @@ func (d *Driver) newConfigsForLocalTests(tests []*protocol.ResolvedEntity, state
 		StartFixtureState: state,
 		HeartbeatInterval: ptypes.DurationProto(heartbeatInterval),
 		WaitUntilReady:    d.cfg.WaitUntilReady(),
-		DebugPort:         uint32(d.cfg.DebuggerPort(debugger.LocalBundle)),
+		DebugPort:         uint32(d.cfg.DebuggerPorts()[debugger.LocalBundle]),
 	}
 	return bcfg, rcfg
 }
@@ -397,7 +397,7 @@ func (d *Driver) newConfigsForRemoteTests(tests []*protocol.ResolvedEntity, dutI
 			BuildArtifactsUrl: buildArtifactsURL,
 		},
 		HeartbeatInterval: ptypes.DurationProto(heartbeatInterval),
-		DebugPort:         uint32(d.cfg.DebuggerPort(debugger.RemoteBundle)),
+		DebugPort:         uint32(d.cfg.DebuggerPorts()[debugger.RemoteBundle]),
 	}
 	return bcfg, rcfg, nil
 }

@@ -109,28 +109,28 @@ func buildAll(ctx context.Context, cfg *config.Config, targetArch string) error 
 			Arch:       targetArch,
 			Workspaces: cfg.CommonWorkspaces(),
 			Out:        filepath.Join(cfg.BuildOutDir(), targetArch, path.Base(build.LocalRunnerPkg)),
-			Debug:      cfg.DebuggerPort(debugger.LocalTestRunner) != 0,
+			Debug:      cfg.DebuggerPorts()[debugger.LocalTestRunner] != 0,
 		},
 		{
 			Pkg:        path.Join(build.LocalBundlePkgPathPrefix, cfg.BuildBundle()),
 			Arch:       targetArch,
 			Workspaces: cfg.BundleWorkspaces(),
 			Out:        filepath.Join(cfg.BuildOutDir(), targetArch, build.LocalBundleBuildSubdir, cfg.BuildBundle()),
-			Debug:      cfg.DebuggerPort(debugger.LocalBundle) != 0,
+			Debug:      cfg.DebuggerPorts()[debugger.LocalBundle] != 0,
 		},
 		{
 			Pkg:        build.RemoteRunnerPkg,
 			Arch:       build.ArchHost,
 			Workspaces: cfg.CommonWorkspaces(),
 			Out:        cfg.RemoteRunner(),
-			Debug:      cfg.DebuggerPort(debugger.RemoteTestRunner) != 0,
+			Debug:      cfg.DebuggerPorts()[debugger.RemoteTestRunner] != 0,
 		},
 		{
 			Pkg:        path.Join(build.RemoteBundlePkgPathPrefix, cfg.BuildBundle()),
 			Arch:       build.ArchHost,
 			Workspaces: cfg.BundleWorkspaces(),
 			Out:        filepath.Join(cfg.RemoteBundleDir(), cfg.BuildBundle()),
-			Debug:      cfg.DebuggerPort(debugger.RemoteBundle) != 0,
+			Debug:      cfg.DebuggerPorts()[debugger.RemoteBundle] != 0,
 		},
 	}
 

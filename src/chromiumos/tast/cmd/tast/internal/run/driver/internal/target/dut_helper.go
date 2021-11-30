@@ -7,23 +7,23 @@ package target
 import (
 	"context"
 
-	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/driver/internal/externalservers"
 	"chromiumos/tast/cmd/tast/internal/run/driver/internal/servo"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/logging"
+	"chromiumos/tast/internal/protocol"
 )
 
 // dutHelper provide utilities to perform operation on DUt.
 type dutHelper struct {
 	servoSpec string // servoSpec stores servo spec
 	dutServer string // dutServer stores DUT server information.
-	cfg       *config.Config
+	cfg       *protocol.SSHConfig
+	testVars  map[string]string
 }
 
 // newDUTHelper return a helper that allow users to manipulate DUT.
-func newDUTHelper(ctx context.Context, cfg *config.Config, role string) *dutHelper {
-	testVars := cfg.TestVars()
+func newDUTHelper(ctx context.Context, cfg *protocol.SSHConfig, testVars map[string]string, role string) *dutHelper {
 	return &dutHelper{
 		servoSpec: servoHost(ctx, role, testVars),
 		dutServer: dutHost(ctx, role, testVars),
@@ -82,7 +82,7 @@ func (a *dutHelper) HardReboot(ctx context.Context) error {
 	}
 	// Connect to servo.
 	servoSpec := a.servoSpec
-	pxy, err := servo.NewProxy(ctx, servoSpec, a.cfg.KeyFile(), a.cfg.KeyDir())
+	pxy, err := servo.NewProxy(ctx, servoSpec, a.cfg.GetKeyFile(), a.cfg.GetKeyDir())
 	if err != nil {
 		return errors.Wrapf(err, "failed to connect to servo host %s", servoSpec)
 	}

@@ -146,6 +146,7 @@ The following software features are defined:
 *   `ondevice_document_scanner` - On-device document scanner support in `ml_service`.
     This implies `ml_service`.
 *   `ondevice_handwriting` - On-device handwriting recognition support in `ml_service`.
+*   `ondevice_speech` - On-device speech recognition support in `ml_service`.
 *   `pinweaver` - Pinweaver support, either by GSC or Intel CSME.
     This implies `ml_service`.
 *   `play_store` - Boards where Google Play Store is supported.

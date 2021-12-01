@@ -138,6 +138,7 @@ var softwareFeatureDefs = map[string]string{
 	"ocr":                       "ocr",
 	"ondevice_document_scanner": "ml_service && ondevice_document_scanner",
 	"ondevice_handwriting":      "ml_service && ondevice_handwriting",
+	"ondevice_speech":           "ml_service && ondevice_speech",
 	"pinweaver":                 `"cr50_onboard" || "pinweaver_csme"`,
 	"play_store":                `arc && !("board:novato" || "board:novato-arc64" || "board:novato-arcnext")`,
 	"plugin_vm":                 "pita", // boards that can run Plugin VM.

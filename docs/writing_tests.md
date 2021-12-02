@@ -111,7 +111,9 @@ Tests have to specify the descriptions in `Desc`, which should be a string liter
 Tests have to specify email addresses of persons and groups who are familiar
 with those tests in [Contacts]. At least one personal or email group address of active
 committer(s) should be specified so that we can file bugs or ask for code reviews.
-The `Contacts` fields should be an array literal of string literals.
+The `Contacts` fields should be an array literal of string literals. To help aid traige and
+on-call rotations, partner owned tests must specify a Google email contact that can be
+reached by on-call rotations.
 
 Tests have to specify [attributes] to describe how they are used in Chrome OS
 testing. A test belongs to zero or more groups by declaring attributes with

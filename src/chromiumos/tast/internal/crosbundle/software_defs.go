@@ -167,6 +167,7 @@ var softwareFeatureDefs = map[string]string{
 	"tpm":                    "!mocktpm",
 	"tpm1":                   "!mocktpm && !tpm2", // Indicate tpm1.2 is available
 	"tpm2":                   "!mocktpm && tpm2",  // Indicate tpm2 is available
+	"tpm2_simulator":         "tpm2_simulator",
 	"transparent_hugepage":   "transparent_hugepage",
 	"untrusted_vm":           `"kernel-4_19" || "kernel-5_4" || "kernel-5_10"`,
 	"usbguard":               "usbguard",

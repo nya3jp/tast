@@ -283,6 +283,10 @@ Tests in this group are not used for build verification.
 				Name: "firmware_usb",
 				Desc: `Indicates a test which requires a working USB stick attached to the servo.`,
 			},
+			{
+				Name: "firmware_bringup",
+				Desc: `Indicates a test is safe to run on a board that doesn't boot to AP. Pass --var noSSH=true also.`,
+			},
 		},
 	},
 	{

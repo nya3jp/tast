@@ -33,6 +33,8 @@ const (
 	// BundleListFixturesMode indicates that the bundle should write information about all the fixtures
 	// to stdout as a JSON array of testing.EntityInfo structs and exit.
 	BundleListFixturesMode BundleRunMode = 4
+	// BundleRPCTCPServerMode indicates that the bundle should run a gRPC server on TCP.
+	BundleRPCTCPServerMode BundleRunMode = 5
 )
 
 // BundleArgs is used to pass arguments from test runners to test bundles.
@@ -45,6 +47,8 @@ type BundleArgs struct {
 	RunTests *BundleRunTestsArgs `json:"runTests,omitempty"`
 	// ListTests contains arguments used by BundleListTestsMode.
 	ListTests *BundleListTestsArgs `json:"listTests,omitempty"`
+	// RPCTCPServer contains arguments user by BundleRPCTCPServerMode.
+	RPCTCPServer *BundleRPCTCPServerArgs `json:"RPCTCPServer,omitempty"`
 }
 
 // FillDeprecated backfills deprecated fields from the corresponding non-deprecated fields.
@@ -341,4 +345,12 @@ type BundleListTestsArgs struct {
 	// Patterns contains patterns (either empty to list all tests, exactly one attribute expression,
 	// or one or more globs) describing which tests to list.
 	Patterns []string `json:"patterns,omitempty"`
+}
+
+// BundleRPCTCPServerArgs is nested within BundleArgs and contains arguments used by BundleRPCTCPServerMode.
+type BundleRPCTCPServerArgs struct {
+	// Port contains the TCP port number where gRPC server listens to
+	Port int `json:"port,omitempty"`
+	// HandshakeRequest contains parameters needed to initialize a gRPC server.
+	HandshakeRequest *protocol.HandshakeRequest `json:"-"`
 }

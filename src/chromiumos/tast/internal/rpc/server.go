@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"net"
 	"os"
 	"os/signal"
 	"strconv"
@@ -60,10 +61,7 @@ func RunServer(r io.Reader, w io.Writer, svcs []*testing.Service, register func(
 	srv := grpc.NewServer(serverOpts(ls, &calls)...)
 
 	// Register core services.
-	reflection.Register(srv)
-	protocol.RegisterLoggingServer(srv, ls)
-	protocol.RegisterFileTransferServer(srv, newFileTransferServer())
-	regErr := register(srv, &req)
+	regErr := registerCoreServices(srv, ls, &req, register)
 
 	// Create a server-scoped context.
 	ctx, cancel := context.WithCancel(context.Background())
@@ -71,12 +69,7 @@ func RunServer(r io.Reader, w io.Writer, svcs []*testing.Service, register func(
 
 	// Register user-defined gRPC services if requested.
 	if req.GetNeedUserServices() {
-		logger := logging.NewSinkLogger(logging.LevelInfo, false, logging.NewFuncSink(ls.Log))
-		ctx := logging.AttachLogger(ctx, logger)
-		vars := req.GetBundleInitParams().GetVars()
-		for _, svc := range svcs {
-			svc.Register(srv, testing.NewServiceState(ctx, testing.NewServiceRoot(svc, vars)))
-		}
+		registerUserServices(ctx, srv, ls, &req, svcs, false)
 	}
 
 	if regErr != nil {
@@ -119,6 +112,69 @@ func RunServer(r io.Reader, w io.Writer, svcs []*testing.Service, register func(
 	return nil
 }
 
+// RunTCPServer runs a gRPC server listening on the specified port thought TCP
+// Port contains the TCP port number where gRPC server listens to
+// HandshakeRequest contains parameters needed to initialize a gRPC server.
+// svcs is the candidate list of user-defined gRPC services and they will be
+// registered if GuaranteeCompatibility is set.
+func RunTCPServer(port int, handshakeReq *protocol.HandshakeRequest, svcs []*testing.Service,
+	register func(srv *grpc.Server, req *protocol.HandshakeRequest) error) error {
+	// Make sure to return only after all active method calls finish.
+	// Otherwise the process can exit before running deferred function
+	// calls on service goroutines.
+	var calls sync.WaitGroup
+	defer calls.Wait()
+
+	// Start a remote logging server. It is used to forward logs from
+	// user-defined gRPC services via side channels.
+	ls := newRemoteLoggingServer()
+	srv := grpc.NewServer(serverOpts(ls, &calls)...)
+
+	// Register core services.
+	regErr := registerCoreServices(srv, ls, handshakeReq, register)
+
+	if regErr != nil {
+		return errors.Wrap(regErr, "gRPC server initialization failed")
+	}
+
+	// Create a server-scoped context.
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	// Register user-defined gRPC services intended for public use.
+	registerUserServices(ctx, srv, ls, handshakeReq, svcs, true)
+
+	// From now on, catch SIGINT/SIGTERM to stop the server gracefully.
+	sigCh := make(chan os.Signal, 1)
+	defer close(sigCh)
+	signal.Notify(sigCh, unix.SIGINT, unix.SIGTERM)
+	defer signal.Stop(sigCh)
+	sigErrCh := make(chan error, 1)
+	go func() {
+		if sig, ok := <-sigCh; ok {
+			sigErrCh <- errors.Errorf("caught signal %d (%s)", sig, sig)
+			srv.Stop()
+		}
+	}()
+
+	// start gRPC server listening on the tcp port
+	listener, err := net.Listen("tcp4", fmt.Sprintf(":%d", port))
+	if err != nil {
+		return errors.Wrap(err, "server failed to listen")
+	}
+
+	if err := srv.Serve(listener); err != nil && err != io.EOF {
+		// Replace the error if we saw a signal.
+		select {
+		case err := <-sigErrCh:
+			return err
+		default:
+		}
+		return err
+	}
+	return nil
+}
+
 // serverStreamWithContext wraps grpc.ServerStream with overriding Context.
 type serverStreamWithContext struct {
 	grpc.ServerStream
@@ -138,6 +194,7 @@ func serverOpts(ls *remoteLoggingServer, calls *sync.WaitGroup) []grpc.ServerOpt
 	// It returns a Context to be passed to a gRPC method, a function to be
 	// called on the end of the gRPC method call to compute trailers, and
 	// possibly an error.
+
 	hook := func(ctx context.Context, method string) (context.Context, func() metadata.MD, error) {
 		// Forward all uncaptured logs via LoggingService.
 		ctx = logging.AttachLogger(ctx, logging.NewSinkLogger(logging.LevelInfo, false, logging.NewFuncSink(ls.Log)))
@@ -225,4 +282,65 @@ func serverOpts(ls *remoteLoggingServer, calls *sync.WaitGroup) []grpc.ServerOpt
 			return handler(srv, stream)
 		}),
 	}
+}
+
+// registerCoreServices registers core Tast services.
+// srv is the gRPC server instance
+// ls is the remote logging server that forwards logs through side channel
+// HandshakeRequest contains parameters needed to initialize a gRPC server.
+// svcs is the candidate list of user-defined gRPC services to be registered
+// register offers a callback hook for additional service registration
+func registerCoreServices(srv *grpc.Server, ls *remoteLoggingServer,
+	handshakeReq *protocol.HandshakeRequest, register func(srv *grpc.Server, req *protocol.HandshakeRequest) error) error {
+	reflection.Register(srv)
+	protocol.RegisterLoggingServer(srv, ls)
+	protocol.RegisterFileTransferServer(srv, newFileTransferServer())
+	return register(srv, handshakeReq)
+}
+
+// registerUserServices registers user defined gRPC services to the gRPC Server
+// srv is the gRPC server instance
+// ls is the remote logging server that forwards logs through side channel
+// HandshakeRequest contains parameters needed to initialize a gRPC server.
+// svcs is the candidate list of user-defined gRPC services to be registered
+// guaranteeCompatibilityOnly determines if the service registration is restricted
+// only to services with GuaranteeCompatibility set
+func registerUserServices(ctx context.Context, srv *grpc.Server, ls *remoteLoggingServer,
+	handshakeReq *protocol.HandshakeRequest, svcs []*testing.Service, guaranteeCompatibilityOnly bool) error {
+	logger := logging.NewSinkLogger(logging.LevelInfo, false, logging.NewFuncSink(ls.Log))
+	ctx = logging.AttachLogger(ctx, logger)
+	vars := handshakeReq.GetBundleInitParams().GetVars()
+	for _, svc := range svcs {
+		if !guaranteeCompatibilityOnly || svc.GuaranteeCompatibility {
+			svc.Register(srv, testing.NewServiceState(ctx, testing.NewServiceRoot(svc, vars)))
+		}
+	}
+	return nil
+}
+
+// startServing kicks off the gRPC server listening through the listener
+func startServing(srv *grpc.Server, listener net.Listener) error {
+	// From now on, catch SIGINT/SIGTERM to stop the server gracefully.
+	sigCh := make(chan os.Signal, 1)
+	defer close(sigCh)
+	signal.Notify(sigCh, unix.SIGINT, unix.SIGTERM)
+	defer signal.Stop(sigCh)
+	sigErrCh := make(chan error, 1)
+	go func() {
+		if sig, ok := <-sigCh; ok {
+			sigErrCh <- errors.Errorf("caught signal %d (%s)", sig, sig)
+			srv.Stop()
+		}
+	}()
+
+	if err := srv.Serve(listener); err != nil {
+		// Replace the error if we saw a signal.
+		select {
+		case err := <-sigErrCh:
+			return err
+		default:
+		}
+		return err
+	}
+	return nil
 }

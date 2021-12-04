@@ -5,6 +5,7 @@
 package bundle
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -12,8 +13,11 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/golang/protobuf/proto"
+
 	"chromiumos/tast/internal/command"
 	"chromiumos/tast/internal/jsonprotocol"
+	"chromiumos/tast/internal/protocol"
 )
 
 // readArgs parses runtime arguments.
@@ -33,9 +37,19 @@ func readArgs(clArgs []string, stdin io.Reader, stderr io.Writer) (*jsonprotocol
 		dump := flags.Bool("dumptests", false, "dump all tests as a JSON-marshaled array of testing.Test structs")
 		exportMetadata := flags.Bool("exportmetadata", false, "export all test metadata as a protobuf-marshaled message")
 		rpc := flags.Bool("rpc", false, "run gRPC server")
+		rpctcp := flags.Bool("rpctcp", false, "run gRPC server listening on TCP. Sample usage:\n"+
+			"  cros -rpctcp -port 4444 -handshake [HANDSHAKE_BASE64]")
+		port := flags.Int("port", 4444, "port number for gRPC server. Only applicable for rpctcp mode")
+		handshakeUsage := "Handshake request for setting up gRPC server. Only applicable for rpctcp mode.\n" +
+			"Request should adhere to handshake.proto and be encoded in base64. Example in golang:\n" +
+			"  var req *HandshakeRequest = ...\n" +
+			"  raw, _ := proto.Marshal(req)\n" +
+			"  input = base64.StdEncoding.EncodeToString(raw)"
+		handshakeBase64 := flags.String("handshake", "", handshakeUsage)
 		if err := flags.Parse(clArgs); err != nil {
 			return nil, command.NewStatusErrorf(statusBadArgs, "%v", err)
 		}
+
 		if *dump {
 			return &jsonprotocol.BundleArgs{
 				Mode:      jsonprotocol.BundleListTestsMode,
@@ -50,6 +64,19 @@ func readArgs(clArgs []string, stdin io.Reader, stderr io.Writer) (*jsonprotocol
 		if *rpc {
 			return &jsonprotocol.BundleArgs{
 				Mode: jsonprotocol.BundleRPCMode,
+			}, nil
+		}
+		if *rpctcp {
+			var handshakeReq protocol.HandshakeRequest
+			if err := decodeBase64Proto(*handshakeBase64, &handshakeReq); err != nil {
+				return nil, command.NewStatusErrorf(statusBadArgs, "failed to decode handshake into proto: %v", err)
+			}
+			return &jsonprotocol.BundleArgs{
+				Mode: jsonprotocol.BundleRPCTCPServerMode,
+				RPCTCPServer: &jsonprotocol.BundleRPCTCPServerArgs{
+					Port:             *port,
+					HandshakeRequest: &handshakeReq,
+				},
 			}, nil
 		}
 	}
@@ -67,4 +94,13 @@ func readArgs(clArgs []string, stdin io.Reader, stderr io.Writer) (*jsonprotocol
 	args.PromoteDeprecated()
 
 	return &args, nil
+}
+
+// decodeBase64Proto decodes a base64 encoded proto into proto message.
+func decodeBase64Proto(protoBase64 string, msg proto.Message) error {
+	protoBytes, err := base64.StdEncoding.DecodeString(protoBase64)
+	if err != nil {
+		return err
+	}
+	return proto.Unmarshal(protoBytes, msg)
 }

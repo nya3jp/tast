@@ -6,14 +6,17 @@ package bundle
 
 import (
 	"bytes"
+	"encoding/base64"
 	"encoding/json"
 	"io/ioutil"
 	"reflect"
+	"strconv"
 	"testing"
 
 	"github.com/golang/protobuf/proto"
 	"github.com/google/go-cmp/cmp"
 	configpb "go.chromium.org/chromiumos/config/go/api"
+	"google.golang.org/protobuf/testing/protocmp"
 
 	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/protocol"
@@ -72,6 +75,44 @@ func TestReadArgsRPC(t *testing.T) {
 	}
 	if diff := cmp.Diff(got, want); diff != "" {
 		t.Fatal("BundleArgs mismatch (-got +want): ", diff)
+	}
+}
+
+func TestReadArgsRpcTcpServer(t *testing.T) {
+	port := 3333
+	var req *protocol.HandshakeRequest = &protocol.HandshakeRequest{
+		NeedUserServices: true,
+		BundleInitParams: &protocol.BundleInitParams{
+			BundleConfig: &protocol.BundleConfig{
+				PrimaryTarget: &protocol.TargetDevice{
+					BundleDir: "BLAR",
+				},
+			},
+		},
+	}
+
+	want := &jsonprotocol.BundleArgs{
+		Mode: jsonprotocol.BundleRPCTCPServerMode,
+		RPCTCPServer: &jsonprotocol.BundleRPCTCPServerArgs{
+			Port:             port,
+			HandshakeRequest: req,
+		},
+	}
+
+	raw, err := proto.Marshal(req)
+	if err != nil {
+		t.Fatal("Fail to serialize proto: ", err)
+	}
+	handshakeBase64 := base64.StdEncoding.EncodeToString(raw)
+	args := []string{"-rpctcp", "-port", strconv.Itoa(port), "-handshake", handshakeBase64}
+
+	got, err := readArgs(args, &bytes.Buffer{}, ioutil.Discard)
+	if err != nil {
+		t.Fatal("readArgs failed: ", err)
+	}
+
+	if diff := cmp.Diff(got, want, protocmp.Transform()); diff != "" {
+		t.Errorf("BundleArgs mismatch (-got +want):\n%s", diff)
 	}
 }
 

@@ -21,6 +21,13 @@ type Service struct {
 	Register func(srv *grpc.Server, s *ServiceState)
 	// Vars contains the names of runtime variables used by the service.
 	Vars []string
+	// GuaranteeCompatibility indicates that the service needs to strictly adhere to
+	// the backward and forward compatibility guarantees when evolving proto definition
+	// and implementation.
+	// Once the flag is marked as True, it cannot be change to False in subsequent
+	// versions.
+	// The service will be exposed to non-Tast test harness clients.
+	GuaranteeCompatibility bool
 }
 
 // ServiceRoot is the root of service state data.

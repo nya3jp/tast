@@ -190,6 +190,9 @@ message RunConfig {
   // ReadyFunc) should be executed before any tests are executed.
   // TODO(crbug.com/1128259): Remove this field once we fully migrate to gRPC.
   bool wait_until_ready = 9;
+
+  // DebugPort is the port that the bundle will attach the debugger to.
+  uint32 debug_port = 10;
 }
 
 // RunDirectories holds several directory paths important for running tests.

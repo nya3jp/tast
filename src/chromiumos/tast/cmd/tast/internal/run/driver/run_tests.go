@@ -23,6 +23,7 @@ import (
 	"chromiumos/tast/ctxutil"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/bundle"
+	"chromiumos/tast/internal/debugger"
 	"chromiumos/tast/internal/linuxssh"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/planner"
@@ -308,6 +309,7 @@ func (d *Driver) newConfigsForLocalTests(tests []*protocol.ResolvedEntity, state
 		StartFixtureState: state,
 		HeartbeatInterval: ptypes.DurationProto(heartbeatInterval),
 		WaitUntilReady:    d.cfg.WaitUntilReady(),
+		DebugPort:         uint32(d.cfg.DebuggerPort(debugger.LocalBundle)),
 	}
 	return bcfg, rcfg
 }
@@ -395,6 +397,7 @@ func (d *Driver) newConfigsForRemoteTests(tests []*protocol.ResolvedEntity, dutI
 			BuildArtifactsUrl: buildArtifactsURL,
 		},
 		HeartbeatInterval: ptypes.DurationProto(heartbeatInterval),
+		DebugPort:         uint32(d.cfg.DebuggerPort(debugger.RemoteBundle)),
 	}
 	return bcfg, rcfg, nil
 }

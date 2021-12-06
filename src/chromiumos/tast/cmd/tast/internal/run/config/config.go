@@ -391,10 +391,8 @@ func (c *MutableConfig) SetFlags(f *flag.FlagSet) {
 	f.BoolVar(&c.ExcludeSkipped, "excludeskipped", false, "exclude skipped tests from the list or run operation")
 
 	c.DebuggerPorts = map[debugger.DebugTarget]int{
-		debugger.LocalBundle:      0,
-		debugger.RemoteBundle:     0,
-		debugger.LocalTestRunner:  0,
-		debugger.RemoteTestRunner: 0,
+		debugger.LocalBundle:  0,
+		debugger.RemoteBundle: 0,
 	}
 	debuggerFlag := command.RepeatedFlag(func(v string) error {
 		parts := strings.SplitN(v, ":", 2)
@@ -403,7 +401,7 @@ func (c *MutableConfig) SetFlags(f *flag.FlagSet) {
 		}
 		target := debugger.DebugTarget(parts[0])
 		if _, ok := c.DebuggerPorts[target]; !ok {
-			return fmt.Errorf("unknown debug target '%s' - valid targets are %s, %s, %s, and %s", target, debugger.LocalBundle, debugger.RemoteBundle, debugger.LocalTestRunner, debugger.RemoteTestRunner)
+			return fmt.Errorf("unknown debug target '%s' - valid targets are %s and %s", target, debugger.LocalBundle, debugger.RemoteBundle)
 		}
 		port, err := strconv.Atoi(parts[1])
 		if err != nil {

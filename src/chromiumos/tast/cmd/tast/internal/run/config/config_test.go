@@ -328,28 +328,22 @@ func TestConfigAttachDebugger(t *testing.T) {
 			name: "empty",
 			args: []string{},
 			want: map[debugger.DebugTarget]int{
-				debugger.LocalBundle:      0,
-				debugger.RemoteBundle:     0,
-				debugger.LocalTestRunner:  0,
-				debugger.RemoteTestRunner: 0,
+				debugger.LocalBundle:  0,
+				debugger.RemoteBundle: 0,
 			},
 		}, {
 			name: "single",
 			args: []string{"-attachdebugger=local:2345"},
 			want: map[debugger.DebugTarget]int{
-				debugger.LocalBundle:      2345,
-				debugger.RemoteBundle:     0,
-				debugger.LocalTestRunner:  0,
-				debugger.RemoteTestRunner: 0,
+				debugger.LocalBundle:  2345,
+				debugger.RemoteBundle: 0,
 			},
 		}, {
 			name: "many",
-			args: []string{"-attachdebugger=local:2345", "-attachdebugger=remote:2346", "-attachdebugger=local-test-runner:2347", "-attachdebugger=remote-test-runner:2348"},
+			args: []string{"-attachdebugger=local:2345", "-attachdebugger=remote:2346"},
 			want: map[debugger.DebugTarget]int{
-				debugger.LocalBundle:      2345,
-				debugger.RemoteBundle:     2346,
-				debugger.LocalTestRunner:  2347,
-				debugger.RemoteTestRunner: 2348,
+				debugger.LocalBundle:  2345,
+				debugger.RemoteBundle: 2346,
 			},
 		}, {
 			name:      "invalid-name-only",

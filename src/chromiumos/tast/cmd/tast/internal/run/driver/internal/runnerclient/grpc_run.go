@@ -50,6 +50,7 @@ func (c *GRPCClient) RunTests(ctx context.Context, bcfg *protocol.BundleConfig, 
 
 		init := &protocol.RunTestsInit{
 			RunConfig: rcfg,
+			DebugPort: rcfg.DebugPort,
 		}
 		if err := stream.Send(&protocol.RunTestsRequest{Type: &protocol.RunTestsRequest_RunTestsInit{RunTestsInit: init}}); err != nil {
 			return errors.Wrap(err, "initializing test run")

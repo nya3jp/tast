@@ -20,6 +20,7 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/driver/internal/sshconfig"
 	"chromiumos/tast/cmd/tast/internal/run/driver/internal/target"
 	"chromiumos/tast/cmd/tast/internal/run/genericexec"
+	"chromiumos/tast/internal/debugger"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/ssh"
@@ -118,6 +119,11 @@ type runnerClient interface {
 
 func (d *Driver) localClient() runnerClient {
 	var args []string
+	// The delve debugger attempts to write to a directory not on the stateful partition.
+	// This ensures it instead writes to the stateful partition.
+	if d.cfg.DebuggerPort(debugger.LocalBundle) != 0 {
+		args = append(args, "XDG_CONFIG_HOME=/mnt/stateful_partition/xdg_config")
+	}
 	if d.cfg.Proxy() == config.ProxyEnv {
 		// Proxy-related variables can be either uppercase or lowercase.
 		// See https://golang.org/pkg/net/http/#ProxyFromEnvironment.

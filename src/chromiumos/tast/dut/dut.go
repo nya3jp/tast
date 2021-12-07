@@ -129,6 +129,11 @@ func (d *DUT) GetFile(ctx context.Context, src, dst string) error {
 // WaitUnreachable waits for the DUT to become unreachable.
 func (d *DUT) WaitUnreachable(ctx context.Context) error {
 	if d.hst == nil {
+		deadline, ok := ctx.Deadline()
+		if ok && deadline.Before(time.Now().Add(d.sopt.ConnectTimeout)) {
+			// There isn't enough time to connect
+			return errors.Errorf("context timeout too short, need at least %s, got %s", d.sopt.ConnectTimeout, deadline.Sub(time.Now()))
+		}
 		if err := d.Connect(ctx); err != nil {
 			// Return the context's error instead of the one returned by Connect:
 			// we should return an error if the context's deadline expired,
@@ -139,6 +144,11 @@ func (d *DUT) WaitUnreachable(ctx context.Context) error {
 
 	logging.Infof(ctx, "Waiting for %s to be unreachable.", d.sopt.Hostname)
 	for {
+		deadline, ok := ctx.Deadline()
+		if ok && deadline.Before(time.Now().Add(pingTimeout)) {
+			// There isn't enough time to ping
+			return errors.Errorf("context timeout too short, need at least %s, got %s", pingTimeout, deadline.Sub(time.Now()))
+		}
 		if err := d.hst.Ping(ctx, pingTimeout); err != nil {
 			// Return the context's error instead of the one returned by Ping:
 			// we should return an error if the context's deadline expired,

@@ -16,9 +16,9 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 
-	"chromiumos/tast/cmd/tast/internal/run/driver/internal/processor"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/logging"
+	"chromiumos/tast/internal/minidriver/processor"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/run/resultsjson"
 )

@@ -11,8 +11,8 @@ import (
 	"strings"
 	"testing"
 
-	"chromiumos/tast/cmd/tast/internal/run/driver/internal/processor"
 	"chromiumos/tast/internal/logging"
+	"chromiumos/tast/internal/minidriver/processor"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/testutil"
 )

@@ -11,8 +11,8 @@ import (
 	"strings"
 	"time"
 
-	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
 	"chromiumos/tast/internal/logging"
+	"chromiumos/tast/internal/run/resultsjson"
 	"chromiumos/tast/internal/testing"
 )
 

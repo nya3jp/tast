@@ -14,10 +14,10 @@ import (
 
 	"github.com/google/subcommands"
 
-	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/logging/loggingtest"
+	"chromiumos/tast/internal/run/resultsjson"
 	"chromiumos/tast/testutil"
 )
 

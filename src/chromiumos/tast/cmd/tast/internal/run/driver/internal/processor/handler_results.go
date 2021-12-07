@@ -7,8 +7,8 @@ package processor
 import (
 	"context"
 
-	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
 	"chromiumos/tast/internal/protocol"
+	"chromiumos/tast/internal/run/resultsjson"
 )
 
 // resultsHandler collects test results.

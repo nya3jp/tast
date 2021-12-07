@@ -17,8 +17,6 @@ import (
 
 	"chromiumos/tast/cmd/tast/internal/run/diagnose"
 	"chromiumos/tast/cmd/tast/internal/run/driver/internal/processor"
-	"chromiumos/tast/cmd/tast/internal/run/reporting"
-	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
 	"chromiumos/tast/ctxutil"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/bundle"
@@ -28,6 +26,8 @@ import (
 	"chromiumos/tast/internal/minidriver/failfast"
 	"chromiumos/tast/internal/planner"
 	"chromiumos/tast/internal/protocol"
+	"chromiumos/tast/internal/run/reporting"
+	"chromiumos/tast/internal/run/resultsjson"
 )
 
 const (

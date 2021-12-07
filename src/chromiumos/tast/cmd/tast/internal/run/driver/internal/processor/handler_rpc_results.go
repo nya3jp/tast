@@ -7,8 +7,8 @@ package processor
 import (
 	"context"
 
-	"chromiumos/tast/cmd/tast/internal/run/reporting"
 	"chromiumos/tast/internal/protocol"
+	"chromiumos/tast/internal/run/reporting"
 )
 
 // rpcResultsHandler streams test results by gRPC.

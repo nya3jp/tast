@@ -8,7 +8,7 @@ import (
 	"encoding/json"
 	"os"
 
-	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
+	"chromiumos/tast/internal/run/resultsjson"
 )
 
 // LegacyResultsFilename is a file name to be used with WriteLegacyResults.

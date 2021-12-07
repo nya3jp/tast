@@ -9,7 +9,7 @@ import (
 	"io"
 	"os"
 
-	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
+	"chromiumos/tast/internal/run/resultsjson"
 )
 
 // StreamedResultsFilename is a file name to be used with StreamedWriter.

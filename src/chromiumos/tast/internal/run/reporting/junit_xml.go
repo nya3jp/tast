@@ -10,7 +10,7 @@ import (
 	"io/ioutil"
 	"time"
 
-	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
+	"chromiumos/tast/internal/run/resultsjson"
 )
 
 // JUnitXMLFilename is a file name to be used with WriteJUnitXMLResults.

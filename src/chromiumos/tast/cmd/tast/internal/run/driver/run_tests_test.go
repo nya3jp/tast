@@ -19,10 +19,10 @@ import (
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/driver"
-	"chromiumos/tast/cmd/tast/internal/run/reporting"
-	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
 	"chromiumos/tast/cmd/tast/internal/run/runtest"
 	"chromiumos/tast/errors"
+	"chromiumos/tast/internal/run/reporting"
+	"chromiumos/tast/internal/run/resultsjson"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/internal/testing/testfixture"
 	"chromiumos/tast/internal/usercode"

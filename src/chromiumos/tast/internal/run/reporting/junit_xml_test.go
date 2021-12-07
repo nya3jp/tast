@@ -13,8 +13,8 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 
-	"chromiumos/tast/cmd/tast/internal/run/reporting"
-	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
+	"chromiumos/tast/internal/run/reporting"
+	"chromiumos/tast/internal/run/resultsjson"
 )
 
 func TestWriteJUnitXMLResults(t *gotesting.T) {

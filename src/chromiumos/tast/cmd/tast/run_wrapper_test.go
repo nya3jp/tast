@@ -8,7 +8,7 @@ import (
 	"context"
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
-	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
+	"chromiumos/tast/internal/run/resultsjson"
 )
 
 // stubRunWrapper is a stub implementation of runWrapper used for testing.

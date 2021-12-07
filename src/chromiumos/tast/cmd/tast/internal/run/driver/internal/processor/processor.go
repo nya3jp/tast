@@ -24,11 +24,11 @@ package processor
 import (
 	"context"
 
-	"chromiumos/tast/cmd/tast/internal/run/reporting"
-	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/minidriver/bundleclient"
 	"chromiumos/tast/internal/minidriver/failfast"
+	"chromiumos/tast/internal/run/reporting"
+	"chromiumos/tast/internal/run/resultsjson"
 )
 
 // DiagnoseFunc is a function called after a run error is encountered while

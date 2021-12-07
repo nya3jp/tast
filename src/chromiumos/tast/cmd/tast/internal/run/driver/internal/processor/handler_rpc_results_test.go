@@ -12,11 +12,11 @@ import (
 	"github.com/google/go-cmp/cmp/cmpopts"
 
 	"chromiumos/tast/cmd/tast/internal/run/driver/internal/processor"
-	"chromiumos/tast/cmd/tast/internal/run/reporting"
 	frameworkprotocol "chromiumos/tast/framework/protocol"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/run/fakereports"
+	"chromiumos/tast/internal/run/reporting"
 )
 
 func TestRPCResultsHandler_Results(t *testing.T) {

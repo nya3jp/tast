@@ -9,7 +9,7 @@ import (
 
 	"chromiumos/tast/cmd/tast/internal/run"
 	"chromiumos/tast/cmd/tast/internal/run/config"
-	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
+	"chromiumos/tast/internal/run/resultsjson"
 )
 
 // runWrapper is a wrapper that allows functions from the run package to be stubbed out for testing.

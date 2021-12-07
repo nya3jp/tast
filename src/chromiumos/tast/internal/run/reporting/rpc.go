@@ -10,9 +10,9 @@ import (
 	"github.com/golang/protobuf/ptypes"
 	"google.golang.org/grpc"
 
-	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
 	"chromiumos/tast/errors"
 	frameworkprotocol "chromiumos/tast/framework/protocol"
+	"chromiumos/tast/internal/run/resultsjson"
 )
 
 // RPCClient implements a client of the reporting gRPC service.

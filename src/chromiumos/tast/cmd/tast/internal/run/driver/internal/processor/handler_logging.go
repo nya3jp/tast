@@ -13,9 +13,9 @@ import (
 	"strings"
 	"time"
 
-	"chromiumos/tast/cmd/tast/internal/run/reporting"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/protocol"
+	"chromiumos/tast/internal/run/reporting"
 )
 
 const testOutputTimeFmt = "15:04:05.000" // format for timestamps attached to test output

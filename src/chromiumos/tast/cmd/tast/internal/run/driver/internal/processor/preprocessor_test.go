@@ -17,10 +17,10 @@ import (
 	"github.com/google/go-cmp/cmp/cmpopts"
 
 	"chromiumos/tast/cmd/tast/internal/run/driver/internal/processor"
-	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/protocol"
+	"chromiumos/tast/internal/run/resultsjson"
 )
 
 // TestPreprocessor_SameEntity checks preprocessor's behavior on receiving

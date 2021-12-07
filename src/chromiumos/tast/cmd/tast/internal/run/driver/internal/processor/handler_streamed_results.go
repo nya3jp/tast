@@ -8,9 +8,9 @@ import (
 	"context"
 	"path/filepath"
 
-	"chromiumos/tast/cmd/tast/internal/run/reporting"
-	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
 	"chromiumos/tast/internal/protocol"
+	"chromiumos/tast/internal/run/reporting"
+	"chromiumos/tast/internal/run/resultsjson"
 )
 
 // streamedResultsHandler saves results to a file progressively.

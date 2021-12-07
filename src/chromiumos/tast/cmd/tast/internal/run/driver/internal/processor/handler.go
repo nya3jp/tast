@@ -9,9 +9,9 @@ import (
 	"strings"
 	"time"
 
-	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/protocol"
+	"chromiumos/tast/internal/run/resultsjson"
 )
 
 type entityInfo struct {

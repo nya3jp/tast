@@ -15,11 +15,11 @@ import (
 	"google.golang.org/grpc/keepalive"
 
 	"chromiumos/tast/cmd/tast/internal/run/driver/internal/drivercore"
-	"chromiumos/tast/cmd/tast/internal/run/genericexec"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/rpc"
+	"chromiumos/tast/internal/run/genericexec"
 	"chromiumos/tast/internal/testing"
 )
 

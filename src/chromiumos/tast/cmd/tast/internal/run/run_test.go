@@ -22,7 +22,6 @@ import (
 
 	"chromiumos/tast/cmd/tast/internal/run"
 	"chromiumos/tast/cmd/tast/internal/run/config"
-	"chromiumos/tast/cmd/tast/internal/run/fakereports"
 	"chromiumos/tast/cmd/tast/internal/run/reporting"
 	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
 	"chromiumos/tast/cmd/tast/internal/run/runtest"
@@ -31,6 +30,7 @@ import (
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/logging/loggingtest"
 	"chromiumos/tast/internal/protocol"
+	"chromiumos/tast/internal/run/fakereports"
 	"chromiumos/tast/internal/testing"
 )
 

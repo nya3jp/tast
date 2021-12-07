@@ -19,8 +19,8 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 
-	"chromiumos/tast/cmd/tast/internal/run/genericexec"
 	"chromiumos/tast/internal/fakeexec"
+	"chromiumos/tast/internal/run/genericexec"
 	"chromiumos/tast/testutil"
 )
 

@@ -10,10 +10,10 @@ import (
 	"net"
 	"path/filepath"
 
-	"chromiumos/tast/cmd/tast/internal/run/devserver"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/debugger"
 	"chromiumos/tast/internal/logging"
+	"chromiumos/tast/internal/run/devserver"
 	"chromiumos/tast/ssh"
 )
 

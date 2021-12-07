@@ -19,10 +19,10 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/driver/internal/runnerclient"
 	"chromiumos/tast/cmd/tast/internal/run/driver/internal/sshconfig"
 	"chromiumos/tast/cmd/tast/internal/run/driver/internal/target"
-	"chromiumos/tast/cmd/tast/internal/run/genericexec"
 	"chromiumos/tast/internal/debugger"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/protocol"
+	"chromiumos/tast/internal/run/genericexec"
 	"chromiumos/tast/ssh"
 )
 

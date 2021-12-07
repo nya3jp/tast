@@ -17,7 +17,6 @@ import (
 	"github.com/golang/protobuf/proto"
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
-	"chromiumos/tast/cmd/tast/internal/run/devserver"
 	"chromiumos/tast/cmd/tast/internal/run/driver"
 	"chromiumos/tast/cmd/tast/internal/run/prepare"
 	"chromiumos/tast/cmd/tast/internal/run/reporting"
@@ -26,6 +25,7 @@ import (
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/protocol"
+	"chromiumos/tast/internal/run/devserver"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/internal/xcontext"
 )

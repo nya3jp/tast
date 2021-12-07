@@ -12,9 +12,9 @@ import (
 
 	"google.golang.org/grpc"
 
-	"chromiumos/tast/cmd/tast/internal/run/genericexec"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/rpc"
+	"chromiumos/tast/internal/run/genericexec"
 )
 
 // rpcConn represents a gRPC connection to a test bundle.

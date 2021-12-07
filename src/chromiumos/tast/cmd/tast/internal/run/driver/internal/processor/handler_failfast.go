@@ -7,7 +7,7 @@ package processor
 import (
 	"context"
 
-	"chromiumos/tast/cmd/tast/internal/run/driver/internal/failfast"
+	"chromiumos/tast/internal/minidriver/failfast"
 	"chromiumos/tast/internal/protocol"
 )
 

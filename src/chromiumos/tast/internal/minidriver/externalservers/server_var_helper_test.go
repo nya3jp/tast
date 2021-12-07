@@ -10,7 +10,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 
-	"chromiumos/tast/cmd/tast/internal/run/driver/internal/externalservers"
+	"chromiumos/tast/internal/minidriver/externalservers"
 )
 
 // TestParseServerVarValues makes sure the parsing of the values of

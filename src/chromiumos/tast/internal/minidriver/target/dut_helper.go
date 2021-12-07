@@ -7,10 +7,10 @@ package target
 import (
 	"context"
 
-	"chromiumos/tast/cmd/tast/internal/run/driver/internal/externalservers"
-	"chromiumos/tast/cmd/tast/internal/run/driver/internal/servo"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/logging"
+	"chromiumos/tast/internal/minidriver/externalservers"
+	"chromiumos/tast/internal/minidriver/servo"
 	"chromiumos/tast/internal/protocol"
 )
 

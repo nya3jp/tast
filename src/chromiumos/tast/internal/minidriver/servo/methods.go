@@ -11,9 +11,9 @@ import (
 	"strings"
 	"time"
 
-	"chromiumos/tast/cmd/tast/internal/run/driver/internal/servo/xmlrpc"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/logging"
+	"chromiumos/tast/internal/minidriver/servo/xmlrpc"
 )
 
 // A StringControl contains the name of a gettable/settable Control which takes a string value.

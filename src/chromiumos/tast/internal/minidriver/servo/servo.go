@@ -14,9 +14,9 @@ package servo
 import (
 	"context"
 
-	"chromiumos/tast/cmd/tast/internal/run/driver/internal/servo/xmlrpc"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/logging"
+	"chromiumos/tast/internal/minidriver/servo/xmlrpc"
 )
 
 // Servo holds the servod connection information.

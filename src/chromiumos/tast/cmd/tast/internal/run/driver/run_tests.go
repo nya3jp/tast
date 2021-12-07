@@ -16,7 +16,6 @@ import (
 	"github.com/golang/protobuf/ptypes"
 
 	"chromiumos/tast/cmd/tast/internal/run/diagnose"
-	"chromiumos/tast/cmd/tast/internal/run/driver/internal/failfast"
 	"chromiumos/tast/cmd/tast/internal/run/driver/internal/processor"
 	"chromiumos/tast/cmd/tast/internal/run/reporting"
 	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
@@ -26,6 +25,7 @@ import (
 	"chromiumos/tast/internal/debugger"
 	"chromiumos/tast/internal/linuxssh"
 	"chromiumos/tast/internal/logging"
+	"chromiumos/tast/internal/minidriver/failfast"
 	"chromiumos/tast/internal/planner"
 	"chromiumos/tast/internal/protocol"
 )

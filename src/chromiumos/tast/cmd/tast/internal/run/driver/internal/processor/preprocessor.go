@@ -13,9 +13,9 @@ import (
 
 	"github.com/golang/protobuf/ptypes"
 
-	"chromiumos/tast/cmd/tast/internal/run/driver/internal/bundleclient"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/logging"
+	"chromiumos/tast/internal/minidriver/bundleclient"
 	"chromiumos/tast/internal/protocol"
 )
 

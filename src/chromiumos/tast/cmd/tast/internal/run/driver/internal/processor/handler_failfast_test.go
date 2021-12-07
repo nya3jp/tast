@@ -11,10 +11,10 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 
-	"chromiumos/tast/cmd/tast/internal/run/driver/internal/failfast"
 	"chromiumos/tast/cmd/tast/internal/run/driver/internal/processor"
 	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
 	"chromiumos/tast/internal/logging"
+	"chromiumos/tast/internal/minidriver/failfast"
 	"chromiumos/tast/internal/protocol"
 )
 

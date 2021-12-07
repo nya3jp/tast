@@ -16,24 +16,17 @@ import (
 	"github.com/golang/protobuf/ptypes"
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
-	"chromiumos/tast/ctxutil"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/bundle"
 	"chromiumos/tast/internal/debugger"
-	"chromiumos/tast/internal/linuxssh"
 	"chromiumos/tast/internal/logging"
-	"chromiumos/tast/internal/minidriver/bundleclient"
-	"chromiumos/tast/internal/minidriver/diagnose"
+	"chromiumos/tast/internal/minidriver"
 	"chromiumos/tast/internal/minidriver/failfast"
 	"chromiumos/tast/internal/minidriver/processor"
 	"chromiumos/tast/internal/planner"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/run/reporting"
 	"chromiumos/tast/internal/run/resultsjson"
-)
-
-const (
-	heartbeatInterval = time.Second // interval for heartbeat messages
 )
 
 // runTestsArgs holds arguments common to private methods called by RunTests.
@@ -207,38 +200,29 @@ func (d *Driver) runLocalTestsWithRemoteFixture(ctx context.Context, bundle stri
 }
 
 func (d *Driver) runLocalTestsWithRetry(ctx context.Context, bundle string, tests []*protocol.ResolvedEntity, state *protocol.StartFixtureState, args *runTestsArgs) ([]*resultsjson.Result, error) {
-	runTestsOnce := func(ctx context.Context, tests []*protocol.ResolvedEntity) ([]*resultsjson.Result, error) {
-		return d.runLocalTestsOnce(ctx, bundle, tests, state, args)
+	_, useDebugger := d.cfg.DebuggerPorts()[debugger.LocalBundle]
+	cfg := &minidriver.Config{
+		Retries:          d.cfg.Retries(),
+		ResDir:           d.cfg.ResDir(),
+		Devservers:       d.cfg.Devservers(),
+		Target:           d.cfg.Target(),
+		LocalDataDir:     d.cfg.LocalDataDir(),
+		LocalOutDir:      d.cfg.LocalOutDir(),
+		LocalTempDir:     d.cfg.LocalTempDir(),
+		LocalBundleDir:   d.cfg.LocalBundleDir(),
+		DownloadMode:     d.cfg.DownloadMode(),
+		WaitUntilReady:   d.cfg.WaitUntilReady(),
+		CheckTestDeps:    d.cfg.CheckTestDeps(),
+		TestVars:         d.cfg.TestVars(),
+		MaybeMissingVars: d.cfg.MaybeMissingVars(),
+		UseDebugger:      useDebugger,
+		Proxy:            d.cfg.Proxy() == config.ProxyEnv,
+		DUTFeatures:      args.DUTInfo.GetFeatures(),
+		Counter:          args.Counter,
+		Client:           args.Client,
 	}
-	return runTestsWithRetry(ctx, tests, runTestsOnce, d.cfg.Retries())
-}
-
-func (d *Driver) runLocalTestsOnce(ctx context.Context, bundle string, tests []*protocol.ResolvedEntity, state *protocol.StartFixtureState, args *runTestsArgs) ([]*resultsjson.Result, error) {
-	if err := d.ReconnectIfNeeded(ctx); err != nil {
-		return nil, err
-	}
-
-	bcfg, rcfg := d.newConfigsForLocalTests(tests, state, args.DUTInfo)
-	multiplexer := logging.NewMultiLogger()
-	ctx = logging.AttachLogger(ctx, multiplexer)
-	diag := func(ctx context.Context, outDir string) string {
-		if ctxutil.DeadlineBefore(ctx, time.Now().Add(SSHPingTimeout)) {
-			return ""
-		}
-		if err := d.SSHConn().Ping(ctx, SSHPingTimeout); err == nil {
-			return ""
-		}
-		return "Lost SSH connection: " + diagnose.SSHDrop(ctx, d.cc, outDir)
-	}
-	pull := func(src, dst string) error {
-		return linuxssh.GetAndDeleteFile(ctx, d.cc.Conn().SSHConn(), src, dst, linuxssh.PreserveSymlinks)
-	}
-
-	hs := processor.NewHandlers(d.cfg.ResDir(), multiplexer, diag, pull, args.Counter, args.Client)
-	proc := processor.New(d.cfg.ResDir(), diag, hs)
-	cl := bundleclient.NewLocal(bundle, d.cfg.LocalBundleDir(), d.cfg.DebuggerPorts()[debugger.LocalBundle] != 0, d.cfg.Proxy() == config.ProxyEnv, d.cc)
-	cl.RunTests(ctx, bcfg, rcfg, proc)
-	return proc.Results(), proc.FatalError()
+	md := minidriver.NewDriver(cfg, d.cc)
+	return md.RunLocalTests(ctx, bundle, tests, state)
 }
 
 func (d *Driver) runRemoteTests(ctx context.Context, bundle string, tests []*protocol.ResolvedEntity, args *runTestsArgs) ([]*resultsjson.Result, error) {
@@ -249,7 +233,7 @@ func (d *Driver) runRemoteTests(ctx context.Context, bundle string, tests []*pro
 	runTestsOnce := func(ctx context.Context, tests []*protocol.ResolvedEntity) ([]*resultsjson.Result, error) {
 		return d.runRemoteTestsOnce(ctx, bundle, tests, args)
 	}
-	return runTestsWithRetry(ctx, tests, runTestsOnce, d.cfg.Retries())
+	return minidriver.RunTestsWithRetry(ctx, tests, runTestsOnce, d.cfg.Retries())
 }
 
 func (d *Driver) runRemoteTestsOnce(ctx context.Context, bundle string, tests []*protocol.ResolvedEntity, args *runTestsArgs) ([]*resultsjson.Result, error) {
@@ -264,60 +248,6 @@ func (d *Driver) runRemoteTestsOnce(ctx context.Context, bundle string, tests []
 	proc := processor.New(d.cfg.ResDir(), nopDiagnose, hs)
 	d.remoteBundleClient(bundle).RunTests(ctx, bcfg, rcfg, proc)
 	return proc.Results(), proc.FatalError()
-}
-
-func (d *Driver) newConfigsForLocalTests(tests []*protocol.ResolvedEntity, state *protocol.StartFixtureState, dutInfo *protocol.DUTInfo) (*protocol.BundleConfig, *protocol.RunConfig) {
-	var testNames []string
-	for _, t := range tests {
-		testNames = append(testNames, t.GetEntity().GetName())
-	}
-
-	buildArtifactsURL := d.cfg.BuildArtifactsURLOverride()
-	if buildArtifactsURL == "" {
-		buildArtifactsURL = dutInfo.GetDefaultBuildArtifactsUrl()
-	}
-
-	devservers := append([]string(nil), d.cfg.Devservers()...)
-	if url, ok := d.cc.Conn().Services().EphemeralDevserverURL(); ok {
-		devservers = append(devservers, url)
-	}
-
-	var tlwServer, tlwSelfName string
-	if addr, ok := d.cc.Conn().Services().TLWAddr(); ok {
-		tlwServer = addr.String()
-		tlwSelfName = d.cfg.Target()
-	}
-
-	var dutServer string
-	if addr, ok := d.cc.Conn().Services().DUTServerAddr(); ok {
-		dutServer = addr.String()
-	}
-
-	bcfg := &protocol.BundleConfig{}
-	rcfg := &protocol.RunConfig{
-		Tests: testNames,
-		Dirs: &protocol.RunDirectories{
-			DataDir: d.cfg.LocalDataDir(),
-			OutDir:  d.cfg.LocalOutDir(),
-			TempDir: d.cfg.LocalTempDir(),
-		},
-		Features: d.cfg.Features(dutInfo.GetFeatures()),
-		ServiceConfig: &protocol.ServiceConfig{
-			Devservers:  devservers,
-			DutServer:   dutServer, // Only pass in DUT server for local tests.
-			TlwServer:   tlwServer,
-			TlwSelfName: tlwSelfName,
-		},
-		DataFileConfig: &protocol.DataFileConfig{
-			DownloadMode:      d.cfg.DownloadMode().Proto(),
-			BuildArtifactsUrl: buildArtifactsURL,
-		},
-		StartFixtureState: state,
-		HeartbeatInterval: ptypes.DurationProto(heartbeatInterval),
-		WaitUntilReady:    d.cfg.WaitUntilReady(),
-		DebugPort:         uint32(d.cfg.DebuggerPorts()[debugger.LocalBundle]),
-	}
-	return bcfg, rcfg
 }
 
 func (d *Driver) newConfigsForRemoteTests(tests []*protocol.ResolvedEntity, dutInfo *protocol.DUTInfo, remoteDevservers []string) (*protocol.BundleConfig, *protocol.RunConfig, error) {
@@ -402,7 +332,7 @@ func (d *Driver) newConfigsForRemoteTests(tests []*protocol.ResolvedEntity, dutI
 			DownloadMode:      d.cfg.DownloadMode().Proto(),
 			BuildArtifactsUrl: buildArtifactsURL,
 		},
-		HeartbeatInterval: ptypes.DurationProto(heartbeatInterval),
+		HeartbeatInterval: ptypes.DurationProto(minidriver.HeartbeatInterval),
 		DebugPort:         uint32(d.cfg.DebuggerPorts()[debugger.RemoteBundle]),
 	}
 	return bcfg, rcfg, nil
@@ -466,65 +396,4 @@ func splitTests(tests []*protocol.ResolvedEntity) (localTests, remoteTests []*pr
 // nopDiagnose is a DiagnoseFunc that does nothing.
 func nopDiagnose(ctx context.Context, outDir string) string {
 	return ""
-}
-
-// runTestsOnceFunc is a function to run tests once.
-type runTestsOnceFunc func(ctx context.Context, tests []*protocol.ResolvedEntity) ([]*resultsjson.Result, error)
-
-// runTestsWithRetry runs tests in a loop. If runTestsOnce returns insufficient
-// results, it calls beforeRetry, followed by runTestsOnce again to restart
-// testing.
-// Additionally, this will honor the retry CLI flag.
-func runTestsWithRetry(ctx context.Context, allTests []*protocol.ResolvedEntity, runTestsOnce runTestsOnceFunc, retryn int) ([]*resultsjson.Result, error) {
-	var allResults []*resultsjson.Result
-	unstarted := make(map[string]struct{})
-
-	logging.Infof(ctx, "Allowing up to %v retries", retryn)
-	retries := make(map[string]int)
-	for _, t := range allTests {
-		unstarted[t.GetEntity().GetName()] = struct{}{}
-		retries[t.GetEntity().GetName()] = retryn
-	}
-
-	for {
-		// Compute tests to run.
-		tests := make([]*protocol.ResolvedEntity, 0, len(unstarted))
-		for _, t := range allTests {
-			if _, ok := unstarted[t.GetEntity().GetName()]; ok {
-				tests = append(tests, t)
-			}
-		}
-
-		// Run tests once.
-		results, err := runTestsOnce(ctx, tests)
-		if err != nil {
-			allResults = append(allResults, results...)
-			return allResults, err
-		}
-
-		// Abort to avoid infinite retries if no test ran in the last attempt.
-		// Note: this needs to happen above the results modifications as if there
-		// is 1 failing test & we strip that fail then we return rather than retry.
-		if len(results) == 0 {
-			return allResults, errors.New("no test ran in the last attempt")
-		}
-
-		// Update the results and unstarted list based on retries/failures.
-		for _, r := range results {
-			if len(r.Errors) > 0 && retries[r.Test.Name] > 0 {
-				logging.Infof(ctx, "Retrying %v due to failure", r.Test.Name)
-				retries[r.Test.Name]--
-				continue
-			}
-			allResults = append(allResults, r)
-			delete(unstarted, r.Test.Name)
-		}
-
-		// Return success if we ran all tests and there are no more retries.
-		if len(unstarted) == 0 {
-			return allResults, nil
-		}
-
-		logging.Infof(ctx, "Trying to run %v remaining test(s)", len(unstarted))
-	}
 }

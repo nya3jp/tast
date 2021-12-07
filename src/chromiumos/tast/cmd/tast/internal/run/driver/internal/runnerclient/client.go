@@ -7,6 +7,7 @@ package runnerclient
 import (
 	"context"
 
+	"chromiumos/tast/cmd/tast/internal/run/driver/internal/processor"
 	"chromiumos/tast/internal/protocol"
 )
 
@@ -37,3 +38,5 @@ type RunTestsOutput interface {
 	// immediately and RunEnd is called with the error.
 	RunEnd(ctx context.Context, err error)
 }
+
+var _ RunTestsOutput = &processor.Processor{}

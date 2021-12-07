@@ -26,7 +26,6 @@ import (
 
 	"chromiumos/tast/cmd/tast/internal/run/driver/internal/bundleclient"
 	"chromiumos/tast/cmd/tast/internal/run/driver/internal/failfast"
-	"chromiumos/tast/cmd/tast/internal/run/driver/internal/runnerclient"
 	"chromiumos/tast/cmd/tast/internal/run/reporting"
 	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
 	"chromiumos/tast/internal/logging"
@@ -52,10 +51,7 @@ type Processor struct {
 	resultsHandler *resultsHandler
 }
 
-var (
-	_ runnerclient.RunTestsOutput   = &Processor{}
-	_ bundleclient.RunFixtureOutput = &Processor{}
-)
+var _ bundleclient.RunFixtureOutput = &Processor{}
 
 // New creates a new Processor.
 // resDir is a path to the directory where test execution results are written.

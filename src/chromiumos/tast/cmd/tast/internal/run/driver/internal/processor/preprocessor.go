@@ -14,7 +14,6 @@ import (
 	"github.com/golang/protobuf/ptypes"
 
 	"chromiumos/tast/cmd/tast/internal/run/driver/internal/bundleclient"
-	"chromiumos/tast/cmd/tast/internal/run/driver/internal/runnerclient"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/protocol"
@@ -51,10 +50,7 @@ type preprocessor struct {
 	fatalError *fatalError
 }
 
-var (
-	_ runnerclient.RunTestsOutput   = &preprocessor{}
-	_ bundleclient.RunFixtureOutput = &preprocessor{}
-)
+var _ bundleclient.RunFixtureOutput = &preprocessor{}
 
 func newPreprocessor(resDir string, diagnose DiagnoseFunc, handlers []handler) *preprocessor {
 	return &preprocessor{

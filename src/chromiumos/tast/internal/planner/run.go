@@ -298,7 +298,7 @@ func (t *fixtTree) Clone() *fixtTree {
 // orphanTest represents a test that depends on a missing fixture directly or
 // indirectly.
 type orphanTest struct {
-	test            *testing.TestInstance
+	test            *protocol.ResolvedEntity
 	missingFixtName string
 }
 
@@ -320,7 +320,7 @@ func buildFixtPlan(testsProto []*protocol.ResolvedEntity, pcfg *Config) (*fixtPl
 	graph := make(map[string][]string) // fixture name to its child names
 	added := make(map[string]struct{}) // set of fixtures added to graph as children
 	var orphans []*orphanTest
-	for _, t := range tests {
+	for i, t := range tests {
 		cur := t.Fixture
 		for cur != pcfg.StartFixtureName {
 			if cur == "" {
@@ -328,7 +328,7 @@ func buildFixtPlan(testsProto []*protocol.ResolvedEntity, pcfg *Config) (*fixtPl
 			}
 			f, ok := pcfg.Fixtures[cur]
 			if !ok {
-				orphans = append(orphans, &orphanTest{test: t, missingFixtName: cur})
+				orphans = append(orphans, &orphanTest{test: testsProto[i], missingFixtName: cur})
 				break
 			}
 			if _, ok := added[cur]; !ok {
@@ -342,7 +342,7 @@ func buildFixtPlan(testsProto []*protocol.ResolvedEntity, pcfg *Config) (*fixtPl
 		sort.Strings(children)
 	}
 	sort.Slice(orphans, func(i, j int) bool {
-		return orphans[i].test.Name < orphans[j].test.Name
+		return orphans[i].test.GetEntity().GetName() < orphans[j].test.GetEntity().GetName()
 	})
 
 	// Build a map from fixture names to tests.
@@ -403,7 +403,7 @@ func buildFixtPlan(testsProto []*protocol.ResolvedEntity, pcfg *Config) (*fixtPl
 
 func (p *fixtPlan) run(ctx context.Context, out output.Stream, dl *downloader) error {
 	for _, o := range p.orphans {
-		tout := output.NewEntityStream(out, o.test.EntityProto())
+		tout := output.NewEntityStream(out, o.test.GetEntity())
 		reportOrphanTest(tout, o.missingFixtName)
 	}
 
@@ -416,7 +416,7 @@ func (p *fixtPlan) entitiesToRun() []*protocol.Entity {
 	var entities []*protocol.Entity
 
 	for _, o := range p.orphans {
-		entities = append(entities, o.test.EntityProto())
+		entities = append(entities, o.test.GetEntity())
 	}
 
 	var traverse func(tree *fixtTree)

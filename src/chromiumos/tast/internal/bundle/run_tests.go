@@ -102,7 +102,7 @@ func runTests(ctx context.Context, srv protocol.TestService_RunTestsServer, cfg 
 		StartFixtureImpl: &stubFixture{setUpErrors: cfg.GetStartFixtureState().GetErrors()},
 	}
 
-	if err := planner.RunTests(ctx, tests, ew, pcfg); err != nil {
+	if err := planner.RunTestsLegacy(ctx, tests, ew, pcfg); err != nil {
 		return command.NewStatusErrorf(statusError, "run failed: %v", err)
 	}
 	return nil

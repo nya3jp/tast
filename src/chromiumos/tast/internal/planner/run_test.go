@@ -40,7 +40,7 @@ func runTestsAndReadAll(t *gotesting.T, tests []*testing.TestInstance, pcfg *Con
 	t.Helper()
 
 	sink := outputtest.NewSink()
-	if err := RunTests(context.Background(), tests, sink, pcfg); err != nil {
+	if err := RunTestsLegacy(context.Background(), tests, sink, pcfg); err != nil {
 		t.Logf("RunTests: %v", err) // improve debuggability
 	}
 	return sink.ReadAll()

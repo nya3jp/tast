@@ -110,6 +110,10 @@ func runTestsRecursive(ctx context.Context, srv protocol.TestService_RunTestsSer
 		}
 	}()
 
+	internalTests := make(map[string]*testing.TestInstance)
+	for _, t := range scfg.registry.AllTests() {
+		internalTests[t.Name] = t
+	}
 	pcfg := &planner.Config{
 		Dirs:             rcfg.GetDirs(),
 		Features:         rcfg.GetFeatures(),
@@ -118,6 +122,7 @@ func runTestsRecursive(ctx context.Context, srv protocol.TestService_RunTestsSer
 		RemoteData:       connEnv.rd,
 		TestHook:         scfg.testHook,
 		BeforeDownload:   scfg.beforeDownload,
+		Tests:            internalTests,
 		Fixtures:         scfg.registry.AllFixtures(),
 		StartFixtureName: rcfg.GetStartFixtureState().GetName(),
 		StartFixtureImpl: &stubFixture{setUpErrors: rcfg.GetStartFixtureState().GetErrors()},
@@ -143,16 +148,12 @@ func runTestsRecursive(ctx context.Context, srv protocol.TestService_RunTestsSer
 	}
 
 	// Run all the tests with Hops = 0.
-	nameToTest := make(map[string]*testing.TestInstance)
-	for _, t := range scfg.registry.AllTests() {
-		nameToTest[t.Name] = t
-	}
-	var tests []*testing.TestInstance
+	var tests []*protocol.ResolvedEntity
 	for _, t := range testEntities {
 		if t.Hops > 0 {
 			continue
 		}
-		tests = append(tests, nameToTest[t.Entity.Name])
+		tests = append(tests, t)
 	}
 	if err := planner.RunTests(ctx, tests, ew, pcfg); err != nil {
 		return command.NewStatusErrorf(statusError, "run failed: %v", err)

@@ -72,6 +72,8 @@ type Config struct {
 	// BeforeDownload specifies a function called before downloading external data files.
 	// It is ignored if it is nil.
 	BeforeDownload func(context.Context)
+	// Tests is a map from a test name to its metadata.
+	Tests map[string]*testing.TestInstance
 	// Fixtures is a map from a fixture name to its metadata.
 	Fixtures map[string]*testing.FixtureInstance
 	// StartFixtureName is a name of a fixture to start test execution.
@@ -113,6 +115,37 @@ func (c *Config) FixtureConfig() *fixture.Config {
 	}
 }
 
+// RunTestsLegacy runs a set of tests, writing outputs to out.
+//
+// RunTestsLegacy is responsible for building an efficient plan to run the given tests.
+// Therefore the order of tests in the argument is ignored; it just specifies
+// a set of tests to run.
+//
+// RunTestsLegacy runs tests on goroutines. If a test does not finish after reaching
+// its timeout, this function returns with an error without waiting for its finish.
+func RunTestsLegacy(ctx context.Context, tests []*testing.TestInstance, out OutputStream, pcfg *Config) error {
+	if pcfg.Tests != nil {
+		return fmt.Errorf("BUG: RunTestsLegacy pcfg.Tests = %v, want nil", pcfg.Tests)
+	}
+	// HACK: modify Tests field. This code should soon go away along with the
+	// removal of this function.
+	defer func() {
+		pcfg.Tests = nil
+	}()
+	pcfg.Tests = make(map[string]*testing.TestInstance)
+	for _, t := range tests {
+		pcfg.Tests[t.Name] = t
+	}
+	ts := make([]*protocol.ResolvedEntity, len(tests))
+	for i, t := range tests {
+		ts[i] = &protocol.ResolvedEntity{
+			Hops:   0,
+			Entity: t.EntityProto(),
+		}
+	}
+	return RunTests(ctx, ts, out, pcfg)
+}
+
 // RunTests runs a set of tests, writing outputs to out.
 //
 // RunTests is responsible for building an efficient plan to run the given tests.
@@ -121,7 +154,7 @@ func (c *Config) FixtureConfig() *fixture.Config {
 //
 // RunTests runs tests on goroutines. If a test does not finish after reaching
 // its timeout, this function returns with an error without waiting for its finish.
-func RunTests(ctx context.Context, tests []*testing.TestInstance, out OutputStream, pcfg *Config) error {
+func RunTests(ctx context.Context, tests []*protocol.ResolvedEntity, out OutputStream, pcfg *Config) error {
 	plan, err := buildPlan(tests, pcfg)
 	if err != nil {
 		return err
@@ -143,15 +176,16 @@ type skippedTest struct {
 	err     error
 }
 
-func buildPlan(tests []*testing.TestInstance, pcfg *Config) (*plan, error) {
+func buildPlan(tests []*protocol.ResolvedEntity, pcfg *Config) (*plan, error) {
 	var runs []*testing.TestInstance
 	var skips []*skippedTest
 	for _, t := range tests {
-		reasons, err := t.Deps().Check(pcfg.Features)
+		ti := pcfg.Tests[t.GetEntity().GetName()]
+		reasons, err := ti.Deps().Check(pcfg.Features)
 		if err == nil && len(reasons) == 0 {
-			runs = append(runs, t)
+			runs = append(runs, ti)
 		} else {
-			skips = append(skips, &skippedTest{test: t, reasons: reasons, err: err})
+			skips = append(skips, &skippedTest{test: ti, reasons: reasons, err: err})
 		}
 	}
 	sort.Slice(skips, func(i, j int) bool {

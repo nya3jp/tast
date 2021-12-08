@@ -271,15 +271,16 @@ type fixtTree struct {
 	fixt *testing.FixtureInstance
 
 	// Following fields are updated as we execute a plan.
-	tests    []*testing.TestInstance
-	children []*fixtTree
+	tests         []*testing.TestInstance
+	externalTests []string
+	children      []*fixtTree
 }
 
 // Empty returns if a tree has no test.
 // An empty fixture tree must not appear as a subtree of another fixture tree
 // so that we can check if a fixture tree is empty in O(1).
 func (t *fixtTree) Empty() bool {
-	return len(t.tests) == 0 && len(t.children) == 0
+	return len(t.tests) == 0 && len(t.externalTests) == 0 && len(t.children) == 0
 }
 
 // Clone returns a deep copy of fixtTree.
@@ -289,9 +290,10 @@ func (t *fixtTree) Clone() *fixtTree {
 		children[i] = child.Clone()
 	}
 	return &fixtTree{
-		fixt:     t.fixt,
-		tests:    append([]*testing.TestInstance(nil), t.tests...),
-		children: children,
+		fixt:          t.fixt,
+		tests:         append([]*testing.TestInstance(nil), t.tests...),
+		externalTests: append([]string(nil), t.externalTests...),
+		children:      children,
 	}
 }
 
@@ -311,78 +313,77 @@ type fixtPlan struct {
 
 // buildFixtPlan builds an execution plan of fixture-ready tests. Tests passed
 // to this function must not depend on preconditions.
-func buildFixtPlan(testsProto []*protocol.ResolvedEntity, pcfg *Config) (*fixtPlan, error) {
-	tests := make([]*testing.TestInstance, len(testsProto))
-	for i, t := range testsProto {
-		tests[i] = pcfg.Tests[t.GetEntity().GetName()]
-	}
-	// Build a graph of fixtures relevant to the given tests.
-	graph := make(map[string][]string) // fixture name to its child names
-	added := make(map[string]struct{}) // set of fixtures added to graph as children
+func buildFixtPlan(tests []*protocol.ResolvedEntity, pcfg *Config) (*fixtPlan, error) {
 	var orphans []*orphanTest
-	for i, t := range tests {
-		cur := t.Fixture
-		for cur != pcfg.StartFixtureName {
-			if cur == "" {
-				return nil, fmt.Errorf("cannot run test %q because it does not depend on start fixture %q", t.Name, pcfg.StartFixtureName)
-			}
-			f, ok := pcfg.Fixtures[cur]
-			if !ok {
-				orphans = append(orphans, &orphanTest{test: testsProto[i], missingFixtName: cur})
-				break
-			}
-			if _, ok := added[cur]; !ok {
-				graph[f.Parent] = append(graph[f.Parent], cur)
-				added[cur] = struct{}{}
-			}
-			cur = f.Parent
+	testsToRun := make(map[string][]*testing.TestInstance) // keyed by fixture
+	externalTestsToRun := make(map[string][]string)
+
+	// Build a graph of fixtures relevant to the given tests.
+	graph := make(map[string][]string) // fixture name to its children names
+	added := make(map[string]struct{}) // set of fixtures added to graph as children
+	var traverse func(string) (bool, string)
+	traverse = func(fixture string) (rooted bool, missingFixtureName string) {
+		if fixture == pcfg.StartFixtureName {
+			return true, ""
+		}
+		if _, ok := added[fixture]; ok {
+			return true, ""
+		}
+		f, ok := pcfg.Fixtures[fixture]
+		if !ok {
+			return false, fixture
+		}
+		rooted, missing := traverse(f.Parent)
+		if rooted {
+			added[fixture] = struct{}{}
+			graph[f.Parent] = append(graph[f.Parent], fixture)
+		}
+		return rooted, missing
+	}
+	for _, t := range tests {
+		f := fixtTreeParent(t)
+		rooted, missing := traverse(f)
+		if !rooted {
+			orphans = append(orphans, &orphanTest{
+				test:            t,
+				missingFixtName: missing,
+			})
+		} else if t.Hops == 0 {
+			// Existence of the test instance is already checked in buildPlan.
+			testsToRun[f] = append(testsToRun[f], pcfg.Tests[t.GetEntity().GetName()])
+		} else {
+			externalTestsToRun[f] = append(externalTestsToRun[f], t.GetEntity().GetName())
 		}
 	}
-	for _, children := range graph {
-		sort.Strings(children)
-	}
+	// Normalize
 	sort.Slice(orphans, func(i, j int) bool {
-		return orphans[i].test.GetEntity().GetName() < orphans[j].test.GetEntity().GetName()
+		ei := orphans[i].test
+		ej := orphans[j].test
+		if ei.Hops != ej.Hops {
+			return ei.Hops < ej.Hops
+		}
+		return ei.Entity.Name < ej.Entity.Name
 	})
-
-	// Build a map from fixture names to tests.
-	testMap := make(map[string][]*testing.TestInstance)
-	for _, t := range tests {
-		testMap[t.Fixture] = append(testMap[t.Fixture], t)
-	}
-	for _, ts := range testMap {
+	for _, ts := range testsToRun {
 		sort.Slice(ts, func(i, j int) bool {
 			return ts[i].Name < ts[j].Name
 		})
 	}
-
-	// Traverse the graph to build a fixture tree.
-	var traverse func(cur string) *fixtTree
-	traverse = func(cur string) *fixtTree {
-		var children []*fixtTree
-		for _, child := range graph[cur] {
-			children = append(children, traverse(child))
-		}
-		return &fixtTree{
-			fixt:     pcfg.Fixtures[cur],
-			tests:    testMap[cur],
-			children: children,
-		}
+	for _, ts := range externalTestsToRun {
+		sort.Strings(ts)
 	}
-	tree := traverse(pcfg.StartFixtureName)
-
-	// Metadata of a start fixture should be unavailable in the registry.
-	if tree.fixt != nil {
-		return nil, fmt.Errorf("BUG: metadata of start fixture %q is unexpectedly available", pcfg.StartFixtureName)
+	for _, children := range graph {
+		sort.Strings(children)
 	}
+
 	impl := pcfg.StartFixtureImpl
 	if impl == nil {
 		impl = &stubFixture{}
 	}
 	const infinite = 24 * time.Hour // a day is considered infinite
-	tree.fixt = &testing.FixtureInstance{
-		// Do not set Name of a start fixture. output.EntityOutputStream do not emit
-		// EntityStart/EntityEnd for unnamed entity.
+	rootFixture := &testing.FixtureInstance{
+		// Do not set Name of a start fixture. output.EntityOutputStream do not
+		// emit EntityStart/EntityEnd for unnamed entities.
 		Impl: impl,
 		// Set infinite timeouts to all lifecycle methods. In production, the
 		// start fixture may communicate with the host machine to trigger remote
@@ -398,7 +399,35 @@ func buildFixtPlan(testsProto []*protocol.ResolvedEntity, pcfg *Config) (*fixtPl
 		PostTestTimeout: infinite,
 	}
 
+	// Traverse the graph to build a fixture tree.
+	var newTree func(name string) *fixtTree
+	newTree = func(name string) *fixtTree {
+		var f *testing.FixtureInstance
+		if name == pcfg.StartFixtureName {
+			f = rootFixture
+		} else {
+			f = pcfg.Fixtures[name]
+		}
+		var children []*fixtTree
+		for _, c := range graph[name] {
+			children = append(children, newTree(c))
+		}
+		return &fixtTree{
+			fixt:          f,
+			tests:         testsToRun[name],
+			externalTests: externalTestsToRun[name],
+			children:      children,
+		}
+	}
+	tree := newTree(pcfg.StartFixtureName)
 	return &fixtPlan{pcfg: pcfg, tree: tree, orphans: orphans}, nil
+}
+
+func fixtTreeParent(test *protocol.ResolvedEntity) string {
+	if test.Hops > 0 {
+		return test.StartFixtureName
+	}
+	return test.Entity.Fixture
 }
 
 func (p *fixtPlan) run(ctx context.Context, out output.Stream, dl *downloader) error {

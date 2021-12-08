@@ -437,7 +437,8 @@ func (p *fixtPlan) run(ctx context.Context, out output.Stream, dl *downloader) e
 	}
 
 	tree := p.tree.Clone()
-	stack := fixture.NewInternalStack(p.pcfg.FixtureConfig(), out)
+	internalStack := fixture.NewInternalStack(p.pcfg.FixtureConfig(), out)
+	stack := &internalOrCombinedStack{internal: internalStack}
 	return runFixtTree(ctx, tree, stack, p.pcfg, out, dl)
 }
 
@@ -467,7 +468,7 @@ func (p *fixtPlan) entitiesToRun() []*protocol.Entity {
 
 // runFixtTree runs tests in a fixture tree.
 // tree is modified as tests are run.
-func runFixtTree(ctx context.Context, tree *fixtTree, stack *fixture.InternalStack, pcfg *Config, out output.Stream, dl *downloader) error {
+func runFixtTree(ctx context.Context, tree *fixtTree, stack *internalOrCombinedStack, pcfg *Config, out output.Stream, dl *downloader) error {
 	// Note about invariants:
 	// On entering this function, if the fixture stack is green, it is clean.
 	// Thus we don't need to reset fixtures before running a next test.
@@ -563,7 +564,8 @@ func (p *prePlan) run(ctx context.Context, out output.Stream, dl *downloader) er
 
 	// Create an empty fixture stack. Tests using preconditions can't depend on
 	// fixture.
-	stack := fixture.NewInternalStack(p.pcfg.FixtureConfig(), out)
+	internalStack := fixture.NewInternalStack(p.pcfg.FixtureConfig(), out)
+	stack := &internalOrCombinedStack{internal: internalStack}
 
 	for i, t := range p.tests {
 		ti := t.EntityProto()
@@ -633,7 +635,7 @@ type preConfig struct {
 //
 // runTest runs a test on a goroutine. If a test does not finish after reaching
 // its timeout, this function returns with an error without waiting for its finish.
-func runTest(ctx context.Context, t *testing.TestInstance, tout *output.EntityStream, pcfg *Config, precfg *preConfig, stack *fixture.InternalStack, dl *downloader) error {
+func runTest(ctx context.Context, t *testing.TestInstance, tout *output.EntityStream, pcfg *Config, precfg *preConfig, stack *internalOrCombinedStack, dl *downloader) error {
 	fixtCtx := ctx
 
 	// Attach a log that the test can use to report timing events.
@@ -651,7 +653,7 @@ func runTest(ctx context.Context, t *testing.TestInstance, tout *output.EntitySt
 	afterTest := dl.BeforeEntity(ctx, t.EntityProto())
 	defer afterTest()
 
-	if err := stack.MarkDirty(); err != nil {
+	if err := stack.MarkDirty(ctx); err != nil {
 		return err
 	}
 
@@ -696,7 +698,7 @@ type testConfig struct {
 //
 // The time allotted to the test is generally the sum of t.Timeout and t.ExitTimeout, but
 // additional time may be allotted for preconditions and pre/post-test hooks.
-func runTestWithConfig(ctx context.Context, tcfg *testConfig, pcfg *Config, stack *fixture.InternalStack, precfg *preConfig, out testing.OutputStream) error {
+func runTestWithConfig(ctx context.Context, tcfg *testConfig, pcfg *Config, stack *internalOrCombinedStack, precfg *preConfig, out testing.OutputStream) error {
 	// codeName is included in error messages if the user code ignores the timeout.
 	// For compatibility, the same fixed name is used for tests, preconditions and test hooks.
 	const codeName = "Test"
@@ -774,7 +776,7 @@ func runTestWithConfig(ctx context.Context, tcfg *testConfig, pcfg *Config, stac
 		defer cancel()
 
 		// Run fixture pre-test hooks.
-		postTest, err := stack.PreTest(ctx, tcfg.outDir, out, condition)
+		postTest, err := stack.PreTest(ctx, tcfg.test.EntityProto(), tcfg.outDir, out, condition)
 		if err != nil {
 			return err
 		}

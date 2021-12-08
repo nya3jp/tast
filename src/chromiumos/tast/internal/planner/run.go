@@ -177,31 +177,35 @@ type skippedTest struct {
 }
 
 func buildPlan(tests []*protocol.ResolvedEntity, pcfg *Config) (*plan, error) {
-	var runs []*testing.TestInstance
+	var testsWithFixture []*protocol.ResolvedEntity
+	preMap := make(map[string][]*testing.TestInstance)
 	var skips []*skippedTest
 	for _, t := range tests {
-		ti := pcfg.Tests[t.GetEntity().GetName()]
-		reasons, err := ti.Deps().Check(pcfg.Features)
-		if err == nil && len(reasons) == 0 {
-			runs = append(runs, ti)
-		} else {
-			skips = append(skips, &skippedTest{test: ti, reasons: reasons, err: err})
+		if t.GetHops() > 0 {
+			testsWithFixture = append(testsWithFixture, t)
+			continue
 		}
+		ti, ok := pcfg.Tests[t.GetEntity().GetName()]
+		if !ok {
+			return nil, fmt.Errorf("BUG: test %v does not exist", t.GetEntity().GetName())
+		}
+		reasons, err := ti.Deps().Check(pcfg.Features)
+		if err != nil || len(reasons) > 0 {
+			skips = append(skips, &skippedTest{test: ti, reasons: reasons, err: err})
+			continue
+		}
+		if ti.Pre != nil {
+			preName := ti.Pre.String()
+			preMap[preName] = append(preMap[preName], ti)
+			continue
+		}
+		// A test which is not skipped nor depending on a precondition is
+		// fixture-ready, possibly depending on an empty fixture.
+		testsWithFixture = append(testsWithFixture, t)
 	}
 	sort.Slice(skips, func(i, j int) bool {
 		return skips[i].test.Name < skips[j].test.Name
 	})
-
-	var fixtTests []*testing.TestInstance
-	preMap := make(map[string][]*testing.TestInstance)
-	for _, t := range runs {
-		if t.Pre != nil {
-			preName := t.Pre.String()
-			preMap[preName] = append(preMap[preName], t)
-		} else {
-			fixtTests = append(fixtTests, t)
-		}
-	}
 
 	preNames := make([]string, 0, len(preMap))
 	for preName := range preMap {
@@ -214,7 +218,7 @@ func buildPlan(tests []*protocol.ResolvedEntity, pcfg *Config) (*plan, error) {
 		prePlans[i] = buildPrePlan(preMap[preName], pcfg)
 	}
 
-	fixtPlan, err := buildFixtPlan(fixtTests, pcfg)
+	fixtPlan, err := buildFixtPlan(testsWithFixture, pcfg)
 	if err != nil {
 		return nil, err
 	}
@@ -307,7 +311,11 @@ type fixtPlan struct {
 
 // buildFixtPlan builds an execution plan of fixture-ready tests. Tests passed
 // to this function must not depend on preconditions.
-func buildFixtPlan(tests []*testing.TestInstance, pcfg *Config) (*fixtPlan, error) {
+func buildFixtPlan(testsProto []*protocol.ResolvedEntity, pcfg *Config) (*fixtPlan, error) {
+	tests := make([]*testing.TestInstance, len(testsProto))
+	for i, t := range testsProto {
+		tests[i] = pcfg.Tests[t.GetEntity().GetName()]
+	}
 	// Build a graph of fixtures relevant to the given tests.
 	graph := make(map[string][]string) // fixture name to its child names
 	added := make(map[string]struct{}) // set of fixtures added to graph as children

@@ -90,9 +90,10 @@ var softwareFeatureDefs = map[string]string{
 	// veyron does not support rootfs lacros entirely. b/204888294
 	// TODO(crbug.com/1267118): Let ARM run as stable
 	// TODO(b/183969803): Remove lacros_stable and lacros_unstable eventually.
-	"lacros":            `!chromeless_tty && !rialto && !("board:veyron_fievel" || "board:veyron_tiger")`,
-	"lacros_stable":     `!chromeless_tty && !rialto && !("board:veyron_fievel" || "board:veyron_tiger") && !"tast_vm" && !"betty" && !arm && !arm64`,
-	"lacros_unstable":   `!chromeless_tty && !rialto && !("board:veyron_fievel" || "board:veyron_tiger") && ("tast_vm" || "betty" || arm || arm64)`,
+	// TODO(crbug.com/1274891): Update arm64 condition from lacros variants when becomes testable.
+	"lacros":            `!chromeless_tty && !rialto && !("board:veyron_fievel" || "board:veyron_tiger") && !arm64`,
+	"lacros_stable":     `!chromeless_tty && !rialto && !("board:veyron_fievel" || "board:veyron_tiger") && !arm64 && !"tast_vm" && !"betty" && !arm`,
+	"lacros_unstable":   `!chromeless_tty && !rialto && !("board:veyron_fievel" || "board:veyron_tiger") && !arm64 && ("tast_vm" || "betty" || arm)`,
 	"lock_core_pattern": `"kernel-3_18"`,
 	"manatee":           "manatee",
 	"mbo":               "mbo",

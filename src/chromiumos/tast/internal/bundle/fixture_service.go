@@ -117,14 +117,6 @@ func (s *fixtureService) pushAndPop(srv protocol.FixtureService_RunFixtureServer
 		dt.Close(ctx)
 	}()
 
-	var downloadMode protocol.DownloadMode
-	switch r.Config.DownloadMode {
-	case protocol.RunFixtureConfig_BATCH:
-		downloadMode = protocol.DownloadMode_BATCH
-	case protocol.RunFixtureConfig_LAZY:
-		downloadMode = protocol.DownloadMode_LAZY
-	}
-
 	pcfg := &planner.Config{
 		Dirs: &protocol.RunDirectories{
 			DataDir: r.Config.DataDir,
@@ -138,7 +130,7 @@ func (s *fixtureService) pushAndPop(srv protocol.FixtureService_RunFixtureServer
 		},
 		DataFile: &protocol.DataFileConfig{
 			BuildArtifactsUrl: r.Config.BuildArtifactsUrl,
-			DownloadMode:      downloadMode,
+			DownloadMode:      r.Config.GetDownloadMode(),
 		},
 		RemoteData: &testing.RemoteData{
 			RPCHint: testing.NewRPCHint(r.Config.LocalBundleDir, r.Config.TestVars),

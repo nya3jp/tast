@@ -8,6 +8,8 @@ import "google/protobuf/duration.proto";
 import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
 
+import "testing.proto";
+
 package tast.core;
 option go_package = "chromiumos/tast/internal/protocol";
 
@@ -81,11 +83,7 @@ message RunFixtureConfig {
 
   string build_artifacts_url = 15;
 
-  enum PlannerDownloadMode {
-    BATCH = 0;
-    LAZY = 1;
-  }
-  PlannerDownloadMode download_mode = 16;
+  DownloadMode download_mode = 16;
 
   string dut_server = 17;
 

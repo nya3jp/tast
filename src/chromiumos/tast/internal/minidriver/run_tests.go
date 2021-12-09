@@ -21,7 +21,6 @@ import (
 	"chromiumos/tast/internal/minidriver/failfast"
 	"chromiumos/tast/internal/minidriver/processor"
 	"chromiumos/tast/internal/minidriver/target"
-	"chromiumos/tast/internal/planner"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/run/reporting"
 	"chromiumos/tast/internal/run/resultsjson"
@@ -56,7 +55,7 @@ type Config struct {
 	LocalOutDir           string
 	LocalTempDir          string
 	LocalBundleDir        string
-	DownloadMode          planner.DownloadMode
+	DownloadMode          protocol.DownloadMode
 	WaitUntilReady        bool
 	SystemServicesTimeout time.Duration
 	CheckTestDeps         bool
@@ -172,7 +171,7 @@ func (d *Driver) newConfigsForLocalTests(tests []*protocol.ResolvedEntity, state
 			TlwSelfName: tlwSelfName,
 		},
 		DataFileConfig: &protocol.DataFileConfig{
-			DownloadMode: d.cfg.DownloadMode.Proto(),
+			DownloadMode: d.cfg.DownloadMode,
 		},
 		StartFixtureState:     state,
 		HeartbeatInterval:     ptypes.DurationProto(HeartbeatInterval),

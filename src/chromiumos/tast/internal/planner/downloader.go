@@ -6,52 +6,12 @@ package planner
 
 import (
 	"context"
-	"fmt"
 
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/devserver"
 	"chromiumos/tast/internal/extdata"
 	"chromiumos/tast/internal/protocol"
 )
-
-// DownloadMode specifies a strategy to download external data files.
-// TODO(oka): DownloadMode is used only in packages other than planner, and
-// should be removed eventually. Currently it's used in JSON protocol, so it
-// might be good to remove it after GRPC migration has finished.
-type DownloadMode int
-
-const (
-	// DownloadBatch specifies that the planner downloads external data files
-	// in batch before running tests.
-	DownloadBatch DownloadMode = iota
-	// DownloadLazy specifies that the planner download external data files
-	// as needed between tests.
-	DownloadLazy
-)
-
-// DownloadModeFromProto converts protocol.DownloadMode to planner.DownloadMode.
-func DownloadModeFromProto(p protocol.DownloadMode) (DownloadMode, error) {
-	switch p {
-	case protocol.DownloadMode_BATCH:
-		return DownloadBatch, nil
-	case protocol.DownloadMode_LAZY:
-		return DownloadLazy, nil
-	default:
-		return DownloadBatch, errors.Errorf("unknown DownloadMode: %v", p)
-	}
-}
-
-// Proto converts planner.DownloadMode to protocol.DownloadMode.
-func (m DownloadMode) Proto() protocol.DownloadMode {
-	switch m {
-	case DownloadBatch:
-		return protocol.DownloadMode_BATCH
-	case DownloadLazy:
-		return protocol.DownloadMode_LAZY
-	default:
-		panic(fmt.Sprintf("Unknown DownloadMode: %v", m))
-	}
-}
 
 // downloader encapsulates the logic to download external data files.
 type downloader struct {

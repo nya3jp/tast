@@ -22,7 +22,6 @@ import (
 	"chromiumos/tast/internal/minidriver"
 	"chromiumos/tast/internal/minidriver/failfast"
 	"chromiumos/tast/internal/minidriver/processor"
-	"chromiumos/tast/internal/planner"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/run/reporting"
 	"chromiumos/tast/internal/run/resultsjson"
@@ -343,7 +342,7 @@ func (d *Driver) newConfigsForRemoteTests(tests []*protocol.ResolvedEntity, dutI
 			// remote fixture which will use devserver or ephemeral server to download files.
 		},
 		DataFileConfig: &protocol.DataFileConfig{
-			DownloadMode:      d.cfg.DownloadMode().Proto(),
+			DownloadMode:      d.cfg.DownloadMode(),
 			BuildArtifactsUrl: buildArtifactsURL,
 		},
 		HeartbeatInterval: ptypes.DurationProto(minidriver.HeartbeatInterval),
@@ -363,16 +362,6 @@ func (d *Driver) newRunFixtureConfig(dutInfo *protocol.DUTInfo) (*protocol.RunFi
 		buildArtifactsURL = dutInfo.GetDefaultBuildArtifactsUrl()
 	}
 
-	var dm protocol.RunFixtureConfig_PlannerDownloadMode
-	switch d.cfg.DownloadMode() {
-	case planner.DownloadBatch:
-		dm = protocol.RunFixtureConfig_BATCH
-	case planner.DownloadLazy:
-		dm = protocol.RunFixtureConfig_LAZY
-	default:
-		return nil, errors.Errorf("unknown mode %v", d.cfg.DownloadMode())
-	}
-
 	return &protocol.RunFixtureConfig{
 		TestVars:          d.cfg.TestVars(),
 		DataDir:           d.cfg.RemoteDataDir(),
@@ -389,7 +378,7 @@ func (d *Driver) newRunFixtureConfig(dutInfo *protocol.DUTInfo) (*protocol.RunFi
 		TlwServer:         tlwServer,
 		DutName:           d.cfg.Target(),
 		BuildArtifactsUrl: buildArtifactsURL,
-		DownloadMode:      dm,
+		DownloadMode:      d.cfg.DownloadMode(),
 	}, nil
 }
 

@@ -21,7 +21,6 @@ import (
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/command"
 	"chromiumos/tast/internal/debugger"
-	"chromiumos/tast/internal/planner"
 	"chromiumos/tast/internal/protocol"
 )
 
@@ -80,7 +79,7 @@ type MutableConfig struct {
 	Devservers                []string
 	BuildArtifactsURLOverride string
 	DownloadPrivateBundles    bool
-	DownloadMode              planner.DownloadMode
+	DownloadMode              protocol.DownloadMode
 	TLWServer                 string
 	ReportsServer             string
 	CompanionDUTs             map[string]string
@@ -201,7 +200,7 @@ func (c *Config) BuildArtifactsURLOverride() string { return c.m.BuildArtifactsU
 func (c *Config) DownloadPrivateBundles() bool { return c.m.DownloadPrivateBundles }
 
 // DownloadMode is strategy to download external data files.
-func (c *Config) DownloadMode() planner.DownloadMode { return c.m.DownloadMode }
+func (c *Config) DownloadMode() protocol.DownloadMode { return c.m.DownloadMode }
 
 // TLWServer is address of the TLW server if available.
 func (c *Config) TLWServer() string { return c.m.TLWServer }
@@ -374,10 +373,10 @@ func (c *MutableConfig) SetFlags(f *flag.FlagSet) {
 	f.StringVar(&c.BuildArtifactsURLOverride, "buildartifactsurl", "", "override Google Cloud Storage URL of build artifacts (implies -extraallowedbuckets)")
 	f.BoolVar(&c.DownloadPrivateBundles, "downloadprivatebundles", false, "download private bundles if missing")
 	ddfs := map[string]int{
-		"batch": int(planner.DownloadBatch),
-		"lazy":  int(planner.DownloadLazy),
+		"batch": int(protocol.DownloadMode_BATCH),
+		"lazy":  int(protocol.DownloadMode_LAZY),
 	}
-	ddf := command.NewEnumFlag(ddfs, func(v int) { c.DownloadMode = planner.DownloadMode(v) }, "batch")
+	ddf := command.NewEnumFlag(ddfs, func(v int) { c.DownloadMode = protocol.DownloadMode(v) }, "batch")
 	f.Var(ddf, "downloaddata", fmt.Sprintf("strategy to download external data files (%s; default %q)", ddf.QuotedValues(), ddf.Default()))
 	f.BoolVar(&c.ContinueAfterFailure, "continueafterfailure", true, "try to run remaining tests after bundle/DUT crash or lost SSH connection")
 	f.IntVar(&c.SSHRetries, "sshretries", 0, "number of SSH connect retries")

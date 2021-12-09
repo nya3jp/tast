@@ -8,7 +8,6 @@ import (
 	"context"
 
 	"chromiumos/tast/errors"
-	"chromiumos/tast/internal/bundle"
 	"chromiumos/tast/internal/protocol"
 )
 
@@ -22,7 +21,7 @@ type RunFixtureOutput interface {
 // RunFixture requests a test bundle to set up a fixture.
 // After successful return of RunFixture, a caller must call
 // FixtureTicket.TearDown to tear down the fixture.
-func (c *Client) RunFixture(ctx context.Context, name string, cfg *bundle.RunFixtureConfig, out RunFixtureOutput) (_ *FixtureTicket, retErr error) {
+func (c *Client) RunFixture(ctx context.Context, name string, cfg *protocol.RunFixtureConfig, out RunFixtureOutput) (_ *FixtureTicket, retErr error) {
 	defer func() {
 		if retErr != nil {
 			retErr = errors.Wrapf(retErr, "failed to set up fixture %s", name)
@@ -43,15 +42,15 @@ func (c *Client) RunFixture(ctx context.Context, name string, cfg *bundle.RunFix
 		}
 	}()
 
-	stream, err := bundle.NewFixtureServiceClient(conn.Conn()).RunFixture(ctx)
+	stream, err := protocol.NewFixtureServiceClient(conn.Conn()).RunFixture(ctx)
 	if err != nil {
 		return nil, err
 	}
 
 	// Set up a remote fixture.
-	req := &bundle.RunFixtureRequest{
-		Control: &bundle.RunFixtureRequest_Push{
-			Push: &bundle.RunFixturePushRequest{
+	req := &protocol.RunFixtureRequest{
+		Control: &protocol.RunFixtureRequest_Push{
+			Push: &protocol.RunFixturePushRequest{
 				Name:   name,
 				Config: cfg,
 			},
@@ -89,7 +88,7 @@ func (c *Client) RunFixture(ctx context.Context, name string, cfg *bundle.RunFix
 type FixtureTicket struct {
 	out    RunFixtureOutput
 	conn   *rpcConn
-	stream bundle.FixtureService_RunFixtureClient
+	stream protocol.FixtureService_RunFixtureClient
 	state  *protocol.StartFixtureState
 }
 
@@ -106,9 +105,9 @@ func (t *FixtureTicket) TearDown(ctx context.Context) (retErr error) {
 		}
 	}()
 
-	req := &bundle.RunFixtureRequest{
-		Control: &bundle.RunFixtureRequest_Pop{
-			Pop: &bundle.RunFixturePopRequest{},
+	req := &protocol.RunFixtureRequest{
+		Control: &protocol.RunFixtureRequest_Pop{
+			Pop: &protocol.RunFixturePopRequest{},
 		},
 	}
 	if _, err := sendAndRecv(ctx, t.stream, t.state.GetName(), req, t.out); err != nil {
@@ -123,14 +122,14 @@ func (t *FixtureTicket) StartFixtureState() *protocol.StartFixtureState {
 	return t.state
 }
 
-func sendAndRecv(ctx context.Context, stream bundle.FixtureService_RunFixtureClient, name string, req *bundle.RunFixtureRequest, out RunFixtureOutput) ([]*bundle.RunFixtureError, error) {
+func sendAndRecv(ctx context.Context, stream protocol.FixtureService_RunFixtureClient, name string, req *protocol.RunFixtureRequest, out RunFixtureOutput) ([]*protocol.RunFixtureError, error) {
 	// Send a request.
 	if err := stream.Send(req); err != nil {
 		return nil, err
 	}
 
 	// Read responses until RequestDone.
-	var errors []*bundle.RunFixtureError
+	var errors []*protocol.RunFixtureError
 	for {
 		msg, err := stream.Recv()
 		if err != nil {
@@ -138,7 +137,7 @@ func sendAndRecv(ctx context.Context, stream bundle.FixtureService_RunFixtureCli
 		}
 
 		switch v := msg.Control.(type) {
-		case *bundle.RunFixtureResponse_Log:
+		case *protocol.RunFixtureResponse_Log:
 			ev := &protocol.EntityLogEvent{
 				Time:       msg.GetTimestamp(),
 				EntityName: name,
@@ -147,7 +146,7 @@ func sendAndRecv(ctx context.Context, stream bundle.FixtureService_RunFixtureCli
 			if err := out.EntityLog(ctx, ev); err != nil {
 				return nil, err
 			}
-		case *bundle.RunFixtureResponse_Error:
+		case *protocol.RunFixtureResponse_Error:
 			e := v.Error
 			ev := &protocol.EntityErrorEvent{
 				Time:       msg.GetTimestamp(),
@@ -165,7 +164,7 @@ func sendAndRecv(ctx context.Context, stream bundle.FixtureService_RunFixtureCli
 				return nil, err
 			}
 			errors = append(errors, e)
-		case *bundle.RunFixtureResponse_RequestDone:
+		case *protocol.RunFixtureResponse_RequestDone:
 			return errors, nil
 		}
 	}

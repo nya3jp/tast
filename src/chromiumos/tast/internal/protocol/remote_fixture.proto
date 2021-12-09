@@ -9,7 +9,7 @@ import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
 
 package tast.core;
-option go_package = "chromiumos/tast/internal/bundle";
+option go_package = "chromiumos/tast/internal/protocol";
 
 // FixtureService provides methods to set up or tear down single remote fixture.
 // Currently we don't support Reset, PreTest, PostTest, and nested remote

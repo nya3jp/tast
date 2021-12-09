@@ -26,17 +26,17 @@ type fixtureService struct {
 	reg *testing.Registry
 }
 
-var _ FixtureServiceServer = (*fixtureService)(nil)
+var _ protocol.FixtureServiceServer = (*fixtureService)(nil)
 
 // registerFixtureService registers fixture service.
 func registerFixtureService(srv *grpc.Server, reg *testing.Registry) {
-	RegisterFixtureServiceServer(srv, &fixtureService{reg: reg})
+	protocol.RegisterFixtureServiceServer(srv, &fixtureService{reg: reg})
 }
 
 // RunFixture provides operations to set up and tear down fixtures.
 // It accepts multiple pairs of push and pop requests in a loop until client
 // closes the connection.
-func (s *fixtureService) RunFixture(srv FixtureService_RunFixtureServer) error {
+func (s *fixtureService) RunFixture(srv protocol.FixtureService_RunFixtureServer) error {
 	for {
 		if err := s.pushAndPop(srv); err == errFixtureServiceNormalEOF {
 			return nil
@@ -50,12 +50,12 @@ var errFixtureServiceNormalEOF = errors.New("normal EOF")
 
 // pushAndPop handles push and pop operations. If the connection is terminated
 // normally, it returns errFixtureServiceNormalEOF.
-func (s *fixtureService) pushAndPop(srv FixtureService_RunFixtureServer) (retErr error) {
+func (s *fixtureService) pushAndPop(srv protocol.FixtureService_RunFixtureServer) (retErr error) {
 	ctx := srv.Context()
 
 	sendDone := func() error {
-		return srv.Send(&RunFixtureResponse{
-			Control: &RunFixtureResponse_RequestDone{
+		return srv.Send(&protocol.RunFixtureResponse{
+			Control: &protocol.RunFixtureResponse_RequestDone{
 				RequestDone: &empty.Empty{},
 			},
 			Timestamp: ptypes.TimestampNow(),
@@ -119,9 +119,9 @@ func (s *fixtureService) pushAndPop(srv FixtureService_RunFixtureServer) (retErr
 
 	var downloadMode protocol.DownloadMode
 	switch r.Config.DownloadMode {
-	case RunFixtureConfig_BATCH:
+	case protocol.RunFixtureConfig_BATCH:
 		downloadMode = protocol.DownloadMode_BATCH
-	case RunFixtureConfig_LAZY:
+	case protocol.RunFixtureConfig_LAZY:
 		downloadMode = protocol.DownloadMode_LAZY
 	}
 
@@ -197,20 +197,20 @@ func (s *fixtureService) pushAndPop(srv FixtureService_RunFixtureServer) (retErr
 
 // fixtureServiceLogger implements planner.OutputStream.
 type fixtureServiceLogger struct {
-	stream FixtureService_RunFixtureServer
+	stream protocol.FixtureService_RunFixtureServer
 }
 
 func (l *fixtureServiceLogger) Log(msg string) error {
-	return l.stream.Send(&RunFixtureResponse{
-		Control:   &RunFixtureResponse_Log{Log: msg},
+	return l.stream.Send(&protocol.RunFixtureResponse{
+		Control:   &protocol.RunFixtureResponse_Log{Log: msg},
 		Timestamp: ptypes.TimestampNow(),
 	})
 }
 
 func (l *fixtureServiceLogger) Error(e *protocol.Error) error {
-	return l.stream.Send(&RunFixtureResponse{
-		Control: &RunFixtureResponse_Error{
-			Error: &RunFixtureError{
+	return l.stream.Send(&protocol.RunFixtureResponse{
+		Control: &protocol.RunFixtureResponse_Error{
+			Error: &protocol.RunFixtureError{
 				Reason: e.GetReason(),
 				File:   e.GetLocation().GetFile(),
 				Line:   int32(e.GetLocation().GetLine()),

@@ -17,7 +17,6 @@ import (
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/errors"
-	"chromiumos/tast/internal/bundle"
 	"chromiumos/tast/internal/debugger"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/minidriver"
@@ -353,7 +352,7 @@ func (d *Driver) newConfigsForRemoteTests(tests []*protocol.ResolvedEntity, dutI
 	return bcfg, rcfg, nil
 }
 
-func (d *Driver) newRunFixtureConfig(dutInfo *protocol.DUTInfo) (*bundle.RunFixtureConfig, error) {
+func (d *Driver) newRunFixtureConfig(dutInfo *protocol.DUTInfo) (*protocol.RunFixtureConfig, error) {
 	var tlwServer string
 	if addr, ok := d.cc.Conn().Services().TLWAddr(); ok {
 		tlwServer = addr.String()
@@ -364,17 +363,17 @@ func (d *Driver) newRunFixtureConfig(dutInfo *protocol.DUTInfo) (*bundle.RunFixt
 		buildArtifactsURL = dutInfo.GetDefaultBuildArtifactsUrl()
 	}
 
-	var dm bundle.RunFixtureConfig_PlannerDownloadMode
+	var dm protocol.RunFixtureConfig_PlannerDownloadMode
 	switch d.cfg.DownloadMode() {
 	case planner.DownloadBatch:
-		dm = bundle.RunFixtureConfig_BATCH
+		dm = protocol.RunFixtureConfig_BATCH
 	case planner.DownloadLazy:
-		dm = bundle.RunFixtureConfig_LAZY
+		dm = protocol.RunFixtureConfig_LAZY
 	default:
 		return nil, errors.Errorf("unknown mode %v", d.cfg.DownloadMode())
 	}
 
-	return &bundle.RunFixtureConfig{
+	return &protocol.RunFixtureConfig{
 		TestVars:          d.cfg.TestVars(),
 		DataDir:           d.cfg.RemoteDataDir(),
 		OutDir:            d.cfg.RemoteOutDir(),

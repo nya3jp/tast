@@ -56,7 +56,7 @@ func (ff *fakeFixture) Reset(ctx context.Context) error {
 
 // startFakeFixtureService starts a fixture service server and returns a client connected to it.
 // stop must be called by the caller.
-func startFakeFixtureService(ctx context.Context, t *gotesting.T, reg *testing.Registry) (rfcl FixtureService_RunFixtureClient, stop func()) {
+func startFakeFixtureService(ctx context.Context, t *gotesting.T, reg *testing.Registry) (rfcl protocol.FixtureService_RunFixtureClient, stop func()) {
 	t.Helper()
 
 	sr, cw := io.Pipe()
@@ -102,7 +102,7 @@ func startFakeFixtureService(ctx context.Context, t *gotesting.T, reg *testing.R
 			t.Errorf("rpcCL.Close(): %v", err)
 		}
 	})
-	cl := NewFixtureServiceClient(rpcCL.Conn())
+	cl := protocol.NewFixtureServiceClient(rpcCL.Conn())
 
 	rfcl, err = cl.RunFixture(ctx)
 	if err != nil {
@@ -128,12 +128,12 @@ func TestFixtureServiceResponses(t *gotesting.T) {
 	td := sshtest.NewTestData(nil)
 	defer td.Close()
 
-	requests := []*RunFixtureRequest{
+	requests := []*protocol.RunFixtureRequest{
 		{
-			Control: &RunFixtureRequest_Push{
-				Push: &RunFixturePushRequest{
+			Control: &protocol.RunFixtureRequest_Push{
+				Push: &protocol.RunFixturePushRequest{
 					Name: "fake",
-					Config: &RunFixtureConfig{
+					Config: &protocol.RunFixtureConfig{
 						ConnectionSpec: td.Srvs[0].Addr().String(),
 						KeyFile:        td.UserKeyFile,
 					},
@@ -141,8 +141,8 @@ func TestFixtureServiceResponses(t *gotesting.T) {
 			},
 		},
 		{
-			Control: &RunFixtureRequest_Pop{
-				Pop: &RunFixturePopRequest{},
+			Control: &protocol.RunFixtureRequest_Pop{
+				Pop: &protocol.RunFixturePopRequest{},
 			},
 		},
 	}
@@ -150,7 +150,7 @@ func TestFixtureServiceResponses(t *gotesting.T) {
 	for _, tc := range []struct {
 		name        string
 		fixt        *fakeFixture
-		wantResults [][]*RunFixtureResponse
+		wantResults [][]*protocol.RunFixtureResponse
 	}{
 		{
 			name: "success",
@@ -164,14 +164,14 @@ func TestFixtureServiceResponses(t *gotesting.T) {
 					s.Log("TearDown")
 				},
 			},
-			wantResults: [][]*RunFixtureResponse{
+			wantResults: [][]*protocol.RunFixtureResponse{
 				{
-					{Control: &RunFixtureResponse_Log{Log: "SetUp"}},
-					{Control: &RunFixtureResponse_Log{Log: "SetUp context log"}},
-					{Control: &RunFixtureResponse_RequestDone{RequestDone: &empty.Empty{}}},
+					{Control: &protocol.RunFixtureResponse_Log{Log: "SetUp"}},
+					{Control: &protocol.RunFixtureResponse_Log{Log: "SetUp context log"}},
+					{Control: &protocol.RunFixtureResponse_RequestDone{RequestDone: &empty.Empty{}}},
 				}, {
-					{Control: &RunFixtureResponse_Log{Log: "TearDown"}},
-					{Control: &RunFixtureResponse_RequestDone{RequestDone: &empty.Empty{}}},
+					{Control: &protocol.RunFixtureResponse_Log{Log: "TearDown"}},
+					{Control: &protocol.RunFixtureResponse_RequestDone{RequestDone: &empty.Empty{}}},
 				},
 			},
 		},
@@ -185,13 +185,13 @@ func TestFixtureServiceResponses(t *gotesting.T) {
 					t.Error("TearDown called unexpectedly")
 				},
 			},
-			wantResults: [][]*RunFixtureResponse{
+			wantResults: [][]*protocol.RunFixtureResponse{
 				{
-					{Control: &RunFixtureResponse_Error{Error: &RunFixtureError{Reason: "Panic: SetUp panic"}}},
-					{Control: &RunFixtureResponse_RequestDone{RequestDone: &empty.Empty{}}},
+					{Control: &protocol.RunFixtureResponse_Error{Error: &protocol.RunFixtureError{Reason: "Panic: SetUp panic"}}},
+					{Control: &protocol.RunFixtureResponse_RequestDone{RequestDone: &empty.Empty{}}},
 				},
 				{
-					{Control: &RunFixtureResponse_RequestDone{RequestDone: &empty.Empty{}}},
+					{Control: &protocol.RunFixtureResponse_RequestDone{RequestDone: &empty.Empty{}}},
 				},
 			},
 		},
@@ -207,8 +207,8 @@ func TestFixtureServiceResponses(t *gotesting.T) {
 
 			// responses reads responses from rfcl. It checks fields not suitable for exact
 			// comparison (e.g. timestamp) are non-zero and fills in zero values.
-			responses := func() []*RunFixtureResponse {
-				var res []*RunFixtureResponse
+			responses := func() []*protocol.RunFixtureResponse {
+				var res []*protocol.RunFixtureResponse
 				for {
 					r, err := rfcl.Recv()
 					if err == io.EOF {
@@ -225,9 +225,9 @@ func TestFixtureServiceResponses(t *gotesting.T) {
 
 					res = append(res, r)
 					switch x := r.Control.(type) {
-					case *RunFixtureResponse_RequestDone:
+					case *protocol.RunFixtureResponse_RequestDone:
 						return res
-					case *RunFixtureResponse_Error:
+					case *protocol.RunFixtureResponse_Error:
 						if x.Error.File == "" {
 							t.Fatalf(`Error.File = "", want file path`)
 						}
@@ -244,7 +244,7 @@ func TestFixtureServiceResponses(t *gotesting.T) {
 				}
 			}
 
-			var got [][]*RunFixtureResponse
+			var got [][]*protocol.RunFixtureResponse
 			for _, req := range requests {
 				rfcl.Send(req)
 				got = append(got, responses())
@@ -270,7 +270,7 @@ func TestFixtureServiceParameters(t *gotesting.T) {
 	tmpDir := testutil.TempDir(t)
 	defer os.RemoveAll(tmpDir)
 
-	cfg := &RunFixtureConfig{
+	cfg := &protocol.RunFixtureConfig{
 		TempDir:        filepath.Join(tmpDir, "tmp"),
 		ConnectionSpec: td.Srvs[0].Addr().String(),
 		KeyFile:        td.UserKeyFile,
@@ -326,9 +326,9 @@ func TestFixtureServiceParameters(t *gotesting.T) {
 	rfcl, stop := startFakeFixtureService(ctx, t, reg)
 	defer stop()
 
-	if err := rfcl.Send(&RunFixtureRequest{
-		Control: &RunFixtureRequest_Push{
-			Push: &RunFixturePushRequest{
+	if err := rfcl.Send(&protocol.RunFixtureRequest{
+		Control: &protocol.RunFixtureRequest_Push{
+			Push: &protocol.RunFixturePushRequest{
 				Name:   "fake",
 				Config: cfg,
 			},
@@ -358,7 +358,7 @@ func TestFixtureServiceDefaultTempDir(t *gotesting.T) {
 
 	// If TempDir is not set, fixture service should create a temporary
 	// directory for fixtures to use, and remove it after the pop operation.
-	cfg := &RunFixtureConfig{
+	cfg := &protocol.RunFixtureConfig{
 		TempDir:        "",
 		ConnectionSpec: td.Srvs[0].Addr().String(),
 		KeyFile:        td.UserKeyFile,
@@ -383,9 +383,9 @@ func TestFixtureServiceDefaultTempDir(t *gotesting.T) {
 	rfcl, stop := startFakeFixtureService(context.Background(), t, reg)
 	defer stop()
 
-	if err := rfcl.Send(&RunFixtureRequest{
-		Control: &RunFixtureRequest_Push{
-			Push: &RunFixturePushRequest{
+	if err := rfcl.Send(&protocol.RunFixtureRequest{
+		Control: &protocol.RunFixtureRequest_Push{
+			Push: &protocol.RunFixturePushRequest{
 				Name:   "fake",
 				Config: cfg,
 			},
@@ -400,9 +400,9 @@ func TestFixtureServiceDefaultTempDir(t *gotesting.T) {
 		t.Fatalf("push; rfcl.Recv() = %v, want RequestDone", res)
 	}
 
-	if err := rfcl.Send(&RunFixtureRequest{
-		Control: &RunFixtureRequest_Pop{
-			Pop: &RunFixturePopRequest{},
+	if err := rfcl.Send(&protocol.RunFixtureRequest{
+		Control: &protocol.RunFixtureRequest_Pop{
+			Pop: &protocol.RunFixturePopRequest{},
 		},
 	}); err != nil {
 		t.Fatal("rfcl.Send(pop):", err)
@@ -446,11 +446,11 @@ func TestFixtureServiceNoSuchFixture(t *gotesting.T) {
 	td := sshtest.NewTestData(nil)
 	defer td.Close()
 
-	if err := rfcl.Send(&RunFixtureRequest{
-		Control: &RunFixtureRequest_Push{
-			Push: &RunFixturePushRequest{
+	if err := rfcl.Send(&protocol.RunFixtureRequest{
+		Control: &protocol.RunFixtureRequest_Push{
+			Push: &protocol.RunFixturePushRequest{
 				Name: "noSuchFixture",
-				Config: &RunFixtureConfig{
+				Config: &protocol.RunFixtureConfig{
 					OutDir:         tmpDir,
 					ConnectionSpec: td.Srvs[0].Addr().String(),
 					KeyFile:        td.UserKeyFile,
@@ -488,11 +488,11 @@ func TestFixtureServiceTimeout(t *gotesting.T) {
 	td := sshtest.NewTestData(nil)
 	defer td.Close()
 
-	if err := rfcl.Send(&RunFixtureRequest{
-		Control: &RunFixtureRequest_Push{
-			Push: &RunFixturePushRequest{
+	if err := rfcl.Send(&protocol.RunFixtureRequest{
+		Control: &protocol.RunFixtureRequest_Push{
+			Push: &protocol.RunFixturePushRequest{
 				Name: "fake",
-				Config: &RunFixtureConfig{
+				Config: &protocol.RunFixtureConfig{
 					TempDir:           tmpDir,
 					OutDir:            tmpDir,
 					ConnectionSpec:    td.Srvs[0].Addr().String(),
@@ -517,46 +517,46 @@ func TestFixtureServiceWrongRequestOrder(t *gotesting.T) {
 	td := sshtest.NewTestData(nil)
 	defer td.Close()
 
-	push := &RunFixtureRequest{
-		Control: &RunFixtureRequest_Push{
-			Push: &RunFixturePushRequest{
+	push := &protocol.RunFixtureRequest{
+		Control: &protocol.RunFixtureRequest_Push{
+			Push: &protocol.RunFixturePushRequest{
 				Name: "fake",
-				Config: &RunFixtureConfig{
+				Config: &protocol.RunFixtureConfig{
 					ConnectionSpec: td.Srvs[0].Addr().String(),
 					KeyFile:        td.UserKeyFile,
 				},
 			},
 		},
 	}
-	pop := &RunFixtureRequest{
-		Control: &RunFixtureRequest_Pop{
-			Pop: &RunFixturePopRequest{},
+	pop := &protocol.RunFixtureRequest{
+		Control: &protocol.RunFixtureRequest_Pop{
+			Pop: &protocol.RunFixturePopRequest{},
 		},
 	}
 
 	for _, tc := range []struct {
 		name    string
-		ops     []*RunFixtureRequest
+		ops     []*protocol.RunFixtureRequest
 		wantErr bool
 	}{
 		{
 			name:    "pop without push",
-			ops:     []*RunFixtureRequest{pop},
+			ops:     []*protocol.RunFixtureRequest{pop},
 			wantErr: true,
 		},
 		{
 			name:    "push without pop",
-			ops:     []*RunFixtureRequest{push},
+			ops:     []*protocol.RunFixtureRequest{push},
 			wantErr: true,
 		},
 		{
 			name:    "push pop pop",
-			ops:     []*RunFixtureRequest{push, pop, pop},
+			ops:     []*protocol.RunFixtureRequest{push, pop, pop},
 			wantErr: true,
 		},
 		{
 			name: "push pop push pop",
-			ops:  []*RunFixtureRequest{push, pop, push, pop},
+			ops:  []*protocol.RunFixtureRequest{push, pop, push, pop},
 		},
 	} {
 		t.Run(tc.name, func(t *gotesting.T) {

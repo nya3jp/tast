@@ -784,6 +784,7 @@ func runTestWithConfig(ctx context.Context, tcfg *testConfig, pcfg *Config, stac
 			if !dt.Connected(ctx) {
 				testState.Log("Reconnecting to DUT")
 				if err := dt.Connect(ctx); err != nil {
+					testState.Error(testing.TestDidNotRunMsg)
 					testState.Fatal("Failed to reconnect to DUT: ", err)
 				}
 			}

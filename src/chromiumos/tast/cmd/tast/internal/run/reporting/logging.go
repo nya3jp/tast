@@ -13,6 +13,7 @@ import (
 
 	"chromiumos/tast/cmd/tast/internal/run/resultsjson"
 	"chromiumos/tast/internal/logging"
+	"chromiumos/tast/internal/testing"
 )
 
 // WriteResultsToLogs writes test results to the console via ctx.
@@ -33,13 +34,16 @@ func WriteResultsToLogs(ctx context.Context, results []*resultsjson.Result, resD
 	passStr := " [ PASS ]"
 	skipStr := " [ SKIP ]"
 	failStr := " [ FAIL ] "
+	notRunStr := " [NOTRUN] "
 	const RED = "\033[1;31m"
 	const GREEN = "\033[1;32m"
 	const YELLOW = "\033[1;33m"
+	const MAGENTA = "\033[1;35m"
 	const RESET = "\033[0m"
 	passStrClr := fmt.Sprintf("%v [ PASS ] %v", GREEN, RESET)
 	skipStrClr := fmt.Sprintf("%v [ SKIP ] %v", YELLOW, RESET)
 	failStrClr := fmt.Sprintf("%v [ FAIL ] %v", RED, RESET)
+	notRunStrClr := fmt.Sprintf("%v [NOTRUN] %v", MAGENTA, RESET)
 	t := time.Now()
 	timeStr := t.UTC().Format("2006-01-02T15:04:05.000000Z")
 
@@ -56,8 +60,13 @@ func WriteResultsToLogs(ctx context.Context, results []*resultsjson.Result, resD
 		} else {
 			for i, te := range res.Errors {
 				if i == 0 {
-					logging.Debug(ctx, pn+failStr+te.Reason)
-					fmt.Printf("%v %v\n", timeStr, pn+failStrClr+te.Reason)
+					if te.Reason == testing.TestDidNotRunMsg {
+						logging.Debug(ctx, pn+notRunStr+te.Reason)
+						fmt.Printf("%v %v\n", timeStr, pn+notRunStrClr+te.Reason)
+					} else {
+						logging.Debug(ctx, pn+failStr+te.Reason)
+						fmt.Printf("%v %v\n", timeStr, pn+failStrClr+te.Reason)
+					}
 				} else {
 					logging.Debug(ctx, strings.Repeat(" ", ml+len(failStr))+te.Reason)
 					fmt.Printf("%v %v\n", timeStr, strings.Repeat(" ", ml+len(failStr))+te.Reason)

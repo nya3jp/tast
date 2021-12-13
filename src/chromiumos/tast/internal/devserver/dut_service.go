@@ -68,7 +68,11 @@ func (c *DUTServiceClient) Open(ctx context.Context, gsURL string) (io.ReadClose
 	}
 	cl := api.NewDutServiceClient(c.conn)
 	op, err := cl.Cache(ctx, &api.CacheRequest{
-		DestinationPath: dir,
+		Destination: &api.CacheRequest_File{
+			File: &api.CacheRequest_LocalFile{
+				Path: dir,
+			},
+		},
 		Source: &api.CacheRequest_GsFile{
 			GsFile: &api.CacheRequest_GSFile{
 				SourcePath: gsURL},

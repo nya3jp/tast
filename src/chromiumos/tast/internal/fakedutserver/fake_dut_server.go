@@ -116,8 +116,8 @@ func (s *DutServiceServer) Cache(ctx context.Context, req *api.CacheRequest) (*l
 		return nil, status.Errorf(codes.NotFound, "not found in cache file map: %s", srcPath)
 	}
 
-	if err := fillCache(content, filepath.Join(req.DestinationPath, filepath.Base(filePath))); err != nil {
-		return nil, status.Errorf(codes.NotFound, "failed to create file %s: %v", req.DestinationPath, err)
+	if err := fillCache(content, filepath.Join(req.GetFile().Path, filepath.Base(filePath))); err != nil {
+		return nil, status.Errorf(codes.NotFound, "failed to create file %s: %v", req.GetFile().Path, err)
 	}
 	operationName := fmt.Sprintf("CacheOperation_%s", srcPath)
 	s.beginOperation(operationName, srcPath)

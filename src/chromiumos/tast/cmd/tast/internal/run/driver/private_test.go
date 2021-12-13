@@ -302,7 +302,11 @@ func TestDriver_DownloadPrivateBundles_DUTServer(t *testing.T) {
 			dest := t.TempDir()
 			cl := api.NewDutServiceClient(conn)
 			cacheReq := &api.CacheRequest{
-				DestinationPath: dest,
+				Destination: &api.CacheRequest_File{
+					File: &api.CacheRequest_LocalFile{
+						Path: dest,
+					},
+				},
 				Source: &api.CacheRequest_GsFile{
 					GsFile: &api.CacheRequest_GSFile{
 						SourcePath: archiveURL,

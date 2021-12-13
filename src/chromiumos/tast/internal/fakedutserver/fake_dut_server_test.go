@@ -44,7 +44,11 @@ func TestDutServiceServer_Cache(t *testing.T) {
 
 	destFile := filepath.Join(dir, "foo/bar/baz")
 	req := &api.CacheRequest{
-		DestinationPath: filepath.Dir(destFile),
+		Destination: &api.CacheRequest_File{
+			File: &api.CacheRequest_LocalFile{
+				Path: filepath.Dir(destFile),
+			},
+		},
 		Source: &api.CacheRequest_GsFile{
 			GsFile: &api.CacheRequest_GSFile{
 				SourcePath: "gs://foo/bar/baz",
@@ -103,7 +107,11 @@ func TestDutServiceServer_Cache_Errors(t *testing.T) {
 	}{
 		{
 			&api.CacheRequest{
-				DestinationPath: "/tmp/dut001",
+				Destination: &api.CacheRequest_File{
+					File: &api.CacheRequest_LocalFile{
+						Path: "/tmp/dut001",
+					},
+				},
 				Source: &api.CacheRequest_GsFile{
 					GsFile: &api.CacheRequest_GSFile{
 						SourcePath: "gs://non-existent-resource",

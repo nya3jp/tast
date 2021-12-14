@@ -53,7 +53,8 @@ func TestStreamedResultsHandler(t *testing.T) {
 		&protocol.EntityEndEvent{Time: epochpb, EntityName: "fixture"},
 	}
 
-	proc := processor.New(resDir, logging.NewMultiLogger(), nopDiagnose, nopPull, nil, nil)
+	hs := processor.NewHandlers(resDir, logging.NewMultiLogger(), nopDiagnose, nopPull, nil, nil)
+	proc := processor.New(resDir, nopDiagnose, hs)
 	runProcessor(context.Background(), proc, events, nil)
 
 	if err := proc.FatalError(); err != nil {

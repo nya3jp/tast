@@ -17,7 +17,7 @@ type failFastHandler struct {
 	counter *failfast.Counter
 }
 
-var _ handler = &failFastHandler{}
+var _ Handler = &failFastHandler{}
 
 func newFailFastHandler(counter *failfast.Counter) *failFastHandler {
 	return &failFastHandler{counter: counter}

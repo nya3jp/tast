@@ -80,7 +80,8 @@ func newFatalError(err error) *fatalError {
 	return &fatalError{E: errors.Wrap(err, "terminating test execution")}
 }
 
-type handler interface {
+// Handler handles processor events.
+type Handler interface {
 	RunStart(ctx context.Context) error
 	EntityStart(ctx context.Context, ei *entityInfo) error
 	EntityLog(ctx context.Context, ei *entityInfo, l *logEntry) error
@@ -95,7 +96,7 @@ type handler interface {
 // implementations.
 type baseHandler struct{}
 
-var _ handler = baseHandler{}
+var _ Handler = baseHandler{}
 
 func (baseHandler) RunStart(ctx context.Context) error {
 	return nil

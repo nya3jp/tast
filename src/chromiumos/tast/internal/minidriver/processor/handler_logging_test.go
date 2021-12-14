@@ -68,7 +68,8 @@ func TestLoggingHandler(t *testing.T) {
 	ctx = logging.AttachLogger(ctx, logger)
 	ctx = logging.AttachLogger(ctx, multiplexer)
 
-	proc := processor.New(resDir, multiplexer, nopDiagnose, nopPull, nil, nil)
+	hs := processor.NewHandlers(resDir, multiplexer, nopDiagnose, nopPull, nil, nil)
+	proc := processor.New(resDir, nopDiagnose, hs)
 	runProcessor(ctx, proc, events, nil)
 
 	if err := proc.FatalError(); err != nil {
@@ -185,7 +186,8 @@ func TestLoggingHandler_RPCLogs(t *testing.T) {
 	ctx = logging.AttachLogger(ctx, logger)
 	ctx = logging.AttachLogger(ctx, multiplexer)
 
-	proc := processor.New(resDir, multiplexer, nopDiagnose, nopPull, nil, client)
+	hs := processor.NewHandlers(resDir, multiplexer, nopDiagnose, nopPull, nil, client)
+	proc := processor.New(resDir, nopDiagnose, hs)
 	runProcessor(ctx, proc, events, nil)
 
 	if err := proc.FatalError(); err != nil {

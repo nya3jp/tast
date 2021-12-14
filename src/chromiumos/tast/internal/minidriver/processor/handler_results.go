@@ -17,7 +17,7 @@ type resultsHandler struct {
 	results []*resultsjson.Result
 }
 
-var _ handler = &resultsHandler{}
+var _ Handler = &resultsHandler{}
 
 func newResultsHandler() *resultsHandler {
 	return &resultsHandler{}

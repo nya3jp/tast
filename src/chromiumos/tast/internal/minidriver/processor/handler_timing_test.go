@@ -44,7 +44,8 @@ func TestTimingHandler(t *testing.T) {
 	log := timing.NewLog()
 	ctx := timing.NewContext(context.Background(), log)
 
-	proc := processor.New(resDir, logging.NewMultiLogger(), nopDiagnose, nopPull, nil, nil)
+	hs := processor.NewHandlers(resDir, logging.NewMultiLogger(), nopDiagnose, nopPull, nil, nil)
+	proc := processor.New(resDir, nopDiagnose, hs)
 	runProcessor(ctx, proc, events, nil)
 
 	if err := proc.FatalError(); err != nil {

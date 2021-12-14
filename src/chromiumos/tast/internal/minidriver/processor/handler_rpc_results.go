@@ -17,7 +17,7 @@ type rpcResultsHandler struct {
 	client *reporting.RPCClient
 }
 
-var _ handler = &rpcResultsHandler{}
+var _ Handler = &rpcResultsHandler{}
 
 func newRPCResultsHandler(client *reporting.RPCClient) *rpcResultsHandler {
 	return &rpcResultsHandler{client: client}

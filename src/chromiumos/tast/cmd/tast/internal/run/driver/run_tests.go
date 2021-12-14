@@ -154,7 +154,8 @@ func (d *Driver) runLocalTestsWithRemoteFixture(ctx context.Context, bundle stri
 
 	// Create a processor for the remote fixture. This will run in parallel
 	// with the processor for local entities.
-	proc := processor.New(d.cfg.ResDir(), multiplexer, nopDiagnose, os.Rename, nil, args.Client)
+	hs := processor.NewHandlers(d.cfg.ResDir(), multiplexer, nopDiagnose, os.Rename, nil, args.Client)
+	proc := processor.New(d.cfg.ResDir(), nopDiagnose, hs)
 	defer func() {
 		proc.RunEnd(ctx, retErr)
 	}()
@@ -233,7 +234,8 @@ func (d *Driver) runLocalTestsOnce(ctx context.Context, bundle string, tests []*
 		return linuxssh.GetAndDeleteFile(ctx, d.cc.Conn().SSHConn(), src, dst, linuxssh.PreserveSymlinks)
 	}
 
-	proc := processor.New(d.cfg.ResDir(), multiplexer, diag, pull, args.Counter, args.Client)
+	hs := processor.NewHandlers(d.cfg.ResDir(), multiplexer, diag, pull, args.Counter, args.Client)
+	proc := processor.New(d.cfg.ResDir(), diag, hs)
 	cl := bundleclient.NewLocal(bundle, d.cfg.LocalBundleDir(), d.cfg.DebuggerPorts()[debugger.LocalBundle] != 0, d.cfg.Proxy() == config.ProxyEnv, d.cc)
 	cl.RunTests(ctx, bcfg, rcfg, proc)
 	return proc.Results(), proc.FatalError()
@@ -258,7 +260,8 @@ func (d *Driver) runRemoteTestsOnce(ctx context.Context, bundle string, tests []
 	multiplexer := logging.NewMultiLogger()
 	ctx = logging.AttachLogger(ctx, multiplexer)
 
-	proc := processor.New(d.cfg.ResDir(), multiplexer, nopDiagnose, os.Rename, args.Counter, args.Client)
+	hs := processor.NewHandlers(d.cfg.ResDir(), multiplexer, nopDiagnose, os.Rename, args.Counter, args.Client)
+	proc := processor.New(d.cfg.ResDir(), nopDiagnose, hs)
 	d.remoteBundleClient(bundle).RunTests(ctx, bcfg, rcfg, proc)
 	return proc.Results(), proc.FatalError()
 }

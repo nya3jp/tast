@@ -53,22 +53,28 @@ type Processor struct {
 
 var _ bundleclient.RunFixtureOutput = &Processor{}
 
-// New creates a new Processor.
-// resDir is a path to the directory where test execution results are written.
+// NewHandlers creates handlers that are suitable for tast CLI to create a
+// Processor with New.
 // multiplexer should be a MultiLogger attached to the context passed to
 // Processor method calls.
-func New(resDir string, multiplexer *logging.MultiLogger, diagnose DiagnoseFunc, pull PullFunc, counter *failfast.Counter, client *reporting.RPCClient) *Processor {
-	resultsHandler := newResultsHandler()
-	preprocessor := newPreprocessor(resDir, diagnose, []handler{
+func NewHandlers(resDir string, multiplexer *logging.MultiLogger, diagnose DiagnoseFunc, pull PullFunc, counter *failfast.Counter, client *reporting.RPCClient) []Handler {
+	return []Handler{
 		newLoggingHandler(resDir, multiplexer, client),
 		newTimingHandler(),
-		resultsHandler,
 		newStreamedResultsHandler(resDir),
 		newRPCResultsHandler(client),
 		newFailFastHandler(counter),
 		// copyOutputHandler should come last as it can block RunEnd for a while.
 		newCopyOutputHandler(pull),
-	})
+	}
+}
+
+// New creates a new Processor.
+// resDir is a path to the directory where test execution results are written.
+func New(resDir string, diagnose DiagnoseFunc, handlers []Handler) *Processor {
+	resultsHandler := newResultsHandler()
+	hs := append([]Handler{resultsHandler}, handlers...)
+	preprocessor := newPreprocessor(resDir, diagnose, hs)
 	return &Processor{
 		preprocessor:   preprocessor,
 		resultsHandler: resultsHandler,

@@ -22,7 +22,7 @@ type copyOutputHandler struct {
 	pullers sync.WaitGroup
 }
 
-var _ handler = &copyOutputHandler{}
+var _ Handler = &copyOutputHandler{}
 
 func newCopyOutputHandler(pull PullFunc) *copyOutputHandler {
 	return &copyOutputHandler{

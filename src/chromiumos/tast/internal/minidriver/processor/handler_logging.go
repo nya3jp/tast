@@ -35,7 +35,7 @@ type entityLogger struct {
 	File   *os.File
 }
 
-var _ handler = &loggingHandler{}
+var _ Handler = &loggingHandler{}
 
 // newLoggingHandler creates a new loggingHandler.
 // multiplexer should be a MultiLogger all logs from the processor (including

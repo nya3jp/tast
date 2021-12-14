@@ -43,7 +43,7 @@ func (s *entityState) EntityInfo() *entityInfo {
 type preprocessor struct {
 	resDir   string
 	diagnose DiagnoseFunc
-	handlers []handler
+	handlers []Handler
 
 	stack      []*entityState
 	seenTimes  map[string]int
@@ -52,7 +52,7 @@ type preprocessor struct {
 
 var _ bundleclient.RunFixtureOutput = &preprocessor{}
 
-func newPreprocessor(resDir string, diagnose DiagnoseFunc, handlers []handler) *preprocessor {
+func newPreprocessor(resDir string, diagnose DiagnoseFunc, handlers []Handler) *preprocessor {
 	return &preprocessor{
 		resDir:    resDir,
 		diagnose:  diagnose,

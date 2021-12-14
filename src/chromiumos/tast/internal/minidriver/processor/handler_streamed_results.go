@@ -21,7 +21,7 @@ type streamedResultsHandler struct {
 	writer *reporting.StreamedWriter
 }
 
-var _ handler = &streamedResultsHandler{}
+var _ Handler = &streamedResultsHandler{}
 
 func newStreamedResultsHandler(resDir string) *streamedResultsHandler {
 	return &streamedResultsHandler{resDir: resDir}

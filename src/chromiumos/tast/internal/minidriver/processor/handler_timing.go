@@ -19,7 +19,7 @@ type timingHandler struct {
 	stage *timing.Stage
 }
 
-var _ handler = &timingHandler{}
+var _ Handler = &timingHandler{}
 
 func newTimingHandler() *timingHandler {
 	return &timingHandler{}

@@ -87,6 +87,7 @@ type Handler interface {
 	EntityLog(ctx context.Context, ei *entityInfo, l *logEntry) error
 	EntityError(ctx context.Context, ei *entityInfo, e *errorEntry) error
 	EntityEnd(ctx context.Context, ei *entityInfo, r *entityResult) error
+	EntityCopyEnd(ctx context.Context, ei *entityInfo) error
 	RunLog(ctx context.Context, l *logEntry) error
 	RunEnd(ctx context.Context)
 }
@@ -115,6 +116,10 @@ func (baseHandler) EntityError(ctx context.Context, ei *entityInfo, e *errorEntr
 }
 
 func (baseHandler) EntityEnd(ctx context.Context, ei *entityInfo, r *entityResult) error {
+	return nil
+}
+
+func (baseHandler) EntityCopyEnd(ctx context.Context, ei *entityInfo) error {
 	return nil
 }
 

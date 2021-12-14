@@ -28,10 +28,18 @@ type RunTestsOutput interface {
 	// execution.
 	RunStart(ctx context.Context) error
 
+	// EntityStart is called when an entity starts.
 	EntityStart(ctx context.Context, ev *protocol.EntityStartEvent) error
+	// EntityLog is called with an entity log.
 	EntityLog(ctx context.Context, ev *protocol.EntityLogEvent) error
+	// EntityError is called with an entity error.
 	EntityError(ctx context.Context, ev *protocol.EntityErrorEvent) error
+	// EntityEnd is called when an entity finishes.
 	EntityEnd(ctx context.Context, ev *protocol.EntityEndEvent) error
+	// EntityCopyEnd is called when copy of output files completes after an entity
+	// finishes.
+	EntityCopyEnd(ctx context.Context, ev *protocol.EntityCopyEndEvent) error
+	// RunLog is called with a log not associated with an entity.
 	RunLog(ctx context.Context, ev *protocol.RunLogEvent) error
 
 	// RunEnd is called exactly once at the end of an overall test execution.

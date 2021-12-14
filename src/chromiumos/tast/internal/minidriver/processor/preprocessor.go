@@ -46,17 +46,21 @@ type preprocessor struct {
 	handlers []Handler
 
 	stack      []*entityState
+	copying    map[string]*entityState
 	seenTimes  map[string]int
 	fatalError *fatalError
 }
 
+var _ bundleclient.RunTestsOutput = &preprocessor{}
 var _ bundleclient.RunFixtureOutput = &preprocessor{}
 
 func newPreprocessor(resDir string, diagnose DiagnoseFunc, handlers []Handler) *preprocessor {
 	return &preprocessor{
-		resDir:    resDir,
-		diagnose:  diagnose,
-		handlers:  handlers,
+		resDir:   resDir,
+		diagnose: diagnose,
+		handlers: handlers,
+
+		copying:   make(map[string]*entityState),
 		seenTimes: make(map[string]int),
 	}
 }
@@ -155,6 +159,7 @@ func (p *preprocessor) EntityEnd(ctx context.Context, ev *protocol.EntityEndEven
 	}
 
 	p.stack = p.stack[:len(p.stack)-1]
+	p.copying[ev.GetEntityName()] = state
 
 	ts, err := ptypes.Timestamp(ev.GetTime())
 	if err != nil {
@@ -173,6 +178,23 @@ func (p *preprocessor) EntityEnd(ctx context.Context, ev *protocol.EntityEndEven
 	for _, h := range p.handlers {
 		if err := h.EntityEnd(ctx, ei, result); err != nil && firstErr == nil {
 			firstErr = errors.Wrap(err, "processing EntityEnd")
+		}
+	}
+	return firstErr
+}
+
+func (p *preprocessor) EntityCopyEnd(ctx context.Context, ev *protocol.EntityCopyEndEvent) error {
+	state, ok := p.copying[ev.GetEntityName()]
+	if !ok {
+		return errors.Errorf("Unexpected EntityCopyEnd for entity %v", ev.GetEntityName())
+	}
+	delete(p.copying, ev.GetEntityName())
+	ei := state.EntityInfo()
+
+	var firstErr error
+	for _, h := range p.handlers {
+		if err := h.EntityCopyEnd(ctx, ei); err != nil && firstErr == nil {
+			firstErr = errors.Wrap(err, "processing EntityCopyEnd")
 		}
 	}
 	return firstErr

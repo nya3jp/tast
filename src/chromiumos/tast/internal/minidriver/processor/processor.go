@@ -24,10 +24,7 @@ package processor
 import (
 	"context"
 
-	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/minidriver/bundleclient"
-	"chromiumos/tast/internal/minidriver/failfast"
-	"chromiumos/tast/internal/run/reporting"
 	"chromiumos/tast/internal/run/resultsjson"
 )
 
@@ -51,23 +48,10 @@ type Processor struct {
 	resultsHandler *resultsHandler
 }
 
-var _ bundleclient.RunFixtureOutput = &Processor{}
-
-// NewHandlers creates handlers that are suitable for tast CLI to create a
-// Processor with New.
-// multiplexer should be a MultiLogger attached to the context passed to
-// Processor method calls.
-func NewHandlers(resDir string, multiplexer *logging.MultiLogger, diagnose DiagnoseFunc, pull PullFunc, counter *failfast.Counter, client *reporting.RPCClient) []Handler {
-	return []Handler{
-		NewLoggingHandler(resDir, multiplexer, client),
-		NewTimingHandler(),
-		NewStreamedResultsHandler(resDir),
-		NewRPCResultsHandler(client),
-		NewFailFastHandler(counter),
-		// copyOutputHandler should come last as it can block RunEnd for a while.
-		NewCopyOutputHandler(pull),
-	}
-}
+var (
+	_ bundleclient.RunTestsOutput   = &Processor{}
+	_ bundleclient.RunFixtureOutput = &Processor{}
+)
 
 // New creates a new Processor.
 // resDir is a path to the directory where test execution results are written.

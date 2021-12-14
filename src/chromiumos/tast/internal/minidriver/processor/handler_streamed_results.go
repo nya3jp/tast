@@ -23,7 +23,9 @@ type streamedResultsHandler struct {
 
 var _ Handler = &streamedResultsHandler{}
 
-func newStreamedResultsHandler(resDir string) *streamedResultsHandler {
+// NewStreamedResultsHandler creates a handler which saves results to a file
+// progressively.
+func NewStreamedResultsHandler(resDir string) *streamedResultsHandler {
 	return &streamedResultsHandler{resDir: resDir}
 }
 

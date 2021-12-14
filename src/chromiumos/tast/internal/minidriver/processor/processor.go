@@ -59,13 +59,13 @@ var _ bundleclient.RunFixtureOutput = &Processor{}
 // Processor method calls.
 func NewHandlers(resDir string, multiplexer *logging.MultiLogger, diagnose DiagnoseFunc, pull PullFunc, counter *failfast.Counter, client *reporting.RPCClient) []Handler {
 	return []Handler{
-		newLoggingHandler(resDir, multiplexer, client),
-		newTimingHandler(),
-		newStreamedResultsHandler(resDir),
-		newRPCResultsHandler(client),
-		newFailFastHandler(counter),
+		NewLoggingHandler(resDir, multiplexer, client),
+		NewTimingHandler(),
+		NewStreamedResultsHandler(resDir),
+		NewRPCResultsHandler(client),
+		NewFailFastHandler(counter),
 		// copyOutputHandler should come last as it can block RunEnd for a while.
-		newCopyOutputHandler(pull),
+		NewCopyOutputHandler(pull),
 	}
 }
 

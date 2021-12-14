@@ -19,7 +19,9 @@ type failFastHandler struct {
 
 var _ Handler = &failFastHandler{}
 
-func newFailFastHandler(counter *failfast.Counter) *failFastHandler {
+// NewFailFastHandler creates a handler which aborts test execution if tests
+// fail too often.
+func NewFailFastHandler(counter *failfast.Counter) *failFastHandler {
 	return &failFastHandler{counter: counter}
 }
 

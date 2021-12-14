@@ -21,7 +21,9 @@ type timingHandler struct {
 
 var _ Handler = &timingHandler{}
 
-func newTimingHandler() *timingHandler {
+// NewTimingHandler creates a handler which records timing information via
+// context.Context.
+func NewTimingHandler() *timingHandler {
 	return &timingHandler{}
 }
 

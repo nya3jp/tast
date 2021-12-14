@@ -37,13 +37,13 @@ type entityLogger struct {
 
 var _ Handler = &loggingHandler{}
 
-// newLoggingHandler creates a new loggingHandler.
+// NewLoggingHandler creates a new loggingHandler.
 // multiplexer should be a MultiLogger all logs from the processor (including
 // the preprocessor and all handlers) are sent to; in other words, multiplexer
 // should be attached to the context passed to Processor method calls.
 // loggingHandler will add/remove additional loggers to/from multiplexer to save
 // per-entity logs.
-func newLoggingHandler(resDir string, multiplexer *logging.MultiLogger, client *reporting.RPCClient) *loggingHandler {
+func NewLoggingHandler(resDir string, multiplexer *logging.MultiLogger, client *reporting.RPCClient) *loggingHandler {
 	return &loggingHandler{
 		resDir:      resDir,
 		multiplexer: multiplexer,

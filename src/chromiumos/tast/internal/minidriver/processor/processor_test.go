@@ -12,8 +12,11 @@ import (
 	"github.com/golang/protobuf/ptypes"
 
 	"chromiumos/tast/errors"
+	"chromiumos/tast/internal/logging"
+	"chromiumos/tast/internal/minidriver/failfast"
 	"chromiumos/tast/internal/minidriver/processor"
 	"chromiumos/tast/internal/protocol"
+	"chromiumos/tast/internal/run/reporting"
 )
 
 var epoch = time.Unix(0, 0)
@@ -62,4 +65,16 @@ func nopPull(src, dst string) error {
 // nopDiagnose is a DiagnoseFunc that does nothing.
 func nopDiagnose(ctx context.Context, outDir string) string {
 	return ""
+}
+
+func newHandlers(resDir string, multiplexer *logging.MultiLogger, pull processor.PullFunc, counter *failfast.Counter, client *reporting.RPCClient) []processor.Handler {
+	return []processor.Handler{
+		processor.NewLoggingHandler(resDir, multiplexer, client),
+		processor.NewTimingHandler(),
+		processor.NewStreamedResultsHandler(resDir),
+		processor.NewRPCResultsHandler(client),
+		processor.NewFailFastHandler(counter),
+		// copyOutputHandler should come last as it can block RunEnd for a while.
+		processor.NewCopyOutputHandler(pull),
+	}
 }

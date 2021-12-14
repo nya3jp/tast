@@ -24,7 +24,9 @@ type copyOutputHandler struct {
 
 var _ Handler = &copyOutputHandler{}
 
-func newCopyOutputHandler(pull PullFunc) *copyOutputHandler {
+// NewCopyOutputHandler creates a handler which copies test output files to
+// the host system when a test finishes.
+func NewCopyOutputHandler(pull PullFunc) *copyOutputHandler {
 	return &copyOutputHandler{
 		pull: pull,
 	}

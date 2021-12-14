@@ -39,7 +39,7 @@ func TestPreprocessor_SameEntity(t *testing.T) {
 		&protocol.EntityEndEvent{Time: epochpb, EntityName: "fixture"},
 	}
 
-	hs := processor.NewHandlers(resDir, logging.NewMultiLogger(), nopDiagnose, nopPull, nil, nil)
+	hs := newHandlers(resDir, logging.NewMultiLogger(), nopPull, nil, nil)
 	proc := processor.New(resDir, nopDiagnose, hs)
 	runProcessor(context.Background(), proc, events, errors.New("something went wrong"))
 
@@ -76,7 +76,7 @@ func TestPreprocessor_MissingEntityEnd(t *testing.T) {
 	logger := logging.NewMultiLogger()
 	ctx := logging.AttachLogger(context.Background(), logger)
 
-	hs := processor.NewHandlers(resDir, logger, nopDiagnose, nopPull, nil, nil)
+	hs := newHandlers(resDir, logger, nopPull, nil, nil)
 	proc := processor.New(resDir, nopDiagnose, hs)
 	runProcessor(ctx, proc, events, errors.New("something went wrong"))
 
@@ -126,7 +126,7 @@ func TestPreprocessor_UnmatchedEntityEvent(t *testing.T) {
 			logger := logging.NewMultiLogger()
 			ctx := logging.AttachLogger(context.Background(), logger)
 
-			hs := processor.NewHandlers(resDir, logger, nopDiagnose, nopPull, nil, nil)
+			hs := newHandlers(resDir, logger, nopPull, nil, nil)
 			proc := processor.New(resDir, nopDiagnose, hs)
 			runProcessor(ctx, proc, events, nil)
 
@@ -171,7 +171,7 @@ func TestPreprocessor_Diagnose(t *testing.T) {
 	logger := logging.NewMultiLogger()
 	ctx := logging.AttachLogger(context.Background(), logger)
 
-	hs := processor.NewHandlers(resDir, logger, fakeDiagnose, nopPull, nil, nil)
+	hs := newHandlers(resDir, logger, nopPull, nil, nil)
 	proc := processor.New(resDir, fakeDiagnose, hs)
 	runProcessor(ctx, proc, events, errors.New("something went wrong"))
 

@@ -147,7 +147,15 @@ func (d *Driver) runLocalTestsWithRemoteFixture(ctx context.Context, bundle stri
 
 	// Create a processor for the remote fixture. This will run in parallel
 	// with the processor for local entities.
-	hs := processor.NewHandlers(d.cfg.ResDir(), multiplexer, nopDiagnose, os.Rename, nil, args.Client)
+	hs := []processor.Handler{
+		processor.NewLoggingHandler(d.cfg.ResDir(), multiplexer, args.Client),
+		processor.NewTimingHandler(),
+		processor.NewStreamedResultsHandler(d.cfg.ResDir()),
+		processor.NewRPCResultsHandler(args.Client),
+		processor.NewFailFastHandler(args.Counter),
+		// copyOutputHandler should come last as it can block RunEnd for a while.
+		processor.NewCopyOutputHandler(os.Rename),
+	}
 	proc := processor.New(d.cfg.ResDir(), nopDiagnose, hs)
 	defer func() {
 		proc.RunEnd(ctx, retErr)
@@ -244,7 +252,15 @@ func (d *Driver) runRemoteTestsOnce(ctx context.Context, bundle string, tests []
 	multiplexer := logging.NewMultiLogger()
 	ctx = logging.AttachLogger(ctx, multiplexer)
 
-	hs := processor.NewHandlers(d.cfg.ResDir(), multiplexer, nopDiagnose, os.Rename, args.Counter, args.Client)
+	hs := []processor.Handler{
+		processor.NewLoggingHandler(d.cfg.ResDir(), multiplexer, args.Client),
+		processor.NewTimingHandler(),
+		processor.NewStreamedResultsHandler(d.cfg.ResDir()),
+		processor.NewRPCResultsHandler(args.Client),
+		processor.NewFailFastHandler(args.Counter),
+		// copyOutputHandler should come last as it can block RunEnd for a while.
+		processor.NewCopyOutputHandler(os.Rename),
+	}
 	proc := processor.New(d.cfg.ResDir(), nopDiagnose, hs)
 	d.remoteBundleClient(bundle).RunTests(ctx, bcfg, rcfg, proc)
 	return proc.Results(), proc.FatalError()

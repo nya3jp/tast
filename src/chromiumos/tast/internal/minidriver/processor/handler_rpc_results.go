@@ -19,7 +19,8 @@ type rpcResultsHandler struct {
 
 var _ Handler = &rpcResultsHandler{}
 
-func newRPCResultsHandler(client *reporting.RPCClient) *rpcResultsHandler {
+// NewRPCResultsHandler creates a handler which streams test results by gRPC.
+func NewRPCResultsHandler(client *reporting.RPCClient) *rpcResultsHandler {
 	return &rpcResultsHandler{client: client}
 }
 

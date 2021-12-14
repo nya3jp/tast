@@ -35,7 +35,7 @@ func TestResultsHandler(t *testing.T) {
 		// Fixture ends.
 		&protocol.EntityEndEvent{Time: epochpb, EntityName: "fixture"},
 	}
-	hs := processor.NewHandlers(resDir, logging.NewMultiLogger(), nopDiagnose, nopPull, nil, nil)
+	hs := newHandlers(resDir, logging.NewMultiLogger(), nopPull, nil, nil)
 	proc := processor.New(resDir, nopDiagnose, hs)
 	runProcessor(context.Background(), proc, events, nil)
 

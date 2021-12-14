@@ -67,6 +67,7 @@ message RunTestsResponse {
     EntityLogEvent entity_log = 3;
     EntityErrorEvent entity_error = 4;
     EntityEndEvent entity_end = 5;
+    EntityCopyEndEvent entity_copy_end = 8;
     StackOperationRequest stack_operation = 6;
     HeartbeatEvent heartbeat = 7;
   }
@@ -354,6 +355,9 @@ message EntityEndEvent {
   Skip skip = 3;
   TimingLog timing_log = 4;
 }
+
+// EntityCopyEndEvent marks the end of an file copies after entity ends.
+message EntityCopyEndEvent { string entity_name = 1; }
 
 // Skip describes the reasons why an entity is skipped.
 message Skip { repeated string reasons = 1; }

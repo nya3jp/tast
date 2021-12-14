@@ -41,6 +41,9 @@ type RunTestsOutput interface {
 	EntityCopyEnd(ctx context.Context, ev *protocol.EntityCopyEndEvent) error
 	// RunLog is called with a log not associated with an entity.
 	RunLog(ctx context.Context, ev *protocol.RunLogEvent) error
+	// StackOperation is called to request remote fixture stack operation.
+	// This is called when a local bundle needs remote fixture operation.
+	StackOperation(ctx context.Context, req *protocol.StackOperationRequest) *protocol.StackOperationResponse
 
 	// RunEnd is called exactly once at the end of an overall test execution.
 	// If any other method returns a non-nil error, test execution is aborted
@@ -98,14 +101,14 @@ func (c *Client) RunTests(ctx context.Context, bcfg *protocol.BundleConfig, rcfg
 			if err != nil {
 				return errors.Wrap(err, "connection to test bundle broken")
 			}
-			if err := handleEvent(ctx, res, out); err != nil {
+			if err := handleEvent(ctx, res, out, stream); err != nil {
 				return err
 			}
 		}
 	}())
 }
 
-func handleEvent(ctx context.Context, res *protocol.RunTestsResponse, out RunTestsOutput) error {
+func handleEvent(ctx context.Context, res *protocol.RunTestsResponse, out RunTestsOutput, stream protocol.TestService_RunTestsClient) error {
 	switch t := res.GetType().(type) {
 	case *protocol.RunTestsResponse_RunLog:
 		return out.RunLog(ctx, t.RunLog)
@@ -119,6 +122,13 @@ func handleEvent(ctx context.Context, res *protocol.RunTestsResponse, out RunTes
 		return out.EntityEnd(ctx, t.EntityEnd)
 	case *protocol.RunTestsResponse_EntityCopyEnd:
 		return out.EntityCopyEnd(ctx, t.EntityCopyEnd)
+	case *protocol.RunTestsResponse_StackOperation:
+		resp := out.StackOperation(ctx, t.StackOperation)
+		return stream.Send(&protocol.RunTestsRequest{
+			Type: &protocol.RunTestsRequest_StackOperationResponse{
+				StackOperationResponse: resp,
+			},
+		})
 	case *protocol.RunTestsResponse_Heartbeat:
 		return nil
 	default:

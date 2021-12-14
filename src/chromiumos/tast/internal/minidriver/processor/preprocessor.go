@@ -200,6 +200,23 @@ func (p *preprocessor) EntityCopyEnd(ctx context.Context, ev *protocol.EntityCop
 	return firstErr
 }
 
+func (p *preprocessor) StackOperation(ctx context.Context, req *protocol.StackOperationRequest) *protocol.StackOperationResponse {
+	var firstRes *protocol.StackOperationResponse
+	for _, h := range p.handlers {
+		res := h.StackOperation(ctx, req)
+		if res == nil {
+			continue
+		}
+		if firstRes != nil {
+			return &protocol.StackOperationResponse{
+				FatalError: "BUG: there should be only one hanlder that handles stack operation, but there are more than one",
+			}
+		}
+		firstRes = res
+	}
+	return firstRes
+}
+
 func (p *preprocessor) RunLog(ctx context.Context, ev *protocol.RunLogEvent) error {
 	ts, err := ptypes.Timestamp(ev.GetTime())
 	if err != nil {

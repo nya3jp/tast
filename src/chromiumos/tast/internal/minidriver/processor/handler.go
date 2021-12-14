@@ -90,6 +90,7 @@ type Handler interface {
 	EntityCopyEnd(ctx context.Context, ei *entityInfo) error
 	RunLog(ctx context.Context, l *logEntry) error
 	RunEnd(ctx context.Context)
+	StackOperation(ctx context.Context, req *protocol.StackOperationRequest) *protocol.StackOperationResponse
 }
 
 // baseHandler is an implementation of handler that does nothing in all methods.
@@ -128,3 +129,7 @@ func (baseHandler) RunLog(ctx context.Context, l *logEntry) error {
 }
 
 func (baseHandler) RunEnd(ctx context.Context) {}
+
+func (baseHandler) StackOperation(context.Context, *protocol.StackOperationRequest) *protocol.StackOperationResponse {
+	return nil
+}

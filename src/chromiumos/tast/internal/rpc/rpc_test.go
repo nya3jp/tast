@@ -764,7 +764,7 @@ var stdioMain = fakeexec.NewAuxMain("rpc_stdio_test", func(path string) {
 
 // runStdioTestServer starts a subprocess serving subprocessServer and
 // starts an asynchronous call of its Ping method.
-func runStdioTestServer(t *gotesting.T) (cmd *exec.Cmd, stdout io.ReadCloser, waitReady, waitFinish func(t *gotesting.T)) {
+func runStdioTestServer(t *gotesting.T) (cmd *exec.Cmd, stdin io.WriteCloser, stdout io.ReadCloser, waitReady, waitFinish func(t *gotesting.T)) {
 	ctx := context.Background()
 
 	// Create a temporary file. Is is initially empty, but a subprocess
@@ -787,7 +787,7 @@ func runStdioTestServer(t *gotesting.T) (cmd *exec.Cmd, stdout io.ReadCloser, wa
 	cmd = exec.Command(params.Executable())
 	cmd.Env = append(os.Environ(), params.Envs()...)
 	cmd.Stderr = os.Stderr
-	stdin, err := cmd.StdinPipe()
+	stdin, err = cmd.StdinPipe()
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -837,11 +837,11 @@ func runStdioTestServer(t *gotesting.T) (cmd *exec.Cmd, stdout io.ReadCloser, wa
 	waitReady = func(t *gotesting.T) { waitText(t, textReady) }
 	// waitFinish wait for the subprocess to finish the gRPC method call.
 	waitFinish = func(t *gotesting.T) { waitText(t, textFinished) }
-	return cmd, stdout, waitReady, waitFinish
+	return cmd, stdin, stdout, waitReady, waitFinish
 }
 
 func TestRPCOverStdioSIGPIPE(t *gotesting.T) {
-	_, stdout, waitReady, waitSuccess := runStdioTestServer(t)
+	_, stdin, stdout, waitReady, waitSuccess := runStdioTestServer(t)
 
 	waitReady(t)
 
@@ -849,11 +849,14 @@ func TestRPCOverStdioSIGPIPE(t *gotesting.T) {
 	// SIGPIPE handlers, writing data to stdout will cause termination.
 	stdout.Close()
 
+	// Close stdin to stop the gRPC server.
+	stdin.Close()
+
 	waitSuccess(t)
 }
 
 func TestRPCOverStdioSIGINT(t *gotesting.T) {
-	cmd, _, waitReady, waitSuccess := runStdioTestServer(t)
+	cmd, _, _, waitReady, waitSuccess := runStdioTestServer(t)
 
 	waitReady(t)
 

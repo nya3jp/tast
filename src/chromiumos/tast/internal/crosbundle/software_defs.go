@@ -123,6 +123,7 @@ var softwareFeatureDefs = map[string]string{
 	"no_asan":                   "!asan",
 	"no_ath10k_4_4":             `!("board:scarlet" && "kernel-4_4")`, // board scarlet with kernel 4.4 has a version of ath10k without certain features.
 	"no_borealis_host":          "!borealis_host",
+	"no_chrome_dcheck":          "!chrome_dcheck",
 	"no_elm_hana_3_18":          `!((elm || hana) && "kernel-3_18")`, // board elm/hana with kernel-3.18 has issue performing WiFi scan: https://crbug.com/1015719
 	"no_eth_loss_on_reboot":     `!("board:jacuzzi")`,                // some devices (jacuzzi) may not enumerate eth on reboot b/178529170
 	"no_iioservice":             "!iioservice",

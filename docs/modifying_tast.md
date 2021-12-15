@@ -35,8 +35,8 @@ are particularly important:
 
 *   [bundle] contains code used to implement test bundles, which contain
     compiled tests and are executed by test runners.
-*   [control] defines control messages that are used for communication between
-    the `tast` process, test runners, and test bundles.
+*   [protocol] defines protocol buffer messages that are used for communication
+    between the `tast` process, test runners, and test bundles.
 *   [runner] contains code shared between `local_test_runner` and
     `remote_test_runner`.
 *   [ssh] opens SSH connections.
@@ -44,7 +44,7 @@ are particularly important:
 
 [tast directory]: https://chromium.googlesource.com/chromiumos/platform/tast/+/main/src/chromiumos/tast/
 [bundle]: https://chromium.googlesource.com/chromiumos/platform/tast/+/main/src/chromiumos/tast/bundle/
-[control]: https://chromium.googlesource.com/chromiumos/platform/tast/+/main/src/chromiumos/tast/internal/control/
+[protocol]: https://chromium.googlesource.com/chromiumos/platform/tast/+/main/src/chromiumos/tast/internal/protocol/
 [runner]: https://chromium.googlesource.com/chromiumos/platform/tast/+/main/src/chromiumos/tast/internal/runner/
 [ssh]: https://chromium.googlesource.com/chromiumos/platform/tast/+/main/src/chromiumos/tast/ssh/
 [testing]: https://chromium.googlesource.com/chromiumos/platform/tast/+/main/src/chromiumos/tast/testing/

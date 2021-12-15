@@ -1208,7 +1208,7 @@ If one violates this convention, runtime error will happen.
 
 #### Test runtime variables
 To declare test runtime variables, set the `testing.Test` struct's `Vars`
-(deprecated) or `VarDeps` field inside your tests' `testing.AddTest` call.
+or `VarDeps` field inside your tests' `testing.AddTest` call.
 `Vars` specifies optional runtime variables, and `VarDeps` specifies required
 runtime variables to run the test. `VarDeps` should be the default choice,
 and `Vars` should be used only when there's a fallback in case the variables

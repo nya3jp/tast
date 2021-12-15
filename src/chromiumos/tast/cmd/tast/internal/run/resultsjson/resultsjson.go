@@ -11,28 +11,27 @@ import (
 
 	"github.com/golang/protobuf/ptypes"
 
+	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/dep"
-	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/protocol"
 )
 
 // Test represents a test.
 type Test struct {
 	// See testing.TestInstance for details of the fields.
-	Name         string                  `json:"name"`
-	Pkg          string                  `json:"pkg"`
-	Desc         string                  `json:"desc"`
-	Contacts     []string                `json:"contacts"`
-	Attr         []string                `json:"attr"`
-	Data         []string                `json:"data"`
-	Vars         []string                `json:"vars,omitempty"`
-	VarDeps      []string                `json:"varDeps,omitempty"`
-	SoftwareDeps dep.SoftwareDeps        `json:"softwareDeps,omitempty"`
-	ServiceDeps  []string                `json:"serviceDeps,omitempty"`
-	Fixture      string                  `json:"fixture,omitempty"`
-	Timeout      time.Duration           `json:"timeout"`
-	Type         jsonprotocol.EntityType `json:"entityType,omitempty"`
-	Bundle       string                  `json:"bundle,omitempty"`
+	Name         string           `json:"name"`
+	Pkg          string           `json:"pkg"`
+	Desc         string           `json:"desc"`
+	Contacts     []string         `json:"contacts"`
+	Attr         []string         `json:"attr"`
+	Data         []string         `json:"data"`
+	Vars         []string         `json:"vars,omitempty"`
+	VarDeps      []string         `json:"varDeps,omitempty"`
+	SoftwareDeps dep.SoftwareDeps `json:"softwareDeps,omitempty"`
+	ServiceDeps  []string         `json:"serviceDeps,omitempty"`
+	Fixture      string           `json:"fixture,omitempty"`
+	Timeout      time.Duration    `json:"timeout"`
+	Bundle       string           `json:"bundle,omitempty"`
 }
 
 // Error describes an error encountered while running a test.
@@ -67,9 +66,8 @@ type Result struct {
 
 // NewTest creates Test from protocol.Entity.
 func NewTest(e *protocol.Entity) (*Test, error) {
-	typ, err := jsonprotocol.EntityTypeFromProto(e.GetType())
-	if err != nil {
-		return nil, err
+	if e.GetType() != protocol.EntityType_TEST {
+		return nil, errors.Errorf("BUG: cannot create resultsjson.Test for a non-test entity: %v", e.GetType())
 	}
 
 	var timeout time.Duration
@@ -94,7 +92,6 @@ func NewTest(e *protocol.Entity) (*Test, error) {
 		ServiceDeps:  e.GetDependencies().GetServices(),
 		Fixture:      e.GetFixture(),
 		Timeout:      timeout,
-		Type:         typ,
 		Bundle:       e.GetLegacyData().GetBundle(),
 	}, nil
 }

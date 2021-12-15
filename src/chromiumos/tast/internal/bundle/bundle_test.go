@@ -11,7 +11,7 @@ import (
 	"io/ioutil"
 	gotesting "testing"
 
-	"chromiumos/tast/internal/jsonprotocol"
+	"chromiumos/tast/internal/bundle/legacyjson"
 	"chromiumos/tast/internal/testing"
 )
 
@@ -28,10 +28,10 @@ func TestDumpTestsJSON(t *gotesting.T) {
 		reg.AddTestInstance(test)
 	}
 
-	var infos []*jsonprotocol.EntityWithRunnabilityInfo
+	var infos []*legacyjson.EntityWithRunnabilityInfo
 	for _, test := range tests {
-		infos = append(infos, &jsonprotocol.EntityWithRunnabilityInfo{
-			EntityInfo: *jsonprotocol.MustEntityInfoFromProto(test.EntityProto()),
+		infos = append(infos, &legacyjson.EntityWithRunnabilityInfo{
+			EntityInfo: *legacyjson.MustEntityInfoFromProto(test.EntityProto()),
 		})
 	}
 

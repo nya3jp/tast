@@ -13,8 +13,8 @@ import (
 
 	"chromiumos/tast/dut"
 	"chromiumos/tast/errors"
+	"chromiumos/tast/internal/bundle/legacyjson"
 	"chromiumos/tast/internal/command"
-	"chromiumos/tast/internal/jsonprotocol"
 	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/testing"
 )
@@ -121,7 +121,7 @@ func run(ctx context.Context, clArgs []string, stdin io.Reader, stdout, stderr i
 }
 
 func writeTestsAsLegacyJSON(w io.Writer, tests []*testing.TestInstance) error {
-	var infos []*jsonprotocol.EntityWithRunnabilityInfo
+	var infos []*legacyjson.EntityWithRunnabilityInfo
 	for _, test := range tests {
 		// If we encounter errors while checking test dependencies,
 		// treat the test as not skipped. When we actually try to
@@ -130,8 +130,8 @@ func writeTestsAsLegacyJSON(w io.Writer, tests []*testing.TestInstance) error {
 		if reasons, err := test.Deps().Check(nil); err == nil && len(reasons) > 0 {
 			skipReason = strings.Join(append([]string(nil), reasons...), ", ")
 		}
-		infos = append(infos, &jsonprotocol.EntityWithRunnabilityInfo{
-			EntityInfo: *jsonprotocol.MustEntityInfoFromProto(test.EntityProto()),
+		infos = append(infos, &legacyjson.EntityWithRunnabilityInfo{
+			EntityInfo: *legacyjson.MustEntityInfoFromProto(test.EntityProto()),
 			SkipReason: skipReason,
 		})
 	}

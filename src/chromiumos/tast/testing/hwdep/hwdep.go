@@ -367,6 +367,22 @@ func Keyboard() Condition {
 	}
 }
 
+// KeyboardBacklight returns a hardware dependency condition that is satified
+// if the DUT supports keyboard backlight functionality.
+func KeyboardBacklight() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("HardwareFeatures is not given")
+		}
+		if hf.GetKeyboard().GetBacklight() != configpb.HardwareFeatures_PRESENT {
+			return unsatisfied("DUT does not have keyboard backlight")
+		}
+		return satisfied()
+	},
+	}
+}
+
 // Touchpad returns a hardware dependency condition that is satisfied
 // iff the DUT has a touchpad.
 func Touchpad() Condition {

@@ -15,6 +15,7 @@ import (
 
 	"github.com/golang/protobuf/ptypes"
 
+	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/diagnose"
 	"chromiumos/tast/ctxutil"
 	"chromiumos/tast/errors"
@@ -22,6 +23,7 @@ import (
 	"chromiumos/tast/internal/debugger"
 	"chromiumos/tast/internal/linuxssh"
 	"chromiumos/tast/internal/logging"
+	"chromiumos/tast/internal/minidriver/bundleclient"
 	"chromiumos/tast/internal/minidriver/failfast"
 	"chromiumos/tast/internal/minidriver/processor"
 	"chromiumos/tast/internal/planner"
@@ -232,7 +234,8 @@ func (d *Driver) runLocalTestsOnce(ctx context.Context, bundle string, tests []*
 	}
 
 	proc := processor.New(d.cfg.ResDir(), multiplexer, diag, pull, args.Counter, args.Client)
-	d.localBundleClient(bundle).RunTests(ctx, bcfg, rcfg, proc)
+	cl := bundleclient.NewLocal(bundle, d.cfg.LocalBundleDir(), d.cfg.DebuggerPorts()[debugger.LocalBundle] != 0, d.cfg.Proxy() == config.ProxyEnv, d.cc)
+	cl.RunTests(ctx, bcfg, rcfg, proc)
 	return proc.Results(), proc.FatalError()
 }
 

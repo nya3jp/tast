@@ -8,8 +8,6 @@ package driver
 
 import (
 	"context"
-	"fmt"
-	"os"
 	"path/filepath"
 	"time"
 
@@ -117,40 +115,11 @@ func (d *Driver) DefaultTimeout() time.Duration {
 	return d.cc.DefaultTimeout()
 }
 
-func (d *Driver) localCommand(exec string) *genericexec.SSHCmd {
-	var args []string
-	// The delve debugger attempts to write to a directory not on the stateful partition.
-	// This ensures it instead writes to the stateful partition.
-	if d.cfg.DebuggerPorts()[debugger.LocalBundle] != 0 {
-		args = append(args, "XDG_CONFIG_HOME=/mnt/stateful_partition/xdg_config")
-	}
-	if d.cfg.Proxy() == config.ProxyEnv {
-		// Proxy-related variables can be either uppercase or lowercase.
-		// See https://golang.org/pkg/net/http/#ProxyFromEnvironment.
-		for _, name := range []string{
-			"HTTP_PROXY", "HTTPS_PROXY", "NO_PROXY",
-			"http_proxy", "https_proxy", "no_proxy",
-		} {
-			if val := os.Getenv(name); val != "" {
-				args = append(args, fmt.Sprintf("%s=%s", name, val))
-			}
-		}
-	}
-	args = append(args, exec)
-
-	cmd := genericexec.CommandSSH(d.cc.Conn().SSHConn(), "env", args...)
-	return cmd
-}
-
 func (d *Driver) localRunnerClient() *runnerclient.Client {
-	cmd := d.localCommand(d.cfg.LocalRunner())
+	cmd := bundleclient.LocalCommand(d.cfg.LocalRunner(), d.cfg.DebuggerPorts()[debugger.LocalBundle] != 0, d.cfg.Proxy() == config.ProxyEnv, d.cc)
+
 	params := &protocol.RunnerInitParams{BundleGlob: d.cfg.LocalBundleGlob()}
 	return runnerclient.New(cmd, params, d.cfg.MsgTimeout(), 1)
-}
-
-func (d *Driver) localBundleClient(bundle string) *bundleclient.Client {
-	cmd := d.localCommand(filepath.Join(d.cfg.LocalBundleDir(), bundle))
-	return bundleclient.New(cmd)
 }
 
 func (d *Driver) remoteRunnerClient() *runnerclient.Client {

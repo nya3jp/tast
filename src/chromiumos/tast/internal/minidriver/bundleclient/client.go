@@ -7,11 +7,14 @@ package bundleclient
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"os"
+	"path/filepath"
 
 	"google.golang.org/grpc"
 
+	"chromiumos/tast/internal/minidriver/target"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/rpc"
 	"chromiumos/tast/internal/run/genericexec"
@@ -80,4 +83,36 @@ func (c *Client) dial(ctx context.Context, req *protocol.HandshakeRequest) (_ *r
 		proc: proc,
 		conn: conn,
 	}, nil
+}
+
+// LocalCommand creates a SSH command to run exec on the target specified by cc.
+func LocalCommand(exec string, useDebugger, proxy bool, cc *target.ConnCache) *genericexec.SSHCmd {
+	var args []string
+	// The delve debugger attempts to write to a directory not on the stateful partition.
+	// This ensures it instead writes to the stateful partition.
+	if useDebugger {
+		args = append(args, "XDG_CONFIG_HOME=/mnt/stateful_partition/xdg_config")
+	}
+	if proxy {
+		// Proxy-related variables can be either uppercase or lowercase.
+		// See https://golang.org/pkg/net/http/#ProxyFromEnvironment.
+		for _, name := range []string{
+			"HTTP_PROXY", "HTTPS_PROXY", "NO_PROXY",
+			"http_proxy", "https_proxy", "no_proxy",
+		} {
+			if val := os.Getenv(name); val != "" {
+				args = append(args, fmt.Sprintf("%s=%s", name, val))
+			}
+		}
+	}
+	args = append(args, exec)
+
+	cmd := genericexec.CommandSSH(cc.Conn().SSHConn(), "env", args...)
+	return cmd
+}
+
+// NewLocal creates a bundle client to the local bundle.
+func NewLocal(bundle, bundleDir string, useDebugger, proxy bool, cc *target.ConnCache) *Client {
+	cmd := LocalCommand(filepath.Join(bundleDir, bundle), useDebugger, proxy, cc)
+	return New(cmd)
 }

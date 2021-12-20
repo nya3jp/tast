@@ -176,3 +176,8 @@ func resolveSSHConfig(ctx context.Context, target string) string {
 	}
 	return alternateTarget
 }
+
+// ConnCacheForTesting returns target.ConnCache the driver owns for testing.
+func (d *Driver) ConnCacheForTesting() *target.ConnCache {
+	return d.cc
+}

@@ -225,7 +225,7 @@ func (d *Driver) runLocalTestsOnce(ctx context.Context, bundle string, tests []*
 		if err := d.SSHConn().Ping(ctx, SSHPingTimeout); err == nil {
 			return ""
 		}
-		return "Lost SSH connection: " + diagnose.SSHDrop(ctx, d, outDir)
+		return "Lost SSH connection: " + diagnose.SSHDrop(ctx, d.cc, outDir)
 	}
 	pull := func(src, dst string) error {
 		return linuxssh.GetAndDeleteFile(ctx, d.cc.Conn().SSHConn(), src, dst, linuxssh.PreserveSymlinks)

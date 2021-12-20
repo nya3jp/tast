@@ -12,44 +12,30 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
-	"time"
 
 	"chromiumos/tast/internal/linuxssh"
 	"chromiumos/tast/internal/logging"
+	"chromiumos/tast/internal/minidriver/target"
 	"chromiumos/tast/internal/testingutil"
-	"chromiumos/tast/ssh"
 )
-
-// ConnCache is an interface satisfied by driver.Driver. The interface avoids
-// circular dependencies between diagnose and driver.
-//
-// TODO(b/187793617): Move this package to driver/internal/ and replace this
-// interface with target.ConnCache once the driver package becomes the only
-// importer of this package.
-type ConnCache interface {
-	InitBootID() string
-	SSHConn() *ssh.Conn
-	ReconnectIfNeeded(ctx context.Context) error
-	DefaultTimeout() time.Duration
-}
 
 // SSHDrop diagnoses a SSH connection drop during local test runs
 // and returns a diagnosis message. Files useful for diagnosis might be saved
 // under outDir.
-func SSHDrop(ctx context.Context, cc ConnCache, outDir string) string {
+func SSHDrop(ctx context.Context, cc *target.ConnCache, outDir string) string {
 	if cc.InitBootID() == "" {
 		return "failed to diagnose: initial boot_id is not available"
 	}
 
 	logging.Info(ctx, "Reconnecting to diagnose lost SSH connection")
 	if err := testingutil.Poll(ctx, func(ctx context.Context) error {
-		return cc.ReconnectIfNeeded(ctx)
+		return cc.EnsureConn(ctx)
 	}, &testingutil.PollOptions{Timeout: cc.DefaultTimeout()}); err != nil {
 		return fmt.Sprint("target did not come back: ", err)
 	}
 
 	// Compare boot_id to see if the target rebooted.
-	bootID, err := linuxssh.ReadBootID(ctx, cc.SSHConn())
+	bootID, err := linuxssh.ReadBootID(ctx, cc.Conn().SSHConn())
 	if err != nil {
 		return fmt.Sprint("failed to diagnose: failed to read boot_id: ", err)
 	}
@@ -81,8 +67,8 @@ var (
 // diagnoseReboot diagnoses the target reboot during local test runs
 // and returns a diagnosis message. Files useful for diagnosis might be saved
 // under outDir.
-func diagnoseReboot(ctx context.Context, cc ConnCache, outDir string) string {
-	conn := cc.SSHConn()
+func diagnoseReboot(ctx context.Context, cc *target.ConnCache, outDir string) string {
+	conn := cc.Conn().SSHConn()
 
 	// Read the unified system log just before the reboot.
 	denseBootID := strings.Replace(cc.InitBootID(), "-", "", -1)

@@ -68,7 +68,7 @@ func callSSHDrop(t *testing.T, rebooted bool, syslog, ramoops string) (msg, outD
 		t.Fatal(err)
 	}
 
-	msg = diagnose.SSHDrop(ctx, drv, outDir)
+	msg = diagnose.SSHDrop(ctx, drv.ConnCacheForTesting(), outDir)
 	return msg, outDir
 }
 
@@ -86,7 +86,7 @@ func TestSSHDropNotRecovered(t *testing.T) {
 	// Pass a canceled context to make reconnection fail.
 	ctx, cancel := context.WithCancel(ctx)
 	cancel()
-	msg := diagnose.SSHDrop(ctx, drv, env.TempDir())
+	msg := diagnose.SSHDrop(ctx, drv.ConnCacheForTesting(), env.TempDir())
 	const exp = "target did not come back: context canceled"
 	if msg != exp {
 		t.Errorf("SSHDrop returned %q; want %q", msg, exp)

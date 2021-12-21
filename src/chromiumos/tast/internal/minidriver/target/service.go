@@ -34,7 +34,7 @@ type ServiceConfig struct {
 	Devservers            []string
 	TastDir               string
 	ExtraAllowedBuckets   []string
-	DebuggerPorts         map[debugger.DebugTarget]int
+	DebuggerPorts         []int
 }
 
 func startServices(ctx context.Context, cfg *ServiceConfig, conn *ssh.Conn, dutServer string) (svcs *Services, retErr error) {
@@ -82,11 +82,7 @@ func startServices(ctx context.Context, cfg *ServiceConfig, conn *ssh.Conn, dutS
 			}
 		}()
 
-		for _, dt := range []debugger.DebugTarget{debugger.LocalTestRunner, debugger.LocalBundle} {
-			debugPort, ok := cfg.DebuggerPorts[dt]
-			if !ok || debugPort == 0 {
-				continue
-			}
+		for _, debugPort := range cfg.DebuggerPorts {
 			if err := debugger.ForwardPort(ctx, conn, debugPort); err != nil {
 				return nil, err
 			}

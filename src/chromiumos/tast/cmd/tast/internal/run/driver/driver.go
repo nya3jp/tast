@@ -15,6 +15,7 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/driver/internal/drivercore"
 	"chromiumos/tast/cmd/tast/internal/run/driver/internal/runnerclient"
 	"chromiumos/tast/cmd/tast/internal/run/driver/internal/sshconfig"
+	"chromiumos/tast/internal/debugger"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/minidriver/bundleclient"
 	"chromiumos/tast/internal/minidriver/target"
@@ -50,13 +51,22 @@ type Driver struct {
 func New(ctx context.Context, cfg *config.Config, rawTarget, role string) (*Driver, error) {
 	resolvedTarget := resolveSSHConfig(ctx, rawTarget)
 
+	var debuggerPorts []int
+	for _, dt := range []debugger.DebugTarget{debugger.LocalTestRunner, debugger.LocalBundle} {
+		debugPort, ok := cfg.DebuggerPorts()[dt]
+		if !ok || debugPort == 0 {
+			continue
+		}
+		debuggerPorts = append(debuggerPorts, debugPort)
+	}
+
 	scfg := &target.ServiceConfig{
 		TLWServer:             cfg.TLWServer(),
 		UseEphemeralDevserver: cfg.UseEphemeralDevserver(),
 		Devservers:            cfg.Devservers(),
 		TastDir:               cfg.TastDir(),
 		ExtraAllowedBuckets:   cfg.ExtraAllowedBuckets(),
-		DebuggerPorts:         cfg.DebuggerPorts(),
+		DebuggerPorts:         debuggerPorts,
 	}
 	tcfg := &target.Config{
 		SSHConfig:     cfg.ProtoSSHConfig(),

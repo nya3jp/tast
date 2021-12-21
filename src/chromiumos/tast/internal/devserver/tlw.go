@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"os"
 
 	"github.com/golang/protobuf/ptypes"
@@ -46,8 +47,8 @@ func (c *TLWClient) TearDown() error {
 	return c.conn.Close()
 }
 
-// Open downloads a file on GCS from storage.googleapis.com using the TLW API.
-func (c *TLWClient) Open(ctx context.Context, gsURL string) (io.ReadCloser, error) {
+// Stage downloads a file on GCS from storage.googleapis.com using the TLW API.
+func (c *TLWClient) Stage(ctx context.Context, gsURL string) (*url.URL, error) {
 	// verify GS URL format.
 	if _, _, err := ParseGSURL(gsURL); err != nil {
 		return nil, errors.Wrapf(err, "failed to parse GS URL: %s", gsURL)
@@ -82,15 +83,24 @@ func (c *TLWClient) Open(ctx context.Context, gsURL string) (io.ReadCloser, erro
 	if err := ptypes.UnmarshalAny(op.GetResponse(), resp); err != nil {
 		return nil, errors.Wrapf(err, "failed to unmarshal response: %v", resp)
 	}
-	httpReq, err := http.NewRequest("GET", resp.Url, nil)
+	return url.Parse(resp.Url)
+}
+
+// Open downloads a file on GCS from storage.googleapis.com using the TLW API.
+func (c *TLWClient) Open(ctx context.Context, gsURL string) (io.ReadCloser, error) {
+	url, err := c.Stage(ctx, gsURL)
 	if err != nil {
-		return nil, errors.Wrapf(err, "failed to create new HTTP request: %s", resp.Url)
+		return nil, err
+	}
+	httpReq, err := http.NewRequest("GET", url.String(), nil)
+	if err != nil {
+		return nil, errors.Wrapf(err, "failed to create new HTTP request: %s", url)
 	}
 	httpReq = httpReq.WithContext(ctx)
 
 	res, err := defaultHTTPClient.Do(httpReq)
 	if err != nil {
-		return nil, errors.Wrapf(err, "failed to get from download URL: %s", resp.Url)
+		return nil, errors.Wrapf(err, "failed to get from download URL: %s", url)
 	}
 
 	switch res.StatusCode {

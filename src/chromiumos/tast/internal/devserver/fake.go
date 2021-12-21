@@ -9,7 +9,10 @@ import (
 	"context"
 	"io"
 	"io/ioutil"
+	"net/url"
 	"os"
+
+	"chromiumos/tast/errors"
 )
 
 // FakeClient is a fake implementation of devserver.Client suitable for unit tests.
@@ -36,4 +39,9 @@ func (c *FakeClient) Open(ctx context.Context, gsURL string) (io.ReadCloser, err
 		return nil, os.ErrNotExist
 	}
 	return ioutil.NopCloser(bytes.NewReader(data)), nil
+}
+
+// Stage simulates a getting a url to Google Cloud Storage.
+func (c *FakeClient) Stage(ctx context.Context, gsURL string) (*url.URL, error) {
+	return nil, errors.New("FakeClient.Stage not implemented")
 }

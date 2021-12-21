@@ -61,8 +61,8 @@ func (c *PseudoClient) TearDown() error {
 	return nil
 }
 
-// Open downloads a file on GCS directly from storage.googleapis.com.
-func (c *PseudoClient) Open(ctx context.Context, gsURL string) (io.ReadCloser, error) {
+// Stage returns a url to GCS directly from storage.googleapis.com.
+func (c *PseudoClient) Stage(ctx context.Context, gsURL string) (*url.URL, error) {
 	bucket, path, err := ParseGSURL(gsURL)
 	if err != nil {
 		return nil, err
@@ -70,6 +70,15 @@ func (c *PseudoClient) Open(ctx context.Context, gsURL string) (io.ReadCloser, e
 
 	dlURL, _ := url.Parse(c.baseURL)
 	dlURL.Path = fmt.Sprintf("/%s/%s", bucket, path)
+	return dlURL, nil
+}
+
+// Open downloads a file on GCS directly from storage.googleapis.com.
+func (c *PseudoClient) Open(ctx context.Context, gsURL string) (io.ReadCloser, error) {
+	dlURL, err := c.Stage(ctx, gsURL)
+	if err != nil {
+		return nil, err
+	}
 	req, err := http.NewRequest("GET", dlURL.String(), nil)
 	if err != nil {
 		return nil, err

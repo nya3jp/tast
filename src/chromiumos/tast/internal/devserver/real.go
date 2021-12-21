@@ -144,8 +144,8 @@ func (c *RealClient) TearDown() error {
 	return nil
 }
 
-// Open downloads a file on GCS via devservers. It returns an error if no devserver is up.
-func (c *RealClient) Open(ctx context.Context, gsURL string) (io.ReadCloser, error) {
+// Stage stages a file on GCS via devservers. It returns an error if no devserver is up.
+func (c *RealClient) Stage(ctx context.Context, gsURL string) (*url.URL, error) {
 	bucket, path, err := ParseGSURL(gsURL)
 	if err != nil {
 		return nil, err
@@ -161,11 +161,11 @@ func (c *RealClient) Open(ctx context.Context, gsURL string) (io.ReadCloser, err
 	// Use an already staged file if there is any.
 	if dsURL, err := c.findStaged(sctx, bucket, path); err == nil {
 		logging.Infof(ctx, "Downloading %s via %s (already staged)", gsURL, dsURL)
-		r, err := c.openStaged(ctx, dsURL, bucket, path)
+		staticURL, err := c.staticURL(ctx, dsURL, bucket, path)
 		if err != nil {
-			return nil, fmt.Errorf("failed to download from %s: %v", dsURL, err)
+			return nil, fmt.Errorf("failed to stage from %s: %v", dsURL, err)
 		}
-		return r, nil
+		return staticURL, nil
 	} else if err != errNotStaged {
 		return nil, fmt.Errorf("failed to find a staged file: %v", err)
 	}
@@ -186,9 +186,23 @@ func (c *RealClient) Open(ctx context.Context, gsURL string) (io.ReadCloser, err
 	}
 
 	logging.Infof(ctx, "Downloading %s via %s (newly staged)", gsURL, dsURL)
-	r, err := c.openStaged(ctx, dsURL, bucket, path)
+	staticURL, err := c.staticURL(ctx, dsURL, bucket, path)
 	if err != nil {
-		return nil, fmt.Errorf("failed to download from %s: %v", dsURL, err)
+		return nil, fmt.Errorf("failed to stage from %s: %v", dsURL, err)
+	}
+	return staticURL, nil
+}
+
+// Open downloads a file on GCS via devservers. It returns an error if no devserver is up.
+func (c *RealClient) Open(ctx context.Context, gsURL string) (io.ReadCloser, error) {
+	staticURL, err := c.Stage(ctx, gsURL)
+	if err != nil {
+		return nil, err
+	}
+
+	r, err := c.openStaged(ctx, staticURL)
+	if err != nil {
+		return nil, fmt.Errorf("failed to download from %s: %v", staticURL, err)
 	}
 	return r, nil
 }
@@ -337,8 +351,7 @@ func (c *RealClient) sendStageRequest(ctx context.Context, req *http.Request) (r
 	}
 }
 
-// openStaged opens a staged file from the devserver at dsURL.
-func (c *RealClient) openStaged(ctx context.Context, dsURL, bucket, path string) (io.ReadCloser, error) {
+func (c *RealClient) staticURL(ctx context.Context, dsURL, bucket, path string) (*url.URL, error) {
 	staticURL, err := url.Parse(dsURL)
 	if err != nil {
 		return nil, err
@@ -347,7 +360,11 @@ func (c *RealClient) openStaged(ctx context.Context, dsURL, bucket, path string)
 	query := make(url.Values)
 	query.Set("gs_bucket", bucket)
 	staticURL.RawQuery = query.Encode()
+	return staticURL, nil
+}
 
+// openStaged opens a staged file from the devserver at staticURL.
+func (c *RealClient) openStaged(ctx context.Context, staticURL *url.URL) (io.ReadCloser, error) {
 	open := func(offset int64) (io.ReadCloser, error) {
 		req, err := http.NewRequest("GET", staticURL.String(), nil)
 		if err != nil {

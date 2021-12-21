@@ -8,6 +8,7 @@ import (
 	"context"
 	"errors"
 	"io/ioutil"
+	"net/http"
 	"os"
 	"testing"
 
@@ -134,6 +135,47 @@ func TestCloudStorageTLWOpen(t *testing.T) {
 	}
 }
 
+func TestCloudStorageTLWStage(t *testing.T) {
+	const (
+		dutName     = "dut001"
+		fakeURL     = "gs://a/b/c"
+		fakeContent = "fake content"
+	)
+	stopFunc, addr := faketlw.StartWiringServer(t, faketlw.WithCacheFileMap(
+		map[string][]byte{
+			fakeURL: []byte(fakeContent),
+		},
+	), faketlw.WithDUTName(dutName))
+	defer stopFunc()
+
+	// Create CloudStorage using a fake TLW client.
+	cs := &CloudStorage{
+		newClient: func(ctx context.Context) (devserver.Client, error) {
+			return devserver.NewTLWClient(ctx, addr, dutName)
+		},
+	}
+
+	fileURL, err := cs.Stage(context.Background(), fakeURL)
+	if err != nil {
+		t.Fatalf("Open failed for %q: %v", fakeURL, err)
+	}
+	resp, err := http.Get(fileURL.String())
+	if err != nil {
+		t.Error("Get failed: ", err)
+	}
+	if resp.StatusCode != 200 {
+		t.Error("Get failed: ", resp)
+	}
+	defer resp.Body.Close()
+	b, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		t.Fatal("ReadAll failed: ", err)
+	}
+	if s := string(b); s != fakeContent {
+		t.Fatalf("Got content %q, want %q", s, fakeContent)
+	}
+}
+
 func TestCloudStorageDUTServerOpen(t *testing.T) {
 	const (
 		dutName     = "dut001"
@@ -157,6 +199,47 @@ func TestCloudStorageDUTServerOpen(t *testing.T) {
 	r, err := cs.Open(context.Background(), fakeURL)
 	if err != nil {
 		t.Fatalf("Open failed for %q: %v", fakeURL, err)
+	}
+	defer r.Close()
+	b, err := ioutil.ReadAll(r)
+	if err != nil {
+		t.Fatal("ReadAll failed: ", err)
+	}
+	if s := string(b); s != fakeContent {
+		t.Fatalf("Got content %q, want %q", s, fakeContent)
+	}
+}
+
+func TestCloudStorageDUTServerStage(t *testing.T) {
+	const (
+		dutName     = "dut001"
+		fakeURL     = "gs://a/b/c"
+		fakeContent = "fake content"
+	)
+	stopFunc, addr := fakedutserver.Start(t, fakedutserver.WithCacheFileMap(
+		map[string][]byte{
+			fakeURL: []byte(fakeContent),
+		},
+	))
+	defer stopFunc()
+
+	// Create CloudStorage using a fake TLW client.
+	cs := &CloudStorage{
+		newClient: func(ctx context.Context) (devserver.Client, error) {
+			return devserver.NewDUTServiceClient(ctx, addr)
+		},
+	}
+
+	fileURL, err := cs.Stage(context.Background(), fakeURL)
+	if err != nil {
+		t.Fatalf("Stage failed for %q: %v", fakeURL, err)
+	}
+	if fileURL.Scheme != "file" {
+		t.Fatalf("Expected file: url, got %q", fileURL)
+	}
+	r, err := os.Open(fileURL.Path)
+	if err != nil {
+		t.Fatal("Open failed: ", err)
 	}
 	defer r.Close()
 	b, err := ioutil.ReadAll(r)
@@ -208,6 +291,27 @@ func TestCloudStorageTLWOpenMissing(t *testing.T) {
 	}
 }
 
+func TestCloudStorageTLWStageMissing(t *testing.T) {
+	const dutName = "dut001"
+	stopFunc, addr := faketlw.StartWiringServer(t, faketlw.WithDUTName(dutName)) // no file served
+	defer stopFunc()
+
+	// Create CloudStorage using a fake TLW client.
+	cs := &CloudStorage{
+		newClient: func(ctx context.Context) (devserver.Client, error) {
+			return devserver.NewTLWClient(ctx, addr, dutName)
+		},
+	}
+
+	fileURL, err := cs.Stage(context.Background(), "gs://a/b/c")
+	if err == nil {
+		t.Fatal("Stage succeeded unexpectedly: ", fileURL)
+	}
+	if !errors.Is(err, os.ErrNotExist) {
+		t.Fatal("Stage failed with unexpected error: ", err)
+	}
+}
+
 func TestCloudStorageDUTServerOpenMissing(t *testing.T) {
 	stopFunc, addr := fakedutserver.Start(t)
 	defer stopFunc()
@@ -226,5 +330,25 @@ func TestCloudStorageDUTServerOpenMissing(t *testing.T) {
 	}
 	if !errors.Is(err, os.ErrNotExist) {
 		t.Fatal("Open failed with unexpected error: ", err)
+	}
+}
+
+func TestCloudStorageDUTServerStageMissing(t *testing.T) {
+	stopFunc, addr := fakedutserver.Start(t)
+	defer stopFunc()
+
+	// Create CloudStorage using a fake TLW client.
+	cs := &CloudStorage{
+		newClient: func(ctx context.Context) (devserver.Client, error) {
+			return devserver.NewDUTServiceClient(ctx, addr)
+		},
+	}
+
+	fileURL, err := cs.Stage(context.Background(), "gs://a/b/c")
+	if err == nil {
+		t.Fatal("Stage succeeded unexpectedly: ", fileURL)
+	}
+	if !errors.Is(err, os.ErrNotExist) {
+		t.Fatal("Stage failed with unexpected error: ", err)
 	}
 }

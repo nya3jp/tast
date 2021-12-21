@@ -8,6 +8,7 @@ import (
 	"context"
 	"io"
 	"io/ioutil"
+	"net/url"
 	"os"
 	"path/filepath"
 
@@ -53,9 +54,9 @@ func (c *DUTServiceClient) TearDown() error {
 	return c.conn.Close()
 }
 
-// Open downloads a file on GCS from storage.googleapis.com to specified destination
-// and return io.ReadCloser for the file.
-func (c *DUTServiceClient) Open(ctx context.Context, gsURL string) (io.ReadCloser, error) {
+// Stage downloads a file on GCS from storage.googleapis.com to specified destination
+// and return file: url for the file.
+func (c *DUTServiceClient) Stage(ctx context.Context, gsURL string) (*url.URL, error) {
 	// verify GS URL format.
 	_, path, err := ParseGSURL(gsURL)
 	if err != nil {
@@ -97,11 +98,27 @@ func (c *DUTServiceClient) Open(ctx context.Context, gsURL string) (io.ReadClose
 	}
 
 	if status := op.GetError(); status != nil {
-		return nil, errors.Errorf("failed to downloand %s from cache server %s", gsURL, status.Message)
+		return nil, errors.Errorf("failed to download %s from cache server %s", gsURL, status.Message)
 	}
-	file, err := os.Open(fullPath)
+	return &url.URL{
+		Scheme: "file",
+		Path:   fullPath,
+	}, nil
+}
+
+// Open downloads a file on GCS from storage.googleapis.com to specified destination
+// and return io.ReadCloser for the file.
+func (c *DUTServiceClient) Open(ctx context.Context, gsURL string) (io.ReadCloser, error) {
+	fileURL, err := c.Stage(ctx, gsURL)
 	if err != nil {
-		return nil, errors.Wrapf(err, "failed to open temporary file %q", fullPath)
+		return nil, err
+	}
+	if fileURL.Scheme != "file" {
+		return nil, errors.Errorf("Expected file url, got %q", fileURL)
+	}
+	file, err := os.Open(fileURL.Path)
+	if err != nil {
+		return nil, errors.Wrapf(err, "failed to open temporary file %q", fileURL.Path)
 	}
 	return file, nil
 }

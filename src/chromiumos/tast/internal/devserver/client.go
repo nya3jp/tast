@@ -9,6 +9,7 @@ package devserver
 import (
 	"context"
 	"io"
+	"net/url"
 )
 
 // Client is a client interface to communicate with devservers.
@@ -17,6 +18,10 @@ type Client interface {
 	// Callers are responsible to close the/ returned io.ReadCloser after use.
 	// If the file does not exist, os.ErrNotExist is returned.
 	Open(ctx context.Context, gsURL string) (io.ReadCloser, error)
+
+	// Stage opens a file on Google Cloud Storage at gsURL. sURL must have a "gs://" scheme.
+	// Returns a http or file url to the data.
+	Stage(ctx context.Context, gsURL string) (*url.URL, error)
 
 	// TearDown should be called once when the Client is destructed,
 	// regardless of whether Open was called or not.

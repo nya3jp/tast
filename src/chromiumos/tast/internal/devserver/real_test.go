@@ -9,6 +9,7 @@ import (
 	"errors"
 	"io"
 	"io/ioutil"
+	"net/http"
 	"os"
 	"reflect"
 	"sort"
@@ -62,6 +63,43 @@ func TestRealClientSimple(t *testing.T) {
 	}
 }
 
+// TestRealClientSimpleStage tests the most simple case of successful download.
+func TestRealClientSimpleStage(t *testing.T) {
+	s := newFakeServer(t)
+	defer s.Close()
+
+	cl := devserver.NewRealClient(context.Background(), []string{s.URL}, nil)
+
+	fileURL, err := cl.Stage(context.Background(), fakeFileURL)
+	if err != nil {
+		t.Error("Stage failed: ", err)
+	} else {
+		req, err := http.NewRequest(http.MethodGet, fileURL.String(), nil)
+		if err != nil {
+			t.Errorf("NewRequest %q failed: %v", fileURL, err)
+		}
+		req.Header.Set("Negotiate", "vlist")
+		client := &http.Client{}
+		resp, err := client.Do(req)
+		if err != nil {
+			t.Errorf("Get %q failed: %v", fileURL, err)
+		}
+		if resp.StatusCode != 200 {
+			t.Errorf("Get %q failed: %v", fileURL, resp)
+		}
+		defer resp.Body.Close()
+		if data, err := ioutil.ReadAll(resp.Body); err != nil {
+			t.Error("ReadAll failed: ", err)
+		} else if string(data) != fakeFileData {
+			t.Errorf("ReadAll returned %q; want %q", string(data), fakeFileData)
+		}
+	}
+
+	if _, err := cl.Stage(context.Background(), "gs://bucket/path/to/wrong_file"); err == nil {
+		t.Error("Stage unexpectedly succeeded")
+	}
+}
+
 // TestRealClientNotFound tests when the file to be staged is not found.
 func TestRealClientNotFound(t *testing.T) {
 	s := newFakeServer(t)
@@ -74,6 +112,20 @@ func TestRealClientNotFound(t *testing.T) {
 		t.Error("Open unexpectedly succeeded")
 	} else if !os.IsNotExist(err) {
 		t.Errorf("Open returned %q; want %q", err, os.ErrNotExist)
+	}
+}
+
+// TestRealClientNotFoundStage tests when the file to be staged is not found.
+func TestRealClientNotFoundStage(t *testing.T) {
+	s := newFakeServer(t)
+	defer s.Close()
+
+	cl := devserver.NewRealClient(context.Background(), []string{s.URL}, nil)
+
+	if fileURL, err := cl.Stage(context.Background(), notFoundURL); err == nil {
+		t.Error("Stage unexpectedly succeeded: ", fileURL)
+	} else if !os.IsNotExist(err) {
+		t.Errorf("Stage returned %q; want %q", err, os.ErrNotExist)
 	}
 }
 
@@ -113,8 +165,43 @@ func TestRealClientPreferStagedServer(t *testing.T) {
 	}
 }
 
-// TestRealClientRetryStage tests that failed stage request is retried.
-func TestRealClientRetryStage(t *testing.T) {
+// TestRealClientPreferStagedServerStage tests that already staged servers are preferred.
+func TestRealClientPreferStagedServerStage(t *testing.T) {
+	stageHook := func(gsURL string) error {
+		t.Error("Unexpected attempt to stage: ", gsURL)
+		return errors.New("stage failure")
+	}
+
+	// First server doesn't have a staged file. Any attempt to stage a file will
+	// result in a test failure.
+	files1 := []*devservertest.File{{URL: fakeFileURL, Data: []byte(fakeFileData)}}
+	s1, err := devservertest.NewServer(devservertest.Files(files1), devservertest.StageHook(stageHook))
+	if err != nil {
+		t.Fatal("NewServer: ", err)
+	}
+	defer s1.Close()
+
+	// Second server has a staged file.
+	files2 := []*devservertest.File{files1[0].Copy()}
+	files2[0].Staged = true
+	s2, err := devservertest.NewServer(devservertest.Files(files2), devservertest.StageHook(stageHook))
+	if err != nil {
+		t.Fatal("NewServer: ", err)
+	}
+	defer s2.Close()
+
+	cl := devserver.NewRealClient(context.Background(), []string{s1.URL, s2.URL}, nil)
+
+	for i := 1; i <= 10; i++ {
+		_, err := cl.Stage(context.Background(), fakeFileURL)
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+}
+
+// TestRealClientRetryStageOpen tests that failed stage request is retried.
+func TestRealClientRetryStageOpen(t *testing.T) {
 	calls := 0
 	stageHook := func(gsURL string) error {
 		calls++
@@ -140,8 +227,34 @@ func TestRealClientRetryStage(t *testing.T) {
 	}
 }
 
-// TestRealClientRetryStageFail tests too many failures causes the download to fail.
-func TestRealClientRetryStageFail(t *testing.T) {
+// TestRealClientRetryStage tests that failed stage request is retried.
+func TestRealClientRetryStage(t *testing.T) {
+	calls := 0
+	stageHook := func(gsURL string) error {
+		calls++
+		if calls <= 1 {
+			return errors.New("stage failure")
+		}
+		return nil
+	}
+	s := newFakeServer(t, devservertest.StageHook(stageHook))
+	defer s.Close()
+
+	o := &devserver.RealClientOptions{StageRetryWaits: []time.Duration{1 * time.Millisecond}}
+	cl := devserver.NewRealClient(context.Background(), []string{s.URL}, o)
+
+	_, err := cl.Stage(context.Background(), fakeFileURL)
+	if err != nil {
+		t.Error("Stage failed despite retries: ", err)
+	}
+
+	if calls != 2 {
+		t.Errorf("stageHook called %d time(s); want 2 times", calls)
+	}
+}
+
+// TestRealClientRetryStageFailOpen tests too many failures causes the download to fail.
+func TestRealClientRetryStageFailOpen(t *testing.T) {
 	calls := 0
 	stageHook := func(gsURL string) error {
 		calls++
@@ -159,6 +272,27 @@ func TestRealClientRetryStageFail(t *testing.T) {
 	if r, err := cl.Open(context.Background(), fakeFileURL); err == nil {
 		r.Close()
 		t.Error("Open succeeded despite too many failures")
+	}
+}
+
+// TestRealClientRetryStageFail tests too many failures causes the download to fail.
+func TestRealClientRetryStageFail(t *testing.T) {
+	calls := 0
+	stageHook := func(gsURL string) error {
+		calls++
+		if calls <= 2 {
+			return errors.New("stage failure")
+		}
+		return nil
+	}
+	s := newFakeServer(t, devservertest.StageHook(stageHook))
+	defer s.Close()
+
+	o := &devserver.RealClientOptions{StageRetryWaits: []time.Duration{1 * time.Millisecond}}
+	cl := devserver.NewRealClient(context.Background(), []string{s.URL}, o)
+
+	if _, err := cl.Stage(context.Background(), fakeFileURL); err == nil {
+		t.Error("Stage succeeded despite too many failures")
 	}
 }
 
@@ -238,6 +372,30 @@ func TestRealClientStableServerSelection(t *testing.T) {
 	}
 }
 
+// TestRealClientStableServerSelectionStage tests that the server selection is stable.
+func TestRealClientStableServerSelectionStage(t *testing.T) {
+	calls := 0
+	stageHook := func(gsURL string) error {
+		calls++
+		return nil
+	}
+	s1 := newFakeServer(t, devservertest.StageHook(stageHook))
+	defer s1.Close()
+	s2 := newFakeServer(t, devservertest.StageHook(stageHook))
+	defer s2.Close()
+
+	cl := devserver.NewRealClient(context.Background(), []string{s1.URL, s2.URL}, nil)
+	for i := 0; i < 10; i++ {
+		_, err := cl.Stage(context.Background(), fakeFileURL)
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+	if calls != 1 {
+		t.Errorf("stageHook called %d time(s); want 1 time", calls)
+	}
+}
+
 // TestRealClientSomeUpServers tests that down servers are not selected.
 func TestRealClientSomeUpServers(t *testing.T) {
 	up1 := newFakeServer(t)
@@ -277,6 +435,24 @@ func TestRealClientNoUpServer(t *testing.T) {
 	}
 }
 
+// TestRealClientNoUpServerStage tests the scenario where no servers are up.
+func TestRealClientNoUpServerStage(t *testing.T) {
+	down1 := newFakeServer(t, devservertest.Down())
+	defer down1.Close()
+	down2 := newFakeServer(t, devservertest.Down())
+	defer down2.Close()
+
+	cl := devserver.NewRealClient(context.Background(), []string{down1.URL, down2.URL}, nil)
+
+	if upURLs := cl.UpServerURLs(); len(upURLs) > 0 {
+		t.Errorf("UpServerURLs = %v; want nil", upURLs)
+	}
+
+	if u, err := cl.Stage(context.Background(), fakeFileURL); err == nil {
+		t.Fatal("Stage unexpectedly succeeded: ", u)
+	}
+}
+
 // TestRealClientNoPath ensures that RealClient works for URLs having no path,
 // i.e. files are directly under the top-level directory.
 func TestRealClientNoPath(t *testing.T) {
@@ -296,4 +472,24 @@ func TestRealClientNoPath(t *testing.T) {
 		t.Fatal("Open failed: ", err)
 	}
 	r.Close()
+}
+
+// TestRealClientNoPathStage ensures that RealClient works for URLs having no path,
+// i.e. files are directly under the top-level directory.
+func TestRealClientNoPathStage(t *testing.T) {
+	const url = "gs://bucket/file"
+
+	files := []*devservertest.File{{URL: url}}
+	s, err := devservertest.NewServer(devservertest.Files(files))
+	if err != nil {
+		t.Fatal("NewServer: ", err)
+	}
+	defer s.Close()
+
+	cl := devserver.NewRealClient(context.Background(), []string{s.URL}, nil)
+
+	_, err = cl.Stage(context.Background(), url)
+	if err != nil {
+		t.Fatal("Stage failed: ", err)
+	}
 }

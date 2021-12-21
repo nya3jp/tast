@@ -7,6 +7,7 @@ package testing
 import (
 	"context"
 	"io"
+	"net/url"
 	"strings"
 	"sync"
 
@@ -53,6 +54,23 @@ func (c *CloudStorage) Open(ctx context.Context, url string) (io.ReadCloser, err
 		url = c.buildArtifactsURL + strings.TrimPrefix(url, buildArtifactPrefix)
 	}
 	return c.cl.Open(ctx, url)
+}
+
+// Stage opens a file on Google Cloud Storage for read. Returns a http or file url to the data.
+// Urls that start with build-artifact:/// will be treated as relative to the BuildArtifactsURL
+// passed to tast in the --buildartifactsurl argument.
+func (c *CloudStorage) Stage(ctx context.Context, url string) (*url.URL, error) {
+	c.once.Do(func() {
+		c.cl, c.initErr = c.newClient(ctx)
+	})
+	if c.initErr != nil {
+		return nil, c.initErr
+	}
+	buildArtifactPrefix := "build-artifact:///"
+	if strings.HasPrefix(url, buildArtifactPrefix) {
+		url = c.buildArtifactsURL + strings.TrimPrefix(url, buildArtifactPrefix)
+	}
+	return c.cl.Stage(ctx, url)
 }
 
 func newClientForURLs(ctx context.Context, urls []string, tlwServer, dutName, dutServer string) (devserver.Client, error) {

@@ -98,7 +98,7 @@ The following software features are defined:
 *   `hostap_hwsim` - Whether system has the hostap project's test dependencies
     (scripts, daemons) installed and configured appropriately.
 *   `hps` - Whether the system has the hps daemon and tools, go/cros-hps.
-*    igt  - Boards that can run igt-gpu-tools tests
+*   `igt` - Boards that can run igt-gpu-tools tests
 *   `iioservice` - Whether the device has CrOS IIO Service running.
 *   `iwlwifi_rescan` - Ability to remove/rescan WiFi PCI device when the
     hardware becomes non-responsive.
@@ -188,6 +188,7 @@ The following software features are defined:
 *   `use_fscrypt_v2` - The board is set to use v2 fscrypt policy for user vault.
 *   `v4l2_codec` - Whether or not v4l2 video acceleration API is supported by this DUT.
 *   `vaapi` - Whether or not VA-API is supported by this DUT.
+*   `video_cards_ihd` - Boards that use the Intel Media Driver (also known as iHD) for VA-API.
 *   `video_decoder_direct` - The platform uses the VideoDecoder (VD) by default.
 *   `video_decoder_legacy` - The platform used the VideoDecodeAccelerator (VDA) by default.
 *   `video_decoder_legacy_supported` - Is the VDA is supported on this platform.

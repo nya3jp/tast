@@ -176,6 +176,7 @@ var softwareFeatureDefs = map[string]string{
 	"use_fscrypt_v2":         `"direncription_allow_v2" && "!lvm_stateful_partition"`,
 	"v4l2_codec":             "v4l2_codec",
 	"vaapi":                  "vaapi",
+	"video_cards_ihd":        "video_cards_iHD",
 	// As the direct video decoder is transitioned in there is the need
 	// to run the legacy decoder to make sure it isn't broken and can be
 	// rolled back to if the direct decoder is having problems.  On some

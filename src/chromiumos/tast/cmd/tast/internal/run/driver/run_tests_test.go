@@ -147,7 +147,9 @@ func TestDriver_RunTests_RemoteFixture(t *gotesting.T) {
 		Timeout: time.Minute,
 		Fixture: "fixture.Remote2",
 		Func: func(ctx context.Context, s *testing.State) {
-			t.Error("test.Local2 was run unexpectedly")
+			if !driver.ShouldRunTestsRecursively() {
+				t.Error("test.Local2 was run unexpectedly")
+			}
 		},
 	})
 	bundle1Remote := testing.NewRegistry("bundle1")
@@ -167,7 +169,9 @@ func TestDriver_RunTests_RemoteFixture(t *gotesting.T) {
 	bundle2Remote.AddFixtureInstance(&testing.FixtureInstance{
 		Name: "fixture.Remote2",
 		Impl: testfixture.New(testfixture.WithSetUp(func(ctx context.Context, s *testing.FixtState) interface{} {
-			t.Error("fixture.Remote2 was set up unexpectedly")
+			if !driver.ShouldRunTestsRecursively() {
+				t.Error("fixture.Remote2 was set up unexpectedly")
+			}
 			return nil
 		})),
 	})
@@ -199,6 +203,13 @@ func TestDriver_RunTests_RemoteFixture(t *gotesting.T) {
 		t.Errorf("RunTests failed: %v", err)
 	}
 
+	wantFixtureError := []resultsjson.Error{{
+		Reason: "Local-remote fixture dependencies are not yet supported in non-primary bundles (b/187957164)",
+	}}
+	if driver.ShouldRunTestsRecursively() {
+		wantFixtureError = nil
+	}
+
 	want := []*resultsjson.Result{
 		{
 			Test: resultsjson.Test{
@@ -213,9 +224,7 @@ func TestDriver_RunTests_RemoteFixture(t *gotesting.T) {
 				Bundle:  "bundle2",
 				Fixture: "fixture.Remote2",
 			},
-			Errors: []resultsjson.Error{{
-				Reason: "Local-remote fixture dependencies are not yet supported in non-primary bundles (b/187957164)",
-			}},
+			Errors: wantFixtureError,
 		},
 	}
 	if diff := cmp.Diff(got, want, resultsCmpOpts...); diff != "" {

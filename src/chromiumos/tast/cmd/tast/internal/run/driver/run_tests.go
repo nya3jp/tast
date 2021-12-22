@@ -27,6 +27,16 @@ import (
 	"chromiumos/tast/internal/run/resultsjson"
 )
 
+// TestRecursively is environment variable key which is set to "1" to enable
+// recursive test running flow and support full remote fixtures.
+const TestRecursively = "TAST_TEST_RECURSIVELY"
+
+// ShouldRunTestsRecursively indicates if Tast tests should be run recursively
+// (i.e. remote bundle invokes local bundle).
+func ShouldRunTestsRecursively() bool {
+	return os.Getenv(TestRecursively) == "1"
+}
+
 // runTestsArgs holds arguments common to private methods called by RunTests.
 type runTestsArgs struct {
 	DUTInfo          *protocol.DUTInfo
@@ -59,10 +69,6 @@ func (d *Driver) RunTests(ctx context.Context, tests []*BundleEntity, dutInfo *p
 
 // runTests runs specified tests. It can return non-nil results even on errors.
 func (d *Driver) runTests(ctx context.Context, bundle string, tests []*protocol.ResolvedEntity, dutInfo *protocol.DUTInfo, client *reporting.RPCClient, remoteDevservers []string) ([]*resultsjson.Result, error) {
-	localTests, remoteTests, err := splitTests(tests)
-	if err != nil {
-		return nil, err
-	}
 
 	args := &runTestsArgs{
 		DUTInfo:          dutInfo,
@@ -71,17 +77,29 @@ func (d *Driver) runTests(ctx context.Context, bundle string, tests []*protocol.
 		RemoteDevservers: remoteDevservers,
 	}
 
-	// Note: These methods can return non-nil results even on errors.
-	localResults, err := d.runLocalTests(ctx, bundle, localTests, args)
-	if err != nil {
-		return localResults, err
+	if !ShouldRunTestsRecursively() {
+		localTests, remoteTests, err := splitTests(tests)
+		if err != nil {
+			return nil, err
+		}
+		// Note: These methods can return non-nil results even on errors.
+		localResults, err := d.runLocalTests(ctx, bundle, localTests, args)
+		if err != nil {
+			return localResults, err
+		}
+		var remoteTestNames []string
+		for _, t := range remoteTests {
+			remoteTestNames = append(remoteTestNames, t.GetEntity().GetName())
+		}
+		remoteResults, err := d.runRemoteTests(ctx, bundle, remoteTestNames, args)
+
+		return append(localResults, remoteResults...), err
 	}
 	var testNames []string
-	for _, t := range remoteTests {
+	for _, t := range tests {
 		testNames = append(testNames, t.GetEntity().GetName())
 	}
-	remoteResults, err := d.runRemoteTests(ctx, bundle, testNames, args)
-	return append(localResults, remoteResults...), err
+	return d.runRemoteTests(ctx, bundle, testNames, args)
 }
 
 func (d *Driver) runLocalTests(ctx context.Context, bundle string, tests []*protocol.ResolvedEntity, args *runTestsArgs) ([]*resultsjson.Result, error) {
@@ -271,7 +289,7 @@ func (d *Driver) runRemoteTestsOnce(ctx context.Context, bundle string, tests []
 		processor.NewCopyOutputHandler(os.Rename),
 	}
 	proc := processor.New(d.cfg.ResDir(), nopDiagnose, hs)
-	d.remoteBundleClient(bundle).RunTests(ctx, bcfg, rcfg, proc, false)
+	d.remoteBundleClient(bundle).RunTests(ctx, bcfg, rcfg, proc, ShouldRunTestsRecursively())
 	return proc.Results(), proc.FatalError()
 }
 

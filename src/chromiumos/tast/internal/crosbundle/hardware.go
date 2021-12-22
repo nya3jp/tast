@@ -82,8 +82,9 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 			Model:    model,
 			Brand:    brand,
 		},
-		Soc: info.soc,
-		Cpu: info.cpuArch,
+		Soc:             info.soc,
+		Cpu:             info.cpuArch,
+		HasNvmeSelfTest: false,
 	}
 	features := &configpb.HardwareFeatures{
 		Screen:             &configpb.HardwareFeatures_Screen{},
@@ -243,6 +244,27 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 	}()
 	if hasNvmeStorage {
 		features.Storage.StorageType = configpb.Component_Storage_NVME
+	}
+
+	// TODO(b/211755998): Pull information from boxster config after this got supported in boxster.
+	hasNvmeSelfTestStorage := func() bool {
+		matches, err := filepath.Glob("/dev/nvme*n1")
+		if err != nil {
+			return false
+		}
+		if len(matches) == 0 {
+			return false
+		}
+
+		nvmePath := matches[0]
+		b, err := exec.Command("nvme", "id-ctrl", "-H", nvmePath).Output()
+		if err != nil {
+			return false
+		}
+		return bytes.Contains(b, []byte("Device Self-test Supported"))
+	}()
+	if hasNvmeStorage && hasNvmeSelfTestStorage {
+		config.HasNvmeSelfTest = true
 	}
 
 	func() {

@@ -805,6 +805,20 @@ func Nvme() Condition {
 	}}
 }
 
+// NvmeSelfTest returns a dependency condition if the device has an NVMe storage device which supported NVMe self-test.
+func NvmeSelfTest() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		dc := f.GetDeprecatedDeviceConfig()
+		if dc == nil {
+			return withErrorStr("DeprecatedDeviceConfig is not given")
+		}
+		if dc.HasNvmeSelfTest {
+			return satisfied()
+		}
+		return unsatisfied("DUT does not have an NVMe storage device which supports self-test")
+	}}
+}
+
 // MinStorage returns a hardware dependency condition requiring the minimum size of the storage in gigabytes.
 func MinStorage(reqGigabytes int) Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {

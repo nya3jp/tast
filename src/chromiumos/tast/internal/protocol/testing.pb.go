@@ -1293,8 +1293,9 @@ type RunConfig struct {
 	// WaitUntilReady indicates that the test bundle's "ready" function (see
 	// ReadyFunc) should be executed before any tests are executed.
 	// TODO(crbug.com/1128259): Remove this field once we fully migrate to gRPC.
-	WaitUntilReady bool   `protobuf:"varint,9,opt,name=wait_until_ready,json=waitUntilReady,proto3" json:"wait_until_ready,omitempty"`
-	DebugPort      uint32 `protobuf:"varint,10,opt,name=debug_port,json=debugPort,proto3" json:"debug_port,omitempty"`
+	WaitUntilReady bool `protobuf:"varint,9,opt,name=wait_until_ready,json=waitUntilReady,proto3" json:"wait_until_ready,omitempty"`
+	// DebugPort is the port that the bundle will attach the debugger to.
+	DebugPort uint32 `protobuf:"varint,10,opt,name=debug_port,json=debugPort,proto3" json:"debug_port,omitempty"`
 }
 
 func (x *RunConfig) Reset() {

@@ -118,6 +118,9 @@ message DeprecatedDeviceConfig {
     POWER_SUPPLY_AC_ONLY = 2;
   }
   PowerSupply power = 4;
+
+  // Indicate the device's storage supporting NVMe self-test or not.
+  bool has_nvme_self_test = 5;
 }
 
 // HardwareFeatures represents a set of hardware features available for the

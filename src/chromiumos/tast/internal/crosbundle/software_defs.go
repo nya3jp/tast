@@ -46,6 +46,7 @@ var softwareFeatureDefs = map[string]string{
 	// TODO(b/174889440) Remove hana, elm
 	// Per b/175345642 veryon_fievel/veyron_tiger are safe but arm32 doesn't report anything in sysfs so just ignore these boards
 	"cpu_vuln_sysfs":    `!(("kernel-3_18" && ("board:asuka" || "board:caroline" || "board:cave" || "board:chell" || "board:lars" || "board:sentry")) || ("kernel-4_4" && ("arm" || "arm64")) || "board:hana" || "board:elm" || "board:hana-kernelnext" || "board:elm-kernelnext" || "board:veyron_fievel" || "board:veyron_tiger")`,
+	"cras":              "cras",
 	"crashpad":          "!force_breakpad",
 	"cros_config":       "unibuild",
 	"cros_internal":     "internal",

@@ -9,6 +9,7 @@ import (
 	"go/ast"
 	"go/format"
 	"go/token"
+	"os"
 	"path/filepath"
 	"regexp"
 	"strconv"
@@ -18,15 +19,34 @@ import (
 // entryPathRegexp matches a file name of an entry file.
 var entryPathRegexp = regexp.MustCompile(`/src/chromiumos/tast/(?:local|remote)/bundles/[^/]+/[^/]+/[^/]+\.go$`)
 
+func fileExists(path string) bool {
+	_, err := os.Stat(path)
+	return !os.IsNotExist(err)
+}
+
 // isEntryFile checks if path is an entry file.
 func isEntryFile(path string) bool {
-	path, err := filepath.Abs(path)
+	var err error
+	exPath := path
+
+	// Unit tests rely on providing fake paths. EvalSymlinks returns an error
+	// if the path doesn't exist. To work around this, only evaluate symlinks
+	// if the path exists
+	if fileExists(exPath) {
+		exPath, err = filepath.EvalSymlinks(exPath)
+		if err != nil {
+			return false
+		}
+	}
+
+	exPath, err = filepath.Abs(exPath)
 	if err != nil {
 		return false
 	}
-	return entryPathRegexp.MatchString(path) &&
-		!isUnitTestFile(path) &&
-		filepath.Base(path) != "doc.go" // exclude package documentation
+
+	return entryPathRegexp.MatchString(exPath) &&
+		!isUnitTestFile(exPath) &&
+		filepath.Base(exPath) != "doc.go" // exclude package documentation
 }
 
 // isUnitTestFile returns true if the supplied path corresponds to a unit test file.

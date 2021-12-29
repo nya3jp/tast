@@ -135,6 +135,7 @@ var softwareFeatureDefs = map[string]string{
 	"no_qemu":                   `!"betty" && !"tast_vm"`,
 	"no_symlink_mount":          "!lxc", // boards using LXC set CONFIG_SECURITY_CHROMIUMOS_NO_SYMLINK_MOUNT=n
 	"no_tablet_form_factor":     "!tablet_form_factor",
+	"no_tpm_dynamic":            "!tpm_dynamic",
 	"no_ubsan":                  "!ubsan",
 	"no_vulkan":                 "!vulkan",
 	"nvme":                      "nvme",
@@ -175,6 +176,7 @@ var softwareFeatureDefs = map[string]string{
 	"tpm1":                      "!mocktpm && !tpm2", // Indicate tpm1.2 is available
 	"tpm2":                      "!mocktpm && tpm2",  // Indicate tpm2 is available
 	"tpm2_simulator":            "tpm2_simulator",
+	"tpm_dynamic":               "tpm_dynamic",
 	"transparent_hugepage":      "transparent_hugepage",
 	"unibuild":                  "unibuild",
 	"untrusted_vm":              `"kernel-4_19" || "kernel-5_4" || "kernel-5_10"`,

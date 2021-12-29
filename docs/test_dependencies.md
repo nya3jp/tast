@@ -139,6 +139,7 @@ The following software features are defined:
 *   `no_symlink_mount` - Symlink mounting is disabled via the
     `CONFIG_SECURITY_CHROMIUMOS_NO_SYMLINK_MOUNT` kernel option.
 *   `no_tablet_form_factor` - The device's primary form factor is not tablet
+*   `no_tpm_dynamic` - Build was not built with dynamic TPM.
 *   `no_ubsan` - Build was not built with Undefined Behavior Sanitizer.
 *   `no_vulkan` - Build was not built with [Vulkan] enabled.
 *   `nvme` - Ability to run NVMe software utilities.
@@ -182,6 +183,7 @@ The following software features are defined:
 *   `tpm1` - Indicate a Trusted Platform Module supporting TPMv1.2 is available. Note that TPMv2 is not backward compatible.
 *   `tpm2` - Indicate a Trusted Platform Module supporting TPMv2 is available.
 *   `tpm2_simulator` - Indicate the simulator of Trusted Platform Module supporting TPMv2 is available.
+*   `tpm_dynamic` - Indicate the dynamic TPM is available.
 *   `transparent_hugepage` - [Transparent Hugepage] support in the Linux kernel.
 *   `unibuild` - The Chrome OS build is a unified build.
 *   `untrusted_vm` - The ability to run an untrusted VM.

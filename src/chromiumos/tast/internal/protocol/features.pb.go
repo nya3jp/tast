@@ -74,6 +74,7 @@ const (
 	DeprecatedDeviceConfig_SOC_ALDER_LAKE     DeprecatedDeviceConfig_SOC = 35
 	DeprecatedDeviceConfig_SOC_SC7280         DeprecatedDeviceConfig_SOC = 36
 	DeprecatedDeviceConfig_SOC_MT8195         DeprecatedDeviceConfig_SOC = 37
+	DeprecatedDeviceConfig_SOC_MT8186         DeprecatedDeviceConfig_SOC = 38
 )
 
 // Enum value maps for DeprecatedDeviceConfig_SOC.
@@ -117,6 +118,7 @@ var (
 		35: "SOC_ALDER_LAKE",
 		36: "SOC_SC7280",
 		37: "SOC_MT8195",
+		38: "SOC_MT8186",
 	}
 	DeprecatedDeviceConfig_SOC_value = map[string]int32{
 		"SOC_UNSPECIFIED":    0,
@@ -157,6 +159,7 @@ var (
 		"SOC_ALDER_LAKE":     35,
 		"SOC_SC7280":         36,
 		"SOC_MT8195":         37,
+		"SOC_MT8186":         38,
 	}
 )
 

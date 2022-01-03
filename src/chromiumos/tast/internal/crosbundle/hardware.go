@@ -95,6 +95,7 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		Audio:              &configpb.HardwareFeatures_Audio{},
 		PrivacyScreen:      &configpb.HardwareFeatures_PrivacyScreen{},
 		Soc:                &configpb.HardwareFeatures_Soc{},
+		Touchpad:           &configpb.HardwareFeatures_Touchpad{},
 		Keyboard:           &configpb.HardwareFeatures_Keyboard{},
 		FormFactor:         &configpb.HardwareFeatures_FormFactor{},
 		DpConverter:        &configpb.HardwareFeatures_DisplayPortConverter{},
@@ -196,6 +197,17 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 	}()
 	if hasTouchScreen {
 		features.Screen.TouchSupport = configpb.HardwareFeatures_PRESENT
+	}
+
+	hasTouchpad := func() bool {
+		tp, err := exec.Command("udevadm", "info", "--export-db").Output()
+		if err != nil {
+			return false
+		}
+		return regexp.MustCompile(`(?m)^E: ID_INPUT_TOUCHPAD=1$`).Match(tp)
+	}()
+	if hasTouchpad {
+		features.Touchpad.Present = configpb.HardwareFeatures_PRESENT
 	}
 
 	hasFingerprint := func() bool {

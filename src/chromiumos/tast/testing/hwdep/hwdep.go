@@ -367,6 +367,22 @@ func Keyboard() Condition {
 	}
 }
 
+// Touchpad returns a hardware dependency condition that is satisfied
+// iff the DUT has a touchpad.
+func Touchpad() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("Did not find hardware features")
+		}
+		if hf.GetTouchpad().GetPresent() != configpb.HardwareFeatures_PRESENT {
+			return unsatisfied("DUT does not have a touchpad")
+		}
+		return satisfied()
+	},
+	}
+}
+
 // Wifi80211ac returns a hardware dependency condition that is satisfied
 // iff the DUT's WiFi module supports 802.11ac.
 func Wifi80211ac() Condition {

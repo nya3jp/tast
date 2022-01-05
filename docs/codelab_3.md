@@ -227,10 +227,10 @@ button is ready to be clicked.
 Now that the wallpaper picker is open, let's set the background to a solid color.
 We left click for the node corresponding to the 'Solid colors' tab in `ui_tree.txt`:
 ```
-node id=301 role=listItem state={} parentID=245 childIds=[341]
-  node id=341 role=genericContainer state={} parentID=301 childIds=[342]
-    node id=342 role=staticText state={} parentID=341 childIds=[343] name=Solid colors
-      node id=343 role=inlineTextBox state={} parentID=342 childIds=[] name=Solid colors
+node id=245 role=genericContainer state={} parentID=243 childIds=[250,251]
+  node id=250 role=paragraph state={} parentID=245 childIds=[252] name=Solid colors
+    node id=252 role=staticText state={} parentID=250 childIds=[362] name=Solid colors
+      node id=362 role=inlineTextBox state={} parentID=252 childIds=[] name=Solid colors
 ```
 ```go
 if err := ui.LeftClick(nodewith.Name("Solid colors").Role(role.StaticText))(ctx); err != nil {
@@ -241,10 +241,10 @@ if err := ui.LeftClick(nodewith.Name("Solid colors").Role(role.StaticText))(ctx)
 Personally, I am a fan of the 'Deep Purple' background, so that is what I am going
 to pick:
 ```
-node id=355 role=listItem state={"focusable":true} parentID=264 childIds=[] name=Deep Purple
+node id=410 role=listBoxOption state={"focusable":true} parentID=409 childIds=[477] name=Deep Purple
 ```
 ```go
-if err := ui.LeftClick(nodewith.Name("Deep Purple").Role(role.ListItem))(ctx); err != nil {
+if err := ui.LeftClick(nodewith.Name("Deep Purple").Role(role.ListBoxOption))(ctx); err != nil {
   s.Fatal(...)
 }
 ```
@@ -256,10 +256,8 @@ models. We examined and found that the "Solid color" list item was not visible
 without scrolling. This could be verified either by seeing the DUT screen or
 by seeing the node having "offscreen" state true:
 ```
-    node id=169 role=listItem state={"offscreen":true} parentID=106 childIds=[229]
-      node id=229 role=genericContainer state={"offscreen":true} parentID=169 childIds=[230]
-        node id=230 role=staticText state={"offscreen":true} parentID=229 childIds=[231] name=Solid colors
-          node id=231 role=inlineTextBox state={"offscreen":true} parentID=230 childIds=[] name=Solid colors
+node id=252 role=staticText state={"offscreen":true} parentID=250 childIds=[362] name=Solid colors
+  node id=362 role=inlineTextBox state={"offscreen":true} parentID=252 childIds=[] name=Solid colors
 ```
 
 This happened due to different screen sizes of devices, which affects the
@@ -267,7 +265,7 @@ window size. In order to make this test more robust, we need to make the item
 visible before clicking:
 
 ```go
-if err := ui.MakeVisible(nodewith.Name("Solid colors").Role(role.InlineTextBox))(ctx); err != nil {
+if err := ui.MakeVisible(nodewith.Name("Solid colors").Role(role.StaticText))(ctx); err != nil {
   s.Fatal(...)
 }
 // same as the previsous section
@@ -305,13 +303,13 @@ Checking that a test succeeded can often be harder than expected. In this case,
 we have to decide what demonstrates a successful wallpaper change. A good solution
 would probably be to check a pixel in the background and make sure it is the
 same color as deep purple. Sadly, that is not currently easy to do in Tast. A
-simpler solution for now is to check for the text 'Deep Purple' because the
-wallpaper picker displays the name of the currently selected wallpaper:
+simpler solution for now is to check for the text 'Deep Purple' in the heading
+because the wallpaper picker displays the name of the currently selected wallpaper:
 ```
-node id=412 role=staticText state={} parentID=206 childIds=[413] name=Deep Purple
+node id=109 role=heading state={} parentID=34 childIds=[] name=Currently set Deep Purple
 ```
 ```go
-if err := ui.WaitUntilExists(nodewith.Name("Deep Purple").Role(role.StaticText))(ctx); err != nil {
+if err := ui.WaitUntilExists(nodewith.NameContaining("Deep Purple").Role(role.Heading))(ctx); err != nil {
   s.Fatal(...)
 }
 ```
@@ -335,8 +333,8 @@ import (
 	"time"
 
 	"chromiumos/tast/local/chrome"
-	"chromiumos/tast/local/chrome/uiauto/faillog"
 	"chromiumos/tast/local/chrome/uiauto"
+	"chromiumos/tast/local/chrome/uiauto/faillog"
 	"chromiumos/tast/local/chrome/uiauto/nodewith"
 	"chromiumos/tast/local/chrome/uiauto/role"
 	"chromiumos/tast/testing"
@@ -374,13 +372,12 @@ func Change(ctx context.Context, s *testing.State) {
 		ui.WaitUntilExists(solidColorsMenu),
 		ui.MakeVisible(solidColorsMenu),
 		ui.LeftClick(solidColorsMenu),
-		ui.LeftClick(nodewith.Name("Deep Purple").Role(role.ListItem)),
+		ui.LeftClick(nodewith.Name("Deep Purple").Role(role.ListBoxOption)),
 		// Ensure that "Deep Purple" text is displayed.
 		// The UI displays the name of the currently set wallpaper.
-		ui.WaitUntilExists(nodewith.Name("Deep Purple").Role(role.StaticText)),
+		ui.WaitUntilExists(nodewith.NameContaining("Deep Purple").Role(role.Heading)),
 	)(ctx); err != nil {
 		s.Fatal("Failed to change the wallpaper: ", err)
 	}
 }
-
 ```

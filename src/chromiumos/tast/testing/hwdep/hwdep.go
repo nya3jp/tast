@@ -265,6 +265,24 @@ func CPUSupportsSMT() Condition {
 	}
 }
 
+// CPUSupportsSHANI returns a hardware dependency condition that is satisfied iff the DUT supports
+// SHA-NI instruction extension.
+func CPUSupportsSHANI() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("HardwareFeatures is not given")
+		}
+		for _, f := range hf.GetSoc().Features {
+			if f == configpb.Component_Soc_SHA_NI {
+				return satisfied()
+			}
+		}
+		return unsatisfied("CPU does not have SHA-NI support")
+	},
+	}
+}
+
 // ECHibernate returns a hardware dependency condition that is satisfied
 // iff the EC has the ability to hibernate.
 func ECHibernate() Condition {

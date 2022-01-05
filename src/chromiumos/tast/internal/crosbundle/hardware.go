@@ -396,6 +396,12 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		features.Soc.Features = append(features.Soc.Features, configpb.Component_Soc_SMT)
 	}
 
+	for _, v := range info.flags {
+		if v == "sha_ni" {
+			features.Soc.Features = append(features.Soc.Features, configpb.Component_Soc_SHA_NI)
+		}
+	}
+
 	func() {
 		// Probe for presence of DisplayPort converters
 		devices := map[string]string{
@@ -441,12 +447,13 @@ func (r *lscpuResult) find(name string) (data string, ok bool) {
 type cpuConfig struct {
 	cpuArch protocol.DeprecatedDeviceConfig_Architecture
 	soc     protocol.DeprecatedDeviceConfig_SOC
+	flags   []string
 }
 
 // cpuInfo returns a structure containing field data from the "lscpu" command
 // which outputs CPU architecture information from "sysfs" and "/proc/cpuinfo".
 func cpuInfo() (cpuConfig, error) {
-	errInfo := cpuConfig{protocol.DeprecatedDeviceConfig_ARCHITECTURE_UNDEFINED, protocol.DeprecatedDeviceConfig_SOC_UNSPECIFIED}
+	errInfo := cpuConfig{protocol.DeprecatedDeviceConfig_ARCHITECTURE_UNDEFINED, protocol.DeprecatedDeviceConfig_SOC_UNSPECIFIED, nil}
 	b, err := exec.Command("lscpu", "--json").Output()
 	if err != nil {
 		return errInfo, err
@@ -455,15 +462,17 @@ func cpuInfo() (cpuConfig, error) {
 	if err := json.Unmarshal(b, &parsed); err != nil {
 		return errInfo, errors.Wrap(err, "failed to parse lscpu result")
 	}
+	flagsStr, _ := parsed.find("Flags:")
+	flags := strings.Split(flagsStr, " ")
 	arch, err := findArchitecture(parsed)
 	if err != nil {
 		return errInfo, errors.Wrap(err, "failed to find CPU architecture")
 	}
 	soc, err := findSOC(parsed)
 	if err != nil {
-		return cpuConfig{arch, protocol.DeprecatedDeviceConfig_SOC_UNSPECIFIED}, errors.Wrap(err, "failed to find SOC")
+		return cpuConfig{arch, protocol.DeprecatedDeviceConfig_SOC_UNSPECIFIED, flags}, errors.Wrap(err, "failed to find SOC")
 	}
-	return cpuConfig{arch, soc}, nil
+	return cpuConfig{arch, soc, flags}, nil
 }
 
 // findArchitecture returns an architecture configuration based from parsed output

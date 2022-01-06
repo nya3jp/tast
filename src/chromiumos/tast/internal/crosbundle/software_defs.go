@@ -41,11 +41,10 @@ var softwareFeatureDefs = map[string]string{
 	"chrome_internal":       "chrome_internal",
 	"chromeless":            "chromeless_tty || rialto",
 	"coresched":             "coresched",
-	// TODO(b/174890060) Remove asuka, caroline, cave, chell, lars, sentry
 	// TODO(b/174888780) Remove kernel-4_4 once arm64 kernel reporting is fixed
 	// TODO(b/174889440) Remove hana, elm
 	// Per b/175345642 veryon_fievel/veyron_tiger are safe but arm32 doesn't report anything in sysfs so just ignore these boards
-	"cpu_vuln_sysfs":    `!(("kernel-3_18" && ("board:asuka" || "board:caroline" || "board:cave" || "board:chell" || "board:lars" || "board:sentry")) || ("kernel-4_4" && ("arm" || "arm64")) || "board:hana" || "board:elm" || "board:hana-kernelnext" || "board:elm-kernelnext" || "board:veyron_fievel" || "board:veyron_tiger")`,
+	"cpu_vuln_sysfs":    `!(("kernel-4_4" && ("arm" || "arm64")) || "board:hana" || "board:elm" || "board:hana-kernelnext" || "board:elm-kernelnext" || "board:veyron_fievel" || "board:veyron_tiger")`,
 	"cras":              "cras",
 	"crashpad":          "!force_breakpad",
 	"cros_config":       "unibuild",

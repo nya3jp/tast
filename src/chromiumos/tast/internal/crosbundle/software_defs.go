@@ -127,6 +127,7 @@ var softwareFeatureDefs = map[string]string{
 	"no_eth_loss_on_reboot":     `!("board:jacuzzi")`,                // some devices (jacuzzi) may not enumerate eth on reboot b/178529170
 	"no_iioservice":             "!iioservice",
 	"no_kernel_upstream":        `!"kernel-upstream"`,
+	"no_manatee":                "!manatee",
 	"no_msan":                   "!msan",
 	"no_ondevice_handwriting":   "!ml_service || !ondevice_handwriting",
 	"no_qemu":                   `!"betty" && !"tast_vm"`,

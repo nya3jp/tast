@@ -131,6 +131,7 @@ The following software features are defined:
     issue performing WiFi scan. See [b/172211349](https://b.corp.google.com/issues/172211349).
 *   `no_eth_loss_on_reboot` - Board does not lose ethernet on reboot. Context: b/178529170
 *   `no_iioservice` - Build was not built with CrOS IIO Service.
+*   `no_manatee` - Build was not built with ManaTEE enabled.
 *   `no_msan` - Build was not built with Memory Sanitizer.
 *   `no_ondevice_handwriting` - Doesn't have on-device handwriting recognition support. Either ml_service is not enabled, or if ml_service doesn't support `ondevice_handwriting`.
 *   `no_arc_userdebug` - Skip boards that ship ARC userdebug build.

@@ -17,6 +17,7 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/driver/internal/drivercore"
 	"chromiumos/tast/cmd/tast/internal/run/genericexec"
 	"chromiumos/tast/errors"
+	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/rpc"
 	"chromiumos/tast/internal/testing"
@@ -188,21 +189,32 @@ func (c *Client) ListTests(ctx context.Context, patterns []string, features *pro
 		return nil, err
 	}
 
-	conn, err := c.dial(ctx, &protocol.HandshakeRequest{RunnerInitParams: c.params})
+	logging.Infof(ctx, "Sending ListEntities Request to test runner (hops=%v)", c.hops)
+	listEntities := func() (*protocol.ListEntitiesResponse, error) {
+		conn, err := c.dial(ctx, &protocol.HandshakeRequest{RunnerInitParams: c.params})
+		if err != nil {
+			return nil, err
+		}
+		defer conn.Close(ctx)
+		req := &protocol.ListEntitiesRequest{
+			Features: features,
+		}
+		// It should be less than a minute to list entities.
+		cl := protocol.NewTestServiceClient(conn.Conn())
+		ctxForListEntities, cancel := context.WithTimeout(ctx, time.Minute)
+		defer cancel()
+		return cl.ListEntities(ctxForListEntities, req)
+	}
+	res, err := listEntities()
 	if err != nil {
-		return nil, err
+		logging.Infof(ctx, "Failed to send ListEntities request: %v", err)
+		logging.Infof(ctx, "Retry sending ListEntities Request to test runner (hops=%v)", c.hops)
+		res, err = listEntities()
+		if err != nil {
+			return nil, err
+		}
 	}
-	defer conn.Close(ctx)
-
-	cl := protocol.NewTestServiceClient(conn.Conn())
-
-	req := &protocol.ListEntitiesRequest{
-		Features: features,
-	}
-	res, err := cl.ListEntities(ctx, req)
-	if err != nil {
-		return nil, err
-	}
+	logging.Info(ctx, "Got ListEntities Response from local test runner")
 
 	for _, e := range res.GetEntities() {
 		if e.GetEntity().GetType() != protocol.EntityType_TEST {

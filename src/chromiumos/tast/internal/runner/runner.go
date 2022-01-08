@@ -49,6 +49,8 @@ func Run(clArgs []string, stdin io.Reader, stdout, stderr io.Writer, scfg *Stati
 			ctx = logging.AttachLogger(ctx, l)
 		}
 	}
+	logging.Debug(ctx, "Tast local_runner starts")
+	defer logging.Debug(ctx, "Tast local_runner ends")
 
 	// TODO(b/189332919): Remove this hack and write stack traces to stderr
 	// once we finish migrating to gRPC-based protocol. This hack is needed

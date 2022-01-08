@@ -32,6 +32,7 @@ type testServer struct {
 }
 
 func newTestServer(scfg *StaticConfig, runnerParams *protocol.RunnerInitParams, bundleParams *protocol.BundleInitParams) *testServer {
+	exec.Command("logger", "local_test_runner: New test server is up for serving requests").Run()
 	return &testServer{
 		scfg:         scfg,
 		runnerParams: runnerParams,
@@ -40,6 +41,9 @@ func newTestServer(scfg *StaticConfig, runnerParams *protocol.RunnerInitParams, 
 }
 
 func (s *testServer) GetDUTInfo(ctx context.Context, req *protocol.GetDUTInfoRequest) (*protocol.GetDUTInfoResponse, error) {
+	// Logging added for b/213616631.
+	logging.Debug(ctx, "Serving GetDUTInfo Request")
+	exec.Command("logger", "local_test_runner: Serving GetDUTInfo Request").Run()
 	if s.scfg.GetDUTInfo == nil {
 		return &protocol.GetDUTInfoResponse{}, nil
 	}
@@ -47,6 +51,9 @@ func (s *testServer) GetDUTInfo(ctx context.Context, req *protocol.GetDUTInfoReq
 }
 
 func (s *testServer) GetSysInfoState(ctx context.Context, req *protocol.GetSysInfoStateRequest) (*protocol.GetSysInfoStateResponse, error) {
+	// Logging added for b/213616631.
+	logging.Debug(ctx, "Serving GetSysInfoState Request")
+	exec.Command("logger", "local_test_runner: Serving GetSysInfoState Request").Run()
 	if s.scfg.GetSysInfoState == nil {
 		return &protocol.GetSysInfoStateResponse{}, nil
 	}
@@ -54,6 +61,9 @@ func (s *testServer) GetSysInfoState(ctx context.Context, req *protocol.GetSysIn
 }
 
 func (s *testServer) CollectSysInfo(ctx context.Context, req *protocol.CollectSysInfoRequest) (*protocol.CollectSysInfoResponse, error) {
+	// Logging added for b/213616631.
+	logging.Debug(ctx, "Serving CollectSysInfo Request")
+	exec.Command("logger", "local_test_runner: Serving CollectSysInfo Request").Run()
 	if s.scfg.CollectSysInfo == nil {
 		return &protocol.CollectSysInfoResponse{}, nil
 	}
@@ -61,6 +71,10 @@ func (s *testServer) CollectSysInfo(ctx context.Context, req *protocol.CollectSy
 }
 
 func (s *testServer) DownloadPrivateBundles(ctx context.Context, req *protocol.DownloadPrivateBundlesRequest) (*protocol.DownloadPrivateBundlesResponse, error) {
+	// Logging added for b/213616631.
+	logging.Debug(ctx, "Serving DownloadPrivateBundles Request")
+	exec.Command("logger", "local_test_runner: Serving DownloadPrivateBundles Request").Run()
+
 	if s.scfg.PrivateBundlesStampPath == "" {
 		return nil, errors.New("this test runner is not configured for private bundles")
 	}
@@ -129,6 +143,9 @@ func (s *testServer) DownloadPrivateBundles(ctx context.Context, req *protocol.D
 
 func (s *testServer) ListEntities(ctx context.Context, req *protocol.ListEntitiesRequest) (*protocol.ListEntitiesResponse, error) {
 	var entities []*protocol.ResolvedEntity
+	// Logging added for b/213616631 to see ListEntities progress on the DUT.
+	logging.Debug(ctx, "Serving ListEntities Request")
+	exec.Command("logger", "local_test_runner: Serving ListEntities Request").Run()
 	// ListEntities should not set runtime global information during handshake.
 	// TODO(b/187793617): Always pass s.bundleParams to bundles once we fully migrate to gRPC-based protocol.
 	// This workaround is currently needed because BundleInitParams is unavailable when this method is called internally for handling JSON-based protocol methods.
@@ -142,10 +159,15 @@ func (s *testServer) ListEntities(ctx context.Context, req *protocol.ListEntitie
 	}); err != nil {
 		return nil, err
 	}
+	// Logging added for b/213616631 to see ListEntities progress on the DUT.
+	logging.Debug(ctx, "Finish serving ListEntities Request")
+	exec.Command("logger", "local_test_runner: Finish serving ListEntities Request").Run()
 	return &protocol.ListEntitiesResponse{Entities: entities}, nil
 }
 
 func (s *testServer) RunTests(srv protocol.TestService_RunTestsServer) error {
+	// Logging added for b/213616631.
+	exec.Command("logger", "local_test_runner: Serving RunTests Request").Run()
 	ctx := srv.Context()
 	logger := logging.NewSinkLogger(logging.LevelInfo, false, logging.NewFuncSink(func(msg string) {
 		srv.Send(&protocol.RunTestsResponse{
@@ -211,6 +233,8 @@ func (s *testServer) forEachBundle(ctx context.Context, debugPort int, bundlePar
 
 	for _, bundlePath := range bundlePaths {
 		if err := func() error {
+			// Logging added for b/213616631 to see ListEntities progress on the DUT.
+			logging.Debugf(ctx, "Sending request to bundle %s", bundlePath)
 			cl, err := rpc.DialExec(ctx, bundlePath, debugPort, true,
 				&protocol.HandshakeRequest{BundleInitParams: bundleParams})
 			if err != nil {

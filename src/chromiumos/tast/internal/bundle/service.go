@@ -6,9 +6,13 @@ package bundle
 
 import (
 	"context"
+	"fmt"
+	"os"
+	"os/exec"
 
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/bundle/bundleclient"
+	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testing"
 )
@@ -20,11 +24,19 @@ type testServer struct {
 }
 
 func newTestServer(scfg *StaticConfig, bundleParams *protocol.BundleInitParams) *testServer {
+	exec.Command("logger", "New test server is setup in bundle to listen to requests").Run()
 	return &testServer{scfg: scfg, bundleParams: bundleParams}
 }
 
 func (s *testServer) ListEntities(ctx context.Context, req *protocol.ListEntitiesRequest) (*protocol.ListEntitiesResponse, error) {
 	var entities []*protocol.ResolvedEntity
+	// Logging added for b/213616631 to see ListEntities progress on the DUT.
+	execName, err := os.Executable()
+	if err != nil {
+		execName = "bundle"
+	}
+	logging.Debugf(ctx, "Serving ListEntities Request in %s (recursive flag: %v)", execName, req.GetRecursive())
+	exec.Command("logger", fmt.Sprintf("Serving ListEntities Request in %s", execName)).Run()
 	if req.GetRecursive() {
 		var cl *bundleclient.Client
 		if s.bundleParams.GetBundleConfig() != nil {
@@ -44,6 +56,9 @@ func (s *testServer) ListEntities(ctx context.Context, req *protocol.ListEntitie
 	} else {
 		entities = listEntities(s.scfg.registry, req.Features)
 	}
+	// Logging added for b/213616631 to see ListEntities progress on the DUT.
+	logging.Debugf(ctx, "Successfully serving ListEntities Request in %s ", execName)
+	exec.Command("logger", fmt.Sprintf("Successfully serving ListEntities Request in %s", execName)).Run()
 	return &protocol.ListEntitiesResponse{Entities: entities}, nil
 }
 

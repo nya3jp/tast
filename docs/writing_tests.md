@@ -1121,12 +1121,12 @@ If a data file is needed by a support package that's used by tests in multiple
 packages, it should be stored in a `data` subdirectory within the support
 package and symlinked into each test package's `data` subdirectory. See the
 [media_session_test.html] file used by the [mediasession package] and shared by
-the [arc.PlayPauseChrome] and [ui.MediaSessionGain] tests, for example.
+the [ui.PlayPauseChrome] and [arc.MediaSessionGain] tests, for example.
 
 [media_session_test.html]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/main/src/chromiumos/tast/local/chrome/mediasession/data/media_session_test.html
 [mediasession package]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/chrome/mediasession
-[arc.PlayPauseChrome]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/main/src/chromiumos/tast/local/bundles/cros/ui/play_pause_chrome.go
-[ui.MediaSessionGain]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/main/src/chromiumos/tast/local/bundles/cros/arc/media_session_gain.go
+[ui.PlayPauseChrome]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/main/src/chromiumos/tast/local/bundles/cros/ui/play_pause_chrome.go
+[arc.MediaSessionGain]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/main/src/chromiumos/tast/local/bundles/cros/arc/media_session_gain.go
 
 ### Using data files in tests
 

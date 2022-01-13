@@ -599,6 +599,11 @@ Parallels boot-up testing. Otherwise the same as group:crosbolt.`,
 		Contacts: []string{"gabormagda@google.com", "cros-engprod-muc@google.com"},
 		Desc:     `A group of tests that require the installation of a new OS image version.`,
 	},
+	{
+		Name:     "asan",
+		Contacts: []string{"cjdb@google.com", "chromeos-toolchain@google.com"},
+		Desc:     `A group of tests for AddressSanitizer builds.`,
+	},
 }
 
 // validGroupMap is the name-keyed map of validGroups.

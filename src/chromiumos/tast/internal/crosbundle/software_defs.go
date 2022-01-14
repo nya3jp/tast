@@ -12,8 +12,9 @@ var softwareFeatureDefs = map[string]string{
 	"amd64": "amd64",
 	// ARC USE flags are defined here:
 	// http://cs/chromeos_public/src/third_party/chromiumos-overlay/eclass/arc-build-constants.eclass
-	"android_vm":         `arc && arcvm && !"android-vm-pi"`,
-	"android_vm_r":       `arc && arcvm && "android-vm-rvc"`,
+	// TODO(b/210917721): Re-enable ARCVM on manatee.
+	"android_vm":         `arc && arcvm && !"android-vm-pi" && !manatee`,
+	"android_vm_r":       `arc && arcvm && "android-vm-rvc" && !manatee`,
 	"android_p":          `arc && "android-container-pi"`,
 	"arc":                `arc`,
 	"arc32":              `"cheets_user" || "cheets_userdebug"`,
@@ -44,14 +45,16 @@ var softwareFeatureDefs = map[string]string{
 	// TODO(b/174888780) Remove kernel-4_4 once arm64 kernel reporting is fixed
 	// TODO(b/174889440) Remove hana, elm, kevin, bob, scarlet.
 	// Per b/175345642 veryon_fievel/veyron_tiger are safe but arm32 doesn't report anything in sysfs so just ignore these boards
-	"cpu_vuln_sysfs":    `!(("kernel-4_4" && ("arm" || "arm64")) || "board:bob" || "board:hana" || "board:elm" || "board:hana-kernelnext" || "board:elm-kernelnext" || "board:kevin" || "board:kevin-kernelnext" || "board:scarlet" || "board:scarlet-kernelnext" || "board:veyron_fievel" || "board:veyron_tiger")`,
-	"cras":              "cras",
-	"crashpad":          "!force_breakpad",
-	"cros_config":       "unibuild",
-	"cros_internal":     "internal",
-	"crosvm_gpu":        `"crosvm-gpu" && "virtio_gpu"`,
-	"crosvm_no_gpu":     `!"crosvm-gpu" || !"virtio_gpu"`,
-	"crossystem":        `!"betty" && !"tast_vm"`, // VMs don't support few crossystem sub-commands: https://crbug.com/974615
+	"cpu_vuln_sysfs": `!(("kernel-4_4" && ("arm" || "arm64")) || "board:bob" || "board:hana" || "board:elm" || "board:hana-kernelnext" || "board:elm-kernelnext" || "board:kevin" || "board:kevin-kernelnext" || "board:scarlet" || "board:scarlet-kernelnext" || "board:veyron_fievel" || "board:veyron_tiger")`,
+	"cras":           "cras",
+	"crashpad":       "!force_breakpad",
+	"cros_config":    "unibuild",
+	"cros_internal":  "internal",
+	"crosvm_gpu":     `"crosvm-gpu" && "virtio_gpu"`,
+	"crosvm_no_gpu":  `!"crosvm-gpu" || !"virtio_gpu"`,
+	// VMs don't support few crossystem sub-commands: https://crbug.com/974615
+	// TODO(b/201493204): Reenable when crossystem is fixed on manatee.
+	"crossystem":        `!"betty" && !"tast_vm" && !"manatee"`,
 	"cups":              "cups",
 	"diagnostics":       `"diagnostics" && !"betty" && !"tast_vm"`, // VMs do not have hardware to diagnose. https://crbug.com/1126619
 	"dlc":               "dlc && dlc_test",
@@ -109,7 +112,7 @@ var softwareFeatureDefs = map[string]string{
 	"ml_benchmark_drivers":      "ml_benchmark_drivers",
 	"ml_service":                "ml_service",
 	"modemfwd":                  "modemfwd",
-	"mosys":                     `!"betty" && !"tast_vm"`,
+	"mosys":                     `!"betty" && !"tast_vm" && !manatee`, //TODO(b/213995159): Reenable manatee when mosys is fixed.
 	"nacl":                      "nacl",
 	"ndk_translation":           "ndk_translation",
 	"ndk_translation64":         "ndk_translation64",
@@ -146,9 +149,11 @@ var softwareFeatureDefs = map[string]string{
 	"plugin_vm":                 "pita", // boards that can run Plugin VM.
 	"proprietary_codecs":        "chrome_internal || chrome_media",
 	"protected_content":         "cdm_factory_daemon",
-	"pstore":                    `!"betty" && !"tast_vm"`, // These boards don't support pstore: https://crbug.com/971899
-	"qemu":                      `"betty" || "tast_vm"`,
-	"racc":                      "racc",
+	// These boards don't support pstore: https://crbug.com/971899
+	// TODO(b/213995410): Reenable pstore on manatee.
+	"pstore": `!"betty" && !"tast_vm" && !manatee`,
+	"qemu":   `"betty" || "tast_vm"`,
+	"racc":   "racc",
 	// weird missing-runner-after-reboot bug: https://crbug.com/909955
 	// TODO(yich): This is a workaround to enable reboot flag on all boards.
 	// We should disable this flag if the weird missing-runner-after-reboot bug still happening.

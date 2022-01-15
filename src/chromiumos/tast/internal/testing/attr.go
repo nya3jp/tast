@@ -492,6 +492,10 @@ Meta tests should be a subset of mainline critical tests.
 				Name: "paper-io_scanning",
 				Desc: `Scanning tests.`,
 			},
+			{
+				Name: "paper-io_mfp_printscan",
+				Desc: `Scanning and printing tests on real MFPs.`,
+			},
 		},
 	},
 	{

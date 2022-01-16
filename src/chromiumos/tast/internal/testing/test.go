@@ -56,7 +56,13 @@ type Test struct {
 
 	// Labels contains freeform text labels describing the test.
 	// This should not be used other than Tast and tests.
+	// Note: this info is not retrievable in test results.
 	Labels []string
+
+	// Markers contains freeform text markers describing the test.
+	// This information will be available in the test results, and can be used
+	// for custom test results filtering or any other mapping.
+	Markers []string
 
 	// Data contains paths of data files needed by the test, relative to a "data" subdirectory within the
 	// directory in which Func is located.
@@ -137,6 +143,10 @@ type Param struct {
 	// ExtraLabels contains freeform text labels describing the test,
 	// in addition to Label declared in the enclosing Test.
 	ExtraLabels []string
+
+	// ExtraMarkers contains freeform text markers describing the test,
+	// in addition to Markers declared in the enclosing Test.
+	ExtraMarkers []string
 
 	// ExtraData contains paths of data files needed by the test case of this
 	// param in addition to Data declared in the enclosing Test.

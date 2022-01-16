@@ -71,6 +71,7 @@ type TestInstance struct {
 	Contacts     []string
 	Attr         []string
 	Labels       []string
+	Markers      []string
 	Data         []string
 	Vars         []string
 	VarDeps      []string
@@ -192,6 +193,7 @@ func newTestInstance(t *Test, p *Param) (*TestInstance, error) {
 	}
 
 	labels := append(append([]string(nil), t.Labels...), p.ExtraLabels...)
+	markers := append(append([]string(nil), t.Markers...), p.ExtraMarkers...)
 
 	return &TestInstance{
 		Name:         name,
@@ -202,6 +204,7 @@ func newTestInstance(t *Test, p *Param) (*TestInstance, error) {
 		Contacts:     append([]string(nil), t.Contacts...),
 		Attr:         attrs,
 		Labels:       labels,
+		Markers:      markers,
 		Data:         data,
 		Vars:         append([]string(nil), t.Vars...),
 		VarDeps:      append([]string(nil), t.VarDeps...),
@@ -477,6 +480,7 @@ func (t *TestInstance) EntityProto() *protocol.Entity {
 		Name:        t.Name,
 		Package:     t.Pkg,
 		Attributes:  append([]string(nil), t.Attr...),
+		Markers:     append([]string(nil), t.Markers...),
 		Description: t.Desc,
 		Fixture:     t.Fixture,
 		Dependencies: &protocol.EntityDependencies{

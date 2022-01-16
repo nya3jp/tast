@@ -24,6 +24,7 @@ type Test struct {
 	Desc         string           `json:"desc"`
 	Contacts     []string         `json:"contacts"`
 	Attr         []string         `json:"attr"`
+	Markers      []string         `json:"markers"`
 	Data         []string         `json:"data"`
 	Vars         []string         `json:"vars,omitempty"`
 	VarDeps      []string         `json:"varDeps,omitempty"`
@@ -85,6 +86,7 @@ func NewTest(e *protocol.Entity) (*Test, error) {
 		Desc:         e.GetDescription(),
 		Contacts:     e.GetContacts().GetEmails(),
 		Attr:         e.GetAttributes(),
+		Markers:      e.GetMarkers(),
 		Data:         e.GetDependencies().GetDataFiles(),
 		Vars:         e.GetLegacyData().GetVariables(),
 		VarDeps:      e.GetLegacyData().GetVariableDeps(),

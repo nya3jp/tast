@@ -134,6 +134,7 @@ message Entity {
   EntityDependencies dependencies = 7;
   EntityContacts contacts = 8;
   EntityLegacyData legacy_data = 9;
+  repeated string markers = 10;
 }
 
 // EntityContacts contains contact information of an entity.

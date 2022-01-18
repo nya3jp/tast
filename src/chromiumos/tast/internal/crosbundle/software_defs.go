@@ -159,30 +159,32 @@ var softwareFeatureDefs = map[string]string{
 	// We should disable this flag if the weird missing-runner-after-reboot bug still happening.
 	// Or cleanup all reboot dependency in tast-tests.
 	// Notice: The flag would be false when a board didn't have any attributes.
-	"reboot":                 `"*"`,
-	"rrm_support":            `!("kernel-3_18" || "kernel-4_4")`,
-	"screenshot":             "!rk3399", // screenshot command broken on RK3399: https://crbug.com/880597
-	"selinux":                "selinux",
-	"selinux_current":        "selinux && !selinux_experimental",
-	"selinux_experimental":   "selinux && selinux_experimental",
-	"shill-wifi":             "!moblab", // fizz-moblab disables the WiFi technology for Shill
-	"sirenia":                "sirenia && !manatee",
-	"smartdim":               "smartdim",
-	"smartctl":               "nvme || sata",
-	"storage_wearout_detect": `"storage_wearout_detect" && !"betty" && !"tast_vm"`, // Skip wearout checks for VMs and eMMC < 5.0
-	"tablet_form_factor":     "tablet_form_factor",
-	"tpm":                    "!mocktpm",
-	"tpm1":                   "!mocktpm && !tpm2", // Indicate tpm1.2 is available
-	"tpm2":                   "!mocktpm && tpm2",  // Indicate tpm2 is available
-	"tpm2_simulator":         "tpm2_simulator",
-	"transparent_hugepage":   "transparent_hugepage",
-	"untrusted_vm":           `"kernel-4_19" || "kernel-5_4" || "kernel-5_10"`,
-	"usbguard":               "usbguard",
-	"use_fscrypt_v1":         `"!direncription_allow_v2" && "!lvm_stateful_partition"`,
-	"use_fscrypt_v2":         `"direncription_allow_v2" && "!lvm_stateful_partition"`,
-	"v4l2_codec":             "v4l2_codec",
-	"vaapi":                  "vaapi",
-	"video_cards_ihd":        "video_cards_iHD",
+	"reboot":                    `"*"`,
+	"rrm_support":               `!("kernel-3_18" || "kernel-4_4")`,
+	"screenshot":                "!rk3399", // screenshot command broken on RK3399: https://crbug.com/880597
+	"selinux":                   "selinux",
+	"selinux_current":           "selinux && !selinux_experimental",
+	"selinux_experimental":      "selinux && selinux_experimental",
+	"shill-wifi":                "!moblab", // fizz-moblab disables the WiFi technology for Shill
+	"sirenia":                   "sirenia && !manatee",
+	"smartdim":                  "smartdim",
+	"smartctl":                  "nvme || sata",
+	"storage_wearout_detect":    `"storage_wearout_detect" && !"betty" && !"tast_vm"`, // Skip wearout checks for VMs and eMMC < 5.0
+	"tablet_form_factor":        "tablet_form_factor",
+	"thread_safe_libva_backend": "video_cards_amdgpu || video_cards_iHD",
+	"tpm":                       "!mocktpm",
+	"tpm1":                      "!mocktpm && !tpm2", // Indicate tpm1.2 is available
+	"tpm2":                      "!mocktpm && tpm2",  // Indicate tpm2 is available
+	"tpm2_simulator":            "tpm2_simulator",
+	"transparent_hugepage":      "transparent_hugepage",
+	"untrusted_vm":              `"kernel-4_19" || "kernel-5_4" || "kernel-5_10"`,
+	"usbguard":                  "usbguard",
+	"use_fscrypt_v1":            `"!direncription_allow_v2" && "!lvm_stateful_partition"`,
+	"use_fscrypt_v2":            `"direncription_allow_v2" && "!lvm_stateful_partition"`,
+	"v4l2_codec":                "v4l2_codec",
+	"vaapi":                     "vaapi",
+	// TODO(b/215374984) Remove `video_cards_ihd`.
+	"video_cards_ihd": "video_cards_iHD",
 	// As the direct video decoder is transitioned in there is the need
 	// to run the legacy decoder to make sure it isn't broken and can be
 	// rolled back to if the direct decoder is having problems.  On some

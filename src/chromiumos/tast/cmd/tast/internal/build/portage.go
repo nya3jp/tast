@@ -89,7 +89,7 @@ func emergeCmdLine(mode emergeMode) []string {
 	if mode == emergeInstall {
 		add("sudo")
 	}
-	add("emerge", "--jobs=16", "--onlydeps", "--update", "--deep", "1")
+	add("emerge", "--jobs=16", "--usepkg", "--onlydeps", "--update", "--deep", "1")
 	if mode == emergeList {
 		add("--pretend", "--columns", "--quiet", "y", "--color", "n")
 	}

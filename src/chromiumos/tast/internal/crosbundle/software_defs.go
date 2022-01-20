@@ -48,7 +48,6 @@ var softwareFeatureDefs = map[string]string{
 	"cpu_vuln_sysfs": `!(("kernel-4_4" && ("arm" || "arm64")) || "board:bob" || "board:hana" || "board:elm" || "board:hana-kernelnext" || "board:elm-kernelnext" || "board:kevin" || "board:kevin-kernelnext" || "board:scarlet" || "board:scarlet-kernelnext" || "board:veyron_fievel" || "board:veyron_tiger")`,
 	"cras":           "cras",
 	"crashpad":       "!force_breakpad",
-	"cros_config":    "unibuild",
 	"cros_internal":  "internal",
 	"crosvm_gpu":     `"crosvm-gpu" && "virtio_gpu"`,
 	"crosvm_no_gpu":  `!"crosvm-gpu" || !"virtio_gpu"`,
@@ -177,6 +176,7 @@ var softwareFeatureDefs = map[string]string{
 	"tpm2":                      "!mocktpm && tpm2",  // Indicate tpm2 is available
 	"tpm2_simulator":            "tpm2_simulator",
 	"transparent_hugepage":      "transparent_hugepage",
+	"unibuild":                  "unibuild",
 	"untrusted_vm":              `"kernel-4_19" || "kernel-5_4" || "kernel-5_10"`,
 	"usbguard":                  "usbguard",
 	"use_fscrypt_v1":            `"!direncription_allow_v2" && "!lvm_stateful_partition"`,

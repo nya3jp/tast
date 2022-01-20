@@ -61,7 +61,6 @@ The following software features are defined:
 *   `cras` - Whether the platform supports the ChromeOS Audio Server.
 *   `crashpad` - Whether the platform supports the crashpad crash handler for
     Chrome.
-*   `cros_config` - `cros_config` utility is available.
 *   `cros_internal` - Functionality that is only available in internal builds of
     Chrome OS (i.e. ones built using `chromeos-overlay`).
 *   `crossystem` - Chrome OS firmware/system interface utility.
@@ -184,6 +183,7 @@ The following software features are defined:
 *   `tpm2` - Indicate a Trusted Platform Module supporting TPMv2 is available.
 *   `tpm2_simulator` - Indicate the simulator of Trusted Platform Module supporting TPMv2 is available.
 *   `transparent_hugepage` - [Transparent Hugepage] support in the Linux kernel.
+*   `unibuild` - The Chrome OS build is a unified build.
 *   `untrusted_vm` - The ability to run an untrusted VM.
 *   `usbguard` - The ability to allow or block USB devices based on policy.
 *   `use_fscrypt_v1` - The board is set to use v1 fscrypt policy for user vault.

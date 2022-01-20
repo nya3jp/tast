@@ -348,6 +348,22 @@ func InternalDisplay() Condition {
 	}
 }
 
+// NoInternalDisplay returns a hardware dependency condition that is satisfied
+// iff the DUT does not have an internal display.
+func NoInternalDisplay() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("HardwareFeatures is not given")
+		}
+		if hf.GetScreen().GetPanelProperties() != nil {
+			return unsatisfied("DUT has an internal display")
+		}
+		return satisfied()
+	},
+	}
+}
+
 // Keyboard returns a hardware dependency condition that is satisfied
 // iff the DUT has an keyboard, e.g. Chromeboxes and Chromebits don't.
 // Tablets might have a removable keyboard.

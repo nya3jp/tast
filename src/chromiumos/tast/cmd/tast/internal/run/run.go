@@ -49,13 +49,15 @@ func Run(ctx context.Context, cfg *config.Config, state *config.DeprecatedState)
 	}
 	defer reportClient.Close()
 
-	// Always start an ephemeral devserver for remote tests if TLWServer is not specified.
-	if cfg.TLWServer() == "" {
+	// Always start an ephemeral devserver for remote tests if TLWServer is not specified, and allowed.
+	if cfg.TLWServer() == "" && cfg.UseEphemeralDevserver() {
 		es, err := startEphemeralDevserverForRemoteTests(ctx, cfg, state)
 		if err != nil {
 			return nil, errors.Wrap(err, "failed to start ephemeral devserver for remote tests")
 		}
 		defer es.Close()
+	} else {
+		state.RemoteDevservers = cfg.Devservers()
 	}
 
 	drv, err := driver.New(ctx, cfg, cfg.Target(), "")

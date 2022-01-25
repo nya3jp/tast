@@ -202,7 +202,7 @@ var softwareFeatureDefs = map[string]string{
 	// run only on the boards that supports KVM virtual suspend time injection.
 	// TODO(b/202091291): Remove virtual_susupend_time_injection swdep once it is supported
 	// on all boards.
-	"virtual_susupend_time_injection": `amd64`,
+	"virtual_susupend_time_injection": `amd64 && ("kernel-4_19" || "kernel-5_4" || "kernel-5_10")`,
 	"virtual_usb_printer":             `!"kernel-4_4"`,
 	// Some VM builds actually can run nested VM with right host configuration.
 	// But we haven't enable this feature on builders. For now, just disable

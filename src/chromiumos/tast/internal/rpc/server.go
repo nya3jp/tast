@@ -58,7 +58,10 @@ func RunServer(r io.Reader, w io.Writer, svcs []*testing.Service, register func(
 	// Start a remote logging server. It is used to forward logs from
 	// user-defined gRPC services via side channels.
 	ls := newRemoteLoggingServer()
-	srv := grpc.NewServer(serverOpts(ls, &calls)...)
+
+	// Setup logger to encapsulate the underlying logging mechanism.
+	logger := newFuncLogger(ls.Log)
+	srv := grpc.NewServer(serverOpts(ls, logger, &calls)...)
 
 	// Register core services.
 	regErr := registerCoreServices(srv, ls, &req, register)
@@ -69,7 +72,7 @@ func RunServer(r io.Reader, w io.Writer, svcs []*testing.Service, register func(
 
 	// Register user-defined gRPC services if requested.
 	if req.GetNeedUserServices() {
-		registerUserServices(ctx, srv, ls, &req, svcs, false)
+		registerUserServices(ctx, srv, logger, &req, svcs, false)
 	}
 
 	if regErr != nil {
@@ -112,29 +115,40 @@ func RunServer(r io.Reader, w io.Writer, svcs []*testing.Service, register func(
 	return nil
 }
 
+// tcpServerResponse contains the return value for RunTCPServer.
+type tcpServerResponse struct {
+	// Port represents the TCP port number the gRPC server is listening on.
+	Port int `json:"port"`
+}
+
 // RunTCPServer runs a gRPC server listening on the specified port thought TCP
 // Port contains the TCP port number where gRPC server listens to
 // HandshakeRequest contains parameters needed to initialize a gRPC server.
+// stdin is the linux standard input.
+// stdout is the linux standard output.
+// stderr is the linux standard error.
 // svcs is the candidate list of user-defined gRPC services and they will be
 // registered if GuaranteeCompatibility is set.
-func RunTCPServer(port int, handshakeReq *protocol.HandshakeRequest, svcs []*testing.Service,
-	register func(srv *grpc.Server, req *protocol.HandshakeRequest) error) error {
+func RunTCPServer(port int, handshakeReq *protocol.HandshakeRequest, stdin io.Reader, stdout, stderr io.Writer,
+	svcs []*testing.Service, register func(srv *grpc.Server, req *protocol.HandshakeRequest) error) error {
 	// Make sure to return only after all active method calls finish.
 	// Otherwise the process can exit before running deferred function
 	// calls on service goroutines.
 	var calls sync.WaitGroup
 	defer calls.Wait()
 
-	// Start a remote logging server. It is used to forward logs from
-	// user-defined gRPC services via side channels.
-	ls := newRemoteLoggingServer()
-	srv := grpc.NewServer(serverOpts(ls, &calls)...)
+	// consoleLogger channels logs to stderr
+	consoleLogFunc := func(msg string) {
+		fmt.Fprintln(stderr, msg)
+	}
+
+	// Setup logger to encapsulate the underlying logging mechanism.
+	logger := newFuncLogger(consoleLogFunc)
+	srv := grpc.NewServer(serverOpts(nil, logger, &calls)...)
 
 	// Register core services.
-	regErr := registerCoreServices(srv, ls, handshakeReq, register)
-
-	if regErr != nil {
-		return errors.Wrap(regErr, "gRPC server initialization failed")
+	if err := registerCoreServices(srv, nil, handshakeReq, register); err != nil {
+		return errors.Wrap(err, "gRPC server initialization failed")
 	}
 
 	// Create a server-scoped context.
@@ -142,7 +156,7 @@ func RunTCPServer(port int, handshakeReq *protocol.HandshakeRequest, svcs []*tes
 	defer cancel()
 
 	// Register user-defined gRPC services intended for public use.
-	registerUserServices(ctx, srv, ls, handshakeReq, svcs, true)
+	registerUserServices(ctx, srv, logger, handshakeReq, svcs, true)
 
 	// From now on, catch SIGINT/SIGTERM to stop the server gracefully.
 	sigCh := make(chan os.Signal, 1)
@@ -162,6 +176,14 @@ func RunTCPServer(port int, handshakeReq *protocol.HandshakeRequest, svcs []*tes
 	if err != nil {
 		return errors.Wrap(err, "server failed to listen")
 	}
+
+	// Return information regarding the server, paving the way for dynamic port assignment.
+	response := &tcpServerResponse{Port: port}
+	responseBytes, err := json.Marshal(response)
+	if err != nil {
+		return errors.Wrapf(err, "failed to marshal json response: %v", response)
+	}
+	fmt.Fprintln(stdout, string(responseBytes))
 
 	if err := srv.Serve(listener); err != nil && err != io.EOF {
 		// Replace the error if we saw a signal.
@@ -189,15 +211,14 @@ func (s *serverStreamWithContext) Context() context.Context {
 var _ grpc.ServerStream = (*serverStreamWithContext)(nil)
 
 // serverOpts returns gRPC server-side interceptors to manipulate context.
-func serverOpts(ls *remoteLoggingServer, calls *sync.WaitGroup) []grpc.ServerOption {
+func serverOpts(ls *remoteLoggingServer, logger logging.Logger, calls *sync.WaitGroup) []grpc.ServerOption {
 	// hook is called on every gRPC method call.
 	// It returns a Context to be passed to a gRPC method, a function to be
 	// called on the end of the gRPC method call to compute trailers, and
 	// possibly an error.
-
 	hook := func(ctx context.Context, method string) (context.Context, func() metadata.MD, error) {
-		// Forward all uncaptured logs via LoggingService.
-		ctx = logging.AttachLogger(ctx, logging.NewSinkLogger(logging.LevelInfo, false, logging.NewFuncSink(ls.Log)))
+		// Forward all uncaptured logs to logger
+		ctx = logging.AttachLogger(ctx, logger)
 
 		var outDir string
 		var tl *timing.Log
@@ -247,7 +268,7 @@ func serverOpts(ls *remoteLoggingServer, calls *sync.WaitGroup) []grpc.ServerOpt
 				}
 			}
 
-			if !isLoggingMethod(method) {
+			if !isLoggingMethod(method) && ls != nil {
 				md[metadataLogLastSeq] = []string{strconv.FormatUint(ls.LastSeq(), 10)}
 			}
 			return md
@@ -293,22 +314,31 @@ func serverOpts(ls *remoteLoggingServer, calls *sync.WaitGroup) []grpc.ServerOpt
 func registerCoreServices(srv *grpc.Server, ls *remoteLoggingServer,
 	handshakeReq *protocol.HandshakeRequest, register func(srv *grpc.Server, req *protocol.HandshakeRequest) error) error {
 	reflection.Register(srv)
-	protocol.RegisterLoggingServer(srv, ls)
+	if ls != nil {
+		protocol.RegisterLoggingServer(srv, ls)
+	}
 	protocol.RegisterFileTransferServer(srv, newFileTransferServer())
 	return register(srv, handshakeReq)
 }
 
+// newFuncLogger provides setup for logging functionalities
+func newFuncLogger(logFunc func(msg string)) logging.Logger {
+	// logger provides logging functionality to services while encapsulates the actual
+	// logging destination and mechanism.
+	return logging.NewSinkLogger(logging.LevelInfo, false, logging.NewFuncSink(logFunc))
+}
+
 // registerUserServices registers user defined gRPC services to the gRPC Server
 // srv is the gRPC server instance
-// ls is the remote logging server that forwards logs through side channel
+// logger provides logging functionality to services
 // HandshakeRequest contains parameters needed to initialize a gRPC server.
 // svcs is the candidate list of user-defined gRPC services to be registered
 // guaranteeCompatibilityOnly determines if the service registration is restricted
 // only to services with GuaranteeCompatibility set
-func registerUserServices(ctx context.Context, srv *grpc.Server, ls *remoteLoggingServer,
+func registerUserServices(ctx context.Context, srv *grpc.Server, logger logging.Logger,
 	handshakeReq *protocol.HandshakeRequest, svcs []*testing.Service, guaranteeCompatibilityOnly bool) error {
-	logger := logging.NewSinkLogger(logging.LevelInfo, false, logging.NewFuncSink(ls.Log))
 	ctx = logging.AttachLogger(ctx, logger)
+
 	vars := handshakeReq.GetBundleInitParams().GetVars()
 	for _, svc := range svcs {
 		if !guaranteeCompatibilityOnly || svc.GuaranteeCompatibility {

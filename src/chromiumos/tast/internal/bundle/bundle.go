@@ -113,7 +113,7 @@ func run(ctx context.Context, clArgs []string, stdin io.Reader, stdout, stderr i
 	case modeRPCTCP:
 		port := args.port
 		handshakeReq := args.handshake
-		if err := RunRPCServerTCP(port, handshakeReq, scfg); err != nil {
+		if err := RunRPCServerTCP(port, handshakeReq, stdin, stdout, stderr, scfg); err != nil {
 			return command.WriteError(stderr, err)
 		}
 		return statusSuccess

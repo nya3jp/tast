@@ -37,9 +37,9 @@ func RunRPCServer(r io.Reader, w io.Writer, scfg *StaticConfig) error {
 }
 
 // RunRPCServerTCP runs the bundle as an RPC server listening on TCP.
-func RunRPCServerTCP(port int, handshakeReq *protocol.HandshakeRequest, scfg *StaticConfig) error {
+func RunRPCServerTCP(port int, handshakeReq *protocol.HandshakeRequest, stdin io.Reader, stdout, stderr io.Writer, scfg *StaticConfig) error {
 	reg := scfg.registry
-	return rpc.RunTCPServer(port, handshakeReq, reg.AllServices(), func(srv *grpc.Server, req *protocol.HandshakeRequest) error {
+	return rpc.RunTCPServer(port, handshakeReq, stdin, stdout, stderr, reg.AllServices(), func(srv *grpc.Server, req *protocol.HandshakeRequest) error {
 		if err := checkRegistrationErrors(reg); err != nil {
 			return err
 		}

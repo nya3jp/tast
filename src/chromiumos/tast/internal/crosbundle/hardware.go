@@ -76,6 +76,17 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		logging.Infof(ctx, "Unknown CPU information: %v", err)
 	}
 
+	vboot2, err := func() (bool, error) {
+		out, err := exec.Command("crossystem", "fw_vboot2").Output()
+		if err != nil {
+			return false, err
+		}
+		return strings.TrimSpace(string(out)) == "1", nil
+	}()
+	if err != nil {
+		logging.Infof(ctx, "Unknow vboot2 info: %v", err)
+	}
+
 	config := &protocol.DeprecatedDeviceConfig{
 		Id: &protocol.DeprecatedConfigId{
 			Platform: platform,
@@ -85,6 +96,7 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		Soc:             info.soc,
 		Cpu:             info.cpuArch,
 		HasNvmeSelfTest: false,
+		HasVboot2:       vboot2,
 	}
 	features := &configpb.HardwareFeatures{
 		Screen:             &configpb.HardwareFeatures_Screen{},

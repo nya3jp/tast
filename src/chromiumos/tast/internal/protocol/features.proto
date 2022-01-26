@@ -122,6 +122,9 @@ message DeprecatedDeviceConfig {
 
   // Indicate the device's storage supporting NVMe self-test or not.
   bool has_nvme_self_test = 5;
+
+  // HasVboot2 indicates whether device uses vboot2.
+  bool has_vboot2 = 6;
 }
 
 // HardwareFeatures represents a set of hardware features available for the

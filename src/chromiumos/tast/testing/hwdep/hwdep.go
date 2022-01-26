@@ -1147,3 +1147,17 @@ func DisplayPortConverter(names ...string) Condition {
 		return unsatisfied("DP converter did not match")
 	}}
 }
+
+// Vboot2 is satisfied iff crossystem param 'fw_vboot2' indicates that DUT uses vboot2.
+func Vboot2() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		dc := f.GetDeprecatedDeviceConfig()
+		if dc == nil {
+			return withErrorStr("DeprecatedDeviceConfig is not given")
+		}
+		if dc.HasVboot2 {
+			return satisfied()
+		}
+		return unsatisfied("DUT is not a vboot2 device")
+	}}
+}

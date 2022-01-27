@@ -620,8 +620,6 @@ func findARMSOC() (protocol.DeprecatedDeviceConfig_SOC, error) {
 				return protocol.DeprecatedDeviceConfig_SOC_SC7180, nil
 			case "jep106:0070:7280":
 				return protocol.DeprecatedDeviceConfig_SOC_SC7280, nil
-			case "jep106:0426:8186":
-				return protocol.DeprecatedDeviceConfig_SOC_MT8186, nil
 			case "jep106:0426:8192":
 				return protocol.DeprecatedDeviceConfig_SOC_MT8192, nil
 			case "jep106:0426:8195":

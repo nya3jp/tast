@@ -424,10 +424,24 @@ func Wifi80211ac() Condition {
 }
 
 // WifiWEP returns a hardware dependency condition that is satisfied
-// iff the DUT's WiFi module supports WEP.
+// if the DUT's WiFi module supports WEP.
+// New generation of Qcom chipsets do not support WEP security protocols.
 func WifiWEP() Condition {
-	c := SkipOnPlatform("herobrine") // Herobrine uses WCN6750 chipset, which does not support WEP.
-	return c
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		platformCondition := SkipOnPlatform(
+			"herobrine")
+		if satisfied, reason, err := platformCondition.Satisfied(f); err != nil || !satisfied {
+			return satisfied, reason, err
+		}
+
+		modelCondition := SkipOnModel(
+			"nipperkin")
+		if satisfied, reason, err := modelCondition.Satisfied(f); err != nil || !satisfied {
+			return satisfied, reason, err
+		}
+		return satisfied()
+	},
+	}
 }
 
 // Wifi80211ax returns a hardware dependency condition that is satisfied
@@ -638,6 +652,7 @@ func WifiIntel() Condition {
 			"jelboz360",
 			"lantis",
 			"madoo",
+			"nipperkin",
 			"pirette",
 			"pirika",
 			"vilboz",

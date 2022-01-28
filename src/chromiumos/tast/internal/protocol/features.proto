@@ -99,6 +99,7 @@ message DeprecatedDeviceConfig {
     SOC_ALDER_LAKE = 35;
     SOC_SC7280 = 36;
     SOC_MT8195 = 37;
+    SOC_MT8186 = 38;
   }
   SOC soc = 2;
 

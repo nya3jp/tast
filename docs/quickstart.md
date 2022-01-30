@@ -62,6 +62,23 @@ Any [modern editor] supports Go. The following are the instructions to setup
     code ./tast-tests ./tast
     ```
 
+Note: If you are using the VSCode "Remote-SSH" extension, restart
+VSCode's SSH server after setting the GOPATH, otherwise the Go
+extension won't pick it up. For example, using the VSCode command
+palette, you can run `>Remote-SSH: Kill VS Code Server on Host`.
+
+After that, it's useful to add the following to your settings JSON to
+avoid opening a 404 page whenever you try to follow links from import
+statements:
+
+```
+  "gopls": {
+    "ui.navigation.importShortcut": "Definition"
+  },
+```
+
+https://github.com/golang/vscode-go/issues/237#issuecomment-646067281
+
 [modern editor]: https://github.com/golang/go/wiki/IDEsAndTextEditorPlugins
 [Visual Studio Code]: https://code.visualstudio.com/
 [Microsoft Go plugin]: https://code.visualstudio.com/docs/languages/go

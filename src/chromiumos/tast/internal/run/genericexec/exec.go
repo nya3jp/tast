@@ -9,12 +9,15 @@ import (
 	"io"
 	"os"
 	"os/exec"
+
+	"chromiumos/tast/internal/debugger"
 )
 
 // ExecCmd represents a local command to execute.
 type ExecCmd struct {
-	name     string
-	baseArgs []string
+	name      string
+	baseArgs  []string
+	debugPort int
 }
 
 var _ Cmd = &ExecCmd{}
@@ -25,6 +28,12 @@ func CommandExec(name string, baseArgs ...string) *ExecCmd {
 		name:     name,
 		baseArgs: baseArgs,
 	}
+}
+
+// DebugCommand returns a version of this command that will run under the debugger.
+func (c *ExecCmd) DebugCommand(debugPort int) Cmd {
+	name, baseArgs := debugger.RewriteDebugCommand(debugPort, c.name, c.baseArgs...)
+	return &ExecCmd{name: name, baseArgs: baseArgs, debugPort: debugPort}
 }
 
 // Run runs a local command synchronously. See Cmd.Run for details.
@@ -41,6 +50,7 @@ func (c *ExecCmd) Run(ctx context.Context, extraArgs []string, stdin io.Reader, 
 	// in case of errors and thus Tast CLI consumes stderr.
 	cmd.ExtraFiles = []*os.File{os.Stderr}
 	cmd.Env = append(os.Environ(), "TAST_B189332919_STACK_TRACE_FD=3")
+	debugger.PrintWaitingMessage(ctx, c.debugPort)
 	return cmd.Run()
 }
 
@@ -69,6 +79,7 @@ func (c *ExecCmd) Interact(ctx context.Context, extraArgs []string) (p Process, 
 	if err := cmd.Start(); err != nil {
 		return nil, err
 	}
+	debugger.PrintWaitingMessage(ctx, c.debugPort)
 
 	return &ExecProcess{
 		cmd:    cmd,

@@ -31,6 +31,10 @@ func TestRewriteDebugCommand(t *testing.T) {
 			want:      []string{"dlv", "exec", "binary", "--api-version=2", "--headless", "--listen=:2345", "--log-dest=/dev/null", "--"},
 		}, {
 			debugPort: 2345,
+			args:      []string{"env", "a=b", "binary"},
+			want:      []string{"env", "a=b", "dlv", "exec", "binary", "--api-version=2", "--headless", "--listen=:2345", "--log-dest=/dev/null", "--"},
+		}, {
+			debugPort: 2345,
 			args:      []string{"binary", "arg1", "arg2"},
 			want:      []string{"dlv", "exec", "binary", "--api-version=2", "--headless", "--listen=:2345", "--log-dest=/dev/null", "--", "arg1", "arg2"},
 		},

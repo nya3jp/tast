@@ -30,6 +30,10 @@ type Cmd interface {
 	// Therefore Interact is safe to be used only with external commands
 	// that exit on closing stdin.
 	Interact(ctx context.Context, extraArgs []string) (Process, error)
+
+	// DebugCommand returns a new command that runs the existing command under a
+	// debugger waiting on port debugPort, if debugPort is non-zero.
+	DebugCommand(debugPort int) Cmd
 }
 
 // Process is a common interface abstracting a running external process.

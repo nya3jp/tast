@@ -62,7 +62,7 @@ func (c *Client) RunTests(ctx context.Context, bcfg *protocol.BundleConfig, rcfg
 				BundleConfig: bcfg,
 				Vars:         rcfg.GetFeatures().GetInfra().GetVars(),
 			},
-		})
+		}, int(rcfg.DebugPort))
 		if err != nil {
 			return errors.Wrap(err, "starting test bundle")
 		}

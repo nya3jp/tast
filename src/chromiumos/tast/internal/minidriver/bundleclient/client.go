@@ -59,8 +59,8 @@ func New(cmd genericexec.Cmd) *Client {
 }
 
 // dial connects to the test bundle and established a gRPC connection.
-func (c *Client) dial(ctx context.Context, req *protocol.HandshakeRequest) (_ *rpcConn, retErr error) {
-	proc, err := c.cmd.Interact(ctx, []string{"-rpc"})
+func (c *Client) dial(ctx context.Context, req *protocol.HandshakeRequest, debugPort int) (_ *rpcConn, retErr error) {
+	proc, err := c.cmd.DebugCommand(debugPort).Interact(ctx, []string{"-rpc"})
 	if err != nil {
 		return nil, err
 	}

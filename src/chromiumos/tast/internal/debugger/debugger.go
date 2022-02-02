@@ -179,8 +179,39 @@ func RewriteDebugCommand(debugPort int, cmd string, args ...string) (newCmd stri
 	if debugPort == 0 {
 		return cmd, args
 	}
+	var prefix []string
+	var binary string
+	var binaryArgs []string
+	if cmd == "env" {
+		prefix = append(prefix, "env")
+		for i, arg := range args {
+			if !strings.Contains(arg, "=") {
+				prefix = append(prefix, args[:i]...)
+				binary = args[i]
+				binaryArgs = args[i+1:]
+			}
+		}
+	} else {
+		binary = cmd
+		binaryArgs = args
+	}
 
 	// Tast uses stdout to interact with the binary. Remove all delve output to
 	// stdout with --log-dest=/dev/null, since critical things go to stderr anyway.
-	return "dlv", append([]string{"exec", cmd, "--api-version=2", "--headless", fmt.Sprintf("--listen=:%d", debugPort), "--log-dest=/dev/null", "--"}, args...)
+	result := append(append(prefix,
+		[]string{"dlv", "exec", binary,
+			"--api-version=2",
+			"--headless",
+			fmt.Sprintf("--listen=:%d", debugPort),
+			"--log-dest=/dev/null",
+			"--"}...), binaryArgs...)
+
+	return result[0], result[1:]
+}
+
+// PrintWaitingMessage outputs a "Waiting for debugger" message, if required.
+func PrintWaitingMessage(ctx context.Context, debugPort int) {
+	if debugPort != 0 {
+		logging.Infof(ctx, "Waiting for debugger on port %d", debugPort)
+	}
 }

@@ -8,14 +8,16 @@ import (
 	"context"
 	"io"
 
+	"chromiumos/tast/internal/debugger"
 	"chromiumos/tast/ssh"
 )
 
 // SSHCmd represents a remote command to execute via SSH.
 type SSHCmd struct {
-	conn     *ssh.Conn
-	name     string
-	baseArgs []string
+	conn      *ssh.Conn
+	name      string
+	baseArgs  []string
+	debugPort int
 }
 
 var _ Cmd = &SSHCmd{}
@@ -30,12 +32,19 @@ func CommandSSH(conn *ssh.Conn, name string, baseArgs ...string) *SSHCmd {
 	}
 }
 
+// DebugCommand returns a version of this command that will run under the debugger.
+func (c *SSHCmd) DebugCommand(debugPort int) Cmd {
+	name, baseArgs := debugger.RewriteDebugCommand(debugPort, c.name, c.baseArgs...)
+	return &SSHCmd{conn: c.conn, name: name, baseArgs: baseArgs, debugPort: debugPort}
+}
+
 // Run runs a remote command synchronously. See Cmd.Run for details.
 func (c *SSHCmd) Run(ctx context.Context, extraArgs []string, stdin io.Reader, stdout, stderr io.Writer) error {
 	cmd := c.conn.CommandContext(ctx, c.name, append(c.baseArgs, extraArgs...)...)
 	cmd.Stdin = stdin
 	cmd.Stdout = stdout
 	cmd.Stderr = stderr
+	debugger.PrintWaitingMessage(ctx, c.debugPort)
 	return cmd.Run()
 }
 
@@ -63,6 +72,7 @@ func (c *SSHCmd) Interact(ctx context.Context, extraArgs []string) (p Process, r
 	if err := cmd.Start(); err != nil {
 		return nil, err
 	}
+	debugger.PrintWaitingMessage(ctx, c.debugPort)
 
 	// Start a gorountine to close stdin when ctx is canceled.
 	go func() {

@@ -62,7 +62,7 @@ var softwareFeatureDefs = map[string]string{
 	"dmverity_unstable": `!("kernel-3_18" || "kernel-4_4" || "kernel-4_14")`,
 	"drivefs":           "drivefs",
 	"drm_atomic":        "drm_atomic",
-	"drm_trace":         `("kernel-5_4" || "kernel-5_10")`,
+	"drm_trace":         `!("kernel-3_18" || "kernel-4_4" || "kernel-4_14" || "kernel-4_19")`,
 	// asuka, banon, caroline, cave, celes, chell, cyan, edgar, kefka, reks, relm, sentry, terra, ultima, and wizpig have buggy EC firmware and cannot capture crash reports. b/172228823
 	// drallion and sarien have do not support the "crash" EC command. crbug.com/1123716
 	// guado, tidus, rikku, veyron_fievel, and veyron_tiger do not have EC firmware. crbug.com/1123716. TODO(crbug.com/1124554) Use an EC hardware dep for these rather than a software dep.
@@ -85,7 +85,7 @@ var softwareFeatureDefs = map[string]string{
 	"houdini64":               "houdini64",
 	"hostap_hwsim":            "wifi_hostap_test",
 	"hps":                     "hps",
-	"igt":                     `("video_cards_amdgpu" || "video_cards_intel" || "video_cards_mediatek" || "video_cards_msm") && ("kernel-5_4" || "kernel-5_10")`,
+	"igt":                     `("video_cards_amdgpu" || "video_cards_intel" || "video_cards_mediatek" || "video_cards_msm") && !("kernel-3_18" || "kernel-4_4" || "kernel-4_14" || "kernel-4_19")`,
 	"iioservice":              "iioservice",
 	// IKEv2 is only supported on 4.19+ kernels.
 	"ikev2":          `!("kernel-3_18" || "kernel-4_4" || "kernel-4_14")`,

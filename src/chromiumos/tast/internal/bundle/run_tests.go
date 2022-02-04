@@ -424,7 +424,7 @@ func setUpTestEnvironment(ctx context.Context, scfg *StaticConfig, cfg *protocol
 	// remote fixtures and run hooks.
 	if scfg.runHook != nil && cfg.GetStartFixtureState().GetName() == "" {
 		var err error
-		postRunFunc, err = scfg.runHook(ctx)
+		postRunFunc, err = scfg.runHook(ctx, cfg.GetSystemServicesTimeout().AsDuration())
 		if err != nil {
 			return nil, command.NewStatusErrorf(statusError, "pre-run failed: %v", err)
 		}

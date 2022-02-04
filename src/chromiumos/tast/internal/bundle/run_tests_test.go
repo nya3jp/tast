@@ -17,6 +17,7 @@ import (
 	"time"
 
 	"github.com/google/go-cmp/cmp"
+	"google.golang.org/protobuf/types/known/durationpb"
 
 	"chromiumos/tast/dut"
 	"chromiumos/tast/errors"
@@ -344,7 +345,31 @@ func TestRunTestsStartFixture(t *gotesting.T) {
 		t.Error("runHook was not called")
 	}
 }
+func TestRunTestsReadyFuncSystemServiceTimeoutCfgSet(t *gotesting.T) {
+	reg := testing.NewRegistry("bundle")
+	reg.AddTestInstance(&testing.TestInstance{Name: "pkg.Test", Func: func(context.Context, *testing.State) {}})
 
+	expectedSystemServiceTimeout := time.Second * 3
+	cfg := &protocol.RunConfig{
+		WaitUntilReady:        true,
+		SystemServicesTimeout: durationpb.New(expectedSystemServiceTimeout),
+	}
+	var actualSystemServiceTimeout time.Duration
+	scfg := NewStaticConfig(reg, time.Minute, Delegate{
+		Ready: func(ctx context.Context, systemServiceTimeout time.Duration) error {
+			actualSystemServiceTimeout = systemServiceTimeout
+			return nil
+		},
+	})
+	cl := startTestServer(t, scfg, &protocol.HandshakeRequest{})
+	if _, err := protocoltest.RunTestsForEvents(context.Background(), cl, cfg); err != nil {
+		t.Fatalf("RunTests failed: %v", err)
+	}
+
+	if actualSystemServiceTimeout != expectedSystemServiceTimeout {
+		t.Fatalf("Expecting SystemServiceTimeout to be %f seconds, however it is %f seconds", expectedSystemServiceTimeout.Seconds(), actualSystemServiceTimeout.Seconds())
+	}
+}
 func TestRunTestsReadyFunc(t *gotesting.T) {
 	reg := testing.NewRegistry("bundle")
 	reg.AddTestInstance(&testing.TestInstance{Name: "pkg.Test", Func: func(context.Context, *testing.State) {}})
@@ -355,7 +380,7 @@ func TestRunTestsReadyFunc(t *gotesting.T) {
 	}
 	ranReady := false
 	scfg := NewStaticConfig(reg, time.Minute, Delegate{
-		Ready: func(context.Context) error {
+		Ready: func(context.Context, time.Duration) error {
 			ranReady = true
 			return nil
 		},
@@ -371,7 +396,7 @@ func TestRunTestsReadyFunc(t *gotesting.T) {
 	// RunTests should fail if the ready function returns an error.
 	const msg = "intentional failure"
 	scfg = NewStaticConfig(reg, time.Minute, Delegate{
-		Ready: func(context.Context) error { return errors.New(msg) },
+		Ready: func(context.Context, time.Duration) error { return errors.New(msg) },
 	})
 	cl = startTestServer(t, scfg, &protocol.HandshakeRequest{})
 	_, err := protocoltest.RunTestsForEvents(context.Background(), cl, cfg)
@@ -393,7 +418,7 @@ func TestRunTestsReadyFuncDisabled(t *gotesting.T) {
 	}
 	ranReady := false
 	scfg := NewStaticConfig(reg, time.Minute, Delegate{
-		Ready: func(context.Context) error {
+		Ready: func(context.Context, time.Duration) error {
 			ranReady = true
 			return nil
 		},

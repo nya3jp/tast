@@ -41,12 +41,14 @@ type Delegate struct {
 
 	// Ready is called at the beginning of a bundle execution if it is not
 	// nil and -waituntilready is set to true (default).
+	// systemTestsTimeout is the timeout for waiting for system services
+	// to be ready in seconds.
 	// Local test bundles can specify a function to wait for the DUT to be
 	// ready for tests to run. It is recommended to write informational
 	// messages with testing.ContextLog to let the user know the reason for
 	// the delay. In case of errors, no test in the test bundle will run.
 	// This field has an effect only for local test bundles.
-	Ready func(ctx context.Context) error
+	Ready func(ctx context.Context, systemTestsTimeout time.Duration) error
 
 	// BeforeReboot is called before every reboot if it is not nil.
 	// This field has an effect only for remote test bundles.
@@ -147,7 +149,7 @@ type StaticConfig struct {
 	registry *testing.Registry
 	// runHook is run at the beginning of the entire series of tests if non-nil.
 	// The returned closure is executed after the entire series of tests if not nil.
-	runHook func(context.Context) (func(context.Context) error, error)
+	runHook func(context.Context, time.Duration) (func(context.Context) error, error)
 	// testHook is run before each test if non-nil.
 	// If this function panics or reports errors, the precondition (if any)
 	// will not be prepared and the test function will not run.
@@ -167,13 +169,13 @@ type StaticConfig struct {
 func NewStaticConfig(reg *testing.Registry, defaultTestTimeout time.Duration, d Delegate) *StaticConfig {
 	return &StaticConfig{
 		registry: reg,
-		runHook: func(ctx context.Context) (func(context.Context) error, error) {
+		runHook: func(ctx context.Context, systemTestsTimeout time.Duration) (func(context.Context) error, error) {
 			pd, ok := testcontext.PrivateDataFromContext(ctx)
 			if !ok {
 				panic("BUG: PrivateData not available in run hook")
 			}
 			if d.Ready != nil && pd.WaitUntilReady {
-				if err := d.Ready(ctx); err != nil {
+				if err := d.Ready(ctx, systemTestsTimeout); err != nil {
 					return nil, err
 				}
 			}

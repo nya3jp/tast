@@ -47,8 +47,9 @@ const (
 )
 
 const (
-	defaultKeyFile     = "chromite/ssh_keys/testing_rsa" // default private SSH key within Chrome OS checkout
-	checkDepsCacheFile = "check_deps_cache.v2.json"      // file in BuildOutDir where dependency-checking results are cached
+	defaultKeyFile               = "chromite/ssh_keys/testing_rsa" // default private SSH key within Chrome OS checkout
+	checkDepsCacheFile           = "check_deps_cache.v2.json"      // file in BuildOutDir where dependency-checking results are cached
+	defaultSystemServicesTimeout = 120 * time.Second               //default timeout for waiting for system services to be ready in seconds
 )
 
 // MutableConfig is similar to Config, but its fields are mutable.
@@ -119,6 +120,8 @@ type MutableConfig struct {
 	DebuggerPorts map[debugger.DebugTarget]int
 
 	Retries int
+
+	SystemServicesTimeout time.Duration
 }
 
 // Config contains shared configuration information for running or listing tests.
@@ -315,6 +318,11 @@ func (c *Config) MsgTimeout() time.Duration { return c.m.MsgTimeout }
 // Retries is the number of retries for failing tests
 func (c *Config) Retries() int { return c.m.Retries }
 
+// SystemServicesTimeout for waiting for system services to be ready in seconds. (Default: 120 seconds)
+func (c *Config) SystemServicesTimeout() time.Duration {
+	return c.m.SystemServicesTimeout
+}
+
 // DeprecatedState hold state attributes which are accumulated over the course
 // of the run.
 //
@@ -399,6 +407,8 @@ func (c *MutableConfig) SetFlags(f *flag.FlagSet) {
 	// Both listing and running test requires filtering and excluding tests that will be
 	// skipped. This flag can be used with tast list or tast run to exclude skipped tests
 	f.BoolVar(&c.ExcludeSkipped, "excludeskipped", false, "exclude skipped tests from the list or run operation")
+
+	f.Var(command.NewDurationFlag(time.Second, &c.SystemServicesTimeout, defaultSystemServicesTimeout), "systemservicestimeout", "timeout for waiting for system services to be ready in seconds")
 
 	c.DebuggerPorts = map[debugger.DebugTarget]int{
 		debugger.LocalBundle:  0,

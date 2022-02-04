@@ -59,6 +59,21 @@ func TestMutableConfigDeriveDefaultsNoBuild(t *testing.T) {
 	}
 }
 
+func TestMutableConfigDeriveDefaultsSystemServicesTimeout(t *testing.T) {
+	cfg := config.NewMutableConfig(config.RunTestsMode, "", "")
+	flags := flag.NewFlagSet("", flag.ContinueOnError)
+	cfg.SetFlags(flags)
+
+	cfg.Build = false
+
+	if err := cfg.DeriveDefaults(); err != nil {
+		t.Error("DeriveDefaults failed: ", err)
+	}
+	if cfg.SystemServicesTimeout.Seconds() != 120 {
+		t.Errorf("DeriveDefault failed to set default value of SystemServicesTimeout. Expected %f seconds, Found: %f seconds", 120.0, cfg.SystemServicesTimeout.Seconds())
+	}
+}
+
 func TestMutableConfigDeriveDefaultsBuild(t *testing.T) {
 	const buildBundle = "cros"
 

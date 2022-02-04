@@ -374,6 +374,10 @@ third_party/autotest/files/server/site_tests/tast/control.runtime-probe
 				Name: "wificell_unstable",
 				Desc: `Indicates that this test is yet to be verified as stable.`,
 			},
+			{
+				Name: "wificell_dut_validation",
+				Desc: `Group of tests to be run by lab team to validate AP, PCAP, BT-Peers & DUT during deployment.`,
+			},
 		},
 	},
 	{

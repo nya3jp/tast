@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/golang/protobuf/ptypes"
+	"google.golang.org/protobuf/types/known/durationpb"
 
 	"chromiumos/tast/ctxutil"
 	"chromiumos/tast/internal/linuxssh"
@@ -47,19 +48,20 @@ func NewDriver(cfg *Config, cc *target.ConnCache) *Driver {
 
 // Config provides configurations for running tests.
 type Config struct {
-	Retries          int
-	ResDir           string
-	Devservers       []string
-	Target           string
-	LocalDataDir     string
-	LocalOutDir      string
-	LocalTempDir     string
-	LocalBundleDir   string
-	DownloadMode     planner.DownloadMode
-	WaitUntilReady   bool
-	CheckTestDeps    bool
-	TestVars         map[string]string
-	MaybeMissingVars string
+	Retries               int
+	ResDir                string
+	Devservers            []string
+	Target                string
+	LocalDataDir          string
+	LocalOutDir           string
+	LocalTempDir          string
+	LocalBundleDir        string
+	DownloadMode          planner.DownloadMode
+	WaitUntilReady        bool
+	SystemServicesTimeout time.Duration
+	CheckTestDeps         bool
+	TestVars              map[string]string
+	MaybeMissingVars      string
 
 	UseDebugger bool
 	Proxy       bool
@@ -153,9 +155,10 @@ func (d *Driver) newConfigsForLocalTests(tests []*protocol.ResolvedEntity, state
 		DataFileConfig: &protocol.DataFileConfig{
 			DownloadMode: d.cfg.DownloadMode.Proto(),
 		},
-		StartFixtureState: state,
-		HeartbeatInterval: ptypes.DurationProto(HeartbeatInterval),
-		WaitUntilReady:    d.cfg.WaitUntilReady,
+		StartFixtureState:     state,
+		HeartbeatInterval:     ptypes.DurationProto(HeartbeatInterval),
+		WaitUntilReady:        d.cfg.WaitUntilReady,
+		SystemServicesTimeout: durationpb.New(d.cfg.SystemServicesTimeout),
 	}
 	return bcfg, rcfg
 }

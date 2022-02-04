@@ -194,6 +194,10 @@ message RunConfig {
 
   // DebugPort is the port that the bundle will attach the debugger to.
   uint32 debug_port = 10;
+
+  // SystemServiceTimeout is timeout for waiting for system services to be ready
+  // in seconds. (Default: 120 seconds)
+  google.protobuf.Duration system_services_timeout = 11;
 }
 
 // RunDirectories holds several directory paths important for running tests.

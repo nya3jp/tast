@@ -99,6 +99,7 @@ The following software features are defined:
 *   `hps` - Whether the system has the hps daemon and tools, go/cros-hps.
 *   `igt` - Boards that can run igt-gpu-tools tests
 *   `iioservice` - Whether the device has CrOS IIO Service running.
+*   `ikev2` - The ability to run an IKEv2 VPN.
 *   `iwlwifi_rescan` - Ability to remove/rescan WiFi PCI device when the
     hardware becomes non-responsive.
 *   `lacros` - Whether the system supports running [lacros].

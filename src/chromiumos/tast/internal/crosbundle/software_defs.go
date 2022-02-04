@@ -88,7 +88,9 @@ var softwareFeatureDefs = map[string]string{
 	"hps":                     "hps",
 	"igt":                     `("video_cards_amdgpu" || "video_cards_intel" || "video_cards_mediatek" || "video_cards_msm") && ("kernel-5_4" || "kernel-5_10")`,
 	"iioservice":              "iioservice",
-	"iwlwifi_rescan":          "iwlwifi_rescan",
+	// IKEv2 is only supported on 4.19+ kernels.
+	"ikev2":          `!("kernel-3_18" || "kernel-4_4" || "kernel-4_14")`,
+	"iwlwifi_rescan": "iwlwifi_rescan",
 	// Lacros variants.
 	// veyron does not support rootfs lacros entirely. b/204888294
 	// TODO(b/183969803): Remove lacros_stable and lacros_unstable eventually.

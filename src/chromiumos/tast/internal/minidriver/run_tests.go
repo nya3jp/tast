@@ -67,9 +67,7 @@ type Config struct {
 	Proxy        bool
 
 	DUTFeatures *protocol.DUTFeatures
-
-	Counter *failfast.Counter
-	Client  *reporting.RPCClient
+	Factory     HandlersFactory
 }
 
 // RunLocalTests runs external tests with retry.
@@ -80,14 +78,37 @@ func (d *Driver) RunLocalTests(ctx context.Context, bundle string, tests []*prot
 	return RunTestsWithRetry(ctx, tests, runTestsOnce, d.cfg.Retries)
 }
 
+// HandlersFactory is a type which creates processor handlers.
+type HandlersFactory func(ctx context.Context, cc *target.ConnCache) (context.Context, []processor.Handler)
+
+// NewRootHandlersFactory creates a new factory for CLI.
+func NewRootHandlersFactory(resDir string, counter *failfast.Counter, client *reporting.RPCClient) HandlersFactory {
+	return func(ctx context.Context, cc *target.ConnCache) (context.Context, []processor.Handler) {
+		multiplexer := logging.NewMultiLogger()
+		ctx = logging.AttachLogger(ctx, multiplexer)
+
+		pull := func(src, dst string) error {
+			return linuxssh.GetAndDeleteFile(ctx, cc.Conn().SSHConn(), src, dst, linuxssh.PreserveSymlinks)
+		}
+		return ctx, []processor.Handler{
+			processor.NewLoggingHandler(resDir, multiplexer, client),
+			processor.NewTimingHandler(),
+			processor.NewStreamedResultsHandler(resDir),
+			processor.NewRPCResultsHandler(client),
+			processor.NewFailFastHandler(counter),
+			// copyOutputHandler should come last as it can block RunEnd for a while.
+			processor.NewCopyOutputHandler(pull),
+		}
+	}
+}
+
 func (d *Driver) runLocalTestsOnce(ctx context.Context, bundle string, tests []*protocol.ResolvedEntity, state *protocol.StartFixtureState) ([]*resultsjson.Result, error) {
 	if err := d.cc.EnsureConn(ctx); err != nil {
 		return nil, err
 	}
 
 	bcfg, rcfg := d.newConfigsForLocalTests(tests, state)
-	multiplexer := logging.NewMultiLogger()
-	ctx = logging.AttachLogger(ctx, multiplexer)
+
 	diag := func(ctx context.Context, outDir string) string {
 		if ctxutil.DeadlineBefore(ctx, time.Now().Add(target.SSHPingTimeout)) {
 			return ""
@@ -97,11 +118,9 @@ func (d *Driver) runLocalTestsOnce(ctx context.Context, bundle string, tests []*
 		}
 		return "Lost SSH connection: " + diagnose.SSHDrop(ctx, d.cc, outDir)
 	}
-	pull := func(src, dst string) error {
-		return linuxssh.GetAndDeleteFile(ctx, d.cc.Conn().SSHConn(), src, dst, linuxssh.PreserveSymlinks)
-	}
 
-	hs := processor.NewHandlers(d.cfg.ResDir, multiplexer, diag, pull, d.cfg.Counter, d.cfg.Client)
+	ctx, hs := d.cfg.Factory(ctx, d.cc)
+
 	proc := processor.New(d.cfg.ResDir, diag, hs)
 	cl := bundleclient.NewLocal(bundle, d.cfg.LocalBundleDir, d.cfg.Proxy, d.cc)
 	cl.RunTests(ctx, bcfg, rcfg, proc)

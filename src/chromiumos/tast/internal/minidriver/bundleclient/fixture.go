@@ -29,7 +29,11 @@ func (c *Client) RunFixture(ctx context.Context, name string, cfg *bundle.RunFix
 		}
 	}()
 
-	conn, err := c.dial(ctx, &protocol.HandshakeRequest{}, 0)
+	conn, err := c.dial(ctx, &protocol.HandshakeRequest{
+		BundleInitParams: &protocol.BundleInitParams{
+			Vars: cfg.GetTestVars(),
+		},
+	}, 0)
 	if err != nil {
 		return nil, err
 	}

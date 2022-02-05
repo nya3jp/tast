@@ -190,12 +190,20 @@ func (ew *eventWriter) EntityEnd(ei *protocol.Entity, skipReasons []string, timi
 	if err != nil {
 		return err
 	}
-	return ew.srv.Send(&protocol.RunTestsResponse{Type: &protocol.RunTestsResponse_EntityEnd{EntityEnd: &protocol.EntityEndEvent{
+	firstErr := ew.srv.Send(&protocol.RunTestsResponse{Type: &protocol.RunTestsResponse_EntityEnd{EntityEnd: &protocol.EntityEndEvent{
 		Time:       ptypes.TimestampNow(),
 		EntityName: ei.GetName(),
 		Skip:       skip,
 		TimingLog:  tlpb,
 	}}})
+	// An entity in the current bundle is run. It means the output files are
+	// already in the local directory, ready to be copied.
+	if err := ew.srv.Send(&protocol.RunTestsResponse{Type: &protocol.RunTestsResponse_EntityCopyEnd{EntityCopyEnd: &protocol.EntityCopyEndEvent{
+		EntityName: ei.GetName(),
+	}}}); err != nil && firstErr == nil {
+		firstErr = err
+	}
+	return firstErr
 }
 
 func (ew *eventWriter) Heartbeat() error {

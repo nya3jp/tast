@@ -117,6 +117,8 @@ func handleEvent(ctx context.Context, res *protocol.RunTestsResponse, out RunTes
 		return out.EntityError(ctx, t.EntityError)
 	case *protocol.RunTestsResponse_EntityEnd:
 		return out.EntityEnd(ctx, t.EntityEnd)
+	case *protocol.RunTestsResponse_EntityCopyEnd:
+		return out.EntityCopyEnd(ctx, t.EntityCopyEnd)
 	case *protocol.RunTestsResponse_Heartbeat:
 		return nil
 	default:

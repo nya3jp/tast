@@ -47,9 +47,11 @@ func TestCopyOutputHandler(t *testing.T) {
 		&protocol.EntityStartEvent{Time: epochpb, Entity: &protocol.Entity{Name: "fixture", Type: protocol.EntityType_FIXTURE}, OutDir: fixtureOutDir},
 		&protocol.EntityStartEvent{Time: epochpb, Entity: &protocol.Entity{Name: "test"}, OutDir: testOutDir},
 		&protocol.EntityEndEvent{Time: epochpb, EntityName: "test"},
+		&protocol.EntityCopyEndEvent{EntityName: "test"},
 		&protocol.EntityStartEvent{Time: epochpb, Entity: &protocol.Entity{Name: "skip"}},
 		&protocol.EntityEndEvent{Time: epochpb, EntityName: "skip", Skip: &protocol.Skip{Reasons: []string{"somehow"}}},
 		&protocol.EntityEndEvent{Time: epochpb, EntityName: "fixture"},
+		&protocol.EntityCopyEndEvent{EntityName: "fixture"},
 	}
 
 	hs := newHandlers(resDir, logging.NewMultiLogger(), os.Rename, nil, nil)

@@ -42,6 +42,8 @@ func runProcessor(ctx context.Context, proc *processor.Processor, events []proto
 				err = proc.EntityError(ctx, ev)
 			case *protocol.EntityEndEvent:
 				err = proc.EntityEnd(ctx, ev)
+			case *protocol.EntityCopyEndEvent:
+				err = proc.EntityCopyEnd(ctx, ev)
 			case *protocol.RunLogEvent:
 				err = proc.RunLog(ctx, ev)
 			}

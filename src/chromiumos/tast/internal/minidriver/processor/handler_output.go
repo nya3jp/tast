@@ -32,7 +32,11 @@ func NewCopyOutputHandler(pull PullFunc) *copyOutputHandler {
 	}
 }
 
-func (h *copyOutputHandler) EntityEnd(ctx context.Context, ei *entityInfo, r *entityResult) error {
+// EntityCopyEnd handles EntityCopyEnd event.
+// We cannot use EntityEnd here, because EntityEnd doesn't guarantee files are
+// already copied, and Tast CLI may see incomplete output files before external
+// bundle finishes coping the file.
+func (h *copyOutputHandler) EntityCopyEnd(ctx context.Context, ei *entityInfo) error {
 	// IntermediateOutDir can be empty for skipped tests.
 	if ei.IntermediateOutDir == "" {
 		return nil

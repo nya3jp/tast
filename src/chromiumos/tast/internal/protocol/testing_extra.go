@@ -9,8 +9,10 @@ type Event interface {
 	isEvent()
 }
 
-func (*RunLogEvent) isEvent()      {}
-func (*EntityStartEvent) isEvent() {}
-func (*EntityLogEvent) isEvent()   {}
-func (*EntityErrorEvent) isEvent() {}
-func (*EntityEndEvent) isEvent()   {}
+func (*RunLogEvent) isEvent()           {}
+func (*EntityStartEvent) isEvent()      {}
+func (*EntityLogEvent) isEvent()        {}
+func (*EntityErrorEvent) isEvent()      {}
+func (*EntityEndEvent) isEvent()        {}
+func (*EntityCopyEndEvent) isEvent()    {}
+func (*StackOperationRequest) isEvent() {}

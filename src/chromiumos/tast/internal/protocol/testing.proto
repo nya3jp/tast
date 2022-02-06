@@ -263,6 +263,15 @@ message ServiceConfig {
   // DutServer is an address of a DUT server (e.g. "1.2.3.4:5678").
   // When this is set, it takes precedence over Devservers.
   string dut_server = 5;
+
+  // Following fields are only needed for remote tests.
+
+  // UseEphemeralDevserer instructs whether to use ephemeral devserver.
+  bool use_ephemeral_devservers = 6;
+  // TastDir used to specify cache directory.
+  string tast_dir = 7;
+  // ExtraAllowedBuckets specifies ephemeral devserver's allowed buckets.
+  repeated string extra_allowed_buckets = 8;
 }
 
 // DownloadMode specifies a strategy to download external data files.

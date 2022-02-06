@@ -347,13 +347,31 @@ func (d *Driver) newConfigsForRemoteTests(tests []string, dutInfo *protocol.DUTI
 			TlwServer:  d.cfg.TLWServer(),
 			// DutServer is intentally left blank here because this config is only used by
 			// remote fixture which will use devserver or ephemeral server to download files.
+
+			UseEphemeralDevservers: d.cfg.UseEphemeralDevserver(),
+			TastDir:                d.cfg.TastDir(),
+			ExtraAllowedBuckets:    d.cfg.ExtraAllowedBuckets(),
 		},
 		DataFileConfig: &protocol.DataFileConfig{
 			DownloadMode:      d.cfg.DownloadMode(),
 			BuildArtifactsUrl: buildArtifactsURL,
 		},
-		HeartbeatInterval: ptypes.DurationProto(minidriver.HeartbeatInterval),
-		DebugPort:         uint32(d.cfg.DebuggerPorts()[debugger.RemoteBundle]),
+		HeartbeatInterval:     ptypes.DurationProto(minidriver.HeartbeatInterval),
+		DebugPort:             uint32(d.cfg.DebuggerPorts()[debugger.RemoteBundle]),
+		SystemServicesTimeout: ptypes.DurationProto(d.cfg.SystemServicesTimeout()),
+		Target: &protocol.RunTargetConfig{
+			Devservers: d.cfg.Devservers(),
+			Dirs: &protocol.RunDirectories{
+				DataDir: d.cfg.LocalDataDir(),
+				OutDir:  d.cfg.LocalOutDir(),
+				TempDir: d.cfg.LocalTempDir(),
+			},
+			DebugPort:       uint32(d.cfg.DebuggerPorts()[debugger.LocalBundle]),
+			MaxTestFailures: int32(d.cfg.MaxTestFailures()),
+			Retries:         int32(d.cfg.Retries()),
+			Proxy:           d.cfg.Proxy() == config.ProxyEnv,
+			WaitUntilReady:  d.cfg.WaitUntilReady(),
+		},
 	}
 	return bcfg, rcfg, nil
 }

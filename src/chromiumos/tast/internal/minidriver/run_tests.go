@@ -69,6 +69,10 @@ type Config struct {
 	Factory     HandlersFactory
 
 	BuildArtifactsURL string
+
+	// Recursive specifies whether to run tests recursively.
+	// This must be true to support remote fixture.
+	Recursive bool
 }
 
 // RunLocalTests runs external tests with retry.
@@ -103,6 +107,25 @@ func NewRootHandlersFactory(resDir string, counter *failfast.Counter, client *re
 	}
 }
 
+// NewIntermediateHandlersFactory creates a new factory.
+// When tests are run recursively, intermediate component (i.e. remote bundle)
+// will use this factory.
+func NewIntermediateHandlersFactory(resDir string, counter *failfast.Counter, pass func(*protocol.RunTestsResponse) error, handle processor.HandleStack) HandlersFactory {
+	return func(ctx context.Context, cc *target.ConnCache) (context.Context, []processor.Handler) {
+		multiplexer := logging.NewMultiLogger()
+		ctx = logging.AttachLogger(ctx, multiplexer)
+		pull := func(src, dst string) error {
+			return linuxssh.GetAndDeleteFile(ctx, cc.Conn().SSHConn(), src, dst, linuxssh.PreserveSymlinks)
+		}
+		return ctx, []processor.Handler{
+			processor.NewFailFastHandler(counter),
+			processor.NewStackOperationHandler(handle),
+			// copyOutputHandler should come last as it can block RunEnd for a while.
+			processor.NewCopyAndPassThroughHandler(pass, pull),
+		}
+	}
+}
+
 func (d *Driver) runLocalTestsOnce(ctx context.Context, bundle string, tests []string, state *protocol.StartFixtureState) ([]*resultsjson.Result, error) {
 	if err := d.cc.EnsureConn(ctx); err != nil {
 		return nil, err
@@ -124,7 +147,7 @@ func (d *Driver) runLocalTestsOnce(ctx context.Context, bundle string, tests []s
 
 	proc := processor.New(d.cfg.ResDir, diag, hs)
 	cl := bundleclient.NewLocal(bundle, d.cfg.LocalBundleDir, d.cfg.Proxy, d.cc)
-	cl.RunTests(ctx, bcfg, rcfg, proc)
+	cl.RunTests(ctx, bcfg, rcfg, proc, d.cfg.Recursive)
 	return proc.Results(), proc.FatalError()
 }
 
@@ -218,7 +241,7 @@ func RunTestsWithRetry(ctx context.Context, allTests []string, runTestsOnce runT
 		// Note: this needs to happen above the results modifications as if there
 		// is 1 failing test & we strip that fail then we return rather than retry.
 		if len(results) == 0 {
-			return allResults, errors.New("no test ran in the last attempt")
+			return allResults, ErrNoTestRanInLastAttempt
 		}
 
 		// Update the results and unstarted list based on retries/failures.
@@ -240,3 +263,6 @@ func RunTestsWithRetry(ctx context.Context, allTests []string, runTestsOnce runT
 		logging.Infof(ctx, "Trying to run %v remaining test(s)", len(unstarted))
 	}
 }
+
+// ErrNoTestRanInLastAttempt indicates no test was ran in the last attempt.
+var ErrNoTestRanInLastAttempt = errors.New("no test ran in the last attempt")

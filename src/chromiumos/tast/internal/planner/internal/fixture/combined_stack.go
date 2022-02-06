@@ -145,9 +145,12 @@ func (s *CombinedStack) SetDirty(ctx context.Context, dirty bool) error {
 	return nil
 }
 
-// Top returns the state of the top fixture. It panics if the child stack is
-// empty.
+// Top returns the state of the top fixture.
+// If the child stack is empty, it returns zero value.
 func (s *CombinedStack) Top() *protocol.StartFixtureState {
+	if len(s.child.stack) == 0 {
+		return nil
+	}
 	f := s.child.top()
 	return &protocol.StartFixtureState{
 		Name:   f.Name(),

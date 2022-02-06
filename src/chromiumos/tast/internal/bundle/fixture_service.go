@@ -5,6 +5,7 @@
 package bundle
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"io"
@@ -227,4 +228,12 @@ func (l *fixtureServiceLogger) EntityError(ei *protocol.Entity, e *protocol.Erro
 
 func (l *fixtureServiceLogger) EntityEnd(ei *protocol.Entity, skipReasons []string, timingLog *timing.Log) error {
 	return nil
+}
+
+func (l *fixtureServiceLogger) ExternalEvent(req *protocol.RunTestsResponse) error {
+	return nil
+}
+
+func (l *fixtureServiceLogger) StackOperation(ctx context.Context, req *protocol.StackOperationRequest) (*protocol.StackOperationResponse, error) {
+	return nil, nil
 }

@@ -6,6 +6,7 @@
 package output
 
 import (
+	"context"
 	"sync"
 
 	"chromiumos/tast/errors"
@@ -25,6 +26,10 @@ type Stream interface {
 	EntityError(ei *protocol.Entity, e *protocol.Error) error
 	// EntityEnd reports that an entity has ended. If skipReasons is not empty it is considered skipped.
 	EntityEnd(ei *protocol.Entity, skipReasons []string, timingLog *timing.Log) error
+	// ExternalEvent reports events happened in external bundles.
+	ExternalEvent(res *protocol.RunTestsResponse) error
+	// StackOperation reports stack operation request.
+	StackOperation(ctx context.Context, req *protocol.StackOperationRequest) (*protocol.StackOperationResponse, error)
 }
 
 // EntityStream wraps planner.OutputStream for a single entity.

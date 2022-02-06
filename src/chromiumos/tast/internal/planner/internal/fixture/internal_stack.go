@@ -9,6 +9,7 @@ import (
 	"errors"
 	"fmt"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"chromiumos/tast/internal/logging"
@@ -543,8 +544,12 @@ func (f *statefulFixture) newTestContext(ctx context.Context, troot *testing.Fix
 func rewriteErrorsForTest(errs []*protocol.Error, fixtureName string) []*protocol.Error {
 	newErrs := make([]*protocol.Error, len(errs))
 	for i, e := range errs {
+		reason := e.GetReason()
+		if !strings.HasPrefix(reason, "[Fixture failure]") {
+			reason = fmt.Sprintf("[Fixture failure] %s: %s", fixtureName, reason)
+		}
 		newErrs[i] = &protocol.Error{
-			Reason:   fmt.Sprintf("[Fixture failure] %s: %s", fixtureName, e.GetReason()),
+			Reason:   reason,
 			Location: e.GetLocation(),
 		}
 	}

@@ -271,7 +271,7 @@ func (d *Driver) runRemoteTestsOnce(ctx context.Context, bundle string, tests []
 		processor.NewCopyOutputHandler(os.Rename),
 	}
 	proc := processor.New(d.cfg.ResDir(), nopDiagnose, hs)
-	d.remoteBundleClient(bundle).RunTests(ctx, bcfg, rcfg, proc)
+	d.remoteBundleClient(bundle).RunTests(ctx, bcfg, rcfg, proc, false)
 	return proc.Results(), proc.FatalError()
 }
 

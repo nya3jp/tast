@@ -6,20 +6,15 @@ package bundle
 
 import (
 	"context"
-	"fmt"
-	"io"
-	"path/filepath"
 	"sort"
 
 	"chromiumos/tast/internal/bundle/bundleclient"
 	"chromiumos/tast/internal/command"
-	"chromiumos/tast/internal/linuxssh"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/planner"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/testing"
-	"chromiumos/tast/internal/timing"
 )
 
 // testEntitiesToRun returns a sorted list of tests to run for the given names.
@@ -113,6 +108,9 @@ func runTestsRecursive(ctx context.Context, srv protocol.TestService_RunTestsSer
 	internalTests := make(map[string]*testing.TestInstance)
 	for _, t := range scfg.registry.AllTests() {
 		internalTests[t.Name] = t
+		if t.Timeout == 0 {
+			t.Timeout = scfg.defaultTestTimeout
+		}
 	}
 	pcfg := &planner.Config{
 		Dirs:             rcfg.GetDirs(),
@@ -126,169 +124,29 @@ func runTestsRecursive(ctx context.Context, srv protocol.TestService_RunTestsSer
 		Fixtures:         scfg.registry.AllFixtures(),
 		StartFixtureName: rcfg.GetStartFixtureState().GetName(),
 		StartFixtureImpl: &stubFixture{setUpErrors: rcfg.GetStartFixtureState().GetErrors()},
+		ExternalTarget: &planner.ExternalTarget{
+			Device: bundleParams.GetBundleConfig().GetPrimaryTarget(),
+			Config: rcfg.GetTarget(),
+			Bundle: scfg.registry.Name(),
+		},
 	}
 
-	// Run all the tests with Hops > 0 (i.e. local tests).
-	testNames := make(map[string][]string)
-	for _, e := range testEntities {
-		if e.Hops == 0 {
-			continue
-		}
-		testNames[e.StartFixtureName] = append(testNames[e.StartFixtureName], e.Entity.Name)
-	}
-	var startFixtures []string
-	for f := range testNames {
-		startFixtures = append(startFixtures, f)
-	}
-	sort.Strings(startFixtures)
-	for _, f := range startFixtures {
-		if err := runRemoteFixtureAndLocalTests(ctx, f, testNames[f], ew, pcfg, rcfg, bcfg, cl); err != nil {
-			return err
-		}
-	}
-
-	// Run all the tests with Hops = 0.
-	var tests []*protocol.ResolvedEntity
+	var internal []*protocol.ResolvedEntity
+	var external []*protocol.ResolvedEntity
 	for _, t := range testEntities {
-		if t.Hops > 0 {
-			continue
+		if t.Hops == 0 {
+			internal = append(internal, t)
+		} else {
+			external = append(external, t)
 		}
-		tests = append(tests, t)
 	}
-	if err := planner.RunTests(ctx, tests, ew, pcfg); err != nil {
+	// Run all the externalTests with Hops > 0 (i.e. local tests).
+	if err := planner.RunTests(ctx, external, ew, pcfg); err != nil {
+		return command.NewStatusErrorf(statusError, "run failed: %v", err)
+	}
+	// Run all the tests with Hops = 0.
+	if err := planner.RunTests(ctx, internal, ew, pcfg); err != nil {
 		return command.NewStatusErrorf(statusError, "run failed: %v", err)
 	}
 	return nil
-}
-
-func runRemoteFixtureAndLocalTests(
-	ctx context.Context,
-	startFixture string,
-	tests []string,
-	ew *eventWriter,
-	pcfg *planner.Config,
-	rcfg *protocol.RunConfig,
-	bcfg *protocol.BundleConfig,
-	cl *bundleclient.Client,
-) (retErr error) {
-	var setUpErrors []*protocol.Error
-	if startFixture != "" {
-		f, ok := pcfg.Fixtures[startFixture]
-		if !ok {
-			setUpErrors = append(setUpErrors, &protocol.Error{
-				Reason: fmt.Sprintf("fixture %q not found", startFixture),
-			})
-		} else {
-			out := &collectErrorsOutputStream{out: ew}
-			stack := planner.NewFixtureStack(pcfg, out)
-			if err := stack.Push(ctx, f); err != nil {
-				return fmt.Errorf("push remote fixture %q: %v", f.Name, err)
-			}
-			setUpErrors = out.errs
-			defer func() {
-				if err := stack.Pop(ctx); err != nil && retErr == nil {
-					retErr = err
-				}
-			}()
-		}
-	}
-	return runLocalTests(ctx, startFixture, setUpErrors, tests, ew, rcfg, bcfg, cl)
-}
-
-func runLocalTests(
-	ctx context.Context,
-	startFixture string,
-	setUpErrors []*protocol.Error,
-	tests []string,
-	ew *eventWriter,
-	rcfg *protocol.RunConfig,
-	bcfg *protocol.BundleConfig,
-	cl *bundleclient.Client) (retErr error) {
-
-	rcl, err := cl.TestService().RunTests(ctx)
-	if err != nil {
-		return err
-	}
-
-	if err := rcl.Send(&protocol.RunTestsRequest{
-		Type: &protocol.RunTestsRequest_RunTestsInit{
-			RunTestsInit: &protocol.RunTestsInit{
-				RunConfig: &protocol.RunConfig{
-					Tests:    tests,
-					Dirs:     rcfg.GetTarget().GetDirs(), // local bundle dirs
-					Features: rcfg.GetFeatures(),
-					ServiceConfig: &protocol.ServiceConfig{
-						Devservers:  rcfg.GetServiceConfig().GetDevservers(),
-						DutServer:   rcfg.GetServiceConfig().GetDutServer(),
-						TlwServer:   rcfg.GetServiceConfig().GetTlwServer(),
-						TlwSelfName: "", // TODO: fill it
-					},
-					DataFileConfig: rcfg.GetDataFileConfig(),
-					StartFixtureState: &protocol.StartFixtureState{
-						Name:   startFixture,
-						Errors: setUpErrors,
-					},
-					HeartbeatInterval:     rcfg.GetHeartbeatInterval(),
-					WaitUntilReady:        rcfg.GetWaitUntilReady(),
-					SystemServicesTimeout: rcfg.GetSystemServicesTimeout(),
-				},
-				Recursive: true,
-			},
-		},
-	}); err != nil {
-		return err
-	}
-
-	var outDirStack []string // empty string is pushed if entity is skipped
-	for {
-		resp, err := rcl.Recv()
-		if err == io.EOF {
-			break
-		} else if err != nil {
-			return err
-		}
-		switch x := resp.Type.(type) {
-		case *protocol.RunTestsResponse_EntityStart:
-			outDirStack = append(outDirStack, x.EntityStart.OutDir)
-		case *protocol.RunTestsResponse_EntityEnd:
-			src := outDirStack[len(outDirStack)-1]
-			outDirStack = outDirStack[:len(outDirStack)-1]
-			if src == "" {
-				break
-			}
-			name := x.EntityEnd.EntityName
-			dst := filepath.Join(rcfg.GetDirs().GetOutDir(), name)
-			if err := linuxssh.GetAndDeleteFile(ctx, cl.SSHConn(), src, dst, linuxssh.PreserveSymlinks); err != nil {
-				return err
-			}
-		}
-		if err := ew.srv.Send(resp); err != nil {
-			return err
-		}
-	}
-
-	// TODO: Diagnose SSH connection drops.
-	return nil
-}
-
-type collectErrorsOutputStream struct {
-	out  planner.OutputStream
-	errs []*protocol.Error
-}
-
-func (s *collectErrorsOutputStream) EntityStart(ei *protocol.Entity, outDir string) error {
-	return s.out.EntityStart(ei, outDir)
-}
-
-func (s *collectErrorsOutputStream) EntityLog(ei *protocol.Entity, msg string) error {
-	return s.out.EntityLog(ei, msg)
-}
-
-func (s *collectErrorsOutputStream) EntityError(ei *protocol.Entity, e *protocol.Error) error {
-	s.errs = append(s.errs, e)
-	return s.out.EntityError(ei, e)
-}
-
-func (s *collectErrorsOutputStream) EntityEnd(ei *protocol.Entity, skipReasons []string, timingLog *timing.Log) error {
-	return s.out.EntityEnd(ei, skipReasons, timingLog)
 }

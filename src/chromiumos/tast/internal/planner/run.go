@@ -91,6 +91,10 @@ type Config struct {
 	// If nil reasonable default will be used. Config.GracePeriod() returns
 	// the grace period to use. This field exists for unit testing.
 	CustomGracePeriod *time.Duration
+
+	// ExternalTarget represents configs for running an external bundle from
+	// current bundle. (i.e. local bundle from remote bundle).
+	ExternalTarget *ExternalTarget
 }
 
 // GracePeriod returns grace period after entity timeout.
@@ -438,7 +442,21 @@ func (p *fixtPlan) run(ctx context.Context, out output.Stream, dl *downloader) e
 
 	tree := p.tree.Clone()
 	internalStack := fixture.NewInternalStack(p.pcfg.FixtureConfig(), out)
-	stack := &internalOrCombinedStack{internal: internalStack}
+
+	var stack *internalOrCombinedStack
+	if p.pcfg.ExternalTarget != nil {
+		externalStack, err := fixture.NewExternalStack(ctx, out)
+		if err != nil {
+			return err
+		}
+		combinedStack := fixture.NewCombinedStack(externalStack, internalStack)
+		stack = &internalOrCombinedStack{combined: combinedStack}
+	} else {
+		// TODO(oka): Remove this code after migration for full remote fixtures.
+		// After migration is fully finished, only CombinedStack should be used.
+		stack = &internalOrCombinedStack{internal: internalStack}
+	}
+
 	return runFixtTree(ctx, tree, stack, p.pcfg, out, dl)
 }
 
@@ -503,6 +521,17 @@ func runFixtTree(ctx context.Context, tree *fixtTree, stack *internalOrCombinedS
 						return err
 					}
 				}
+			}
+			// Run external tests then.
+			for stack.Status() != fixture.StatusYellow && len(tree.externalTests) > 0 {
+				unstarted, err := runExternalTests(ctx, tree.externalTests, stack.combined, pcfg, out)
+				if err != nil {
+					return err
+				}
+				if len(unstarted) == len(tree.externalTests) {
+					return fmt.Errorf("BUG: runExternalTests succeeds but no external test has run")
+				}
+				tree.externalTests = unstarted
 			}
 
 			// Run child fixtures recursively.

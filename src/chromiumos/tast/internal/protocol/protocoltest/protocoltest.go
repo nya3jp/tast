@@ -93,6 +93,9 @@ func runTestsForEvents(ctx context.Context, cl protocol.TestServiceClient, rcfg 
 			return es, err
 		}
 
+		if err := replyStackOperation(srv, res); err != nil {
+			return nil, err
+		}
 		e, ok := ExtractEvent(res)
 		if !ok {
 			continue
@@ -107,6 +110,28 @@ func runTestsForEvents(ctx context.Context, cl protocol.TestServiceClient, rcfg 
 
 		es = append(es, e)
 	}
+}
+
+func replyStackOperation(srv protocol.TestService_RunTestsClient, res *protocol.RunTestsResponse) error {
+	if _, ok := res.Type.(*protocol.RunTestsResponse_StackOperation); !ok {
+		return nil
+	}
+	var resp *protocol.StackOperationResponse
+	switch res.GetStackOperation().Type.(type) {
+	case *protocol.StackOperationRequest_Reset_:
+		resp = &protocol.StackOperationResponse{Status: protocol.StackStatus_GREEN}
+	case *protocol.StackOperationRequest_PreTest:
+		resp = &protocol.StackOperationResponse{}
+	case *protocol.StackOperationRequest_PostTest:
+		resp = &protocol.StackOperationResponse{}
+	case *protocol.StackOperationRequest_Status:
+		resp = &protocol.StackOperationResponse{Status: protocol.StackStatus_GREEN}
+	case *protocol.StackOperationRequest_SetDirty:
+		resp = &protocol.StackOperationResponse{}
+	case *protocol.StackOperationRequest_Errors:
+		resp = &protocol.StackOperationResponse{}
+	}
+	return srv.Send(&protocol.RunTestsRequest{Type: &protocol.RunTestsRequest_StackOperationResponse{StackOperationResponse: resp}})
 }
 
 // ExtractEvent extracts Event from RunTestsResponse. It is useful in unit tests

@@ -118,6 +118,8 @@ type eventWriter struct {
 	mu  sync.Mutex // used to synchronize Send calls to srv
 }
 
+var _ planner.OutputStream = (*eventWriter)(nil)
+
 func newEventWriter(srv protocol.TestService_RunTestsServer) *eventWriter {
 	// Continue even if we fail to connect to syslog.
 	lg, _ := syslog.New(syslog.LOG_INFO, "tast")
@@ -204,6 +206,32 @@ func (ew *eventWriter) EntityEnd(ei *protocol.Entity, skipReasons []string, timi
 		firstErr = err
 	}
 	return firstErr
+}
+
+func (ew *eventWriter) ExternalEvent(req *protocol.RunTestsResponse) error {
+	ew.mu.Lock()
+	defer ew.mu.Unlock()
+	return ew.srv.Send(req)
+}
+
+func (ew *eventWriter) StackOperation(ctx context.Context, req *protocol.StackOperationRequest) (*protocol.StackOperationResponse, error) {
+	ew.mu.Lock()
+	defer ew.mu.Unlock()
+	if err := ew.srv.Send(&protocol.RunTestsResponse{
+		Type: &protocol.RunTestsResponse_StackOperation{
+			StackOperation: req,
+		},
+	}); err != nil {
+		return nil, err
+	}
+	resp, err := ew.srv.Recv()
+	if err != nil {
+		return nil, err
+	}
+	if _, ok := resp.Type.(*protocol.RunTestsRequest_StackOperationResponse); !ok {
+		return nil, fmt.Errorf("unexpected return type %T", resp.Type)
+	}
+	return resp.GetStackOperationResponse(), nil
 }
 
 func (ew *eventWriter) Heartbeat() error {

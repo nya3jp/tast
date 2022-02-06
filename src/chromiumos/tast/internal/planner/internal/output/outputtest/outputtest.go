@@ -6,6 +6,8 @@
 package outputtest
 
 import (
+	"context"
+
 	"chromiumos/tast/internal/planner/internal/output"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/timing"
@@ -69,6 +71,16 @@ func (s *Sink) EntityEnd(ei *protocol.Entity, skipReasons []string, timingLog *t
 	}
 	s.msgs = append(s.msgs, &protocol.EntityEndEvent{EntityName: ei.GetName(), Skip: skip})
 	return nil
+}
+
+// ExternalEvent implements output.Stream.
+func (s *Sink) ExternalEvent(res *protocol.RunTestsResponse) error {
+	return nil
+}
+
+// StackOperation implements output.Stream.
+func (s *Sink) StackOperation(ctx context.Context, req *protocol.StackOperationRequest) (*protocol.StackOperationResponse, error) {
+	return nil, nil
 }
 
 // ReadAll reads all control messages written to the sink.

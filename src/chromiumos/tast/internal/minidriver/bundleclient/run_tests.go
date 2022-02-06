@@ -54,7 +54,7 @@ type RunTestsOutput interface {
 // RunTests requests to run tests according to the given RunConfig.
 // Test execution events are streamed back via out. See RunTestsOutput for
 // details.
-func (c *Client) RunTests(ctx context.Context, bcfg *protocol.BundleConfig, rcfg *protocol.RunConfig, out RunTestsOutput) {
+func (c *Client) RunTests(ctx context.Context, bcfg *protocol.BundleConfig, rcfg *protocol.RunConfig, out RunTestsOutput, recursive bool) {
 	// Call RunEnd exactly once on returning from this method.
 	out.RunEnd(ctx, func() (runErr error) {
 		// Make sure all subprocesses and goroutines exit upon returning from
@@ -88,6 +88,7 @@ func (c *Client) RunTests(ctx context.Context, bcfg *protocol.BundleConfig, rcfg
 
 		init := &protocol.RunTestsInit{
 			RunConfig: rcfg,
+			Recursive: recursive,
 		}
 		if err := stream.Send(&protocol.RunTestsRequest{Type: &protocol.RunTestsRequest_RunTestsInit{RunTestsInit: init}}); err != nil {
 			return errors.Wrap(err, "initializing test run")

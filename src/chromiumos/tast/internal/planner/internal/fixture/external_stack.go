@@ -6,25 +6,23 @@ package fixture
 
 import (
 	"context"
-	"fmt"
 
 	"chromiumos/tast/errors"
+	"chromiumos/tast/internal/planner/internal/output"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testing"
 )
 
 // ExternalStack operates fixtures in a remote bundle.
 type ExternalStack struct {
-	cl *client
-
+	cl     *client
 	status Status            // updated on Reset
 	errors []*protocol.Error // cached as a constant value
 }
 
 // NewExternalStack creates a new ExternalStack.
-func NewExternalStack(ctx context.Context, srv protocol.TestService_RunTestsServer) (*ExternalStack, error) {
-	cl := &client{srv: srv}
-
+func NewExternalStack(ctx context.Context, out output.Stream) (*ExternalStack, error) {
+	cl := &client{out: out}
 	status, err := cl.status(ctx)
 	if err != nil {
 		return nil, err
@@ -33,7 +31,6 @@ func NewExternalStack(ctx context.Context, srv protocol.TestService_RunTestsServ
 	if err != nil {
 		return nil, err
 	}
-
 	return &ExternalStack{
 		cl:     cl,
 		status: status,
@@ -42,29 +39,11 @@ func NewExternalStack(ctx context.Context, srv protocol.TestService_RunTestsServ
 }
 
 type client struct {
-	srv protocol.TestService_RunTestsServer
+	out output.Stream
 }
 
-func (op *client) do(ctx context.Context, req *protocol.StackOperationRequest) (*protocol.StackOperationResponse, error) {
-	if err := op.srv.Send(&protocol.RunTestsResponse{
-		Type: &protocol.RunTestsResponse_StackOperation{
-			StackOperation: req,
-		},
-	}); err != nil {
-		return nil, err
-	}
-	resp, err := op.srv.Recv()
-	if err != nil {
-		return nil, err
-	}
-	if _, ok := resp.Type.(*protocol.RunTestsRequest_StackOperationResponse); !ok {
-		return nil, fmt.Errorf("unexpected return type %T", resp.Type)
-	}
-	return resp.GetStackOperationResponse(), nil
-}
-
-func (op *client) status(ctx context.Context) (Status, error) {
-	resp, err := op.do(ctx, &protocol.StackOperationRequest{
+func (cl *client) status(ctx context.Context) (Status, error) {
+	resp, err := cl.out.StackOperation(ctx, &protocol.StackOperationRequest{
 		Type: &protocol.StackOperationRequest_Status{
 			Status: &protocol.StackGetStatus{},
 		},
@@ -74,9 +53,8 @@ func (op *client) status(ctx context.Context) (Status, error) {
 	}
 	return statusFromProto(resp.GetStatus()), nil
 }
-
-func (op *client) errors(ctx context.Context) ([]*protocol.Error, error) {
-	resp, err := op.do(ctx, &protocol.StackOperationRequest{
+func (cl *client) errors(ctx context.Context) ([]*protocol.Error, error) {
+	resp, err := cl.out.StackOperation(ctx, &protocol.StackOperationRequest{
 		Type: &protocol.StackOperationRequest_Errors{
 			Errors: &protocol.StackGetErrors{},
 		},
@@ -99,7 +77,7 @@ func (s *ExternalStack) Errors() []*protocol.Error {
 
 // Reset runs Reset on the underlying stack.
 func (s *ExternalStack) Reset(ctx context.Context) error {
-	resp, err := s.cl.do(ctx, &protocol.StackOperationRequest{
+	resp, err := s.cl.out.StackOperation(ctx, &protocol.StackOperationRequest{
 		Type: &protocol.StackOperationRequest_Reset_{
 			Reset_: &protocol.StackReset{},
 		},
@@ -113,7 +91,7 @@ func (s *ExternalStack) Reset(ctx context.Context) error {
 
 // PreTest runs PreTest on the underlying stack.
 func (s *ExternalStack) PreTest(ctx context.Context, test *protocol.Entity, condition *testing.EntityCondition) (func(context.Context) error, error) {
-	resp, err := s.cl.do(ctx, &protocol.StackOperationRequest{
+	resp, err := s.cl.out.StackOperation(ctx, &protocol.StackOperationRequest{
 		Type: &protocol.StackOperationRequest_PreTest{
 			PreTest: &protocol.StackPreTest{
 				Entity:   test,
@@ -128,7 +106,7 @@ func (s *ExternalStack) PreTest(ctx context.Context, test *protocol.Entity, cond
 		condition.RecordError()
 	}
 	return func(ctx context.Context) error {
-		resp, err := s.cl.do(ctx, &protocol.StackOperationRequest{
+		resp, err := s.cl.out.StackOperation(ctx, &protocol.StackOperationRequest{
 			Type: &protocol.StackOperationRequest_PostTest{
 				PostTest: &protocol.StackPostTest{
 					Entity:   test,
@@ -148,7 +126,7 @@ func (s *ExternalStack) PreTest(ctx context.Context, test *protocol.Entity, cond
 
 // SetDirty runs SetDirty on the underlying stack.
 func (s *ExternalStack) SetDirty(ctx context.Context, dirty bool) error {
-	_, err := s.cl.do(ctx, &protocol.StackOperationRequest{
+	_, err := s.cl.out.StackOperation(ctx, &protocol.StackOperationRequest{
 		Type: &protocol.StackOperationRequest_SetDirty{
 			SetDirty: &protocol.StackSetDirty{
 				Dirty: dirty,

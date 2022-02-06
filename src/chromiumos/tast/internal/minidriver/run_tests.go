@@ -72,8 +72,8 @@ type Config struct {
 }
 
 // RunLocalTests runs external tests with retry.
-func (d *Driver) RunLocalTests(ctx context.Context, bundle string, tests []*protocol.ResolvedEntity, state *protocol.StartFixtureState) ([]*resultsjson.Result, error) {
-	runTestsOnce := func(ctx context.Context, tests []*protocol.ResolvedEntity) ([]*resultsjson.Result, error) {
+func (d *Driver) RunLocalTests(ctx context.Context, bundle string, tests []string, state *protocol.StartFixtureState) ([]*resultsjson.Result, error) {
+	runTestsOnce := func(ctx context.Context, tests []string) ([]*resultsjson.Result, error) {
 		return d.runLocalTestsOnce(ctx, bundle, tests, state)
 	}
 	return RunTestsWithRetry(ctx, tests, runTestsOnce, d.cfg.Retries)
@@ -103,7 +103,7 @@ func NewRootHandlersFactory(resDir string, counter *failfast.Counter, client *re
 	}
 }
 
-func (d *Driver) runLocalTestsOnce(ctx context.Context, bundle string, tests []*protocol.ResolvedEntity, state *protocol.StartFixtureState) ([]*resultsjson.Result, error) {
+func (d *Driver) runLocalTestsOnce(ctx context.Context, bundle string, tests []string, state *protocol.StartFixtureState) ([]*resultsjson.Result, error) {
 	if err := d.cc.EnsureConn(ctx); err != nil {
 		return nil, err
 	}
@@ -128,12 +128,7 @@ func (d *Driver) runLocalTestsOnce(ctx context.Context, bundle string, tests []*
 	return proc.Results(), proc.FatalError()
 }
 
-func (d *Driver) newConfigsForLocalTests(tests []*protocol.ResolvedEntity, state *protocol.StartFixtureState) (*protocol.BundleConfig, *protocol.RunConfig) {
-	var testNames []string
-	for _, t := range tests {
-		testNames = append(testNames, t.GetEntity().GetName())
-	}
-
+func (d *Driver) newConfigsForLocalTests(tests []string, state *protocol.StartFixtureState) (*protocol.BundleConfig, *protocol.RunConfig) {
 	devservers := append([]string(nil), d.cfg.Devservers...)
 	if url, ok := d.cc.Conn().Services().EphemeralDevserverURL(); ok {
 		devservers = append(devservers, url)
@@ -152,7 +147,7 @@ func (d *Driver) newConfigsForLocalTests(tests []*protocol.ResolvedEntity, state
 
 	bcfg := &protocol.BundleConfig{}
 	rcfg := &protocol.RunConfig{
-		Tests: testNames,
+		Tests: tests,
 		Dirs: &protocol.RunDirectories{
 			DataDir: d.cfg.LocalDataDir,
 			OutDir:  d.cfg.LocalOutDir,
@@ -186,28 +181,28 @@ func (d *Driver) newConfigsForLocalTests(tests []*protocol.ResolvedEntity, state
 }
 
 // runTestsOnceFunc is a function to run tests once.
-type runTestsOnceFunc func(ctx context.Context, tests []*protocol.ResolvedEntity) ([]*resultsjson.Result, error)
+type runTestsOnceFunc func(ctx context.Context, tests []string) ([]*resultsjson.Result, error)
 
 // RunTestsWithRetry runs tests in a loop. If runTestsOnce returns insufficient
 // results, it calls beforeRetry, followed by runTestsOnce again to restart
 // testing.
 // Additionally, this will honor the retry CLI flag.
-func RunTestsWithRetry(ctx context.Context, allTests []*protocol.ResolvedEntity, runTestsOnce runTestsOnceFunc, retryn int) ([]*resultsjson.Result, error) {
+func RunTestsWithRetry(ctx context.Context, allTests []string, runTestsOnce runTestsOnceFunc, retryn int) ([]*resultsjson.Result, error) {
 	var allResults []*resultsjson.Result
 	unstarted := make(map[string]struct{})
 
 	logging.Infof(ctx, "Allowing up to %v retries", retryn)
 	retries := make(map[string]int)
 	for _, t := range allTests {
-		unstarted[t.GetEntity().GetName()] = struct{}{}
-		retries[t.GetEntity().GetName()] = retryn
+		unstarted[t] = struct{}{}
+		retries[t] = retryn
 	}
 
 	for {
 		// Compute tests to run.
-		tests := make([]*protocol.ResolvedEntity, 0, len(unstarted))
+		tests := make([]string, 0, len(unstarted))
 		for _, t := range allTests {
-			if _, ok := unstarted[t.GetEntity().GetName()]; ok {
+			if _, ok := unstarted[t]; ok {
 				tests = append(tests, t)
 			}
 		}

@@ -76,7 +76,11 @@ func (d *Driver) runTests(ctx context.Context, bundle string, tests []*protocol.
 	if err != nil {
 		return localResults, err
 	}
-	remoteResults, err := d.runRemoteTests(ctx, bundle, remoteTests, args)
+	var testNames []string
+	for _, t := range remoteTests {
+		testNames = append(testNames, t.GetEntity().GetName())
+	}
+	remoteResults, err := d.runRemoteTests(ctx, bundle, testNames, args)
 	return append(localResults, remoteResults...), err
 }
 
@@ -231,21 +235,25 @@ func (d *Driver) runLocalTestsWithRetry(ctx context.Context, bundle string, test
 		BuildArtifactsURL:     buildArtifactsURL,
 	}
 	md := minidriver.NewDriver(cfg, d.cc)
-	return md.RunLocalTests(ctx, bundle, tests, state)
+	var names []string
+	for _, t := range tests {
+		names = append(names, t.GetEntity().GetName())
+	}
+	return md.RunLocalTests(ctx, bundle, names, state)
 }
 
-func (d *Driver) runRemoteTests(ctx context.Context, bundle string, tests []*protocol.ResolvedEntity, args *runTestsArgs) ([]*resultsjson.Result, error) {
+func (d *Driver) runRemoteTests(ctx context.Context, bundle string, tests []string, args *runTestsArgs) ([]*resultsjson.Result, error) {
 	if len(tests) == 0 {
 		return nil, nil
 	}
 
-	runTestsOnce := func(ctx context.Context, tests []*protocol.ResolvedEntity) ([]*resultsjson.Result, error) {
+	runTestsOnce := func(ctx context.Context, tests []string) ([]*resultsjson.Result, error) {
 		return d.runRemoteTestsOnce(ctx, bundle, tests, args)
 	}
 	return minidriver.RunTestsWithRetry(ctx, tests, runTestsOnce, d.cfg.Retries())
 }
 
-func (d *Driver) runRemoteTestsOnce(ctx context.Context, bundle string, tests []*protocol.ResolvedEntity, args *runTestsArgs) ([]*resultsjson.Result, error) {
+func (d *Driver) runRemoteTestsOnce(ctx context.Context, bundle string, tests []string, args *runTestsArgs) ([]*resultsjson.Result, error) {
 	bcfg, rcfg, err := d.newConfigsForRemoteTests(tests, args.DUTInfo, args.RemoteDevservers)
 	if err != nil {
 		return nil, err
@@ -267,15 +275,10 @@ func (d *Driver) runRemoteTestsOnce(ctx context.Context, bundle string, tests []
 	return proc.Results(), proc.FatalError()
 }
 
-func (d *Driver) newConfigsForRemoteTests(tests []*protocol.ResolvedEntity, dutInfo *protocol.DUTInfo, remoteDevservers []string) (*protocol.BundleConfig, *protocol.RunConfig, error) {
+func (d *Driver) newConfigsForRemoteTests(tests []string, dutInfo *protocol.DUTInfo, remoteDevservers []string) (*protocol.BundleConfig, *protocol.RunConfig, error) {
 	exe, err := os.Executable()
 	if err != nil {
 		return nil, nil, err
-	}
-
-	var testNames []string
-	for _, t := range tests {
-		testNames = append(testNames, t.GetEntity().GetName())
 	}
 
 	companionDUTs := make(map[string]*protocol.DUTConfig)
@@ -332,7 +335,7 @@ func (d *Driver) newConfigsForRemoteTests(tests []*protocol.ResolvedEntity, dutI
 		},
 	}
 	rcfg := &protocol.RunConfig{
-		Tests: testNames,
+		Tests: tests,
 		Dirs: &protocol.RunDirectories{
 			DataDir: d.cfg.RemoteDataDir(),
 			OutDir:  d.cfg.RemoteOutDir(),

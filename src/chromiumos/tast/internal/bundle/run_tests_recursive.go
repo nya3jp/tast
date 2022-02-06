@@ -215,7 +215,7 @@ func runLocalTests(
 			RunTestsInit: &protocol.RunTestsInit{
 				RunConfig: &protocol.RunConfig{
 					Tests:    tests,
-					Dirs:     rcfg.GetDirs().GetPrimaryTarget(),
+					Dirs:     rcfg.GetTarget().GetDirs(), // local bundle dirs
 					Features: rcfg.GetFeatures(),
 					ServiceConfig: &protocol.ServiceConfig{
 						Devservers:  rcfg.GetServiceConfig().GetDevservers(),

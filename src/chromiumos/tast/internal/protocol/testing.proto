@@ -199,6 +199,30 @@ message RunConfig {
   // SystemServiceTimeout is timeout for waiting for system services to be ready
   // in seconds. (Default: 120 seconds)
   google.protobuf.Duration system_services_timeout = 11;
+
+  // Target specifies how the primary target bundle should run.
+  // This can be nil if no target bundle exists.
+  RunTargetConfig target = 12;
+}
+
+// RunTargetConfig contains parameters for the primary target bundle to run.
+message RunTargetConfig {
+  // Devservers correspnods to config.Devservers.
+  repeated string devservers = 1;
+  // Dirs contains directories local tests use.
+  RunDirectories dirs = 2;
+  // DebugPort is the port that the bundle will attach the debugger to.
+  uint32 debug_port = 3;
+  // MaxTestFailures specifies maximum test failures allowed.
+  int32 max_test_failures = 4;
+  // Retries is the number of retries for failing tests.
+  int32 retries = 5;
+  // Proxy if true indicates that the HTTP_PROXY, HTTPS_PROXY, and NO_PROXY
+  // environment variables (and their lowercase counterparts) should be
+  // forwarded to the DUT if set on the host.
+  bool proxy = 6;
+  // TODO(crbug.com/1128259): Remove this field once we fully migrate to gRPC.
+  bool wait_until_ready = 7;
 }
 
 // RunDirectories holds several directory paths important for running tests.
@@ -211,8 +235,6 @@ message RunDirectories {
   // TempDir is the path to the directory under which temporary files for tests
   // are written.
   string temp_dir = 3;
-  // PrimaryTarget is the run directories of the primary target.
-  RunDirectories primary_target = 4;
 }
 
 // ServiceConfig contains configurations of external services available to

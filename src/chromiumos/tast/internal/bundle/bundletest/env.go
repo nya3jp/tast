@@ -224,7 +224,9 @@ func (e *Env) RunConfig() *protocol.RunConfig {
 		Dirs: &protocol.RunDirectories{
 			DataDir: e.RemoteDataDir(),
 			OutDir:  e.RemoteOutDir(),
-			PrimaryTarget: &protocol.RunDirectories{
+		},
+		Target: &protocol.RunTargetConfig{
+			Dirs: &protocol.RunDirectories{
 				DataDir: e.LocalDataDir(),
 				OutDir:  e.LocalOutDir(),
 			},

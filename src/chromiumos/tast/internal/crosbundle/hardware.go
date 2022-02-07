@@ -303,6 +303,16 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		}
 	}
 
+	// Device has CBI if ectool cbi get doesn't raise error.
+	if out, err := exec.Command("ectool", "cbi", "get", "0").Output(); err != nil {
+		logging.Infof(ctx, "CBI not present: %v", err)
+		features.EmbeddedController.Cbi = configpb.HardwareFeatures_NOT_PRESENT
+	} else if strings.Contains(string(out), "As uint:") {
+		features.EmbeddedController.Cbi = configpb.HardwareFeatures_PRESENT
+	} else {
+		features.EmbeddedController.Cbi = configpb.HardwareFeatures_PRESENT_UNKNOWN
+	}
+
 	// TODO(b/173741162): Pull storage information from boxster config and add
 	// additional storage types.
 	hasNvmeStorage := func() bool {

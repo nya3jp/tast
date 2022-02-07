@@ -28,14 +28,15 @@ import (
 	"chromiumos/tast/internal/run/resultsjson"
 )
 
-// TestRecursively is environment variable key which is set to "1" to enable
+// TestRecursively is environment variable key which is set to "0" to disable
 // recursive test running flow and support full remote fixtures.
+// TODO(b/187957164): Remove this after migration has finished.
 const TestRecursively = "TAST_TEST_RECURSIVELY"
 
 // ShouldRunTestsRecursively indicates if Tast tests should be run recursively
 // (i.e. remote bundle invokes local bundle).
 func ShouldRunTestsRecursively() bool {
-	return os.Getenv(TestRecursively) == "1"
+	return os.Getenv(TestRecursively) != "0"
 }
 
 // runTestsArgs holds arguments common to private methods called by RunTests.

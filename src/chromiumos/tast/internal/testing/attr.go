@@ -131,6 +131,10 @@ Tests in this group are not used for build verification.
 				Desc: `Indicates that this test is running igt-gpu-tools.`,
 			},
 			{
+				Name: "graphics_opencl",
+				Desc: `Indicates that this test is part of OpenCL testing.`,
+			},
+			{
 				Name: "graphics_video_platformdecoding",
 				Desc: `Indicates that this test is exercising platform video decoding abilities.`,
 			},

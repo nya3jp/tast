@@ -52,8 +52,7 @@ var softwareFeatureDefs = map[string]string{
 	"crosvm_gpu":     `"crosvm-gpu" && "virtio_gpu"`,
 	"crosvm_no_gpu":  `!"crosvm-gpu" || !"virtio_gpu"`,
 	// VMs don't support few crossystem sub-commands: https://crbug.com/974615
-	// TODO(b/201493204): Reenable when crossystem is fixed on manatee.
-	"crossystem":        `!"betty" && !"tast_vm" && !"manatee"`,
+	"crossystem":        `!"betty" && !"tast_vm"`,
 	"cups":              "cups",
 	"diagnostics":       `"diagnostics" && !"betty" && !"tast_vm"`, // VMs do not have hardware to diagnose. https://crbug.com/1126619
 	"dlc":               "dlc && dlc_test",
@@ -114,7 +113,7 @@ var softwareFeatureDefs = map[string]string{
 	"ml_benchmark_drivers":      "ml_benchmark_drivers",
 	"ml_service":                "ml_service",
 	"modemfwd":                  "modemfwd",
-	"mosys":                     `!"betty" && !"tast_vm" && !manatee`, //TODO(b/213995159): Reenable manatee when mosys is fixed.
+	"mosys":                     `!"betty" && !"tast_vm"`,
 	"nacl":                      "nacl",
 	"ndk_translation":           "ndk_translation",
 	"ndk_translation64":         "ndk_translation64",
@@ -153,8 +152,7 @@ var softwareFeatureDefs = map[string]string{
 	"proprietary_codecs":        "chrome_internal || chrome_media",
 	"protected_content":         "cdm_factory_daemon",
 	// These boards don't support pstore: https://crbug.com/971899
-	// TODO(b/213995410): Reenable pstore on manatee.
-	"pstore": `!"betty" && !"tast_vm" && !manatee`,
+	"pstore": `!"betty" && !"tast_vm"`,
 	"qemu":   `"betty" || "tast_vm"`,
 	"racc":   "racc",
 	// weird missing-runner-after-reboot bug: https://crbug.com/909955

@@ -1360,8 +1360,9 @@ func Vboot2() Condition {
 
 // SupportsVP9KSVCHWDecoding is satisfied if the SoC supports VP9 k-SVC
 // hardware decoding. They are x86 devices that are capable of VP9 hardware
-// decoding. VP9 k-SVC is a SVC stream in which a frame only on keyframe can
-// refer frames in a different spatial layer.
+// decoding and Qualcomm7180/7280.
+// VP9 k-SVC is a SVC stream in which a frame only on keyframe can refer frames
+// in a different spatial layer. See https://www.w3.org/TR/webrtc-svc/#dependencydiagrams* for detail.
 func SupportsVP9KSVCHWDecoding() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		dc := f.GetDeprecatedDeviceConfig()
@@ -1370,6 +1371,11 @@ func SupportsVP9KSVCHWDecoding() Condition {
 		}
 
 		if dc.GetCpu() == protocol.DeprecatedDeviceConfig_X86_64 {
+			return satisfied()
+		}
+
+		if dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_SC7180 ||
+			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_SC7280 {
 			return satisfied()
 		}
 

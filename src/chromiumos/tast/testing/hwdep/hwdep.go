@@ -1122,6 +1122,24 @@ func SkipOnFormFactor(ffList ...configpb.HardwareFeatures_FormFactor_FormFactorT
 	}}
 }
 
+// socTypeIsStateful returns true when stateful API is supported on the given |SocType|
+// or returns false when stateless API is supported.
+func socTypeIsStateful(SocType protocol.DeprecatedDeviceConfig_SOC) bool {
+	switch SocType {
+	case protocol.DeprecatedDeviceConfig_SOC_MT8173,
+		protocol.DeprecatedDeviceConfig_SOC_SC7180,
+		protocol.DeprecatedDeviceConfig_SOC_SC7280:
+		return true
+	case protocol.DeprecatedDeviceConfig_SOC_MT8192,
+		protocol.DeprecatedDeviceConfig_SOC_MT8195,
+		protocol.DeprecatedDeviceConfig_SOC_MT8186:
+		return false
+	// TODO(stevecho): stateful is more common for now, but we can change this in the future
+	default:
+		return true
+	}
+}
+
 // SupportsV4L2StatefulVideoDecoding says true if the SoC supports the V4L2
 // stateful video decoding kernel API. Examples of this are MTK8173 and
 // Qualcomm devices (7180, etc). In general, we prefer to use stateless
@@ -1132,12 +1150,26 @@ func SupportsV4L2StatefulVideoDecoding() Condition {
 		if dc == nil {
 			return withErrorStr("DeprecatedDeviceConfig is not given")
 		}
-		if dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_MT8173 ||
-			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_SC7180 ||
-			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_SC7280 {
+		if socTypeIsStateful(dc.GetSoc()) {
 			return satisfied()
 		}
 		return unsatisfied("SoC does not support V4L2 Stateful HW video decoding")
+	}}
+}
+
+// SupportsV4L2StatelessVideoDecoding says true if the SoC supports the V4L2
+// stateless video decoding kernel API. Examples of this are MTK8192 (Asurada),
+// MTK8195 (Cherry), and MTK8186 (Corsola).
+func SupportsV4L2StatelessVideoDecoding() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		dc := f.GetDeprecatedDeviceConfig()
+		if dc == nil {
+			return withErrorStr("DeprecatedDeviceConfig is not given")
+		}
+		if !socTypeIsStateful(dc.GetSoc()) {
+			return satisfied()
+		}
+		return unsatisfied("SoC does not support V4L2 Stateless HW video decoding")
 	}}
 }
 

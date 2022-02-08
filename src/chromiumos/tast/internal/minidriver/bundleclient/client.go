@@ -60,7 +60,11 @@ func New(cmd genericexec.Cmd) *Client {
 
 // dial connects to the test bundle and established a gRPC connection.
 func (c *Client) dial(ctx context.Context, req *protocol.HandshakeRequest, debugPort int) (_ *rpcConn, retErr error) {
-	proc, err := c.cmd.DebugCommand(debugPort).Interact(ctx, []string{"-rpc"})
+	debugCmd, err := c.cmd.DebugCommand(ctx, debugPort)
+	if err != nil {
+		return nil, err
+	}
+	proc, err := debugCmd.Interact(ctx, []string{"-rpc"})
 	if err != nil {
 		return nil, err
 	}
@@ -86,13 +90,10 @@ func (c *Client) dial(ctx context.Context, req *protocol.HandshakeRequest, debug
 }
 
 // LocalCommand creates a SSH command to run exec on the target specified by cc.
-func LocalCommand(exec string, useDebugger, proxy bool, cc *target.ConnCache) *genericexec.SSHCmd {
+func LocalCommand(exec string, proxy bool, cc *target.ConnCache) *genericexec.SSHCmd {
 	var args []string
 	// The delve debugger attempts to write to a directory not on the stateful partition.
 	// This ensures it instead writes to the stateful partition.
-	if useDebugger {
-		args = append(args, "XDG_CONFIG_HOME=/mnt/stateful_partition/xdg_config")
-	}
 	if proxy {
 		// Proxy-related variables can be either uppercase or lowercase.
 		// See https://golang.org/pkg/net/http/#ProxyFromEnvironment.
@@ -112,7 +113,7 @@ func LocalCommand(exec string, useDebugger, proxy bool, cc *target.ConnCache) *g
 }
 
 // NewLocal creates a bundle client to the local bundle.
-func NewLocal(bundle, bundleDir string, useDebugger, proxy bool, cc *target.ConnCache) *Client {
-	cmd := LocalCommand(filepath.Join(bundleDir, bundle), useDebugger, proxy, cc)
+func NewLocal(bundle, bundleDir string, proxy bool, cc *target.ConnCache) *Client {
+	cmd := LocalCommand(filepath.Join(bundleDir, bundle), proxy, cc)
 	return New(cmd)
 }

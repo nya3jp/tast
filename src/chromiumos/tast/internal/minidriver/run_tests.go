@@ -63,8 +63,8 @@ type Config struct {
 	TestVars              map[string]string
 	MaybeMissingVars      string
 
-	UseDebugger bool
-	Proxy       bool
+	DebuggerPort int
+	Proxy        bool
 
 	DUTFeatures *protocol.DUTFeatures
 
@@ -103,7 +103,7 @@ func (d *Driver) runLocalTestsOnce(ctx context.Context, bundle string, tests []*
 
 	hs := processor.NewHandlers(d.cfg.ResDir, multiplexer, diag, pull, d.cfg.Counter, d.cfg.Client)
 	proc := processor.New(d.cfg.ResDir, diag, hs)
-	cl := bundleclient.NewLocal(bundle, d.cfg.LocalBundleDir, d.cfg.UseDebugger, d.cfg.Proxy, d.cc)
+	cl := bundleclient.NewLocal(bundle, d.cfg.LocalBundleDir, d.cfg.Proxy, d.cc)
 	cl.RunTests(ctx, bcfg, rcfg, proc)
 	return proc.Results(), proc.FatalError()
 }
@@ -159,6 +159,7 @@ func (d *Driver) newConfigsForLocalTests(tests []*protocol.ResolvedEntity, state
 		HeartbeatInterval:     ptypes.DurationProto(HeartbeatInterval),
 		WaitUntilReady:        d.cfg.WaitUntilReady,
 		SystemServicesTimeout: durationpb.New(d.cfg.SystemServicesTimeout),
+		DebugPort:             uint32(d.cfg.DebuggerPort),
 	}
 	return bcfg, rcfg
 }

@@ -5,9 +5,12 @@
 package genericexec
 
 import (
+	"bufio"
+	"bytes"
 	"context"
 	"io"
 
+	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/debugger"
 	"chromiumos/tast/ssh"
 )
@@ -32,10 +35,25 @@ func CommandSSH(conn *ssh.Conn, name string, baseArgs ...string) *SSHCmd {
 	}
 }
 
+// Keep attempting to kill the debugger. It's possible that kill will fail
+// with "no such process", so just do an || true to ensure it doesn't fail.
+const killDebuggerCommand = `while pid=$(pgrep ^dlv$); do kill "${pid}" || true; done`
+
 // DebugCommand returns a version of this command that will run under the debugger.
-func (c *SSHCmd) DebugCommand(debugPort int) Cmd {
-	name, baseArgs := debugger.RewriteDebugCommand(debugPort, c.name, c.baseArgs...)
-	return &SSHCmd{conn: c.conn, name: name, baseArgs: baseArgs, debugPort: debugPort}
+func (c *SSHCmd) DebugCommand(ctx context.Context, debugPort int) (Cmd, error) {
+	if debugPort == 0 {
+		return c, nil
+	}
+	if err := debugger.FindPreemptiveDebuggerErrors(debugPort, true); err != nil {
+		return nil, err
+	}
+	killCurrentDebuggerCmd := SSHCmd{conn: c.conn, name: "sh", baseArgs: []string{"-c", killDebuggerCommand}}
+	var stderr bytes.Buffer
+	if err := killCurrentDebuggerCmd.Run(ctx, nil, nil, nil, bufio.NewWriter(&stderr)); err != nil {
+		return nil, errors.Errorf("Failed to kill the current debugger. stderr: %s. Error: %+v", stderr.String(), err)
+	}
+	name, baseArgs := debugger.RewriteDebugCommand(debugPort, debugger.DlvDUTEnv, c.name, c.baseArgs...)
+	return &SSHCmd{conn: c.conn, name: name, baseArgs: baseArgs, debugPort: debugPort}, nil
 }
 
 // Run runs a remote command synchronously. See Cmd.Run for details.

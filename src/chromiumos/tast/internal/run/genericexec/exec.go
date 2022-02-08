@@ -31,9 +31,19 @@ func CommandExec(name string, baseArgs ...string) *ExecCmd {
 }
 
 // DebugCommand returns a version of this command that will run under the debugger.
-func (c *ExecCmd) DebugCommand(debugPort int) Cmd {
-	name, baseArgs := debugger.RewriteDebugCommand(debugPort, c.name, c.baseArgs...)
-	return &ExecCmd{name: name, baseArgs: baseArgs, debugPort: debugPort}
+func (c *ExecCmd) DebugCommand(ctx context.Context, debugPort int) (Cmd, error) {
+	if debugPort == 0 {
+		return c, nil
+	}
+	if err := debugger.FindPreemptiveDebuggerErrors(debugPort, false); err != nil {
+		return nil, err
+	}
+	debugEnv := debugger.DlvHostEnv
+	if debugger.IsRunningOnDUT() {
+		debugEnv = debugger.DlvDUTEnv
+	}
+	name, baseArgs := debugger.RewriteDebugCommand(debugPort, debugEnv, c.name, c.baseArgs...)
+	return &ExecCmd{name: name, baseArgs: baseArgs, debugPort: debugPort}, nil
 }
 
 // Run runs a local command synchronously. See Cmd.Run for details.

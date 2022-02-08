@@ -35,15 +35,25 @@ const (
 	RemoteTestRunner DebugTarget = "remote-test-runner"
 )
 
-// FindPreemptiveDebuggerErrors pre-emptively checks potential errors, to ensure better error messages for users.
-func FindPreemptiveDebuggerErrors(port int) error {
-	if port == 0 {
-		return nil
-	}
+// DlvDUTEnv is the environment variables required to run dlv on DUTs.
+// Setting XDG_CONFIG_HOME to the stateful partition is required to stop it
+// writing to ~/.config/dlv, which is in a read-only partition.
+var DlvDUTEnv = []string{"XDG_CONFIG_HOME=/mnt/stateful_partition/xdg_config"}
+
+// DlvHostEnv is the environment variables required to run dlv on a host machine.
+var DlvHostEnv = []string{}
+
+// IsRunningOnDUT returns whether the current process is running on the DUT.
+func IsRunningOnDUT() bool {
 	// We want to change the error messages based on whether this is running on the DUT or the host.
 	// We can't necessarily know in the caller because it doesn't distinguish between remote bundles and local bundles.
 	lsb, err := ioutil.ReadFile("/etc/lsb-release")
-	isDUT := err == nil && strings.Contains(string(lsb), "CHROMEOS_RELEASE_BOARD")
+	return err == nil && strings.Contains(string(lsb), "CHROMEOS_RELEASE_BOARD")
+}
+
+// FindPreemptiveDebuggerErrors pre-emptively checks potential errors, to ensure better error messages for users.
+func FindPreemptiveDebuggerErrors(port int, remoteCommand bool) error {
+	isDUT := IsRunningOnDUT()
 
 	if _, err := exec.LookPath("dlv"); err != nil {
 		if runtime.GOARCH == "arm" {
@@ -53,6 +63,11 @@ func FindPreemptiveDebuggerErrors(port int) error {
 		} else {
 			return errors.New(`dlv doesn't exist on your host machine. To install, run "sudo emerge dev-go/delve"`)
 		}
+	}
+
+	// The host machine needs to set up a port forward, so the port *should* be in use.
+	if !isDUT && remoteCommand {
+		return nil
 	}
 
 	machine := "host"
@@ -175,38 +190,31 @@ func ForwardPort(ctx context.Context, sshConn *ssh.Conn, port int) error {
 // RewriteDebugCommand takes a go binary and a set of arguments it takes,
 // and if a debug port was provided, rewrites it as a command that instead
 // runs a debugger and waits on that port before running the binary.
-func RewriteDebugCommand(debugPort int, cmd string, args ...string) (newCmd string, newArgs []string) {
+func RewriteDebugCommand(debugPort int, env []string, cmd string, args ...string) (newCmd string, newArgs []string) {
 	if debugPort == 0 {
 		return cmd, args
 	}
-	var prefix []string
-	var binary string
-	var binaryArgs []string
 	if cmd == "env" {
-		prefix = append(prefix, "env")
 		for i, arg := range args {
 			if !strings.Contains(arg, "=") {
-				prefix = append(prefix, args[:i]...)
-				binary = args[i]
-				binaryArgs = args[i+1:]
+				env = append(env, args[:i]...)
+				cmd = args[i]
+				args = args[i+1:]
+				break
 			}
 		}
-	} else {
-		binary = cmd
-		binaryArgs = args
 	}
 
 	// Tast uses stdout to interact with the binary. Remove all delve output to
 	// stdout with --log-dest=/dev/null, since critical things go to stderr anyway.
-	result := append(append(prefix,
-		[]string{"dlv", "exec", binary,
+	return "env", append(append(env,
+		[]string{"dlv", "exec", cmd,
 			"--api-version=2",
 			"--headless",
 			fmt.Sprintf("--listen=:%d", debugPort),
 			"--log-dest=/dev/null",
-			"--"}...), binaryArgs...)
+			"--"}...), args...)
 
-	return result[0], result[1:]
 }
 
 // PrintWaitingMessage outputs a "Waiting for debugger" message, if required.

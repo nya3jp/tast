@@ -200,7 +200,6 @@ func (d *Driver) runLocalTestsWithRemoteFixture(ctx context.Context, bundle stri
 }
 
 func (d *Driver) runLocalTestsWithRetry(ctx context.Context, bundle string, tests []*protocol.ResolvedEntity, state *protocol.StartFixtureState, args *runTestsArgs) ([]*resultsjson.Result, error) {
-	_, useDebugger := d.cfg.DebuggerPorts()[debugger.LocalBundle]
 	cfg := &minidriver.Config{
 		Retries:               d.cfg.Retries(),
 		ResDir:                d.cfg.ResDir(),
@@ -216,7 +215,7 @@ func (d *Driver) runLocalTestsWithRetry(ctx context.Context, bundle string, test
 		CheckTestDeps:         d.cfg.CheckTestDeps(),
 		TestVars:              d.cfg.TestVars(),
 		MaybeMissingVars:      d.cfg.MaybeMissingVars(),
-		UseDebugger:           useDebugger,
+		DebuggerPort:          d.cfg.DebuggerPorts()[debugger.LocalBundle],
 		Proxy:                 d.cfg.Proxy() == config.ProxyEnv,
 		DUTFeatures:           args.DUTInfo.GetFeatures(),
 		Counter:               args.Counter,

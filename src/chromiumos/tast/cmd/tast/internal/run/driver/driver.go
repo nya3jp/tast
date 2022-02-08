@@ -15,7 +15,6 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/driver/internal/drivercore"
 	"chromiumos/tast/cmd/tast/internal/run/driver/internal/runnerclient"
 	"chromiumos/tast/cmd/tast/internal/run/driver/internal/sshconfig"
-	"chromiumos/tast/internal/debugger"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/minidriver/bundleclient"
 	"chromiumos/tast/internal/minidriver/target"
@@ -116,7 +115,7 @@ func (d *Driver) DefaultTimeout() time.Duration {
 }
 
 func (d *Driver) localRunnerClient() *runnerclient.Client {
-	cmd := bundleclient.LocalCommand(d.cfg.LocalRunner(), d.cfg.DebuggerPorts()[debugger.LocalBundle] != 0, d.cfg.Proxy() == config.ProxyEnv, d.cc)
+	cmd := bundleclient.LocalCommand(d.cfg.LocalRunner(), d.cfg.Proxy() == config.ProxyEnv, d.cc)
 
 	params := &protocol.RunnerInitParams{BundleGlob: d.cfg.LocalBundleGlob()}
 	return runnerclient.New(cmd, params, d.cfg.MsgTimeout(), 1)

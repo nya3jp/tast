@@ -149,7 +149,7 @@ func (s *testServer) ListEntities(ctx context.Context, req *protocol.ListEntitie
 	// ListEntities should not set runtime global information during handshake.
 	// TODO(b/187793617): Always pass s.bundleParams to bundles once we fully migrate to gRPC-based protocol.
 	// This workaround is currently needed because BundleInitParams is unavailable when this method is called internally for handling JSON-based protocol methods.
-	if err := s.forEachBundle(ctx, 0, nil, func(ctx context.Context, ts protocol.TestServiceClient) error {
+	if err := s.forEachBundle(ctx, nil, func(ctx context.Context, ts protocol.TestServiceClient) error {
 		res, err := ts.ListEntities(ctx, req) // pass through req
 		if err != nil {
 			return err
@@ -186,8 +186,7 @@ func (s *testServer) RunTests(srv protocol.TestService_RunTestsServer) error {
 	if err != nil {
 		return err
 	}
-	runTestsInit, ok := initReq.GetType().(*protocol.RunTestsRequest_RunTestsInit)
-	if !ok {
+	if _, ok := initReq.GetType().(*protocol.RunTestsRequest_RunTestsInit); !ok {
 		return errors.Errorf("RunTests: unexpected initial request message: got %T, want %T", initReq.GetType(), &protocol.RunTestsRequest_RunTestsInit{})
 	}
 
@@ -195,7 +194,7 @@ func (s *testServer) RunTests(srv protocol.TestService_RunTestsServer) error {
 		killStaleRunners(ctx, unix.SIGTERM)
 	}
 
-	return s.forEachBundle(ctx, int(runTestsInit.RunTestsInit.DebugPort), s.bundleParams, func(ctx context.Context, ts protocol.TestServiceClient) error {
+	return s.forEachBundle(ctx, s.bundleParams, func(ctx context.Context, ts protocol.TestServiceClient) error {
 		st, err := ts.RunTests(ctx)
 		if err != nil {
 			return err
@@ -223,7 +222,7 @@ func (s *testServer) RunTests(srv protocol.TestService_RunTestsServer) error {
 	})
 }
 
-func (s *testServer) forEachBundle(ctx context.Context, debugPort int, bundleParams *protocol.BundleInitParams, f func(ctx context.Context, ts protocol.TestServiceClient) error) error {
+func (s *testServer) forEachBundle(ctx context.Context, bundleParams *protocol.BundleInitParams, f func(ctx context.Context, ts protocol.TestServiceClient) error) error {
 	bundlePaths, err := filepath.Glob(s.runnerParams.GetBundleGlob())
 	if err != nil {
 		return err
@@ -235,7 +234,7 @@ func (s *testServer) forEachBundle(ctx context.Context, debugPort int, bundlePar
 		if err := func() error {
 			// Logging added for b/213616631 to see ListEntities progress on the DUT.
 			logging.Debugf(ctx, "Sending request to bundle %s", bundlePath)
-			cl, err := rpc.DialExec(ctx, bundlePath, debugPort, true,
+			cl, err := rpc.DialExec(ctx, bundlePath, true,
 				&protocol.HandshakeRequest{BundleInitParams: bundleParams})
 			if err != nil {
 				return err

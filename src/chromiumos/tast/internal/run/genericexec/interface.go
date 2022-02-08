@@ -33,7 +33,9 @@ type Cmd interface {
 
 	// DebugCommand returns a new command that runs the existing command under a
 	// debugger waiting on port debugPort, if debugPort is non-zero.
-	DebugCommand(debugPort int) Cmd
+	// It will also ensure that the command is runnable, such as by killing
+	// the old debugger.
+	DebugCommand(ctx context.Context, debugPort int) (Cmd, error)
 }
 
 // Process is a common interface abstracting a running external process.

@@ -9,10 +9,15 @@ import (
 	"path/filepath"
 )
 
-const tastDir = "/tmp/tast" // base directory where Tast writes files
+const (
+	// base directory where Tast writes files
+	tastDir = "/tmp/tast"
+	// Path to the src files
+	srcDir = "chromiumos"
+)
 
 // trunkDir returns the path to the Chrome OS checkout (within a chroot).
 func trunkDir() string {
 	// TODO(derat): Should probably check that we're actually in the chroot first.
-	return filepath.Join(os.Getenv("HOME"), "trunk")
+	return filepath.Join(os.Getenv("HOME"), srcDir)
 }

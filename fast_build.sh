@@ -15,9 +15,9 @@ readonly PKGDIR="${GOHOME}/pkg"
 
 # Go workspaces containing the Tast source.
 readonly SRCDIRS=(
-  "${HOME}/trunk/src/platform/tast"
-  "${HOME}/trunk/src/platform/tast-tests"
-  "${HOME}/trunk/src/platform/tast-tests-private"
+  "${HOME}/chromiumos/src/platform/tast"
+  "${HOME}/chromiumos/src/platform/tast-tests"
+  "${HOME}/chromiumos/src/platform/tast-tests-private"
 )
 
 # Package to build to produce tast executables.

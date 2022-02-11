@@ -1298,3 +1298,13 @@ func SupportsVP9KSVCHWEncoding() Condition {
 		return unsatisfied("SoC does not support VP9 k-SVC HW encoding")
 	}}
 }
+
+// AssistantKey is satisfied if a model has an assistant key.
+func AssistantKey() Condition {
+	return Model("eve", "nocturne", "atlas")
+}
+
+// NoAssistantKey is satisfied if a model does not have an assistant key.
+func NoAssistantKey() Condition {
+	return SkipOnModel("eve", "nocturne", "atlas")
+}

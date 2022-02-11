@@ -618,3 +618,28 @@ func TestDisplayPortConverter(t *testing.T) {
 		&protocol.DeprecatedDeviceConfig{},
 		nil)
 }
+
+func TestAssistantkey(t *testing.T) {
+	for _, tc := range []struct {
+		model         string
+		wantSatisfied bool
+	}{
+		{"eve", true},
+		{"nocturne", true},
+		{"atlas", true},
+		{"volteer", false},
+	} {
+		verifyCondition(t, hwdep.AssistantKey(), &protocol.DeprecatedDeviceConfig{
+			Id: &protocol.DeprecatedConfigId{
+				Model: tc.model,
+			},
+		}, &configpb.HardwareFeatures{}, tc.wantSatisfied)
+
+		// hwdep.NoAssistantKey should always be !hwdep.AssistantKey.
+		verifyCondition(t, hwdep.NoAssistantKey(), &protocol.DeprecatedDeviceConfig{
+			Id: &protocol.DeprecatedConfigId{
+				Model: tc.model,
+			},
+		}, &configpb.HardwareFeatures{}, !tc.wantSatisfied)
+	}
+}

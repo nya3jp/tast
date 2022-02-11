@@ -500,6 +500,7 @@ func Wifi80211ax() Condition {
 			"kalista",
 			"kefka",
 			"kevin",
+			"kevin64",
 			"kip",
 			"kukui", // The mosys for jacuzzi is kukui. jacuzzi does not support 802.11ax
 			"lars",
@@ -548,6 +549,7 @@ func Wifi80211ax() Condition {
 			"blipper",
 			"dirinboz",
 			"ezkinil",
+			"gooey",
 			"gumboz",
 			"jelboz",
 			"jelboz360",
@@ -652,7 +654,7 @@ func WifiIntel() Condition {
 		// "gru" is being used here to represent "scarlet" devices.
 		platformCondition := SkipOnPlatform(
 			"asurada", "bob", "cherry", "elm", "fievel", "gru", "grunt", "hana", "herobrine", "jacuzzi",
-			"kevin", "kukui", "oak", "strongbad", "tiger", "trogdor", "trogdor-kernelnext",
+			"kevin", "kevin64", "kukui", "oak", "strongbad", "tiger", "trogdor", "trogdor-kernelnext",
 		)
 		if satisfied, reason, err := platformCondition.Satisfied(f); err != nil || !satisfied {
 			return satisfied, reason, err
@@ -667,6 +669,7 @@ func WifiIntel() Condition {
 			"blooglet",
 			"dirinboz",
 			"ezkinil",
+			"gooey",
 			"gumboz",
 			"jelboz",
 			"jelboz360",

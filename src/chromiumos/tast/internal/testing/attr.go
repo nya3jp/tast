@@ -570,6 +570,10 @@ Parallels boot-up testing. Otherwise the same as group:crosbolt.`,
 				Name: "borealis_weekly",
 				Desc: `Indicate this test should be scheduled per week.`,
 			},
+			{
+				Name: "informational",
+				Desc: `Indicates that failures can be ignored.`,
+			},
 		},
 	},
 	{

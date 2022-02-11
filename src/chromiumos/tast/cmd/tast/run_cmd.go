@@ -50,17 +50,33 @@ func (*runCmd) Synopsis() string { return "run tests" }
 func (*runCmd) Usage() string {
 	return `Usage: run [flag]... <target> [pattern]...
 
-Run one or more tests on a target device.
+Description:
+    Runs the tast tests on the target based on the pattern provided.
+    Exits with 0 if all expected tests were executed, even if some of them failed.
+    Non-zero exit codes indicate high-level issues, e.g. the SSH connection to the
+    target was lost. Callers should examine results.json or streamed_results.jsonl
+    for failing tests. -failfortests can be supplied to override this behavior.
 
-The target is an SSH connection spec of the form "[user@]host[:port]".
-Patterns are either globs matching test names or a single test attribute
-boolean expression in parentheses (e.g. "(informational && !disabled)").
+Target:
+    The target is an SSH connection spec of the form "[user@]host[:port]".
 
-Exits with 0 if all expected tests were executed, even if some of them failed.
-Non-zero exit codes indicate high-level issues, e.g. the SSH connection to the
-target was lost. Callers should examine results.json or streamed_results.jsonl
-for failing tests. -failfortests can be supplied to override this behavior.
+Pattern:
+    Patterns are either globs matching test names or a single test attribute
+    boolean expression in parentheses.          
+  
+    To run tests based attributes pattern, mention single argument surrounded by parentheses. Example:
 
+        $ tast run <target> '(("dep:chrome" || "dep:android") && !informational)'
+    
+    To run tests based on test name wildcard pattern, use *. Example:
+
+        $ tast run <target> 'ui*' 'wilco*'
+
+    To run specific tests mention them separated by space. Example:
+
+        $ tast run <target>  example.ServoEcho ui.ZoomConfCUJ.basic_large
+
+Flag:
 `
 }
 

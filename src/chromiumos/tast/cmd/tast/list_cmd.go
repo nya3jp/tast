@@ -44,13 +44,29 @@ func (*listCmd) Synopsis() string { return "list tests" }
 func (*listCmd) Usage() string {
 	return `Usage: list [flag]... <target> [pattern]...
 
-List tests matched by zero or more patterns.
+Description:
+    List tests matched by zero or more patterns.
 
-The target is an SSH connection spec of the form "[user@]host[:port]".
+Target:
+    The target is an SSH connection spec of the form "[user@]host[:port]".
 
-Patterns are either globs matching test names or a single test attribute
-boolean expression in parentheses (e.g. "(informational && !disabled)").
+Pattern:
+    Patterns are either globs matching test names or a single test attribute
+    boolean expression in parentheses.
 
+    To list all the tests:
+        
+        $ tast list <target>             
+  
+    To list tests based attributes pattern, mention single argument surrounded by parentheses. Example:
+
+        $ tast list <target> '(("dep:chrome" || "dep:android") && !informational)'
+    
+    To list tests based on test name wildcard pattern, use *. Example:
+
+        $ tast list <target> 'ui*' 'wilco*'
+
+Flag:
 `
 }
 

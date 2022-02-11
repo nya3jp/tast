@@ -168,7 +168,7 @@ func verifyTestNames(patterns []string, tests []*driver.BundleEntity) error {
 	}
 	unmatched := m.UnmatchedPatterns(testNames)
 	if len(unmatched) != 0 {
-		return errors.Errorf("specified tests not found: %s", strings.Join(unmatched, ", "))
+		return errors.Errorf("no tests matched by pattern(s) %v, please try tast list to find tests with similar pattern", strings.Join(unmatched, ", "))
 	}
 	return nil
 }

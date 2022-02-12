@@ -206,6 +206,9 @@ func (d *Driver) runLocalTestsWithRemoteFixture(ctx context.Context, bundle stri
 }
 
 func (d *Driver) runLocalTestsWithRetry(ctx context.Context, bundle string, tests []*protocol.ResolvedEntity, state *protocol.StartFixtureState, args *runTestsArgs) ([]*resultsjson.Result, error) {
+
+	buildArtifactsURL := getBuildArtifactsURL(d.cfg.BuildArtifactsURLOverride(), args.DUTInfo.GetDefaultBuildArtifactsUrl())
+
 	cfg := &minidriver.Config{
 		Retries:               d.cfg.Retries(),
 		ResDir:                d.cfg.ResDir(),
@@ -225,6 +228,7 @@ func (d *Driver) runLocalTestsWithRetry(ctx context.Context, bundle string, test
 		Proxy:                 d.cfg.Proxy() == config.ProxyEnv,
 		DUTFeatures:           args.DUTInfo.GetFeatures(),
 		Factory:               minidriver.NewRootHandlersFactory(d.cfg.ResDir(), args.Counter, args.Client),
+		BuildArtifactsURL:     buildArtifactsURL,
 	}
 	md := minidriver.NewDriver(cfg, d.cc)
 	return md.RunLocalTests(ctx, bundle, tests, state)
@@ -351,16 +355,22 @@ func (d *Driver) newConfigsForRemoteTests(tests []*protocol.ResolvedEntity, dutI
 	return bcfg, rcfg, nil
 }
 
+func getBuildArtifactsURL(buildArtifactsURLOverride, dutDefaultBuildArtifactsURL string) string {
+
+	//If the tast cmd does not provide buildArtifactsUrl then use the dut default build artifact url
+	if buildArtifactsURLOverride == "" {
+		return dutDefaultBuildArtifactsURL
+	}
+	return buildArtifactsURLOverride
+}
+
 func (d *Driver) newRunFixtureConfig(dutInfo *protocol.DUTInfo) (*protocol.RunFixtureConfig, error) {
 	var tlwServer string
 	if addr, ok := d.cc.Conn().Services().TLWAddr(); ok {
 		tlwServer = addr.String()
 	}
 
-	buildArtifactsURL := d.cfg.BuildArtifactsURLOverride()
-	if buildArtifactsURL == "" {
-		buildArtifactsURL = dutInfo.GetDefaultBuildArtifactsUrl()
-	}
+	buildArtifactsURL := getBuildArtifactsURL(d.cfg.BuildArtifactsURLOverride(), dutInfo.GetDefaultBuildArtifactsUrl())
 
 	return &protocol.RunFixtureConfig{
 		TestVars:          d.cfg.TestVars(),

@@ -67,6 +67,8 @@ type Config struct {
 
 	DUTFeatures *protocol.DUTFeatures
 	Factory     HandlersFactory
+
+	BuildArtifactsURL string
 }
 
 // RunLocalTests runs external tests with retry.
@@ -171,7 +173,8 @@ func (d *Driver) newConfigsForLocalTests(tests []*protocol.ResolvedEntity, state
 			TlwSelfName: tlwSelfName,
 		},
 		DataFileConfig: &protocol.DataFileConfig{
-			DownloadMode: d.cfg.DownloadMode,
+			DownloadMode:      d.cfg.DownloadMode,
+			BuildArtifactsUrl: d.cfg.BuildArtifactsURL,
 		},
 		StartFixtureState:     state,
 		HeartbeatInterval:     ptypes.DurationProto(HeartbeatInterval),

@@ -263,32 +263,39 @@ accuracy.
 
 Currently, the UI detection library support ROI
 [defined](https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform/tast-tests/src/chromiumos/tast/local/uidetection/finder.go)
-by: 1. Image-based UI elements. 1. `Within(*uidetection.Finder)` finds a UI
-element within another UI element. 2. `Above(*uidetection.Finder)` finds a UI
-element that is above another UI element. 3. `Below(*uidetection.Finder)` finds
-a UI element that is below another UI element. 4. `LeftOf(*uidetection.Finder)`
-finds a UI element that is in the left of another UI element. 5.
-`RightOf(*uidetection.Finder)` finds a UI element that is in the right of
-another UI element.
+by:
 
-**Example**: find the word `next` that is above the textblock `some textblock`:
+1.  Image-based UI elements.
 
-```go
-word := uidetection.Word("next").Above(uidetection.Textblock([]string{
-    "some", "textblock"})))
-```
+    *   `Within(*uidetection.Finder)` finds a UI element within another UI
+        element.
+    *   `Above(*uidetection.Finder)` finds a UI element that is above another UI
+        element.
+    *   `Below(*uidetection.Finder)` finds a UI element that is below another UI
+        element.
+    *   `LeftOf(*uidetection.Finder)` finds a UI element that is in the left of
+        another UI element.
+    *   `RightOf(*uidetection.Finder)` finds a UI element that is in the right
+        of another UI element.
 
-1.  Assessbility-tree-based UI elements (reprensented by [nodewith.Finder]).
+    **Example**: find the word `next` that is above the textblock `some
+    textblock`:
 
-    1.  `WithinA11yNode(*nodewith.Finder)` finds a UI element that is within a
+    ```go
+    word := uidetection.Word("next").Above(uidetection.Textblock([]string{"some", "textblock"})))
+    ```
+
+2.  Assessbility-tree-based UI elements (reprensented by [nodewith.Finder]).
+
+    *   `WithinA11yNode(*nodewith.Finder)` finds a UI element that is within a
         UI node in the accessibility tree.
-    2.  `AboveA11yNode(*nodewith.Finder)` finds a UI element that is above a UI
+    *   `AboveA11yNode(*nodewith.Finder)` finds a UI element that is above a UI
         node in the accessibility tree.
-    3.  `BelowA11yNode(*nodewith.Finder)` finds a UI element that is below a UI
+    *   `BelowA11yNode(*nodewith.Finder)` finds a UI element that is below a UI
         node in the accessibility tree.
-    4.  `LeftOfA11yNode(*nodewith.Finder)` finds a UI element that is in the
+    *   `LeftOfA11yNode(*nodewith.Finder)` finds a UI element that is in the
         left of a UI node in the accessibility tree.
-    5.  `RightOfA11yNode(*nodewith.Finder)` finds a UI element that is in the
+    *   `RightOfA11yNode(*nodewith.Finder)` finds a UI element that is in the
         right of a UI node in the accessibility tree.
 
     **Example**: find an icon `icon.png` in the VS Code app:
@@ -298,16 +305,16 @@ word := uidetection.Word("next").Above(uidetection.Textblock([]string{
     icon := uidetection.CustomIcon(s.DataPath("icon.png")).WithinA11yNode(vs_app_windown)
     ```
 
-2.  ROIs in pixel (px), **USE WITH CAUTION**.
+3.  ROIs in pixel (px), **USE WITH CAUTION**.
 
-    1.  `WithinPx(coords.Rect)` finds a UI element in the bounding box
-        specified in pixels.
-    2.  `AbovePx(int)` finds a UI element above a pixel.
-    3.  `BelowPx(int)` finds a UI element below a pixel.
-    4.  `LeftOfPx(int)` finds a UI element in the left of a pixel.
-    5.  `RightOfPx(int)` finds a UI element in the right of a pixel.
+    *   `WithinPx(coords.Rect)` finds a UI element in the bounding box specified
+        in pixels.
+    *   `AbovePx(int)` finds a UI element above a pixel.
+    *   `BelowPx(int)` finds a UI element below a pixel.
+    *   `LeftOfPx(int)` finds a UI element in the left of a pixel.
+    *   `RightOfPx(int)` finds a UI element in the right of a pixel.
 
-3.  ROIs in density-independent pixels (dp) **USE WITH CAUTION**.
+4.  ROIs in density-independent pixels (dp) **USE WITH CAUTION**.
     `WithinDp(coords.Rect)`, `AboveDp(int)`, `BelowDp(int)`, `LeftOfDp(int)`,
     `RighttOfDp(int)` are defined analogously as the ROIs in pixels, except that
     they are in [density-independent pixels].

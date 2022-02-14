@@ -7,6 +7,8 @@
 *   [Codelab #2](codelab_2.md) teaches advanced topics for writing Tast tests.
 *   [Codelab #3](codelab_3.md) demonstrates the usage of the UI Automation package.
 *   [Codelab #4](codelab_4.md) walks you through the creation of a remote test.
+*   [Using Image-based UI Detection](using_uidetection.md) demonstrates the
+    usage of the image-based UI detection package.
 *   [How-To](howto.md)
 *   [Getting Help](getting_help.md)
 

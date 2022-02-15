@@ -75,6 +75,20 @@ declarative, which means:
 - `testing.AddTest()` should be the only statement of `init()`'s body.
 - `testing.AddTest()` should take a pointer of a `testing.Test` composite literal.
 
+Each field of testing.Test should be constant-like. Fields should not be set
+using the invocation of custom functions (however, append() is allowed), or
+using variables. In particular, we say constant-like is any of these things:
+
+- An array literal of constant-like.
+- A go constant.
+- A literal value.
+- A var defined as an array literal of go constants or literal values (N.B. not
+  general constant-likes).
+- A var forwarding (set to) another constant-like var.
+- A call to append on some constant-likes.
+- A call to hwdep.D, but please apply the spirit of constant-like to the
+  arguments to hwdep.D.
+
 The test registration code will be similar to the following:
 
 ```go

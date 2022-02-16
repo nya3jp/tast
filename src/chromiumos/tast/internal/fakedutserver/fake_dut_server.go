@@ -107,16 +107,12 @@ func (s *DutServiceServer) Cache(ctx context.Context, req *api.CacheRequest) (*l
 	} else {
 		return nil, status.Errorf(codes.Unknown, "unknown file type: %v", req.Source)
 	}
-	_, filePath, err := parseGSURL(srcPath)
-	if err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "invalid gsFile Name : %v", srcPath)
-	}
 	content, ok := s.cfg.cacheFileMap[srcPath]
 	if !ok {
 		return nil, status.Errorf(codes.NotFound, "not found in cache file map: %s", srcPath)
 	}
 
-	if err := fillCache(content, filepath.Join(req.GetFile().Path, filepath.Base(filePath))); err != nil {
+	if err := fillCache(content, req.GetFile().Path); err != nil {
 		return nil, status.Errorf(codes.NotFound, "failed to create file %s: %v", req.GetFile().Path, err)
 	}
 	operationName := fmt.Sprintf("CacheOperation_%s", srcPath)

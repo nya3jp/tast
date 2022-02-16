@@ -7,6 +7,7 @@ package driver_test
 import (
 	"context"
 	"fmt"
+	"path/filepath"
 	"testing"
 	"time"
 
@@ -265,6 +266,7 @@ func TestDriver_DownloadPrivateBundles_DUTServer(t *testing.T) {
 	const (
 		buildArtifactsURL = "gs://build-artifacts/foo/bar"
 		archiveURL        = "gs://build-artifacts/foo/bar/tast-bundles.zip"
+		fileName          = "tast-bundles.zip"
 	)
 
 	stopFunc, dutServerAddr := fakedutserver.Start(
@@ -299,7 +301,7 @@ func TestDriver_DownloadPrivateBundles_DUTServer(t *testing.T) {
 			defer conn.Close()
 
 			// verify GS URL format.
-			dest := t.TempDir()
+			dest := filepath.Join(t.TempDir(), fileName)
 			cl := api.NewDutServiceClient(conn)
 			cacheReq := &api.CacheRequest{
 				Destination: &api.CacheRequest_File{
@@ -313,7 +315,6 @@ func TestDriver_DownloadPrivateBundles_DUTServer(t *testing.T) {
 					},
 				},
 			}
-			fmt.Printf("dest dir: %s\n", dest)
 			if _, err := cl.Cache(context.Background(), cacheReq); err != nil {
 				t.Errorf("DownloadPrivateBundles: Cache failed: %v", err)
 			}

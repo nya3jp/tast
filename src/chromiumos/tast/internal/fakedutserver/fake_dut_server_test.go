@@ -46,7 +46,7 @@ func TestDutServiceServer_Cache(t *testing.T) {
 	req := &api.CacheRequest{
 		Destination: &api.CacheRequest_File{
 			File: &api.CacheRequest_LocalFile{
-				Path: filepath.Dir(destFile),
+				Path: destFile,
 			},
 		},
 		Source: &api.CacheRequest_GsFile{

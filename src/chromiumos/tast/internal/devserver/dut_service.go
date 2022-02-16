@@ -71,7 +71,7 @@ func (c *DUTServiceClient) Stage(ctx context.Context, gsURL string) (*url.URL, e
 	op, err := cl.Cache(ctx, &api.CacheRequest{
 		Destination: &api.CacheRequest_File{
 			File: &api.CacheRequest_LocalFile{
-				Path: dir,
+				Path: fullPath,
 			},
 		},
 		Source: &api.CacheRequest_GsFile{

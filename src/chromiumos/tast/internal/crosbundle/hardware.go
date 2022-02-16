@@ -205,6 +205,9 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		const fileName = "/usr/share/power_manager/has_keyboard_backlight"
 		content, err := ioutil.ReadFile(fileName)
 		if err != nil {
+			if os.IsNotExist(err) {
+				return false, nil
+			}
 			return false, errors.Errorf("failed to read file %q: %v", fileName, err)
 		}
 		return strings.TrimSuffix(string(content), "\n") == "1", nil

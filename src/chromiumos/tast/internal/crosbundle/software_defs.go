@@ -210,7 +210,9 @@ var softwareFeatureDefs = map[string]string{
 	// But we haven't enable this feature on builders. For now, just disable
 	// vm_host feature for VM builds. The kvm_transition flag indicates the
 	// board may not work with VMs without a cold reboot b/134764918.
-	"vm_host":  "kvm_host && !tast_vm && !kvm_transition",
+	// Also, the peculiar configuration of manatee boards does not yet qualify
+	// them as properly VM-enabled boards so we disable this b/219865862
+	"vm_host":  "kvm_host && !tast_vm && !kvm_transition && !manatee",
 	"vulkan":   "vulkan",
 	"watchdog": `watchdog`,
 	// nyan_kitty is skipped as its WiFi device is unresolvably flaky (crrev.com/c/944502),

@@ -127,6 +127,10 @@ Tests in this group are not used for build verification.
 				Desc: `Indicates that this test should run on audio/video analysis pool.`,
 			},
 			{
+				Name: "graphics_drm",
+				Desc: `Indicates that this test is part of DRM testing.`,
+			},
+			{
 				Name: "graphics_igt",
 				Desc: `Indicates that this test is running igt-gpu-tools.`,
 			},
@@ -141,6 +145,10 @@ Tests in this group are not used for build verification.
 			{
 				Name: "graphics_video_av1",
 				Desc: `Indicates that this test is exercising av1 codec.`,
+			},
+			{
+				Name: "graphics_video_chromestackdecoding",
+				Desc: `Indicates that this test is part of Chrome Stack Decoding video.`,
 			},
 			{
 				Name: "graphics_video_h264",

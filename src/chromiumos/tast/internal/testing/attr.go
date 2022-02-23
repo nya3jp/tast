@@ -222,6 +222,11 @@ Tests in this group are not used for build verification.
 		Desc:     `A group of camera tests for postsubmit runs.`,
 	},
 	{
+		Name:     "cuj",
+		Contacts: []string{"chromeos-perfmetrics-eng@google.com"},
+		Desc:     `A group of CUJ tests that run regularly for the Performance Metrics team.`,
+	},
+	{
 		Name:     "drivefs-cq",
 		Contacts: []string{"chromeos-files-syd@google.com"},
 		Desc:     `The group of tests to be run in CQ for DriveFS functionality.`,

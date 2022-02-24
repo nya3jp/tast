@@ -18,6 +18,7 @@ message Features {
 
   DUTFeatures dut = 6;
   InfraFeatures infra = 7;
+  map<string, DUTFeatures> companionFeatures = 8;
 
   reserved 1 to 4;
 }

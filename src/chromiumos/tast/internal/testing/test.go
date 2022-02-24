@@ -110,6 +110,24 @@ type Test struct {
 
 	// LacrosStatus indicates whether lacros variants have been considered for this test or not.
 	LacrosStatus LacrosMetadata
+
+	// SoftwareDepsForAll lists software features of all DUTs that
+	// are required to run the test.
+	// It is a map of companion roles and software features.
+	// The role for primary DUT should be "".
+	// The primary DUT software dependency will be the union of
+	// SoftwareDeps and SoftwareDepsForAll[""].
+	// If any dependencies are not satisfied, the test will be skipped.
+	SoftwareDepsForAll map[string][]string
+
+	// HardwareDepsForAll describes hardware features and setup of all
+	// DUTs that are required to run the test.
+	// It is a map of companion roles and hardware features.
+	// The role for primary DUT should be "".
+	// The primary DUT hardware dependency will be the union of
+	// HardwareDeps and HardwareDepsForAll[""].
+	// If any dependencies are not satisfied, the test will be skipped.
+	HardwareDepsForAll map[string]hwdep.Deps
 }
 
 // LacrosMetadata indicates whether lacros variants have been considered for this test or not.
@@ -174,6 +192,25 @@ type Param struct {
 
 	// Val is the value which can be retrieved from testing.State.Param() method.
 	Val interface{}
+
+	// ExtraSoftwareDepsForAll lists software features of all DUTs
+	// that are required to run the test case for this param,
+	// in addition to SoftwareDepsForAll in the enclosing Test.
+	// The primary DUT software dependency will be the union of
+	// SoftwareDeps, SoftwareDepsForAll[""], ExtraSoftwareDeps and
+	// ExtraSoftwareDepsForAll[""].
+	// It is a map of companion roles and software features.
+	ExtraSoftwareDepsForAll map[string][]string
+
+	// ExtraHardwareDepsForAll describes hardware features and setup
+	// companion DUTs that are required to run the test case for this param,
+	// in addition to HardwareDepsForAll in the enclosing Test.
+	// It is a map of companion roles and hardware features.
+	// The role for primary DUT should be ""
+	// The primary DUT hardware dependency will be the union of
+	// HardwareDeps, HardwareDepsForAll[""], ExtraHardwareDeps and
+	// ExtraHardwareDep and ExtraHardwareDepsForAll[""].
+	ExtraHardwareDepsForAll map[string]hwdep.Deps
 }
 
 // validate performs initial validations of Test.

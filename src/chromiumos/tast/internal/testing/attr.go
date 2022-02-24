@@ -359,6 +359,10 @@ third_party/autotest/files/server/site_tests/tast/control.runtime-probe
 				Name: "wificell_func",
 				Desc: `Tests basic WiFi functionalities using Wificell fixture nightly.`,
 			},
+						{
+				Name: "wificell_func_ax",
+				Desc: `Tests basic WiFi AX functionalities using Wificell fixture nightly.`,
+			},
 			{
 				Name: "wificell_suspend",
 				Desc: `Tests basic WiFi behavior related to suspend/resume.`,

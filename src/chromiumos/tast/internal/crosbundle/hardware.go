@@ -24,6 +24,7 @@ import (
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/protocol"
+	"chromiumos/tast/testing/wlan"
 )
 
 // detectHardwareFeatures returns a device.Config and api.HardwareFeatures instances
@@ -111,6 +112,7 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		Keyboard:           &configpb.HardwareFeatures_Keyboard{},
 		FormFactor:         &configpb.HardwareFeatures_FormFactor{},
 		DpConverter:        &configpb.HardwareFeatures_DisplayPortConverter{},
+		Wifi:               &configpb.HardwareFeatures_Wifi{},
 	}
 
 	formFactor, err := func() (string, error) {
@@ -133,6 +135,11 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 	if err != nil {
 		logging.Infof(ctx, "Unknown /hardware-properties/is-lid-convertible: %v", err)
 	}
+	features.Wifi, err = wifiFeatures()
+	if err != nil {
+		logging.Infof(ctx, "Error getting Wifi: %v", err)
+	}
+
 	detachableBasePath, err := func() (string, error) {
 		out, err := crosConfig("/detachable-base", "usb-path")
 		if err != nil {
@@ -995,4 +1002,15 @@ func bootTimeCalibration(model string) (bool, error) {
 	const N = len("boot_time_calibration_enabled: ")
 	enabled := string(match[N:])
 	return enabled == "true", nil
+}
+
+func wifiFeatures() (*configpb.HardwareFeatures_Wifi, error) {
+	dev, err := wlan.DeviceInfo()
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get device")
+	}
+
+	return &configpb.HardwareFeatures_Wifi{
+		WifiChips: []configpb.HardwareFeatures_Wifi_WifiChip{
+			configpb.HardwareFeatures_Wifi_WifiChip(dev.ID)}}, nil
 }

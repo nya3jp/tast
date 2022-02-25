@@ -16,6 +16,7 @@ import (
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/dep"
 	"chromiumos/tast/internal/protocol"
+	"chromiumos/tast/testing/wlan"
 )
 
 // These are form factor values that can be passed to FormFactor and SkipOnFormFactor.
@@ -87,6 +88,48 @@ func platformListed(dc *protocol.DeprecatedDeviceConfig, names ...string) (bool,
 	platformID := strings.ToLower(p)
 	for _, name := range names {
 		if name == platformID {
+			return true, nil
+		}
+	}
+	return false, nil
+}
+
+// WLAN device IDs. Convenience wrappers.
+const (
+	Marvell88w8897SDIO         = wlan.Marvell88w8897SDIO
+	Marvell88w8997PCIE         = wlan.Marvell88w8997PCIE
+	QualcommAtherosQCA6174     = wlan.QualcommAtherosQCA6174
+	QualcommAtherosQCA6174SDIO = wlan.QualcommAtherosQCA6174SDIO
+	QualcommWCN3990            = wlan.QualcommWCN3990
+	QualcommWCN6750            = wlan.QualcommWCN6750
+	QualcommWCN6855            = wlan.QualcommWCN6855
+	Intel7260                  = wlan.Intel7260
+	Intel7265                  = wlan.Intel7265
+	Intel9000                  = wlan.Intel9000
+	Intel9260                  = wlan.Intel9260
+	Intel22260                 = wlan.Intel22260
+	Intel22560                 = wlan.Intel22560
+	IntelAX211                 = wlan.IntelAX211
+	BroadcomBCM4354SDIO        = wlan.BroadcomBCM4354SDIO
+	BroadcomBCM4356PCIE        = wlan.BroadcomBCM4356PCIE
+	BroadcomBCM4371PCIE        = wlan.BroadcomBCM4371PCIE
+	Realtek8822CPCIE           = wlan.Realtek8822CPCIE
+	Realtek8852APCIE           = wlan.Realtek8852APCIE
+	MediaTekMT7921PCIE         = wlan.MediaTekMT7921PCIE
+	MediaTekMT7921SDIO         = wlan.MediaTekMT7921SDIO
+)
+
+// wifiDeviceListed returns whether a WiFi device given in HardwareFeatures is listed in the given list of names or not.
+func wifiDeviceListed(hwf *protocol.HardwareFeatures, devices ...wlan.DeviceID) (bool, error) {
+	wifi := hwf.HardwareFeatures.GetWifi()
+	if wifi == nil {
+		return false, errors.New("Wifi data has not been passed from DUT")
+	}
+
+	chipset := int32(wifi.WifiChips[0])
+
+	for _, id := range devices {
+		if id == wlan.DeviceID(chipset) {
 			return true, nil
 		}
 	}
@@ -192,6 +235,42 @@ func SkipOnPlatform(names ...string) Condition {
 		}
 		if listed {
 			return unsatisfied("PlatformId matched with skip-on list")
+		}
+		return satisfied()
+	}}
+}
+
+// WifiDevice returns a hardware dependency condition that is satisfied
+// iff the DUT's WiFi device is one of the given names.
+// Please find the doc of Model(), too, for details about the expected usage.
+func WifiDevice(devices ...wlan.DeviceID) Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		listed, err := wifiDeviceListed(f, devices...)
+		if err != nil {
+			// Fail-open. Assumption is that if the device is not recognized, it doesn't match.
+			return unsatisfied(fmt.Sprintf("Unrecognized decvice. Assume not matching. Err %v", err))
+		}
+		if !listed {
+			return unsatisfied("WiFi device did not match")
+		}
+		return satisfied()
+	}}
+}
+
+// SkipOnWifiDevice returns a hardware dependency condition that is satisfied
+// iff the DUT's WiFi device is none of the given names.
+// Please find the doc of Model(), too, for details about the expected usage.
+func SkipOnWifiDevice(devices ...wlan.DeviceID) Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		listed, err := wifiDeviceListed(f, devices...)
+		if err != nil {
+			// Failed to get the device id.
+			// Run the test to report error if it fails on this device.
+			return satisfied()
+
+		}
+		if listed {
+			return unsatisfied("WiFi device matched with skip-on list")
 		}
 		return satisfied()
 	}}

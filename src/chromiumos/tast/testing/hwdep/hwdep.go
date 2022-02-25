@@ -475,7 +475,7 @@ func Wifi80211ax() Condition {
 			"asurada",
 			"banjo",
 			"banon",
-			"bob",
+			"bob", // bob, kevin use the platform name "gru", they do need to be added to SkipOnModel
 			"buddy",
 			"candy",
 			"caroline",
@@ -616,18 +616,48 @@ func WifiNotMarvell() Condition {
 	// about WiFi chip, so list the known platforms here for now.
 	// TODO(b/187699664): remove "Elm" and "Hana" after unibuild migration
 	// completed.
-	return SkipOnPlatform(
-		"bob", "kevin", "oak", "elm", "hana", "fievel", "tiger",
-	)
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		platformCondition := SkipOnPlatform(
+			"bob", "elm", "fievel", "hana", "kevin", "kevin64", "oak", "tiger",
+		)
+		if satisfied, reason, err := platformCondition.Satisfied(f); err != nil || !satisfied {
+			return satisfied, reason, err
+		}
+		modelCondition := SkipOnModel(
+			"bob",
+			"kevin",
+			"kevin64",
+		)
+		if satisfied, reason, err := modelCondition.Satisfied(f); err != nil || !satisfied {
+			return satisfied, reason, err
+		}
+		return satisfied()
+	},
+	}
 }
 
 // WifiNotMarvell8997 returns a hardware dependency condition that is satisfied if
 // the DUT is not using Marvell 8997 chipsets.
 func WifiNotMarvell8997() Condition {
 	// TODO(b/187699768): replace this when we have hwdep for WiFi chips.
-	return SkipOnPlatform(
-		"bob", "kevin",
-	)
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		platformCondition := SkipOnPlatform(
+			"bob", "kevin", "kevin64",
+		)
+		if satisfied, reason, err := platformCondition.Satisfied(f); err != nil || !satisfied {
+			return satisfied, reason, err
+		}
+		modelCondition := SkipOnModel(
+			"bob",
+			"kevin",
+			"kevin64",
+		)
+		if satisfied, reason, err := modelCondition.Satisfied(f); err != nil || !satisfied {
+			return satisfied, reason, err
+		}
+		return satisfied()
+	},
+	}
 }
 
 // WifiMarvell returns a hardware dependency condition that is satisfied if the
@@ -636,9 +666,24 @@ func WifiMarvell() Condition {
 	// TODO(b/187699768): replace this when we have hwdep for WiFi chips.
 	// TODO(b/187699664): remove "Elm" and "Hana" after unibuild migration
 	// completed.
-	return Platform(
-		"bob", "kevin", "oak", "elm", "hana", "fievel", "tiger",
-	)
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		platformCondition := Platform(
+			"bob", "elm", "fievel", "hana", "kevin", "kevin64", "oak", "tiger",
+		)
+		if platformSatisfied, _, err := platformCondition.Satisfied(f); err == nil && platformSatisfied {
+			return satisfied()
+		}
+		// bob, kevin may be the platform name or model name,
+		// return satisfied if its plarform name or model name is bob/kevin
+		modelCondition := Model(
+			"bob", "kevin", "kevin64",
+		)
+		if modelSatisfied, _, err := modelCondition.Satisfied(f); err == nil && modelSatisfied {
+			return satisfied()
+		}
+		return unsatisfied("DUT does not have a Marvell WiFi chip")
+	},
+	}
 }
 
 // WifiIntel returns a hardware dependency condition that if satisfied, indicates

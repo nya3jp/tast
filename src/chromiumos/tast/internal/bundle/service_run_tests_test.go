@@ -417,7 +417,7 @@ func TestTestServiceRunTests_Failures(t *gotesting.T) {
 	localSkip := &testing.TestInstance{
 		Name:         "local.Skip",
 		Timeout:      time.Minute,
-		SoftwareDeps: []string{"missing"},
+		SoftwareDeps: map[string][]string{"": []string{"missing"}},
 		Func:         func(ctx context.Context, s *testing.State) {},
 	}
 	localReg := testing.NewRegistry("bundle")
@@ -440,7 +440,7 @@ func TestTestServiceRunTests_Failures(t *gotesting.T) {
 	remoteSkip := &testing.TestInstance{
 		Name:         "remote.Skip",
 		Timeout:      time.Minute,
-		SoftwareDeps: []string{"missing"},
+		SoftwareDeps: map[string][]string{"": []string{"missing"}},
 		Func:         func(ctx context.Context, s *testing.State) {},
 	}
 	remoteReg := testing.NewRegistry("bundle")

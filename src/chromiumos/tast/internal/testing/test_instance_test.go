@@ -17,6 +17,7 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"google.golang.org/protobuf/testing/protocmp"
 
+	"chromiumos/tast/internal/dep"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/testing/hwdep"
 )
@@ -110,7 +111,52 @@ func TestInstantiate(t *gotesting.T) {
 		Data:         []string{"data1.txt", "data2.txt"},
 		Vars:         []string{"var1"},
 		VarDeps:      []string{"vardep1"},
-		SoftwareDeps: []string{"dep1", "dep2"},
+		SoftwareDeps: map[string][]string{"": {"dep1", "dep2"}},
+		Timeout:      123 * time.Second,
+		ServiceDeps:  []string{"svc1", "svc2"},
+	}}
+	if diff := cmp.Diff(got, want, cmpopts.IgnoreFields(TestInstance{}, "Func", "HardwareDeps")); diff != "" {
+		t.Errorf("Got unexpected test instances (-got +want):\n%s", diff)
+	}
+	if got[0].Func == nil {
+		t.Error("Got nil Func")
+	}
+}
+func TestInstantiateOnlyForAllPrimary(t *gotesting.T) {
+	got, err := instantiate(&Test{
+		Func:               TESTINSTANCETEST,
+		Desc:               "hello",
+		Contacts:           []string{"a@example.com", "b@example.com"},
+		Attr:               []string{"group:mainline", "informational"},
+		Data:               []string{"data1.txt", "data2.txt"},
+		Vars:               []string{"var1"},
+		VarDeps:            []string{"vardep1"},
+		SoftwareDepsForAll: map[string]dep.SoftwareDeps{"": []string{"dep1", "dep2"}},
+		HardwareDepsForAll: map[string]dep.HardwareDeps{"": hwdep.D(hwdep.Model("model1", "model2"))},
+		Timeout:            123 * time.Second,
+		ServiceDeps:        []string{"svc1", "svc2"},
+	})
+	if err != nil {
+		t.Fatal("Failed to instantiate test: ", err)
+	}
+	want := []*TestInstance{{
+		Name:     "testing.TESTINSTANCETEST",
+		Pkg:      "chromiumos/tast/internal/testing",
+		Desc:     "hello",
+		Contacts: []string{"a@example.com", "b@example.com"},
+		Attr: []string{
+			"group:mainline",
+			"informational",
+			testNameAttrPrefix + "testing.TESTINSTANCETEST",
+			// The bundle name is the second-to-last component in the package's path.
+			testBundleAttrPrefix + "internal",
+			testDepAttrPrefix + "dep1",
+			testDepAttrPrefix + "dep2",
+		},
+		Data:         []string{"data1.txt", "data2.txt"},
+		Vars:         []string{"var1"},
+		VarDeps:      []string{"vardep1"},
+		SoftwareDeps: map[string]dep.SoftwareDeps{"": []string{"dep1", "dep2"}},
 		Timeout:      123 * time.Second,
 		ServiceDeps:  []string{"svc1", "svc2"},
 	}}
@@ -122,6 +168,222 @@ func TestInstantiate(t *gotesting.T) {
 	}
 }
 
+func TestInstantiateForAllCompaion(t *gotesting.T) {
+	got, err := instantiate(&Test{
+		Func:     TESTINSTANCETEST,
+		Desc:     "hello",
+		Contacts: []string{"a@example.com", "b@example.com"},
+		Attr:     []string{"group:mainline", "informational"},
+		Data:     []string{"data1.txt", "data2.txt"},
+		Vars:     []string{"var1"},
+		VarDeps:  []string{"vardep1"},
+		SoftwareDepsForAll: map[string]dep.SoftwareDeps{
+			"":             []string{"dep1", "dep2"},
+			"compaionDut1": []string{"dep3", "dep4"},
+		},
+		HardwareDepsForAll: map[string]dep.HardwareDeps{
+			"":             hwdep.D(hwdep.Model("model1", "model2")),
+			"compaionDut1": hwdep.D(hwdep.Model("model3", "model4")),
+		},
+		Timeout:     123 * time.Second,
+		ServiceDeps: []string{"svc1", "svc2"},
+	})
+	if err != nil {
+		t.Fatal("Failed to instantiate test: ", err)
+	}
+	want := []*TestInstance{{
+		Name:     "testing.TESTINSTANCETEST",
+		Pkg:      "chromiumos/tast/internal/testing",
+		Desc:     "hello",
+		Contacts: []string{"a@example.com", "b@example.com"},
+		Attr: []string{
+			"group:mainline",
+			"informational",
+			testNameAttrPrefix + "testing.TESTINSTANCETEST",
+			// The bundle name is the second-to-last component in the package's path.
+			testBundleAttrPrefix + "internal",
+			testDepAttrPrefix + "dep1",
+			testDepAttrPrefix + "dep2",
+			testDepAttrPrefix + "dep3",
+			testDepAttrPrefix + "dep4",
+		},
+		Data:    []string{"data1.txt", "data2.txt"},
+		Vars:    []string{"var1"},
+		VarDeps: []string{"vardep1"},
+		SoftwareDeps: map[string]dep.SoftwareDeps{
+			"":             []string{"dep1", "dep2"},
+			"compaionDut1": []string{"dep3", "dep4"},
+		},
+		Timeout:     123 * time.Second,
+		ServiceDeps: []string{"svc1", "svc2"},
+	}}
+	if diff := cmp.Diff(got, want, cmpopts.IgnoreFields(TestInstance{}, "Func", "HardwareDeps", "Attr")); diff != "" {
+		t.Errorf("Got unexpected test instances (-got +want):\n%s", diff)
+	}
+	less := func(a, b string) bool { return a < b }
+	if diff := cmp.Diff(got[0].Attr, want[0].Attr, cmpopts.SortSlices(less)); diff != "" {
+		t.Errorf("Got unexpected Attr test instances (-got +want):\n%s", diff)
+	}
+	if got[0].Func == nil {
+		t.Error("Got nil Func")
+	}
+}
+
+func TestInstantiateForBothPimaryCompaion(t *gotesting.T) {
+	got, err := instantiate(&Test{
+		Func:         TESTINSTANCETEST,
+		Desc:         "hello",
+		Contacts:     []string{"a@example.com", "b@example.com"},
+		Attr:         []string{"group:mainline", "informational"},
+		Data:         []string{"data1.txt", "data2.txt"},
+		Vars:         []string{"var1"},
+		VarDeps:      []string{"vardep1"},
+		SoftwareDeps: []string{"dep0"},
+		SoftwareDepsForAll: map[string]dep.SoftwareDeps{
+			"":             []string{"dep1", "dep2"},
+			"compaionDut1": []string{"dep3", "dep4"},
+		},
+		HardwareDeps: hwdep.D(hwdep.Model("model0")),
+		HardwareDepsForAll: map[string]dep.HardwareDeps{
+			"":             hwdep.D(hwdep.Model("model1", "model2")),
+			"compaionDut1": hwdep.D(hwdep.Model("model3", "model4")),
+		},
+		Timeout:     123 * time.Second,
+		ServiceDeps: []string{"svc1", "svc2"},
+	})
+	if err != nil {
+		t.Fatal("Failed to instantiate test: ", err)
+	}
+	want := []*TestInstance{{
+		Name:     "testing.TESTINSTANCETEST",
+		Pkg:      "chromiumos/tast/internal/testing",
+		Desc:     "hello",
+		Contacts: []string{"a@example.com", "b@example.com"},
+		Attr: []string{
+			"group:mainline",
+			"informational",
+			testNameAttrPrefix + "testing.TESTINSTANCETEST",
+			// The bundle name is the second-to-last component in the package's path.
+			testBundleAttrPrefix + "internal",
+			testDepAttrPrefix + "dep0",
+			testDepAttrPrefix + "dep1",
+			testDepAttrPrefix + "dep2",
+			testDepAttrPrefix + "dep3",
+			testDepAttrPrefix + "dep4",
+		},
+		Data:    []string{"data1.txt", "data2.txt"},
+		Vars:    []string{"var1"},
+		VarDeps: []string{"vardep1"},
+		SoftwareDeps: map[string]dep.SoftwareDeps{
+			"":             []string{"dep0", "dep1", "dep2"},
+			"compaionDut1": []string{"dep3", "dep4"},
+		},
+		Timeout:     123 * time.Second,
+		ServiceDeps: []string{"svc1", "svc2"},
+	}}
+	if diff := cmp.Diff(got, want, cmpopts.IgnoreFields(TestInstance{}, "Func", "HardwareDeps", "Attr")); diff != "" {
+		t.Errorf("Got unexpected test instances (-got +want):\n%s", diff)
+	}
+	less := func(a, b string) bool { return a < b }
+	if diff := cmp.Diff(got[0].Attr, want[0].Attr, cmpopts.SortSlices(less)); diff != "" {
+		t.Errorf("Got unexpected Attr test instances (-got +want):\n%s", diff)
+	}
+	if got[0].Func == nil {
+		t.Error("Got nil Func")
+	}
+}
+
+func TestInstantiateParamsForAllPrimary(t *gotesting.T) {
+	got, err := instantiate(&Test{
+		Func:               TESTINSTANCETEST,
+		Attr:               []string{"group:crosbolt"},
+		Data:               []string{"data0.txt"},
+		SoftwareDepsForAll: map[string]dep.SoftwareDeps{"": []string{"dep0"}},
+		HardwareDepsForAll: map[string]dep.HardwareDeps{"": hwdep.D(hwdep.Model("model1", "model2"))},
+		Params: []Param{{
+			Val:                     123,
+			ExtraAttr:               []string{"crosbolt_nightly"},
+			ExtraData:               []string{"data1.txt"},
+			ExtraSoftwareDepsForAll: map[string]dep.SoftwareDeps{"": []string{"dep1"}},
+			ExtraHardwareDepsForAll: map[string]dep.HardwareDeps{"": hwdep.D(hwdep.SkipOnModel("model2"))},
+		}, {
+			Name:                    "foo",
+			Val:                     456,
+			ExtraAttr:               []string{"crosbolt_weekly"},
+			ExtraData:               []string{"data2.txt"},
+			ExtraSoftwareDepsForAll: map[string]dep.SoftwareDeps{"": []string{"dep2"}},
+			ExtraHardwareDepsForAll: map[string]dep.HardwareDeps{"": hwdep.D(hwdep.SkipOnModel("model1"))},
+		}},
+	})
+	if err != nil {
+		t.Fatal("Failed to instantiate test: ", err)
+	}
+
+	want := []*TestInstance{
+		{
+			Name: "testing.TESTINSTANCETEST",
+			Pkg:  "chromiumos/tast/internal/testing",
+			Val:  123,
+			Attr: []string{
+				"group:crosbolt",
+				"crosbolt_nightly",
+				testNameAttrPrefix + "testing.TESTINSTANCETEST",
+				// The bundle name is the second-to-last component in the package's path.
+				testBundleAttrPrefix + "internal",
+				testDepAttrPrefix + "dep0",
+				testDepAttrPrefix + "dep1",
+			},
+			Data:         []string{"data0.txt", "data1.txt"},
+			SoftwareDeps: map[string]dep.SoftwareDeps{"": []string{"dep0", "dep1"}},
+		},
+		{
+			Name: "testing.TESTINSTANCETEST.foo",
+			Pkg:  "chromiumos/tast/internal/testing",
+			Val:  456,
+			Attr: []string{
+				"group:crosbolt",
+				"crosbolt_weekly",
+				testNameAttrPrefix + "testing.TESTINSTANCETEST.foo",
+				// The bundle name is the second-to-last component in the package's path.
+				testBundleAttrPrefix + "internal",
+				testDepAttrPrefix + "dep0",
+				testDepAttrPrefix + "dep2",
+			},
+			Data:         []string{"data0.txt", "data2.txt"},
+			SoftwareDeps: map[string]dep.SoftwareDeps{"": []string{"dep0", "dep2"}},
+		},
+	}
+	if diff := cmp.Diff(got, want, cmpopts.IgnoreFields(TestInstance{}, "Func", "HardwareDeps", "Pre")); diff != "" {
+		t.Errorf("Got unexpected test instances (-got +want):\n%s", diff)
+	}
+	if len(got) == 2 {
+		if got[0].Func == nil {
+			t.Error("Got nil Func for the first test instance")
+		}
+		reasons, err := got[0].Deps().Check(features([]string{"dep0", "dep1"}, "model1"))
+		if err != nil {
+			t.Fatal("Check failed: ", err)
+		}
+		if len(reasons) > 0 {
+			t.Error("Got unexpected HardwareDeps for first test instance: Check returned skip reasons for model1: ", reasons)
+		}
+		reasons, err = got[0].Deps().Check(features([]string{"dep0", "dep1"}, "model2"))
+		if len(reasons) == 0 {
+			t.Error("Got unexpected HardwareDeps for first test instance: Check returned no skip reason for model2")
+		}
+		if got[1].Func == nil {
+			t.Error("Got nil Func for the second test instance")
+		}
+		reasons, err = got[1].Deps().Check(features([]string{"dep0", "dep2"}, "model2"))
+		if len(reasons) > 0 {
+			t.Error("Got unexpected HardwareDeps for second test instance: Check returned skip reasons for model2: ", reasons)
+		}
+		reasons, err = got[1].Deps().Check(features([]string{"dep0", "dep2"}, "model1"))
+		if len(reasons) == 0 {
+			t.Error("Got unexpected HardwareDeps for second test instance: Check returned no skip reason for model1")
+		}
+	}
+}
 func TestInstantiateParams(t *gotesting.T) {
 	got, err := instantiate(&Test{
 		Func:         TESTINSTANCETEST,
@@ -163,7 +425,7 @@ func TestInstantiateParams(t *gotesting.T) {
 				testDepAttrPrefix + "dep1",
 			},
 			Data:         []string{"data0.txt", "data1.txt"},
-			SoftwareDeps: []string{"dep0", "dep1"},
+			SoftwareDeps: map[string][]string{"": {"dep0", "dep1"}},
 		},
 		{
 			Name: "testing.TESTINSTANCETEST.foo",
@@ -179,13 +441,128 @@ func TestInstantiateParams(t *gotesting.T) {
 				testDepAttrPrefix + "dep2",
 			},
 			Data:         []string{"data0.txt", "data2.txt"},
-			SoftwareDeps: []string{"dep0", "dep2"},
+			SoftwareDeps: map[string][]string{"": {"dep0", "dep2"}},
 		},
 	}
 	if diff := cmp.Diff(got, want, cmpopts.IgnoreFields(TestInstance{}, "Func", "HardwareDeps", "Pre")); diff != "" {
 		t.Errorf("Got unexpected test instances (-got +want):\n%s", diff)
 	}
 	if len(got) == 2 {
+		if got[0].Func == nil {
+			t.Error("Got nil Func for the first test instance")
+		}
+		reasons, err := got[0].Deps().Check(features([]string{"dep0", "dep1"}, "model1"))
+		if err != nil {
+			t.Fatal("Check failed: ", err)
+		}
+		if len(reasons) > 0 {
+			t.Error("Got unexpected HardwareDeps for first test instance: Check returned skip reasons for model1: ", reasons)
+		}
+		reasons, err = got[0].Deps().Check(features([]string{"dep0", "dep1"}, "model2"))
+		if len(reasons) == 0 {
+			t.Error("Got unexpected HardwareDeps for first test instance: Check returned no skip reason for model2")
+		}
+		if got[1].Func == nil {
+			t.Error("Got nil Func for the second test instance")
+		}
+		reasons, err = got[1].Deps().Check(features([]string{"dep0", "dep2"}, "model2"))
+		if len(reasons) > 0 {
+			t.Error("Got unexpected HardwareDeps for second test instance: Check returned skip reasons for model2: ", reasons)
+		}
+		reasons, err = got[1].Deps().Check(features([]string{"dep0", "dep2"}, "model1"))
+		if len(reasons) == 0 {
+			t.Error("Got unexpected HardwareDeps for second test instance: Check returned no skip reason for model1")
+		}
+	}
+}
+
+func TestInstantiateParamsForAllCompaion(t *gotesting.T) {
+	got, err := instantiate(&Test{
+		Func: TESTINSTANCETEST,
+		Attr: []string{"group:crosbolt"},
+		Data: []string{"data0.txt"},
+		SoftwareDepsForAll: map[string]dep.SoftwareDeps{
+			"":             []string{"dep0"},
+			"compaionDut1": []string{"dep3"},
+		},
+		HardwareDepsForAll: map[string]dep.HardwareDeps{
+			"":             hwdep.D(hwdep.Model("model1", "model2")),
+			"compaionDut1": hwdep.D(hwdep.Model("model1", "model2")),
+		},
+		Params: []Param{{
+			Val:                     123,
+			ExtraAttr:               []string{"crosbolt_nightly"},
+			ExtraData:               []string{"data1.txt"},
+			ExtraSoftwareDepsForAll: map[string]dep.SoftwareDeps{"": []string{"dep1"}},
+			ExtraHardwareDepsForAll: map[string]dep.HardwareDeps{"": hwdep.D(hwdep.SkipOnModel("model2"))},
+		}, {
+			Name:                    "foo",
+			Val:                     456,
+			ExtraAttr:               []string{"crosbolt_weekly"},
+			ExtraData:               []string{"data2.txt"},
+			ExtraSoftwareDepsForAll: map[string]dep.SoftwareDeps{"": []string{"dep2"}},
+			ExtraHardwareDepsForAll: map[string]dep.HardwareDeps{"": hwdep.D(hwdep.SkipOnModel("model1"))},
+		}},
+	})
+	if err != nil {
+		t.Fatal("Failed to instantiate test: ", err)
+	}
+
+	want := []*TestInstance{
+		{
+			Name: "testing.TESTINSTANCETEST",
+			Pkg:  "chromiumos/tast/internal/testing",
+			Val:  123,
+			Attr: []string{
+				"group:crosbolt",
+				"crosbolt_nightly",
+				testNameAttrPrefix + "testing.TESTINSTANCETEST",
+				// The bundle name is the second-to-last component in the package's path.
+				testBundleAttrPrefix + "internal",
+				testDepAttrPrefix + "dep0",
+				testDepAttrPrefix + "dep1",
+				testDepAttrPrefix + "dep3",
+			},
+			Data: []string{"data0.txt", "data1.txt"},
+			SoftwareDeps: map[string]dep.SoftwareDeps{
+				"":             []string{"dep0", "dep1"},
+				"compaionDut1": []string{"dep3"},
+			},
+		},
+		{
+			Name: "testing.TESTINSTANCETEST.foo",
+			Pkg:  "chromiumos/tast/internal/testing",
+			Val:  456,
+			Attr: []string{
+				"group:crosbolt",
+				"crosbolt_weekly",
+				testNameAttrPrefix + "testing.TESTINSTANCETEST.foo",
+				// The bundle name is the second-to-last component in the package's path.
+				testBundleAttrPrefix + "internal",
+				testDepAttrPrefix + "dep0",
+				testDepAttrPrefix + "dep2",
+				testDepAttrPrefix + "dep3",
+			},
+			Data: []string{"data0.txt", "data2.txt"},
+			SoftwareDeps: map[string]dep.SoftwareDeps{
+				"":             []string{"dep0", "dep2"},
+				"compaionDut1": []string{"dep3"},
+			},
+		},
+	}
+	if diff := cmp.Diff(got, want, cmpopts.IgnoreFields(TestInstance{}, "Func", "HardwareDeps", "Attr")); diff != "" {
+		t.Errorf("Got unexpected test instances (-got +want):\n%s", diff)
+	}
+
+	if len(got) == 2 {
+		less := func(a, b string) bool { return a < b }
+		if diff := cmp.Diff(got[0].Attr, want[0].Attr, cmpopts.SortSlices(less)); diff != "" {
+			t.Errorf("Got unexpected Attr test instances (-got +want):\n%s", diff)
+		}
+		if diff := cmp.Diff(got[1].Attr, want[1].Attr, cmpopts.SortSlices(less)); diff != "" {
+			t.Errorf("Got unexpected Attr test instances (-got +want):\n%s", diff)
+		}
+
 		if got[0].Func == nil {
 			t.Error("Got nil Func for the first test instance")
 		}
@@ -595,6 +972,7 @@ func TestInstantiateCompatAttrs(t *gotesting.T) {
 			// This attribute is added for compatibility.
 			"disabled",
 		},
+		SoftwareDeps: map[string][]string{"": nil},
 	}}
 	if diff := cmp.Diff(got, want, cmpopts.IgnoreFields(TestInstance{}, "Func", "HardwareDeps", "Pre")); diff != "" {
 		t.Errorf("Got unexpected test instances (-got +want):\n%s", diff)
@@ -637,19 +1015,19 @@ func TestSoftwareDeps(t *gotesting.T) {
 
 	for _, tc := range []struct {
 		name        string
-		testDeps    []string
+		testDeps    map[string]dep.SoftwareDeps
 		wantReasons []string
 		wantErr     string
 	}{{
 		name:     "error",
-		testDeps: []string{"dep3", "dep1", "dep2", "depX"},
+		testDeps: map[string]dep.SoftwareDeps{"": []string{"dep3", "dep1", "dep2", "depX"}},
 		wantErr:  "unknown SoftwareDeps: depX",
 	}, {
 		name:     "pass",
-		testDeps: []string{"dep1", "dep2"},
+		testDeps: map[string]dep.SoftwareDeps{"": []string{"dep1", "dep2"}},
 	}, {
 		name:        "skip",
-		testDeps:    []string{"dep0", "dep1"},
+		testDeps:    map[string]dep.SoftwareDeps{"": []string{"dep0", "dep1"}},
 		wantReasons: []string{"missing SoftwareDeps: dep0"},
 	}} {
 		t.Run(tc.name, func(t *gotesting.T) {
@@ -667,7 +1045,59 @@ func TestSoftwareDeps(t *gotesting.T) {
 	}
 }
 
-func TestHardwareDeps(t *gotesting.T) {
+func TestSoftwareDepsForAllCompaion(t *gotesting.T) {
+	fs := &protocol.Features{
+		CheckDeps: true,
+		Dut: &protocol.DUTFeatures{
+			Software: &protocol.SoftwareFeatures{
+				Available:   []string{"dep1", "dep2"},
+				Unavailable: []string{"dep0", "dep3"},
+			},
+		},
+	}
+
+	for _, tc := range []struct {
+		name        string
+		testDeps    map[string]dep.SoftwareDeps
+		wantReasons []string
+		wantErr     string
+	}{{
+		name: "error",
+		testDeps: map[string]dep.SoftwareDeps{
+			"":             []string{"dep3", "dep1", "dep2", "depX"},
+			"compaionDut1": []string{"dep3"},
+		},
+		wantErr: "unknown SoftwareDeps: depX",
+	}, {
+		name: "pass",
+		testDeps: map[string]dep.SoftwareDeps{
+			"":             []string{"dep1", "dep2"},
+			"compaionDut1": []string{"dep1"},
+		},
+	}, {
+		name: "skip",
+		testDeps: map[string]dep.SoftwareDeps{
+			"":             []string{"dep0", "dep1"},
+			"compaionDut1": []string{"dep1"},
+		},
+		wantReasons: []string{"missing SoftwareDeps: dep0"},
+	}} {
+		t.Run(tc.name, func(t *gotesting.T) {
+			reasons, err := (&TestInstance{SoftwareDeps: tc.testDeps}).Deps().Check(fs)
+			if tc.wantErr == "" && err != nil {
+				t.Errorf("Check() failed: %v", err)
+			}
+			if tc.wantErr != "" && (err == nil || err.Error() != tc.wantErr) {
+				t.Errorf("Check() returned error %v; want %q", err, tc.wantErr)
+			}
+			if diff := cmp.Diff(reasons, tc.wantReasons); diff != "" {
+				t.Errorf("Reasons unmatch (-got +want):\n%v", diff)
+			}
+		})
+	}
+}
+
+func TestHardwareDepsForAllPrimary(t *gotesting.T) {
 	fs := &protocol.Features{
 		CheckDeps: true,
 		Dut: &protocol.DUTFeatures{
@@ -690,7 +1120,44 @@ func TestHardwareDeps(t *gotesting.T) {
 		modelDep: "samus",
 	}} {
 		t.Run(tc.modelDep, func(t *gotesting.T) {
-			reasons, err := (&TestInstance{HardwareDeps: hwdep.D(hwdep.Model(tc.modelDep))}).Deps().Check(fs)
+			reasons, err := (&TestInstance{HardwareDeps: map[string]dep.HardwareDeps{"": hwdep.D(hwdep.Model(tc.modelDep))}}).Deps().Check(fs)
+			if err != nil {
+				t.Fatal("Check failed: ", err)
+			}
+			if diff := cmp.Diff(reasons, tc.wantReasons); diff != "" {
+				t.Errorf("Reasons unmatch (-got +want):\n%v", diff)
+			}
+		})
+	}
+}
+
+func TestHardwareDepsForAllCompaion(t *gotesting.T) {
+	fs := &protocol.Features{
+		CheckDeps: true,
+		Dut: &protocol.DUTFeatures{
+			Hardware: &protocol.HardwareFeatures{
+				DeprecatedDeviceConfig: &protocol.DeprecatedDeviceConfig{
+					Id: &protocol.DeprecatedConfigId{
+						Model: "samus",
+					},
+				},
+			},
+		},
+	}
+	for _, tc := range []struct {
+		modelDep    string
+		wantReasons []string
+	}{{
+		modelDep:    "eve",
+		wantReasons: []string{"ModelId did not match"},
+	}, {
+		modelDep: "samus",
+	}} {
+		t.Run(tc.modelDep, func(t *gotesting.T) {
+			reasons, err := (&TestInstance{HardwareDeps: map[string]dep.HardwareDeps{
+				"":             hwdep.D(hwdep.Model(tc.modelDep)),
+				"compaionDut1": hwdep.D(hwdep.Model(tc.modelDep)),
+			}}).Deps().Check(fs)
 			if err != nil {
 				t.Fatal("Check failed: ", err)
 			}
@@ -764,7 +1231,7 @@ func TestTestInstanceEntityProto(t *gotesting.T) {
 		Data:         []string{"foo.txt"},
 		Vars:         []string{"var1", "var2"},
 		VarDeps:      []string{"vardep1"},
-		SoftwareDeps: []string{"dep1", "dep2"},
+		SoftwareDeps: map[string]dep.SoftwareDeps{"": []string{"dep1", "dep2"}},
 		ServiceDeps:  []string{"svc1", "svc2"},
 		Fixture:      "fixt",
 		Timeout:      time.Hour,
@@ -804,7 +1271,7 @@ func TestTestClone(t *gotesting.T) {
 		timeout = time.Minute
 	)
 	attr := []string{"a", "b"}
-	softwareDeps := []string{"sw1", "sw2"}
+	softwareDeps := map[string]dep.SoftwareDeps{"": []string{"sw1", "sw2"}}
 	serviceDeps := []string{"svc1", "svc2"}
 	f := func(context.Context, *State) {}
 
@@ -831,10 +1298,11 @@ func TestTestClone(t *gotesting.T) {
 		Name:         name,
 		Func:         f,
 		Attr:         append([]string(nil), attr...),
-		SoftwareDeps: append([]string(nil), softwareDeps...),
+		SoftwareDeps: softwareDeps,
 		ServiceDeps:  append([]string(nil), serviceDeps...),
 		Timeout:      timeout,
 	}
+
 	clone := orig.clone()
 	checkTest("clone()", clone)
 
@@ -843,7 +1311,7 @@ func TestTestClone(t *gotesting.T) {
 	clone.Func = nil
 	clone.Attr[0] = "new"
 	clone.Timeout = 2 * timeout
-	clone.SoftwareDeps[0] = "swnew"
+	clone.SoftwareDeps[""][0] = "swnew"
 	clone.ServiceDeps[0] = "svcnew"
 	checkTest("update after clone()", &orig)
 }
@@ -853,13 +1321,14 @@ func TestWriteTestsAsProto(t *gotesting.T) {
 		{
 			Name:         "test001",
 			Attr:         []string{"attr1", "attr2"},
-			HardwareDeps: hwdep.D(),
+			HardwareDeps: map[string]dep.HardwareDeps{"": hwdep.D()},
 			Contacts: []string{
 				"someone1@chromium.org",
 				"someone2@chromium.org",
 			},
 		},
 	}
+
 	expected := api.TestCaseMetadataList{
 		Values: []*api.TestCaseMetadata{
 			{

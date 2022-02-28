@@ -14,9 +14,9 @@ import (
 
 func TestMain(m *gotesting.M) {
 	restore := testcheck.SetAllTestsforTest([]*testing.TestInstance{{
-		Name: "foo.FirstTest", Timeout: 10 * time.Minute, Attr: []string{"A", "B"}, SoftwareDeps: []string{"A", "B"},
+		Name: "foo.FirstTest", Timeout: 10 * time.Minute, Attr: []string{"A", "B"}, SoftwareDeps: map[string][]string{"": []string{"A", "B"}},
 	}, {
-		Name: "foo.SecondTest", Timeout: 5 * time.Minute, Attr: []string{"A", "C"}, SoftwareDeps: []string{"A", "C"},
+		Name: "foo.SecondTest", Timeout: 5 * time.Minute, Attr: []string{"A", "C"}, SoftwareDeps: map[string][]string{"": []string{"A", "C"}},
 	}})
 	defer restore()
 	m.Run()

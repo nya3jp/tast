@@ -221,9 +221,9 @@ func TestRunSoftwareDeps(t *gotesting.T) {
 	)
 
 	nopFunc := func(context.Context, *testing.State) {}
-	test1 := &testing.TestInstance{Name: "pkg.Test1", SoftwareDeps: []string{validDep}, Func: nopFunc, Timeout: time.Minute}
-	test2 := &testing.TestInstance{Name: "pkg.Test2", SoftwareDeps: []string{missingDep}, Func: nopFunc, Timeout: time.Minute}
-	test3 := &testing.TestInstance{Name: "pkg.Test3", SoftwareDeps: []string{unregDep}, Func: nopFunc, Timeout: time.Minute}
+	test1 := &testing.TestInstance{Name: "pkg.Test1", SoftwareDeps: map[string][]string{"": []string{validDep}}, Func: nopFunc, Timeout: time.Minute}
+	test2 := &testing.TestInstance{Name: "pkg.Test2", SoftwareDeps: map[string][]string{"": []string{missingDep}}, Func: nopFunc, Timeout: time.Minute}
+	test3 := &testing.TestInstance{Name: "pkg.Test3", SoftwareDeps: map[string][]string{"": []string{unregDep}}, Func: nopFunc, Timeout: time.Minute}
 	tests := []*testing.TestInstance{test1, test2, test3}
 
 	cfg := &Config{
@@ -762,7 +762,7 @@ func TestRunExternalData(t *gotesting.T) {
 					Pkg:          "pkg",
 					Func:         func(ctx context.Context, s *testing.State) {},
 					Fixture:      "fixt",
-					SoftwareDeps: []string{"dep1"},
+					SoftwareDeps: map[string][]string{"": []string{"dep1"}},
 					Timeout:      time.Minute,
 				},
 				{
@@ -788,7 +788,7 @@ func TestRunExternalData(t *gotesting.T) {
 					},
 					Fixture:      "fixt",
 					Data:         []string{"file2.txt"},
-					SoftwareDeps: []string{"dep2"},
+					SoftwareDeps: map[string][]string{"": []string{"dep2"}},
 					Timeout:      time.Minute,
 				},
 				{
@@ -1796,10 +1796,10 @@ func TestRunPreconditionWithSkips(t *gotesting.T) {
 	tests := []*testing.TestInstance{
 		{Name: "pkg.Test1", Func: nopFunc, Pre: pre1},
 		{Name: "pkg.Test2", Func: nopFunc, Pre: pre1},
-		{Name: "pkg.Test3", Func: nopFunc, Pre: pre1, SoftwareDeps: []string{dep}},
+		{Name: "pkg.Test3", Func: nopFunc, Pre: pre1, SoftwareDeps: map[string][]string{"": []string{dep}}},
 		{Name: "pkg.Test4", Func: nopFunc, Pre: pre2},
 		{Name: "pkg.Test5", Func: nopFunc, Pre: pre2},
-		{Name: "pkg.Test6", Func: nopFunc, Pre: pre2, SoftwareDeps: []string{dep}},
+		{Name: "pkg.Test6", Func: nopFunc, Pre: pre2, SoftwareDeps: map[string][]string{"": []string{dep}}},
 	}
 
 	cfg := &Config{
@@ -2089,10 +2089,10 @@ func TestRunPlan(t *gotesting.T) {
 		{
 			name: "deps",
 			tests: []*testing.TestInstance{
-				{Name: "pkg.Test4", SoftwareDeps: []string{"yes"}},
-				{Name: "pkg.Test3", SoftwareDeps: []string{"no"}},
-				{Name: "pkg.Test2", SoftwareDeps: []string{"no"}, Pre: pre1},
-				{Name: "pkg.Test1", SoftwareDeps: []string{"no"}, Pre: pre2},
+				{Name: "pkg.Test4", SoftwareDeps: map[string][]string{"": []string{"yes"}}},
+				{Name: "pkg.Test3", SoftwareDeps: map[string][]string{"": []string{"no"}}},
+				{Name: "pkg.Test2", SoftwareDeps: map[string][]string{"": []string{"no"}}, Pre: pre1},
+				{Name: "pkg.Test1", SoftwareDeps: map[string][]string{"": []string{"no"}}, Pre: pre2},
 			},
 			wantOrder: []string{
 				// Skipped tests come first.

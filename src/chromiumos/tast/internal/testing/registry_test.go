@@ -106,7 +106,7 @@ func TestAddTestModifyOriginal(t *gotesting.T) {
 	if len(tests) != 1 {
 		t.Fatalf("AllTests returned %v; wanted 1 test: ", tests)
 	}
-	if want := []string{origDep}; !reflect.DeepEqual(tests[0].SoftwareDeps, want) {
+	if want := []string{origDep}; !reflect.DeepEqual(tests[0].SoftwareDeps[""], want) {
 		t.Errorf("Test.Deps is %v; want %v", tests[0].SoftwareDeps, want)
 	}
 }

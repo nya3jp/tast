@@ -75,10 +75,10 @@ type TestInstance struct {
 	Data         []string
 	Vars         []string
 	VarDeps      []string
-	SoftwareDeps dep.SoftwareDeps
+	SoftwareDeps map[string]dep.SoftwareDeps
 	// HardwareDeps field is not in the protocol yet. When the scheduler in infra is
 	// implemented, it is needed.
-	HardwareDeps dep.HardwareDeps
+	HardwareDeps map[string]dep.HardwareDeps
 	ServiceDeps  []string
 	Pre          Precondition
 	Fixture      string
@@ -146,10 +146,35 @@ func newTestInstance(t *Test, p *Param) (*TestInstance, error) {
 		return nil, err
 	}
 
-	swDeps := append(append([]string(nil), t.SoftwareDeps...), p.ExtraSoftwareDeps...)
-	hwDeps := dep.MergeHardwareDeps(t.HardwareDeps, p.ExtraHardwareDeps)
-	if err := hwDeps.Validate(); err != nil {
-		return nil, err
+	swDeps := make(map[string]dep.SoftwareDeps)
+	swDeps[""] = append(append([]string(nil), t.SoftwareDeps...), p.ExtraSoftwareDeps...)
+	for key, element := range t.SoftwareDepsForAll {
+		swDeps[key] = append(swDeps[key], element...)
+	}
+
+	for key, element := range p.ExtraSoftwareDepsForAll {
+		swDeps[key] = append(swDeps[key], element...)
+	}
+
+	hwDeps := make(map[string]dep.HardwareDeps)
+	hwDeps[""] = dep.MergeHardwareDeps(t.HardwareDeps, p.ExtraHardwareDeps)
+
+	for key, element := range t.HardwareDepsForAll {
+		hwDeps[key] = dep.MergeHardwareDeps(hwDeps[key], element)
+	}
+
+	for key, element := range p.ExtraHardwareDepsForAll {
+		hwDeps[key] = dep.MergeHardwareDeps(hwDeps[key], element)
+	}
+
+	for k, hwDepsForDut := range hwDeps {
+		if err := hwDepsForDut.Validate(); err != nil {
+			role := k
+			if role == "" {
+				role = "primary"
+			}
+			return nil, errors.Wrapf(err, "failed to validate %s dut", role)
+		}
 	}
 
 	attrs := append(manualAttrs, autoAttrs(name, info.pkg, swDeps)...)
@@ -218,13 +243,15 @@ func newTestInstance(t *Test, p *Param) (*TestInstance, error) {
 }
 
 // autoAttrs returns automatically-generated attributes.
-func autoAttrs(name, pkg string, deps dep.SoftwareDeps) []string {
+func autoAttrs(name, pkg string, depsForAll map[string]dep.SoftwareDeps) []string {
 	attrs := []string{testNameAttrPrefix + name}
 	if comps := strings.Split(pkg, "/"); len(comps) >= 2 {
 		attrs = append(attrs, testBundleAttrPrefix+comps[len(comps)-2])
 	}
-	for _, dep := range deps {
-		attrs = append(attrs, testDepAttrPrefix+dep)
+	for _, element := range depsForAll {
+		for _, dep := range element {
+			attrs = append(attrs, testDepAttrPrefix+dep)
+		}
 	}
 	return attrs
 }
@@ -415,7 +442,9 @@ func (t *TestInstance) clone() *TestInstance {
 	ret.Data = append([]string(nil), ret.Data...)
 	ret.Vars = append([]string(nil), ret.Vars...)
 	ret.VarDeps = append([]string(nil), ret.VarDeps...)
-	ret.SoftwareDeps = append([]string(nil), ret.SoftwareDeps...)
+	for key, element := range ret.SoftwareDeps {
+		ret.SoftwareDeps[key] = append([]string(nil), element...)
+	}
 	ret.ServiceDeps = append([]string(nil), ret.ServiceDeps...)
 	return ret
 }
@@ -426,14 +455,14 @@ func (t *TestInstance) String() string {
 
 // Deps dependencies of this test.
 func (t *TestInstance) Deps() *dep.Deps {
+	swDepsForAll := make(map[string]dep.SoftwareDeps)
+	for key, element := range t.SoftwareDeps {
+		swDepsForAll[key] = append([]string(nil), element...)
+	}
 	return &dep.Deps{
-		Var: t.VarDeps,
-		Software: map[string]dep.SoftwareDeps{
-			"": append([]string(nil), t.SoftwareDeps...),
-		},
-		Hardware: map[string]dep.HardwareDeps{
-			"": t.HardwareDeps,
-		},
+		Var:      t.VarDeps,
+		Software: swDepsForAll,
+		Hardware: t.HardwareDeps,
 	}
 }
 
@@ -498,7 +527,7 @@ func (t *TestInstance) EntityProto() *protocol.Entity {
 			Timeout:      ptypes.DurationProto(t.Timeout),
 			Variables:    append([]string(nil), t.Vars...),
 			VariableDeps: append([]string(nil), t.VarDeps...),
-			SoftwareDeps: append([]string(nil), t.SoftwareDeps...),
+			SoftwareDeps: append([]string(nil), t.SoftwareDeps[""]...),
 			Bundle:       t.Bundle,
 		},
 	}

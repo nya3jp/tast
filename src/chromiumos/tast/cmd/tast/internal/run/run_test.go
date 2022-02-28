@@ -133,7 +133,7 @@ func TestRunResults(t *gotesting.T) {
 	localSkip := &testing.TestInstance{
 		Name:         "local.Skip",
 		Timeout:      time.Minute,
-		SoftwareDeps: []string{"missing"},
+		SoftwareDeps: map[string][]string{"": []string{"missing"}},
 		Func:         func(ctx context.Context, s *testing.State) {},
 	}
 	localReg := testing.NewRegistry("bundle")
@@ -156,7 +156,7 @@ func TestRunResults(t *gotesting.T) {
 	remoteSkip := &testing.TestInstance{
 		Name:         "remote.Skip",
 		Timeout:      time.Minute,
-		SoftwareDeps: []string{"missing"},
+		SoftwareDeps: map[string][]string{"": []string{"missing"}},
 		Func:         func(ctx context.Context, s *testing.State) {},
 	}
 	remoteReg := testing.NewRegistry("bundle")
@@ -288,7 +288,7 @@ func TestRunLogs(t *gotesting.T) {
 	localSkip := &testing.TestInstance{
 		Name:         "local.Skip",
 		Timeout:      time.Minute,
-		SoftwareDeps: []string{"missing"},
+		SoftwareDeps: map[string][]string{"": []string{"missing"}},
 		Func:         func(ctx context.Context, s *testing.State) {},
 	}
 	localReg := testing.NewRegistry("bundle")
@@ -313,7 +313,7 @@ func TestRunLogs(t *gotesting.T) {
 	remoteSkip := &testing.TestInstance{
 		Name:         "remote.Skip",
 		Timeout:      time.Minute,
-		SoftwareDeps: []string{"missing"},
+		SoftwareDeps: map[string][]string{"": []string{"missing"}},
 		Func:         func(ctx context.Context, s *testing.State) {},
 	}
 	remoteReg := testing.NewRegistry("bundle")
@@ -622,7 +622,7 @@ func TestRunWithReports_ReportResult(t *gotesting.T) {
 	localReg.AddTestInstance(&testing.TestInstance{
 		Name:         test3Name,
 		Timeout:      time.Minute,
-		SoftwareDeps: []string{softwareDep},
+		SoftwareDeps: map[string][]string{"": []string{softwareDep}},
 		Func:         func(ctx context.Context, s *testing.State) {},
 	})
 	remoteReg := testing.NewRegistry(bundleName)
@@ -766,7 +766,7 @@ func TestRunWithSkippedTests(t *gotesting.T) {
 	localReg.AddTestInstance(&testing.TestInstance{
 		Name:         localTestName,
 		Timeout:      time.Minute,
-		SoftwareDeps: []string{softwareDep},
+		SoftwareDeps: map[string][]string{"": []string{softwareDep}},
 		Func: func(ctx context.Context, s *testing.State) {
 			t.Errorf("%s was run despite unsatisfied dependency", localTestName)
 		},
@@ -776,7 +776,7 @@ func TestRunWithSkippedTests(t *gotesting.T) {
 	remoteReg.AddTestInstance(&testing.TestInstance{
 		Name:         remoteTestName,
 		Timeout:      time.Minute,
-		SoftwareDeps: []string{softwareDep},
+		SoftwareDeps: map[string][]string{"": []string{softwareDep}},
 		Func: func(ctx context.Context, s *testing.State) {
 			t.Errorf("%s was run despite unsatisfied dependency", remoteTestName)
 		},
@@ -839,7 +839,7 @@ func TestRunListTests(t *gotesting.T) {
 	skippedTest := &testing.TestInstance{
 		Name:         skippedTestName,
 		Timeout:      time.Minute,
-		SoftwareDeps: []string{missingSoftwareDep},
+		SoftwareDeps: map[string][]string{"": []string{missingSoftwareDep}},
 		Func:         func(ctx context.Context, s *testing.State) {},
 	}
 	remoteReg := testing.NewRegistry(bundleName)
@@ -914,7 +914,7 @@ func TestRunListTestsWithSharding(t *gotesting.T) {
 	skippedTest := &testing.TestInstance{
 		Name:         skippedTestName,
 		Timeout:      time.Minute,
-		SoftwareDeps: []string{missingSoftwareDep},
+		SoftwareDeps: map[string][]string{"": []string{missingSoftwareDep}},
 		Func:         func(ctx context.Context, s *testing.State) {},
 	}
 	remoteReg := testing.NewRegistry(bundleName)

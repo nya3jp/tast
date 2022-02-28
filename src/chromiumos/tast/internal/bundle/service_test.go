@@ -62,9 +62,9 @@ func TestTestServerListEntitiesTestSkips(t *gotesting.T) {
 			},
 		},
 	}
-	t1 := &testing.TestInstance{Name: "pkg.Test1", SoftwareDeps: []string{"dep1"}}
-	t2 := &testing.TestInstance{Name: "pkg.Test2", SoftwareDeps: []string{"dep2"}}
-	t3 := &testing.TestInstance{Name: "pkg.Test3", SoftwareDeps: []string{"dep3"}}
+	t1 := &testing.TestInstance{Name: "pkg.Test1", SoftwareDeps: map[string][]string{"": []string{"dep1"}}}
+	t2 := &testing.TestInstance{Name: "pkg.Test2", SoftwareDeps: map[string][]string{"": []string{"dep2"}}}
+	t3 := &testing.TestInstance{Name: "pkg.Test3", SoftwareDeps: map[string][]string{"": []string{"dep3"}}}
 
 	reg := testing.NewRegistry("bundle")
 	reg.AddTestInstance(t1)

@@ -189,7 +189,7 @@ func NewTestEntityRoot(test *TestInstance, cfg *RuntimeConfig, out OutputStream,
 	ce := &testcontext.CurrentEntity{
 		OutDir:          cfg.OutDir,
 		HasSoftwareDeps: true,
-		SoftwareDeps:    test.SoftwareDeps,
+		SoftwareDeps:    append([]string(nil), test.SoftwareDeps[""]...),
 		ServiceDeps:     test.ServiceDeps,
 		Labels:          test.Labels,
 	}
@@ -571,7 +571,7 @@ func (s *testMixin) OutDir() string { return s.testRoot.entityRoot.cfg.OutDir }
 
 // SoftwareDeps returns software dependencies declared in the currently running entity.
 func (s *testMixin) SoftwareDeps() []string {
-	return append([]string(nil), s.testRoot.test.SoftwareDeps...)
+	return append([]string(nil), s.testRoot.test.SoftwareDeps[""]...)
 }
 
 // ServiceDeps returns service dependencies declared in the currently running entity.

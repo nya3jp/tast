@@ -123,10 +123,11 @@ TestLoop:
 // requiredDeps is a list of items which the test's SoftwareDeps needs to
 // satisfy. Each item is one or '|'-connected multiple software feature names,
 // and SoftwareDeps must contain at least one of them.
+// TODO: b/225978622 -- support multi-dut in test check.
 func SoftwareDeps(t *gotesting.T, f TestFilter, requiredDeps []string) {
 	for _, tst := range getTests(t, f) {
 		deps := make(map[string]struct{})
-		for _, d := range tst.SoftwareDeps {
+		for _, d := range tst.SoftwareDeps[""] {
 			deps[d] = struct{}{}
 		}
 	CheckLoop:

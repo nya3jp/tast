@@ -367,7 +367,7 @@ third_party/autotest/files/server/site_tests/tast/control.runtime-probe
 				Name: "wificell_func",
 				Desc: `Tests basic WiFi functionalities using Wificell fixture nightly.`,
 			},
-						{
+			{
 				Name: "wificell_func_ax",
 				Desc: `Tests basic WiFi AX functionalities using Wificell fixture nightly.`,
 			},
@@ -498,6 +498,11 @@ Meta tests should be a subset of mainline critical tests.
 		Name:     "nearby-share",
 		Contacts: []string{"chromeos-sw-engprod@google.com"},
 		Desc:     `A group of tests that test Nearby Share functionality.`,
+	},
+	{
+		Name:     "nearby-share-cq",
+		Contacts: []string{"chromeos-sw-engprod@google.com"},
+		Desc:     `A group of tests to be run in CQ for Nearby Share functionality.`,
 	},
 	{
 		Name:     "nearby-share-remote",

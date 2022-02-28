@@ -17,8 +17,8 @@ import (
 // Deps contains all information about dependencies tests have.
 type Deps struct {
 	Var      []string
-	Software SoftwareDeps
-	Hardware HardwareDeps
+	Software map[string]SoftwareDeps
+	Hardware map[string]HardwareDeps
 }
 
 // Check performs dependency checks according to given features.
@@ -50,20 +50,46 @@ func (d *Deps) Check(f *protocol.Features) (reasons []string, err error) {
 		return nil, errors.Errorf("runtime variable %v is missing and doesn't match with %v", v, maybeMissingVars)
 	}
 
-	missing, unknown := missingSoftwareDeps(d.Software, f.GetDut().GetSoftware())
-	if len(unknown) > 0 {
-		return nil, errors.Errorf("unknown SoftwareDeps: %v", strings.Join(unknown, ", "))
-	}
-	if len(missing) > 0 {
-		reasons = append(reasons, fmt.Sprintf("missing SoftwareDeps: %s", strings.Join(missing, ", ")))
+	for role, swDep := range d.Software {
+		var dut *protocol.DUTFeatures
+		if role != "" {
+			var valid bool
+			if dut, valid = f.GetCompanionFeatures()[role]; !valid {
+				continue
+			}
+		} else {
+			dut = f.GetDut()
+		}
+
+		missing, unknown := missingSoftwareDeps(swDep, dut.GetSoftware())
+
+		if len(unknown) > 0 {
+			return nil, errors.Errorf("unknown SoftwareDeps: %v", strings.Join(unknown, ", "))
+		}
+		if len(missing) > 0 {
+			reasons = append(reasons, fmt.Sprintf("missing SoftwareDeps: %s", strings.Join(missing, ", ")))
+		}
 	}
 
-	sat, err := d.Hardware.Satisfied(f.GetDut().GetHardware())
-	if err != nil {
-		return nil, err
-	}
-	for _, r := range sat {
-		reasons = append(reasons, r)
+	for role, hwDep := range d.Hardware {
+		var dut *protocol.DUTFeatures
+		if role != "" {
+			var valid bool
+			dut, valid = f.GetCompanionFeatures()[role]
+			if !valid {
+				continue
+			}
+		} else {
+			dut = f.GetDut()
+		}
+
+		sat, err := hwDep.Satisfied(dut.GetHardware())
+		if err != nil {
+			return nil, err
+		}
+		for _, r := range sat {
+			reasons = append(reasons, r)
+		}
 	}
 
 	return reasons, nil

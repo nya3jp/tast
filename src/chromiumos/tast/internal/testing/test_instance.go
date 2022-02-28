@@ -427,9 +427,13 @@ func (t *TestInstance) String() string {
 // Deps dependencies of this test.
 func (t *TestInstance) Deps() *dep.Deps {
 	return &dep.Deps{
-		Var:      t.VarDeps,
-		Software: append([]string(nil), t.SoftwareDeps...),
-		Hardware: t.HardwareDeps,
+		Var: t.VarDeps,
+		Software: map[string]dep.SoftwareDeps{
+			"": append([]string(nil), t.SoftwareDeps...),
+		},
+		Hardware: map[string]dep.HardwareDeps{
+			"": t.HardwareDeps,
+		},
 	}
 }
 

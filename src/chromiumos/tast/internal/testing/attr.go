@@ -151,6 +151,10 @@ Tests in this group are not used for build verification.
 				Desc: `Indicates that this test is part of Chrome Stack Decoding video.`,
 			},
 			{
+				Name: "graphics_video_decodeaccel",
+				Desc: `Indicates that this test is part of decode accel video.`,
+			},
+			{
 				Name: "graphics_video_h264",
 				Desc: `Indicates that this test is exercising h264 codec.`,
 			},

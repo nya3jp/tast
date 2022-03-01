@@ -41,8 +41,8 @@ Any [modern editor] supports Go. The following are the instructions to setup
 [Visual Studio Code] with Tast code navigation:
 
 1.  Download [Visual Studio Code]
-2.  Install the
-    [Microsoft Go plugin] (VSCode will recommend that plugin once you open a Go file)
+2.  Install the [official Go extension] (VSCode will recommend that extension
+    once you open a Go file)
 3.  Update the `GOPATH` environment variable to make code navigation works (`F12` key)
 
     ```sh
@@ -81,7 +81,7 @@ https://github.com/golang/vscode-go/issues/237#issuecomment-646067281
 
 [modern editor]: https://github.com/golang/go/wiki/IDEsAndTextEditorPlugins
 [Visual Studio Code]: https://code.visualstudio.com/
-[Microsoft Go plugin]: https://code.visualstudio.com/docs/languages/go
+[official Go extension]: https://code.visualstudio.com/docs/languages/go
 
 ## Run a prebuilt test
 

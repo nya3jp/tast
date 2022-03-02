@@ -18,6 +18,7 @@ import (
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/crypto/ssh/agent"
 	"golang.org/x/crypto/ssh/terminal"
+	"golang.org/x/net/proxy"
 
 	"chromiumos/tast/errors"
 )
@@ -247,9 +248,16 @@ func New(ctx context.Context, o *Options) (*Conn, error) {
 func connectSSH(ctx context.Context, hostPort string, cfg *ssh.ClientConfig) (*ssh.Client, error) {
 	var cl *ssh.Client
 	if err := doAsync(ctx, func() error {
-		var err error
-		cl, err = ssh.Dial("tcp", hostPort, cfg)
-		return err
+		conn, err := proxy.FromEnvironment().Dial("tcp", hostPort)
+		if err != nil {
+			return err
+		}
+		c, chans, reqs, err := ssh.NewClientConn(conn, hostPort, cfg)
+		if err != nil {
+			return err
+		}
+		cl = ssh.NewClient(c, chans, reqs)
+		return nil
 	}, func() {
 		if cl != nil {
 			cl.Conn.Close()

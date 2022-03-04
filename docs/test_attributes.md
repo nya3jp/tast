@@ -61,6 +61,8 @@ Below is the list of most popular groups and their associated extra attributes:
 *   `group:mtp` - Tests that will run on the `mtpWithAndroid` fixture. Typically
     those tests require special hardware (Android Phone Connected to DUT) and setup
     available in the fixture.
+*   `group:cuj` - A group of CUJ tests. Tests having this attribute will have their
+    performance data collected and sent to TPS dashboard.
 
 See [attr.go] for the full list of valid attributes.
 

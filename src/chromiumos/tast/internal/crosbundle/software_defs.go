@@ -185,8 +185,8 @@ var softwareFeatureDefs = map[string]string{
 	"unibuild":                  "unibuild",
 	"untrusted_vm":              `"kernel-4_19" || "kernel-5_4" || "kernel-5_10"`,
 	"usbguard":                  "usbguard",
-	"use_fscrypt_v1":            `"!direncription_allow_v2" && "!lvm_stateful_partition"`,
-	"use_fscrypt_v2":            `"direncription_allow_v2" && "!lvm_stateful_partition"`,
+	"use_fscrypt_v1":            `!"direncription_allow_v2" && !"lvm_stateful_partition"`,
+	"use_fscrypt_v2":            `"direncription_allow_v2" && !"lvm_stateful_partition"`,
 	"v4l2_codec":                "v4l2_codec",
 	"vaapi":                     "vaapi",
 	// TODO(b/215374984) Remove `video_cards_ihd`.

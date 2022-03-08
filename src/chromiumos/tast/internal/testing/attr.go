@@ -577,6 +577,10 @@ Parallels boot-up testing. Otherwise the same as group:crosbolt.`,
 				Name: "typec_lab",
 				Desc: `Indicates that this test should be run in a dedicated Type C lab setup.`,
 			},
+			{
+				Name: "typec_informational",
+				Desc: `Indicates that failures can be ignored.`,
+			},
 		},
 	},
 	{

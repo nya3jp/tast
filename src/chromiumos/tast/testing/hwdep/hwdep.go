@@ -267,6 +267,31 @@ func ECFeatureCBI() Condition {
 	}
 }
 
+// GSCUART returns a hardware dependency condition that is satisfied iff the DUT has a GSC and that GSC has a working UART.
+// TODO(b/224608005): Add a cros_config for this and use that instead.
+func GSCUART() Condition {
+	// There is no way to probe for this condition, and there should be no machines newer than 2017 without working UARTs.
+	return SkipOnModel(
+		"astronaut",
+		"blackplte",
+		"caroline",
+		"celes",
+		"electro",
+		"elm",
+		"eve",
+		"hana",
+		"kefka",
+		"lars",
+		"nasher",
+		"nocturne",
+		"relm",
+		"robo360",
+		"sand",
+		"sentry",
+		"snappy",
+	)
+}
+
 // CPUSupportsSMT returns a hardware dependency condition that is satisfied iff the DUT supports
 // Symmetric Multi-Threading.
 func CPUSupportsSMT() Condition {

@@ -829,6 +829,50 @@ func SupportsNV12Overlays() Condition {
 	}
 }
 
+// SupportsP010Overlays says true if the SoC supports P010 hardware overlays,
+// which are commonly used for high bit-depth video overlays. Only Intel SoCs
+// with GPU Gen 12 (TGL, RLK) or later support those.
+func SupportsP010Overlays() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		dc := f.GetDeprecatedDeviceConfig()
+		if dc == nil {
+			return withErrorStr("DeprecatedDeviceConfig is not given")
+		}
+		// Any ARM CPUs
+		if dc.GetCpu() == protocol.DeprecatedDeviceConfig_ARM ||
+			dc.GetCpu() == protocol.DeprecatedDeviceConfig_ARM64 ||
+			// Unknown SOCs
+			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_UNSPECIFIED ||
+			// Intel before Tiger Lake
+			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_APOLLO_LAKE ||
+			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_BAY_TRAIL ||
+			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_BRASWELL ||
+			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_IVY_BRIDGE ||
+			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_PINE_TRAIL ||
+			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_SANDY_BRIDGE ||
+			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_BROADWELL ||
+			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_HASWELL ||
+			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_SKYLAKE_U ||
+			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_SKYLAKE_Y ||
+			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_KABYLAKE_U ||
+			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_KABYLAKE_Y ||
+			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_KABYLAKE_U_R ||
+			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_AMBERLAKE_Y ||
+			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_APOLLO_LAKE ||
+			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_COMET_LAKE_U ||
+			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_GEMINI_LAKE ||
+			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_WHISKEY_LAKE_U ||
+			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_JASPER_LAKE ||
+			// All AMDs
+			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_STONEY_RIDGE ||
+			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_PICASSO {
+			return unsatisfied("SoC does not support P010 Overlays")
+		}
+		return satisfied()
+	},
+	}
+}
+
 // Supports30bppFramebuffer says true if the SoC supports 30bpp color depth
 // primary plane scanout. This is: Intel SOCs Kabylake and onwards, AMD SOCs
 // from Zork onwards (codified Picasso), and not ARM SOCs.

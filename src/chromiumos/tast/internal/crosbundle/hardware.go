@@ -168,7 +168,7 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		features.Keyboard.KeyboardType = configpb.HardwareFeatures_Keyboard_DETACHABLE
 	}
 
-	backlight, err := func() (bool, error) {
+	keyboardBacklight, err := func() (bool, error) {
 		out, err := crosConfig("/keyboard", "backlight")
 		if err != nil {
 			return false, err
@@ -190,17 +190,6 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		logging.Infof(ctx, "Unknown /power/has-keyboard-backlight: %v", err)
 	}
 
-	hasBacklight, err := func() (bool, error) {
-		out, err := crosConfig("/hardware-properties", "has-backlight")
-		if err != nil {
-			return false, err
-		}
-		return out == "true", nil
-	}()
-	if err != nil {
-		logging.Infof(ctx, "Unknown /hardware-properties/has-backlight: %v", err)
-	}
-
 	hasKeyboardBacklightUnderPowerManager, err := func() (bool, error) {
 		const fileName = "/usr/share/power_manager/has_keyboard_backlight"
 		content, err := ioutil.ReadFile(fileName)
@@ -216,7 +205,7 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		logging.Infof(ctx, "Unknown /usr/share/power_manager: %v", err)
 	}
 
-	if backlight || hasBacklight || hasKeyboardBacklight || hasKeyboardBacklightUnderPowerManager {
+	if keyboardBacklight || hasKeyboardBacklight || hasKeyboardBacklightUnderPowerManager {
 		features.Keyboard.Backlight = configpb.HardwareFeatures_PRESENT
 	}
 

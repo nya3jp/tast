@@ -73,6 +73,27 @@ func TestAttr(t *gotesting.T) {
 	}
 }
 
+func TestIfAttr(t *gotesting.T) {
+	for _, tc := range []struct {
+		criteriaAttr []string
+		attr         []string
+		wantFail     bool
+	}{
+		{[]string{}, []string{}, false},
+		{[]string{"A"}, []string{"B|C"}, false},
+		{[]string{"A"}, []string{"B"}, true},
+		{[]string{"B|C"}, []string{"A"}, false},
+		{[]string{"D"}, []string{"B"}, false},
+		{[]string{"A", "B|C"}, []string{"D", "E|F"}, true},
+	} {
+		tt := &gotesting.T{}
+		testcheck.IfAttr(tt, testcheck.Glob(t, "*"), tc.criteriaAttr, tc.attr)
+		if tt.Failed() != tc.wantFail {
+			t.Errorf("Attr(%v) Failed = %v, want %v", tc.attr, tt.Failed(), tc.wantFail)
+		}
+	}
+}
+
 func TestSoftwareDeps(t *gotesting.T) {
 	for _, tc := range []struct {
 		deps     []string

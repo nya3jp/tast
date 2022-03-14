@@ -84,6 +84,41 @@ func Attr(t *gotesting.T, f TestFilter, requiredAttr []string) {
 	}
 }
 
+// IfAttr checks that tests matched by f declare requiredAttr as Attr if all Attr in criteriaAttr are present.
+// criteriaAttr is a list of items to apply to test's Attr.
+// requiredAttr is a list of items which the test's Attr must have if criteriaAttr are matched.
+// Each item is one or '|'-connected multiple attr names, and Attr must contain at least one of them.
+// Example, criteriaAttr=["A", "B|C"], requiredAttr=["D", "E|F"]
+// Any tests with Attr A and either B or C should define Attr D and either E or F.
+func IfAttr(t *gotesting.T, f TestFilter, criteriaAttr, requiredAttr []string) {
+TestLoop:
+	for _, tst := range getTests(t, f) {
+		attr := make(map[string]struct{})
+		for _, at := range tst.Attr {
+			attr[at] = struct{}{}
+		}
+	CriteriaLoop:
+		for _, at := range criteriaAttr {
+			for _, item := range strings.Split(at, "|") {
+				if _, ok := attr[item]; ok {
+					continue CriteriaLoop
+				}
+			}
+			// Any one of the criteria is not met.
+			continue TestLoop
+		}
+	CheckLoop:
+		for _, at := range requiredAttr {
+			for _, item := range strings.Split(at, "|") {
+				if _, ok := attr[item]; ok {
+					continue CheckLoop
+				}
+			}
+			t.Errorf("%s: missing attribute %q", tst.Name, at)
+		}
+	}
+}
+
 // SoftwareDeps checks that tests matched by f declare requiredDeps as software dependencies.
 // requiredDeps is a list of items which the test's SoftwareDeps needs to
 // satisfy. Each item is one or '|'-connected multiple software feature names,

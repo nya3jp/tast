@@ -206,6 +206,7 @@ The following software features are defined:
     this feature excludes that version for known flakiness. See
     [this bug](https://b.corp.google.com/issues/172224081) for context.
 *   `vm_host` - The ability to [run virtual machines].
+*   `vpd` - The DUT has a VPD chip.
 *   `vulkan` - Whether [Vulkan] is enabled.
 *   `watchdog` - watchdog daemon
 *   `wifi` - If this DUT has WiFi device.

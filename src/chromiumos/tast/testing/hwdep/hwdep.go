@@ -1243,15 +1243,16 @@ func SkipOnFormFactor(ffList ...configpb.HardwareFeatures_FormFactor_FormFactorT
 	}}
 }
 
-// socTypeIsStateful returns true when stateful API is supported on the given |SocType|
+// socTypeIsV4l2Stateful returns true when stateful API is supported on the given |SocType|
 // or returns false when stateless API is supported.
-func socTypeIsStateful(SocType protocol.DeprecatedDeviceConfig_SOC) bool {
+func socTypeIsV4l2Stateful(SocType protocol.DeprecatedDeviceConfig_SOC) bool {
 	switch SocType {
 	case protocol.DeprecatedDeviceConfig_SOC_MT8173,
 		protocol.DeprecatedDeviceConfig_SOC_SC7180,
 		protocol.DeprecatedDeviceConfig_SOC_SC7280:
 		return true
-	case protocol.DeprecatedDeviceConfig_SOC_MT8192,
+	case protocol.DeprecatedDeviceConfig_SOC_MT8183,
+		protocol.DeprecatedDeviceConfig_SOC_MT8192,
 		protocol.DeprecatedDeviceConfig_SOC_MT8195,
 		protocol.DeprecatedDeviceConfig_SOC_MT8186:
 		return false
@@ -1271,7 +1272,10 @@ func SupportsV4L2StatefulVideoDecoding() Condition {
 		if dc == nil {
 			return withErrorStr("DeprecatedDeviceConfig is not given")
 		}
-		if socTypeIsStateful(dc.GetSoc()) {
+		if dc.GetCpu() == protocol.DeprecatedDeviceConfig_X86 || dc.GetCpu() == protocol.DeprecatedDeviceConfig_X86_64 {
+			return unsatisfied("DUT's CPU is x86 compatible, which doesn't support V4L2")
+		}
+		if socTypeIsV4l2Stateful(dc.GetSoc()) {
 			return satisfied()
 		}
 		return unsatisfied("SoC does not support V4L2 Stateful HW video decoding")
@@ -1287,7 +1291,10 @@ func SupportsV4L2StatelessVideoDecoding() Condition {
 		if dc == nil {
 			return withErrorStr("DeprecatedDeviceConfig is not given")
 		}
-		if !socTypeIsStateful(dc.GetSoc()) {
+		if dc.GetCpu() == protocol.DeprecatedDeviceConfig_X86 || dc.GetCpu() == protocol.DeprecatedDeviceConfig_X86_64 {
+			return unsatisfied("DUT's CPU is x86 compatible, which doesn't support V4L2")
+		}
+		if !socTypeIsV4l2Stateful(dc.GetSoc()) {
 			return satisfied()
 		}
 		return unsatisfied("SoC does not support V4L2 Stateless HW video decoding")

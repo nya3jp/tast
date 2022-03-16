@@ -453,6 +453,10 @@ third_party/autotest/files/server/site_tests/tast/control.runtime-probe
 				Name: "cellular_sim_test_esim",
 				Desc: `Identifies Cellular tests that need an esim with a test CI.`,
 			},
+			{
+				Name: "cellular_weekly",
+				Desc: `Identifies Cellular tests that are run once a week.`,
+			},
 		},
 	},
 	{

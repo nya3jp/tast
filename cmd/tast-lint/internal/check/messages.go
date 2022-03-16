@@ -66,6 +66,7 @@ const (
 	printfURL     = baseURL + "#log-vs-logf"
 	errPkgURL     = baseURL + "#error-pkg"
 	errFmtURL     = baseURL + "#error-fmt"
+	errConstURL   = baseURL + "#error-construction"
 	logFmtURL     = baseURL + "#log-fmt"
 	commonFmtURL  = baseURL + "#common-fmt"
 	formattingURL = baseURL + "#Formatting"
@@ -219,6 +220,16 @@ func Messages(fs *token.FileSet, f *ast.File, fix bool) []*Issue {
 			} else {
 				args[0].val = messageTrimmed
 				args[0].fixed = true
+			}
+		}
+
+		// Used errors.Wrapf(err, "something failed: %v", err) instead of errors.Wrap(err, "something failed")
+		if callName == "errors.Wrapf" {
+			for _, e := range args {
+				if e.typ == errorArg {
+					addIssue(`Use errors.Wrap(err, "<msg>") instead of errors.Wrapf(err, "<msg>: %v", err)`, errConstURL, true)
+					break
+				}
 			}
 		}
 

@@ -10,7 +10,9 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net"
+	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 	"time"
 
@@ -90,13 +92,13 @@ func Run(ctx context.Context, cfg *config.Config, state *config.DeprecatedState)
 
 	switch cfg.Mode() {
 	case config.ListTestsMode:
-		results, err := listTests(ctx, cfg, drv, dutInfo[""])
+		results, err := listTests(ctx, cfg, drv, dutInfo)
 		if err != nil {
 			return nil, errors.Wrapf(err, "failed to list tests")
 		}
 		return results, nil
 	case config.RunTestsMode:
-		results, err := runTests(ctx, cfg, state, drv, reportClient, dutInfo[""])
+		results, err := runTests(ctx, cfg, state, drv, reportClient, dutInfo)
 		if err != nil {
 			return results, errors.Wrapf(err, "failed to run tests")
 		}
@@ -142,8 +144,22 @@ func removeSkippedTestsFromBundle(bundle []*driver.BundleEntity) ([]*driver.Bund
 }
 
 // listTests returns the whole tests to run.
-func listTests(ctx context.Context, cfg *config.Config, drv *driver.Driver, dutInfo *protocol.DUTInfo) ([]*resultsjson.Result, error) {
-	tests, err := drv.ListMatchedTests(ctx, cfg.Features(dutInfo.GetFeatures(), nil))
+func listTests(ctx context.Context, cfg *config.Config,
+	drv *driver.Driver,
+	dutInfos map[string]*protocol.DUTInfo) ([]*resultsjson.Result, error) {
+	CompanionFeatures := make(map[string]*protocol.DUTFeatures)
+	for role, dutInfo := range dutInfos {
+		if role != "" {
+			CompanionFeatures[role] = dutInfo.GetFeatures()
+		}
+	}
+
+	var dutFeature *protocol.DUTFeatures
+	if _, ok := dutInfos[""]; ok {
+		dutFeature = dutInfos[""].GetFeatures()
+	}
+
+	tests, err := drv.ListMatchedTests(ctx, cfg.Features(dutFeature, CompanionFeatures))
 	if err != nil {
 		return nil, err
 	}
@@ -190,15 +206,36 @@ func verifyTestNames(patterns []string, tests []*driver.BundleEntity) error {
 	return nil
 }
 
-func runTests(ctx context.Context, cfg *config.Config, state *config.DeprecatedState, drv *driver.Driver, client *reporting.RPCClient, dutInfo *protocol.DUTInfo) (results []*resultsjson.Result, retErr error) {
-	if err := ioutil.WriteFile(filepath.Join(cfg.ResDir(), DUTInfoFile), []byte(proto.MarshalTextString(dutInfo)), 0644); err != nil {
-		logging.Debugf(ctx, "Failed to dump DUTInfo: %v", err)
-	}
+func runTests(ctx context.Context, cfg *config.Config,
+	state *config.DeprecatedState,
+	drv *driver.Driver, client *reporting.RPCClient,
+	dutInfos map[string]*protocol.DUTInfo) (results []*resultsjson.Result,
+	retErr error) {
 
-	if ver := dutInfo.GetOsVersion(); ver == "" {
-		logging.Info(ctx, "Target version: not available from target")
-	} else {
-		logging.Infof(ctx, "Target version: %v", ver)
+	var roles []string
+	for role := range dutInfos {
+		roles = append(roles, role)
+	}
+	sort.Strings(roles)
+	for _, role := range roles {
+		dir := cfg.ResDir()
+		roleName := "Primary"
+		if role != "" {
+			dir = filepath.Join(cfg.ResDir(), role)
+			if err := os.MkdirAll(dir, os.ModePerm); err != nil {
+				logging.Debugf(ctx, "Failed to create directory: %v", err)
+			}
+			roleName = role
+		}
+		if err := ioutil.WriteFile(filepath.Join(dir, DUTInfoFile), []byte(proto.MarshalTextString(dutInfos[role])), 0644); err != nil {
+			logging.Debugf(ctx, "Failed to dump DUTInfo: %v", err)
+		}
+
+		if ver := dutInfos[role].GetOsVersion(); ver == "" {
+			logging.Infof(ctx, "%s DUT version: not available from target", roleName)
+		} else {
+			logging.Infof(ctx, "%s DUT version: %v", roleName, ver)
+		}
 	}
 
 	initialSysInfo, err := drv.GetSysInfoState(ctx)
@@ -206,7 +243,14 @@ func runTests(ctx context.Context, cfg *config.Config, state *config.DeprecatedS
 		return nil, errors.Wrap(err, "failed to get initial sysinfo")
 	}
 
-	tests, err := drv.ListMatchedTests(ctx, cfg.Features(dutInfo.GetFeatures(), map[string]*protocol.DUTFeatures{}))
+	CompanionFeatures := make(map[string]*protocol.DUTFeatures)
+	for role, dutInfo := range dutInfos {
+		if role != "" {
+			CompanionFeatures[role] = dutInfo.GetFeatures()
+		}
+	}
+
+	tests, err := drv.ListMatchedTests(ctx, cfg.Features(dutInfos[""].GetFeatures(), CompanionFeatures))
 	if err != nil {
 		return nil, err
 	}
@@ -291,5 +335,5 @@ func runTests(ctx context.Context, cfg *config.Config, state *config.DeprecatedS
 		reporting.WriteResultsToLogs(ctx, results, cfg.ResDir(), complete)
 	}()
 
-	return drv.RunTests(ctx, shard.Included, dutInfo, client, state.RemoteDevservers)
+	return drv.RunTests(ctx, shard.Included, dutInfos, client, state.RemoteDevservers)
 }

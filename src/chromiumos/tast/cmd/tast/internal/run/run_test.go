@@ -1000,7 +1000,7 @@ func TestRunDumpDUTInfo(t *gotesting.T) {
 		t.Errorf("Run failed: %v", err)
 	}
 
-	const expectedOSVersion = "Target version: " + osVersion
+	const expectedOSVersion = "Primary DUT version: " + osVersion
 	if logs := logger.String(); !strings.Contains(logs, expectedOSVersion) {
 		t.Errorf("Cannot find %q in log buffer %q", expectedOSVersion, logs)
 	}

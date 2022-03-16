@@ -87,7 +87,7 @@ func runExternalTests(ctx context.Context, names []string, stack *fixture.Combin
 		DebuggerPort: int(pcfg.ExternalTarget.Config.GetDebugPort()),
 		Proxy:        pcfg.ExternalTarget.Config.GetProxy(),
 
-		DUTFeatures: pcfg.Features.GetDut(),
+		DUTFeatures: map[string]*protocol.DUTFeatures{"": pcfg.Features.GetDut()},
 		Factory:     factory,
 
 		Recursive: true,

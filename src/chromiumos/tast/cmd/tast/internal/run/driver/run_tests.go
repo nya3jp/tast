@@ -39,14 +39,18 @@ func ShouldRunTestsRecursively() bool {
 
 // runTestsArgs holds arguments common to private methods called by RunTests.
 type runTestsArgs struct {
-	DUTInfo          *protocol.DUTInfo
+	DUTInfo          map[string]*protocol.DUTInfo
 	Counter          *failfast.Counter
 	Client           *reporting.RPCClient
 	RemoteDevservers []string
 }
 
 // RunTests runs specified tests per bundle.
-func (d *Driver) RunTests(ctx context.Context, tests []*BundleEntity, dutInfo *protocol.DUTInfo, client *reporting.RPCClient, remoteDevservers []string) ([]*resultsjson.Result, error) {
+func (d *Driver) RunTests(ctx context.Context,
+	tests []*BundleEntity,
+	dutInfos map[string]*protocol.DUTInfo,
+	client *reporting.RPCClient,
+	remoteDevservers []string) ([]*resultsjson.Result, error) {
 	testsPerBundle := make(map[string][]*protocol.ResolvedEntity)
 	for _, t := range tests {
 		testsPerBundle[t.Bundle] = append(testsPerBundle[t.Bundle], t.Resolved)
@@ -58,7 +62,7 @@ func (d *Driver) RunTests(ctx context.Context, tests []*BundleEntity, dutInfo *p
 	sort.Strings(bundles)
 	var results []*resultsjson.Result
 	for _, bundle := range bundles {
-		res, err := d.runTests(ctx, bundle, testsPerBundle[bundle], dutInfo, client, remoteDevservers)
+		res, err := d.runTests(ctx, bundle, testsPerBundle[bundle], dutInfos, client, remoteDevservers)
 		results = append(results, res...)
 		if err != nil {
 			return results, err
@@ -68,10 +72,10 @@ func (d *Driver) RunTests(ctx context.Context, tests []*BundleEntity, dutInfo *p
 }
 
 // runTests runs specified tests. It can return non-nil results even on errors.
-func (d *Driver) runTests(ctx context.Context, bundle string, tests []*protocol.ResolvedEntity, dutInfo *protocol.DUTInfo, client *reporting.RPCClient, remoteDevservers []string) ([]*resultsjson.Result, error) {
+func (d *Driver) runTests(ctx context.Context, bundle string, tests []*protocol.ResolvedEntity, dutInfos map[string]*protocol.DUTInfo, client *reporting.RPCClient, remoteDevservers []string) ([]*resultsjson.Result, error) {
 
 	args := &runTestsArgs{
-		DUTInfo:          dutInfo,
+		DUTInfo:          dutInfos,
 		Counter:          failfast.NewCounter(d.cfg.MaxTestFailures()),
 		Client:           client,
 		RemoteDevservers: remoteDevservers,
@@ -157,7 +161,7 @@ func (d *Driver) runLocalTestsWithRemoteFixture(ctx context.Context, bundle stri
 	if start == "" {
 		return d.runLocalTestsWithRetry(ctx, bundle, tests, &protocol.StartFixtureState{}, args)
 	}
-	runCfg, err := d.newRunFixtureConfig(args.DUTInfo)
+	runCfg, err := d.newRunFixtureConfig(args.DUTInfo[""])
 	if err != nil {
 		return nil, err
 	}
@@ -229,7 +233,12 @@ func (d *Driver) runLocalTestsWithRemoteFixture(ctx context.Context, bundle stri
 
 func (d *Driver) runLocalTestsWithRetry(ctx context.Context, bundle string, tests []*protocol.ResolvedEntity, state *protocol.StartFixtureState, args *runTestsArgs) ([]*resultsjson.Result, error) {
 
-	buildArtifactsURL := getBuildArtifactsURL(d.cfg.BuildArtifactsURLOverride(), args.DUTInfo.GetDefaultBuildArtifactsUrl())
+	buildArtifactsURL := getBuildArtifactsURL(d.cfg.BuildArtifactsURLOverride(), args.DUTInfo[""].GetDefaultBuildArtifactsUrl())
+
+	dutFeature := make(map[string]*protocol.DUTFeatures)
+	for key, value := range args.DUTInfo {
+		dutFeature[key] = value.GetFeatures()
+	}
 
 	cfg := &minidriver.Config{
 		Retries:               d.cfg.Retries(),
@@ -248,7 +257,7 @@ func (d *Driver) runLocalTestsWithRetry(ctx context.Context, bundle string, test
 		MaybeMissingVars:      d.cfg.MaybeMissingVars(),
 		DebuggerPort:          d.cfg.DebuggerPorts()[debugger.LocalBundle],
 		Proxy:                 d.cfg.Proxy() == config.ProxyEnv,
-		DUTFeatures:           args.DUTInfo.GetFeatures(),
+		DUTFeatures:           dutFeature,
 		Factory:               minidriver.NewRootHandlersFactory(d.cfg.ResDir(), args.Counter, args.Client),
 		BuildArtifactsURL:     buildArtifactsURL,
 	}
@@ -293,7 +302,7 @@ func (d *Driver) runRemoteTestsOnce(ctx context.Context, bundle string, tests []
 	return proc.Results(), proc.FatalError()
 }
 
-func (d *Driver) newConfigsForRemoteTests(tests []string, dutInfo *protocol.DUTInfo, remoteDevservers []string) (*protocol.BundleConfig, *protocol.RunConfig, error) {
+func (d *Driver) newConfigsForRemoteTests(tests []string, dutInfos map[string]*protocol.DUTInfo, remoteDevservers []string) (*protocol.BundleConfig, *protocol.RunConfig, error) {
 	exe, err := os.Executable()
 	if err != nil {
 		return nil, nil, err
@@ -314,7 +323,7 @@ func (d *Driver) newConfigsForRemoteTests(tests []string, dutInfo *protocol.DUTI
 
 	buildArtifactsURL := d.cfg.BuildArtifactsURLOverride()
 	if buildArtifactsURL == "" {
-		buildArtifactsURL = dutInfo.GetDefaultBuildArtifactsUrl()
+		buildArtifactsURL = dutInfos[""].GetDefaultBuildArtifactsUrl()
 	}
 
 	runFlags := []string{
@@ -352,6 +361,12 @@ func (d *Driver) newConfigsForRemoteTests(tests []string, dutInfo *protocol.DUTI
 			RunFlags: runFlags,
 		},
 	}
+	CompanionFeatures := make(map[string]*protocol.DUTFeatures)
+	for role, dutInfo := range dutInfos {
+		if role != "" {
+			CompanionFeatures[role] = dutInfo.GetFeatures()
+		}
+	}
 	rcfg := &protocol.RunConfig{
 		Tests: tests,
 		Dirs: &protocol.RunDirectories{
@@ -359,7 +374,7 @@ func (d *Driver) newConfigsForRemoteTests(tests []string, dutInfo *protocol.DUTI
 			OutDir:  d.cfg.RemoteOutDir(),
 			TempDir: d.cfg.RemoteTempDir(),
 		},
-		Features: d.cfg.Features(dutInfo.GetFeatures(), nil),
+		Features: d.cfg.Features(dutInfos[""].GetFeatures(), CompanionFeatures),
 		ServiceConfig: &protocol.ServiceConfig{
 			Devservers: remoteDevservers,
 			TlwServer:  d.cfg.TLWServer(),

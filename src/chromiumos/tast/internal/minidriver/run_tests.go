@@ -65,7 +65,7 @@ type Config struct {
 	DebuggerPort int
 	Proxy        bool
 
-	DUTFeatures *protocol.DUTFeatures
+	DUTFeatures map[string]*protocol.DUTFeatures
 	Factory     HandlersFactory
 
 	BuildArtifactsURL string
@@ -168,6 +168,13 @@ func (d *Driver) newConfigsForLocalTests(tests []string, state *protocol.StartFi
 		dutServer = addr.String()
 	}
 
+	var dutFeature *protocol.DUTFeatures
+	if _, ok := d.cfg.DUTFeatures[""]; ok {
+		dutFeature = d.cfg.DUTFeatures[""]
+	} else {
+		dutFeature = nil
+	}
+
 	bcfg := &protocol.BundleConfig{}
 	rcfg := &protocol.RunConfig{
 		Tests: tests,
@@ -182,7 +189,7 @@ func (d *Driver) newConfigsForLocalTests(tests []string, state *protocol.StartFi
 				Vars:             d.cfg.TestVars,
 				MaybeMissingVars: d.cfg.MaybeMissingVars,
 			},
-			Dut: d.cfg.DUTFeatures,
+			Dut: dutFeature,
 		},
 		ServiceConfig: &protocol.ServiceConfig{
 			Devservers:  devservers,

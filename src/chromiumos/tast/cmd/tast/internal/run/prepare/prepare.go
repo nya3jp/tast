@@ -29,31 +29,25 @@ import (
 	"chromiumos/tast/ssh"
 )
 
-// Prepare prepares target DUT and companion DUTs for running tests.
-// When instructed in cfg, it builds and pushes the local test runner and test
+// CheckPrivateBundleFlag instructed in cfg,
+// it builds and pushes the local test runner and test
 // bundles, and downloads private test bundles.
-// It returns the DUTInfo for the primary DUT.
-func Prepare(ctx context.Context, cfg *config.Config, primaryDriver *driver.Driver) (*protocol.DUTInfo, error) {
+func CheckPrivateBundleFlag(ctx context.Context, cfg *config.Config) error {
 	if cfg.Build() && cfg.DownloadPrivateBundles() {
 		// Usually it makes no sense to download prebuilt private bundles when
 		// building and pushing a fresh test bundle.
-		return nil, errors.New("-downloadprivatebundles requires -build=false")
+		return errors.New("-downloadprivatebundles requires -build=false")
 	}
+	return nil
+}
 
-	dutInfo, err := prepareDUT(ctx, cfg, primaryDriver)
+// Prepare prepares target DUT for running tests.
+// It returns the DUTInfo for the primary DUT.
+func Prepare(ctx context.Context, cfg *config.Config,
+	driver *driver.Driver) (*protocol.DUTInfo, error) {
+	dutInfo, err := prepareDUT(ctx, cfg, driver)
 	if err != nil {
 		return nil, fmt.Errorf("failed to prepare primary DUT %s: %v", cfg.Target(), err)
-	}
-
-	for role, dut := range cfg.CompanionDUTs() {
-		companionDriver, err := driver.New(ctx, cfg, dut, role)
-		if err != nil {
-			return nil, fmt.Errorf("failed to connect to companion DUT %s: %v", dut, err)
-		}
-		defer companionDriver.Close(ctx)
-		if _, err := prepareDUT(ctx, cfg, companionDriver); err != nil {
-			return nil, fmt.Errorf("failed to prepare companion DUT %s: %v", dut, err)
-		}
 	}
 	return dutInfo, nil
 }

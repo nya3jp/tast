@@ -60,26 +60,43 @@ func Run(ctx context.Context, cfg *config.Config, state *config.DeprecatedState)
 		state.RemoteDevservers = cfg.Devservers()
 	}
 
+	if err := prepare.CheckPrivateBundleFlag(ctx, cfg); err != nil {
+		return nil, errors.Wrap(err, "failed in checking downloadprivatebundles flag")
+	}
+
 	drv, err := driver.New(ctx, cfg, cfg.Target(), "")
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to connect to target")
 	}
 	defer drv.Close(ctx)
 
-	dutInfo, err := prepare.Prepare(ctx, cfg, drv)
+	dutInfo := make(map[string]*protocol.DUTInfo)
+	dutInfo[""], err = prepare.Prepare(ctx, cfg, drv)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to build and push")
+		return nil, errors.Wrap(err, "failed to build and push primary DUT")
+	}
+
+	for role, dut := range cfg.CompanionDUTs() {
+		companionDriver, err := driver.New(ctx, cfg, dut, role)
+		if err != nil {
+			return nil, errors.Wrapf(err, "failed to connect to companion DUT %s", dut)
+		}
+		defer companionDriver.Close(ctx)
+		dutInfo[role], err = prepare.Prepare(ctx, cfg, companionDriver)
+		if err != nil {
+			return nil, errors.Wrapf(err, "failed to build and push companion DUT %s", dut)
+		}
 	}
 
 	switch cfg.Mode() {
 	case config.ListTestsMode:
-		results, err := listTests(ctx, cfg, drv, dutInfo)
+		results, err := listTests(ctx, cfg, drv, dutInfo[""])
 		if err != nil {
 			return nil, errors.Wrapf(err, "failed to list tests")
 		}
 		return results, nil
 	case config.RunTestsMode:
-		results, err := runTests(ctx, cfg, state, drv, reportClient, dutInfo)
+		results, err := runTests(ctx, cfg, state, drv, reportClient, dutInfo[""])
 		if err != nil {
 			return results, errors.Wrapf(err, "failed to run tests")
 		}

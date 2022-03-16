@@ -143,7 +143,7 @@ func removeSkippedTestsFromBundle(bundle []*driver.BundleEntity) ([]*driver.Bund
 
 // listTests returns the whole tests to run.
 func listTests(ctx context.Context, cfg *config.Config, drv *driver.Driver, dutInfo *protocol.DUTInfo) ([]*resultsjson.Result, error) {
-	tests, err := drv.ListMatchedTests(ctx, cfg.Features(dutInfo.GetFeatures()))
+	tests, err := drv.ListMatchedTests(ctx, cfg.Features(dutInfo.GetFeatures(), nil))
 	if err != nil {
 		return nil, err
 	}
@@ -206,7 +206,7 @@ func runTests(ctx context.Context, cfg *config.Config, state *config.DeprecatedS
 		return nil, errors.Wrap(err, "failed to get initial sysinfo")
 	}
 
-	tests, err := drv.ListMatchedTests(ctx, cfg.Features(dutInfo.GetFeatures()))
+	tests, err := drv.ListMatchedTests(ctx, cfg.Features(dutInfo.GetFeatures(), map[string]*protocol.DUTFeatures{}))
 	if err != nil {
 		return nil, err
 	}

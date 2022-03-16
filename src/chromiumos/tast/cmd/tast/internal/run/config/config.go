@@ -671,14 +671,16 @@ func (c *Config) RemoteBundleGlob() string {
 }
 
 // Features constructs Features from Config and protocol.DUTFeatures.
-func (c *Config) Features(dut *protocol.DUTFeatures) *protocol.Features {
+func (c *Config) Features(dut *protocol.DUTFeatures,
+	companions map[string]*protocol.DUTFeatures) *protocol.Features {
 	return &protocol.Features{
 		CheckDeps: c.CheckTestDeps(),
 		Infra: &protocol.InfraFeatures{
 			Vars:             c.TestVars(),
 			MaybeMissingVars: c.MaybeMissingVars(),
 		},
-		Dut: dut,
+		Dut:               dut,
+		CompanionFeatures: companions,
 	}
 }
 

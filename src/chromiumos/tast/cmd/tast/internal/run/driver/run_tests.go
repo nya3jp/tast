@@ -359,7 +359,7 @@ func (d *Driver) newConfigsForRemoteTests(tests []string, dutInfo *protocol.DUTI
 			OutDir:  d.cfg.RemoteOutDir(),
 			TempDir: d.cfg.RemoteTempDir(),
 		},
-		Features: d.cfg.Features(dutInfo.GetFeatures()),
+		Features: d.cfg.Features(dutInfo.GetFeatures(), nil),
 		ServiceConfig: &protocol.ServiceConfig{
 			Devservers: remoteDevservers,
 			TlwServer:  d.cfg.TLWServer(),

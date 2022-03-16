@@ -831,7 +831,7 @@ func SupportsNV12Overlays() Condition {
 
 // SupportsP010Overlays says true if the SoC supports P010 hardware overlays,
 // which are commonly used for high bit-depth video overlays. Only Intel SoCs
-// with GPU Gen 12 (TGL, RLK) or later support those.
+// with GPU Gen 11 (JSL), Gen 12 (TGL, RLK) or later support those.
 func SupportsP010Overlays() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		dc := f.GetDeprecatedDeviceConfig()
@@ -862,7 +862,6 @@ func SupportsP010Overlays() Condition {
 			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_COMET_LAKE_U ||
 			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_GEMINI_LAKE ||
 			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_WHISKEY_LAKE_U ||
-			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_JASPER_LAKE ||
 			// All AMDs
 			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_STONEY_RIDGE ||
 			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_PICASSO {

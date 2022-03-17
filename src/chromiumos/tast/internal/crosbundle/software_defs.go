@@ -29,8 +29,9 @@ var softwareFeatureDefs = map[string]string{
 	"arm":               `"arm" || "arm64"`,
 	"aslr":              "!asan", // ASan instrumentation breaks ASLR
 	"biometrics_daemon": "biod",
-	"borealis_host":     "borealis_host",
-	"breakpad":          "force_breakpad",
+	// TODO(b/225065082): Re-enable borealis on manatee
+	"borealis_host": "borealis_host && !manatee",
+	"breakpad":      "force_breakpad",
 	// daisy variants' cameras don't support 1280x720.
 	"camera_720p": "!snow && !skate && !spring",
 	// Some boards might not support the camera/video/audio components required by the camera app.

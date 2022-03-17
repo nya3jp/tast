@@ -513,6 +513,16 @@ Meta tests should be a subset of mainline critical tests.
 		Desc:     `A group of tests to be run in CQ for Nearby Share functionality.`,
 	},
 	{
+		Name:     "nearby-share-dev",
+		Contacts: []string{"chromeos-sw-engprod@google.com"},
+		Desc:     `A group of tests that test Nearby Share functionality with the dev version of Android Nearby.`,
+	},
+	{
+		Name:     "nearby-share-prod",
+		Contacts: []string{"chromeos-sw-engprod@google.com"},
+		Desc:     `A group of tests that test Nearby Share functionality with the production version of Android Nearby.`,
+	},
+	{
 		Name:     "nearby-share-remote",
 		Contacts: []string{"chromeos-sw-engprod@google.com"},
 		Desc:     `A group of remote tests that test Nearby Share functionality.`,

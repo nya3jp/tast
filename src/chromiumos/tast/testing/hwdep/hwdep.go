@@ -156,6 +156,7 @@ func SkipOnModel(names ...string) Condition {
 // Platform returns a hardware dependency condition that is satisfied
 // iff the DUT's platform ID is one of the give names.
 // Please find the doc of Model(), too, for details about the expected usage.
+// Deprecated. Use Model() or "board:*" software dependency.
 func Platform(names ...string) Condition {
 	for _, n := range names {
 		if !idRegexp.MatchString(n) {
@@ -177,6 +178,7 @@ func Platform(names ...string) Condition {
 // SkipOnPlatform returns a hardware dependency condition that is satisfied
 // iff the DUT's platform ID is none of the give names.
 // Please find the doc of Model(), too, for details about the expected usage.
+// Deprecated. Use SkipOnModel() or "board:*" software dependency.
 func SkipOnPlatform(names ...string) Condition {
 	for _, n := range names {
 		if !idRegexp.MatchString(n) {

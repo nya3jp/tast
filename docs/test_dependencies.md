@@ -354,8 +354,8 @@ the test will run only on DUTs where all the conditions are satisfied.
 
 You can find the full list of supported conditions in the [hwdep package].
 
-Note that there are special kinds of hardware dependencies, named `Model`,
-`SkipOnModel`, `Platform`, and `SkipOnPlatform`.
+Note that there are special kinds of hardware dependencies, named `Model` and
+`SkipOnModel`.
 With these dependencies, tests will be controlled based on the device type names,
 rather than the device characteristics.
 In general, it is recommended *not* to use these conditions. If you feel you need
@@ -368,7 +368,7 @@ Examples of their expected use cases are:
   to promoted it to critical.
 * There is a test running as informational. Flakiness failures are found
   only on a few models, but the test is stable on other models.
-  With depending models/platforms, we can promote the test to critical on
+  With depending models, we can promote the test to critical on
   most of models, except ones where the test results flakiness.
   In this case, it is expected that a dedicated engineer is assigned to
   investigate the cause and its fix.

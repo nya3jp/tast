@@ -702,16 +702,17 @@ func Wifi80211ax6E() Condition {
 }
 
 // WifiMACAddrRandomize returns a hardware dependency condition that is satisfied
-// iff the DUT support WiFi MAC Address Randomization.
+// iff the DUT supports WiFi MAC Address Randomization.
 func WifiMACAddrRandomize() Condition {
-	// TODO(crbug.com/1070299): replace this when we have hwdep for WiFi chips.
-	return SkipOnPlatform(
+	return SkipOnWifiDevice(
 		// mwifiex in 3.10 kernel does not support it.
-		"kitty",
+		Marvell88w8897SDIO, Marvell88w8997PCIE,
 		// Broadcom driver has only NL80211_FEATURE_SCHED_SCAN_RANDOM_MAC_ADDR
 		// but not NL80211_FEATURE_SCAN_RANDOM_MAC_ADDR. We require randomization
 		// for all supported scan types.
-		"mickey", "minnie", "speedy",
+		BroadcomBCM4354SDIO,
+		// RTL8822CE reports only NL80211_FEATURE_SCAN_RANDOM_MAC_ADDR.
+		Realtek8822CPCIE,
 	)
 }
 

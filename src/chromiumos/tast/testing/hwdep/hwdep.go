@@ -1254,7 +1254,8 @@ func socTypeIsV4l2Stateful(SocType protocol.DeprecatedDeviceConfig_SOC) bool {
 	case protocol.DeprecatedDeviceConfig_SOC_MT8183,
 		protocol.DeprecatedDeviceConfig_SOC_MT8192,
 		protocol.DeprecatedDeviceConfig_SOC_MT8195,
-		protocol.DeprecatedDeviceConfig_SOC_MT8186:
+		protocol.DeprecatedDeviceConfig_SOC_MT8186,
+		protocol.DeprecatedDeviceConfig_SOC_RK3399:
 		return false
 	// TODO(stevecho): stateful is more common for now, but we can change this in the future
 	default:
@@ -1284,7 +1285,7 @@ func SupportsV4L2StatefulVideoDecoding() Condition {
 
 // SupportsV4L2StatelessVideoDecoding says true if the SoC supports the V4L2
 // stateless video decoding kernel API. Examples of this are MTK8192 (Asurada),
-// MTK8195 (Cherry), and MTK8186 (Corsola).
+// MTK8195 (Cherry), MTK8186 (Corsola), and RK3399 (scarlet/kevin/bob).
 func SupportsV4L2StatelessVideoDecoding() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		dc := f.GetDeprecatedDeviceConfig()

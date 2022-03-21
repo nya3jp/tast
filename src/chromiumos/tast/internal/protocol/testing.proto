@@ -135,7 +135,7 @@ message Entity {
   EntityDependencies dependencies = 7;
   EntityContacts contacts = 8;
   EntityLegacyData legacy_data = 9;
-  repeated string markers = 10;
+  repeated StringPair search_flags = 10;
 }
 
 // EntityContacts contains contact information of an entity.
@@ -468,3 +468,13 @@ enum StackStatus {
 }
 
 message HeartbeatEvent { google.protobuf.Timestamp time = 1; }
+
+// A string key-value pair.
+message StringPair {
+  // Regex: ^[a-z][a-z0-9_]*(/[a-z][a-z0-9_]*)*$
+  // Max length: 64.
+  string key = 1;
+
+  // Max length: 256.
+  string value = 2;
+}

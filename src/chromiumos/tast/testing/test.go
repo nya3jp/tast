@@ -6,6 +6,7 @@
 package testing
 
 import (
+	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testing"
 )
 
@@ -43,3 +44,6 @@ const (
 	// LacrosVariantUnneeded indicates that lacros variants for this test are not needed.
 	LacrosVariantUnneeded = testing.LacrosVariantUnneeded
 )
+
+// StringPair represents a string key-value pair. Typically used for SearchFlags.
+type StringPair = protocol.StringPair

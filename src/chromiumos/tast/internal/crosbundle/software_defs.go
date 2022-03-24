@@ -24,11 +24,9 @@ var softwareFeatureDefs = map[string]string{
 	"arc_camera3":        `"arc-camera3"`,
 	"arc_launched_32bit": `"arc-launched-32bit-abi"`,
 	"arc_launched_64bit": `"!arc-launched-32bit-abi"`,
-	// TODO(b/197806652): Replace arc_pstore with android_vm.
-	"arc_pstore":        "arc && arcvm",
-	"arm":               `"arm" || "arm64"`,
-	"aslr":              "!asan", // ASan instrumentation breaks ASLR
-	"biometrics_daemon": "biod",
+	"arm":                `"arm" || "arm64"`,
+	"aslr":               "!asan", // ASan instrumentation breaks ASLR
+	"biometrics_daemon":  "biod",
 	// TODO(b/225065082): Re-enable borealis on manatee
 	"borealis_host": "borealis_host && !manatee",
 	"breakpad":      "force_breakpad",

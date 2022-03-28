@@ -454,8 +454,8 @@ third_party/autotest/files/server/site_tests/tast/control.runtime-probe
 				Desc: `Identifies Cellular tests that need an esim with a test CI.`,
 			},
 			{
-				Name: "cellular_weekly",
-				Desc: `Identifies Cellular tests that are run once a week.`,
+				Name: "cellular_modem_fw",
+				Desc: `Identifies modem firmware tests that are run with less frequency.`,
 			},
 		},
 	},

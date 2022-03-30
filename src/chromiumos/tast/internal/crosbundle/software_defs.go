@@ -151,10 +151,9 @@ var softwareFeatureDefs = map[string]string{
 	"ondevice_speech":           "ml_service && ondevice_speech",
 	"pinweaver":                 `"cr50_onboard" || "pinweaver_csme" || ("tpm2_simulator" && "tpm2")`,
 	"play_store":                `arc && !("board:novato" || "board:novato-arc64" || "board:novato-arcnext")`,
-	// BUG(b/227402455): Re-enable plugin_vm on manatee.
-	"plugin_vm":          "pita && !manatee", // boards that can run Plugin VM.
-	"proprietary_codecs": "chrome_internal || chrome_media",
-	"protected_content":  "cdm_factory_daemon",
+	"plugin_vm":                 "pita", // boards that can run Plugin VM.
+	"proprietary_codecs":        "chrome_internal || chrome_media",
+	"protected_content":         "cdm_factory_daemon",
 	// These boards don't support pstore: https://crbug.com/971899
 	"pstore": `!"betty" && !"tast_vm"`,
 	"qemu":   `"betty" || "tast_vm"`,

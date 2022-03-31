@@ -80,6 +80,7 @@ var softwareFeatureDefs = map[string]string{
 	"gpu_sandboxing":          `!"betty" && !"tast_vm"`,                 // no GPU sandboxing on VMs: https://crbug.com/914688
 	"graphics_debugfs":        `!"kernel-3_18"`,
 	"gsc":                     `"cr50_onboard" || "ti50_onboard"`,
+	"hana":                    "hana",
 	"hammerd":                 "hammerd",
 	"houdini":                 "houdini",
 	"houdini64":               "houdini64",
@@ -144,6 +145,7 @@ var softwareFeatureDefs = map[string]string{
 	"nvme":                      "nvme",
 	"oci":                       "containers && !moblab", // run_oci doesn't work on Moblab: https://crbug.com/951691
 	"ocr":                       "ocr",
+	"octopus":                   "octopus",
 	"ondevice_document_scanner": "ml_service && ondevice_document_scanner",
 	"ondevice_handwriting":      "ml_service && ondevice_handwriting",
 	"ondevice_speech":           "ml_service && ondevice_speech",

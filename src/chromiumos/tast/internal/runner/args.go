@@ -137,6 +137,7 @@ type DeprecatedDirectRunConfig struct {
 
 // RunConfig generates protocol.RunConfig.
 // Tests should be a resolved list of test names according to a.Patterns.
+// Todo: Use primary dut for now, will add companion features in the future
 func (c *DeprecatedDirectRunConfig) RunConfig(tests []string) *protocol.RunConfig {
 	return &protocol.RunConfig{
 		Tests: tests,

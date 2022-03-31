@@ -68,6 +68,12 @@ func runExternalTests(ctx context.Context, names []string, stack *fixture.Combin
 	counter := failfast.NewCounter(int(pcfg.ExternalTarget.Config.GetMaxTestFailures()))
 	factory := minidriver.NewIntermediateHandlersFactory(pcfg.Dirs.GetOutDir(), counter, out.ExternalEvent, fixtureServer.Handle)
 
+	companionFeatures := make(map[string]*protocol.DUTFeatures)
+	companionFeatures[""] = pcfg.Features.GetDut()
+	for key, value := range pcfg.Features.GetCompanionFeatures() {
+		companionFeatures[key] = value
+	}
+
 	cfg := &minidriver.Config{
 		Retries:        int(pcfg.ExternalTarget.Config.GetRetries()),
 		ResDir:         pcfg.Dirs.GetOutDir(),
@@ -87,7 +93,7 @@ func runExternalTests(ctx context.Context, names []string, stack *fixture.Combin
 		DebuggerPort: int(pcfg.ExternalTarget.Config.GetDebugPort()),
 		Proxy:        pcfg.ExternalTarget.Config.GetProxy(),
 
-		DUTFeatures: map[string]*protocol.DUTFeatures{"": pcfg.Features.GetDut()},
+		DUTFeatures: companionFeatures,
 		Factory:     factory,
 
 		Recursive: true,

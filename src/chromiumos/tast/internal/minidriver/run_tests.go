@@ -175,6 +175,12 @@ func (d *Driver) newConfigsForLocalTests(tests []string, state *protocol.StartFi
 		dutFeature = nil
 	}
 
+	companionFeatures := make(map[string]*protocol.DUTFeatures)
+	for key, value := range d.cfg.DUTFeatures {
+		if key != "" {
+			companionFeatures[key] = value
+		}
+	}
 	bcfg := &protocol.BundleConfig{}
 	rcfg := &protocol.RunConfig{
 		Tests: tests,
@@ -189,7 +195,8 @@ func (d *Driver) newConfigsForLocalTests(tests []string, state *protocol.StartFi
 				Vars:             d.cfg.TestVars,
 				MaybeMissingVars: d.cfg.MaybeMissingVars,
 			},
-			Dut: dutFeature,
+			Dut:               dutFeature,
+			CompanionFeatures: companionFeatures,
 		},
 		ServiceConfig: &protocol.ServiceConfig{
 			Devservers:  devservers,

@@ -51,6 +51,15 @@ func TestDriver_RunTests(t *gotesting.T) {
 			s.Error("Failed")
 		},
 	})
+	bundle3Local := testing.NewRegistry("bundle3")
+	bundle3Local.AddTestInstance(&testing.TestInstance{
+		Name:    "test.Local3",
+		Timeout: time.Minute,
+		Func:    func(ctx context.Context, s *testing.State) {},
+		SoftwareDeps: map[string][]string{
+			"":     []string{},
+			"dut1": []string{"mock"}},
+	})
 	bundle1Remote := testing.NewRegistry("bundle1")
 	bundle1Remote.AddTestInstance(&testing.TestInstance{
 		Name:    "test.Remote1",
@@ -65,11 +74,20 @@ func TestDriver_RunTests(t *gotesting.T) {
 			s.Error("Failed")
 		},
 	})
-
+	bundle3Remote := testing.NewRegistry("bundle3")
+	bundle3Remote.AddTestInstance(&testing.TestInstance{
+		Name:    "test.Remote3",
+		Timeout: time.Minute,
+		Func:    func(ctx context.Context, s *testing.State) {},
+		SoftwareDeps: map[string][]string{
+			"":     []string{},
+			"dut1": []string{"mock"}},
+	})
 	env := runtest.SetUp(
 		t,
-		runtest.WithLocalBundles(bundle1Local, bundle2Local),
-		runtest.WithRemoteBundles(bundle1Remote, bundle2Remote),
+		runtest.WithLocalBundles(bundle1Local, bundle2Local, bundle3Local),
+		runtest.WithRemoteBundles(bundle1Remote, bundle2Remote, bundle3Remote),
+		runtest.WithCompanionDUT("dut1"),
 	)
 	ctx := env.Context()
 	cfg := env.Config(func(cfg *config.MutableConfig) {})
@@ -120,6 +138,18 @@ func TestDriver_RunTests(t *gotesting.T) {
 			Errors: []resultsjson.Error{{
 				Reason: "Failed",
 			}},
+		},
+		{
+			Test: resultsjson.Test{
+				Name:   "test.Local3",
+				Bundle: "bundle3",
+			},
+		},
+		{
+			Test: resultsjson.Test{
+				Name:   "test.Remote3",
+				Bundle: "bundle3",
+			},
 		},
 	}
 	if diff := cmp.Diff(got, want, resultsCmpOpts...); diff != "" {

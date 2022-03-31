@@ -25,6 +25,7 @@ type CurrentEntity struct {
 	// current entity. It is true only for tests.
 	HasSoftwareDeps bool
 	// SoftwareDeps is a list of software dependencies declared in the current entity.
+	// Todo: Will add support on multi-DUT dependency in future
 	SoftwareDeps []string
 	// ServiceDeps is a list of service dependencies declared in the current entity.
 	ServiceDeps []string

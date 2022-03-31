@@ -20,6 +20,9 @@ type SoftwareDeps = []string
 func missingSoftwareDeps(deps SoftwareDeps, features *protocol.SoftwareFeatures) (missing, unknown []string) {
 DepLoop:
 	for _, d := range deps {
+		if d == "" {
+			continue DepLoop
+		}
 		for _, f := range features.GetAvailable() {
 			if d == f {
 				continue DepLoop

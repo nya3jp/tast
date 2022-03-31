@@ -22,6 +22,9 @@ func TestDumpTestsJSON(t *gotesting.T) {
 	tests := []*testing.TestInstance{
 		{Name: "pkg.Test", Func: f},
 		{Name: "pkg.Test2", Func: f},
+		{Name: "pkg.Test3", Func: f, SoftwareDeps: map[string][]string{
+			"":     []string{},
+			"dut1": []string{"missing1"}}},
 	}
 
 	for _, test := range tests {

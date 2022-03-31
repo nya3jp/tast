@@ -136,10 +136,19 @@ func TestRunResults(t *gotesting.T) {
 		SoftwareDeps: map[string][]string{"": []string{"missing"}},
 		Func:         func(ctx context.Context, s *testing.State) {},
 	}
+	localSkipForCompanion := &testing.TestInstance{
+		Name:    "local.SkipForCompanion",
+		Timeout: time.Minute,
+		SoftwareDeps: map[string][]string{
+			"":     []string{},
+			"dut1": []string{"missing1"}},
+		Func: func(ctx context.Context, s *testing.State) {},
+	}
 	localReg := testing.NewRegistry("bundle")
 	localReg.AddTestInstance(localPass)
 	localReg.AddTestInstance(localFail)
 	localReg.AddTestInstance(localSkip)
+	localReg.AddTestInstance(localSkipForCompanion)
 
 	remotePass := &testing.TestInstance{
 		Name:    "remote.Pass",
@@ -159,10 +168,33 @@ func TestRunResults(t *gotesting.T) {
 		SoftwareDeps: map[string][]string{"": []string{"missing"}},
 		Func:         func(ctx context.Context, s *testing.State) {},
 	}
+	remoteSkipForCompanion := &testing.TestInstance{
+		Name:    "remote.SkipForCompanion",
+		Timeout: time.Minute,
+		SoftwareDeps: map[string][]string{
+			"":     []string{},
+			"dut1": []string{"missing1"}},
+		Func: func(ctx context.Context, s *testing.State) {},
+	}
 	remoteReg := testing.NewRegistry("bundle")
 	remoteReg.AddTestInstance(remotePass)
 	remoteReg.AddTestInstance(remoteFail)
 	remoteReg.AddTestInstance(remoteSkip)
+	remoteReg.AddTestInstance(remoteSkipForCompanion)
+
+	makeHandler := func(role string) runtest.DUTOption {
+		return runtest.WithGetDUTInfo(func(req *protocol.GetDUTInfoRequest) (*protocol.GetDUTInfoResponse, error) {
+			return &protocol.GetDUTInfoResponse{
+				DutInfo: &protocol.DUTInfo{
+					Features: &protocol.DUTFeatures{
+						Software: &protocol.SoftwareFeatures{
+							Unavailable: []string{"missing1"},
+						},
+					},
+				},
+			}, nil
+		})
+	}
 
 	env := runtest.SetUp(
 		t,
@@ -179,6 +211,7 @@ func TestRunResults(t *gotesting.T) {
 				},
 			}, nil
 		}),
+		runtest.WithCompanionDUT("dut1", makeHandler("dut1")),
 	)
 	ctx := env.Context()
 	cfg := env.Config(nil)
@@ -199,6 +232,15 @@ func TestRunResults(t *gotesting.T) {
 			},
 			OutDir:     filepath.Join(cfg.ResDir(), "tests/local.Skip"),
 			SkipReason: "missing SoftwareDeps: missing",
+		},
+		{
+			Test: resultsjson.Test{
+				Name:    "local.SkipForCompanion",
+				Timeout: time.Minute,
+				Bundle:  "bundle",
+			},
+			OutDir:     filepath.Join(cfg.ResDir(), "tests/local.SkipForCompanion"),
+			SkipReason: "missing SoftwareDeps: missing1",
 		},
 		{
 			Test: resultsjson.Test{
@@ -226,6 +268,15 @@ func TestRunResults(t *gotesting.T) {
 			},
 			SkipReason: "missing SoftwareDeps: missing",
 			OutDir:     filepath.Join(cfg.ResDir(), "tests/remote.Skip"),
+		},
+		{
+			Test: resultsjson.Test{
+				Name:    "remote.SkipForCompanion",
+				Timeout: time.Minute,
+				Bundle:  "bundle",
+			},
+			OutDir:     filepath.Join(cfg.ResDir(), "tests/remote.SkipForCompanion"),
+			SkipReason: "missing SoftwareDeps: missing1",
 		},
 		{
 			Test: resultsjson.Test{
@@ -291,10 +342,19 @@ func TestRunLogs(t *gotesting.T) {
 		SoftwareDeps: map[string][]string{"": []string{"missing"}},
 		Func:         func(ctx context.Context, s *testing.State) {},
 	}
+	localSkipForCompanion := &testing.TestInstance{
+		Name:    "local.SkipForCompanion",
+		Timeout: time.Minute,
+		SoftwareDeps: map[string][]string{
+			"":     []string{},
+			"dut1": []string{"missing1"}},
+		Func: func(ctx context.Context, s *testing.State) {},
+	}
 	localReg := testing.NewRegistry("bundle")
 	localReg.AddTestInstance(localPass)
 	localReg.AddTestInstance(localFail)
 	localReg.AddTestInstance(localSkip)
+	localReg.AddTestInstance(localSkipForCompanion)
 
 	remotePass := &testing.TestInstance{
 		Name:    "remote.Pass",
@@ -316,10 +376,33 @@ func TestRunLogs(t *gotesting.T) {
 		SoftwareDeps: map[string][]string{"": []string{"missing"}},
 		Func:         func(ctx context.Context, s *testing.State) {},
 	}
+	remoteSkipForCompanion := &testing.TestInstance{
+		Name:    "remote.SkipForCompanion",
+		Timeout: time.Minute,
+		SoftwareDeps: map[string][]string{
+			"":     []string{},
+			"dut1": []string{"missing1"}},
+		Func: func(ctx context.Context, s *testing.State) {},
+	}
 	remoteReg := testing.NewRegistry("bundle")
 	remoteReg.AddTestInstance(remotePass)
 	remoteReg.AddTestInstance(remoteFail)
 	remoteReg.AddTestInstance(remoteSkip)
+	remoteReg.AddTestInstance(remoteSkipForCompanion)
+
+	makeHandler := func(role string) runtest.DUTOption {
+		return runtest.WithGetDUTInfo(func(req *protocol.GetDUTInfoRequest) (*protocol.GetDUTInfoResponse, error) {
+			return &protocol.GetDUTInfoResponse{
+				DutInfo: &protocol.DUTInfo{
+					Features: &protocol.DUTFeatures{
+						Software: &protocol.SoftwareFeatures{
+							Unavailable: []string{"missing1"},
+						},
+					},
+				},
+			}, nil
+		})
+	}
 
 	env := runtest.SetUp(
 		t,
@@ -336,6 +419,7 @@ func TestRunLogs(t *gotesting.T) {
 				},
 			}, nil
 		}),
+		runtest.WithCompanionDUT("dut1", makeHandler("dut1")),
 	)
 	logger := loggingtest.NewLogger(t, logging.LevelInfo) // drop debug messages
 	ctx := logging.AttachLoggerNoPropagation(env.Context(), logger)
@@ -354,6 +438,9 @@ func TestRunLogs(t *gotesting.T) {
 		// local.Skip
 		{"tests/local.Skip/log.txt", "Started test local.Skip"},
 		{"tests/local.Skip/log.txt", "Skipped test local.Skip due to missing dependencies: missing SoftwareDeps: missing"},
+		// local.SkipForCompanion
+		{"tests/local.SkipForCompanion/log.txt", "Started test local.SkipForCompanion"},
+		{"tests/local.SkipForCompanion/log.txt", "Skipped test local.SkipForCompanion due to missing dependencies: missing SoftwareDeps: missing1"},
 		// local.Fail
 		{"tests/local.Fail/log.txt", "Started test local.Fail"},
 		{"tests/local.Fail/log.txt", "Oops from local.Fail"},
@@ -365,6 +452,9 @@ func TestRunLogs(t *gotesting.T) {
 		// remote.Skip
 		{"tests/remote.Skip/log.txt", "Started test remote.Skip"},
 		{"tests/remote.Skip/log.txt", "Skipped test remote.Skip due to missing dependencies: missing SoftwareDeps: missing"},
+		// remote.SkipForCompanion
+		{"tests/remote.SkipForCompanion/log.txt", "Started test remote.SkipForCompanion"},
+		{"tests/remote.SkipForCompanion/log.txt", "Skipped test remote.SkipForCompanion due to missing dependencies: missing SoftwareDeps: missing1"},
 		// remote.Fail
 		{"tests/remote.Fail/log.txt", "Started test remote.Fail"},
 		{"tests/remote.Fail/log.txt", "Oops from remote.Fail"},
@@ -391,6 +481,9 @@ func TestRunLogs(t *gotesting.T) {
 		// local.Skip
 		"Started test local.Skip",
 		"Skipped test local.Skip due to missing dependencies: missing SoftwareDeps: missing",
+		// local.SkipForCompanion
+		"Started test local.SkipForCompanion",
+		"Skipped test local.SkipForCompanion due to missing dependencies: missing SoftwareDeps: missing1",
 		// local.Pass
 		"Started test local.Pass",
 		"Hello from local.Pass",
@@ -402,6 +495,9 @@ func TestRunLogs(t *gotesting.T) {
 		// remote.Skip
 		"Started test remote.Skip",
 		"Skipped test remote.Skip due to missing dependencies: missing SoftwareDeps: missing",
+		// remote.SkipForCompanion
+		"Started test remote.SkipForCompanion",
+		"Skipped test remote.SkipForCompanion due to missing dependencies: missing SoftwareDeps: missing1",
 		// remote.Pass
 		"Started test remote.Pass",
 		"Hello from remote.Pass",

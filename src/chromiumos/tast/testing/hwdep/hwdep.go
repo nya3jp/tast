@@ -739,6 +739,7 @@ func WifiIntel() Condition {
 			"beetley",
 			"blipper",
 			"blooglet",
+			"dewatt",
 			"dirinboz",
 			"ezkinil",
 			"gooey",

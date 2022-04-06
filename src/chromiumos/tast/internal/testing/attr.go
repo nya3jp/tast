@@ -434,6 +434,10 @@ third_party/autotest/files/server/site_tests/tast/control.runtime-probe
 				Desc: `Identifies Cellular tests for the cellular commit queue suite.`,
 			},
 			{
+				Name: "cellular_ota_avl",
+				Desc: `Identifies Cellular ota tests for the cellular avl qual.`,
+			},
+			{
 				Name: "cellular_sim_active",
 				Desc: `Identifies Cellular tests that need an active sim.`,
 			},

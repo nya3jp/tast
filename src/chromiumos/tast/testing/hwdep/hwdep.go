@@ -273,7 +273,7 @@ func GSCUART() Condition {
 	// There is no way to probe for this condition, and there should be no machines newer than 2017 without working UARTs.
 	return SkipOnModel(
 		"astronaut",
-		"blackplte",
+		"blacktiplte",
 		"caroline",
 		"celes",
 		"electro",

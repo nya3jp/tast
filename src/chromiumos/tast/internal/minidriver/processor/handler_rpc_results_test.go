@@ -70,7 +70,19 @@ func TestRPCResultsHandler_Results(t *testing.T) {
 			Test: "pkg.Test2",
 		},
 	}
-	if diff := cmp.Diff(got, want, cmpopts.IgnoreFields(frameworkprotocol.ErrorReport{}, "Time")); diff != "" {
+	// make sure StartTime and Duration are not nil.
+	for _, r := range got {
+		if r.StartTime == nil || r.Duration == nil {
+			t.Errorf("Test result for %s return nil on start time or duration", r.Test)
+		}
+	}
+	cmpOptIgnoreErrFields := cmpopts.IgnoreFields(frameworkprotocol.ErrorReport{}, "Time")
+	cmpOptIgnoreTimeFields := cmpopts.IgnoreFields(frameworkprotocol.ReportResultRequest{}, "StartTime", "Duration")
+	cmpOptIgnoreUnexported := cmpopts.IgnoreUnexported(frameworkprotocol.ReportResultRequest{})
+	cmpOptIgnoreUnexportedErr := cmpopts.IgnoreUnexported(frameworkprotocol.ErrorReport{})
+	if diff := cmp.Diff(got, want,
+		cmpOptIgnoreTimeFields, cmpOptIgnoreErrFields,
+		cmpOptIgnoreUnexported, cmpOptIgnoreUnexportedErr); diff != "" {
 		t.Errorf("Got unexpected results (-got +want):\n%s", diff)
 	}
 }
@@ -123,7 +135,13 @@ func TestRPCResultsHandler_Terminate(t *testing.T) {
 		{Test: "pkg.Test2", Errors: []*frameworkprotocol.ErrorReport{{Reason: "Failed"}, {Reason: "Failed"}}},
 		// Third test is not executed.
 	}
-	if diff := cmp.Diff(got, want, cmpopts.IgnoreFields(frameworkprotocol.ErrorReport{}, "Time")); diff != "" {
+	cmpOptIgnoreErrFields := cmpopts.IgnoreFields(frameworkprotocol.ErrorReport{}, "Time")
+	cmpOptIgnoreTimeFields := cmpopts.IgnoreFields(frameworkprotocol.ReportResultRequest{}, "StartTime", "Duration")
+	cmpOptIgnoreUnexported := cmpopts.IgnoreUnexported(frameworkprotocol.ReportResultRequest{})
+	cmpOptIgnoreUnexportedErr := cmpopts.IgnoreUnexported(frameworkprotocol.ErrorReport{})
+	if diff := cmp.Diff(got, want,
+		cmpOptIgnoreTimeFields, cmpOptIgnoreErrFields,
+		cmpOptIgnoreUnexported, cmpOptIgnoreUnexportedErr); diff != "" {
 		t.Errorf("Got unexpected results (-got +want):\n%s", diff)
 	}
 }

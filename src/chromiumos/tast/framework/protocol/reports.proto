@@ -6,6 +6,7 @@ syntax = "proto3";
 
 package tast.core;
 
+import "google/protobuf/duration.proto";
 import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
 
@@ -35,6 +36,10 @@ message ReportResultRequest {
   repeated ErrorReport errors = 2;
   // skip_reason tells why the test is skipped.
   string skip_reason = 3;
+  // start_time tells the start running time of the test.
+  google.protobuf.Timestamp start_time = 4;
+  // duration tells the duration of the test run.
+  google.protobuf.Duration duration = 5;
 }
 
 message ReportResultResponse {

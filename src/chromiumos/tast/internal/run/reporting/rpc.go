@@ -124,9 +124,16 @@ func (c *RPCClient) ReportResult(ctx context.Context, r *resultsjson.Result) err
 		return nil
 	}
 
+	startTime, err := ptypes.TimestampProto(r.Start)
+	if err != nil {
+		return err
+	}
+	duration := ptypes.DurationProto(r.End.Sub(r.Start))
 	req := &frameworkprotocol.ReportResultRequest{
 		Test:       r.Name,
 		SkipReason: r.SkipReason,
+		StartTime:  startTime,
+		Duration:   duration,
 	}
 	for _, e := range r.Errors {
 		ts, err := ptypes.TimestampProto(e.Time)

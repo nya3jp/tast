@@ -658,10 +658,28 @@ func TestRunWithReports_ReportResult(t *gotesting.T) {
 		{Test: test1Name},
 		{Test: test2Name, Errors: []*frameworkprotocol.ErrorReport{{Reason: test2Error}}},
 	}
+
 	results := srv.Results()
-	cmpOpt := cmpopts.IgnoreFields(frameworkprotocol.ErrorReport{}, "Time", "File", "Line", "Stack")
-	if diff := cmp.Diff(results, expectedResults, cmpOpt); diff != "" {
+	// make sure StartTime and Duration are not nil.
+	for _, r := range results {
+		if r.StartTime == nil || r.Duration == nil {
+			t.Errorf("Test result for %s return nil on start time or duration", r.Test)
+		}
+	}
+	cmpOptIgnoreErrFields := cmpopts.IgnoreFields(frameworkprotocol.ErrorReport{}, "Time", "File", "Line", "Stack")
+	cmpOptIgnoreTimeFields := cmpopts.IgnoreFields(frameworkprotocol.ReportResultRequest{}, "StartTime", "Duration")
+	cmpOptIgnoreUnexported := cmpopts.IgnoreUnexported(frameworkprotocol.ReportResultRequest{})
+	cmpOptIgnoreUnexportedErr := cmpopts.IgnoreUnexported(frameworkprotocol.ErrorReport{})
+	if diff := cmp.Diff(results, expectedResults,
+		cmpOptIgnoreTimeFields, cmpOptIgnoreErrFields,
+		cmpOptIgnoreUnexported, cmpOptIgnoreUnexportedErr); diff != "" {
 		t.Errorf("Got unexpected results (-got +want):\n%s", diff)
+	}
+	// Check if result has start time and duration.
+	for i, r := range results {
+		if r.StartTime == nil || r.Duration == nil {
+			t.Errorf("Test result for %s should have start time and duration", expectedResults[i].Test)
+		}
 	}
 }
 
@@ -720,8 +738,13 @@ func TestRunWithReports_ReportResultTerminate(t *gotesting.T) {
 		// pkg.Test3 is not run.
 	}
 	results := srv.Results()
-	cmpOpt := cmpopts.IgnoreFields(frameworkprotocol.ErrorReport{}, "Time", "File", "Line", "Stack")
-	if diff := cmp.Diff(results, expectedResults, cmpOpt); diff != "" {
+	cmpOptIgnoreErrFields := cmpopts.IgnoreFields(frameworkprotocol.ErrorReport{}, "Time", "File", "Line", "Stack")
+	cmpOptIgnoreTimeFields := cmpopts.IgnoreFields(frameworkprotocol.ReportResultRequest{}, "StartTime", "Duration")
+	cmpOptIgnoreUnexported := cmpopts.IgnoreUnexported(frameworkprotocol.ReportResultRequest{})
+	cmpOptIgnoreUnexportedErr := cmpopts.IgnoreUnexported(frameworkprotocol.ErrorReport{})
+	if diff := cmp.Diff(results, expectedResults,
+		cmpOptIgnoreTimeFields, cmpOptIgnoreErrFields,
+		cmpOptIgnoreUnexported, cmpOptIgnoreUnexportedErr); diff != "" {
 		t.Errorf("Got unexpected results (-got +want):\n%s", diff)
 	}
 }

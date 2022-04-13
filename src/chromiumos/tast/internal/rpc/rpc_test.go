@@ -21,7 +21,7 @@ import (
 
 	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/google/go-cmp/cmp"
-	"github.com/shirou/gopsutil/process"
+	"github.com/shirou/gopsutil/v3/process"
 	"golang.org/x/sys/unix"
 	"google.golang.org/grpc"
 

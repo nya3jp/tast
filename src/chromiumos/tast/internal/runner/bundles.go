@@ -5,7 +5,7 @@
 package runner
 
 import (
-	"github.com/shirou/gopsutil/process"
+	"github.com/shirou/gopsutil/v3/process"
 	"golang.org/x/sys/unix"
 )
 

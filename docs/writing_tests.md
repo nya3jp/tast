@@ -1653,6 +1653,29 @@ subpackage.
 
 [crbug.com/1027368]: https://crbug.com/1027368
 
+## Utilities
+
+Tast contains many utilities for common operations. Some of them are briefly
+described below; see the package links for additional documentation and
+examples.
+
+### lsbrelease
+
+The [`lsbrelease`] package provides access to the fields in `/etc/lsb-release`.
+Usually Tast tests are not supposed to that information to change their
+behavior, so `lsbrelease` contains a list of packages that are allowed to use
+it. Attempting to use `lsbrelease` in a package that is not in the allow list
+will cause a panic.
+
+[`lsbrelease`]: https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/src/chromiumos/tast/lsbrelease/lsbrelease.go
+
+### testexec
+
+The [`testexec`] package provides a convenient interface to run processes on
+the DUT. It should be used instead of the standard `os/exec` package.
+
+[`testexec`]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/chromiumos/tast/common/testexec/testexec.go
+
 ## Use of third party libraries
 
 1. Add an ebuild to package the code as a Portage package in

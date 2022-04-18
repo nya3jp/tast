@@ -1636,6 +1636,14 @@ if err := bc.CheckBoot(ctx, &req, &res); err != nil {
 [`rpc.Dial`]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/rpc#Dial
 [`grpc.ClientConn`]: https://godoc.org/google.golang.org/grpc#ClientConn
 
+### Panics in gRPC services
+
+If a gRPC call fails with "error reading from server: EOF", it may indicate the
+service panicked. The panic message is not currently logged or propagated to
+the caller. This issue is tracked in [b/187794185].
+
+[b/187794185]: https://buganizer.corp.google.com/issues/187794185
+
 ### Notes on designing gRPC services
 
 Tast's gRPC services don't have to worry about protocol compatibility because

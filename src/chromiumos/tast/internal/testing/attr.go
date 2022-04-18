@@ -313,6 +313,14 @@ Tests in this group are not used for build verification.
 				Name: "firmware_bringup",
 				Desc: `Indicates a test is safe to run on a board that doesn't boot to AP. Pass --var noSSH=true also.`,
 			},
+			{
+				Name: "firmware_level1",
+				Desc: `A subset of firmware_bios that is expected to pass before the AP firmware is finished.`,
+			},
+			{
+				Name: "firmware_level2",
+				Desc: `A subset of firmware_bios that is expected to pass after firmware_level1.`,
+			},
 		},
 	},
 	{

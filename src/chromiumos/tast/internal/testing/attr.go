@@ -159,6 +159,10 @@ Tests in this group are not used for build verification.
 				Desc: `Indicates that this test is exercising h264 codec.`,
 			},
 			{
+				Name: "graphics_video_hevc",
+				Desc: `Indicates that this test is exercising hevc codec.`,
+			},
+			{
 				Name: "graphics_video_vp8",
 				Desc: `Indicates that this test is exercising vp8 codec.`,
 			},

@@ -79,7 +79,7 @@ var softwareFeatureDefs = map[string]string{
 	"google_virtual_keyboard": "chrome_internal && internal && !moblab", // doesn't work on Moblab: https://crbug.com/949912
 	"gpu_sandboxing":          `!"betty" && !"tast_vm"`,                 // no GPU sandboxing on VMs: https://crbug.com/914688
 	"graphics_debugfs":        `!"kernel-3_18"`,
-	"gsc":                     "cr50_onboard",
+	"gsc":                     `"cr50_onboard" || "ti50_onboard"`,
 	"hammerd":                 "hammerd",
 	"houdini":                 "houdini",
 	"houdini64":               "houdini64",

@@ -264,11 +264,14 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 	}
 
 	hasFingerprint := func() bool {
-		fi, err := os.Stat("/dev/cros_fp")
+		out, err := crosConfig("/fingerprint", "sensor-location")
 		if err != nil {
 			return false
 		}
-		return (fi.Mode() & os.ModeCharDevice) != 0
+		if out == "" || out == "none" {
+			return false
+		}
+		return true
 	}()
 	features.Fingerprint.Location = configpb.HardwareFeatures_Fingerprint_NOT_PRESENT
 	if hasFingerprint {

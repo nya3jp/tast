@@ -24,6 +24,7 @@ import (
 	"chromiumos/tast/errors"
 	"chromiumos/tast/framework/protocol"
 	"chromiumos/tast/internal/logging"
+	"chromiumos/tast/lsbrelease"
 	"chromiumos/tast/testing/wlan"
 )
 
@@ -274,11 +275,24 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 	}
 
 	hasFingerprint := func() bool {
-		fi, err := os.Stat("/dev/cros_fp")
+		// TODO(b/240120426): Remove when volteer-manatee is deprecated.
+		// Fingerprint functionality is not supported on volteer-manatee.
+		lr, err := lsbrelease.Load()
+		if err == nil {
+			board, ok := lr[lsbrelease.Board]
+			if ok && board == "volteer-manatee" {
+				return false
+			}
+		}
+
+		out, err := crosConfig("/fingerprint", "sensor-location")
 		if err != nil {
 			return false
 		}
-		return (fi.Mode() & os.ModeCharDevice) != 0
+		if out == "" || out == "none" {
+			return false
+		}
+		return true
 	}()
 	features.Fingerprint.Location = configpb.HardwareFeatures_Fingerprint_NOT_PRESENT
 	if hasFingerprint {

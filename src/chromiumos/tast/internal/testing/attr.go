@@ -701,6 +701,17 @@ Parallels boot-up testing. Otherwise the same as group:crosbolt.`,
 			},
 		},
 	},
+	{
+		Name:     "shimless_rma",
+		Contacts: []string{"chromeos-engprod-platform-syd@google.com"},
+		Desc:     `shimless rma related tests.`,
+		Subattrs: []*attr{
+			{
+				Name: "shimless_rma_experimental",
+				Desc: `Shimless RMA tests that might break the DUTs in the lab.`,
+			},
+		},
+	},
 }
 
 // validGroupMap is the name-keyed map of validGroups.

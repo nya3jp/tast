@@ -189,31 +189,34 @@ than one action in a row.
 
 Now if we look at `ui_tree.txt`, we can see the right click menu:
 ```
-node id=118 role=menuListPopup state={"vertical":true} parentID=117 childIds=[119,121,124] className=SubmenuView
-  node id=119 role=menuItem state={} parentID=118 childIds=[] name=Autohide shelf className=MenuItemView
-  node id=121 role=menuItem state={} parentID=118 childIds=[] name=Shelf position className=MenuItemView
-  node id=124 role=menuItem state={} parentID=118 childIds=[] name=Set wallpaper className=MenuItemView
+node id=219 role=menu state={"vertical":true} parentID=218 childIds=[220,222,225] className=SubmenuView
+  node id=220 role=menuItem state={"focusable":true} parentID=219 childIds=[] name=Autohide shelf className=MenuItemView
+  node id=222 role=menuItem state={"focusable":true} parentID=219 childIds=[] name=Shelf position className=MenuItemView
+  node id=225 role=menuItem state={"focusable":true} parentID=219 childIds=[] name=Personalize className=MenuItemView
 ```
 
 > Note: If you don't see an update to `ui_tree.txt`, you may need to add
 `testing.Sleep(time.Second)` before causing the test to fail. Events are
 asynchronous and might not immediately update the UI tree.
 
-Next, we want to click on the "Set wallpaper" menu item:
+Next, we want to click on the "Personalize" menu item:
 ```go
-if err := ui.LeftClick(nodewith.Name("Set wallpaper").Role(role.MenuItem))(ctx); err != nil {
+if err := ui.LeftClick(nodewith.Name("Personalize").Role(role.MenuItem))(ctx); err != nil {
   s.Fatal(...)
 }
 ```
+> Warning: Getting nodes by human-readable name is **strongly discouraged** in general.
+We use `nodewith.Name()` to get the menu item only because all the menu items share the
+same class name.
 
 When you run the test, depending on the speed of your device and your luck, the
-"Set wallpaper" menu item may or may not have been clicked. We have just hit a
+"Personalize" menu item may or may not have been clicked. We have just hit a
 race condition where the menu may not be fully ready to be clicked by
 the time that we try to click it. To fix this, we will simply keep clicking the
 menu item until it no longer exists:
 ```go
-setWallpaperMenu := nodewith.Name("Set wallpaper").Role(role.MenuItem)
-if err := ui.LeftClickUntil(setWallpaperMenu, ui.Gone(setWallpaperMenu))(ctx); err != nil {
+personalizeMenu := nodewith.Name("Personalize").Role(role.MenuItem)
+if err := ui.LeftClickUntil(personalizeMenu, ui.Gone(personalizeMenu))(ctx); err != nil {
   s.Fatal(...)
 }
 ```
@@ -222,9 +225,18 @@ if err := ui.LeftClickUntil(setWallpaperMenu, ui.Gone(setWallpaperMenu))(ctx); e
 work. The issue is that we do not have a indicator for when the menu
 button is ready to be clicked.
 
+After opening the personalization app, we will proceed to the wallpaper subpage to change the wallpaper.
+```
+changeWallpaperButton := nodewith.Role(role.Button).Name("Change wallpaper")
+uiauto.Combine("change the wallpaper",
+	ui.WaitUntilExists(changeWallpaperButton),
+	ui.LeftClick(changeWallpaperButton),
+)
+```
+
 ## More Basic Interactions
 
-Now that the wallpaper picker is open, let's set the background to a solid color.
+Now that the wallpaper subpage is open, let's set the background to a solid color.
 We left click for the node corresponding to the 'Solid colors' tab in `ui_tree.txt`:
 ```
 node id=245 role=genericContainer state={} parentID=243 childIds=[250,251]
@@ -362,13 +374,17 @@ func Change(ctx context.Context, s *testing.State) {
 	defer faillog.DumpUITreeOnError(ctx, s.OutDir(), s.HasError, tconn)
 
 	ui := uiauto.New(tconn)
-	setWallpaperMenu := nodewith.Name("Set wallpaper").Role(role.MenuItem)
+	personalizeMenu := nodewith.Name("Personalize").Role(role.MenuItem)
+	changeWallpaperButton := nodewith.Role(role.Button).Name("Change wallpaper")
 	solidColorsMenu := nodewith.Name("Solid colors").Role(role.StaticText)
 	if err := uiauto.Combine("change the wallpaper",
 		ui.RightClick(nodewith.ClassName("WallpaperView")),
 		// This button takes a bit before it is clickable.
 		// Keep clicking it until the click is received and the menu closes.
-		ui.WithInterval(500*time.Millisecond).LeftClickUntil(setWallpaperMenu, ui.Gone(setWallpaperMenu)),
+		ui.WithInterval(500*time.Millisecond).LeftClickUntil(personalizeMenu, ui.Gone(personalizeMenu)),
+		ui.Exists(nodewith.NameContaining("Personalization").Role(role.Window).First()),
+		ui.WaitUntilExists(changeWallpaperButton),
+		ui.LeftClick(changeWallpaperButton),
 		ui.WaitUntilExists(solidColorsMenu),
 		ui.MakeVisible(solidColorsMenu),
 		ui.LeftClick(solidColorsMenu),

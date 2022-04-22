@@ -13,11 +13,10 @@ var softwareFeatureDefs = map[string]string{
 	// ARC USE flags are defined here:
 	// http://cs/chromeos_public/src/third_party/chromiumos-overlay/eclass/arc-build-constants.eclass
 	// TODO(b/210917721): Re-enable ARCVM on manatee.
-	"android_vm":   `arc && arcvm && !"android-vm-pi" && !manatee`,
-	"android_vm_r": `arc && arcvm && "android-vm-rvc" && !manatee`,
-	"android_p":    `arc && "android-container-pi"`,
-	// TODO(b/210917721): Re-enable ARCVM on manatee.
-	"arc":                `arc && !manatee`,
+	"android_vm":         `arc && arcvm && !"android-vm-pi" && !manatee`,
+	"android_vm_r":       `arc && arcvm && "android-vm-rvc" && !manatee`,
+	"android_p":          `arc && "android-container-pi"`,
+	"arc":                `arc`,
 	"arc32":              `"cheets_user" || "cheets_userdebug"`,
 	"arc64":              `"cheets_user_64" || "cheets_userdebug_64"`,
 	"arc_camera1":        `"arc-camera1"`,

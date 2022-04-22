@@ -7,6 +7,7 @@
 package config
 
 import (
+	"bufio"
 	"flag"
 	"fmt"
 	"net/url"
@@ -121,6 +122,14 @@ type MutableConfig struct {
 	Retries int
 
 	SystemServicesTimeout time.Duration
+
+	// ForceSkips is a mapping from a test name to the filter file name which specified
+	// the test should be disabled.
+	// Filter file example:
+	//     # The following tests will disabled.
+	//     -meta.DisabledTest1
+	//     -meta.DisabledTest2
+	ForceSkips map[string]*protocol.ForceSkip
 }
 
 // Config contains shared configuration information for running or listing tests.
@@ -322,6 +331,16 @@ func (c *Config) SystemServicesTimeout() time.Duration {
 	return c.m.SystemServicesTimeout
 }
 
+// ForceSkips returns the mapping between name of disabled tests
+// and the reason of disabling the test.
+func (c *Config) ForceSkips() map[string]*protocol.ForceSkip {
+	forceSkips := make(map[string]*protocol.ForceSkip)
+	for k, r := range c.m.ForceSkips {
+		forceSkips[k] = &protocol.ForceSkip{Reason: r.Reason}
+	}
+	return forceSkips
+}
+
 // DeprecatedState hold state attributes which are accumulated over the course
 // of the run.
 //
@@ -344,6 +363,7 @@ func NewMutableConfig(mode Mode, tastDir, trunkDir string) *MutableConfig {
 		TrunkDir:      trunkDir,
 		TestVars:      make(map[string]string),
 		CompanionDUTs: make(map[string]string),
+		ForceSkips:    make(map[string]*protocol.ForceSkip),
 	}
 }
 
@@ -430,6 +450,14 @@ func (c *MutableConfig) SetFlags(f *flag.FlagSet) {
 		return nil
 	})
 	f.Var(&debuggerFlag, "attachdebugger", "start up the delve debugger for a process and wait for a process to attach on a given port")
+
+	filterFile := command.RepeatedFlag(func(fileName string) error {
+		if err := c.addForceSkippedTests(fileName); err != nil {
+			return errors.Wrapf(err, "failed to read test filter file %s", fileName)
+		}
+		return nil
+	})
+	f.Var(&filterFile, "testfilterfile", `a file indicates which tests to be disable (can be repeated)`)
 
 	// Some flags are only relevant if we're running tests rather than listing them.
 	if c.Mode == RunTestsMode {
@@ -617,6 +645,36 @@ func (c *MutableConfig) DeriveDefaults() error {
 // Freeze returns a frozen configuration object.
 func (c *MutableConfig) Freeze() *Config {
 	return &Config{m: c}
+}
+
+// addForceSkippedTests extracts name of disabled test name from a filter
+// file and put the information to the c.ForceSkips which is a mapping
+// from a test name to the reason being disabled.
+// Filter file example:
+//     # The following tests will disabled.
+//     -meta.DisabledTest1
+//     -meta.DisabledTest2
+func (c *MutableConfig) addForceSkippedTests(fileName string) error {
+	file, err := os.Open(fileName)
+	if err != nil {
+		return errors.Wrapf(err, "failed to read test filter file: %v", fileName)
+	}
+	defer file.Close()
+	sc := bufio.NewScanner(file)
+	for sc.Scan() {
+		line := sc.Text()
+		tokens := strings.Split(line, "#")
+		testName := strings.TrimSpace(tokens[0])
+		if strings.HasPrefix(testName, "-") {
+			t := testName[1:]
+			c.ForceSkips[t] = &protocol.ForceSkip{
+				Reason: fmt.Sprintf("Test %s is disabled by test filter file %s", t, fileName),
+			}
+		} else if testName != "" {
+			return errors.Wrapf(err, "filter file %v has syntax error: %q", fileName, line)
+		}
+	}
+	return nil
 }
 
 // BuildCfg returns a build.Config.

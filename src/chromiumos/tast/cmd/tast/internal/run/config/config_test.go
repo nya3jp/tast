@@ -7,15 +7,18 @@ package config_test
 import (
 	"flag"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"reflect"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/internal/debugger"
+	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/testutil"
 )
 
@@ -399,5 +402,63 @@ func TestConfigAttachDebugger(t *testing.T) {
 				t.Errorf("cfg.DebuggerPorts = %q; want %q", got, tc.want)
 			}
 		}
+	}
+}
+
+func TestConfigTestFilterFilePass(t *testing.T) {
+	cfg := config.NewMutableConfig(config.RunTestsMode, "", "")
+	flags := flag.NewFlagSet("", flag.ContinueOnError)
+	cfg.SetFlags(flags)
+
+	td := testutil.TempDir(t)
+	defer os.RemoveAll(td)
+
+	filterFile := filepath.Join(td, "filter.txt")
+	content := `
+	# testing
+	-test1 # comment
+	-test2
+	`
+	if err := ioutil.WriteFile(filterFile, []byte(content), 0644); err != nil {
+		t.Fatalf("Failed to create filter file %s: %v", filterFile, err)
+	}
+
+	if err := flags.Parse([]string{fmt.Sprintf("-testfilterfile=%s", filterFile)}); err != nil {
+		t.Fatalf("Failed to parse filter file %s: %v", filterFile, err)
+	}
+
+	if err := cfg.DeriveDefaults(); err != nil {
+		t.Fatal("Failed to derive defaults: ", err)
+	}
+	want := map[string]*protocol.ForceSkip{
+		"test1": {Reason: fmt.Sprintf("Test test1 is disabled by test filter file %s", filterFile)},
+		"test2": {Reason: fmt.Sprintf("Test test2 is disabled by test filter file %s", filterFile)},
+	}
+	cmpOptIgnoreUnexported := cmpopts.IgnoreUnexported(protocol.ForceSkip{})
+	if diff := cmp.Diff(cfg.ForceSkips, want, cmpOptIgnoreUnexported); diff != "" {
+		t.Fatalf("got unexpected ForceSkips from config (-got +want):\n%s", diff)
+	}
+}
+
+func TestConfigTestFilterFileFail(t *testing.T) {
+	cfg := config.NewMutableConfig(config.RunTestsMode, "", "")
+	flags := flag.NewFlagSet("", flag.ContinueOnError)
+	cfg.SetFlags(flags)
+
+	td := testutil.TempDir(t)
+	defer os.RemoveAll(td)
+
+	filterFile := filepath.Join(td, "filter.txt")
+	content := `
+	# testing
+	-test1 # comment
+	test2
+	`
+	if err := ioutil.WriteFile(filterFile, []byte(content), 0644); err != nil {
+		t.Fatalf("Failed to create filter file %s: %v", filterFile, err)
+	}
+
+	if err := flags.Parse([]string{fmt.Sprintf("-testfilterfile=%s", filterFile)}); err == nil {
+		t.Fatal("Failed to identify error in filter file ", filterFile)
 	}
 }

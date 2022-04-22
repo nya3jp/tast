@@ -19,6 +19,8 @@ message Features {
   DUTFeatures dut = 6;
   InfraFeatures infra = 7;
   map<string, DUTFeatures> companionFeatures = 8;
+  // ForceSkip provides a mapping of the tests forced to skip and the reasons.
+  map<string, ForceSkip> force_skips = 9;
 
   reserved 1 to 4;
 }
@@ -135,3 +137,6 @@ message HardwareFeatures {
   reserved 2;
   DeprecatedDeviceConfig deprecated_device_config = 3;
 }
+
+// ForceSkip provides the reason of skipping a test by force.
+message ForceSkip { string reason = 1; }

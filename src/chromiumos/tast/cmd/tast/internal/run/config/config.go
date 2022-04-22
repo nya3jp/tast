@@ -739,6 +739,7 @@ func (c *Config) Features(dut *protocol.DUTFeatures,
 		},
 		Dut:               dut,
 		CompanionFeatures: companions,
+		ForceSkips:        c.ForceSkips(),
 	}
 }
 

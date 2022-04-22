@@ -2262,3 +2262,57 @@ func TestRunEnsureLabel(t *gotesting.T) {
 		}
 	}
 }
+func TestRunDisabled(t *gotesting.T) {
+	td := testutil.TempDir(t)
+	defer os.RemoveAll(td)
+	od := filepath.Join(td, "out")
+
+	tests := []*testing.TestInstance{
+		{
+			Name:    "pkg.Test",
+			Func:    func(context.Context, *testing.State) {},
+			Timeout: time.Minute,
+		},
+		{
+			Name:    "pkg.TestDisabled",
+			Func:    func(context.Context, *testing.State) {},
+			Timeout: time.Minute,
+		},
+	}
+
+	msgs := runTestsAndReadAll(t, tests,
+		&Config{
+			Dirs: &protocol.RunDirectories{OutDir: od},
+			Features: &protocol.Features{
+				ForceSkips: map[string]*protocol.ForceSkip{
+					"pkg.TestDisabled": {
+						Reason: "Test pkg.TestDisabled is disabled by test filter file filter.txt",
+					},
+				},
+			},
+		},
+	)
+
+	want := []protocol.Event{
+		&protocol.EntityStartEvent{Entity: tests[1].EntityProto()},
+		&protocol.EntityEndEvent{
+			EntityName: tests[1].Name,
+			Skip: &protocol.Skip{
+				Reasons: []string{
+					fmt.Sprintf("Test %s is disabled by test filter file filter.txt", tests[1].Name),
+				},
+			},
+		},
+		&protocol.EntityStartEvent{Entity: tests[0].EntityProto(), OutDir: filepath.Join(od, "pkg.Test")},
+		&protocol.EntityEndEvent{EntityName: tests[0].Name},
+	}
+	if diff := cmp.Diff(msgs, want, protocmp.Transform()); diff != "" {
+		t.Error("Output mismatch (-got +want):\n", diff)
+	}
+
+	if fi, err := os.Stat(filepath.Join(od, tests[0].Name)); err != nil {
+		t.Errorf("Out dir %v not accessible after testing: %v", od, err)
+	} else if mode := fi.Mode()&os.ModePerm | os.ModeSticky; mode != 0777|os.ModeSticky {
+		t.Errorf("Out dir %v has mode 0%o; want 0%o", od, mode, 0777|os.ModeSticky)
+	}
+}

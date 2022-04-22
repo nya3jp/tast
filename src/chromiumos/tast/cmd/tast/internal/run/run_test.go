@@ -1251,3 +1251,161 @@ func TestRunWithVerifyTestPatternRuns(t *gotesting.T) {
 		t.Errorf("Unexpected err during test patten search: %s", err)
 	}
 }
+
+func TestRunDisable(t *gotesting.T) {
+	localPass := &testing.TestInstance{
+		Name:    "local.Pass",
+		Timeout: time.Minute,
+		Func:    func(ctx context.Context, s *testing.State) {},
+	}
+	localFail := &testing.TestInstance{
+		Name:    "local.Fail",
+		Timeout: time.Minute,
+		Func: func(ctx context.Context, s *testing.State) {
+			s.Error("Failed")
+		},
+	}
+	localDisabled := &testing.TestInstance{
+		Name:    "local.Disabled",
+		Timeout: time.Minute,
+		Func:    func(ctx context.Context, s *testing.State) {},
+	}
+	localReg := testing.NewRegistry("bundle")
+	localReg.AddTestInstance(localPass)
+	localReg.AddTestInstance(localFail)
+	localReg.AddTestInstance(localDisabled)
+
+	remotePass := &testing.TestInstance{
+		Name:    "remote.Pass",
+		Timeout: time.Minute,
+		Func:    func(ctx context.Context, s *testing.State) {},
+	}
+	remoteFail := &testing.TestInstance{
+		Name:    "remote.Fail",
+		Timeout: time.Minute,
+		Func: func(ctx context.Context, s *testing.State) {
+			s.Error("Failed")
+		},
+	}
+	remoteDisabled := &testing.TestInstance{
+		Name:    "remote.Disabled",
+		Timeout: time.Minute,
+		Func:    func(ctx context.Context, s *testing.State) {},
+	}
+	remoteReg := testing.NewRegistry("bundle")
+	remoteReg.AddTestInstance(remotePass)
+	remoteReg.AddTestInstance(remoteFail)
+	remoteReg.AddTestInstance(remoteDisabled)
+
+	env := runtest.SetUp(
+		t,
+		runtest.WithLocalBundles(localReg),
+		runtest.WithRemoteBundles(remoteReg),
+		runtest.WithGetDUTInfo(func(req *protocol.GetDUTInfoRequest) (*protocol.GetDUTInfoResponse, error) {
+			return &protocol.GetDUTInfoResponse{
+				DutInfo: &protocol.DUTInfo{
+					Features: &protocol.DUTFeatures{
+						Software: &protocol.SoftwareFeatures{
+							Unavailable: []string{"missing"},
+						},
+					},
+				},
+			}, nil
+		}),
+	)
+	ctx := env.Context()
+	const filterFileName = "filter.txt"
+	const reason1 = "reason1"
+	const reason2 = "reason2"
+	cfg := env.Config(func(cfg *config.MutableConfig) {
+		// Set a nonexistent path for the remote runner so that it will fail.
+		cfg.ForceSkips = map[string]*protocol.ForceSkip{
+			"local.Disabled":  {Reason: reason1},
+			"remote.Disabled": {Reason: reason2},
+		}
+	})
+	state := env.State()
+
+	results, err := run.Run(ctx, cfg, state)
+	if err != nil {
+		t.Errorf("Run failed: %v", err)
+	}
+
+	expected := []*resultsjson.Result{
+		{
+			Test: resultsjson.Test{
+				Name:    "local.Disabled",
+				Timeout: time.Minute,
+				Bundle:  "bundle",
+			},
+			OutDir:     filepath.Join(cfg.ResDir(), "tests/local.Disabled"),
+			SkipReason: reason1,
+		},
+		{
+			Test: resultsjson.Test{
+				Name:    "local.Fail",
+				Timeout: time.Minute,
+				Bundle:  "bundle",
+			},
+			OutDir: filepath.Join(cfg.ResDir(), "tests/local.Fail"),
+			Errors: []resultsjson.Error{{Reason: "Failed"}},
+		},
+		{
+			Test: resultsjson.Test{
+				Name:    "local.Pass",
+				Timeout: time.Minute,
+				Bundle:  "bundle",
+			},
+			OutDir: filepath.Join(cfg.ResDir(), "tests/local.Pass"),
+		},
+		{
+			Test: resultsjson.Test{
+				Name:    "remote.Disabled",
+				Timeout: time.Minute,
+				Bundle:  "bundle",
+			},
+			OutDir:     filepath.Join(cfg.ResDir(), "tests/remote.Disabled"),
+			SkipReason: reason2,
+		},
+		{
+			Test: resultsjson.Test{
+				Name:    "remote.Fail",
+				Timeout: time.Minute,
+				Bundle:  "bundle",
+			},
+			Errors: []resultsjson.Error{{Reason: "Failed"}},
+			OutDir: filepath.Join(cfg.ResDir(), "tests/remote.Fail"),
+		},
+		{
+			Test: resultsjson.Test{
+				Name:    "remote.Pass",
+				Timeout: time.Minute,
+				Bundle:  "bundle",
+			},
+			OutDir: filepath.Join(cfg.ResDir(), "tests/remote.Pass"),
+		},
+	}
+
+	// Results returned from the function call.
+	if diff := cmp.Diff(results, expected, resultsCmpOpts...); diff != "" {
+		t.Errorf("Returned results mismatch (-got +want):\n%s", diff)
+	}
+
+	// Results in results.json.
+	if b, err := ioutil.ReadFile(filepath.Join(cfg.ResDir(), reporting.LegacyResultsFilename)); err != nil {
+		t.Errorf("Failed to read %s: %v", reporting.LegacyResultsFilename, err)
+	} else if err := json.Unmarshal(b, &results); err != nil {
+		t.Errorf("Failed to parse %s: %v", reporting.LegacyResultsFilename, err)
+	} else if diff := cmp.Diff(results, expected, resultsCmpOpts...); diff != "" {
+		t.Errorf("%s mismatch (-got +want):\n%s", reporting.LegacyResultsFilename, diff)
+	}
+
+	// Results in streamed_results.json.
+	if b, err := ioutil.ReadFile(filepath.Join(cfg.ResDir(), reporting.StreamedResultsFilename)); err != nil {
+		t.Errorf("Failed to read %s: %v", reporting.StreamedResultsFilename, err)
+	} else if results, err := unmarshalStreamedResults(b); err != nil {
+		t.Errorf("Failed to parse %s: %v", reporting.StreamedResultsFilename, err)
+	} else if diff := cmp.Diff(results, expected, resultsCmpOpts...); diff != "" {
+		t.Errorf("%s mismatch (-got +want):\n%s", reporting.StreamedResultsFilename, diff)
+	}
+}

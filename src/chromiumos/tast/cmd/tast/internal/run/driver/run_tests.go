@@ -258,6 +258,7 @@ func (d *Driver) runLocalTestsWithRetry(ctx context.Context, bundle string, test
 		DebuggerPort:          d.cfg.DebuggerPorts()[debugger.LocalBundle],
 		Proxy:                 d.cfg.Proxy() == config.ProxyEnv,
 		DUTFeatures:           dutFeature,
+		ForceSkips:            d.cfg.ForceSkips(),
 		Factory:               minidriver.NewRootHandlersFactory(d.cfg.ResDir(), args.Counter, args.Client),
 		BuildArtifactsURL:     buildArtifactsURL,
 	}

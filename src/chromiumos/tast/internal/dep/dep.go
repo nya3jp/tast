@@ -16,6 +16,7 @@ import (
 
 // Deps contains all information about dependencies tests have.
 type Deps struct {
+	Test     string
 	Var      []string
 	Software map[string]SoftwareDeps
 	Hardware map[string]HardwareDeps
@@ -25,6 +26,10 @@ type Deps struct {
 // On success, it returns a list of reasons for which a test should be skipped.
 // If reasons is empty, a test should be run.
 func (d *Deps) Check(f *protocol.Features) (reasons []string, err error) {
+	if reason, skip := f.GetForceSkips()[d.Test]; skip {
+		return []string{reason.Reason}, nil
+	}
+
 	if !f.GetCheckDeps() {
 		return nil, nil
 	}

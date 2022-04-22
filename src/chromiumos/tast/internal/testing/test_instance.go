@@ -460,6 +460,7 @@ func (t *TestInstance) Deps() *dep.Deps {
 		swDepsForAll[key] = append([]string(nil), element...)
 	}
 	return &dep.Deps{
+		Test:     t.Name,
 		Var:      t.VarDeps,
 		Software: swDepsForAll,
 		Hardware: t.HardwareDeps,

@@ -94,6 +94,7 @@ func runExternalTests(ctx context.Context, names []string, stack *fixture.Combin
 		Proxy:        pcfg.ExternalTarget.Config.GetProxy(),
 
 		DUTFeatures: companionFeatures,
+		ForceSkips:  pcfg.Features.ForceSkips,
 		Factory:     factory,
 
 		Recursive: true,

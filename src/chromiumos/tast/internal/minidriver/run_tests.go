@@ -66,6 +66,7 @@ type Config struct {
 	Proxy        bool
 
 	DUTFeatures map[string]*protocol.DUTFeatures
+	ForceSkips  map[string]*protocol.ForceSkip
 	Factory     HandlersFactory
 
 	BuildArtifactsURL string
@@ -197,6 +198,7 @@ func (d *Driver) newConfigsForLocalTests(tests []string, state *protocol.StartFi
 			},
 			Dut:               dutFeature,
 			CompanionFeatures: companionFeatures,
+			ForceSkips:        d.cfg.ForceSkips,
 		},
 		ServiceConfig: &protocol.ServiceConfig{
 			Devservers:  devservers,

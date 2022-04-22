@@ -138,6 +138,59 @@ func TestDriver_ListMatchedLocalTests(t *gotesting.T) {
 	}
 }
 
+func TestDriver_ListMatchedTestsWithDisabled(t *gotesting.T) {
+	ctx, drv, features := newDriverForListingTests(t)
+
+	features.ForceSkips = map[string]*protocol.ForceSkip{
+		"pkg.Local1":  {Reason: "Test pkg.Local1 is disabled by test filter file filter.txt"},
+		"pkg.Remote4": {Reason: "Test pkg.Remote4 is disabled by test filter file filter.txt"},
+	}
+
+	got, err := drv.ListMatchedTests(ctx, features)
+	if err != nil {
+		t.Fatal("ListMatchedTests failed: ", err)
+	}
+
+	want := []*driver.BundleEntity{
+		makeBundleEntityForTest("bundle1", 1, "pkg.Local1", "yes", nil),
+		makeBundleEntityForTest("bundle2", 1, "pkg.Local3", "yes", []string{"var"}),
+		makeBundleEntityForTest("bundle1", 0, "pkg.Remote2", "yes", nil),
+		makeBundleEntityForTest("bundle2", 0, "pkg.Remote4", "yes", nil),
+	}
+	want[0].Resolved.Skip = &protocol.Skip{
+		Reasons: []string{"Test pkg.Local1 is disabled by test filter file filter.txt"},
+	}
+	want[3].Resolved.Skip = &protocol.Skip{
+		Reasons: []string{"Test pkg.Remote4 is disabled by test filter file filter.txt"},
+	}
+	if diff := cmp.Diff(got, want, protocmp.Transform()); diff != "" {
+		t.Errorf("Unexpected list of tests (-got +want):\n%v", diff)
+	}
+}
+
+func TestDriver_ListMatchedLocalTestsDisabled(t *gotesting.T) {
+	ctx, drv, features := newDriverForListingTests(t)
+	features.ForceSkips = map[string]*protocol.ForceSkip{
+		"pkg.Local3": {Reason: "Test pkg.Local3 is disabled by test filter file filter.txt"},
+	}
+
+	got, err := drv.ListMatchedLocalTests(ctx, features)
+	if err != nil {
+		t.Fatal("ListMatchedLocalTests failed: ", err)
+	}
+
+	want := []*driver.BundleEntity{
+		makeBundleEntityForTest("bundle1", 1, "pkg.Local1", "yes", nil),
+		makeBundleEntityForTest("bundle2", 1, "pkg.Local3", "yes", []string{"var"}),
+	}
+	want[1].Resolved.Skip = &protocol.Skip{
+		Reasons: []string{"Test pkg.Local3 is disabled by test filter file filter.txt"},
+	}
+	if diff := cmp.Diff(got, want, protocmp.Transform()); diff != "" {
+		t.Errorf("Unexpected list of tests (-got +want):\n%v", diff)
+	}
+}
+
 func TestDriver_ListLocalFixtures(t *gotesting.T) {
 	ctx, drv, _ := newDriverForListingTests(t)
 

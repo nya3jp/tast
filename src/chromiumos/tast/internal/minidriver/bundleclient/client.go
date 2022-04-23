@@ -11,8 +11,10 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"time"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/keepalive"
 
 	"chromiumos/tast/internal/minidriver/target"
 	"chromiumos/tast/internal/protocol"
@@ -48,13 +50,15 @@ func (c *rpcConn) Conn() *grpc.ClientConn {
 
 // Client is a gRPC protocol client to a test bundle.
 type Client struct {
-	cmd genericexec.Cmd
+	cmd        genericexec.Cmd
+	msgTimeout time.Duration
 }
 
 // New creates a new Client.
-func New(cmd genericexec.Cmd) *Client {
+func New(cmd genericexec.Cmd, msgTimeOut time.Duration) *Client {
 	return &Client{
-		cmd: cmd,
+		cmd:        cmd,
+		msgTimeout: msgTimeOut,
 	}
 }
 
@@ -78,7 +82,14 @@ func (c *Client) dial(ctx context.Context, req *protocol.HandshakeRequest, debug
 	// Pass through stderr.
 	go io.Copy(os.Stderr, proc.Stderr())
 
-	conn, err := rpc.NewClient(ctx, proc.Stdout(), proc.Stdin(), req)
+	opts := []grpc.DialOption{
+		grpc.WithKeepaliveParams(keepalive.ClientParameters{
+			// Note: Timeout is ignored if it is longer than Time.
+			Time:    c.msgTimeout,
+			Timeout: c.msgTimeout,
+		}),
+	}
+	conn, err := rpc.NewClient(ctx, proc.Stdout(), proc.Stdin(), req, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -113,7 +124,7 @@ func LocalCommand(exec string, proxy bool, cc *target.ConnCache) *genericexec.SS
 }
 
 // NewLocal creates a bundle client to the local bundle.
-func NewLocal(bundle, bundleDir string, proxy bool, cc *target.ConnCache) *Client {
+func NewLocal(bundle, bundleDir string, proxy bool, cc *target.ConnCache, msgTimeout time.Duration) *Client {
 	cmd := LocalCommand(filepath.Join(bundleDir, bundle), proxy, cc)
-	return New(cmd)
+	return New(cmd, msgTimeout)
 }

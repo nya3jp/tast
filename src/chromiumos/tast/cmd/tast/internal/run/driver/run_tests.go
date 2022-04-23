@@ -254,6 +254,7 @@ func (d *Driver) runLocalTestsWithRetry(ctx context.Context, bundle string, test
 		DownloadMode:          d.cfg.DownloadMode(),
 		WaitUntilReady:        d.cfg.WaitUntilReady(),
 		SystemServicesTimeout: d.cfg.SystemServicesTimeout(),
+		MsgTimeout:            d.cfg.MsgTimeout(),
 		CheckTestDeps:         d.cfg.CheckTestDeps(),
 		TestVars:              d.cfg.TestVars(),
 		MaybeMissingVars:      d.cfg.MaybeMissingVars(),

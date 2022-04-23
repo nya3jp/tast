@@ -62,6 +62,7 @@ type Config struct {
 	CheckTestDeps         bool
 	TestVars              map[string]string
 	MaybeMissingVars      string
+	MsgTimeout            time.Duration
 
 	DebuggerPort int
 	Proxy        bool
@@ -148,7 +149,7 @@ func (d *Driver) runLocalTestsOnce(ctx context.Context, bundle string, tests []s
 	ctx, hs := d.cfg.Factory(ctx, d.cc)
 
 	proc := processor.New(d.cfg.ResDir, diag, hs)
-	cl := bundleclient.NewLocal(bundle, d.cfg.LocalBundleDir, d.cfg.Proxy, d.cc)
+	cl := bundleclient.NewLocal(bundle, d.cfg.LocalBundleDir, d.cfg.Proxy, d.cc, d.cfg.MsgTimeout)
 	cl.RunTests(ctx, bcfg, rcfg, proc, d.cfg.Recursive)
 	return proc.Results(), proc.FatalError()
 }

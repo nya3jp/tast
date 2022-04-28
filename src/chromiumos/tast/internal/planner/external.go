@@ -77,7 +77,7 @@ func runExternalTests(ctx context.Context, names []string, stack *fixture.Combin
 	cfg := &minidriver.Config{
 		Retries:        int(pcfg.ExternalTarget.Config.GetRetries()),
 		ResDir:         pcfg.Dirs.GetOutDir(),
-		Devservers:     pcfg.Service.GetDevservers(),
+		Devservers:     pcfg.ExternalTarget.Config.GetDevservers(),
 		Target:         pcfg.ExternalTarget.Device.GetDutConfig().GetSshConfig().GetConnectionSpec(),
 		LocalDataDir:   pcfg.ExternalTarget.Config.GetDirs().GetDataDir(),
 		LocalOutDir:    pcfg.ExternalTarget.Config.GetDirs().GetOutDir(),

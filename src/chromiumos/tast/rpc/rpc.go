@@ -17,6 +17,7 @@ import (
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/rpc"
 	"chromiumos/tast/internal/testing"
+	"chromiumos/tast/ssh"
 )
 
 // Client owns a gRPC connection to the DUT for remote tests to use.
@@ -29,8 +30,8 @@ type Client struct {
 
 // Close closes the connection.
 // TODO(b/3042409): Remove ctx param from this method.
-func (c *Client) Close(ctx context.Context) error {
-	return c.cl.Close()
+func (c *Client) Close(ctx context.Context, opts ...ssh.RunOption) error {
+	return c.cl.Close(opts...)
 }
 
 // Dial establishes a gRPC connection to the test bundle executable

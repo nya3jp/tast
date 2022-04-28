@@ -27,6 +27,7 @@ import (
 	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/timing"
 	"chromiumos/tast/ssh"
+	"chromiumos/tast/testing"
 )
 
 // SSHClient is a Tast gRPC client over an SSH connection.
@@ -41,11 +42,11 @@ func (c *SSHClient) Conn() *grpc.ClientConn {
 }
 
 // Close closes this client.
-func (c *SSHClient) Close() error {
+func (c *SSHClient) Close(opts ...ssh.RunOption) error {
 	closeErr := c.cl.Close()
 	c.cmd.Abort()
 	// Ignore errors from Wait since Abort above causes it to return context.Canceled.
-	c.cmd.Wait()
+	c.cmd.Wait(opts...)
 	return closeErr
 }
 
@@ -67,6 +68,7 @@ func DialSSH(ctx context.Context, conn *ssh.Conn, path string, req *protocol.Han
 		}
 		args = append(append([]string{"env"}, envArgs...), args...)
 	}
+	testing.ContextLog(ctx, "Running rpc server: ", args)
 	cmd := conn.CommandContext(ctx, args[0], args[1:]...)
 	stdin, err := cmd.StdinPipe()
 	if err != nil {

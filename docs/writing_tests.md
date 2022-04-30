@@ -1661,6 +1661,187 @@ subpackage.
 
 [crbug.com/1027368]: https://crbug.com/1027368
 
+## Companion DUTs (Multi-DUTs) Support
+
+Most tests are written to test against one DUT, but multiple DUTs are needed
+for tests that are testing the interaction between two or more DUTs. Tast uses
+companion DUTs feature to support those tests. Please notice that Tast
+currently only support companion DUTs for remote tests, and they are not
+accessible by local tests.
+
+### Tast Companion DUT CLI
+
+Users can use the run flag -companiondut to specify a companion DUT to be used
+in tests. The flag is repeatable so users can specify more than one companion
+DUT. The value of the flag specifies a role and a dut address in this format,
+<Role>:<Host>.
+
+#### Examples
+
+Here is an example of how a companion DUT is specified on the Tast command
+line.  In this example, primary DUT has the address 127.0.0.1:2222 and the
+companion DUT has the address 127.0.0.1:2223.
+
+```
+% tast run --companiondut=cd1:127.0.0.1:2223 127.0.0.1:2222 <tests>
+```
+
+### Accessing Companion DUTs In A Remote Test
+
+Users can use the function testing.State.CompanionDUT to get the pointer to
+dut.DUT of a companion DUT. The function take the role name of the companion
+DUT as the input parameter.
+
+#### Examples
+
+```
+// CompanionDUTs ensures DUT and companion DUTs are accessible in test.
+// Tast command line:
+// tast run -build=true -companiondut=cd1:dut1 dut0 meta.CompanionDUTs
+func CompanionDUTs(ctx context.Context, s *testing.State) {
+	cl, err := rpc.Dial(ctx, s.DUT(), s.RPCHint(), "cros")
+	if err != nil {
+		s.Fatal("Failed to connect to the RPC service on the DUT: ", err)
+	}
+	defer cl.Close(ctx)
+
+	companionDUT := s.CompanionDUT("cd1")
+	if companionDUT == nil {
+		s.Fatal("Failed to get companion DUT cd1")
+	}
+	companionCl, err := rpc.Dial(ctx, companionDUT, s.RPCHint(), "cros")
+if err != nil {
+		s.Fatal("Failed to connect to the RPC service on the companion DUT: ", err)
+	}
+	defer companionCl.Close(ctx)
+}
+```
+
+### Software/Hardware Dependencies Of Companion DUTs
+
+Users can use HardwareDepsForAll and SoftwareDepsAll of testing.Test to
+specify the hardware/software dependencies on all DUTs used in a test.
+Furthermore, users can use HardwareDepsForAll and SoftwareDepsAll of
+testing.Test to specify the ExtraHardwareDepsForAll and
+ExtraSoftwareDepsForAll of testing.Param to specify the hardware/software
+dependencies on all DUTs of a parameterized test.
+
+### Example of Specifying Companion Dependencies In A Test
+
+```
+type Test struct {
+             …
+        // SoftwareDepsForAll lists software features of all DUTs that
+        // are required to run the test.
+        // It is a map of companion roles and software features.
+        // The role for primary DUT should be "".
+        // The primary DUT software dependency will be the union of
+        // SoftwareDeps and SoftwareDepsForAll[""].
+        // If any dependencies are not satisfied, the test will be skipped.
+        SoftwareDepsForAll map[string][]string
+
+        // HardwareDepsForAll describes hardware features and setup of all
+        // DUTs that are required to run the test.
+        // It is a map of companion roles and hardware features.
+        // The role for primary DUT should be "".
+        // The primary DUT hardware dependency will be the union of
+        // HardwareDeps and HardwareDepsForAll[""].
+        // If any dependencies are not satisfied, the test will be skipped.
+        HardwareDepsForAll map[string]hwdep.Deps
+        …
+}
+```
+
+#### Specifying Hardware/Software Dependencies Of Companion DUTs In Parameterized Test
+
+```
+type Param struct {
+        …
+
+        // ExtraSoftwareDepsForAll lists software features of all DUTs
+        // that are required to run the test case for this param,
+        // in addition to SoftwareDepsForAll in the enclosing Test.
+        // The primary DUT software dependency will be the union of
+        // SoftwareDeps, SoftwareDepsForAll[""], ExtraSoftwareDeps and
+        // ExtraSoftwareDepsForAll[""].
+        // It is a map of companion roles and software features.
+        ExtraSoftwareDepsForAll map[string][]string
+
+        // ExtraHardwareDepsForAll describes hardware features and setup
+        // companion DUTs that are required to run the test case for this param,
+        // in addition to HardwareDepsForAll in the enclosing Test.
+        // It is a map of companion roles and hardware features.
+        // The role for primary DUT should be ""
+        // The primary DUT hardware dependency will be the union of
+        // HardwareDeps, HardwareDepsForAll[""], ExtraHardwareDeps and
+        // ExtraHardwareDep and ExtraHardwareDepsForAll[""].
+        ExtraHardwareDepsForAll map[string]hwdep.Deps
+}
+```
+
+### Example of Specifying Companion Dependencies In A Test
+
+```
+func init() {
+        testing.AddTest(&testing.Test{
+                Func:         CompanionDepsUsage,
+                …
+                SoftwareDeps: []string{"chrome"},
+                SoftwareDepsForAll: map[string][]string{
+                    // Additional primary DUT dependency.
+                    // As a result, primary will have dependency on "lacros"
+                    "": []string{"lacros"},
+                    // Companion DUT 1 dependency.
+                    "cd1": []string{"chrome"},
+                },
+                HardwareDepsForAll: map[string]hwdep.Deps {
+                    // Companion DUT 1 dependency.
+                    "cd1": hwdep.D(hwdep.InternalDisplay()),
+                },
+        })
+}
+```
+
+### Example of Specifying Companion Dependencies In Parameterized Tests
+
+```
+func init() {
+    testing.AddTest(&testing.Test{
+        Func:         CompanionDepsParamUsage,
+        …
+          SoftwareDeps: []string{"chrome"},
+          …
+          Params: []testing.Param{
+            {
+             …
+              Name: "P1",
+              ExtraSoftwareDepsAll: map[string][]string{
+                "cd1": []string{ "android_p"},
+              },
+             },
+              ExtraHardwareDepsForAll: map[string]hwdep.Deps {
+                "cd1": hwdep.D(hwdep.InternalDisplay()),
+            },
+            {
+              …
+              Name: "p2",
+              ExtraSoftwareDepsForAll: map[string][]string{
+                "cd1": []string{ "android_vm"},
+              },
+             },
+              ExtraHardwareDepsForAll: map[string]hwdep.Deps {
+                "cd1": hwdep.D(hwdep.InternalDisplay()),
+              },
+            },
+         },
+    })
+}
+```
+
+
+
+
+
 ## Utilities
 
 Tast contains many utilities for common operations. Some of them are briefly

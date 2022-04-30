@@ -85,7 +85,7 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		return strings.TrimSpace(string(out)) == "1", nil
 	}()
 	if err != nil {
-		logging.Infof(ctx, "Unknow vboot2 info: %v", err)
+		logging.Infof(ctx, "Unknown vboot2 info: %v", err)
 	}
 
 	config := &protocol.DeprecatedDeviceConfig{

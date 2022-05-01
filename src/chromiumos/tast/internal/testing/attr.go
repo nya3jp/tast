@@ -463,6 +463,10 @@ third_party/autotest/files/server/site_tests/tast/control.runtime-probe
 				Desc: `Identifies Cellular tests that need active sim's on two slots.`,
 			},
 			{
+				Name: "cellular_sim_pinlock",
+				Desc: `Identifies Cellular tests that need sim with puk and pin codes.`,
+			},
+			{
 				Name: "cellular_sim_roaming",
 				Desc: `Identifies Cellular tests that need a roaming sim.`,
 			},

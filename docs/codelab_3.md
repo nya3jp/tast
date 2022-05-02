@@ -205,7 +205,8 @@ if err := ui.LeftClick(nodewith.Name("Personalize").Role(role.MenuItem))(ctx); e
   s.Fatal(...)
 }
 ```
-> Warning: Getting nodes by human-readable name is **strongly discouraged** in general.
+> Warning: Getting nodes by human-readable name is **strongly discouraged** in general
+because it requires to keep updating the UI string and the literal in the test in sync.
 We use `nodewith.Name()` to get the menu item only because all the menu items share the
 same class name.
 
@@ -355,6 +356,7 @@ import (
 func init() {
 	testing.AddTest(&testing.Test{
 		Func: Change,
+		LacrosStatus: testing.LacrosVariantUnknown,
 		Desc: "Follows the user flow to change the wallpaper",
 		Contacts: []string{
 			"chromeos-sw-engprod@google.com",
@@ -381,7 +383,7 @@ func Change(ctx context.Context, s *testing.State) {
 		ui.RightClick(nodewith.ClassName("WallpaperView")),
 		// This button takes a bit before it is clickable.
 		// Keep clicking it until the click is received and the menu closes.
-		ui.WithInterval(500*time.Millisecond).LeftClickUntil(personalizeMenu, ui.Gone(personalizeMenu)),
+		ui.WithInterval(1*time.Second).LeftClickUntil(personalizeMenu, ui.Gone(personalizeMenu)),
 		ui.Exists(nodewith.NameContaining("Personalization").Role(role.Window).First()),
 		ui.WaitUntilExists(changeWallpaperButton),
 		ui.LeftClick(changeWallpaperButton),

@@ -346,6 +346,24 @@ func ECFeatureCBI() Condition {
 	}
 }
 
+// Cellular returns a hardware dependency condition that
+// is satisfied iff the DUT has a cellular modem.
+func Cellular() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("Did not find hardware features")
+		}
+		if status := hf.GetCellular().Present; status == configpb.HardwareFeatures_NOT_PRESENT {
+			return unsatisfied("DUT does not have a cellular modem")
+		} else if status == configpb.HardwareFeatures_PRESENT_UNKNOWN {
+			return unsatisfied("Could not determine if cellular model is present")
+		}
+		return satisfied()
+	},
+	}
+}
+
 // GSCUART returns a hardware dependency condition that is satisfied iff the DUT has a GSC and that GSC has a working UART.
 // TODO(b/224608005): Add a cros_config for this and use that instead.
 func GSCUART() Condition {

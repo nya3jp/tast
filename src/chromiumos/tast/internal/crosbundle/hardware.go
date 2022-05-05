@@ -113,6 +113,7 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		FormFactor:         &configpb.HardwareFeatures_FormFactor{},
 		DpConverter:        &configpb.HardwareFeatures_DisplayPortConverter{},
 		Wifi:               &configpb.HardwareFeatures_Wifi{},
+		Cellular:           &configpb.HardwareFeatures_Cellular{},
 	}
 
 	formFactor, err := func() (string, error) {
@@ -310,6 +311,13 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		features.EmbeddedController.Cbi = configpb.HardwareFeatures_PRESENT
 	} else {
 		features.EmbeddedController.Cbi = configpb.HardwareFeatures_PRESENT_UNKNOWN
+	}
+
+	if err := exec.Command("cros_config", "/modem", "firmware-variant").Run(); err != nil {
+		logging.Infof(ctx, "Modem not found: %v", err)
+		features.Cellular.Present = configpb.HardwareFeatures_NOT_PRESENT
+	} else {
+		features.Cellular.Present = configpb.HardwareFeatures_PRESENT
 	}
 
 	// TODO(b/173741162): Pull storage information from boxster config and add

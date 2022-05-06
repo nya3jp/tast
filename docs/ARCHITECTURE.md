@@ -26,7 +26,7 @@ mentions several best practices we learned from framework development.
 
 ### Remote end-to-end testing
 
-Tast is a remote end-to-end testing framework, primarily targeting Chrome OS.
+Tast is a remote end-to-end testing framework, primarily targeting ChromeOS.
 
 There are two important aspects of Tast here: **end-to-end **and** remote**.
 - **End-to-end**: Tast runs tests against a complete **target product**. Tests
@@ -271,11 +271,11 @@ other fixtures.
 An environment is an abstract term referring to a state of the target/host
 system. Some possible environments a fixture may set up are, for example:
 
-- The target Chrome OS device is in the login screen
-- The target Chrome OS device is logged into a user session
-- The target Chrome OS device is logged into a user session, and Crostini is
+- The target ChromeOS device is in the login screen
+- The target ChromeOS device is logged into a user session
+- The target ChromeOS device is logged into a user session, and Crostini is
   enabled
-- The target Chrome OS device is enrolled into an enterprise policy
+- The target ChromeOS device is enrolled into an enterprise policy
 
 Fixtures are registered to the framework in a very similar way as tests and
 services. Fixture registration is done by an init function calling
@@ -448,11 +448,11 @@ is ACL: if you want to make several tests public while keeping other tests
 private, you need to create two test bundles, one for public tests and the other
 one for private tests, so that external users who cannot check out private
 source code can still build the public test bundle. Also, it would be useful to
-create a new test bundle for a new target system (e.g. non Chrome OS target
+create a new test bundle for a new target system (e.g. non ChromeOS target
 systems) since it can install a different set of hooks.
 
-As of writing, we have only two test bundles today: "cros" for public Chrome OS
-tests and "crosint" for private Chrome OS tests. Since the two test bundles
+As of writing, we have only two test bundles today: "cros" for public ChromeOS
+tests and "crosint" for private ChromeOS tests. Since the two test bundles
 share the same set of bundle.Delegate parameters, their main functions call into
 the bundlemain support package, which in turn calls into
 bundle.LocalDefault/RemoteDefault, to avoid duplication.
@@ -556,7 +556,7 @@ agreed not to implement this feature.
 A proposal was made to upload crash dumps generated during tests to Google
 servers automatically ([crrev.com/c/2337754](https://crrev.com/c/2337754)).
 The approach had a privacy implication since Tast has many users outside of
-Google. In the end, the feature was implemented in the Chrome OS testing
+Google. In the end, the feature was implemented in the ChromeOS testing
 infrastructure.
 ***
 
@@ -604,7 +604,7 @@ local_test_runner cannot execute local tests depending on remote fixtures.
 
 #### Beware of versioning boundaries
 
-Many CI systems deploy Tast for end-to-end testing, including Chrome OS, Chrome,
+Many CI systems deploy Tast for end-to-end testing, including ChromeOS, Chrome,
 Android, Google3, and several other CI systems outside of Google. This means
 that it is very difficult to make changes to the protocol between Tast and CI
 systems, e.g. adding/removing/changing Tast CLI flags or changing test result
@@ -615,7 +615,7 @@ In general, we should be extremely careful about designing a new Tast CLI
 feature for test requesters since it is difficult to make breaking changes.
 As for Go APIs for test authors, we can be less strict as we can make atomic
 commits to the framework and user code as of writing. However, once we start
-having Tast tests outside of Chrome OS repositories, Go API stability will
+having Tast tests outside of ChromeOS repositories, Go API stability will
 become important.
 
 *** aside
@@ -634,7 +634,7 @@ attribute to be considered as critical/informational. To disable a test, simply
 the "group:mainline" attribute could be removed.
 
 Migration from the old rule to the new rule turned out to be very painful
-because those rules have been hard-coded to several CI systems (Chrome OS,
+because those rules have been hard-coded to several CI systems (ChromeOS,
 Chrome, Android at that time) as attribute expressions. Therefore we needed to
 do step-by-step migration as described in
 [go/tast-mainline-attr-transition](https://goto.google.com/tast-mainline-attr-transition).
@@ -659,29 +659,29 @@ in the future.
 
 We had a bug that Tast CLI fails to run because of unsupported flags on release
 branches ([b/191779650](https://issuetracker.google.com/issues/191779650)).
-It was because a new flag was added to Tast CLI but Chrome OS CI used an
+It was because a new flag was added to Tast CLI but ChromeOS CI used an
 unbranched config to specify a list of flags to pass to Tast CLI.
 
-We think that this is a design bug in Chrome OS CI configuration: unbranched CI
+We think that this is a design bug in ChromeOS CI configuration: unbranched CI
 configs should not construct Tast CLI flags that can change per branch. We
 expect that this problem is solved in the future.
 ***
 
-#### Beware of Chrome OS specific logic
+#### Beware of ChromeOS specific logic
 
 Tast framework should focus on being a general remote testing framework, and
 should be agnostic to the target/host system type.
 
-Tast started as a testing framework for Chrome OS, so naturally it has several
-hard-coded logic that assume that the target system is Chrome OS and the host
-system is Chrome OS chroot. But we expect that Tast will be used outside of
-Chrome OS in near future. Therefore it is good to avoid introducing new
-Chrome OS specific logic to the framework, and remove existing Chrome OS
+Tast started as a testing framework for ChromeOS, so naturally it has several
+hard-coded logic that assume that the target system is ChromeOS and the host
+system is ChromeOS chroot. But we expect that Tast will be used outside of
+ChromeOS in near future. Therefore it is good to avoid introducing new
+ChromeOS specific logic to the framework, and remove existing ChromeOS
 specific logic from the framework.
 
-If you need Chrome OS specific logic, consider if you can put them in test
+If you need ChromeOS specific logic, consider if you can put them in test
 bundles or CI systems. If it's impossible, introduce a proper boundary between
-the new Chrome OS specific logic and existing OS agnostic logic.
+the new ChromeOS specific logic and existing OS agnostic logic.
 
 *** aside
 **Example**: Test hooks
@@ -689,28 +689,28 @@ the new Chrome OS specific logic and existing OS agnostic logic.
 A proposal was made to the framework to run the auditctl command between tests
 for debugging certain failures
 ([crrev.com/c/2513678](https://crrev.com/c/2513678)). Since this logic was
-specific to Chrome OS, we introduced test hooks to test bundles and asked the
+specific to ChromeOS, we introduced test hooks to test bundles and asked the
 author to put the logic there.
 ***
 
 *** aside
-**Example**: Chrome OS infra specific APIs
+**Example**: ChromeOS infra specific APIs
 
-For next-gen Chrome OS infra support, we added to the framework the logic to
-resolve the target hostname and port with Chrome OS infra specific APIs. This
+For next-gen ChromeOS infra support, we added to the framework the logic to
+resolve the target hostname and port with ChromeOS infra specific APIs. This
 design turned out bad, and we're moving the logic out of the framework.
 ***
 
 *** aside
 **Example**: Downloading external data files
 
-In Chrome OS lab, when downloading data files from Google Cloud Storage, test
+In ChromeOS lab, when downloading data files from Google Cloud Storage, test
 frameworks (not limited to Tast) are supposed to use Devservers, which act as
 a sort of caching proxy server to Google Cloud Storage with private credentials.
 Tast uses Devservers to download external data files needed by tests.
 
 Test frameworks and Devservers use non-standard REST APIs to communicate.
-Today, many non-Chrome OS infra run Tast tests, but it is only Chrome OS infra
+Today, many non-ChromeOS infra run Tast tests, but it is only ChromeOS infra
 that provides Devservers to Tast to allow downloading ACL'ed external data
 files.
 

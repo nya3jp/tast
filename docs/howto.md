@@ -41,7 +41,7 @@ func someFunction(...) error {
 [errors.Is]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/errors#Is
 
 ### Command line
-As Chrome OS is based on Linux we can execute Linux commands on the command line that can give us the needed information of the state of the system. This is done with the [testexec.CommandContext] function.
+As ChromeOS is based on Linux we can execute Linux commands on the command line that can give us the needed information of the state of the system. This is done with the [testexec.CommandContext] function.
 The `CommandContext()` function wraps the standard go exec package to honor the timeout of the context in which the test is running.
 ```
 out, err := testexec.CommandContext(ctx, "lshw", "-C", "multimedia").Output(testexec.DumpLogOnError)
@@ -150,7 +150,7 @@ It is also possible to directly interact with the elements of the UI (like click
 [Codelab #3]: codelab_3.md
 
 ### Waiting in tests
-To check some condition it is sometimes necessary to wait until certain changes have been processed in Chrome OS. For such cases the [testing.Poll] function should be used instead of sleeping in tests, as it does not introduce unnecessary delays and race conditions in integration tests. See also [Context and timeouts].
+To check some condition it is sometimes necessary to wait until certain changes have been processed in ChromeOS. For such cases the [testing.Poll] function should be used instead of sleeping in tests, as it does not introduce unnecessary delays and race conditions in integration tests. See also [Context and timeouts].
 ```
 // Wait until the condition is true.
 if err := testing.Poll(ctx, func(ctx context.Context) error {

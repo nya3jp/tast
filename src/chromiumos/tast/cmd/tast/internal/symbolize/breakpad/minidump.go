@@ -22,7 +22,7 @@ import (
 )
 
 const (
-	debugSuffix          = ".debug"   // suffix that Chrome OS build process adds to files with debugging symbols
+	debugSuffix          = ".debug"   // suffix that ChromeOS build process adds to files with debugging symbols
 	mdMagic              = "MDMP"     // magic bytes occurring at the beginning of minidump files
 	mdMaxStreams         = 32         // max streams to read from minidump file
 	mdReleaseStreamType  = 0x47670005 // minidump stream type used for /etc/lsb-release data

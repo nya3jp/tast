@@ -12,7 +12,7 @@ if [[ $# -lt 2 || "$1" == '-h' || "$1" == '--help' ]]; then
   cat - << EOF
 Usage: $(basename "$0") [flag]... [target] [pattern]...
 
-Run one or more Tast tests against a Chrome OS test device using
+Run one or more Tast tests against a ChromeOS test device using
 binaries from an autotest_server_package.tar.bz2 archive.
 
 Additional flags for "tast run" may be supplied, most notably:

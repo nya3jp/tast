@@ -50,7 +50,7 @@ var validGroups = []*group{
 		Desc: `The default group of functional tests.
 
 Mainline tests are run for build verification. Among others, pre-submit and
-post-submit testing in Chrome OS CI and Chromium CI are important places where
+post-submit testing in ChromeOS CI and Chromium CI are important places where
 mainlines tests are run.
 `,
 		Subattrs: []*attr{
@@ -78,7 +78,7 @@ Tests in this group are not used for build verification.
 		Subattrs: []*attr{
 			{
 				Name: "crosbolt_perbuild",
-				Desc: `Indicates that this test should run for every Chrome OS build.`,
+				Desc: `Indicates that this test should run for every ChromeOS build.`,
 			},
 			{
 				Name: "crosbolt_nightly",
@@ -112,7 +112,7 @@ Tests in this group are not used for build verification.
 			},
 			{
 				Name: "graphics_perbuild",
-				Desc: `Indicates that this test should run for every Chrome OS build.`,
+				Desc: `Indicates that this test should run for every ChromeOS build.`,
 			},
 			{
 				Name: "graphics_nightly",
@@ -342,7 +342,7 @@ Tests in this group are not used for build verification.`,
 		Subattrs: []*attr{
 			{
 				Name: "hwsec_destructive_crosbolt_perbuild",
-				Desc: `Indicates that this test should run for every Chrome OS build.`,
+				Desc: `Indicates that this test should run for every ChromeOS build.`,
 			},
 		},
 	},
@@ -508,11 +508,11 @@ Meta tests should be a subset of mainline critical tests.
 		Subattrs: []*attr{
 			{
 				Name: "fingerprint-mcu_dragonclaw",
-				Desc: `Tests to be run on Dragonclaw board (a standalone MCU board, not a Chrome OS board).`,
+				Desc: `Tests to be run on Dragonclaw board (a standalone MCU board, not a ChromeOS board).`,
 			},
 			{
 				Name: "fingerprint-mcu_icetower",
-				Desc: `Tests to be run on Icetower board (a standalone MCU board, not a Chrome OS board).`,
+				Desc: `Tests to be run on Icetower board (a standalone MCU board, not a ChromeOS board).`,
 			},
 		},
 	},
@@ -600,7 +600,7 @@ Parallels boot-up testing. Otherwise the same as group:crosbolt.`,
 		Subattrs: []*attr{
 			{
 				Name: "parallels_crosbolt_perbuild",
-				Desc: `Indicates that this test should run for every Chrome OS build.`,
+				Desc: `Indicates that this test should run for every ChromeOS build.`,
 			},
 			{
 				Name: "parallels_crosbolt_nightly",

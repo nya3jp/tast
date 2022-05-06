@@ -11,7 +11,7 @@ arguments. In doing so, we'll learn:
 
 We probably wouldn't want to actually test this, since the `date` command is
 likely very stable by this point and any regressions in it would hopefully be
-caught long before reaching Chrome OS. Since there's a cost in writing, running,
+caught long before reaching ChromeOS. Since there's a cost in writing, running,
 and maintaining tests, we want to focus on areas where we'll get the most
 benefit.
 
@@ -88,7 +88,7 @@ the test.
 `Attr` contains free-form strings naming this test's [attributes].
 `group:mainline` indicates that this test is in [the mainline group], the
 default group for functional tests. `informational` indicates that this test is
-non-critical, i.e. it won't run on the Chrome OS Commit Queue or on the
+non-critical, i.e. it won't run on the ChromeOS Commit Queue or on the
 Pre-Flight Queue (PFQ) builders that are used to integrate new versions of
 Chrome or Android into the OS. All [new mainline tests] (internal link) should
 start out with the `informational` attribute until they've been proven to be

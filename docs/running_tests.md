@@ -4,7 +4,7 @@
 
 ## Basic syntax
 
-Tests can be executed within a Chrome OS chroot using the `tast` executable's
+Tests can be executed within a ChromeOS chroot using the `tast` executable's
 `run` command:
 
 ```shell
@@ -50,7 +50,7 @@ Any additional positional arguments describe which tests should be executed:
     test names. For example, `ui.*` matches all tests with names prefixed by
     `ui.`. Multiple patterns can be supplied: passing `example.Pass` and
     `example.Fail` selects those two tests.
-*   It's invalid to mix attribute expressions and wildcard patterns. To use a 
+*   It's invalid to mix attribute expressions and wildcard patterns. To use a
     wildcard to match against the test name you can use the `"name:ui.*"`
     expression instead.
 
@@ -113,7 +113,7 @@ ssh <servo-host>
 servod --board=<board> --model=<model> --port=<servo-port> --serialname=<servo-serial>
 ```
 
-In automated testing in the Chrome OS lab, Tast tests can reach a working Servo
+In automated testing in the ChromeOS lab, Tast tests can reach a working Servo
 device via `servo` runtime variable if they are scheduled with Autotest control
 files declaring a Servo dependency. Control files for mainline tests declare it,
 but other control files may not. See [crrev.com/c/2790771] for an example to add

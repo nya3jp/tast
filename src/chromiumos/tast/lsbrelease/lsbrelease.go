@@ -29,7 +29,7 @@ const (
 	Board = "CHROMEOS_RELEASE_BOARD"
 
 	// BuilderPath is a key for a string identifying the builder run that
-	// produced the Chrome OS image (e.g. "eve-release/R74-12345.0.0").
+	// produced the ChromeOS image (e.g. "eve-release/R74-12345.0.0").
 	BuilderPath = "CHROMEOS_RELEASE_BUILDER_PATH"
 
 	// Milestone is a key for milestone number (e.g. "74")
@@ -41,7 +41,7 @@ const (
 	// PatchNumber is a key for the patch number (e.g. "0.0")
 	PatchNumber = "CHROMEOS_RELEASE_PATCH_NUMBER"
 
-	// Version is a key for Chrome OS version (e.g. "12345.0.0")
+	// Version is a key for ChromeOS version (e.g. "12345.0.0")
 	Version = "CHROMEOS_RELEASE_VERSION"
 
 	// ReleaseAppID is a key for the release Omaha app ID.
@@ -131,7 +131,7 @@ var lineRe = regexp.MustCompile(`^([A-Z0-9_]+)\s*=\s*(.*)$`)
 func Parse(r io.Reader) (map[string]string, error) {
 	caller.Check(2, allowedPkgs)
 
-	// The format of /etc/lsb-release in Chrome OS is described in the following doc:
+	// The format of /etc/lsb-release in ChromeOS is described in the following doc:
 	// https://chromium.googlesource.com/chromiumos/docs/+/HEAD/lsb-release.md
 	kvs := make(map[string]string)
 	sc := bufio.NewScanner(r)

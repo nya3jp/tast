@@ -19,7 +19,7 @@ const (
 
 	// crashReportDumpKey is used as the key for minidumps within crash reports.
 	// Linux Chrome writes crash reports as multipart MIME data rather than crash_reporter's
-	// colon-separated format, and oddly, the Chrome OS report writer uses this MIME-related
+	// colon-separated format, and oddly, the ChromeOS report writer uses this MIME-related
 	// snippet as a key instead of defining something else. crash_reporter also contains
 	// code to look for this string.
 	crashReportDumpKey = "upload_file_minidump\"; filename=\"dump\""
@@ -46,7 +46,7 @@ func readField(r *bufio.Reader, delim byte, max int) (string, error) {
 	return string(b), nil
 }
 
-// ReadCrashReport reads a Chrome OS crash report file written by Chrome.
+// ReadCrashReport reads a ChromeOS crash report file written by Chrome.
 // These files are typically parsed by crash-reporter and use a custom format consisting of
 // repeated colon-separated (key, decimal-value-length, value-data) sequences:
 //

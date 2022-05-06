@@ -77,7 +77,7 @@ type Options struct {
 	WarnFunc func(string)
 
 	// Platform describes the operating system running on the SSH server. This controls how certain
-	// commands will be executed on the remote system. If nil, assumes a Chrome OS system.
+	// commands will be executed on the remote system. If nil, assumes a ChromeOS system.
 	Platform *Platform
 }
 

@@ -25,7 +25,7 @@ for the command to complete.
     performance when running tests on a DUT in a different geographical
     location.
 *   Developers shouldn't need to edit tests on-device in order to iterate
-    quickly. Chrome OS systems do not make for pleasant development
+    quickly. ChromeOS systems do not make for pleasant development
     environments. (They may support pleasant development environments within
     VMs, but that doesn't help for testing.)
 *   Running a test shouldn't result in code being compiled. If a test needs
@@ -52,7 +52,7 @@ for the command to complete.
     repetition is unavoidable, there should be automatic checks that the names
     are consistent in all locations.
 *   Developers shouldn't need to know the specifics of how the test system is
-    integrated into Chrome OS. In the common case, they shouldn't need to edit
+    integrated into ChromeOS. In the common case, they shouldn't need to edit
     `.ebuild` files when adding a test, run `cros_workon` when making changes,
     or set USE flags or build and deploy packages to run tests.
 

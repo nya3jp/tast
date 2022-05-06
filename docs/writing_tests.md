@@ -34,7 +34,7 @@ repository). Private tests are checked into private repositories such as the
 
 Tests are categorized into packages based on the functionality that
 they exercise; for example, the [ui package] contains local tests that exercise
-the Chrome OS UI. The category package needs to be directly under the bundle
+the ChromeOS UI. The category package needs to be directly under the bundle
 package. Thus the category package path should be matched with
 `chromiumos/tast/(local|remote)/bundles/(?P<bundlename>[^/]+)/(?P<category>[^/]+)`.
 
@@ -129,7 +129,7 @@ The `Contacts` fields should be an array literal of string literals. To help aid
 on-call rotations, partner owned tests must specify a Google email contact that can be
 reached by on-call rotations.
 
-Tests have to specify [attributes] to describe how they are used in Chrome OS
+Tests have to specify [attributes] to describe how they are used in ChromeOS
 testing. A test belongs to zero or more groups by declaring attributes with
 `group:`-prefix. Typically functional tests belong to the mainline group by
 declaring the `group:mainline` attribute. New mainline tests should have the
@@ -207,7 +207,7 @@ cover edge cases that may not be typically seen when using the package, and they
 greatly aid in future refactorings (since it can be hard to determine the full
 set of Tast-based tests that must be run to exercise the package). See [How to
 Write Go Code: Testing] and [Go's testing package] for more information about
-writing unit tests for Go code. The [Best practices for writing Chrome OS unit
+writing unit tests for Go code. The [Best practices for writing ChromeOS unit
 tests] document contains additional suggestions that may be helpful (despite
 being C++-centric).
 
@@ -221,7 +221,7 @@ run tests for a single package or all packages.
 
 [How to Write Go Code: Testing]: https://golang.org/doc/code.html#Testing
 [Go's testing package]: https://golang.org/pkg/testing/
-[Best practices for writing Chrome OS unit tests]: https://chromium.googlesource.com/chromiumos/docs/+/main/testing/unit_tests.md
+[Best practices for writing ChromeOS unit tests]: https://chromium.googlesource.com/chromiumos/docs/+/main/testing/unit_tests.md
 [fast_build.sh]: modifying_tast.md#fast_build_sh
 
 ### Import
@@ -468,7 +468,7 @@ sampling of internal links:
 While this is sound advice for fast-running, deterministic unit tests, it isn't
 necessarily always the best approach for integration tests:
 
-*   There are unavoidable sources of non-determinism in Chrome OS integration
+*   There are unavoidable sources of non-determinism in ChromeOS integration
     tests. DUTs can experience hardware or networking issues, and flakiness
     becomes more likely as more tests are run.
 *   When a lengthy setup process is repeated by many tests in a single suite,
@@ -1086,9 +1086,9 @@ following content:
 > date as a suffix in the filename to make it easy to add a new version when
 > needed, e.g. `user_login_data_20180812.bin`.
 
-If data files are produced as [build artifacts of Chrome OS], they can be also
+If data files are produced as [build artifacts of ChromeOS], they can be also
 used as external data files. However, build artifacts are available only for
-Chrome OS images built by official builders; for developer builds, tests
+ChromeOS images built by official builders; for developer builds, tests
 requiring build artifacts will fail.
 
 An example external link file to reference a build artifact is below:
@@ -1113,7 +1113,7 @@ before running Tast tests to prevent stale files from being served.
 
 [external link format]: https://chromium.googlesource.com/chromiumos/platform/tast/+/main/src/chromiumos/tast/internal/extdata/extdata.go
 [example.DataFiles]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/main/src/chromiumos/tast/local/bundles/cros/example/data_files.go
-[build artifacts of Chrome OS]: https://goto.google.com/cros-build-google-storage
+[build artifacts of ChromeOS]: https://goto.google.com/cros-build-google-storage
 [`gsutil cp`]: https://cloud.google.com/storage/docs/gsutil/commands/cp
 
 ### Internal vs. external
@@ -1125,7 +1125,7 @@ external data.
 ### Executables
 
 If your test depends on outside executables, use Portage to build and package
-those executables separately and include them in test Chrome OS system images.
+those executables separately and include them in test ChromeOS system images.
 Tast [intentionally](design_principles.md) does not support compiling or
 deploying other packages that tests depend on.
 
@@ -1507,7 +1507,7 @@ package arc
 // ~/trunk/src/platform/tast/tools/go.sh generate chromiumos/tast/services/cros/arc
 ```
 
-To regenerate `.pb.go` files, run the command mentioned in the file in Chrome OS
+To regenerate `.pb.go` files, run the command mentioned in the file in ChromeOS
 chroot (remember to replace the last argument of the command with the path to
 the directory containing the protocol buffer files). This has to be done
 manually whenever `.proto` files are edited. Updated `.pb.go` files should be

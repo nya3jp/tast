@@ -34,7 +34,7 @@ const (
 	// TypeStatic is for a link to a file on web with fixed URL and content.
 	TypeStatic LinkType = ""
 
-	// TypeArtifact is for a link to a file in Chrome OS build artifacts
+	// TypeArtifact is for a link to a file in ChromeOS build artifacts
 	// corresponding to the DUT image version.
 	TypeArtifact LinkType = "artifact"
 )
@@ -140,7 +140,7 @@ type Manager struct {
 // dataDir is the path to the base directory containing external data link files
 // (typically "/usr/local/share/tast/data" on DUT). artifactURL is the URL of
 // Google Cloud Storage directory, ending with a slash, containing build
-// artifacts for the current Chrome OS image.
+// artifacts for the current ChromeOS image.
 func NewManager(ctx context.Context, dataDir, artifactsURL string) (*Manager, error) {
 	var all []string
 	if err := filepath.Walk(dataDir, func(linkPath string, info os.FileInfo, err error) error {

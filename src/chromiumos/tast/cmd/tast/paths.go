@@ -16,7 +16,7 @@ const (
 	srcDir = "chromiumos"
 )
 
-// trunkDir returns the path to the Chrome OS checkout (within a chroot).
+// trunkDir returns the path to the ChromeOS checkout (within a chroot).
 func trunkDir() string {
 	// TODO(derat): Should probably check that we're actually in the chroot first.
 	return filepath.Join(os.Getenv("HOME"), srcDir)

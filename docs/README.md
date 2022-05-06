@@ -35,8 +35,8 @@
 *   [Modifying Tast](modifying_tast.md)
 *   [Test Validation](test_validation.md)
 
-## Integration with Chrome OS infrastructure (for Googlers)
+## Integration with ChromeOS infrastructure (for Googlers)
 
-*   [Adding new tests to Chrome OS infra](http://go/tast-add-test)
+*   [Adding new tests to ChromeOS infra](http://go/tast-add-test)
 *   [Tast Infra Integration](http://go/tast-infra)
 *   [Investigating Tast Test Failures](http://go/tast-failures)

@@ -12,7 +12,7 @@ import (
 	"chromiumos/tast/lsbrelease"
 )
 
-// GetDUTInfo implements the GetDUTInfo RPC method for Chrome OS.
+// GetDUTInfo implements the GetDUTInfo RPC method for ChromeOS.
 func GetDUTInfo(ctx context.Context, req *protocol.GetDUTInfoRequest) (*protocol.GetDUTInfoResponse, error) {
 	kvs, err := lsbrelease.Load()
 	if err != nil {

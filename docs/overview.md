@@ -42,7 +42,7 @@ compiled tests along with code for running them and reporting results back to
 a test runner. Bundles exist so that test code can be checked into other
 (probably non-public) repositories.
 
-The default local and remote bundles, consisting of Chrome OS tests, are named
+The default local and remote bundles, consisting of ChromeOS tests, are named
 `cros` and are checked into the [tast-tests repository].
 
 Local tests can be included in a system image via Portage packages with names of

@@ -111,7 +111,7 @@ message DownloadPrivateBundlesRequest {
   ServiceConfig service_config = 1;
 
   // BuildArtifactsUrl is the URL of Google Cloud Storage directory, ending with
-  // a slash, containing build artifacts for the current Chrome OS image.
+  // a slash, containing build artifacts for the current ChromeOS image.
   // If it is empty, DefaultBuildArtifactsURL in runner.Config is used.
   string build_artifact_url = 2;
 }
@@ -289,7 +289,7 @@ message DataFileConfig {
   DownloadMode download_mode = 1;
 
   // BuildArtifactsUrl is the URL of Google Cloud Storage directory, ending with
-  // a slash, containing build artifacts for the current Chrome OS image.
+  // a slash, containing build artifacts for the current ChromeOS image.
   string build_artifacts_url = 2;
 }
 

@@ -5,7 +5,7 @@
 package config
 
 // bundleInfo contains information about a test bundle.
-// All paths in this struct are relative to the Chrome OS trunk directory.
+// All paths in this struct are relative to the ChromeOS trunk directory.
 type bundleInfo struct {
 	workspace string // path to Go workspace containing test bundle source code
 }

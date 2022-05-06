@@ -47,7 +47,7 @@ const (
 )
 
 const (
-	defaultKeyFile               = "chromite/ssh_keys/testing_rsa" // default private SSH key within Chrome OS checkout
+	defaultKeyFile               = "chromite/ssh_keys/testing_rsa" // default private SSH key within ChromeOS checkout
 	checkDepsCacheFile           = "check_deps_cache.v2.json"      // file in BuildOutDir where dependency-checking results are cached
 	defaultSystemServicesTimeout = 120 * time.Second               //default timeout for waiting for system services to be ready in seconds
 )
@@ -168,7 +168,7 @@ func (c *Config) Mode() Mode { return c.m.Mode }
 // TastDir is base directory under which files are written.
 func (c *Config) TastDir() string { return c.m.TastDir }
 
-// TrunkDir is path to Chrome OS checkout.
+// TrunkDir is path to ChromeOS checkout.
 func (c *Config) TrunkDir() string { return c.m.TrunkDir }
 
 // Build is rebuild (and push, for local tests) a single test bundle.
@@ -355,7 +355,7 @@ type DeprecatedState struct {
 // NewMutableConfig returns a new configuration for executing test runners in the supplied mode.
 // It sets fields that are required by SetFlags.
 // tastDir is the base directory under which files are written (e.g. /tmp/tast).
-// trunkDir is the path to the Chrome OS checkout (within the chroot).
+// trunkDir is the path to the ChromeOS checkout (within the chroot).
 func NewMutableConfig(mode Mode, tastDir, trunkDir string) *MutableConfig {
 	return &MutableConfig{
 		Mode:          mode,

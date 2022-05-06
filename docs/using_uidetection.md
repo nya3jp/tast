@@ -21,7 +21,7 @@ current state of the UI. The accessibility tree has access to:
 
 *   The Chrome Browser
 *   The ChromeOS Desktop UI
-*   Chrome OS packaged apps
+*   ChromeOS packaged apps
 *   Web Apps/PWAs
 
 That being said, it does not have access to UI elements in containers or VMs

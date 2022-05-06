@@ -4,11 +4,11 @@
 
 ## Prerequisites
 
-You'll need a [Chrome OS chroot]. If you've only done Chrome development so far,
+You'll need a [ChromeOS chroot]. If you've only done Chrome development so far,
 note that this is different from the Chrome checkout described in the
 [Simple Chrome] documentation.
 
-You'll also need a Chrome OS device running a system image built with the `test`
+You'll also need a ChromeOS device running a system image built with the `test`
 flag that's reachable from your workstation via SSH. An image running in a
 [virtual machine] will also work. If you're using a test image that you
 downloaded rather than one built in your chroot, make sure that it's a recent
@@ -18,16 +18,16 @@ version.
 remove all user profiles from the device when run, including any local state.
 Prefer to have a device specifically for testing.
 
-[Chrome OS chroot]: http://www.chromium.org/chromium-os/quick-start-guide
+[ChromeOS chroot]: http://www.chromium.org/chromium-os/quick-start-guide
 [Simple Chrome]: https://chromium.googlesource.com/chromiumos/docs/+/main/simple_chrome_workflow.md
 [virtual machine]: https://chromium.googlesource.com/chromiumos/docs/+/main/cros_vm.md
 
 ## Setup
 
-### Update Chrome OS chroot
+### Update ChromeOS chroot
 
-Assuming that you already have a valid Chrome OS repo checked out (see
-[Chrome OS chroot]), it is recommended to update the chroot by doing:
+Assuming that you already have a valid ChromeOS repo checked out (see
+[ChromeOS chroot]), it is recommended to update the chroot by doing:
 
 ```sh
 cd ${CHROMEOS_SRC}
@@ -94,7 +94,7 @@ In your chroot, run the following:
 tast -verbose run -build=false <test-device-ip> login.Chrome
 ```
 
-You should see output scroll by on your workstation, and on the Chrome OS
+You should see output scroll by on your workstation, and on the ChromeOS
 device, the test should log in and load a webpage. After the test is done, take
 a look at the results in `/tmp/tast/results/latest` in your chroot.
 
@@ -123,7 +123,7 @@ See [Running Tests] for more information.
 
 ## Modify a test
 
-Now, let's modify the test. In your Chrome OS checkout, go to
+Now, let's modify the test. In your ChromeOS checkout, go to
 `src/platform/tast-tests/src/chromiumos/tast/local/bundles/cros/login` and open
 `chrome.go` (for convenience, there's also a `local_tests` symlink at the
 top of `tast-tests`). The `Chrome` function here will run directly on the

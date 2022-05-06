@@ -4,7 +4,7 @@
 
 package crosbundle
 
-// softwareFeatureDefs defines software features for Chrome OS test bundles.
+// softwareFeatureDefs defines software features for ChromeOS test bundles.
 var softwareFeatureDefs = map[string]string{
 	// This list is documented at docs/test_dependencies.md.
 	// All USE flags referenced here must be listed in IUSE in the tast-use-flags ebuild.

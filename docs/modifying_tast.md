@@ -67,7 +67,7 @@ structs that may or may not be set depending on the type of request that is
 being made. Note also that [runner.RunTestsArgs] includes [bundle.RunTestsArgs]
 and that [runner.ListTestsArgs] includes [bundle.ListTestsArgs].
 
-When running in the Chrome OS hardware lab or on VM builders, matching versions
+When running in the ChromeOS hardware lab or on VM builders, matching versions
 of `tast`, test runners, and test bundles are used, so there are no
 compatibility concerns.
 
@@ -118,7 +118,7 @@ the former are provided. See [change 1474620] for an example.
 
 The quickest way to rebuild the `tast` executable after modifying its code is by
 running the [fast_build.sh] script located at the top of the `src/platform/tast`
-repository within the Chrome OS chroot. This script bypasses Portage and runs
+repository within the ChromeOS chroot. This script bypasses Portage and runs
 `go build` directly, allowing it to take advantage of [Go's build cache]. Since
 dependency checks are skipped, there's no guarantee that the resulting
 executable is correct – before uploading a change, you should verify it that it

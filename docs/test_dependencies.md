@@ -61,8 +61,8 @@ The following software features are defined:
 *   `crashpad` - Whether the platform supports the crashpad crash handler for
     Chrome.
 *   `cros_internal` - Functionality that is only available in internal builds of
-    Chrome OS (i.e. ones built using `chromeos-overlay`).
-*   `crossystem` - Chrome OS firmware/system interface utility.
+    ChromeOS (i.e. ones built using `chromeos-overlay`).
+*   `crossystem` - ChromeOS firmware/system interface utility.
 *   `crostini_stable` - Boards that can run Crostini tests reliably.
 *   `crostini_unstable` - Boards that cannot run Crostini tests reliably.
 *   `crosvm_gpu` - Boards that use hardware GPU acceleration in the guest VM environment.
@@ -83,7 +83,7 @@ The following software features are defined:
     and produce a panicinfo file after a crash.
 *   `endorsement` - Whether the system have a valid endorsement certificate.
 *   `factory_flow`- Device is subject to the [go/chromeos-factory-flow](http://go/chromeos-factory-flow) (e.g. most devices).
-*   `firewall` - Standard Chrome OS network firewall rules.
+*   `firewall` - Standard ChromeOS network firewall rules.
 *   `flashrom` - Userspace utility to update firmware.
 *   `gboard_decoder` - Whether Gboard built-in decoder is installed.
 *   `google_virtual_keyboard` - The proprietary Google onscreen virtual keyboard
@@ -136,7 +136,7 @@ The following software features are defined:
 *   `no_ondevice_handwriting` - Doesn't have on-device handwriting recognition support. Either ml_service is not enabled, or if ml_service doesn't support `ondevice_handwriting`.
 *   `no_arc_userdebug` - Skip boards that ship ARC userdebug build.
 *   `no_arc_x86` - Skip on x86 architecture.
-*   `no_qemu` - For tests not for Chrome OS QEMU images.
+*   `no_qemu` - For tests not for ChromeOS QEMU images.
 *   `no_symlink_mount` - Symlink mounting is disabled via the
     `CONFIG_SECURITY_CHROMIUMOS_NO_SYMLINK_MOUNT` kernel option.
 *   `no_tablet_form_factor` - The device's primary form factor is not tablet
@@ -160,7 +160,7 @@ The following software features are defined:
     builds with the |propietary_codecs| build flag set.
 *   `protected_content` - Platform has HW backed OEMCrypto implementation for Widevine
     L1 HW DRM.
-*   `qemu` - For tests exclusive to Chrome OS QEMU images.
+*   `qemu` - For tests exclusive to ChromeOS QEMU images.
 *   `racc` - Whether [Runtime AVL Compliance Check] is available.
 *   `reboot` - The ability to reboot reliably during a remote test.
 *   `rrm_support` - Driver support for 802.11k RRM.
@@ -186,7 +186,7 @@ The following software features are defined:
 *   `tpm2_simulator` - Indicate the simulator of Trusted Platform Module supporting TPMv2 is available.
 *   `tpm_dynamic` - Indicate the dynamic TPM is available.
 *   `transparent_hugepage` - [Transparent Hugepage] support in the Linux kernel.
-*   `unibuild` - The Chrome OS build is a unified build.
+*   `unibuild` - The ChromeOS build is a unified build.
 *   `untrusted_vm` - The ability to run an untrusted VM.
 *   `usbguard` - The ability to allow or block USB devices based on policy.
 *   `use_fscrypt_v1` - The board is set to use v1 fscrypt policy for user vault.
@@ -376,7 +376,7 @@ Examples of their expected use cases are:
 
 ### Adding new hardware conditions
 
-In order to guarantee forward compatibility in Chrome OS infra,
+In order to guarantee forward compatibility in ChromeOS infra,
 each `Condition` should be based on the
 `chromiumos.config.api.HardwareFeatures` protobuf schema.
 
@@ -385,7 +385,7 @@ whether `Screen.TouchSupport` is set to `HardwareFeatures_PRESENT`.
 
 Note that currently a `chromiumos.config.api.HardwareFeatures` instance is
 generated internally by Tast at runtime, so only limited fields are filled.
-In the future, Chrome OS infra test scheduler will be responsible for checking
+In the future, ChromeOS infra test scheduler will be responsible for checking
 such conditions before running Tast tests.
 
 Please contact and collaborate with the infra team when you need a new type of

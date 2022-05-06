@@ -92,7 +92,7 @@ failing to pass lint checks may not be reviewed.
 ### Run unit tests
 
 Unit tests are not run automatically in repo upload hooks for technical reasons.
-You need to run them manually by the following command in the Chrome OS chroot:
+You need to run them manually by the following command in the ChromeOS chroot:
 
 ```
 ~/trunk/src/platform/tast/fast_build.sh -T
@@ -142,7 +142,7 @@ Test owners know the tested feature a lot better than Tast reviewers, obviously.
 Tast reviewer reviews make sure your change is good from the perspective of Tast
 test experts.
 
-Tast reviewers are engineers from various teams in Chrome OS who have experience
+Tast reviewers are engineers from various teams in ChromeOS who have experience
 with writing and reviewing Tast tests. Their review insures that tests are
 written using learned best practices for test execution speed, stability and
 maintainability.

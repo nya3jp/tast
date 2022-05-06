@@ -36,7 +36,7 @@ var (
 	systemLogExcludes = []string{"journal"} // journald binary logs: https://crbug.com/931951
 )
 
-// GetSysInfoState implements the GetSysInfoState RPC method for Chrome OS.
+// GetSysInfoState implements the GetSysInfoState RPC method for ChromeOS.
 func GetSysInfoState(ctx context.Context, req *protocol.GetSysInfoStateRequest) (*protocol.GetSysInfoStateResponse, error) {
 	if err := suspendLogCleanup(); err != nil {
 		logging.Infof(ctx, "Failed to pause log cleanup: %v", err)
@@ -67,7 +67,7 @@ func GetSysInfoState(ctx context.Context, req *protocol.GetSysInfoStateRequest) 
 	}, nil
 }
 
-// CollectSysInfo implements the CollectSysInfo RPC method for Chrome OS.
+// CollectSysInfo implements the CollectSysInfo RPC method for ChromeOS.
 func CollectSysInfo(ctx context.Context, req *protocol.CollectSysInfoRequest) (*protocol.CollectSysInfoResponse, error) {
 	initialState := req.GetInitialState()
 

@@ -826,7 +826,7 @@ type DownloadPrivateBundlesRequest struct {
 	// provided by infrastructure system.
 	ServiceConfig *ServiceConfig `protobuf:"bytes,1,opt,name=service_config,json=serviceConfig,proto3" json:"service_config,omitempty"`
 	// BuildArtifactsUrl is the URL of Google Cloud Storage directory, ending with
-	// a slash, containing build artifacts for the current Chrome OS image.
+	// a slash, containing build artifacts for the current ChromeOS image.
 	// If it is empty, DefaultBuildArtifactsURL in runner.Config is used.
 	BuildArtifactUrl string `protobuf:"bytes,2,opt,name=build_artifact_url,json=buildArtifactUrl,proto3" json:"build_artifact_url,omitempty"`
 }
@@ -1734,7 +1734,7 @@ type DataFileConfig struct {
 
 	DownloadMode DownloadMode `protobuf:"varint,1,opt,name=download_mode,json=downloadMode,proto3,enum=tast.core.DownloadMode" json:"download_mode,omitempty"`
 	// BuildArtifactsUrl is the URL of Google Cloud Storage directory, ending with
-	// a slash, containing build artifacts for the current Chrome OS image.
+	// a slash, containing build artifacts for the current ChromeOS image.
 	BuildArtifactsUrl string `protobuf:"bytes,2,opt,name=build_artifacts_url,json=buildArtifactsUrl,proto3" json:"build_artifacts_url,omitempty"`
 }
 

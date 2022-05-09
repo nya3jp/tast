@@ -10,23 +10,12 @@ import (
 	"fmt"
 	"os"
 	"strings"
-	"sync"
 	"testing"
 	"time"
 
 	"chromiumos/tast/shutil"
 	"chromiumos/tast/ssh"
 )
-
-var staticUserKey, staticHostKey *rsa.PrivateKey
-var onceGenerateStaticKeys sync.Once
-
-func staticKeys() (userKey, hostKey *rsa.PrivateKey) {
-	onceGenerateStaticKeys.Do(func() {
-		staticUserKey, staticHostKey = MustGenerateKeys()
-	})
-	return staticUserKey, staticHostKey
-}
 
 // ConnectToServer establishes a connection to srv using key.
 // base is used as a base set of options.
@@ -84,7 +73,7 @@ func NewTestDataConn(t *testing.T) *TestDataConn {
 	td := &TestDataConn{}
 	td.Ctx, td.Cancel = context.WithCancel(context.Background())
 
-	userKey, hostKey := staticKeys()
+	userKey, hostKey := MustGenerateKeys()
 
 	var err error
 	if td.Srv, err = NewSSHServer(&userKey.PublicKey, hostKey, td.handleExec); err != nil {

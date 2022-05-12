@@ -5,7 +5,7 @@
 # found in the LICENSE file.
 
 # This script quickly builds the tast executable or its unit tests within a
-# Chrome OS chroot.
+# ChromeOS chroot.
 
 # Personal Go workspace used to cache compiled packages.
 readonly GOHOME="${HOME}/go"

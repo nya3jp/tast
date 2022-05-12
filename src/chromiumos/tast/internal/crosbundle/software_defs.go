@@ -26,6 +26,7 @@ var softwareFeatureDefs = map[string]string{
 	"arc_launched_64bit": `"!arc-launched-32bit-abi"`,
 	"arm":                `"arm" || "arm64"`,
 	"aslr":               "!asan", // ASan instrumentation breaks ASLR
+	"auto_update_stable": `!("board:*-*")`,
 	"biometrics_daemon":  "biod",
 	// TODO(b/225065082): Re-enable borealis on manatee
 	"borealis_host": "borealis_host && !manatee",

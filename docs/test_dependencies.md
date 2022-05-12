@@ -33,6 +33,8 @@ The following software features are defined:
 *   `aslr` - Address space layout randomization, which mitigates buffer-overflow
     attacks, is functional (this is not true for builds with [AddressSanitizer]
     instrumentation built in).
+*   `auto_update_stable` - No suffix like -kernelnext and -arc-r in the board name.
+    Auto update to a stable version is possible.
 *   `autotest-capability:foo` - An [Autotest capability] named `foo`. See below.
 *   `biometrics_daemon` - The ability to process fingerprint authentication.
     This implies the presence of the `biod` package.

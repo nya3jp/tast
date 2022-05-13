@@ -15,7 +15,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/godbus/dbus"
+	"github.com/godbus/dbus/v5"
 
 	"chromiumos/tast/errors"
 )
@@ -57,7 +57,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/godbus/dbus"
+	"github.com/godbus/dbus/v5"
 
 	"chromiumos/tast/errors"
 )
@@ -145,7 +145,7 @@ func main() {
 	files[filename4] = `package main
 
 import (
-	"github.com/godbus/dbus"
+	"github.com/godbus/dbus/v5"
 )
 
 func main() {
@@ -157,7 +157,7 @@ func main() {
 	expects[filename4] = `package main
 
 import (
-	"github.com/godbus/dbus"
+	"github.com/godbus/dbus/v5"
 
 	"chromiumos/tast/local/dbusutil"
 )

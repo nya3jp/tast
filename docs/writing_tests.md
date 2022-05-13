@@ -240,7 +240,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/godbus/dbus"
+	"github.com/godbus/dbus/v5"
 	"golang.org/x/sys/unix"
 
 	"chromiumos/tast/errors"

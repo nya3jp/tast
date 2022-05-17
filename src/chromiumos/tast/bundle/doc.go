@@ -7,7 +7,7 @@ Package bundle contains functionality shared by test bundles.
 
 Test bundles are executables containing sets of local or remote tests.
 They allow groups of tests to be built and deployed separately (because they
-test different products based on the Chromium OS project, contain non-public
+test different products based on the ChromiumOS project, contain non-public
 code, etc.).
 
 Bundles are executed by test runners, which aggregate test results and

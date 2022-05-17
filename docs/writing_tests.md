@@ -92,7 +92,7 @@ using variables. In particular, we say constant-like is any of these things:
 The test registration code will be similar to the following:
 
 ```go
-// Copyright 2018 The Chromium OS Authors. All rights reserved.
+// Copyright 2018 The ChromiumOS Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -1364,7 +1364,7 @@ func init() {
         }, {
             Name:              "h264",
             Val:               "sample.h264",
-            ExtraSoftwareDeps: []string{"chrome_internal"}, // H.264 codec is unavailable on Chromium OS
+            ExtraSoftwareDeps: []string{"chrome_internal"}, // H.264 codec is unavailable on ChromiumOS
             ExtraData:         []string{"sample.h264"},
             ExtraAttr:         []string{"informational"},
         }},
@@ -1494,7 +1494,7 @@ guidelines:
 `.pb.go` files, looking like the following:
 
 ```go
-// Copyright 2019 The Chromium OS Authors. All rights reserved.
+// Copyright 2019 The ChromiumOS Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 

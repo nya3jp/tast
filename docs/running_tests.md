@@ -90,7 +90,7 @@ To skip rebuilding a bundle and instead run all builtin bundles within the
 all `test` system images (non-`test` system images are not supposed by Tast).
 
 [tast-tests repository]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/
-[Go in Chromium OS]: https://www.chromium.org/chromium-os/developer-guide/go-in-chromium-os
+[Go in ChromiumOS]: https://www.chromium.org/chromium-os/developer-guide/go-in-chromium-os
 
 ## Running tests with Servo
 

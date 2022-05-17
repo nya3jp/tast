@@ -12,7 +12,7 @@ For more information, see the [list of documentation](docs/README.md).
 
 ## Directory structure
 
-This repository is organized in accordance with the [Go in Chromium OS]
+This repository is organized in accordance with the [Go in ChromiumOS]
 suggestions.
 
 *   [`src/chromiumos/`](src/chromiumos/)
@@ -30,7 +30,7 @@ suggestions.
 
 Tests are located in the [tast-tests repository].
 
-[Go in Chromium OS]: http://www.chromium.org/chromium-os/developer-guide/go-in-chromium-os
+[Go in ChromiumOS]: http://www.chromium.org/chromium-os/developer-guide/go-in-chromium-os
 [tast-tests repository]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/
 
 ## Notes about the logo

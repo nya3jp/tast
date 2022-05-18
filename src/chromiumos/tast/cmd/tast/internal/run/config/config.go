@@ -50,6 +50,7 @@ const (
 	defaultKeyFile               = "chromite/ssh_keys/testing_rsa" // default private SSH key within ChromeOS checkout
 	checkDepsCacheFile           = "check_deps_cache.v2.json"      // file in BuildOutDir where dependency-checking results are cached
 	defaultSystemServicesTimeout = 120 * time.Second               //default timeout for waiting for system services to be ready in seconds
+	dutNotToConnect              = "-"                             // Target for dutless scenarios
 )
 
 // MutableConfig is similar to Config, but its fields are mutable.
@@ -365,6 +366,11 @@ func NewMutableConfig(mode Mode, tastDir, trunkDir string) *MutableConfig {
 		CompanionDUTs: make(map[string]string),
 		ForceSkips:    make(map[string]*protocol.ForceSkip),
 	}
+}
+
+// ShouldConnect tells whether we should connect to the specified target.
+func ShouldConnect(target string) bool {
+	return target != dutNotToConnect
 }
 
 // SetFlags adds common run-related flags to f that store values in Config.

@@ -45,6 +45,10 @@ const (
 // Run executes or lists tests per cfg and returns the results.
 // Messages are logged via ctx as the run progresses.
 func Run(ctx context.Context, cfg *config.Config, state *config.DeprecatedState) ([]*resultsjson.Result, error) {
+	if !config.ShouldConnect(cfg.Target()) {
+		logging.Info(ctx, "Tast will not make any connection to the target '-'.")
+	}
+
 	reportClient, err := reporting.NewRPCClient(ctx, cfg.ReportsServer())
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to set up gRPC servers")
@@ -52,7 +56,7 @@ func Run(ctx context.Context, cfg *config.Config, state *config.DeprecatedState)
 	defer reportClient.Close()
 
 	// Always start an ephemeral devserver for remote tests if TLWServer is not specified, and allowed.
-	if cfg.TLWServer() == "" && cfg.UseEphemeralDevserver() {
+	if cfg.TLWServer() == "" && cfg.UseEphemeralDevserver() && config.ShouldConnect(cfg.Target()) {
 		es, err := startEphemeralDevserverForRemoteTests(ctx, cfg, state)
 		if err != nil {
 			return nil, errors.Wrap(err, "failed to start ephemeral devserver for remote tests")

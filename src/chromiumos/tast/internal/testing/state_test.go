@@ -21,9 +21,12 @@ import (
 	"time"
 
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
+	"go.chromium.org/chromiumos/config/go/api"
 	"google.golang.org/protobuf/testing/protocmp"
 
 	"chromiumos/tast/errors"
+	frameworkprotocol "chromiumos/tast/framework/protocol"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/testutil"
@@ -801,6 +804,7 @@ func TestStateExports(t *gotesting.T) {
 				"Errorf",
 				"Fatal",
 				"Fatalf",
+				"Features",
 				"FixtValue",
 				"HasError",
 				"Log",
@@ -830,6 +834,7 @@ func TestStateExports(t *gotesting.T) {
 				"Errorf",
 				"Fatal",
 				"Fatalf",
+				"Features",
 				"HasError",
 				"Log",
 				"Logf",
@@ -856,6 +861,7 @@ func TestStateExports(t *gotesting.T) {
 				"Errorf",
 				"Fatal",
 				"Fatalf",
+				"Features",
 				"HasError",
 				"Log",
 				"Logf",
@@ -881,6 +887,7 @@ func TestStateExports(t *gotesting.T) {
 				"Errorf",
 				"Fatal",
 				"Fatalf",
+				"Features",
 				"FixtContext",
 				"HasError",
 				"Log",
@@ -904,6 +911,7 @@ func TestStateExports(t *gotesting.T) {
 				"Errorf",
 				"Fatal",
 				"Fatalf",
+				"Features",
 				"HasError",
 				"Log",
 				"Logf",
@@ -933,5 +941,46 @@ func TestStateExports(t *gotesting.T) {
 				t.Errorf("Methods unmatch (-got +want):\n%s", diff)
 			}
 		})
+	}
+}
+
+func TestHardwareFeatures(t *gotesting.T) {
+	features := map[string]*frameworkprotocol.DUTFeatures{
+		"": {
+			Hardware: &frameworkprotocol.HardwareFeatures{
+				HardwareFeatures: &api.HardwareFeatures{
+					Screen: &api.HardwareFeatures_Screen{
+						PanelProperties: &api.Component_DisplayPanel_Properties{},
+					},
+				},
+			},
+		},
+
+		"cd1": {
+			Hardware: &frameworkprotocol.HardwareFeatures{
+				HardwareFeatures: &api.HardwareFeatures{
+					Storage: &api.HardwareFeatures_Storage{
+						StorageType: api.Component_Storage_NVME,
+					},
+				},
+			},
+		},
+	}
+	test := &testing.TestInstance{}
+	cfg := &testing.RuntimeConfig{Features: features}
+	var out outputSink
+	root := testing.NewTestEntityRoot(test, cfg, &out, testing.NewEntityCondition())
+	s := root.NewTestState()
+
+	for role, features := range features {
+		got := s.Features(role)
+		opts := []cmp.Option{
+			cmpopts.IgnoreUnexported(frameworkprotocol.DUTFeatures{}),
+			cmpopts.IgnoreUnexported(frameworkprotocol.HardwareFeatures{}),
+			cmpopts.IgnoreUnexported(api.HardwareFeatures{}),
+		}
+		if diff := cmp.Diff(got, features, opts...); diff != "" {
+			t.Errorf("Failed to get hardware feature for %q (-got +want):\n%s", role, diff)
+		}
 	}
 }

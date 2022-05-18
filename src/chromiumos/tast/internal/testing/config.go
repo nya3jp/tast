@@ -8,6 +8,7 @@ import (
 	"context"
 
 	"chromiumos/tast/dut"
+	"chromiumos/tast/framework/protocol"
 )
 
 // RuntimeConfig contains details about how an individual test should be run.
@@ -19,6 +20,8 @@ type RuntimeConfig struct {
 	// Vars contains names and values of out-of-band variables passed to tests at runtime.
 	// Names must be registered in Test.Vars and values may be accessed using State.Var.
 	Vars map[string]string
+	// Features contains hardware features for all DUTs used in the test.
+	Features map[string]*protocol.DUTFeatures
 	// CloudStorage is a client to read files on Google Cloud Storage.
 	CloudStorage *CloudStorage
 	// RemoteData contains information relevant to remote tests.

@@ -17,6 +17,7 @@ import (
 	"time"
 
 	"chromiumos/tast/errors"
+	frameworkprotocol "chromiumos/tast/framework/protocol"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/planner/internal/entity"
 	"chromiumos/tast/internal/planner/internal/fixture"
@@ -735,10 +736,17 @@ func runTestWithConfig(ctx context.Context, tcfg *testConfig, pcfg *Config, stac
 	var postTestFunc func(ctx context.Context, s *testing.TestHookState)
 
 	condition := testing.NewEntityCondition()
+
+	features := make(map[string]*frameworkprotocol.DUTFeatures)
+	features[""] = pcfg.Features.GetDut()
+	for role, dutFeatures := range pcfg.Features.GetCompanionFeatures() {
+		features[role] = dutFeatures
+	}
 	rcfg := &testing.RuntimeConfig{
-		DataDir: filepath.Join(pcfg.Dirs.GetDataDir(), testing.RelativeDataDir(tcfg.test.Pkg)),
-		OutDir:  tcfg.outDir,
-		Vars:    pcfg.Features.GetInfra().GetVars(),
+		DataDir:  filepath.Join(pcfg.Dirs.GetDataDir(), testing.RelativeDataDir(tcfg.test.Pkg)),
+		OutDir:   tcfg.outDir,
+		Vars:     pcfg.Features.GetInfra().GetVars(),
+		Features: features,
 		CloudStorage: testing.NewCloudStorage(
 			pcfg.Service.GetDevservers(),
 			pcfg.Service.GetTlwServer(),

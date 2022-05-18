@@ -64,6 +64,7 @@ import (
 
 	"chromiumos/tast/dut"
 	"chromiumos/tast/errors"
+	frameworkprotocol "chromiumos/tast/framework/protocol"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testcontext"
@@ -475,6 +476,12 @@ func (s *globalMixin) recordError() {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	s.hasError = true
+}
+
+// Features returns the features of a DUT based on role name.
+// For primary DUT, use "" as the role name.
+func (s *globalMixin) Features(role string) *frameworkprotocol.DUTFeatures {
+	return s.entityRoot.cfg.Features[role]
 }
 
 // entityMixin implements common methods for State types allowing to access

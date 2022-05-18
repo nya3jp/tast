@@ -11,6 +11,7 @@ import (
 	"strings"
 
 	"chromiumos/tast/errors"
+	frameworkprotocol "chromiumos/tast/framework/protocol"
 	"chromiumos/tast/internal/protocol"
 )
 
@@ -56,7 +57,7 @@ func (d *Deps) Check(f *protocol.Features) (reasons []string, err error) {
 	}
 
 	for role, swDep := range d.Software {
-		var dut *protocol.DUTFeatures
+		var dut *frameworkprotocol.DUTFeatures
 		if role != "" {
 			var valid bool
 			if dut, valid = f.GetCompanionFeatures()[role]; !valid {
@@ -77,7 +78,7 @@ func (d *Deps) Check(f *protocol.Features) (reasons []string, err error) {
 	}
 
 	for role, hwDep := range d.Hardware {
-		var dut *protocol.DUTFeatures
+		var dut *frameworkprotocol.DUTFeatures
 		if role != "" {
 			var valid bool
 			dut, valid = f.GetCompanionFeatures()[role]

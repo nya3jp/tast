@@ -12,6 +12,7 @@ import (
 	"os"
 	"path/filepath"
 
+	frameworkprotocol "chromiumos/tast/framework/protocol"
 	"chromiumos/tast/internal/command"
 	"chromiumos/tast/internal/protocol"
 )
@@ -148,8 +149,8 @@ func (c *DeprecatedDirectRunConfig) RunConfig(tests []string) *protocol.RunConfi
 		},
 		Features: &protocol.Features{
 			CheckDeps: c.CheckDeps,
-			Dut: &protocol.DUTFeatures{
-				Software: &protocol.SoftwareFeatures{
+			Dut: &frameworkprotocol.DUTFeatures{
+				Software: &frameworkprotocol.SoftwareFeatures{
 					Available:   c.AvailableSoftwareFeatures,
 					Unavailable: c.UnavailableSoftwareFeatures,
 				},

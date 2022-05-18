@@ -20,6 +20,7 @@ import (
 
 	"chromiumos/tast/cmd/tast/internal/build"
 	"chromiumos/tast/errors"
+	frameworkprotocol "chromiumos/tast/framework/protocol"
 	"chromiumos/tast/internal/command"
 	"chromiumos/tast/internal/debugger"
 	"chromiumos/tast/internal/protocol"
@@ -735,8 +736,8 @@ func (c *Config) RemoteBundleGlob() string {
 }
 
 // Features constructs Features from Config and protocol.DUTFeatures.
-func (c *Config) Features(dut *protocol.DUTFeatures,
-	companions map[string]*protocol.DUTFeatures) *protocol.Features {
+func (c *Config) Features(dut *frameworkprotocol.DUTFeatures,
+	companions map[string]*frameworkprotocol.DUTFeatures) *protocol.Features {
 	return &protocol.Features{
 		CheckDeps: c.CheckTestDeps(),
 		Infra: &protocol.InfraFeatures{

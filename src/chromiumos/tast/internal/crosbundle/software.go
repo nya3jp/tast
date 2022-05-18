@@ -14,9 +14,9 @@ import (
 
 	"chromiumos/tast/autocaps"
 	"chromiumos/tast/errors"
+	protocol "chromiumos/tast/framework/protocol"
 	"chromiumos/tast/internal/expr"
 	"chromiumos/tast/internal/logging"
-	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/lsbrelease"
 )
 

@@ -17,6 +17,7 @@ import (
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/errors"
+	frameworkprotocol "chromiumos/tast/framework/protocol"
 	"chromiumos/tast/internal/debugger"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/minidriver"
@@ -235,7 +236,7 @@ func (d *Driver) runLocalTestsWithRetry(ctx context.Context, bundle string, test
 
 	buildArtifactsURL := getBuildArtifactsURL(d.cfg.BuildArtifactsURLOverride(), args.DUTInfo[""].GetDefaultBuildArtifactsUrl())
 
-	dutFeature := make(map[string]*protocol.DUTFeatures)
+	dutFeature := make(map[string]*frameworkprotocol.DUTFeatures)
 	for key, value := range args.DUTInfo {
 		dutFeature[key] = value.GetFeatures()
 	}
@@ -362,7 +363,7 @@ func (d *Driver) newConfigsForRemoteTests(tests []string, dutInfos map[string]*p
 			RunFlags: runFlags,
 		},
 	}
-	CompanionFeatures := make(map[string]*protocol.DUTFeatures)
+	CompanionFeatures := make(map[string]*frameworkprotocol.DUTFeatures)
 	for role, dutInfo := range dutInfos {
 		if role != "" {
 			CompanionFeatures[role] = dutInfo.GetFeatures()

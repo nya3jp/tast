@@ -15,6 +15,7 @@ import (
 	"github.com/golang/protobuf/ptypes/empty"
 	"google.golang.org/grpc"
 
+	frameworkprotocol "chromiumos/tast/framework/protocol"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/planner"
 	"chromiumos/tast/internal/protocol"
@@ -142,8 +143,8 @@ func (s *fixtureService) pushAndPop(srv protocol.FixtureService_RunFixtureServer
 			Infra: &protocol.InfraFeatures{
 				Vars: r.Config.TestVars,
 			},
-			Dut: &protocol.DUTFeatures{
-				Software: &protocol.SoftwareFeatures{
+			Dut: &frameworkprotocol.DUTFeatures{
+				Software: &frameworkprotocol.SoftwareFeatures{
 					Available:   r.Config.AvailableSoftwareFeatures,
 					Unavailable: r.Config.UnavailableSoftwareFeatures,
 				},

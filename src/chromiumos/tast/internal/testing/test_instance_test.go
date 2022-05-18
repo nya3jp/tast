@@ -17,6 +17,7 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"google.golang.org/protobuf/testing/protocmp"
 
+	frameworkprotocol "chromiumos/tast/framework/protocol"
 	"chromiumos/tast/internal/dep"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/testing/hwdep"
@@ -61,14 +62,14 @@ func features(availableSWs []string, model string) *protocol.Features {
 
 	return &protocol.Features{
 		CheckDeps: true,
-		Dut: &protocol.DUTFeatures{
-			Software: &protocol.SoftwareFeatures{
+		Dut: &frameworkprotocol.DUTFeatures{
+			Software: &frameworkprotocol.SoftwareFeatures{
 				Available:   availableSWs,
 				Unavailable: unavailableSWs,
 			},
-			Hardware: &protocol.HardwareFeatures{
-				DeprecatedDeviceConfig: &protocol.DeprecatedDeviceConfig{
-					Id: &protocol.DeprecatedConfigId{
+			Hardware: &frameworkprotocol.HardwareFeatures{
+				DeprecatedDeviceConfig: &frameworkprotocol.DeprecatedDeviceConfig{
+					Id: &frameworkprotocol.DeprecatedConfigId{
 						Model: model,
 					},
 				},
@@ -1005,8 +1006,8 @@ func TestInstantiateNonPointerPrecondition(t *gotesting.T) {
 func TestSoftwareDeps(t *gotesting.T) {
 	fs := &protocol.Features{
 		CheckDeps: true,
-		Dut: &protocol.DUTFeatures{
-			Software: &protocol.SoftwareFeatures{
+		Dut: &frameworkprotocol.DUTFeatures{
+			Software: &frameworkprotocol.SoftwareFeatures{
 				Available:   []string{"dep1", "dep2"},
 				Unavailable: []string{"dep0", "dep3"},
 			},
@@ -1048,8 +1049,8 @@ func TestSoftwareDeps(t *gotesting.T) {
 func TestSoftwareDepsForAllCompaion(t *gotesting.T) {
 	fs := &protocol.Features{
 		CheckDeps: true,
-		Dut: &protocol.DUTFeatures{
-			Software: &protocol.SoftwareFeatures{
+		Dut: &frameworkprotocol.DUTFeatures{
+			Software: &frameworkprotocol.SoftwareFeatures{
 				Available:   []string{"dep1", "dep2"},
 				Unavailable: []string{"dep0", "dep3"},
 			},
@@ -1100,10 +1101,10 @@ func TestSoftwareDepsForAllCompaion(t *gotesting.T) {
 func TestHardwareDepsForAllPrimary(t *gotesting.T) {
 	fs := &protocol.Features{
 		CheckDeps: true,
-		Dut: &protocol.DUTFeatures{
-			Hardware: &protocol.HardwareFeatures{
-				DeprecatedDeviceConfig: &protocol.DeprecatedDeviceConfig{
-					Id: &protocol.DeprecatedConfigId{
+		Dut: &frameworkprotocol.DUTFeatures{
+			Hardware: &frameworkprotocol.HardwareFeatures{
+				DeprecatedDeviceConfig: &frameworkprotocol.DeprecatedDeviceConfig{
+					Id: &frameworkprotocol.DeprecatedConfigId{
 						Model: "samus",
 					},
 				},
@@ -1134,10 +1135,10 @@ func TestHardwareDepsForAllPrimary(t *gotesting.T) {
 func TestHardwareDepsForAllCompaion(t *gotesting.T) {
 	fs := &protocol.Features{
 		CheckDeps: true,
-		Dut: &protocol.DUTFeatures{
-			Hardware: &protocol.HardwareFeatures{
-				DeprecatedDeviceConfig: &protocol.DeprecatedDeviceConfig{
-					Id: &protocol.DeprecatedConfigId{
+		Dut: &frameworkprotocol.DUTFeatures{
+			Hardware: &frameworkprotocol.HardwareFeatures{
+				DeprecatedDeviceConfig: &frameworkprotocol.DeprecatedDeviceConfig{
+					Id: &frameworkprotocol.DeprecatedConfigId{
 						Model: "samus",
 					},
 				},

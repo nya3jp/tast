@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 //go:generate protoc --go_out=plugins=grpc:../../../.. -I . reports.proto
+//go:generate protoc --go_out=plugins=grpc:../../../.. -I . -I ../../../../../../../config/proto dutfeatures.proto
 
 package protocol
 

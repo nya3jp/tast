@@ -22,8 +22,8 @@ import (
 	configpb "go.chromium.org/chromiumos/config/go/api"
 
 	"chromiumos/tast/errors"
+	"chromiumos/tast/framework/protocol"
 	"chromiumos/tast/internal/logging"
-	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/testing/wlan"
 )
 

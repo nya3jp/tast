@@ -9,14 +9,14 @@ import (
 
 	configpb "go.chromium.org/chromiumos/config/go/api"
 
-	"chromiumos/tast/internal/protocol"
+	frameworkprotocol "chromiumos/tast/framework/protocol"
 	"chromiumos/tast/testing/hwdep"
 )
 
-func verifyCondition(t *testing.T, c hwdep.Condition, dc *protocol.DeprecatedDeviceConfig, features *configpb.HardwareFeatures, expectSatisfied bool) {
+func verifyCondition(t *testing.T, c hwdep.Condition, dc *frameworkprotocol.DeprecatedDeviceConfig, features *configpb.HardwareFeatures, expectSatisfied bool) {
 	t.Helper()
 
-	satisfied, reason, err := c.Satisfied(&protocol.HardwareFeatures{HardwareFeatures: features, DeprecatedDeviceConfig: dc})
+	satisfied, reason, err := c.Satisfied(&frameworkprotocol.HardwareFeatures{HardwareFeatures: features, DeprecatedDeviceConfig: dc})
 	if err != nil {
 		t.Error("Error while evaluating condition: ", err)
 	}
@@ -31,9 +31,9 @@ func verifyCondition(t *testing.T, c hwdep.Condition, dc *protocol.DeprecatedDev
 	}
 }
 
-func expectError(t *testing.T, c hwdep.Condition, dc *protocol.DeprecatedDeviceConfig, features *configpb.HardwareFeatures) {
+func expectError(t *testing.T, c hwdep.Condition, dc *frameworkprotocol.DeprecatedDeviceConfig, features *configpb.HardwareFeatures) {
 	t.Helper()
-	_, _, err := c.Satisfied(&protocol.HardwareFeatures{HardwareFeatures: features, DeprecatedDeviceConfig: dc})
+	_, _, err := c.Satisfied(&frameworkprotocol.HardwareFeatures{HardwareFeatures: features, DeprecatedDeviceConfig: dc})
 	if err == nil {
 		t.Errorf("Unexpectedly succeded")
 	}
@@ -55,8 +55,8 @@ func TestModel(t *testing.T) {
 	} {
 		verifyCondition(
 			t, c,
-			&protocol.DeprecatedDeviceConfig{
-				Id: &protocol.DeprecatedConfigId{
+			&frameworkprotocol.DeprecatedDeviceConfig{
+				Id: &frameworkprotocol.DeprecatedConfigId{
 					Model: tc.model,
 				},
 			},
@@ -82,8 +82,8 @@ func TestSkipOnModel(t *testing.T) {
 	} {
 		verifyCondition(
 			t, c,
-			&protocol.DeprecatedDeviceConfig{
-				Id: &protocol.DeprecatedConfigId{
+			&frameworkprotocol.DeprecatedDeviceConfig{
+				Id: &frameworkprotocol.DeprecatedConfigId{
 					Model: tc.model,
 				},
 			},
@@ -106,8 +106,8 @@ func TestPlatform(t *testing.T) {
 	} {
 		verifyCondition(
 			t, c,
-			&protocol.DeprecatedDeviceConfig{
-				Id: &protocol.DeprecatedConfigId{
+			&frameworkprotocol.DeprecatedDeviceConfig{
+				Id: &frameworkprotocol.DeprecatedConfigId{
 					Platform: tc.platform,
 				},
 			},
@@ -130,8 +130,8 @@ func TestSkipOnPlatform(t *testing.T) {
 	} {
 		verifyCondition(
 			t, c,
-			&protocol.DeprecatedDeviceConfig{
-				Id: &protocol.DeprecatedConfigId{
+			&frameworkprotocol.DeprecatedDeviceConfig{
+				Id: &frameworkprotocol.DeprecatedConfigId{
 					Platform: tc.platform,
 				},
 			},
@@ -152,7 +152,7 @@ func TestTouchscreen(t *testing.T) {
 	} {
 		verifyCondition(
 			t, c,
-			&protocol.DeprecatedDeviceConfig{},
+			&frameworkprotocol.DeprecatedDeviceConfig{},
 			&configpb.HardwareFeatures{
 				Screen: &configpb.HardwareFeatures_Screen{
 					TouchSupport: tc.TouchSupport,
@@ -162,7 +162,7 @@ func TestTouchscreen(t *testing.T) {
 	}
 	expectError(
 		t, c,
-		&protocol.DeprecatedDeviceConfig{},
+		&frameworkprotocol.DeprecatedDeviceConfig{},
 		nil)
 }
 
@@ -203,7 +203,7 @@ func TestChromeEC(t *testing.T) {
 	} {
 		verifyCondition(
 			t, c,
-			&protocol.DeprecatedDeviceConfig{},
+			&frameworkprotocol.DeprecatedDeviceConfig{},
 			&configpb.HardwareFeatures{
 				EmbeddedController: &configpb.HardwareFeatures_EmbeddedController{
 					Present: tc.ECPresent,
@@ -214,7 +214,7 @@ func TestChromeEC(t *testing.T) {
 	}
 	expectError(
 		t, c,
-		&protocol.DeprecatedDeviceConfig{},
+		&frameworkprotocol.DeprecatedDeviceConfig{},
 		nil)
 }
 
@@ -232,7 +232,7 @@ func TestECFFeatureTypecCmd(t *testing.T) {
 	} {
 		verifyCondition(
 			t, c,
-			&protocol.DeprecatedDeviceConfig{},
+			&frameworkprotocol.DeprecatedDeviceConfig{},
 			&configpb.HardwareFeatures{
 				EmbeddedController: &configpb.HardwareFeatures_EmbeddedController{
 					FeatureTypecCmd: tc.ECFeatureTypecCmd,
@@ -242,7 +242,7 @@ func TestECFFeatureTypecCmd(t *testing.T) {
 	}
 	expectError(
 		t, c,
-		&protocol.DeprecatedDeviceConfig{},
+		&frameworkprotocol.DeprecatedDeviceConfig{},
 		nil)
 }
 
@@ -258,7 +258,7 @@ func TestFingerprint(t *testing.T) {
 	} {
 		verifyCondition(
 			t, c,
-			&protocol.DeprecatedDeviceConfig{},
+			&frameworkprotocol.DeprecatedDeviceConfig{},
 			&configpb.HardwareFeatures{
 				Fingerprint: &configpb.HardwareFeatures_Fingerprint{
 					Location: tc.Fingerprint,
@@ -268,7 +268,7 @@ func TestFingerprint(t *testing.T) {
 	}
 	expectError(
 		t, c,
-		&protocol.DeprecatedDeviceConfig{},
+		&frameworkprotocol.DeprecatedDeviceConfig{},
 		nil)
 }
 
@@ -284,7 +284,7 @@ func TestNoFingerprint(t *testing.T) {
 	} {
 		verifyCondition(
 			t, c,
-			&protocol.DeprecatedDeviceConfig{},
+			&frameworkprotocol.DeprecatedDeviceConfig{},
 			&configpb.HardwareFeatures{
 				Fingerprint: &configpb.HardwareFeatures_Fingerprint{
 					Location: tc.Fingerprint,
@@ -294,7 +294,7 @@ func TestNoFingerprint(t *testing.T) {
 	}
 	expectError(
 		t, c,
-		&protocol.DeprecatedDeviceConfig{},
+		&frameworkprotocol.DeprecatedDeviceConfig{},
 		nil)
 }
 
@@ -310,7 +310,7 @@ func TestInternalDisplay(t *testing.T) {
 	} {
 		verifyCondition(
 			t, c,
-			&protocol.DeprecatedDeviceConfig{},
+			&frameworkprotocol.DeprecatedDeviceConfig{},
 			&configpb.HardwareFeatures{
 				Screen: &configpb.HardwareFeatures_Screen{
 					PanelProperties: tc.PanelProperties,
@@ -333,7 +333,7 @@ func TestNvmeStorage(t *testing.T) {
 	} {
 		verifyCondition(
 			t, c,
-			&protocol.DeprecatedDeviceConfig{},
+			&frameworkprotocol.DeprecatedDeviceConfig{},
 			&configpb.HardwareFeatures{
 				Storage: &configpb.HardwareFeatures_Storage{
 					StorageType: tc.StorageType,
@@ -343,7 +343,7 @@ func TestNvmeStorage(t *testing.T) {
 	}
 	expectError(
 		t, c,
-		&protocol.DeprecatedDeviceConfig{},
+		&frameworkprotocol.DeprecatedDeviceConfig{},
 		nil)
 }
 
@@ -362,8 +362,8 @@ func TestWiFiIntel(t *testing.T) {
 	} {
 		verifyCondition(
 			t, c,
-			&protocol.DeprecatedDeviceConfig{
-				Id: &protocol.DeprecatedConfigId{
+			&frameworkprotocol.DeprecatedDeviceConfig{
+				Id: &frameworkprotocol.DeprecatedConfigId{
 					Platform: tc.platform,
 					Model:    tc.model,
 				},
@@ -453,7 +453,7 @@ func TestMicrophone(t *testing.T) {
 	} {
 		verifyCondition(
 			t, c,
-			&protocol.DeprecatedDeviceConfig{},
+			&frameworkprotocol.DeprecatedDeviceConfig{},
 			&configpb.HardwareFeatures{
 				Audio: &configpb.HardwareFeatures_Audio{
 					LidMicrophone:  &configpb.HardwareFeatures_Count{Value: tc.lidMicrophone},
@@ -476,7 +476,7 @@ func TestSpeaker(t *testing.T) {
 	} {
 		verifyCondition(
 			t, c,
-			&protocol.DeprecatedDeviceConfig{},
+			&frameworkprotocol.DeprecatedDeviceConfig{},
 			&configpb.HardwareFeatures{
 				Audio: &configpb.HardwareFeatures_Audio{
 					SpeakerAmplifier: tc.speakerAmplifier,
@@ -498,7 +498,7 @@ func TestPrivacyScreen(t *testing.T) {
 	} {
 		verifyCondition(
 			t, c,
-			&protocol.DeprecatedDeviceConfig{},
+			&frameworkprotocol.DeprecatedDeviceConfig{},
 			&configpb.HardwareFeatures{
 				PrivacyScreen: &configpb.HardwareFeatures_PrivacyScreen{
 					Present: tc.PrivacyScreen,
@@ -508,7 +508,7 @@ func TestPrivacyScreen(t *testing.T) {
 	}
 	expectError(
 		t, c,
-		&protocol.DeprecatedDeviceConfig{},
+		&frameworkprotocol.DeprecatedDeviceConfig{},
 		nil)
 }
 
@@ -541,13 +541,13 @@ func TestKeyboard(t *testing.T) {
 	} {
 		verifyCondition(
 			t, c,
-			&protocol.DeprecatedDeviceConfig{},
+			&frameworkprotocol.DeprecatedDeviceConfig{},
 			tc.features,
 			tc.expectSatisfied)
 	}
 	expectError(
 		t, c,
-		&protocol.DeprecatedDeviceConfig{},
+		&frameworkprotocol.DeprecatedDeviceConfig{},
 		nil)
 }
 
@@ -576,13 +576,13 @@ func TestSmartAmpBootTimeCalibration(t *testing.T) {
 	} {
 		verifyCondition(
 			t, c,
-			&protocol.DeprecatedDeviceConfig{},
+			&frameworkprotocol.DeprecatedDeviceConfig{},
 			tc.features,
 			tc.expectSatisfied)
 	}
 	expectError(
 		t, c,
-		&protocol.DeprecatedDeviceConfig{},
+		&frameworkprotocol.DeprecatedDeviceConfig{},
 		nil)
 }
 
@@ -610,12 +610,12 @@ func TestDisplayPortConverter(t *testing.T) {
 			},
 		}, true},
 	} {
-		verifyCondition(t, c, &protocol.DeprecatedDeviceConfig{},
+		verifyCondition(t, c, &frameworkprotocol.DeprecatedDeviceConfig{},
 			tc.features, tc.expectSatisfied)
 	}
 	expectError(
 		t, c,
-		&protocol.DeprecatedDeviceConfig{},
+		&frameworkprotocol.DeprecatedDeviceConfig{},
 		nil)
 }
 
@@ -629,15 +629,15 @@ func TestAssistantkey(t *testing.T) {
 		{"atlas", true},
 		{"volteer", false},
 	} {
-		verifyCondition(t, hwdep.AssistantKey(), &protocol.DeprecatedDeviceConfig{
-			Id: &protocol.DeprecatedConfigId{
+		verifyCondition(t, hwdep.AssistantKey(), &frameworkprotocol.DeprecatedDeviceConfig{
+			Id: &frameworkprotocol.DeprecatedConfigId{
 				Model: tc.model,
 			},
 		}, &configpb.HardwareFeatures{}, tc.wantSatisfied)
 
 		// hwdep.NoAssistantKey should always be !hwdep.AssistantKey.
-		verifyCondition(t, hwdep.NoAssistantKey(), &protocol.DeprecatedDeviceConfig{
-			Id: &protocol.DeprecatedConfigId{
+		verifyCondition(t, hwdep.NoAssistantKey(), &frameworkprotocol.DeprecatedDeviceConfig{
+			Id: &frameworkprotocol.DeprecatedConfigId{
 				Model: tc.model,
 			},
 		}, &configpb.HardwareFeatures{}, !tc.wantSatisfied)

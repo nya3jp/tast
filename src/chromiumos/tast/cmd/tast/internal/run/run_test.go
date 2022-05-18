@@ -186,8 +186,8 @@ func TestRunResults(t *gotesting.T) {
 		return runtest.WithGetDUTInfo(func(req *protocol.GetDUTInfoRequest) (*protocol.GetDUTInfoResponse, error) {
 			return &protocol.GetDUTInfoResponse{
 				DutInfo: &protocol.DUTInfo{
-					Features: &protocol.DUTFeatures{
-						Software: &protocol.SoftwareFeatures{
+					Features: &frameworkprotocol.DUTFeatures{
+						Software: &frameworkprotocol.SoftwareFeatures{
 							Unavailable: []string{"missing1"},
 						},
 					},
@@ -203,8 +203,8 @@ func TestRunResults(t *gotesting.T) {
 		runtest.WithGetDUTInfo(func(req *protocol.GetDUTInfoRequest) (*protocol.GetDUTInfoResponse, error) {
 			return &protocol.GetDUTInfoResponse{
 				DutInfo: &protocol.DUTInfo{
-					Features: &protocol.DUTFeatures{
-						Software: &protocol.SoftwareFeatures{
+					Features: &frameworkprotocol.DUTFeatures{
+						Software: &frameworkprotocol.SoftwareFeatures{
 							Unavailable: []string{"missing"},
 						},
 					},
@@ -394,8 +394,8 @@ func TestRunLogs(t *gotesting.T) {
 		return runtest.WithGetDUTInfo(func(req *protocol.GetDUTInfoRequest) (*protocol.GetDUTInfoResponse, error) {
 			return &protocol.GetDUTInfoResponse{
 				DutInfo: &protocol.DUTInfo{
-					Features: &protocol.DUTFeatures{
-						Software: &protocol.SoftwareFeatures{
+					Features: &frameworkprotocol.DUTFeatures{
+						Software: &frameworkprotocol.SoftwareFeatures{
 							Unavailable: []string{"missing1"},
 						},
 					},
@@ -411,8 +411,8 @@ func TestRunLogs(t *gotesting.T) {
 		runtest.WithGetDUTInfo(func(req *protocol.GetDUTInfoRequest) (*protocol.GetDUTInfoResponse, error) {
 			return &protocol.GetDUTInfoResponse{
 				DutInfo: &protocol.DUTInfo{
-					Features: &protocol.DUTFeatures{
-						Software: &protocol.SoftwareFeatures{
+					Features: &frameworkprotocol.DUTFeatures{
+						Software: &frameworkprotocol.SoftwareFeatures{
 							Unavailable: []string{"missing"},
 						},
 					},
@@ -730,8 +730,8 @@ func TestRunWithReports_ReportResult(t *gotesting.T) {
 		runtest.WithGetDUTInfo(func(req *protocol.GetDUTInfoRequest) (*protocol.GetDUTInfoResponse, error) {
 			return &protocol.GetDUTInfoResponse{
 				DutInfo: &protocol.DUTInfo{
-					Features: &protocol.DUTFeatures{
-						Software: &protocol.SoftwareFeatures{
+					Features: &frameworkprotocol.DUTFeatures{
+						Software: &frameworkprotocol.SoftwareFeatures{
 							Unavailable: []string{softwareDep},
 						},
 					},
@@ -885,8 +885,8 @@ func TestRunWithSkippedTests(t *gotesting.T) {
 		runtest.WithGetDUTInfo(func(req *protocol.GetDUTInfoRequest) (*protocol.GetDUTInfoResponse, error) {
 			return &protocol.GetDUTInfoResponse{
 				DutInfo: &protocol.DUTInfo{
-					Features: &protocol.DUTFeatures{
-						Software: &protocol.SoftwareFeatures{
+					Features: &frameworkprotocol.DUTFeatures{
+						Software: &frameworkprotocol.SoftwareFeatures{
 							Unavailable: []string{softwareDep},
 						},
 					},
@@ -949,8 +949,8 @@ func TestRunListTests(t *gotesting.T) {
 		runtest.WithGetDUTInfo(func(req *protocol.GetDUTInfoRequest) (*protocol.GetDUTInfoResponse, error) {
 			return &protocol.GetDUTInfoResponse{
 				DutInfo: &protocol.DUTInfo{
-					Features: &protocol.DUTFeatures{
-						Software: &protocol.SoftwareFeatures{
+					Features: &frameworkprotocol.DUTFeatures{
+						Software: &frameworkprotocol.SoftwareFeatures{
 							Unavailable: []string{missingSoftwareDep},
 						},
 					},
@@ -1024,8 +1024,8 @@ func TestRunListTestsWithSharding(t *gotesting.T) {
 		runtest.WithGetDUTInfo(func(req *protocol.GetDUTInfoRequest) (*protocol.GetDUTInfoResponse, error) {
 			return &protocol.GetDUTInfoResponse{
 				DutInfo: &protocol.DUTInfo{
-					Features: &protocol.DUTFeatures{
-						Software: &protocol.SoftwareFeatures{
+					Features: &frameworkprotocol.DUTFeatures{
+						Software: &frameworkprotocol.SoftwareFeatures{
 							Unavailable: []string{missingSoftwareDep},
 						},
 					},
@@ -1074,8 +1074,8 @@ func TestRunDumpDUTInfo(t *gotesting.T) {
 	env := runtest.SetUp(t, runtest.WithGetDUTInfo(func(req *protocol.GetDUTInfoRequest) (*protocol.GetDUTInfoResponse, error) {
 		return &protocol.GetDUTInfoResponse{
 			DutInfo: &protocol.DUTInfo{
-				Features: &protocol.DUTFeatures{
-					Software: &protocol.SoftwareFeatures{
+				Features: &frameworkprotocol.DUTFeatures{
+					Software: &frameworkprotocol.SoftwareFeatures{
 						// Must report non-empty features.
 						// TODO(b/187793617): Remove this once we fully migrate to the gRPC protocol and
 						// GetDUTInfo gets capable of returning errors.
@@ -1304,8 +1304,8 @@ func TestRunDisable(t *gotesting.T) {
 		runtest.WithGetDUTInfo(func(req *protocol.GetDUTInfoRequest) (*protocol.GetDUTInfoResponse, error) {
 			return &protocol.GetDUTInfoResponse{
 				DutInfo: &protocol.DUTInfo{
-					Features: &protocol.DUTFeatures{
-						Software: &protocol.SoftwareFeatures{
+					Features: &frameworkprotocol.DUTFeatures{
+						Software: &frameworkprotocol.SoftwareFeatures{
 							Unavailable: []string{"missing"},
 						},
 					},

@@ -23,6 +23,7 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/prepare"
 	"chromiumos/tast/cmd/tast/internal/run/sharding"
 	"chromiumos/tast/errors"
+	frameworkprotocol "chromiumos/tast/framework/protocol"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/run/devserver"
@@ -151,14 +152,14 @@ func removeSkippedTestsFromBundle(bundle []*driver.BundleEntity) ([]*driver.Bund
 func listTests(ctx context.Context, cfg *config.Config,
 	drv *driver.Driver,
 	dutInfos map[string]*protocol.DUTInfo) ([]*resultsjson.Result, error) {
-	CompanionFeatures := make(map[string]*protocol.DUTFeatures)
+	CompanionFeatures := make(map[string]*frameworkprotocol.DUTFeatures)
 	for role, dutInfo := range dutInfos {
 		if role != "" {
 			CompanionFeatures[role] = dutInfo.GetFeatures()
 		}
 	}
 
-	var dutFeature *protocol.DUTFeatures
+	var dutFeature *frameworkprotocol.DUTFeatures
 	if _, ok := dutInfos[""]; ok {
 		dutFeature = dutInfos[""].GetFeatures()
 	}
@@ -247,7 +248,7 @@ func runTests(ctx context.Context, cfg *config.Config,
 		return nil, errors.Wrap(err, "failed to get initial sysinfo")
 	}
 
-	CompanionFeatures := make(map[string]*protocol.DUTFeatures)
+	CompanionFeatures := make(map[string]*frameworkprotocol.DUTFeatures)
 	for role, dutInfo := range dutInfos {
 		if role != "" {
 			CompanionFeatures[role] = dutInfo.GetFeatures()

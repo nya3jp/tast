@@ -24,6 +24,7 @@ import (
 	"google.golang.org/protobuf/testing/protocmp"
 
 	"chromiumos/tast/errors"
+	frameworkprotocol "chromiumos/tast/framework/protocol"
 	"chromiumos/tast/internal/devserver/devservertest"
 	"chromiumos/tast/internal/extdata"
 	"chromiumos/tast/internal/logging"
@@ -229,8 +230,8 @@ func TestRunSoftwareDeps(t *gotesting.T) {
 	cfg := &Config{
 		Features: &protocol.Features{
 			CheckDeps: true,
-			Dut: &protocol.DUTFeatures{
-				Software: &protocol.SoftwareFeatures{
+			Dut: &frameworkprotocol.DUTFeatures{
+				Software: &frameworkprotocol.SoftwareFeatures{
 					Available:   []string{validDep},
 					Unavailable: []string{missingDep},
 				},
@@ -734,8 +735,8 @@ func TestRunExternalData(t *gotesting.T) {
 				Dirs: &protocol.RunDirectories{DataDir: dataDir},
 				Features: &protocol.Features{
 					CheckDeps: true,
-					Dut: &protocol.DUTFeatures{
-						Software: &protocol.SoftwareFeatures{
+					Dut: &frameworkprotocol.DUTFeatures{
+						Software: &frameworkprotocol.SoftwareFeatures{
 							Available:   []string{"dep2"},
 							Unavailable: []string{"dep1"},
 						},
@@ -1805,8 +1806,8 @@ func TestRunPreconditionWithSkips(t *gotesting.T) {
 	cfg := &Config{
 		Features: &protocol.Features{
 			CheckDeps: true,
-			Dut: &protocol.DUTFeatures{
-				Software: &protocol.SoftwareFeatures{
+			Dut: &frameworkprotocol.DUTFeatures{
+				Software: &frameworkprotocol.SoftwareFeatures{
 					Unavailable: []string{dep},
 				},
 			},
@@ -2013,8 +2014,8 @@ func TestRunPlan(t *gotesting.T) {
 	cfg := &Config{
 		Features: &protocol.Features{
 			CheckDeps: true,
-			Dut: &protocol.DUTFeatures{
-				Software: &protocol.SoftwareFeatures{
+			Dut: &frameworkprotocol.DUTFeatures{
+				Software: &frameworkprotocol.SoftwareFeatures{
 					Available:   []string{"yes"},
 					Unavailable: []string{"no"},
 				},

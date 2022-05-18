@@ -7,6 +7,7 @@ package planner
 import (
 	"context"
 
+	frameworkprotocol "chromiumos/tast/framework/protocol"
 	"chromiumos/tast/internal/minidriver"
 	"chromiumos/tast/internal/minidriver/failfast"
 	"chromiumos/tast/internal/minidriver/target"
@@ -68,7 +69,7 @@ func runExternalTests(ctx context.Context, names []string, stack *fixture.Combin
 	counter := failfast.NewCounter(int(pcfg.ExternalTarget.Config.GetMaxTestFailures()))
 	factory := minidriver.NewIntermediateHandlersFactory(pcfg.Dirs.GetOutDir(), counter, out.ExternalEvent, fixtureServer.Handle)
 
-	companionFeatures := make(map[string]*protocol.DUTFeatures)
+	companionFeatures := make(map[string]*frameworkprotocol.DUTFeatures)
 	companionFeatures[""] = pcfg.Features.GetDut()
 	for key, value := range pcfg.Features.GetCompanionFeatures() {
 		companionFeatures[key] = value

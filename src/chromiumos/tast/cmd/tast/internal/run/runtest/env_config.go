@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"time"
 
+	frameworkprotocol "chromiumos/tast/framework/protocol"
 	"chromiumos/tast/internal/fakesshserver"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testing"
@@ -176,8 +177,8 @@ func defaultDUTConfig(dutID int) *dutConfig {
 		GetDUTInfo: func(req *protocol.GetDUTInfoRequest) (*protocol.GetDUTInfoResponse, error) {
 			return &protocol.GetDUTInfoResponse{
 				DutInfo: &protocol.DUTInfo{
-					Features: &protocol.DUTFeatures{
-						Software: &protocol.SoftwareFeatures{
+					Features: &frameworkprotocol.DUTFeatures{
+						Software: &frameworkprotocol.SoftwareFeatures{
 							// We must report non-empty features. Otherwise Tast CLI considers the response
 							// as an error.
 							// TODO(b/187793617): Remove this once we fully migrate to the gRPC protocol and

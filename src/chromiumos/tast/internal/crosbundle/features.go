@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 
+	frameworkprotocol "chromiumos/tast/framework/protocol"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/lsbrelease"
 )
@@ -45,7 +46,7 @@ func GetDUTInfo(ctx context.Context, req *protocol.GetDUTInfoRequest) (*protocol
 
 	return &protocol.GetDUTInfoResponse{
 		DutInfo: &protocol.DUTInfo{
-			Features: &protocol.DUTFeatures{
+			Features: &frameworkprotocol.DUTFeatures{
 				Software: softwareFeatures,
 				Hardware: hardwareFeatures,
 			},

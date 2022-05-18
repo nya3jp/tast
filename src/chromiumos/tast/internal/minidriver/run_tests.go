@@ -14,6 +14,7 @@ import (
 	"google.golang.org/protobuf/types/known/durationpb"
 
 	"chromiumos/tast/ctxutil"
+	frameworkprotocol "chromiumos/tast/framework/protocol"
 	"chromiumos/tast/internal/linuxssh"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/minidriver/bundleclient"
@@ -65,7 +66,7 @@ type Config struct {
 	DebuggerPort int
 	Proxy        bool
 
-	DUTFeatures map[string]*protocol.DUTFeatures
+	DUTFeatures map[string]*frameworkprotocol.DUTFeatures
 	ForceSkips  map[string]*protocol.ForceSkip
 	Factory     HandlersFactory
 
@@ -169,14 +170,14 @@ func (d *Driver) newConfigsForLocalTests(tests []string, state *protocol.StartFi
 		dutServer = addr.String()
 	}
 
-	var dutFeature *protocol.DUTFeatures
+	var dutFeature *frameworkprotocol.DUTFeatures
 	if _, ok := d.cfg.DUTFeatures[""]; ok {
 		dutFeature = d.cfg.DUTFeatures[""]
 	} else {
 		dutFeature = nil
 	}
 
-	companionFeatures := make(map[string]*protocol.DUTFeatures)
+	companionFeatures := make(map[string]*frameworkprotocol.DUTFeatures)
 	for key, value := range d.cfg.DUTFeatures {
 		if key != "" {
 			companionFeatures[key] = value

@@ -14,17 +14,18 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/driver"
 	"chromiumos/tast/cmd/tast/internal/run/runtest"
+	frameworkprotocol "chromiumos/tast/framework/protocol"
 	"chromiumos/tast/internal/protocol"
 )
 
 func TestDriver_GetDUTInfo(t *testing.T) {
 	want := &protocol.DUTInfo{
-		Features: &protocol.DUTFeatures{
-			Software: &protocol.SoftwareFeatures{
+		Features: &frameworkprotocol.DUTFeatures{
+			Software: &frameworkprotocol.SoftwareFeatures{
 				Available:   []string{"dep1", "dep2"},
 				Unavailable: []string{"dep3"},
 			},
-			Hardware: &protocol.HardwareFeatures{
+			Hardware: &frameworkprotocol.HardwareFeatures{
 				HardwareFeatures: &configpb.HardwareFeatures{
 					Screen: &configpb.HardwareFeatures_Screen{
 						PanelProperties: &configpb.Component_DisplayPanel_Properties{},
@@ -38,8 +39,8 @@ func TestDriver_GetDUTInfo(t *testing.T) {
 						EcType:  configpb.HardwareFeatures_EmbeddedController_EC_CHROME,
 					},
 				},
-				DeprecatedDeviceConfig: &protocol.DeprecatedDeviceConfig{
-					Id: &protocol.DeprecatedConfigId{
+				DeprecatedDeviceConfig: &frameworkprotocol.DeprecatedDeviceConfig{
+					Id: &frameworkprotocol.DeprecatedConfigId{
 						Platform: "platform_id",
 						Model:    "model_id",
 						Brand:    "brand_id",

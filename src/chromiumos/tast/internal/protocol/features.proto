@@ -6,7 +6,7 @@ syntax = "proto3";
 
 package tast.core;
 
-import "chromiumos/config/api/topology.proto";
+import "chromiumos/tast/framework/protocol/dutfeatures.proto";
 
 option go_package = "chromiumos/tast/internal/protocol";
 
@@ -25,117 +25,11 @@ message Features {
   reserved 1 to 4;
 }
 
-// DUTFeatures represents a set of features the DUT provides.
-message DUTFeatures {
-  SoftwareFeatures software = 1;
-  HardwareFeatures hardware = 2;
-}
-
 // InfraFeatures represents a set of features made available by testing
 // infrastructure.
 message InfraFeatures {
   map<string, string> vars = 1;
   string maybe_missing_vars = 2;
-}
-
-// SoftwareFeatures represents a set of software features available for the
-// image being tested.
-message SoftwareFeatures {
-  repeated string available = 1;
-  repeated string unavailable = 2;
-}
-
-// DeprecatedConfigId is the labels given to DUT based on the hardware model or
-// platform name. These information is fetched from the DUT at runtime by the
-// framework.
-message DeprecatedConfigId {
-  string model = 1;
-  string platform = 2;
-  string brand = 3;
-}
-
-// DeprecatedDeviceConfig stores DUT characteristics not covered by
-// config.api.HardwareFeatures. Some fields/enums were copied from
-// go.chromium.org/chromiumos/infra/proto/go/device package.
-message DeprecatedDeviceConfig {
-  DeprecatedConfigId id = 1;
-
-  enum SOC {
-    SOC_UNSPECIFIED = 0;
-    // Aka AML-Y
-    SOC_AMBERLAKE_Y = 1;
-    SOC_APOLLO_LAKE = 2;
-    SOC_BAY_TRAIL = 3;
-    SOC_BRASWELL = 4;
-    SOC_BROADWELL = 5;
-    SOC_CANNON_LAKE_Y = 6;
-    SOC_COMET_LAKE_U = 7;
-    SOC_EXYNOS_5250 = 8;
-    SOC_EXYNOS_5420 = 9;
-    // Aka GLK
-    SOC_GEMINI_LAKE = 10;
-    SOC_HASWELL = 11;
-    SOC_ICE_LAKE_Y = 12;
-    SOC_IVY_BRIDGE = 13;
-    SOC_KABYLAKE_U = 14;
-    // KabyLake U refresh
-    SOC_KABYLAKE_U_R = 15;
-    SOC_KABYLAKE_Y = 16;
-    SOC_MT8173 = 17;
-    SOC_MT8176 = 18;
-    SOC_MT8183 = 19;
-    SOC_PICASSO = 20;
-    SOC_PINE_TRAIL = 21;
-    SOC_RK3288 = 22;
-    SOC_RK3399 = 23;
-    SOC_SANDY_BRIDGE = 24;
-    SOC_SDM845 = 25;
-    SOC_SKYLAKE_U = 26;
-    SOC_SKYLAKE_Y = 27;
-    SOC_STONEY_RIDGE = 28;
-    SOC_TEGRA_K1 = 29;
-    SOC_WHISKEY_LAKE_U = 30;
-    SOC_SC7180 = 31;
-    SOC_JASPER_LAKE = 32;
-    SOC_TIGER_LAKE = 33;
-    SOC_MT8192 = 34;
-    SOC_ALDER_LAKE = 35;
-    SOC_SC7280 = 36;
-    SOC_MT8195 = 37;
-    SOC_MT8186 = 38;
-  }
-  SOC soc = 2;
-
-  enum Architecture {
-    ARCHITECTURE_UNDEFINED = 0;
-    X86 = 1;
-    X86_64 = 2;
-    ARM = 3;
-    ARM64 = 4;
-  }
-  Architecture cpu = 3;
-
-  // Indicate the device's power supply.
-  enum PowerSupply {
-    POWER_SUPPLY_UNSPECIFIED = 0;
-    POWER_SUPPLY_BATTERY = 1;
-    POWER_SUPPLY_AC_ONLY = 2;
-  }
-  PowerSupply power = 4;
-
-  // Indicate the device's storage supporting NVMe self-test or not.
-  bool has_nvme_self_test = 5;
-
-  // HasVboot2 indicates whether device uses vboot2.
-  bool has_vboot2 = 6;
-}
-
-// HardwareFeatures represents a set of hardware features available for the
-// device model being tested.
-message HardwareFeatures {
-  chromiumos.config.api.HardwareFeatures hardware_features = 1;
-  reserved 2;
-  DeprecatedDeviceConfig deprecated_device_config = 3;
 }
 
 // ForceSkip provides the reason of skipping a test by force.

@@ -9,6 +9,7 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 
+	frameworkprotocol "chromiumos/tast/framework/protocol"
 	"chromiumos/tast/internal/dep"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/testing/hwdep"
@@ -47,14 +48,14 @@ func TestCheckSoftwareDepsSucceeded(t *testing.T) {
 		Infra: &protocol.InfraFeatures{
 			Vars: map[string]string{"xyz": "def"},
 		},
-		Dut: &protocol.DUTFeatures{
-			Software: &protocol.SoftwareFeatures{
+		Dut: &frameworkprotocol.DUTFeatures{
+			Software: &frameworkprotocol.SoftwareFeatures{
 				Available: []string{"sw1"},
 			},
 		},
-		CompanionFeatures: map[string]*protocol.DUTFeatures{
-			"CompanionDut1": &protocol.DUTFeatures{
-				Software: &protocol.SoftwareFeatures{
+		CompanionFeatures: map[string]*frameworkprotocol.DUTFeatures{
+			"CompanionDut1": &frameworkprotocol.DUTFeatures{
+				Software: &frameworkprotocol.SoftwareFeatures{
 					Available: []string{"sw2"},
 				},
 			},
@@ -79,14 +80,14 @@ func TestCheckSoftwareDepsPrimaryFailed(t *testing.T) {
 		Infra: &protocol.InfraFeatures{
 			Vars: map[string]string{"xyz": "def"},
 		},
-		Dut: &protocol.DUTFeatures{
-			Software: &protocol.SoftwareFeatures{
+		Dut: &frameworkprotocol.DUTFeatures{
+			Software: &frameworkprotocol.SoftwareFeatures{
 				Available: []string{"sw1err"},
 			},
 		},
-		CompanionFeatures: map[string]*protocol.DUTFeatures{
-			"CompanionDut1": &protocol.DUTFeatures{
-				Software: &protocol.SoftwareFeatures{
+		CompanionFeatures: map[string]*frameworkprotocol.DUTFeatures{
+			"CompanionDut1": &frameworkprotocol.DUTFeatures{
+				Software: &frameworkprotocol.SoftwareFeatures{
 					Available: []string{"sw2"},
 				},
 			},
@@ -111,14 +112,14 @@ func TestCheckSoftwareDepsCompanionFailed(t *testing.T) {
 		Infra: &protocol.InfraFeatures{
 			Vars: map[string]string{"xyz": "def"},
 		},
-		Dut: &protocol.DUTFeatures{
-			Software: &protocol.SoftwareFeatures{
+		Dut: &frameworkprotocol.DUTFeatures{
+			Software: &frameworkprotocol.SoftwareFeatures{
 				Available: []string{"sw1"},
 			},
 		},
-		CompanionFeatures: map[string]*protocol.DUTFeatures{
-			"CompanionDut1": &protocol.DUTFeatures{
-				Software: &protocol.SoftwareFeatures{
+		CompanionFeatures: map[string]*frameworkprotocol.DUTFeatures{
+			"CompanionDut1": &frameworkprotocol.DUTFeatures{
+				Software: &frameworkprotocol.SoftwareFeatures{
 					Available: []string{"errsw2"},
 				},
 			},
@@ -143,20 +144,22 @@ func TestCheckHardwareDepsSucceeded(t *testing.T) {
 		Infra: &protocol.InfraFeatures{
 			Vars: map[string]string{"xyz": "def"},
 		},
-		Dut: &protocol.DUTFeatures{
-			Hardware: &protocol.HardwareFeatures{
-				DeprecatedDeviceConfig: &protocol.DeprecatedDeviceConfig{
-					Id: &protocol.DeprecatedConfigId{
+		Dut: &frameworkprotocol.DUTFeatures{
+			Hardware: &frameworkprotocol.HardwareFeatures{
+				DeprecatedDeviceConfig: &frameworkprotocol.DeprecatedDeviceConfig{
+					Id: &frameworkprotocol.DeprecatedConfigId{
+
 						Model: "samus",
 					},
 				},
 			},
 		},
-		CompanionFeatures: map[string]*protocol.DUTFeatures{
-			"CompanionDut1": &protocol.DUTFeatures{
-				Hardware: &protocol.HardwareFeatures{
-					DeprecatedDeviceConfig: &protocol.DeprecatedDeviceConfig{
-						Id: &protocol.DeprecatedConfigId{
+		CompanionFeatures: map[string]*frameworkprotocol.DUTFeatures{
+			"CompanionDut1": &frameworkprotocol.DUTFeatures{
+				Hardware: &frameworkprotocol.HardwareFeatures{
+					DeprecatedDeviceConfig: &frameworkprotocol.DeprecatedDeviceConfig{
+						Id: &frameworkprotocol.DeprecatedConfigId{
+
 							Model: "samus2",
 						},
 					},
@@ -187,20 +190,22 @@ func TestCheckHardwareDepsPrimaryFailed(t *testing.T) {
 		Infra: &protocol.InfraFeatures{
 			Vars: map[string]string{"xyz": "def"},
 		},
-		Dut: &protocol.DUTFeatures{
-			Hardware: &protocol.HardwareFeatures{
-				DeprecatedDeviceConfig: &protocol.DeprecatedDeviceConfig{
-					Id: &protocol.DeprecatedConfigId{
+		Dut: &frameworkprotocol.DUTFeatures{
+			Hardware: &frameworkprotocol.HardwareFeatures{
+				DeprecatedDeviceConfig: &frameworkprotocol.DeprecatedDeviceConfig{
+					Id: &frameworkprotocol.DeprecatedConfigId{
+
 						Model: "samuserr",
 					},
 				},
 			},
 		},
-		CompanionFeatures: map[string]*protocol.DUTFeatures{
-			"CompanionDut1": &protocol.DUTFeatures{
-				Hardware: &protocol.HardwareFeatures{
-					DeprecatedDeviceConfig: &protocol.DeprecatedDeviceConfig{
-						Id: &protocol.DeprecatedConfigId{
+		CompanionFeatures: map[string]*frameworkprotocol.DUTFeatures{
+			"CompanionDut1": &frameworkprotocol.DUTFeatures{
+				Hardware: &frameworkprotocol.HardwareFeatures{
+					DeprecatedDeviceConfig: &frameworkprotocol.DeprecatedDeviceConfig{
+						Id: &frameworkprotocol.DeprecatedConfigId{
+
 							Model: "samus2",
 						},
 					},
@@ -231,20 +236,22 @@ func TestCheckHardwareDepsCompanionFailed(t *testing.T) {
 		Infra: &protocol.InfraFeatures{
 			Vars: map[string]string{"xyz": "def"},
 		},
-		Dut: &protocol.DUTFeatures{
-			Hardware: &protocol.HardwareFeatures{
-				DeprecatedDeviceConfig: &protocol.DeprecatedDeviceConfig{
-					Id: &protocol.DeprecatedConfigId{
+		Dut: &frameworkprotocol.DUTFeatures{
+			Hardware: &frameworkprotocol.HardwareFeatures{
+				DeprecatedDeviceConfig: &frameworkprotocol.DeprecatedDeviceConfig{
+					Id: &frameworkprotocol.DeprecatedConfigId{
+
 						Model: "samus",
 					},
 				},
 			},
 		},
-		CompanionFeatures: map[string]*protocol.DUTFeatures{
-			"CompanionDut1": &protocol.DUTFeatures{
-				Hardware: &protocol.HardwareFeatures{
-					DeprecatedDeviceConfig: &protocol.DeprecatedDeviceConfig{
-						Id: &protocol.DeprecatedConfigId{
+		CompanionFeatures: map[string]*frameworkprotocol.DUTFeatures{
+			"CompanionDut1": &frameworkprotocol.DUTFeatures{
+				Hardware: &frameworkprotocol.HardwareFeatures{
+					DeprecatedDeviceConfig: &frameworkprotocol.DeprecatedDeviceConfig{
+						Id: &frameworkprotocol.DeprecatedConfigId{
+
 							Model: "samuserr",
 						},
 					},

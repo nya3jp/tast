@@ -8,8 +8,8 @@ import (
 	"testing"
 
 	"chromiumos/tast/errors"
+	"chromiumos/tast/framework/protocol"
 	"chromiumos/tast/internal/dep"
-	"chromiumos/tast/internal/protocol"
 )
 
 // success returns a HardwareCondition that is always satisfied.

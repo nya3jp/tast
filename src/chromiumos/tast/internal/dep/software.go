@@ -7,7 +7,7 @@ package dep
 import (
 	"sort"
 
-	"chromiumos/tast/internal/protocol"
+	"chromiumos/tast/framework/protocol"
 )
 
 // SoftwareDeps represents dependencies to software features.

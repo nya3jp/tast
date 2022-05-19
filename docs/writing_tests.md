@@ -1013,6 +1013,25 @@ for details) in the Tast [results dir]. The above example will generate:
 [timing#Log.Write]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/timing#Log.Write
 [results dir]: running_tests.md#Interpreting-test-results
 
+### Logged in users home directory
+
+Within the scope of a test, it might be useful to put files in the users
+Downloads directory or My Files directory. To achieve there are 2 helper methods
+that calculate the logged in user's hash and return the path to either Downloads
+or MyFiles. To use these, do the following:
+
+```go
+import "chromiumos/tast/local/cryptohome"
+
+downloadsPath, err := cryptohome.DownloadsPath(ctx, cr.NormalizedUser())
+if err != nil {
+  s.Fatal("Failed to get users Download path: ", err)
+}
+```
+
+An alternative `MyFilesPath` if you require the My Files location directly.
+Please avoid using the `/home/chronos/user` path directly as these are being
+deprecated.
 ## Output files
 
 Tests can write output files that are automatically copied to the host system

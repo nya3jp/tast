@@ -286,6 +286,7 @@ func checkFile(path git.CommitFile, data []byte, debug bool, fs *token.FileSet, 
 		issues = append(issues, check.InterFileRefs(fs, f)...)
 		issues = append(issues, check.Messages(fs, f, fix)...)
 		issues = append(issues, check.VerifyTestingStateStruct(fs, f)...)
+		issues = append(issues, check.NoHardcodedUserDirs(fs, f)...)
 	}
 
 	if isSupportPackageFile(path.Path) {

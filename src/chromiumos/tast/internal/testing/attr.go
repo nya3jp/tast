@@ -431,6 +431,11 @@ third_party/autotest/files/server/site_tests/tast/control.runtime-probe
 		},
 	},
 	{
+		Name:     "wificell_dual_dut",
+		Contacts: []string{"chromeos-kernel-wifi@google.com"},
+		Desc:     `The group of WiFi tests using dual-DUT setups.`,
+	},
+	{
 		Name:     "wificell_roam",
 		Contacts: []string{"chromeos-kernel-wifi@google.com"},
 		Desc:     `The group of WiFi roaming tests to be run with Grover fixture.`,

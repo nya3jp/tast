@@ -752,6 +752,17 @@ func WifiMACAddrRandomize() Condition {
 	)
 }
 
+// WifiTDLS returns a hardware dependency condition that is satisfied
+// iff the DUT fully supports TDLS MGMT and OPER.
+func WifiTDLS() Condition {
+	return SkipOnWifiDevice(
+		// QCA 6174 does not support TDLS.
+		QualcommAtherosQCA6174, QualcommAtherosQCA6174SDIO,
+		// MTK7921/SDIO (Pico6) has support issues.
+		MediaTekMT7921SDIO,
+	)
+}
+
 // WifiNotMarvell returns a hardware dependency condition that is satisfied iff
 // the DUT's not using a Marvell WiFi chip.
 func WifiNotMarvell() Condition {

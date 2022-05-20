@@ -162,7 +162,10 @@ func ForwardPort(ctx context.Context, sshConn *ssh.Conn, port int) error {
 
 		server, err := sshConn.Dial("tcp", remoteAddress)
 		if err != nil {
-			onError(err)
+			onError(errors.Wrapf(err,
+				"Unable to connect to DUT:%d. If the DUT is running on a different network, "+
+					"you may need to try port forwarding over SSH (ssh -R %d:localhost:%d <dut>), "+
+					"then `tast run -attachdebugger=local:%d -debuggerportforward=false. <dut> <test>", port, port, port, port))
 			return
 		}
 		defer server.Close()

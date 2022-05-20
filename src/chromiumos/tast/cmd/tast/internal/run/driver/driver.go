@@ -67,12 +67,13 @@ func New(ctx context.Context, cfg *config.Config, rawTarget, role string) (*Driv
 	}
 
 	scfg := &target.ServiceConfig{
-		TLWServer:             cfg.TLWServer(),
-		UseEphemeralDevserver: cfg.UseEphemeralDevserver(),
-		Devservers:            cfg.Devservers(),
-		TastDir:               cfg.TastDir(),
-		ExtraAllowedBuckets:   cfg.ExtraAllowedBuckets(),
-		DebuggerPorts:         debuggerPorts,
+		TLWServer:              cfg.TLWServer(),
+		UseEphemeralDevserver:  cfg.UseEphemeralDevserver(),
+		Devservers:             cfg.Devservers(),
+		TastDir:                cfg.TastDir(),
+		ExtraAllowedBuckets:    cfg.ExtraAllowedBuckets(),
+		DebuggerPorts:          debuggerPorts,
+		DebuggerPortForwarding: cfg.DebuggerPortForwarding(),
 	}
 	tcfg := &target.Config{
 		SSHConfig:     cfg.ProtoSSHConfig(),

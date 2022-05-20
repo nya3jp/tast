@@ -118,8 +118,9 @@ type MutableConfig struct {
 	DefaultVarsDirs  []string
 	MaybeMissingVars string
 
-	MsgTimeout    time.Duration
-	DebuggerPorts map[debugger.DebugTarget]int
+	MsgTimeout             time.Duration
+	DebuggerPorts          map[debugger.DebugTarget]int
+	DebuggerPortForwarding bool
 
 	Retries int
 
@@ -292,6 +293,9 @@ func (c *Config) DebuggerPorts() map[debugger.DebugTarget]int {
 	return m
 }
 
+// DebuggerPortForwarding is whether port forwarding should be performed for you when debugging.
+func (c *Config) DebuggerPortForwarding() bool { return c.m.DebuggerPortForwarding }
+
 // ExtraUSEFlags is additional USE flags to inject when determining features.
 func (c *Config) ExtraUSEFlags() []string { return append([]string(nil), c.m.ExtraUSEFlags...) }
 
@@ -457,6 +461,7 @@ func (c *MutableConfig) SetFlags(f *flag.FlagSet) {
 		return nil
 	})
 	f.Var(&debuggerFlag, "attachdebugger", "start up the delve debugger for a process and wait for a process to attach on a given port")
+	f.BoolVar(&c.DebuggerPortForwarding, "debuggerportforwarding", true, "Forward ports for you when attempting to connect to a dlv instance on a DUT. If set to false, you will need to forward ports yourself (ssh -R port:localhost:port).")
 
 	filterFile := command.RepeatedFlag(func(fileName string) error {
 		if err := c.addForceSkippedTests(fileName); err != nil {

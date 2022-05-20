@@ -29,12 +29,13 @@ type Services struct {
 
 // ServiceConfig contains configs for creating a service.
 type ServiceConfig struct {
-	TLWServer             string
-	UseEphemeralDevserver bool
-	Devservers            []string
-	TastDir               string
-	ExtraAllowedBuckets   []string
-	DebuggerPorts         []int
+	TLWServer              string
+	UseEphemeralDevserver  bool
+	Devservers             []string
+	TastDir                string
+	ExtraAllowedBuckets    []string
+	DebuggerPorts          []int
+	DebuggerPortForwarding bool
 }
 
 func startServices(ctx context.Context, cfg *ServiceConfig, conn *ssh.Conn, dutServer string) (svcs *Services, retErr error) {
@@ -82,9 +83,11 @@ func startServices(ctx context.Context, cfg *ServiceConfig, conn *ssh.Conn, dutS
 			}
 		}()
 
-		for _, debugPort := range cfg.DebuggerPorts {
-			if err := debugger.ForwardPort(ctx, conn, debugPort); err != nil {
-				return nil, err
+		if cfg.DebuggerPortForwarding {
+			for _, debugPort := range cfg.DebuggerPorts {
+				if err := debugger.ForwardPort(ctx, conn, debugPort); err != nil {
+					return nil, err
+				}
 			}
 		}
 	}

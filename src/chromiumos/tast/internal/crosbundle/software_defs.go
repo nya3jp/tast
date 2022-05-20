@@ -188,14 +188,18 @@ var softwareFeatureDefs = map[string]string{
 	"tpm2_simulator":            "tpm2_simulator",
 	"tpm_dynamic":               "tpm_dynamic",
 	"transparent_hugepage":      "transparent_hugepage",
-	"typec_usb_link":            `!("kernel-4_4" || "kernel-4_14" || "kernel-4_19" || "kernel-5_4") && !("arm" || "arm64")`,
-	"unibuild":                  "unibuild",
-	"untrusted_vm":              `"kernel-4_19" || "kernel-5_4" || "kernel-5_10"`,
-	"usbguard":                  "usbguard",
-	"use_fscrypt_v1":            `!"direncription_allow_v2" && !"lvm_stateful_partition"`,
-	"use_fscrypt_v2":            `"direncription_allow_v2" && !"lvm_stateful_partition"`,
-	"v4l2_codec":                "v4l2_codec",
-	"vaapi":                     "vaapi",
+	// physical_location is only supported in kernel 5.10 or later.
+	// physical_location is not supported in ARM.
+	// Proper physical_location is not added to older boards, but should be included in newer boards.
+	"typec_physical_location": `!("kernel-4_4" || "kernel-4_14" || "kernel-4_19" || "kernel-5_4") && !("arm" || "arm64") && !("board:amd*" || "board:asuka*" || "board:asurada*" || "board:atlas*" || "board:banon*" || "board:betty*" || "board:bob*" || "board:caroline*" || "board:cave*" || "board:celes*" || "board:chell*" || "board:cherry*" || "board:coral*" || "board:cyan*" || "board:dedede*" || "board:drallion*" || "board:edgar*" || "board:elm*" || "board:eve*" || "board:fizz*" || "board:grunt*" || "board:hana*" || "board:hatch*" || "board:jacuzzi*" || "board:kalista*" || "board:keeby*" || "board:kefka*" || "board:kevin*" || "board:kukui*" || "board:lars*" || "board:nami*" || "board:nautilus*" || "board:nocturne*" || "board:novato*" || "board:octopus*" || "board:puff*" || "board:pyro*" || "board:rammus*" || "board:reef*" || "board:reks*" || "board:relm*" || "board:reven*" || "board:sand*" || "board:sarien*" || "board:scarlet*" || "board:sentry*" || "board:setzer*" || "board:snappy*" || "board:soraka*" || "board:strongbad*" || "board:terra*" || "board:trogdor*" || "board:ultima*" || "board:volteer*" || "board:wizpig*" || "board:zork*")`,
+	"typec_usb_link":          `!("kernel-4_4" || "kernel-4_14" || "kernel-4_19" || "kernel-5_4") && !("arm" || "arm64")`,
+	"unibuild":                "unibuild",
+	"untrusted_vm":            `"kernel-4_19" || "kernel-5_4" || "kernel-5_10"`,
+	"usbguard":                "usbguard",
+	"use_fscrypt_v1":          `!"direncription_allow_v2" && !"lvm_stateful_partition"`,
+	"use_fscrypt_v2":          `"direncription_allow_v2" && !"lvm_stateful_partition"`,
+	"v4l2_codec":              "v4l2_codec",
+	"vaapi":                   "vaapi",
 	// TODO(b/215374984) Remove `video_cards_ihd`.
 	"video_cards_ihd": "video_cards_iHD",
 	// As the direct video decoder is transitioned in there is the need

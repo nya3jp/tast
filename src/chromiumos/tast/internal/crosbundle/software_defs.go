@@ -183,6 +183,7 @@ var softwareFeatureDefs = map[string]string{
 	"tpm2_simulator":            "tpm2_simulator",
 	"tpm_dynamic":               "tpm_dynamic",
 	"transparent_hugepage":      "transparent_hugepage",
+	"typec_usb_link":            `!("kernel-4_4" || "kernel-4_14" || "kernel-4_19" || "kernel-5_4") && !("arm" || "arm64")`,
 	"unibuild":                  "unibuild",
 	"untrusted_vm":              `"kernel-4_19" || "kernel-5_4" || "kernel-5_10"`,
 	"usbguard":                  "usbguard",

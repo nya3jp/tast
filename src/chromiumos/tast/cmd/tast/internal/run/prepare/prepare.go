@@ -43,25 +43,33 @@ func CheckPrivateBundleFlag(ctx context.Context, cfg *config.Config) error {
 
 // Prepare prepares target DUT for running tests.
 // It returns the DUTInfo for the primary DUT.
-func Prepare(ctx context.Context, cfg *config.Config,
-	driver *driver.Driver) (*protocol.DUTInfo, error) {
+func Prepare(ctx context.Context, cfg *config.Config, driver *driver.Driver) (*protocol.DUTInfo, error) {
+	// Build all the remote bundles.
+	if err := buildRemoteBundles(ctx, cfg); err != nil {
+		return nil, err
+	}
+
+	// Do not build or push to DUT as we dont have access to it.
+	if !config.ShouldConnect(cfg.Target()) {
+		return nil, nil
+	}
+
 	dutInfo, err := prepareDUT(ctx, cfg, driver)
 	if err != nil {
-		return nil, fmt.Errorf("failed to prepare primary DUT %s: %v", cfg.Target(), err)
+		return nil, fmt.Errorf("failed to prepare DUT %s: %v", cfg.Target(), err)
 	}
+
 	return dutInfo, nil
 }
 
-// prepareDUT prepares the DUT for running tests. When instructed in cfg, it
-// builds and pushes the local test runner and test bundles, and downloads
-// private test bundles.
+// prepareDUT prepares the DUT for running tests and downloads private test bundles.
 func prepareDUT(ctx context.Context, cfg *config.Config, drv *driver.Driver) (*protocol.DUTInfo, error) {
 	if cfg.Build() {
 		targetArch, err := getTargetArch(ctx, cfg, drv.SSHConn())
 		if err != nil {
 			return nil, fmt.Errorf("failed to get architecture information: %v", err)
 		}
-		if err := buildAll(ctx, cfg, targetArch); err != nil {
+		if err := buildLocalBundles(ctx, cfg, targetArch); err != nil {
 			return nil, err
 		}
 		if err := pushAll(ctx, cfg, drv, targetArch); err != nil {
@@ -71,6 +79,11 @@ func prepareDUT(ctx context.Context, cfg *config.Config, drv *driver.Driver) (*p
 
 	// Now that local_test_runner is prepared, we can retrieve DUTInfo.
 	// It is needed in DownloadPrivateBundles below.
+	return getDUTInfo(ctx, cfg, drv)
+}
+
+// getDUTInfo downloads private bundles and returns the DUT info.
+func getDUTInfo(ctx context.Context, cfg *config.Config, drv *driver.Driver) (*protocol.DUTInfo, error) {
 	dutInfo, err := drv.GetDUTInfo(ctx)
 	if err != nil {
 		return nil, err
@@ -93,25 +106,8 @@ func prepareDUT(ctx context.Context, cfg *config.Config, drv *driver.Driver) (*p
 	return dutInfo, nil
 }
 
-// buildAll builds Go binaries as instructed in cfg.
-func buildAll(ctx context.Context, cfg *config.Config, targetArch string) error {
-	// local_test_runner is required even if we are running only remote tests,
-	// e.g. to compute software dependencies.
-	tgts := []*build.Target{
-		{
-			Pkg:        build.LocalRunnerPkg,
-			Arch:       targetArch,
-			Workspaces: cfg.CommonWorkspaces(),
-			Out:        filepath.Join(cfg.BuildOutDir(), targetArch, path.Base(build.LocalRunnerPkg)),
-			Debug:      cfg.DebuggerPorts()[debugger.LocalTestRunner] != 0,
-		},
-		{
-			Pkg:        path.Join(build.LocalBundlePkgPathPrefix, cfg.BuildBundle()),
-			Arch:       targetArch,
-			Workspaces: cfg.BundleWorkspaces(),
-			Out:        filepath.Join(cfg.BuildOutDir(), targetArch, build.LocalBundleBuildSubdir, cfg.BuildBundle()),
-			Debug:      cfg.DebuggerPorts()[debugger.LocalBundle] != 0,
-		},
+func buildRemoteBundles(ctx context.Context, cfg *config.Config) error {
+	targets := []*build.Target{
 		{
 			Pkg:        build.RemoteRunnerPkg,
 			Arch:       build.ArchHost,
@@ -126,6 +122,38 @@ func buildAll(ctx context.Context, cfg *config.Config, targetArch string) error 
 			Out:        filepath.Join(cfg.RemoteBundleDir(), cfg.BuildBundle()),
 			Debug:      cfg.DebuggerPorts()[debugger.RemoteBundle] != 0,
 		},
+	}
+
+	return buildBundles(ctx, cfg, targets)
+}
+
+func buildLocalBundles(ctx context.Context, cfg *config.Config, targetArch string) error {
+	// local_test_runner is required even if we are running only remote tests,
+	// e.g. to compute software dependencies.
+	targets := []*build.Target{
+		{
+			Pkg:        build.LocalRunnerPkg,
+			Arch:       targetArch,
+			Workspaces: cfg.CommonWorkspaces(),
+			Out:        filepath.Join(cfg.BuildOutDir(), targetArch, path.Base(build.LocalRunnerPkg)),
+			Debug:      cfg.DebuggerPorts()[debugger.LocalTestRunner] != 0,
+		},
+		{
+			Pkg:        path.Join(build.LocalBundlePkgPathPrefix, cfg.BuildBundle()),
+			Arch:       targetArch,
+			Workspaces: cfg.BundleWorkspaces(),
+			Out:        filepath.Join(cfg.BuildOutDir(), targetArch, build.LocalBundleBuildSubdir, cfg.BuildBundle()),
+			Debug:      cfg.DebuggerPorts()[debugger.LocalBundle] != 0,
+		},
+	}
+
+	return buildBundles(ctx, cfg, targets)
+}
+
+func buildBundles(ctx context.Context, cfg *config.Config, tgts []*build.Target) error {
+	// Nothing to build.
+	if !cfg.Build() {
+		return nil
 	}
 
 	var names []string

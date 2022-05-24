@@ -163,3 +163,35 @@ func TestPushDataFiles(t *gotesting.T) {
 		t.Errorf("pushDataFiles() unexpectedly copied %s", extFile1)
 	}
 }
+
+func TestPrepare(t *gotesting.T) {
+	env := runtest.SetUp(t)
+	ctx := env.Context()
+	tests := []struct {
+		name string
+		cfg  *config.Config
+		drv  *driver.Driver
+	}{
+		{
+			name: "PrepareNoHostNoBuild",
+			cfg: env.Config(func(cfg *config.MutableConfig) {
+				cfg.Target = "-"
+				cfg.Build = false
+			}),
+			drv: nil,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *gotesting.T) {
+			gotDUTInfo, err := Prepare(ctx, tc.cfg, tc.drv)
+			if err != nil {
+				t.Errorf("Unexpected error in Prepare(): %v", err)
+			}
+
+			if gotDUTInfo != nil {
+				t.Errorf("Prepare(): got %v, want nil", gotDUTInfo)
+			}
+		})
+	}
+}

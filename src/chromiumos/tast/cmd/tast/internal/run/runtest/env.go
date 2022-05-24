@@ -64,6 +64,10 @@ func SetUp(t *gotesting.T, opts ...EnvOrDUTOption) *Env {
 
 	// Prepare various directories. All directories should be under rootDir
 	// so that they are remove after the test.
+	// b/233294809: Sometimes the temp directory is not created in time
+	// before ioutil.TempDir is called. Call os.MkdirAll to make sure the
+	// temp directory exists.
+	os.MkdirAll(os.TempDir(), 0777)
 	rootDir, err := ioutil.TempDir("", "tast.")
 	if err != nil {
 		t.Fatal(err)

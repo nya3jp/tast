@@ -2133,18 +2133,18 @@ var allFixtureSteps = []fixtureSteps{
 	fixtureSetup, fixtureReset, fixturePreTest, fixturePostTest, fixtureTearDown,
 }
 
-// recordingFixture is a FixtureImpl that records the labels passed to each function.
+// recordingFixture is a FixtureImpl that records the private attributes passed to each function.
 type recordingFixture struct {
-	called        map[fixtureSteps]bool
-	msgs          map[fixtureSteps]string
-	expectedLabel string
+	called              map[fixtureSteps]bool
+	msgs                map[fixtureSteps]string
+	expectedPrivateAttr string
 }
 
-func newRecordingFixture(label string) recordingFixture {
+func newRecordingFixture(privateAttr string) recordingFixture {
 	return recordingFixture{
-		called:        make(map[fixtureSteps]bool),
-		msgs:          make(map[fixtureSteps]string),
-		expectedLabel: label,
+		called:              make(map[fixtureSteps]bool),
+		msgs:                make(map[fixtureSteps]string),
+		expectedPrivateAttr: privateAttr,
 	}
 }
 
@@ -2156,7 +2156,7 @@ func (f *recordingFixture) SetUp(ctx context.Context, s *testing.FixtState) inte
 		}
 	}()
 	f.called[fixtureSetup] = true
-	testcontext.EnsureLabel(ctx, f.expectedLabel)
+	testcontext.EnsurePrivateAttr(ctx, f.expectedPrivateAttr)
 	return nil
 }
 
@@ -2167,7 +2167,7 @@ func (f *recordingFixture) Reset(ctx context.Context) error {
 		}
 	}()
 	f.called[fixtureReset] = true
-	testcontext.EnsureLabel(ctx, f.expectedLabel)
+	testcontext.EnsurePrivateAttr(ctx, f.expectedPrivateAttr)
 	return nil
 }
 
@@ -2178,7 +2178,7 @@ func (f *recordingFixture) PreTest(ctx context.Context, s *testing.FixtTestState
 		}
 	}()
 	f.called[fixturePreTest] = true
-	testcontext.EnsureLabel(ctx, f.expectedLabel)
+	testcontext.EnsurePrivateAttr(ctx, f.expectedPrivateAttr)
 }
 
 func (f *recordingFixture) PostTest(ctx context.Context, s *testing.FixtTestState) {
@@ -2188,7 +2188,7 @@ func (f *recordingFixture) PostTest(ctx context.Context, s *testing.FixtTestStat
 		}
 	}()
 	f.called[fixturePostTest] = true
-	testcontext.EnsureLabel(ctx, f.expectedLabel)
+	testcontext.EnsurePrivateAttr(ctx, f.expectedPrivateAttr)
 }
 
 func (f *recordingFixture) TearDown(ctx context.Context, s *testing.FixtState) {
@@ -2198,21 +2198,21 @@ func (f *recordingFixture) TearDown(ctx context.Context, s *testing.FixtState) {
 		}
 	}()
 	f.called[fixtureTearDown] = true
-	testcontext.EnsureLabel(ctx, f.expectedLabel)
+	testcontext.EnsurePrivateAttr(ctx, f.expectedPrivateAttr)
 }
 
-// TestRunEnsureLabel verifies that Labels can be read in tests and fixtures via the context variable.
-func TestRunEnsureLabel(t *gotesting.T) {
-	fixtureLabel1 := "label in fixture 1"
-	fixtureLabel2 := "label in fixture 2"
-	fixtureLabel3 := "label in fixture 3"
-	testLabel := "label_in_test"
-	impl1 := newRecordingFixture(fixtureLabel1)
-	fixt1 := &testing.FixtureInstance{Name: "fixt1", Impl: &impl1, Labels: []string{fixtureLabel1}}
-	impl2 := newRecordingFixture(fixtureLabel2)
-	fixt2 := &testing.FixtureInstance{Name: "fixt2", Impl: &impl2, Labels: []string{fixtureLabel2}, Parent: "fixt1"}
-	impl3 := newRecordingFixture(fixtureLabel3)
-	fixt3 := &testing.FixtureInstance{Name: "fixt3", Impl: &impl3, Labels: []string{fixtureLabel3}, Parent: "fixt2"}
+// TestRunEnsurePrivateAttr verifies that PrivateAttr can be read in tests and fixtures via the context variable.
+func TestRunEnsurePrivateAttr(t *gotesting.T) {
+	fixturePrivateAttr1 := "privateAttr in fixture 1"
+	fixturePrivateAttr2 := "privateAttr in fixture 2"
+	fixturePrivateAttr3 := "privateAttr in fixture 3"
+	testPrivateAttr := "privateAttr_in_test"
+	impl1 := newRecordingFixture(fixturePrivateAttr1)
+	fixt1 := &testing.FixtureInstance{Name: "fixt1", Impl: &impl1, PrivateAttr: []string{fixturePrivateAttr1}}
+	impl2 := newRecordingFixture(fixturePrivateAttr2)
+	fixt2 := &testing.FixtureInstance{Name: "fixt2", Impl: &impl2, PrivateAttr: []string{fixturePrivateAttr2}, Parent: "fixt1"}
+	impl3 := newRecordingFixture(fixturePrivateAttr3)
+	fixt3 := &testing.FixtureInstance{Name: "fixt3", Impl: &impl3, PrivateAttr: []string{fixturePrivateAttr3}, Parent: "fixt2"}
 	cfg := &Config{
 		Features: &protocol.Features{},
 		Fixtures: map[string]*testing.FixtureInstance{
@@ -2224,24 +2224,24 @@ func TestRunEnsureLabel(t *gotesting.T) {
 
 	// run 2 tests for the same fixture to run Reset() of the fixtures
 	tests := []*testing.TestInstance{{
-		Name:    "pkg.TestWithFixture1",
-		Func:    func(context.Context, *testing.State) {},
-		Timeout: time.Minute,
-		Fixture: "fixt3",
-		Labels:  []string{"irrelevant_label"},
+		Name:        "pkg.TestWithFixture1",
+		Func:        func(context.Context, *testing.State) {},
+		Timeout:     time.Minute,
+		Fixture:     "fixt3",
+		PrivateAttr: []string{"irrelevant_privateAttr"},
 	}, {
 		Name: "pkg.TestWithFixture2",
 		Func: func(ctx context.Context, _ *testing.State) {
 			defer func() {
 				if err := recover(); err != nil {
-					t.Error("Failed to ensure label in TestWithFixture2:", err)
+					t.Error("Failed to ensure privateAttr in TestWithFixture2:", err)
 				}
 			}()
-			testcontext.EnsureLabel(ctx, testLabel)
+			testcontext.EnsurePrivateAttr(ctx, testPrivateAttr)
 		},
-		Timeout: time.Minute,
-		Fixture: "fixt3",
-		Labels:  []string{testLabel},
+		Timeout:     time.Minute,
+		Fixture:     "fixt3",
+		PrivateAttr: []string{testPrivateAttr},
 	}}
 	_ = runTestsAndReadAll(t, tests, cfg)
 

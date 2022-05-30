@@ -62,8 +62,8 @@ func ContextSoftwareDeps(ctx context.Context) ([]string, bool) {
 	return testcontext.SoftwareDeps(ctx)
 }
 
-// ContextEnsureLabel ensures the current entity declares a label in its metadata.
+// ContextEnsurePrivateAttr ensures the current entity declares a privateAttr in its metadata.
 // Otherwise it will panic.
-func ContextEnsureLabel(ctx context.Context, label string) {
-	testcontext.EnsureLabel(ctx, label)
+func ContextEnsurePrivateAttr(ctx context.Context, name string) {
+	testcontext.EnsurePrivateAttr(ctx, name)
 }

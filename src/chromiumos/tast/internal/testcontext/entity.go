@@ -29,8 +29,8 @@ type CurrentEntity struct {
 	SoftwareDeps []string
 	// ServiceDeps is a list of service dependencies declared in the current entity.
 	ServiceDeps []string
-	// Labels is a list of labels declared in the current entity.
-	Labels []string
+	// PrivateAttr is a list of private attributes declared in the current entity.
+	PrivateAttr []string
 }
 
 // WithCurrentEntity attaches CurrentEntity to context.Context. This function can't
@@ -74,26 +74,26 @@ func ServiceDeps(ctx context.Context) ([]string, bool) {
 	return append([]string(nil), ec.ServiceDeps...), true
 }
 
-// EnsureLabel ensures the current entity declares a label in its metadata.
+// EnsurePrivateAttr ensures the current entity declares a privateAttr in its metadata.
 // Otherwise it will panic.
-func EnsureLabel(ctx context.Context, label string) {
+func EnsurePrivateAttr(ctx context.Context, name string) {
 	ec, ok := ctx.Value(currentEntityKey{}).(*CurrentEntity)
 	if !ok {
 		panic("Context is not associated with an entity")
 	}
-	for _, s := range ec.Labels {
-		if s == label {
+	for _, s := range ec.PrivateAttr {
+		if s == name {
 			return
 		}
 	}
-	panic("Expected label " + label + " not found in the entity")
+	panic("Expected privateAttr " + name + " not found in the entity")
 }
 
-// Labels returns the labels of current entity.
-func Labels(ctx context.Context) (labels []string, ok bool) {
+// PrivateAttr returns the private attributes of current entity.
+func PrivateAttr(ctx context.Context) (privateAttr []string, ok bool) {
 	ec, ok := ctx.Value(currentEntityKey{}).(*CurrentEntity)
 	if !ok {
 		return nil, ok
 	}
-	return ec.Labels, ok
+	return ec.PrivateAttr, ok
 }

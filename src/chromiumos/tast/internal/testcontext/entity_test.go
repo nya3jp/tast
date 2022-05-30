@@ -86,7 +86,7 @@ func TestServiceDeps(t *testing.T) {
 }
 
 func TestEnsureLable(t *testing.T) {
-	const testLabel = "test_label"
+	const testPrivateAttr = "test_privateAttr"
 
 	ctx := context.Background()
 
@@ -97,13 +97,13 @@ func TestEnsureLable(t *testing.T) {
 				panicked = true
 			}
 		}()
-		testcontext.EnsureLabel(ctx, testLabel)
+		testcontext.EnsurePrivateAttr(ctx, testPrivateAttr)
 	}()
 	if !panicked {
-		t.Error("EnsureLabel unexpectedly succeeded for context with no labels")
+		t.Error("EnsurePrivateAttr unexpectedly succeeded for context with no privateAttr")
 	}
 
-	ec := &testcontext.CurrentEntity{Labels: []string{"unrelated_label"}}
+	ec := &testcontext.CurrentEntity{PrivateAttr: []string{"unrelated_privateAttr"}}
 	ctx = testcontext.WithCurrentEntity(ctx, ec)
 	panicked = false
 	func() {
@@ -112,39 +112,39 @@ func TestEnsureLable(t *testing.T) {
 				panicked = true
 			}
 		}()
-		testcontext.EnsureLabel(ctx, testLabel)
+		testcontext.EnsurePrivateAttr(ctx, testPrivateAttr)
 	}()
 	if !panicked {
-		t.Error("EnsureLabel unexpectedly succeeded for context without expected label")
+		t.Error("EnsurePrivateAttr unexpectedly succeeded for context without expected privateAttr")
 	}
 
-	ec = &testcontext.CurrentEntity{Labels: []string{testLabel}}
+	ec = &testcontext.CurrentEntity{PrivateAttr: []string{testPrivateAttr}}
 	ctx = testcontext.WithCurrentEntity(ctx, ec)
 	func() {
 		defer func() {
 			err := recover()
 			if err != nil {
-				t.Error("EnsureLabel unexpectedly failed for context with the expected label: ", err)
+				t.Error("EnsurePrivateAttr unexpectedly failed for context with the expected privateAttr: ", err)
 			}
 		}()
-		testcontext.EnsureLabel(ctx, testLabel)
+		testcontext.EnsurePrivateAttr(ctx, testPrivateAttr)
 	}()
 }
 
-func TestLabels(t *testing.T) {
-	testLabels := []string{"label1", "label2"}
-	ec := &testcontext.CurrentEntity{Labels: testLabels}
+func TestPrivateAttr(t *testing.T) {
+	testPrivateAttr := []string{"privateAttr1", "privateAttr2"}
+	ec := &testcontext.CurrentEntity{PrivateAttr: testPrivateAttr}
 	ctx := testcontext.WithCurrentEntity(context.Background(), ec)
-	labels, ok := testcontext.Labels(ctx)
+	privateAttr, ok := testcontext.PrivateAttr(ctx)
 	if !ok {
-		t.Error("Labels not returned for a context associated with an entity")
-	} else if diff := cmp.Diff(labels, testLabels); diff != "" {
-		t.Errorf("Labels returned unexpected content (-got +want):\n%s", diff)
+		t.Error("PrivateAttr not returned for a context associated with an entity")
+	} else if diff := cmp.Diff(privateAttr, testPrivateAttr); diff != "" {
+		t.Errorf("PrivateAttr returned unexpected content (-got +want):\n%s", diff)
 	}
 
 	// Context not associated with an entity
 	ctx = context.Background()
-	if labels, ok := testcontext.Labels(ctx); ok {
-		t.Errorf("Labels returned for a context not associated with entity: %s", labels)
+	if privateAttr, ok := testcontext.PrivateAttr(ctx); ok {
+		t.Errorf("PrivateAttr returned for a context not associated with entity: %s", privateAttr)
 	}
 }

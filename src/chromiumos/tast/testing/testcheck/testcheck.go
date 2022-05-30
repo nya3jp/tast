@@ -165,16 +165,16 @@ func (e EntityType) String() string {
 
 // Entity represents a node in the dependency graph of tests and fixtures.
 type Entity struct {
-	Type   EntityType
-	Name   string
-	Parent string
-	Labels map[string]struct{}
-	Attrs  map[string]struct{}
+	Type         EntityType
+	Name         string
+	Parent       string
+	PrivateAttrs map[string]struct{}
+	Attrs        map[string]struct{}
 }
 
-// HasLabel returns whether the node has given label.
-func (e *Entity) HasLabel(name string) bool {
-	_, ok := e.Labels[name]
+// HasPrivateAttr returns whether the node has a given private attribute.
+func (e *Entity) HasPrivateAttr(name string) bool {
+	_, ok := e.PrivateAttrs[name]
 	return ok
 }
 
@@ -196,20 +196,20 @@ func Entities() map[string]Entity {
 	result := make(map[string]Entity)
 	for _, tst := range allTests() {
 		result[tst.Name] = Entity{
-			Type:   Test,
-			Name:   tst.Name,
-			Parent: tst.Fixture,
-			Labels: stringSet(tst.Labels),
-			Attrs:  stringSet(tst.Attr),
+			Type:         Test,
+			Name:         tst.Name,
+			Parent:       tst.Fixture,
+			PrivateAttrs: stringSet(tst.PrivateAttr),
+			Attrs:        stringSet(tst.Attr),
 		}
 	}
 	for n, f := range testing.GlobalRegistry().AllFixtures() {
 		result[n] = Entity{
-			Type:   Fixture,
-			Name:   n,
-			Parent: f.Parent,
-			Labels: stringSet(f.Labels),
-			Attrs:  nil,
+			Type:         Fixture,
+			Name:         n,
+			Parent:       f.Parent,
+			PrivateAttrs: stringSet(f.PrivateAttr),
+			Attrs:        nil,
 		}
 	}
 	return result

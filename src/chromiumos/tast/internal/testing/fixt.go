@@ -71,8 +71,8 @@ type Fixture struct {
 	// "data" subdirectory within the directory in which the fixture is registered.
 	Data []string
 
-	// Labels contains freeform text labels describing the fixture.
-	Labels []string
+	// PrivateAttr contains freeform text private attributres describing the fixture.
+	PrivateAttr []string
 
 	// TODO(oka): Add Param fields.
 }
@@ -96,7 +96,7 @@ func (f *Fixture) instantiate(pkg string) (*FixtureInstance, error) {
 		ServiceDeps:     append([]string(nil), f.ServiceDeps...),
 		Data:            append([]string(nil), f.Data...),
 		Vars:            append([]string(nil), f.Vars...),
-		Labels:          append([]string(nil), f.Labels...),
+		PrivateAttr:     append([]string(nil), f.PrivateAttr...),
 	}, nil
 }
 
@@ -121,7 +121,7 @@ type FixtureInstance struct {
 	Data            []string
 	ServiceDeps     []string
 	Vars            []string
-	Labels          []string
+	PrivateAttr     []string
 
 	// Bundle is the name of the test bundle this test belongs to.
 	// This field is empty initially, and later set when the test is added

@@ -70,7 +70,7 @@ type TestInstance struct {
 	Desc         string
 	Contacts     []string
 	Attr         []string
-	Labels       []string
+	PrivateAttr  []string
 	SearchFlags  []*protocol.StringPair
 	Data         []string
 	Vars         []string
@@ -217,7 +217,7 @@ func newTestInstance(t *Test, p *Param) (*TestInstance, error) {
 		return nil, fmt.Errorf("timeout is negative (%v)", timeout)
 	}
 
-	labels := append(append([]string(nil), t.Labels...), p.ExtraLabels...)
+	PrivateAttr := append(append([]string(nil), t.PrivateAttr...), p.ExtraPrivateAttr...)
 	searchFlags := append(append([]*protocol.StringPair(nil), t.SearchFlags...), p.ExtraSearchFlags...)
 
 	return &TestInstance{
@@ -228,7 +228,7 @@ func newTestInstance(t *Test, p *Param) (*TestInstance, error) {
 		Desc:         t.Desc,
 		Contacts:     append([]string(nil), t.Contacts...),
 		Attr:         attrs,
-		Labels:       labels,
+		PrivateAttr:  PrivateAttr,
 		SearchFlags:  searchFlags,
 		Data:         data,
 		Vars:         append([]string(nil), t.Vars...),

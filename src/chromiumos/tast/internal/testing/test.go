@@ -55,10 +55,10 @@ type Test struct {
 	// for commonly-used attributes.
 	Attr []string
 
-	// Labels contains freeform text labels describing the test.
+	// PrivateAttr contains freeform text private attributes describing the test.
 	// This should not be used other than Tast and tests.
 	// Note: this info is not retrievable in test results.
-	Labels []string
+	PrivateAttr []string
 
 	// SearchFlags contains key-value pairs describing the test.
 	// This information will be available in the test results, and can be used
@@ -159,9 +159,9 @@ type Param struct {
 	// in addition to Attr declared in the enclosing Test.
 	ExtraAttr []string
 
-	// ExtraLabels contains freeform text labels describing the test,
-	// in addition to Label declared in the enclosing Test.
-	ExtraLabels []string
+	// ExtraPrivateAttr contains freeform text private attributes describing the test,
+	// in addition to PrivateAttr declared in the enclosing Test.
+	ExtraPrivateAttr []string
 
 	// ExtraSearchFlags contains name-value pairs describing the test,
 	// in addition to SearchFlags declared in the enclosing Test.

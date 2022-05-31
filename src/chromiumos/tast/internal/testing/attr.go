@@ -205,6 +205,10 @@ Tests in this group are not used for build verification.
 				Name: "appcompat_smoke",
 				Desc: `A group of ARC app compatibility tests for smoke testing.`,
 			},
+			{
+				Name: "appcompat_top_apps",
+				Desc: `A group of ARC app compatibility tests for top apps testing.`,
+			},
 		},
 	},
 	{

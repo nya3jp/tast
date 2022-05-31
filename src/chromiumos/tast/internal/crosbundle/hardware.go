@@ -114,6 +114,7 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		DpConverter:        &configpb.HardwareFeatures_DisplayPortConverter{},
 		Wifi:               &configpb.HardwareFeatures_Wifi{},
 		Cellular:           &configpb.HardwareFeatures_Cellular{},
+		Bluetooth:          &configpb.HardwareFeatures_Bluetooth{},
 	}
 
 	formFactor, err := func() (string, error) {
@@ -318,6 +319,15 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		features.Cellular.Present = configpb.HardwareFeatures_NOT_PRESENT
 	} else {
 		features.Cellular.Present = configpb.HardwareFeatures_PRESENT
+	}
+
+	if out, err := exec.Command("hciconfig").Output(); err != nil {
+		features.Bluetooth.Present = configpb.HardwareFeatures_PRESENT_UNKNOWN
+	} else if len(string(out)) != 0 {
+		features.Bluetooth.Present = configpb.HardwareFeatures_PRESENT
+	} else {
+		logging.Infof(ctx, "bluetooth not found: %v", err)
+		features.Bluetooth.Present = configpb.HardwareFeatures_NOT_PRESENT
 	}
 
 	// TODO(b/173741162): Pull storage information from boxster config and add

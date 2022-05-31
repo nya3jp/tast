@@ -364,6 +364,22 @@ func Cellular() Condition {
 	}
 }
 
+// Bluetooth returns a hardware dependency condition that
+// is satisfied iff the DUT has a bluetooth adapter.
+func Bluetooth() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		if hf := f.GetHardwareFeatures(); hf == nil {
+			return withErrorStr("Did not find hardware features")
+		} else if status := hf.GetBluetooth().Present; status == configpb.HardwareFeatures_NOT_PRESENT {
+			return unsatisfied("DUT does not have a bluetooth adapter")
+		} else if status == configpb.HardwareFeatures_PRESENT_UNKNOWN {
+			return unsatisfied("Could not determine bluetooth adapter presence")
+		}
+		return satisfied()
+	},
+	}
+}
+
 // GSCUART returns a hardware dependency condition that is satisfied iff the DUT has a GSC and that GSC has a working UART.
 // TODO(b/224608005): Add a cros_config for this and use that instead.
 func GSCUART() Condition {

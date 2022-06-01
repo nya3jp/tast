@@ -49,8 +49,14 @@ type Driver struct {
 
 // New establishes a new connection to the target device and returns a Driver.
 func New(ctx context.Context, cfg *config.Config, rawTarget, role string) (*Driver, error) {
-	resolvedTarget := resolveSSHConfig(ctx, rawTarget)
+	// Use nil as connection cache if we should not connect to the target.
+	if !config.ShouldConnect(cfg.Target()) {
+		return &Driver{
+			cfg: cfg,
+		}, nil
+	}
 
+	resolvedTarget := resolveSSHConfig(ctx, rawTarget)
 	var debuggerPorts []int
 	for _, dt := range []debugger.DebugTarget{debugger.LocalTestRunner, debugger.LocalBundle} {
 		debugPort, ok := cfg.DebuggerPorts()[dt]
@@ -86,23 +92,36 @@ func New(ctx context.Context, cfg *config.Config, rawTarget, role string) (*Driv
 
 // Close closes the current connection to the target device.
 func (d *Driver) Close(ctx context.Context) error {
+	// Check we have the connection to close.
+	if d.cc == nil {
+		return nil
+	}
 	return d.cc.Close(ctx)
 }
 
 // ConnectionSpec returns a connection spec as [<user>@]host[:<port>].
 func (d *Driver) ConnectionSpec() string {
+	if d.cc == nil {
+		return ""
+	}
 	return d.cc.ConnectionSpec()
 }
 
 // InitBootID returns a boot ID string obtained on the first successful
 // connection to the target device.
 func (d *Driver) InitBootID() string {
+	if d.cc == nil {
+		return ""
+	}
 	return d.cc.InitBootID()
 }
 
 // SSHConn returns ssh.Conn for the current connection.
 // The return value may change after calling non-getter methods.
 func (d *Driver) SSHConn() *ssh.Conn {
+	if d.cc == nil {
+		return nil
+	}
 	return d.cc.Conn().SSHConn()
 }
 
@@ -110,12 +129,18 @@ func (d *Driver) SSHConn() *ssh.Conn {
 // target device.
 // The return value may change after calling non-getter methods.
 func (d *Driver) Services() *Services {
+	if d.cc == nil {
+		return nil
+	}
 	return d.cc.Conn().Services()
 }
 
 // ReconnectIfNeeded ensures that the current connection is healthy, and
 // otherwise it re-establishes a connection.
 func (d *Driver) ReconnectIfNeeded(ctx context.Context) error {
+	if d.cc == nil {
+		return nil
+	}
 	return d.cc.EnsureConn(ctx)
 }
 
@@ -125,6 +150,10 @@ func (d *Driver) DefaultTimeout() time.Duration {
 }
 
 func (d *Driver) localRunnerClient() *runnerclient.Client {
+	// We dont have access to the target.
+	if !config.ShouldConnect(d.cfg.Target()) {
+		return nil
+	}
 	cmd := bundleclient.LocalCommand(d.cfg.LocalRunner(), d.cfg.Proxy() == config.ProxyEnv, d.cc)
 
 	params := &protocol.RunnerInitParams{BundleGlob: d.cfg.LocalBundleGlob()}

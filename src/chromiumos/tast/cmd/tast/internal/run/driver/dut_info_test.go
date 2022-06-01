@@ -102,3 +102,24 @@ func TestDriver_GetDUTInfo_NoCheckTestDeps(t *testing.T) {
 		t.Fatalf("GetDUTInfo failed: %v", err)
 	}
 }
+
+func TestDriverGetDUTInfoNoHost(t *testing.T) {
+	env := runtest.SetUp(t)
+	ctx := env.Context()
+	cfg := env.Config(func(cfg *config.MutableConfig) {
+		cfg.Target = "-"
+	})
+
+	drv, err := driver.New(ctx, cfg, cfg.Target(), "")
+	if err != nil {
+		t.Fatalf("driver.New failed: %v", err)
+	}
+	defer drv.Close(ctx)
+	gotInfo, err := drv.GetDUTInfo(ctx)
+	if err != nil {
+		t.Fatalf("GetDUTInfo failed: %v", err)
+	}
+	if gotInfo != nil {
+		t.Fatalf("GetDUTInfo failed: got %v want nil", gotInfo)
+	}
+}

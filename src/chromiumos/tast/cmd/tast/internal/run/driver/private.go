@@ -20,6 +20,12 @@ func (d *Driver) DownloadPrivateBundles(ctx context.Context, dutInfo *protocol.D
 		return nil
 	}
 
+	client := d.localRunnerClient()
+	if client == nil {
+		logging.Info(ctx, "Dont have access to DUT. Not downloading private bundles.")
+		return nil
+	}
+
 	ctx, st := timing.Start(ctx, "download_private_bundles")
 	defer st.End()
 
@@ -57,7 +63,7 @@ func (d *Driver) DownloadPrivateBundles(ctx context.Context, dutInfo *protocol.D
 		BuildArtifactUrl: buildArtifactsURL,
 	}
 
-	if err := d.localRunnerClient().DownloadPrivateBundles(ctx, req); err != nil {
+	if err := client.DownloadPrivateBundles(ctx, req); err != nil {
 		return errors.Wrap(err, "failed to download private bundles")
 	}
 	return nil

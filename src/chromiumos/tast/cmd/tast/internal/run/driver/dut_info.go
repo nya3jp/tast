@@ -19,12 +19,18 @@ func (d *Driver) GetDUTInfo(ctx context.Context) (*protocol.DUTInfo, error) {
 		return nil, nil
 	}
 
+	client := d.localRunnerClient()
+	if client == nil {
+		logging.Info(ctx, "Dont have access to DUT. Returning nil DUTInfo")
+		return nil, nil
+	}
+
 	ctx, st := timing.Start(ctx, "get_dut_info")
 	defer st.End()
 	logging.Debug(ctx, "Getting DUT info")
 
 	req := &protocol.GetDUTInfoRequest{ExtraUseFlags: d.cfg.ExtraUSEFlags()}
-	res, err := d.localRunnerClient().GetDUTInfo(ctx, req)
+	res, err := client.GetDUTInfo(ctx, req)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to retrieve DUT info")
 	}

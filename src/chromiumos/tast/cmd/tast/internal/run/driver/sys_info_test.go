@@ -11,6 +11,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"google.golang.org/protobuf/testing/protocmp"
 
+	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/driver"
 	"chromiumos/tast/cmd/tast/internal/run/runtest"
 	"chromiumos/tast/internal/protocol"
@@ -88,5 +89,44 @@ func TestDriver_CollectSysInfo(t *testing.T) {
 	}
 	if diff := cmp.Diff(gotCrashes, fakeCrashes); diff != "" {
 		t.Errorf("Crash dumps mismatch (-got +want):\n%s", diff)
+	}
+}
+
+func TestCollectSysInfoNoHost(t *testing.T) {
+	env := runtest.SetUp(t)
+	ctx := env.Context()
+	cfg := env.Config(func(cfg *config.MutableConfig) {
+		cfg.Target = "-"
+	})
+
+	drv, err := driver.New(ctx, cfg, cfg.Target(), "")
+	if err != nil {
+		t.Fatalf("driver.New failed: %v", err)
+	}
+	defer drv.Close(ctx)
+	if err := drv.CollectSysInfo(ctx, nil); err != nil {
+		t.Fatalf("CollectSysInfo failed: %v", err)
+	}
+}
+
+func TestGetSysInfoStateNoHost(t *testing.T) {
+	env := runtest.SetUp(t)
+	ctx := env.Context()
+	cfg := env.Config(func(cfg *config.MutableConfig) {
+		cfg.Target = "-"
+	})
+
+	drv, err := driver.New(ctx, cfg, cfg.Target(), "")
+	if err != nil {
+		t.Fatalf("driver.New failed: %v", err)
+	}
+	defer drv.Close(ctx)
+	gotState, err := drv.GetSysInfoState(ctx)
+	if err != nil {
+		t.Fatalf("GetSysInfoState failed: %v", err)
+	}
+
+	if gotState != nil {
+		t.Fatalf("GetSysInfoState failed: got %v want nil", gotState)
 	}
 }

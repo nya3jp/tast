@@ -343,3 +343,21 @@ func TestDriver_DownloadPrivateBundles_DUTServer(t *testing.T) {
 		t.Error("DownloadPrivateBundles not called")
 	}
 }
+
+func TestPrivateNoHost(t *testing.T) {
+	env := runtest.SetUp(t)
+	ctx := env.Context()
+	cfg := env.Config(func(cfg *config.MutableConfig) {
+		cfg.DownloadPrivateBundles = true
+		cfg.Target = "-"
+	})
+
+	drv, err := driver.New(ctx, cfg, cfg.Target(), "")
+	if err != nil {
+		t.Fatalf("driver.New failed: %v", err)
+	}
+	defer drv.Close(ctx)
+	if err := drv.DownloadPrivateBundles(ctx, nil); err != nil {
+		t.Fatalf("DownloadPrivateBundles failed: %v", err)
+	}
+}

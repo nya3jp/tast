@@ -31,12 +31,18 @@ func (d *Driver) GetSysInfoState(ctx context.Context) (*protocol.SysInfoState, e
 		return nil, nil
 	}
 
+	client := d.localRunnerClient()
+	if client == nil {
+		logging.Info(ctx, "Dont have access to DUT. Returning nil SysInfoState")
+		return nil, nil
+	}
+
 	ctx, st := timing.Start(ctx, "get_sys_info_state")
 	defer st.End()
 	logging.Debug(ctx, "Getting initial system state")
 
 	req := &protocol.GetSysInfoStateRequest{}
-	res, err := d.localRunnerClient().GetSysInfoState(ctx, req)
+	res, err := client.GetSysInfoState(ctx, req)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to get system info state")
 	}
@@ -50,6 +56,12 @@ func (d *Driver) CollectSysInfo(ctx context.Context, initialSysInfo *protocol.Sy
 		return nil
 	}
 
+	client := d.localRunnerClient()
+	if client == nil {
+		logging.Info(ctx, "Dont have access to DUT. No sysInfo to collect.")
+		return nil
+	}
+
 	ctx, st := timing.Start(ctx, "collect_sys_info")
 	defer st.End()
 	logging.Debug(ctx, "Collecting system information")
@@ -57,7 +69,7 @@ func (d *Driver) CollectSysInfo(ctx context.Context, initialSysInfo *protocol.Sy
 	req := &protocol.CollectSysInfoRequest{
 		InitialState: initialSysInfo,
 	}
-	res, err := d.localRunnerClient().CollectSysInfo(ctx, req)
+	res, err := client.CollectSysInfo(ctx, req)
 	if err != nil {
 		return errors.Wrap(err, "failed to collect system info")
 	}

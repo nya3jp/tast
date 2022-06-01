@@ -609,15 +609,7 @@ Fixtures are composable. A fixture can declare its parent fixture with
 tests use it.
 
 Local tests/fixtures can depend on a remote fixture if they live in test bundles
-with the same name (e.g. local `cros` and remote `cros`). Currently we have
-several limitations though ([b/187957164](http://b/187957164)):
-
-- Only `SetUp()` and `TearDown()` are called for the remote fixture.
-  Reset/PreTest/PostTest implementations should be empty as they're not called.
-- The remote fixture cannot have a parent fixture.
-- Fixture value is not transferred from remote to local. s.FixtValue() returns
-  nil for a local test/fixture depending on a remote fixture.
-- Only `cros` bundles are supported.
+with the same name (e.g. local `cros` and remote `cros`).
 
 Fixtures are registered by calling [`testing.AddFixture`] with [`testing.Fixture`]
 struct in `init()`. `testing.Fixture.Name` specifies the fixture name,

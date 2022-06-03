@@ -722,6 +722,14 @@ Parallels boot-up testing. Otherwise the same as group:crosbolt.`,
 				Name: "shimless_rma_experimental",
 				Desc: `Shimless RMA tests that might break the DUTs in the lab.`,
 			},
+			{
+				Name: "shimless_rma_normal",
+				Desc: `Shimless RMA tests that can be executed in Skylab.`,
+			},
+			{
+				Name: "shimless_rma_nodelocked",
+				Desc: `Shimless RMA tests that require node-locked image.`,
+			},
 		},
 	},
 }

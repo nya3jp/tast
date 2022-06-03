@@ -219,6 +219,9 @@ func newTestInstance(t *Test, p *Param) (*TestInstance, error) {
 
 	PrivateAttr := append(append([]string(nil), t.PrivateAttr...), p.ExtraPrivateAttr...)
 	searchFlags := append(append([]*protocol.StringPair(nil), t.SearchFlags...), p.ExtraSearchFlags...)
+	if err := validateSearchFlags(searchFlags); err != nil {
+		return nil, err
+	}
 
 	return &TestInstance{
 		Name:         name,
@@ -400,6 +403,15 @@ func validateData(data []string) error {
 	for _, p := range data {
 		if p != filepath.Clean(p) || strings.HasPrefix(p, ".") || strings.HasPrefix(p, "/") {
 			return fmt.Errorf("data path %q is invalid", p)
+		}
+	}
+	return nil
+}
+func validateSearchFlags(searchFlags []*protocol.StringPair) error {
+	validKey := regexp.MustCompile(`^[a-z][a-z0-9_]*(/[a-z][a-z0-9_]*)*$`)
+	for _, searchFlag := range searchFlags {
+		if !validKey.MatchString(searchFlag.Key) {
+			return fmt.Errorf("The key of SearchFlag %v should match %s", searchFlag, validKey)
 		}
 	}
 	return nil

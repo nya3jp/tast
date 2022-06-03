@@ -1368,3 +1368,35 @@ func TestWriteTestsAsProto(t *gotesting.T) {
 		t.Errorf("WriteTestsAsProto(%v): got %v; want %v", in, actual, expected)
 	}
 }
+
+func TestValidateSearchFlags_OK(t *gotesting.T) {
+	for _, searchFlags := range [][]*protocol.StringPair{
+		{{Key: "a", Value: "value"}},
+		{{Key: "a_1", Value: "value"}},
+		{{Key: "a_1_b", Value: "value"}},
+		{{Key: "a1", Value: "value"}},
+		{{Key: "a_", Value: "value"}},
+		{{Key: "a/b", Value: "value"}},
+	} {
+		if err := validateSearchFlags(searchFlags); err != nil {
+			t.Errorf("validateSearchFlags(%v) = %v; want nil", searchFlags, err)
+		}
+	}
+}
+
+func TestValidateSearchFlags_Error(t *gotesting.T) {
+	for _, searchFlags := range [][]*protocol.StringPair{
+		{{Key: "", Value: "value"}},
+		{{Key: "1", Value: "value"}},
+		{{Key: "A", Value: "value"}},
+		{{Key: "aB", Value: "value"}},
+		{{Key: "a-b", Value: "value"}},
+		{{Key: "a b", Value: "value"}},
+		{{Key: "a&", Value: "value"}},
+		{{Key: "a/", Value: "value"}},
+	} {
+		if err := validateSearchFlags(searchFlags); err == nil {
+			t.Errorf("validateSearchFlags(%v) = nil; want error", searchFlags)
+		}
+	}
+}

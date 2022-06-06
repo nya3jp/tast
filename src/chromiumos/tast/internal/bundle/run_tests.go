@@ -244,10 +244,12 @@ func (ew *eventWriter) Heartbeat() error {
 
 // connectToTarget connects to the target DUT and returns its connection.
 func connectToTarget(ctx context.Context, spec, keyFile, keyDir string, beforeReboot func(context.Context, *dut.DUT) error) (_ *dut.DUT, retErr error) {
-	if spec == "" {
-		return nil, errors.New("connection spec not supplied")
+	// Do not attempt to connect to the target if we dont have it.
+	if spec == "" || spec == "-" {
+		return nil, nil
 	}
 
+	logging.Infof(ctx, "Connecting to DUT: %s", spec)
 	dt, err := dut.New(spec, keyFile, keyDir, beforeReboot)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create connection: %v", err)
@@ -325,9 +327,14 @@ func (c *connectionEnv) close(ctx context.Context) {
 	}
 	logging.Info(ctx, "Disconnecting from DUT")
 	// It is okay to ignore the error since we've finished testing at this point.
-	c.rd.DUT.Close(ctx)
+	if c.rd.DUT != nil {
+		c.rd.DUT.Close(ctx)
+	}
+
 	for _, d := range c.rd.CompanionDUTs {
-		d.Close(ctx)
+		if d != nil {
+			d.Close(ctx)
+		}
 	}
 }
 
@@ -335,10 +342,6 @@ func (c *connectionEnv) close(ctx context.Context) {
 // specifies. Caller must call close after use.
 func setUpConnection(ctx context.Context, scfg *StaticConfig, cfg *protocol.RunConfig, bcfg *protocol.BundleConfig) (_ *connectionEnv, retErr error) {
 	pt := bcfg.GetPrimaryTarget()
-	if pt == nil {
-		return &connectionEnv{}, nil
-	}
-
 	logging.Info(ctx, "Connecting to DUT")
 	sshCfg := pt.GetDutConfig().GetSshConfig()
 	dt, err := connectToTarget(ctx, sshCfg.GetConnectionSpec(), sshCfg.GetKeyFile(), sshCfg.GetKeyDir(), scfg.beforeReboot)

@@ -314,6 +314,11 @@ func (d *Driver) newConfigsForRemoteTests(tests []string, dutInfos map[string]*p
 
 	companionDUTs := make(map[string]*protocol.DUTConfig)
 	for name, target := range d.cfg.CompanionDUTs() {
+		// Don't add to the map if we don't have a valid target.
+		if target == "" || target == "-" {
+			continue
+		}
+
 		companionDUTs[name] = &protocol.DUTConfig{
 			SshConfig: &protocol.SSHConfig{
 				// TODO: Resolve target to a connection spec.
@@ -330,39 +335,31 @@ func (d *Driver) newConfigsForRemoteTests(tests []string, dutInfos map[string]*p
 		buildArtifactsURL = dutInfos[""].GetDefaultBuildArtifactsUrl()
 	}
 
-	runFlags := []string{
-		"-build=" + strconv.FormatBool(d.cfg.Build()),
-		"-keyfile=" + d.cfg.KeyFile(),
-		"-keydir=" + d.cfg.KeyDir(),
-		"-remoterunner=" + d.cfg.RemoteRunner(),
-		"-remotebundledir=" + d.cfg.RemoteBundleDir(),
-		"-remotedatadir=" + d.cfg.RemoteDataDir(),
-		"-localrunner=" + d.cfg.LocalRunner(),
-		"-localbundledir=" + d.cfg.LocalBundleDir(),
-		"-localdatadir=" + d.cfg.LocalDataDir(),
-		"-devservers=" + strings.Join(d.cfg.Devservers(), ","),
-		"-buildartifactsurl=" + buildArtifactsURL,
+	var connSpec string
+	var primaryTarget *protocol.TargetDevice
+	if d.cc != nil {
+		connSpec = d.cc.ConnectionSpec()
 	}
-	for role, dut := range d.cfg.CompanionDUTs() {
-		runFlags = append(runFlags, fmt.Sprintf("-companiondut=%s:%s", role, dut))
-	}
-
-	bcfg := &protocol.BundleConfig{
-		PrimaryTarget: &protocol.TargetDevice{
+	if connSpec != "" && connSpec != "-" {
+		primaryTarget = &protocol.TargetDevice{
 			DutConfig: &protocol.DUTConfig{
 				SshConfig: &protocol.SSHConfig{
-					ConnectionSpec: d.cc.ConnectionSpec(),
+					ConnectionSpec: connSpec,
 					KeyFile:        d.cfg.KeyFile(),
 					KeyDir:         d.cfg.KeyDir(),
 				},
 				TlwName: d.cfg.Target(),
 			},
 			BundleDir: d.cfg.LocalBundleDir(),
-		},
+		}
+	}
+
+	bcfg := &protocol.BundleConfig{
+		PrimaryTarget: primaryTarget,
 		CompanionDuts: companionDUTs,
 		MetaTestConfig: &protocol.MetaTestConfig{
 			TastPath: exe,
-			RunFlags: runFlags,
+			RunFlags: d.runFlags(buildArtifactsURL),
 		},
 	}
 	CompanionFeatures := make(map[string]*frameworkprotocol.DUTFeatures)
@@ -413,6 +410,26 @@ func (d *Driver) newConfigsForRemoteTests(tests []string, dutInfos map[string]*p
 	return bcfg, rcfg, nil
 }
 
+func (d *Driver) runFlags(buildArtifactsURL string) []string {
+	runFlags := []string{
+		"-build=" + strconv.FormatBool(d.cfg.Build()),
+		"-keyfile=" + d.cfg.KeyFile(),
+		"-keydir=" + d.cfg.KeyDir(),
+		"-remoterunner=" + d.cfg.RemoteRunner(),
+		"-remotebundledir=" + d.cfg.RemoteBundleDir(),
+		"-remotedatadir=" + d.cfg.RemoteDataDir(),
+		"-localrunner=" + d.cfg.LocalRunner(),
+		"-localbundledir=" + d.cfg.LocalBundleDir(),
+		"-localdatadir=" + d.cfg.LocalDataDir(),
+		"-devservers=" + strings.Join(d.cfg.Devservers(), ","),
+		"-buildartifactsurl=" + buildArtifactsURL,
+	}
+	for role, dut := range d.cfg.CompanionDUTs() {
+		runFlags = append(runFlags, fmt.Sprintf("-companiondut=%s:%s", role, dut))
+	}
+	return runFlags
+}
+
 func getBuildArtifactsURL(buildArtifactsURLOverride, dutDefaultBuildArtifactsURL string) string {
 
 	//If the tast cmd does not provide buildArtifactsUrl then use the dut default build artifact url
@@ -429,13 +446,16 @@ func (d *Driver) newRunFixtureConfig(dutInfo *protocol.DUTInfo) (*protocol.RunFi
 	}
 
 	buildArtifactsURL := getBuildArtifactsURL(d.cfg.BuildArtifactsURLOverride(), dutInfo.GetDefaultBuildArtifactsUrl())
-
+	var connSpec string
+	if d.cc != nil {
+		connSpec = d.cc.ConnectionSpec()
+	}
 	return &protocol.RunFixtureConfig{
 		TestVars:          d.cfg.TestVars(),
 		DataDir:           d.cfg.RemoteDataDir(),
 		OutDir:            d.cfg.RemoteOutDir(),
 		TempDir:           "", // empty for fixture service to create it
-		ConnectionSpec:    d.cc.ConnectionSpec(),
+		ConnectionSpec:    connSpec,
 		KeyFile:           d.cfg.KeyFile(),
 		KeyDir:            d.cfg.KeyDir(),
 		LocalBundleDir:    d.cfg.LocalBundleDir(),

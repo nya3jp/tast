@@ -20,6 +20,7 @@ import (
 	"chromiumos/tast/cmd/tast/internal/build"
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/driver"
+	fwprotocol "chromiumos/tast/framework/protocol"
 	"chromiumos/tast/internal/debugger"
 	"chromiumos/tast/internal/linuxssh"
 	"chromiumos/tast/internal/logging"
@@ -51,7 +52,12 @@ func Prepare(ctx context.Context, cfg *config.Config, driver *driver.Driver) (*p
 
 	// Do not build or push to DUT as we dont have access to it.
 	if !config.ShouldConnect(cfg.Target()) {
-		return nil, nil
+		return &protocol.DUTInfo{
+			Features: &fwprotocol.DUTFeatures{
+				Software: &fwprotocol.SoftwareFeatures{},
+				Hardware: &fwprotocol.HardwareFeatures{},
+			},
+		}, nil
 	}
 
 	dutInfo, err := prepareDUT(ctx, cfg, driver)

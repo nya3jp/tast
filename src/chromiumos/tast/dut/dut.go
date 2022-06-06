@@ -72,17 +72,23 @@ func New(target, keyFile, keyDir string, beforeReboot func(context.Context, *DUT
 //  linuxssh.GetFile(ctx, d.Conn(), src, dst, linuxssh.PreserveSymlinks)
 //  d.Conn().CommandContext("uptime")
 func (d *DUT) Conn() *ssh.Conn {
+	if d == nil {
+		return nil
+	}
 	return d.hst
 }
 
 // Close releases the DUT's resources.
 func (d *DUT) Close(ctx context.Context) error {
+	if d == nil {
+		return nil
+	}
 	return d.Disconnect(ctx)
 }
 
 // Connected returns true if a usable connection to the DUT is held.
 func (d *DUT) Connected(ctx context.Context) bool {
-	if d.hst == nil {
+	if d == nil || d.hst == nil {
 		return false
 	}
 	if err := d.hst.Ping(ctx, pingTimeout); err != nil {
@@ -94,6 +100,9 @@ func (d *DUT) Connected(ctx context.Context) bool {
 // Connect establishes a connection to the DUT. If a connection already
 // exists, it is closed first.
 func (d *DUT) Connect(ctx context.Context) error {
+	if d == nil {
+		return nil
+	}
 	d.Disconnect(ctx)
 
 	var err error
@@ -108,7 +117,7 @@ func (d *DUT) Connect(ctx context.Context) error {
 // Disconnect closes the current connection to the DUT. It is a no-op if
 // no connection is currently established.
 func (d *DUT) Disconnect(ctx context.Context) error {
-	if d.hst == nil {
+	if d == nil || d.hst == nil {
 		return nil
 	}
 	defer func() { d.hst = nil }()
@@ -123,11 +132,17 @@ func (d *DUT) Disconnect(ctx context.Context) error {
 //
 // DEPRECATED: use linuxssh.GetFile(ctx, d.Conn(), src, dst, linuxssh.PreserveSymlinks)
 func (d *DUT) GetFile(ctx context.Context, src, dst string) error {
+	if d == nil {
+		return nil
+	}
 	return linuxssh.GetFile(ctx, d.hst, src, dst, linuxssh.PreserveSymlinks)
 }
 
 // WaitUnreachable waits for the DUT to become unreachable.
 func (d *DUT) WaitUnreachable(ctx context.Context) error {
+	if d == nil {
+		return nil
+	}
 	if d.hst == nil {
 		deadline, ok := ctx.Deadline()
 		if ok && deadline.Before(time.Now().Add(d.sopt.ConnectTimeout)) {

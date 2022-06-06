@@ -130,6 +130,10 @@ func NewIntermediateHandlersFactory(resDir string, counter *failfast.Counter, pa
 }
 
 func (d *Driver) runLocalTestsOnce(ctx context.Context, bundle string, tests []string, state *protocol.StartFixtureState) ([]*resultsjson.Result, error) {
+	if d.cc == nil {
+		return nil, nil
+	}
+
 	if err := d.cc.EnsureConn(ctx); err != nil {
 		return nil, err
 	}

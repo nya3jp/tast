@@ -39,7 +39,7 @@ func (s *testServer) ListEntities(ctx context.Context, req *protocol.ListEntitie
 	exec.Command("logger", fmt.Sprintf("Serving ListEntities Request in %s", execName)).Run()
 	if req.GetRecursive() {
 		var cl *bundleclient.Client
-		if s.bundleParams.GetBundleConfig() != nil {
+		if s.bundleParams.GetBundleConfig().GetPrimaryTarget() != nil {
 			var err error
 			cl, err = bundleclient.New(ctx, s.bundleParams.GetBundleConfig().GetPrimaryTarget(), s.scfg.registry.Name(), &protocol.HandshakeRequest{})
 			if err != nil {

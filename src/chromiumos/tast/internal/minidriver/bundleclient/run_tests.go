@@ -90,7 +90,11 @@ func (c *Client) RunTests(ctx context.Context, bcfg *protocol.BundleConfig, rcfg
 			RunConfig: rcfg,
 			Recursive: recursive,
 		}
-		if err := stream.Send(&protocol.RunTestsRequest{Type: &protocol.RunTestsRequest_RunTestsInit{RunTestsInit: init}}); err != nil {
+		if err := stream.Send(&protocol.RunTestsRequest{
+			Type: &protocol.RunTestsRequest_RunTestsInit{
+				RunTestsInit: init,
+			},
+		}); err != nil {
 			return errors.Wrap(err, "initializing test run")
 		}
 

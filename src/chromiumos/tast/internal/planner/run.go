@@ -779,7 +779,7 @@ func runTestWithConfig(ctx context.Context, tcfg *testConfig, pcfg *Config, stac
 		}
 
 		// In remote tests, reconnect to the DUT if needed.
-		if pcfg.RemoteData != nil {
+		if pcfg.RemoteData != nil && testState.DUT() != nil {
 			dt := testState.DUT()
 			if !dt.Connected(ctx) {
 				testState.Log("Reconnecting to DUT")

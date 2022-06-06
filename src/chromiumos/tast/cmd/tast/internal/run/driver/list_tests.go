@@ -13,7 +13,7 @@ import (
 
 // ListMatchedTests enumerates tests matched with the user-supplied patterns.
 func (d *Driver) ListMatchedTests(ctx context.Context, features *protocol.Features) ([]*BundleEntity, error) {
-	local, err := d.localRunnerClient().ListTests(ctx, d.cfg.Patterns(), features)
+	local, err := d.ListMatchedLocalTests(ctx, features)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to list local tests")
 	}
@@ -27,6 +27,9 @@ func (d *Driver) ListMatchedTests(ctx context.Context, features *protocol.Featur
 // ListMatchedLocalTests enumerates local tests matched with the user-supplied
 // patterns.
 func (d *Driver) ListMatchedLocalTests(ctx context.Context, features *protocol.Features) ([]*BundleEntity, error) {
+	if d.localRunnerClient() == nil {
+		return nil, nil
+	}
 	tests, err := d.localRunnerClient().ListTests(ctx, d.cfg.Patterns(), features)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to list local tests")
@@ -36,6 +39,9 @@ func (d *Driver) ListMatchedLocalTests(ctx context.Context, features *protocol.F
 
 // ListLocalFixtures enumerates all local fixtures.
 func (d *Driver) ListLocalFixtures(ctx context.Context) ([]*BundleEntity, error) {
+	if d.localRunnerClient() == nil {
+		return nil, nil
+	}
 	fixtures, err := d.localRunnerClient().ListFixtures(ctx)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to list local fixtures")

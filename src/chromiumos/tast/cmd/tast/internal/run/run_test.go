@@ -1409,3 +1409,37 @@ func TestRunDisable(t *gotesting.T) {
 		t.Errorf("%s mismatch (-got +want):\n%s", reporting.StreamedResultsFilename, diff)
 	}
 }
+
+func TestRunSSHLessHostLocal(t *gotesting.T) {
+	env := runtest.SetUp(t)
+	ctx := env.Context()
+	cfg := env.Config(func(cfg *config.MutableConfig) {
+		cfg.Target = "-"
+	})
+	state := env.State()
+
+	if _, err := run.Run(ctx, cfg, state); err != nil {
+		t.Error("Run did not run remote tests")
+	}
+}
+
+func TestRunSSHLessHostRemote(t *gotesting.T) {
+	remotePass := &testing.TestInstance{
+		Name:    "remote.Pass",
+		Timeout: time.Minute,
+		Func:    func(ctx context.Context, s *testing.State) {},
+	}
+	remoteReg := testing.NewRegistry("bundle")
+	remoteReg.AddTestInstance(remotePass)
+	env := runtest.SetUp(t, runtest.WithRemoteBundles(remoteReg))
+
+	ctx := env.Context()
+	cfg := env.Config(func(cfg *config.MutableConfig) {
+		cfg.Target = "-"
+	})
+	state := env.State()
+
+	if _, err := run.Run(ctx, cfg, state); err != nil {
+		t.Errorf("Run failed with err: %v", err)
+	}
+}

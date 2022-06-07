@@ -47,6 +47,18 @@ func checkFile(t *testing.T, path, data string, mode os.FileMode) {
 	}
 }
 
+// checkDir checks that the dir at path exists and has the supplied mode.
+// Test errors are reported for any discrepancies.
+func checkDir(t *testing.T, path string, mode os.FileMode) {
+	if di, err := os.Stat(path); err != nil {
+		t.Errorf("Failed to stat %v: %v", path, err)
+	} else if di.Mode()&os.ModeType != os.ModeDir {
+		t.Errorf("%s is not a dir", path)
+	} else if newMode := di.Mode() & os.ModePerm; newMode != mode {
+		t.Errorf("%v has mode 0%o; want 0%o", path, newMode, mode)
+	}
+}
+
 func TestCopyFile(t *testing.T) {
 	const (
 		data = "this is not the most interesting text ever written"
@@ -144,5 +156,86 @@ func TestCopyFileOrMoveFileWithDir(t *testing.T) {
 	}
 	if err := fsutil.MoveFile(src, filepath.Join(td, "moveDst")); err == nil {
 		t.Error("MoveFile unexpectedly succeeded for directory ", src)
+	}
+}
+
+func TestCopyDir(t *testing.T) {
+	td := testutil.TempDir(t)
+	defer os.RemoveAll(td)
+
+	// Create the following dir/file structure:
+	//   src mode:0755
+	//   ├─file1 mode:0655 content:"file1"
+	//   └─subdir mode:0754
+	//     ├─file2 mode:0654 content:"file2"
+	//     └─file3 <symlink to file1>
+	src := filepath.Join(td, "src")
+	if err := os.Mkdir(src, 0755); err != nil {
+		t.Fatal(err)
+	}
+	file1Path := filepath.Join(src, "file1")
+	if err := ioutil.WriteFile(file1Path, []byte("file1"), 0655); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Mkdir(filepath.Join(src, "subdir"), 0754); err != nil {
+		t.Fatal(err)
+	}
+	if err := ioutil.WriteFile(filepath.Join(src, "subdir", "file2"), []byte("file2"), 0654); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Symlink(file1Path, filepath.Join(src, "subdir", "file3")); err != nil {
+		t.Fatal(err)
+	}
+	dst := filepath.Join(td, "dst")
+
+	if err := fsutil.CopyDir(src, dst); err != nil {
+		t.Errorf("CopyDir unexpectedly failed: %v", err)
+	}
+
+	checkDir(t, filepath.Join(dst), 0755)
+	checkFile(t, filepath.Join(dst, "file1"), "file1", 0655)
+	checkDir(t, filepath.Join(dst, "subdir"), 0754)
+	checkFile(t, filepath.Join(dst, "subdir", "file2"), "file2", 0654)
+	checkFile(t, filepath.Join(dst, "subdir", "file3"), "file1", 0655)
+}
+
+func TestCopyDirFailsWhenDestinationExists(t *testing.T) {
+	td := testutil.TempDir(t)
+	defer os.RemoveAll(td)
+
+	src := filepath.Join(td, "src")
+	if err := os.Mkdir(src, 0755); err != nil {
+		t.Fatal(err)
+	}
+	dst := filepath.Join(td, "dst")
+	if err := os.Mkdir(dst, 0755); err != nil {
+		t.Fatal(err)
+	}
+
+	if err := fsutil.CopyDir(src, dst); err == nil {
+		t.Errorf("CopyDir unexpectedly succeeded: %v", err)
+	}
+
+	// Ensure destination directory is not removed.
+	checkDir(t, filepath.Join(dst), 0755)
+}
+
+func TestCopyDirRemovesDestinationItCreatedOnFailure(t *testing.T) {
+	td := testutil.TempDir(t)
+	defer os.RemoveAll(td)
+
+	src := filepath.Join(td, "src")
+	// Reading directory with permissions 0100 will fail.
+	if err := os.Mkdir(src, 0100); err != nil {
+		t.Fatal(err)
+	}
+	dst := filepath.Join(td, "dst")
+
+	if err := fsutil.CopyDir(src, dst); err == nil {
+		t.Errorf("CopyDir unexpectedly succeeded: %v", err)
+	}
+
+	if _, err := os.Stat(dst); err == nil {
+		t.Errorf("Target directory %s has not been removed", dst)
 	}
 }

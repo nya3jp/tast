@@ -493,6 +493,10 @@ third_party/autotest/files/server/site_tests/tast/control.runtime-probe
 			{
 				Name: "cellular_amari_callbox",
 				Desc: `Identifies tests that run on DUTs connected to the Amari callbox.`,
+                        },
+			{
+				Name: "cellular_callbox",
+				Desc: `Identifies tests that run on DUTs connected to the CMW500 callbox.`,
 			},
 		},
 	},

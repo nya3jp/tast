@@ -94,9 +94,10 @@ func runExternalTests(ctx context.Context, names []string, stack *fixture.Combin
 		DebuggerPort: int(pcfg.ExternalTarget.Config.GetDebugPort()),
 		Proxy:        pcfg.ExternalTarget.Config.GetProxy(),
 
-		DUTFeatures: companionFeatures,
-		ForceSkips:  pcfg.Features.ForceSkips,
-		Factory:     factory,
+		DUTFeatures:       companionFeatures,
+		ForceSkips:        pcfg.Features.ForceSkips,
+		Factory:           factory,
+		BuildArtifactsURL: pcfg.DataFile.GetBuildArtifactsUrl(),
 
 		Recursive: true,
 	}

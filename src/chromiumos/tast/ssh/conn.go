@@ -62,6 +62,9 @@ type Options struct {
 	// Only unencrypted keys are used.
 	KeyDir string
 
+	// ProxyCommand specifies the command to use to connect to the DUT.
+	ProxyCommand string
+
 	// ConnectTimeout contains a timeout for establishing the TCP connection.
 	ConnectTimeout time.Duration
 	// ConnectRetries contains the number of times to retry after a connection failure.
@@ -218,7 +221,7 @@ func New(ctx context.Context, o *Options) (*Conn, error) {
 	for i := 0; i < o.ConnectRetries+1; i++ {
 		start := time.Now()
 		var cl *ssh.Client
-		if cl, err = connectSSH(ctx, o.Hostname, cfg); err == nil {
+		if cl, err = connectSSH(ctx, o.Hostname, o.ProxyCommand, cfg); err == nil {
 			return &Conn{cl, o.Platform}, nil
 		}
 		if ctx.Err() != nil {
@@ -245,10 +248,16 @@ func New(ctx context.Context, o *Options) (*Conn, error) {
 }
 
 // connectSSH attempts to synchronously connect to hostPort as directed by cfg.
-func connectSSH(ctx context.Context, hostPort string, cfg *ssh.ClientConfig) (*ssh.Client, error) {
+func connectSSH(ctx context.Context, hostPort, proxyCommand string, cfg *ssh.ClientConfig) (*ssh.Client, error) {
 	var cl *ssh.Client
 	if err := doAsync(ctx, func() error {
-		conn, err := proxy.FromEnvironment().Dial("tcp", hostPort)
+		var conn net.Conn
+		var err error
+		if proxyCommand == "" {
+			conn, err = proxy.FromEnvironment().Dial("tcp", hostPort)
+		} else {
+			conn, err = DialProxyCommand(ctx, hostPort, proxyCommand)
+		}
 		if err != nil {
 			return err
 		}

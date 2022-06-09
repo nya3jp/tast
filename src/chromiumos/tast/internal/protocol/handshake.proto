@@ -77,6 +77,8 @@ message SSHConfig {
   // KeyDir is a path to the directory containing SSH private keys
   // (typically $HOME/.ssh).
   string key_dir = 3;
+  // ProxyCommand specifies the command to use to connect to the DUT.
+  string proxy_command = 4;
 }
 
 // MetaTestConfig contains parameters needed by meta tests (tests that

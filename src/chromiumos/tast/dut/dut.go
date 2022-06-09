@@ -49,7 +49,7 @@ type DUT struct {
 // (of the form "[<user>@]host[:<port>]") using the SSH key at keyFile or
 // keys located in keyDir.
 // The DUT does not start out in a connected state; Connect must be called.
-func New(target, keyFile, keyDir string, beforeReboot func(context.Context, *DUT) error) (*DUT, error) {
+func New(target, keyFile, keyDir, proxyCommand string, beforeReboot func(context.Context, *DUT) error) (*DUT, error) {
 	d := DUT{beforeReboot: beforeReboot}
 	if err := ssh.ParseTarget(target, &d.sopt); err != nil {
 		return nil, err
@@ -57,6 +57,7 @@ func New(target, keyFile, keyDir string, beforeReboot func(context.Context, *DUT
 	d.sopt.ConnectTimeout = connectTimeout
 	d.sopt.KeyFile = keyFile
 	d.sopt.KeyDir = keyDir
+	d.sopt.ProxyCommand = proxyCommand
 
 	return &d, nil
 }

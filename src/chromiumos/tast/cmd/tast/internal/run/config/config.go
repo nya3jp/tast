@@ -113,6 +113,7 @@ type MutableConfig struct {
 	CollectSysInfo       bool
 	MaxTestFailures      int
 	ExcludeSkipped       bool
+	ProxyCommand         string
 
 	TestVars         map[string]string
 	VarsFiles        []string
@@ -157,6 +158,7 @@ func (c *Config) ProtoSSHConfig() *protocol.SSHConfig {
 		ConnectionSpec: c.Target(),
 		KeyFile:        c.KeyFile(),
 		KeyDir:         c.KeyDir(),
+		ProxyCommand:   c.ProxyCommand(),
 	}
 }
 
@@ -281,6 +283,9 @@ func (c *Config) CheckTestDeps() bool { return c.m.CheckTestDeps }
 
 // ExcludeSkipped is whether tests which would be skipped are excluded.
 func (c *Config) ExcludeSkipped() bool { return c.m.ExcludeSkipped }
+
+// ProxyCommand specifies the command to use to connect to the DUT.
+func (c *Config) ProxyCommand() string { return c.m.ProxyCommand }
 
 // WaitUntilReady is whether to wait for DUT to be ready before running tests.
 func (c *Config) WaitUntilReady() bool { return c.m.WaitUntilReady }
@@ -415,6 +420,7 @@ func (c *MutableConfig) SetFlags(f *flag.FlagSet) {
 	f.StringVar(&c.TLWServer, "tlwserver", "", "TLW server address")
 	f.StringVar(&c.ReportsServer, "reports_server", "", "Reports server address")
 	f.IntVar(&c.MaxTestFailures, "maxtestfailures", 0, "the maximum number test failures allowed (default to 0 which means no limit)")
+	f.StringVar(&c.ProxyCommand, "proxycommand", "", "command to use to connect to the DUT.")
 
 	f.IntVar(&c.TotalShards, "totalshards", 1, "total number of shards to be used in a test run")
 	f.IntVar(&c.ShardIndex, "shardindex", 0, "the index of shard to used in the current run")

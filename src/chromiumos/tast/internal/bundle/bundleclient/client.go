@@ -55,6 +55,7 @@ func New(ctx context.Context, target *protocol.TargetDevice, name string, hr *pr
 	opts.ConnectTimeout = 10 * time.Second
 	opts.KeyFile = scfg.GetKeyFile()
 	opts.KeyDir = scfg.GetKeyDir()
+	opts.ProxyCommand = scfg.GetProxyCommand()
 
 	hst, err := ssh.New(ctx, &opts)
 	if err != nil {

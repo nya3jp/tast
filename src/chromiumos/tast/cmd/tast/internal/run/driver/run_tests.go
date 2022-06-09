@@ -325,6 +325,7 @@ func (d *Driver) newConfigsForRemoteTests(tests []string, dutInfos map[string]*p
 				ConnectionSpec: target,
 				KeyFile:        d.cfg.KeyFile(),
 				KeyDir:         d.cfg.KeyDir(),
+				ProxyCommand:   d.cfg.ProxyCommand(),
 			},
 			TlwName: target,
 		}
@@ -347,6 +348,7 @@ func (d *Driver) newConfigsForRemoteTests(tests []string, dutInfos map[string]*p
 					ConnectionSpec: connSpec,
 					KeyFile:        d.cfg.KeyFile(),
 					KeyDir:         d.cfg.KeyDir(),
+					ProxyCommand:   d.cfg.ProxyCommand(),
 				},
 				TlwName: d.cfg.Target(),
 			},
@@ -491,6 +493,7 @@ func (d *Driver) newRunFixtureConfig(dutInfo *protocol.DUTInfo) (*protocol.RunFi
 		DutName:           d.cfg.Target(),
 		BuildArtifactsUrl: buildArtifactsURL,
 		DownloadMode:      d.cfg.DownloadMode(),
+		ProxyCommand:      d.cfg.ProxyCommand(),
 	}, nil
 }
 

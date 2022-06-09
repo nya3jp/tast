@@ -109,7 +109,7 @@ func (s *fixtureService) pushAndPop(srv protocol.FixtureService_RunFixtureServer
 	defer restoreTempDir()
 
 	logging.Info(ctx, "Connecting to DUT")
-	dt, err := connectToTarget(ctx, r.Config.ConnectionSpec, r.Config.KeyFile, r.Config.KeyDir, nil)
+	dt, err := connectToTarget(ctx, r.Config.ConnectionSpec, r.Config.KeyFile, r.Config.KeyDir, r.Config.ProxyCommand, nil)
 	if err != nil {
 		return fmt.Errorf("push %v: %v", r.Name, err)
 	}

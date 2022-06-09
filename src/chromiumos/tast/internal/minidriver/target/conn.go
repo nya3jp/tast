@@ -112,6 +112,7 @@ func dialSSH(ctx context.Context, cfg *protocol.SSHConfig, target string, retrie
 		ConnectRetryInterval: sshRetryInterval,
 		KeyFile:              cfg.GetKeyFile(),
 		KeyDir:               cfg.GetKeyDir(),
+		ProxyCommand:         cfg.GetProxyCommand(),
 		WarnFunc:             func(s string) { logging.Info(ctx, s) },
 	}
 	if err := ssh.ParseTarget(target, opts); err != nil {

@@ -87,6 +87,9 @@ message RunFixtureConfig {
 
   string dut_server = 17;
 
+  // ProxyCommand specifies the command to use to connect to the DUT.
+  string proxy_command = 18;
+
   // TODO(oka): add device_config and hardware_features to support hardware
   // deps. Hint: config/api/topology.proto and device/config.proto define them.
 

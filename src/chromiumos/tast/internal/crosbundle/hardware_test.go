@@ -275,6 +275,10 @@ func TestFindSpeakerAmplifier(t *testing.T) {
 			"i2c-MX98390:00",
 			configpb.HardwareFeatures_Audio_MAX98390.String(),
 		},
+		{
+			"i2c-CSC3541:03",
+			configpb.HardwareFeatures_Audio_CS35L41.String(),
+		},
 	}
 	for _, tc := range testCases {
 		amp, match := matchSpeakerAmplifier(tc.input)

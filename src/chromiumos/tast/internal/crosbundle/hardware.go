@@ -988,6 +988,7 @@ var ampsRegexp = map[string]*regexp.Regexp{
 	configpb.HardwareFeatures_Audio_RT1015P.String():  regexp.MustCompile(`^(i2c-)?(rtl?)?(10ec)?1015p(\.\d*)?((:\d*)|([_-]?\d*))?$`),
 	configpb.HardwareFeatures_Audio_ALC1011.String():  regexp.MustCompile(`^(i2c-)?((rtl?)|(10ec))?1011(\.\d*)?((:\d*)|([_-]?\d*))?$`),
 	configpb.HardwareFeatures_Audio_MAX98390.String(): regexp.MustCompile(`^(i2c-)?ma?x98390((:\d*)|([_-]?\d*))?$`),
+	configpb.HardwareFeatures_Audio_CS35L41.String():  regexp.MustCompile(`^(i2c-)?csc3541((:\d*)|([_-]?\d*))?$`),
 }
 
 func matchSpeakerAmplifier(line string) (*configpb.Component_Amplifier, bool) {

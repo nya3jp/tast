@@ -1277,6 +1277,7 @@ var smartAmps = []string{
 	configpb.HardwareFeatures_Audio_MAX98373.String(),
 	configpb.HardwareFeatures_Audio_MAX98390.String(),
 	configpb.HardwareFeatures_Audio_ALC1011.String(),
+	configpb.HardwareFeatures_Audio_CS35L41.String(),
 }
 
 // SmartAmp returns a hardware dependency condition that is satisfied iff the DUT

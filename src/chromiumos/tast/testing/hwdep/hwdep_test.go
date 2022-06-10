@@ -11,6 +11,7 @@ import (
 
 	frameworkprotocol "chromiumos/tast/framework/protocol"
 	"chromiumos/tast/testing/hwdep"
+	"chromiumos/tast/testing/wlan"
 )
 
 func verifyCondition(t *testing.T, c hwdep.Condition, dc *frameworkprotocol.DeprecatedDeviceConfig, features *configpb.HardwareFeatures, expectSatisfied bool) {
@@ -351,30 +352,42 @@ func TestWiFiIntel(t *testing.T) {
 	c := hwdep.WifiIntel()
 
 	for _, tc := range []struct {
-		platform        string
-		model           string
+		wifiDeviceID    wlan.DeviceID
 		expectSatisfied bool
 	}{
-		{"grunt", "barla", false},
-		{"zork", "ezkinil", false},
-		{"zork", "morphius", true},
-		{"octopus", "droid", true},
+		{hwdep.Marvell88w8897SDIO, false},
+		{hwdep.Marvell88w8997PCIE, false},
+		{hwdep.QualcommAtherosQCA6174, false},
+		{hwdep.QualcommAtherosQCA6174SDIO, false},
+		{hwdep.QualcommWCN3990, false},
+		{hwdep.QualcommWCN6750, false},
+		{hwdep.QualcommWCN6855, false},
+		{hwdep.Intel7260, true},
+		{hwdep.Intel7265, true},
+		{hwdep.Intel9000, true},
+		{hwdep.Intel9260, true},
+		{hwdep.Intel22260, true},
+		{hwdep.Intel22560, true},
+		{hwdep.IntelAX211, true},
+		{hwdep.BroadcomBCM4354SDIO, false},
+		{hwdep.BroadcomBCM4356PCIE, false},
+		{hwdep.BroadcomBCM4371PCIE, false},
+		{hwdep.Realtek8822CPCIE, false},
+		{hwdep.Realtek8852APCIE, false},
+		{hwdep.Realtek8852CPCIE, false},
+		{hwdep.MediaTekMT7921PCIE, false},
+		{hwdep.MediaTekMT7921SDIO, false},
 	} {
 		verifyCondition(
 			t, c,
-			&frameworkprotocol.DeprecatedDeviceConfig{
-				Id: &frameworkprotocol.DeprecatedConfigId{
-					Platform: tc.platform,
-					Model:    tc.model,
+			&frameworkprotocol.DeprecatedDeviceConfig{},
+			&configpb.HardwareFeatures{
+				Wifi: &configpb.HardwareFeatures_Wifi{
+					WifiChips: []configpb.HardwareFeatures_Wifi_WifiChip{configpb.HardwareFeatures_Wifi_WifiChip(tc.wifiDeviceID)},
 				},
 			},
-			&configpb.HardwareFeatures{},
 			tc.expectSatisfied)
 	}
-	expectError(
-		t, c,
-		nil,
-		&configpb.HardwareFeatures{})
 }
 
 func TestMinStorage(t *testing.T) {

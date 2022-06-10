@@ -115,6 +115,7 @@ const (
 	BroadcomBCM4371PCIE        = wlan.BroadcomBCM4371PCIE
 	Realtek8822CPCIE           = wlan.Realtek8822CPCIE
 	Realtek8852APCIE           = wlan.Realtek8852APCIE
+	Realtek8852CPCIE           = wlan.Realtek8852CPCIE
 	MediaTekMT7921PCIE         = wlan.MediaTekMT7921PCIE
 	MediaTekMT7921SDIO         = wlan.MediaTekMT7921SDIO
 )

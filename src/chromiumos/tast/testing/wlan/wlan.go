@@ -58,6 +58,7 @@ const (
 	BroadcomBCM4371PCIE
 	Realtek8822CPCIE
 	Realtek8852APCIE
+	Realtek8852CPCIE
 	MediaTekMT7921PCIE
 	MediaTekMT7921SDIO
 )
@@ -83,6 +84,7 @@ var DeviceNames = map[DeviceID]string{
 	BroadcomBCM4371PCIE:        "Broadcom BCM4371 PCIE",
 	Realtek8822CPCIE:           "Realtek 8822C PCIE",
 	Realtek8852APCIE:           "Realtek 8852A PCIE",
+	Realtek8852CPCIE:           "Realtek 8852C PCIE",
 	MediaTekMT7921PCIE:         "MediaTek MT7921 PCIE",
 	MediaTekMT7921SDIO:         "MediaTek MT7921 SDIO",
 }
@@ -127,6 +129,7 @@ var lookupWLANDev = map[DevInfo]DeviceID{
 	{Vendor: "0x14e4", Device: "0x440d"}:                      BroadcomBCM4371PCIE,
 	{Vendor: "0x10ec", Device: "0xc822"}:                      Realtek8822CPCIE,
 	{Vendor: "0x10ec", Device: "0x8852"}:                      Realtek8852APCIE,
+	{Vendor: "0x10ec", Device: "0xc852"}:                      Realtek8852CPCIE,
 	{Vendor: "0x14c3", Device: "0x7961"}:                      MediaTekMT7921PCIE,
 	{Vendor: "0x037a", Device: "0x7901"}:                      MediaTekMT7921SDIO,
 	{Compatible: "qcom,wcn3990-wifi"}:                         QualcommWCN3990,

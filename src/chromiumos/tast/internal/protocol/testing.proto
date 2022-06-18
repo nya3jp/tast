@@ -417,8 +417,8 @@ message SysInfoState {
   // unified system logs.
   string unified_log_cursor = 2;
 
-  // MinidumpPaths contains absolute paths to minidump crash files.
-  repeated string minidump_paths = 3;
+  // CrashFilePaths contains absolute paths to crash files.
+  repeated string crash_file_paths = 3;
 }
 
 message StackOperationRequest {

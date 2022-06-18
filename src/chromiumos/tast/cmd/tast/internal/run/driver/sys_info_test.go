@@ -20,8 +20,8 @@ import (
 
 func TestDriver_CollectSysInfo(t *testing.T) {
 	fakeState := &protocol.SysInfoState{
-		LogInodeSizes: map[uint64]int64{1: 2, 3: 4},
-		MinidumpPaths: []string{"foo.dmp", "bar.dmp"},
+		LogInodeSizes:  map[uint64]int64{1: 2, 3: 4},
+		CrashFilePaths: []string{"foo.dmp", "bar.dmp"},
 	}
 	fakeLogs := map[string]string{
 		"messages":      "this is syslog",

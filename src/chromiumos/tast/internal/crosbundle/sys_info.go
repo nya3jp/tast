@@ -53,7 +53,7 @@ func GetSysInfoState(ctx context.Context, req *protocol.GetSysInfoStateRequest) 
 		logging.Infof(ctx, "Failed to get unified system log cursor: %v", err)
 	}
 
-	minidumpPaths, err := getMinidumps()
+	crashFilePaths, err := getCrashFilePaths()
 	if err != nil {
 		return nil, err
 	}
@@ -62,7 +62,7 @@ func GetSysInfoState(ctx context.Context, req *protocol.GetSysInfoStateRequest) 
 		State: &protocol.SysInfoState{
 			LogInodeSizes:    logInodeSizes,
 			UnifiedLogCursor: unifiedLogCursor,
-			MinidumpPaths:    minidumpPaths,
+			CrashFilePaths:   crashFilePaths,
 		},
 	}, nil
 }
@@ -96,7 +96,7 @@ func CollectSysInfo(ctx context.Context, req *protocol.CollectSysInfoRequest) (*
 	}
 
 	// Collect crashes.
-	dumps, err := getMinidumps()
+	dumps, err := getCrashFilePaths()
 	if err != nil {
 		return nil, err
 	}
@@ -104,7 +104,7 @@ func CollectSysInfo(ctx context.Context, req *protocol.CollectSysInfoRequest) (*
 	if err != nil {
 		return nil, err
 	}
-	if err := crash.CopyNewFiles(ctx, crashDir, dumps, initialState.GetMinidumpPaths()); err != nil {
+	if err := crash.CopyNewFiles(ctx, crashDir, dumps, initialState.GetCrashFilePaths()); err != nil {
 		return nil, err
 	}
 	// TODO(derat): Decide if it's worthwhile to call crash.CopySystemInfo here to get /etc/lsb-release.
@@ -120,16 +120,32 @@ func CollectSysInfo(ctx context.Context, req *protocol.CollectSysInfoRequest) (*
 	}, nil
 }
 
-// getMinidumps returns the paths of all minidump files within dirs.
-func getMinidumps() ([]string, error) {
+// getCrashFilePaths returns the paths of all minidump files, meta files
+// and all files with a meta file prefix within dirs.
+func getCrashFilePaths() ([]string, error) {
 	var dumps []string
+	var metaFilePrefixes []string
 	paths, err := crash.GetCrashes(crash.DefaultDirs()...)
 	if err != nil {
 		return nil, err
 	}
 	for _, path := range paths {
+		if filepath.Ext(path) == crash.MetadataExt {
+			prefix := strings.TrimSuffix(path, crash.MetadataExt)
+			metaFilePrefixes = append(metaFilePrefixes, prefix)
+		}
+	}
+	for _, path := range paths {
 		if filepath.Ext(path) == crash.MinidumpExt {
 			dumps = append(dumps, path)
+			continue
+		}
+		for _, prefix := range metaFilePrefixes {
+			if strings.HasPrefix(path, prefix) {
+				dumps = append(dumps, path)
+				// The current path match the current prefix so we can skip other prefixes.
+				break
+			}
 		}
 	}
 	return dumps, nil

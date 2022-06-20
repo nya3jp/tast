@@ -225,7 +225,7 @@ var softwareFeatureDefs = map[string]string{
 	"wifi":        `!"betty" && !"tast_vm" && !"nyan_kitty"`,
 	"wilco":       "wilco",
 	"wired_8021x": "wired_8021x",
-	// WireGuard is only supported on 5.10+ kernels.
-	"wireguard": `!("kernel-3_18" || "kernel-4_4" || "kernel-4_14" || "kernel-4_19" || "kernel-5_4")`,
+	// WireGuard is only supported on 5.4+ kernels.
+	"wireguard": `!("kernel-3_18" || "kernel-4_4" || "kernel-4_14" || "kernel-4_19")`,
 	"wpa3_sae":  "wpa3_sae",
 }

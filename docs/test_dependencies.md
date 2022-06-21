@@ -44,6 +44,7 @@ The following software features are defined:
 *   `camera_720p` - The ability to capture video with frame size 1280x720.
 *   `camera_app` - The ability to run the builtin camera app.
 *   `camera_feature_hdrnet` - Whether HDRnet is enabled on this platform.
+*   `camera_feature_portrait_mode` - Whether Portrait Mode is enabled on this platform.
 *   `camera_legacy` - Using [Linux Video Capture] in Chrome, and [Camera HAL1]
     in Android if ARC++ is available.
 *   `cert_provision` - The ability to use an additional cert_provision library

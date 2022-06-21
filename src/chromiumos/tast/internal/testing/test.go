@@ -25,6 +25,14 @@ const (
 	// the test runner (which downloads the files) to the test bundle so the bundle
 	// can include them in the test's output.
 	ExternalErrorSuffix = ".external-error"
+
+	// ExternalURLSuffix is a file name suffix to store external data file's source url.
+	// It is used to perform staleness check for external files. If this file is present
+	// tast first refer this file to see if it has previously downloaded file from the
+	// url. If so then file is not downloaded again. This is useful in case when
+	// the artifact name in External data files does not change, however the
+	// buildartifactsurl cli flag changed, resulting in different source url.
+	ExternalURLSuffix = ".external-url"
 )
 
 // TestFunc is the code associated with a test.

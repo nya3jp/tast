@@ -610,14 +610,16 @@ func TestRunDownloadsStatic(t *gotesting.T) {
 // Artifact external data files are successfully downloaded.
 func TestRunDownloadsArtifact(t *gotesting.T) {
 	const (
-		name1 = "name1"
-		name2 = "name2"
-		file1 = "file1"
-		file2 = "file2"
-		url1  = fakeArtifactURL + name1
-		url2  = fakeArtifactURL + name2
-		data1 = "foo"
-		data2 = "bar"
+		name1              = "name1"
+		name2              = "name2"
+		file1              = "file1"
+		file2              = "file2"
+		url1               = fakeArtifactURL + name1
+		url2               = fakeArtifactURL + name2
+		data1              = "foo"
+		data2              = "bar"
+		urlRecordFile1Data = url1
+		urlRecordFile2Data = url2
 	)
 	tmpDir := testutil.TempDir(t)
 	defer os.RemoveAll(tmpDir)
@@ -664,6 +666,13 @@ func TestRunDownloadsArtifact(t *gotesting.T) {
 		t.Errorf("Unexpected mode for %s: got %o, want %o", file1, fi.Mode(), 0644)
 	}
 
+	urlRecordFile1 := path1 + testing.ExternalURLSuffix
+	if out, err := ioutil.ReadFile(urlRecordFile1); err != nil {
+		t.Error(err)
+	} else if !bytes.Equal(out, []byte(urlRecordFile1Data)) {
+		t.Errorf("Corrupted data for %s: got %q, want %q", file1, string(out), urlRecordFile1)
+	}
+
 	path2 := filepath.Join(tmpDir, file2)
 	if out, err := ioutil.ReadFile(path2); err != nil {
 		t.Error(err)
@@ -674,6 +683,105 @@ func TestRunDownloadsArtifact(t *gotesting.T) {
 		t.Error(err)
 	} else if fi.Mode() != 0755 {
 		t.Errorf("Unexpected mode for %s: got %o, want %o", file2, fi.Mode(), 0755)
+	}
+
+	urlRecordFile2 := path2 + testing.ExternalURLSuffix
+	if out, err := ioutil.ReadFile(urlRecordFile2); err != nil {
+		t.Error(err)
+	} else if !bytes.Equal(out, []byte(urlRecordFile2Data)) {
+		t.Errorf("Corrupted data for %s: got %q, want %q", file2, string(out), urlRecordFile2)
+	}
+}
+
+func TestRunDownloadsArtifactURLChanged(t *gotesting.T) {
+	const fakeArtifactURL2 = "gs://someotherbucket/path/to/artifacts/"
+
+	const (
+		name               = "name"
+		file1              = "file1"
+		file2              = "file2"
+		url1               = fakeArtifactURL + name
+		url2               = fakeArtifactURL2 + name
+		data1              = "foo"
+		data2              = "bar"
+		urlRecordFile2Data = url2
+	)
+	tmpDir := testutil.TempDir(t)
+	defer os.RemoveAll(tmpDir)
+
+	// First time download
+	jobs := []*DownloadJob{
+		{
+			link: &link{
+				Data: LinkData{
+					Type: TypeArtifact,
+					Name: name,
+				},
+				ComputedURL: url1,
+			},
+			dests: []string{filepath.Join(tmpDir, file1), filepath.Join(tmpDir, file2)},
+		},
+	}
+	cl := devserver.NewFakeClient(map[string][]byte{
+		url1: []byte(data1),
+		url2: []byte(data2),
+	})
+
+	RunDownloads(context.Background(), tmpDir, jobs, cl)
+
+	// Second time download, with different url but with same name.
+	// Should download from the new url.
+	jobs = []*DownloadJob{
+		{
+			link: &link{
+				Data: LinkData{
+					Type: TypeArtifact,
+					Name: name,
+				},
+				ComputedURL: url2,
+			},
+			dests: []string{filepath.Join(tmpDir, file1), filepath.Join(tmpDir, file2)},
+		},
+	}
+
+	RunDownloads(context.Background(), tmpDir, jobs, cl)
+
+	path1 := filepath.Join(tmpDir, file1)
+	if out, err := ioutil.ReadFile(path1); err != nil {
+		t.Error(err)
+	} else if !bytes.Equal(out, []byte(data2)) {
+		t.Errorf("Corrupted data for %s: got %q, want %q", file1, string(out), data2)
+	}
+	if fi, err := os.Stat(path1); err != nil {
+		t.Error(err)
+	} else if fi.Mode() != 0644 {
+		t.Errorf("Unexpected mode for %s: got %o, want %o", file1, fi.Mode(), 0644)
+	}
+
+	urlRecordFile1 := path1 + testing.ExternalURLSuffix
+	if out, err := ioutil.ReadFile(urlRecordFile1); err != nil {
+		t.Error(err)
+	} else if !bytes.Equal(out, []byte(urlRecordFile2Data)) {
+		t.Errorf("Corrupted data for %s: got %q, want %q", file1, string(out), urlRecordFile1)
+	}
+
+	path2 := filepath.Join(tmpDir, file2)
+	if out, err := ioutil.ReadFile(path2); err != nil {
+		t.Error(err)
+	} else if !bytes.Equal(out, []byte(data2)) {
+		t.Errorf("Corrupted data for %s: got %q, want %q", file2, string(out), data2)
+	}
+	if fi, err := os.Stat(path2); err != nil {
+		t.Error(err)
+	} else if fi.Mode() != 0644 {
+		t.Errorf("Unexpected mode for %s: got %o, want %o", file2, fi.Mode(), 0644)
+	}
+
+	urlRecordFile2 := path2 + testing.ExternalURLSuffix
+	if out, err := ioutil.ReadFile(urlRecordFile2); err != nil {
+		t.Error(err)
+	} else if !bytes.Equal(out, []byte(urlRecordFile2Data)) {
+		t.Errorf("Corrupted data for %s: got %q, want %q", file2, string(out), urlRecordFile2)
 	}
 }
 

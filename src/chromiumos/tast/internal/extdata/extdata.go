@@ -240,7 +240,7 @@ func (m *Manager) PrepareDownloads(ctx context.Context, entities []*protocol.Ent
 			needed := false
 			f, err := os.Open(destPath)
 			if err == nil {
-				needed = verify(f, link) != nil
+				needed = shouldDownload(f, link, destPath)
 				f.Close()
 
 				if needed {
@@ -299,6 +299,22 @@ func (m *Manager) PrepareDownloads(ctx context.Context, entities []*protocol.Ent
 	return jobs, func() {
 		for _, f := range releaseFunc {
 			f()
+		}
+	}
+}
+
+// writeExternalURLRecord record url source of external file.
+func writeExternalURLRecord(ctx context.Context, job *DownloadJob) {
+	if job.link.Data.Type == TypeArtifact {
+		for _, dest := range job.dests {
+			urlRecordFile := dest + testing.ExternalURLSuffix
+			err := os.WriteFile(urlRecordFile, []byte(job.link.ComputedURL), 0666)
+
+			if err != nil {
+				// Non critical error.
+				msg := fmt.Sprintf("Failed to write urlRecord %s, content: %s: %v", urlRecordFile, job.link.ComputedURL, err)
+				logging.Info(ctx, msg)
+			}
 		}
 	}
 }
@@ -368,6 +384,7 @@ func RunDownloads(ctx context.Context, dataDir string, jobs []*DownloadJob, cl d
 				mbs := float64(res.size) / res.duration.Seconds() / 1024 / 1024
 				logging.Infof(ctx, "Finished downloading %s (%d bytes, %v, %.1fMB/s)",
 					res.job.link.ComputedURL, res.size, res.duration.Round(time.Millisecond), mbs)
+				writeExternalURLRecord(ctx, res.job)
 			}
 			finished++
 		case <-time.After(30 * time.Second):
@@ -423,11 +440,34 @@ func runDownload(ctx context.Context, dataDir string, job *DownloadJob, cl devse
 		if err := os.Remove(dest); err != nil && !os.IsNotExist(err) {
 			return size, err
 		}
+
 		if err := os.Link(f.Name(), dest); err != nil {
 			return size, err
 		}
 	}
 	return size, nil
+}
+
+// shouldDownload decides if the file needs to be downloaded
+func shouldDownload(f *os.File, link *link, destPath string) bool {
+
+	if link.Data.Type == TypeArtifact {
+		// For Artifact type, we check for staleness of the previous downloaded files.
+		// Staleness check is done by comparing current download url to previusly download
+		// url
+		urlRecordPath := destPath + testing.ExternalURLSuffix
+
+		bytes, err := os.ReadFile(urlRecordPath)
+		// url record does not exists, meaning file previously was never downloaded.
+		// Lets download it.
+		if err != nil {
+			return true
+		}
+		// url record exists. Lets examine the record.
+		urlRecord := string(bytes)
+		return link.ComputedURL != urlRecord
+	}
+	return verify(f, link) != nil
 }
 
 // verify checks the integrity of an external data file.

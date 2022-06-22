@@ -918,18 +918,10 @@ func WifiQualcomm() Condition {
 // WifiSAP returns a hardware dependency condition that if satisfied, indicates
 // that a device supports SoftAP.
 func WifiSAP() Condition {
-	// TODO(crbug.com/1070299): we don't yet have relevant fields in device.Config
-	// about WiFi chip, so list the known platforms here for now.
-	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
-		platformCondition := Platform(
-			"strongbad", "trogdor", "trogdor-kernelnext",
-		)
-		if satisfied, reason, err := platformCondition.Satisfied(f); err != nil || !satisfied {
-			return satisfied, reason, err
-		}
-		return satisfied()
-	},
-	}
+	return SkipOnWifiDevice(
+		MediaTekMT7921PCIE,
+		MediaTekMT7921SDIO,
+	)
 }
 
 func hasBattery(f *protocol.HardwareFeatures) (bool, error) {

@@ -656,3 +656,29 @@ func TestAssistantkey(t *testing.T) {
 		}, &configpb.HardwareFeatures{}, !tc.wantSatisfied)
 	}
 }
+
+func TestHPS(t *testing.T) {
+	c := hwdep.HPS()
+
+	for _, tc := range []struct {
+		hpsPresent      configpb.HardwareFeatures_Present
+		expectSatisfied bool
+	}{
+		{configpb.HardwareFeatures_PRESENT, true},
+		{configpb.HardwareFeatures_NOT_PRESENT, false},
+	} {
+		verifyCondition(
+			t, c,
+			&frameworkprotocol.DeprecatedDeviceConfig{},
+			&configpb.HardwareFeatures{
+				Hps: &configpb.HardwareFeatures_Hps{
+					Present: tc.hpsPresent,
+				},
+			},
+			tc.expectSatisfied)
+	}
+	expectError(
+		t, c,
+		&frameworkprotocol.DeprecatedDeviceConfig{},
+		nil)
+}

@@ -1500,3 +1500,15 @@ func AssistantKey() Condition {
 func NoAssistantKey() Condition {
 	return SkipOnModel("eve", "nocturne", "atlas")
 }
+
+// HPS is satisfied if the HPS peripheral (go/cros-hps) is present in the DUT.
+func HPS() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		if hf := f.GetHardwareFeatures(); hf == nil {
+			return withErrorStr("Did not find hardware features")
+		} else if status := hf.GetHps().Present; status == configpb.HardwareFeatures_PRESENT {
+			return satisfied()
+		}
+		return unsatisfied("HPS peripheral is not present")
+	}}
+}

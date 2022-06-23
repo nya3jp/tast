@@ -115,6 +115,7 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		Wifi:               &configpb.HardwareFeatures_Wifi{},
 		Cellular:           &configpb.HardwareFeatures_Cellular{},
 		Bluetooth:          &configpb.HardwareFeatures_Bluetooth{},
+		Hps:                &configpb.HardwareFeatures_Hps{},
 	}
 
 	formFactor, err := func() (string, error) {
@@ -541,6 +542,20 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 			})
 		}
 	}()
+
+	hasHps, err := func() (bool, error) {
+		out, err := crosConfig("/hps", "has-hps")
+		if err != nil {
+			return false, err
+		}
+		return out == "true", nil
+	}()
+	if err != nil {
+		logging.Infof(ctx, "Unknown /hps: %v", err)
+	}
+	if hasHps {
+		features.Hps.Present = configpb.HardwareFeatures_PRESENT
+	}
 
 	return &protocol.HardwareFeatures{
 		HardwareFeatures:       features,

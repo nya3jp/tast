@@ -458,9 +458,23 @@ third_party/autotest/files/server/site_tests/tast/control.runtime-probe
 		},
 	},
 	{
-		Name:     "wificell_dual_dut",
+		Name:     "wificell_cross_device",
 		Contacts: []string{"chromeos-kernel-wifi@google.com"},
-		Desc:     `The group of WiFi tests using dual-DUT setups.`,
+		Desc:     `The group of WiFi tests using nearbyshare fixture.`,
+		Subattrs: []*attr{
+			{
+				Name: "wificell_cross_device_p2p",
+				Desc: `Tests basic WiFi P2P functionalities using nearbyshare fixture.`,
+			},
+			{
+				Name: "wificell_cross_device_tdls",
+				Desc: `Tests basic WiFi TDLS functionalities using nearbyshare fixture.`,
+			},
+			{
+				Name: "wificell_cross_device_unstable",
+				Desc: `Indicates that this test is yet to be verified as stable.`,
+			},
+		},
 	},
 	{
 		Name:     "wificell_roam",

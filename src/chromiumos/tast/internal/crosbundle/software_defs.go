@@ -15,6 +15,7 @@ var softwareFeatureDefs = map[string]string{
 	// TODO(b/210917721): Re-enable ARCVM on manatee.
 	"android_vm":         `arc && arcvm && !"android-vm-pi" && !manatee`,
 	"android_vm_r":       `arc && arcvm && "android-vm-rvc" && !manatee`,
+	"android_vm_t":       `arc && arcvm && "android-vm-tm"`,
 	"android_p":          `arc && "android-container-pi"`,
 	"arc":                `arc`,
 	"arc32":              `"cheets_user" || "cheets_userdebug"`,

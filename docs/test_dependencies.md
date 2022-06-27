@@ -86,6 +86,8 @@ The following software features are defined:
     and produce a panicinfo file after a crash.
 *   `endorsement` - Whether the system have a valid endorsement certificate.
 *   `factory_flow`- Device is subject to the [go/chromeos-factory-flow](http://go/chromeos-factory-flow) (e.g. most devices).
+*   `fake_hps` - Whether the HPS daemon (go/cros-hps) uses a fake software
+    device for testing purposes.
 *   `firewall` - Standard ChromeOS network firewall rules.
 *   `flashrom` - Userspace utility to update firmware.
 *   `gboard_decoder` - Whether Gboard built-in decoder is installed.

@@ -73,6 +73,7 @@ var softwareFeatureDefs = map[string]string{
 	"ec_crash":                `!(("board:asuka" || "board:banon" || "board:caroline" || "board:caroline-kernelnext" || "board:caroline-userdebug" || "board:cave" || "board:celes" || "board:chell" || "board:cyan" || "board:edgar" || "board:kefka" || "board:reks" || "board:relm" || "board:sentry" || "board:terra" || "board:ultima" || "board:wizpig") || ("board:drallion" || "board:sarien") || ("board:guado" || "board:guado-cfm" || "board:tidus" || "board:rikku" || "board:rikku-cfm" || "board:veyron_fievel" || "board:veyron_tiger") || "board:nocturne" || "board:nocturne-kernelnext" || "board:nami-kernelnext" || "board:rammus" || "board:sarien-kernelnext")`,
 	"endorsement":             `!"betty" && !"tast_vm"`, // VMs don't have valid endorsement certificate.
 	"factory_flow":            "!no_factory_flow",
+	"fake_hps":                `"betty" || "tast_vm"`, // VMs run hpsd with --test (fake software device)
 	"firewall":                "!moblab", // Moblab has relaxed iptables rules
 	"flashrom":                `!"betty" && !"tast_vm"`,
 	"fwupd":                   "fwupd",                                  // have sys-apps/fwupd installed.

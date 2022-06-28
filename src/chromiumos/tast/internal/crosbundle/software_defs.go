@@ -176,6 +176,7 @@ var softwareFeatureDefs = map[string]string{
 	"smartctl":                  "nvme || sata",
 	"storage_wearout_detect":    `"storage_wearout_detect" && !"betty" && !"tast_vm"`, // Skip wearout checks for VMs and eMMC < 5.0
 	"tablet_form_factor":        "tablet_form_factor",
+	"tflite_opencl":             `!(elm || hana)`, // these boards seem to have issues with the OpenCL TFLite delegate (b/233851820)
 	"thread_safe_libva_backend": "video_cards_amdgpu || video_cards_iHD",
 	"tpm":                       "!mocktpm",
 	"tpm1":                      "!mocktpm && !tpm2", // Indicate tpm1.2 is available

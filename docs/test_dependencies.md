@@ -182,6 +182,8 @@ The following software features are defined:
 *   `storage_wearout_detect` - The ability to measure storage device health.
 *   `tablet_form_factor` - The device's primary form factor is tablet
 *   `tast_vm` - The test is running in a VM [managed by chromite](https://chromium.googlesource.com/chromiumos/chromite/+/HEAD/lib/cros_test.py#396).
+*   `tflite_opencl` - Skips boards which have issues with the OpenCL TFLite
+    delegate (b/233851820).
 *   `thread_safe_libva_backend` - Boards where the LIBVA backend is threadsafe.
 *   `tpm` - A [Trusted Platform Module] chip.
 *   `tpm1` - Indicate a Trusted Platform Module supporting TPMv1.2 is available. Note that TPMv2 is not backward compatible.

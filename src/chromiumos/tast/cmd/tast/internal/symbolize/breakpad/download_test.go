@@ -48,7 +48,8 @@ func TestDownloadSymbols(t *testing.T) {
 	}
 
 	// Create an archive containing the symbol files under relative paths starting
-	// with imageArchiveTarPrefix.
+	// with imageArchiveTarPrefixes[0].
+	imageArchiveTarPrefix := imageArchiveTarPrefixes[0]
 	ad := filepath.Join(td, "archive")
 	for _, f := range files {
 		if err := f.write(filepath.Join(ad, imageArchiveTarPrefix)); err != nil {

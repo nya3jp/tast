@@ -20,10 +20,12 @@ import (
 const (
 	imageArchiveBaseURL        = "gs://chromeos-image-archive"         // contains build artifacts
 	imageArchiveFilename       = "debug_breakpad.tar.xz"               // filename within builder path
-	imageArchiveTarPrefix      = "debug/breakpad/"                     // prefix for symbol dir in .tar.xz
 	lacrosSymbolArchiveBaseURL = "gs://chrome-unsigned/desktop-5c0tCh" // gs:// location with Lacros symbols
 	lacrosSymbolArchivePath    = "lacros64/lacros_debug.zip"           // path to Lacros symbols archive
 )
+
+// symbol dir in .tar.xz can have a prefix
+var imageArchiveTarPrefixes = []string{"debug/breakpad/", "./"}
 
 // moduleRegex extracts module ID from the output of dump_syms -i.
 var moduleRegexp = regexp.MustCompile(`MODULE \S+ \S+ ([0-9A-F]+) (\S+)\.debug`)
@@ -67,7 +69,10 @@ func DownloadSymbols(url, destDir string, files SymbolFileMap) (created int, err
 
 		// Strip off the weird leading directories used in archive files and check if this
 		// is one of the files we're looking for.
-		p := hdr.Name[len(imageArchiveTarPrefix):]
+		p, err := stripAnyPrefix(hdr.Name, imageArchiveTarPrefixes)
+		if err != nil {
+			return 0, err
+		}
 		if _, ok := wanted[p]; !ok || hdr.Typeflag != tar.TypeReg {
 			continue
 		}
@@ -86,6 +91,15 @@ func DownloadSymbols(url, destDir string, files SymbolFileMap) (created int, err
 	}
 
 	return created, nil
+}
+
+func stripAnyPrefix(s string, prefixes []string) (string, error) {
+	for _, prefix := range prefixes {
+		if strings.HasPrefix(s, prefix) {
+			return s[len(prefix):], nil
+		}
+	}
+	return "", fmt.Errorf("could not strip prefix from %s", s)
 }
 
 // DownloadLacrosSymbols downloads the specified url and extract symbols to

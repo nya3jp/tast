@@ -35,6 +35,7 @@ var softwareFeatureDefs = map[string]string{
 	// Some boards might not support the camera/video/audio components required by the camera app.
 	// TODO(b/185087278): Remove soraka-libcamera.
 	"camera_app":                   `!("board:volteer-kernelnext" || "board:soraka-libcamera")`,
+	"camera_feature_auto_framing":  "camera_feature_auto_framing",
 	"camera_feature_hdrnet":        "camera_feature_hdrnet",
 	"camera_feature_portrait_mode": "camera_feature_portrait_mode",
 	"camera_legacy":                `!"arc-camera1" && !"arc-camera3"`,

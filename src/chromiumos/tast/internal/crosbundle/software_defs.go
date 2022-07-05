@@ -148,8 +148,10 @@ var softwareFeatureDefs = map[string]string{
 	"ocr":                       "ocr",
 	"octopus":                   "octopus",
 	"ondevice_document_scanner": "ml_service && ondevice_document_scanner",
+	"ondevice_grammar":          "ml_service && ondevice_grammar",
 	"ondevice_handwriting":      "ml_service && ondevice_handwriting",
 	"ondevice_speech":           "ml_service && ondevice_speech",
+	"ondevice_text_suggestions": "ml_service && ondevice_text_suggestions",
 	"pinweaver":                 `"ti50_onboard" || "cr50_onboard" || "pinweaver_csme" || ("tpm2_simulator" && "tpm2")`,
 	"play_store":                `arc && !("board:novato" || "board:novato-arc64" || "board:novato-arcnext")`,
 	"plugin_vm":                 "pita", // boards that can run Plugin VM.

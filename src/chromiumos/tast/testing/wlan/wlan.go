@@ -121,6 +121,7 @@ var lookupWLANDev = map[DevInfo]DeviceID{
 	{Vendor: "0x8086", Device: "0xa0f0", Subsystem: "0x0074"}: Intel22560,
 	{Vendor: "0x8086", Device: "0xa0f0", Subsystem: "0x6074"}: Intel22560,
 	{Vendor: "0x8086", Device: "0x51f0", Subsystem: "0x0090"}: IntelAX211,
+	{Vendor: "0x8086", Device: "0x51f1", Subsystem: "0x0090"}: IntelAX211,
 	{Vendor: "0x8086", Device: "0x51f0", Subsystem: "0x0094"}: IntelAX211,
 	{Vendor: "0x8086", Device: "0x51f0", Subsystem: "0x4090"}: IntelAX211,
 	{Vendor: "0x8086", Device: "0x54f0", Subsystem: "0x0090"}: IntelAX211,

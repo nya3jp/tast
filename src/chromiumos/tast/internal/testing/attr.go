@@ -786,6 +786,17 @@ Parallels boot-up testing. Otherwise the same as group:crosbolt.`,
 			},
 		},
 	},
+	{
+		Name:     "ml_benchmark",
+		Contacts: []string{"chromeos-platform-ml-accelerators@google.com"},
+		Desc:     `MLBenchmark performance tests.`,
+		Subattrs: []*attr{
+			{
+				Name: "ml_benchmark_nightly",
+				Desc: `Indicates that this test should run nightly.`,
+			},
+		},
+	},
 }
 
 // validGroupMap is the name-keyed map of validGroups.

@@ -15,6 +15,7 @@
 ## Tast tests
 
 *   [Running Tests](running_tests.md)
+*   [Debugging Tests (with a debugger)](debugger.md)
 *   [Writing Tests](writing_tests.md)
 *   [Getting Code Reviews](code_reviews.md)
 *   [Code Review Comments](code_review_comments.md)

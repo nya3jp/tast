@@ -197,3 +197,6 @@ In another window inside chroot:
 ```shell
 tast run localhost:<port> <test>
 ```
+
+## Running tests attached to a debugger
+See [Tast Debugger](debugger.md)

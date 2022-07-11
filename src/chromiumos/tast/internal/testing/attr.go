@@ -471,6 +471,10 @@ third_party/autotest/files/server/site_tests/tast/control.runtime-probe
 				Desc: `Tests basic WiFi TDLS functionalities using nearbyshare fixture.`,
 			},
 			{
+				Name: "wificell_cross_device_sap",
+				Desc: `Tests basic WiFi Soft AP functionalities using nearbyshare fixture.`,
+			},
+			{
 				Name: "wificell_cross_device_unstable",
 				Desc: `Indicates that this test is yet to be verified as stable.`,
 			},

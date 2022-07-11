@@ -347,6 +347,26 @@ func ECFeatureCBI() Condition {
 	}
 }
 
+// ECFeatureDetachableBase returns a hardware dependency condition that is
+// satisfied iff the DUT has the detachable base attached.
+func ECFeatureDetachableBase() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("Did not find hardware features")
+		}
+		status := hf.GetEmbeddedController().GetDetachableBase()
+		if status == configpb.HardwareFeatures_NOT_PRESENT {
+			return unsatisfied("Detachable base is not attached to DUT")
+		}
+		if status == configpb.HardwareFeatures_PRESENT_UNKNOWN {
+			return unsatisfied("Could not determine detachable base presence")
+		}
+		return satisfied()
+	},
+	}
+}
+
 // Cellular returns a hardware dependency condition that
 // is satisfied iff the DUT has a cellular modem.
 func Cellular() Condition {

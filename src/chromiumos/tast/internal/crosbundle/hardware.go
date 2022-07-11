@@ -303,6 +303,15 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 				features.EmbeddedController.FeatureTypecCmd = configpb.HardwareFeatures_NOT_PRESENT
 			}
 		}
+		// Check if the detachable base is attached.
+		output, err = exec.Command("ectool", "mkbpget", "switches").Output()
+		if err != nil {
+			features.EmbeddedController.DetachableBase = configpb.HardwareFeatures_PRESENT_UNKNOWN
+		} else if strings.Contains(string(output), "Base attached: ON") {
+			features.EmbeddedController.DetachableBase = configpb.HardwareFeatures_PRESENT
+		} else {
+			features.EmbeddedController.DetachableBase = configpb.HardwareFeatures_NOT_PRESENT
+		}
 	}
 
 	// Device has CBI if ectool cbi get doesn't raise error.

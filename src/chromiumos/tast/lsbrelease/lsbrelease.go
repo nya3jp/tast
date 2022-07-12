@@ -81,6 +81,7 @@ var allowedPkgs = []string{
 	"chromiumos/tast/local/bundles/cros/system",     // For Version.
 	"chromiumos/tast/local/bundles/cros/hwsec",      // For cross-version login tests.
 	"chromiumos/tast/local/bundles/cros/policy",     // For autoupdate policy tests.
+	"chromiumos/tast/local/bundles/cros/video",      // For video per-platform test expectations.
 	"chromiumos/tast/local/chrome/crossdevice",
 	"chromiumos/tast/local/chrome/nearbyshare",
 	"chromiumos/tast/local/crash",

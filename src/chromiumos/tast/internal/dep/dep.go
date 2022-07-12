@@ -35,27 +35,6 @@ func (d *Deps) Check(f *protocol.Features) (reasons []string, err error) {
 		return nil, nil
 	}
 
-	// If f.MaybeMissingVars is empty, no variables are considered as missing.
-	maybeMissingVars, err := regexp.Compile("^" + f.GetInfra().GetMaybeMissingVars() + "$")
-	if err != nil {
-		return nil, errors.Errorf("regex %v is invalid: %v", f.GetInfra().GetMaybeMissingVars(), err)
-	}
-
-	vars := f.GetInfra().GetVars()
-	for _, v := range d.Var {
-		if _, ok := vars[v]; ok {
-			continue
-		}
-		if maybeMissingVars.MatchString(v) {
-			reasons = append(reasons, fmt.Sprintf("runtime variable %v is missing and matches with %v", v, maybeMissingVars))
-			continue
-		}
-		if f.GetInfra().GetMaybeMissingVars() == "" {
-			return nil, errors.Errorf("runtime variable %v is missing", v)
-		}
-		return nil, errors.Errorf("runtime variable %v is missing and doesn't match with %v", v, maybeMissingVars)
-	}
-
 	for role, swDep := range d.Software {
 		var dut *frameworkprotocol.DUTFeatures
 		if role != "" {
@@ -96,6 +75,31 @@ func (d *Deps) Check(f *protocol.Features) (reasons []string, err error) {
 		for _, r := range sat {
 			reasons = append(reasons, r)
 		}
+	}
+
+	if len(reasons) != 0 {
+		return reasons, nil
+	}
+
+	// If f.MaybeMissingVars is empty, no variables are considered as missing.
+	maybeMissingVars, err := regexp.Compile("^" + f.GetInfra().GetMaybeMissingVars() + "$")
+	if err != nil {
+		return nil, errors.Errorf("regex %v is invalid: %v", f.GetInfra().GetMaybeMissingVars(), err)
+	}
+
+	vars := f.GetInfra().GetVars()
+	for _, v := range d.Var {
+		if _, ok := vars[v]; ok {
+			continue
+		}
+		if maybeMissingVars.MatchString(v) {
+			reasons = append(reasons, fmt.Sprintf("runtime variable %v is missing and matches with %v", v, maybeMissingVars))
+			continue
+		}
+		if f.GetInfra().GetMaybeMissingVars() == "" {
+			return nil, errors.Errorf("runtime variable %v is missing", v)
+		}
+		return nil, errors.Errorf("runtime variable %v is missing and doesn't match with %v", v, maybeMissingVars)
 	}
 
 	return reasons, nil

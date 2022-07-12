@@ -74,7 +74,7 @@ var softwareFeatureDefs = map[string]string{
 	"endorsement":             `!"betty" && !"tast_vm"`, // VMs don't have valid endorsement certificate.
 	"factory_flow":            "!no_factory_flow",
 	"fake_hps":                `"betty" || "tast_vm"`, // VMs run hpsd with --test (fake software device)
-	"firewall":                "!moblab", // Moblab has relaxed iptables rules
+	"firewall":                "!moblab",              // Moblab has relaxed iptables rules
 	"flashrom":                `!"betty" && !"tast_vm"`,
 	"fwupd":                   "fwupd",                                  // have sys-apps/fwupd installed.
 	"gboard_decoder":          "gboard_decoder",                         // have IME mojo service installed.
@@ -117,6 +117,7 @@ var softwareFeatureDefs = map[string]string{
 	"ml_benchmark_drivers":      "ml_benchmark_drivers",
 	"ml_service":                "ml_service",
 	"modemfwd":                  "modemfwd",
+	"mojo_service_manager":      "mojo_service_manager",
 	"mosys":                     `!"betty" && !"tast_vm"`,
 	"nacl":                      "nacl",
 	"ndk_translation":           "ndk_translation",

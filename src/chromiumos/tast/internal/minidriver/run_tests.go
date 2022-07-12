@@ -220,6 +220,7 @@ func (d *Driver) newConfigsForLocalTests(tests []string, state *protocol.StartFi
 		HeartbeatInterval:     ptypes.DurationProto(HeartbeatInterval),
 		WaitUntilReady:        d.cfg.WaitUntilReady,
 		SystemServicesTimeout: durationpb.New(d.cfg.SystemServicesTimeout),
+		MsgTimeout:            durationpb.New(d.cfg.MsgTimeout),
 		DebugPort:             uint32(d.cfg.DebuggerPort),
 	}
 	return bcfg, rcfg

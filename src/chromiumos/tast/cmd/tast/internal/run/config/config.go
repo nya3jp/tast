@@ -51,6 +51,7 @@ const (
 	defaultKeyFile               = "chromite/ssh_keys/testing_rsa" // default private SSH key within ChromeOS checkout
 	checkDepsCacheFile           = "check_deps_cache.v2.json"      // file in BuildOutDir where dependency-checking results are cached
 	defaultSystemServicesTimeout = 120 * time.Second               //default timeout for waiting for system services to be ready in seconds
+	defaultMsgTimeout            = 120 * time.Second               // default timeout for grpc connection.
 	dutNotToConnect              = "-"                             // Target for dutless scenarios
 )
 
@@ -118,13 +119,13 @@ type MutableConfig struct {
 	DefaultVarsDirs  []string
 	MaybeMissingVars string
 
-	MsgTimeout             time.Duration
 	DebuggerPorts          map[debugger.DebugTarget]int
 	DebuggerPortForwarding bool
 
 	Retries int
 
 	SystemServicesTimeout time.Duration
+	MsgTimeout            time.Duration
 
 	// ForceSkips is a mapping from a test name to the filter file name which specified
 	// the test should be disabled.
@@ -439,6 +440,7 @@ func (c *MutableConfig) SetFlags(f *flag.FlagSet) {
 	f.BoolVar(&c.ExcludeSkipped, "excludeskipped", false, "exclude skipped tests from the list or run operation")
 
 	f.Var(command.NewDurationFlag(time.Second, &c.SystemServicesTimeout, defaultSystemServicesTimeout), "systemservicestimeout", "timeout for waiting for system services to be ready in seconds")
+	f.Var(command.NewDurationFlag(time.Second, &c.MsgTimeout, defaultMsgTimeout), "connectiontimeout", "the value time interval in seconds for tast to check if the connection to target is alive (default to 60 which means 1 mins)")
 
 	c.DebuggerPorts = map[debugger.DebugTarget]int{
 		debugger.LocalBundle:  0,
@@ -582,8 +584,6 @@ func (c *MutableConfig) DeriveDefaults() error {
 	// removing the restriction.
 	c.PrimaryBundle = "cros"
 
-	c.MsgTimeout = time.Minute
-
 	// Apply -varsfile.
 	for _, path := range c.VarsFiles {
 		if err := readAndMergeVarsFile(c.TestVars, path, errorOnDuplicate); err != nil {
@@ -663,9 +663,10 @@ func (c *MutableConfig) Freeze() *Config {
 // file and put the information to the c.ForceSkips which is a mapping
 // from a test name to the reason being disabled.
 // Filter file example:
-//     # The following tests will disabled.
-//     -meta.DisabledTest1
-//     -meta.DisabledTest2
+//
+//	# The following tests will disabled.
+//	-meta.DisabledTest1
+//	-meta.DisabledTest2
 func (c *MutableConfig) addForceSkippedTests(fileName string) error {
 	file, err := os.Open(fileName)
 	if err != nil {

@@ -90,6 +90,7 @@ func runExternalTests(ctx context.Context, names []string, stack *fixture.Combin
 		CheckTestDeps:    pcfg.Features.GetCheckDeps(),
 		TestVars:         pcfg.Features.GetInfra().GetVars(),
 		MaybeMissingVars: pcfg.Features.GetInfra().GetMaybeMissingVars(),
+		MsgTimeout:       pcfg.ExternalTarget.Config.GetMsgTimeout().AsDuration(),
 
 		DebuggerPort: int(pcfg.ExternalTarget.Config.GetDebugPort()),
 		Proxy:        pcfg.ExternalTarget.Config.GetProxy(),

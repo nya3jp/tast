@@ -372,6 +372,32 @@ func TestRunTestsReadyFuncSystemServiceTimeoutCfgSet(t *gotesting.T) {
 		t.Fatalf("Expecting SystemServiceTimeout to be %f seconds, however it is %f seconds", expectedSystemServiceTimeout.Seconds(), actualSystemServiceTimeout.Seconds())
 	}
 }
+
+func TestRunTestsReadyFuncMsgTimeoutCfgSet(t *gotesting.T) {
+	reg := testing.NewRegistry("bundle")
+	reg.AddTestInstance(&testing.TestInstance{Name: "pkg.Test", Func: func(context.Context, *testing.State) {}})
+
+	expectedMsgTimeout := time.Second * 3
+	cfg := &protocol.RunConfig{
+		WaitUntilReady:        true,
+		SystemServicesTimeout: durationpb.New(expectedMsgTimeout),
+	}
+	var actualMsgTimeout time.Duration
+	scfg := NewStaticConfig(reg, time.Minute, Delegate{
+		Ready: func(ctx context.Context, systemServiceTimeout time.Duration) error {
+			actualMsgTimeout = systemServiceTimeout
+			return nil
+		},
+	})
+	cl := startTestServer(t, scfg, &protocol.HandshakeRequest{})
+	if _, err := protocoltest.RunTestsForEvents(context.Background(), cl, cfg); err != nil {
+		t.Fatalf("RunTests failed: %v", err)
+	}
+
+	if actualMsgTimeout != expectedMsgTimeout {
+		t.Fatalf("Expecting SystemServiceTimeout to be %f seconds, however it is %f seconds", expectedMsgTimeout.Seconds(), actualMsgTimeout.Seconds())
+	}
+}
 func TestRunTestsReadyFunc(t *gotesting.T) {
 	reg := testing.NewRegistry("bundle")
 	reg.AddTestInstance(&testing.TestInstance{Name: "pkg.Test", Func: func(context.Context, *testing.State) {}})

@@ -393,6 +393,7 @@ func (d *Driver) newConfigsForRemoteTests(tests []string, dutInfos map[string]*p
 		HeartbeatInterval:     ptypes.DurationProto(minidriver.HeartbeatInterval),
 		DebugPort:             uint32(d.cfg.DebuggerPorts()[debugger.RemoteBundle]),
 		SystemServicesTimeout: ptypes.DurationProto(d.cfg.SystemServicesTimeout()),
+		MsgTimeout:            ptypes.DurationProto(d.cfg.MsgTimeout()),
 		Target: &protocol.RunTargetConfig{
 			Devservers: d.cfg.Devservers(),
 			Dirs: &protocol.RunDirectories{
@@ -405,6 +406,7 @@ func (d *Driver) newConfigsForRemoteTests(tests []string, dutInfos map[string]*p
 			Retries:         int32(d.cfg.Retries()),
 			Proxy:           d.cfg.Proxy() == config.ProxyEnv,
 			WaitUntilReady:  d.cfg.WaitUntilReady(),
+			MsgTimeout:      ptypes.DurationProto(d.cfg.MsgTimeout()),
 		},
 	}
 	return bcfg, rcfg, nil

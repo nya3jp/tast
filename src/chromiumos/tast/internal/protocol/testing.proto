@@ -204,6 +204,11 @@ message RunConfig {
   // Target specifies how the primary target bundle should run.
   // This can be nil if no target bundle exists.
   RunTargetConfig target = 12;
+
+  // MsgTimeout is the duration that the client waits for.
+  // If no activity is seen even after that the connection is closed.
+  // (Default: 60 seconds)
+  google.protobuf.Duration msg_timeout = 13;
 }
 
 // RunTargetConfig contains parameters for the primary target bundle to run.
@@ -224,6 +229,10 @@ message RunTargetConfig {
   bool proxy = 6;
   // TODO(crbug.com/1128259): Remove this field once we fully migrate to gRPC.
   bool wait_until_ready = 7;
+  // MsgTimeout is the duration that the client waits for.
+  // If no activity is seen even after that the connection is closed.
+  // (Default: 60 seconds)
+  google.protobuf.Duration msg_timeout = 8;
 }
 
 // RunDirectories holds several directory paths important for running tests.

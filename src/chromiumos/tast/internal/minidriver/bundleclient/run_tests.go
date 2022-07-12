@@ -104,7 +104,7 @@ func (c *Client) RunTests(ctx context.Context, bcfg *protocol.BundleConfig, rcfg
 				return nil
 			}
 			if err != nil {
-				return errors.Wrap(err, "connection to test bundle broken")
+				return errors.Wrapf(err, "connection to test bundle broken with msgTimeout %v", c.msgTimeout)
 			}
 			if err := handleEvent(ctx, res, out, stream); err != nil {
 				return err

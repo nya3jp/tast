@@ -17,7 +17,7 @@ import (
 // dateSuffixRe is a compiled regular expression for date suffix check.
 // The filename stem should end with YYYYMMDD date pattern, or in addition
 // _RC\d+ pattern version suffix.
-var dateSuffixRe = regexp.MustCompile(`(?:[-_])(\d{8})(?:_RC\d+)?(?:[-.]|$)`)
+var dateSuffixRe = regexp.MustCompile(`(?:[-_])(\d{8})(?:_RC\d+)?(?:[-_.]|$)`)
 
 // ExternalJSON checks if url in .external file has a date suffix or not.
 func ExternalJSON(path string, in []byte) []*Issue {

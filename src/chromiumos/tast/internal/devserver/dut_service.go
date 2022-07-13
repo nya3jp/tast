@@ -19,6 +19,7 @@ import (
 	"google.golang.org/grpc/status"
 
 	"chromiumos/tast/errors"
+	"chromiumos/tast/internal/logging"
 )
 
 // DUTServiceClient is an implementation of Client to communicate with DUT Service API.
@@ -32,7 +33,9 @@ var _ Client = &DUTServiceClient{}
 
 // NewDUTServiceClient creates a DUTServiceClient.
 func NewDUTServiceClient(ctx context.Context, dutServer string) (*DUTServiceClient, error) {
-	destDir, err := ioutil.TempDir("/tmp", "dut_service_client_")
+	logging.Info(ctx, "NewDUTServiceClient using /var/tmp")
+	// TODO (b:238682439), correctly make use of the tast tempdir.
+	destDir, err := ioutil.TempDir("/var/tmp", "dut_service_client_")
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed to create temporary directory for downloading file %s", destDir)
 	}

@@ -61,7 +61,7 @@ func (s *internalOrCombinedStack) Reset(ctx context.Context) error {
 
 func (s internalOrCombinedStack) PreTest(ctx context.Context, test *protocol.Entity, outDir string, out testing.OutputStream, condition *testing.EntityCondition) (func(ctx context.Context) error, error) {
 	if s.internal != nil {
-		return s.internal.PreTest(ctx, outDir, out, condition)
+		return s.internal.PreTest(ctx, outDir, out, condition, test)
 	}
 	return s.combined.PreTest(ctx, test, outDir, out, condition)
 }

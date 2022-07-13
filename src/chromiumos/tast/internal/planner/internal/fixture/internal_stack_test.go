@@ -268,7 +268,13 @@ func TestInternalStackContext(t *gotesting.T) {
 	if err := stack.Reset(ctx); err != nil {
 		t.Fatal("Reset: ", err)
 	}
-	postTest, err := stack.PreTest(ctx, testOutDir, nil, testing.NewEntityCondition())
+
+	testEntity := &protocol.Entity{
+		Type: protocol.EntityType_TEST,
+		Name: "test",
+	}
+
+	postTest, err := stack.PreTest(ctx, testOutDir, nil, testing.NewEntityCondition(), testEntity)
 	if err != nil {
 		t.Fatal("PreTest: ", err)
 	}
@@ -330,7 +336,13 @@ func TestInternalStackState(t *gotesting.T) {
 	if err := stack.Push(ctx, fixt); err != nil {
 		t.Fatal("Push: ", err)
 	}
-	postTest, err := stack.PreTest(ctx, "", nil, testing.NewEntityCondition())
+
+	testEntity := &protocol.Entity{
+		Type: protocol.EntityType_TEST,
+		Name: "test",
+	}
+
+	postTest, err := stack.PreTest(ctx, "", nil, testing.NewEntityCondition(), testEntity)
 	if err != nil {
 		t.Fatal("PreTest: ", err)
 	}
@@ -522,7 +534,13 @@ func TestInternalStackOutputGreen(t *gotesting.T) {
 	if err := stack.Push(ctx, fixt2); err != nil {
 		t.Fatal("Push 2: ", err)
 	}
-	postTest, err := stack.PreTest(ctx, "", out, testing.NewEntityCondition())
+
+	testEntity := &protocol.Entity{
+		Type: protocol.EntityType_TEST,
+		Name: "test",
+	}
+
+	postTest, err := stack.PreTest(ctx, "", out, testing.NewEntityCondition(), testEntity)
 	if err != nil {
 		t.Fatal("PreTest: ", err)
 	}

@@ -918,6 +918,7 @@ func TestStateExports(t *gotesting.T) {
 				"OutDir",
 				"RPCHint",
 				"TestContext",
+				"TestName",
 			},
 		},
 	} {

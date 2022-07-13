@@ -294,10 +294,11 @@ func (r *FixtTestEntityRoot) OutDir() string {
 
 // NewFixtTestState creates a FixtTestState.
 // ctx should have the same lifetime as the test, including PreTest and PostTest.
-func (r *FixtTestEntityRoot) NewFixtTestState(ctx context.Context) *FixtTestState {
+func (r *FixtTestEntityRoot) NewFixtTestState(ctx context.Context, name string) *FixtTestState {
 	return &FixtTestState{
 		globalMixin: r.entityRoot.newGlobalMixin("", r.hasError()),
 		testCtx:     ctx,
+		testName:    name,
 	}
 }
 
@@ -415,13 +416,13 @@ var errorSuffix = regexp.MustCompile(`(\s*:\s*|\s+)$`)
 // formatError formats an error message using fmt.Sprint.
 // If the format is well-known one, such as:
 //
-//  formatError("Failed something: ", err)
+//	formatError("Failed something: ", err)
 //
 // then this function extracts an error object and returns parsed error messages
 // in the following way:
 //
-//  lastMsg = "Failed something"
-//  fullMsg = "Failed something: <error message>"
+//	lastMsg = "Failed something"
+//	fullMsg = "Failed something: <error message>"
 func (s *globalMixin) formatError(args ...interface{}) (fullMsg, lastMsg string, err error) {
 	fullMsg = s.errPrefix + fmt.Sprint(args...)
 	if len(args) == 1 {
@@ -448,13 +449,13 @@ var errorfSuffix = regexp.MustCompile(`\s*:?\s*%v$`)
 // formatErrorf formats an error message using fmt.Sprintf.
 // If the format is the following well-known one:
 //
-//  formatErrorf("Failed something: %v", err)
+//	formatErrorf("Failed something: %v", err)
 //
 // then this function extracts an error object and returns parsed error messages
 // in the following way:
 //
-//  lastMsg = "Failed something"
-//  fullMsg = "Failed something: <error message>"
+//	lastMsg = "Failed something"
+//	fullMsg = "Failed something: <error message>"
 func (s *globalMixin) formatErrorf(format string, args ...interface{}) (fullMsg, lastMsg string, err error) {
 	fullMsg = s.errPrefix + fmt.Sprintf(format, args...)
 	if len(args) >= 1 {
@@ -773,7 +774,8 @@ func (s *FixtState) OutDir() string {
 // FixtTestState is the state the framework passes to PreTest and PostTest.
 type FixtTestState struct {
 	*globalMixin
-	testCtx context.Context
+	testCtx  context.Context
+	testName string
 }
 
 // OutDir returns a directory into which the entity may place arbitrary files
@@ -787,4 +789,9 @@ func (s *FixtTestState) OutDir() string {
 // the same metadata as the ctx passed to PreTest and PostTest.
 func (s *FixtTestState) TestContext() context.Context {
 	return s.testCtx
+}
+
+// TestName returns test name of the test.
+func (s *FixtTestState) TestName() string {
+	return s.testName
 }

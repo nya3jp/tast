@@ -46,24 +46,24 @@ type Config struct {
 //
 // A fixture is in exactly one of three statuses: green, yellow, and red.
 //
-//  - A fixture is green if it has been successfully set up and never failed to
-//    reset so far.
-//  - A fixture is yellow if it has been successfully set up but failed to
-//    reset.
-//  - A fixture is red if it has been torn down.
+//   - A fixture is green if it has been successfully set up and never failed to
+//     reset so far.
+//   - A fixture is yellow if it has been successfully set up but failed to
+//     reset.
+//   - A fixture is red if it has been torn down.
 //
 // The following diagram illustrates the status transition of a fixture:
 //
-//                                   OK
-//                             +-------------+
-//                             v             |
-//  +-----+  SetUp     OK  +-------+  Reset  |  Fail  +--------+
-//  | red |---------+----->| green |---------+------->| yellow |
-//  +-----+         |      +-------+                  +--------+
-//   ^ ^ ^          | Fail     |                          |
-//   | | +----------+          | TearDown                 | TearDown
-//   | +-----------------------+                          |
-//   +----------------------------------------------------+
+//	                                 OK
+//	                           +-------------+
+//	                           v             |
+//	+-----+  SetUp     OK  +-------+  Reset  |  Fail  +--------+
+//	| red |---------+----->| green |---------+--name----->| yellow |
+//	+-----+         |      +-------+                  +--------+
+//	 ^ ^ ^          | Fail     |                          |
+//	 | | +----------+          | TearDown                 | TearDown
+//	 | +-----------------------+                          |
+//	 +----------------------------------------------------+
 //
 // InternalStack maintains the following invariants about fixture statuses:
 //
@@ -76,9 +76,9 @@ type Config struct {
 // A fixture stack can be also in exactly one of three statuses: green, yellow,
 // and red.
 //
-//  - A fixture stack is green if all fixtures in the stack are green.
-//  - A fixture stack is yellow if any fixture in the stack is yellow.
-//  - A fixture stack is red if any fixture in the stack is red.
+//   - A fixture stack is green if all fixtures in the stack are green.
+//   - A fixture stack is yellow if any fixture in the stack is yellow.
+//   - A fixture stack is red if any fixture in the stack is red.
 //
 // An empty fixture stack is green. When SetUp fails on pushing a new fixture
 // to an green stack, the stack becomes red until the failed fixture is popped
@@ -91,16 +91,16 @@ type Config struct {
 //
 // The following diagram illustrates the status transition of a fixture stack:
 //
-//                                           OK
-//                                     +------------+          +-+ Push
-//                                     v            |          v |
-//     +--------+  Fail     Reset  +-------+  Push  |  Fail  +-----+
-//  +->| yellow |<-------+---------| green |--------+------->| red |<-+
-//  |  +--------+        |         +-------+                 +-----+  |
-//  |       |            | OK        ^ ^ ^                      |     |
-//  |       | Pop        |           | | |                      | Pop |
-//  |       |            +-----------+ | |                      |     |
-//  +-------+--------------------------+ +----------------------+-----+
+//	                                         OK
+//	                                   +------------+          +-+ Push
+//	                                   v            |          v |
+//	   +--------+  Fail     Reset  +-------+  Push  |  Fail  +-----+
+//	+->| yellow |<-------+---------| green |--------+------->| red |<-+
+//	|  +--------+        |         +-------+                 +-----+  |
+//	|       |            | OK        ^ ^ ^                      |     |
+//	|       | Pop        |           | | |                      | Pop |
+//	|       |            +-----------+ | |                      |     |
+//	+-------+--------------------------+ +----------------------+-----+
 //
 // A fixture stack is clean or dirty. A stack is initially clean. A clean stack
 // can be marked dirty with MarkDirty. It is an error to call MarkDirty on a
@@ -137,7 +137,7 @@ func (st *InternalStack) Status() Status {
 // for tests depending on the fixture stack. An error message is formatted in
 // the following way:
 //
-//  [Fixture failure] (fixture name): (original error message)
+//	[Fixture failure] (fixture name): (original error message)
 func (st *InternalStack) Errors() []*protocol.Error {
 	for _, f := range st.stack {
 		if f.Status() == StatusRed {
@@ -267,7 +267,7 @@ func (st *InternalStack) Reset(ctx context.Context) error {
 
 // PreTest runs PreTests on the fixtures.
 // It returns a post test hook that runs PostTests on the fixtures.
-func (st *InternalStack) PreTest(ctx context.Context, outDir string, out testing.OutputStream, condition *testing.EntityCondition) (func(ctx context.Context) error, error) {
+func (st *InternalStack) PreTest(ctx context.Context, outDir string, out testing.OutputStream, condition *testing.EntityCondition, testEntity *protocol.Entity) (func(ctx context.Context) error, error) {
 	if status := st.Status(); status != StatusGreen {
 		return nil, fmt.Errorf("BUG: PreTest called for a %v fixture", status)
 	}
@@ -275,7 +275,7 @@ func (st *InternalStack) PreTest(ctx context.Context, outDir string, out testing
 	var postTests []func(context.Context) error
 	for _, f := range st.stack {
 		rcfg := st.newRuntimeConfig(ctx, outDir, f.fixt)
-		pt, err := f.RunPreTest(ctx, rcfg, out, condition)
+		pt, err := f.RunPreTest(ctx, rcfg, out, condition, testEntity)
 		if err != nil {
 			return nil, err
 		}
@@ -375,7 +375,7 @@ func (f *statefulFixture) Status() Status {
 // for tests depending on the fixture. An error message is formatted in the
 // following way:
 //
-//  [Fixture failure] (fixture name): (original error message)
+//	[Fixture failure] (fixture name): (original error message)
 func (f *statefulFixture) Errors() []*protocol.Error {
 	return f.errs
 }
@@ -476,7 +476,7 @@ func (f *statefulFixture) RunReset(ctx context.Context) error {
 }
 
 // RunPreTest runs PreTest on the fixture. It returns a post test hook.
-func (f *statefulFixture) RunPreTest(ctx context.Context, rcfg *testing.RuntimeConfig, out testing.OutputStream, condition *testing.EntityCondition) (func(ctx context.Context) error, error) {
+func (f *statefulFixture) RunPreTest(ctx context.Context, rcfg *testing.RuntimeConfig, out testing.OutputStream, condition *testing.EntityCondition, testEntity *protocol.Entity) (func(ctx context.Context) error, error) {
 	if status := f.Status(); status != StatusGreen {
 		return nil, fmt.Errorf("BUG: RunPreTest called for a %v fixture", status)
 	}
@@ -489,7 +489,7 @@ func (f *statefulFixture) RunPreTest(ctx context.Context, rcfg *testing.RuntimeC
 
 	froot := testing.NewFixtTestEntityRoot(f.fixt, rcfg, out, condition)
 	ctx = f.newTestContext(ctx, froot, froot.LogSink())
-	s := froot.NewFixtTestState(ctx)
+	s := froot.NewFixtTestState(ctx, testEntity.Name)
 	name := fmt.Sprintf("%s:PreTest", f.fixt.Name)
 	if err := usercode.SafeCall(ctx, name, f.fixt.PreTestTimeout, f.cfg.GracePeriod, usercode.ErrorOnPanic(s), func(ctx context.Context) {
 		f.fixt.Impl.PreTest(ctx, s)
@@ -501,18 +501,18 @@ func (f *statefulFixture) RunPreTest(ctx context.Context, rcfg *testing.RuntimeC
 		return doNothing, nil
 	}
 	return func(ctx context.Context) error {
-		return f.runPostTest(ctx, rcfg, out, condition)
+		return f.runPostTest(ctx, rcfg, out, condition, testEntity.Name)
 	}, nil
 }
 
-func (f *statefulFixture) runPostTest(ctx context.Context, rcfg *testing.RuntimeConfig, out testing.OutputStream, condition *testing.EntityCondition) error {
+func (f *statefulFixture) runPostTest(ctx context.Context, rcfg *testing.RuntimeConfig, out testing.OutputStream, condition *testing.EntityCondition, testName string) error {
 	if status := f.Status(); status != StatusGreen {
 		return fmt.Errorf("BUG: RunPostTest called for a %v fixture", status)
 	}
 
 	froot := testing.NewFixtTestEntityRoot(f.fixt, rcfg, out, condition)
 	ctx = f.newTestContext(ctx, froot, froot.LogSink())
-	s := froot.NewFixtTestState(ctx)
+	s := froot.NewFixtTestState(ctx, testName)
 	name := fmt.Sprintf("%s:PostTest", f.fixt.Name)
 
 	if err := usercode.SafeCall(ctx, name, f.fixt.PostTestTimeout, f.cfg.GracePeriod, usercode.ErrorOnPanic(s), func(ctx context.Context) {

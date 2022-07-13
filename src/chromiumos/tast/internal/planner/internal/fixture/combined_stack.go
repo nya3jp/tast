@@ -113,7 +113,7 @@ func (s *CombinedStack) PreTest(ctx context.Context, test *protocol.Entity, outD
 	if err != nil {
 		return nil, err
 	}
-	childPostTest, err := s.child.PreTest(ctx, outDir, out, condition)
+	childPostTest, err := s.child.PreTest(ctx, outDir, out, condition, test)
 	if err != nil {
 		return nil, err
 	}

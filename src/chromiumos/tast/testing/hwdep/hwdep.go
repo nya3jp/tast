@@ -594,14 +594,6 @@ func Touchpad() Condition {
 	}
 }
 
-// Wifi80211ac returns a hardware dependency condition that is satisfied
-// iff the DUT's WiFi module supports 802.11ac.
-func Wifi80211ac() Condition {
-	// Some of guado and kip SKUs do not support 802.11ac.
-	// TODO(crbug.com/1070299): replace this when we have hwdep for WiFi chips.
-	return SkipOnPlatform("kip", "guado")
-}
-
 // WifiWEP returns a hardware dependency condition that is satisfied
 // if the DUT's WiFi module supports WEP.
 // New generation of Qcom chipsets do not support WEP security protocols.

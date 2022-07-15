@@ -367,6 +367,23 @@ func ECFeatureDetachableBase() Condition {
 	}
 }
 
+// ECFeatureChargeControlV2 returns a hardware dependency condition that is
+// satisfied iff the DUT supports version 2 of the EC_CMD_CHARGE_CONTROL feature
+// (which adds battery sustain).
+func ECFeatureChargeControlV2() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("Did not find hardware features")
+		}
+		if hf.GetEmbeddedController().GetFeatureChargeControlV2() == configpb.HardwareFeatures_NOT_PRESENT {
+			return unsatisfied("DUT EC does not support EC_CMD_CHARGE_CONTROL version 2")
+		}
+		return satisfied()
+	},
+	}
+}
+
 // Cellular returns a hardware dependency condition that
 // is satisfied iff the DUT has a cellular modem.
 func Cellular() Condition {

@@ -312,6 +312,14 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		} else {
 			features.EmbeddedController.DetachableBase = configpb.HardwareFeatures_NOT_PRESENT
 		}
+		// Running `ectool chargecontrol` with no args will fail if version 2 isn't
+		// supported.
+		if err := exec.Command("ectool", "chargecontrol").Run(); err != nil {
+			logging.Infof(ctx, "Charge control V2 not supported: %v", err)
+			features.EmbeddedController.FeatureChargeControlV2 = configpb.HardwareFeatures_NOT_PRESENT
+		} else {
+			features.EmbeddedController.FeatureChargeControlV2 = configpb.HardwareFeatures_PRESENT
+		}
 	}
 
 	// Device has CBI if ectool cbi get doesn't raise error.

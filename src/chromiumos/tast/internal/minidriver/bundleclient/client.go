@@ -14,7 +14,6 @@ import (
 	"time"
 
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/keepalive"
 
 	"chromiumos/tast/internal/minidriver/target"
 	"chromiumos/tast/internal/protocol"
@@ -82,14 +81,8 @@ func (c *Client) dial(ctx context.Context, req *protocol.HandshakeRequest, debug
 	// Pass through stderr.
 	go io.Copy(os.Stderr, proc.Stderr())
 
-	opts := []grpc.DialOption{
-		grpc.WithKeepaliveParams(keepalive.ClientParameters{
-			// Note: Timeout is ignored if it is longer than Time.
-			Time:    c.msgTimeout,
-			Timeout: c.msgTimeout,
-		}),
-	}
-	conn, err := rpc.NewClient(ctx, proc.Stdout(), proc.Stdin(), req, opts...)
+	// TODO: re-enable after finding a proper solution for b/239035591.
+	conn, err := rpc.NewClient(ctx, proc.Stdout(), proc.Stdin(), req)
 	if err != nil {
 		return nil, err
 	}

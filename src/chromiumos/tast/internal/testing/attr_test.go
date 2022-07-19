@@ -80,6 +80,9 @@ func TestCheckKnownAttrs(t *testing.T) {
 			attrs: []string{"group:dpanel-end2end"},
 		},
 		{
+			attrs: []string{"group:enterprise-reporting"},
+		},
+		{
 			attrs: []string{"group:input-tools"},
 		},
 		{

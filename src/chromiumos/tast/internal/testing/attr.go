@@ -271,6 +271,11 @@ Tests in this group are not used for build verification.
 		Desc:     `A group of tests for the DPanel/DMServer team.`,
 	},
 	{
+		Name:     "enterprise-reporting",
+		Contacts: []string{"albertojuarez@google.com", "cros-reporting-eng@google.com"},
+		Desc:     `A group of tests for the commercial reporting/I&I team.`,
+	},
+	{
 		Name:     "input-tools",
 		Contacts: []string{"essential-inputs-team@google.com"},
 		Desc:     `A group of essential inputs IME and Virtual Keyboard tests.`,

@@ -13,6 +13,7 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+	"time"
 
 	"github.com/golang/protobuf/ptypes"
 	"golang.org/x/sys/unix"
@@ -30,6 +31,9 @@ type testServer struct {
 	runnerParams *protocol.RunnerInitParams
 	bundleParams *protocol.BundleInitParams
 }
+
+// ErrFailedToReadFile is used for indicating a file failed to open at the beginning.
+var ErrFailedToReadFile = errors.New("failed to read file at the beginning")
 
 func newTestServer(scfg *StaticConfig, runnerParams *protocol.RunnerInitParams, bundleParams *protocol.BundleInitParams) *testServer {
 	exec.Command("logger", "local_test_runner: New test server is up for serving requests").Run()
@@ -247,4 +251,82 @@ func (s *testServer) forEachBundle(ctx context.Context, bundleParams *protocol.B
 		}
 	}
 	return nil
+}
+
+func (s *testServer) StreamFile(req *protocol.StreamFileRequest, srv protocol.TestService_StreamFileServer) error {
+	// Logging added for b/213616631.
+	exec.Command("logger", "local_test_runner: Serving StreamFile Request").Run()
+	path := req.Name
+	ctx := srv.Context()
+
+	fs, err := os.Stat(path)
+	if err != nil {
+		return errors.Wrapf(ErrFailedToReadFile, "file %v does not exist on the DUT: %v", path, err)
+	}
+	offset := req.GetOffset()
+	// If offset is less than 0, start streaming from the bottom of the file.
+	if req.Offset < 0 {
+		offset = fs.Size()
+	}
+
+	const maxRetries = 10
+	const interval = time.Second
+	failures := 0
+
+	for {
+		select {
+		case <-ctx.Done():
+			return nil
+		case <-time.After(interval):
+		}
+		fs, err := os.Stat(path)
+		if err != nil {
+			if failures < maxRetries {
+				failures = failures + 1
+				continue
+			}
+			return errors.Wrapf(err, "failed to get size of file %v", path)
+		}
+		failures = 0
+		if fs.Size() == offset {
+			// Nothing new was added to the file.
+			continue
+		}
+		if fs.Size() < offset {
+			// The file is smaller now which may be due to file rotation.
+			// Read the entire file instead.
+			offset = 0
+		}
+		data, n, err := readFileWithOffset(path, offset)
+		if err != nil && !errors.Is(err, io.EOF) {
+			return errors.Wrapf(err, "failed to read file %v", path)
+		}
+		if n == 0 {
+			continue
+		}
+		nextOffset := offset + n
+		rspn := &protocol.StreamFileResponse{Data: data, Offset: nextOffset}
+		if err := srv.Send(rspn); err != nil {
+			return err
+		}
+		offset = nextOffset
+	}
+}
+
+func readFileWithOffset(path string, offset int64) ([]byte, int64, error) {
+	const megabyte = 1 << 20
+	buf := make([]byte, megabyte*2)
+	f, err := os.Open(path)
+	if err != nil {
+		return nil, 0, err
+	}
+	defer f.Close()
+	if _, err := f.Seek(offset, io.SeekStart); err != nil {
+		return nil, 0, err
+	}
+	n, err := f.Read(buf)
+	if err != nil {
+		return nil, 0, err
+	}
+	return buf[0:n], int64(n), nil
 }

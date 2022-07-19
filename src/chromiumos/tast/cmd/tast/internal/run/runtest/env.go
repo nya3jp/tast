@@ -169,6 +169,7 @@ func runnerSSHHandlers(localBundleDir string, dcfg *dutConfig) []fakesshserver.H
 		CollectSysInfo:         dcfg.CollectSysInfo,
 		DownloadPrivateBundles: dcfg.DownloadPrivateBundles,
 		OnRunTestsInit:         dcfg.OnRunLocalTestsInit,
+		StreamFile:             dcfg.StreamFile,
 	}).SSHHandlers(LocalTestRunnerPath)
 	hs = append(hs, defaultHandlers(dcfg)...)
 	hs = append(hs, dcfg.ExtraSSHHandlers...)

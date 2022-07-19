@@ -8,6 +8,9 @@ import (
 	"context"
 	"io"
 	"io/ioutil"
+	"os"
+	"path/filepath"
+	"sync"
 	gotesting "testing"
 	"time"
 
@@ -19,6 +22,7 @@ import (
 	"chromiumos/tast/internal/protocol/protocoltest"
 	"chromiumos/tast/internal/rpc"
 	"chromiumos/tast/internal/testing"
+	"chromiumos/tast/testutil"
 )
 
 // startTestServer starts an in-process gRPC server and returns a connection as
@@ -136,5 +140,84 @@ func TestTestServerRunTests(t *gotesting.T) {
 	}
 	if diff := cmp.Diff(events, wantEvents, protocoltest.EventCmpOpts...); diff != "" {
 		t.Errorf("Events mismatch (-got +want):\n%s", diff)
+	}
+}
+
+func TestTestServerStreamFile(t *gotesting.T) {
+	cl := startTestServer(t, nil)
+	ctx := context.Background()
+
+	dataDir := testutil.TempDir(t)
+	defer os.RemoveAll(dataDir)
+	src := filepath.Join(dataDir, "test.log")
+	f, err := os.OpenFile(src, os.O_RDWR|os.O_CREATE, 0755)
+	if err != nil {
+		t.Fatalf("failed to create file %v: %v", src, err)
+	}
+	defer f.Close()
+
+	stream, err := cl.StreamFile(ctx, &protocol.StreamFileRequest{Name: src, Offset: 0})
+	if err != nil {
+		t.Fatalf("StreamFile failed: %v", err)
+	}
+
+	data := []string{
+		`line1\nline`,
+		`2\nline3\n`,
+	}
+	expected := ""
+	for _, d := range data {
+		expected = expected + d
+	}
+
+	done := make(chan bool, 1)
+
+	wg := sync.WaitGroup{}
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		for _, d := range data {
+			time.Sleep(time.Second * 2)
+			if _, err := f.Write([]byte(d)); err != nil {
+				t.Errorf("failed to write data %q: %v", d, err)
+			}
+		}
+		done <- true
+		return
+	}()
+
+	got := ""
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		for i := range data {
+			select {
+			case <-done:
+				return
+			default:
+				msg, err := stream.Recv()
+				if err != nil {
+					t.Fatalf("failed to receive data %q -- data got so far %q: %v", data[i], got, err)
+				}
+				got = got + string(msg.GetData())
+			}
+		}
+	}()
+	wg.Wait()
+	if got != expected {
+		t.Errorf("unexpect streaming data: got %q; want %q", got, expected)
+	}
+}
+
+func TestTestServerStreamFileNotExist(t *gotesting.T) {
+	cl := startTestServer(t, nil)
+	ctx := context.Background()
+
+	stream, err := cl.StreamFile(ctx, &protocol.StreamFileRequest{Name: "NonExisitngFile.bad"})
+	if err != nil {
+		return
+	}
+	if _, err := stream.Recv(); err == nil {
+		t.Fatal("StreamFile failed tp return error for non-exiting file")
 	}
 }

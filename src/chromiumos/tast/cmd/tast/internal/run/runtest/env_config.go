@@ -34,6 +34,7 @@ type dutConfig struct {
 	CollectSysInfo         func(req *protocol.CollectSysInfoRequest) (*protocol.CollectSysInfoResponse, error)
 	DownloadPrivateBundles func(req *protocol.DownloadPrivateBundlesRequest) (*protocol.DownloadPrivateBundlesResponse, error)
 	OnRunLocalTestsInit    func(init *protocol.RunTestsInit, bcfg *protocol.BundleConfig)
+	StreamFile             func(req *protocol.StreamFileRequest, srv protocol.TestService_StreamFileServer) error
 }
 
 // EnvOption can be passed to SetUp to customize the testing environment.
@@ -200,5 +201,12 @@ func defaultDUTConfig(dutID int) *dutConfig {
 			return &protocol.DownloadPrivateBundlesResponse{}, nil
 		},
 		OnRunLocalTestsInit: func(init *protocol.RunTestsInit, bcfg *protocol.BundleConfig) {},
+	}
+}
+
+// WithStreamFile specifies a function that implements StreamFile handler.
+func WithStreamFile(f func(req *protocol.StreamFileRequest, srv protocol.TestService_StreamFileServer) error) DUTOption {
+	return func(cfg *dutConfig) {
+		cfg.StreamFile = f
 	}
 }

@@ -44,6 +44,8 @@ type Config struct {
 	DownloadPrivateBundles func(req *protocol.DownloadPrivateBundlesRequest) (*protocol.DownloadPrivateBundlesResponse, error)
 	// OnRunTestsInit is called on the beginning of RunTests.
 	OnRunTestsInit func(init *protocol.RunTestsInit, bcfg *protocol.BundleConfig)
+	// StreamFile implements the StreamFile handler.
+	StreamFile func(req *protocol.StreamFileRequest, srv protocol.TestService_StreamFileServer) error
 }
 
 // Runner represents a fake test runner.
@@ -199,4 +201,8 @@ func (s *testService) CollectSysInfo(ctx context.Context, req *protocol.CollectS
 
 func (s *testService) DownloadPrivateBundles(ctx context.Context, req *protocol.DownloadPrivateBundlesRequest) (*protocol.DownloadPrivateBundlesResponse, error) {
 	return s.cfg.DownloadPrivateBundles(req)
+}
+
+func (s *testService) StreamFile(req *protocol.StreamFileRequest, srv protocol.TestService_StreamFileServer) error {
+	return s.cfg.StreamFile(req, srv)
 }

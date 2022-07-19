@@ -39,6 +39,9 @@ service TestService {
   // them to the DUT.
   rpc DownloadPrivateBundles(DownloadPrivateBundlesRequest)
       returns (DownloadPrivateBundlesResponse) {}
+
+  // StreamFile requests to stream a specify file.
+  rpc StreamFile(StreamFileRequest) returns (stream StreamFileResponse) {}
 }
 
 message ListEntitiesRequest {
@@ -118,6 +121,21 @@ message DownloadPrivateBundlesRequest {
 }
 
 message DownloadPrivateBundlesResponse {}
+
+message StreamFileRequest {
+  // Name is the name of the file which the content will be streamed.
+  string name = 1;
+  // Offset is where in the file that streaming should start.
+  // If the offset is negative, streaming will start at the end of file.
+  int64 offset = 2;
+}
+
+message StreamFileResponse {
+  // Content is the latest content from the log file.
+  bytes data = 1;
+  // Offset is where the current file point to after reading the current data.
+  int64 offset = 2;
+}
 
 // EntityType represents a type of an entity.
 enum EntityType {

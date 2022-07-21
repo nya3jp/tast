@@ -137,6 +137,11 @@ type Test struct {
 	// HardwareDeps and HardwareDepsForAll[""].
 	// If any dependencies are not satisfied, the test will be skipped.
 	HardwareDepsForAll map[string]hwdep.Deps
+
+	// TestBedDeps are used for defining test bed dependencies only, i.e., 'carrier:verizon'.
+	// These are not used by tests themselves, but added to test metadata definitions used by
+	// infra services.
+	TestBedDeps []string
 }
 
 // LacrosMetadata indicates whether lacros variants have been considered for this test or not.

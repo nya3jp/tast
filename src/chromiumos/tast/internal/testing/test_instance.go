@@ -80,9 +80,12 @@ type TestInstance struct {
 	// implemented, it is needed.
 	HardwareDeps map[string]dep.HardwareDeps
 	ServiceDeps  []string
-	Pre          Precondition
-	Fixture      string
-	Timeout      time.Duration
+	// TestBedDeps is only used by infra and should not be used in tast core library
+	// or tests.
+	TestBedDeps []string
+	Pre         Precondition
+	Fixture     string
+	Timeout     time.Duration
 
 	// Bundle is the name of the test bundle this test belongs to.
 	// This field is empty initially, and later set when the test is added
@@ -239,6 +242,7 @@ func newTestInstance(t *Test, p *Param) (*TestInstance, error) {
 		SoftwareDeps: swDeps,
 		HardwareDeps: hwDeps,
 		ServiceDeps:  append([]string(nil), t.ServiceDeps...),
+		TestBedDeps:  append([]string(nil), t.TestBedDeps...),
 		Pre:          pre,
 		Fixture:      fixt,
 		Timeout:      timeout,
@@ -482,6 +486,7 @@ func (t *TestInstance) Deps() *dep.Deps {
 // Proto converts test metadata of TestInstance into a protobuf message.
 func (t *TestInstance) Proto() *api.TestCaseMetadata {
 	var tags []*api.TestCase_Tag
+
 	for _, a := range t.Attr {
 		tags = append(tags, &api.TestCase_Tag{Value: a})
 	}
@@ -489,13 +494,20 @@ func (t *TestInstance) Proto() *api.TestCaseMetadata {
 	for _, email := range t.Contacts {
 		owners = append(owners, &api.Contact{Email: email})
 	}
+
+	var dependencies []*api.TestCase_Dependency
+	for _, dep := range t.TestBedDeps {
+		dependencies = append(dependencies, &api.TestCase_Dependency{Value: dep})
+	}
+
 	r := api.TestCaseMetadata{
 		TestCase: &api.TestCase{
 			Id: &api.TestCase_Id{
 				Value: testHarnessPrefix + "." + t.Name,
 			},
-			Name: t.Name,
-			Tags: tags,
+			Name:         t.Name,
+			Tags:         tags,
+			Dependencies: dependencies,
 		},
 		TestCaseExec: &api.TestCaseExec{
 			TestHarness: &api.TestHarness{

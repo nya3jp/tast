@@ -95,7 +95,7 @@ func validateGlob(glob string) (hasWildcard bool, err error) {
 		case unicode.IsLetter(ch), unicode.IsDigit(ch), ch == '.', ch == '_':
 			continue
 		default:
-			return hasWildcard, fmt.Errorf("invalid character %v", ch)
+			return hasWildcard, fmt.Errorf("invalid character %q in pattern %v", ch, glob)
 		}
 	}
 	return hasWildcard, nil

@@ -54,6 +54,8 @@ func TestMatcherBadPatterns(t *gotesting.T) {
 		"[]",
 		"(",
 		"test-Fo.",
+		"-var",
+		"var=",
 	} {
 		if _, err := testing.NewMatcher([]string{pat}); err == nil {
 			t.Errorf("NewMatcher unexpectedly succeeded for %q", pat)

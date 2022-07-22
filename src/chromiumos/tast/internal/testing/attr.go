@@ -192,6 +192,11 @@ Tests in this group are not used for build verification.
 		Desc:     `A group of ARC Functional tests.`,
 	},
 	{
+		Name:     "arc-video",
+		Contacts: []string{"chromeos-arc-video-eng@google.com"},
+		Desc:     `A group of ARC Video tests.`,
+	},
+	{
 		Name:     "mtp",
 		Contacts: []string{"arc-engprod@google.com"},
 		Desc:     `A group of tests that run on DUTs with Android phones connected and verify MTP(Media Transfer Protocol).`,

@@ -1088,6 +1088,77 @@ func TestRunFixture(t *gotesting.T) {
 	}
 }
 
+func TestPreTestName(t *gotesting.T) {
+	const (
+		val1 = "val1"
+	)
+	fixt1 := &testing.FixtureInstance{
+		Name: "fixt1",
+		Impl: testfixture.New(
+			testfixture.WithSetUp(func(ctx context.Context, s *testing.FixtState) interface{} {
+				return val1
+			}),
+			testfixture.WithReset(func(ctx context.Context) error {
+				return nil
+			}),
+			testfixture.WithPreTest(func(ctx context.Context, s *testing.FixtTestState) {
+				logging.Info(ctx, "fixt1 PreTest")
+				logging.Info(ctx, "fixt1 TestName"+s.TestName())
+			})),
+	}
+
+	cfg := &Config{
+		Fixtures: map[string]*testing.FixtureInstance{
+			fixt1.Name: fixt1,
+		},
+	}
+
+	tests := []*testing.TestInstance{{
+		Name:    "pkg.Test1",
+		Fixture: "fixt1",
+		Func: func(ctx context.Context, s *testing.State) {
+			s.Log("Test 1")
+			if val := s.FixtValue(); val != val1 {
+				t.Errorf("pkg.Test1: FixtValue() = %v; want %v", val, val1)
+			}
+		},
+		Timeout: time.Minute,
+	}, {
+		Name:    "pkg.Test2",
+		Fixture: "fixt1",
+		Func: func(ctx context.Context, s *testing.State) {
+			s.Log("Test 2")
+			if val := s.FixtValue(); val != val1 {
+				t.Errorf("pkg.Test2: FixtValue() = %v; want %v", val, val1)
+			}
+		},
+		Timeout: time.Minute,
+	}}
+
+	msgs := runTestsAndReadAll(t, tests, cfg)
+
+	want := []protocol.Event{
+
+		// pkg.Test1 depends on fixt1.
+		&protocol.EntityStartEvent{Entity: fixt1.EntityProto()},
+		&protocol.EntityStartEvent{Entity: tests[0].EntityProto()},
+		&protocol.EntityLogEvent{EntityName: tests[0].Name, Text: "fixt1 PreTest"},
+		&protocol.EntityLogEvent{EntityName: tests[0].Name, Text: "fixt1 TestName" + tests[0].Name},
+		&protocol.EntityLogEvent{EntityName: tests[0].Name, Text: "Test 1"},
+		&protocol.EntityEndEvent{EntityName: tests[0].Name},
+		// pkg.Test2 depends on fixt1.
+		&protocol.EntityStartEvent{Entity: tests[1].EntityProto()},
+		&protocol.EntityLogEvent{EntityName: tests[1].Name, Text: "fixt1 PreTest"},
+		&protocol.EntityLogEvent{EntityName: tests[1].Name, Text: "fixt1 TestName" + tests[1].Name},
+		&protocol.EntityLogEvent{EntityName: tests[1].Name, Text: "Test 2"},
+		&protocol.EntityEndEvent{EntityName: tests[1].Name},
+		&protocol.EntityEndEvent{EntityName: fixt1.Name},
+	}
+	if diff := cmp.Diff(msgs, want, protocmp.Transform()); diff != "" {
+		t.Error("Output mismatch (-got +want):\n", diff)
+	}
+}
+
 func TestRunFixtureSetUpFailure(t *gotesting.T) {
 	fixt1 := &testing.FixtureInstance{
 		Name: "fixt1",

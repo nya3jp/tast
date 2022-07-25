@@ -29,6 +29,7 @@ func main() {
 	context.TODO()
 	dbus.SystemBus()
 	dbus.SystemBusPrivate()
+	os.Chdir("tmp")
 }
 `
 	expects := []string{
@@ -38,6 +39,7 @@ func main() {
 		"testfile.go:18:2: context.TODO ignores test timeout; use test function's ctx arg instead",
 		"testfile.go:19:2: dbus.SystemBus may reorder signals; use chromiumos/tast/local/dbusutil.SystemBus instead",
 		"testfile.go:20:2: dbus.SystemBusPrivate may reorder signals; use chromiumos/tast/local/dbusutil.SystemBusPrivate instead",
+		"testfile.go:21:2: os.Chdir changes the shared CWD of the process, reference files using absolute paths.",
 	}
 
 	f, fs := parse(code, "testfile.go")

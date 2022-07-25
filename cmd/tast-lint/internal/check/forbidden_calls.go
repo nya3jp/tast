@@ -101,6 +101,14 @@ func ForbiddenCalls(fs *token.FileSet, f *ast.File, fix bool) []*Issue {
 				})
 				importsRequired = append(importsRequired, "chromiumos/tast/local/dbusutil")
 			}
+		case "os.Chdir":
+			if !isUnitTest {
+				issues = append(issues, &Issue{
+					Pos:  fs.Position(x.Pos()),
+					Msg:  "os.Chdir changes the shared CWD of the process, reference files using absolute paths.",
+					Link: "https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/code_review_comments.md#os.Chdir",
+				})
+			}
 		}
 
 		return true

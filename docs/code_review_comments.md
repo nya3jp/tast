@@ -127,6 +127,49 @@ See also [a section in the Writing Tests document](writing_tests.md#Fixtures).
 [fixtures]: writing_tests.md#Fixtures
 
 
+## os.Chdir
+
+Using the [`os.Chdir`] function in Tast tests can make tests flakier
+because it creates a potential race condition as the current working
+direstory (CWD) is shared across the running process. If commands need to
+be run in a specific directory, consider using [`exec.Command`] and
+updating the Dir field to the directory the command needs to run in.
+
+```go
+// GOOD
+func Example(ctx context.Context, s *testing.State) {
+	cmd := exec.Command("ls")
+	cmd.Dir = "tmp"
+    err := cmd.Run()
+
+    if err != nil {
+        s.Fatal("Failed to list in folder tmp: ", err)
+    }
+	...
+}
+
+
+```
+
+```go
+// BAD
+func Example(ctx context.Context, s *testing.State) {
+	err := os.Chdir('tmp')
+	if err != nil {
+		s.Fatal("Failed to switch directory: ", err)
+	}
+	cmd := exec.Command("ls")
+    err := cmd.Run()
+    if err != nil {
+        s.Fatal("Failed to list in folder tmp: ", err)
+    }
+	...
+}
+```
+
+[`os.Chdir`]: https://pkg.go.dev/os#Chdir
+[`exec.Command`]: https://pkg.go.dev/os/exec#Command
+
 ## Sleep
 
 Sleeping without polling for a condition is discouraged, since it makes tests

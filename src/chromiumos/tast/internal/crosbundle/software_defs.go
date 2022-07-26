@@ -43,6 +43,8 @@ var softwareFeatureDefs = map[string]string{
 	"chrome_internal":              "chrome_internal",
 	"chromeless":                   "chromeless_tty || rialto",
 	"coresched":                    "coresched",
+	// TEO governor was new in v5.1, but we backported it to v4.19.
+	"cpuidle_teo": `!("kernel-4_4" || "kernel-4_14")`,
 	// TODO(b/174888780) Remove kernel-4_4 once arm64 kernel reporting is fixed
 	// TODO(b/174889440) Remove hana, elm, kevin, bob, scarlet.
 	// Per b/175345642 veryon_fievel/veyron_tiger are safe but arm32 doesn't report anything in sysfs so just ignore these boards

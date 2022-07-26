@@ -78,6 +78,7 @@ var softwareFeatureDefs = map[string]string{
 	"fake_hps":                `"betty" || "tast_vm"`, // VMs run hpsd with --test (fake software device)
 	"firewall":                "!moblab",              // Moblab has relaxed iptables rules
 	"flashrom":                `!"betty" && !"tast_vm"`,
+	"flex_id":                 "flex_id",                                // Enable using flex_id for enrollment
 	"fwupd":                   "fwupd",                                  // have sys-apps/fwupd installed.
 	"gboard_decoder":          "gboard_decoder",                         // have IME mojo service installed.
 	"google_virtual_keyboard": "chrome_internal && internal && !moblab", // doesn't work on Moblab: https://crbug.com/949912

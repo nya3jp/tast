@@ -833,15 +833,51 @@ func WifiMarvell() Condition {
 // that a device uses Intel WiFi. It is not guaranteed that the condition will be
 // satisfied for all devices with Intel WiFi.
 func WifiIntel() Condition {
-	return WifiDevice(
-		Intel7260,
-		Intel7265,
-		Intel9000,
-		Intel9260,
-		Intel22260,
-		Intel22560,
-		IntelAX211,
-	)
+	// TODO(crbug.com/1070299): we don't yet have relevant fields in device.Config
+	// about WiFi chip, so list the known platforms here for now.
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		// TODO(crbug.com/1115620): remove "Elm" and "Hana" after unibuild migration
+		// completed.
+		// NB: Devices in the "scarlet" family use the platform name "gru", so
+		// "gru" is being used here to represent "scarlet" devices.
+		platformCondition := SkipOnPlatform(
+			"asurada", "bob", "cherry", "elm", "fievel", "gru", "grunt", "hana", "herobrine", "jacuzzi",
+			"kevin", "kevin64", "kukui", "oak", "strongbad", "tiger", "trogdor", "trogdor-kernelnext",
+		)
+		if satisfied, reason, err := platformCondition.Satisfied(f); err != nil || !satisfied {
+			return satisfied, reason, err
+		}
+		// NB: These exclusions are somewhat overly broad; for example, some
+		// (but not all) blooglet devices have Intel WiFi chips. However,
+		// for now there is no better way to specify the exact hardware
+		// parameters needed for this dependency. (See crbug.com/1070299.)
+		modelCondition := SkipOnModel(
+			"beetley",
+			"blipper",
+			"blooglet",
+			"dewatt",
+			"dirinboz",
+			"ezkinil",
+			"gooey",
+			"gumboz",
+			"jelboz",
+			"jelboz360",
+			"landia",
+			"lantis",
+			"madoo",
+			"nereid",
+			"nipperkin",
+			"pirette",
+			"pirika",
+			"vilboz",
+			"vorticon",
+		)
+		if satisfied, reason, err := modelCondition.Satisfied(f); err != nil || !satisfied {
+			return satisfied, reason, err
+		}
+		return satisfied()
+	},
+	}
 }
 
 // WifiQualcomm returns a hardware dependency condition that if satisfied, indicates

@@ -155,7 +155,9 @@ The following software features are defined:
 *   `oci` - The ability to use the `run_oci` program to execute code within
     [OCI] containers.
 *   `ocr` - [Optical Character Recognition Service] daemon.
-*   `ondevice_document_scanner` - On-device document scanner support in `ml_service`.
+*   `ondevice_document_scanner` - On-device document scanner support in `ml_service` which installed document scanner library in rootfs.
+    This implies `ml_service`.
+*   `ondevice_document_scanner_rootfs_or_dlc` - On-device document scanner support in `ml_service`.
     This implies `ml_service`.
 *   `ondevice_grammar` - On-device grammar check support in `ml_service`.
 *   `ondevice_handwriting` - On-device handwriting recognition support in `ml_service`.

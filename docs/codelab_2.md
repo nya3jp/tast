@@ -435,7 +435,7 @@ If we see the expected message, we break out of the loop using a `WatchLoop`
 Here's a full listing of the test's code:
 
 ```go
-// Copyright 2019 The Chromium OS Authors. All rights reserved.
+// Copyright <copyright_year> The ChromiumOS Authors.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 

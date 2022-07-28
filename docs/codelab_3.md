@@ -335,7 +335,7 @@ one chain of operations.
 [uiauto.Combine]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/chrome/uiauto#Combine
 
 ```go
-// Copyright 2021 The Chromium OS Authors. All rights reserved.
+// Copyright <copyright_year> The ChromiumOS Authors.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 

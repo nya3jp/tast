@@ -61,11 +61,11 @@ var softwareFeatureDefs = map[string]string{
 	"dlc":               "dlc && dlc_test",
 	"dptf":              "dptf",
 	"device_crash":      `!("board:samus")`, // Samus devices do not reliably come back after kernel crashes. crbug.com/1045821
-	"dmverity_stable":   `"kernel-3_18" || "kernel-4_4" || "kernel-4_14"`,
-	"dmverity_unstable": `!("kernel-3_18" || "kernel-4_4" || "kernel-4_14")`,
+	"dmverity_stable":   `"kernel-4_4" || "kernel-4_14"`,
+	"dmverity_unstable": `!("kernel-4_4" || "kernel-4_14")`,
 	"drivefs":           "drivefs",
 	"drm_atomic":        "drm_atomic",
-	"drm_trace":         `!("kernel-3_18" || "kernel-4_4" || "kernel-4_14" || "kernel-4_19")`,
+	"drm_trace":         `!("kernel-4_4" || "kernel-4_14" || "kernel-4_19")`,
 	// asuka, banon, caroline, cave, celes, chell, cyan, edgar, kefka, reks, relm, sentry, terra, ultima, and wizpig have buggy EC firmware and cannot capture crash reports. b/172228823
 	// drallion and sarien have do not support the "crash" EC command. crbug.com/1123716
 	// guado, tidus, rikku, veyron_fievel, and veyron_tiger do not have EC firmware. crbug.com/1123716. TODO(crbug.com/1124554) Use an EC hardware dep for these rather than a software dep.
@@ -91,11 +91,11 @@ var softwareFeatureDefs = map[string]string{
 	"houdini64":               "houdini64",
 	"hostap_hwsim":            "wifi_hostap_test",
 	"hps":                     "hps",
-	"igt":                     `("video_cards_amdgpu" || "video_cards_intel" || "video_cards_mediatek" || "video_cards_msm") && !("kernel-3_18" || "kernel-4_4" || "kernel-4_14" || "kernel-4_19")`,
+	"igt":                     `("video_cards_amdgpu" || "video_cards_intel" || "video_cards_mediatek" || "video_cards_msm") && !("kernel-4_4" || "kernel-4_14" || "kernel-4_19")`,
 	"iioservice":              "iioservice",
 	"inference_accuracy_eval": "inference_accuracy_eval",
 	// IKEv2 is only supported on 4.19+ kernels.
-	"ikev2":          `!("kernel-3_18" || "kernel-4_4" || "kernel-4_14")`,
+	"ikev2":          `!("kernel-4_4" || "kernel-4_14")`,
 	"iwlwifi_rescan": "iwlwifi_rescan",
 	// Lacros variants.
 	// veyron does not support rootfs lacros entirely. b/204888294
@@ -173,7 +173,7 @@ var softwareFeatureDefs = map[string]string{
 	// Or cleanup all reboot dependency in tast-tests.
 	// Notice: The flag would be false when a board didn't have any attributes.
 	"reboot":                    `"*"`,
-	"rrm_support":               `!("kernel-3_18" || "kernel-4_4")`,
+	"rrm_support":               `!"kernel-4_4"`,
 	"screenshot":                "!rk3399", // screenshot command broken on RK3399: https://crbug.com/880597
 	"selinux":                   "selinux",
 	"selinux_current":           "selinux && !selinux_experimental",
@@ -198,7 +198,7 @@ var softwareFeatureDefs = map[string]string{
 	"typec_physical_location": `!("kernel-4_4" || "kernel-4_14" || "kernel-4_19" || "kernel-5_4") && !("arm" || "arm64") && !("board:amd*" || "board:asuka*" || "board:asurada*" || "board:atlas*" || "board:banon*" || "board:betty*" || "board:bob*" || "board:caroline*" || "board:cave*" || "board:celes*" || "board:chell*" || "board:cherry*" || "board:coral*" || "board:cyan*" || "board:dedede*" || "board:drallion*" || "board:edgar*" || "board:elm*" || "board:eve*" || "board:fizz*" || "board:grunt*" || "board:hana*" || "board:hatch*" || "board:jacuzzi*" || "board:kalista*" || "board:keeby*" || "board:kefka*" || "board:kevin*" || "board:kukui*" || "board:lars*" || "board:nami*" || "board:nautilus*" || "board:nocturne*" || "board:novato*" || "board:octopus*" || "board:puff*" || "board:pyro*" || "board:rammus*" || "board:reef*" || "board:reks*" || "board:relm*" || "board:reven*" || "board:sand*" || "board:sarien*" || "board:scarlet*" || "board:sentry*" || "board:setzer*" || "board:snappy*" || "board:soraka*" || "board:strongbad*" || "board:terra*" || "board:trogdor*" || "board:ultima*" || "board:volteer*" || "board:wizpig*" || "board:zork*")`,
 	"typec_usb_link":          `!("kernel-4_4" || "kernel-4_14" || "kernel-4_19" || "kernel-5_4") && !("arm" || "arm64")`,
 	"unibuild":                "unibuild",
-	"untrusted_vm":            `"kernel-4_19" || "kernel-5_4" || "kernel-5_10"`,
+	"untrusted_vm":            `!("kernel-4_4" || "kernel-4_14")`,
 	"usbguard":                "usbguard",
 	"use_fscrypt_v1":          `!"direncription_allow_v2" && !"lvm_stateful_partition"`,
 	"use_fscrypt_v2":          `"direncription_allow_v2" && !"lvm_stateful_partition"`,
@@ -239,6 +239,6 @@ var softwareFeatureDefs = map[string]string{
 	"wilco":       "wilco",
 	"wired_8021x": "wired_8021x",
 	// WireGuard is only supported on 5.4+ kernels.
-	"wireguard": `!("kernel-3_18" || "kernel-4_4" || "kernel-4_14" || "kernel-4_19")`,
+	"wireguard": `!("kernel-4_4" || "kernel-4_14" || "kernel-4_19")`,
 	"wpa3_sae":  "wpa3_sae",
 }

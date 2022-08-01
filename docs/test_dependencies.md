@@ -92,7 +92,6 @@ The following software features are defined:
 *   `firewall` - Standard ChromeOS network firewall rules.
 *   `flashrom` - Userspace utility to update firmware.
 *   `flex_id` - Enable using [flex_id](http://go/chromeos-flex-id) for enrollment.
-*   `gboard_decoder` - Whether Gboard built-in decoder is installed.
 *   `google_virtual_keyboard` - The proprietary Google onscreen virtual keyboard
     (as opposed to the builtin open-source virtual keyboard).
 *   `gpu_sandboxing` - Chrome's GPU process is [sandboxed].

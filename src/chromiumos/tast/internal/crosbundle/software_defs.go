@@ -80,7 +80,6 @@ var softwareFeatureDefs = map[string]string{
 	"flashrom":                `!"betty" && !"tast_vm"`,
 	"flex_id":                 "flex_id",                                // Enable using flex_id for enrollment
 	"fwupd":                   "fwupd",                                  // have sys-apps/fwupd installed.
-	"gboard_decoder":          "gboard_decoder",                         // have IME mojo service installed.
 	"google_virtual_keyboard": "chrome_internal && internal && !moblab", // doesn't work on Moblab: https://crbug.com/949912
 	"gpu_sandboxing":          `!"betty" && !"tast_vm"`,                 // no GPU sandboxing on VMs: https://crbug.com/914688
 	"graphics_debugfs":        `!"kernel-3_18"`,

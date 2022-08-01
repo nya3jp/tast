@@ -151,6 +151,7 @@ The following software features are defined:
 *   `no_tpm_dynamic` - Build was not built with dynamic TPM.
 *   `no_ubsan` - Build was not built with Undefined Behavior Sanitizer.
 *   `no_vulkan` - Build was not built with [Vulkan] enabled.
+*   `no_arcvm_virtio_blk_data` - Build was not built with ARCVM virtio-blk /data enabled.
 *   `nvme` - Ability to run NVMe software utilities.
 *   `oci` - The ability to use the `run_oci` program to execute code within
     [OCI] containers.

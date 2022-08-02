@@ -233,6 +233,9 @@ message RunTargetConfig {
   // If no activity is seen even after that the connection is closed.
   // (Default: 60 seconds)
   google.protobuf.Duration msg_timeout = 8;
+  // SystemServiceTimeout is timeout for waiting for system services to be ready
+  // in seconds. (Default: 120 seconds)
+  google.protobuf.Duration system_services_timeout = 9;
 }
 
 // RunDirectories holds several directory paths important for running tests.

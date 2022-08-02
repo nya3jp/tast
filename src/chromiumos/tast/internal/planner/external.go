@@ -86,11 +86,12 @@ func runExternalTests(ctx context.Context, names []string, stack *fixture.Combin
 		LocalBundleDir: pcfg.ExternalTarget.Device.GetBundleDir(),
 		DownloadMode:   pcfg.DataFile.GetDownloadMode(),
 
-		WaitUntilReady:   pcfg.ExternalTarget.Config.GetWaitUntilReady(),
-		CheckTestDeps:    pcfg.Features.GetCheckDeps(),
-		TestVars:         pcfg.Features.GetInfra().GetVars(),
-		MaybeMissingVars: pcfg.Features.GetInfra().GetMaybeMissingVars(),
-		MsgTimeout:       pcfg.ExternalTarget.Config.GetMsgTimeout().AsDuration(),
+		WaitUntilReady:        pcfg.ExternalTarget.Config.GetWaitUntilReady(),
+		CheckTestDeps:         pcfg.Features.GetCheckDeps(),
+		TestVars:              pcfg.Features.GetInfra().GetVars(),
+		MaybeMissingVars:      pcfg.Features.GetInfra().GetMaybeMissingVars(),
+		MsgTimeout:            pcfg.ExternalTarget.Config.GetMsgTimeout().AsDuration(),
+		SystemServicesTimeout: pcfg.ExternalTarget.Config.GetSystemServicesTimeout().AsDuration(),
 
 		DebuggerPort: int(pcfg.ExternalTarget.Config.GetDebugPort()),
 		Proxy:        pcfg.ExternalTarget.Config.GetProxy(),

@@ -83,7 +83,6 @@ var softwareFeatureDefs = map[string]string{
 	"fwupd":                   "fwupd",                                  // have sys-apps/fwupd installed.
 	"google_virtual_keyboard": "chrome_internal && internal && !moblab", // doesn't work on Moblab: https://crbug.com/949912
 	"gpu_sandboxing":          `!"betty" && !"tast_vm"`,                 // no GPU sandboxing on VMs: https://crbug.com/914688
-	"graphics_debugfs":        `!"kernel-3_18"`,
 	"gsc":                     `"cr50_onboard" || "ti50_onboard"`,
 	"hana":                    "hana",
 	"hammerd":                 "hammerd",
@@ -104,7 +103,6 @@ var softwareFeatureDefs = map[string]string{
 	"lacros":                 `!chromeless_tty && !rialto && !("board:veyron_fievel" || "board:veyron_tiger") && !arm64`,
 	"lacros_stable":          `!chromeless_tty && !rialto && !("board:veyron_fievel" || "board:veyron_tiger") && !arm64 && !"tast_vm" && !"betty"`,
 	"lacros_unstable":        `!chromeless_tty && !rialto && !("board:veyron_fievel" || "board:veyron_tiger") && !arm64 && ("tast_vm" || "betty")`,
-	"lock_core_pattern":      `"kernel-3_18"`,
 	"lvm_stateful_partition": "lvm_stateful_partition",
 	"manatee":                "manatee",
 	"mbo":                    "mbo",
@@ -136,8 +134,7 @@ var softwareFeatureDefs = map[string]string{
 	"no_ath10k_4_4":             `!("board:scarlet" && "kernel-4_4")`, // board scarlet with kernel 4.4 has a version of ath10k without certain features.
 	"no_borealis_host":          "!borealis_host",
 	"no_chrome_dcheck":          "!chrome_dcheck",
-	"no_elm_hana_3_18":          `!((elm || hana) && "kernel-3_18")`, // board elm/hana with kernel-3.18 has issue performing WiFi scan: https://crbug.com/1015719
-	"no_eth_loss_on_reboot":     `!("board:jacuzzi")`,                // some devices (jacuzzi) may not enumerate eth on reboot b/178529170
+	"no_eth_loss_on_reboot":     `!("board:jacuzzi")`, // some devices (jacuzzi) may not enumerate eth on reboot b/178529170
 	"no_iioservice":             "!iioservice",
 	"no_kernel_upstream":        `!"kernel-upstream"`,
 	"no_manatee":                "!manatee",

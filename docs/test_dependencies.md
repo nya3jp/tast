@@ -95,7 +95,6 @@ The following software features are defined:
 *   `google_virtual_keyboard` - The proprietary Google onscreen virtual keyboard
     (as opposed to the builtin open-source virtual keyboard).
 *   `gpu_sandboxing` - Chrome's GPU process is [sandboxed].
-*   `graphics_debugfs` - Whether the kernel DRM subsystem supports Debug FS for Graphics.
 *   `gsc` - Whether the platform has an onboard Google security chip.
 *   `houdini` - Availability of 32-bit Houdini library for ARC.
 *   `houdini64` - Availability of 64-bit Houdini library for ARC.
@@ -111,8 +110,6 @@ The following software features are defined:
 *   `lacros` - Whether the system supports running [lacros].
 *   `lacros_stable` - Whether the system supports running [lacros] and is stable enough for CQ. [TODO: Remove this.](b/183969803)
 *   `lacros_unstable` - Whether the system supports running [lacros] and is not stable enough for CQ. [TODO: Remove this.](b/183969803)
-*   `lock_core_pattern` - Ability to lock down |core_pattern| from further
-    modifications.
 *   `manatee` - The system is running a ManaTEE image.
 *   `mbo` - WiFi MBO support.
 *   `memfd_create` - memfd_create function implemented in the kernel.
@@ -134,8 +131,6 @@ The following software features are defined:
 *   `no_ath10k_4_4` - Skip boards using the ath10k/ar10k driver on kernel 4.4, as they are missing certain features (b/138406224).
 *   `no_borealis_host` - Boards which is not designed to host borealis.
 *   `no_chrome_dcheck` - Chrome/Chromium was not built with dcheck enabld`.
-*   `no_elm_hana_3_18` - Skip boards elm and hana with kernel-3.18 as they have
-    issue performing WiFi scan. See [b/172211349](https://b.corp.google.com/issues/172211349).
 *   `no_eth_loss_on_reboot` - Board does not lose ethernet on reboot. Context: b/178529170
 *   `no_iioservice` - Build was not built with CrOS IIO Service.
 *   `no_manatee` - Build was not built with ManaTEE enabled.

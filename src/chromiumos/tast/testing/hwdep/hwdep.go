@@ -635,108 +635,17 @@ func WifiWEP() Condition {
 // Wifi80211ax returns a hardware dependency condition that is satisfied
 // iff the DUT's WiFi module supports 802.11ax.
 func Wifi80211ax() Condition {
-	// Note: this is currently a blocklist.
-	// TODO(crbug.com/1070299): replace this when we have hwdep for WiFi chips.
-	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
-		// TODO(crbug.com/1115620): remove "Elm" and "Hana" after unibuild migration
-		// completed.
-		platformCondition := SkipOnPlatform(
-			"asuka",
-			"asurada",
-			"banjo",
-			"banon",
-			"bob", // bob, kevin use the platform name "gru", they do need to be added to SkipOnModel
-			"buddy",
-			"candy",
-			"caroline",
-			"cave",
-			"celes",
-			"chell",
-			"coral",
-			"cyan",
-			"edgar",
-			"enguarde",
-			"eve",
-			"fievel",
-			"fizz",
-			"gale",
-			"gandof",
-			"gnawty",
-			"gru", // The mosys for scarlet is gru. scarlet does not support 802.11ax
-			"grunt",
-			"guado",
-			"hana",
-			"jecht", // The mosys for tidus is jecht. tidus does not support 802.11ax
-			"kalista",
-			"kefka",
-			"kevin",
-			"kevin64",
-			"kip",
-			"kukui", // The mosys for jacuzzi is kukui. jacuzzi does not support 802.11ax
-			"lars",
-			"lulu",
-			"nami",
-			"nautilus",
-			"ninja",
-			"nocturne",
-			"oak", // The mosys for elm is oak. elm does not support 802.11ax
-			"octopus",
-			"orco",
-			"paine",
-			"poppy", // The mosys for atlas is poppy. atlas does not support 802.11ax
-			"puff",
-			"pyro",
-			"rammus",
-			"reef",
-			"reks",
-			"relm",
-			"rikku",
-			"samus",
-			"sand",
-			"sarien",
-			"sentry",
-			"setzer",
-			"snappy",
-			"soraka",
-			"strongbad",
-			"sumo",
-			"swanky",
-			"terra",
-			"tiger",
-			"trogdor",
-			"trogdor-kernelnext",
-			"ultima",
-			"winky",
-			"wizpig",
-			"yuna")
-		if satisfied, reason, err := platformCondition.Satisfied(f); err != nil || !satisfied {
-			return satisfied, reason, err
-		}
-		// Some models of boards excluded from the platform skip do not support
-		// 802.11ax. To be precise as possible, we will skip these models as well.
-		modelCondition := SkipOnModel(
-			"beadrix",
-			"beetley",
-			"blipper",
-			"dirinboz",
-			"ezkinil",
-			"gooey",
-			"gumboz",
-			"jelboz",
-			"jelboz360",
-			"landia",
-			"lantis",
-			"madoo",
-			"pirette",
-			"pirika",
-			"vilboz",
-		)
-		if satisfied, reason, err := modelCondition.Satisfied(f); err != nil || !satisfied {
-			return satisfied, reason, err
-		}
-		return satisfied()
-	},
-	}
+	return WifiDevice(
+		QualcommWCN6750,
+		QualcommWCN6855,
+		Intel22260,
+		Intel22560,
+		IntelAX211,
+		Realtek8852APCIE,
+		Realtek8852CPCIE,
+		MediaTekMT7921PCIE,
+		MediaTekMT7921SDIO,
+	)
 }
 
 // Wifi80211ax6E returns a hardware dependency condition that is satisfied

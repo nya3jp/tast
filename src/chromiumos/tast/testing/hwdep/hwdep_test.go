@@ -390,6 +390,48 @@ func TestWiFiIntel(t *testing.T) {
 	}
 }
 
+func Test80211ax(t *testing.T) {
+	c := hwdep.Wifi80211ax()
+
+	for _, tc := range []struct {
+		wifiDeviceID    wlan.DeviceID
+		expectSatisfied bool
+	}{
+		{hwdep.Marvell88w8897SDIO, false},
+		{hwdep.Marvell88w8997PCIE, false},
+		{hwdep.QualcommAtherosQCA6174, false},
+		{hwdep.QualcommAtherosQCA6174SDIO, false},
+		{hwdep.QualcommWCN3990, false},
+		{hwdep.QualcommWCN6750, true},
+		{hwdep.QualcommWCN6855, true},
+		{hwdep.Intel7260, false},
+		{hwdep.Intel7265, false},
+		{hwdep.Intel9000, false},
+		{hwdep.Intel9260, false},
+		{hwdep.Intel22260, true},
+		{hwdep.Intel22560, true},
+		{hwdep.IntelAX211, true},
+		{hwdep.BroadcomBCM4354SDIO, false},
+		{hwdep.BroadcomBCM4356PCIE, false},
+		{hwdep.BroadcomBCM4371PCIE, false},
+		{hwdep.Realtek8822CPCIE, false},
+		{hwdep.Realtek8852APCIE, true},
+		{hwdep.Realtek8852CPCIE, true},
+		{hwdep.MediaTekMT7921PCIE, true},
+		{hwdep.MediaTekMT7921SDIO, true},
+	} {
+		verifyCondition(
+			t, c,
+			&frameworkprotocol.DeprecatedDeviceConfig{},
+			&configpb.HardwareFeatures{
+				Wifi: &configpb.HardwareFeatures_Wifi{
+					WifiChips: []configpb.HardwareFeatures_Wifi_WifiChip{configpb.HardwareFeatures_Wifi_WifiChip(tc.wifiDeviceID)},
+				},
+			},
+			tc.expectSatisfied)
+	}
+}
+
 func TestMinStorage(t *testing.T) {
 	c := hwdep.MinStorage(16)
 	for _, tc := range []struct {

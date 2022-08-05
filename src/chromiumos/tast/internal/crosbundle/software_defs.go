@@ -13,21 +13,24 @@ var softwareFeatureDefs = map[string]string{
 	// ARC USE flags are defined here:
 	// http://cs/chromeos_public/src/third_party/chromiumos-overlay/eclass/arc-build-constants.eclass
 	// TODO(b/210917721): Re-enable ARCVM on manatee.
-	"android_vm":         `arc && arcvm && !"android-vm-pi" && !manatee`,
-	"android_vm_r":       `arc && arcvm && "android-vm-rvc" && !manatee`,
-	"android_vm_t":       `arc && arcvm && "android-vm-tm"`,
-	"android_p":          `arc && "android-container-pi"`,
-	"arc":                `arc`,
-	"arc32":              `"cheets_user" || "cheets_userdebug"`,
-	"arc64":              `"cheets_user_64" || "cheets_userdebug_64"`,
-	"arc_camera1":        `"arc-camera1"`,
-	"arc_camera3":        `"arc-camera3"`,
-	"arc_launched_32bit": `"arc-launched-32bit-abi"`,
-	"arc_launched_64bit": `"!arc-launched-32bit-abi"`,
-	"arm":                `"arm" || "arm64"`,
-	"aslr":               "!asan", // ASan instrumentation breaks ASLR
-	"auto_update_stable": `!("board:*-*")`,
-	"biometrics_daemon":  "biod",
+	"android_vm":   `arc && arcvm && !"android-vm-pi" && !manatee`,
+	"android_vm_r": `arc && arcvm && "android-vm-rvc" && !manatee`,
+	"android_vm_t": `arc && arcvm && "android-vm-tm"`,
+	"android_p":    `arc && "android-container-pi"`,
+	"arc":          `arc`,
+	"arc32":        `"cheets_user" || "cheets_userdebug"`,
+	"arc64":        `"cheets_user_64" || "cheets_userdebug_64"`,
+	// To access Android's /data directory from ChromeOS on ARCVM virtio-blk /data devices by mounting the virtio-blk disk image of Android's /data directory,
+	// the host kernel version needs to be 5.2 or above.
+	"arc_android_data_cros_access": `!arcvm_virtio_blk_data || "kernel-5_4" || "kernel-5_10" || "kernel-5_15"`,
+	"arc_camera1":                  `"arc-camera1"`,
+	"arc_camera3":                  `"arc-camera3"`,
+	"arc_launched_32bit":           `"arc-launched-32bit-abi"`,
+	"arc_launched_64bit":           `"!arc-launched-32bit-abi"`,
+	"arm":                          `"arm" || "arm64"`,
+	"aslr":                         "!asan", // ASan instrumentation breaks ASLR
+	"auto_update_stable":           `!("board:*-*")`,
+	"biometrics_daemon":            "biod",
 	// TODO(b/225065082): Re-enable borealis on manatee
 	"borealis_host": "borealis_host && !manatee",
 	"breakpad":      "force_breakpad",

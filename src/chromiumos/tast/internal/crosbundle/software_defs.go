@@ -100,10 +100,9 @@ var softwareFeatureDefs = map[string]string{
 	// Lacros variants.
 	// veyron does not support rootfs lacros entirely. b/204888294
 	// TODO(b/183969803): Remove lacros_stable and lacros_unstable eventually.
-	// TODO(crbug.com/1274891): Update arm64 condition from lacros variants when becomes testable.
-	"lacros":                 `!chromeless_tty && !rialto && !("board:veyron_fievel" || "board:veyron_tiger") && !arm64`,
+	"lacros":                 `!chromeless_tty && !rialto && !("board:veyron_fievel" || "board:veyron_tiger")`,
 	"lacros_stable":          `!chromeless_tty && !rialto && !("board:veyron_fievel" || "board:veyron_tiger") && !arm64 && !"tast_vm" && !"betty"`,
-	"lacros_unstable":        `!chromeless_tty && !rialto && !("board:veyron_fievel" || "board:veyron_tiger") && !arm64 && ("tast_vm" || "betty")`,
+	"lacros_unstable":        `!chromeless_tty && !rialto && !("board:veyron_fievel" || "board:veyron_tiger") && (arm64 || "tast_vm" || "betty")`,
 	"lvm_stateful_partition": "lvm_stateful_partition",
 	"manatee":                "manatee",
 	"mbo":                    "mbo",

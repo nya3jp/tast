@@ -80,17 +80,20 @@ type TestInstance struct {
 	// implemented, it is needed.
 	HardwareDeps map[string]dep.HardwareDeps
 	ServiceDeps  []string
-	// TestBedDeps is only used by infra and should not be used in tast core library
-	// or tests.
-	TestBedDeps []string
-	Pre         Precondition
-	Fixture     string
-	Timeout     time.Duration
+	Pre          Precondition
+	Fixture      string
+	Timeout      time.Duration
 
 	// Bundle is the name of the test bundle this test belongs to.
 	// This field is empty initially, and later set when the test is added
 	// to testing.Registry.
 	Bundle string
+
+	// TestBedDeps, Requirements, Purpose, and BugComponent are only used
+	// by infra and should not be used in tests.
+	TestBedDeps  []string
+	Requirements []string
+	BugComponent string
 }
 
 // instantiate creates one or more TestInstance from t.
@@ -242,10 +245,12 @@ func newTestInstance(t *Test, p *Param) (*TestInstance, error) {
 		SoftwareDeps: swDeps,
 		HardwareDeps: hwDeps,
 		ServiceDeps:  append([]string(nil), t.ServiceDeps...),
-		TestBedDeps:  append([]string(nil), t.TestBedDeps...),
 		Pre:          pre,
 		Fixture:      fixt,
 		Timeout:      timeout,
+		TestBedDeps:  append([]string(nil), t.TestBedDeps...),
+		Requirements: append([]string(nil), t.Requirements...),
+		BugComponent: t.BugComponent,
 	}, nil
 }
 
@@ -500,6 +505,11 @@ func (t *TestInstance) Proto() *api.TestCaseMetadata {
 		dependencies = append(dependencies, &api.TestCase_Dependency{Value: dep})
 	}
 
+	var requirements []*api.Requirement
+	for _, requirement := range t.Requirements {
+		requirements = append(requirements, &api.Requirement{Value: requirement})
+	}
+
 	r := api.TestCaseMetadata{
 		TestCase: &api.TestCase{
 			Id: &api.TestCase_Id{
@@ -517,7 +527,10 @@ func (t *TestInstance) Proto() *api.TestCaseMetadata {
 			},
 		},
 		TestCaseInfo: &api.TestCaseInfo{
-			Owners: owners,
+			Owners:       owners,
+			Requirements: requirements,
+			Criteria:     &api.Criteria{Value: t.Desc},
+			BugComponent: &api.BugComponent{Value: t.BugComponent},
 		},
 	}
 	return &r

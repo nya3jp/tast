@@ -91,6 +91,9 @@ func TestInstantiate(t *gotesting.T) {
 		HardwareDeps: hwdep.D(hwdep.Model("model1", "model2")),
 		Timeout:      123 * time.Second,
 		ServiceDeps:  []string{"svc1", "svc2"},
+		TestBedDeps:  []string{"dep:one", "dep:two", "dep:three"},
+		Requirements: []string{"one", "two"},
+		BugComponent: "b:123xyz",
 	})
 	if err != nil {
 		t.Fatal("Failed to instantiate test: ", err)
@@ -115,6 +118,9 @@ func TestInstantiate(t *gotesting.T) {
 		SoftwareDeps: map[string][]string{"": {"dep1", "dep2"}},
 		Timeout:      123 * time.Second,
 		ServiceDeps:  []string{"svc1", "svc2"},
+		TestBedDeps:  []string{"dep:one", "dep:two", "dep:three"},
+		Requirements: []string{"one", "two"},
+		BugComponent: "b:123xyz",
 	}}
 	if diff := cmp.Diff(got, want, cmpopts.IgnoreFields(TestInstance{}, "Func", "HardwareDeps")); diff != "" {
 		t.Errorf("Got unexpected test instances (-got +want):\n%s", diff)
@@ -169,7 +175,7 @@ func TestInstantiateOnlyForAllPrimary(t *gotesting.T) {
 	}
 }
 
-func TestInstantiateForAllCompaion(t *gotesting.T) {
+func TestInstantiateForAllCompanion(t *gotesting.T) {
 	got, err := instantiate(&Test{
 		Func:     TESTINSTANCETEST,
 		Desc:     "hello",
@@ -1327,6 +1333,10 @@ func TestWriteTestsAsProto(t *gotesting.T) {
 				"someone1@chromium.org",
 				"someone2@chromium.org",
 			},
+			TestBedDeps:  []string{"carrier:verizon", "madeup:name"},
+			Desc:         "Fake purpose",
+			Requirements: []string{"req1", "req2", "req3"},
+			BugComponent: "my component",
 		},
 	}
 
@@ -1342,6 +1352,10 @@ func TestWriteTestsAsProto(t *gotesting.T) {
 						{Value: "attr1"},
 						{Value: "attr2"},
 					},
+					Dependencies: []*api.TestCase_Dependency{
+						{Value: "carrier:verizon"},
+						{Value: "madeup:name"},
+					},
 				},
 				TestCaseExec: &api.TestCaseExec{
 					TestHarness: &api.TestHarness{
@@ -1355,6 +1369,13 @@ func TestWriteTestsAsProto(t *gotesting.T) {
 						{Email: "someone1@chromium.org"},
 						{Email: "someone2@chromium.org"},
 					},
+					Requirements: []*api.Requirement{
+						{Value: "req1"},
+						{Value: "req2"},
+						{Value: "req3"},
+					},
+					Criteria:     &api.Criteria{Value: "Fake purpose"},
+					BugComponent: &api.BugComponent{Value: "my component"},
 				},
 			},
 		},

@@ -138,10 +138,21 @@ type Test struct {
 	// If any dependencies are not satisfied, the test will be skipped.
 	HardwareDepsForAll map[string]hwdep.Deps
 
+	// Fields after this line are used  for automation purposes only, tests should not use
+	// these fields.
+
 	// TestBedDeps are used for defining test bed dependencies only, i.e., 'carrier:verizon'.
 	// These are not used by tests themselves, but added to test metadata definitions used by
 	// infra services.
 	TestBedDeps []string
+
+	// Requirements are used for linking test cases to requirements. These are not used by
+	// tests themselves, but added to test metadata definitions used by infra services.
+	Requirements []string
+
+	// Bug component id for filing bugs against this test, i.e. 'b:1234'. This field is not
+	// to be used by tests themselves, but added to test metadata definitions used by infra services.
+	BugComponent string
 }
 
 // LacrosMetadata indicates whether lacros variants have been considered for this test or not.

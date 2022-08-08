@@ -59,7 +59,7 @@ func TestCheckKnownAttrs(t *testing.T) {
 			attrs: []string{"group:arc-functional"},
 		},
 		{
-			attrs: []string{"group:appcompat"},
+			attrs: []string{"group:appcompat", "appcompat_default"},
 		},
 		{
 			attrs: []string{"group:appcompat", "appcompat_smoke"},

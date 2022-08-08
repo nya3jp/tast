@@ -213,6 +213,10 @@ Tests in this group are not used for build verification.
 				Name: "appcompat_top_apps",
 				Desc: `A group of ARC app compatibility tests for top apps testing.`,
 			},
+			{
+				Name: "appcompat_default",
+				Desc: `A group of ARC app compatibility tests for appcompat testing.`,
+			},
 		},
 	},
 	{

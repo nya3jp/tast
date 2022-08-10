@@ -191,3 +191,20 @@ func TestPollUseNonContextError(t *gotesting.T) {
 		t.Errorf("Poll returned error %q, which doesn't contain func error %q", err.Error(), msg)
 	}
 }
+
+func TestPollTimeoutErrorMsg(t *gotesting.T) {
+	timeout := time.Second + 2*time.Millisecond + 3*time.Nanosecond
+	opts := &testingutil.PollOptions{
+		Timeout:  timeout,
+		Interval: time.Millisecond,
+	}
+	err := testingutil.Poll(context.Background(), func(ctx context.Context) error {
+		return errors.New("")
+	}, opts)
+
+	if err == nil {
+		t.Error("Poll didn't timeout correctly")
+	} else if !strings.Contains(err.Error(), timeout.String()) {
+		t.Errorf("Poll returned error %q, which doesn't contain timeout duration %q", err.Error(), timeout.String())
+	}
+}

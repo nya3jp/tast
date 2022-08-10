@@ -67,7 +67,7 @@ func Poll(ctx context.Context, f func(context.Context) error, opts *PollOptions)
 
 		if e, ok := err.(*pollBreak); ok {
 			if ctx.Err() != nil && lastErr != nil {
-				return errors.Wrapf(lastErr, "%s; last error follows", e.err)
+				return errors.Wrapf(lastErr, "%s during a poll with timeout %v; last error follows", e.err, timeout)
 			}
 			return e.err
 		}
@@ -84,7 +84,7 @@ func Poll(ctx context.Context, f func(context.Context) error, opts *PollOptions)
 		case <-time.After(interval):
 		case <-ctx.Done():
 			if lastErr != nil {
-				return errors.Wrapf(lastErr, "%s; last error follows", ctx.Err())
+				return errors.Wrapf(lastErr, "%s during a poll with timeout %v; last error follows", ctx.Err(), timeout)
 			}
 			return ctx.Err()
 		}

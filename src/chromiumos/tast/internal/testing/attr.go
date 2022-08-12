@@ -814,6 +814,11 @@ Parallels boot-up testing. Otherwise the same as group:crosbolt.`,
 			},
 		},
 	},
+	{
+		Name:     "assistant_audiobox",
+		Contacts: []string{"chromeos-sw-engprod@google.com", "assistive-eng@google.com"},
+		Desc:     `A group of Assistant tests that have to be run in audiobox.`,
+	},
 }
 
 // validGroupMap is the name-keyed map of validGroups.

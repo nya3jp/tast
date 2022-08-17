@@ -275,6 +275,11 @@ Tests in this group are not used for build verification.
 		Desc:     `A group of tests performing enrollment and will clobber the stateful partition.`,
 	},
 	{
+		Name:     "dmserver-enrollment-daily",
+		Contacts: []string{"rzakarian@google.com", "chromeos-ent-test@google.com"},
+		Desc:     `A group of tests for the DMServer enrollment.`,
+	},
+	{
 		Name:     "dpanel-end2end",
 		Contacts: []string{"rzakarian@google.com", "chromeos-ent-test@google.com"},
 		Desc:     `A group of tests for the DPanel/DMServer team.`,

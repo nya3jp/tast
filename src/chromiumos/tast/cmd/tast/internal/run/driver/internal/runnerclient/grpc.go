@@ -8,6 +8,7 @@ import (
 	"context"
 	"io"
 	"os"
+	"path/filepath"
 	"sort"
 	"time"
 
@@ -286,6 +287,10 @@ func (c *Client) StreamFile(ctx context.Context, src, dest string, offset int64)
 	if err != nil {
 		return offset, errors.Wrapf(err, "failed to stream file %s from DUT to %s", src, dest)
 	}
+	destDir := filepath.Dir(dest)
+	if err := os.MkdirAll(destDir, 0755); err != nil {
+		return offset, errors.Wrapf(err, "failed to create directory %v for streaming", destDir)
+	}
 	f, err := os.OpenFile(dest, os.O_APPEND|os.O_RDWR|os.O_CREATE, 0755)
 	if err != nil {
 		return offset, errors.Wrapf(err, "failed to open file %v for streaming", dest)
@@ -296,7 +301,7 @@ func (c *Client) StreamFile(ctx context.Context, src, dest string, offset int64)
 		msg, err := stream.Recv()
 		if err != nil {
 			if err == io.EOF {
-				logging.Infof(ctx, "receive EOF whle streaming data from file %v", src)
+				logging.Infof(ctx, "receive EOF while streaming data from file %v", src)
 				return nextOffset, nil
 			}
 			return nextOffset, errors.Wrapf(err, "failed to receive streaming data from file %v", src)

@@ -83,6 +83,9 @@ func prepareDUT(ctx context.Context, cfg *config.Config, drv *driver.Driver) (*p
 		}
 	}
 
+	// Stream log files from the DUT.
+	streamLogs(ctx, cfg, drv)
+
 	// Now that local_test_runner is prepared, we can retrieve DUTInfo.
 	// It is needed in DownloadPrivateBundles below.
 	return getDUTInfo(ctx, cfg, drv)
@@ -399,4 +402,30 @@ func formatBytes(bytes int64) string {
 		return fmt.Sprintf("%.1f KB", float32(bytes)/float32(kb))
 	}
 	return fmt.Sprintf("%d B", bytes)
+}
+
+// streamLogs streams a set of predefined log files to help debugging when DUT becomes unrepairable.
+func streamLogs(ctx context.Context, cfg *config.Config, drv *driver.Driver) {
+	filesToStream := []string{
+		"/var/log/recover_duts/recover_duts.log",
+	}
+
+	for _, f := range filesToStream {
+		src := f
+		dest := filepath.Join(cfg.ResDir(), "streamed", f)
+
+		// Since ConnCache is not goroutine-safe, create a new driver for this goroutine.
+		dd, err := drv.Duplicate(ctx)
+		if err != nil {
+			logging.Infof(ctx, "Cannot duplicate driver for streaming file: %v", err)
+			return
+		}
+
+		go func() {
+			defer dd.Close(ctx)
+			if err := dd.StreamFile(ctx, src, dest); err != nil {
+				logging.Infof(ctx, "Fail to stream file %s", src)
+			}
+		}()
+	}
 }

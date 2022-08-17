@@ -201,6 +201,9 @@ func defaultDUTConfig(dutID int) *dutConfig {
 			return &protocol.DownloadPrivateBundlesResponse{}, nil
 		},
 		OnRunLocalTestsInit: func(init *protocol.RunTestsInit, bcfg *protocol.BundleConfig) {},
+		StreamFile: func(req *protocol.StreamFileRequest, srv protocol.TestService_StreamFileServer) error {
+			return nil
+		},
 	}
 }
 

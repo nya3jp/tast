@@ -43,8 +43,10 @@ type BundleEntity = drivercore.BundleEntity
 // re-establish a connection to the target device, so you should get a fresh
 // connection object after calling them.
 type Driver struct {
-	cfg *config.Config
-	cc  *target.ConnCache
+	cfg       *config.Config
+	cc        *target.ConnCache
+	rawTarget string
+	role      string
 }
 
 // New establishes a new connection to the target device and returns a Driver.
@@ -52,7 +54,9 @@ func New(ctx context.Context, cfg *config.Config, rawTarget, role string) (*Driv
 	// Use nil as connection cache if we should not connect to the target.
 	if !config.ShouldConnect(cfg.Target()) {
 		return &Driver{
-			cfg: cfg,
+			cfg:       cfg,
+			rawTarget: rawTarget,
+			role:      role,
 		}, nil
 	}
 
@@ -90,9 +94,16 @@ func New(ctx context.Context, cfg *config.Config, rawTarget, role string) (*Driv
 		return nil, err
 	}
 	return &Driver{
-		cfg: cfg,
-		cc:  cc,
+		cfg:       cfg,
+		cc:        cc,
+		rawTarget: rawTarget,
+		role:      role,
 	}, nil
+}
+
+// Duplicate duplicate a driver.
+func (d *Driver) Duplicate(ctx context.Context) (*Driver, error) {
+	return New(ctx, d.cfg, d.rawTarget, d.role)
 }
 
 // Close closes the current connection to the target device.

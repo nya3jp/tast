@@ -63,15 +63,33 @@ func TestDriver_StreamFile(t *testing.T) {
 		cfg.CheckTestDeps = true
 	})
 
+	t.Logf("TestDriver_StreamFile target %v", cfg.Target())
 	drv, err := driver.New(ctx, cfg, cfg.Target(), "")
 	if err != nil {
 		t.Errorf("driver.New failed: %v", err)
 	}
 	defer drv.Close(ctx)
 
-	if err := drv.StreamFile(ctx, src, dest); err != nil {
-		t.Fatalf("StreamFile failed: %v", err)
+	t.Logf("TestDriver_StreamFile driver info %+v", drv)
+
+	var streamErr error
+	defer func() {
+		if streamErr != nil {
+			t.Fatalf("Stream File failed")
+		}
+	}()
+
+	dd, err := drv.Duplicate(ctx)
+	if err != nil {
+		t.Fatal("Failed to dupliate driver: ", err)
 	}
+	go func() {
+		defer dd.Close(ctx)
+		if err := dd.StreamFile(ctx, src, dest); err != nil {
+			streamErr = errors.Wrap(err, "failed to stream file")
+		}
+	}()
+
 	if err := testingutil.Poll(ctx, func(ctx context.Context) error {
 		f, err := os.Stat(dest)
 		if err != nil {
@@ -139,15 +157,31 @@ func TestDriver_StreamFileWithInterruption(t *testing.T) {
 		cfg.CheckTestDeps = true
 	})
 
+	t.Logf("TestDriver_StreamFileWithInterruption target %v", cfg.Target())
 	drv, err := driver.New(ctx, cfg, cfg.Target(), "")
 	if err != nil {
 		t.Errorf("driver.New failed: %v", err)
 	}
 	defer drv.Close(ctx)
+	t.Logf("TestDriver_StreamFile driver info %+v", drv)
 
-	if err := drv.StreamFile(ctx, src, dest); err != nil {
-		t.Fatalf("StreamFile failed: %v", err)
+	var streamErr error
+	defer func() {
+		if streamErr != nil {
+			t.Fatalf("Stream File failed")
+		}
+	}()
+	dd, err := drv.Duplicate(ctx)
+	if err != nil {
+		t.Fatal("Failed to dupliate driver: ", err)
 	}
+	go func() {
+		defer dd.Close(ctx)
+		if err := dd.StreamFile(ctx, src, dest); err != nil {
+			streamErr = errors.Wrap(err, "failed to stream file")
+		}
+	}()
+
 	if err := testingutil.Poll(ctx, func(ctx context.Context) error {
 		f, err := os.Stat(dest)
 		if err != nil {

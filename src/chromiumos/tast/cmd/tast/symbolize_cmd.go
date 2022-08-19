@@ -21,7 +21,7 @@ type symbolizeCmd struct {
 	cfg symbolize.Config
 }
 
-var _ = subcommands.Command(&runCmd{})
+var _ = subcommands.Command(&symbolizeCmd{})
 
 func (*symbolizeCmd) Name() string     { return "symbolize" }
 func (*symbolizeCmd) Synopsis() string { return "symbolize crashes" }

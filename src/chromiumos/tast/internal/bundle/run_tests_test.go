@@ -241,8 +241,9 @@ func TestRunTestsRemoteData(t *gotesting.T) {
 					BundleDir: "/mock/local/bundles",
 				},
 				MetaTestConfig: &protocol.MetaTestConfig{
-					TastPath: "/bogus/tast",
-					RunFlags: []string{"-flag1", "-flag2"},
+					TastPath:  "/bogus/tast",
+					RunFlags:  []string{"-flag1", "-flag2"},
+					ListFlags: []string{"-flag3"},
 				},
 			},
 		},
@@ -258,6 +259,7 @@ func TestRunTestsRemoteData(t *gotesting.T) {
 		Target:         hr.BundleInitParams.BundleConfig.PrimaryTarget.DutConfig.SshConfig.ConnectionSpec,
 		TastPath:       hr.BundleInitParams.BundleConfig.MetaTestConfig.TastPath,
 		RunFlags:       hr.BundleInitParams.BundleConfig.MetaTestConfig.RunFlags,
+		ListFlags:      hr.BundleInitParams.BundleConfig.MetaTestConfig.ListFlags,
 		ConnectionSpec: hr.BundleInitParams.BundleConfig.PrimaryTarget.DutConfig.SshConfig.ConnectionSpec,
 	}
 	if diff := cmp.Diff(meta, expMeta); diff != "" {

@@ -658,6 +658,7 @@ func TestMeta(t *gotesting.T) {
 		TastPath:       "/foo/bar",
 		Target:         "example.net",
 		RunFlags:       []string{"-foo", "-bar"},
+		ListFlags:      []string{"-lflag"},
 		ConnectionSpec: "example.net",
 	}
 	getMeta := func(test *testing.TestInstance, cfg *testing.RuntimeConfig) (meta *testing.Meta, ok bool) {

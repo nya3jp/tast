@@ -90,4 +90,9 @@ message MetaTestConfig {
   // functionality, e.g. paths to binaries used by the tast process and
   // credentials for reconnecting to the DUT.
   repeated string run_flags = 2;
+  // ListFlags contains a subset of the flags that were passed to the "tast
+  // list" command. The included flags are ones that are necessary for core
+  // functionality, e.g. paths to binaries used by the tast process and
+  // credentials for reconnecting to the DUT.
+  repeated string list_flags = 3;
 }

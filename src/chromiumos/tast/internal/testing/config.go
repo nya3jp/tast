@@ -61,8 +61,10 @@ type Meta struct {
 	// Target contains information about the DUT as "[<user>@]host[:<port>]".
 	// DEPRECATED: Use ConnectionSpec instead.
 	Target string
-	// Flags contains flags that should be passed to the tast command's "list" and "run" subcommands.
+	// Flags contains flags that should be passed to the tast command's "run" subcommands.
 	RunFlags []string
+	// Flags contains flags that should be passed to the tast command's "list" subcommands.
+	ListFlags []string
 	// ConnectionSpec contains information about the DUT as "[<user>@]host[:<port>]".
 	ConnectionSpec string
 }
@@ -71,6 +73,7 @@ type Meta struct {
 func (m *Meta) clone() *Meta {
 	mc := *m
 	mc.RunFlags = append([]string{}, m.RunFlags...)
+	mc.ListFlags = append([]string{}, m.ListFlags...)
 	return &mc
 }
 

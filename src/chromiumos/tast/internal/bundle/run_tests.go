@@ -374,6 +374,7 @@ func setUpConnection(ctx context.Context, scfg *StaticConfig, cfg *protocol.RunC
 				TastPath:       bcfg.GetMetaTestConfig().GetTastPath(),
 				Target:         sshCfg.GetConnectionSpec(),
 				RunFlags:       bcfg.GetMetaTestConfig().GetRunFlags(),
+				ListFlags:      bcfg.GetMetaTestConfig().GetListFlags(),
 				ConnectionSpec: sshCfg.GetConnectionSpec(),
 			},
 			RPCHint:       testing.NewRPCHint(pt.GetBundleDir(), cfg.GetFeatures().GetInfra().GetVars()),

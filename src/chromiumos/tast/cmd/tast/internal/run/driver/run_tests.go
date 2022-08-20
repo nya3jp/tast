@@ -358,8 +358,9 @@ func (d *Driver) newConfigsForRemoteTests(tests []string, dutInfos map[string]*p
 		PrimaryTarget: primaryTarget,
 		CompanionDuts: companionDUTs,
 		MetaTestConfig: &protocol.MetaTestConfig{
-			TastPath: exe,
-			RunFlags: d.runFlags(buildArtifactsURL),
+			TastPath:  exe,
+			RunFlags:  d.runFlags(buildArtifactsURL),
+			ListFlags: d.listFlags(buildArtifactsURL),
 		},
 	}
 	CompanionFeatures := make(map[string]*frameworkprotocol.DUTFeatures)
@@ -427,8 +428,28 @@ func (d *Driver) runFlags(buildArtifactsURL string) []string {
 		"-devservers=" + strings.Join(d.cfg.Devservers(), ","),
 		"-buildartifactsurl=" + buildArtifactsURL,
 	}
+	for _, varsDir := range d.cfg.DefaultVarsDirs() {
+		runFlags = append(runFlags, "-defaultvarsdir="+varsDir)
+	}
 	for role, dut := range d.cfg.CompanionDUTs() {
 		runFlags = append(runFlags, fmt.Sprintf("-companiondut=%s:%s", role, dut))
+	}
+	return runFlags
+}
+
+func (d *Driver) listFlags(buildArtifactsURL string) []string {
+	runFlags := []string{
+		"-build=" + strconv.FormatBool(d.cfg.Build()),
+		"-keyfile=" + d.cfg.KeyFile(),
+		"-keydir=" + d.cfg.KeyDir(),
+		"-remoterunner=" + d.cfg.RemoteRunner(),
+		"-remotebundledir=" + d.cfg.RemoteBundleDir(),
+		"-remotedatadir=" + d.cfg.RemoteDataDir(),
+		"-localrunner=" + d.cfg.LocalRunner(),
+		"-localbundledir=" + d.cfg.LocalBundleDir(),
+		"-localdatadir=" + d.cfg.LocalDataDir(),
+		"-devservers=" + strings.Join(d.cfg.Devservers(), ","),
+		"-buildartifactsurl=" + buildArtifactsURL,
 	}
 	return runFlags
 }

@@ -489,9 +489,9 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		logging.Infof(ctx, "Failed to get base microphone: %v", err)
 	}
 	features.Audio.BaseMicrophone = baseMicrophone
-	expectAudio := formFactor == "CHROMEBOOK" || formFactor == "CHROMEBASE" || formFactor == "REFERENCE"
-	if features.Audio.LidMicrophone != nil && features.Audio.BaseMicrophone != nil && features.Audio.LidMicrophone.Value == 0 && features.Audio.BaseMicrophone.Value == 0 && expectAudio {
-		features.Audio.LidMicrophone.Value = 1
+	expectAudio := hasBuiltinAudio(ctx, features.FormFactor.FormFactor)
+	if features.Audio.LidMicrophone.GetValue() == 0 && features.Audio.BaseMicrophone.GetValue() == 0 && expectAudio {
+		features.Audio.LidMicrophone = &configpb.HardwareFeatures_Count{Value: 1}
 	}
 	speaker, err := matchCrasDeviceType(`INTERNAL_SPEAKER`)
 	if err != nil {
@@ -503,6 +503,11 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		amp, err := findSpeakerAmplifier(model)
 		if err != nil {
 			logging.Infof(ctx, "Failed to get amp: %v", err)
+		}
+		if amp == nil {
+			// Do not assume findSpeakerAmplifier() always returns a non-nil amp.
+			// Always signal that the device has a hwdep.Speaker().
+			amp = &configpb.Component_Amplifier{}
 		}
 		features.Audio.SpeakerAmplifier = amp
 	}
@@ -1078,4 +1083,22 @@ func wifiFeatures() (*configpb.HardwareFeatures_Wifi, error) {
 	return &configpb.HardwareFeatures_Wifi{
 		WifiChips: []configpb.HardwareFeatures_Wifi_WifiChip{
 			configpb.HardwareFeatures_Wifi_WifiChip(dev.ID)}}, nil
+}
+
+// hasBuiltinAudio tells if a given form factor has built-in audio devices
+func hasBuiltinAudio(ctx context.Context, ff configpb.HardwareFeatures_FormFactor_FormFactorType) bool {
+	switch ff {
+	case configpb.HardwareFeatures_FormFactor_CLAMSHELL,
+		configpb.HardwareFeatures_FormFactor_CONVERTIBLE,
+		configpb.HardwareFeatures_FormFactor_DETACHABLE,
+		configpb.HardwareFeatures_FormFactor_CHROMEBASE,
+		configpb.HardwareFeatures_FormFactor_CHROMESLATE:
+		return true
+	case configpb.HardwareFeatures_FormFactor_CHROMEBIT,
+		configpb.HardwareFeatures_FormFactor_CHROMEBOX:
+		return false
+	default:
+		logging.Infof(ctx, "Unknown form factor: %s", ff)
+		return false
+	}
 }

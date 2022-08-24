@@ -69,6 +69,7 @@ import (
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/timing"
+	"chromiumos/tast/internal/usercode"
 )
 
 const (
@@ -617,7 +618,7 @@ func (s *State) Param() interface{} {
 	return s.testRoot.test.Val
 }
 
-// Run starts a new subtest with an unique name. Error messages are prepended with the subtest
+// Run starts a new subtest with a unique name. Error messages are prepended with the subtest
 // name during its execution. If Fatal/Fatalf is called from inside a subtest, only that subtest
 // is stopped; its parent continues. Returns true if the subtest passed.
 func (s *State) Run(ctx context.Context, name string, run func(context.Context, *State)) bool {
@@ -635,6 +636,12 @@ func (s *State) Run(ctx context.Context, name string, run func(context.Context, 
 	finished := make(chan struct{})
 
 	go func() {
+		defer func() {
+			if r := recover(); r != nil {
+				usercode.ErrorOnPanic(ns)(r)
+			}
+		}()
+
 		ctx, cancel := context.WithCancel(ctx)
 		defer cancel()
 

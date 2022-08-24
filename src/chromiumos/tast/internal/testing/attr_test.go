@@ -68,6 +68,9 @@ func TestCheckKnownAttrs(t *testing.T) {
 			attrs: []string{"group:appcompat", "appcompat_top_apps"},
 		},
 		{
+			attrs: []string{"group:arcappgameperf"},
+		},
+		{
 			attrs: []string{"group:graphics"},
 		},
 		{

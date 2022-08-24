@@ -225,6 +225,11 @@ Tests in this group are not used for build verification.
 		},
 	},
 	{
+		Name:     "arcappgameperf",
+		Contacts: []string{"arc-engprod@google.com"},
+		Desc:     `A group of tests that run ARC++ Game performance tests.`,
+	},
+	{
 		Name:     "arc-data-snapshot",
 		Contacts: []string{"pbond@google.com", "arc-commercial@google.com"},
 		Desc:     `A group of ARC data snapshot tests that run on DUTs.`,

@@ -1385,8 +1385,8 @@ func TestWriteTestsAsProto(t *gotesting.T) {
 	WriteTestsAsProto(&b, in)
 	var actual api.TestCaseMetadataList
 	proto.Unmarshal(b.Bytes(), &actual)
-	if !cmp.Equal(expected, actual, cmp.Comparer(proto.Equal)) {
-		t.Errorf("WriteTestsAsProto(%v): got %v; want %v", in, actual, expected)
+	if !cmp.Equal(&expected, &actual, cmp.Comparer(proto.Equal)) {
+		t.Errorf("WriteTestsAsProto(%v): got %v; want %v", in, &actual, &expected)
 	}
 }
 

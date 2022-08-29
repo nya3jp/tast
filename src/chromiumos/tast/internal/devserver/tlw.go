@@ -65,7 +65,7 @@ func (c *TLWClient) Stage(ctx context.Context, gsURL string) (*url.URL, error) {
 		if st.Code() == codes.NotFound {
 			return nil, errors.Wrap(os.ErrNotExist, gsURL)
 		}
-		return nil, errors.Wrapf(err, "failed to call CacheForDut(%v)", req)
+		return nil, errors.Wrapf(err, "failed to call CacheForDut(%v)", &req)
 	}
 
 	opcli := longrunning.NewOperationsClient(c.conn)

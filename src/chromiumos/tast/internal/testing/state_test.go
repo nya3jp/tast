@@ -20,8 +20,8 @@ import (
 	gotesting "testing"
 	"time"
 
+	"github.com/golang/protobuf/proto"
 	"github.com/google/go-cmp/cmp"
-	"github.com/google/go-cmp/cmp/cmpopts"
 	"go.chromium.org/chromiumos/config/go/api"
 	"google.golang.org/protobuf/testing/protocmp"
 
@@ -976,13 +976,9 @@ func TestHardwareFeatures(t *gotesting.T) {
 
 	for role, features := range features {
 		got := s.Features(role)
-		opts := []cmp.Option{
-			cmpopts.IgnoreUnexported(frameworkprotocol.DUTFeatures{}),
-			cmpopts.IgnoreUnexported(frameworkprotocol.HardwareFeatures{}),
-			cmpopts.IgnoreUnexported(api.HardwareFeatures{}),
-		}
-		if diff := cmp.Diff(got, features, opts...); diff != "" {
-			t.Errorf("Failed to get hardware feature for %q (-got +want):\n%s", role, diff)
+
+		if !proto.Equal(got, features) {
+			t.Errorf("Failed to get hardware feature for %q (-got +want):\n%s\n%s", role, got, features)
 		}
 	}
 }

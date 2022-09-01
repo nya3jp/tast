@@ -23,7 +23,8 @@ import (
 const Path = "/etc/lsb-release"
 
 // Keys in /etc/lsb-release. See the following doc for details:
-//  https://chromium.googlesource.com/chromiumos/docs/+/HEAD/os_config.md#LSB
+//
+//	https://chromium.googlesource.com/chromiumos/docs/+/HEAD/os_config.md#LSB
 const (
 	// Board is a key for a board name (e.g. "eve")
 	Board = "CHROMEOS_RELEASE_BOARD"
@@ -56,6 +57,9 @@ const (
 	// ReleaseTrack is a key for the device's release track (e.g. "stable-channel")
 	ReleaseTrack = "CHROMEOS_RELEASE_TRACK"
 
+	// ReleaseDescription is a key for the device's release description (e.g. "15075.0.0 (Official Build) dev-channel octopus test")
+	ReleaseDescription = "CHROMEOS_RELEASE_DESCRIPTION"
+
 	// ARCSDKVersion is a key for the Android SDK Version of the current
 	// ARC image installed on the DUT.
 	ARCSDKVersion = "CHROMEOS_ARC_ANDROID_SDK_VERSION"
@@ -81,6 +85,7 @@ var allowedPkgs = []string{
 	"chromiumos/tast/local/bundles/cros/system",     // For Version.
 	"chromiumos/tast/local/bundles/cros/hwsec",      // For cross-version login tests.
 	"chromiumos/tast/local/bundles/cros/policy",     // For autoupdate policy tests.
+	"chromiumos/tast/local/bundles/cros/lacros",     // For ReleaseTrack or Description.
 	"chromiumos/tast/local/bundles/cros/video",      // For video per-platform test expectations.
 	"chromiumos/tast/local/chrome/crossdevice",
 	"chromiumos/tast/local/chrome/nearbyshare",

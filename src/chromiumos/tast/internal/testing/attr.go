@@ -202,8 +202,19 @@ Tests in this group are not used for build verification.
 		Desc:     `A group of tests that run on DUTs with Android phones connected and verify MTP(Media Transfer Protocol).`,
 	},
 	{
+		Name:     "arc",
+		Contacts: []string{"arc-engprod@google.com"},
+		Desc:     `A group of tests that run ARC++ Functional Tests.`,
+		Subattrs: []*attr{
+			{
+				Name: "arc_playstore",
+				Desc: `A group of tests which tests playstore functionality on its nightly build.`,
+			},
+		},
+	},
+	{
 		Name:     "appcompat",
-		Contacts: []string{"chromeos-engprod@google.com", "cros-appcompat-test-team@google.com"},
+		Contacts: []string{"arc-engprod@google.com", "cros-appcompat-test-team@google.com"},
 		Desc:     `A group of ARC app compatibility tests.`,
 		Subattrs: []*attr{
 			{

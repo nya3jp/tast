@@ -176,16 +176,18 @@ var softwareFeatureDefs = map[string]string{
 	// We should disable this flag if the weird missing-runner-after-reboot bug still happening.
 	// Or cleanup all reboot dependency in tast-tests.
 	// Notice: The flag would be false when a board didn't have any attributes.
-	"reboot":                    `"*"`,
-	"rrm_support":               `!"kernel-4_4"`,
-	"screenshot":                "!rk3399", // screenshot command broken on RK3399: https://crbug.com/880597
-	"selinux":                   "selinux",
-	"selinux_current":           "selinux && !selinux_experimental",
-	"selinux_experimental":      "selinux && selinux_experimental",
-	"shill-wifi":                "!moblab", // fizz-moblab disables the WiFi technology for Shill
-	"sirenia":                   "sirenia && !manatee",
-	"smartdim":                  "smartdim",
-	"smartctl":                  "nvme || sata",
+	"reboot":               `"*"`,
+	"rrm_support":          `!"kernel-4_4"`,
+	"screenshot":           "!rk3399", // screenshot command broken on RK3399: https://crbug.com/880597
+	"selinux":              "selinux",
+	"selinux_current":      "selinux && !selinux_experimental",
+	"selinux_experimental": "selinux && selinux_experimental",
+	"shill-wifi":           "!moblab", // fizz-moblab disables the WiFi technology for Shill
+	"sirenia":              "sirenia && !manatee",
+	"smartdim":             "smartdim",
+	"smartctl":             "nvme || sata",
+	// VMs don't support speech on-device API.
+	"soda":                      `!"betty" && !"tast_vm"`,
 	"storage_wearout_detect":    `"storage_wearout_detect" && !"betty" && !"tast_vm"`, // Skip wearout checks for VMs and eMMC < 5.0
 	"tablet_form_factor":        "tablet_form_factor",
 	"tflite_opencl":             `!(elm || hana)`, // these boards seem to have issues with the OpenCL TFLite delegate (b/233851820)

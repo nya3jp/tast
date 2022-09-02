@@ -230,7 +230,8 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 
 		// eDP displays show up as card*-eDP-1
 		// MIPI panels show up as card*-DSI-1
-		cardMatch := regexp.MustCompile(`^card[0-9]-(eDP|DSI)-1$`)
+		// Virtual displays in VMs show up as card*-Virtual-1
+		cardMatch := regexp.MustCompile(`^card[0-9]-(eDP|DSI|Virtual)-1$`)
 		for _, file := range drmFiles {
 			fileName := file.Name()
 

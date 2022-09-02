@@ -9,3 +9,6 @@
 
 # Emacs
 *~
+
+# Code Coverage Results
+/coverage_result/

@@ -839,6 +839,27 @@ Parallels boot-up testing. Otherwise the same as group:crosbolt.`,
 		Contacts: []string{"gabormagda@google.com", "chromeos-ent-test@google.com"},
 		Desc:     `A group of commercial tests that should use limited resources.`,
 	},
+	{
+		Name:     "experimental",
+		Contacts: []string{"chromeos-velocity@google.com"},
+		Desc: `This is for housing Informational tests that are not going to be promoted to CQ any time soon (i.e. < 3months).
+							 Default is to run the tests M/W/F only. Runs on same set of boards as group:mainline.
+							 Motivation is to lower DUT usage for tests that don't need to run that frequently.`,
+		Subattrs: []*attr{
+			{
+				Name: "experimental_nightly",
+				Desc: `Runs once every evening.`,
+			},
+			{
+				Name: "experimental_m_w_f",
+				Desc: `Runs once on Monday, Wednesday, and Friday only.`,
+			},
+			{
+				Name: "experimental_weekly",
+				Desc: `Runs once a week only.`,
+			},
+		},
+	},
 }
 
 // validGroupMap is the name-keyed map of validGroups.

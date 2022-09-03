@@ -96,10 +96,18 @@ all `test` system images (non-`test` system images are not supposed by Tast).
 
 Some tests use servo, a physical device that connects to both the host machine
 and the DUT. These tests all specify `servo` as a [runtime variable], so they
-must be run with that variable specifying the servo host and servo port:
+must be run with that variable specifying the servo host and servo port.
+
+If you can run Tast without [port forwarding], please use following syntax.
 
 ```shell
 tast run -var=servo=<servo-host>:<servo-port> <target> <test-pattern>
+```
+
+If you need run Tast with [port forwarding], please use following syntax.
+
+```shell
+tast run -var=servo=localhost:<servo-port>:ssh:<servo_localhost_port> localhost:<DUT_localhost_port> <test-pattern>
 ```
 
 In order for a test to interact with the servo, the servo host must be running
@@ -121,6 +129,8 @@ a dependency declaration.
 
 [runtime variable]: writing_tests.md#runtime-variables
 [crrev.com/c/2790771]: https://crrev.com/c/2790771
+[port forwarding]: running_tests.md#googlers-only_running-tests-on-a-leased-dut-from-the-lab
+
 
 ## Interpreting test results
 
@@ -185,18 +195,21 @@ start ui
 
 In a window outside the chroot do,
 
-```shell
-gcert  # Once a day
-ssh -L <port>:localhost:22 root@<dut> # One session for each DUT
-```
+*   Run gcert once a day.
+*   Use [SSH Watcher] to port-forward a ssh connection to your device.
+*   Use [SSH Watcher] to port-forward a ssh connection to labstation if you need
+    to use servo.
 
-Any port is fine as long as it is not used by other applications. Leave the ssh session on.
+
+Any port is fine as long as it is not used by other applications. Leave the SSH Watcher session(s) on.
 
 In another window inside chroot:
 
 ```shell
 tast run localhost:<port> <test>
 ```
+
+[SSH Watcher]: https://chromium.googlesource.com/chromiumos/platform/dev-util/+/HEAD/contrib/sshwatcher/README.md
 
 ## Running tests attached to a debugger
 See [Tast Debugger](debugger.md)

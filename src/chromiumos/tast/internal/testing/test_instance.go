@@ -315,7 +315,7 @@ var testNameRegexp = regexp.MustCompile(`^[a-z][a-z0-9]*\.[A-Z][A-Za-z0-9]*(?:\.
 
 func validateName(name string) error {
 	if !testNameRegexp.MatchString(name) {
-		return fmt.Errorf("invalid test name %q", name)
+		return fmt.Errorf("invalid test name %q test name should consist of a package name, a period the name of the exported test function, followed optionally by a period and the name of the parameter", name)
 	}
 	return nil
 }

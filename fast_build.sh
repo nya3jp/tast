@@ -6,6 +6,10 @@
 
 # This script quickly builds the tast executable or its unit tests within a
 # ChromeOS chroot.
+if [ ! -f /etc/cros_chroot_version ]; then
+  echo "File /etc/cros_chroot_version not found. Are you in the chroot?"
+  exit 1
+fi
 
 # Personal Go workspace used to cache compiled packages.
 readonly GOHOME="${HOME}/go"

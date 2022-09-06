@@ -136,7 +136,11 @@ Tests in this group are not used for build verification.
 			},
 			{
 				Name: "graphics_igt",
-				Desc: `Indicates that this test is running igt-gpu-tools.`,
+				Desc: `Indicates that this test is running KMS igt-gpu-tools.`,
+			},
+			{
+				Name: "graphics_chameleon_igt",
+				Desc: `Indicates that this is a Chameleon test running igt-gpu-tools.`,
 			},
 			{
 				Name: "graphics_opencl",

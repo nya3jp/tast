@@ -114,6 +114,7 @@ The following software features are defined:
 *   `lacros` - Whether the system supports running [lacros].
 *   `lacros_stable` - Whether the system supports running [lacros] and is stable enough for CQ. [TODO: Remove this.](b/183969803)
 *   `lacros_unstable` - Whether the system supports running [lacros] and is not stable enough for CQ. [TODO: Remove this.](b/183969803)
+*   `landlock_enabled` - Whether the system supports the Landlock Linux Security Module.
 *   `manatee` - The system is running a ManaTEE image.
 *   `mbo` - WiFi MBO support.
 *   `memfd_create` - memfd_create function implemented in the kernel.

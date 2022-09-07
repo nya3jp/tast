@@ -108,6 +108,8 @@ var softwareFeatureDefs = map[string]string{
 	"lacros":                 `!chromeless_tty && !rialto && !("board:veyron_fievel" || "board:veyron_tiger")`,
 	"lacros_stable":          `!chromeless_tty && !rialto && !("board:veyron_fievel" || "board:veyron_tiger") && !arm64 && !"tast_vm" && !"betty"`,
 	"lacros_unstable":        `!chromeless_tty && !rialto && !("board:veyron_fievel" || "board:veyron_tiger") && (arm64 || "tast_vm" || "betty")`,
+	// TODO(b/245597235): enable for 5.10 as well.
+	"landlock_enabled":       `!("kernel-4_4" || "kernel-4_14" || "kernel-4_19" || "kernel-5_4" || "kernel-5_10")`,
 	"lvm_stateful_partition": "lvm_stateful_partition",
 	"manatee":                "manatee",
 	"mbo":                    "mbo",

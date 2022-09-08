@@ -47,6 +47,8 @@ The following software features are defined:
     for Chrome.
 *   `camera_720p` - The ability to capture video with frame size 1280x720.
 *   `camera_app` - The ability to run the builtin camera app.
+*   `camera_feature_auto_framing` - Whether Auto Framing is enabled on this platform.
+*   `camera_feature_effects` - Whether camera effects are enabled on this platform.
 *   `camera_feature_hdrnet` - Whether HDRnet is enabled on this platform.
 *   `camera_feature_portrait_mode` - Whether Portrait Mode is enabled on this platform.
 *   `camera_legacy` - Using [Linux Video Capture] in Chrome, and [Camera HAL1]

@@ -40,6 +40,7 @@ var softwareFeatureDefs = map[string]string{
 	// TODO(b/185087278): Remove soraka-libcamera.
 	"camera_app":                   `!("board:volteer-kernelnext" || "board:soraka-libcamera")`,
 	"camera_feature_auto_framing":  "camera_feature_auto_framing",
+	"camera_feature_effects":       "camera_feature_effects",
 	"camera_feature_hdrnet":        "camera_feature_hdrnet",
 	"camera_feature_portrait_mode": "camera_feature_portrait_mode",
 	"camera_legacy":                `!"arc-camera1" && !"arc-camera3"`,
@@ -105,9 +106,9 @@ var softwareFeatureDefs = map[string]string{
 	// Lacros variants.
 	// veyron does not support rootfs lacros entirely. b/204888294
 	// TODO(b/183969803): Remove lacros_stable and lacros_unstable eventually.
-	"lacros":                 `!chromeless_tty && !rialto && !("board:veyron_fievel" || "board:veyron_tiger")`,
-	"lacros_stable":          `!chromeless_tty && !rialto && !("board:veyron_fievel" || "board:veyron_tiger") && !arm64 && !"tast_vm" && !"betty"`,
-	"lacros_unstable":        `!chromeless_tty && !rialto && !("board:veyron_fievel" || "board:veyron_tiger") && (arm64 || "tast_vm" || "betty")`,
+	"lacros":          `!chromeless_tty && !rialto && !("board:veyron_fievel" || "board:veyron_tiger")`,
+	"lacros_stable":   `!chromeless_tty && !rialto && !("board:veyron_fievel" || "board:veyron_tiger") && !arm64 && !"tast_vm" && !"betty"`,
+	"lacros_unstable": `!chromeless_tty && !rialto && !("board:veyron_fievel" || "board:veyron_tiger") && (arm64 || "tast_vm" || "betty")`,
 	// TODO(b/245597235): enable for 5.10 as well.
 	"landlock_enabled":       `!("kernel-4_4" || "kernel-4_14" || "kernel-4_19" || "kernel-5_4" || "kernel-5_10")`,
 	"lvm_stateful_partition": "lvm_stateful_partition",

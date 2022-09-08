@@ -598,6 +598,97 @@ third_party/autotest/files/server/site_tests/tast/control.runtime-probe
 		},
 	},
 	{
+		Name:     "bluetooth",
+		Contacts: []string{"cros-connectivity@google.com"},
+		Desc:     "Identifies bluetooth tests.",
+		Subattrs: []*attr{
+			{
+				Name: "bluetooth_sa",
+				Desc: "Identifies stable bluetooth tests that only requires the DUT (not peer devices) to run except for stress, performance and MTBF tests. Previously known as bluetooth_standalone.",
+			},
+			{
+				Name: "bluetooth_core",
+				Desc: "Identifies stable bluetooth tests for bluetooth platform that requires a peer device.",
+			},
+			{
+				Name: "bluetooth_floss",
+				Desc: "Identifies stable bluetooth tests that are ported to run with the new floss stack. Eventually all tests in bluetooth_core and bluetooth_sa tests will be added to this pool and will be stabilised.",
+			},
+			{
+				Name: "bluetooth_flaky",
+				Desc: "Identifies bluetooth tests (bluetooth_sa and bluetooth_core) which are not stable yet. This is used to run new tests in the lab to detect any failures. Once the tests are stable (>95% pass rate), these tests are moved to bluetooth_sa or bluetooth_core suites",
+			},
+			{
+				Name: "bluetooth_stress",
+				Desc: "Identifies bluetooth stress tests.",
+			},
+			{
+				Name: "bluetooth_sa_cq",
+				Desc: "Identifies tests the same way as bluetooth_sa, but these tests are also ran as part of CQ for all changes.",
+			},
+			{
+				Name: "bluetooth_core_cq",
+				Desc: "Identifies tests the same way as bluetooth_core_cq, but these tests are also ran as part of the custom CQ for Bluetooth and WiFi changes.",
+			},
+			{
+				Name: "bluetooth_floss_cq",
+				Desc: "Identifies tests the same way as bluetooth_floss, but these tests are also ran as part of the custom CQ for Floss",
+			},
+			{
+				Name: "bluetooth_wifi_coex",
+				Desc: "Identifies bluetooth and wifi coexistence tests.",
+			},
+			{
+				Name: "bluetooth_fw",
+				Desc: "Identifies tests that can only break when a hardware/firmware change occurs. These tests test a feature/requirement that is implemented in hardware/firmware.",
+			},
+			{
+				Name: "bluetooth_dep_feature",
+				Desc: "Identifies tests for features that use Bluetooth. Example Nearby Share, Phone Hub etc.",
+			},
+			{
+				Name: "bluetooth_perf",
+				Desc: "Identifies performance tests for bluetooth.",
+			},
+			{
+				Name: "bluetooth_longrun",
+				Desc: "Identifies tests that take more than 5 minutes to run. This does not contain stress tests or MTBF tests. This allows for separate scheduling.",
+			},
+			{
+				Name: "bluetooth_cuj",
+				Desc: "Identifies tests for bluetooth that tests layers above the platform such as UI and any tests that implement a CUJ above platform layer.",
+			},
+			{
+				Name: "bluetooth_manual",
+				Desc: "Identifies semi-manual tests for bluetooth. Used as a logical grouping for these tests and are not scheduled in the lab.",
+			},
+			{
+				Name: "bluetooth_avl",
+				Desc: "Identifies AVL tests meant to be run by partners and are not scheduled in the lab.",
+			},
+			{
+				Name: "bluetooth_mtbf",
+				Desc: "Identifies MTBP tests for bluetooth. These are scheduled in a separate pool as to not use up all DUT capacity in the lab.",
+			},
+			{
+				Name: "bluetooth_btpeers_1",
+				Desc: "Identifies bluetooth tests that require at most 1 btpeer.",
+			},
+			{
+				Name: "bluetooth_btpeers_2",
+				Desc: "Identifies bluetooth tests that require at most 2 btpeers.",
+			},
+			{
+				Name: "bluetooth_btpeers_3",
+				Desc: "Identifies bluetooth tests that require at most 3 btpeers.",
+			},
+			{
+				Name: "bluetooth_btpeers_4",
+				Desc: "Identifies bluetooth tests that require at most 4 btpeers.",
+			},
+		},
+	},
+	{
 		Name:     "meta",
 		Contacts: []string{"tast-owners@google.com"},
 		Desc: `A group of functional tests of the Tast framework itself.

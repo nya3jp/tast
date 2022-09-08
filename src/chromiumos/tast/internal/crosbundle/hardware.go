@@ -18,6 +18,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 
 	configpb "go.chromium.org/chromiumos/config/go/api"
 
@@ -354,7 +355,12 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		features.Cellular.Present = configpb.HardwareFeatures_PRESENT
 	}
 
-	if out, err := exec.Command("bluetoothctl", "list").Output(); err != nil {
+	// bluetoothctl hangs when bluetoothd is not built with asan enabled or
+	// crashes. Set state to PRESENT_UNKNOWN on timeout.
+	const timeout = 3 * time.Second
+	cmdCtx, cancel := context.WithTimeout(ctx, timeout)
+	defer cancel()
+	if out, err := exec.CommandContext(cmdCtx, "bluetoothctl", "list").Output(); err != nil {
 		features.Bluetooth.Present = configpb.HardwareFeatures_PRESENT_UNKNOWN
 	} else if len(string(out)) != 0 {
 		features.Bluetooth.Present = configpb.HardwareFeatures_PRESENT

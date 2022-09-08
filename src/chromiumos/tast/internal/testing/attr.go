@@ -411,7 +411,7 @@ Tests in this group are not used for build verification.
 	},
 	{
 		Name:     "flashrom",
-		Contacts: []string{"chromeos-platform-syd@google.com"},
+		Contacts: []string{"cros-flashrom-team@google.com"},
 		Desc:     `A group of Flashrom destructive tests.`,
 	},
 	{

@@ -875,6 +875,11 @@ Parallels boot-up testing. Otherwise the same as group:crosbolt.`,
 			},
 		},
 	},
+	{
+		Name:     "telemetry_extension_hw",
+		Contacts: []string{"cros-oem-services-team@google.com"},
+		Desc:     `A group of Telemetry Extension hardware dependant tests.`,
+	},
 }
 
 // validGroupMap is the name-keyed map of validGroups.

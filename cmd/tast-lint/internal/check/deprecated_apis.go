@@ -22,8 +22,8 @@ type deprecatedAPI struct {
 	// If ident is empty, it means the package itself is deprecated.
 	// Methods are not supported. Only APIs used in the form of
 	// <package name>.<ident> are supported.
-	ident string
-
+	ident       string
+	exclusion   map[string]struct{}
 	alternative string // alternative to use displayed in the error message
 	link        string // bug link
 }
@@ -42,13 +42,25 @@ func DeprecatedAPIs(fs *token.FileSet, f *ast.File) []*Issue {
 			alternative: "context",
 			link:        "https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#Contexts-and-timeouts",
 		},
+		{
+			pkg:         "syscall",
+			alternative: "golang.org/x/sys/unix",
+			exclusion:   map[string]struct{}{"stat_t": {}},
+			link:        "https://buganizer.corp.google.com/issues/187787902",
+		},
 	})
 }
 
 func deprecatedAPIs(fs *token.FileSet, f *ast.File, ds []*deprecatedAPI) []*Issue {
 	deprecatedPkg := make(map[string]*deprecatedAPI)
 	deprecatedPkgIdent := make(map[string]map[string]*deprecatedAPI)
+	// Deprecated package with exclusion.
+	deprecatedPkgWithExclusion := make(map[string]*deprecatedAPI)
 	for _, d := range ds {
+		if len(d.exclusion) > 0 {
+			deprecatedPkgWithExclusion[d.pkg] = d
+			continue
+		}
 		if d.ident == "" {
 			deprecatedPkg[d.pkg] = d
 			continue
@@ -103,6 +115,16 @@ func deprecatedAPIs(fs *token.FileSet, f *ast.File, ds []*deprecatedAPI) []*Issu
 		path, ok := imports[x.Name]
 		if !ok {
 			return true
+		}
+		if d, ok := deprecatedPkgWithExclusion[path]; ok {
+			if _, excluded := d.exclusion[sel.Sel.Name]; !excluded {
+				issues = append(issues, &Issue{
+					Pos:  fs.Position(x.Pos()),
+					Msg:  fmt.Sprintf("%v.%v is from a deprecated package; use corresponding API in %v instead", d.pkg, sel.Sel.Name, d.alternative),
+					Link: d.link,
+				})
+				return true
+			}
 		}
 		m, ok := deprecatedPkgIdent[path]
 		if !ok {

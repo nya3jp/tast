@@ -602,6 +602,41 @@ third_party/autotest/files/server/site_tests/tast/control.runtime-probe
 		},
 	},
 	{
+		Name:     "cellular_crosbolt",
+		Contacts: []string{"chromeos-cellular-team@google.com"},
+		Desc:     `The group of Cellular Performance tests to be run on hardware with a builtin Cellular modem and SIM card.`,
+		Subattrs: []*attr{
+			{
+				Name: "cellular_crosbolt_perf_nightly",
+				Desc: `Indicates that this test should run nightly.`,
+			},
+			{
+				Name: "cellular_crosbolt_unstable",
+				Desc: `Identifies Cellular tests that are unstable. Used to skip tests running on stable suites and/or the CQ.`,
+			},
+			{
+				Name: "cellular_crosbolt_sim_active",
+				Desc: `Identifies Cellular tests that need an active sim.`,
+			},
+			{
+				Name: "cellular_crosbolt_carrier_att",
+				Desc: `Identifies Cellular tests that need a AT&T active sim.`,
+			},
+			{
+				Name: "cellular_crosbolt_carrier_verizon",
+				Desc: `Identifies Cellular tests that need a Verizon active sim.`,
+			},
+			{
+				Name: "cellular_crosbolt_carrier_tmobile",
+				Desc: `Identifies Cellular tests that need a T-Mobile active sim.`,
+			},
+			{
+				Name: "cellular_crosbolt_carrier_local",
+				Desc: `Identifies Cellular tests that need a local active sim.`,
+			},
+		},
+	},
+	{
 		Name:     "bluetooth",
 		Contacts: []string{"cros-connectivity@google.com"},
 		Desc:     "Identifies bluetooth tests.",

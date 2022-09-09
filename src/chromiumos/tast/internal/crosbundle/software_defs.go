@@ -44,7 +44,7 @@ var softwareFeatureDefs = map[string]string{
 	"camera_feature_hdrnet":        "camera_feature_hdrnet",
 	"camera_feature_portrait_mode": "camera_feature_portrait_mode",
 	"camera_legacy":                `!"arc-camera1" && !"arc-camera3"`,
-	"cellular_modem_dlcs_present":  `!("board:coral*" || "board:dedede*" || "board:drallion*" || "board:hatch*" || "board:nautilus*" || "board:octopus*" || "board:sarien*" || "board:zork*" || "board:brya*" || "board:nissa*" || "board:corsola*" || "board:skyrim*")`,
+	"cellular_modem_dlcs_present":  `!("board:coral*" || "board:dedede*" || "board:drallion*" || "board:hatch*" || "board:nautilus*" || "board:octopus*" || "board:sarien*" || "board:zork*" || "board:nissa*" || "board:corsola*" || "board:skyrim*")`,
 	"cellular_variant_present":     `!("board:drallion*" || "board:nautilus*" || "board:sarien*")`,
 	"cert_provision":               "cert_provision",
 	"chrome":                       "!chromeless_tty && !rialto",
@@ -106,9 +106,9 @@ var softwareFeatureDefs = map[string]string{
 	// Lacros variants.
 	// veyron does not support rootfs lacros entirely. b/204888294
 	// TODO(b/183969803): Remove lacros_stable and lacros_unstable eventually.
-	"lacros":          `!chromeless_tty && !rialto && !("board:veyron_fievel" || "board:veyron_tiger")`,
-	"lacros_stable":   `!chromeless_tty && !rialto && !("board:veyron_fievel" || "board:veyron_tiger") && !arm64 && !"tast_vm" && !"betty"`,
-	"lacros_unstable": `!chromeless_tty && !rialto && !("board:veyron_fievel" || "board:veyron_tiger") && (arm64 || "tast_vm" || "betty")`,
+	"lacros":                 `!chromeless_tty && !rialto && !("board:veyron_fievel" || "board:veyron_tiger")`,
+	"lacros_stable":          `!chromeless_tty && !rialto && !("board:veyron_fievel" || "board:veyron_tiger") && !arm64 && !"tast_vm" && !"betty"`,
+	"lacros_unstable":        `!chromeless_tty && !rialto && !("board:veyron_fievel" || "board:veyron_tiger") && (arm64 || "tast_vm" || "betty")`,
 	"landlock_enabled":       `!("kernel-4_4" || "kernel-4_14" || "kernel-4_19" || "kernel-5_4")`,
 	"lvm_stateful_partition": "lvm_stateful_partition",
 	"manatee":                "manatee",

@@ -92,7 +92,7 @@ using variables. In particular, we say constant-like is any of these things:
 The test registration code will be similar to the following:
 
 ```go
-// Copyright 2018 The ChromiumOS Authors. All rights reserved.
+// Copyright 2018 The ChromiumOS Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -1505,7 +1505,7 @@ guidelines:
 `.pb.go` files, looking like the following:
 
 ```go
-// Copyright 2019 The ChromiumOS Authors. All rights reserved.
+// Copyright 2019 The ChromiumOS Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 

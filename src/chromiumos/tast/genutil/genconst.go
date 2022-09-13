@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium OS Authors. All rights reserved.
+// Copyright 2019 The ChromiumOS Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -81,7 +81,7 @@ func GenerateConstants(input, output string, params Params) error {
 	return nil
 }
 
-const tmplStr = `// Copyright {{printf "%d" .CopyrightYear}} The Chromium OS Authors. All rights reserved.
+const tmplStr = `// Copyright {{printf "%d" .CopyrightYear}} The ChromiumOS Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 

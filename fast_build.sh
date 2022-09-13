@@ -58,16 +58,6 @@ Usage:
  ${CMD} -b <pkg> -o <path>                            Builds <pkg> to <path>.
  ${CMD} [-v] -T [-- <gotest opts>]                    Tests all packages.
  ${CMD} [-v] [-r <regex>] -t <pkg> [-- <gotest opts>] Tests <pkg>.
- ${CMD} [-v] -G [-f] [-- <gotest opts>]               Tests all packages
-                                                             and generates code
-                                                             coverage reports
-                                                             to ${PWD}
-                                                             /coverage_results.
- ${CMD} [-v] [-r <regex>] -g <pkg> [-- <gotest opts>] Tests <pkg> and generates
-                                                             code coverage for
-                                                             the <pkg> to
-                                                             ${PWD}
-                                                             /coverage_results.
  ${CMD} -C                                            Checks all code using
  ${CMD//?/ }                                               "go vet".
  ${CMD} -c <pkg>                                      Checks <pkg>'s code.
@@ -120,40 +110,8 @@ fmt.Sprint,fmt.Sprintf,sort.Reverse \
 # Tests one or more packages.
 run_test() {
   local args=("${@}" "${EXTRAARGS[@]}")
-  go test -pkgdir "${PKGDIR}" \
-    ${test_regex:+"-run=${test_regex}"} "${args[@]}" \
-    "${verbose_flag}"
-}
-
-# Tests and generates code coverage for one or more packages.
-# Code coverage directory format:
-#   coverage_result/
-#     YYYY-MM-DD_HH:MM:SS/
-#       tast_func_coverage_all.txt or tast_func_coverage_<pkg>.txt
-#       tast_code_coverage_all.html or tast_code_coverage_<pkg>.html
-#       tast_code_coverage_all.out or tast_code_coverage_<pkg>.out
-run_code_coverage() {
-  local args=("${@}" "${EXTRAARGS[@]}")
-  local curr_time
-  curr_time="$(date '+%Y-%m-%d_%H:%M:%S')"
-  local dir="coverage_result/${curr_time}"
-  mkdir -p "${dir}"
-
-  local pkg_name
-  if [ ${#args[@]} -gt 1 ]; then
-    pkg_name="all"
-  else
-    pkg_name="${args[0]//\//_}"
-  fi
-
-  go test -covermode=atomic -pkgdir "${PKGDIR}" \
-    ${test_regex:+"-run=${test_regex}"} "${args[@]}" \
-    -coverprofile="${dir}/tast_code_coverage_${pkg_name}.out" \
-    "${verbose_flag}"
-  go tool cover -html="${dir}/tast_code_coverage_${pkg_name}.out" -o \
-    "${dir}/tast_code_coverage_${pkg_name}.html"
-  go tool cover -func="${dir}/tast_code_coverage_${pkg_name}.out" -o \
-    "${dir}/tast_func_coverage_${pkg_name}.txt"
+  go test ${verbose_flag} -pkgdir "${PKGDIR}" \
+    ${test_regex:+"-run=${test_regex}"} "${args[@]}"
 }
 
 # Executable package to build.
@@ -168,9 +126,6 @@ check_pkg=
 # Test package to build and run.
 test_pkg=
 
-# Test package to build, run, and generate code coverage data.
-code_coverage_pkg=
-
 # Verbose flag for testing.
 verbose_flag=
 
@@ -180,16 +135,13 @@ test_regex=
 # Whether to build and run a debug package.
 debug=0
 
-while getopts "CTGdb:c:ho:r:t:g:v-" opt; do
+while getopts "CTdb:c:ho:r:t:v-" opt; do
   case "${opt}" in
     C)
       check_pkg=all
       ;;
     T)
       test_pkg=all
-      ;;
-    G)
-      code_coverage_pkg=all
       ;;
     d)
       debug=1
@@ -208,9 +160,6 @@ while getopts "CTGdb:c:ho:r:t:g:v-" opt; do
       ;;
     t)
       test_pkg="${OPTARG}"
-      ;;
-    g)
-      code_coverage_pkg="${OPTARG}"
       ;;
     v)
       verbose_flag="-v"
@@ -232,25 +181,13 @@ if [ -n "${build_pkg}" ]; then
   run_build "${build_pkg}" "${build_out}"
 elif [ -n "${test_pkg}" ]; then
   if [ "${test_pkg}" = 'all' ]; then
-    # mapfile reads output from get_test_pkgs into array
-    mapfile -t test_pkgs < <(get_test_pkgs)
-    run_test "${test_pkgs[@]}"
+    run_test $(get_test_pkgs)
   else
     run_test "${test_pkg}"
   fi
-elif [ -n "${code_coverage_pkg}" ]; then
-  if [ "${code_coverage_pkg}" = 'all' ]; then
-    # mapfile reads output from get_test_pkgs into array
-    mapfile -t test_pkgs < <(get_test_pkgs)
-    run_code_coverage "${test_pkgs[@]}"
-  else
-    run_code_coverage "${code_coverage_pkg}"
-  fi
 elif [ -n "${check_pkg}" ]; then
   if [ "${check_pkg}" = 'all' ]; then
-    # mapfile reads output from get_check_pkgs into array
-    mapfile -t check_pkgs < <(get_check_pkgs)
-    run_vet "${check_pkgs[@]}"
+    run_vet $(get_check_pkgs)
   else
     run_vet "${check_pkg}"
   fi

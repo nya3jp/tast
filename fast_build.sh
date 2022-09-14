@@ -104,9 +104,9 @@ run_build() {
   local pkg="${1}"
   local dest="${2}"
   if [[ "${debug}" == 0 ]]; then
-    go build -i -pkgdir "${PKGDIR}" -o "${dest}" "${pkg}"
+    go build -pkgdir "${PKGDIR}" -o "${dest}" "${pkg}"
   else
-    go build -gcflags="all=-N -l" -i -pkgdir "${PKGDIR}" -o "${dest}" "${pkg}"
+    go build -gcflags="all=-N -l" -pkgdir "${PKGDIR}" -o "${dest}" "${pkg}"
   fi
 }
 

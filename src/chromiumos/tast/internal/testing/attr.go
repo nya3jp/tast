@@ -971,6 +971,17 @@ Parallels boot-up testing. Otherwise the same as group:crosbolt.`,
 		Contacts: []string{"cros-oem-services-team@google.com"},
 		Desc:     `A group of Telemetry Extension hardware dependant tests.`,
 	},
+	{
+		Name:     "hwsec",
+		Contacts: []string{"cros-hwsec@google.com"},
+		Desc:     `A group of tests related to hardware-backed security. (ie. TPM)`,
+		Subattrs: []*attr{
+			{
+				Name: "hwsec_weekly",
+				Desc: "Indicates that these tests should run weekly. Tests that aren't stable enough to be critical or is too expensive gets placed here",
+			},
+		},
+	},
 }
 
 // validGroupMap is the name-keyed map of validGroups.

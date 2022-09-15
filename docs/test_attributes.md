@@ -39,7 +39,6 @@ Below is the list of most popular groups and their associated extra attributes:
      * `arc_playstore`: A group of ARC tests which verify playstore
      functionality after updating the playstore to nightly build.
 *   `group:crosbolt` - Test failures are ignored and the test's performance data
-*   `group:crosbolt` - Test failures are ignored and the test's performance data
     are uploaded to [crosbolt]. When you add this attribute, you also need to
     add one of `crosbolt_perbuild`, `crosbolt_nightly` or `crosbolt_weekly`.
 *   `group:wificell` - Tests that will run on the [wificell] fixture. Typically

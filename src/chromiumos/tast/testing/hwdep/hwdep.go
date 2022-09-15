@@ -122,7 +122,7 @@ const (
 
 // wifiDeviceListed returns whether a WiFi device given in HardwareFeatures is listed in the given list of names or not.
 func wifiDeviceListed(hwf *protocol.HardwareFeatures, devices ...wlan.DeviceID) (bool, error) {
-	wifi := hwf.HardwareFeatures.GetWifi()
+	wifi := hwf.GetHardwareFeatures().GetWifi()
 	if wifi == nil {
 		return false, errors.New("Wifi data has not been passed from DUT")
 	}

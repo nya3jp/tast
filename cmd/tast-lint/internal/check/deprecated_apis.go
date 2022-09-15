@@ -1,4 +1,4 @@
-// Copyright 2021 The ChromiumOS Authors
+// Copyright 2022 The ChromiumOS Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,8 +45,16 @@ func DeprecatedAPIs(fs *token.FileSet, f *ast.File) []*Issue {
 		{
 			pkg:         "syscall",
 			alternative: "golang.org/x/sys/unix",
-			exclusion:   map[string]struct{}{"stat_t": {}},
-			link:        "https://buganizer.corp.google.com/issues/187787902",
+			exclusion: map[string]struct{}{
+				"stat_t":      {},
+				"RawConn":     {},
+				"Conn":        {},
+				"SysProcAttr": {},
+				"WaitStatus":  {},
+				"Rusage":      {},
+				"Credential":  {},
+			},
+			link: "https://buganizer.corp.google.com/issues/187787902",
 		},
 	})
 }

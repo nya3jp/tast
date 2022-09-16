@@ -443,6 +443,47 @@ func GSCUART() Condition {
 	)
 }
 
+// CPUNotNeedsCoreScheduling returns a hardware dependency condition that is satisfied iff the DUT's
+// CPU is does not need to use core scheduling to mitigate hardware vulnerabilities.
+func CPUNotNeedsCoreScheduling() Condition {
+	return cpuNeedsCoreScheduling(false)
+}
+
+// CPUNeedsCoreScheduling returns a hardware dependency condition that is satisfied iff the DUT's
+// CPU needs to use core scheduling to mitigate hardware vulnerabilities.
+func CPUNeedsCoreScheduling() Condition {
+	return cpuNeedsCoreScheduling(true)
+}
+
+// cpuNeedsCoreScheduling generates a Condition for CPUNeedsCoreScheduling() and its inverse,
+// CPUNotNeedsCoreScheduling(). A CPU needs core scheduling if it is vulnerable to either L1TF or
+// MDS hardware vulnerabilities.
+func cpuNeedsCoreScheduling(enabled bool) Condition {
+	needsCoreScheduling := func(hf *configpb.HardwareFeatures) (bool, string) {
+		for _, f := range hf.GetSoc().Vulnerabilities {
+			if f == configpb.Component_Soc_L1TF {
+				return true, "CPU is vulnerable to L1TF"
+			}
+			if f == configpb.Component_Soc_MDS {
+				return true, "CPU is vulnerable MDS"
+			}
+		}
+		return false, "CPU is not vulnerable to L1TF or MDS"
+	}
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("HardwareFeatures is not given")
+		}
+		needed, description := needsCoreScheduling(hf)
+		if needed == enabled {
+			return satisfied()
+		}
+		return unsatisfied(description)
+	},
+	}
+}
+
 // CPUSupportsSMT returns a hardware dependency condition that is satisfied iff the DUT supports
 // Symmetric Multi-Threading.
 func CPUSupportsSMT() Condition {

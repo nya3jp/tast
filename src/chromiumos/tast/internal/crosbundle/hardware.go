@@ -562,6 +562,33 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		features.Soc.Features = append(features.Soc.Features, configpb.Component_Soc_SMT)
 	}
 
+	cpuVulnerabilityPresent := func(vulnerability string) (bool, error) {
+		vPath := filepath.Join("/sys/devices/system/cpu/vulnerabilities", vulnerability)
+		b, err := ioutil.ReadFile(vPath)
+		if err != nil {
+			return false, errors.Wrapf(err, "failed to read vulnerability file %q", vPath)
+		}
+		s := strings.TrimSpace(string(b))
+		if s == "Not affected" {
+			return false, nil
+		}
+		return true, nil
+	}
+
+	cpuL1TF, err := cpuVulnerabilityPresent("l1tf")
+	if err != nil {
+		logging.Infof(ctx, "Failed to determine L1TF vulnerability: %v", err)
+	} else if cpuL1TF {
+		features.Soc.Vulnerabilities = append(features.Soc.Vulnerabilities, configpb.Component_Soc_L1TF)
+	}
+
+	cpuMDS, err := cpuVulnerabilityPresent("mds")
+	if err != nil {
+		logging.Infof(ctx, "Failed to determine MDS vulnerability: %v", err)
+	} else if cpuMDS {
+		features.Soc.Vulnerabilities = append(features.Soc.Vulnerabilities, configpb.Component_Soc_MDS)
+	}
+
 	for _, v := range info.flags {
 		if v == "sha_ni" {
 			features.Soc.Features = append(features.Soc.Features, configpb.Component_Soc_SHA_NI)

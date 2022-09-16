@@ -159,15 +159,10 @@ func Model(names ...string) Condition {
 	}
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		listed, err := modelListed(f.GetDeprecatedDeviceConfig(), names...)
-		// Currently amd64-generic vm does not return a model ID.
-		// Treat it as a model that does not match any of the known ids.
-
-		// TODO(b:190010549): Propagate the error once amd64-generic vm is handled properly.
-		// if err != nil {
-		//   	 return withError(err)
-		// }
-
-		if err != nil || !listed {
+		if err != nil {
+			return withError(err)
+		}
+		if !listed {
 			return unsatisfied("ModelId did not match")
 		}
 		return satisfied()

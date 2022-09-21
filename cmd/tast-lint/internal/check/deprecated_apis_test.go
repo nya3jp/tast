@@ -60,7 +60,7 @@ func TestDeprecatedAPIsWithExclusion(t *testing.T) {
 	}, {
 		pkg:         "syscall",
 		alternative: "golang.org/x/sys/unix",
-		exclusion:   map[string]struct{}{"stat_t": {}},
+		exclusion:   map[string]struct{}{"Stat_t": {}},
 		link:        "https://buganizer.corp.google.com/issues/187787902",
 	}}
 	const code = `package main
@@ -72,7 +72,7 @@ import (
 
 func main() {
 	testexec.CommandContext(ctx, "cat")
-	syscall.stat_t // ok
+	syscall.Stat_t // ok
 	syscall.SIGSEGV // not ok
 }
 `
@@ -94,7 +94,7 @@ func TestDeprecatedAPIsWithExclusionSameName(t *testing.T) {
 	}, {
 		pkg:         "syscall",
 		alternative: "golang.org/x/sys/unix",
-		exclusion:   map[string]struct{}{"stat_t": {}},
+		exclusion:   map[string]struct{}{"Stat_t": {}},
 		link:        "https://buganizer.corp.google.com/issues/187787902",
 	}, {
 		pkg:         "syscall2",
@@ -104,8 +104,13 @@ func TestDeprecatedAPIsWithExclusionSameName(t *testing.T) {
 		pkg:         "syscall3",
 		alternative: "golang.org/x/sys/unix",
 		exclusion: map[string]struct{}{
-			"stat_t2": {},
-			"stat_t3": {},
+			"Stat_t":      {},
+			"RawConn":     {},
+			"Conn":        {},
+			"SysProcAttr": {},
+			"WaitStatus":  {},
+			"Rusage":      {},
+			"Credential":  {},
 		},
 		link: "https://buganizer.corp.google.com/issues/187787902",
 	}}
@@ -122,14 +127,31 @@ func main() {
 	testexec.CommandContext(ctx, "cat")
 	syscall2.stat_t // not ok
 	syscall3.stat_t // not ok
-	syscall3.stat_t2 // ok
-	syscall3.stat_t3 // ok
+	syscall3.Stat_t // ok
+	syscall3.rawconn // not ok
+	syscall3.RawConn // ok
+	syscall3.coNN // not ok
+	syscall3.Conn // ok
+	syscall3.sysProcAttr // not ok
+	syscall3.SysProcAttr // ok
+	syscall3.waitStatus // not ok
+	syscall3.WaitStatus // ok
+	syscall3.rusage // not ok
+	syscall3.Rusage // ok
+	syscall3.credential // not ok
+	syscall3.Credential // ok
 }
 `
 	want := []string{
 		"testfile.go:4:2: package chromiumos/tast/local/testexec is deprecated; use chromiumos/tast/common/testexec instead",
 		"testfile.go:6:2: package syscall2 is deprecated; use golang.org/x/sys/unix instead",
 		"testfile.go:13:2: syscall3.stat_t is from a deprecated package; use corresponding API in golang.org/x/sys/unix instead",
+		"testfile.go:15:2: syscall3.rawconn is from a deprecated package; use corresponding API in golang.org/x/sys/unix instead",
+		"testfile.go:17:2: syscall3.coNN is from a deprecated package; use corresponding API in golang.org/x/sys/unix instead",
+		"testfile.go:19:2: syscall3.sysProcAttr is from a deprecated package; use corresponding API in golang.org/x/sys/unix instead",
+		"testfile.go:21:2: syscall3.waitStatus is from a deprecated package; use corresponding API in golang.org/x/sys/unix instead",
+		"testfile.go:23:2: syscall3.rusage is from a deprecated package; use corresponding API in golang.org/x/sys/unix instead",
+		"testfile.go:25:2: syscall3.credential is from a deprecated package; use corresponding API in golang.org/x/sys/unix instead",
 	}
 
 	f, fs := parse(code, "testfile.go")

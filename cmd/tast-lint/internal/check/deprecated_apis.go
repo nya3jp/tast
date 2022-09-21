@@ -46,7 +46,7 @@ func DeprecatedAPIs(fs *token.FileSet, f *ast.File) []*Issue {
 			pkg:         "syscall",
 			alternative: "golang.org/x/sys/unix",
 			exclusion: map[string]struct{}{
-				"stat_t":      {},
+				"Stat_t":      {},
 				"RawConn":     {},
 				"Conn":        {},
 				"SysProcAttr": {},

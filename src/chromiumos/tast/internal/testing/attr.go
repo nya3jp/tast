@@ -1026,6 +1026,11 @@ Parallels boot-up testing. Otherwise the same as group:crosbolt.`,
 			},
 		},
 	},
+	{
+		Name:     "cros-tcp-grpc",
+		Contacts: []string{"jonfan@google.com", "chromeos-sw-engprod@google.com"},
+		Desc:     `A group of tests that test Tast TCP based gRPC services.`,
+	},
 }
 
 // validGroupMap is the name-keyed map of validGroups.

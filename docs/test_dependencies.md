@@ -62,6 +62,7 @@ The following software features are defined:
     [chromeos-chrome] Portage package is installed (which also installs Chrome
     binary tests), and that the `ui` Upstart job is present.
 *   `chromeless` - Explicit *lack* of support for login via Chrome.
+*   `chromeos_kernelci` - Whether the image built for https://chromeos.kernelci.org/ or not.
 *   `chrome_internal` - Functionality that is only available in internal builds
     of Chrome (e.g. official branding). Any test that specifies this dependency
     should also explicitly specify a `chrome` dependency.

@@ -51,6 +51,7 @@ var softwareFeatureDefs = map[string]string{
 	"chrome":                       "!chromeless_tty && !rialto",
 	"chrome_internal":              "chrome_internal",
 	"chromeless":                   "chromeless_tty || rialto",
+	"chromeos_kernelci":            "chromeos_kernelci_builder",
 	// Kernels pre-4.19 do not support core scheduling.
 	"coresched": `!("kernel-4_4" || "kernel-4_14")`,
 	// TEO governor was new in v5.1, but we backported it to v4.19.

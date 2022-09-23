@@ -48,8 +48,8 @@ func TestDriver_GetDUTInfo(t *testing.T) {
 				},
 			},
 		},
-		OsVersion:                "octopus-release/R86-13312.0.2020_07_02_1108",
-		DefaultBuildArtifactsUrl: "gs://chromeos-image-archive/octopus-release/R86-13312.0.2020_07_02_1108/",
+		OsVersion:                "octopus-release/R107-15117.5.0",
+		DefaultBuildArtifactsUrl: "gs://chromeos-image-archive/octopus-release/R107-15117.5.0/",
 	}
 	extraUseFlags := []string{"use1", "use2"}
 

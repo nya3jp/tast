@@ -1069,7 +1069,7 @@ func TestRunListTestsWithSharding(t *gotesting.T) {
 }
 
 func TestRunDumpDUTInfo(t *gotesting.T) {
-	const osVersion = "octopus-release/R86-13312.0.2020_07_02_1108"
+	const osVersion = "octopus-release/R107-15117.5.0"
 
 	env := runtest.SetUp(t, runtest.WithGetDUTInfo(func(req *protocol.GetDUTInfoRequest) (*protocol.GetDUTInfoResponse, error) {
 		return &protocol.GetDUTInfoResponse{

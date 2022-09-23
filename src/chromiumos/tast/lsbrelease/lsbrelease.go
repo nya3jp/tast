@@ -30,19 +30,22 @@ const (
 	Board = "CHROMEOS_RELEASE_BOARD"
 
 	// BuilderPath is a key for a string identifying the builder run that
-	// produced the ChromeOS image (e.g. "eve-release/R74-12345.0.0").
+	// produced the ChromeOS image (e.g. "eve-release/R74-12345.5.0").
 	BuilderPath = "CHROMEOS_RELEASE_BUILDER_PATH"
 
 	// Milestone is a key for milestone number (e.g. "74")
 	Milestone = "CHROMEOS_RELEASE_CHROME_MILESTONE"
 
-	// BuildNumber is a key for the build number (e.g. "12345")
+	// BuildNumber is a key for the major OS version number (e.g. "12345")
 	BuildNumber = "CHROMEOS_RELEASE_BUILD_NUMBER"
 
-	// PatchNumber is a key for the patch number (e.g. "0.0")
+	// BranchNumber is a key for the minor OS version number used by branch (e.g. "5")
+	BranchNumber = "CHROMEOS_RELEASE_BRANCH_NUMBER"
+
+	// PatchNumber is a key for the patch number (e.g. "0")
 	PatchNumber = "CHROMEOS_RELEASE_PATCH_NUMBER"
 
-	// Version is a key for ChromeOS version (e.g. "12345.0.0")
+	// Version is a key for ChromeOS version (e.g. "12345.5.0")
 	Version = "CHROMEOS_RELEASE_VERSION"
 
 	// ReleaseAppID is a key for the release Omaha app ID.
@@ -57,7 +60,7 @@ const (
 	// ReleaseTrack is a key for the device's release track (e.g. "stable-channel")
 	ReleaseTrack = "CHROMEOS_RELEASE_TRACK"
 
-	// ReleaseDescription is a key for the device's release description (e.g. "15075.0.0 (Official Build) dev-channel octopus test")
+	// ReleaseDescription is a key for the device's release description (e.g. "12345.5.0 (Official Build) dev-channel eve test")
 	ReleaseDescription = "CHROMEOS_RELEASE_DESCRIPTION"
 
 	// ARCSDKVersion is a key for the Android SDK Version of the current

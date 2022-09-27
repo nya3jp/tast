@@ -122,6 +122,9 @@ func TestCheckKnownAttrs(t *testing.T) {
 			attrs: []string{"group:storage-qual"},
 		},
 		{
+			attrs: []string{"group:telemetry_extension_hw"},
+		},
+		{
 			attrs: []string{"group:wilco_bve"},
 		},
 		{

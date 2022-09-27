@@ -127,6 +127,8 @@ var lookupWLANDev = map[DevInfo]DeviceID{
 	{Vendor: "0x8086", Device: "0x51f0", Subsystem: "0x4090"}: IntelAX211,
 	{Vendor: "0x8086", Device: "0x54f0", Subsystem: "0x0090"}: IntelAX211,
 	{Vendor: "0x8086", Device: "0x54f0", Subsystem: "0x0094"}: IntelAX211,
+	{Vendor: "0x8086", Device: "0x7e40", Subsystem: "0x0090"}: IntelAX211,
+	{Vendor: "0x8086", Device: "0x7e40", Subsystem: "0x0094"}: IntelAX211,
 	{Vendor: "0x02d0", Device: "0x4354"}:                      BroadcomBCM4354SDIO,
 	{Vendor: "0x14e4", Device: "0x43ec"}:                      BroadcomBCM4356PCIE,
 	{Vendor: "0x14e4", Device: "0x440d"}:                      BroadcomBCM4371PCIE,

@@ -6,6 +6,7 @@ package testingutil
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"chromiumos/tast/ctxutil"
@@ -47,8 +48,10 @@ func Poll(ctx context.Context, f func(context.Context) error, opts *PollOptions)
 	}
 
 	timeout := ctxutil.MaxTimeout
+	timeoutLog := "with no set timeout"
 	if opts != nil && opts.Timeout > 0 {
 		timeout = opts.Timeout
+		timeoutLog = fmt.Sprintf("with timeout %v", timeout)
 	}
 	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
@@ -67,7 +70,7 @@ func Poll(ctx context.Context, f func(context.Context) error, opts *PollOptions)
 
 		if e, ok := err.(*pollBreak); ok {
 			if ctx.Err() != nil && lastErr != nil {
-				return errors.Wrapf(lastErr, "%s during a poll with timeout %v; last error follows", e.err, timeout)
+				return errors.Wrapf(lastErr, "%s during a poll %v; last error follows", e.err, timeoutLog)
 			}
 			return e.err
 		}
@@ -84,7 +87,7 @@ func Poll(ctx context.Context, f func(context.Context) error, opts *PollOptions)
 		case <-time.After(interval):
 		case <-ctx.Done():
 			if lastErr != nil {
-				return errors.Wrapf(lastErr, "%s during a poll with timeout %v; last error follows", ctx.Err(), timeout)
+				return errors.Wrapf(lastErr, "%s during a poll %v; last error follows", ctx.Err(), timeoutLog)
 			}
 			return ctx.Err()
 		}

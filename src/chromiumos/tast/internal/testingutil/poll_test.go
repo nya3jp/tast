@@ -207,4 +207,27 @@ func TestPollTimeoutErrorMsg(t *gotesting.T) {
 	} else if !strings.Contains(err.Error(), timeout.String()) {
 		t.Errorf("Poll returned error %q, which doesn't contain timeout duration %q", err.Error(), timeout.String())
 	}
+
+	timeout = 0
+	opts = &testingutil.PollOptions{
+		Timeout:  timeout,
+		Interval: time.Millisecond,
+	}
+
+	ctx, cancel := context.WithCancel(context.Background())
+	first := true
+	const msg = "this is a test error message"
+	if err := testingutil.Poll(ctx, func(ctx context.Context) error {
+		if first {
+			first = false
+			return errors.New(msg)
+		}
+		cancel()
+		<-ctx.Done()
+		return testingutil.PollBreak(ctx.Err())
+	}, opts); err == nil {
+		t.Error("Poll didn't return expected error for timeout with failing func")
+	} else if strings.Contains(err.Error(), timeout.String()) {
+		t.Errorf("Poll returned error %q, which contains max timeout duration %q", err.Error(), timeout.String())
+	}
 }

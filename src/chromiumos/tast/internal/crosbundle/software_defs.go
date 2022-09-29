@@ -9,7 +9,8 @@ var softwareFeatureDefs = map[string]string{
 	// This list is documented at docs/test_dependencies.md.
 	// All USE flags referenced here must be listed in IUSE in the tast-use-flags ebuild.
 	// The one exception is tast_vm, which is inserted by VM builders via -extrauseflags.
-	"amd64": "amd64",
+	"amd64":   "amd64",
+	"amd_cpu": "amd_cpu",
 	// ARC USE flags are defined here:
 	// http://cs/chromeos_public/src/third_party/chromiumos-overlay/eclass/arc-build-constants.eclass
 	// TODO(b/210917721): Re-enable ARCVM on manatee.

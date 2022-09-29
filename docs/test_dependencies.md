@@ -16,6 +16,7 @@ Tests specify dependencies through the `SoftwareDeps` and `HardwareDeps` fields 
 The following software features are defined:
 
 *   `amd64` - The [amd64] processor architecture.
+*   `amd_cpu` - Boards that contain an AMD application processor.
 *   `android_vm` - The ability to [run Android apps] in VM instead of container.
     Any version of Android R+ can be used. Prefer this over `android_vm_r` if possible.
 *   `android_vm_r` - `android_vm` feature that runs in R VM.

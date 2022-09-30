@@ -183,6 +183,10 @@ func newTestInstance(t *Test, p *Param) (*TestInstance, error) {
 		}
 	}
 
+	var requirements []string
+	requirements = append(requirements, t.Requirements...)
+	requirements = append(requirements, p.ExtraRequirements...)
+
 	attrs := append(manualAttrs, autoAttrs(name, info.pkg, swDeps)...)
 	attrs = modifyAttrsForCompat(attrs)
 	if err := validateAttr(attrs); err != nil {
@@ -249,7 +253,7 @@ func newTestInstance(t *Test, p *Param) (*TestInstance, error) {
 		Fixture:      fixt,
 		Timeout:      timeout,
 		TestBedDeps:  append([]string(nil), t.TestBedDeps...),
-		Requirements: append([]string(nil), t.Requirements...),
+		Requirements: requirements,
 		BugComponent: t.BugComponent,
 	}, nil
 }

@@ -307,12 +307,14 @@ func TestInstantiateParamsForAllPrimary(t *gotesting.T) {
 		Data:               []string{"data0.txt"},
 		SoftwareDepsForAll: map[string]dep.SoftwareDeps{"": []string{"dep0"}},
 		HardwareDepsForAll: map[string]dep.HardwareDeps{"": hwdep.D(hwdep.Model("model1", "model2"))},
+		Requirements:       []string{"one"},
 		Params: []Param{{
 			Val:                     123,
 			ExtraAttr:               []string{"crosbolt_nightly"},
 			ExtraData:               []string{"data1.txt"},
 			ExtraSoftwareDepsForAll: map[string]dep.SoftwareDeps{"": []string{"dep1"}},
 			ExtraHardwareDepsForAll: map[string]dep.HardwareDeps{"": hwdep.D(hwdep.SkipOnModel("model2"))},
+			ExtraRequirements:       []string{"two"},
 		}, {
 			Name:                    "foo",
 			Val:                     456,
@@ -320,6 +322,7 @@ func TestInstantiateParamsForAllPrimary(t *gotesting.T) {
 			ExtraData:               []string{"data2.txt"},
 			ExtraSoftwareDepsForAll: map[string]dep.SoftwareDeps{"": []string{"dep2"}},
 			ExtraHardwareDepsForAll: map[string]dep.HardwareDeps{"": hwdep.D(hwdep.SkipOnModel("model1"))},
+			ExtraRequirements:       []string{"three", "four"},
 		}},
 	})
 	if err != nil {
@@ -342,6 +345,7 @@ func TestInstantiateParamsForAllPrimary(t *gotesting.T) {
 			},
 			Data:         []string{"data0.txt", "data1.txt"},
 			SoftwareDeps: map[string]dep.SoftwareDeps{"": []string{"dep0", "dep1"}},
+			Requirements: []string{"one", "two"},
 		},
 		{
 			Name: "testing.TESTINSTANCETEST.foo",
@@ -358,6 +362,7 @@ func TestInstantiateParamsForAllPrimary(t *gotesting.T) {
 			},
 			Data:         []string{"data0.txt", "data2.txt"},
 			SoftwareDeps: map[string]dep.SoftwareDeps{"": []string{"dep0", "dep2"}},
+			Requirements: []string{"one", "three", "four"},
 		},
 	}
 	if diff := cmp.Diff(got, want, cmpopts.IgnoreFields(TestInstance{}, "Func", "HardwareDeps", "Pre")); diff != "" {

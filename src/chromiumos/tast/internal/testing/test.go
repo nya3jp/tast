@@ -203,6 +203,11 @@ type Param struct {
 	// param, in addition to HardwareDeps in the enclosing Test.
 	ExtraHardwareDeps hwdep.Deps
 
+	// ExtraRequirements are used for linking test cases to requirements. These are not used by
+	// tests themselves, but added to test metadata definitions used by infra services.  This slice is
+	// appended to an Requirements declared by the test.
+	ExtraRequirements []string
+
 	// Pre contains a precondition that must be met before the test is run.
 	// Can only be set if the enclosing test doesn't have one already set.
 	Pre Precondition

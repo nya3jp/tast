@@ -56,7 +56,11 @@ func New(ctx context.Context, cfg *config.Config, rawTarget, role string) (*Driv
 		}, nil
 	}
 
-	resolvedTarget := resolveSSHConfig(ctx, rawTarget)
+	resolvedTarget, resolvedProxyCommand := resolveSSHConfig(ctx, rawTarget)
+	proxyCommand := cfg.ProtoSSHConfig().GetProxyCommand()
+	if proxyCommand == "" {
+		proxyCommand = resolvedProxyCommand
+	}
 	var debuggerPorts []int
 	for _, dt := range []debugger.DebugTarget{debugger.LocalTestRunner, debugger.LocalBundle} {
 		debugPort, ok := cfg.DebuggerPorts()[dt]
@@ -81,7 +85,7 @@ func New(ctx context.Context, cfg *config.Config, rawTarget, role string) (*Driv
 		TastVars:      cfg.TestVars(),
 		ServiceConfig: scfg,
 	}
-	cc, err := target.NewConnCache(ctx, tcfg, resolvedTarget, role)
+	cc, err := target.NewConnCache(ctx, tcfg, resolvedTarget, proxyCommand, role)
 	if err != nil {
 		return nil, err
 	}
@@ -106,6 +110,14 @@ func (d *Driver) ConnectionSpec() string {
 		return ""
 	}
 	return d.cc.ConnectionSpec()
+}
+
+// ProxyCommand returns the proxy command.
+func (d *Driver) ProxyCommand() string {
+	if d.cc == nil {
+		return ""
+	}
+	return d.cc.ProxyCommand()
 }
 
 // InitBootID returns a boot ID string obtained on the first successful
@@ -172,17 +184,17 @@ func (d *Driver) remoteBundleClient(bundle string) *bundleclient.Client {
 	return bundleclient.New(cmd, d.cfg.MsgTimeout())
 }
 
-func resolveSSHConfig(ctx context.Context, target string) string {
-	alternateTarget, err := sshconfig.ResolveHost(target)
+func resolveSSHConfig(ctx context.Context, target string) (alternateTarget, proxyCommand string) {
+	alternateTarget, proxyCommand, err := sshconfig.ResolveHost(target)
 	if err != nil {
 		logging.Infof(ctx, "Error in reading SSH configuaration files: %v", err)
-		return target
+		return target, ""
 	}
 	if alternateTarget != target {
 		logging.Infof(ctx, "Using target %v instead of %v to connect according to SSH configuration files",
 			alternateTarget, target)
 	}
-	return alternateTarget
+	return alternateTarget, proxyCommand
 }
 
 // ConnCacheForTesting returns target.ConnCache the driver owns for testing.

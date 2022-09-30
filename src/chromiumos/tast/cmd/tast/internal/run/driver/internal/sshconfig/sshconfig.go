@@ -98,10 +98,10 @@ type FileParam struct {
 var tokenRegExp = regexp.MustCompile(`!("([^"]*)")|("([^"]*)")|([^\s"]+)`)
 
 // ResolveHost takes an address and returns a resolved hostname based on ~/.ssh/config and /etc/ssh/ssh_config.
-func ResolveHost(addr string) (resolvedHost string, err error) {
+func ResolveHost(addr string) (resolvedHost, resolvedProxyCommand string, err error) {
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 	userConfigDir := filepath.Join(homeDir, ".ssh")
 	configFiles := []FileParam{
@@ -119,13 +119,13 @@ func ResolveHost(addr string) (resolvedHost string, err error) {
 
 // ResolveHostFromFiles takes an address, base directory (affects default include path) and a list of
 // SSH configuration files and returns the resolved hostname.
-func ResolveHostFromFiles(addr string, configFiles []FileParam) (resolvedHost string, err error) {
+func ResolveHostFromFiles(addr string, configFiles []FileParam) (resolvedHost, resolvedProxyCommand string, err error) {
 	host, port, err := splitHostPort(addr)
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 	if host == "" {
-		return addr, nil
+		return addr, "", nil
 	}
 	sc := block{
 		blockType:  notInBlock,            // top of the hierarchy so it is not in any block.
@@ -136,23 +136,25 @@ func ResolveHostFromFiles(addr string, configFiles []FileParam) (resolvedHost st
 	openedFiles := map[string]struct{}{}
 	for _, fp := range configFiles {
 		if err := readFile(fp.Path, fp.BaseDir, openedFiles, &sc); err != nil {
-			return "", err
+			return "", "", err
 		}
 	}
-	resolvedHostName, resolvedPort := sc.findHostPort(host)
+
+	si := sc.resolveSSHInfo(host)
+
 	// Use input host name f we cannot find HostName parameter from the matched Host definition.
 	// For example, if we cannot anything Host pattern match 127.0.0.1,
 	// the resolvedHostName will be 127.0.0.1.
-	if resolvedHostName == "" {
-		resolvedHostName = host
+	if si.hostName == "" {
+		si.hostName = host
 	}
 	// If user does not specify the port number, we will use the found port number.
 	// Empty if it is not found.
 	if port != "" {
 		// If the user specifies the port, we will use the user specified port.
-		resolvedPort = port
+		si.port = port
 	}
-	return joinHostAndPort(resolvedHostName, resolvedPort), nil
+	return joinHostAndPort(si.hostName, si.port), si.proxyCommand, nil
 }
 
 // readFilesMatchingPattern reads one or more files that match the argument fileParam.Path.
@@ -347,46 +349,69 @@ func matchHost(inputHostName string, patterns []string) bool {
 	return matched
 }
 
-// findHostPort finds the first matched host and port from block.
-func (sc *block) findHostPort(inputHostName string) (resolvedHostName, resolvedPort string) {
+type resolvedSSHInfo struct {
+	hostName     string
+	port         string
+	proxyCommand string
+}
+
+func (si *resolvedSSHInfo) filled() bool {
+	return si.hostName != "" && si.port != "" && si.proxyCommand != ""
+}
+
+func (si *resolvedSSHInfo) setUnfilled(src resolvedSSHInfo) {
+	if si.hostName == "" {
+		si.hostName = src.hostName
+	}
+	if si.port == "" {
+		si.port = src.port
+	}
+	if si.proxyCommand == "" {
+		si.proxyCommand = src.proxyCommand
+	}
+}
+
+// resolveSSHInfo resolves SSH info for the given host name.
+func (sc *block) resolveSSHInfo(inputHostName string) resolvedSSHInfo {
+	var si resolvedSSHInfo
+
 	switch sc.blockType {
 	case notInBlock:
 		break
 	case hostBlock:
 		if !matchHost(inputHostName, sc.patterns) {
-			return "", ""
+			return si
 		}
 	case matchBlock:
 		// Not support match block in this version.
-		return "", ""
+		return si
 	}
+
 	values := sc.parameters["hostname"]
 	if len(values) == 1 {
 		// In order to handle the case %%%h, we first replace all %% with tab because
 		// tab is not allowed in hostname.
-		resolvedHostName = strings.ReplaceAll(values[0], "%%", "\t")
-		resolvedHostName = strings.ReplaceAll(resolvedHostName, "%h", inputHostName)
+		si.hostName = strings.ReplaceAll(values[0], "%%", "\t")
+		si.hostName = strings.ReplaceAll(si.hostName, "%h", inputHostName)
 		// Now we replace all tabs back to "%".
-		resolvedHostName = strings.ReplaceAll(resolvedHostName, "\t", "%")
+		si.hostName = strings.ReplaceAll(si.hostName, "\t", "%")
 	}
 	values = sc.parameters["port"]
 	if len(values) == 1 {
-		resolvedPort = values[0]
+		si.port = values[0]
+	}
+	values = sc.parameters["proxycommand"]
+	if len(values) > 0 {
+		si.proxyCommand = strings.Join(values, " ")
 	}
 
 	for _, subBlock := range sc.subBlocks {
-		if resolvedHostName != "" && resolvedPort != "" {
-			return resolvedHostName, resolvedPort
+		if si.filled() {
+			return si
 		}
-		hostname, port := subBlock.findHostPort(inputHostName)
-		if resolvedHostName == "" {
-			resolvedHostName = hostname
-		}
-		if resolvedPort == "" {
-			resolvedPort = port
-		}
+		si.setUnfilled(subBlock.resolveSSHInfo(inputHostName))
 	}
-	return resolvedHostName, resolvedPort
+	return si
 }
 
 // print is for debugging purpose only.

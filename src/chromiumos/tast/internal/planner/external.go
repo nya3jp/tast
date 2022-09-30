@@ -47,7 +47,7 @@ func runExternalTests(ctx context.Context, names []string, stack *fixture.Combin
 		TastVars:      pcfg.Features.GetInfra().GetVars(),
 		ServiceConfig: scfg,
 	}
-	cc, err := target.NewConnCache(ctx, tcfg, pcfg.ExternalTarget.Device.GetDutConfig().GetSshConfig().GetConnectionSpec(), "")
+	cc, err := target.NewConnCache(ctx, tcfg, pcfg.ExternalTarget.Device.GetDutConfig().GetSshConfig().GetConnectionSpec(), pcfg.ExternalTarget.Device.GetDutConfig().GetSshConfig().GetProxyCommand(), "")
 	if err != nil {
 		return nil, err
 	}

@@ -336,10 +336,11 @@ func (d *Driver) newConfigsForRemoteTests(tests []string, dutInfos map[string]*p
 		buildArtifactsURL = dutInfos[""].GetDefaultBuildArtifactsUrl()
 	}
 
-	var connSpec string
+	var connSpec, proxyCommand string
 	var primaryTarget *protocol.TargetDevice
 	if d.cc != nil {
 		connSpec = d.cc.ConnectionSpec()
+		proxyCommand = d.cc.ProxyCommand()
 	}
 	if connSpec != "" && connSpec != "-" {
 		primaryTarget = &protocol.TargetDevice{
@@ -348,7 +349,7 @@ func (d *Driver) newConfigsForRemoteTests(tests []string, dutInfos map[string]*p
 					ConnectionSpec: connSpec,
 					KeyFile:        d.cfg.KeyFile(),
 					KeyDir:         d.cfg.KeyDir(),
-					ProxyCommand:   d.cfg.ProxyCommand(),
+					ProxyCommand:   proxyCommand,
 				},
 				TlwName: d.cfg.Target(),
 			},
@@ -472,9 +473,10 @@ func (d *Driver) newRunFixtureConfig(dutInfo *protocol.DUTInfo) (*protocol.RunFi
 	}
 
 	buildArtifactsURL := getBuildArtifactsURL(d.cfg.BuildArtifactsURLOverride(), dutInfo.GetDefaultBuildArtifactsUrl())
-	var connSpec string
+	var connSpec, proxyCommand string
 	if d.cc != nil {
 		connSpec = d.cc.ConnectionSpec()
+		proxyCommand = d.cc.ProxyCommand()
 	}
 	return &protocol.RunFixtureConfig{
 		TestVars:          d.cfg.TestVars(),
@@ -493,7 +495,7 @@ func (d *Driver) newRunFixtureConfig(dutInfo *protocol.DUTInfo) (*protocol.RunFi
 		DutName:           d.cfg.Target(),
 		BuildArtifactsUrl: buildArtifactsURL,
 		DownloadMode:      d.cfg.DownloadMode(),
-		ProxyCommand:      d.cfg.ProxyCommand(),
+		ProxyCommand:      proxyCommand,
 	}, nil
 }
 

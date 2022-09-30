@@ -5,3 +5,4 @@
 Host "octopus"
     HostName 127.0.0.1
     Port 2222
+    ProxyCommand proxy_command octopus

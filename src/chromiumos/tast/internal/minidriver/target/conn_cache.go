@@ -17,18 +17,19 @@ import (
 //
 // ConnCache is not goroutine-safe.
 type ConnCache struct {
-	cfg        *Config
-	target     string
-	initBootID string
-	helper     *dutHelper
-	conn       *Conn // always non-nil
+	cfg          *Config
+	target       string
+	proxyCommand string
+	initBootID   string
+	helper       *dutHelper
+	conn         *Conn // always non-nil
 }
 
 // NewConnCache establishes a new connection to target and return a ConnCache.
 // Call Close when it is no longer needed.
-func NewConnCache(ctx context.Context, cfg *Config, target, role string) (cc *ConnCache, retErr error) {
+func NewConnCache(ctx context.Context, cfg *Config, target, proxyCommand, role string) (cc *ConnCache, retErr error) {
 	helper := newDUTHelper(ctx, cfg.SSHConfig, cfg.TastVars, role)
-	conn, err := newConn(ctx, cfg, target, helper.dutServer)
+	conn, err := newConn(ctx, cfg, target, proxyCommand, helper.dutServer)
 	if err != nil {
 		return nil, err
 	}
@@ -44,11 +45,12 @@ func NewConnCache(ctx context.Context, cfg *Config, target, role string) (cc *Co
 	}
 
 	return &ConnCache{
-		cfg:        cfg,
-		target:     target,
-		initBootID: bootID,
-		conn:       conn,
-		helper:     helper,
+		cfg:          cfg,
+		target:       target,
+		proxyCommand: proxyCommand,
+		initBootID:   bootID,
+		conn:         conn,
+		helper:       helper,
 	}, nil
 }
 
@@ -83,7 +85,7 @@ func (cc *ConnCache) EnsureConn(ctx context.Context) error {
 	}
 	logging.Infof(ctx, "Target connection is unhealthy: %v; reconnecting", err)
 
-	newConnection, err := newConn(ctx, cc.cfg, cc.target, cc.helper.dutServer)
+	newConnection, err := newConn(ctx, cc.cfg, cc.target, cc.proxyCommand, cc.helper.dutServer)
 	if err != nil {
 		// b/205333029: Move the code for rebooting to somewhere else when we support servod for multiple DUT.
 		if cc.helper != nil {
@@ -95,7 +97,7 @@ func (cc *ConnCache) EnsureConn(ctx context.Context) error {
 			shortCtx, cancel := context.WithTimeout(ctx, time.Minute*3)
 			defer cancel()
 			if err := testingutil.Poll(shortCtx, func(ctx context.Context) error {
-				newConnection, err = newConn(ctx, cc.cfg, cc.target, cc.helper.dutServer)
+				newConnection, err = newConn(ctx, cc.cfg, cc.target, cc.proxyCommand, cc.helper.dutServer)
 				return err
 			}, &testingutil.PollOptions{Timeout: cc.DefaultTimeout()}); err != nil {
 				logging.Infof(ctx, "Fail to reconnect after reboot target: %v", err)
@@ -121,6 +123,11 @@ func (cc *ConnCache) InitBootID() string {
 // ConnectionSpec returns a connection spec as [<user>@]host[:<port>].
 func (cc *ConnCache) ConnectionSpec() string {
 	return cc.target
+}
+
+// ProxyCommand returns the proxy command.
+func (cc *ConnCache) ProxyCommand() string {
+	return cc.proxyCommand
 }
 
 // DefaultTimeout returns the default timeout for connection operations.

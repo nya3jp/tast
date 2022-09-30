@@ -39,8 +39,8 @@ type Config struct {
 	ServiceConfig *ServiceConfig
 }
 
-func newConn(ctx context.Context, cfg *Config, target, dutServer string) (conn *Conn, retErr error) {
-	sshConn, err := dialSSH(ctx, cfg.SSHConfig, target, cfg.Retries)
+func newConn(ctx context.Context, cfg *Config, target, proxyCommand, dutServer string) (conn *Conn, retErr error) {
+	sshConn, err := dialSSH(ctx, cfg.SSHConfig, target, proxyCommand, cfg.Retries)
 	if err != nil {
 		msg, diagErr := diagnoseNetwork(ctx, target)
 		if diagErr != nil {
@@ -101,7 +101,7 @@ func (c *Conn) Target() string {
 }
 
 // dialSSH uses ssh to connect to target which in the format host:port.
-func dialSSH(ctx context.Context, cfg *protocol.SSHConfig, target string, retries int) (*ssh.Conn, error) {
+func dialSSH(ctx context.Context, cfg *protocol.SSHConfig, target, proxyCommand string, retries int) (*ssh.Conn, error) {
 	ctx, st := timing.Start(ctx, "connect")
 	defer st.End()
 	logging.Infof(ctx, "Connecting to %s", target)
@@ -112,7 +112,7 @@ func dialSSH(ctx context.Context, cfg *protocol.SSHConfig, target string, retrie
 		ConnectRetryInterval: sshRetryInterval,
 		KeyFile:              cfg.GetKeyFile(),
 		KeyDir:               cfg.GetKeyDir(),
-		ProxyCommand:         cfg.GetProxyCommand(),
+		ProxyCommand:         proxyCommand,
 		WarnFunc:             func(s string) { logging.Info(ctx, s) },
 	}
 	if err := ssh.ParseTarget(target, opts); err != nil {

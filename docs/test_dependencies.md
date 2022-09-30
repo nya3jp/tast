@@ -93,6 +93,7 @@ The following software features are defined:
 *   `ec_crash` - Boards that have EC firmware, implement the `crash` EC command,
     and produce a panicinfo file after a crash.
 *   `endorsement` - Whether the system have a valid endorsement certificate.
+*   `faceauth` - Whether the system has faceauth functionality enabled, go/cros-faceauth.
 *   `factory_flow`- Device is subject to the [go/chromeos-factory-flow](http://go/chromeos-factory-flow) (e.g. most devices).
 *   `fake_hps` - Whether the HPS daemon (go/cros-hps) uses a fake software
     device for testing purposes.

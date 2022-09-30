@@ -892,6 +892,24 @@ func Battery() Condition {
 	}
 }
 
+// platformHasNV12Overlays returns true if the the given platform is known
+// to support NV12 hardware overlays.
+func platformHasNV12Overlays(SocType protocol.DeprecatedDeviceConfig_SOC) bool {
+	return SocType != protocol.DeprecatedDeviceConfig_SOC_HASWELL &&
+		SocType != protocol.DeprecatedDeviceConfig_SOC_BAY_TRAIL &&
+		SocType != protocol.DeprecatedDeviceConfig_SOC_BROADWELL &&
+		SocType != protocol.DeprecatedDeviceConfig_SOC_SKYLAKE_U &&
+		SocType != protocol.DeprecatedDeviceConfig_SOC_SKYLAKE_Y &&
+		SocType != protocol.DeprecatedDeviceConfig_SOC_APOLLO_LAKE &&
+		SocType != protocol.DeprecatedDeviceConfig_SOC_STONEY_RIDGE &&
+		SocType != protocol.DeprecatedDeviceConfig_SOC_MT8173 &&
+		SocType != protocol.DeprecatedDeviceConfig_SOC_MT8176 &&
+		SocType != protocol.DeprecatedDeviceConfig_SOC_MT8183 &&
+		SocType != protocol.DeprecatedDeviceConfig_SOC_MT8192 &&
+		SocType != protocol.DeprecatedDeviceConfig_SOC_MT8195 &&
+		SocType != protocol.DeprecatedDeviceConfig_SOC_SC7280
+}
+
 // SupportsNV12Overlays says true if the SoC supports NV12 hardware overlays,
 // which are commonly used for video overlays. SoCs with Intel Gen 7.5 (Haswell,
 // BayTrail) and Gen 8 GPUs (Broadwell, Braswell) for example, don't support
@@ -902,22 +920,28 @@ func SupportsNV12Overlays() Condition {
 		if dc == nil {
 			return withErrorStr("DeprecatedDeviceConfig is not given")
 		}
-		if dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_HASWELL ||
-			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_BAY_TRAIL ||
-			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_BROADWELL ||
-			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_BRASWELL ||
-			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_SKYLAKE_U ||
-			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_SKYLAKE_Y ||
-			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_APOLLO_LAKE ||
-			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_STONEY_RIDGE ||
-			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_MT8173 ||
-			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_MT8176 ||
-			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_MT8183 ||
-			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_MT8192 ||
-			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_MT8195 ||
-			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_SC7180 ||
-			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_SC7280 {
+		if !platformHasNV12Overlays(dc.GetSoc()) {
 			return unsatisfied("SoC does not support NV12 Overlays")
+		}
+		return satisfied()
+	},
+	}
+}
+
+// SupportsVideoOverlays says true if the SoC supports some type of YUV
+// hardware overlay. This includes NV12, I420, and YUY2.
+func SupportsVideoOverlays() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		dc := f.GetDeprecatedDeviceConfig()
+		if dc == nil {
+			return withErrorStr("DeprecatedDeviceConfig is not given")
+		}
+
+		var supportsYUY2Overlays = dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_MT8183 ||
+			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_MT8192 ||
+			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_MT8195
+		if !platformHasNV12Overlays(dc.GetSoc()) && !supportsYUY2Overlays {
+			return unsatisfied("SoC does not support Video Overlays")
 		}
 		return satisfied()
 	},

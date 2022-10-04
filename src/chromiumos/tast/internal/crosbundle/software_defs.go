@@ -254,4 +254,9 @@ var softwareFeatureDefs = map[string]string{
 	// WireGuard is only supported on 5.4+ kernels.
 	"wireguard": `!("kernel-4_4" || "kernel-4_14" || "kernel-4_19")`,
 	"wpa3_sae":  "wpa3_sae",
+	// Some boards cannot play/record stably, disabling these tests and keeping
+	// some of them informationl.
+	// TODO(b/240269271): remove "octopus" and "hatch" when b/240269271 is fixed.
+	"audio_stable":   `!("board:octopus" || "board:hatch")`,
+	"audio_unstable": `"board:octopus" || "board:hatch"`,
 }

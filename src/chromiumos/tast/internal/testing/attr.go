@@ -1024,6 +1024,10 @@ Parallels boot-up testing. Otherwise the same as group:crosbolt.`,
 				Name: "hwsec_weekly",
 				Desc: "Indicates that these tests should run weekly. Tests that aren't stable enough to be critical or is too expensive gets placed here",
 			},
+			{
+				Name: "hwsec_nightly",
+				Desc: "Indicates that these tests should run nightly. Tests that are too expensive for mainline, but still important enough to be checked more often than weekly, get placed here",
+			},
 		},
 	},
 	{

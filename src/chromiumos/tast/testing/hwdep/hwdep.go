@@ -953,6 +953,31 @@ func Battery() Condition {
 	}
 }
 
+// NoBatteryBootSupported returns a hardware dependency condition that is satisfied iff the DUT
+// supports booting without a battery.
+func NoBatteryBootSupported() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hasBattery, err := hasBattery(f)
+		if err != nil {
+			return withError(err)
+		}
+		if !hasBattery {
+			return unsatisfied("DUT does not have a battery")
+		}
+
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("Did not find hardware features")
+		}
+		if !hf.GetBattery().GetNoBatteryBootSupported() {
+			return unsatisfied("DUT does not support booting without a battery")
+		}
+
+		return satisfied()
+	},
+	}
+}
+
 // platformHasNV12Overlays returns true if the the given platform is known
 // to support NV12 hardware overlays.
 func platformHasNV12Overlays(SocType protocol.DeprecatedDeviceConfig_SOC) bool {

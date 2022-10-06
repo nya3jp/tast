@@ -118,6 +118,7 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		Cellular:           &configpb.HardwareFeatures_Cellular{},
 		Bluetooth:          &configpb.HardwareFeatures_Bluetooth{},
 		Hps:                &configpb.HardwareFeatures_Hps{},
+		Battery:            &configpb.HardwareFeatures_Battery{},
 	}
 
 	formFactor, err := func() (string, error) {
@@ -144,6 +145,16 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 	if err != nil {
 		logging.Infof(ctx, "Error getting Wifi: %v", err)
 	}
+
+	// Battery
+	noBatteryBootSupported, err := func() (bool, error) {
+		out, err := crosConfig("/battery", "no-battery-boot-supported")
+		if err != nil {
+			return false, err
+		}
+		return out == "true", nil
+	}()
+	features.Battery.NoBatteryBootSupported = noBatteryBootSupported
 
 	detachableBasePath, err := func() (string, error) {
 		out, err := crosConfig("/detachable-base", "usb-path")

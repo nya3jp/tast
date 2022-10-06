@@ -213,6 +213,7 @@ var softwareFeatureDefs = map[string]string{
 	"unibuild":                "unibuild",
 	"untrusted_vm":            `!("kernel-4_4" || "kernel-4_14")`,
 	"usbguard":                "usbguard",
+	"usb_hid_wake":            `!("board:octopus")`,
 	"use_fscrypt_v1":          `!"direncription_allow_v2" && !"lvm_stateful_partition"`,
 	"use_fscrypt_v2":          `"direncription_allow_v2" && !"lvm_stateful_partition"`,
 	"v4l2_codec":              "v4l2_codec",

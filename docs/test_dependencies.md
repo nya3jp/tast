@@ -209,6 +209,7 @@ stack-sampled metrics.
 *   `unibuild` - The ChromeOS build is a unified build.
 *   `untrusted_vm` - The ability to run an untrusted VM.
 *   `usbguard` - The ability to allow or block USB devices based on policy.
+*   `usb_hid_wake` - The platform will register HID wake events to a usb device.
 *   `use_fscrypt_v1` - The board is set to use v1 fscrypt policy for user vault.
 *   `use_fscrypt_v2` - The board is set to use v2 fscrypt policy for user vault.
 *   `v4l2_codec` - Whether or not v4l2 video acceleration API is supported by this DUT.

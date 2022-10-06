@@ -127,7 +127,6 @@ The following software features are defined:
 *   `microcode` - Platforms that have CPU microcode.
 *   `ml_service` - ML Service daemon.
 *   `ml_benchmark_drivers` - [ML benchmarking suite](http://go/roadrollerda)
-*   `mojo_service_manager` - ChromeOS mojo servicem manager daemon.
 *   `mosys` - Ability to run mosys command.
 *   `nacl` - Availability of the Native Client sandboxing technology.
 *   `ndk_translation` - Availability of 32-bit NDK translation library for ARC.

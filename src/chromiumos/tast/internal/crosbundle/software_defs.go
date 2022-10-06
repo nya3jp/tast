@@ -130,7 +130,6 @@ var softwareFeatureDefs = map[string]string{
 	"ml_benchmark_drivers":      "ml_benchmark_drivers",
 	"ml_service":                "ml_service",
 	"modemfwd":                  "modemfwd",
-	"mojo_service_manager":      "mojo_service_manager",
 	"mosys":                     `!"betty" && !"tast_vm"`,
 	"nacl":                      "nacl",
 	"ndk_translation":           "ndk_translation",

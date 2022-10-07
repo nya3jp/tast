@@ -6,12 +6,16 @@ package check
 
 import (
 	"bytes"
+	"fmt"
 	"go/ast"
 	"go/format"
+	"go/parser"
 	"go/token"
 	"os"
+	"path"
 	"path/filepath"
 	"regexp"
+	"runtime"
 	"strconv"
 	"strings"
 )
@@ -138,4 +142,81 @@ func formatASTNode(fs *token.FileSet, f *ast.File) ([]byte, error) {
 		return nil, err
 	}
 	return buf.Bytes(), nil
+}
+
+// policyNames retrieves the policy names from the defs.go definition file. It
+// returns a map where they key represent the name of the policy, and the value
+// it a bool which is true for those policies that have the Name function
+// defined, false otherwise.
+func policyNames() map[string]bool {
+	// Get the path to the common file.
+	_, filename, _, ok := runtime.Caller(0)
+	if !ok {
+		panic("Could not get caller information")
+	}
+
+	src := strings.Split(filename, "platform")[0]
+	// Build defs path.
+	defs := path.Join(src, "platform/tast-tests/src/chromiumos/tast/common/policy/defs.go")
+	if !fileExists(defs) {
+		panic(fmt.Sprintf("Path %s does not exist", defs))
+	}
+
+	fs := token.NewFileSet()
+	file, err := parser.ParseFile(fs, defs, nil, parser.ParseComments)
+	if err != nil {
+		panic(err)
+	}
+
+	m := make(map[string]bool)
+
+	for _, decl := range file.Decls {
+		genDecl, ok := decl.(*ast.GenDecl)
+		// Check if declaration is a type definition.
+		if ok && genDecl.Tok == token.TYPE && len(genDecl.Specs) == 1 {
+			typeSpec, ok := genDecl.Specs[0].(*ast.TypeSpec)
+			if ok {
+				m[typeSpec.Name.Name] = false
+			}
+
+			continue
+		}
+
+		funcDecl, ok := decl.(*ast.FuncDecl)
+		// Check if the declaration is the Name function definition implemented for
+		// each policy.
+		if ok && funcDecl.Name.Name == "Name" && len(funcDecl.Body.List) == 1 {
+			returnStmt, ok := funcDecl.Body.List[0].(*ast.ReturnStmt)
+			if ok && len(returnStmt.Results) == 1 {
+				basicLit, ok := returnStmt.Results[0].(*ast.BasicLit)
+				if ok && basicLit.Kind == token.STRING {
+					policyName := basicLit.Value[1 : len(basicLit.Value)-1]
+					_, ok = m[policyName]
+					if ok {
+						m[policyName] = true
+					}
+				}
+			}
+		}
+	}
+
+	return m
+}
+
+// union adds all key-value pairs from maps a and b. If a and b have an equal key
+// then the value from a will be kept.
+func union[K comparable, V any](a, b map[K]V) map[K]V {
+	c := make(map[K]V)
+	for k, v := range a {
+		c[k] = v
+	}
+
+	for k, v := range b {
+		_, present := c[k]
+		if !present {
+			c[k] = v
+		}
+	}
+
+	return c
 }

@@ -123,8 +123,8 @@ func makeMapDirGoFile(paths []git.CommitFile) map[string][]git.CommitFile {
 // The directory is a newly added package represents its all Go files were newly added (not modified or something else)
 // at this commit.
 // Thus, such directory should satisfy the following conditions:
-//  - The number of ".go" files in the directory is equal to the number of ".go" files that were committed this time.
-//  - Status of all committed ".go" files were "Added".
+//   - The number of ".go" files in the directory is equal to the number of ".go" files that were committed this time.
+//   - Status of all committed ".go" files were "Added".
 func isNewlyAddedPackage(g *git.Git, dir string, paths []git.CommitFile) (bool, error) {
 	exfiles, err := g.ListDir(dir)
 	if err != nil {
@@ -287,6 +287,7 @@ func checkFile(path git.CommitFile, data []byte, debug bool, fs *token.FileSet, 
 		issues = append(issues, check.Messages(fs, f, fix)...)
 		issues = append(issues, check.VerifyTestingStateStruct(fs, f)...)
 		issues = append(issues, check.NoHardcodedUserDirs(fs, f)...)
+		issues = append(issues, check.SearchFlags(fs, f)...)
 	}
 
 	if isSupportPackageFile(path.Path) {

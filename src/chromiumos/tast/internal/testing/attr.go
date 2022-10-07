@@ -1035,6 +1035,11 @@ Parallels boot-up testing. Otherwise the same as group:crosbolt.`,
 		Contacts: []string{"jonfan@google.com", "chromeos-sw-engprod@google.com"},
 		Desc:     `A group of tests that test Tast TCP based gRPC services.`,
 	},
+	{
+		Name:     "sensors",
+		Contacts: []string{"gwendal@google.com", "chromeos-sensors@google.com"},
+		Desc:     `A group of tests that test sensor and sensor services.`,
+	},
 }
 
 // validGroupMap is the name-keyed map of validGroups.

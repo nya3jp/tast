@@ -108,6 +108,14 @@ func (c *Config) GracePeriod() time.Duration {
 
 // FixtureConfig returns a fixture config derived from c.
 func (c *Config) FixtureConfig() *fixture.Config {
+	// Features contains software/hardware features each DUT has, and runtime variables.
+	// Its key for the map is the role of the DUT such as "cd1".
+	// The role for primary DUT should be "".
+	features := make(map[string]*frameworkprotocol.DUTFeatures)
+	features[""] = c.Features.GetDut()
+	for role, dutFeatures := range c.Features.GetCompanionFeatures() {
+		features[role] = dutFeatures
+	}
 	return &fixture.Config{
 		DataDir:           c.Dirs.GetDataDir(),
 		OutDir:            c.Dirs.GetOutDir(),
@@ -116,6 +124,7 @@ func (c *Config) FixtureConfig() *fixture.Config {
 		BuildArtifactsURL: c.DataFile.GetBuildArtifactsUrl(),
 		RemoteData:        c.RemoteData,
 		StartFixtureName:  c.StartFixtureName,
+		Features:          features,
 		GracePeriod:       c.GracePeriod(),
 	}
 }

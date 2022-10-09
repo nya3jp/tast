@@ -12,6 +12,7 @@ import (
 	"strings"
 	"time"
 
+	frameworkprotocol "chromiumos/tast/framework/protocol"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/planner/internal/entity"
 	"chromiumos/tast/internal/planner/internal/output"
@@ -33,6 +34,10 @@ type Config struct {
 	BuildArtifactsURL string
 	RemoteData        *testing.RemoteData
 	StartFixtureName  string
+	// Features contains software/hardware features each DUT has, and runtime variables.
+	// Its key for the map is the role of the DUT such as "cd1".
+	// The role for primary DUT should be "".
+	Features map[string]*frameworkprotocol.DUTFeatures
 	// GracePeriod specifies the grace period after fixture timeout.
 	GracePeriod time.Duration
 }
@@ -331,6 +336,7 @@ func (st *InternalStack) newRuntimeConfig(ctx context.Context, outDir string, fi
 		RemoteData: st.cfg.RemoteData,
 		FixtValue:  st.Val(),
 		FixtCtx:    ctx,
+		Features:   st.cfg.Features,
 	}
 }
 

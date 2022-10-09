@@ -67,6 +67,9 @@ type Config struct {
 	DebuggerPort int
 	Proxy        bool
 
+	// DUTFeatures contains software/hardware features each DUT has, and runtime variables.
+	// Its key for the map is the role of the DUT such as "cd1".
+	// The role for primary DUT should be "".
 	DUTFeatures map[string]*frameworkprotocol.DUTFeatures
 	ForceSkips  map[string]*protocol.ForceSkip
 	Factory     HandlersFactory

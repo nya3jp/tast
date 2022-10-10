@@ -353,6 +353,18 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		features.Cellular.Present = configpb.HardwareFeatures_NOT_PRESENT
 	} else {
 		features.Cellular.Present = configpb.HardwareFeatures_PRESENT
+		swDynamicSar, err := func() (bool, error) {
+			out, err := crosConfig("/power", "use-modemmanager-for-dynamic-sar")
+			if err != nil {
+				return false, err
+			}
+			return out == "1", nil
+		}()
+		if err != nil {
+			logging.Infof(ctx, "Unknown /power/use-modemmanager-for-dynamic-sar: %v", err)
+		}
+		features.Cellular.DynamicPowerReductionConfig = &configpb.HardwareFeatures_Cellular_DynamicPowerReductionConfig{
+			DynamicPowerReductionConfig: &configpb.HardwareFeatures_Cellular_DynamicPowerReductionConfig_ModemManager{ModemManager: swDynamicSar}}
 	}
 
 	// bluetoothctl hangs when bluetoothd is not built with asan enabled or

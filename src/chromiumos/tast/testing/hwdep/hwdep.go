@@ -402,6 +402,22 @@ func Cellular() Condition {
 	}
 }
 
+// CellularSoftwareDynamicSar returns a hardware dependency condition that
+// is satisfied iff the DUT has enabled software dynamic sar.
+func CellularSoftwareDynamicSar() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("Did not find hardware features")
+		}
+		if status := hf.GetCellular().GetDynamicPowerReductionConfig().GetModemManager(); status {
+			return satisfied()
+		}
+		return unsatisfied("DUT does not support cellular sw dynamic sar")
+	},
+	}
+}
+
 // Bluetooth returns a hardware dependency condition that
 // is satisfied iff the DUT has a bluetooth adapter.
 func Bluetooth() Condition {

@@ -70,8 +70,9 @@ func New(target, keyFile, keyDir, proxyCommand string, beforeReboot func(context
 // is stale. Always call Conn to get the present connection.
 //
 // Examples:
-//  linuxssh.GetFile(ctx, d.Conn(), src, dst, linuxssh.PreserveSymlinks)
-//  d.Conn().CommandContext("uptime")
+//
+//	linuxssh.GetFile(ctx, d.Conn(), src, dst, linuxssh.PreserveSymlinks)
+//	d.Conn().CommandContext("uptime")
 func (d *DUT) Conn() *ssh.Conn {
 	if d == nil {
 		return nil
@@ -247,7 +248,7 @@ func (d *DUT) Reboot(ctx context.Context) error {
 			return errors.New("boot_id did not change")
 		}
 		return nil
-	}, &testingutil.PollOptions{Timeout: 3 * time.Minute}); err != nil {
+	}, &testingutil.PollOptions{Timeout: 4 * time.Minute}); err != nil {
 		return errors.Wrap(err, "failed to wait for DUT to reboot")
 	}
 	return nil

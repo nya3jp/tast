@@ -914,6 +914,7 @@ func platformHasNV12Overlays(SocType protocol.DeprecatedDeviceConfig_SOC) bool {
 	return SocType != protocol.DeprecatedDeviceConfig_SOC_HASWELL &&
 		SocType != protocol.DeprecatedDeviceConfig_SOC_BAY_TRAIL &&
 		SocType != protocol.DeprecatedDeviceConfig_SOC_BROADWELL &&
+		SocType != protocol.DeprecatedDeviceConfig_SOC_BRASWELL &&
 		SocType != protocol.DeprecatedDeviceConfig_SOC_SKYLAKE_U &&
 		SocType != protocol.DeprecatedDeviceConfig_SOC_SKYLAKE_Y &&
 		SocType != protocol.DeprecatedDeviceConfig_SOC_APOLLO_LAKE &&
@@ -923,6 +924,7 @@ func platformHasNV12Overlays(SocType protocol.DeprecatedDeviceConfig_SOC) bool {
 		SocType != protocol.DeprecatedDeviceConfig_SOC_MT8183 &&
 		SocType != protocol.DeprecatedDeviceConfig_SOC_MT8192 &&
 		SocType != protocol.DeprecatedDeviceConfig_SOC_MT8195 &&
+		SocType != protocol.DeprecatedDeviceConfig_SOC_SC7180 &&
 		SocType != protocol.DeprecatedDeviceConfig_SOC_SC7280
 }
 

@@ -56,10 +56,8 @@ var softwareFeatureDefs = map[string]string{
 	"coresched": `!("kernel-4_4" || "kernel-4_14")`,
 	// TEO governor was new in v5.1, but we backported it to v4.19.
 	"cpuidle_teo": `!("kernel-4_4" || "kernel-4_14")`,
-	// TODO(b/174888780) Remove kernel-4_4 once arm64 kernel reporting is fixed
 	// TODO(b/174889440) Remove hana, elm, kevin, bob, scarlet.
-	// Per b/175345642 veryon_fievel/veyron_tiger are safe but arm32 doesn't report anything in sysfs so just ignore these boards
-	"cpu_vuln_sysfs": `!(("kernel-4_4" && ("arm" || "arm64")) || "board:bob" || "board:hana" || "board:elm" || "board:hana-kernelnext" || "board:elm-kernelnext" || "board:kevin" || "board:kevin-kernelnext" || "board:scarlet" || "board:scarlet-kernelnext" || "board:veyron_fievel" || "board:veyron_tiger")`,
+	"cpu_vuln_sysfs": `!("board:bob" || "board:hana" || "board:elm" || "board:hana-kernelnext" || "board:elm-kernelnext" || "board:kevin" || "board:scarlet")`,
 	"cras":           "cras",
 	"crashpad":       "!force_breakpad",
 	"cros_internal":  "internal",

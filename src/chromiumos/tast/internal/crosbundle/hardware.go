@@ -1126,9 +1126,14 @@ func wifiFeatures() (*configpb.HardwareFeatures_Wifi, error) {
 		return nil, errors.Wrap(err, "failed to get device")
 	}
 
+	_, err = exec.Command("vpd", "-g", "wifi_sar").Output()
+	vpdSarFound := err == nil
+
 	return &configpb.HardwareFeatures_Wifi{
 		WifiChips: []configpb.HardwareFeatures_Wifi_WifiChip{
-			configpb.HardwareFeatures_Wifi_WifiChip(dev.ID)}}, nil
+			configpb.HardwareFeatures_Wifi_WifiChip(dev.ID)},
+		WifiVpdSar: vpdSarFound,
+	}, nil
 }
 
 // hasBuiltinAudio tells if a given form factor has built-in audio devices

@@ -884,6 +884,51 @@ func WifiSAP() Condition {
 	)
 }
 
+// These are the models which utilize SAR tables stored in VPD. See (b/204199379#comment10)
+// for the methodology used to determine this list as well as a justification as
+// to why it is stable.
+var modelsWithVpdSarTables = []string{
+	"akali360",
+	"ampton",
+	"arcada",
+	"babytiger",
+	"caroline",
+	"eve",
+	"leona",
+	"nautilus",
+	"nautiluslte",
+	"pantheon",
+	"shyvanna",
+	"vayne",
+}
+
+// WifiVpdSar returns a hardware dependency condition that if satisfied, indicates
+// that a device supports VPD SAR tables, and the device actually has such tables
+// in VPD.
+func WifiVpdSar() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		modelCondition := Model(modelsWithVpdSarTables...)
+		if satisfied, reason, err := modelCondition.Satisfied(f); err != nil || !satisfied {
+			return satisfied, reason, err
+		}
+		wifi := f.GetHardwareFeatures().GetWifi()
+		if wifi == nil {
+			return unsatisfied("WiFi data has not been passed from DUT")
+		}
+		if !wifi.GetWifiVpdSar() {
+			return unsatisfied("Device has no \"wifi_sar\" field in vpd")
+		}
+		return satisfied()
+	},
+	}
+}
+
+// WifiNoVpdSar returns a hardware dependency condition that if satisfied, indicates
+// that the device does not support VPD SAR tables.
+func WifiNoVpdSar() Condition {
+	return SkipOnModel(modelsWithVpdSarTables...)
+}
+
 func hasBattery(f *protocol.HardwareFeatures) (bool, error) {
 	dc := f.GetDeprecatedDeviceConfig()
 	if dc == nil {

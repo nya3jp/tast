@@ -1069,8 +1069,13 @@ Parallels boot-up testing. Otherwise the same as group:crosbolt.`,
 				Name: "network_e2e_unstable",
 				Desc: `Identifies network ui/e2e tests that are unstable. Used to skip tests running on stable suites and/or the CQ.`,
 			},
-	        },
-	 },
+		},
+	},
+	{
+		Name:     "intel-gating",
+		Contacts: []string{"ambalavanan.m.m@intel.com", "intel-chrome-system-automation-team@intel.com"},
+		Desc:     `A group of tests related to Intel that are gating for build validation.`,
+	},
 }
 
 // validGroupMap is the name-keyed map of validGroups.

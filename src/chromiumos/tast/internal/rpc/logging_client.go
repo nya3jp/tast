@@ -10,6 +10,8 @@ import (
 	"sync"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/logging"
@@ -95,6 +97,11 @@ func (l *remoteLoggingClient) runBackground(ctx context.Context) {
 			res, err := l.stream.Recv()
 			if err != nil {
 				if err == io.EOF {
+					return nil
+				}
+				grpcStatus, ok := status.FromError(err)
+				if ok && grpcStatus.Code() == codes.Unavailable {
+					logging.Infof(ctx, "Remote Logging interupted with following error: %v", grpcStatus)
 					return nil
 				}
 				return err

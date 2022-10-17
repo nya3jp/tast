@@ -8,6 +8,9 @@ import (
 	"context"
 	"io"
 
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/protocol"
 )
@@ -104,7 +107,11 @@ func (c *Client) RunTests(ctx context.Context, bcfg *protocol.BundleConfig, rcfg
 				return nil
 			}
 			if err != nil {
-				return errors.Wrapf(err, "connection to test bundle broken with msgTimeout %v", c.msgTimeout)
+				grpcStatus, ok := status.FromError(err)
+				if ok && grpcStatus.Code() == codes.Unavailable {
+					return errors.Wrapf(err, "connection to test bundle is broken due to abrupt shutdown of the bundle process or network connection")
+				}
+				return errors.Wrapf(err, "connection to test bundle broken")
 			}
 			if err := handleEvent(ctx, res, out, stream); err != nil {
 				return err

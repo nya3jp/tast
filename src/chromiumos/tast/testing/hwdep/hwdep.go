@@ -1146,6 +1146,64 @@ func NoForceDischarge() Condition {
 	}}
 }
 
+// IntelSOC returns a hardware dependency condition if the SOC belongs to Intel.
+func IntelSOC() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		dc := f.GetDeprecatedDeviceConfig()
+		if dc == nil {
+			return withErrorStr("DeprecatedDeviceConfig is not given")
+		}
+		switch dc.GetSoc() {
+		case protocol.DeprecatedDeviceConfig_SOC_ALDER_LAKE,
+			protocol.DeprecatedDeviceConfig_SOC_AMBERLAKE_Y,
+			protocol.DeprecatedDeviceConfig_SOC_APOLLO_LAKE,
+			protocol.DeprecatedDeviceConfig_SOC_BAY_TRAIL,
+			protocol.DeprecatedDeviceConfig_SOC_BRASWELL,
+			protocol.DeprecatedDeviceConfig_SOC_BROADWELL,
+			protocol.DeprecatedDeviceConfig_SOC_CANNON_LAKE_Y,
+			protocol.DeprecatedDeviceConfig_SOC_COMET_LAKE_U,
+			protocol.DeprecatedDeviceConfig_SOC_GEMINI_LAKE,
+			protocol.DeprecatedDeviceConfig_SOC_HASWELL,
+			protocol.DeprecatedDeviceConfig_SOC_ICE_LAKE_Y,
+			protocol.DeprecatedDeviceConfig_SOC_IVY_BRIDGE,
+			protocol.DeprecatedDeviceConfig_SOC_JASPER_LAKE,
+			protocol.DeprecatedDeviceConfig_SOC_KABYLAKE_U,
+			protocol.DeprecatedDeviceConfig_SOC_KABYLAKE_U_R,
+			protocol.DeprecatedDeviceConfig_SOC_KABYLAKE_Y,
+			protocol.DeprecatedDeviceConfig_SOC_PINE_TRAIL,
+			protocol.DeprecatedDeviceConfig_SOC_SANDY_BRIDGE,
+			protocol.DeprecatedDeviceConfig_SOC_SKYLAKE_Y,
+			protocol.DeprecatedDeviceConfig_SOC_SKYLAKE_U,
+			protocol.DeprecatedDeviceConfig_SOC_TIGER_LAKE,
+			protocol.DeprecatedDeviceConfig_SOC_WHISKEY_LAKE_U:
+			return satisfied()
+		}
+		return unsatisfied("DUT is not an Intel SOC")
+	}}
+}
+
+// SupportDVFS returns a hardware dependency condition if it supports Dynamic voltage and frequency scaling.
+func SupportDVFS() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		dc := f.GetDeprecatedDeviceConfig()
+		if dc == nil {
+			return withErrorStr("DeprecatedDeviceConfig is not given")
+		}
+		switch dc.GetSoc() {
+		case protocol.DeprecatedDeviceConfig_SOC_MT8173,
+			protocol.DeprecatedDeviceConfig_SOC_MT8183,
+			protocol.DeprecatedDeviceConfig_SOC_MT8192,
+			protocol.DeprecatedDeviceConfig_SOC_MT8195,
+			protocol.DeprecatedDeviceConfig_SOC_MT8186,
+			protocol.DeprecatedDeviceConfig_SOC_MT8176,
+			protocol.DeprecatedDeviceConfig_SOC_RK3288,
+			protocol.DeprecatedDeviceConfig_SOC_RK3399:
+			return satisfied()
+		}
+		return unsatisfied(fmt.Sprintf("DUT doesn't support DVFS: %d", dc.GetSoc()))
+	}}
+}
+
 // X86 returns a hardware dependency condition matching x86 ABI compatible platform.
 func X86() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {

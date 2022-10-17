@@ -1539,25 +1539,6 @@ func SupportsVP9KSVCHWDecoding() Condition {
 	}}
 }
 
-// SupportsVP9KSVCHWEncoding is satisfied if the SoC supports VP9 k-SVC
-// hardware encoding. VP9 k-SVC is a SVC stream in which a frame only on keyframe
-// can refer frames in a different spatial layer.
-// See https://www.w3.org/TR/webrtc-svc/#dependencydiagrams* for detail.
-func SupportsVP9KSVCHWEncoding() Condition {
-	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
-		dc := f.GetDeprecatedDeviceConfig()
-		if dc == nil {
-			return withErrorStr("DeprecatedDeviceConfig is not given")
-		}
-		if dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_JASPER_LAKE ||
-			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_TIGER_LAKE ||
-			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_ALDER_LAKE {
-			return satisfied()
-		}
-		return unsatisfied("SoC does not support VP9 k-SVC HW encoding")
-	}}
-}
-
 // AssistantKey is satisfied if a model has an assistant key.
 func AssistantKey() Condition {
 	return Model("eve", "nocturne", "atlas")

@@ -134,3 +134,20 @@ func TestProxyCommand(t *testing.T) {
 	}
 	defer hst.Close(ctx)
 }
+
+func TestProxyCommandNone(t *testing.T) {
+	t.Parallel()
+	srv, err := sshtest.NewSSHServer(&userKey.PublicKey, hostKey, nil)
+	if err != nil {
+		t.Fatal("Failed starting server: ", err)
+	}
+	defer srv.Close()
+
+	ctx := context.Background()
+	opt := ssh.Options{ProxyCommand: "none"}
+	hst, err := sshtest.ConnectToServer(ctx, srv, userKey, &opt)
+	if err != nil {
+		t.Fatal("Unexpectedly unable to connect to server: ", err)
+	}
+	defer hst.Close(ctx)
+}

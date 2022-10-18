@@ -13,6 +13,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"strconv"
+	"strings"
 	"time"
 
 	"golang.org/x/crypto/ssh"
@@ -253,7 +254,7 @@ func connectSSH(ctx context.Context, hostPort, proxyCommand string, cfg *ssh.Cli
 	if err := doAsync(ctx, func() error {
 		var conn net.Conn
 		var err error
-		if proxyCommand == "" {
+		if proxyCommand == "" || strings.ToLower(proxyCommand) == "none" {
 			conn, err = proxy.FromEnvironment().Dial("tcp", hostPort)
 		} else {
 			conn, err = DialProxyCommand(ctx, hostPort, proxyCommand)

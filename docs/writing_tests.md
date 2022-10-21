@@ -347,6 +347,11 @@ Several blog posts discuss these patterns in more detail:
 Note: there is an old equivalent "golang.org/x/net/context" package, but for
 consistency, the built-in "context" package is preferred.
 
+> As a rule of thumb, a timeout should be **double of the expected worst case
+> performance**. If you're unsure, measure time multiple times in the worst case
+> scenario and double that. Do not use timeouts to catch performance
+> regressions. Instead consider writing a performance test.
+
 [context.Context]: https://golang.org/pkg/context/
 [channel]: https://tour.golang.org/concurrency/2
 [local tests]: https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform/tast/src/chromiumos/tast/internal/bundle/local.go

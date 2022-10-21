@@ -331,9 +331,10 @@ other two types of ROIs.
 ### How can I test if the library can find a UI element in a screenshot before coding? (Googlers only)
 
 Try the playground at [go/acuiti-playground]. Upload a screenshot you want to
-test and choose the detection type to text or custom icon. If you are able to
-find the UI element there, there should be no problem that the [uidetection] can
-find it too.
+test and change the detection type to 'text' or 'custom icon'. If you can
+find a UI element with playground, the [uidetection] library can find it too.
+
+The playground also generates a Tast code snippet matching the query.
 
 ### I am getting errors in taking stable screenshot.
 

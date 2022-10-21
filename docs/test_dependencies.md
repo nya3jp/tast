@@ -192,6 +192,8 @@ The following software features are defined:
 *   `siernia` - Sirenia is present on a non-ManaTEE image.
 *   `smartdim` - Use smart dim to defer the imminent screen dimming.
 *   `smartctl` - Ability to run smartctl software utility.
+*   `stack_sampled_metrics` - Ability to run the stack profiler and gather
+stack-sampled metrics.
 *   `storage_wearout_detect` - The ability to measure storage device health.
 *   `tablet_form_factor` - The device's primary form factor is tablet
 *   `tast_vm` - The test is running in a VM [managed by chromite](https://chromium.googlesource.com/chromiumos/chromite/+/HEAD/lib/cros_test.py#396).

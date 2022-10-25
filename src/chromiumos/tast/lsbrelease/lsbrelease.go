@@ -82,18 +82,18 @@ var allowedPkgs = []string{
 	// TODO(crbug.com/1140906): Temporarily allowed until we remove extra tracing code that only runs on eve.
 	"chromiumos/tast/local/bundles/cros/lacros/gpucuj",
 	"chromiumos/tast/local/bundles/cros/platform/updateserver",
-	"chromiumos/tast/local/bundles/cros/autoupdate", // For autoupdate and rollback tests.
-	"chromiumos/tast/local/bundles/cros/health",     // To confirm OS version can be parsed.
-	"chromiumos/tast/local/bundles/cros/osinstall",  // For Version.
-	"chromiumos/tast/local/bundles/cros/system",     // For Version.
-	"chromiumos/tast/local/bundles/cros/hwsec",      // For cross-version login tests.
-	"chromiumos/tast/local/bundles/cros/policy",     // For autoupdate policy tests.
-	"chromiumos/tast/local/bundles/cros/lacros",     // For ReleaseTrack or Description.
+	"chromiumos/tast/local/bundles/cros/autoupdate",         // For autoupdate and rollback tests.
+	"chromiumos/tast/local/bundles/cros/health",             // To confirm OS version can be parsed.
+	"chromiumos/tast/local/bundles/cros/osinstall",          // For Version.
+	"chromiumos/tast/local/bundles/cros/system",             // For Version.
+	"chromiumos/tast/local/bundles/cros/hwsec",              // For cross-version login tests.
+	"chromiumos/tast/local/bundles/cros/policy",             // For autoupdate policy tests.
+	"chromiumos/tast/local/bundles/cros/lacros",             // For ReleaseTrack or Description.
+	"chromiumos/tast/local/bundles/cros/video/expectations", // For per-board test expectations.
 	"chromiumos/tast/local/chrome/crossdevice",
 	"chromiumos/tast/local/chrome/nearbyshare",
 	"chromiumos/tast/local/crash",
 	"chromiumos/tast/local/graphics/trace",
-	"chromiumos/tast/local/graphics/expectations", // For per-board test expectations.
 	"chromiumos/tast/local/rialto",
 	"chromiumos/tast/local/screenshot", // For Board.
 	"chromiumos/tast/lsbrelease",

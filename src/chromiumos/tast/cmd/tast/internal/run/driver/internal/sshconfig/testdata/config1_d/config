@@ -20,3 +20,12 @@ Host hello*                # Test nest include.
 
 Host 0:0:0:0:0:ffff:*1
     Port 2222
+
+Host with_proxyjump
+    ProxyJump proxy
+
+Host with_proxyjump_port
+    ProxyJump proxy:22
+
+Host with_proxyjump_none
+    ProxyJump none

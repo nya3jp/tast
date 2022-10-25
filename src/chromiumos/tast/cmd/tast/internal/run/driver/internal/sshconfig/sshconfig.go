@@ -404,6 +404,26 @@ func (sc *block) resolveSSHInfo(inputHostName string) resolvedSSHInfo {
 	if len(values) > 0 {
 		si.proxyCommand = strings.Join(values, " ")
 	}
+	values = sc.parameters["proxyjump"]
+	if len(values) == 1 {
+		if strings.ToLower(values[0]) == "none" {
+			// ProxyJump == none disables ProxyJump. Just use "none" as the proxy command.
+			si.proxyCommand = "none"
+		} else {
+			// NOTE: `man ssh_config` says ProxyJump can be a comma-separated string to specify multiple
+			// proxies, but this code doesn't support it.
+			host, port, err := splitHostPort(values[0])
+			if err == nil {
+				// ProxyJump == proxy has the same effect as ProxyCommand == "ssh -W [%h]:%p proxy"
+				args := []string{"ssh"}
+				if port != "" {
+					args = append(args, "-p", port)
+				}
+				args = append(args, "-W", "[%h]:%p", host)
+				si.proxyCommand = strings.Join(args, " ")
+			}
+		}
+	}
 
 	for _, subBlock := range sc.subBlocks {
 		if si.filled() {

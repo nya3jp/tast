@@ -152,6 +152,13 @@ func TestResolveHostFromFilesNotMatchCondInclude(t *testing.T) {
 	testForResolveHostFromDefaultConfig(t, "h.google.com", "h.google.com:22", "")
 }
 
+// TestResolveHostFromFilesProxyJump tests the case that ProxyJump is properly interpreted.
+func TestResolveHostFromFilesProxyJump(t *testing.T) {
+	testForResolveHostFromDefaultConfig(t, "with_proxyjump", "with_proxyjump:22", "ssh -W [%h]:%p proxy")
+	testForResolveHostFromDefaultConfig(t, "with_proxyjump_port", "with_proxyjump_port:22", "ssh -p 22 -W [%h]:%p proxy")
+	testForResolveHostFromDefaultConfig(t, "with_proxyjump_none", "with_proxyjump_none:22", "none")
+}
+
 // TestResolveHostFromFilesWithLoop tests if ResolveHostFromFiles detect a loop in Include statements.
 func TestResolveHostFromFilesWithLoop(t *testing.T) {
 

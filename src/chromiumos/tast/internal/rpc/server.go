@@ -178,7 +178,8 @@ func RunTCPServer(port int, handshakeReq *protocol.HandshakeRequest, stdin io.Re
 	}
 
 	// Return information regarding the server, paving the way for dynamic port assignment.
-	response := &tcpServerResponse{Port: port}
+	assignedPort := listener.Addr().(*net.TCPAddr).Port
+	response := &tcpServerResponse{Port: assignedPort}
 	responseBytes, err := json.Marshal(response)
 	if err != nil {
 		return errors.Wrapf(err, "failed to marshal json response: %v", response)

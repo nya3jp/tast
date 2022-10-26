@@ -511,6 +511,14 @@ third_party/autotest/files/server/site_tests/tast/control.runtime-probe
 				Name: "wificell_dut_validation",
 				Desc: `Group of tests to be run by lab team to validate AP, PCAP, BT-Peers & DUT during deployment.`,
 			},
+			{
+				Name: "wificell_e2e",
+				Desc: `Identifies wifi_chrome ui/e2e tests.`,
+			},
+			{
+				Name: "wificell_e2e_unstable",
+				Desc: `Identifies wifi_chrome ui/e2e tests that are unstable. Used to skip tests running on stable suites and/or the CQ.`,
+			},
 		},
 	},
 	{
@@ -603,6 +611,14 @@ third_party/autotest/files/server/site_tests/tast/control.runtime-probe
 			{
 				Name: "cellular_callbox",
 				Desc: `Identifies tests that run on DUTs connected to the CMW500 callbox.`,
+			},
+			{
+				Name: "cellular_e2e",
+				Desc: `Identifies Cellular ui/e2e tests.`,
+			},
+			{
+				Name: "cellular_e2e_unstable",
+				Desc: `Identifies Cellular ui/e2e tests that are unstable. Used to skip tests running on stable suites and/or the CQ.`,
 			},
 		},
 	},
@@ -1044,7 +1060,17 @@ Parallels boot-up testing. Otherwise the same as group:crosbolt.`,
 		Name:     "network",
 		Contacts: []string{"cros-networking@google.com"},
 		Desc:     `A group of tests that test general network functions.`,
-	},
+		Subattrs: []*attr{
+			{
+				Name: "network_e2e",
+				Desc: `Identifies network ui/e2e tests.`,
+			},
+			{
+				Name: "network_e2e_unstable",
+				Desc: `Identifies network ui/e2e tests that are unstable. Used to skip tests running on stable suites and/or the CQ.`,
+			},
+	        },
+	 },
 }
 
 // validGroupMap is the name-keyed map of validGroups.

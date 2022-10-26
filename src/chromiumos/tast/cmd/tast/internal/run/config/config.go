@@ -479,6 +479,32 @@ func (c *MutableConfig) SetFlags(f *flag.FlagSet) {
 	})
 	f.Var(&filterFile, "testfilterfile", `a file indicates which tests to be disable (can be repeated)`)
 
+	vf := command.RepeatedFlag(func(v string) error {
+		parts := strings.SplitN(v, "=", 2)
+		if len(parts) != 2 {
+			return errors.New(`want "name=value"`)
+		}
+		c.TestVars[parts[0]] = parts[1]
+		return nil
+	})
+	f.Var(&vf, "var", `runtime variable to pass to tests, as "name=value" (can be repeated)`)
+	dvd := command.RepeatedFlag(func(path string) error {
+		c.DefaultVarsDirs = append(c.DefaultVarsDirs, path)
+		return nil
+	})
+	f.Var(&dvd, "defaultvarsdir", "directory having YAML files containing variables (can be repeated)")
+	vff := command.RepeatedFlag(func(path string) error {
+		c.VarsFiles = append(c.VarsFiles, path)
+		return nil
+	})
+	f.Var(&vff, "varsfile", "YAML file containing variables (can be repeated)")
+	// TODO(oka): Use flag.Func once it's available.
+	f.Var(funcValue(func(s string) error {
+		c.MaybeMissingVars = s
+		_, err := regexp.Compile(s)
+		return err
+	}), "maybemissingvars", "Regex matching with variables which may be missing")
+
 	// Some flags are only relevant if we're running tests rather than listing them.
 	if c.Mode == RunTestsMode {
 		f.StringVar(&c.ResDir, "resultsdir", "", "directory for test results")
@@ -487,32 +513,6 @@ func (c *MutableConfig) SetFlags(f *flag.FlagSet) {
 
 		f.Var(command.NewListFlag(",", func(v []string) { c.ExtraUSEFlags = v }, nil), "extrauseflags",
 			"comma-separated list of additional USE flags to inject when checking test dependencies")
-
-		vf := command.RepeatedFlag(func(v string) error {
-			parts := strings.SplitN(v, "=", 2)
-			if len(parts) != 2 {
-				return errors.New(`want "name=value"`)
-			}
-			c.TestVars[parts[0]] = parts[1]
-			return nil
-		})
-		f.Var(&vf, "var", `runtime variable to pass to tests, as "name=value" (can be repeated)`)
-		dvd := command.RepeatedFlag(func(path string) error {
-			c.DefaultVarsDirs = append(c.DefaultVarsDirs, path)
-			return nil
-		})
-		f.Var(&dvd, "defaultvarsdir", "directory having YAML files containing variables (can be repeated)")
-		vff := command.RepeatedFlag(func(path string) error {
-			c.VarsFiles = append(c.VarsFiles, path)
-			return nil
-		})
-		f.Var(&vff, "varsfile", "YAML file containing variables (can be repeated)")
-		// TODO(oka): Use flag.Func once it's available.
-		f.Var(funcValue(func(s string) error {
-			c.MaybeMissingVars = s
-			_, err := regexp.Compile(s)
-			return err
-		}), "maybemissingvars", "Regex matching with variables which may be missing")
 
 		vals := map[string]int{
 			"env":  int(ProxyEnv),

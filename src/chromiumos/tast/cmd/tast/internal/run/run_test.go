@@ -421,7 +421,7 @@ func TestRunLogs(t *gotesting.T) {
 		}),
 		runtest.WithCompanionDUT("dut1", makeHandler("dut1")),
 	)
-	logger := loggingtest.NewLogger(t, logging.LevelInfo) // drop debug messages
+	logger := loggingtest.NewLogger(t, logging.LevelDebug)
 	ctx := logging.AttachLoggerNoPropagation(env.Context(), logger)
 	cfg := env.Config(nil)
 	state := env.State()

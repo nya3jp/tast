@@ -52,6 +52,10 @@ func NewLoggingHandler(resDir string, multiplexer *logging.MultiLogger, client *
 }
 
 func (h *loggingHandler) EntityStart(ctx context.Context, ei *entityInfo) error {
+	const BLUE = "\033[1;34m"
+	const RESET = "\033[0m"
+	t := time.Now()
+	timeStr := t.UTC().Format("2006-01-02T15:04:05.000000Z")
 	f, err := os.Create(filepath.Join(ei.FinalOutDir, "log.txt"))
 	if err != nil {
 		return err
@@ -73,7 +77,8 @@ func (h *loggingHandler) EntityStart(ctx context.Context, ei *entityInfo) error 
 	h.loggers = append(h.loggers, logger)
 	h.multiplexer.AddLogger(logger.Logger)
 
-	logging.Infof(ctx, "Started %s %s", entityTypeName(ei.Entity.GetType()), ei.Entity.GetName())
+	logging.Debugf(ctx, "Started %s %s", entityTypeName(ei.Entity.GetType()), ei.Entity.GetName())
+	fmt.Printf("%v%v Started %s %s %v\n", timeStr, BLUE, entityTypeName(ei.Entity.GetType()), ei.Entity.GetName(), RESET)
 	return nil
 }
 
@@ -97,14 +102,25 @@ func (h *loggingHandler) EntityError(ctx context.Context, ei *entityInfo, e *err
 }
 
 func (h *loggingHandler) EntityEnd(ctx context.Context, ei *entityInfo, r *entityResult) error {
+	const BLUE = "\033[1;34m"
+	const RESET = "\033[0m"
+	t := time.Now()
+	timeStr := t.UTC().Format("2006-01-02T15:04:05.000000Z")
 	if reasons := r.Skip.GetReasons(); len(reasons) > 0 {
-		logging.Infof(ctx, "Skipped test %s due to missing dependencies: %s", ei.Entity.GetName(), strings.Join(reasons, ", "))
+		logging.Debugf(ctx, "Skipped test %s due to missing dependencies: %s", ei.Entity.GetName(), strings.Join(reasons, ", "))
+		fmt.Printf("%v%v Skipped test %s%v due to missing dependencies: %s\n", timeStr, BLUE, ei.Entity.GetName(), RESET, strings.Join(reasons, ", "))
 		return nil
 	}
-	logging.Infof(ctx,
+	logging.Debugf(ctx,
 		"Completed %s %s in %v with %d error(s)",
 		entityTypeName(ei.Entity.GetType()),
 		ei.Entity.GetName(),
+		r.End.Sub(r.Start).Round(time.Millisecond),
+		len(r.Errors))
+	fmt.Printf("%v%v Completed %s %s %v in %v with %d error(s)\n",
+		timeStr, BLUE,
+		entityTypeName(ei.Entity.GetType()),
+		ei.Entity.GetName(), RESET,
 		r.End.Sub(r.Start).Round(time.Millisecond),
 		len(r.Errors))
 

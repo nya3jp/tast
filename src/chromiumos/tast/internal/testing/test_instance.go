@@ -585,6 +585,9 @@ func (t *TestInstance) EntityProto() *protocol.Entity {
 			SoftwareDeps: append([]string(nil), t.SoftwareDeps[""]...),
 			Bundle:       t.Bundle,
 		},
+		TestBedDeps:  append([]string(nil), t.TestBedDeps...),
+		Requirements: append([]string(nil), t.Requirements...),
+		BugComponent: t.BugComponent,
 	}
 }
 

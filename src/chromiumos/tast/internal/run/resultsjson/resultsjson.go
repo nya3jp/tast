@@ -33,6 +33,9 @@ type Test struct {
 	Fixture      string                 `json:"fixture,omitempty"`
 	Timeout      time.Duration          `json:"timeout"`
 	Bundle       string                 `json:"bundle,omitempty"`
+	TestBedDeps  []string               `json:"testBedDeps,omitempty"`
+	Requirements []string               `json:"requirements,omitempty"`
+	BugComponent string                 `json:"bugComponent,omitempty"`
 }
 
 // Error describes an error encountered while running a test.
@@ -94,5 +97,8 @@ func NewTest(e *protocol.Entity) (*Test, error) {
 		Fixture:      e.GetFixture(),
 		Timeout:      timeout,
 		Bundle:       e.GetLegacyData().GetBundle(),
+		TestBedDeps:  e.GetTestBedDeps(),
+		Requirements: e.GetRequirements(),
+		BugComponent: e.GetBugComponent(),
 	}, nil
 }

@@ -166,6 +166,9 @@ message Entity {
   EntityContacts contacts = 8;
   EntityLegacyData legacy_data = 9;
   repeated StringPair search_flags = 10;
+  repeated string test_bed_deps = 11;
+  repeated string requirements = 12;
+  string bug_component = 13;
 }
 
 // EntityContacts contains contact information of an entity.

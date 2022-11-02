@@ -156,6 +156,7 @@ var softwareFeatureDefs = map[string]string{
 	"no_ubsan":                  "!ubsan",
 	"no_vulkan":                 "!vulkan",
 	"no_arcvm_virtio_blk_data":  "!arcvm_virtio_blk_data",
+	"no_gsc":                    `!"cr50_onboard" && !"ti50_onboard"`,
 	"nvme":                      "nvme",
 	"oci":                       "containers && !moblab", // run_oci doesn't work on Moblab: https://crbug.com/951691
 	"ocr":                       "ocr",

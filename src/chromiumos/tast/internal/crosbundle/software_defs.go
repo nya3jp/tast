@@ -151,6 +151,7 @@ var softwareFeatureDefs = map[string]string{
 	"no_qemu":                   `!"betty" && !"tast_vm"`,
 	"no_symlink_mount":          "!lxc", // boards using LXC set CONFIG_SECURITY_CHROMIUMOS_NO_SYMLINK_MOUNT=n
 	"no_tablet_form_factor":     "!tablet_form_factor",
+	"no_tpm2_simulator":         "!tpm2_simulator",
 	"no_tpm_dynamic":            "!tpm_dynamic",
 	"no_ubsan":                  "!ubsan",
 	"no_vulkan":                 "!vulkan",

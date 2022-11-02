@@ -151,6 +151,7 @@ The following software features are defined:
 *   `no_symlink_mount` - Symlink mounting is disabled via the
     `CONFIG_SECURITY_CHROMIUMOS_NO_SYMLINK_MOUNT` kernel option.
 *   `no_tablet_form_factor` - The device's primary form factor is not tablet
+*   `no_tpm2_simulator` - Built was not built with the simulator of Trusted Platform Module supporting TPMv2.
 *   `no_tpm_dynamic` - Build was not built with dynamic TPM.
 *   `no_ubsan` - Build was not built with Undefined Behavior Sanitizer.
 *   `no_vulkan` - Build was not built with [Vulkan] enabled.

@@ -982,6 +982,10 @@ Parallels boot-up testing. Otherwise the same as group:crosbolt.`,
 				Name: "shimless_rma_nodelocked",
 				Desc: `Shimless RMA tests that require node-locked image.`,
 			},
+			{
+				Name: "shimless_rma_calibration",
+				Desc: `Shimless RMA tests for calibration.`,
+			},
 		},
 	},
 	{

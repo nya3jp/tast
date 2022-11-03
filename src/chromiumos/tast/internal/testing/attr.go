@@ -1080,6 +1080,15 @@ Parallels boot-up testing. Otherwise the same as group:crosbolt.`,
 		Contacts: []string{"ambalavanan.m.m@intel.com", "intel-chrome-system-automation-team@intel.com"},
 		Desc:     `A group of tests related to Intel that are gating for build validation.`,
 	},
+	{
+		Name:     "hw_agnostic",
+		Contacts: []string{"tast-owners@google.com"},
+		Desc: `Specifies tests that are capable of being run on VMs.
+
+This does not imply tests can only run on VMs, but can be used by systems to find and schedule tests on VMs
+from other existing groups (or use this group standalone).
+`,
+	},
 }
 
 // validGroupMap is the name-keyed map of validGroups.

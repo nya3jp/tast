@@ -1332,7 +1332,7 @@ func TestWriteTestsAsProto(t *gotesting.T) {
 	in := []*TestInstance{
 		{
 			Name:         "test001",
-			Attr:         []string{"attr1", "attr2"},
+			Attr:         []string{"attr1", "attr2", "group:hw_agnostic"},
 			HardwareDeps: map[string]dep.HardwareDeps{"": hwdep.D()},
 			Contacts: []string{
 				"someone1@chromium.org",
@@ -1356,6 +1356,7 @@ func TestWriteTestsAsProto(t *gotesting.T) {
 					Tags: []*api.TestCase_Tag{
 						{Value: "attr1"},
 						{Value: "attr2"},
+						{Value: "group:hw_agnostic"},
 					},
 					Dependencies: []*api.TestCase_Dependency{
 						{Value: "carrier:verizon"},
@@ -1381,6 +1382,7 @@ func TestWriteTestsAsProto(t *gotesting.T) {
 					},
 					Criteria:     &api.Criteria{Value: "Fake purpose"},
 					BugComponent: &api.BugComponent{Value: "my component"},
+					HwAgnostic:   &api.HwAgnostic{Value: true},
 				},
 			},
 		},

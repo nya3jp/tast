@@ -499,6 +499,18 @@ func (t *TestInstance) Proto() *api.TestCaseMetadata {
 	for _, a := range t.Attr {
 		tags = append(tags, &api.TestCase_Tag{Value: a})
 	}
+
+	// If 'group:hw_agnostic' is set, we need to also set
+	// HwAgnostic flag in test metadata proto along with adding
+	// it to the tags.
+	hwAgnostic := false
+	for _, a := range t.Attr {
+		if a == "group:hw_agnostic" {
+			hwAgnostic = true
+			break
+		}
+	}
+
 	var owners []*api.Contact
 	for _, email := range t.Contacts {
 		owners = append(owners, &api.Contact{Email: email})
@@ -535,6 +547,7 @@ func (t *TestInstance) Proto() *api.TestCaseMetadata {
 			Requirements: requirements,
 			Criteria:     &api.Criteria{Value: t.Desc},
 			BugComponent: &api.BugComponent{Value: t.BugComponent},
+			HwAgnostic:   &api.HwAgnostic{Value: hwAgnostic},
 		},
 	}
 	return &r

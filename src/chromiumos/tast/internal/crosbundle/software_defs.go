@@ -258,6 +258,7 @@ var softwareFeatureDefs = map[string]string{
 	// Some boards cannot play/record stably, disabling these tests and keeping
 	// some of them informationl.
 	// TODO(b/240269271): remove "octopus" and "hatch" when b/240269271 is fixed.
-	"audio_stable":   `!("board:octopus" || "board:hatch")`,
-	"audio_unstable": `"board:octopus" || "board:hatch"`,
+	"audio_stable":               `!("board:octopus" || "board:hatch")`,
+	"audio_unstable":             `"board:octopus" || "board:hatch"`,
+	"gsc_can_wake_ec_with_reset": `!("board:grunt" || "board:nami")`,
 }

@@ -418,6 +418,24 @@ func CellularSoftwareDynamicSar() Condition {
 	}
 }
 
+// NoCellular returns a hardware dependency condition that
+// is satisfied iff the DUT does not have a cellular modem.
+func NoCellular() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("Did not find hardware features")
+		}
+		if status := hf.GetCellular().Present; status == configpb.HardwareFeatures_NOT_PRESENT {
+			return satisfied()
+		} else if status == configpb.HardwareFeatures_PRESENT_UNKNOWN {
+			return unsatisfied("Could not determine if cellular model is present")
+		}
+		return unsatisfied("DUT has a cellular modem")
+	},
+	}
+}
+
 // Bluetooth returns a hardware dependency condition that
 // is satisfied iff the DUT has a bluetooth adapter.
 func Bluetooth() Condition {

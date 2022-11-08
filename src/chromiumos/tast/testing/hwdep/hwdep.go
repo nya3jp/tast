@@ -571,23 +571,6 @@ func CPUSupportsSHANI() Condition {
 	}
 }
 
-// ECHibernate returns a hardware dependency condition that is satisfied
-// iff the EC has the ability to hibernate.
-func ECHibernate() Condition {
-	names := []string{"fizz", "kukui", "puff", "scarlet"}
-	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
-		listed, err := platformListed(f.GetDeprecatedDeviceConfig(), names...)
-		if err != nil {
-			return withError(err)
-		}
-		if listed {
-			return unsatisfied("DUT does not support EC hibernate")
-		}
-		return satisfied()
-	},
-	}
-}
-
 // Fingerprint returns a hardware dependency condition that is satisfied
 // iff the DUT has fingerprint sensor.
 func Fingerprint() Condition {

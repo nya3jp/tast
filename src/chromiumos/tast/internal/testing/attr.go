@@ -1089,6 +1089,11 @@ This does not imply tests can only run on VMs, but can be used by systems to fin
 from other existing groups (or use this group standalone).
 `,
 	},
+	{
+		Name:     "vdi_limited",
+		Contacts: []string{"kamilszarek@google.com", "chromeos-ent-test@google.com"},
+		Desc:     `A group of VDI tests that should use run on selected devices to limit load on the infrastructure.`,
+	},
 }
 
 // validGroupMap is the name-keyed map of validGroups.

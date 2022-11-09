@@ -792,34 +792,9 @@ Meta tests should be a subset of mainline critical tests.
 		Desc:     `A group of tests that utilize Syzkaller to fuzz the kernel.`,
 	},
 	{
-		Name:     "nearby-share",
-		Contacts: []string{"chromeos-sw-engprod@google.com"},
-		Desc:     `A group of tests that test Nearby Share functionality.`,
-	},
-	{
 		Name:     "nearby-share-arc",
 		Contacts: []string{"chromeos-sw-engprod@google.com"},
 		Desc:     `A group of tests that test Nearby Share functionality from ARC++.`,
-	},
-	{
-		Name:     "nearby-share-cq",
-		Contacts: []string{"chromeos-sw-engprod@google.com"},
-		Desc:     `A group of tests to be run in CQ for Nearby Share functionality.`,
-	},
-	{
-		Name:     "nearby-share-dev",
-		Contacts: []string{"chromeos-sw-engprod@google.com"},
-		Desc:     `A group of tests that test Nearby Share functionality with the dev version of Android Nearby.`,
-	},
-	{
-		Name:     "nearby-share-prod",
-		Contacts: []string{"chromeos-sw-engprod@google.com"},
-		Desc:     `A group of tests that test Nearby Share functionality with the production version of Android Nearby.`,
-	},
-	{
-		Name:     "nearby-share-remote",
-		Contacts: []string{"chromeos-sw-engprod@google.com"},
-		Desc:     `A group of remote tests that test Nearby Share functionality.`,
 	},
 	{
 		Name:     "paper-io",
@@ -918,6 +893,59 @@ Parallels boot-up testing. Otherwise the same as group:crosbolt.`,
 		Name:     "cross-device",
 		Contacts: []string{"chromeos-sw-engprod@google.com"},
 		Desc:     `A group of tests that test Cross Device functionality between CrOS and Android devices.`,
+		Subattrs: []*attr{
+			{
+				Name: "cross-device_cellular",
+				Desc: `Cross Device tests that use a cellular connection on the Android phone.`,
+			},
+			{
+				Name: "cross-device_cq",
+				Desc: `Indicate this test should be scheduled on one of the Cross Device Commit Queues.`,
+			},
+			{
+				Name: "cross-device_instanttether",
+				Desc: `Instant Tether tests.`,
+			},
+			{
+				Name: "cross-device_lacros",
+				Desc: `Cross Device tests that use Lacros.`,
+			},
+			{
+				Name: "cross-device_nearbyshare",
+				Desc: `Nearby Share tests.`,
+			},
+			{
+				Name: "cross-device_nearbyshare-dev",
+				Desc: `A group of tests that test Nearby Share functionality with the dev version of Android Nearby.`,
+			},
+			{
+				Name: "cross-device_nearbyshare-prod",
+				Desc: `A group of tests that test Nearby Share functionality with the production version of Android Nearby.`,
+			},
+			{
+				Name: "cross-device_phonehub",
+				Desc: `Phone Hub tests.`,
+			},
+			{
+				Name: "cross-device_smartlock",
+				Desc: `Smart Lock tests.`,
+			},
+		},
+	},
+	{
+		Name:     "cross-device-remote",
+		Contacts: []string{"chromeos-sw-engprod@google.com"},
+		Desc:     `A group of remote tests that test Cross Device functionality between two ChromeOS devices.`,
+		Subattrs: []*attr{
+			{
+				Name: "cross-device-remote_cq",
+				Desc: `Indicate this test should be scheduled on one of the Cross Device Commit Queues.`,
+			},
+			{
+				Name: "cross-device-remote_nearbyshare",
+				Desc: `Nearby Share tests.`,
+			},
+		},
 	},
 	{
 		Name:     "hps",

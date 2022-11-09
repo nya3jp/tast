@@ -46,15 +46,9 @@ func testFunc(path string) {
 }
 `
 	expects := []string{
-		"testfile.go:9:22: A reference to the /home/chronos/user bind mount was found which is being deprecated, please use the cryptohome package instead",
 		"testfile.go:11:18: A reference to the /home/chronos/user bind mount was found which is being deprecated, please use the cryptohome package instead",
-		"testfile.go:16:24: A reference to the /home/chronos/user bind mount was found which is being deprecated, please use the cryptohome package instead",
 		"testfile.go:17:6: A reference to the /home/chronos/user bind mount was found which is being deprecated, please use the cryptohome package instead",
-		"testfile.go:18:10: A reference to the /home/chronos/user bind mount was found which is being deprecated, please use the cryptohome package instead",
-		"testfile.go:19:26: A reference to the /home/chronos/user bind mount was found which is being deprecated, please use the cryptohome package instead",
 		"testfile.go:21:36: A reference to the /home/chronos/user bind mount was found which is being deprecated, please use the cryptohome package instead",
-		"testfile.go:22:29: A reference to the /home/chronos/user bind mount was found which is being deprecated, please use the cryptohome package instead",
-		"testfile.go:25:11: A reference to the /home/chronos/user bind mount was found which is being deprecated, please use the cryptohome package instead",
 		"testfile.go:26:28: filesapp.DownloadPath references the /home/chronos/user bind mount which is being deprecated, please use the cryptohome package instead",
 		"testfile.go:28:24: filesapp.MyFilesPath references the /home/chronos/user bind mount which is being deprecated, please use the cryptohome package instead",
 	}

@@ -30,7 +30,7 @@ func NoHardcodedUserDirs(fs *token.FileSet, f *ast.File) []*Issue {
 
 	// Match any paths that are parented at /home/chronos/user but exclude any
 	// matches that might be part of a comment.
-	mountRegex := regexp.MustCompile(`^"/home/chronos/user[^\s]*"$`)
+	mountRegex := regexp.MustCompile(`^"/home/chronos/user/Downloads[^\s]*"$`)
 
 	// Traverse the syntax tree to identify either string literals that reference
 	// the user bind mount OR exported package variables that are known or have

@@ -201,6 +201,7 @@ stack-sampled metrics.
 *   `tast_vm` - The test is running in a VM [managed by chromite](https://chromium.googlesource.com/chromiumos/chromite/+/HEAD/lib/cros_test.py#396).
 *   `tflite_opencl` - Skips boards which have issues with the OpenCL TFLite
     delegate (b/233851820).
+*   `third_party_firmware` - The device runs third-party firmware (e.g. BIOS) that can not be managed.
 *   `thread_safe_libva_backend` - Boards where the LIBVA backend is threadsafe.
 *   `tpm` - A [Trusted Platform Module] chip.
 *   `tpm1` - Indicate a Trusted Platform Module supporting TPMv1.2 is available. Note that TPMv2 is not backward compatible.

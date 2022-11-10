@@ -273,28 +273,19 @@ Finally, we need to read the output from `dmesg`:
 		defer close(ch)
 
 		// Writes msg to ch and returns true if more messages should be written.
-		writeMsg := func(msg string) bool {
-			// To avoid blocking forever on a write to ch if nobody's reading from
-			// it, we use a non-blocking write. If the channel isn't writable, sleep
-			// briefly and then check if the context's deadline has been reached.
-			for {
-				if ctx.Err() != nil {
-					return false
-				}
-
-				select {
-				case ch <- msg:
-					return true
-				default:
-					testing.Sleep(ctx, 10*time.Millisecond)
-				}
+		writeMsg := func(ctx context.Context, msg string) bool {
+			select {
+			case ch <- msg:
+				return true
+			case ctx.Done():
+				return false
 			}
 		}
 
 		// The Scan method will return false once the dmesg process is killed.
 		sc := bufio.NewScanner(stdout)
 		for sc.Scan() {
-			if !writeMsg(sc.Text()) {
+			if !writeMsg(ctx, sc.Text()) {
 				break
 			}
 		}
@@ -315,12 +306,10 @@ the other end. The reader in this scenario is the main test function, and we
 don't want our goroutine to block indefinitely if the test exits before it's
 read everything that we're trying to write to the channel.
 
-To handle this case, we define a nested `writeMsg` function that performs the
-write in a `select` statement with a `default` case that will be executed
-immediately if the channel isn't currently writable. If we hit that, we sleep
-briefly (to avoid burning CPU cycles unnecessarily), check whether the context's
-deadline has been reached (indicating that the test completed), and then try to
-write to the channel again.
+To handle this case, we define a nested `writeMsg` function that performs a
+blocking `select` statement which waits until either channel has been available
+for write operations or `ctx` context deadline has been reached (indicating that
+the test completed).
 
 [unidirectional channel]: https://gobyexample.com/channel-directions
 [name the return arguments]: https://github.com/golang/go/wiki/CodeReviewComments#named-result-parameters
@@ -584,28 +573,19 @@ func streamDmesg(ctx context.Context) (*testexec.Cmd, <-chan string, error) {
 		defer close(ch)
 
 		// Writes msg to ch and returns true if more messages should be written.
-		writeMsg := func(msg string) bool {
-			// To avoid blocking forever on a write to ch if nobody's reading from
-			// it, we use a non-blocking write. If the channel isn't writable, sleep
-			// briefly and then check if the context's deadline has been reached.
-			for {
-				if ctx.Err() != nil {
-					return false
-				}
-
-				select {
-				case ch <- msg:
-					return true
-				default:
-					testing.Sleep(ctx, 10*time.Millisecond)
-				}
+		writeMsg := func(ctx context.Context, msg string) bool {
+			select {
+			case ch <- msg:
+				return true
+			case ctx.Done():
+				return false
 			}
 		}
 
 		// The Scan method will return false once the dmesg process is killed.
 		sc := bufio.NewScanner(stdout)
 		for sc.Scan() {
-			if !writeMsg(sc.Text()) {
+			if !writeMsg(ctx, sc.Text()) {
 				break
 			}
 		}

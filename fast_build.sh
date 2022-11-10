@@ -147,9 +147,9 @@ run_code_coverage() {
 
   go test "${verbose_flag[@]}" -covermode=atomic -pkgdir "${PKGDIR}" \
     ${test_regex:+"-run=${test_regex}"} "${args[@]}" \
-    -coverprofile="${dir}/tast_code_coverage_${pkg_name}.out" \
-  go tool cover -html="${dir}/tast_code_coverage_${pkg_name}.out" -o \
-    "${dir}/tast_code_coverage_${pkg_name}.html"
+    -coverprofile="${dir}/tast_code_coverage_${pkg_name}.out"
+  go tool cover -html="${dir}/tast_code_coverage_${pkg_name}.out" \
+    -o "${dir}/tast_code_coverage_${pkg_name}.html"
   go tool cover -func="${dir}/tast_code_coverage_${pkg_name}.out" -o \
     "${dir}/tast_func_coverage_${pkg_name}.txt"
 }

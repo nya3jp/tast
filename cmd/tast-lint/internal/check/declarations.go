@@ -7,6 +7,7 @@ package check
 import (
 	"go/ast"
 	"go/token"
+	"net/mail"
 	"strconv"
 	"strings"
 	"unicode"
@@ -26,7 +27,7 @@ const (
 	badDescMsg        = `Desc should be capitalized phrases without trailing punctuation, e.g. "Checks that foo is bar"`
 
 	noContactMsg          = `Contacts field should exist to list owners' email addresses`
-	nonLiteralContactsMsg = `Contacts field should be an array literal of string literals`
+	nonLiteralContactsMsg = `Contacts field should be an array literal of syntactically valid email address`
 
 	nonLiteralAttrMsg         = `Test Attr should be an array literal of string literals`
 	nonLiteralVarsMsg         = `Test Vars should be an array literal of string literals or constants, or append(array literal, ConstList...)`
@@ -262,7 +263,17 @@ func verifyContacts(fs *token.FileSet, fields entityFields, call *ast.CallExpr) 
 
 	var issues []*Issue
 	for _, el := range comp.Elts {
-		if _, ok := toString(el); !ok {
+		contact, ok := toString(el)
+		if !ok {
+			issues = append(issues, &Issue{
+				Pos:  fs.Position(el.Pos()),
+				Msg:  nonLiteralContactsMsg,
+				Link: testRegistrationURL,
+			})
+			continue
+		}
+
+		if _, err := mail.ParseAddress(contact); err != nil {
 			issues = append(issues, &Issue{
 				Pos:  fs.Position(el.Pos()),
 				Msg:  nonLiteralContactsMsg,

@@ -115,27 +115,47 @@ func TestDeclarationsDesc(t *testing.T) {
 func TestDeclarationsContacts(t *testing.T) {
 	for _, tc := range []struct {
 		snip    string
-		wantMsg string
+		wantMsg []string
 	}{{`
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
 		Desc:     "This description is fine",
 		// Contacts is missing
-	})`, declTestPath + ":4:18: " + noContactMsg}, {`
+	})`, []string{declTestPath + ":4:18: " + noContactMsg}}, {`
 	testing.AddTest(&testing.Test{
 		Func: DoStuff,
 		Desc: "This description is fine",
 		Contacts: []string{variableAddress},
-	})`, declTestPath + ":7:22: " + nonLiteralContactsMsg}, {`
+	})`, []string{declTestPath + ":7:22: " + nonLiteralContactsMsg}}, {`
 	testing.AddTest(&testing.Test{
 		Func: DoStuff,
 		Desc: "This description is fine",
 		Contacts: variableContacts,
-	})`, declTestPath + ":7:13: " + nonLiteralContactsMsg}} {
+	})`, []string{declTestPath + ":7:13: " + nonLiteralContactsMsg}}, {`
+	testing.AddTest(&testing.Test{
+		Func: DoStuff,
+		Desc: "This description is fine",
+		Contacts: []string{"mechromium.org"},
+	})`, []string{declTestPath + ":7:22: " + nonLiteralContactsMsg}}, {`
+	testing.AddTest(&testing.Test{
+		Func: DoStuff,
+		Desc: "This description is fine",
+		Contacts: []string{"m@chromium.org@chromium.org"},
+	})`, []string{declTestPath + ":7:22: " + nonLiteralContactsMsg}}, {`
+	testing.AddTest(&testing.Test{
+		Func: DoStuff,
+		Desc: "This description is fine",
+		Contacts: []string{"me@chromium.org"},
+	})`, nil}, {`
+	testing.AddTest(&testing.Test{
+		Func: DoStuff,
+		Desc: "This description is fine",
+		Contacts: []string{"me-me+sub@chromium.org"},
+	})`, nil}} {
 		code := fmt.Sprintf(initTmpl, tc.snip)
 		f, fs := parse(code, declTestPath)
 		issues := TestDeclarations(fs, f, git.CommitFile{}, false)
-		verifyIssues(t, issues, []string{tc.wantMsg})
+		verifyIssues(t, issues, tc.wantMsg)
 	}
 }
 

@@ -18,6 +18,11 @@ service TestService {
   // ListEntities requests all entities available on the server.
   rpc ListEntities(ListEntitiesRequest) returns (ListEntitiesResponse) {}
 
+  // GlobalRuntimeVars requests all global runtime variables declared on the
+  // server.
+  rpc GlobalRuntimeVars(GlobalRuntimeVarsRequest)
+      returns (GlobalRuntimeVarsResponse) {}
+
   // RunTests requests to run tests.
   // A client must send an initial request message containing RunTestsInit to
   // a server. Then a server starts running tests and report progress in
@@ -55,6 +60,12 @@ message ListEntitiesResponse {
   // entities is unspecified.
   repeated ResolvedEntity entities = 1;
 }
+
+message GlobalRuntimeVarsRequest {}
+
+message GlobalRuntimeVar { string name = 1; }
+
+message GlobalRuntimeVarsResponse { repeated GlobalRuntimeVar vars = 1; }
 
 message RunTestsRequest {
   oneof type {

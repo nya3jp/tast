@@ -62,6 +62,17 @@ func (s *testServer) ListEntities(ctx context.Context, req *protocol.ListEntitie
 	return &protocol.ListEntitiesResponse{Entities: entities}, nil
 }
 
+func (s *testServer) GlobalRuntimeVars(ctx context.Context, req *protocol.GlobalRuntimeVarsRequest) (*protocol.GlobalRuntimeVarsResponse, error) {
+
+	vars := s.scfg.registry.AllVars()
+
+	var runTimeVars []*protocol.GlobalRuntimeVar
+	for _, v := range vars {
+		runTimeVars = append(runTimeVars, &protocol.GlobalRuntimeVar{Name: v.Name()})
+	}
+	return &protocol.GlobalRuntimeVarsResponse{Vars: runTimeVars}, nil
+}
+
 func (s *testServer) RunTests(srv protocol.TestService_RunTestsServer) error {
 	ctx := srv.Context()
 

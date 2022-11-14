@@ -93,6 +93,44 @@ func TestTestServerListEntities(t *gotesting.T) {
 	}
 }
 
+func TestTestServerGlobalRuntimeVars(t *gotesting.T) {
+
+	reg1 := testing.NewRegistry("a")
+	reg2 := testing.NewRegistry("b")
+	var1 := testing.NewVarString("var1", "", "description")
+	reg1.AddVar(var1)
+	var2 := testing.NewVarString("var2", "", "description")
+	reg1.AddVar(var2)
+	var3 := testing.NewVarString("var3", "", "description")
+	reg2.AddVar(var3)
+	var4 := testing.NewVarString("var4", "", "description")
+	reg2.AddVar(var4)
+	bundleGlob := fakebundle.Install(t, reg1, reg2)
+
+	cl := startTestServer(t, &protocol.RunnerInitParams{BundleGlob: bundleGlob})
+
+	// Call GlobalRuntimeVars.
+	got, err := cl.GlobalRuntimeVars(context.Background(), &protocol.GlobalRuntimeVarsRequest{})
+	if err != nil {
+		t.Fatalf("GlobalRuntimeVars failed: %v", err)
+	}
+
+	want := &protocol.GlobalRuntimeVarsResponse{
+		Vars: []*protocol.GlobalRuntimeVar{
+			{Name: "var1"},
+			{Name: "var2"},
+			{Name: "var3"},
+			{Name: "var4"},
+		},
+	}
+	sorter := func(a, b *protocol.GlobalRuntimeVar) bool {
+		return a.GetName() < b.GetName()
+	}
+	if diff := cmp.Diff(got, want, protocmp.Transform(), protocmp.SortRepeated(sorter)); diff != "" {
+		t.Errorf("GlobalRuntimeVarsResponse mismatch (-got +want):\n%s", diff)
+	}
+}
+
 func TestTestServerRunTests(t *gotesting.T) {
 	// Create two fake bundles.
 	test1 := &testing.TestInstance{

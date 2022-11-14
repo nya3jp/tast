@@ -175,6 +175,15 @@ func (r *Registry) AllFixtures() map[string]*FixtureInstance {
 	return fs
 }
 
+// AllVars returns copies of all registered all runtime variables.
+func (r *Registry) AllVars() []Var {
+	var vars []Var
+	for _, f := range r.allVars {
+		vars = append(vars, f)
+	}
+	return vars
+}
+
 // userCaller finds the caller of a registration function. It ignores framework
 // packages.
 func userCaller() (file string, line int) {

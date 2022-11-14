@@ -169,6 +169,28 @@ func (s *testServer) ListEntities(ctx context.Context, req *protocol.ListEntitie
 	return &protocol.ListEntitiesResponse{Entities: entities}, nil
 }
 
+func (s *testServer) GlobalRuntimeVars(ctx context.Context, req *protocol.GlobalRuntimeVarsRequest) (*protocol.GlobalRuntimeVarsResponse, error) {
+	var vars []*protocol.GlobalRuntimeVar
+	logging.Debug(ctx, "Serving GlobalRuntimeVars Request")
+	exec.Command("logger", "local_test_runner: Serving GlobalRuntimeVars Request").Run()
+	// GlobalRuntimeVars should not set runtime global information during handshake.
+
+	if err := s.forEachBundle(ctx, nil, func(ctx context.Context, ts protocol.TestServiceClient) error {
+		res, err := ts.GlobalRuntimeVars(ctx, req) // pass through req
+		if err != nil {
+			return err
+		}
+		vars = append(vars, res.GetVars()...)
+		return nil
+	}); err != nil {
+		return nil, err
+	}
+
+	logging.Debug(ctx, "Finish serving GlobalRuntimeVars Request")
+	exec.Command("logger", "local_test_runner: Finish serving GlobalRuntimeVars Request").Run()
+	return &protocol.GlobalRuntimeVarsResponse{Vars: vars}, nil
+}
+
 func (s *testServer) RunTests(srv protocol.TestService_RunTestsServer) error {
 	// Logging added for b/213616631.
 	exec.Command("logger", "local_test_runner: Serving RunTests Request").Run()

@@ -53,6 +53,36 @@ func TestTestServiceListEntities(t *gotesting.T) {
 	}
 }
 
+func TestTestServiceGlobalRuntimeVars(t *gotesting.T) {
+
+	reg := testing.NewRegistry("bundle")
+	var1 := testing.NewVarString("var1", "", "description")
+	reg.AddVar(var1)
+	var2 := testing.NewVarString("var2", "", "description")
+	reg.AddVar(var2)
+
+	env := bundletest.SetUp(t, bundletest.WithRemoteBundles(reg))
+	cl := protocol.NewTestServiceClient(env.DialRemoteBundle(context.Background(), t, reg.Name()))
+
+	got, err := cl.GlobalRuntimeVars(context.Background(), &protocol.GlobalRuntimeVarsRequest{})
+	if err != nil {
+		t.Fatalf("GlobalRuntimeVars failed: %v", err)
+	}
+
+	want := &protocol.GlobalRuntimeVarsResponse{
+		Vars: []*protocol.GlobalRuntimeVar{
+			{Name: "var1"},
+			{Name: "var2"},
+		},
+	}
+	sorter := func(a, b *protocol.GlobalRuntimeVar) bool {
+		return a.GetName() < b.GetName()
+	}
+	if diff := cmp.Diff(got, want, protocmp.Transform(), protocmp.SortRepeated(sorter)); diff != "" {
+		t.Errorf("GlobalRuntimeVars mismatch (-got +want):\n%s", diff)
+	}
+}
+
 func TestTestServerListEntitiesTestSkips(t *gotesting.T) {
 	features := &protocol.Features{
 		CheckDeps: true,

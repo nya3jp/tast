@@ -219,7 +219,7 @@ func pushAll(ctx context.Context, cfg *config.Config, drv *driver.Driver, target
 		return fmt.Errorf("failed to push local executables: %v", err)
 	}
 
-	if cfg.Mode() == config.ListTestsMode {
+	if cfg.Mode() != config.RunTestsMode {
 		return nil
 	}
 

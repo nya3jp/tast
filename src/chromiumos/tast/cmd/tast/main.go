@@ -60,6 +60,7 @@ func doMain() int {
 	subcommands.Register(newListCmd(os.Stdout, trunkDir()), "")
 	subcommands.Register(newRunCmd(trunkDir()), "")
 	subcommands.Register(&symbolizeCmd{}, "")
+	subcommands.Register(newGlobalRuntimeVarsCmd(os.Stdout, trunkDir()), "")
 
 	version := flag.Bool("version", false, "print version and exit")
 	verbose := flag.Bool("verbose", false, "use verbose logging")

@@ -18,9 +18,18 @@ type runWrapper interface {
 	run(ctx context.Context, cfg *config.Config, state *config.DeprecatedState) ([]*resultsjson.Result, error)
 }
 
+type globalRuntimeVarsrunWrapper interface {
+	// run calls run.Run.
+	GlobalRuntimeVars(ctx context.Context, cfg *config.Config, state *config.DeprecatedState) ([]string, error)
+}
+
 // realRunWrapper is a runWrapper implementation that calls the real functions in the run package.
 type realRunWrapper struct{}
 
 func (w realRunWrapper) run(ctx context.Context, cfg *config.Config, state *config.DeprecatedState) ([]*resultsjson.Result, error) {
 	return run.Run(ctx, cfg, state)
+}
+
+func (w realRunWrapper) GlobalRuntimeVars(ctx context.Context, cfg *config.Config, state *config.DeprecatedState) ([]string, error) {
+	return run.GlobalRuntimeVars(ctx, cfg, state)
 }

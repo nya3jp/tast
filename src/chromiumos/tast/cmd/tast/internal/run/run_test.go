@@ -907,6 +907,50 @@ func TestRunWithSkippedTests(t *gotesting.T) {
 	}
 }
 
+func TestRunGetGlobalRuntimeVars(t *gotesting.T) {
+	const (
+		bundleName = "bundle"
+
+		localTestName   = "pkg.LocalTest"
+		remoteTestName  = "pkg.RemoteTest"
+		skippedTestName = "pkg.SkippedTest"
+
+		missingSoftwareDep = "missing"
+	)
+
+	localReg := testing.NewRegistry("bundle")
+	var1 := testing.NewVarString("var1", "", "description")
+	localReg.AddVar(var1)
+	var2 := testing.NewVarString("var2", "", "description")
+	localReg.AddVar(var2)
+
+	remoteReg := testing.NewRegistry("bundle")
+	var3 := testing.NewVarString("var3", "", "description")
+	remoteReg.AddVar(var3)
+	var4 := testing.NewVarString("var4", "", "description")
+	remoteReg.AddVar(var4)
+
+	env := runtest.SetUp(
+		t,
+		runtest.WithLocalBundles(localReg),
+		runtest.WithRemoteBundles(remoteReg),
+	)
+	ctx := env.Context()
+	cfg := env.Config(func(cfg *config.MutableConfig) {})
+	state := env.State()
+
+	got, err := run.GlobalRuntimeVars(ctx, cfg, state)
+	if err != nil {
+		t.Errorf("Run failed: %v", err)
+	}
+	want := []string{
+		"var1", "var2", "var3", "var4",
+	}
+	if diff := cmp.Diff(got, want, protocmp.Transform()); diff != "" {
+		t.Errorf("Unexpected list of Global Runtime Vars (-got +want):\n%v", diff)
+	}
+}
+
 // TestListTests make sure list test can list all tests.
 func TestRunListTests(t *gotesting.T) {
 	const (

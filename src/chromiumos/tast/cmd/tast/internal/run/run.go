@@ -76,23 +76,9 @@ func Run(ctx context.Context, cfg *config.Config, state *config.DeprecatedState)
 		return nil, errors.Wrap(err, "failed to connect to target")
 	}
 	defer drv.Close(ctx)
-
-	dutInfo := make(map[string]*protocol.DUTInfo)
-	dutInfo[""], err = prepare.Prepare(ctx, cfg, drv)
+	dutInfo, err := prepareDUT(ctx, cfg, drv)
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to build and push primary DUT")
-	}
-
-	for role, dut := range cfg.CompanionDUTs() {
-		companionDriver, err := driver.New(ctx, cfg, dut, role)
-		if err != nil {
-			return nil, errors.Wrapf(err, "failed to connect to companion DUT %s", dut)
-		}
-		defer companionDriver.Close(ctx)
-		dutInfo[role], err = prepare.Prepare(ctx, cfg, companionDriver)
-		if err != nil {
-			return nil, errors.Wrapf(err, "failed to build and push companion DUT %s", dut)
-		}
+		return nil, err
 	}
 
 	switch cfg.Mode() {
@@ -111,6 +97,29 @@ func Run(ctx context.Context, cfg *config.Config, state *config.DeprecatedState)
 	default:
 		return nil, errors.Errorf("unhandled mode %d", cfg.Mode())
 	}
+}
+
+func prepareDUT(ctx context.Context, cfg *config.Config, drv *driver.Driver) (map[string]*protocol.DUTInfo, error) {
+	dutInfo := make(map[string]*protocol.DUTInfo)
+	primaryDutInfo, err := prepare.Prepare(ctx, cfg, drv)
+	dutInfo[""] = primaryDutInfo
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to build and push primary DUT")
+	}
+
+	for role, dut := range cfg.CompanionDUTs() {
+		companionDriver, err := driver.New(ctx, cfg, dut, role)
+		if err != nil {
+			return nil, errors.Wrapf(err, "failed to connect to companion DUT %s", dut)
+		}
+		defer companionDriver.Close(ctx)
+		dutInfo[role], err = prepare.Prepare(ctx, cfg, companionDriver)
+		if err != nil {
+			return nil, errors.Wrapf(err, "failed to build and push companion DUT %s", dut)
+		}
+	}
+
+	return dutInfo, nil
 }
 
 // startEphemeralDevserverForRemoteTests starts an ephemeral devserver for remote tests.
@@ -146,6 +155,31 @@ func removeSkippedTestsFromBundle(bundle []*driver.BundleEntity) ([]*driver.Bund
 	}
 
 	return filteredBundle, skippedBundle
+}
+
+// GlobalRuntimeVars returns all used global runtime variables.
+func GlobalRuntimeVars(ctx context.Context, cfg *config.Config, state *config.DeprecatedState) ([]string, error) {
+
+	if err := prepare.CheckPrivateBundleFlag(ctx, cfg); err != nil {
+		return nil, errors.Wrap(err, "failed in checking downloadprivatebundles flag")
+	}
+
+	drv, err := driver.New(ctx, cfg, cfg.Target(), "")
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to connect to target")
+	}
+	defer drv.Close(ctx)
+	_, err = prepareDUT(ctx, cfg, drv)
+
+	if err != nil {
+		return nil, err
+	}
+
+	vars, err := drv.GlobalRuntimeVars(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return vars, err
 }
 
 // listTests returns the whole tests to run.

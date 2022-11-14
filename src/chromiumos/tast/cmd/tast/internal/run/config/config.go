@@ -34,6 +34,8 @@ const (
 	RunTestsMode Mode = iota
 	// ListTestsMode indicates that tests should only be listed.
 	ListTestsMode
+	// GlobalRuntimeVarsMode indicates that list all GlobalRuntimeVars currently used.
+	GlobalRuntimeVarsMode
 )
 
 // ProxyMode describes how proxies should be used when running tests.

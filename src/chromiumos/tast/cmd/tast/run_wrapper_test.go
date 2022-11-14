@@ -17,11 +17,17 @@ type stubRunWrapper struct {
 	runCfg   *config.Config          // config passed to run
 	runState *config.DeprecatedState // state passed to run
 
-	runRes []*resultsjson.Result // results to return from run
-	runErr error                 // error to return from run
+	runRes               []*resultsjson.Result // results to return from run
+	runGlobalRuntimeVars []string              //results to return from GlobalRuntimeVars
+	runErr               error                 // error to return from run
 }
 
 func (w *stubRunWrapper) run(ctx context.Context, cfg *config.Config, state *config.DeprecatedState) ([]*resultsjson.Result, error) {
 	w.runCtx, w.runCfg, w.runState = ctx, cfg, state
 	return w.runRes, w.runErr
+}
+
+func (w *stubRunWrapper) GlobalRuntimeVars(ctx context.Context, cfg *config.Config, state *config.DeprecatedState) ([]string, error) {
+	w.runCtx, w.runCfg, w.runState = ctx, cfg, state
+	return w.runGlobalRuntimeVars, w.runErr
 }

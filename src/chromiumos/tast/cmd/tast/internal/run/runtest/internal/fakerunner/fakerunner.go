@@ -135,6 +135,10 @@ func (s *testService) ListEntities(ctx context.Context, req *protocol.ListEntiti
 	return s.cl.ListEntities(ctx, req)
 }
 
+func (s *testService) GlobalRuntimeVars(ctx context.Context, req *protocol.GlobalRuntimeVarsRequest) (*protocol.GlobalRuntimeVarsResponse, error) {
+	return s.cl.GlobalRuntimeVars(ctx, req)
+}
+
 func (s *testService) RunTests(downstream protocol.TestService_RunTestsServer) error {
 	initReq, err := downstream.Recv()
 	if err != nil {

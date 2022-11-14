@@ -236,6 +236,42 @@ func (c *Client) ListTests(ctx context.Context, patterns []string, features *pro
 	return tests, nil
 }
 
+// GlobalRuntimeVars client implementation
+func (c *Client) GlobalRuntimeVars(ctx context.Context) (vars []string, retErr error) {
+	defer func() {
+		if retErr != nil {
+			retErr = errors.Wrap(retErr, "listing GlobalRuntimeVars")
+		}
+	}()
+
+	GlobalRuntimeVars := func() (*protocol.GlobalRuntimeVarsResponse, error) {
+		conn, err := c.dial(ctx, &protocol.HandshakeRequest{RunnerInitParams: c.params})
+		if err != nil {
+			return nil, err
+		}
+		defer conn.Close(ctx)
+		req := &protocol.GlobalRuntimeVarsRequest{}
+		// It should be less than a minute to get global vars.
+		cl := protocol.NewTestServiceClient(conn.Conn())
+		ctxForGlobalRuntimeVars, cancel := context.WithTimeout(ctx, time.Minute)
+		defer cancel()
+		return cl.GlobalRuntimeVars(ctxForGlobalRuntimeVars, req)
+	}
+	res, err := GlobalRuntimeVars()
+
+	if err != nil {
+		logging.Infof(ctx, "Failed to send GlobalRuntimeVars request: %v", err)
+		return nil, err
+	}
+	logging.Info(ctx, "Got GlobalRuntimeVars Response from local test runner")
+
+	var result []string
+	for i := 0; i < len(res.Vars); i++ {
+		result = append(result, res.Vars[i].Name)
+	}
+	return result, nil
+}
+
 // ListFixtures enumerates all fixtures.
 func (c *Client) ListFixtures(ctx context.Context) (fixtures []*drivercore.BundleEntity, retErr error) {
 	defer func() {

@@ -83,8 +83,18 @@ func (c *Client) dial(ctx context.Context, req *protocol.HandshakeRequest) (_ *r
 	// Pass through stderr.
 	go io.Copy(os.Stderr, proc.Stderr())
 
+	opts := []grpc.DialOption{
+		grpc.WithDefaultCallOptions(
+			grpc.MaxRecvMsgSizeCallOption{
+				MaxRecvMsgSize: rpc.MaxMessageSize,
+			},
+			grpc.MaxSendMsgSizeCallOption{
+				MaxSendMsgSize: rpc.MaxMessageSize,
+			},
+		),
+	}
 	// TODO: re-enable keepalive check after finding a proper solution for b/239035591.
-	conn, err := rpc.NewClient(ctx, proc.Stdout(), proc.Stdin(), req)
+	conn, err := rpc.NewClient(ctx, proc.Stdout(), proc.Stdin(), req, opts...)
 	if err != nil {
 		return nil, err
 	}

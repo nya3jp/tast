@@ -29,6 +29,9 @@ import (
 	"chromiumos/tast/internal/timing"
 )
 
+// MaxMessageSize is used to tell Tast's GRPC servers and clients the maximum size of messages.
+const MaxMessageSize = 1024 * 1024 * 8
+
 // RunServer runs a gRPC server on r/w channels.
 // register is called back to register core services. svcs is a list of
 // user-defined gRPC services to be registered if the client requests them in
@@ -303,6 +306,8 @@ func serverOpts(ls *remoteLoggingServer, logger logging.Logger, calls *sync.Wait
 			}()
 			return handler(srv, stream)
 		}),
+		grpc.MaxRecvMsgSize(MaxMessageSize),
+		grpc.MaxSendMsgSize(MaxMessageSize),
 	}
 }
 

@@ -108,7 +108,8 @@ func init() {
 	testing.AddTest(&testing.Test{
 		Func:         DoSomething,
 		Desc:         "Does X to verify Y",
-		Contacts:     []string{"me@chromium.org"},
+		Contacts:     []string{"team@google.com", "me@chromium.org"},
+		BugComponent: "b:12345",
 		Attr:         []string{"group:mainline", "informational"},
 		SoftwareDeps: []string{"chrome"},
 		Timeout:      3 * time.Minute,
@@ -123,11 +124,22 @@ func DoSomething(ctx context.Context, s *testing.State) {
 Tests have to specify the descriptions in `Desc`, which should be a string literal.
 
 Tests have to specify email addresses of persons and groups who are familiar
-with those tests in [Contacts]. At least one personal or email group address of active
-committer(s) should be specified so that we can file bugs or ask for code reviews.
-The `Contacts` fields should be an array literal of string literals. To help aid traige and
-on-call rotations, partner owned tests must specify a Google email contact that can be
-reached by on-call rotations.
+with those tests in `Contacts`. The first element of the slice should be a group
+alias for the team ultimately responsible for the test. Subsequent elements
+should be individuals or groups who can be contacted for code reviews, bugs,
+and any issue with the test's usage. To help aid triage and on-call rotations,
+partner owned tests must specify a Google email contact that can be
+reached by on-call rotations. Any google.com or chromium.org groups listed should
+accept email posts from non-members within the organization. Users who no longer
+work on Chrome OS or with test's owning team should remove themselves as a
+contact.
+
+Tests have to specify a `BugComponent`, which should be a string with a prefix
+indicating the bug tracker. The string's contents point to the location where
+bugs regarding the test should initially be filed. A prefix is used to
+distinguish between different bug trackers. For Buganizer, use "b:" plus
+the componentid, e.g. "b:1034625". For Chromium bug tracker, use "crbug:" plus
+the component label, e.g. "crbug:Blink>JavaScript>WebAssembly".
 
 Tests have to specify [attributes] to describe how they are used in ChromeOS
 testing. A test belongs to zero or more groups by declaring attributes with

@@ -537,8 +537,11 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 	}
 
 	if speaker.GetValue() > 0 || expectAudio {
-		model := strings.TrimSuffix(strings.ToLower(config.Id.Model), "_signed")
-		amp, err := findSpeakerAmplifier(model)
+		config, err := crosConfig("audio/main", "sound-card-init-conf")
+		if err != nil {
+			logging.Infof(ctx, "Failed to get sound-card-init-conf: %v", err)
+		}
+		amp, err := findSpeakerAmplifier(config)
 		if err != nil {
 			logging.Infof(ctx, "Failed to get amp: %v", err)
 		}
@@ -1073,7 +1076,7 @@ func matchCrasDeviceType(pattern string) (*configpb.HardwareFeatures_Count, erro
 
 // findSpeakerAmplifier parses a content of in "/sys/kernel/debug/asoc/components"
 // and returns the speaker amplifier used.
-func findSpeakerAmplifier(model string) (*configpb.Component_Amplifier, error) {
+func findSpeakerAmplifier(config string) (*configpb.Component_Amplifier, error) {
 
 	// This sys path exists only on kernel >=4.14. But we don't
 	// target amp tests on earlier kernels.
@@ -1086,7 +1089,7 @@ func findSpeakerAmplifier(model string) (*configpb.Component_Amplifier, error) {
 	for scanner.Scan() {
 		amp, found := matchSpeakerAmplifier(scanner.Text())
 		if found {
-			enabled, err := bootTimeCalibration(model)
+			enabled, err := bootTimeCalibration(config)
 			if enabled {
 				amp.Features = append(amp.Features, configpb.Component_Amplifier_BOOT_TIME_CALIBRATION)
 			}
@@ -1118,9 +1121,8 @@ func matchSpeakerAmplifier(line string) (*configpb.Component_Amplifier, bool) {
 
 // bootTimeCalibration returns whether the boot time calibration is
 // enabled by parsing the sound_card_init config.
-func bootTimeCalibration(model string) (bool, error) {
-
-	path := "/etc/sound_card_init/" + model + ".yaml"
+func bootTimeCalibration(config string) (bool, error) {
+	path := "/etc/sound_card_init/" + config + ".yaml"
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		// Regard config non-existence as boot_time_calibration disabled.
 		return false, nil

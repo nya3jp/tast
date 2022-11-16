@@ -44,6 +44,7 @@ The following software features are defined:
 *   `biometrics_daemon` - The ability to process fingerprint authentication.
     This implies the presence of the `biod` package.
 *   `borealis_host` - Boards that can host the Borealis system.
+*   `bpf` - Whether the platform (kernel) has the bpf syscall enabled.
 *   `breakpad` - Whether the platform supports the breakpad crash handler
     for Chrome.
 *   `camera_720p` - The ability to capture video with frame size 1280x720.

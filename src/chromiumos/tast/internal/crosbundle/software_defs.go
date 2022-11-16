@@ -37,7 +37,9 @@ var softwareFeatureDefs = map[string]string{
 	"biometrics_daemon":            "biod",
 	// TODO(b/225065082): Re-enable borealis on manatee
 	"borealis_host": "borealis_host && !manatee",
-	"breakpad":      "force_breakpad",
+	// The bpf syscall is enabled on CrOS since kernel v5.10.
+	"bpf":      `!("kernel-4_4" || "kernel-4_14" || "kernel-4_19" || "kernel-5_4")`,
+	"breakpad": "force_breakpad",
 	// daisy variants' cameras don't support 1280x720.
 	"camera_720p": "!snow && !skate && !spring",
 	// Some boards might not support the camera/video/audio components required by the camera app.

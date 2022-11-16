@@ -59,6 +59,7 @@ var softwareFeatureDefs = map[string]string{
 	"chrome":                       "!chromeless_tty && !rialto",
 	"chrome_internal":              "chrome_internal",
 	"chromeless":                   "chromeless_tty || rialto",
+	"chromeos_firmware":            `!("board:reven*")`, // Reven (ChromeOS Flex) devices run third-party firmware.
 	"chromeos_kernelci":            "chromeos_kernelci_builder",
 	// Kernels pre-4.19 do not support core scheduling.
 	"coresched": `!("kernel-4_4" || "kernel-4_14")`,
@@ -121,10 +122,8 @@ var softwareFeatureDefs = map[string]string{
 	"lacros_unstable":        `!chromeless_tty && !rialto && !("board:veyron_fievel" || "board:veyron_tiger") && (arm64 || "tast_vm" || "betty")`,
 	"landlock_enabled":       `!("kernel-4_4" || "kernel-4_14" || "kernel-4_19" || "kernel-5_4")`,
 	"lvm_stateful_partition": "lvm_stateful_partition",
-	// ChromeOS Flex devices run third-party BIOS that can not be managed.
-	"third_party_firmware": "third_party_firmware",
-	"manatee":              "manatee",
-	"mbo":                  "mbo",
+	"manatee":                "manatee",
+	"mbo":                    "mbo",
 	// QEMU has implemented memfd_create, but we haven't updated
 	// to a release with the change (https://bugs.launchpad.net/qemu/+bug/1734792).
 	// Remove "|| betty || tast_vm" from list when we upgrade.

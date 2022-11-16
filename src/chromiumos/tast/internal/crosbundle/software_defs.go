@@ -37,6 +37,7 @@ var softwareFeatureDefs = map[string]string{
 	"aslr":                 "!asan", // ASan instrumentation breaks ASLR
 	"auto_update_stable":   `!("board:*-*")`,
 	"biometrics_daemon":    "biod",
+	"boot_perf_info":       `!("board:reven*")`, // Reven (ChromeOS Flex) doesn't support boot performance metrics.
 	// TODO(b/225065082): Re-enable borealis on manatee
 	"borealis_host": "borealis_host && !manatee",
 	// The bpf syscall is enabled on CrOS since kernel v5.10.

@@ -43,6 +43,7 @@ The following software features are defined:
 *   `autotest-capability:foo` - An [Autotest capability] named `foo`. See below.
 *   `biometrics_daemon` - The ability to process fingerprint authentication.
     This implies the presence of the `biod` package.
+*   `boot_perf_info` - Reven (ChromeOS Flex) doesn't support boot performance metrics.
 *   `borealis_host` - Boards that can host the Borealis system.
 *   `bpf` - Whether the platform (kernel) has the bpf syscall enabled.
 *   `breakpad` - Whether the platform supports the breakpad crash handler

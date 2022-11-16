@@ -109,7 +109,7 @@ icon := uidetection.CustomIcon(s.DataPath("logo_chrome.png"))
 Then we can left-click the icon by:
 
 ```go
-if err:= ud.LeftClick(icon) {
+if err := ud.LeftClick(icon)(ctx); err != nil {
   s.Fatal("Failed to click Chrome icon", err)
 }
 ```
@@ -125,7 +125,7 @@ textblock := uidetection.TextBlock([]string{"Customize", "Chrome"})
 The left-click operation is done by:
 
 ```go
-if err:= ud.LeftClick(textblock) {
+if err := ud.LeftClick(textblock)(ctx); err != nil {
   s.Fatal("Failed to click Customize Chrome button", err)
 }
 ```
@@ -139,7 +139,7 @@ the immediate screenshot using
 `WithScreenshotStrategy(uidetection.ImmediateScreenshot)`:
 
 ```go
-if err:= ud.WithScreenshotStrategy(uidetection.ImmediateScreenshot).LeftClick(textblock) {
+if err:= ud.WithScreenshotStrategy(uidetection.ImmediateScreenshot).LeftClick(textblock)(ctx); err != nil {
   s.Fatal("Failed to click Customize Chrome button", err)
 }
 ```
@@ -150,7 +150,7 @@ Similarly to the textblock detection, this operation can be defined as:
 
 ```go
 word := uidetection.Word("Cancel")
-if err:= ud.LeftClick(word) {
+if err := ud.LeftClick(word)(ctx); err != nil {
   s.Fatal("Failed to click Cancel button", err)
 }
 ```
@@ -163,7 +163,7 @@ successful close of the "customize chrome" layout. A simple solution is to check
 if the cancel button disappeared from the screen:
 
 ```go
-if err:= ud.WaitUntilGone(uidetection.Word("Cancel")) {
+if err := ud.WaitUntilGone(uidetection.Word("Cancel"))(ctx); err != nil {
   s.Fatal("The cancel button still exists", err)
 }
 ```

@@ -353,7 +353,7 @@ Tests in this group are not used for build verification.
 	},
 	{
 		Name:     "firmware",
-		Contacts: []string{"chromeos-engprod@google.com", "cros-fw-engprod@google.com"},
+		Contacts: []string{"chromeos-faft@google.com", "jbettis@chromium.org"},
 		Desc:     `A group of tests for firmware (AP, EC, GSC)`,
 		Subattrs: []*attr{
 			{

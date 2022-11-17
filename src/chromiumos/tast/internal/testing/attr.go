@@ -911,6 +911,10 @@ Parallels boot-up testing. Otherwise the same as group:crosbolt.`,
 				Desc: `Cross Device tests that use Lacros.`,
 			},
 			{
+				Name: "cross-device_floss",
+				Desc: `Cross Device tests with Floss enabled.`,
+			},
+			{
 				Name: "cross-device_nearbyshare",
 				Desc: `Nearby Share tests.`,
 			},
@@ -944,6 +948,10 @@ Parallels boot-up testing. Otherwise the same as group:crosbolt.`,
 			{
 				Name: "cross-device-remote_nearbyshare",
 				Desc: `Nearby Share tests.`,
+			},
+			{
+				Name: "cross-device-remote_floss",
+				Desc: `Cross Device remote tests with Floss enabled.`,
 			},
 		},
 	},

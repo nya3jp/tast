@@ -63,6 +63,7 @@ The following software features are defined:
     [chromeos-chrome] Portage package is installed (which also installs Chrome
     binary tests), and that the `ui` Upstart job is present.
 *   `chromeless` - Explicit *lack* of support for login via Chrome.
+*   `chromeos_firmware` - Boards that use ChromeOS firmware.
 *   `chromeos_kernelci` - Whether the image built for https://chromeos.kernelci.org/ or not.
 *   `chrome_internal` - Functionality that is only available in internal builds
     of Chrome (e.g. official branding). Any test that specifies this dependency
@@ -202,7 +203,6 @@ stack-sampled metrics.
 *   `tast_vm` - The test is running in a VM [managed by chromite](https://chromium.googlesource.com/chromiumos/chromite/+/HEAD/lib/cros_test.py#396).
 *   `tflite_opencl` - Skips boards which have issues with the OpenCL TFLite
     delegate (b/233851820).
-*   `third_party_firmware` - The device runs third-party firmware (e.g. BIOS) that can not be managed.
 *   `thread_safe_libva_backend` - Boards where the LIBVA backend is threadsafe.
 *   `tpm` - A [Trusted Platform Module] chip.
 *   `tpm1` - Indicate a Trusted Platform Module supporting TPMv1.2 is available. Note that TPMv2 is not backward compatible.

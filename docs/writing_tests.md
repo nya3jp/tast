@@ -363,6 +363,8 @@ consistency, the built-in "context" package is preferred.
 > performance**. If you're unsure, measure time multiple times in the worst case
 > scenario and double that. Do not use timeouts to catch performance
 > regressions. Instead consider writing a performance test.
+> When a test hits a timeout that was sufficient before, investigate why it hit
+> the timeout before increasing it.
 
 [context.Context]: https://golang.org/pkg/context/
 [channel]: https://tour.golang.org/concurrency/2

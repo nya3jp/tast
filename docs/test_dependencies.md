@@ -411,30 +411,20 @@ whether `Screen.TouchSupport` is set to `HardwareFeatures_PRESENT`.
 
 Note that currently a `chromiumos.config.api.HardwareFeatures` instance is
 generated internally by Tast at runtime, so only limited fields are filled.
-In the future, ChromeOS infra test scheduler will be responsible for checking
-such conditions before running Tast tests.
-
-Please contact and collaborate with the infra team when you need a new type of
-hardware constraints in Tast.
-(If you are not a Google employee, please collaborate with your Google contact.
-)
+In the future, ChromeOS Infra test scheduler will be responsible for checking
+hardware dependencies before running Tast tests.
 
 Here is an example end-to-end workflow:
 Let’s assume that a developer wants to add a new Tast test which requires a new
 hardware feature to be used in the test hardware constraints (e.g. “wifi chip
 vendor name is X”).
 
-1. The developer asks the infra team for that hardware feature.
-    + Send an email to g/cros-boxster-discuss for contacting and collaborating
-      with the infra team.
-
-    + The developer may propose a change to the schema
-     [(config/api/topology.proto)][1] as a means of clarifying the data or
-     concept they need.
-
-    * The infra team approves it and adds a new field in the .proto file
+1. The developer makes a change for that hardware feature.
+    * The developer files a CL for a change to the schema
+     [(config/api/topology.proto)][1] to add a new field for the feature.
+    * A domain expert approves the change in the .proto file
      [(config/api/topology.proto)][1].  [(Example CL)][2]
-2. The developer waits until the .proto file in #1 is updated, then implements
+2. The developer waits until the CL in #1 is landed, then implements
    some functions in the Tast framework supporting the new feature(s) using the
    new message type.
     * The Tast team reviews and approves such a change to Tast.

@@ -88,6 +88,18 @@ func (d *DUT) Close(ctx context.Context) error {
 	return d.Disconnect(ctx)
 }
 
+// Health checks the connection status with the DUT.
+func (d *DUT) Health(ctx context.Context) error {
+	if d == nil || d.hst == nil {
+		return errors.New("DUT does not exist.")
+	}
+
+	if err := d.hst.Ping(ctx, pingTimeout); err != nil {
+		return errors.Wrapf(err, "failed to ping %v", d.sopt.Hostname)
+	}
+	return nil
+}
+
 // Connected returns true if a usable connection to the DUT is held.
 func (d *DUT) Connected(ctx context.Context) bool {
 	if d == nil || d.hst == nil {

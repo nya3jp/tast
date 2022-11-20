@@ -129,7 +129,7 @@ Now, let's modify the test. In your ChromeOS checkout, go to
 top of `tast-tests`). The `Chrome` function here will run directly on the
 test device.
 
-At the end of the anonymous function inside `testChromeLogin`, add the following code:
+At the end of the function `testChromeLogin`, add the following code:
 
 ```go
 if _, err = cr.NewConn(ctx, "https://www.google.com/"); err != nil {
@@ -146,7 +146,7 @@ tast -verbose run <test-device-ip> login.Chrome
 This time, the test should additionally open a Google search page.
 
 Return to the test file and add the following statement at the end of the
-anonymous function inside `testChromeLogin`:
+function `testChromeLogin`:
 
 ```go
 s.Error("This is an intentional error")

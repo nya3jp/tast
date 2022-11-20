@@ -56,6 +56,12 @@ func loadSysInfo() (*SysInfo, error) {
 	// Queries camera configuration from CrOS config. For each built-in camera, the
 	// /camera/devices/*/interface config is either "usb" or "mipi".
 	for i := 0; ; i++ {
+		// Detachable camera is treated as external, so ignore it in testing.
+		// If error found, either there is no camera or camera is built-in.
+		isDetachable, err := exec.Command("cros_config", fmt.Sprintf("/camera/devices/%v", i), "detachable").Output()
+		if err == nil && string(isDetachable) == "true" {
+			continue
+		}
 		out, err := exec.Command("cros_config", fmt.Sprintf("/camera/devices/%v", i), "interface").Output()
 		if err != nil {
 			break

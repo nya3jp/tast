@@ -129,6 +129,7 @@ func runTestsRecursive(ctx context.Context, srv protocol.TestService_RunTestsSer
 			Config: rcfg.GetTarget(),
 			Bundle: scfg.registry.Name(),
 		},
+		MaxSysMsgLogSize: rcfg.GetMaxSysMsgLogSize(),
 	}
 
 	var internal []*protocol.ResolvedEntity

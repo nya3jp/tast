@@ -732,6 +732,11 @@ func (s *TestHookState) Purgeable() []string {
 	return append([]string(nil), s.testRoot.entityRoot.cfg.Purgeable...)
 }
 
+// MaxSysMsgLogSize return the flag size of truncate log file.
+func (s *TestHookState) MaxSysMsgLogSize() int64 {
+	return s.testRoot.entityRoot.cfg.MaxSysMsgLogSize
+}
+
 // CompanionDUTRoles returns an alphabetically sorted array of
 // companion DUT roles.
 func (s *TestHookState) CompanionDUTRoles() []string {

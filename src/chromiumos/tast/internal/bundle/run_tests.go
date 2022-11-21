@@ -100,6 +100,7 @@ func runTests(ctx context.Context, srv protocol.TestService_RunTestsServer, cfg 
 		Fixtures:         scfg.registry.AllFixtures(),
 		StartFixtureName: cfg.GetStartFixtureState().GetName(),
 		StartFixtureImpl: &stubFixture{setUpErrors: cfg.GetStartFixtureState().GetErrors()},
+		MaxSysMsgLogSize: cfg.GetMaxSysMsgLogSize(),
 	}
 
 	if err := planner.RunTestsLegacy(ctx, tests, ew, pcfg); err != nil {

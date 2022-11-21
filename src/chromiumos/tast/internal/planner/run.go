@@ -96,6 +96,9 @@ type Config struct {
 	// ExternalTarget represents configs for running an external bundle from
 	// current bundle. (i.e. local bundle from remote bundle).
 	ExternalTarget *ExternalTarget
+
+	//MaxSysMsgLogSize is a size of flag for truncate log file.
+	MaxSysMsgLogSize int64
 }
 
 // GracePeriod returns grace period after entity timeout.
@@ -763,11 +766,12 @@ func runTestWithConfig(ctx context.Context, tcfg *testConfig, pcfg *Config, stac
 			pcfg.Service.GetDutServer(),
 			pcfg.DataFile.GetBuildArtifactsUrl(),
 		),
-		RemoteData: pcfg.RemoteData,
-		FixtCtx:    tcfg.fixtCtx,
-		FixtValue:  stack.Val(),
-		PreCtx:     precfg.ctx,
-		Purgeable:  tcfg.purgeable,
+		RemoteData:       pcfg.RemoteData,
+		FixtCtx:          tcfg.fixtCtx,
+		FixtValue:        stack.Val(),
+		PreCtx:           precfg.ctx,
+		Purgeable:        tcfg.purgeable,
+		MaxSysMsgLogSize: pcfg.MaxSysMsgLogSize,
 	}
 	troot := testing.NewTestEntityRoot(tcfg.test, rcfg, out, condition)
 	ctx = troot.NewContext(ctx)

@@ -866,6 +866,7 @@ func TestStateExports(t *gotesting.T) {
 				"HasError",
 				"Log",
 				"Logf",
+				"MaxSysMsgLogSize",
 				"OutDir",
 				"Purgeable",
 				"RPCHint",

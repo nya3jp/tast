@@ -384,23 +384,6 @@ func ECFeatureChargeControlV2() Condition {
 	}
 }
 
-// ECFeatureTabletModeAngle returns a hardware dependency condition that is
-// satisfied iff the DUT support fetching and modifying the tablet mode angle
-// via the `ectool motionsense tablet_mode_angle` command.
-func ECFeatureTabletModeAngle() Condition {
-	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
-		hf := f.GetHardwareFeatures()
-		if hf == nil {
-			return withErrorStr("Did not find hardware features")
-		}
-		if hf.GetEmbeddedController().GetFeatureTabletModeAngle() == configpb.HardwareFeatures_NOT_PRESENT {
-			return unsatisfied("DUT EC does not support tablet mode angle")
-		}
-		return satisfied()
-	},
-	}
-}
-
 // Cellular returns a hardware dependency condition that
 // is satisfied iff the DUT has a cellular modem.
 func Cellular() Condition {

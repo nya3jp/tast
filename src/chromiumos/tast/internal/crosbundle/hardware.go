@@ -336,14 +336,6 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		} else {
 			features.EmbeddedController.FeatureChargeControlV2 = configpb.HardwareFeatures_PRESENT
 		}
-		// Check if we can fetch or set the tablet mode angle via the
-		// motionsense command.
-		if err := exec.Command("ectool", "motionsense", "tablet_mode_angle").Run(); err != nil {
-			logging.Infof(ctx, "Fetching and setting tablet mode angle not supported: %v", err)
-			features.EmbeddedController.FeatureChargeControlV2 = configpb.HardwareFeatures_NOT_PRESENT
-		} else {
-			features.EmbeddedController.FeatureChargeControlV2 = configpb.HardwareFeatures_PRESENT
-		}
 	}
 
 	// Device has CBI if ectool cbi get doesn't raise error.

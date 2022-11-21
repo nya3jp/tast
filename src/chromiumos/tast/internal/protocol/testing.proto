@@ -238,6 +238,10 @@ message RunConfig {
   // If no activity is seen even after that the connection is closed.
   // (Default: 60 seconds)
   google.protobuf.Duration msg_timeout = 13;
+
+  // MaxSysMsgLogSize is a maximum size of /var/log/messages that Tast will
+  // copy.
+  int64 max_sys_msg_log_size = 14;
 }
 
 // RunTargetConfig contains parameters for the primary target bundle to run.

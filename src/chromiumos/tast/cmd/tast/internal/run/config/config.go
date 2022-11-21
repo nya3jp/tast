@@ -52,9 +52,10 @@ const (
 const (
 	defaultKeyFile               = "chromite/ssh_keys/testing_rsa" // default private SSH key within ChromeOS checkout
 	checkDepsCacheFile           = "check_deps_cache.v2.json"      // file in BuildOutDir where dependency-checking results are cached
-	defaultSystemServicesTimeout = 120 * time.Second               //default timeout for waiting for system services to be ready in seconds
+	defaultSystemServicesTimeout = 120 * time.Second               // default timeout for waiting for system services to be ready in seconds
 	defaultMsgTimeout            = 120 * time.Second               // default timeout for grpc connection.
 	dutNotToConnect              = "-"                             // Target for dutless scenarios
+	defaultMaxSysMsgLogSize      = 20 * 1024 * 1024                // default Max System Message Log Size 20MB
 )
 
 // MutableConfig is similar to Config, but its fields are mutable.
@@ -129,6 +130,7 @@ type MutableConfig struct {
 
 	SystemServicesTimeout time.Duration
 	MsgTimeout            time.Duration
+	MaxSysMsgLogSize      int64
 
 	// ForceSkips is a mapping from a test name to the filter file name which specified
 	// the test should be disabled.
@@ -337,6 +339,9 @@ func (c *Config) MaybeMissingVars() string { return c.m.MaybeMissingVars }
 // MsgTimeout is timeout for reading control messages; default used if zero.
 func (c *Config) MsgTimeout() time.Duration { return c.m.MsgTimeout }
 
+// MaxSysMsgLogSize is size for truncate log files.
+func (c *Config) MaxSysMsgLogSize() int64 { return c.m.MaxSysMsgLogSize }
+
 // Retries is the number of retries for failing tests
 func (c *Config) Retries() int { return c.m.Retries }
 
@@ -449,6 +454,7 @@ func (c *MutableConfig) SetFlags(f *flag.FlagSet) {
 
 	f.Var(command.NewDurationFlag(time.Second, &c.SystemServicesTimeout, defaultSystemServicesTimeout), "systemservicestimeout", "timeout for waiting for system services to be ready in seconds")
 	f.Var(command.NewDurationFlag(time.Second, &c.MsgTimeout, defaultMsgTimeout), "connectiontimeout", "the value time interval in seconds for tast to check if the connection to target is alive (default to 60 which means 1 mins)")
+	f.Int64Var(&c.MaxSysMsgLogSize, "maxsysmsglogsize", defaultMaxSysMsgLogSize, "max size for the downloaded system message log after each test (default to 20MB)")
 
 	c.DebuggerPorts = map[debugger.DebugTarget]int{
 		debugger.LocalBundle:  0,

@@ -398,6 +398,7 @@ func (d *Driver) newConfigsForRemoteTests(tests []string, dutInfos map[string]*p
 		DebugPort:             uint32(d.cfg.DebuggerPorts()[debugger.RemoteBundle]),
 		SystemServicesTimeout: ptypes.DurationProto(d.cfg.SystemServicesTimeout()),
 		MsgTimeout:            ptypes.DurationProto(d.cfg.MsgTimeout()),
+		MaxSysMsgLogSize:      d.cfg.MaxSysMsgLogSize(),
 		Target: &protocol.RunTargetConfig{
 			Devservers: d.cfg.Devservers(),
 			Dirs: &protocol.RunDirectories{

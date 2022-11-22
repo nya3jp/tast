@@ -280,6 +280,11 @@ Tests in this group are not used for build verification.
 		Desc:     `A group of camera tests for USB camera qualification.`,
 	},
 	{
+		Name:     "cq-minimal",
+		Contacts: []string{"bhthompson@google.com", "tast-owners@google.com"},
+		Desc:     `A group of tests that verify minimum bisection/debug functionality`,
+	},
+	{
 		Name:     "cuj",
 		Contacts: []string{"chromeos-perfmetrics-eng@google.com"},
 		Desc:     `A group of CUJ tests that run regularly for the Performance Metrics team.`,

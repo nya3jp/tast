@@ -117,6 +117,7 @@ The following software features are defined:
 *   `iioservice` - Whether the device has CrOS IIO Service running.
 *   `inference_accuracy_eval` - Whether the device has inference accuracy evaluation tools installed.
 *   `ikev2` - The ability to run an IKEv2 VPN.
+*   `io_uring` - Whether the platform (kernel) has the io_uring syscalls enabled.
 *   `iwlwifi_rescan` - Ability to remove/rescan WiFi PCI device when the
     hardware becomes non-responsive.
 *   `lacros` - Whether the system supports running [lacros].

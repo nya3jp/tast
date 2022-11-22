@@ -112,7 +112,9 @@ var softwareFeatureDefs = map[string]string{
 	"iioservice":              "iioservice",
 	"inference_accuracy_eval": "inference_accuracy_eval",
 	// IKEv2 is only supported on 4.19+ kernels.
-	"ikev2":          `!("kernel-4_4" || "kernel-4_14")`,
+	"ikev2": `!("kernel-4_4" || "kernel-4_14")`,
+	// The io_uring syscalls are enabled on CrOS since kernel v5.15.
+	"io_uring":       `!("kernel-4_4" || "kernel-4_14" || "kernel-4_19" || "kernel-5_4" || "kernel-5_10")`,
 	"iwlwifi_rescan": "iwlwifi_rescan",
 	// Lacros variants.
 	// veyron does not support rootfs lacros entirely. b/204888294

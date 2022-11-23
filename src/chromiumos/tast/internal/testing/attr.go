@@ -629,6 +629,10 @@ third_party/autotest/files/server/site_tests/tast/control.runtime-probe
 				Name: "cellular_e2e_unstable",
 				Desc: `Identifies Cellular ui/e2e tests that are unstable. Used to skip tests running on stable suites and/or the CQ.`,
 			},
+			{
+				Name: "cellular_na",
+				Desc: `Identifies tests that can run only on North America carriers AT&T, Verizon, T-Mobile.`,
+			},
 		},
 	},
 	{

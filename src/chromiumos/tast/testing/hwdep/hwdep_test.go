@@ -724,3 +724,30 @@ func TestHPS(t *testing.T) {
 		&frameworkprotocol.DeprecatedDeviceConfig{},
 		nil)
 }
+
+func TestCameraFeature(t *testing.T) {
+	for _, tc := range []struct {
+		caps            []string
+		features        []string
+		expectSatisfied bool
+	}{
+		{[]string{"hdrnet", "gcam_ae"}, []string{}, true},
+		{[]string{"hdrnet", "gcam_ae"}, []string{"hdrnet"}, true},
+		{[]string{"hdrnet", "gcam_ae"}, []string{"hdrnet", "gcam_ae"}, true},
+		{[]string{"hdrnet", "gcam_ae"}, []string{"auto_framing"}, false},
+	} {
+		verifyCondition(
+			t, hwdep.CameraFeature(tc.features...),
+			&frameworkprotocol.DeprecatedDeviceConfig{},
+			&configpb.HardwareFeatures{
+				Camera: &configpb.HardwareFeatures_Camera{
+					Features: tc.caps,
+				},
+			},
+			tc.expectSatisfied)
+	}
+	expectError(
+		t, hwdep.CameraFeature(),
+		&frameworkprotocol.DeprecatedDeviceConfig{},
+		nil)
+}

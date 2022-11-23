@@ -1644,3 +1644,33 @@ func HPS() Condition {
 		return unsatisfied("HPS peripheral is not present")
 	}}
 }
+
+func containsCameraFeature(strs []string, feature string) bool {
+	for _, f := range strs {
+		if f == feature {
+			return true
+		}
+	}
+	return false
+}
+
+// CameraFeature is satisfied if all the features listed in |names| are enabled on the DUT.
+func CameraFeature(names ...string) Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		if hf := f.GetHardwareFeatures(); hf == nil {
+			return withErrorStr("Did not find hardware features")
+		} else if features := hf.GetCamera().Features; features != nil {
+			unsatisfiedFeatures := make([]string, 0, 10)
+			for _, n := range names {
+				if !containsCameraFeature(features, n) {
+					unsatisfiedFeatures = append(unsatisfiedFeatures, n)
+				}
+			}
+			if len(unsatisfiedFeatures) != 0 {
+				return unsatisfied(fmt.Sprintf("Camera features not enabled: %v", unsatisfiedFeatures))
+			}
+			return satisfied()
+		}
+		return unsatisfied("Camera features not probed")
+	}}
+}

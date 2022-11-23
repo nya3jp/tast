@@ -118,6 +118,7 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		Bluetooth:          &configpb.HardwareFeatures_Bluetooth{},
 		Hps:                &configpb.HardwareFeatures_Hps{},
 		Battery:            &configpb.HardwareFeatures_Battery{},
+		Camera:             &configpb.HardwareFeatures_Camera{},
 	}
 
 	formFactor, err := func() (string, error) {
@@ -642,6 +643,12 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		features.Hps.Present = configpb.HardwareFeatures_PRESENT
 	}
 
+	camFeatures, err := cameraFeatures(model)
+	if err != nil {
+		logging.Infof(ctx, "failed to load camera feature profile: %v", err)
+	}
+	features.Camera.Features = camFeatures
+
 	return &protocol.HardwareFeatures{
 		HardwareFeatures:       features,
 		DeprecatedDeviceConfig: config,
@@ -1154,4 +1161,32 @@ func hasBuiltinAudio(ctx context.Context, ff configpb.HardwareFeatures_FormFacto
 		logging.Infof(ctx, "Unknown form factor: %s", ff)
 		return false
 	}
+}
+
+// cameraFeatures returns the list of configured camera features for the given
+// |model| by inspecting the on-device feature config file.
+func cameraFeatures(model string) ([]string, error) {
+	type modelConfig map[string]struct {
+		FeatureSet []map[string]string `json:"feature_set"`
+	}
+	const featureProfilePath = "/etc/camera/feature_profile.json"
+	jsonInput, err := ioutil.ReadFile(featureProfilePath)
+	if err != nil {
+		return nil, errors.Wrap(err, "cannot load feature profile config")
+	}
+	conf := make(modelConfig)
+	if err := json.Unmarshal(jsonInput, &conf); err != nil {
+		return nil, errors.Wrap(err, "cannot unmarshal feature profile config")
+	}
+	c, ok := conf[model]
+	if !ok {
+		return nil, errors.Errorf("feature set config for model %s doesn't exist", model)
+	}
+	var features []string
+	for _, f := range c.FeatureSet {
+		if v, ok := f["type"]; ok {
+			features = append(features, v)
+		}
+	}
+	return features, nil
 }

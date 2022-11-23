@@ -17,6 +17,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"sort"
+	"strconv"
 	"strings"
 
 	cryptossh "golang.org/x/crypto/ssh"
@@ -102,6 +103,78 @@ func getFile(ctx context.Context, s *ssh.Conn, src, dst string, symlinkPolicy Sy
 		return "", nil, fmt.Errorf("running local tar failed: %v", err)
 	}
 	return filepath.Join(td, sb), close, nil
+}
+
+// GetFileTail copies a file from the host to the local machine.
+// dst is the full destination name for the file and it will be replaced
+// if it already exists. If the same of the src is better tham maxSize,
+// the beginning of the file will be truncated.
+func GetFileTail(ctx context.Context, s *ssh.Conn, src, dst string, maxSize int64) error {
+	src = filepath.Clean(src)
+	dst = filepath.Clean(dst)
+
+	if err := os.RemoveAll(dst); err != nil {
+		return err
+	}
+
+	path, close, err := getFileTail(ctx, s, src, dst, maxSize)
+	if err != nil {
+		return err
+	}
+	defer close()
+
+	if err := os.Rename(path, dst); err != nil {
+		return fmt.Errorf("moving local file failed: %v", err)
+	}
+	return nil
+}
+
+// getFileTail copies a file from the host to the local machine.
+// It creates a temporary directory under the directory of dst, and copies
+// src to it. It returns the filepath where src has been copied to.
+// Caller must call close to remove the temporary directory.
+func getFileTail(ctx context.Context, conn *ssh.Conn, src, dst string, maxSize int64) (path string, close func() error, retErr error) {
+	// Create a temporary directory alongside the destination path.
+	td, err := ioutil.TempDir(filepath.Dir(dst), filepath.Base(dst)+".")
+	if err != nil {
+		return "", nil, fmt.Errorf("creating local temp dir failed: %v", err)
+	}
+	defer func() {
+		if retErr != nil {
+			os.RemoveAll(td)
+		}
+	}()
+	close = func() error {
+		return os.RemoveAll(td)
+	}
+
+	rcmd := conn.CommandContext(ctx, "sh", "-c", fmt.Sprintf("tail -c %s %q | gzip -c", strconv.FormatInt(maxSize, 10), src))
+	p, err := rcmd.StdoutPipe()
+	if err != nil {
+		return "", nil, fmt.Errorf("failed to get stdout pipe: %v", err)
+	}
+	if err := rcmd.Start(); err != nil {
+		return "", nil, fmt.Errorf("running remote gzip failed: %v", err)
+	}
+	defer rcmd.Wait()
+	defer rcmd.Abort()
+
+	sb := filepath.Base(src)
+	outPath := filepath.Join(td, sb)
+	outfile, err := os.Create(outPath)
+	if err != nil {
+		return "", nil, fmt.Errorf("failed to create temporary output file %v: %v", outPath, err)
+	}
+	defer outfile.Close()
+
+	cmd := exec.CommandContext(ctx, "gzip", "-d")
+	cmd.Stdin = p
+	cmd.Stdout = outfile
+	if err := cmd.Run(); err != nil {
+		return "", nil, errors.Wrapf(err, "failed to unzip Data")
+	}
+
+	return outPath, close, nil
 }
 
 // findChangedFiles returns a subset of files that differ between the local machine

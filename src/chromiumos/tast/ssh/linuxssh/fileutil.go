@@ -53,6 +53,12 @@ func ReadFile(ctx context.Context, conn *ssh.Conn, path string) ([]byte, error) 
 	return conn.CommandContext(ctx, "cat", path).Output(ssh.DumpLogOnError)
 }
 
+// GetFileTail reads the file on the path and returns the file truncate by command tail
+// with the Max System Message Log Size and destination.
+func GetFileTail(ctx context.Context, conn *ssh.Conn, src, dst string, maxSize int64) error {
+	return linuxssh.GetFileTail(ctx, conn, src, dst, maxSize)
+}
+
 // WriteFile writes data to the file on the path. If the file does not exist,
 // WriteFile creates it with permissions perm; otherwise WriteFile truncates it
 // before writing, without changing permissions.

@@ -94,6 +94,45 @@ func TestGetFileRegular(t *testing.T) {
 	}
 }
 
+func TestGetFileTail(t *testing.T) {
+	t.Parallel()
+	td := sshtest.NewTestDataConn(t)
+	defer td.Close()
+
+	files := map[string]string{"file": "fooooooooo", "fileWanted": "oooo"}
+	tmpDir, srcDir := initFileTest(t, files)
+	defer os.RemoveAll(tmpDir)
+
+	srcFile := filepath.Join(srcDir, "file")
+	dstFile := filepath.Join(tmpDir, "file.copy")
+	if err := linuxssh.GetFileTail(td.Ctx, td.Hst, srcFile, dstFile, 4); err != nil {
+		t.Fatal(err)
+	}
+	if err := checkFile(dstFile, files["fileWanted"]); err != nil {
+		t.Error(err)
+	}
+
+	// GetFileTail should overwrite local files.
+	if err := linuxssh.GetFileTail(td.Ctx, td.Hst, srcFile, dstFile, 4); err != nil {
+		t.Error(err)
+	}
+
+	// Using DereferenceSymlinks should make no difference for regular files
+	srcFile = filepath.Join(srcDir, "file")
+	dstFile = filepath.Join(tmpDir, "file.dereference")
+	if err := linuxssh.GetFileTail(td.Ctx, td.Hst, srcFile, dstFile, 4); err != nil {
+		t.Fatal(err)
+	}
+	if err := checkFile(dstFile, files["fileWanted"]); err != nil {
+		t.Error(err)
+	}
+
+	// GetFileTail should overwrite local files.
+	if err := linuxssh.GetFileTail(td.Ctx, td.Hst, srcFile, dstFile, 4); err != nil {
+		t.Error(err)
+	}
+}
+
 func TestGetFileRegularSymlink(t *testing.T) {
 	t.Parallel()
 	td := sshtest.NewTestDataConn(t)

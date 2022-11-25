@@ -366,6 +366,10 @@ consistency, the built-in "context" package is preferred.
 > When a test hits a timeout that was sufficient before, investigate why it hit
 > the timeout before increasing it.
 
+The performance and worst case scenario can be obtained using the [time
+calculation script]. It parses the test result logs to obtain the average and
+max time from various executions.
+
 [context.Context]: https://golang.org/pkg/context/
 [channel]: https://tour.golang.org/concurrency/2
 [local tests]: https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform/tast/src/chromiumos/tast/internal/bundle/local.go
@@ -376,6 +380,7 @@ consistency, the built-in "context" package is preferred.
 [testing.Sleep]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#Sleep
 [Go Concurrency Patterns: Context]: https://blog.golang.org/context
 [Go Concurrency Patterns: Timing out, moving on]: https://blog.golang.org/go-concurrency-patterns-timing-out-and
+[time calculation script]: https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform/tast-tests/tools/test_time_calculation.py
 
 ### Reserve time for clean-up task
 

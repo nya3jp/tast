@@ -477,6 +477,24 @@ func GSCUART() Condition {
 	)
 }
 
+// GSCRWKeyIDProd returns a hardware dependency condition that
+// is satisfied iff the DUT does have a GSC RW image signed with prod key.
+func GSCRWKeyIDProd() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("Did not find hardware features")
+		}
+		if status := hf.GetTrustedPlatformModule().GetProductionRwKeyId(); status == configpb.HardwareFeatures_PRESENT {
+			return satisfied()
+		} else if status == configpb.HardwareFeatures_PRESENT_UNKNOWN {
+			return unsatisfied("Could not determine if production RW key is used to sign GSC image")
+		}
+		return unsatisfied("DUT has a dev signed GSC image")
+	},
+	}
+}
+
 // CPUNotNeedsCoreScheduling returns a hardware dependency condition that is satisfied iff the DUT's
 // CPU is does not need to use core scheduling to mitigate hardware vulnerabilities.
 func CPUNotNeedsCoreScheduling() Condition {

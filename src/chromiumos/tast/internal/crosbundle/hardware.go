@@ -28,6 +28,12 @@ import (
 	"chromiumos/tast/testing/wlan"
 )
 
+// GSCKeyID is a hex value that represents a key used to sign a GSC image.
+type GSCKeyID string
+
+// prodRWGSCKeyIDs is a slice with production keyIDs used to sign the RW GSC image.
+var prodRWGSCKeyIDs = []GSCKeyID{"0x87b73b67", "0xde88588d"}
+
 // detectHardwareFeatures returns a device.Config and api.HardwareFeatures instances
 // some of whose members are filled based on runtime information.
 func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, error) {
@@ -101,24 +107,25 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		HasVboot2:       vboot2,
 	}
 	features := &configpb.HardwareFeatures{
-		Screen:             &configpb.HardwareFeatures_Screen{},
-		Fingerprint:        &configpb.HardwareFeatures_Fingerprint{},
-		EmbeddedController: &configpb.HardwareFeatures_EmbeddedController{},
-		Storage:            &configpb.HardwareFeatures_Storage{},
-		Memory:             &configpb.HardwareFeatures_Memory{},
-		Audio:              &configpb.HardwareFeatures_Audio{},
-		PrivacyScreen:      &configpb.HardwareFeatures_PrivacyScreen{},
-		Soc:                &configpb.HardwareFeatures_Soc{},
-		Touchpad:           &configpb.HardwareFeatures_Touchpad{},
-		Keyboard:           &configpb.HardwareFeatures_Keyboard{},
-		FormFactor:         &configpb.HardwareFeatures_FormFactor{},
-		DpConverter:        &configpb.HardwareFeatures_DisplayPortConverter{},
-		Wifi:               &configpb.HardwareFeatures_Wifi{},
-		Cellular:           &configpb.HardwareFeatures_Cellular{},
-		Bluetooth:          &configpb.HardwareFeatures_Bluetooth{},
-		Hps:                &configpb.HardwareFeatures_Hps{},
-		Battery:            &configpb.HardwareFeatures_Battery{},
-		Camera:             &configpb.HardwareFeatures_Camera{},
+		Screen:                &configpb.HardwareFeatures_Screen{},
+		Fingerprint:           &configpb.HardwareFeatures_Fingerprint{},
+		EmbeddedController:    &configpb.HardwareFeatures_EmbeddedController{},
+		Storage:               &configpb.HardwareFeatures_Storage{},
+		Memory:                &configpb.HardwareFeatures_Memory{},
+		Audio:                 &configpb.HardwareFeatures_Audio{},
+		PrivacyScreen:         &configpb.HardwareFeatures_PrivacyScreen{},
+		Soc:                   &configpb.HardwareFeatures_Soc{},
+		Touchpad:              &configpb.HardwareFeatures_Touchpad{},
+		Keyboard:              &configpb.HardwareFeatures_Keyboard{},
+		FormFactor:            &configpb.HardwareFeatures_FormFactor{},
+		DpConverter:           &configpb.HardwareFeatures_DisplayPortConverter{},
+		Wifi:                  &configpb.HardwareFeatures_Wifi{},
+		Cellular:              &configpb.HardwareFeatures_Cellular{},
+		Bluetooth:             &configpb.HardwareFeatures_Bluetooth{},
+		Hps:                   &configpb.HardwareFeatures_Hps{},
+		Battery:               &configpb.HardwareFeatures_Battery{},
+		Camera:                &configpb.HardwareFeatures_Camera{},
+		TrustedPlatformModule: &configpb.HardwareFeatures_TrustedPlatformModule{},
 	}
 
 	formFactor, err := func() (string, error) {
@@ -348,6 +355,21 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 	} else {
 		features.EmbeddedController.Cbi = configpb.HardwareFeatures_PRESENT_UNKNOWN
 	}
+
+	// Device has GSC with production RW KeyId if gsctool -a -I -M
+	// returns RW KeyID with value 0x87b73b67 or 0xde88588d
+	func() {
+		if out, err := exec.Command("gsctool", "-a", "-f", "-M").Output(); err != nil {
+			logging.Infof(ctx, "Failed to exec command for KeyId info: %v", err)
+			features.TrustedPlatformModule.ProductionRwKeyId = configpb.HardwareFeatures_PRESENT_UNKNOWN
+		} else if keyIDRW, err := findGSCKeyID(string(out), "RW"); err != nil {
+			logging.Infof(ctx, "Failed to read RW KeyId: %v", err)
+		} else if containsGSCKeyID(prodRWGSCKeyIDs, GSCKeyID(keyIDRW)) {
+			features.TrustedPlatformModule.ProductionRwKeyId = configpb.HardwareFeatures_PRESENT
+		} else {
+			features.TrustedPlatformModule.ProductionRwKeyId = configpb.HardwareFeatures_NOT_PRESENT
+		}
+	}()
 
 	if err := exec.Command("cros_config", "/modem", "firmware-variant").Run(); err != nil {
 		logging.Infof(ctx, "Modem not found: %v", err)
@@ -1189,4 +1211,30 @@ func cameraFeatures(model string) ([]string, error) {
 		}
 	}
 	return features, nil
+}
+
+// findGSCKeyID parses a content of "gsctool -a -f -M" and return a required key
+func findGSCKeyID(str, keyIDType string) (string, error) {
+	re := regexp.MustCompile(`(?m)^keyids: RO (0x.+), RW (0x.+)$`)
+
+	switch keyIDType {
+	case "RO":
+		keyID := re.FindAllStringSubmatch(str, -1)[0][1]
+		return keyID, nil
+	case "RW":
+		keyID := re.FindAllStringSubmatch(str, -1)[0][2]
+		return keyID, nil
+	default:
+		return "", errors.Errorf("Unknown keyId type %s", keyIDType)
+	}
+}
+
+// containsGSCKeyID returns true if reqKeyID is in the keyIDs
+func containsGSCKeyID(keyIDs []GSCKeyID, reqKeyID GSCKeyID) bool {
+	for _, keyID := range keyIDs {
+		if keyID == reqKeyID {
+			return true
+		}
+	}
+	return false
 }

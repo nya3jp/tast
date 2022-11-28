@@ -185,8 +185,10 @@ var softwareFeatureDefs = map[string]string{
 	"protected_content":                       "cdm_factory_daemon",
 	// These boards don't support pstore: https://crbug.com/971899
 	"pstore": `!"betty" && !"tast_vm"`,
-	"qemu":   `"betty" || "tast_vm"`,
-	"racc":   "racc",
+	// ptp_kvm is only available on ARM in kernel 5.10 or later.
+	"ptp_kvm": `"amd64" || (("arm" || "arm64") && !("kernel-4_4" || "kernel-4_14" || "kernel-4_19" || "kernel-5_4"))`,
+	"qemu":    `"betty" || "tast_vm"`,
+	"racc":    "racc",
 	// weird missing-runner-after-reboot bug: https://crbug.com/909955
 	// TODO(yich): This is a workaround to enable reboot flag on all boards.
 	// We should disable this flag if the weird missing-runner-after-reboot bug still happening.

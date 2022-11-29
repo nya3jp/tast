@@ -214,6 +214,10 @@ Tests in this group are not used for build verification.
 				Name: "arc_playstore",
 				Desc: `A group of tests which tests playstore functionality on its nightly build.`,
 			},
+			{
+				Name: "arc_core",
+				Desc: `A group of tests which tests ARC Core functionality on its nightly build.`,
+			},
 		},
 	},
 	{

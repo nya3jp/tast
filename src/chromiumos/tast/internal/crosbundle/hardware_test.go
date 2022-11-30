@@ -218,6 +218,49 @@ func TestFindMemorySize(t *testing.T) {
 	}
 }
 
+func TestIsBootTimeCalibrationEnabled(t *testing.T) {
+	testCases := []struct {
+		input  string
+		expect bool
+	}{
+		{
+			"boot_time_calibration_enabled : true",
+			true,
+		},
+		{
+			"boot_time_calibration_enabled : false",
+			false,
+		},
+		{
+			"boot_time_calibration_enabled    : false",
+			false,
+		},
+		{
+			"boot_time_calibration_enabled :  true",
+			true,
+		},
+		{
+			"boot_time_calibration_enabled:true",
+			true,
+		},
+		{
+			"boot_time_calibration_enabled:false",
+			false,
+		},
+	}
+	for _, tc := range testCases {
+		enable, err := isBootTimeCalibrationEnabled(tc.input)
+
+		if err != nil {
+			t.Errorf("failed to call isBootTimeCalibrationEnabled: %v, input=%s", err, tc.input)
+		}
+
+		if enable != tc.expect {
+			t.Errorf("Got %v, expect %v: input=%v", enable, tc.expect, tc.input)
+		}
+	}
+}
+
 func TestFindSpeakerAmplifier(t *testing.T) {
 	testCases := []struct {
 		input  string

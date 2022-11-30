@@ -34,20 +34,20 @@ type GSCKeyID string
 // prodRWGSCKeyIDs is a slice with production keyIDs used to sign the RW GSC image.
 var prodRWGSCKeyIDs = []GSCKeyID{"0x87b73b67", "0xde88588d"}
 
+func crosConfig(path, prop string) (string, error) {
+	cmd := exec.Command("cros_config", path, prop)
+	var buf bytes.Buffer
+	cmd.Stderr = &buf
+	b, err := cmd.Output()
+	if err != nil {
+		return "", errors.Errorf("cros_config failed (stderr: %q): %v", buf.Bytes(), err)
+	}
+	return string(b), nil
+}
+
 // detectHardwareFeatures returns a device.Config and api.HardwareFeatures instances
 // some of whose members are filled based on runtime information.
 func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, error) {
-	crosConfig := func(path, prop string) (string, error) {
-		cmd := exec.Command("cros_config", path, prop)
-		var buf bytes.Buffer
-		cmd.Stderr = &buf
-		b, err := cmd.Output()
-		if err != nil {
-			return "", errors.Errorf("cros_config failed (stderr: %q): %v", buf.Bytes(), err)
-		}
-		return string(b), nil
-	}
-
 	platform, err := func() (string, error) {
 		out, err := crosConfig("/identity", "platform-name")
 		if err != nil {
@@ -541,11 +541,8 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 	}
 
 	if speaker.GetValue() > 0 || expectAudio {
-		config, err := crosConfig("audio/main", "sound-card-init-conf")
-		if err != nil {
-			logging.Infof(ctx, "Failed to get sound-card-init-conf: %v", err)
-		}
-		amp, err := findSpeakerAmplifier(config)
+
+		amp, err := findSpeakerAmplifier()
 		if err != nil {
 			logging.Infof(ctx, "Failed to get amp: %v", err)
 		}
@@ -1086,7 +1083,7 @@ func matchCrasDeviceType(pattern string) (*configpb.HardwareFeatures_Count, erro
 
 // findSpeakerAmplifier parses a content of in "/sys/kernel/debug/asoc/components"
 // and returns the speaker amplifier used.
-func findSpeakerAmplifier(config string) (*configpb.Component_Amplifier, error) {
+func findSpeakerAmplifier() (*configpb.Component_Amplifier, error) {
 
 	// This sys path exists only on kernel >=4.14. But we don't
 	// target amp tests on earlier kernels.
@@ -1097,10 +1094,8 @@ func findSpeakerAmplifier(config string) (*configpb.Component_Amplifier, error) 
 	defer f.Close()
 	scanner := bufio.NewScanner(f)
 	for scanner.Scan() {
-		amp, found := matchSpeakerAmplifier(scanner.Text())
-		if found {
-			enabled, err := bootTimeCalibration(config)
-			if enabled {
+		if amp, found := matchSpeakerAmplifier(scanner.Text()); found {
+			if enabled, err := bootTimeCalibration(); err == nil && enabled {
 				amp.Features = append(amp.Features, configpb.Component_Amplifier_BOOT_TIME_CALIBRATION)
 			}
 			return amp, err
@@ -1131,23 +1126,33 @@ func matchSpeakerAmplifier(line string) (*configpb.Component_Amplifier, bool) {
 
 // bootTimeCalibration returns whether the boot time calibration is
 // enabled by parsing the sound_card_init config.
-func bootTimeCalibration(config string) (bool, error) {
-	path := "/etc/sound_card_init/" + config + ".yaml"
-	if _, err := os.Stat(path); os.IsNotExist(err) {
+func bootTimeCalibration() (bool, error) {
+	config, err := crosConfig("/audio/main", "sound-card-init-conf")
+	if err != nil {
+		return false, err
+	}
+	path := "/etc/sound_card_init/" + config
+	if _, err := os.Stat(path); err != nil {
 		// Regard config non-existence as boot_time_calibration disabled.
-		return false, nil
+		if os.IsNotExist(err) {
+			return false, nil
+		}
+		return false, err
 	}
 	b, err := ioutil.ReadFile(path)
 	if err != nil {
 		return false, errors.New("failed to read sound_card_init config")
 	}
-	re := regexp.MustCompile("boot_time_calibration_enabled: (true|false)")
-	match := re.Find([]byte(b))
+	return isBootTimeCalibrationEnabled(string(b))
+}
+
+func isBootTimeCalibrationEnabled(s string) (bool, error) {
+	re := regexp.MustCompile(`boot_time_calibration_enabled\s*?:\s*?(true|false)`)
+	match := re.FindStringSubmatch(s)
 	if match == nil {
 		return false, errors.New("invalid sound_card_init config")
 	}
-	const N = len("boot_time_calibration_enabled: ")
-	enabled := string(match[N:])
+	enabled := match[1]
 	return enabled == "true", nil
 }
 

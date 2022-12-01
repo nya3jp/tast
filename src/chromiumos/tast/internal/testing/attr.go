@@ -1143,6 +1143,27 @@ from other existing groups (or use this group standalone).
 		Contacts: []string{"kamilszarek@google.com", "chromeos-ent-test@google.com"},
 		Desc:     `A group of VDI tests that should use run on selected devices to limit load on the infrastructure.`,
 	},
+
+	{
+		Name:     "golden_tier",
+		Contacts: []string{"kamilszarek@google.com", "chromeos-ent-test@google.com"},
+		Desc:     `Suite will run assigned tests on devices that provide the most reliable results. More info go/cros-duop:proposal`,
+	},
+	{
+		Name:     "medium_low_tier",
+		Contacts: []string{"kamilszarek@google.com", "chromeos-ent-test@google.com"},
+		Desc:     `Suite will run assigned tests on medium and low tier devices. More info go/cros-duop:proposal`,
+	},
+	{
+		Name:     "hardware",
+		Contacts: []string{"kamilszarek@google.com", "chromeos-ent-test@google.com"},
+		Desc:     `Suite will run assigned tests on various hardware configurations. More info go/cros-duop:proposal`,
+	},
+	{
+		Name:     "complementary",
+		Contacts: []string{"kamilszarek@google.com", "chromeos-ent-test@google.com"},
+		Desc:     `Suite will run assigned tests on devices that are not in golden_tier, medium_low_tier not hardware. More info go/cros-duop:proposal`,
+	},
 }
 
 // validGroupMap is the name-keyed map of validGroups.

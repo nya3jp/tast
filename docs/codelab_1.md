@@ -63,10 +63,11 @@ func init() {
 		Func: DateFormat,
 		Desc: "Checks that the date command prints dates as expected",
 		Contacts: []string{
-			"me@chromium.org",         // Test author
-			"tast-users@chromium.org", // Backup mailing list
+			"my-team@chromium.org", // Owning team mailing list
+			"me@chromium.org",      // Optional test contact
 		},
 		Attr: []string{"group:mainline", "informational"},
+		BugComponent: "b:1234",
 	})
 }
 ```
@@ -92,7 +93,11 @@ non-critical, i.e. it won't run on the ChromeOS Commit Queue or on the
 Pre-Flight Queue (PFQ) builders that are used to integrate new versions of
 Chrome or Android into the OS. All [new mainline tests] (internal link) should
 start out with the `informational` attribute until they've been proven to be
-stable.
+stable. If a test is not dependent on physical HW and can be run on x86 VMs,
+please also specify `group:hw_agnostic`.
+
+`BugComponent` contains a string representing the owning team's primary bug component.
+For buganizer, please use a "`b:`" prefix and specify the component ID (i.e., "`b:12345`"). For crbug, please use a "`crbug:`" prefix followed by component path (i.e., "`crbug:UI>Shell>Launcher`").
 
 [testing.AddTest]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#AddTest
 [testing.Test]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#Test

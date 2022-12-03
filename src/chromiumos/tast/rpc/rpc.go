@@ -37,20 +37,23 @@ func (c *Client) Close(ctx context.Context, opts ...ssh.RunOption) error {
 // Dial establishes a gRPC connection to the test bundle executable
 // using d and h.
 //
+// The context passed in must remain valid for as long as the gRPC connection.
+// I.e. Don't use the context from within a testing.Poll function.
+//
 // Example:
 //
-//  cl, err := rpc.Dial(ctx, d, s.RPCHint())
-//  if err != nil {
-//  	return err
-//  }
-//  defer cl.Close(ctx)
+//	cl, err := rpc.Dial(ctx, d, s.RPCHint())
+//	if err != nil {
+//		return err
+//	}
+//	defer cl.Close(ctx)
 //
-//  fs := base.NewFileSystemClient(cl.Conn)
+//	fs := base.NewFileSystemClient(cl.Conn)
 //
-//  res, err := fs.ReadDir(ctx, &base.ReadDirRequest{Dir: "/mnt/stateful_partition"})
-//  if err != nil {
-//  	return err
-//  }
+//	res, err := fs.ReadDir(ctx, &base.ReadDirRequest{Dir: "/mnt/stateful_partition"})
+//	if err != nil {
+//		return err
+//	}
 func Dial(ctx context.Context, d *dut.DUT, h *testing.RPCHint) (*Client, error) {
 	exe, err := os.Executable()
 	if err != nil {

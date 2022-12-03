@@ -52,6 +52,9 @@ func (c *SSHClient) Close(opts ...ssh.RunOption) error {
 
 // DialSSH establishes a gRPC connection to an executable on a remote machine.
 // proxy if true indicates that HTTP proxy environment variables should be forwarded.
+//
+// The context passed in must remain valid for as long as the gRPC connection.
+// I.e. Don't use the context from within a testing.Poll function.
 func DialSSH(ctx context.Context, conn *ssh.Conn, path string, req *protocol.HandshakeRequest, proxy bool) (*SSHClient, error) {
 	args := []string{path, "-rpc"}
 	if proxy {

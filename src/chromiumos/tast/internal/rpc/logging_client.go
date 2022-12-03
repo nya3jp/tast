@@ -76,7 +76,10 @@ func (l *remoteLoggingClient) Wait(ctx context.Context, seq uint64) error {
 		case <-ctx.Done():
 			return ctx.Err()
 		case <-l.doneCh:
-			return errors.New("logging stream closed")
+			if l.runErr == nil {
+				return errors.New("logging stream closed")
+			}
+			return errors.Wrap(l.runErr, "logging stream closed")
 		case <-waiter:
 		}
 	}
@@ -86,7 +89,10 @@ func (l *remoteLoggingClient) Wait(ctx context.Context, seq uint64) error {
 func (l *remoteLoggingClient) Close() error {
 	l.stream.CloseSend()
 	<-l.doneCh
-	return l.runErr
+	if l.runErr != nil {
+		return errors.Wrap(l.runErr, "remote logging background routine failed")
+	}
+	return nil
 }
 
 func (l *remoteLoggingClient) runBackground(ctx context.Context) {

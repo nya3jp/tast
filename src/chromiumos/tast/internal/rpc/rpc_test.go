@@ -15,6 +15,7 @@ import (
 	"path/filepath"
 	"reflect"
 	"strconv"
+	"strings"
 	"sync"
 	gotesting "testing"
 	"time"
@@ -726,6 +727,59 @@ func TestRPCOverSSH(t *gotesting.T) {
 	cl := protocol.NewPingCoreClient(conn.Conn())
 	if _, err := cl.Ping(ctx, &empty.Empty{}); err != nil {
 		t.Error("Ping failed: ", err)
+	}
+}
+
+// Verifies that rpc calls fail if the context passed to DialSSH is cancelled.
+func TestRPCOverSSHShortContext(t *gotesting.T) {
+	ctx := context.Background()
+
+	// Start a fake SSH server providing gRPC server.
+	td := sshtest.NewTestData(func(req *sshtest.ExecReq) {
+		req.Start(true)
+		if err := RunServer(req, req, nil, func(srv *grpc.Server, req *protocol.HandshakeRequest) error {
+			protocol.RegisterPingCoreServer(srv, &pingCoreServer{})
+			return nil
+		}); err != nil {
+			fmt.Fprintf(req.Stderr(), "FATAL: %v\n", err)
+			req.End(1)
+			return
+		}
+		req.End(0)
+	})
+	defer td.Close()
+
+	sshConn, err := ssh.New(ctx, &ssh.Options{
+		Hostname: td.Srvs[0].Addr().String(),
+		KeyFile:  td.UserKeyFile,
+	})
+	if err != nil {
+		t.Fatalf("Failed to connect to fake SSH server: %v", err)
+	}
+	defer sshConn.Close(ctx)
+
+	// Connect to the server and try calling a method.
+	shortContext, shortCancel := context.WithCancel(ctx)
+	conn, err := DialSSH(shortContext, sshConn, "", &protocol.HandshakeRequest{}, false)
+	if err != nil {
+		t.Fatalf("DialSSH failed: %v", err)
+	}
+
+	// Should succeed
+	cl := protocol.NewPingCoreClient(conn.Conn())
+	if _, err := cl.Ping(ctx, &empty.Empty{}); err != nil {
+		t.Error("Ping failed: ", err)
+	}
+
+	shortCancel()
+	if _, err := cl.Ping(ctx, &empty.Empty{}); err != nil {
+		t.Error("Ping failed: ", err)
+	}
+	// Should fail
+	if err := conn.Close(); err == nil {
+		t.Error("Close succeeded, but was expected to fail")
+	} else if !strings.Contains(err.Error(), "remote logging background routine failed") || !strings.Contains(err.Error(), "context canceled") {
+		t.Error("Close failed with wrong error: ", err)
 	}
 }
 

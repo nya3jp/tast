@@ -229,6 +229,7 @@ var softwareFeatureDefs = map[string]string{
 	"usb_hid_wake":            `!("board:octopus")`,
 	"use_fscrypt_v1":          `!"direncription_allow_v2" && !"lvm_stateful_partition"`,
 	"use_fscrypt_v2":          `"direncription_allow_v2" && !"lvm_stateful_partition"`,
+	"uvc_compliant":           `!("kernel-4_4" || "kernel-4_14")`,
 	"v4l2_codec":              "v4l2_codec",
 	"vaapi":                   "vaapi",
 	// TODO(b/215374984) Remove `video_cards_ihd`.

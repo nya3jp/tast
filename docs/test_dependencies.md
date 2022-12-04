@@ -218,6 +218,7 @@ stack-sampled metrics.
 *   `usb_hid_wake` - The platform will register HID wake events to a usb device.
 *   `use_fscrypt_v1` - The board is set to use v1 fscrypt policy for user vault.
 *   `use_fscrypt_v2` - The board is set to use v2 fscrypt policy for user vault.
+*   `uvc_compliant` - The board has a UVC driver that is V4L2 compliant.
 *   `v4l2_codec` - Whether or not v4l2 video acceleration API is supported by this DUT.
 *   `vaapi` - Whether or not VA-API is supported by this DUT.
 *   `video_cards_ihd` - Boards that use the Intel Media Driver (also known as iHD) for VA-API.

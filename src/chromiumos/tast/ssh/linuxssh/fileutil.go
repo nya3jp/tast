@@ -11,7 +11,10 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"strconv"
+	"strings"
 
+	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/linuxssh"
 	"chromiumos/tast/ssh"
 )
@@ -25,6 +28,13 @@ const (
 	// DereferenceSymlinks indicates that symlinks should be dereferenced and turned into normal files.
 	DereferenceSymlinks = linuxssh.DereferenceSymlinks
 )
+
+// WordCountInfo describes the result from the unix command wc.
+type WordCountInfo struct {
+	Lines int64
+	Words int64
+	Bytes int64
+}
 
 // GetFile copies a file or directory from the host to the local machine.
 // dst is the full destination name for the file or directory being copied, not
@@ -55,8 +65,8 @@ func ReadFile(ctx context.Context, conn *ssh.Conn, path string) ([]byte, error) 
 
 // GetFileTail reads the file on the path and returns the file truncate by command tail
 // with the Max System Message Log Size and destination.
-func GetFileTail(ctx context.Context, conn *ssh.Conn, src, dst string, maxSize int64) error {
-	return linuxssh.GetFileTail(ctx, conn, src, dst, maxSize)
+func GetFileTail(ctx context.Context, conn *ssh.Conn, src, dst string, startLine, maxSize int64) error {
+	return linuxssh.GetFileTail(ctx, conn, src, dst, startLine, maxSize)
 }
 
 // WriteFile writes data to the file on the path. If the file does not exist,
@@ -67,4 +77,37 @@ func WriteFile(ctx context.Context, conn *ssh.Conn, path string, data []byte, pe
 	cmd := conn.CommandContext(ctx, "sh", "-c", `test -e "$0"; r=$?; cat > "$0"; if [ $r = 1 ]; then chmod "$1" "$0"; fi`, path, fmt.Sprintf("%o", perm&os.ModePerm))
 	cmd.Stdin = bytes.NewBuffer(data)
 	return cmd.Run(ssh.DumpLogOnError)
+}
+
+// WordCount get the line, word and byte counts of a remote text file.
+func WordCount(ctx context.Context, conn *ssh.Conn, path string) (*WordCountInfo, error) {
+	cmd := conn.CommandContext(ctx, "wc", path)
+	output, err := cmd.Output()
+	if err != nil {
+		return nil, errors.Wrapf(err, "failed to call wc for %s", path)
+	}
+	// Output example: "   68201  1105834 14679551 /var/log/messages".
+	strList := strings.Split(string(output), " ")
+	var strs []string
+	for _, s := range strList {
+		if s != "" {
+			strs = append(strs, s)
+		}
+	}
+	if len(strs) < 3 {
+		return nil, errors.Errorf("wc information is not available for %s", path)
+	}
+	lc, err := strconv.ParseInt(strs[0], 10, 64)
+	if err != nil {
+		return nil, errors.Wrapf(err, "failed to parse line count from string %s", string(output))
+	}
+	wc, err := strconv.ParseInt(strs[1], 10, 64)
+	if err != nil {
+		return nil, errors.Wrapf(err, "failed to parse word count from string %s", string(output))
+	}
+	bc, err := strconv.ParseInt(strs[2], 10, 64)
+	if err != nil {
+		return nil, errors.Wrapf(err, "failed to parse bytes count from string %s", string(output))
+	}
+	return &WordCountInfo{Lines: lc, Words: wc, Bytes: bc}, nil
 }

@@ -17,7 +17,6 @@ import (
 	"path/filepath"
 	"regexp"
 	"sort"
-	"strconv"
 	"strings"
 
 	cryptossh "golang.org/x/crypto/ssh"
@@ -105,11 +104,11 @@ func getFile(ctx context.Context, s *ssh.Conn, src, dst string, symlinkPolicy Sy
 	return filepath.Join(td, sb), close, nil
 }
 
-// GetFileTail copies a file from the host to the local machine.
+// GetFileTail copies a file starting from startLine in src from the host to the local machine.
 // dst is the full destination name for the file and it will be replaced
-// if it already exists. If the same of the src is better tham maxSize,
+// if it already exists. If the same of the source data is bigger than maxSize,
 // the beginning of the file will be truncated.
-func GetFileTail(ctx context.Context, s *ssh.Conn, src, dst string, maxSize int64) error {
+func GetFileTail(ctx context.Context, s *ssh.Conn, src, dst string, startLine, maxSize int64) error {
 	src = filepath.Clean(src)
 	dst = filepath.Clean(dst)
 
@@ -117,7 +116,7 @@ func GetFileTail(ctx context.Context, s *ssh.Conn, src, dst string, maxSize int6
 		return err
 	}
 
-	path, close, err := getFileTail(ctx, s, src, dst, maxSize)
+	path, close, err := getFileTail(ctx, s, src, dst, startLine, maxSize)
 	if err != nil {
 		return err
 	}
@@ -129,11 +128,11 @@ func GetFileTail(ctx context.Context, s *ssh.Conn, src, dst string, maxSize int6
 	return nil
 }
 
-// getFileTail copies a file from the host to the local machine.
+// getFileTail copies a file starting from startLine in src from the host to the local machine.
 // It creates a temporary directory under the directory of dst, and copies
 // src to it. It returns the filepath where src has been copied to.
 // Caller must call close to remove the temporary directory.
-func getFileTail(ctx context.Context, conn *ssh.Conn, src, dst string, maxSize int64) (path string, close func() error, retErr error) {
+func getFileTail(ctx context.Context, conn *ssh.Conn, src, dst string, startLine, maxSize int64) (path string, close func() error, retErr error) {
 	// Create a temporary directory alongside the destination path.
 	td, err := ioutil.TempDir(filepath.Dir(dst), filepath.Base(dst)+".")
 	if err != nil {
@@ -148,7 +147,12 @@ func getFileTail(ctx context.Context, conn *ssh.Conn, src, dst string, maxSize i
 		return os.RemoveAll(td)
 	}
 
-	rcmd := conn.CommandContext(ctx, "sh", "-c", fmt.Sprintf("tail -c %s %q | gzip -c", strconv.FormatInt(maxSize, 10), src))
+	// The first tail, "tail -n +%d %q", will print file starting from startLine to stdout.
+	// The second tail, "tail -c +d", will truncate the beginning of stdin to fit maxSize bytes.
+	// The gzip line will compress the data from stdin.
+	tailCmd := fmt.Sprintf("tail -n +%d %q | tail -c %d | gzip -c", startLine, src, maxSize)
+	rcmd := conn.CommandContext(ctx, "sh", "-c", tailCmd)
+
 	p, err := rcmd.StdoutPipe()
 	if err != nil {
 		return "", nil, fmt.Errorf("failed to get stdout pipe: %v", err)

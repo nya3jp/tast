@@ -95,3 +95,37 @@ func TestWriteFile(t *testing.T) {
 	}
 	checkFile(path3, "b", 0473)
 }
+
+func TestLineCount(t *testing.T) {
+	t.Parallel()
+	td := sshtest.NewTestDataConn(t)
+	defer td.Close()
+
+	ctx := logging.AttachLogger(context.Background(), loggingtest.NewLogger(t, logging.LevelInfo)) // for debug
+
+	dir := testutil.TempDir(t)
+	defer os.RemoveAll(dir)
+
+	filename := "foo.txt"
+	files := map[string]string{filename: "line1\nline2\nline3\n"}
+	testutil.WriteFiles(dir, files)
+
+	want := &linuxssh.WordCountInfo{
+		Lines: 3,
+		Words: 3,
+		Bytes: 18,
+	}
+	got, err := linuxssh.WordCount(ctx, td.Hst, filepath.Join(dir, filename))
+	if err != nil {
+		t.Errorf("Failed the get line count: %v", err)
+	}
+	if got.Lines != want.Lines {
+		t.Errorf("Failed to get correct line count; got = %v, want %v", got.Lines, want.Lines)
+	}
+	if got.Words != want.Words {
+		t.Errorf("Failed to get correct word count; got = %v, want %v", got.Words, want.Words)
+	}
+	if got.Bytes != want.Bytes {
+		t.Errorf("Failed to get correct byte count; got = %v, want %v", got.Bytes, want.Bytes)
+	}
+}

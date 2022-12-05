@@ -64,24 +64,26 @@ func runTestsRecursive(ctx context.Context, srv protocol.TestService_RunTestsSer
 		ew.RunLog(msg)
 	})))
 
-	var cl *bundleclient.Client
-	if target := bcfg.GetPrimaryTarget(); target != nil {
-		var err error
-		cl, err = bundleclient.New(ctx, bcfg.GetPrimaryTarget(), scfg.registry.Name(), &protocol.HandshakeRequest{
-			BundleInitParams: &protocol.BundleInitParams{
-				Vars: bundleParams.Vars,
-			},
-		})
-		if err != nil {
-			return err
-		}
-		defer func() {
-			if err := cl.Close(ctx); err != nil && retErr == nil {
-				retErr = err
+	es, err := func() (es []*protocol.ResolvedEntity, retErr error) {
+		var cl *bundleclient.Client
+		if target := bcfg.GetPrimaryTarget(); target != nil {
+			var err error
+			cl, err = bundleclient.New(ctx, bcfg.GetPrimaryTarget(), scfg.registry.Name(), &protocol.HandshakeRequest{
+				BundleInitParams: &protocol.BundleInitParams{
+					Vars: bundleParams.Vars,
+				},
+			})
+			if err != nil {
+				return nil, err
 			}
-		}()
-	}
-	es, err := listEntitiesRecursive(ctx, scfg.registry, rcfg.GetFeatures(), cl)
+			defer func() {
+				if err := cl.Close(ctx); err != nil && retErr == nil {
+					retErr = err
+				}
+			}()
+		}
+		return listEntitiesRecursive(ctx, scfg.registry, rcfg.GetFeatures(), cl)
+	}()
 	if err != nil {
 		return err
 	}

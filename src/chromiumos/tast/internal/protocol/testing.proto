@@ -474,6 +474,7 @@ message StackOperationRequest {
     StackGetStatus status = 4;
     StackSetDirty set_dirty = 5;
     StackGetErrors errors = 6;
+    StackValue value = 7;
   }
 }
 
@@ -495,6 +496,8 @@ message StackSetDirty { bool dirty = 1; }
 
 message StackGetErrors {}
 
+message StackValue {}
+
 message StackOperationResponse {
   // FatalError is an framework internal error happened during operation.
   string fatal_error = 1;
@@ -505,6 +508,8 @@ message StackOperationResponse {
   repeated Error errors = 3;
   // TestHasError is a response for StackPreTest and StackPostTest request.
   bool test_has_error = 4;
+  // FixtValue is the serialized fixture value of the fixture in current stack.
+  bytes fixt_value = 5;
 }
 
 enum StackStatus {

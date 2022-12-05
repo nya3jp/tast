@@ -630,6 +630,10 @@ func TestWithTimeout(t *testing.T) {
 	ctx, cancel := WithTimeout(context.Background(), timeout, wantErr)
 	defer cancel(context.Canceled)
 
+	if to, err := GetContextTimeout(ctx); err != nil || to != timeout {
+		t.Errorf("Timeout value mismatch: got %v, want %v", to, timeout)
+	}
+
 	if isDone(ctx) {
 		t.Error("On init: Done is already signaled")
 	}
@@ -656,8 +660,19 @@ func TestWithTimeout(t *testing.T) {
 
 func TestWithTimeout_NilError(t *testing.T) {
 	defer func() { recover() }()
-	_, cancel := WithTimeout(context.Background(), time.Second, nil)
+	const timeout = time.Second
+	ctx, cancel := WithTimeout(context.Background(), timeout, nil)
 	defer cancel(context.Canceled)
 
+	if to, err := GetContextTimeout(ctx); err != nil || to != timeout {
+		t.Errorf("Timeout value mismatch: got %v, want %v", to, timeout)
+	}
+
 	t.Error("WithTimeout(nil) did not panic")
+}
+
+func TestGetContextTimeout_NoTimeout(t *testing.T) {
+	if to, err := GetContextTimeout(context.Background()); err == nil {
+		t.Errorf("Timeout error mismatch: got %v, want nil", to)
+	}
 }

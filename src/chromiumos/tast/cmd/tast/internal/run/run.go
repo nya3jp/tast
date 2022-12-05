@@ -22,6 +22,7 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/driver"
 	"chromiumos/tast/cmd/tast/internal/run/prepare"
 	"chromiumos/tast/cmd/tast/internal/run/sharding"
+	"chromiumos/tast/ctxutil"
 	"chromiumos/tast/errors"
 	frameworkprotocol "chromiumos/tast/framework/protocol"
 	"chromiumos/tast/internal/logging"
@@ -345,12 +346,14 @@ func runTests(ctx context.Context, cfg *config.Config,
 			postReserve = 0
 		}
 		var cancel xcontext.CancelFunc
-		ctx, cancel = xcontext.WithDeadline(ctx, deadline.Add(-postReserve), errors.Errorf("%v: global timeout reached", context.DeadlineExceeded))
+		ctx, cancel = xcontext.WithDeadline(ctx, deadline.Add(-postReserve), errors.Errorf("%v: tast command timeout reached", context.DeadlineExceeded))
 		defer cancel(context.Canceled)
 	}
 
 	// Write results and collect system info after testing.
 	defer func() {
+		cmdTimeoutPast := ctxutil.DeadlineBefore(ctx, time.Now())
+
 		ctx := postCtx
 		if retErr != nil {
 			// Print the run error message before moving on to writing results.
@@ -381,7 +384,8 @@ func runTests(ctx context.Context, cfg *config.Config,
 		}
 
 		complete := retErr == nil
-		reporting.WriteResultsToLogs(ctx, results, cfg.ResDir(), complete)
+
+		reporting.WriteResultsToLogs(ctx, results, cfg.ResDir(), complete, cmdTimeoutPast)
 	}()
 
 	return drv.RunTests(ctx, shard.Included, dutInfos, client, state.RemoteDevservers)

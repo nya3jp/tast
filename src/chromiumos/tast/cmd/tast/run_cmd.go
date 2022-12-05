@@ -89,7 +89,7 @@ func (r *runCmd) SetFlags(f *flag.FlagSet) {
 }
 
 func (r *runCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{}) subcommands.ExitStatus {
-	ctx, cancel := xcontext.WithTimeout(ctx, r.timeout, errors.Errorf("%v: global timeout reached (%v)", context.DeadlineExceeded, r.timeout))
+	ctx, cancel := xcontext.WithTimeout(ctx, r.timeout, errors.Errorf("%v: tast command timeout reached (%v)", context.DeadlineExceeded, r.timeout))
 	defer cancel(context.Canceled)
 
 	var state config.DeprecatedState

@@ -7,6 +7,7 @@ package xcontext
 
 import (
 	"context"
+	"errors"
 	"sync/atomic"
 	"time"
 
@@ -15,6 +16,12 @@ import (
 
 // clk is replaced in unit tests to use fake clocks.
 var clk = clock.NewClock()
+
+type keyType string
+
+const (
+	contextTimeoutKey keyType = "context_timeout_duration"
+)
 
 // CancelFunc is a function to cancel an associated context with a specified
 // error. If a context is already canceled, calling this function has no effect.
@@ -174,5 +181,20 @@ func WithTimeout(parent context.Context, d time.Duration, err error) (context.Co
 	if err == nil {
 		panic("xcontext: WithTimeout called with nil err")
 	}
-	return WithDeadline(parent, clk.Now().Add(d), err)
+	ctx, cFunc := WithDeadline(parent, clk.Now().Add(d), err)
+
+	// Adding timeout to the context for access when reporting the timeout has been reached
+	ctx = context.WithValue(ctx, contextTimeoutKey, d)
+
+	return ctx, cFunc
+}
+
+// GetContextTimeout returns the duration set on the Context for its Timeout
+// If the Timeout has not been set, then -1 is returned
+func GetContextTimeout(ctx context.Context) (time.Duration, error) {
+	t, ok := ctx.Value(contextTimeoutKey).(time.Duration)
+	if ok {
+		return t, nil
+	}
+	return 0, errors.New("timeout not set on context")
 }

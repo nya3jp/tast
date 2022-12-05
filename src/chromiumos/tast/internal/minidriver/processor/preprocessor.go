@@ -13,10 +13,12 @@ import (
 
 	"github.com/golang/protobuf/ptypes"
 
+	"chromiumos/tast/ctxutil"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/minidriver/bundleclient"
 	"chromiumos/tast/internal/protocol"
+	"chromiumos/tast/internal/xcontext"
 )
 
 // entityState is used by preprocessor to track the state of a single entity.
@@ -252,6 +254,12 @@ func (p *preprocessor) RunEnd(ctx context.Context, runErr error) {
 		// Attribute a run failure to the most recently started entity.
 		if len(p.stack) > 0 {
 			stateTop := p.stateTop()
+			if ctxutil.DeadlineBefore(ctx, time.Now()) {
+				apprRunTime := time.Now().Sub(stateTop.Start).Round(time.Millisecond).Seconds()
+				if t, err := xcontext.GetContextTimeout(ctx); err == nil {
+					msg = fmt.Sprintf("Test did not finish(~%v seconds) due to Tast command timeout(%v seconds)", apprRunTime, t.Seconds())
+				}
+			}
 			// Always ignore errors from EntityError since runErr is non-nil.
 			_ = p.EntityError(ctx, &protocol.EntityErrorEvent{
 				Time:       ptypes.TimestampNow(),

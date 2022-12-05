@@ -14,12 +14,13 @@ import (
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/run/resultsjson"
 	"chromiumos/tast/internal/testing"
+	"chromiumos/tast/internal/xcontext"
 )
 
 // WriteResultsToLogs writes test results to the console via ctx.
 // resDir is the directory where test result files have been saved. complete
 // indicates whether we could run all tests.
-func WriteResultsToLogs(ctx context.Context, results []*resultsjson.Result, resDir string, complete bool) {
+func WriteResultsToLogs(ctx context.Context, results []*resultsjson.Result, resDir string, complete, cmdTimeoutPast bool) {
 	ml := 0
 	for _, res := range results {
 		if len(res.Name) > ml {
@@ -79,6 +80,10 @@ func WriteResultsToLogs(ctx context.Context, results []*resultsjson.Result, resD
 		// If the run didn't finish, log an additional message after the individual results
 		// to make it clearer that all is not well.
 		logging.Info(ctx, "")
+		if t, err := xcontext.GetContextTimeout(ctx); cmdTimeoutPast && err == nil {
+			msg := fmt.Sprintf("Run time reached Tast command timeout(%v seconds)", t.Seconds())
+			logging.Info(ctx, msg)
+		}
 		logging.Info(ctx, "Run did not finish successfully; results are incomplete")
 	}
 

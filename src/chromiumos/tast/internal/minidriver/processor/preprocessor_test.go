@@ -10,8 +10,10 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
@@ -21,6 +23,7 @@ import (
 	"chromiumos/tast/internal/minidriver/processor"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/run/resultsjson"
+	"chromiumos/tast/internal/xcontext"
 )
 
 // TestPreprocessor_SameEntity checks preprocessor's behavior on receiving
@@ -200,5 +203,38 @@ func TestPreprocessor_Diagnose(t *testing.T) {
 	}
 	if diff := cmp.Diff(got, want, resultCmpOpts...); diff != "" {
 		t.Fatalf("Results mismatch (-got +want):\n%s", diff)
+	}
+}
+
+func TestPreprocessor_TimeoutReached(t *testing.T) {
+	resDir := t.TempDir()
+
+	events := []protocol.Event{
+		// First test starts.
+		&protocol.EntityStartEvent{Time: epochpb, Entity: &protocol.Entity{Name: "timeout_test"}},
+		// Timeout is reached
+	}
+
+	logger := logging.NewMultiLogger()
+	ctx := logging.AttachLogger(context.Background(), logger)
+
+	hs := newHandlers(resDir, logger, nopPull, nil, nil)
+	proc := processor.New(resDir, nopDiagnose, hs)
+	testCtx, _ := xcontext.WithTimeout(ctx, time.Nanosecond, errors.New("Timeout reached"))
+	runProcessor(testCtx, proc, events, errors.New("Timeout reached"))
+
+	if err := proc.FatalError(); err != nil {
+		t.Errorf("Processor had a fatal error: %v", err)
+	}
+
+	b, err := ioutil.ReadFile(filepath.Join(resDir, "tests/timeout_test/log.txt"))
+	if err != nil {
+		t.Fatalf("Failed to read log.txt: %v", err)
+	}
+
+	got := string(b)
+	want, _ := regexp.Compile("Test did not finish\\(~[0-9.e\\-+]* seconds\\) due to Tast command timeout\\([0-9.e\\-+]* seconds\\)")
+	if !want.MatchString(got) {
+		t.Errorf("Log doesn't contain an expected message: got %q, want %q", got, want)
 	}
 }

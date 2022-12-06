@@ -213,8 +213,9 @@ var softwareFeatureDefs = map[string]string{
 	"tflite_opencl":             `!(elm || hana)`, // these boards seem to have issues with the OpenCL TFLite delegate (b/233851820)
 	"thread_safe_libva_backend": "video_cards_amdgpu || video_cards_iHD",
 	"tpm":                       "!mocktpm",
-	"tpm1":                      "!mocktpm && !tpm2", // Indicate tpm1.2 is available
-	"tpm2":                      "!mocktpm && tpm2",  // Indicate tpm2 is available
+	"tpm_clear_allowed":         "!mocktpm && (!tpm_dynamic || tpm2_simulator)", // this filters out the reven board from TPM devices
+	"tpm1":                      "!mocktpm && !tpm2",                            // Indicate tpm1.2 is available
+	"tpm2":                      "!mocktpm && tpm2",                             // Indicate tpm2 is available
 	"tpm2_simulator":            "tpm2_simulator",
 	"tpm_dynamic":               "tpm_dynamic",
 	"transparent_hugepage":      "transparent_hugepage",

@@ -207,6 +207,7 @@ stack-sampled metrics.
     delegate (b/233851820).
 *   `thread_safe_libva_backend` - Boards where the LIBVA backend is threadsafe.
 *   `tpm` - A [Trusted Platform Module] chip.
+*   `tpm_clear_allowed` - The device's TPM can be cleared.
 *   `tpm1` - Indicate a Trusted Platform Module supporting TPMv1.2 is available. Note that TPMv2 is not backward compatible.
 *   `tpm2` - Indicate a Trusted Platform Module supporting TPMv2 is available.
 *   `tpm2_simulator` - Indicate the simulator of Trusted Platform Module supporting TPMv2 is available.

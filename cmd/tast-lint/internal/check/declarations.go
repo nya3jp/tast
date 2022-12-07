@@ -8,6 +8,7 @@ import (
 	"go/ast"
 	"go/token"
 	"net/mail"
+	"regexp"
 	"strconv"
 	"strings"
 	"unicode"
@@ -28,6 +29,9 @@ const (
 
 	noContactMsg          = `Contacts field should exist to list owners' email addresses`
 	nonLiteralContactsMsg = `Contacts field should be an array literal of syntactically valid email address`
+
+	noBugComponentMsg  = `BugComponent field should not specified`
+	nonBugComponentMsg = `BugComponent does not match 'b:<component_id>' or 'crbug:' syntax`
 
 	nonLiteralAttrMsg         = `Test Attr should be an array literal of string literals`
 	nonLiteralVarsMsg         = `Test Vars should be an array literal of string literals or constants, or append(array literal, ConstList...)`
@@ -189,6 +193,7 @@ func verifyAddTestCall(fs *token.FileSet, call *ast.CallExpr, path git.CommitFil
 	issues = append(issues, verifyParams(fs, fields)...)
 	issues = append(issues, verifyDesc(fs, fields, call, fix)...)
 	issues = append(issues, verifyContacts(fs, fields, call)...)
+	issues = append(issues, verifyBugComponent(fs, fields, call)...)
 	issues = append(issues, verifyLacrosStatus(fs, fields, path, call, fix)...)
 
 	return issues
@@ -240,6 +245,41 @@ func verifyDesc(fs *token.FileSet, fields entityFields, call *ast.CallExpr, fix 
 		}, nil)
 	}
 	return nil
+}
+func verifyBugComponent(fs *token.FileSet, fields entityFields, call *ast.CallExpr) []*Issue {
+	//  Does BugComponent exist?
+	kv, ok := fields["BugComponent"]
+	if !ok {
+		return []*Issue{{
+			Pos:  fs.Position(call.Args[0].Pos()),
+			Msg:  noBugComponentMsg,
+			Link: testRegistrationURL,
+		}}
+	}
+
+	node := kv.Value
+	s, ok := toString(node)
+	if !ok {
+		return []*Issue{{
+			Pos:  fs.Position(node.Pos()),
+			Msg:  nonBugComponentMsg,
+			Link: testRegistrationURL,
+		}}
+	}
+
+	componentPatterns := []string{"^b:[0-9]+$", "^crbug:[a-zA-Z>]+$"}
+
+	for _, pattern := range componentPatterns {
+		var matched, _ = regexp.Match(pattern, []byte(s))
+		if matched {
+			return nil
+		}
+	}
+	return []*Issue{{
+		Pos:  fs.Position(node.Pos()),
+		Msg:  s + " " + nonBugComponentMsg,
+		Link: testRegistrationURL,
+	}}
 }
 
 func verifyContacts(fs *token.FileSet, fields entityFields, call *ast.CallExpr) []*Issue {

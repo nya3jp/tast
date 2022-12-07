@@ -23,6 +23,7 @@ func init() {
 		Func:     DoStuff,
 		Desc:     "This description is fine",
 		Contacts: []string{"me@chromium.org"},
+		BugComponent: "b:1034625",
 	})
 }
 
@@ -89,22 +90,56 @@ func TestDeclarationsDesc(t *testing.T) {
 		Func:     DoStuff,
 		// Desc is missing
 		Contacts: []string{"me@chromium.org"},
+		BugComponent: "b:1034625",
 	})`, declTestPath + ":4:18: " + noDescMsg}, {`
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
 		Desc:     variableDesc,
 		Contacts: []string{"me@chromium.org"},
+		BugComponent: "b:1034625",
 	})`, declTestPath + ":6:13: " + nonLiteralDescMsg}, {`
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
 		Desc:     "not capitalized",
 		Contacts: []string{"me@chromium.org"},
+		BugComponent: "b:1034625",
 	})`, declTestPath + ":6:13: " + badDescMsg}, {`
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
 		Desc:     "Ends with a period.",
 		Contacts: []string{"me@chromium.org"},
+		BugComponent: "b:1034625",
 	})`, declTestPath + ":6:13: " + badDescMsg}} {
+		code := fmt.Sprintf(initTmpl, tc.snip)
+		f, fs := parse(code, declTestPath)
+		issues := TestDeclarations(fs, f, git.CommitFile{}, false)
+		verifyIssues(t, issues, []string{tc.wantMsg})
+	}
+}
+
+func TestDeclarationsBugComponent(t *testing.T) {
+	for _, tc := range []struct {
+		snip    string
+		wantMsg string
+	}{{`
+	testing.AddTest(&testing.Test{
+		Func:	DoStuff,
+		Desc:	"Litteral Desc",
+		Contacts:  []string{"me@chromium.org"},
+		BugComponent: "b:123asdf",
+	})`, declTestPath + ":8:17: b:123asdf " + nonBugComponentMsg}, {`
+	testing.AddTest(&testing.Test{
+		Func:	DoStuff,
+		Desc:	"Litteral Desc",
+		Contacts:  []string{"me@chromium.org"},
+		BugComponent: "b:asdf123",
+	})`, declTestPath + ":8:17: b:asdf123 " + nonBugComponentMsg}, {`
+	testing.AddTest(&testing.Test{
+		Func:	DoStuff,
+		Desc:	"Litteral Desc",
+		Contacts:  []string{"me@chromium.org"},
+		BugComponent: "crbug:asdf<asdf",
+	})`, declTestPath + ":8:17: crbug:asdf<asdf " + nonBugComponentMsg}} {
 		code := fmt.Sprintf(initTmpl, tc.snip)
 		f, fs := parse(code, declTestPath)
 		issues := TestDeclarations(fs, f, git.CommitFile{}, false)
@@ -120,37 +155,44 @@ func TestDeclarationsContacts(t *testing.T) {
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
 		Desc:     "This description is fine",
+		BugComponent: "b:1034625",
 		// Contacts is missing
 	})`, []string{declTestPath + ":4:18: " + noContactMsg}}, {`
 	testing.AddTest(&testing.Test{
 		Func: DoStuff,
 		Desc: "This description is fine",
 		Contacts: []string{variableAddress},
+		BugComponent: "b:1034625",
 	})`, []string{declTestPath + ":7:22: " + nonLiteralContactsMsg}}, {`
 	testing.AddTest(&testing.Test{
 		Func: DoStuff,
 		Desc: "This description is fine",
 		Contacts: variableContacts,
+		BugComponent: "b:1034625",
 	})`, []string{declTestPath + ":7:13: " + nonLiteralContactsMsg}}, {`
 	testing.AddTest(&testing.Test{
 		Func: DoStuff,
 		Desc: "This description is fine",
 		Contacts: []string{"mechromium.org"},
+		BugComponent: "b:1034625",
 	})`, []string{declTestPath + ":7:22: " + nonLiteralContactsMsg}}, {`
 	testing.AddTest(&testing.Test{
 		Func: DoStuff,
 		Desc: "This description is fine",
 		Contacts: []string{"m@chromium.org@chromium.org"},
+		BugComponent: "b:1034625",
 	})`, []string{declTestPath + ":7:22: " + nonLiteralContactsMsg}}, {`
 	testing.AddTest(&testing.Test{
 		Func: DoStuff,
 		Desc: "This description is fine",
 		Contacts: []string{"me@chromium.org"},
+		BugComponent: "b:1034625",
 	})`, nil}, {`
 	testing.AddTest(&testing.Test{
 		Func: DoStuff,
 		Desc: "This description is fine",
 		Contacts: []string{"me-me+sub@chromium.org"},
+		BugComponent: "b:1034625",
 	})`, nil}} {
 		code := fmt.Sprintf(initTmpl, tc.snip)
 		f, fs := parse(code, declTestPath)
@@ -169,18 +211,21 @@ func TestDeclarationsAttr(t *testing.T) {
 		Desc:     "This description is fine",
 		Contacts: []string{"me@chromium.org"},
 		Attr:     []string{"this", "is", "valid", "attr"},
+		BugComponent: "b:1034625",
 	})`}, {`
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
 		Desc:     "This description is fine",
 		Contacts: []string{"me@chromium.org"},
 		Attr:     foobar,  // non array literal.
+		BugComponent: "b:1034625",
 	})`, declTestPath + ":8:13: " + nonLiteralAttrMsg}, {`
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
 		Desc:     "This description is fine",
 		Contacts: []string{"me@chromium.org"},
 		Attr:     []string{variableAttr},
+		BugComponent: "b:1034625",
 	})`, declTestPath + ":8:22: " + nonLiteralAttrMsg}} {
 		code := fmt.Sprintf(initTmpl, tc.snip)
 		f, fs := parse(code, declTestPath)
@@ -202,62 +247,72 @@ func TestDeclarationsVars(t *testing.T) {
 			Func:     DoStuff,
 			Desc:     "This description is fine",
 			Contacts: []string{"me@chromium.org"},
+			BugComponent: "b:1034625",
 			Vars:     []string{"this", "is", "valid", "vars"},
 		})`}, {snip: `
 		testing.AddTest(&testing.Test{
 			Func:     DoStuff,
 			Desc:     "This description is fine",
 			Contacts: []string{"me@chromium.org"},
+			BugComponent: "b:1034625",
 			Vars:     append([]string{"this", "is", "valid", "vars", localConstant}, foo.BarList...),
 		})`}, {snip: `
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
 		Desc:     "This description is fine",
 		Contacts: []string{"me@chromium.org"},
+		BugComponent: "b:1034625",
 		Vars:     append(foo.BarList, "this", "is", "valid", "vars", localConstant),
 	})`}, {snip: `
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
 		Desc:     "This description is fine",
 		Contacts: []string{"me@chromium.org"},
+		BugComponent: "b:1034625",
 		Vars:     foo.BarList,
 	})`}, {snip: `
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
 		Desc:     "This description is fine",
 		Contacts: []string{"me@chromium.org"},
+		BugComponent: "b:1034625",
 		Vars:     append(foo.BarList, bar.Baz...),
 	})`}, {snip: `
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
 		Desc:     "This description is fine",
 		Contacts: []string{"me@chromium.org"},
+		BugComponent: "b:1034625",
 		Vars:     []string{foo.BarConstant, localConstant},
 	})`}, {snip: `
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
 		Desc:     "This description is fine",
 		Contacts: []string{"me@chromium.org"},
+		BugComponent: "b:1034625",
 		Vars:     append(foo.BazList, localConstant),
 	})`}, {`
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
 		Desc:     "This description is fine",
 		Contacts: []string{"me@chromium.org"},
+		BugComponent: "b:1034625",
 		Vars:     append(foo.BarList, localList...),
-	})`, declTestPath + ":8:13: " + nonLiteralVarsMsg}, {`
+	})`, declTestPath + ":9:13: " + nonLiteralVarsMsg}, {`
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
 		Desc:     "This description is fine",
 		Contacts: []string{"me@chromium.org"},
+		BugComponent: "b:1034625",
 		Vars:     localList,
-	})`, declTestPath + ":8:13: " + nonLiteralVarsMsg}, {`
+	})`, declTestPath + ":9:13: " + nonLiteralVarsMsg}, {`
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
 		Desc:     "This description is fine",
 		Contacts: []string{"me@chromium.org"},
+		BugComponent: "b:1034625",
 		Vars:     append(localList, "foo", "bar"),
-	})`, declTestPath + ":8:13: " + nonLiteralVarsMsg}} {
+	})`, declTestPath + ":9:13: " + nonLiteralVarsMsg}} {
 		code := fmt.Sprintf(initTmpl, tc.snip)
 		f, fs := parse(code, declTestPath)
 		issues := TestDeclarations(fs, f, git.CommitFile{}, false)
@@ -279,6 +334,7 @@ func TestDeclarationsSoftwareDeps(t *testing.T) {
 		LacrosStatus: testing.LacrosVariantUnneeded,
 		Desc:         "This description is fine",
 		Contacts:     []string{"me@chromium.org"},
+		BugComponent: "b:1034625",
 		SoftwareDeps: []string{"this", "is", "valid", "dep"},
 	})`}, {snip: `
 	testing.AddTest(&testing.Test{
@@ -286,6 +342,7 @@ func TestDeclarationsSoftwareDeps(t *testing.T) {
 		LacrosStatus: testing.LacrosVariantUnneeded,
 		Desc:         "This description is fine",
 		Contacts:     []string{"me@chromium.org"},
+		BugComponent: "b:1034625",
 		SoftwareDeps: []string{qualified.variable, is, "allowed"},
 	})`}, {snip: `
 	testing.AddTest(&testing.Test{
@@ -293,6 +350,7 @@ func TestDeclarationsSoftwareDeps(t *testing.T) {
 		LacrosStatus: testing.LacrosVariantUnneeded,
 		Desc:     "This description is fine",
 		Contacts: []string{"me@chromium.org"},
+		BugComponent: "b:1034625",
 		SoftwareDeps:     append([]string{"this", "is", "valid", localConstant}, foo.BarList...),
 	})`}, {snip: `
 	testing.AddTest(&testing.Test{
@@ -300,6 +358,7 @@ func TestDeclarationsSoftwareDeps(t *testing.T) {
 		LacrosStatus: testing.LacrosVariantUnneeded,
 		Desc:     "This description is fine",
 		Contacts: []string{"me@chromium.org"},
+		BugComponent: "b:1034625",
 		SoftwareDeps:     append(foo.BarList, "this", "is", "valid", localConstant),
 	})`}, {snip: `
 	testing.AddTest(&testing.Test{
@@ -307,6 +366,7 @@ func TestDeclarationsSoftwareDeps(t *testing.T) {
 		LacrosStatus: testing.LacrosVariantUnneeded,
 		Desc:     "This description is fine",
 		Contacts: []string{"me@chromium.org"},
+		BugComponent: "b:1034625",
 		SoftwareDeps:     foo.BarList,
 	})`}, {snip: `
 	testing.AddTest(&testing.Test{
@@ -314,6 +374,7 @@ func TestDeclarationsSoftwareDeps(t *testing.T) {
 		LacrosStatus: testing.LacrosVariantUnneeded,
 		Desc:     "This description is fine",
 		Contacts: []string{"me@chromium.org"},
+		BugComponent: "b:1034625",
 		SoftwareDeps:     append(foo.BarList, bar.Baz...),
 	})`}, {snip: `
 	testing.AddTest(&testing.Test{
@@ -321,6 +382,7 @@ func TestDeclarationsSoftwareDeps(t *testing.T) {
 		LacrosStatus: testing.LacrosVariantUnneeded,
 		Desc:     "This description is fine",
 		Contacts: []string{"me@chromium.org"},
+		BugComponent: "b:1034625",
 		SoftwareDeps:     []string{foo.BarConstant, localConstant},
 	})`}, {snip: `
 	testing.AddTest(&testing.Test{
@@ -328,6 +390,7 @@ func TestDeclarationsSoftwareDeps(t *testing.T) {
 		LacrosStatus: testing.LacrosVariantUnneeded,
 		Desc:     "This description is fine",
 		Contacts: []string{"me@chromium.org"},
+		BugComponent: "b:1034625",
 		SoftwareDeps:     append(foo.BazList, localConstant),
 	})`}, {`
 	testing.AddTest(&testing.Test{
@@ -335,15 +398,17 @@ func TestDeclarationsSoftwareDeps(t *testing.T) {
 		LacrosStatus: testing.LacrosVariantUnneeded,
 		Desc:         "This description is fine",
 		Contacts:     []string{"me@chromium.org"},
+		BugComponent: "b:1034625",
 		SoftwareDeps: foobar,  // non array literal.
-	})`, declTestPath + ":9:17: " + nonLiteralSoftwareDepsMsg}, {`
+	})`, declTestPath + ":10:17: " + nonLiteralSoftwareDepsMsg}, {`
 	testing.AddTest(&testing.Test{
 		Func:         DoStuff,
 		LacrosStatus: testing.LacrosVariantUnneeded,
 		Desc:         "This description is fine",
 		Contacts:     []string{"me@chromium.org"},
+		BugComponent: "b:1034625",
 		SoftwareDeps: []string{fun()},  // invocation is not allowed.
-	})`, declTestPath + ":9:17: " + nonLiteralSoftwareDepsMsg}} {
+	})`, declTestPath + ":10:17: " + nonLiteralSoftwareDepsMsg}} {
 		code := fmt.Sprintf(initTmpl, tc.snip)
 		f, fs := parse(code, declTestPath)
 		issues := TestDeclarations(fs, f, git.CommitFile{}, false)
@@ -365,6 +430,7 @@ func TestDeclarationsParams(t *testing.T) {
 		LacrosStatus: testing.LacrosVariantUnneeded,
 		Desc:     "This description is fine",
 		Contacts: []string{"me@chromium.org"},
+		BugComponent: "b:1034625",
 		Params: []Param{{
 			Name: "param1",
 			ExtraAttr:         []string{"attr1"},
@@ -378,20 +444,23 @@ func TestDeclarationsParams(t *testing.T) {
 		LacrosStatus: testing.LacrosVariantUnneeded,
 		Desc:     "This description is fine",
 		Contacts: []string{"me@chromium.org"},
+		BugComponent: "b:1034625",
 		Params:   variableParams,
-	})`, []string{declTestPath + ":9:13: " + nonLiteralParamsMsg}}, {`
+	})`, []string{declTestPath + ":10:13: " + nonLiteralParamsMsg}}, {`
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
 		LacrosStatus: testing.LacrosVariantUnneeded,
 		Desc:     "This description is fine",
 		Contacts: []string{"me@chromium.org"},
+		BugComponent: "b:1034625",
 		Params:   []Param{variableParamStruct},
-	})`, []string{declTestPath + ":9:21: " + nonLiteralParamsMsg}}, {`
+	})`, []string{declTestPath + ":10:21: " + nonLiteralParamsMsg}}, {`
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
 		LacrosStatus: testing.LacrosVariantUnneeded,
 		Desc:     "This description is fine",
 		Contacts: []string{"me@chromium.org"},
+		BugComponent: "b:1034625",
 		Params: []Param{{
 			Name: variableParamName,
 		}, {
@@ -404,11 +473,11 @@ func TestDeclarationsParams(t *testing.T) {
 			ExtraSoftwareDeps: []string{fun()},
 		}},
 	})`, []string{
-		declTestPath + ":10:10: " + nonLiteralParamNameMsg,
-		declTestPath + ":12:23: " + nonLiteralAttrMsg,
-		declTestPath + ":14:32: " + nonLiteralAttrMsg,
-		declTestPath + ":16:23: " + nonLiteralSoftwareDepsMsg,
-		declTestPath + ":18:23: " + nonLiteralSoftwareDepsMsg,
+		declTestPath + ":11:10: " + nonLiteralParamNameMsg,
+		declTestPath + ":13:23: " + nonLiteralAttrMsg,
+		declTestPath + ":15:32: " + nonLiteralAttrMsg,
+		declTestPath + ":17:23: " + nonLiteralSoftwareDepsMsg,
+		declTestPath + ":19:23: " + nonLiteralSoftwareDepsMsg,
 	}}} {
 		code := fmt.Sprintf(initTmpl, tc.snip)
 		f, fs := parse(code, declTestPath)

@@ -838,7 +838,7 @@ func findIntelSOC(parsed *lscpuResult) (protocol.DeprecatedDeviceConfig_SOC, err
 			{protocol.DeprecatedDeviceConfig_SOC_AMBERLAKE_Y, `Core.* [mi]\d-(10|8)\d{3}Y`},
 
 			// https://ark.intel.com/content/www/us/en/ark/products/codename/90354/comet-lake.html
-			{protocol.DeprecatedDeviceConfig_SOC_COMET_LAKE_U, `Core.* i\d-10\d{3}U|Celeron.* 5[23]05U`},
+			{protocol.DeprecatedDeviceConfig_SOC_COMET_LAKE_U, `Core.* i\d-10\d{3}U|Celeron.* 5[23]05U|Intel\(R\) Pentium\(R\) CPU 6405U`},
 
 			// https://ark.intel.com/content/www/us/en/ark/products/codename/135883/whiskey-lake.html
 			{protocol.DeprecatedDeviceConfig_SOC_WHISKEY_LAKE_U, `Core.* i\d-8\d{2}5U|Celeron.* 4[23]05U`},

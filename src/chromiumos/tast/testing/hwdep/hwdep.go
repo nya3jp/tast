@@ -1271,6 +1271,21 @@ func NoX86() Condition {
 	}}
 }
 
+// Emmc returns a hardware dependency condition if the device has an eMMC
+// storage device.
+func Emmc() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("Did not find hardware features")
+		}
+		if hf.GetStorage().GetStorageType() == configpb.Component_Storage_EMMC {
+			return satisfied()
+		}
+		return unsatisfied("DUT does not have an eMMC storage device")
+	}}
+}
+
 // Nvme returns a hardware dependency condition if the device has an NVMe
 // storage device.
 func Nvme() Condition {

@@ -321,6 +321,35 @@ func TestInternalDisplay(t *testing.T) {
 	}
 }
 
+func TestEmmcStorage(t *testing.T) {
+	c := hwdep.Emmc()
+
+	for _, tc := range []struct {
+		StorageType     configpb.Component_Storage_StorageType
+		expectSatisfied bool
+	}{
+		{configpb.Component_Storage_STORAGE_TYPE_UNKNOWN, false},
+		{configpb.Component_Storage_EMMC, true},
+		{configpb.Component_Storage_NVME, false},
+		{configpb.Component_Storage_SATA, false},
+		{configpb.Component_Storage_UFS, false},
+	} {
+		verifyCondition(
+			t, c,
+			&frameworkprotocol.DeprecatedDeviceConfig{},
+			&configpb.HardwareFeatures{
+				Storage: &configpb.HardwareFeatures_Storage{
+					StorageType: tc.StorageType,
+				},
+			},
+			tc.expectSatisfied)
+	}
+	expectError(
+		t, c,
+		&frameworkprotocol.DeprecatedDeviceConfig{},
+		nil)
+}
+
 func TestNvmeStorage(t *testing.T) {
 	c := hwdep.Nvme()
 

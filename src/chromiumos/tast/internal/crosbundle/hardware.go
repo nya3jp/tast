@@ -404,6 +404,20 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		features.Bluetooth.Present = configpb.HardwareFeatures_NOT_PRESENT
 	}
 
+	hasEmmcStorage := func() bool {
+		matches, err := filepath.Glob("/dev/mmc*")
+		if err != nil {
+			return false
+		}
+		if len(matches) > 0 {
+			return true
+		}
+		return false
+	}()
+	if hasEmmcStorage {
+		features.Storage.StorageType = configpb.Component_Storage_EMMC
+	}
+
 	// TODO(b/173741162): Pull storage information from boxster config and add
 	// additional storage types.
 	hasNvmeStorage := func() bool {

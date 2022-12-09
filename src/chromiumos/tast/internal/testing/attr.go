@@ -633,6 +633,10 @@ third_party/autotest/files/server/site_tests/tast/control.runtime-probe
 				Name: "cellular_na",
 				Desc: `Identifies tests that can run only on North America carriers AT&T, Verizon, T-Mobile.`,
 			},
+			{
+				Name: "cellular_run_isolated",
+				Desc: `Identifies tests which are scheduled seperately from other tests. These tests are called out by name in control files. Used to isolate stress tests or high priority tests`,
+			},
 		},
 	},
 	{

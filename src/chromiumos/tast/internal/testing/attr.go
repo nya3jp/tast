@@ -1164,6 +1164,11 @@ from other existing groups (or use this group standalone).
 		Contacts: []string{"kamilszarek@google.com", "chromeos-ent-test@google.com"},
 		Desc:     `Suite will run assigned tests on devices that are not in golden_tier, medium_low_tier not hardware. More info go/cros-duop:proposal`,
 	},
+	{
+		Name:     "crostini_slow",
+		Contacts: []string{"clumptini@google.com"},
+		Desc:     `A group of slow crostini tests that should run on dedicated shards only when relevant code is changed.`,
+	},
 }
 
 // validGroupMap is the name-keyed map of validGroups.

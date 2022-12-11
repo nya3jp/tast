@@ -80,6 +80,9 @@ func TestCheckKnownAttrs(t *testing.T) {
 			attrs: []string{"group:cq-minimal"},
 		},
 		{
+			attrs: []string{"group:crostini_slow"},
+		},
+		{
 			attrs: []string{"group:graphics"},
 		},
 		{

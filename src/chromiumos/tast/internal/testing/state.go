@@ -695,6 +695,11 @@ func (s *State) FixtValue() interface{} {
 	return s.testRoot.entityRoot.cfg.FixtValue
 }
 
+// FixtSerializedValue returns the serialized fixture value.
+func (s *State) FixtSerializedValue() ([]byte, error) {
+	return s.testRoot.entityRoot.cfg.FixtSerializedValue()
+}
+
 // PreState holds state relevant to the execution of a single precondition.
 //
 // This is a State for preconditions. See State's documentation for general

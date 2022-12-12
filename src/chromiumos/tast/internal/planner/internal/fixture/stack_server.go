@@ -60,6 +60,8 @@ func (s *StackServer) Handle(ctx context.Context, op *protocol.StackOperationReq
 		resp, err = s.SetDirty(ctx, x.SetDirty)
 	case *protocol.StackOperationRequest_Errors:
 		resp, err = s.Errors(ctx)
+	case *protocol.StackOperationRequest_Value:
+		resp, err = s.FixtValue(ctx)
 	default:
 		err = fmt.Errorf("BUG: unknown type %T", op)
 	}
@@ -174,4 +176,12 @@ func (s *StackServer) Errors(ctx context.Context) (*protocol.StackOperationRespo
 	return &protocol.StackOperationResponse{
 		Errors: s.cfg.Stack.Errors(),
 	}, nil
+}
+
+// FixtValue returns a serialized value on  Errors on stack.
+func (s *StackServer) FixtValue(ctx context.Context) (*protocol.StackOperationResponse, error) {
+	serializedValue, err := s.cfg.Stack.SerializedVal(ctx)
+	return &protocol.StackOperationResponse{
+		FixtValue: serializedValue,
+	}, err
 }

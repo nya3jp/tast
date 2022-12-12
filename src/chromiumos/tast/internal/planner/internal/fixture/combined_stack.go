@@ -52,6 +52,14 @@ func (s *CombinedStack) Val() interface{} {
 	return s.parent.Val()
 }
 
+// SerializedVal returns the serialized fixture value obtained on setup.
+func (s *CombinedStack) SerializedVal(ctx context.Context) ([]byte, error) {
+	if len(s.child.stack) > 0 && s.child.Val() != nil {
+		return s.child.SerializedVal(ctx)
+	}
+	return s.parent.SerializedVal(ctx)
+}
+
 // Push adds a new fixture to the top of the fixture stack.
 // See InternalStack.Push for details.
 func (s *CombinedStack) Push(ctx context.Context, fixt *testing.FixtureInstance) error {

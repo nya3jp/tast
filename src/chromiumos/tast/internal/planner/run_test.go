@@ -1025,6 +1025,16 @@ func TestRunFixture(t *gotesting.T) {
 			s.Log("Test 0")
 			if val := s.FixtValue(); val != nil {
 				t.Errorf("pkg.Test0: FixtValue() = %v; want nil", val)
+				return
+			}
+			serializedVal, err := s.FixtSerializedValue()
+			if err != nil {
+				t.Errorf("pkg.Test0: FixtSerializedValue() failed: %v", err)
+				return
+			}
+			if string(serializedVal) != "null" {
+				t.Errorf("pkg.Test0: FixtSerializedValue() = %v; want null", string(serializedVal))
+				return
 			}
 		},
 		Timeout: time.Minute,
@@ -1035,6 +1045,25 @@ func TestRunFixture(t *gotesting.T) {
 			s.Log("Test 1")
 			if val := s.FixtValue(); val != val1 {
 				t.Errorf("pkg.Test1: FixtValue() = %v; want %v", val, val1)
+				return
+			}
+			serializedVal, err := s.FixtSerializedValue()
+			if err != nil {
+				t.Errorf("pkg.Test1: FixtSerializedValue() failed: %v", err)
+				return
+			}
+			if serializedVal == nil {
+				t.Error("pkg.Test1: FixtSerializedValue() return unexpected nil")
+				return
+			}
+			deserializedVal := ""
+			if err := json.Unmarshal(serializedVal, &deserializedVal); err != nil {
+				t.Error("pkg.Test1: FixtSerializedValue() failed to return de-serializable value")
+				return
+			}
+			if deserializedVal != val1 {
+				t.Errorf("pkg.Test1: FixtSerializedValue() = %v; want %v", deserializedVal, val1)
+				return
 			}
 		},
 		Timeout: time.Minute,
@@ -1045,6 +1074,21 @@ func TestRunFixture(t *gotesting.T) {
 			s.Log("Test 2")
 			if val := s.FixtValue(); val != val2 {
 				t.Errorf("pkg.Test2: FixtValue() = %v; want %v", val, val2)
+				return
+			}
+			serializedVal, err := s.FixtSerializedValue()
+			if err != nil {
+				t.Errorf("pkg.Test2: FixtSerializedValue() failed: %v", err)
+				return
+			}
+			deserializedVal := ""
+			if err := json.Unmarshal(serializedVal, &deserializedVal); err != nil {
+				t.Error("pkg.Test2: FixtSerializedValue() failed to return de-serializable value")
+				return
+			}
+			if deserializedVal != val2 {
+				t.Errorf("pkg.Test2: FixtSerializedValue() = %v; want %v", deserializedVal, val2)
+				return
 			}
 		},
 		Timeout: time.Minute,

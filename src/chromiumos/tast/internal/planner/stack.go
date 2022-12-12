@@ -38,6 +38,13 @@ func (s *internalOrCombinedStack) Val() interface{} {
 	return s.combined.Val()
 }
 
+func (s *internalOrCombinedStack) SerializedVal(ctx context.Context) ([]byte, error) {
+	if s.internal != nil {
+		return s.internal.SerializedVal(ctx)
+	}
+	return s.combined.SerializedVal(ctx)
+}
+
 func (s *internalOrCombinedStack) Push(ctx context.Context, fixt *testing.FixtureInstance) error {
 	if s.internal != nil {
 		return s.internal.Push(ctx, fixt)

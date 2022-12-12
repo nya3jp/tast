@@ -143,3 +143,14 @@ func (s *ExternalStack) SetDirty(ctx context.Context, dirty bool) error {
 func (s *ExternalStack) Val() (val interface{}) {
 	return nil
 }
+
+// SerializedVal returns the serialized value
+func (s *ExternalStack) SerializedVal(ctx context.Context) ([]byte, error) {
+	resp, err := s.cl.out.StackOperation(ctx, &protocol.StackOperationRequest{
+		Type: &protocol.StackOperationRequest_Value{},
+	})
+	if err != nil {
+		return nil, errors.Wrap(err, "stack value")
+	}
+	return resp.GetFixtValue(), nil
+}

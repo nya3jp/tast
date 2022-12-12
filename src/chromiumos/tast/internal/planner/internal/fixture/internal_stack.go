@@ -6,6 +6,7 @@ package fixture
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"path/filepath"
@@ -163,6 +164,19 @@ func (st *InternalStack) Val() interface{} {
 		return nil
 	}
 	return st.top().Val()
+}
+
+// SerializedVal returns the serialized fixture value of the top fixture.
+//
+// If the fixture stack is empty or red, it returns nil.
+func (st *InternalStack) SerializedVal(ctx context.Context) ([]byte, error) {
+	if len(st.stack) == 0 {
+		return nil, nil
+	}
+	if st.Status() == StatusRed {
+		return nil, nil
+	}
+	return st.top().SerializedVal()
 }
 
 // Push adds a new fixture to the top of the fixture stack.
@@ -389,6 +403,15 @@ func (f *statefulFixture) Errors() []*protocol.Error {
 // Val returns the fixture value obtained on setup.
 func (f *statefulFixture) Val() interface{} {
 	return f.val
+}
+
+// SerializedVal serializes the value of the fixture.
+func (f *statefulFixture) SerializedVal() ([]byte, error) {
+	serializedValue, err := json.Marshal(f.val)
+	if err != nil {
+		return nil, fmt.Errorf("failed to serialize value from fixture %s: %v", f.fixt.Name, err)
+	}
+	return serializedValue, nil
 }
 
 // RunSetUp calls SetUp of the fixture with a proper context and timeout.

@@ -30,6 +30,9 @@ type RuntimeConfig struct {
 	// FixtValue is a value returned by a parent fixture.
 	// It is nil if not available.
 	FixtValue interface{}
+	// FixtSerializedValue is a serialized value returned by a parent fixture.
+	// It is nil if not available.
+	FixtSerializedValue func() ([]byte, error)
 	// FixtCtx is the context that lives as long as the fixture.
 	// It can be accessed only from testing.FixtState.
 	FixtCtx context.Context

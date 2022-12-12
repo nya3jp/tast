@@ -766,9 +766,12 @@ func runTestWithConfig(ctx context.Context, tcfg *testConfig, pcfg *Config, stac
 			pcfg.Service.GetDutServer(),
 			pcfg.DataFile.GetBuildArtifactsUrl(),
 		),
-		RemoteData:       pcfg.RemoteData,
-		FixtCtx:          tcfg.fixtCtx,
-		FixtValue:        stack.Val(),
+		RemoteData: pcfg.RemoteData,
+		FixtCtx:    tcfg.fixtCtx,
+		FixtValue:  stack.Val(),
+		FixtSerializedValue: func() ([]byte, error) {
+			return stack.SerializedVal(ctx)
+		},
 		PreCtx:           precfg.ctx,
 		Purgeable:        tcfg.purgeable,
 		MaxSysMsgLogSize: pcfg.MaxSysMsgLogSize,

@@ -29,6 +29,7 @@ import (
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/fakeexec"
 	"chromiumos/tast/internal/logging"
+	"chromiumos/tast/internal/logging/loggingtest"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/sshtest"
 	"chromiumos/tast/internal/testcontext"
@@ -733,6 +734,7 @@ func TestRPCOverSSH(t *gotesting.T) {
 // Verifies that rpc calls fail if the context passed to DialSSH is cancelled.
 func TestRPCOverSSHShortContext(t *gotesting.T) {
 	ctx := context.Background()
+	ctx = logging.AttachLoggerNoPropagation(ctx, loggingtest.NewLogger(t, logging.LevelInfo))
 
 	// Start a fake SSH server providing gRPC server.
 	td := sshtest.NewTestData(func(req *sshtest.ExecReq) {
@@ -767,19 +769,27 @@ func TestRPCOverSSHShortContext(t *gotesting.T) {
 
 	// Should succeed
 	cl := protocol.NewPingCoreClient(conn.Conn())
+	t.Log("Ping")
 	if _, err := cl.Ping(ctx, &empty.Empty{}); err != nil {
 		t.Error("Ping failed: ", err)
 	}
 
+	t.Log("Cancel shortContext")
 	shortCancel()
+
+	t.Log("Ping")
 	if _, err := cl.Ping(ctx, &empty.Empty{}); err != nil {
 		t.Error("Ping failed: ", err)
 	}
 	// Should fail
+	t.Log("Close conn")
 	if err := conn.Close(); err == nil {
 		t.Error("Close succeeded, but was expected to fail")
 	} else if !strings.Contains(err.Error(), "remote logging background routine failed") || !strings.Contains(err.Error(), "context canceled") {
 		t.Error("Close failed with wrong error: ", err)
+	}
+	if err := sshConn.Ping(ctx, time.Second); err != nil {
+		t.Error("SSH ping failed: ", err)
 	}
 }
 

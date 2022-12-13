@@ -490,6 +490,54 @@ func GSCRWKeyIDProd() Condition {
 	}
 }
 
+// HasTpm returns a hardware dependency condition that is satisfied iff the DUT
+// does have an enabled TPM.
+func HasTpm() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("Did not find hardware features")
+		}
+		if hf.GetTrustedPlatformModule().GetRuntimeTpmVersion() == configpb.HardwareFeatures_TrustedPlatformModule_TPM_VERSION_DISABLED {
+			return unsatisfied("DUT has no enabled TPM")
+		}
+		return satisfied()
+	},
+	}
+}
+
+// HasTpm1 returns a hardware dependency condition that is satisfied iff the DUT
+// does have an enabled TPM1.2.
+func HasTpm1() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("Did not find hardware features")
+		}
+		if hf.GetTrustedPlatformModule().GetRuntimeTpmVersion() == configpb.HardwareFeatures_TrustedPlatformModule_TPM_VERSION_V1_2 {
+			return satisfied()
+		}
+		return unsatisfied("DUT has no enabled TPM1.2")
+	},
+	}
+}
+
+// HasTpm2 returns a hardware dependency condition that is satisfied iff the DUT
+// does have an enabled TPM2.0.
+func HasTpm2() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("Did not find hardware features")
+		}
+		if hf.GetTrustedPlatformModule().GetRuntimeTpmVersion() == configpb.HardwareFeatures_TrustedPlatformModule_TPM_VERSION_V2 {
+			return satisfied()
+		}
+		return unsatisfied("DUT has no enabled TPM2.0")
+	},
+	}
+}
+
 // CPUNotNeedsCoreScheduling returns a hardware dependency condition that is satisfied iff the DUT's
 // CPU is does not need to use core scheduling to mitigate hardware vulnerabilities.
 func CPUNotNeedsCoreScheduling() Condition {

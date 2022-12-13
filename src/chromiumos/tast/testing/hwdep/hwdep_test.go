@@ -780,3 +780,78 @@ func TestCameraFeature(t *testing.T) {
 		&frameworkprotocol.DeprecatedDeviceConfig{},
 		nil)
 }
+
+func TestHasTpm(t *testing.T) {
+	for _, tc := range []struct {
+		version         configpb.HardwareFeatures_TrustedPlatformModule_RuntimeTpmVersion
+		expectSatisfied bool
+	}{
+		{configpb.HardwareFeatures_TrustedPlatformModule_TPM_VERSION_DISABLED, false},
+		{configpb.HardwareFeatures_TrustedPlatformModule_TPM_VERSION_V1_2, true},
+		{configpb.HardwareFeatures_TrustedPlatformModule_TPM_VERSION_V2, true},
+	} {
+		verifyCondition(
+			t, hwdep.HasTpm(),
+			&frameworkprotocol.DeprecatedDeviceConfig{},
+			&configpb.HardwareFeatures{
+				TrustedPlatformModule: &configpb.HardwareFeatures_TrustedPlatformModule{
+					RuntimeTpmVersion: tc.version,
+				},
+			},
+			tc.expectSatisfied)
+	}
+	expectError(
+		t, hwdep.HasTpm(),
+		&frameworkprotocol.DeprecatedDeviceConfig{},
+		nil)
+}
+
+func TestHasTpm1(t *testing.T) {
+	for _, tc := range []struct {
+		version         configpb.HardwareFeatures_TrustedPlatformModule_RuntimeTpmVersion
+		expectSatisfied bool
+	}{
+		{configpb.HardwareFeatures_TrustedPlatformModule_TPM_VERSION_DISABLED, false},
+		{configpb.HardwareFeatures_TrustedPlatformModule_TPM_VERSION_V1_2, true},
+		{configpb.HardwareFeatures_TrustedPlatformModule_TPM_VERSION_V2, false},
+	} {
+		verifyCondition(
+			t, hwdep.HasTpm1(),
+			&frameworkprotocol.DeprecatedDeviceConfig{},
+			&configpb.HardwareFeatures{
+				TrustedPlatformModule: &configpb.HardwareFeatures_TrustedPlatformModule{
+					RuntimeTpmVersion: tc.version,
+				},
+			},
+			tc.expectSatisfied)
+	}
+	expectError(
+		t, hwdep.HasTpm1(),
+		&frameworkprotocol.DeprecatedDeviceConfig{},
+		nil)
+}
+
+func TestHasTpm2(t *testing.T) {
+	for _, tc := range []struct {
+		version         configpb.HardwareFeatures_TrustedPlatformModule_RuntimeTpmVersion
+		expectSatisfied bool
+	}{
+		{configpb.HardwareFeatures_TrustedPlatformModule_TPM_VERSION_DISABLED, false},
+		{configpb.HardwareFeatures_TrustedPlatformModule_TPM_VERSION_V1_2, false},
+		{configpb.HardwareFeatures_TrustedPlatformModule_TPM_VERSION_V2, true},
+	} {
+		verifyCondition(
+			t, hwdep.HasTpm2(),
+			&frameworkprotocol.DeprecatedDeviceConfig{},
+			&configpb.HardwareFeatures{
+				TrustedPlatformModule: &configpb.HardwareFeatures_TrustedPlatformModule{
+					RuntimeTpmVersion: tc.version,
+				},
+			},
+			tc.expectSatisfied)
+	}
+	expectError(
+		t, hwdep.HasTpm2(),
+		&frameworkprotocol.DeprecatedDeviceConfig{},
+		nil)
+}

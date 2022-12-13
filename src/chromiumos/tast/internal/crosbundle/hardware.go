@@ -371,6 +371,31 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		}
 	}()
 
+	// Whether device has TPM enabled can be checked by `tpm_manager_client status`.
+	// If TPM is enabled, we can check the version by `tpm_version`.
+	func() {
+		features.TrustedPlatformModule.RuntimeTpmVersion = configpb.HardwareFeatures_TrustedPlatformModule_TPM_VERSION_DISABLED
+		out, err := exec.Command("tpm_manager_client", "status", "--nonsensitive").Output()
+		if err != nil {
+			logging.Info(ctx, "Failed to exec command `tpm_manager_client status`: ", err)
+			return
+		}
+		if !strings.Contains(string(out), "is_enabled: true") {
+			return
+		}
+		out, err = exec.Command("tpm_version").Output()
+		if err != nil {
+			logging.Info(ctx, "Failed to exec command `tpm_version`: ", err)
+			return
+		}
+		status := string(out)
+		if strings.Contains(status, "TPM 1.2") {
+			features.TrustedPlatformModule.RuntimeTpmVersion = configpb.HardwareFeatures_TrustedPlatformModule_TPM_VERSION_V1_2
+		} else if strings.Contains(status, "TPM 2.0") {
+			features.TrustedPlatformModule.RuntimeTpmVersion = configpb.HardwareFeatures_TrustedPlatformModule_TPM_VERSION_V2
+		}
+	}()
+
 	if err := exec.Command("cros_config", "/modem", "firmware-variant").Run(); err != nil {
 		logging.Infof(ctx, "Modem not found: %v", err)
 		features.Cellular.Present = configpb.HardwareFeatures_NOT_PRESENT

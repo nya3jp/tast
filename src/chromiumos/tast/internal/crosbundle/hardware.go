@@ -337,8 +337,9 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 			features.EmbeddedController.DetachableBase = configpb.HardwareFeatures_NOT_PRESENT
 		}
 		// Running `ectool chargecontrol` with no args will fail if version 2 isn't
-		// supported.
-		if err := exec.Command("ectool", "chargecontrol").Run(); err != nil {
+		// supported. Check for battery sustainer output if the command doesn't
+		// fail to make sure charger control v2 is fully supported.
+		if out, err := exec.Command("ectool", "chargecontrol").Output(); err != nil || !regexp.MustCompile(`.*Battery sustainer`).Match(out) {
 			logging.Infof(ctx, "Charge control V2 not supported: %v", err)
 			features.EmbeddedController.FeatureChargeControlV2 = configpb.HardwareFeatures_NOT_PRESENT
 		} else {

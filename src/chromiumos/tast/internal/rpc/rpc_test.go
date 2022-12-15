@@ -62,6 +62,12 @@ func (s *pingCoreServer) Ping(ctx context.Context, _ *empty.Empty) (*empty.Empty
 	return &empty.Empty{}, nil
 }
 
+type pingPanicServer struct{}
+
+func (s *pingPanicServer) Ping(ctx context.Context, _ *empty.Empty) (*empty.Empty, error) {
+	panic("pingPanicServer.Ping was called")
+}
+
 // pingPair manages a local client/server pair of the Ping gRPC service.
 type pingPair struct {
 	UserClient protocol.PingUserClient
@@ -194,6 +200,32 @@ func TestRPCFailure(t *gotesting.T) {
 	})
 	if _, err := pp.UserClient.Ping(callCtx, &empty.Empty{}); err == nil {
 		t.Error("Ping unexpectedly succeeded")
+	}
+	if !called {
+		t.Error("onPing not called")
+	}
+}
+
+func TestRPCPanic(t *gotesting.T) {
+	ctx := testcontext.WithCurrentEntity(context.Background(), &testcontext.CurrentEntity{})
+	req := &protocol.HandshakeRequest{NeedUserServices: true}
+
+	called := false
+	svc := newPingService(func(context.Context, *testing.ServiceState) error {
+		called = true
+		panic("Ping was called")
+	})
+
+	pp := newPingPair(ctx, t, req, svc)
+	defer pp.Close()
+
+	callCtx := testcontext.WithCurrentEntity(ctx, &testcontext.CurrentEntity{
+		ServiceDeps: []string{pingUserServiceName},
+	})
+	if _, err := pp.UserClient.Ping(callCtx, &empty.Empty{}); err == nil {
+		t.Error("Ping unexpectedly succeeded")
+	} else if !strings.Contains(err.Error(), "panic: Ping was called") {
+		t.Error("Ping error did not contain panic info: ", err)
 	}
 	if !called {
 		t.Error("onPing not called")
@@ -600,6 +632,51 @@ func TestRPCOverExec(t *gotesting.T) {
 	}
 }
 
+func TestPanicOverExec(t *gotesting.T) {
+	ctx := context.Background()
+
+	// Create a loopback executable providing gRPC server.
+	dir, err := ioutil.TempDir("", "tast-unittest.")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer os.RemoveAll(dir)
+
+	path := filepath.Join(dir, "rpc-server")
+	lo, err := fakeexec.CreateLoopback(path, func(_ []string, stdin io.Reader, stdout, _ io.WriteCloser) int {
+		if err := RunServer(stdin, stdout, nil, func(srv *grpc.Server, req *protocol.HandshakeRequest) error {
+			protocol.RegisterPingCoreServer(srv, &pingPanicServer{})
+			return nil
+		}); err != nil {
+			fmt.Fprintf(os.Stderr, "FATAL: %v\n", err)
+			return 1
+		}
+		return 0
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer lo.Close()
+
+	// Connect to the server and try calling a method.
+	conn, err := DialExec(ctx, path, false, &protocol.HandshakeRequest{})
+	if err != nil {
+		t.Fatalf("DialExec failed: %v", err)
+	}
+	defer func() {
+		if err := conn.Close(); err != nil {
+			t.Errorf("Close failed: %v", err)
+		}
+	}()
+
+	cl := protocol.NewPingCoreClient(conn.Conn())
+	if _, err := cl.Ping(ctx, &empty.Empty{}); err == nil {
+		t.Error("Ping unexpectedly succeeded")
+	} else if !strings.Contains(err.Error(), "panic: pingPanicServer.Ping was called") {
+		t.Error("Ping error did not contain panic info: ", err)
+	}
+}
+
 type leakingPingServer struct{}
 
 func (s *leakingPingServer) Ping(ctx context.Context, _ *empty.Empty) (*empty.Empty, error) {
@@ -790,6 +867,52 @@ func TestRPCOverSSHShortContext(t *gotesting.T) {
 	}
 	if err := sshConn.Ping(ctx, time.Second); err != nil {
 		t.Error("SSH ping failed: ", err)
+	}
+}
+
+func TestPanicOverSSH(t *gotesting.T) {
+	ctx := context.Background()
+
+	// Start a fake SSH server providing gRPC server.
+	td := sshtest.NewTestData(func(req *sshtest.ExecReq) {
+		req.Start(true)
+		if err := RunServer(req, req, nil, func(srv *grpc.Server, req *protocol.HandshakeRequest) error {
+			protocol.RegisterPingCoreServer(srv, &pingPanicServer{})
+			return nil
+		}); err != nil {
+			fmt.Fprintf(req.Stderr(), "FATAL: %v\n", err)
+			req.End(1)
+			return
+		}
+		req.End(0)
+	})
+	defer td.Close()
+
+	sshConn, err := ssh.New(ctx, &ssh.Options{
+		Hostname: td.Srvs[0].Addr().String(),
+		KeyFile:  td.UserKeyFile,
+	})
+	if err != nil {
+		t.Fatalf("Failed to connect to fake SSH server: %v", err)
+	}
+	defer sshConn.Close(ctx)
+
+	// Connect to the server and try calling a method.
+	conn, err := DialSSH(ctx, sshConn, "", &protocol.HandshakeRequest{}, false)
+	if err != nil {
+		t.Fatalf("DialSSH failed: %v", err)
+	}
+	defer func() {
+		if err := conn.Close(); err != nil {
+			t.Errorf("Close failed: %v", err)
+		}
+	}()
+
+	cl := protocol.NewPingCoreClient(conn.Conn())
+	if _, err := cl.Ping(ctx, &empty.Empty{}); err == nil {
+		t.Error("Ping unexpectedly succeeded")
+	} else if !strings.Contains(err.Error(), "panic: pingPanicServer.Ping was called") {
+		t.Error("Ping error did not contain panic info: ", err)
 	}
 }
 

@@ -18,8 +18,10 @@ import (
 
 	"golang.org/x/sys/unix"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/reflection"
+	"google.golang.org/grpc/status"
 
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/logging"
@@ -282,6 +284,11 @@ func serverOpts(ls *remoteLoggingServer, logger logging.Logger, calls *sync.Wait
 
 	return []grpc.ServerOption{
 		grpc.UnaryInterceptor(func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (res interface{}, err error) {
+			defer func() {
+				if r := recover(); r != nil {
+					err = status.Error(codes.Internal, fmt.Sprintf("panic: %v", r))
+				}
+			}()
 			calls.Add(1)
 			defer calls.Done()
 			ctx, trailer, err := hook(ctx, info.FullMethod)
@@ -293,7 +300,12 @@ func serverOpts(ls *remoteLoggingServer, logger logging.Logger, calls *sync.Wait
 			}()
 			return handler(ctx, req)
 		}),
-		grpc.StreamInterceptor(func(srv interface{}, stream grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
+		grpc.StreamInterceptor(func(srv interface{}, stream grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) (err error) {
+			defer func() {
+				if r := recover(); r != nil {
+					err = status.Error(codes.Internal, fmt.Sprintf("panic: %v", r))
+				}
+			}()
 			calls.Add(1)
 			defer calls.Done()
 			ctx, trailer, err := hook(stream.Context(), info.FullMethod)

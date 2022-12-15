@@ -9,7 +9,6 @@ package dut
 import (
 	"context"
 	"fmt"
-	"net"
 	"strings"
 	"time"
 
@@ -26,16 +25,6 @@ const (
 
 	connectTimeout      = 10 * time.Second
 	reconnectRetryDelay = time.Second
-)
-
-// Suffix names for forward compatibility.
-const (
-	// CompanionSuffixPcap is a companion suffix for the pcap.
-	CompanionSuffixPcap = "-pcap"
-	// CompanionSuffixRouter is a companion suffix for the router.
-	CompanionSuffixRouter = "-router"
-	// CompanionSuffixTablet is a companion suffix for the tablet.
-	CompanionSuffixTablet = "-tablet"
 )
 
 // DUT represents a "Device Under Test" against which remote tests are run.
@@ -280,87 +269,3 @@ func (d *DUT) KeyDir() string { return d.sopt.KeyDir }
 // This is provided for tests that may need to establish direct SSH connections to hosts.
 // (e.g. syzkaller connecting to a host).
 func (d *DUT) HostName() string { return d.sopt.Hostname }
-
-// ErrCompanionHostname is the error of deriving default companion device hostname from dut's hostname.
-// e.g. when DUT is connected with IP address.
-var ErrCompanionHostname = errors.New("cannot derive default companion device hostname")
-
-// CompanionDeviceHostname derives the hostname of companion device from test target
-// with the convention in Autotest.
-// (see server/cros/dnsname_mangler.py in Autotest)
-func (d *DUT) CompanionDeviceHostname(suffix string) (string, error) {
-	dutHost := d.sopt.Hostname
-	// Try split out port part.
-	if host, _, err := net.SplitHostPort(dutHost); err == nil {
-		dutHost = host
-	}
-
-	if ip := net.ParseIP(dutHost); ip != nil {
-		// We don't mangle IP address. Return error.
-		return "", ErrCompanionHostname
-	}
-
-	// Companion device hostname convention: append suffix after the first sub-domain string.
-	hostname := strings.SplitN(dutHost, ".", 2)
-	hostname[0] = hostname[0] + suffix
-	return strings.Join(hostname, "."), nil
-}
-
-// connectCompanionDevice connects to a companion device in test environment. e.g. WiFi AP.
-// It reuses SSH key from DUT for establishing SSH connection to a companion device.
-// Note that it uses the derived hostname (from the DUT's hostname) with default port to
-// establish a connection. If the router/pcap runs in a non-default port, router/pcap
-// target should be specified in test variables.
-func (d *DUT) connectCompanionDevice(ctx context.Context, suffix string) (*ssh.Conn, error) {
-	var sopt ssh.Options
-	hostname, err := d.CompanionDeviceHostname(suffix)
-	if err != nil {
-		return nil, err
-	}
-	// Let ParseTarget derive default user and port for us.
-	if err := ssh.ParseTarget(hostname, &sopt); err != nil {
-		return nil, ErrCompanionHostname
-	}
-	sopt.ConnectTimeout = connectTimeout
-	// Companion devices use the same key as DUT.
-	sopt.KeyFile = d.sopt.KeyFile
-	sopt.KeyDir = d.sopt.KeyDir
-
-	return ssh.New(ctx, &sopt)
-}
-
-// DefaultWifiRouterHost connects to the default WiFi router and returns SSH object.
-// DEPRECATED: Connect using CompanionDeviceHostname() instead.
-func (d *DUT) DefaultWifiRouterHost(ctx context.Context) (*ssh.Conn, error) {
-	return d.connectCompanionDevice(ctx, CompanionSuffixRouter)
-}
-
-// DefaultWifiPcapHost connects to the default WiFi pcap router and returns SSH object.
-// DEPRECATED: Connect using CompanionDeviceHostname() instead.
-func (d *DUT) DefaultWifiPcapHost(ctx context.Context) (*ssh.Conn, error) {
-	return d.connectCompanionDevice(ctx, CompanionSuffixPcap)
-}
-
-// WifiPeerHost connects to the WiFi peer (specified by index) and returns SSH object.
-func (d *DUT) WifiPeerHost(ctx context.Context, index int) (*ssh.Conn, error) {
-	return d.connectCompanionDevice(ctx, fmt.Sprintf("-wifipeer%d", index))
-}
-
-// DefaultCameraboxChart connects to paired chart tablet in camerabox setup and returns SSH object.
-func (d *DUT) DefaultCameraboxChart(ctx context.Context) (*ssh.Conn, error) {
-	return d.connectCompanionDevice(ctx, CompanionSuffixTablet)
-}
-
-// NewSecondaryDevice creates a DUT for a secondary target, sharing the same SSH info.
-// TODO(crbug/1129234): Remove this when full secondary DUT support is added.
-func (d *DUT) NewSecondaryDevice(target string) (*DUT, error) {
-	d2 := DUT{beforeReboot: d.beforeReboot}
-	if err := ssh.ParseTarget(target, &d2.sopt); err != nil {
-		return nil, err
-	}
-	d2.sopt.ConnectTimeout = connectTimeout
-	d2.sopt.KeyFile = d.sopt.KeyFile
-	d2.sopt.KeyDir = d.sopt.KeyDir
-
-	return &d2, nil
-}

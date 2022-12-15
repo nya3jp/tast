@@ -30,7 +30,7 @@ const (
 	noContactMsg          = `Contacts field should exist to list owners' email addresses`
 	nonLiteralContactsMsg = `Contacts field should be an array literal of syntactically valid email address`
 
-	noBugComponentMsg  = `BugComponent field should not specified`
+	noBugComponentMsg  = `BugComponent field should be specified`
 	nonBugComponentMsg = `BugComponent does not match 'b:<component_id>' or 'crbug:' syntax`
 
 	nonLiteralAttrMsg         = `Test Attr should be an array literal of string literals`

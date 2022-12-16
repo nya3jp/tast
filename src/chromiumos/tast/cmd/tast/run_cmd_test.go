@@ -26,7 +26,7 @@ func executeRunCmd(t *gotesting.T, args []string, wrapper *stubRunWrapper, logge
 	td := testutil.TempDir(t)
 	defer os.RemoveAll(td)
 
-	cmd := newRunCmd(td)
+	cmd := newRunCmd(td, "")
 	cmd.wrapper = wrapper
 	flags := flag.NewFlagSet("", flag.ContinueOnError)
 	cmd.SetFlags(flags)

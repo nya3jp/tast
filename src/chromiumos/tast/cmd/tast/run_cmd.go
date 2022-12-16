@@ -34,14 +34,16 @@ type runCmd struct {
 	wrapper      runWrapper            // can be set by tests to stub out calls to run package
 	failForTests bool                  // exit with 1 if any individual tests fail
 	timeout      time.Duration         // overall timeout; 0 if no timeout
+	version      string                // tast version
 }
 
 var _ = subcommands.Command(&runCmd{})
 
-func newRunCmd(trunkDir string) *runCmd {
+func newRunCmd(trunkDir, version string) *runCmd {
 	return &runCmd{
 		cfg:     config.NewMutableConfig(config.RunTestsMode, tastDir, trunkDir),
 		wrapper: &realRunWrapper{},
+		version: version,
 	}
 }
 
@@ -148,6 +150,7 @@ func (r *runCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{})
 	ctx = logging.AttachLogger(ctx, logger)
 
 	logging.Info(ctx, "Command line: ", strings.Join(os.Args, " "))
+	logging.Info(ctx, "Tast version: ", r.version)
 	r.cfg.Target = f.Args()[0]
 	r.cfg.Patterns = f.Args()[1:]
 

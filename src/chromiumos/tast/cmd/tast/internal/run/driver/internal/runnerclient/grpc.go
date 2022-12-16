@@ -99,6 +99,9 @@ func (c *Client) dial(ctx context.Context, req *protocol.HandshakeRequest) (_ *r
 		return nil, err
 	}
 
+	// TODO: remove after b/262732408 is resolved.
+	logging.Info(ctx, "Max GPRC runner client message size: ", rpc.MaxMessageSize)
+
 	return &rpcConn{
 		proc: proc,
 		conn: conn,

@@ -58,7 +58,7 @@ func doMain() int {
 	subcommands.Register(subcommands.FlagsCommand(), "")
 	subcommands.Register(subcommands.CommandsCommand(), "")
 	subcommands.Register(newListCmd(os.Stdout, trunkDir()), "")
-	subcommands.Register(newRunCmd(trunkDir()), "")
+	subcommands.Register(newRunCmd(trunkDir(), Version), "")
 	subcommands.Register(&symbolizeCmd{}, "")
 	subcommands.Register(newGlobalRuntimeVarsCmd(os.Stdout, trunkDir()), "")
 

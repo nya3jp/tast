@@ -32,12 +32,10 @@ var softwareFeatureDefs = map[string]string{
 	"arc_launched_32bit":           `"arc-launched-32bit-abi"`,
 	"arc_launched_64bit":           `"!arc-launched-32bit-abi"`,
 	"arm":                          `"arm" || "arm64"`,
-	// For boards that are migrating from 32-bit ARM userspace to 64-bit ARM userspace.
-	"arm_32_to_64_upgrade": `("board:trogdor" || "board:strongbad")`,
-	"aslr":                 "!asan", // ASan instrumentation breaks ASLR
-	"auto_update_stable":   `!("board:*-*")`,
-	"biometrics_daemon":    "biod",
-	"boot_perf_info":       `!("board:reven*")`, // Reven (ChromeOS Flex) doesn't support boot performance metrics.
+	"aslr":                         "!asan", // ASan instrumentation breaks ASLR
+	"auto_update_stable":           `!("board:*-*")`,
+	"biometrics_daemon":            "biod",
+	"boot_perf_info":               `!("board:reven*")`, // Reven (ChromeOS Flex) doesn't support boot performance metrics.
 	// TODO(b/225065082): Re-enable borealis on manatee
 	"borealis_host": "borealis_host && !manatee",
 	// The bpf syscall is enabled on CrOS since kernel v5.10.

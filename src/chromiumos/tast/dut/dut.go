@@ -91,7 +91,7 @@ func (d *DUT) Close(ctx context.Context) error {
 // Health checks the connection status with the DUT.
 func (d *DUT) Health(ctx context.Context) error {
 	if d == nil || d.hst == nil {
-		return errors.New("DUT does not exist.")
+		return errors.New("ssh.Conn or DUT does not exist")
 	}
 
 	if err := d.hst.Ping(ctx, pingTimeout); err != nil {

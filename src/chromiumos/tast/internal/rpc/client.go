@@ -234,7 +234,8 @@ var alwaysAllowedServices = []string{
 	"tast.cros.baserpc.FileSystem",
 }
 
-// clientOpts returns gRPC client-side interceptors to manipulate context.
+// clientOpts returns gRPC client-side interceptors to manipulate context and
+// make sure all clients use the same GRPC send/recv message size.
 func clientOpts(lazyLog *lazyRemoteLoggingClient) []grpc.DialOption {
 	// hook is called on every gRPC method call.
 	// It returns a Context to be passed to a gRPC invocation, a function to be
@@ -305,6 +306,10 @@ func clientOpts(lazyLog *lazyRemoteLoggingClient) []grpc.DialOption {
 			stream, err := streamer(ctx, desc, cc, method, opts...)
 			return &clientStreamWithAfter{ClientStream: stream, after: after}, err
 		}),
+		grpc.WithDefaultCallOptions(
+			grpc.MaxCallRecvMsgSize(MaxMessageSize),
+			grpc.MaxCallSendMsgSize(MaxMessageSize),
+		),
 	}
 }
 

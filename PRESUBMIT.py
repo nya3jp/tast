@@ -4,10 +4,9 @@
 
 """Hook to stop people from running `git cl`."""
 
-from __future__ import print_function
-
 import sys
 
+USE_PYTHON3 = True
 
 def CheckChangeOnUpload(_input_api, _output_api):
   print('ERROR: CrOS repos use `repo upload`, not `git cl upload`.',

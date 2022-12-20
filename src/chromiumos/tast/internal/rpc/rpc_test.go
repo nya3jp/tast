@@ -810,6 +810,7 @@ func TestRPCOverSSH(t *gotesting.T) {
 
 // Verifies that rpc calls fail if the context passed to DialSSH is cancelled.
 func TestRPCOverSSHShortContext(t *gotesting.T) {
+	t.Skip("Test disabled because of flakiness b/262413993")
 	ctx := context.Background()
 	ctx = logging.AttachLoggerNoPropagation(ctx, loggingtest.NewLogger(t, logging.LevelInfo))
 

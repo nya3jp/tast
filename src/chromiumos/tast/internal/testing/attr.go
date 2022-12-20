@@ -876,6 +876,21 @@ Parallels boot-up testing. Otherwise the same as group:crosbolt.`,
 		},
 	},
 	{
+		Name:     "wwcb",
+		Contacts: []string{"cros-wwcb-automation@google.com"},
+		Desc:     `WWCB end-to-end functional tests.`,
+		Subattrs: []*attr{
+			{
+				Name: "wwcb_satlab",
+				Desc: `Indicates that this test should be run in a dedicated wwcb setup.`,
+			},
+			{
+				Name: "wwcb_informational",
+				Desc: `Indicates that failures can be ignored.`,
+			},
+		},
+	},
+	{
 		Name:     "borealis",
 		Contacts: []string{"chromeos-gaming@google.com"},
 		Desc:     `Borealis related tests.`,

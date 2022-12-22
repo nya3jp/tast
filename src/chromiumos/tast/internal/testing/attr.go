@@ -1189,6 +1189,11 @@ from other existing groups (or use this group standalone).
 		Contacts: []string{"chromeos-audio-bugs@google.com", "chromeos-sw-engprod@google.com"},
 		Desc:     `A group of audio tests that are out of audio.* but tracked with audio_cq.`,
 	},
+	{
+		Name:     "audio_audiobox",
+		Contacts: []string{"chromeos-audio-bugs@google.com", "chromeos-sw-engprod@google.com"},
+		Desc:     `A group of audio tests that have to be run in audiobox.`,
+	},
 }
 
 // validGroupMap is the name-keyed map of validGroups.

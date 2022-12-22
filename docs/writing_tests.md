@@ -625,6 +625,12 @@ Each test can declare its fixture by setting [`testing.Test.Fixture`] an fixture
 name. The fixture's `SetUp()` returns an arbitrary value that can be obtained by
 calling `s.FixtValue()` in the test. Because `s.FixtValue()` returns an
 `interface{}`, type assertion is needed to cast it to the actual type.
+However, `s.FixtValue()` will always return nil when local tests/fixtures
+try to access values from remote fixtures because Tast does not know the actual
+types of fixture values to deserialize them. Therefore, there is another
+function `s.FixtSerializedValue()` which returns a json encoded byte array
+so that local tests/fixtures can deserialize the values with correct
+data type.
 
 Fixtures are composable. A fixture can declare its parent fixture with
 `testing.Fixture.Parent`. Parent's `SetUp()` is executed before the fixture's

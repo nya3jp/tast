@@ -1184,6 +1184,11 @@ from other existing groups (or use this group standalone).
 		Contacts: []string{"clumptini@google.com"},
 		Desc:     `A group of slow crostini tests that should run on dedicated shards only when relevant code is changed.`,
 	},
+	{
+		Name:     "audio",
+		Contacts: []string{"chromeos-audio-bugs@google.com", "chromeos-sw-engprod@google.com"},
+		Desc:     `A group of audio tests that are out of audio.* but tracked with audio_cq.`,
+	},
 }
 
 // validGroupMap is the name-keyed map of validGroups.

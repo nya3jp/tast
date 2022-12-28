@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"time"
 
 	"github.com/golang/protobuf/ptypes"
 	"github.com/golang/protobuf/ptypes/empty"
@@ -161,6 +162,14 @@ func (s *fixtureService) pushAndPop(srv protocol.FixtureService_RunFixtureServer
 	}
 
 	stack := planner.NewFixtureStack(pcfg, &fixtureServiceLogger{srv})
+	if dt != nil && !dt.Connected(ctx) {
+		// Try to reconnect to the DUT.
+		waitConnectCtx, cancel := context.WithTimeout(ctx, 2*time.Minute)
+		defer cancel()
+		if err := dt.WaitConnect(waitConnectCtx); err != nil {
+			return fmt.Errorf("Failed to connect to DUT before running fixture %s: %v", r.Name, err)
+		}
+	}
 	if err := stack.Push(ctx, f); err != nil {
 		return fmt.Errorf("push %v: %v", r.Name, err)
 	}

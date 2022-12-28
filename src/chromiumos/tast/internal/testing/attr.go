@@ -923,6 +923,10 @@ Parallels boot-up testing. Otherwise the same as group:crosbolt.`,
 		Desc:     `A group of tests that test Cross Device functionality between CrOS and Android devices.`,
 		Subattrs: []*attr{
 			{
+				Name: "cross-device_crossdevice",
+				Desc: `Temporary smoke test to mitigate cross device onboarding fixture failure.`,
+			},
+			{
 				Name: "cross-device_cellular",
 				Desc: `Cross Device tests that use a cellular connection on the Android phone.`,
 			},

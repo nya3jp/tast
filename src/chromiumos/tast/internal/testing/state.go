@@ -52,6 +52,7 @@ package testing
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
@@ -696,8 +697,21 @@ func (s *State) FixtValue() interface{} {
 }
 
 // FixtSerializedValue returns the serialized fixture value.
+// TODO: b/264292451: Deprecate FixtSerializedValue().
 func (s *State) FixtSerializedValue() ([]byte, error) {
 	return s.testRoot.entityRoot.cfg.FixtSerializedValue()
+}
+
+// FixtFillValue stores the deserialized result in the value pointed to by v.
+func (s *State) FixtFillValue(v any) error {
+	data, err := s.testRoot.entityRoot.cfg.FixtSerializedValue()
+	if err != nil {
+		return errors.Wrap(err, "failed to get serialize fixture value")
+	}
+	if err := json.Unmarshal(data, v); err != nil {
+		return errors.Wrap(err, "failed to deserialize fixture value")
+	}
+	return nil
 }
 
 // PreState holds state relevant to the execution of a single precondition.

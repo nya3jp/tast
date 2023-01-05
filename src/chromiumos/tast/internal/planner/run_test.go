@@ -1065,8 +1065,8 @@ func TestRunFixture(t *gotesting.T) {
 				t.Errorf("pkg.Test1: FixtSerializedValue() = %v; want %v", deserializedVal, val1)
 				return
 			}
-			deserializedValue := ""
-			if err := s.FixtFillValue(&deserializedValue); err != nil {
+			deserializedVal = ""
+			if err := s.FixtFillValue(&deserializedVal); err != nil {
 				t.Errorf("pkg.Test1: FixtFillValue() failed to deserialize value: %v", err)
 				return
 			}
@@ -1099,8 +1099,8 @@ func TestRunFixture(t *gotesting.T) {
 				t.Errorf("pkg.Test2: FixtSerializedValue() = %v; want %v", deserializedVal, val2)
 				return
 			}
-			deserializedValue := ""
-			if err := s.FixtFillValue(&deserializedValue); err != nil {
+			deserializedVal = ""
+			if err := s.FixtFillValue(&deserializedVal); err != nil {
 				t.Errorf("pkg.Test2: FixtFillValue() failed to deserialize value: %v", err)
 				return
 			}

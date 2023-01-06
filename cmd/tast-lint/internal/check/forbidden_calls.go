@@ -82,6 +82,12 @@ func ForbiddenCalls(fs *token.FileSet, f *ast.File, fix bool) []*Issue {
 				Msg:  "time.Sleep ignores context deadline; use testing.Poll or testing.Sleep instead",
 				Link: "https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#Contexts-and-timeouts",
 			})
+		case "testing.FixtSerializedValue":
+			issues = append(issues, &Issue{
+				Pos:  fs.Position(x.Pos()),
+				Msg:  "testing.FixtSerializedValue is deprecated; use testing.FixtFillValue",
+				Link: "https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#fixtures",
+			})
 		case "dbus.SystemBus", "dbus.SystemBusPrivate":
 			if !fix {
 				issues = append(issues, &Issue{

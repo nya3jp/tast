@@ -628,9 +628,8 @@ calling `s.FixtValue()` in the test. Because `s.FixtValue()` returns an
 However, `s.FixtValue()` will always return nil when local tests/fixtures
 try to access values from remote fixtures because Tast does not know the actual
 types of fixture values to deserialize them. Therefore, there is another
-function `s.FixtSerializedValue()` which returns a json encoded byte array
-so that local tests/fixtures can deserialize the values with correct
-data type.
+function `s.FixtFillValue(v, any)` which requires user to pass in a pointer,
+and it will store the deserialized result in the value pointed to by pointer.
 
 Fixtures are composable. A fixture can declare its parent fixture with
 `testing.Fixture.Parent`. Parent's `SetUp()` is executed before the fixture's

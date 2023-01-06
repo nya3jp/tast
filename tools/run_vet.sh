@@ -14,7 +14,15 @@ for x in "$@"
 do
     if [[ "${x}" == *.go ]]
     then
-       goPackages+=($(dirname "${x}"))
+       case ${x} in
+           "${tast_root}/cmd/tast-lint"*)
+               echo "go-vet: Skipping tast-lint changes ${x}."
+               ;;
+           *)
+               goPackages+=($(dirname "${x}"))
+               ;;
+       esac
+
     fi
 done
 

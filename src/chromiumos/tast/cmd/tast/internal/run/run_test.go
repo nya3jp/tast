@@ -1084,6 +1084,36 @@ func TestRunListTestsWithSharding(t *gotesting.T) {
 	remoteTestMeta, _ := resultsjson.NewTest(remoteTest.EntityProto())
 	skippedTestMeta, _ := resultsjson.NewTest(skippedTest.EntityProto())
 
+	// Run the test with hash shards.
+	for shardIndex, expected := range [][]*resultsjson.Result{
+		{
+			{Test: *localTestMeta},
+			{Test: *skippedTestMeta, SkipReason: "missing SoftwareDeps: missing"},
+		},
+		{
+			{Test: *remoteTestMeta},
+		},
+	} {
+		t.Run(fmt.Sprintf("shard%d", shardIndex), func(t *gotesting.T) {
+			cfg := env.Config(func(cfg *config.MutableConfig) {
+				cfg.Mode = config.ListTestsMode
+				cfg.TotalShards = 2
+				cfg.ShardIndex = shardIndex
+				cfg.ShardMethod = "hash"
+			})
+
+			results, err := run.Run(ctx, cfg, state)
+			if err != nil {
+				t.Errorf("Run failed: %v", err)
+			}
+
+			if diff := cmp.Diff(results, expected); diff != "" {
+				t.Errorf("Unexpected results (-got +want):\n%s", diff)
+			}
+		})
+	}
+
+	// Run the test with alpha shards.
 	for shardIndex, expected := range [][]*resultsjson.Result{
 		{
 			{Test: *localTestMeta},
@@ -1098,6 +1128,7 @@ func TestRunListTestsWithSharding(t *gotesting.T) {
 				cfg.Mode = config.ListTestsMode
 				cfg.TotalShards = 2
 				cfg.ShardIndex = shardIndex
+				cfg.ShardMethod = "alpha"
 			})
 
 			results, err := run.Run(ctx, cfg, state)
@@ -1110,6 +1141,7 @@ func TestRunListTestsWithSharding(t *gotesting.T) {
 			}
 		})
 	}
+
 }
 
 func TestRunDumpDUTInfo(t *gotesting.T) {

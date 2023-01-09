@@ -6,6 +6,9 @@
 package sharding
 
 import (
+	"crypto/sha256"
+	"math/big"
+
 	"chromiumos/tast/cmd/tast/internal/run/driver"
 )
 
@@ -20,8 +23,8 @@ type Shard struct {
 	Excluded []*driver.BundleEntity
 }
 
-// Compute computes a set of tests to include/exclude in the specified shard.
-func Compute(tests []*driver.BundleEntity, shardIndex, totalShards int) *Shard {
+// ComputeAlpha computes a set of tests to include/exclude in the specified shard by lexiographic.
+func ComputeAlpha(tests []*driver.BundleEntity, shardIndex, totalShards int) *Shard {
 	var startIdx, endIdx, shardSpan int
 
 	if len(tests)%totalShards > 0 {
@@ -45,6 +48,29 @@ func Compute(tests []*driver.BundleEntity, shardIndex, totalShards int) *Shard {
 	var includes, excludes []*driver.BundleEntity
 	for i, test := range tests {
 		if i >= startIdx && i <= endIdx {
+			includes = append(includes, test)
+		} else {
+			excludes = append(excludes, test)
+		}
+	}
+
+	return &Shard{Included: includes, Excluded: excludes}
+}
+
+// ComputeHash computes a set of tests to include/exclude in the specified shard by hash.
+// This is experimental for now, and will potentially produce empty shards. If you see
+// issues when this is rolling out please file a buganizer issue to component 1152900.
+func ComputeHash(tests []*driver.BundleEntity, shardIndex, totalShards int) *Shard {
+	var includes, excludes []*driver.BundleEntity
+	for _, test := range tests {
+		// Compute sha256(Entity.Name) % totalShards.
+		sum := sha256.Sum256([]byte(test.Resolved.Entity.Name))
+		shaInt := new(big.Int)
+		shaInt.SetBytes(sum[:])
+		shaInt.Mod(shaInt, big.NewInt(int64(totalShards)))
+
+		// If the shardIndex == the module we're in the group.
+		if int(shaInt.Int64()) == shardIndex {
 			includes = append(includes, test)
 		} else {
 			excludes = append(excludes, test)

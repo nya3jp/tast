@@ -106,6 +106,7 @@ type MutableConfig struct {
 
 	TotalShards int
 	ShardIndex  int
+	ShardMethod string
 
 	SSHRetries           int
 	ContinueAfterFailure bool
@@ -273,8 +274,11 @@ func (c *Config) RemoteTempDir() string { return c.m.RemoteTempDir }
 // TotalShards is total number of shards to be used in a test run.
 func (c *Config) TotalShards() int { return c.m.TotalShards }
 
-// ShardIndex is specifies the index of shard to used in the current run.
+// ShardIndex specifies the index of shard to used in the current run.
 func (c *Config) ShardIndex() int { return c.m.ShardIndex }
+
+// ShardMethod specifies which sharding method we should use.
+func (c *Config) ShardMethod() string { return c.m.ShardMethod }
 
 // SSHRetries is number of SSH connect retries.
 func (c *Config) SSHRetries() int { return c.m.SSHRetries }
@@ -431,6 +435,7 @@ func (c *MutableConfig) SetFlags(f *flag.FlagSet) {
 
 	f.IntVar(&c.TotalShards, "totalshards", 1, "total number of shards to be used in a test run")
 	f.IntVar(&c.ShardIndex, "shardindex", 0, "the index of shard to used in the current run")
+	f.StringVar(&c.ShardMethod, "shardmethod", "alpha", "the method used to split the shards (one of \"hash\" or \"alpha\")")
 
 	f.StringVar(&c.LocalRunner, "localrunner", "", "executable that runs local test bundles")
 	f.StringVar(&c.LocalBundleDir, "localbundledir", "", "directory containing builtin local test bundles")
@@ -655,6 +660,9 @@ func (c *MutableConfig) DeriveDefaults() error {
 	}
 	if c.ShardIndex < 0 || c.ShardIndex >= c.TotalShards {
 		return fmt.Errorf("shard index %v is out of range", c.ShardIndex)
+	}
+	if c.ShardMethod != "alpha" && c.ShardMethod != "hash" {
+		return fmt.Errorf("-shardmethod must be either 'hash' or 'alpha'")
 	}
 
 	if !c.Build {

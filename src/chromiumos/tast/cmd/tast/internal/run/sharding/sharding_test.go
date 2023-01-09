@@ -39,7 +39,7 @@ func makeTests(pattern string) []*driver.BundleEntity {
 	return tests
 }
 
-func TestCompute(t *gotesting.T) {
+func TestComputeAlpha(t *gotesting.T) {
 	for _, tc := range []struct {
 		name   string
 		tests  []*driver.BundleEntity
@@ -101,7 +101,79 @@ func TestCompute(t *gotesting.T) {
 		t.Run(tc.name, func(t *gotesting.T) {
 			for index, want := range tc.shards {
 				t.Run(fmt.Sprintf("shard%d", index), func(t *gotesting.T) {
-					got := sharding.Compute(tc.tests, index, len(tc.shards))
+					got := sharding.ComputeAlpha(tc.tests, index, len(tc.shards))
+					if diff := cmp.Diff(got, want, protocmp.Transform()); diff != "" {
+						t.Errorf("Mismatch (-got +want):\n%s", diff)
+					}
+				})
+			}
+		})
+	}
+}
+
+func TestComputeHash(t *gotesting.T) {
+	for _, tc := range []struct {
+		name   string
+		tests  []*driver.BundleEntity
+		shards []*sharding.Shard
+	}{
+		{
+			"single",
+			makeTests("AxyBCzEF"),
+			[]*sharding.Shard{
+				{Included: makeTests("AxyBCzEF"), Excluded: makeTests("")},
+			},
+		},
+		{
+			"even",
+			makeTests("ABCDEFGHI"),
+			[]*sharding.Shard{
+				{Included: makeTests("BC"), Excluded: makeTests("ADEFGHI")},
+				{Included: makeTests("ADFHI"), Excluded: makeTests("BCEG")},
+				{Included: makeTests("EG"), Excluded: makeTests("ABCDFHI")},
+			},
+		},
+		{
+			"uneven",
+			makeTests("ABCDEFGHIJK"),
+			[]*sharding.Shard{
+				{Included: makeTests("BCJ"), Excluded: makeTests("ADEFGHIK")},
+				{Included: makeTests("ADFHIK"), Excluded: makeTests("BCEGJ")},
+				{Included: makeTests("EG"), Excluded: makeTests("ABCDFHIJK")},
+			},
+		},
+		{
+			"skips",
+			makeTests("AxByCzD"),
+			[]*sharding.Shard{
+				{Included: makeTests("BC"), Excluded: makeTests("AxyzD")},
+				{Included: makeTests("AD"), Excluded: makeTests("xByCz")},
+				{Included: makeTests("xyz"), Excluded: makeTests("ABCD")},
+			},
+		},
+		{
+			"sparse",
+			makeTests("AxB"),
+			[]*sharding.Shard{
+				{Included: makeTests("B"), Excluded: makeTests("Ax")},
+				{Included: makeTests("A"), Excluded: makeTests("xB")},
+				{Included: makeTests("x"), Excluded: makeTests("AB")},
+			},
+		},
+		{
+			"zero",
+			makeTests(""),
+			[]*sharding.Shard{
+				{Included: makeTests(""), Excluded: makeTests("")},
+				{Included: makeTests(""), Excluded: makeTests("")},
+				{Included: makeTests(""), Excluded: makeTests("")},
+			},
+		},
+	} {
+		t.Run(tc.name, func(t *gotesting.T) {
+			for index, want := range tc.shards {
+				t.Run(fmt.Sprintf("shard%d", index), func(t *gotesting.T) {
+					got := sharding.ComputeHash(tc.tests, index, len(tc.shards))
 					if diff := cmp.Diff(got, want, protocmp.Transform()); diff != "" {
 						t.Errorf("Mismatch (-got +want):\n%s", diff)
 					}

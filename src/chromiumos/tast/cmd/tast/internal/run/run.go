@@ -203,7 +203,12 @@ func listTests(ctx context.Context, cfg *config.Config,
 		return nil, err
 	}
 
-	shard := sharding.Compute(tests, cfg.ShardIndex(), cfg.TotalShards())
+	var shard *sharding.Shard
+	if cfg.ShardMethod() == "hash" {
+		shard = sharding.ComputeHash(tests, cfg.ShardIndex(), cfg.TotalShards())
+	} else {
+		shard = sharding.ComputeAlpha(tests, cfg.ShardIndex(), cfg.TotalShards())
+	}
 
 	var testsToPrint []*driver.BundleEntity
 	if cfg.ExcludeSkipped() {
@@ -298,7 +303,12 @@ func runTests(ctx context.Context, cfg *config.Config,
 		return nil, err
 	}
 
-	shard := sharding.Compute(tests, cfg.ShardIndex(), cfg.TotalShards())
+	var shard *sharding.Shard
+	if cfg.ShardMethod() == "hash" {
+		shard = sharding.ComputeHash(tests, cfg.ShardIndex(), cfg.TotalShards())
+	} else {
+		shard = sharding.ComputeAlpha(tests, cfg.ShardIndex(), cfg.TotalShards())
+	}
 
 	var testsToRun []*driver.BundleEntity
 	var testsToSkip []*driver.BundleEntity

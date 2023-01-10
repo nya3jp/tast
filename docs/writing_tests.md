@@ -566,6 +566,12 @@ func init() {
 
 The above document describes how to define new dependencies.
 
+Also, there is an API Features which allows tests to get information regarding
+DUT features. However, it is purely used for informational purpose only. Do not
+use it to alter test behavior. Use it for only for informational purpose. Use
+[parameterized tests] for tests to have different behavior for different
+DUT features.
+
 If a test depends on the DUT being in a specific configurable state (e.g. tablet
 mode), it should put it into that state. For example, [chrome.ExtraArgs] can be
 passed to [chrome.New] to pass additional command-line flags (e.g.
@@ -577,6 +583,7 @@ dependencies.
 [chrome.ExtraArgs]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/chrome#ExtraArgs
 [chrome.New]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/chrome#New
 [tast-users mailing list]: https://groups.google.com/a/chromium.org/forum/#!forum/tast-users
+[parameterized tests]: #Parameterized-tests
 
 ### Fixtures
 

@@ -688,6 +688,14 @@ third_party/autotest/files/server/site_tests/tast/control.runtime-probe
 				Desc: "Identifies stable bluetooth tests that are ported to run with the new floss stack. Eventually all tests in bluetooth_core and bluetooth_sa tests will be added to this pool and will be stabilised.",
 			},
 			{
+				Name: "bluetooth_cross_device_fastpair",
+				Desc: "Identifies stable Cross Device Fast Pair tests that require a peer device.",
+			},
+			{
+				Name: "bluetooth_cross_device_fastpair_multidut",
+				Desc: "Identifies stable Cross Device Fast Pair tests that require a peer device and 2 DUTs.",
+			},
+			{
 				Name: "bluetooth_flaky",
 				Desc: "Identifies bluetooth tests (bluetooth_sa and bluetooth_core) which are not stable yet. This is used to run new tests in the lab to detect any failures. Once the tests are stable (>95% pass rate), these tests are moved to bluetooth_sa or bluetooth_core suites",
 			},
@@ -706,6 +714,10 @@ third_party/autotest/files/server/site_tests/tast/control.runtime-probe
 			{
 				Name: "bluetooth_floss_cq",
 				Desc: "Identifies tests the same way as bluetooth_floss, but these tests are also ran as part of the custom CQ for Floss",
+			},
+			{
+				Name: "bluetooth_cross_device_cq",
+				Desc: "Identifies Cross Device Bluetooth tests that are also ran as part of the custom CQ for Cross Device.",
 			},
 			{
 				Name: "bluetooth_wifi_coex",

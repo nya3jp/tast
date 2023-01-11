@@ -1234,7 +1234,7 @@ func hasBuiltinAudio(ctx context.Context, ff configpb.HardwareFeatures_FormFacto
 // |model| by inspecting the on-device feature config file.
 func cameraFeatures(model string) ([]string, error) {
 	type modelConfig map[string]struct {
-		FeatureSet []map[string]string `json:"feature_set"`
+		FeatureSet []map[string]interface{} `json:"feature_set"`
 	}
 	const featureProfilePath = "/etc/camera/feature_profile.json"
 	jsonInput, err := ioutil.ReadFile(featureProfilePath)
@@ -1249,13 +1249,24 @@ func cameraFeatures(model string) ([]string, error) {
 	if !ok {
 		return nil, errors.Errorf("feature set config for model %s doesn't exist", model)
 	}
-	var features []string
+	featureSet := make(map[string]bool)
 	for _, f := range c.FeatureSet {
-		if v, ok := f["type"]; ok {
-			features = append(features, v)
+		var v interface{}
+		// The "type" attribute is always a string.
+		if v, ok = f["type"]; !ok {
+			continue
+		}
+		// There can be multiple entries for a feature with different
+		// constraints.
+		if _, ok := featureSet[v.(string)]; !ok {
+			featureSet[v.(string)] = true
 		}
 	}
-	return features, nil
+	var ret []string
+	for k := range featureSet {
+		ret = append(ret, k)
+	}
+	return ret, nil
 }
 
 // findGSCKeyID parses a content of "gsctool -a -f -M" and return a required key

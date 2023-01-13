@@ -818,8 +818,14 @@ Meta tests should be a subset of mainline critical tests.
 	},
 	{
 		Name:     "nearby-share-arc",
-		Contacts: []string{"chromeos-sw-engprod@google.com"},
+		Contacts: []string{"chromeos-sw-engprod@google.com", "arc-app-dev@google.com", "alanding@chromium.org"},
 		Desc:     `A group of tests that test Nearby Share functionality from ARC++.`,
+		Subattrs: []*attr{
+			{
+				Name: "nearby-share-arc_fusebox",
+				Desc: `A group of tests that test Nearby Share functionality with FuseBox from ARC++.`,
+			},
+		},
 	},
 	{
 		Name:     "paper-io",

@@ -129,7 +129,7 @@ a dependency declaration.
 
 [runtime variable]: writing_tests.md#runtime-variables
 [crrev.com/c/2790771]: https://crrev.com/c/2790771
-[port forwarding]: running_tests.md#googlers-only_running-tests-on-a-leased-dut-from-the-lab
+[port forwarding]: running_tests.md#Option-2_Use-SSH-port-forwarding
 
 
 ## Interpreting test results
@@ -192,6 +192,23 @@ rm -rf /var/lib/devicesettings '/home/chronos/Local State'
 start ui
 ```
 ## Googlers Only: Running tests on a leased DUT from the lab
+
+### Option 1: Use corp-ssh-helper-helper
+
+In a window outside the chroot do,
+
+*   Run gcert once a day.
+*   Install [corp-ssh-helper-helper] and start the corp-ssh-helper-helper server process.
+
+In another window inside chroot:
+
+```shell
+tast run <target> <test>
+```
+
+[corp-ssh-helper-helper]: https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform/dev/contrib/corp-ssh-helper-helper/README.md
+
+### Option 2: Use SSH port forwarding
 
 In a window outside the chroot do,
 

@@ -68,8 +68,10 @@ var softwareFeatureDefs = map[string]string{
 	"cras":           "cras",
 	"crashpad":       "!force_breakpad",
 	"cros_internal":  "internal",
-	"crosvm_gpu":     `"crosvm-gpu" && "virtio_gpu"`,
-	"crosvm_no_gpu":  `!"crosvm-gpu" || !"virtio_gpu"`,
+	// Boards to run Crostini Apps tests. See b/256521958.
+	"crostini_app":  `"board:atlas" || "board:brya" || "board:eve" || "board:hatch" || "board:jacuzzi" || "board:nami" || "board:volteer"`,
+	"crosvm_gpu":    `"crosvm-gpu" && "virtio_gpu"`,
+	"crosvm_no_gpu": `!"crosvm-gpu" || !"virtio_gpu"`,
 	// VMs don't support few crossystem sub-commands: https://crbug.com/974615
 	"crossystem":        `!"betty" && !"tast_vm"`,
 	"cups":              "cups",

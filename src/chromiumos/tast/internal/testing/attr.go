@@ -633,6 +633,50 @@ third_party/autotest/files/server/site_tests/tast/control.runtime-probe
 				Name: "cellular_run_isolated",
 				Desc: `Identifies tests which are scheduled seperately from other tests. These tests are called out by name in control files. Used to isolate stress tests or high priority tests`,
 			},
+			{
+				Name: "cellular_carrier_att",
+				Desc: `Identifies Cellular tests that need an AT&T active sim.`,
+			},
+			{
+				Name: "cellular_carrier_verizon",
+				Desc: `Identifies Cellular tests that need an Verizon active sim.`,
+			},
+			{
+				Name: "cellular_carrier_tmobile",
+				Desc: `Identifies Cellular tests that need an T-Mobile active sim.`,
+			},
+			{
+				Name: "cellular_carrier_amarisoft",
+				Desc: `Identifies Cellular tests that need an Amarisoft active sim.`,
+			},
+			{
+				Name: "cellular_carrier_vodafone",
+				Desc: `Identifies Cellular tests that need an Vodafone active sim.`,
+			},
+			{
+				Name: "cellular_carrier_rakuten",
+				Desc: `Identifies Cellular tests that need an Rakuten active sim.`,
+			},
+			{
+				Name: "cellular_carrier_ee",
+				Desc: `Identifies Cellular tests that need an EE active sim.`,
+			},
+			{
+				Name: "cellular_carrier_kddi",
+				Desc: `Identifies Cellular tests that need an KDDI active sim.`,
+			},
+			{
+				Name: "cellular_carrier_docomo",
+				Desc: `Identifies Cellular tests that need an Docomo active sim.`,
+			},
+			{
+				Name: "cellular_carrier_softbank",
+				Desc: `Identifies Cellular tests that need an Softbank active sim.`,
+			},
+			{
+				Name: "cellular_carrier_local",
+				Desc: `Identifies Cellular tests that need an active sim.`,
+			},
 		},
 	},
 	{

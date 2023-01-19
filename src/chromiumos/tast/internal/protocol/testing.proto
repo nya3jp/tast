@@ -248,6 +248,9 @@ message RunConfig {
   // MaxSysMsgLogSize is a maximum size of /var/log/messages that Tast will
   // copy.
   int64 max_sys_msg_log_size = 14;
+
+  // WaitUntilReadyTimeout set a timeout for the entire ready.Wait function.
+  google.protobuf.Duration wait_until_ready_timeout = 15;
 }
 
 // RunTargetConfig contains parameters for the primary target bundle to run.
@@ -275,6 +278,9 @@ message RunTargetConfig {
   // SystemServiceTimeout is timeout for waiting for system services to be ready
   // in seconds. (Default: 120 seconds)
   google.protobuf.Duration system_services_timeout = 9;
+  // WaitUntilReadyTimeout set a timeout for the entire ready.Wait function.
+  //(Default: 120 seconds)
+  google.protobuf.Duration wait_until_ready_timeout = 10;
 }
 
 // RunDirectories holds several directory paths important for running tests.

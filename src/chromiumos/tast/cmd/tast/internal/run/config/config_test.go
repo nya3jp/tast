@@ -77,6 +77,21 @@ func TestMutableConfigDeriveDefaultsSystemServicesTimeout(t *testing.T) {
 	}
 }
 
+func TestMutableConfigDeriveDefaultsWaitUntilReadyTimeout(t *testing.T) {
+	cfg := config.NewMutableConfig(config.RunTestsMode, "", "")
+	flags := flag.NewFlagSet("", flag.ContinueOnError)
+	cfg.SetFlags(flags)
+
+	cfg.Build = false
+
+	if err := cfg.DeriveDefaults(); err != nil {
+		t.Error("DeriveDefaults failed: ", err)
+	}
+	if cfg.WaitUntilReadyTimeout.Seconds() != 120 {
+		t.Errorf("DeriveDefault failed to set default value of WaitUntilReadyTimeout. Expected %f seconds, Found: %f seconds", 120.0, cfg.WaitUntilReadyTimeout.Seconds())
+	}
+}
+
 func TestMutableConfigDeriveDefaultsBuild(t *testing.T) {
 	const buildBundle = "cros"
 

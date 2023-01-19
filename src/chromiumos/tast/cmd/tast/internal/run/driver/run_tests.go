@@ -254,6 +254,7 @@ func (d *Driver) runLocalTestsWithRetry(ctx context.Context, bundle string, test
 		DownloadMode:          d.cfg.DownloadMode(),
 		WaitUntilReady:        d.cfg.WaitUntilReady(),
 		SystemServicesTimeout: d.cfg.SystemServicesTimeout(),
+		WaitUntilReadyTimeout: d.cfg.WaitUntilReadyTimeout(),
 		MsgTimeout:            d.cfg.MsgTimeout(),
 		CheckTestDeps:         d.cfg.CheckTestDeps(),
 		TestVars:              d.cfg.TestVars(),
@@ -397,6 +398,7 @@ func (d *Driver) newConfigsForRemoteTests(tests []string, dutInfos map[string]*p
 		HeartbeatInterval:     ptypes.DurationProto(minidriver.HeartbeatInterval),
 		DebugPort:             uint32(d.cfg.DebuggerPorts()[debugger.RemoteBundle]),
 		SystemServicesTimeout: ptypes.DurationProto(d.cfg.SystemServicesTimeout()),
+		WaitUntilReadyTimeout: ptypes.DurationProto(d.cfg.WaitUntilReadyTimeout()),
 		MsgTimeout:            ptypes.DurationProto(d.cfg.MsgTimeout()),
 		MaxSysMsgLogSize:      d.cfg.MaxSysMsgLogSize(),
 		Target: &protocol.RunTargetConfig{
@@ -413,6 +415,7 @@ func (d *Driver) newConfigsForRemoteTests(tests []string, dutInfos map[string]*p
 			WaitUntilReady:        d.cfg.WaitUntilReady(),
 			MsgTimeout:            ptypes.DurationProto(d.cfg.MsgTimeout()),
 			SystemServicesTimeout: ptypes.DurationProto(d.cfg.SystemServicesTimeout()),
+			WaitUntilReadyTimeout: ptypes.DurationProto(d.cfg.WaitUntilReadyTimeout()),
 		},
 	}
 	return bcfg, rcfg, nil

@@ -21,7 +21,10 @@ func TestPrivateData(t *testing.T) {
 		t.Fatalf("PrivateDataFromContext unexpectedly succeeded for initial Context: %v", got)
 	}
 
-	want := testcontext.PrivateData{WaitUntilReady: true}
+	want := testcontext.PrivateData{
+		WaitUntilReady:        true,
+		WaitUntilReadyTimeout: 10,
+	}
 	ctx = testcontext.WithPrivateData(ctx, want)
 
 	got, ok = testcontext.PrivateDataFromContext(ctx)

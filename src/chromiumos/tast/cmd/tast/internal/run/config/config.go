@@ -54,6 +54,7 @@ const (
 	checkDepsCacheFile           = "check_deps_cache.v2.json"      // file in BuildOutDir where dependency-checking results are cached
 	defaultSystemServicesTimeout = 120 * time.Second               // default timeout for waiting for system services to be ready in seconds
 	defaultMsgTimeout            = 120 * time.Second               // default timeout for grpc connection.
+	defaultWaitUntilReadyTimeout = 120 * time.Second               // default timeout for the entire ready.Wait function
 	dutNotToConnect              = "-"                             // Target for dutless scenarios
 	defaultMaxSysMsgLogSize      = 20 * 1024 * 1024                // default Max System Message Log Size 20MB
 )
@@ -131,6 +132,7 @@ type MutableConfig struct {
 
 	SystemServicesTimeout time.Duration
 	MsgTimeout            time.Duration
+	WaitUntilReadyTimeout time.Duration
 	MaxSysMsgLogSize      int64
 
 	// ForceSkips is a mapping from a test name to the filter file name which specified
@@ -297,6 +299,11 @@ func (c *Config) ProxyCommand() string { return c.m.ProxyCommand }
 
 // WaitUntilReady is whether to wait for DUT to be ready before running tests.
 func (c *Config) WaitUntilReady() bool { return c.m.WaitUntilReady }
+
+// WaitUntilReadyTimeout set a timeout for the entire ready.Wait function. (Default: 120 seconds)
+func (c *Config) WaitUntilReadyTimeout() time.Duration {
+	return c.m.WaitUntilReadyTimeout
+}
 
 // DebuggerPorts is a mapping from binary to the port we want to debug said binary on.
 func (c *Config) DebuggerPorts() map[debugger.DebugTarget]int {
@@ -523,6 +530,7 @@ func (c *MutableConfig) SetFlags(f *flag.FlagSet) {
 		f.StringVar(&c.ResDir, "resultsdir", "", "directory for test results")
 		f.BoolVar(&c.CollectSysInfo, "sysinfo", true, "collect system information (logs, crashes, etc.)")
 		f.BoolVar(&c.WaitUntilReady, "waituntilready", true, "wait until DUT is ready before running tests")
+		f.Var(command.NewDurationFlag(time.Second, &c.WaitUntilReadyTimeout, defaultWaitUntilReadyTimeout), "waituntilreadytimeout", "timeout for the entire ready.Wait function")
 
 		f.Var(command.NewListFlag(",", func(v []string) { c.ExtraUSEFlags = v }, nil), "extrauseflags",
 			"comma-separated list of additional USE flags to inject when checking test dependencies")

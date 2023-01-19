@@ -51,7 +51,8 @@ func testEntitiesToRun(allEntities []*protocol.ResolvedEntity, names []string) [
 // via EntityError control messages).
 func runTestsRecursive(ctx context.Context, srv protocol.TestService_RunTestsServer, rcfg *protocol.RunConfig, scfg *StaticConfig, bundleParams *protocol.BundleInitParams) (retErr error) {
 	ctx = testcontext.WithPrivateData(ctx, testcontext.PrivateData{
-		WaitUntilReady: rcfg.GetWaitUntilReady(),
+		WaitUntilReady:        rcfg.GetWaitUntilReady(),
+		WaitUntilReadyTimeout: rcfg.GetWaitUntilReadyTimeout().AsDuration(),
 	})
 	bcfg := bundleParams.GetBundleConfig()
 

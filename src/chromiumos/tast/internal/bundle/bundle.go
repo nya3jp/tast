@@ -175,7 +175,13 @@ func NewStaticConfig(reg *testing.Registry, defaultTestTimeout time.Duration, d 
 				panic("BUG: PrivateData not available in run hook")
 			}
 			if d.Ready != nil && pd.WaitUntilReady {
-				if err := d.Ready(ctx, systemTestsTimeout); err != nil {
+				ctxWithTimeout := ctx
+				if pd.WaitUntilReadyTimeout > 0 {
+					var cancel context.CancelFunc
+					ctxWithTimeout, cancel = context.WithTimeout(ctx, pd.WaitUntilReadyTimeout)
+					defer cancel()
+				}
+				if err := d.Ready(ctxWithTimeout, systemTestsTimeout); err != nil {
 					return nil, err
 				}
 			}

@@ -59,6 +59,7 @@ type Config struct {
 	DownloadMode          protocol.DownloadMode
 	WaitUntilReady        bool
 	SystemServicesTimeout time.Duration
+	WaitUntilReadyTimeout time.Duration
 	CheckTestDeps         bool
 	TestVars              map[string]string
 	MaybeMissingVars      string
@@ -223,6 +224,7 @@ func (d *Driver) newConfigsForLocalTests(tests []string, state *protocol.StartFi
 		HeartbeatInterval:     ptypes.DurationProto(HeartbeatInterval),
 		WaitUntilReady:        d.cfg.WaitUntilReady,
 		SystemServicesTimeout: durationpb.New(d.cfg.SystemServicesTimeout),
+		WaitUntilReadyTimeout: durationpb.New(d.cfg.WaitUntilReadyTimeout),
 		MsgTimeout:            durationpb.New(d.cfg.MsgTimeout),
 		DebugPort:             uint32(d.cfg.DebuggerPort),
 	}

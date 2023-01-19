@@ -57,7 +57,8 @@ func testsToRun(scfg *StaticConfig, patterns []string) ([]*testing.TestInstance,
 // Otherwise, nil is returned (test errors will be reported via EntityError control messages).
 func runTests(ctx context.Context, srv protocol.TestService_RunTestsServer, cfg *protocol.RunConfig, scfg *StaticConfig, bcfg *protocol.BundleConfig) (retErr error) {
 	ctx = testcontext.WithPrivateData(ctx, testcontext.PrivateData{
-		WaitUntilReady: cfg.GetWaitUntilReady(),
+		WaitUntilReady:        cfg.GetWaitUntilReady(),
+		WaitUntilReadyTimeout: cfg.GetWaitUntilReadyTimeout().AsDuration(),
 	})
 
 	ew := newEventWriter(srv)

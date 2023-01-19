@@ -6,6 +6,7 @@ package testcontext
 
 import (
 	"context"
+	"time"
 )
 
 // privateDataKey is the type of the key used for attaching a PrivateData
@@ -16,6 +17,8 @@ type privateDataKey struct{}
 type PrivateData struct {
 	// WaitUntilReady carries the value of -waituntilready flag.
 	WaitUntilReady bool
+	// WaitUntilReadyTimeout carries the value of -waituntilreadytimeout flag.
+	WaitUntilReadyTimeout time.Duration
 }
 
 // WithPrivateData attaches PrivateData to context.Context.

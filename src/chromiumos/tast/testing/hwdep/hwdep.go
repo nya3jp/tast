@@ -821,6 +821,12 @@ func WifiTDLS() Condition {
 	)
 }
 
+// WifiFT returns a hardware dependency condition that is satisfied
+// iff the DUT supports Fast Transition roaming mode.
+func WifiFT() Condition {
+	return SkipOnWifiDevice(Marvell88w8897SDIO, Marvell88w8997PCIE)
+}
+
 // WifiNotMarvell returns a hardware dependency condition that is satisfied iff
 // the DUT's not using a Marvell WiFi chip.
 func WifiNotMarvell() Condition {

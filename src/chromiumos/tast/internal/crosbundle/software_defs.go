@@ -183,8 +183,9 @@ var softwareFeatureDefs = map[string]string{
 	"plugin_vm":                               "pita", // boards that can run Plugin VM.
 	"proprietary_codecs":                      "chrome_internal || chrome_media",
 	"protected_content":                       "cdm_factory_daemon",
-	// These boards don't support pstore: https://crbug.com/971899
-	"pstore": `!"betty" && !"tast_vm"`,
+	// VM boards don't support pstore: https://crbug.com/971899
+	// reven boards don't support pstore: b/234722825
+	"pstore": `!("betty" || "tast_vm" || "board:reven*")`,
 	// ptp_kvm is only available on ARM in kernel 5.10 or later.
 	"ptp_kvm": `"amd64" || (("arm" || "arm64") && !("kernel-4_4" || "kernel-4_14" || "kernel-4_19" || "kernel-5_4"))`,
 	"qemu":    `"betty" || "tast_vm"`,

@@ -120,30 +120,48 @@ func TestDeclarationsDesc(t *testing.T) {
 func TestDeclarationsBugComponent(t *testing.T) {
 	for _, tc := range []struct {
 		snip    string
-		wantMsg string
+		wantMsg []string
 	}{{`
 	testing.AddTest(&testing.Test{
 		Func:	DoStuff,
 		Desc:	"Litteral Desc",
 		Contacts:  []string{"me@chromium.org"},
 		BugComponent: "b:123asdf",
-	})`, declTestPath + ":8:17: b:123asdf " + nonBugComponentMsg}, {`
+	})`, []string{declTestPath + ":8:17: b:123asdf " + nonBugComponentMsg}}, {`
 	testing.AddTest(&testing.Test{
 		Func:	DoStuff,
 		Desc:	"Litteral Desc",
 		Contacts:  []string{"me@chromium.org"},
 		BugComponent: "b:asdf123",
-	})`, declTestPath + ":8:17: b:asdf123 " + nonBugComponentMsg}, {`
+	})`, []string{declTestPath + ":8:17: b:asdf123 " + nonBugComponentMsg}}, {`
 	testing.AddTest(&testing.Test{
 		Func:	DoStuff,
 		Desc:	"Litteral Desc",
 		Contacts:  []string{"me@chromium.org"},
 		BugComponent: "crbug:asdf<asdf",
-	})`, declTestPath + ":8:17: crbug:asdf<asdf " + nonBugComponentMsg}} {
+	})`, []string{declTestPath + ":8:17: crbug:asdf<asdf " + nonBugComponentMsg}}, {`
+	testing.AddTest(&testing.Test{
+		Func:	DoStuff,
+		Desc:	"Litteral Desc",
+		Contacts:  []string{"me@chromium.org"},
+		BugComponent: "TBA",
+	})`, nil}, {`
+	testing.AddTest(&testing.Test{
+		Func:	DoStuff,
+		Desc:	"Litteral Desc",
+		Contacts:  []string{"me@chromium.org"},
+		BugComponent: "b:1034625",
+	})`, nil}, {`
+	testing.AddTest(&testing.Test{
+		Func:	DoStuff,
+		Desc:	"Litteral Desc",
+		Contacts:  []string{"me@chromium.org"},
+		BugComponent: "crbug:asdf>asdf",
+	})`, nil}} {
 		code := fmt.Sprintf(initTmpl, tc.snip)
 		f, fs := parse(code, declTestPath)
 		issues := TestDeclarations(fs, f, git.CommitFile{}, false)
-		verifyIssues(t, issues, []string{tc.wantMsg})
+		verifyIssues(t, issues, tc.wantMsg)
 	}
 }
 

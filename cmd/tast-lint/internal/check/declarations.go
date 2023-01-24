@@ -267,8 +267,7 @@ func verifyBugComponent(fs *token.FileSet, fields entityFields, call *ast.CallEx
 		}}
 	}
 
-	componentPatterns := []string{"^b:[0-9]+$", "^crbug:[a-zA-Z>]+$"}
-
+	componentPatterns := []string{"^b:[0-9]+$", "^crbug:[a-zA-Z>]+$", "^TBA$"}
 	for _, pattern := range componentPatterns {
 		var matched, _ = regexp.Match(pattern, []byte(s))
 		if matched {

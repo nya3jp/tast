@@ -975,6 +975,12 @@ func findAMDSOC(parsed *lscpuResult) (protocol.DeprecatedDeviceConfig_SOC, error
 	if model == "112" {
 		return protocol.DeprecatedDeviceConfig_SOC_STONEY_RIDGE, nil
 	}
+	if family, ok := parsed.find("CPU family:"); ok {
+		if family == "23" && (model == "24" || model == "32") {
+			return protocol.DeprecatedDeviceConfig_SOC_PICASSO, nil
+		}
+	}
+
 	return protocol.DeprecatedDeviceConfig_SOC_UNSPECIFIED, errors.Errorf("unknown AMD model: %s", model)
 }
 

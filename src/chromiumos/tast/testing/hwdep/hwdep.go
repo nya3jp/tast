@@ -1062,6 +1062,7 @@ func platformHasNV12Overlays(SocType protocol.DeprecatedDeviceConfig_SOC) bool {
 		SocType != protocol.DeprecatedDeviceConfig_SOC_MT8183 &&
 		SocType != protocol.DeprecatedDeviceConfig_SOC_MT8192 &&
 		SocType != protocol.DeprecatedDeviceConfig_SOC_MT8195 &&
+		SocType != protocol.DeprecatedDeviceConfig_SOC_MT8186 &&
 		SocType != protocol.DeprecatedDeviceConfig_SOC_SC7180 &&
 		SocType != protocol.DeprecatedDeviceConfig_SOC_SC7280
 }
@@ -1095,7 +1096,8 @@ func SupportsVideoOverlays() Condition {
 
 		var supportsYUY2Overlays = dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_MT8183 ||
 			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_MT8192 ||
-			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_MT8195
+			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_MT8195 ||
+			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_MT8186
 		if !platformHasNV12Overlays(dc.GetSoc()) && !supportsYUY2Overlays {
 			return unsatisfied("SoC does not support Video Overlays")
 		}

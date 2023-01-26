@@ -1792,3 +1792,23 @@ func CameraFeature(names ...string) Condition {
 		return unsatisfied("Camera features not probed")
 	}}
 }
+
+// MainboardHasEarlyLibgfxinit is satisfied if the BIOS was built with Kconfig CONFIG_MAINBOARD_HAS_EARLY_LIBGFXINIT
+func MainboardHasEarlyLibgfxinit() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf != nil {
+			fwc := hf.GetFwConfig()
+			if fwc != nil {
+				if fwc.MainboardHasEarlyLibgfxinit == configpb.HardwareFeatures_PRESENT {
+					return satisfied()
+				}
+				if fwc.MainboardHasEarlyLibgfxinit == configpb.HardwareFeatures_NOT_PRESENT {
+					return unsatisfied("MainboardHasEarlyLibgfxinit Kconfig disabled")
+				}
+			}
+		}
+		// The default for this Kconfig is off, so not found is the same as disabled.
+		return unsatisfied("Kconfig not found")
+	}}
+}

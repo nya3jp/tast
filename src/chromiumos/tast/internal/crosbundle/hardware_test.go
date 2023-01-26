@@ -5,9 +5,13 @@
 package crosbundle
 
 import (
+	"context"
+	"os"
 	"testing"
 
+	"go.chromium.org/chromiumos/config/go/api"
 	configpb "go.chromium.org/chromiumos/config/go/api"
+	"google.golang.org/protobuf/proto"
 
 	"chromiumos/tast/framework/protocol"
 )
@@ -335,6 +339,59 @@ func TestFindSpeakerAmplifier(t *testing.T) {
 		}
 		if amp.GetName() != tc.expect {
 			t.Errorf("Got %s, expect %s: input=%s", amp.GetName(), tc.expect, tc.input)
+		}
+	}
+}
+
+func TestParseKConfigs(t *testing.T) {
+	flashromExtractCoreBootCmd = func(ctx context.Context, corebootBinName string) error {
+		return nil
+	}
+	testCases := []struct {
+		input  string
+		expect *configpb.HardwareFeatures_FirmwareConfiguration
+	}{
+		{
+			"CONFIG_A=y\n" +
+				"CONFIG_B=n\n" +
+				"# CONFIG_C is not set\n",
+			&configpb.HardwareFeatures_FirmwareConfiguration{},
+		},
+		{
+			"CONFIG_MAINBOARD_HAS_EARLY_LIBGFXINIT=y\n",
+			&configpb.HardwareFeatures_FirmwareConfiguration{
+				MainboardHasEarlyLibgfxinit: api.HardwareFeatures_PRESENT,
+			},
+		},
+		{
+			"# CONFIG_MAINBOARD_HAS_EARLY_LIBGFXINIT is not set\n",
+			&configpb.HardwareFeatures_FirmwareConfiguration{
+				MainboardHasEarlyLibgfxinit: api.HardwareFeatures_NOT_PRESENT,
+			},
+		},
+		{
+			"CONFIG_MAINBOARD_HAS_EARLY_LIBGFXINIT=n\n",
+			&configpb.HardwareFeatures_FirmwareConfiguration{},
+		},
+	}
+	for _, tc := range testCases {
+		cbfsToolExtractConfigCmd = func(ctx context.Context, corebootBinName, fwConfigName string) error {
+			outfile, err := os.Create(fwConfigName)
+			if err != nil {
+				return err
+			}
+			defer outfile.Close()
+			_, err = outfile.WriteString(tc.input)
+			return err
+		}
+		features := api.HardwareFeatures{
+			FwConfig: &configpb.HardwareFeatures_FirmwareConfiguration{},
+		}
+		if err := parseKConfigs(context.Background(), &features); err != nil {
+			t.Error("parseKConfigs returned error: ", err)
+		}
+		if !proto.Equal(features.GetFwConfig(), tc.expect) {
+			t.Errorf("Got %+v, expect %+v: input=%s", features.GetFwConfig(), tc.expect, tc.input)
 		}
 	}
 }

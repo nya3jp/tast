@@ -126,6 +126,7 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		Battery:               &configpb.HardwareFeatures_Battery{},
 		Camera:                &configpb.HardwareFeatures_Camera{},
 		TrustedPlatformModule: &configpb.HardwareFeatures_TrustedPlatformModule{},
+		FwConfig:              &configpb.HardwareFeatures_FirmwareConfiguration{},
 	}
 
 	formFactor, err := func() (string, error) {
@@ -707,6 +708,10 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		logging.Infof(ctx, "failed to load camera feature profile: %v", err)
 	}
 	features.Camera.Features = camFeatures
+
+	if err := parseKConfigs(ctx, features); err != nil {
+		logging.Info(ctx, "Failed to parse BIOS kConfig: ", err)
+	}
 
 	return &protocol.HardwareFeatures{
 		HardwareFeatures:       features,
@@ -1299,4 +1304,63 @@ func containsGSCKeyID(keyIDs []GSCKeyID, reqKeyID GSCKeyID) bool {
 		}
 	}
 	return false
+}
+
+// For mocking.
+var flashromExtractCoreBootCmd = func(ctx context.Context, corebootBinName string) error {
+	return exec.CommandContext(ctx, "flashrom", "-p", "host", "-r", "-i", fmt.Sprintf("FW_MAIN_A:%s", corebootBinName)).Run()
+}
+var cbfsToolExtractConfigCmd = func(ctx context.Context, corebootBinName, fwConfigName string) error {
+	return exec.CommandContext(ctx, "cbfstool", corebootBinName, "extract", "-n", "config", "-f", fwConfigName).Run()
+}
+
+var kConfigLineRegexp = regexp.MustCompile(`^(# )?(CONFIG\S*)(=(y)| (is not set))`)
+
+// parseKConfigs updates the provided HardwareFeatures with the features found
+// by reading reading through the BIOS Kconfigs.
+func parseKConfigs(ctx context.Context, features *configpb.HardwareFeatures) error {
+	corebootBin, err := ioutil.TempFile("/var/tmp", "")
+	if err != nil {
+		return errors.Wrap(err, "failed to create temp file")
+	}
+	corebootBin.Close()
+	defer os.Remove(corebootBin.Name())
+
+	fwConfig, err := ioutil.TempFile("/var/tmp", "")
+	if err != nil {
+		return errors.Wrap(err, "failed to create temp file")
+	}
+	fwConfig.Close()
+	defer os.Remove(fwConfig.Name())
+
+	if err := flashromExtractCoreBootCmd(ctx, corebootBin.Name()); err != nil {
+		return errors.Wrap(err, "failed to extract FW_MAIN_A bios section")
+	}
+	if err := cbfsToolExtractConfigCmd(ctx, corebootBin.Name(), fwConfig.Name()); err != nil {
+		return errors.Wrap(err, "failed to extract bios Kconfig file")
+	}
+	inFile, err := os.Open(fwConfig.Name())
+	if err != nil {
+		return errors.Wrap(err, "failed to read bios Kconfig file")
+	}
+	defer inFile.Close()
+
+	importantConfigs := map[string]*configpb.HardwareFeatures_Present{
+		"CONFIG_MAINBOARD_HAS_EARLY_LIBGFXINIT": &features.FwConfig.MainboardHasEarlyLibgfxinit,
+	}
+
+	scanner := bufio.NewScanner(inFile)
+	for scanner.Scan() {
+		line := scanner.Text()
+		if match := kConfigLineRegexp.FindStringSubmatch(line); match != nil {
+			if val, ok := importantConfigs[match[2]]; ok {
+				if match[4] == "y" {
+					*val = configpb.HardwareFeatures_PRESENT
+				} else if match[5] == "is not set" {
+					*val = configpb.HardwareFeatures_NOT_PRESENT
+				}
+			}
+		}
+	}
+	return nil
 }

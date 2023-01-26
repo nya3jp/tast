@@ -626,8 +626,8 @@ third_party/autotest/files/server/site_tests/tast/control.runtime-probe
 				Desc: `Identifies Cellular ui/e2e tests.`,
 			},
 			{
-				Name: "cellular_na",
-				Desc: `Identifies tests that can run only on North America carriers AT&T, Verizon, T-Mobile.`,
+				Name: "cellular_sms",
+				Desc: `Identifies SMS tests that can run on North America carriers AT&T, Verizon, T-Mobile.`,
 			},
 			{
 				Name: "cellular_run_isolated",

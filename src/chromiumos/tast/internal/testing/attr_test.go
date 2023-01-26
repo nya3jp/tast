@@ -134,9 +134,6 @@ func TestCheckKnownAttrs(t *testing.T) {
 			attrs: []string{"group:telemetry_extension_hw"},
 		},
 		{
-			attrs: []string{"group:wilco_bve"},
-		},
-		{
 			attrs: []string{"group:wilco_bve_dock"},
 		},
 

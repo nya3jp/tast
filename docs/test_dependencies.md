@@ -427,12 +427,18 @@ vendor name is X”).
      [(config/api/topology.proto)][1] to add a new field for the feature.
     * A domain expert approves the change in the .proto file
      [(config/api/topology.proto)][1].  [(Example CL)][2]
-2. The developer waits until the CL in #1 is landed, then implements
+1. To test locally, run these commands to regenerate the go proto bindings.
+    ```
+    ~/chromiumos/src/config/generate.sh
+    cros workon --host start cros-config-api
+    sudo emerge cros-config-api
+    ```
+1. The developer waits until the CL in #1 is landed, then implements
    some functions in the Tast framework supporting the new feature(s) using the
    new message type.
     * The Tast team reviews and approves such a change to Tast.
     [Here is an example CL][3] which puts some data into the protobuf in Tast.
-3. The developer writes test(s) with hwdeps in its test metadata using the
+1. The developer writes test(s) with hwdeps in its test metadata using the
    above function in Tast.
 
 [1]: https://source.chromium.org/chromium/infra/infra/+/HEAD:go/src/go.chromium.org/chromiumos/config/proto/chromiumos/config/api/topology.proto

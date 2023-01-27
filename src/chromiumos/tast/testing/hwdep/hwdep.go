@@ -288,6 +288,22 @@ func TouchScreen() Condition {
 	}
 }
 
+// NoTouchScreen returns a hardware dependency condition that is satisfied
+// if the DUT doesn't have a touchscreen.
+func NoTouchScreen() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("DUT HardwareFeatures data is not given")
+		}
+		if status := hf.GetScreen().GetTouchSupport(); status == configpb.HardwareFeatures_NOT_PRESENT {
+			return satisfied()
+		}
+		return unsatisfied("DUT has a touchscreen")
+	},
+	}
+}
+
 // ChromeEC returns a hardware dependency condition that is satisfied
 // iff the DUT has a present EC of the "Chrome EC" type.
 func ChromeEC() Condition {

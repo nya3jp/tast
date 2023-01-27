@@ -1477,6 +1477,24 @@ func PrivacyScreen() Condition {
 	}
 }
 
+// NoPrivacyScreen returns a hardware dependency condition that is satisfied if the DUT
+// does not have a privacy screen.
+func NoPrivacyScreen() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("Did not find hardware features")
+		}
+		if status := hf.GetPrivacyScreen().GetPresent(); status != configpb.HardwareFeatures_NOT_PRESENT {
+			return satisfied()
+		} else if status == configpb.HardwareFeatures_PRESENT_UNKNOWN {
+			return unsatisfied("Could not determine if a privacy screen is present")
+		}
+		return unsatisfied("DUT has a privacy screen")
+	},
+	}
+}
+
 var smartAmps = []string{
 	configpb.HardwareFeatures_Audio_MAX98373.String(),
 	configpb.HardwareFeatures_Audio_MAX98390.String(),

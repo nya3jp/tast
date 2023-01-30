@@ -623,3 +623,12 @@ func (s *Servo) HasCCD(ctx context.Context) (bool, error) {
 
 	return s.hasCCD, nil
 }
+
+// GetServoSerials returns a map of servo serial numbers. Interesting map keys are "ccd", "main", "servo_micro", but there are others also.
+func (s *Servo) GetServoSerials(ctx context.Context) (map[string]string, error) {
+	value := make(map[string]string)
+	if err := s.xmlrpc.Run(ctx, xmlrpc.NewCall("get_servo_serials"), &value); err != nil {
+		return nil, errors.Wrap(err, "getting servo serials")
+	}
+	return value, nil
+}

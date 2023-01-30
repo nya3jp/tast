@@ -23,12 +23,22 @@ type dutHelper struct {
 }
 
 // newDUTHelper return a helper that allow users to manipulate DUT.
+// using NewProxy to establish servo communication
 func newDUTHelper(ctx context.Context, cfg *protocol.SSHConfig, testVars map[string]string, role string) *dutHelper {
-	return &dutHelper{
+	a := dutHelper{
 		servoSpec: servoHost(ctx, role, testVars),
 		dutServer: dutHost(ctx, role, testVars),
 		cfg:       cfg,
 	}
+	if a.servoSpec == "" {
+		return &a
+	}
+	pxy, err := servo.NewProxy(ctx, a.servoSpec, a.cfg.GetKeyFile(), a.cfg.GetKeyDir())
+	if err != nil {
+		logging.Infof(ctx, "failed to connect to servo host %s", a.servoSpec)
+	}
+	defer pxy.Close(ctx)
+	return &a
 }
 
 // servoHost finds servo related information for a particular role from a variable to value map.

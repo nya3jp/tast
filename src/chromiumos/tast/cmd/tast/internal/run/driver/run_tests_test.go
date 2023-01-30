@@ -111,29 +111,23 @@ func TestDriver_RunTests(t *gotesting.T) {
 	want := []*resultsjson.Result{
 		{
 			Test: resultsjson.Test{
-				Name:   "test.Local1",
-				Bundle: "bundle1",
+				Name:         "test.Local1",
+				Bundle:       "bundle1",
+				LacrosStatus: "unknown",
 			},
 		},
 		{
 			Test: resultsjson.Test{
-				Name:   "test.Remote1",
-				Bundle: "bundle1",
+				Name:         "test.Remote1",
+				Bundle:       "bundle1",
+				LacrosStatus: "unknown",
 			},
 		},
 		{
 			Test: resultsjson.Test{
-				Name:   "test.Local2",
-				Bundle: "bundle2",
-			},
-			Errors: []resultsjson.Error{{
-				Reason: "Failed",
-			}},
-		},
-		{
-			Test: resultsjson.Test{
-				Name:   "test.Remote2",
-				Bundle: "bundle2",
+				Name:         "test.Local2",
+				Bundle:       "bundle2",
+				LacrosStatus: "unknown",
 			},
 			Errors: []resultsjson.Error{{
 				Reason: "Failed",
@@ -141,14 +135,26 @@ func TestDriver_RunTests(t *gotesting.T) {
 		},
 		{
 			Test: resultsjson.Test{
-				Name:   "test.Local3",
-				Bundle: "bundle3",
+				Name:         "test.Remote2",
+				Bundle:       "bundle2",
+				LacrosStatus: "unknown",
+			},
+			Errors: []resultsjson.Error{{
+				Reason: "Failed",
+			}},
+		},
+		{
+			Test: resultsjson.Test{
+				Name:         "test.Local3",
+				Bundle:       "bundle3",
+				LacrosStatus: "unknown",
 			},
 		},
 		{
 			Test: resultsjson.Test{
-				Name:   "test.Remote3",
-				Bundle: "bundle3",
+				Name:         "test.Remote3",
+				Bundle:       "bundle3",
+				LacrosStatus: "unknown",
 			},
 		},
 	}
@@ -243,16 +249,18 @@ func TestDriver_RunTests_RemoteFixture(t *gotesting.T) {
 	want := []*resultsjson.Result{
 		{
 			Test: resultsjson.Test{
-				Name:    "test.Local1",
-				Bundle:  "bundle1",
-				Fixture: "fixture.Remote1",
+				Name:         "test.Local1",
+				Bundle:       "bundle1",
+				Fixture:      "fixture.Remote1",
+				LacrosStatus: "unknown",
 			},
 		},
 		{
 			Test: resultsjson.Test{
-				Name:    "test.Local2",
-				Bundle:  "bundle2",
-				Fixture: "fixture.Remote2",
+				Name:         "test.Local2",
+				Bundle:       "bundle2",
+				Fixture:      "fixture.Remote2",
+				LacrosStatus: "unknown",
 			},
 			Errors: wantFixtureError,
 		},
@@ -303,22 +311,25 @@ func TestDriver_RunTests_RetryTests(t *gotesting.T) {
 	want := []*resultsjson.Result{
 		{
 			Test: resultsjson.Test{
-				Name:   "test.Local1",
-				Bundle: "bundle",
+				Name:         "test.Local1",
+				Bundle:       "bundle",
+				LacrosStatus: "unknown",
 			},
 			Errors: []resultsjson.Error{{Reason: "intentional crash (see log for goroutine dump)"}},
 		},
 		{
 			Test: resultsjson.Test{
-				Name:   "test.Local2",
-				Bundle: "bundle",
+				Name:         "test.Local2",
+				Bundle:       "bundle",
+				LacrosStatus: "unknown",
 			},
 			Errors: []resultsjson.Error{{Reason: "intentional crash (see log for goroutine dump)"}},
 		},
 		{
 			Test: resultsjson.Test{
-				Name:   "test.Local3",
-				Bundle: "bundle",
+				Name:         "test.Local3",
+				Bundle:       "bundle",
+				LacrosStatus: "unknown",
 			},
 			Errors: []resultsjson.Error{{Reason: "intentional crash (see log for goroutine dump)"}},
 		},
@@ -370,15 +381,17 @@ func TestDriver_RunTests_MaxTestFailures(t *gotesting.T) {
 	want := []*resultsjson.Result{
 		{
 			Test: resultsjson.Test{
-				Name:   "test.Local1",
-				Bundle: "bundle",
+				Name:         "test.Local1",
+				Bundle:       "bundle",
+				LacrosStatus: "unknown",
 			},
 			Errors: []resultsjson.Error{{Reason: "Failure"}},
 		},
 		{
 			Test: resultsjson.Test{
-				Name:   "test.Local2",
-				Bundle: "bundle",
+				Name:         "test.Local2",
+				Bundle:       "bundle",
+				LacrosStatus: "unknown",
 			},
 			Errors: []resultsjson.Error{{Reason: "Failure"}},
 		},
@@ -461,28 +474,32 @@ func TestDriver_RunTests_WithRetries(t *gotesting.T) {
 	want := []*resultsjson.Result{
 		{
 			Test: resultsjson.Test{
-				Name:   "test.Local2",
-				Bundle: "bundle",
+				Name:         "test.Local2",
+				Bundle:       "bundle",
+				LacrosStatus: "unknown",
 			},
 		},
 		{
 			Test: resultsjson.Test{
-				Name:   "test.Local1",
-				Bundle: "bundle",
+				Name:         "test.Local1",
+				Bundle:       "bundle",
+				LacrosStatus: "unknown",
 			},
 			Errors: []resultsjson.Error{{Reason: "Failure"}},
 		},
 
 		{
 			Test: resultsjson.Test{
-				Name:   "test.Remote2",
-				Bundle: "bundle",
+				Name:         "test.Remote2",
+				Bundle:       "bundle",
+				LacrosStatus: "unknown",
 			},
 		},
 		{
 			Test: resultsjson.Test{
-				Name:   "test.Remote1",
-				Bundle: "bundle",
+				Name:         "test.Remote1",
+				Bundle:       "bundle",
+				LacrosStatus: "unknown",
 			},
 			Errors: []resultsjson.Error{{Reason: "Failure"}},
 		},
@@ -495,41 +512,47 @@ func TestDriver_RunTests_WithRetries(t *gotesting.T) {
 	jsonWant := []*resultsjson.Result{
 		{
 			Test: resultsjson.Test{
-				Name:   "test.Local1",
-				Bundle: "bundle",
+				Name:         "test.Local1",
+				Bundle:       "bundle",
+				LacrosStatus: "unknown",
 			},
 			Errors: []resultsjson.Error{{Reason: "Failure"}},
 		},
 		{
 			Test: resultsjson.Test{
-				Name:   "test.Local2",
-				Bundle: "bundle",
+				Name:         "test.Local2",
+				Bundle:       "bundle",
+				LacrosStatus: "unknown",
 			},
 		},
 		{
 			Test: resultsjson.Test{
-				Name:   "test.Local1",
-				Bundle: "bundle",
-			},
-			Errors: []resultsjson.Error{{Reason: "Failure"}},
-		},
-		{
-			Test: resultsjson.Test{
-				Name:   "test.Remote1",
-				Bundle: "bundle",
+				Name:         "test.Local1",
+				Bundle:       "bundle",
+				LacrosStatus: "unknown",
 			},
 			Errors: []resultsjson.Error{{Reason: "Failure"}},
 		},
 		{
 			Test: resultsjson.Test{
-				Name:   "test.Remote2",
-				Bundle: "bundle",
+				Name:         "test.Remote1",
+				Bundle:       "bundle",
+				LacrosStatus: "unknown",
+			},
+			Errors: []resultsjson.Error{{Reason: "Failure"}},
+		},
+		{
+			Test: resultsjson.Test{
+				Name:         "test.Remote2",
+				Bundle:       "bundle",
+				LacrosStatus: "unknown",
 			},
 		},
 		{
 			Test: resultsjson.Test{
-				Name:   "test.Remote1",
-				Bundle: "bundle",
+				Name:         "test.Remote1",
+				Bundle:       "bundle",
+				LacrosStatus: "unknown",
 			},
 			Errors: []resultsjson.Error{{Reason: "Failure"}},
 		},

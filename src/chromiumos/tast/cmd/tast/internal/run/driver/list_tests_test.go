@@ -76,6 +76,7 @@ func makeBundleEntityForTest(bundle string, hops int32, name, attr string, varDe
 					Bundle:       bundle,
 					VariableDeps: varDeps,
 				},
+				LacrosStatus: "unknown",
 			},
 			Hops: hops,
 		},

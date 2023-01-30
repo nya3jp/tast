@@ -170,6 +170,21 @@ const (
 	LacrosVariantUnneeded
 )
 
+func (m LacrosMetadata) String() string {
+	switch m {
+	case LacrosVariantUnknown:
+		return "unknown"
+	case LacrosVariantNeeded:
+		return "needed"
+	case LacrosVariantExists:
+		return "exists"
+	case LacrosVariantUnneeded:
+		return "unneeded"
+	default:
+		return fmt.Sprintf("unexpected value (%d)", int(m))
+	}
+}
+
 // Param defines parameters for a parameterized test case.
 // See also https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#Parameterized-tests
 type Param struct {

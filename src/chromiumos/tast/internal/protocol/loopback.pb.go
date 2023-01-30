@@ -34,6 +34,7 @@ type ExecRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Type:
+	//
 	//	*ExecRequest_Init
 	//	*ExecRequest_Stdin
 	Type isExecRequest_Type `protobuf_oneof:"type"`
@@ -114,6 +115,7 @@ type ExecResponse struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Type:
+	//
 	//	*ExecResponse_Exit
 	//	*ExecResponse_Stdout
 	//	*ExecResponse_Stderr

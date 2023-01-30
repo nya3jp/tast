@@ -1248,6 +1248,7 @@ func TestTestInstanceEntityProto(t *gotesting.T) {
 		Fixture:      "fixt",
 		Timeout:      time.Hour,
 		Bundle:       "bundle",
+		LacrosStatus: LacrosVariantExists,
 	}
 
 	got := test.EntityProto()
@@ -1271,6 +1272,7 @@ func TestTestInstanceEntityProto(t *gotesting.T) {
 			Timeout:      ptypes.DurationProto(time.Hour),
 			Bundle:       "bundle",
 		},
+		LacrosStatus: "exists",
 	}
 	if diff := cmp.Diff(got, want, protocmp.Transform()); diff != "" {
 		t.Errorf("Got unexpected Entity (-got +want):\n%s", diff)

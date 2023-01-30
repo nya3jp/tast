@@ -93,6 +93,8 @@ message GetDUTInfoRequest {
   // addition to the ones read from USEFlagsFile when computing the feature sets
   // for GetDUTInfoResponse.
   repeated string extra_use_flags = 1;
+  // Features specifies whether to get software/hardware features of the DUT.
+  bool features = 2;
 }
 
 message GetDUTInfoResponse { DUTInfo dut_info = 1; }

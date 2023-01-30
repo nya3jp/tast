@@ -34,14 +34,18 @@ func GetDUTInfo(ctx context.Context, req *protocol.GetDUTInfoRequest) (*protocol
 		osVersion = fmt.Sprintf("%vR%v-%v (%v)", board, milestone, version, buildType)
 	}
 
-	softwareFeatures, err := detectSoftwareFeatures(ctx, req.GetExtraUseFlags())
-	if err != nil {
-		return nil, err
-	}
+	var softwareFeatures *frameworkprotocol.SoftwareFeatures
+	var hardwareFeatures *frameworkprotocol.HardwareFeatures
 
-	hardwareFeatures, err := detectHardwareFeatures(ctx)
-	if err != nil {
-		return nil, err
+	if req.GetFeatures() {
+		softwareFeatures, err = detectSoftwareFeatures(ctx, req.GetExtraUseFlags())
+		if err != nil {
+			return nil, err
+		}
+		hardwareFeatures, err = detectHardwareFeatures(ctx)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	return &protocol.GetDUTInfoResponse{

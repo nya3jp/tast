@@ -7,6 +7,7 @@ package driver
 import (
 	"context"
 
+	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/protocol"
@@ -15,10 +16,6 @@ import (
 
 // GetDUTInfo retrieves various DUT information needed for test execution.
 func (d *Driver) GetDUTInfo(ctx context.Context) (*protocol.DUTInfo, error) {
-	if !d.cfg.CheckTestDeps() {
-		return nil, nil
-	}
-
 	client := d.localRunnerClient()
 	if client == nil {
 		logging.Info(ctx, "Dont have access to DUT. Returning nil DUTInfo")
@@ -29,7 +26,13 @@ func (d *Driver) GetDUTInfo(ctx context.Context) (*protocol.DUTInfo, error) {
 	defer st.End()
 	logging.Debug(ctx, "Getting DUT info")
 
-	req := &protocol.GetDUTInfoRequest{ExtraUseFlags: d.cfg.ExtraUSEFlags()}
+	// Only need features when we are running tests.
+	needFeatures := d.cfg.CheckTestDeps() && d.cfg.Mode() == config.RunTestsMode
+
+	req := &protocol.GetDUTInfoRequest{
+		ExtraUseFlags: d.cfg.ExtraUSEFlags(),
+		Features:      needFeatures,
+	}
 	res, err := client.GetDUTInfo(ctx, req)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to retrieve DUT info")

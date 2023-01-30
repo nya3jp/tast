@@ -81,15 +81,41 @@ func TestDriver_GetDUTInfo(t *testing.T) {
 	}
 }
 
-func TestDriver_GetDUTInfo_NoCheckTestDeps(t *testing.T) {
+func TestDriver_GetDUTInfo_NoCheckTestDepsForRun(t *testing.T) {
 	env := runtest.SetUp(t, runtest.WithGetDUTInfo(func(req *protocol.GetDUTInfoRequest) (*protocol.GetDUTInfoResponse, error) {
-		t.Error("GetDUTInfo called unexpectedly")
+		if req.GetFeatures() {
+			t.Error("GetDUTInfo request should not check for features")
+		}
 		return &protocol.GetDUTInfoResponse{}, nil
 	}))
 	ctx := env.Context()
 	cfg := env.Config(func(cfg *config.MutableConfig) {
 		// With "never", the runner shouldn't be called and dependencies shouldn't be checked.
 		cfg.CheckTestDeps = false
+	})
+
+	drv, err := driver.New(ctx, cfg, cfg.Target(), "")
+	if err != nil {
+		t.Fatalf("driver.New failed: %v", err)
+	}
+	defer drv.Close(ctx)
+
+	if _, err := drv.GetDUTInfo(ctx); err != nil {
+		t.Fatalf("GetDUTInfo failed: %v", err)
+	}
+}
+
+func TestDriver_GetDUTInfo_NoTestDepsForList(t *testing.T) {
+	env := runtest.SetUp(t, runtest.WithGetDUTInfo(func(req *protocol.GetDUTInfoRequest) (*protocol.GetDUTInfoResponse, error) {
+		if req.GetFeatures() {
+			t.Error("GetDUTInfo request should not check for features")
+		}
+		return &protocol.GetDUTInfoResponse{}, nil
+	}))
+	ctx := env.Context()
+	cfg := env.Config(func(cfg *config.MutableConfig) {
+		// The dependencies shouldn't be checked for listing tests.
+		cfg.Mode = config.ListTestsMode
 	})
 
 	drv, err := driver.New(ctx, cfg, cfg.Target(), "")

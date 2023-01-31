@@ -855,3 +855,83 @@ func TestHasTpm2(t *testing.T) {
 		&frameworkprotocol.DeprecatedDeviceConfig{},
 		nil)
 }
+
+func TestFirmwareKconfigFields(t *testing.T) {
+	// hwdep.VBootCbfsIntegration()
+	for _, tc := range []struct {
+		present         configpb.HardwareFeatures_Present
+		expectSatisfied bool
+	}{
+		{configpb.HardwareFeatures_PRESENT, true},
+		{configpb.HardwareFeatures_NOT_PRESENT, false},
+		{configpb.HardwareFeatures_PRESENT_UNKNOWN, false},
+	} {
+		verifyCondition(
+			t, hwdep.VbootCbfsIntegration(),
+			&frameworkprotocol.DeprecatedDeviceConfig{},
+			&configpb.HardwareFeatures{
+				FwConfig: &configpb.HardwareFeatures_FirmwareConfiguration{
+					VbootCbfsIntegration: tc.present,
+				},
+			},
+			tc.expectSatisfied)
+	}
+	verifyCondition(
+		t, hwdep.VbootCbfsIntegration(),
+		&frameworkprotocol.DeprecatedDeviceConfig{},
+		nil,
+		false)
+
+	// hwdep.MainboardHasEarlyLibgfxinit()
+	for _, tc := range []struct {
+		present         configpb.HardwareFeatures_Present
+		expectSatisfied bool
+	}{
+		{configpb.HardwareFeatures_PRESENT, true},
+		{configpb.HardwareFeatures_NOT_PRESENT, false},
+		{configpb.HardwareFeatures_PRESENT_UNKNOWN, false},
+	} {
+		verifyCondition(
+			t, hwdep.MainboardHasEarlyLibgfxinit(),
+			&frameworkprotocol.DeprecatedDeviceConfig{
+				Id: &frameworkprotocol.DeprecatedConfigId{
+					Model: "non-default",
+				},
+			},
+			&configpb.HardwareFeatures{
+				FwConfig: &configpb.HardwareFeatures_FirmwareConfiguration{
+					MainboardHasEarlyLibgfxinit: tc.present,
+				},
+			},
+			tc.expectSatisfied)
+	}
+	verifyCondition(
+		t, hwdep.MainboardHasEarlyLibgfxinit(),
+		&frameworkprotocol.DeprecatedDeviceConfig{
+			Id: &frameworkprotocol.DeprecatedConfigId{
+				Model: "non-default",
+			},
+		},
+		nil,
+		false)
+	for _, model := range []string{"skolas", "brya0", "kano", "agah"} {
+		verifyCondition(
+			t, hwdep.MainboardHasEarlyLibgfxinit(),
+			&frameworkprotocol.DeprecatedDeviceConfig{
+				Id: &frameworkprotocol.DeprecatedConfigId{
+					Model: model,
+				},
+			},
+			nil,
+			true)
+		verifyCondition(
+			t, hwdep.MainboardHasEarlyLibgfxinit(),
+			&frameworkprotocol.DeprecatedDeviceConfig{
+				Id: &frameworkprotocol.DeprecatedConfigId{
+					Model: model,
+				},
+			},
+			&configpb.HardwareFeatures{},
+			true)
+	}
+}

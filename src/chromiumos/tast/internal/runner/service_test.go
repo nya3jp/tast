@@ -10,7 +10,6 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"sync"
 	gotesting "testing"
 	"time"
 
@@ -210,38 +209,34 @@ func TestTestServerStreamFile(t *gotesting.T) {
 
 	done := make(chan bool, 1)
 
-	wg := sync.WaitGroup{}
-	wg.Add(1)
 	go func() {
-		defer wg.Done()
+		time.Sleep(time.Second * 2) // Simulate data not sent at once or right away.
 		for _, d := range data {
-			time.Sleep(time.Second * 2)
 			if _, err := f.Write([]byte(d)); err != nil {
 				t.Errorf("failed to write data %q: %v", d, err)
 			}
+			time.Sleep(time.Second * 2)
 		}
-		done <- true
+		<-done
 		return
 	}()
 
 	got := ""
-	wg.Add(1)
 	go func() {
-		defer wg.Done()
 		for i := range data {
-			select {
-			case <-done:
-				return
-			default:
-				msg, err := stream.Recv()
-				if err != nil {
-					t.Fatalf("failed to receive data %q -- data got so far %q: %v", data[i], got, err)
-				}
-				got = got + string(msg.GetData())
+			msg, err := stream.Recv()
+			if err != nil {
+				t.Fatalf("failed to receive data %q -- data got so far %q: %v", data[i], got, err)
 			}
+			got = got + string(msg.GetData())
 		}
+		done <- true
 	}()
-	wg.Wait()
+	select {
+	case <-done:
+	case <-time.After(10 * time.Second):
+		t.Fatalf("failed get all required data: got %q; want %q", got, expected)
+	}
 	if got != expected {
 		t.Errorf("unexpect streaming data: got %q; want %q", got, expected)
 	}

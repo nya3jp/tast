@@ -10,6 +10,7 @@ import (
 	configpb "go.chromium.org/chromiumos/config/go/api"
 
 	frameworkprotocol "chromiumos/tast/framework/protocol"
+	"chromiumos/tast/internal/dep"
 	"chromiumos/tast/testing/hwdep"
 	"chromiumos/tast/testing/wlan"
 )
@@ -854,4 +855,46 @@ func TestHasTpm2(t *testing.T) {
 		t, hwdep.HasTpm2(),
 		&frameworkprotocol.DeprecatedDeviceConfig{},
 		nil)
+}
+
+func TestFirmwareKconfigFields(t *testing.T) {
+	type FirmwareConfigurationGenerator func(configpb.HardwareFeatures_Present) *configpb.HardwareFeatures_FirmwareConfiguration
+
+	for _, p := range []struct {
+		condition       dep.HardwareCondition
+		configGenerator FirmwareConfigurationGenerator
+	}{
+		{hwdep.MainboardHasEarlyLibgfxinit(), func(present configpb.HardwareFeatures_Present) *configpb.HardwareFeatures_FirmwareConfiguration {
+			return &configpb.HardwareFeatures_FirmwareConfiguration{
+				MainboardHasEarlyLibgfxinit: present,
+			}
+		}},
+		{hwdep.VbootCbfsIntegration(), func(present configpb.HardwareFeatures_Present) *configpb.HardwareFeatures_FirmwareConfiguration {
+			return &configpb.HardwareFeatures_FirmwareConfiguration{
+				VbootCbfsIntegration: present,
+			}
+		}},
+	} {
+		for _, tc := range []struct {
+			present         configpb.HardwareFeatures_Present
+			expectSatisfied bool
+		}{
+			{configpb.HardwareFeatures_PRESENT, true},
+			{configpb.HardwareFeatures_NOT_PRESENT, false},
+			{configpb.HardwareFeatures_PRESENT_UNKNOWN, false},
+		} {
+			verifyCondition(
+				t, p.condition,
+				&frameworkprotocol.DeprecatedDeviceConfig{},
+				&configpb.HardwareFeatures{
+					FwConfig: p.configGenerator(tc.present),
+				},
+				tc.expectSatisfied)
+		}
+		verifyCondition(
+			t, p.condition,
+			&frameworkprotocol.DeprecatedDeviceConfig{},
+			nil,
+			false)
+	}
 }

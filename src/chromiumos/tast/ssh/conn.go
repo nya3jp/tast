@@ -126,7 +126,8 @@ func getSSHAuthMethods(o *Options, questionPrefix string) ([]ssh.AuthMethod, err
 		// testing_rsa is used by Autotest's SSH config, so look for the same key here.
 		// See https://www.chromium.org/chromium-os/testing/autotest-developer-faq/ssh-test-keys-setup.
 		// mobbase_id_rsa is stored in /home/moblab/.ssh on Moblab devices.
-		for _, fn := range []string{"testing_rsa", "mobbase_id_rsa", "id_dsa", "id_ecdsa", "id_ed25519", "id_rsa"} {
+		// partner_testing_rsa is an only googler & partner visible key installed in ChromeOS test images.
+		for _, fn := range []string{"testing_rsa", "mobbase_id_rsa", "id_dsa", "id_ecdsa", "id_ed25519", "id_rsa", "partner_testing_rsa"} {
 			p := filepath.Join(o.KeyDir, fn)
 			if p == o.KeyFile {
 				continue

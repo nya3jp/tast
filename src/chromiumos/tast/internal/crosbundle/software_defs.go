@@ -118,7 +118,7 @@ var softwareFeatureDefs = map[string]string{
 	"iwlwifi_rescan": "iwlwifi_rescan",
 	// Lacros variants.
 	// veyron does not support rootfs lacros entirely. b/204888294
-	// TODO(b/183969803): Remove lacros_stable and lacros_unstable eventually.
+	// TODO(crbug.com/1412276): Remove lacros_stable and lacros_unstable eventually.
 	"lacros":                 `!chromeless_tty && !rialto && !("board:veyron_fievel" || "board:veyron_tiger")`,
 	"lacros_stable":          `!chromeless_tty && !rialto && !("board:veyron_fievel" || "board:veyron_tiger") && !"tast_vm" && !"betty"`,
 	"lacros_unstable":        `!chromeless_tty && !rialto && !("board:veyron_fievel" || "board:veyron_tiger") && ("tast_vm" || "betty")`,

@@ -121,8 +121,8 @@ The following software features are defined:
 *   `iwlwifi_rescan` - Ability to remove/rescan WiFi PCI device when the
     hardware becomes non-responsive.
 *   `lacros` - Whether the system supports running [lacros].
-*   `lacros_stable` - Whether the system supports running [lacros] and is stable enough for CQ. [TODO: Remove this.](b/183969803)
-*   `lacros_unstable` - Whether the system supports running [lacros] and is not stable enough for CQ. [TODO: Remove this.](b/183969803)
+*   `lacros_stable` - Whether the system supports running [lacros] and is stable enough for CQ. [TODO: Remove this.](crbug.com/1412276)
+*   `lacros_unstable` - Whether the system supports running [lacros] and is not stable enough for CQ. [TODO: Remove this.](crbug.com/1412276)
 *   `landlock_enabled` - Whether the system supports the Landlock Linux Security Module.
 *   `manatee` - The system is running a ManaTEE image.
 *   `mbo` - WiFi MBO support.

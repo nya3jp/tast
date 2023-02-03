@@ -18,6 +18,7 @@ const (
 	nonLiteralLacrosMetadataMsg = `Test LacrosStatus should be a single LacrosStatus value, e.g. testing.LacrosVariantNeeded`
 	noLacrosVariantUnknownMsg   = `Test LacrosStatus should not be LacrosVariantUnknown. Please work out if your test needs lacros variants. To do this, see go/lacros-tast-porting or contact edcourtney@, hidehiko@, or lacros-tast@`
 	addedUnknownMetadataMsg     = `tast-lint has added LacrosVariantUnknown as a placeholder but please work out if your test needs lacros variants. To do this, see go/lacros-tast-porting or contact edcourtney@, hidehiko@, or lacros-tast@`
+	noLacrosSoftwareDepsMsg     = `Test SoftwareDeps dep:lacros should be added along with dep:lacros_{un}stable`
 )
 
 func hasSoftwareDeps(expr ast.Expr, dep string) bool {
@@ -191,6 +192,30 @@ func verifyLacrosStatus(fs *token.FileSet, fields entityFields, path git.CommitF
 			Msg:  noLacrosVariantUnknownMsg,
 			Link: testRegistrationURL,
 		}})
+	}
+
+	return nil
+}
+
+// verifyLacrosSoftwareDeps verifies that the SoftwareDeps 'lacros_{un}stable' should always be
+// defined along with 'lacros'.
+// Make sure that 'lacros' is a superset of 'lacros_{un}stable' that represent the breakdown
+// {un}stable dependencies.
+// It makes it easy to share Lacros tests with the 'dep:lacros' between Chromium and ChromiumOS.
+func verifyLacrosSoftwareDeps(fs *token.FileSet, fields entityFields, call *ast.CallExpr) []*Issue {
+	// Raise an issue only when 'lacros_{un}stable' is set without 'lacros'.
+	if (checkAllSoftwareDeps(fields, "lacros_stable") || checkAllSoftwareDeps(fields, "lacros_unstable")) &&
+		!checkAllSoftwareDeps(fields, "lacros") {
+
+		pos := call.Args[0].Pos()
+		if s, ok := fields["SoftwareDeps"]; ok {
+			pos = s.Pos()
+		}
+
+		return []*Issue{{
+			Pos: fs.Position(pos),
+			Msg: noLacrosSoftwareDepsMsg,
+		}}
 	}
 
 	return nil

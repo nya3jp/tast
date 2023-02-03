@@ -1854,3 +1854,9 @@ func RuntimeProbeConfig() Condition {
 		return satisfied()
 	}}
 }
+
+// SeamlessRefreshRate is satisfied if the device supports changing refresh rates without modeset.
+func SeamlessRefreshRate() Condition {
+	// TODO: Determine at runtime if a device meets the requirements by inspecting EDID, kernel, and SoC versions.
+	return Model("mithrax", "taniks")
+}

@@ -147,6 +147,10 @@ Tests in this group are not used for build verification.
 				Desc: `Indicates that this test is part of OpenCL testing.`,
 			},
 			{
+				Name: "graphics_satlab_redrix_stress_b246324780",
+				Desc: `Indicates that this test is running to support redrix b/246324780.`,
+			},
+			{
 				Name: "graphics_video_platformdecoding",
 				Desc: `Indicates that this test is exercising platform video decoding abilities.`,
 			},

@@ -44,7 +44,7 @@ func PollBreak(err error) error {
 // Poll implements testing.Poll.
 func Poll(ctx context.Context, f func(context.Context) error, opts *PollOptions) error {
 	if ctx.Err() != nil {
-		return ctx.Err()
+		return errors.Wrap(ctx.Err(), "poll fails before actually running the function")
 	}
 
 	timeout := ctxutil.MaxTimeout
@@ -89,7 +89,7 @@ func Poll(ctx context.Context, f func(context.Context) error, opts *PollOptions)
 			if lastErr != nil {
 				return errors.Wrapf(lastErr, "%s during a poll %v; last error follows", ctx.Err(), timeoutLog)
 			}
-			return ctx.Err()
+			return errors.Wrap(ctx.Err(), "poll fails before the first execution of the given function completes")
 		}
 	}
 }

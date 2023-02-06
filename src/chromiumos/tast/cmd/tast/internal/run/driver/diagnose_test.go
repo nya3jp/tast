@@ -87,7 +87,7 @@ func TestSSHDropNotRecovered(t *testing.T) {
 	ctx, cancel := context.WithCancel(ctx)
 	cancel()
 	msg := diagnose.SSHDrop(ctx, drv.ConnCacheForTesting(), env.TempDir())
-	const exp = "target did not come back: context canceled"
+	const exp = "target did not come back: poll fails before actually running the function: context canceled"
 	if msg != exp {
 		t.Errorf("SSHDrop returned %q; want %q", msg, exp)
 	}

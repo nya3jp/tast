@@ -414,6 +414,14 @@ Tests in this group are not used for build verification.
 				Desc: `A subset of firmware_bios that is expected to pass after firmware_level1.`,
 			},
 			{
+				Name: "firmware_level3",
+				Desc: `A subset of firmware_bios that is expected to pass after firmware_level2.`,
+			},
+			{
+				Name: "firmware_level4",
+				Desc: `A subset of firmware_bios that is expected to pass after firmware_level3.`,
+			},
+			{
 				Name: "firmware_detachable",
 				Desc: `A set of non-destructive tests indented to run on detachables.`,
 			},

@@ -197,7 +197,6 @@ var softwareFeatureDefs = map[string]string{
 	// Notice: The flag would be false when a board didn't have any attributes.
 	"reboot":               `"*"`,
 	"rrm_support":          `!"kernel-4_4"`,
-	"screenshot":           "!rk3399", // screenshot command broken on RK3399: https://crbug.com/880597
 	"selinux":              "selinux",
 	"selinux_current":      "selinux && !selinux_experimental",
 	"selinux_experimental": "selinux && selinux_experimental",

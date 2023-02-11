@@ -173,15 +173,8 @@ func NewProxy(ctx context.Context, servoHostPort, keyFile, keyDir string) (newPr
 			logging.Infof(ctx, "Warning in running servod: %s: %v", string(output), err)
 		} else {
 			logging.Infof(ctx, "Started servod at port %d", port)
-			// Poll for a minute to make sure servod is ready.
-			err := testing.Poll(ctx, func(ctx context.Context) error {
-				_, err := pxy.svo.GetServoSerials(ctx)
-				return err
-			}, &testing.PollOptions{Interval: time.Second,
-				Timeout: time.Minute})
-			if err != nil {
-				return nil, err
-			}
+			// Sleep for a minute to make sure servod is ready.
+			testing.Sleep(ctx, time.Minute)
 		}
 
 		// Next, forward a local port over the SSH connection to the servod port.

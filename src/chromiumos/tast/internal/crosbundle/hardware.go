@@ -210,12 +210,12 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		logging.Infof(ctx, "Unknown /keyboard/backlight: %v", err)
 	}
 
-	hasKeyboardBacklight, err := func() (bool, error) {
+	hasKeyboardBacklight, err := func() (string, error) {
 		out, err := crosConfig("/power", "has-keyboard-backlight")
 		if err != nil {
-			return false, err
+			return "", err
 		}
-		return out == "1", nil
+		return out, nil
 	}()
 	if err != nil {
 		logging.Infof(ctx, "Unknown /power/has-keyboard-backlight: %v", err)
@@ -236,8 +236,15 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		logging.Infof(ctx, "Unknown /usr/share/power_manager: %v", err)
 	}
 
-	if keyboardBacklight || hasKeyboardBacklight || hasKeyboardBacklightUnderPowerManager {
+	switch hasKeyboardBacklight {
+	case "1":
 		features.Keyboard.Backlight = configpb.HardwareFeatures_PRESENT
+	case "":
+		if keyboardBacklight || hasKeyboardBacklightUnderPowerManager {
+			features.Keyboard.Backlight = configpb.HardwareFeatures_PRESENT
+		}
+	default:
+		features.Keyboard.Backlight = configpb.HardwareFeatures_NOT_PRESENT
 	}
 
 	hasInternalDisplay := func() bool {

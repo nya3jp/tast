@@ -1808,6 +1808,14 @@ func MainboardHasEarlyLibgfxinit() Condition {
 				}
 			}
 		}
+		// Some Brya models default to PRESENT
+		listed, err := modelListed(f.GetDeprecatedDeviceConfig(), "skolas", "brya0", "kano", "agah")
+		if err != nil {
+			return withError(err)
+		}
+		if listed {
+			return satisfied()
+		}
 		// The default for this Kconfig is off, so not found is the same as disabled.
 		return unsatisfied("Kconfig not found")
 	}}

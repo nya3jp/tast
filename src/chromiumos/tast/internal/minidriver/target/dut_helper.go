@@ -6,12 +6,14 @@ package target
 
 import (
 	"context"
+	"time"
 
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/minidriver/externalservers"
 	"chromiumos/tast/internal/minidriver/servo"
 	"chromiumos/tast/internal/protocol"
+	"chromiumos/tast/testing"
 )
 
 // dutHelper provide utilities to perform operation on DUt.
@@ -23,12 +25,31 @@ type dutHelper struct {
 }
 
 // newDUTHelper return a helper that allow users to manipulate DUT.
+// using NewProxy to establish servo communication
 func newDUTHelper(ctx context.Context, cfg *protocol.SSHConfig, testVars map[string]string, role string) *dutHelper {
-	return &dutHelper{
+	a := dutHelper{
 		servoSpec: servoHost(ctx, role, testVars),
 		dutServer: dutHost(ctx, role, testVars),
 		cfg:       cfg,
 	}
+	if a.servoSpec == "" {
+		return &a
+	}
+	pxy, err := servo.NewProxy(ctx, a.servoSpec, a.cfg.GetKeyFile(), a.cfg.GetKeyDir())
+	if err != nil {
+		logging.Infof(ctx, "Failed to connect to servo host %s", a.servoSpec)
+		return &a
+	}
+	err = testing.Poll(ctx, func(ctx context.Context) error {
+		_, err := pxy.Servo().GetServoSerials(ctx)
+		return err
+	}, &testing.PollOptions{Interval: time.Second,
+		Timeout: time.Minute})
+	if err != nil {
+		logging.Infof(ctx, "Can not get servo serials %s", a.servoSpec)
+	}
+	defer pxy.Close(ctx)
+	return &a
 }
 
 // servoHost finds servo related information for a particular role from a variable to value map.
@@ -37,12 +58,13 @@ func servoHost(ctx context.Context, role string, testVars map[string]string) str
 		roleToServer, err := externalservers.ParseServerVarValues(servoVarVal)
 		if err == nil {
 			server, ok := roleToServer[role]
-			if !ok {
-				logging.Infof(ctx, "No servo server information for role: %s", role)
+			if ok {
+				return server
 			}
-			return server
+			logging.Infof(ctx, "No servo server information for role: %s", role)
+		} else {
+			logging.Infof(ctx, "Failed to parse servo server information: %v", err)
 		}
-		logging.Infof(ctx, "Failed to parse servo server information: %v", err)
 	}
 	if role != "" {
 		return ""
@@ -60,12 +82,13 @@ func dutHost(ctx context.Context, role string, testVars map[string]string) strin
 		roleToServer, err := externalservers.ParseServerVarValues(dutVarVal)
 		if err == nil {
 			server, ok := roleToServer[role]
-			if !ok {
-				logging.Infof(ctx, "No DUT server information for role: %s", role)
+			if ok {
+				return server
 			}
-			return server
+			logging.Infof(ctx, "No DUT server information for role: %s", role)
+		} else {
+			logging.Infof(ctx, "Failed to parse dut server information: %v", err)
 		}
-		logging.Infof(ctx, "Failed to parse dut server information: %v", err)
 	}
 	return ""
 }

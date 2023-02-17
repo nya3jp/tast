@@ -100,6 +100,7 @@ var softwareFeatureDefs = map[string]string{
 	"flashrom":                `!"betty" && !"tast_vm"`,
 	"flex_id":                 "flex_id",                                // Enable using flex_id for enrollment
 	"fwupd":                   "fwupd",                                  // have sys-apps/fwupd installed.
+	"ghostscript":             "postscript",                             // Ghostscript and dependent packages available
 	"google_virtual_keyboard": "chrome_internal && internal && !moblab", // doesn't work on Moblab: https://crbug.com/949912
 	"gpu_sandboxing":          `!"betty" && !"tast_vm"`,                 // no GPU sandboxing on VMs: https://crbug.com/914688
 	"gsc":                     `"cr50_onboard" || "ti50_onboard"`,

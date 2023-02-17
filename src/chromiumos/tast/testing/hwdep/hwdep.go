@@ -1820,23 +1820,3 @@ func MainboardHasEarlyLibgfxinit() Condition {
 		return unsatisfied("Kconfig not found")
 	}}
 }
-
-// VbootCbfsIntegration is satisfied if the BIOS was built with Kconfig CONFIG_VBOOT_CBFS_INTEGRATION
-func VbootCbfsIntegration() Condition {
-	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
-		hf := f.GetHardwareFeatures()
-		if hf != nil {
-			fwc := hf.GetFwConfig()
-			if fwc != nil {
-				if fwc.VbootCbfsIntegration == configpb.HardwareFeatures_PRESENT {
-					return satisfied()
-				}
-				if fwc.VbootCbfsIntegration == configpb.HardwareFeatures_NOT_PRESENT {
-					return unsatisfied("VbootCbfsIntegration Kconfig disabled")
-				}
-			}
-		}
-		// The default for this Kconfig is off, so not found is the same as disabled.
-		return unsatisfied("Kconfig not found")
-	}}
-}

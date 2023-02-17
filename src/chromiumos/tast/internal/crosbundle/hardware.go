@@ -1347,7 +1347,6 @@ func parseKConfigs(ctx context.Context, features *configpb.HardwareFeatures) err
 
 	importantConfigs := map[string]*configpb.HardwareFeatures_Present{
 		"CONFIG_MAINBOARD_HAS_EARLY_LIBGFXINIT": &features.FwConfig.MainboardHasEarlyLibgfxinit,
-		"CONFIG_VBOOT_CBFS_INTEGRATION":         &features.FwConfig.VbootCbfsIntegration,
 	}
 
 	scanner := bufio.NewScanner(inFile)

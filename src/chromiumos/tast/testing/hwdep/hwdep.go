@@ -1840,3 +1840,17 @@ func VbootCbfsIntegration() Condition {
 		return unsatisfied("Kconfig not found")
 	}}
 }
+
+// RuntimeProbeConfig is satisfied if the probe config of the model exists.
+func RuntimeProbeConfig() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("DUT HardwareFeatures data is not given")
+		}
+		if hf.GetRuntimeProbeConfig().GetPresent() != configpb.HardwareFeatures_PRESENT {
+			return unsatisfied("DUT does not have Runtime Probe config")
+		}
+		return satisfied()
+	}}
+}

@@ -935,3 +935,29 @@ func TestFirmwareKconfigFields(t *testing.T) {
 			true)
 	}
 }
+
+func TestRuntimeProbeConfig(t *testing.T) {
+	c := hwdep.RuntimeProbeConfig()
+
+	for _, tc := range []struct {
+		rpConfigPresent configpb.HardwareFeatures_Present
+		expectSatisfied bool
+	}{
+		{configpb.HardwareFeatures_PRESENT, true},
+		{configpb.HardwareFeatures_NOT_PRESENT, false},
+	} {
+		verifyCondition(
+			t, c,
+			&frameworkprotocol.DeprecatedDeviceConfig{},
+			&configpb.HardwareFeatures{
+				RuntimeProbeConfig: &configpb.HardwareFeatures_RuntimeProbeConfig{
+					Present: tc.rpConfigPresent,
+				},
+			},
+			tc.expectSatisfied)
+	}
+	expectError(
+		t, c,
+		&frameworkprotocol.DeprecatedDeviceConfig{},
+		nil)
+}

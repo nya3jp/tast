@@ -127,6 +127,7 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		Camera:                &configpb.HardwareFeatures_Camera{},
 		TrustedPlatformModule: &configpb.HardwareFeatures_TrustedPlatformModule{},
 		FwConfig:              &configpb.HardwareFeatures_FirmwareConfiguration{},
+		RuntimeProbeConfig:    &configpb.HardwareFeatures_RuntimeProbeConfig{},
 	}
 
 	formFactor, err := func() (string, error) {
@@ -718,6 +719,17 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 
 	if err := parseKConfigs(ctx, features); err != nil {
 		logging.Info(ctx, "Failed to parse BIOS kConfig: ", err)
+	}
+
+	rpConfigPresent, err := hasRuntimeProbeConfig(model)
+	if err != nil {
+		logging.Info(ctx, "Failed to determine if the config of Runtime Probe exists: ", err)
+	}
+	if rpConfigPresent {
+		features.RuntimeProbeConfig.Present = configpb.HardwareFeatures_PRESENT
+	} else {
+		logging.Infof(ctx, "Config of Runtime Probe not found")
+		features.RuntimeProbeConfig.Present = configpb.HardwareFeatures_NOT_PRESENT
 	}
 
 	return &protocol.HardwareFeatures{
@@ -1321,7 +1333,7 @@ var cbfsToolExtractConfigCmd = func(ctx context.Context, corebootBinName, fwConf
 	return exec.CommandContext(ctx, "cbfstool", corebootBinName, "extract", "-n", "config", "-f", fwConfigName).Run()
 }
 
-var kConfigLineRegexp = regexp.MustCompile(`^(# )?(CONFIG\S*)(=(y)| (is not set))`)
+var configLineRegexp = regexp.MustCompile(`^(# )?(CONFIG\S*)(=(y)| (is not set))`)
 
 // parseKConfigs updates the provided HardwareFeatures with the features found
 // by reading reading through the BIOS Kconfigs.
@@ -1360,7 +1372,7 @@ func parseKConfigs(ctx context.Context, features *configpb.HardwareFeatures) err
 	scanner := bufio.NewScanner(inFile)
 	for scanner.Scan() {
 		line := scanner.Text()
-		if match := kConfigLineRegexp.FindStringSubmatch(line); match != nil {
+		if match := configLineRegexp.FindStringSubmatch(line); match != nil {
 			if val, ok := importantConfigs[match[2]]; ok {
 				if match[4] == "y" {
 					*val = configpb.HardwareFeatures_PRESENT
@@ -1371,4 +1383,25 @@ func parseKConfigs(ctx context.Context, features *configpb.HardwareFeatures) err
 		}
 	}
 	return nil
+}
+
+// hasRuntimeProbeConfig returns true if the corresponding probe config for the
+// model of the DUT exists.  The err is set if the error os.Stat returns is not
+// fs.ErrNotExist.
+func hasRuntimeProbeConfig(model string) (bool, error) {
+	probeConfigRelPath := "etc/runtime_probe/" + model + "/probe_config.json"
+	configRoots := []string{
+		"/usr/local/",
+		"/",
+	}
+	for _, configRoot := range configRoots {
+		_, err := os.Stat(configRoot + probeConfigRelPath)
+		if err == nil {
+			return true, nil
+		}
+		if !os.IsNotExist(err) {
+			return false, err
+		}
+	}
+	return false, nil
 }

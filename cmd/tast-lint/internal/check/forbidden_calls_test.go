@@ -47,6 +47,41 @@ func main() {
 	verifyIssues(t, issues, expects)
 }
 
+func TestForbiddenCalls_Exceptions(t *testing.T) {
+	const code = `package main
+
+import (
+	"fmt"
+	"time"
+
+	"github.com/godbus/dbus/v5"
+
+	"chromiumos/tast/errors"
+)
+
+func main() {
+	fmt.Printf("foo")
+	fmt.Errorf("foo")
+	errors.Errorf("foo")
+	time.Sleep(time.Second)
+	context.Background()
+	context.TODO()
+	dbus.SystemBus()
+	dbus.SystemBusPrivate()
+	os.Chdir("tmp")
+}
+`
+	var expects []string
+
+	f, fs := parse(code, "src/chromiumos/tast/local/bundles/cros/meta/local_timeout.go")
+	issues := ForbiddenCalls(fs, f, false)
+	verifyIssues(t, issues, expects)
+
+	f, fs = parse(code, "src/chromiumos/tast/remote/bundles/cros/meta/remote_timeout.go")
+	issues = ForbiddenCalls(fs, f, false)
+	verifyIssues(t, issues, expects)
+}
+
 func TestAutoFixForbiddenCalls(t *testing.T) {
 	files := make(map[string]string)
 	expects := make(map[string]string)

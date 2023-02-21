@@ -9,15 +9,30 @@ import (
 	"go/ast"
 	"go/token"
 	"strconv"
+	"strings"
 
 	"golang.org/x/tools/go/ast/astutil"
 )
+
+// Ignore known valid use cases needing to override forbidden calls
+var allowList = []string{
+	// meta tests to test the test over-running the test's timeout
+	"src/chromiumos/tast/local/bundles/cros/meta/local_timeout.go",
+	"src/chromiumos/tast/remote/bundles/cros/meta/remote_timeout.go",
+}
 
 // ForbiddenCalls checks if any forbidden functions are called.
 func ForbiddenCalls(fs *token.FileSet, f *ast.File, fix bool) []*Issue {
 	isUnitTest := isUnitTestFile(fs.Position(f.Package).Filename)
 	var issues []*Issue
 	var importsRequired []string
+
+	filepath := fs.Position(f.Package).Filename
+	for _, p := range allowList {
+		if strings.HasSuffix(filepath, p) {
+			return issues
+		}
+	}
 
 	// Being able to run goimports is a precondition to being able to make any fixes.
 	fixable := false

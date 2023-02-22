@@ -57,7 +57,8 @@ var softwareFeatureDefs = map[string]string{
 	"chrome":                       "!chromeless_tty && !rialto",
 	"chrome_internal":              "chrome_internal",
 	"chromeless":                   "chromeless_tty || rialto",
-	"chromeos_firmware":            `!("board:reven*")`, // Reven (ChromeOS Flex) devices run third-party firmware.
+	"chromeos_ec_firmware":         `!"wilco" && !"betty" && !"tast_vm" && !"board:reven*"`, // Wilco devices run Dell EC firmware.  VM boards (e.g. betty) don't have EC firmware.  Reven (ChromeOS Flex) devices run third-party firmware.
+	"chromeos_firmware":            `!("board:reven*")`,                                     // Reven (ChromeOS Flex) devices run third-party firmware.
 	"chromeos_kernelci":            "chromeos_kernelci_builder",
 	// Kernels pre-4.19 do not support core scheduling.
 	"coresched": `!("kernel-4_4" || "kernel-4_14")`,

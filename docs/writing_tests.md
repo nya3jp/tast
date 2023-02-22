@@ -1933,4 +1933,22 @@ Just take usual precautions on introducing libraries, such as
 If you are in doubt, please feel free to send your proposal to
 tast-reviewers@google.com.
 
+When testing locally, remember to `cros_workon --host start tast-build-deps`
+and `./update_chroot` to build Tast with your new dependencies.
+
+### Dependencies with 9999 ebuilds
+
+Dependencies are picked up from the host, not any board. So if you have updated
+a dependency with a 9999 ebuild, then you'll need to workon start it. For
+example if you've added something to system_api:
+```
+(cr) ~/chromiumos/src/scripts $ cros_workon --host start chromeos-base/system_api tast-build-deps
+(cr) ~/chromiumos/src/scripts $ ./update_chroot
+```
+
+And cleanup after you're done with local changes:
+```
+(cr) ~/chromiumos/src/scripts $ cros_workon --host stop chromeos-base/system_api tast-build-deps
+```
+
 [third_party/chromiumos-overlay]: https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/refs/heads/main/dev-go/

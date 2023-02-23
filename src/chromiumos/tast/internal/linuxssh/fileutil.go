@@ -237,12 +237,24 @@ func findChangedFiles(ctx context.Context, s *ssh.Conn, files map[string]string)
 // getRemoteSHA1s returns SHA1s for the files paths on s.
 // Missing files are excluded from the returned map.
 func getRemoteSHA1s(ctx context.Context, s *ssh.Conn, paths []string) (map[string]string, error) {
-	out, err := s.CommandContext(ctx, "sha1sum", paths...).Output()
-	if err != nil {
-		// TODO(derat): Find a classier way to ignore missing files.
-		if _, ok := err.(*cryptossh.ExitError); !ok {
-			return nil, fmt.Errorf("failed to hash files: %v", err)
+	var out []byte
+	// Getting shalsum for 1000 files at a time to avoid argument list too long with ssh.
+	// b/270380606
+	const numFilesToRead = 1000
+	for i := 0; i < len(paths); i = i + numFilesToRead {
+		endIndex := i + numFilesToRead
+		if endIndex > len(paths) {
+			endIndex = len(paths)
 		}
+		currentOut, err := s.CommandContext(ctx, "sha1sum", paths[i:endIndex]...).Output()
+		if err != nil {
+			// TODO(derat): Find a classier way to ignore missing files.
+			if _, ok := err.(*cryptossh.ExitError); !ok {
+				return nil, fmt.Errorf("failed to hash files: %v", err)
+			}
+			continue
+		}
+		out = append(out, currentOut...)
 	}
 
 	sums := make(map[string]string, len(paths))

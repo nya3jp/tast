@@ -15,7 +15,6 @@ import (
 
 	"google.golang.org/grpc"
 
-	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/minidriver/target"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/rpc"
@@ -87,9 +86,6 @@ func (c *Client) dial(ctx context.Context, req *protocol.HandshakeRequest, debug
 	if err != nil {
 		return nil, err
 	}
-
-	// TODO: remove after b/262732408 is resolved.
-	logging.Info(ctx, "Max GPRC bundle client message size: ", rpc.MaxMessageSize)
 
 	return &rpcConn{
 		proc: proc,

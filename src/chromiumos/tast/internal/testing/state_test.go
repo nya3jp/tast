@@ -807,7 +807,6 @@ func TestStateExports(t *gotesting.T) {
 				"Fatalf",
 				"Features",
 				"FixtFillValue",
-				"FixtSerializedValue",
 				"FixtValue",
 				"HasError",
 				"Log",

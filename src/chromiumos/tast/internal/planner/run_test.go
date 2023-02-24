@@ -1027,13 +1027,13 @@ func TestRunFixture(t *gotesting.T) {
 				t.Errorf("pkg.Test0: FixtValue() = %v; want nil", val)
 				return
 			}
-			serializedVal, err := s.FixtSerializedValue()
-			if err != nil {
-				t.Errorf("pkg.Test0: FixtSerializedValue() failed: %v", err)
+			deserializedVal := ""
+			if err := s.FixtFillValue(&deserializedVal); err != nil {
+				t.Errorf("pkg.Test0: FixtFillValue() failed: %v", err)
 				return
 			}
-			if string(serializedVal) != "null" {
-				t.Errorf("pkg.Test0: FixtSerializedValue() = %v; want null", string(serializedVal))
+			if len(deserializedVal) > 0 {
+				t.Errorf("pkg.Test0: FixtFillValue() = %v; want nil", deserializedVal)
 				return
 			}
 		},
@@ -1047,27 +1047,9 @@ func TestRunFixture(t *gotesting.T) {
 				t.Errorf("pkg.Test1: FixtValue() = %v; want %v", val, val1)
 				return
 			}
-			serializedVal, err := s.FixtSerializedValue()
-			if err != nil {
-				t.Errorf("pkg.Test1: FixtSerializedValue() failed: %v", err)
-				return
-			}
-			if serializedVal == nil {
-				t.Error("pkg.Test1: FixtSerializedValue() return unexpected nil")
-				return
-			}
 			deserializedVal := ""
-			if err := json.Unmarshal(serializedVal, &deserializedVal); err != nil {
-				t.Errorf("pkg.Test1: FixtSerializedValue() failed to return de-serializable value: %v", err)
-				return
-			}
-			if deserializedVal != val1 {
-				t.Errorf("pkg.Test1: FixtSerializedValue() = %v; want %v", deserializedVal, val1)
-				return
-			}
-			deserializedVal = ""
 			if err := s.FixtFillValue(&deserializedVal); err != nil {
-				t.Errorf("pkg.Test1: FixtFillValue() failed to deserialize value: %v", err)
+				t.Errorf("pkg.Test1: FixtFillValue() failed: %v", err)
 				return
 			}
 			if deserializedVal != val1 {
@@ -1085,23 +1067,9 @@ func TestRunFixture(t *gotesting.T) {
 				t.Errorf("pkg.Test2: FixtValue() = %v; want %v", val, val2)
 				return
 			}
-			serializedVal, err := s.FixtSerializedValue()
-			if err != nil {
-				t.Errorf("pkg.Test2: FixtSerializedValue() failed: %v", err)
-				return
-			}
 			deserializedVal := ""
-			if err := json.Unmarshal(serializedVal, &deserializedVal); err != nil {
-				t.Errorf("pkg.Test2: FixtSerializedValue() failed to return de-serializable value: %v", err)
-				return
-			}
-			if deserializedVal != val2 {
-				t.Errorf("pkg.Test2: FixtSerializedValue() = %v; want %v", deserializedVal, val2)
-				return
-			}
-			deserializedVal = ""
 			if err := s.FixtFillValue(&deserializedVal); err != nil {
-				t.Errorf("pkg.Test2: FixtFillValue() failed to deserialize value: %v", err)
+				t.Errorf("pkg.Test2: FixtFillValue() failed: %v", err)
 				return
 			}
 			if deserializedVal != val2 {

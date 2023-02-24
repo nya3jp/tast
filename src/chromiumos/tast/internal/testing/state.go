@@ -696,12 +696,6 @@ func (s *State) FixtValue() interface{} {
 	return s.testRoot.entityRoot.cfg.FixtValue
 }
 
-// FixtSerializedValue returns the serialized fixture value.
-// TODO: b/264292451: Deprecate FixtSerializedValue().
-func (s *State) FixtSerializedValue() ([]byte, error) {
-	return s.testRoot.entityRoot.cfg.FixtSerializedValue()
-}
-
 // FixtFillValue stores the deserialized result in the value pointed to by v.
 func (s *State) FixtFillValue(v any) error {
 	data, err := s.testRoot.entityRoot.cfg.FixtSerializedValue()

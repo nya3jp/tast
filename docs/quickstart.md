@@ -42,7 +42,8 @@ Any [modern editor] supports Go. The following are the instructions to setup
 
 1.  Download [Visual Studio Code]
 2.  Install the [official Go extension] (VSCode will recommend that extension
-    once you open a Go file)
+    once you open a Go file), and optionally [CrOS IDE], which [among others]
+    substitutes the step 3 and 4 once you open a Tast test file.
 3.  Update the `GOPATH` environment variable to make code navigation works (`F12` key)
 
     ```sh
@@ -82,6 +83,8 @@ https://github.com/golang/vscode-go/issues/237#issuecomment-646067281
 [modern editor]: https://github.com/golang/go/wiki/IDEsAndTextEditorPlugins
 [Visual Studio Code]: https://code.visualstudio.com/
 [official Go extension]: https://code.visualstudio.com/docs/languages/go
+[CrOS IDE]: https://marketplace.visualstudio.com/items?itemName=Google.cros-ide
+[among others]: http://go/cros-ide-doc-tast-tests
 
 ## Run a prebuilt test
 

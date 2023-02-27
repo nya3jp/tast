@@ -70,6 +70,7 @@ func main() {
 		return
 	}
 	if err != nil {
+		fmt.Println("Failed to run lint: ", err)
 		panic(err)
 	}
 

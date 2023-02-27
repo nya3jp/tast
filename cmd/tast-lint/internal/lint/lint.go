@@ -22,6 +22,7 @@ import (
 	"golang.org/x/sync/errgroup"
 
 	"chromiumos/tast/errors"
+
 	"go.chromium.org/tast/cmd/tast-lint/internal/check"
 	"go.chromium.org/tast/cmd/tast-lint/internal/git"
 )
@@ -31,14 +32,18 @@ func getTargetFiles(g *git.Git, deltaPath string, args []string) ([]git.CommitFi
 	if len(args) == 0 {
 		// If -commit is set, check changed files.
 		if g.Commit != "" {
-			return g.ChangedFiles()
+			filecommitted, err := g.ChangedFiles()
+			if err != nil {
+				return filecommitted, errors.Wrap(err, "failed to get changed files from git")
+			}
+			return filecommitted, nil
 		}
 
 		// Otherwise, treat as if all files in the checkout were specified.
 		args = nil // avoid clobbering args
 		if err := filepath.Walk(".", func(path string, info os.FileInfo, err error) error {
 			if err != nil {
-				return err
+				return errors.Wrapf(err, "failed to access path %q", path)
 			}
 			if info.Mode()&os.ModeType != 0 {
 				// Skip non-regular files.
@@ -47,13 +52,13 @@ func getTargetFiles(g *git.Git, deltaPath string, args []string) ([]git.CommitFi
 			args = append(args, path)
 			return nil
 		}); err != nil {
-			return nil, err
+			return nil, errors.Wrap(err, "failed to walk directory")
 		}
 	}
 
 	currAbs, err := filepath.Abs(".")
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "failed to get absolute path")
 	}
 	var files []git.CommitFile
 	for _, p := range args {
@@ -375,7 +380,7 @@ func Run(commit string, debug, fix bool, args []string) ([]*check.Issue, error) 
 
 	files, err := getTargetFiles(g, deltaPath, args)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "failed to get target files")
 	}
 	if len(files) == 0 {
 		return nil, ErrNoTarget

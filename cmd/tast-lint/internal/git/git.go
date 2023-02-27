@@ -65,7 +65,7 @@ func (g *Git) ChangedFiles() ([]CommitFile, error) {
 	cmd.Dir = g.Dir
 	out, err := cmd.Output()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to get diff tree from git %q: %v", g.Commit, err)
 	}
 	stats := strings.Split(strings.TrimRight(string(out), "\n"), "\n")
 	var files []CommitFile

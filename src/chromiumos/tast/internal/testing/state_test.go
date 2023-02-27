@@ -897,6 +897,7 @@ func TestStateExports(t *gotesting.T) {
 				"Logf",
 				"OutDir",
 				"Param",
+				"ParentFillValue",
 				"ParentValue",
 				"RPCHint",
 				"RequiredVar",

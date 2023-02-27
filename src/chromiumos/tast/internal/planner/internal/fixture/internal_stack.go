@@ -118,6 +118,8 @@ type InternalStack struct {
 
 	stack []*statefulFixture // fixtures on a traverse path, root to leaf
 	dirty bool
+
+	ParentFixtSerializedValue func() ([]byte, error) // ParentFixtSerializedValue is needed its parent is an external stack.
 }
 
 // NewInternalStack creates a new empty fixture stack.
@@ -349,8 +351,14 @@ func (st *InternalStack) newRuntimeConfig(ctx context.Context, outDir string, fi
 		),
 		RemoteData: st.cfg.RemoteData,
 		FixtValue:  st.Val(),
-		FixtCtx:    ctx,
-		Features:   st.cfg.Features,
+		FixtSerializedValue: func() ([]byte, error) {
+			if st.ParentFixtSerializedValue == nil {
+				return nil, nil
+			}
+			return st.ParentFixtSerializedValue()
+		},
+		FixtCtx:  ctx,
+		Features: st.cfg.Features,
 	}
 }
 

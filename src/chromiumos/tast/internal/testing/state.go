@@ -784,6 +784,18 @@ func (s *FixtState) Param() interface{} {
 	panic("to be implemented")
 }
 
+// ParentFillValue stores the parent fixture value iin the value pointed to by v.
+func (s *FixtState) ParentFillValue(v any) error {
+	data, err := s.entityRoot.cfg.FixtSerializedValue()
+	if err != nil {
+		return errors.Wrap(err, "failed to get serialize fixture value")
+	}
+	if err := json.Unmarshal(data, v); err != nil {
+		return errors.Wrap(err, "failed to deserialize fixture value")
+	}
+	return nil
+}
+
 // ParentValue returns the parent fixture value if the fixture has a parent in the same process.
 // ParentValue returns nil otherwise.
 func (s *FixtState) ParentValue() interface{} {

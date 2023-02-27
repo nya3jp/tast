@@ -464,6 +464,9 @@ func (p *fixtPlan) run(ctx context.Context, out output.Stream, dl *downloader) e
 		}
 		combinedStack := fixture.NewCombinedStack(externalStack, internalStack)
 		stack = &internalOrCombinedStack{combined: combinedStack}
+		internalStack.ParentFixtSerializedValue = func() ([]byte, error) {
+			return externalStack.SerializedVal(ctx)
+		}
 	} else {
 		// TODO(oka): Remove this code after migration for full remote fixtures.
 		// After migration is fully finished, only CombinedStack should be used.

@@ -315,10 +315,7 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		}
 		return true
 	}()
-	features.Fingerprint.Location = configpb.HardwareFeatures_Fingerprint_NOT_PRESENT
-	if hasFingerprint {
-		features.Fingerprint.Location = configpb.HardwareFeatures_Fingerprint_LOCATION_UNKNOWN
-	}
+	features.Fingerprint.Present = hasFingerprint
 
 	// Device has ChromeEC if /dev/cros_ec exists.
 	// TODO(b/173741162): Pull EmbeddedController data directly from Boxster.

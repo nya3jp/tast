@@ -252,18 +252,18 @@ func TestFingerprint(t *testing.T) {
 	c := hwdep.Fingerprint()
 
 	for _, tc := range []struct {
-		Fingerprint     configpb.HardwareFeatures_Fingerprint_Location
+		Fingerprint     bool
 		expectSatisfied bool
 	}{
-		{configpb.HardwareFeatures_Fingerprint_NOT_PRESENT, false},
-		{configpb.HardwareFeatures_Fingerprint_LOCATION_UNKNOWN, true},
+		{true, true},
+		{false, false},
 	} {
 		verifyCondition(
 			t, c,
 			&frameworkprotocol.DeprecatedDeviceConfig{},
 			&configpb.HardwareFeatures{
 				Fingerprint: &configpb.HardwareFeatures_Fingerprint{
-					Location: tc.Fingerprint,
+					Present: tc.Fingerprint,
 				},
 			},
 			tc.expectSatisfied)
@@ -278,18 +278,18 @@ func TestNoFingerprint(t *testing.T) {
 	c := hwdep.NoFingerprint()
 
 	for _, tc := range []struct {
-		Fingerprint     configpb.HardwareFeatures_Fingerprint_Location
+		Fingerprint     bool
 		expectSatisfied bool
 	}{
-		{configpb.HardwareFeatures_Fingerprint_NOT_PRESENT, true},
-		{configpb.HardwareFeatures_Fingerprint_LOCATION_UNKNOWN, false},
+		{true, false},
+		{false, true},
 	} {
 		verifyCondition(
 			t, c,
 			&frameworkprotocol.DeprecatedDeviceConfig{},
 			&configpb.HardwareFeatures{
 				Fingerprint: &configpb.HardwareFeatures_Fingerprint{
-					Location: tc.Fingerprint,
+					Present: tc.Fingerprint,
 				},
 			},
 			tc.expectSatisfied)

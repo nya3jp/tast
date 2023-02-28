@@ -644,7 +644,7 @@ func Fingerprint() Condition {
 		if hf == nil {
 			return withErrorStr("HardwareFeatures is not given")
 		}
-		if hf.GetFingerprint().GetLocation() == configpb.HardwareFeatures_Fingerprint_NOT_PRESENT {
+		if !hf.GetFingerprint().GetPresent() {
 			return unsatisfied("DUT does not have fingerprint sensor")
 		}
 		return satisfied()
@@ -660,7 +660,7 @@ func NoFingerprint() Condition {
 		if hf == nil {
 			return withErrorStr("HardwareFeatures is not given")
 		}
-		if hf.GetFingerprint().GetLocation() != configpb.HardwareFeatures_Fingerprint_NOT_PRESENT {
+		if hf.GetFingerprint().GetPresent() {
 			return unsatisfied("DUT has fingerprint sensor")
 		}
 		return satisfied()

@@ -33,7 +33,7 @@ func TestDriver_GetDUTInfo(t *testing.T) {
 						TouchSupport:    configpb.HardwareFeatures_PRESENT,
 					},
 					Fingerprint: &configpb.HardwareFeatures_Fingerprint{
-						Location: configpb.HardwareFeatures_Fingerprint_NOT_PRESENT,
+						Present: false,
 					},
 					EmbeddedController: &configpb.HardwareFeatures_EmbeddedController{
 						Present: configpb.HardwareFeatures_PRESENT,

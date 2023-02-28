@@ -326,6 +326,11 @@ Tests in this group are not used for build verification.
 		Desc:     `A group of tests for the DMServer enrollment.`,
 	},
 	{
+		Name:     "dmserver-enrollment-live",
+		Contacts: []string{"rzakarian@google.com", "chromeos-ent-test@google.com"},
+		Desc:     `A group of tests for the DMServer live enrollment.`,
+	},
+	{
 		Name:     "dmserver-zteenrollment-daily",
 		Contacts: []string{"rzakarian@google.com", "chromeos-ent-test@google.com"},
 		Desc:     `A group of tests for the DMServer ZTE enrollment.`,

@@ -95,6 +95,9 @@ func TestCheckKnownAttrs(t *testing.T) {
 			attrs: []string{"group:dmserver-enrollment-daily"},
 		},
 		{
+			attrs: []string{"group:dmserver-enrollment-live"},
+		},
+		{
 			attrs: []string{"group:dmserver-zteenrollment-daily"},
 		},
 		{

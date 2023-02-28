@@ -136,7 +136,9 @@ func TestCheckKnownAttrs(t *testing.T) {
 		{
 			attrs: []string{"group:wilco_bve_dock"},
 		},
-
+		{
+			attrs: []string{"group:criticalstaging"},
+		},
 		// Invalid cases.
 		{
 			attrs: []string{""},

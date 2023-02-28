@@ -69,6 +69,19 @@ promoted to critical tests after stabilization.
 		},
 	},
 	{
+		Name:     "criticalstaging",
+		Contacts: []string{"tast-owners@google.com"},
+		Desc: `Inidcates intent to run in critcial CQ & Release.
+
+This group will be used to indicate a test is intended on going into "mainline"
+critical testing. This group will be run on all boards/models; on ToT only.
+Tests can only remain in this group long enough to gather signal (10 days),
+after which the owner must promote them into mainline only, or back into
+informational. If no owner action is taken after a 4 day grace period, they
+will be moved into informational.
+`,
+	},
+	{
 		Name:     "crosbolt",
 		Contacts: []string{"crosbolt-eng@google.com"},
 		Desc: `The group of performance tests to be run regularly by the crosbolt team.

@@ -1285,6 +1285,11 @@ from other existing groups (or use this group standalone).
 		Contacts: []string{"chromeos-audio-bugs@google.com", "chromeos-sw-engprod@google.com"},
 		Desc:     `A group of audio tests that have to be run in audiobox.`,
 	},
+	{
+		Name:     "unowned",
+		Contacts: []string{"kamilszarek@google.com", "chromeos-ent-test@google.com"},
+		Desc:     `Suite will run unowned tests at a minimul infra load.`,
+	},
 }
 
 // validGroupMap is the name-keyed map of validGroups.

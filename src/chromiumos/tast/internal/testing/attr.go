@@ -1237,6 +1237,14 @@ Parallels boot-up testing. Otherwise the same as group:crosbolt.`,
 				Name: "network_e2e_unstable",
 				Desc: `Identifies network ui/e2e tests that are unstable. Used to skip tests running on stable suites and/or the CQ.`,
 			},
+			{
+				Name: "network_platform",
+				Desc: `Identifies stable platform network tests.`,
+			},
+			{
+				Name: "network_platform_unstable",
+				Desc: `Identifies unstable platform network tests.`,
+			},
 		},
 	},
 	{

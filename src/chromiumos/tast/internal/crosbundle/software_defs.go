@@ -50,7 +50,6 @@ var softwareFeatureDefs = map[string]string{
 	"camera_feature_effects":       "camera_feature_effects",
 	"camera_feature_hdrnet":        "camera_feature_hdrnet",
 	"camera_feature_portrait_mode": "camera_feature_portrait_mode",
-	"camera_legacy":                `!"arc-camera1" && !"arc-camera3"`,
 	"cellular_modem_dlcs_present":  `!("board:coral*" || "board:dedede*" || "board:drallion*" || "board:hatch*" || "board:nautilus*" || "board:octopus*" || "board:sarien*" || "board:zork*")`,
 	"cellular_variant_present":     `!("board:drallion*" || "board:nautilus*" || "board:sarien*")`,
 	"cert_provision":               "cert_provision",

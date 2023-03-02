@@ -353,7 +353,7 @@ func (st *InternalStack) newRuntimeConfig(ctx context.Context, outDir string, fi
 		FixtValue:  st.Val(),
 		FixtSerializedValue: func() ([]byte, error) {
 			if st.ParentFixtSerializedValue == nil {
-				return nil, nil
+				return st.SerializedVal(ctx)
 			}
 			return st.ParentFixtSerializedValue()
 		},

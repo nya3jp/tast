@@ -139,6 +139,11 @@ func newTestInstance(t *Test, p *Param) (*TestInstance, error) {
 		return nil, err
 	}
 
+	bugComponent := t.BugComponent
+	if p.BugComponent != "" {
+		bugComponent = p.BugComponent
+	}
+
 	manualAttrs := append(append([]string(nil), t.Attr...), p.ExtraAttr...)
 	if err := validateManualAttr(manualAttrs); err != nil {
 		return nil, err
@@ -256,7 +261,7 @@ func newTestInstance(t *Test, p *Param) (*TestInstance, error) {
 		Timeout:      timeout,
 		TestBedDeps:  append([]string(nil), t.TestBedDeps...),
 		Requirements: requirements,
-		BugComponent: t.BugComponent,
+		BugComponent: bugComponent,
 	}, nil
 }
 

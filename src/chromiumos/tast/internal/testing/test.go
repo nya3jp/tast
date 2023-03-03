@@ -256,6 +256,11 @@ type Param struct {
 	// HardwareDeps, HardwareDepsForAll[""], ExtraHardwareDeps and
 	// ExtraHardwareDep and ExtraHardwareDepsForAll[""].
 	ExtraHardwareDepsForAll map[string]hwdep.Deps
+
+	// BugComponent overrides BugComponent defined in the test.
+	// This field is for infra/external use only and should not be used
+	// or referenced within the test code..
+	BugComponent string
 }
 
 // validate performs initial validations of Test.

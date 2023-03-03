@@ -397,12 +397,15 @@ func TestInstantiateParamsForAllPrimary(t *gotesting.T) {
 	}
 }
 func TestInstantiateParams(t *gotesting.T) {
+	bugComp := "b:123xyz"
+	bugCompOverride := "b:123456"
 	got, err := instantiate(&Test{
 		Func:         TESTINSTANCETEST,
 		Attr:         []string{"group:crosbolt"},
 		Data:         []string{"data0.txt"},
 		SoftwareDeps: []string{"dep0"},
 		HardwareDeps: hwdep.D(hwdep.Model("model1", "model2")),
+		BugComponent: bugComp,
 		Params: []Param{{
 			Val:               123,
 			ExtraAttr:         []string{"crosbolt_nightly"},
@@ -416,6 +419,7 @@ func TestInstantiateParams(t *gotesting.T) {
 			ExtraData:         []string{"data2.txt"},
 			ExtraSoftwareDeps: []string{"dep2"},
 			ExtraHardwareDeps: hwdep.D(hwdep.SkipOnModel("model1")),
+			BugComponent:      bugCompOverride,
 		}},
 	})
 	if err != nil {
@@ -438,6 +442,7 @@ func TestInstantiateParams(t *gotesting.T) {
 			},
 			Data:         []string{"data0.txt", "data1.txt"},
 			SoftwareDeps: map[string][]string{"": {"dep0", "dep1"}},
+			BugComponent: bugComp,
 		},
 		{
 			Name: "testing.TESTINSTANCETEST.foo",
@@ -454,6 +459,7 @@ func TestInstantiateParams(t *gotesting.T) {
 			},
 			Data:         []string{"data0.txt", "data2.txt"},
 			SoftwareDeps: map[string][]string{"": {"dep0", "dep2"}},
+			BugComponent: bugCompOverride,
 		},
 	}
 	if diff := cmp.Diff(got, want, cmpopts.IgnoreFields(TestInstance{}, "Func", "HardwareDeps", "Pre")); diff != "" {

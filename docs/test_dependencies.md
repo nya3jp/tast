@@ -30,7 +30,6 @@ The following software features are defined:
     For ARCVM virtio-blk /data devices, this only ensures that we can mount the virtio-blk disk
     image of Android's /data directory on the host, and does not grant an automatic access to
     Android's /data directory from the host side.
-*   `arc_camera1` - Using [Camera HAL3] in Chrome and [Camera HAL1] in Android.
 *   `arc_camera3` - Using [Camera HAL3] interface in Chrome and Android.
 *   `arc_launched_32bit` - This platform originally launched with 32-bit Android.
 *   `arc_launched_64bit` - This platform originally launched with 64-bit Android.

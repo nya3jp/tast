@@ -1697,7 +1697,7 @@ As with anything involving protos, when updating them, please make sure you
 maintain compatibility with older versions of the proto, as it is possible that
 you can have a new gRPC server with an old gRPC client, and vice versa. To do
 this, just ensure that you follow the principles outlined in
-[this](http://go/proto/programming-guides/proto3#updating) document.
+[this](https://protobuf.dev/programming-guides/proto3/#updating) document.
 
 Tast's gRPC services don't necessarily have to provide general-purpose APIs.
 It is perfectly fine to define gRPC services specific to a particular test case.

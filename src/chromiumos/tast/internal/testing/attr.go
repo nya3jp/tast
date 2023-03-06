@@ -704,6 +704,10 @@ third_party/autotest/files/server/site_tests/tast/control.runtime-probe
 				Desc: `Identifies Cellular tests that need an Softbank active sim.`,
 			},
 			{
+				Name: "cellular_carrier_fi",
+				Desc: `Identifies Cellular tests that need an Google Fi active sim.`,
+			},
+			{
 				Name: "cellular_carrier_local",
 				Desc: `Identifies Cellular tests that need an active sim.`,
 			},

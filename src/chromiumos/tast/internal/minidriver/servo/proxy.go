@@ -173,8 +173,24 @@ func NewProxy(ctx context.Context, servoHostPort, keyFile, keyDir string) (newPr
 			logging.Infof(ctx, "Warning in running servod: %s: %v", string(output), err)
 		} else {
 			logging.Infof(ctx, "Started servod at port %d", port)
-			// Sleep for a minute to make sure servod is ready.
-			testing.Sleep(ctx, time.Minute)
+			// Poll for a minute to make sure servod is ready, and get serials.
+			err := testing.Poll(ctx, func(ctx context.Context) error {
+				logging.Infof(ctx, "Wait for servod to be ready")
+				out, err := pxy.hst.CommandContext(ctx, "servodtool", "instance", "show", "-p", strconv.Itoa(port)).Output()
+				if err != nil {
+					return err
+				}
+				if strings.Contains(string(out), "serials :") {
+					serials := strings.Split(string(out), "\n")[1]
+					logging.Infof(ctx, "Started servod with serials %s", serials)
+					return nil
+				}
+				return errors.New("No servod scratch entry found, keep polling")
+			}, &testing.PollOptions{Interval: 2 * time.Second,
+				Timeout: time.Minute})
+			if err != nil {
+				return nil, err
+			}
 		}
 
 		// Next, forward a local port over the SSH connection to the servod port.

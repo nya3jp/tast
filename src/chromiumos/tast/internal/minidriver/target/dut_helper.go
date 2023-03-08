@@ -6,14 +6,12 @@ package target
 
 import (
 	"context"
-	"time"
 
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/minidriver/externalservers"
 	"chromiumos/tast/internal/minidriver/servo"
 	"chromiumos/tast/internal/protocol"
-	"chromiumos/tast/testing"
 )
 
 // dutHelper provide utilities to perform operation on DUt.
@@ -39,14 +37,6 @@ func newDUTHelper(ctx context.Context, cfg *protocol.SSHConfig, testVars map[str
 	if err != nil {
 		logging.Infof(ctx, "Failed to connect to servo host %s", a.servoSpec)
 		return &a
-	}
-	err = testing.Poll(ctx, func(ctx context.Context) error {
-		_, err := pxy.Servo().GetServoSerials(ctx)
-		return err
-	}, &testing.PollOptions{Interval: time.Second,
-		Timeout: time.Minute})
-	if err != nil {
-		logging.Infof(ctx, "Can not get servo serials %s", a.servoSpec)
 	}
 	defer pxy.Close(ctx)
 	return &a

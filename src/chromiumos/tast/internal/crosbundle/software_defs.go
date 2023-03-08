@@ -113,6 +113,7 @@ var softwareFeatureDefs = map[string]string{
 	"houdini64":               "houdini64",
 	"hostap_hwsim":            "wifi_hostap_test",
 	"hps":                     "hps",
+	"hwdrm_stable":            `!("board:brya")`, // brya devices have FW corruption issues with HWDRM: b/243456977
 	"igt":                     `("video_cards_amdgpu" || "video_cards_intel" || "video_cards_mediatek" || "video_cards_msm") && !("kernel-4_4" || "kernel-4_14" || "kernel-4_19")`,
 	"iioservice":              "iioservice",
 	"inference_accuracy_eval": "inference_accuracy_eval",

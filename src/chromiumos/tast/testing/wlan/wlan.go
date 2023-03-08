@@ -48,10 +48,12 @@ const (
 	QualcommWCN6855
 	Intel7260
 	Intel7265
+	Intel8265
 	Intel9000
 	Intel9260
 	Intel22260
 	Intel22560
+	IntelAX201
 	IntelAX211
 	BroadcomBCM4354SDIO
 	BroadcomBCM4356PCIE
@@ -74,10 +76,12 @@ var DeviceNames = map[DeviceID]string{
 	QualcommWCN6855:            "Qualcomm WCN6855",
 	Intel7260:                  "Intel 7260",
 	Intel7265:                  "Intel 7265",
+	Intel8265:                  "Intel 8265",
 	Intel9000:                  "Intel 9000",
 	Intel9260:                  "Intel 9260",
 	Intel22260:                 "Intel 22260",
 	Intel22560:                 "Intel 22560",
+	IntelAX201:                 "Intel AX 201",
 	IntelAX211:                 "Intel AX 211",
 	BroadcomBCM4354SDIO:        "Broadcom BCM4354 SDIO",
 	BroadcomBCM4356PCIE:        "Broadcom BCM4356 PCIE",
@@ -108,6 +112,7 @@ var lookupWLANDev = map[DevInfo]DeviceID{
 	// For integrated wifi chips, use device_id and subsystem_id together
 	// as an identifier.
 	// 0x02f0 is for Quasar on CML; 0x4070, 0x0074, 0x6074 are for HrP2.
+	{Vendor: "0x8086", Device: "0x24fd", Subsystem: "0x0010"}: Intel8265,
 	{Vendor: "0x8086", Device: "0x02f0", Subsystem: "0x0034"}: Intel9000,
 	{Vendor: "0x8086", Device: "0x02f0", Subsystem: "0x4070"}: Intel22560,
 	{Vendor: "0x8086", Device: "0x02f0", Subsystem: "0x0074"}: Intel22560,
@@ -119,6 +124,8 @@ var lookupWLANDev = map[DevInfo]DeviceID{
 	{Vendor: "0x8086", Device: "0xa0f0", Subsystem: "0x4070"}: Intel22560,
 	{Vendor: "0x8086", Device: "0xa0f0", Subsystem: "0x0074"}: Intel22560,
 	{Vendor: "0x8086", Device: "0xa0f0", Subsystem: "0x6074"}: Intel22560,
+	{Vendor: "0x8086", Device: "0x02f0", Subsystem: "0x0070"}: IntelAX201,
+	{Vendor: "0x8086", Device: "0xa0f0", Subsystem: "0x0070"}: IntelAX201,
 	{Vendor: "0x8086", Device: "0x51f0", Subsystem: "0x0090"}: IntelAX211,
 	{Vendor: "0x8086", Device: "0x51f1", Subsystem: "0x0090"}: IntelAX211,
 	{Vendor: "0x8086", Device: "0x51f1", Subsystem: "0x0094"}: IntelAX211,

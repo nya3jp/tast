@@ -309,6 +309,12 @@ Tests in this group are not used for build verification.
 		Name:     "cuj",
 		Contacts: []string{"chromeos-perfmetrics-eng@google.com"},
 		Desc:     `A group of CUJ tests that run regularly for the Performance Metrics team.`,
+		Subattrs: []*attr{
+			{
+				Name: "cuj_experimental",
+				Desc: `Experimental CUJ tests that only run on a selected subset of models.`,
+			},
+		},
 	},
 	{
 		Name:     "drivefs-cq",

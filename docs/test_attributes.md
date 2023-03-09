@@ -69,7 +69,9 @@ Below is the list of most popular groups and their associated extra attributes:
     available in the fixture.
 *   `group:cuj` - A group of CUJ tests. Tests having this attribute will have their
     performance data collected and sent to TPS dashboard.
-
+    Below are its sub-attributes:
+    *  `cuj_experimental`: A group of CUJ tests which are experimental and only run
+       on a selected subset of models.
 See [attr.go] for the full list of valid attributes.
 
 ## Automatically-added attributes

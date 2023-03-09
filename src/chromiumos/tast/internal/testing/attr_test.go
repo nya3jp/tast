@@ -142,6 +142,13 @@ func TestCheckKnownAttrs(t *testing.T) {
 		{
 			attrs: []string{"group:criticalstaging"},
 		},
+		{
+			attrs: []string{"group:cuj"},
+		},
+		{
+			attrs: []string{"group:cuj", "cuj_experimental"},
+		},
+
 		// Invalid cases.
 		{
 			attrs: []string{""},

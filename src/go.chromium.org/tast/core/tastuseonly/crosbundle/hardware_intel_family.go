@@ -9,11 +9,11 @@ package crosbundle
 // Do not change the above line; see https://golang.org/pkg/cmd/go/internal/generate/
 //
 // This file contains constants from arch/x86/include/asm/intel-family.h
-// in the Linux kernel repository at revision 4e8ae0c6a8aa41670b817bf02036cbfff2854227.
+// in the Linux kernel repository at revision a3495f2e994c37f6560078d4d5963b0b95629c4d.
 // Run "go generate" to regenerate it.
 
-//go:generate ../../../../../tools/go.sh run gen/gen_intel_family.go ../../../../../../../third_party/kernel/v5.4/arch/x86/include/asm/intel-family.h hardware_intel_family.go
-//go:generate ../../../../../tools/go.sh fmt hardware_intel_family.go
+//go:generate ../../../../../../tools/go.sh run gen/gen_intel_family.go ../../../../../../../../third_party/kernel/v5.15/arch/x86/include/asm/intel-family.h hardware_intel_family.go
+//go:generate ../../../../../../tools/go.sh fmt hardware_intel_family.go
 
 const (
 	// Intel family
@@ -66,13 +66,30 @@ const (
 	INTEL_FAM6_ICELAKE_L            = 0x7e
 	INTEL_FAM6_XEON_PHI_KNM         = 0x85
 	INTEL_FAM6_ATOM_TREMONT_D       = 0x86
+	INTEL_FAM6_LAKEFIELD            = 0x8a
 	INTEL_FAM6_TIGERLAKE_L          = 0x8c
 	INTEL_FAM6_TIGERLAKE            = 0x8d
 	INTEL_FAM6_KABYLAKE_L           = 0x8e
+	INTEL_FAM6_SAPPHIRERAPIDS_X     = 0x8f
 	INTEL_FAM6_ATOM_TREMONT         = 0x96
+	INTEL_FAM6_ALDERLAKE            = 0x97
+	INTEL_FAM6_ALDERLAKE_L          = 0x9a
 	INTEL_FAM6_ATOM_TREMONT_L       = 0x9c
 	INTEL_FAM6_ICELAKE_NNPI         = 0x9d
 	INTEL_FAM6_KABYLAKE             = 0x9e
 	INTEL_FAM6_COMETLAKE            = 0xa5
 	INTEL_FAM6_COMETLAKE_L          = 0xa6
+	INTEL_FAM6_ROCKETLAKE           = 0xa7
+	INTEL_FAM6_METEORLAKE_L         = 0xaa
+	INTEL_FAM6_METEORLAKE           = 0xac
+	INTEL_FAM6_GRANITERAPIDS_X      = 0xad
+	INTEL_FAM6_GRANITERAPIDS_D      = 0xae
+	INTEL_FAM6_SIERRAFOREST_X       = 0xaf
+	INTEL_FAM6_GRANDRIDGE           = 0xb6
+	INTEL_FAM6_RAPTORLAKE           = 0xb7
+	INTEL_FAM6_RAPTORLAKE_P         = 0xba
+	INTEL_FAM6_LUNARLAKE_M          = 0xbd
+	INTEL_FAM6_ALDERLAKE_N          = 0xbe
+	INTEL_FAM6_RAPTORLAKE_S         = 0xbf
+	INTEL_FAM6_EMERALDRAPIDS_X      = 0xcf
 )

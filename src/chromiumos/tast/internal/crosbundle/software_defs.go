@@ -137,6 +137,8 @@ var softwareFeatureDefs = map[string]string{
 	// Remove "|| betty || tast_vm" from list when we upgrade.
 	"memfd_create": `!("betty" || "tast_vm")`,
 	"memd":         "memd",
+	// Memfd execution attempts are detected and blocked only on the following kernel versions.
+	"memfd_exec_detection": `("kernel-4_19" || "kernel-5_4" || "kernel-5_10" || "kernel-5_15")`,
 	// Only official builds are considered to have metrics consent.
 	// See: ChromeCrashReporterClient::GetCollectStatsConsent()
 	// Also metrics consent needs TPM (crbug.com/1035197).

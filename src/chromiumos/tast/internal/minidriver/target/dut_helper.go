@@ -30,15 +30,6 @@ func newDUTHelper(ctx context.Context, cfg *protocol.SSHConfig, testVars map[str
 		dutServer: dutHost(ctx, role, testVars),
 		cfg:       cfg,
 	}
-	if a.servoSpec == "" {
-		return &a
-	}
-	pxy, err := servo.NewProxy(ctx, a.servoSpec, a.cfg.GetKeyFile(), a.cfg.GetKeyDir())
-	if err != nil {
-		logging.Infof(ctx, "Failed to connect to servo host %s", a.servoSpec)
-		return &a
-	}
-	defer pxy.Close(ctx)
 	return &a
 }
 

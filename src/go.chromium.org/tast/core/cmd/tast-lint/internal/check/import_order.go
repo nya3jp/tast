@@ -13,7 +13,7 @@ import (
 	"os/exec"
 	"regexp"
 
-	"go.chromium.org/tast/cmd/tast-lint/internal/diff"
+	"go.chromium.org/tast/core/cmd/tast-lint/internal/diff"
 )
 
 // commentInImportRegexp matches a comment inside an import block.
@@ -26,6 +26,7 @@ var commentInImportRegexp = regexp.MustCompile(`import \([^)]*(//|/\*)`)
 //   - In each group, the entries should be sorted in the lexicographical
 //     order.
 //   - The groups should be separated by an empty line.
+//
 // This order should be same as what "goimports --local chromiumos/" does.
 func ImportOrder(path string, in []byte) []*Issue {
 	out, err := formatImports(in)

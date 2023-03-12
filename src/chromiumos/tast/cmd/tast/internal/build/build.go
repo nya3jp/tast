@@ -18,7 +18,7 @@ import (
 
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/timing"
-	"chromiumos/tast/shutil"
+	"go.chromium.org/tast/core/shutil"
 )
 
 // archToEnvs maps from a userland architecture name to the corresponding Go command environment variables that

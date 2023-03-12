@@ -13,7 +13,7 @@ import (
 	"golang.org/x/sys/unix"
 
 	"chromiumos/tast/fsutil"
-	"chromiumos/tast/testutil"
+	"go.chromium.org/tast/core/testutil"
 )
 
 // setUpFile creates a temporary directory containing a file with the supplied data and mode.

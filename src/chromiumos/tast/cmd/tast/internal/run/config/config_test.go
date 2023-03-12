@@ -19,7 +19,7 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/internal/debugger"
 	"chromiumos/tast/internal/protocol"
-	"chromiumos/tast/testutil"
+	"go.chromium.org/tast/core/testutil"
 )
 
 func TestMutableConfigRunDefaults(t *testing.T) {

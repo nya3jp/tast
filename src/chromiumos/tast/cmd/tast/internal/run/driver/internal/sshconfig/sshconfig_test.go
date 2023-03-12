@@ -11,7 +11,7 @@ import (
 	"testing"
 
 	"chromiumos/tast/cmd/tast/internal/run/driver/internal/sshconfig"
-	"chromiumos/tast/testutil"
+	"go.chromium.org/tast/core/testutil"
 )
 
 // testForResolveHostFromDefaultConfig runs wiath a default test configuration that used by most unit tests for ResolveHostFromFiles.

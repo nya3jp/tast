@@ -18,7 +18,7 @@ import (
 	"github.com/google/subcommands"
 
 	"chromiumos/tast/internal/run/resultsjson"
-	"chromiumos/tast/testutil"
+	"go.chromium.org/tast/core/testutil"
 )
 
 // executeListCmd creates a listCmd and executes it using the supplied args and wrapper.

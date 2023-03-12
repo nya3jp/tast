@@ -22,7 +22,7 @@ import (
 	"chromiumos/tast/internal/rpc"
 	"chromiumos/tast/internal/sshtest"
 	"chromiumos/tast/internal/testing"
-	"chromiumos/tast/testutil"
+	"go.chromium.org/tast/core/testutil"
 )
 
 // Env contains information needed to interact with the testing environment

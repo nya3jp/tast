@@ -24,7 +24,7 @@ import (
 	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/internal/testing/testfixture"
-	"chromiumos/tast/testutil"
+	"go.chromium.org/tast/core/testutil"
 )
 
 // TestInternalStackInitStatus checks the initial status of a fixture stack.

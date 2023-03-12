@@ -29,7 +29,7 @@ import (
 	frameworkprotocol "chromiumos/tast/framework/protocol"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testing"
-	"chromiumos/tast/testutil"
+	"go.chromium.org/tast/core/testutil"
 )
 
 // outputSink is an implementation of OutputStream for unit tests.

@@ -9,7 +9,7 @@ import (
 	"os"
 	"testing"
 
-	"chromiumos/tast/testutil"
+	"go.chromium.org/tast/core/testutil"
 )
 
 func checkSourceCompatWithCode(t *testing.T, code string) error {

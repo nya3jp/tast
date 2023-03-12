@@ -150,7 +150,7 @@ Please ensure that any changes that you make are also covered by tests.
 The [testutil package] provides utility functions intended to reduce repetitive
 code within unit tests.
 
-[testutil package]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testutil
+[testutil package]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/testutil
 
 ### Meta tests
 

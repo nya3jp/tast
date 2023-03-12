@@ -33,7 +33,7 @@ import (
 	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/internal/testing/testfixture"
-	"chromiumos/tast/testutil"
+	"go.chromium.org/tast/core/testutil"
 )
 
 // runTestsAndReadAll runs tests and returns a slice of control messages written to the output.

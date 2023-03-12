@@ -11,9 +11,9 @@ import (
 	"os"
 	"sort"
 
-	"go.chromium.org/tast/cmd/tast-lint/internal/check"
-	"go.chromium.org/tast/cmd/tast-lint/internal/lint"
-	"go.chromium.org/tast/shutil"
+	"go.chromium.org/tast/core/cmd/tast-lint/internal/check"
+	"go.chromium.org/tast/core/cmd/tast-lint/internal/lint"
+	"go.chromium.org/tast/core/shutil"
 )
 
 // categorizeIssues categorize issues into auto-fixable and un-auto-fixable,

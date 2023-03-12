@@ -21,7 +21,7 @@ import (
 
 	"chromiumos/tast/internal/fakeexec"
 	"chromiumos/tast/internal/run/genericexec"
-	"chromiumos/tast/testutil"
+	"go.chromium.org/tast/core/testutil"
 )
 
 func TestExecCmdRun(t *testing.T) {

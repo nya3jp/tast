@@ -11,7 +11,7 @@ import (
 	"testing"
 
 	"chromiumos/tast/cmd/tast/internal/symbolize/breakpad"
-	"chromiumos/tast/testutil"
+	"go.chromium.org/tast/core/testutil"
 )
 
 func TestCreateSymbolFiles(t *testing.T) {

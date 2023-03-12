@@ -24,7 +24,7 @@ import (
 	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/internal/testing/testfixture"
-	"chromiumos/tast/testutil"
+	"go.chromium.org/tast/core/testutil"
 )
 
 func setUpWithDefaultDUT(t *gotesting.T, os ...bundletest.Option) *bundletest.Env {

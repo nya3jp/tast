@@ -21,7 +21,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 
-	"go.chromium.org/tast/testutil"
+	"go.chromium.org/tast/core/testutil"
 )
 
 func parse(code, filename string) (*ast.File, *token.FileSet) {

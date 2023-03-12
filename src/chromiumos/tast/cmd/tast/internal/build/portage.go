@@ -17,7 +17,7 @@ import (
 	"time"
 
 	"chromiumos/tast/internal/timing"
-	"chromiumos/tast/shutil"
+	"go.chromium.org/tast/core/shutil"
 )
 
 const (
@@ -102,7 +102,7 @@ func emergeCmdLine(mode emergeMode) []string {
 //
 // emerge prints each missing dependency to stdout on a line similar to the following:
 //
-//   N     dev-go/cmp 0.2.0-r1
+//	N     dev-go/cmp 0.2.0-r1
 func parseMissingDeps(stdout []byte) []string {
 	var missing []string
 	for _, ln := range strings.Split(strings.TrimSpace(string(stdout)), "\n") {

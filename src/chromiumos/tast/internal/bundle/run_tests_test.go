@@ -27,7 +27,7 @@ import (
 	"chromiumos/tast/internal/rpc"
 	"chromiumos/tast/internal/sshtest"
 	"chromiumos/tast/internal/testing"
-	"chromiumos/tast/testutil"
+	"go.chromium.org/tast/core/testutil"
 )
 
 // startTestServer starts an in-process gRPC server and returns a connection as

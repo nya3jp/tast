@@ -34,7 +34,7 @@ import (
 	"strings"
 
 	"chromiumos/tast/common/testexec"
-	"chromiumos/tast/shutil"
+	"go.chromium.org/tast/core/shutil"
 	"chromiumos/tast/testing"
 )
 ```
@@ -213,7 +213,7 @@ recommended in Tast.
 
 [testexec]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/common/testexec
 [exec]: https://golang.org/pkg/os/exec/
-[shutil]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/shutil
+[shutil]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/shutil
 
 ## Wrapping it up
 
@@ -252,7 +252,7 @@ import (
 	"strings"
 
 	"chromiumos/tast/common/testexec"
-	"chromiumos/tast/shutil"
+	"go.chromium.org/tast/core/shutil"
 	"chromiumos/tast/testing"
 )
 

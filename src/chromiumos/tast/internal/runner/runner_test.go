@@ -17,7 +17,7 @@ import (
 
 	"chromiumos/tast/internal/bundle"
 	"chromiumos/tast/internal/testing"
-	"chromiumos/tast/testutil"
+	"go.chromium.org/tast/core/testutil"
 )
 
 const (

@@ -26,7 +26,7 @@ import (
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/internal/testing/testfixture"
 	"chromiumos/tast/internal/usercode"
-	"chromiumos/tast/testutil"
+	"go.chromium.org/tast/core/testutil"
 )
 
 // resultsCmpOpts is a common options used to compare []resultsjson.Result.

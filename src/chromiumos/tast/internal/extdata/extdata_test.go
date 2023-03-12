@@ -18,7 +18,7 @@ import (
 	"chromiumos/tast/internal/devserver"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testing"
-	"chromiumos/tast/testutil"
+	"go.chromium.org/tast/core/testutil"
 )
 
 const fakeArtifactURL = "gs://somebucket/path/to/artifacts/"

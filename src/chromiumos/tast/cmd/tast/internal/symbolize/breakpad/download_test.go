@@ -13,7 +13,7 @@ import (
 	"testing"
 
 	"chromiumos/tast/cmd/tast/internal/symbolize/fakecmd"
-	"chromiumos/tast/testutil"
+	"go.chromium.org/tast/core/testutil"
 )
 
 // testSymbolFileInfo contains information about a symbol file written for testing.

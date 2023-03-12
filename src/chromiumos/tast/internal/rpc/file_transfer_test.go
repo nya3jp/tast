@@ -15,7 +15,7 @@ import (
 	"google.golang.org/grpc"
 
 	"chromiumos/tast/internal/protocol"
-	"chromiumos/tast/testutil"
+	"go.chromium.org/tast/core/testutil"
 )
 
 func TestFileTransferServerPullDirectory(t *testing.T) {

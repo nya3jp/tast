@@ -18,7 +18,7 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/runtest"
 	"chromiumos/tast/internal/fakesshserver"
 	"chromiumos/tast/internal/minidriver/diagnose"
-	"chromiumos/tast/testutil"
+	"go.chromium.org/tast/core/testutil"
 )
 
 func loadTestData(t *testing.T, filename string) string {

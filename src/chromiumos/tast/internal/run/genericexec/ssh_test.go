@@ -20,7 +20,7 @@ import (
 	"chromiumos/tast/internal/run/genericexec"
 	"chromiumos/tast/internal/sshtest"
 	"chromiumos/tast/ssh"
-	"chromiumos/tast/testutil"
+	"go.chromium.org/tast/core/testutil"
 )
 
 func TestSSHCmdRun(t *testing.T) {

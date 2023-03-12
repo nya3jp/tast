@@ -7,7 +7,7 @@ package check
 import (
 	"testing"
 
-	"go.chromium.org/tast/cmd/tast-lint/internal/git"
+	"go.chromium.org/tast/core/cmd/tast-lint/internal/git"
 )
 
 const lacrosPath = "/src/chromiumos/tast/local/bundles/cros/lacros/foo.go"

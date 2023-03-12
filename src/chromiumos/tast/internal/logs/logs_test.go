@@ -18,7 +18,7 @@ import (
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/logging/loggingtest"
 	"chromiumos/tast/internal/logs"
-	"chromiumos/tast/testutil"
+	"go.chromium.org/tast/core/testutil"
 )
 
 // getUpdates passes sizes to CopyLogFileUpdates to get file updates within dir

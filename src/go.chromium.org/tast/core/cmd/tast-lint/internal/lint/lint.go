@@ -22,9 +22,8 @@ import (
 	"golang.org/x/sync/errgroup"
 
 	"chromiumos/tast/errors"
-
-	"go.chromium.org/tast/cmd/tast-lint/internal/check"
-	"go.chromium.org/tast/cmd/tast-lint/internal/git"
+	"go.chromium.org/tast/core/cmd/tast-lint/internal/check"
+	"go.chromium.org/tast/core/cmd/tast-lint/internal/git"
 )
 
 // getTargetFiles returns the list of files to run lint according to flags.

@@ -37,7 +37,7 @@ import (
 	"chromiumos/tast/internal/testingutil"
 	"chromiumos/tast/internal/timing"
 	"chromiumos/tast/ssh"
-	"chromiumos/tast/testutil"
+	"go.chromium.org/tast/core/testutil"
 )
 
 const pingUserServiceName = "tast.coretest.PingUser"

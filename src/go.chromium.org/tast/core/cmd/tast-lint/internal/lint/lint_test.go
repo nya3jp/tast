@@ -12,8 +12,8 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 
-	"go.chromium.org/tast/cmd/tast-lint/internal/lint"
-	"go.chromium.org/tast/testutil"
+	"go.chromium.org/tast/core/cmd/tast-lint/internal/lint"
+	"go.chromium.org/tast/core/testutil"
 )
 
 // setUpGitRepo creates a new Git repository in a temporary directory and sets

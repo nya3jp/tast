@@ -21,7 +21,7 @@ import (
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/run/fakereports"
 	"chromiumos/tast/internal/run/reporting"
-	"chromiumos/tast/testutil"
+	"go.chromium.org/tast/core/testutil"
 )
 
 var timestampRe = regexp.MustCompile(`^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{6}Z `)

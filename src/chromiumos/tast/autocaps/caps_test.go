@@ -10,7 +10,7 @@ import (
 	"testing"
 
 	"chromiumos/tast/autocaps"
-	"chromiumos/tast/testutil"
+	"go.chromium.org/tast/core/testutil"
 )
 
 func TestCaps(t *testing.T) {

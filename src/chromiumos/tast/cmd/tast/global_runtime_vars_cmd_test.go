@@ -15,7 +15,7 @@ import (
 
 	"github.com/google/subcommands"
 
-	"chromiumos/tast/testutil"
+	"go.chromium.org/tast/core/testutil"
 )
 
 // executeGlobalRuntimeVarsCmd creates a GlobalRuntimeVarsCmd and executes it using the supplied args and wrapper.

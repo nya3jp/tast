@@ -21,9 +21,10 @@ var bundleCategoryRegex = regexp.MustCompile(`^(chromiumos/tast/(?:local|remote)
 // Returns ok=false if it's not a bundle (sub)package.
 //
 // Example:
-//   "chromiumos/tast/local/bundles/cros/foo"         -> "chromiumos/tast/local/bundles/cros", "foo", true
-//   "chromiumos/tast/remote/bundles/crosint/foo/bar" -> "chromiumos/tast/remote/bundles/crosint", "foo", true
-//   "chromiumos/tast/local/foo"                      -> "", "", false
+//
+//	"chromiumos/tast/local/bundles/cros/foo"         -> "chromiumos/tast/local/bundles/cros", "foo", true
+//	"chromiumos/tast/remote/bundles/crosint/foo/bar" -> "chromiumos/tast/remote/bundles/crosint", "foo", true
+//	"chromiumos/tast/local/foo"                      -> "", "", false
 func parseBundlePackage(p string) (bundlePkg, category string, ok bool) {
 	m := bundleCategoryRegex.FindStringSubmatch(p)
 	if len(m) == 0 {

@@ -16,7 +16,7 @@ import (
 	"chromiumos/tast/errors"
 	"chromiumos/tast/exec"
 	"chromiumos/tast/internal/logging"
-	"chromiumos/tast/shutil"
+	"go.chromium.org/tast/core/shutil"
 )
 
 // Cmd represents an external command being prepared or run on a remote host.

@@ -18,7 +18,7 @@ import (
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/logging/loggingtest"
 	"chromiumos/tast/internal/run/resultsjson"
-	"chromiumos/tast/testutil"
+	"go.chromium.org/tast/core/testutil"
 )
 
 // executeRunCmd creates a runCmd and executes it using the supplied args, wrapper, and Logger.

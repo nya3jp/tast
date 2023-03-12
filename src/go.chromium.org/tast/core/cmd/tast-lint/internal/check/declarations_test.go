@@ -10,7 +10,7 @@ import (
 	"go/token"
 	"testing"
 
-	"go.chromium.org/tast/cmd/tast-lint/internal/git"
+	"go.chromium.org/tast/core/cmd/tast-lint/internal/git"
 )
 
 const declTestPath = "src/chromiumos/tast/local/bundles/cros/example/do_stuff.go"

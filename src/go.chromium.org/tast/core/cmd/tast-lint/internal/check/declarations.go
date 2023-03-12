@@ -15,7 +15,7 @@ import (
 
 	"golang.org/x/tools/go/ast/astutil"
 
-	"go.chromium.org/tast/cmd/tast-lint/internal/git"
+	"go.chromium.org/tast/core/cmd/tast-lint/internal/git"
 )
 
 // Exposed here for unit tests.

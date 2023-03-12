@@ -14,7 +14,7 @@ import (
 	"google.golang.org/grpc"
 
 	"chromiumos/tast/internal/protocol"
-	"chromiumos/tast/shutil"
+	"go.chromium.org/tast/core/shutil"
 )
 
 // ProcFunc is a callback passed to CreateLoopback to fully control the behavior of

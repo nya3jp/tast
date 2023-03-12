@@ -19,7 +19,7 @@ import (
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/logs"
 	"chromiumos/tast/internal/protocol"
-	"chromiumos/tast/shutil"
+	"go.chromium.org/tast/core/shutil"
 )
 
 const (

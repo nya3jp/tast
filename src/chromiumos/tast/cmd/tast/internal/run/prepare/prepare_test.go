@@ -20,7 +20,7 @@ import (
 	"chromiumos/tast/internal/fakesshserver"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testing"
-	"chromiumos/tast/testutil"
+	"go.chromium.org/tast/core/testutil"
 )
 
 func TestPushDataFiles(t *gotesting.T) {

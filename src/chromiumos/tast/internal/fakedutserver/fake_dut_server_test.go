@@ -19,7 +19,7 @@ import (
 	"google.golang.org/grpc/status"
 
 	"chromiumos/tast/internal/fakedutserver"
-	"chromiumos/tast/testutil"
+	"go.chromium.org/tast/core/testutil"
 )
 
 func TestDutServiceServer_Cache(t *testing.T) {

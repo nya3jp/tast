@@ -7,7 +7,7 @@ package ssh
 import (
 	"fmt"
 
-	"chromiumos/tast/shutil"
+	"go.chromium.org/tast/core/shutil"
 )
 
 // Platform defines platform-specific behaviours for SSH connections.

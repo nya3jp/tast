@@ -12,8 +12,8 @@ import (
 	"reflect"
 	"testing"
 
-	"go.chromium.org/tast/cmd/tast-lint/internal/git"
-	"go.chromium.org/tast/testutil"
+	"go.chromium.org/tast/core/cmd/tast-lint/internal/git"
+	"go.chromium.org/tast/core/testutil"
 )
 
 const (
@@ -31,23 +31,23 @@ const (
 // newTestRepo creates a new Git working tree for testing and returns the
 // directory path. The repository will contain two commits:
 //
-//  In the first commit:
-//    static.txt = "static"
-//    test.txt = ""
-//    delete.txt = ""
+//	In the first commit:
+//	  static.txt = "static"
+//	  test.txt = ""
+//	  delete.txt = ""
 //
-//  In the second commit:
-//    static.txt = "static"
-//    test.txt = "foo"
-//    new.txt = "baz"
-//    symlink.txt = symlink to ./static.txt
+//	In the second commit:
+//	  static.txt = "static"
+//	  test.txt = "foo"
+//	  new.txt = "baz"
+//	  symlink.txt = symlink to ./static.txt
 //
-//  In the work tree:
-//    static.txt = "static"
-//    test.txt = "bar"
-//    new.txt = "baz"
-//    symlink.txt = symlink to ./static.txt
-//    untracked.txt = ""
+//	In the work tree:
+//	  static.txt = "static"
+//	  test.txt = "bar"
+//	  new.txt = "baz"
+//	  symlink.txt = symlink to ./static.txt
+//	  untracked.txt = ""
 func newTestRepo(t *testing.T) string {
 	t.Helper()
 

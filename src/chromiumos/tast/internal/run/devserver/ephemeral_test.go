@@ -14,7 +14,7 @@ import (
 	"strings"
 	"testing"
 
-	"chromiumos/tast/testutil"
+	"go.chromium.org/tast/core/testutil"
 )
 
 type testData struct {

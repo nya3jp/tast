@@ -23,7 +23,7 @@ import (
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/sshtest"
 	"chromiumos/tast/ssh"
-	"chromiumos/tast/testutil"
+	"go.chromium.org/tast/core/testutil"
 )
 
 func TestRunCtx(t *testing.T) {

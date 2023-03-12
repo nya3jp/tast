@@ -14,7 +14,7 @@ import (
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/minidriver/processor"
 	"chromiumos/tast/internal/protocol"
-	"chromiumos/tast/testutil"
+	"go.chromium.org/tast/core/testutil"
 )
 
 func TestCopyOutputHandler(t *testing.T) {

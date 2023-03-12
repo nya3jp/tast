@@ -16,7 +16,7 @@ import (
 	"testing"
 	"time"
 
-	"chromiumos/tast/testutil"
+	"go.chromium.org/tast/core/testutil"
 )
 
 func TestParseEmergeOutput(t *testing.T) {

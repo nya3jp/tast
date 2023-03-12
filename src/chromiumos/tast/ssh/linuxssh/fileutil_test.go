@@ -15,7 +15,7 @@ import (
 	"chromiumos/tast/internal/logging/loggingtest"
 	"chromiumos/tast/internal/sshtest"
 	"chromiumos/tast/ssh/linuxssh"
-	"chromiumos/tast/testutil"
+	"go.chromium.org/tast/core/testutil"
 )
 
 const strangeFileName = "$()\"'` "

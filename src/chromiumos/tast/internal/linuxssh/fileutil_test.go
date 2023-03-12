@@ -16,7 +16,7 @@ import (
 
 	"chromiumos/tast/internal/linuxssh"
 	"chromiumos/tast/internal/sshtest"
-	"chromiumos/tast/testutil"
+	"go.chromium.org/tast/core/testutil"
 )
 
 // initFileTest creates a temporary directory with a subdirectory containing files.

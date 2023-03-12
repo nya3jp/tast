@@ -14,7 +14,7 @@ import (
 	"testing"
 
 	"chromiumos/tast/cmd/tast/internal/build"
-	"chromiumos/tast/testutil"
+	"go.chromium.org/tast/core/testutil"
 )
 
 func TestBuild(t *testing.T) {

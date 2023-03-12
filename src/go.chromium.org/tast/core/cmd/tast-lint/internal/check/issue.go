@@ -42,13 +42,13 @@ func SortIssues(issues []*Issue) {
 // number of a comment group (see ast.CommentGroup) in f that contains "NOLINT".
 //
 // Filtering is performed at this level rather than while walking the AST for several reasons:
-//  - We want to avoid making each check look for NOLINT itself.
-//  - We can't just skip nodes that are on the same lines as NOLINT comments, since some issues are
-//    reported with different line numbers than the position of the node from which they were reported.
-//    For example, the Declarations function inspects testing.Test composite literal nodes,
-//    but the line numbers used in its issues correspond to Desc fields that contain errors.
-//    We expect test authors to place a NOLINT comment at the end of the line containing the Desc field,
-//    not on the line containing the beginning of the testing.Test literal.
+//   - We want to avoid making each check look for NOLINT itself.
+//   - We can't just skip nodes that are on the same lines as NOLINT comments, since some issues are
+//     reported with different line numbers than the position of the node from which they were reported.
+//     For example, the Declarations function inspects testing.Test composite literal nodes,
+//     but the line numbers used in its issues correspond to Desc fields that contain errors.
+//     We expect test authors to place a NOLINT comment at the end of the line containing the Desc field,
+//     not on the line containing the beginning of the testing.Test literal.
 func DropIgnoredIssues(issues []*Issue, fs *token.FileSet, f *ast.File) []*Issue {
 	nolintLineNums := make(map[int]struct{})
 	for _, cg := range f.Comments {

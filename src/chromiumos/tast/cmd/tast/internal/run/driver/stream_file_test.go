@@ -17,7 +17,7 @@ import (
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testingutil"
-	"chromiumos/tast/testutil"
+	"go.chromium.org/tast/core/testutil"
 )
 
 func TestDriver_StreamFile(t *testing.T) {

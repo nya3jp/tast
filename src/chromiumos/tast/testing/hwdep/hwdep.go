@@ -1084,6 +1084,7 @@ func platformHasNV12Overlays(SocType protocol.DeprecatedDeviceConfig_SOC) bool {
 		SocType != protocol.DeprecatedDeviceConfig_SOC_MT8192 &&
 		SocType != protocol.DeprecatedDeviceConfig_SOC_MT8195 &&
 		SocType != protocol.DeprecatedDeviceConfig_SOC_MT8186 &&
+		SocType != protocol.DeprecatedDeviceConfig_SOC_MT8188G &&
 		SocType != protocol.DeprecatedDeviceConfig_SOC_SC7180 &&
 		SocType != protocol.DeprecatedDeviceConfig_SOC_SC7280
 }
@@ -1118,7 +1119,8 @@ func SupportsVideoOverlays() Condition {
 		var supportsYUY2Overlays = dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_MT8183 ||
 			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_MT8192 ||
 			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_MT8195 ||
-			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_MT8186
+			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_MT8186 ||
+			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_MT8188G
 		if !platformHasNV12Overlays(dc.GetSoc()) && !supportsYUY2Overlays {
 			return unsatisfied("SoC does not support Video Overlays")
 		}
@@ -1311,6 +1313,7 @@ func SupportDVFS() Condition {
 			protocol.DeprecatedDeviceConfig_SOC_MT8192,
 			protocol.DeprecatedDeviceConfig_SOC_MT8195,
 			protocol.DeprecatedDeviceConfig_SOC_MT8186,
+			protocol.DeprecatedDeviceConfig_SOC_MT8188G,
 			protocol.DeprecatedDeviceConfig_SOC_MT8176,
 			protocol.DeprecatedDeviceConfig_SOC_RK3288,
 			protocol.DeprecatedDeviceConfig_SOC_RK3399:
@@ -1616,6 +1619,7 @@ func socTypeIsV4l2Stateful(SocType protocol.DeprecatedDeviceConfig_SOC) bool {
 		protocol.DeprecatedDeviceConfig_SOC_MT8192,
 		protocol.DeprecatedDeviceConfig_SOC_MT8195,
 		protocol.DeprecatedDeviceConfig_SOC_MT8186,
+		protocol.DeprecatedDeviceConfig_SOC_MT8188G,
 		protocol.DeprecatedDeviceConfig_SOC_RK3399:
 		return false
 	// TODO(stevecho): stateful is more common for now, but we can change this in the future

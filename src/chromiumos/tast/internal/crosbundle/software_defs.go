@@ -98,25 +98,26 @@ var softwareFeatureDefs = map[string]string{
 	"factory_flow":        "!no_factory_flow",
 	"fake_hps":            `"betty" || "tast_vm"`, // VMs run hpsd with --test (fake software device)
 	// TODO(http://b/271025366): Remove feedback when the bug is resolved.
-	"feedback":                `!("board:fizz" || "board:puff" || "board:rammus")`,
-	"firewall":                "!moblab", // Moblab has relaxed iptables rules
-	"flashrom":                `!"betty" && !"tast_vm"`,
-	"flex_id":                 "flex_id",                                // Enable using flex_id for enrollment
-	"fwupd":                   "fwupd",                                  // have sys-apps/fwupd installed.
-	"ghostscript":             "postscript",                             // Ghostscript and dependent packages available
-	"google_virtual_keyboard": "chrome_internal && internal && !moblab", // doesn't work on Moblab: https://crbug.com/949912
-	"gpu_sandboxing":          `!"betty" && !"tast_vm"`,                 // no GPU sandboxing on VMs: https://crbug.com/914688
-	"gsc":                     `"cr50_onboard" || "ti50_onboard"`,
-	"hana":                    "hana",
-	"hammerd":                 "hammerd",
-	"houdini":                 "houdini",
-	"houdini64":               "houdini64",
-	"hostap_hwsim":            "wifi_hostap_test",
-	"hps":                     "hps",
-	"hwdrm_stable":            `!("board:brya")`, // brya devices have FW corruption issues with HWDRM: b/243456977
-	"igt":                     `("video_cards_amdgpu" || "video_cards_intel" || "video_cards_mediatek" || "video_cards_msm") && !("kernel-4_4" || "kernel-4_14" || "kernel-4_19")`,
-	"iioservice":              "iioservice",
-	"inference_accuracy_eval": "inference_accuracy_eval",
+	"feedback":                  `!("board:fizz" || "board:puff" || "board:rammus")`,
+	"firewall":                  "!moblab", // Moblab has relaxed iptables rules
+	"flashrom":                  `!"betty" && !"tast_vm"`,
+	"first_class_servo_working": `!("board:brya" || "board:volteer")`,     // TODO(b/274634861): remove the first_class_servo_working when fixed.
+	"flex_id":                   "flex_id",                                // Enable using flex_id for enrollment
+	"fwupd":                     "fwupd",                                  // have sys-apps/fwupd installed.
+	"ghostscript":               "postscript",                             // Ghostscript and dependent packages available
+	"google_virtual_keyboard":   "chrome_internal && internal && !moblab", // doesn't work on Moblab: https://crbug.com/949912
+	"gpu_sandboxing":            `!"betty" && !"tast_vm"`,                 // no GPU sandboxing on VMs: https://crbug.com/914688
+	"gsc":                       `"cr50_onboard" || "ti50_onboard"`,
+	"hana":                      "hana",
+	"hammerd":                   "hammerd",
+	"houdini":                   "houdini",
+	"houdini64":                 "houdini64",
+	"hostap_hwsim":              "wifi_hostap_test",
+	"hps":                       "hps",
+	"hwdrm_stable":              `!("board:brya")`, // brya devices have FW corruption issues with HWDRM: b/243456977
+	"igt":                       `("video_cards_amdgpu" || "video_cards_intel" || "video_cards_mediatek" || "video_cards_msm") && !("kernel-4_4" || "kernel-4_14" || "kernel-4_19")`,
+	"iioservice":                "iioservice",
+	"inference_accuracy_eval":   "inference_accuracy_eval",
 	// IKEv2 is only supported on 4.19+ kernels.
 	"ikev2": `!("kernel-4_4" || "kernel-4_14")`,
 	// The io_uring syscalls are enabled on CrOS since kernel v5.15.

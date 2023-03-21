@@ -167,32 +167,6 @@ func NewProxy(ctx context.Context, servoHostPort, keyFile, keyDir string) (newPr
 			}
 		}()
 
-		logging.Infof(ctx, "Attempt to start servod at port %d at servo host %s:%d just in case that it has not been started", port, host, sshPort)
-		output, err := pxy.hst.CommandContext(ctx, "start", "servod", fmt.Sprintf("PORT=%d", port)).Output()
-		if err != nil {
-			logging.Infof(ctx, "Warning in running servod: %s: %v", string(output), err)
-		} else {
-			logging.Infof(ctx, "Started servod at port %d", port)
-			// Poll for a minute to make sure servod is ready, and get serials.
-			err := testing.Poll(ctx, func(ctx context.Context) error {
-				logging.Infof(ctx, "Wait for servod to be ready")
-				out, err := pxy.hst.CommandContext(ctx, "servodtool", "instance", "show", "-p", strconv.Itoa(port)).Output()
-				if err != nil {
-					return err
-				}
-				if strings.Contains(string(out), "serials :") {
-					serials := strings.Split(string(out), "\n")[1]
-					logging.Infof(ctx, "Started servod with serials %s", serials)
-					return nil
-				}
-				return errors.New("No servod scratch entry found, keep polling")
-			}, &testing.PollOptions{Interval: 2 * time.Second,
-				Timeout: time.Minute})
-			if err != nil {
-				return nil, err
-			}
-		}
-
 		// Next, forward a local port over the SSH connection to the servod port.
 		logging.Info(ctx, "Creating forwarded connection to port ", port)
 		pxy.fwd, err = pxy.hst.NewForwarder("localhost:0", fmt.Sprintf("localhost:%d", port),
@@ -223,6 +197,49 @@ func NewProxy(ctx context.Context, servoHostPort, keyFile, keyDir string) (newPr
 	}
 	toClose = nil // disarm cleanup
 	return &pxy, nil
+}
+
+// StartServo start servod and verify every 2 second until it is ready. Add check to avoid repeated attempting.
+func StartServo(ctx context.Context, servoHostPort, keyFile, keyDir string) (retErr error) {
+	host, port, sshPort, err := splitHostPort(servoHostPort)
+	if err != nil {
+		return err
+	}
+	// If the servod instance isn't running locally, assume that we need to connect to it via SSH.
+	if sshPort > 0 && !isDockerHost(host) && ((host != "localhost" && host != "127.0.0.1" && host != "::1") || sshPort != 22) {
+		// First, create an SSH connection to the remote system running servod.
+		sopt := ssh.Options{
+			KeyFile:        keyFile,
+			KeyDir:         keyDir,
+			ConnectTimeout: proxyTimeout,
+			WarnFunc:       func(msg string) { logging.Info(ctx, msg) },
+			Hostname:       net.JoinHostPort(host, fmt.Sprint(sshPort)),
+			User:           "root",
+		}
+		logging.Infof(ctx, "Opening Servo SSH connection to %s", sopt.Hostname)
+		hst, err := ssh.New(ctx, &sopt)
+		if err != nil {
+			return err
+		}
+
+		logging.Infof(ctx, "Attempt to start servod at port %d at servo host %s:%d just in case that it has not been started", port, host, sshPort)
+		if _, err := hst.CommandContext(ctx, "servodtool", "instance", "show", "-p", strconv.Itoa(port)).Output(); err == nil {
+			// Since servod has already been started, do not need to start again.
+			return nil
+		}
+		hst.CommandContext(ctx, "start", "servod", fmt.Sprintf("PORT=%d", port)).Output()
+		logging.Infof(ctx, "Started servod at port %d", port)
+		// Poll for a minute to make sure servod is ready, and get serials.
+		testing.Poll(ctx, func(ctx context.Context) error {
+			logging.Infof(ctx, "Wait for servod to be ready")
+			if _, err := hst.CommandContext(ctx, "servodtool", "instance", "show", "-p", strconv.Itoa(port)).Output(); err != nil {
+				return err
+			}
+			return nil
+		}, &testing.PollOptions{Interval: 2 * time.Second,
+			Timeout: time.Minute})
+	}
+	return nil
 }
 
 // logServoStatus logs the current servo status from the servo host.

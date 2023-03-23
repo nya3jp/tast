@@ -9,34 +9,34 @@
 // libraries. This package records stack traces and chained errors, and leaves
 // nicely formatted logs when tests fail.
 //
-// Simple usage
+// # Simple usage
 //
 // To construct a new error, use New or Errorf.
 //
-//  errors.New("process not found")
-//  errors.Errorf("process %d not found", pid)
+//	errors.New("process not found")
+//	errors.Errorf("process %d not found", pid)
 //
 // To construct an error by adding context to an existing error, use Wrap or
 // Wrapf.
 //
-//  errors.Wrap(err, "failed to connect to Chrome browser process")
-//  errors.Wrapf(err, "failed to connect to Chrome renderer process %d", pid)
+//	errors.Wrap(err, "failed to connect to Chrome browser process")
+//	errors.Wrapf(err, "failed to connect to Chrome renderer process %d", pid)
 //
 // A stack trace can be printed by passing an error to error-reporting methods
 // in testing.State, or formatting it with the fmt package with the "%+v" verb.
 //
-// Defining custom error types
+// # Defining custom error types
 //
 // Sometimes you may want to define custom error types, for example, to inspect
 // and react to errors. In that case, embed *E in your custom error struct.
 //
-//  type CustomError struct {
-//      *errors.E
-//  }
+//	type CustomError struct {
+//	    *errors.E
+//	}
 //
-//  if err := doSomething(); err != nil {
-//      return &CustomError{E: errors.Wrap(err, "something failed")}
-//  }
+//	if err := doSomething(); err != nil {
+//	    return &CustomError{E: errors.Wrap(err, "something failed")}
+//	}
 package errors
 
 import (
@@ -160,4 +160,9 @@ func As(err error, target interface{}) bool {
 // chain matches target.
 func Is(err, target error) bool {
 	return errors.Is(err, target)
+}
+
+// Join is a wrapper of built-in errors.Join.
+func Join(errs ...error) error {
+	return errors.Join(errs...)
 }

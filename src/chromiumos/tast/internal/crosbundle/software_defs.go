@@ -196,7 +196,8 @@ var softwareFeatureDefs = map[string]string{
 	// reven boards don't support pstore: b/234722825
 	"pstore": `!("betty" || "tast_vm" || "board:reven*")`,
 	// ptp_kvm is only available on ARM in kernel 5.10 or later.
-	"ptp_kvm": `"amd64" || (("arm" || "arm64") && !("kernel-4_4" || "kernel-4_14" || "kernel-4_19" || "kernel-5_4"))`,
+	// ptp_kvm is unreliable on amd64 in kernel 4.19.
+	"ptp_kvm": `("amd64" && !"kernel-4_19") || (("arm" || "arm64") && !("kernel-4_4" || "kernel-4_14" || "kernel-4_19" || "kernel-5_4"))`,
 	"qemu":    `"betty" || "tast_vm"`,
 	"racc":    "racc",
 	// weird missing-runner-after-reboot bug: https://crbug.com/909955

@@ -191,8 +191,9 @@ func (d *Driver) remoteRunnerClient() *runnerclient.Client {
 }
 
 func (d *Driver) remoteBundleClient(bundle string) *bundleclient.Client {
-	cmd := genericexec.CommandExec(filepath.Join(d.cfg.RemoteBundleDir(), bundle))
-	return bundleclient.New(cmd, d.cfg.MsgTimeout())
+	bundlePath := filepath.Join(d.cfg.RemoteBundleDir(), bundle)
+	cmd := genericexec.CommandExec(bundlePath)
+	return bundleclient.New(cmd, d.cfg.MsgTimeout(), bundlePath)
 }
 
 func resolveSSHConfig(ctx context.Context, target string) (alternateTarget, proxyCommand string) {

@@ -51,14 +51,21 @@ func (c *rpcConn) Conn() *grpc.ClientConn {
 type Client struct {
 	cmd        genericexec.Cmd
 	msgTimeout time.Duration
+	bundlePath string
 }
 
 // New creates a new Client.
-func New(cmd genericexec.Cmd, msgTimeOut time.Duration) *Client {
+func New(cmd genericexec.Cmd, msgTimeOut time.Duration, bundlePath string) *Client {
 	return &Client{
 		cmd:        cmd,
 		msgTimeout: msgTimeOut,
+		bundlePath: bundlePath, // bundlePath is used for debugging purpose.
 	}
+}
+
+// BundlePath returns the bundle path.
+func (c *Client) BundlePath() string {
+	return c.bundlePath
 }
 
 // dial connects to the test bundle and established a gRPC connection.
@@ -118,6 +125,7 @@ func LocalCommand(exec string, proxy bool, cc *target.ConnCache) *genericexec.SS
 
 // NewLocal creates a bundle client to the local bundle.
 func NewLocal(bundle, bundleDir string, proxy bool, cc *target.ConnCache, msgTimeout time.Duration) *Client {
-	cmd := LocalCommand(filepath.Join(bundleDir, bundle), proxy, cc)
-	return New(cmd, msgTimeout)
+	bundlePath := filepath.Join(bundleDir, bundle)
+	cmd := LocalCommand(bundlePath, proxy, cc)
+	return New(cmd, msgTimeout, filepath.Join(bundleDir, bundle))
 }

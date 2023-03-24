@@ -24,12 +24,22 @@ type Client struct {
 
 // Close closes the underlying connections.
 func (c *Client) Close(ctx context.Context) error {
-	err := c.cl.Close()
-	err2 := c.hst.Close(ctx)
-	if err != nil {
-		return err
+	var err, err2 error
+	if c.cl != nil {
+		err = c.cl.Close()
+		c.cl = nil
 	}
-	return err2
+	if c.hst != nil {
+		err2 = c.hst.Close(ctx)
+		c.hst = nil
+	}
+	if err != nil {
+		return errors.Wrap(err, "bundleclient.Close: failed to close SSH client")
+	}
+	if err2 != nil {
+		return errors.Wrap(err2, "bundleclient.Close: failed to close host connection")
+	}
+	return nil
 }
 
 // TestService returns test service client.

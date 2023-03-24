@@ -78,16 +78,22 @@ func (s *testServer) RunTests(srv protocol.TestService_RunTestsServer) error {
 
 	initReq, err := srv.Recv()
 	if err != nil {
-		return err
+		return errors.Wrap(err, "RunTests: failed to receive messages")
 	}
 	if _, ok := initReq.GetType().(*protocol.RunTestsRequest_RunTestsInit); !ok {
 		return errors.Errorf("RunTests: unexpected initial request message: got %T, want %T", initReq.GetType(), &protocol.RunTestsRequest_RunTestsInit{})
 	}
 
 	if initReq.GetRunTestsInit().GetRecursive() {
-		return runTestsRecursive(ctx, srv, initReq.GetRunTestsInit().GetRunConfig(), s.scfg, s.bundleParams)
+		if err := runTestsRecursive(ctx, srv, initReq.GetRunTestsInit().GetRunConfig(), s.scfg, s.bundleParams); err != nil {
+			return errors.Wrap(err, "RunTests: failed in run tests recursively")
+		}
+		return nil
 	}
-	return runTests(ctx, srv, initReq.GetRunTestsInit().GetRunConfig(), s.scfg, s.bundleParams.GetBundleConfig())
+	if err := runTests(ctx, srv, initReq.GetRunTestsInit().GetRunConfig(), s.scfg, s.bundleParams.GetBundleConfig()); err != nil {
+		return errors.Wrap(err, "RunTests: failed in run tests")
+	}
+	return nil
 }
 
 // listEntitiesRecursive lists all the entities this bundle has.

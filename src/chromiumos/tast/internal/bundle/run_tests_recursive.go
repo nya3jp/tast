@@ -8,6 +8,7 @@ import (
 	"context"
 	"sort"
 
+	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/bundle/bundleclient"
 	"chromiumos/tast/internal/command"
 	"chromiumos/tast/internal/logging"
@@ -75,15 +76,19 @@ func runTestsRecursive(ctx context.Context, srv protocol.TestService_RunTestsSer
 				},
 			})
 			if err != nil {
-				return nil, err
+				return nil, errors.Wrap(err, "failed to create bundle client")
 			}
 			defer func() {
-				if err := cl.Close(ctx); err != nil && retErr == nil {
-					retErr = err
+				if err := cl.Close(ctx); err != nil {
+					logging.Infof(ctx, "Warning: %v", errors.Wrap(err, "failed to close bundle client"))
 				}
 			}()
 		}
-		return listEntitiesRecursive(ctx, scfg.registry, rcfg.GetFeatures(), cl)
+		entities, err := listEntitiesRecursive(ctx, scfg.registry, rcfg.GetFeatures(), cl)
+		if err != nil {
+			return nil, err
+		}
+		return entities, nil
 	}()
 	if err != nil {
 		return err
@@ -92,7 +97,7 @@ func runTestsRecursive(ctx context.Context, srv protocol.TestService_RunTestsSer
 
 	connEnv, err := setUpConnection(ctx, scfg, rcfg, bcfg)
 	if err != nil {
-		return err
+		return errors.Wrap(err, "failed in setup connection with dut")
 	}
 	defer connEnv.close(ctx)
 
@@ -100,11 +105,11 @@ func runTestsRecursive(ctx context.Context, srv protocol.TestService_RunTestsSer
 	// fixtures for local tests.
 	env, err := setUpTestEnvironment(ctx, scfg, rcfg, bcfg)
 	if err != nil {
-		return err
+		return errors.Wrap(err, "failed to set up test environment")
 	}
 	defer func() {
 		if err := env.close(ctx); err != nil && retErr != nil {
-			retErr = err
+			retErr = errors.Wrap(err, "failed to closing test environment")
 		}
 	}()
 

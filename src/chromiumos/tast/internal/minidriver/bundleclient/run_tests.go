@@ -111,7 +111,7 @@ func (c *Client) RunTests(ctx context.Context, bcfg *protocol.BundleConfig, rcfg
 				if ok && grpcStatus.Code() == codes.Unavailable {
 					return errors.Wrapf(err, "connection to test bundle is broken due to abrupt shutdown of the bundle process or network connection")
 				}
-				return errors.Wrapf(err, "connection to test bundle broken")
+				return errors.Wrapf(err, "connection to test bundle %s broken", c.BundlePath())
 			}
 			if err := handleEvent(ctx, res, out, stream); err != nil {
 				return err

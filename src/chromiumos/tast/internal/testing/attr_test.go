@@ -77,6 +77,9 @@ func TestCheckKnownAttrs(t *testing.T) {
 			attrs: []string{"group:arc", "arc_core"},
 		},
 		{
+			attrs: []string{"group:arc", "arc_chromeos_vm"},
+		},
+		{
 			attrs: []string{"group:cq-minimal"},
 		},
 		{

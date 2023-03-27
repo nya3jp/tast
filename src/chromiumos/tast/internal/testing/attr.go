@@ -235,6 +235,10 @@ Tests in this group are not used for build verification.
 				Name: "arc_core",
 				Desc: `A group of tests which tests ARC Core functionality on its nightly build.`,
 			},
+			{
+				Name: "arc_chromeos_vm",
+				Desc: `A group of tests which run ARC functionality on ChromeOS VM nightly build.`,
+			},
 		},
 	},
 	{

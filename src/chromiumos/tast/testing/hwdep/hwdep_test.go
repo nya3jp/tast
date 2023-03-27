@@ -681,15 +681,15 @@ func TestDisplayPortConverter(t *testing.T) {
 		{&configpb.HardwareFeatures{
 			DpConverter: &configpb.HardwareFeatures_DisplayPortConverter{
 				Converters: []*configpb.Component_DisplayPortConverter{
-					&configpb.Component_DisplayPortConverter{Name: "RTD2141B"},
+					{Name: "RTD2141B"},
 				},
 			},
 		}, false},
 		{&configpb.HardwareFeatures{
 			DpConverter: &configpb.HardwareFeatures_DisplayPortConverter{
 				Converters: []*configpb.Component_DisplayPortConverter{
-					&configpb.Component_DisplayPortConverter{Name: "RTD2141B"},
-					&configpb.Component_DisplayPortConverter{Name: "PS175"},
+					{Name: "RTD2141B"},
+					{Name: "PS175"},
 				},
 			},
 		}, true},
@@ -960,4 +960,178 @@ func TestRuntimeProbeConfig(t *testing.T) {
 		t, c,
 		&frameworkprotocol.DeprecatedDeviceConfig{},
 		nil)
+}
+
+func TestGPUFamily(t *testing.T) {
+	c := hwdep.GPUFamily([]string{"tigerlake", "qualcomm"})
+	for _, tc := range []struct {
+		gpuFamily       string
+		expectSatisfied bool
+	}{
+		{"tigerlake", true},
+		{"qualcomm", true},
+		{"rogue", false},
+		{"rk3399", false},
+	} {
+		verifyCondition(
+			t, c,
+			&frameworkprotocol.DeprecatedDeviceConfig{},
+			&configpb.HardwareFeatures{
+				HardwareProbeConfig: &configpb.HardwareFeatures_HardwareProbe{
+					GpuFamily: tc.gpuFamily,
+				},
+			},
+			tc.expectSatisfied,
+		)
+	}
+	expectError(
+		t, c,
+		&frameworkprotocol.DeprecatedDeviceConfig{},
+		nil,
+	)
+}
+
+func TestSkipGPUFamily(t *testing.T) {
+	c := hwdep.SkipGPUFamily([]string{"tigerlake", "qualcomm"})
+	for _, tc := range []struct {
+		gpuFamily       string
+		expectSatisfied bool
+	}{
+		{"tigerlake", false},
+		{"qualcomm", false},
+		{"rogue", true},
+		{"rk3399", true},
+	} {
+		verifyCondition(
+			t, c,
+			&frameworkprotocol.DeprecatedDeviceConfig{},
+			&configpb.HardwareFeatures{
+				HardwareProbeConfig: &configpb.HardwareFeatures_HardwareProbe{
+					GpuFamily: tc.gpuFamily,
+				},
+			},
+			tc.expectSatisfied,
+		)
+	}
+	expectError(
+		t, c,
+		&frameworkprotocol.DeprecatedDeviceConfig{},
+		nil,
+	)
+}
+
+func TestGPUVendor(t *testing.T) {
+	c := hwdep.GPUVendor([]string{"intel", "amd"})
+	for _, tc := range []struct {
+		gpuVendor       string
+		expectSatisfied bool
+	}{
+		{"intel", true},
+		{"amd", true},
+		{"vmware", false},
+		{"nvidia", false},
+	} {
+		verifyCondition(
+			t, c,
+			&frameworkprotocol.DeprecatedDeviceConfig{},
+			&configpb.HardwareFeatures{
+				HardwareProbeConfig: &configpb.HardwareFeatures_HardwareProbe{
+					GpuVendor: tc.gpuVendor,
+				},
+			},
+			tc.expectSatisfied,
+		)
+	}
+	expectError(
+		t, c,
+		&frameworkprotocol.DeprecatedDeviceConfig{},
+		nil,
+	)
+}
+
+func TestSkipGPUVendor(t *testing.T) {
+	c := hwdep.SkipGPUVendor([]string{"intel", "amd"})
+	for _, tc := range []struct {
+		gpuVendor       string
+		expectSatisfied bool
+	}{
+		{"intel", false},
+		{"amd", false},
+		{"vmware", true},
+		{"nvidia", true},
+	} {
+		verifyCondition(
+			t, c,
+			&frameworkprotocol.DeprecatedDeviceConfig{},
+			&configpb.HardwareFeatures{
+				HardwareProbeConfig: &configpb.HardwareFeatures_HardwareProbe{
+					GpuVendor: tc.gpuVendor,
+				},
+			},
+			tc.expectSatisfied,
+		)
+	}
+	expectError(
+		t, c,
+		&frameworkprotocol.DeprecatedDeviceConfig{},
+		nil,
+	)
+}
+
+func TestCPUSocFamily(t *testing.T) {
+	c := hwdep.CPUSocFamily([]string{"intel", "amd"})
+	for _, tc := range []struct {
+		cpuSocFamily    string
+		expectSatisfied bool
+	}{
+		{"intel", true},
+		{"amd", true},
+		{"qualcomm", false},
+		{"mediatek", false},
+	} {
+		verifyCondition(
+			t, c,
+			&frameworkprotocol.DeprecatedDeviceConfig{},
+			&configpb.HardwareFeatures{
+				HardwareProbeConfig: &configpb.HardwareFeatures_HardwareProbe{
+					CpuSocFamily: tc.cpuSocFamily,
+				},
+			},
+			tc.expectSatisfied,
+		)
+	}
+	expectError(
+		t, c,
+		&frameworkprotocol.DeprecatedDeviceConfig{},
+		nil,
+	)
+}
+
+func TestSkipCPUSocFamily(t *testing.T) {
+	c := hwdep.SkipCPUSocFamily([]string{"intel", "amd"})
+	for _, tc := range []struct {
+		cpuSocFamily    string
+		expectSatisfied bool
+	}{
+		{"intel", false},
+		{"amd", false},
+		{"qualcomm", true},
+		{"mediatek", true},
+	} {
+		verifyCondition(
+			t, c,
+			&frameworkprotocol.DeprecatedDeviceConfig{},
+			&configpb.HardwareFeatures{
+				HardwareProbeConfig: &configpb.HardwareFeatures_HardwareProbe{
+					CpuSocFamily: tc.cpuSocFamily,
+				},
+			},
+			tc.expectSatisfied,
+		)
+	}
+	expectError(
+		t, c,
+		&frameworkprotocol.DeprecatedDeviceConfig{},
+		nil,
+	)
 }

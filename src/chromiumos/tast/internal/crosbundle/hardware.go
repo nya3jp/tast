@@ -128,6 +128,7 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		TrustedPlatformModule: &configpb.HardwareFeatures_TrustedPlatformModule{},
 		FwConfig:              &configpb.HardwareFeatures_FirmwareConfiguration{},
 		RuntimeProbeConfig:    &configpb.HardwareFeatures_RuntimeProbeConfig{},
+		HardwareProbeConfig:   &configpb.HardwareFeatures_HardwareProbe{},
 	}
 
 	formFactor, err := func() (string, error) {
@@ -731,6 +732,31 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		logging.Infof(ctx, "Config of Runtime Probe not found")
 		features.RuntimeProbeConfig.Present = configpb.HardwareFeatures_NOT_PRESENT
 	}
+
+	gpuFamily, gpuVendor, cpuSocFamily, err := func() (gpuFamily, gpuVendor, cpuSocFamily string, fetchErr error) {
+		out, err := exec.Command("/usr/local/graphics/hardware_probe", "--gpu-family", "--gpu-vendor", "--cpu-soc-family").Output()
+		if err != nil {
+			return "", "", "", err
+		}
+		fetch := func(regexStr, input string) string {
+			match := regexp.MustCompile(regexStr).FindStringSubmatch(input)
+			if match == nil {
+				fetchErr = errors.Wrapf(fetchErr, "regex (%v) not match", regexStr)
+				return ""
+			}
+			return match[1]
+		}
+		gpuFamily = fetch(`GPU_Family: (\S+)`, string(out))
+		gpuVendor = fetch(`GPU_Vendor: (\S+)`, string(out))
+		cpuSocFamily = fetch(`CPU_SOC_Family: (\S+)`, string(out))
+		return
+	}()
+	if err != nil {
+		logging.Infof(ctx, "failed to parse hardware_probe output: %v", err)
+	}
+	features.HardwareProbeConfig.GpuFamily = gpuFamily
+	features.HardwareProbeConfig.GpuVendor = gpuVendor
+	features.HardwareProbeConfig.CpuSocFamily = cpuSocFamily
 
 	return &protocol.HardwareFeatures{
 		HardwareFeatures:       features,

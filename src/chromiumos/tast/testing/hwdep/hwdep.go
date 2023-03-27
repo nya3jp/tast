@@ -1865,3 +1865,111 @@ func SeamlessRefreshRate() Condition {
 	// TODO: Determine at runtime if a device meets the requirements by inspecting EDID, kernel, and SoC versions.
 	return Model("mithrax", "taniks")
 }
+
+// GPUFamily is satisfied if the devices GPU family is categoried as one of the families specified.
+// For a complete list of values or to add new ones please check the pciid maps at
+// https://chromium.googlesource.com/chromiumos/platform/graphics/+/refs/heads/main/src/go.chromium.org/chromiumos/graphics-utils-go/hardware_probe/cmd/hardware_probe
+func GPUFamily(families []string) Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("DUT HardwareFeatures data is not given")
+		}
+		for _, family := range families {
+			if hf.GetHardwareProbeConfig().GetGpuFamily() == family {
+				return satisfied()
+			}
+		}
+		return unsatisfied("DUT GPU family is not met")
+	}}
+}
+
+// SkipGPUFamily is satisfied if the devices GPU family is none of the families specified.
+// For a complete list of values or to add new ones please check the pciid maps at
+// https://chromium.googlesource.com/chromiumos/platform/graphics/+/refs/heads/main/src/go.chromium.org/chromiumos/graphics-utils-go/hardware_probe/cmd/hardware_probe
+func SkipGPUFamily(families []string) Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("DUT HardwareFeatures data is not given")
+		}
+		for _, family := range families {
+			if hf.GetHardwareProbeConfig().GetGpuFamily() == family {
+				return unsatisfied("DUT GPU family matched with skip list")
+			}
+		}
+		return satisfied()
+	}}
+}
+
+// GPUVendor is satisfied if the devices GPU vendor is categoried as one of the vendors specified.
+// For a complete list of values or to add new ones please check the files at
+// https://chromium.googlesource.com/chromiumos/platform/graphics/+/refs/heads/main/src/go.chromium.org/chromiumos/graphics-utils-go/hardware_probe/cmd/hardware_probe
+func GPUVendor(vendors []string) Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("DUT HardwareFeatures data is not given")
+		}
+		for _, vendor := range vendors {
+			if hf.GetHardwareProbeConfig().GetGpuVendor() == vendor {
+				return satisfied()
+			}
+		}
+		return unsatisfied("DUT GPU vendor is not met")
+	}}
+}
+
+// SkipGPUVendor is satisfied if the devices GPU vendor is categoried as none of the vendors specified.
+// For a complete list of values or to add new ones please check the files at
+// https://chromium.googlesource.com/chromiumos/platform/graphics/+/refs/heads/main/src/go.chromium.org/chromiumos/graphics-utils-go/hardware_probe/cmd/hardware_probe
+func SkipGPUVendor(vendors []string) Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("DUT HardwareFeatures data is not given")
+		}
+		for _, vendor := range vendors {
+			if hf.GetHardwareProbeConfig().GetGpuVendor() == vendor {
+				return unsatisfied("DUT GPU vendor matched with skip list")
+			}
+		}
+		return satisfied()
+	}}
+}
+
+// CPUSocFamily is satisfied if the devices CPU SOC family is categoried as one of the families specified.
+// For a complete list of values or to add new ones please check the files at
+// https://chromium.googlesource.com/chromiumos/platform/graphics/+/refs/heads/main/src/go.chromium.org/chromiumos/graphics-utils-go/hardware_probe/cmd/hardware_probe
+func CPUSocFamily(families []string) Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("DUT HardwareFeatures data is not given")
+		}
+		for _, family := range families {
+			if hf.GetHardwareProbeConfig().GetCpuSocFamily() == family {
+				return satisfied()
+			}
+		}
+		return unsatisfied("DUT CPU soc family is not met")
+	}}
+}
+
+// SkipCPUSocFamily is satisfied if the devies CPU SOC family is none of the families specified.
+// For a complete list of values or to add new ones please check the files at
+// https://chromium.googlesource.com/chromiumos/platform/graphics/+/refs/heads/main/src/go.chromium.org/chromiumos/graphics-utils-go/hardware_probe/cmd/hardware_probe
+func SkipCPUSocFamily(families []string) Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("DUT HardwareFeatures data is not given")
+		}
+		for _, family := range families {
+			if hf.GetHardwareProbeConfig().GetCpuSocFamily() == family {
+				return unsatisfied("DUT CPU soc family matched with skip list")
+			}
+		}
+		return satisfied()
+	}}
+}

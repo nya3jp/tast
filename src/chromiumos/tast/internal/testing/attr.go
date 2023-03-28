@@ -1340,6 +1340,11 @@ from other existing groups (or use this group standalone).
 			},
 		},
 	},
+	{
+		Name:     "camera_dependent",
+		Contacts: []string{"chromeos-camera-eng@google.com", "chromeos-sw-engprod@google.com"},
+		Desc:     `A group of tests depending on camera but out of camera.*.`,
+	},
 }
 
 // validGroupMap is the name-keyed map of validGroups.

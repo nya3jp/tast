@@ -1325,6 +1325,21 @@ from other existing groups (or use this group standalone).
 		Contacts: []string{"kamilszarek@google.com", "chromeos-ent-test@google.com"},
 		Desc:     `Suite will run unowned tests at a minimul infra load.`,
 	},
+	{
+		Name:     "video_conference",
+		Contacts: []string{"cros-videoconferencing@google.com"},
+		Desc:     `video conference related tests.`,
+		Subattrs: []*attr{
+			{
+				Name: "video_conference_cq_critical",
+				Desc: `Indicate this test should be scheduled in cq as critial test.`,
+			},
+			{
+				Name: "video_conference_per_build",
+				Desc: `Indicate this test should be scheduled per build.`,
+			},
+		},
+	},
 }
 
 // validGroupMap is the name-keyed map of validGroups.

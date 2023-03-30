@@ -120,6 +120,7 @@ const (
 	Realtek8852CPCIE           = wlan.Realtek8852CPCIE
 	MediaTekMT7921PCIE         = wlan.MediaTekMT7921PCIE
 	MediaTekMT7921SDIO         = wlan.MediaTekMT7921SDIO
+	MediaTekMT7922PCIE         = wlan.MediaTekMT7922PCIE
 )
 
 // wifiDeviceListed returns whether a WiFi device given in HardwareFeatures is listed in the given list of names or not.
@@ -783,6 +784,7 @@ func Wifi80211ax() Condition {
 		Realtek8852CPCIE,
 		MediaTekMT7921PCIE,
 		MediaTekMT7921SDIO,
+		MediaTekMT7922PCIE,
 	)
 }
 

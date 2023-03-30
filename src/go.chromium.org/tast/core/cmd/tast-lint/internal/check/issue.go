@@ -18,7 +18,6 @@ type Issue struct {
 	Msg     string
 	Link    string
 	Fixable bool
-	Warning bool
 }
 
 func (i *Issue) String() string {

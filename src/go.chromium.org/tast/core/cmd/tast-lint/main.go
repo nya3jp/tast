@@ -18,11 +18,8 @@ import (
 
 // categorizeIssues categorize issues into auto-fixable and un-auto-fixable,
 // then returns devided two slices.
-func categorizeIssues(issues []*check.Issue) (fixable, unfixable, warning []*check.Issue) {
+func categorizeIssues(issues []*check.Issue) (fixable, unfixable []*check.Issue) {
 	for _, i := range issues {
-		if i.Warning {
-			warning = append(warning, i)
-		}
 		if i.Fixable {
 			fixable = append(fixable, i)
 		} else {
@@ -79,12 +76,7 @@ func main() {
 
 	if len(issues) > 0 && !*fix {
 		// categorize issues
-		fixable, unfixable, warning := categorizeIssues(issues)
-		if len(warning) > 0 {
-			fmt.Println("Please address the following warnings:")
-			report(warning)
-			fmt.Println()
-		}
+		fixable, unfixable := categorizeIssues(issues)
 		if len(unfixable) > 0 {
 			fmt.Println("Following errors should be modified by yourself:")
 			report(unfixable)

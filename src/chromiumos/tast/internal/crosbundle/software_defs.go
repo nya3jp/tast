@@ -274,9 +274,8 @@ var softwareFeatureDefs = map[string]string{
 	"watchdog": `watchdog`,
 	// nyan_kitty is skipped as its WiFi device is unresolvably flaky (crrev.com/c/944502),
 	// exhibiting very similar symptoms to crbug.com/693724, b/65858242, b/36264732.
-	"wifi":        `!"betty" && !"tast_vm" && !"nyan_kitty"`,
-	"wilco":       "wilco",
-	"wired_8021x": "wired_8021x",
+	"wifi":  `!"betty" && !"tast_vm" && !"nyan_kitty"`,
+	"wilco": "wilco",
 	// WireGuard is only supported on 5.4+ kernels.
 	"wireguard": `!("kernel-4_4" || "kernel-4_14" || "kernel-4_19")`,
 	"wpa3_sae":  "wpa3_sae",

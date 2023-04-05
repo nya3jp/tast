@@ -291,6 +291,7 @@ func checkFile(path git.CommitFile, data []byte, debug bool, fs *token.FileSet, 
 		issues = append(issues, check.ForbiddenBundleImports(fs, f)...)
 		issues = append(issues, check.ForbiddenCalls(fs, f, fix)...)
 		issues = append(issues, check.ForbiddenImports(fs, f)...)
+		issues = append(issues, check.WarningCalls(fs, f, fix)...)
 		issues = append(issues, check.InterFileRefs(fs, f)...)
 		issues = append(issues, check.Messages(fs, f, fix)...)
 		issues = append(issues, check.VerifyTestingStateStruct(fs, f)...)

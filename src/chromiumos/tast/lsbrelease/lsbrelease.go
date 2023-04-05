@@ -95,7 +95,8 @@ var allowedPkgs = []string{
 	"chromiumos/tast/local/graphics/trace",
 	"chromiumos/tast/local/graphics/expectations", // For per-board test expectations.
 	"chromiumos/tast/local/rialto",
-	"chromiumos/tast/local/screenshot", // For Board.
+	"chromiumos/tast/local/screenshot",  // For Board.
+	"chromiumos/tast/local/uidetection", // Build and board for uidetection analytics.
 	"chromiumos/tast/lsbrelease",
 	"chromiumos/tast/lsbrelease_test",
 	"chromiumos/tast/remote/bundles/cros/firmware",     // For finding firmware file.

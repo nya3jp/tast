@@ -115,6 +115,7 @@ var lookupWLANDev = map[DevInfo]DeviceID{
 	// as an identifier.
 	// 0x02f0 is for Quasar on CML; 0x4070, 0x0074, 0x6074 are for HrP2.
 	{Vendor: "0x8086", Device: "0x24fd", Subsystem: "0x0010"}: Intel8265,
+	{Vendor: "0x8086", Device: "0x02f0", Subsystem: "0x0030"}: Intel9000,
 	{Vendor: "0x8086", Device: "0x02f0", Subsystem: "0x0034"}: Intel9000,
 	{Vendor: "0x8086", Device: "0x02f0", Subsystem: "0x4070"}: Intel22560,
 	{Vendor: "0x8086", Device: "0x02f0", Subsystem: "0x0074"}: Intel22560,

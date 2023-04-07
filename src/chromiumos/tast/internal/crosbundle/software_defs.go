@@ -99,7 +99,8 @@ var softwareFeatureDefs = map[string]string{
 	"feedback":                  `!("board:fizz" || "board:puff" || "board:rammus")`,
 	"firewall":                  "!moblab", // Moblab has relaxed iptables rules
 	"flashrom":                  `!"betty" && !"tast_vm"`,
-	"first_class_servo_working": `!("board:brya" || "board:volteer")`,     // TODO(b/274634861): remove the first_class_servo_working when fixed.
+	"first_class_servo_working": `!("board:brya" || "board:volteer")`, // TODO(b/274634861): remove the first_class_servo_working when fixed.
+	"fpmcu_testing":             `!"manatee" && !"kernel-upstream"`,
 	"flex_id":                   "flex_id",                                // Enable using flex_id for enrollment
 	"fwupd":                     "fwupd",                                  // have sys-apps/fwupd installed.
 	"ghostscript":               "postscript",                             // Ghostscript and dependent packages available

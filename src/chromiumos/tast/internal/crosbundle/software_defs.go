@@ -190,6 +190,7 @@ var softwareFeatureDefs = map[string]string{
 	"pinweaver":                               `"ti50_onboard" || "cr50_onboard" || "pinweaver_csme" || ("tpm2_simulator" && "tpm2")`,
 	"play_store":                              `arc && !("board:novato" || "board:novato-arc64" || "board:novato-arcnext")`,
 	"plugin_vm":                               "pita", // boards that can run Plugin VM.
+	"printscanmgr":                            "printscanmgr",
 	"proprietary_codecs":                      "chrome_internal || chrome_media",
 	"protected_content":                       "cdm_factory_daemon",
 	// VM boards don't support pstore: https://crbug.com/971899

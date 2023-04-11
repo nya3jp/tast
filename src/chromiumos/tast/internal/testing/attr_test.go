@@ -110,6 +110,9 @@ func TestCheckKnownAttrs(t *testing.T) {
 			attrs: []string{"group:enterprise-reporting"},
 		},
 		{
+			attrs: []string{"group:external-dependency", "external-dependency_exemption"},
+		},
+		{
 			attrs: []string{"group:input-tools"},
 		},
 		{

@@ -54,6 +54,7 @@ const (
 	Intel22260
 	Intel22560
 	IntelAX201
+	IntelAX203
 	IntelAX211
 	BroadcomBCM4354SDIO
 	BroadcomBCM4356PCIE
@@ -83,6 +84,7 @@ var DeviceNames = map[DeviceID]string{
 	Intel22260:                 "Intel 22260",
 	Intel22560:                 "Intel 22560",
 	IntelAX201:                 "Intel AX 201",
+	IntelAX203:                 "Intel AX 203",
 	IntelAX211:                 "Intel AX 211",
 	BroadcomBCM4354SDIO:        "Broadcom BCM4354 SDIO",
 	BroadcomBCM4356PCIE:        "Broadcom BCM4356 PCIE",
@@ -129,6 +131,7 @@ var lookupWLANDev = map[DevInfo]DeviceID{
 	{Vendor: "0x8086", Device: "0xa0f0", Subsystem: "0x6074"}: Intel22560,
 	{Vendor: "0x8086", Device: "0x02f0", Subsystem: "0x0070"}: IntelAX201,
 	{Vendor: "0x8086", Device: "0xa0f0", Subsystem: "0x0070"}: IntelAX201,
+	{Vendor: "0x8086", Device: "0x54f0", Subsystem: "0x0274"}: IntelAX203,
 	{Vendor: "0x8086", Device: "0x51f0", Subsystem: "0x0090"}: IntelAX211,
 	{Vendor: "0x8086", Device: "0x51f1", Subsystem: "0x0090"}: IntelAX211,
 	{Vendor: "0x8086", Device: "0x51f1", Subsystem: "0x0094"}: IntelAX211,

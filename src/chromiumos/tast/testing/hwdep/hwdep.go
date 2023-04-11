@@ -111,6 +111,7 @@ const (
 	Intel22260                 = wlan.Intel22260
 	Intel22560                 = wlan.Intel22560
 	IntelAX201                 = wlan.IntelAX201
+	IntelAX203                 = wlan.IntelAX203
 	IntelAX211                 = wlan.IntelAX211
 	BroadcomBCM4354SDIO        = wlan.BroadcomBCM4354SDIO
 	BroadcomBCM4356PCIE        = wlan.BroadcomBCM4356PCIE
@@ -779,6 +780,7 @@ func Wifi80211ax() Condition {
 		Intel22260,
 		Intel22560,
 		IntelAX201,
+		IntelAX203,
 		IntelAX211,
 		Realtek8852APCIE,
 		Realtek8852CPCIE,

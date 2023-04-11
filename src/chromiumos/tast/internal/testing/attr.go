@@ -1247,6 +1247,11 @@ Parallels boot-up testing. Otherwise the same as group:crosbolt.`,
 		},
 	},
 	{
+		Name:     "cryptohome",
+		Contacts: []string{"cryptohome-core@google.com"},
+		Desc:     `A group of tests related to the cryptohomed system daemon.`,
+	},
+	{
 		Name:     "cros-tcp-grpc",
 		Contacts: []string{"jonfan@google.com", "chromeos-sw-engprod@google.com"},
 		Desc:     `A group of tests that test Tast TCP based gRPC services.`,

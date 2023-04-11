@@ -34,6 +34,7 @@ var softwareFeatureDefs = map[string]string{
 	"aslr":                         "!asan", // ASan instrumentation breaks ASLR
 	"auto_update_stable":           `!("board:*-*")`,
 	"biometrics_daemon":            "biod",
+	"bluetooth_floss":              `!("board:asuka" || "board:banon" || "board:bob" || "board:caroline" || "board:cave" || "board:celes" || "board:chell" || "board:coral" || "board:cyan" || "board:edgar" || "board:elm" || "board:hana" || "board:kefka" || "board:kevin" || "board:lars" || "board:pyro" || "board:reef" || "board:reks" || "board:relm" || "board:sand" || "board:scarlet" || "board:sentry" || "board:setzer" || "board:snappy" || "board:terra" || "board:ultima")`,
 	"boot_perf_info":               `!("board:reven*")`, // Reven (ChromeOS Flex) doesn't support boot performance metrics.
 	// TODO(b/225065082): Re-enable borealis on manatee
 	"borealis_host": "borealis_host && !manatee",

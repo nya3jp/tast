@@ -118,6 +118,7 @@ var softwareFeatureDefs = map[string]string{
 	"igt":                       `("video_cards_amdgpu" || "video_cards_intel" || "video_cards_mediatek" || "video_cards_msm") && !("kernel-4_4" || "kernel-4_14" || "kernel-4_19")`,
 	"iioservice":                "iioservice",
 	"inference_accuracy_eval":   "inference_accuracy_eval",
+	"inputs_deps":               `!("board:*-kernelnext")`,
 	// IKEv2 is only supported on 4.19+ kernels.
 	"ikev2": `!("kernel-4_4" || "kernel-4_14")`,
 	// The io_uring syscalls are enabled on CrOS since kernel v5.15.

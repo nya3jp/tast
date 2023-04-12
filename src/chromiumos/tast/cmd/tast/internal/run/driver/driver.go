@@ -18,6 +18,7 @@ import (
 	"chromiumos/tast/internal/debugger"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/minidriver/bundleclient"
+	"chromiumos/tast/internal/minidriver/servo"
 	"chromiumos/tast/internal/minidriver/target"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/run/genericexec"
@@ -51,6 +52,9 @@ type Driver struct {
 
 // New establishes a new connection to the target device and returns a Driver.
 func New(ctx context.Context, cfg *config.Config, rawTarget, role string) (*Driver, error) {
+	if err := servo.StartServo(ctx, target.ServoHost(ctx, role, cfg.TestVars()), cfg.ProtoSSHConfig().GetKeyFile(), cfg.ProtoSSHConfig().GetKeyDir()); err != nil {
+		logging.Infof(ctx, "Failed to connect to servo host %s", target.ServoHost(ctx, role, cfg.TestVars()))
+	}
 	// Use nil as connection cache if we should not connect to the target.
 	if !config.ShouldConnect(cfg.Target()) {
 		return &Driver{

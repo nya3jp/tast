@@ -6,12 +6,16 @@ package target
 
 import (
 	"context"
+	"net"
+	"time"
 
 	"chromiumos/tast/errors"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/minidriver/externalservers"
 	"chromiumos/tast/internal/minidriver/servo"
 	"chromiumos/tast/internal/protocol"
+	"chromiumos/tast/ssh"
+	"chromiumos/tast/testing"
 )
 
 // dutHelper provide utilities to perform operation on DUt.
@@ -26,22 +30,52 @@ type dutHelper struct {
 // using NewProxy to establish servo communication
 func newDUTHelper(ctx context.Context, cfg *protocol.SSHConfig, testVars map[string]string, role string) *dutHelper {
 	a := dutHelper{
-		servoSpec: servoHost(ctx, role, testVars),
+		servoSpec: ServoHost(ctx, role, testVars),
 		dutServer: dutHost(ctx, role, testVars),
 		cfg:       cfg,
 	}
 	if a.servoSpec == "" {
 		return &a
 	}
-	err := servo.StartServo(ctx, a.servoSpec, a.cfg.GetKeyFile(), a.cfg.GetKeyDir())
-	if err != nil {
-		logging.Infof(ctx, "Failed to connect to servo host %s", a.servoSpec)
+	if err := ensureDUTConnection(ctx, cfg.ConnectionSpec); err != nil {
+		logging.Infof(ctx, "Failed to connect to DUT %s", err)
 	}
 	return &a
 }
 
-// servoHost finds servo related information for a particular role from a variable to value map.
-func servoHost(ctx context.Context, role string, testVars map[string]string) string {
+// ensureDUTConnection poll for a minute to make sure DUT connection is ready
+// to prevent the accidental disconnection of the DUT after the servod is established.
+func ensureDUTConnection(ctx context.Context, target string) error {
+	logging.Infof(ctx, "Wait for DUT connection to be ready")
+	opts := &ssh.Options{}
+	if err := ssh.ParseTarget(target, opts); err != nil {
+		return err
+	}
+	host, port, err := net.SplitHostPort(opts.Hostname)
+	if err != nil {
+		return err
+	}
+	// Poll for a minute to make sure DUT connection is ready.
+	if err := testing.Poll(ctx, func(ctx context.Context) error {
+		if err := tryResolveDNS(ctx, host); err != nil {
+			return errors.Wrap(err, "* DNS resolution: FAIL: ")
+		}
+		if err := tryPing(ctx, host); err != nil {
+			return errors.Wrap(err, "* Ping: FAIL: ")
+		}
+		if err := tryRawConnect(ctx, host, port); err != nil {
+			return errors.Wrap(err, "* Connect: FAIL: ")
+		}
+		return nil
+	}, &testing.PollOptions{Interval: 10 * time.Second,
+		Timeout: time.Minute}); err != nil {
+		logging.Infof(ctx, "DUT connection testing poll fail: %v", err)
+	}
+	return nil
+}
+
+// ServoHost finds servo related information for a particular role from a variable to value map.
+func ServoHost(ctx context.Context, role string, testVars map[string]string) string {
 	if servoVarVal, ok := testVars["servers.servo"]; ok {
 		roleToServer, err := externalservers.ParseServerVarValues(servoVarVal)
 		if err == nil {

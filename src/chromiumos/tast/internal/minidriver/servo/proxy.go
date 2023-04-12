@@ -19,7 +19,6 @@ import (
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/ssh"
 	"chromiumos/tast/ssh/linuxssh"
-	"chromiumos/tast/testing"
 )
 
 const proxyTimeout = 10 * time.Second // max time for establishing SSH connection
@@ -201,6 +200,9 @@ func NewProxy(ctx context.Context, servoHostPort, keyFile, keyDir string) (newPr
 
 // StartServo start servod and verify every 2 second until it is ready. Add check to avoid repeated attempting.
 func StartServo(ctx context.Context, servoHostPort, keyFile, keyDir string) (retErr error) {
+	if servoHostPort == "" {
+		return nil
+	}
 	host, port, sshPort, err := splitHostPort(servoHostPort)
 	if err != nil {
 		return err
@@ -222,22 +224,17 @@ func StartServo(ctx context.Context, servoHostPort, keyFile, keyDir string) (ret
 			return err
 		}
 
-		logging.Infof(ctx, "Attempt to start servod at port %d at servo host %s:%d just in case that it has not been started", port, host, sshPort)
 		if _, err := hst.CommandContext(ctx, "servodtool", "instance", "show", "-p", strconv.Itoa(port)).Output(); err == nil {
 			// Since servod has already been started, do not need to start again.
 			return nil
 		}
 		hst.CommandContext(ctx, "start", "servod", fmt.Sprintf("PORT=%d", port)).Output()
-		logging.Infof(ctx, "Started servod at port %d", port)
-		// Poll for a minute to make sure servod is ready, and get serials.
-		testing.Poll(ctx, func(ctx context.Context) error {
-			logging.Infof(ctx, "Wait for servod to be ready")
-			if _, err := hst.CommandContext(ctx, "servodtool", "instance", "show", "-p", strconv.Itoa(port)).Output(); err != nil {
-				return err
-			}
-			return nil
-		}, &testing.PollOptions{Interval: 2 * time.Second,
-			Timeout: time.Minute})
+		logging.Infof(ctx, "Start servod at port %d at servo host %s:%d", port, host, sshPort)
+		// Provide servod up to 120 second to prepare, otherwise it will time out.
+		logging.Infof(ctx, "Wait for servod to be ready")
+		if _, err := hst.CommandContext(ctx, "servodtool", "instance", "wait-for-active", "--timeout", "120", "-p", strconv.Itoa(port)).Output(); err != nil {
+			return err
+		}
 	}
 	return nil
 }

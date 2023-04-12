@@ -947,25 +947,25 @@ func WifiIntel() Condition {
 // WifiQualcomm returns a hardware dependency condition that if satisfied, indicates
 // that a device uses Qualcomm WiFi.
 func WifiQualcomm() Condition {
-	// TODO(crbug.com/1070299): we don't yet have relevant fields in device.Config
-	// about WiFi chip, so list the known platforms here for now.
-	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
-		platformCondition := Platform(
-			"grunt", "kukui", "scarlet", "strongbad", "trogdor", "trogdor-kernelnext",
-		)
-		if satisfied, reason, err := platformCondition.Satisfied(f); err != nil || !satisfied {
-			return satisfied, reason, err
-		}
-		// barla has Realtek WiFi chip.
-		modelCondition := SkipOnModel(
-			"barla",
-		)
-		if satisfied, reason, err := modelCondition.Satisfied(f); err != nil || !satisfied {
-			return satisfied, reason, err
-		}
-		return satisfied()
-	},
-	}
+	return WifiDevice(
+		QualcommAtherosQCA6174,
+		QualcommAtherosQCA6174SDIO,
+		QualcommWCN3990,
+		QualcommWCN6750,
+		QualcommWCN6855,
+	)
+}
+
+// WifiNotQualcomm returns a hardware dependency condition that if satisfied, indicates
+// that a device doesn't use Qualcomm WiFi.
+func WifiNotQualcomm() Condition {
+	return SkipOnWifiDevice(
+		QualcommAtherosQCA6174,
+		QualcommAtherosQCA6174SDIO,
+		QualcommWCN3990,
+		QualcommWCN6750,
+		QualcommWCN6855,
+	)
 }
 
 // WifiSAP returns a hardware dependency condition that if satisfied, indicates

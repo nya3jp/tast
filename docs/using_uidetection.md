@@ -26,7 +26,7 @@ current state of the UI. The accessibility tree has access to:
 
 That being said, it does not have access to UI elements in containers or VMs
 (like VDI and Crostini). To close the automation gap for these apps, we
-introduce another UI automation library [uidetection] that does not reply on the
+introduce another UI automation library [uidetection] that does not rely on the
 accessibility tree. [uidetection] makes use of computer vision techniques and is
 able to detect UI elements from the screen directly.
 

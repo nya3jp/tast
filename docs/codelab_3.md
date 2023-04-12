@@ -61,6 +61,7 @@ func init() {
 			"my-group@chromium.org",
 			"my-ldap@chromium.org",
 		},
+		BugComponent: "b:1034625",
 		Attr:         []string{"group:mainline", "informational"},
 		SoftwareDeps: []string{"chrome"},
 		Fixture:      "chromeLoggedIn",
@@ -361,6 +362,7 @@ func init() {
 		Contacts: []string{
 			"chromeos-sw-engprod@google.com",
 		},
+		BugComponent: "b:1034625",
 		Attr:         []string{"group:mainline", "informational"},
 		SoftwareDeps: []string{"chrome"},
 		Fixture:      "chromeLoggedIn",

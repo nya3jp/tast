@@ -268,6 +268,9 @@ var softwareFeatureDefs = map[string]string{
 	// on all boards.
 	"virtual_susupend_time_injection": `amd64 && ("kernel-4_19" || "kernel-5_4" || "kernel-5_10")`,
 	"virtual_usb_printer":             `!"kernel-4_4"`,
+	// VM boards with vkms enabled can test screen configuration changes like
+	// setting resolution.
+	"vkms": "vkms",
 	// Some VM builds actually can run nested VM with right host configuration.
 	// But we haven't enable this feature on builders. For now, just disable
 	// vm_host feature for VM builds.

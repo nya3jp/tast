@@ -157,6 +157,8 @@ var softwareFeatureDefs = map[string]string{
 	"nnapi_vendor_driver":       "nnapi && !betty && !tast_vm",
 	"no_amd_cpu":                "!amd_cpu",
 	"no_android":                "!arc",
+	"no_android_vm_r":           `!(arc && arcvm && "android-vm-rvc" && !manatee)`,
+	"no_android_vm_t":           `!(arc && arcvm && "android-vm-tm")`,
 	"no_arc_userdebug":          "!(cheets_userdebug || cheets_userdebug_64)",
 	"no_arc_x86":                "!(amd64 && cheets_user)",
 	"no_arm":                    "!arm",

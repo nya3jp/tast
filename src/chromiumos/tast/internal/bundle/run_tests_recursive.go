@@ -109,7 +109,11 @@ func runTestsRecursive(ctx context.Context, srv protocol.TestService_RunTestsSer
 	}
 	defer func() {
 		if err := env.close(ctx); err != nil && retErr != nil {
-			retErr = errors.Wrap(err, "failed to closing test environment")
+			if retErr != nil {
+				logging.Info(ctx, "Failed to close test environment: ", err)
+			} else {
+				retErr = errors.Wrap(err, "failed to close test environment")
+			}
 		}
 	}()
 

@@ -1247,9 +1247,44 @@ Parallels boot-up testing. Otherwise the same as group:crosbolt.`,
 		},
 	},
 	{
+		Name:     "attestation",
+		Contacts: []string{"cros-hwsec@google.com"},
+		Desc:     `A group of tests related to the attestationd system daemon.`,
+	},
+	{
+		Name:     "bootlockbox",
+		Contacts: []string{"cros-hwsec@google.com"},
+		Desc:     `A group of tests related to the bootlockboxd system daemon.`,
+	},
+	{
+		Name:     "chaps",
+		Contacts: []string{"cros-hwsec@google.com"},
+		Desc:     `A group of tests related to the chapsd system daemon.`,
+	},
+	{
 		Name:     "cryptohome",
 		Contacts: []string{"cryptohome-core@google.com"},
 		Desc:     `A group of tests related to the cryptohomed system daemon.`,
+	},
+	{
+		Name:     "hwsec_infra",
+		Contacts: []string{"cros-hwsec@google.com"},
+		Desc:     `A group of tests related to the hwsec related low-level libraries & daemons.`,
+	},
+	{
+		Name:     "tpm_manager",
+		Contacts: []string{"cros-hwsec@google.com"},
+		Desc:     `A group of tests related to the tpm_managerd system daemon.`,
+	},
+	{
+		Name:     "u2fd",
+		Contacts: []string{"cros-hwsec@google.com"},
+		Desc:     `A group of tests related to the u2fd system daemon.`,
+	},
+	{
+		Name:     "vtpm",
+		Contacts: []string{"cros-hwsec@google.com"},
+		Desc:     `A group of tests related to the vtpmd system daemon.`,
 	},
 	{
 		Name:     "cros-tcp-grpc",

@@ -13,7 +13,6 @@ import (
 	"strings"
 	"time"
 
-	frameworkprotocol "chromiumos/tast/framework/protocol"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/planner/internal/entity"
 	"chromiumos/tast/internal/planner/internal/output"
@@ -22,6 +21,8 @@ import (
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/internal/timing"
 	"chromiumos/tast/internal/usercode"
+
+	frameworkprotocol "go.chromium.org/tast/core/framework/protocol"
 )
 
 // Config contains details about how to run fixtures.

@@ -17,7 +17,6 @@ import (
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/errors"
-	frameworkprotocol "chromiumos/tast/framework/protocol"
 	"chromiumos/tast/internal/debugger"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/minidriver"
@@ -26,6 +25,8 @@ import (
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/run/reporting"
 	"chromiumos/tast/internal/run/resultsjson"
+
+	frameworkprotocol "go.chromium.org/tast/core/framework/protocol"
 )
 
 // TestRecursively is environment variable key which is set to "0" to disable

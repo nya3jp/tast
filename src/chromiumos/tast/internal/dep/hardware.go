@@ -5,7 +5,7 @@
 package dep
 
 import (
-	"chromiumos/tast/framework/protocol"
+	"go.chromium.org/tast/core/framework/protocol"
 )
 
 // HardwareDeps is exported as chromiumos/tast/testing/hwdep.Deps. Please find its document for details.

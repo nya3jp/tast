@@ -24,7 +24,6 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/sharding"
 	"chromiumos/tast/ctxutil"
 	"chromiumos/tast/errors"
-	frameworkprotocol "chromiumos/tast/framework/protocol"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/run/devserver"
@@ -32,6 +31,8 @@ import (
 	"chromiumos/tast/internal/run/resultsjson"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/internal/xcontext"
+
+	frameworkprotocol "go.chromium.org/tast/core/framework/protocol"
 )
 
 const (

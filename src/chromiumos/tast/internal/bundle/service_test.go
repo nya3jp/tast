@@ -11,10 +11,11 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"google.golang.org/protobuf/testing/protocmp"
 
-	frameworkprotocol "chromiumos/tast/framework/protocol"
 	"chromiumos/tast/internal/bundle/bundletest"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testing"
+
+	frameworkprotocol "go.chromium.org/tast/core/framework/protocol"
 )
 
 func TestTestServiceListEntities(t *gotesting.T) {

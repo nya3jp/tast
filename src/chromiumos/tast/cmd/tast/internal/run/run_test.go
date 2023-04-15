@@ -23,7 +23,6 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run"
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/runtest"
-	frameworkprotocol "chromiumos/tast/framework/protocol"
 	"chromiumos/tast/internal/devserver/devservertest"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/logging/loggingtest"
@@ -32,6 +31,8 @@ import (
 	"chromiumos/tast/internal/run/reporting"
 	"chromiumos/tast/internal/run/resultsjson"
 	"chromiumos/tast/internal/testing"
+
+	frameworkprotocol "go.chromium.org/tast/core/framework/protocol"
 )
 
 // resultsCmpOpts is a common options used to compare []*resultsjson.Result.

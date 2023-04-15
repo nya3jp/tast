@@ -23,9 +23,10 @@ import (
 	configpb "go.chromium.org/chromiumos/config/go/api"
 
 	"chromiumos/tast/errors"
-	"chromiumos/tast/framework/protocol"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/testing/wlan"
+
+	"go.chromium.org/tast/core/framework/protocol"
 )
 
 // GSCKeyID is a hex value that represents a key used to sign a GSC image.

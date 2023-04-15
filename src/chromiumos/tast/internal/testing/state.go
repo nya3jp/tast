@@ -65,12 +65,13 @@ import (
 
 	"chromiumos/tast/dut"
 	"chromiumos/tast/errors"
-	frameworkprotocol "chromiumos/tast/framework/protocol"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testcontext"
 	"chromiumos/tast/internal/timing"
 	"chromiumos/tast/internal/usercode"
+
+	frameworkprotocol "go.chromium.org/tast/core/framework/protocol"
 )
 
 const (

@@ -16,12 +16,13 @@ import (
 	"github.com/golang/protobuf/ptypes/empty"
 	"google.golang.org/grpc"
 
-	frameworkprotocol "chromiumos/tast/framework/protocol"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/planner"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/internal/timing"
+
+	frameworkprotocol "go.chromium.org/tast/core/framework/protocol"
 )
 
 // fixtureService implements FixtureServiceServer gRPC service.

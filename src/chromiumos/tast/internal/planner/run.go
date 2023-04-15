@@ -17,7 +17,6 @@ import (
 	"time"
 
 	"chromiumos/tast/errors"
-	frameworkprotocol "chromiumos/tast/framework/protocol"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/planner/internal/entity"
 	"chromiumos/tast/internal/planner/internal/fixture"
@@ -27,6 +26,8 @@ import (
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/internal/timing"
 	"chromiumos/tast/internal/usercode"
+
+	frameworkprotocol "go.chromium.org/tast/core/framework/protocol"
 )
 
 // OutputStream is an interface to report streamed outputs of multiple entity runs.

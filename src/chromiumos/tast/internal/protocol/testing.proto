@@ -9,7 +9,7 @@ package tast.core;
 import "google/protobuf/duration.proto";
 import "google/protobuf/timestamp.proto";
 
-import "chromiumos/tast/framework/protocol/dutfeatures.proto";
+import "go.chromium.org/tast/core/framework/protocol/dutfeatures.proto";
 import "features.proto";
 
 option go_package = "chromiumos/tast/internal/protocol";

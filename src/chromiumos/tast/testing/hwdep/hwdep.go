@@ -14,9 +14,10 @@ import (
 	configpb "go.chromium.org/chromiumos/config/go/api"
 
 	"chromiumos/tast/errors"
-	"chromiumos/tast/framework/protocol"
 	"chromiumos/tast/internal/dep"
 	"chromiumos/tast/testing/wlan"
+
+	"go.chromium.org/tast/core/framework/protocol"
 )
 
 // These are form factor values that can be passed to FormFactor and SkipOnFormFactor.

@@ -14,10 +14,11 @@ import (
 
 	"chromiumos/tast/autocaps"
 	"chromiumos/tast/errors"
-	protocol "chromiumos/tast/framework/protocol"
 	"chromiumos/tast/internal/expr"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/lsbrelease"
+
+	protocol "go.chromium.org/tast/core/framework/protocol"
 )
 
 const (

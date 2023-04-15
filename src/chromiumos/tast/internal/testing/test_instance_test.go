@@ -17,10 +17,11 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"google.golang.org/protobuf/testing/protocmp"
 
-	frameworkprotocol "chromiumos/tast/framework/protocol"
 	"chromiumos/tast/internal/dep"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/testing/hwdep"
+
+	frameworkprotocol "go.chromium.org/tast/core/framework/protocol"
 )
 
 // TESTINSTANCETEST is a public test function with a name that's chosen to be appropriate for this file's

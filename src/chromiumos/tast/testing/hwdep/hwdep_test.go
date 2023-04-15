@@ -9,9 +9,10 @@ import (
 
 	configpb "go.chromium.org/chromiumos/config/go/api"
 
-	frameworkprotocol "chromiumos/tast/framework/protocol"
 	"chromiumos/tast/testing/hwdep"
 	"chromiumos/tast/testing/wlan"
+
+	frameworkprotocol "go.chromium.org/tast/core/framework/protocol"
 )
 
 func verifyCondition(t *testing.T, c hwdep.Condition, dc *frameworkprotocol.DeprecatedDeviceConfig, features *configpb.HardwareFeatures, expectSatisfied bool) {

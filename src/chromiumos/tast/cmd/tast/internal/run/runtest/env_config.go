@@ -9,10 +9,11 @@ import (
 	"fmt"
 	"time"
 
-	frameworkprotocol "chromiumos/tast/framework/protocol"
 	"chromiumos/tast/internal/fakesshserver"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testing"
+
+	frameworkprotocol "go.chromium.org/tast/core/framework/protocol"
 )
 
 // envConfig contains configurations of the testing environment.

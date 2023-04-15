@@ -26,9 +26,10 @@ import (
 	"google.golang.org/protobuf/testing/protocmp"
 
 	"chromiumos/tast/errors"
-	frameworkprotocol "chromiumos/tast/framework/protocol"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testing"
+
+	frameworkprotocol "go.chromium.org/tast/core/framework/protocol"
 	"go.chromium.org/tast/core/testutil"
 )
 

@@ -8,7 +8,8 @@ import (
 	"context"
 
 	"chromiumos/tast/dut"
-	"chromiumos/tast/framework/protocol"
+
+	"go.chromium.org/tast/core/framework/protocol"
 )
 
 // RuntimeConfig contains details about how an individual test should be run.

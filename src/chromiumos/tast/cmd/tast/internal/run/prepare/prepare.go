@@ -20,7 +20,6 @@ import (
 	"chromiumos/tast/cmd/tast/internal/build"
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/driver"
-	fwprotocol "chromiumos/tast/framework/protocol"
 	"chromiumos/tast/internal/debugger"
 	"chromiumos/tast/internal/linuxssh"
 	"chromiumos/tast/internal/logging"
@@ -28,6 +27,8 @@ import (
 	"chromiumos/tast/internal/testing"
 	"chromiumos/tast/internal/timing"
 	"chromiumos/tast/ssh"
+
+	fwprotocol "go.chromium.org/tast/core/framework/protocol"
 )
 
 // CheckPrivateBundleFlag instructed in cfg,

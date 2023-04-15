@@ -14,7 +14,6 @@ import (
 	"google.golang.org/protobuf/types/known/durationpb"
 
 	"chromiumos/tast/ctxutil"
-	frameworkprotocol "chromiumos/tast/framework/protocol"
 	"chromiumos/tast/internal/linuxssh"
 	"chromiumos/tast/internal/logging"
 	"chromiumos/tast/internal/minidriver/bundleclient"
@@ -25,6 +24,8 @@ import (
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/run/reporting"
 	"chromiumos/tast/internal/run/resultsjson"
+
+	frameworkprotocol "go.chromium.org/tast/core/framework/protocol"
 )
 
 const (

@@ -11,8 +11,9 @@ import (
 	"strings"
 
 	"chromiumos/tast/errors"
-	frameworkprotocol "chromiumos/tast/framework/protocol"
 	"chromiumos/tast/internal/protocol"
+
+	frameworkprotocol "go.chromium.org/tast/core/framework/protocol"
 )
 
 // Deps contains all information about dependencies tests have.

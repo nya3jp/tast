@@ -6,7 +6,7 @@ syntax = "proto3";
 
 package tast.core;
 
-import "chromiumos/tast/framework/protocol/dutfeatures.proto";
+import "go.chromium.org/tast/core/framework/protocol/dutfeatures.proto";
 
 option go_package = "chromiumos/tast/internal/protocol";
 

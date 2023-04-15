@@ -20,10 +20,11 @@ import (
 
 	"chromiumos/tast/cmd/tast/internal/build"
 	"chromiumos/tast/errors"
-	frameworkprotocol "chromiumos/tast/framework/protocol"
 	"chromiumos/tast/internal/command"
 	"chromiumos/tast/internal/debugger"
 	"chromiumos/tast/internal/protocol"
+
+	frameworkprotocol "go.chromium.org/tast/core/framework/protocol"
 )
 
 // Mode describes the action to perform.

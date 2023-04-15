@@ -11,8 +11,9 @@ import (
 	"google.golang.org/grpc"
 
 	"chromiumos/tast/errors"
-	frameworkprotocol "chromiumos/tast/framework/protocol"
 	"chromiumos/tast/internal/run/resultsjson"
+
+	frameworkprotocol "go.chromium.org/tast/core/framework/protocol"
 )
 
 // RPCClient implements a client of the reporting gRPC service.

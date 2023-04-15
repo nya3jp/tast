@@ -13,7 +13,7 @@ import (
 	configpb "go.chromium.org/chromiumos/config/go/api"
 	"google.golang.org/protobuf/proto"
 
-	"chromiumos/tast/framework/protocol"
+	"go.chromium.org/tast/core/framework/protocol"
 )
 
 func TestGetDiskSize(t *testing.T) {

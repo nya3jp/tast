@@ -8,9 +8,10 @@ import (
 	"context"
 	"fmt"
 
-	frameworkprotocol "chromiumos/tast/framework/protocol"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/lsbrelease"
+
+	frameworkprotocol "go.chromium.org/tast/core/framework/protocol"
 )
 
 // GetDUTInfo implements the GetDUTInfo RPC method for ChromeOS.

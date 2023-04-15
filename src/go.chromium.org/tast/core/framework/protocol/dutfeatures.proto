@@ -8,7 +8,7 @@ package tast.core;
 
 import "chromiumos/config/api/topology.proto";
 
-option go_package = "chromiumos/tast/framework/protocol";
+option go_package = "go.chromium.org/tast/core/framework/protocol";
 
 // DUTFeatures represents a set of features the DUT provides.
 message DUTFeatures {

@@ -10,7 +10,7 @@ import "google/protobuf/duration.proto";
 import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
 
-option go_package = "chromiumos/tast/framework/protocol";
+option go_package = "go.chromium.org/tast/core/framework/protocol";
 
 // Reports service is invoked by Tast CLI for reporting its test results and
 // logs.

@@ -9,10 +9,11 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 
-	frameworkprotocol "chromiumos/tast/framework/protocol"
 	"chromiumos/tast/internal/dep"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/testing/hwdep"
+
+	frameworkprotocol "go.chromium.org/tast/core/framework/protocol"
 )
 
 func TestCheckDeps(t *testing.T) {

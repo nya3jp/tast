@@ -12,9 +12,10 @@ import (
 	"os"
 	"path/filepath"
 
-	frameworkprotocol "chromiumos/tast/framework/protocol"
 	"chromiumos/tast/internal/command"
 	"chromiumos/tast/internal/protocol"
+
+	frameworkprotocol "go.chromium.org/tast/core/framework/protocol"
 )
 
 // RunnerType describes the type of test runner that is using this package.

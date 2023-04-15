@@ -7,7 +7,6 @@ package planner
 import (
 	"context"
 
-	frameworkprotocol "chromiumos/tast/framework/protocol"
 	"chromiumos/tast/internal/minidriver"
 	"chromiumos/tast/internal/minidriver/failfast"
 	"chromiumos/tast/internal/minidriver/target"
@@ -15,6 +14,8 @@ import (
 	"chromiumos/tast/internal/planner/internal/output"
 	"chromiumos/tast/internal/protocol"
 	"chromiumos/tast/internal/testing"
+
+	frameworkprotocol "go.chromium.org/tast/core/framework/protocol"
 )
 
 // ExternalTarget specifies the external target bundle to run.

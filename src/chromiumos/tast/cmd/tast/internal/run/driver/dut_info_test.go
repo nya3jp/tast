@@ -14,8 +14,9 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/driver"
 	"chromiumos/tast/cmd/tast/internal/run/runtest"
-	frameworkprotocol "chromiumos/tast/framework/protocol"
 	"chromiumos/tast/internal/protocol"
+
+	frameworkprotocol "go.chromium.org/tast/core/framework/protocol"
 )
 
 func TestDriver_GetDUTInfo(t *testing.T) {

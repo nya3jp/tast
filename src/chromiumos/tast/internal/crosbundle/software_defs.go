@@ -76,7 +76,7 @@ var softwareFeatureDefs = map[string]string{
 	"crossystem":        `!"betty" && !"tast_vm"`,
 	"cups":              "cups",
 	"diagnostics":       `"diagnostics" && !"betty" && !"tast_vm"`, // VMs do not have hardware to diagnose. https://crbug.com/1126619
-	"dlc":               "dlc && dlc_test",
+	"dlc":               "dlc",
 	"dptf":              "dptf",
 	"device_crash":      `!("board:samus")`, // Samus devices do not reliably come back after kernel crashes. crbug.com/1045821
 	"dmverity_stable":   `"kernel-4_4" || "kernel-4_14"`,

@@ -11,9 +11,9 @@ import (
 	"path/filepath"
 	"testing"
 
-	"chromiumos/tast/internal/logging"
-	"chromiumos/tast/internal/logging/loggingtest"
-	"chromiumos/tast/internal/sshtest"
+	"go.chromium.org/tast/core/tastuseonly/logging"
+	"go.chromium.org/tast/core/tastuseonly/logging/loggingtest"
+	"go.chromium.org/tast/core/tastuseonly/sshtest"
 	"chromiumos/tast/ssh/linuxssh"
 	"go.chromium.org/tast/core/testutil"
 )

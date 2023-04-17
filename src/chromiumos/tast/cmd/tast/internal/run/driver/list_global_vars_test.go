@@ -14,7 +14,7 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/driver"
 	"chromiumos/tast/cmd/tast/internal/run/runtest"
-	"chromiumos/tast/internal/testing"
+	"go.chromium.org/tast/core/tastuseonly/testing"
 )
 
 func newDriverForGlobalRuntimeVars(t *gotesting.T) (context.Context, *driver.Driver) {

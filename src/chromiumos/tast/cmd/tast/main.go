@@ -14,8 +14,8 @@ import (
 	"github.com/google/subcommands"
 	"golang.org/x/crypto/ssh/terminal"
 
-	"chromiumos/tast/internal/command"
-	"chromiumos/tast/internal/logging"
+	"go.chromium.org/tast/core/tastuseonly/command"
+	"go.chromium.org/tast/core/tastuseonly/logging"
 )
 
 // Version is the version info of this command. It is filled in during emerge.

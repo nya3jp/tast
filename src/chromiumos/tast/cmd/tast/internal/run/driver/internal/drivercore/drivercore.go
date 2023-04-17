@@ -6,7 +6,7 @@
 package drivercore
 
 import (
-	"chromiumos/tast/internal/protocol"
+	"go.chromium.org/tast/core/tastuseonly/protocol"
 )
 
 // BundleEntity is a pair of a ResolvedEntity and its bundle name.

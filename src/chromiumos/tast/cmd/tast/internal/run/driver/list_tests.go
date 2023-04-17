@@ -8,7 +8,7 @@ import (
 	"context"
 
 	"chromiumos/tast/errors"
-	"chromiumos/tast/internal/protocol"
+	"go.chromium.org/tast/core/tastuseonly/protocol"
 )
 
 // ListMatchedTests enumerates tests matched with the user-supplied patterns.

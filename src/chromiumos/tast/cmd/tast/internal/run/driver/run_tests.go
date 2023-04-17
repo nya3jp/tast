@@ -17,14 +17,14 @@ import (
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/errors"
-	"chromiumos/tast/internal/debugger"
-	"chromiumos/tast/internal/logging"
-	"chromiumos/tast/internal/minidriver"
-	"chromiumos/tast/internal/minidriver/failfast"
-	"chromiumos/tast/internal/minidriver/processor"
-	"chromiumos/tast/internal/protocol"
-	"chromiumos/tast/internal/run/reporting"
-	"chromiumos/tast/internal/run/resultsjson"
+	"go.chromium.org/tast/core/tastuseonly/debugger"
+	"go.chromium.org/tast/core/tastuseonly/logging"
+	"go.chromium.org/tast/core/tastuseonly/minidriver"
+	"go.chromium.org/tast/core/tastuseonly/minidriver/failfast"
+	"go.chromium.org/tast/core/tastuseonly/minidriver/processor"
+	"go.chromium.org/tast/core/tastuseonly/protocol"
+	"go.chromium.org/tast/core/tastuseonly/run/reporting"
+	"go.chromium.org/tast/core/tastuseonly/run/resultsjson"
 
 	frameworkprotocol "go.chromium.org/tast/core/framework/protocol"
 )

@@ -16,8 +16,8 @@ import (
 
 	"chromiumos/tast/cmd/tast/internal/run/driver"
 	"chromiumos/tast/cmd/tast/internal/run/runtest"
-	"chromiumos/tast/internal/fakesshserver"
-	"chromiumos/tast/internal/minidriver/diagnose"
+	"go.chromium.org/tast/core/tastuseonly/fakesshserver"
+	"go.chromium.org/tast/core/tastuseonly/minidriver/diagnose"
 	"go.chromium.org/tast/core/testutil"
 )
 

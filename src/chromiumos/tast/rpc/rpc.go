@@ -14,9 +14,9 @@ import (
 
 	"chromiumos/tast/dut"
 	"chromiumos/tast/errors"
-	"chromiumos/tast/internal/protocol"
-	"chromiumos/tast/internal/rpc"
-	"chromiumos/tast/internal/testing"
+	"go.chromium.org/tast/core/tastuseonly/protocol"
+	"go.chromium.org/tast/core/tastuseonly/rpc"
+	"go.chromium.org/tast/core/tastuseonly/testing"
 	"chromiumos/tast/ssh"
 )
 

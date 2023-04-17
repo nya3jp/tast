@@ -16,8 +16,8 @@ import (
 	"github.com/google/subcommands"
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
-	"chromiumos/tast/internal/logging"
-	"chromiumos/tast/internal/run/resultsjson"
+	"go.chromium.org/tast/core/tastuseonly/logging"
+	"go.chromium.org/tast/core/tastuseonly/run/resultsjson"
 )
 
 // listCmd implements subcommands.Command to support listing tests.

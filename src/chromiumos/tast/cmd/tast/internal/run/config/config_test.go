@@ -17,8 +17,8 @@ import (
 	"github.com/google/go-cmp/cmp/cmpopts"
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
-	"chromiumos/tast/internal/debugger"
-	"chromiumos/tast/internal/protocol"
+	"go.chromium.org/tast/core/tastuseonly/debugger"
+	"go.chromium.org/tast/core/tastuseonly/protocol"
 	"go.chromium.org/tast/core/testutil"
 )
 

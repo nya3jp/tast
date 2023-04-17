@@ -5,7 +5,7 @@
 package testing
 
 import (
-	"chromiumos/tast/internal/testing"
+	"go.chromium.org/tast/core/tastuseonly/testing"
 )
 
 // Service contains information about a gRPC service exported for remote tests.

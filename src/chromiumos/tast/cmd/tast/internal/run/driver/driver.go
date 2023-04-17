@@ -15,14 +15,16 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/driver/internal/drivercore"
 	"chromiumos/tast/cmd/tast/internal/run/driver/internal/runnerclient"
 	"chromiumos/tast/cmd/tast/internal/run/driver/internal/sshconfig"
-	"chromiumos/tast/internal/debugger"
-	"chromiumos/tast/internal/logging"
-	"chromiumos/tast/internal/minidriver/bundleclient"
-	"chromiumos/tast/internal/minidriver/servo"
-	"chromiumos/tast/internal/minidriver/target"
-	"chromiumos/tast/internal/protocol"
-	"chromiumos/tast/internal/run/genericexec"
+
 	"chromiumos/tast/ssh"
+
+	"go.chromium.org/tast/core/tastuseonly/debugger"
+	"go.chromium.org/tast/core/tastuseonly/logging"
+	"go.chromium.org/tast/core/tastuseonly/minidriver/bundleclient"
+	"go.chromium.org/tast/core/tastuseonly/minidriver/servo"
+	"go.chromium.org/tast/core/tastuseonly/minidriver/target"
+	"go.chromium.org/tast/core/tastuseonly/protocol"
+	"go.chromium.org/tast/core/tastuseonly/run/genericexec"
 )
 
 const (

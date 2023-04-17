@@ -5,7 +5,7 @@
 package testing
 
 import (
-	"chromiumos/tast/internal/testing"
+	"go.chromium.org/tast/core/tastuseonly/testing"
 )
 
 // Precondition represents a precondition that must be satisfied before a test is run.

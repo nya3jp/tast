@@ -17,7 +17,7 @@ import (
 
 	"github.com/google/subcommands"
 
-	"chromiumos/tast/internal/run/resultsjson"
+	"go.chromium.org/tast/core/tastuseonly/run/resultsjson"
 	"go.chromium.org/tast/core/testutil"
 )
 

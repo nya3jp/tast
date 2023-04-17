@@ -7,7 +7,7 @@ package testing
 import (
 	"regexp"
 
-	"chromiumos/tast/internal/testing"
+	"go.chromium.org/tast/core/tastuseonly/testing"
 )
 
 // NewTestGlobRegexp returns a compiled regular expression corresponding to g,

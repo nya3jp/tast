@@ -14,7 +14,7 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/driver"
 	"chromiumos/tast/cmd/tast/internal/run/runtest"
-	"chromiumos/tast/internal/protocol"
+	"go.chromium.org/tast/core/tastuseonly/protocol"
 	"go.chromium.org/tast/core/testutil"
 )
 

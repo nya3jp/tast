@@ -20,9 +20,9 @@ import (
 
 	"chromiumos/tast/cmd/tast/internal/build"
 	"chromiumos/tast/errors"
-	"chromiumos/tast/internal/command"
-	"chromiumos/tast/internal/debugger"
-	"chromiumos/tast/internal/protocol"
+	"go.chromium.org/tast/core/tastuseonly/command"
+	"go.chromium.org/tast/core/tastuseonly/debugger"
+	"go.chromium.org/tast/core/tastuseonly/protocol"
 
 	frameworkprotocol "go.chromium.org/tast/core/framework/protocol"
 )

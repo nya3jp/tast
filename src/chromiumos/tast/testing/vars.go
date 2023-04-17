@@ -9,8 +9,8 @@ import (
 	"strings"
 
 	"chromiumos/tast/caller"
-	"chromiumos/tast/internal/packages"
-	"chromiumos/tast/internal/testing"
+	"go.chromium.org/tast/core/tastuseonly/packages"
+	"go.chromium.org/tast/core/tastuseonly/testing"
 )
 
 // VarString define a structure for global runtime variables of string type.

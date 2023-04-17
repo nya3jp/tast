@@ -11,7 +11,7 @@ import (
 
 	"chromiumos/tast/cmd/tast/internal/run/driver"
 	"chromiumos/tast/cmd/tast/internal/run/runtest"
-	"chromiumos/tast/internal/fakesshserver"
+	"go.chromium.org/tast/core/tastuseonly/fakesshserver"
 )
 
 func TestDriver(t *testing.T) {

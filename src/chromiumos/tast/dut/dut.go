@@ -13,9 +13,9 @@ import (
 	"time"
 
 	"chromiumos/tast/errors"
-	"chromiumos/tast/internal/linuxssh"
-	"chromiumos/tast/internal/logging"
-	"chromiumos/tast/internal/testingutil"
+	"go.chromium.org/tast/core/tastuseonly/linuxssh"
+	"go.chromium.org/tast/core/tastuseonly/logging"
+	"go.chromium.org/tast/core/tastuseonly/testingutil"
 	"chromiumos/tast/ssh"
 )
 

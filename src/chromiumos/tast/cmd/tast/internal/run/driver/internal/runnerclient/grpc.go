@@ -16,11 +16,11 @@ import (
 
 	"chromiumos/tast/cmd/tast/internal/run/driver/internal/drivercore"
 	"chromiumos/tast/errors"
-	"chromiumos/tast/internal/logging"
-	"chromiumos/tast/internal/protocol"
-	"chromiumos/tast/internal/rpc"
-	"chromiumos/tast/internal/run/genericexec"
-	"chromiumos/tast/internal/testing"
+	"go.chromium.org/tast/core/tastuseonly/logging"
+	"go.chromium.org/tast/core/tastuseonly/protocol"
+	"go.chromium.org/tast/core/tastuseonly/rpc"
+	"go.chromium.org/tast/core/tastuseonly/run/genericexec"
+	"go.chromium.org/tast/core/tastuseonly/testing"
 )
 
 // Client is a GRPC-protocol client to test_runner.

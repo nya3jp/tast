@@ -9,7 +9,7 @@ import (
 	"io"
 
 	"chromiumos/tast/errors"
-	"chromiumos/tast/internal/protocol"
+	"go.chromium.org/tast/core/tastuseonly/protocol"
 )
 
 // RunTests requests to run tests according to the given RunConfig.

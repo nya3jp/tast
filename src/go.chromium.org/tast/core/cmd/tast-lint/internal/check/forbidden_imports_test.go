@@ -37,6 +37,7 @@ import (
 	"chromiumos/tast/common/foo"
 	"chromiumos/tast/local/foo"
 	"chromiumos/tast/remote/foo"
+	"go.chromium.org/tast/core/tastuseonly/run"
 	"some/other/package"
 )
 `
@@ -48,11 +49,13 @@ import (
 		filepath: "src/chromiumos/tast/local/testfile.go",
 		want: []string{
 			"src/chromiumos/tast/local/testfile.go:6:2: Non-remote package should not import remote package chromiumos/tast/remote/foo",
+			"src/chromiumos/tast/local/testfile.go:7:2: Test package should not import tastuseonly package go.chromium.org/tast/core/tastuseonly/run",
 		},
 	}, {
 		filepath: "src/chromiumos/tast/remote/testfile.go",
 		want: []string{
 			"src/chromiumos/tast/remote/testfile.go:5:2: Non-local package should not import local package chromiumos/tast/local/foo",
+			"src/chromiumos/tast/remote/testfile.go:7:2: Test package should not import tastuseonly package go.chromium.org/tast/core/tastuseonly/run",
 		},
 	}, {
 		filepath: "src/chromiumos/tast/common/testfile.go",

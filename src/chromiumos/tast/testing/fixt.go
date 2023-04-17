@@ -5,7 +5,7 @@
 package testing
 
 import (
-	"chromiumos/tast/internal/testing"
+	"go.chromium.org/tast/core/tastuseonly/testing"
 )
 
 // Fixture describes a fixture registered to the framework.

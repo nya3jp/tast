@@ -9,9 +9,9 @@ import (
 	"fmt"
 	"time"
 
-	"chromiumos/tast/internal/fakesshserver"
-	"chromiumos/tast/internal/protocol"
-	"chromiumos/tast/internal/testing"
+	"go.chromium.org/tast/core/tastuseonly/fakesshserver"
+	"go.chromium.org/tast/core/tastuseonly/protocol"
+	"go.chromium.org/tast/core/tastuseonly/testing"
 
 	frameworkprotocol "go.chromium.org/tast/core/framework/protocol"
 )

@@ -6,7 +6,7 @@
 package caller
 
 import (
-	"chromiumos/tast/internal/caller"
+	"go.chromium.org/tast/core/tastuseonly/caller"
 )
 
 // Get returns the package path-qualified name of a function in the current call

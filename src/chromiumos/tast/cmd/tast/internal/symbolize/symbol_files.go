@@ -13,7 +13,7 @@ import (
 	"sync/atomic"
 
 	"chromiumos/tast/cmd/tast/internal/symbolize/breakpad"
-	"chromiumos/tast/internal/logging"
+	"go.chromium.org/tast/core/tastuseonly/logging"
 )
 
 // symbolFileInfo contains a module's path and corresponding Breakpad ID. See breakpad.ModuleInfo.

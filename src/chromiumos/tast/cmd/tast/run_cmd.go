@@ -17,10 +17,10 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/ctxutil"
 	"chromiumos/tast/errors"
-	"chromiumos/tast/internal/command"
-	"chromiumos/tast/internal/logging"
-	"chromiumos/tast/internal/timing"
-	"chromiumos/tast/internal/xcontext"
+	"go.chromium.org/tast/core/tastuseonly/command"
+	"go.chromium.org/tast/core/tastuseonly/logging"
+	"go.chromium.org/tast/core/tastuseonly/timing"
+	"go.chromium.org/tast/core/tastuseonly/xcontext"
 )
 
 const (

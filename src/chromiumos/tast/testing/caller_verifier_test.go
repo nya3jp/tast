@@ -8,16 +8,16 @@ import (
 	"regexp"
 	gotesting "testing"
 
-	"chromiumos/tast/internal/caller"
+	"go.chromium.org/tast/core/tastuseonly/caller"
 )
 
 func TestFuncNameVerify(t *gotesting.T) {
-	v := newCallerVerifier(regexp.MustCompile("^go.chromium.org/tast/testing.TestFuncNameVerify$"))
+	v := newCallerVerifier(regexp.MustCompile("^chromiumos/tast/testing.TestFuncNameVerify$"))
 	if err := v.verifyAndRegister(caller.Func(1)); err != nil {
 		t.Error("Unexpected verification failure: ", err)
 	}
 
-	v = newCallerVerifier(regexp.MustCompile("^go.chromium.org/tast/testing.NoMatchFuncName$"))
+	v = newCallerVerifier(regexp.MustCompile("^hromiumos/tast/core/testing.NoMatchFuncName$"))
 	if err := v.verifyAndRegister(caller.Func(1)); err == nil {
 		t.Error("Unexpected verification pass for unmatched function name")
 	}

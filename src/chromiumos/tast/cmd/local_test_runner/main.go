@@ -13,8 +13,8 @@ package main
 import (
 	"os"
 
-	"chromiumos/tast/internal/crosbundle"
-	"chromiumos/tast/internal/runner"
+	"go.chromium.org/tast/core/tastuseonly/crosbundle"
+	"go.chromium.org/tast/core/tastuseonly/runner"
 )
 
 func main() {

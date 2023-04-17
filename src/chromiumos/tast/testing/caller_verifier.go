@@ -8,8 +8,6 @@ import (
 	"fmt"
 	"regexp"
 	"runtime"
-
-	"chromiumos/tast/internal/packages"
 )
 
 // callerVerifier is to verify testing.AddTest() function callers.
@@ -34,7 +32,7 @@ func newCallerVerifier(pattern *regexp.Regexp) *callerVerifier {
 // - the function name at the given pc matches with the required pattern.
 // - this function is not called twice or more for a file of the pc.
 func (v *callerVerifier) verifyAndRegister(f *runtime.Func, pc uintptr) error {
-	if !v.funcPattern.MatchString(packages.Normalize(f.Name())) {
+	if !v.funcPattern.MatchString(f.Name()) {
 		return fmt.Errorf("test registration needs to be done in %s: %s", v.funcPattern, f.Name())
 	}
 

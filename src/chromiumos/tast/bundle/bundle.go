@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"os"
 
-	"chromiumos/tast/internal/bundle"
+	"go.chromium.org/tast/core/tastuseonly/bundle"
 )
 
 // Delegate injects functions as a part of test bundle framework implementation.

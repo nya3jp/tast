@@ -15,8 +15,8 @@ import (
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/cmd/tast/internal/run/driver"
 	"chromiumos/tast/cmd/tast/internal/run/runtest"
-	"chromiumos/tast/internal/protocol"
-	"chromiumos/tast/internal/testing"
+	"go.chromium.org/tast/core/tastuseonly/protocol"
+	"go.chromium.org/tast/core/tastuseonly/testing"
 )
 
 func newDriverForListingTests(t *gotesting.T) (context.Context, *driver.Driver, *protocol.Features) {

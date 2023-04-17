@@ -28,7 +28,7 @@ func TestDeprecatedAPIs(t *testing.T) {
 
 import (
 	b "chromiumos/tast/bundle"
-	"chromiumos/tast/internal/bundle"
+	"go.chromium.org/tast/core/tastuseonly/bundle"
 	"chromiumos/tast/local/testexec"
 	"syscall"
 )

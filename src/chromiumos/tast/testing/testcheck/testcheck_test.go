@@ -8,7 +8,7 @@ import (
 	gotesting "testing"
 	"time"
 
-	"chromiumos/tast/internal/testing"
+	"go.chromium.org/tast/core/tastuseonly/testing"
 	"chromiumos/tast/testing/testcheck"
 )
 

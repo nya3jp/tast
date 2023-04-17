@@ -5,7 +5,7 @@
 package testing
 
 import (
-	"chromiumos/tast/internal/testing"
+	"go.chromium.org/tast/core/tastuseonly/testing"
 )
 
 // State holds state relevant to the execution of a single test.

@@ -15,7 +15,7 @@ import (
 	"strings"
 
 	"chromiumos/tast/errors"
-	"chromiumos/tast/internal/linuxssh"
+	"go.chromium.org/tast/core/tastuseonly/linuxssh"
 	"chromiumos/tast/ssh"
 )
 

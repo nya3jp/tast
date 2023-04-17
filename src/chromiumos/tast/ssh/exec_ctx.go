@@ -15,7 +15,7 @@ import (
 
 	"chromiumos/tast/errors"
 	"chromiumos/tast/exec"
-	"chromiumos/tast/internal/logging"
+	"go.chromium.org/tast/core/tastuseonly/logging"
 	"go.chromium.org/tast/core/shutil"
 )
 

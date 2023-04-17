@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"chromiumos/tast/internal/logging"
+	"go.chromium.org/tast/core/tastuseonly/logging"
 )
 
 // StreamFile stream a file from the source file at target DUT to a destination

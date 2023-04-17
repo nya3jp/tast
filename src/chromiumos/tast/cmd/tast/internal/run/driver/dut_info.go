@@ -9,9 +9,9 @@ import (
 
 	"chromiumos/tast/cmd/tast/internal/run/config"
 	"chromiumos/tast/errors"
-	"chromiumos/tast/internal/logging"
-	"chromiumos/tast/internal/protocol"
-	"chromiumos/tast/internal/timing"
+	"go.chromium.org/tast/core/tastuseonly/logging"
+	"go.chromium.org/tast/core/tastuseonly/protocol"
+	"go.chromium.org/tast/core/tastuseonly/timing"
 )
 
 // GetDUTInfo retrieves various DUT information needed for test execution.

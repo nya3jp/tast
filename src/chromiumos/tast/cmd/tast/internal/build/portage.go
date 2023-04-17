@@ -16,7 +16,7 @@ import (
 	"strings"
 	"time"
 
-	"chromiumos/tast/internal/timing"
+	"go.chromium.org/tast/core/tastuseonly/timing"
 	"go.chromium.org/tast/core/shutil"
 )
 

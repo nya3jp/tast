@@ -8,9 +8,9 @@ import (
 	"context"
 
 	"chromiumos/tast/errors"
-	"chromiumos/tast/internal/logging"
-	"chromiumos/tast/internal/protocol"
-	"chromiumos/tast/internal/timing"
+	"go.chromium.org/tast/core/tastuseonly/logging"
+	"go.chromium.org/tast/core/tastuseonly/protocol"
+	"go.chromium.org/tast/core/tastuseonly/timing"
 )
 
 // DownloadPrivateBundles downloads and installs a private test bundle archive

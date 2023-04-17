@@ -14,7 +14,7 @@ import (
 	"time"
 
 	"chromiumos/tast/errors"
-	"chromiumos/tast/internal/logging"
+	"go.chromium.org/tast/core/tastuseonly/logging"
 )
 
 // DialProxyCommand creates a new connection using the specified proxy command.

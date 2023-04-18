@@ -380,33 +380,6 @@ Tests in this group are not used for build verification.
 		Desc:     `A group of essential inputs IME and Virtual Keyboard tests running in google3.`,
 	},
 	{
-		Name:     "ml_service",
-		Contacts: []string{"chrome-knowledge-eng@google.com"},
-		Desc:     `A group of tests for features involving ML service.`,
-		Subattrs: []*attr{
-			{
-				Name: "ml_service_ondevice_document_scanner",
-				Desc: `A group of tests that test the on-device document scanner.`,
-			},
-			{
-				Name: "ml_service_ondevice_grammar_check",
-				Desc: `A group of tests that test the on-device grammar check.`,
-			},
-			{
-				Name: "ml_service_ondevice_handwriting",
-				Desc: `A group of tests that test the on-device handwriting.`,
-			},
-			{
-				Name: "ml_service_ondevice_speech",
-				Desc: `A group of tests that test the on-device voice input.`,
-			},
-			{
-				Name: "ml_service_ondevice_text_suggestions",
-				Desc: `A group of tests that test the on-device text suggestions.`,
-			},
-		},
-	},
-	{
 		Name:     "firmware",
 		Contacts: []string{"chromeos-faft@google.com", "jbettis@chromium.org"},
 		Desc:     `A group of tests for firmware (AP, EC, GSC)`,

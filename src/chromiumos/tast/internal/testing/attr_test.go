@@ -119,9 +119,6 @@ func TestCheckKnownAttrs(t *testing.T) {
 			attrs: []string{"group:input-tools-upstream"},
 		},
 		{
-			attrs: []string{"group:ml_service"},
-		},
-		{
 			attrs: []string{"group:flashrom"},
 		},
 		{

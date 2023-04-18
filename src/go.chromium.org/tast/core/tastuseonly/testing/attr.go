@@ -1372,6 +1372,17 @@ from other existing groups (or use this group standalone).
 		Contacts: []string{"chromeos-camera-eng@google.com", "chromeos-sw-engprod@google.com"},
 		Desc:     `A group of tests depending on camera but out of camera.*.`,
 	},
+	{
+		Name:     "power",
+		Contacts: []string{"chromeos-platform-power@google.com", "chromeos-pvs-eng@google.com"},
+		Desc:     `Tests measuring power.`,
+		Subattrs: []*attr{
+			{
+				Name: "power_cpd",
+				Desc: `Tests relying on CPD to measure power at the battery.`,
+			},
+		},
+	},
 }
 
 // validGroupMap is the name-keyed map of validGroups.

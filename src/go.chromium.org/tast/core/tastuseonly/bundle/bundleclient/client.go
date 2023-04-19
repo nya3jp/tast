@@ -11,9 +11,9 @@ import (
 	"time"
 
 	"chromiumos/tast/errors"
+	"chromiumos/tast/ssh"
 	"go.chromium.org/tast/core/tastuseonly/protocol"
 	"go.chromium.org/tast/core/tastuseonly/rpc"
-	"chromiumos/tast/ssh"
 )
 
 // Client is a bundle client.

@@ -9,9 +9,9 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 
+	"chromiumos/tast/testing/hwdep"
 	"go.chromium.org/tast/core/tastuseonly/dep"
 	"go.chromium.org/tast/core/tastuseonly/protocol"
-	"chromiumos/tast/testing/hwdep"
 
 	frameworkprotocol "go.chromium.org/tast/core/framework/protocol"
 )

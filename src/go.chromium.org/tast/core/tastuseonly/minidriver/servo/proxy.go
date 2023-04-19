@@ -16,9 +16,9 @@ import (
 	"github.com/docker/docker/client"
 
 	"chromiumos/tast/errors"
-	"go.chromium.org/tast/core/tastuseonly/logging"
 	"chromiumos/tast/ssh"
 	"chromiumos/tast/ssh/linuxssh"
+	"go.chromium.org/tast/core/tastuseonly/logging"
 )
 
 const proxyTimeout = 10 * time.Second // max time for establishing SSH connection

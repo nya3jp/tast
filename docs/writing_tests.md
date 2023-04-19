@@ -197,7 +197,7 @@ Documentation] page.
 [gofmt]: https://golang.org/cmd/gofmt/
 [go vet]: https://golang.org/cmd/vet/
 [golint]: https://github.com/golang/lint
-[tast-lint]: https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/src/chromiumos/tast/cmd/tast-lint/
+[tast-lint]: https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/src/go.chromium.org/tast/core/cmd/tast-lint/
 [Effective Go]: https://golang.org/doc/effective_go.html
 [Go Code Review Comments]: https://github.com/golang/go/wiki/CodeReviewComments
 [Go FAQ]: https://golang.org/doc/faq

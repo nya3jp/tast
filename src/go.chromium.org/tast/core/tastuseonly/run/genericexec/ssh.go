@@ -11,8 +11,8 @@ import (
 	"io"
 
 	"chromiumos/tast/errors"
-	"go.chromium.org/tast/core/tastuseonly/debugger"
 	"chromiumos/tast/ssh"
+	"go.chromium.org/tast/core/tastuseonly/debugger"
 )
 
 // SSHCmd represents a remote command to execute via SSH.

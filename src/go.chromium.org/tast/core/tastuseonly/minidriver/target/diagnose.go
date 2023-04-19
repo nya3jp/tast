@@ -13,8 +13,8 @@ import (
 	"time"
 
 	"chromiumos/tast/errors"
-	"go.chromium.org/tast/core/tastuseonly/logging"
 	"chromiumos/tast/ssh"
+	"go.chromium.org/tast/core/tastuseonly/logging"
 )
 
 // diagnoseNetwork runs network diagnosis to debug SSH connection issues.

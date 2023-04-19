@@ -9,10 +9,10 @@ import (
 	"time"
 
 	"chromiumos/tast/errors"
+	"chromiumos/tast/ssh"
 	"go.chromium.org/tast/core/tastuseonly/logging"
 	"go.chromium.org/tast/core/tastuseonly/protocol"
 	"go.chromium.org/tast/core/tastuseonly/timing"
-	"chromiumos/tast/ssh"
 )
 
 const (

@@ -17,9 +17,9 @@ import (
 
 	cryptossh "golang.org/x/crypto/ssh"
 
+	"chromiumos/tast/ssh"
 	"go.chromium.org/tast/core/tastuseonly/run/genericexec"
 	"go.chromium.org/tast/core/tastuseonly/sshtest"
-	"chromiumos/tast/ssh"
 	"go.chromium.org/tast/core/testutil"
 )
 

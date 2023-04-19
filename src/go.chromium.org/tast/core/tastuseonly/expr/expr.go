@@ -19,12 +19,12 @@ import (
 //
 // Expressions are supplied as strings consisting of the following tokens:
 //
-//	* Attributes, either as bare identifiers (only if compliant with
-//	  https://golang.org/ref/spec#Identifiers) or as double-quoted strings
-//	  (in which '*' characters are interpreted as wildcards)
-//	* Binary operators: && (and), || (or)
-//	* Unary operator: ! (not)
-//	* Grouping: (, )
+//   - Attributes, either as bare identifiers (only if compliant with
+//     https://golang.org/ref/spec#Identifiers) or as double-quoted strings
+//     (in which '*' characters are interpreted as wildcards)
+//   - Binary operators: && (and), || (or)
+//   - Unary operator: ! (not)
+//   - Grouping: (, )
 //
 // The expression syntax is conveniently a subset of Go's syntax, so Go's parser and ast
 // packages are used to convert the initial expression into a binary expression tree.

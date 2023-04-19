@@ -20,8 +20,8 @@ import (
 	"golang.org/x/sys/unix"
 
 	"chromiumos/tast/errors"
-	"go.chromium.org/tast/core/tastuseonly/logging"
 	"chromiumos/tast/ssh"
+	"go.chromium.org/tast/core/tastuseonly/logging"
 )
 
 // A DebugTarget represents a go binary that can be debugged.

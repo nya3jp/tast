@@ -8,8 +8,8 @@ import (
 	"context"
 	"fmt"
 
-	"go.chromium.org/tast/core/tastuseonly/protocol"
 	"chromiumos/tast/lsbrelease"
+	"go.chromium.org/tast/core/tastuseonly/protocol"
 
 	frameworkprotocol "go.chromium.org/tast/core/framework/protocol"
 )

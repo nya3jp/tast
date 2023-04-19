@@ -100,22 +100,22 @@ var knownNames = map[string]struct{}{}
 //
 // NewAuxMain must be called in a top-level variable initialization like:
 //
-//   type fooParams struct { ... }
+//	type fooParams struct { ... }
 //
-//   var fooMain = fakeexec.NewAuxMain("foo", func(p fooParams) {
-//     // Another main function here...
-//   })
+//	var fooMain = fakeexec.NewAuxMain("foo", func(p fooParams) {
+//	  // Another main function here...
+//	})
 //
 // If the current process is executed for the auxiliary main, NewAuxMain
 // immediately calls f and exits. Otherwise *AuxMain is returned, which you can
 // use to start a subprocess running the auxiliary main.
 //
-//   p := fooMain.Params(fooParams{ ... })
+//	p := fooMain.Params(fooParams{ ... })
 //
-//   cmd := exec.Command(p.Name())
-//   cmd.Env = append(os.Environ(), p.Envs()...)
+//	cmd := exec.Command(p.Name())
+//	cmd.Env = append(os.Environ(), p.Envs()...)
 //
-//   if err := cmd.Run(); err != nil { ... }
+//	if err := cmd.Run(); err != nil { ... }
 //
 // Prefer Loopback if subprocesses don't need to call system calls. Loopback
 // subprocesses virtually run within the current unit test process, which is

@@ -19,8 +19,8 @@
 
 # dummy                 - see crbug/1135039
 # Found in 2 files used to replicate linux kernel sysinfo output.
-# src/chromiumos/tast/cmd/tast/internal/run/testdata/ramoops_crash_arm.txt
-# src/chromiumos/tast/cmd/tast/internal/run/testdata/ramoops_crash_x86.txt
+# src//tast/internal/run/testdata/ramoops_crash_arm.txt
+# src//tast/internal/run/testdata/ramoops_crash_x86.txt
 
 # first.?class.?citizen - clean
 # grandfathered         - clean
@@ -37,8 +37,8 @@
 
 # master                - see crbug/1122372
 # Found in 2 files used to replicate procfs /devices/ff110000.spi/spi_master
-# src/chromiumos/tast/cmd/tast/internal/run/testdata/ramoops_crash_arm.txt
-# src/chromiumos/tast/cmd/tast/internal/run/testdata/ramoops_crash_x86.txt
+# src//tast/internal/run/testdata/ramoops_crash_arm.txt
+# src//tast/internal/run/testdata/ramoops_crash_x86.txt
 
 # \bmitm\b              - clean
 
@@ -52,7 +52,7 @@
 
 # slave                 - see crbug/1126921
 # Found in 1 file used to replicate linux kernel sysinfo output.
-# src/chromiumos/tast/cmd/tast/internal/run/testdata/ramoops_crash_arm.txt
+# src//tast/internal/run/testdata/ramoops_crash_arm.txt
 
 # white.?glove          - clean
 # white.?hat            - clean

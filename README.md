@@ -16,13 +16,13 @@ This repository is organized in accordance with the [Go in ChromiumOS]
 suggestions.
 
 *   [`src/chromiumos/`](src/chromiumos/)
-    *   [`cmd/local_test_runner/`](src/chromiumos/tast/cmd/local_test_runner) -
+    *   [`cmd/local_test_runner/`](src/go.chromium.org/tast/core/cmd/local_test_runner) -
         `main` package for the `local_test_runner` executable used to execute
         local test bundles on-device.
-    *   [`cmd/remote_test_runner/`](src/chromiumos/tast/cmd/remote_test_runner) -
+    *   [`cmd/remote_test_runner/`](src/go.chromium.org/tast/core/cmd/remote_test_runner) -
         `main` package for the `remote_test_runner` executable used to execute
         remote test bundles on the host system.
-    *   [`cmd/tast/`](src/chromiumos/tast/cmd/tast/) - `main` package for the `tast`
+    *   [`cmd/tast/`](src/go.chromium.org/tast/core/cmd/tast/) - `main` package for the `tast`
         executable used to build and run tests.
         *   `...` - Packages used only by the `tast` executable.
     *   [`tast/...`](src/chromiumos/tast/) - Common packages shared by multiple

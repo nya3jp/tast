@@ -13,8 +13,8 @@ import (
 
 	"google.golang.org/grpc"
 
-	"go.chromium.org/tast/core/tastuseonly/protocol"
 	"go.chromium.org/tast/core/shutil"
+	"go.chromium.org/tast/core/tastuseonly/protocol"
 )
 
 // ProcFunc is a callback passed to CreateLoopback to fully control the behavior of

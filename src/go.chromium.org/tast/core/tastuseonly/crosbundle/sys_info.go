@@ -15,11 +15,11 @@ import (
 	"time"
 
 	"chromiumos/tast/errors"
+	"go.chromium.org/tast/core/shutil"
 	"go.chromium.org/tast/core/tastuseonly/crash"
 	"go.chromium.org/tast/core/tastuseonly/logging"
 	"go.chromium.org/tast/core/tastuseonly/logs"
 	"go.chromium.org/tast/core/tastuseonly/protocol"
-	"go.chromium.org/tast/core/shutil"
 )
 
 const (

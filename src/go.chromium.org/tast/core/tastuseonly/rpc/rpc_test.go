@@ -27,6 +27,7 @@ import (
 	"google.golang.org/grpc"
 
 	"chromiumos/tast/errors"
+	"chromiumos/tast/ssh"
 	"go.chromium.org/tast/core/tastuseonly/fakeexec"
 	"go.chromium.org/tast/core/tastuseonly/logging"
 	"go.chromium.org/tast/core/tastuseonly/logging/loggingtest"
@@ -36,7 +37,6 @@ import (
 	"go.chromium.org/tast/core/tastuseonly/testing"
 	"go.chromium.org/tast/core/tastuseonly/testingutil"
 	"go.chromium.org/tast/core/tastuseonly/timing"
-	"chromiumos/tast/ssh"
 	"go.chromium.org/tast/core/testutil"
 )
 

@@ -11,10 +11,10 @@ import (
 	"path/filepath"
 
 	"chromiumos/tast/errors"
+	"chromiumos/tast/ssh"
 	"go.chromium.org/tast/core/tastuseonly/debugger"
 	"go.chromium.org/tast/core/tastuseonly/logging"
 	"go.chromium.org/tast/core/tastuseonly/run/devserver"
-	"chromiumos/tast/ssh"
 )
 
 // Services owns services exposed to a target by SSH port forwarding.

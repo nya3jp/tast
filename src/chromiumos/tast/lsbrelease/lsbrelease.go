@@ -74,11 +74,11 @@ const (
 
 // allowedPkgs is the list of Go packages that can use this package.
 var allowedPkgs = []string{
-	"chromiumos/tast/cmd/tast/internal/symbolize",
-	"go.chromium.org/tast/core/tastuseonly/crosbundle",    // For software feature detection.
-	"go.chromium.org/tast/core/tastuseonly/runner",        // For SoftwareDeps check.
-	"chromiumos/tast/local/arc",              // For SDKVersion.
-	"chromiumos/tast/local/bundles/cros/arc", // For Version.
+	"go.chromium.org/tast/core/cmd/tast/internal/symbolize",
+	"go.chromium.org/tast/core/tastuseonly/crosbundle", // For software feature detection.
+	"go.chromium.org/tast/core/tastuseonly/runner",     // For SoftwareDeps check.
+	"chromiumos/tast/local/arc",                        // For SDKVersion.
+	"chromiumos/tast/local/bundles/cros/arc",           // For Version.
 	// TODO(crbug.com/1140906): Temporarily allowed until we remove extra tracing code that only runs on eve.
 	"chromiumos/tast/local/bundles/cros/lacros/gpucuj",
 	"chromiumos/tast/local/bundles/cros/platform/updateserver",

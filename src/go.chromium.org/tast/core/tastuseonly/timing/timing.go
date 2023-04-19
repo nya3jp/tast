@@ -57,12 +57,12 @@ func (l *Log) Empty() bool {
 //
 // Output is intended to improve human readability:
 //
-// 	[[4.000, "stage0", [
-// 	         [3.000, "stage1", [
-// 	                 [1.000, "stage2"],
-// 	                 [2.000, "stage3"]]],
-// 	         [1.000, "stage4"]]],
-// 	 [0.531, "stage5"]]
+//	[[4.000, "stage0", [
+//	         [3.000, "stage1", [
+//	                 [1.000, "stage2"],
+//	                 [2.000, "stage3"]]],
+//	         [1.000, "stage4"]]],
+//	 [0.531, "stage5"]]
 func (l *Log) WritePretty(w io.Writer) error {
 	l.Root.mu.Lock()
 	defer l.Root.mu.Unlock()

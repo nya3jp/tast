@@ -87,7 +87,7 @@ failing to pass lint checks may not be reviewed.
 [goimports]: https://godoc.org/golang.org/x/tools/cmd/goimports
 [go vet]: https://golang.org/cmd/vet/
 [golint]: https://github.com/golang/lint
-[tast-lint]: https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/src/chromiumos/tast/cmd/tast-lint/
+[tast-lint]: https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/src/go.chromium.org/tast/core/cmd/tast-lint/
 
 ### Run unit tests
 

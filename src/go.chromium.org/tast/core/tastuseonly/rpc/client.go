@@ -23,11 +23,11 @@ import (
 	"google.golang.org/grpc/status"
 
 	"chromiumos/tast/errors"
+	"chromiumos/tast/ssh"
+	"chromiumos/tast/testing"
 	"go.chromium.org/tast/core/tastuseonly/protocol"
 	"go.chromium.org/tast/core/tastuseonly/testcontext"
 	"go.chromium.org/tast/core/tastuseonly/timing"
-	"chromiumos/tast/ssh"
-	"chromiumos/tast/testing"
 )
 
 // SSHClient is a Tast gRPC client over an SSH connection.

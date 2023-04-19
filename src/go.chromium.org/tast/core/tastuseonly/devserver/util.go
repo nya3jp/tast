@@ -23,7 +23,7 @@ var defaultHTTPClient = &http.Client{
 
 // ParseGSURL parses a Google Cloud Storage URL. It is parsed as:
 //
-//  gs://<bucket>/<path>
+//	gs://<bucket>/<path>
 //
 // Note that path is not prefixed with a slash, which is suitable for use with
 // GCS APIs.

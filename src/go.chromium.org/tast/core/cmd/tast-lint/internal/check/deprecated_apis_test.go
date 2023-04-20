@@ -14,7 +14,7 @@ func TestDeprecatedAPIs(t *testing.T) {
 		alternative: "chromiumos/tast/common/testexec",
 		link:        "https://crbug.com/1119252",
 	}, {
-		pkg:         "chromiumos/tast/bundle",
+		pkg:         "go.chromium.org/tast/core/bundle",
 		ident:       "LocalDelegate",
 		alternative: "Delegate",
 		link:        "https://crbug.com/1134060",
@@ -27,7 +27,7 @@ func TestDeprecatedAPIs(t *testing.T) {
 	const code = `package main
 
 import (
-	b "chromiumos/tast/bundle"
+	b "go.chromium.org/tast/core/bundle"
 	"go.chromium.org/tast/core/tastuseonly/bundle"
 	"chromiumos/tast/local/testexec"
 	"syscall"
@@ -43,7 +43,7 @@ func main() {
 `
 	want := []string{
 		"testfile.go:6:2: package chromiumos/tast/local/testexec is deprecated; use chromiumos/tast/common/testexec instead",
-		"testfile.go:12:4: chromiumos/tast/bundle.LocalDelegate is deprecated; use Delegate instead",
+		"testfile.go:12:4: go.chromium.org/tast/core/bundle.LocalDelegate is deprecated; use Delegate instead",
 		"testfile.go:15:2: syscall.not_stat_t is from a deprecated package; use corresponding API in golang.org/x/sys/unix instead",
 	}
 

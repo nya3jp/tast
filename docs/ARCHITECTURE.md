@@ -425,7 +425,7 @@ package main
 import (
     "os"
 
-    "chromiumos/tast/bundle"
+    "go.chromium.org/tast/core/bundle"
 
     // Underscore-imported packages register their tests via init functions.
     _ "chromiumos/tast/local/bundles/cros/apps"

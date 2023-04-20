@@ -25,7 +25,7 @@ readonly SRCDIRS=(
 )
 
 # Package to build to produce tast executables.
-readonly TAST_PKG="/tast"
+readonly TAST_PKG="go.chromium.org/tast/core/cmd/tast"
 
 # Output filename for tast executable.
 readonly TAST_OUT="${GOHOME}/bin/tast"

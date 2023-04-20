@@ -149,7 +149,7 @@ func wifiDeviceListed(hwf *protocol.HardwareFeatures, devices ...wlan.DeviceID) 
 // check whether DUT needs to have touchscreen, some specific SKU, internal display etc.
 //
 // Expected example use case is; there is a problem in some code where we do not have
-// control, such as a device specific driver, or hardware etc., and unfortnately
+// control, such as a device specific driver, or hardware etc., and unfortunately
 // it unlikely be fixed for a while.
 // Another use case is; a test is stably running on most of models, but failing on some
 // specific models. By using Model() and SkipOnModel() combination, the test can be

@@ -36,7 +36,11 @@ const compatGoPath = "cmd/tast/internal/build/compat.go"
 func checkSourceCompat(workspace string) error {
 	path := filepath.Join(workspace, compatGoPath)
 	if _, err := os.Stat(path); os.IsNotExist(err) {
-		// Inspect older and newer location of this file so that compatibility
+		// Inspect newer location of this file.
+		path = filepath.Join(workspace, "src", packages.FrameworkPrefix, compatGoPath)
+	}
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		// Inspect older location of this file so that compatibility
 		// check doesn't fail after we move this file.
 		path = filepath.Join(workspace, "src", packages.OldFrameworkPrefix, compatGoPath)
 	}

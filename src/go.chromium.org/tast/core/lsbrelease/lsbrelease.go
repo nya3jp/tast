@@ -16,7 +16,7 @@ import (
 	"regexp"
 	"strings"
 
-	"chromiumos/tast/caller"
+	"go.chromium.org/tast/core/caller"
 )
 
 // Path is to the path for lsb-release file on the device.

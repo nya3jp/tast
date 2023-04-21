@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"strings"
 
-	"chromiumos/tast/caller"
+	"go.chromium.org/tast/core/caller"
 	"go.chromium.org/tast/core/tastuseonly/packages"
 	"go.chromium.org/tast/core/tastuseonly/testing"
 )

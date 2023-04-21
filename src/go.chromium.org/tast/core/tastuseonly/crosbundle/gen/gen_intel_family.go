@@ -12,7 +12,7 @@ import (
 	"os"
 	"regexp"
 
-	"chromiumos/tast/genutil"
+	"go.chromium.org/tast/core/genutil"
 )
 
 func main() {

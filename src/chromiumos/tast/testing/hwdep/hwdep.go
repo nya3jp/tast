@@ -1134,80 +1134,26 @@ func SupportsVideoOverlays() Condition {
 	}
 }
 
-// SupportsP010Overlays says true if the SoC supports P010 hardware overlays,
-// which are commonly used for high bit-depth video overlays. Only Intel SoCs
-// with GPU Gen 11 (JSL), Gen 12 (TGL, RLK) or later support those.
-func SupportsP010Overlays() Condition {
-	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
-		dc := f.GetDeprecatedDeviceConfig()
-		if dc == nil {
-			return withErrorStr("DeprecatedDeviceConfig is not given")
-		}
-		// Any ARM CPUs
-		if dc.GetCpu() == protocol.DeprecatedDeviceConfig_ARM ||
-			dc.GetCpu() == protocol.DeprecatedDeviceConfig_ARM64 ||
-			// Unknown SOCs
-			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_UNSPECIFIED ||
-			// Intel before Tiger Lake
-			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_APOLLO_LAKE ||
-			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_BAY_TRAIL ||
-			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_BRASWELL ||
-			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_IVY_BRIDGE ||
-			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_PINE_TRAIL ||
-			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_SANDY_BRIDGE ||
-			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_BROADWELL ||
-			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_HASWELL ||
-			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_SKYLAKE_U ||
-			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_SKYLAKE_Y ||
-			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_KABYLAKE_U ||
-			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_KABYLAKE_Y ||
-			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_KABYLAKE_U_R ||
-			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_AMBERLAKE_Y ||
-			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_APOLLO_LAKE ||
-			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_COMET_LAKE_U ||
-			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_GEMINI_LAKE ||
-			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_WHISKEY_LAKE_U ||
-			// All AMDs
-			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_STONEY_RIDGE ||
-			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_PICASSO {
-			return unsatisfied("SoC does not support P010 Overlays")
-		}
-		return satisfied()
-	},
-	}
-}
-
 // Supports30bppFramebuffer says true if the SoC supports 30bpp color depth
 // primary plane scanout. This is: Intel SOCs Kabylake and onwards, AMD SOCs
 // from Zork onwards (codified Picasso), and not ARM SOCs.
 func Supports30bppFramebuffer() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
-		dc := f.GetDeprecatedDeviceConfig()
-		if dc == nil {
-			return withErrorStr("DeprecatedDeviceConfig is not given")
+		// Any ARM embedder.
+		if satisfied, _, err := SkipCPUSocFamily([]string{"mediatek", "rockchip", "qualcomm"}).Satisfied(f); err != nil || !satisfied {
+			return unsatisfied("SoC does not support scanning out 30bpp framebuffers (ARM device)")
 		}
-		// Any ARM CPUs
-		if dc.GetCpu() == protocol.DeprecatedDeviceConfig_ARM ||
-			dc.GetCpu() == protocol.DeprecatedDeviceConfig_ARM64 ||
-			// Unknown SOCs
-			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_UNSPECIFIED ||
-			// Intel before Kabylake
-			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_APOLLO_LAKE ||
-			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_BAY_TRAIL ||
-			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_BRASWELL ||
-			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_IVY_BRIDGE ||
-			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_PINE_TRAIL ||
-			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_SANDY_BRIDGE ||
-			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_BROADWELL ||
-			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_HASWELL ||
-			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_SKYLAKE_U ||
-			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_SKYLAKE_Y ||
-			// AMD before Zork
-			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_STONEY_RIDGE {
-			return unsatisfied("SoC does not support scanning out 30bpp framebuffers")
+		// Intel Gen9 GPUs (e.g. Skylake) and before.
+		if satisfied, _, err := SkipGPUFamily([]string{"pinetrail", "broadwell", "apollolake", "skylake"}).Satisfied(f); err != nil || !satisfied {
+			return unsatisfied("SoC does not support scanning out 30bpp framebuffers (Intel Skylake) or before")
+		}
+		// AMD before Zork.
+		if satisfied, _, err := SkipGPUFamily([]string{"stoney"}).Satisfied(f); err != nil || !satisfied {
+			return unsatisfied("SoC does not support scanning out 30bpp framebuffers (AMD grunt)")
 		}
 		return satisfied()
-	}}
+	},
+	}
 }
 
 // Since there are no way to get whether an EC supports force discharging on a device or not,

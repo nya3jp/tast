@@ -348,7 +348,7 @@ There are also `autotest-capability:`-prefixed features, which are added by the
 existing Autotest-based video tests to Tast. Do not depend on capabilities from
 outside of video tests.
 
-[autocaps package]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/autocaps/
+[autocaps package]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/autocaps/
 
 
 ## Hardware dependencies

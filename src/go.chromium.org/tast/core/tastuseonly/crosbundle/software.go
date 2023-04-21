@@ -12,8 +12,8 @@ import (
 	"sort"
 	"strings"
 
-	"chromiumos/tast/autocaps"
 	"chromiumos/tast/errors"
+	"go.chromium.org/tast/core/autocaps"
 	"go.chromium.org/tast/core/lsbrelease"
 	"go.chromium.org/tast/core/tastuseonly/expr"
 	"go.chromium.org/tast/core/tastuseonly/logging"

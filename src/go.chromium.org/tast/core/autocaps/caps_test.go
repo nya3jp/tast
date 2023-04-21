@@ -9,7 +9,7 @@ import (
 	"reflect"
 	"testing"
 
-	"chromiumos/tast/autocaps"
+	"go.chromium.org/tast/core/autocaps"
 	"go.chromium.org/tast/core/testutil"
 )
 

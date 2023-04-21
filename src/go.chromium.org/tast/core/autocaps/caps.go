@@ -137,9 +137,9 @@ func readCapsFile(path string, info *SysInfo, caps map[string]State) error {
 // applyDirective applies the supplied directive to the capabilities in caps.
 //
 // A directive can consist of:
-//	- a bare capability name to set the capability's state to Yes
-//	- "no <capability>" to set the capability's state to No
-//	- "disable <capability>" to set the capability's state to Disable
+//   - a bare capability name to set the capability's state to Yes
+//   - "no <capability>" to set the capability's state to No
+//   - "disable <capability>" to set the capability's state to Disable
 func applyDirective(directive string, caps map[string]State) error {
 	matches := directiveRegexp.FindStringSubmatch(directive)
 	if matches == nil {

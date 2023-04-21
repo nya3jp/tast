@@ -9,7 +9,7 @@ import (
 	"reflect"
 	"testing"
 
-	"chromiumos/tast/lsbrelease"
+	"go.chromium.org/tast/core/lsbrelease"
 )
 
 func TestParse(t *testing.T) {

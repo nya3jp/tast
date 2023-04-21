@@ -8,8 +8,8 @@ import (
 	"bytes"
 	"errors"
 
-	"chromiumos/tast/lsbrelease"
 	"go.chromium.org/tast/core/cmd/tast/internal/symbolize/breakpad"
+	"go.chromium.org/tast/core/lsbrelease"
 )
 
 // releaseInfo contains information parsed from /etc/lsb-release.

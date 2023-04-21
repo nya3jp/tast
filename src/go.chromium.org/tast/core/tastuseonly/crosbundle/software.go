@@ -14,7 +14,7 @@ import (
 
 	"chromiumos/tast/autocaps"
 	"chromiumos/tast/errors"
-	"chromiumos/tast/lsbrelease"
+	"go.chromium.org/tast/core/lsbrelease"
 	"go.chromium.org/tast/core/tastuseonly/expr"
 	"go.chromium.org/tast/core/tastuseonly/logging"
 

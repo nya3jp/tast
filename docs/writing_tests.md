@@ -1037,8 +1037,8 @@ for details) in the Tast [results dir]. The above example will generate:
     [3.000, "stage_b"]]]
 ```
 
-[timing package]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/timing
-[timing#Log.Write]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/timing#Log.Write
+[timing package]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/timing
+[timing#Log.Write]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/timing#Log.Write
 [results dir]: running_tests.md#Interpreting-test-results
 
 ### Logged in users home directory

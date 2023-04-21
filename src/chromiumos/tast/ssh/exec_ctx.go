@@ -14,9 +14,9 @@ import (
 	"golang.org/x/crypto/ssh"
 
 	"chromiumos/tast/errors"
-	"chromiumos/tast/exec"
-	"go.chromium.org/tast/core/tastuseonly/logging"
+	"go.chromium.org/tast/core/exec"
 	"go.chromium.org/tast/core/shutil"
+	"go.chromium.org/tast/core/tastuseonly/logging"
 )
 
 // Cmd represents an external command being prepared or run on a remote host.

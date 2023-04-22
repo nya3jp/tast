@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"chromiumos/tast/ctxutil"
+	"go.chromium.org/tast/core/ctxutil"
 )
 
 // runAndGetDeadline passes ctx and d to f (e.g. OptionalTimeout or Shorten) and returns

@@ -108,7 +108,7 @@ We explicitly ask for the temp dir to be created under `/tmp`. Tast sets
 the filesystem, leaving a mount in `TMPDIR` can cause problems when Tast tries
 to clean it up later.
 
-[ctxutil.Shorten]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/ctxutil#Shorten
+[ctxutil.Shorten]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/ctxutil#Shorten
 
 ## Creating the filesystem
 
@@ -440,7 +440,7 @@ import (
 	"time"
 
 	"chromiumos/tast/common/testexec"
-	"chromiumos/tast/ctxutil"
+	"go.chromium.org/tast/core/ctxutil"
 	"chromiumos/tast/errors"
 	"chromiumos/tast/testing"
 )

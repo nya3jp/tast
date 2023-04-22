@@ -13,7 +13,7 @@ import (
 	"github.com/golang/protobuf/ptypes"
 	"google.golang.org/protobuf/types/known/durationpb"
 
-	"chromiumos/tast/ctxutil"
+	"go.chromium.org/tast/core/ctxutil"
 	"go.chromium.org/tast/core/tastuseonly/linuxssh"
 	"go.chromium.org/tast/core/tastuseonly/logging"
 	"go.chromium.org/tast/core/tastuseonly/minidriver/bundleclient"

@@ -9,8 +9,8 @@ import (
 	"fmt"
 	"time"
 
-	"chromiumos/tast/ctxutil"
 	"chromiumos/tast/errors"
+	"go.chromium.org/tast/core/ctxutil"
 )
 
 const defaultPollInterval = 100 * time.Millisecond

@@ -72,7 +72,7 @@ ctx, _ = ctxutil.Shorten(ctx, 5*time.Second)
 [This article](https://developer.squareup.com/blog/always-be-closing/)
 describes how a similar bug caused massive production issues at Square.
 
-[`ctxutil.Shorten`]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/ctxutil#Shorten
+[`ctxutil.Shorten`]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/ctxutil#Shorten
 [`context.WithTimeout`]: https://godoc.org/context#WithTimeout
 
 

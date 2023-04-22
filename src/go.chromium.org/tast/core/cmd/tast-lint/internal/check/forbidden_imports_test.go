@@ -83,10 +83,12 @@ import (
 	"fmt"
 
 	"chromiumos/tast/dut"
+	"chromiumos/tast/ctxutil"
 )
 `
 	expects := []string{
 		"testfile.go:6:2: go.chromium.org/tast/core/dut package should be used instead of chromiumos/tast/dut package",
+		"testfile.go:7:2: go.chromium.org/tast/core/ctxutil package should be used instead of chromiumos/tast/ctxutil package",
 	}
 
 	f, fs := parse(code, "testfile.go")

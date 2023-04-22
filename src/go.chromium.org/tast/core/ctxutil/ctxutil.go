@@ -7,9 +7,8 @@ package ctxutil
 
 import (
 	"context"
+	"math"
 	"time"
-
-	"go.chromium.org/tast/core/ctxutil"
 )
 
 // MaxTimeout is the maximum value of time.Duration, approximately 290 years.
@@ -20,17 +19,25 @@ import (
 // (Precisely, if the original context has no deadline or a deadline later than
 // MaxDuration, the new deadline is different, but it is so future that we do
 // not need to distinguish them.)
-const MaxTimeout = ctxutil.MaxTimeout
+const MaxTimeout time.Duration = math.MaxInt64
 
 // Shorten returns a context and cancel function derived from ctx with its deadline shortened by d.
 // If ctx has no deadline, the returned context won't have one either. Note that if ctx's deadline is
 // less than d in the future, the returned context's deadline will have already expired.
 func Shorten(ctx context.Context, d time.Duration) (context.Context, context.CancelFunc) {
-	return ctxutil.Shorten(ctx, d)
+	dl, ok := ctx.Deadline()
+	if !ok {
+		return context.WithCancel(ctx)
+	}
+	return context.WithDeadline(ctx, dl.Add(-d))
 }
 
 // DeadlineBefore returns true if ctx has a deadline that expires before t.
 // It returns true if the deadline has already expired and false if no deadline is set.
 func DeadlineBefore(ctx context.Context, t time.Time) bool {
-	return ctxutil.DeadlineBefore(ctx, t)
+	dl, ok := ctx.Deadline()
+	if !ok {
+		return false
+	}
+	return dl.Before(t)
 }

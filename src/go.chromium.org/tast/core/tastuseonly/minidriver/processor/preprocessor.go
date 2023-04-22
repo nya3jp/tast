@@ -13,8 +13,8 @@ import (
 
 	"github.com/golang/protobuf/ptypes"
 
-	"chromiumos/tast/ctxutil"
 	"chromiumos/tast/errors"
+	"go.chromium.org/tast/core/ctxutil"
 	"go.chromium.org/tast/core/tastuseonly/logging"
 	"go.chromium.org/tast/core/tastuseonly/minidriver/bundleclient"
 	"go.chromium.org/tast/core/tastuseonly/protocol"

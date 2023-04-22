@@ -199,7 +199,7 @@ import (
     "context"
     "time"
 
-    "chromiumos/tast/ctxutil"
+    "go.chromium.org/tast/core/ctxutil"
     "chromiumos/tast/local/chrome"
     "chromiumos/tast/local/chrome/uiauto"
     "chromiumos/tast/local/chrome/uiauto/faillog"

@@ -432,7 +432,7 @@ The reason why it is discouraged is because it needs `pkga.NewA()` to shorten
 `ctx` at the beginning of the function to ensure that it leaves enough time for
 `a.CleanUp()` to call.
 
-[ctxutil.Shorten]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/ctxutil#Shorten
+[ctxutil.Shorten]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/ctxutil#Shorten
 
 ### Concurrency
 

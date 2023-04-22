@@ -18,8 +18,8 @@ import (
 
 	"github.com/golang/protobuf/proto"
 
-	"chromiumos/tast/ctxutil"
 	"chromiumos/tast/errors"
+	"go.chromium.org/tast/core/ctxutil"
 
 	"go.chromium.org/tast/core/cmd/tast/internal/run/config"
 	"go.chromium.org/tast/core/cmd/tast/internal/run/driver"

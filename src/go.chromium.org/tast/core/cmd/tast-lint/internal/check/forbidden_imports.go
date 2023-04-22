@@ -29,6 +29,13 @@ func ForbiddenImports(fs *token.FileSet, f *ast.File) []*Issue {
 				Link: "https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#Error-construction",
 			})
 		}
+		// TODO: b/187792551 -- remove to check after chromiumos/tast/dut os removed.
+		if p == "chromiumos/tast/dut" {
+			issues = append(issues, &Issue{
+				Pos: fs.Position(im.Pos()),
+				Msg: fmt.Sprintf("go.chromium.org/tast/core/dut package should be used instead of %s package", p),
+			})
+		}
 	}
 
 	// local <-> remote, common -> {local, remote} dependencies are forbidden.

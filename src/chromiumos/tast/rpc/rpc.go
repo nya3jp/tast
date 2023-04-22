@@ -12,12 +12,12 @@ import (
 
 	"google.golang.org/grpc"
 
-	"chromiumos/tast/dut"
 	"chromiumos/tast/errors"
+	"chromiumos/tast/ssh"
+	"go.chromium.org/tast/core/dut"
 	"go.chromium.org/tast/core/tastuseonly/protocol"
 	"go.chromium.org/tast/core/tastuseonly/rpc"
 	"go.chromium.org/tast/core/tastuseonly/testing"
-	"chromiumos/tast/ssh"
 )
 
 // Client owns a gRPC connection to the DUT for remote tests to use.

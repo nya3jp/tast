@@ -7,7 +7,7 @@ package testing
 import (
 	"context"
 
-	"chromiumos/tast/dut"
+	"go.chromium.org/tast/core/dut"
 
 	"go.chromium.org/tast/core/framework/protocol"
 )

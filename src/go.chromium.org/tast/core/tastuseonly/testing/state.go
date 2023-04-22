@@ -63,8 +63,8 @@ import (
 	"strings"
 	"sync"
 
-	"chromiumos/tast/dut"
 	"chromiumos/tast/errors"
+	"go.chromium.org/tast/core/dut"
 	"go.chromium.org/tast/core/tastuseonly/logging"
 	"go.chromium.org/tast/core/tastuseonly/protocol"
 	"go.chromium.org/tast/core/tastuseonly/testcontext"

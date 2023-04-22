@@ -17,8 +17,8 @@ import (
 	"github.com/golang/protobuf/ptypes"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	"chromiumos/tast/dut"
 	"chromiumos/tast/errors"
+	"go.chromium.org/tast/core/dut"
 	"go.chromium.org/tast/core/tastuseonly/command"
 	"go.chromium.org/tast/core/tastuseonly/logging"
 	"go.chromium.org/tast/core/tastuseonly/planner"

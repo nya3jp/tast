@@ -72,3 +72,24 @@ import (
 		verifyIssues(t, issues, tc.want)
 	}
 }
+
+// TestForbiddenImports_MovedPackages makes sure packages to be removed after move
+// is completed. will not be called again.
+// TODO: b/187792551 -- remove to check after chromiumos/tast/dut os removed.
+func TestForbiddenImports_MovedPackages(t *testing.T) {
+	const code = `package main
+
+import (
+	"fmt"
+
+	"chromiumos/tast/dut"
+)
+`
+	expects := []string{
+		"testfile.go:6:2: go.chromium.org/tast/core/dut package should be used instead of chromiumos/tast/dut package",
+	}
+
+	f, fs := parse(code, "testfile.go")
+	issues := ForbiddenImports(fs, f)
+	verifyIssues(t, issues, expects)
+}

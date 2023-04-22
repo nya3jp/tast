@@ -19,8 +19,8 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"google.golang.org/protobuf/types/known/durationpb"
 
-	"chromiumos/tast/dut"
 	"chromiumos/tast/errors"
+	"go.chromium.org/tast/core/dut"
 	"go.chromium.org/tast/core/tastuseonly/logging"
 	"go.chromium.org/tast/core/tastuseonly/protocol"
 	"go.chromium.org/tast/core/tastuseonly/protocol/protocoltest"

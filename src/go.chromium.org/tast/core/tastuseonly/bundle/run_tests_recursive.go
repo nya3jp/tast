@@ -8,7 +8,7 @@ import (
 	"context"
 	"sort"
 
-	"chromiumos/tast/errors"
+	"go.chromium.org/tast/core/errors"
 
 	"go.chromium.org/tast/core/tastuseonly/bundle/bundleclient"
 	"go.chromium.org/tast/core/tastuseonly/command"

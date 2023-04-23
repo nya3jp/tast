@@ -14,9 +14,9 @@ import (
 	"strconv"
 	"strings"
 
-	"chromiumos/tast/errors"
-	"go.chromium.org/tast/core/tastuseonly/linuxssh"
 	"chromiumos/tast/ssh"
+	"go.chromium.org/tast/core/errors"
+	"go.chromium.org/tast/core/tastuseonly/linuxssh"
 )
 
 // SymlinkPolicy describes how symbolic links should be handled by PutFiles.

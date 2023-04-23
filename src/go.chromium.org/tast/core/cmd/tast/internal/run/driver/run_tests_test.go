@@ -17,10 +17,10 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 
-	"chromiumos/tast/errors"
 	"go.chromium.org/tast/core/cmd/tast/internal/run/config"
 	"go.chromium.org/tast/core/cmd/tast/internal/run/driver"
 	"go.chromium.org/tast/core/cmd/tast/internal/run/runtest"
+	"go.chromium.org/tast/core/errors"
 	"go.chromium.org/tast/core/tastuseonly/run/reporting"
 	"go.chromium.org/tast/core/tastuseonly/run/resultsjson"
 	"go.chromium.org/tast/core/tastuseonly/testing"

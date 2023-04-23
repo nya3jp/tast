@@ -9,7 +9,7 @@ import (
 	"context"
 	"sync"
 
-	"chromiumos/tast/errors"
+	"go.chromium.org/tast/core/errors"
 	"go.chromium.org/tast/core/tastuseonly/protocol"
 	"go.chromium.org/tast/core/tastuseonly/testing"
 	"go.chromium.org/tast/core/tastuseonly/timing"

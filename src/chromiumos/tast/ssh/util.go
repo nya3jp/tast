@@ -9,7 +9,7 @@ import (
 	"net"
 	"strconv"
 
-	"chromiumos/tast/errors"
+	"go.chromium.org/tast/core/errors"
 )
 
 func parseIPAddressAndPort(s string) (net.IP, int, error) {

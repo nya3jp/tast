@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"runtime"
 
-	"chromiumos/tast/errors/stack"
+	"go.chromium.org/tast/core/errors/stack"
 	"go.chromium.org/tast/core/tastuseonly/protocol"
 )
 

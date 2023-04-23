@@ -13,7 +13,7 @@ import (
 
 	"golang.org/x/crypto/ssh"
 
-	"chromiumos/tast/errors"
+	"go.chromium.org/tast/core/errors"
 	"go.chromium.org/tast/core/exec"
 	"go.chromium.org/tast/core/shutil"
 	"go.chromium.org/tast/core/tastuseonly/logging"

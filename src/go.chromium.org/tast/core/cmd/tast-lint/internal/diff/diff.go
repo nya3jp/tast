@@ -11,7 +11,7 @@ import (
 	"os"
 	"os/exec"
 
-	"chromiumos/tast/errors"
+	"go.chromium.org/tast/core/errors"
 )
 
 // writeTempFile creates a temp file containing the given s. Returns the name

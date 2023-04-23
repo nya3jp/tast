@@ -37,27 +37,88 @@
 //	if err := doSomething(); err != nil {
 //	    return &CustomError{E: errors.Wrap(err, "something failed")}
 //	}
-//
-// DO NOT MODIFY THIS. Any enhancement should be done in
-// "go.chromium.org/tast/core/errors".
 package errors
 
 import (
+	"errors"
 	"fmt"
+	"io"
+	"strings"
 
-	"go.chromium.org/tast/core/errors"
 	"go.chromium.org/tast/core/errors/stack"
 )
 
 // E is the error implementation used by this package.
-type E = errors.E
+type E struct {
+	msg   string      // error message to be prepended to cause
+	stk   stack.Stack // stack trace where this error was created
+	cause error       // original error that caused this error if non-nil
+}
+
+// NewE create a new E. Do not use this function outside Tast.
+// TODO: b/187792551 -- Will remove after we move all tests to use
+// go.chromium.org/tast/errors.
+func NewE(msg string, stk stack.Stack, cause error) *E {
+	return &E{msg, stk, cause}
+}
+
+// Error implements the error interface.
+func (e *E) Error() string {
+	if e.cause == nil {
+		return e.msg
+	}
+	return fmt.Sprintf("%s: %s", e.msg, e.cause.Error())
+}
+
+// Unwrap implements the error Unwrap interface introduced in go1.13.
+func (e *E) Unwrap() error {
+	return e.cause
+}
+
+// unwrapper is a private interface of *E providing access to its fields.
+// We should access *E via this interface to allow embedding *E in
+// user-defined custom error types.
+type unwrapper interface {
+	unwrap() (msg string, stk stack.Stack, cause error)
+}
+
+// unwrap implements the unwrapper interface.
+func (e *E) unwrap() (msg string, stk stack.Stack, cause error) {
+	return e.msg, e.stk, e.cause
+}
+
+// formatChain formats an error chain.
+func formatChain(err error) string {
+	var chain []string
+	for err != nil {
+		if e, ok := err.(unwrapper); ok {
+			msg, stk, cause := e.unwrap()
+			chain = append(chain, fmt.Sprintf("%s\n%v", msg, stk))
+			err = cause
+		} else {
+			chain = append(chain, fmt.Sprintf("%s\n\tat ???", err.Error()))
+			err = nil
+		}
+	}
+	return strings.Join(chain, "\n")
+}
+
+// Format implements the fmt.Formatter interface.
+// In particular, it is supported to format an error chain by "%+v" verb.
+func (e *E) Format(s fmt.State, verb rune) {
+	if verb == 'v' && s.Flag('+') {
+		io.WriteString(s, formatChain(e))
+	} else {
+		io.WriteString(s, e.Error())
+	}
+}
 
 // New creates a new error with the given message.
 // This is similar to the standard errors.New, but also records the location
 // where it was called.
 func New(msg string) *E {
 	s := stack.New(1)
-	return errors.NewE(msg, s, nil)
+	return &E{msg, s, nil}
 }
 
 // Errorf creates a new error with the given message.
@@ -66,7 +127,7 @@ func New(msg string) *E {
 func Errorf(format string, args ...interface{}) *E {
 	s := stack.New(1)
 	msg := fmt.Sprintf(format, args...)
-	return errors.NewE(msg, s, nil)
+	return &E{msg, s, nil}
 }
 
 // Wrap creates a new error with the given message, wrapping another error.
@@ -75,7 +136,7 @@ func Errorf(format string, args ...interface{}) *E {
 // is different from the popular github.com/pkg/errors package.
 func Wrap(cause error, msg string) *E {
 	s := stack.New(1)
-	return errors.NewE(msg, s, cause)
+	return &E{msg, s, cause}
 }
 
 // Wrapf creates a new error with the given message, wrapping another error.
@@ -85,7 +146,7 @@ func Wrap(cause error, msg string) *E {
 func Wrapf(cause error, format string, args ...interface{}) *E {
 	s := stack.New(1)
 	msg := fmt.Sprintf(format, args...)
-	return errors.NewE(msg, s, cause)
+	return &E{msg, s, cause}
 }
 
 // Unwrap is a wrapper of built-in errors.Unwrap. It returns the result of

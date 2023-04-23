@@ -17,7 +17,7 @@ import (
 
 	"github.com/godbus/dbus/v5"
 
-	"chromiumos/tast/errors"
+	"go.chromium.org/tast/core/errors"
 )
 
 func main() {
@@ -33,7 +33,7 @@ func main() {
 }
 `
 	expects := []string{
-		"testfile.go:14:2: chromiumos/tast/errors.Errorf should be used instead of fmt.Errorf",
+		"testfile.go:14:2: go.chromium.org/tast/core/errors.Errorf should be used instead of fmt.Errorf",
 		"testfile.go:16:2: time.Sleep ignores context deadline; use testing.Poll or testing.Sleep instead",
 		"testfile.go:17:2: context.Background ignores test timeout; use test function's ctx arg instead",
 		"testfile.go:18:2: context.TODO ignores test timeout; use test function's ctx arg instead",
@@ -56,7 +56,7 @@ import (
 
 	"github.com/godbus/dbus/v5"
 
-	"chromiumos/tast/errors"
+	"go.chromium.org/tast/core/errors"
 )
 
 func main() {
@@ -96,7 +96,7 @@ import (
 
 	"github.com/godbus/dbus/v5"
 
-	"chromiumos/tast/errors"
+	"go.chromium.org/tast/core/errors"
 )
 
 func main() {
@@ -119,8 +119,8 @@ import (
 	"fmt"
 	"time"
 
-	"chromiumos/tast/errors"
 	"chromiumos/tast/local/dbusutil"
+	"go.chromium.org/tast/core/errors"
 )
 
 func main() {
@@ -151,7 +151,7 @@ func main() {
 import (
 	"fmt"
 
-	"chromiumos/tast/errors"
+	"go.chromium.org/tast/core/errors"
 )
 
 func main() {
@@ -172,7 +172,7 @@ func main() {
 	expects[filename3] = `package main
 
 import (
-	"chromiumos/tast/errors"
+	"go.chromium.org/tast/core/errors"
 )
 
 func main() {
@@ -207,25 +207,25 @@ func main() {
 	files[filename5] = `package main
 
 import (
-	. "chromiumos/tast/errors"
+	. "go.chromium.org/tast/core/errors"
 
 	"fmt"
 )
 
 func main() {
-	New("import chromiumos/tast/errors with alias")
+	New("import go.chromium.org/tast/core/errors with alias")
 	fmt.Errorf("This is not fixable")
 }`
 	expects[filename5] = `package main
 
 import (
-	. "chromiumos/tast/errors"
+	. "go.chromium.org/tast/core/errors"
 
 	"fmt"
 )
 
 func main() {
-	New("import chromiumos/tast/errors with alias")
+	New("import go.chromium.org/tast/core/errors with alias")
 	fmt.Errorf("This is not fixable")
 }
 `
@@ -234,7 +234,7 @@ func main() {
 import (
 	"fmt"
 
-	"chromiumos/tast/errors"
+	"go.chromium.org/tast/core/errors"
 )
 
 func foo() error {
@@ -247,7 +247,7 @@ func bar(n int) error {
 	expects[filename6] = `package main
 
 import (
-	"chromiumos/tast/errors"
+	"go.chromium.org/tast/core/errors"
 )
 
 func foo() error {

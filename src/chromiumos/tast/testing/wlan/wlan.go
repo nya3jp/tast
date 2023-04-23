@@ -12,7 +12,7 @@ import (
 	"regexp"
 	"strings"
 
-	"chromiumos/tast/errors"
+	"go.chromium.org/tast/core/errors"
 )
 
 // DeviceID is used as a Device ID type.

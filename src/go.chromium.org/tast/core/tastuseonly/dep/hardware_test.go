@@ -7,7 +7,7 @@ package dep_test
 import (
 	"testing"
 
-	"chromiumos/tast/errors"
+	"go.chromium.org/tast/core/errors"
 	"go.chromium.org/tast/core/tastuseonly/dep"
 
 	"go.chromium.org/tast/core/framework/protocol"

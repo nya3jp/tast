@@ -8,7 +8,7 @@ import (
 	"context"
 	"sort"
 
-	"chromiumos/tast/errors"
+	"go.chromium.org/tast/core/errors"
 )
 
 // GlobalRuntimeVars in driver class append result between local and remote.

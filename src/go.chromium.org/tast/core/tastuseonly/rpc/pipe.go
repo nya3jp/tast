@@ -13,7 +13,7 @@ import (
 
 	"google.golang.org/grpc"
 
-	"chromiumos/tast/errors"
+	"go.chromium.org/tast/core/errors"
 )
 
 var (

@@ -15,9 +15,9 @@ import (
 
 	"github.com/docker/docker/client"
 
-	"chromiumos/tast/errors"
 	"chromiumos/tast/ssh"
 	"chromiumos/tast/ssh/linuxssh"
+	"go.chromium.org/tast/core/errors"
 	"go.chromium.org/tast/core/tastuseonly/logging"
 )
 

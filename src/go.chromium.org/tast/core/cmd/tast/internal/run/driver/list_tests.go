@@ -7,7 +7,7 @@ package driver
 import (
 	"context"
 
-	"chromiumos/tast/errors"
+	"go.chromium.org/tast/core/errors"
 	"go.chromium.org/tast/core/tastuseonly/protocol"
 )
 

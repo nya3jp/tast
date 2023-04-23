@@ -314,7 +314,7 @@ the test completed).
 [unidirectional channel]: https://gobyexample.com/channel-directions
 [name the return arguments]: https://github.com/golang/go/wiki/CodeReviewComments#named-result-parameters
 [testing.ContextLog]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#ContextLog
-[errors.Wrap]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/errors#Wrap
+[errors.Wrap]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/errors#Wrap
 [Formatting]: https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#Formatting
 [bufio.Scanner]: https://golang.org/pkg/bufio/#Scanner
 
@@ -441,7 +441,7 @@ import (
 
 	"chromiumos/tast/common/testexec"
 	"go.chromium.org/tast/core/ctxutil"
-	"chromiumos/tast/errors"
+	"go.chromium.org/tast/core/errors"
 	"chromiumos/tast/testing"
 )
 

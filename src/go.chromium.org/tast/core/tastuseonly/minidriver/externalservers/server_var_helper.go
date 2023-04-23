@@ -8,7 +8,7 @@ package externalservers
 import (
 	"strings"
 
-	"chromiumos/tast/errors"
+	"go.chromium.org/tast/core/errors"
 )
 
 // ParseServerVarValues parse the values of server related run time variables

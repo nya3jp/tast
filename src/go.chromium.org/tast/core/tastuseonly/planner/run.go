@@ -16,7 +16,7 @@ import (
 	"sync"
 	"time"
 
-	"chromiumos/tast/errors"
+	"go.chromium.org/tast/core/errors"
 	"go.chromium.org/tast/core/tastuseonly/logging"
 	"go.chromium.org/tast/core/tastuseonly/planner/internal/entity"
 	"go.chromium.org/tast/core/tastuseonly/planner/internal/fixture"

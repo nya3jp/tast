@@ -10,7 +10,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"chromiumos/tast/errors"
+	"go.chromium.org/tast/core/errors"
 )
 
 // PanicHandler specifies how to handle panics in SafeCall.

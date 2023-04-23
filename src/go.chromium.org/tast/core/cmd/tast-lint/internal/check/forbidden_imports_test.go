@@ -15,14 +15,14 @@ import (
 	"fmt"
 	"errors"
 
-	"chromiumos/tast/errors"
+	"go.chromium.org/tast/core/errors"
 
 	"github.com/pkg/errors"
 )
 `
 	expects := []string{
-		"testfile.go:5:2: chromiumos/tast/errors package should be used instead of errors package",
-		"testfile.go:9:2: chromiumos/tast/errors package should be used instead of github.com/pkg/errors package",
+		"testfile.go:5:2: go.chromium.org/tast/core/errors package should be used instead of errors package",
+		"testfile.go:9:2: go.chromium.org/tast/core/errors package should be used instead of github.com/pkg/errors package",
 	}
 
 	f, fs := parse(code, "testfile.go")
@@ -84,11 +84,13 @@ import (
 
 	"chromiumos/tast/dut"
 	"chromiumos/tast/ctxutil"
+	"chromiumos/tast/errors"
 )
 `
 	expects := []string{
 		"testfile.go:6:2: go.chromium.org/tast/core/dut package should be used instead of chromiumos/tast/dut package",
 		"testfile.go:7:2: go.chromium.org/tast/core/ctxutil package should be used instead of chromiumos/tast/ctxutil package",
+		"testfile.go:8:2: go.chromium.org/tast/core/errors package should be used instead of chromiumos/tast/errors package",
 	}
 
 	f, fs := parse(code, "testfile.go")

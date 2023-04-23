@@ -18,8 +18,8 @@ import (
 	"strings"
 	"time"
 
-	"chromiumos/tast/errors"
 	"chromiumos/tast/testing"
+	"go.chromium.org/tast/core/errors"
 )
 
 const defaultRPCTimeout = 10 * time.Second

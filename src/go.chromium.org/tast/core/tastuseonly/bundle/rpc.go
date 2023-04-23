@@ -10,7 +10,7 @@ import (
 
 	"google.golang.org/grpc"
 
-	"chromiumos/tast/errors"
+	"go.chromium.org/tast/core/errors"
 	"go.chromium.org/tast/core/tastuseonly/protocol"
 	"go.chromium.org/tast/core/tastuseonly/rpc"
 	"go.chromium.org/tast/core/tastuseonly/testing"

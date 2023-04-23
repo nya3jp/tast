@@ -14,8 +14,8 @@ import (
 
 	"google.golang.org/grpc"
 
-	"chromiumos/tast/errors"
 	"go.chromium.org/tast/core/cmd/tast/internal/run/driver/internal/drivercore"
+	"go.chromium.org/tast/core/errors"
 	"go.chromium.org/tast/core/tastuseonly/logging"
 	"go.chromium.org/tast/core/tastuseonly/protocol"
 	"go.chromium.org/tast/core/tastuseonly/rpc"

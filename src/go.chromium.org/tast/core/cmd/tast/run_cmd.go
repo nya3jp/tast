@@ -14,8 +14,8 @@ import (
 
 	"github.com/google/subcommands"
 
-	"chromiumos/tast/errors"
 	"go.chromium.org/tast/core/ctxutil"
+	"go.chromium.org/tast/core/errors"
 
 	"go.chromium.org/tast/core/cmd/tast/internal/run/config"
 	"go.chromium.org/tast/core/tastuseonly/command"

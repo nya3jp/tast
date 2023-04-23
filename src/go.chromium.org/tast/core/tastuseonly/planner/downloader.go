@@ -7,7 +7,7 @@ package planner
 import (
 	"context"
 
-	"chromiumos/tast/errors"
+	"go.chromium.org/tast/core/errors"
 	"go.chromium.org/tast/core/tastuseonly/devserver"
 	"go.chromium.org/tast/core/tastuseonly/extdata"
 	"go.chromium.org/tast/core/tastuseonly/protocol"

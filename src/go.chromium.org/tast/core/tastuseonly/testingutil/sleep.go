@@ -8,7 +8,7 @@ import (
 	"context"
 	"time"
 
-	"chromiumos/tast/errors"
+	"go.chromium.org/tast/core/errors"
 )
 
 // Sleep implements testing.Sleep.

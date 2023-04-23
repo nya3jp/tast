@@ -6,7 +6,7 @@
 package failfast
 
 import (
-	"chromiumos/tast/errors"
+	"go.chromium.org/tast/core/errors"
 )
 
 // Counter counts test failures and aborts test execution if it passes a given

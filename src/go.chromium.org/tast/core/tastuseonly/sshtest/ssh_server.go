@@ -22,7 +22,7 @@ import (
 
 	"golang.org/x/crypto/ssh"
 
-	"chromiumos/tast/errors"
+	"go.chromium.org/tast/core/errors"
 )
 
 const (

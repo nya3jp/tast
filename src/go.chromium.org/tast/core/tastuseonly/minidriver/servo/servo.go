@@ -14,7 +14,7 @@ package servo
 import (
 	"context"
 
-	"chromiumos/tast/errors"
+	"go.chromium.org/tast/core/errors"
 	"go.chromium.org/tast/core/tastuseonly/logging"
 	"go.chromium.org/tast/core/tastuseonly/minidriver/servo/xmlrpc"
 )

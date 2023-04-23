@@ -12,7 +12,7 @@ import (
 	"net/url"
 	"os"
 
-	"chromiumos/tast/errors"
+	"go.chromium.org/tast/core/errors"
 )
 
 // FakeClient is a fake implementation of devserver.Client suitable for unit tests.

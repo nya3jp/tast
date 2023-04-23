@@ -23,7 +23,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"google.golang.org/protobuf/testing/protocmp"
 
-	"chromiumos/tast/errors"
+	"go.chromium.org/tast/core/errors"
 	"go.chromium.org/tast/core/tastuseonly/devserver/devservertest"
 	"go.chromium.org/tast/core/tastuseonly/extdata"
 	"go.chromium.org/tast/core/tastuseonly/logging"

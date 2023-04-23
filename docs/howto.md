@@ -38,7 +38,7 @@ func someFunction(...) error {
 }
 ```
 
-[errors.Is]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/errors#Is
+[errors.Is]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/errors#Is
 
 ### Command line
 As ChromeOS is based on Linux we can execute Linux commands on the command line that can give us the needed information of the state of the system. This is done with the [testexec.CommandContext] function.

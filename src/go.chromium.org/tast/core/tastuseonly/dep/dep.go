@@ -10,7 +10,7 @@ import (
 	"regexp"
 	"strings"
 
-	"chromiumos/tast/errors"
+	"go.chromium.org/tast/core/errors"
 	"go.chromium.org/tast/core/tastuseonly/protocol"
 
 	frameworkprotocol "go.chromium.org/tast/core/framework/protocol"

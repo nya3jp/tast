@@ -25,7 +25,7 @@ func ForbiddenImports(fs *token.FileSet, f *ast.File) []*Issue {
 		if p == "errors" || p == "github.com/pkg/errors" {
 			issues = append(issues, &Issue{
 				Pos:  fs.Position(im.Pos()),
-				Msg:  fmt.Sprintf("chromiumos/tast/errors package should be used instead of %s package", p),
+				Msg:  fmt.Sprintf("go.chromium.org/tast/core/errors package should be used instead of %s package", p),
 				Link: "https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#Error-construction",
 			})
 		}
@@ -40,6 +40,12 @@ func ForbiddenImports(fs *token.FileSet, f *ast.File) []*Issue {
 			issues = append(issues, &Issue{
 				Pos: fs.Position(im.Pos()),
 				Msg: fmt.Sprintf("go.chromium.org/tast/core/ctxutil package should be used instead of %s package", p),
+			})
+		}
+		if p == "chromiumos/tast/errors" {
+			issues = append(issues, &Issue{
+				Pos: fs.Position(im.Pos()),
+				Msg: fmt.Sprintf("go.chromium.org/tast/core/errors package should be used instead of %s package", p),
 			})
 		}
 

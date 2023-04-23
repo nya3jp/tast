@@ -19,8 +19,8 @@ import (
 
 	"golang.org/x/sys/unix"
 
-	"chromiumos/tast/errors"
 	"chromiumos/tast/ssh"
+	"go.chromium.org/tast/core/errors"
 	"go.chromium.org/tast/core/tastuseonly/logging"
 )
 

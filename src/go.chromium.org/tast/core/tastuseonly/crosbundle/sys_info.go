@@ -14,7 +14,7 @@ import (
 	"strings"
 	"time"
 
-	"chromiumos/tast/errors"
+	"go.chromium.org/tast/core/errors"
 	"go.chromium.org/tast/core/shutil"
 	"go.chromium.org/tast/core/tastuseonly/crash"
 	"go.chromium.org/tast/core/tastuseonly/logging"

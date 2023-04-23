@@ -255,7 +255,7 @@ import (
 	"github.com/godbus/dbus/v5"
 	"golang.org/x/sys/unix"
 
-	"chromiumos/tast/errors"
+	"go.chromium.org/tast/core/errors"
 	"chromiumos/tast/local/chrome"
 )
 ```
@@ -828,7 +828,7 @@ The same considerations apply to `testing.ContextLog` vs. `testing.ContextLogf`.
 
 ### Error construction
 
-To construct new errors or wrap other errors, use the [chromiumos/tast/errors]
+To construct new errors or wrap other errors, use the [go.chromium.org/tast/core/errors]
 package rather than standard libraries (`errors.New`, `fmt.Errorf`) or any other
 third-party libraries. It records stack traces and chained errors, and leaves
 nicely formatted logs when tests fail.
@@ -878,13 +878,13 @@ are useful to design good errors:
 > - In general, the call `f(x)` is responsible for reporting the attempted operation `f` and the argument value `x` as they relate to the context of the error.
 > - The caller is responsible for adding further information that it has but the call `f(x)` does not.
 
-[chromiumos/tast/errors]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/errors
-[errors.New]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/errors#New
-[errors.Errorf]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/errors#Errorf
-[errors.Wrap]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/errors#Wrap
-[errors.Wrapf]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/errors#Wrapf
-[errors.Is]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/errors#Is
-[errors.As]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/errors#As
+[go.chromium.org/tast/core/errors]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/errors
+[errors.New]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/errors#New
+[errors.Errorf]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/errors#Errorf
+[errors.Wrap]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/errors#Wrap
+[errors.Wrapf]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/errors#Wrapf
+[errors.Is]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/errors#Is
+[errors.As]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/errors#As
 [The Go programming language]: https://www.gopl.io/
 
 ### Formatting
@@ -975,7 +975,7 @@ encountered. When a test is running, `panic` has the same effect as `State`'s
 The [Error handling and Go] and [Errors are values] blog posts offer guidance on
 using the `error` type.
 
-[errors package]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/errors
+[errors package]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/errors
 [Error handling and Go]: https://blog.golang.org/error-handling-and-go
 [Errors are values]: https://blog.golang.org/errors-are-values
 

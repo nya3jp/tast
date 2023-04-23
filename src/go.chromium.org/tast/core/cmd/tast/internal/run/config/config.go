@@ -18,8 +18,8 @@ import (
 	"strings"
 	"time"
 
-	"chromiumos/tast/errors"
 	"go.chromium.org/tast/core/cmd/tast/internal/build"
+	"go.chromium.org/tast/core/errors"
 	"go.chromium.org/tast/core/tastuseonly/command"
 	"go.chromium.org/tast/core/tastuseonly/debugger"
 	"go.chromium.org/tast/core/tastuseonly/protocol"

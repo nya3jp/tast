@@ -15,7 +15,7 @@ import (
 	"strings"
 	"text/template"
 
-	"chromiumos/tast/errors"
+	"go.chromium.org/tast/core/errors"
 )
 
 // Params controls the detailed behavior of GenerateConstants.

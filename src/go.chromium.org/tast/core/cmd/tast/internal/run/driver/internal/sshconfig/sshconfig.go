@@ -14,7 +14,7 @@ import (
 	"regexp"
 	"strings"
 
-	"chromiumos/tast/errors"
+	"go.chromium.org/tast/core/errors"
 )
 
 // blockType represents type of SSH config block.

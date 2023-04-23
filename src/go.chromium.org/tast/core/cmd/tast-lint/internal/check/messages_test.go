@@ -14,7 +14,7 @@ func TestMessages(t *testing.T) {
 import (
 	"context"
 
-	"chromiumos/tast/errors"
+	"go.chromium.org/tast/core/errors"
 	"chromiumos/tast/testing"
 )
 
@@ -185,7 +185,7 @@ func TestAutoFixMessages(t *testing.T) {
 import (
 	"context"
 
-	"chromiumos/tast/errors"
+	"go.chromium.org/tast/core/errors"
 	"chromiumos/tast/testing"
 )
 
@@ -248,8 +248,8 @@ func Test(ctx context.Context, s *testing.State) {
 import (
 	"context"
 
-	"chromiumos/tast/errors"
 	"chromiumos/tast/testing"
+	"go.chromium.org/tast/core/errors"
 )
 
 func Test(ctx context.Context, s *testing.State) {
@@ -309,7 +309,7 @@ func Test(ctx context.Context, s *testing.State) {
 	const filename2 = "bar.go"
 	files[filename2] = `package new
 
-import "chromiumos/tast/errors"
+import "go.chromium.org/tast/core/errors"
 
 func main() {
 	return errors.Errorf("should use Wrapf %s%s: %v", "h", "ere", err)
@@ -317,7 +317,7 @@ func main() {
 `
 	expects[filename2] = `package new
 
-import "chromiumos/tast/errors"
+import "go.chromium.org/tast/core/errors"
 
 func main() {
 	return errors.Wrapf(err, "should use Wrapf %s%s", "h", "ere")

@@ -21,7 +21,7 @@ import (
 
 	"golang.org/x/sync/errgroup"
 
-	"chromiumos/tast/errors"
+	"go.chromium.org/tast/core/errors"
 
 	"go.chromium.org/tast/core/cmd/tast-lint/internal/check"
 	"go.chromium.org/tast/core/cmd/tast-lint/internal/git"

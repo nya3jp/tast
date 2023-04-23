@@ -15,7 +15,7 @@ import (
 
 	"golang.org/x/sys/unix"
 
-	"chromiumos/tast/errors"
+	"go.chromium.org/tast/core/errors"
 )
 
 // CopyFile copies the regular file at path src to dst.

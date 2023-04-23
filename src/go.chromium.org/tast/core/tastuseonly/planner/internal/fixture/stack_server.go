@@ -8,7 +8,7 @@ import (
 	"context"
 	"fmt"
 
-	"chromiumos/tast/errors"
+	"go.chromium.org/tast/core/errors"
 	"go.chromium.org/tast/core/tastuseonly/planner/internal/entity"
 	"go.chromium.org/tast/core/tastuseonly/planner/internal/output"
 	"go.chromium.org/tast/core/tastuseonly/protocol"

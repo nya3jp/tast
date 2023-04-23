@@ -203,8 +203,8 @@ func f() error { return errors.New("hello") }
 			"src/chromiumos/tast/services/cros/chrome/gen.go":               tc.content,
 			"src/chromiumos/tast/services/cros/chrome/chrome_service.pb.go": tc.content,
 			// Framework files.
-			"src/chromiumos/tast/errors/errors.go":   tc.content,
-			"src/chromiumos/tast/testing/testing.go": tc.content,
+			"src/go.chromium.org/tast/core/errors/errors.go": tc.content,
+			"src/chromiumos/tast/testing/testing.go":         tc.content,
 			// Unrelated files.
 			"src/chromiumos/infra/infra.go": tc.content,
 			"tools/main.go":                 tc.content,

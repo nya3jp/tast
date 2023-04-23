@@ -19,6 +19,8 @@ var allowList = []string{
 	// meta tests to test the test over-running the test's timeout
 	"src/chromiumos/tast/local/bundles/cros/meta/local_timeout.go",
 	"src/chromiumos/tast/remote/bundles/cros/meta/remote_timeout.go",
+	// TODO: b/187792551 -- remove after the following file is deleted.
+	"src/chromiumos/tast/errors/errors.go",
 }
 
 // ForbiddenCalls checks if any forbidden functions are called.
@@ -39,7 +41,7 @@ func ForbiddenCalls(fs *token.FileSet, f *ast.File, fix bool) []*Issue {
 	if src, err := formatASTNode(fs, f); err == nil {
 		fixable = goimportApplicable(src)
 	}
-	// Checks for the possibility of linting fmt.Errorf with errors from "chromiumos/tast/errors" including existing
+	// Checks for the possibility of linting fmt.Errorf with errors from "go.chromium.org/tast/core/errors" including existing
 	// 'errors' identifiers (if any) and the requirement of importing errors package (if not imported).
 	hasErrorsImport, errorsErr := checkErrors(f)
 
@@ -67,7 +69,7 @@ func ForbiddenCalls(fs *token.FileSet, f *ast.File, fix bool) []*Issue {
 			}
 		case "fmt.Errorf":
 			if !fix {
-				msg := "chromiumos/tast/errors.Errorf should be used instead of fmt.Errorf"
+				msg := "go.chromium.org/tast/core/errors.Errorf should be used instead of fmt.Errorf"
 				if errorsErr != nil {
 					msg = fmt.Sprintf("%s. Also found an error: %s", msg, errorsErr)
 				}
@@ -88,7 +90,7 @@ func ForbiddenCalls(fs *token.FileSet, f *ast.File, fix bool) []*Issue {
 				})
 
 				if !hasErrorsImport {
-					importsRequired = append(importsRequired, "chromiumos/tast/errors")
+					importsRequired = append(importsRequired, "go.chromium.org/tast/core/errors")
 				}
 			}
 		case "time.Sleep":
@@ -130,6 +132,13 @@ func ForbiddenCalls(fs *token.FileSet, f *ast.File, fix bool) []*Issue {
 					Link: "https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/code_review_comments.md#os_Chdir",
 				})
 			}
+		case "errors.NewE":
+			if !isUnitTest {
+				issues = append(issues, &Issue{
+					Pos: fs.Position(x.Pos()),
+					Msg: "errors.NewE should only be called by src/chromiumos/tast/errors/errors.go.",
+				})
+			}
 		}
 
 		return true
@@ -151,7 +160,7 @@ func ForbiddenCalls(fs *token.FileSet, f *ast.File, fix bool) []*Issue {
 }
 
 // hasIdentErrors returns true if there is an identifier node "errors" which is not a part of
-// "chromiumos/tast/errors" package, otherwise returns false.
+// "go.chromium.org/tast/core/errors" package, otherwise returns false.
 func hasIdentErrors(f *ast.File) bool {
 	hasErrors := false
 	ast.Inspect(f, func(node ast.Node) bool {
@@ -174,20 +183,20 @@ func hasIdentErrors(f *ast.File) bool {
 	return hasErrors
 }
 
-// checkErrors checks if the "chromiumos/tast/errors" package could replace the occurrences of fmt.Errorf
+// checkErrors checks if the "go.chromium.org/tast/core/errors" package could replace the occurrences of fmt.Errorf
 // automatically or manual intervention is solicited.
 func checkErrors(f *ast.File) (bool, error) {
 	if hasIdentErrors(f) {
 		return false, fmt.Errorf("manual fix required, detected 'errors' as an identifier")
 	}
 
-	const pkg = "chromiumos/tast/errors"
+	const pkg = "go.chromium.org/tast/core/errors"
 	for _, imp := range f.Imports {
 		iPath, err := strconv.Unquote(imp.Path.Value)
 		if err != nil || iPath != pkg {
 			continue
 		}
-		// An existing import of "chromiumos/tast/errors" without alias
+		// An existing import of "go.chromium.org/tast/core/errors" without alias
 		if imp.Name == nil {
 			return true, nil
 		}

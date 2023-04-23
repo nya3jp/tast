@@ -11,8 +11,8 @@ import (
 	"strings"
 	"time"
 
-	"chromiumos/tast/errors"
 	"go.chromium.org/tast/core/dut"
+	"go.chromium.org/tast/core/errors"
 	"go.chromium.org/tast/core/tastuseonly/bundle/legacyjson"
 	"go.chromium.org/tast/core/tastuseonly/command"
 	"go.chromium.org/tast/core/tastuseonly/testcontext"

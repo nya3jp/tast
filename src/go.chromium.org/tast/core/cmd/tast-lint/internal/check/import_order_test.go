@@ -18,7 +18,7 @@ import (
 
 	"github.com/godbus/dbus/v5"
 
-	"chromiumos/tast/errors"
+	"go.chromium.org/tast/core/errors"
 	"go.chromium.org/tast/errors"
 )
 
@@ -42,7 +42,7 @@ func TestImportOrderGroup(t *testing.T) {
 import (
 	"fmt"
 	"github.com/godbus/dbus/v5"
-	"chromiumos/tast/errors"
+	"go.chromium.org/tast/core/errors"
 	"go.chromium.org/tast/errors"
 )
 
@@ -59,7 +59,7 @@ func Foo() {
 +
  	"github.com/godbus/dbus/v5"
 +
- 	"chromiumos/tast/errors"
+ 	"go.chromium.org/tast/core/errors"
  	"go.chromium.org/tast/errors"
  )
 `
@@ -78,7 +78,7 @@ func TestImportOrderGroupOrder(t *testing.T) {
 import (
 	"fmt"
 
-	"chromiumos/tast/errors"
+	"go.chromium.org/tast/core/errors"
 
 	"github.com/godbus/dbus/v5"
 )
@@ -94,11 +94,11 @@ func Foo() {
  import (
  	"fmt"
  
--	"chromiumos/tast/errors"
+-	"go.chromium.org/tast/core/errors"
 -
  	"github.com/godbus/dbus/v5"
 +
-+	"chromiumos/tast/errors"
++	"go.chromium.org/tast/core/errors"
  )
  
  func Foo() {
@@ -118,7 +118,7 @@ import (
 	"fmt"
 
 	// some comment
-	"chromiumos/tast/errors"
+	"go.chromium.org/tast/core/errors"
 )
 
 func Foo() {
@@ -141,7 +141,7 @@ package main
 import (
 	"fmt"
 	"github.com/godbus/dbus/v5"
-	"chromiumos/tast/errors"
+	"go.chromium.org/tast/core/errors"
 )
 
 // Foo does foo
@@ -157,7 +157,7 @@ package main
 import (
 	"fmt"
 
-	"chromiumos/tast/errors"
+	"go.chromium.org/tast/core/errors"
 
 	"github.com/godbus/dbus/v5"
 )
@@ -178,7 +178,7 @@ import (
 
 	"github.com/godbus/dbus/v5"
 
-	"chromiumos/tast/errors"
+	"go.chromium.org/tast/core/errors"
 )
 
 // Foo does foo
@@ -196,7 +196,7 @@ import (
 
 	"github.com/godbus/dbus/v5"
 
-	"chromiumos/tast/errors"
+	"go.chromium.org/tast/core/errors"
 )
 
 // Foo does foo

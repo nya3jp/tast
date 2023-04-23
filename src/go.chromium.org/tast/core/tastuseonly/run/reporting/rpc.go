@@ -10,7 +10,7 @@ import (
 	"github.com/golang/protobuf/ptypes"
 	"google.golang.org/grpc"
 
-	"chromiumos/tast/errors"
+	"go.chromium.org/tast/core/errors"
 	"go.chromium.org/tast/core/tastuseonly/run/resultsjson"
 
 	frameworkprotocol "go.chromium.org/tast/core/framework/protocol"

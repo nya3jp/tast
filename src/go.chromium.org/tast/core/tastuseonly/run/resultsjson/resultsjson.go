@@ -11,7 +11,7 @@ import (
 
 	"github.com/golang/protobuf/ptypes"
 
-	"chromiumos/tast/errors"
+	"go.chromium.org/tast/core/errors"
 	"go.chromium.org/tast/core/tastuseonly/dep"
 	"go.chromium.org/tast/core/tastuseonly/protocol"
 )

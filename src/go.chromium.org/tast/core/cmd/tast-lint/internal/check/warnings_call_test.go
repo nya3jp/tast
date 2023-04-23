@@ -14,7 +14,7 @@ import (
 	"fmt"
 	"time"
 	"github.com/godbus/dbus/v5"
-	"chromiumos/tast/errors"
+	"go.chromium.org/tast/core/errors"
 )
 func main() {
 	testing.Sleep()
@@ -32,7 +32,7 @@ import (
 	"fmt"
 	"time"
 	"github.com/godbus/dbus/v5"
-	"chromiumos/tast/errors"
+	"go.chromium.org/tast/core/errors"
 )
 func main() {
 	testing.Sleep() // GoBigSleepLint: valid testing.sleep

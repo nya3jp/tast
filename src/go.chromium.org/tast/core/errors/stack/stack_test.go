@@ -19,7 +19,7 @@ func TestShort(t *testing.T) {
 		t.Fatalf("Stack trace is too short: %q", trace)
 	}
 
-	firstRegexp := regexp.MustCompile(`^\tat chromiumos/tast/errors/stack\.TestShort \(stack_test.go:\d+\)$`)
+	firstRegexp := regexp.MustCompile(`^\tat go.chromium.org/tast/core/errors/stack\.TestShort \(stack_test.go:\d+\)$`)
 	if s := lines[0]; !firstRegexp.MatchString(s) {
 		t.Errorf("First line of stack trace is wrong: expected to match %q, got %q", firstRegexp, s)
 	}
@@ -44,7 +44,7 @@ func TestLong(t *testing.T) {
 		t.Fatalf("Stack trace has wrong number of lines: expected %d, got %d", maxDepth+1, len(lines))
 	}
 
-	re := regexp.MustCompile(`^\tat chromiumos/tast/errors/stack\.getDeepStack \(stack_test.go:\d+\)$`)
+	re := regexp.MustCompile(`^\tat go.chromium.org/tast/core/errors/stack\.getDeepStack \(stack_test.go:\d+\)$`)
 	for i, line := range lines {
 		if i < len(lines)-1 {
 			if !re.MatchString(line) {

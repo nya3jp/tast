@@ -25,7 +25,7 @@ import (
 	"go.chromium.org/chromiumos/config/go/api"
 	"google.golang.org/protobuf/testing/protocmp"
 
-	"chromiumos/tast/errors"
+	"go.chromium.org/tast/core/errors"
 	"go.chromium.org/tast/core/tastuseonly/protocol"
 	"go.chromium.org/tast/core/tastuseonly/testing"
 

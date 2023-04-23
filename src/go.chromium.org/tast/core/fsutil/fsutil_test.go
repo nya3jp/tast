@@ -12,7 +12,7 @@ import (
 
 	"golang.org/x/sys/unix"
 
-	"chromiumos/tast/fsutil"
+	"go.chromium.org/tast/core/fsutil"
 	"go.chromium.org/tast/core/testutil"
 )
 

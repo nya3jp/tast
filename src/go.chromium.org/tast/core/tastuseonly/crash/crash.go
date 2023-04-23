@@ -11,7 +11,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"chromiumos/tast/fsutil"
+	"go.chromium.org/tast/core/fsutil"
 	"go.chromium.org/tast/core/tastuseonly/logging"
 )
 

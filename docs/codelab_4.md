@@ -194,7 +194,7 @@ For that we import all packages containing services we need as well as the
 import (
 	...
         "chromiumos/tast/remote/policyutil"
-	"chromiumos/tast/rpc"
+	"go.chromium.org/tast/core/rpc"
 	ps "chromiumos/tast/services/cros/policy"
 	...
 )

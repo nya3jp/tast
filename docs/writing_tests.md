@@ -1680,7 +1680,7 @@ if err := bc.CheckBoot(ctx, &req, &res); err != nil {
 }
 ```
 
-[`rpc.Dial`]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/rpc#Dial
+[`rpc.Dial`]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/rpc#Dial
 [`grpc.ClientConn`]: https://godoc.org/google.golang.org/grpc#ClientConn
 
 ### Panics in gRPC services

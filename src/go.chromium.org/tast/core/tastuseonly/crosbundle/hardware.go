@@ -1033,8 +1033,18 @@ func findAMDSOC(parsed *lscpuResult) (protocol.DeprecatedDeviceConfig_SOC, error
 		return protocol.DeprecatedDeviceConfig_SOC_STONEY_RIDGE, nil
 	}
 	if family, ok := parsed.find("CPU family:"); ok {
-		if family == "23" && (model == "24" || model == "32") {
-			return protocol.DeprecatedDeviceConfig_SOC_PICASSO, nil
+		if family == "23" {
+			if model == "24" || model == "32" {
+				return protocol.DeprecatedDeviceConfig_SOC_PICASSO, nil
+			} else if model == "160" {
+				return protocol.DeprecatedDeviceConfig_SOC_MENDOCINO, nil
+			}
+		} else if family == "25" {
+			if model == "80" {
+				return protocol.DeprecatedDeviceConfig_SOC_CEZANNE, nil
+			} else if model == "116" {
+				return protocol.DeprecatedDeviceConfig_SOC_PHOENIX, nil
+			}
 		}
 	}
 

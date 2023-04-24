@@ -82,6 +82,9 @@ message DeprecatedDeviceConfig {
     SOC_MT8195 = 37;
     SOC_MT8186 = 38;
     SOC_MT8188G = 39;
+    SOC_CEZANNE = 40;
+    SOC_MENDOCINO = 41;
+    SOC_PHOENIX = 42;
   }
   SOC soc = 2;
 

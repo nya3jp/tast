@@ -249,7 +249,7 @@ func WifiDevice(devices ...wlan.DeviceID) Condition {
 		listed, err := wifiDeviceListed(f, devices...)
 		if err != nil {
 			// Fail-open. Assumption is that if the device is not recognized, it doesn't match.
-			return unsatisfied(fmt.Sprintf("Unrecognized decvice. Assume not matching. Err %v", err))
+			return unsatisfied(fmt.Sprintf("Unrecognized device. Assume not matching. Err %v", err))
 		}
 		if !listed {
 			return unsatisfied("WiFi device did not match")
@@ -719,7 +719,7 @@ func Keyboard() Condition {
 	}
 }
 
-// KeyboardBacklight returns a hardware dependency condition that is satified
+// KeyboardBacklight returns a hardware dependency condition that is satisfied
 // if the DUT supports keyboard backlight functionality.
 func KeyboardBacklight() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
@@ -916,7 +916,7 @@ func WifiMarvell() Condition {
 			return satisfied()
 		}
 		// bob, kevin may be the platform name or model name,
-		// return satisfied if its plarform name or model name is bob/kevin
+		// return satisfied if its platform name or model name is bob/kevin
 		modelCondition := Model(
 			"bob", "kevin", "kevin64",
 		)
@@ -1067,6 +1067,24 @@ func NoBatteryBootSupported() Condition {
 			return unsatisfied("DUT does not support booting without a battery")
 		}
 
+		return satisfied()
+	},
+	}
+}
+
+// SupportsHardwareOverlays returns a hardware dependency condition that is satisfied if the SoC
+// supports hardware overlays.
+func SupportsHardwareOverlays() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		dc := f.GetDeprecatedDeviceConfig()
+		if dc == nil {
+			return withErrorStr("DeprecatedDeviceConfig is not given")
+		}
+
+		if dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_STONEY_RIDGE ||
+			dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_SC7180 {
+			return unsatisfied("SoC does not support Hardware Overlays")
+		}
 		return satisfied()
 	},
 	}
@@ -1567,7 +1585,7 @@ func Lid() Condition {
 	return FormFactor(Clamshell, Convertible, Detachable)
 }
 
-// InternalKeyboard returns a hardware dependency condition that is satisfied iff the DUT's form factor has a fixed undettachable keyboard.
+// InternalKeyboard returns a hardware dependency condition that is satisfied iff the DUT's form factor has a fixed undetachable keyboard.
 func InternalKeyboard() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
@@ -1762,7 +1780,7 @@ func SeamlessRefreshRate() Condition {
 	return Model("mithrax", "taniks")
 }
 
-// GPUFamily is satisfied if the devices GPU family is categoried as one of the families specified.
+// GPUFamily is satisfied if the devices GPU family is categorized as one of the families specified.
 // For a complete list of values or to add new ones please check the pciid maps at
 // https://chromium.googlesource.com/chromiumos/platform/graphics/+/refs/heads/main/src/go.chromium.org/chromiumos/graphics-utils-go/hardware_probe/cmd/hardware_probe
 func GPUFamily(families []string) Condition {
@@ -1798,7 +1816,7 @@ func SkipGPUFamily(families []string) Condition {
 	}}
 }
 
-// GPUVendor is satisfied if the devices GPU vendor is categoried as one of the vendors specified.
+// GPUVendor is satisfied if the devices GPU vendor is categorized as one of the vendors specified.
 // For a complete list of values or to add new ones please check the files at
 // https://chromium.googlesource.com/chromiumos/platform/graphics/+/refs/heads/main/src/go.chromium.org/chromiumos/graphics-utils-go/hardware_probe/cmd/hardware_probe
 func GPUVendor(vendors []string) Condition {
@@ -1816,7 +1834,7 @@ func GPUVendor(vendors []string) Condition {
 	}}
 }
 
-// SkipGPUVendor is satisfied if the devices GPU vendor is categoried as none of the vendors specified.
+// SkipGPUVendor is satisfied if the devices GPU vendor is categorized as none of the vendors specified.
 // For a complete list of values or to add new ones please check the files at
 // https://chromium.googlesource.com/chromiumos/platform/graphics/+/refs/heads/main/src/go.chromium.org/chromiumos/graphics-utils-go/hardware_probe/cmd/hardware_probe
 func SkipGPUVendor(vendors []string) Condition {
@@ -1834,7 +1852,7 @@ func SkipGPUVendor(vendors []string) Condition {
 	}}
 }
 
-// CPUSocFamily is satisfied if the devices CPU SOC family is categoried as one of the families specified.
+// CPUSocFamily is satisfied if the devices CPU SOC family is categorized as one of the families specified.
 // For a complete list of values or to add new ones please check the files at
 // https://chromium.googlesource.com/chromiumos/platform/graphics/+/refs/heads/main/src/go.chromium.org/chromiumos/graphics-utils-go/hardware_probe/cmd/hardware_probe
 func CPUSocFamily(families []string) Condition {
@@ -1852,7 +1870,7 @@ func CPUSocFamily(families []string) Condition {
 	}}
 }
 
-// SkipCPUSocFamily is satisfied if the devies CPU SOC family is none of the families specified.
+// SkipCPUSocFamily is satisfied if the device's CPU SOC family is none of the families specified.
 // For a complete list of values or to add new ones please check the files at
 // https://chromium.googlesource.com/chromiumos/platform/graphics/+/refs/heads/main/src/go.chromium.org/chromiumos/graphics-utils-go/hardware_probe/cmd/hardware_probe
 func SkipCPUSocFamily(families []string) Condition {

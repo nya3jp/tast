@@ -273,7 +273,7 @@ func Keyboard() Condition {
 	return hwdep.Keyboard()
 }
 
-// KeyboardBacklight returns a hardware dependency condition that is satified
+// KeyboardBacklight returns a hardware dependency condition that is satisfied
 // if the DUT supports keyboard backlight functionality.
 func KeyboardBacklight() Condition {
 	return hwdep.KeyboardBacklight()
@@ -388,6 +388,12 @@ func Battery() Condition {
 // supports booting without a battery.
 func NoBatteryBootSupported() Condition {
 	return hwdep.NoBatteryBootSupported()
+}
+
+// SupportsHardwareOverlays returns a hardware dependency condition that is satisfied if the SoC
+// supports hardware overlays.
+func SupportsHardwareOverlays() Condition {
+	return hwdep.SupportsHardwareOverlays()
 }
 
 // SupportsNV12Overlays says true if the SoC supports NV12 hardware overlays,
@@ -533,7 +539,7 @@ func Lid() Condition {
 	return hwdep.Lid()
 }
 
-// InternalKeyboard returns a hardware dependency condition that is satisfied iff the DUT's form factor has a fixed undettachable keyboard.
+// InternalKeyboard returns a hardware dependency condition that is satisfied iff the DUT's form factor has a fixed undetachable keyboard.
 func InternalKeyboard() Condition {
 	return hwdep.InternalKeyboard()
 }
@@ -598,7 +604,7 @@ func SeamlessRefreshRate() Condition {
 	return hwdep.SeamlessRefreshRate()
 }
 
-// GPUFamily is satisfied if the devices GPU family is categoried as one of the families specified.
+// GPUFamily is satisfied if the devices GPU family is categorized as one of the families specified.
 // For a complete list of values or to add new ones please check the pciid maps at
 // https://chromium.googlesource.com/chromiumos/platform/graphics/+/refs/heads/main/src/go.chromium.org/chromiumos/graphics-utils-go/hardware_probe/cmd/hardware_probe
 func GPUFamily(families []string) Condition {
@@ -612,28 +618,28 @@ func SkipGPUFamily(families []string) Condition {
 	return hwdep.SkipGPUFamily(families)
 }
 
-// GPUVendor is satisfied if the devices GPU vendor is categoried as one of the vendors specified.
+// GPUVendor is satisfied if the devices GPU vendor is categorized as one of the vendors specified.
 // For a complete list of values or to add new ones please check the files at
 // https://chromium.googlesource.com/chromiumos/platform/graphics/+/refs/heads/main/src/go.chromium.org/chromiumos/graphics-utils-go/hardware_probe/cmd/hardware_probe
 func GPUVendor(vendors []string) Condition {
 	return hwdep.GPUVendor(vendors)
 }
 
-// SkipGPUVendor is satisfied if the devices GPU vendor is categoried as none of the vendors specified.
+// SkipGPUVendor is satisfied if the devices GPU vendor is categorized as none of the vendors specified.
 // For a complete list of values or to add new ones please check the files at
 // https://chromium.googlesource.com/chromiumos/platform/graphics/+/refs/heads/main/src/go.chromium.org/chromiumos/graphics-utils-go/hardware_probe/cmd/hardware_probe
 func SkipGPUVendor(vendors []string) Condition {
 	return hwdep.SkipGPUVendor(vendors)
 }
 
-// CPUSocFamily is satisfied if the devices CPU SOC family is categoried as one of the families specified.
+// CPUSocFamily is satisfied if the devices CPU SOC family is categorized as one of the families specified.
 // For a complete list of values or to add new ones please check the files at
 // https://chromium.googlesource.com/chromiumos/platform/graphics/+/refs/heads/main/src/go.chromium.org/chromiumos/graphics-utils-go/hardware_probe/cmd/hardware_probe
 func CPUSocFamily(families []string) Condition {
 	return hwdep.CPUSocFamily(families)
 }
 
-// SkipCPUSocFamily is satisfied if the devies CPU SOC family is none of the families specified.
+// SkipCPUSocFamily is satisfied if the device's CPU SOC family is none of the families specified.
 // For a complete list of values or to add new ones please check the files at
 // https://chromium.googlesource.com/chromiumos/platform/graphics/+/refs/heads/main/src/go.chromium.org/chromiumos/graphics-utils-go/hardware_probe/cmd/hardware_probe
 func SkipCPUSocFamily(families []string) Condition {

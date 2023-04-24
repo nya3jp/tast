@@ -144,6 +144,7 @@ func (d *DUT) GetFile(ctx context.Context, src, dst string) error {
 
 // WaitUnreachable waits for the DUT to become unreachable.
 func (d *DUT) WaitUnreachable(ctx context.Context) error {
+	startTime := time.Now()
 	if d == nil {
 		return nil
 	}
@@ -165,8 +166,8 @@ func (d *DUT) WaitUnreachable(ctx context.Context) error {
 	for {
 		deadline, ok := ctx.Deadline()
 		if ok && deadline.Before(time.Now().Add(pingTimeout)) {
-			// There isn't enough time to ping
-			return errors.Errorf("context timeout too short, need at least %s, got %s", pingTimeout, deadline.Sub(time.Now()))
+			// There isn't enough time to ping again.
+			return errors.Errorf("DUT still reachable after %s", time.Now().Sub(startTime))
 		}
 		if err := d.hst.Ping(ctx, pingTimeout); err != nil {
 			// Return the context's error instead of the one returned by Ping:

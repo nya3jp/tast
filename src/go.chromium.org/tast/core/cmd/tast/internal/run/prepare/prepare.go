@@ -17,10 +17,10 @@ import (
 	"strings"
 	"time"
 
-	"chromiumos/tast/ssh"
 	"go.chromium.org/tast/core/cmd/tast/internal/build"
 	"go.chromium.org/tast/core/cmd/tast/internal/run/config"
 	"go.chromium.org/tast/core/cmd/tast/internal/run/driver"
+	"go.chromium.org/tast/core/ssh"
 	"go.chromium.org/tast/core/tastuseonly/debugger"
 	"go.chromium.org/tast/core/tastuseonly/linuxssh"
 	"go.chromium.org/tast/core/tastuseonly/logging"

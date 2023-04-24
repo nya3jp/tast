@@ -22,8 +22,8 @@ import (
 	cryptossh "golang.org/x/crypto/ssh"
 	"golang.org/x/sys/unix"
 
-	"chromiumos/tast/ssh"
 	"go.chromium.org/tast/core/errors"
+	"go.chromium.org/tast/core/ssh"
 )
 
 // SymlinkPolicy describes how symbolic links should be handled by PutFiles.

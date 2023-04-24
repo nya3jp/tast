@@ -60,6 +60,18 @@ func ForbiddenImports(fs *token.FileSet, f *ast.File) []*Issue {
 				Msg: fmt.Sprintf("go.chromium.org/tast/core/rpc package should be used instead of %s package", p),
 			})
 		}
+		if p == "chromiumos/tast/ssh" {
+			issues = append(issues, &Issue{
+				Pos: fs.Position(im.Pos()),
+				Msg: fmt.Sprintf("go.chromium.org/tast/core/ssh package should be used instead of %s package", p),
+			})
+		}
+		if p == "chromiumos/tast/ssh/linuxssh" {
+			issues = append(issues, &Issue{
+				Pos: fs.Position(im.Pos()),
+				Msg: fmt.Sprintf("go.chromium.org/tast/core/ssh/linuxssh package should be used instead of %s package", p),
+			})
+		}
 	}
 
 	// local <-> remote, common -> {local, remote} dependencies are forbidden.

@@ -1,4 +1,4 @@
-// Copyright 2021 The ChromiumOS Authors
+// Copyright 2023 The ChromiumOS Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,8 +19,8 @@ import (
 
 	cryptossh "golang.org/x/crypto/ssh"
 
-	"chromiumos/tast/ssh"
 	"go.chromium.org/tast/core/exec"
+	"go.chromium.org/tast/core/ssh"
 	"go.chromium.org/tast/core/tastuseonly/logging"
 	"go.chromium.org/tast/core/tastuseonly/sshtest"
 	"go.chromium.org/tast/core/testutil"

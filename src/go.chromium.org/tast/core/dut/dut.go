@@ -12,8 +12,8 @@ import (
 	"strings"
 	"time"
 
-	"chromiumos/tast/ssh"
 	"go.chromium.org/tast/core/errors"
+	"go.chromium.org/tast/core/ssh"
 
 	"go.chromium.org/tast/core/tastuseonly/linuxssh"
 	"go.chromium.org/tast/core/tastuseonly/logging"

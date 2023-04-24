@@ -1,4 +1,4 @@
-// Copyright 2017 The ChromiumOS Authors
+// Copyright 2023 The ChromiumOS Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,8 +11,8 @@ import (
 	"testing"
 	"time"
 
+	"go.chromium.org/tast/core/ssh"
 	"go.chromium.org/tast/core/tastuseonly/sshtest"
-	"chromiumos/tast/ssh"
 	"go.chromium.org/tast/core/testutil"
 )
 

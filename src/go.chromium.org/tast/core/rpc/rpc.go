@@ -12,9 +12,9 @@ import (
 
 	"google.golang.org/grpc"
 
-	"chromiumos/tast/ssh"
 	"go.chromium.org/tast/core/dut"
 	"go.chromium.org/tast/core/errors"
+	"go.chromium.org/tast/core/ssh"
 	"go.chromium.org/tast/core/tastuseonly/protocol"
 	"go.chromium.org/tast/core/tastuseonly/rpc"
 	"go.chromium.org/tast/core/tastuseonly/testing"

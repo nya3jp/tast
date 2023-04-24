@@ -46,7 +46,7 @@ are particularly important:
 [bundle]: https://chromium.googlesource.com/chromiumos/platform/tast/+/main/src/go.chromium.org/tast/core/bundle/
 [protocol]: https://chromium.googlesource.com/chromiumos/platform/tast/+/main/src/chromiumos/tast/internal/protocol/
 [runner]: https://chromium.googlesource.com/chromiumos/platform/tast/+/main/src/chromiumos/tast/internal/runner/
-[ssh]: https://chromium.googlesource.com/chromiumos/platform/tast/+/main/src/chromiumos/tast/ssh/
+[ssh]: https://chromium.googlesource.com/chromiumos/platform/tast/+/main/src/go.chromium.org/tast/core/ssh/
 [testing]: https://chromium.googlesource.com/chromiumos/platform/tast/+/main/src/chromiumos/tast/testing/
 
 ## Making changes

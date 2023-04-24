@@ -87,6 +87,8 @@ import (
 	"chromiumos/tast/errors"
 	"chromiumos/tast/fsutil"
 	"chromiumos/tast/rpc"
+	"chromiumos/tast/ssh"
+	"chromiumos/tast/ssh/linuxssh"
 )
 `
 	expects := []string{
@@ -95,6 +97,8 @@ import (
 		"testfile.go:8:2: go.chromium.org/tast/core/errors package should be used instead of chromiumos/tast/errors package",
 		"testfile.go:9:2: go.chromium.org/tast/core/fsutil package should be used instead of chromiumos/tast/fsutil package",
 		"testfile.go:10:2: go.chromium.org/tast/core/rpc package should be used instead of chromiumos/tast/rpc package",
+		"testfile.go:11:2: go.chromium.org/tast/core/ssh package should be used instead of chromiumos/tast/ssh package",
+		"testfile.go:12:2: go.chromium.org/tast/core/ssh/linuxssh package should be used instead of chromiumos/tast/ssh/linuxssh package",
 	}
 
 	f, fs := parse(code, "testfile.go")

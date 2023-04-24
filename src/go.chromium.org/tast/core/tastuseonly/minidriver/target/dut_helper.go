@@ -9,9 +9,9 @@ import (
 	"net"
 	"time"
 
-	"chromiumos/tast/ssh"
 	"chromiumos/tast/testing"
 	"go.chromium.org/tast/core/errors"
+	"go.chromium.org/tast/core/ssh"
 
 	"go.chromium.org/tast/core/tastuseonly/logging"
 	"go.chromium.org/tast/core/tastuseonly/minidriver/externalservers"

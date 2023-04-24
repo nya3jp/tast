@@ -10,8 +10,8 @@ import (
 	"path/filepath"
 	"time"
 
-	"chromiumos/tast/ssh"
 	"go.chromium.org/tast/core/errors"
+	"go.chromium.org/tast/core/ssh"
 	"go.chromium.org/tast/core/tastuseonly/protocol"
 	"go.chromium.org/tast/core/tastuseonly/rpc"
 )

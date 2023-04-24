@@ -16,7 +16,7 @@ import (
 	"go.chromium.org/tast/core/cmd/tast/internal/run/driver/internal/runnerclient"
 	"go.chromium.org/tast/core/cmd/tast/internal/run/driver/internal/sshconfig"
 
-	"chromiumos/tast/ssh"
+	"go.chromium.org/tast/core/ssh"
 
 	"go.chromium.org/tast/core/tastuseonly/debugger"
 	"go.chromium.org/tast/core/tastuseonly/logging"

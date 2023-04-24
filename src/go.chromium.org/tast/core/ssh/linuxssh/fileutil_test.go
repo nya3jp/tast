@@ -1,4 +1,4 @@
-// Copyright 2020 The ChromiumOS Authors
+// Copyright 2023 The ChromiumOS Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,10 +11,10 @@ import (
 	"path/filepath"
 	"testing"
 
+	"go.chromium.org/tast/core/ssh/linuxssh"
 	"go.chromium.org/tast/core/tastuseonly/logging"
 	"go.chromium.org/tast/core/tastuseonly/logging/loggingtest"
 	"go.chromium.org/tast/core/tastuseonly/sshtest"
-	"chromiumos/tast/ssh/linuxssh"
 	"go.chromium.org/tast/core/testutil"
 )
 

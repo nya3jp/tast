@@ -8,7 +8,7 @@ import (
 	"context"
 	"strings"
 
-	"chromiumos/tast/ssh"
+	"go.chromium.org/tast/core/ssh"
 )
 
 // ReadBootID reads the current boot_id at hst.

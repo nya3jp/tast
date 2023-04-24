@@ -10,8 +10,8 @@ import (
 	"net"
 	"path/filepath"
 
-	"chromiumos/tast/ssh"
 	"go.chromium.org/tast/core/errors"
+	"go.chromium.org/tast/core/ssh"
 	"go.chromium.org/tast/core/tastuseonly/debugger"
 	"go.chromium.org/tast/core/tastuseonly/logging"
 	"go.chromium.org/tast/core/tastuseonly/run/devserver"

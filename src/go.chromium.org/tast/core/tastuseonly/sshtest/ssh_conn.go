@@ -13,8 +13,8 @@ import (
 	"testing"
 	"time"
 
-	"chromiumos/tast/ssh"
 	"go.chromium.org/tast/core/shutil"
+	"go.chromium.org/tast/core/ssh"
 )
 
 // ConnectToServer establishes a connection to srv using key.

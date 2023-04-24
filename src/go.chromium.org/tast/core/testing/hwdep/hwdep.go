@@ -994,6 +994,17 @@ func WifiSAP() Condition {
 	)
 }
 
+// WifiP2P returns a hardware dependency condition that if satisfied, indicates
+// that a device supports P2P.
+func WifiP2P() Condition {
+	return SkipOnWifiDevice(
+		MediaTekMT7921PCIE,
+		MediaTekMT7921SDIO,
+		Realtek8822CPCIE,
+		QualcommWCN6855,
+	)
+}
+
 // These are the models which utilize SAR tables stored in VPD. See (b/204199379#comment10)
 // for the methodology used to determine this list as well as a justification as
 // to why it is stable.

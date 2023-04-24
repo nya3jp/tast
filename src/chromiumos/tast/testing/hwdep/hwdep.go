@@ -371,6 +371,12 @@ func WifiSAP() Condition {
 	return hwdep.WifiSAP()
 }
 
+// WifiP2P returns a hardware dependency condition that if satisfied, indicates
+// that a device supports P2P.
+func WifiP2P() Condition {
+	return hwdep.WifiP2P()
+}
+
 // WifiVpdSar returns a hardware dependency condition that if satisfied, indicates
 // that a device supports VPD SAR tables, and the device actually has such tables
 // in VPD.

@@ -17,7 +17,7 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"google.golang.org/protobuf/testing/protocmp"
 
-	"chromiumos/tast/testing/hwdep"
+	"go.chromium.org/tast/core/testing/hwdep"
 
 	"go.chromium.org/tast/core/tastuseonly/dep"
 	"go.chromium.org/tast/core/tastuseonly/protocol"

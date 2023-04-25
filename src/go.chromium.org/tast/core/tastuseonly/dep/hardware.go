@@ -8,7 +8,7 @@ import (
 	"go.chromium.org/tast/core/framework/protocol"
 )
 
-// HardwareDeps is exported as chromiumos/tast/testing/hwdep.Deps. Please find its document for details.
+// HardwareDeps is exported as go.chromium.org/tast/core/testing/hwdep.Deps. Please find its document for details.
 type HardwareDeps struct {
 	// conds hold a slice of HardwareConditions. The enclosing HardwareDeps instance will be satisfied
 	// iff all conds return true. Note that, if conds is empty, HardwareDeps is considered as
@@ -16,7 +16,7 @@ type HardwareDeps struct {
 	conds []HardwareCondition
 }
 
-// HardwareCondition is exported as chromiumos/tast/testing/hwdep.Condition. Please find its document for details.
+// HardwareCondition is exported as go.chromium.org/tast/core/testing/hwdep.Condition. Please find its document for details.
 // Either Satisfied or Err should be nil exclusively.
 type HardwareCondition struct {
 	// Satisfied is a pointer to a function which checks if the given HardwareFeatures satisfies

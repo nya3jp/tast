@@ -61,14 +61,14 @@ func TestRun_TargetSelection(t *testing.T) {
 	// Create a commit containing two bad files.
 	const badCode = "package pkg\n// This is bad comment\nfunc init() {}\n"
 	if err := testutil.WriteFiles(".", map[string]string{
-		"src/chromiumos/tast/testing/aaa.go": badCode,
-		"src/chromiumos/tast/testing/bbb.go": badCode,
+		"src/go.chromium.org/tast/core/testing/aaa.go": badCode,
+		"src/go.chromium.org/tast/core/testing/bbb.go": badCode,
 	}); err != nil {
 		t.Fatalf("Failed to write files: %v", err)
 	}
 	if err := exec.Command("git", "add",
-		"src/chromiumos/tast/testing/aaa.go",
-		"src/chromiumos/tast/testing/bbb.go").Run(); err != nil {
+		"src/go.chromium.org/tast/core/testing/aaa.go",
+		"src/go.chromium.org/tast/core/testing/bbb.go").Run(); err != nil {
 		t.Fatalf("git add failed: %v", err)
 	}
 	if err := exec.Command("git", "commit", "-m", "commit").Run(); err != nil {
@@ -79,9 +79,9 @@ func TestRun_TargetSelection(t *testing.T) {
 	const goodCode = "package pkg\n"
 	if err := testutil.WriteFiles(".", map[string]string{
 		// Overwrite aaa.go with good contents.
-		"src/chromiumos/tast/testing/aaa.go": goodCode,
+		"src/go.chromium.org/tast/core/testing/aaa.go": goodCode,
 		// Create ccc.go with bad contents.
-		"src/chromiumos/tast/testing/ccc.go": badCode,
+		"src/go.chromium.org/tast/core/testing/ccc.go": badCode,
 	}); err != nil {
 		t.Fatalf("Failed to write files: %v", err)
 	}
@@ -96,8 +96,8 @@ func TestRun_TargetSelection(t *testing.T) {
 			commit: "",
 			args:   nil,
 			want: map[string]struct{}{
-				"src/chromiumos/tast/testing/bbb.go": {},
-				"src/chromiumos/tast/testing/ccc.go": {},
+				"src/go.chromium.org/tast/core/testing/bbb.go": {},
+				"src/go.chromium.org/tast/core/testing/ccc.go": {},
 			},
 		},
 		{
@@ -105,31 +105,31 @@ func TestRun_TargetSelection(t *testing.T) {
 			commit: "HEAD",
 			args:   nil,
 			want: map[string]struct{}{
-				"src/chromiumos/tast/testing/aaa.go": {},
-				"src/chromiumos/tast/testing/bbb.go": {},
+				"src/go.chromium.org/tast/core/testing/aaa.go": {},
+				"src/go.chromium.org/tast/core/testing/bbb.go": {},
 			},
 		},
 		{
 			// Args specified: check specified files.
 			commit: "",
 			args: []string{
-				"src/chromiumos/tast/testing/aaa.go",
-				"src/chromiumos/tast/testing/ccc.go",
+				"src/go.chromium.org/tast/core/testing/aaa.go",
+				"src/go.chromium.org/tast/core/testing/ccc.go",
 			},
 			want: map[string]struct{}{
-				"src/chromiumos/tast/testing/ccc.go": {},
+				"src/go.chromium.org/tast/core/testing/ccc.go": {},
 			},
 		},
 		{
 			// Both commit and args specified: check specified files as of the commit.
 			commit: "HEAD",
 			args: []string{
-				"src/chromiumos/tast/testing/aaa.go",
-				"src/chromiumos/tast/testing/bbb.go",
+				"src/go.chromium.org/tast/core/testing/aaa.go",
+				"src/go.chromium.org/tast/core/testing/bbb.go",
 			},
 			want: map[string]struct{}{
-				"src/chromiumos/tast/testing/aaa.go": {},
-				"src/chromiumos/tast/testing/bbb.go": {},
+				"src/go.chromium.org/tast/core/testing/aaa.go": {},
+				"src/go.chromium.org/tast/core/testing/bbb.go": {},
 			},
 		},
 	} {
@@ -164,7 +164,7 @@ func TestRun_FileCategories(t *testing.T) {
 			// testing.State check should be applied to support library files only.
 			check: "testing.State check",
 			content: `package pkg
-import "chromiumos/tast/testing"
+import "go.chromium.org/tast/core/testing"
 func f(s *testing.State) {}
 `,
 			want: map[string]struct{}{
@@ -203,8 +203,8 @@ func f() error { return errors.New("hello") }
 			"src/chromiumos/tast/services/cros/chrome/gen.go":               tc.content,
 			"src/chromiumos/tast/services/cros/chrome/chrome_service.pb.go": tc.content,
 			// Framework files.
-			"src/go.chromium.org/tast/core/errors/errors.go": tc.content,
-			"src/chromiumos/tast/testing/testing.go":         tc.content,
+			"src/go.chromium.org/tast/core/errors/errors.go":   tc.content,
+			"src/go.chromium.org/tast/core/testing/testing.go": tc.content,
 			// Unrelated files.
 			"src/chromiumos/infra/infra.go": tc.content,
 			"tools/main.go":                 tc.content,

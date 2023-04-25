@@ -88,7 +88,7 @@ Several attributes are also added automatically:
 See the [Running Tests] document for information about using attributes to
 select which tests to run.
 
-[testing.Test]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#Test
+[testing.Test]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/testing#Test
 [crosbolt]: https://crosbolt.teams.x20web.corp.google.com/prod/crosbolt/index.html
 [wificell]: https://chromium.googlesource.com/chromiumos/third_party/autotest/+/main/docs/wificell.md
 [grover]: https://docs.google.com/document/d/1klnkcEpbG6_0BKeLXEN9ST13-w8gcNYG1xH80dlvt7U/edit# (Googlers only)

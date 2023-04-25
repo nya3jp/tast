@@ -1,11 +1,11 @@
-// Copyright 2017 The ChromiumOS Authors
+// Copyright 2023 The ChromiumOS Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package testing
 
 import (
-	"go.chromium.org/tast/core/testing"
+	"go.chromium.org/tast/core/tastuseonly/testing"
 )
 
 // State holds state relevant to the execution of a single test.

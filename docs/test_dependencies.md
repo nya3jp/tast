@@ -7,7 +7,7 @@ supported by the DUT, the test will usually be skipped. See the `tast` command's
 
 Tests specify dependencies through the `SoftwareDeps` and `HardwareDeps` fields in [testing.Test].
 
-[testing.Test]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#Test
+[testing.Test]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/testing#Test
 
 ## Software dependencies
 
@@ -402,7 +402,7 @@ Examples of their expected use cases are:
   In this case, it is expected that a dedicated engineer is assigned to
   investigate the cause and its fix.
 
-[hwdep package]: https://chromium.googlesource.com/chromiumos/platform/tast/+/main/src/chromiumos/tast/testing/hwdep/
+[hwdep package]: https://chromium.googlesource.com/chromiumos/platform/tast/+/main/src/go.chromium.org/tast/core/testing/hwdep/
 
 ### Adding new hardware conditions
 

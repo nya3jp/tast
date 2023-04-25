@@ -35,7 +35,7 @@ import (
 
 	"chromiumos/tast/common/testexec"
 	"go.chromium.org/tast/core/shutil"
-	"chromiumos/tast/testing"
+	"go.chromium.org/tast/core/testing"
 )
 ```
 
@@ -99,8 +99,8 @@ please also specify `group:hw_agnostic`.
 `BugComponent` contains a string representing the owning team's primary bug component.
 For buganizer, please use a "`b:`" prefix and specify the component ID (i.e., "`b:12345`"). For crbug, please use a "`crbug:`" prefix followed by component path (i.e., "`crbug:UI>Shell>Launcher`").
 
-[testing.AddTest]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#AddTest
-[testing.Test]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#Test
+[testing.AddTest]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/testing#AddTest
+[testing.Test]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/testing#Test
 [attributes]: https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/test_attributes.md
 [the mainline group]: https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/test_attributes.md
 [new mainline tests]: https://chrome-internal.googlesource.com/chromeos/chromeos-admin/+/HEAD/doc/tast_add_test.md
@@ -120,7 +120,7 @@ to fetch test-related information at runtime and to report log messages or
 errors.
 
 [context.Context]: https://golang.org/pkg/context/
-[testing.State]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#State
+[testing.State]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/testing#State
 
 ## Test cases
 
@@ -253,7 +253,7 @@ import (
 
 	"chromiumos/tast/common/testexec"
 	"go.chromium.org/tast/core/shutil"
-	"chromiumos/tast/testing"
+	"go.chromium.org/tast/core/testing"
 )
 
 func init() {

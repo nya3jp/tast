@@ -1,4 +1,4 @@
-// Copyright 2019 The ChromiumOS Authors
+// Copyright 2023 The ChromiumOS Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,11 @@ import (
 	"context"
 	"time"
 
-	"go.chromium.org/tast/core/testing"
+	"go.chromium.org/tast/core/tastuseonly/testingutil"
 )
 
 // PollOptions may be passed to Poll to configure its behavior.
-type PollOptions = testing.PollOptions
+type PollOptions = testingutil.PollOptions
 
 // PollBreak creates an error wrapping err that may be returned from a
 // function passed to Poll to terminate polling immediately. For example:
@@ -24,7 +24,7 @@ type PollOptions = testing.PollOptions
 //	  ...
 //	})
 func PollBreak(err error) error {
-	return testing.PollBreak(err)
+	return testingutil.PollBreak(err)
 }
 
 // Poll runs f repeatedly until f returns nil and then itself returns nil.
@@ -40,7 +40,7 @@ func PollBreak(err error) error {
 // If an error wrapped by PollBreak is returned, then it
 // immediately terminates the polling, and returns the unwrapped error.
 func Poll(ctx context.Context, f func(context.Context) error, opts *PollOptions) error {
-	return testing.Poll(ctx, f, opts)
+	return testingutil.Poll(ctx, f, opts)
 }
 
 // Sleep pauses the current goroutine for d or until ctx expires.
@@ -49,5 +49,5 @@ func Poll(ctx context.Context, f func(context.Context) error, opts *PollOptions)
 // a condition is discouraged, since it makes tests flakier (when the sleep
 // duration isn't long enough) or slower (when the duration is too long).
 func Sleep(ctx context.Context, d time.Duration) error {
-	return testing.Sleep(ctx, d)
+	return testingutil.Sleep(ctx, d)
 }

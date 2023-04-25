@@ -3,7 +3,7 @@
 This document collects common comments made during reviews of Tast tests.
 
 Tast code should also follow Go's established best practices as described in
-[Effective Go] and [Go Code Review Comments].  
+[Effective Go] and [Go Code Review Comments].
 [Go Style] (internal document similar to public style guides) is also a good
 read and source of style suggestions.
 
@@ -198,9 +198,9 @@ testing.Sleep(ctx, 10*time.Second) // hope that the server starts in 10 seconds
 If you really need to sleep for a fixed amount of time, use [`testing.Sleep`] to
 honor the context timeout.
 
-[`testing.Poll`]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#Poll
-[`testing.PollBreak`]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#PollBreak
-[`testing.Sleep`]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#Sleep
+[`testing.Poll`]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/testing#Poll
+[`testing.PollBreak`]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/testing#PollBreak
+[`testing.Sleep`]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/testing#Sleep
 
 
 ## State
@@ -228,12 +228,12 @@ In many cases you can avoid passing [`testing.State`] to a function:
     [`context.Context`] and call [`testing.ContextOutDir`].
 
 [gRPC services]: https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#Remote-procedure-calls-with-gRPC
-[`testing.State`]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#State
-[`testing.State.Error`]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#State.Error
+[`testing.State`]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/testing#State
+[`testing.State.Error`]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/testing#State.Error
 [`context.Context`]: https://godoc.org/context
-[`testing.ContextLog`]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#ContextLog
-[`testing.State.OutDir`]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#State.OutDir
-[`testing.ContextOutDir`]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#ContextOutDir
+[`testing.ContextLog`]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/testing#ContextLog
+[`testing.State.OutDir`]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/testing#State.OutDir
+[`testing.ContextOutDir`]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/testing#ContextOutDir
 [the allowlist in tast-lint]: https://chromium.googlesource.com/chromiumos/platform/tast/+/refs/heads/main/src/go.chromium.org/tast/core/cmd/tast-lint/check/disallow_testingstate.go
 
 

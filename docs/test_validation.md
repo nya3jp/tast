@@ -115,8 +115,8 @@ notice problems while trying to run their tests locally.
 Registration errors in local tests in the `cros` bundle are also caught by a
 unit test in [main_test.go].
 
-[testing.Test]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#Test
-[testing.AddTest]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#AddTest
+[testing.Test]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/testing#Test
+[testing.AddTest]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/testing#AddTest
 [test_instance.go]: https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/src/chromiumos/tast/internal/testing/test_instance.go
 [main_test.go]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/chromiumos/tast/local/bundles/cros/main_test.go
 
@@ -134,4 +134,4 @@ repositories. The script's usage is described in the [Modifying Tast] document.
 [ARC]: https://developer.android.com/topic/arc/
 [software features]: test_dependencies.md
 [registration_test.go]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/chromiumos/tast/local/bundles/cros/arc/registration_test.go
-[testcheck]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing/testcheck
+[testcheck]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/testing/testcheck

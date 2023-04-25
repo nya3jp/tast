@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"go.chromium.org/tast/core/tastuseonly/testing"
-	"chromiumos/tast/testing/testcheck"
+	"go.chromium.org/tast/core/testing/testcheck"
 )
 
 func TestMain(m *gotesting.M) {

@@ -255,7 +255,7 @@ func SearchFlags(fs *token.FileSet, f *ast.File) (issues []*Issue) {
 		return
 	}
 
-	testingPkgName := hasImport(f, "chromiumos/tast/testing")
+	testingPkgName := hasImport(f, "go.chromium.org/tast/core/testing")
 	if testingPkgName == "" {
 		return
 	}

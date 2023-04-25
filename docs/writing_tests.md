@@ -101,7 +101,7 @@ package ui
 import (
 	"context"
 
-	"chromiumos/tast/testing"
+	"go.chromium.org/tast/core/testing"
 )
 
 func init() {
@@ -165,7 +165,7 @@ If a test needs to be disabled leave a comment in the test source with the
 reason. If applicable, create a bug explaining under what circumstances the
 test can be enabled.
 
-[Contacts]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#Test
+[Contacts]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/testing#Test
 [attributes]: test_attributes.md
 [software dependencies]: test_dependencies.md
 
@@ -276,8 +276,8 @@ exported function that receives a [testing.State] struct. This is defined in the
 [Tast testing package] (not to be confused with [Go's `testing` package] for
 unit testing) and is used to log progress and report failures.
 
-[testing.State]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#State
-[Tast testing package]: https://chromium.googlesource.com/chromiumos/platform/tast/+/main/src/chromiumos/tast/testing/
+[testing.State]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/testing#State
+[Tast testing package]: https://chromium.googlesource.com/chromiumos/platform/tast/+/main/src/go.chromium.org/tast/core/testing/
 
 ### Startup and shutdown
 
@@ -375,9 +375,9 @@ max time from various executions.
 [local tests]: https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform/tast/src/chromiumos/tast/internal/bundle/local.go
 [remote tests]: https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform/tast/src/chromiumos/tast/internal/bundle/remote.go
 [select]: https://tour.golang.org/concurrency/5
-[testing.Poll]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#Poll
-[testing.PollBreak]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#PollBreak
-[testing.Sleep]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#Sleep
+[testing.Poll]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/testing#Poll
+[testing.PollBreak]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/testing#PollBreak
+[testing.Sleep]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/testing#Sleep
 [Go Concurrency Patterns: Context]: https://blog.golang.org/context
 [Go Concurrency Patterns: Timing out, moving on]: https://blog.golang.org/go-concurrency-patterns-timing-out-and
 [time calculation script]: https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform/tast-tests/tools/test_time_calculation.py
@@ -712,7 +712,7 @@ Preconditions, predecessor of fixtures, are not recommended for new tests.
 [`testing.Test.Fixture`]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/internal/testing#Test.Fixture
 [chrome/fixture.go]: https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform/tast-tests/src/chromiumos/tast/local/chrome/fixture.go
 [example.ChromeFixture]: https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform/tast-tests/src/chromiumos/tast/local/bundles/cros/example/chrome_fixture.go
-[`testing.AddFixture`]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#AddFixture
+[`testing.AddFixture`]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/testing#AddFixture
 
 ## Common testing patterns
 
@@ -754,7 +754,7 @@ for _, tc := range []struct {
 ```
 
 [table-driven test]: https://github.com/golang/go/wiki/TableDrivenTests
-[testing.State.Run]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#State.Run
+[testing.State.Run]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/testing#State.Run
 
 ## Errors and logging
 
@@ -1457,7 +1457,7 @@ properties.
 [table-driven tests]: #Table_driven-tests
 [critical]: https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/test_attributes.md
 [informational]: https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/test_attributes.md
-[`testing.Param`]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#Param
+[`testing.Param`]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/testing#Param
 [declarative]: #Test-registration
 [test registration]: #Test-registration
 
@@ -1636,11 +1636,11 @@ a field of the struct type implementing the gRPC service. It allows the service
 to access service-specific information, such as runtime variables and data files
 (not implemented yet: [crbug.com/1027381]).
 
-[`testing.AddService`]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#AddService
-[`testing.Service`]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#Service
+[`testing.AddService`]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/testing#AddService
+[`testing.Service`]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/testing#Service
 [`grpc.Server`]: https://godoc.org/google.golang.org/grpc#Server
 [test `.go` files]: https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#code-location
-[`testing.ServiceState`]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/testing#ServiceState
+[`testing.ServiceState`]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/testing#ServiceState
 [crbug.com/1135996]: https://crbug.com/1135996
 [crbug.com/1027381]: https://crbug.com/1027381
 

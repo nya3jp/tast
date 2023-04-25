@@ -47,7 +47,7 @@ are particularly important:
 [protocol]: https://chromium.googlesource.com/chromiumos/platform/tast/+/main/src/chromiumos/tast/internal/protocol/
 [runner]: https://chromium.googlesource.com/chromiumos/platform/tast/+/main/src/chromiumos/tast/internal/runner/
 [ssh]: https://chromium.googlesource.com/chromiumos/platform/tast/+/main/src/go.chromium.org/tast/core/ssh/
-[testing]: https://chromium.googlesource.com/chromiumos/platform/tast/+/main/src/chromiumos/tast/testing/
+[testing]: https://chromium.googlesource.com/chromiumos/platform/tast/+/main/src/go.chromium.org/tast/core/testing/
 
 ## Making changes
 
@@ -127,12 +127,12 @@ builds when you run `FEATURES=test sudo emerge tast-cmd` (after running
 
 *   Without any arguments, `fast_build.sh` compiles the `tast` executable to
     `$HOME/go/bin/tast`.
-*   `fast_build.sh -t chromiumos/tast/testing` runs the unit tests for the
-    `chromiumos/tast/testing` package.
+*   `fast_build.sh -t go.chromium.org/tast/core/testing` runs the unit tests for the
+    `go.chromium.org/tast/core/testing` package.
 *   `fast_build.sh -T` runs all unit tests (including ones in the `tast-tests`
     repository).
-*   `fast_build.sh -c chromiumos/tast/testing` runs `go vet` against the
-    `chromiumos/tast/testing` package.
+*   `fast_build.sh -c go.chromium.org/tast/core/testing` runs `go vet` against the
+    `go.chromium.org/tast/core/testing` package.
 *   `fast_build.sh -C` vets all packages.
 
 Run `fast_build.sh -h` to see all available options.

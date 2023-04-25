@@ -10,8 +10,8 @@ import (
 	"reflect"
 	"time"
 
-	"chromiumos/tast/testing/hwdep"
 	"go.chromium.org/tast/core/tastuseonly/protocol"
+	"go.chromium.org/tast/core/testing/hwdep"
 )
 
 const (

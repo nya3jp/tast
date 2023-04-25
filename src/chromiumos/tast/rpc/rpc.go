@@ -6,8 +6,8 @@
 package rpc
 
 import (
-	"chromiumos/tast/testing"
 	"context"
+	"go.chromium.org/tast/core/testing"
 
 	"go.chromium.org/tast/core/dut"
 	"go.chromium.org/tast/core/rpc"

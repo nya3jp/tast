@@ -15,7 +15,7 @@ import (
 	"context"
 
 	"go.chromium.org/tast/core/errors"
-	"chromiumos/tast/testing"
+	"go.chromium.org/tast/core/testing"
 )
 
 func Test(ctx context.Context, s *testing.State) {
@@ -185,8 +185,8 @@ func TestAutoFixMessages(t *testing.T) {
 import (
 	"context"
 
+	"go.chromium.org/tast/core/testing"
 	"go.chromium.org/tast/core/errors"
-	"chromiumos/tast/testing"
 )
 
 func Test(ctx context.Context, s *testing.State) {
@@ -248,8 +248,8 @@ func Test(ctx context.Context, s *testing.State) {
 import (
 	"context"
 
-	"chromiumos/tast/testing"
 	"go.chromium.org/tast/core/errors"
+	"go.chromium.org/tast/core/testing"
 )
 
 func Test(ctx context.Context, s *testing.State) {

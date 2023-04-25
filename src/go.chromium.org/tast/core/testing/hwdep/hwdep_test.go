@@ -9,8 +9,8 @@ import (
 
 	configpb "go.chromium.org/chromiumos/config/go/api"
 
-	"chromiumos/tast/testing/hwdep"
-	"chromiumos/tast/testing/wlan"
+	"go.chromium.org/tast/core/testing/hwdep"
+	"go.chromium.org/tast/core/testing/wlan"
 
 	frameworkprotocol "go.chromium.org/tast/core/framework/protocol"
 )

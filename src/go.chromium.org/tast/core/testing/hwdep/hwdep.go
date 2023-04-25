@@ -1152,28 +1152,6 @@ func SupportsVideoOverlays() Condition {
 	}
 }
 
-// Supports30bppFramebuffer says true if the SoC supports 30bpp color depth
-// primary plane scanout. This is: Intel SOCs Kabylake and onwards, AMD SOCs
-// from Zork onwards (codified Picasso), and not ARM SOCs.
-func Supports30bppFramebuffer() Condition {
-	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
-		// Any ARM embedder.
-		if satisfied, _, err := SkipCPUSocFamily([]string{"mediatek", "rockchip", "qualcomm"}).Satisfied(f); err != nil || !satisfied {
-			return unsatisfied("SoC does not support scanning out 30bpp framebuffers (ARM device)")
-		}
-		// Intel Gen9 GPUs (e.g. Skylake) and before.
-		if satisfied, _, err := SkipGPUFamily([]string{"pinetrail", "broadwell", "apollolake", "skylake"}).Satisfied(f); err != nil || !satisfied {
-			return unsatisfied("SoC does not support scanning out 30bpp framebuffers (Intel Skylake) or before")
-		}
-		// AMD before Zork.
-		if satisfied, _, err := SkipGPUFamily([]string{"stoney"}).Satisfied(f); err != nil || !satisfied {
-			return unsatisfied("SoC does not support scanning out 30bpp framebuffers (AMD grunt)")
-		}
-		return satisfied()
-	},
-	}
-}
-
 // Since there are no way to get whether an EC supports force discharging on a device or not,
 // list up the models known not to support force discharging here.
 var modelsWithoutForceDischargeSupport = []string{

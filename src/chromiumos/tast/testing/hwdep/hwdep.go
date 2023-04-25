@@ -410,13 +410,6 @@ func SupportsVideoOverlays() Condition {
 	return hwdep.SupportsVideoOverlays()
 }
 
-// Supports30bppFramebuffer says true if the SoC supports 30bpp color depth
-// primary plane scanout. This is: Intel SOCs Kabylake and onwards, AMD SOCs
-// from Zork onwards (codified Picasso), and not ARM SOCs.
-func Supports30bppFramebuffer() Condition {
-	return hwdep.Supports30bppFramebuffer()
-}
-
 // ForceDischarge returns a hardware dependency condition that is satisfied iff the DUT
 // has a battery and it supports force discharge through `ectool chargecontrol`.
 // The devices listed in modelsWithoutForceDischargeSupport do not satisfy this condition

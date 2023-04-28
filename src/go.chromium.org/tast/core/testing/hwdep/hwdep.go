@@ -511,6 +511,22 @@ func GSCRWKeyIDProd() Condition {
 	}
 }
 
+// HasNoTpm returns a hardware dependency condition that is satisfied iff the DUT
+// doesn't have an enabled TPM.
+func HasNoTpm() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("Did not find hardware features")
+		}
+		if hf.GetTrustedPlatformModule().GetRuntimeTpmVersion() != configpb.HardwareFeatures_TrustedPlatformModule_TPM_VERSION_DISABLED {
+			return unsatisfied("DUT has an enabled TPM")
+		}
+		return satisfied()
+	},
+	}
+}
+
 // HasTpm returns a hardware dependency condition that is satisfied iff the DUT
 // does have an enabled TPM.
 func HasTpm() Condition {

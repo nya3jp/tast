@@ -200,6 +200,12 @@ func GSCRWKeyIDProd() Condition {
 	return hwdep.GSCRWKeyIDProd()
 }
 
+// HasNoTpm returns a hardware dependency condition that is satisfied iff the DUT
+// doesn't have an enabled TPM.
+func HasNoTpm() Condition {
+	return hwdep.HasNoTpm()
+}
+
 // HasTpm returns a hardware dependency condition that is satisfied iff the DUT
 // does have an enabled TPM.
 func HasTpm() Condition {

@@ -800,9 +800,22 @@ func TestHasTpm(t *testing.T) {
 				},
 			},
 			tc.expectSatisfied)
+		verifyCondition(
+			t, hwdep.HasNoTpm(),
+			&frameworkprotocol.DeprecatedDeviceConfig{},
+			&configpb.HardwareFeatures{
+				TrustedPlatformModule: &configpb.HardwareFeatures_TrustedPlatformModule{
+					RuntimeTpmVersion: tc.version,
+				},
+			},
+			!tc.expectSatisfied)
 	}
 	expectError(
 		t, hwdep.HasTpm(),
+		&frameworkprotocol.DeprecatedDeviceConfig{},
+		nil)
+	expectError(
+		t, hwdep.HasNoTpm(),
 		&frameworkprotocol.DeprecatedDeviceConfig{},
 		nil)
 }

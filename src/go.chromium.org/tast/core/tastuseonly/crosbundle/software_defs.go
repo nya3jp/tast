@@ -230,7 +230,7 @@ var softwareFeatureDefs = map[string]string{
 	"thread_safe_libva_backend": "video_cards_amdgpu || video_cards_iHD",
 	"tpm":                       "!mocktpm",
 	"tpm_clear_allowed":         "!mocktpm && (!tpm_dynamic || tpm2_simulator)", // this filters out the reven board from TPM devices
-	"tpm1":                      "!mocktpm && !tpm2",                            // Indicate tpm1.2 is available
+	"tpm1":                      "!mocktpm && tpm",                              // Indicate tpm1.2 is available
 	"tpm2":                      "!mocktpm && tpm2",                             // Indicate tpm2 is available
 	"tpm2_simulator":            "tpm2_simulator",
 	"tpm_dynamic":               "tpm_dynamic",

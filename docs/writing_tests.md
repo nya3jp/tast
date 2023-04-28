@@ -1953,3 +1953,13 @@ And cleanup after you're done with local changes:
 ```
 
 [third_party/chromiumos-overlay]: https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/refs/heads/main/dev-go/
+
+### Test promotion process for mainline tests
+
+The group:mainline non-informational tests are run in ChromeOS lab for CQs.
+
+Please see the Google internal link go/tast-add-test (Googler only) for the
+promotion process from informational to non-informational.
+
+[go/tast-add-test]: http://goto.google.com/tast-add-test
+

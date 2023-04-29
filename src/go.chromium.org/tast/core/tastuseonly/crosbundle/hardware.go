@@ -977,6 +977,10 @@ func findIntelSOC(parsed *lscpuResult) (protocol.DeprecatedDeviceConfig_SOC, err
 		return protocol.DeprecatedDeviceConfig_SOC_JASPER_LAKE, nil
 	case INTEL_FAM6_TIGERLAKE_L:
 		return protocol.DeprecatedDeviceConfig_SOC_TIGER_LAKE, nil
+	case INTEL_FAM6_ALDERLAKE_L:
+		return protocol.DeprecatedDeviceConfig_SOC_ALDER_LAKE, nil
+	case INTEL_FAM6_METEORLAKE_L:
+		return protocol.DeprecatedDeviceConfig_SOC_METEOR_LAKE, nil
 	case INTEL_FAM6_CANNONLAKE_L:
 		return protocol.DeprecatedDeviceConfig_SOC_CANNON_LAKE_Y, nil
 	case INTEL_FAM6_ATOM_GOLDMONT:

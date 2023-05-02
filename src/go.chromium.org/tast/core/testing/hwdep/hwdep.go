@@ -1585,6 +1585,30 @@ func SupportsV4L2StatelessVideoDecoding() Condition {
 	}}
 }
 
+// SupportsHEVCVideoDecodingInChrome says true if the device supports HEVC video
+// decoding in Chrome. Note that this might be different from support at the
+// platform (i.e. drivers, kernel, hardware) level.
+// This function represents a policy: Tast tests using this should still make
+// use of SoftwareDeps "caps.HWDecodeHEVC" (or "caps.HWDecodeHEVC10BPP").
+func SupportsHEVCVideoDecodingInChrome() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		// ARM embedders don't support it.
+		if satisfied, _, err := SkipCPUSocFamily([]string{"mediatek", "rockchip", "qualcomm"}).Satisfied(f); err != nil || !satisfied {
+			return unsatisfied("Chrome does not support HEVC video decoding on this SoC")
+		}
+		// AMD Zork (Picasso) and before also don't.
+		if satisfied, _, err := SkipGPUFamily([]string{"picasso", "stoney"}).Satisfied(f); err != nil || !satisfied {
+			return unsatisfied("Chrome does not support HEVC video decoding on this SoC")
+		}
+		// Any Intel TGL, ADL-P do support it.
+		if supported, _, err := GPUFamily([]string{"tigerlake", "alderlake"}).Satisfied(f); err == nil && supported {
+			return satisfied()
+		}
+		// TODO(b/279332111): Implement other combinations, e.g. JSL.
+		return satisfied()
+	}}
+}
+
 // Lid returns a hardware dependency condition that is satisfied iff the DUT's form factor has a lid.
 func Lid() Condition {
 	return FormFactor(Clamshell, Convertible, Detachable)

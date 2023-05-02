@@ -539,6 +539,13 @@ func SupportsV4L2StatelessVideoDecoding() Condition {
 	return hwdep.SupportsV4L2StatelessVideoDecoding()
 }
 
+// SupportsHEVCVideoDecodingInChrome says true if the device supports HEVC video
+// decoding in Chrome. Note that this might be different from support at the
+// platform (i.e. drivers, kernel, hardware) level.
+func SupportsHEVCVideoDecodingInChrome() Condition {
+	return hwdep.SupportsHEVCVideoDecodingInChrome()
+}
+
 // Lid returns a hardware dependency condition that is satisfied iff the DUT's form factor has a lid.
 func Lid() Condition {
 	return hwdep.Lid()

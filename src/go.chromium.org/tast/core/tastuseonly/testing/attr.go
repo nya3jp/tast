@@ -489,6 +489,29 @@ Tests in this group are not used for build verification.`,
 		Desc:     `A group of tests verifying the current state of Omaha.`,
 	},
 	{
+		Name:     "racc",
+		Contacts: []string{"chromeos-runtime-probe@google.com"},
+		Desc:     `A group of tests that validate the RACC-related functionality.`,
+		Subattrs: []*attr{
+			{
+				Name: "racc_general",
+				Desc: `Tests RACC functionality with RACC binaries installed.`,
+			},
+			{
+				Name: "racc_config_installed",
+				Desc: `Tests RACC functionality with probe payload installed.
+
+The group of tests compare results probed by Runtime Probe and corresponding information
+in cros-labels decoded from HWID string.  These tests mainly check if Runtime Probe works
+as expected (in terms of D-Bus connection, probe function, and probe result).  For
+short-term plan, only autotest can invoke these tests with host_info information.  That's
+why we add this attribute and run tests of this attribute in a control file at
+third_party/autotest/files/server/site_tests/tast/control.runtime-probe
+`,
+			},
+		},
+	},
+	{
 		Name:     "rapid-ime-decoder",
 		Contacts: []string{"essential-inputs-team@google.com"},
 		Desc:     `A group of tests to validate libIMEdecoder.so releases.`,

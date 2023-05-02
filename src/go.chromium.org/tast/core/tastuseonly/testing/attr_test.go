@@ -134,6 +134,12 @@ func TestCheckKnownAttrs(t *testing.T) {
 			attrs: []string{"group:rapid-ime-decoder"},
 		},
 		{
+			attrs: []string{"group:racc", "racc_general"},
+		},
+		{
+			attrs: []string{"group:racc", "racc_config_installed"},
+		},
+		{
 			attrs: []string{"group:storage-qual"},
 		},
 		{

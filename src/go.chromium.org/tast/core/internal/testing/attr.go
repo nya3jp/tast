@@ -198,6 +198,17 @@ Tests in this group are not used for build verification.
 		},
 	},
 	{
+		Name:     "pvs",
+		Contacts: []string{"chromeos-pvs-eng@google.com"},
+		Desc:     `The group of pvs tests to be run regularly by the pvs team.`,
+		Subattrs: []*attr{
+			{
+				Name: "pvs_perbuild",
+				Desc: `Indicates that this test should run for every ChromeOS build.`,
+			},
+		},
+	},
+	{
 		Name:     "stress",
 		Contacts: []string{"chromeos-engprod@google.com"},
 		Desc:     `A group of stress tests.`,

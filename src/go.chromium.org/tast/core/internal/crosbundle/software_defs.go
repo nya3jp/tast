@@ -62,7 +62,8 @@ var softwareFeatureDefs = map[string]string{
 	// Kernels pre-4.19 do not support core scheduling.
 	"coresched": `!("kernel-4_4" || "kernel-4_14")`,
 	// TEO governor was new in v5.1, but we backported it to v4.19.
-	"cpuidle_teo": `!("kernel-4_4" || "kernel-4_14")`,
+	"cpuidle_teo":       `!("kernel-4_4" || "kernel-4_14")`,
+	"cpu_heterogeneous": `"arm" || "arm64" || "board:brya*"`,
 	// TODO(b/174889440) Remove hana, elm, kevin, bob, scarlet.
 	"cpu_vuln_sysfs": `!("board:bob" || "board:hana" || "board:elm" || "board:hana-kernelnext" || "board:elm-kernelnext" || "board:kevin" || "board:scarlet")`,
 	"cras":           "cras",

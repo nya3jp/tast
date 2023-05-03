@@ -69,6 +69,7 @@ The following software features are defined:
     should also explicitly specify a `chrome` dependency.
 * `coresched` - Whether device supports core scheduling feature for secure HT.
 * `cpuidle_teo` - Availability of the TEO cpuidle governor.
+* `cpu_heterogeneous` - Whether device has heterogeneous CPU topology.
 * `cpu_vuln_sysfs` - Whether the platform has /sys/devices/system/cpu/vulnerabilities sysfs files
 * `cras` - Whether the platform supports the ChromeOS Audio Server.
 * `crashpad` - Whether the platform supports the crashpad crash handler for

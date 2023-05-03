@@ -18,13 +18,13 @@ import (
 
 	"go.chromium.org/tast/core/ssh"
 
-	"go.chromium.org/tast/core/tastuseonly/debugger"
-	"go.chromium.org/tast/core/tastuseonly/logging"
-	"go.chromium.org/tast/core/tastuseonly/minidriver/bundleclient"
-	"go.chromium.org/tast/core/tastuseonly/minidriver/servo"
-	"go.chromium.org/tast/core/tastuseonly/minidriver/target"
-	"go.chromium.org/tast/core/tastuseonly/protocol"
-	"go.chromium.org/tast/core/tastuseonly/run/genericexec"
+	"go.chromium.org/tast/core/internal/debugger"
+	"go.chromium.org/tast/core/internal/logging"
+	"go.chromium.org/tast/core/internal/minidriver/bundleclient"
+	"go.chromium.org/tast/core/internal/minidriver/servo"
+	"go.chromium.org/tast/core/internal/minidriver/target"
+	"go.chromium.org/tast/core/internal/protocol"
+	"go.chromium.org/tast/core/internal/run/genericexec"
 )
 
 const (

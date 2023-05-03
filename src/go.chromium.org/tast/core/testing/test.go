@@ -6,8 +6,8 @@
 package testing
 
 import (
-	"go.chromium.org/tast/core/tastuseonly/protocol"
-	"go.chromium.org/tast/core/tastuseonly/testing"
+	"go.chromium.org/tast/core/internal/protocol"
+	"go.chromium.org/tast/core/internal/testing"
 )
 
 // Test describes a registration of one or more test instances.

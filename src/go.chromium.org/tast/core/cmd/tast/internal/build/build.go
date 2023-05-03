@@ -16,9 +16,9 @@ import (
 
 	"golang.org/x/sync/errgroup"
 
+	"go.chromium.org/tast/core/internal/logging"
+	"go.chromium.org/tast/core/internal/timing"
 	"go.chromium.org/tast/core/shutil"
-	"go.chromium.org/tast/core/tastuseonly/logging"
-	"go.chromium.org/tast/core/tastuseonly/timing"
 )
 
 // archToEnvs maps from a userland architecture name to the corresponding Go command environment variables that

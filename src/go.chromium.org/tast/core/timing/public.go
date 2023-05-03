@@ -8,7 +8,7 @@ package timing
 import (
 	"context"
 
-	"go.chromium.org/tast/core/tastuseonly/timing"
+	"go.chromium.org/tast/core/internal/timing"
 )
 
 // Stage represents a discrete unit of work that is being timed.

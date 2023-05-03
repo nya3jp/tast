@@ -11,7 +11,7 @@ package main
 import (
 	"os"
 
-	"go.chromium.org/tast/core/tastuseonly/runner"
+	"go.chromium.org/tast/core/internal/runner"
 )
 
 func main() {

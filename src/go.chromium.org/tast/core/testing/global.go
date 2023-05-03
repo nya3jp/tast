@@ -8,9 +8,9 @@ import (
 	"fmt"
 	"regexp"
 
-	"go.chromium.org/tast/core/tastuseonly/caller"
-	"go.chromium.org/tast/core/tastuseonly/packages"
-	"go.chromium.org/tast/core/tastuseonly/testing"
+	"go.chromium.org/tast/core/internal/caller"
+	"go.chromium.org/tast/core/internal/packages"
+	"go.chromium.org/tast/core/internal/testing"
 )
 
 // verifier is a global singleton to check if AddTest() is used as designed.

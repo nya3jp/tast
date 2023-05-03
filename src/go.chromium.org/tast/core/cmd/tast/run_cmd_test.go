@@ -15,9 +15,9 @@ import (
 	"github.com/google/subcommands"
 
 	"go.chromium.org/tast/core/errors"
-	"go.chromium.org/tast/core/tastuseonly/logging"
-	"go.chromium.org/tast/core/tastuseonly/logging/loggingtest"
-	"go.chromium.org/tast/core/tastuseonly/run/resultsjson"
+	"go.chromium.org/tast/core/internal/logging"
+	"go.chromium.org/tast/core/internal/logging/loggingtest"
+	"go.chromium.org/tast/core/internal/run/resultsjson"
 	"go.chromium.org/tast/core/testutil"
 )
 

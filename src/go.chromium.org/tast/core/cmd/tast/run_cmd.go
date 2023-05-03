@@ -18,10 +18,10 @@ import (
 	"go.chromium.org/tast/core/errors"
 
 	"go.chromium.org/tast/core/cmd/tast/internal/run/config"
-	"go.chromium.org/tast/core/tastuseonly/command"
-	"go.chromium.org/tast/core/tastuseonly/logging"
-	"go.chromium.org/tast/core/tastuseonly/timing"
-	"go.chromium.org/tast/core/tastuseonly/xcontext"
+	"go.chromium.org/tast/core/internal/command"
+	"go.chromium.org/tast/core/internal/logging"
+	"go.chromium.org/tast/core/internal/timing"
+	"go.chromium.org/tast/core/internal/xcontext"
 )
 
 const (

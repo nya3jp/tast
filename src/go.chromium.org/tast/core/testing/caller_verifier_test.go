@@ -8,7 +8,7 @@ import (
 	"regexp"
 	gotesting "testing"
 
-	"go.chromium.org/tast/core/tastuseonly/caller"
+	"go.chromium.org/tast/core/internal/caller"
 )
 
 func TestFuncNameVerify(t *gotesting.T) {

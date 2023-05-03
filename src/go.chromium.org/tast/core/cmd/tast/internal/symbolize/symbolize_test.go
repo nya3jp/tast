@@ -11,8 +11,8 @@ import (
 	"testing"
 
 	"go.chromium.org/tast/core/cmd/tast/internal/symbolize/fakecmd"
-	"go.chromium.org/tast/core/tastuseonly/logging"
-	"go.chromium.org/tast/core/tastuseonly/logging/loggingtest"
+	"go.chromium.org/tast/core/internal/logging"
+	"go.chromium.org/tast/core/internal/logging/loggingtest"
 )
 
 func TestSymbolize(t *testing.T) {

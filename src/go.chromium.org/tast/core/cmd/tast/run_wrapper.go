@@ -9,7 +9,7 @@ import (
 
 	"go.chromium.org/tast/core/cmd/tast/internal/run"
 	"go.chromium.org/tast/core/cmd/tast/internal/run/config"
-	"go.chromium.org/tast/core/tastuseonly/run/resultsjson"
+	"go.chromium.org/tast/core/internal/run/resultsjson"
 )
 
 // runWrapper is a wrapper that allows functions from the run package to be stubbed out for testing.

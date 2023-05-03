@@ -125,30 +125,6 @@ func ForbiddenImports(fs *token.FileSet, f *ast.File) []*Issue {
 					Link: link,
 				})
 			}
-			// TODO: b/187792551 remove this check after tastuseonly is renamed back to internal.
-			if strings.Contains(p, "tastuseonly") {
-				forbidden := localFile || remoteFile
-				if !forbidden {
-					testPackagePaths := []string{
-						"chromiumos/tast/common",
-						"chromiumos/tast/restrictions",
-						"chromiumos/tast/services",
-					}
-					for _, t := range testPackagePaths {
-						if strings.HasPrefix(p, t) {
-							forbidden = true
-							break
-						}
-					}
-				}
-				if forbidden {
-					issues = append(issues, &Issue{
-						Pos:  fs.Position(im.Pos()),
-						Msg:  fmt.Sprintf("Test package should not import tastuseonly package %v", p),
-						Link: link,
-					})
-				}
-			}
 		}
 	}
 

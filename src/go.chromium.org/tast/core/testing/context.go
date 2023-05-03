@@ -9,8 +9,8 @@ import (
 	"context"
 	"fmt"
 
-	"go.chromium.org/tast/core/tastuseonly/logging"
-	"go.chromium.org/tast/core/tastuseonly/testcontext"
+	"go.chromium.org/tast/core/internal/logging"
+	"go.chromium.org/tast/core/internal/testcontext"
 )
 
 // ContextLog formats its arguments using default formatting and logs them via

@@ -14,7 +14,7 @@ import (
 	configpb "go.chromium.org/chromiumos/config/go/api"
 
 	"go.chromium.org/tast/core/errors"
-	"go.chromium.org/tast/core/tastuseonly/dep"
+	"go.chromium.org/tast/core/internal/dep"
 	"go.chromium.org/tast/core/testing/wlan"
 
 	"go.chromium.org/tast/core/framework/protocol"

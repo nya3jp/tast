@@ -16,7 +16,7 @@ import (
 	"path/filepath"
 
 	"go.chromium.org/tast/core/cmd/tast/internal/symbolize/breakpad"
-	"go.chromium.org/tast/core/tastuseonly/logging"
+	"go.chromium.org/tast/core/internal/logging"
 )
 
 // Config contains parameters used when symbolizing crash files.

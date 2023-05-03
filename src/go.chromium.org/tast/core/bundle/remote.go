@@ -7,8 +7,8 @@ package bundle
 import (
 	"os"
 
-	"go.chromium.org/tast/core/tastuseonly/bundle"
-	"go.chromium.org/tast/core/tastuseonly/testing"
+	"go.chromium.org/tast/core/internal/bundle"
+	"go.chromium.org/tast/core/internal/testing"
 )
 
 // RemoteDefault implements the main function for remote test bundles.

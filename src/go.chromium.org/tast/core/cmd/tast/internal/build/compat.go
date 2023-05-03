@@ -14,7 +14,7 @@ import (
 	"path/filepath"
 	"strconv"
 
-	"go.chromium.org/tast/core/tastuseonly/packages"
+	"go.chromium.org/tast/core/internal/packages"
 )
 
 // sourceCompatVersion describes the compatibility version of the Tast source code.

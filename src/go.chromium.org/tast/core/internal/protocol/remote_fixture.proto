@@ -1,0 +1,122 @@
+// Copyright 2020 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+import "google/protobuf/duration.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+import "testing.proto";
+
+package tast.core;
+option go_package = "go.chromium.org/tast/core/internal/protocol";
+
+// FixtureService provides methods to set up or tear down single remote fixture.
+// Currently we don't support Reset, PreTest, PostTest, and nested remote
+// fixtures.
+service FixtureService {
+  rpc RunFixture(stream RunFixtureRequest) returns (stream RunFixtureResponse) {
+  }
+}
+
+// RunFixtureRequest is the request to RunFixture.
+message RunFixtureRequest {
+  oneof control {
+    RunFixturePushRequest push = 1;
+    RunFixturePopRequest pop = 2;
+  }
+}
+
+// RunFixturePushRequest requests pushing a fixture.
+message RunFixturePushRequest {
+  // Name is the name of the fixture to run method.
+  string name = 1;
+  // Config is the configuration the framework needs to run the fixture.
+  RunFixtureConfig config = 2;
+}
+
+// RunFixturePushRequest requests popping the pushed fixture.
+message RunFixturePopRequest {}
+
+// RunFixtureConfig contains information the framework needs to run fixtures.
+message RunFixtureConfig {
+  // TastVars contains names and values of runtime variables used to pass
+  // out-of-band data to the fixture.
+  map<string, string> test_vars = 1;
+
+  // DataDir is the path to the directory containing fixture data files.
+  string data_dir = 2;
+  // OutDir is the path to the base directory under which fixtures should write
+  // output files.
+  string out_dir = 3;
+  // TempDir is the path to the directory under which temporary files for
+  // fixtures are written.
+  string temp_dir = 4;
+
+  // ConnectionSpec is the DUT connection spec as [<user>@]host[:<port>].
+  string connection_spec = 5;
+  // KeyFile is the path to the SSH private key to use to connect to the DUT.
+  string key_file = 6;
+  // KeyDir is the directory containing SSH private keys (typically $HOME/.ssh).
+  string key_dir = 7;
+  // LocalBundleDir is the directory on the DUT where local test bundle
+  // executables are located. This path is used by remote fixture to invoke gRPC
+  // services in local test.
+  string local_bundle_dir = 8;
+
+  // CheckSoftwareDeps is true if each test's SoftwareDeps field should be
+  // checked against AvailableSoftwareFeatures and UnavailableSoftwareFeatures.
+  bool check_software_deps = 9;
+  // AvailableSoftwareFeatures contains a list of software features supported
+  // by the DUT.
+  repeated string available_software_features = 10;
+  // UnavailableSoftwareFeatures contains a list of software features not
+  // supported by the DUT.
+  repeated string unavailable_software_features = 11;
+
+  repeated string devservers = 12;
+
+  string tlw_server = 13;
+  string dut_name = 14;
+
+  string build_artifacts_url = 15;
+
+  DownloadMode download_mode = 16;
+
+  string dut_server = 17;
+
+  // ProxyCommand specifies the command to use to connect to the DUT.
+  string proxy_command = 18;
+
+  // TODO(oka): add device_config and hardware_features to support hardware
+  // deps. Hint: config/api/topology.proto and device/config.proto define them.
+
+  // CustomGracePeriod is the custom grace period for fixture methods. When
+  // omitted reasonable default will be used. This field exists for unit
+  // testing.
+  google.protobuf.Duration custom_grace_period = 1000;
+}
+
+// RunFixtureError describes an error encountered while running fixtures.
+message RunFixtureError {
+  string reason = 1;
+  string file = 2;
+  int32 line = 3;
+  string stack = 4;
+}
+
+// RunFixtureResponse is the control message the server streams to the caller.
+message RunFixtureResponse {
+  oneof control {
+    // Log is the log message.
+    string log = 1;
+    // Error is the error message.
+    RunFixtureError error = 2;
+    // RequestDone is sent when request is done, no matter the result.
+    google.protobuf.Empty request_done = 3;
+  }
+  // Timestamp is the timestamp of the event.
+  google.protobuf.Timestamp timestamp = 4;
+}

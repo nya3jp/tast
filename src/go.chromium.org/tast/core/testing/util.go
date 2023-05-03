@@ -8,7 +8,7 @@ import (
 	"context"
 	"time"
 
-	"go.chromium.org/tast/core/tastuseonly/testingutil"
+	"go.chromium.org/tast/core/internal/testingutil"
 )
 
 // PollOptions may be passed to Poll to configure its behavior.

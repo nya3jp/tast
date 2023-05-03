@@ -21,11 +21,11 @@ import (
 	"go.chromium.org/tast/core/cmd/tast/internal/run/driver"
 	"go.chromium.org/tast/core/cmd/tast/internal/run/runtest"
 	"go.chromium.org/tast/core/errors"
-	"go.chromium.org/tast/core/tastuseonly/run/reporting"
-	"go.chromium.org/tast/core/tastuseonly/run/resultsjson"
-	"go.chromium.org/tast/core/tastuseonly/testing"
-	"go.chromium.org/tast/core/tastuseonly/testing/testfixture"
-	"go.chromium.org/tast/core/tastuseonly/usercode"
+	"go.chromium.org/tast/core/internal/run/reporting"
+	"go.chromium.org/tast/core/internal/run/resultsjson"
+	"go.chromium.org/tast/core/internal/testing"
+	"go.chromium.org/tast/core/internal/testing/testfixture"
+	"go.chromium.org/tast/core/internal/usercode"
 	"go.chromium.org/tast/core/testutil"
 )
 

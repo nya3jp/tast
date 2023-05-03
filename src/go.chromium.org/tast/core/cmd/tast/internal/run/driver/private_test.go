@@ -20,10 +20,10 @@ import (
 	"go.chromium.org/tast/core/cmd/tast/internal/run/config"
 	"go.chromium.org/tast/core/cmd/tast/internal/run/driver"
 	"go.chromium.org/tast/core/cmd/tast/internal/run/runtest"
-	"go.chromium.org/tast/core/tastuseonly/devserver"
-	"go.chromium.org/tast/core/tastuseonly/fakedutserver"
-	"go.chromium.org/tast/core/tastuseonly/faketlw"
-	"go.chromium.org/tast/core/tastuseonly/protocol"
+	"go.chromium.org/tast/core/internal/devserver"
+	"go.chromium.org/tast/core/internal/fakedutserver"
+	"go.chromium.org/tast/core/internal/faketlw"
+	"go.chromium.org/tast/core/internal/protocol"
 )
 
 func TestDriver_DownloadPrivateBundles_Disabled(t *testing.T) {

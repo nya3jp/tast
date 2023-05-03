@@ -8,7 +8,7 @@ import (
 	"runtime"
 	gotesting "testing"
 
-	"go.chromium.org/tast/core/tastuseonly/testing"
+	"go.chromium.org/tast/core/internal/testing"
 )
 
 func TestRegisterVarString(t *gotesting.T) {

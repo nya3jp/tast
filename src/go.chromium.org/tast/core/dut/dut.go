@@ -15,9 +15,9 @@ import (
 	"go.chromium.org/tast/core/errors"
 	"go.chromium.org/tast/core/ssh"
 
-	"go.chromium.org/tast/core/tastuseonly/linuxssh"
-	"go.chromium.org/tast/core/tastuseonly/logging"
-	"go.chromium.org/tast/core/tastuseonly/testingutil"
+	"go.chromium.org/tast/core/internal/linuxssh"
+	"go.chromium.org/tast/core/internal/logging"
+	"go.chromium.org/tast/core/internal/testingutil"
 )
 
 const (

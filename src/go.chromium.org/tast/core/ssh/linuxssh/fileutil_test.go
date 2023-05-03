@@ -11,10 +11,10 @@ import (
 	"path/filepath"
 	"testing"
 
+	"go.chromium.org/tast/core/internal/logging"
+	"go.chromium.org/tast/core/internal/logging/loggingtest"
+	"go.chromium.org/tast/core/internal/sshtest"
 	"go.chromium.org/tast/core/ssh/linuxssh"
-	"go.chromium.org/tast/core/tastuseonly/logging"
-	"go.chromium.org/tast/core/tastuseonly/logging/loggingtest"
-	"go.chromium.org/tast/core/tastuseonly/sshtest"
 	"go.chromium.org/tast/core/testutil"
 )
 

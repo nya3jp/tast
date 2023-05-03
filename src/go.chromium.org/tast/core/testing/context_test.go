@@ -10,8 +10,8 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 
-	"go.chromium.org/tast/core/tastuseonly/logging"
-	"go.chromium.org/tast/core/tastuseonly/logging/loggingtest"
+	"go.chromium.org/tast/core/internal/logging"
+	"go.chromium.org/tast/core/internal/logging/loggingtest"
 	"go.chromium.org/tast/core/testing"
 )
 

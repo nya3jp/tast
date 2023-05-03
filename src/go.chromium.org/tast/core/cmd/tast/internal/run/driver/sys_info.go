@@ -9,10 +9,10 @@ import (
 	"path/filepath"
 
 	"go.chromium.org/tast/core/errors"
-	"go.chromium.org/tast/core/tastuseonly/linuxssh"
-	"go.chromium.org/tast/core/tastuseonly/logging"
-	"go.chromium.org/tast/core/tastuseonly/protocol"
-	"go.chromium.org/tast/core/tastuseonly/timing"
+	"go.chromium.org/tast/core/internal/linuxssh"
+	"go.chromium.org/tast/core/internal/logging"
+	"go.chromium.org/tast/core/internal/protocol"
+	"go.chromium.org/tast/core/internal/timing"
 )
 
 const (

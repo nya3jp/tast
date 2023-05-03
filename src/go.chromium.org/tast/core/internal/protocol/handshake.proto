@@ -1,0 +1,100 @@
+// Copyright 2020 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package tast.core;
+option go_package = "go.chromium.org/tast/core/internal/protocol";
+
+// HandshakeRequest contains parameters needed to initialize a gRPC server.
+// The message is sent in a raw format since gRPC connection is not ready before
+// handshake.
+message HandshakeRequest {
+  // Whether to initialize user-defined gRPC services.
+  bool need_user_services = 1;
+  BundleInitParams bundle_init_params = 2;
+  RunnerInitParams runner_init_params = 3;
+}
+
+// HandshakeResponse is a response to an HandshakeRequest message.
+// The message is sent in a raw format since gRPC connection is not ready before
+// handshake.
+message HandshakeResponse {
+  // Set if an error occurred.
+  HandshakeError error = 1;
+}
+
+// HandshakeError describes a failed handshake result.
+message HandshakeError { string reason = 1; }
+
+// BundleInitParams contains parameters needed to initialize bundles.
+message BundleInitParams {
+  // Runtime variables.
+  map<string, string> vars = 1;
+
+  // BundleConfigs represents all the bundles to run.
+  BundleConfig bundle_config = 2;
+}
+
+// RunnerInitParams contains information needed to initialize test runners.
+message RunnerInitParams {
+  // A file path glob that matches test bundle executables.
+  // Example: "/usr/local/libexec/tast/bundles/local/*"
+  string bundle_glob = 1;
+}
+
+message BundleConfig {
+  // PrimaryTarget is the target device for remote tests.
+  TargetDevice primary_target = 1;
+  map<string, DUTConfig> companion_duts = 2;
+  MetaTestConfig meta_test_config = 3;
+}
+
+// TargetDevice represents a local bundle on which remote tests invoke services.
+message TargetDevice {
+  // DutConfig describes the DUT containing local bundles.
+  DUTConfig dut_config = 1;
+  // BundleDir represents the directory on which the target bundle exists.
+  string bundle_dir = 2;
+}
+
+// DUTConfig describes a DUT.
+message DUTConfig {
+  // SshConfig contains information needed to connect to the DUT via SSH.
+  SSHConfig ssh_config = 1;
+  // TlwName contains the name of the DUT recognized by the TLW service.
+  // This must be set when TLW API is used.
+  string tlw_name = 2;
+}
+
+// SSHConfig contains information needed to connect to the DUT via SSH.
+message SSHConfig {
+  // ConnectionSpec is a connection spec as [<user>@]host[:<port>].
+  string connection_spec = 1;
+  // KeyFile is a path to the SSH private key to use to connect to the target.
+  string key_file = 2;
+  // KeyDir is a path to the directory containing SSH private keys
+  // (typically $HOME/.ssh).
+  string key_dir = 3;
+  // ProxyCommand specifies the command to use to connect to the DUT.
+  string proxy_command = 4;
+}
+
+// MetaTestConfig contains parameters needed by meta tests (tests that
+// exercise Tast itself).
+message MetaTestConfig {
+  // TastPath contains the path to the tast binary that was executed to initiate
+  // testing.
+  string tast_path = 1;
+  // RunFlags contains a subset of the flags that were passed to the "tast run"
+  // command. The included flags are ones that are necessary for core
+  // functionality, e.g. paths to binaries used by the tast process and
+  // credentials for reconnecting to the DUT.
+  repeated string run_flags = 2;
+  // ListFlags contains a subset of the flags that were passed to the "tast
+  // list" command. The included flags are ones that are necessary for core
+  // functionality, e.g. paths to binaries used by the tast process and
+  // credentials for reconnecting to the DUT.
+  repeated string list_flags = 3;
+}

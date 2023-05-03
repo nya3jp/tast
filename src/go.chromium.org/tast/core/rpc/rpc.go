@@ -14,10 +14,10 @@ import (
 
 	"go.chromium.org/tast/core/dut"
 	"go.chromium.org/tast/core/errors"
+	"go.chromium.org/tast/core/internal/protocol"
+	"go.chromium.org/tast/core/internal/rpc"
+	"go.chromium.org/tast/core/internal/testing"
 	"go.chromium.org/tast/core/ssh"
-	"go.chromium.org/tast/core/tastuseonly/protocol"
-	"go.chromium.org/tast/core/tastuseonly/rpc"
-	"go.chromium.org/tast/core/tastuseonly/testing"
 )
 
 // Client owns a gRPC connection to the DUT for remote tests to use.

@@ -5,7 +5,7 @@
 // Package fakerunner provides a fake implementation of test runners.
 //
 // We implement fake test runners by mostly delegating to the real
-// implementation of test runners (go.chromium.org/tast/core/tastuseonly/runner). Thus we can
+// implementation of test runners (go.chromium.org/tast/core/internal/runner). Thus we can
 // use the fakebundle package to create fake test bundles executed by fake test
 // runners. On the other hand, other operation modes (e.g. GetDUTInfo,
 // GetSysInfoState etc.) are hooked by this package so that callers can inject
@@ -20,12 +20,12 @@ import (
 
 	"google.golang.org/grpc"
 
+	"go.chromium.org/tast/core/internal/fakeexec"
+	"go.chromium.org/tast/core/internal/fakesshserver"
+	"go.chromium.org/tast/core/internal/protocol"
+	"go.chromium.org/tast/core/internal/rpc"
+	"go.chromium.org/tast/core/internal/runner"
 	"go.chromium.org/tast/core/shutil"
-	"go.chromium.org/tast/core/tastuseonly/fakeexec"
-	"go.chromium.org/tast/core/tastuseonly/fakesshserver"
-	"go.chromium.org/tast/core/tastuseonly/protocol"
-	"go.chromium.org/tast/core/tastuseonly/rpc"
-	"go.chromium.org/tast/core/tastuseonly/runner"
 )
 
 // Config holds configuration values needed to instantiate a fake test runner.

@@ -8,8 +8,8 @@ package runnerclient
 import (
 	"context"
 
-	"go.chromium.org/tast/core/tastuseonly/minidriver/processor"
-	"go.chromium.org/tast/core/tastuseonly/protocol"
+	"go.chromium.org/tast/core/internal/minidriver/processor"
+	"go.chromium.org/tast/core/internal/protocol"
 )
 
 // RunTestsOutput is implemented by callers of RunTests to receive test

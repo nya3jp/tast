@@ -11,7 +11,7 @@ import (
 	gotesting "testing"
 	"time"
 
-	"go.chromium.org/tast/core/tastuseonly/testing"
+	"go.chromium.org/tast/core/internal/testing"
 )
 
 // SetAllTestsforTest sets all tests to use in this package. This is mainly used in unittest for testing purpose.

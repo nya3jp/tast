@@ -16,8 +16,8 @@ import (
 	"strings"
 	"time"
 
+	"go.chromium.org/tast/core/internal/timing"
 	"go.chromium.org/tast/core/shutil"
-	"go.chromium.org/tast/core/tastuseonly/timing"
 )
 
 const (

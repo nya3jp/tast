@@ -11,8 +11,8 @@ import (
 	"testing"
 	"time"
 
+	"go.chromium.org/tast/core/internal/sshtest"
 	"go.chromium.org/tast/core/ssh"
-	"go.chromium.org/tast/core/tastuseonly/sshtest"
 	"go.chromium.org/tast/core/testutil"
 )
 

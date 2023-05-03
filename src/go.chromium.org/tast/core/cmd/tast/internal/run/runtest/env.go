@@ -17,11 +17,11 @@ import (
 
 	"go.chromium.org/tast/core/cmd/tast/internal/run/config"
 	"go.chromium.org/tast/core/cmd/tast/internal/run/runtest/internal/fakerunner"
-	"go.chromium.org/tast/core/tastuseonly/bundle/bundletest"
-	"go.chromium.org/tast/core/tastuseonly/fakesshserver"
-	"go.chromium.org/tast/core/tastuseonly/logging"
-	"go.chromium.org/tast/core/tastuseonly/logging/loggingtest"
-	"go.chromium.org/tast/core/tastuseonly/runner"
+	"go.chromium.org/tast/core/internal/bundle/bundletest"
+	"go.chromium.org/tast/core/internal/fakesshserver"
+	"go.chromium.org/tast/core/internal/logging"
+	"go.chromium.org/tast/core/internal/logging/loggingtest"
+	"go.chromium.org/tast/core/internal/runner"
 )
 
 const (

@@ -14,7 +14,7 @@ import (
 
 	"go.chromium.org/tast/core/cmd/tast/internal/run/driver"
 	"go.chromium.org/tast/core/cmd/tast/internal/run/sharding"
-	"go.chromium.org/tast/core/tastuseonly/protocol"
+	"go.chromium.org/tast/core/internal/protocol"
 )
 
 // makeTests creates a list of BundleEntity from pattern.

@@ -178,6 +178,7 @@ func defaultAllowedBuckets() map[string]struct{} {
 		"cros-containers-staging":       {},
 		"crosvideo":                     {},
 		"perfetto":                      {},
+		"refvm-images":                  {},
 		"termina-component-testing":     {},
 		"pstash_apks":                   {},
 	}

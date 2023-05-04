@@ -1699,6 +1699,11 @@ func NoAssistantKey() Condition {
 	return SkipOnModel("eve", "nocturne", "atlas")
 }
 
+// HapticTouchpad is satisfied if a model has a haptic touchpad.
+func HapticTouchpad() Condition {
+	return Model("vell", "redrix")
+}
+
 // HPS is satisfied if the HPS peripheral (go/cros-hps) is present in the DUT.
 func HPS() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {

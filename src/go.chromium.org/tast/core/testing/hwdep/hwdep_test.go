@@ -729,6 +729,23 @@ func TestAssistantkey(t *testing.T) {
 	}
 }
 
+func TestHapticTouchpad(t *testing.T) {
+	for _, tc := range []struct {
+		model         string
+		wantSatisfied bool
+	}{
+		{"vell", true},
+		{"redrix", true},
+		{"volteer", false},
+	} {
+		verifyCondition(t, hwdep.HapticTouchpad(), &frameworkprotocol.DeprecatedDeviceConfig{
+			Id: &frameworkprotocol.DeprecatedConfigId{
+				Model: tc.model,
+			},
+		}, &configpb.HardwareFeatures{}, tc.wantSatisfied)
+	}
+}
+
 func TestHPS(t *testing.T) {
 	c := hwdep.HPS()
 

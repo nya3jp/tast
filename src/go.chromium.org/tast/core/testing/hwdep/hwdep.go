@@ -1941,3 +1941,8 @@ func SkipCPUSocFamily(families []string) Condition {
 		return satisfied()
 	}}
 }
+
+// InternalTrackpoint is satisfied if a model has an internal trackpoint.
+func InternalTrackpoint() Condition {
+	return Model("morphius")
+}

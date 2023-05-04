@@ -1166,3 +1166,21 @@ func TestSkipCPUSocFamily(t *testing.T) {
 		nil,
 	)
 }
+
+func TestInternalTrackpoint(t *testing.T) {
+	for _, tc := range []struct {
+		model         string
+		wantSatisfied bool
+	}{
+		{"morphius", true},
+		{"eve", false},
+		{"nocturne", false},
+		{"volteer", false},
+	} {
+		verifyCondition(t, hwdep.InternalTrackpoint(), &frameworkprotocol.DeprecatedDeviceConfig{
+			Id: &frameworkprotocol.DeprecatedConfigId{
+				Model: tc.model,
+			},
+		}, &configpb.HardwareFeatures{}, tc.wantSatisfied)
+	}
+}

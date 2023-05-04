@@ -130,6 +130,7 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		FwConfig:              &configpb.HardwareFeatures_FirmwareConfiguration{},
 		RuntimeProbeConfig:    &configpb.HardwareFeatures_RuntimeProbeConfig{},
 		HardwareProbeConfig:   &configpb.HardwareFeatures_HardwareProbe{},
+		Display:               &configpb.HardwareFeatures_Display{},
 	}
 
 	formFactor, err := func() (string, error) {
@@ -250,7 +251,7 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		features.Keyboard.Backlight = configpb.HardwareFeatures_NOT_PRESENT
 	}
 
-	hasInternalDisplay := func() bool {
+	checkForConnector := func(connectorRegexp string) bool {
 		const drmSysFS = "/sys/class/drm"
 
 		drmFiles, err := ioutil.ReadDir(drmSysFS)
@@ -258,10 +259,7 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 			return false
 		}
 
-		// eDP displays show up as card*-eDP-1
-		// MIPI panels show up as card*-DSI-1
-		// Virtual displays in VMs show up as card*-Virtual-1
-		cardMatch := regexp.MustCompile(`^card[0-9]-(eDP|DSI|Virtual)-1$`)
+		cardMatch := regexp.MustCompile(connectorRegexp)
 		for _, file := range drmFiles {
 			fileName := file.Name()
 
@@ -278,9 +276,29 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 
 		// No indication of internal panel connected and recognised.
 		return false
-	}()
+	}
+
+	// eDP displays show up as card*-eDP-1
+	// MIPI panels show up as card*-DSI-1
+	// Virtual displays in VMs show up as card*-Virtual-1
+	internalDisplayRegexp := `^card[0-9]-(eDP|DSI|Virtual)-1$`
+	hasInternalDisplay := checkForConnector(internalDisplayRegexp)
 	if hasInternalDisplay {
 		features.Screen.PanelProperties = &configpb.Component_DisplayPanel_Properties{}
+	}
+
+	// Display ports show up as card*-DP-[0-9]
+	// HDMI ports show up as card*-HDMI-A-1
+	// DVI ports show up as card*-DVI-I-1
+	externalDisplayRegexp := `^card[0-9]-(DP|HDMI-A|DVI-I)-[0-9]$`
+	hasExternalDisplay := checkForConnector(externalDisplayRegexp)
+	switch {
+	case hasInternalDisplay && hasExternalDisplay:
+		features.Display.Type = configpb.HardwareFeatures_Display_TYPE_INTERNAL_EXTERNAL
+	case hasExternalDisplay:
+		features.Display.Type = configpb.HardwareFeatures_Display_TYPE_EXTERNAL
+	case hasInternalDisplay:
+		features.Display.Type = configpb.HardwareFeatures_Display_TYPE_INTERNAL
 	}
 
 	hasTouchScreen := func() bool {

@@ -684,6 +684,26 @@ func NoFingerprint() Condition {
 	}
 }
 
+// ExternalDisplay returns a hardware dependency condition that is satisfied
+// iff the DUT has an external display
+func ExternalDisplay() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("HardwareFeatures is not given")
+		}
+		display := hf.GetDisplay()
+		if display == nil {
+			return withErrorStr("Display is not given")
+		}
+		if display.GetType() == configpb.HardwareFeatures_Display_TYPE_EXTERNAL || display.GetType() == configpb.HardwareFeatures_Display_TYPE_INTERNAL_EXTERNAL {
+			return satisfied()
+		}
+		return unsatisfied("DUT does not have an external display")
+	},
+	}
+}
+
 // InternalDisplay returns a hardware dependency condition that is satisfied
 // iff the DUT has an internal display, e.g. Chromeboxes and Chromebits don't.
 func InternalDisplay() Condition {

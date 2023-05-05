@@ -25,7 +25,7 @@ suggestions.
     *   [`cmd/tast/`](src/go.chromium.org/tast/core/cmd/tast/) - `main` package for the `tast`
         executable used to build and run tests.
         *   `...` - Packages used only by the `tast` executable.
-    *   [`tast/...`](src/chromiumos/tast/) - Common packages shared by multiple
+    *   [`tast/...`](src/go.chromium.org/tast/core/) - Common packages shared by multiple
         executables.
 
 Tests are located in the [tast-tests repository].

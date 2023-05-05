@@ -19,8 +19,6 @@ var allowList = []string{
 	// meta tests to test the test over-running the test's timeout
 	"src/chromiumos/tast/local/bundles/cros/meta/local_timeout.go",
 	"src/chromiumos/tast/remote/bundles/cros/meta/remote_timeout.go",
-	// TODO: b/187792551 -- remove after the following file is deleted.
-	"src/chromiumos/tast/errors/errors.go",
 }
 
 // ForbiddenCalls checks if any forbidden functions are called.
@@ -130,13 +128,6 @@ func ForbiddenCalls(fs *token.FileSet, f *ast.File, fix bool) []*Issue {
 					Pos:  fs.Position(x.Pos()),
 					Msg:  "os.Chdir changes the shared CWD of the process, reference files using absolute paths.",
 					Link: "https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/code_review_comments.md#os_Chdir",
-				})
-			}
-		case "errors.NewE":
-			if !isUnitTest {
-				issues = append(issues, &Issue{
-					Pos: fs.Position(x.Pos()),
-					Msg: "errors.NewE should only be called by src/chromiumos/tast/errors/errors.go.",
 				})
 			}
 		}

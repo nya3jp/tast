@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// DO NOT USE THIS COPY OF SERVO IN TESTS, USE THE ONE IN platform/tast-tests/src/chromiumos/tast/common/servo
+
 package servo
 
 import (
 	"context"
 	"fmt"
-	"io"
 	"net"
 	"strconv"
 	"strings"
@@ -18,7 +19,6 @@ import (
 	"go.chromium.org/tast/core/errors"
 	"go.chromium.org/tast/core/internal/logging"
 	"go.chromium.org/tast/core/ssh"
-	"go.chromium.org/tast/core/ssh/linuxssh"
 )
 
 const proxyTimeout = 10 * time.Second // max time for establishing SSH connection
@@ -277,109 +277,5 @@ func (p *Proxy) Close(ctx context.Context) {
 	}
 }
 
-func (p *Proxy) isLocal() bool {
-	return p.hst == nil || p.isDockerized()
-}
-
-func (p *Proxy) isClosed() bool {
-	return p.svo == nil
-}
-
-func (p *Proxy) isDockerized() bool {
-	return p.sdc != ""
-}
-
 // Servo returns the proxy's encapsulated Servo object.
 func (p *Proxy) Servo() *Servo { return p.svo }
-
-func (p *Proxy) runCommandImpl(ctx context.Context, dumpLogOnError, asRoot bool, name string, args ...string) error {
-	var sshOpts []ssh.RunOption
-	if dumpLogOnError {
-		sshOpts = append(sshOpts, ssh.DumpLogOnError)
-	}
-	if p.isClosed() {
-		return errors.New("connection to servo is closed")
-	}
-	if p.isLocal() {
-		return errors.New("local servo is not supported")
-	}
-	return p.hst.CommandContext(ctx, name, args...).Run(sshOpts...)
-}
-
-// RunCommand execs a command on the servo host, optionally as root.
-func (p *Proxy) RunCommand(ctx context.Context, asRoot bool, name string, args ...string) error {
-	return p.runCommandImpl(ctx /*dumpLogOnError=*/, true, asRoot, name, args...)
-}
-
-// RunCommandQuiet execs a command on the servo host, optionally as root, does not log output.
-func (p *Proxy) RunCommandQuiet(ctx context.Context, asRoot bool, name string, args ...string) error {
-	return p.runCommandImpl(ctx /*dumpLogOnError=*/, false, asRoot, name, args...)
-}
-
-// OutputCommand execs a command as the root user and returns stdout.
-func (p *Proxy) OutputCommand(ctx context.Context, asRoot bool, name string, args ...string) ([]byte, error) {
-	if p.isClosed() {
-		return nil, errors.New("connection to servo is closed")
-	}
-	if p.isLocal() {
-		return nil, errors.New("local servo is not supported")
-	}
-	return p.hst.CommandContext(ctx, name, args...).Output(ssh.DumpLogOnError)
-}
-
-// InputCommand execs a command and redirects stdin.
-func (p *Proxy) InputCommand(ctx context.Context, asRoot bool, stdin io.Reader, name string, args ...string) error {
-	if p.isClosed() {
-		return errors.New("connection to servo is closed")
-	}
-	if p.isLocal() {
-		return errors.New("local servo is not supported")
-	}
-	cmd := p.hst.CommandContext(ctx, name, args...)
-	cmd.Stdin = stdin
-	return cmd.Run(ssh.DumpLogOnError)
-}
-
-// GetFile copies a servo host file to a local file.
-func (p *Proxy) GetFile(ctx context.Context, asRoot bool, remoteFile, localFile string) error {
-	if p.isClosed() {
-		return errors.New("connection to servo is closed")
-	}
-	if p.isLocal() {
-		return errors.New("local servo is not supported")
-	}
-	return linuxssh.GetFile(ctx, p.hst, remoteFile, localFile, linuxssh.DereferenceSymlinks)
-}
-
-// PutFiles copies a local file to a servo host file.
-func (p *Proxy) PutFiles(ctx context.Context, asRoot bool, fileMap map[string]string) error {
-	if p.isClosed() {
-		return errors.New("connection to servo is closed")
-	}
-	if p.isLocal() {
-		return errors.New("local servo is not supported")
-	}
-	_, err := linuxssh.PutFiles(ctx, p.hst, fileMap, linuxssh.DereferenceSymlinks)
-	return err
-}
-
-// GetPort returns the port where servod is running on the server.
-func (p *Proxy) GetPort() int { return p.port }
-
-// Proxied returns true if the servo host is connected via ssh proxy.
-func (p *Proxy) Proxied() bool {
-	return p.hst != nil
-}
-
-// NewForwarder forwards a local port to a remote port on the servo host.
-func (p *Proxy) NewForwarder(ctx context.Context, hostPort string) (*ssh.Forwarder, error) {
-	if !p.Proxied() {
-		return nil, errors.New("servo host is not proxied via ssh")
-	}
-	fwd, err := p.hst.NewForwarder("localhost:0", hostPort,
-		func(err error) { logging.Info(ctx, "Got forwarding error: ", err) })
-	if err != nil {
-		return nil, errors.Wrap(err, "creating ssh forwarder")
-	}
-	return fwd, nil
-}

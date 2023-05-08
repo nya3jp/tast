@@ -1782,7 +1782,7 @@ func MainboardHasEarlyLibgfxinit() Condition {
 			}
 		}
 		// Some Brya models default to PRESENT
-		listed, err := modelListed(f.GetDeprecatedDeviceConfig(), "skolas", "brya0", "kano", "agah")
+		listed, err := modelListed(f.GetDeprecatedDeviceConfig(), "skolas", "brya0", "kano", "agah", "taeko", "crota", "osiris", "gaelen", "lisbon", "gladios", "marasov", "omnigul", "constitution")
 		if err != nil {
 			return withError(err)
 		}

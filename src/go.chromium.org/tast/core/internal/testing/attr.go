@@ -374,9 +374,9 @@ Tests in this group are not used for build verification.
 	{
 		Name:     "external-dependency",
 		Contacts: []string{"chromeos-software-engprod@google.com", "shengjun@google.com"},
-		Desc: `A group of tests that rely on external websites/apps/services. 
+		Desc: `A group of tests that rely on external websites/apps/services.
 		Due to the dependencies to external resources, these test cases are more likely to break.
-		Therefore, it is highly disrecommended to promote them into mainline CQ. 
+		Therefore, it is highly disrecommended to promote them into mainline CQ.
 		Please refer to go/cros-automation-1p3p for more details.`,
 		Subattrs: []*attr{
 			{
@@ -419,6 +419,10 @@ Tests in this group are not used for build verification.
 			{
 				Name: "firmware_experimental",
 				Desc: `Firmware tests that might break the DUTs in the lab.`,
+			},
+			{
+				Name: "firmware_pd",
+				Desc: `A group of tests that test USB-C Power Delivery. Equivalent to autotest suite:faft_pd.`,
 			},
 			{
 				Name: "firmware_slow",

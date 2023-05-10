@@ -71,6 +71,9 @@ func TestCheckKnownAttrs(t *testing.T) {
 			attrs: []string{"group:arcappgameperf"},
 		},
 		{
+			attrs: []string{"group:arcappmediaperf"},
+		},
+		{
 			attrs: []string{"group:arc", "arc_playstore"},
 		},
 		{

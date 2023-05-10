@@ -157,6 +157,9 @@ func TestCheckKnownAttrs(t *testing.T) {
 		{
 			attrs: []string{"group:cuj", "cuj_experimental"},
 		},
+		{
+			attrs: []string{"group:healthd", "healthd_perbuild"},
+		},
 
 		// Invalid cases.
 		{

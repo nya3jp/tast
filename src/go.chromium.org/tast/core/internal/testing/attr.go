@@ -1445,6 +1445,17 @@ from other existing groups (or use this group standalone).
 			},
 		},
 	},
+	{
+		Name:     "healthd",
+		Contacts: []string{"cros-tdm-tpe-eng@google.com"},
+		Desc:     `A group of tests that validate the functionality of cros_healthd.`,
+		Subattrs: []*attr{
+			{
+				Name: "healthd_perbuild",
+				Desc: `Indicates that this test should run for every ChromeOS build.`,
+			},
+		},
+	},
 }
 
 // validGroupMap is the name-keyed map of validGroups.

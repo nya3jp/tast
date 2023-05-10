@@ -131,9 +131,6 @@ func TestCheckKnownAttrs(t *testing.T) {
 			attrs: []string{"group:hwsec_destructive_crosbolt", "hwsec_destructive_crosbolt_perbuild"},
 		},
 		{
-			attrs: []string{"group:runtime_probe"},
-		},
-		{
 			attrs: []string{"group:rapid-ime-decoder"},
 		},
 		{

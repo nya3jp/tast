@@ -558,7 +558,7 @@ in cros-labels decoded from HWID string.  These tests mainly check if Runtime Pr
 as expected (in terms of D-Bus connection, probe function, and probe result).  For
 short-term plan, only autotest can invoke these tests with host_info information.  That's
 why we add this attribute and run tests of this attribute in a control file at
-third_party/autotest/files/server/site_tests/tast/control.runtime-probe
+third_party/autotest/files/server/site_tests/tast/control.racc-config-installed.
 `,
 			},
 		},
@@ -567,19 +567,6 @@ third_party/autotest/files/server/site_tests/tast/control.runtime-probe
 		Name:     "rapid-ime-decoder",
 		Contacts: []string{"essential-inputs-team@google.com"},
 		Desc:     `A group of tests to validate libIMEdecoder.so releases.`,
-	},
-	{
-		Name:     "runtime_probe",
-		Contacts: []string{"chromeos-runtime-probe@google.com"},
-		Desc: `A group of tests that tests the functionality of runtime probe.
-
-The group of tests compare results probed by |runtime_probe| and corresponding information
-in cros-labels decoded from HWID string.  These tests mainly check if runtime-probe works
-as expected (in terms of D-Bus connection, probe function, and probe result).  For
-short-term plan, only autotest can invoke these tests with host_info information.  That's
-why we add this group and run tests of this group in a control file at
-third_party/autotest/files/server/site_tests/tast/control.runtime-probe
-`,
 	},
 	{
 		Name:     "wificell",

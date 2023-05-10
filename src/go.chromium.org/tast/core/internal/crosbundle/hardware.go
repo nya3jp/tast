@@ -774,6 +774,24 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 	features.HardwareProbeConfig.GpuVendor = gpuVendor
 	features.HardwareProbeConfig.CpuSocFamily = cpuSocFamily
 
+	hevcSupport, err := func() (configpb.HardwareFeatures_Present, error) {
+		out, err := crosConfig("/ui", "serialized-ash-switches")
+		if err != nil {
+			return configpb.HardwareFeatures_PRESENT_UNKNOWN, err
+		}
+		if regexp.MustCompile("disable-features=[^\x00]*PlatformHEVCDecoderSupport").MatchString(out) {
+			return configpb.HardwareFeatures_NOT_PRESENT, nil
+		}
+		if regexp.MustCompile("enable-features=[^\x00]*PlatformHEVCDecoderSupport").MatchString(out) {
+			return configpb.HardwareFeatures_PRESENT, nil
+		}
+		return configpb.HardwareFeatures_PRESENT_UNKNOWN, nil
+	}()
+	if err != nil {
+		logging.Infof(ctx, "Unknown /ui/serialized-ash-switches: %v", err)
+	}
+	features.Soc.HevcSupport = hevcSupport
+
 	return &protocol.HardwareFeatures{
 		HardwareFeatures:       features,
 		DeprecatedDeviceConfig: config,

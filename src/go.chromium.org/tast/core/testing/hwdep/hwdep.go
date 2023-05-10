@@ -1613,6 +1613,14 @@ func SupportsV4L2StatelessVideoDecoding() Condition {
 // use of SoftwareDeps "caps.HWDecodeHEVC" (or "caps.HWDecodeHEVC10BPP").
 func SupportsHEVCVideoDecodingInChrome() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		// Disabled on any device where the config is explicitly disabled.
+		if f.GetHardwareFeatures().GetSoc().GetHevcSupport() == configpb.HardwareFeatures_NOT_PRESENT {
+			return unsatisfied("Chrome has HEVC disabled on this device")
+		}
+		// Enabled on any device where the config is explicitly enabled.
+		if f.GetHardwareFeatures().GetSoc().GetHevcSupport() == configpb.HardwareFeatures_PRESENT {
+			return satisfied()
+		}
 		// ARM embedders don't support it.
 		if satisfied, _, err := SkipCPUSocFamily([]string{"mediatek", "rockchip", "qualcomm"}).Satisfied(f); err != nil || !satisfied {
 			return unsatisfied("Chrome does not support HEVC video decoding on this SoC")
@@ -1625,8 +1633,7 @@ func SupportsHEVCVideoDecodingInChrome() Condition {
 		if supported, _, err := GPUFamily([]string{"tigerlake", "alderlake"}).Satisfied(f); err == nil && supported {
 			return satisfied()
 		}
-		// TODO(b/279332111): Implement other combinations, e.g. JSL.
-		return satisfied()
+		return unsatisfied("Chrome does not support HEVC video decoding on this SoC")
 	}}
 }
 

@@ -69,6 +69,29 @@ promoted to critical tests after stabilization.
 		},
 	},
 	{
+		Name:     "cbx",
+		Contacts: []string{"tast-core@google.com"},
+		Desc:     `A group of tests related to Chromebook X testing`,
+		Subattrs: []*attr{
+			{
+				Name: "cbx_feature_enabled",
+				Desc: "Indicates that these tests should run on Chromebook X devices",
+			},
+			{
+				Name: "cbx_feature_disabled",
+				Desc: "Indicates that these tests should run on non-Chromebook-X devices",
+			},
+			{
+				Name: "cbx_stable",
+				Desc: `Indicates that this test has been verified as stable.`,
+			},
+			{
+				Name: "cbx_unstable",
+				Desc: `Indicates that this test is yet to be verified as stable.`,
+			},
+		},
+	},
+	{
 		Name:     "criticalstaging",
 		Contacts: []string{"tast-owners@google.com"},
 		Desc: `Inidcates intent to run in critcial CQ & Release.

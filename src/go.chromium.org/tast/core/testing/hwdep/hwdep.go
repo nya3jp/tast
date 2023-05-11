@@ -977,6 +977,7 @@ func WifiIntel() Condition {
 		Intel22260,
 		Intel22560,
 		IntelAX201,
+		IntelAX203,
 		IntelAX211,
 	)
 }

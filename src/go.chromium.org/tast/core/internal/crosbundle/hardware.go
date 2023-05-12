@@ -178,6 +178,15 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 	if err != nil {
 		logging.Infof(ctx, "Unknown /detachable-base/usbpath: %v", err)
 	}
+
+	checkHammer := func() bool {
+		hammer, err := exec.Command("udevadm", "info", "--export-db").Output()
+		if err != nil {
+			return false
+		}
+		return regexp.MustCompile(`(?m)^E: ID_MODEL=Hammer$`).Match(hammer)
+	}
+
 	if formFactorEnum, ok := configpb.HardwareFeatures_FormFactor_FormFactorType_value[formFactor]; ok {
 		features.FormFactor.FormFactor = configpb.HardwareFeatures_FormFactor_FormFactorType(formFactorEnum)
 	} else if formFactor == "CHROMEBOOK" {
@@ -200,7 +209,14 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 	case configpb.HardwareFeatures_FormFactor_CLAMSHELL, configpb.HardwareFeatures_FormFactor_CONVERTIBLE:
 		features.Keyboard.KeyboardType = configpb.HardwareFeatures_Keyboard_INTERNAL
 	case configpb.HardwareFeatures_FormFactor_DETACHABLE:
-		features.Keyboard.KeyboardType = configpb.HardwareFeatures_Keyboard_DETACHABLE
+		// When the dut is a detachable, check whether hammer exists
+		// to determine if a removable keyboard is connected.
+		hasHammer := checkHammer()
+		if hasHammer {
+			features.Keyboard.KeyboardType = configpb.HardwareFeatures_Keyboard_DETACHABLE
+		} else {
+			features.Keyboard.KeyboardType = configpb.HardwareFeatures_Keyboard_NONE
+		}
 	}
 
 	keyboardBacklight, err := func() (bool, error) {

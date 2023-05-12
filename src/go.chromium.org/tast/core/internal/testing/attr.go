@@ -512,6 +512,45 @@ Tests in this group are not used for build verification.
 		Desc:     `A group of Flashrom destructive tests.`,
 	},
 	{
+		Name:     "gsc",
+		Contacts: []string{"jettrink@google.com", "chromeos-faft@google.com"},
+		Desc:     `A group of Google Security Chip tests -- typical performed on bare board.`,
+		Subattrs: []*attr{
+			{
+				Name: "gsc_dt_ab",
+				Desc: `A set of tests that run on a Dauntless Andreiboard with Hyperdebug connected.`,
+			},
+			{
+				Name: "gsc_dt_shield",
+				Desc: `A set of tests that run on a Dauntless Shield with Hyperdebug connected.`,
+			},
+			{
+				Name: "gsc_ot_fpga_cw310",
+				Desc: `A set of tests that run on an OpenTitan FPGACW310 with Hyperdebug connected.`,
+			},
+			{
+				Name: "gsc_ot_shield",
+				Desc: `A set of tests that run on an OpenTitan Shield with Hyperdebug connected.`,
+			},
+			{
+				Name: "gsc_h1_shield",
+				Desc: `A set of tests that run on a Haven Shield with Hyperdebug connected.`,
+			},
+			{
+				Name: "gsc_he",
+				Desc: `A set of tests that run on a emulated hardware via host process.`,
+			},
+			{
+				Name: "gsc_image_ti50",
+				Desc: `A set of tests that run on the normal ti50 FW image`,
+			},
+			{
+				Name: "gsc_image_sta",
+				Desc: `A set of tests that run on the system_test_auto FW image`,
+			},
+		},
+	},
+	{
 		Name:     "hwsec_destructive_crosbolt",
 		Contacts: []string{"cros-hwsec@google.com"},
 		Desc: `A group of HWSec destructive performance tests that wipe and recreate encstateful in the tests,

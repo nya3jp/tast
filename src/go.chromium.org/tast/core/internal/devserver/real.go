@@ -17,7 +17,6 @@ import (
 	"os"
 	"path"
 	"regexp"
-	"runtime/debug"
 	"sort"
 	"strings"
 	"time"
@@ -410,10 +409,8 @@ func (c *RealClient) openStaged(ctx context.Context, staticURL *url.URL) (io.Rea
 
 		// TODO: b/279489613 -- Remove following log after verifying new headers working with
 		// new cache servers.
-		stackInfo := string(debug.Stack())
 		logging.Infof(ctx, "Sending GET request %s to cache server with headers %s=%s and %s=%s",
 			staticURL.String(), swarmingTaskIDHeaderName, c.taskID, bucketIDHeaderName, c.bucketID)
-		logging.Infof(ctx, "stack info: %s", stackInfo)
 
 		res, err := c.cl.Do(req)
 		if err != nil {

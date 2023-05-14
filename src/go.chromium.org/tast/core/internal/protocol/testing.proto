@@ -281,6 +281,12 @@ message RunTargetConfig {
   // WaitUntilReadyTimeout set a timeout for the entire ready.Wait function.
   //(Default: 120 seconds)
   google.protobuf.Duration wait_until_ready_timeout = 10;
+  // SwarmingTaskID specifies the swarming task ID of the scheduled
+  // job that run Tast tests.
+  string SwarmingTaskID = 11;
+  // BuildBucketID specifies the build bucket ID of the scheduled
+  // job that run Tast tests.
+  string BuildBucketID = 12;
 }
 
 // RunDirectories holds several directory paths important for running tests.
@@ -330,6 +336,13 @@ message ServiceConfig {
   string tast_dir = 7;
   // ExtraAllowedBuckets specifies ephemeral devserver's allowed buckets.
   repeated string extra_allowed_buckets = 8;
+
+  // SwarmingTaskID specifies the swarming task ID of the scheduled
+  // job that run Tast tests.
+  string SwarmingTaskID = 9;
+  // BuildBucketID specifies the build bucket ID of the scheduled
+  // job that run Tast tests.
+  string BuildBucketID = 10;
 }
 
 // DownloadMode specifies a strategy to download external data files.

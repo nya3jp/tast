@@ -17,7 +17,8 @@ import (
 // If tlwServer is non-empty, TLWClient is returned.
 // If devserver contains 1 or more element, RealClient is returned.
 // If the oth are empty, PseudoClient is returned.
-func NewClient(ctx context.Context, devservers []string, tlwServer, dutName, dutServer string) (Client, error) {
+func NewClient(ctx context.Context, devservers []string,
+	tlwServer, dutName, dutServer, swarmingTaskID, buildBucketID string) (Client, error) {
 	if dutServer != "" {
 		if len(devservers) > 0 {
 			return nil, fmt.Errorf("both dutServer (%q) and devservers (%v) are set", dutServer, devservers)
@@ -49,7 +50,11 @@ func NewClient(ctx context.Context, devservers []string, tlwServer, dutName, dut
 	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
 
-	cl := NewRealClient(ctx, devservers, nil)
+	cl := NewRealClient(ctx, devservers,
+		&RealClientOptions{
+			SwarmingTaskID: swarmingTaskID,
+			BuildBucketID:  buildBucketID,
+		})
 	logging.Infof(ctx, "Devserver status: %s", cl.Status())
 	return cl, nil
 }

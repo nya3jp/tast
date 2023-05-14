@@ -29,6 +29,8 @@ func newDownloader(ctx context.Context, pcfg *Config) (*downloader, error) {
 		pcfg.Service.GetTlwServer(),
 		pcfg.Service.GetTlwSelfName(),
 		pcfg.Service.GetDutServer(),
+		pcfg.Service.GetSwarmingTaskID(),
+		pcfg.Service.GetBuildBucketID(),
 	)
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed to create new client [devservers=%v, TLWServer=%s]",

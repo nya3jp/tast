@@ -55,10 +55,12 @@ func (d *Driver) DownloadPrivateBundles(ctx context.Context, dutInfo *protocol.D
 
 	req := &protocol.DownloadPrivateBundlesRequest{
 		ServiceConfig: &protocol.ServiceConfig{
-			Devservers:  devservers,
-			DutServer:   dutServer,
-			TlwServer:   tlwServer,
-			TlwSelfName: tlwSelfName,
+			Devservers:     devservers,
+			DutServer:      dutServer,
+			TlwServer:      tlwServer,
+			TlwSelfName:    tlwSelfName,
+			SwarmingTaskID: d.cfg.SwarmingTaskID(),
+			BuildBucketID:  d.cfg.BuildBucketID(),
 		},
 		BuildArtifactUrl: buildArtifactsURL,
 	}

@@ -63,6 +63,8 @@ func runExternalTests(ctx context.Context, names []string, stack *fixture.Combin
 			pcfg.Service.GetTlwSelfName(),
 			pcfg.Service.GetDutServer(),
 			pcfg.DataFile.GetBuildArtifactsUrl(),
+			pcfg.Service.GetSwarmingTaskID(),
+			pcfg.Service.GetBuildBucketID(),
 		),
 		RemoteData: pcfg.RemoteData,
 	})
@@ -86,6 +88,8 @@ func runExternalTests(ctx context.Context, names []string, stack *fixture.Combin
 		LocalTempDir:   pcfg.ExternalTarget.Config.GetDirs().GetTempDir(),
 		LocalBundleDir: pcfg.ExternalTarget.Device.GetBundleDir(),
 		DownloadMode:   pcfg.DataFile.GetDownloadMode(),
+		SwarmingTaskID: pcfg.ExternalTarget.Config.GetSwarmingTaskID(),
+		BuildBucketID:  pcfg.ExternalTarget.Config.GetBuildBucketID(),
 
 		WaitUntilReady:        pcfg.ExternalTarget.Config.GetWaitUntilReady(),
 		CheckTestDeps:         pcfg.Features.GetCheckDeps(),

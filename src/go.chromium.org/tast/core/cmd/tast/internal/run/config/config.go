@@ -92,6 +92,8 @@ type MutableConfig struct {
 	TLWServer                 string
 	ReportsServer             string
 	CompanionDUTs             map[string]string
+	SwarmingTaskID            string
+	BuildBucketID             string
 
 	LocalRunner    string
 	LocalBundleDir string
@@ -239,6 +241,14 @@ func (c *Config) CompanionDUTs() map[string]string {
 	}
 	return duts
 }
+
+// SwarmingTaskID specifies the swarming task ID of the scheduled
+// job that run Tast tests.
+func (c *Config) SwarmingTaskID() string { return c.m.SwarmingTaskID }
+
+// BuildBucketID specifies the build bucket ID of the scheduled
+// job that run Tast tests.
+func (c *Config) BuildBucketID() string { return c.m.BuildBucketID }
 
 // LocalRunner is path to executable that runs local test bundles.
 func (c *Config) LocalRunner() string { return c.m.LocalRunner }
@@ -681,6 +691,9 @@ func (c *MutableConfig) DeriveDefaults() error {
 			}
 		}
 	}
+
+	c.SwarmingTaskID = os.Getenv("SWARMING_TASK_ID")
+	c.BuildBucketID = os.Getenv("BUILD_BUCKET_ID")
 
 	return nil
 }

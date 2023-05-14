@@ -65,6 +65,8 @@ type Config struct {
 	TestVars              map[string]string
 	MaybeMissingVars      string
 	MsgTimeout            time.Duration
+	SwarmingTaskID        string
+	BuildBucketID         string
 
 	DebuggerPort int
 	Proxy        bool
@@ -212,10 +214,12 @@ func (d *Driver) newConfigsForLocalTests(tests []string, state *protocol.StartFi
 			ForceSkips:        d.cfg.ForceSkips,
 		},
 		ServiceConfig: &protocol.ServiceConfig{
-			Devservers:  devservers,
-			DutServer:   dutServer, // Only pass in DUT server for local tests.
-			TlwServer:   tlwServer,
-			TlwSelfName: tlwSelfName,
+			Devservers:     devservers,
+			DutServer:      dutServer, // Only pass in DUT server for local tests.
+			TlwServer:      tlwServer,
+			TlwSelfName:    tlwSelfName,
+			SwarmingTaskID: d.cfg.SwarmingTaskID,
+			BuildBucketID:  d.cfg.BuildBucketID,
 		},
 		DataFileConfig: &protocol.DataFileConfig{
 			DownloadMode:      d.cfg.DownloadMode,

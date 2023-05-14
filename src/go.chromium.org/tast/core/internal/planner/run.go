@@ -769,6 +769,8 @@ func runTestWithConfig(ctx context.Context, tcfg *testConfig, pcfg *Config, stac
 			pcfg.Service.GetTlwSelfName(),
 			pcfg.Service.GetDutServer(),
 			pcfg.DataFile.GetBuildArtifactsUrl(),
+			pcfg.Service.GetSwarmingTaskID(),
+			pcfg.Service.GetBuildBucketID(),
 		),
 		RemoteData: pcfg.RemoteData,
 		FixtCtx:    tcfg.fixtCtx,

@@ -46,6 +46,8 @@ type runTestsArgs struct {
 	Counter          *failfast.Counter
 	Client           *reporting.RPCClient
 	RemoteDevservers []string
+	SwarmingTaskID   string
+	BuildBucketID    string
 }
 
 // RunTests runs specified tests per bundle.
@@ -82,6 +84,8 @@ func (d *Driver) runTests(ctx context.Context, bundle string, tests []*protocol.
 		Counter:          failfast.NewCounter(d.cfg.MaxTestFailures()),
 		Client:           client,
 		RemoteDevservers: remoteDevservers,
+		SwarmingTaskID:   d.cfg.SwarmingTaskID(),
+		BuildBucketID:    d.cfg.BuildBucketID(),
 	}
 
 	if !ShouldRunTestsRecursively() {
@@ -266,6 +270,8 @@ func (d *Driver) runLocalTestsWithRetry(ctx context.Context, bundle string, test
 		ForceSkips:            d.cfg.ForceSkips(),
 		Factory:               minidriver.NewRootHandlersFactory(d.cfg.ResDir(), args.Counter, args.Client),
 		BuildArtifactsURL:     buildArtifactsURL,
+		SwarmingTaskID:        d.cfg.SwarmingTaskID(),
+		BuildBucketID:         d.cfg.BuildBucketID(),
 	}
 	md := minidriver.NewDriver(cfg, d.cc)
 	var names []string
@@ -287,7 +293,8 @@ func (d *Driver) runRemoteTests(ctx context.Context, bundle string, tests []stri
 }
 
 func (d *Driver) runRemoteTestsOnce(ctx context.Context, bundle string, tests []string, args *runTestsArgs) ([]*resultsjson.Result, error) {
-	bcfg, rcfg, err := d.newConfigsForRemoteTests(tests, args.DUTInfo, args.RemoteDevservers)
+	bcfg, rcfg, err := d.newConfigsForRemoteTests(tests, args.DUTInfo, args.RemoteDevservers,
+		args.SwarmingTaskID, args.BuildBucketID)
 	if err != nil {
 		return nil, err
 	}
@@ -308,7 +315,8 @@ func (d *Driver) runRemoteTestsOnce(ctx context.Context, bundle string, tests []
 	return proc.Results(), proc.FatalError()
 }
 
-func (d *Driver) newConfigsForRemoteTests(tests []string, dutInfos map[string]*protocol.DUTInfo, remoteDevservers []string) (*protocol.BundleConfig, *protocol.RunConfig, error) {
+func (d *Driver) newConfigsForRemoteTests(tests []string, dutInfos map[string]*protocol.DUTInfo,
+	remoteDevservers []string, swarmingTaskID, buildBucketID string) (*protocol.BundleConfig, *protocol.RunConfig, error) {
 	exe, err := os.Executable()
 	if err != nil {
 		return nil, nil, err
@@ -391,6 +399,8 @@ func (d *Driver) newConfigsForRemoteTests(tests []string, dutInfos map[string]*p
 			UseEphemeralDevservers: d.cfg.UseEphemeralDevserver(),
 			TastDir:                d.cfg.TastDir(),
 			ExtraAllowedBuckets:    d.cfg.ExtraAllowedBuckets(),
+			SwarmingTaskID:         swarmingTaskID,
+			BuildBucketID:          buildBucketID,
 		},
 		DataFileConfig: &protocol.DataFileConfig{
 			DownloadMode:      d.cfg.DownloadMode(),
@@ -417,6 +427,8 @@ func (d *Driver) newConfigsForRemoteTests(tests []string, dutInfos map[string]*p
 			MsgTimeout:            ptypes.DurationProto(d.cfg.MsgTimeout()),
 			SystemServicesTimeout: ptypes.DurationProto(d.cfg.SystemServicesTimeout()),
 			WaitUntilReadyTimeout: ptypes.DurationProto(d.cfg.WaitUntilReadyTimeout()),
+			SwarmingTaskID:        d.cfg.SwarmingTaskID(),
+			BuildBucketID:         d.cfg.BuildBucketID(),
 		},
 	}
 	return bcfg, rcfg, nil

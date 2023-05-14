@@ -349,6 +349,8 @@ func (st *InternalStack) newRuntimeConfig(ctx context.Context, outDir string, fi
 			st.cfg.Service.GetTlwSelfName(),
 			st.cfg.Service.GetDutServer(),
 			st.cfg.BuildArtifactsURL,
+			st.cfg.Service.GetSwarmingTaskID(),
+			st.cfg.Service.GetBuildBucketID(),
 		),
 		RemoteData: st.cfg.RemoteData,
 		FixtValue:  st.Val(),

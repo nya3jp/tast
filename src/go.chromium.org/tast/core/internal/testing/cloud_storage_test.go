@@ -18,7 +18,7 @@ import (
 )
 
 func TestNewCloudStorage(t *testing.T) {
-	cs := NewCloudStorage(nil, "", "", "", "")
+	cs := NewCloudStorage(nil, "", "", "", "", "", "")
 	if cs == nil {
 		t.Error("NewCloudStorage returned nil")
 	}
@@ -27,7 +27,7 @@ func TestNewCloudStorage(t *testing.T) {
 func TestNewCloudStorageTLW(t *testing.T) {
 	stopFunc, addr := faketlw.StartWiringServer(t)
 	defer stopFunc()
-	cs := NewCloudStorage(nil, addr, "dutName001", "", "gs://fake-repo/board-release/R12-3.4.5/")
+	cs := NewCloudStorage(nil, addr, "dutName001", "", "gs://fake-repo/board-release/R12-3.4.5/", "", "")
 	if cs == nil {
 		t.Error("NewCloudStorage returned nil")
 	}
@@ -36,7 +36,7 @@ func TestNewCloudStorageTLW(t *testing.T) {
 func TestNewCloudStorageDUTServer(t *testing.T) {
 	stopFunc, addr := fakedutserver.Start(t)
 	defer stopFunc()
-	cs := NewCloudStorage(nil, "", "", addr, "gs://fake-repo/board-release/R12-3.4.5/")
+	cs := NewCloudStorage(nil, "", "", addr, "gs://fake-repo/board-release/R12-3.4.5/", "", "")
 	if cs == nil {
 		t.Error("NewCloudStorage returned nil")
 	}

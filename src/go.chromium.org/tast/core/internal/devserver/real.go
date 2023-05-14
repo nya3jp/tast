@@ -25,10 +25,8 @@ import (
 )
 
 const (
-	swarmingTaskIDEnvName    = "SWARMING_TASK_ID"
-	bucketIDEnvName          = "BUILD_BUCKET_ID"
 	swarmingTaskIDHeaderName = "X-SWARMING-TASK-ID"
-	bucketIDHeaderName       = "X-BBID"
+	buildBucketIDHeaderName  = "X-BBID"
 )
 
 var errNotStaged = errors.New("no staged file found")
@@ -71,8 +69,8 @@ type RealClient struct {
 	servers         []server
 	cl              *http.Client
 	stageRetryWaits []time.Duration
-	taskID          string
-	bucketID        string
+	swarmingTaskID  string
+	buildBucketID   string
 }
 
 var _ Client = &RealClient{}
@@ -87,11 +85,11 @@ type RealClientOptions struct {
 	// If nil, default strategy is used. If zero-length slice, no retry is attempted.
 	StageRetryWaits []time.Duration
 
-	// TaskID specifies the task ID of the scheduled job that run Tast tests.
-	TaskID string
+	// SwarmingTaskID specifies the task ID of the scheduled job that run Tast tests.
+	SwarmingTaskID string
 
-	// BucketId specifies the build bucket ID for the schedule job that run Tast tests
-	BucketID string
+	// BuildBucketID specifies the build bucket ID for the schedule job that run Tast tests
+	BuildBucketID string
 }
 
 var defaultOptions = &RealClientOptions{
@@ -134,15 +132,15 @@ func NewRealClient(ctx context.Context, dsURLs []string, o *RealClientOptions) *
 	sort.Slice(servers, func(i, j int) bool {
 		return servers[i].url < servers[j].url
 	})
-	taskID := o.TaskID
-	if taskID == "" {
-		taskID = "none"
+	swarmingTaskID := o.SwarmingTaskID
+	if swarmingTaskID == "" {
+		swarmingTaskID = "none"
 	}
-	bucketID := o.BucketID
-	if bucketID == "" {
-		bucketID = "none"
+	buildBucketID := o.BuildBucketID
+	if buildBucketID == "" {
+		buildBucketID = "none"
 	}
-	return &RealClient{servers, cl, stageRetryWaits, taskID, bucketID}
+	return &RealClient{servers, cl, stageRetryWaits, swarmingTaskID, buildBucketID}
 }
 
 // UpServerURLs returns URLs of operational devservers.
@@ -268,8 +266,8 @@ func (c *RealClient) checkStaged(ctx context.Context, dsURL, bucket, gsPath stri
 		return err
 	}
 	req = req.WithContext(ctx)
-	req.Header.Set(swarmingTaskIDHeaderName, c.taskID)
-	req.Header.Set(bucketIDHeaderName, c.bucketID)
+	req.Header.Set(swarmingTaskIDHeaderName, c.swarmingTaskID)
+	req.Header.Set(buildBucketIDHeaderName, c.buildBucketID)
 
 	res, err := c.cl.Do(req)
 	if err != nil {
@@ -328,8 +326,8 @@ func (c *RealClient) stage(ctx context.Context, dsURL, bucket, gsPath string) er
 		return err
 	}
 	req = req.WithContext(ctx)
-	req.Header.Set(swarmingTaskIDHeaderName, c.taskID)
-	req.Header.Set(bucketIDHeaderName, c.bucketID)
+	req.Header.Set(swarmingTaskIDHeaderName, c.swarmingTaskID)
+	req.Header.Set(buildBucketIDHeaderName, c.buildBucketID)
 
 	for i := 0; ; i++ {
 		start := time.Now()
@@ -396,8 +394,8 @@ func (c *RealClient) openStaged(ctx context.Context, staticURL *url.URL) (io.Rea
 		if err != nil {
 			return nil, err
 		}
-		req.Header.Set(swarmingTaskIDHeaderName, c.taskID)
-		req.Header.Set(bucketIDHeaderName, c.bucketID)
+		req.Header.Set(swarmingTaskIDHeaderName, c.swarmingTaskID)
+		req.Header.Set(buildBucketIDHeaderName, c.buildBucketID)
 		// Negotiate header disables automatic content negotiation. See:
 		// https://crbug.com/967305
 		// https://tools.ietf.org/html/rfc2295#section-8.4
@@ -410,7 +408,7 @@ func (c *RealClient) openStaged(ctx context.Context, staticURL *url.URL) (io.Rea
 		// TODO: b/279489613 -- Remove following log after verifying new headers working with
 		// new cache servers.
 		logging.Infof(ctx, "Sending GET request %s to cache server with headers %s=%s and %s=%s",
-			staticURL.String(), swarmingTaskIDHeaderName, c.taskID, bucketIDHeaderName, c.bucketID)
+			staticURL.String(), swarmingTaskIDHeaderName, c.swarmingTaskID, buildBucketIDHeaderName, c.buildBucketID)
 
 		res, err := c.cl.Do(req)
 		if err != nil {

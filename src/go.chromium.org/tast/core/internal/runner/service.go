@@ -98,7 +98,9 @@ func (s *testServer) DownloadPrivateBundles(ctx context.Context, req *protocol.D
 	cl, err := devserver.NewClient(
 		ctx, req.GetServiceConfig().GetDevservers(),
 		req.GetServiceConfig().GetTlwServer(), req.GetServiceConfig().GetTlwSelfName(),
-		req.ServiceConfig.GetDutServer(),
+		req.GetServiceConfig().GetDutServer(),
+		req.GetServiceConfig().GetSwarmingTaskID(),
+		req.GetServiceConfig().GetBuildBucketID(),
 	)
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed to create new client [devservers=%v, TLWServer=%s]",

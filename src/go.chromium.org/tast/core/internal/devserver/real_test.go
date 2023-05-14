@@ -493,3 +493,24 @@ func TestRealClientNoPathStage(t *testing.T) {
 		t.Fatal("Stage failed: ", err)
 	}
 }
+
+// TestRealClientHeader tests http request has correct headers.
+func TestRealClientHeader(t *testing.T) {
+	swarmingTaskID := "taskID"
+	buildBucketID := "bbid"
+	s := newFakeServer(t, devservertest.SwarmingTaskID(swarmingTaskID), devservertest.BBID(buildBucketID))
+	defer s.Close()
+
+	cl := devserver.NewRealClient(context.Background(), []string{s.URL},
+		&devserver.RealClientOptions{
+			SwarmingTaskID: swarmingTaskID,
+			BuildBucketID:  buildBucketID,
+		})
+
+	if _, err := cl.Stage(context.Background(), fakeFileURL); err != nil {
+		t.Error("Stage failed: ", err)
+	}
+	if _, err := cl.Open(context.Background(), fakeFileURL); err != nil {
+		t.Error("Open failed: ", err)
+	}
+}

@@ -30,6 +30,10 @@ type Server struct {
 
 	mu    sync.Mutex
 	files map[string]*File
+
+	swarmingTaskID  string
+	buildBucketID   string
+	needHeaderCheck bool
 }
 
 // File represents a file served by a Server. A set of files served by a Server
@@ -57,6 +61,10 @@ type options struct {
 	files              []*File
 	stageHook          func(gsURL string) error
 	abortDownloadAfter int
+
+	swarmingTaskID  string
+	buildBucketID   string
+	needHeaderCheck bool
 }
 
 // Option is an option accepted by NewServer to configure Server initialization.
@@ -91,12 +99,30 @@ func AbortDownloadAfter(bytes int) Option {
 	}
 }
 
+// SwarmingTaskID returns an option to specify the swarming task ID.
+func SwarmingTaskID(swarmingTaskID string) Option {
+	return func(o *options) {
+		o.swarmingTaskID = swarmingTaskID
+		o.needHeaderCheck = true
+	}
+}
+
+// BBID returns an option to specify the build bucket ID.
+func BBID(buildBucketID string) Option {
+	return func(o *options) {
+		o.buildBucketID = buildBucketID
+		o.needHeaderCheck = true
+	}
+}
+
 // NewServer starts a fake devserver using specified options.
 func NewServer(opts ...Option) (*Server, error) {
 	mux := http.NewServeMux()
 	o := &options{
 		stageHook:          func(gsURL string) error { return nil },
 		abortDownloadAfter: -1,
+		swarmingTaskID:     "none",
+		buildBucketID:      "none",
 	}
 	for _, opt := range opts {
 		opt(o)
@@ -120,6 +146,9 @@ func NewServer(opts ...Option) (*Server, error) {
 		stageHook:          o.stageHook,
 		abortDownloadAfter: o.abortDownloadAfter,
 		files:              files,
+		swarmingTaskID:     o.swarmingTaskID,
+		buildBucketID:      o.buildBucketID,
+		needHeaderCheck:    o.needHeaderCheck,
 	}
 
 	mux.Handle("/check_health", http.HandlerFunc(s.handleCheckHealth))
@@ -132,6 +161,23 @@ func NewServer(opts ...Option) (*Server, error) {
 // Close stops the server and releases its associated resources.
 func (s *Server) Close() {
 	s.Server.Close()
+}
+
+func (s *Server) checkHeaders(r *http.Request) error {
+	if !s.needHeaderCheck {
+		return nil
+	}
+	swarmingTaskID := r.Header.Get("X-SWARMING-TASK-ID")
+	if swarmingTaskID != s.swarmingTaskID {
+		return fmt.Errorf("failed to get expected value for header X-SWARMING-TASK-ID got: %q want: %q",
+			swarmingTaskID, s.swarmingTaskID)
+	}
+	buildBucketID := r.Header.Get("X-BBID")
+	if buildBucketID != s.buildBucketID {
+		return fmt.Errorf("failed to get expected value for header X-BBID got: %q want: %q",
+			buildBucketID, s.buildBucketID)
+	}
+	return nil
 }
 
 func (s *Server) handleCheckHealth(w http.ResponseWriter, r *http.Request) {
@@ -161,6 +207,9 @@ func (s *Server) handleIsStaged(w http.ResponseWriter, r *http.Request) {
 	}(); err != nil {
 		respondError(w, err)
 	}
+	if err := s.checkHeaders(r); err != nil {
+		respondError(w, err)
+	}
 }
 
 func (s *Server) handleStage(w http.ResponseWriter, r *http.Request) {
@@ -188,6 +237,9 @@ func (s *Server) handleStage(w http.ResponseWriter, r *http.Request) {
 		f.Staged = true
 		return nil
 	}(); err != nil {
+		respondError(w, err)
+	}
+	if err := s.checkHeaders(r); err != nil {
 		respondError(w, err)
 	}
 }
@@ -222,6 +274,10 @@ func (s *Server) handleStatic(w http.ResponseWriter, r *http.Request) {
 	}
 	if b := r.URL.Query().Get("gs_bucket"); b != bucket {
 		http.Error(w, fmt.Sprintf("Incorrect gs_bucket: got %q, wantStaged %q", b, bucket), http.StatusBadRequest)
+		return
+	}
+	if err := s.checkHeaders(r); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 

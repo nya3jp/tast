@@ -1012,6 +1012,7 @@ func WifiSAP() Condition {
 	return SkipOnWifiDevice(
 		MediaTekMT7921PCIE,
 		MediaTekMT7921SDIO,
+		QualcommWCN6855,
 	)
 }
 

@@ -71,15 +71,15 @@ promoted to critical tests after stabilization.
 	{
 		Name:     "cbx",
 		Contacts: []string{"tast-core@google.com"},
-		Desc:     `A group of tests related to Chromebook X testing`,
+		Desc:     `A group of tests related to cbx testing`,
 		Subattrs: []*attr{
 			{
 				Name: "cbx_feature_enabled",
-				Desc: "Indicates that these tests should run on Chromebook X devices",
+				Desc: "Indicates that these tests should run on devices that have cbx features",
 			},
 			{
 				Name: "cbx_feature_disabled",
-				Desc: "Indicates that these tests should run on non-Chromebook-X devices",
+				Desc: "Indicates that these tests should run on devices that have no cbx features",
 			},
 			{
 				Name: "cbx_stable",

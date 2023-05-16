@@ -81,6 +81,7 @@ The following software features are defined:
 * `crostini_unstable` - Boards that cannot run Crostini tests reliably.
 * `crosvm_gpu` - Boards that use hardware GPU acceleration in the guest VM environment.
 * `crosvm_no_gpu` - Boards that use software GPU emulation in the guest VM environment.
+* `crosvm_swap - Boards that have crosvm's vmm-swap feature enabled.
 * `cups` - CUPS daemon.
 * `device_crash` - Boards that can recover gracefully after a hard crash (e.g.
     kernel crash)

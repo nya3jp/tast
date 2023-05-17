@@ -542,8 +542,15 @@ func buildRequestURL(endpoint, bucket, gsPath string) string {
 	if dir := path.Dir(gsPath); dir != "." {
 		gsDirURL.Path = dir
 	}
+	// URL.String() escapes URL, including spaces, which is then escaped again in
+	// values.Encode() below. Specifically, spaces are double escaped " " -> %20 -> %2520.
+	// To prevent this, unescaping the path before passing it to values.Encode().
+	unescapedGsDirURL, err := url.PathUnescape(gsDirURL.String())
+	if err != nil {
+		unescapedGsDirURL = gsDirURL.String()
+	}
 	values := url.Values{
-		"archive_url": {gsDirURL.String()},
+		"archive_url": {unescapedGsDirURL},
 		"files":       {path.Base(gsPath)},
 	}
 	return fmt.Sprintf("%s?%s", endpoint, values.Encode())

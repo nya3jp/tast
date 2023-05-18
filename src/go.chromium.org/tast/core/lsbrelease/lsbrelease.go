@@ -104,6 +104,7 @@ var allowedPkgs = []string{
 	"chromiumos/tast/remote/firmware",                  // For checking USB images
 	"chromiumos/tast/remote/firmware/reporters",        // For Board.
 	"chromiumos/tast/local/bundles/cros/wifi",          // For Board.
+	"chromiumos/tast/local/bundles/crosint/apps",       // For Board.
 }
 
 // Load loads /etc/lsb-release and returns a parsed key-value map.

@@ -423,11 +423,13 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		}
 	}()
 
-	if err := exec.Command("cros_config", "/modem", "firmware-variant").Run(); err != nil {
+	modemVariant, err := crosConfig("/modem", "firmware-variant")
+	if err != nil {
 		logging.Infof(ctx, "Modem not found: %v", err)
 		features.Cellular.Present = configpb.HardwareFeatures_NOT_PRESENT
 	} else {
 		features.Cellular.Present = configpb.HardwareFeatures_PRESENT
+		features.Cellular.Model = modemVariant
 		swDynamicSar, err := func() (bool, error) {
 			out, err := crosConfig("/power", "use-modemmanager-for-dynamic-sar")
 			if err != nil {

@@ -418,6 +418,62 @@ func Cellular() Condition {
 	}
 }
 
+// SkipOnCellularVariant returns a hardware dependency condition that is satisfied
+// iff the DUT's cellular variant is none of the given names.
+func SkipOnCellularVariant(names ...string) Condition {
+	for _, n := range names {
+		if !idRegexp.MatchString(n) {
+			return Condition{Err: errors.Errorf("Variant should match with %v: %q", idRegexp, n)}
+		}
+	}
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("Did not find hardware features")
+		}
+		if status := hf.GetCellular().Present; status == configpb.HardwareFeatures_NOT_PRESENT {
+			return unsatisfied("DUT does not have a cellular modem")
+		} else if status == configpb.HardwareFeatures_PRESENT_UNKNOWN {
+			return unsatisfied("Could not determine if cellular model is present")
+		}
+		variant := hf.GetCellular().GetModel()
+		for _, name := range names {
+			if name == variant {
+				return unsatisfied("Variant matched with skip-on list")
+			}
+		}
+		return satisfied()
+	}}
+}
+
+// CellularVariant returns a hardware dependency condition that is satisfied
+// iff the DUT's cellular variant is one of the given names.
+func CellularVariant(names ...string) Condition {
+	for _, n := range names {
+		if !idRegexp.MatchString(n) {
+			return Condition{Err: errors.Errorf("Variant should match with %v: %q", idRegexp, n)}
+		}
+	}
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("Did not find hardware features")
+		}
+		if status := hf.GetCellular().Present; status == configpb.HardwareFeatures_NOT_PRESENT {
+			return unsatisfied("DUT does not have a cellular modem")
+		} else if status == configpb.HardwareFeatures_PRESENT_UNKNOWN {
+			return unsatisfied("Could not determine if cellular model is present")
+		}
+		variant := hf.GetCellular().GetModel()
+		for _, name := range names {
+			if name == variant {
+				return satisfied()
+			}
+		}
+		return unsatisfied("Variant did not match")
+	}}
+}
+
 // CellularSoftwareDynamicSar returns a hardware dependency condition that
 // is satisfied iff the DUT has enabled software dynamic sar.
 func CellularSoftwareDynamicSar() Condition {

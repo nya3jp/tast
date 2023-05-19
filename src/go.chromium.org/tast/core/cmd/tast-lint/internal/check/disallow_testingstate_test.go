@@ -37,7 +37,7 @@ func TestTestingStateAllowed(t *testing.T) {
 	const code = `package main
 func A(s *testing.State) {}
 `
-	const path = "/src/chromiumos/tast/local/bundlemain/main.go"
+	const path = "/src/go.chromium.org/tast-tests/cros/local/bundlemain/main.go"
 	f, fs := parse(code, path)
 	issues := VerifyTestingStateParam(fs, f)
 	verifyIssues(t, issues, nil)

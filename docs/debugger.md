@@ -66,7 +66,7 @@ If you haven't already, follow the instructions in the [quickstart guide](quicks
             "${workspaceFolder}/src/platform"
           ],
           "pattern": {
-            // 2021/01/20 11:53:25 ../platform/tast-tests/src/chromiumos/tast/local/bundlemain/main.go:274:3: unknown field 'BeforeDownload' in struct literal of type "chromiumos/tast/internal/bundle".LocalDelegate
+            // 2021/01/20 11:53:25 ../platform/tast-tests/src/go.chromium.org/tast-tests/cros/local/bundlemain/main.go:274:3: unknown field 'BeforeDownload' in struct literal of type "chromiumos/tast/internal/bundle".LocalDelegate
             // ../platform/tast-tests/src/chromiumos/tast/common/perf/timeline_test.go:217:51: cannot use d1 (type *testTimelineDatasource) as type TimelineDatasource in array or slice literal:
             "regexp": "(..\/platform\/[^:]+):(\\d+):(\\d+):\\s+(.+)$",
             "file": 1,

@@ -232,6 +232,7 @@ stack-sampled metrics.
 * `video_decoder_legacy` - The platform used the VideoDecodeAccelerator (VDA) by default.
 * `video_decoder_legacy_supported` - Is the VDA is supported on this platform.
 * `video_overlays` - The kernel [DRM/KMS] version atomic commits and the underlying hardware display controller support the NV12 DRM Plane format needed to promote videos to [hardware overlays].
+* `virtual_multidisplay` - The platform supports virtual multi display testing (at the time of writing, only 6.1+ betty boards).  This should be depended on for all multidisplay presubmit tests to run on betty.
 * `virtual_susupend_time_injection` - The platform supports KVM virtual suspend time injection.
 * `virtual_usb_printer` - Whether or not the device can run tests that
     use [virtual USB printing][virtual-usb-printer-readme]. Note that

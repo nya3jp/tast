@@ -269,7 +269,8 @@ var softwareFeatureDefs = map[string]string{
 	// drm_atomic is a necessary but not sufficient condition to support
 	// video_overlays; in practice, they tend to be enabled at the same time.
 	// Generally you should use the more restrictive hwdep.SupportsNV12Overlays().
-	"video_overlays": "drm_atomic",
+	"video_overlays":       "drm_atomic",
+	"virtual_multidisplay": `(("tast_vm" || "betty") && ("kernel-6_1"))`,
 	// virtual_susupend_time_injection swdep is used to limit the arc.Suspend.* tests to
 	// run only on the boards that supports KVM virtual suspend time injection.
 	// TODO(b/202091291): Remove virtual_susupend_time_injection swdep once it is supported

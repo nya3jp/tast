@@ -15,6 +15,7 @@ import (
 
 	"go.chromium.org/tast/core/errors"
 	"go.chromium.org/tast/core/internal/dep"
+	"go.chromium.org/tast/core/testing/cellularconst"
 	"go.chromium.org/tast/core/testing/wlan"
 
 	"go.chromium.org/tast/core/framework/protocol"
@@ -471,6 +472,60 @@ func CellularVariant(names ...string) Condition {
 			}
 		}
 		return unsatisfied("Variant did not match")
+	}}
+}
+
+// CellularModemType returns a hardware dependency condition that is satisfied
+// iff the DUT's cellular modem type is one of the given types.
+func CellularModemType(modemTypes ...cellularconst.ModemType) Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("Did not find hardware features")
+		}
+		if status := hf.GetCellular().Present; status == configpb.HardwareFeatures_NOT_PRESENT {
+			return unsatisfied("DUT does not have a cellular modem")
+		} else if status == configpb.HardwareFeatures_PRESENT_UNKNOWN {
+			return unsatisfied("Could not determine if cellular model is present")
+		}
+		variant := hf.GetCellular().GetModel()
+		modemType, err := cellularconst.GetModemTypeFromVariant(variant)
+		if err != nil {
+			return withError(err)
+		}
+		for _, m := range modemTypes {
+			if m == modemType {
+				return satisfied()
+			}
+		}
+		return unsatisfied("Modem type did not match")
+	}}
+}
+
+// SkipOnCellularModemType returns a hardware dependency condition that is satisfied
+// iff the DUT's cellular modem type is none of the given types.
+func SkipOnCellularModemType(modemTypes ...cellularconst.ModemType) Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("Did not find hardware features")
+		}
+		if status := hf.GetCellular().Present; status == configpb.HardwareFeatures_NOT_PRESENT {
+			return unsatisfied("DUT does not have a cellular modem")
+		} else if status == configpb.HardwareFeatures_PRESENT_UNKNOWN {
+			return unsatisfied("Could not determine if cellular model is present")
+		}
+		variant := hf.GetCellular().GetModel()
+		modemType, err := cellularconst.GetModemTypeFromVariant(variant)
+		if err != nil {
+			return withError(err)
+		}
+		for _, m := range modemTypes {
+			if m == modemType {
+				return unsatisfied("Modem type matched with skip-on list")
+			}
+		}
+		return satisfied()
 	}}
 }
 

@@ -1443,6 +1443,21 @@ func NvmeSelfTest() Condition {
 	}}
 }
 
+// Ufs returns a hardware dependency condition if the device has a UFS storage
+// device.
+func Ufs() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("Did not find hardware features")
+		}
+		if hf.GetStorage().GetStorageType() == configpb.Component_Storage_UFS {
+			return satisfied()
+		}
+		return unsatisfied("DUT does not have a UFS storage device")
+	}}
+}
+
 // MinStorage returns a hardware dependency condition requiring the minimum size of the storage in gigabytes.
 func MinStorage(reqGigabytes int) Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {

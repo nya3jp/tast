@@ -378,6 +378,36 @@ func TestNvmeStorage(t *testing.T) {
 		nil)
 }
 
+func TestUfsStorage(t *testing.T) {
+	c := hwdep.Ufs()
+
+	for _, tc := range []struct {
+		StorageType     configpb.Component_Storage_StorageType
+		expectSatisfied bool
+	}{
+		{configpb.Component_Storage_STORAGE_TYPE_UNKNOWN, false},
+		{configpb.Component_Storage_EMMC, false},
+		{configpb.Component_Storage_NVME, false},
+		{configpb.Component_Storage_SATA, false},
+		{configpb.Component_Storage_UFS, true},
+		{configpb.Component_Storage_BRIDGED_EMMC, false},
+	} {
+		verifyCondition(
+			t, c,
+			&frameworkprotocol.DeprecatedDeviceConfig{},
+			&configpb.HardwareFeatures{
+				Storage: &configpb.HardwareFeatures_Storage{
+					StorageType: tc.StorageType,
+				},
+			},
+			tc.expectSatisfied)
+	}
+	expectError(
+		t, c,
+		&frameworkprotocol.DeprecatedDeviceConfig{},
+		nil)
+}
+
 func TestWiFiIntel(t *testing.T) {
 	c := hwdep.WifiIntel()
 

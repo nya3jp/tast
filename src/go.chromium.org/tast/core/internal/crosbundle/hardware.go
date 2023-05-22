@@ -525,6 +525,17 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		config.HasNvmeSelfTest = true
 	}
 
+	hasUfsStorage := func() bool {
+		out, err := crosConfig("/hardware-properties", "storage-type")
+		if err != nil {
+			return false
+		}
+		return out == "UFS"
+	}()
+	if hasUfsStorage {
+		features.Storage.StorageType = configpb.Component_Storage_UFS
+	}
+
 	func() {
 		// This function determines DUT's power supply type and stores it to config.Power.
 		// If DUT has a battery, config.Power is DeprecatedDeviceConfig_POWER_SUPPLY_BATTERY.

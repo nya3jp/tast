@@ -126,7 +126,7 @@ func buildRemoteBundles(ctx context.Context, cfg *config.Config) error {
 			Debug:      cfg.DebuggerPorts()[debugger.RemoteTestRunner] != 0,
 		},
 		{
-			Pkg:        path.Join(build.RemoteBundlePkgPathPrefix, cfg.BuildBundle()),
+			Pkg:        path.Join(remoteBundlePrefix(cfg.BuildBundle()), cfg.BuildBundle()),
 			Arch:       build.ArchHost,
 			Workspaces: cfg.BundleWorkspaces(),
 			Out:        filepath.Join(cfg.RemoteBundleDir(), cfg.BuildBundle()),
@@ -135,6 +135,13 @@ func buildRemoteBundles(ctx context.Context, cfg *config.Config) error {
 	}
 
 	return buildBundles(ctx, cfg, targets)
+}
+
+func remoteBundlePrefix(bundle string) string {
+	if bundle == "crosint" {
+		return build.RemotePrivateBundlePkgPathPrefix
+	}
+	return build.RemoteBundlePkgPathPrefix
 }
 
 func buildLocalBundles(ctx context.Context, cfg *config.Config, targetArch string) error {
@@ -149,7 +156,7 @@ func buildLocalBundles(ctx context.Context, cfg *config.Config, targetArch strin
 			Debug:      cfg.DebuggerPorts()[debugger.LocalTestRunner] != 0,
 		},
 		{
-			Pkg:        path.Join(build.LocalBundlePkgPathPrefix, cfg.BuildBundle()),
+			Pkg:        path.Join(localBundlePrefix(cfg.BuildBundle()), cfg.BuildBundle()),
 			Arch:       targetArch,
 			Workspaces: cfg.BundleWorkspaces(),
 			Out:        filepath.Join(cfg.BuildOutDir(), targetArch, build.LocalBundleBuildSubdir, cfg.BuildBundle()),
@@ -158,6 +165,13 @@ func buildLocalBundles(ctx context.Context, cfg *config.Config, targetArch strin
 	}
 
 	return buildBundles(ctx, cfg, targets)
+}
+
+func localBundlePrefix(bundle string) string {
+	if bundle == "crosint" {
+		return build.LocalPrivateBundlePkgPathPrefix
+	}
+	return build.LocalBundlePkgPathPrefix
 }
 
 func buildBundles(ctx context.Context, cfg *config.Config, tgts []*build.Target) error {

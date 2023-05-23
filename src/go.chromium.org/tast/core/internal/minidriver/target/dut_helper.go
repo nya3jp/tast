@@ -38,9 +38,6 @@ func newDUTHelper(ctx context.Context, cfg *protocol.SSHConfig, testVars map[str
 	if a.servoSpec == "" {
 		return &a
 	}
-	if err := ensureDUTConnection(ctx, cfg.ConnectionSpec); err != nil {
-		logging.Infof(ctx, "Failed to connect to DUT %s", err)
-	}
 	return &a
 }
 

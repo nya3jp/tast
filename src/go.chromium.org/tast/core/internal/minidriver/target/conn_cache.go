@@ -31,7 +31,13 @@ func NewConnCache(ctx context.Context, cfg *Config, target, proxyCommand, role s
 	helper := newDUTHelper(ctx, cfg.SSHConfig, cfg.TastVars, role)
 	conn, err := newConn(ctx, cfg, target, proxyCommand, helper.dutServer)
 	if err != nil {
-		return nil, err
+		if err := ensureDUTConnection(ctx, cfg.SSHConfig.ConnectionSpec); err != nil {
+			logging.Infof(ctx, "Failed to connect to DUT %s", err)
+		}
+		conn, err = newConn(ctx, cfg, target, proxyCommand, helper.dutServer)
+		if err != nil {
+			return nil, err
+		}
 	}
 	defer func() {
 		if retErr != nil {

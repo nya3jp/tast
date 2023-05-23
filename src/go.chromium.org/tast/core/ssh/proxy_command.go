@@ -46,7 +46,7 @@ func DialProxyCommand(ctx context.Context, hostPort, proxyCommand string) (net.C
 	}
 	go func() {
 		if err = cmd.Wait(); err != nil {
-			logging.Infof(ctx, "Proxy command failed: comand = '%s', err = '%s', stderr = '%s'", proxyCommandReplaced, err, conn.stderrBuffer.String())
+			logging.Debugf(ctx, "Proxy command failed: comand = '%s', err = '%s', stderr = '%s'", proxyCommandReplaced, err, conn.stderrBuffer.String())
 		}
 	}()
 	return &conn, nil

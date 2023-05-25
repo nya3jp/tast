@@ -3,4 +3,11 @@
 # found in the LICENSE file.
 #
 # Tast reviewers can approve changes to software dependency definitions.
-per-file test_dependencies.md = file:chromiumos/platform/tast-tests:/OWNERS
+# per-file test_dependencies.md = file:chromiumos/platform/tast-tests:/OWNERS
+
+rohitbm@chromium.org
+seewaifu@google.com
+yichiyan@google.com
+jessemcguire@google.com
+abergman@google.com
+asadrieh@google.com

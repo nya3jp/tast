@@ -52,7 +52,7 @@ if err != nil {
 In the example the command `lshw -C multimedia` is executed on the command line. The output of the execution is written into the out variable by calling the `Output` function and should then contain a list of all connected multimedia devices.
 By passing `testexec.DumpLogOnError` we also get the stderr output in case the execution fails.
 
-[testexec.CommandContext]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/common/testexec#CommandContext
+[testexec.CommandContext]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/go.chromium.org/tast-tests/cros/common/testexec#CommandContext
 
 ### Checking windows
 In some cases checking if certain windows have been opened, or a certain number of windows have been opened can be enough to check if a test was successful or not. To do that [ash.GetAllWindows] can be used. See the [ash package documentation] for more information.

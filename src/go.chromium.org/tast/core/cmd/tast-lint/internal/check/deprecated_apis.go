@@ -33,7 +33,7 @@ func DeprecatedAPIs(fs *token.FileSet, f *ast.File) []*Issue {
 	return deprecatedAPIs(fs, f, []*deprecatedAPI{
 		{
 			pkg:         "chromiumos/tast/local/testexec",
-			alternative: "chromiumos/tast/common/testexec",
+			alternative: "go.chromium.org/tast-tests/cros/common/testexec",
 			link:        "https://crbug.com/1119252",
 		},
 		{

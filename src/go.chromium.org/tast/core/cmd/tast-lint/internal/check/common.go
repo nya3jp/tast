@@ -157,7 +157,7 @@ func policyNames() map[string]bool {
 
 	src := strings.Split(filename, "platform")[0]
 	// Build defs path.
-	defs := path.Join(src, "platform/tast-tests/src/chromiumos/tast/common/policy/defs.go")
+	defs := path.Join(src, "platform/tast-tests/src/go.chromium.org/tast-tests/cros/common/policy/defs.go")
 	if !fileExists(defs) {
 		panic(fmt.Sprintf("Path %s does not exist", defs))
 	}

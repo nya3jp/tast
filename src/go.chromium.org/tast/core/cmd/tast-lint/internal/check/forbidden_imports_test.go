@@ -34,7 +34,7 @@ func TestForbiddenImports(t *testing.T) {
 	const code = `package main
 
 import (
-	"chromiumos/tast/common/foo"
+	"go.chromium.org/tast-tests/cros/common/foo"
 	"chromiumos/tast/local/foo"
 	"chromiumos/tast/remote/foo"
 	"some/other/package"
@@ -55,13 +55,13 @@ import (
 			"src/chromiumos/tast/remote/testfile.go:5:2: Non-local package should not import local package chromiumos/tast/local/foo",
 		},
 	}, {
-		filepath: "src/chromiumos/tast/common/testfile.go",
+		filepath: "src/go.chromium.org/tast-tests/cros/common/testfile.go",
 		want: []string{
-			"src/chromiumos/tast/common/testfile.go:5:2: Non-local package should not import local package chromiumos/tast/local/foo",
-			"src/chromiumos/tast/common/testfile.go:6:2: Non-remote package should not import remote package chromiumos/tast/remote/foo",
+			"src/go.chromium.org/tast-tests/cros/common/testfile.go:5:2: Non-local package should not import local package chromiumos/tast/local/foo",
+			"src/go.chromium.org/tast-tests/cros/common/testfile.go:6:2: Non-remote package should not import remote package chromiumos/tast/remote/foo",
 		},
 	}, {
-		filepath: "src/chromiumos/tast/common/testfile_test.go",
+		filepath: "src/go.chromium.org/tast-tests/cros/common/testfile_test.go",
 		want:     nil,
 	}} {
 		f, fs := parse(code, tc.filepath)

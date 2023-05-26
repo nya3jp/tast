@@ -53,7 +53,7 @@ shared code] section.
 
 Packages outside `chromiumos/tast/local/...` should not import packages in `chromiumos/tast/local/...`, and
 packages outside `chromiumos/tast/remote/...` should not import packages in `chromiumos/tast/remote/...`.
-If local and remote packages should share the same code, put them in `chromiumos/tast/common/...`.
+If local and remote packages should share the same code, put them in `go.chromium.org/tast-tests/cros/common/...`.
 
 [test bundles]: overview.md#Test-bundles
 [tast-tests repository]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD
@@ -1084,7 +1084,7 @@ to a `tests/<test-name>/` subdirectory within the results directory.
 The [perf] package is provided to record the results of performance tests.  See
 the [perf] documentation for more details.
 
-[perf]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/common/perf
+[perf]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/go.chromium.org/tast-tests/cros/common/perf
 
 ## Data files
 
@@ -1911,7 +1911,7 @@ will cause a panic.
 The [`testexec`] package provides a convenient interface to run processes on
 the DUT. It should be used instead of the standard `os/exec` package.
 
-[`testexec`]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/chromiumos/tast/common/testexec/testexec.go
+[`testexec`]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/go.chromium.org/tast-tests/cros/common/testexec/testexec.go
 
 ## Use of third party libraries
 

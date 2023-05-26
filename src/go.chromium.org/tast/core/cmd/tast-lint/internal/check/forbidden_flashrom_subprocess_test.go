@@ -54,7 +54,7 @@ func Test() {
 			},
 		},
 		{
-			filepath: "src/chromiumos/tast/common/testfile.go",
+			filepath: "src/go.chromium.org/tast-tests/cros/common/testfile.go",
 			want:     []string{},
 		},
 	} {

@@ -58,7 +58,7 @@ func isForbidden(expr ast.Expr, issues *[]*Issue, fs *token.FileSet) {
 							*issues = append(*issues, &Issue{
 								Pos:  fs.Position(v.Pos()),
 								Msg:  "Please don't use flashrom subprocess but use flashrom_library instead.",
-								Link: "https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/chromiumos/tast/common/flashrom/",
+								Link: "https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/go.chromium.org/tast-tests/cros/common/flashrom/",
 							})
 						}
 					}

@@ -168,10 +168,10 @@ import "go.chromium.org/tast/core/testing"
 func f(s *testing.State) {}
 `,
 			want: map[string]struct{}{
-				"src/chromiumos/tast/local/chrome/chrome.go":      {},
-				"src/chromiumos/tast/remote/chrome/chrome.go":     {},
-				"src/chromiumos/tast/common/chrome/chrome.go":     {},
-				"src/chromiumos/tast/services/cros/chrome/gen.go": {},
+				"src/chromiumos/tast/local/chrome/chrome.go":                  {},
+				"src/chromiumos/tast/remote/chrome/chrome.go":                 {},
+				"src/go.chromium.org/tast-tests/cros/common/chrome/chrome.go": {},
+				"src/chromiumos/tast/services/cros/chrome/gen.go":             {},
 			},
 		},
 		{
@@ -182,12 +182,12 @@ import "errors"
 func f() error { return errors.New("hello") }
 `,
 			want: map[string]struct{}{
-				"src/chromiumos/tast/local/bundles/cros/ui/cuj/cuj.go":  {},
-				"src/chromiumos/tast/remote/bundles/cros/ui/cuj/cuj.go": {},
-				"src/chromiumos/tast/local/chrome/chrome.go":            {},
-				"src/chromiumos/tast/remote/chrome/chrome.go":           {},
-				"src/chromiumos/tast/common/chrome/chrome.go":           {},
-				"src/chromiumos/tast/services/cros/chrome/gen.go":       {},
+				"src/chromiumos/tast/local/bundles/cros/ui/cuj/cuj.go":        {},
+				"src/chromiumos/tast/remote/bundles/cros/ui/cuj/cuj.go":       {},
+				"src/chromiumos/tast/local/chrome/chrome.go":                  {},
+				"src/chromiumos/tast/remote/chrome/chrome.go":                 {},
+				"src/go.chromium.org/tast-tests/cros/common/chrome/chrome.go": {},
+				"src/chromiumos/tast/services/cros/chrome/gen.go":             {},
 			},
 		},
 	} {
@@ -199,7 +199,7 @@ func f() error { return errors.New("hello") }
 			// Support library files.
 			"src/chromiumos/tast/local/chrome/chrome.go":                    tc.content,
 			"src/chromiumos/tast/remote/chrome/chrome.go":                   tc.content,
-			"src/chromiumos/tast/common/chrome/chrome.go":                   tc.content,
+			"src/go.chromium.org/tast-tests/cros/common/chrome/chrome.go":   tc.content,
 			"src/chromiumos/tast/services/cros/chrome/gen.go":               tc.content,
 			"src/chromiumos/tast/services/cros/chrome/chrome_service.pb.go": tc.content,
 			// Framework files.

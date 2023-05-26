@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// DO NOT USE THIS COPY OF XML-RPC IN TESTS, USE THE ONE IN platform/tast-tests/src/chromiumos/tast/common/xmlrpc
+// DO NOT USE THIS COPY OF XML-RPC IN TESTS, USE THE ONE IN platform/tast-tests/src/go.chromium.org/tast-tests/cros/common/xmlrpc
 
 // Package xmlrpc implements the XML-RPC client library.
 package xmlrpc

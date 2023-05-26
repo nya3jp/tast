@@ -250,7 +250,7 @@ func extractTestFileValues(f *ast.File, values map[string]bool, pkgName string, 
 // that have been used during the testing phase. If the file is not a Tast test,
 // then it is skipped.
 func SearchFlags(fs *token.FileSet, f *ast.File) (issues []*Issue) {
-	policyPkgName := hasImport(f, "chromiumos/tast/common/policy")
+	policyPkgName := hasImport(f, "go.chromium.org/tast-tests/cros/common/policy")
 	if policyPkgName == "" {
 		return
 	}

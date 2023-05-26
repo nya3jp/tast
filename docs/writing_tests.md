@@ -1477,13 +1477,13 @@ For the general usage of gRPC-Go, see also the [official tutorial].
 ### Defining gRPC services
 
 gRPC services are defined as protocol buffer files stored under
-`tast-tests/src/chromiumos/tast/services`. The directory is organized in the
+`tast-tests/src/go.chromium.org/tast-tests/cros/services`. The directory is organized in the
 similar way as test bundles at
 `tast-tests/src/chromiumos/tast/{local,remote}/bundles`. Below is an example of
 an imaginary gRPC service `arc.BootService`:
 
 ```
-tast-tests/src/chromiumos/tast/services/
+tast-tests/src/go.chromium.org/tast-tests/cros/services/
   cros/                   ... test bundle name where this service is included
     arc/                  ... service category name
       gen.go              ... Go file containing go generate directives
@@ -1500,7 +1500,7 @@ package tast.cros.arc;
 
 import "google/protobuf/empty.proto";
 
-option go_package = "chromiumos/tast/services/cros/arc";
+option go_package = "go.chromium.org/tast-tests/cros/services/cros/arc";
 
 // BootService allows remote tests to boot ARC on the DUT.
 service BootService {
@@ -1530,7 +1530,7 @@ guidelines:
 *   **Package names**: Protocol buffer package name specified in the `package`
     directive should be `tast.<bundle-name>.<category-name>`. Go package name
     specified in the `option go_package` directive should be
-    `chromiumos/tast/services/<bundle-name>/<category-name>`.
+    `go.chromium.org/tast-tests/cros/services/<bundle-name>/<category-name>`.
 *   **Service names**: Name services with `Service` suffix.
 *   **Message names**: Method request/response messages should be named
     `FooBarRequest`/`FooBarResponse`.
@@ -1551,7 +1551,7 @@ package arc
 
 // Run the following command in CrOS chroot to regenerate protocol buffer bindings:
 //
-// ~/trunk/src/platform/tast/tools/go.sh generate chromiumos/tast/services/cros/arc
+// ~/trunk/src/platform/tast/tools/go.sh generate go.chromium.org/tast-tests/cros/services/cros/arc
 ```
 
 To regenerate `.pb.go` files, run the command mentioned in the file in ChromeOS

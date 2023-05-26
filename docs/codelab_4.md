@@ -35,7 +35,7 @@ parts:
 The gRPC services are created using [protocol buffers](https://developers.google.com/protocol-buffers)
 to define their signatures, their respective request and response message types.
 We create a proto file with the definition in the folder in
-`tast-tests/src/chromiumos/tast/services/cros` that corresponds to the test.
+`tast-tests/src/go.chromium.org/tast-tests/cros/services/cros` that corresponds to the test.
 So if you need a service for a policy test the folder used will be `policy`.
 In this example we will create a service with a method that checks if the
 timezone set on the DUT matches a given timezone. So we need one method
@@ -53,7 +53,7 @@ package tast.cros.policy;
 
 import "google/protobuf/empty.proto";
 
-option go_package = "chromiumos/tast/services/cros/policy";
+option go_package = "go.chromium.org/tast-tests/cros/services/cros/policy";
 
 // SystemTimezoneService provides a function to test the system timezone.
 service SystemTimezoneService {
@@ -74,12 +74,12 @@ package policy
 
 // Run the following command in CrOS chroot to regenerate protocol buffer bindings:
 //
-// ~/trunk/src/platform/tast/tools/go.sh generate chromiumos/tast/services/cros/policy
+// ~/trunk/src/platform/tast/tools/go.sh generate go.chromium.org/tast-tests/cros/services/cros/policy
 //go:generate protoc -I . --go_out=plugins=grpc:../../../../.. system_timezone.proto
 ```
 
 Then we run
-`~/trunk/src/platform/tast/tools/go.sh generate chromiumos/tast/services/cros/folder`
+`~/trunk/src/platform/tast/tools/go.sh generate go.chromium.org/tast-tests/cros/services/cros/folder`
 as stated in the `gen.go` file. This will generate a `system_timezone.pb.go` file
 which contains the go code for the service.
 
@@ -104,7 +104,7 @@ import (
 	"github.com/golang/protobuf/ptypes/empty"
 	"google.golang.org/grpc"
 
-	pb "chromiumos/tast/services/cros/policy"
+	pb "go.chromium.org/tast-tests/cros/services/cros/policy"
 	...
 )
 ```
@@ -195,7 +195,7 @@ import (
 	...
         "chromiumos/tast/remote/policyutil"
 	"go.chromium.org/tast/core/rpc"
-	ps "chromiumos/tast/services/cros/policy"
+	ps "go.chromium.org/tast-tests/cros/services/cros/policy"
 	...
 )
 ```

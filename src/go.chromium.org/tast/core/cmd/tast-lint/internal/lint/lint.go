@@ -96,7 +96,7 @@ func isUserFile(path string) bool {
 	return strings.Contains(path, "src/chromiumos/tast/local/") ||
 		strings.Contains(path, "src/chromiumos/tast/remote/") ||
 		strings.Contains(path, "src/go.chromium.org/tast-tests/cros/common/") ||
-		strings.Contains(path, "src/chromiumos/tast/services/")
+		strings.Contains(path, "src/go.chromium.org/tast-tests/cros/services/")
 }
 
 // hasFmtError runs gofmt to see if code has any formatting error.

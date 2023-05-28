@@ -75,36 +75,36 @@ const (
 // allowedPkgs is the list of Go packages that can use this package.
 var allowedPkgs = []string{
 	"go.chromium.org/tast/core/cmd/tast/internal/symbolize",
-	"go.chromium.org/tast/core/internal/crosbundle", // For software feature detection.
-	"go.chromium.org/tast/core/internal/runner",     // For SoftwareDeps check.
-	"chromiumos/tast/local/arc",                     // For SDKVersion.
-	"chromiumos/tast/local/bundles/cros/arc",        // For Version.
+	"go.chromium.org/tast/core/internal/crosbundle",          // For software feature detection.
+	"go.chromium.org/tast/core/internal/runner",              // For SoftwareDeps check.
+	"go.chromium.org/tast-tests/cros/local/arc",              // For SDKVersion.
+	"go.chromium.org/tast-tests/cros/local/bundles/cros/arc", // For Version.
 	// TODO(crbug.com/1140906): Temporarily allowed until we remove extra tracing code that only runs on eve.
-	"chromiumos/tast/local/bundles/cros/lacros/gpucuj",
-	"chromiumos/tast/local/bundles/cros/platform/updateserver",
-	"chromiumos/tast/local/bundles/cros/autoupdate", // For autoupdate and rollback tests.
-	"chromiumos/tast/local/bundles/cros/health",     // To confirm OS version can be parsed.
-	"chromiumos/tast/local/bundles/cros/osinstall",  // For Version.
-	"chromiumos/tast/local/bundles/cros/system",     // For Version.
-	"chromiumos/tast/local/bundles/cros/hwsec",      // For cross-version login tests.
-	"chromiumos/tast/local/bundles/cros/policy",     // For autoupdate policy tests.
-	"chromiumos/tast/local/bundles/cros/lacros",     // For ReleaseTrack or Description.
-	"chromiumos/tast/local/chrome/crossdevice",
-	"chromiumos/tast/local/chrome/nearbyshare",
-	"chromiumos/tast/local/crash",
-	"chromiumos/tast/local/graphics/trace",
-	"chromiumos/tast/local/graphics/expectations", // For per-board test expectations.
+	"go.chromium.org/tast-tests/cros/local/bundles/cros/lacros/gpucuj",
+	"go.chromium.org/tast-tests/cros/local/bundles/cros/platform/updateserver",
+	"go.chromium.org/tast-tests/cros/local/bundles/cros/autoupdate", // For autoupdate and rollback tests.
+	"go.chromium.org/tast-tests/cros/local/bundles/cros/health",     // To confirm OS version can be parsed.
+	"go.chromium.org/tast-tests/cros/local/bundles/cros/osinstall",  // For Version.
+	"go.chromium.org/tast-tests/cros/local/bundles/cros/system",     // For Version.
+	"go.chromium.org/tast-tests/cros/local/bundles/cros/hwsec",      // For cross-version login tests.
+	"go.chromium.org/tast-tests/cros/local/bundles/cros/policy",     // For autoupdate policy tests.
+	"go.chromium.org/tast-tests/cros/local/bundles/cros/lacros",     // For ReleaseTrack or Description.
+	"go.chromium.org/tast-tests/cros/local/chrome/crossdevice",
+	"go.chromium.org/tast-tests/cros/local/chrome/nearbyshare",
+	"go.chromium.org/tast-tests/cros/local/crash",
+	"go.chromium.org/tast-tests/cros/local/graphics/trace",
+	"go.chromium.org/tast-tests/cros/local/graphics/expectations", // For per-board test expectations.
 	"chromiumos/tast/local/rialto",
-	"chromiumos/tast/local/screenshot",  // For Board.
-	"chromiumos/tast/local/uidetection", // Build and board for uidetection analytics.
+	"go.chromium.org/tast-tests/cros/local/screenshot",  // For Board.
+	"go.chromium.org/tast-tests/cros/local/uidetection", // Build and board for uidetection analytics.
 	"go.chromium.org/tast/core/lsbrelease",
 	"go.chromium.org/tast/core/lsbrelease_test",
-	"chromiumos/tast/remote/bundles/cros/firmware",     // For finding firmware file.
-	"chromiumos/tast/remote/bundles/cros/omaha/params", // To replicate update_engine behavior.
-	"chromiumos/tast/remote/firmware",                  // For checking USB images
-	"chromiumos/tast/remote/firmware/reporters",        // For Board.
-	"chromiumos/tast/local/bundles/cros/wifi",          // For Board.
-	"chromiumos/tast/local/bundles/crosint/apps",       // For Board.
+	"go.chromium.org/tast-tests/cros/remote/bundles/cros/firmware",          // For finding firmware file.
+	"go.chromium.org/tast-tests/cros/remote/bundles/cros/omaha/params",      // To replicate update_engine behavior.
+	"go.chromium.org/tast-tests/cros/remote/firmware",                       // For checking USB images
+	"go.chromium.org/tast-tests/cros/remote/firmware/reporters",             // For Board.
+	"go.chromium.org/tast-tests/cros/local/bundles/cros/wifi",               // For Board.
+	"go.chromium.org/tast-tests-private/crosint/local/bundles/crosint/apps", // For Board.
 }
 
 // Load loads /etc/lsb-release and returns a parsed key-value map.

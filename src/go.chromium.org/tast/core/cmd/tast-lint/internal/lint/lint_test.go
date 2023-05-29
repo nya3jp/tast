@@ -168,8 +168,8 @@ import "go.chromium.org/tast/core/testing"
 func f(s *testing.State) {}
 `,
 			want: map[string]struct{}{
-				"src/chromiumos/tast/local/chrome/chrome.go":                      {},
-				"src/chromiumos/tast/remote/chrome/chrome.go":                     {},
+				"src/go.chromium.org/tast-tests/cros/local/chrome/chrome.go":      {},
+				"src/go.chromium.org/tast-tests/cros/remote/chrome/chrome.go":     {},
 				"src/go.chromium.org/tast-tests/cros/common/chrome/chrome.go":     {},
 				"src/go.chromium.org/tast-tests/cros/services/cros/chrome/gen.go": {},
 			},
@@ -182,23 +182,23 @@ import "errors"
 func f() error { return errors.New("hello") }
 `,
 			want: map[string]struct{}{
-				"src/chromiumos/tast/local/bundles/cros/ui/cuj/cuj.go":            {},
-				"src/chromiumos/tast/remote/bundles/cros/ui/cuj/cuj.go":           {},
-				"src/chromiumos/tast/local/chrome/chrome.go":                      {},
-				"src/chromiumos/tast/remote/chrome/chrome.go":                     {},
-				"src/go.chromium.org/tast-tests/cros/common/chrome/chrome.go":     {},
-				"src/go.chromium.org/tast-tests/cros/services/cros/chrome/gen.go": {},
+				"src/go.chromium.org/tast-tests/cros/local/bundles/cros/ui/cuj/cuj.go":  {},
+				"src/go.chromium.org/tast-tests/cros/remote/bundles/cros/ui/cuj/cuj.go": {},
+				"src/go.chromium.org/tast-tests/cros/local/chrome/chrome.go":            {},
+				"src/go.chromium.org/tast-tests/cros/remote/chrome/chrome.go":           {},
+				"src/go.chromium.org/tast-tests/cros/common/chrome/chrome.go":           {},
+				"src/go.chromium.org/tast-tests/cros/services/cros/chrome/gen.go":       {},
 			},
 		},
 	} {
 		// Write the same content to many files.
 		if err := testutil.WriteFiles(".", map[string]string{
 			// Test bundle files.
-			"src/chromiumos/tast/local/bundles/cros/ui/cuj/cuj.go":  tc.content,
-			"src/chromiumos/tast/remote/bundles/cros/ui/cuj/cuj.go": tc.content,
+			"src/go.chromium.org/tast-tests/cros/local/bundles/cros/ui/cuj/cuj.go":  tc.content,
+			"src/go.chromium.org/tast-tests/cros/remote/bundles/cros/ui/cuj/cuj.go": tc.content,
 			// Support library files.
-			"src/chromiumos/tast/local/chrome/chrome.go":                                    tc.content,
-			"src/chromiumos/tast/remote/chrome/chrome.go":                                   tc.content,
+			"src/go.chromium.org/tast-tests/cros/local/chrome/chrome.go":                    tc.content,
+			"src/go.chromium.org/tast-tests/cros/remote/chrome/chrome.go":                   tc.content,
 			"src/go.chromium.org/tast-tests/cros/common/chrome/chrome.go":                   tc.content,
 			"src/go.chromium.org/tast-tests/cros/services/cros/chrome/gen.go":               tc.content,
 			"src/go.chromium.org/tast-tests/cros/services/cros/chrome/chrome_service.pb.go": tc.content,

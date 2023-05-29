@@ -7,7 +7,7 @@ package check
 import "testing"
 
 func TestExports(t *testing.T) {
-	const filename = "src/chromiumos/tast/local/bundles/cros/example/test.go"
+	const filename = "src/go.chromium.org/tast-tests/cros/local/bundles/cros/example/test.go"
 	const code = `package example
 
 type SomeType struct{}
@@ -30,7 +30,7 @@ func SomeFunc2() {}
 }
 
 func TestExports_ZeroFunc(t *testing.T) {
-	const filename = "src/chromiumos/tast/local/bundles/cros/example/test.go"
+	const filename = "src/go.chromium.org/tast-tests/cros/local/bundles/cros/example/test.go"
 	const code = `package example
 `
 	expects := []string{
@@ -43,7 +43,7 @@ func TestExports_ZeroFunc(t *testing.T) {
 }
 
 func TestExports_OneFunc(t *testing.T) {
-	const filename = "src/chromiumos/tast/local/bundles/cros/example/test.go"
+	const filename = "src/go.chromium.org/tast-tests/cros/local/bundles/cros/example/test.go"
 	const code = `package example
 
 func SomeFunc1() {} // considered the test main function
@@ -55,7 +55,7 @@ func SomeFunc1() {} // considered the test main function
 }
 
 func TestExports_NonTestMainFile(t *testing.T) {
-	const filename = "src/chromiumos/tast/local/chrome/const.go"
+	const filename = "src/go.chromium.org/tast-tests/cros/local/chrome/const.go"
 	const code = `package example
 
 type SomeType struct{}
@@ -70,7 +70,7 @@ func SomeFunc2() {}
 }
 
 func TestExports_DocFile(t *testing.T) {
-	const filename = "src/chromiumos/tast/local/bundles/cros/example/doc.go"
+	const filename = "src/go.chromium.org/tast-tests/cros/local/bundles/cros/example/doc.go"
 	const code = `// Package example demonstrates how to do things.
 package example
 `
@@ -80,7 +80,7 @@ package example
 }
 
 func TestExports_Methods(t *testing.T) {
-	const filename = "src/chromiumos/tast/local/bundles/cros/example/test.go"
+	const filename = "src/go.chromium.org/tast-tests/cros/local/bundles/cros/example/test.go"
 	const code = `package example
 
 type someType int
@@ -94,7 +94,7 @@ func Test() {}
 }
 
 func TestExports_Service(t *testing.T) {
-	const filename = "src/chromiumos/tast/local/bundles/cros/example/service.go"
+	const filename = "src/go.chromium.org/tast-tests/cros/local/bundles/cros/example/service.go"
 	const code = `package example
 
 type Service struct {}

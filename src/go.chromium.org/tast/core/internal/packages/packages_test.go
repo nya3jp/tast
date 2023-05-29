@@ -12,26 +12,6 @@ import (
 	"go.chromium.org/tast/core/internal/packages"
 )
 
-func TestNormalize(t *testing.T) {
-	for _, tc := range []struct {
-		input string
-		want  string
-	}{{
-		filepath.Join(packages.OldFrameworkPrefix, "foo"),
-		filepath.Join(packages.FrameworkPrefix, "foo"),
-	}, {
-		filepath.Join(packages.FrameworkPrefix, "foo"),
-		filepath.Join(packages.FrameworkPrefix, "foo"),
-	}, {
-		"foo",
-		"foo",
-	}} {
-		if got := packages.Normalize(tc.input); got != tc.want {
-			t.Errorf("TrimCommonPrefix(%q) = %q want %q", tc.input, got, tc.want)
-		}
-	}
-}
-
 func callerFuncName(t *testing.T) string {
 	pc, _, _, ok := runtime.Caller(1)
 	if !ok {
@@ -78,7 +58,6 @@ func TestSplitFuncName(t *testing.T) {
 func TestSame(t *testing.T) {
 	var (
 		foo      = filepath.Join(packages.FrameworkPrefix, "foo")
-		oldFoo   = filepath.Join(packages.OldFrameworkPrefix, "foo")
 		otherFoo = "foo"
 		bar      = filepath.Join(packages.FrameworkPrefix, "bar")
 	)
@@ -89,7 +68,6 @@ func TestSame(t *testing.T) {
 		want bool
 	}{
 		{foo, foo, true},
-		{foo, oldFoo, true},
 		{foo, otherFoo, false},
 		{foo, bar, false},
 	} {

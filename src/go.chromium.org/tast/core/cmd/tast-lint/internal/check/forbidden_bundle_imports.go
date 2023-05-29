@@ -15,16 +15,16 @@ import (
 	"strings"
 )
 
-var bundleCategoryRegex = regexp.MustCompile(`^(chromiumos/tast/(?:local|remote)/bundles/\w+)/(\w+)`)
+var bundleCategoryRegex = regexp.MustCompile(`^(go.chromium.org/tast-tests/cros/(?:local|remote)/bundles/\w+)/(\w+)`)
 
 // parseBundlePackage analyzes full package path and returns matching bundle prefix and the category name.
 // Returns ok=false if it's not a bundle (sub)package.
 //
 // Example:
 //
-//	"chromiumos/tast/local/bundles/cros/foo"         -> "chromiumos/tast/local/bundles/cros", "foo", true
-//	"chromiumos/tast/remote/bundles/crosint/foo/bar" -> "chromiumos/tast/remote/bundles/crosint", "foo", true
-//	"chromiumos/tast/local/foo"                      -> "", "", false
+//	"go.chromium.org/tast-tests/cros/local/bundles/cros/foo"         -> "go.chromium.org/tast-tests/cros/local/bundles/cros", "foo", true
+//	"go.chromium.org/tast-tests/cros/remote/bundles/crosint/foo/bar" -> "go.chromium.org/tast-tests/cros/remote/bundles/crosint", "foo", true
+//	"go.chromium.org/tast-tests/cros/local/foo"                      -> "", "", false
 func parseBundlePackage(p string) (bundlePkg, category string, ok bool) {
 	m := bundleCategoryRegex.FindStringSubmatch(p)
 	if len(m) == 0 {

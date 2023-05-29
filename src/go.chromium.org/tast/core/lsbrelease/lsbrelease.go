@@ -94,9 +94,8 @@ var allowedPkgs = []string{
 	"go.chromium.org/tast-tests/cros/local/crash",
 	"go.chromium.org/tast-tests/cros/local/graphics/trace",
 	"go.chromium.org/tast-tests/cros/local/graphics/expectations", // For per-board test expectations.
-	"chromiumos/tast/local/rialto",
-	"go.chromium.org/tast-tests/cros/local/screenshot",  // For Board.
-	"go.chromium.org/tast-tests/cros/local/uidetection", // Build and board for uidetection analytics.
+	"go.chromium.org/tast-tests/cros/local/screenshot",            // For Board.
+	"go.chromium.org/tast-tests/cros/local/uidetection",           // Build and board for uidetection analytics.
 	"go.chromium.org/tast/core/lsbrelease",
 	"go.chromium.org/tast/core/lsbrelease_test",
 	"go.chromium.org/tast-tests/cros/remote/bundles/cros/firmware",          // For finding firmware file.

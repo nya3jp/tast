@@ -28,7 +28,7 @@ func TestPushDataFiles(t *gotesting.T) {
 	const (
 		dataSubdir  = "data"   // subdir storing test data per the tast/testing package
 		bundleName  = "bundle" // test bundle
-		bundlePkg   = "chromiumos/tast/local/bundles/" + bundleName
+		bundlePkg   = "go.chromium.org/tast-tests/cros/local/bundles/" + bundleName
 		category    = "cat" // test category
 		categoryPkg = bundlePkg + "/" + category
 		pattern     = "cat.*" // glob matching all tests
@@ -42,7 +42,7 @@ func TestPushDataFiles(t *gotesting.T) {
 		extLinkFile1 = extFile1 + testing.ExternalLinkSuffix
 		extLinkFile2 = extFile2 + testing.ExternalLinkSuffix
 
-		fixtPkg = "chromiumos/tast/local/chrome"
+		fixtPkg = "go.chromium.org/tast-tests/cros/local/chrome"
 	)
 
 	// Make the local test bundle list two tests containing the first three files (with overlap).

@@ -25,7 +25,7 @@ func (*x) h(a int, b, c string, d string, e int, f string) (int, int) {
 	_ = func() (a x, b *x) {}
 }
 `
-	const path = "/src/chromiumos/tast/local/foo.go"
+	const path = "/src/go.chromium.org/tast-tests/cros/local/foo.go"
 	f, fs := parse(code, path)
 	issues := FuncParams(fs, f, false)
 	expects := []string{

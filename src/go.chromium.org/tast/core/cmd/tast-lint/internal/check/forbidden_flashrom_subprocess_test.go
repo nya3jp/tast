@@ -11,7 +11,7 @@ import (
 func TestForbiddenFlashromSubprocess_CommandContext(t *testing.T) {
 	const code = `package main
 
-import "chromiumos/tast/local/bundles/cros/example/util"
+import "go.chromium.org/tast-tests/cros/local/bundles/cros/example/util"
 
 func init() {
 	testing.AddTest(&testing.Test{
@@ -36,21 +36,21 @@ func Test() {
 		want     []string
 	}{
 		{
-			filepath: "src/chromiumos/tast/local/testfile.go",
+			filepath: "src/go.chromium.org/tast-tests/cros/local/testfile.go",
 			want: []string{
-				"src/chromiumos/tast/local/testfile.go:16:2: Please don't use flashrom subprocess but use flashrom_library instead.",
-				"src/chromiumos/tast/local/testfile.go:17:2: Please don't use flashrom subprocess but use flashrom_library instead.",
-				"src/chromiumos/tast/local/testfile.go:18:2: Please don't use flashrom subprocess but use flashrom_library instead.",
-				"src/chromiumos/tast/local/testfile.go:19:2: Please don't use flashrom subprocess but use flashrom_library instead.",
+				"src/go.chromium.org/tast-tests/cros/local/testfile.go:16:2: Please don't use flashrom subprocess but use flashrom_library instead.",
+				"src/go.chromium.org/tast-tests/cros/local/testfile.go:17:2: Please don't use flashrom subprocess but use flashrom_library instead.",
+				"src/go.chromium.org/tast-tests/cros/local/testfile.go:18:2: Please don't use flashrom subprocess but use flashrom_library instead.",
+				"src/go.chromium.org/tast-tests/cros/local/testfile.go:19:2: Please don't use flashrom subprocess but use flashrom_library instead.",
 			},
 		},
 		{
-			filepath: "src/chromiumos/tast/remote/testfile.go",
+			filepath: "src/go.chromium.org/tast-tests/cros/remote/testfile.go",
 			want: []string{
-				"src/chromiumos/tast/remote/testfile.go:16:2: Please don't use flashrom subprocess but use flashrom_library instead.",
-				"src/chromiumos/tast/remote/testfile.go:17:2: Please don't use flashrom subprocess but use flashrom_library instead.",
-				"src/chromiumos/tast/remote/testfile.go:18:2: Please don't use flashrom subprocess but use flashrom_library instead.",
-				"src/chromiumos/tast/remote/testfile.go:19:2: Please don't use flashrom subprocess but use flashrom_library instead.",
+				"src/go.chromium.org/tast-tests/cros/remote/testfile.go:16:2: Please don't use flashrom subprocess but use flashrom_library instead.",
+				"src/go.chromium.org/tast-tests/cros/remote/testfile.go:17:2: Please don't use flashrom subprocess but use flashrom_library instead.",
+				"src/go.chromium.org/tast-tests/cros/remote/testfile.go:18:2: Please don't use flashrom subprocess but use flashrom_library instead.",
+				"src/go.chromium.org/tast-tests/cros/remote/testfile.go:19:2: Please don't use flashrom subprocess but use flashrom_library instead.",
 			},
 		},
 		{

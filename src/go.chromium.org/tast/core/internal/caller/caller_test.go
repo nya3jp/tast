@@ -49,7 +49,6 @@ func TestFuncWithIgnore(t *testing.T) {
 }
 
 func TestCheckPass(t *testing.T) {
-	caller.Check(1, []string{packages.OldFrameworkPrefix + "internal/caller_test"})
 	caller.Check(1, []string{packages.FrameworkPrefix + "internal/caller_test"})
 }
 

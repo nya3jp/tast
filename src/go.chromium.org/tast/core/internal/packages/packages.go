@@ -11,20 +11,14 @@ import (
 	"strings"
 )
 
-// OldFrameworkPrefix is the older common framework package prefix.
-const OldFrameworkPrefix = "chromiumos/tast/"
-
 // FrameworkPrefix is the newer common framework package prefix.
 const FrameworkPrefix = "go.chromium.org/tast/core/"
 
 // Normalize normalizes old framework package path to a newer corresponding one.
-// If the given string doesn't start with OldFrameworkPrefix, Normalize returns
-// the unmodified string.
+// Normalize return the unmodified string.
+// TODO: b/187792551 -- Remove after issue is closed.
 func Normalize(s string) string {
-	if !strings.HasPrefix(s, OldFrameworkPrefix) {
-		return s
-	}
-	return FrameworkPrefix + strings.TrimPrefix(s, OldFrameworkPrefix)
+	return s
 }
 
 // SplitFuncName splits runtime.Func.Name() into package and function name.

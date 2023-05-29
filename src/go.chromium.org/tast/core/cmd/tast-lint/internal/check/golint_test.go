@@ -38,7 +38,7 @@ func TestGolint_TestMainFunction(t *testing.T) {
 
 func Kitten() {}
 `
-	issues := Golint("src/chromiumos/tast/local/bundles/cros/example/kitten.go", []byte(code), false)
+	issues := Golint("src/go.chromium.org/tast-tests/cros/local/bundles/cros/example/kitten.go", []byte(code), false)
 	// Test main functions can be exported without comments.
 	verifyIssues(t, issues, nil)
 }

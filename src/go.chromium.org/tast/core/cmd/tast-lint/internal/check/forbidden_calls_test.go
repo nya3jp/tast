@@ -37,8 +37,8 @@ func main() {
 		"testfile.go:16:2: time.Sleep ignores context deadline; use testing.Poll or testing.Sleep instead",
 		"testfile.go:17:2: context.Background ignores test timeout; use test function's ctx arg instead",
 		"testfile.go:18:2: context.TODO ignores test timeout; use test function's ctx arg instead",
-		"testfile.go:19:2: dbus.SystemBus may reorder signals; use chromiumos/tast/local/dbusutil.SystemBus instead",
-		"testfile.go:20:2: dbus.SystemBusPrivate may reorder signals; use chromiumos/tast/local/dbusutil.SystemBusPrivate instead",
+		"testfile.go:19:2: dbus.SystemBus may reorder signals; use go.chromium.org/tast-tests/cros/local/dbusutil.SystemBus instead",
+		"testfile.go:20:2: dbus.SystemBusPrivate may reorder signals; use go.chromium.org/tast-tests/cros/local/dbusutil.SystemBusPrivate instead",
 		"testfile.go:21:2: os.Chdir changes the shared CWD of the process, reference files using absolute paths.",
 	}
 
@@ -73,11 +73,11 @@ func main() {
 `
 	var expects []string
 
-	f, fs := parse(code, "src/chromiumos/tast/local/bundles/cros/meta/local_timeout.go")
+	f, fs := parse(code, "src/go.chromium.org/tast-tests/cros/local/bundles/cros/meta/local_timeout.go")
 	issues := ForbiddenCalls(fs, f, false)
 	verifyIssues(t, issues, expects)
 
-	f, fs = parse(code, "src/chromiumos/tast/remote/bundles/cros/meta/remote_timeout.go")
+	f, fs = parse(code, "src/go.chromium.org/tast-tests/cros/remote/bundles/cros/meta/remote_timeout.go")
 	issues = ForbiddenCalls(fs, f, false)
 	verifyIssues(t, issues, expects)
 }
@@ -119,7 +119,7 @@ import (
 	"fmt"
 	"time"
 
-	"chromiumos/tast/local/dbusutil"
+	"go.chromium.org/tast-tests/cros/local/dbusutil"
 	"go.chromium.org/tast/core/errors"
 )
 
@@ -196,7 +196,7 @@ func main() {
 import (
 	"github.com/godbus/dbus/v5"
 
-	"chromiumos/tast/local/dbusutil"
+	"go.chromium.org/tast-tests/cros/local/dbusutil"
 )
 
 func main() {

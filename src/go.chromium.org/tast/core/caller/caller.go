@@ -13,8 +13,8 @@ import (
 // stack. skip is the number of stack frames to skip, with 0 identifying the
 // frame for Get itself and 1 identifying the caller of Get.
 // Get ignores a function in chromiumos/... calling the same function in
-// go.chromium.org/... . For example if chromiumos/tast/foo.Bar calls
-// go.chromium.org/tast/foo.Bar, Get ignores chromiumos/tast/foo.Bar.
+// go.chromium.org/... . For example if go.chromium.org/tast-tests/cros/foo.Bar calls
+// go.chromium.org/tast/foo.Bar, Get ignores go.chromium.org/tast-tests/cros/foo.Bar.
 func Get(skip int) string {
 	return caller.Get(skip + 1)
 }

@@ -24,8 +24,8 @@ control messages.
 
 The tast command contains a hardcoded assumption that the main function for
 a local bundle named "foo" will exist at the Go import path
-chromiumos/tast/local/bundles/foo, while the corresponding remote bundle's
-code will be located at chromiumos/tast/remote/bundles/foo. Similarly, the
+go.chromium.org/tast-tests/cros/local/bundles/foo, while the corresponding remote bundle's
+code will be located at go.chromium.org/tast-tests/cros/remote/bundles/foo. Similarly, the
 bundle must be installed by a package named
 chromeos-base/tast-local-tests-foo or chromeos-base/tast-remote-tests-foo.
 

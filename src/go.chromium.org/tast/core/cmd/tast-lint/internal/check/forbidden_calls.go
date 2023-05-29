@@ -17,8 +17,8 @@ import (
 // Ignore known valid use cases needing to override forbidden calls
 var allowList = []string{
 	// meta tests to test the test over-running the test's timeout
-	"src/chromiumos/tast/local/bundles/cros/meta/local_timeout.go",
-	"src/chromiumos/tast/remote/bundles/cros/meta/remote_timeout.go",
+	"src/go.chromium.org/tast-tests/cros/local/bundles/cros/meta/local_timeout.go",
+	"src/go.chromium.org/tast-tests/cros/remote/bundles/cros/meta/remote_timeout.go",
 }
 
 // ForbiddenCalls checks if any forbidden functions are called.
@@ -107,7 +107,7 @@ func ForbiddenCalls(fs *token.FileSet, f *ast.File, fix bool) []*Issue {
 			if !fix {
 				issues = append(issues, &Issue{
 					Pos:     fs.Position(x.Pos()),
-					Msg:     fmt.Sprintf("dbus.%v may reorder signals; use chromiumos/tast/local/dbusutil.%v instead", methodName, methodName),
+					Msg:     fmt.Sprintf("dbus.%v may reorder signals; use go.chromium.org/tast-tests/cros/local/dbusutil.%v instead", methodName, methodName),
 					Link:    "https://github.com/godbus/dbus/issues/187",
 					Fixable: fixable,
 				})
@@ -120,7 +120,7 @@ func ForbiddenCalls(fs *token.FileSet, f *ast.File, fix bool) []*Issue {
 						Name: methodName,
 					},
 				})
-				importsRequired = append(importsRequired, "chromiumos/tast/local/dbusutil")
+				importsRequired = append(importsRequired, "go.chromium.org/tast-tests/cros/local/dbusutil")
 			}
 		case "os.Chdir":
 			if !isUnitTest {

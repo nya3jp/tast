@@ -35,8 +35,8 @@ func TestForbiddenImports(t *testing.T) {
 
 import (
 	"go.chromium.org/tast-tests/cros/common/foo"
-	"chromiumos/tast/local/foo"
-	"chromiumos/tast/remote/foo"
+	"go.chromium.org/tast-tests/cros/local/foo"
+	"go.chromium.org/tast-tests/cros/remote/foo"
 	"some/other/package"
 )
 `
@@ -45,20 +45,20 @@ import (
 		filepath string
 		want     []string
 	}{{
-		filepath: "src/chromiumos/tast/local/testfile.go",
+		filepath: "src/go.chromium.org/tast-tests/cros/local/testfile.go",
 		want: []string{
-			"src/chromiumos/tast/local/testfile.go:6:2: Non-remote package should not import remote package chromiumos/tast/remote/foo",
+			"src/go.chromium.org/tast-tests/cros/local/testfile.go:6:2: Non-remote package should not import remote package go.chromium.org/tast-tests/cros/remote/foo",
 		},
 	}, {
-		filepath: "src/chromiumos/tast/remote/testfile.go",
+		filepath: "src/go.chromium.org/tast-tests/cros/remote/testfile.go",
 		want: []string{
-			"src/chromiumos/tast/remote/testfile.go:5:2: Non-local package should not import local package chromiumos/tast/local/foo",
+			"src/go.chromium.org/tast-tests/cros/remote/testfile.go:5:2: Non-local package should not import local package go.chromium.org/tast-tests/cros/local/foo",
 		},
 	}, {
 		filepath: "src/go.chromium.org/tast-tests/cros/common/testfile.go",
 		want: []string{
-			"src/go.chromium.org/tast-tests/cros/common/testfile.go:5:2: Non-local package should not import local package chromiumos/tast/local/foo",
-			"src/go.chromium.org/tast-tests/cros/common/testfile.go:6:2: Non-remote package should not import remote package chromiumos/tast/remote/foo",
+			"src/go.chromium.org/tast-tests/cros/common/testfile.go:5:2: Non-local package should not import local package go.chromium.org/tast-tests/cros/local/foo",
+			"src/go.chromium.org/tast-tests/cros/common/testfile.go:6:2: Non-remote package should not import remote package go.chromium.org/tast-tests/cros/remote/foo",
 		},
 	}, {
 		filepath: "src/go.chromium.org/tast-tests/cros/common/testfile_test.go",

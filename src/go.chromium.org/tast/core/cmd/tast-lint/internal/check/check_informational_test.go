@@ -21,7 +21,7 @@ func init() {
 	})
 }
 `
-	const path = "/src/chromiumos/tast/local/bundles/cros/example/keyboard.go"
+	const path = "/src/go.chromium.org/tast-tests/cros/local/bundles/cros/example/keyboard.go"
 	f, fs := parse(code, path)
 	issues := VerifyInformationalAttr(fs, f)
 	verifyIssues(t, issues, nil)
@@ -34,7 +34,7 @@ func init() {
 	})
 }
 `
-	const path = "/src/chromiumos/tast/local/bundles/cros/example/pass.go"
+	const path = "/src/go.chromium.org/tast-tests/cros/local/bundles/cros/example/pass.go"
 	f, fs := parse(code, path)
 	issues := VerifyInformationalAttr(fs, f)
 	verifyIssues(t, issues, nil)
@@ -48,7 +48,7 @@ func init() {
 	})
 }
 `
-	const path = "/src/chromiumos/tast/local/bundles/cros/example/pass.go"
+	const path = "/src/go.chromium.org/tast-tests/cros/local/bundles/cros/example/pass.go"
 	f, fs := parse(code, path)
 	issues := VerifyInformationalAttr(fs, f)
 	verifyIssues(t, issues, nil)
@@ -62,7 +62,7 @@ func init() {
 	})
 }
 `
-	const path = "/src/chromiumos/tast/local/bundles/cros/example/pass.go"
+	const path = "/src/go.chromium.org/tast-tests/cros/local/bundles/cros/example/pass.go"
 	f, fs := parse(code, path)
 	issues := VerifyInformationalAttr(fs, f)
 	verifyIssues(t, issues, nil)
@@ -77,7 +77,7 @@ func init() {
 	})
 }
 `
-	const path = "/src/chromiumos/tast/local/crosbolt.go"
+	const path = "/src/go.chromium.org/tast-tests/cros/local/crosbolt.go"
 	f, fs := parse(code, path)
 	issues := VerifyInformationalAttr(fs, f)
 	verifyIssues(t, issues, nil)
@@ -103,7 +103,7 @@ func init() {
 	})
 }
 `
-	const path = "/src/chromiumos/tast/local/parameterized1.go"
+	const path = "/src/go.chromium.org/tast-tests/cros/local/parameterized1.go"
 	f, fs := parse(code, path)
 	issues := VerifyInformationalAttr(fs, f)
 	expects := []string{
@@ -131,7 +131,7 @@ func init() {
 	})
 }
 `
-	const path = "/src/chromiumos/tast/local/parameterized2.go"
+	const path = "/src/go.chromium.org/tast-tests/cros/local/parameterized2.go"
 	f, fs := parse(code, path)
 	issues := VerifyInformationalAttr(fs, f)
 	expects := []string{
@@ -151,7 +151,7 @@ func init() {
 	})
 }
 `
-	const path = "/src/chromiumos/tast/local/parameterized3.go"
+	const path = "/src/go.chromium.org/tast-tests/cros/local/parameterized3.go"
 	f, fs := parse(code, path)
 	issues := VerifyInformationalAttr(fs, f)
 	verifyIssues(t, issues, nil)

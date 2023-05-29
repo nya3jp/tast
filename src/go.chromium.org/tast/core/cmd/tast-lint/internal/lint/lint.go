@@ -76,8 +76,8 @@ func getTargetFiles(g *git.Git, deltaPath string, args []string) ([]git.CommitFi
 // isSupportPackageFile checks if a file path is of support packages.
 func isSupportPackageFile(path string) bool {
 	return isUserFile(path) &&
-		!strings.Contains(path, "src/chromiumos/tast/local/bundles/") &&
-		!strings.Contains(path, "src/chromiumos/tast/remote/bundles/")
+		!strings.Contains(path, "src/go.chromium.org/tast-tests/cros/local/bundles/") &&
+		!strings.Contains(path, "src/go.chromium.org/tast-tests/cros/remote/bundles/")
 }
 
 // isUserFile checks if a file path is under the Tast user code directories.
@@ -93,8 +93,8 @@ func isUserFile(path string) bool {
 		return false
 	}
 
-	return strings.Contains(path, "src/chromiumos/tast/local/") ||
-		strings.Contains(path, "src/chromiumos/tast/remote/") ||
+	return strings.Contains(path, "src/go.chromium.org/tast-tests/cros/local/") ||
+		strings.Contains(path, "src/go.chromium.org/tast-tests/cros/remote/") ||
 		strings.Contains(path, "src/go.chromium.org/tast-tests/cros/common/") ||
 		strings.Contains(path, "src/go.chromium.org/tast-tests/cros/services/")
 }

@@ -39,11 +39,6 @@ func checkSourceCompat(workspace string) error {
 		// Inspect newer location of this file.
 		path = filepath.Join(workspace, "src", packages.FrameworkPrefix, compatGoPath)
 	}
-	if _, err := os.Stat(path); os.IsNotExist(err) {
-		// Inspect older location of this file so that compatibility
-		// check doesn't fail after we move this file.
-		path = filepath.Join(workspace, "src", packages.OldFrameworkPrefix, compatGoPath)
-	}
 	ver, err := readSourceCompatVersion(path)
 	if err != nil {
 		return fmt.Errorf("failed to get sourceCompatVersion: %v", err)

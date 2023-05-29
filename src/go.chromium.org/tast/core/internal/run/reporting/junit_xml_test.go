@@ -20,7 +20,7 @@ import (
 func TestWriteJUnitXMLResults(t *gotesting.T) {
 	passedTest := resultsjson.Test{
 		Name:    "example.Pass",
-		Pkg:     "chromiumos/tast/local/bundles/cros/example",
+		Pkg:     "go.chromium.org/tast-tests/cros/local/bundles/cros/example",
 		Desc:    "Passed test",
 		Timeout: 2 * time.Minute,
 		Bundle:  "cros",

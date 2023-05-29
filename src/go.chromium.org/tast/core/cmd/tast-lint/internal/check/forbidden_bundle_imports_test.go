@@ -19,15 +19,15 @@ func TestParseBundlePackage(t *testing.T) {
 		want resp
 	}{
 		{
-			"chromiumos/tast/local/bundles/cros/foo",
-			resp{"chromiumos/tast/local/bundles/cros", "foo", true},
+			"go.chromium.org/tast-tests/cros/local/bundles/cros/foo",
+			resp{"go.chromium.org/tast-tests/cros/local/bundles/cros", "foo", true},
 		},
 		{
-			"chromiumos/tast/remote/bundles/crosint/foo/bar",
-			resp{"chromiumos/tast/remote/bundles/crosint", "foo", true},
+			"go.chromium.org/tast-tests/cros/remote/bundles/crosint/foo/bar",
+			resp{"go.chromium.org/tast-tests/cros/remote/bundles/crosint", "foo", true},
 		},
 		{
-			"chromiumos/tast/local/foo",
+			"go.chromium.org/tast-tests/cros/local/foo",
 			resp{"", "", false},
 		},
 		{
@@ -35,7 +35,7 @@ func TestParseBundlePackage(t *testing.T) {
 			resp{"", "", false},
 		},
 		{
-			"chromiumos/tast/local/bundles/cros",
+			"go.chromium.org/tast-tests/cros/local/bundles/cros",
 			resp{"", "", false},
 		},
 	} {
@@ -55,48 +55,48 @@ func TestForbiddenBundleImports(t *testing.T) {
 			`package main
 
 import (
-	"chromiumos/tast/local/bar/baz"
-	"chromiumos/tast/local/bundles/cros/bar/baz"
-	"chromiumos/tast/local/bundles/cros/foo/baz"
-	"chromiumos/tast/local/bundles/crosint/bar"
-	"chromiumos/tast/local/bundles/crosint/bar/baz"
-	"chromiumos/tast/local/bundles/crosint/foo"
-	"chromiumos/tast/local/bundles/crosint/foo/baz"
-	"chromiumos/tast/remote/bundles/cros/foo/baz"
+	"go.chromium.org/tast-tests/cros/local/bar/baz"
+	"go.chromium.org/tast-tests/cros/local/bundles/cros/bar/baz"
+	"go.chromium.org/tast-tests/cros/local/bundles/cros/foo/baz"
+	"go.chromium.org/tast-tests/cros/local/bundles/crosint/bar"
+	"go.chromium.org/tast-tests/cros/local/bundles/crosint/bar/baz"
+	"go.chromium.org/tast-tests/cros/local/bundles/crosint/foo"
+	"go.chromium.org/tast-tests/cros/local/bundles/crosint/foo/baz"
+	"go.chromium.org/tast-tests/cros/remote/bundles/cros/foo/baz"
 )
 `,
-			"src/chromiumos/tast/local/bundles/cros/foo/testfile.go",
+			"src/go.chromium.org/tast-tests/cros/local/bundles/cros/foo/testfile.go",
 			[]string{
-				"src/chromiumos/tast/local/bundles/cros/foo/testfile.go:5:2: import of chromiumos/tast/local/bundles/cros/bar/baz is only allowed from chromiumos/tast/local/bundles/*/bar or its descendant",
-				"src/chromiumos/tast/local/bundles/cros/foo/testfile.go:7:2: import of chromiumos/tast/local/bundles/crosint/bar is only allowed from chromiumos/tast/local/bundles/*/bar or its descendant",
-				"src/chromiumos/tast/local/bundles/cros/foo/testfile.go:8:2: import of chromiumos/tast/local/bundles/crosint/bar/baz is only allowed from chromiumos/tast/local/bundles/*/bar or its descendant",
-				"src/chromiumos/tast/local/bundles/cros/foo/testfile.go:11:2: import of chromiumos/tast/remote/bundles/cros/foo/baz is only allowed from chromiumos/tast/remote/bundles/*/foo or its descendant",
+				"src/go.chromium.org/tast-tests/cros/local/bundles/cros/foo/testfile.go:5:2: import of go.chromium.org/tast-tests/cros/local/bundles/cros/bar/baz is only allowed from go.chromium.org/tast-tests/cros/local/bundles/*/bar or its descendant",
+				"src/go.chromium.org/tast-tests/cros/local/bundles/cros/foo/testfile.go:7:2: import of go.chromium.org/tast-tests/cros/local/bundles/crosint/bar is only allowed from go.chromium.org/tast-tests/cros/local/bundles/*/bar or its descendant",
+				"src/go.chromium.org/tast-tests/cros/local/bundles/cros/foo/testfile.go:8:2: import of go.chromium.org/tast-tests/cros/local/bundles/crosint/bar/baz is only allowed from go.chromium.org/tast-tests/cros/local/bundles/*/bar or its descendant",
+				"src/go.chromium.org/tast-tests/cros/local/bundles/cros/foo/testfile.go:11:2: import of go.chromium.org/tast-tests/cros/remote/bundles/cros/foo/baz is only allowed from go.chromium.org/tast-tests/cros/remote/bundles/*/foo or its descendant",
 			},
 		},
 		{
 			`package main
 
 import (
-	"chromiumos/tast/local/bundles/cros/bar"
-	"chromiumos/tast/remote/bundles/cros/bar"
-	"chromiumos/tast/remote/bundles/cros/bar/baz"
+	"go.chromium.org/tast-tests/cros/local/bundles/cros/bar"
+	"go.chromium.org/tast-tests/cros/remote/bundles/cros/bar"
+	"go.chromium.org/tast-tests/cros/remote/bundles/cros/bar/baz"
 )
 `,
-			"src/chromiumos/tast/remote/bundles/cros/testfile.go",
+			"src/go.chromium.org/tast-tests/cros/remote/bundles/cros/testfile.go",
 			[]string{
-				"src/chromiumos/tast/remote/bundles/cros/testfile.go:4:2: import of chromiumos/tast/local/bundles/cros/bar is only allowed from chromiumos/tast/local/bundles/*/bar or its descendant",
+				"src/go.chromium.org/tast-tests/cros/remote/bundles/cros/testfile.go:4:2: import of go.chromium.org/tast-tests/cros/local/bundles/cros/bar is only allowed from go.chromium.org/tast-tests/cros/local/bundles/*/bar or its descendant",
 			},
 		},
 		{
 			`package main
 
 import (
-	"chromiumos/tast/local/bundles/cros/foo"
+	"go.chromium.org/tast-tests/cros/local/bundles/cros/foo"
 )
 `,
-			"src/chromiumos/tast/local/foo/testfile.go",
+			"src/go.chromium.org/tast-tests/cros/local/foo/testfile.go",
 			[]string{
-				"src/chromiumos/tast/local/foo/testfile.go:4:2: import of chromiumos/tast/local/bundles/cros/foo is only allowed from chromiumos/tast/local/bundles/*/foo or its descendant",
+				"src/go.chromium.org/tast-tests/cros/local/foo/testfile.go:4:2: import of go.chromium.org/tast-tests/cros/local/bundles/cros/foo is only allowed from go.chromium.org/tast-tests/cros/local/bundles/*/foo or its descendant",
 			},
 		},
 	} {

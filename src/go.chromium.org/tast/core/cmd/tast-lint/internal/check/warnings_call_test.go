@@ -38,7 +38,7 @@ func main() {
 	testing.Sleep() // GoBigSleepLint: valid testing.sleep
 }
 `
-	f, fs := parse(code, "src/chromiumos/tast/local/bundles/cros/meta/local_timeout.go")
+	f, fs := parse(code, "src/go.chromium.org/tast-tests/cros/local/bundles/cros/meta/local_timeout.go")
 	issues := WarningCalls(fs, f, false)
 	if len(issues) != 0 {
 		t.Errorf("Warnings should have 0 sleep warning fail")

@@ -39,7 +39,7 @@ func main(){
 		print(a)
 	}
 }`
-	const path = "/src/chromiumos/tast/local/foo.go"
+	const path = "/src/go.chromium.org/tast-tests/cros/local/foo.go"
 	f, fs := parse(code, path)
 	issues := EmptySlice(fs, f, false)
 	expects := []string{

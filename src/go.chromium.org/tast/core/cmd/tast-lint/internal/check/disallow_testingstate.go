@@ -19,7 +19,7 @@ func VerifyTestingStateParam(fs *token.FileSet, f *ast.File) []*Issue {
 		// Runs code before and after each local test
 		"src/go.chromium.org/tast-tests/cros/local/bundlemain/main.go",
 		// Below files are cases still under considering.
-		"src/chromiumos/tast/local/graphics/trace/trace.go",
+		"src/go.chromium.org/tast-tests/cros/local/graphics/trace/trace.go",
 	}
 	filepath := fs.Position(f.Package).Filename
 	for _, p := range allowList {
@@ -63,7 +63,7 @@ func VerifyTestingStateStruct(fs *token.FileSet, f *ast.File) []*Issue {
 
 	// TODO(crbug.com/1012586): Make below file not use testing.State in struct types.
 	var allowList = []string{
-		"src/chromiumos/tast/local/bundles/cros/platform/memoryuser/mempressure_task.go",
+		"src/go.chromium.org/tast-tests/cros/local/bundles/cros/platform/memoryuser/mempressure_task.go",
 	}
 	filepath := fs.Position(f.Package).Filename
 	for _, p := range allowList {

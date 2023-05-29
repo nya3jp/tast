@@ -13,7 +13,7 @@ import (
 	"go.chromium.org/tast/core/cmd/tast-lint/internal/git"
 )
 
-const declTestPath = "src/chromiumos/tast/local/bundles/cros/example/do_stuff.go"
+const declTestPath = "src/go.chromium.org/tast-tests/cros/local/bundles/cros/example/do_stuff.go"
 
 func TestDeclarationsPass(t *testing.T) {
 	const code = `package pkg

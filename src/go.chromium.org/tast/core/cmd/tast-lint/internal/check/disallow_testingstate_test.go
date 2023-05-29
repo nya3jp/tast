@@ -19,7 +19,7 @@ func B() {
 func C(s testing.State) {}
 func D(s ***testing.State) {}
 `
-	const path = "/src/chromiumos/tast/local/test1.go"
+	const path = "/src/go.chromium.org/tast-tests/cros/local/test1.go"
 	f, fs := parse(code, path)
 	issues := VerifyTestingStateParam(fs, f)
 	expects := []string{

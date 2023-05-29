@@ -32,7 +32,7 @@ type deprecatedAPI struct {
 func DeprecatedAPIs(fs *token.FileSet, f *ast.File) []*Issue {
 	return deprecatedAPIs(fs, f, []*deprecatedAPI{
 		{
-			pkg:         "chromiumos/tast/local/testexec",
+			pkg:         "go.chromium.org/tast-tests/cros/local/testexec",
 			alternative: "go.chromium.org/tast-tests/cros/common/testexec",
 			link:        "https://crbug.com/1119252",
 		},

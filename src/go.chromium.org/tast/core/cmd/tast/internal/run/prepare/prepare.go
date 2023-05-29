@@ -303,7 +303,7 @@ func allNeededFixtures(fixtures, tests []*driver.BundleEntity) []*driver.BundleE
 
 // getDataFilePaths returns the paths to data files needed for running
 // cfg.Patterns on hst. The returned paths are relative to the package root,
-// e.g. "chromiumos/tast/local/bundle/<bundle>/<category>/data/<filename>".
+// e.g. "go.chromium.org/tast-tests/cros/local/bundle/<bundle>/<category>/data/<filename>".
 func getDataFilePaths(ctx context.Context, cfg *config.Config, drv *driver.Driver) (paths []string, err error) {
 	ctx, st := timing.Start(ctx, "get_data_paths")
 	defer st.End()
@@ -354,7 +354,7 @@ func getDataFilePaths(ctx context.Context, cfg *config.Config, drv *driver.Drive
 // pushDataFiles copies the listed entity data files to destDir on hst.
 // destDir is the data directory for Tast, e.g. "/usr/share/tast/data/local".
 // The file paths are relative to the package root, i.e. paths take the form
-// "chromiumos/tast/local/bundle/cros/<category>/data/<filename>".
+// "go.chromium.org/tast-tests/cros/local/bundle/cros/<category>/data/<filename>".
 // Otherwise, files will be copied from cfg.BuildWorkspace.
 func pushDataFiles(ctx context.Context, cfg *config.Config, hst *ssh.Conn, destDir string, paths []string) error {
 	ctx, st := timing.Start(ctx, "push_data")

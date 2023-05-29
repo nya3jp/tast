@@ -15,7 +15,7 @@ func TestExternalJSONBad(t *testing.T) {
   "sha256sum": "285e7d8d6df63516f26a6e01394ddf5575bf6be9f008371f5e7aba155b4d4fac"
 }
 `
-	const path = "src/chromiumos/tast/local/bundles/cros/arc/data/ArcWMTestApp_24.apk.external"
+	const path = "src/go.chromium.org/tast-tests/cros/local/bundles/cros/arc/data/ArcWMTestApp_24.apk.external"
 	issues := ExternalJSON(path, []byte(code))
 	expects := []string{
 		path + ": include the date as a suffix in the filename like \".../ArcWMTestApp_24_YYYYMMDD.apk\"",
@@ -31,7 +31,7 @@ func TestExternalJSONInvalidDate(t *testing.T) {
   "sha256sum": "285e7d8d6df63516f26a6e01394ddf5575bf6be9f008371f5e7aba155b4d4fac"
 }
 `
-	const path = "src/chromiumos/tast/local/bundles/cros/arc/data/ArcWMTestApp_24.apk.external"
+	const path = "src/go.chromium.org/tast-tests/cros/local/bundles/cros/arc/data/ArcWMTestApp_24.apk.external"
 	issues := ExternalJSON(path, []byte(code))
 	expects := []string{
 		path + ": include the date as a suffix in the filename like \".../ArcWMTestApp_24_20191131.invalid_YYYYMMDD.apk\"",
@@ -46,7 +46,7 @@ func TestExternalJSONNoURL(t *testing.T) {
   "sha256sum": "285e7d8d6df63516f26a6e01394ddf5575bf6be9f008371f5e7aba155b4d4fac"
 }
 `
-	const path = "src/chromiumos/tast/local/bundles/cros/arc/data/ArcWMTestApp_24.apk.external"
+	const path = "src/go.chromium.org/tast-tests/cros/local/bundles/cros/arc/data/ArcWMTestApp_24.apk.external"
 	issues := ExternalJSON(path, []byte(code))
 	verifyIssues(t, issues, nil)
 }
@@ -58,7 +58,7 @@ func TestExternalJSONOK1(t *testing.T) {
   "sha256sum": "285e7d8d6df63516f26a6e01394ddf5575bf6be9f008371f5e7aba155b4d4fac"
 }
 `
-	const path = "src/chromiumos/tast/local/bundles/cros/arc/data/ArcWMTestApp_24.apk.external"
+	const path = "src/go.chromium.org/tast-tests/cros/local/bundles/cros/arc/data/ArcWMTestApp_24.apk.external"
 	issues := ExternalJSON(path, []byte(code))
 	verifyIssues(t, issues, nil)
 }
@@ -70,7 +70,7 @@ func TestExternalJSONOK2(t *testing.T) {
   "url": "gs://chromiumos-test-assets-public/tast/cros/printer/gstopdf_golden.pdf_20191009-135923"
 }
 `
-	const path = "src/chromiumos/tast/local/bundles/cros/printer/data/gstopdf_golden.pdf.external"
+	const path = "src/go.chromium.org/tast-tests/cros/local/bundles/cros/printer/data/gstopdf_golden.pdf.external"
 	issues := ExternalJSON(path, []byte(code))
 	verifyIssues(t, issues, nil)
 }
@@ -82,7 +82,7 @@ func TestExternalJSONOK3(t *testing.T) {
   "sha256sum": "somehash"
 }
 `
-	const path = "src/chromiumos/tast/local/bundles/crosint/arc/data/linpack.apk.external"
+	const path = "src/go.chromium.org/tast-tests/cros/local/bundles/crosint/arc/data/linpack.apk.external"
 	issues := ExternalJSON(path, []byte(code))
 	verifyIssues(t, issues, nil)
 }
@@ -95,7 +95,7 @@ func TestExternalJSONCrostini(t *testing.T) {
 	"size": 100000
 }
 `
-	const path = "src/chromiumos/tast/local/bundles/crosint/graphics/data/crostini_trace_l0001.trace.external"
+	const path = "src/go.chromium.org/tast-tests/cros/local/bundles/crosint/graphics/data/crostini_trace_l0001.trace.external"
 	issues := ExternalJSON(path, []byte(code))
 	verifyIssues(t, issues, nil)
 }
@@ -108,7 +108,7 @@ func TestExternalJSONCameraApk(t *testing.T) {
 	"size": 100000
 }
 `
-	const path = "src/chromiumos/tast/local/bundles/cros/camera/data/GoogleCameraArc.apk.external"
+	const path = "src/go.chromium.org/tast-tests/cros/local/bundles/cros/camera/data/GoogleCameraArc.apk.external"
 	issues := ExternalJSON(path, []byte(code))
 	verifyIssues(t, issues, nil)
 }

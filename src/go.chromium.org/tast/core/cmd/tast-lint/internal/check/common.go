@@ -21,7 +21,11 @@ import (
 )
 
 // entryPathRegexp matches a file name of an entry file.
-var entryPathRegexp = regexp.MustCompile(`/src/chromiumos/tast/(?:local|remote)/bundles/[^/]+/[^/]+/[^/]+\.go$`)
+// verifier is a global singleton to check if AddTest() is used as designed.
+var tastTestsPattern = `/src/go\.chromium\.org/tast-tests/cros/(local|remote)/bundles/[^/]+/[^/]+/[^/]+\.go$`
+var tastTestsPrivatePattern = `/src/go\.chromium\.org/tast-tests-private/crosint/(local|remote)/bundles/[^/]+/[^/]+/[^/]+\.go$`
+
+var entryPathRegexp = regexp.MustCompile(fmt.Sprintf("(%s)|(%s)", tastTestsPattern, tastTestsPrivatePattern))
 
 func fileExists(path string) bool {
 	_, err := os.Stat(path)

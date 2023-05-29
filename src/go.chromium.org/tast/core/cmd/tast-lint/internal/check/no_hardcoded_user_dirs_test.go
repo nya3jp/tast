@@ -14,7 +14,7 @@ func TestHardcodedUserDirs(t *testing.T) {
 import (
 	"file/filepath"
 
-	"chromiumos/tast/local/chrome/uiauto/filesapp"
+	"go.chromium.org/tast-tests/cros/local/chrome/uiauto/filesapp"
 )
 
 const homeDirMount = "/home/chronos/user"

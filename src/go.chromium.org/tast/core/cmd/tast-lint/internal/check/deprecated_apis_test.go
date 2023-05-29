@@ -10,7 +10,7 @@ import (
 
 func TestDeprecatedAPIs(t *testing.T) {
 	deprecated := []*deprecatedAPI{{
-		pkg:         "chromiumos/tast/local/testexec",
+		pkg:         "go.chromium.org/tast-tests/cros/local/testexec",
 		alternative: "go.chromium.org/tast-tests/cros/common/testexec",
 		link:        "https://crbug.com/1119252",
 	}, {
@@ -29,7 +29,7 @@ func TestDeprecatedAPIs(t *testing.T) {
 import (
 	b "go.chromium.org/tast/core/bundle"
 	"go.chromium.org/tast/core/internal/bundle"
-	"chromiumos/tast/local/testexec"
+	"go.chromium.org/tast-tests/cros/local/testexec"
 	"syscall"
 )
 
@@ -42,7 +42,7 @@ func main() {
 }
 `
 	want := []string{
-		"testfile.go:6:2: package chromiumos/tast/local/testexec is deprecated; use go.chromium.org/tast-tests/cros/common/testexec instead",
+		"testfile.go:6:2: package go.chromium.org/tast-tests/cros/local/testexec is deprecated; use go.chromium.org/tast-tests/cros/common/testexec instead",
 		"testfile.go:12:4: go.chromium.org/tast/core/bundle.LocalDelegate is deprecated; use Delegate instead",
 		"testfile.go:15:2: syscall.not_stat_t is from a deprecated package; use corresponding API in golang.org/x/sys/unix instead",
 	}
@@ -54,7 +54,7 @@ func main() {
 
 func TestDeprecatedAPIsWithExclusion(t *testing.T) {
 	deprecated := []*deprecatedAPI{{
-		pkg:         "chromiumos/tast/local/testexec",
+		pkg:         "go.chromium.org/tast-tests/cros/local/testexec",
 		alternative: "go.chromium.org/tast-tests/cros/common/testexec",
 		link:        "https://crbug.com/1119252",
 	}, {
@@ -66,7 +66,7 @@ func TestDeprecatedAPIsWithExclusion(t *testing.T) {
 	const code = `package main
 
 import (
-	"chromiumos/tast/local/testexec"
+	"go.chromium.org/tast-tests/cros/local/testexec"
 	"syscall"
 )
 
@@ -77,7 +77,7 @@ func main() {
 }
 `
 	want := []string{
-		"testfile.go:4:2: package chromiumos/tast/local/testexec is deprecated; use go.chromium.org/tast-tests/cros/common/testexec instead",
+		"testfile.go:4:2: package go.chromium.org/tast-tests/cros/local/testexec is deprecated; use go.chromium.org/tast-tests/cros/common/testexec instead",
 		"testfile.go:11:2: syscall.SIGSEGV is from a deprecated package; use corresponding API in golang.org/x/sys/unix instead",
 	}
 
@@ -88,7 +88,7 @@ func main() {
 
 func TestDeprecatedAPIsWithExclusionSameName(t *testing.T) {
 	deprecated := []*deprecatedAPI{{
-		pkg:         "chromiumos/tast/local/testexec",
+		pkg:         "go.chromium.org/tast-tests/cros/local/testexec",
 		alternative: "go.chromium.org/tast-tests/cros/common/testexec",
 		link:        "https://crbug.com/1119252",
 	}, {
@@ -117,7 +117,7 @@ func TestDeprecatedAPIsWithExclusionSameName(t *testing.T) {
 	const code = `package main
 
 import (
-	"chromiumos/tast/local/testexec"
+	"go.chromium.org/tast-tests/cros/local/testexec"
 	"syscall"
 	"syscall2"
 	"syscall3"
@@ -143,7 +143,7 @@ func main() {
 }
 `
 	want := []string{
-		"testfile.go:4:2: package chromiumos/tast/local/testexec is deprecated; use go.chromium.org/tast-tests/cros/common/testexec instead",
+		"testfile.go:4:2: package go.chromium.org/tast-tests/cros/local/testexec is deprecated; use go.chromium.org/tast-tests/cros/common/testexec instead",
 		"testfile.go:6:2: package syscall2 is deprecated; use golang.org/x/sys/unix instead",
 		"testfile.go:13:2: syscall3.stat_t is from a deprecated package; use corresponding API in golang.org/x/sys/unix instead",
 		"testfile.go:15:2: syscall3.rawconn is from a deprecated package; use corresponding API in golang.org/x/sys/unix instead",

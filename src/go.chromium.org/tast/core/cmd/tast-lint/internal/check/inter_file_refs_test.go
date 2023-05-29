@@ -30,7 +30,7 @@ func parse2(filename1, code1, filename2, code2 string) (*token.FileSet, *ast.Fil
 }
 
 func TestInterFileRefs(t *testing.T) {
-	const filename1 = "src/chromiumos/tast/local/bundles/cros/example/test1.go"
+	const filename1 = "src/go.chromium.org/tast-tests/cros/local/bundles/cros/example/test1.go"
 	const code1 = `package example
 
 type someType struct{}
@@ -45,7 +45,7 @@ func Test1() {
 }
 `
 
-	const filename2 = "src/chromiumos/tast/local/bundles/cros/example/test2.go"
+	const filename2 = "src/go.chromium.org/tast-tests/cros/local/bundles/cros/example/test2.go"
 	const code2 = `package example
 
 func Test2() {
@@ -72,7 +72,7 @@ func Test2() {
 }
 
 func TestInterFileRefs_NonTestMainFile(t *testing.T) {
-	const filename1 = "src/chromiumos/tast/local/chrome/chrome1.go"
+	const filename1 = "src/go.chromium.org/tast-tests/cros/local/chrome/chrome1.go"
 	const code1 = `package chrome
 
 type someType struct{}
@@ -81,7 +81,7 @@ var someVar int = 123
 func someFunc() {}
 `
 
-	const filename2 = "src/chromiumos/tast/local/chrome/chrome2.go"
+	const filename2 = "src/go.chromium.org/tast-tests/cros/local/chrome/chrome2.go"
 	const code2 = `package chrome
 
 func Foo() {
@@ -98,10 +98,10 @@ func Foo() {
 }
 
 func TestInterFileRefs_ForeignRefs(t *testing.T) {
-	const filename = "src/chromiumos/tast/local/bundles/cros/example/test.go"
+	const filename = "src/go.chromium.org/tast-tests/cros/local/bundles/cros/example/test.go"
 	const code = `package example
 
-import "chromiumos/tast/local/bundles/cros/example/util"
+import "go.chromium.org/tast-tests/cros/local/bundles/cros/example/util"
 
 func Test() {
 	var x util.SomeType

@@ -35,8 +35,8 @@ func ForbiddenImports(fs *token.FileSet, f *ast.File) []*Issue {
 	path := fs.File(f.Pos()).Name()
 	if !isUnitTestFile(path) {
 		const (
-			localPkg  = "chromiumos/tast/local"
-			remotePkg = "chromiumos/tast/remote"
+			localPkg  = "go.chromium.org/tast-tests/cros/local"
+			remotePkg = "go.chromium.org/tast-tests/cros/remote"
 		)
 		localFile := strings.Contains(path, localPkg)
 		remoteFile := strings.Contains(path, remotePkg)

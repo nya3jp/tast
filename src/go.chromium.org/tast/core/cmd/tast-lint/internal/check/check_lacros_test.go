@@ -10,7 +10,7 @@ import (
 	"go.chromium.org/tast/core/cmd/tast-lint/internal/git"
 )
 
-const lacrosPath = "/src/chromiumos/tast/local/bundles/cros/lacros/foo.go"
+const lacrosPath = "/src/go.chromium.org/tast-tests/cros/local/bundles/cros/lacros/foo.go"
 
 func TestLacrosSoftwareDepsSuccess(t *testing.T) {
 	const code = `package lacros

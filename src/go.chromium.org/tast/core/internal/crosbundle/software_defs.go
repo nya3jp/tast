@@ -171,6 +171,7 @@ var softwareFeatureDefs = map[string]string{
 	"no_igt":                    `!("video_cards_amdgpu" || "video_cards_intel" || "video_cards_mediatek" || "video_cards_msm") || ("kernel-4_4" || "kernel-4_14" || "kernel-4_19")`, // opposite of "igt"
 	"no_iioservice":             "!iioservice",
 	"no_kernel_upstream":        `!"kernel-upstream"`,
+	"no_lvm_stateful_partition": "!lvm_stateful_partition",
 	"no_manatee":                "!manatee",
 	"no_msan":                   "!msan",
 	"no_ondevice_handwriting":   "!ml_service || !ondevice_handwriting",

@@ -3,12 +3,10 @@
 
 # Prefer tast-owners@ to individual owners. Sending code reviews to the alias
 # allows the owners to distribute code review loads.
-# TODO: Uncomment after tast lockdown.
-# tast-owners@google.com
+tast-owners@google.com
 
 rohitbm@chromium.org
 seewaifu@google.com
 yichiyan@google.com
-jessemcguire@google.com
 abergman@google.com
 asadrieh@google.com

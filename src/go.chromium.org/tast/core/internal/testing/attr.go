@@ -1495,6 +1495,11 @@ from other existing groups (or use this group standalone).
 			},
 		},
 	},
+	{
+		Name:     "launcher_search_quality_daily",
+		Contacts: []string{"launcher-search-notify@google.com"},
+		Desc:     "A group of tests for checking the pass ratio in different builds for launcher search.",
+	},
 }
 
 // validGroupMap is the name-keyed map of validGroups.

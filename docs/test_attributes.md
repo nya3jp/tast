@@ -29,7 +29,7 @@ Below is the list of most popular groups and their associated extra attributes:
     change, while failures in informational tests are ignored.
     All informational mainline tests are supposed to be promoted to critical
     tests.
-     * `criticalstaging` - This group will be used to indicate a test is intended on
+     * `group:criticalstaging` - This group will be used to indicate a test is intended on
        going into "mainline" critical testing. This group will be run on all boards/models;
        on ToT only.  Tests can only remain in this group long enough to gather signal (10 days),
        after which the owner must promote them into mainline only, or back into

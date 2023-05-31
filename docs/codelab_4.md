@@ -92,7 +92,7 @@ Next we need to implement what the `TestSystemTimezone` method is actually
 doing on the DUT. The service implementation is placed in the same folder as
 respective local tests. So again if you are writing a remote policy test, all
 created services for that test go in the
-`src/chromiumos/tast/local/bundles/cros/policy` folder.
+`src/go.chromium.org/tast-tests/cros/local/bundles/cros/policy` folder.
 
 For the implementation we need to import the respective package we assigned
 our service to as well as the `grpc` package. As we use an empty response
@@ -178,13 +178,13 @@ also returns an error. The error indicates that the timezone on the DUT is not
 the expected timezone.
 
 The full implementation of the local service can be found
-[here](https://osscs.corp.google.com/chromiumos/chromiumos/codesearch/+/03b1d8d64180a8e6f5c073c683cd3ba070adf1f8:src/platform/tast-tests/src/chromiumos/tast/local/bundles/cros/policy/system_timezone_service.go)
+[here](https://osscs.corp.google.com/chromiumos/chromiumos/codesearch/+/03b1d8d64180a8e6f5c073c683cd3ba070adf1f8:src/platform/tast-tests/src/go.chromium.org/tast-tests/cros/local/bundles/cros/policy/system_timezone_service.go)
 
 ## Remote test
 
 The remote tests themselves are put into their respective folder in
-`tast-tests/src/chromiumos/tast/remote/bundles/cros`, so in the case of a policy test they are placed in
-`tast-tests/src/chromiumos/tast/remote/bundles/cros/policy`.
+`tast-tests/src/go.chromium.org/tast-tests/cros/remote/bundles/cros`, so in the case of a policy test they are placed in
+`tast-tests/src/go.chromium.org/tast-tests/cros/remote/bundles/cros/policy`.
 With the generated service we can now implement the remote part of the test.
 For that we import all packages containing services we need as well as the
 `rpc` package. For tests involving enrollment we also need the
@@ -193,7 +193,7 @@ For that we import all packages containing services we need as well as the
 ```go
 import (
 	...
-        "chromiumos/tast/remote/policyutil"
+        "go.chromium.org/tast-tests/cros/remote/policyutil"
 	"go.chromium.org/tast/core/rpc"
 	ps "go.chromium.org/tast-tests/cros/services/cros/policy"
 	...
@@ -248,4 +248,4 @@ func SystemTimezone(ctx context.Context, s *testing.State) {
 ```
 
 The full implementation of the remote test can be found
-[here](https://osscs.corp.google.com/chromiumos/chromiumos/codesearch/+/03b1d8d64180a8e6f5c073c683cd3ba070adf1f8:src/platform/tast-tests/src/chromiumos/tast/remote/bundles/cros/policy/system_timezone.go).
+[here](https://osscs.corp.google.com/chromiumos/chromiumos/codesearch/+/03b1d8d64180a8e6f5c073c683cd3ba070adf1f8:src/platform/tast-tests/src/go.chromium.org/tast-tests/cros/remote/bundles/cros/policy/system_timezone.go).

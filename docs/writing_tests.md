@@ -26,8 +26,8 @@ should not be explicitly specified when defining tests.
 
 Public tests built into the default `cros` local and remote [test bundles] are
 checked into the [tast-tests repository] under the
-[src/chromiumos/tast/local/bundles/cros/] and
-[src/chromiumos/tast/remote/bundles/cros/] directories (which may also be
+[src/go.chromium.org/tast-tests/cros/local/bundles/cros/] and
+[src/go.chromium.org/tast-tests/cros/remote/bundles/cros/] directories (which may also be
 accessed by the `local_tests` and `remote_tests` symlinks at the top of the
 repository). Private tests are checked into private repositories such as the
 [tast-tests-private repository], and built into non-`cros` test bundles.
@@ -36,14 +36,14 @@ Tests are categorized into packages based on the functionality that
 they exercise; for example, the [ui package] contains local tests that exercise
 the ChromeOS UI. The category package needs to be directly under the bundle
 package. Thus the category package path should be matched with
-`chromiumos/tast/(local|remote)/bundles/(?P<bundlename>[^/]+)/(?P<category>[^/]+)`.
+`go.chromium.org/tast/core/(local|remote)/bundles/(?P<bundlename>[^/]+)/(?P<category>[^/]+)`.
 
 A local test named `ui.DoSomething` should be defined in a file named
-`src/chromiumos/tast/local/bundles/cros/ui/do_something.go` (i.e. convert the
+`src/go.chromium.org/tast-tests/cros/local/bundles/cros/ui/do_something.go` (i.e. convert the
 test name to lowercase and insert underscores between words).
 
 Support packages used by multiple test categories located in
-[src/chromiumos/tast/local/] and [src/chromiumos/tast/remote/], alongside the
+[src/go.chromium.org/tast-tests/cros/local/] and [src/go.chromium.org/tast-tests/cros/remote/], alongside the
 `bundles/` directories. For example, the [chrome package] can be used by local
 tests to interact with Chrome.
 
@@ -51,19 +51,19 @@ If there's a support package that's specific to a single category, it's often
 best to place it underneath the category's directory. See the [Scoping and
 shared code] section.
 
-Packages outside `chromiumos/tast/local/...` should not import packages in `chromiumos/tast/local/...`, and
-packages outside `chromiumos/tast/remote/...` should not import packages in `chromiumos/tast/remote/...`.
+Packages outside `go.chromium.org/tast-tests/cros/local/...` should not import packages in `go.chromium.org/tast-tests/cros/local/...`, and
+packages outside `go.chromium.org/tast-tests/cros/remote/...` should not import packages in `go.chromium.org/tast-tests/cros/remote/...`.
 If local and remote packages should share the same code, put them in `go.chromium.org/tast-tests/cros/common/...`.
 
 [test bundles]: overview.md#Test-bundles
 [tast-tests repository]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD
 [tast-tests-private repository]: https://chrome-internal.googlesource.com/chromeos/platform/tast-tests-private/+/HEAD
-[src/chromiumos/tast/local/bundles/cros/]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/chromiumos/tast/local/bundles/cros/
-[src/chromiumos/tast/remote/bundles/cros/]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/chromiumos/tast/remote/bundles/cros/
-[ui package]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/chromiumos/tast/local/bundles/cros/ui/
-[src/chromiumos/tast/local/]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/chromiumos/tast/local/
-[src/chromiumos/tast/remote/]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/chromiumos/tast/remote/
-[chrome package]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/chromiumos/tast/local/chrome/
+[src/go.chromium.org/tast-tests/cros/local/bundles/cros/]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/go.chromium.org/tast-tests/cros/local/bundles/cros/
+[src/go.chromium.org/tast-tests/cros/remote/bundles/cros/]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/go.chromium.org/tast-tests/cros/remote/bundles/cros/
+[ui package]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/go.chromium.org/tast-tests/cros/local/bundles/cros/ui/
+[src/go.chromium.org/tast-tests/cros/local/]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/go.chromium.org/tast-tests/cros/local/
+[src/go.chromium.org/tast-tests/cros/remote/]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/go.chromium.org/tast-tests/cros/remote/
+[chrome package]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/go.chromium.org/tast-tests/cros/local/chrome/
 [Scoping and shared code]: #Scoping-and-shared-code
 
 ### Test registration
@@ -176,8 +176,8 @@ file (either [local/bundles/cros/imports.go] or [remote/bundles/cros/imports.go]
 underscore-import the new package so its `init` functions will be executed to
 register tests.
 
-[local/bundles/cros/imports.go]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/chromiumos/tast/local/bundles/cros/imports.go
-[remote/bundles/cros/imports.go]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/chromiumos/tast/remote/bundles/cros/imports.go
+[local/bundles/cros/imports.go]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/go.chromium.org/tast-tests/cros/local/bundles/cros/imports.go
+[remote/bundles/cros/imports.go]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/go.chromium.org/tast-tests/cros/remote/bundles/cros/imports.go
 
 ## Coding style and best practices
 
@@ -226,7 +226,7 @@ being C++-centric).
 Setting `FEATURES=test` when emerging a test bundle package
 (`tast-local-tests-cros` or `tast-remote-tests-cros`) will run all unit tests
 for the corresponding packages in the `tast-tests` repository (i.e.
-`chromiumos/tast/local/...` or `chromiumos/tast/remote/...`, respectively).
+`go.chromium.org/tast-tests/cros/local/...` or `go.chromium.org/tast-tests/cros/remote/...`, respectively).
 
 During development, the [fast_build.sh] script can be used to quickly build and
 run tests for a single package or all packages.
@@ -256,7 +256,7 @@ import (
 	"golang.org/x/sys/unix"
 
 	"go.chromium.org/tast/core/errors"
-	"chromiumos/tast/local/chrome"
+	"go.chromium.org/tast-tests/cros/local/chrome"
 )
 ```
 
@@ -372,8 +372,8 @@ max time from various executions.
 
 [context.Context]: https://golang.org/pkg/context/
 [channel]: https://tour.golang.org/concurrency/2
-[local tests]: https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform/tast/src/chromiumos/tast/internal/bundle/local.go
-[remote tests]: https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform/tast/src/chromiumos/tast/internal/bundle/remote.go
+[local tests]: https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform/tast/src/go.chromium.org/tast/coreinternal/bundle/local.go
+[remote tests]: https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform/tast/src/go.chromium.org/tast/coreinternal/bundle/remote.go
 [select]: https://tour.golang.org/concurrency/5
 [testing.Poll]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/testing#Poll
 [testing.PollBreak]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/testing#PollBreak
@@ -474,9 +474,9 @@ later in this document. Importing a subpackage is allowed only in the category
 package containing it; otherwise `repo upload` will fail with lint errors.
 
 [scoped at the package level]: https://golang.org/ref/spec#Declarations_and_scope
-[chromecrash]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/main/src/chromiumos/tast/local/bundles/cros/ui/chromecrash/
-[ui.ChromeCrashLoggedIn]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/main/src/chromiumos/tast/local/bundles/cros/ui/chrome_crash_logged_in.go
-[ui.ChromeCrashNotLoggedIn]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/main/src/chromiumos/tast/local/bundles/cros/ui/chrome_crash_not_logged_in.go
+[chromecrash]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/main/src/go.chromium.org/tast-tests/cros/local/bundles/cros/ui/chromecrash/
+[ui.ChromeCrashLoggedIn]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/main/src/go.chromium.org/tast-tests/cros/local/bundles/cros/ui/chrome_crash_logged_in.go
+[ui.ChromeCrashNotLoggedIn]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/main/src/go.chromium.org/tast-tests/cros/local/bundles/cros/ui/chrome_crash_not_logged_in.go
 
 ### Test consolidation
 
@@ -580,8 +580,8 @@ passed to [chrome.New] to pass additional command-line flags (e.g.
 The [tast-users mailing list] is a good place to ask questions about test
 dependencies.
 
-[chrome.ExtraArgs]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/chrome#ExtraArgs
-[chrome.New]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/chrome#New
+[chrome.ExtraArgs]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/go.chromium.org/tast-tests/cros/local/chrome#ExtraArgs
+[chrome.New]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/go.chromium.org/tast-tests/cros/local/chrome#New
 [tast-users mailing list]: https://groups.google.com/a/chromium.org/forum/#!forum/tast-users
 [parameterized tests]: #Parameterized-tests
 
@@ -704,14 +704,14 @@ fulfill the aforementioned property.
 
 Preconditions, predecessor of fixtures, are not recommended for new tests.
 
-[`testing.Fixture`]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/internal/testing#Fixture
-[`testing.FixtureImpl`]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/internal/testing#FixtureImpl
-[`testing.FixtTestState`]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/internal/testing#FixtTestState
-[chrome.New]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/chrome#New
-[chromeLoggedIn]: https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform/tast-tests/src/chromiumos/tast/local/chrome/fixture.go
-[`testing.Test.Fixture`]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/internal/testing#Test.Fixture
-[chrome/fixture.go]: https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform/tast-tests/src/chromiumos/tast/local/chrome/fixture.go
-[example.ChromeFixture]: https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform/tast-tests/src/chromiumos/tast/local/bundles/cros/example/chrome_fixture.go
+[`testing.Fixture`]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/coreinternal/testing#Fixture
+[`testing.FixtureImpl`]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/coreinternal/testing#FixtureImpl
+[`testing.FixtTestState`]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/coreinternal/testing#FixtTestState
+[chrome.New]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/go.chromium.org/tast-tests/cros/local/chrome#New
+[chromeLoggedIn]: https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform/tast-tests/src/go.chromium.org/tast-tests/cros/local/chrome/fixture.go
+[`testing.Test.Fixture`]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/coreinternal/testing#Test.Fixture
+[chrome/fixture.go]: https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform/tast-tests/src/go.chromium.org/tast-tests/cros/local/chrome/fixture.go
+[example.ChromeFixture]: https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform/tast-tests/src/go.chromium.org/tast-tests/cros/local/bundles/cros/example/chrome_fixture.go
 [`testing.AddFixture`]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/testing#AddFixture
 
 ## Common testing patterns
@@ -1049,7 +1049,7 @@ that calculate the logged in user's hash and return the path to either Downloads
 or MyFiles. To use these, do the following:
 
 ```go
-import "chromiumos/tast/local/cryptohome"
+import "go.chromium.org/tast-tests/cros/local/cryptohome"
 
 downloadsPath, err := cryptohome.DownloadsPath(ctx, cr.NormalizedUser())
 if err != nil {
@@ -1158,8 +1158,8 @@ never be overwritten once they have been used in a CQ run or dry-run. If
 overwriting a cloud storage file, remember to manually clear the cache folders
 before running Tast tests to prevent stale files from being served.
 
-[external link format]: https://chromium.googlesource.com/chromiumos/platform/tast/+/main/src/chromiumos/tast/internal/extdata/extdata.go
-[example.DataFiles]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/main/src/chromiumos/tast/local/bundles/cros/example/data_files.go
+[external link format]: https://chromium.googlesource.com/chromiumos/platform/tast/+/main/src/go.chromium.org/tast/coreinternal/extdata/extdata.go
+[example.DataFiles]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/main/src/go.chromium.org/tast-tests/cros/local/bundles/cros/example/data_files.go
 [build artifacts of ChromeOS]: https://goto.google.com/cros-build-google-storage
 [`gsutil cp`]: https://cloud.google.com/storage/docs/gsutil/commands/cp
 
@@ -1184,10 +1184,10 @@ package and symlinked into each test package's `data` subdirectory. See the
 [media_session_test.html] file used by the [mediasession package] and shared by
 the [ui.PlayPauseChrome] and [arc.MediaSessionGain] tests, for example.
 
-[media_session_test.html]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/main/src/chromiumos/tast/local/chrome/mediasession/data/media_session_test.html
-[mediasession package]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/chrome/mediasession
-[ui.PlayPauseChrome]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/main/src/chromiumos/tast/local/bundles/cros/ui/play_pause_chrome.go
-[arc.MediaSessionGain]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/main/src/chromiumos/tast/local/bundles/cros/arc/media_session_gain.go
+[media_session_test.html]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/main/src/go.chromium.org/tast-tests/cros/local/chrome/mediasession/data/media_session_test.html
+[mediasession package]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/go.chromium.org/tast-tests/cros/local/chrome/mediasession
+[ui.PlayPauseChrome]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/main/src/go.chromium.org/tast-tests/cros/local/bundles/cros/ui/play_pause_chrome.go
+[arc.MediaSessionGain]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/main/src/go.chromium.org/tast-tests/cros/local/bundles/cros/arc/media_session_gain.go
 
 ### Using data files in tests
 
@@ -1215,7 +1215,7 @@ b, err := ioutil.ReadFile(s.DataPath("user_login_data.bin"))
 See the [example.DataFiles] test for a complete example of using both local and
 external data files.
 
-[example.DataFiles]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/chromiumos/tast/local/bundles/cros/example/data_files.go
+[example.DataFiles]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/go.chromium.org/tast-tests/cros/local/bundles/cros/example/data_files.go
 
 ## Runtime variables
 
@@ -1353,7 +1353,7 @@ func Bar(ctx context.Context, s *testing.State) {
 }
 ```
 
-See [example.SecretVars](https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/chromiumos/tast/local/bundles/cros/example/secret_vars.go) for working example.
+See [example.SecretVars](https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/go.chromium.org/tast-tests/cros/local/bundles/cros/example/secret_vars.go) for working example.
 
 #### Naming convention
 
@@ -1470,7 +1470,7 @@ services.
 
 For the general usage of gRPC-Go, see also the [official tutorial].
 
-[chrome]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/chromiumos/tast/local/chrome/
+[chrome]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/go.chromium.org/tast-tests/cros/local/chrome/
 [gRPC]: https://grpc.io
 [official tutorial]: https://grpc.io/docs/tutorials/basic/go/
 
@@ -1479,7 +1479,7 @@ For the general usage of gRPC-Go, see also the [official tutorial].
 gRPC services are defined as protocol buffer files stored under
 `tast-tests/src/go.chromium.org/tast-tests/cros/services`. The directory is organized in the
 similar way as test bundles at
-`tast-tests/src/chromiumos/tast/{local,remote}/bundles`. Below is an example of
+`tast-tests/src/go.chromium.org/tast-tests/cros/{local,remote}/bundles`. Below is an example of
 an imaginary gRPC service `arc.BootService`:
 
 ```
@@ -1569,9 +1569,9 @@ included and submitted in CLs adding/modifying/deleting `.proto` files.
 ### Implementing gRPC services
 
 gRPC service implementations should be placed at the same location as local
-tests, i.e. `tast-tests/src/chromiumos/tast/local/bundles`. For example, an
+tests, i.e. `tast-tests/src/go.chromium.org/tast-tests/cros/local/bundles`. For example, an
 imaginary `arc.BootService` would be implemented in
-`tast-tests/src/chromiumos/tast/local/bundles/arc/boot_service.go`.
+`tast-tests/src/go.chromium.org/tast-tests/cros/local/bundles/arc/boot_service.go`.
 
 gRPC services can be registered with [`testing.AddService`] by passing
 [`testing.Service`] containing service descriptions. The most important field is
@@ -1579,7 +1579,7 @@ gRPC services can be registered with [`testing.AddService`] by passing
 Below is an implementation of the `arc.BootService`:
 
 ```go
-// tast-tests/src/chromiumos/tast/local/bundles/arc/boot_service.go
+// tast-tests/src/go.chromium.org/tast-tests/cros/local/bundles/arc/boot_service.go
 package arc
 
 func init() {
@@ -1904,7 +1904,7 @@ behavior, so `lsbrelease` contains a list of packages that are allowed to use
 it. Attempting to use `lsbrelease` in a package that is not in the allow list
 will cause a panic.
 
-[`lsbrelease`]: https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/src/chromiumos/tast/lsbrelease/lsbrelease.go
+[`lsbrelease`]: https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/src/go.chromium.org/tast/core/lsbrelease/lsbrelease.go
 
 ### testexec
 

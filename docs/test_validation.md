@@ -117,8 +117,8 @@ unit test in [main_test.go].
 
 [testing.Test]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/testing#Test
 [testing.AddTest]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/testing#AddTest
-[test_instance.go]: https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/src/chromiumos/tast/internal/testing/test_instance.go
-[main_test.go]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/chromiumos/tast/local/bundles/cros/main_test.go
+[test_instance.go]: https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/src/go.chromium.org/tast/core/internal/testing/test_instance.go
+[main_test.go]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/go.chromium.org/tast-tests/cros/local/bundles/cros/main_test.go
 
 ### Unit tests
 
@@ -133,5 +133,5 @@ repositories. The script's usage is described in the [Modifying Tast] document.
 
 [ARC]: https://developer.android.com/topic/arc/
 [software features]: test_dependencies.md
-[registration_test.go]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/chromiumos/tast/local/bundles/cros/arc/registration_test.go
+[registration_test.go]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/go.chromium.org/tast-tests/cros/local/bundles/cros/arc/registration_test.go
 [testcheck]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/testing/testcheck

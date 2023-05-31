@@ -45,11 +45,11 @@ Currently, we support the detections of three types of UI elements:
 In Tast, [uidetection] can be imported like so:
 
 ```go
-import "chromiumos/tast/local/uidetection"
+import "go.chromium.org/tast-tests/cros/local/uidetection"
 ```
 
-[uiauto]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/chrome/uiauto
-[uidetection]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/uidetection
+[uiauto]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/go.chromium.org/tast-tests/cros/local/chrome/uiauto
+[uidetection]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/go.chromium.org/tast-tests/cros/local/uidetection
 
 ## Simple Starter Test
 
@@ -184,7 +184,7 @@ if err := uiauto.Combine("verify detections",
 ```
 
 [Data files in Tast]: https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#Data-files
-[uiauto.Combine]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/chrome/uiauto#Combine
+[uiauto.Combine]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/go.chromium.org/tast-tests/cros/local/chrome/uiauto#Combine
 
 ## Full Code
 
@@ -200,10 +200,10 @@ import (
     "time"
 
     "go.chromium.org/tast/core/ctxutil"
-    "chromiumos/tast/local/chrome"
-    "chromiumos/tast/local/chrome/uiauto"
-    "chromiumos/tast/local/chrome/uiauto/faillog"
-    "chromiumos/tast/local/uidetection"
+    "go.chromium.org/tast-tests/cros/local/chrome"
+    "go.chromium.org/tast-tests/cros/local/chrome/uiauto"
+    "go.chromium.org/tast-tests/cros/local/chrome/uiauto/faillog"
+    "go.chromium.org/tast-tests/cros/local/uidetection"
     "go.chromium.org/tast/core/testing"
 )
 
@@ -262,7 +262,7 @@ using ROI instead of the whole screen can help to increase the detection
 accuracy.
 
 Currently, the UI detection library support ROI
-[defined](https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform/tast-tests/src/chromiumos/tast/local/uidetection/finder.go)
+[defined](https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform/tast-tests/src/go.chromium.org/tast-tests/cros/local/uidetection/finder.go)
 by:
 
 1.  Image-based UI elements.
@@ -323,7 +323,7 @@ Note: usage of ROIs in pixels or in density-independent pixels is generally
 discouraged, as they vary from devices to devices. Please first consider using
 other two types of ROIs.
 
-[nodewith.Finder]: https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform/tast-tests/src/chromiumos/tast/local/chrome/uiauto/nodewith/nodewith.go?q=nodewith.go#:~:text=type%20Finder%20struct%20%7B
+[nodewith.Finder]: https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform/tast-tests/src/go.chromium.org/tast-tests/cros/local/chrome/uiauto/nodewith/nodewith.go?q=nodewith.go#:~:text=type%20Finder%20struct%20%7B
 [density-independent pixels]: https://en.wikipedia.org/wiki/Device-independent_pixel
 
 ## FAQs

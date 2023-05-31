@@ -99,7 +99,7 @@ select which tests to run.
 [crosbolt]: https://crosbolt.teams.x20web.corp.google.com/prod/crosbolt/index.html
 [wificell]: https://chromium.googlesource.com/chromiumos/third_party/autotest/+/main/docs/wificell.md
 [grover]: https://docs.google.com/document/d/1klnkcEpbG6_0BKeLXEN9ST13-w8gcNYG1xH80dlvt7U/edit# (Googlers only)
-[attr.go]: https://chromium.googlesource.com/chromiumos/platform/tast/+/refs/heads/main/src/chromiumos/tast/internal/testing/attr.go
+[attr.go]: https://chromium.googlesource.com/chromiumos/platform/tast/+/refs/heads/main/src/go.chromium.org/tast/core/internal/testing/attr.go
 [bundle]: overview.md#Test-bundles
 [software dependency]: test_dependencies.md
 [name]: writing_tests.md#Test-names

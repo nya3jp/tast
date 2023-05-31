@@ -326,7 +326,7 @@ the correct order.
 If you're having trouble finding a way to specify your test's dependencies,
 please ask for help on the [tast-users mailing list].
 
-[software_defs.go]: https://chromium.googlesource.com/chromiumos/platform/tast/+/main/src/chromiumos/tast/internal/crosbundle/software_defs.go
+[software_defs.go]: https://chromium.googlesource.com/chromiumos/platform/tast/+/main/src/go.chromium.org/tast/core/internal/crosbundle/software_defs.go
 [tast-use-flags]: https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/main/chromeos-base/tast-use-flags/
 [Cq-Depend]: https://chromium.googlesource.com/chromiumos/docs/+/main/contributing.md#cq-depend
 [tast-users mailing list]: https://groups.google.com/a/chromium.org/g/tast-users

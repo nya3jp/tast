@@ -18,7 +18,7 @@ benefit.
 ## Boring boilerplate
 
 To start out, we'll create a file at
-`src/platform/tast-tests/src/chromiumos/tast/local/bundles/cros/platform/date_format.go`
+`src/platform/tast-tests/src/go.chromium.org/tast-tests/cros/local/bundles/cros/platform/date_format.go`
 containing the standard copyright header, the name of the package that this file
 belongs to, and an `import` block listing the packages that we're using:
 
@@ -49,7 +49,7 @@ you generally don't need to worry about managing imports of standard Go
 packages, but you'll still need to add Tast-specific dependencies (i.e. packages
 beginning with `chromiumos/`) yourself.
 
-[test category packages]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/chromiumos/tast/local/bundles/cros
+[test category packages]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/go.chromium.org/tast-tests/cros/local/bundles/cros
 [goimports]: https://godoc.org/golang.org/x/tools/cmd/goimports
 
 ## Test metadata

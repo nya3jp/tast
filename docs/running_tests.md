@@ -45,7 +45,7 @@ Any additional positional arguments describe which tests should be executed:
     attribute. Attributes that don't consist of a letter or underscore followed
     by letters, digits, and underscores must be double-quoted. '*' characters in
     quoted strings are interpreted as wildcards.
-    See [chromiumos/tast/internal/expr] for details about expression syntax.
+    See [go.chromium.org/tast/core/internal/expr] for details about expression syntax.
 *   Otherwise, the argument(s) are interpreted as wildcard patterns matching
     test names. For example, `ui.*` matches all tests with names prefixed by
     `ui.`. Multiple patterns can be supplied: passing `example.Pass` and
@@ -60,7 +60,7 @@ Tests may be skipped if they list [software dependencies] that aren't provided
 by the DUT. This behavior can be controlled via the `tast` command's
 `-checktestdeps` flag.
 
-[chromiumos/tast/internal/expr]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/internal/expr
+[go.chromium.org/tast/core/internal/expr]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/internal/expr
 [Test Attributes]: test_attributes.md
 [software dependencies]: test_dependencies.md
 

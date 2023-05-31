@@ -76,8 +76,8 @@ for _, w := range ws {
 }
 ```
 
-[ash.GetAllWindows]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/chrome/ash#GetAllWindows
-[chrome.TestAPIConn]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/chrome#Chrome.TestAPIConn
+[ash.GetAllWindows]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/go.chromium.org/tast-tests/cros/local/chrome/ash#GetAllWindows
+[chrome.TestAPIConn]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/go.chromium.org/tast-tests/cros/local/chrome#Chrome.TestAPIConn
 [ash package documentation]: https://chromium.googlesource.com/chromium/src/+/HEAD/ash/README.md
 
 ### Checking files
@@ -138,7 +138,7 @@ if err := conn.Eval(ctx, code, &found); err != nil {
 ```
 The [chrome.Conn.Eval] can also be used on the connection to Tast's test extension which gives access to other APIs. A connection can be created with [chrome.TestAPIConn]. The connection to Tast's test extension should not be closed as it is shared.
 
-[chrome.Conn.Eval]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/chrome#Conn.Eval
+[chrome.Conn.Eval]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/go.chromium.org/tast-tests/cros/local/chrome#Conn.Eval
 
 ### Find the JavaScript path for an element
 In the previous paragraph we took a look at how to evaluate JavaScript expressions in a Tast test, however finding the JavaScript expression you need for a certain test can be difficult.

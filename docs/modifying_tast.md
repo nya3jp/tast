@@ -42,10 +42,10 @@ are particularly important:
 *   [ssh] opens SSH connections.
 *   [testing] contains code used to define and run tests.
 
-[tast directory]: https://chromium.googlesource.com/chromiumos/platform/tast/+/main/src/chromiumos/tast/
+[tast directory]: https://chromium.googlesource.com/chromiumos/platform/tast/+/main/src/go.chromium.org/tast/core/
 [bundle]: https://chromium.googlesource.com/chromiumos/platform/tast/+/main/src/go.chromium.org/tast/core/bundle/
-[protocol]: https://chromium.googlesource.com/chromiumos/platform/tast/+/main/src/chromiumos/tast/internal/protocol/
-[runner]: https://chromium.googlesource.com/chromiumos/platform/tast/+/main/src/chromiumos/tast/internal/runner/
+[protocol]: https://chromium.googlesource.com/chromiumos/platform/tast/+/main/src/go.chromium.org/tast/core/internal/protocol/
+[runner]: https://chromium.googlesource.com/chromiumos/platform/tast/+/main/src/go.chromium.org/tast/core/internal/runner/
 [ssh]: https://chromium.googlesource.com/chromiumos/platform/tast/+/main/src/go.chromium.org/tast/core/ssh/
 [testing]: https://chromium.googlesource.com/chromiumos/platform/tast/+/main/src/go.chromium.org/tast/core/testing/
 
@@ -103,11 +103,11 @@ while preserving its original marshaled name in its `json` tag.
 the former are provided. See [change 1474620] for an example.
 
 [run]: https://chromium.googlesource.com/chromiumos/platform/tast/+/main/src/go.chromium.org/tast/core/cmd/tast/internal/run/
-[runner.Args]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/internal/runner#Args
+[runner.Args]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/internal/runner#Args
 [bundle.Args]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/bundle#Args
-[runner.RunTestsArgs]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/internal/runner#RunTestsArgs
+[runner.RunTestsArgs]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/internal/runner#RunTestsArgs
 [bundle.RunTestsArgs]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/bundle#RunTestsArgs
-[runner.ListTestsArgs]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/chromiumos/tast/internal/runner#ListTestsArgs
+[runner.ListTestsArgs]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/internal/runner#ListTestsArgs
 [bundle.ListTestsArgs]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/bundle#ListTestsArgs
 [json package]: https://golang.org/pkg/encoding/json/
 [change 1474620]: https://crrev.com/c/1474620
@@ -159,4 +159,4 @@ instance of the `tast` executable to perform end-to-end verification of
 interactions between `tast`, test runners, and test bundles. They're executed
 the same way as other Tast tests, i.e. via `tast run`.
 
-[meta tests]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/chromiumos/tast/remote/bundles/cros/meta/
+[meta tests]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/go.chromium.org/tast-tests/cros/remote/bundles/cros/meta/

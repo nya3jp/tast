@@ -118,7 +118,7 @@ file must define these two functions:
 Here is a complete example of a test file defining a no-op test:
 
 ```go
-// File: src/chromiumos/tast/local/bundles/cros/example/pass.go
+// File: src/go.chromium.org/tast-tests/cros/local/bundles/cros/example/pass.go
 
 package example
 
@@ -232,7 +232,7 @@ following two symbols:
 Here is an example of a service file:
 
 ```go
-// File: src/chromiumos/tast/local/bundles/cros/example/foo_service.go
+// File: src/go.chromium.org/tast-tests/cros/local/bundles/cros/example/foo_service.go
 
 func init() {
     testing.AddService(&testing.Service{
@@ -428,8 +428,8 @@ import (
     "go.chromium.org/tast/core/bundle"
 
     // Underscore-imported packages register their tests via init functions.
-    _ "chromiumos/tast/local/bundles/cros/apps"
-    _ "chromiumos/tast/local/bundles/cros/arc"
+    _ "go.chromium.org/tast-tests/cros/local/bundles/cros/apps"
+    _ "go.chromium.org/tast-tests/cros/local/bundles/cros/arc"
     ...
 )
 

@@ -37,14 +37,15 @@ func (td *testData) Get(path string) (string, error) {
 	}
 	defer res.Body.Close()
 
-	if res.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("GET %s returned %d; want %d", path, res.StatusCode, http.StatusOK)
-	}
-
 	b, err := ioutil.ReadAll(res.Body)
 	if err != nil {
 		return "", fmt.Errorf("GET %s returned malformed response: %v", path, err)
 	}
+
+	if res.StatusCode != http.StatusOK {
+		return "", fmt.Errorf("GET %s returned %d; want %d: %v", path, res.StatusCode, http.StatusOK, string(b))
+	}
+
 	return string(b), nil
 }
 
@@ -136,6 +137,56 @@ echo -n "$*" > ${!#}
 	const exp = "-m cp gs://chromiumos-test-assets-public/path/to/file.bin "
 	if !strings.HasPrefix(args, exp) {
 		t.Fatalf("Unexpected gsutil parameters: got %q, want prefix %q", args, exp)
+	}
+}
+
+// TestExtract checks stage and extract fails.
+func TestExtract(t *testing.T) {
+	td := newTestData(t, `#!/bin/bash
+echo -n "$*" > ${!#}
+`)
+	defer td.Close()
+
+	const (
+		params      = "archive_url=gs://chromiumos-test-assets-public/path/to&files=file.tar.xz"
+		checkPath   = "/is_staged?" + params
+		stagePath   = "/stage?" + params
+		extractPath = "/extract/chromiumos-test-assets-public/path/to/file.tar.xz?file=inner.bin"
+	)
+
+	if status, err := td.Get(checkPath); err != nil {
+		t.Error("Checking staged status failed: ", err)
+	} else if exp := "False"; status != exp {
+		t.Errorf("Checking staged status failed: got %q, want %q", status, exp)
+	}
+
+	if _, err := td.Get(stagePath); err != nil {
+		t.Fatal("Staging request failed: ", err)
+	}
+
+	if status, err := td.Get(checkPath); err != nil {
+		t.Error("Checking staged status failed: ", err)
+	} else if exp := "True"; status != exp {
+		t.Errorf("Checking staged status failed: got %q, want %q", status, exp)
+	}
+
+	res, err := http.Get(td.url + extractPath)
+	if err != nil {
+		t.Errorf("GET %s failed: %v", extractPath, err)
+	}
+	defer res.Body.Close()
+
+	b, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		t.Errorf("GET %s returned malformed response: %v", extractPath, err)
+	}
+
+	if res.StatusCode != http.StatusNotImplemented {
+		t.Errorf("GET %s returned %d; want %d: %v", extractPath, res.StatusCode, http.StatusNotImplemented, string(b))
+	}
+
+	if string(b) != "This is an ephemeral devserver provided by Tast." {
+		t.Fatalf("Unexpected response, did someone implement extract? %q", string(b))
 	}
 }
 

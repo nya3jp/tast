@@ -77,6 +77,7 @@ func (e *Ephemeral) Close() error {
 
 // handleIndex serves any requests not matched to any other routes.
 func (e *Ephemeral) handleIndex(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotImplemented)
 	io.WriteString(w, "This is an ephemeral devserver provided by Tast.")
 }
 

@@ -13,9 +13,8 @@ var softwareFeatureDefs = map[string]string{
 	"amd_cpu": "amd_cpu",
 	// ARC USE flags are defined here:
 	// http://cs/chromeos_public/src/third_party/chromiumos-overlay/eclass/arc-build-constants.eclass
-	// TODO(b/210917721): Re-enable ARCVM on manatee.
-	"android_vm":          `arc && arcvm && !"android-vm-pi" && !manatee`,
-	"android_vm_r":        `arc && arcvm && "android-vm-rvc" && !manatee`,
+	"android_vm":          `arc && arcvm && !"android-vm-pi"`,
+	"android_vm_r":        `arc && arcvm && "android-vm-rvc"`,
 	"android_vm_t":        `arc && arcvm && "android-vm-tm"`,
 	"android_container":   `arc && ("android-container-rvc" || "android-container-pi")`,
 	"android_p":           `arc && "android-container-pi"`,
@@ -36,8 +35,7 @@ var softwareFeatureDefs = map[string]string{
 	"biometrics_daemon":            "biod",
 	"bluetooth_floss":              `!("board:asuka" || "board:banon" || "board:bob" || "board:caroline" || "board:cave" || "board:celes" || "board:chell" || "board:coral" || "board:cyan" || "board:edgar" || "board:elm" || "board:hana" || "board:kefka" || "board:kevin" || "board:lars" || "board:pyro" || "board:reef" || "board:reks" || "board:relm" || "board:sand" || "board:scarlet" || "board:sentry" || "board:setzer" || "board:snappy" || "board:terra" || "board:ultima")`,
 	"boot_perf_info":               `!("board:reven*")`, // Reven (ChromeOS Flex) doesn't support boot performance metrics.
-	// TODO(b/225065082): Re-enable borealis on manatee
-	"borealis_host": "borealis_host && !manatee",
+	"borealis_host":                "borealis_host",
 	// The bpf syscall is enabled on CrOS since kernel v5.10.
 	"bpf":      `!("kernel-4_4" || "kernel-4_14" || "kernel-4_19" || "kernel-5_4")`,
 	"breakpad": "force_breakpad",
@@ -133,7 +131,6 @@ var softwareFeatureDefs = map[string]string{
 	"lacros_unstable":        `!chromeless_tty && !rialto && !("board:veyron_fievel" || "board:veyron_tiger") && ("tast_vm" || "betty")`,
 	"landlock_enabled":       `!("kernel-4_4" || "kernel-4_14" || "kernel-4_19" || "kernel-5_4")`,
 	"lvm_stateful_partition": "lvm_stateful_partition",
-	"manatee":                "manatee",
 	"mbo":                    "mbo",
 	// QEMU has implemented memfd_create, but we haven't updated
 	// to a release with the change (https://bugs.launchpad.net/qemu/+bug/1734792).
@@ -158,7 +155,7 @@ var softwareFeatureDefs = map[string]string{
 	"nnapi_vendor_driver":       "nnapi && !betty && !tast_vm",
 	"no_amd_cpu":                "!amd_cpu",
 	"no_android":                "!arc",
-	"no_android_vm_r":           `!(arc && arcvm && "android-vm-rvc" && !manatee)`,
+	"no_android_vm_r":           `!(arc && arcvm && "android-vm-rvc")`,
 	"no_android_vm_t":           `!(arc && arcvm && "android-vm-tm")`,
 	"no_arc_userdebug":          "!(cheets_userdebug || cheets_userdebug_64)",
 	"no_arc_x86":                "!(amd64 && cheets_user)",
@@ -172,7 +169,6 @@ var softwareFeatureDefs = map[string]string{
 	"no_iioservice":             "!iioservice",
 	"no_kernel_upstream":        `!"kernel-upstream"`,
 	"no_lvm_stateful_partition": "!lvm_stateful_partition",
-	"no_manatee":                "!manatee",
 	"no_msan":                   "!msan",
 	"no_ondevice_handwriting":   "!ml_service || !ondevice_handwriting",
 	"no_qemu":                   `!"betty" && !"tast_vm"`,
@@ -219,7 +215,7 @@ var softwareFeatureDefs = map[string]string{
 	"selinux_current":      "selinux && !selinux_experimental",
 	"selinux_experimental": "selinux && selinux_experimental",
 	"shill-wifi":           "!moblab", // fizz-moblab disables the WiFi technology for Shill
-	"sirenia":              "sirenia && !manatee",
+	"sirenia":              "sirenia",
 	"smartdim":             "smartdim",
 	"smartctl":             "nvme || sata",
 	// VMs don't support speech on-device API.
@@ -276,9 +272,7 @@ var softwareFeatureDefs = map[string]string{
 	// Some VM builds actually can run nested VM with right host configuration.
 	// But we haven't enable this feature on builders. For now, just disable
 	// vm_host feature for VM builds.
-	// Also, the peculiar configuration of manatee boards does not yet qualify
-	// them as properly VM-enabled boards so we disable this b/219865862
-	"vm_host": "kvm_host && !tast_vm && !manatee",
+	"vm_host": "kvm_host && !tast_vm",
 	// VPD is not available in VMs.
 	"vpd":      `!"betty" && !"tast_vm"`,
 	"vulkan":   "vulkan",

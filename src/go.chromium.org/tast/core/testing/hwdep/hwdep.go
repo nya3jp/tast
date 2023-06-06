@@ -795,6 +795,22 @@ func NoFingerprint() Condition {
 	}
 }
 
+// VRR returns a hardware dependency condition that is satisfied iff
+// the DUT is VRR Capable (has vrr_capable value set to 1 in modetest).
+func VRR() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("HardwareFeatures is not given")
+		}
+		if hf.GetVrr().GetPresent() != configpb.HardwareFeatures_PRESENT {
+			return unsatisfied("DUT does not have VRR")
+		}
+		return satisfied()
+	},
+	}
+}
+
 // ExternalDisplay returns a hardware dependency condition that is satisfied
 // iff the DUT has an external display
 func ExternalDisplay() Condition {

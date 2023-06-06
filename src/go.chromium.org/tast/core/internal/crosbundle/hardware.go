@@ -131,6 +131,7 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		RuntimeProbeConfig:    &configpb.HardwareFeatures_RuntimeProbeConfig{},
 		HardwareProbeConfig:   &configpb.HardwareFeatures_HardwareProbe{},
 		Display:               &configpb.HardwareFeatures_Display{},
+		Vrr:                   &configpb.HardwareFeatures_Vrr{},
 	}
 
 	formFactor, err := func() (string, error) {
@@ -820,6 +821,23 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		logging.Infof(ctx, "Unknown /ui/serialized-ash-switches: %v", err)
 	}
 	features.Soc.HevcSupport = hevcSupport
+
+	hasVrrSupport := func() bool {
+		modetestOutput, err := exec.Command("modetest").Output()
+		if err != nil {
+			logging.Infof(ctx, "failed to run modetest: %v", err)
+			return false
+		}
+		// check if there exists a vrr_capable property with a value set to 1 in
+		// the modetest command output
+		regex := regexp.MustCompile("\n\t.*vrr_capable:(\n\t\t.*)*\n\t\tvalue: 1")
+		return regex.Match(modetestOutput)
+	}()
+	if hasVrrSupport {
+		features.Vrr.Present = configpb.HardwareFeatures_PRESENT
+	} else {
+		features.Vrr.Present = configpb.HardwareFeatures_NOT_PRESENT
+	}
 
 	return &protocol.HardwareFeatures{
 		HardwareFeatures:       features,

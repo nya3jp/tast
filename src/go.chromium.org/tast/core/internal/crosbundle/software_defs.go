@@ -36,6 +36,7 @@ var softwareFeatureDefs = map[string]string{
 	"bluetooth_floss":              `!("board:asuka" || "board:banon" || "board:bob" || "board:caroline" || "board:cave" || "board:celes" || "board:chell" || "board:coral" || "board:cyan" || "board:edgar" || "board:elm" || "board:hana" || "board:kefka" || "board:kevin" || "board:lars" || "board:pyro" || "board:reef" || "board:reks" || "board:relm" || "board:sand" || "board:scarlet" || "board:sentry" || "board:setzer" || "board:snappy" || "board:terra" || "board:ultima")`,
 	"boot_perf_info":               `!("board:reven*")`, // Reven (ChromeOS Flex) doesn't support boot performance metrics.
 	"borealis_host":                "borealis_host",
+	"borealis_nvidia":              "borealis_nvidia",
 	// The bpf syscall is enabled on CrOS since kernel v5.10.
 	"bpf":      `!("kernel-4_4" || "kernel-4_14" || "kernel-4_19" || "kernel-5_4")`,
 	"breakpad": "force_breakpad",

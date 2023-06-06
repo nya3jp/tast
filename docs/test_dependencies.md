@@ -45,6 +45,7 @@ The following software features are defined:
 * `bluetooth_floss` - Excludes boards that do not support the floss bluetooth adapter.
 * `boot_perf_info` - Reven (ChromeOS Flex) doesn't support boot performance metrics.
 * `borealis_host` - Boards that can host the Borealis system.
+*  borealis_nvidia - Boards that use nvidia supported Borealis system.
 * `bpf` - Whether the platform (kernel) has the bpf syscall enabled.
 * `breakpad` - Whether the platform supports the breakpad crash handler
     for Chrome.

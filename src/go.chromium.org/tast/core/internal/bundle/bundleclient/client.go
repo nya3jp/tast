@@ -16,6 +16,8 @@ import (
 	"go.chromium.org/tast/core/ssh"
 )
 
+const defaultConnectRetries = 3
+
 // Client is a bundle client.
 type Client struct {
 	hst *ssh.Conn
@@ -66,6 +68,7 @@ func New(ctx context.Context, target *protocol.TargetDevice, name string, hr *pr
 	opts.KeyFile = scfg.GetKeyFile()
 	opts.KeyDir = scfg.GetKeyDir()
 	opts.ProxyCommand = scfg.GetProxyCommand()
+	opts.ConnectRetries = defaultConnectRetries
 
 	hst, err := ssh.New(ctx, &opts)
 	if err != nil {

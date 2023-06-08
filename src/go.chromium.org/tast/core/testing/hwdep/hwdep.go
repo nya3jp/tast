@@ -421,6 +421,26 @@ func ECFeatureAssertsPanic() Condition {
 	}
 }
 
+// ECFeatureSystemSafeMode returns a hardware dependency condition that is
+// satisfied iff the DUT EC supports system safe mode recovery.
+func ECFeatureSystemSafeMode() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("Did not find hardware features")
+		}
+		status := hf.GetEmbeddedController().GetFeatureSystemSafeMode()
+		if status == configpb.HardwareFeatures_NOT_PRESENT {
+			return unsatisfied("DUT EC does not system safe mode")
+		}
+		if status == configpb.HardwareFeatures_PRESENT_UNKNOWN {
+			return unsatisfied("Could not determine if DUT EC supports system safe mode")
+		}
+		return satisfied()
+	},
+	}
+}
+
 // Cellular returns a hardware dependency condition that
 // is satisfied iff the DUT has a cellular modem.
 func Cellular() Condition {

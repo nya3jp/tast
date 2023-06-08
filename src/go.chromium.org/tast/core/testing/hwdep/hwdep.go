@@ -401,6 +401,26 @@ func ECFeatureChargeControlV2() Condition {
 	}
 }
 
+// ECFeatureAssertsPanic returns a hardware dependency condition that is
+// satisfied iff the DUT EC will panic on assertion failure.
+func ECFeatureAssertsPanic() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("Did not find hardware features")
+		}
+		status := hf.GetEmbeddedController().GetFeatureAssertsPanic()
+		if status == configpb.HardwareFeatures_NOT_PRESENT {
+			return unsatisfied("DUT EC does not panic on assert failure")
+		}
+		if status == configpb.HardwareFeatures_PRESENT_UNKNOWN {
+			return unsatisfied("Could not determine if DUT EC panics on assert failure")
+		}
+		return satisfied()
+	},
+	}
+}
+
 // Cellular returns a hardware dependency condition that
 // is satisfied iff the DUT has a cellular modem.
 func Cellular() Condition {

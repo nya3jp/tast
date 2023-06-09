@@ -817,6 +817,14 @@ third_party/autotest/files/server/site_tests/tast/control.racc-config-installed.
 				Name: "cellular_carrier_local",
 				Desc: `Identifies Cellular tests that need an active sim.`,
 			},
+			{
+				Name: "cellular_stress",
+				Desc: `Identifies Cellular stress tests.`,
+			},
+			{
+				Name: "cellular_power",
+				Desc: `Identifies Cellular tests which measure and monitor power consumpiton with cellular connectivity.`,
+			},
 		},
 	},
 	{

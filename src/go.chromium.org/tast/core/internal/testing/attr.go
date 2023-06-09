@@ -575,6 +575,12 @@ Tests in this group are not used for build verification.`,
 		Desc:     `A group of tests that must pass reliably prior to lab deployments.`,
 	},
 	{
+		Name:     "labqual_informational",
+		Contacts: []string{"gowriden@google.com", "peep-fleet-infra-sw@google.com"},
+		Desc: `    A group of tests that will be ultimately included in the labqual group.
+		           This separate group if for testing safely with backward compatibility.`,
+	},
+	{
 		Name:     "omaha",
 		Contacts: []string{"vsavu@google.com", "chromeos-commercial-remote-management@google.com"},
 		Desc:     `A group of tests verifying the current state of Omaha.`,

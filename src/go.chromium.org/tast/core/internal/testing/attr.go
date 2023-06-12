@@ -768,6 +768,10 @@ third_party/autotest/files/server/site_tests/tast/control.racc-config-installed.
 				Desc: `Identifies Cellular ui/e2e tests.`,
 			},
 			{
+				Name: "cellular_suspend",
+				Desc: `Identifies Cellular tests that will perform a suspend resume.`,
+			},
+			{
 				Name: "cellular_sms",
 				Desc: `Identifies SMS tests that can run on North America carriers AT&T, Verizon, T-Mobile.`,
 			},

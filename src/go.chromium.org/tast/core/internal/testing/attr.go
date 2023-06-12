@@ -886,6 +886,10 @@ third_party/autotest/files/server/site_tests/tast/control.racc-config-installed.
 				Desc: "Identifies stable bluetooth tests that are ported to run with the new floss stack. Eventually all tests in bluetooth_core and bluetooth_sa tests will be added to this pool and will be stabilised.",
 			},
 			{
+				Name: "bluetooth_floss_flaky",
+				Desc: "Identifies flaky bluetooth tests that are ported to run with the new floss stack. These tests will be moved to bluetooth_floss when stable.",
+			},
+			{
 				Name: "bluetooth_cross_device_fastpair",
 				Desc: "Identifies stable Cross Device Fast Pair tests that require a peer device.",
 			},

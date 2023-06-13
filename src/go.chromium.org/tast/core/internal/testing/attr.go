@@ -1413,8 +1413,108 @@ Parallels boot-up testing. Otherwise the same as group:crosbolt.`,
 	},
 	{
 		Name:     "intel-gating",
-		Contacts: []string{"ambalavanan.m.m@intel.com", "intel-chrome-system-automation-team@intel.com"},
+		Contacts: []string{"intel.chrome.automation.team@intel.com", "ambalavanan.m.m@intel.com"},
 		Desc:     `A group of tests related to Intel that are gating for build validation.`,
+	},
+	{
+		Name:     "intel-nda",
+		Contacts: []string{"intel.chrome.automation.team@intel.com", "ambalavanan.m.m@intel.com"},
+		Desc:     `A group of tests related to Intel that are No Devices Attached (NDA) for build validation.`,
+	},
+	{
+		Name:     "intel-convertible",
+		Contacts: []string{"intel.chrome.automation.team@intel.com", "ambalavanan.m.m@intel.com"},
+		Desc:     `A group of tests related to Intel that are specific to convertible tablet mode DUTs for build validation.`,
+	},
+	{
+		Name:     "intel-stability",
+		Contacts: []string{"intel.chrome.automation.team@intel.com", "ambalavanan.m.m@intel.com"},
+		Desc:     `A group of tests related to Intel that determines the stability of the builds.`,
+	},
+	{
+		Name:     "intel-reliability",
+		Contacts: []string{"intel.chrome.automation.team@intel.com", "ambalavanan.m.m@intel.com"},
+		Desc:     `A group of tests related to Intel that determines the reliability of the builds.`,
+	},
+	{
+		Name:     "intel-stress",
+		Contacts: []string{"intel.chrome.automation.team@intel.com", "ambalavanan.m.m@intel.com"},
+		Desc:     `A group of tests related to Intel that stresses the DUT for build validation.`,
+	},
+	{
+		Name:     "intel-cswitch-set1",
+		Contacts: []string{"intel.chrome.automation.team@intel.com", "ambalavanan.m.m@intel.com"},
+		Desc:     `A group of tests related to Intel that uses C-Switch with Type-C to HDMI, Type-C to DP, Type-C Headset and Type-C to Type-A Hub with USB 3.0 Pendrive, USB 2.0 Pendrive and Type-A Headset peripherals for build validation.`,
+	},
+	{
+		Name:     "intel-cswitch-set2",
+		Contacts: []string{"intel.chrome.automation.team@intel.com", "ambalavanan.m.m@intel.com"},
+		Desc:     `A group of tests related to Intel that uses C-Switch with Type-C Pendrive, Type-C Keyboard and Type-C to Type-A Hub with Type-A Keyboard peripherals for build validation.`,
+	},
+	{
+		Name:     "intel-dp",
+		Contacts: []string{"intel.chrome.automation.team@intel.com", "ambalavanan.m.m@intel.com"},
+		Desc:     `A group of tests related to Intel that verifies the DP display connected to the DUT via native DP port for build validation.`,
+	},
+	{
+		Name:     "intel-dp-type-c",
+		Contacts: []string{"intel.chrome.automation.team@intel.com", "ambalavanan.m.m@intel.com"},
+		Desc:     `A group of tests related to Intel that verifies the DP display connected to the DUT via Type-C to DP dongle for build validation.`,
+	},
+	{
+		Name:     "intel-hdmi",
+		Contacts: []string{"intel.chrome.automation.team@intel.com", "ambalavanan.m.m@intel.com"},
+		Desc:     `A group of tests related to Intel that verifies the HDMI display connected to the DUT via native HDMI port for build validation.`,
+	},
+	{
+		Name:     "intel-hdmi-type-c",
+		Contacts: []string{"intel.chrome.automation.team@intel.com", "ambalavanan.m.m@intel.com"},
+		Desc:     `A group of tests related to Intel that verifies the HDMI display connected to the DUT via Type-C to HDMI dongle for build validation.`,
+	},
+	{
+		Name:     "intel-bt",
+		Contacts: []string{"intel.chrome.automation.team@intel.com", "ambalavanan.m.m@intel.com"},
+		Desc:     `A group of tests related to Intel that are specific to Bluetooth for build validation.`,
+	},
+	{
+		Name:     "intel-flashing",
+		Contacts: []string{"intel.chrome.automation.team@intel.com", "ambalavanan.m.m@intel.com"},
+		Desc:     `A group of tests related to Intel that flashes new builds on the DUT.`,
+	},
+	{
+		Name:     "intel-jack",
+		Contacts: []string{"intel.chrome.automation.team@intel.com", "ambalavanan.m.m@intel.com"},
+		Desc:     `A group of tests related to Intel where 3.5mm Jack is connected to the DUT for build validation.`,
+	},
+	{
+		Name:     "intel-type-c-eth-dongle",
+		Contacts: []string{"intel.chrome.automation.team@intel.com", "ambalavanan.m.m@intel.com"},
+		Desc:     `A group of tests related to Intel where Ethernet is connected to the DUT via Type-C to Ethernet dongle for build validation.`,
+	},
+	{
+		Name:     "intel-type-c-usb",
+		Contacts: []string{"intel.chrome.automation.team@intel.com", "ambalavanan.m.m@intel.com"},
+		Desc:     `A group of tests related to Intel where Type-C Pendrive is connected to the DUT for build validation.`,
+	},
+	{
+		Name:     "intel-usb-cam",
+		Contacts: []string{"intel.chrome.automation.team@intel.com", "ambalavanan.m.m@intel.com"},
+		Desc:     `A group of tests related to Intel where Type-A USB camera is connected to the DUT for build validation.`,
+	},
+	{
+		Name:     "intel-usb-set1",
+		Contacts: []string{"intel.chrome.automation.team@intel.com", "ambalavanan.m.m@intel.com"},
+		Desc:     `A group of tests related to Intel that uses Type-A Hub with USB 3.0 Pendrive, USB 2.0 Pendrive and USB Speaker for build validation.`,
+	},
+	{
+		Name:     "intel-usb-set2",
+		Contacts: []string{"intel.chrome.automation.team@intel.com", "ambalavanan.m.m@intel.com"},
+		Desc:     `A group of tests related to Intel that uses Type-A Hub with USB Keyboard, USB Mouse and USB Headset for build validation.`,
+	},
+	{
+		Name:     "intel-wlan",
+		Contacts: []string{"intel.chrome.automation.team@intel.com", "ambalavanan.m.m@intel.com"},
+		Desc:     `A group of tests related to Intel that verifies WLAN for build validation.`,
 	},
 	{
 		Name:     "hw_agnostic",

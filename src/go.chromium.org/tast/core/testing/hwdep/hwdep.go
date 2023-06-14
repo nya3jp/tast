@@ -176,7 +176,7 @@ func Model(names ...string) Condition {
 }
 
 // SkipOnModel returns a hardware dependency condition that is satisfied
-// iff the DUT's model ID is none of the given names.
+// if and only if the DUT's model ID is none of the given names.
 // Please find the doc of Model(), too, for details about the expected usage.
 func SkipOnModel(names ...string) Condition {
 	for _, n := range names {
@@ -199,7 +199,7 @@ func SkipOnModel(names ...string) Condition {
 }
 
 // Platform returns a hardware dependency condition that is satisfied
-// iff the DUT's platform ID is one of the give names.
+// if and only if the DUT's platform ID is one of the give names.
 // Please find the doc of Model(), too, for details about the expected usage.
 // Deprecated. Use Model() or "board:*" software dependency.
 func Platform(names ...string) Condition {
@@ -221,7 +221,7 @@ func Platform(names ...string) Condition {
 }
 
 // SkipOnPlatform returns a hardware dependency condition that is satisfied
-// iff the DUT's platform ID is none of the give names.
+// if and only if the DUT's platform ID is none of the give names.
 // Please find the doc of Model(), too, for details about the expected usage.
 // Deprecated. Use SkipOnModel() or "board:*" software dependency.
 func SkipOnPlatform(names ...string) Condition {
@@ -243,7 +243,7 @@ func SkipOnPlatform(names ...string) Condition {
 }
 
 // WifiDevice returns a hardware dependency condition that is satisfied
-// iff the DUT's WiFi device is one of the given names.
+// if and only if the DUT's WiFi device is one of the given names.
 // Please find the doc of Model(), too, for details about the expected usage.
 func WifiDevice(devices ...wlan.DeviceID) Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
@@ -260,7 +260,7 @@ func WifiDevice(devices ...wlan.DeviceID) Condition {
 }
 
 // SkipOnWifiDevice returns a hardware dependency condition that is satisfied
-// iff the DUT's WiFi device is none of the given names.
+// if and only if the DUT's WiFi device is none of the given names.
 // Please find the doc of Model(), too, for details about the expected usage.
 func SkipOnWifiDevice(devices ...wlan.DeviceID) Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
@@ -279,7 +279,7 @@ func SkipOnWifiDevice(devices ...wlan.DeviceID) Condition {
 }
 
 // TouchScreen returns a hardware dependency condition that is satisfied
-// iff the DUT has touchscreen.
+// if and only if the DUT has touchscreen.
 func TouchScreen() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
@@ -311,7 +311,7 @@ func NoTouchScreen() Condition {
 }
 
 // ChromeEC returns a hardware dependency condition that is satisfied
-// iff the DUT has a present EC of the "Chrome EC" type.
+// if and only if the DUT has a present EC of the "Chrome EC" type.
 func ChromeEC() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
@@ -329,7 +329,7 @@ func ChromeEC() Condition {
 }
 
 // ECFeatureTypecCmd returns a hardware dependency condition that is satisfied
-// iff the DUT has an EC which supports the EC_FEATURE_TYPEC_CMD feature flag.
+// if and only if the DUT has an EC which supports the EC_FEATURE_TYPEC_CMD feature flag.
 func ECFeatureTypecCmd() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
@@ -347,7 +347,7 @@ func ECFeatureTypecCmd() Condition {
 }
 
 // ECFeatureCBI returns a hardware dependency condition that
-// is satisfied iff the DUT has an EC which supports CBI.
+// is satisfied if and only if the DUT has an EC which supports CBI.
 func ECFeatureCBI() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
@@ -365,7 +365,7 @@ func ECFeatureCBI() Condition {
 }
 
 // ECFeatureDetachableBase returns a hardware dependency condition that is
-// satisfied iff the DUT has the detachable base attached.
+// satisfied if and only if the DUT has the detachable base attached.
 func ECFeatureDetachableBase() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
@@ -385,7 +385,7 @@ func ECFeatureDetachableBase() Condition {
 }
 
 // ECFeatureChargeControlV2 returns a hardware dependency condition that is
-// satisfied iff the DUT supports version 2 of the EC_CMD_CHARGE_CONTROL feature
+// satisfied if and only if the DUT supports version 2 of the EC_CMD_CHARGE_CONTROL feature
 // (which adds battery sustain).
 func ECFeatureChargeControlV2() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
@@ -402,7 +402,7 @@ func ECFeatureChargeControlV2() Condition {
 }
 
 // ECFeatureAssertsPanic returns a hardware dependency condition that is
-// satisfied iff the DUT EC will panic on assertion failure.
+// satisfied if and only if the DUT EC will panic on assertion failure.
 func ECFeatureAssertsPanic() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
@@ -422,7 +422,7 @@ func ECFeatureAssertsPanic() Condition {
 }
 
 // ECFeatureSystemSafeMode returns a hardware dependency condition that is
-// satisfied iff the DUT EC supports system safe mode recovery.
+// satisfied if and only if the DUT EC supports system safe mode recovery.
 func ECFeatureSystemSafeMode() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
@@ -442,7 +442,7 @@ func ECFeatureSystemSafeMode() Condition {
 }
 
 // Cellular returns a hardware dependency condition that
-// is satisfied iff the DUT has a cellular modem.
+// is satisfied if and only if the DUT has a cellular modem.
 func Cellular() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
@@ -460,7 +460,7 @@ func Cellular() Condition {
 }
 
 // SkipOnCellularVariant returns a hardware dependency condition that is satisfied
-// iff the DUT's cellular variant is none of the given names.
+// if and only if the DUT's cellular variant is none of the given names.
 func SkipOnCellularVariant(names ...string) Condition {
 	for _, n := range names {
 		if !idRegexp.MatchString(n) {
@@ -488,7 +488,7 @@ func SkipOnCellularVariant(names ...string) Condition {
 }
 
 // CellularVariant returns a hardware dependency condition that is satisfied
-// iff the DUT's cellular variant is one of the given names.
+// if and only if the DUT's cellular variant is one of the given names.
 func CellularVariant(names ...string) Condition {
 	for _, n := range names {
 		if !idRegexp.MatchString(n) {
@@ -516,7 +516,7 @@ func CellularVariant(names ...string) Condition {
 }
 
 // CellularModemType returns a hardware dependency condition that is satisfied
-// iff the DUT's cellular modem type is one of the given types.
+// if and only if the DUT's cellular modem type is one of the given types.
 func CellularModemType(modemTypes ...cellularconst.ModemType) Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
@@ -543,7 +543,7 @@ func CellularModemType(modemTypes ...cellularconst.ModemType) Condition {
 }
 
 // SkipOnCellularModemType returns a hardware dependency condition that is satisfied
-// iff the DUT's cellular modem type is none of the given types.
+// if and only if the DUT's cellular modem type is none of the given types.
 func SkipOnCellularModemType(modemTypes ...cellularconst.ModemType) Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
@@ -570,7 +570,7 @@ func SkipOnCellularModemType(modemTypes ...cellularconst.ModemType) Condition {
 }
 
 // CellularSoftwareDynamicSar returns a hardware dependency condition that
-// is satisfied iff the DUT has enabled software dynamic sar.
+// is satisfied if and only if the DUT has enabled software dynamic sar.
 func CellularSoftwareDynamicSar() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
@@ -586,7 +586,7 @@ func CellularSoftwareDynamicSar() Condition {
 }
 
 // NoCellular returns a hardware dependency condition that
-// is satisfied iff the DUT does not have a cellular modem.
+// is satisfied if and only if the DUT does not have a cellular modem.
 func NoCellular() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
@@ -604,7 +604,7 @@ func NoCellular() Condition {
 }
 
 // Bluetooth returns a hardware dependency condition that
-// is satisfied iff the DUT has a bluetooth adapter.
+// is satisfied if and only if the DUT has a bluetooth adapter.
 func Bluetooth() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		if hf := f.GetHardwareFeatures(); hf == nil {
@@ -619,7 +619,7 @@ func Bluetooth() Condition {
 	}
 }
 
-// GSCUART returns a hardware dependency condition that is satisfied iff the DUT has a GSC and that GSC has a working UART.
+// GSCUART returns a hardware dependency condition that is satisfied if and only if the DUT has a GSC and that GSC has a working UART.
 // TODO(b/224608005): Add a cros_config for this and use that instead.
 func GSCUART() Condition {
 	// There is no way to probe for this condition, and there should be no machines newer than 2017 without working UARTs.
@@ -645,7 +645,7 @@ func GSCUART() Condition {
 }
 
 // GSCRWKeyIDProd returns a hardware dependency condition that
-// is satisfied iff the DUT does have a GSC RW image signed with prod key.
+// is satisfied if and only if the DUT does have a GSC RW image signed with prod key.
 func GSCRWKeyIDProd() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
@@ -662,7 +662,7 @@ func GSCRWKeyIDProd() Condition {
 	}
 }
 
-// HasNoTpm returns a hardware dependency condition that is satisfied iff the DUT
+// HasNoTpm returns a hardware dependency condition that is satisfied if and only if the DUT
 // doesn't have an enabled TPM.
 func HasNoTpm() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
@@ -678,7 +678,7 @@ func HasNoTpm() Condition {
 	}
 }
 
-// HasTpm returns a hardware dependency condition that is satisfied iff the DUT
+// HasTpm returns a hardware dependency condition that is satisfied if and only if the DUT
 // does have an enabled TPM.
 func HasTpm() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
@@ -694,7 +694,7 @@ func HasTpm() Condition {
 	}
 }
 
-// HasTpm1 returns a hardware dependency condition that is satisfied iff the DUT
+// HasTpm1 returns a hardware dependency condition that is satisfied if and only if the DUT
 // does have an enabled TPM1.2.
 func HasTpm1() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
@@ -710,7 +710,7 @@ func HasTpm1() Condition {
 	}
 }
 
-// HasTpm2 returns a hardware dependency condition that is satisfied iff the DUT
+// HasTpm2 returns a hardware dependency condition that is satisfied if and only if the DUT
 // does have an enabled TPM2.0.
 func HasTpm2() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
@@ -726,13 +726,13 @@ func HasTpm2() Condition {
 	}
 }
 
-// CPUNotNeedsCoreScheduling returns a hardware dependency condition that is satisfied iff the DUT's
+// CPUNotNeedsCoreScheduling returns a hardware dependency condition that is satisfied if and only if the DUT's
 // CPU is does not need to use core scheduling to mitigate hardware vulnerabilities.
 func CPUNotNeedsCoreScheduling() Condition {
 	return cpuNeedsCoreScheduling(false)
 }
 
-// CPUNeedsCoreScheduling returns a hardware dependency condition that is satisfied iff the DUT's
+// CPUNeedsCoreScheduling returns a hardware dependency condition that is satisfied if and only if the DUT's
 // CPU needs to use core scheduling to mitigate hardware vulnerabilities.
 func CPUNeedsCoreScheduling() Condition {
 	return cpuNeedsCoreScheduling(true)
@@ -767,7 +767,7 @@ func cpuNeedsCoreScheduling(enabled bool) Condition {
 	}
 }
 
-// CPUSupportsSMT returns a hardware dependency condition that is satisfied iff the DUT supports
+// CPUSupportsSMT returns a hardware dependency condition that is satisfied if and only if the DUT supports
 // Symmetric Multi-Threading.
 func CPUSupportsSMT() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
@@ -785,7 +785,7 @@ func CPUSupportsSMT() Condition {
 	}
 }
 
-// CPUSupportsSHANI returns a hardware dependency condition that is satisfied iff the DUT supports
+// CPUSupportsSHANI returns a hardware dependency condition that is satisfied if and only if the DUT supports
 // SHA-NI instruction extension.
 func CPUSupportsSHANI() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
@@ -804,7 +804,7 @@ func CPUSupportsSHANI() Condition {
 }
 
 // Fingerprint returns a hardware dependency condition that is satisfied
-// iff the DUT has fingerprint sensor.
+// if and only if the DUT has fingerprint sensor.
 func Fingerprint() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
@@ -835,7 +835,7 @@ func NoFingerprint() Condition {
 	}
 }
 
-// VRR returns a hardware dependency condition that is satisfied iff
+// VRR returns a hardware dependency condition that is satisfied if and only if
 // the DUT is VRR Capable (has vrr_capable value set to 1 in modetest).
 func VRR() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
@@ -852,7 +852,7 @@ func VRR() Condition {
 }
 
 // ExternalDisplay returns a hardware dependency condition that is satisfied
-// iff the DUT has an external display
+// if and only if the DUT has an external display
 func ExternalDisplay() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
@@ -872,7 +872,7 @@ func ExternalDisplay() Condition {
 }
 
 // InternalDisplay returns a hardware dependency condition that is satisfied
-// iff the DUT has an internal display, e.g. Chromeboxes and Chromebits don't.
+// if and only if the DUT has an internal display, e.g. Chromeboxes and Chromebits don't.
 func InternalDisplay() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
@@ -888,7 +888,7 @@ func InternalDisplay() Condition {
 }
 
 // NoInternalDisplay returns a hardware dependency condition that is satisfied
-// iff the DUT does not have an internal display.
+// if and only if the DUT does not have an internal display.
 func NoInternalDisplay() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
@@ -904,7 +904,7 @@ func NoInternalDisplay() Condition {
 }
 
 // Keyboard returns a hardware dependency condition that is satisfied
-// iff the DUT has an keyboard, e.g. Chromeboxes and Chromebits don't.
+// if and only if the DUT has an keyboard, e.g. Chromeboxes and Chromebits don't.
 // Tablets might have a removable keyboard.
 func Keyboard() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
@@ -939,7 +939,7 @@ func KeyboardBacklight() Condition {
 }
 
 // Touchpad returns a hardware dependency condition that is satisfied
-// iff the DUT has a touchpad.
+// if and only if the DUT has a touchpad.
 func Touchpad() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
@@ -976,7 +976,7 @@ func WifiWEP() Condition {
 }
 
 // Wifi80211ax returns a hardware dependency condition that is satisfied
-// iff the DUT's WiFi module supports 802.11ax.
+// if and only if the DUT's WiFi module supports 802.11ax.
 func Wifi80211ax() Condition {
 	return WifiDevice(
 		QualcommWCN6750,
@@ -995,7 +995,7 @@ func Wifi80211ax() Condition {
 }
 
 // Wifi80211ax6E returns a hardware dependency condition that is satisfied
-// iff the DUT's WiFi module supports WiFi 6E.
+// if and only if the DUT's WiFi module supports WiFi 6E.
 func Wifi80211ax6E() Condition {
 	// Note: this is currently an allowlist. We can move this to a blocklist if the number of platforms gets out of hand.
 	// TODO(crbug.com/1070299): replace this when we have hwdep for WiFi chips.
@@ -1023,7 +1023,7 @@ func Wifi80211ax6E() Condition {
 }
 
 // WifiMACAddrRandomize returns a hardware dependency condition that is satisfied
-// iff the DUT supports WiFi MAC Address Randomization.
+// if and only if the DUT supports WiFi MAC Address Randomization.
 func WifiMACAddrRandomize() Condition {
 	return SkipOnWifiDevice(
 		// mwifiex in 3.10 kernel does not support it.
@@ -1038,7 +1038,7 @@ func WifiMACAddrRandomize() Condition {
 }
 
 // WifiTDLS returns a hardware dependency condition that is satisfied
-// iff the DUT fully supports TDLS MGMT and OPER.
+// if and only if the DUT fully supports TDLS MGMT and OPER.
 func WifiTDLS() Condition {
 	return SkipOnWifiDevice(
 		// QCA 6174 does not support TDLS.
@@ -1049,12 +1049,12 @@ func WifiTDLS() Condition {
 }
 
 // WifiFT returns a hardware dependency condition that is satisfied
-// iff the DUT supports Fast Transition roaming mode.
+// if and only if the DUT supports Fast Transition roaming mode.
 func WifiFT() Condition {
 	return SkipOnWifiDevice(Marvell88w8897SDIO, Marvell88w8997PCIE)
 }
 
-// WifiNotMarvell returns a hardware dependency condition that is satisfied iff
+// WifiNotMarvell returns a hardware dependency condition that is satisfied if and only if
 // the DUT's not using a Marvell WiFi chip.
 func WifiNotMarvell() Condition {
 	// TODO(b/187699768): we don't yet have relevant fields in device.Config
@@ -1247,7 +1247,7 @@ func hasBattery(f *protocol.HardwareFeatures) (bool, error) {
 	return dc.GetPower() == protocol.DeprecatedDeviceConfig_POWER_SUPPLY_BATTERY, nil
 }
 
-// Battery returns a hardware dependency condition that is satisfied iff the DUT
+// Battery returns a hardware dependency condition that is satisfied if and only if the DUT
 // has a battery, e.g. Chromeboxes and Chromebits don't.
 func Battery() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
@@ -1263,7 +1263,7 @@ func Battery() Condition {
 	}
 }
 
-// NoBatteryBootSupported returns a hardware dependency condition that is satisfied iff the DUT
+// NoBatteryBootSupported returns a hardware dependency condition that is satisfied if and only if the DUT
 // supports booting without a battery.
 func NoBatteryBootSupported() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
@@ -1379,7 +1379,7 @@ var modelsWithoutForceDischargeSupport = []string{
 	"sarien",
 }
 
-// ForceDischarge returns a hardware dependency condition that is satisfied iff the DUT
+// ForceDischarge returns a hardware dependency condition that is satisfied if and only if the DUT
 // has a battery and it supports force discharge through `ectool chargecontrol`.
 // The devices listed in modelsWithoutForceDischargeSupport do not satisfy this condition
 // even though they have a battery since they does not support force discharge via ectool.
@@ -1575,7 +1575,7 @@ func MaxMemory(reqMegabytes int) Condition {
 	}}
 }
 
-// Speaker returns a hardware dependency condition that is satisfied iff the DUT has a speaker.
+// Speaker returns a hardware dependency condition that is satisfied if and only if the DUT has a speaker.
 func Speaker() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
@@ -1590,7 +1590,7 @@ func Speaker() Condition {
 	}
 }
 
-// Microphone returns a hardware dependency condition that is satisfied iff the DUT has a microphone.
+// Microphone returns a hardware dependency condition that is satisfied if and only if the DUT has a microphone.
 func Microphone() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
@@ -1605,7 +1605,7 @@ func Microphone() Condition {
 	}
 }
 
-// PrivacyScreen returns a hardware dependency condition that is satisfied iff the DUT has a privacy screen.
+// PrivacyScreen returns a hardware dependency condition that is satisfied if and only if the DUT has a privacy screen.
 func PrivacyScreen() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
@@ -1645,7 +1645,7 @@ var smartAmps = []string{
 	configpb.HardwareFeatures_Audio_CS35L41.String(),
 }
 
-// SmartAmp returns a hardware dependency condition that is satisfied iff the DUT
+// SmartAmp returns a hardware dependency condition that is satisfied if and only if the DUT
 // has smart amplifier.
 func SmartAmp() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
@@ -1664,7 +1664,7 @@ func SmartAmp() Condition {
 	}}
 }
 
-// SmartAmpBootTimeCalibration returns a hardware dependency condition that is satisfied iff
+// SmartAmpBootTimeCalibration returns a hardware dependency condition that is satisfied if and only if
 // the DUT enables boot time calibration for smart amplifier.
 func SmartAmpBootTimeCalibration() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
@@ -1695,7 +1695,7 @@ func formFactorListed(hf *configpb.HardwareFeatures, ffList ...configpb.Hardware
 }
 
 // FormFactor returns a hardware dependency condition that is satisfied
-// iff the DUT's form factor is one of the given values.
+// if and only if the DUT's form factor is one of the given values.
 func FormFactor(ffList ...configpb.HardwareFeatures_FormFactor_FormFactorType) Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
@@ -1711,7 +1711,7 @@ func FormFactor(ffList ...configpb.HardwareFeatures_FormFactor_FormFactorType) C
 }
 
 // SkipOnFormFactor returns a hardware dependency condition that is satisfied
-// iff the DUT's form factor is none of the give values.
+// if and only if the DUT's form factor is none of the give values.
 func SkipOnFormFactor(ffList ...configpb.HardwareFeatures_FormFactor_FormFactorType) Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
@@ -1790,7 +1790,7 @@ func SupportsV4L2StatelessVideoDecoding() Condition {
 }
 
 // SupportsHEVCVideoDecodingInChrome says true if the device supports HEVC video
-// decoding in Chrome. Note that this might be different from support at the
+// decoding in Chrome. Note that this might be dif and only iferent from support at the
 // platform (i.e. drivers, kernel, hardware) level.
 // This function represents a policy: Tast tests using this should still make
 // use of SoftwareDeps "caps.HWDecodeHEVC" (or "caps.HWDecodeHEVC10BPP").
@@ -1824,12 +1824,12 @@ func SupportsHEVCVideoDecodingInChrome() Condition {
 	}}
 }
 
-// Lid returns a hardware dependency condition that is satisfied iff the DUT's form factor has a lid.
+// Lid returns a hardware dependency condition that is satisfied if and only if the DUT's form factor has a lid.
 func Lid() Condition {
 	return FormFactor(Clamshell, Convertible, Detachable)
 }
 
-// InternalKeyboard returns a hardware dependency condition that is satisfied iff the DUT's form factor has a fixed undetachable keyboard.
+// InternalKeyboard returns a hardware dependency condition that is satisfied if and only if the DUT's form factor has a fixed undetachable keyboard.
 func InternalKeyboard() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
@@ -1865,7 +1865,7 @@ func DisplayPortConverter(names ...string) Condition {
 	}}
 }
 
-// Vboot2 is satisfied iff crossystem param 'fw_vboot2' indicates that DUT uses vboot2.
+// Vboot2 is satisfied if and only if crossystem param 'fw_vboot2' indicates that DUT uses vboot2.
 func Vboot2() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		dc := f.GetDeprecatedDeviceConfig()
@@ -1883,7 +1883,7 @@ func Vboot2() Condition {
 // hardware decoding. They are x86 devices that are capable of VP9 hardware
 // decoding and Qualcomm7180/7280.
 // VP9 k-SVC is a SVC stream in which a frame only on keyframe can refer frames
-// in a different spatial layer. See https://www.w3.org/TR/webrtc-svc/#dependencydiagrams* for detail.
+// in a dif and only iferent spatial layer. See https://www.w3.org/TR/webrtc-svc/#dependencydiagrams* for detail.
 func SupportsVP9KSVCHWDecoding() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		dc := f.GetDeprecatedDeviceConfig()

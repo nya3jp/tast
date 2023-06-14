@@ -248,4 +248,4 @@ func SystemTimezone(ctx context.Context, s *testing.State) {
 ```
 
 The full implementation of the remote test can be found
-[here](https://osscs.corp.google.com/chromiumos/chromiumos/codesearch/+/03b1d8d64180a8e6f5c073c683cd3ba070adf1f8:src/platform/tast-tests/src/go.chromium.org/tast-tests/cros/remote/bundles/cros/policy/system_timezone.go).
+[here](https://osscs.corp.google.com/chromiumos/chromiumos/codesearch/+/03b1d8d64180a8e6f5c073c683cd3ba070adf1f8:src/platform/tast-tests/src/chromiumos/tast/remote/bundles/cros/policy/system_timezone.go).

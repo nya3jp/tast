@@ -1765,15 +1765,19 @@ func SupportsHEVCVideoDecodingInChrome() Condition {
 			return satisfied()
 		}
 		// ARM embedders don't support it.
-		if satisfied, _, err := SkipCPUSocFamily([]string{"mediatek", "rockchip", "qualcomm"}).Satisfied(f); err != nil || !satisfied {
+		if satisfy, _, err := CPUSocFamily([]string{"mediatek", "rockchip", "qualcomm"}).Satisfied(f); err == nil && satisfy {
 			return unsatisfied("Chrome does not support HEVC video decoding on this SoC")
 		}
 		// AMD Zork (Picasso) and before also don't.
-		if satisfied, _, err := SkipGPUFamily([]string{"picasso", "stoney"}).Satisfied(f); err != nil || !satisfied {
+		if satisfy, _, err := GPUFamily([]string{"picasso", "stoney"}).Satisfied(f); err == nil && satisfy {
 			return unsatisfied("Chrome does not support HEVC video decoding on this SoC")
 		}
+		// Other AMD device support it.
+		if satisfy, _, err := CPUSocFamily([]string{"amd"}).Satisfied(f); err == nil && satisfy {
+			return satisfied()
+		}
 		// Any Intel TGL, ADL-P do support it.
-		if supported, _, err := GPUFamily([]string{"tigerlake", "alderlake"}).Satisfied(f); err == nil && supported {
+		if satisfy, _, err := GPUFamily([]string{"tigerlake", "alderlake"}).Satisfied(f); err == nil && satisfy {
 			return satisfied()
 		}
 		return unsatisfied("Chrome does not support HEVC video decoding on this SoC")

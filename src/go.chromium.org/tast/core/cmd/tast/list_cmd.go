@@ -5,12 +5,12 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"flag"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 
 	"github.com/google/subcommands"
@@ -88,13 +88,14 @@ func (lc *listCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{
 	lc.cfg.Target = f.Args()[0]
 	lc.cfg.Patterns = f.Args()[1:]
 
-	logger := logging.NewSinkLogger(logging.LevelDebug, true, logging.NewWriterSink(ioutil.Discard))
+	var logInMemory bytes.Buffer
+	logger := logging.NewSinkLogger(logging.LevelDebug, true, logging.NewWriterSink(&logInMemory))
 	ctx = logging.AttachLoggerNoPropagation(ctx, logger)
 
 	state := config.DeprecatedState{}
 	results, err := lc.wrapper.run(ctx, lc.cfg.Freeze(), &state)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "ERROR: %v\n", err)
+		fmt.Fprintf(os.Stderr, "%v\nERROR: %v\n", logInMemory.String(), err)
 		return subcommands.ExitFailure
 	}
 	tests := make([]*resultsjson.Test, len(results))

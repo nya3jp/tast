@@ -292,4 +292,5 @@ var softwareFeatureDefs = map[string]string{
 	"audio_unstable":             `"board:octopus" || "board:hatch"`,
 	"gsc_can_wake_ec_with_reset": `!("board:grunt" || "board:nami")`,
 	"ec_hibernate":               `!("board:brask" || "board:fizz" || "board:kukui" || "board:puff" || "board:scarlet" || "board:shotzo")`,
+	"ap_noise_cancellation":      `("board:brya" || "board:nissa" || "board:skyrim" || "board:guybrush")`,
 }

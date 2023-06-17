@@ -1435,14 +1435,34 @@ Parallels boot-up testing. Otherwise the same as group:crosbolt.`,
 		Desc:     `A group of tests related to Intel that are specific to convertible tablet mode DUTs for build validation.`,
 	},
 	{
-		Name:     "intel-stability",
+		Name:     "intel-stability-bronze",
 		Contacts: []string{"intel.chrome.automation.team@intel.com", "ambalavanan.m.m@intel.com"},
-		Desc:     `A group of tests related to Intel that determines the stability of the builds.`,
+		Desc:     `A group of tests related to Intel that determines the stability of the builds on proto boards.`,
 	},
 	{
-		Name:     "intel-reliability",
+		Name:     "intel-stability-silver",
 		Contacts: []string{"intel.chrome.automation.team@intel.com", "ambalavanan.m.m@intel.com"},
-		Desc:     `A group of tests related to Intel that determines the reliability of the builds.`,
+		Desc:     `A group of tests related to Intel that determines the stability of the builds on EVT boards.`,
+	},
+	{
+		Name:     "intel-stability-gold",
+		Contacts: []string{"intel.chrome.automation.team@intel.com", "ambalavanan.m.m@intel.com"},
+		Desc:     `A group of tests related to Intel that determines the stability of the builds on DVT boards.`,
+	},
+	{
+		Name:     "intel-reliability-bronze",
+		Contacts: []string{"intel.chrome.automation.team@intel.com", "ambalavanan.m.m@intel.com"},
+		Desc:     `A group of tests related to Intel that determines the reliability of the builds on proto boards.`,
+	},
+	{
+		Name:     "intel-reliability-silver",
+		Contacts: []string{"intel.chrome.automation.team@intel.com", "ambalavanan.m.m@intel.com"},
+		Desc:     `A group of tests related to Intel that determines the reliability of the builds on EVT boards.`,
+	},
+	{
+		Name:     "intel-reliability-gold",
+		Contacts: []string{"intel.chrome.automation.team@intel.com", "ambalavanan.m.m@intel.com"},
+		Desc:     `A group of tests related to Intel that determines the reliability of the builds on DVT boards.`,
 	},
 	{
 		Name:     "intel-stress",

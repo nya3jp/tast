@@ -1976,6 +1976,18 @@ func CameraFeature(names ...string) Condition {
 	}}
 }
 
+// CameraEnumerated is satisfied if all the camera devices are enumberated on the DUT.
+func CameraEnumerated() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		if hf := f.GetHardwareFeatures(); hf == nil {
+			return withErrorStr("Did not find hardware features")
+		} else if !hf.GetCamera().Enumerated {
+			return unsatisfied("no camera was enumerated")
+		}
+		return satisfied()
+	}}
+}
+
 // MainboardHasEarlyLibgfxinit is satisfied if the BIOS was built with Kconfig CONFIG_MAINBOARD_HAS_EARLY_LIBGFXINIT
 func MainboardHasEarlyLibgfxinit() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {

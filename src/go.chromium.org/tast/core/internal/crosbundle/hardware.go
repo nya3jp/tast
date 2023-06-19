@@ -777,6 +777,11 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		logging.Infof(ctx, "failed to load camera feature profile: %v", err)
 	}
 	features.Camera.Features = camFeatures
+	camEnumerated, err := cameraEnumerated()
+	if err != nil {
+		logging.Infof(ctx, "failed to load camera enumeration status: %v", err)
+	}
+	features.Camera.Enumerated = camEnumerated
 
 	if err := parseKConfigs(ctx, features); err != nil {
 		logging.Info(ctx, "Failed to parse BIOS kConfig: ", err)
@@ -1449,6 +1454,39 @@ func cameraFeatures(model string) ([]string, error) {
 		ret = append(ret, k)
 	}
 	return ret, nil
+}
+
+// cameraEnumerated returns whether camera devices have been all enumerated.
+func cameraEnumerated() (bool, error) {
+	countStr, err := crosConfig("/camera", "count")
+	if err != nil {
+		return false, errors.Wrap(err, "failed to get count from crosConfig")
+	}
+	count, err := strconv.Atoi(countStr)
+	if err != nil {
+		return false, errors.Wrap(err, "failed to parse crosConfig output")
+	}
+
+	usbCams := func() int {
+		out, err := exec.Command("media_v4l2_test", "--list_usbcam").Output()
+		if err != nil {
+			return 0
+		}
+		return len(strings.Fields(string(out)))
+	}()
+	mipiCams := func() int {
+		out, err := exec.Command("cros-camera-tool", "modules", "list").Output()
+		if err != nil {
+			return 0
+		}
+		var cams []map[string]string
+		if err := json.Unmarshal(out, &cams); err != nil {
+			return 0
+		}
+		return len(cams)
+	}()
+
+	return usbCams+mipiCams == count, nil
 }
 
 // findGSCKeyID parses a content of "gsctool -a -f -M" and return a required key

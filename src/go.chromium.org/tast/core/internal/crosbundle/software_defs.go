@@ -55,8 +55,8 @@ var softwareFeatureDefs = map[string]string{
 	"chrome":                       "!chromeless_tty && !rialto",
 	"chrome_internal":              "chrome_internal",
 	"chromeless":                   "chromeless_tty || rialto",
-	"chromeos_ec_firmware":         `!"wilco" && !"betty" && !"tast_vm" && !"board:reven*"`, // Wilco devices run Dell EC firmware.  VM boards (e.g. betty) don't have EC firmware.  Reven (ChromeOS Flex) devices run third-party firmware.
-	"chromeos_firmware":            `!("board:reven*")`,                                     // Reven (ChromeOS Flex) devices run third-party firmware.
+	"chromeos_ec_firmware":         "!wilco && !no_factory_flow", // Wilco devices run Dell EC firmware.  VM boards don't have EC firmware.
+	"chromeos_firmware":            "!no_factory_flow",           // VMs run third-party firmware.
 	"chromeos_kernelci":            "chromeos_kernelci_builder",
 	// Kernels pre-4.19 do not support core scheduling.
 	"coresched": `!("kernel-4_4" || "kernel-4_14")`,
@@ -74,9 +74,9 @@ var softwareFeatureDefs = map[string]string{
 	"crosvm_no_gpu": `!"crosvm-gpu" || !"virtio_gpu"`,
 	"crosvm_swap":   `"crosvm-swap"`,
 	// VMs don't support few crossystem sub-commands: https://crbug.com/974615
-	"crossystem":        `!"betty" && !"tast_vm"`,
+	"crossystem":        "!no_factory_flow",
 	"cups":              "cups",
-	"diagnostics":       `"diagnostics" && !"betty" && !"tast_vm"`, // VMs do not have hardware to diagnose. https://crbug.com/1126619
+	"diagnostics":       "diagnostics && !no_factory_flow", // VMs do not have hardware to diagnose. https://crbug.com/1126619
 	"dlc":               "dlc",
 	"dptf":              "dptf",
 	"device_crash":      `!("board:samus")`, // Samus devices do not reliably come back after kernel crashes. crbug.com/1045821
@@ -93,20 +93,20 @@ var softwareFeatureDefs = map[string]string{
 	// TODO(b/201430283): Remove nami-kernelnext, rammus, and sarien-kernelnext when bug is resolved.
 	"ec_crash":            `!(("board:asuka" || "board:banon" || "board:caroline" || "board:caroline-kernelnext" || "board:caroline-userdebug" || "board:cave" || "board:celes" || "board:chell" || "board:cyan" || "board:edgar" || "board:kefka" || "board:reks" || "board:relm" || "board:sentry" || "board:terra" || "board:ultima" || "board:wizpig") || ("board:drallion" || "board:sarien") || ("board:guado" || "board:guado-cfm" || "board:tidus" || "board:rikku" || "board:rikku-cfm" || "board:veyron_fievel" || "board:veyron_tiger") || "board:nocturne" || "board:nocturne-kernelnext" || "board:nami-kernelnext" || "board:rammus" || "board:sarien-kernelnext")`,
 	"ec_system_safe_mode": `"board:skyrim" || "board:dedede"`,
-	"endorsement":         `!"betty" && !"tast_vm"`, // VMs don't have valid endorsement certificate.
+	"endorsement":         "!no_factory_flow", // VMs don't have valid endorsement certificate.
 	"faceauth":            "faceauth",
 	"factory_flow":        "!no_factory_flow",
-	"fake_hps":            `"betty" || "tast_vm"`, // VMs run hpsd with --test (fake software device)
+	"fake_hps":            "no_factory_flow", // VMs run hpsd with --test (fake software device)
 	// TODO(http://b/271025366): Remove feedback when the bug is resolved.
 	"feedback":                  `!("board:fizz" || "board:puff" || "board:rammus")`,
 	"firewall":                  "!moblab", // Moblab has relaxed iptables rules
-	"flashrom":                  `!"betty" && !"tast_vm"`,
+	"flashrom":                  "!no_factory_flow",
 	"first_class_servo_working": `!("board:brya" || "board:volteer")`,     // TODO(b/274634861): remove the first_class_servo_working when fixed.
 	"flex_id":                   "flex_id",                                // Enable using flex_id for enrollment
 	"fwupd":                     "fwupd",                                  // have sys-apps/fwupd installed.
 	"ghostscript":               "postscript",                             // Ghostscript and dependent packages available
 	"google_virtual_keyboard":   "chrome_internal && internal && !moblab", // doesn't work on Moblab: https://crbug.com/949912
-	"gpu_sandboxing":            `!"betty" && !"tast_vm"`,                 // no GPU sandboxing on VMs: https://crbug.com/914688
+	"gpu_sandboxing":            "!no_factory_flow",                       // no GPU sandboxing on VMs: https://crbug.com/914688
 	"gsc":                       `"cr50_onboard" || "ti50_onboard"`,
 	"hana":                      "hana",
 	"hammerd":                   "hammerd",
@@ -128,15 +128,15 @@ var softwareFeatureDefs = map[string]string{
 	// veyron does not support rootfs lacros entirely. b/204888294
 	// TODO(crbug.com/1412276): Remove lacros_stable and lacros_unstable eventually.
 	"lacros":                 `!chromeless_tty && !rialto && !("board:veyron_fievel" || "board:veyron_tiger")`,
-	"lacros_stable":          `!chromeless_tty && !rialto && !("board:veyron_fievel" || "board:veyron_tiger") && !"tast_vm" && !"betty"`,
-	"lacros_unstable":        `!chromeless_tty && !rialto && !("board:veyron_fievel" || "board:veyron_tiger") && ("tast_vm" || "betty")`,
+	"lacros_stable":          `!chromeless_tty && !rialto && !("board:veyron_fievel" || "board:veyron_tiger") && !no_factory_flow`,
+	"lacros_unstable":        `!chromeless_tty && !rialto && !("board:veyron_fievel" || "board:veyron_tiger") && no_factory_flow`,
 	"landlock_enabled":       `!("kernel-4_4" || "kernel-4_14" || "kernel-4_19" || "kernel-5_4")`,
 	"lvm_stateful_partition": "lvm_stateful_partition",
 	"mbo":                    "mbo",
 	// QEMU has implemented memfd_create, but we haven't updated
 	// to a release with the change (https://bugs.launchpad.net/qemu/+bug/1734792).
-	// Remove "|| betty || tast_vm" from list when we upgrade.
-	"memfd_create": `!("betty" || "tast_vm")`,
+	// Remove when we upgrade.
+	"memfd_create": "!no_factory_flow",
 	"memd":         "memd",
 	// Memfd execution attempts are detected and blocked only on the following kernel versions.
 	"memfd_exec_detection": `("kernel-4_19" || "kernel-5_4" || "kernel-5_10" || "kernel-5_15")`,
@@ -144,16 +144,16 @@ var softwareFeatureDefs = map[string]string{
 	// See: ChromeCrashReporterClient::GetCollectStatsConsent()
 	// Also metrics consent needs TPM (crbug.com/1035197).
 	"metrics_consent":           "chrome_internal && !mocktpm && !tast_vm",
-	"microcode":                 `!"betty" && !"tast_vm"`,
+	"microcode":                 "!no_factory_flow",
 	"ml_benchmark_drivers":      "ml_benchmark_drivers",
 	"ml_service":                "ml_service",
 	"modemfwd":                  "modemfwd",
-	"mosys":                     `!"betty" && !"tast_vm"`,
+	"mosys":                     "!no_factory_flow",
 	"nacl":                      "nacl",
 	"ndk_translation":           "ndk_translation",
 	"ndk_translation64":         "ndk_translation64",
 	"nnapi":                     "nnapi",
-	"nnapi_vendor_driver":       "nnapi && !betty && !tast_vm",
+	"nnapi_vendor_driver":       "nnapi && !no_factory_flow",
 	"no_amd_cpu":                "!amd_cpu",
 	"no_android":                "!arc",
 	"no_android_vm_r":           `!(arc && arcvm && "android-vm-rvc")`,
@@ -172,7 +172,7 @@ var softwareFeatureDefs = map[string]string{
 	"no_lvm_stateful_partition": "!lvm_stateful_partition",
 	"no_msan":                   "!msan",
 	"no_ondevice_handwriting":   "!ml_service || !ondevice_handwriting",
-	"no_qemu":                   `!"betty" && !"tast_vm"`,
+	"no_qemu":                   "!no_factory_flow",
 	"no_symlink_mount":          "!lxc", // boards using LXC set CONFIG_SECURITY_CHROMIUMOS_NO_SYMLINK_MOUNT=n
 	"no_tablet_form_factor":     "!tablet_form_factor",
 	"no_tpm2_simulator":         "!tpm2_simulator",
@@ -199,11 +199,11 @@ var softwareFeatureDefs = map[string]string{
 	"protected_content":                       "cdm_factory_daemon",
 	// VM boards don't support pstore: https://crbug.com/971899
 	// reven boards don't support pstore: b/234722825
-	"pstore": `!("betty" || "tast_vm" || "board:reven*")`,
+	"pstore": "!no_factory_flow",
 	// ptp_kvm is only available on ARM in kernel 5.10 or later.
 	// ptp_kvm is unreliable on amd64 in kernel 4.19.
 	"ptp_kvm": `("amd64" && !"kernel-4_19") || (("arm" || "arm64") && !("kernel-4_4" || "kernel-4_14" || "kernel-4_19" || "kernel-5_4"))`,
-	"qemu":    `"betty" || "tast_vm"`,
+	"qemu":    "no_factory_flow",
 	"racc":    "racc",
 	// weird missing-runner-after-reboot bug: https://crbug.com/909955
 	// TODO(yich): This is a workaround to enable reboot flag on all boards.
@@ -220,10 +220,10 @@ var softwareFeatureDefs = map[string]string{
 	"smartdim":             "smartdim",
 	"smartctl":             "nvme || sata",
 	// VMs don't support speech on-device API.
-	"soda": `!"betty" && !"tast_vm"`,
+	"soda": "!no_factory_flow",
 	// Should match StackSamplingProfiler::IsSupportedForCurrentPlatform() in Chromium repo.
-	"stack_sampled_metrics":     `"amd64" && !"betty" && !"tast_vm"`,
-	"storage_wearout_detect":    `"storage_wearout_detect" && !"betty" && !"tast_vm"`, // Skip wearout checks for VMs and eMMC < 5.0
+	"stack_sampled_metrics":     "amd64 && !no_factory_flow",
+	"storage_wearout_detect":    "storage_wearout_detect && !no_factory_flow", // Skip wearout checks for VMs and eMMC < 5.0
 	"tablet_form_factor":        "tablet_form_factor",
 	"tflite_opencl":             `!(elm || hana)`, // these boards seem to have issues with the OpenCL TFLite delegate (b/233851820)
 	"thread_safe_libva_backend": "video_cards_amdgpu || video_cards_iHD",
@@ -275,12 +275,11 @@ var softwareFeatureDefs = map[string]string{
 	// vm_host feature for VM builds.
 	"vm_host": "kvm_host && !tast_vm",
 	// VPD is not available in VMs.
-	"vpd":      `!"betty" && !"tast_vm"`,
+	"vpd":      "!no_factory_flow",
 	"vulkan":   "vulkan",
 	"watchdog": `watchdog`,
-	// nyan_kitty is skipped as its WiFi device is unresolvably flaky (crrev.com/c/944502),
-	// exhibiting very similar symptoms to crbug.com/693724, b/65858242, b/36264732.
-	"wifi":  `!"betty" && !"tast_vm" && !"nyan_kitty"`,
+	// VMs do not have WiFi.
+	"wifi":  "!no_factory_flow",
 	"wilco": "wilco",
 	// WireGuard is only supported on 5.4+ kernels.
 	"wireguard": `!("kernel-4_4" || "kernel-4_14" || "kernel-4_19")`,

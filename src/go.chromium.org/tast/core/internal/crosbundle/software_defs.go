@@ -256,7 +256,7 @@ var softwareFeatureDefs = map[string]string{
 	// newer platforms there will not be a legacy decoder to run.
 	"video_decoder_direct":           "!disable_cros_video_decoder",
 	"video_decoder_legacy":           "disable_cros_video_decoder",
-	"video_decoder_legacy_supported": `!("board:strongbad*" || "board:trogdor*" || "board:herobrine*" || "board:corsola*")`,
+	"video_decoder_legacy_supported": `("board:hana*" || "board:elm*")`,
 	// drm_atomic is a necessary but not sufficient condition to support
 	// video_overlays; in practice, they tend to be enabled at the same time.
 	// Generally you should use the more restrictive hwdep.SupportsNV12Overlays().

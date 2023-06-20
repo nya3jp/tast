@@ -334,6 +334,11 @@ Tests in this group are not used for build verification.
 		Desc:     `A group of camera tests for libcamera build.`,
 	},
 	{
+		Name:     "camera-stability",
+		Contacts: []string{"chromeos-camera-kernel@google.com", "chromeos-camera-eng@google.com"},
+		Desc:     `A group of camera tests for verifying the stability of the camera modules.`,
+	},
+	{
 		Name:     "camera-postsubmit",
 		Contacts: []string{"chromeos-camera-eng@google.com"},
 		Desc:     `A group of camera tests for postsubmit runs.`,

@@ -797,6 +797,7 @@ func TestStateExports(t *gotesting.T) {
 		{
 			testing.State{},
 			[]string{
+				"AttachErrorHandlers",
 				"CloudStorage",
 				"CompanionDUT",
 				"DUT",
@@ -828,6 +829,7 @@ func TestStateExports(t *gotesting.T) {
 		{
 			testing.PreState{},
 			[]string{
+				"AttachErrorHandlers",
 				"CloudStorage",
 				"CompanionDUT",
 				"DUT",
@@ -854,6 +856,7 @@ func TestStateExports(t *gotesting.T) {
 		{
 			testing.TestHookState{},
 			[]string{
+				"AttachErrorHandlers",
 				"CloudStorage",
 				"CompanionDUT",
 				"CompanionDUTRoles",
@@ -882,6 +885,7 @@ func TestStateExports(t *gotesting.T) {
 		{
 			testing.FixtState{},
 			[]string{
+				"AttachErrorHandlers",
 				"CloudStorage",
 				"CompanionDUT",
 				"DUT",
@@ -909,6 +913,7 @@ func TestStateExports(t *gotesting.T) {
 		{
 			testing.FixtTestState{},
 			[]string{
+				"AttachErrorHandlers",
 				"CloudStorage",
 				"CompanionDUT",
 				"DUT",
@@ -984,5 +989,89 @@ func TestHardwareFeatures(t *gotesting.T) {
 		if !proto.Equal(got, features) {
 			t.Errorf("Failed to get hardware feature for %q (-got +want):\n%s\n%s", role, got, features)
 		}
+	}
+}
+
+func TestOnError(t *gotesting.T) {
+	var out outputSink
+	root := testing.NewTestEntityRoot(&testing.TestInstance{Timeout: time.Minute}, &testing.RuntimeConfig{}, &out, testing.NewEntityCondition())
+	s := root.NewTestState()
+
+	errorMsg := "s.Error is called"
+	errorfMsg := "s.Errorf is called"
+
+	callCount := 0
+	onErrorForErrorCalled := false
+	onErrorForErrorfCalled := false
+	onError := func(errMsg string) {
+		if errMsg == errorMsg {
+			onErrorForErrorCalled = true
+		}
+		callCount++
+	}
+	s.AttachErrorHandlers(onError, nil)
+	onErrorf := func(errMsg string) {
+		if errMsg == errorfMsg {
+			onErrorForErrorfCalled = true
+		}
+		callCount++
+	}
+	s.AttachErrorHandlers(onErrorf, nil)
+
+	s.Error(errorMsg)
+	s.Errorf("%s", errorfMsg)
+
+	if !onErrorForErrorCalled {
+		t.Error("Failed to get onError callback when s.Error is called")
+	}
+	if !onErrorForErrorfCalled {
+		t.Error("Failed to get onError callback when s.Errorf is called")
+	}
+	if callCount != 4 {
+		t.Errorf("Failled to get correct callback cout got %d; wanted 4", callCount)
+	}
+}
+
+func TestOnFatalForFatal(t *gotesting.T) {
+	var out outputSink
+	root := testing.NewTestEntityRoot(&testing.TestInstance{Timeout: time.Minute}, &testing.RuntimeConfig{}, &out, testing.NewEntityCondition())
+	s := root.NewTestState()
+
+	onFatalCalled := false
+	onFatal := func(errMsg string) { onFatalCalled = true }
+
+	// Log the fatal message in a goroutine so the main goroutine that's running the test won't exit.
+	done := make(chan bool)
+	go func() {
+		defer close(done)
+		s.AttachErrorHandlers(nil, onFatal)
+		s.Fatal("fatal")
+	}()
+	<-done
+
+	if !onFatalCalled {
+		t.Errorf("Failed to get onFatal callback when s.Fatal is called")
+	}
+}
+
+func TestOnFatalForFatalf(t *gotesting.T) {
+	var out outputSink
+	root := testing.NewTestEntityRoot(&testing.TestInstance{Timeout: time.Minute}, &testing.RuntimeConfig{}, &out, testing.NewEntityCondition())
+	s := root.NewTestState()
+
+	onFatalCalled := false
+	onFatal := func(errMsg string) { onFatalCalled = true }
+
+	// Log the fatal message in a goroutine so the main goroutine that's running the test won't exit.
+	done := make(chan bool)
+	go func() {
+		defer close(done)
+		s.AttachErrorHandlers(nil, onFatal)
+		s.Fatalf("fatal %s", "msg")
+	}()
+	<-done
+
+	if !onFatalCalled {
+		t.Errorf("Failed to get onFatal callback when s.Fatalf is called")
 	}
 }

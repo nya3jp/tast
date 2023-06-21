@@ -1534,3 +1534,16 @@ func TestRunSSHLessHostRemote(t *gotesting.T) {
 		t.Errorf("Run failed with err: %v", err)
 	}
 }
+
+type errHander struct {
+	onFatalCalled bool
+	onErrorCalled bool
+}
+
+func (eh *errHander) OnFatal(errMsg string) {
+	eh.onFatalCalled = true
+}
+
+func (eh *errHander) OnError(errMsg string) {
+	eh.onErrorCalled = true
+}

@@ -38,6 +38,14 @@ const (
 // TestFunc is the code associated with a test.
 type TestFunc func(context.Context, *State)
 
+// OnErrorHandler is the interface of the custom error handler which will
+// be used when a test calls s.Error.
+type OnErrorHandler func(errMsg string)
+
+// OnFatalHandler is the interface of the custom error handler which will
+// be used when a test calls s.Fatal.
+type OnFatalHandler func(errMsg string)
+
 // Test describes a registration of one or more test instances.
 //
 // Test can be passed to testing.AddTest to actually register test instances

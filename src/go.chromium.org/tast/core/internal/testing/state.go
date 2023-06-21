@@ -319,8 +319,10 @@ type globalMixin struct {
 	entityRoot *EntityRoot
 	errPrefix  string // prefix to be added to error messages
 
-	mu       sync.Mutex // protects hasError
-	hasError bool       // true if any error was reported from this State object or subtests' State objects
+	mu            sync.Mutex       // protects hasError
+	hasError      bool             // true if any error was reported from this State object or subtests' State objects
+	errorHandlers []OnErrorHandler // errorHandlers will be used when a test calls s.Error
+	fatalHandlers []OnFatalHandler // fatalHandlers will be used when a test calls s.Fatal
 }
 
 // CloudStorage returns a client for Google Cloud Storage.
@@ -378,6 +380,7 @@ func (s *globalMixin) Error(args ...interface{}) {
 	fullMsg, lastMsg, err := s.formatError(args...)
 	e := NewError(err, fullMsg, lastMsg, 1)
 	s.entityRoot.out.Error(e)
+	s.handleError(fullMsg)
 }
 
 // Errorf is similar to Error but formats its arguments using fmt.Sprintf.
@@ -386,6 +389,7 @@ func (s *globalMixin) Errorf(format string, args ...interface{}) {
 	fullMsg, lastMsg, err := s.formatErrorf(format, args...)
 	e := NewError(err, fullMsg, lastMsg, 1)
 	s.entityRoot.out.Error(e)
+	s.handleError(fullMsg)
 }
 
 // Fatal is similar to Error but additionally immediately ends the entity.
@@ -394,6 +398,7 @@ func (s *globalMixin) Fatal(args ...interface{}) {
 	fullMsg, lastMsg, err := s.formatError(args...)
 	e := NewError(err, fullMsg, lastMsg, 1)
 	s.entityRoot.out.Error(e)
+	s.handleFatal(fullMsg)
 	runtime.Goexit()
 }
 
@@ -403,6 +408,7 @@ func (s *globalMixin) Fatalf(format string, args ...interface{}) {
 	fullMsg, lastMsg, err := s.formatErrorf(format, args...)
 	e := NewError(err, fullMsg, lastMsg, 1)
 	s.entityRoot.out.Error(e)
+	s.handleFatal(fullMsg)
 	runtime.Goexit()
 }
 
@@ -411,6 +417,34 @@ func (s *globalMixin) HasError() bool {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	return s.hasError
+}
+
+// AttachErrorHandlers attaches a customer error handlers. If the onError
+// handler is not nil, it will be called s.Error* functions are called.
+// If the onFatal handler is not nil, it will be called s.Fatal* functions
+// are called. If multiple handlers are attached, the handlers will
+// be called in reverse order.
+func (s *globalMixin) AttachErrorHandlers(onError OnErrorHandler, onFatal OnFatalHandler) {
+	if onError != nil {
+		s.errorHandlers = append([]OnErrorHandler{onError}, s.errorHandlers...)
+	}
+	if onFatal != nil {
+		s.fatalHandlers = append([]OnFatalHandler{onFatal}, s.fatalHandlers...)
+	}
+}
+
+// handleError will call all error handler when s.Error* is called.
+func (s *globalMixin) handleError(errMsg string) {
+	for _, h := range s.errorHandlers {
+		h(errMsg)
+	}
+}
+
+// handleFatal will call all error handler when s.Fatal* is called.
+func (s *globalMixin) handleFatal(errMsg string) {
+	for _, h := range s.fatalHandlers {
+		h(errMsg)
+	}
 }
 
 // errorSuffix matches the well-known error message suffixes for formatError.

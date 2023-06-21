@@ -131,6 +131,9 @@ func TestCheckKnownAttrs(t *testing.T) {
 			attrs: []string{"group:hwsec_destructive_crosbolt", "hwsec_destructive_crosbolt_perbuild"},
 		},
 		{
+			attrs: []string{"group:language_packs_hw_recognition_dlc_download_daily"},
+		},
+		{
 			attrs: []string{"group:launcher_search_quality_daily"},
 		},
 		{

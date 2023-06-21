@@ -1651,6 +1651,11 @@ from other existing groups (or use this group standalone).
 		Contacts: []string{"launcher-search-notify@google.com"},
 		Desc:     "A group of tests for checking the pass ratio in different builds for launcher search.",
 	},
+	{
+		Name:     "language_packs_hw_recognition_dlc_download_daily",
+		Contacts: []string{"cros-borders-eng@google.com"},
+		Desc:     "A group of tests for checking language packs handwriting recognition dlc downloading",
+	},
 }
 
 // validGroupMap is the name-keyed map of validGroups.

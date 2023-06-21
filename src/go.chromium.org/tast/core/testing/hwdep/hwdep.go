@@ -1988,6 +1988,49 @@ func CameraEnumerated() Condition {
 	}}
 }
 
+func isAtLeastOneModuleListed(modules, enumerated []string) bool {
+	for _, module := range modules {
+		for _, id := range enumerated {
+			if module == id {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+// CameraUSBModule is satisfied if at least one of the module is enumerated on the DUT.
+func CameraUSBModule(modules ...string) Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		if hf := f.GetHardwareFeatures(); hf == nil {
+			return withErrorStr("Did not find hardware features")
+		} else if enumerated := hf.GetCamera().EnumeratedUsbIds; enumerated != nil {
+			if isAtLeastOneModuleListed(modules, enumerated) {
+				return satisfied()
+			}
+			return unsatisfied("no USB Camera with given ID was enumerated")
+		}
+		return unsatisfied("no USB Camera was enumerated")
+	}}
+}
+
+// SkipOnCameraUSBModule is satisfied if none of the given modules are enumerated.
+// Note that the dependency is satisfied if no camera is enumerated. In some cases,
+// this should be used with CameraEnumerated().
+func SkipOnCameraUSBModule(modules ...string) Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		if hf := f.GetHardwareFeatures(); hf == nil {
+			return withErrorStr("Did not find hardware features")
+		} else if enumerated := hf.GetCamera().EnumeratedUsbIds; enumerated != nil {
+			if isAtLeastOneModuleListed(modules, enumerated) {
+				return unsatisfied("matched with skip-on list")
+			}
+			return satisfied()
+		}
+		return satisfied()
+	}}
+}
+
 // MainboardHasEarlyLibgfxinit is satisfied if the BIOS was built with Kconfig CONFIG_MAINBOARD_HAS_EARLY_LIBGFXINIT
 func MainboardHasEarlyLibgfxinit() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {

@@ -120,6 +120,7 @@ The following software features are defined:
 * `igt` - Boards that can run igt-gpu-tools tests
 * `iioservice` - Whether the device has CrOS IIO Service running.
 * `inference_accuracy_eval` - Whether the device has inference accuracy evaluation tools installed.
+* `intel_psr` - Whether Intel PSR (platform service record) is supported or not.
 * `ikev2` - The ability to run an IKEv2 VPN.
 * `io_uring` - Whether the platform (kernel) has the io_uring syscalls enabled.
 * `iwlwifi_rescan` - Ability to remove/rescan WiFi PCI device when the

@@ -119,6 +119,7 @@ var softwareFeatureDefs = map[string]string{
 	"iioservice":                "iioservice",
 	"inference_accuracy_eval":   "inference_accuracy_eval",
 	"inputs_deps":               `!("board:*-kernelnext")`,
+	"intel_psr":                 "intel_psr",
 	// IKEv2 is only supported on 4.19+ kernels.
 	"ikev2": `!("kernel-4_4" || "kernel-4_14")`,
 	// The io_uring syscalls are enabled on CrOS since kernel v5.15.

@@ -794,21 +794,32 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 	}
 
 	gpuFamily, gpuVendor, cpuSocFamily, err := func() (gpuFamily, gpuVendor, cpuSocFamily string, fetchErr error) {
-		out, err := exec.Command("/usr/local/graphics/hardware_probe", "--gpu-family", "--gpu-vendor", "--cpu-soc-family").Output()
+		out, err := exec.Command("/usr/local/graphics/hardware_probe").Output()
 		if err != nil {
 			return "", "", "", err
 		}
-		fetch := func(regexStr, input string) string {
-			match := regexp.MustCompile(regexStr).FindStringSubmatch(input)
-			if match == nil {
-				fetchErr = errors.Wrapf(fetchErr, "regex (%v) not match", regexStr)
-				return ""
-			}
-			return match[1]
+		type gpuInfo struct {
+			Family string `json:"Family"`
+			Vendor string `json:"GPUVendor"`
 		}
-		gpuFamily = fetch(`GPU_Family: (\S+)`, string(out))
-		gpuVendor = fetch(`GPU_Vendor: (\S+)`, string(out))
-		cpuSocFamily = fetch(`CPU_SOC_Family: (\S+)`, string(out))
+
+		type hardwareProbeResult struct {
+			GPUInfo   []gpuInfo `json:"GPU_Family"`
+			CPUFamily string    `json:"CPU_SOC_Family"`
+		}
+
+		var result hardwareProbeResult
+		if err := json.Unmarshal(out, &result); err != nil {
+			return "", "", "", err
+		}
+		if len(result.GPUInfo) > 0 {
+			gpuFamily = result.GPUInfo[0].Family
+			gpuVendor = result.GPUInfo[0].Vendor
+			if len(result.GPUInfo) > 1 {
+				logging.Infof(ctx, "Found multiple GPUInfo(%v), only use the first one detected.", result.GPUInfo)
+			}
+		}
+		cpuSocFamily = result.CPUFamily
 		return
 	}()
 	if err != nil {

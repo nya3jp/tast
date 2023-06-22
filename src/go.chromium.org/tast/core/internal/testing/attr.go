@@ -380,6 +380,11 @@ Tests in this group are not used for build verification.
 		Desc:     `A group of tests performing enrollment and will clobber the stateful partition.`,
 	},
 	{
+		Name:     "data-leak-prevention-dmserver-enrollment-daily",
+		Contacts: []string{"accorsi@google.com", "chromeos-dlp@google.com"},
+		Desc:     `A group of Data Leak Prevention tests requiring DMServer enrollment.`,
+	},
+	{
 		Name:     "dmserver-enrollment-daily",
 		Contacts: []string{"rzakarian@google.com", "chromeos-ent-test@google.com"},
 		Desc:     `A group of tests for the DMServer enrollment.`,

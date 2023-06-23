@@ -410,6 +410,11 @@ Tests in this group are not used for build verification.
 		Desc:     `A group of tests for the commercial reporting/I&I team.`,
 	},
 	{
+		Name:     "enterprise-reporting-daily",
+		Contacts: []string{"albertojuarez@google.com", "cros-reporting-eng@google.com"},
+		Desc:     `A group of tests for the commercial reporting/I&I team.`,
+	},
+	{
 		Name:     "external-dependency",
 		Contacts: []string{"chromeos-software-engprod@google.com", "shengjun@google.com"},
 		Desc: `A group of tests that rely on external websites/apps/services.

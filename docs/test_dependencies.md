@@ -45,7 +45,7 @@ The following software features are defined:
 * `bluetooth_floss` - Excludes boards that do not support the floss bluetooth adapter.
 * `boot_perf_info` - Reven (ChromeOS Flex) doesn't support boot performance metrics.
 * `borealis_host` - Boards that can host the Borealis system.
-*  borealis_nvidia - Boards that use nvidia supported Borealis system.
+*  borealis_nvidia` - Boards that use nvidia supported Borealis system.
 * `bpf` - Whether the platform (kernel) has the bpf syscall enabled.
 * `breakpad` - Whether the platform supports the breakpad crash handler
     for Chrome.
@@ -82,7 +82,7 @@ The following software features are defined:
 * `crostini_unstable` - Boards that cannot run Crostini tests reliably.
 * `crosvm_gpu` - Boards that use hardware GPU acceleration in the guest VM environment.
 * `crosvm_no_gpu` - Boards that use software GPU emulation in the guest VM environment.
-* `crosvm_swap - Boards that have crosvm's vmm-swap feature enabled.
+* `crosvm_swap` - Boards that have crosvm's vmm-swap feature enabled.
 * `cups` - CUPS daemon.
 * `device_crash` - Boards that can recover gracefully after a hard crash (e.g.
     kernel crash)

@@ -27,9 +27,10 @@ should not be explicitly specified when defining tests.
 Public tests built into the default `cros` local and remote [test bundles] are
 checked into the [tast-tests repository] under the
 [src/go.chromium.org/tast-tests/cros/local/bundles/cros/] and
-[src/go.chromium.org/tast-tests/cros/remote/bundles/cros/] directories (which may also be
-accessed by the `local_tests` and `remote_tests` symlinks at the top of the
-repository). Private tests are checked into private repositories such as the
+[src/go.chromium.org/tast-tests/cros/remote/bundles/cros/] directories (where
+src/go.chromium.org/tast-tests/cros/ can also be accessed by the `cros` symlink
+at the top of the repository).
+Private tests are checked into private repositories such as the
 [tast-tests-private repository], and built into non-`cros` test bundles.
 
 Tests are categorized into packages based on the functionality that

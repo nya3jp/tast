@@ -128,7 +128,7 @@ See [Running Tests] for more information.
 
 Now, let's modify the test. In your ChromeOS checkout, go to
 `src/platform/tast-tests/src/go.chromium.org/tast-tests/cros/local/bundles/cros/login` and open
-`chrome.go` (for convenience, there's also a `local_tests` symlink at the
+`chrome.go` (for convenience, there's also a `cros` symlink at the
 top of `tast-tests`). The `Chrome` function here will run directly on the
 test device.
 

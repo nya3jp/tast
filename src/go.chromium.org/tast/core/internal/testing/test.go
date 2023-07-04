@@ -56,6 +56,13 @@ type Test struct {
 	// Contacts is a list of email addresses of persons and groups who are familiar with the test.
 	// At least one personal email address of an active committer should be specified so that we can
 	// file bugs or ask for code reviews.
+	//
+	// The first address must be the team alias for whichever team/product area ultimately owns the test.
+	// Partner tests should have a Googler contact, but addresses outside of google or chromium are OK
+	// for the second+ entries. Please make sure your group alias can be emailed by Googlers outside of the group.
+	//
+	// Additional email aliases should all be people who want to be added to
+	// bugs/emails/communication about the test.
 	Contacts []string
 
 	// Attr contains freeform text attributes describing the test.

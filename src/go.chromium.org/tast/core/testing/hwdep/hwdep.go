@@ -1470,6 +1470,21 @@ func Emmc() Condition {
 	}}
 }
 
+// EmmcOverNvme returns a hardware dependency condition if the device has an eMMC
+// storage device proxied by an eMMC to NVMe bridge (e.g. BH799)
+func EmmcOverNvme() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("Did not find hardware features")
+		}
+		if hf.GetStorage().GetStorageType() == configpb.Component_Storage_BRIDGED_EMMC {
+			return satisfied()
+		}
+		return unsatisfied("DUT does not have an eMMC over NVMe storage device")
+	}}
+}
+
 // Nvme returns a hardware dependency condition if the device has an NVMe
 // storage device.
 func Nvme() Condition {

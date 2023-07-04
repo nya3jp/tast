@@ -1485,6 +1485,66 @@ Parallels boot-up testing. Otherwise the same as group:crosbolt.`,
 		Desc:     `A group of tests related to Intel that stresses the DUT for build validation.`,
 	},
 	{
+		Name:     "intel-tbt3-dock",
+		Contacts: []string{"intel.chrome.automation.team@intel.com", "ambalavanan.m.m@intel.com"},
+		Desc:     `A group of tests related to Intel that uses C-Switch with TBT3 dock with 40G cable having USB 3.0 Pendrive, USB 3.2 Type-C Pendrive, 4K HDMI display and 3.5mm Jack peripherals for build validation.`,
+	},
+	{
+		Name:     "intel-tbt4-dock",
+		Contacts: []string{"intel.chrome.automation.team@intel.com", "ambalavanan.m.m@intel.com"},
+		Desc:     `A group of tests related to Intel that uses C-Switch with TBT4/USB4 dock with 40G cable having USB 2.0 Pendrive, USB 3.0 Pendrive, 4K HDMI display and 3.5mm Jack peripherals for build validation.`,
+	},
+	{
+		Name:     "intel-tbt3-dock-usb",
+		Contacts: []string{"intel.chrome.automation.team@intel.com", "ambalavanan.m.m@intel.com"},
+		Desc:     `A group of tests related to Intel that uses C-Switch with TBT3 dock with 40G cable having USB 2.0 Pendrive, USB 3.0 Pendrive, TBT3 BP SSD peripherals for build validation.`,
+	},
+	{
+		Name:     "intel-tbt3-hdmi-dongle",
+		Contacts: []string{"intel.chrome.automation.team@intel.com", "ambalavanan.m.m@intel.com"},
+		Desc:     `A group of tests related to Intel that uses C-Switch with TBT to HDMI dongle connecting to a 4K HDMI display for build validation.`,
+	},
+	{
+		Name:     "intel-tbt3-dp-dongle",
+		Contacts: []string{"intel.chrome.automation.team@intel.com", "ambalavanan.m.m@intel.com"},
+		Desc:     `A group of tests related to Intel that uses C-Switch with TBT to DP dongle connecting to a 4K DP display for build validation.`,
+	},
+	{
+		Name:     "intel-tbt3-dock-tbt-display",
+		Contacts: []string{"intel.chrome.automation.team@intel.com", "ambalavanan.m.m@intel.com"},
+		Desc:     `A group of tests related to Intel that uses C-Switch with TBT3 dock with 40G cable having 4K TBT display for build validation.`,
+	},
+	{
+		Name:     "intel-tbt4-dock-type-c-display",
+		Contacts: []string{"intel.chrome.automation.team@intel.com", "ambalavanan.m.m@intel.com"},
+		Desc:     `A group of tests related to Intel that uses C-Switch with TBT4/USB4 dock with 40G cable having Type-C display for build validation.`,
+	},
+	{
+		Name:     "intel-type-c-display",
+		Contacts: []string{"intel.chrome.automation.team@intel.com", "ambalavanan.m.m@intel.com"},
+		Desc:     `A group of tests related to Intel that verifies Type-C display connected to Type-C port for build validation.`,
+	},
+	{
+		Name:     "intel-tbt4-display",
+		Contacts: []string{"intel.chrome.automation.team@intel.com", "ambalavanan.m.m@intel.com"},
+		Desc:     `A group of tests related to Intel that uses C-Switch with TBT4/USB4 cable connecting to 4K TBT display for build validation.`,
+	},
+	{
+		Name:     "intel-tbt3-dock-cbr",
+		Contacts: []string{"intel.chrome.automation.team@intel.com", "ambalavanan.m.m@intel.com"},
+		Desc:     `A group of tests related to Intel that uses C-Switch with TBT3 dock with active CBR cable for build validation.`,
+	},
+	{
+		Name:     "intel-tbt4-dock-cbr",
+		Contacts: []string{"intel.chrome.automation.team@intel.com", "ambalavanan.m.m@intel.com"},
+		Desc:     `A group of tests related to Intel that uses C-Switch with TBT4/USB4 dock with active CBR cable for build validation.`,
+	},
+	{
+		Name:     "intel-tbt3-bp-dock",
+		Contacts: []string{"intel.chrome.automation.team@intel.com", "ambalavanan.m.m@intel.com"},
+		Desc:     `A group of tests related to Intel that uses C-Switch with TBT3 BP dock having USB 2.0 Pendrive, USB 3.0 Pendrive, 2K HDMI display and 3.5mm Jack build validation.`,
+	},
+	{
 		Name:     "intel-cswitch-set1",
 		Contacts: []string{"intel.chrome.automation.team@intel.com", "ambalavanan.m.m@intel.com"},
 		Desc:     `A group of tests related to Intel that uses C-Switch with Type-C to HDMI, Type-C to DP, Type-C Headset and Type-C to Type-A Hub with USB 3.0 Pendrive, USB 2.0 Pendrive and Type-A Headset peripherals for build validation.`,

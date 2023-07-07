@@ -567,6 +567,10 @@ Tests in this group are not used for build verification.
 				Name: "gsc_image_sta2",
 				Desc: `A set of tests that run on the system_test_auto_2 FW image`,
 			},
+			{
+				Name: "gsc_nightly",
+				Desc: `A set of tests that should run nightly`,
+			},
 		},
 	},
 	{

@@ -431,7 +431,7 @@ func ECFeatureSystemSafeMode() Condition {
 		}
 		status := hf.GetEmbeddedController().GetFeatureSystemSafeMode()
 		if status == configpb.HardwareFeatures_NOT_PRESENT {
-			return unsatisfied("DUT EC does not system safe mode")
+			return unsatisfied("DUT EC does not support system safe mode")
 		}
 		if status == configpb.HardwareFeatures_PRESENT_UNKNOWN {
 			return unsatisfied("Could not determine if DUT EC supports system safe mode")

@@ -97,6 +97,7 @@ var (
 		"zoglin_sc7280":      {"zoglin_sc7280", "herobrine", ModemTypeSC7280},
 		"zombie_sc7280":      {"zombie_sc7280", "herobrine", ModemTypeSC7280},
 		"gooey":              {"gooey", "keeby", ModemTypeL850},
+		"nautiluslte":        {"nautiluslte", "nautilus", ModemTypeL850},
 		"craask_fm101":       {"craask_fm101", "nissa", ModemTypeFM101},
 		"nivviks_fm101":      {"nivviks_fm101", "nissa", ModemTypeFM101},
 		"pujjo_fm101":        {"pujjo_fm101", "nissa", ModemTypeFM101},

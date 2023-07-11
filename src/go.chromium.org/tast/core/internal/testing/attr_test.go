@@ -172,6 +172,9 @@ func TestCheckKnownAttrs(t *testing.T) {
 		{
 			attrs: []string{"group:healthd", "healthd_perbuild"},
 		},
+		{
+			attrs: []string{"group:privacyhub-golden"},
+		},
 
 		// Invalid cases.
 		{

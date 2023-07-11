@@ -1740,6 +1740,11 @@ from other existing groups (or use this group standalone).
 		Contacts: []string{"cros-borders-eng@google.com"},
 		Desc:     "A group of tests for checking language packs handwriting recognition dlc downloading",
 	},
+	{
+		Name:     "privacyhub-golden",
+		Contacts: []string{"chromeos-privacyhub@google.com", "zauri@google.com"},
+		Desc:     "A group of tests for checking the Privacy Hub features on golden devices.",
+	},
 	// DO NOT USE for test suites that are not owned by the ChromeOS Software - Developer pillar team.
 	// This is subject to change in the future.
 	// TODO(b/291014686) Review this setting to check if there is any issue.

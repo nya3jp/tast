@@ -95,7 +95,7 @@ Unit tests are not run automatically in repo upload hooks for technical reasons.
 You need to run them manually by the following command in the ChromeOS chroot:
 
 ```
-~/trunk/src/platform/tast/fast_build.sh -T
+~/chromiumos/src/platform/tast/fast_build.sh -T
 ```
 
 CLs breaking unit tests are rejected by the Commit Queue.

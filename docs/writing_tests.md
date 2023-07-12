@@ -1552,7 +1552,7 @@ package arc
 
 // Run the following command in CrOS chroot to regenerate protocol buffer bindings:
 //
-// ~/trunk/src/platform/tast/tools/go.sh generate go.chromium.org/tast-tests/cros/services/cros/arc
+// ~/chromiumos/src/platform/tast/tools/go.sh generate go.chromium.org/tast-tests/cros/services/cros/arc
 ```
 
 To regenerate `.pb.go` files, run the command mentioned in the file in ChromeOS

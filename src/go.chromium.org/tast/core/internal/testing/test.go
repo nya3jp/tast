@@ -168,6 +168,10 @@ type Test struct {
 	// Bug component id for filing bugs against this test, i.e. 'b:1234'. This field is not
 	// to be used by tests themselves, but added to test metadata definitions used by infra services.
 	BugComponent string
+
+	// Life cycle metadata to indicate the usage of this test. This field is not
+	// to be used by tests themselves, but added to test metadata definitions used by infra services.
+	LifeCycleStage LifeCycle
 }
 
 // LacrosMetadata indicates whether lacros variants have been considered for this test or not.
@@ -197,6 +201,51 @@ func (m LacrosMetadata) String() string {
 		return "unneeded"
 	default:
 		return fmt.Sprintf("unexpected value (%d)", int(m))
+	}
+}
+
+// LifeCycle aligns with the TestCaseMetadata proto value of LifeCycle.
+type LifeCycle int
+
+const (
+	// LifeCycleDefault should not be added to a test directly and indicates that this test does not have an
+	// explicitly defined value. ProductionReady will be used instead, unless a parent test or
+	// parameterized sub-test defines a different value.
+	LifeCycleDefault LifeCycle = iota
+	// LifeCycleProductionReady is the indicates the test can be run in the lab and is expected to pass.
+	// Most tests will be in this stage, and this value will be assumed if no other value is provided.
+	LifeCycleProductionReady
+	// LifeCycleDisabled indicates that the test should not run in the lab and code will be deleted if not cleaned
+	// up in a timely manner.
+	LifeCycleDisabled
+	// LifeCycleInDevelopment indicates that the test is either new or broken. It can still run in the lab
+	// (ideally at a reduced frequency) but should not be included in flakiness reports or used to make
+	// decisions like release qualification.
+	LifeCycleInDevelopment
+	// LifeCycleManualOnly indicates that the test is not meant to be scheduled in the lab - it will only be
+	// triggered manually or outside of a lab environment. The code should not be deleted unless test owners
+	// do not maintain the test.
+	LifeCycleManualOnly
+	// LifeCycleOwnerMonitored indicates that the test has inherently ambiguous usage and should not be run by
+	// or interpreted by anyone other than the test owner. These tests can run in the lab but should not
+	// be run in release-blocking suites or any other situation where a non-owner will need to use the results.
+	LifeCycleOwnerMonitored
+)
+
+func (s LifeCycle) String() string {
+	switch s {
+	case LifeCycleProductionReady:
+		return "LIFE_CYCLE_PRODUCTION_READY"
+	case LifeCycleDisabled:
+		return "LIFE_CYCLE_DISABLED"
+	case LifeCycleInDevelopment:
+		return "LIFE_CYCLE_IN_DEVELOPMENT"
+	case LifeCycleManualOnly:
+		return "LIFE_CYCLE_MANUAL_ONLY"
+	case LifeCycleOwnerMonitored:
+		return "LIFE_CYCLE_OWNER_MONITORED"
+	default:
+		return fmt.Sprintf("Unknown")
 	}
 }
 
@@ -274,8 +323,12 @@ type Param struct {
 
 	// BugComponent overrides BugComponent defined in the test.
 	// This field is for infra/external use only and should not be used
-	// or referenced within the test code..
+	// or referenced within the test code.
 	BugComponent string
+
+	// LifeCycleStage overrides the LifeCycleStage defined in the test.
+	// This field is not to be used or referenced by test code.
+	LifeCycleStage LifeCycle
 }
 
 // validate performs initial validations of Test.

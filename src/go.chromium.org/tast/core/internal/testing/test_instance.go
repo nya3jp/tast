@@ -90,11 +90,12 @@ type TestInstance struct {
 	// to testing.Registry.
 	Bundle string
 
-	// TestBedDeps, Requirements, Purpose, and BugComponent are only used
-	// by infra and should not be used in tests.
-	TestBedDeps  []string
-	Requirements []string
-	BugComponent string
+	// TestBedDeps, Requirements, Purpose, BugComponent, and LifeCycleStage
+	// are only used by infra and should not be used in tests.
+	TestBedDeps    []string
+	Requirements   []string
+	BugComponent   string
+	LifeCycleStage LifeCycle
 }
 
 // instantiate creates one or more TestInstance from t.
@@ -142,6 +143,12 @@ func newTestInstance(t *Test, p *Param) (*TestInstance, error) {
 	bugComponent := t.BugComponent
 	if p.BugComponent != "" {
 		bugComponent = p.BugComponent
+	}
+
+	// Overwrite test's LifeCycle with subtest's LifeCycle if it was set.
+	lifeCycleStage := t.LifeCycleStage
+	if p.LifeCycleStage != LifeCycleDefault {
+		lifeCycleStage = p.LifeCycleStage
 	}
 
 	manualAttrs := append(append([]string(nil), t.Attr...), p.ExtraAttr...)
@@ -240,28 +247,29 @@ func newTestInstance(t *Test, p *Param) (*TestInstance, error) {
 	}
 
 	return &TestInstance{
-		Name:         name,
-		Pkg:          info.pkg,
-		Val:          p.Val,
-		Func:         t.Func,
-		Desc:         t.Desc,
-		Contacts:     append([]string(nil), t.Contacts...),
-		Attr:         attrs,
-		PrivateAttr:  PrivateAttr,
-		SearchFlags:  searchFlags,
-		Data:         data,
-		Vars:         append([]string(nil), t.Vars...),
-		VarDeps:      append([]string(nil), t.VarDeps...),
-		SoftwareDeps: swDeps,
-		HardwareDeps: hwDeps,
-		ServiceDeps:  append([]string(nil), t.ServiceDeps...),
-		LacrosStatus: t.LacrosStatus,
-		Pre:          pre,
-		Fixture:      fixt,
-		Timeout:      timeout,
-		TestBedDeps:  append([]string(nil), t.TestBedDeps...),
-		Requirements: requirements,
-		BugComponent: bugComponent,
+		Name:           name,
+		Pkg:            info.pkg,
+		Val:            p.Val,
+		Func:           t.Func,
+		Desc:           t.Desc,
+		Contacts:       append([]string(nil), t.Contacts...),
+		Attr:           attrs,
+		PrivateAttr:    PrivateAttr,
+		SearchFlags:    searchFlags,
+		Data:           data,
+		Vars:           append([]string(nil), t.Vars...),
+		VarDeps:        append([]string(nil), t.VarDeps...),
+		SoftwareDeps:   swDeps,
+		HardwareDeps:   hwDeps,
+		ServiceDeps:    append([]string(nil), t.ServiceDeps...),
+		LacrosStatus:   t.LacrosStatus,
+		Pre:            pre,
+		Fixture:        fixt,
+		Timeout:        timeout,
+		TestBedDeps:    append([]string(nil), t.TestBedDeps...),
+		Requirements:   requirements,
+		BugComponent:   bugComponent,
+		LifeCycleStage: lifeCycleStage,
 	}, nil
 }
 
@@ -518,6 +526,21 @@ func (t *TestInstance) Proto() *api.TestCaseMetadata {
 		}
 	}
 
+	// By default, set LifeCycle to ProductionReady.
+	lifeCycleValue := api.LifeCycleStage_LIFE_CYCLE_PRODUCTION_READY
+	switch t.LifeCycleStage {
+	case LifeCycleProductionReady:
+		lifeCycleValue = api.LifeCycleStage_LIFE_CYCLE_PRODUCTION_READY
+	case LifeCycleDisabled:
+		lifeCycleValue = api.LifeCycleStage_LIFE_CYCLE_DISABLED
+	case LifeCycleInDevelopment:
+		lifeCycleValue = api.LifeCycleStage_LIFE_CYCLE_IN_DEVELOPMENT
+	case LifeCycleManualOnly:
+		lifeCycleValue = api.LifeCycleStage_LIFE_CYCLE_MANUAL_ONLY
+	case LifeCycleOwnerMonitored:
+		lifeCycleValue = api.LifeCycleStage_LIFE_CYCLE_OWNER_MONITORED
+	}
+
 	var owners []*api.Contact
 	for _, email := range t.Contacts {
 		owners = append(owners, &api.Contact{Email: email})
@@ -550,11 +573,12 @@ func (t *TestInstance) Proto() *api.TestCaseMetadata {
 			},
 		},
 		TestCaseInfo: &api.TestCaseInfo{
-			Owners:       owners,
-			Requirements: requirements,
-			Criteria:     &api.Criteria{Value: t.Desc},
-			BugComponent: &api.BugComponent{Value: t.BugComponent},
-			HwAgnostic:   &api.HwAgnostic{Value: hwAgnostic},
+			Owners:         owners,
+			Requirements:   requirements,
+			Criteria:       &api.Criteria{Value: t.Desc},
+			BugComponent:   &api.BugComponent{Value: t.BugComponent},
+			HwAgnostic:     &api.HwAgnostic{Value: hwAgnostic},
+			LifeCycleStage: &api.LifeCycleStage{Value: lifeCycleValue},
 		},
 	}
 	return &r

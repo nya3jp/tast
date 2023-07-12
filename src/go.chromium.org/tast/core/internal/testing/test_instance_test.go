@@ -317,6 +317,7 @@ func TestInstantiateParamsForAllPrimary(t *gotesting.T) {
 			ExtraSoftwareDepsForAll: map[string]dep.SoftwareDeps{"": []string{"dep1"}},
 			ExtraHardwareDepsForAll: map[string]dep.HardwareDeps{"": hwdep.D(hwdep.SkipOnModel("model2"))},
 			ExtraRequirements:       []string{"two"},
+			LifeCycleStage:          LifeCycleInDevelopment,
 		}, {
 			Name:                    "foo",
 			Val:                     456,
@@ -345,9 +346,10 @@ func TestInstantiateParamsForAllPrimary(t *gotesting.T) {
 				testDepAttrPrefix + "dep0",
 				testDepAttrPrefix + "dep1",
 			},
-			Data:         []string{"data0.txt", "data1.txt"},
-			SoftwareDeps: map[string]dep.SoftwareDeps{"": []string{"dep0", "dep1"}},
-			Requirements: []string{"one", "two"},
+			Data:           []string{"data0.txt", "data1.txt"},
+			SoftwareDeps:   map[string]dep.SoftwareDeps{"": []string{"dep0", "dep1"}},
+			Requirements:   []string{"one", "two"},
+			LifeCycleStage: LifeCycleInDevelopment,
 		},
 		{
 			Name: "testing.TESTINSTANCETEST.foo",
@@ -1348,10 +1350,11 @@ func TestWriteTestsAsProto(t *gotesting.T) {
 				"someone1@chromium.org",
 				"someone2@chromium.org",
 			},
-			TestBedDeps:  []string{"carrier:verizon", "madeup:name"},
-			Desc:         "Fake purpose",
-			Requirements: []string{"req1", "req2", "req3"},
-			BugComponent: "my component",
+			TestBedDeps:    []string{"carrier:verizon", "madeup:name"},
+			Desc:           "Fake purpose",
+			Requirements:   []string{"req1", "req2", "req3"},
+			BugComponent:   "my component",
+			LifeCycleStage: LifeCycleManualOnly,
 		},
 	}
 
@@ -1393,6 +1396,8 @@ func TestWriteTestsAsProto(t *gotesting.T) {
 					Criteria:     &api.Criteria{Value: "Fake purpose"},
 					BugComponent: &api.BugComponent{Value: "my component"},
 					HwAgnostic:   &api.HwAgnostic{Value: true},
+					LifeCycleStage: &api.LifeCycleStage{
+						Value: api.LifeCycleStage_LIFE_CYCLE_MANUAL_ONLY},
 				},
 			},
 		},

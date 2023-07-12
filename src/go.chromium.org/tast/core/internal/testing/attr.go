@@ -1736,6 +1736,56 @@ from other existing groups (or use this group standalone).
 		Contacts: []string{"cros-borders-eng@google.com"},
 		Desc:     "A group of tests for checking language packs handwriting recognition dlc downloading",
 	},
+	// DO NOT USE for test suites that are not owned by the ChromeOS Software - Developer pillar team.
+	// This is subject to change in the future.
+	// TODO(b/291014686) Review this setting to check if there is any issue.
+	{
+		Name:     "cros_dev_suite",
+		Contacts: []string{"chromeos-dev-engprod@google.com"},
+		Desc:     "A group used to divide large test suites for ChromeOS Developer (F.K.A ChromeOS Apps) focus area tests",
+		Subattrs: []*attr{
+			{
+				Name: "cros_dev_suite_0",
+				Desc: "Index 0 of the CrOS dev sub-suites",
+			},
+			{
+				Name: "cros_dev_suite_1",
+				Desc: "Index 1 of the CrOS dev sub-suites",
+			},
+			{
+				Name: "cros_dev_suite_2",
+				Desc: "Index 2 of the CrOS dev sub-suites",
+			},
+			{
+				Name: "cros_dev_suite_3",
+				Desc: "Index 3 of the CrOS dev sub-suites",
+			},
+			{
+				Name: "cros_dev_suite_4",
+				Desc: "Index 4 of the CrOS dev sub-suites",
+			},
+			{
+				Name: "cros_dev_suite_5",
+				Desc: "Index 5 of the CrOS dev sub-suites",
+			},
+			{
+				Name: "cros_dev_suite_6",
+				Desc: "Index 6 of the CrOS dev sub-suites",
+			},
+			{
+				Name: "cros_dev_suite_7",
+				Desc: "Index 7 of the CrOS dev sub-suites",
+			},
+			{
+				Name: "cros_dev_suite_8",
+				Desc: "Index 8 of the CrOS dev sub-suites",
+			},
+			{
+				Name: "cros_dev_suite_9",
+				Desc: "Index 9 of the CrOS dev sub-suites",
+			},
+		},
+	},
 }
 
 // validGroupMap is the name-keyed map of validGroups.

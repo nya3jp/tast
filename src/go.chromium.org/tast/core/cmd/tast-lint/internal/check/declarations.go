@@ -42,6 +42,7 @@ const (
 	testRegistrationURL     = `https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#Test-registration`
 	testParamTestURL        = `https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#Parameterized-test-registration`
 	testRuntimeVariablesURL = `https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#Runtime-variables`
+	testAttrDocURL          = `https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/test_attributes.md`
 )
 
 // TestDeclarations checks declarations of testing.Test structs.

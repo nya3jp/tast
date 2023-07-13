@@ -16,8 +16,6 @@ const (
 	criticalstagingWithoutInformationalMsg = `Attr "group:criticalstaging" should be used with "group:mainline" and "informational".`
 	informationalWithGroupMsg              = `Attr "group:informational" is a typo of "informational".`
 	criticalStagingWithoutGroupMsg         = `Attr "criticalstaging" is a typo of "group:criticalstaging".`
-
-	attrDocURL = "https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/test_attributes.md"
 )
 
 // VerifyMainlineAttrs checks that "group:mainline" related attributes are set correctly.
@@ -37,7 +35,7 @@ func mainlineAttrsChecker(attrs []string, pos token.Position) []*Issue {
 		issues = append(issues, &Issue{
 			Pos:  pos,
 			Msg:  informationalWithGroupMsg,
-			Link: attrDocURL,
+			Link: testAttrDocURL,
 		})
 		// Assume the intention is to set the correct Attr.
 		hasInformational = true
@@ -46,7 +44,7 @@ func mainlineAttrsChecker(attrs []string, pos token.Position) []*Issue {
 		issues = append(issues, &Issue{
 			Pos:  pos,
 			Msg:  criticalStagingWithoutGroupMsg,
-			Link: attrDocURL,
+			Link: testAttrDocURL,
 		})
 		// Assume the intention is to set the correct Attr.
 		hasCriticalStaging = true
@@ -56,14 +54,14 @@ func mainlineAttrsChecker(attrs []string, pos token.Position) []*Issue {
 		issues = append(issues, &Issue{
 			Pos:  pos,
 			Msg:  informationalWithoutMainlineMsg,
-			Link: attrDocURL,
+			Link: testAttrDocURL,
 		})
 	}
 	if hasCriticalStaging && !(hasMainline && hasInformational) {
 		issues = append(issues, &Issue{
 			Pos:  pos,
 			Msg:  criticalstagingWithoutInformationalMsg,
-			Link: attrDocURL,
+			Link: testAttrDocURL,
 		})
 	}
 

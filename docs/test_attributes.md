@@ -28,7 +28,7 @@ Below is the list of most popular groups and their associated extra attributes:
     Failures in critical tests justify rejecting or reverting the responsible
     change, while failures in informational tests are ignored.
     All informational mainline tests are supposed to be promoted to critical
-    tests.
+    tests. Details on adding tests can be found in this [tast-add-test] document (googlers only).
      * `group:criticalstaging` - This group will be used to indicate a test is intended on
        going into "mainline" critical testing. This group will be run on all boards/models;
        on ToT only.  Tests can only remain in this group long enough to gather signal (10 days),
@@ -36,6 +36,10 @@ Below is the list of most popular groups and their associated extra attributes:
        informational. If no owner action is taken after a 4 day grace period, they
        will be moved into informational.
      * `informational`: This group indicate a test is not critical.
+*   `group:hw_agnostic` - A test that is not dependent on physical HW and can be run on x86 VMs.
+     * `vm_stable`: This indicates that a test is stable on VMs. It is intended for
+        mainline informational tests that have yet to be stabilized on all boards/models, but
+        is safe and stable on VMs. This enables such tests to be scheduled and tested on VM only.
 *   `group:appcompat` - A group of ARC app compatibility tests.
     Below are its sub-attribute:
      * `appcompat_release`: A group of ARC app compatibility tests for release testing.
@@ -105,3 +109,4 @@ select which tests to run.
 [name]: writing_tests.md#Test-names
 [Running Tests]: running_tests.md
 [disabled]: writing_tests.md#Disabling-tests
+[tast-add-test]: http://go/tast-add-test

@@ -1631,6 +1631,12 @@ Parallels boot-up testing. Otherwise the same as group:crosbolt.`,
 This does not imply tests can only run on VMs, but can be used by systems to find and schedule tests on VMs
 from other existing groups (or use this group standalone).
 `,
+		Subattrs: []*attr{
+			{
+				Name: "hw_agnostic_vm_stable",
+				Desc: `Specifies tests that are stable on VMs.`,
+			},
+		},
 	},
 	{
 		Name:     "vdi_limited",

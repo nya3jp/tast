@@ -685,6 +685,10 @@ third_party/autotest/files/server/site_tests/tast/control.racc-config-installed.
 				Name: "wificell_e2e_unstable",
 				Desc: `Identifies wifi_chrome ui/e2e tests that are unstable. Used to skip tests running on stable suites and/or the CQ.`,
 			},
+			{
+				Name: "wificell_openwrt",
+				Desc: `Using OpenWRT router for the test.`,
+			},
 		},
 	},
 	{

@@ -192,13 +192,13 @@ func TestFindMemorySize(t *testing.T) {
 		{
 			[]byte(`MemTotal:       987654321 kB
 			MemFree:         99999999 kB
-			`), true, 987654321000,
+			`), true, 1011358024704,
 		},
 		{
 			[]byte(`
 			MemFree:       11111111 kB
 			MemTotal:      12345678 kB
-			`), true, 12345678000,
+			`), true, 12641974272,
 		},
 		{
 			[]byte(``), false, 0,

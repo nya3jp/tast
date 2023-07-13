@@ -628,7 +628,8 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		logging.Infof(ctx, "Failed to get memory size: %v", err)
 	}
 	features.Memory.Profile = &configpb.Component_Memory_Profile{
-		SizeMegabytes: int32(memoryBytes / 1_000_000),
+		// Use 2^20 megabytes to be consistent with how memory size is advertised.
+		SizeMegabytes: int32(memoryBytes >> 20),
 	}
 
 	lidMicrophone, err := matchCrasDeviceType(`(INTERNAL|FRONT)_MIC`)
@@ -1293,7 +1294,8 @@ func findMemorySize(meminfo []byte) (int64, error) {
 		if err != nil {
 			return 0, err
 		}
-		return val * 1_000, nil
+		// meminfo reported kB is 2^10 bytes not 10^3.
+		return val << 10, nil
 	}
 	return 0, fmt.Errorf("MemTotal not found; input=%q", string(meminfo))
 }

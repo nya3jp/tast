@@ -34,7 +34,7 @@ func (d *Driver) StreamFile(ctx context.Context, src, dest string) error {
 				// Do not need to log in this siuation.
 				return nil
 			}
-			logging.Infof(ctx, "Warning: failed to stream %s from DUT to %s: %v", src, dest, err)
+			logging.Debugf(ctx, "Warning: failed to stream %s from DUT to %s: %v", src, dest, err)
 			if strings.Contains(err.Error(), "does not exist on the DUT") {
 				logging.Infof(ctx, "Fail %s does not exist; will not retry streaming", src)
 				return nil

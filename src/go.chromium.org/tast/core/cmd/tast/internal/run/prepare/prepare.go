@@ -439,7 +439,7 @@ func streamLogs(ctx context.Context, cfg *config.Config, drv *driver.Driver) {
 		go func() {
 			defer dd.Close(ctx)
 			if err := dd.StreamFile(ctx, src, dest); err != nil {
-				logging.Infof(ctx, "Fail to stream file %s", src)
+				logging.Debugf(ctx, "Fail to stream file %s", src)
 			}
 		}()
 	}

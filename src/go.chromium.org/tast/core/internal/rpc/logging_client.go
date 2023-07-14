@@ -107,7 +107,7 @@ func (l *remoteLoggingClient) runBackground(ctx context.Context) {
 				}
 				grpcStatus, ok := status.FromError(err)
 				if ok && grpcStatus.Code() == codes.Unavailable {
-					logging.Infof(ctx, "Remote Logging interrupted with following error: %v", grpcStatus)
+					logging.Debugf(ctx, "Remote Logging interrupted with following error: %v", grpcStatus)
 					return nil
 				}
 				return err

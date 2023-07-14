@@ -89,7 +89,7 @@ func (cc *ConnCache) EnsureConn(ctx context.Context) error {
 	if err == nil {
 		return nil
 	}
-	logging.Infof(ctx, "Target connection is unhealthy: %v; reconnecting", err)
+	logging.Debugf(ctx, "Target connection is unhealthy: %v; reconnecting", err)
 
 	newConnection, err := newConn(ctx, cc.cfg, cc.target, cc.proxyCommand, cc.helper.dutServer)
 	if err != nil {

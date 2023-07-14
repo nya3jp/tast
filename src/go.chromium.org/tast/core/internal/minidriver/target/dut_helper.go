@@ -35,9 +35,6 @@ func newDUTHelper(ctx context.Context, cfg *protocol.SSHConfig, testVars map[str
 		dutServer: dutHost(ctx, role, testVars),
 		cfg:       cfg,
 	}
-	if a.servoSpec == "" {
-		return &a
-	}
 	return &a
 }
 

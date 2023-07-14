@@ -41,7 +41,9 @@ func crosConfig(path, prop string) (string, error) {
 	cmd.Stderr = &buf
 	b, err := cmd.Output()
 	if err != nil {
-		return "", errors.Errorf("cros_config failed (stderr: %q): %v", buf.Bytes(), err)
+		if xerr, ok := err.(*exec.ExitError); !ok || xerr.ExitCode() != 1 {
+			return "", errors.Errorf("cros_config failed (stderr: %q): %v", buf.Bytes(), err)
+		}
 	}
 	return string(b), nil
 }

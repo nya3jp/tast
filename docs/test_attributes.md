@@ -31,9 +31,9 @@ Below is the list of most popular groups and their associated extra attributes:
     tests. Details on adding tests can be found in this [tast-add-test] document (googlers only).
      * `group:criticalstaging` - This group will be used to indicate a test is intended on
        going into "mainline" critical testing. This group will be run on all boards/models;
-       on ToT only.  Tests can only remain in this group long enough to gather signal (10 days),
+       on ToT only.  Tests can only remain in this group long enough to gather signal (10 consecutive builds),
        after which the owner must promote them into mainline only, or back into
-       informational. If no owner action is taken after a 4 day grace period, they
+       informational. If no owner action is taken after a 4 builds grace period, they
        will be moved into informational.
      * `informational`: This group indicate a test is not critical.
 *   `group:hw_agnostic` - A test that is not dependent on physical HW and can be run on x86 VMs.

@@ -14,6 +14,12 @@ import (
 // context.Context.
 type loggerKey struct{}
 
+// unexported context.Context key type to avoid collisions with other packages
+type pKey int
+
+// key used for setting the log prefix to the context
+const prefixKey pKey = iota
+
 // AttachLogger creates a new context with logger attached. Logs emitted via
 // the new context are propagated to the parent context.
 func AttachLogger(ctx context.Context, logger Logger) context.Context {
@@ -34,6 +40,18 @@ func AttachLoggerNoPropagation(ctx context.Context, logger Logger) context.Conte
 func HasLogger(ctx context.Context) bool {
 	_, ok := loggerFromContext(ctx)
 	return ok
+}
+
+// SetLogPrefix takes in a prefix string to prepend to all logs coming through the logger
+func SetLogPrefix(ctx context.Context, prefix string) context.Context {
+	ctx = context.WithValue(ctx, prefixKey, prefix)
+	return ctx
+}
+
+// UnsetLogPrefix removes the prefix that is prepended to all logs coming through the logger
+func UnsetLogPrefix(ctx context.Context) context.Context {
+	ctx = context.WithValue(ctx, prefixKey, "")
+	return ctx
 }
 
 // loggerFromContext extracts a logger from a context.
@@ -71,7 +89,8 @@ func log(ctx context.Context, level Level, args ...interface{}) {
 	if !ok {
 		return
 	}
-	logger.Log(level, ts, fmt.Sprint(args...))
+	prefix := getPrefix(ctx)
+	logger.Log(level, ts, prefix+fmt.Sprint(args...))
 }
 
 func logf(ctx context.Context, level Level, format string, args ...interface{}) {
@@ -80,5 +99,14 @@ func logf(ctx context.Context, level Level, format string, args ...interface{}) 
 	if !ok {
 		return
 	}
-	logger.Log(level, ts, fmt.Sprintf(format, args...))
+	prefix := getPrefix(ctx)
+	logger.Log(level, ts, prefix+fmt.Sprintf(format, args...))
+}
+
+func getPrefix(ctx context.Context) string {
+	prefix := ""
+	if pf := ctx.Value(prefixKey); pf != nil {
+		prefix = pf.(string)
+	}
+	return prefix
 }

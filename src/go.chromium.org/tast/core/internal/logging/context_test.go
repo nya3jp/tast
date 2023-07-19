@@ -116,3 +116,25 @@ func TestHasLogger(t *testing.T) {
 		t.Error("HasLogger = false for a context with a logger attached")
 	}
 }
+
+func TestSetLogPrefix(t *testing.T) {
+	logger := loggingtest.NewLogger(t, logging.LevelDebug)
+	ctx := logging.AttachLogger(context.Background(), logger)
+	ctx = logging.SetLogPrefix(ctx, "[Phase A setup] ")
+
+	logging.Info(ctx, "a", "aa")
+	logging.Infof(ctx, "b%sb", "b")
+	logging.Debug(ctx, "c", "cc")
+	logging.Debugf(ctx, "d%sd", "d")
+
+	ctx = logging.UnsetLogPrefix(ctx)
+
+	logging.Info(ctx, "a", "aa")
+	logging.Infof(ctx, "b%sb", "b")
+	logging.Debug(ctx, "c", "cc")
+	logging.Debugf(ctx, "d%sd", "d")
+
+	if diff := cmp.Diff(logger.Logs(), []string{"[Phase A setup] aaa", "[Phase A setup] bbb", "[Phase A setup] ccc", "[Phase A setup] ddd", "aaa", "bbb", "ccc", "ddd"}); diff != "" {
+		t.Errorf("Messages mismatch (-got +want):\n%s", diff)
+	}
+}

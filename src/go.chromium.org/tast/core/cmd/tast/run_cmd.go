@@ -20,6 +20,7 @@ import (
 	"go.chromium.org/tast/core/cmd/tast/internal/run/config"
 	"go.chromium.org/tast/core/internal/command"
 	"go.chromium.org/tast/core/internal/logging"
+	"go.chromium.org/tast/core/internal/telemetry"
 	"go.chromium.org/tast/core/internal/timing"
 	"go.chromium.org/tast/core/internal/xcontext"
 )
@@ -90,6 +91,7 @@ func (r *runCmd) SetFlags(f *flag.FlagSet) {
 }
 
 func (r *runCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{}) subcommands.ExitStatus {
+	ctx = telemetry.SetPhase(ctx, "setup", telemetry.Framework, "tast")
 	ctx, cancel := xcontext.WithTimeout(ctx, r.timeout, errors.Errorf("%v: tast command timeout reached (%v)", context.DeadlineExceeded, r.timeout))
 	defer cancel(context.Canceled)
 
@@ -162,6 +164,7 @@ func (r *runCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{})
 		logging.Debug(ctx, "Using SSH dir ", r.cfg.KeyDir)
 	}
 	logging.Info(ctx, "Writing results to ", r.cfg.ResDir)
+	ctx = telemetry.SetPhase(ctx, "", "", "")
 
 	results, runErr := r.wrapper.run(ctx, r.cfg.Freeze(), &state)
 

@@ -1150,6 +1150,16 @@ An example external link file to reference a build artifact is below:
 
 To upload a file to Google Cloud Storage you can use the [`gsutil cp`] command.
 
+Example gsutil command to upload the user login image above:
+
+```
+$ gsutil cp /tmp/your/local_file/user_login_some_image_20181210.jpg gs://chromiumos-test-assets-public/tast/cros/ui/user_login_some_image_20181210.jpg
+```
+
+**IMPORTANT:** Don't use space in the file name until this bug is fixed [b/271155369].
+
+[b/271155369]: https://buganizer.corp.google.com/issues/271155369
+
 To list all uploaded versions of the file, use the `gsutil ls -a` command.
 
 External files are cached in two locations: /usr/local/share/tast/data_pushed on

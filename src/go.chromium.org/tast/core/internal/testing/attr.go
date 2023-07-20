@@ -132,6 +132,10 @@ Tests in this group are not used for build verification.
 				Name: "crosbolt_arc_perf_qual",
 				Desc: `Indicates that this test is used for ARC performance qualification.`,
 			},
+			{
+				Name: "crosbolt_fsi_check",
+				Desc: `Indicates that this test is used for FSI health check`,
+			},
 		},
 	},
 	{

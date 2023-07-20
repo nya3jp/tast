@@ -73,6 +73,7 @@ var (
 		"bugzzy_l850gl":      {"bugzzy_l850gl", "dedede", ModemTypeL850},
 		"bugzzy_nl668am":     {"bugzzy_nl668am", "dedede", ModemTypeNL668},
 		"cret":               {"cret", "dedede", ModemTypeL850},
+		"drallion":           {"drallion", "drallion", ModemTypeL850},
 		"drawper_l850gl":     {"drawper_l850gl", "dedede", ModemTypeL850},
 		"kracko_nl668am":     {"kracko_nl668am", "dedede", ModemTypeNL668},
 		"kracko_fm101_cat12": {"kracko_fm101_cat12", "dedede", ModemTypeFM101},

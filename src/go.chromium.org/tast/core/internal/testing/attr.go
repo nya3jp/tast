@@ -909,6 +909,10 @@ third_party/autotest/files/server/site_tests/tast/control.racc-config-installed.
 				Name: "cellular_power",
 				Desc: `Identifies Cellular tests which measure and monitor power consumpiton with cellular connectivity.`,
 			},
+			{
+				Name: "cellular_handover",
+				Desc: `Identifies Cellular handover tests.`,
+			},
 		},
 	},
 	{

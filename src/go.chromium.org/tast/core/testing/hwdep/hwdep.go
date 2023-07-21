@@ -1208,7 +1208,7 @@ var modelsWithVpdSarTables = []string{
 	"nautilus",
 	"nautiluslte",
 	"pantheon",
-	"shyvanna",
+	"shyvana",
 	"vayne",
 }
 
@@ -1976,7 +1976,7 @@ func CameraFeature(names ...string) Condition {
 	}}
 }
 
-// CameraEnumerated is satisfied if all the camera devices are enumberated on the DUT.
+// CameraEnumerated is satisfied if all the camera devices are enumerated on the DUT.
 func CameraEnumerated() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		if hf := f.GetHardwareFeatures(); hf == nil {

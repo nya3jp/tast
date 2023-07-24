@@ -4,6 +4,10 @@
 /.vscode/
 /src/.vscode/
 
+# Jetbrains IDEs (e.g. Intellij)
+/.idea/
+*.iml
+
 # Go packages, e.g. when Visual Studio Code is run from the base folder, not src
 /pkg/
 

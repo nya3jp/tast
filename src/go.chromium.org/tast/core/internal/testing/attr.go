@@ -730,6 +730,45 @@ third_party/autotest/files/server/site_tests/tast/control.racc-config-installed.
 		},
 	},
 	{
+		Name:     "wifi_router_feature",
+		Contacts: []string{"chromeos-kernel-wifi@google.com"},
+		Desc:     "Used with the wificell* test groups to denote features that all routers within the wificell testbed must support for the test. Each sub-attribute corresponds to a value in the chromiumos.test.lab.api.WifiRouterFeature Enum.",
+		Subattrs: []*attr{
+			{
+				Name: "wifi_router_feature_ieee_802_11_a",
+				Desc: "WiFi 1 (IEEE 802.11a) support.",
+			},
+			{
+				Name: "wifi_router_feature_ieee_802_11_b",
+				Desc: "WiFi 2 (IEEE 802.11b) support.",
+			},
+			{
+				Name: "wifi_router_feature_ieee_802_11_g",
+				Desc: "WiFi 3 (IEEE 802.11g) support.",
+			},
+			{
+				Name: "wifi_router_feature_ieee_802_11_n",
+				Desc: "WiFi 4 (IEEE 802.11n) support.",
+			},
+			{
+				Name: "wifi_router_feature_ieee_802_11_ac",
+				Desc: "WiFi 5 (IEEE 802.11ac) support.",
+			},
+			{
+				Name: "wifi_router_feature_ieee_802_11_ax",
+				Desc: "WiFi 6 (IEEE 802.11ax, 2.4GHz, 5GHz) support.",
+			},
+			{
+				Name: "wifi_router_feature_ieee_802_11_ax_e",
+				Desc: "WiFi 6E (IEEE 802.11ax, 6GHz) support.",
+			},
+			{
+				Name: "wifi_router_feature_ieee_802_11_be",
+				Desc: "WiFi 7 (IEEE 802.11be) support.",
+			},
+		},
+	},
+	{
 		Name:     "cellular",
 		Contacts: []string{"chromeos-cellular-team@google.com"},
 		Desc:     `The group of Cellular tests to be run on hardware with a builtin Cellular modem and SIM card.`,

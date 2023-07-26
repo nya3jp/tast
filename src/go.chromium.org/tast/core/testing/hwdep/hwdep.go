@@ -1860,6 +1860,24 @@ func InternalKeyboard() Condition {
 	}
 }
 
+// NoInternalKeyboard returns a hardware dependency condition that is satisfied
+// if and only if the DUT's form factor does not have a fixed undetachable
+// keyboard.
+func NoInternalKeyboard() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("HardwareFeatures is not given")
+		}
+		if hf.GetKeyboard() != nil &&
+			hf.GetKeyboard().KeyboardType == configpb.HardwareFeatures_Keyboard_INTERNAL {
+			return unsatisfied("DUT does have a fixed keyboard")
+		}
+		return satisfied()
+	},
+	}
+}
+
 // DisplayPortConverter is satisfied if a DP converter with one of the given names
 // is present.
 func DisplayPortConverter(names ...string) Condition {

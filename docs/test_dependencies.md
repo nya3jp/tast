@@ -237,7 +237,8 @@ stack-sampled metrics.
     [this bug](https://b.corp.google.com/issues/172224081) for context.
 * `vm_host` - The ability to [run virtual machines].
 * `vpd` - The DUT has a VPD chip.
-* `vulkan` - Whether [Vulkan] is enabled.
+* `vulkan` - Whether [Vulkan] libraries are installed on the system image.
+* `vulkan_composite` - Boards that support composition with [Vulkan].
 * `watchdog` - watchdog daemon
 * `wifi` - If this DUT has WiFi device.
 * `wpa3_sae` - The ability to use WPA3-SAE authentication for WiFi.

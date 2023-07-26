@@ -34,7 +34,7 @@ func main() {
 `
 	expects := []string{
 		"testfile.go:14:2: go.chromium.org/tast/core/errors.Errorf should be used instead of fmt.Errorf",
-		"testfile.go:16:2: time.Sleep ignores context deadline; use testing.Poll or testing.Sleep instead",
+		"testfile.go:16:2: time.Sleep ignores context deadline; use testing.Poll instead or use testing.Sleep and add a comment with GoBigSleepLint explaining the justification",
 		"testfile.go:17:2: context.Background ignores test timeout; use test function's ctx arg instead",
 		"testfile.go:18:2: context.TODO ignores test timeout; use test function's ctx arg instead",
 		"testfile.go:19:2: dbus.SystemBus may reorder signals; use go.chromium.org/tast-tests/cros/local/dbusutil.SystemBus instead",

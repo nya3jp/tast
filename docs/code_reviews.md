@@ -74,6 +74,13 @@ about expected processes or files), it's fine to keep it all together.
 
 [go/small-cls]: https://goto.google.com/small-cls
 
+### Make sure that using tast is the correct fit
+
+Tests should be written at the lowest level possible (i.e. unitests).
+Refer to [go/chromeos-test-guidance] for more details.
+
+[go/chromeos-test-guidance]: https://goto.google.com/chromeos-test-guidance
+
 ### Run repo upload hooks
 
 Tast repositories are configured to run many linters ([gofmt], [goimports],

@@ -951,6 +951,33 @@ third_party/autotest/files/server/site_tests/tast/control.racc-config-installed.
 		},
 	},
 	{
+		Name:     "uwb",
+		Contacts: []string{"chromeos-cellular-team@google.com"},
+		Desc:     `The group of Cellular Performance tests to be run on hardware with a builtin Cellular modem and SIM card.`,
+		Subattrs: []*attr{
+			{
+				Name: "uwb_unstable",
+				Desc: "Identifies UWB tests that are unstable. Used to skip tests running on stable suites and/or the CQ.",
+			},
+			{
+				Name: "uwb_cros_peers_1",
+				Desc: "Identifies uwb tests that require at most 1 CrOS peer.",
+			},
+			{
+				Name: "uwb_cros_peers_2",
+				Desc: "Identifies uwb tests that require at most 2 CrOS peers.",
+			},
+			{
+				Name: "uwb_android_peers_1",
+				Desc: "Identifies uwb tests that require at most 1 Android peer.",
+			},
+			{
+				Name: "uwb_android_peers_2",
+				Desc: "Identifies uwb tests that require at most 2 Android peers.",
+			},
+		},
+	},
+	{
 		Name:     "bluetooth",
 		Contacts: []string{"cros-connectivity@google.com"},
 		Desc:     "Identifies bluetooth tests.",

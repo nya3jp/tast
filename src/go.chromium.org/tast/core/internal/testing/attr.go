@@ -285,6 +285,14 @@ Tests in this group are not used for build verification.
 				Desc: `A group of ARC app compatibility tests for release testing.`,
 			},
 			{
+				Name: "appcompat_release_0",
+				Desc: `Group 0 of ARC app compatibility tests for release testing.`,
+			},
+			{
+				Name: "appcompat_release_1",
+				Desc: `Group 1 of ARC app compatibility tests for release testing.`,
+			},
+			{
 				Name: "appcompat_smoke",
 				Desc: `A group of ARC app compatibility tests for smoke testing.`,
 			},
@@ -303,6 +311,30 @@ Tests in this group are not used for build verification.
 			{
 				Name: "appcompat_default",
 				Desc: `A group of ARC app compatibility tests for appcompat testing.`,
+			},
+			{
+				Name: "appcompat_default_0",
+				Desc: `Group 0 of ARC app compatibility tests for appcompat testing.`,
+			},
+			{
+				Name: "appcompat_default_1",
+				Desc: `Group 1 of ARC app compatibility tests for appcompat testing.`,
+			},
+			{
+				Name: "appcompat_default_2",
+				Desc: `Group 2 of ARC app compatibility tests for appcompat testing.`,
+			},
+			{
+				Name: "appcompat_default_3",
+				Desc: `Group 3 of ARC app compatibility tests for appcompat testing.`,
+			},
+			{
+				Name: "appcompat_default_4",
+				Desc: `Group 4 of ARC app compatibility tests for appcompat testing.`,
+			},
+			{
+				Name: "appcompat_default_5",
+				Desc: `Group 5 of ARC app compatibility tests for appcompat testing.`,
 			},
 		},
 	},

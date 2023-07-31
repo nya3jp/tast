@@ -44,7 +44,9 @@ var softwareFeatureDefs = map[string]string{
 	"camera_720p": "!snow && !skate && !spring",
 	// Some boards might not support the camera/video/audio components required by the camera app.
 	// TODO(b/185087278): Remove soraka-libcamera.
-	"camera_app":                   `!("board:volteer-kernelnext" || "board:soraka-libcamera")`,
+	"camera_app": `!("board:volteer-kernelnext" || "board:soraka-libcamera")`,
+	// VMs don't show corner indicator (see b/290143268).
+	"camera_doc_corner_indicator":  `!"betty" && !"tast_vm"`,
 	"camera_feature_auto_framing":  "camera_feature_auto_framing",
 	"camera_feature_effects":       "camera_feature_effects",
 	"camera_feature_hdrnet":        "camera_feature_hdrnet",
@@ -273,13 +275,13 @@ var softwareFeatureDefs = map[string]string{
 	// vm_host feature for VM builds.
 	"vm_host": "kvm_host && !tast_vm",
 	// VPD is not available in VMs.
-	"vpd":      `!"betty" && !"tast_vm"`,
-	"vulkan":   "vulkan",
+	"vpd":    `!"betty" && !"tast_vm"`,
+	"vulkan": "vulkan",
 	// Boards that support composition with Vulkan. The vanilla "vulkan" dep
 	// above simply indicates whether Vulkan drivers are present in the image, so
 	// this dep is a subset of those devices.
 	"vulkan_composite": `vulkan && ("board:volteer" || "board:brya")`,
-	"watchdog": `watchdog`,
+	"watchdog":         `watchdog`,
 	// nyan_kitty is skipped as its WiFi device is unresolvably flaky (crrev.com/c/944502),
 	// exhibiting very similar symptoms to crbug.com/693724, b/65858242, b/36264732.
 	"wifi":  `!"betty" && !"tast_vm" && !"nyan_kitty"`,

@@ -1932,7 +1932,7 @@ licensing ([example](
 https://chromium-review.googlesource.com/c/chromiumos/overlays/chromiumos-overlay/+/1146070)).
 2. Add the dependency to tast-build-deps ([example](
 https://chromium-review.googlesource.com/c/chromiumos/overlays/chromiumos-overlay/+/1737396)).
-Please send this CL to ebuild-reviews@ and tast-owners@.
+Please send this CL to tast-owners@.
 
 Tast doesn't have any official process to review third party libraries.
 Just take usual precautions on introducing libraries, such as

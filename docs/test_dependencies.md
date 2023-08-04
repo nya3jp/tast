@@ -45,7 +45,7 @@ The following software features are defined:
 * `bluetooth_floss` - Excludes boards that do not support the floss bluetooth adapter.
 * `boot_perf_info` - Reven (ChromeOS Flex) doesn't support boot performance metrics.
 * `borealis_host` - Boards that can host the Borealis system.
-*  borealis_nvidia` - Boards that use nvidia supported Borealis system.
+* `borealis_nvidia` - Boards that use nvidia supported Borealis system.
 * `bpf` - Whether the platform (kernel) has the bpf syscall enabled.
 * `breakpad` - Whether the platform supports the breakpad crash handler
     for Chrome.
@@ -146,7 +146,7 @@ The following software features are defined:
 * `no_asan` - Build was not built with Address Sanitizer. Similar to `aslr`.
 * `no_ath10k_4_4` - Skip boards using the ath10k/ar10k driver on kernel 4.4, as they are missing certain features (b/138406224).
 * `no_borealis_host` - Boards which is not designed to host borealis.
-* `no_chrome_dcheck` - Chrome/Chromium was not built with dcheck enabld`.
+* `no_chrome_dcheck` - Chrome/Chromium was not built with dcheck enabld.
 * `no_eth_loss_on_reboot` - Board does not lose ethernet on reboot. Context: b/178529170
 * `no_iioservice` - Build was not built with CrOS IIO Service.
 * `no_msan` - Build was not built with Memory Sanitizer.

@@ -13,13 +13,13 @@ var softwareFeatureDefs = map[string]string{
 	"amd_cpu": "amd_cpu",
 	// ARC USE flags are defined here:
 	// http://cs/chromeos_public/src/third_party/chromiumos-overlay/eclass/arc-build-constants.eclass
+	"android_container":   `arc && ("android-container-rvc" || "android-container-pi")`,
+	"android_container_r": `arc && "android-container-rvc"`,
+	"android_p":           `arc && "android-container-pi"`,
+	"android_r":           `arc && ("android-container-rvc" || "android-vm-rvc")`,
 	"android_vm":          `arc && arcvm && !"android-vm-pi"`,
 	"android_vm_r":        `arc && arcvm && "android-vm-rvc"`,
 	"android_vm_t":        `arc && arcvm && "android-vm-tm"`,
-	"android_container":   `arc && ("android-container-rvc" || "android-container-pi")`,
-	"android_p":           `arc && "android-container-pi"`,
-	"android_container_r": `arc && "android-container-rvc"`,
-	"android_r":           `arc && ("android-container-rvc" || "android-vm-rvc")`,
 	"arc":                 `arc`,
 	"arc32":               `"cheets_user" || "cheets_userdebug"`,
 	"arc64":               `"cheets_user_64" || "cheets_userdebug_64"`,
@@ -31,12 +31,18 @@ var softwareFeatureDefs = map[string]string{
 	"arc_launched_64bit":           `"!arc-launched-32bit-abi"`,
 	"arm":                          `"arm" || "arm64"`,
 	"aslr":                         "!asan", // ASan instrumentation breaks ASLR
-	"auto_update_stable":           `!("board:*-*")`,
-	"biometrics_daemon":            "biod",
-	"bluetooth_floss":              `!("board:asuka" || "board:banon" || "board:bob" || "board:caroline" || "board:cave" || "board:celes" || "board:chell" || "board:coral" || "board:cyan" || "board:edgar" || "board:elm" || "board:hana" || "board:kefka" || "board:kevin" || "board:lars" || "board:pyro" || "board:reef" || "board:reks" || "board:relm" || "board:sand" || "board:scarlet" || "board:sentry" || "board:setzer" || "board:snappy" || "board:terra" || "board:ultima")`,
-	"boot_perf_info":               `!("board:reven*")`, // Reven (ChromeOS Flex) doesn't support boot performance metrics.
-	"borealis_host":                "borealis_host",
-	"borealis_nvidia":              "borealis_nvidia",
+	"ap_noise_cancellation":        `("board:brya" || "board:nissa" || "board:skyrim" || "board:guybrush")`,
+	// Some boards cannot play/record stably, disabling these tests and keeping
+	// some of them informational.
+	// TODO(b/240269271): remove "octopus" and "hatch" when b/240269271 is fixed.
+	"audio_stable":       `!("board:octopus" || "board:hatch")`,
+	"audio_unstable":     `"board:octopus" || "board:hatch"`,
+	"auto_update_stable": `!("board:*-*")`,
+	"biometrics_daemon":  "biod",
+	"bluetooth_floss":    `!("board:asuka" || "board:banon" || "board:bob" || "board:caroline" || "board:cave" || "board:celes" || "board:chell" || "board:coral" || "board:cyan" || "board:edgar" || "board:elm" || "board:hana" || "board:kefka" || "board:kevin" || "board:lars" || "board:pyro" || "board:reef" || "board:reks" || "board:relm" || "board:sand" || "board:scarlet" || "board:sentry" || "board:setzer" || "board:snappy" || "board:terra" || "board:ultima")`,
+	"boot_perf_info":     `!("board:reven*")`, // Reven (ChromeOS Flex) doesn't support boot performance metrics.
+	"borealis_host":      "borealis_host",
+	"borealis_nvidia":    "borealis_nvidia",
 	// The bpf syscall is enabled on CrOS since kernel v5.10.
 	"bpf":      `!("kernel-4_4" || "kernel-4_14" || "kernel-4_19" || "kernel-5_4")`,
 	"breakpad": "force_breakpad",
@@ -77,12 +83,12 @@ var softwareFeatureDefs = map[string]string{
 	// VMs don't support few crossystem sub-commands: https://crbug.com/974615
 	"crossystem":        `!"betty" && !"tast_vm"`,
 	"cups":              "cups",
+	"device_crash":      `!("board:samus")`,                        // Samus devices do not reliably come back after kernel crashes. crbug.com/1045821
 	"diagnostics":       `"diagnostics" && !"betty" && !"tast_vm"`, // VMs do not have hardware to diagnose. https://crbug.com/1126619
 	"dlc":               "dlc",
-	"dptf":              "dptf",
-	"device_crash":      `!("board:samus")`, // Samus devices do not reliably come back after kernel crashes. crbug.com/1045821
 	"dmverity_stable":   `"kernel-4_4" || "kernel-4_14"`,
 	"dmverity_unstable": `!("kernel-4_4" || "kernel-4_14")`,
+	"dptf":              "dptf",
 	"drivefs":           "drivefs",
 	"drm_atomic":        "drm_atomic",
 	"drm_trace":         `!("kernel-4_4" || "kernel-4_14" || "kernel-4_19")`,
@@ -93,33 +99,35 @@ var softwareFeatureDefs = map[string]string{
 	// TODO(https://crbug.com/1122066): remove guado-cfm and rikku-cfm when they're no longer necessary
 	// TODO(b/201430283): Remove nami-kernelnext, rammus, and sarien-kernelnext when bug is resolved.
 	"ec_crash":     `!(("board:asuka" || "board:banon" || "board:caroline" || "board:caroline-kernelnext" || "board:caroline-userdebug" || "board:cave" || "board:celes" || "board:chell" || "board:cyan" || "board:edgar" || "board:kefka" || "board:reks" || "board:relm" || "board:sentry" || "board:terra" || "board:ultima" || "board:wizpig") || ("board:drallion" || "board:sarien") || ("board:guado" || "board:guado-cfm" || "board:tidus" || "board:rikku" || "board:rikku-cfm" || "board:veyron_fievel" || "board:veyron_tiger") || "board:nocturne" || "board:nocturne-kernelnext" || "board:nami-kernelnext" || "board:rammus" || "board:sarien-kernelnext")`,
+	"ec_hibernate": `!("board:brask" || "board:fizz" || "board:kukui" || "board:puff" || "board:scarlet" || "board:shotzo")`,
 	"endorsement":  `!"betty" && !"tast_vm"`, // VMs don't have valid endorsement certificate.
 	"faceauth":     "faceauth",
 	"factory_flow": "!no_factory_flow",
 	"fake_hps":     `"betty" || "tast_vm"`, // VMs run hpsd with --test (fake software device)
 	// TODO(http://b/271025366): Remove feedback when the bug is resolved.
-	"feedback":                  `!("board:fizz" || "board:puff" || "board:rammus")`,
-	"firewall":                  "!moblab", // Moblab has relaxed iptables rules
-	"flashrom":                  `!"betty" && !"tast_vm"`,
-	"first_class_servo_working": `!("board:brya" || "board:volteer")`,     // TODO(b/274634861): remove the first_class_servo_working when fixed.
-	"flex_id":                   "flex_id",                                // Enable using flex_id for enrollment
-	"fwupd":                     "fwupd",                                  // have sys-apps/fwupd installed.
-	"ghostscript":               "postscript",                             // Ghostscript and dependent packages available
-	"google_virtual_keyboard":   "chrome_internal && internal && !moblab", // doesn't work on Moblab: https://crbug.com/949912
-	"gpu_sandboxing":            `!"betty" && !"tast_vm"`,                 // no GPU sandboxing on VMs: https://crbug.com/914688
-	"gsc":                       `"cr50_onboard" || "ti50_onboard"`,
-	"hana":                      "hana",
-	"hammerd":                   "hammerd",
-	"houdini":                   "houdini",
-	"houdini64":                 "houdini64",
-	"hostap_hwsim":              "wifi_hostap_test",
-	"hps":                       "hps",
-	"hwdrm_stable":              `!("board:brya" || "board:geralt")`, // brya devices have FW corruption issues with HWDRM: b/243456977, geralt is under development
-	"igt":                       `("video_cards_amdgpu" || "video_cards_intel" || "video_cards_mediatek" || "video_cards_msm") && !("kernel-4_4" || "kernel-4_14" || "kernel-4_19")`,
-	"iioservice":                "iioservice",
-	"inference_accuracy_eval":   "inference_accuracy_eval",
-	"inputs_deps":               `!("board:*-kernelnext")`,
-	"intel_psr":                 "intel_psr",
+	"feedback":                   `!("board:fizz" || "board:puff" || "board:rammus")`,
+	"firewall":                   "!moblab",                            // Moblab has relaxed iptables rules
+	"first_class_servo_working":  `!("board:brya" || "board:volteer")`, // TODO(b/274634861): remove the first_class_servo_working when fixed.
+	"flashrom":                   `!"betty" && !"tast_vm"`,
+	"flex_id":                    "flex_id",                                // Enable using flex_id for enrollment
+	"fwupd":                      "fwupd",                                  // have sys-apps/fwupd installed.
+	"ghostscript":                "postscript",                             // Ghostscript and dependent packages available
+	"google_virtual_keyboard":    "chrome_internal && internal && !moblab", // doesn't work on Moblab: https://crbug.com/949912
+	"gpu_sandboxing":             `!"betty" && !"tast_vm"`,                 // no GPU sandboxing on VMs: https://crbug.com/914688
+	"gsc":                        `"cr50_onboard" || "ti50_onboard"`,
+	"gsc_can_wake_ec_with_reset": `!("board:grunt" || "board:nami")`,
+	"hammerd":                    "hammerd",
+	"hana":                       "hana",
+	"hostap_hwsim":               "wifi_hostap_test",
+	"houdini":                    "houdini",
+	"houdini64":                  "houdini64",
+	"hps":                        "hps",
+	"hwdrm_stable":               `!("board:brya" || "board:geralt")`, // brya devices have FW corruption issues with HWDRM: b/243456977, geralt is under development
+	"igt":                        `("video_cards_amdgpu" || "video_cards_intel" || "video_cards_mediatek" || "video_cards_msm") && !("kernel-4_4" || "kernel-4_14" || "kernel-4_19")`,
+	"iioservice":                 "iioservice",
+	"inference_accuracy_eval":    "inference_accuracy_eval",
+	"inputs_deps":                `!("board:*-kernelnext")`,
+	"intel_psr":                  "intel_psr",
 	// IKEv2 is only supported on 4.19+ kernels.
 	"ikev2": `!("kernel-4_4" || "kernel-4_14")`,
 	// The io_uring syscalls are enabled on CrOS since kernel v5.15.
@@ -161,12 +169,14 @@ var softwareFeatureDefs = map[string]string{
 	"no_android_vm_t":           `!(arc && arcvm && "android-vm-tm")`,
 	"no_arc_userdebug":          "!(cheets_userdebug || cheets_userdebug_64)",
 	"no_arc_x86":                "!(amd64 && cheets_user)",
+	"no_arcvm_virtio_blk_data":  "!(arcvm_virtio_blk_data || arcvm_data_migration)",
 	"no_arm":                    "!arm",
 	"no_asan":                   "!asan",
 	"no_ath10k_4_4":             `!("board:scarlet" && "kernel-4_4")`, // board scarlet with kernel 4.4 has a version of ath10k without certain features.
 	"no_borealis_host":          "!borealis_host",
 	"no_chrome_dcheck":          "!chrome_dcheck",
-	"no_eth_loss_on_reboot":     `!("board:jacuzzi")`,                                                                                                                                // some devices (jacuzzi) may not enumerate eth on reboot b/178529170
+	"no_eth_loss_on_reboot":     `!("board:jacuzzi")`, // some devices (jacuzzi) may not enumerate eth on reboot b/178529170
+	"no_gsc":                    `!"cr50_onboard" && !"ti50_onboard"`,
 	"no_igt":                    `!("video_cards_amdgpu" || "video_cards_intel" || "video_cards_mediatek" || "video_cards_msm") || ("kernel-4_4" || "kernel-4_14" || "kernel-4_19")`, // opposite of "igt"
 	"no_iioservice":             "!iioservice",
 	"no_kernel_upstream":        `!"kernel-upstream"`,
@@ -180,8 +190,6 @@ var softwareFeatureDefs = map[string]string{
 	"no_tpm_dynamic":            "!tpm_dynamic",
 	"no_ubsan":                  "!ubsan",
 	"no_vulkan":                 "!vulkan",
-	"no_arcvm_virtio_blk_data":  "!(arcvm_virtio_blk_data || arcvm_data_migration)",
-	"no_gsc":                    `!"cr50_onboard" && !"ti50_onboard"`,
 	"nvme":                      "nvme",
 	"oci":                       "containers && !moblab", // run_oci doesn't work on Moblab: https://crbug.com/951691
 	"ocr":                       "ocr",
@@ -218,8 +226,8 @@ var softwareFeatureDefs = map[string]string{
 	"selinux_experimental": "selinux && selinux_experimental",
 	"shill-wifi":           "!moblab", // fizz-moblab disables the WiFi technology for Shill
 	"sirenia":              "sirenia",
-	"smartdim":             "smartdim",
 	"smartctl":             "nvme || sata",
+	"smartdim":             "smartdim",
 	// VMs don't support speech on-device API.
 	"soda": `!"betty" && !"tast_vm"`,
 	// Should match StackSamplingProfiler::IsSupportedForCurrentPlatform() in Chromium repo.
@@ -229,10 +237,10 @@ var softwareFeatureDefs = map[string]string{
 	"tflite_opencl":             `!(elm || hana)`, // these boards seem to have issues with the OpenCL TFLite delegate (b/233851820)
 	"thread_safe_libva_backend": "video_cards_amdgpu || video_cards_iHD",
 	"tpm":                       "!mocktpm",
-	"tpm_clear_allowed":         "!mocktpm && (!tpm_dynamic || tpm2_simulator)", // this filters out the reven board from TPM devices
-	"tpm1":                      "!mocktpm && tpm",                              // Indicate tpm1.2 is available
-	"tpm2":                      "!mocktpm && tpm2",                             // Indicate tpm2 is available
+	"tpm1":                      "!mocktpm && tpm",  // Indicate tpm1.2 is available
+	"tpm2":                      "!mocktpm && tpm2", // Indicate tpm2 is available
 	"tpm2_simulator":            "tpm2_simulator",
+	"tpm_clear_allowed":         "!mocktpm && (!tpm_dynamic || tpm2_simulator)", // this filters out the reven board from TPM devices
 	"tpm_dynamic":               "tpm_dynamic",
 	"transparent_hugepage":      "transparent_hugepage",
 	// physical_location is only supported in kernel 5.10 or later.
@@ -241,8 +249,8 @@ var softwareFeatureDefs = map[string]string{
 	"typec_physical_location": `!("kernel-4_4" || "kernel-4_14" || "kernel-4_19" || "kernel-5_4") && !("arm" || "arm64") && !("board:amd*" || "board:asuka*" || "board:asurada*" || "board:atlas*" || "board:banon*" || "board:betty*" || "board:bob*" || "board:caroline*" || "board:cave*" || "board:celes*" || "board:chell*" || "board:cherry*" || "board:coral*" || "board:corsola*" || "board:cyan*" || "board:dedede*" || "board:drallion*" || "board:edgar*" || "board:elm*" || "board:eve*" || "board:fizz*" || "board:geralt*" || "board:grunt*" || "board:hana*" || "board:hatch*" || "board:jacuzzi*" || "board:kalista*" || "board:keeby*" || "board:kefka*" || "board:kevin*" || "board:kukui*" || "board:lars*" || "board:nami*" || "board:nautilus*" || "board:nocturne*" || "board:novato*" || "board:octopus*" || "board:puff*" || "board:pyro*" || "board:rammus*" || "board:reef*" || "board:reks*" || "board:relm*" || "board:reven*" || "board:sand*" || "board:sarien*" || "board:scarlet*" || "board:sentry*" || "board:setzer*" || "board:snappy*" || "board:soraka*" || "board:strongbad*" || "board:terra*" || "board:trogdor*" || "board:ultima*" || "board:volteer*" || "board:wizpig*" || "board:zork*")`,
 	"unibuild":                "unibuild",
 	"untrusted_vm":            `!("kernel-4_4" || "kernel-4_14")`,
-	"usbguard":                "usbguard",
 	"usb_hid_wake":            `!("board:octopus*")`,
+	"usbguard":                "usbguard",
 	"use_fscrypt_v1":          `!"direncription_allow_v2" && !"lvm_stateful_partition"`,
 	"use_fscrypt_v2":          `"direncription_allow_v2" && !"lvm_stateful_partition"`,
 	"uvc_compliant":           `!("kernel-4_4" || "kernel-4_14")`,
@@ -289,12 +297,4 @@ var softwareFeatureDefs = map[string]string{
 	// WireGuard is only supported on 5.4+ kernels.
 	"wireguard": `!("kernel-4_4" || "kernel-4_14" || "kernel-4_19")`,
 	"wpa3_sae":  "wpa3_sae",
-	// Some boards cannot play/record stably, disabling these tests and keeping
-	// some of them informationl.
-	// TODO(b/240269271): remove "octopus" and "hatch" when b/240269271 is fixed.
-	"audio_stable":               `!("board:octopus" || "board:hatch")`,
-	"audio_unstable":             `"board:octopus" || "board:hatch"`,
-	"gsc_can_wake_ec_with_reset": `!("board:grunt" || "board:nami")`,
-	"ec_hibernate":               `!("board:brask" || "board:fizz" || "board:kukui" || "board:puff" || "board:scarlet" || "board:shotzo")`,
-	"ap_noise_cancellation":      `("board:brya" || "board:nissa" || "board:skyrim" || "board:guybrush")`,
 }

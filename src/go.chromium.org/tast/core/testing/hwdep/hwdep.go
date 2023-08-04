@@ -726,6 +726,38 @@ func HasTpm2() Condition {
 	}
 }
 
+// HasGSCCr50 returns a hardware dependency condition that is satisfied if and only if the DUT
+// does have a Cr50 GSC.
+func HasGSCCr50() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("Did not find hardware features")
+		}
+		if hf.GetTrustedPlatformModule().GetGscFwName() == configpb.HardwareFeatures_TrustedPlatformModule_GSC_CR50 {
+			return satisfied()
+		}
+		return unsatisfied("DUT has no Cr50 GSC")
+	},
+	}
+}
+
+// HasGSCTi50 returns a hardware dependency condition that is satisfied if and only if the DUT
+// does have a Ti50 GSC.
+func HasGSCTi50() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("Did not find hardware features")
+		}
+		if hf.GetTrustedPlatformModule().GetGscFwName() == configpb.HardwareFeatures_TrustedPlatformModule_GSC_TI50 {
+			return satisfied()
+		}
+		return unsatisfied("DUT has no Ti50 GSC")
+	},
+	}
+}
+
 // CPUNotNeedsCoreScheduling returns a hardware dependency condition that is satisfied if and only if the DUT's
 // CPU is does not need to use core scheduling to mitigate hardware vulnerabilities.
 func CPUNotNeedsCoreScheduling() Condition {

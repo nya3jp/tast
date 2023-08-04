@@ -456,6 +456,17 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		}
 	}()
 
+	// Obtain GSC name from existence of /opt/google/{cr50,ti50}/firmware directory.
+	func() {
+		if _, err := os.Stat("/opt/google/cr50/firmware"); err == nil {
+			features.TrustedPlatformModule.GscFwName = configpb.HardwareFeatures_TrustedPlatformModule_GSC_CR50
+		} else if _, err := os.Stat("/opt/google/ti50/firmware"); err == nil {
+			features.TrustedPlatformModule.GscFwName = configpb.HardwareFeatures_TrustedPlatformModule_GSC_TI50
+		} else {
+			features.TrustedPlatformModule.GscFwName = configpb.HardwareFeatures_TrustedPlatformModule_GSC_NONE
+		}
+	}()
+
 	modemVariant, err := crosConfig("/modem", "firmware-variant")
 	if err != nil {
 		logging.Infof(ctx, "Modem not found: %v", err)

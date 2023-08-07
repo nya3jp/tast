@@ -1852,19 +1852,19 @@ func SupportsHEVCVideoDecodingInChrome() Condition {
 			return satisfied()
 		}
 		// ARM embedders don't support it.
-		if satisfy, _, err := CPUSocFamily([]string{"mediatek", "rockchip", "qualcomm"}).Satisfied(f); err == nil && satisfy {
+		if satisfy, _, err := CPUSocFamily("mediatek", "rockchip", "qualcomm").Satisfied(f); err == nil && satisfy {
 			return unsatisfied("Chrome does not support HEVC video decoding on this SoC")
 		}
 		// AMD Zork (Picasso) and before also don't.
-		if satisfy, _, err := GPUFamily([]string{"picasso", "stoney"}).Satisfied(f); err == nil && satisfy {
+		if satisfy, _, err := GPUFamily("picasso", "stoney").Satisfied(f); err == nil && satisfy {
 			return unsatisfied("Chrome does not support HEVC video decoding on this SoC")
 		}
 		// Other AMD device support it.
-		if satisfy, _, err := CPUSocFamily([]string{"amd"}).Satisfied(f); err == nil && satisfy {
+		if satisfy, _, err := CPUSocFamily("amd").Satisfied(f); err == nil && satisfy {
 			return satisfied()
 		}
 		// Any Intel TGL, ADL-P do support it.
-		if satisfy, _, err := GPUFamily([]string{"tigerlake", "alderlake"}).Satisfied(f); err == nil && satisfy {
+		if satisfy, _, err := GPUFamily("tigerlake", "alderlake").Satisfied(f); err == nil && satisfy {
 			return satisfied()
 		}
 		return unsatisfied("Chrome does not support HEVC video decoding on this SoC")
@@ -2152,7 +2152,7 @@ func SeamlessRefreshRate() Condition {
 // GPUFamily is satisfied if the devices GPU family is categorized as one of the families specified.
 // For a complete list of values or to add new ones please check the pciid maps at
 // https://chromium.googlesource.com/chromiumos/platform/graphics/+/refs/heads/main/src/go.chromium.org/chromiumos/graphics-utils-go/hardware_probe/cmd/hardware_probe
-func GPUFamily(families []string) Condition {
+func GPUFamily(families ...string) Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
@@ -2170,7 +2170,7 @@ func GPUFamily(families []string) Condition {
 // SkipGPUFamily is satisfied if the devices GPU family is none of the families specified.
 // For a complete list of values or to add new ones please check the pciid maps at
 // https://chromium.googlesource.com/chromiumos/platform/graphics/+/refs/heads/main/src/go.chromium.org/chromiumos/graphics-utils-go/hardware_probe/cmd/hardware_probe
-func SkipGPUFamily(families []string) Condition {
+func SkipGPUFamily(families ...string) Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
@@ -2188,7 +2188,7 @@ func SkipGPUFamily(families []string) Condition {
 // GPUVendor is satisfied if the devices GPU vendor is categorized as one of the vendors specified.
 // For a complete list of values or to add new ones please check the files at
 // https://chromium.googlesource.com/chromiumos/platform/graphics/+/refs/heads/main/src/go.chromium.org/chromiumos/graphics-utils-go/hardware_probe/cmd/hardware_probe
-func GPUVendor(vendors []string) Condition {
+func GPUVendor(vendors ...string) Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
@@ -2206,7 +2206,7 @@ func GPUVendor(vendors []string) Condition {
 // SkipGPUVendor is satisfied if the devices GPU vendor is categorized as none of the vendors specified.
 // For a complete list of values or to add new ones please check the files at
 // https://chromium.googlesource.com/chromiumos/platform/graphics/+/refs/heads/main/src/go.chromium.org/chromiumos/graphics-utils-go/hardware_probe/cmd/hardware_probe
-func SkipGPUVendor(vendors []string) Condition {
+func SkipGPUVendor(vendors ...string) Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
@@ -2224,7 +2224,7 @@ func SkipGPUVendor(vendors []string) Condition {
 // CPUSocFamily is satisfied if the devices CPU SOC family is categorized as one of the families specified.
 // For a complete list of values or to add new ones please check the files at
 // https://chromium.googlesource.com/chromiumos/platform/graphics/+/refs/heads/main/src/go.chromium.org/chromiumos/graphics-utils-go/hardware_probe/cmd/hardware_probe
-func CPUSocFamily(families []string) Condition {
+func CPUSocFamily(families ...string) Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
@@ -2242,7 +2242,7 @@ func CPUSocFamily(families []string) Condition {
 // SkipCPUSocFamily is satisfied if the device's CPU SOC family is none of the families specified.
 // For a complete list of values or to add new ones please check the files at
 // https://chromium.googlesource.com/chromiumos/platform/graphics/+/refs/heads/main/src/go.chromium.org/chromiumos/graphics-utils-go/hardware_probe/cmd/hardware_probe
-func SkipCPUSocFamily(families []string) Condition {
+func SkipCPUSocFamily(families ...string) Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {

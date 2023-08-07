@@ -1024,7 +1024,7 @@ func TestRuntimeProbeConfig(t *testing.T) {
 }
 
 func TestGPUFamily(t *testing.T) {
-	c := hwdep.GPUFamily([]string{"tigerlake", "qualcomm"})
+	c := hwdep.GPUFamily("tigerlake", "qualcomm")
 	for _, tc := range []struct {
 		gpuFamily       string
 		expectSatisfied bool
@@ -1053,7 +1053,7 @@ func TestGPUFamily(t *testing.T) {
 }
 
 func TestSkipGPUFamily(t *testing.T) {
-	c := hwdep.SkipGPUFamily([]string{"tigerlake", "qualcomm"})
+	c := hwdep.SkipGPUFamily("tigerlake", "qualcomm")
 	for _, tc := range []struct {
 		gpuFamily       string
 		expectSatisfied bool
@@ -1082,7 +1082,7 @@ func TestSkipGPUFamily(t *testing.T) {
 }
 
 func TestGPUVendor(t *testing.T) {
-	c := hwdep.GPUVendor([]string{"intel", "amd"})
+	c := hwdep.GPUVendor("intel", "amd")
 	for _, tc := range []struct {
 		gpuVendor       string
 		expectSatisfied bool
@@ -1111,7 +1111,7 @@ func TestGPUVendor(t *testing.T) {
 }
 
 func TestSkipGPUVendor(t *testing.T) {
-	c := hwdep.SkipGPUVendor([]string{"intel", "amd"})
+	c := hwdep.SkipGPUVendor("intel", "amd")
 	for _, tc := range []struct {
 		gpuVendor       string
 		expectSatisfied bool
@@ -1140,7 +1140,7 @@ func TestSkipGPUVendor(t *testing.T) {
 }
 
 func TestCPUSocFamily(t *testing.T) {
-	c := hwdep.CPUSocFamily([]string{"intel", "amd"})
+	c := hwdep.CPUSocFamily("intel", "amd")
 	for _, tc := range []struct {
 		cpuSocFamily    string
 		expectSatisfied bool
@@ -1169,7 +1169,7 @@ func TestCPUSocFamily(t *testing.T) {
 }
 
 func TestSkipCPUSocFamily(t *testing.T) {
-	c := hwdep.SkipCPUSocFamily([]string{"intel", "amd"})
+	c := hwdep.SkipCPUSocFamily("intel", "amd")
 	for _, tc := range []struct {
 		cpuSocFamily    string
 		expectSatisfied bool

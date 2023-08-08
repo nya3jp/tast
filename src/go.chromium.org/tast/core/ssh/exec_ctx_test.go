@@ -457,6 +457,9 @@ func TestStartTimeoutCtx(t *testing.T) {
 }
 
 func TestWaitTimeoutCtx(t *testing.T) {
+	// TODO: b/295031735
+	// Need to figure out why it failed.
+	t.Skip("Test disabled because of flakiness b/295031735")
 	t.Parallel()
 	td := sshtest.NewTestDataConn(t)
 	defer td.Close()

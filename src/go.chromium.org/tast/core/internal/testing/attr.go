@@ -1909,6 +1909,17 @@ from other existing groups (or use this group standalone).
 			},
 		},
 	},
+	{
+		Name:     "human_motion_robot",
+		Contacts: []string{"chromeos-tango@google.com"},
+		Desc:     "A group of tests that use the Human Motion Robot device",
+		Subattrs: []*attr{
+			{
+				Name: "human_motion_robot_linearity",
+				Desc: "A group of tests that focus on linearity",
+			},
+		},
+	},
 }
 
 // validGroupMap is the name-keyed map of validGroups.

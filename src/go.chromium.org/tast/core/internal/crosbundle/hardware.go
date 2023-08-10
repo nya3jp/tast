@@ -468,9 +468,11 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 	}()
 
 	modemVariant, err := crosConfig("/modem", "firmware-variant")
+	features.Cellular.Present = configpb.HardwareFeatures_NOT_PRESENT
 	if err != nil {
-		logging.Infof(ctx, "Modem not found: %v", err)
-		features.Cellular.Present = configpb.HardwareFeatures_NOT_PRESENT
+		logging.Infof(ctx, "Modem not found with err: %v", err)
+	} else if modemVariant == "" {
+		logging.Info(ctx, "Modem not found")
 	} else {
 		features.Cellular.Present = configpb.HardwareFeatures_PRESENT
 		features.Cellular.Model = modemVariant

@@ -45,5 +45,26 @@ const (
 	LacrosVariantUnneeded = testing.LacrosVariantUnneeded
 )
 
+const (
+	// LifeCycleProductionReady indicates the test can be run in the lab and is expected to pass.
+	// Most tests will be in this stage, and this value will be assumed if no other value is provided.
+	LifeCycleProductionReady = testing.LifeCycleProductionReady
+	// LifeCycleDisabled indicates that the test should not run in the lab and code will be deleted if not cleaned
+	// up in a timely manner.
+	LifeCycleDisabled = testing.LifeCycleDisabled
+	// LifeCycleInDevelopment indicates that the test is either new or broken. It can still run in the lab
+	// (ideally at a reduced frequency) but should not be included in flakiness reports or used to make
+	// decisions like release qualification.
+	LifeCycleInDevelopment = testing.LifeCycleInDevelopment
+	// LifeCycleManualOnly indicates that the test is not meant to be scheduled in the lab - it will only be
+	// triggered manually or outside of a lab environment. The code should not be deleted unless test owners
+	// do not maintain the test.
+	LifeCycleManualOnly = testing.LifeCycleManualOnly
+	// LifeCycleOwnerMonitored indicates that the test has inherently ambiguous usage and should not be run by
+	// or interpreted by anyone other than the test owner. These tests can run in the lab but should not
+	// be run in release-blocking suites or any other situation where a non-owner will need to use the results.
+	LifeCycleOwnerMonitored = testing.LifeCycleOwnerMonitored
+)
+
 // StringPair represents a string key-value pair. Typically used for SearchFlags.
 type StringPair = protocol.StringPair

@@ -340,6 +340,22 @@ Tests in this group are not used for build verification.
 				Name: "appcompat_default_5",
 				Desc: `Group 5 of ARC app compatibility tests for appcompat testing.`,
 			},
+			{
+				Name: "appcompat_default_6",
+				Desc: `Group 6 of ARC app compatibility tests for appcompat testing.`,
+			},
+			{
+				Name: "appcompat_default_7",
+				Desc: `Group 7 of ARC app compatibility tests for appcompat testing.`,
+			},
+			{
+				Name: "appcompat_default_8",
+				Desc: `Group 8 of ARC app compatibility tests for appcompat testing.`,
+			},
+			{
+				Name: "appcompat_default_9",
+				Desc: `Group 9 of ARC app compatibility tests for appcompat testing.`,
+			},
 		},
 	},
 	{

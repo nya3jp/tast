@@ -69,6 +69,7 @@ var (
 		"rusty_fm101":        {"rusty_fm101", "corsola", ModemTypeFM101},
 		"steelix_fm101":      {"steelix_fm101", "corsola", ModemTypeFM101},
 		"beadrix_nl668am":    {"beadrix_nl668am", "dedede", ModemTypeNL668},
+		"blacktiplte":        {"blacktiplte", "coral", ModemTypeL850},
 		"boten":              {"boten", "dedede", ModemTypeL850},
 		"bugzzy_l850gl":      {"bugzzy_l850gl", "dedede", ModemTypeL850},
 		"bugzzy_nl668am":     {"bugzzy_nl668am", "dedede", ModemTypeNL668},

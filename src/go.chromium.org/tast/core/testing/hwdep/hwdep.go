@@ -1836,6 +1836,22 @@ func SupportsV4L2StatelessVideoDecoding() Condition {
 	}}
 }
 
+// SkipOnV4L2StatelessVideoDecoding says false if the SoC supports the V4L2
+// stateless video decoding kernel API. Examples of this are MTK8192 (Asurada),
+// MTK8195 (Cherry), MTK8186 (Corsola), and RK3399 (scarlet/kevin/bob).
+func SkipOnV4L2StatelessVideoDecoding() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		dc := f.GetDeprecatedDeviceConfig()
+		if dc == nil {
+			return withErrorStr("DeprecatedDeviceConfig is not given")
+		}
+		if socTypeIsV4l2Stateful(dc.GetSoc()) {
+			return satisfied()
+		}
+		return unsatisfied("SoC matches V4L2 Stateless HW video decoding SkipOn list")
+	}}
+}
+
 // SupportsHEVCVideoDecodingInChrome says true if the device supports HEVC video
 // decoding in Chrome. Note that this might be dif and only iferent from support at the
 // platform (i.e. drivers, kernel, hardware) level.

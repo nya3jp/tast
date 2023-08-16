@@ -84,6 +84,7 @@ Below is the list of most popular groups and their associated extra attributes:
     Below are its sub-attributes:
     *  `cuj_experimental`: A group of CUJ tests which are experimental and only run
        on a selected subset of models.
+    *  `cuj_weekly`: A group of CUJ tests that run weekly.
 See [attr.go] for the full list of valid attributes.
 
 ## Automatically-added attributes

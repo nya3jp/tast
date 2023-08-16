@@ -38,6 +38,12 @@ func (f *testSymbolFileInfo) write(dir string) error {
 }
 
 func TestDownloadSymbols(t *testing.T) {
+	cleanUp, err := fakecmd.Install("../fakecmd/scripts/gsutil")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer cleanUp()
+
 	td := testutil.TempDir(t)
 	defer os.RemoveAll(td)
 
@@ -95,11 +101,7 @@ func TestDownloadLacrosSymbols(t *testing.T) {
 	td := testutil.TempDir(t)
 	defer os.RemoveAll(td)
 
-	if err := exec.Command("cp", "testdata/lacros_debug.zip", td).Run(); err != nil {
-		t.Errorf("Cannot copy lacros_debug.zip to the test directory %s, error: %v", td, err)
-	}
-
-	if err := DownloadLacrosSymbols("gs://ignored", td); err != nil {
+	if err := DownloadLacrosSymbols("testdata/lacros_debug.zip", td); err != nil {
 		t.Errorf("DownloadLacrosSymbol failed: %v", err)
 	}
 

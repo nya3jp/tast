@@ -6,4 +6,11 @@
 #
 # Fake gsutil for testing.
 
-true
+case $1 in
+cp)
+  cp "$2" "$3"
+  ;;
+*)
+  true
+  ;;
+esac

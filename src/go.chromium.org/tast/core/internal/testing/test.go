@@ -172,6 +172,11 @@ type Test struct {
 	// Life cycle metadata to indicate the usage of this test. This field is not
 	// to be used by tests themselves, but added to test metadata definitions used by infra services.
 	LifeCycleStage LifeCycle
+
+	// VariantCategory defines hardware and software capabilities of the device or test rigging it
+	// needs, which can influence the behavior of the test and its outcome.
+	// Not required for the legacy pipeline.
+	VariantCategory string
 }
 
 // LacrosMetadata indicates whether lacros variants have been considered for this test or not.

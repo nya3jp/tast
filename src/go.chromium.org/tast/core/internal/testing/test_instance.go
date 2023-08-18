@@ -92,10 +92,11 @@ type TestInstance struct {
 
 	// TestBedDeps, Requirements, Purpose, BugComponent, and LifeCycleStage
 	// are only used by infra and should not be used in tests.
-	TestBedDeps    []string
-	Requirements   []string
-	BugComponent   string
-	LifeCycleStage LifeCycle
+	TestBedDeps     []string
+	Requirements    []string
+	BugComponent    string
+	LifeCycleStage  LifeCycle
+	VariantCategory string
 }
 
 // instantiate creates one or more TestInstance from t.
@@ -247,29 +248,30 @@ func newTestInstance(t *Test, p *Param) (*TestInstance, error) {
 	}
 
 	return &TestInstance{
-		Name:           name,
-		Pkg:            info.pkg,
-		Val:            p.Val,
-		Func:           t.Func,
-		Desc:           t.Desc,
-		Contacts:       append([]string(nil), t.Contacts...),
-		Attr:           attrs,
-		PrivateAttr:    PrivateAttr,
-		SearchFlags:    searchFlags,
-		Data:           data,
-		Vars:           append([]string(nil), t.Vars...),
-		VarDeps:        append([]string(nil), t.VarDeps...),
-		SoftwareDeps:   swDeps,
-		HardwareDeps:   hwDeps,
-		ServiceDeps:    append([]string(nil), t.ServiceDeps...),
-		LacrosStatus:   t.LacrosStatus,
-		Pre:            pre,
-		Fixture:        fixt,
-		Timeout:        timeout,
-		TestBedDeps:    append([]string(nil), t.TestBedDeps...),
-		Requirements:   requirements,
-		BugComponent:   bugComponent,
-		LifeCycleStage: lifeCycleStage,
+		Name:            name,
+		Pkg:             info.pkg,
+		Val:             p.Val,
+		Func:            t.Func,
+		Desc:            t.Desc,
+		Contacts:        append([]string(nil), t.Contacts...),
+		Attr:            attrs,
+		PrivateAttr:     PrivateAttr,
+		SearchFlags:     searchFlags,
+		Data:            data,
+		Vars:            append([]string(nil), t.Vars...),
+		VarDeps:         append([]string(nil), t.VarDeps...),
+		SoftwareDeps:    swDeps,
+		HardwareDeps:    hwDeps,
+		ServiceDeps:     append([]string(nil), t.ServiceDeps...),
+		LacrosStatus:    t.LacrosStatus,
+		Pre:             pre,
+		Fixture:         fixt,
+		Timeout:         timeout,
+		TestBedDeps:     append([]string(nil), t.TestBedDeps...),
+		Requirements:    requirements,
+		BugComponent:    bugComponent,
+		LifeCycleStage:  lifeCycleStage,
+		VariantCategory: t.VariantCategory,
 	}, nil
 }
 
@@ -573,12 +575,13 @@ func (t *TestInstance) Proto() *api.TestCaseMetadata {
 			},
 		},
 		TestCaseInfo: &api.TestCaseInfo{
-			Owners:         owners,
-			Requirements:   requirements,
-			Criteria:       &api.Criteria{Value: t.Desc},
-			BugComponent:   &api.BugComponent{Value: t.BugComponent},
-			HwAgnostic:     &api.HwAgnostic{Value: hwAgnostic},
-			LifeCycleStage: &api.LifeCycleStage{Value: lifeCycleValue},
+			Owners:          owners,
+			Requirements:    requirements,
+			Criteria:        &api.Criteria{Value: t.Desc},
+			BugComponent:    &api.BugComponent{Value: t.BugComponent},
+			HwAgnostic:      &api.HwAgnostic{Value: hwAgnostic},
+			LifeCycleStage:  &api.LifeCycleStage{Value: lifeCycleValue},
+			VariantCategory: &api.DDDVariantCategory{Value: t.VariantCategory},
 		},
 	}
 	return &r

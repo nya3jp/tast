@@ -131,8 +131,9 @@ var softwareFeatureDefs = map[string]string{
 	// IKEv2 is only supported on 4.19+ kernels.
 	"ikev2": `!("kernel-4_4" || "kernel-4_14")`,
 	// The io_uring syscalls are enabled on CrOS since kernel v5.15.
-	"io_uring":       `!("kernel-4_4" || "kernel-4_14" || "kernel-4_19" || "kernel-5_4" || "kernel-5_10")`,
-	"iwlwifi_rescan": "iwlwifi_rescan",
+	"io_uring":        `!("kernel-4_4" || "kernel-4_14" || "kernel-4_19" || "kernel-5_4" || "kernel-5_10")`,
+	"iwlwifi_rescan":  "iwlwifi_rescan",
+	"known_fixed_ssd": `!("tast_vm" || "board:reven*")`,
 	// Lacros variants.
 	// veyron does not support rootfs lacros entirely. b/204888294
 	// TODO(crbug.com/1412276): Remove lacros_stable and lacros_unstable eventually.

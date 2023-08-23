@@ -362,6 +362,22 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 	}()
 	features.Fingerprint.FingerprintDiag.RoutineEnable = fingerprintDiagRoutineEnabled
 
+	fwid, err := func() (uint32, error) {
+		out, err := exec.Command("crossystem", "fwid").Output()
+		if err != nil {
+			return 0, err
+		}
+		fwidMajorStr, err := strconv.Atoi((strings.Split(string(out), ".")[1]))
+		if err != nil {
+			return 0, err
+		}
+		return uint32(fwidMajorStr), nil
+	}()
+	if err != nil {
+		logging.Infof(ctx, "Error getting active firmware id: %v", err)
+	}
+	features.FwConfig.FwRwActiveVersion = fwid
+
 	// Device has ChromeEC if /dev/cros_ec exists.
 	// TODO(b/173741162): Pull EmbeddedController data directly from Boxster.
 	if _, err := os.Stat("/dev/cros_ec"); err == nil {

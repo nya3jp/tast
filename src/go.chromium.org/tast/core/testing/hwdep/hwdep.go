@@ -48,6 +48,14 @@ func D(conds ...Condition) Deps {
 // idRegexp is the pattern that the given model/platform ID names should match with.
 var idRegexp = regexp.MustCompile(`^[a-z0-9_-]+$`)
 
+type FWUIType int
+
+const (
+	LegacyMenuUI FWUIType = iota
+	LegacyClamshellUI
+	MenuUI
+)
+
 func satisfied() (bool, string, error) {
 	return true, "", nil
 }
@@ -2375,6 +2383,69 @@ func SkipOnOEM(names ...string) Condition {
 			if name == oem {
 				return unsatisfied("DUT OEM name [" + oem + "] is in the allow list")
 			}
+		}
+		return satisfied()
+	}}
+}
+
+// legacyMenuUIModels contains models adopting LegacyMenuUI.
+var legacyMenuUIModels = []string{
+	"krane",
+	"kodama",
+	"katsu",
+	"kakadu",
+	"nocturne",
+	"soraka",
+	"dru",
+	"druwl",
+	"dumo",
+}
+
+// fwUIListed returns whether the dut's firmware ui is listed in the given list
+// of firmware ui types. It uses the machine's active firmware version
+// represented by a protocol.HardwareFeatures to determine whether menu UI is
+// implemented. If not, it will check the legacyMenuUIModels list for
+// differentiation between LegacyMenuUI and LegacyClamshellUI.
+func fwUIListed(f *protocol.HardwareFeatures, names ...FWUIType) (bool, error) {
+	fwid := f.GetHardwareFeatures().GetFwConfig().FwRwActiveVersion
+	if fwid == 0 {
+		return false, errors.New("firmware id has not been passed from the DUT")
+	}
+	var dutFWUI FWUIType
+	// Using chromium: 2043102 as a reference, which landed in R83-12992.0.0,
+	// firmware versions greater than '12992' should have the menu UI
+	// implemented.
+	if fwid > 12992 {
+		dutFWUI = MenuUI
+	} else {
+		isLegacyMenuUI, err := modelListed(f.GetDeprecatedDeviceConfig(), legacyMenuUIModels...)
+		if err != nil {
+			return false, err
+		}
+		if isLegacyMenuUI {
+			dutFWUI = LegacyMenuUI
+		} else {
+			dutFWUI = LegacyClamshellUI
+		}
+	}
+	for _, name := range names {
+		if name == dutFWUI {
+			return true, nil
+		}
+	}
+	return false, nil
+}
+
+// FirmwareUIType returns a dependency condition that is satisfied if
+// the DUT's firmware UI is one of the given types.
+func FirmwareUIType(fwUIType ...FWUIType) Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		listed, err := fwUIListed(f, fwUIType...)
+		if err != nil {
+			return withError(err)
+		}
+		if !listed {
+			return unsatisfied("FWUIType did not match")
 		}
 		return satisfied()
 	}}

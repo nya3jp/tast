@@ -271,3 +271,8 @@ func (d *DUT) KeyDir() string { return d.sopt.KeyDir }
 // This is provided for tests that may need to establish direct SSH connections to hosts.
 // (e.g. syzkaller connecting to a host).
 func (d *DUT) HostName() string { return d.sopt.Hostname }
+
+// ProxyCommand returns the proxy command that is used to connect to the DUT.
+// This is provided for tests that may need to establish SSH connections to additional hosts
+// (e.g. a labstation and you want to test locally without any ssh forwards).
+func (d *DUT) ProxyCommand() string { return d.sopt.ProxyCommand }

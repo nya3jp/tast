@@ -1208,11 +1208,7 @@ func WifiNotQualcomm() Condition {
 // WifiSAP returns a hardware dependency condition that if satisfied, indicates
 // that a device supports SoftAP.
 func WifiSAP() Condition {
-	return SkipOnWifiDevice(
-		MediaTekMT7921PCIE,
-		MediaTekMT7921SDIO,
-		QualcommWCN6855,
-	)
+	return WifiNotQualcomm()
 }
 
 // WifiP2P returns a hardware dependency condition that if satisfied, indicates

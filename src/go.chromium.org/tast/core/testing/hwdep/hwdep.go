@@ -2277,3 +2277,19 @@ func SkipCPUSocFamily(families ...string) Condition {
 func InternalTrackpoint() Condition {
 	return Model("morphius")
 }
+
+// FeatureLevel is satisfied if the feature level of the DUT match the value of
+// the parameter level.
+func FeatureLevel(level uint32) Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("Did not find hardware features")
+		}
+		if hf.GetFeatureLevel() != level {
+			return unsatisfied(fmt.Sprintf("The DUT has different feature level; got %d, need %d",
+				hf.GetFeatureLevel(), level))
+		}
+		return satisfied()
+	}}
+}

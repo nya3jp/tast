@@ -1214,3 +1214,26 @@ func TestInternalTrackpoint(t *testing.T) {
 		}, &configpb.HardwareFeatures{}, tc.wantSatisfied)
 	}
 }
+
+func TestFeatureLevel(t *testing.T) {
+	c := hwdep.FeatureLevel(1)
+	for _, tc := range []struct {
+		level           uint32
+		expectSatisfied bool
+	}{
+		{0, false},
+		{1, true},
+	} {
+		verifyCondition(
+			t, c,
+			nil,
+			&configpb.HardwareFeatures{
+				FeatureLevel: tc.level,
+			},
+			tc.expectSatisfied)
+	}
+	expectError(
+		t, c,
+		nil,
+		nil)
+}

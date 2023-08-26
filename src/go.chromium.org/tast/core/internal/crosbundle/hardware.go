@@ -886,6 +886,11 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		features.Vrr.Present = configpb.HardwareFeatures_NOT_PRESENT
 	}
 
+	features.FeatureLevel, err = featureLevel()
+	if err != nil {
+		logging.Infof(ctx, "Failed to get feature level: %v", err)
+	}
+
 	return &protocol.HardwareFeatures{
 		HardwareFeatures:       features,
 		DeprecatedDeviceConfig: config,
@@ -1642,4 +1647,18 @@ func hasRuntimeProbeConfig(model string) (bool, error) {
 		}
 	}
 	return false, nil
+}
+
+// featureLevel returns the feature level number of the DUT.
+func featureLevel() (level uint32, err error) {
+	cmd := exec.Command("feature_explorer", "--feature_level")
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		return 0, errors.Wrapf(err, "failed to call feature_explorer %s", string(out))
+	}
+	value, err := strconv.ParseUint(strings.TrimSpace(string(out)), 0, 64)
+	if err != nil {
+		return 0, errors.Wrapf(err, "failed to parse feature level %s", string(out))
+	}
+	return uint32(value), nil
 }

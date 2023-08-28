@@ -1559,6 +1559,10 @@ Parallels boot-up testing. Otherwise the same as group:crosbolt.`,
 		Desc:     `A group of tests that test general network functions.`,
 		Subattrs: []*attr{
 			{
+				Name: "network_cq",
+				Desc: `Identifies test that belong to network CQ and only gets triggered by CLs that touch specific code paths.`,
+			},
+			{
 				Name: "network_e2e",
 				Desc: `Identifies network ui/e2e tests.`,
 			},

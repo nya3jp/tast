@@ -13,10 +13,11 @@ used by the test.
 In Tast our reference point is the DUT, so anything not running on the DUT is
 considered to be remote in the Tast context. So remote tests are tests which do
 not run on the DUT itself but on a remote host. They are needed when a test
-needs to reboot the DUT during the test execution for any reason. Alternatively
-a remote fixture can be used when reboots are only needed in a preparation step
-for the test (e.g. enrollment, resetting hardware etc.). The remote host can
-communicate with the DUT via ssh or gRPC services during the test, which are
+needs to reboot or suspend the DUT for an extended period of time (>20s) during
+the test execution for any reason. Alternatively a remote fixture can be used
+when reboots/suspends are only needed in a preparation step for the test (e.g.
+enrollment, resetting hardware, required system state, etc.). The remote host
+can communicate with the DUT via ssh or gRPC services during the test, which are
 used to execute code on the DUT itself.
 
 ![remote test](remote_test.png)

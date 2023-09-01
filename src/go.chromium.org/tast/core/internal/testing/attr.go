@@ -1945,7 +1945,7 @@ from other existing groups (or use this group standalone).
 		},
 	},
 	{
-		Name:     "launcher_image_search",
+		Name:     "launcher_image_search_perbuild",
 		Contacts: []string{"launcher-search-notify@google.com"},
 		Desc:     "A group of launcher image search test cases for dedicated support boards.",
 	},

@@ -143,7 +143,7 @@ func TestCheckKnownAttrs(t *testing.T) {
 			attrs: []string{"group:launcher_search_quality_daily"},
 		},
 		{
-			attrs: []string{"group:launcher_image_search"},
+			attrs: []string{"group:launcher_image_search_perbuild"},
 		},
 		{
 			attrs: []string{"group:rapid-ime-decoder"},

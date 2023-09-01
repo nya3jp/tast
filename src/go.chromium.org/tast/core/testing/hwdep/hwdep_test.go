@@ -300,6 +300,34 @@ func TestNoFingerprint(t *testing.T) {
 		nil)
 }
 
+func TestFingerprintDiagSupported(t *testing.T) {
+	c := hwdep.FingerprintDiagSupported()
+
+	for _, tc := range []struct {
+		DiagnosticRoutineEnabled bool
+		expectSatisfied          bool
+	}{
+		{true, true},
+		{false, false},
+	} {
+		verifyCondition(
+			t, c,
+			&frameworkprotocol.DeprecatedDeviceConfig{},
+			&configpb.HardwareFeatures{
+				Fingerprint: &configpb.HardwareFeatures_Fingerprint{
+					FingerprintDiag: &configpb.HardwareFeatures_Fingerprint_FingerprintDiag{
+						RoutineEnable: tc.DiagnosticRoutineEnabled,
+					},
+				},
+			},
+			tc.expectSatisfied)
+	}
+	expectError(
+		t, c,
+		&frameworkprotocol.DeprecatedDeviceConfig{},
+		nil)
+}
+
 func TestInternalDisplay(t *testing.T) {
 	c := hwdep.InternalDisplay()
 

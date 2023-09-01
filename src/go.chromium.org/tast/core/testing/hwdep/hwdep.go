@@ -880,6 +880,22 @@ func NoFingerprint() Condition {
 	}
 }
 
+// FingerprintDiagSupported returns a hardware dependency condition that is
+// satisfied if and only if the fingerprint diagnostic is supported on the DUT.
+func FingerprintDiagSupported() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("HardwareFeatures is not given")
+		}
+		if !hf.GetFingerprint().GetFingerprintDiag().GetRoutineEnable() {
+			return unsatisfied("DUT does not support fingerprint diagnostic routine")
+		}
+		return satisfied()
+	},
+	}
+}
+
 // VRR returns a hardware dependency condition that is satisfied if and only if
 // the DUT is VRR Capable (has vrr_capable value set to 1 in modetest).
 func VRR() Condition {

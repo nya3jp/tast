@@ -354,6 +354,14 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 	}()
 	features.Fingerprint.Present = hasFingerprint
 
+	features.Fingerprint.FingerprintDiag = &configpb.HardwareFeatures_Fingerprint_FingerprintDiag{}
+
+	fingerprintDiagRoutineEnabled := func() bool {
+		out, err := crosConfig("/cros-healthd/routines/fingerprint-diag", "routine-enable")
+		return err == nil && out == "true"
+	}()
+	features.Fingerprint.FingerprintDiag.RoutineEnable = fingerprintDiagRoutineEnabled
+
 	// Device has ChromeEC if /dev/cros_ec exists.
 	// TODO(b/173741162): Pull EmbeddedController data directly from Boxster.
 	if _, err := os.Stat("/dev/cros_ec"); err == nil {

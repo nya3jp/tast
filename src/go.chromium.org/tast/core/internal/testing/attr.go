@@ -1954,6 +1954,17 @@ from other existing groups (or use this group standalone).
 		Contacts: []string{"launcher-search-notify@google.com"},
 		Desc:     "A group of launcher image search test cases for dedicated support boards.",
 	},
+	{
+		Name:     "cr_oobe",
+		Contacts: []string{"cros-connectivity@google.com"},
+		Desc:     "A group of tests for OOBE maintained by System Services team",
+		Subattrs: []*attr{
+			{
+				Name: "cr_oobe_chromebox_chromebase",
+				Desc: "A group of oobe tests that need chromebox/chromebase",
+			},
+		},
+	},
 }
 
 // validGroupMap is the name-keyed map of validGroups.

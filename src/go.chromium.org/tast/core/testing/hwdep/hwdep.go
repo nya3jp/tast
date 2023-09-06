@@ -1842,6 +1842,21 @@ func SupportsV4L2StatefulVideoDecoding() Condition {
 	}}
 }
 
+// SupportsV4L2FlatStatefulVideoDecoding says true if the SoC supports V4L2
+// Flat stateful video decoding [1].
+// [1] https://source.chromium.org/chromium/chromium/src/+/main:media/gpu/v4l2/v4l2_stateful_video_decoder.cc
+func SupportsV4L2FlatStatefulVideoDecoding() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		if satisfy, _, err := CPUSocFamily("qualcomm").Satisfied(f); err == nil && satisfy {
+			return satisfied()
+		}
+		if satisfy, _, err := GPUFamily("rogue").Satisfied(f); err == nil && satisfy {
+			return satisfied()
+		}
+		return unsatisfied("SoC does not support V4L2 Flat Stateful HW video decoding")
+	}}
+}
+
 // SupportsV4L2StatelessVideoDecoding says true if the SoC supports the V4L2
 // stateless video decoding kernel API. Examples of this are MTK8192 (Asurada),
 // MTK8195 (Cherry), MTK8186 (Corsola), and RK3399 (scarlet/kevin/bob).

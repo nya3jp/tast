@@ -118,6 +118,7 @@ var softwareFeatureDefs = map[string]string{
 	"gsc_can_wake_ec_with_reset": `!("board:grunt" || "board:nami")`,
 	"hammerd":                    "hammerd",
 	"hana":                       "hana",
+	"hibernate":                  "hibernate",
 	"hostap_hwsim":               "wifi_hostap_test",
 	"houdini":                    "houdini",
 	"houdini64":                  "houdini64",

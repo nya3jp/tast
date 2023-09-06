@@ -1879,6 +1879,11 @@ from other existing groups (or use this group standalone).
 		Desc:     "A group of tests for checking language packs handwriting recognition dlc downloading",
 	},
 	{
+		Name:     "ddd_test_group",
+		Contacts: []string{"chromeos-test-platform-team@google.com", "dbeckett@google.com"},
+		Desc:     "A group of tests for checking the 3d expression resolver.",
+	},
+	{
 		Name:     "privacyhub-golden",
 		Contacts: []string{"chromeos-privacyhub@google.com", "zauri@google.com"},
 		Desc:     "A group of tests for checking the Privacy Hub features on golden devices.",

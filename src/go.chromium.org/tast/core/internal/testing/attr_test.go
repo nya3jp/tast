@@ -181,6 +181,9 @@ func TestCheckKnownAttrs(t *testing.T) {
 		{
 			attrs: []string{"group:privacyhub-golden"},
 		},
+		{
+			attrs: []string{"group:ddd_test_group"},
+		},
 
 		// Invalid cases.
 		{

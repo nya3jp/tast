@@ -4,6 +4,10 @@
 
 package build
 
+import (
+	"go.chromium.org/tast/core/errors"
+)
+
 // ArchHost represents the host architecture. It can be set in Target.Arch to
 // instruct to use the host toolchains.
 const ArchHost = "host"
@@ -39,4 +43,37 @@ type Target struct {
 	Out string
 	// Debug is a flag indicating whether the binary should be built with debug symbols.
 	Debug bool
+}
+
+// LocalBundlePrefix returns the local bundle prefix for a particular bundle.
+func LocalBundlePrefix(bundle string) (string, error) {
+	bundles := map[string]string{
+		// Default bundle is to cros
+		"":              LocalBundlePkgPathPrefix,
+		"cros":          LocalBundlePkgPathPrefix,
+		"crosint":       "go.chromium.org/tast-tests-private/crosint/local/bundles",
+		"crosint_intel": "go.chromium.org/partner-intel-private/crosint_intel/local/bundles",
+	}
+	prefix, ok := bundles[bundle]
+	if !ok {
+		return "", errors.Errorf("failed to find prefix for bundle %s", bundle)
+	}
+	return prefix, nil
+
+}
+
+// RemoteBundlePrefix returns the remnote bundle prefix for a particular bundle.
+func RemoteBundlePrefix(bundle string) (string, error) {
+	bundles := map[string]string{
+		// Default bundle is cros.
+		"":              RemoteBundlePkgPathPrefix,
+		"cros":          RemoteBundlePkgPathPrefix,
+		"crosint":       "go.chromium.org/tast-tests-private/crosint/remote/bundles",
+		"crosint_intel": "go.chromium.org/partner-intel-private/crosint_intel/remote/bundles",
+	}
+	prefix, ok := bundles[bundle]
+	if !ok {
+		return "", errors.Errorf("failed to find prefix for bundle %s", bundle)
+	}
+	return prefix, nil
 }

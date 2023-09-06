@@ -22,6 +22,7 @@ readonly SRCDIRS=(
   "${HOME}/chromiumos/src/platform/tast"
   "${HOME}/chromiumos/src/platform/tast-tests"
   "${HOME}/chromiumos/src/platform/tast-tests-private"
+  "${HOME}/chromiumos/src/platform/tests-partners/partner-intel-private"
 )
 
 # Package to build to produce tast executables.

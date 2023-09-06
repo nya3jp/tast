@@ -138,8 +138,8 @@ func buildRemoteBundles(ctx context.Context, cfg *config.Config) error {
 }
 
 func remoteBundlePrefix(bundle string) string {
-	if bundle == "crosint" {
-		return build.RemotePrivateBundlePkgPathPrefix
+	if prefix, err := build.RemoteBundlePrefix(bundle); err == nil {
+		return prefix
 	}
 	return build.RemoteBundlePkgPathPrefix
 }
@@ -168,8 +168,8 @@ func buildLocalBundles(ctx context.Context, cfg *config.Config, targetArch strin
 }
 
 func localBundlePrefix(bundle string) string {
-	if bundle == "crosint" {
-		return build.LocalPrivateBundlePkgPathPrefix
+	if prefix, err := build.LocalBundlePrefix(bundle); err == nil {
+		return prefix
 	}
 	return build.LocalBundlePkgPathPrefix
 }

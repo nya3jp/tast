@@ -22,6 +22,9 @@ func init() {
 		"crosint": {
 			workspace: "src/platform/tast-tests-private",
 		},
+		"crosint_intel": {
+			workspace: "src/platform/tests-partners/partner-intel-private",
+		},
 	}
 }
 

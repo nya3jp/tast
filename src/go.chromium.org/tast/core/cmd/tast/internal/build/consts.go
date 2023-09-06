@@ -17,12 +17,6 @@ const (
 	// RemoteBundlePkgPathPrefix is the Go package path prefix for remote test bundles.
 	RemoteBundlePkgPathPrefix = "go.chromium.org/tast-tests/cros/remote/bundles"
 
-	// LocalPrivateBundlePkgPathPrefix is the Go package path prefix for local test private bundles.
-	LocalPrivateBundlePkgPathPrefix = "go.chromium.org/tast-tests-private/crosint/local/bundles"
-
-	// RemotePrivateBundlePkgPathPrefix is the Go package path prefix for remote private test bundles.
-	RemotePrivateBundlePkgPathPrefix = "go.chromium.org/tast-tests-private/crosint/remote/bundles"
-
 	// LocalBundleBuildSubdir is a subdirectory used for compiled local test bundles.
 	// Bundles are placed here rather than in the top-level build artifacts dir so that
 	// local and remote bundles with the same name won't overwrite each other.

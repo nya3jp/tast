@@ -174,6 +174,7 @@ func writeError(w http.ResponseWriter, err error) {
 func defaultAllowedBuckets() map[string]struct{} {
 	return map[string]struct{}{
 		"chromeos-image-archive":        {},
+		"chromeos-releases":             {},
 		"chromeos-test-assets-private":  {},
 		"chromiumos-test-assets-public": {},
 		"cros-containers-staging":       {},

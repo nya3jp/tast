@@ -1265,3 +1265,26 @@ func TestFeatureLevel(t *testing.T) {
 		nil,
 		nil)
 }
+
+func TestOEM(t *testing.T) {
+	c := hwdep.OEM("Asus", "Dell")
+	for _, tc := range []struct {
+		oem             string
+		expectSatisfied bool
+	}{
+		{"HP", false},
+		{"Asus", true},
+		{"Dell", true},
+	} {
+		t.Log("oem name: ", tc.oem)
+		verifyCondition(
+			t, c,
+			nil,
+			&configpb.HardwareFeatures{
+				OemInfo: &configpb.HardwareFeatures_OEMInfo{
+					Name: tc.oem,
+				},
+			},
+			tc.expectSatisfied)
+	}
+}

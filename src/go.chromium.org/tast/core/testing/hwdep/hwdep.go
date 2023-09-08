@@ -2333,3 +2333,16 @@ func FeatureLevel(level uint32) Condition {
 		return satisfied()
 	}}
 }
+
+// OEM is satisfied if the OEM names on the DUT is in the input allow list.
+func OEM(names ...string) Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		oem := f.GetHardwareFeatures().GetOemInfo().GetName()
+		for _, name := range names {
+			if name == oem {
+				return satisfied()
+			}
+		}
+		return unsatisfied("DUT OEM name [" + oem + "] is not in the allow list")
+	}}
+}

@@ -899,6 +899,10 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		logging.Infof(ctx, "Failed to get feature level: %v", err)
 	}
 
+	features.OemInfo = &configpb.HardwareFeatures_OEMInfo{
+		Name: oemName(),
+	}
+
 	return &protocol.HardwareFeatures{
 		HardwareFeatures:       features,
 		DeprecatedDeviceConfig: config,
@@ -1669,4 +1673,23 @@ func featureLevel() (level uint32, err error) {
 		return 0, errors.Wrapf(err, "failed to parse feature level %s", string(out))
 	}
 	return uint32(value), nil
+}
+
+func oemName() string {
+	if out, err := crosConfig("/branding", "oem-name"); err == nil {
+		return out
+	}
+
+	if out, err := os.ReadFile("/sys/firmware/vpd/ro/oem_name"); err == nil {
+		if string(out) != "" {
+			return string(out)
+		}
+	}
+
+	if out, err := os.ReadFile("/sys/devices/virtual/dmi/id/sys_vendor"); err == nil {
+		name := strings.TrimSpace(string(out))
+		return name
+	}
+
+	return ""
 }

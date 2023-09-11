@@ -35,8 +35,11 @@ var softwareFeatureDefs = map[string]string{
 	// Some boards cannot play/record stably, disabling these tests and keeping
 	// some of them informational.
 	// TODO(b/240269271): remove "octopus" and "hatch" when b/240269271 is fixed.
-	"audio_stable":       `!("board:octopus" || "board:hatch")`,
-	"audio_unstable":     `"board:octopus" || "board:hatch"`,
+	"audio_stable":   `!("board:octopus" || "board:hatch")`,
+	"audio_unstable": `"board:octopus" || "board:hatch"`,
+	// Grunt has disabled HW acceleration for encoder in ARC but enabled in chrome. It leads to constant tests failure.
+	// This might be not needed when grunt gets uprev to ARC-R and support for HW acceleration.
+	"arc_hw_encoder":     `!("board:grunt" || "board:grunt-kernelnext")`,
 	"auto_update_stable": `!("board:*-*")`,
 	"biometrics_daemon":  "biod",
 	"bluetooth_floss":    `!("board:asuka" || "board:banon" || "board:bob" || "board:caroline" || "board:cave" || "board:celes" || "board:chell" || "board:coral" || "board:cyan" || "board:edgar" || "board:elm" || "board:hana" || "board:kefka" || "board:kevin" || "board:lars" || "board:pyro" || "board:reef" || "board:reks" || "board:relm" || "board:sand" || "board:scarlet" || "board:sentry" || "board:setzer" || "board:snappy" || "board:terra" || "board:ultima")`,

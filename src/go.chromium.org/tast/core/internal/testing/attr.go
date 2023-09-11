@@ -1965,6 +1965,11 @@ from other existing groups (or use this group standalone).
 			},
 		},
 	},
+	{
+		Name:     "floatingworkspace",
+		Contacts: []string{"cros-commercial-productivity-eng@google.com"},
+		Desc:     "A group of tests related to floating workspace.",
+	},
 }
 
 // validGroupMap is the name-keyed map of validGroups.

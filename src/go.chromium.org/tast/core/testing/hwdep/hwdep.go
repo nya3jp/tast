@@ -2346,3 +2346,16 @@ func OEM(names ...string) Condition {
 		return unsatisfied("DUT OEM name [" + oem + "] is not in the allow list")
 	}}
 }
+
+// SkipOnOEM is satisfied if the OEM names on the DUT is not in the input allow list.
+func SkipOnOEM(names ...string) Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		oem := f.GetHardwareFeatures().GetOemInfo().GetName()
+		for _, name := range names {
+			if name == oem {
+				return unsatisfied("DUT OEM name [" + oem + "] is in the allow list")
+			}
+		}
+		return satisfied()
+	}}
+}

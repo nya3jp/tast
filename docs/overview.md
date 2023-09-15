@@ -13,10 +13,12 @@ running locally as root can do. Most tests should be local tests.
 ### Remote tests
 
 Remote tests run on the machine initiating testing (e.g. a developer's
-workstation, a.k.a. the "host system") and run shell commands on the DUT
-remotely, allowing the DUT to be rebooted in the course of a single test. They
-are similar in function to Autotest's "server" tests. They run more slowly than
-local tests, are harder to write, and are more susceptible to infrastructure and
+workstation, a.k.a. the "host system") and interact with the DUT remotely
+either via gRPC methods or via shell commands. Remote tests enable rebooting
+the DUT in the course of a single test, as well as coordinating multiple DUTs
+or auxiliary devices (such as Servos or WiFi access points). They are similar
+in function to Autotest's "server" tests. They run more slowly than local
+tests, are harder to write, and are more susceptible to infrastructure and
 hardware issues.
 
 ### `tast` command

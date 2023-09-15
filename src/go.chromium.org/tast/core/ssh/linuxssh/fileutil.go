@@ -44,6 +44,40 @@ func GetFile(ctx context.Context, s *ssh.Conn, src, dst string, symlinkPolicy Sy
 	return linuxssh.GetFile(ctx, s, src, dst, symlinkPolicy)
 }
 
+// RemoteFileDelta describes the result from the function NewRemoteFileDelta.
+type RemoteFileDelta struct {
+	s         *ssh.Conn
+	src       string
+	dst       string
+	maxsize   int64
+	startline int64
+}
+
+// NewRemoteFileDelta get startline from LineCount create a object rtd with
+// ssh connection, file source, file destination and file max size.
+func NewRemoteFileDelta(ctx context.Context, s *ssh.Conn, src, dst string, maxSize int64) (*RemoteFileDelta, error) {
+
+	wordCountInfo, err := WordCount(ctx, s, src)
+	if err != nil {
+		return nil, fmt.Errorf("failed the get line count: %v", err)
+	}
+	rtd := RemoteFileDelta{
+		s:         s,
+		src:       src,
+		dst:       dst,
+		maxsize:   maxSize,
+		startline: wordCountInfo.Lines + 1,
+	}
+
+	return &rtd, nil
+}
+
+// Save calling the GetFileTail with struct RemoteFileDelta RemoteFileDelta
+// the range between beginning of the file and rtd.startline will be truncated.
+func (rtd *RemoteFileDelta) Save(ctx context.Context) error {
+	return GetFileTail(ctx, rtd.s, rtd.src, rtd.dst, rtd.startline, rtd.maxsize)
+}
+
 // PutFiles copies files on the local machine to the host. files describes
 // a mapping from a local file path to a remote file path. For example, the call:
 //

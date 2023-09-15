@@ -1974,3 +1974,37 @@ promotion process from informational to non-informational.
 
 [go/tast-add-test]: http://goto.google.com/tast-add-test
 
+## Useful Fixtures
+
+Here are some fixtures that may come in handy when writing tast tests.
+
+### Virtual multidisplay testing fixture
+
+There is a multidisplay [testing fixture] designed to be used as a parent
+fixture for multidisplay test cases.
+
+This fixture needs to be loaded as a top level parent in order to do it's work
+of reloading and configuring the VKMS driver to support multiple virtual
+displays.
+
+The pattern used for the ARC and chromium tests can be found in their respective
+[fixture definitions].
+
+There is a HasParentState interface that can be implemented by your child
+fixture state returned by the SetUp function which can be used and casted within
+tests to the VirtualMultidisplayController interface returned by this fixture.
+
+A simple example of this can be seen in the [hotplug test] or a more complex
+example in the [arc tests].
+
+[testing fixture]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/go.chromium.org/tast-tests/cros/local/virtualmultidisplay/fixture.go
+[fixture definitions]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/go.chromium.org/tast-tests/cros/local/chrome/fixture.go
+[hotplug test]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/go.chromium.org/tast-tests/cros/local/bundles/cros/virtualmultidisplay/hotplug.go
+[arc tests]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/go.chromium.org/tast-tests/cros/local/bundles/cros/arc/multi_display_virtual.go?autodive=0%2F%2F
+
+#### Requirements
+
+In order for virtual multidisplay tests to run and pass, the VKMS driver with
+the configFS patches must be loaded.
+
+This is true for betty boards on 6.1+ already.

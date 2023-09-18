@@ -40,20 +40,20 @@ func Build(ctx context.Context, cfg *Config, tgts []*Target) error {
 
 	if cfg.TastWorkspace != "" {
 		if err := checkSourceCompat(cfg.TastWorkspace); err != nil {
-			return fmt.Errorf("tast is too old: %v; please run: ./update_chroot", err)
+			return fmt.Errorf("tast is too old: %v; please run: update_chroot", err)
 		}
 	}
 
 	if cfg.CheckBuildDeps {
 		if missing, cmds, err := checkDeps(ctx, cfg.CheckDepsCachePath); err != nil {
-			return fmt.Errorf("failed checking build deps: %v; please run: ./update_chroot", err)
+			return fmt.Errorf("failed checking build deps: %v; please run: update_chroot", err)
 		} else if len(missing) > 0 {
 			if !cfg.InstallPortageDeps {
 				logMissingDeps(ctx, missing, cmds)
 				return errors.New("missing build dependencies")
 			}
 			if err := installMissingDeps(ctx, missing, cmds); err != nil {
-				return fmt.Errorf("failed installing missing deps: %v; please run: ./update_chroot", err)
+				return fmt.Errorf("failed installing missing deps: %v; please run: update_chroot", err)
 			}
 		}
 	}

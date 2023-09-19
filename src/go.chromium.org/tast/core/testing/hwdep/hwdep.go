@@ -442,6 +442,26 @@ func ECFeatureSystemSafeMode() Condition {
 	}
 }
 
+// ECFeatureMemoryDumpCommands returns a hardware dependency condition that is
+// satisfied if and only if the DUT EC supports memory dump host commands.
+func ECFeatureMemoryDumpCommands() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("Did not find hardware features")
+		}
+		status := hf.GetEmbeddedController().GetFeatureMemoryDumpCommands()
+		if status == configpb.HardwareFeatures_NOT_PRESENT {
+			return unsatisfied("DUT EC does not support memory dump host commands")
+		}
+		if status == configpb.HardwareFeatures_PRESENT_UNKNOWN {
+			return unsatisfied("Could not determine if DUT EC supports memory dump host commands")
+		}
+		return satisfied()
+	},
+	}
+}
+
 // Cellular returns a hardware dependency condition that
 // is satisfied if and only if the DUT has a cellular modem.
 func Cellular() Condition {

@@ -373,6 +373,7 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 			features.EmbeddedController.FeatureTypecCmd = configpb.HardwareFeatures_PRESENT_UNKNOWN
 			features.EmbeddedController.FeatureSystemSafeMode = configpb.HardwareFeatures_PRESENT_UNKNOWN
 			features.EmbeddedController.FeatureAssertsPanic = configpb.HardwareFeatures_PRESENT_UNKNOWN
+			features.EmbeddedController.FeatureMemoryDumpCommands = configpb.HardwareFeatures_PRESENT_UNKNOWN
 		} else {
 			// The presence of the integer "41" in the inventory output is a sufficient check, since 41 is
 			// the bit position associated with this feature.
@@ -392,6 +393,12 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 				features.EmbeddedController.FeatureAssertsPanic = configpb.HardwareFeatures_PRESENT
 			} else {
 				features.EmbeddedController.FeatureAssertsPanic = configpb.HardwareFeatures_NOT_PRESENT
+			}
+			// EC_FEATURE_ASSERT_REBOOTS == 51
+			if bytes.Contains(output, []byte("51")) {
+				features.EmbeddedController.FeatureMemoryDumpCommands = configpb.HardwareFeatures_PRESENT
+			} else {
+				features.EmbeddedController.FeatureMemoryDumpCommands = configpb.HardwareFeatures_NOT_PRESENT
 			}
 		}
 		// Check if the detachable base is attached.

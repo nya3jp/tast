@@ -103,6 +103,7 @@ var (
 		"craask_fm101":       {"craask_fm101", "nissa", ModemTypeFM101},
 		"nivviks_fm101":      {"nivviks_fm101", "nissa", ModemTypeFM101},
 		"pujjo_fm101":        {"pujjo_fm101", "nissa", ModemTypeFM101},
+		"pujjoteen5_fm350":   {"pujjoteen5_fm350", "nissa", ModemTypeFM350},
 		"yavijo_fm101":       {"yavijo_fm101", "nissa", ModemTypeFM101},
 		"yavilla_fm101":      {"yavilla_fm101", "nissa", ModemTypeFM101},
 		"yavilly_fm101":      {"yavilly_fm101", "nissa", ModemTypeFM101},

@@ -1677,7 +1677,9 @@ func featureLevel() (level uint32, err error) {
 
 func oemName() string {
 	if out, err := crosConfig("/branding", "oem-name"); err == nil {
-		return out
+		if out != "" {
+			return out
+		}
 	}
 
 	if out, err := os.ReadFile("/sys/firmware/vpd/ro/oem_name"); err == nil {

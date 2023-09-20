@@ -17,10 +17,14 @@ The following software features are defined:
 
 * `amd64` - The [amd64] processor architecture.
 * `amd_cpu` - Boards that contain an AMD application processor.
+* `android_container` - The ability to [run Android apps] in a container instead
+    of a VM. Prefer this over `android_container_r` if possible.
+* `android_container_r` - `android_container` features that runs in R container.
 * `android_vm` - The ability to [run Android apps] in VM instead of container.
     Any version of Android R+ can be used. Prefer this over `android_vm_r` if possible.
 * `android_vm_r` - `android_vm` feature that runs in R VM.
 * `android_p` - The ability to [run Android apps] that require Android P.
+* `android_r` - The ability to [run Android apps] that require Android R.
 * `arc` - The ability to [run Android apps] in any way, in VM or container,
     with any Android version. This is intended to be used to run non-ARC tests
     only when ARC is supported on the board.

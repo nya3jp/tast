@@ -412,12 +412,14 @@ func TestInstantiateParams(t *gotesting.T) {
 		SoftwareDeps: []string{"dep0"},
 		HardwareDeps: hwdep.D(hwdep.Model("model1", "model2")),
 		BugComponent: bugComp,
+		TestBedDeps:  []string{"dep1", "dep2"},
 		Params: []Param{{
 			Val:               123,
 			ExtraAttr:         []string{"crosbolt_nightly"},
 			ExtraData:         []string{"data1.txt"},
 			ExtraSoftwareDeps: []string{"dep1"},
 			ExtraHardwareDeps: hwdep.D(hwdep.SkipOnModel("model2")),
+			ExtraTestBedDeps:  []string{"dep3", "dep4"},
 		}, {
 			Name:              "foo",
 			Val:               456,
@@ -425,6 +427,7 @@ func TestInstantiateParams(t *gotesting.T) {
 			ExtraData:         []string{"data2.txt"},
 			ExtraSoftwareDeps: []string{"dep2"},
 			ExtraHardwareDeps: hwdep.D(hwdep.SkipOnModel("model1")),
+			ExtraTestBedDeps:  []string{"dep5", "dep6"},
 			BugComponent:      bugCompOverride,
 		}},
 	})
@@ -448,6 +451,7 @@ func TestInstantiateParams(t *gotesting.T) {
 			},
 			Data:         []string{"data0.txt", "data1.txt"},
 			SoftwareDeps: map[string][]string{"": {"dep0", "dep1"}},
+			TestBedDeps:  []string{"dep1", "dep2", "dep3", "dep4"},
 			BugComponent: bugComp,
 		},
 		{
@@ -465,6 +469,7 @@ func TestInstantiateParams(t *gotesting.T) {
 			},
 			Data:         []string{"data0.txt", "data2.txt"},
 			SoftwareDeps: map[string][]string{"": {"dep0", "dep2"}},
+			TestBedDeps:  []string{"dep1", "dep2", "dep5", "dep6"},
 			BugComponent: bugCompOverride,
 		},
 	}

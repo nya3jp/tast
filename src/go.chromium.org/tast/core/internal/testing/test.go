@@ -159,6 +159,10 @@ type Test struct {
 	// TestBedDeps are used for defining test bed dependencies only, i.e., 'carrier:verizon'.
 	// These are not used by tests themselves, but added to test metadata definitions used by
 	// infra services.
+	//
+	// For details about what dependencies are supported and how they are parsed,
+	// see the converter and reverter functions in
+	// https://source.chromium.org/chromium/infra/infra/+/main:go/src/infra/libs/skylab/inventory/autotest/labels/.
 	TestBedDeps []string
 
 	// Requirements are used for linking test cases to requirements. These are not used by
@@ -291,6 +295,15 @@ type Param struct {
 	// tests themselves, but added to test metadata definitions used by infra services.  This slice is
 	// appended to an Requirements declared by the test.
 	ExtraRequirements []string
+
+	// ExtraTestBedDeps are used for defining test bed dependencies only, i.e., 'carrier:verizon'.
+	// These are not used by tests themselves, but added to test metadata definitions used by
+	// infra services. This slice is appended to the TestBedDeps in the enclosing Test.
+	//
+	// For details about what dependencies are supported and how they are parsed,
+	// see the converter and reverter functions in
+	// https://source.chromium.org/chromium/infra/infra/+/main:go/src/infra/libs/skylab/inventory/autotest/labels/.
+	ExtraTestBedDeps []string
 
 	// Pre contains a precondition that must be met before the test is run.
 	// Can only be set if the enclosing test doesn't have one already set.

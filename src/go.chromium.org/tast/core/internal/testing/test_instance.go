@@ -247,6 +247,10 @@ func newTestInstance(t *Test, p *Param) (*TestInstance, error) {
 		return nil, err
 	}
 
+	var testBedDeps []string
+	testBedDeps = append(testBedDeps, t.TestBedDeps...)
+	testBedDeps = append(testBedDeps, p.ExtraTestBedDeps...)
+
 	return &TestInstance{
 		Name:            name,
 		Pkg:             info.pkg,
@@ -267,7 +271,7 @@ func newTestInstance(t *Test, p *Param) (*TestInstance, error) {
 		Pre:             pre,
 		Fixture:         fixt,
 		Timeout:         timeout,
-		TestBedDeps:     append([]string(nil), t.TestBedDeps...),
+		TestBedDeps:     testBedDeps,
 		Requirements:    requirements,
 		BugComponent:    bugComponent,
 		LifeCycleStage:  lifeCycleStage,

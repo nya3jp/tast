@@ -82,7 +82,7 @@ var softwareFeatureDefs = map[string]string{
 	"crostini_app":  `"board:atlas" || "board:brya" || "board:coral" || "board:dedede" || "board:eve" || "board:grunt" || "board:hatch" || "board:jacuzzi" || "board:nami" || "board:octopus" || "board:scarlet" || "board:volteer" || "board:zork"`,
 	"crosvm_gpu":    `"crosvm-gpu" && "virtio_gpu"`,
 	"crosvm_no_gpu": `!"crosvm-gpu" || !"virtio_gpu"`,
-	"crosvm_swap":   `"crosvm-swap"`,
+	"crosvm_swap":   `!("kernel-4_4" || "kernel-4_14" || "kernel-4_19" || "arm")`,
 	// VMs don't support few crossystem sub-commands: https://crbug.com/974615
 	"crossystem":        `!"betty" && !"tast_vm"`,
 	"cups":              "cups",

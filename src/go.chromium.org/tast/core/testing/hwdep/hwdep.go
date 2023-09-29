@@ -2450,3 +2450,18 @@ func FirmwareUIType(fwUIType ...FWUIType) Condition {
 		return satisfied()
 	}}
 }
+
+// AlternativeFirmware returns a hardware dependency condition that is satisfied if and only if the DUT has altfw.
+func AlternativeFirmware() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		ff := f.GetHardwareFeatures().GetFirmwareFeatures()
+		if ff == nil {
+			return withErrorStr("Did not find firmware features")
+		}
+		if ff.GetAlternativeFirmware().Present == configpb.HardwareFeatures_PRESENT {
+			return satisfied()
+		}
+		return unsatisfied("DUT does not have altfw")
+	},
+	}
+}

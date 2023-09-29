@@ -134,6 +134,9 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		HardwareProbeConfig:   &configpb.HardwareFeatures_HardwareProbe{},
 		Display:               &configpb.HardwareFeatures_Display{},
 		Vrr:                   &configpb.HardwareFeatures_Vrr{},
+		FirmwareFeatures: &configpb.HardwareFeatures_FirmwareFeatures{
+			AlternativeFirmware: &configpb.HardwareFeatures_FirmwareFeatures_AlternativeFirmware{},
+		},
 	}
 
 	formFactor, err := func() (string, error) {
@@ -924,6 +927,24 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 
 	features.OemInfo = &configpb.HardwareFeatures_OEMInfo{
 		Name: oemName(),
+	}
+
+	// FirmwareFeatures
+	altfw, err := func() (bool, error) {
+		out, err := crosConfig("/firmware/altfw-firmware",
+			"altfw-present")
+		if err != nil {
+			return false, err
+		}
+		return out == "true", nil
+	}()
+	if err != nil {
+		logging.Infof(ctx, "Unknown firmware/altfw-firmware/altfw-present : %v", err)
+	}
+	if altfw {
+		features.FirmwareFeatures.AlternativeFirmware.Present = configpb.HardwareFeatures_PRESENT
+	} else {
+		features.FirmwareFeatures.AlternativeFirmware.Present = configpb.HardwareFeatures_NOT_PRESENT
 	}
 
 	return &protocol.HardwareFeatures{

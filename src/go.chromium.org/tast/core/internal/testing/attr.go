@@ -532,6 +532,10 @@ Tests in this group are not used for build verification.
 				Desc: `A group of tests that test USB-C Power Delivery. Equivalent to autotest suite:faft_pd.`,
 			},
 			{
+				Name: "firmware_pd_unstable",
+				Desc: `Firmware PD tests that are not stabilized, but won't break DUTs.`,
+			},
+			{
 				Name: "firmware_slow",
 				Desc: `A group of tests that takes a very long time to run.`,
 			},

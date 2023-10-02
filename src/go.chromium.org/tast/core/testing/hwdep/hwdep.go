@@ -1947,8 +1947,8 @@ func SupportsHEVCVideoDecodingInChrome() Condition {
 		if satisfy, _, err := CPUSocFamily("amd").Satisfied(f); err == nil && satisfy {
 			return satisfied()
 		}
-		// Any Intel TGL, ADL-P do support it.
-		if satisfy, _, err := GPUFamily("tigerlake", "alderlake").Satisfied(f); err == nil && satisfy {
+		// Any Intel TGL, ADL-P and MTL do support it.
+		if satisfy, _, err := GPUFamily("tigerlake", "alderlake", "meteorlake").Satisfied(f); err == nil && satisfy {
 			return satisfied()
 		}
 		return unsatisfied("Chrome does not support HEVC video decoding on this SoC")

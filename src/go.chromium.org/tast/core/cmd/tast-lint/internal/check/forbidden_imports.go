@@ -35,11 +35,15 @@ func ForbiddenImports(fs *token.FileSet, f *ast.File) []*Issue {
 	path := fs.File(f.Pos()).Name()
 	if !isUnitTestFile(path) {
 		const (
-			localPkg  = "go.chromium.org/tast-tests/cros/local"
-			remotePkg = "go.chromium.org/tast-tests/cros/remote"
+			localPkg           = "go.chromium.org/tast-tests/cros/local"
+			remotePkg          = "go.chromium.org/tast-tests/cros/remote"
+			publicPkg          = "go.chromium.org/tast-tests/"
+			publicLocalBundle  = "go.chromium.org/tast-tests/cros/local/bundles"
+			publicRemoteBundle = "go.chromium.org/tast-tests/cros/remote/bundles"
 		)
 		localFile := strings.Contains(path, localPkg)
 		remoteFile := strings.Contains(path, remotePkg)
+		privateFile := !strings.Contains(path, publicPkg)
 		for _, im := range f.Imports {
 			p, err := strconv.Unquote(im.Path.Value)
 			if err != nil {
@@ -48,6 +52,7 @@ func ForbiddenImports(fs *token.FileSet, f *ast.File) []*Issue {
 
 			importLocal := strings.HasPrefix(p, localPkg)
 			importRemote := strings.HasPrefix(p, remotePkg)
+			importPublicBundles := strings.HasPrefix(p, publicLocalBundle) || strings.HasPrefix(p, publicRemoteBundle)
 
 			const link = "https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#Code-location"
 			if !localFile && importLocal {
@@ -61,6 +66,13 @@ func ForbiddenImports(fs *token.FileSet, f *ast.File) []*Issue {
 				issues = append(issues, &Issue{
 					Pos:  fs.Position(im.Pos()),
 					Msg:  fmt.Sprintf("Non-remote package should not import remote package %v", p),
+					Link: link,
+				})
+			}
+			if privateFile && importPublicBundles {
+				issues = append(issues, &Issue{
+					Pos:  fs.Position(im.Pos()),
+					Msg:  fmt.Sprintf("Private repository should not import Non-private bundle %v", p),
 					Link: link,
 				})
 			}

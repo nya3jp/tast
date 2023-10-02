@@ -16,6 +16,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"sync"
 
@@ -26,6 +27,9 @@ import (
 	"go.chromium.org/tast/core/cmd/tast-lint/internal/check"
 	"go.chromium.org/tast/core/cmd/tast-lint/internal/git"
 )
+
+// tastUserCodeDirRE matches with a valid import, e.g."src/go.chromium.org/tast-test/local/"
+var tastUserCodeDirRE = regexp.MustCompile(`^.*src/go.chromium.org/tast-.*/(local|remote|common|services)/.*$`)
 
 // getTargetFiles returns the list of files to run lint according to flags.
 func getTargetFiles(g *git.Git, deltaPath string, args []string) ([]git.CommitFile, error) {
@@ -93,10 +97,7 @@ func isUserFile(path string) bool {
 		return false
 	}
 
-	return strings.Contains(path, "src/go.chromium.org/tast-tests/cros/local/") ||
-		strings.Contains(path, "src/go.chromium.org/tast-tests/cros/remote/") ||
-		strings.Contains(path, "src/go.chromium.org/tast-tests/cros/common/") ||
-		strings.Contains(path, "src/go.chromium.org/tast-tests/cros/services/")
+	return tastUserCodeDirRE.MatchString(path)
 }
 
 // hasFmtError runs gofmt to see if code has any formatting error.

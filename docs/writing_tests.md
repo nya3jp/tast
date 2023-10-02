@@ -52,6 +52,8 @@ If there's a support package that's specific to a single category, it's often
 best to place it underneath the category's directory. See the [Scoping and
 shared code] section.
 
+Tast-tests-private repository `go.chromium.org/tast-tests-private/...` should not import packages bundle in `go.chromium.org/tast-tests/cros/local/bundles/...` and `go.chromium.org/tast-tests/cros/remote/bundles/...`
+
 Packages outside `go.chromium.org/tast-tests/cros/local/...` should not import packages in `go.chromium.org/tast-tests/cros/local/...`, and
 packages outside `go.chromium.org/tast-tests/cros/remote/...` should not import packages in `go.chromium.org/tast-tests/cros/remote/...`.
 If local and remote packages should share the same code, put them in `go.chromium.org/tast-tests/cros/common/...`.

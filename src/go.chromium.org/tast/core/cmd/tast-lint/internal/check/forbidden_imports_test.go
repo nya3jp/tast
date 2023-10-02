@@ -37,6 +37,8 @@ import (
 	"go.chromium.org/tast-tests/cros/common/foo"
 	"go.chromium.org/tast-tests/cros/local/foo"
 	"go.chromium.org/tast-tests/cros/remote/foo"
+	"go.chromium.org/tast-tests/cros/local/bundles/foo"
+	_ "go.chromium.org/tast-tests/cros/remote/bundles/foo"
 	"some/other/package"
 )
 `
@@ -48,17 +50,31 @@ import (
 		filepath: "src/go.chromium.org/tast-tests/cros/local/testfile.go",
 		want: []string{
 			"src/go.chromium.org/tast-tests/cros/local/testfile.go:6:2: Non-remote package should not import remote package go.chromium.org/tast-tests/cros/remote/foo",
+			"src/go.chromium.org/tast-tests/cros/local/testfile.go:8:2: Non-remote package should not import remote package go.chromium.org/tast-tests/cros/remote/bundles/foo",
 		},
 	}, {
 		filepath: "src/go.chromium.org/tast-tests/cros/remote/testfile.go",
 		want: []string{
 			"src/go.chromium.org/tast-tests/cros/remote/testfile.go:5:2: Non-local package should not import local package go.chromium.org/tast-tests/cros/local/foo",
+			"src/go.chromium.org/tast-tests/cros/remote/testfile.go:7:2: Non-local package should not import local package go.chromium.org/tast-tests/cros/local/bundles/foo",
 		},
 	}, {
 		filepath: "src/go.chromium.org/tast-tests/cros/common/testfile.go",
 		want: []string{
 			"src/go.chromium.org/tast-tests/cros/common/testfile.go:5:2: Non-local package should not import local package go.chromium.org/tast-tests/cros/local/foo",
 			"src/go.chromium.org/tast-tests/cros/common/testfile.go:6:2: Non-remote package should not import remote package go.chromium.org/tast-tests/cros/remote/foo",
+			"src/go.chromium.org/tast-tests/cros/common/testfile.go:7:2: Non-local package should not import local package go.chromium.org/tast-tests/cros/local/bundles/foo",
+			"src/go.chromium.org/tast-tests/cros/common/testfile.go:8:2: Non-remote package should not import remote package go.chromium.org/tast-tests/cros/remote/bundles/foo",
+		},
+	}, {
+		filepath: "src/go.chromium.org/tast-tests-private/crosint/common/testfile.go",
+		want: []string{
+			"src/go.chromium.org/tast-tests-private/crosint/common/testfile.go:5:2: Non-local package should not import local package go.chromium.org/tast-tests/cros/local/foo",
+			"src/go.chromium.org/tast-tests-private/crosint/common/testfile.go:6:2: Non-remote package should not import remote package go.chromium.org/tast-tests/cros/remote/foo",
+			"src/go.chromium.org/tast-tests-private/crosint/common/testfile.go:7:2: Non-local package should not import local package go.chromium.org/tast-tests/cros/local/bundles/foo",
+			"src/go.chromium.org/tast-tests-private/crosint/common/testfile.go:7:2: Private repository should not import Non-private bundle go.chromium.org/tast-tests/cros/local/bundles/foo",
+			"src/go.chromium.org/tast-tests-private/crosint/common/testfile.go:8:2: Non-remote package should not import remote package go.chromium.org/tast-tests/cros/remote/bundles/foo",
+			"src/go.chromium.org/tast-tests-private/crosint/common/testfile.go:8:2: Private repository should not import Non-private bundle go.chromium.org/tast-tests/cros/remote/bundles/foo",
 		},
 	}, {
 		filepath: "src/go.chromium.org/tast-tests/cros/common/testfile_test.go",

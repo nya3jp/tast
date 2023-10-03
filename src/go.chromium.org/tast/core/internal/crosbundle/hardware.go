@@ -1711,10 +1711,5 @@ func oemName() string {
 		}
 	}
 
-	if out, err := os.ReadFile("/sys/devices/virtual/dmi/id/sys_vendor"); err == nil {
-		name := strings.TrimSpace(string(out))
-		return name
-	}
-
 	return ""
 }

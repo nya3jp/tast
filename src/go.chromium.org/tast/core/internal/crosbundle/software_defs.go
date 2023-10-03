@@ -25,7 +25,7 @@ var softwareFeatureDefs = map[string]string{
 	"arc64":               `"cheets_user_64" || "cheets_userdebug_64"`,
 	// To access Android's /data directory from ChromeOS on ARCVM virtio-blk /data devices by mounting the virtio-blk disk image of Android's /data directory,
 	// the host kernel version needs to be 5.2 or above.
-	"arc_android_data_cros_access": `!arcvm_virtio_blk_data || "kernel-5_4" || "kernel-5_10" || "kernel-5_15"`,
+	"arc_android_data_cros_access": `!arcvm_virtio_blk_data || "kernel-5_4" || "kernel-5_10" || "kernel-5_15" || "kernel-6_1"`,
 	"arc_camera3":                  `"arc-camera3"`,
 	"arc_launched_32bit":           `"arc-launched-32bit-abi"`,
 	"arc_launched_64bit":           `"!arc-launched-32bit-abi"`,

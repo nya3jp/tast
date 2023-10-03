@@ -231,7 +231,11 @@ Tests in this group are not used for build verification.
 		Subattrs: []*attr{
 			{
 				Name: "pvs_perbuild",
-				Desc: `Indicates that this test should run for every ChromeOS build.`,
+				Desc: `PVS tests that should run for every ChromeOS build.`,
+			},
+			{
+				Name: "pvs_shop_daily",
+				Desc: `SHoP tests that should run daily.`,
 			},
 		},
 	},

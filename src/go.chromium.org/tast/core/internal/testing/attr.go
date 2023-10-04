@@ -761,6 +761,14 @@ third_party/autotest/files/server/site_tests/tast/control.racc-config-installed.
 				Name: "wificell_openwrt",
 				Desc: `Using OpenWRT router for the test.`,
 			},
+			{
+				Name: "wificell_commercial",
+				Desc: `Identifies wifi_commercial/enterprise tests.`,
+			},
+			{
+				Name: "wificell_commercial_unstable",
+				Desc: `Identifies wifi_commercial/enterprise tests that are unstable.`,
+			},
 		},
 	},
 	{

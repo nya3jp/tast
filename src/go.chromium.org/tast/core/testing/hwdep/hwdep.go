@@ -787,6 +787,22 @@ func HasGSCTi50() Condition {
 	}
 }
 
+// HasTpmNvramRollbackSpace returns a hardware dependency condition that is satisfied if and only
+// if the DUT has the TPM space to be used during enterprise enrollment.
+func HasTpmNvramRollbackSpace() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("Did not find hardware features")
+		}
+		if hf.GetTrustedPlatformModule().GetEnterpriseRollbackSpace() == configpb.HardwareFeatures_PRESENT {
+			return satisfied()
+		}
+		return unsatisfied("DUT's TPM has no enterprise rollback space (0x100e)")
+	},
+	}
+}
+
 // CPUNotNeedsCoreScheduling returns a hardware dependency condition that is satisfied if and only if the DUT's
 // CPU is does not need to use core scheduling to mitigate hardware vulnerabilities.
 func CPUNotNeedsCoreScheduling() Condition {

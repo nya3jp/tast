@@ -502,6 +502,21 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		}
 	}()
 
+	// Check if rollback NVRAM space is present in the TPM.
+	func() {
+		out, err := exec.Command("tpm_manager_client", "list_spaces").Output()
+		if err != nil {
+			logging.Info(ctx, "Failed to exec command `tpm_manager_client list_spaces`: ", err)
+			features.TrustedPlatformModule.EnterpriseRollbackSpace = configpb.HardwareFeatures_PRESENT_UNKNOWN
+			return
+		}
+		if bytes.Contains(out, []byte("0x0000100E")) {
+			features.TrustedPlatformModule.EnterpriseRollbackSpace = configpb.HardwareFeatures_PRESENT
+			return
+		}
+		features.TrustedPlatformModule.EnterpriseRollbackSpace = configpb.HardwareFeatures_NOT_PRESENT
+	}()
+
 	// Obtain GSC name from existence of /opt/google/{cr50,ti50}/firmware directory.
 	func() {
 		if _, err := os.Stat("/opt/google/cr50/firmware"); err == nil {

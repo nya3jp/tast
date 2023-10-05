@@ -293,7 +293,7 @@ func (d *Driver) runRemoteTests(ctx context.Context, bundle string, tests []stri
 }
 
 func (d *Driver) runRemoteTestsOnce(ctx context.Context, bundle string, tests []string, args *runTestsArgs) ([]*resultsjson.Result, error) {
-	bcfg, rcfg, err := d.newConfigsForRemoteTests(tests, args.DUTInfo, args.RemoteDevservers,
+	bcfg, rcfg, err := d.newConfigsForRemoteTests(ctx, tests, args.DUTInfo, args.RemoteDevservers,
 		args.SwarmingTaskID, args.BuildBucketID)
 	if err != nil {
 		return nil, err
@@ -315,7 +315,7 @@ func (d *Driver) runRemoteTestsOnce(ctx context.Context, bundle string, tests []
 	return proc.Results(), proc.FatalError()
 }
 
-func (d *Driver) newConfigsForRemoteTests(tests []string, dutInfos map[string]*protocol.DUTInfo,
+func (d *Driver) newConfigsForRemoteTests(ctx context.Context, tests []string, dutInfos map[string]*protocol.DUTInfo,
 	remoteDevservers []string, swarmingTaskID, buildBucketID string) (*protocol.BundleConfig, *protocol.RunConfig, error) {
 	exe, err := os.Executable()
 	if err != nil {
@@ -329,13 +329,19 @@ func (d *Driver) newConfigsForRemoteTests(tests []string, dutInfos map[string]*p
 			continue
 		}
 
+		resolvedTarget, resolvedProxyCommand := resolveSSHConfig(ctx, target)
+		proxyCommand := d.cfg.ProxyCommand()
+		if proxyCommand == "" {
+			proxyCommand = resolvedProxyCommand
+		}
+
 		companionDUTs[name] = &protocol.DUTConfig{
 			SshConfig: &protocol.SSHConfig{
 				// TODO: Resolve target to a connection spec.
-				ConnectionSpec: target,
+				ConnectionSpec: resolvedTarget,
 				KeyFile:        d.cfg.KeyFile(),
 				KeyDir:         d.cfg.KeyDir(),
-				ProxyCommand:   d.cfg.ProxyCommand(),
+				ProxyCommand:   proxyCommand,
 			},
 			TlwName: target,
 		}

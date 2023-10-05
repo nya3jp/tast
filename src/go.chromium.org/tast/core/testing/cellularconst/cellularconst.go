@@ -25,6 +25,7 @@ const (
 	ModemTypeFM101
 	ModemTypeSC7180 // trogdor
 	ModemTypeSC7280 // herobrine
+	ModemTypeEM060
 )
 
 func (e ModemType) String() string {
@@ -41,6 +42,8 @@ func (e ModemType) String() string {
 		return "SC7180"
 	case ModemTypeSC7280:
 		return "SC7280"
+	case ModemTypeEM060:
+		return "EM060"
 	default:
 		return fmt.Sprintf("%d", int(e))
 	}
@@ -67,6 +70,7 @@ var (
 		"astronaut":          {"astronaut", "coral", ModemTypeL850},
 		"krabby_fm101":       {"krabby_fm101", "corsola", ModemTypeFM101},
 		"rusty_fm101":        {"rusty_fm101", "corsola", ModemTypeFM101},
+		"rusty_em060":        {"rusty_em060", "corsola", ModemTypeEM060},
 		"steelix_fm101":      {"steelix_fm101", "corsola", ModemTypeFM101},
 		"beadrix_nl668am":    {"beadrix_nl668am", "dedede", ModemTypeNL668},
 		"blacktiplte":        {"blacktiplte", "coral", ModemTypeL850},

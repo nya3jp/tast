@@ -439,6 +439,10 @@ Tests in this group are not used for build verification.
 				Name: "cuj_weekly",
 				Desc: `CUJ tests that run weekly`,
 			},
+			{
+				Name: "cuj_loginperf",
+				Desc: `LoginPerf.* that run regularly`,
+			},
 		},
 	},
 	{

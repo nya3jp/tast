@@ -176,6 +176,9 @@ func TestCheckKnownAttrs(t *testing.T) {
 			attrs: []string{"group:cuj", "cuj_weekly"},
 		},
 		{
+			attrs: []string{"group:cuj", "cuj_loginperf"},
+		},
+		{
 			attrs: []string{"group:healthd", "healthd_perbuild"},
 		},
 		{

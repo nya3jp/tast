@@ -21,6 +21,7 @@ import (
 	"time"
 
 	configpb "go.chromium.org/chromiumos/config/go/api"
+	softwarepb "go.chromium.org/chromiumos/config/go/api/software"
 
 	"go.chromium.org/tast/core/errors"
 	"go.chromium.org/tast/core/internal/logging"
@@ -135,6 +136,10 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		Display:               &configpb.HardwareFeatures_Display{},
 		Vrr:                   &configpb.HardwareFeatures_Vrr{},
 		Hdmi:                  &configpb.HardwareFeatures_Hdmi{},
+	}
+
+	swConfig := &softwarepb.SoftwareConfig{
+		AltFirmwareConfig: &softwarepb.AltFirmwareConfig{},
 	}
 
 	formFactor, err := func() (string, error) {
@@ -973,9 +978,27 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		Name: oemName(),
 	}
 
+	// FirmwareFeatures
+	altfw, err := func() (bool, error) {
+		out, err := crosConfig("/alt-firmware", "has-alt-firmware")
+		if err != nil {
+			return false, err
+		}
+		return out == "true", nil
+	}()
+	if err != nil {
+		logging.Infof(ctx, "Unknown firmware/altfw-firmware/altfw-present : %v", err)
+	}
+	if altfw {
+		swConfig.AltFirmwareConfig.HasAltFirmware = true
+	} else {
+		swConfig.AltFirmwareConfig.HasAltFirmware = false
+	}
+
 	return &protocol.HardwareFeatures{
 		HardwareFeatures:       features,
 		DeprecatedDeviceConfig: config,
+		SoftwareConfig:         swConfig,
 	}, nil
 }
 

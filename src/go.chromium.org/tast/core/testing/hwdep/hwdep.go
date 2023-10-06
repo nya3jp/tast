@@ -2525,3 +2525,21 @@ func HasPDPort(port uint32) Condition {
 	},
 	}
 }
+
+// AlternativeFirmware returns a hardware dependency condition that is satisfied if and only if the DUT has altfw.
+func AlternativeFirmware() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		sc := f.GetSoftwareConfig()
+		if sc == nil {
+			return withErrorStr("Did not find software config")
+		}
+		if sc.GetAltFirmwareConfig() == nil {
+			return withErrorStr("Did not find alt firmware config")
+		}
+		if sc.GetAltFirmwareConfig().HasAltFirmware {
+			return satisfied()
+		}
+		return unsatisfied("DUT does not have altfw")
+	},
+	}
+}

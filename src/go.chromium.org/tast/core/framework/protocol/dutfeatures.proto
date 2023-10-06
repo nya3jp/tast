@@ -7,6 +7,7 @@ syntax = "proto3";
 package tast.core;
 
 import "chromiumos/config/api/topology.proto";
+import "chromiumos/config/api/software/software_config.proto";
 
 option go_package = "go.chromium.org/tast/core/framework/protocol";
 
@@ -119,4 +120,5 @@ message HardwareFeatures {
   chromiumos.config.api.HardwareFeatures hardware_features = 1;
   reserved 2;
   DeprecatedDeviceConfig deprecated_device_config = 3;
+  chromiumos.config.api.software.SoftwareConfig software_config = 4;
 }

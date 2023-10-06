@@ -155,6 +155,10 @@ Tests in this group are not used for build verification.
 				Desc: `Indicate this test is focus on video encode/decode.`,
 			},
 			{
+				Name: "graphics_power",
+				Desc: `Indicates that this test switches the power supply and discharges the battery.`,
+			},
+			{
 				Name: "graphics_perbuild",
 				Desc: `Indicates that this test should run for every ChromeOS build.`,
 			},

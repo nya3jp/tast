@@ -980,6 +980,22 @@ func ExternalDisplay() Condition {
 	}
 }
 
+// HdmiConnected returns a hardware dependency condition that is satisfied
+// if and only if the DUT has an external display with HDMI connected.
+func HdmiConnected() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("HardwareFeatures is not given")
+		}
+		if hf.GetHdmi().GetPresent() != configpb.HardwareFeatures_PRESENT {
+			return unsatisfied("DUT does not have HDMI Connected")
+		}
+		return satisfied()
+	},
+	}
+}
+
 // InternalDisplay returns a hardware dependency condition that is satisfied
 // if and only if the DUT has an internal display, e.g. Chromeboxes and Chromebits don't.
 func InternalDisplay() Condition {

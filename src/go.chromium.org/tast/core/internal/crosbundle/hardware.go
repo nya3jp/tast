@@ -134,6 +134,7 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		HardwareProbeConfig:   &configpb.HardwareFeatures_HardwareProbe{},
 		Display:               &configpb.HardwareFeatures_Display{},
 		Vrr:                   &configpb.HardwareFeatures_Vrr{},
+		Hdmi:                  &configpb.HardwareFeatures_Hdmi{},
 		FirmwareFeatures: &configpb.HardwareFeatures_FirmwareFeatures{
 			AlternativeFirmware: &configpb.HardwareFeatures_FirmwareFeatures_AlternativeFirmware{},
 		},
@@ -321,6 +322,17 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		features.Display.Type = configpb.HardwareFeatures_Display_TYPE_EXTERNAL
 	case hasInternalDisplay:
 		features.Display.Type = configpb.HardwareFeatures_Display_TYPE_INTERNAL
+	}
+
+	isHdmiConnected := func() bool {
+		// HDMI ports show up as card*-HDMI-A-1
+		hdmiCardRegex := `^card[0-9]-HDMI-A-[0-9]$`
+		return checkForConnector(hdmiCardRegex)
+	}()
+	if isHdmiConnected {
+		features.Hdmi.Present = configpb.HardwareFeatures_PRESENT
+	} else {
+		features.Hdmi.Present = configpb.HardwareFeatures_NOT_PRESENT
 	}
 
 	hasTouchScreen := func() bool {

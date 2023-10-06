@@ -8,9 +8,15 @@ import (
 	"fmt"
 	"go/ast"
 	"go/token"
+	"regexp"
 	"strconv"
 	"strings"
 )
+
+var localPkgRE = regexp.MustCompile(`go.chromium.org/tast-.*/local/.*$`)
+var remotePkgRE = regexp.MustCompile(`go.chromium.org/tast-.*/remote/.*$`)
+var localPkgPrefixRE = regexp.MustCompile(`^go.chromium.org/tast-.*/local/.*$`)
+var remotePkgPrefixRE = regexp.MustCompile(`^go.chromium.org/tast-.*/remote/.*$`)
 
 // ForbiddenImports makes sure tests don't have forbidden imports.
 func ForbiddenImports(fs *token.FileSet, f *ast.File) []*Issue {
@@ -35,23 +41,20 @@ func ForbiddenImports(fs *token.FileSet, f *ast.File) []*Issue {
 	path := fs.File(f.Pos()).Name()
 	if !isUnitTestFile(path) {
 		const (
-			localPkg           = "go.chromium.org/tast-tests/cros/local"
-			remotePkg          = "go.chromium.org/tast-tests/cros/remote"
 			publicPkg          = "go.chromium.org/tast-tests/"
 			publicLocalBundle  = "go.chromium.org/tast-tests/cros/local/bundles"
 			publicRemoteBundle = "go.chromium.org/tast-tests/cros/remote/bundles"
 		)
-		localFile := strings.Contains(path, localPkg)
-		remoteFile := strings.Contains(path, remotePkg)
+		localFile := localPkgRE.MatchString(path)
+		remoteFile := remotePkgRE.MatchString(path)
 		privateFile := !strings.Contains(path, publicPkg)
 		for _, im := range f.Imports {
 			p, err := strconv.Unquote(im.Path.Value)
 			if err != nil {
 				continue
 			}
-
-			importLocal := strings.HasPrefix(p, localPkg)
-			importRemote := strings.HasPrefix(p, remotePkg)
+			importLocal := localPkgPrefixRE.MatchString(p)
+			importRemote := remotePkgPrefixRE.MatchString(p)
 			importPublicBundles := strings.HasPrefix(p, publicLocalBundle) || strings.HasPrefix(p, publicRemoteBundle)
 
 			const link = "https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#Code-location"

@@ -139,8 +139,9 @@ The following software features are defined:
 * `memfd_create` - memfd_create function implemented in the kernel.
 * `memd` - [Memory stats collection daemon].
 * `microcode` - Platforms that have CPU microcode.
-* `ml_service` - ML Service daemon.
 * `ml_benchmark_drivers` - [ML benchmarking suite](http://go/roadrollerda)
+* `ml_service` - ML Service daemon.
+* `ml_tiered_support` - Platforms enabled for tiered benchmarking.
 * `mosys` - Ability to run mosys command.
 * `nacl` - Availability of the Native Client sandboxing technology.
 * `ndk_translation` - Availability of 32-bit NDK translation library for ARC.

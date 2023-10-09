@@ -7,6 +7,7 @@ package devserver
 import (
 	"context"
 	"fmt"
+	"os"
 	"time"
 
 	"go.chromium.org/tast/core/internal/logging"
@@ -55,6 +56,12 @@ func NewClient(ctx context.Context, devservers []string,
 			SwarmingTaskID: swarmingTaskID,
 			BuildBucketID:  buildBucketID,
 		})
-	logging.Infof(ctx, "Devserver status: %s", cl.Status())
+
+	if exe, err := os.Executable(); err != nil {
+		logging.Info(ctx, "Failed to get name of the running executable: ", err)
+		logging.Infof(ctx, "Devserver status: %s", cl.Status())
+	} else {
+		logging.Infof(ctx, "Devserver connection status from %s: %s", exe, cl.Status())
+	}
 	return cl, nil
 }

@@ -30,6 +30,8 @@ import (
 
 // tastUserCodeDirRE matches with a valid import, e.g."src/go.chromium.org/tast-test/local/"
 var tastUserCodeDirRE = regexp.MustCompile(`^.*src/go.chromium.org/tast-.*/(local|remote|common|services)/.*$`)
+var localBundlesRE = regexp.MustCompile(`go.chromium.org/tast-.*/local/bundles/.*$`)
+var remoteBundlesRE = regexp.MustCompile(`go.chromium.org/tast-.*/remote/bundles/.*$`)
 
 // getTargetFiles returns the list of files to run lint according to flags.
 func getTargetFiles(g *git.Git, deltaPath string, args []string) ([]git.CommitFile, error) {
@@ -80,8 +82,8 @@ func getTargetFiles(g *git.Git, deltaPath string, args []string) ([]git.CommitFi
 // isSupportPackageFile checks if a file path is of support packages.
 func isSupportPackageFile(path string) bool {
 	return isUserFile(path) &&
-		!strings.Contains(path, "src/go.chromium.org/tast-tests/cros/local/bundles/") &&
-		!strings.Contains(path, "src/go.chromium.org/tast-tests/cros/remote/bundles/")
+		!localBundlesRE.MatchString(path) &&
+		!remoteBundlesRE.MatchString(path)
 }
 
 // isUserFile checks if a file path is under the Tast user code directories.

@@ -532,6 +532,10 @@ Tests in this group are not used for build verification.
 				Desc: `Indicates that this is a test of the Google Security Chip firmware (Cr50).`,
 			},
 			{
+				Name: "firmware_mp",
+				Desc: `A group of tests targeted at mp_firmware_testing pool devices. These device run MP signed AP firmware and boot Test OS images via developer mode.`,
+			},
+			{
 				Name: "firmware_ec",
 				Desc: `A group of tests that test the EC firmware. Equivalent to autotest suite:faft_ec & suite:faft_ec_fw_qual.`,
 			},

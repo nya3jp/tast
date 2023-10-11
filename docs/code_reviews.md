@@ -16,13 +16,15 @@ reviewers:
     declaration, excluding yourself). If your change introduces a new test, send
     it to your team member(s) who will co-own the test. Getting reviews from the
     test owners makes sure the change is good from the perspective of feature
-    experts [(details)](#Why-are-test-owner-reviews-required).
+    experts [(details)](#Why-are-test-owner-reviews-required). The test owner
+    should grant you the `Code-Review+2` vote.
 
 2.  **Tast reviewers**. Send your change to tast-owners@google.com. In a few
     minutes, the code review is assigned to one or more [Tast reviewers] using
     the [gwsq] bot. Getting reviews from the Tast reviewers makes sure the
     change is good from the perspective of Tast test experts
-    [(details)](#Why-are-Tast-reviewer-reviews-required).
+    [(details)](#Why-are-Tast-reviewer-reviews-required). The tast reviewer
+    should grant you the `Tast-Review+1` vote.
 
 After getting LGTM from both reviewers, submit the change via the Commit Queue.
 

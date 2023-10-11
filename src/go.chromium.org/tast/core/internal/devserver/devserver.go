@@ -47,7 +47,7 @@ func NewClient(ctx context.Context, devservers []string,
 		return NewPseudoClient(), nil
 	}
 
-	const timeout = 3 * time.Second
+	const timeout = 10 * time.Second
 	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
 

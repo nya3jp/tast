@@ -82,6 +82,10 @@ promoted to critical tests after stabilization.
 				Desc: "Indicates that these tests should run on devices that have no cbx features",
 			},
 			{
+				Name: "cbx_critical",
+				Desc: `Indicates that this test has been verified as P0 and stable.`,
+			},
+			{
 				Name: "cbx_stable",
 				Desc: `Indicates that this test has been verified as stable.`,
 			},

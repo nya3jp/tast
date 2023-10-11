@@ -1417,12 +1417,12 @@ Parallels boot-up testing. Otherwise the same as group:crosbolt.`,
 	},
 	{
 		Name:     "wilco_bve",
-		Contacts: []string{"lamzin@google.com", "cros-oem-services-team@google.com"},
+		Contacts: []string{"cros-oem-services-team@google.com"},
 		Desc:     `A group of Wilco tests that require servo type-A connected to a USB-A port that has a lightning bolt or a battery icon engraved into it.`,
 	},
 	{
 		Name:     "wilco_bve_dock",
-		Contacts: []string{"lamzin@google.com", "cros-oem-services-team@google.com"},
+		Contacts: []string{"cros-oem-services-team@google.com"},
 		Desc:     `A group of Wilco tests that require a solomon dock connected to the DUT.`,
 	},
 	{

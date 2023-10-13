@@ -18,7 +18,7 @@ type SinkLogger struct {
 	sink      Sink
 }
 
-// NewSinkLogger creates a new SinkLogger.
+// NewSinkLogger creates a new logger that filters and formats the messages and logs them to a sink.
 //
 // level specifies the minimum level of logs the sink should get notified of.
 // If timestamp is true, a timestamp is prepended to a log before it is sent to
@@ -48,7 +48,7 @@ type Sink interface {
 	Log(msg string)
 }
 
-// FuncSink is a Sink that calls a function.
+// FuncSink is a Sink that calls a function. You probably do not want this, you want NewFuncLogger instead.
 //
 // All calls to the underlying function are synchronized.
 type FuncSink struct {

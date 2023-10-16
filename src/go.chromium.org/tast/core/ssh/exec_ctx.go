@@ -255,6 +255,7 @@ func (c *Cmd) Start() error {
 	}
 
 	if err := doAsync(c.ctx, func() error {
+		logging.Debug(c.ctx, "Running ssh cmd: ", shutil.EscapeSlice(c.Args))
 		return c.sess.Start(c.buildCmd(c.Dir, c.Args))
 	}, func() {
 		c.sess.Close()

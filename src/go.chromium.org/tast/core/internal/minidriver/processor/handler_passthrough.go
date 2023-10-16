@@ -57,10 +57,7 @@ func (h *passThroughHandler) EntityStart(ctx context.Context, ei *entityInfo) er
 }
 
 func (h *passThroughHandler) EntityLog(ctx context.Context, ei *entityInfo, l *logEntry) error {
-	ts, err := ptypes.TimestampProto(l.Time)
-	if err != nil {
-		return err
-	}
+	ts := timestamppb.New(l.Time)
 	h.mu.Lock()
 	defer h.mu.Unlock()
 	return h.pass(&protocol.RunTestsResponse{
@@ -69,6 +66,7 @@ func (h *passThroughHandler) EntityLog(ctx context.Context, ei *entityInfo, l *l
 				Time:       ts,
 				EntityName: ei.Entity.GetName(),
 				Text:       l.Text,
+				Level:      protocol.LevelToProto(l.Level),
 			},
 		},
 	})

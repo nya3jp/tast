@@ -214,7 +214,7 @@ func (st *InternalStack) Push(ctx context.Context, fixt *testing.FixtureInstance
 	ei := fixt.EntityProto()
 	fout := output.NewEntityStream(st.out, ei)
 
-	ctx = testing.NewContext(ctx, ce, logging.NewSinkLogger(logging.LevelInfo, false, logging.NewFuncSink(func(msg string) { fout.Log(msg) })))
+	ctx = testing.NewContext(ctx, ce, logging.NewFuncLogger(func(level logging.Level, ts time.Time, msg string) { fout.Log(level, ts, msg) }))
 	root := testing.NewEntityRoot(
 		ce,
 		fixt.Constraints(),
@@ -510,7 +510,7 @@ func (f *statefulFixture) RunReset(ctx context.Context) error {
 
 	if resetErr != nil {
 		f.status = StatusYellow
-		f.fout.Log(fmt.Sprintf("Fixture failed to reset: %v; recovering", resetErr))
+		f.fout.Log(logging.LevelInfo, time.Now(), fmt.Sprintf("Fixture failed to reset: %v; recovering", resetErr))
 	}
 	return nil
 }

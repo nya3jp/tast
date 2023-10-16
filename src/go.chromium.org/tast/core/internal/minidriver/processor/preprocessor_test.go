@@ -114,7 +114,7 @@ func TestPreprocessor_MissingEntityEnd(t *testing.T) {
 // receiving an unmatched EntityLog/EntityError/EntityEnd message.
 func TestPreprocessor_UnmatchedEntityEvent(t *testing.T) {
 	for _, event := range []protocol.Event{
-		&protocol.EntityLogEvent{Time: epochpb, EntityName: "test2"},
+		&protocol.EntityLogEvent{Time: epochpb, EntityName: "test2", Level: protocol.LogLevel_INFO},
 		&protocol.EntityErrorEvent{Time: epochpb, EntityName: "test2"},
 		&protocol.EntityEndEvent{Time: epochpb, EntityName: "test2"},
 	} {

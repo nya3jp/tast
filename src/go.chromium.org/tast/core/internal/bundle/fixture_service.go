@@ -15,6 +15,7 @@ import (
 	"github.com/golang/protobuf/ptypes"
 	"github.com/golang/protobuf/ptypes/empty"
 	"google.golang.org/grpc"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"go.chromium.org/tast/core/internal/logging"
 	"go.chromium.org/tast/core/internal/planner"
@@ -204,10 +205,10 @@ type fixtureServiceLogger struct {
 	stream protocol.FixtureService_RunFixtureServer
 }
 
-func (l *fixtureServiceLogger) Log(msg string) error {
+func (l *fixtureServiceLogger) Log(level logging.Level, ts time.Time, msg string) error {
 	return l.stream.Send(&protocol.RunFixtureResponse{
 		Control:   &protocol.RunFixtureResponse_Log{Log: msg},
-		Timestamp: ptypes.TimestampNow(),
+		Timestamp: timestamppb.New(ts),
 	})
 }
 
@@ -229,8 +230,8 @@ func (l *fixtureServiceLogger) EntityStart(ei *protocol.Entity, outDir string) e
 	return nil
 }
 
-func (l *fixtureServiceLogger) EntityLog(ei *protocol.Entity, msg string) error {
-	return l.Log(msg)
+func (l *fixtureServiceLogger) EntityLog(ei *protocol.Entity, level logging.Level, ts time.Time, msg string) error {
+	return l.Log(level, ts, msg)
 }
 
 func (l *fixtureServiceLogger) EntityError(ei *protocol.Entity, e *protocol.Error) error {

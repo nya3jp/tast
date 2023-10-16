@@ -45,17 +45,17 @@ func TestLoggingHandler(t *testing.T) {
 	events := []protocol.Event{
 		// Fixture starts.
 		&protocol.EntityStartEvent{Time: epochpb, Entity: &protocol.Entity{Name: "fixture", Type: protocol.EntityType_FIXTURE}},
-		&protocol.EntityLogEvent{Time: epochpb, EntityName: "fixture", Text: "This is a log from the fixture"},
+		&protocol.EntityLogEvent{Time: epochpb, EntityName: "fixture", Text: "This is a log from the fixture", Level: protocol.LogLevel_INFO},
 		// First test runs with 1 error.
 		&protocol.EntityStartEvent{Time: epochpb, Entity: &protocol.Entity{Name: "pkg.Test1"}},
-		&protocol.EntityLogEvent{Time: epochpb, EntityName: "pkg.Test1", Text: "This is a log from the first test"},
+		&protocol.EntityLogEvent{Time: epochpb, EntityName: "pkg.Test1", Text: "This is a log from the first test", Level: protocol.LogLevel_INFO},
 		&protocol.EntityErrorEvent{Time: epochpb, EntityName: "pkg.Test1", Error: &protocol.Error{Reason: "Failed", Location: &protocol.ErrorLocation{File: "file.go", Line: 123, Stack: "stacktrace"}}},
 		&protocol.EntityEndEvent{Time: epochpb, EntityName: "pkg.Test1"},
 		// Fixture reports an error.
 		&protocol.EntityErrorEvent{Time: epochpb, EntityName: "fixture", Error: &protocol.Error{Reason: "Failed", Location: &protocol.ErrorLocation{File: "fixture.go", Line: 456, Stack: "stacktrace"}}},
 		// Second test runs with no error.
 		&protocol.EntityStartEvent{Time: epochpb, Entity: &protocol.Entity{Name: "pkg.Test2"}},
-		&protocol.EntityLogEvent{Time: epochpb, EntityName: "pkg.Test2", Text: "This is a log from the second test"},
+		&protocol.EntityLogEvent{Time: epochpb, EntityName: "pkg.Test2", Text: "This is a log from the second test", Level: protocol.LogLevel_INFO},
 		&protocol.EntityEndEvent{Time: epochpb, EntityName: "pkg.Test2"},
 		// Fixture ends.
 		&protocol.EntityEndEvent{Time: epochpb, EntityName: "fixture"},
@@ -159,10 +159,10 @@ func TestLoggingHandler_RPCLogs(t *testing.T) {
 	)
 	events := []protocol.Event{
 		&protocol.EntityStartEvent{Time: epochpb, Entity: &protocol.Entity{Name: "test1"}},
-		&protocol.EntityLogEvent{Time: epochpb, EntityName: "test1", Text: test1Log},
+		&protocol.EntityLogEvent{Time: epochpb, EntityName: "test1", Text: test1Log, Level: protocol.LogLevel_INFO},
 		&protocol.EntityEndEvent{Time: epochpb, EntityName: "test1"},
 		&protocol.EntityStartEvent{Time: epochpb, Entity: &protocol.Entity{Name: "test2"}},
-		&protocol.EntityLogEvent{Time: epochpb, EntityName: "test2", Text: test2Log},
+		&protocol.EntityLogEvent{Time: epochpb, EntityName: "test2", Text: test2Log, Level: protocol.LogLevel_INFO},
 		&protocol.EntityEndEvent{Time: epochpb, EntityName: "test2"},
 	}
 

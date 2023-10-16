@@ -8,8 +8,10 @@ package output
 import (
 	"context"
 	"sync"
+	"time"
 
 	"go.chromium.org/tast/core/errors"
+	"go.chromium.org/tast/core/internal/logging"
 	"go.chromium.org/tast/core/internal/protocol"
 	"go.chromium.org/tast/core/internal/testing"
 	"go.chromium.org/tast/core/internal/timing"
@@ -21,7 +23,7 @@ type Stream interface {
 	// EntityStart reports that an entity has started.
 	EntityStart(ei *protocol.Entity, outDir string) error
 	// EntityLog reports an informational log message.
-	EntityLog(ei *protocol.Entity, msg string) error
+	EntityLog(ei *protocol.Entity, level logging.Level, ts time.Time, msg string) error
 	// EntityError reports an error from an entity. An entity that reported one or more errors should be considered failure.
 	EntityError(ei *protocol.Entity, e *protocol.Error) error
 	// EntityEnd reports that an entity has ended. If skipReasons is not empty it is considered skipped.
@@ -68,7 +70,7 @@ func (w *EntityStream) Start(outDir string) error {
 }
 
 // Log reports an informational log from the entity.
-func (w *EntityStream) Log(msg string) error {
+func (w *EntityStream) Log(level logging.Level, ts time.Time, msg string) error {
 	w.mu.Lock()
 	defer w.mu.Unlock()
 	if w.ended {
@@ -78,7 +80,7 @@ func (w *EntityStream) Log(msg string) error {
 		// TODO(crbug.com/1035940): Consider emitting RunLog.
 		return nil
 	}
-	return w.out.EntityLog(w.ei, msg)
+	return w.out.EntityLog(w.ei, level, ts, msg)
 }
 
 // Log reports an error from the entity.

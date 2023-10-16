@@ -49,10 +49,11 @@ func (s *Sink) EntityStart(ei *protocol.Entity, outDir string) error {
 }
 
 // EntityLog implements output.Stream.
-func (s *Sink) EntityLog(ei *protocol.Entity, msg string) error {
+func (s *Sink) EntityLog(ei *protocol.Entity, level logging.Level, ts time.Time, msg string) error {
 	s.msgs = append(s.msgs, &protocol.EntityLogEvent{
 		EntityName: ei.GetName(),
 		Text:       msg,
+		Level:      protocol.LevelToProto(level),
 	})
 	return nil
 }

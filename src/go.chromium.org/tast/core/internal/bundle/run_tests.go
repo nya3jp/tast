@@ -155,16 +155,17 @@ func (ew *eventWriter) EntityStart(ei *protocol.Entity, outDir string) error {
 	}}})
 }
 
-func (ew *eventWriter) EntityLog(ei *protocol.Entity, msg string) error {
+func (ew *eventWriter) EntityLog(ei *protocol.Entity, level logging.Level, ts time.Time, msg string) error {
 	ew.mu.Lock()
 	defer ew.mu.Unlock()
 	if ew.lg != nil {
 		ew.lg.Info(fmt.Sprintf("%s: %s", ei.Name, msg))
 	}
 	return ew.srv.Send(&protocol.RunTestsResponse{Type: &protocol.RunTestsResponse_EntityLog{EntityLog: &protocol.EntityLogEvent{
-		Time:       ptypes.TimestampNow(),
+		Time:       timestamppb.New(ts),
 		EntityName: ei.GetName(),
 		Text:       msg,
+		Level:      protocol.LevelToProto(level),
 	}}})
 }
 

@@ -605,7 +605,7 @@ func (p *prePlan) run(ctx context.Context, out output.Stream, dl *downloader) er
 		PrivateAttr:     append([]string(nil), p.tests[0].PrivateAttr...),
 	}
 	plog := newPreLogger(out)
-	pctx, cancel := context.WithCancel(testing.NewContext(ctx, ec, logging.NewSinkLogger(logging.LevelInfo, false, logging.NewFuncSink(plog.Log))))
+	pctx, cancel := context.WithCancel(testing.NewContext(ctx, ec, logging.NewFuncLogger(plog.Log)))
 	defer cancel()
 
 	// Create an empty fixture stack. Tests using preconditions can't depend on
@@ -653,10 +653,10 @@ func newPreLogger(out output.Stream) *preLogger {
 
 // Log emits a log message to output.OutputStream just as if it is emitted by the
 // current test. SetCurrentTest must be called before calling this method.
-func (l *preLogger) Log(msg string) {
+func (l *preLogger) Log(level logging.Level, ts time.Time, msg string) {
 	l.mu.Lock()
 	defer l.mu.Unlock()
-	l.out.EntityLog(l.ti, msg)
+	l.out.EntityLog(l.ti, level, ts, msg)
 }
 
 // SetCurrentTest sets the current test.
@@ -931,7 +931,7 @@ func reportSkippedTest(tout *output.EntityStream, reasons []string, err error) {
 
 // dumpGoroutines dumps all goroutines to tout.
 func dumpGoroutines(tout *output.EntityStream) {
-	tout.Log("Dumping all goroutines")
+	tout.Log(logging.LevelInfo, time.Now(), "Dumping all goroutines")
 	if err := func() error {
 		p := pprof.Lookup("goroutine")
 		if p == nil {
@@ -943,7 +943,7 @@ func dumpGoroutines(tout *output.EntityStream) {
 		}
 		sc := bufio.NewScanner(&buf)
 		for sc.Scan() {
-			tout.Log(sc.Text())
+			tout.Log(logging.LevelInfo, time.Now(), sc.Text())
 		}
 		return sc.Err()
 	}(); err != nil {

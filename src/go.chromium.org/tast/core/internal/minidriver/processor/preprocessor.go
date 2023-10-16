@@ -111,12 +111,9 @@ func (p *preprocessor) EntityLog(ctx context.Context, ev *protocol.EntityLogEven
 		return errors.Wrap(err, "processing EntityLog")
 	}
 
-	ts, err := ptypes.Timestamp(ev.GetTime())
-	if err != nil {
-		return errors.Wrap(err, "processing EntityLog")
-	}
+	ts := ev.GetTime().AsTime()
 	ei := state.EntityInfo()
-	l := &logEntry{Time: ts, Text: ev.GetText()}
+	l := &logEntry{Time: ts, Text: ev.GetText(), Level: protocol.ProtoToLevel(ev.GetLevel())}
 
 	var firstErr error
 	for _, h := range p.handlers {

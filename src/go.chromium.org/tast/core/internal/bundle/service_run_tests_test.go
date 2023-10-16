@@ -176,29 +176,29 @@ func TestTestServiceRunTests(t *gotesting.T) {
 	wantEvents := []protocol.Event{
 		// Fixture set up
 		&protocol.EntityStartEvent{Entity: parentRemoteFixture.EntityProto()},
-		&protocol.EntityLogEvent{EntityName: parentRemoteFixture.Name, Text: "Parent fixture SetUp"},
+		&protocol.EntityLogEvent{EntityName: parentRemoteFixture.Name, Text: "Parent fixture SetUp", Level: protocol.LogLevel_INFO},
 		&protocol.EntityStartEvent{Entity: remoteFixture.EntityProto()},
-		&protocol.EntityLogEvent{EntityName: remoteFixture.Name, Text: "Remote fixture SetUp"},
+		&protocol.EntityLogEvent{EntityName: remoteFixture.Name, Text: "Remote fixture SetUp", Level: protocol.LogLevel_INFO},
 		// First test
 		&protocol.EntityStartEvent{Entity: localTest1.EntityProto()},
-		&protocol.EntityLogEvent{EntityName: localTest1.Name, Text: "Remote fixture PreTest"},
-		&protocol.EntityLogEvent{EntityName: localTest1.Name, Text: "Local test 1"},
-		&protocol.EntityLogEvent{EntityName: localTest1.Name, Text: "Remote fixture PostTest"},
+		&protocol.EntityLogEvent{EntityName: localTest1.Name, Text: "Remote fixture PreTest", Level: protocol.LogLevel_INFO},
+		&protocol.EntityLogEvent{EntityName: localTest1.Name, Text: "Local test 1", Level: protocol.LogLevel_INFO},
+		&protocol.EntityLogEvent{EntityName: localTest1.Name, Text: "Remote fixture PostTest", Level: protocol.LogLevel_INFO},
 		&protocol.EntityEndEvent{EntityName: localTest1.Name},
-		&protocol.EntityLogEvent{EntityName: remoteFixture.Name, Text: "Remote fixture Reset"},
+		&protocol.EntityLogEvent{EntityName: remoteFixture.Name, Text: "Remote fixture Reset", Level: protocol.LogLevel_INFO},
 		// Second test
 		&protocol.EntityStartEvent{Entity: localTest2.EntityProto()},
-		&protocol.EntityLogEvent{EntityName: localTest2.Name, Text: "Remote fixture PreTest"},
-		&protocol.EntityLogEvent{EntityName: localTest2.Name, Text: "Local test 2"},
-		&protocol.EntityLogEvent{EntityName: localTest2.Name, Text: "Remote fixture PostTest"},
+		&protocol.EntityLogEvent{EntityName: localTest2.Name, Text: "Remote fixture PreTest", Level: protocol.LogLevel_INFO},
+		&protocol.EntityLogEvent{EntityName: localTest2.Name, Text: "Local test 2", Level: protocol.LogLevel_INFO},
+		&protocol.EntityLogEvent{EntityName: localTest2.Name, Text: "Remote fixture PostTest", Level: protocol.LogLevel_INFO},
 		&protocol.EntityEndEvent{EntityName: localTest2.Name},
 		// Fixture tear down
-		&protocol.EntityLogEvent{EntityName: remoteFixture.Name, Text: "Remote fixture TearDown"},
+		&protocol.EntityLogEvent{EntityName: remoteFixture.Name, Text: "Remote fixture TearDown", Level: protocol.LogLevel_INFO},
 		&protocol.EntityEndEvent{EntityName: remoteFixture.Name},
 		&protocol.EntityEndEvent{EntityName: parentRemoteFixture.Name},
 		// Remote test
 		&protocol.EntityStartEvent{Entity: remoteTest.EntityProto()},
-		&protocol.EntityLogEvent{EntityName: remoteTest.Name, Text: "Remote testing"},
+		&protocol.EntityLogEvent{EntityName: remoteTest.Name, Text: "Remote testing", Level: protocol.LogLevel_INFO},
 		&protocol.EntityEndEvent{EntityName: remoteTest.Name},
 	}
 
@@ -333,11 +333,11 @@ func TestTestServiceRunTests_RemoteOnly(t *gotesting.T) {
 
 	wantEvents := []protocol.Event{
 		&protocol.EntityStartEvent{Entity: remoteFixture.EntityProto()},
-		&protocol.EntityLogEvent{EntityName: remoteFixture.Name, Text: "Remote fixture SetUp"},
+		&protocol.EntityLogEvent{EntityName: remoteFixture.Name, Text: "Remote fixture SetUp", Level: protocol.LogLevel_INFO},
 		&protocol.EntityStartEvent{Entity: remoteTest.EntityProto()},
-		&protocol.EntityLogEvent{EntityName: remoteTest.Name, Text: "Remote testing"},
+		&protocol.EntityLogEvent{EntityName: remoteTest.Name, Text: "Remote testing", Level: protocol.LogLevel_INFO},
 		&protocol.EntityEndEvent{EntityName: remoteTest.Name},
-		&protocol.EntityLogEvent{EntityName: remoteFixture.Name, Text: "Remote fixture TearDown"},
+		&protocol.EntityLogEvent{EntityName: remoteFixture.Name, Text: "Remote fixture TearDown", Level: protocol.LogLevel_INFO},
 		&protocol.EntityEndEvent{EntityName: remoteFixture.Name},
 	}
 
@@ -389,11 +389,11 @@ func TestTestServiceRunTests_LocalOnly(t *gotesting.T) {
 
 	wantEvents := []protocol.Event{
 		&protocol.EntityStartEvent{Entity: localFixture.EntityProto()},
-		&protocol.EntityLogEvent{EntityName: localFixture.Name, Text: "Local fixture SetUp"},
+		&protocol.EntityLogEvent{EntityName: localFixture.Name, Text: "Local fixture SetUp", Level: protocol.LogLevel_INFO},
 		&protocol.EntityStartEvent{Entity: localTest.EntityProto()},
-		&protocol.EntityLogEvent{EntityName: localTest.Name, Text: "Local testing"},
+		&protocol.EntityLogEvent{EntityName: localTest.Name, Text: "Local testing", Level: protocol.LogLevel_INFO},
 		&protocol.EntityEndEvent{EntityName: localTest.Name},
-		&protocol.EntityLogEvent{EntityName: localFixture.Name, Text: "Local fixture TearDown"},
+		&protocol.EntityLogEvent{EntityName: localFixture.Name, Text: "Local fixture TearDown", Level: protocol.LogLevel_INFO},
 		&protocol.EntityEndEvent{EntityName: localFixture.Name},
 	}
 	if diff := cmp.Diff(events, wantEvents, protocoltest.EventCmpOpts...); diff != "" {
@@ -555,7 +555,7 @@ func TestTestServiceRunTests_LocalTestRemoteFixtureFailures(t *gotesting.T) {
 
 		&protocol.EntityStartEvent{Entity: failTearDownRemoteFixture.EntityProto()},
 		&protocol.EntityStartEvent{Entity: localFailTearDownRemoteFixture.EntityProto()},
-		&protocol.EntityLogEvent{EntityName: localFailTearDownRemoteFixture.Name, Text: "Test run"},
+		&protocol.EntityLogEvent{EntityName: localFailTearDownRemoteFixture.Name, Text: "Test run", Level: protocol.LogLevel_INFO},
 		&protocol.EntityEndEvent{EntityName: localFailTearDownRemoteFixture.Name},
 		&protocol.EntityErrorEvent{EntityName: failTearDownRemoteFixture.Name, Error: &protocol.Error{Reason: "TearDown fail"}},
 		&protocol.EntityEndEvent{EntityName: failTearDownRemoteFixture.Name},
@@ -706,7 +706,7 @@ func TestTestServiceRunTests_ExternalResetFailure(t *gotesting.T) {
 		&protocol.EntityStartEvent{Entity: localTest.EntityProto()},
 		&protocol.EntityEndEvent{EntityName: localTest.Name},
 
-		&protocol.EntityLogEvent{EntityName: fixture.Name, Text: "Fixture failed to reset: Reset failed; recovering"},
+		&protocol.EntityLogEvent{EntityName: fixture.Name, Text: "Fixture failed to reset: Reset failed; recovering", Level: protocol.LogLevel_INFO},
 		&protocol.EntityEndEvent{EntityName: fixture.Name},
 		&protocol.EntityStartEvent{Entity: fixture.EntityProto()},
 
@@ -782,16 +782,16 @@ func TestTestServiceRunTests_ExternalResetSetUpFailure(t *gotesting.T) {
 
 	wantEvents := []protocol.Event{
 		&protocol.EntityStartEvent{Entity: fixture.EntityProto()},
-		&protocol.EntityLogEvent{EntityName: fixture.Name, Text: "SetUp called"},
+		&protocol.EntityLogEvent{EntityName: fixture.Name, Text: "SetUp called", Level: protocol.LogLevel_INFO},
 
 		&protocol.EntityStartEvent{Entity: localTest.EntityProto()},
 		&protocol.EntityEndEvent{EntityName: localTest.Name},
 
-		&protocol.EntityLogEvent{EntityName: fixture.Name, Text: "Fixture failed to reset: Reset failed; recovering"},
+		&protocol.EntityLogEvent{EntityName: fixture.Name, Text: "Fixture failed to reset: Reset failed; recovering", Level: protocol.LogLevel_INFO},
 		&protocol.EntityEndEvent{EntityName: fixture.Name},
 
 		&protocol.EntityStartEvent{Entity: fixture.EntityProto()},
-		&protocol.EntityLogEvent{EntityName: fixture.Name, Text: "SetUp called"},
+		&protocol.EntityLogEvent{EntityName: fixture.Name, Text: "SetUp called", Level: protocol.LogLevel_INFO},
 		&protocol.EntityErrorEvent{EntityName: fixture.Name, Error: &protocol.Error{Reason: "SetUp failed"}},
 		&protocol.EntityEndEvent{EntityName: fixture.Name},
 

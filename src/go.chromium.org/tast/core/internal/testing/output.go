@@ -5,6 +5,9 @@
 package testing
 
 import (
+	"time"
+
+	"go.chromium.org/tast/core/internal/logging"
 	"go.chromium.org/tast/core/internal/protocol"
 )
 
@@ -12,7 +15,7 @@ import (
 // Note that planner.OutputStream is for multiple entities in contrast.
 type OutputStream interface {
 	// Log reports an informational log message from an entity.
-	Log(msg string) error
+	Log(level logging.Level, ts time.Time, msg string) error
 
 	// Error reports an error from by an entity. An entity that reported one or
 	// more errors should be considered failure.

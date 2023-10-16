@@ -142,6 +142,7 @@ func sendAndRecv(ctx context.Context, stream protocol.FixtureService_RunFixtureC
 				Time:       msg.GetTimestamp(),
 				EntityName: name,
 				Text:       v.Log,
+				Level:      protocol.LogLevel_INFO,
 			}
 			if err := out.EntityLog(ctx, ev); err != nil {
 				return nil, err

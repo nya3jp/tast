@@ -26,6 +26,7 @@ import (
 	"google.golang.org/protobuf/testing/protocmp"
 
 	"go.chromium.org/tast/core/errors"
+	"go.chromium.org/tast/core/internal/logging"
 	"go.chromium.org/tast/core/internal/protocol"
 	"go.chromium.org/tast/core/internal/testing"
 
@@ -44,7 +45,7 @@ type outputData struct {
 	Errs []*protocol.Error
 }
 
-func (r *outputSink) Log(msg string) error {
+func (r *outputSink) Log(level logging.Level, ts time.Time, msg string) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
 	r.Data.Logs = append(r.Data.Logs, msg)

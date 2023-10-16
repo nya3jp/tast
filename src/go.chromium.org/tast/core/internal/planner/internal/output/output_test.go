@@ -6,10 +6,12 @@ package output_test
 
 import (
 	gotesting "testing"
+	"time"
 
 	"github.com/google/go-cmp/cmp"
 	"google.golang.org/protobuf/testing/protocmp"
 
+	"go.chromium.org/tast/core/internal/logging"
 	"go.chromium.org/tast/core/internal/planner/internal/output"
 	"go.chromium.org/tast/core/internal/planner/internal/output/outputtest"
 	"go.chromium.org/tast/core/internal/protocol"
@@ -22,18 +24,18 @@ func TestTestOutputStream(t *gotesting.T) {
 	tout := output.NewEntityStream(sink, test)
 
 	tout.Start("/tmp/out")
-	tout.Log("hello")
+	tout.Log(logging.LevelDebug, time.Now(), "hello")
 	tout.Error(&protocol.Error{Reason: "faulty", Location: &protocol.ErrorLocation{File: "world.go"}})
-	tout.Log("world")
+	tout.Log(logging.LevelInfo, time.Now(), "world")
 	tout.End(nil, timing.NewLog())
 
 	got := sink.ReadAll()
 
 	want := []protocol.Event{
 		&protocol.EntityStartEvent{Entity: test, OutDir: "/tmp/out"},
-		&protocol.EntityLogEvent{EntityName: "pkg.Test", Text: "hello"},
+		&protocol.EntityLogEvent{EntityName: "pkg.Test", Text: "hello", Level: protocol.LogLevel_DEBUG},
 		&protocol.EntityErrorEvent{EntityName: "pkg.Test", Error: &protocol.Error{Reason: "faulty"}},
-		&protocol.EntityLogEvent{EntityName: "pkg.Test", Text: "world"},
+		&protocol.EntityLogEvent{EntityName: "pkg.Test", Text: "world", Level: protocol.LogLevel_INFO},
 		&protocol.EntityEndEvent{EntityName: "pkg.Test"},
 	}
 	if diff := cmp.Diff(got, want, protocmp.Transform()); diff != "" {
@@ -47,9 +49,9 @@ func TestTestOutputStreamUnnamedEntity(t *gotesting.T) {
 	tout := output.NewEntityStream(sink, test)
 
 	tout.Start("/tmp/out")
-	tout.Log("hello")
+	tout.Log(logging.LevelDebug, time.Now(), "hello")
 	tout.Error(&protocol.Error{Reason: "faulty", Location: &protocol.ErrorLocation{File: "world.go"}})
-	tout.Log("world")
+	tout.Log(logging.LevelInfo, time.Now(), "world")
 	tout.End(nil, timing.NewLog())
 
 	got := sink.ReadAll()

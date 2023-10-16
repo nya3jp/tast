@@ -62,6 +62,7 @@ import (
 	"sort"
 	"strings"
 	"sync"
+	"time"
 
 	"go.chromium.org/tast/core/dut"
 	"go.chromium.org/tast/core/errors"
@@ -164,7 +165,9 @@ func (r *EntityRoot) NewFixtState() *FixtState {
 
 // NewContext creates a new context associated with the entity.
 func (r *EntityRoot) NewContext(ctx context.Context) context.Context {
-	return NewContext(ctx, r.ce, logging.NewSinkLogger(logging.LevelInfo, false, logging.NewFuncSink(func(msg string) { r.out.Log(msg) })))
+	return NewContext(ctx, r.ce, logging.NewFuncLogger(func(level logging.Level, ts time.Time, msg string) {
+		r.out.Log(level, ts, msg)
+	}))
 }
 
 // hasError checks if any error has been reported.
@@ -258,7 +261,9 @@ func (r *TestEntityRoot) SetPreValue(val interface{}) {
 
 // Logger returns a logger for the test entity.
 func (r *TestEntityRoot) Logger() logging.Logger {
-	return logging.NewSinkLogger(logging.LevelInfo, false, logging.NewFuncSink(func(msg string) { r.entityRoot.out.Log(msg) }))
+	return logging.NewFuncLogger(func(level logging.Level, ts time.Time, msg string) {
+		r.entityRoot.out.Log(level, ts, msg)
+	})
 }
 
 // FixtTestEntityRoot is the root of all State objects associated with a test
@@ -286,7 +291,9 @@ func (r *FixtTestEntityRoot) hasError() bool {
 
 // Logger returns a logger for the entity.
 func (r *FixtTestEntityRoot) Logger() logging.Logger {
-	return logging.NewSinkLogger(logging.LevelInfo, false, logging.NewFuncSink(func(msg string) { r.entityRoot.out.Log(msg) }))
+	return logging.NewFuncLogger(func(level logging.Level, ts time.Time, msg string) {
+		r.entityRoot.out.Log(level, ts, msg)
+	})
 }
 
 // OutDir returns a directory into which the entity may place arbitrary files
@@ -363,12 +370,12 @@ func (s *globalMixin) CompanionDUT(role string) *dut.DUT {
 
 // Log formats its arguments using default formatting and logs them.
 func (s *globalMixin) Log(args ...interface{}) {
-	s.entityRoot.out.Log(fmt.Sprint(args...))
+	s.entityRoot.out.Log(logging.LevelInfo, time.Now(), fmt.Sprint(args...))
 }
 
 // Logf is similar to Log but formats its arguments using fmt.Sprintf.
 func (s *globalMixin) Logf(format string, args ...interface{}) {
-	s.entityRoot.out.Log(fmt.Sprintf(format, args...))
+	s.entityRoot.out.Log(logging.LevelInfo, time.Now(), fmt.Sprintf(format, args...))
 }
 
 // Error formats its arguments using default formatting and marks the entity

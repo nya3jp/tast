@@ -214,7 +214,7 @@ func (st *InternalStack) Push(ctx context.Context, fixt *testing.FixtureInstance
 	ei := fixt.EntityProto()
 	fout := output.NewEntityStream(st.out, ei)
 
-	ctx = testing.NewContext(ctx, ce, logging.NewFuncSink(func(msg string) { fout.Log(msg) }))
+	ctx = testing.NewContext(ctx, ce, logging.NewSinkLogger(logging.LevelInfo, false, logging.NewFuncSink(func(msg string) { fout.Log(msg) })))
 	root := testing.NewEntityRoot(
 		ce,
 		fixt.Constraints(),
@@ -528,7 +528,7 @@ func (f *statefulFixture) RunPreTest(ctx context.Context, rcfg *testing.RuntimeC
 	}
 
 	froot := testing.NewFixtTestEntityRoot(f.fixt, rcfg, out, condition)
-	ctx = f.newTestContext(ctx, froot, froot.LogSink())
+	ctx = f.newTestContext(ctx, froot, logging.NewSinkLogger(logging.LevelInfo, false, froot.LogSink()))
 	s := froot.NewFixtTestState(ctx, testEntity.Name)
 	name := fmt.Sprintf("%s:PreTest", f.fixt.Name)
 	if err := usercode.SafeCall(ctx, name, f.fixt.PreTestTimeout, f.cfg.GracePeriod, usercode.ErrorOnPanic(s), func(ctx context.Context) {
@@ -551,7 +551,7 @@ func (f *statefulFixture) runPostTest(ctx context.Context, rcfg *testing.Runtime
 	}
 
 	froot := testing.NewFixtTestEntityRoot(f.fixt, rcfg, out, condition)
-	ctx = f.newTestContext(ctx, froot, froot.LogSink())
+	ctx = f.newTestContext(ctx, froot, logging.NewSinkLogger(logging.LevelInfo, false, froot.LogSink()))
 	s := froot.NewFixtTestState(ctx, testName)
 	name := fmt.Sprintf("%s:PostTest", f.fixt.Name)
 
@@ -564,7 +564,7 @@ func (f *statefulFixture) runPostTest(ctx context.Context, rcfg *testing.Runtime
 }
 
 // newTestContext returns a Context to be passed to PreTest/PostTest of a fixture.
-func (f *statefulFixture) newTestContext(ctx context.Context, troot *testing.FixtTestEntityRoot, sink logging.Sink) context.Context {
+func (f *statefulFixture) newTestContext(ctx context.Context, troot *testing.FixtTestEntityRoot, logger logging.Logger) context.Context {
 	ce := &testcontext.CurrentEntity{
 		// OutDir is from the test so that test hooks can save files just like tests.
 		OutDir: troot.OutDir(),
@@ -576,7 +576,7 @@ func (f *statefulFixture) newTestContext(ctx context.Context, troot *testing.Fix
 		// PrivateAttr is from the fixture so that each user function can check them.
 		PrivateAttr: f.fixt.PrivateAttr,
 	}
-	return testing.NewContext(ctx, ce, sink)
+	return testing.NewContext(ctx, ce, logger)
 }
 
 // rewriteErrorsForTest rewrites error messages reported by a fixture to be

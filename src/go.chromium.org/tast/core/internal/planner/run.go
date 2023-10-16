@@ -605,7 +605,7 @@ func (p *prePlan) run(ctx context.Context, out output.Stream, dl *downloader) er
 		PrivateAttr:     append([]string(nil), p.tests[0].PrivateAttr...),
 	}
 	plog := newPreLogger(out)
-	pctx, cancel := context.WithCancel(testing.NewContext(ctx, ec, logging.NewFuncSink(plog.Log)))
+	pctx, cancel := context.WithCancel(testing.NewContext(ctx, ec, logging.NewSinkLogger(logging.LevelInfo, false, logging.NewFuncSink(plog.Log))))
 	defer cancel()
 
 	// Create an empty fixture stack. Tests using preconditions can't depend on

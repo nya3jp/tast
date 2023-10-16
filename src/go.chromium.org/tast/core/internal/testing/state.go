@@ -164,7 +164,7 @@ func (r *EntityRoot) NewFixtState() *FixtState {
 
 // NewContext creates a new context associated with the entity.
 func (r *EntityRoot) NewContext(ctx context.Context) context.Context {
-	return NewContext(ctx, r.ce, logging.NewFuncSink(func(msg string) { r.out.Log(msg) }))
+	return NewContext(ctx, r.ce, logging.NewSinkLogger(logging.LevelInfo, false, logging.NewFuncSink(func(msg string) { r.out.Log(msg) })))
 }
 
 // hasError checks if any error has been reported.
@@ -306,8 +306,7 @@ func (r *FixtTestEntityRoot) NewFixtTestState(ctx context.Context, name string) 
 }
 
 // NewContext returns a context.Context to be used for the entity.
-func NewContext(ctx context.Context, ec *testcontext.CurrentEntity, sink logging.Sink) context.Context {
-	logger := logging.NewSinkLogger(logging.LevelInfo, false, sink)
+func NewContext(ctx context.Context, ec *testcontext.CurrentEntity, logger logging.Logger) context.Context {
 	ctx = logging.AttachLoggerNoPropagation(ctx, logger)
 	ctx = testcontext.WithCurrentEntity(ctx, ec)
 	return ctx

@@ -166,11 +166,11 @@ func TestFixtureServiceResponses(t *gotesting.T) {
 			},
 			wantResults: [][]*protocol.RunFixtureResponse{
 				{
-					{Control: &protocol.RunFixtureResponse_Log{Log: "SetUp"}},
-					{Control: &protocol.RunFixtureResponse_Log{Log: "SetUp context log"}},
+					{Control: &protocol.RunFixtureResponse_Log{Log: "SetUp"}, Level: protocol.LogLevel_INFO},
+					{Control: &protocol.RunFixtureResponse_Log{Log: "SetUp context log"}, Level: protocol.LogLevel_INFO},
 					{Control: &protocol.RunFixtureResponse_RequestDone{RequestDone: &empty.Empty{}}},
 				}, {
-					{Control: &protocol.RunFixtureResponse_Log{Log: "TearDown"}},
+					{Control: &protocol.RunFixtureResponse_Log{Log: "TearDown"}, Level: protocol.LogLevel_INFO},
 					{Control: &protocol.RunFixtureResponse_RequestDone{RequestDone: &empty.Empty{}}},
 				},
 			},

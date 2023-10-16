@@ -8,6 +8,7 @@ import "google/protobuf/duration.proto";
 import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
 
+import "logging.proto";
 import "testing.proto";
 
 package tast.core;
@@ -119,4 +120,6 @@ message RunFixtureResponse {
   }
   // Timestamp is the timestamp of the event.
   google.protobuf.Timestamp timestamp = 4;
+  // The log level of the log message. Omit if not logging.
+  LogLevel level = 5;
 }

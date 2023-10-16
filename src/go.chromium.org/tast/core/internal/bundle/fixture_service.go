@@ -209,6 +209,7 @@ func (l *fixtureServiceLogger) Log(level logging.Level, ts time.Time, msg string
 	return l.stream.Send(&protocol.RunFixtureResponse{
 		Control:   &protocol.RunFixtureResponse_Log{Log: msg},
 		Timestamp: timestamppb.New(ts),
+		Level:     protocol.LevelToProto(level),
 	})
 }
 
@@ -222,7 +223,7 @@ func (l *fixtureServiceLogger) Error(e *protocol.Error) error {
 				Stack:  e.GetLocation().GetStack(),
 			},
 		},
-		Timestamp: ptypes.TimestampNow(),
+		Timestamp: timestamppb.Now(),
 	})
 }
 

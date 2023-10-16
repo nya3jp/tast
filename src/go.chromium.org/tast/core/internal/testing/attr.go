@@ -1312,6 +1312,25 @@ Parallels boot-up testing. Otherwise the same as group:crosbolt.`,
 		},
 	},
 	{
+		Name:     "pasit",
+		Contacts: []string{"cros-wwcb-automation@google.com"},
+		Desc:     `PASIT end-to-end functional tests.`,
+		Subattrs: []*attr{
+			{
+				Name: "pasit_fast",
+				Desc: `Indicates that this test without webcam should be run in a dedicated setup.`,
+			},
+			{
+				Name: "pasit_full",
+				Desc: `Indicates that this test with webcam should be run in a dedicated setup.`,
+			},
+			{
+				Name: "pasit_informational",
+				Desc: `Indicates that failures can be ignored.`,
+			},
+		},
+	},
+	{
 		Name:     "borealis",
 		Contacts: []string{"chromeos-gaming@google.com"},
 		Desc:     `Borealis related tests.`,

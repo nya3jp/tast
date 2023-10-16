@@ -47,7 +47,7 @@ var softwareFeatureDefs = map[string]string{
 	"borealis_host":      "borealis_host",
 	"borealis_nvidia":    "borealis_nvidia",
 	// The bpf syscall is enabled on CrOS since kernel v5.10.
-	"bpf":      `!("kernel-4_4" || "kernel-4_14" || "kernel-4_19" || "kernel-5_4")`,
+	"bpf":      `!("kernel-4_14" || "kernel-4_19" || "kernel-5_4")`,
 	"breakpad": "force_breakpad",
 	// daisy variants' cameras don't support 1280x720.
 	"camera_720p": "!snow && !skate && !spring",
@@ -69,9 +69,9 @@ var softwareFeatureDefs = map[string]string{
 	"chromeos_firmware":            `!("board:reven*")`,                                     // Reven (ChromeOS Flex) devices run third-party firmware.
 	"chromeos_kernelci":            "chromeos_kernelci_builder",
 	// Kernels pre-4.19 do not support core scheduling.
-	"coresched": `!("kernel-4_4" || "kernel-4_14")`,
+	"coresched": `!"kernel-4_14"`,
 	// TEO governor was new in v5.1, but we backported it to v4.19.
-	"cpuidle_teo":       `!("kernel-4_4" || "kernel-4_14")`,
+	"cpuidle_teo":       `!"kernel-4_14"`,
 	"cpu_heterogeneous": `"arm" || "arm64" || "board:brya*"`,
 	// TODO(b/174889440) Remove hana, elm, kevin, bob, scarlet.
 	"cpu_vuln_sysfs": `!("board:bob" || "board:hana" || "board:elm" || "board:hana-kernelnext" || "board:elm-kernelnext" || "board:kevin" || "board:scarlet")`,
@@ -82,19 +82,19 @@ var softwareFeatureDefs = map[string]string{
 	"crostini_app":  `"board:atlas" || "board:brya" || "board:coral" || "board:dedede" || "board:eve" || "board:grunt" || "board:hatch" || "board:jacuzzi" || "board:nami" || "board:octopus" || "board:scarlet" || "board:volteer" || "board:zork"`,
 	"crosvm_gpu":    `"crosvm-gpu" && "virtio_gpu"`,
 	"crosvm_no_gpu": `!"crosvm-gpu" || !"virtio_gpu"`,
-	"crosvm_swap":   `!("kernel-4_4" || "kernel-4_14" || "kernel-4_19" || "arm")`,
+	"crosvm_swap":   `!("kernel-4_14" || "kernel-4_19" || "arm")`,
 	// VMs don't support few crossystem sub-commands: https://crbug.com/974615
 	"crossystem":        `!"betty" && !"tast_vm"`,
 	"cups":              "cups",
 	"device_crash":      `!("board:samus")`,                        // Samus devices do not reliably come back after kernel crashes. crbug.com/1045821
 	"diagnostics":       `"diagnostics" && !"betty" && !"tast_vm"`, // VMs do not have hardware to diagnose. https://crbug.com/1126619
 	"dlc":               "dlc",
-	"dmverity_stable":   `"kernel-4_4" || "kernel-4_14"`,
-	"dmverity_unstable": `!("kernel-4_4" || "kernel-4_14")`,
+	"dmverity_stable":   `"kernel-4_14"`,
+	"dmverity_unstable": `!"kernel-4_14"`,
 	"dptf":              "dptf",
 	"drivefs":           "drivefs",
 	"drm_atomic":        "drm_atomic",
-	"drm_trace":         `!("kernel-4_4" || "kernel-4_14" || "kernel-4_19")`,
+	"drm_trace":         `!("kernel-4_14" || "kernel-4_19")`,
 	// asuka, banon, caroline, cave, celes, chell, cyan, edgar, kefka, reks, relm, sentry, terra, ultima, and wizpig have buggy EC firmware and cannot capture crash reports. b/172228823
 	// drallion and sarien have do not support the "crash" EC command. crbug.com/1123716
 	// guado, tidus, rikku, veyron_fievel, and veyron_tiger do not have EC firmware. crbug.com/1123716. TODO(crbug.com/1124554) Use an EC hardware dep for these rather than a software dep.
@@ -127,15 +127,15 @@ var softwareFeatureDefs = map[string]string{
 	"houdini64":                  "houdini64",
 	"hps":                        "hps",
 	"hwdrm_stable":               `!("board:brya" || "board:geralt")`, // brya devices have FW corruption issues with HWDRM: b/243456977, geralt is under development
-	"igt":                        `("video_cards_amdgpu" || "video_cards_intel" || "video_cards_mediatek" || "video_cards_msm") && !("kernel-4_4" || "kernel-4_14" || "kernel-4_19")`,
+	"igt":                        `("video_cards_amdgpu" || "video_cards_intel" || "video_cards_mediatek" || "video_cards_msm") && !("kernel-4_14" || "kernel-4_19")`,
 	"iioservice":                 "iioservice",
 	"inference_accuracy_eval":    "inference_accuracy_eval",
 	"inputs_deps":                `!("board:*-kernelnext")`,
 	"intel_psr":                  "intel_psr",
 	// IKEv2 is only supported on 4.19+ kernels.
-	"ikev2": `!("kernel-4_4" || "kernel-4_14")`,
+	"ikev2": `!"kernel-4_14"`,
 	// The io_uring syscalls are enabled on CrOS since kernel v5.15.
-	"io_uring":        `!("kernel-4_4" || "kernel-4_14" || "kernel-4_19" || "kernel-5_4" || "kernel-5_10")`,
+	"io_uring":        `!("kernel-4_14" || "kernel-4_19" || "kernel-5_4" || "kernel-5_10")`,
 	"iwlwifi_rescan":  "iwlwifi_rescan",
 	"known_fixed_ssd": `!("tast_vm" || "board:reven*")`,
 	// Lacros variants.
@@ -144,7 +144,7 @@ var softwareFeatureDefs = map[string]string{
 	"lacros":                 `!chromeless_tty && !rialto && !("board:veyron_fievel" || "board:veyron_tiger")`,
 	"lacros_stable":          `!chromeless_tty && !rialto && !("board:veyron_fievel" || "board:veyron_tiger") && !"tast_vm" && !"betty"`,
 	"lacros_unstable":        `!chromeless_tty && !rialto && !("board:veyron_fievel" || "board:veyron_tiger") && ("tast_vm" || "betty")`,
-	"landlock_enabled":       `!("kernel-4_4" || "kernel-4_14" || "kernel-4_19" || "kernel-5_4")`,
+	"landlock_enabled":       `!("kernel-4_14" || "kernel-4_19" || "kernel-5_4")`,
 	"lvm_stateful_partition": "lvm_stateful_partition",
 	"mbo":                    "mbo",
 	// QEMU has implemented memfd_create, but we haven't updated
@@ -178,12 +178,11 @@ var softwareFeatureDefs = map[string]string{
 	"no_arcvm_virtio_blk_data":  "!(arcvm_virtio_blk_data || arcvm_data_migration)",
 	"no_arm":                    "!arm",
 	"no_asan":                   "!asan",
-	"no_ath10k_4_4":             `!("board:scarlet" && "kernel-4_4")`, // board scarlet with kernel 4.4 has a version of ath10k without certain features.
 	"no_borealis_host":          "!borealis_host",
 	"no_chrome_dcheck":          "!chrome_dcheck",
 	"no_eth_loss_on_reboot":     `!("board:jacuzzi")`, // some devices (jacuzzi) may not enumerate eth on reboot b/178529170
 	"no_gsc":                    `!"cr50_onboard" && !"ti50_onboard"`,
-	"no_igt":                    `!("video_cards_amdgpu" || "video_cards_intel" || "video_cards_mediatek" || "video_cards_msm") || ("kernel-4_4" || "kernel-4_14" || "kernel-4_19")`, // opposite of "igt"
+	"no_igt":                    `!("video_cards_amdgpu" || "video_cards_intel" || "video_cards_mediatek" || "video_cards_msm") || ("kernel-4_14" || "kernel-4_19")`, // opposite of "igt"
 	"no_iioservice":             "!iioservice",
 	"no_kernel_upstream":        `!"kernel-upstream"`,
 	"no_lvm_stateful_partition": "!lvm_stateful_partition",
@@ -217,7 +216,7 @@ var softwareFeatureDefs = map[string]string{
 	"pstore": `!("betty" || "tast_vm" || "board:reven*")`,
 	// ptp_kvm is only available on ARM in kernel 5.10 or later.
 	// ptp_kvm is unreliable on amd64 in kernel 4.19.
-	"ptp_kvm": `("amd64" && !"kernel-4_19") || (("arm" || "arm64") && !("kernel-4_4" || "kernel-4_14" || "kernel-4_19" || "kernel-5_4"))`,
+	"ptp_kvm": `("amd64" && !"kernel-4_19") || (("arm" || "arm64") && !("kernel-4_14" || "kernel-4_19" || "kernel-5_4"))`,
 	"qemu":    `"betty" || "tast_vm"`,
 	"racc":    "racc",
 	// weird missing-runner-after-reboot bug: https://crbug.com/909955
@@ -226,7 +225,6 @@ var softwareFeatureDefs = map[string]string{
 	// Or cleanup all reboot dependency in tast-tests.
 	// Notice: The flag would be false when a board didn't have any attributes.
 	"reboot":               `"*"`,
-	"rrm_support":          `!"kernel-4_4"`,
 	"selinux":              "selinux",
 	"selinux_current":      "selinux && !selinux_experimental",
 	"selinux_experimental": "selinux && selinux_experimental",
@@ -252,15 +250,15 @@ var softwareFeatureDefs = map[string]string{
 	// physical_location is only supported in kernel 5.10 or later.
 	// physical_location is not supported in ARM.
 	// Proper physical_location is not added to older boards, but should be included in newer boards.
-	"typec_physical_location": `!("kernel-4_4" || "kernel-4_14" || "kernel-4_19" || "kernel-5_4") && !("arm" || "arm64") && !("board:amd*" || "board:asuka*" || "board:asurada*" || "board:atlas*" || "board:banon*" || "board:betty*" || "board:bob*" || "board:caroline*" || "board:cave*" || "board:celes*" || "board:chell*" || "board:cherry*" || "board:coral*" || "board:corsola*" || "board:cyan*" || "board:dedede*" || "board:drallion*" || "board:edgar*" || "board:elm*" || "board:eve*" || "board:fizz*" || "board:geralt*" || "board:grunt*" || "board:hana*" || "board:hatch*" || "board:jacuzzi*" || "board:kalista*" || "board:keeby*" || "board:kefka*" || "board:kevin*" || "board:kukui*" || "board:lars*" || "board:nami*" || "board:nautilus*" || "board:nocturne*" || "board:novato*" || "board:octopus*" || "board:puff*" || "board:pyro*" || "board:rammus*" || "board:reef*" || "board:reks*" || "board:relm*" || "board:reven*" || "board:sand*" || "board:sarien*" || "board:scarlet*" || "board:sentry*" || "board:setzer*" || "board:snappy*" || "board:soraka*" || "board:strongbad*" || "board:terra*" || "board:trogdor*" || "board:ultima*" || "board:volteer*" || "board:wizpig*" || "board:zork*")`,
+	"typec_physical_location": `!("kernel-4_14" || "kernel-4_19" || "kernel-5_4") && !("arm" || "arm64") && !("board:amd*" || "board:asuka*" || "board:asurada*" || "board:atlas*" || "board:banon*" || "board:betty*" || "board:bob*" || "board:caroline*" || "board:cave*" || "board:celes*" || "board:chell*" || "board:cherry*" || "board:coral*" || "board:corsola*" || "board:cyan*" || "board:dedede*" || "board:drallion*" || "board:edgar*" || "board:elm*" || "board:eve*" || "board:fizz*" || "board:geralt*" || "board:grunt*" || "board:hana*" || "board:hatch*" || "board:jacuzzi*" || "board:kalista*" || "board:keeby*" || "board:kefka*" || "board:kevin*" || "board:kukui*" || "board:lars*" || "board:nami*" || "board:nautilus*" || "board:nocturne*" || "board:novato*" || "board:octopus*" || "board:puff*" || "board:pyro*" || "board:rammus*" || "board:reef*" || "board:reks*" || "board:relm*" || "board:reven*" || "board:sand*" || "board:sarien*" || "board:scarlet*" || "board:sentry*" || "board:setzer*" || "board:snappy*" || "board:soraka*" || "board:strongbad*" || "board:terra*" || "board:trogdor*" || "board:ultima*" || "board:volteer*" || "board:wizpig*" || "board:zork*")`,
 	"uefi_firmware":           `"board:reven*" && !betty && !tast_vm`,
 	"unibuild":                "unibuild",
-	"untrusted_vm":            `!("kernel-4_4" || "kernel-4_14")`,
+	"untrusted_vm":            `!"kernel-4_14"`,
 	"usb_hid_wake":            `!("board:octopus*")`,
 	"usbguard":                "usbguard",
 	"use_fscrypt_v1":          `!"direncription_allow_v2" && !"lvm_stateful_partition"`,
 	"use_fscrypt_v2":          `"direncription_allow_v2" && !"lvm_stateful_partition"`,
-	"uvc_compliant":           `!("kernel-4_4" || "kernel-4_14")`,
+	"uvc_compliant":           `!"kernel-4_14"`,
 	"v4l2_codec":              "v4l2_codec",
 	"vaapi":                   "vaapi",
 	// TODO(b/215374984) Remove `video_cards_ihd`.
@@ -282,7 +280,6 @@ var softwareFeatureDefs = map[string]string{
 	// TODO(b/202091291): Remove virtual_susupend_time_injection swdep once it is supported
 	// on all boards.
 	"virtual_susupend_time_injection": `amd64`,
-	"virtual_usb_printer":             `!"kernel-4_4"`,
 	// VM boards with vkms enabled can test screen configuration changes like
 	// setting resolution.
 	"vkms": "vkms",
@@ -303,6 +300,6 @@ var softwareFeatureDefs = map[string]string{
 	"wifi":  `!"betty" && !"tast_vm" && !"nyan_kitty"`,
 	"wilco": "wilco",
 	// WireGuard is only supported on 5.4+ kernels.
-	"wireguard": `!("kernel-4_4" || "kernel-4_14" || "kernel-4_19")`,
+	"wireguard": `!("kernel-4_14" || "kernel-4_19")`,
 	"wpa3_sae":  "wpa3_sae",
 }

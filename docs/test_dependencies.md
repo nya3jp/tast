@@ -153,7 +153,6 @@ The following software features are defined:
     the `android` feature; DUTs will have exactly one of these two features.
 * `no_arm` - The absence of [arm] 32 bit userspace.
 * `no_asan` - Build was not built with Address Sanitizer. Similar to `aslr`.
-* `no_ath10k_4_4` - Skip boards using the ath10k/ar10k driver on kernel 4.4, as they are missing certain features (b/138406224).
 * `no_borealis_host` - Boards which is not designed to host borealis.
 * `no_chrome_dcheck` - Chrome/Chromium was not built with dcheck enabld.
 * `no_eth_loss_on_reboot` - Board does not lose ethernet on reboot. Context: b/178529170
@@ -196,7 +195,6 @@ The following software features are defined:
 * `qemu` - For tests exclusive to ChromeOS QEMU images.
 * `racc` - Whether [Runtime AVL Compliance Check] is available.
 * `reboot` - The ability to reboot reliably during a remote test.
-* `rrm_support` - Driver support for 802.11k RRM.
 * `screenshot` - The [screenshot command] can save screenshots.
 * `selinux` - An SELinux-enabled board. All Android boards are
     SELinux-enabled.
@@ -240,11 +238,6 @@ stack-sampled metrics.
 * `video_overlays` - The kernel [DRM/KMS] version atomic commits and the underlying hardware display controller support the NV12 DRM Plane format needed to promote videos to [hardware overlays].
 * `virtual_multidisplay` - The platform supports virtual multi display testing (at the time of writing, only 6.1+ betty boards).  This should be depended on for all multidisplay presubmit tests to run on betty.
 * `virtual_susupend_time_injection` - The platform supports KVM virtual suspend time injection.
-* `virtual_usb_printer` - Whether or not the device can run tests that
-    use [virtual USB printing][virtual-usb-printer-readme]. Note that
-    while the necessary kernel modules are available on kernel v4.4,
-    this feature excludes that version for known flakiness. See
-    [this bug](https://b.corp.google.com/issues/172224081) for context.
 * `vm_host` - The ability to [run virtual machines].
 * `vpd` - The DUT has a VPD chip.
 * `vulkan` - Whether [Vulkan] libraries are installed on the system image.

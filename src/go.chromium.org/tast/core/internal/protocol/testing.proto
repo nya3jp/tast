@@ -11,6 +11,7 @@ import "google/protobuf/timestamp.proto";
 
 import "go.chromium.org/tast/core/framework/protocol/dutfeatures.proto";
 import "features.proto";
+import "logging.proto";
 
 option go_package = "go.chromium.org/tast/core/internal/protocol";
 
@@ -423,6 +424,7 @@ message TimingStage {
 message RunLogEvent {
   google.protobuf.Timestamp time = 1;
   string text = 2;
+  LogLevel level = 3;
 }
 
 // EntityStartEvent marks the start of an entity run. EntityStartEvent is sent

@@ -38,6 +38,7 @@ type RunFixtureRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Control:
+	//
 	//	*RunFixtureRequest_Push
 	//	*RunFixtureRequest_Pop
 	Control isRunFixtureRequest_Control `protobuf_oneof:"control"`
@@ -503,6 +504,7 @@ type RunFixtureResponse struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Types that are assignable to Control:
+	//
 	//	*RunFixtureResponse_Log
 	//	*RunFixtureResponse_Error
 	//	*RunFixtureResponse_RequestDone

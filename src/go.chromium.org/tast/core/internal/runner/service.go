@@ -15,8 +15,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/golang/protobuf/ptypes"
 	"golang.org/x/sys/unix"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"go.chromium.org/tast/core/errors"
 	"go.chromium.org/tast/core/internal/devserver"
@@ -197,16 +197,17 @@ func (s *testServer) RunTests(srv protocol.TestService_RunTestsServer) error {
 	// Logging added for b/213616631.
 	exec.Command("logger", "local_test_runner: Serving RunTests Request").Run()
 	ctx := srv.Context()
-	logger := logging.NewSinkLogger(logging.LevelInfo, false, logging.NewFuncSink(func(msg string) {
+	logger := logging.NewFuncLogger(func(level logging.Level, ts time.Time, msg string) {
 		srv.Send(&protocol.RunTestsResponse{
 			Type: &protocol.RunTestsResponse_RunLog{
 				RunLog: &protocol.RunLogEvent{
-					Time: ptypes.TimestampNow(),
-					Text: msg,
+					Time:  timestamppb.New(ts),
+					Text:  msg,
+					Level: protocol.LevelToProto(level),
 				},
 			},
 		})
-	}))
+	})
 	// Logs from RunTests should not be routed to protocol.Logging service.
 	ctx = logging.AttachLoggerNoPropagation(ctx, logger)
 

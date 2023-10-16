@@ -172,10 +172,10 @@ func TestRunTests(t *gotesting.T) {
 
 	// Just check some basic details of the control messages.
 	wantEvents := []protocol.Event{
-		&protocol.RunLogEvent{Text: preRunMsg},
-		&protocol.RunLogEvent{Text: "Connecting to DUT"},
-		&protocol.RunLogEvent{Text: "Devserver status: using pseudo client"},
-		&protocol.RunLogEvent{Text: "Found 0 external linked data file(s), need to download 0"},
+		&protocol.RunLogEvent{Text: preRunMsg, Level: protocol.LogLevel_INFO},
+		&protocol.RunLogEvent{Text: "Connecting to DUT", Level: protocol.LogLevel_INFO},
+		&protocol.RunLogEvent{Text: "Devserver status: using pseudo client", Level: protocol.LogLevel_INFO},
+		&protocol.RunLogEvent{Text: "Found 0 external linked data file(s), need to download 0", Level: protocol.LogLevel_INFO},
 		&protocol.EntityStartEvent{Entity: tests[0].EntityProto()},
 		&protocol.EntityLogEvent{EntityName: name1, Text: preTestMsg},
 		&protocol.EntityLogEvent{EntityName: name1, Text: postTestMsg},
@@ -185,8 +185,8 @@ func TestRunTests(t *gotesting.T) {
 		&protocol.EntityErrorEvent{EntityName: name2, Error: &protocol.Error{Reason: errorMsg}},
 		&protocol.EntityLogEvent{EntityName: name2, Text: postTestMsg},
 		&protocol.EntityEndEvent{EntityName: name2},
-		&protocol.RunLogEvent{Text: "Disconnecting from DUT"},
-		&protocol.RunLogEvent{Text: postRunMsg},
+		&protocol.RunLogEvent{Text: "Disconnecting from DUT", Level: protocol.LogLevel_INFO},
+		&protocol.RunLogEvent{Text: postRunMsg, Level: protocol.LogLevel_INFO},
 	}
 	if diff := cmp.Diff(events, wantEvents, protocoltest.EventCmpOpts...); diff != "" {
 		t.Errorf("Events mismatch (-got +want):\n%s", diff)

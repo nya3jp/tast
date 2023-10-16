@@ -13,6 +13,7 @@ import (
 	"path/filepath"
 	"sort"
 	"sync"
+	"time"
 
 	"github.com/golang/protobuf/ptypes"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -66,7 +67,7 @@ func runTests(ctx context.Context, srv protocol.TestService_RunTestsServer, cfg 
 	hbw := newHeartbeatWriter(ew)
 	defer hbw.Stop()
 
-	logger := logging.NewSinkLogger(logging.LevelInfo, false, logging.NewFuncSink(func(msg string) { ew.RunLog(msg) }))
+	logger := logging.NewFuncLogger(ew.RunLog)
 	ctx = logging.AttachLoggerNoPropagation(ctx, logger)
 
 	tests, err := testsToRun(scfg, cfg.GetTests())
@@ -128,15 +129,16 @@ func newEventWriter(srv protocol.TestService_RunTestsServer) *eventWriter {
 	return &eventWriter{srv: srv, lg: lg}
 }
 
-func (ew *eventWriter) RunLog(msg string) error {
+func (ew *eventWriter) RunLog(level logging.Level, ts time.Time, msg string) {
 	ew.mu.Lock()
 	defer ew.mu.Unlock()
 	if ew.lg != nil {
 		ew.lg.Info(msg)
 	}
-	return ew.srv.Send(&protocol.RunTestsResponse{Type: &protocol.RunTestsResponse_RunLog{RunLog: &protocol.RunLogEvent{
-		Time: ptypes.TimestampNow(),
-		Text: msg,
+	ew.srv.Send(&protocol.RunTestsResponse{Type: &protocol.RunTestsResponse_RunLog{RunLog: &protocol.RunLogEvent{
+		Time:  timestamppb.New(ts),
+		Text:  msg,
+		Level: protocol.LevelToProto(level),
 	}}})
 }
 

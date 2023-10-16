@@ -9,6 +9,7 @@ import (
 	"sync"
 
 	"github.com/golang/protobuf/ptypes"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"go.chromium.org/tast/core/internal/logging"
 	"go.chromium.org/tast/core/internal/protocol"
@@ -138,17 +139,15 @@ func (h *passThroughHandler) EntityCopyEnd(ctx context.Context, ei *entityInfo) 
 }
 
 func (h *passThroughHandler) RunLog(ctx context.Context, l *logEntry) error {
-	ts, err := ptypes.TimestampProto(l.Time)
-	if err != nil {
-		return err
-	}
+	ts := timestamppb.New(l.Time)
 	h.mu.Lock()
 	defer h.mu.Unlock()
 	return h.pass(&protocol.RunTestsResponse{
 		Type: &protocol.RunTestsResponse_RunLog{
 			RunLog: &protocol.RunLogEvent{
-				Time: ts,
-				Text: l.Text,
+				Time:  ts,
+				Text:  l.Text,
+				Level: protocol.LevelToProto(l.Level),
 			},
 		},
 	})

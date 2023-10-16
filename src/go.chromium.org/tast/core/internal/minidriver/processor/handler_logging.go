@@ -83,7 +83,14 @@ func (h *loggingHandler) EntityStart(ctx context.Context, ei *entityInfo) error 
 }
 
 func (h *loggingHandler) EntityLog(ctx context.Context, ei *entityInfo, l *logEntry) error {
-	logging.Infof(ctx, "[%s] %s", l.Time.Format(testOutputTimeFmt), l.Text)
+	switch l.Level {
+	case logging.LevelInfo:
+		logging.Infof(ctx, "[%s] %s", l.Time.Format(testOutputTimeFmt), l.Text)
+	case logging.LevelDebug:
+		logging.Debugf(ctx, "[%s] %s", l.Time.Format(testOutputTimeFmt), l.Text)
+	default:
+		logging.Infof(ctx, "UNKNOWN LEVEL [%s] %s", l.Time.Format(testOutputTimeFmt), l.Text)
+	}
 	return nil
 }
 
@@ -132,7 +139,14 @@ func (h *loggingHandler) EntityEnd(ctx context.Context, ei *entityInfo, r *entit
 }
 
 func (h *loggingHandler) RunLog(ctx context.Context, l *logEntry) error {
-	logging.Infof(ctx, "[%s] %s", l.Time.Format(testOutputTimeFmt), l.Text)
+	switch l.Level {
+	case logging.LevelInfo:
+		logging.Infof(ctx, "[%s] %s", l.Time.Format(testOutputTimeFmt), l.Text)
+	case logging.LevelDebug:
+		logging.Debugf(ctx, "[%s] %s", l.Time.Format(testOutputTimeFmt), l.Text)
+	default:
+		logging.Infof(ctx, "UNKNOWN LEVEL [%s] %s", l.Time.Format(testOutputTimeFmt), l.Text)
+	}
 	return nil
 }
 

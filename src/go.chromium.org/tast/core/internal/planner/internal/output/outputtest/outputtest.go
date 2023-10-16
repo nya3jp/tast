@@ -7,10 +7,13 @@ package outputtest
 
 import (
 	"context"
+	"time"
 
+	"go.chromium.org/tast/core/internal/logging"
 	"go.chromium.org/tast/core/internal/planner/internal/output"
 	"go.chromium.org/tast/core/internal/protocol"
 	"go.chromium.org/tast/core/internal/timing"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // Sink is fake output sink for unit testing.
@@ -27,9 +30,11 @@ func NewSink() *Sink {
 }
 
 // RunLog implements output.Stream.
-func (s *Sink) RunLog(msg string) error {
+func (s *Sink) RunLog(level logging.Level, ts time.Time, msg string) error {
 	s.msgs = append(s.msgs, &protocol.RunLogEvent{
-		Text: msg,
+		Text:  msg,
+		Time:  timestamppb.New(ts),
+		Level: protocol.LevelToProto(level),
 	})
 	return nil
 }

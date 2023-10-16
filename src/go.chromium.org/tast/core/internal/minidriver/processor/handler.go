@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"go.chromium.org/tast/core/errors"
+	"go.chromium.org/tast/core/internal/logging"
 	"go.chromium.org/tast/core/internal/protocol"
 	"go.chromium.org/tast/core/internal/run/resultsjson"
 )
@@ -22,8 +23,9 @@ type entityInfo struct {
 }
 
 type logEntry struct {
-	Time time.Time
-	Text string
+	Time  time.Time
+	Text  string
+	Level logging.Level
 }
 
 type errorEntry struct {

@@ -25,6 +25,14 @@ message ReadLogsResponse {
   LogEntry entry = 1;
 }
 
+// LogLevel corresponds to the go type
+// go.chromium.org/tast/core/internal/logging.Level
+enum LogLevel {
+  LOGLEVEL_UNSPECIFIED = 0;
+  DEBUG = 1;
+  INFO = 2;
+}
+
 message LogEntry {
   // Msg is a logged message.
   string msg = 1;

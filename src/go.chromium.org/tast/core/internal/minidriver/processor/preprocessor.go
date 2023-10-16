@@ -220,11 +220,8 @@ func (p *preprocessor) StackOperation(ctx context.Context, req *protocol.StackOp
 }
 
 func (p *preprocessor) RunLog(ctx context.Context, ev *protocol.RunLogEvent) error {
-	ts, err := ptypes.Timestamp(ev.GetTime())
-	if err != nil {
-		return errors.Wrap(err, "processing RunLog")
-	}
-	l := &logEntry{Time: ts, Text: ev.GetText()}
+	ts := ev.GetTime().AsTime()
+	l := &logEntry{Time: ts, Text: ev.GetText(), Level: protocol.ProtoToLevel(ev.GetLevel())}
 
 	var firstErr error
 	for _, h := range p.handlers {

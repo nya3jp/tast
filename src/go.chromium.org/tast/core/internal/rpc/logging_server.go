@@ -8,7 +8,9 @@ import (
 	"container/list"
 	"errors"
 	"sync"
+	"time"
 
+	"go.chromium.org/tast/core/internal/logging"
 	"go.chromium.org/tast/core/internal/protocol"
 )
 
@@ -99,7 +101,7 @@ var _ protocol.LoggingServer = (*remoteLoggingServer)(nil)
 
 // Log sends msg to connected clients if any.
 // This method can be called on any goroutine.
-func (s *remoteLoggingServer) Log(msg string) {
+func (s *remoteLoggingServer) Log(level logging.Level, ts time.Time, msg string) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	if s.inbox == nil {
@@ -107,8 +109,9 @@ func (s *remoteLoggingServer) Log(msg string) {
 	}
 	s.lastSeq++
 	s.inbox <- &protocol.LogEntry{
-		Msg: msg,
-		Seq: s.lastSeq,
+		Msg:   msg,
+		Seq:   s.lastSeq,
+		Level: protocol.LevelToProto(level),
 	}
 }
 

@@ -6,6 +6,7 @@ package rpc
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"sync"
 
@@ -113,7 +114,14 @@ func (l *remoteLoggingClient) runBackground(ctx context.Context) {
 				return err
 			}
 
-			logging.Info(ctx, res.Entry.GetMsg())
+			switch res.Entry.GetLevel() {
+			case protocol.LogLevel_DEBUG:
+				logging.Debug(ctx, res.Entry.GetMsg())
+			case protocol.LogLevel_INFO:
+				logging.Info(ctx, res.Entry.GetMsg())
+			default:
+				logging.Info(ctx, fmt.Sprintf("UNKNOWN LEVEL:%s", res.Entry.GetMsg()))
+			}
 
 			l.mu.Lock()
 			l.lastSeq = res.Entry.GetSeq()

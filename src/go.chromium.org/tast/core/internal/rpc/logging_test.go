@@ -9,6 +9,7 @@ import (
 	"net"
 	"strconv"
 	"testing"
+	"time"
 
 	"google.golang.org/grpc"
 
@@ -38,7 +39,7 @@ func TestRemoteLogging(t *testing.T) {
 	}
 	defer conn.Close()
 
-	sv.Log("foo") // logs before ReadLogs should be discarded
+	sv.Log(logging.LevelInfo, time.Now(), "foo") // logs before ReadLogs should be discarded
 
 	logs := make(chan string)
 	logger := logging.NewSinkLogger(logging.LevelInfo, false, logging.NewFuncSink(func(msg string) { logs <- msg }))
@@ -53,7 +54,7 @@ func TestRemoteLogging(t *testing.T) {
 	// Logs should be delivered in order.
 	const n = 100
 	for i := 0; i < n; i++ {
-		sv.Log(strconv.Itoa(i)) // should not block
+		sv.Log(logging.LevelInfo, time.Now(), strconv.Itoa(i)) // should not block
 	}
 
 	for i := 0; i < n; i++ {
@@ -68,5 +69,5 @@ func TestRemoteLogging(t *testing.T) {
 		t.Fatal("remoteLoggingClient.Close failed: ", err)
 	}
 
-	sv.Log("foo") // logs after ReadLogs should be discarded
+	sv.Log(logging.LevelInfo, time.Now(), "foo") // logs after ReadLogs should be discarded
 }

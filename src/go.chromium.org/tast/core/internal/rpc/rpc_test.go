@@ -143,18 +143,26 @@ func newPingPair(ctx context.Context, t *gotesting.T, req *protocol.HandshakeReq
 	}
 }
 
-type channelSink struct {
+type channelLogger struct {
 	ch chan<- string
 }
 
-func newChannelSink() (*channelSink, <-chan string) {
+func newChannelLogger() (*channelLogger, <-chan string) {
 	// Allocate an arbitrary large buffer to avoid unit tests from hanging
 	// when they don't read all messages.
 	ch := make(chan string, 1000)
-	return &channelSink{ch: ch}, ch
+	return &channelLogger{ch: ch}, ch
 }
 
-func (s *channelSink) Log(msg string) {
+func (s *channelLogger) Log(level logging.Level, ts time.Time, msg string) {
+	switch level {
+	case logging.LevelDebug:
+		msg = "DEBUG: " + msg
+	case logging.LevelInfo:
+		msg = "INFO: " + msg
+	default:
+		msg = "UNKNOWN LEVEL: " + msg
+	}
 	s.ch <- msg
 }
 
@@ -332,11 +340,9 @@ func TestRPCForwardCurrentEntity(t *gotesting.T) {
 }
 
 func TestRPCForwardLogs(t *gotesting.T) {
-	const exp = "hello"
-
 	ctx := context.Background()
-	sink, logs := newChannelSink()
-	ctx = logging.AttachLogger(ctx, logging.NewSinkLogger(logging.LevelDebug, false, sink))
+	logger, logs := newChannelLogger()
+	ctx = logging.AttachLogger(ctx, logger)
 	ctx = testcontext.WithCurrentEntity(ctx, &testcontext.CurrentEntity{})
 	req := &protocol.HandshakeRequest{NeedUserServices: true}
 
@@ -344,7 +350,7 @@ func TestRPCForwardLogs(t *gotesting.T) {
 	svc := newPingService(func(ctx context.Context, s *testing.ServiceState) error {
 		called = true
 		logging.Debug(ctx, "world") // not delivered
-		logging.Info(ctx, exp)
+		logging.Info(ctx, "hello")
 		return nil
 	})
 
@@ -361,13 +367,15 @@ func TestRPCForwardLogs(t *gotesting.T) {
 		t.Error("onPing not called")
 	}
 
-	select {
-	case msg := <-logs:
-		if msg != exp {
-			t.Errorf("Got log %q; want %q", msg, exp)
+	for _, exp := range []string{"DEBUG: world", "INFO: hello"} {
+		select {
+		case msg := <-logs:
+			if msg != exp {
+				t.Errorf("Got log %q; want %q", msg, exp)
+			}
+		default:
+			t.Error("Logs unavailable immediately on RPC completion")
 		}
-	default:
-		t.Error("Logs unavailable immediately on RPC completion")
 	}
 }
 
@@ -542,19 +550,17 @@ func TestRPCSetVars(t *gotesting.T) {
 }
 
 func TestRPCServiceScopedContext(t *gotesting.T) {
-	const exp = "hello"
-
 	ctx := context.Background()
-	sink, logs := newChannelSink()
-	ctx = logging.AttachLogger(ctx, logging.NewSinkLogger(logging.LevelDebug, false, sink))
+	logger, logs := newChannelLogger()
+	ctx = logging.AttachLogger(ctx, logger)
 	ctx = testcontext.WithCurrentEntity(ctx, &testcontext.CurrentEntity{})
 	req := &protocol.HandshakeRequest{NeedUserServices: true}
 
 	called := false
 	svc := newPingService(func(ctx context.Context, s *testing.ServiceState) error {
 		called = true
-		logging.Debug(ctx, "world") // not delivered
-		logging.Info(s.ServiceContext(), exp)
+		logging.Debug(ctx, "world")
+		logging.Info(s.ServiceContext(), "hello")
 		return nil
 	})
 
@@ -571,8 +577,10 @@ func TestRPCServiceScopedContext(t *gotesting.T) {
 		t.Error("onPing not called")
 	}
 
-	if msg := <-logs; msg != exp {
-		t.Errorf("Got log %q; want %q", msg, exp)
+	for _, exp := range []string{"DEBUG: world", "INFO: hello"} {
+		if msg := <-logs; msg != exp {
+			t.Errorf("Got log %q; want %q", msg, exp)
+		}
 	}
 }
 

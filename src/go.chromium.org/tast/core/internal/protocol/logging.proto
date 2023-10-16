@@ -39,4 +39,6 @@ message LogEntry {
   // Seq is an ID of the log entry. It is a sequentially increasing number
   // starting from 1.
   uint64 seq = 2;
+  // The level of the log message from logging.Level.
+  LogLevel level = 3;
 }

@@ -65,7 +65,7 @@ func RunServer(r io.Reader, w io.Writer, svcs []*testing.Service, register func(
 	ls := newRemoteLoggingServer()
 
 	// Setup logger to encapsulate the underlying logging mechanism.
-	logger := newFuncLogger(ls.Log)
+	logger := logging.NewFuncLogger(ls.Log)
 	srv := grpc.NewServer(serverOpts(ls, logger, &calls)...)
 
 	// Register core services.
@@ -148,7 +148,7 @@ func RunTCPServer(port int, handshakeReq *protocol.HandshakeRequest, stdin io.Re
 	}
 
 	// Setup logger to encapsulate the underlying logging mechanism.
-	logger := newFuncLogger(consoleLogFunc)
+	logger := logging.NewSinkLogger(logging.LevelInfo, false, logging.NewFuncSink(consoleLogFunc))
 	srv := grpc.NewServer(serverOpts(nil, logger, &calls)...)
 
 	// Register core services.
@@ -337,13 +337,6 @@ func registerCoreServices(srv *grpc.Server, ls *remoteLoggingServer,
 	}
 	protocol.RegisterFileTransferServer(srv, newFileTransferServer())
 	return register(srv, handshakeReq)
-}
-
-// newFuncLogger provides setup for logging functionalities
-func newFuncLogger(logFunc func(msg string)) logging.Logger {
-	// logger provides logging functionality to services while encapsulates the actual
-	// logging destination and mechanism.
-	return logging.NewSinkLogger(logging.LevelInfo, false, logging.NewFuncSink(logFunc))
 }
 
 // registerUserServices registers user defined gRPC services to the gRPC Server

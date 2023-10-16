@@ -32,7 +32,30 @@ func TestContextLogger(t *gotesting.T) {
 
 	const testLog = "foo"
 	logger2.Print(testLog)
+	logger2.VPrint("ignore me, I'm verbose")
 	if diff := cmp.Diff(logger.Logs(), []string{testLog}); diff != "" {
+		t.Errorf("Log mismatch (-got +want):\n%s", diff)
+	}
+}
+
+func TestContextLoggerVerbose(t *gotesting.T) {
+	ctx := context.Background()
+
+	if _, ok := testing.ContextLogger(ctx); ok {
+		t.Errorf("Expected logger to not be available from background context")
+	}
+
+	logger := loggingtest.NewLogger(t, logging.LevelDebug)
+	ctx = logging.AttachLogger(ctx, logger)
+
+	logger2, ok := testing.ContextLogger(ctx)
+	if !ok {
+		t.Errorf("Expected logger to be available")
+	}
+
+	logger2.Print("foo")
+	logger2.VPrint("bar")
+	if diff := cmp.Diff(logger.Logs(), []string{"foo", "bar"}); diff != "" {
 		t.Errorf("Log mismatch (-got +want):\n%s", diff)
 	}
 }

@@ -378,6 +378,16 @@ func (s *globalMixin) Logf(format string, args ...interface{}) {
 	s.entityRoot.out.Log(logging.LevelInfo, time.Now(), fmt.Sprintf(format, args...))
 }
 
+// VLog formats its arguments using default formatting and logs them at the debug (verbose) level.
+func (s *globalMixin) VLog(args ...interface{}) {
+	s.entityRoot.out.Log(logging.LevelDebug, time.Now(), fmt.Sprint(args...))
+}
+
+// VLogf is similar to VLog but formats its arguments using fmt.Sprintf.
+func (s *globalMixin) VLogf(format string, args ...interface{}) {
+	s.entityRoot.out.Log(logging.LevelDebug, time.Now(), fmt.Sprintf(format, args...))
+}
+
 // Error formats its arguments using default formatting and marks the entity
 // as having failed (using the arguments as a reason for the failure)
 // while letting the entity continue execution.

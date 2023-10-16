@@ -41,14 +41,18 @@ type outputSink struct {
 }
 
 type outputData struct {
-	Logs []string
-	Errs []*protocol.Error
+	Logs     []string
+	FullLogs []string
+	Errs     []*protocol.Error
 }
 
 func (r *outputSink) Log(level logging.Level, ts time.Time, msg string) error {
 	r.mu.Lock()
 	defer r.mu.Unlock()
-	r.Data.Logs = append(r.Data.Logs, msg)
+	if level >= logging.LevelInfo {
+		r.Data.Logs = append(r.Data.Logs, msg)
+	}
+	r.Data.FullLogs = append(r.Data.FullLogs, msg)
 	return nil
 }
 
@@ -70,7 +74,9 @@ func TestLog(t *gotesting.T) {
 	s := root.NewTestState()
 	s.Log("msg ", 1)
 	s.Logf("msg %d", 2)
-	exp := outputData{Logs: []string{"msg 1", "msg 2"}}
+	s.VLog("msg ", 3)
+	s.VLogf("msg %d", 4)
+	exp := outputData{Logs: []string{"msg 1", "msg 2"}, FullLogs: []string{"msg 1", "msg 2", "msg 3", "msg 4"}}
 	if diff := cmp.Diff(out.Data, exp, outputDataCmpOpts...); diff != "" {
 		t.Errorf("Bad test report (-got +want):\n%s", diff)
 	}
@@ -84,15 +90,19 @@ func TestNestedRun(t *gotesting.T) {
 
 	s.Run(ctx, "p1", func(ctx context.Context, s *testing.State) {
 		s.Log("msg ", 1)
+		s.VLog("vmsg ", 1)
 
 		s.Run(ctx, "p2", func(ctx context.Context, s *testing.State) {
 			s.Log("msg ", 2)
+			s.VLog("vmsg ", 2)
 		})
 
 		s.Log("msg ", 3)
+		s.VLog("vmsg ", 3)
 	})
 
 	s.Log("msg ", 4)
+	s.VLog("vmsg ", 4)
 
 	exp := outputData{Logs: []string{
 		"Starting subtest p1",
@@ -101,6 +111,17 @@ func TestNestedRun(t *gotesting.T) {
 		"msg 2",
 		"msg 3",
 		"msg 4",
+	}, FullLogs: []string{
+		"Starting subtest p1",
+		"msg 1",
+		"vmsg 1",
+		"Starting subtest p1/p2",
+		"msg 2",
+		"vmsg 2",
+		"msg 3",
+		"vmsg 3",
+		"msg 4",
+		"vmsg 4",
 	}}
 	if diff := cmp.Diff(out.Data, exp, outputDataCmpOpts...); diff != "" {
 		t.Errorf("Bad test report (-got +want):\n%s", diff)
@@ -121,6 +142,7 @@ func TestRunReturn(t *gotesting.T) {
 
 	if res := s.Run(ctx, "p2", func(ctx context.Context, s *testing.State) {
 		s.Log("ok")
+		s.VLog("vok")
 	}); res != true {
 		t.Error("Expected success to return true")
 	}
@@ -130,6 +152,12 @@ func TestRunReturn(t *gotesting.T) {
 			"Starting subtest p1",
 			"Starting subtest p2",
 			"ok",
+		},
+		FullLogs: []string{
+			"Starting subtest p1",
+			"Starting subtest p2",
+			"ok",
+			"vok",
 		},
 		Errs: []*protocol.Error{
 			{Reason: "p1: fail"},
@@ -385,6 +413,10 @@ func TestRunUsePrefix(t *gotesting.T) {
 			"Starting subtest f1",
 			"Starting subtest f1/f2",
 		},
+		FullLogs: []string{
+			"Starting subtest f1",
+			"Starting subtest f1/f2",
+		},
 		Errs: []*protocol.Error{
 			{Reason: "f1/f2: error msg"},
 		},
@@ -420,6 +452,9 @@ func TestRunNonFatal(t *gotesting.T) {
 
 	exp := outputData{
 		Logs: []string{
+			"Starting subtest f",
+		},
+		FullLogs: []string{
 			"Starting subtest f",
 		},
 		Errs: []*protocol.Error{
@@ -824,6 +859,8 @@ func TestStateExports(t *gotesting.T) {
 				"ServiceDeps",
 				"SoftwareDeps",
 				"TestName",
+				"VLog",
+				"VLogf",
 				"Var",
 			},
 		},
@@ -851,6 +888,8 @@ func TestStateExports(t *gotesting.T) {
 				"ServiceDeps",
 				"SoftwareDeps",
 				"TestName",
+				"VLog",
+				"VLogf",
 				"Var",
 			},
 		},
@@ -880,6 +919,8 @@ func TestStateExports(t *gotesting.T) {
 				"ServiceDeps",
 				"SoftwareDeps",
 				"TestName",
+				"VLog",
+				"VLogf",
 				"Var",
 			},
 		},
@@ -907,6 +948,8 @@ func TestStateExports(t *gotesting.T) {
 				"ParentValue",
 				"RPCHint",
 				"RequiredVar",
+				"VLog",
+				"VLogf",
 				"Var",
 				// TODO(crbug.com/1035940): Provide access to services.
 			},
@@ -930,6 +973,8 @@ func TestStateExports(t *gotesting.T) {
 				"RPCHint",
 				"TestContext",
 				"TestName",
+				"VLog",
+				"VLogf",
 			},
 		},
 	} {

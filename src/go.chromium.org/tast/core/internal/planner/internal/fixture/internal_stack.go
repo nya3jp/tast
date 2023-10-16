@@ -528,7 +528,7 @@ func (f *statefulFixture) RunPreTest(ctx context.Context, rcfg *testing.RuntimeC
 	}
 
 	froot := testing.NewFixtTestEntityRoot(f.fixt, rcfg, out, condition)
-	ctx = f.newTestContext(ctx, froot, logging.NewSinkLogger(logging.LevelInfo, false, froot.LogSink()))
+	ctx = f.newTestContext(ctx, froot, froot.Logger())
 	s := froot.NewFixtTestState(ctx, testEntity.Name)
 	name := fmt.Sprintf("%s:PreTest", f.fixt.Name)
 	if err := usercode.SafeCall(ctx, name, f.fixt.PreTestTimeout, f.cfg.GracePeriod, usercode.ErrorOnPanic(s), func(ctx context.Context) {
@@ -551,7 +551,7 @@ func (f *statefulFixture) runPostTest(ctx context.Context, rcfg *testing.Runtime
 	}
 
 	froot := testing.NewFixtTestEntityRoot(f.fixt, rcfg, out, condition)
-	ctx = f.newTestContext(ctx, froot, logging.NewSinkLogger(logging.LevelInfo, false, froot.LogSink()))
+	ctx = f.newTestContext(ctx, froot, froot.Logger())
 	s := froot.NewFixtTestState(ctx, testName)
 	name := fmt.Sprintf("%s:PostTest", f.fixt.Name)
 

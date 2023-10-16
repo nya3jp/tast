@@ -256,9 +256,9 @@ func (r *TestEntityRoot) SetPreValue(val interface{}) {
 	r.preValue = val
 }
 
-// LogSink returns a logging sink for the test entity.
-func (r *TestEntityRoot) LogSink() logging.Sink {
-	return logging.NewFuncSink(func(msg string) { r.entityRoot.out.Log(msg) })
+// Logger returns a logger for the test entity.
+func (r *TestEntityRoot) Logger() logging.Logger {
+	return logging.NewSinkLogger(logging.LevelInfo, false, logging.NewFuncSink(func(msg string) { r.entityRoot.out.Log(msg) }))
 }
 
 // FixtTestEntityRoot is the root of all State objects associated with a test
@@ -284,9 +284,9 @@ func (r *FixtTestEntityRoot) hasError() bool {
 	return r.entityRoot.hasError()
 }
 
-// LogSink returns a logging sink for the entity.
-func (r *FixtTestEntityRoot) LogSink() logging.Sink {
-	return logging.NewFuncSink(func(msg string) { r.entityRoot.out.Log(msg) })
+// Logger returns a logger for the entity.
+func (r *FixtTestEntityRoot) Logger() logging.Logger {
+	return logging.NewSinkLogger(logging.LevelInfo, false, logging.NewFuncSink(func(msg string) { r.entityRoot.out.Log(msg) }))
 }
 
 // OutDir returns a directory into which the entity may place arbitrary files

@@ -738,6 +738,10 @@ third_party/autotest/files/server/site_tests/tast/control.racc-config-installed.
 				Desc: `Tests basic WiFi AX functionalities using Wificell fixture nightly.`,
 			},
 			{
+				Name: "wificell_func_be",
+				Desc: `Tests basic WiFi BE functionalities using Wificell fixture nightly.`,
+			},
+			{
 				Name: "wificell_suspend",
 				Desc: `Tests basic WiFi behavior related to suspend/resume.`,
 			},

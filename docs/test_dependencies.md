@@ -207,7 +207,6 @@ The following software features are defined:
     will be enforced. This implies `selinux`.
 * `shill-wifi` - WiFi technology is enabled for Shill.
 * `shipping_kernel` - Debug-related kernel configs are not enabled.
-* `siernia` - Sirenia is present on a non-ManaTEE image.
 * `smartdim` - Use smart dim to defer the imminent screen dimming.
 * `smartctl` - Ability to run smartctl software utility.
 * `stack_sampled_metrics` - Ability to run the stack profiler and gather

@@ -687,9 +687,15 @@ Tests in this group are not used for build verification.`,
 	},
 	{
 		Name:     "labqual_informational",
-		Contacts: []string{"gowriden@google.com", "peep-fleet-infra-sw@google.com"},
+		Contacts: []string{"peep-fleet-infra-sw@google.com", "gowriden@google.com"},
 		Desc: `    A group of tests that will be ultimately included in the labqual group.
-		           This separate group if for testing safely with backward compatibility.`,
+		           This separate group is for testing safely with backward compatibility.`,
+	},
+	{
+		Name:     "labqual_stable",
+		Contacts: []string{"peep-fleet-infra-sw@google.com", "gowriden@google.com"},
+		Desc: `    A group of labqual tests that are verified to be stable(using suite scheduler) to be launched to external partners and internal stakeholders.
+		           This separate group is for backward compatibility and not forcing to run the existing labqual group which contains optional tests.`,
 	},
 	{
 		Name:     "omaha",

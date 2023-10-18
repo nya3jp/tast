@@ -368,6 +368,20 @@ func (s *globalMixin) CompanionDUT(role string) *dut.DUT {
 	return dut
 }
 
+// CompanionDUT returns an array of CompanionDUTs added through the commandline.
+// It can only be called by remote entities.
+func (s *globalMixin) CompanionDUTs() map[string]*dut.DUT {
+	if s.entityRoot.cfg.RemoteData == nil {
+		panic("Companion DUT unavailable (running non-remote?)")
+	}
+
+	cDUTs := make(map[string]*dut.DUT)
+	for role, dut := range s.entityRoot.cfg.RemoteData.CompanionDUTs {
+		cDUTs[role] = dut
+	}
+	return cDUTs
+}
+
 // Log formats its arguments using default formatting and logs them.
 func (s *globalMixin) Log(args ...interface{}) {
 	s.entityRoot.out.Log(logging.LevelInfo, time.Now(), fmt.Sprint(args...))

@@ -83,6 +83,8 @@ var softwareFeatureDefs = map[string]string{
 	"crosvm_gpu":    `"crosvm-gpu" && "virtio_gpu"`,
 	"crosvm_no_gpu": `!"crosvm-gpu" || !"virtio_gpu"`,
 	"crosvm_swap":   `!("kernel-4_14" || "kernel-4_19" || "arm")`,
+	// Boards that are failing deterministically for CrostiniGeekbench6CUJ
+	"crostini_geekbench6_supported": `!("board:jacuzzi*" || "board:asurada" || "board:corsola*" || "board:strongbad" || "board:trogdor" || "board:kukui")`,
 	// VMs don't support few crossystem sub-commands: https://crbug.com/974615
 	"crossystem":        `!"betty" && !"tast_vm"`,
 	"cups":              "cups",

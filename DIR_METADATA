@@ -7,7 +7,7 @@
 #   https://source.chromium.org/chromium/infra/infra/+/HEAD:go/src/infra/tools/dirmd/proto/dir_metadata.proto
 
 buganizer {
-  component_id: 1034754 # ChromeOS > Test > Harness > Tast > Framework
+  component_id: 1034754  # ChromeOS > Test > Harness > Tast > Framework
 }
 
 team_email: "tast-users@chromium.org"

@@ -869,6 +869,12 @@ func HasDynamicHighResTimerControl() Condition {
 		if _, err := os.Stat("/proc/sys/kernel/timer_highres"); err != nil {
 			return unsatisfied("Device doesn't support dynamic hrtimer control")
 		}
+		if _, err := os.Stat("/proc/sys/kernel/sched_aggressive_next_balance"); err != nil {
+			return unsatisfied("Device doesn't support dynamic hrtimer control")
+		}
+		if _, err := os.Stat("/proc/sys/kernel/sched_min_load_balance_interval"); err != nil {
+			return unsatisfied("Device doesn't support dynamic hrtimer control")
+		}
 		return satisfied()
 	},
 	}

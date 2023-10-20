@@ -459,6 +459,26 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		features.EmbeddedController.Cbi = configpb.HardwareFeatures_PRESENT_UNKNOWN
 	}
 
+	// Get number of PD ports from ectool, if possible.
+	if out, err := exec.Command("ectool", "usbpdpower").Output(); err == nil {
+		// Returns multiple lines like:
+		// Port 0: SNK Charger PD 15263mV / 3000mA, max 15000mV / 3000mA / 45000mW
+		// Port 1: Disconnected
+		// We want to match the last port number seen to get the count.
+		re := regexp.MustCompile(`Port (\d+):`)
+		match := re.FindAllSubmatch(out, -1)
+		logging.Infof(ctx, "usbc: %s", match)
+		if match == nil {
+			// If ectool succeeds but doesn't match the regex something is very wrong. I.e. someone modified the output of ectool.
+			return nil, errors.Errorf("ectool usbpdpower output unexpected: %v", string(out))
+		}
+		count, err := strconv.Atoi(string(match[len(match)-1][1]))
+		if err != nil {
+			return nil, errors.Errorf("Failed to parse: %v", string(match[len(match)-1][1]))
+		}
+		features.UsbC = &configpb.HardwareFeatures_UsbC{Count: &configpb.HardwareFeatures_Count{Value: uint32(count + 1)}}
+	}
+
 	// Device has GSC with production RW KeyId if gsctool -a -I -M
 	// returns RW KeyID with value 0x87b73b67 or 0xde88588d
 	func() {

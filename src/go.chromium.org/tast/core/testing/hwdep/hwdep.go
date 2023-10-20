@@ -2502,3 +2502,20 @@ func FirmwareUIType(fwUIType ...FWUIType) Condition {
 		return satisfied()
 	}}
 }
+
+// HasPDPort returns a hardware dependency condition that is satisfied
+// if and only if the DUT has a USB-C PD port with the provided index.
+// I.e. HasPDPort(1) will match on devices that have 2 or more USB-C PD ports.
+func HasPDPort(port uint32) Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf.GetUsbC().GetCount() == nil {
+			return unsatisfied("Did not find USB-C port count")
+		}
+		if hf.GetUsbC().GetCount().GetValue() > port {
+			return satisfied()
+		}
+		return unsatisfied(fmt.Sprintf("DUT does not have PD port %d", port))
+	},
+	}
+}

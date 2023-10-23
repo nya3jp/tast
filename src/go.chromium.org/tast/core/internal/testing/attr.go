@@ -2025,6 +2025,11 @@ from other existing groups (or use this group standalone).
 		Contacts: []string{"cros-commercial-productivity-eng@google.com"},
 		Desc:     "A group of tests related to floating workspace.",
 	},
+	{
+		Name:     "inputs_appcompat_arc_perbuild",
+		Contacts: []string{"essential-inputs-team@google.com"},
+		Desc:     "A group of inputs test on arc++ platform for most popular boards.",
+	},
 }
 
 // validGroupMap is the name-keyed map of validGroups.

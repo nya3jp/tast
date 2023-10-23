@@ -122,6 +122,9 @@ func TestCheckKnownAttrs(t *testing.T) {
 			attrs: []string{"group:external-dependency", "external-dependency_exemption"},
 		},
 		{
+			attrs: []string{"group:inputs_appcompat_arc_perbuild"},
+		},
+		{
 			attrs: []string{"group:input-tools"},
 		},
 		{

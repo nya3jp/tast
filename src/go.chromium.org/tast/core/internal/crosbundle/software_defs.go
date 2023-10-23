@@ -205,6 +205,7 @@ var softwareFeatureDefs = map[string]string{
 	"ondevice_document_scanner_rootfs_or_dlc": "ml_service && (ondevice_document_scanner || ondevice_document_scanner_dlc)",
 	"ondevice_grammar":                        "ml_service && ondevice_grammar",
 	"ondevice_handwriting":                    "ml_service && ondevice_handwriting",
+	"ondevice_image_content_annotation":       "ml_service && ondevice_image_content_annotation",
 	"ondevice_speech":                         "ml_service && ondevice_speech",
 	"ondevice_text_suggestions":               "ml_service && ondevice_text_suggestions",
 	"pinweaver":                               `"ti50_onboard" || "cr50_onboard" || "pinweaver_csme" || ("tpm2_simulator" && "tpm2")`,

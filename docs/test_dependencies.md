@@ -181,6 +181,7 @@ The following software features are defined:
     This implies `ml_service`.
 * `ondevice_grammar` - On-device grammar check support in `ml_service`.
 * `ondevice_handwriting` - On-device handwriting recognition support in `ml_service`.
+* `ondevice_image_content_annotation` - On-device image content annotation support in `ml_service`.
 * `ondevice_speech` - On-device speech recognition support in `ml_service`.
 * `ondevice_text_suggestions` - On-device txt suggestions support in `ml_service`.
 * `pinweaver` - Pinweaver support, either by GSC or Intel CSME.

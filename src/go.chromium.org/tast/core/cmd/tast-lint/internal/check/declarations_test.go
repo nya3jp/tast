@@ -471,6 +471,14 @@ func TestDeclarationsParams(t *testing.T) {
 		Desc:     "This description is fine",
 		Contacts: []string{"me@chromium.org"},
 		BugComponent: "b:1034625",
+		Params:   pkg.FuncParams(),
+	})`, []string{declTestPath + ":10:13: " + nonLiteralParamsMsg}}, {`
+	testing.AddTest(&testing.Test{
+		Func:     DoStuff,
+		LacrosStatus: testing.LacrosVariantUnneeded,
+		Desc:     "This description is fine",
+		Contacts: []string{"me@chromium.org"},
+		BugComponent: "b:1034625",
 		Params:   []Param{variableParamStruct},
 	})`, []string{declTestPath + ":10:21: " + nonLiteralParamsMsg}}, {`
 	testing.AddTest(&testing.Test{
@@ -496,6 +504,79 @@ func TestDeclarationsParams(t *testing.T) {
 		declTestPath + ":15:32: " + nonLiteralAttrMsg,
 		declTestPath + ":17:23: " + nonLiteralSoftwareDepsMsg,
 		declTestPath + ":19:23: " + nonLiteralSoftwareDepsMsg,
+	}}, {snip: `
+	testing.AddTest(&testing.Test{
+		Func:     DoStuff,
+		LacrosStatus: testing.LacrosVariantUnneeded,
+		Desc:     "This description is fine",
+		Contacts: []string{"me@chromium.org"},
+		BugComponent: "b:1034625",
+		Params: firmware.AddPDPorts([]Param{{
+			Name: "param1",
+			ExtraAttr:         []string{"attr1"},
+			ExtraSoftwareDeps: []string{"deps1", qualified.name},
+			Val: firmware.PDTestParams{},
+		}, {
+			Name: "param2",
+			Val: firmware.PDTestParams{},
+		}}, []string{"firmware", "firmware_pd"}),
+	})`}, {`
+	testing.AddTest(&testing.Test{
+		Func:     DoStuff,
+		LacrosStatus: testing.LacrosVariantUnneeded,
+		Desc:     "This description is fine",
+		Contacts: []string{"me@chromium.org"},
+		BugComponent: "b:1034625",
+		Params: firmware.AddPDPorts(variableParams, variableAttrs),
+	})`, []string{
+		declTestPath + ":10:31: " + fwAddPortsNonLiteralParamsMsg,
+		declTestPath + ":10:47: " + nonLiteralAttrMsg,
+	}}, {`
+	testing.AddTest(&testing.Test{
+		Func:     DoStuff,
+		LacrosStatus: testing.LacrosVariantUnneeded,
+		Desc:     "This description is fine",
+		Contacts: []string{"me@chromium.org"},
+		BugComponent: "b:1034625",
+		Params: firmware.AddPDPorts([]Param{variableParamStruct}, []string{variableAttr}),
+	})`, []string{
+		declTestPath + ":10:39: " + nonLiteralParamsMsg,
+		declTestPath + ":10:70: " + nonLiteralAttrMsg,
+	}}, {`
+	testing.AddTest(&testing.Test{
+		Func:     DoStuff,
+		LacrosStatus: testing.LacrosVariantUnneeded,
+		Desc:     "This description is fine",
+		Contacts: []string{"me@chromium.org"},
+		BugComponent: "b:1034625",
+		Params: firmware.AddPDPorts([]Param{{
+			Name: variableParamName,
+			Val: firmware.PDTestParams{},
+		}, {
+			ExtraAttr:         variableAttrs,
+			Val: firmware.PDTestParams{},
+		}, {
+			ExtraAttr:         []string{variableAttr},
+			Val: firmware.PDTestParams{},
+		}, {
+			ExtraSoftwareDeps: variableSoftwareDeps,
+			Val: firmware.PDTestParams{},
+		}, {
+			ExtraSoftwareDeps: []string{fun()},
+			Val: firmware.PDTestParams{},
+		}, {
+			Val: true,
+		}, {
+			Name: "No val",
+		}}, []string{"attr1"}),
+	})`, []string{
+		declTestPath + ":11:10: " + nonLiteralParamNameMsg,
+		declTestPath + ":14:23: " + nonLiteralAttrMsg,
+		declTestPath + ":17:32: " + nonLiteralAttrMsg,
+		declTestPath + ":20:23: " + nonLiteralSoftwareDepsMsg,
+		declTestPath + ":23:23: " + nonLiteralSoftwareDepsMsg,
+		declTestPath + ":26:9: " + fwAddPortsWrongValMsg,
+		declTestPath + ":27:6: " + fwAddPortsWrongValMsg,
 	}}} {
 		code := fmt.Sprintf(initTmpl, tc.snip)
 		f, fs := parse(code, declTestPath)

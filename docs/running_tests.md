@@ -250,3 +250,56 @@ tast run --var=servo=localhost:${SERVO_PORT?}:ssh:${LOCAL_SERVO_SSH_PORT?} local
 
 ## Running tests attached to a debugger
 See [Tast Debugger](debugger.md)
+
+## Bisecting tests broken by chromium
+When a tast test fails on chromium CQ for an LKGM update, it means that some
+change in chromium has broken the test.
+
+Bisecting the failure is a little bit complicated since you have to repeatedly
+compile chromium and deploy to a VM or DUT and then run a tast test from a cros
+chroot.
+
+This process can be made easier using `git bisect run` with a script.
+
+You should be able to see the first bot that fails and find a good and bad chromium commit
+via the BLAMELIST tab of the builder page.
+
+### Example bisect.sh script
+This script assumes there is a local amd-generic VM running.
+```
+#!/bin/sh
+set -x
+gclient sync
+autoninja -C out_amd64-generic/Release chrome
+third_party/chromite/bin/deploy_chrome --board=amd64-generic --build-dir=out_amd64-generic/Release --device=ssh://localhost:9222 --verbose --strip-flags=-S --mount
+cd ~/chromiumos
+cros_sdk -- tast run -failfortests localhost:9222 terminal.Crosh
+```
+
+### chromium repo
+```
+git bisect good <last-commit-in-previous-good-build>
+git bisect bad <last-commit-in-first-bad-build>
+git bisect run ./bisect.sh
+```
+
+### Running Tast on a VM
+It can be useful to use a postsubmit builder to get a VM image since they
+include debug symbols which makes it easier to update individual cros packages
+if needed.  It also avoid the slowdown of `gclient sync` pulling down the VM
+when using `.gclient` with `cros_board_with_qemu_images`.
+
+To get a VM, open
+https://ci.chromium.org/ui/p/chromeos/builders/postsubmit/amd64-generic-postsubmit
+, select a green build, and find `gs://` url for image. You can edit the URL and
+replace `amd64-generic` with any other board name to find the builds for other
+boards.
+
+```
+chroot: $ cros flash --debug file:///tmp xbuddy://remote/amd64-generic-postsubmit/R120-15645.0.0-56998-8767360335941552641
+```
+
+To start the VM (no chroot):
+```
+cros vm --start --board=amd64-generic --image-path ~/chromiumos/out/tmp/chromiumos_test_image.bin
+```

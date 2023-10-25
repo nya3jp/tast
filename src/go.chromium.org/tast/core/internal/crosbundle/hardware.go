@@ -239,41 +239,8 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		logging.Infof(ctx, "Unknown /keyboard/backlight: %v", err)
 	}
 
-	hasKeyboardBacklight, err := func() (string, error) {
-		out, err := crosConfig("/power", "has-keyboard-backlight")
-		if err != nil {
-			return "", err
-		}
-		return out, nil
-	}()
-	if err != nil {
-		logging.Infof(ctx, "Unknown /power/has-keyboard-backlight: %v", err)
-	}
-
-	hasKeyboardBacklightUnderPowerManager, err := func() (bool, error) {
-		const fileName = "/usr/share/power_manager/has_keyboard_backlight"
-		content, err := ioutil.ReadFile(fileName)
-		if err != nil {
-			if os.IsNotExist(err) {
-				return false, nil
-			}
-			return false, errors.Errorf("failed to read file %q: %v", fileName, err)
-		}
-		return strings.TrimSuffix(string(content), "\n") == "1", nil
-	}()
-	if err != nil {
-		logging.Infof(ctx, "Unknown /usr/share/power_manager: %v", err)
-	}
-
-	switch hasKeyboardBacklight {
-	case "1":
+	if keyboardBacklight {
 		features.Keyboard.Backlight = configpb.HardwareFeatures_PRESENT
-	case "":
-		if keyboardBacklight || hasKeyboardBacklightUnderPowerManager {
-			features.Keyboard.Backlight = configpb.HardwareFeatures_PRESENT
-		}
-	default:
-		features.Keyboard.Backlight = configpb.HardwareFeatures_NOT_PRESENT
 	}
 
 	checkForConnector := func(connectorRegexp string) bool {

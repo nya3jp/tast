@@ -1918,9 +1918,6 @@ func SupportsV4L2StatefulVideoDecoding() Condition {
 		if dc.GetCpu() == protocol.DeprecatedDeviceConfig_X86 || dc.GetCpu() == protocol.DeprecatedDeviceConfig_X86_64 {
 			return unsatisfied("DUT's CPU is x86 compatible, which doesn't support V4L2")
 		}
-		if dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_MT8173 {
-			return unsatisfied("MT8173 devices only support MT21C output (b/230654454).")
-		}
 		if socTypeIsV4l2Stateful(dc.GetSoc()) {
 			return satisfied()
 		}

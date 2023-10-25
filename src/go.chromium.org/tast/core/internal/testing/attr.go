@@ -2036,6 +2036,11 @@ from other existing groups (or use this group standalone).
 		Contacts: []string{"essential-inputs-team@google.com"},
 		Desc:     "A group of inputs test on arc++ platform for most popular boards.",
 	},
+	{
+		Name:     "inputs_appcompat_citrix_perbuild",
+		Contacts: []string{"essential-inputs-team@google.com"},
+		Desc:     "A group of inputs test on citrix platform for most popular boards.",
+	},
 }
 
 // validGroupMap is the name-keyed map of validGroups.

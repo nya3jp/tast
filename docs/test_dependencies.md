@@ -114,6 +114,7 @@ The following software features are defined:
     (as opposed to the builtin open-source virtual keyboard).
 * `gpu_sandboxing` - Chrome's GPU process is [sandboxed].
 * `gsc` - Whether the platform has an onboard Google security chip.
+* `has_recovery_mrc_cache` - Boards that have the RECOVERY_MRC_CACHE section.
 * `hibernate`- Whether the platform supports hibernate.
 * `houdini` - Availability of 32-bit Houdini library for ARC.
 * `houdini64` - Availability of 64-bit Houdini library for ARC.

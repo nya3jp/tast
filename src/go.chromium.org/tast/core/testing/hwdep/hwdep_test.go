@@ -1025,6 +1025,46 @@ func TestFirmwareKconfigFields(t *testing.T) {
 	}
 }
 
+func TestECBuildConfigOptions(t *testing.T) {
+	testECBuildConfig := map[string]configpb.HardwareFeatures_Present{
+		"CONFIG_A": configpb.HardwareFeatures_PRESENT,
+		"CONFIG_B": configpb.HardwareFeatures_NOT_PRESENT,
+		"CONFIG_C": configpb.HardwareFeatures_PRESENT_UNKNOWN,
+	}
+	for _, tc := range []struct {
+		options   []string
+		satisfied bool
+	}{
+		{[]string{"CONFIG_A"}, true},
+		{[]string{"A"}, true},
+		{[]string{"CONFIG_B"}, false},
+		{[]string{"B"}, false},
+		{[]string{"CONFIG_C"}, false},
+		{[]string{"C"}, false},
+		{[]string{"CONFIG_D"}, false},
+		{[]string{"D"}, false},
+		{[]string{""}, false},
+		{[]string{"A", "B", "C", "D"}, true},
+		{[]string{"D", "C", "B", "A"}, true},
+		{[]string{"B", "C", "D"}, false},
+		{[]string{"D", "C", "B"}, false},
+	} {
+		verifyCondition(
+			t, hwdep.ECBuildConfigOptions(tc.options...),
+			&frameworkprotocol.DeprecatedDeviceConfig{},
+			&configpb.HardwareFeatures{
+				EmbeddedController: &configpb.HardwareFeatures_EmbeddedController{
+					BuildConfig: testECBuildConfig,
+				},
+			},
+			tc.satisfied)
+	}
+	expectError(
+		t, hwdep.ECBuildConfigOptions("FOO"),
+		&frameworkprotocol.DeprecatedDeviceConfig{},
+		nil)
+}
+
 func TestRuntimeProbeConfig(t *testing.T) {
 	c := hwdep.RuntimeProbeConfig()
 

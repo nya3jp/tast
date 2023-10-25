@@ -854,6 +854,10 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		logging.Info(ctx, "Failed to parse BIOS kConfig: ", err)
 	}
 
+	if err := parseECBuildConfig(ctx, features); err != nil {
+		logging.Info(ctx, "Failed to parse EC Config: ", err)
+	}
+
 	rpConfigPresent, err := hasRuntimeProbeConfig(model)
 	if err != nil {
 		logging.Info(ctx, "Failed to determine if the config of Runtime Probe exists: ", err)
@@ -1644,8 +1648,8 @@ func containsGSCKeyID(keyIDs []GSCKeyID, reqKeyID GSCKeyID) bool {
 var flashromExtractCoreBootCmd = func(ctx context.Context, corebootBinName string) error {
 	return exec.CommandContext(ctx, "flashrom", "-p", "host", "-r", "-i", fmt.Sprintf("FW_MAIN_A:%s", corebootBinName)).Run()
 }
-var cbfsToolExtractConfigCmd = func(ctx context.Context, corebootBinName, fwConfigName string) error {
-	return exec.CommandContext(ctx, "cbfstool", corebootBinName, "extract", "-n", "config", "-f", fwConfigName).Run()
+var cbfsToolExtractCmd = func(ctx context.Context, corebootBinName, fileName, outputPath string) error {
+	return exec.CommandContext(ctx, "cbfstool", corebootBinName, "extract", "-n", fileName, "-f", outputPath).Run()
 }
 
 var configLineRegexp = regexp.MustCompile(`^(# )?(CONFIG\S*)(=(y)| (is not set))`)
@@ -1670,7 +1674,7 @@ func parseKConfigs(ctx context.Context, features *configpb.HardwareFeatures) err
 	if err := flashromExtractCoreBootCmd(ctx, corebootBin.Name()); err != nil {
 		return errors.Wrap(err, "failed to extract FW_MAIN_A bios section")
 	}
-	if err := cbfsToolExtractConfigCmd(ctx, corebootBin.Name(), fwConfig.Name()); err != nil {
+	if err := cbfsToolExtractCmd(ctx, corebootBin.Name(), "config", fwConfig.Name()); err != nil {
 		return errors.Wrap(err, "failed to extract bios Kconfig file")
 	}
 	inFile, err := os.Open(fwConfig.Name())
@@ -1697,6 +1701,51 @@ func parseKConfigs(ctx context.Context, features *configpb.HardwareFeatures) err
 			}
 		}
 	}
+	return nil
+}
+
+func parseECBuildConfig(ctx context.Context, features *configpb.HardwareFeatures) error {
+	corebootBin, err := ioutil.TempFile("/var/tmp", "")
+	if err != nil {
+		return errors.Wrap(err, "failed to create temp file")
+	}
+	corebootBin.Close()
+	defer os.Remove(corebootBin.Name())
+
+	ecConfig, err := ioutil.TempFile("/var/tmp", "")
+	if err != nil {
+		return errors.Wrap(err, "failed to create temp file")
+	}
+	ecConfig.Close()
+	defer os.Remove(ecConfig.Name())
+
+	if err := flashromExtractCoreBootCmd(ctx, corebootBin.Name()); err != nil {
+		return errors.Wrap(err, "failed to extract FW_MAIN_A bios section")
+	}
+	if err := cbfsToolExtractCmd(ctx, corebootBin.Name(), "ecrw.config", ecConfig.Name()); err != nil {
+		return errors.Wrap(err, "failed to extract ec config file")
+	}
+	inFile, err := os.Open(ecConfig.Name())
+	if err != nil {
+		return errors.Wrap(err, "failed to read ec Kconfig file")
+	}
+	defer inFile.Close()
+
+	ecBuildConfig := make(map[string]configpb.HardwareFeatures_Present)
+	scanner := bufio.NewScanner(inFile)
+	for scanner.Scan() {
+		line := scanner.Text()
+		if match := configLineRegexp.FindStringSubmatch(line); match != nil {
+			if match[4] == "y" {
+				ecBuildConfig[match[2]] = configpb.HardwareFeatures_PRESENT
+			} else if match[5] == "is not set" {
+				ecBuildConfig[match[2]] = configpb.HardwareFeatures_NOT_PRESENT
+			} else {
+				return errors.Errorf("Malformed config line: %s", line)
+			}
+		}
+	}
+	features.EmbeddedController.BuildConfig = ecBuildConfig
 	return nil
 }
 

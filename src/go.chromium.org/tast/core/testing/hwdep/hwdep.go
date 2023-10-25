@@ -2220,6 +2220,32 @@ func SkipOnCameraUSBModule(modules ...string) Condition {
 	}}
 }
 
+// ECBuildConfigOptions is satisfied if any of the provided options are enabled.
+// This can be used to check alternative option names,
+// e.g. CONFIG_DEBUG_ASSERT, CONFIG_PLATFORM_EC_DEBUG_ASSERT
+func ECBuildConfigOptions(optionNames ...string) Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("Did not find hardware features")
+		}
+		buildConfig := hf.GetEmbeddedController().GetBuildConfig()
+		if buildConfig == nil {
+			return withErrorStr("Did not find EC build config")
+		}
+		for _, optionName := range optionNames {
+			if !strings.HasPrefix(optionName, "CONFIG_") {
+				optionName = "CONFIG_" + optionName
+			}
+			if present, found := buildConfig[optionName]; found && present == configpb.HardwareFeatures_PRESENT {
+				return satisfied()
+			}
+		}
+		return unsatisfied(fmt.Sprintf("EC config option(s) %s are not enabled", optionNames))
+	},
+	}
+}
+
 // MainboardHasEarlyLibgfxinit is satisfied if the BIOS was built with Kconfig CONFIG_MAINBOARD_HAS_EARLY_LIBGFXINIT
 func MainboardHasEarlyLibgfxinit() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {

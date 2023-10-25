@@ -7,6 +7,7 @@ package crosbundle
 import (
 	"context"
 	"os"
+	"reflect"
 	"testing"
 
 	"go.chromium.org/chromiumos/config/go/api"
@@ -375,8 +376,8 @@ func TestParseKConfigs(t *testing.T) {
 		},
 	}
 	for _, tc := range testCases {
-		cbfsToolExtractConfigCmd = func(ctx context.Context, corebootBinName, fwConfigName string) error {
-			outfile, err := os.Create(fwConfigName)
+		cbfsToolExtractCmd = func(ctx context.Context, corebootBinName, fileName, outputPath string) error {
+			outfile, err := os.Create(outputPath)
 			if err != nil {
 				return err
 			}
@@ -392,6 +393,45 @@ func TestParseKConfigs(t *testing.T) {
 		}
 		if !proto.Equal(features.GetFwConfig(), tc.expect) {
 			t.Errorf("Got %+v, expect %+v: input=%s", features.GetFwConfig(), tc.expect, tc.input)
+		}
+	}
+}
+
+func TestParseECBuildConfig(t *testing.T) {
+	flashromExtractCoreBootCmd = func(ctx context.Context, corebootBinName string) error {
+		return nil
+	}
+	testCases := []struct {
+		input  string
+		expect map[string]configpb.HardwareFeatures_Present
+	}{
+		{
+			"CONFIG_A=y\n" +
+				"# CONFIG_C is not set\n",
+			map[string]configpb.HardwareFeatures_Present{
+				"CONFIG_A": configpb.HardwareFeatures_PRESENT,
+				"CONFIG_C": configpb.HardwareFeatures_NOT_PRESENT,
+			},
+		},
+	}
+	for _, tc := range testCases {
+		cbfsToolExtractCmd = func(ctx context.Context, corebootBinName, fileName, outputPath string) error {
+			outfile, err := os.Create(outputPath)
+			if err != nil {
+				return err
+			}
+			defer outfile.Close()
+			_, err = outfile.WriteString(tc.input)
+			return err
+		}
+		features := api.HardwareFeatures{
+			EmbeddedController: &configpb.HardwareFeatures_EmbeddedController{},
+		}
+		if err := parseECBuildConfig(context.Background(), &features); err != nil {
+			t.Error("parseKConfigs returned error: ", err)
+		}
+		if !reflect.DeepEqual(features.EmbeddedController.BuildConfig, tc.expect) {
+			t.Errorf("Got %+v, expect %+v: input=%s", features.EmbeddedController.BuildConfig, tc.expect, tc.input)
 		}
 	}
 }

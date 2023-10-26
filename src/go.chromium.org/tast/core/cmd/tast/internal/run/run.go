@@ -59,15 +59,15 @@ func Run(ctx context.Context, cfg *config.Config, state *config.DeprecatedState)
 	}
 	defer reportClient.Close()
 
+	state.RemoteDevservers = cfg.Devservers()
 	// Always start an ephemeral devserver for remote tests if TLWServer is not specified, and allowed.
 	if cfg.TLWServer() == "" && cfg.UseEphemeralDevserver() && config.ShouldConnect(cfg.Target()) {
-		es, err := startEphemeralDevserverForRemoteTests(ctx, cfg, state)
+		es, esAddr, err := startEphemeralDevserverForRemoteTests(ctx, cfg, state)
 		if err != nil {
 			return nil, errors.Wrap(err, "failed to start ephemeral devserver for remote tests")
 		}
+		state.RemoteDevservers = append([]string{esAddr}, state.RemoteDevservers...)
 		defer es.Close()
-	} else {
-		state.RemoteDevservers = cfg.Devservers()
 	}
 
 	if err := prepare.CheckPrivateBundleFlag(ctx, cfg); err != nil {
@@ -126,21 +126,21 @@ func prepareDUT(ctx context.Context, cfg *config.Config, drv *driver.Driver) (ma
 }
 
 // startEphemeralDevserverForRemoteTests starts an ephemeral devserver for remote tests.
-func startEphemeralDevserverForRemoteTests(ctx context.Context, cfg *config.Config, state *config.DeprecatedState) (*devserver.Ephemeral, error) {
+func startEphemeralDevserverForRemoteTests(ctx context.Context, cfg *config.Config, state *config.DeprecatedState) (*devserver.Ephemeral, string, error) {
 	lis, err := net.Listen("tcp", "localhost:0")
 	if err != nil {
-		return nil, fmt.Errorf("failed to listen to a local port: %v", err)
+		return nil, "", fmt.Errorf("failed to listen to a local port: %v", err)
 	}
 
 	cacheDir := filepath.Join(cfg.TastDir(), "devserver", "static")
 	es, err := devserver.NewEphemeral(lis, cacheDir, cfg.ExtraAllowedBuckets())
 	if err != nil {
-		return nil, err
+		return nil, "", err
 	}
 
-	state.RemoteDevservers = []string{fmt.Sprintf("http://%s", lis.Addr())}
-	logging.Info(ctx, "Starting ephemeral devserver at ", state.RemoteDevservers[0], " for remote tests")
-	return es, nil
+	addr := fmt.Sprintf("http://%s", lis.Addr())
+	logging.Info(ctx, "Starting ephemeral devserver at ", addr, " for remote tests")
+	return es, addr, nil
 }
 
 func removeSkippedTestsFromBundle(bundle []*driver.BundleEntity) ([]*driver.BundleEntity, []*driver.BundleEntity) {

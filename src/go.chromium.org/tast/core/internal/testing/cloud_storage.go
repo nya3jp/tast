@@ -24,6 +24,7 @@ type CloudStorage struct {
 	cl                devserver.Client
 	initErr           error
 	buildArtifactsURL string
+	devservers        []string
 }
 
 // NewCloudStorage constructs a new CloudStorage from a list of Devserver URLs.
@@ -36,6 +37,7 @@ func NewCloudStorage(devservers []string,
 			return newClientForURLs(ctx, devservers, tlwServer, dutName, dutServer, swarmingTaskID, buildBucketID)
 		},
 		buildArtifactsURL: buildArtifactsURL,
+		devservers:        devservers,
 	}
 }
 
@@ -72,6 +74,14 @@ func (c *CloudStorage) Stage(ctx context.Context, url string) (*url.URL, error) 
 		url = c.buildArtifactsURL + strings.TrimPrefix(url, buildArtifactPrefix)
 	}
 	return c.cl.Stage(ctx, url)
+}
+
+// Devservers a list of available devservers which may include devservers specified
+// on the Tast command line and Tast's ephemeral server.
+func (c *CloudStorage) Devservers() []string {
+	devservers := make([]string, len(c.devservers))
+	copy(devservers, c.devservers)
+	return devservers
 }
 
 func newClientForURLs(ctx context.Context, urls []string,

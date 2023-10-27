@@ -1916,6 +1916,10 @@ from other existing groups (or use this group standalone).
 				Name: "power_cpd",
 				Desc: `Tests relying on CPD to measure power at the battery.`,
 			},
+			{
+				Name: "power_regression",
+				Desc: `Core tests designed to catch regressions in power consumption.`,
+			},
 		},
 	},
 	{

@@ -109,6 +109,7 @@ The following software features are defined:
 * `firewall` - Standard ChromeOS network firewall rules.
 * `flashrom` - Userspace utility to update firmware.
 * `flex_id` - Enable using [flex_id](http://go/chromeos-flex-id) for enrollment.
+* `flex_internal` - Enable using flex_internal to pull in data (URLs, API keys, etc.) only needed by official Flex releases.
 * `ghostscript` - Ghostscript and dependent packages are available for printing.
 * `google_virtual_keyboard` - The proprietary Google onscreen virtual keyboard
     (as opposed to the builtin open-source virtual keyboard).

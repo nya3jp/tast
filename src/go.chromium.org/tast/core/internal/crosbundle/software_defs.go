@@ -116,6 +116,7 @@ var softwareFeatureDefs = map[string]string{
 	"first_class_servo_working":  `!("board:brya" || "board:volteer")`, // TODO(b/274634861): remove the first_class_servo_working when fixed.
 	"flashrom":                   `!"betty" && !"tast_vm"`,
 	"flex_id":                    "flex_id",                                // Enable using flex_id for enrollment
+	"flex_internal":              "flex_internal",                          // Enable using flex_internal to pull in data (URLs, API keys, etc.) only needed by official Flex releases
 	"fwupd":                      "fwupd",                                  // have sys-apps/fwupd installed.
 	"ghostscript":                "postscript",                             // Ghostscript and dependent packages available
 	"google_virtual_keyboard":    "chrome_internal && internal && !moblab", // doesn't work on Moblab: https://crbug.com/949912

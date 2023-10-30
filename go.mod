@@ -4,7 +4,7 @@ go 1.21
 
 require (
 	code.cloudfoundry.org/clock v1.1.0
-	github.com/docker/docker v24.0.2+incompatible
+	github.com/docker/docker v24.0.7+incompatible
 	github.com/golang/protobuf v1.5.3
 	github.com/google/go-cmp v0.5.9
 	github.com/google/subcommands v1.2.0

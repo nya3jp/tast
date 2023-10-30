@@ -84,6 +84,11 @@ func (c *CloudStorage) Devservers() []string {
 	return devservers
 }
 
+// BuildArtifactsURL returns the location of build artifacts.
+func (c *CloudStorage) BuildArtifactsURL() string {
+	return c.buildArtifactsURL
+}
+
 func newClientForURLs(ctx context.Context, urls []string,
 	tlwServer, dutName, dutServer, swarmingTaskID, buildBucketID string) (devserver.Client, error) {
 	return devserver.NewClient(ctx, urls, tlwServer, dutName, dutServer, swarmingTaskID, buildBucketID)

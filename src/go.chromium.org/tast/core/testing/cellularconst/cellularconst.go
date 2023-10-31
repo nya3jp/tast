@@ -58,6 +58,8 @@ type DeviceInfo struct {
 
 var (
 	// KnownVariants mapping between variant and modem type.
+	// Note: Keep synced with infra/go/src/infra/cros/recovery/internal/components/cros/cellular/variants.go
+	// TODO(b/308606112): Migrate both codes to a shared library when available.
 	KnownVariants = map[string]DeviceInfo{
 		"anahera_l850":       {"anahera_l850", "brya", ModemTypeL850},
 		"brya_fm350":         {"brya_fm350", "brya", ModemTypeFM350},

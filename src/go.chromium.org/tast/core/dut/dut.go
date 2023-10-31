@@ -207,8 +207,10 @@ func (d *DUT) WaitConnect(ctx context.Context) error {
 	}
 }
 
-// Reboot reboots the DUT.
-func (d *DUT) Reboot(ctx context.Context) error {
+// RebootWithCommand reboots the DUT with a specific command.
+// The command might be one that causes the DUT to crash or hang which will
+// eventually lead to a reboot of some sort.
+func (d *DUT) RebootWithCommand(ctx context.Context, cmd string, args ...string) error {
 	if d.beforeReboot != nil {
 		if err := d.beforeReboot(ctx, d); err != nil {
 			return errors.Wrap(err, "failed while running pre-reboot function")
@@ -231,7 +233,7 @@ func (d *DUT) Reboot(ctx context.Context) error {
 	// if the network interface of the DUT goes down before the SSH command finishes.
 	rebootCtx, cancel := context.WithTimeout(ctx, 3*time.Second)
 	defer cancel()
-	d.Conn().CommandContext(rebootCtx, "reboot").Run() // ignore the error
+	d.Conn().CommandContext(rebootCtx, cmd, args...).Run() // ignore the error
 
 	if err := testingutil.Poll(ctx, func(ctx context.Context) error {
 		// Set a short timeout to the iteration in case of any SSH operations
@@ -255,6 +257,11 @@ func (d *DUT) Reboot(ctx context.Context) error {
 		return errors.Wrap(err, "failed to wait for DUT to reboot")
 	}
 	return nil
+}
+
+// Reboot reboots the DUT.
+func (d *DUT) Reboot(ctx context.Context) error {
+	return d.RebootWithCommand(ctx, "reboot")
 }
 
 // KeyFile returns the path to the SSH private key used to connect to the DUT.

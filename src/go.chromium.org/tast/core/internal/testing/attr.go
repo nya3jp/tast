@@ -788,6 +788,10 @@ third_party/autotest/files/server/site_tests/tast/control.racc-config-installed.
 				Desc: `Using OpenWRT router for the test.`,
 			},
 			{
+				Name: "wificell_reboot",
+				Desc: `Using DUT reboot mechanism for the test.`,
+			},
+			{
 				Name: "wificell_commercial",
 				Desc: `Identifies wifi_commercial/enterprise tests.`,
 			},

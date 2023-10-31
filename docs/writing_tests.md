@@ -375,8 +375,8 @@ max time from various executions.
 
 [context.Context]: https://golang.org/pkg/context/
 [channel]: https://tour.golang.org/concurrency/2
-[local tests]: https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform/tast/src/go.chromium.org/tast/coreinternal/bundle/local.go
-[remote tests]: https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform/tast/src/go.chromium.org/tast/coreinternal/bundle/remote.go
+[local tests]: https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform/tast/src/go.chromium.org/tast/core/internal/bundle/local.go
+[remote tests]: https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform/tast/src/go.chromium.org/tast/core/internal/bundle/remote.go
 [select]: https://tour.golang.org/concurrency/5
 [testing.Poll]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/testing#Poll
 [testing.PollBreak]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/testing#PollBreak
@@ -707,12 +707,12 @@ fulfill the aforementioned property.
 
 Preconditions, predecessor of fixtures, are not recommended for new tests.
 
-[`testing.Fixture`]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/coreinternal/testing#Fixture
-[`testing.FixtureImpl`]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/coreinternal/testing#FixtureImpl
-[`testing.FixtTestState`]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/coreinternal/testing#FixtTestState
+[`testing.Fixture`]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/internal/testing#Fixture
+[`testing.FixtureImpl`]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/internal/testing#FixtureImpl
+[`testing.FixtTestState`]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/internal/testing#FixtTestState
 [chrome.New]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/go.chromium.org/tast-tests/cros/local/chrome#New
 [chromeLoggedIn]: https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform/tast-tests/src/go.chromium.org/tast-tests/cros/local/chrome/fixture.go
-[`testing.Test.Fixture`]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/coreinternal/testing#Test.Fixture
+[`testing.Test.Fixture`]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/internal/testing#Test.Fixture
 [chrome/fixture.go]: https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform/tast-tests/src/go.chromium.org/tast-tests/cros/local/chrome/fixture.go
 [example.ChromeFixture]: https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform/tast-tests/src/go.chromium.org/tast-tests/cros/local/bundles/cros/example/chrome_fixture.go
 [`testing.AddFixture`]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/testing#AddFixture
@@ -1171,7 +1171,7 @@ never be overwritten once they have been used in a CQ run or dry-run. If
 overwriting a cloud storage file, remember to manually clear the cache folders
 before running Tast tests to prevent stale files from being served.
 
-[external link format]: https://chromium.googlesource.com/chromiumos/platform/tast/+/main/src/go.chromium.org/tast/coreinternal/extdata/extdata.go
+[external link format]: https://chromium.googlesource.com/chromiumos/platform/tast/+/main/src/go.chromium.org/tast/core/internal/extdata/extdata.go
 [example.DataFiles]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/main/src/go.chromium.org/tast-tests/cros/local/bundles/cros/example/data_files.go
 [build artifacts of ChromeOS]: https://goto.google.com/cros-build-google-storage
 [`gsutil cp`]: https://cloud.google.com/storage/docs/gsutil/commands/cp

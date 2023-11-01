@@ -173,6 +173,7 @@ The following software features are defined:
 * `no_vulkan` - Build was not built with [Vulkan] enabled.
 * `no_arcvm_virtio_blk_data` - Build was not built with ARCVM virtio-blk /data enabled.
 * `no_gsc` - Build was not built with onboard Google security chip support.
+* `nmi_backtrace` - The Linux kernel has support for NMI backtraces.
 * `nvme` - Ability to run NVMe software utilities.
 * `oci` - The ability to use the `run_oci` program to execute code within
     [OCI] containers.

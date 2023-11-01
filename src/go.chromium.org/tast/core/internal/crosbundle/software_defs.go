@@ -175,6 +175,7 @@ var softwareFeatureDefs = map[string]string{
 	"nacl":                      "nacl",
 	"ndk_translation":           "ndk_translation",
 	"ndk_translation64":         "ndk_translation64",
+	"nmi_backtrace":             `!("arm" || "arm64") || ("arm64" && !("kernel-4_19" || "kernel-5_4" || "kernel-5_10"))`,
 	"nnapi":                     "nnapi",
 	"nnapi_vendor_driver":       "nnapi && !betty && !tast_vm",
 	"no_amd_cpu":                "!amd_cpu",

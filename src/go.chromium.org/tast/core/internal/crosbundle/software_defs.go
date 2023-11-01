@@ -148,6 +148,7 @@ var softwareFeatureDefs = map[string]string{
 	// The io_uring syscalls are enabled on CrOS since kernel v5.15.
 	"io_uring":        `!("kernel-4_14" || "kernel-4_19" || "kernel-5_4" || "kernel-5_10")`,
 	"iwlwifi_rescan":  "iwlwifi_rescan",
+	"kfence_enabled":  `!("kernel-4_14" || "kernel-4_19" || "kernel-5_4")`,
 	"known_fixed_ssd": `!("tast_vm" || "board:reven*")`,
 	// Lacros variants.
 	// veyron does not support rootfs lacros entirely. b/204888294

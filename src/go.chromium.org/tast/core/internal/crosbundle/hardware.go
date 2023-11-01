@@ -16,6 +16,7 @@ import (
 	"path"
 	"path/filepath"
 	"regexp"
+	"runtime"
 	"strconv"
 	"strings"
 	"time"
@@ -111,31 +112,32 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		HasVboot2:       vboot2,
 	}
 	features := &configpb.HardwareFeatures{
-		Screen:                &configpb.HardwareFeatures_Screen{},
-		Fingerprint:           &configpb.HardwareFeatures_Fingerprint{},
-		EmbeddedController:    &configpb.HardwareFeatures_EmbeddedController{},
-		Storage:               &configpb.HardwareFeatures_Storage{},
-		Memory:                &configpb.HardwareFeatures_Memory{},
-		Audio:                 &configpb.HardwareFeatures_Audio{},
-		PrivacyScreen:         &configpb.HardwareFeatures_PrivacyScreen{},
-		Soc:                   &configpb.HardwareFeatures_Soc{},
-		Touchpad:              &configpb.HardwareFeatures_Touchpad{},
-		Keyboard:              &configpb.HardwareFeatures_Keyboard{},
-		FormFactor:            &configpb.HardwareFeatures_FormFactor{},
-		DpConverter:           &configpb.HardwareFeatures_DisplayPortConverter{},
-		Wifi:                  &configpb.HardwareFeatures_Wifi{},
-		Cellular:              &configpb.HardwareFeatures_Cellular{},
-		Bluetooth:             &configpb.HardwareFeatures_Bluetooth{},
-		Hps:                   &configpb.HardwareFeatures_Hps{},
-		Battery:               &configpb.HardwareFeatures_Battery{},
-		Camera:                &configpb.HardwareFeatures_Camera{},
-		TrustedPlatformModule: &configpb.HardwareFeatures_TrustedPlatformModule{},
-		FwConfig:              &configpb.HardwareFeatures_FirmwareConfiguration{},
-		RuntimeProbeConfig:    &configpb.HardwareFeatures_RuntimeProbeConfig{},
-		HardwareProbeConfig:   &configpb.HardwareFeatures_HardwareProbe{},
-		Display:               &configpb.HardwareFeatures_Display{},
-		Vrr:                   &configpb.HardwareFeatures_Vrr{},
-		Hdmi:                  &configpb.HardwareFeatures_Hdmi{},
+		Screen:                  &configpb.HardwareFeatures_Screen{},
+		Fingerprint:             &configpb.HardwareFeatures_Fingerprint{},
+		EmbeddedController:      &configpb.HardwareFeatures_EmbeddedController{},
+		Storage:                 &configpb.HardwareFeatures_Storage{},
+		Memory:                  &configpb.HardwareFeatures_Memory{},
+		Audio:                   &configpb.HardwareFeatures_Audio{},
+		PrivacyScreen:           &configpb.HardwareFeatures_PrivacyScreen{},
+		Soc:                     &configpb.HardwareFeatures_Soc{},
+		Touchpad:                &configpb.HardwareFeatures_Touchpad{},
+		Keyboard:                &configpb.HardwareFeatures_Keyboard{},
+		FormFactor:              &configpb.HardwareFeatures_FormFactor{},
+		DpConverter:             &configpb.HardwareFeatures_DisplayPortConverter{},
+		Wifi:                    &configpb.HardwareFeatures_Wifi{},
+		Cellular:                &configpb.HardwareFeatures_Cellular{},
+		Bluetooth:               &configpb.HardwareFeatures_Bluetooth{},
+		Hps:                     &configpb.HardwareFeatures_Hps{},
+		Battery:                 &configpb.HardwareFeatures_Battery{},
+		Camera:                  &configpb.HardwareFeatures_Camera{},
+		TrustedPlatformModule:   &configpb.HardwareFeatures_TrustedPlatformModule{},
+		FwConfig:                &configpb.HardwareFeatures_FirmwareConfiguration{},
+		RuntimeProbeConfig:      &configpb.HardwareFeatures_RuntimeProbeConfig{},
+		HardwareProbeConfig:     &configpb.HardwareFeatures_HardwareProbe{},
+		Display:                 &configpb.HardwareFeatures_Display{},
+		Vrr:                     &configpb.HardwareFeatures_Vrr{},
+		Hdmi:                    &configpb.HardwareFeatures_Hdmi{},
+		InterruptControllerInfo: &configpb.HardwareFeatures_InterruptControllerInfo{},
 	}
 
 	swConfig := &softwarepb.SoftwareConfig{
@@ -963,6 +965,38 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		swConfig.AltFirmwareConfig.HasAltFirmware = true
 	} else {
 		swConfig.AltFirmwareConfig.HasAltFirmware = false
+	}
+
+	// InterruptControllerInfo
+
+	// Default to assuming we have NMI support. We only say NMI is
+	// unsupported if we've explicitly decided we can't support it for
+	// a given configuration. Note that upon any errors we'll leave this
+	// as "present". If a test doesn't care then that's fine. If a test
+	// relies on NMI support then we _want_ the test to fail and point out
+	// that we failed to get the config properly.
+	features.InterruptControllerInfo.NmiSupport = configpb.HardwareFeatures_PRESENT
+	if runtime.GOARCH == "arm" {
+		features.InterruptControllerInfo.NmiSupport = configpb.HardwareFeatures_NOT_PRESENT
+	} else if runtime.GOARCH == "arm64" {
+		// GICv2 can't support NMIs. There's no wonderful way to detect
+		// the version of the GIC, but /proc/interrupts will contain
+		// GICv2 in this case so we'll use that.
+		if interruptsOutput, err := os.ReadFile("/proc/interrupts"); err != nil {
+			// Give out a warning because /proc/interrupts should always exist.
+			logging.Infof(ctx, "Couldn't read /proc/interrupts: %v", err)
+		} else if strings.Contains(string(interruptsOutput), "GICv2") {
+			features.InterruptControllerInfo.NmiSupport = configpb.HardwareFeatures_NOT_PRESENT
+		}
+
+		// If the device tree indicates broken firmware then we know we
+		// don't support NMI.
+		if brokenGicOutput, err := exec.Command("find", "/proc/device-tree/", "-name", "mediatek,broken-save-restore-fw").Output(); err != nil {
+			// All arm64 should have /proc/device-tree/
+			logging.Infof(ctx, "Failed to search device-tree for GIC FW Quirk: %v", err)
+		} else if string(brokenGicOutput) != "" {
+			features.InterruptControllerInfo.NmiSupport = configpb.HardwareFeatures_NOT_PRESENT
+		}
 	}
 
 	return &protocol.HardwareFeatures{

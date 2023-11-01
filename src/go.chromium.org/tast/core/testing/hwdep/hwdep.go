@@ -2581,3 +2581,17 @@ func AlternativeFirmware() Condition {
 	},
 	}
 }
+
+// NmiSupport returns a hardware dependency condition that is satisfied
+// this hardware supports NMIs (Non-Maskable Interrupts)
+func NmiSupport() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+
+		if hf.GetInterruptControllerInfo().GetNmiSupport() == configpb.HardwareFeatures_PRESENT {
+			return satisfied()
+		}
+		return unsatisfied("DUT does not support NMIs")
+	},
+	}
+}

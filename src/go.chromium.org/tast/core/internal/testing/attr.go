@@ -1924,6 +1924,10 @@ from other existing groups (or use this group standalone).
 				Name: "power_regression",
 				Desc: `Core tests designed to catch regressions in power consumption.`,
 			},
+			{
+				Name: "power_daily",
+				Desc: `Core tests designed to catch regressions in power consumption. Shorter tests, many models, run daily.`,
+			},
 		},
 	},
 	{

@@ -439,7 +439,6 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		// We want to match the last port number seen to get the count.
 		re := regexp.MustCompile(`Port (\d+):`)
 		match := re.FindAllSubmatch(out, -1)
-		logging.Infof(ctx, "usbc: %s", match)
 		if match == nil {
 			// If ectool succeeds but doesn't match the regex something is very wrong. I.e. someone modified the output of ectool.
 			return nil, errors.Errorf("ectool usbpdpower output unexpected: %v", string(out))

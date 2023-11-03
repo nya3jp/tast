@@ -111,12 +111,15 @@ var softwareFeatureDefs = map[string]string{
 	"factory_flow": "!no_factory_flow",
 	"fake_hps":     `"betty" || "tast_vm"`, // VMs run hpsd with --test (fake software device)
 	// TODO(http://b/271025366): Remove feedback when the bug is resolved.
-	"feedback":                   `!("board:fizz" || "board:puff" || "board:rammus")`,
-	"firewall":                   "!moblab",                            // Moblab has relaxed iptables rules
-	"first_class_servo_working":  `!("board:brya" || "board:volteer")`, // TODO(b/274634861): remove the first_class_servo_working when fixed.
-	"flashrom":                   `!"betty" && !"tast_vm"`,
-	"flex_id":                    "flex_id",                                // Enable using flex_id for enrollment
-	"flex_internal":              "flex_internal",                          // Enable using flex_internal to pull in data (URLs, API keys, etc.) only needed by official Flex releases
+	"feedback":                  `!("board:fizz" || "board:puff" || "board:rammus")`,
+	"firewall":                  "!moblab",                            // Moblab has relaxed iptables rules
+	"first_class_servo_working": `!("board:brya" || "board:volteer")`, // TODO(b/274634861): remove the first_class_servo_working when fixed.
+	"flashrom":                  `!"betty" && !"tast_vm"`,
+	"flex_id":                   "flex_id",       // Enable using flex_id for enrollment
+	"flex_internal":             "flex_internal", // Enable using flex_internal to pull in data (URLs, API keys, etc.) only needed by official Flex releases
+	// Enable using flex_hwis for hardware data sending.
+	// Ignore reven board as reven board is not a VM and does not have a VPD, and cannot use enroll fixtures.
+	"flex_hwis":                  `flex_internal && "board:reven-vmtest"`,
 	"fwupd":                      "fwupd",                                  // have sys-apps/fwupd installed.
 	"ghostscript":                "postscript",                             // Ghostscript and dependent packages available
 	"google_virtual_keyboard":    "chrome_internal && internal && !moblab", // doesn't work on Moblab: https://crbug.com/949912

@@ -961,11 +961,11 @@ third_party/autotest/files/server/site_tests/tast/control.racc-config-installed.
 			},
 			{
 				Name: "cellular_carrier_verizon",
-				Desc: `Identifies Cellular tests that need an Verizon active sim.`,
+				Desc: `Identifies Cellular tests that need a Verizon active sim.`,
 			},
 			{
 				Name: "cellular_carrier_tmobile",
-				Desc: `Identifies Cellular tests that need an T-Mobile active sim.`,
+				Desc: `Identifies Cellular tests that need a T-Mobile active sim.`,
 			},
 			{
 				Name: "cellular_carrier_amarisoft",
@@ -973,11 +973,11 @@ third_party/autotest/files/server/site_tests/tast/control.racc-config-installed.
 			},
 			{
 				Name: "cellular_carrier_vodafone",
-				Desc: `Identifies Cellular tests that need an Vodafone active sim.`,
+				Desc: `Identifies Cellular tests that need a Vodafone active sim.`,
 			},
 			{
 				Name: "cellular_carrier_rakuten",
-				Desc: `Identifies Cellular tests that need an Rakuten active sim.`,
+				Desc: `Identifies Cellular tests that need a Rakuten active sim.`,
 			},
 			{
 				Name: "cellular_carrier_ee",
@@ -985,19 +985,31 @@ third_party/autotest/files/server/site_tests/tast/control.racc-config-installed.
 			},
 			{
 				Name: "cellular_carrier_kddi",
-				Desc: `Identifies Cellular tests that need an KDDI active sim.`,
+				Desc: `Identifies Cellular tests that need a KDDI active sim.`,
 			},
 			{
 				Name: "cellular_carrier_docomo",
-				Desc: `Identifies Cellular tests that need an Docomo active sim.`,
+				Desc: `Identifies Cellular tests that need a Docomo active sim.`,
 			},
 			{
 				Name: "cellular_carrier_softbank",
-				Desc: `Identifies Cellular tests that need an Softbank active sim.`,
+				Desc: `Identifies Cellular tests that need a Softbank active sim.`,
 			},
 			{
 				Name: "cellular_carrier_fi",
-				Desc: `Identifies Cellular tests that need an Google Fi active sim.`,
+				Desc: `Identifies Cellular tests that need a Google Fi active sim.`,
+			},
+			{
+				Name: "cellular_carrier_bell",
+				Desc: `Identifies Cellular tests that need a Bell active sim.`,
+			},
+			{
+				Name: "cellular_carrier_roger",
+				Desc: `Identifies Cellular tests that need a Rogers active sim.`,
+			},
+			{
+				Name: "cellular_carrier_telus",
+				Desc: `Identifies Cellular tests that need a Telus active sim.`,
 			},
 			{
 				Name: "cellular_carrier_local",

@@ -9,7 +9,6 @@ import (
 	"fmt"
 	"html"
 	"io"
-	"io/ioutil"
 	"net"
 	"net/http"
 	"net/url"
@@ -62,6 +61,7 @@ func NewEphemeral(lis net.Listener, cacheDir string, extraAllowedBuckets []strin
 	mux.HandleFunc("/check_health", s.handleCheckHealth)
 	mux.HandleFunc("/is_staged", s.handleIsStaged)
 	mux.HandleFunc("/stage", s.handleStage)
+	mux.HandleFunc("/extract/", s.handleExtract)
 	mux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir(cacheDir))))
 
 	go s.server.Serve(lis)
@@ -136,7 +136,7 @@ func (e *Ephemeral) handleStage(w http.ResponseWriter, r *http.Request) {
 			return err
 		}
 
-		tf, err := ioutil.TempFile(e.cacheDir, ".download.")
+		tf, err := os.CreateTemp(e.cacheDir, ".download.")
 		if err != nil {
 			return err
 		}
@@ -150,7 +150,7 @@ func (e *Ephemeral) handleStage(w http.ResponseWriter, r *http.Request) {
 			if strings.Contains(string(out), "No URLs matched") {
 				return fmt.Errorf("file not found: %s", gsURL)
 			}
-			return fmt.Errorf("%s failed: %v", strings.Join(cmd.Args, " "), err)
+			return fmt.Errorf("%s failed: %v %s", strings.Join(cmd.Args, " "), err, string(out))
 		}
 
 		return os.Link(tf.Name(), savePath)
@@ -162,9 +162,64 @@ func (e *Ephemeral) handleStage(w http.ResponseWriter, r *http.Request) {
 	io.WriteString(w, "Success")
 }
 
+// handleExtract handles the /extract/ url path.  Extracts a single file from a compressed tar archive.
+// For compatibility with the devservers in the lab, extract all the files from the tar archive into the cache dir.
+// Lab devservers are slow when requesting the first file, and then very fast for the subsequent files, so it must work that way also.
+func (e *Ephemeral) handleExtract(w http.ResponseWriter, r *http.Request) {
+	if err := func() error {
+		// /extract/GS_BUCKET/GS_PATH/ARCHIVE.tar.xz?file=FILENAME
+		gsURL := "gs:/" + strings.TrimPrefix(r.URL.Path, "/extract")
+		extractFile := r.URL.Query().Get("file")
+
+		relPath, err := e.validateGSURL(gsURL)
+		if err != nil {
+			return err
+		}
+		archivePath := filepath.Join(e.cacheDir, relPath)
+		archiveFiles := fmt.Sprintf("%s_files", archivePath)
+		extractedFile := filepath.Join(archiveFiles, extractFile)
+		relPath, err = filepath.Rel(e.cacheDir, extractedFile)
+		if err != nil {
+			return err
+		}
+		// If the file exists, redirect to it.
+		if _, err := os.Stat(extractedFile); err == nil {
+			http.Redirect(w, r, fmt.Sprintf("/static/%s", relPath), http.StatusTemporaryRedirect)
+			return nil
+		} else if !os.IsNotExist(err) {
+			return err
+		}
+
+		// Untar archive to a temp dir
+		archiveFilesTemp, err := os.MkdirTemp(e.cacheDir, ".untar.")
+		if err != nil {
+			return err
+		}
+		defer os.RemoveAll(archiveFilesTemp)
+		cmd := exec.Command("tar", "-C", archiveFilesTemp, "-xaf", archivePath)
+		out, err := cmd.CombinedOutput()
+		if err != nil {
+			return fmt.Errorf("%s failed: %v %s", strings.Join(cmd.Args, " "), err, string(out))
+		}
+
+		// tar successful, rename temp dir
+		if err := os.Rename(archiveFilesTemp, archiveFiles); err != nil {
+			return err
+		}
+
+		// Redirect to the requested file
+		http.Redirect(w, r, fmt.Sprintf("/static/%s", relPath), http.StatusTemporaryRedirect)
+		return nil
+	}(); err != nil {
+		writeError(w, err)
+		return
+	}
+}
+
 // writeError responds to an HTTP request by 500 Internal Server Error and
 // the error message in HTML.
 func writeError(w http.ResponseWriter, err error) {
+	w.Header().Add("Content-Type", "text/html")
 	w.WriteHeader(http.StatusInternalServerError)
 	fmt.Fprintf(w, "<pre>\n%s\n</pre>", html.EscapeString(err.Error()))
 }

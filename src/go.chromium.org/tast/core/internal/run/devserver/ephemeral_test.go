@@ -5,7 +5,9 @@
 package devserver
 
 import (
+	"bytes"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net"
 	"net/http"
@@ -60,7 +62,7 @@ func newTestData(t *testing.T, gsutil string) *testData {
 	}()
 
 	// Create a fake "gsutil" command in cacheDir and update $PATH to include cacheDir.
-	if err := ioutil.WriteFile(filepath.Join(cacheDir, "gsutil"), []byte(gsutil), 0700); err != nil {
+	if err := os.WriteFile(filepath.Join(cacheDir, "gsutil"), []byte(gsutil), 0700); err != nil {
 		t.Fatal("Failed to save a fake gsutil: ", err)
 	}
 
@@ -140,8 +142,8 @@ echo -n "$*" > ${!#}
 	}
 }
 
-// TestExtract checks stage and extract fails.
-func TestExtract(t *testing.T) {
+// TestExtract checks stage successful and extract fails when requested file is not a tar archive.
+func TestExtractNotTarArchive(t *testing.T) {
 	td := newTestData(t, `#!/bin/bash
 echo -n "$*" > ${!#}
 `)
@@ -176,17 +178,122 @@ echo -n "$*" > ${!#}
 	}
 	defer res.Body.Close()
 
-	b, err := ioutil.ReadAll(res.Body)
+	b, err := io.ReadAll(res.Body)
 	if err != nil {
 		t.Errorf("GET %s returned malformed response: %v", extractPath, err)
 	}
 
-	if res.StatusCode != http.StatusNotImplemented {
-		t.Errorf("GET %s returned %d; want %d: %v", extractPath, res.StatusCode, http.StatusNotImplemented, string(b))
+	if res.StatusCode != http.StatusInternalServerError {
+		t.Errorf("GET %s returned %d; want %d: %v", extractPath, res.StatusCode, http.StatusInternalServerError, string(b))
 	}
 
-	if string(b) != "This is an ephemeral devserver provided by Tast." {
-		t.Fatalf("Unexpected response, did someone implement extract? %q", string(b))
+	if !bytes.Contains(b, []byte("This does not look like a tar archive")) {
+		t.Fatalf("Unexpected response: %q", string(b))
+	}
+}
+
+// TestExtract checks stage successful and extract fails when requested file is a tar archive, but doesn't contain the requested inner file.
+func TestExtractFileNotInTarArchive(t *testing.T) {
+	td := newTestData(t, `#!/bin/bash
+	tmpdir="$(mktemp -d)"
+	echo "a" >"${tmpdir}/a"
+	echo "b" >"${tmpdir}/b"
+	tar -C "${tmpdir}" -cJf "${!#}" a b
+	rm -rf "${tmpdir}"
+	`)
+	defer td.Close()
+
+	const (
+		params      = "archive_url=gs://chromiumos-test-assets-public/path/to&files=file.tar.xz"
+		checkPath   = "/is_staged?" + params
+		stagePath   = "/stage?" + params
+		extractPath = "/extract/chromiumos-test-assets-public/path/to/file.tar.xz?file=inner.bin"
+	)
+
+	if status, err := td.Get(checkPath); err != nil {
+		t.Error("Checking staged status failed: ", err)
+	} else if exp := "False"; status != exp {
+		t.Errorf("Checking staged status failed: got %q, want %q", status, exp)
+	}
+
+	if _, err := td.Get(stagePath); err != nil {
+		t.Fatal("Staging request failed: ", err)
+	}
+
+	if status, err := td.Get(checkPath); err != nil {
+		t.Error("Checking staged status failed: ", err)
+	} else if exp := "True"; status != exp {
+		t.Errorf("Checking staged status failed: got %q, want %q", status, exp)
+	}
+
+	res, err := http.Get(td.url + extractPath)
+	if err != nil {
+		t.Errorf("GET %s failed: %v", extractPath, err)
+	}
+	defer res.Body.Close()
+
+	b, err := io.ReadAll(res.Body)
+	if err != nil {
+		t.Errorf("GET %s returned malformed response: %v", extractPath, err)
+	}
+
+	if res.StatusCode != http.StatusNotFound {
+		t.Errorf("GET %s got %d; want %d: %v", extractPath, res.StatusCode, http.StatusNotFound, string(b))
+	}
+}
+
+// TestExtract checks stage successful and extract successful when requested file is a tar archive, and does contain the requested inner file.
+func TestExtractSuccess(t *testing.T) {
+	td := newTestData(t, `#!/bin/bash
+	tmpdir="$(mktemp -d)"
+	echo "a" >"${tmpdir}/a"
+	echo "b" >"${tmpdir}/b"
+	echo "inner.bin" >"${tmpdir}/inner.bin"
+	tar -C "${tmpdir}" -cJf "${!#}" a b inner.bin
+	rm -rf "${tmpdir}"
+	`)
+	defer td.Close()
+
+	const (
+		params      = "archive_url=gs://chromiumos-test-assets-public/path/to&files=file.tar.xz"
+		checkPath   = "/is_staged?" + params
+		stagePath   = "/stage?" + params
+		extractPath = "/extract/chromiumos-test-assets-public/path/to/file.tar.xz?file=inner.bin"
+	)
+
+	if status, err := td.Get(checkPath); err != nil {
+		t.Error("Checking staged status failed: ", err)
+	} else if exp := "False"; status != exp {
+		t.Errorf("Checking staged status failed: got %q, want %q", status, exp)
+	}
+
+	if _, err := td.Get(stagePath); err != nil {
+		t.Fatal("Staging request failed: ", err)
+	}
+
+	if status, err := td.Get(checkPath); err != nil {
+		t.Error("Checking staged status failed: ", err)
+	} else if exp := "True"; status != exp {
+		t.Errorf("Checking staged status failed: got %q, want %q", status, exp)
+	}
+
+	res, err := http.Get(td.url + extractPath)
+	if err != nil {
+		t.Errorf("GET %s failed: %v", extractPath, err)
+	}
+	defer res.Body.Close()
+
+	b, err := io.ReadAll(res.Body)
+	if err != nil {
+		t.Errorf("GET %s returned malformed response: %v", extractPath, err)
+	}
+
+	if res.StatusCode != http.StatusOK {
+		t.Errorf("GET %s got %d; want %d: %v", extractPath, res.StatusCode, http.StatusOK, string(b))
+	}
+
+	if string(b) != "inner.bin\n" {
+		t.Fatalf("Unexpected response: got %q, want %q", string(b), "inner.bin\n")
 	}
 }
 

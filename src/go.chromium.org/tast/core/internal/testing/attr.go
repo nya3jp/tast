@@ -804,7 +804,7 @@ third_party/autotest/files/server/site_tests/tast/control.racc-config-installed.
 	{
 		Name:     "wificell_cross_device",
 		Contacts: []string{"chromeos-kernel-wifi@google.com"},
-		Desc:     `The group of WiFi tests using nearbyshare fixture.`,
+		Desc:     `The group of WiFi tests running on multi-dut testbeds.`,
 		Subattrs: []*attr{
 			{
 				Name: "wificell_cross_device_p2p",
@@ -821,6 +821,14 @@ third_party/autotest/files/server/site_tests/tast/control.racc-config-installed.
 			{
 				Name: "wificell_cross_device_unstable",
 				Desc: `Indicates that this test is yet to be verified as stable.`,
+			},
+			{
+				Name: "wificell_cross_device_multidut",
+				Desc: `Tests basic WiFi mutidut connections to AP.`,
+			},
+			{
+				Name: "wificell_cross_device_multidut_unstable",
+				Desc: `Flaky tests that test basic WiFi mutidut connections to AP. Used to skip tests running on stable suites and/or the CQ.`,
 			},
 		},
 	},

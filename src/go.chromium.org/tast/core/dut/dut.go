@@ -250,6 +250,9 @@ func (d *DUT) RebootWithCommand(ctx context.Context, cmd string, args ...string)
 			return errors.Wrap(err, "failed to read boot_id")
 		}
 		if curID == initID {
+			// Device hasn't rebooted yet; avoid spamming
+			// connections too quickly.
+			time.Sleep(3 * time.Second)
 			return errors.New("boot_id did not change")
 		}
 		return nil

@@ -2078,6 +2078,11 @@ from other existing groups (or use this group standalone).
 		Contacts: []string{"essential-inputs-team@google.com"},
 		Desc:     "A group of inputs test on citrix platform for most popular boards.",
 	},
+	{
+		Name:     "testenv_preprod",
+		Contacts: []string{"cros-ufo-testing@google.com"},
+		Desc:     `A group of tests pointing to preprod test environment of services.`,
+	},
 }
 
 // validGroupMap is the name-keyed map of validGroups.

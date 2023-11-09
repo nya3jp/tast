@@ -401,6 +401,11 @@ Tests in this group are not used for build verification.
 		},
 	},
 	{
+		Name:     "camera-kernelnext",
+		Contacts: []string{"chromeos-camera-kernel@google.com", "chromeos-camera-eng@google.com"},
+		Desc:     `A group of camera tests for verifying that kernel uprevs are working.`,
+	},
+	{
 		Name:     "camera-libcamera",
 		Contacts: []string{"chromeos-camera-eng@google.com"},
 		Desc:     `A group of camera tests for libcamera build.`,

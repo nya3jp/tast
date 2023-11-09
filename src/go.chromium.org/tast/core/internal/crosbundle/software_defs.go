@@ -88,6 +88,7 @@ var softwareFeatureDefs = map[string]string{
 	"crostini_geekbench6_supported": `!("board:jacuzzi*" || "board:asurada" || "board:corsola*" || "board:strongbad" || "board:trogdor" || "board:kukui")`,
 	// VMs don't support few crossystem sub-commands: https://crbug.com/974615
 	"crossystem":        `!"betty" && !"tast_vm"`,
+	"csme_update":       `!("board:atlas" || "board:coral" || "board:drallion" || "board:eve" || "board:fizz" || "board:hatch" || "board:kalista" || "board:nami" || "board:nautilus" || "board:octopus" || "board:puff" || "board:rammus" || "board:reef" || "board:sarien")`,
 	"cups":              "cups",
 	"device_crash":      `!("board:samus")`,                        // Samus devices do not reliably come back after kernel crashes. crbug.com/1045821
 	"diagnostics":       `"diagnostics" && !"betty" && !"tast_vm"`, // VMs do not have hardware to diagnose. https://crbug.com/1126619

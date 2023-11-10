@@ -1915,6 +1915,20 @@ from other existing groups (or use this group standalone).
 		Name:     "audio_e2e_experimental",
 		Contacts: []string{"chromeos-audio-bugs@google.com", "chromeos-sw-engprod@google.com", "crosep-intertech@google.com"},
 		Desc:     `A group of audio end-to-end tests for experimental purposes.`,
+		Subattrs: []*attr{
+			{
+				Name: "audio_e2e_experimental_audiobox",
+				Desc: `Specifies tests that are running on audiobox`,
+			},
+			{
+				Name: "audio_e2e_experimental_latency_toolkit",
+				Desc: `Specifies tests that are running on audiobox with latency toolkit.`,
+			},
+			{
+				Name: "audio_e2e_experimental_usb",
+				Desc: `Specifies tests that are running on audio usb testbed.`,
+			},
+		},
 	},
 	{
 		Name:     "unowned",

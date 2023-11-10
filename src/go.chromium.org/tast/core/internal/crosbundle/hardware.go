@@ -141,7 +141,7 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 	}
 
 	swConfig := &softwarepb.SoftwareConfig{
-		AltFirmwareConfig: &softwarepb.AltFirmwareConfig{},
+		FirmwareInfo: &softwarepb.FirmwareInfo{},
 	}
 
 	formFactor, err := func() (string, error) {
@@ -952,19 +952,19 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 
 	// FirmwareFeatures
 	altfw, err := func() (bool, error) {
-		out, err := crosConfig("/alt-firmware", "has-alt-firmware")
+		out, err := crosConfig("/firmware", "has-alt-firmware")
 		if err != nil {
 			return false, err
 		}
 		return out == "true", nil
 	}()
 	if err != nil {
-		logging.Infof(ctx, "Unknown firmware/altfw-firmware/altfw-present : %v", err)
+		logging.Infof(ctx, "Unknown firmware/altfw-present : %v", err)
 	}
 	if altfw {
-		swConfig.AltFirmwareConfig.HasAltFirmware = true
+		swConfig.FirmwareInfo.HasAltFirmware = true
 	} else {
-		swConfig.AltFirmwareConfig.HasAltFirmware = false
+		swConfig.FirmwareInfo.HasAltFirmware = false
 	}
 
 	// InterruptControllerInfo

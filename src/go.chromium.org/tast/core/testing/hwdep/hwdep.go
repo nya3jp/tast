@@ -48,8 +48,10 @@ func D(conds ...Condition) Deps {
 // idRegexp is the pattern that the given model/platform ID names should match with.
 var idRegexp = regexp.MustCompile(`^[a-z0-9_-]+$`)
 
+// FWUIType as int.
 type FWUIType int
 
+// These are different flavors of UI.
 const (
 	LegacyMenuUI FWUIType = iota
 	LegacyClamshellUI
@@ -2571,10 +2573,10 @@ func AlternativeFirmware() Condition {
 		if sc == nil {
 			return withErrorStr("Did not find software config")
 		}
-		if sc.GetAltFirmwareConfig() == nil {
-			return withErrorStr("Did not find alt firmware config")
+		if sc.GetFirmwareInfo() == nil {
+			return withErrorStr("Did not find firmware info")
 		}
-		if sc.GetAltFirmwareConfig().HasAltFirmware {
+		if sc.GetFirmwareInfo().HasAltFirmware {
 			return satisfied()
 		}
 		return unsatisfied("DUT does not have altfw")

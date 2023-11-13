@@ -70,5 +70,5 @@ func Check(skip int, pkgs []string) {
 	callee := Get(skip)
 	panic(fmt.Sprintf(
 		"%s is not allowed to call %s; check the list in %s",
-		caller, path.Base(callee), path.Base(callee)))
+		callerPkg, path.Base(callee), path.Base(callee)))
 }

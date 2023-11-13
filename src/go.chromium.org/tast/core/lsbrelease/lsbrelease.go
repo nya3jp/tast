@@ -77,6 +77,7 @@ var allowedPkgs = []string{
 	"go.chromium.org/tast/core/cmd/tast/internal/symbolize",
 	"go.chromium.org/tast/core/internal/crosbundle",          // For software feature detection.
 	"go.chromium.org/tast/core/internal/runner",              // For SoftwareDeps check.
+	"go.chromium.org/tast-tests/cros/common/firmware/usb",    // For checking USB images
 	"go.chromium.org/tast-tests/cros/local/arc",              // For SDKVersion.
 	"go.chromium.org/tast-tests/cros/local/bundles/cros/arc", // For Version.
 	// TODO(crbug.com/1140906): Temporarily allowed until we remove extra tracing code that only runs on eve.

@@ -100,16 +100,28 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		logging.Infof(ctx, "Unknown vboot2 info: %v", err)
 	}
 
+	hasSideVolumeButton, err := func() (bool, error) {
+		out, err := crosConfig("/hardware-properties", "has-side-volume-button")
+		if err != nil {
+			return false, err
+		}
+		return strings.TrimSpace(string(out)) == "true", nil
+	}()
+	if err != nil {
+		logging.Infof(ctx, "Unknown has-side-volume-button: %v", err)
+	}
+
 	config := &protocol.DeprecatedDeviceConfig{
 		Id: &protocol.DeprecatedConfigId{
 			Platform: platform,
 			Model:    model,
 			Brand:    brand,
 		},
-		Soc:             info.soc,
-		Cpu:             info.cpuArch,
-		HasNvmeSelfTest: false,
-		HasVboot2:       vboot2,
+		Soc:                 info.soc,
+		Cpu:                 info.cpuArch,
+		HasNvmeSelfTest:     false,
+		HasVboot2:           vboot2,
+		HasSideVolumeButton: hasSideVolumeButton,
 	}
 	features := &configpb.HardwareFeatures{
 		Screen:                  &configpb.HardwareFeatures_Screen{},

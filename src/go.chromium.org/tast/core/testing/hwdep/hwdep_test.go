@@ -1328,3 +1328,27 @@ func TestOEM(t *testing.T) {
 			tc.expectSatisfied)
 	}
 }
+
+func TestHasSideVolumeButton(t *testing.T) {
+	c := hwdep.HasSideVolumeButton()
+
+	for _, tc := range []struct {
+		hasSideVolumeButton bool
+		expectSatisfied     bool
+	}{
+		{true, true},
+		{false, false},
+	} {
+		verifyCondition(
+			t, c,
+			&frameworkprotocol.DeprecatedDeviceConfig{
+				HasSideVolumeButton: tc.hasSideVolumeButton,
+			},
+			&configpb.HardwareFeatures{},
+			tc.expectSatisfied)
+	}
+	expectError(
+		t, c,
+		nil,
+		nil)
+}

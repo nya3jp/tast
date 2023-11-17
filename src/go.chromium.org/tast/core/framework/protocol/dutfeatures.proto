@@ -112,6 +112,9 @@ message DeprecatedDeviceConfig {
 
   // HasVboot2 indicates whether device uses vboot2.
   bool has_vboot2 = 6;
+
+  // HasSideVolumeButton indicates whether device has side volume button.
+  bool has_side_volume_button = 7;
 }
 
 // HardwareFeatures represents a set of hardware features available for the

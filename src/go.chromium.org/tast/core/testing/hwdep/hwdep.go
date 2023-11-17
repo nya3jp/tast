@@ -2597,3 +2597,18 @@ func NmiSupport() Condition {
 	},
 	}
 }
+
+// HasSideVolumeButton returns a hardware dependency condition that is satisfied
+// if the DUT has side volume button.
+func HasSideVolumeButton() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		dc := f.GetDeprecatedDeviceConfig()
+		if dc == nil {
+			return withErrorStr("DeprecatedDeviceConfig is not given")
+		}
+		if dc.HasSideVolumeButton {
+			return satisfied()
+		}
+		return unsatisfied("DUT does not have side volume button")
+	}}
+}

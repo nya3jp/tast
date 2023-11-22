@@ -2115,6 +2115,11 @@ from other existing groups (or use this group standalone).
 		Desc:     "A group of inputs test on arc++ platform for most popular boards.",
 	},
 	{
+		Name:     "inputs_orca_daily",
+		Contacts: []string{"essential-inputs-team@google.com"},
+		Desc:     "A group of inputs test for orca feature that runs daily.",
+	},
+	{
 		Name:     "inputs_appcompat_citrix_perbuild",
 		Contacts: []string{"essential-inputs-team@google.com"},
 		Desc:     "A group of inputs test on citrix platform for most popular boards.",

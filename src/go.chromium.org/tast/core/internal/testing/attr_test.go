@@ -125,6 +125,9 @@ func TestCheckKnownAttrs(t *testing.T) {
 			attrs: []string{"group:inputs_appcompat_arc_perbuild"},
 		},
 		{
+			attrs: []string{"group:inputs_orca_daily"},
+		},
+		{
 			attrs: []string{"group:inputs_appcompat_citrix_perbuild"},
 		},
 		{

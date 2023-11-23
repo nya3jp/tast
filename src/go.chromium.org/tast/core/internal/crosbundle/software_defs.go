@@ -46,6 +46,8 @@ var softwareFeatureDefs = map[string]string{
 	"boot_perf_info":     `!("board:reven*")`, // Reven (ChromeOS Flex) doesn't support boot performance metrics.
 	"borealis_host":      "borealis_host",
 	"borealis_nvidia":    "borealis_nvidia",
+	// borealis_host but with boards that have precompield shader cache enabled
+	"borealis_precompiled_cache_enabled": `borealis_host && ("board:brya" || "board:guybrush" || "board:hatch" || "board:nissa" || "board:rex" || "board:skyrim" || "board:volteer")`,
 	// The bpf syscall is enabled on CrOS since kernel v5.10.
 	"bpf":      `!("kernel-4_14" || "kernel-4_19" || "kernel-5_4")`,
 	"breakpad": "force_breakpad",

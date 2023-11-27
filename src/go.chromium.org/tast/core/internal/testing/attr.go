@@ -1241,8 +1241,26 @@ Meta tests should be a subset of mainline critical tests.
 	},
 	{
 		Name:     "storage-qual",
-		Contacts: []string{"chromeos-engprod-platform-syd@google.com"},
-		Desc:     `A group of tests for internal and external storage qualification and testing.`,
+		Contacts: []string{"chromeos-storage@google.com"},
+		Desc:     `A group of tests that are used for Storage HW validation.`,
+		Subattrs: []*attr{
+			{
+				Name: "storage-qual_pdp_enabled",
+				Desc: `Storage Enabled PDP gate tests.`,
+			},
+			{
+				Name: "storage-qual_pdp_kpi",
+				Desc: `Storage Meets KPI PDP gate tests.`,
+			},
+			{
+				Name: "storage-qual_pdp_stress",
+				Desc: `Storage Stress PDP gate tests.`,
+			},
+			{
+				Name: "storage-qual_avl_v3",
+				Desc: `Storage AVL v3 qualification tests.`,
+			},
+		},
 	},
 	{
 		Name:     "syzcorpus",

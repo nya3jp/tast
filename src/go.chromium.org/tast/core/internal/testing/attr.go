@@ -133,6 +133,10 @@ Tests in this group are not used for build verification.
 				Desc: `Indicates that this test is a memory test and should run nightly.`,
 			},
 			{
+				Name: "crosbolt_arc_perf_memory_nightly",
+				Desc: `Indicates that this test is a memory test for ARC performance qualification and should run nightly.`,
+			},
+			{
 				Name: "crosbolt_arc_perf_qual",
 				Desc: `Indicates that this test is used for ARC performance qualification.`,
 			},

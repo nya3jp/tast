@@ -2248,7 +2248,7 @@ func ECBuildConfigOptions(optionNames ...string) Condition {
 		}
 		buildConfig := hf.GetEmbeddedController().GetBuildConfig()
 		if buildConfig == nil {
-			return withErrorStr("Did not find EC build config")
+			return unsatisfied("EC build config is missing")
 		}
 		for _, optionName := range optionNames {
 			if !strings.HasPrefix(optionName, "CONFIG_") {

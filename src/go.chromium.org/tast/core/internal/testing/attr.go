@@ -2124,6 +2124,16 @@ from other existing groups (or use this group standalone).
 		Contacts: []string{"cros-ufo-testing@google.com"},
 		Desc:     `A group of tests pointing to preprod test environment of services.`,
 	},
+	{
+		Name:     "crostini_cq",
+		Contacts: []string{"clumptini@google.com"},
+		Desc:     "A group of tests for Crostini non-apps tests that run in CQ.",
+	},
+	{
+		Name:     "crostini_app_cq",
+		Contacts: []string{"clumptini@google.com"},
+		Desc:     "A group of tests for Crostini apps tests that run in CQ.",
+	},
 }
 
 // validGroupMap is the name-keyed map of validGroups.

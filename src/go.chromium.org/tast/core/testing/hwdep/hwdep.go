@@ -1399,6 +1399,28 @@ func WifiNoVpdSar() Condition {
 	return SkipOnModel(modelsWithVpdSarTables...)
 }
 
+// WifiNonSelfManaged returns a hardware dependency condition that if satisfied,
+// indicates that the device does not support self-managed WiFi.
+func WifiNonSelfManaged() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		// All of Intel WiFi chips supported by ChromiumOS are
+		// self-managed.
+		intelCondition := WifiIntel()
+		if satisfied, _, err := intelCondition.Satisfied(f); err == nil && satisfied {
+			return unsatisfied("DUT has a Intel self-managed WiFi chip")
+		}
+
+		// WCN6855 and WCN6750 are Qualcomm's self-managed WiFi chips.
+		wifiCondition := SkipOnWifiDevice(
+			QualcommWCN6855, QualcommWCN6750)
+		if satisfied, reason, err := wifiCondition.Satisfied(f); err != nil || !satisfied {
+			return satisfied, reason, err
+		}
+		return satisfied()
+	},
+	}
+}
+
 func hasBattery(f *protocol.HardwareFeatures) (bool, error) {
 	dc := f.GetDeprecatedDeviceConfig()
 	if dc == nil {

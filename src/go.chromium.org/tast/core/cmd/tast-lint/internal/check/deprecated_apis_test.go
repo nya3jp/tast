@@ -9,6 +9,54 @@ import (
 )
 
 func TestDeprecatedAPIs(t *testing.T) {
+	const code = `package main
+
+import (
+	"golang.org/x/net/context"
+	"go.chromium.org/tast-tests/cros/local/testexec"
+	"syscall"
+)
+
+func main() {
+	testexec.CommandContext(ctx, "cat") // not ok
+	context.Context // not ok
+	syscall.stat_t // not ok
+	syscall.Stat_t // ok
+	syscall.rawconn // not ok
+	syscall.RawConn // ok
+	syscall.coNN // not ok
+	syscall.Conn // ok
+	syscall.sysProcAttr // not ok
+	syscall.SysProcAttr // ok
+	syscall.waitStatus // not ok
+	syscall.WaitStatus // ok
+	syscall.rusage // not ok
+	syscall.Rusage // ok
+	syscall.credential // not ok
+	syscall.Credential // ok
+	syscall.seteuid // not ok
+	syscall.Seteuid // ok
+}
+`
+	want := []string{
+		"testfile.go:4:2: package golang.org/x/net/context is deprecated; use context instead",
+		"testfile.go:5:2: package go.chromium.org/tast-tests/cros/local/testexec is deprecated; use go.chromium.org/tast-tests/cros/common/testexec instead",
+		"testfile.go:12:2: syscall.stat_t is from a deprecated package; use corresponding API in golang.org/x/sys/unix instead",
+		"testfile.go:14:2: syscall.rawconn is from a deprecated package; use corresponding API in golang.org/x/sys/unix instead",
+		"testfile.go:16:2: syscall.coNN is from a deprecated package; use corresponding API in golang.org/x/sys/unix instead",
+		"testfile.go:18:2: syscall.sysProcAttr is from a deprecated package; use corresponding API in golang.org/x/sys/unix instead",
+		"testfile.go:20:2: syscall.waitStatus is from a deprecated package; use corresponding API in golang.org/x/sys/unix instead",
+		"testfile.go:22:2: syscall.rusage is from a deprecated package; use corresponding API in golang.org/x/sys/unix instead",
+		"testfile.go:24:2: syscall.credential is from a deprecated package; use corresponding API in golang.org/x/sys/unix instead",
+		"testfile.go:26:2: syscall.seteuid is from a deprecated package; use corresponding API in golang.org/x/sys/unix instead",
+	}
+
+	f, fs := parse(code, "testfile.go")
+	issues := DeprecatedAPIs(fs, f)
+	verifyIssues(t, issues, want)
+}
+
+func TestDeprecatedAPIsInternal(t *testing.T) {
 	deprecated := []*deprecatedAPI{{
 		pkg:         "go.chromium.org/tast-tests/cros/local/testexec",
 		alternative: "go.chromium.org/tast-tests/cros/common/testexec",

@@ -53,6 +53,8 @@ func DeprecatedAPIs(fs *token.FileSet, f *ast.File) []*Issue {
 				"WaitStatus":  {},
 				"Rusage":      {},
 				"Credential":  {},
+				// TODO(b/314052718): Replace Seteuid()
+				"Seteuid": {},
 			},
 			link: "https://buganizer.corp.google.com/issues/187787902",
 		},

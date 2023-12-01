@@ -8,7 +8,6 @@ package hwdep
 
 import (
 	"fmt"
-	"os"
 	"regexp"
 	"strings"
 
@@ -860,24 +859,6 @@ func CPUSupportsSMT() Condition {
 			}
 		}
 		return unsatisfied("CPU does not have SMT support")
-	},
-	}
-}
-
-// HasDynamicHighResTimerControl returns a hardware dependency condition that is satisfied if and only if the
-// DUT has sysctl for turning off hrtimer.
-func HasDynamicHighResTimerControl() Condition {
-	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
-		if _, err := os.Stat("/proc/sys/kernel/timer_highres"); err != nil {
-			return unsatisfied("Device doesn't support dynamic hrtimer control")
-		}
-		if _, err := os.Stat("/proc/sys/kernel/sched_aggressive_next_balance"); err != nil {
-			return unsatisfied("Device doesn't support dynamic hrtimer control")
-		}
-		if _, err := os.Stat("/proc/sys/kernel/sched_min_load_balance_interval"); err != nil {
-			return unsatisfied("Device doesn't support dynamic hrtimer control")
-		}
-		return satisfied()
 	},
 	}
 }

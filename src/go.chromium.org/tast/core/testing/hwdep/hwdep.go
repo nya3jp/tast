@@ -2597,3 +2597,27 @@ func HasSideVolumeButton() Condition {
 		return unsatisfied("DUT does not have side volume button")
 	}}
 }
+
+// MiniOS returns a hardware dependency condition that is satisfied if and only
+// if the DUT supports minios.
+func MiniOS() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("HardwareFeatures is not given")
+		}
+		major := hf.GetFwConfig().GetFwRoVersion().MajorVersion
+		minor := hf.GetFwConfig().GetFwRoVersion().MinorVersion
+		// miniOS is supported in firmware UI since CL:3249309 (landed in 14315).
+		// For ARM, there's a bug which is fixed in CL:3653659 (landed in 14858).
+		// The fix is cherry-picked to firmware-cherry-14454.B in 14454.34.
+		if x86Satisfied, _, err := X86().Satisfied(f); err == nil && x86Satisfied && major >= 14315 {
+			return satisfied()
+		}
+		if noX86Satisfied, _, err := NoX86().Satisfied(f); err == nil && noX86Satisfied &&
+			(major >= 14858 || (major == 14454 && minor >= 34)) {
+			return satisfied()
+		}
+		return unsatisfied("DUT does not support minios")
+	}}
+}

@@ -376,6 +376,34 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 	}
 	features.FwConfig.FwRwActiveVersion = fwid
 
+	features.FwConfig.FwRoVersion = &configpb.HardwareFeatures_FirmwareConfiguration_SemVer{}
+	if err := func() error {
+		out, err := exec.Command("crossystem", "ro_fwid").Output()
+		if err != nil {
+			return err
+		}
+		roFwIds := strings.Split(string(out), ".")
+		wantIds := roFwIds[1:]
+		versions := []*uint32{
+			&features.FwConfig.FwRoVersion.MajorVersion,
+			&features.FwConfig.FwRoVersion.MinorVersion,
+			&features.FwConfig.FwRoVersion.PatchVersion,
+		}
+		if len(versions) != len(wantIds) {
+			return errors.Errorf("got unexpected length of ro_fwid: %s", out)
+		}
+		for idx, strID := range wantIds {
+			id, err := strconv.Atoi(strID)
+			if err != nil {
+				return err
+			}
+			*versions[idx] = uint32(id)
+		}
+		return nil
+	}(); err != nil {
+		logging.Infof(ctx, "Unable to parse ro_fwid versions: %v", err)
+	}
+
 	// Device has ChromeEC if /dev/cros_ec exists.
 	// TODO(b/173741162): Pull EmbeddedController data directly from Boxster.
 	if _, err := os.Stat("/dev/cros_ec"); err == nil {

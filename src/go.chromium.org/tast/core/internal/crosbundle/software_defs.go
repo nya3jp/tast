@@ -255,7 +255,7 @@ var softwareFeatureDefs = map[string]string{
 	// VMs don't support speech on-device API.
 	"soda": `!"betty" && !"tast_vm"`,
 	// Should match StackSamplingProfiler::IsSupportedForCurrentPlatform() in Chromium repo.
-	"stack_sampled_metrics":     `"amd64" && !"betty" && !"tast_vm"`,
+	"stack_sampled_metrics":     `("amd64" || "arm64") && !"betty" && !"tast_vm"`,
 	"storage_wearout_detect":    `"storage_wearout_detect" && !"betty" && !"tast_vm"`, // Skip wearout checks for VMs and eMMC < 5.0
 	"tablet_form_factor":        "tablet_form_factor",
 	"tflite_opencl":             `!(elm || hana)`, // these boards seem to have issues with the OpenCL TFLite delegate (b/233851820)

@@ -595,13 +595,27 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		features.Bluetooth.Present = configpb.HardwareFeatures_NOT_PRESENT
 	}
 
+	readSysfsString := func(dev, relPath string) string {
+		path := "/sys/block/" + dev + "/" + relPath
+		out, err := exec.CommandContext(cmdCtx, "cat", path).Output()
+		if err != nil {
+			return ""
+		}
+		return strings.TrimSpace(string(out))
+	}
+
 	hasEmmcStorage := func() bool {
 		matches, err := filepath.Glob("/dev/mmc*")
 		if err != nil {
 			return false
 		}
-		if len(matches) > 0 {
-			return true
+		for _, dev := range matches {
+			pathComponenets := strings.Split(dev, "/")
+			phyDev := pathComponenets[len(pathComponenets)-1]
+			out := readSysfsString(phyDev, "device/type")
+			if out == "MMC" {
+				return true
+			}
 		}
 		return false
 	}()
@@ -609,8 +623,43 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		features.Storage.StorageType = configpb.Component_Storage_EMMC
 	}
 
-	// TODO(b/173741162): Pull storage information from boxster config and add
-	// additional storage types.
+	hasEmmcBridgeStorage := func() bool {
+		const bh799Ven = 0x1217
+		const bh799Dev = 0x0002
+		var readSysfsHex func(string, string) int64
+		readSysfsHex = func(devPath, relPath string) int64 {
+			pathComponenets := strings.Split(devPath, "/")
+			phyDev := pathComponenets[len(pathComponenets)-1]
+			outStr := readSysfsString(phyDev, relPath)
+			if outStr == "" {
+				return 0
+			}
+			if outStr[0:2] == "0x" {
+				outStr = outStr[2:]
+			}
+			val, err := strconv.ParseInt(outStr, 16, 64)
+			if err != nil {
+				return 0
+			}
+			return val
+		}
+		matches, err := filepath.Glob("/dev/nvme*")
+		if err != nil {
+			return false
+		}
+		for _, dev := range matches {
+			subsysVen := readSysfsHex(dev, "device/device/subsystem_vendor")
+			subsysDev := readSysfsHex(dev, "device/device/subsystem_device")
+			if subsysVen == bh799Ven && subsysDev == bh799Dev {
+				return true
+			}
+		}
+		return false
+	}()
+	if hasEmmcBridgeStorage {
+		features.Storage.StorageType = configpb.Component_Storage_BRIDGED_EMMC
+	}
+
 	hasNvmeStorage := func() bool {
 		matches, err := filepath.Glob("/dev/nvme*")
 		if err != nil {
@@ -621,11 +670,10 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		}
 		return false
 	}()
-	if hasNvmeStorage {
+	if hasNvmeStorage && !hasEmmcBridgeStorage {
 		features.Storage.StorageType = configpb.Component_Storage_NVME
 	}
 
-	// TODO(b/211755998): Pull information from boxster config after this got supported in boxster.
 	hasNvmeSelfTestStorage := func() bool {
 		matches, err := filepath.Glob("/dev/nvme*n1")
 		if err != nil {
@@ -646,14 +694,44 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		config.HasNvmeSelfTest = true
 	}
 
-	hasUfsStorage := func() bool {
-		out, err := crosConfig("/hardware-properties", "storage-type")
+	hasSataStorage := func() bool {
+		matches, err := filepath.Glob("/dev/sd*")
 		if err != nil {
 			return false
 		}
-		return out == "UFS"
+		for _, dev := range matches {
+			pathComponenets := strings.Split(dev, "/")
+			physDev := pathComponenets[len(pathComponenets)-1]
+			outStr := readSysfsString(physDev, "device/inquiry")
+			if strings.Contains(outStr, "ATA") {
+				return true
+			}
+			return false
+		}
+		return false
 	}()
-	if hasUfsStorage {
+	if hasSataStorage {
+		features.Storage.StorageType = configpb.Component_Storage_SATA
+	}
+
+	hasUfsStorage := func() bool {
+		matches, err := filepath.Glob("/dev/sd*")
+		if err != nil {
+			return false
+		}
+		for _, dev := range matches {
+			pathComponenets := strings.Split(dev, "/")
+			physDev := pathComponenets[len(pathComponenets)-1]
+			outStr := readSysfsString(physDev, "removable")
+			val, err := strconv.ParseInt(outStr, 10, 64)
+			if err == nil && val == 0 {
+				return true
+			}
+			return false
+		}
+		return false
+	}()
+	if hasUfsStorage && !hasSataStorage {
 		features.Storage.StorageType = configpb.Component_Storage_UFS
 	}
 

@@ -15,10 +15,14 @@ import (
 	"time"
 
 	"github.com/docker/docker/client"
+	"google.golang.org/grpc"
 
+	"go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/chromiumos/infra/proto/go/satlabrpcserver"
 	"go.chromium.org/tast/core/errors"
 	"go.chromium.org/tast/core/internal/logging"
 	"go.chromium.org/tast/core/ssh"
+	"go.chromium.org/tast/core/testing"
 )
 
 const proxyTimeout = 10 * time.Second // max time for establishing SSH connection
@@ -207,8 +211,20 @@ func StartServo(ctx context.Context, servoHostPort, keyFile, keyDir string) (ret
 	if err != nil {
 		return err
 	}
+	isDocker := isDockerHost(host)
+	// Example servoHostPort: satlab-0wgtfqin20158027-host2-docker_servod:9999.
+	if isDocker {
+		logging.Infof(ctx, "Start Docker servod container via Satlab RPC server.")
+		conn, err := grpc.Dial(testing.SatlabRPCServer, grpc.WithInsecure())
+		if err != nil {
+			return err
+		}
+		c := satlabrpcserver.NewSatlabRpcServiceClient(conn)
+		_, err = c.StartServod(ctx, &api.StartServodRequest{ServodDockerContainerName: host})
+		return err
+	}
 	// If the servod instance isn't running locally, assume that we need to connect to it via SSH.
-	if sshPort > 0 && !isDockerHost(host) && ((host != "localhost" && host != "127.0.0.1" && host != "::1") || sshPort != 22) {
+	if sshPort > 0 && !isDocker && ((host != "localhost" && host != "127.0.0.1" && host != "::1") || sshPort != 22) {
 		// First, create an SSH connection to the remote system running servod.
 		sopt := ssh.Options{
 			KeyFile:        keyFile,

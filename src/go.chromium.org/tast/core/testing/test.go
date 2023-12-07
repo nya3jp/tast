@@ -66,5 +66,10 @@ const (
 	LifeCycleOwnerMonitored = testing.LifeCycleOwnerMonitored
 )
 
+const (
+	// SatlabRPCServer is the container:port where Satlab RPC server runs and listens to.
+	SatlabRPCServer = "satlab_rpcserver:6003"
+)
+
 // StringPair represents a string key-value pair. Typically used for SearchFlags.
 type StringPair = protocol.StringPair

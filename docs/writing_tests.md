@@ -1087,7 +1087,7 @@ to a `tests/<test-name>/` subdirectory within the results directory.
 The [perf] package is provided to record the results of performance tests.  See
 the [perf] documentation for more details.
 
-[perf]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/go.chromium.org/tast-tests/cros/common/perf
+[perf]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/common/perf
 
 ## Data files
 

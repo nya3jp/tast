@@ -1127,29 +1127,11 @@ func Wifi80211ax() Condition {
 // Wifi80211ax6E returns a hardware dependency condition that is satisfied
 // if and only if the DUT's WiFi module supports WiFi 6E.
 func Wifi80211ax6E() Condition {
-	// Note: this is currently an allowlist. We can move this to a blocklist if the number of platforms gets out of hand.
-	// TODO(crbug.com/1070299): replace this when we have hwdep for WiFi chips.
-	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
-		modelCondition := Model(
-			"anahera",
-			"brya",
-			"felwinter",
-			"gimble",
-			"herobrine",
-			"kano",
-			"nipperkin",
-			"primus",
-			"redrix",
-			"taeko",
-			"taeland",
-			"vell",
-		)
-		if satisfied, reason, err := modelCondition.Satisfied(f); err != nil || !satisfied {
-			return satisfied, reason, err
-		}
-		return satisfied()
-	},
-	}
+	return WifiDevice(
+		QualcommWCN6855,
+		IntelAX211,
+		MediaTekMT7922PCIE,
+	)
 }
 
 // WifiMACAddrRandomize returns a hardware dependency condition that is satisfied

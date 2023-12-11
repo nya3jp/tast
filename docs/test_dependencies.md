@@ -108,6 +108,7 @@ The following software features are defined:
 * `factory_flow`- Device is subject to the [go/chromeos-factory-flow](http://go/chromeos-factory-flow) (e.g. most devices).
 * `fake_hps` - Whether the HPS daemon (go/cros-hps) uses a fake software
     device for testing purposes.
+* `fbpreprocessord`- Firmware dump processor daemon.
 * `firewall` - Standard ChromeOS network firewall rules.
 * `flashrom` - Userspace utility to update firmware.
 * `flex_id` - Enable using [flex_id](http://go/chromeos-flex-id) for enrollment.

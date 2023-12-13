@@ -364,7 +364,7 @@ func runTests(ctx context.Context, cfg *config.Config,
 
 		// The DUT might have rebooted during tests. Try reconnecting
 		// before proceeding to CollectSysInfo.
-		if err := drv.ReconnectIfNeeded(ctx); err != nil {
+		if err := drv.ReconnectIfNeeded(ctx, true); err != nil {
 			logging.Infof(ctx, "Failed to reconnect to DUT: %v", err)
 		}
 

@@ -84,7 +84,7 @@ func (cc *ConnCache) Conn() *Conn {
 //
 // Be aware that calling EnsureConn may invalidate a connection previously
 // returned from Conn.
-func (cc *ConnCache) EnsureConn(ctx context.Context) error {
+func (cc *ConnCache) EnsureConn(ctx context.Context, rebootBeforeReconnect bool) error {
 	err := cc.conn.Healthy(ctx)
 	if err == nil {
 		return nil
@@ -94,7 +94,7 @@ func (cc *ConnCache) EnsureConn(ctx context.Context) error {
 	newConnection, err := newConn(ctx, cc.cfg, cc.target, cc.proxyCommand, cc.helper.dutServer)
 	if err != nil {
 		// b/205333029: Move the code for rebooting to somewhere else when we support servod for multiple DUT.
-		if cc.helper != nil {
+		if cc.helper != nil && rebootBeforeReconnect {
 			// If we have a way, reboot the DUT.
 			logging.Info(ctx, "Reboot target before reconnecting")
 			if rebootErr := cc.helper.HardReboot(ctx); rebootErr != nil {

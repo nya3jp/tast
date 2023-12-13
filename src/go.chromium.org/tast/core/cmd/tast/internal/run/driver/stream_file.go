@@ -44,7 +44,7 @@ func (d *Driver) StreamFile(ctx context.Context, src, dest string) error {
 		// If the file exist on the server, keep trying.
 		// Sleep for 30 second before retrying.
 		time.Sleep(time.Second * 30)
-		if err := d.ReconnectIfNeeded(ctx); err != nil {
+		if err := d.ReconnectIfNeeded(ctx, false); err != nil {
 			logging.Infof(ctx, "Failed to reconnect to DUT to stream file %v", err)
 			return nil
 		}

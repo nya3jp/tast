@@ -167,11 +167,11 @@ func (d *Driver) Services() *Services {
 
 // ReconnectIfNeeded ensures that the current connection is healthy, and
 // otherwise it re-establishes a connection.
-func (d *Driver) ReconnectIfNeeded(ctx context.Context) error {
+func (d *Driver) ReconnectIfNeeded(ctx context.Context, rebootBeforeReconnect bool) error {
 	if d.cc == nil {
 		return nil
 	}
-	return d.cc.EnsureConn(ctx)
+	return d.cc.EnsureConn(ctx, rebootBeforeReconnect)
 }
 
 // DefaultTimeout returns the default timeout for connection operations.

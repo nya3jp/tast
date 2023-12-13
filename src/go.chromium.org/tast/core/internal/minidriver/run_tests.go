@@ -141,7 +141,7 @@ func (d *Driver) runLocalTestsOnce(ctx context.Context, bundle string, tests []s
 		return nil, nil
 	}
 
-	if err := d.cc.EnsureConn(ctx); err != nil {
+	if err := d.cc.EnsureConn(ctx, true); err != nil {
 		return nil, err
 	}
 

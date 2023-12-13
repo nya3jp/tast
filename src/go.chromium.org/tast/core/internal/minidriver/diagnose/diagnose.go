@@ -29,7 +29,7 @@ func SSHDrop(ctx context.Context, cc *target.ConnCache, outDir string) string {
 
 	logging.Info(ctx, "Reconnecting to diagnose lost SSH connection")
 	if err := testingutil.Poll(ctx, func(ctx context.Context) error {
-		return cc.EnsureConn(ctx)
+		return cc.EnsureConn(ctx, true)
 	}, &testingutil.PollOptions{Timeout: cc.DefaultTimeout()}); err != nil {
 		return fmt.Sprint("target did not come back: ", err)
 	}

@@ -180,7 +180,7 @@ func (c *RealClient) Stage(ctx context.Context, gsURL string) (*url.URL, error) 
 
 	// Use an already staged file if there is any.
 	if dsURL, err := c.findStaged(sctx, bucket, path); err == nil {
-		logging.Infof(ctx, "Downloading %s via %s (already staged)", gsURL, dsURL)
+		logging.Infof(ctx, "Downloading %s via %s", gsURL, dsURL)
 		staticURL, err := c.staticURL(ctx, dsURL, bucket, path)
 		if err != nil {
 			return nil, fmt.Errorf("failed to stage from %s: %v", dsURL, err)
@@ -222,7 +222,7 @@ func (c *RealClient) Open(ctx context.Context, gsURL string) (io.ReadCloser, err
 
 	r, err := c.openStaged(ctx, staticURL)
 	if err != nil {
-		return nil, fmt.Errorf("failed to download from %s: %v", staticURL, err)
+		return nil, fmt.Errorf("failed to download from %s: %w", staticURL, err)
 	}
 	return r, nil
 }
@@ -423,6 +423,9 @@ func (c *RealClient) openStaged(ctx context.Context, staticURL *url.URL) (io.Rea
 			out, _ := ioutil.ReadAll(res.Body)
 			s := scrapeInternalError(out)
 			return nil, fmt.Errorf("got status %d: %s", res.StatusCode, s)
+		case http.StatusNotFound:
+			res.Body.Close()
+			return nil, fmt.Errorf("got status %d: %w", res.StatusCode, os.ErrNotExist)
 		default:
 			res.Body.Close()
 			return nil, fmt.Errorf("got status %d", res.StatusCode)

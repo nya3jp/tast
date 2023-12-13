@@ -7,7 +7,6 @@ package runner
 import (
 	"context"
 	"io"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -93,8 +92,6 @@ func (s *testServer) DownloadPrivateBundles(ctx context.Context, req *protocol.D
 	}
 
 	// Download the archive via devserver.
-	archiveURL := req.GetBuildArtifactUrl() + "tast_bundles.tar.bz2"
-	logging.Infof(ctx, "Downloading private bundles from %s", archiveURL)
 	cl, err := devserver.NewClient(
 		ctx, req.GetServiceConfig().GetDevservers(),
 		req.GetServiceConfig().GetTlwServer(), req.GetServiceConfig().GetTlwSelfName(),
@@ -108,15 +105,46 @@ func (s *testServer) DownloadPrivateBundles(ctx context.Context, req *protocol.D
 	}
 	defer cl.TearDown()
 
+	privateBundles := []string{
+		"tast_bundles",
+		"tast_intel_bundles",
+	}
+
+	for _, b := range privateBundles {
+		if err := downloadPrivateBundle(ctx, cl, req.GetBuildArtifactUrl(), b); err != nil {
+			return nil, errors.Wrapf(err, "failed to download %s", b)
+		}
+	}
+
+	if err := os.WriteFile(s.scfg.PrivateBundlesStampPath, nil, 0644); err != nil {
+		return nil, err
+	}
+
+	return &protocol.DownloadPrivateBundlesResponse{}, nil
+}
+
+// downloadPrivateBundle downloads a single private bundle.
+func downloadPrivateBundle(ctx context.Context, cl devserver.Client, archiveURBase, bundle string) error {
+	// Download the archive via devserver.
+	archiveURL := archiveURBase + bundle + ".tar.bz2"
+	logging.Infof(ctx, "Downloading private bundle %s", archiveURL)
+
 	r, err := cl.Open(ctx, archiveURL)
 	if err != nil {
-		return nil, err
+		if errors.As(err, &os.ErrNotExist) {
+			// Not all private bundles are available for all users.
+			// It is fine to not finding certain bundles for certain
+			// users.
+			logging.Infof(ctx, "Private bundle %s not found", archiveURL)
+			return nil
+		}
+		return err
 	}
 	defer r.Close()
 
-	tf, err := ioutil.TempFile("", "tast_bundles.")
+	tf, err := os.CreateTemp("", bundle+".")
 	if err != nil {
-		return nil, err
+		return err
 	}
 	defer os.Remove(tf.Name())
 
@@ -131,20 +159,16 @@ func (s *testServer) DownloadPrivateBundles(ctx context.Context, req *protocol.D
 		cmd := exec.Command("tar", "xf", tf.Name())
 		cmd.Dir = "/usr/local"
 		if err := cmd.Run(); err != nil {
-			return nil, errors.Errorf("failed to extract %s: %v", strings.Join(cmd.Args, " "), err)
+			return errors.Errorf("failed to extract %s: %v", strings.Join(cmd.Args, " "), err)
 		}
 		logging.Info(ctx, "Download finished successfully")
 	} else if os.IsNotExist(err) {
 		logging.Info(ctx, "Private bundles not found")
 	} else {
-		return nil, errors.Errorf("failed to download %s: %v", archiveURL, err)
+		return errors.Errorf("failed to copy downloaded archive %s: %v", archiveURL, err)
 	}
 
-	if err := ioutil.WriteFile(s.scfg.PrivateBundlesStampPath, nil, 0644); err != nil {
-		return nil, err
-	}
-
-	return &protocol.DownloadPrivateBundlesResponse{}, nil
+	return nil
 }
 
 func (s *testServer) ListEntities(ctx context.Context, req *protocol.ListEntitiesRequest) (*protocol.ListEntitiesResponse, error) {

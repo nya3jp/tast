@@ -33,11 +33,6 @@ var softwareFeatureDefs = map[string]string{
 	"arm":                          `"arm" || "arm64"`,
 	"aslr":                         "!asan", // ASan instrumentation breaks ASLR
 	"ap_noise_cancellation":        `("board:brya" || "board:nissa" || "board:skyrim" || "board:guybrush")`,
-	// Some boards cannot play/record stably, disabling these tests and keeping
-	// some of them informational.
-	// TODO(b/240269271): remove "octopus" and "hatch" when b/240269271 is fixed.
-	"audio_stable":   `!("board:octopus" || "board:hatch")`,
-	"audio_unstable": `"board:octopus" || "board:hatch"`,
 	// Grunt has disabled HW acceleration for encoder in ARC but enabled in chrome. It leads to constant tests failure.
 	// This might be not needed when grunt gets uprev to ARC-R and support for HW acceleration.
 	"arc_hw_encoder":     `!("board:grunt" || "board:grunt-kernelnext")`,

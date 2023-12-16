@@ -1860,6 +1860,18 @@ Parallels boot-up testing. Otherwise the same as group:crosbolt.`,
 		Desc:     `A group of tests related to Intel where 3.5mm Jack is connected to the DUT for build validation.`,
 	},
 	{
+		Name: "intel_private",
+		// TODO: b/295558201 - change to proper Intel owner later.
+		Contacts: []string{"tast-owners@google.com"},
+		Desc:     `Intel private tests.`,
+		Subattrs: []*attr{
+			{
+				Name: "intel_private_unstable",
+				Desc: `Unstable intel private tests.`,
+			},
+		},
+	},
+	{
 		Name:     "intel-type-c-eth-dongle",
 		Contacts: []string{"intel.chrome.automation.team@intel.com", "ambalavanan.m.m@intel.com"},
 		Desc:     `A group of tests related to Intel where Ethernet is connected to the DUT via Type-C to Ethernet dongle for build validation.`,

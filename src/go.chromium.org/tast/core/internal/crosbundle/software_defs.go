@@ -170,7 +170,7 @@ var softwareFeatureDefs = map[string]string{
 	// Only official builds are considered to have metrics consent.
 	// See: ChromeCrashReporterClient::GetCollectStatsConsent()
 	// Also metrics consent needs TPM (crbug.com/1035197).
-	"metrics_consent":           "chrome_internal && !mocktpm && !tast_vm",
+	"metrics_consent":           "chrome_internal && !tast_vm",
 	"microcode":                 `!"betty" && !"tast_vm"`,
 	"ml_benchmark_drivers":      "ml_benchmark_drivers",
 	"ml_tiered_support":         `("board:brya" || "board:nissa" || "board:cherry" || "board:skyrim" || "board:guybrush" || "board:hatch" || "board:volteer" || "board:dedede" || "board:zork" || "board:strongbad" || "board:puff" || "board:trogdor" || "board:drallion" || "board:asurada" || "board:corsola")`,
@@ -257,11 +257,11 @@ var softwareFeatureDefs = map[string]string{
 	"tablet_form_factor":        "tablet_form_factor",
 	"tflite_opencl":             `!(elm || hana)`, // these boards seem to have issues with the OpenCL TFLite delegate (b/233851820)
 	"thread_safe_libva_backend": "video_cards_amdgpu || video_cards_iHD",
-	"tpm":                       "!mocktpm",
-	"tpm1":                      "!mocktpm && tpm",  // Indicate tpm1.2 is available
-	"tpm2":                      "!mocktpm && tpm2", // Indicate tpm2 is available
+	"tpm":                       `"*"`,
+	"tpm1":                      "tpm",  // Indicate tpm1.2 is available
+	"tpm2":                      "tpm2", // Indicate tpm2 is available
 	"tpm2_simulator":            "tpm2_simulator",
-	"tpm_clear_allowed":         "!mocktpm && (!tpm_dynamic || tpm2_simulator)", // this filters out the reven board from TPM devices
+	"tpm_clear_allowed":         "!tpm_dynamic || tpm2_simulator", // this filters out the reven board from TPM devices
 	"tpm_dynamic":               "tpm_dynamic",
 	"transparent_hugepage":      "transparent_hugepage",
 	// physical_location is only supported in kernel 5.10 or later.

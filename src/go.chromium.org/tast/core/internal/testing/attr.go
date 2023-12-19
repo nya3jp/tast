@@ -1360,6 +1360,10 @@ Parallels boot-up testing. Otherwise the same as group:crosbolt.`,
 				Desc: `Indicates that failures can be ignored.`,
 			},
 			{
+				Name: "typec_tbt3_bringup",
+				Desc: `Indicates that this test should be run for Thunderbolt 3 bringup validation`,
+			},
+			{
 				Name: "typec_tbt4_bringup",
 				Desc: `Indicates that this test should be run for Thunderbolt 4 bringup validation`,
 			},

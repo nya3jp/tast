@@ -1117,6 +1117,20 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		}
 	}
 
+	features.Accelerometer = &configpb.HardwareFeatures_Accelerometer{}
+	func() {
+		out, err := crosConfig("/hardware-properties", "has-base-accelerometer")
+		if err != nil {
+			features.Accelerometer.BaseAccelerometer = configpb.HardwareFeatures_PRESENT_UNKNOWN
+			return
+		}
+		if out == "" || out == "false" {
+			features.Accelerometer.BaseAccelerometer = configpb.HardwareFeatures_NOT_PRESENT
+			return
+		}
+		features.Accelerometer.BaseAccelerometer = configpb.HardwareFeatures_PRESENT
+	}()
+
 	return &protocol.HardwareFeatures{
 		HardwareFeatures:       features,
 		DeprecatedDeviceConfig: config,

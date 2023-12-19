@@ -2653,3 +2653,19 @@ func MiniOS() Condition {
 		return unsatisfied("DUT does not support minios")
 	}}
 }
+
+// BaseAccelerometer returns a hardware dependency condition that is satisfied
+// if and only if the DUT has the base accelerometer sensor.
+func BaseAccelerometer() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("Did not find hardware features")
+		}
+		if hf.Accelerometer.GetBaseAccelerometer() != configpb.HardwareFeatures_PRESENT {
+			return unsatisfied("DUT does not have base accelerometer")
+		}
+		return satisfied()
+	},
+	}
+}

@@ -42,3 +42,20 @@ func Kitten() {}
 	// Test main functions can be exported without comments.
 	verifyIssues(t, issues, nil)
 }
+
+func TestGolint_AcceptId(t *testing.T) {
+	const code = `package main
+
+// testId is acceptable.
+func testId(tId string) string {
+	return tId
+}
+
+// methodId is acceptatble
+func (m *structType) methodId(tId string) string {
+	return m.returnId + "_" + tId
+}
+`
+	issues := Golint("testfile.go", []byte(code), false)
+	verifyIssues(t, issues, nil)
+}

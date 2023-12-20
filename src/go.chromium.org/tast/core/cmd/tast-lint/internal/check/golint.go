@@ -33,6 +33,25 @@ func shouldIgnore(p lint.Problem) bool {
 		return true
 	}
 
+	if p.Category == "naming" {
+		// Accept Id as an alternative of ID because protobuf generates Id
+		// instead of ID for go bindings.
+		check := func() bool {
+			tokens := strings.SplitN(p.Text, " should be ", 2)
+			if len(tokens) != 2 {
+				return false
+			}
+			// Checks for functions, methods and their parameters.
+			return (strings.HasPrefix(tokens[0], "func") || strings.HasPrefix(tokens[0], "method")) &&
+				strings.Contains(tokens[0], "Id") &&
+				strings.Contains(tokens[1], "ID")
+		}()
+		if check {
+			return true
+		}
+
+	}
+
 	return false
 }
 

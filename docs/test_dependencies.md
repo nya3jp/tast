@@ -212,7 +212,6 @@ The following software features are defined:
 * `selinux_experimental` - An experimental SELinux board. An experimental
     board has `SELINUX=permissive` in `/etc/selinux/config`, thus no policy
     will be enforced. This implies `selinux`.
-* `shill-wifi` - WiFi technology is enabled for Shill.
 * `shipping_kernel` - Debug-related kernel configs are not enabled.
 * `smartdim` - Use smart dim to defer the imminent screen dimming.
 * `smartctl` - Ability to run smartctl software utility.

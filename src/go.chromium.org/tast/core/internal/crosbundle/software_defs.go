@@ -246,7 +246,6 @@ var softwareFeatureDefs = map[string]string{
 	"selinux":              "selinux",
 	"selinux_current":      "selinux && !selinux_experimental",
 	"selinux_experimental": "selinux && selinux_experimental",
-	"shill-wifi":           "!moblab", // fizz-moblab disables the WiFi technology for Shill
 	"shipping_kernel":      `!"debug" && !"kcov" && !"lockdebug"`,
 	"smartctl":             "nvme || sata",
 	"smartdim":             "smartdim",

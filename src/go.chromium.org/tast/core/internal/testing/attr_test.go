@@ -199,6 +199,9 @@ func TestCheckKnownAttrs(t *testing.T) {
 		{
 			attrs: []string{"group:floatingworkspace"},
 		},
+		{
+			attrs: []string{"group:typec"},
+		},
 
 		// Invalid cases.
 		{

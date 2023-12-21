@@ -1371,7 +1371,7 @@ Parallels boot-up testing. Otherwise the same as group:crosbolt.`,
 	},
 	{
 		Name:     "typec",
-		Contacts: []string{"chromeos-power@google.com"},
+		Contacts: []string{"chromeos-usb@google.com"},
 		Desc:     `USB Type C functional tests.`,
 		Subattrs: []*attr{
 			{

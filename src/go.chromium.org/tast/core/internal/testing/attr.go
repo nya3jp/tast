@@ -1375,6 +1375,10 @@ Parallels boot-up testing. Otherwise the same as group:crosbolt.`,
 				Name: "typec_tbt4_bringup",
 				Desc: `Indicates that this test should be run for Thunderbolt 4 bringup validation`,
 			},
+			{
+				Name: "typec_usb_bringup",
+				Desc: `Indicates that this test should be run for USB-C bringup validation`,
+			},
 		},
 	},
 	{

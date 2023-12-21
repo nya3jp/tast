@@ -29,6 +29,7 @@ var softwareFeatureDefs = map[string]string{
 	"arc_camera3":                  `"arc-camera3"`,
 	"arc_launched_32bit":           `"arc-launched-32bit-abi"`,
 	"arc_launched_64bit":           `"!arc-launched-32bit-abi"`,
+	"arcvm_data_migration":         "arcvm_data_migration",
 	"arm":                          `"arm" || "arm64"`,
 	"aslr":                         "!asan", // ASan instrumentation breaks ASLR
 	"ap_noise_cancellation":        `("board:brya" || "board:nissa" || "board:skyrim" || "board:guybrush")`,

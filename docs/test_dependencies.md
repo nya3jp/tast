@@ -37,6 +37,7 @@ The following software features are defined:
 * `arc_camera3` - Using [Camera HAL3] interface in Chrome and Android.
 * `arc_launched_32bit` - This platform originally launched with 32-bit Android.
 * `arc_launched_64bit` - This platform originally launched with 64-bit Android.
+* `arcvm_data_migration` - Boards with ARCVM /data migration enabled.
 * `arm` - The [arm] 32 and 64 bit processor architecture.
 * `aslr` - Address space layout randomization, which mitigates buffer-overflow
     attacks, is functional (this is not true for builds with [AddressSanitizer]

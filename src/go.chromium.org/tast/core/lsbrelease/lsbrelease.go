@@ -81,15 +81,15 @@ var allowedPkgs = []string{
 	"go.chromium.org/tast-tests/cros/local/bundles/cros/arc", // For Version.
 	// TODO(crbug.com/1140906): Temporarily allowed until we remove extra tracing code that only runs on eve.
 	"go.chromium.org/tast-tests/cros/local/bundles/cros/lacros/gpucuj",
-	"go.chromium.org/tast-tests/cros/local/bundles/cros/platform/runtimeprobe", // For Version.
 	"go.chromium.org/tast-tests/cros/local/bundles/cros/platform/updateserver",
-	"go.chromium.org/tast-tests/cros/local/bundles/cros/autoupdate", // For autoupdate and rollback tests.
-	"go.chromium.org/tast-tests/cros/local/bundles/cros/health",     // To confirm OS version can be parsed.
-	"go.chromium.org/tast-tests/cros/local/bundles/cros/osinstall",  // For Version.
-	"go.chromium.org/tast-tests/cros/local/bundles/cros/system",     // For Version.
-	"go.chromium.org/tast-tests/cros/local/bundles/cros/hwsec",      // For cross-version login tests.
-	"go.chromium.org/tast-tests/cros/local/bundles/cros/policy",     // For autoupdate policy tests.
-	"go.chromium.org/tast-tests/cros/local/bundles/cros/lacros",     // For ReleaseTrack or Description.
+	"go.chromium.org/tast-tests/cros/local/bundles/cros/autoupdate",   // For autoupdate and rollback tests.
+	"go.chromium.org/tast-tests/cros/local/bundles/cros/health",       // To confirm OS version can be parsed.
+	"go.chromium.org/tast-tests/cros/local/bundles/cros/osinstall",    // For Version.
+	"go.chromium.org/tast-tests/cros/local/bundles/cros/runtimeprobe", // For Version.
+	"go.chromium.org/tast-tests/cros/local/bundles/cros/system",       // For Version.
+	"go.chromium.org/tast-tests/cros/local/bundles/cros/hwsec",        // For cross-version login tests.
+	"go.chromium.org/tast-tests/cros/local/bundles/cros/policy",       // For autoupdate policy tests.
+	"go.chromium.org/tast-tests/cros/local/bundles/cros/lacros",       // For ReleaseTrack or Description.
 	"go.chromium.org/tast-tests/cros/local/chrome/crossdevice",
 	"go.chromium.org/tast-tests/cros/local/chrome/nearbyshare",
 	"go.chromium.org/tast-tests/cros/local/crash",

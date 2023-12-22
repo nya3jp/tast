@@ -351,6 +351,16 @@ func getDataFilePaths(ctx context.Context, cfg *config.Config, drv *driver.Drive
 	return paths, nil
 }
 
+func dataSrcPath(searchPath []string, dataFilePath string) string {
+	for _, sp := range searchPath {
+		p := filepath.Join(sp, dataFilePath)
+		if _, err := os.Stat(p); err == nil {
+			return p
+		}
+	}
+	return ""
+}
+
 // pushDataFiles copies the listed entity data files to destDir on hst.
 // destDir is the data directory for Tast, e.g. "/usr/share/tast/data/local".
 // The file paths are relative to the package root, i.e. paths take the form
@@ -362,18 +372,23 @@ func pushDataFiles(ctx context.Context, cfg *config.Config, hst *ssh.Conn, destD
 
 	logging.Info(ctx, "Pushing data files to target")
 
-	srcDir := filepath.Join(cfg.BuildWorkspace(), "src")
+	var searchPaths []string
+	for _, s := range cfg.BundleWorkspaces() {
+		searchPaths = append(searchPaths, filepath.Join(s, "src"))
+	}
+
+	files := make(map[string]string)
 
 	// All paths are relative to the bundle dir.
-	var copyPaths, delPaths, missingPaths []string
+	var delPaths, missingPaths []string
 	for _, p := range paths {
 		lp := p + testing.ExternalLinkSuffix
-		if _, err := os.Stat(filepath.Join(srcDir, lp)); err == nil {
+		if srcPath := dataSrcPath(searchPaths, lp); srcPath != "" {
 			// Push the external link file.
-			copyPaths = append(copyPaths, lp)
-		} else if _, err := os.Stat(filepath.Join(srcDir, p)); err == nil {
+			files[srcPath] = filepath.Join(destDir, lp)
+		} else if srcPath := dataSrcPath(searchPaths, p); srcPath != "" {
 			// Push the internal data file and remove the external link file (if any).
-			copyPaths = append(copyPaths, p)
+			files[srcPath] = filepath.Join(destDir, p)
 			delPaths = append(delPaths, lp)
 		} else {
 			missingPaths = append(missingPaths, p)
@@ -382,11 +397,6 @@ func pushDataFiles(ctx context.Context, cfg *config.Config, hst *ssh.Conn, destD
 
 	if len(missingPaths) > 0 {
 		return fmt.Errorf("not found: %v", missingPaths)
-	}
-
-	files := make(map[string]string)
-	for _, p := range copyPaths {
-		files[filepath.Join(srcDir, p)] = filepath.Join(destDir, p)
 	}
 
 	start := time.Now()

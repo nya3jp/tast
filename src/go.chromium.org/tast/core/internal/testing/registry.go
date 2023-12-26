@@ -18,15 +18,16 @@ import (
 
 // Registry holds tests and services.
 type Registry struct {
-	name         string
-	errors       []error
-	allTests     []*TestInstance
-	testNames    map[string]struct{} // names of registered tests
-	allServices  []*Service
-	allPres      map[string]Precondition
-	allFixtures  map[string]*FixtureInstance
-	allVars      map[string]Var    // all registered global runtime variables
-	varRawValues map[string]string // raw values of global runtime variables
+	name           string
+	errors         []error
+	allTests       []*TestInstance
+	testNames      map[string]struct{} // names of registered tests
+	allServices    []*Service
+	allPres        map[string]Precondition
+	allFixtures    map[string]*FixtureInstance
+	allVars        map[string]Var    // all registered global runtime variables
+	varRawValues   map[string]string // raw values of global runtime variables
+	varInitialized bool              // Global runtime variables have been initialized.
 }
 
 // NewRegistry returns a new test registry.
@@ -220,5 +221,11 @@ func (r *Registry) InitializeVars(values map[string]string) error {
 			}
 		}
 	}
+	r.varInitialized = true
 	return nil
+}
+
+// VarsHaveBeenInitialized returns flag to indicate whether global variables are initialized.
+func (r *Registry) VarsHaveBeenInitialized() bool {
+	return r.varInitialized
 }

@@ -23,9 +23,6 @@ func TestRegisterVarString(t *gotesting.T) {
 	if v.Name() != varName {
 		t.Errorf("Function registerVarString set variable name to %q; wanted %q", v.Name(), varName)
 	}
-	if v.Value() != value {
-		t.Errorf("Function registerVarString set variable value to %q; wanted %q", v.Value(), value)
-	}
 }
 
 func TestRegisterVarStringBadName(t *gotesting.T) {
@@ -37,4 +34,25 @@ func TestRegisterVarStringBadName(t *gotesting.T) {
 	if err == nil {
 		t.Fatal("Failed to get an error from registerVarString when variable name is not following convention.")
 	}
+}
+
+// TestVarsNoInit makes sure runtime variables are initialized before being used.
+func TestVarsNoInit(t *gotesting.T) {
+	varName := "testing.v1"
+	value := "default"
+	reg := testing.NewRegistry("bundle")
+	pc, _, _, _ := runtime.Caller(0)
+	stringVar, err := registerVarString(reg, varName, value, "desc", runtime.FuncForPC(pc).Name())
+	if err != nil {
+		t.Fatal("Failed register variable: ", err)
+	}
+	if reg.VarsHaveBeenInitialized() {
+		t.Fatal("Got true for reg.VarsHaveBeenInitialized; wanted false")
+	}
+	defer func() {
+		if recover() == nil {
+			t.Fatal("Uninitialized variables accessed without panic")
+		}
+	}()
+	stringVar.Value()
 }

@@ -180,6 +180,9 @@ func checkAll(g *git.Git, paths []git.CommitFile, debug, fix bool) ([]*check.Iss
 		if err != nil {
 			continue
 		}
+		if debug {
+			fmt.Printf("Checking file: %s\n", path.Path)
+		}
 		allIssues = append(allIssues, check.ExternalJSON(path.Path, data)...)
 	}
 
@@ -192,6 +195,9 @@ func checkAll(g *git.Git, paths []git.CommitFile, debug, fix bool) ([]*check.Iss
 		data, err := g.ReadFile(path.Path)
 		if err != nil {
 			continue
+		}
+		if debug {
+			fmt.Printf("Checking file: %s\n", path.Path)
 		}
 		allIssues = append(allIssues, check.SecretVarFile(path.Path, data)...)
 	}
@@ -232,6 +238,9 @@ func checkAll(g *git.Git, paths []git.CommitFile, debug, fix bool) ([]*check.Iss
 				continue
 			}
 
+			if debug {
+				fmt.Printf("Checking file: %s\n", path.Path)
+			}
 			mux.Lock()
 			i := len(fileIssues)
 			fileIssues = append(fileIssues, nil)

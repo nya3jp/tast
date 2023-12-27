@@ -67,7 +67,7 @@ func TestMainlineAttrsChecker(t *testing.T) {
 		},
 	} {
 		t.Run(name, func(t *testing.T) {
-			got := mainlineAttrsChecker(item.attrs, token.Position{})
+			got := mainlineAttrsChecker(item.attrs, token.Position{}, nil, token.Position{})
 			var gotMsgs []string
 			for _, issue := range got {
 				gotMsgs = append(gotMsgs, issue.Msg)

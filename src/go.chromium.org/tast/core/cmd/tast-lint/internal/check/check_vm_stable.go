@@ -23,7 +23,7 @@ func VerifyVMStableAttrs(fs *token.FileSet, f *ast.File) []*Issue {
 	return checkAttr(fs, f, vmStableAttrChecker)
 }
 
-func vmStableAttrChecker(attrs []string, pos token.Position) []*Issue {
+func vmStableAttrChecker(attrs []string, attrPos token.Position, requirements []string, requirementPos token.Position) []*Issue {
 	var issues []*Issue
 
 	hasMainline := slices.Contains(attrs, "group:mainline")
@@ -40,7 +40,7 @@ func vmStableAttrChecker(attrs []string, pos token.Position) []*Issue {
 	// Missing hw_agnostic
 	if hasVMStable && !hasHWAgnostic {
 		issues = append(issues, &Issue{
-			Pos:  pos,
+			Pos:  attrPos,
 			Msg:  vmStableWithoutHWAgnosticMsg,
 			Link: testAttrDocURL,
 		})
@@ -49,7 +49,7 @@ func vmStableAttrChecker(attrs []string, pos token.Position) []*Issue {
 	// Missing mainline
 	if hasVMStable && !hasMainline {
 		issues = append(issues, &Issue{
-			Pos:  pos,
+			Pos:  attrPos,
 			Msg:  vmStableWithoutMainlineMsg,
 			Link: testAttrDocURL,
 		})
@@ -58,7 +58,7 @@ func vmStableAttrChecker(attrs []string, pos token.Position) []*Issue {
 	// Missing informational
 	if hasVMStable && !hasInformational {
 		issues = append(issues, &Issue{
-			Pos:  pos,
+			Pos:  attrPos,
 			Msg:  vmStableWithoutInformationalMsg,
 			Link: testAttrDocURL,
 		})

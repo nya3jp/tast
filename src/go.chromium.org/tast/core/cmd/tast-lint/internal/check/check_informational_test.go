@@ -107,7 +107,7 @@ func init() {
 	f, fs := parse(code, path)
 	issues := VerifyInformationalAttr(fs, f)
 	expects := []string{
-		"-: Newly added tests should be marked as 'informational'.",
+		path + ":8:6: Newly added tests should be marked as 'informational'.",
 		path + ":12:4: Newly added tests should be marked as 'informational'.",
 		path + ":15:4: Newly added tests should be marked as 'informational'.",
 	}

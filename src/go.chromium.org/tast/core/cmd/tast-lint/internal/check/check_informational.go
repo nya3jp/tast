@@ -16,10 +16,10 @@ const (
 // VerifyInformationalAttr checks if a newly added test has 'informational' attribute.
 func VerifyInformationalAttr(fs *token.FileSet, f *ast.File) []*Issue {
 	return checkAttr(fs, f,
-		func(attrs []string, pos token.Position) []*Issue {
+		func(attrs []string, attrPos token.Position, requirements []string, requirementPos token.Position) []*Issue {
 			if isCriticalTest(attrs) {
 				return []*Issue{{
-					Pos:  pos,
+					Pos:  attrPos,
 					Msg:  shouldBeInformationalMsg,
 					Link: testRegistrationURL,
 				}}

@@ -10,8 +10,8 @@ import (
 	"go/token"
 )
 
-// testAttrChecker is a function checks for a test's Attr and ExtraAttr.
-type testAttrChecker func(attrs []string, pos token.Position) []*Issue
+// testAttrChecker is a function checks for a test's Attr, ExtraAttr, Requirements and ExtraRequirements.
+type testAttrChecker func(attrs []string, attrPos token.Position, requirements []string, requirementPos token.Position) []*Issue
 
 func checkAttr(fs *token.FileSet, f *ast.File, checker testAttrChecker) []*Issue {
 	var issues []*Issue
@@ -43,7 +43,9 @@ func checkAttr(fs *token.FileSet, f *ast.File, checker testAttrChecker) []*Issue
 			}
 
 			var attrs []string
-			var attrPos token.Pos
+			var requirements []string
+			attrPos := comp.Pos()
+			requirementPos := comp.Pos()
 			var paramNode ast.Node
 			for _, el := range comp.Elts {
 				identName, value, pos, err := decomposeKVNode(el)
@@ -51,8 +53,12 @@ func checkAttr(fs *token.FileSet, f *ast.File, checker testAttrChecker) []*Issue
 					continue
 				}
 				if identName == "Attr" {
-					attrs = makeSliceAttrs(value)
+					attrs = makeStringSlice(value)
 					attrPos = pos
+				}
+				if identName == "Requirements" {
+					requirements = makeStringSlice(value)
+					requirementPos = pos
 				}
 				if identName == "Params" {
 					paramNode = value
@@ -71,22 +77,29 @@ func checkAttr(fs *token.FileSet, f *ast.File, checker testAttrChecker) []*Issue
 						continue
 					}
 					var exAttrs []string
-					var exAttrPos token.Pos
+					exAttrPos := comp.Pos()
+					var exRequirements []string
+					exRequirementPos := comp.Pos()
 					for _, el := range comp.Elts {
 						identName, value, pos, err := decomposeKVNode(el)
 						if err != nil {
 							continue
 						}
 						if identName == "ExtraAttr" {
-							exAttrs = makeSliceAttrs(value)
+							exAttrs = makeStringSlice(value)
 							exAttrPos = pos
+						}
+						if identName == "ExtraRequirements" {
+							exRequirements = makeStringSlice(value)
+							exRequirementPos = pos
 						}
 					}
 					exAttrs = append(exAttrs, attrs...)
-					issues = append(issues, checker(exAttrs, fs.Position(exAttrPos))...)
+					exRequirements = append(exRequirements, requirements...)
+					issues = append(issues, checker(exAttrs, fs.Position(exAttrPos), exRequirements, fs.Position(exRequirementPos))...)
 				}
 			} else {
-				issues = append(issues, checker(attrs, fs.Position(attrPos))...)
+				issues = append(issues, checker(attrs, fs.Position(attrPos), requirements, fs.Position(requirementPos))...)
 			}
 		}
 	}
@@ -106,9 +119,9 @@ func decomposeKVNode(el ast.Node) (string, ast.Node, token.Pos, error) {
 	return ident.Name, kv.Value, kv.Pos(), nil
 }
 
-// makeSliceAttrs make a string slice of elements in attribute.
+// makeStringSlice make a string slice of elements in attribute or requirement.
 // We do not check the non-string-literal elements.
-func makeSliceAttrs(node ast.Node) []string {
+func makeStringSlice(node ast.Node) []string {
 	var attrs []string
 	comp, ok := node.(*ast.CompositeLit)
 	if !ok {

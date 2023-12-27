@@ -23,7 +23,7 @@ func VerifyMainlineAttrs(fs *token.FileSet, f *ast.File) []*Issue {
 	return checkAttr(fs, f, mainlineAttrsChecker)
 }
 
-func mainlineAttrsChecker(attrs []string, pos token.Position) []*Issue {
+func mainlineAttrsChecker(attrs []string, attrPos token.Position, requirements []string, requirementPos token.Position) []*Issue {
 	var issues []*Issue
 
 	hasMainline := slices.Contains(attrs, "group:mainline")
@@ -33,7 +33,7 @@ func mainlineAttrsChecker(attrs []string, pos token.Position) []*Issue {
 	// Find typos.
 	if slices.Contains(attrs, "group:informational") {
 		issues = append(issues, &Issue{
-			Pos:  pos,
+			Pos:  attrPos,
 			Msg:  informationalWithGroupMsg,
 			Link: testAttrDocURL,
 		})
@@ -42,7 +42,7 @@ func mainlineAttrsChecker(attrs []string, pos token.Position) []*Issue {
 	}
 	if slices.Contains(attrs, "criticalstaging") {
 		issues = append(issues, &Issue{
-			Pos:  pos,
+			Pos:  attrPos,
 			Msg:  criticalStagingWithoutGroupMsg,
 			Link: testAttrDocURL,
 		})
@@ -52,14 +52,14 @@ func mainlineAttrsChecker(attrs []string, pos token.Position) []*Issue {
 
 	if hasInformational && !hasMainline {
 		issues = append(issues, &Issue{
-			Pos:  pos,
+			Pos:  attrPos,
 			Msg:  informationalWithoutMainlineMsg,
 			Link: testAttrDocURL,
 		})
 	}
 	if hasCriticalStaging && !(hasMainline && hasInformational) {
 		issues = append(issues, &Issue{
-			Pos:  pos,
+			Pos:  attrPos,
 			Msg:  criticalstagingWithoutInformationalMsg,
 			Link: testAttrDocURL,
 		})

@@ -36,7 +36,7 @@ func TestVMStableAttrsChecker(t *testing.T) {
 		},
 	} {
 		t.Run(name, func(t *testing.T) {
-			got := vmStableAttrChecker(item.attrs, token.Position{})
+			got := vmStableAttrChecker(item.attrs, token.Position{}, nil, token.Position{})
 			var gotMsgs []string
 			for _, issue := range got {
 				gotMsgs = append(gotMsgs, issue.Msg)

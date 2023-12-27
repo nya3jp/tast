@@ -21,7 +21,9 @@ func init() {
 `
 	const path = "/src/chromiumos/tast/local/bundles/cros/example/keyboard.go"
 	f, fs := parse(code, path)
-	issues := checkAttr(fs, f, func(attrs []string, pos token.Position) []*Issue { return nil })
+	issues := checkAttr(fs, f, func(attrs []string, attrPos token.Position, requirements []string, requirementPos token.Position) []*Issue {
+		return nil
+	})
 	verifyIssues(t, issues, nil)
 }
 
@@ -36,14 +38,14 @@ func init() {
 	const path = "/src/chromiumos/tast/local/bundles/cros/example/keyboard.go"
 	f, fs := parse(code, path)
 	issues := checkAttr(fs, f,
-		func(attrs []string, pos token.Position) []*Issue {
+		func(attrs []string, attrPos token.Position, requirements []string, requirementPos token.Position) []*Issue {
 			return []*Issue{
 				{
-					Pos: pos,
+					Pos: attrPos,
 					Msg: "First issue.",
 				},
 				{
-					Pos: pos,
+					Pos: attrPos,
 					Msg: "Second issue.",
 				},
 			}
@@ -73,12 +75,12 @@ func init() {
 	const path = "/src/chromiumos/tast/local/extra_attr.go"
 	f, fs := parse(code, path)
 	issues := checkAttr(fs, f,
-		func(attrs []string, pos token.Position) []*Issue {
+		func(attrs []string, attrPos token.Position, requirements []string, requirementPos token.Position) []*Issue {
 			if slices.Contains(attrs, "pass") {
 				return nil
 			}
 			return []*Issue{{
-				Pos: pos,
+				Pos: attrPos,
 				Msg: "Failed.",
 			}}
 		},

@@ -1543,12 +1543,6 @@ Parallels boot-up testing. Otherwise the same as group:crosbolt.`,
 		Name:     "distributed_lab_qual",
 		Contacts: []string{"chromeos-distributed-fleet-platform@google.com"},
 		Desc:     `A group of test to qualify distributed lab components.`,
-		Subattrs: []*attr{
-			{
-				Name: "distributed_lab_qual_faft",
-				Desc: `Indicate firmware test for distributed lab.`,
-			},
-		},
 	},
 	{
 		Name:     "shimless_rma",

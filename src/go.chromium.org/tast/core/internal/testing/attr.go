@@ -616,6 +616,10 @@ Tests in this group are not used for build verification.
 				Name: "firmware_stress",
 				Desc: `Firmware tests which repeat the same scenario many times.`,
 			},
+			{
+				Name: "firmware_ro",
+				Desc: `Firmware tests which should only be run during an RO/RW qual, but not during a RW only qual.`,
+			},
 		},
 	},
 	{

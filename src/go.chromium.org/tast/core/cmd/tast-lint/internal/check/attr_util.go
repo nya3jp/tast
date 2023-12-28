@@ -66,6 +66,20 @@ func checkAttr(fs *token.FileSet, f *ast.File, checker testAttrChecker) []*Issue
 			}
 
 			if paramNode != nil {
+				// If Params is a call to firmware.AddPDPorts, then inspect it's first arg instead.
+				call, ok := paramNode.(*ast.CallExpr)
+				if ok {
+					fun, ok := call.Fun.(*ast.SelectorExpr)
+					if !ok {
+						continue
+					}
+					x, ok := fun.X.(*ast.Ident)
+					if !ok || x.String() != "firmware" || fun.Sel.String() != "AddPDPorts" {
+						continue
+					}
+					paramNode = call.Args[0]
+				}
+
 				comp, ok := paramNode.(*ast.CompositeLit)
 				if !ok {
 					// This should be checked by another lint, so skipped.

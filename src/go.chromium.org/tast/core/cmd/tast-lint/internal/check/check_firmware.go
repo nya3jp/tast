@@ -20,11 +20,18 @@ const (
 	biosRWRequirementMsg      = `All "firmware_bios" tests without "firmware_ro" should also include the requirement "sys-fw-0025-v01".`
 	nonBiosRWRequirementMsg   = `Only "firmware_bios" tests without "firmware_ro" may include the requirement "sys-fw-0025-v01".`
 	biosTestInvalidAttrsMsg   = `The attrs "firmware_level*" and "firmware_ro" can only be used with "firmware_bios".`
+	ecRequirementMsg          = `All "firmware_ec" tests should also include the requirement "sys-fw-0022-v02".`
+	nonECRequirementMsg       = `Only "firmware_ec" tests may include the requirement "sys-fw-0022-v02".`
+	pdRequirementIndirectMsg  = `Don't use attr "firmware_pd" or requirement "sys-fw-0023-v01" directly, but instead use firmware.AddPDPorts().`
 )
 
 // VerifyFirmwareAttrs checks that "group:firmware" related attributes are set correctly.
 func VerifyFirmwareAttrs(fs *token.FileSet, f *ast.File) []*Issue {
-	return checkAttr(fs, f, firmwareBiosAttrsChecker)
+	var issues []*Issue
+	issues = append(issues, checkAttr(fs, f, firmwareBiosAttrsChecker)...)
+	issues = append(issues, checkAttr(fs, f, firmwareECAttrsChecker)...)
+	issues = append(issues, checkAttr(fs, f, firmwarePDAttrsChecker)...)
+	return issues
 }
 
 func firmwareBiosAttrsChecker(attrs []string, attrPos token.Position, requirements []string, requirementPos token.Position) []*Issue {
@@ -90,5 +97,49 @@ func firmwareBiosAttrsChecker(attrs []string, attrPos token.Position, requiremen
 		})
 	}
 
+	return issues
+}
+
+func firmwareECAttrsChecker(attrs []string, attrPos token.Position, requirements []string, requirementPos token.Position) []*Issue {
+	var issues []*Issue
+
+	hasFirmware := slices.Contains(attrs, "group:firmware")
+	hasEC := slices.Contains(attrs, "firmware_ec")
+
+	if hasFirmware && hasEC && !slices.Contains(requirements, "sys-fw-0022-v02") {
+		issues = append(issues, &Issue{
+			Pos:  requirementPos,
+			Msg:  ecRequirementMsg,
+			Link: testAttrDocURL,
+		})
+	}
+	if !hasEC && slices.Contains(requirements, "sys-fw-0022-v02") {
+		issues = append(issues, &Issue{
+			Pos:  requirementPos,
+			Msg:  nonECRequirementMsg,
+			Link: testAttrDocURL,
+		})
+	}
+
+	return issues
+}
+
+func firmwarePDAttrsChecker(attrs []string, attrPos token.Position, requirements []string, requirementPos token.Position) []*Issue {
+	var issues []*Issue
+
+	if slices.Contains(requirements, "sys-fw-0023-v01") {
+		issues = append(issues, &Issue{
+			Pos:  requirementPos,
+			Msg:  pdRequirementIndirectMsg,
+			Link: testAttrDocURL,
+		})
+	}
+	if slices.Contains(attrs, "firmware_pd") {
+		issues = append(issues, &Issue{
+			Pos:  attrPos,
+			Msg:  pdRequirementIndirectMsg,
+			Link: testAttrDocURL,
+		})
+	}
 	return issues
 }

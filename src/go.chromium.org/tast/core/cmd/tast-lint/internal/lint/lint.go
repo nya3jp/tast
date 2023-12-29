@@ -22,10 +22,9 @@ import (
 
 	"golang.org/x/sync/errgroup"
 
-	"go.chromium.org/tast/core/errors"
-
 	"go.chromium.org/tast/core/cmd/tast-lint/internal/check"
 	"go.chromium.org/tast/core/cmd/tast-lint/internal/git"
+	"go.chromium.org/tast/core/errors"
 )
 
 // tastUserCodeDirRE matches with a valid import, e.g."src/go.chromium.org/tast-test/local/"
@@ -274,19 +273,16 @@ func checkFile(path git.CommitFile, data []byte, debug bool, fs *token.FileSet, 
 	issues = append(issues, check.DeprecatedAPIs(fs, f)...)
 	issues = append(issues, check.FixtureDeclarations(fs, f, fix)...)
 
-	// TODO: Ongoing go module work breaks this check. b/274840073
-	//       is tracking this issue. Once go-module work is completed
-	//       this linter rule may need to change.
-	// if !hasFmtError(data, path.Path) {
-	// 	// goimports applies gofmt, so skip it if the code has any formatting
-	// 	// error to avoid confusing reports. gofmt will be run by the repo
-	// 	// upload hook anyway.
-	// 	if !fix {
-	// 		issues = append(issues, check.ImportOrder(path.Path, data)...)
-	// 	} else if newf, err := check.ImportOrderAutoFix(fs, f); err == nil {
-	// 		*f = *newf
-	// 	}
-	// }
+	if !hasFmtError(data, path.Path) {
+		// goimports applies gofmt, so skip it if the code has any formatting
+		// error to avoid confusing reports. gofmt will be run by the repo
+		// upload hook anyway.
+		if !fix {
+			issues = append(issues, check.ImportOrder(path.Path, data)...)
+		} else if newf, err := check.ImportOrderAutoFix(fs, f); err == nil {
+			*f = *newf
+		}
+	}
 
 	if isUserFile(path.Path) {
 		issues = append(issues, check.TestDeclarations(fs, f, path, fix)...)

@@ -977,7 +977,7 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		logging.Info(ctx, "Failed to parse EC Config: ", err)
 	}
 
-	rpConfigPresent, err := hasRuntimeProbeConfig(model)
+	rpConfigPresent, err := hasRuntimeProbeConfig(model, false)
 	if err != nil {
 		logging.Info(ctx, "Failed to determine if the config of Runtime Probe exists: ", err)
 	}
@@ -986,6 +986,17 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 	} else {
 		logging.Infof(ctx, "Config of Runtime Probe not found")
 		features.RuntimeProbeConfig.Present = configpb.HardwareFeatures_NOT_PRESENT
+	}
+
+	rpEncryptedConfigPresent, err := hasRuntimeProbeConfig(model, true)
+	if err != nil {
+		logging.Info(ctx, "Failed to determine if the encrypted config of Runtime Probe exists: ", err)
+	}
+	if rpEncryptedConfigPresent {
+		features.RuntimeProbeConfig.EncryptedConfigPresent = configpb.HardwareFeatures_PRESENT
+	} else {
+		logging.Infof(ctx, "Encrypted config of Runtime Probe not found")
+		features.RuntimeProbeConfig.EncryptedConfigPresent = configpb.HardwareFeatures_NOT_PRESENT
 	}
 
 	gpuFamily, gpuVendor, cpuSocFamily, err := func() (gpuFamily, gpuVendor, cpuSocFamily string, fetchErr error) {
@@ -1942,8 +1953,11 @@ func parseECBuildConfig(ctx context.Context, features *configpb.HardwareFeatures
 // hasRuntimeProbeConfig returns true if the corresponding probe config for the
 // model of the DUT exists.  The err is set if the error os.Stat returns is not
 // fs.ErrNotExist.
-func hasRuntimeProbeConfig(model string) (bool, error) {
+func hasRuntimeProbeConfig(model string, encrypted bool) (bool, error) {
 	probeConfigRelPath := "etc/runtime_probe/" + model + "/probe_config.json"
+	if encrypted {
+		probeConfigRelPath += ".enc"
+	}
 	configRoots := []string{
 		"/usr/local/",
 		"/",

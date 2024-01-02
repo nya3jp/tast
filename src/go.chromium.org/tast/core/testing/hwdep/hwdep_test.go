@@ -1136,6 +1136,33 @@ func TestRuntimeProbeConfig(t *testing.T) {
 		nil)
 }
 
+func TestRuntimeProbeConfigPrivate(t *testing.T) {
+	for _, tc := range []struct {
+		option                   bool
+		rpEncryptedConfigPresent configpb.HardwareFeatures_Present
+		expectSatisfied          bool
+	}{
+		{true, configpb.HardwareFeatures_PRESENT, true},
+		{true, configpb.HardwareFeatures_NOT_PRESENT, false},
+		{false, configpb.HardwareFeatures_PRESENT, false},
+		{false, configpb.HardwareFeatures_NOT_PRESENT, true},
+	} {
+		verifyCondition(
+			t, hwdep.RuntimeProbeConfigPrivate(tc.option),
+			&frameworkprotocol.DeprecatedDeviceConfig{},
+			&configpb.HardwareFeatures{
+				RuntimeProbeConfig: &configpb.HardwareFeatures_RuntimeProbeConfig{
+					EncryptedConfigPresent: tc.rpEncryptedConfigPresent,
+				},
+			},
+			tc.expectSatisfied)
+	}
+	expectError(
+		t, hwdep.RuntimeProbeConfigPrivate(true),
+		&frameworkprotocol.DeprecatedDeviceConfig{},
+		nil)
+}
+
 func TestGPUFamily(t *testing.T) {
 	c := hwdep.GPUFamily("tigerlake", "qualcomm")
 	for _, tc := range []struct {

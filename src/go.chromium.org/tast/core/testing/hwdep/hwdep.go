@@ -2346,6 +2346,25 @@ func RuntimeProbeConfig() Condition {
 	}}
 }
 
+// RuntimeProbeConfigPrivate is satisfied if the existence status of private
+// probe configs of the model matches given |present|.
+func RuntimeProbeConfigPrivate(present bool) Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("DUT HardwareFeatures data is not given")
+		}
+		actualPresent := hf.GetRuntimeProbeConfig().GetEncryptedConfigPresent() == configpb.HardwareFeatures_PRESENT
+		if present != actualPresent {
+			if actualPresent {
+				return unsatisfied("DUT has unexpected private Runtime Probe config")
+			}
+			return unsatisfied("DUT does not have private Runtime Probe config")
+		}
+		return satisfied()
+	}}
+}
+
 // SeamlessRefreshRate is satisfied if the device supports changing refresh rates without modeset.
 func SeamlessRefreshRate() Condition {
 	// TODO: Determine at runtime if a device meets the requirements by inspecting EDID, kernel, and SoC versions.

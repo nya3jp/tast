@@ -989,9 +989,15 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 	}
 
 	gpuFamily, gpuVendor, cpuSocFamily, err := func() (gpuFamily, gpuVendor, cpuSocFamily string, fetchErr error) {
-		out, err := exec.Command("/usr/local/graphics/hardware_probe").Output()
+		outBin, err := ioutil.TempFile("/tmp", "hardware_probe")
 		if err != nil {
-			return "", "", "", err
+			return "", "", "", errors.Wrap(err, "failed to create temp file")
+		}
+		outBin.Close()
+		defer os.Remove(outBin.Name())
+		out, err := exec.Command("/usr/local/graphics/hardware_probe", "-output", outBin.Name()).CombinedOutput()
+		if err != nil {
+			return "", "", "", errors.Wrapf(err, "failed to run hardware_probe, output: %v", string(out))
 		}
 		type gpuInfo struct {
 			Family string `json:"Family"`
@@ -1002,9 +1008,12 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 			GPUInfo   []gpuInfo `json:"GPU_Family"`
 			CPUFamily string    `json:"CPU_SOC_Family"`
 		}
-
+		b, err := os.ReadFile(outBin.Name())
+		if err != nil {
+			return "", "", "", errors.Wrap(err, "failed to read hardware_probe.json")
+		}
 		var result hardwareProbeResult
-		if err := json.Unmarshal(out, &result); err != nil {
+		if err := json.Unmarshal(b, &result); err != nil {
 			return "", "", "", err
 		}
 		if len(result.GPUInfo) > 0 {

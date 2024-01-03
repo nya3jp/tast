@@ -1650,6 +1650,11 @@ Parallels boot-up testing. Otherwise the same as group:crosbolt.`,
 		Desc:     `A group of tests related to the cryptohomed system daemon.`,
 	},
 	{
+		Name:     "device_management",
+		Contacts: []string{"cros-hwsec@google.com"},
+		Desc:     `A group of tests related to the device_management system daemon.`,
+	},
+	{
 		Name:     "hwsec_infra",
 		Contacts: []string{"cros-hwsec@google.com"},
 		Desc:     `A group of tests related to the hwsec related low-level libraries & daemons.`,

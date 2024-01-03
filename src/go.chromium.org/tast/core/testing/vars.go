@@ -46,10 +46,6 @@ func (v *VarString) Name() string {
 
 // Value returns value of the variable.
 func (v *VarString) Value() string {
-	reg := testing.GlobalRegistry()
-	if !reg.VarsHaveBeenInitialized() {
-		panic(fmt.Sprintf("Variable %s has not been initialized", v.v.Name()))
-	}
 	return v.v.Value()
 }
 

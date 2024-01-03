@@ -125,6 +125,7 @@ const (
 	IntelAX201                 = wlan.IntelAX201
 	IntelAX203                 = wlan.IntelAX203
 	IntelAX211                 = wlan.IntelAX211
+	IntelBE200                 = wlan.IntelBE200
 	BroadcomBCM4354SDIO        = wlan.BroadcomBCM4354SDIO
 	BroadcomBCM4356PCIE        = wlan.BroadcomBCM4356PCIE
 	BroadcomBCM4371PCIE        = wlan.BroadcomBCM4371PCIE
@@ -1116,6 +1117,7 @@ func Wifi80211ax() Condition {
 		IntelAX201,
 		IntelAX203,
 		IntelAX211,
+		IntelBE200,
 		Realtek8852APCIE,
 		Realtek8852CPCIE,
 		MediaTekMT7921PCIE,
@@ -1130,6 +1132,7 @@ func Wifi80211ax6E() Condition {
 	return WifiDevice(
 		QualcommWCN6855,
 		IntelAX211,
+		IntelBE200,
 		MediaTekMT7922PCIE,
 	)
 }
@@ -1258,6 +1261,7 @@ func WifiIntel() Condition {
 		IntelAX201,
 		IntelAX203,
 		IntelAX211,
+		IntelBE200,
 	)
 }
 

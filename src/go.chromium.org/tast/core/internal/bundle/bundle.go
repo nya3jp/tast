@@ -15,6 +15,7 @@ import (
 	"go.chromium.org/tast/core/errors"
 	"go.chromium.org/tast/core/internal/bundle/legacyjson"
 	"go.chromium.org/tast/core/internal/command"
+	"go.chromium.org/tast/core/internal/logging"
 	"go.chromium.org/tast/core/internal/testcontext"
 	"go.chromium.org/tast/core/internal/testing"
 )
@@ -177,8 +178,15 @@ func NewStaticConfig(reg *testing.Registry, defaultTestTimeout time.Duration, d 
 			if d.Ready != nil && pd.WaitUntilReady {
 				ctxWithTimeout := ctx
 				if pd.WaitUntilReadyTimeout > 0 {
+					waitUntilReadyTimeout := pd.WaitUntilReadyTimeout
+					if waitUntilReadyTimeout < systemTestsTimeout {
+						logging.Infof(ctx,
+							"The waituntilreadytimeout (%vs) should be greater than or equal to systemservicestimeout (%vs); will use systemservicestimeout instead",
+							waitUntilReadyTimeout.Seconds(), systemTestsTimeout.Seconds())
+						waitUntilReadyTimeout = systemTestsTimeout
+					}
 					var cancel context.CancelFunc
-					ctxWithTimeout, cancel = context.WithTimeout(ctx, pd.WaitUntilReadyTimeout)
+					ctxWithTimeout, cancel = context.WithTimeout(ctx, waitUntilReadyTimeout)
 					defer cancel()
 				}
 				if err := d.Ready(ctxWithTimeout, systemTestsTimeout); err != nil {

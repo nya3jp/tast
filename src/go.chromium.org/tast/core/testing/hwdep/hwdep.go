@@ -2673,3 +2673,17 @@ func BaseAccelerometer() Condition {
 	},
 	}
 }
+
+// IntelIsh is satisfied if Intel Integrated Sensor Hub is present in the `lspci` output on DUT.
+func IntelIsh() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("Did not find hardware features")
+		}
+		if hf.GetFwConfig().IntelIsh == configpb.HardwareFeatures_PRESENT {
+			return satisfied()
+		}
+		return unsatisfied("Intel ISH is not present nor enabled")
+	}}
+}

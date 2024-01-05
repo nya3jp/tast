@@ -1424,3 +1424,31 @@ func TestHasBaseAccelerometer(t *testing.T) {
 		nil,
 		nil)
 }
+
+func TestIntelIsh(t *testing.T) {
+	c := hwdep.IntelIsh()
+
+	for _, tc := range []struct {
+		intelIshPresent configpb.HardwareFeatures_Present
+		expectSatisfied bool
+	}{
+		{configpb.HardwareFeatures_PRESENT_UNKNOWN, false},
+		{configpb.HardwareFeatures_NOT_PRESENT, false},
+		{configpb.HardwareFeatures_PRESENT, true},
+	} {
+		verifyCondition(
+			t, c,
+			nil,
+			&configpb.HardwareFeatures{
+				FwConfig: &configpb.HardwareFeatures_FirmwareConfiguration{
+					IntelIsh: tc.intelIshPresent,
+				},
+			},
+			tc.expectSatisfied)
+	}
+	expectError(
+		t, c,
+		nil,
+		nil)
+
+}

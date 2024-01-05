@@ -1140,6 +1140,22 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		features.Accelerometer.BaseAccelerometer = configpb.HardwareFeatures_PRESENT
 	}()
 
+	func() {
+		out, err := exec.CommandContext(cmdCtx, "lspci", "-mm").Output()
+		if err != nil {
+			features.FwConfig.IntelIsh = configpb.HardwareFeatures_PRESENT_UNKNOWN
+			return
+		}
+		lines := strings.Split(string(out), "\n")
+		for _, line := range lines {
+			if strings.Contains(line, "Integrated Sensor Hub") {
+				features.FwConfig.IntelIsh = configpb.HardwareFeatures_PRESENT
+				return
+			}
+		}
+		features.FwConfig.IntelIsh = configpb.HardwareFeatures_NOT_PRESENT
+	}()
+
 	return &protocol.HardwareFeatures{
 		HardwareFeatures:       features,
 		DeprecatedDeviceConfig: config,

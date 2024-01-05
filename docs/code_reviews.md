@@ -26,12 +26,20 @@ reviewers:
     [(details)](#Why-are-Tast-reviewer-reviews-required). The tast reviewer
     should grant you the `Tast-Review+1` vote.
 
+    If your CL only changes the following file types, the CL is exempt from the
+    `Tast-Review` vote:
+
+    *   `.external`
+    *   `.SHA256`
+
+    The [Tast-Stamper] bot will grant the `Tast-Review+1` vote for you automatically.
+
 After getting LGTM from both reviewers, submit the change via the Commit Queue.
 
 [self-review checklist]: #Self_review-checklist
 [Tast reviewers]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/refs/heads/main/OWNERS
 [gwsq]: https://goto.google.com/gwsq-gerrit
-
+[Tast-Stamper]: https://chromium-review.googlesource.com/q/project:chromiumos/platform/tast-tests+label:Tast-Review%3D1%2Cuser%3Dtast-stamper@tast-stamper.iam.gserviceaccount.com
 
 ## Self-review checklist
 

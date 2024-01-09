@@ -273,12 +273,12 @@ Tests in this group are not used for build verification.
 	},
 	{
 		Name:     "mtp",
-		Contacts: []string{"arc-engprod@google.com"},
+		Contacts: []string{"chromeos-dev-engprod@google.com"},
 		Desc:     `A group of tests that run on DUTs with Android phones connected and verify MTP(Media Transfer Protocol).`,
 	},
 	{
 		Name:     "arc",
-		Contacts: []string{"arc-engprod@google.com"},
+		Contacts: []string{"chromeos-dev-engprod@google.com"},
 		Desc:     `A group of tests that run ARC++ Functional Tests.`,
 		Subattrs: []*attr{
 			{
@@ -297,7 +297,7 @@ Tests in this group are not used for build verification.
 	},
 	{
 		Name:     "appcompat",
-		Contacts: []string{"arc-engprod@google.com", "cros-appcompat-test-team@google.com"},
+		Contacts: []string{"chromeos-dev-engprod@google.com", "cros-appcompat-test-team@google.com"},
 		Desc:     `A group of ARC app compatibility tests.`,
 		Subattrs: []*attr{
 			{
@@ -376,12 +376,26 @@ Tests in this group are not used for build verification.
 	},
 	{
 		Name:     "arcappgameperf",
-		Contacts: []string{"arc-engprod@google.com"},
+		Contacts: []string{"chromeos-dev-engprod@google.com"},
 		Desc:     `A group of tests that run ARC++ Game performance tests.`,
+		Subattrs: []*attr{
+			{
+				Name: "arcappgameperf_0",
+				Desc: `Group 0 of ARC++ Game performance tests.`,
+			},
+			{
+				Name: "arcappgameperf_1",
+				Desc: `Group 1 of ARC++ Game performance tests.`,
+			},
+			{
+				Name: "arcappgameperf_2",
+				Desc: `Group 2 of ARC++ Game performance tests.`,
+			},
+		},
 	},
 	{
 		Name:     "arcappmediaperf",
-		Contacts: []string{"arc-engprod@google.com"},
+		Contacts: []string{"chromeos-dev-engprod@google.com"},
 		Desc:     `A group of tests that run ARC++ Media performance tests.`,
 	},
 	{

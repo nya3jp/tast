@@ -277,6 +277,11 @@ Tests in this group are not used for build verification.
 		Desc:     `A group of tests that run on DUTs with Android phones connected and verify MTP(Media Transfer Protocol).`,
 	},
 	{
+		Name:     "mtp_cq",
+		Contacts: []string{"chromeos-dev-engprod@google.com"},
+		Desc:     `A group of critical tests that run on DUTs with Android phones connected and verify MTP(Media Transfer Protocol).`,
+	},
+	{
 		Name:     "arc",
 		Contacts: []string{"chromeos-dev-engprod@google.com"},
 		Desc:     `A group of tests that run ARC++ Functional Tests.`,

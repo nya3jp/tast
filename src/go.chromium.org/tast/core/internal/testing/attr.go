@@ -2211,6 +2211,11 @@ from other existing groups (or use this group standalone).
 		Contacts: []string{"kamilszarek@google.com", "chromeos-ent-test@google.com"},
 		Desc:     "A group of tests that use accounts provided by TAPE.",
 	},
+	{
+		Name:     "on_flex",
+		Contacts: []string{"kamilszarek@google.com", "chromeos-ent-test@google.com"},
+		Desc:     `A group of tests that run on Flex devices.`,
+	},
 }
 
 // validGroupMap is the name-keyed map of validGroups.

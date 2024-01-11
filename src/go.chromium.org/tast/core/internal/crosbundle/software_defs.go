@@ -29,6 +29,7 @@ var softwareFeatureDefs = map[string]string{
 	"arc_camera3":                  `"arc-camera3"`,
 	"arc_launched_32bit":           `"arc-launched-32bit-abi"`,
 	"arc_launched_64bit":           `"!arc-launched-32bit-abi"`,
+	"arc_64bit_only":               `"arc-64bit-only"`,
 	"arcvm_data_migration":         "arcvm_data_migration",
 	"arm":                          `"arm" || "arm64"`,
 	"aslr":                         "!asan", // ASan instrumentation breaks ASLR
@@ -183,6 +184,7 @@ var softwareFeatureDefs = map[string]string{
 	"no_android":                "!arc",
 	"no_android_vm_r":           `!(arc && arcvm && "android-vm-rvc")`,
 	"no_android_vm_t":           `!(arc && arcvm && "android-vm-tm")`,
+	"no_arc_64bit_only":         `"!arc-64bit-only"`,
 	"no_arc_userdebug":          "!(cheets_userdebug || cheets_userdebug_64)",
 	"no_arc_x86":                "!(amd64 && cheets_user)",
 	"no_arcvm_virtio_blk_data":  "!(arcvm_virtio_blk_data || arcvm_data_migration)",

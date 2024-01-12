@@ -1075,6 +1075,10 @@ third_party/autotest/files/server/site_tests/tast/control.racc-config-installed.
 				Name: "cellular_carrier_dependent",
 				Desc: `Identifies Cellular tests that should be only run on a single carrier`,
 			},
+			{
+				Name: "cellular_hotspot",
+				Desc: `Identifies Cellular hotspot tests.`,
+			},
 		},
 	},
 	{

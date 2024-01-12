@@ -2206,6 +2206,11 @@ from other existing groups (or use this group standalone).
 		Contacts: []string{"clumptini@google.com"},
 		Desc:     "A group of tests for bruschetta tests that run in CQ.",
 	},
+	{
+		Name:     "tape-daily",
+		Contacts: []string{"kamilszarek@google.com", "chromeos-ent-test@google.com"},
+		Desc:     "A group of tests that use accounts provided by TAPE.",
+	},
 }
 
 // validGroupMap is the name-keyed map of validGroups.

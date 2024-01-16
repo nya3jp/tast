@@ -188,7 +188,7 @@ var softwareFeatureDefs = map[string]string{
 	"no_android":                "!arc",
 	"no_android_vm_r":           `!(arc && arcvm && "android-vm-rvc")`,
 	"no_android_vm_t":           `!(arc && arcvm && "android-vm-tm")`,
-	"no_arc_64bit_only":         `"!arc-64bit-only"`,
+	"no_arc_64bit_only":         `!"arc-64bit-only"`,
 	"no_arc_userdebug":          "!(cheets_userdebug || cheets_userdebug_64)",
 	"no_arc_x86":                "!(amd64 && cheets_user)",
 	"no_arcvm_virtio_blk_data":  "!(arcvm_virtio_blk_data || arcvm_data_migration)",

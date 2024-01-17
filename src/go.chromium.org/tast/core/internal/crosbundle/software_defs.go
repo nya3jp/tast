@@ -167,17 +167,21 @@ var softwareFeatureDefs = map[string]string{
 	// Only official builds are considered to have metrics consent.
 	// See: ChromeCrashReporterClient::GetCollectStatsConsent()
 	// Also metrics consent needs TPM (crbug.com/1035197).
-	"metrics_consent":           "chrome_internal && !tast_vm",
-	"microcode":                 `!"betty" && !"tast_vm"`,
-	"ml_benchmark_drivers":      "ml_benchmark_drivers",
-	"ml_tiered_support":         `("board:brya" || "board:nissa" || "board:cherry" || "board:skyrim" || "board:guybrush" || "board:hatch" || "board:volteer" || "board:dedede" || "board:zork" || "board:strongbad" || "board:puff" || "board:trogdor" || "board:drallion" || "board:asurada" || "board:corsola")`,
-	"ml_service":                "ml_service",
-	"modemfwd":                  "modemfwd",
-	"mosys":                     "!no_factory_flow && !betty && !tast_vm",
-	"nacl":                      "nacl",
-	"ndk_translation":           "ndk_translation",
-	"ndk_translation64":         "ndk_translation64",
-	"nmi_backtrace":             `!("arm" || "arm64") || ("arm64" && !("kernel-4_19" || "kernel-5_4" || "kernel-5_10"))`,
+	"metrics_consent":      "chrome_internal && !tast_vm",
+	"microcode":            `!"betty" && !"tast_vm"`,
+	"ml_benchmark_drivers": "ml_benchmark_drivers",
+	"ml_tiered_support":    `("board:brya" || "board:nissa" || "board:cherry" || "board:skyrim" || "board:guybrush" || "board:hatch" || "board:volteer" || "board:dedede" || "board:zork" || "board:strongbad" || "board:puff" || "board:trogdor" || "board:drallion" || "board:asurada" || "board:corsola")`,
+	"ml_service":           "ml_service",
+	"modemfwd":             "modemfwd",
+	"mosys":                "!no_factory_flow && !betty && !tast_vm",
+	"nacl":                 "nacl",
+	"ndk_translation":      "ndk_translation",
+	"ndk_translation64":    "ndk_translation64",
+	// Technially x86 boards have always been able to do NMI backtrace and arm64 boards have been able to do
+	// so since kernel v5.15. However, we'll set a baseline of kernel v6.1 because we need extra patches
+	// that make the debug messages more reliable so we can make sure that `lkdtm_HARDLOCKUP` is traced.
+	// Specifically we want the set of patches that end at <https://crrev.com/c/5192885>.
+	"nmi_backtrace":             `!("kernel-4_14" || "kernel-4_19" || "kernel-5_4" || "kernel-5_10" || "kernel-5_15")`,
 	"nnapi":                     "nnapi",
 	"nnapi_vendor_driver":       "nnapi && !betty && !tast_vm",
 	"no_amd_cpu":                "!amd_cpu",

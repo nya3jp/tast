@@ -152,6 +152,12 @@ func newTestInstance(t *Test, p *Param) (*TestInstance, error) {
 		lifeCycleStage = p.LifeCycleStage
 	}
 
+	// Overwrite test's VariantCategory with subtest's VariantCategory if it was set.
+	variantCategory := t.VariantCategory
+	if p.VariantCategory != "" {
+		variantCategory = p.VariantCategory
+	}
+
 	manualAttrs := append(append([]string(nil), t.Attr...), p.ExtraAttr...)
 	if err := validateManualAttr(manualAttrs); err != nil {
 		return nil, err
@@ -275,7 +281,7 @@ func newTestInstance(t *Test, p *Param) (*TestInstance, error) {
 		Requirements:    requirements,
 		BugComponent:    bugComponent,
 		LifeCycleStage:  lifeCycleStage,
-		VariantCategory: t.VariantCategory,
+		VariantCategory: variantCategory,
 	}, nil
 }
 

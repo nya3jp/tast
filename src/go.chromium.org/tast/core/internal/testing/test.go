@@ -347,6 +347,11 @@ type Param struct {
 	// LifeCycleStage overrides the LifeCycleStage defined in the test.
 	// This field is not to be used or referenced by test code.
 	LifeCycleStage LifeCycle
+
+	// VariantCategory defines hardware and software capabilities of the device or test rigging it
+	// needs, which can influence the behavior of the test and its outcome.
+	// Not required for the legacy pipeline.
+	VariantCategory string
 }
 
 // validate performs initial validations of Test.

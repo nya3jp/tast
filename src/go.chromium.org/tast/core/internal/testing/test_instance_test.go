@@ -305,6 +305,8 @@ func TestInstantiateForBothPimaryCompaion(t *gotesting.T) {
 }
 
 func TestInstantiateParamsForAllPrimary(t *gotesting.T) {
+	defaultVariantCategory := "defaultVariant"
+	overriddenVariantCategory := "123A"
 	got, err := instantiate(&Test{
 		Func:               TESTINSTANCETEST,
 		Attr:               []string{"group:crosbolt"},
@@ -312,6 +314,7 @@ func TestInstantiateParamsForAllPrimary(t *gotesting.T) {
 		SoftwareDepsForAll: map[string]dep.SoftwareDeps{"": []string{"dep0"}},
 		HardwareDepsForAll: map[string]dep.HardwareDeps{"": hwdep.D(hwdep.Model("model1", "model2"))},
 		Requirements:       []string{"one"},
+		VariantCategory:    defaultVariantCategory,
 		Params: []Param{{
 			Val:                     123,
 			ExtraAttr:               []string{"crosbolt_nightly"},
@@ -320,6 +323,7 @@ func TestInstantiateParamsForAllPrimary(t *gotesting.T) {
 			ExtraHardwareDepsForAll: map[string]dep.HardwareDeps{"": hwdep.D(hwdep.SkipOnModel("model2"))},
 			ExtraRequirements:       []string{"two"},
 			LifeCycleStage:          LifeCycleInDevelopment,
+			VariantCategory:         overriddenVariantCategory,
 		}, {
 			Name:                    "foo",
 			Val:                     456,
@@ -348,10 +352,11 @@ func TestInstantiateParamsForAllPrimary(t *gotesting.T) {
 				testDepAttrPrefix + "dep0",
 				testDepAttrPrefix + "dep1",
 			},
-			Data:           []string{"data0.txt", "data1.txt"},
-			SoftwareDeps:   map[string]dep.SoftwareDeps{"": []string{"dep0", "dep1"}},
-			Requirements:   []string{"one", "two"},
-			LifeCycleStage: LifeCycleInDevelopment,
+			Data:            []string{"data0.txt", "data1.txt"},
+			SoftwareDeps:    map[string]dep.SoftwareDeps{"": []string{"dep0", "dep1"}},
+			Requirements:    []string{"one", "two"},
+			LifeCycleStage:  LifeCycleInDevelopment,
+			VariantCategory: overriddenVariantCategory,
 		},
 		{
 			Name: "testing.TESTINSTANCETEST.foo",
@@ -366,9 +371,10 @@ func TestInstantiateParamsForAllPrimary(t *gotesting.T) {
 				testDepAttrPrefix + "dep0",
 				testDepAttrPrefix + "dep2",
 			},
-			Data:         []string{"data0.txt", "data2.txt"},
-			SoftwareDeps: map[string]dep.SoftwareDeps{"": []string{"dep0", "dep2"}},
-			Requirements: []string{"one", "three", "four"},
+			Data:            []string{"data0.txt", "data2.txt"},
+			SoftwareDeps:    map[string]dep.SoftwareDeps{"": []string{"dep0", "dep2"}},
+			Requirements:    []string{"one", "three", "four"},
+			VariantCategory: defaultVariantCategory,
 		},
 	}
 	if diff := cmp.Diff(got, want, cmpopts.IgnoreFields(TestInstance{}, "Func", "HardwareDeps", "Pre")); diff != "" {

@@ -9,7 +9,7 @@ require (
 	github.com/google/go-cmp v0.5.9
 	github.com/google/subcommands v1.2.0
 	github.com/shirou/gopsutil/v3 v3.23.5
-	go.chromium.org/chromiumos/config/go v0.0.0-20230818003854-e6542d94194c
+	go.chromium.org/chromiumos/config/go v0.0.0-20240117201416-64f45f1e62a6
 	golang.org/x/crypto v0.12.0
 	golang.org/x/exp v0.0.0-20230817173708-d852ddb80c63
 	golang.org/x/lint v0.0.0-20210508222113-6edffad5e616

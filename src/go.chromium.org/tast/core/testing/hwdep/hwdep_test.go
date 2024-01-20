@@ -1479,3 +1479,63 @@ func TestIntelIsh(t *testing.T) {
 		nil)
 
 }
+
+func TestTouchpad(t *testing.T) {
+	c := hwdep.Touchpad()
+
+	for _, tc := range []struct {
+		touchpadPresent configpb.HardwareFeatures_Present
+		touchpadType    configpb.HardwareFeatures_Touchpad_TouchpadType
+		expectSatisfied bool
+	}{
+		{configpb.HardwareFeatures_PRESENT, configpb.HardwareFeatures_Touchpad_INTERNAL, true},
+		{configpb.HardwareFeatures_PRESENT, configpb.HardwareFeatures_Touchpad_DETACHABLE, true},
+		{configpb.HardwareFeatures_NOT_PRESENT, configpb.HardwareFeatures_Touchpad_NONE, false},
+		{configpb.HardwareFeatures_PRESENT_UNKNOWN, configpb.HardwareFeatures_Touchpad_TYPE_UNKNOWN, false},
+	} {
+		verifyCondition(
+			t, c,
+			nil,
+			&configpb.HardwareFeatures{
+				Touchpad: &configpb.HardwareFeatures_Touchpad{
+					Present:      tc.touchpadPresent,
+					TouchpadType: tc.touchpadType,
+				},
+			},
+			tc.expectSatisfied)
+	}
+	expectError(
+		t, c,
+		nil,
+		nil)
+}
+
+func TestInternalTouchpad(t *testing.T) {
+	c := hwdep.InternalTouchpad()
+
+	for _, tc := range []struct {
+		touchpadPresent configpb.HardwareFeatures_Present
+		touchpadType    configpb.HardwareFeatures_Touchpad_TouchpadType
+		expectSatisfied bool
+	}{
+		{configpb.HardwareFeatures_PRESENT, configpb.HardwareFeatures_Touchpad_INTERNAL, true},
+		{configpb.HardwareFeatures_PRESENT, configpb.HardwareFeatures_Touchpad_DETACHABLE, false},
+		{configpb.HardwareFeatures_NOT_PRESENT, configpb.HardwareFeatures_Touchpad_NONE, false},
+		{configpb.HardwareFeatures_PRESENT_UNKNOWN, configpb.HardwareFeatures_Touchpad_TYPE_UNKNOWN, false},
+	} {
+		verifyCondition(
+			t, c,
+			nil,
+			&configpb.HardwareFeatures{
+				Touchpad: &configpb.HardwareFeatures_Touchpad{
+					Present:      tc.touchpadPresent,
+					TouchpadType: tc.touchpadType,
+				},
+			},
+			tc.expectSatisfied)
+	}
+	expectError(
+		t, c,
+		nil,
+		nil)
+}

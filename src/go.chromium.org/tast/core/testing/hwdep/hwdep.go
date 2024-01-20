@@ -1070,7 +1070,11 @@ func KeyboardBacklight() Condition {
 }
 
 // Touchpad returns a hardware dependency condition that is satisfied
-// if and only if the DUT has a touchpad.
+// if and only if the DUT has a touchpad, e.g. Chromeboxes and Chromebits don't.
+// Tablets might have a detachable touchpad, which also satisfy this condition.
+// For a detachable touchpad, this condition does not guarantee that they are
+// currently attached. Use this in combination with `ECFeatureDetachableBase`
+// if the base being attached is required.
 func Touchpad() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
@@ -1079,6 +1083,24 @@ func Touchpad() Condition {
 		}
 		if hf.GetTouchpad().GetPresent() != configpb.HardwareFeatures_PRESENT {
 			return unsatisfied("DUT does not have a touchpad")
+		}
+		return satisfied()
+	},
+	}
+}
+
+// InternalTouchpad returns a hardware dependency condition that is satisfied if
+// and only if the DUT's form factor has a fixed undetachable touchpad.
+func InternalTouchpad() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("HardwareFeatures is not given")
+		}
+		if hf.GetTouchpad() == nil ||
+			hf.GetTouchpad().GetPresent() != configpb.HardwareFeatures_PRESENT ||
+			hf.GetTouchpad().TouchpadType != configpb.HardwareFeatures_Touchpad_INTERNAL {
+			return unsatisfied("DUT does not have a fixed touchpad")
 		}
 		return satisfied()
 	},

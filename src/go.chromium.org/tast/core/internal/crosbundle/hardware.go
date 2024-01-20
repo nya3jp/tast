@@ -229,16 +229,20 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 	switch features.FormFactor.FormFactor {
 	case configpb.HardwareFeatures_FormFactor_CHROMEBASE, configpb.HardwareFeatures_FormFactor_CHROMEBIT, configpb.HardwareFeatures_FormFactor_CHROMEBOX, configpb.HardwareFeatures_FormFactor_CHROMESLATE:
 		features.Keyboard.KeyboardType = configpb.HardwareFeatures_Keyboard_NONE
+		features.Touchpad.TouchpadType = configpb.HardwareFeatures_Touchpad_NONE
 	case configpb.HardwareFeatures_FormFactor_CLAMSHELL, configpb.HardwareFeatures_FormFactor_CONVERTIBLE:
 		features.Keyboard.KeyboardType = configpb.HardwareFeatures_Keyboard_INTERNAL
+		features.Touchpad.TouchpadType = configpb.HardwareFeatures_Touchpad_INTERNAL
 	case configpb.HardwareFeatures_FormFactor_DETACHABLE:
 		// When the dut is a detachable, check whether hammer exists
 		// to determine if a removable keyboard is connected.
 		hasHammer := checkHammer()
 		if hasHammer {
 			features.Keyboard.KeyboardType = configpb.HardwareFeatures_Keyboard_DETACHABLE
+			features.Touchpad.TouchpadType = configpb.HardwareFeatures_Touchpad_DETACHABLE
 		} else {
 			features.Keyboard.KeyboardType = configpb.HardwareFeatures_Keyboard_NONE
+			features.Touchpad.TouchpadType = configpb.HardwareFeatures_Touchpad_NONE
 		}
 	}
 
@@ -338,6 +342,9 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 	}()
 	if hasTouchpad {
 		features.Touchpad.Present = configpb.HardwareFeatures_PRESENT
+	} else {
+		features.Touchpad.Present = configpb.HardwareFeatures_PRESENT_UNKNOWN
+		features.Touchpad.TouchpadType = configpb.HardwareFeatures_Touchpad_TYPE_UNKNOWN
 	}
 
 	hasFingerprint := func() bool {

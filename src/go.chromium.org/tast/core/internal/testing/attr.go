@@ -1079,6 +1079,10 @@ third_party/autotest/files/server/site_tests/tast/control.racc-config-installed.
 				Name: "cellular_hotspot",
 				Desc: `Identifies Cellular hotspot tests.`,
 			},
+			{
+				Name: "cellular_dut_check",
+				Desc: `Identifies Cellular dut health tests.`,
+			},
 		},
 	},
 	{

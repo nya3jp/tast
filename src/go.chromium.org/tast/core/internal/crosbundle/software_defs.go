@@ -243,13 +243,14 @@ var softwareFeatureDefs = map[string]string{
 	// We should disable this flag if the weird missing-runner-after-reboot bug still happening.
 	// Or cleanup all reboot dependency in tast-tests.
 	// Notice: The flag would be false when a board didn't have any attributes.
-	"reboot":               `"*"`,
-	"selinux":              "selinux",
-	"selinux_current":      "selinux && !selinux_experimental",
-	"selinux_experimental": "selinux && selinux_experimental",
-	"shipping_kernel":      `!"debug" && !"kcov" && !"lockdebug"`,
-	"smartctl":             "nvme || sata",
-	"smartdim":             "smartdim",
+	"reboot":                `"*"`,
+	"secagentd_auth_stable": `("board:brya" || "board:brya-arc-t" || "board:reven" || "board:betty" || "board:grunt" || "board:jacuzzi" || "board:octopus" || "board:octopus-arc-r" || "board:octopus-arc-t")`,
+	"selinux":               "selinux",
+	"selinux_current":       "selinux && !selinux_experimental",
+	"selinux_experimental":  "selinux && selinux_experimental",
+	"shipping_kernel":       `!"debug" && !"kcov" && !"lockdebug"`,
+	"smartctl":              "nvme || sata",
+	"smartdim":              "smartdim",
 	// VMs don't support speech on-device API.
 	"soda": `!"betty" && !"tast_vm"`,
 	// Should match StackSamplingProfiler::IsSupportedForCurrentPlatform() in Chromium repo.

@@ -1847,7 +1847,7 @@ func containsGSCKeyID(keyIDs []GSCKeyID, reqKeyID GSCKeyID) bool {
 
 // For mocking.
 var flashromExtractCoreBootCmd = func(ctx context.Context, corebootBinName string) error {
-	return exec.CommandContext(ctx, "flashrom", "-p", "host", "-r", "-i", fmt.Sprintf("FW_MAIN_A:%s", corebootBinName)).Run()
+	return exec.CommandContext(ctx, "flashrom", "-p", "internal", "-r", "-i", fmt.Sprintf("FW_MAIN_A:%s", corebootBinName)).Run()
 }
 var cbfsToolExtractCmd = func(ctx context.Context, corebootBinName, fileName, outputPath string) error {
 	return exec.CommandContext(ctx, "cbfstool", corebootBinName, "extract", "-n", fileName, "-f", outputPath).Run()

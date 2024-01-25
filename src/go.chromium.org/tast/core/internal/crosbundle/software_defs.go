@@ -103,12 +103,13 @@ var softwareFeatureDefs = map[string]string{
 	// nocturne only sporadically captures EC panics. crbug.com/1135798
 	// TODO(https://crbug.com/1122066): remove guado-cfm and rikku-cfm when they're no longer necessary
 	// TODO(b/201430283): Remove nami-kernelnext, rammus, and sarien-kernelnext when bug is resolved.
-	"ec_crash":     `!(("board:asuka" || "board:banon" || "board:caroline" || "board:caroline-kernelnext" || "board:caroline-userdebug" || "board:cave" || "board:celes" || "board:chell" || "board:cyan" || "board:edgar" || "board:kefka" || "board:reks" || "board:relm" || "board:sentry" || "board:terra" || "board:ultima" || "board:wizpig") || ("board:drallion" || "board:sarien") || ("board:guado" || "board:guado-cfm" || "board:tidus" || "board:rikku" || "board:rikku-cfm" || "board:veyron_fievel" || "board:veyron_tiger") || "board:nocturne" || "board:nocturne-kernelnext" || "board:nami-kernelnext" || "board:rammus" || "board:sarien-kernelnext")`,
-	"ec_hibernate": `!("board:brask" || "board:fizz" || "board:kukui" || "board:puff" || "board:scarlet" || "board:shotzo")`,
-	"endorsement":  `!"betty" && !"tast_vm"`, // VMs don't have valid endorsement certificate.
-	"faceauth":     "faceauth",
-	"factory_flow": "!no_factory_flow",
-	"fake_hps":     `"betty" || "tast_vm"`, // VMs run hpsd with --test (fake software device)
+	"ec_crash":        `!(("board:asuka" || "board:banon" || "board:caroline" || "board:caroline-kernelnext" || "board:caroline-userdebug" || "board:cave" || "board:celes" || "board:chell" || "board:cyan" || "board:edgar" || "board:kefka" || "board:reks" || "board:relm" || "board:sentry" || "board:terra" || "board:ultima" || "board:wizpig") || ("board:drallion" || "board:sarien") || ("board:guado" || "board:guado-cfm" || "board:tidus" || "board:rikku" || "board:rikku-cfm" || "board:veyron_fievel" || "board:veyron_tiger") || "board:nocturne" || "board:nocturne-kernelnext" || "board:nami-kernelnext" || "board:rammus" || "board:sarien-kernelnext")`,
+	"ec_hibernate":    `!("board:brask" || "board:fizz" || "board:kukui" || "board:puff" || "board:scarlet" || "board:shotzo")`,
+	"endorsement":     `!"betty" && !"tast_vm"`, // VMs don't have valid endorsement certificate.
+	"faceauth":        "faceauth",
+	"factory_flow":    "!no_factory_flow",
+	"fake_hps":        `"betty" || "tast_vm"`, // VMs run hpsd with --test (fake software device)
+	"fbpreprocessord": "fbpreprocessord",
 	// TODO(http://b/271025366): Remove feedback when the bug is resolved.
 	"feedback":                  `!("board:fizz" || "board:puff" || "board:rammus")`,
 	"firewall":                  "!moblab",                            // Moblab has relaxed iptables rules
@@ -319,7 +320,6 @@ var softwareFeatureDefs = map[string]string{
 	"wifi":  `!"betty" && !"tast_vm" && !"nyan_kitty"`,
 	"wilco": "wilco",
 	// WireGuard is only supported on 5.4+ kernels.
-	"wireguard":       `!("kernel-4_14" || "kernel-4_19")`,
-	"wpa3_sae":        "wpa3_sae",
-	"fbpreprocessord": "fbpreprocessord",
+	"wireguard": `!("kernel-4_14" || "kernel-4_19")`,
+	"wpa3_sae":  "wpa3_sae",
 }

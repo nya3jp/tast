@@ -7,6 +7,7 @@ package testing
 import (
 	"fmt"
 	"runtime"
+	"strings"
 
 	"go.chromium.org/tast/core/errors/stack"
 	"go.chromium.org/tast/core/internal/protocol"
@@ -30,11 +31,11 @@ func NewError(err error, fullMsg, lastMsg string, skipFrames int) *protocol.Erro
 	}
 
 	return &protocol.Error{
-		Reason: fullMsg,
+		Reason: strings.ToValidUTF8(fullMsg, ""),
 		Location: &protocol.ErrorLocation{
 			File:  fn,
 			Line:  int64(ln),
-			Stack: trace,
+			Stack: strings.ToValidUTF8(trace, ""),
 		},
 	}
 }

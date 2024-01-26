@@ -113,6 +113,7 @@ var (
 		"gothrax_fm101":      {"gothrax_fm101", "nissa", ModemTypeFM101},
 		"nivviks_fm101":      {"nivviks_fm101", "nissa", ModemTypeFM101},
 		"pujjo_fm101":        {"pujjo_fm101", "nissa", ModemTypeFM101},
+		"pujjo_em060":        {"pujjo_em060", "nissa", ModemTypeEM060},
 		"pujjoteen5_fm350":   {"pujjoteen5_fm350", "nissa", ModemTypeFM350},
 		"quandiso_fm101":     {"quandiso_fm101", "nissa", ModemTypeFM101},
 		"quandiso360_fm101":  {"quandiso360_fm101", "nissa", ModemTypeFM101},

@@ -7,6 +7,7 @@ package logging
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 )
 
@@ -90,7 +91,7 @@ func log(ctx context.Context, level Level, args ...interface{}) {
 		return
 	}
 	prefix := getPrefix(ctx)
-	logger.Log(level, ts, prefix+fmt.Sprint(args...))
+	logger.Log(level, ts, ReplaceInvalidUTF8(prefix+fmt.Sprint(args...)))
 }
 
 func logf(ctx context.Context, level Level, format string, args ...interface{}) {
@@ -100,7 +101,7 @@ func logf(ctx context.Context, level Level, format string, args ...interface{}) 
 		return
 	}
 	prefix := getPrefix(ctx)
-	logger.Log(level, ts, prefix+fmt.Sprintf(format, args...))
+	logger.Log(level, ts, ReplaceInvalidUTF8(prefix+fmt.Sprintf(format, args...)))
 }
 
 func getPrefix(ctx context.Context) string {
@@ -109,4 +110,9 @@ func getPrefix(ctx context.Context) string {
 		prefix = pf.(string)
 	}
 	return prefix
+}
+
+// ReplaceInvalidUTF8 replaces all invalid UTF-8 characters from a string.
+func ReplaceInvalidUTF8(msg string) string {
+	return strings.ToValidUTF8(msg, "")
 }

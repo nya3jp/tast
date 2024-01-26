@@ -384,22 +384,22 @@ func (s *globalMixin) CompanionDUTs() map[string]*dut.DUT {
 
 // Log formats its arguments using default formatting and logs them.
 func (s *globalMixin) Log(args ...interface{}) {
-	s.entityRoot.out.Log(logging.LevelInfo, time.Now(), fmt.Sprint(args...))
+	s.entityRoot.out.Log(logging.LevelInfo, time.Now(), logging.ReplaceInvalidUTF8(fmt.Sprint(args...)))
 }
 
 // Logf is similar to Log but formats its arguments using fmt.Sprintf.
 func (s *globalMixin) Logf(format string, args ...interface{}) {
-	s.entityRoot.out.Log(logging.LevelInfo, time.Now(), fmt.Sprintf(format, args...))
+	s.entityRoot.out.Log(logging.LevelInfo, time.Now(), logging.ReplaceInvalidUTF8(fmt.Sprintf(format, args...)))
 }
 
 // VLog formats its arguments using default formatting and logs them at the debug (verbose) level.
 func (s *globalMixin) VLog(args ...interface{}) {
-	s.entityRoot.out.Log(logging.LevelDebug, time.Now(), fmt.Sprint(args...))
+	s.entityRoot.out.Log(logging.LevelDebug, time.Now(), logging.ReplaceInvalidUTF8(fmt.Sprint(args...)))
 }
 
 // VLogf is similar to VLog but formats its arguments using fmt.Sprintf.
 func (s *globalMixin) VLogf(format string, args ...interface{}) {
-	s.entityRoot.out.Log(logging.LevelDebug, time.Now(), fmt.Sprintf(format, args...))
+	s.entityRoot.out.Log(logging.LevelDebug, time.Now(), logging.ReplaceInvalidUTF8(fmt.Sprintf(format, args...)))
 }
 
 // Error formats its arguments using default formatting and marks the entity

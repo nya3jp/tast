@@ -82,6 +82,27 @@ func TestLog(t *gotesting.T) {
 	}
 }
 
+func TestLogInvalidUTF8(t *gotesting.T) {
+	var out outputSink
+	root := testing.NewTestEntityRoot(&testing.TestInstance{Timeout: time.Minute}, &testing.RuntimeConfig{}, &out, testing.NewEntityCondition())
+	s := root.NewTestState()
+	const invalidUTF8 = "\xed"
+	s.Log("msg ", 1, invalidUTF8)
+	s.Logf("msg %d %v", 2, invalidUTF8)
+	s.VLog("msg ", 3, invalidUTF8)
+	s.VLogf("msg %d %v", 4, invalidUTF8)
+	for _, l := range out.Data.Logs {
+		if strings.Contains(l, invalidUTF8) {
+			t.Errorf("out.Data.Logs message %q has invalid UTF-8 characters", l)
+		}
+	}
+	for _, l := range out.Data.FullLogs {
+		if strings.Contains(l, invalidUTF8) {
+			t.Errorf("out.Data.FullLogs message %q has invalid UTF-8 characters", l)
+		}
+	}
+}
+
 func TestNestedRun(t *gotesting.T) {
 	var out outputSink
 	root := testing.NewTestEntityRoot(&testing.TestInstance{Timeout: time.Minute}, &testing.RuntimeConfig{}, &out, testing.NewEntityCondition())

@@ -6,6 +6,7 @@ package logging_test
 
 import (
 	"context"
+	"strings"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -136,5 +137,20 @@ func TestSetLogPrefix(t *testing.T) {
 
 	if diff := cmp.Diff(logger.Logs(), []string{"[Phase A setup] aaa", "[Phase A setup] bbb", "[Phase A setup] ccc", "[Phase A setup] ddd", "aaa", "bbb", "ccc", "ddd"}); diff != "" {
 		t.Errorf("Messages mismatch (-got +want):\n%s", diff)
+	}
+}
+
+func TestLoggingInvalidUTF8(t *testing.T) {
+	const invalidUTF8 = "\xed"
+	logger := loggingtest.NewLogger(t, logging.LevelDebug)
+	ctx := logging.AttachLogger(context.Background(), logger)
+	logging.Info(ctx, "a", "aa", invalidUTF8)
+	logging.Infof(ctx, "b%sb%s", "b", invalidUTF8)
+	logging.Debug(ctx, "c", "cc", invalidUTF8)
+	logging.Debugf(ctx, "d%sd%s", "d", invalidUTF8)
+	for _, l := range logger.Logs() {
+		if strings.Contains(l, invalidUTF8) {
+			t.Errorf("Log message %q has invalid UTF-8 characters", l)
+		}
 	}
 }

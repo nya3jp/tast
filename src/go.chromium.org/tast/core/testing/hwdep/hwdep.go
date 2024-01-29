@@ -2503,7 +2503,7 @@ func SkipCPUSocFamily(families ...string) Condition {
 
 // InternalTrackpoint is satisfied if a model has an internal trackpoint.
 func InternalTrackpoint() Condition {
-	return Model("morphius")
+	return Model("morphius", "primus")
 }
 
 // FeatureLevel is satisfied if the feature level of the DUT match the value of

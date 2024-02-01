@@ -247,6 +247,7 @@ var softwareFeatureDefs = map[string]string{
 	// Or cleanup all reboot dependency in tast-tests.
 	// Notice: The flag would be false when a board didn't have any attributes.
 	"reboot":                `"*"`,
+	"reven_oobe_config":     `reven_oobe_config`,
 	"secagentd_auth_stable": `("board:brya" || "board:brya-arc-t" || "board:reven" || "board:betty" || "board:grunt" || "board:jacuzzi" || "board:octopus" || "board:octopus-arc-r" || "board:octopus-arc-t")`,
 	"selinux":               "selinux",
 	"selinux_current":       "selinux && !selinux_experimental",

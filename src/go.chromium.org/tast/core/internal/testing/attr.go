@@ -1387,6 +1387,10 @@ Parallels boot-up testing. Otherwise the same as group:crosbolt.`,
 				Desc: `Indicates that this test should be run in a dedicated Type C lab setup.`,
 			},
 			{
+				Name: "typec_mcci",
+				Desc: `Indicates that this test required a MCCI swtich.`,
+			},
+			{
 				Name: "typec_dp_bringup",
 				Desc: `Indicates that this test should be run for DisplayPort bringup validation`,
 			},

@@ -64,6 +64,12 @@ by the DUT. This behavior can be controlled via the `tast` command's
 [Test Attributes]: test_attributes.md
 [software dependencies]: test_dependencies.md
 
+## Note for Chrome related tests
+
+When you are running Tast tests that require Chrome, you should double check
+that no unexpected arguments are specified in `/etc/chrome_dev.conf` on the DUT.
+It can change Chrome's behavior and some tests might fail unexpectedly.
+
 ## Controlling whether tests are rebuilt
 
 When the `-build` flag is true (the default), `tast run` rebuilds the `cros`

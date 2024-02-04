@@ -155,11 +155,12 @@ func (r *EntityRoot) newEntityMixin() *entityMixin {
 }
 
 // NewFixtState creates a FixtState for a fixture.
-func (r *EntityRoot) NewFixtState() *FixtState {
+func (r *EntityRoot) NewFixtState(fi *FixtureInstance) *FixtState {
 	return &FixtState{
 		globalMixin: r.newGlobalMixin("", r.hasError()),
 		entityMixin: r.newEntityMixin(),
 		entityRoot:  r,
+		fixt:        fi,
 	}
 }
 
@@ -834,6 +835,7 @@ type FixtState struct {
 	*entityMixin
 
 	entityRoot *EntityRoot
+	fixt       *FixtureInstance
 }
 
 // FixtContext returns fixture-scoped context. i.e. the context is alive until TearDown returns.
@@ -845,8 +847,7 @@ func (s *FixtState) FixtContext() context.Context {
 
 // Param returns Val specified at the Param struct for the current fixture.
 func (s *FixtState) Param() interface{} {
-	// TODO(oka): Implement it.
-	panic("to be implemented")
+	return s.fixt.Val
 }
 
 // ParentFillValue stores the parent fixture value iin the value pointed to by v.

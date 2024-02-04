@@ -432,7 +432,7 @@ func (f *statefulFixture) RunSetUp(ctx context.Context) error {
 	}
 
 	ctx = f.root.NewContext(ctx)
-	s := f.root.NewFixtState()
+	s := f.root.NewFixtState(f.fixt)
 	name := fmt.Sprintf("%s:SetUp", f.fixt.Name)
 
 	f.fout.Start(s.OutDir())
@@ -471,7 +471,7 @@ func (f *statefulFixture) RunTearDown(ctx context.Context) error {
 	}
 
 	ctx = f.root.NewContext(ctx)
-	s := f.root.NewFixtState()
+	s := f.root.NewFixtState(f.fixt)
 	name := fmt.Sprintf("%s:TearDown", f.fixt.Name)
 
 	if err := usercode.SafeCall(ctx, name, f.fixt.TearDownTimeout, f.cfg.GracePeriod, usercode.ErrorOnPanic(s), func(ctx context.Context) {

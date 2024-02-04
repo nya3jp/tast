@@ -59,6 +59,9 @@ type Fixture struct {
 	// This timeout is by default 0.
 	TearDownTimeout time.Duration
 
+	// Params lists the Param structs for parameterized fixtures.
+	Params []FixtureParam
+
 	// ServiceDeps contains a list of RPC service names in local test bundles that this remote fixture
 	// will access. This field is valid only for remote fixtures.
 	ServiceDeps []string
@@ -73,31 +76,158 @@ type Fixture struct {
 
 	// PrivateAttr contains freeform text private attributres describing the fixture.
 	PrivateAttr []string
-
-	// TODO(oka): Add Param fields.
 }
 
-func (f *Fixture) instantiate(pkg string) (*FixtureInstance, error) {
+// FixtureParam defines parameters for a parameterized fixture.
+type FixtureParam struct {
+	// Name is the name of this parameterized fixture.
+	// Full name of the fixture will be category.FixtureName.param_name,
+	// or category.FixtureName if Name is empty.
+	// Name should match with [a-z0-9_]*.
+	Name string
+
+	// ExtraContacts is a list of extra email addresses of persons and groups who are familiar
+	// with the parameter. At least one personal email address of an active committer
+	// should be specified so that we can file bugs or ask for code review.
+	ExtraContacts []string
+
+	// Parent specifies the parent fixture name, or empty if it has no parent.
+	// Can only be set if the enclosing fixture doesn't have one already set.
+	Parent string
+
+	// SetUpTimeout is the timeout applied to SetUp.
+	// Even if fixtures are nested, the timeout is applied only to this stage.
+	// Can only be set if the enclosing fixture doesn't have one already set.
+	SetUpTimeout time.Duration
+
+	// ResetTimeout is the timeout applied to Reset.
+	// Even if fixtures are nested, the timeout is applied only to this stage.
+	// Can only be set if the enclosing fixture doesn't have one already set.
+	ResetTimeout time.Duration
+
+	// PreTestTimeout is the timeout applied to PreTest.
+	// Even if fixtures are nested, the timeout is applied only to this stage.
+	// Can only be set if the enclosing fixture doesn't have one already set.
+	PreTestTimeout time.Duration
+
+	// PostTestTimeout is the timeout applied to PostTest.
+	// Even if fixtures are nested, the timeout is applied only to this stage.
+	// Can only be set if the enclosing fixture doesn't have one already set.
+	PostTestTimeout time.Duration
+
+	// TearDownTimeout is the timeout applied to TearDown.
+	// Even if fixtures are nested, the timeout is applied only to this stage.
+	// Can only be set if the enclosing fixture doesn't have one already set.
+	TearDownTimeout time.Duration
+
+	// Val is the value which can be retrieved from testing.FixtState.Param() method.
+	Val interface{}
+
+	// ExtraServiceDeps contains a list of extra RPC service names in local test bundles
+	// that this remote fixture parameter will access.
+	// This field is valid only for remote fixtures.
+	ExtraServiceDeps []string
+
+	// ExtraData contains paths of extra data files needed by the fixture parameter,
+	// relative to a "data" subdirectory within the directory in which the fixture is registered.
+	ExtraData []string
+
+	// ExtraPrivateAttr contains extra freeform text private attributes describing the
+	// fixture parameter.
+	ExtraPrivateAttr []string
+}
+
+func (f *Fixture) instantiate(pkg string) ([]*FixtureInstance, error) {
 	if err := validateFixture(f); err != nil {
 		return nil, err
 	}
+	// Empty Params is equivalent to one Param with all default values.
+	ps := f.Params
+	if len(ps) == 0 {
+		ps = []FixtureParam{{}}
+	}
+
+	fis := make([]*FixtureInstance, 0, len(ps))
+	for _, p := range ps {
+		fi, err := newFixtureInstance(f, pkg, &p)
+		if err != nil {
+			return nil, err
+		}
+		fis = append(fis, fi)
+	}
+	return fis, nil
+}
+
+func newFixtureInstance(f *Fixture, pkg string, p *FixtureParam) (*FixtureInstance, error) {
+	name := f.Name
+	if p.Name != "" {
+		name += "." + p.Name
+	}
+
+	contacts := append(f.Contacts, p.ExtraContacts...)
+
+	parent := f.Parent
+	if p.Parent != "" {
+		parent = p.Parent
+	}
+
+	setUpTimeout, err := timeout(p.SetUpTimeout, f.SetUpTimeout, "SetUpTimeout")
+	if err != nil {
+		return nil, err
+	}
+	resetTimeout, err := timeout(p.ResetTimeout, f.ResetTimeout, "ResetTimeout")
+	if err != nil {
+		return nil, err
+	}
+	preTestTimeout, err := timeout(p.PreTestTimeout, f.PreTestTimeout, "PreTestTimeout")
+	if err != nil {
+		return nil, err
+	}
+	postTestTimeout, err := timeout(p.PostTestTimeout, f.PostTestTimeout, "PostTestTimeout")
+	if err != nil {
+		return nil, err
+	}
+	tearDownTimeout, err := timeout(p.TearDownTimeout, f.TearDownTimeout, "TearDownTimeout")
+	if err != nil {
+		return nil, err
+	}
+
+	serviceDeps := append(f.ServiceDeps, p.ExtraServiceDeps...)
+
+	data := append(f.Data, p.ExtraData...)
+
+	privateAttr := append(f.PrivateAttr, p.ExtraPrivateAttr...)
+
 	return &FixtureInstance{
 		Pkg:             pkg,
-		Name:            f.Name,
+		Name:            name,
 		Desc:            f.Desc,
-		Contacts:        append([]string(nil), f.Contacts...),
+		Contacts:        contacts,
 		Impl:            f.Impl,
-		Parent:          f.Parent,
-		SetUpTimeout:    f.SetUpTimeout,
-		ResetTimeout:    f.ResetTimeout,
-		PreTestTimeout:  f.PreTestTimeout,
-		PostTestTimeout: f.PostTestTimeout,
-		TearDownTimeout: f.TearDownTimeout,
-		ServiceDeps:     append([]string(nil), f.ServiceDeps...),
-		Data:            append([]string(nil), f.Data...),
-		Vars:            append([]string(nil), f.Vars...),
-		PrivateAttr:     append([]string(nil), f.PrivateAttr...),
+		Parent:          parent,
+		SetUpTimeout:    setUpTimeout,
+		ResetTimeout:    resetTimeout,
+		PreTestTimeout:  preTestTimeout,
+		PostTestTimeout: postTestTimeout,
+		TearDownTimeout: tearDownTimeout,
+		Val:             p.Val,
+		ServiceDeps:     serviceDeps,
+		Data:            data,
+		Vars:            f.Vars,
+		PrivateAttr:     privateAttr,
 	}, nil
+}
+
+func timeout(paramTimeout, fixtureTimeout time.Duration, timeoutType string) (time.Duration, error) {
+	if paramTimeout != 0 {
+		if fixtureTimeout != 0 {
+			return 0,
+				errors.Errorf("Param has %s specified and its enclosing fixture also has %s specified, but only one can be specified",
+					timeoutType, timeoutType)
+		}
+		return paramTimeout, nil
+	}
+	return fixtureTimeout, nil
 }
 
 // FixtureInstance represents a fixture instance registered to the framework.
@@ -118,6 +248,7 @@ type FixtureInstance struct {
 	PreTestTimeout  time.Duration
 	PostTestTimeout time.Duration
 	TearDownTimeout time.Duration
+	Val             interface{}
 	Data            []string
 	ServiceDeps     []string
 	Vars            []string

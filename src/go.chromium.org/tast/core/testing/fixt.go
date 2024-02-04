@@ -11,5 +11,8 @@ import (
 // Fixture describes a fixture registered to the framework.
 type Fixture = testing.Fixture
 
+// FixtureParam defines parameters for a parameterized fixture.
+type FixtureParam = testing.FixtureParam
+
 // FixtureImpl is an interface fixtures should implement.
 type FixtureImpl = testing.FixtureImpl

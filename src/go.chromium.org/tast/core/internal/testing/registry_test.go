@@ -238,6 +238,76 @@ func TestAllFixtures(t *gotesting.T) {
 	}
 }
 
+func TestAllFixturesParam(t *gotesting.T) {
+	reg := NewRegistry("bundle")
+	allFixts := []*Fixture{
+		{
+			Name: "a",
+			Params: []FixtureParam{
+				{
+					Name: "x",
+				},
+				{
+					Name: "y",
+				},
+				{
+					Name: "z",
+				},
+			},
+		},
+		{
+			Name: "b",
+			Params: []FixtureParam{
+				{
+					Name: "x",
+				},
+				{
+					Name: "y",
+				},
+				{
+					Name: "z",
+				},
+			},
+		},
+		{
+			Name: "c",
+			Params: []FixtureParam{
+				{
+					Name: "x",
+				},
+				{
+					Name: "y",
+				},
+				{
+					Name: "z",
+				},
+			},
+		},
+	}
+
+	for _, f := range allFixts {
+		reg.AddFixture(f, "pkg")
+	}
+	if errs := reg.Errors(); len(errs) > 0 {
+		t.Fatal("Registration failed: ", errs)
+	}
+
+	want := map[string]*FixtureInstance{
+		"a.x": {Name: "a.x", Pkg: "pkg", Bundle: "bundle"},
+		"a.y": {Name: "a.y", Pkg: "pkg", Bundle: "bundle"},
+		"a.z": {Name: "a.z", Pkg: "pkg", Bundle: "bundle"},
+		"b.x": {Name: "b.x", Pkg: "pkg", Bundle: "bundle"},
+		"b.y": {Name: "b.y", Pkg: "pkg", Bundle: "bundle"},
+		"b.z": {Name: "b.z", Pkg: "pkg", Bundle: "bundle"},
+		"c.x": {Name: "c.x", Pkg: "pkg", Bundle: "bundle"},
+		"c.y": {Name: "c.y", Pkg: "pkg", Bundle: "bundle"},
+		"c.z": {Name: "c.z", Pkg: "pkg", Bundle: "bundle"},
+	}
+	if diff := cmp.Diff(reg.AllFixtures(), want); diff != "" {
+		t.Errorf("Result mismatch (-got +want):\n%v", diff)
+	}
+}
+
 type varType struct {
 	name  string
 	value string

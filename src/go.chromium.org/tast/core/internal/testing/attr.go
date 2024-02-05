@@ -1761,6 +1761,11 @@ Parallels boot-up testing. Otherwise the same as group:crosbolt.`,
 		Desc:     `A group of tests related to Intel that are No Devices Attached (NDA) for build validation.`,
 	},
 	{
+		Name:     "intel-sleep",
+		Contacts: []string{"intel.chrome.automation.team@intel.com", "ambalavanan.m.m@intel.com"},
+		Desc:     `A group of tests related to Intel that target the sleep(S0ix or S3) scenarios for build validation.`,
+	},
+	{
 		Name:     "intel-convertible",
 		Contacts: []string{"intel.chrome.automation.team@intel.com", "ambalavanan.m.m@intel.com"},
 		Desc:     `A group of tests related to Intel that are specific to convertible tablet mode DUTs for build validation.`,

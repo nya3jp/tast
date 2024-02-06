@@ -152,6 +152,9 @@ func TestCheckKnownAttrs(t *testing.T) {
 			attrs: []string{"group:launcher_search_quality_daily"},
 		},
 		{
+			attrs: []string{"group:launcher_search_quality_per_build"},
+		},
+		{
 			attrs: []string{"group:launcher_image_search_perbuild"},
 		},
 		{

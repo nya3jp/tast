@@ -1159,6 +1159,14 @@ func Wifi80211ax6E() Condition {
 	)
 }
 
+// Wifi80211be returns a hardware dependency condition that is satisfied
+// if and only if the DUT's WiFi module supports WiFi 7.
+func Wifi80211be() Condition {
+	return WifiDevice(
+		IntelBE200,
+	)
+}
+
 // WifiMACAddrRandomize returns a hardware dependency condition that is satisfied
 // if and only if the DUT supports WiFi MAC Address Randomization.
 func WifiMACAddrRandomize() Condition {

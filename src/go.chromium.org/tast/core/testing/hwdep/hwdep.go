@@ -986,6 +986,22 @@ func ExternalDisplay() Condition {
 	}
 }
 
+// NoExternalDisplay returns a hardware dependency condition that is satisfied
+// if and only if the DUT does not have an external display
+func NoExternalDisplay() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hasExternalDisplay, _, err := ExternalDisplay().Satisfied(f)
+		if err != nil {
+			return withError(err)
+		}
+		if hasExternalDisplay {
+			return unsatisfied("DUT has an external display")
+		}
+		return satisfied()
+	},
+	}
+}
+
 // HdmiConnected returns a hardware dependency condition that is satisfied
 // if and only if the DUT has an external display with HDMI connected.
 func HdmiConnected() Condition {

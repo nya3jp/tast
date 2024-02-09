@@ -279,7 +279,9 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 						return false
 					}
 				} else {
-					return strings.HasPrefix(string(cardConnected), "connected")
+					if strings.HasPrefix(string(cardConnected), "connected") {
+						return true
+					}
 				}
 			}
 		}

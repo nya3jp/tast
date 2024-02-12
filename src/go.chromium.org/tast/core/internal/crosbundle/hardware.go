@@ -402,7 +402,9 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 			return errors.Errorf("got unexpected length of ro_fwid: %s", out)
 		}
 		for idx, strID := range wantIds {
-			id, err := strconv.Atoi(strID)
+			// There are some fwids that look like Google_Foob.11297.437.0~RO
+			numericPart := strings.Split(strID, "~")
+			id, err := strconv.Atoi(numericPart[0])
 			if err != nil {
 				return err
 			}

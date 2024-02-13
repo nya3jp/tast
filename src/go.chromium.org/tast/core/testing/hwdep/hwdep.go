@@ -1034,6 +1034,23 @@ func InternalDisplay() Condition {
 	}
 }
 
+// InternalDisplayWithHeightPx returns a hardware dependency condition that is
+// satisfied if and only if the DUT has an internal display (e.g. Chromeboxes
+// and Chromebits don't) and specific height in pixels.
+func InternalDisplayWithHeightPx(heightPx int32) Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("HardwareFeatures is not given")
+		}
+		if hf.GetScreen().GetPanelProperties().HeightPx == heightPx {
+			return satisfied()
+		}
+		return unsatisfied("DUT does not have an internal display with specific height")
+	},
+	}
+}
+
 // NoInternalDisplay returns a hardware dependency condition that is satisfied
 // if and only if the DUT does not have an internal display.
 func NoInternalDisplay() Condition {

@@ -1464,6 +1464,10 @@ Parallels boot-up testing. Otherwise the same as group:crosbolt.`,
 				Desc: `Indicate this test should be scheduled per day.`,
 			},
 			{
+				Name: "borealis_stress",
+				Desc: `Indicate this is a stress test that should be scheduled on the Borealis satlab.`,
+			},
+			{
 				Name: "borealis_weekly",
 				Desc: `Indicate this test should be scheduled per week.`,
 			},

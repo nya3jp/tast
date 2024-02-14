@@ -8,6 +8,7 @@ package hwdep
 
 import (
 	"fmt"
+	"os"
 	"regexp"
 	"strings"
 
@@ -842,6 +843,18 @@ func cpuNeedsCoreScheduling(enabled bool) Condition {
 			return satisfied()
 		}
 		return unsatisfied(description)
+	},
+	}
+}
+
+// HasParavirtSchedControl returns a hardware dependency condition that is satisfied if and only if the
+// DUT has kvm module parameter for controlling paravirt scheduling.
+func HasParavirtSchedControl() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		if _, err := os.Stat("/sys/module/kvm/parameters/kvm_pv_sched"); err != nil {
+			return unsatisfied("Device doesn't support paravirt scheduling feature")
+		}
+		return satisfied()
 	},
 	}
 }

@@ -2040,11 +2040,21 @@ func SupportsV4L2StatefulVideoDecoding() Condition {
 	}}
 }
 
-// SupportsV4L2FlatVideoDecoding says true if the SoC supports V4L2 Flat video decoding [1].
+// SupportsV4L2FlatVideoDecoding says true if the SoC supports V4L2 Flat video decoding [1][2].
 // [1] https://source.chromium.org/chromium/chromium/src/+/main:media/gpu/v4l2/v4l2_stateful_video_decoder.cc
+// [2] https://source.chromium.org/chromium/chromium/src/+/main:media/gpu/v4l2/stateless/v4l2_stateless_video_decoder.cc
 func SupportsV4L2FlatVideoDecoding() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		if satisfy, _, err := CPUSocFamily("qualcomm").Satisfied(f); err == nil && satisfy {
+			return satisfied()
+		}
+		if satisfy, _, err := GPUFamily("rogue").Satisfied(f); err == nil && satisfy {
+			return satisfied()
+		}
+		if satisfy, _, err := GPUFamily("mali-g72").Satisfied(f); err == nil && satisfy {
+			return satisfied()
+		}
+		if satisfy, _, err := GPUFamily("mali-g52").Satisfied(f); err == nil && satisfy {
 			return satisfied()
 		}
 		return unsatisfied("SoC does not support V4L2 Flat HW video decoding")

@@ -1392,6 +1392,7 @@ var modelsWithVpdSarTables = []string{
 	"ampton",
 	"arcada",
 	"babytiger",
+	"basking",
 	"caroline",
 	"eve",
 	"leona",

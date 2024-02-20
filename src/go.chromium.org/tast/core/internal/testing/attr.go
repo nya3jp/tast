@@ -2100,6 +2100,10 @@ from other existing groups (or use this group standalone).
 				Name: "power_daily_video_playback",
 				Desc: `Core tests designed to catch regressions in power consumption. Only attached to tests in cros/power/video_playback.go`,
 			},
+			{
+				Name: "power_daily_misc",
+				Desc: `Miscellaneous tests designed to catch regressions and collect experimental data.`,
+			},
 		},
 	},
 	{

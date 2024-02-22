@@ -703,6 +703,39 @@ fixture `X` has a child fixture `Y`, then `f(X) ⊇ f(Y)`. Otherwise, calling
 `Y`'s reset may put the system state to one not accepted by `X`, failing to
 fulfill the aforementioned property.
 
+#### Parameterized Fixtures
+
+Similar to tests, parameterized fixtures are also supported. They can be used to
+define multiple similar fixtures with different features/options.
+
+To parameterize a fixture, specify a slice of `testing.FixtureParam` in
+the `Params` field on fixture registration. If `Params` is non-empty,
+`testing.AddFixture` will expand the fixture into one or more tests
+corresponding to each item in `Params` by merging `testing.Fixture` and
+`testing.FixtureParam`.
+
+Here is an [example with normal parameterized fixtures]
+and an [example of a test using the normal parameterized fixtures].
+
+`FixtureParam` should be a literal in general since fixture registration
+should be [declarative]. However, a fixture may need to support a different
+combination of features or options. For fixtures that support a lot of
+different features/options, fixture writers and users may have a hard time to
+figure out what parameters have been declared for a particular combination
+of features/options. To ease the effort for composing a fixture with a lot
+of features/options, factory-like functions are allowed to be used for
+`FixtureParam` declaration and reference to the parameterized fixture.
+Even with the exception, the fixture writers and test writers should always
+make sure the function always returns the same fixture name for the same build.
+Otherwise, the generated metadata will produce the wrong data and cause
+issues in the test executions. Also, the factory function should be simple and
+the name of the parameter should allow users to identify the combination of
+features/options easily.
+
+Here is an [example of parameterized fixtures with a factory],
+and an [example of a test use a parameterized fixture with a factory].
+
+
 #### Preconditions
 
 Preconditions, predecessor of fixtures, are not recommended for new tests.
@@ -716,6 +749,11 @@ Preconditions, predecessor of fixtures, are not recommended for new tests.
 [chrome/fixture.go]: https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform/tast-tests/src/go.chromium.org/tast-tests/cros/local/chrome/fixture.go
 [example.ChromeFixture]: https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform/tast-tests/src/go.chromium.org/tast-tests/cros/local/bundles/cros/example/chrome_fixture.go
 [`testing.AddFixture`]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/testing#AddFixture
+[example with normal parameterized fixtures]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/go.chromium.org/tast-tests/cros/remote/meta/fixture.go#61
+[example of a test using the normal parameterized fixtures]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/go.chromium.org/tast-tests/cros/remote/bundles/cros/meta/remote_fixt_param.go
+[example of parameterized fixtures with a factory]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/go.chromium.org/tast-tests/cros/local/meta/fixture.go#72
+[example of a test use a parameterized fixture with a factory]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/go.chromium.org/tast-tests/cros/local/bundles/cros/meta/local_fixt_param.go
+
 
 ## Common testing patterns
 
@@ -1398,7 +1436,7 @@ tests with different test properties.
 To parameterize a test, specify a slice of [`testing.Param`] in the `Params`
 field on test registration. `Params` should be a literal since test
 registration should be [declarative]. If `Params` is non-empty,
-`testing.AddTest` expands the the test into one or more tests corresponding to
+`testing.AddTest` expands the test into one or more tests corresponding to
 each item in `Params` by merging `testing.Test` and [`testing.Param`] with the
 rules described below.
 

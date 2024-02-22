@@ -203,6 +203,9 @@ func writeSystemInfo(ctx context.Context, dir string) error {
 	if _, err := os.Stat("/proc/bus/pci"); !os.IsNotExist(err) {
 		cmds["lspci.txt"] = []string{"lspci", "-vvnn"}
 	}
+	if _, err := os.Stat("/sys/bus/usb"); !os.IsNotExist(err) {
+		cmds["lsusb.txt"] = []string{"lsusb", "-vt"}
+	}
 
 	for fn, cmd := range cmds {
 		// Set timeout in case some commands take long time unexpectedly. (crbug.com/1147723)

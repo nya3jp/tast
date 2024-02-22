@@ -378,21 +378,33 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 	}()
 	features.Fingerprint.FingerprintDiag.RoutineEnable = fingerprintDiagRoutineEnabled
 
-	fwid, err := func() (uint32, error) {
+	features.FwConfig.FwRwVersion = &configpb.HardwareFeatures_FirmwareConfiguration_SemVer{}
+	if err := func() error {
 		out, err := exec.Command("crossystem", "fwid").Output()
 		if err != nil {
-			return 0, err
+			return err
 		}
-		fwidMajorStr, err := strconv.Atoi((strings.Split(string(out), ".")[1]))
-		if err != nil {
-			return 0, err
+		rwFwIds := strings.Split(string(out), ".")
+		wantRwIds := rwFwIds[1:]
+		versions := []*uint32{
+			&features.FwConfig.FwRwVersion.MajorVersion,
+			&features.FwConfig.FwRwVersion.MinorVersion,
+			&features.FwConfig.FwRwVersion.PatchVersion,
 		}
-		return uint32(fwidMajorStr), nil
-	}()
-	if err != nil {
-		logging.Infof(ctx, "Error getting active firmware id: %v", err)
+		if len(versions) != len(wantRwIds) {
+			return errors.Errorf("got unexpected length of fwid: %s", out)
+		}
+		for idx, strID := range wantRwIds {
+			id, err := strconv.Atoi(strID)
+			if err != nil {
+				return err
+			}
+			*versions[idx] = uint32(id)
+		}
+		return nil
+	}(); err != nil {
+		logging.Infof(ctx, "Unable to parse fwid versions: %v", err)
 	}
-	features.FwConfig.FwRwActiveVersion = fwid
 
 	features.FwConfig.FwRoVersion = &configpb.HardwareFeatures_FirmwareConfiguration_SemVer{}
 	if err := func() error {

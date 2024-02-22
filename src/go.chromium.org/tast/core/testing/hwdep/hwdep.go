@@ -2655,15 +2655,15 @@ var legacyMenuUIModels = []string{
 // implemented. If not, it will check the legacyMenuUIModels list for
 // differentiation between LegacyMenuUI and LegacyClamshellUI.
 func fwUIListed(f *protocol.HardwareFeatures, names ...FWUIType) (bool, error) {
-	fwid := f.GetHardwareFeatures().GetFwConfig().FwRwActiveVersion
-	if fwid == 0 {
+	rwMajorVersion := f.GetHardwareFeatures().GetFwConfig().GetFwRwVersion().MajorVersion
+	if rwMajorVersion == 0 {
 		return false, errors.New("firmware id has not been passed from the DUT")
 	}
 	var dutFWUI FWUIType
 	// Using chromium: 2043102 as a reference, which landed in R83-12992.0.0,
 	// firmware versions greater than '12992' should have the menu UI
 	// implemented.
-	if fwid > 12992 {
+	if rwMajorVersion > 12992 {
 		dutFWUI = MenuUI
 	} else {
 		isLegacyMenuUI, err := modelListed(f.GetDeprecatedDeviceConfig(), legacyMenuUIModels...)
@@ -2831,5 +2831,39 @@ func FirmwareSplashScreen() Condition {
 		}
 		// The default for this Kconfig is off, so not found is the same as disabled.
 		return unsatisfied("Kconfig not found")
+	}}
+}
+
+// MiniDiag returns a hardware dependency condition that is satisfied if and
+// only if the DUT supports minidiag.
+func MiniDiag() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("HardwareFeatures is not given")
+		}
+		rwMajorVersion := hf.GetFwConfig().GetFwRwVersion().MajorVersion
+		rwMinorVersion := hf.GetFwConfig().GetFwRwVersion().MinorVersion
+		// Dirinboz launch MiniDiag earlier (crrev/c/2525502) than other
+		// zork variants (crrev/c/2677619).
+		isDirinboz, err := modelListed(f.GetDeprecatedDeviceConfig(), "dirinboz")
+		if err != nil {
+			return withError(err)
+		}
+		/*
+			CL:2617391 landed in 13727.0.0 for most of the boards except:
+				- zork:    CL:2677619 landed in firmware-zork-13434.B 13434.267.0
+				- trogdor: CL:2677612 landed in firmware-trogdor-13577.B 13577.106.0
+				- dedede:  CL:2677618 landed in firmware-dedede-13606.B 13606.99.0
+				- volteer: CL:2677615 landed in firmware-volteer-13672.B 13672.109.0
+		*/
+		if rwMajorVersion >= 13727 || isDirinboz ||
+			(rwMajorVersion == 13434 && rwMinorVersion >= 267) ||
+			(rwMajorVersion == 13577 && rwMinorVersion >= 106) ||
+			(rwMajorVersion == 13606 && rwMinorVersion >= 99) ||
+			(rwMajorVersion == 13672 && rwMinorVersion >= 109) {
+			return satisfied()
+		}
+		return unsatisfied("DUT does not support minidiag")
 	}}
 }

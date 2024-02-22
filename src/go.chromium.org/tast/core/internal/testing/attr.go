@@ -2095,6 +2095,17 @@ from other existing groups (or use this group standalone).
 		},
 	},
 	{
+		Name:     "heartd",
+		Contacts: []string{"cros-tdm-tpe-eng@google.com"},
+		Desc:     `A group of tests that validate the functionality of heartd.`,
+		Subattrs: []*attr{
+			{
+				Name: "heartd_perbuild",
+				Desc: `Indicates that this test should run for every ChromeOS build.`,
+			},
+		},
+	},
+	{
 		Name:     "launcher_search_quality_daily",
 		Contacts: []string{"launcher-search-notify@google.com"},
 		Desc:     "A group of tests for checking the pass ratio in different builds for launcher search.",

@@ -1,0 +1,29 @@
+// Copyright 2024 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package tast.core;
+
+import "chromiumos/test/lab/api/dut.proto";
+
+option go_package = "go.chromium.org/tast/core/framework/protocol";
+
+// DUTLabConfig represents the configurations of all DUT used in a
+// test session.
+message DUTLabConfig {
+  // ChromeOSDUTLabConfig provides a mapping between roles of ChromeOS
+  // DUTs and lab configurations of those DUTs.
+  // Note: The role of the primary DUT is "" and the roles of the
+  // companion DUTs usaually are cd1, cd2, ...
+  map<string, chromiumos.test.lab.api.Dut> ChromeOSDUTLabConfig = 1;
+  // AndroidDUTLabConfig provides a mapping between the associate hostname
+  // of the Android DUTs and lab configurations of those DUTs.
+  map<string, chromiumos.test.lab.api.Dut> AndroidDUTLabConfig = 2;
+  // DevboardDUTLabConfig provides a mapping between the role
+  // of Devboard DUTs and lab configurations of those DUTs.
+  // Note: The role of the primary DUT is "" and the roles of the
+  // companion DUTs usaually are cd1, cd2, ...
+  map<string, chromiumos.test.lab.api.Dut> DevboardDUTLabConfig = 3;
+}

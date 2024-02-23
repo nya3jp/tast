@@ -7,6 +7,7 @@ syntax = "proto3";
 package tast.core;
 
 import "go.chromium.org/tast/core/framework/protocol/dutfeatures.proto";
+import "go.chromium.org/tast/core/framework/protocol/dut_lab_config.proto";
 
 option go_package = "go.chromium.org/tast/core/internal/protocol";
 
@@ -30,6 +31,7 @@ message Features {
 message InfraFeatures {
   map<string, string> vars = 1;
   string maybe_missing_vars = 2;
+  DUTLabConfig DUTLabConfig = 3;
 }
 
 // ForceSkip provides the reason of skipping a test by force.

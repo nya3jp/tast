@@ -4,6 +4,7 @@
 
 //go:generate protoc --go_out=plugins=grpc:../../../../.. -I . reports.proto
 //go:generate protoc --go_out=plugins=grpc:../../../../.. -I . -I ../../../../../../../../config/proto dutfeatures.proto
+//go:generate protoc --go_out=plugins=grpc:../../../../.. -I . -I ../../../../../../../../config/proto dut_lab_config.proto
 
 package protocol
 

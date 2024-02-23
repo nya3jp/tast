@@ -8,6 +8,8 @@ import "google/protobuf/duration.proto";
 import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
 
+import "go.chromium.org/tast/core/framework/protocol/dut_lab_config.proto";
+
 import "logging.proto";
 import "testing.proto";
 
@@ -90,6 +92,9 @@ message RunFixtureConfig {
 
   // ProxyCommand specifies the command to use to connect to the DUT.
   string proxy_command = 18;
+
+  // DUTLabConfig specifies the command to use to connect to the DUT.
+  DUTLabConfig DUTLabConfig = 19;
 
   // TODO(oka): add device_config and hardware_features to support hardware
   // deps. Hint: config/api/topology.proto and device/config.proto define them.

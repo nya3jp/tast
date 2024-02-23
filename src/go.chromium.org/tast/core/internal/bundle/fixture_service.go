@@ -144,12 +144,13 @@ func (s *fixtureService) pushAndPop(srv protocol.FixtureService_RunFixtureServer
 		},
 		Features: &protocol.Features{
 			Infra: &protocol.InfraFeatures{
-				Vars: r.Config.TestVars,
+				Vars:         r.Config.GetTestVars(),
+				DUTLabConfig: r.Config.GetDUTLabConfig(),
 			},
 			Dut: &frameworkprotocol.DUTFeatures{
 				Software: &frameworkprotocol.SoftwareFeatures{
-					Available:   r.Config.AvailableSoftwareFeatures,
-					Unavailable: r.Config.UnavailableSoftwareFeatures,
+					Available:   r.Config.GetAvailableSoftwareFeatures(),
+					Unavailable: r.Config.GetUnavailableSoftwareFeatures(),
 				},
 				// TODO(oka): fill HardwareFeatures field.
 			},

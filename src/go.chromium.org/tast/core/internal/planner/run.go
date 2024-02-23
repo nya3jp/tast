@@ -130,6 +130,7 @@ func (c *Config) FixtureConfig() *fixture.Config {
 		StartFixtureName:  c.StartFixtureName,
 		Features:          features,
 		GracePeriod:       c.GracePeriod(),
+		DUTLabConfig:      c.Features.GetInfra().GetDUTLabConfig(),
 	}
 }
 
@@ -759,10 +760,11 @@ func runTestWithConfig(ctx context.Context, tcfg *testConfig, pcfg *Config, stac
 		features[role] = dutFeatures
 	}
 	rcfg := &testing.RuntimeConfig{
-		DataDir:  filepath.Join(pcfg.Dirs.GetDataDir(), testing.RelativeDataDir(tcfg.test.Pkg)),
-		OutDir:   tcfg.outDir,
-		Vars:     pcfg.Features.GetInfra().GetVars(),
-		Features: features,
+		DataDir:      filepath.Join(pcfg.Dirs.GetDataDir(), testing.RelativeDataDir(tcfg.test.Pkg)),
+		OutDir:       tcfg.outDir,
+		Vars:         pcfg.Features.GetInfra().GetVars(),
+		Features:     features,
+		DUTLabConfig: pcfg.Features.GetInfra().GetDUTLabConfig(),
 		CloudStorage: testing.NewCloudStorage(
 			pcfg.Service.GetDevservers(),
 			pcfg.Service.GetTlwServer(),

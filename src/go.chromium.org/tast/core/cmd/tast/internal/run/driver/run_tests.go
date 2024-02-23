@@ -264,6 +264,7 @@ func (d *Driver) runLocalTestsWithRetry(ctx context.Context, bundle string, test
 		CheckTestDeps:         d.cfg.CheckTestDeps(),
 		TestVars:              d.cfg.TestVars(),
 		MaybeMissingVars:      d.cfg.MaybeMissingVars(),
+		DUTLabConfig:          d.cfg.DUTLabConfig(),
 		DebuggerPort:          d.cfg.DebuggerPorts()[debugger.LocalBundle],
 		Proxy:                 d.cfg.Proxy() == config.ProxyEnv,
 		DUTFeatures:           dutFeature,

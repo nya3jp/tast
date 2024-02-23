@@ -40,6 +40,9 @@ type Config struct {
 	// Its key for the map is the role of the DUT such as "cd1".
 	// The role for primary DUT should be "".
 	Features map[string]*frameworkprotocol.DUTFeatures
+	// DUTlabConfig contains lab configuration of the each DUT used in the test session.
+	DUTLabConfig *frameworkprotocol.DUTLabConfig
+
 	// GracePeriod specifies the grace period after fixture timeout.
 	GracePeriod time.Duration
 }
@@ -360,8 +363,9 @@ func (st *InternalStack) newRuntimeConfig(ctx context.Context, outDir string, fi
 			}
 			return st.ParentFixtSerializedValue()
 		},
-		FixtCtx:  ctx,
-		Features: st.cfg.Features,
+		FixtCtx:      ctx,
+		Features:     st.cfg.Features,
+		DUTLabConfig: st.cfg.DUTLabConfig,
 	}
 }
 

@@ -67,6 +67,7 @@ type Config struct {
 	MsgTimeout            time.Duration
 	SwarmingTaskID        string
 	BuildBucketID         string
+	DUTLabConfig          *frameworkprotocol.DUTLabConfig
 
 	DebuggerPort int
 	Proxy        bool
@@ -208,6 +209,7 @@ func (d *Driver) newConfigsForLocalTests(tests []string, state *protocol.StartFi
 			Infra: &protocol.InfraFeatures{
 				Vars:             d.cfg.TestVars,
 				MaybeMissingVars: d.cfg.MaybeMissingVars,
+				DUTLabConfig:     d.cfg.DUTLabConfig,
 			},
 			Dut:               dutFeature,
 			CompanionFeatures: companionFeatures,

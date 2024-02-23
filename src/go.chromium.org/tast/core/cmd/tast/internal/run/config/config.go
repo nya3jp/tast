@@ -18,6 +18,8 @@ import (
 	"strings"
 	"time"
 
+	"google.golang.org/protobuf/encoding/protojson"
+
 	"go.chromium.org/tast/core/cmd/tast/internal/build"
 	"go.chromium.org/tast/core/errors"
 	"go.chromium.org/tast/core/internal/command"
@@ -94,6 +96,7 @@ type MutableConfig struct {
 	CompanionDUTs             map[string]string
 	SwarmingTaskID            string
 	BuildBucketID             string
+	DUTLabConfig              *frameworkprotocol.DUTLabConfig
 
 	LocalRunner    string
 	LocalBundleDir string
@@ -240,6 +243,12 @@ func (c *Config) CompanionDUTs() map[string]string {
 		duts[k] = v
 	}
 	return duts
+}
+
+// DUTLabConfig specifies the DUT lab configuration of the DUTs
+// used for the running Tast.
+func (c *Config) DUTLabConfig() *frameworkprotocol.DUTLabConfig {
+	return c.m.DUTLabConfig
 }
 
 // SwarmingTaskID specifies the swarming task ID of the scheduled
@@ -563,8 +572,23 @@ func (c *MutableConfig) SetFlags(f *flag.FlagSet) {
 			return nil
 		})
 		f.Var(&compDUTs, "companiondut", `role to companion DUT, as "role:address" (can be repeated)`)
-		f.IntVar(&c.Retries, "retries", 0, `number of times to retry a failing test`)
 
+		readLabConfig := func(filename string) error {
+			labConfig := &frameworkprotocol.DUTLabConfig{}
+			data, err := os.ReadFile(filename)
+			if err != nil {
+				return errors.Wrapf(err, "failed to open lab config fiie %s", filename)
+			}
+			if err := protojson.Unmarshal(data, labConfig); err != nil {
+				return errors.Wrapf(err, "failed to unmarshal lab config fiie %s", filename)
+			}
+			c.DUTLabConfig = labConfig
+			return nil
+		}
+		f.Func("dutlabconfig", `a file to describe all DUTs being used in the test`,
+			readLabConfig)
+
+		f.IntVar(&c.Retries, "retries", 0, `number of times to retry a failing test`)
 	}
 }
 
@@ -793,6 +817,7 @@ func (c *Config) Features(dut *frameworkprotocol.DUTFeatures,
 		Infra: &protocol.InfraFeatures{
 			Vars:             c.TestVars(),
 			MaybeMissingVars: c.MaybeMissingVars(),
+			DUTLabConfig:     c.DUTLabConfig(),
 		},
 		Dut:               dut,
 		CompanionFeatures: companions,

@@ -43,8 +43,10 @@ type RuntimeConfig struct {
 	// Purgeable is a list of file paths which are not used for now and thus
 	// can be deleted if the disk space is low.
 	Purgeable []string
-	//MaxSysMsgLogSize is a size of flag for truncate log file.
+	// MaxSysMsgLogSize is a size of flag for truncate log file.
 	MaxSysMsgLogSize int64
+	// DUTLabConfig is the lab configuration for all DUTs.
+	DUTLabConfig *protocol.DUTLabConfig
 }
 
 // RemoteData contains information relevant to remote entities.

@@ -95,6 +95,7 @@ func runExternalTests(ctx context.Context, names []string, stack *fixture.Combin
 		CheckTestDeps:         pcfg.Features.GetCheckDeps(),
 		TestVars:              pcfg.Features.GetInfra().GetVars(),
 		MaybeMissingVars:      pcfg.Features.GetInfra().GetMaybeMissingVars(),
+		DUTLabConfig:          pcfg.Features.GetInfra().GetDUTLabConfig(),
 		MsgTimeout:            pcfg.ExternalTarget.Config.GetMsgTimeout().AsDuration(),
 		SystemServicesTimeout: pcfg.ExternalTarget.Config.GetSystemServicesTimeout().AsDuration(),
 		WaitUntilReadyTimeout: pcfg.ExternalTarget.Config.GetWaitUntilReadyTimeout().AsDuration(),

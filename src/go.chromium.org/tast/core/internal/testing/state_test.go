@@ -23,6 +23,7 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/google/go-cmp/cmp"
 	"go.chromium.org/chromiumos/config/go/api"
+	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"google.golang.org/protobuf/testing/protocmp"
 
 	"go.chromium.org/tast/core/errors"
@@ -846,6 +847,61 @@ func TestCloudStorage(t *gotesting.T) {
 	}
 }
 
+func TestDUtLabConfig(t *gotesting.T) {
+	var out outputSink
+	chromeOSDUTID := "chromeos_dut"
+	androidDUTID := "android_dut"
+	devboardDUTID := "devboard_dut"
+	root := testing.NewTestEntityRoot(
+		&testing.TestInstance{Timeout: time.Minute},
+		&testing.RuntimeConfig{
+			DUTLabConfig: &frameworkprotocol.DUTLabConfig{
+				ChromeOSDUTLabConfig: map[string]*labapi.Dut{
+					"": {
+						Id: &labapi.Dut_Id{Value: chromeOSDUTID},
+					},
+				},
+				AndroidDUTLabConfig: map[string]*labapi.Dut{
+					"a1": {
+						Id: &labapi.Dut_Id{Value: androidDUTID},
+					},
+				},
+				DevboardDUTLabConfig: map[string]*labapi.Dut{
+					"cd1": {
+						Id: &labapi.Dut_Id{Value: devboardDUTID},
+					},
+				},
+			},
+		},
+		&out, testing.NewEntityCondition())
+	s := root.NewTestState()
+
+	chromeOSDUT, err := s.ChromeOSDUTLabConfig("")
+	if err != nil {
+		t.Fatal("Failed to get ChromeOS DUT lab config: ", err)
+	}
+	if chromeOSDUT.GetId().GetValue() != chromeOSDUTID {
+		t.Errorf("Failed to get expected ChromeOS DUT ID: got (%s) wanted(%s)",
+			chromeOSDUT.GetId().GetValue(), chromeOSDUTID)
+	}
+	androidDUT, err := s.AndroidDUTLabConfig("a1")
+	if err != nil {
+		t.Fatal("Failed to get Android DUT lab config: ", err)
+	}
+	if androidDUT.GetId().GetValue() != androidDUTID {
+		t.Errorf("Failed to get expected Android DUT ID: got (%s) wanted(%s)",
+			androidDUT.GetId().GetValue(), androidDUTID)
+	}
+	devboardDUT, err := s.DevboardDUTLabConfig("cd1")
+	if err != nil {
+		t.Fatal("Failed to get Devboard DUT lab config: ", err)
+	}
+	if devboardDUT.GetId().GetValue() != devboardDUTID {
+		t.Errorf("Failed to get expected devboard DUT ID: got (%s) wanted(%s)",
+			devboardDUT.GetId().GetValue(), devboardDUTID)
+	}
+}
+
 func TestStateExports(t *gotesting.T) {
 	for _, tc := range []struct {
 		state   interface{}
@@ -854,13 +910,16 @@ func TestStateExports(t *gotesting.T) {
 		{
 			testing.State{},
 			[]string{
+				"AndroidDUTLabConfig",
 				"AttachErrorHandlers",
+				"ChromeOSDUTLabConfig",
 				"CloudStorage",
 				"CompanionDUT",
 				"CompanionDUTs",
 				"DUT",
 				"DataFileSystem",
 				"DataPath",
+				"DevboardDUTLabConfig",
 				"Error",
 				"Errorf",
 				"Fatal",
@@ -889,13 +948,16 @@ func TestStateExports(t *gotesting.T) {
 		{
 			testing.PreState{},
 			[]string{
+				"AndroidDUTLabConfig",
 				"AttachErrorHandlers",
+				"ChromeOSDUTLabConfig",
 				"CloudStorage",
 				"CompanionDUT",
 				"CompanionDUTs",
 				"DUT",
 				"DataFileSystem",
 				"DataPath",
+				"DevboardDUTLabConfig",
 				"Error",
 				"Errorf",
 				"Fatal",
@@ -919,7 +981,9 @@ func TestStateExports(t *gotesting.T) {
 		{
 			testing.TestHookState{},
 			[]string{
+				"AndroidDUTLabConfig",
 				"AttachErrorHandlers",
+				"ChromeOSDUTLabConfig",
 				"CloudStorage",
 				"CompanionDUT",
 				"CompanionDUTRoles",
@@ -927,6 +991,7 @@ func TestStateExports(t *gotesting.T) {
 				"DUT",
 				"DataFileSystem",
 				"DataPath",
+				"DevboardDUTLabConfig",
 				"Error",
 				"Errorf",
 				"Fatal",
@@ -951,13 +1016,16 @@ func TestStateExports(t *gotesting.T) {
 		{
 			testing.FixtState{},
 			[]string{
+				"AndroidDUTLabConfig",
 				"AttachErrorHandlers",
+				"ChromeOSDUTLabConfig",
 				"CloudStorage",
 				"CompanionDUT",
 				"CompanionDUTs",
 				"DUT",
 				"DataFileSystem",
 				"DataPath",
+				"DevboardDUTLabConfig",
 				"Error",
 				"Errorf",
 				"Fatal",
@@ -982,11 +1050,14 @@ func TestStateExports(t *gotesting.T) {
 		{
 			testing.FixtTestState{},
 			[]string{
+				"AndroidDUTLabConfig",
 				"AttachErrorHandlers",
+				"ChromeOSDUTLabConfig",
 				"CloudStorage",
 				"CompanionDUT",
 				"CompanionDUTs",
 				"DUT",
+				"DevboardDUTLabConfig",
 				"Error",
 				"Errorf",
 				"Fatal",

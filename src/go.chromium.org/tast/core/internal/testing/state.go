@@ -64,6 +64,8 @@ import (
 	"sync"
 	"time"
 
+	api "go.chromium.org/chromiumos/config/go/test/lab/api"
+
 	"go.chromium.org/tast/core/dut"
 	"go.chromium.org/tast/core/errors"
 	"go.chromium.org/tast/core/internal/logging"
@@ -381,6 +383,55 @@ func (s *globalMixin) CompanionDUTs() map[string]*dut.DUT {
 		cDUTs[role] = dut
 	}
 	return cDUTs
+}
+
+// ChromeOSDUTLabConfig returns the lab configuration of a ChromeOS DUT.
+// The role for primary DUT is "".
+func (s *globalMixin) ChromeOSDUTLabConfig(role string) (*api.Dut, error) {
+	m := s.entityRoot.cfg.DUTLabConfig.GetChromeOSDUTLabConfig()
+	if m == nil {
+		return nil, errors.New("no ChromeOS DUT lab config is available")
+	}
+	dut, ok := m[role]
+	if !ok {
+		d := "primary DUT"
+		if role != "" {
+			d = fmt.Sprintf("companion DUT %s", role)
+		}
+		return nil, errors.Errorf("failed find ChromeOS DUT for the %s", d)
+	}
+	return dut, nil
+}
+
+// / AndroidDUTLabConfig returns the lab configuration of an Android DUT.
+func (s *globalMixin) AndroidDUTLabConfig(associateHostname string) (*api.Dut, error) {
+	m := s.entityRoot.cfg.DUTLabConfig.GetAndroidDUTLabConfig()
+	if m == nil {
+		return nil, errors.New("no Android DUT lab config is available")
+	}
+	dut, ok := m[associateHostname]
+	if !ok {
+		return nil, errors.Errorf("failed find Android DUT for the associate hostname %s",
+			associateHostname)
+	}
+	return dut, nil
+}
+
+// DevboardDUTLabConfig returns the lab configuration of a Devboard DUT.
+func (s *globalMixin) DevboardDUTLabConfig(role string) (*api.Dut, error) {
+	m := s.entityRoot.cfg.DUTLabConfig.GetDevboardDUTLabConfig()
+	if m == nil {
+		return nil, errors.New("no Devboard DUT lab config is available")
+	}
+	dut, ok := m[role]
+	if !ok {
+		d := "primary DUT"
+		if role != "" {
+			d = fmt.Sprintf("companion DUT %s", role)
+		}
+		return nil, errors.Errorf("failed find Devboard DUT for the %s", d)
+	}
+	return dut, nil
 }
 
 // Log formats its arguments using default formatting and logs them.

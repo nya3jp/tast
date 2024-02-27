@@ -85,18 +85,19 @@ var softwareFeatureDefs = map[string]string{
 	// Boards that are failing deterministically for CrostiniGeekbench6CUJ
 	"crostini_geekbench6_supported": `!("board:jacuzzi*" || "board:asurada" || "board:corsola*" || "board:strongbad" || "board:trogdor" || "board:kukui")`,
 	// VMs don't support few crossystem sub-commands: https://crbug.com/974615
-	"crossystem":        `!"betty" && !"tast_vm"`,
-	"csme_update":       `!("board:atlas" || "board:coral" || "board:drallion" || "board:eve" || "board:fizz" || "board:hatch" || "board:kalista" || "board:nami" || "board:nautilus" || "board:octopus" || "board:puff" || "board:rammus" || "board:reef" || "board:sand" || "board:sarien")`,
-	"cups":              "cups",
-	"device_crash":      `!("board:samus")`,                        // Samus devices do not reliably come back after kernel crashes. crbug.com/1045821
-	"diagnostics":       `"diagnostics" && !"betty" && !"tast_vm"`, // VMs do not have hardware to diagnose. https://crbug.com/1126619
-	"dlc":               "dlc",
-	"dmverity_stable":   `"kernel-4_14"`,
-	"dmverity_unstable": `!"kernel-4_14"`,
-	"dptf":              "dptf",
-	"drivefs":           "drivefs",
-	"drm_atomic":        "drm_atomic",
-	"drm_trace":         `!("kernel-4_14" || "kernel-4_19")`,
+	"crossystem":         `!"betty" && !"tast_vm"`,
+	"csme_update":        `!("board:atlas" || "board:coral" || "board:drallion" || "board:eve" || "board:fizz" || "board:hatch" || "board:kalista" || "board:nami" || "board:nautilus" || "board:octopus" || "board:puff" || "board:rammus" || "board:reef" || "board:sand" || "board:sarien")`,
+	"cups":               "cups",
+	"device_crash":       `!("board:samus")`,                        // Samus devices do not reliably come back after kernel crashes. crbug.com/1045821
+	"diagnostics":        `"diagnostics" && !"betty" && !"tast_vm"`, // VMs do not have hardware to diagnose. https://crbug.com/1126619
+	"dlc":                "dlc",
+	"dmcrypt_encryption": `("board:guybrush" || "board:brya")`,
+	"dmverity_stable":    `"kernel-4_14"`,
+	"dmverity_unstable":  `!"kernel-4_14"`,
+	"dptf":               "dptf",
+	"drivefs":            "drivefs",
+	"drm_atomic":         "drm_atomic",
+	"drm_trace":          `!("kernel-4_14" || "kernel-4_19")`,
 	// asuka, banon, caroline, cave, celes, chell, cyan, edgar, kefka, reks, relm, sentry, terra, ultima, and wizpig have buggy EC firmware and cannot capture crash reports. b/172228823
 	// drallion and sarien have do not support the "crash" EC command. crbug.com/1123716
 	// guado, tidus, rikku, veyron_fievel, and veyron_tiger do not have EC firmware. crbug.com/1123716. TODO(crbug.com/1124554) Use an EC hardware dep for these rather than a software dep.

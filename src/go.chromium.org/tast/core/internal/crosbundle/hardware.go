@@ -742,16 +742,24 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		for _, dev := range matches {
 			pathComponenets := strings.Split(dev, "/")
 			physDev := pathComponenets[len(pathComponenets)-1]
-			outStr := readSysfsString(physDev, "removable")
-			val, err := strconv.ParseInt(outStr, 10, 64)
-			if err == nil && val == 0 {
+			// /sys/block/<dev>/device is a symlink to the scsi target node,
+			// the symlink resolution will resolve .. directory against the linked one
+			// so we can get to the controller's node
+			path := "/sys/block/" + physDev + "/device/../../../driver"
+			out, err := exec.Command("readlink", "-f", path).Output()
+			if err != nil {
+				return false
+			}
+			resComponents := strings.Split(strings.TrimSpace(string(out)), "/")
+			res := resComponents[len(resComponents)-1]
+			if res == "ufshcd" {
 				return true
 			}
 			return false
 		}
 		return false
 	}()
-	if hasUfsStorage && !hasSataStorage {
+	if hasUfsStorage {
 		features.Storage.StorageType = configpb.Component_Storage_UFS
 	}
 

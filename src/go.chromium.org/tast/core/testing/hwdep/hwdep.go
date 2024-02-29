@@ -927,6 +927,29 @@ func NoFingerprint() Condition {
 	}
 }
 
+// SkipOnFPMCU returns a hardware dependency condition that is satisfied
+// if and only if the DUT's fingerprint board is none of the given names.
+func SkipOnFPMCU(names ...string) Condition {
+	for _, n := range names {
+		if !idRegexp.MatchString(n) {
+			return Condition{Err: errors.Errorf("ModelId should match with %v: %q", idRegexp, n)}
+		}
+	}
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("HardwareFeatures is not given")
+		}
+		fingerprintBoard := hf.GetFingerprint().GetBoard()
+		for _, n := range names {
+			if fingerprintBoard == n {
+				return unsatisfied("Fingerprint test skipped on " + fingerprintBoard + " board")
+			}
+		}
+		return satisfied()
+	}}
+}
+
 // FingerprintDiagSupported returns a hardware dependency condition that is
 // satisfied if and only if the fingerprint diagnostic is supported on the DUT.
 func FingerprintDiagSupported() Condition {

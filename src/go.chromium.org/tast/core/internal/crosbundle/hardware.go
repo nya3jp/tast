@@ -361,6 +361,15 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 	}()
 	features.Fingerprint.Present = hasFingerprint
 
+	fingerprintBoard := func() string {
+		out, err := crosConfig("/fingerprint", "board")
+		if err != nil {
+			return ""
+		}
+		return out
+	}()
+	features.Fingerprint.Board = fingerprintBoard
+
 	features.Fingerprint.FingerprintDiag = &configpb.HardwareFeatures_Fingerprint_FingerprintDiag{}
 
 	fingerprintDiagRoutineEnabled := func() bool {

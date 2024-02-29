@@ -300,6 +300,33 @@ func TestNoFingerprint(t *testing.T) {
 		nil)
 }
 
+func TestSkipOnFPMCU(t *testing.T) {
+	c := hwdep.SkipOnFPMCU("helipilot", "buccaneer")
+
+	for _, tc := range []struct {
+		fingerprintBoard string
+		expectSatisfied  bool
+	}{
+		{"helipilot", false},
+		{"buccaneer", false},
+		{"bloonchipper", true},
+	} {
+		verifyCondition(
+			t, c,
+			&frameworkprotocol.DeprecatedDeviceConfig{},
+			&configpb.HardwareFeatures{
+				Fingerprint: &configpb.HardwareFeatures_Fingerprint{
+					Board: tc.fingerprintBoard,
+				},
+			},
+			tc.expectSatisfied)
+	}
+	expectError(
+		t, c,
+		&frameworkprotocol.DeprecatedDeviceConfig{},
+		nil)
+}
+
 func TestFingerprintDiagSupported(t *testing.T) {
 	c := hwdep.FingerprintDiagSupported()
 

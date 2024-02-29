@@ -2816,3 +2816,20 @@ func IntelIsh() Condition {
 		return unsatisfied("Intel ISH is not present nor enabled")
 	}}
 }
+
+// FirmwareSplashScreen is satisfied if the BIOS was built with Kconfig
+// CONFIG_CHROMEOS_FW_SPLASH_SCREEN or Kconfig CONFIG_BMP_LOGO
+func FirmwareSplashScreen() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		fwc := f.GetHardwareFeatures().GetFwConfig()
+		if fwc != nil {
+			if fwc.FwSplashScreen == configpb.HardwareFeatures_PRESENT ||
+				fwc.BmpLogo == configpb.HardwareFeatures_PRESENT {
+				return satisfied()
+			}
+			return unsatisfied("The splash screen feature is not supported")
+		}
+		// The default for this Kconfig is off, so not found is the same as disabled.
+		return unsatisfied("Kconfig not found")
+	}}
+}

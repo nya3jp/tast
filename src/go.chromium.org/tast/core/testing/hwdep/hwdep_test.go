@@ -1061,6 +1061,32 @@ func TestHasTpm2(t *testing.T) {
 }
 
 func TestFirmwareKconfigFields(t *testing.T) {
+	// hwdep.FirmwareSplashScreen()
+	for _, tc := range []struct {
+		present         configpb.HardwareFeatures_Present
+		expectSatisfied bool
+	}{
+		{configpb.HardwareFeatures_PRESENT, true},
+		{configpb.HardwareFeatures_NOT_PRESENT, false},
+		{configpb.HardwareFeatures_PRESENT_UNKNOWN, false},
+	} {
+		verifyCondition(
+			t, hwdep.FirmwareSplashScreen(),
+			&frameworkprotocol.DeprecatedDeviceConfig{},
+			&configpb.HardwareFeatures{
+				FwConfig: &configpb.HardwareFeatures_FirmwareConfiguration{
+					BmpLogo:        tc.present,
+					FwSplashScreen: tc.present,
+				},
+			},
+			tc.expectSatisfied)
+	}
+	verifyCondition(
+		t, hwdep.FirmwareSplashScreen(),
+		&frameworkprotocol.DeprecatedDeviceConfig{},
+		nil,
+		false)
+
 	// hwdep.VBootCbfsIntegration()
 	for _, tc := range []struct {
 		present         configpb.HardwareFeatures_Present

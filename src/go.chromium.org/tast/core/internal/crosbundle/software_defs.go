@@ -316,7 +316,7 @@ var softwareFeatureDefs = map[string]string{
 	// Boards that support composition with Vulkan. The vanilla "vulkan" dep
 	// above simply indicates whether Vulkan drivers are present in the image, so
 	// this dep is a subset of those devices.
-	"vulkan_composite": `vulkan && ("board:volteer" || "board:brya" || "board:skyrim" )`,
+	"vulkan_composite": `vulkan && ("board:volteer" || "board:brya" || "board:rex" || "board:skyrim" )`,
 	"watchdog":         `watchdog`,
 	// nyan_kitty is skipped as its WiFi device is unresolvably flaky (crrev.com/c/944502),
 	// exhibiting very similar symptoms to crbug.com/693724, b/65858242, b/36264732.

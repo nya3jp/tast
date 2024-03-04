@@ -99,8 +99,8 @@ var DeviceNames = map[DeviceID]string{
 	MediaTekMT7922PCIE:         "MediaTek MT7922 PCIE",
 }
 
-// Mapping of device identification data to device ID.
-var lookupWLANDev = map[DevInfo]DeviceID{
+// LookupWLANDev mapping of device identification data to device ID.
+var LookupWLANDev = map[DevInfo]DeviceID{
 	{Vendor: "0x02df", Device: "0x912d"}: Marvell88w8897SDIO,
 	{Vendor: "0x1b4b", Device: "0x2b42"}: Marvell88w8997PCIE,
 	{Vendor: "0x168c", Device: "0x003e"}: QualcommAtherosQCA6174,
@@ -211,7 +211,7 @@ func DeviceInfo() (*DevInfo, error) {
 	for _, line := range strings.Split(uevent, "\n") {
 		if kv := compatibleRE.FindStringSubmatch(line); kv != nil {
 			if wifiSnoc := strings.SplitN(line, "=", 2); len(wifiSnoc) == 2 {
-				if d, ok := lookupWLANDev[DevInfo{Compatible: wifiSnoc[1]}]; ok {
+				if d, ok := LookupWLANDev[DevInfo{Compatible: wifiSnoc[1]}]; ok {
 					// Found the matching device.
 					return &DevInfo{ID: d, Name: DeviceNames[d]}, nil
 				}
@@ -234,11 +234,11 @@ func DeviceInfo() (*DevInfo, error) {
 	if err != nil && !os.IsNotExist(err) {
 		return nil, errors.Wrapf(err, "failed to get subsystem ID at device %q", netIf)
 	}
-	if d, ok := lookupWLANDev[DevInfo{Vendor: vendorID, Device: productID, Subsystem: subsystemID}]; ok {
+	if d, ok := LookupWLANDev[DevInfo{Vendor: vendorID, Device: productID, Subsystem: subsystemID}]; ok {
 		return &DevInfo{Vendor: vendorID, Device: productID, Subsystem: subsystemID, ID: d, Name: DeviceNames[d]}, nil
 	}
 
-	if d, ok := lookupWLANDev[DevInfo{Vendor: vendorID, Device: productID}]; ok {
+	if d, ok := LookupWLANDev[DevInfo{Vendor: vendorID, Device: productID}]; ok {
 		return &DevInfo{Vendor: vendorID, Device: productID, ID: d, Name: DeviceNames[d]}, nil
 	}
 

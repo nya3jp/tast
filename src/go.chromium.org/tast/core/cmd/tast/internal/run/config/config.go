@@ -639,9 +639,7 @@ func (c *MutableConfig) DeriveDefaults() error {
 		} else {
 			c.DefaultVarsDirs = []string{
 				"/etc/tast/vars/private",
-				filepath.Join(c.TrunkDir, "src/platform/tast-tests-private/vars"),
 				"/etc/tast/vars/public",
-				filepath.Join(c.TrunkDir, "src/platform/tast-tests/vars"),
 			}
 		}
 	}

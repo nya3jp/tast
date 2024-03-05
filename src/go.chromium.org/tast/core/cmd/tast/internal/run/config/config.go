@@ -655,16 +655,23 @@ func (c *MutableConfig) DeriveDefaults() error {
 
 	// Apply variables from default configurations.
 	if len(c.DefaultVarsDirs) == 0 {
+		// TODO: b/324133828 -- Use only src/* after /etc/tast/vars are removed
+		// from the build.
 		if c.Build {
 			c.DefaultVarsDirs = []string{
 				filepath.Join(c.TrunkDir, "src/platform/tast-tests-private/vars"),
 				filepath.Join(c.TrunkDir, "src/platform/tast-tests/vars"),
 			}
 		} else {
-			c.DefaultVarsDirs = []string{
-				"/etc/tast/vars/private",
-				"/etc/tast/vars/public",
+			privateVars := filepath.Join(c.TrunkDir, "src/platform/tast-tests-private/vars")
+			if _, err := os.Stat("/etc/tast/vars/private"); err == nil {
+				privateVars = "/etc/tast/vars/private"
 			}
+			publicVars := filepath.Join(c.TrunkDir, "src/platform/tast-tests/vars")
+			if _, err := os.Stat("/etc/tast/vars/public"); err == nil {
+				publicVars = "/etc/tast/vars/public"
+			}
+			c.DefaultVarsDirs = []string{privateVars, publicVars}
 		}
 	}
 	var defaultVarsFiles []string

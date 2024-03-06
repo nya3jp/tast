@@ -208,6 +208,12 @@ func TestCheckKnownAttrs(t *testing.T) {
 		{
 			attrs: []string{"group:typec"},
 		},
+		{
+			attrs: []string{"group:meet"},
+		},
+		{
+			attrs: []string{"group:meet", "informational"},
+		},
 
 		// Invalid cases.
 		{

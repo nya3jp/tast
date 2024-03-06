@@ -1259,6 +1259,17 @@ third_party/autotest/files/server/site_tests/tast/control.racc-config-installed.
 		},
 	},
 	{
+		Name:     "meet",
+		Contacts: []string{"rooms-engprod@google.com"},
+		Desc:     `The group of tests to be run on a Meet CFM board.`,
+		Subattrs: []*attr{
+			{
+				Name: "informational",
+				Desc: `Used to gather information on test performance and confidence before being promoted to group:criticalstaging.`,
+			},
+		},
+	},
+	{
 		Name:     "meta",
 		Contacts: []string{"tast-owners@google.com"},
 		Desc: `A group of functional tests of the Tast framework itself.

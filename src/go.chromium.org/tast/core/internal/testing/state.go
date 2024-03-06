@@ -649,6 +649,16 @@ func (s *entityMixin) DataPath(p string) string {
 	panic(fmt.Sprintf("Data %q wasn't declared on registration", p))
 }
 
+// DataPaths returns a mapping between data file previously
+// registered via Data and the absolute paths to use to access.
+func (s *entityMixin) DataPaths() map[string]string {
+	dataPaths := make(map[string]string)
+	for _, f := range s.entityRoot.cst.allData {
+		dataPaths[f] = filepath.Join(s.entityRoot.cfg.DataDir, f)
+	}
+	return dataPaths
+}
+
 // DataFileSystem returns an http.FileSystem implementation that serves an entity's data files.
 //
 //	srv := httptest.NewServer(http.FileServer(s.DataFileSystem()))

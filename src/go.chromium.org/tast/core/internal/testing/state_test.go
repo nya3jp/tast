@@ -588,6 +588,29 @@ func TestDataPathNotDeclared(t *gotesting.T) {
 	}()
 }
 
+func TestDataPaths(t *gotesting.T) {
+	const (
+		dataDir = "/tmp/data"
+	)
+	test := testing.TestInstance{
+		Timeout: time.Minute,
+		Data:    []string{"foo", "foo/bar", "foo/baz"},
+	}
+
+	expected := make(map[string]string)
+	for _, f := range test.Data {
+		expected[f] = filepath.Join(dataDir, f)
+	}
+
+	var out outputSink
+	root := testing.NewTestEntityRoot(&test, &testing.RuntimeConfig{DataDir: dataDir}, &out, testing.NewEntityCondition())
+	s := root.NewTestState()
+	got := s.DataPaths()
+	if diff := cmp.Diff(got, expected); diff != "" {
+		t.Fatalf("failed to get expected data paths (-got +want):\n%s", diff)
+	}
+}
+
 func TestDataFileServer(t *gotesting.T) {
 	td := testutil.TempDir(t)
 	defer os.RemoveAll(td)
@@ -919,6 +942,7 @@ func TestStateExports(t *gotesting.T) {
 				"DUT",
 				"DataFileSystem",
 				"DataPath",
+				"DataPaths",
 				"DevboardDUTLabConfig",
 				"Error",
 				"Errorf",
@@ -957,6 +981,7 @@ func TestStateExports(t *gotesting.T) {
 				"DUT",
 				"DataFileSystem",
 				"DataPath",
+				"DataPaths",
 				"DevboardDUTLabConfig",
 				"Error",
 				"Errorf",
@@ -991,6 +1016,7 @@ func TestStateExports(t *gotesting.T) {
 				"DUT",
 				"DataFileSystem",
 				"DataPath",
+				"DataPaths",
 				"DevboardDUTLabConfig",
 				"Error",
 				"Errorf",
@@ -1025,6 +1051,7 @@ func TestStateExports(t *gotesting.T) {
 				"DUT",
 				"DataFileSystem",
 				"DataPath",
+				"DataPaths",
 				"DevboardDUTLabConfig",
 				"Error",
 				"Errorf",

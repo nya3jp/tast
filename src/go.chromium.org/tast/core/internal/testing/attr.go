@@ -167,6 +167,10 @@ Tests in this group are not used for build verification.
 				Desc: `Indicates that this test switches the power supply and discharges the battery.`,
 			},
 			{
+				Name: "graphics_manual",
+				Desc: `Indicates that this test is designed to run manually and not to run in the lab.`,
+			},
+			{
 				Name: "graphics_perbuild",
 				Desc: `Indicates that this test should run for every ChromeOS build.`,
 			},
@@ -177,6 +181,10 @@ Tests in this group are not used for build verification.
 			{
 				Name: "graphics_weekly",
 				Desc: `Indicates that this test should run weekly.`,
+			},
+			{
+				Name: "graphics_bringup",
+				Desc: `Indicates that this test should be run during devices bringup.`,
 			},
 			{
 				Name: "graphics_av_analysis",
@@ -197,10 +205,6 @@ Tests in this group are not used for build verification.
 			{
 				Name: "graphics_opencl",
 				Desc: `Indicates that this test is part of OpenCL testing.`,
-			},
-			{
-				Name: "graphics_satlab_redrix_stress_b246324780",
-				Desc: `Indicates that this test is running to support redrix b/246324780.`,
 			},
 			{
 				Name: "graphics_video_platformdecoding",
@@ -233,6 +237,10 @@ Tests in this group are not used for build verification.
 			{
 				Name: "graphics_video_vp9",
 				Desc: `Indicates that this test is exercising vp9 codec.`,
+			},
+			{
+				Name: "graphics_stress",
+				Desc: `Indicates that this test is part of the graphics stress testing.`,
 			},
 		},
 	},

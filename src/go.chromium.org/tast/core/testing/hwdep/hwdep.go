@@ -2134,6 +2134,10 @@ func SupportsHEVCVideoDecodingInChrome() Condition {
 		if f.GetHardwareFeatures().GetSoc().GetHevcSupport() == configpb.HardwareFeatures_PRESENT {
 			return satisfied()
 		}
+		// MT8188G does support it.
+		if f.GetDeprecatedDeviceConfig().GetSoc() == protocol.DeprecatedDeviceConfig_SOC_MT8188G {
+			return satisfied()
+		}
 		// ARM embedders don't support it.
 		if satisfy, _, err := CPUSocFamily("mediatek", "rockchip", "qualcomm").Satisfied(f); err == nil && satisfy {
 			return unsatisfied("Chrome does not support HEVC video decoding on this SoC")

@@ -28,6 +28,10 @@ type Fixture struct {
 	// that we can file bugs or ask for code review.
 	Contacts []string
 
+	// BugComponent is an id for filing bugs against this fixture, i.e. 'b:1234'. This field is not
+	// to be used by the fixtures themselves, but added to metadata used outside of testing.
+	BugComponent string
+
 	// Impl is the implementation of the fixture.
 	Impl FixtureImpl
 
@@ -90,6 +94,11 @@ type FixtureParam struct {
 	// with the parameter. At least one personal email address of an active committer
 	// should be specified so that we can file bugs or ask for code review.
 	ExtraContacts []string
+
+	// BugComponent overrides BugComponent defined in the top-level fixture.
+	// This field is for infra/external use only and should not be used
+	// or referenced within the fixture code.
+	BugComponent string
 
 	// Parent specifies the parent fixture name, or empty if it has no parent.
 	// Can only be set if the enclosing fixture doesn't have one already set.
@@ -166,6 +175,11 @@ func newFixtureInstance(f *Fixture, pkg string, p *FixtureParam) (*FixtureInstan
 
 	contacts := append(f.Contacts, p.ExtraContacts...)
 
+	bugComponent := f.BugComponent
+	if p.BugComponent != "" {
+		bugComponent = p.BugComponent
+	}
+
 	parent := f.Parent
 	if p.Parent != "" {
 		parent = p.Parent
@@ -203,6 +217,7 @@ func newFixtureInstance(f *Fixture, pkg string, p *FixtureParam) (*FixtureInstan
 		Name:            name,
 		Desc:            f.Desc,
 		Contacts:        contacts,
+		BugComponent:    bugComponent,
 		Impl:            f.Impl,
 		Parent:          parent,
 		SetUpTimeout:    setUpTimeout,
@@ -241,6 +256,7 @@ type FixtureInstance struct {
 	Name            string
 	Desc            string
 	Contacts        []string
+	BugComponent    string
 	Impl            FixtureImpl
 	Parent          string
 	SetUpTimeout    time.Duration

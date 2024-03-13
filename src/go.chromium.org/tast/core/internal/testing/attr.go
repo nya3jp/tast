@@ -976,6 +976,10 @@ third_party/autotest/files/server/site_tests/tast/control.racc-config-installed.
 				Desc: `Identifies modem firmware tests that are run with less frequency.`,
 			},
 			{
+				Name: "cellular_modem_verification",
+				Desc: `Identifies modem tests used in CQ for manifest and DLC verification.`,
+			},
+			{
 				Name: "cellular_amari_callbox",
 				Desc: `Identifies tests that run on DUTs connected to an Amari callbox.`,
 			},

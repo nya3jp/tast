@@ -54,7 +54,7 @@ var softwareFeatureDefs = map[string]string{
 	// TODO(b/185087278): Remove soraka-libcamera.
 	"camera_app": `!("board:volteer-kernelnext" || "board:soraka-libcamera")`,
 	// VMs don't show corner indicator (see b/290143268).
-	"camera_doc_corner_indicator":  `!"betty" && !"tast_vm"`,
+	"camera_doc_corner_indicator":  `!"betty" && !"tast_vm" && !"board:reven-vmtest" && !"board:amd64-generic"`,
 	"camera_feature_auto_framing":  "camera_feature_auto_framing",
 	"camera_feature_effects":       "camera_feature_effects",
 	"camera_feature_hdrnet":        "camera_feature_hdrnet",
@@ -64,8 +64,8 @@ var softwareFeatureDefs = map[string]string{
 	"chrome":                       "!chromeless_tty && !rialto",
 	"chrome_internal":              "chrome_internal",
 	"chromeless":                   "chromeless_tty || rialto",
-	"chromeos_ec_firmware":         `!"wilco" && !"betty" && !"tast_vm" && !"board:reven*"`, // Wilco devices run Dell EC firmware.  VM boards (e.g. betty) don't have EC firmware.  Reven (ChromeOS Flex) devices run third-party firmware.
-	"chromeos_firmware":            `!("board:reven*")`,                                     // Reven (ChromeOS Flex) devices run third-party firmware.
+	"chromeos_ec_firmware":         `!"wilco" && !"betty" && !"tast_vm"  && !"board:amd64-generic" && !"board:reven*"`, // Wilco devices run Dell EC firmware.  VM boards (e.g. betty) don't have EC firmware.  Reven (ChromeOS Flex) devices run third-party firmware.
+	"chromeos_firmware":            `!("board:reven*")`,                                                                // Reven (ChromeOS Flex) devices run third-party firmware.
 	"chromeos_kernelci":            "chromeos_kernelci_builder",
 	// Kernels pre-4.19 do not support core scheduling.
 	"coresched": `!"kernel-4_14"`,
@@ -85,11 +85,11 @@ var softwareFeatureDefs = map[string]string{
 	// Boards that are failing deterministically for CrostiniGeekbench6CUJ
 	"crostini_geekbench6_supported": `!("board:jacuzzi*" || "board:asurada" || "board:corsola*" || "board:strongbad" || "board:trogdor" || "board:kukui")`,
 	// VMs don't support few crossystem sub-commands: https://crbug.com/974615
-	"crossystem":         `!"betty" && !"tast_vm"`,
+	"crossystem":         `!"betty" && !"tast_vm" && !"board:reven-vmtest" && !"board:amd64-generic"`,
 	"csme_update":        `!("board:atlas" || "board:coral" || "board:drallion" || "board:eve" || "board:fizz" || "board:hatch" || "board:kalista" || "board:nami" || "board:nautilus" || "board:octopus" || "board:puff" || "board:rammus" || "board:reef" || "board:sand" || "board:sarien")`,
 	"cups":               "cups",
-	"device_crash":       `!("board:samus")`,                        // Samus devices do not reliably come back after kernel crashes. crbug.com/1045821
-	"diagnostics":        `"diagnostics" && !"betty" && !"tast_vm"`, // VMs do not have hardware to diagnose. https://crbug.com/1126619
+	"device_crash":       `!("board:samus")`,                                                                           // Samus devices do not reliably come back after kernel crashes. crbug.com/1045821
+	"diagnostics":        `"diagnostics" && !"betty" && !"tast_vm" && !"board:reven-vmtest" && !"board:amd64-generic"`, // VMs do not have hardware to diagnose. https://crbug.com/1126619
 	"dlc":                "dlc",
 	"dmcrypt_encryption": `("board:guybrush" || "board:brya")`,
 	"dmverity_stable":    `"kernel-4_14"`,
@@ -148,13 +148,13 @@ var softwareFeatureDefs = map[string]string{
 	"io_uring":        `!("kernel-4_14" || "kernel-4_19" || "kernel-5_4" || "kernel-5_10")`,
 	"iwlwifi_rescan":  "iwlwifi_rescan",
 	"kfence_enabled":  `!("kernel-4_14" || "kernel-4_19" || "kernel-5_4")`,
-	"known_fixed_ssd": `!("tast_vm" || "board:reven*")`,
+	"known_fixed_ssd": `!("tast_vm" || "board:reven-vmtest" || "board:amd64-generic"|| "board:reven*")`,
 	// Lacros variants.
 	// veyron does not support rootfs lacros entirely. b/204888294
 	// TODO(crbug.com/1412276): Remove lacros_stable and lacros_unstable eventually.
 	"lacros":                 `!chromeless_tty && !rialto && !("board:veyron_fievel" || "board:veyron_tiger")`,
-	"lacros_stable":          `!chromeless_tty && !rialto && !("board:veyron_fievel" || "board:veyron_tiger") && !"tast_vm" && !"betty"`,
-	"lacros_unstable":        `!chromeless_tty && !rialto && !("board:veyron_fievel" || "board:veyron_tiger") && ("tast_vm" || "betty")`,
+	"lacros_stable":          `!chromeless_tty && !rialto && !("board:veyron_fievel" || "board:veyron_tiger") && !"tast_vm"  && !"board:reven-vmtest" && !"board:amd64-generic"&& !"betty"`,
+	"lacros_unstable":        `!chromeless_tty && !rialto && !("board:veyron_fievel" || "board:veyron_tiger") && ("tast_vm" || "board:reven-vmtest" || "board:amd64-generic"|| "betty")`,
 	"landlock_enabled":       `!("kernel-4_14" || "kernel-4_19" || "kernel-5_4")`,
 	"lvm_stateful_partition": "lvm_stateful_partition",
 	"mbo":                    "mbo",
@@ -236,7 +236,7 @@ var softwareFeatureDefs = map[string]string{
 	"protected_content":                       "cdm_factory_daemon",
 	// VM boards don't support pstore: https://crbug.com/971899
 	// reven boards don't support pstore: b/234722825
-	"pstore": `!("betty" || "tast_vm" || "board:reven*")`,
+	"pstore": `!("betty" || "tast_vm" || "board:reven-vmtest" || "board:amd64-generic"|| "board:reven*")`,
 	// ptp_kvm is only available on ARM in kernel 5.10 or later.
 	// ptp_kvm is unreliable on amd64 in kernel 4.19.
 	"ptp_kvm": `("amd64" && !"kernel-4_19") || (("arm" || "arm64") && !("kernel-4_14" || "kernel-4_19" || "kernel-5_4"))`,
@@ -298,7 +298,7 @@ var softwareFeatureDefs = map[string]string{
 	// video_overlays; in practice, they tend to be enabled at the same time.
 	// Generally you should use the more restrictive hwdep.SupportsNV12Overlays().
 	"video_overlays":       "drm_atomic",
-	"virtual_multidisplay": `(("tast_vm" || "betty") && ("kernel-6_1"))`,
+	"virtual_multidisplay": `(("tast_vm" || "board:reven-vmtest" || "board:amd64-generic"|| "betty") && ("kernel-6_1"))`,
 	// virtual_susupend_time_injection swdep is used to limit the arc.Suspend.* tests to
 	// run only on the boards that supports KVM virtual suspend time injection.
 	// TODO(b/202091291): Remove virtual_susupend_time_injection swdep once it is supported
@@ -321,7 +321,7 @@ var softwareFeatureDefs = map[string]string{
 	"watchdog":         `watchdog`,
 	// nyan_kitty is skipped as its WiFi device is unresolvably flaky (crrev.com/c/944502),
 	// exhibiting very similar symptoms to crbug.com/693724, b/65858242, b/36264732.
-	"wifi":  `!"betty" && !"tast_vm" && !"nyan_kitty"`,
+	"wifi":  `!"betty" && !"tast_vm"  && !"board:reven-vmtest" && !"board:amd64-generic" && !"nyan_kitty"`,
 	"wilco": "wilco",
 	// WireGuard is only supported on 5.4+ kernels.
 	"wireguard": `!("kernel-4_14" || "kernel-4_19")`,

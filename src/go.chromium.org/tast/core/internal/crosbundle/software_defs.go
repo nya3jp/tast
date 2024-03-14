@@ -131,6 +131,7 @@ var softwareFeatureDefs = map[string]string{
 	"hana":                       "hana",
 	"has_recovery_mrc_cache":     `!("board:asurada" || "board:cherry" || "board:corsola" || "board:elm" || "board:grunt" || "board:guybrush" || "board:jacuzzi" || "board:kukui" || "board:staryu" || "board:zork")`,
 	"hibernate":                  "hibernate",
+	"hotspot":                    `!("board:*-kernelnext")`,
 	"hostap_hwsim":               "wifi_hostap_test",
 	"houdini":                    "houdini",
 	"houdini64":                  "houdini64",

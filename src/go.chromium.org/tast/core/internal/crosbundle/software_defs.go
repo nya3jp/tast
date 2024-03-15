@@ -148,7 +148,7 @@ var softwareFeatureDefs = map[string]string{
 	"io_uring":        `!("kernel-4_14" || "kernel-4_19" || "kernel-5_4" || "kernel-5_10")`,
 	"iwlwifi_rescan":  "iwlwifi_rescan",
 	"kfence_enabled":  `!("kernel-4_14" || "kernel-4_19" || "kernel-5_4")`,
-	"known_fixed_ssd": `!("tast_vm" || "board:reven-vmtest" || "board:amd64-generic"|| "board:reven*")`,
+	"known_fixed_ssd": `!("tast_vm" || "board:amd64-generic"|| "board:reven*")`,
 	// Lacros variants.
 	// veyron does not support rootfs lacros entirely. b/204888294
 	// TODO(crbug.com/1412276): Remove lacros_stable and lacros_unstable eventually.
@@ -236,7 +236,7 @@ var softwareFeatureDefs = map[string]string{
 	"protected_content":                       "cdm_factory_daemon",
 	// VM boards don't support pstore: https://crbug.com/971899
 	// reven boards don't support pstore: b/234722825
-	"pstore": `!("betty" || "tast_vm" || "board:reven-vmtest" || "board:amd64-generic"|| "board:reven*")`,
+	"pstore": `!("betty" || "tast_vm" || "board:amd64-generic"|| "board:reven*")`,
 	// ptp_kvm is only available on ARM in kernel 5.10 or later.
 	// ptp_kvm is unreliable on amd64 in kernel 4.19.
 	"ptp_kvm": `("amd64" && !"kernel-4_19") || (("arm" || "arm64") && !("kernel-4_14" || "kernel-4_19" || "kernel-5_4"))`,

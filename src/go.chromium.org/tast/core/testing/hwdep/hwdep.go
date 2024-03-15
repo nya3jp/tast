@@ -1924,7 +1924,7 @@ func NoPrivacyScreen() Condition {
 		if hf == nil {
 			return withErrorStr("Did not find hardware features")
 		}
-		if status := hf.GetPrivacyScreen().GetPresent(); status != configpb.HardwareFeatures_NOT_PRESENT {
+		if status := hf.GetPrivacyScreen().GetPresent(); status == configpb.HardwareFeatures_NOT_PRESENT {
 			return satisfied()
 		} else if status == configpb.HardwareFeatures_PRESENT_UNKNOWN {
 			return unsatisfied("Could not determine if a privacy screen is present")

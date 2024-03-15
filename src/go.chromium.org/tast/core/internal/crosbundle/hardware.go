@@ -884,10 +884,15 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 			logging.Infof(ctx, "Failed to get connectors: %v", err)
 			return false
 		}
-		// Check if privacy-screen prop is present.
-		result := strings.Contains(string(value), "privacy-screen:")
 
-		return result
+		modetestInfo := string(value)
+		// Check if privacy-screen prop is present.
+		if strings.Contains(modetestInfo, "privacy-screen sw-state:") && strings.Contains(modetestInfo, "privacy-screen hw-state:") {
+			return true
+		}
+
+		// Fallback to legacy style.
+		return strings.Contains(modetestInfo, "privacy-screen:")
 	}()
 	if hasPrivacyScreen {
 		features.PrivacyScreen.Present = configpb.HardwareFeatures_PRESENT

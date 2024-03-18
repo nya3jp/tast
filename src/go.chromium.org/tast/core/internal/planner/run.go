@@ -370,6 +370,9 @@ func buildFixtPlan(tests []*protocol.ResolvedEntity, pcfg *Config) (*fixtPlan, e
 		} else if t.Hops == 0 {
 			// Existence of the test instance is already checked in buildPlan.
 			testsToRun[f] = append(testsToRun[f], pcfg.Tests[t.GetEntity().GetName()])
+		} else if len(t.GetSkip().GetReasons()) > 0 {
+			// If a test is going to be skipped, don't run fixture setup.
+			externalTestsToRun[""] = append(externalTestsToRun[""], t.GetEntity().GetName())
 		} else {
 			externalTestsToRun[f] = append(externalTestsToRun[f], t.GetEntity().GetName())
 		}

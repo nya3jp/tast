@@ -106,25 +106,25 @@ var softwareFeatureDefs = map[string]string{
 	// TODO(b/201430283): Remove nami-kernelnext, rammus, and sarien-kernelnext when bug is resolved.
 	"ec_crash":        `!(("board:asuka" || "board:banon" || "board:caroline" || "board:caroline-kernelnext" || "board:caroline-userdebug" || "board:cave" || "board:celes" || "board:chell" || "board:cyan" || "board:edgar" || "board:kefka" || "board:reks" || "board:relm" || "board:sentry" || "board:terra" || "board:ultima" || "board:wizpig") || ("board:drallion" || "board:sarien") || ("board:guado" || "board:guado-cfm" || "board:tidus" || "board:rikku" || "board:rikku-cfm" || "board:veyron_fievel" || "board:veyron_tiger") || "board:nocturne" || "board:nocturne-kernelnext" || "board:nami-kernelnext" || "board:rammus" || "board:sarien-kernelnext")`,
 	"ec_hibernate":    `!("board:brask" || "board:fizz" || "board:kukui" || "board:puff" || "board:scarlet" || "board:shotzo")`,
-	"endorsement":     `!"betty" && !"tast_vm"`, // VMs don't have valid endorsement certificate.
+	"endorsement":     `!"board:amd64-generic" && !"board:reven-vmtest" && !"betty" && !"tast_vm"`, // VMs don't have valid endorsement certificate.
 	"faceauth":        "faceauth",
 	"factory_flow":    "!no_factory_flow",
-	"fake_hps":        `"betty" || "tast_vm"`, // VMs run hpsd with --test (fake software device)
+	"fake_hps":        `"board:amd64-generic" || "board:reven-vmtest" || "betty" || "tast_vm"`, // VMs run hpsd with --test (fake software device)
 	"fbpreprocessord": "fbpreprocessord",
 	// TODO(http://b/271025366): Remove feedback when the bug is resolved.
 	"feedback":                  `!("board:fizz" || "board:puff" || "board:rammus")`,
 	"firewall":                  "!moblab",                            // Moblab has relaxed iptables rules
 	"first_class_servo_working": `!("board:brya" || "board:volteer")`, // TODO(b/274634861): remove the first_class_servo_working when fixed.
-	"flashrom":                  `!"betty" && !"tast_vm"`,
+	"flashrom":                  `!"board:amd64-generic" && !"board:reven-vmtest" && !"betty" && !"tast_vm"`,
 	"flex_id":                   "flex_id",       // Enable using flex_id for enrollment
 	"flex_internal":             "flex_internal", // Enable using flex_internal to pull in data (URLs, API keys, etc.) only needed by official Flex releases
 	// Enable using flex_hwis for hardware data sending.
 	// Ignore reven board as reven board is not a VM and does not have a VPD, and cannot use enroll fixtures.
 	"flex_hwis":                  `flex_internal && "board:reven-vmtest"`,
-	"fwupd":                      "fwupd",                                  // have sys-apps/fwupd installed.
-	"ghostscript":                "postscript",                             // Ghostscript and dependent packages available
-	"google_virtual_keyboard":    "chrome_internal && internal && !moblab", // doesn't work on Moblab: https://crbug.com/949912
-	"gpu_sandboxing":             `!"betty" && !"tast_vm"`,                 // no GPU sandboxing on VMs: https://crbug.com/914688
+	"fwupd":                      "fwupd",                                                                     // have sys-apps/fwupd installed.
+	"ghostscript":                "postscript",                                                                // Ghostscript and dependent packages available
+	"google_virtual_keyboard":    "chrome_internal && internal && !moblab",                                    // doesn't work on Moblab: https://crbug.com/949912
+	"gpu_sandboxing":             `!"board:amd64-generic" && !"board:reven-vmtest" && !"betty" && !"tast_vm"`, // no GPU sandboxing on VMs: https://crbug.com/914688
 	"gsc":                        `"cr50_onboard" || "ti50_onboard"`,
 	"gsc_can_wake_ec_with_reset": `!("board:grunt" || "board:nami")`,
 	"hammerd":                    "hammerd",
@@ -169,12 +169,12 @@ var softwareFeatureDefs = map[string]string{
 	// See: ChromeCrashReporterClient::GetCollectStatsConsent()
 	// Also metrics consent needs TPM (crbug.com/1035197).
 	"metrics_consent":      "chrome_internal && !tast_vm",
-	"microcode":            `!"betty" && !"tast_vm"`,
+	"microcode":            `!"board:amd64-generic" && !"board:reven-vmtest" && !"betty" && !"tast_vm"`,
 	"ml_benchmark_drivers": "ml_benchmark_drivers",
 	"ml_tiered_support":    `("board:brya" || "board:nissa" || "board:cherry" || "board:skyrim" || "board:guybrush" || "board:hatch" || "board:volteer" || "board:dedede" || "board:zork" || "board:strongbad" || "board:puff" || "board:trogdor" || "board:drallion" || "board:asurada" || "board:corsola" || "board:rex")`,
 	"ml_service":           "ml_service",
 	"modemfwd":             "modemfwd",
-	"mosys":                "!no_factory_flow && !betty && !tast_vm",
+	"mosys":                `!no_factory_flow && !"board:amd64-generic" && !"board:reven-vmtest" && !betty && !tast_vm`,
 	"nacl":                 "nacl",
 	"ndk_translation":      "ndk_translation",
 	"ndk_translation64":    "ndk_translation64",
@@ -184,7 +184,7 @@ var softwareFeatureDefs = map[string]string{
 	// Specifically we want the set of patches that end at <https://crrev.com/c/5192885>.
 	"nmi_backtrace":             `!("kernel-4_14" || "kernel-4_19" || "kernel-5_4" || "kernel-5_10" || "kernel-5_15")`,
 	"nnapi":                     "nnapi",
-	"nnapi_vendor_driver":       "nnapi && !betty && !tast_vm",
+	"nnapi_vendor_driver":       `nnapi && !"board:amd64-generic" && !"board:reven-vmtest" && !betty && !tast_vm`,
 	"no_amd_cpu":                "!amd_cpu",
 	"no_android":                "!arc",
 	"no_android_p":              `!(arc && ("android-container-pi" || "android-vm-pi"))`,
@@ -207,7 +207,7 @@ var softwareFeatureDefs = map[string]string{
 	"no_lvm_stateful_partition": "!lvm_stateful_partition",
 	"no_msan":                   "!msan",
 	"no_ondevice_handwriting":   "!ml_service || !ondevice_handwriting",
-	"no_qemu":                   `!"betty" && !"tast_vm"`,
+	"no_qemu":                   `!"board:amd64-generic" && !"board:reven-vmtest" && !"betty" && !"tast_vm"`,
 	"no_symlink_mount":          "!lxc", // boards using LXC set CONFIG_SECURITY_CHROMIUMOS_NO_SYMLINK_MOUNT=n
 	"no_tablet_form_factor":     "!tablet_form_factor",
 	"no_tpm2_simulator":         "!tpm2_simulator",
@@ -256,10 +256,10 @@ var softwareFeatureDefs = map[string]string{
 	"smartctl":              "nvme || sata",
 	"smartdim":              "smartdim",
 	// VMs don't support speech on-device API.
-	"soda": `!"betty" && !"tast_vm"`,
+	"soda": `!"board:amd64-generic" && !"board:reven-vmtest" && !"betty" && !"tast_vm"`,
 	// Should match StackSamplingProfiler::IsSupportedForCurrentPlatform() in Chromium repo.
 	"stack_sampled_metrics":     `("amd64" || "arm64") && !"betty" && !"tast_vm"`,
-	"storage_wearout_detect":    `"storage_wearout_detect" && !"betty" && !"tast_vm"`, // Skip wearout checks for VMs and eMMC < 5.0
+	"storage_wearout_detect":    `"storage_wearout_detect" && !"board:amd64-generic" && !"board:reven-vmtest" && !"betty" && !"tast_vm"`, // Skip wearout checks for VMs and eMMC < 5.0
 	"tablet_form_factor":        "tablet_form_factor",
 	"tflite_opencl":             `!(elm || hana)`, // these boards seem to have issues with the OpenCL TFLite delegate (b/233851820)
 	"thread_safe_libva_backend": "video_cards_amdgpu || video_cards_iHD",
@@ -311,7 +311,7 @@ var softwareFeatureDefs = map[string]string{
 	// vm_host feature for VM builds.
 	"vm_host": "kvm_host && !tast_vm",
 	// VPD is not available in VMs.
-	"vpd":    `!"betty" && !"tast_vm"`,
+	"vpd":    `!"board:amd64-generic" && !"board:reven-vmtest" && !"betty" && !"tast_vm"`,
 	"vulkan": "vulkan",
 	// Boards that support composition with Vulkan. The vanilla "vulkan" dep
 	// above simply indicates whether Vulkan drivers are present in the image, so

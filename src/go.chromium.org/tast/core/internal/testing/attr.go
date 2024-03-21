@@ -2157,6 +2157,17 @@ from other existing groups (or use this group standalone).
 		Contacts: []string{"chromeos-privacyhub@google.com", "zauri@google.com"},
 		Desc:     "A group of tests for checking the Privacy Hub features on golden devices.",
 	},
+	{
+		Name:     "lvm_migration",
+		Contacts: []string{"chromeos-storage@google.com", "sarthakukreti@google.com"},
+		Desc:     "A group of tests for checking the LVM migration feature.",
+		Subattrs: []*attr{
+			{
+				Name: "lvm_migration_cryptohome",
+				Desc: "Tests for validating cryptohome validity across migration.",
+			},
+		},
+	},
 	// DO NOT USE for test suites that are not owned by the ChromeOS Software - Developer pillar team.
 	// This is subject to change in the future.
 	// TODO(b/291014686) Review this setting to check if there is any issue.

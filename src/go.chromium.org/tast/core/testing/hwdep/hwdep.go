@@ -859,6 +859,27 @@ func HasParavirtSchedControl() Condition {
 	}
 }
 
+// HasSchedRTControl returns a hardware dependency condition that is satisfied if and only if the
+// DUT has sysctl for deadline server for realtime tasks.
+func HasSchedRTControl() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		if _, err := os.Stat("/proc/sys/kernel/sched_rr_timeslice_ms"); err != nil {
+			return unsatisfied("Device doesn't have sched_rr_timeslice_ms")
+		}
+		if _, err := os.Stat("/proc/sys/kernel/sched_rt_runtime_us"); err != nil {
+			return unsatisfied("Device doesn't have sched_rt_runtime_us")
+		}
+		if _, err := os.Stat("/proc/sys/kernel/sched_rt_period_us"); err != nil {
+			return unsatisfied("Device doesn't have sched_rt_period_us")
+		}
+		if _, err := os.Stat("/sys/kernel/debug/sched/fair_server"); err != nil {
+			return unsatisfied("Device doesn't have sched fair_server")
+		}
+		return satisfied()
+	},
+	}
+}
+
 // CPUSupportsSMT returns a hardware dependency condition that is satisfied if and only if the DUT supports
 // Symmetric Multi-Threading.
 func CPUSupportsSMT() Condition {

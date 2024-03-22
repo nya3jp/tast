@@ -1312,6 +1312,10 @@ Meta tests should be a subset of mainline critical tests.
 				Name: "fingerprint-mcu_icetower",
 				Desc: `Tests to be run on Icetower board (a standalone MCU board, not a ChromeOS board).`,
 			},
+			{
+				Name: "fingerprint-mcu_quincy",
+				Desc: `Tests to be run on Quincy board (a standalone MCU board, not a ChromeOS board).`,
+			},
 		},
 	},
 	{

@@ -908,6 +908,8 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 	}()
 	if hasPrivacyScreen {
 		features.PrivacyScreen.Present = configpb.HardwareFeatures_PRESENT
+	} else {
+		features.PrivacyScreen.Present = configpb.HardwareFeatures_NOT_PRESENT
 	}
 
 	cpuSMT, err := func() (bool, error) {

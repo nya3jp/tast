@@ -59,6 +59,7 @@ var softwareFeatureDefs = map[string]string{
 	"camera_feature_effects":       "camera_feature_effects",
 	"camera_feature_hdrnet":        "camera_feature_hdrnet",
 	"camera_feature_portrait_mode": "camera_feature_portrait_mode",
+	"camera_feature_super_res":     "camera_feature_super_res",
 	"cellular_modem_dlcs_present":  `!("board:coral*" || "board:dedede*" || "board:drallion*" || "board:hatch*" || "board:nautilus*" || "board:octopus*" || "board:sarien*" || "board:zork*")`,
 	"cert_provision":               "cert_provision",
 	"chrome":                       "!chromeless_tty && !rialto",

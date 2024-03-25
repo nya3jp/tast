@@ -60,6 +60,7 @@ The following software features are defined:
 * `camera_feature_effects` - Whether camera effects are enabled on this platform.
 * `camera_feature_hdrnet` - Whether HDRnet is enabled on this platform.
 * `camera_feature_portrait_mode` - Whether Portrait Mode is enabled on this platform.
+* `camera_feature_super_res` - Whether single frame super resolution is enabled on this platform.
 * `cert_provision` - The ability to use an additional cert_provision library
     that supports an interface for provisioning machine-wide certificates and
     using them for signing data on top of cryptohome dbus interface.

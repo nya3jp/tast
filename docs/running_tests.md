@@ -14,6 +14,21 @@ tast run <target> <test-pattern> <test-pattern> ...
 To run private tests (e.g. `crosint` test bundle), use
 `-buildbundle=<bundle-name>`.
 
+Tests can also be run within a chrome-sdk using the `cros_run_test`
+command:
+
+```shell
+third_party/chromite/bin/cros_run_test --device=<target> --tast <test-pattern>
+```
+
+When running `tast run` from a ChromeOS chroot, it compiles the tast binary in
+`/platform/tast` and all tests in `/platform/tast-tests` and runs the code you
+have checked out with any local changes.
+
+When running `cros_run_test` from a chrome-sdk, the precompiled tests which
+are packaged in the downloaded bundle will run which will be from the platform
+version shown in chrome-sdk.
+
 ## Specifying where to run tests
 
 The first positional argument supplied to the `run` subcommand specifies the
@@ -271,41 +286,89 @@ You should be able to see the first bot that fails and find a good and bad chrom
 via the BLAMELIST tab of the builder page.
 
 ### Example bisect.sh script
-This script assumes there is a local amd-generic VM running.
-```
+This script assumes there is a local betty-pi-arc VM running and that tests are
+run from a ChromeOS chroot.
+```shell
 #!/bin/sh
 set -x
 gclient sync
-autoninja -C out_amd64-generic/Release chrome
-third_party/chromite/bin/deploy_chrome --board=amd64-generic --build-dir=out_amd64-generic/Release --device=ssh://localhost:9222 --verbose --strip-flags=-S --mount
+autoninja -C out_betty-pi-arc/Release chrome
+third_party/chromite/bin/deploy_chrome --board=betty-pi-arc --build-dir=out_betty-pi-arc/Release --device=ssh://localhost:9222 --verbose --strip-flags=-S --mount
 cd ~/chromiumos
 cros_sdk -- tast run -failfortests localhost:9222 terminal.Crosh
 ```
 
 ### chromium repo
-```
+```shell
 git bisect good <last-commit-in-previous-good-build>
 git bisect bad <last-commit-in-first-bad-build>
 git bisect run ./bisect.sh
 ```
 
 ### Running Tast on a VM
-It can be useful to use a postsubmit builder to get a VM image since they
-include debug symbols which makes it easier to update individual cros packages
-if needed.  It also avoid the slowdown of `gclient sync` pulling down the VM
-when using `.gclient` with `cros_board_with_qemu_images`.
+There are a number of ChromeOS boards designed to run as VMs such as
+`amd64-generic`, and `betty-pi-arc`.  Update `chromium/.gclient` file and add
+`cros_boards` field in `custom_vars`:
+```shell
+solutions = [
+  {
+    ...
+    "custom_vars" : {
+        ...
+        "cros_boards": "betty-pi-arc", # colon-separated list.
+    },
+  },
+]
+```
 
-To get a VM, open
-https://ci.chromium.org/ui/p/chromeos/builders/postsubmit/amd64-generic-postsubmit
+Download the SDK for the newly added board:
+```shell
+gclient sync
+```
+
+Enter chrome-sdk and download VM:
+```shell
+cros chrome-sdk --board=betty-pi-arc --download-vm --log-level=info --nogn-gen
+```
+
+Start the VM:
+```shell
+cros vm --start
+```
+
+If you are going to compile and deploy chrome, you may want to update
+`args.gn` with values to match what the bots use.  E.g.:
+```shell
+$ cat out_betty-pi-arc/Release/args.gn
+import("//build/args/chromeos/betty-pi-arc.gni")
+# Place any additional args or overrides below:
+dcheck_always_on = true
+exclude_unwind_tables = false
+is_chrome_branded = true
+use_remoteexec = true
+```
+
+Compile and deploy:
+```shell
+autoninja -C out_betty-pi-arc/Release chrome
+third_party/chromite/bin/deploy_chrome --board=betty-pi-arc --build-dir=out_betty-pi-arc/Release --device=ssh://localhost:9222 --verbose --strip-flags=-S --mount
+```
+
+Run a test:
+```shell
+third_party/chromite/bin/cros_run_test --device=localhost:9222 --tast terminal.Crosh
+```
+
+### Download specific version of VM
+If you need to use a different VM version than the current
+`//chromeos/CHROMEOS_LKGM` used by chrome-sdk, you can download VMs directly
+from google cloud storage. Open
+https://ci.chromium.org/ui/p/chromeos/builders/postsubmit/betty-pi-arc-snapshot
 , select a green build, and find `gs://` url for image. You can edit the URL and
-replace `amd64-generic` with any other board name to find the builds for other
+replace `betty-pi-arc-snapshot` with any other board name to find the builds for other
 boards.
 
-```
-chroot: $ cros flash --debug file:///tmp xbuddy://remote/amd64-generic-postsubmit/R120-15645.0.0-56998-8767360335941552641
-```
-
-To start the VM (no chroot):
-```
-cros vm --start --board=amd64-generic --image-path ~/chromiumos/out/tmp/chromiumos_test_image.bin
+```shell
+cros flash --debug file:///tmp xbuddy://remote/betty-pi-arc-snapshot/R125-15831.0.0-96552-8752561462204607073
+cros vm --start --board=betty-pi-arc --image-path /tmp/chromiumos_test_image.bin
 ```

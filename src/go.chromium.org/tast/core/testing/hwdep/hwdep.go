@@ -1003,6 +1003,22 @@ func VRR() Condition {
 	}
 }
 
+// TiledDisplay returns a hardware dependency condition that is satisfied if and only if
+// the DUT is connected to a tiled display (has a non-empty TILE value in modetest).
+func TiledDisplay() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("HardwareFeatures is not given")
+		}
+		if hf.GetTiledDisplay().GetPresent() != configpb.HardwareFeatures_PRESENT {
+			return unsatisfied("DUT is not connected to a tiled display")
+		}
+		return satisfied()
+	},
+	}
+}
+
 // Display returns a hardware dependency condition that is satisfied if and
 // only if the DUT has some display, internal or external.
 func Display() Condition {

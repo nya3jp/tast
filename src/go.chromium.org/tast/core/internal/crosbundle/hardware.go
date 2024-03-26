@@ -150,6 +150,7 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		Vrr:                     &configpb.HardwareFeatures_Vrr{},
 		Hdmi:                    &configpb.HardwareFeatures_Hdmi{},
 		InterruptControllerInfo: &configpb.HardwareFeatures_InterruptControllerInfo{},
+		TiledDisplay:            &configpb.HardwareFeatures_TiledDisplay{},
 	}
 
 	swConfig := &softwarepb.SoftwareConfig{
@@ -1124,6 +1125,23 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		features.Vrr.Present = configpb.HardwareFeatures_PRESENT
 	} else {
 		features.Vrr.Present = configpb.HardwareFeatures_NOT_PRESENT
+	}
+
+	hasTiledDisplay := func() bool {
+		modetestOutput, err := exec.Command("modetest", "-c").Output()
+		if err != nil {
+			logging.Infof(ctx, "failed to run modetest: %v", err)
+			return false
+		}
+		// Check if there exists a TILE property with a non-empty value set in the modetest output.
+		// Value, if present, is printed on a new line with an extra tab.
+		regex := regexp.MustCompile("\n\t.*TILE:(\n\t\t*.*){0,4}\n\n\t\tvalue:(\n\t\t\t.*[^:][0-9a-z].*)")
+		return regex.Match(modetestOutput)
+	}()
+	if hasTiledDisplay {
+		features.TiledDisplay.Present = configpb.HardwareFeatures_PRESENT
+	} else {
+		features.TiledDisplay.Present = configpb.HardwareFeatures_NOT_PRESENT
 	}
 
 	features.FeatureLevel, err = featureLevel()

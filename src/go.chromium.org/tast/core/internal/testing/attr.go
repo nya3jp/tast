@@ -1295,6 +1295,11 @@ Meta tests should be a subset of mainline critical tests.
 		Desc:     `The group of tests to be run in CQ for integrated fingerprint functionality.`,
 	},
 	{
+		Name:     "fingerprint-release",
+		Contacts: []string{"chromeos-fingerprint@google.com"},
+		Desc:     `The group of fingerprint tests to be included in e2e release testing.`,
+	},
+	{
 		Name:     "fingerprint-mcu",
 		Contacts: []string{"chromeos-fingerprint@google.com"},
 		Desc:     `The group of tests to be run on a standalone Fingerprint MCU board.`,

@@ -161,6 +161,7 @@ The following software features are defined:
 * `no_arm` - The absence of [arm] 32 bit userspace.
 * `no_asan` - Build was not built with Address Sanitizer. Similar to `aslr`.
 * `no_borealis_host` - Boards which is not designed to host borealis.
+* `no_camera_feature_super_res` - Whether single frame super resolution is disabled on this platform.
 * `no_chrome_dcheck` - Chrome/Chromium was not built with dcheck enabld.
 * `no_downloads_bind_mount` - Disable Downloads bind mount and migrate files from ~/Downloads to ~/MyFiles/Downloads.
 * `no_eth_loss_on_reboot` - Board does not lose ethernet on reboot. Context: b/178529170

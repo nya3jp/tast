@@ -336,6 +336,16 @@ Start the VM:
 cros vm --start
 ```
 
+You can view the screen output using VNC:
+```shell
+vncviewer localhost:5900 &
+```
+
+You may need to install a VNC viewer package:
+```shell
+sudo apt install xtightvncviewer
+```
+
 If you are going to compile and deploy chrome, you may want to update
 `args.gn` with values to match what the bots use.  E.g.:
 ```shell

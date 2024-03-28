@@ -647,6 +647,10 @@ Tests in this group are not used for build verification.
 				Name: "firmware_ro",
 				Desc: `Firmware tests which should only be run during an RO/RW qual, but not during a RW only qual.`,
 			},
+			{
+				Name: "firmware_servo_micro",
+				Desc: `Firmware tests which require a servo with servo_micro.`,
+			},
 		},
 	},
 	{

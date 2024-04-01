@@ -2865,6 +2865,8 @@ func MiniDiag() Condition {
 		if hf == nil {
 			return withErrorStr("HardwareFeatures is not given")
 		}
+		roMajorVersion := hf.GetFwConfig().GetFwRoVersion().MajorVersion
+		roMinorVersion := hf.GetFwConfig().GetFwRoVersion().MinorVersion
 		rwMajorVersion := hf.GetFwConfig().GetFwRwVersion().MajorVersion
 		rwMinorVersion := hf.GetFwConfig().GetFwRwVersion().MinorVersion
 		// Dirinboz launch MiniDiag earlier (crrev/c/2525502) than other
@@ -2874,17 +2876,24 @@ func MiniDiag() Condition {
 			return withError(err)
 		}
 		/*
-			CL:2617391 landed in 13727.0.0 for most of the boards except:
-				- zork:    CL:2677619 landed in firmware-zork-13434.B 13434.267.0
-				- trogdor: CL:2677612 landed in firmware-trogdor-13577.B 13577.106.0
-				- dedede:  CL:2677618 landed in firmware-dedede-13606.B 13606.99.0
-				- volteer: CL:2677615 landed in firmware-volteer-13672.B 13672.109.0
+			RO: CL:2282867 landed in 13396.0.0 for most of the boards except:
+				- puff: CL:2353773 landed in firmware-puff-13324.B 13324.35.0
+
+			RW: CL:2617391 landed in 13727.0.0 for most of the boards except:
+				- zork (dirinboz):    CL:2525502 landed in firmware-zork-13434.B 13434.106.0
+				- zork:               CL:2677619 landed in firmware-zork-13434.B 13434.267.0
+				- trogdor:            CL:2677612 landed in firmware-trogdor-13577.B 13577.106.0
+				- dedede:             CL:2677618 landed in firmware-dedede-13606.B 13606.99.0
+				- volteer:            CL:2677615 landed in firmware-volteer-13672.B 13672.109.0
 		*/
-		if rwMajorVersion >= 13727 || isDirinboz ||
-			(rwMajorVersion == 13434 && rwMinorVersion >= 267) ||
+		roCheck := (roMajorVersion >= 13396 || (roMajorVersion == 13324 && roMinorVersion >= 35))
+		rwCheck := (rwMajorVersion >= 13727 ||
+			(rwMajorVersion == 13434 && (rwMinorVersion >= 267 || (isDirinboz && rwMinorVersion >= 106))) ||
 			(rwMajorVersion == 13577 && rwMinorVersion >= 106) ||
 			(rwMajorVersion == 13606 && rwMinorVersion >= 99) ||
-			(rwMajorVersion == 13672 && rwMinorVersion >= 109) {
+			(rwMajorVersion == 13672 && rwMinorVersion >= 109))
+
+		if roCheck && rwCheck {
 			return satisfied()
 		}
 		return unsatisfied("DUT does not support minidiag")

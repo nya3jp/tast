@@ -1252,22 +1252,6 @@ third_party/autotest/files/server/site_tests/tast/control.racc-config-installed.
 				Name: "bluetooth_mtbf",
 				Desc: "Identifies MTBP tests for bluetooth. These are scheduled in a separate pool as to not use up all DUT capacity in the lab.",
 			},
-			{
-				Name: "bluetooth_btpeers_1",
-				Desc: "Identifies bluetooth tests that require at most 1 btpeer.",
-			},
-			{
-				Name: "bluetooth_btpeers_2",
-				Desc: "Identifies bluetooth tests that require at most 2 btpeers.",
-			},
-			{
-				Name: "bluetooth_btpeers_3",
-				Desc: "Identifies bluetooth tests that require at most 3 btpeers.",
-			},
-			{
-				Name: "bluetooth_btpeers_4",
-				Desc: "Identifies bluetooth tests that require at most 4 btpeers.",
-			},
 		},
 	},
 	{

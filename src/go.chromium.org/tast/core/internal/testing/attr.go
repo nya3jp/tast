@@ -144,6 +144,10 @@ Tests in this group are not used for build verification.
 				Name: "crosbolt_fsi_check",
 				Desc: `Indicates that this test is used for FSI health check`,
 			},
+			{
+				Name: "crosbolt_release_gates",
+				Desc: `Indicates that this test is used for Release Gating.`,
+			},
 		},
 	},
 	{

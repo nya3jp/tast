@@ -2103,15 +2103,27 @@ from other existing groups (or use this group standalone).
 			},
 			{
 				Name: "power_daily",
-				Desc: `Core tests designed to catch regressions in power consumption. Shorter tests, many models, run daily.`,
+				Desc: `Core tests designed to catch regressions in power consumption. Shorter tests, many models, ran daily.`,
+			},
+			{
+				Name: "power_weekly",
+				Desc: `Core tests designed to catch regressions in power consumption. Shorter tests, many models, ran weekly.`,
 			},
 			{
 				Name: "power_daily_video_playback",
-				Desc: `Core tests designed to catch regressions in power consumption. Only attached to tests in cros/power/video_playback.go`,
+				Desc: `Core tests designed to catch regressions in power consumption. Only attached to tests in cros/power/video_playback.go. Ran daily.`,
+			},
+			{
+				Name: "power_weekly_video_playback",
+				Desc: `Core tests designed to catch regressions in power consumption. Only attached to tests in cros/power/video_playback.go. Ran weekly.`,
 			},
 			{
 				Name: "power_daily_misc",
-				Desc: `Miscellaneous tests designed to catch regressions and collect experimental data.`,
+				Desc: `Miscellaneous tests designed to catch regressions and collect experimental data. Ran daily.`,
+			},
+			{
+				Name: "power_weekly_misc",
+				Desc: `Miscellaneous tests designed to catch regressions and collect experimental data. Ran weekly.`,
 			},
 		},
 	},

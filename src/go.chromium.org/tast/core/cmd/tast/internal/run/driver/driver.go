@@ -46,15 +46,18 @@ type BundleEntity = drivercore.BundleEntity
 // re-establish a connection to the target device, so you should get a fresh
 // connection object after calling them.
 type Driver struct {
-	cfg       *config.Config
-	cc        *target.ConnCache
-	rawTarget string
-	role      string
+	cfg           *config.Config
+	cc            *target.ConnCache
+	rawTarget     string
+	role          string
+	servoHostInfo *servo.HostInfo
 }
 
 // New establishes a new connection to the target device and returns a Driver.
 func New(ctx context.Context, cfg *config.Config, rawTarget, role string) (*Driver, error) {
-	if err := servo.StartServo(ctx, target.ServoHost(ctx, role, cfg.TestVars()), cfg.ProtoSSHConfig().GetKeyFile(), cfg.ProtoSSHConfig().GetKeyDir()); err != nil {
+	servoHost := target.ServoHost(ctx, role, cfg.TestVars())
+	servoHostInfo, err := servo.StartServo(ctx, servoHost, cfg.ProtoSSHConfig().GetKeyFile(), cfg.ProtoSSHConfig().GetKeyDir())
+	if err != nil {
 		logging.Infof(ctx, "Failed to connect to servo host %s", target.ServoHost(ctx, role, cfg.TestVars()))
 	}
 	// Use nil as connection cache if we should not connect to the target.
@@ -100,10 +103,11 @@ func New(ctx context.Context, cfg *config.Config, rawTarget, role string) (*Driv
 		return nil, err
 	}
 	return &Driver{
-		cfg:       cfg,
-		cc:        cc,
-		rawTarget: rawTarget,
-		role:      role,
+		cfg:           cfg,
+		cc:            cc,
+		rawTarget:     rawTarget,
+		role:          role,
+		servoHostInfo: servoHostInfo,
 	}, nil
 }
 
@@ -218,4 +222,15 @@ func resolveSSHConfig(ctx context.Context, target string) (alternateTarget, prox
 // ConnCacheForTesting returns target.ConnCache the driver owns for testing.
 func (d *Driver) ConnCacheForTesting() *target.ConnCache {
 	return d.cc
+}
+
+// CollectServoLogs collects the sysinfo, considering diff from the given initial
+// sysinfo state.
+func (d *Driver) CollectServoLogs(ctx context.Context) (retErr error) {
+	servoLogDir := filepath.Join(d.cfg.ResDir(), "servo_log")
+	if err := servo.CollectLogs(ctx, d.servoHostInfo, d.cfg.ProtoSSHConfig().GetKeyFile(),
+		d.cfg.ProtoSSHConfig().GetKeyDir(), servoLogDir); err != nil {
+		logging.Infof(ctx, "Failed to get to servo log: %v", err)
+	}
+	return nil
 }

@@ -385,7 +385,13 @@ func runTests(ctx context.Context, cfg *config.Config,
 			logging.Infof(ctx, "Failed writing %s: %v", reporting.JUnitXMLFilename, err)
 		}
 
+		if err := drv.CollectServoLogs(ctx); err != nil {
+			logging.Infof(ctx, "Failed writing servod logs: %v", err)
+		}
+
 		complete := retErr == nil
+
+		logging.Info(ctx, "Done collecting logs")
 
 		reporting.WriteResultsToLogs(ctx, results, cfg.ResDir(), complete, cmdTimeoutPast)
 	}()

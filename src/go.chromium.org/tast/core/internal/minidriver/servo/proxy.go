@@ -7,9 +7,13 @@
 package servo
 
 import (
+	"bufio"
 	"context"
 	"fmt"
 	"net"
+	"os"
+	"path/filepath"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -22,6 +26,7 @@ import (
 	"go.chromium.org/tast/core/errors"
 	"go.chromium.org/tast/core/internal/logging"
 	"go.chromium.org/tast/core/ssh"
+	"go.chromium.org/tast/core/ssh/linuxssh"
 	"go.chromium.org/tast/core/testing"
 )
 
@@ -202,14 +207,23 @@ func NewProxy(ctx context.Context, servoHostPort, keyFile, keyDir string) (newPr
 	return &pxy, nil
 }
 
+// HostInfo Stores servo related host information.
+type HostInfo struct {
+	Host         string // Host stores the servo host name.
+	Port         int    // Port stores the servo port number.
+	SSHPort      int    // SSHPort stores servo ssh port number.
+	DockerHost   bool   // DockerHost indicates whether the servo host is a docker container.
+	MsgLineStart int64  // MsgLineStart store the starting line of /var/log/messages.
+}
+
 // StartServo start servod and verify every 2 second until it is ready. Add check to avoid repeated attempting.
-func StartServo(ctx context.Context, servoHostPort, keyFile, keyDir string) (retErr error) {
+func StartServo(ctx context.Context, servoHostPort, keyFile, keyDir string) (hostInfo *HostInfo, retErr error) {
 	if servoHostPort == "" {
-		return nil
+		return nil, nil
 	}
 	host, port, sshPort, err := splitHostPort(servoHostPort)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	isDocker := isDockerHost(host)
 	// Example servoHostPort: satlab-0wgtfqin20158027-host2-docker_servod:9999.
@@ -217,12 +231,22 @@ func StartServo(ctx context.Context, servoHostPort, keyFile, keyDir string) (ret
 		logging.Infof(ctx, "Start Docker servod container via Satlab RPC server.")
 		conn, err := grpc.Dial(testing.SatlabRPCServer, grpc.WithInsecure())
 		if err != nil {
-			return err
+			return nil, err
 		}
 		c := satlabrpcserver.NewSatlabRpcServiceClient(conn)
-		_, err = c.StartServod(ctx, &api.StartServodRequest{ServodDockerContainerName: host})
-		return err
+		if _, err = c.StartServod(ctx,
+			&api.StartServodRequest{ServodDockerContainerName: host}); err != nil {
+			return nil, err
+		}
+		return &HostInfo{
+			Host:       host,
+			Port:       port,
+			SSHPort:    sshPort,
+			DockerHost: true,
+		}, nil
 	}
+
+	var msgLineStart int64
 	// If the servod instance isn't running locally, assume that we need to connect to it via SSH.
 	if sshPort > 0 && !isDocker && ((host != "localhost" && host != "127.0.0.1" && host != "::1") || sshPort != 22) {
 		// First, create an SSH connection to the remote system running servod.
@@ -237,22 +261,40 @@ func StartServo(ctx context.Context, servoHostPort, keyFile, keyDir string) (ret
 		logging.Infof(ctx, "Opening Servo SSH connection to %s", sopt.Hostname)
 		hst, err := ssh.New(ctx, &sopt)
 		if err != nil {
-			return err
+			return nil, err
 		}
+		defer hst.Close(ctx)
 
+		wcInfo, err := linuxssh.WordCount(ctx, hst, "/var/log/messages")
+		if err != nil {
+			logging.Infof(ctx, "Failed to get word code for /var/log/messages of servo host%s: %v", servoHostPort, err)
+		}
+		msgLineStart = wcInfo.Lines
 		if _, err := hst.CommandContext(ctx, "servodtool", "instance", "show", "-p", strconv.Itoa(port)).Output(); err == nil {
 			// Since servod has already been started, do not need to start again.
-			return nil
+			return &HostInfo{
+				Host:         host,
+				Port:         port,
+				SSHPort:      sshPort,
+				DockerHost:   false,
+				MsgLineStart: msgLineStart,
+			}, nil
 		}
 		hst.CommandContext(ctx, "start", "servod", fmt.Sprintf("PORT=%d", port)).Output()
 		logging.Infof(ctx, "Start servod at port %d at servo host %s:%d", port, host, sshPort)
 		// Provide servod up to 120 second to prepare, otherwise it will time out.
 		logging.Infof(ctx, "Wait for servod to be ready")
 		if _, err := hst.CommandContext(ctx, "servodtool", "instance", "wait-for-active", "--timeout", "120", "-p", strconv.Itoa(port)).Output(); err != nil {
-			return err
+			return nil, err
 		}
 	}
-	return nil
+	return &HostInfo{
+		Host:         host,
+		Port:         port,
+		SSHPort:      sshPort,
+		DockerHost:   false,
+		MsgLineStart: msgLineStart,
+	}, nil
 }
 
 // logServoStatus logs the current servo status from the servo host.
@@ -295,3 +337,192 @@ func (p *Proxy) Close(ctx context.Context) {
 
 // Servo returns the proxy's encapsulated Servo object.
 func (p *Proxy) Servo() *Servo { return p.svo }
+
+// CollectLogs downloads servo logs to the dest directory.
+// TODO: Move this code to a default fixture after b/333592531 is implemented.
+func CollectLogs(ctx context.Context, servoHostInfo *HostInfo, keyFile, keyDir, dest string) (retErr error) {
+	if servoHostInfo == nil {
+		return nil
+	}
+	host := servoHostInfo.Host
+	port := servoHostInfo.Port
+	sshPort := servoHostInfo.SSHPort
+	isDocker := servoHostInfo.DockerHost
+	// Example servoHostPort: satlab-0wgtfqin20158027-host2-docker_servod:9999.
+	// TODO: b/333928745 download servod logs from servod containers.
+	if isDocker {
+		logging.Infof(ctx, "Downloading servod log from servo container is not supported yet")
+		return nil
+	}
+	// If the servod instance isn't running locally, assume that we need to connect to it via SSH.
+	shouldDownloadLogs := sshPort > 0 && !isDocker && ((host != "localhost" && host != "127.0.0.1" && host != "::1") || sshPort != 22)
+	if !shouldDownloadLogs {
+		logging.Infof(ctx, "Downloading servod log is not supported for host %s:%d", host, sshPort)
+		return nil
+	}
+	// First, create an SSH connection to the remote system running servod.
+	sopt := ssh.Options{
+		KeyFile:        keyFile,
+		KeyDir:         keyDir,
+		ConnectTimeout: proxyTimeout,
+		WarnFunc:       func(msg string) { logging.Info(ctx, msg) },
+		Hostname:       net.JoinHostPort(host, fmt.Sprint(sshPort)),
+		User:           "root",
+	}
+	logging.Infof(ctx, "Opening Servo SSH connection to %s", sopt.Hostname)
+	hst, err := ssh.New(ctx, &sopt)
+	if err != nil {
+		return err
+	}
+	defer hst.Close(ctx)
+
+	servodLogDir := fmt.Sprintf("/var/log/servod_%d", port)
+
+	logging.Info(ctx, "Collecting servo logs from ", servodLogDir)
+	defer logging.Info(ctx, "Done collecting servo logs from ", servodLogDir)
+
+	const maxLogSize = 20 * 1024 * 1024 //20mb
+
+	servoHostDestDir := filepath.Join(dest, fmt.Sprintf("servo_host_%s", sopt.Hostname))
+
+	destDir := filepath.Join(servoHostDestDir, fmt.Sprintf("servod_%d", port))
+	if err := os.MkdirAll(destDir, 0755); err != nil {
+		logging.Infof(ctx, "Failed to create dir %s for downloading servo logs: %v", destDir, err)
+	}
+
+	// Getting servod logs.
+	downloadServodLogs(ctx, hst, servodLogDir, destDir, maxLogSize)
+
+	// Getting servo startup log from servo host.
+	downloadServodStartupLogs(ctx, hst, port, servoHostDestDir, maxLogSize)
+
+	// Getting /var/log/messages from servo host.
+	downloadServodMessages(ctx, hst, servoHostDestDir, servoHostInfo.MsgLineStart, maxLogSize)
+
+	// Getting dmesg.
+	downloadServodDMesgLogs(ctx, hst, servoHostDestDir, sopt.Hostname)
+
+	// Extract MCU logs from latest.DEBUG.
+	extractServodMCULogs(ctx, servodLogDir, destDir, maxLogSize)
+
+	return nil
+}
+
+func downloadServodLogs(ctx context.Context, hst *ssh.Conn, servodLogDir, destDir string, maxLogSize int64) {
+	links := []string{
+		"latest.DEBUG",
+		"latest.WARNING",
+		"latest.INFO",
+	}
+	for _, l := range links {
+		fl := filepath.Join(servodLogDir, l)
+		dn := filepath.Join(destDir, l)
+		logging.Info(ctx, "Saving servo log ", dn)
+		if err := linuxssh.GetFileTail(ctx, hst, fl, dn, 0, maxLogSize); err != nil {
+			logging.Infof(ctx, "Failed to servod log %s: %v", fl, err)
+		}
+	}
+}
+
+func downloadServodStartupLogs(ctx context.Context, hst *ssh.Conn, port int,
+	servoHostDestDir string, maxLogSize int64) {
+	// Getting servo start log from servo host.
+	servodStartup := fmt.Sprintf("servod_%d.STARTUP.log", port)
+	src := filepath.Join("/var/log", servodStartup)
+	if err := linuxssh.GetFileTail(ctx, hst, src,
+		filepath.Join(servoHostDestDir, servodStartup),
+		0, maxLogSize); err != nil {
+		logging.Infof(ctx, "Failed to download servod log %s: %v", servodStartup, err)
+	}
+}
+
+func downloadServodMessages(ctx context.Context, hst *ssh.Conn,
+	servoHostDestDir string, startLine, maxLogSize int64) {
+	// Getting servo start log from servo host.
+	msg := "messages"
+	src := filepath.Join("/var/log", msg)
+	if err := linuxssh.GetFileTail(ctx, hst, src,
+		filepath.Join(servoHostDestDir, msg),
+		startLine, maxLogSize); err != nil {
+		logging.Infof(ctx, "Failed to download servod log %s: %v", src, err)
+	}
+}
+
+func downloadServodDMesgLogs(ctx context.Context, hst *ssh.Conn,
+	servoHostDestDir, hostname string) {
+	cmd := hst.CommandContext(ctx, "dmesg", "-H")
+	dmesgFile := filepath.Join(servoHostDestDir, "dmesg")
+	dmesgOut, err := os.Create(dmesgFile)
+	if err != nil {
+		logging.Infof(ctx, "Failed to create servo log dmesg: %v", err)
+		return
+	}
+	defer dmesgOut.Close()
+	cmd.Stdout = dmesgOut
+	if err := cmd.Start(); err != nil {
+		logging.Infof(ctx, "Failed to start dmesg for host %s: %v", hostname, err)
+		return
+	}
+	defer cmd.Wait()
+}
+
+// extractServodMCULogs extract MCU logs from latest.DEBUG.
+func extractServodMCULogs(ctx context.Context, servodLogDir, destDir string, maxLogSize int64) {
+	var mcuFiles map[string]*os.File = make(map[string]*os.File)
+
+	src := filepath.Join(destDir, "latest.DEBUG")
+	f, err := os.Open(src)
+	if err != nil {
+		logging.Infof(ctx, "Failed to open %s: %v", src, err)
+		return
+	}
+	defer f.Close()
+
+	regExpr := `(?P<time>[\d\-]+ [\d:,]+ )` +
+		`- (?P<mcu>[\w/]+) - ` +
+		`EC3PO\.Console[\s\-\w\d:.]+LogConsoleOutput - /dev/pts/\d+ - ` +
+		`(?P<line>.+$)`
+
+	re, err := regexp.Compile(regExpr)
+	if err != nil {
+		fmt.Printf("Fail in compiling expression %v\n", err)
+		return
+	}
+
+	sc := bufio.NewScanner(f)
+	sc.Split(bufio.ScanLines)
+	for sc.Scan() {
+		text := sc.Text()
+		matches := re.FindStringSubmatch(text)
+		timeIndex := re.SubexpIndex("time")
+		if timeIndex < 0 || timeIndex >= len(matches) {
+			continue
+		}
+		mcuIndex := re.SubexpIndex("mcu")
+		if mcuIndex < 0 || mcuIndex >= len(matches) {
+			continue
+		}
+		lineIndex := re.SubexpIndex("line")
+		if lineIndex < 0 || lineIndex >= len(matches) {
+			continue
+		}
+		timestamp := matches[timeIndex]
+		mcu := strings.ToLower(matches[mcuIndex])
+		line := matches[lineIndex]
+		mcuFile, ok := mcuFiles[mcu]
+		if !ok {
+			mcuFile, err = os.Create(filepath.Join(destDir, fmt.Sprintf("%s.txt", mcu)))
+			if err != nil {
+				logging.Infof(ctx, "Failed to create servo log %s.txt: %v", mcu, err)
+				mcuFiles[mcu] = nil
+				continue
+			}
+			mcuFiles[mcu] = mcuFile
+			defer mcuFile.Close()
+		}
+		if mcuFile == nil {
+			continue
+		}
+		fmt.Fprintln(mcuFile, timestamp, "- ", line)
+	}
+}

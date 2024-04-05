@@ -277,7 +277,7 @@ Finally, we need to read the output from `dmesg`:
 			select {
 			case ch <- msg:
 				return true
-			case ctx.Done():
+			case <-ctx.Done():
 				return false
 			}
 		}
@@ -577,7 +577,7 @@ func streamDmesg(ctx context.Context) (*testexec.Cmd, <-chan string, error) {
 			select {
 			case ch <- msg:
 				return true
-			case ctx.Done():
+			case <-ctx.Done():
 				return false
 			}
 		}

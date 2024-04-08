@@ -198,6 +198,7 @@ func writeSystemInfo(ctx context.Context, dir string) error {
 		"losetup.txt":      {"losetup"},
 		"lscpu.txt":        {"lscpu"},
 		"df.txt":           {"df", "-mP"},
+		"lvs.txt":          {"lvs", "-a", "--units=m"},
 		"dmesg.txt":        {"dmesg"},
 	}
 	if _, err := os.Stat("/proc/bus/pci"); !os.IsNotExist(err) {

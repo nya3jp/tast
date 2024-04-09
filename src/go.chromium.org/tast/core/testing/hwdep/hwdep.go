@@ -1632,6 +1632,33 @@ func SupportsNV12Overlays() Condition {
 	}
 }
 
+// Supports10BitOverlays returns true if the SoC supports 10-bit pixel formats
+// such as AR30 as overlays.
+func Supports10BitOverlays() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		if satisfy, _, err := CPUSocFamily("mediatek").Satisfied(f); err == nil && !satisfy {
+			return unsatisfied("Chrome does not support 10-bit overlays on this SoC family")
+		}
+
+		dc := f.GetDeprecatedDeviceConfig()
+		if dc == nil {
+			return withErrorStr("DeprecatedDeviceConfig is not given")
+		}
+
+		// TODO(b/334027497): Switch this logic to use hardware_probe.
+		satisfy := dc.GetSoc() != protocol.DeprecatedDeviceConfig_SOC_MT8173 &&
+			dc.GetSoc() != protocol.DeprecatedDeviceConfig_SOC_MT8183 &&
+			dc.GetSoc() != protocol.DeprecatedDeviceConfig_SOC_MT8186 &&
+			dc.GetSoc() != protocol.DeprecatedDeviceConfig_SOC_MT8192
+		if !satisfy {
+			return unsatisfied("Chrome does not support 10-bit overlays on this SoC")
+		}
+
+		return satisfied()
+	},
+	}
+}
+
 // SupportsVideoOverlays says true if the SoC supports some type of YUV
 // hardware overlay. This includes NV12, I420, and YUY2.
 func SupportsVideoOverlays() Condition {

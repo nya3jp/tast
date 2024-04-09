@@ -2308,6 +2308,21 @@ from other existing groups (or use this group standalone).
 		Contacts: []string{"kamilszarek@google.com", "chromeos-ent-test@google.com"},
 		Desc:     `A group of tests that run on Flex devices.`,
 	},
+	{
+		Name:     "crospts",
+		Contacts: []string{"cros-core-systems-perf@google.com"},
+		Desc:     `A group of performance microbenchmark tests that run manually.`,
+		Subattrs: []*attr{
+			{
+				Name: "crospts_x86",
+				Desc: `CrosPTS tests for x86.`,
+			},
+			{
+				Name: "crospts_arm64",
+				Desc: `CrosPTS tests for arm64.`,
+			},
+		},
+	},
 }
 
 // validGroupMap is the name-keyed map of validGroups.

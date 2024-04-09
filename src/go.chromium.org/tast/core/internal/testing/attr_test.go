@@ -214,6 +214,15 @@ func TestCheckKnownAttrs(t *testing.T) {
 		{
 			attrs: []string{"group:meet", "informational"},
 		},
+		{
+			attrs: []string{"group:crospts"},
+		},
+		{
+			attrs: []string{"group:crospts", "crospts_x86"},
+		},
+		{
+			attrs: []string{"group:crospts", "crospts_arm64"},
+		},
 
 		// Invalid cases.
 		{

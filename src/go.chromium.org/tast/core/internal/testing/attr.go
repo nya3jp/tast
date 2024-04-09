@@ -1403,6 +1403,10 @@ Parallels boot-up testing. Otherwise the same as group:crosbolt.`,
 		Desc:     `USB Type C functional tests.`,
 		Subattrs: []*attr{
 			{
+				Name: "typec_compliance_ex350",
+				Desc: `Indicates that this test should be run using an EX350 compliance tester.`,
+			},
+			{
 				Name: "typec_lab",
 				Desc: `Indicates that this test should be run in a dedicated Type C lab setup.`,
 			},

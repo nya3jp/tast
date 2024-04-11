@@ -146,6 +146,7 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		FwConfig:                &configpb.HardwareFeatures_FirmwareConfiguration{},
 		RuntimeProbeConfig:      &configpb.HardwareFeatures_RuntimeProbeConfig{},
 		HardwareProbeConfig:     &configpb.HardwareFeatures_HardwareProbe{},
+		Suspend:                 &configpb.HardwareFeatures_Suspend{},
 		Display:                 &configpb.HardwareFeatures_Display{},
 		Vrr:                     &configpb.HardwareFeatures_Vrr{},
 		Hdmi:                    &configpb.HardwareFeatures_Hdmi{},
@@ -504,6 +505,40 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		features.EmbeddedController.Cbi = configpb.HardwareFeatures_PRESENT
 	} else {
 		features.EmbeddedController.Cbi = configpb.HardwareFeatures_PRESENT_UNKNOWN
+	}
+
+	getSuspendMode := func(ctx context.Context) (string, error) {
+		if err := exec.CommandContext(ctx, "check_powerd_config", "--suspend_to_idle").Run(); err == nil {
+			return "s2idle", nil
+		}
+		// Read the value from the power_manager suspend_mode configuration.
+		out, err := os.ReadFile("/var/lib/power_manager/suspend_mode")
+		if err != nil {
+			out2, err2 := os.ReadFile("/usr/share/power_manager/suspend_mode")
+			if err2 != nil {
+				return "", errors.Wrap(err, err2.Error())
+			}
+			out = out2
+		}
+		// kernel_default is using the /sys/power/mem_sleep kernel configuration.
+		if string(out) == "kernel_default" {
+			out, err := os.ReadFile("/sys/power/mem_sleep")
+			if err != nil {
+				return "", err
+			}
+			return string(out), nil
+		}
+		return string(out), nil
+	}
+
+	if mode, err := getSuspendMode(ctx); err != nil {
+		logging.Info(ctx, "Failed to get suspend mode: ", err)
+	} else if mode == "deep" {
+		features.Suspend.SuspendToMem = configpb.HardwareFeatures_PRESENT
+	} else if mode == "s2idle" {
+		features.Suspend.SuspendToIdle = configpb.HardwareFeatures_PRESENT
+	} else {
+		logging.Info(ctx, "Unrecognized suspend configuration: ", mode)
 	}
 
 	// Get number of PD ports from ectool, if possible.

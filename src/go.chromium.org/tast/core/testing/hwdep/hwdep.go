@@ -2003,6 +2003,40 @@ var smartAmps = []string{
 	configpb.HardwareFeatures_Audio_CS35L41.String(),
 }
 
+// SuspendToIdle returns a condition that is satisfied if the DUT suspends by default to idle/S0ix.
+func SuspendToIdle() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("Did not find hardware features")
+		}
+		if hf.GetSuspend() != nil {
+			if hf.GetSuspend().GetSuspendToIdle() == configpb.HardwareFeatures_PRESENT {
+				return satisfied()
+			}
+			return unsatisfied("DUT does not default to suspend to idle")
+		}
+		return withErrorStr("DUT did not find hardware suspend features")
+	}}
+}
+
+// SuspendToMem returns a condition that is satisfied if the DUT suspends by default to mem/S3.
+func SuspendToMem() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("Did not find hardware features")
+		}
+		if hf.GetSuspend() != nil {
+			if hf.GetSuspend().GetSuspendToMem() == configpb.HardwareFeatures_PRESENT {
+				return satisfied()
+			}
+			return unsatisfied("DUT does not default to suspend to mem")
+		}
+		return withErrorStr("DUT did not find hardware suspend features")
+	}}
+}
+
 // SmartAmp returns a hardware dependency condition that is satisfied if and only if the DUT
 // has smart amplifier.
 func SmartAmp() Condition {

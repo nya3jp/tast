@@ -73,3 +73,7 @@ const (
 
 // StringPair represents a string key-value pair. Typically used for SearchFlags.
 type StringPair = protocol.StringPair
+
+// TastRootRemoteFixtureName is the name of the root remote fixture which will be run
+// when a bundle start.
+const TastRootRemoteFixtureName = testing.TastRootRemoteFixtureName

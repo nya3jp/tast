@@ -184,6 +184,9 @@ func newFixtureInstance(f *Fixture, pkg string, p *FixtureParam) (*FixtureInstan
 	if p.Parent != "" {
 		parent = p.Parent
 	}
+	if parent == "" && name != TastRootRemoteFixtureName {
+		parent = TastRootRemoteFixtureName
+	}
 
 	setUpTimeout, err := timeout(p.SetUpTimeout, f.SetUpTimeout, "SetUpTimeout")
 	if err != nil {

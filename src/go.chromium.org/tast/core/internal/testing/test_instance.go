@@ -231,6 +231,9 @@ func newTestInstance(t *Test, p *Param) (*TestInstance, error) {
 		}
 		fixt = p.Fixture
 	}
+	if pre == nil && fixt == "" {
+		fixt = TastRootRemoteFixtureName
+	}
 
 	if pre != nil && fixt != "" {
 		return nil, errors.New("Fixture and Pre cannot be set simultaneously")

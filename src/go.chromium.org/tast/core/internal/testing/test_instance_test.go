@@ -125,6 +125,7 @@ func TestInstantiate(t *gotesting.T) {
 		Requirements:    []string{"one", "two"},
 		BugComponent:    "b:123xyz",
 		VariantCategory: "1",
+		Fixture:         TastRootRemoteFixtureName,
 	}}
 	if diff := cmp.Diff(got, want, cmpopts.IgnoreFields(TestInstance{}, "Func", "HardwareDeps")); diff != "" {
 		t.Errorf("Got unexpected test instances (-got +want):\n%s", diff)
@@ -170,6 +171,7 @@ func TestInstantiateOnlyForAllPrimary(t *gotesting.T) {
 		SoftwareDeps: map[string]dep.SoftwareDeps{"": []string{"dep1", "dep2"}},
 		Timeout:      123 * time.Second,
 		ServiceDeps:  []string{"svc1", "svc2"},
+		Fixture:      TastRootRemoteFixtureName,
 	}}
 	if diff := cmp.Diff(got, want, cmpopts.IgnoreFields(TestInstance{}, "Func", "HardwareDeps")); diff != "" {
 		t.Errorf("Got unexpected test instances (-got +want):\n%s", diff)
@@ -227,6 +229,7 @@ func TestInstantiateForAllCompanion(t *gotesting.T) {
 		},
 		Timeout:     123 * time.Second,
 		ServiceDeps: []string{"svc1", "svc2"},
+		Fixture:     TastRootRemoteFixtureName,
 	}}
 	if diff := cmp.Diff(got, want, cmpopts.IgnoreFields(TestInstance{}, "Func", "HardwareDeps", "Attr")); diff != "" {
 		t.Errorf("Got unexpected test instances (-got +want):\n%s", diff)
@@ -291,6 +294,7 @@ func TestInstantiateForBothPimaryCompaion(t *gotesting.T) {
 		},
 		Timeout:     123 * time.Second,
 		ServiceDeps: []string{"svc1", "svc2"},
+		Fixture:     TastRootRemoteFixtureName,
 	}}
 	if diff := cmp.Diff(got, want, cmpopts.IgnoreFields(TestInstance{}, "Func", "HardwareDeps", "Attr")); diff != "" {
 		t.Errorf("Got unexpected test instances (-got +want):\n%s", diff)
@@ -357,6 +361,7 @@ func TestInstantiateParamsForAllPrimary(t *gotesting.T) {
 			Requirements:    []string{"one", "two"},
 			LifeCycleStage:  LifeCycleInDevelopment,
 			VariantCategory: overriddenVariantCategory,
+			Fixture:         TastRootRemoteFixtureName,
 		},
 		{
 			Name: "testing.TESTINSTANCETEST.foo",
@@ -375,6 +380,7 @@ func TestInstantiateParamsForAllPrimary(t *gotesting.T) {
 			SoftwareDeps:    map[string]dep.SoftwareDeps{"": []string{"dep0", "dep2"}},
 			Requirements:    []string{"one", "three", "four"},
 			VariantCategory: defaultVariantCategory,
+			Fixture:         TastRootRemoteFixtureName,
 		},
 	}
 	if diff := cmp.Diff(got, want, cmpopts.IgnoreFields(TestInstance{}, "Func", "HardwareDeps", "Pre")); diff != "" {
@@ -459,6 +465,7 @@ func TestInstantiateParams(t *gotesting.T) {
 			SoftwareDeps: map[string][]string{"": {"dep0", "dep1"}},
 			TestBedDeps:  []string{"dep1", "dep2", "dep3", "dep4"},
 			BugComponent: bugComp,
+			Fixture:      TastRootRemoteFixtureName,
 		},
 		{
 			Name: "testing.TESTINSTANCETEST.foo",
@@ -477,6 +484,7 @@ func TestInstantiateParams(t *gotesting.T) {
 			SoftwareDeps: map[string][]string{"": {"dep0", "dep2"}},
 			TestBedDeps:  []string{"dep1", "dep2", "dep5", "dep6"},
 			BugComponent: bugCompOverride,
+			Fixture:      TastRootRemoteFixtureName,
 		},
 	}
 	if diff := cmp.Diff(got, want, cmpopts.IgnoreFields(TestInstance{}, "Func", "HardwareDeps", "Pre")); diff != "" {
@@ -563,6 +571,7 @@ func TestInstantiateParamsForAllCompaion(t *gotesting.T) {
 				"":             []string{"dep0", "dep1"},
 				"compaionDut1": []string{"dep3"},
 			},
+			Fixture: TastRootRemoteFixtureName,
 		},
 		{
 			Name: "testing.TESTINSTANCETEST.foo",
@@ -583,6 +592,7 @@ func TestInstantiateParamsForAllCompaion(t *gotesting.T) {
 				"":             []string{"dep0", "dep2"},
 				"compaionDut1": []string{"dep3"},
 			},
+			Fixture: TastRootRemoteFixtureName,
 		},
 	}
 	if diff := cmp.Diff(got, want, cmpopts.IgnoreFields(TestInstance{}, "Func", "HardwareDeps", "Attr")); diff != "" {
@@ -1008,6 +1018,7 @@ func TestInstantiateCompatAttrs(t *gotesting.T) {
 			"disabled",
 		},
 		SoftwareDeps: map[string][]string{"": nil},
+		Fixture:      TastRootRemoteFixtureName,
 	}}
 	if diff := cmp.Diff(got, want, cmpopts.IgnoreFields(TestInstance{}, "Func", "HardwareDeps", "Pre")); diff != "" {
 		t.Errorf("Got unexpected test instances (-got +want):\n%s", diff)
@@ -1324,6 +1335,7 @@ func TestTestClone(t *gotesting.T) {
 			SoftwareDeps: softwareDeps,
 			ServiceDeps:  serviceDeps,
 			Timeout:      timeout,
+			Fixture:      TastRootRemoteFixtureName,
 		}
 		if diff := cmp.Diff(tst, want, cmpopts.IgnoreFields(TestInstance{}, "Func", "HardwareDeps")); diff != "" {
 			t.Errorf("Unexpected instance after %s; (-got +want):\n%v", msg, diff)
@@ -1338,6 +1350,7 @@ func TestTestClone(t *gotesting.T) {
 		SoftwareDeps: softwareDeps,
 		ServiceDeps:  append([]string(nil), serviceDeps...),
 		Timeout:      timeout,
+		Fixture:      TastRootRemoteFixtureName,
 	}
 
 	clone := orig.clone()
@@ -1369,6 +1382,7 @@ func TestWriteTestsAsProto(t *gotesting.T) {
 			BugComponent:    "my component",
 			LifeCycleStage:  LifeCycleManualOnly,
 			VariantCategory: "2",
+			Fixture:         TastRootRemoteFixtureName,
 		},
 	}
 

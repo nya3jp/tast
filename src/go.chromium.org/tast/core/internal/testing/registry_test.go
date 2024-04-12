@@ -229,9 +229,9 @@ func TestAllFixtures(t *gotesting.T) {
 	}
 
 	want := map[string]*FixtureInstance{
-		"a": {Name: "a", Pkg: "pkg", Bundle: "bundle"},
-		"b": {Name: "b", Pkg: "pkg", Bundle: "bundle"},
-		"c": {Name: "c", Pkg: "pkg", Bundle: "bundle"},
+		"a": {Name: "a", Pkg: "pkg", Bundle: "bundle", Parent: TastRootRemoteFixtureName},
+		"b": {Name: "b", Pkg: "pkg", Bundle: "bundle", Parent: TastRootRemoteFixtureName},
+		"c": {Name: "c", Pkg: "pkg", Bundle: "bundle", Parent: TastRootRemoteFixtureName},
 	}
 	if diff := cmp.Diff(reg.AllFixtures(), want); diff != "" {
 		t.Errorf("Result mismatch (-got +want):\n%v", diff)
@@ -293,15 +293,15 @@ func TestAllFixturesParam(t *gotesting.T) {
 	}
 
 	want := map[string]*FixtureInstance{
-		"a.x": {Name: "a.x", Pkg: "pkg", Bundle: "bundle"},
-		"a.y": {Name: "a.y", Pkg: "pkg", Bundle: "bundle"},
-		"a.z": {Name: "a.z", Pkg: "pkg", Bundle: "bundle"},
-		"b.x": {Name: "b.x", Pkg: "pkg", Bundle: "bundle"},
-		"b.y": {Name: "b.y", Pkg: "pkg", Bundle: "bundle"},
-		"b.z": {Name: "b.z", Pkg: "pkg", Bundle: "bundle"},
-		"c.x": {Name: "c.x", Pkg: "pkg", Bundle: "bundle"},
-		"c.y": {Name: "c.y", Pkg: "pkg", Bundle: "bundle"},
-		"c.z": {Name: "c.z", Pkg: "pkg", Bundle: "bundle"},
+		"a.x": {Name: "a.x", Pkg: "pkg", Bundle: "bundle", Parent: TastRootRemoteFixtureName},
+		"a.y": {Name: "a.y", Pkg: "pkg", Bundle: "bundle", Parent: TastRootRemoteFixtureName},
+		"a.z": {Name: "a.z", Pkg: "pkg", Bundle: "bundle", Parent: TastRootRemoteFixtureName},
+		"b.x": {Name: "b.x", Pkg: "pkg", Bundle: "bundle", Parent: TastRootRemoteFixtureName},
+		"b.y": {Name: "b.y", Pkg: "pkg", Bundle: "bundle", Parent: TastRootRemoteFixtureName},
+		"b.z": {Name: "b.z", Pkg: "pkg", Bundle: "bundle", Parent: TastRootRemoteFixtureName},
+		"c.x": {Name: "c.x", Pkg: "pkg", Bundle: "bundle", Parent: TastRootRemoteFixtureName},
+		"c.y": {Name: "c.y", Pkg: "pkg", Bundle: "bundle", Parent: TastRootRemoteFixtureName},
+		"c.z": {Name: "c.z", Pkg: "pkg", Bundle: "bundle", Parent: TastRootRemoteFixtureName},
 	}
 	if diff := cmp.Diff(reg.AllFixtures(), want); diff != "" {
 		t.Errorf("Result mismatch (-got +want):\n%v", diff)

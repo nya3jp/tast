@@ -224,6 +224,7 @@ stack-sampled metrics.
 * `tast_vm` - The test is running in a VM [managed by chromite](https://chromium.googlesource.com/chromiumos/chromite/+/HEAD/lib/cros_test.py#396).
 * `tflite_opencl` - Skips boards which have issues with the OpenCL TFLite
     delegate (b/233851820).
+* `tflite_mtk_neuron` - The availability of TFLite Neuron Delegate for APU.
 * `thread_safe_libva_backend` - Boards where the LIBVA backend is threadsafe.
 * `tpm` - A [Trusted Platform Module] chip.
 * `tpm_clear_allowed` - The device's TPM can be cleared.

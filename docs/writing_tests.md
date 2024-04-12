@@ -1174,6 +1174,9 @@ following content:
 > date as a suffix in the filename to make it easy to add a new version when
 > needed, e.g. `user_login_data_20180812.bin`.
 
+The commands `du -b $FILE` and `sha256sum $FILE` can calculate the size and
+sha256sum respectively.
+
 If data files are produced as [build artifacts of ChromeOS], they can be also
 used as external data files. However, build artifacts are available only for
 ChromeOS images built by official builders; for developer builds, tests

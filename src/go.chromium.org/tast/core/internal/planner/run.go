@@ -543,6 +543,7 @@ func runFixtTree(ctx context.Context, tree *fixtTree, stack *internalOrCombinedS
 					}
 				}
 			}
+			hasExternalTests := len(tree.externalTests) > 0
 			// Run external tests then.
 			for stack.Status() != fixture.StatusYellow && len(tree.externalTests) > 0 {
 				unstarted, err := runExternalTests(ctx, tree.externalTests, stack.combined, pcfg, out)
@@ -557,6 +558,13 @@ func runFixtTree(ctx context.Context, tree *fixtTree, stack *internalOrCombinedS
 
 			// Run child fixtures recursively.
 			for stack.Status() != fixture.StatusYellow && len(tree.children) > 0 {
+				// We have not yet call Reset after the execution of the last
+				// external tests. Call it now.
+				if hasExternalTests {
+					if err := stack.Reset(ctx); err != nil {
+						return err
+					}
+				}
 				subtree := tree.children[0]
 				if err := runFixtTree(ctx, subtree, stack, pcfg, out, dl); err != nil {
 					return err

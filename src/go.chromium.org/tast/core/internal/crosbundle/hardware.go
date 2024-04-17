@@ -526,9 +526,9 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 			if err != nil {
 				return "", err
 			}
-			return string(out), nil
+			return strings.TrimSpace(string(out)), nil
 		}
-		return string(out), nil
+		return strings.TrimSpace(string(out)), nil
 	}
 
 	if mode, err := getSuspendMode(ctx); err != nil {

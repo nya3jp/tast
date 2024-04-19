@@ -31,7 +31,7 @@ const (
 	nonLiteralContactsMsg = `Contacts field should be an array literal of syntactically valid email address`
 
 	noBugComponentMsg  = `BugComponent field should be specified`
-	nonBugComponentMsg = `BugComponent does not match 'b:<component_id>' or 'crbug:' syntax`
+	nonBugComponentMsg = `BugComponent does not match 'b:<component_id>' syntax`
 
 	nonLiteralAttrMsg             = `Test Attr should be an array literal of string literals`
 	nonLiteralVarsMsg             = `Test Vars should be an array literal of string literals or constants, or append(array literal, ConstList...)`
@@ -271,7 +271,7 @@ func verifyBugComponent(fs *token.FileSet, fields entityFields, call *ast.CallEx
 		}}
 	}
 
-	componentPatterns := []string{"^b:[0-9]+$", "^crbug:[a-zA-Z>]+$", "^TBA$"}
+	componentPatterns := []string{"^b:[0-9]+$"} // Only Buganizer allowed at this time.
 	for _, pattern := range componentPatterns {
 		var matched, _ = regexp.Match(pattern, []byte(s))
 		if matched {

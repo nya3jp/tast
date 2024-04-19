@@ -138,25 +138,7 @@ func TestDeclarationsBugComponent(t *testing.T) {
 		Func:	DoStuff,
 		Desc:	"Litteral Desc",
 		Contacts:  []string{"me@chromium.org"},
-		BugComponent: "crbug:asdf<asdf",
-	})`, []string{declTestPath + ":8:17: crbug:asdf<asdf " + nonBugComponentMsg}}, {`
-	testing.AddTest(&testing.Test{
-		Func:	DoStuff,
-		Desc:	"Litteral Desc",
-		Contacts:  []string{"me@chromium.org"},
-		BugComponent: "TBA",
-	})`, nil}, {`
-	testing.AddTest(&testing.Test{
-		Func:	DoStuff,
-		Desc:	"Litteral Desc",
-		Contacts:  []string{"me@chromium.org"},
 		BugComponent: "b:1034625",
-	})`, nil}, {`
-	testing.AddTest(&testing.Test{
-		Func:	DoStuff,
-		Desc:	"Litteral Desc",
-		Contacts:  []string{"me@chromium.org"},
-		BugComponent: "crbug:asdf>asdf",
 	})`, nil}} {
 		code := fmt.Sprintf(initTmpl, tc.snip)
 		f, fs := parse(code, declTestPath)

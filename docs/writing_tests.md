@@ -141,8 +141,8 @@ Tests have to specify a `BugComponent`, which should be a string with a prefix
 indicating the bug tracker. The string's contents point to the location where
 bugs regarding the test should initially be filed. A prefix is used to
 distinguish between different bug trackers. For Buganizer, use "b:" plus
-the componentid, e.g. "b:1034625". For Chromium bug tracker, use "crbug:" plus
-the component label, e.g. "crbug:Blink>JavaScript>WebAssembly".
+the componentid, e.g. "b:1034625". Ensure that a *componentid* is used, not a
+specific bug id.
 
 Tests have to specify [attributes] to describe how they are used in ChromeOS
 testing. A test belongs to zero or more groups by declaring attributes with

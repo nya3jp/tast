@@ -97,7 +97,7 @@ stable. If a test is not dependent on physical HW and can be run on x86 VMs,
 please also specify `group:hw_agnostic`.
 
 `BugComponent` contains a string representing the owning team's primary bug component.
-For buganizer, please use a "`b:`" prefix and specify the component ID (i.e., "`b:12345`"). For crbug, please use a "`crbug:`" prefix followed by component path (i.e., "`crbug:UI>Shell>Launcher`").
+For buganizer, please use a "`b:`" prefix and specify the component ID (i.e., "`b:12345`").
 
 [testing.AddTest]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/testing#AddTest
 [testing.Test]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/testing#Test

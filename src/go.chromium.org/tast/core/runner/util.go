@@ -2,13 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Package main implements the local_test_runner executable.
-//
-// local_test_runner is executed on-device by the tast command.
-// It runs test bundles and reports the results back to tast.
-// It is also used to query additional information about the DUT
-// such as logs, crashes, and supported software features.
-package main
+// Package runner provides utilities for Tast runner executables.
+package runner
 
 import (
 	"os"
@@ -17,7 +12,8 @@ import (
 	"go.chromium.org/tast/core/internal/runner"
 )
 
-func main() {
+// RunLocal runs the local test runner.
+func RunLocal() int {
 	scfg := runner.StaticConfig{
 		Type:                    runner.LocalRunner,
 		KillStaleRunners:        true,
@@ -32,5 +28,5 @@ func main() {
 			TempDir:    "/usr/local/tmp/tast/run_tmp",
 		},
 	}
-	os.Exit(runner.Run(os.Args[1:], os.Stdin, os.Stdout, os.Stderr, &scfg))
+	return runner.Run(os.Args[1:], os.Stdin, os.Stdout, os.Stderr, &scfg)
 }

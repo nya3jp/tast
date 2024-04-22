@@ -253,7 +253,7 @@ func (d *DUT) RebootWithCommand(ctx context.Context, cmd string, args ...string)
 			// Device hasn't rebooted yet; avoid spamming
 			// connections too quickly.
 			time.Sleep(3 * time.Second)
-			return errors.New("boot_id did not change")
+			return errors.Errorf("boot_id did not change, still %v", curID)
 		}
 		return nil
 	}, &testingutil.PollOptions{Timeout: 4 * time.Minute}); err != nil {

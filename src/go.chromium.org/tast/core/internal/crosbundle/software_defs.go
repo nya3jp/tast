@@ -254,7 +254,7 @@ var softwareFeatureDefs = map[string]string{
 	"selinux":               "selinux",
 	"selinux_current":       "selinux && !selinux_experimental",
 	"selinux_experimental":  "selinux && selinux_experimental",
-	"shipping_kernel":       `!"debug" && !"kcov" && !"lockdebug"`,
+	"shipping_kernel":       "shipping_kernel",
 	"smartctl":              "nvme || sata",
 	"smartdim":              "smartdim",
 	// VMs don't support speech on-device API.

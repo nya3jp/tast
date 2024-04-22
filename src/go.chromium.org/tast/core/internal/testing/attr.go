@@ -1469,6 +1469,22 @@ Parallels boot-up testing. Otherwise the same as group:crosbolt.`,
 				Desc: `Indicates that this test with webcam should be run in a dedicated setup.`,
 			},
 			{
+				Name: "pasit_storage",
+				Desc: `Indicates that this test with exteranl storage should be run in a dedicated setup.`,
+			},
+			{
+				Name: "pasit_camera",
+				Desc: `Indicates that this test with external camera should be run in a dedicated setup.`,
+			},
+			{
+				Name: "pasit_display",
+				Desc: `Indicates that this test with external display should be run in a dedicated setup.`,
+			},
+			{
+				Name: "pasit_hid",
+				Desc: `Indicates that this test with HIDs should be run in a dedicated setup.`,
+			},
+			{
 				Name: "pasit_informational",
 				Desc: `Indicates that failures can be ignored.`,
 			},

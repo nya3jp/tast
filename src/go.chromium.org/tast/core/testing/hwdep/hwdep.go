@@ -1273,6 +1273,18 @@ func Wifi80211be() Condition {
 	)
 }
 
+// WifiGCMP returns a hardware dependency condition that is satisfied if and
+// only if the DUT's WiFi module supports GCMP-128 and GCMP-256 ciphers.
+func WifiGCMP() Condition {
+	return SkipOnWifiDevice(
+		Marvell88w8897SDIO,
+		Marvell88w8997PCIE,
+		QualcommAtherosQCA6174,
+		QualcommAtherosQCA6174SDIO,
+		Intel7265,
+	)
+}
+
 // WifiMACAddrRandomize returns a hardware dependency condition that is satisfied
 // if and only if the DUT supports WiFi MAC Address Randomization.
 func WifiMACAddrRandomize() Condition {

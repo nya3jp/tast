@@ -592,6 +592,44 @@ func Test80211be(t *testing.T) {
 	}
 }
 
+func TestWifiGCMP(t *testing.T) {
+	c := hwdep.WifiGCMP()
+
+	for _, tc := range []struct {
+		wifiDeviceID    wlan.DeviceID
+		expectSatisfied bool
+	}{
+		{hwdep.Marvell88w8897SDIO, false},
+		{hwdep.Marvell88w8997PCIE, false},
+		{hwdep.QualcommAtherosQCA6174, false},
+		{hwdep.QualcommAtherosQCA6174SDIO, false},
+		{hwdep.QualcommWCN3990, true},
+		{hwdep.QualcommWCN6855, true},
+		{hwdep.Intel7265, false},
+		{hwdep.Intel9000, true},
+		{hwdep.Intel9260, true},
+		{hwdep.Intel22260, true},
+		{hwdep.Intel22560, true},
+		{hwdep.IntelAX211, true},
+		{hwdep.IntelBE200, true},
+		{hwdep.Realtek8822CPCIE, true},
+		{hwdep.Realtek8852APCIE, true},
+		{hwdep.MediaTekMT7921PCIE, true},
+		{hwdep.MediaTekMT7921SDIO, true},
+		{hwdep.MediaTekMT7922PCIE, true},
+	} {
+		verifyCondition(
+			t, c,
+			&frameworkprotocol.DeprecatedDeviceConfig{},
+			&configpb.HardwareFeatures{
+				Wifi: &configpb.HardwareFeatures_Wifi{
+					WifiChips: []configpb.HardwareFeatures_Wifi_WifiChip{configpb.HardwareFeatures_Wifi_WifiChip(tc.wifiDeviceID)},
+				},
+			},
+			tc.expectSatisfied)
+	}
+}
+
 func TestWiFiNonSelfManaged(t *testing.T) {
 	c := hwdep.WifiNonSelfManaged()
 

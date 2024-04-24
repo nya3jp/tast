@@ -138,6 +138,7 @@ The following software features are defined:
 * `known_fixed_ssd` - Set when the fixed SSD location globs are defined. They are not for board:reven (the hardware is not fixed) and VMs, since the path
     is either not defined (if taken directly from xxx-generic overlay) or already defined to real hardware location.
     Only for betty we do defined a "hardware" path since that board is only used for VM.
+* `kstack_random` - Whether the kernel has randomized kernel stack offsets (CONFIG_RANDOMIZE_KSTACK_OFFSET) enabled.
 * `lacros` - Whether the system supports running [lacros].
 * `lacros_stable` - Whether the system supports running [lacros] and is stable enough for CQ. [TODO: Remove this.](crbug.com/1412276)
 * `lacros_unstable` - Whether the system supports running [lacros] and is not stable enough for CQ. [TODO: Remove this.](crbug.com/1412276)

@@ -151,6 +151,7 @@ var softwareFeatureDefs = map[string]string{
 	"iwlwifi_rescan":  "iwlwifi_rescan",
 	"kfence_enabled":  `!("kernel-4_14" || "kernel-4_19" || "kernel-5_4")`,
 	"known_fixed_ssd": `!("tast_vm" || "board:amd64-generic"|| "board:reven*")`,
+	"kstack_random":   `!("kernel-4_14" || "kernel-4_19" || "kernel-5_4" || "kernel-5_10")`,
 	// Lacros variants.
 	// veyron does not support rootfs lacros entirely. b/204888294
 	// TODO(crbug.com/1412276): Remove lacros_stable and lacros_unstable eventually.

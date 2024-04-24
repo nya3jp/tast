@@ -6,7 +6,7 @@ package build
 
 const (
 	// LocalRunnerPkg is the Go package for local_test_runner.
-	LocalRunnerPkg = "go.chromium.org/tast/core/cmd/local_test_runner"
+	LocalRunnerPkg = "go.chromium.org/tast/runner/local_test_runner"
 
 	// RemoteRunnerPkg is the Go package for remote_test_runner.
 	RemoteRunnerPkg = "go.chromium.org/tast/core/cmd/remote_test_runner"

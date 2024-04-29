@@ -46,8 +46,12 @@ func CheckPrivateBundleFlag(ctx context.Context, cfg *config.Config) error {
 // Prepare prepares target DUT for running tests.
 // It returns the DUTInfo for the primary DUT.
 func Prepare(ctx context.Context, cfg *config.Config, driver *driver.Driver) (*protocol.DUTInfo, error) {
-	// Build all the remote bundles.
-	if err := buildRemoteBundles(ctx, cfg); err != nil {
+	if !cfg.Build() {
+		if err := buildAllRemoteBundlesInChroot(ctx, cfg); err != nil {
+			return nil, fmt.Errorf("failed to check and build remote bundles: %v", err)
+		}
+	} else if err := buildRemoteBundles(ctx, cfg); err != nil {
+		// Build all the remote bundles.
 		return nil, err
 	}
 
@@ -67,6 +71,58 @@ func Prepare(ctx context.Context, cfg *config.Config, driver *driver.Driver) (*p
 	}
 
 	return dutInfo, nil
+}
+
+// buildAllRemoteBundlesInChroot will build all available remote bundles in
+// chroot.
+func buildAllRemoteBundlesInChroot(ctx context.Context, cfg *config.Config) error {
+	if !config.InChroot() {
+		// Do not build in chroot.
+		return nil
+	}
+	// check if it is invoked from tast command line.
+	execName, err := os.Executable()
+	if err != nil || filepath.Base(execName) != "tast" {
+		return nil
+	}
+	logging.Info(ctx, "Build remote bundles")
+	var targets []*build.Target
+	type bundleRepos struct {
+		bundle string
+		repo   string
+	}
+	remoteBundles := []bundleRepos{
+		{bundle: "cros", repo: "tast-tests"},
+		{bundle: "crosint", repo: "tast-tests-private"},
+		{bundle: "crosint_intel", repo: "tests-partners/partner-intel-private"},
+	}
+	for _, b := range remoteBundles {
+		// If there is no source directory, skip the build.
+		src := filepath.Join(cfg.TrunkDir(), "src/platform/", b.repo)
+		if _, err := os.Stat(src); err != nil {
+			continue
+		}
+		logging.Infof(ctx, "Adding remote bundle %q to build list", b.bundle)
+		workspace := append(cfg.CommonWorkspaces())
+		if b.repo != "tast-tests" {
+			workspace = append(workspace,
+				filepath.Join(cfg.TrunkDir(), "src/platform/tast-tests"))
+		}
+		workspace = append(workspace, src)
+		targets = append(targets, &build.Target{
+			Pkg:        path.Join(remoteBundlePrefix(b.bundle), b.bundle),
+			Arch:       build.ArchHost,
+			Workspaces: workspace,
+			Out:        filepath.Join(cfg.RemoteBundleDir(), b.bundle),
+			Debug:      cfg.DebuggerPorts()[debugger.RemoteBundle] != 0,
+		},
+		)
+	}
+	if len(targets) == 0 {
+		return nil
+	}
+	return buildBundles(ctx, cfg, targets)
+
 }
 
 // prepareDUT prepares the DUT for running tests and downloads private test bundles.
@@ -133,7 +189,6 @@ func buildRemoteBundles(ctx context.Context, cfg *config.Config) error {
 			Debug:      cfg.DebuggerPorts()[debugger.RemoteBundle] != 0,
 		},
 	}
-
 	return buildBundles(ctx, cfg, targets)
 }
 
@@ -145,6 +200,11 @@ func remoteBundlePrefix(bundle string) string {
 }
 
 func buildLocalBundles(ctx context.Context, cfg *config.Config, targetArch string) error {
+	// Nothing to build.
+	if !cfg.Build() {
+		return nil
+	}
+
 	// local_test_runner is required even if we are running only remote tests,
 	// e.g. to compute software dependencies.
 	targets := []*build.Target{
@@ -175,11 +235,6 @@ func localBundlePrefix(bundle string) string {
 }
 
 func buildBundles(ctx context.Context, cfg *config.Config, tgts []*build.Target) error {
-	// Nothing to build.
-	if !cfg.Build() {
-		return nil
-	}
-
 	var names []string
 	for _, tgt := range tgts {
 		names = append(names, path.Base(tgt.Pkg))

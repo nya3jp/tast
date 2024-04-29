@@ -639,8 +639,16 @@ func (c *MutableConfig) DeriveDefaults() error {
 		setIfEmpty(&c.LocalBundleDir, "/usr/local/libexec/tast/bundles/local")
 		setIfEmpty(&c.LocalDataDir, "/usr/local/share/tast/data")
 		setIfEmpty(&c.RemoteRunner, "/usr/bin/remote_test_runner")
-		setIfEmpty(&c.RemoteBundleDir, "/usr/libexec/tast/bundles/remote")
 		setIfEmpty(&c.RemoteDataDir, "/usr/share/tast/data")
+
+		// b/334180005: we will no longer include tast remote bundles in the chroot.
+		// We will always build in chroot.
+		if InChroot() {
+			setIfEmpty(&c.RemoteBundleDir, filepath.Join(c.BuildOutDir, build.ArchHost, build.RemoteBundleBuildSubdir))
+		} else {
+			setIfEmpty(&c.RemoteBundleDir, "/usr/libexec/tast/bundles/remote")
+		}
+
 	}
 	// TODO(crbug/1177189): we assume there's only one remote bundle. Consider
 	// removing the restriction.
@@ -838,4 +846,12 @@ func (c *Config) bundleGlob(dir string) string {
 		last = c.BuildBundle()
 	}
 	return filepath.Join(dir, last)
+}
+
+// InChroot checks if the current session is running inside chroot.
+func InChroot() bool {
+	if _, err := os.Stat("/etc/cros_chroot_version"); err == nil {
+		return true
+	}
+	return false
 }

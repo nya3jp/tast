@@ -15,17 +15,17 @@ For more information, see the [list of documentation](docs/README.md).
 This repository is organized in accordance with the [Go in ChromiumOS]
 suggestions.
 
-*   [`src/chromiumos/`](src/chromiumos/)
-    *   [`cmd/local_test_runner/`](src/go.chromium.org/tast/core/cmd/local_test_runner) -
+*   [`src/go.chromiumos.org/`](src/go.chromiumos.org/)
+    *   [`tast/runner/local_test_runner/`](src/go.chromium.org/tast/runner/local_test_runner) -
         `main` package for the `local_test_runner` executable used to execute
         local test bundles on-device.
-    *   [`cmd/remote_test_runner/`](src/go.chromium.org/tast/core/cmd/remote_test_runner) -
+    *   [`tast/core/cmd/remote_test_runner/`](src/go.chromium.org/tast/core/cmd/remote_test_runner) -
         `main` package for the `remote_test_runner` executable used to execute
         remote test bundles on the host system.
-    *   [`cmd/tast/`](src/go.chromium.org/tast/core/cmd/tast/) - `main` package for the `tast`
+    *   [`tast/core/cmd/tast/`](src/go.chromium.org/tast/core/cmd/tast/) - `main` package for the `tast`
         executable used to build and run tests.
-        *   `...` - Packages used only by the `tast` executable.
-    *   [`tast/...`](src/go.chromium.org/tast/core/) - Common packages shared by multiple
+        *   Packages used only by the `tast` executable.
+    *   [`tast/core/`](src/go.chromium.org/tast/core/) - Common packages shared by multiple
         executables.
 
 Tests are located in the [tast-tests repository].

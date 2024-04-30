@@ -2339,6 +2339,11 @@ from other existing groups (or use this group standalone).
 			},
 		},
 	},
+	{
+		Name:     "secagentd_bpf",
+		Contacts: []string{"cros-enterprise-security@google.com"},
+		Desc:     `A group of ChromeOS Enterprise XDR tests that use eBPF.`,
+	},
 }
 
 // validGroupMap is the name-keyed map of validGroups.

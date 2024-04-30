@@ -15,7 +15,7 @@ For more information, see the [list of documentation](docs/README.md).
 This repository is organized in accordance with the [Go in ChromiumOS]
 suggestions.
 
-*   [`src/go.chromiumos.org/`](src/go.chromiumos.org/)
+*   [`src/go.chromium.org/`](src/go.chromium.org/)
     *   [`tast/runner/local_test_runner/`](src/go.chromium.org/tast/runner/local_test_runner) -
         `main` package for the `local_test_runner` executable used to execute
         local test bundles on-device.

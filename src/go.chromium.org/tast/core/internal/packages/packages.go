@@ -8,6 +8,8 @@
 package packages
 
 import (
+	"fmt"
+	"regexp"
 	"strings"
 )
 
@@ -31,4 +33,21 @@ func SplitFuncName(fn string) (fullPkg, name string) {
 // Same returns true if x and y are identical after normalization.
 func Same(x, y string) bool {
 	return Normalize(x) == Normalize(y)
+}
+
+var srcExpr = regexp.MustCompile(fmt.Sprintf(".*/(?P<path>(src/.*))"))
+
+// SrcPathInTastRepo extract <repo>/<src> from a full path.
+// Example:
+// ~/chromiumos/src/platform/tast-tests/src/go.chromium.org/tast-tests/cros/local/meta
+// will be extracted to
+// tast-tests/src/go.chromium.org/tast-tests/cros/local/meta
+func SrcPathInTastRepo(fn string) string {
+	matches := srcExpr.FindStringSubmatch(fn)
+	pathIndex := srcExpr.SubexpIndex("path")
+	if pathIndex < 0 || pathIndex > len(matches) {
+		// Return as is if there is not match.
+		return fn
+	}
+	return matches[pathIndex]
 }

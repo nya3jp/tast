@@ -7,6 +7,7 @@ package testing
 import (
 	"fmt"
 	"regexp"
+	"runtime"
 
 	"go.chromium.org/tast/core/internal/caller"
 	"go.chromium.org/tast/core/internal/packages"
@@ -47,6 +48,8 @@ func AddService(s *Service) {
 
 // AddFixture adds fixture f to the global registry.
 func AddFixture(f *Fixture) {
+	_, fn, _, _ := runtime.Caller(1)
 	pkg, _ := packages.SplitFuncName(caller.Get(2))
-	testing.GlobalRegistry().AddFixture(f, pkg)
+	srcPath := packages.SrcPathInTastRepo(fn)
+	testing.GlobalRegistry().AddFixture(f, pkg, srcPath)
 }

@@ -8,6 +8,9 @@ import (
 	"context"
 	"encoding/json"
 	"io"
+	"os"
+	"path/filepath"
+	"sort"
 	"strings"
 	"time"
 
@@ -106,6 +109,28 @@ func run(ctx context.Context, clArgs []string, stdin io.Reader, stdout, stderr i
 			return command.WriteError(stderr, errors.Errorf("invalid dump format %v", args.dumpFormat))
 		}
 		return statusSuccess
+	case modeDumpFixtures:
+		switch args.dumpFormat {
+		case dumpFormatProto:
+			fixtures := allFixtures(scfg)
+			execName, err := os.Executable()
+			if err != nil {
+				return command.WriteError(stderr, errors.New("failed to get the executable name"))
+			}
+			execName = filepath.Base(execName)
+			prefix, found := strings.CutPrefix(execName, "host_")
+			if !found {
+				return command.WriteError(stderr,
+					errors.Errorf("executable name should be in format host_<bundle_name>_<bundle_type>"))
+			}
+			// Executable should be in the format of host_<bundle_name>_<bundle_type>.
+			if err := testing.WriteFixturesAsProto(stdout, prefix, fixtures); err != nil {
+				return command.WriteError(stderr, err)
+			}
+			return 0
+		default:
+			return command.WriteError(stderr, errors.Errorf("invalid dump format %v", args.dumpFormat))
+		}
 	case modeRPC:
 		if err := RunRPCServer(stdin, stdout, scfg); err != nil {
 			return command.WriteError(stderr, err)
@@ -139,6 +164,18 @@ func writeTestsAsLegacyJSON(w io.Writer, tests []*testing.TestInstance) error {
 		})
 	}
 	return json.NewEncoder(w).Encode(infos)
+}
+
+// allFixtures returns a sorted list of all fixtues defined in the bundle.
+func allFixtures(scfg *StaticConfig) []*testing.FixtureInstance {
+	var fixtures []*testing.FixtureInstance
+	for _, t := range scfg.registry.AllFixtures() {
+		fixtures = append(fixtures, t)
+	}
+	sort.Slice(fixtures, func(i, j int) bool {
+		return fixtures[i].Name < fixtures[j].Name
+	})
+	return fixtures
 }
 
 // StaticConfig contains configurations unique to a test bundle.

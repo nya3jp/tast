@@ -25,6 +25,7 @@ const (
 	modeRPC mode = iota
 	modeDumpTests
 	modeRPCTCP
+	modeDumpFixtures
 )
 
 type dumpFormat int
@@ -57,6 +58,7 @@ func readArgs(clArgs []string, stderr io.Writer) (*parsedArgs, error) {
 
 	dump := flags.Bool("dumptests", false, "dump all tests as a JSON-marshaled array of testing.Test structs")
 	exportMetadata := flags.Bool("exportmetadata", false, "export all test metadata as a protobuf-marshaled message")
+	exportFixtureMetadata := flags.Bool("exportfixturemetadata", false, "export all fixture metadata as a protobuf-marshaled message")
 	rpc := flags.Bool("rpc", false, "run gRPC server")
 	rpctcp := flags.Bool("rpctcp", false, "run gRPC server listening on TCP. Sample usage:\n"+
 		"  cros -rpctcp -port 4444 -handshake [HANDSHAKE_BASE64]")
@@ -76,6 +78,9 @@ func readArgs(clArgs []string, stderr io.Writer) (*parsedArgs, error) {
 	}
 	if *exportMetadata {
 		return &parsedArgs{mode: modeDumpTests, dumpFormat: dumpFormatProto}, nil
+	}
+	if *exportFixtureMetadata {
+		return &parsedArgs{mode: modeDumpFixtures, dumpFormat: dumpFormatProto}, nil
 	}
 	if *rpc {
 		return &parsedArgs{mode: modeRPC}, nil

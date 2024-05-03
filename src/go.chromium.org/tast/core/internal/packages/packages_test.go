@@ -76,3 +76,28 @@ func TestSame(t *testing.T) {
 		}
 	}
 }
+
+func TestSrcPathInTastRepo(t *testing.T) {
+	for _, tc := range []struct {
+		fn       string
+		wantPath string
+	}{
+		{"abcde/platform/tast/src/go.chromium.org/tast/foo.Bar",
+			"src/go.chromium.org/tast/foo.Bar"},
+		{"abcee/platform/tast-tests/src/go.chromium.org/tast-tests",
+			"src/go.chromium.org/tast-tests"},
+		{"abcee/platform/tast-tests-private/src/go.chromium.org/tast-tests-private",
+			"src/go.chromium.org/tast-tests-private"},
+		{"abcee/partner-intel-private/src/go.chromium.org/partner-intel-private",
+			"src/go.chromium.org/partner-intel-private"},
+		{"abcee/abcd",
+			"abcee/abcd"},
+	} {
+		t.Run(tc.fn, func(t *testing.T) {
+			gotPath := packages.SrcPathInTastRepo(tc.fn)
+			if gotPath != tc.wantPath {
+				t.Errorf("Got name %q want %q", gotPath, tc.wantPath)
+			}
+		})
+	}
+}

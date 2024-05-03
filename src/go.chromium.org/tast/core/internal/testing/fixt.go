@@ -6,8 +6,14 @@ package testing
 
 import (
 	"context"
+	"fmt"
+	"io"
 	"regexp"
 	"time"
+
+	"google.golang.org/protobuf/proto"
+
+	"go.chromium.org/chromiumos/config/go/test/api"
 
 	"go.chromium.org/tast/core/errors"
 	"go.chromium.org/tast/core/internal/protocol"
@@ -146,7 +152,7 @@ type FixtureParam struct {
 	ExtraPrivateAttr []string
 }
 
-func (f *Fixture) instantiate(pkg string) ([]*FixtureInstance, error) {
+func (f *Fixture) instantiate(pkg, src string) ([]*FixtureInstance, error) {
 	if err := validateFixture(f); err != nil {
 		return nil, err
 	}
@@ -158,7 +164,7 @@ func (f *Fixture) instantiate(pkg string) ([]*FixtureInstance, error) {
 
 	fis := make([]*FixtureInstance, 0, len(ps))
 	for _, p := range ps {
-		fi, err := newFixtureInstance(f, pkg, &p)
+		fi, err := newFixtureInstance(f, pkg, src, &p)
 		if err != nil {
 			return nil, err
 		}
@@ -167,7 +173,7 @@ func (f *Fixture) instantiate(pkg string) ([]*FixtureInstance, error) {
 	return fis, nil
 }
 
-func newFixtureInstance(f *Fixture, pkg string, p *FixtureParam) (*FixtureInstance, error) {
+func newFixtureInstance(f *Fixture, pkg, src string, p *FixtureParam) (*FixtureInstance, error) {
 	name := f.Name
 	if p.Name != "" {
 		name += "." + p.Name
@@ -233,6 +239,7 @@ func newFixtureInstance(f *Fixture, pkg string, p *FixtureParam) (*FixtureInstan
 		Data:            data,
 		Vars:            f.Vars,
 		PrivateAttr:     privateAttr,
+		SrcFile:         src,
 	}, nil
 }
 
@@ -272,6 +279,7 @@ type FixtureInstance struct {
 	ServiceDeps     []string
 	Vars            []string
 	PrivateAttr     []string
+	SrcFile         string
 
 	// Bundle is the name of the test bundle this test belongs to.
 	// This field is empty initially, and later set when the test is added
@@ -462,4 +470,45 @@ type FixtureImpl interface {
 	//
 	// Note that TearDownTimeout is by default 0. Change it to have a valid context.
 	TearDown(ctx context.Context, s *FixtState)
+}
+
+// WriteFixturesAsProto exports fixture metadata in the protobuf format defined by infra.
+func WriteFixturesAsProto(w io.Writer, prefix string, fixtures []*FixtureInstance) error {
+	var fms []*api.TastFixtureMetadata
+	for _, src := range fixtures {
+		fms = append(fms, src.proto(prefix))
+	}
+	result := &api.TestHarnessMetadataList{
+		Values: []*api.TestHarnessMetadata{
+			{
+				MetadataType: &api.TestHarnessMetadata_TastMetadata_{
+					TastMetadata: &api.TestHarnessMetadata_TastMetadata{
+						TastFixtureMetadata: fms,
+					},
+				},
+			},
+		},
+	}
+	d, err := proto.Marshal(result)
+	if err != nil {
+		return errors.Wrap(err, "Failed to marshalize the proto")
+	}
+	_, err = w.Write(d)
+	return err
+}
+
+// proto converts test metadata of TestInstance into a protobuf message.
+func (f *FixtureInstance) proto(prefix string) *api.TastFixtureMetadata {
+	var owners []*api.Contact
+	for _, c := range f.Contacts {
+		owners = append(owners, &api.Contact{Email: c})
+	}
+	fm := &api.TastFixtureMetadata{
+		Id:           fmt.Sprintf("%s_%s", prefix, f.Name),
+		Owners:       owners,
+		BugComponent: &api.BugComponent{Value: f.BugComponent},
+		PathToFile:   f.SrcFile,
+		Parent:       f.Parent,
+	}
+	return fm
 }

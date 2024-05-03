@@ -110,9 +110,9 @@ func (r *Registry) AddService(s *Service) {
 }
 
 // AddFixture adds f to the registry.
-func (r *Registry) AddFixture(f *Fixture, pkg string) {
+func (r *Registry) AddFixture(f *Fixture, pkg, src string) {
 	r.RecordError(func() error {
-		fis, err := f.instantiate(pkg)
+		fis, err := f.instantiate(pkg, src)
 		if err != nil {
 			return err
 		}

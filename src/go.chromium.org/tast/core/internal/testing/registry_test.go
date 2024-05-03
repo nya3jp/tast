@@ -150,11 +150,11 @@ func TestAddTestConflictingPre(t *gotesting.T) {
 func TestAddFixtureDuplicateName(t *gotesting.T) {
 	const name = "foo"
 	reg := NewRegistry("bundle")
-	reg.AddFixture(&Fixture{Name: name}, "pkg")
+	reg.AddFixture(&Fixture{Name: name}, "pkg", "abc")
 	if errs := reg.Errors(); len(errs) > 0 {
 		t.Fatalf("Fixture registration failed: %v", errs)
 	}
-	reg.AddFixture(&Fixture{Name: name}, "pkg2")
+	reg.AddFixture(&Fixture{Name: name}, "pkg2", "abc")
 	if errs := reg.Errors(); len(errs) == 0 {
 		t.Error("Duplicated fixture registration succeeded unexpectedly")
 	}
@@ -181,7 +181,7 @@ func TestAddFixtureInvalidName(t *gotesting.T) {
 		{"ieee1394", true},
 	} {
 		reg := NewRegistry("bundle")
-		reg.AddFixture(&Fixture{Name: tc.name}, "pkg")
+		reg.AddFixture(&Fixture{Name: tc.name}, "pkg", "abc")
 		errs := reg.Errors()
 		if tc.ok && len(errs) > 0 {
 			t.Errorf("AddFixture(%q) failed: %v", tc.name, errs)
@@ -222,16 +222,16 @@ func TestAllFixtures(t *gotesting.T) {
 	}
 
 	for _, f := range allFixts {
-		reg.AddFixture(f, "pkg")
+		reg.AddFixture(f, "pkg", "abc")
 	}
 	if errs := reg.Errors(); len(errs) > 0 {
 		t.Fatal("Registration failed: ", errs)
 	}
 
 	want := map[string]*FixtureInstance{
-		"a": {Name: "a", Pkg: "pkg", Bundle: "bundle", Parent: TastRootRemoteFixtureName},
-		"b": {Name: "b", Pkg: "pkg", Bundle: "bundle", Parent: TastRootRemoteFixtureName},
-		"c": {Name: "c", Pkg: "pkg", Bundle: "bundle", Parent: TastRootRemoteFixtureName},
+		"a": {Name: "a", Pkg: "pkg", Bundle: "bundle", Parent: TastRootRemoteFixtureName, SrcFile: "abc"},
+		"b": {Name: "b", Pkg: "pkg", Bundle: "bundle", Parent: TastRootRemoteFixtureName, SrcFile: "abc"},
+		"c": {Name: "c", Pkg: "pkg", Bundle: "bundle", Parent: TastRootRemoteFixtureName, SrcFile: "abc"},
 	}
 	if diff := cmp.Diff(reg.AllFixtures(), want); diff != "" {
 		t.Errorf("Result mismatch (-got +want):\n%v", diff)
@@ -286,22 +286,22 @@ func TestAllFixturesParam(t *gotesting.T) {
 	}
 
 	for _, f := range allFixts {
-		reg.AddFixture(f, "pkg")
+		reg.AddFixture(f, "pkg", "abc")
 	}
 	if errs := reg.Errors(); len(errs) > 0 {
 		t.Fatal("Registration failed: ", errs)
 	}
 
 	want := map[string]*FixtureInstance{
-		"a.x": {Name: "a.x", Pkg: "pkg", Bundle: "bundle", Parent: TastRootRemoteFixtureName},
-		"a.y": {Name: "a.y", Pkg: "pkg", Bundle: "bundle", Parent: TastRootRemoteFixtureName},
-		"a.z": {Name: "a.z", Pkg: "pkg", Bundle: "bundle", Parent: TastRootRemoteFixtureName},
-		"b.x": {Name: "b.x", Pkg: "pkg", Bundle: "bundle", Parent: TastRootRemoteFixtureName},
-		"b.y": {Name: "b.y", Pkg: "pkg", Bundle: "bundle", Parent: TastRootRemoteFixtureName},
-		"b.z": {Name: "b.z", Pkg: "pkg", Bundle: "bundle", Parent: TastRootRemoteFixtureName},
-		"c.x": {Name: "c.x", Pkg: "pkg", Bundle: "bundle", Parent: TastRootRemoteFixtureName},
-		"c.y": {Name: "c.y", Pkg: "pkg", Bundle: "bundle", Parent: TastRootRemoteFixtureName},
-		"c.z": {Name: "c.z", Pkg: "pkg", Bundle: "bundle", Parent: TastRootRemoteFixtureName},
+		"a.x": {Name: "a.x", Pkg: "pkg", Bundle: "bundle", Parent: TastRootRemoteFixtureName, SrcFile: "abc"},
+		"a.y": {Name: "a.y", Pkg: "pkg", Bundle: "bundle", Parent: TastRootRemoteFixtureName, SrcFile: "abc"},
+		"a.z": {Name: "a.z", Pkg: "pkg", Bundle: "bundle", Parent: TastRootRemoteFixtureName, SrcFile: "abc"},
+		"b.x": {Name: "b.x", Pkg: "pkg", Bundle: "bundle", Parent: TastRootRemoteFixtureName, SrcFile: "abc"},
+		"b.y": {Name: "b.y", Pkg: "pkg", Bundle: "bundle", Parent: TastRootRemoteFixtureName, SrcFile: "abc"},
+		"b.z": {Name: "b.z", Pkg: "pkg", Bundle: "bundle", Parent: TastRootRemoteFixtureName, SrcFile: "abc"},
+		"c.x": {Name: "c.x", Pkg: "pkg", Bundle: "bundle", Parent: TastRootRemoteFixtureName, SrcFile: "abc"},
+		"c.y": {Name: "c.y", Pkg: "pkg", Bundle: "bundle", Parent: TastRootRemoteFixtureName, SrcFile: "abc"},
+		"c.z": {Name: "c.z", Pkg: "pkg", Bundle: "bundle", Parent: TastRootRemoteFixtureName, SrcFile: "abc"},
 	}
 	if diff := cmp.Diff(reg.AllFixtures(), want); diff != "" {
 		t.Errorf("Result mismatch (-got +want):\n%v", diff)

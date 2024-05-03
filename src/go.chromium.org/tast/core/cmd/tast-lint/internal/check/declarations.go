@@ -28,7 +28,9 @@ const (
 	badDescMsg        = `Desc should be capitalized phrases without trailing punctuation, e.g. "Checks that foo is bar"`
 
 	noContactMsg          = `Contacts field should exist to list owners' email addresses`
+	noContactsPresentMsg  = `Contacts field should not be empty`
 	nonLiteralContactsMsg = `Contacts field should be an array literal of syntactically valid email address`
+	googleDotOrgMsg       = `Contacts field should not contain the likely typos of "google.org" or "chromium.com"`
 
 	noBugComponentMsg  = `BugComponent field should be specified`
 	nonBugComponentMsg = `BugComponent does not match 'b:<component_id>' syntax`
@@ -174,6 +176,7 @@ func verifyAddFixtureCall(fs *token.FileSet, call *ast.CallExpr, fix bool) []*Is
 	issues = append(issues, verifyVars(fs, fields)...)
 	issues = append(issues, verifyDesc(fs, fields, call, fix)...)
 	issues = append(issues, verifyContacts(fs, fields, call)...)
+	issues = append(issues, verifyBugComponent(fs, fields, call)...)
 	return issues
 }
 
@@ -305,6 +308,13 @@ func verifyContacts(fs *token.FileSet, fields entityFields, call *ast.CallExpr) 
 	}
 
 	var issues []*Issue
+	if len(comp.Elts) == 0 {
+		issues = append(issues, &Issue{
+			Pos:  fs.Position(comp.Pos()),
+			Msg:  noContactsPresentMsg,
+			Link: testRegistrationURL,
+		})
+	}
 	for _, el := range comp.Elts {
 		contact, ok := toString(el)
 		if !ok {
@@ -322,6 +332,19 @@ func verifyContacts(fs *token.FileSet, fields entityFields, call *ast.CallExpr) 
 				Msg:  nonLiteralContactsMsg,
 				Link: testRegistrationURL,
 			})
+			continue
+		}
+
+		// Discourage authors from mistyping google or chromium domains.
+		badDomains := []string{"@google.org", "@chromium.com"}
+		for _, badDomain := range badDomains {
+			if strings.HasSuffix(contact, badDomain) {
+				issues = append(issues, &Issue{
+					Pos:  fs.Position(el.Pos()),
+					Msg:  googleDotOrgMsg,
+					Link: testRegistrationURL,
+				})
+			}
 		}
 	}
 	return issues

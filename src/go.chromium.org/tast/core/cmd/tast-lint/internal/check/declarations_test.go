@@ -185,6 +185,18 @@ func TestDeclarationsContacts(t *testing.T) {
 	testing.AddTest(&testing.Test{
 		Func: DoStuff,
 		Desc: "This description is fine",
+		Contacts: []string{},
+		BugComponent: "b:1034625",
+	})`, []string{declTestPath + ":7:13: " + noContactsPresentMsg}}, {`
+	testing.AddTest(&testing.Test{
+		Func: DoStuff,
+		Desc: "This description is fine",
+		Contacts: []string{"m@google.org"},
+		BugComponent: "b:1034625",
+	})`, []string{declTestPath + ":7:22: " + googleDotOrgMsg}}, {`
+	testing.AddTest(&testing.Test{
+		Func: DoStuff,
+		Desc: "This description is fine",
 		Contacts: []string{"me@chromium.org"},
 		BugComponent: "b:1034625",
 	})`, nil}, {`
@@ -617,6 +629,7 @@ func init() {
 		Name:            "fixtA",
 		Desc:            "Valid description",
 		Contacts:        []string{"me@chromium.org"},
+		BugComponent:    "b:1234",
 		Impl:            &fakeFixture{param: "A"},
 		SetUpTimeout:    fixtureTimeout,
 		TearDownTimeout: fixtureTimeout,
@@ -627,6 +640,7 @@ func init() {
 		Name:     "anotherFixt",
 		Desc:     "Valid description",
 		Contacts: []string{"me@chromium.org"},
+		BugComponent:    "b:1234",
 	})
 }
 `
@@ -644,11 +658,12 @@ func init() {
 		Impl: &fakeFixture{param: "A"},
 	})
 	testing.AddFixture(&testing.Fixture{
-		Name:     "fixtB",
-		Contacts: contacts,
-		Desc:     desc,
-		Impl:     &fakeFixture{param: "B"},
-		Vars:     vars,
+		Name:         "fixtB",
+		Contacts:     contacts,
+		BugComponent: "badComp",
+		Desc:         desc,
+		Impl:         &fakeFixture{param: "B"},
+		Vars:         vars,
 	})
 }
 `
@@ -657,8 +672,10 @@ func init() {
 	verifyIssues(t, issues, []string{
 		declTestPath + ":4:21: " + noDescMsg,
 		declTestPath + ":4:21: " + noContactMsg,
-		declTestPath + ":10:13: " + nonLiteralContactsMsg,
-		declTestPath + ":11:13: " + nonLiteralDescMsg,
-		declTestPath + ":13:13: " + nonLiteralVarsMsg,
+		declTestPath + ":4:21: " + noBugComponentMsg,
+		declTestPath + ":10:17: " + nonLiteralContactsMsg,
+		declTestPath + ":11:17: badComp " + nonBugComponentMsg,
+		declTestPath + ":12:17: " + nonLiteralDescMsg,
+		declTestPath + ":14:17: " + nonLiteralVarsMsg,
 	})
 }

@@ -755,6 +755,228 @@ Preconditions, predecessor of fixtures, are not recommended for new tests.
 [example of a test use a parameterized fixture with a factory]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/go.chromium.org/tast-tests/cros/local/bundles/cros/meta/local_fixt_param.go
 
 
+## Hooks/Remote Root Fixture
+Tast [`remote root fixture`] which allows test writers to add hooks that
+affect every test (except test with Pre-Condition) in a Tast session.
+Those hooks can perform different functions such as checking DUT state
+between tests.
+
+All tests and fixtures will depend on the [`remote root fixture`] directly
+or indirectly. The Setup phase of the [`remote root fixture`] which will
+be run at the beginning of the execution of a Tast bundle. It can allow
+different hooks to be run during different phases of the remote root
+fixture: Setup, PreTest,  Reset, PostTest, and TearDown. Hook writers
+can do something applicable to all tests.
+
+Tast's fixture tree is constructed separately while running
+tests for different bundles. Since a Tast session may include tests
+from different bundles, the setup for the root fixture may be invoked
+multiple times during a Tast session.  Also, if the retries flag of
+Tast is set to be greater than zero, Tast will need to re-construct
+and run the fixture tree. Hence, the setup of the root fixture will
+be invoked again.
+
+The root fixture will allow us to add framework level setups and
+monitors. For example, we can start servod on the labstation at the
+beginning of the running a bundle so that all tests in the bundle
+can use servo.  It will also allow test writers to create hooks that
+affect every test in a Tast session. It will allow users to create a
+customized environment for each test suite.
+
+### Adding a Hook
+All hooks should be in the [`hooks directory`]. Hooks can depend on
+remote and common Tast libraries. On the other hand, tests or fixtures
+should not have any dependencies on hooks.
+
+
+#### addHook
+The function addHook for users to add a hook to the root fixture. It is
+intentionally not to export this function’s symbol so that all hooks and
+the [`remote root fixture`] will be created in the same package. This will
+allow Tast team to have better control what hooks are allowed.
+
+#### HookImpl
+HookImpl is an interface that users have to implement so that the
+root fixture can invoke the corresponding action in each step of a
+fixture process.
+
+```go
+type HookImpl interface {
+        // SetUp will be called during root fixture Setup.
+        SetUp(ctx context.Context, s *HookState) error
+        // Reset will be called during root fixture Reset.
+        Reset(ctx context.Context) error
+        // PreTest will be called during root fixture PreTest.
+        PreTest(ctx context.Context, s *HookTestState) error
+        // PostTest will be called during root fixture PostTest.
+        PostTest(ctx context.Context, s *HookTestState) error
+        // TearDown will be called during root fixture TearDown.
+        TearDown(ctx context.Context, s *HookState) error
+}
+```
+
+#### orderedHooks
+To avoid non-deterministic order of the execution, a variable
+“orderHooks” will be used to maintain the order of execution. To add
+a new hook, the author needs to add the name of the hook to the list.
+Otherwise, the hook will not be executed. The order of the execution
+On the other hand, PostTest and TearDown will be executed in the
+reverse order of this list.
+
+```go
+var orderedHooks []string
+```
+
+#### HookState
+HookState includes certain fixture state information that is available
+for each hook to be used during Setup and Teardown.
+
+#### HookTestState
+HookTestState includes fixture state information that is available for
+each hook to be used during PreTest and PostTest.
+
+#### Service Dependencies
+Since the [`remote root fixture`] is a remote fixture, all hooks are
+running on the host side. Some hooks may need to use GPRC services that
+are running on the DUT to perform actions on the DUT. Users can add
+ServiceDeps to the root fixture if their hooks need GPRC services.
+
+#### Code Review
+Since all hooks affect the entire Tast session, they affect all tests.
+Therefore, any additions and changes of hooks will require approval
+from a member of the Tast team. Also, at least one expert reviewer will
+be needed for each hook related CL.
+
+### Example of Adding A Hook
+Here is a [`hook example`].
+
+
+#### Add Hook
+All hooks should be added in the “init” function of a file.
+
+```go
+func init() {
+    addHook(&Hook{
+        Name:         "exampleHook",
+        Desc:         "Demonstrate how to use hook",
+        Contacts:     []string{"tast-owner@google.com"},
+        BugComponent: "b:1034522",
+        Impl:         &testhook{},
+    })
+}
+```
+
+#### Create A Runtime Variable
+In the [`hook example`], the hook will use a Tast global variable to
+determine whether actions should be performed. This variable is for
+this example only.
+
+```go
+var shouldRun = testing.RegisterVarString(
+    "hooks.example.shouldrun",
+    "",
+    "A variable to decide whether example hook should run",
+)
+```
+
+#### Implement The Hook
+The implementation of a hook needs to include five functions:
+Setup, PreTest, PostTest, Reset, and Teardown. In this example,
+all five functions  will only perform action if the variable
+hooks.example.shouldrun is set to true.
+
+```go
+type testhook struct {
+    shouldRun bool
+}
+
+// SetUp will be called during root fixture Setup.
+func (h *testhook) SetUp(ctx context.Context, s *HookState) error {
+    h.shouldRun = shouldRun.Value() == "true"
+    if !h.shouldRun {
+        return nil
+    }
+    testing.ContextLog(ctx, "testhook Setup")
+    return nil
+}
+
+// Reset will be called during root fixture Reset.
+func (h *testhook) Reset(ctx context.Context) error {
+    if !h.shouldRun {
+        return nil
+    }
+    testing.ContextLog(ctx, "testhook Reset")
+    return nil
+}
+
+// PreTest will be called during root fixture PreTest.
+func (h *testhook) PreTest(ctx context.Context, s *HookTestState) error {
+    if !h.shouldRun {
+            return nil
+    }
+    testing.ContextLog(ctx, "testhook PreTest: ", s.TestName())
+    return nil
+}
+
+// PostTest will be called during root fixture PostTest.
+func (h *testhook) PostTest(ctx context.Context, s *HookTestState) error {
+    if !h.shouldRun {
+        return nil
+    }
+    testing.ContextLog(ctx, "testhook PostTest: ", s.TestName())
+    return nil
+}
+
+// TearDown will be called during root fixture TearDown.
+func (h *testhook) TearDown(ctx context.Context, s *HookState) error {
+    if !h.shouldRun {
+        return nil
+    }
+    testing.ContextLog(ctx, "testhook TearDown")
+    return nil
+}
+```
+
+#### Add the Example Hook To the Execution List
+New hook will not be executed until it is added to the list
+“orderedHooks” of the [`remote root fixture`].
+
+
+```go
+var orderedHooks []string = []string{
+    "exampleHook",
+}
+```
+
+#### Turning On Example Hook During Test
+This example show how to turn on the example hook with Tast command line.
+
+```
+tast run -var=hooks.example.shouldrun=true <dut> <tests>
+```
+
+### Policy
+Since hooks can affect every test and fixture in a Tast session, we need
+to be careful about what hooks can go in the remote root fixture. Here
+is the policy that we have at this moment. The policy may be revised
+in future.
+
+* All hook related CLs have to be reviewed and approved by Tast team members.
+
+* An 1-pager should be sent to Tast team to review in advance.
+
+* For more complicated hooks, proper design documents should be reviewed.
+
+* Most hooks should be guarded by Tast global runtime variables which means
+  that most hooks should only be triggered when the corresponding runtime
+  variables are set.
+
+
+[`remote root fixture`]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/go.chromium.org/tast-tests/cros/remote/hooks/root_fixture.go
+[`hook example`]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/go.chromium.org/tast-tests/cros/remote/hooks/example.go
+[`hooks directory`]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/HEAD/src/go.chromium.org/tast-tests/cros/remote/hooks
+
+
 ## Common testing patterns
 
 ### Table-driven tests

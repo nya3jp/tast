@@ -125,6 +125,7 @@ var softwareFeatureDefs = map[string]string{
 	// Ignore reven board as reven board is not a VM and does not have a VPD, and cannot use enroll fixtures.
 	"flex_hwis":                  `flex_internal && "board:reven-vmtest"`,
 	"fwupd":                      "fwupd",                                                                     // have sys-apps/fwupd installed.
+	"gaia":                       "chrome_internal",                                                           // same as "chrome_internal"; depends on chrome login through Google account service
 	"ghostscript":                "postscript",                                                                // Ghostscript and dependent packages available
 	"google_virtual_keyboard":    "chrome_internal && internal && !moblab",                                    // doesn't work on Moblab: https://crbug.com/949912
 	"gpu_sandboxing":             `!"board:amd64-generic" && !"board:reven-vmtest" && !"betty" && !"tast_vm"`, // no GPU sandboxing on VMs: https://crbug.com/914688

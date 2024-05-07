@@ -246,6 +246,10 @@ Tests in this group are not used for build verification.
 				Name: "graphics_stress",
 				Desc: `Indicates that this test is part of the graphics stress testing.`,
 			},
+			{
+				Name: "graphics_tiled_satlab_perbuild",
+				Desc: `Indicates that this test should run per-build on a satlab with tiled displays.`,
+			},
 		},
 	},
 	{

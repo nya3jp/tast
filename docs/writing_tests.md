@@ -389,51 +389,27 @@ max time from various executions.
 
 For any function with a corresponding clean-up function, prefer using the [defer]
 statement to keep the two function calls close together (see the
-[Startup and shutdown](#startup-and-shutdown) section for detail):
+[Startup and shutdown](#startup-and-shutdown) section for detail).
+
+Create a separate clean up context using [ctxutil.Shorten] to make sure to reserve
+enough time for your deferred functions to run even when the test context timed out.
 ```go
-a := pkga.NewA(ctx, ...)
-defer func(ctx context.Context) {
-  if err := a.CleanUp(ctx); err != nil {
-    // ...
-  }
-}(ctx)
-```
-Before creating `A`, make sure that the clean-up function has sufficient time to
-run:
-```go
-ctxForCleanUpA := ctx
-ctx, cancel := ctxutil.Shorten(ctx, pkga.TimeForCleanUpA)
+cleanupCtx := ctx
+ctx, cancel := ctxutil.Shorten(ctx, timeForCleanup)
 defer cancel()
-a := pkga.NewA(ctx, ...)
+...
+service := createService(ctx, ...)
 defer func(ctx context.Context) {
-  if err := a.CleanUp(ctx); err != nil {
-    // ...
+  if err := service.Close(ctx); err != nil {
+    s.Error("Failed to close service: ", err)
   }
-}(ctxForCleanUpA)
+}(cleanupCtx)
 ```
 
-It [ctxutil.Shorten]s `ctx` before calling `pkga.NewA` to ensure that after
-`pkga.NewA()`, `a.CleanUp()` still has time to perform the clean-up. Note that
-`pkga` should provide `TimeForCleanUpA` constant for its callers to reserve time
-for `a.CleanUp()`.
-Also, instead of assigning the shortened `ctx` to `sCtx`, it copies the original
-`ctx` to `ctxForCleanUpA` before shortening it. It is because we want to use
-`ctx` for the main logic and leave the longer name for the clean-up logic.
-
-Another approach was used but discouraged now:
-```go
-a := pkga.NewA(ctx, ...)
-defer func(ctx context.Context) {
-  if err := a.CleanUp(ctx); err != nil {
-    // ...
-  }
-}(ctx)
-ctx, cancel := a.ReserveForCleanUp(ctx)
-defer cancel()
-```
-The reason why it is discouraged is because it needs `pkga.NewA()` to shorten
-`ctx` at the beginning of the function to ensure that it leaves enough time for
-`a.CleanUp()` to call.
+Make sure you catch and report errors in cleanup functions. You can use
+`s.Error` to continue running the current deferred function and `return`
+if your cleanup function needs to exit early. Avoid using `s.Fatal` in
+deferred functions.
 
 [ctxutil.Shorten]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/ctxutil#Shorten
 
@@ -1946,7 +1922,7 @@ cl, err := rpc.Dial(ctx, s.DUT(), s.RPCHint())
 if err != nil {
     s.Fatal("Failed to connect to the RPC service on the DUT: ", err)
 }
-defer cl.Close(ctx)
+defer cl.Close(cleanupCtx)
 
 bc := pb.NewBootServiceClient(cl.Conn)
 
@@ -2024,11 +2000,15 @@ DUT as the input parameter.
 // Tast command line:
 // tast run -build=true -companiondut=cd1:dut1 dut0 meta.CompanionDUTs
 func CompanionDUTs(ctx context.Context, s *testing.State) {
+	cleanupCtx := ctx
+	ctx, cancel := ctxutil.Shorten(ctx, time.Second*30)
+	defer cancel()
+
 	cl, err := rpc.Dial(ctx, s.DUT(), s.RPCHint(), "cros")
 	if err != nil {
 		s.Fatal("Failed to connect to the RPC service on the DUT: ", err)
 	}
-	defer cl.Close(ctx)
+	defer cl.Close(cleanupCtx)
 
 	companionDUT := s.CompanionDUT("cd1")
 	if companionDUT == nil {
@@ -2038,7 +2018,7 @@ func CompanionDUTs(ctx context.Context, s *testing.State) {
 if err != nil {
 		s.Fatal("Failed to connect to the RPC service on the companion DUT: ", err)
 	}
-	defer companionCl.Close(ctx)
+	defer companionCl.Close(cleanupCtx)
 }
 ```
 

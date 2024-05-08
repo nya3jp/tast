@@ -261,7 +261,7 @@ func StartServo(ctx context.Context, servoHostPort, keyFile, keyDir string) (hos
 		logging.Infof(ctx, "Opening Servo SSH connection to %s", sopt.Hostname)
 		hst, err := ssh.New(ctx, &sopt)
 		if err != nil {
-			return nil, err
+			return nil, errors.Wrap(err, "failed to open SSH connection to labstation")
 		}
 		defer hst.Close(ctx)
 
@@ -280,12 +280,15 @@ func StartServo(ctx context.Context, servoHostPort, keyFile, keyDir string) (hos
 				MsgLineStart: msgLineStart,
 			}, nil
 		}
-		hst.CommandContext(ctx, "start", "servod", fmt.Sprintf("PORT=%d", port)).Output()
+		if out, err := hst.CommandContext(ctx, "start", "servod",
+			fmt.Sprintf("PORT=%d", port)).CombinedOutput(); err != nil {
+			return nil, errors.Wrapf(err, "failed to start servod: %s", string(out))
+		}
 		logging.Infof(ctx, "Start servod at port %d at servo host %s:%d", port, host, sshPort)
 		// Provide servod up to 120 second to prepare, otherwise it will time out.
 		logging.Infof(ctx, "Wait for servod to be ready")
 		if _, err := hst.CommandContext(ctx, "servodtool", "instance", "wait-for-active", "--timeout", "120", "-p", strconv.Itoa(port)).Output(); err != nil {
-			return nil, err
+			return nil, errors.Wrap(err, "failed to check if servod is ready")
 		}
 	}
 	return &HostInfo{

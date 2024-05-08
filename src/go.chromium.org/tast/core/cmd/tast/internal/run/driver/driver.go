@@ -58,7 +58,8 @@ func New(ctx context.Context, cfg *config.Config, rawTarget, role string) (*Driv
 	servoHost := target.ServoHost(ctx, role, cfg.TestVars())
 	servoHostInfo, err := servo.StartServo(ctx, servoHost, cfg.ProtoSSHConfig().GetKeyFile(), cfg.ProtoSSHConfig().GetKeyDir())
 	if err != nil {
-		logging.Infof(ctx, "Failed to connect to servo host %s", target.ServoHost(ctx, role, cfg.TestVars()))
+		logging.Infof(ctx, "Failed to connect to servo host %s: %v",
+			target.ServoHost(ctx, role, cfg.TestVars()), err)
 	}
 	// Use nil as connection cache if we should not connect to the target.
 	if !config.ShouldConnect(cfg.Target()) {

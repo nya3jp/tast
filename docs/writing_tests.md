@@ -859,7 +859,7 @@ func init() {
     addHook(&Hook{
         Name:         "exampleHook",
         Desc:         "Demonstrate how to use hook",
-        Contacts:     []string{"tast-owner@google.com"},
+        Contacts:     []string{"tast-core@google.com"},
         BugComponent: "b:1034522",
         Impl:         &testhook{},
     })

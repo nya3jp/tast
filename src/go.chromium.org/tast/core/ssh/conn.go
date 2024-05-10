@@ -6,6 +6,8 @@ package ssh
 
 import (
 	"context"
+	"crypto/tls"
+	"crypto/x509"
 	"fmt"
 	"io/ioutil"
 	"net"
@@ -220,10 +222,22 @@ func New(ctx context.Context, o *Options) (*Conn, error) {
 		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
 	}
 
+	isCloudbot := false
+	if id, found := os.LookupEnv("SWARMING_BOT_ID"); found && strings.HasPrefix(id, "cloudbots-") {
+		isCloudbot = true
+	}
 	for i := 0; i < o.ConnectRetries+1; i++ {
 		start := time.Now()
 		var cl *ssh.Client
-		if cl, err = connectSSH(ctx, o.Hostname, o.ProxyCommand, cfg); err == nil {
+		if isCloudbot {
+			if o.WarnFunc != nil {
+				o.WarnFunc(fmt.Sprintf("SSH to client through cloudbot proxy"))
+			}
+			cl, err = connectCloudBotsSSH(ctx, o.Hostname, cfg)
+		} else {
+			cl, err = connectSSH(ctx, o.Hostname, o.ProxyCommand, cfg)
+		}
+		if err == nil {
 			return &Conn{cl, o.Platform}, nil
 		}
 		if ctx.Err() != nil {
@@ -277,6 +291,97 @@ func connectSSH(ctx context.Context, hostPort, proxyCommand string, cfg *ssh.Cli
 		return nil, err
 	}
 	return cl, nil
+}
+
+// connectCloudBotsSSH attempts to connect to host from CloudBots through proxy
+// server.
+func connectCloudBotsSSH(ctx context.Context, host string, sshConfig *ssh.ClientConfig) (*ssh.Client, error) {
+	var sshClient *ssh.Client
+	var proxyConn *tls.Conn
+	if err := doAsync(ctx, func() error {
+		tlsConfig, err := cloudBotsTLSConfig(host)
+		if err != nil {
+			return fmt.Errorf("connectCloudBotsSSH fail to get tlsConfig: %w", err)
+		}
+		proxyAddr, err := cloudBotsProxyAddress()
+		if err != nil {
+			return fmt.Errorf("connectCloudBotsSSH fail to get proxy address: %w", err)
+		}
+		// Connect to proxy server through tls
+		proxyConn, err = tls.Dial("tcp", proxyAddr, tlsConfig)
+		if err != nil {
+			return fmt.Errorf("connectCloudBotsSSH fail to connect to proxy: %w", err)
+		}
+
+		// Connect to host through proxy
+		c, chans, reqs, err := ssh.NewClientConn(proxyConn, proxyAddr, sshConfig)
+		if err != nil {
+			return fmt.Errorf("lient fail to get NewClientConn: %w", err)
+		}
+		sshClient, err = ssh.NewClient(c, chans, reqs), nil
+		if err != nil {
+			return fmt.Errorf("connectCloudBotsSSH fail to get NewClient: %w", err)
+		}
+		return nil
+	}, func() {
+		if proxyConn != nil {
+			proxyConn.Close()
+		}
+		if sshClient != nil {
+			sshClient.Close()
+		}
+	}); err != nil {
+		return nil, err
+	}
+	return sshClient, nil
+}
+
+// cloudBotsTLSConfig parses cloudbots env var and returns tls config.
+func cloudBotsTLSConfig(hostname string) (*tls.Config, error) {
+	var certPath, labDomain string
+	var ok bool
+	if certPath, ok = os.LookupEnv("CLOUDBOTS_CA_CERTIFICATE"); !ok {
+		return nil, errors.New("CLOUDBOTS_CA_CERTIFICATE env variable not found")
+	}
+	if labDomain, ok = os.LookupEnv("CLOUDBOTS_LAB_DOMAIN"); !ok {
+		return nil, errors.New("CLOUDBOTS_PROXY_ADDRESS env variable not found")
+	}
+	servername := hostname
+	if i := strings.Index(hostname, ":"); i > 0 {
+		// tlsConfig.ServerName can only take FQDN. No port allowed
+		servername = hostname[:i]
+		port := hostname[i+1:]
+		if port != "22" {
+			return nil, fmt.Errorf("cloudbots tls does not support non 22 port. port=%s", port)
+		}
+	}
+	if len(servername) < len(labDomain) || servername[len(servername)-len(labDomain):] != labDomain {
+		// Add labDomain to servername for FQDN
+		servername = fmt.Sprintf("%s.%s", servername, labDomain)
+	}
+	pem, err := os.ReadFile(certPath)
+	if err != nil {
+		return nil, err
+	}
+	rootCAs := x509.NewCertPool()
+	if ok = rootCAs.AppendCertsFromPEM(pem); !ok {
+		return nil, fmt.Errorf("error appending root certificate %q", certPath)
+	}
+	tlsConfig := &tls.Config{
+		RootCAs:            rootCAs,
+		ServerName:         servername,
+		InsecureSkipVerify: false,
+	}
+	return tlsConfig, nil
+}
+
+// cloudBotsProxyAddress returns proxy endpoint from cloudbots env var.
+func cloudBotsProxyAddress() (string, error) {
+	proxyAddr, found := os.LookupEnv("CLOUDBOTS_PROXY_ADDRESS")
+	if !found {
+		return "", errors.New("CLOUDBOTS_PROXY_ADDRESS env variable not found")
+	}
+	return proxyAddr, nil
 }
 
 // Close closes the underlying connection to the host.

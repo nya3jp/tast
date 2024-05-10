@@ -2344,6 +2344,11 @@ from other existing groups (or use this group standalone).
 		Contacts: []string{"cros-enterprise-security@google.com"},
 		Desc:     `A group of ChromeOS Enterprise XDR tests that use eBPF.`,
 	},
+	{
+		Name:     "chrome_uprev_cbx",
+		Contacts: []string{"chromeos-velocity@google.com", "alvinjia@google.com"},
+		Desc:     `A group of tests that are running on cbx device in Chrome uprev CQ.`,
+	},
 }
 
 // validGroupMap is the name-keyed map of validGroups.

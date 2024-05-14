@@ -223,6 +223,15 @@ func TestCheckKnownAttrs(t *testing.T) {
 		{
 			attrs: []string{"group:crospts", "crospts_arm64"},
 		},
+		{
+			attrs: []string{"group:sw_gates_virt", "sw_gates_virt_enabled"},
+		},
+		{
+			attrs: []string{"group:sw_gates_virt", "sw_gates_virt_kpi"},
+		},
+		{
+			attrs: []string{"group:sw_gates_virt", "sw_gates_virt_stress"},
+		},
 
 		// Invalid cases.
 		{

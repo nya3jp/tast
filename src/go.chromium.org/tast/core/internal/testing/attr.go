@@ -2349,6 +2349,25 @@ from other existing groups (or use this group standalone).
 		Contacts: []string{"chromeos-velocity@google.com", "alvinjia@google.com"},
 		Desc:     `A group of tests that are running on cbx device in Chrome uprev CQ.`,
 	},
+	{
+		Name:     "sw_gates_virt",
+		Contacts: []string{"crosvm-core@google.com"},
+		Desc:     `A group of tests that belong to the virtualization part of the Platform enablement SW gates.`,
+		Subattrs: []*attr{
+			{
+				Name: "sw_gates_virt_enabled",
+				Desc: `Enabled tests.`,
+			},
+			{
+				Name: "sw_gates_virt_kpi",
+				Desc: `Meets KPIs tests.`,
+			},
+			{
+				Name: "sw_gates_virt_stress",
+				Desc: `Stress tests.`,
+			},
+		},
+	},
 }
 
 // validGroupMap is the name-keyed map of validGroups.

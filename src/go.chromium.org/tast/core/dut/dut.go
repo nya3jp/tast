@@ -231,7 +231,7 @@ func (d *DUT) RebootWithCommand(ctx context.Context, cmd string, args ...string)
 
 	// Run the reboot command with a short timeout. This command can block for long time
 	// if the network interface of the DUT goes down before the SSH command finishes.
-	rebootCtx, cancel := context.WithTimeout(ctx, 3*time.Second)
+	rebootCtx, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel()
 	d.Conn().CommandContext(rebootCtx, cmd, args...).Run() // ignore the error
 
@@ -240,7 +240,7 @@ func (d *DUT) RebootWithCommand(ctx context.Context, cmd string, args ...string)
 		// blocking for long time. For example, the network interface of the DUT
 		// might go down in the middle of readBootID and it might block for
 		// long time.
-		ctx, cancel := context.WithTimeout(ctx, 3*time.Second)
+		ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
 		defer cancel()
 		if err := d.WaitConnect(ctx); err != nil {
 			return errors.Wrap(err, "failed to connect to DUT")

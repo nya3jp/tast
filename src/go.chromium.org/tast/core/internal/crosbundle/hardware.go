@@ -212,6 +212,21 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		return regexp.MustCompile(`(?m)^E: ID_MODEL=Hammer$`).Match(hammer)
 	}
 
+	checkRoach := func() bool {
+		i2cPath, err := crosConfig("/detachable-base", "i2c-path")
+		if err != nil || i2cPath == "" {
+			return false
+		}
+		_, err = os.Stat(filepath.Join("/sys/bus/i2c/devices/", i2cPath))
+		if err != nil {
+			if !os.IsNotExist(err) {
+				logging.Infof(ctx, "Failed to get file stat: %v", err)
+			}
+			return false
+		}
+		return true
+	}
+
 	if formFactorEnum, ok := configpb.HardwareFeatures_FormFactor_FormFactorType_value[formFactor]; ok {
 		features.FormFactor.FormFactor = configpb.HardwareFeatures_FormFactor_FormFactorType(formFactorEnum)
 	} else if formFactor == "CHROMEBOOK" {
@@ -238,8 +253,7 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 	case configpb.HardwareFeatures_FormFactor_DETACHABLE:
 		// When the dut is a detachable, check whether hammer exists
 		// to determine if a removable keyboard is connected.
-		hasHammer := checkHammer()
-		if hasHammer {
+		if checkHammer() || checkRoach() {
 			features.Keyboard.KeyboardType = configpb.HardwareFeatures_Keyboard_DETACHABLE
 			features.Touchpad.TouchpadType = configpb.HardwareFeatures_Touchpad_DETACHABLE
 		} else {

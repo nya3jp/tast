@@ -1306,10 +1306,10 @@ for details) in the Tast [results dir]. The above example will generate:
 
 ### Logged in users home directory
 
-Within the scope of a test, it might be useful to put files in the users
-Downloads directory or My Files directory. To achieve there are 2 helper methods
-that calculate the logged in user's hash and return the path to either Downloads
-or MyFiles. To use these, do the following:
+Within the scope of a test, it might be useful to put files in the user's
+`Downloads` or `MyFiles` directory. To achieve this, there are 2 helper methods
+that calculate the logged in user's hash and return the path to either
+`Downloads` or `MyFiles`. To use these, do the following:
 
 ```go
 import "go.chromium.org/tast-tests/cros/local/cryptohome"
@@ -1320,9 +1320,10 @@ if err != nil {
 }
 ```
 
-An alternative `MyFilesPath` if you require the My Files location directly.
-Please avoid using the `/home/chronos/user` path directly as these are being
-deprecated.
+There is an alternative `MyFilesPath` if you require the `MyFiles` location
+directly. Please avoid using the `/home/chronos/user` path directly as these are
+being deprecated.
+
 ## Output files
 
 Tests can write output files that are automatically copied to the host system

@@ -21,6 +21,8 @@ import (
 	"github.com/docker/docker/client"
 	"google.golang.org/grpc"
 
+	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
+
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/infra/proto/go/satlabrpcserver"
 	"go.chromium.org/tast/core/errors"
@@ -209,15 +211,16 @@ func NewProxy(ctx context.Context, servoHostPort, keyFile, keyDir string) (newPr
 
 // HostInfo Stores servo related host information.
 type HostInfo struct {
-	Host         string // Host stores the servo host name.
-	Port         int    // Port stores the servo port number.
-	SSHPort      int    // SSHPort stores servo ssh port number.
-	DockerHost   bool   // DockerHost indicates whether the servo host is a docker container.
-	MsgLineStart int64  // MsgLineStart store the starting line of /var/log/messages.
+	Host           string // Host stores the servo host name.
+	Port           int    // Port stores the servo port number.
+	SSHPort        int    // SSHPort stores servo ssh port number.
+	DockerHost     bool   // DockerHost indicates whether the servo host is a docker container.
+	MsgLineStart   int64  // MsgLineStart stores the starting line of /var/log/messages.
+	ServoInitiated bool   // ServoInitiated indicate if servod is started by current process.
 }
 
 // StartServo start servod and verify every 2 second until it is ready. Add check to avoid repeated attempting.
-func StartServo(ctx context.Context, servoHostPort, keyFile, keyDir string) (hostInfo *HostInfo, retErr error) {
+func StartServo(ctx context.Context, servoHostPort, keyFile, keyDir string, dutTopology *labapi.Dut) (hostInfo *HostInfo, retErr error) {
 	if servoHostPort == "" {
 		return nil, nil
 	}
@@ -267,37 +270,56 @@ func StartServo(ctx context.Context, servoHostPort, keyFile, keyDir string) (hos
 
 		wcInfo, err := linuxssh.WordCount(ctx, hst, "/var/log/messages")
 		if err != nil {
-			logging.Infof(ctx, "Failed to get word code for /var/log/messages of servo host%s: %v", servoHostPort, err)
+			logging.Infof(ctx, "Failed to get word count for /var/log/messages of servo host %s: %v", servoHostPort, err)
 		}
 		msgLineStart = wcInfo.Lines
-		if _, err := hst.CommandContext(ctx, "servodtool", "instance", "show", "-p", strconv.Itoa(port)).Output(); err == nil {
+		hostInfo = &HostInfo{
+			Host:         host,
+			Port:         port,
+			SSHPort:      sshPort,
+			DockerHost:   false,
+			MsgLineStart: msgLineStart,
+		}
+		inUseFile := fmt.Sprintf("/var/lib/servod/%d_in_use", int(port))
+		if out, err := hst.CommandContext(ctx, "touch", inUseFile).CombinedOutput(); err != nil {
+			logging.Infof(ctx, "failed to touch %s: %s: %v", inUseFile, (out), err)
+		}
+		out, err := hst.CommandContext(ctx, "servodtool", "instance", "show", "-p", strconv.Itoa(port)).Output()
+		if err == nil {
 			// Since servod has already been started, do not need to start again.
-			return &HostInfo{
-				Host:         host,
-				Port:         port,
-				SSHPort:      sshPort,
-				DockerHost:   false,
-				MsgLineStart: msgLineStart,
-			}, nil
+			return hostInfo, nil
 		}
-		if out, err := hst.CommandContext(ctx, "start", "servod",
-			fmt.Sprintf("PORT=%d", port)).CombinedOutput(); err != nil {
-			return nil, errors.Wrapf(err, "failed to start servod: %s", string(out))
+		logging.Infof(ctx, "Failed to find running servod instance: %s: %v", string(out), err)
+		logging.Info(ctx, "Attempt to start servod")
+		args := []string{"servod"}
+		args = append(args, fmt.Sprintf("PORT=%d", port))
+		if board := dutTopology.GetChromeos().GetDutModel().GetBuildTarget(); board != "" {
+			args = append(args, fmt.Sprintf("BOARD=%s", board))
 		}
-		logging.Infof(ctx, "Start servod at port %d at servo host %s:%d", port, host, sshPort)
+		if model := dutTopology.GetChromeos().GetDutModel().GetModelName(); model != "" {
+			args = append(args, fmt.Sprintf("MODEL=%s", model))
+		}
+		if serial := dutTopology.GetChromeos().GetServo().GetSerial(); serial != "" {
+			args = append(args, fmt.Sprintf("SERIAL=%s", serial))
+		} else if serial := dutTopology.GetDevboard().GetServo().GetSerial(); serial != "" {
+			args = append(args, fmt.Sprintf("SERIAL=%s", serial))
+		}
+		if out, err := hst.CommandContext(ctx, "start", args...).CombinedOutput(); err != nil {
+			// Don't return error so that we can log servod logs later.
+			logging.Infof(ctx, "failed to start servod: %s: %v", string(out), err)
+			return hostInfo, nil
+		}
+		// Save it for clean up later.
+		hostInfo.ServoInitiated = true
+		logging.Infof(ctx, "Started servod at port %d at servo host %s:%d", port, host, sshPort)
 		// Provide servod up to 120 second to prepare, otherwise it will time out.
 		logging.Infof(ctx, "Wait for servod to be ready")
-		if _, err := hst.CommandContext(ctx, "servodtool", "instance", "wait-for-active", "--timeout", "120", "-p", strconv.Itoa(port)).Output(); err != nil {
-			return nil, errors.Wrap(err, "failed to check if servod is ready")
+		if out, err := hst.CommandContext(ctx, "servodtool", "instance", "wait-for-active", "--timeout", "120", "-p", strconv.Itoa(port)).Output(); err != nil {
+			// Don't return error so that we can log servod logs later.
+			logging.Infof(ctx, "failed to check if servod is ready: %s: %v", string(out), err)
 		}
 	}
-	return &HostInfo{
-		Host:         host,
-		Port:         port,
-		SSHPort:      sshPort,
-		DockerHost:   false,
-		MsgLineStart: msgLineStart,
-	}, nil
+	return hostInfo, nil
 }
 
 // logServoStatus logs the current servo status from the servo host.
@@ -341,9 +363,10 @@ func (p *Proxy) Close(ctx context.Context) {
 // Servo returns the proxy's encapsulated Servo object.
 func (p *Proxy) Servo() *Servo { return p.svo }
 
-// CollectLogs downloads servo logs to the dest directory.
+// CleanUpAndCollectLogs clean up servo-in-use file and downloads servo logs
+// to the dest directory.
 // TODO: Move this code to a default fixture after b/333592531 is implemented.
-func CollectLogs(ctx context.Context, servoHostInfo *HostInfo, keyFile, keyDir, dest string) (retErr error) {
+func CleanUpAndCollectLogs(ctx context.Context, servoHostInfo *HostInfo, keyFile, keyDir, dest string) (retErr error) {
 	if servoHostInfo == nil {
 		return nil
 	}
@@ -407,6 +430,11 @@ func CollectLogs(ctx context.Context, servoHostInfo *HostInfo, keyFile, keyDir, 
 
 	// Extract MCU logs from latest.DEBUG.
 	extractServodMCULogs(ctx, servodLogDir, destDir, maxLogSize)
+
+	// Remove in-use file
+	if servoHostInfo.ServoInitiated {
+		cleanupFile(ctx, hst, port, sopt.Hostname)
+	}
 
 	return nil
 }
@@ -527,5 +555,13 @@ func extractServodMCULogs(ctx context.Context, servodLogDir, destDir string, max
 			continue
 		}
 		fmt.Fprintln(mcuFile, timestamp, "- ", line)
+	}
+}
+
+func cleanupFile(ctx context.Context, hst *ssh.Conn, port int, hostname string) {
+	inUseFile := fmt.Sprintf("/var/lib/servod/%d_in_use", port)
+	cmd := hst.CommandContext(ctx, "rm", inUseFile)
+	if out, err := cmd.CombinedOutput(); err != nil {
+		logging.Infof(ctx, "Failed to remove %s from %s: %s: %v", inUseFile, hostname, out, err)
 	}
 }

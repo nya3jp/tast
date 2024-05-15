@@ -11,6 +11,8 @@ import (
 	"path/filepath"
 	"time"
 
+	"go.chromium.org/chromiumos/config/go/test/lab/api"
+
 	"go.chromium.org/tast/core/cmd/tast/internal/run/config"
 	"go.chromium.org/tast/core/cmd/tast/internal/run/driver/internal/drivercore"
 	"go.chromium.org/tast/core/cmd/tast/internal/run/driver/internal/runnerclient"
@@ -56,7 +58,23 @@ type Driver struct {
 // New establishes a new connection to the target device and returns a Driver.
 func New(ctx context.Context, cfg *config.Config, rawTarget, role string) (*Driver, error) {
 	servoHost := target.ServoHost(ctx, role, cfg.TestVars())
-	servoHostInfo, err := servo.StartServo(ctx, servoHost, cfg.ProtoSSHConfig().GetKeyFile(), cfg.ProtoSSHConfig().GetKeyDir())
+	dutLabConfig := cfg.DUTLabConfig()
+	var dutTopology *api.Dut
+	if dutLabConfig.GetChromeOSDUTLabConfig() != nil {
+		dt, ok := dutLabConfig.GetChromeOSDUTLabConfig()[role]
+		if ok {
+			dutTopology = dt
+		}
+	}
+	if dutTopology == nil && dutLabConfig.GetDevboardDUTLabConfig() != nil {
+		dt, ok := dutLabConfig.GetDevboardDUTLabConfig()[role]
+		if ok {
+			dutTopology = dt
+		}
+	}
+	servoHostInfo, err := servo.StartServo(ctx, servoHost,
+		cfg.ProtoSSHConfig().GetKeyFile(), cfg.ProtoSSHConfig().GetKeyDir(),
+		dutTopology)
 	if err != nil {
 		logging.Infof(ctx, "Failed to connect to servo host %s: %v",
 			target.ServoHost(ctx, role, cfg.TestVars()), err)
@@ -229,7 +247,7 @@ func (d *Driver) ConnCacheForTesting() *target.ConnCache {
 // sysinfo state.
 func (d *Driver) CollectServoLogs(ctx context.Context) (retErr error) {
 	servoLogDir := filepath.Join(d.cfg.ResDir(), "servo_log")
-	if err := servo.CollectLogs(ctx, d.servoHostInfo, d.cfg.ProtoSSHConfig().GetKeyFile(),
+	if err := servo.CleanUpAndCollectLogs(ctx, d.servoHostInfo, d.cfg.ProtoSSHConfig().GetKeyFile(),
 		d.cfg.ProtoSSHConfig().GetKeyDir(), servoLogDir); err != nil {
 		logging.Infof(ctx, "Failed to get to servo log: %v", err)
 	}

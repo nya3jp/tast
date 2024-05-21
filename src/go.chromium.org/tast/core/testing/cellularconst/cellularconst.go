@@ -26,6 +26,8 @@ const (
 	ModemTypeSC7180 // trogdor
 	ModemTypeSC7280 // herobrine
 	ModemTypeEM060
+	ModemTypeRW101
+	ModemTypeRW135
 )
 
 func (e ModemType) String() string {
@@ -44,6 +46,10 @@ func (e ModemType) String() string {
 		return "SC7280"
 	case ModemTypeEM060:
 		return "EM060"
+	case ModemTypeRW101:
+		return "RW101"
+	case ModemTypeRW135:
+		return "RW135"
 	default:
 		return fmt.Sprintf("%d", int(e))
 	}
@@ -115,6 +121,7 @@ var (
 		"pujjo_fm101":        {"pujjo_fm101", "nissa", ModemTypeFM101},
 		"pujjo_em060":        {"pujjo_em060", "nissa", ModemTypeEM060},
 		"pujjoteen5_fm350":   {"pujjoteen5_fm350", "nissa", ModemTypeFM350},
+		"sundance_rw101":     {"sundance_rw101", "nissa", ModemTypeRW101},
 		"quandiso_fm101":     {"quandiso_fm101", "nissa", ModemTypeFM101},
 		"quandiso360_fm101":  {"quandiso360_fm101", "nissa", ModemTypeFM101},
 		"uldren_fm101":       {"uldren_fm101", "nissa", ModemTypeFM101},
@@ -130,6 +137,7 @@ var (
 		"arcada":             {"arcada", "sarien", ModemTypeL850},
 		"sarien":             {"sarien", "sarien", ModemTypeL850},
 		"starmie_fm101":      {"starmie_fm101", "staryu", ModemTypeFM101},
+		"wugtrio_rw101":      {"wugtrio_rw101", "staryu", ModemTypeRW101},
 		"coachz":             {"coachz", "strongbad", ModemTypeSC7180},
 		"quackingstick":      {"quackingstick", "strongbad", ModemTypeSC7180},
 		"kingoftown":         {"kingoftown", "trogdor", ModemTypeSC7180},

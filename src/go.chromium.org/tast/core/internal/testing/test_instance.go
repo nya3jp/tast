@@ -595,6 +595,7 @@ func (t *TestInstance) Proto() *api.TestCaseMetadata {
 			HwAgnostic:      &api.HwAgnostic{Value: hwAgnostic},
 			LifeCycleStage:  &api.LifeCycleStage{Value: lifeCycleValue},
 			VariantCategory: &api.DDDVariantCategory{Value: t.VariantCategory},
+			ExtraInfo:       map[string]string{"fixture": t.Fixture},
 		},
 	}
 	return &r

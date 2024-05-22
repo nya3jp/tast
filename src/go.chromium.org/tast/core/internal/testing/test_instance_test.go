@@ -1382,7 +1382,7 @@ func TestWriteTestsAsProto(t *gotesting.T) {
 			BugComponent:    "my component",
 			LifeCycleStage:  LifeCycleManualOnly,
 			VariantCategory: "2",
-			Fixture:         TastRootRemoteFixtureName,
+			Fixture:         "fixtureID",
 		},
 	}
 
@@ -1427,6 +1427,7 @@ func TestWriteTestsAsProto(t *gotesting.T) {
 					LifeCycleStage: &api.LifeCycleStage{
 						Value: api.LifeCycleStage_LIFE_CYCLE_MANUAL_ONLY},
 					VariantCategory: &api.DDDVariantCategory{Value: "2"},
+					ExtraInfo:       map[string]string{"fixture": "fixtureID"},
 				},
 			},
 		},

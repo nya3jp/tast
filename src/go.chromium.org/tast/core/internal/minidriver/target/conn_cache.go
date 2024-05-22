@@ -8,6 +8,7 @@ import (
 	"context"
 	"time"
 
+	"go.chromium.org/tast/core/errors"
 	"go.chromium.org/tast/core/internal/linuxssh"
 	"go.chromium.org/tast/core/internal/logging"
 	"go.chromium.org/tast/core/internal/testingutil"
@@ -47,7 +48,7 @@ func NewConnCache(ctx context.Context, cfg *Config, target, proxyCommand, role s
 
 	bootID, err := linuxssh.ReadBootID(ctx, conn.SSHConn())
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "failed to read boot id")
 	}
 
 	return &ConnCache{

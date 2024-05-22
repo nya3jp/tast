@@ -17,6 +17,7 @@ import (
 	"go.chromium.org/tast/core/cmd/tast/internal/run/driver/internal/drivercore"
 	"go.chromium.org/tast/core/cmd/tast/internal/run/driver/internal/runnerclient"
 	"go.chromium.org/tast/core/cmd/tast/internal/run/driver/internal/sshconfig"
+	"go.chromium.org/tast/core/errors"
 
 	"go.chromium.org/tast/core/ssh"
 
@@ -119,7 +120,7 @@ func New(ctx context.Context, cfg *config.Config, rawTarget, role string) (*Driv
 	}
 	cc, err := target.NewConnCache(ctx, tcfg, resolvedTarget, proxyCommand, role)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "failed to create a new connection")
 	}
 	return &Driver{
 		cfg:           cfg,

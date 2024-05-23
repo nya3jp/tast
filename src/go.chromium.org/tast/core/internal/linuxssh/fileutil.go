@@ -19,7 +19,6 @@ import (
 	"sort"
 	"strings"
 
-	cryptossh "golang.org/x/crypto/ssh"
 	"golang.org/x/sys/unix"
 
 	"go.chromium.org/tast/core/errors"
@@ -234,6 +233,10 @@ func findChangedFiles(ctx context.Context, s *ssh.Conn, files map[string]string)
 	return cf, nil
 }
 
+type exitStatusError interface {
+	ExitStatus() int
+}
+
 // getRemoteSHA1s returns SHA1s for the files paths on s.
 // Missing files are excluded from the returned map.
 func getRemoteSHA1s(ctx context.Context, s *ssh.Conn, paths []string) (map[string]string, error) {
@@ -249,10 +252,10 @@ func getRemoteSHA1s(ctx context.Context, s *ssh.Conn, paths []string) (map[strin
 		currentOut, err := s.CommandContext(ctx, "sha1sum", paths[i:endIndex]...).Output()
 		if err != nil {
 			// TODO(derat): Find a classier way to ignore missing files.
-			if _, ok := err.(*cryptossh.ExitError); !ok {
-				return nil, fmt.Errorf("failed to hash files: %v", err)
+			if _, ok := err.(exitStatusError); ok {
+				continue
 			}
-			continue
+			return nil, fmt.Errorf("failed to hash files: %v", err)
 		}
 		out = append(out, currentOut...)
 	}

@@ -18,6 +18,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/electricbubble/gadb"
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/crypto/ssh/agent"
 	"golang.org/x/crypto/ssh/terminal"
@@ -49,6 +50,8 @@ type Conn struct {
 	// platform describes the Operating System running on the remote computer. Guaranteed to
 	// be non-nil.
 	platform *Platform
+
+	adbDevice *gadb.Device
 }
 
 // Options contains options used when connecting to an SSH server.
@@ -87,9 +90,42 @@ type Options struct {
 	Platform *Platform
 }
 
-// ParseTarget parses target (of the form "[<user>@]host[:<port>]") and fills
+// ConnectionType indicates the type of connection to the DUT.
+type ConnectionType int
+
+const (
+	// None is an invalid connection.
+	None ConnectionType = iota
+	// SSH indicates that the DUT is connected to a ChromeOS device via SSH.
+	SSH
+	// ADB indicates that the DUT is connected to an Android device via ADB.
+	ADB
+)
+
+// Type returns the type of connection to the DUT.
+func (s *Conn) Type() ConnectionType {
+	if s.cl != nil {
+		return SSH
+	}
+	if s.adbDevice != nil {
+		return ADB
+	}
+	return None
+}
+
+// ParseTarget parses target (of the form "[adb:][<user>@]host[:<port>]") and fills
 // the User, Hostname, and Port fields in o, using reasonable defaults for unspecified values.
 func ParseTarget(target string, o *Options) error {
+	if strings.HasPrefix(target, "adb:") {
+		_, _, err := net.SplitHostPort(target[4:])
+		if err != nil {
+			o.Hostname = "adb:" + net.JoinHostPort(target[4:], strconv.Itoa(5555))
+		} else {
+			o.Hostname = target
+		}
+		return nil
+	}
+
 	m := targetRegexp.FindStringSubmatch(target)
 	if m == nil {
 		return fmt.Errorf("couldn't parse %q as \"[user@]hostname[:port]\"", target)
@@ -234,11 +270,17 @@ func New(ctx context.Context, o *Options) (*Conn, error) {
 				o.WarnFunc(fmt.Sprintf("SSH to client through cloudbot proxy"))
 			}
 			cl, err = connectCloudBotsSSH(ctx, o.Hostname, cfg)
+		} else if strings.HasPrefix(o.Hostname, "adb:") {
+			var adbDevice *gadb.Device
+			adbDevice, err = connectADB(ctx, o.Hostname[4:], o)
+			if err == nil {
+				return &Conn{adbDevice: adbDevice, platform: o.Platform}, nil
+			}
 		} else {
 			cl, err = connectSSH(ctx, o.Hostname, o.ProxyCommand, cfg)
 		}
 		if err == nil {
-			return &Conn{cl, o.Platform}, nil
+			return &Conn{cl: cl, platform: o.Platform}, nil
 		}
 		if ctx.Err() != nil {
 			return nil, ctx.Err()
@@ -261,6 +303,52 @@ func New(ctx context.Context, o *Options) (*Conn, error) {
 		}
 	}
 	return nil, err
+}
+
+func connectADB(ctx context.Context, target string, o *Options) (*gadb.Device, error) {
+	adbClient, err := gadb.NewClient()
+	if err != nil {
+		if o.WarnFunc != nil {
+			o.WarnFunc(fmt.Sprintf("Failed to connect to ADB: %v", err))
+		}
+		return nil, err
+	}
+	host, portStr, err := net.SplitHostPort(target)
+	if err != nil {
+		if o.WarnFunc != nil {
+			o.WarnFunc(fmt.Sprintf("Failed to parse adb host %q: %v", target, err))
+		}
+		return nil, err
+	}
+	port, err := strconv.Atoi(portStr)
+	if err != nil {
+		if o.WarnFunc != nil {
+			o.WarnFunc(fmt.Sprintf("Failed to parse adb port %q: %v", portStr, err))
+		}
+		return nil, err
+	}
+	if err = adbClient.Connect(host, port); err != nil {
+		if o.WarnFunc != nil {
+			o.WarnFunc(fmt.Sprintf("Failed to connect to %q: %v", target, err))
+		}
+		return nil, err
+	}
+	devices, err := adbClient.DeviceList()
+	if err != nil {
+		if o.WarnFunc != nil {
+			o.WarnFunc(fmt.Sprintf("Failed to get ADB devices: %v", err))
+		}
+		return nil, err
+	}
+	for _, d := range devices {
+		if d.Serial() == target {
+			return &d, nil
+		}
+	}
+	if o.WarnFunc != nil {
+		o.WarnFunc(fmt.Sprintf("Failed to find ADB device"))
+	}
+	return nil, errors.Errorf("Failed to find ADB device %q in %v", target, devices)
 }
 
 // connectSSH attempts to synchronously connect to hostPort as directed by cfg.
@@ -386,7 +474,13 @@ func cloudBotsProxyAddress() (string, error) {
 
 // Close closes the underlying connection to the host.
 func (s *Conn) Close(ctx context.Context) error {
-	return doAsync(ctx, func() error { return s.cl.Conn.Close() }, nil)
+	return doAsync(ctx, func() error {
+		if s != nil && s.cl != nil {
+			return s.cl.Conn.Close()
+		}
+		// adbDevice doesn't need closing
+		return nil
+	}, nil)
 }
 
 // Ping checks that the connection to the host is still active, blocking until a
@@ -395,8 +489,12 @@ func (s *Conn) Close(ctx context.Context) error {
 func (s *Conn) Ping(ctx context.Context, timeout time.Duration) error {
 	ch := make(chan error, 1)
 	go func() {
-		_, _, err := s.cl.SendRequest(sshMsgIgnore, true, []byte{})
-		ch <- err
+		if s.cl != nil {
+			_, _, err := s.cl.SendRequest(sshMsgIgnore, true, []byte{})
+			ch <- err
+		} else {
+			ch <- s.CommandContext(ctx, "true").Run()
+		}
 	}()
 
 	select {
@@ -411,6 +509,9 @@ func (s *Conn) Ping(ctx context.Context, timeout time.Duration) error {
 
 // ListenTCP opens a remote TCP port for listening.
 func (s *Conn) ListenTCP(addr *net.TCPAddr) (net.Listener, error) {
+	if s.cl == nil {
+		return nil, errors.New("ADB ListenTCP not implemented")
+	}
 	return s.cl.ListenTCP(addr)
 }
 
@@ -423,6 +524,9 @@ func (s *Conn) NewForwarder(localAddr, remoteAddr string, errFunc func(error)) (
 // GenerateRemoteAddress generates an address corresponding to the same one as
 // we are currently connected to, but on a different port.
 func (s *Conn) GenerateRemoteAddress(port int) (string, error) {
+	if s.cl == nil {
+		return "", errors.New("ADB GenerateRemoteAddress not implemented")
+	}
 	host, _, err := net.SplitHostPort(s.cl.RemoteAddr().String())
 	if err != nil {
 		return "", err
@@ -433,6 +537,9 @@ func (s *Conn) GenerateRemoteAddress(port int) (string, error) {
 // Dial initiates a connection to the addr from the remote host.
 // The resulting connection has a zero LocalAddr() and RemoteAddr().
 func (s *Conn) Dial(addr, net string) (net.Conn, error) {
+	if s.cl == nil {
+		return nil, errors.New("ADB Dial not implemented")
+	}
 	return s.cl.Dial(addr, net)
 }
 
@@ -455,6 +562,9 @@ func checkSupportedNetwork(network string) error {
 // remoteAddr uses the same format but is resolved by the remote SSH server.
 // If non-nil, errFunc will be invoked asynchronously on a goroutine with connection or forwarding errors.
 func (s *Conn) ForwardLocalToRemote(network, localAddr, remoteAddr string, errFunc func(error)) (*Forwarder, error) {
+	if s.cl == nil {
+		return nil, errors.New("ADB ForwardLocalToRemote not implemented")
+	}
 	if err := checkSupportedNetwork(network); err != nil {
 		return nil, err
 	}

@@ -47,7 +47,7 @@ type Cmd struct {
 	log                    bytes.Buffer   // uncaptured stdout/stderr
 	stdoutPipe, stderrPipe *io.PipeWriter // set when StdoutPipe/StderrPipe are called
 	onceClose              sync.Once      // used to close stdoutPipe/stderrPipe just once
-	sess                   *ssh.Session
+	sess                   genericSession
 
 	// ctx is the context given to Command that specifies the timeout of the external command.
 	ctx context.Context
@@ -87,6 +87,15 @@ type RunOption = exec.RunOption
 // (i.e., exited with non-zero status code).
 const DumpLogOnError = exec.DumpLogOnError
 
+// genericSession is the methods in the ssh.Session object that we actually use.
+type genericSession interface {
+	Close() error
+	Start(cmd string) error
+	StdoutPipe() (io.Reader, error)
+	StderrPipe() (io.Reader, error)
+	Wait() error
+}
+
 func hasOpt(opt RunOption, opts []RunOption) bool {
 	for _, o := range opts {
 		if o == opt {
@@ -108,6 +117,15 @@ var (
 //
 // See: https://godoc.org/os/exec#Command
 func (s *Conn) CommandContext(ctx context.Context, name string, args ...string) *Cmd {
+	// Tast expects commands to run as root, but adb shell runs them as the user "shell"
+	if s != nil && s.adbDevice != nil {
+		return &Cmd{
+			Args:  append([]string{"su", "root", name}, args...),
+			ssh:   s,
+			abort: make(chan struct{}),
+			ctx:   ctx,
+		}
+	}
 	return &Cmd{
 		Args:  append([]string{name}, args...),
 		ssh:   s,
@@ -328,15 +346,44 @@ func (c *Cmd) startSession(ctx context.Context) error {
 	// Set the state early to reject startSession to be called twice.
 	c.state = stateStarted
 
-	var sess *ssh.Session
+	var sess genericSession
 
 	if err := doAsync(ctx, func() error {
 		var err error
-		sess, err = c.ssh.cl.NewSession()
+		if c.ssh.cl != nil {
+			sshSess, err := c.ssh.cl.NewSession()
+			if err != nil {
+				return err
+			}
+			sess = sshSess
+			ioIn, ioOut, ioErr, err := c.setupSession(sshSess)
+			if ioIn != nil {
+				sshSess.Stdin = ioIn
+			}
+			if ioOut != nil {
+				sshSess.Stdout = ioOut
+			}
+			if ioErr != nil {
+				sshSess.Stderr = ioErr
+			}
+			return err
+		}
+		adbSess, err := c.ssh.adbDevice.NewSession()
 		if err != nil {
 			return err
 		}
-		return c.setupSession(sess)
+		sess = adbSess
+		ioIn, ioOut, ioErr, err := c.setupSession(adbSess)
+		if ioIn != nil {
+			adbSess.Stdin = ioIn
+		}
+		if ioOut != nil {
+			adbSess.Stdout = ioOut
+		}
+		if ioErr != nil {
+			adbSess.Stderr = ioErr
+		}
+		return err
 	}, func() {
 		if sess != nil {
 			sess.Close()
@@ -352,20 +399,22 @@ func (c *Cmd) startSession(ctx context.Context) error {
 }
 
 // setupSession sets up pipes for a new session sess.
-func (c *Cmd) setupSession(sess *ssh.Session) error {
+// Returns the io handles to be passed into the session. If one of the handles is nil, leave the session's handle as is for that iostream.
+func (c *Cmd) setupSession(sess genericSession) (stdin io.Reader, stdout, stderr io.Writer, err error) {
 	var copiers []func() // functions to run on background goroutines to copy pipe data
 
-	sess.Stdin = c.Stdin
+	stdin = c.Stdin
 
 	// When using pipes, make sure to close them to send EOF after copying data.
 	// Note that sess.Stdout/Stderr are io.Writer so they're not closed.
 	if c.stdoutPipe == nil {
-		sess.Stdout = c.Stdout
+		stdout = c.Stdout
 	} else {
 		p, err := sess.StdoutPipe()
 		if err != nil {
-			return err
+			return stdin, stdout, stderr, err
 		}
+		stdout = c.stdoutPipe
 		copiers = append(copiers, func() {
 			_, err := io.Copy(c.stdoutPipe, p)
 			c.stdoutPipe.CloseWithError(err)
@@ -373,11 +422,11 @@ func (c *Cmd) setupSession(sess *ssh.Session) error {
 	}
 
 	if c.stderrPipe == nil {
-		sess.Stderr = c.Stderr
+		stderr = c.Stderr
 	} else {
 		p, err := sess.StderrPipe()
 		if err != nil {
-			return err
+			return stdin, stdout, stderr, err
 		}
 		copiers = append(copiers, func() {
 			_, err := io.Copy(c.stderrPipe, p)
@@ -387,16 +436,16 @@ func (c *Cmd) setupSession(sess *ssh.Session) error {
 
 	// Unlike Cmd in os/exec, x/crypto/ssh isn't concurrent safe if Stdout
 	// and Stderr are the same writer.
-	if sess.Stdout != nil && interfaceEqual(sess.Stdout, sess.Stderr) {
-		w := &safeWriter{w: sess.Stdout}
-		sess.Stdout = w
-		sess.Stderr = w
+	if stdout != nil && interfaceEqual(stdout, stderr) {
+		w := &safeWriter{w: stdout}
+		stdout = w
+		stderr = w
 	}
 
 	for _, f := range copiers {
 		go f()
 	}
-	return nil
+	return stdin, stdout, stderr, nil
 }
 
 // interfaceEqual protects against panics from doing equality tests on
@@ -447,7 +496,10 @@ func (c *Cmd) waitAndClose(f func() error) error {
 	c.closePipes(io.EOF)
 
 	if err := doAsync(ctx, func() error {
-		c.sess.Signal(ssh.SIGKILL) // in case the command is still running
+		sshSess, ok := c.sess.(*ssh.Session)
+		if ok {
+			sshSess.Signal(ssh.SIGKILL) // in case the command is still running
+		}
 		return c.sess.Close()
 	}, nil); err != nil && err != io.EOF && retErr == nil { // Close returns io.EOF on success
 		retErr = err

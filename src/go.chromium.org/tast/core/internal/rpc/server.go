@@ -13,6 +13,7 @@ import (
 	"net"
 	"os"
 	"os/signal"
+	"runtime/debug"
 	"strconv"
 	"sync"
 
@@ -287,6 +288,7 @@ func serverOpts(ls *remoteLoggingServer, logger logging.Logger, calls *sync.Wait
 			defer func() {
 				if r := recover(); r != nil {
 					err = status.Error(codes.Internal, fmt.Sprintf("panic: %v", r))
+					logging.Info(ctx, "GRPC Panic Stack trace:\n", string(debug.Stack()))
 				}
 			}()
 			calls.Add(1)
@@ -304,6 +306,7 @@ func serverOpts(ls *remoteLoggingServer, logger logging.Logger, calls *sync.Wait
 			defer func() {
 				if r := recover(); r != nil {
 					err = status.Error(codes.Internal, fmt.Sprintf("panic: %v", r))
+					logging.Info(stream.Context(), "GRPC Panic Stack trace:\n", string(debug.Stack()))
 				}
 			}()
 			calls.Add(1)

@@ -86,7 +86,7 @@ func (s *testServer) RunTests(srv protocol.TestService_RunTestsServer) error {
 
 	if initReq.GetRunTestsInit().GetRecursive() {
 		if err := runTestsRecursive(ctx, srv, initReq.GetRunTestsInit().GetRunConfig(), s.scfg, s.bundleParams); err != nil {
-			return errors.Wrap(err, "RunTests: failed in run tests recursively")
+			return fmt.Errorf("RunTests: failed in run tests recursively: %+v", err)
 		}
 		return nil
 	}

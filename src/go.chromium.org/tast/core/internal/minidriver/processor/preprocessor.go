@@ -234,7 +234,7 @@ func (p *preprocessor) RunLog(ctx context.Context, ev *protocol.RunLogEvent) err
 
 func (p *preprocessor) RunEnd(ctx context.Context, runErr error) {
 	if runErr != nil {
-		msg := fmt.Sprintf("Got global error: %v", runErr)
+		msg := fmt.Sprintf("Got global error: %+v", runErr)
 
 		// Run diagnosis and replace the error message if it could give a more
 		// detailed explanation.

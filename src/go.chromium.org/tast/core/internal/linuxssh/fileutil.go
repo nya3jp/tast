@@ -391,7 +391,13 @@ func PutFiles(ctx context.Context, s *ssh.Conn, files map[string]string,
 	defer cmd.Wait()
 	defer unix.Kill(cmd.Process.Pid, unix.SIGKILL)
 
-	rcmd := s.CommandContext(ctx, "tar", "-x", "--gzip", "--no-same-owner", "--recursive-unlink", "-p", "-C", "/")
+	var rcmd *ssh.Cmd
+	if s.Type() == ssh.ADB {
+		rcmd = s.CommandContext(ctx, "tar", "-f", "-", "-x", "--gzip", "--no-same-owner", "-p", "-C", "/")
+	} else {
+		rcmd = s.CommandContext(ctx, "tar", "-x", "--gzip", "--no-same-owner", "--recursive-unlink", "-p", "-C", "/")
+	}
+
 	cr := &countingReader{r: p}
 	rcmd.Stdin = cr
 	if err := rcmd.Run(ssh.DumpLogOnError); err != nil {

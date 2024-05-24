@@ -23,6 +23,7 @@ import (
 
 	configpb "go.chromium.org/chromiumos/config/go/api"
 	softwarepb "go.chromium.org/chromiumos/config/go/api/software"
+	"golang.org/x/sys/unix"
 
 	"go.chromium.org/tast/core/errors"
 	"go.chromium.org/tast/core/internal/logging"
@@ -1288,63 +1289,75 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 	}, nil
 }
 
-type lscpuEntry struct {
-	Field string `json:"field"` // includes trailing ":"
-	Data  string `json:"data"`
-}
-
-type lscpuResult struct {
-	Entries []lscpuEntry `json:"lscpu"`
-}
-
-func (r *lscpuResult) find(name string) (data string, ok bool) {
-	for _, e := range r.Entries {
-		if e.Field == name {
-			return e.Data, true
-		}
-	}
-	return "", false
-}
-
 type cpuConfig struct {
 	cpuArch protocol.DeprecatedDeviceConfig_Architecture
 	soc     protocol.DeprecatedDeviceConfig_SOC
 	flags   []string
 }
 
-// cpuInfo returns a structure containing field data from the "lscpu" command
-// which outputs CPU architecture information from "sysfs" and "/proc/cpuinfo".
+// cpuInfo returns a structure containing data about the cpu.
+// flags & soc come from the first cpu in /proc/cpuinfo
+// cpuArch comes from unix.Uname()
 func cpuInfo() (cpuConfig, error) {
-	errInfo := cpuConfig{protocol.DeprecatedDeviceConfig_ARCHITECTURE_UNDEFINED, protocol.DeprecatedDeviceConfig_SOC_UNSPECIFIED, nil}
-	b, err := exec.Command("lscpu", "--json").Output()
+	ret := cpuConfig{protocol.DeprecatedDeviceConfig_ARCHITECTURE_UNDEFINED, protocol.DeprecatedDeviceConfig_SOC_UNSPECIFIED, nil}
+	// Read /proc/cpuinfo for flags
+	cpuinfoFile, err := os.Open("/proc/cpuinfo")
 	if err != nil {
-		return errInfo, err
+		return ret, errors.Wrap(err, "failed to read /proc/cpuinfo")
 	}
-	var parsed lscpuResult
-	if err := json.Unmarshal(b, &parsed); err != nil {
-		return errInfo, errors.Wrap(err, "failed to parse lscpu result")
+
+	var vendorID, family, modelStr, modelName string
+	scanner := bufio.NewScanner(cpuinfoFile)
+	for scanner.Scan() {
+		line := scanner.Text()
+		if line == "" {
+			break
+		}
+		parts := strings.SplitN(line, ":", 2)
+		if len(parts) < 2 {
+			continue
+		}
+		key := strings.TrimSpace(parts[0])
+		val := strings.TrimSpace(parts[1])
+		switch key {
+		case "flags":
+			flags := strings.Split(val, " ")
+			ret.flags = flags
+		case "vendor_id":
+			vendorID = val
+		case "cpu family":
+			family = val
+		case "model":
+			modelStr = val
+		case "model name":
+			modelName = val
+		}
 	}
-	flagsStr, _ := parsed.find("Flags:")
-	flags := strings.Split(flagsStr, " ")
-	arch, err := findArchitecture(parsed)
+	if err := scanner.Err(); err != nil {
+		return ret, errors.Wrap(err, "error reading /proc/cpuinfo")
+	}
+
+	// Call unix.Uname for CPU arch
+	u := unix.Utsname{}
+	if err := unix.Uname(&u); err != nil {
+		return ret, errors.Wrap(err, "failed to call Uname")
+	}
+	arch, err := findArchitecture(string(bytes.Trim(u.Machine[:], "\x00")))
 	if err != nil {
-		return errInfo, errors.Wrap(err, "failed to find CPU architecture")
+		return ret, errors.Wrap(err, "failed to decode CPU architecture")
 	}
-	soc, err := findSOC(parsed)
+	ret.cpuArch = arch
+
+	soc, err := findSOC(vendorID, family, modelStr, modelName)
 	if err != nil {
-		return cpuConfig{arch, protocol.DeprecatedDeviceConfig_SOC_UNSPECIFIED, flags}, errors.Wrap(err, "failed to find SOC")
+		return ret, errors.Wrap(err, "failed to find SOC")
 	}
-	return cpuConfig{arch, soc, flags}, nil
+	ret.soc = soc
+	return ret, nil
 }
 
-// findArchitecture returns an architecture configuration based from parsed output
-// data value of the "Architecture" field.
-func findArchitecture(parsed lscpuResult) (protocol.DeprecatedDeviceConfig_Architecture, error) {
-	arch, ok := parsed.find("Architecture:")
-	if !ok {
-		return protocol.DeprecatedDeviceConfig_ARCHITECTURE_UNDEFINED, errors.New("failed to find Architecture field")
-	}
-
+// findArchitecture returns an architecture configuration based on Uname.Machine.
+func findArchitecture(arch string) (protocol.DeprecatedDeviceConfig_Architecture, error) {
 	switch arch {
 	case "x86_64":
 		return protocol.DeprecatedDeviceConfig_X86_64, nil
@@ -1359,23 +1372,17 @@ func findArchitecture(parsed lscpuResult) (protocol.DeprecatedDeviceConfig_Archi
 	}
 }
 
-// findSOC returns a SOC configuration based from parsed output data value of the
-// "Vendor ID" and other related fields.
-func findSOC(parsed lscpuResult) (protocol.DeprecatedDeviceConfig_SOC, error) {
-	vendorID, ok := parsed.find("Vendor ID:")
-	if !ok {
-		return protocol.DeprecatedDeviceConfig_SOC_UNSPECIFIED, errors.New("failed to find Vendor ID field")
-	}
-
+// findSOC returns a SOC configuration based of the "Vendor ID" and other related fields.
+func findSOC(vendorID, family, modelStr, modelName string) (protocol.DeprecatedDeviceConfig_SOC, error) {
 	switch vendorID {
 	case "ARM":
 		fallthrough
 	case "Qualcomm":
 		return findARMSOC()
 	case "GenuineIntel":
-		return findIntelSOC(&parsed)
+		return findIntelSOC(family, modelStr, modelName)
 	case "AuthenticAMD":
-		return findAMDSOC(&parsed)
+		return findAMDSOC(family, modelStr)
 	default:
 		return protocol.DeprecatedDeviceConfig_SOC_UNSPECIFIED, errors.Errorf("unknown vendor ID: %q", vendorID)
 	}
@@ -1447,17 +1454,11 @@ func findARMSOC() (protocol.DeprecatedDeviceConfig_SOC, error) {
 
 // findIntelSOC returns an Intel SOC configuration based on "CPU family", "Model",
 // and "Model name" fields.
-func findIntelSOC(parsed *lscpuResult) (protocol.DeprecatedDeviceConfig_SOC, error) {
-	if family, ok := parsed.find("CPU family:"); !ok {
-		return protocol.DeprecatedDeviceConfig_SOC_UNSPECIFIED, errors.New("failed to find Intel family")
-	} else if family != "6" {
+func findIntelSOC(family, modelStr, modelName string) (protocol.DeprecatedDeviceConfig_SOC, error) {
+	if family != "6" {
 		return protocol.DeprecatedDeviceConfig_SOC_UNSPECIFIED, errors.Errorf("unknown Intel family: %s", family)
 	}
 
-	modelStr, ok := parsed.find("Model:")
-	if !ok {
-		return protocol.DeprecatedDeviceConfig_SOC_UNSPECIFIED, errors.New("failed to find Intel model")
-	}
 	model, err := strconv.ParseInt(modelStr, 10, 64)
 	if err != nil {
 		return protocol.DeprecatedDeviceConfig_SOC_UNSPECIFIED, errors.Wrapf(err, "failed to parse Intel model: %q", modelStr)
@@ -1467,10 +1468,6 @@ func findIntelSOC(parsed *lscpuResult) (protocol.DeprecatedDeviceConfig_SOC, err
 		// AMBERLAKE_Y, COMET_LAKE_U, WHISKEY_LAKE_U, KABYLAKE_U, KABYLAKE_U_R, and
 		// KABYLAKE_Y share the same model. Parse model name.
 		// Note that Pentium brand is unsupported.
-		modelName, ok := parsed.find("Model name:")
-		if !ok {
-			return protocol.DeprecatedDeviceConfig_SOC_UNSPECIFIED, errors.New("failed to find Intel model name")
-		}
 		for _, e := range []struct {
 			soc protocol.DeprecatedDeviceConfig_SOC
 			ptn string
@@ -1507,6 +1504,8 @@ func findIntelSOC(parsed *lscpuResult) (protocol.DeprecatedDeviceConfig_SOC, err
 		return protocol.DeprecatedDeviceConfig_SOC_TIGER_LAKE, nil
 	case INTEL_FAM6_ALDERLAKE_L:
 		return protocol.DeprecatedDeviceConfig_SOC_ALDER_LAKE, nil
+	case INTEL_FAM6_ALDERLAKE_N:
+		return protocol.DeprecatedDeviceConfig_SOC_ALDER_LAKE, nil
 	case INTEL_FAM6_METEORLAKE_L:
 		return protocol.DeprecatedDeviceConfig_SOC_METEOR_LAKE, nil
 	case INTEL_FAM6_CANNONLAKE_L:
@@ -1515,10 +1514,6 @@ func findIntelSOC(parsed *lscpuResult) (protocol.DeprecatedDeviceConfig_SOC, err
 		return protocol.DeprecatedDeviceConfig_SOC_APOLLO_LAKE, nil
 	case INTEL_FAM6_SKYLAKE_L:
 		// SKYLAKE_U and SKYLAKE_Y share the same model. Parse model name.
-		modelName, ok := parsed.find("Model name:")
-		if !ok {
-			return protocol.DeprecatedDeviceConfig_SOC_UNSPECIFIED, errors.New("failed to find Intel model name")
-		}
 		for _, e := range []struct {
 			soc protocol.DeprecatedDeviceConfig_SOC
 			ptn string
@@ -1548,32 +1543,26 @@ func findIntelSOC(parsed *lscpuResult) (protocol.DeprecatedDeviceConfig_SOC, err
 	case INTEL_FAM6_ATOM_BONNELL:
 		return protocol.DeprecatedDeviceConfig_SOC_PINE_TRAIL, nil
 	default:
-		return protocol.DeprecatedDeviceConfig_SOC_UNSPECIFIED, errors.Errorf("unknown Intel model: %d", model)
+		return protocol.DeprecatedDeviceConfig_SOC_UNSPECIFIED, errors.Errorf("unknown Intel model: %q %q", modelStr, modelName)
 	}
 }
 
 // findAMDSOC returns an AMD SOC configuration based on "Model" field.
-func findAMDSOC(parsed *lscpuResult) (protocol.DeprecatedDeviceConfig_SOC, error) {
-	model, ok := parsed.find("Model:")
-	if !ok {
-		return protocol.DeprecatedDeviceConfig_SOC_UNSPECIFIED, errors.New("failed to find AMD model")
-	}
+func findAMDSOC(family, model string) (protocol.DeprecatedDeviceConfig_SOC, error) {
 	if model == "112" {
 		return protocol.DeprecatedDeviceConfig_SOC_STONEY_RIDGE, nil
 	}
-	if family, ok := parsed.find("CPU family:"); ok {
-		if family == "23" {
-			if model == "24" || model == "32" {
-				return protocol.DeprecatedDeviceConfig_SOC_PICASSO, nil
-			} else if model == "160" {
-				return protocol.DeprecatedDeviceConfig_SOC_MENDOCINO, nil
-			}
-		} else if family == "25" {
-			if model == "80" {
-				return protocol.DeprecatedDeviceConfig_SOC_CEZANNE, nil
-			} else if model == "116" {
-				return protocol.DeprecatedDeviceConfig_SOC_PHOENIX, nil
-			}
+	if family == "23" {
+		if model == "24" || model == "32" {
+			return protocol.DeprecatedDeviceConfig_SOC_PICASSO, nil
+		} else if model == "160" {
+			return protocol.DeprecatedDeviceConfig_SOC_MENDOCINO, nil
+		}
+	} else if family == "25" {
+		if model == "80" {
+			return protocol.DeprecatedDeviceConfig_SOC_CEZANNE, nil
+		} else if model == "116" {
+			return protocol.DeprecatedDeviceConfig_SOC_PHOENIX, nil
 		}
 	}
 

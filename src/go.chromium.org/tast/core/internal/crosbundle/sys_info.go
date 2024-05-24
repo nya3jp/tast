@@ -72,12 +72,12 @@ func CollectSysInfo(ctx context.Context, req *protocol.CollectSysInfoRequest) (*
 	initialState := req.GetInitialState()
 
 	// Collect syslog logs.
-	logDir, err := ioutil.TempDir("", "tast_logs.")
+	logDir, err := os.MkdirTemp("", "tast_logs.")
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "failed making tast_logs temp dir")
 	}
 	if err := logs.CopyLogFileUpdates(ctx, systemLogDir, logDir, systemLogExcludes, initialState.GetLogInodeSizes()); err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "failed CopyLogFileUpdates to tast_logs")
 	}
 
 	// Write system logs into a subdirectory.
@@ -98,14 +98,14 @@ func CollectSysInfo(ctx context.Context, req *protocol.CollectSysInfoRequest) (*
 	// Collect crashes.
 	dumps, err := getCrashFilePaths()
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "failed getCrashFilePaths")
 	}
-	crashDir, err := ioutil.TempDir("", "tast_crashes.")
+	crashDir, err := os.MkdirTemp("", "tast_crashes.")
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "failed making tast_crashes temp dir")
 	}
 	if err := crash.CopyNewFiles(ctx, crashDir, dumps, initialState.GetCrashFilePaths()); err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "failed CopyNewFiles to tast_crashes")
 	}
 	// TODO(derat): Decide if it's worthwhile to call crash.CopySystemInfo here to get /etc/lsb-release.
 	// Doing so makes it harder to exercise this code in unit tests.
@@ -190,22 +190,27 @@ func writeSystemInfo(ctx context.Context, dir string) error {
 	var errs []string
 	cmds := map[string][]string{
 		"upstart_jobs.txt": {"initctl", "list"},
-		"ps.txt":           {"ps", "auxwwf"},
-		"du_stateful.txt":  {"du", "-m", "/mnt/stateful_partition"},
+		"ps.txt":           {"sh", "-c", "ps auxwwf || ps -Afw"},
 		"mount.txt":        {"mount"},
 		"hostname.txt":     {"hostname"},
 		"uptime.txt":       {"uptime"},
-		"losetup.txt":      {"losetup"},
+		"losetup.txt":      {"sh", "-c", "losetup || losetup -a"},
 		"lscpu.txt":        {"lscpu"},
-		"df.txt":           {"df", "-mP"},
+		"df.txt":           {"df", "-kP"},
 		"lvs.txt":          {"lvs", "-a", "--units=m"},
 		"dmesg.txt":        {"dmesg"},
 	}
+	if _, err := os.Stat("/mnt/stateful_partition"); !os.IsNotExist(err) {
+		cmds["du_stateful.txt"] = []string{"du", "-m", "/mnt/stateful_partition"}
+	}
+	if _, err := os.Stat("/data"); !os.IsNotExist(err) {
+		cmds["du_data.txt"] = []string{"du", "-m", "/data"}
+	}
 	if _, err := os.Stat("/proc/bus/pci"); !os.IsNotExist(err) {
-		cmds["lspci.txt"] = []string{"lspci", "-vvnn"}
+		cmds["lspci.txt"] = []string{"sh", "-c", "lspci -vvnn || lspci -nn"}
 	}
 	if _, err := os.Stat("/sys/bus/usb"); !os.IsNotExist(err) {
-		cmds["lsusb.txt"] = []string{"lsusb", "-vt"}
+		cmds["lsusb.txt"] = []string{"sh", "-c", "lsusb -vt || lsusb"}
 	}
 
 	for fn, cmd := range cmds {

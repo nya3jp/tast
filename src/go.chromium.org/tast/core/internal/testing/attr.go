@@ -2368,6 +2368,11 @@ from other existing groups (or use this group standalone).
 			},
 		},
 	},
+	{
+		Name:     "inputs_appcompat_gworkspace_perbuild",
+		Contacts: []string{"essential-inputs-team@google.com"},
+		Desc:     "A group of inputs test for gworkspace",
+	},
 }
 
 // validGroupMap is the name-keyed map of validGroups.

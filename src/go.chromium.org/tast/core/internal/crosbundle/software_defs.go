@@ -207,6 +207,7 @@ var softwareFeatureDefs = map[string]string{
 	"no_chrome_dcheck":            "!chrome_dcheck",
 	"no_downloads_bind_mount":     "!downloads_bind_mount",
 	"no_eth_loss_on_reboot":       `!("board:jacuzzi")`, // some devices (jacuzzi) may not enumerate eth on reboot b/178529170
+	"no_fbpreprocessord":          "!fbpreprocessord",
 	"no_gsc":                      `!"cr50_onboard" && !"ti50_onboard"`,
 	"no_igt":                      `!("video_cards_amdgpu" || "video_cards_intel" || "video_cards_mediatek" || "video_cards_msm") || ("kernel-4_14" || "kernel-4_19")`, // opposite of "igt"
 	"no_iioservice":               "!iioservice",

@@ -167,6 +167,7 @@ The following software features are defined:
 * `no_chrome_dcheck` - Chrome/Chromium was not built with dcheck enabld.
 * `no_downloads_bind_mount` - Disable Downloads bind mount and migrate files from ~/Downloads to ~/MyFiles/Downloads.
 * `no_eth_loss_on_reboot` - Board does not lose ethernet on reboot. Context: b/178529170
+* `no_fbpreprocessord` - Build was not built with `fbpreprocessord`, the firmware dump processor daemon.
 * `no_iioservice` - Build was not built with CrOS IIO Service.
 * `no_msan` - Build was not built with Memory Sanitizer.
 * `no_ondevice_handwriting` - Doesn't have on-device handwriting recognition support. Either ml_service is not enabled, or if ml_service doesn't support `ondevice_handwriting`.

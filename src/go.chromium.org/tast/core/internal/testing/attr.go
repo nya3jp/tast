@@ -187,6 +187,14 @@ Tests in this group are not used for build verification.
 				Desc: `Indicates that this test should run weekly.`,
 			},
 			{
+				Name: "graphics_deqp",
+				Desc: `Indicates that this test is graphics deqp functional tests.`,
+			},
+			{
+				Name: "graphics_cft",
+				Desc: `Indicates that this test has been converted to directly run via suite_scheduler starlark file.`,
+			},
+			{
 				Name: "graphics_bringup",
 				Desc: `Indicates that this test should be run during devices bringup.`,
 			},

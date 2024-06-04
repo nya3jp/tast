@@ -18,6 +18,7 @@ import (
 	"go.chromium.org/tast/core/internal/logging"
 	"go.chromium.org/tast/core/internal/minidriver/bundleclient"
 	"go.chromium.org/tast/core/internal/protocol"
+	"go.chromium.org/tast/core/internal/testing"
 	"go.chromium.org/tast/core/internal/xcontext"
 )
 
@@ -51,12 +52,13 @@ type preprocessor struct {
 	copying    map[string]*entityState
 	seenTimes  map[string]int
 	fatalError *fatalError
+	bundle     string
 }
 
 var _ bundleclient.RunTestsOutput = &preprocessor{}
 var _ bundleclient.RunFixtureOutput = &preprocessor{}
 
-func newPreprocessor(resDir string, diagnose DiagnoseFunc, handlers []Handler) *preprocessor {
+func newPreprocessor(resDir string, diagnose DiagnoseFunc, handlers []Handler, bundle string) *preprocessor {
 	return &preprocessor{
 		resDir:   resDir,
 		diagnose: diagnose,
@@ -64,6 +66,7 @@ func newPreprocessor(resDir string, diagnose DiagnoseFunc, handlers []Handler) *
 
 		copying:   make(map[string]*entityState),
 		seenTimes: make(map[string]int),
+		bundle:    bundle,
 	}
 }
 
@@ -335,22 +338,44 @@ func (p *preprocessor) createOutDir(e *protocol.Entity) (string, error) {
 	const (
 		testLogsDir    = "tests"
 		fixtureLogsDir = "fixtures"
+		maxAttempts    = 20
 	)
 
 	dirName := testLogsDir
 	if e.GetType() == protocol.EntityType_FIXTURE {
 		dirName = fixtureLogsDir
 	}
-	relOutDir := filepath.Join(dirName, e.GetName())
+	defaultName := e.GetName()
+
+	if e.GetName() == testing.TastRootRemoteFixtureName {
+		// The remote root fixture is special because it will
+		// be invoked once per bundle. It will be confusing which
+		// run it is corresponding to.
+		// Therefore, we add the bundle and timestamp suffix here
+		// for easier debugging.
+		timestamp := time.Now().UTC().Format("20060102150405")
+		defaultName = fmt.Sprintf("%s_%s_%s", defaultName, p.bundle, timestamp)
+	}
+	relOutDir := filepath.Join(dirName, defaultName)
 
 	// Add a number suffix to the output directory name in case of conflict.
-	seenCnt := p.seenTimes[e.GetName()]
+	seenCnt := p.seenTimes[defaultName]
 	if seenCnt > 0 {
 		relOutDir += fmt.Sprintf(".%d", seenCnt)
 	}
 	p.seenTimes[e.GetName()]++
 
 	outDir := filepath.Join(p.resDir, relOutDir)
+
+	// Make sure the directory is unique.
+	for i := 0; i < maxAttempts; i++ {
+		if _, err := os.Stat(outDir); err != nil {
+			break
+		}
+		relOutDir := filepath.Join(dirName,
+			fmt.Sprintf("%s.%d", defaultName, seenCnt+i+1))
+		outDir = filepath.Join(p.resDir, relOutDir)
+	}
 
 	if err := os.MkdirAll(outDir, 0755); err != nil {
 		return "", err

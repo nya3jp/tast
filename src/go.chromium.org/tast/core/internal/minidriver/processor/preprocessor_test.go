@@ -43,7 +43,7 @@ func TestPreprocessor_SameEntity(t *testing.T) {
 	}
 
 	hs := newHandlers(resDir, logging.NewMultiLogger(), nopPull, nil, nil)
-	proc := processor.New(resDir, nopDiagnose, hs)
+	proc := processor.New(resDir, nopDiagnose, hs, "cros")
 	runProcessor(context.Background(), proc, events, errors.New("something went wrong"))
 
 	if err := proc.FatalError(); err != nil {
@@ -80,7 +80,7 @@ func TestPreprocessor_MissingEntityEnd(t *testing.T) {
 	ctx := logging.AttachLogger(context.Background(), logger)
 
 	hs := newHandlers(resDir, logger, nopPull, nil, nil)
-	proc := processor.New(resDir, nopDiagnose, hs)
+	proc := processor.New(resDir, nopDiagnose, hs, "cros")
 	runProcessor(ctx, proc, events, errors.New("something went wrong"))
 
 	if err := proc.FatalError(); err != nil {
@@ -130,7 +130,7 @@ func TestPreprocessor_UnmatchedEntityEvent(t *testing.T) {
 			ctx := logging.AttachLogger(context.Background(), logger)
 
 			hs := newHandlers(resDir, logger, nopPull, nil, nil)
-			proc := processor.New(resDir, nopDiagnose, hs)
+			proc := processor.New(resDir, nopDiagnose, hs, "cros")
 			runProcessor(ctx, proc, events, nil)
 
 			if err := proc.FatalError(); err != nil {
@@ -175,7 +175,7 @@ func TestPreprocessor_Diagnose(t *testing.T) {
 	ctx := logging.AttachLogger(context.Background(), logger)
 
 	hs := newHandlers(resDir, logger, nopPull, nil, nil)
-	proc := processor.New(resDir, fakeDiagnose, hs)
+	proc := processor.New(resDir, fakeDiagnose, hs, "cros")
 	runProcessor(ctx, proc, events, errors.New("something went wrong"))
 
 	if err := proc.FatalError(); err != nil {
@@ -219,7 +219,7 @@ func TestPreprocessor_TimeoutReached(t *testing.T) {
 	ctx := logging.AttachLogger(context.Background(), logger)
 
 	hs := newHandlers(resDir, logger, nopPull, nil, nil)
-	proc := processor.New(resDir, nopDiagnose, hs)
+	proc := processor.New(resDir, nopDiagnose, hs, "cros")
 	testCtx, _ := xcontext.WithTimeout(ctx, time.Nanosecond, errors.New("Timeout reached"))
 	runProcessor(testCtx, proc, events, errors.New("Timeout reached"))
 

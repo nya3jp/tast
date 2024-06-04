@@ -187,7 +187,7 @@ func (d *Driver) runLocalTestsWithRemoteFixture(ctx context.Context, bundle stri
 		// copyOutputHandler should come last as it can block RunEnd for a while.
 		processor.NewCopyOutputHandler(os.Rename),
 	}
-	proc := processor.New(d.cfg.ResDir(), nopDiagnose, hs)
+	proc := processor.New(d.cfg.ResDir(), nopDiagnose, hs, bundle)
 	defer func() {
 		proc.RunEnd(ctx, retErr)
 	}()
@@ -311,7 +311,7 @@ func (d *Driver) runRemoteTestsOnce(ctx context.Context, bundle string, tests []
 		// copyOutputHandler should come last as it can block RunEnd for a while.
 		processor.NewCopyOutputHandler(os.Rename),
 	}
-	proc := processor.New(d.cfg.ResDir(), nopDiagnose, hs)
+	proc := processor.New(d.cfg.ResDir(), nopDiagnose, hs, bundle)
 	d.remoteBundleClient(bundle).RunTests(ctx, bcfg, rcfg, proc, ShouldRunTestsRecursively())
 	return proc.Results(), proc.FatalError()
 }

@@ -49,7 +49,7 @@ func TestRPCResultsHandler_Results(t *testing.T) {
 	defer client.Close()
 
 	hs := newHandlers(resDir, logging.NewMultiLogger(), nopPull, nil, client)
-	proc := processor.New(resDir, nopDiagnose, hs)
+	proc := processor.New(resDir, nopDiagnose, hs, "cros")
 	runProcessor(context.Background(), proc, events, nil)
 
 	if err := proc.FatalError(); err != nil {
@@ -123,7 +123,7 @@ func TestRPCResultsHandler_Terminate(t *testing.T) {
 	defer client.Close()
 
 	hs := newHandlers(resDir, logging.NewMultiLogger(), nopPull, nil, client)
-	proc := processor.New(resDir, nopDiagnose, hs)
+	proc := processor.New(resDir, nopDiagnose, hs, "cros")
 	runProcessor(context.Background(), proc, events, nil)
 
 	if err := proc.FatalError(); err == nil {

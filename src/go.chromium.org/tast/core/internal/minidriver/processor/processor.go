@@ -55,10 +55,10 @@ var (
 
 // New creates a new Processor.
 // resDir is a path to the directory where test execution results are written.
-func New(resDir string, diagnose DiagnoseFunc, handlers []Handler) *Processor {
+func New(resDir string, diagnose DiagnoseFunc, handlers []Handler, bundle string) *Processor {
 	resultsHandler := newResultsHandler()
 	hs := append([]Handler{resultsHandler}, handlers...)
-	preprocessor := newPreprocessor(resDir, diagnose, hs)
+	preprocessor := newPreprocessor(resDir, diagnose, hs, bundle)
 	return &Processor{
 		preprocessor:   preprocessor,
 		resultsHandler: resultsHandler,

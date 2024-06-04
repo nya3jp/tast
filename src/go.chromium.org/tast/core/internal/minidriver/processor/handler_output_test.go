@@ -55,7 +55,7 @@ func TestCopyOutputHandler(t *testing.T) {
 	}
 
 	hs := newHandlers(resDir, logging.NewMultiLogger(), os.Rename, nil, nil)
-	proc := processor.New(resDir, nopDiagnose, hs)
+	proc := processor.New(resDir, nopDiagnose, hs, "cros")
 	runProcessor(context.Background(), proc, events, nil)
 
 	if err := proc.FatalError(); err != nil {

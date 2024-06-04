@@ -50,7 +50,7 @@ func TestFailFastHandler(t *testing.T) {
 	counter := failfast.NewCounter(2)
 
 	hs := newHandlers(resDir, logging.NewMultiLogger(), nopPull, counter, nil)
-	proc := processor.New(resDir, nopDiagnose, hs)
+	proc := processor.New(resDir, nopDiagnose, hs, "cros")
 	runProcessor(context.Background(), proc, events, nil)
 
 	if err := proc.FatalError(); err == nil {

@@ -270,6 +270,7 @@ var softwareFeatureDefs = map[string]string{
 	"storage_wearout_detect":    `"storage_wearout_detect" && !"board:amd64-generic" && !"board:reven-vmtest" && !"betty" && !"tast_vm"`, // Skip wearout checks for VMs and eMMC < 5.0
 	"tablet_form_factor":        "tablet_form_factor",
 	"tflite_opencl":             `!(elm || hana)`, // these boards seem to have issues with the OpenCL TFLite delegate (b/233851820)
+	"tflite_intel_openvino":     `intel_openvino_delegate`,
 	"tflite_mtk_neuron":         `mtk_neuron_delegate`,
 	"thread_safe_libva_backend": "video_cards_amdgpu || video_cards_iHD",
 	"tpm":                       `"*"`,

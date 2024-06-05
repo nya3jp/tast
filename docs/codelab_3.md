@@ -38,12 +38,12 @@ In Tast, [chrome.automation] is wrapped in [chrome/uiauto] and can be imported l
 ```go
 import "go.chromium.org/tast-tests/cros/local/chrome/uiauto"
 ```
-[Accessibility Node]: https://developer.chrome.com/docs/extensions/reference/automation/#type-AutomationNode
-[chrome.automation]: https://developer.chrome.com/docs/extensions/reference/automation/
-[chrome/uiauto]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/go.chromium.org/tast-tests/cros/local/chrome/uiauto
-[Role]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/go.chromium.org/tast-tests/cros/local/chrome/uiauto/role#Role
-[Location]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/go.chromium.org/tast-tests/cros/local/coords#Rect
-[States List]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/go.chromium.org/tast-tests/cros/local/chrome/uiauto/state#State
+[Accessibility Node]: https://chromium.googlesource.com/chromium/src/+/refs/heads/main/extensions/common/api/automation.idl#872
+[chrome.automation]: https://chromium.googlesource.com/chromium/src/+/refs/heads/main/extensions/common/api/automation.idl
+[chrome/uiauto]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/chrome/uiauto
+[Role]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/chrome/uiauto/role#Role
+[Location]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/coords#Rect
+[States List]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/chrome/uiauto/state#State
 
 
 ## Simple Starter Test
@@ -100,7 +100,7 @@ Opening chrome, clicking Test Api Extension(T in top right) > Manage extensions,
 Enabling Developer mode toggle, Clicking background page > Console. It has a
 [Codelab].
 
-[here]: https://sites.google.com/a/chromium.org/dev/developers/how-tos/inspecting-ash
+[here]: https://www.chromium.org/developers/how-tos/inspecting-ash/
 [Codelab]: https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/third_party/autotest/files/docs/chrome-automation-codelab.md?q=chrome-automation-codelab.md
 
 
@@ -123,11 +123,11 @@ Firstly, there is the [nodewith] package that is used to describe a way to find 
 With it, you can specify things like the [Name("")], [Role(role.Button)], or [Focused()].
 A chain of nodes can be defined by using [Ancestor(ancestorNode)].
 
-[nodewith]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/go.chromium.org/tast-tests/cros/local/chrome/uiauto/nodewith
-[Name("")]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/go.chromium.org/tast-tests/cros/local/chrome/uiauto/nodewith#Name
-[Role(role.Button)]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/go.chromium.org/tast-tests/cros/local/chrome/uiauto/nodewith#Role
-[Focused()]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/go.chromium.org/tast-tests/cros/local/chrome/uiauto/nodewith#Focused
-[Ancestor(ancestorNode)]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/go.chromium.org/tast-tests/cros/local/chrome/uiauto/nodewith#Ancestor
+[nodewith]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/chrome/uiauto/nodewith
+[Name("")]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/chrome/uiauto/nodewith#Name
+[Role(role.Button)]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/chrome/uiauto/nodewith#Role
+[Focused()]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/chrome/uiauto/nodewith#Focused
+[Ancestor(ancestorNode)]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/chrome/uiauto/nodewith#Ancestor
 
 The a11y tree can sometimes be hard to interact with directly.
 From nodes moving around to parts of the tree temporarily disappearing,
@@ -143,13 +143,13 @@ right clicking, we could write:
 ui.WithTimeout(time.Minute).RightClick(nodewith.ClassName("WallpaperView"))
 ```
 
-[uiauto.Context]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/go.chromium.org/tast-tests/cros/local/chrome/uiauto#Context
-[LeftClick]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/go.chromium.org/tast-tests/cros/local/chrome/uiauto#Context.LeftClick
-[WaitUntilExists]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/go.chromium.org/tast-tests/cros/local/chrome/uiauto#Context.WaitUntilExists
-[FocusAndWait]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/go.chromium.org/tast-tests/cros/local/chrome/uiauto#Context.FocusAndWait
-[WithTimeout]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/go.chromium.org/tast-tests/cros/local/chrome/uiauto#Context.WithTimeout
-[WithInterval]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/go.chromium.org/tast-tests/cros/local/chrome/uiauto#Context.WithInterval
-[WithPollOpts]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/go.chromium.org/tast-tests/cros/local/chrome/uiauto#Context.WithPollOpts
+[uiauto.Context]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/chrome/uiauto#Context
+[LeftClick]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/chrome/uiauto#Context.LeftClick
+[WaitUntilExists]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/chrome/uiauto#Context.WaitUntilExists
+[FocusAndWait]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/chrome/uiauto#Context.FocusAndWait
+[WithTimeout]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/chrome/uiauto#Context.WithTimeout
+[WithInterval]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/chrome/uiauto#Context.WithInterval
+[WithPollOpts]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/chrome/uiauto#Context.WithPollOpts
 
 Finally, you may have noticed the slightly strange syntax `(ctx)` after
 `ui.RightClick(nodewith.ClassName("WallpaperView"))`.
@@ -183,8 +183,8 @@ if err := uiauto.Combine("do some bigger action",
 > Note: I generally advise using [uiauto.Combine] if you are doing more
 than one action in a row.
 
-[uiauto.Action]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/go.chromium.org/tast-tests/cros/local/chrome/uiauto#Action
-[uiauto.Combine]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/go.chromium.org/tast-tests/cros/local/chrome/uiauto#Combine
+[uiauto.Action]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/chrome/uiauto#Action
+[uiauto.Combine]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/chrome/uiauto#Combine
 
 ## Dealing With a Race Condition
 
@@ -333,7 +333,7 @@ if err := ui.WaitUntilExists(nodewith.NameContaining("Deep Purple").Role(role.He
 > Note: The code below is using [uiauto.Combine] to simplify all of the steps above into
 one chain of operations.
 
-[uiauto.Combine]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/go.chromium.org/tast-tests/cros/local/chrome/uiauto#Combine
+[uiauto.Combine]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/chrome/uiauto#Combine
 
 ```go
 // Copyright <copyright_year> The ChromiumOS Authors

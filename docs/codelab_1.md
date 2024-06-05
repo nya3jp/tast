@@ -211,7 +211,7 @@ spaces, we use `%q` so they'll be quoted automatically. The `<foo>
 printed/produced/= <bar>; want <baz>` form is also common in Go unit tests and
 recommended in Tast.
 
-[testexec]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/go.chromium.org/tast-tests/cros/common/testexec
+[testexec]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/common/testexec
 [exec]: https://golang.org/pkg/os/exec/
 [shutil]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/shutil
 

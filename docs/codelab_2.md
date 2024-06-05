@@ -312,7 +312,7 @@ for write operations or `ctx` context deadline has been reached (indicating that
 the test completed).
 
 [unidirectional channel]: https://gobyexample.com/channel-directions
-[name the return arguments]: https://github.com/golang/go/wiki/CodeReviewComments#named-result-parameters
+[name the return arguments]: https://go.dev/wiki/CodeReviewComments#named-result-parameters
 [testing.ContextLog]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/testing#ContextLog
 [errors.Wrap]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/errors#Wrap
 [Formatting]: https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#Formatting

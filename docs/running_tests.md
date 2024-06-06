@@ -243,27 +243,15 @@ Any port is fine as long as it is not used by other applications. Leave the SSH 
 
 In another window inside chroot:
 
+Without servo port
+
 ```shell
 tast run localhost:<port> <test>
 ```
 
-Specific example:
+With servo port
 
 ```
-DUT_HOSTNAME=chromeos6-row18-rack18-host17
-SERVO_HOSTNAME=chromeos6-row18-rack18-labstation4
-SERVO_PORT=9972
-LOCAL_SERVO_SSH_PORT=2003
-LOCAL_DUT_SSH_PORT=2005
-ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o IdentityFile=~/.ssh/testing_rsa -l root ${SERVO_HOSTNAME?} "start servod PORT=${SERVO_PORT?}"
-go run ~/chromiumos/src/platform/dev/contrib/sshwatcher/sshwatcher.go ${SERVO_HOSTNAME?} ${LOCAL_SERVO_SSH_PORT?} ${DUT_HOSTNAME?} ${LOCAL_DUT_SSH_PORT?}
-
-<new window>
-cd ~/chromiumos ; cros_sdk --no-ns-pid
-SERVO_PORT=9972
-LOCAL_SERVO_SSH_PORT=2003
-LOCAL_DUT_SSH_PORT=2005
-
 tast run --var=servo=localhost:${SERVO_PORT?}:ssh:${LOCAL_SERVO_SSH_PORT?} localhost:${LOCAL_DUT_SSH_PORT?} firmware.Fixture.normal
 ```
 

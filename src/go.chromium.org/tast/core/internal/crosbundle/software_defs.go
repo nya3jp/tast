@@ -119,8 +119,9 @@ var softwareFeatureDefs = map[string]string{
 	"firewall":                  "!moblab",                            // Moblab has relaxed iptables rules
 	"first_class_servo_working": `!("board:brya" || "board:volteer")`, // TODO(b/274634861): remove the first_class_servo_working when fixed.
 	"flashrom":                  `!"board:amd64-generic" && !"board:reven-vmtest" && !"betty" && !"tast_vm"`,
-	"flex_id":                   "flex_id",       // Enable using flex_id for enrollment
-	"flex_internal":             "flex_internal", // Enable using flex_internal to pull in data (URLs, API keys, etc.) only needed by official Flex releases
+	"flex_device":               `"board:reven*"`, // Determine if the device is a ChromeOS Flex device by which board it's using
+	"flex_id":                   "flex_id",        // Enable using flex_id for enrollment
+	"flex_internal":             "flex_internal",  // Enable using flex_internal to pull in data (URLs, API keys, etc.) only needed by official Flex releases
 	// Enable using flex_hwis for hardware data sending.
 	// Ignore reven board as reven board is not a VM and does not have a VPD, and cannot use enroll fixtures.
 	"flex_hwis":                  `flex_internal && "board:reven-vmtest"`,

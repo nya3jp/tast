@@ -1206,7 +1206,7 @@ func InternalTouchpad() Condition {
 		if hf.GetTouchpad() == nil ||
 			hf.GetTouchpad().GetPresent() != configpb.HardwareFeatures_PRESENT ||
 			hf.GetTouchpad().TouchpadType != configpb.HardwareFeatures_Touchpad_INTERNAL {
-			return unsatisfied("DUT does not have a fixed touchpad")
+			return unsatisfied("DUT does not have a fixed touchpad or is a ChromeOS Flex device.")
 		}
 		return satisfied()
 	},

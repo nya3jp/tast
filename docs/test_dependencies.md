@@ -113,8 +113,10 @@ The following software features are defined:
 * `fbpreprocessord`- Firmware dump processor daemon.
 * `firewall` - Standard ChromeOS network firewall rules.
 * `flashrom` - Userspace utility to update firmware.
+* `flex_device` - Whether the device is a ChromeOS Flex device
 * `flex_id` - Enable using [flex_id](http://go/chromeos-flex-id) for enrollment.
 * `flex_internal` - Enable using flex_internal to pull in data (URLs, API keys, etc.) only needed by official Flex releases.
+* `flex_hwis` - Enable using flex_hwis for hardware data sending.
 * `gaia` - Support for performing user login via Chrome through Google account service
 * `ghostscript` - Ghostscript and dependent packages are available for printing.
 * `google_virtual_keyboard` - The proprietary Google onscreen virtual keyboard

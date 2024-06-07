@@ -256,6 +256,7 @@ var softwareFeatureDefs = map[string]string{
 	// Notice: The flag would be false when a board didn't have any attributes.
 	"reboot":                `"*"`,
 	"reven_oobe_config":     `reven_oobe_config`,
+	"s5_inactivity_timeout": `!("board:asurada" || "board:cherry" || "board:kukui" || "board:jacuzzi")`,
 	"secagentd_auth_stable": `("board:brya" || "board:brya-arc-t" || "board:reven" || "board:betty" || "board:grunt" || "board:jacuzzi" || "board:octopus" || "board:octopus-arc-r" || "board:octopus-arc-t")`,
 	"selinux":               "selinux",
 	"selinux_current":       "selinux && !selinux_experimental",

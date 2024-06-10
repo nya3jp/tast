@@ -8,7 +8,7 @@ Tast code should also follow Go's established best practices as described in
 read and source of style suggestions.
 
 [Effective Go]: https://golang.org/doc/effective_go.html
-[Go Code Review Comments]: https://github.com/golang/go/wiki/CodeReviewComments
+[Go Code Review Comments]: https://go.dev/wiki/CodeReviewComments
 [Go Style]: http://go/go-style
 
 [TOC]
@@ -44,9 +44,9 @@ out, err := testexec.CommandContext(...).CombinedOutput()
 if regexp.Match(out, "...") { ... }
 ```
 
-[`CombinedOutput`]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/go.chromium.org/tast-tests/cros/common/testexec#Cmd.CombinedOutput
-[`Output`]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/go.chromium.org/tast-tests/cros/common/testexec#Cmd.Output
-[`Run`]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/go.chromium.org/tast-tests/cros/common/testexec#Cmd.Run
+[`CombinedOutput`]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/common/testexec#Cmd.CombinedOutput
+[`Output`]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/common/testexec#Cmd.Output
+[`Run`]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/common/testexec#Cmd.Run
 
 
 ## Context cancellation
@@ -234,7 +234,7 @@ In many cases you can avoid passing [`testing.State`] to a function:
 [`testing.ContextLog`]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/testing#ContextLog
 [`testing.State.OutDir`]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/testing#State.OutDir
 [`testing.ContextOutDir`]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/testing#ContextOutDir
-[the allowlist in tast-lint]: https://chromium.googlesource.com/chromiumos/platform/tast/+/refs/heads/main/src/go.chromium.org/tast/core/cmd/tast-lint/check/disallow_testingstate.go
+[the allowlist in tast-lint]: https://chromium.googlesource.com/chromiumos/platform/tast/+/refs/heads/main/src/go.chromium.org/tast/core/cmd/tast-lint/internal/check/disallow_testingstate.go
 
 
 ## Test dependencies

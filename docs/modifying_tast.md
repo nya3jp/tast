@@ -25,7 +25,7 @@ and terminology in Tast.
     initiate running remote tests.
 
 [tast executable]: https://chromium.googlesource.com/chromiumos/platform/tast/+/main/src/go.chromium.org/tast/core/cmd/tast/
-[local_test_runner]: https://chromium.googlesource.com/chromiumos/platform/tast/+/main/src/go.chromium.org/tast/core/cmd/local_test_runner/
+[local_test_runner]: https://chromium.googlesource.com/chromiumos/platform/tast/+/main/src/go.chromium.org/tast/runner/local_test_runner/
 [remote_test_runner]: https://chromium.googlesource.com/chromiumos/platform/tast/+/main/src/go.chromium.org/tast/core/cmd/remote_test_runner/
 
 ### Libraries

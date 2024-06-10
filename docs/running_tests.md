@@ -198,7 +198,7 @@ Various files and directories are created within the results directory:
 [run.TestResult]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/cmd/tast/internal/run#TestResult
 [JSONL]: http://jsonlines.org/
 [output files]: writing_tests.md#Output-files
-[perf]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/go.chromium.org/tast-tests/cros/common/perf
+[perf]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/common/perf
 [timing]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/timing
 
 ## Reset the device owner of the DUT after test run

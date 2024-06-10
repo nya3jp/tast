@@ -20,7 +20,7 @@ Test names are automatically derived from tests' package and function names and
 should not be explicitly specified when defining tests.
 
 [Go's naming conventions]: https://golang.org/doc/effective_go.html#names
-[acronyms should be fully capitalized]: https://github.com/golang/go/wiki/CodeReviewComments#initialisms
+[acronyms should be fully capitalized]: https://go.dev/wiki/CodeReviewComments#initialisms
 
 ### Code location
 
@@ -202,7 +202,7 @@ Documentation] page.
 [golint]: https://github.com/golang/lint
 [tast-lint]: https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/src/go.chromium.org/tast/core/cmd/tast-lint/
 [Effective Go]: https://golang.org/doc/effective_go.html
-[Go Code Review Comments]: https://github.com/golang/go/wiki/CodeReviewComments
+[Go Code Review Comments]: https://go.dev/wiki/CodeReviewComments
 [Go FAQ]: https://golang.org/doc/faq
 [Go Documentation]: https://golang.org/doc/
 
@@ -236,7 +236,7 @@ run tests for a single package or all packages.
 
 [How to Write Go Code: Testing]: https://golang.org/doc/code.html#Testing
 [Go's testing package]: https://golang.org/pkg/testing/
-[Best practices for writing ChromeOS unit tests]: https://chromium.googlesource.com/chromiumos/docs/+/main/testing/unit_tests.md
+[Best practices for writing ChromeOS unit tests]: https://www.chromium.org/chromium-os/developer-library/guides/testing/unit-tests/
 [fast_build.sh]: modifying_tast.md#fast_build_sh
 
 ### Import
@@ -559,8 +559,8 @@ passed to [chrome.New] to pass additional command-line flags (e.g.
 The [tast-users mailing list] is a good place to ask questions about test
 dependencies.
 
-[chrome.ExtraArgs]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/go.chromium.org/tast-tests/cros/local/chrome#ExtraArgs
-[chrome.New]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/go.chromium.org/tast-tests/cros/local/chrome#New
+[chrome.ExtraArgs]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/chrome#ExtraArgs
+[chrome.New]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/chrome#New
 [tast-users mailing list]: https://groups.google.com/a/chromium.org/forum/#!forum/tast-users
 [parameterized tests]: #Parameterized-tests
 
@@ -719,7 +719,7 @@ Preconditions, predecessor of fixtures, are not recommended for new tests.
 [`testing.Fixture`]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/internal/testing#Fixture
 [`testing.FixtureImpl`]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/internal/testing#FixtureImpl
 [`testing.FixtTestState`]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/internal/testing#FixtTestState
-[chrome.New]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/go.chromium.org/tast-tests/cros/local/chrome#New
+[chrome.New]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/chrome#New
 [chromeLoggedIn]: https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform/tast-tests/src/go.chromium.org/tast-tests/cros/local/chrome/fixture.go
 [`testing.Test.Fixture`]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/internal/testing#Test.Fixture
 [chrome/fixture.go]: https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform/tast-tests/src/go.chromium.org/tast-tests/cros/local/chrome/fixture.go
@@ -992,7 +992,7 @@ for _, tc := range []struct {
 }
 ```
 
-[table-driven test]: https://github.com/golang/go/wiki/TableDrivenTests
+[table-driven test]: https://go.dev/wiki/TableDrivenTests
 [testing.State.Run]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast.git/src/go.chromium.org/tast/core/testing#State.Run
 
 ## Errors and logging
@@ -1194,7 +1194,7 @@ Semicolons are appropriate for joining independent clauses:
 s.Log("Attempt failed; trying again")
 ```
 
-[Go's error string conventions]: https://github.com/golang/go/wiki/CodeReviewComments#error-strings
+[Go's error string conventions]: https://go.dev/wiki/CodeReviewComments#error-strings
 [output file]: #Output-files
 
 ### Support packages
@@ -1438,7 +1438,7 @@ package and symlinked into each test package's `data` subdirectory. See the
 the [ui.PlayPauseChrome] and [arc.MediaSessionGain] tests, for example.
 
 [media_session_test.html]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/main/src/go.chromium.org/tast-tests/cros/local/chrome/mediasession/data/media_session_test.html
-[mediasession package]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/go.chromium.org/tast-tests/cros/local/chrome/mediasession
+[mediasession package]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/chrome/mediasession
 [ui.PlayPauseChrome]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/main/src/go.chromium.org/tast-tests/cros/local/bundles/cros/ui/play_pause_chrome.go
 [arc.MediaSessionGain]: https://chromium.googlesource.com/chromiumos/platform/tast-tests/+/main/src/go.chromium.org/tast-tests/cros/local/bundles/cros/arc/media_session_gain.go
 

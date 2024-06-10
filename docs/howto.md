@@ -52,7 +52,7 @@ if err != nil {
 In the example the command `lshw -C multimedia` is executed on the command line. The output of the execution is written into the out variable by calling the `Output` function and should then contain a list of all connected multimedia devices.
 By passing `testexec.DumpLogOnError` we also get the stderr output in case the execution fails.
 
-[testexec.CommandContext]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/go.chromium.org/tast-tests/cros/common/testexec#CommandContext
+[testexec.CommandContext]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/common/testexec#CommandContext
 
 ### Checking windows
 In some cases checking if certain windows have been opened, or a certain number of windows have been opened can be enough to check if a test was successful or not. To do that [ash.GetAllWindows] can be used. See the [ash package documentation] for more information.
@@ -76,8 +76,8 @@ for _, w := range ws {
 }
 ```
 
-[ash.GetAllWindows]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/go.chromium.org/tast-tests/cros/local/chrome/ash#GetAllWindows
-[chrome.TestAPIConn]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/go.chromium.org/tast-tests/cros/local/chrome#Chrome.TestAPIConn
+[ash.GetAllWindows]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/chrome/ash#GetAllWindows
+[chrome.TestAPIConn]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/chrome#Chrome.TestAPIConn
 [ash package documentation]: https://chromium.googlesource.com/chromium/src/+/HEAD/ash/README.md
 
 ### Checking files
@@ -138,7 +138,7 @@ if err := conn.Eval(ctx, code, &found); err != nil {
 ```
 The [chrome.Conn.Eval] can also be used on the connection to Tast's test extension which gives access to other APIs. A connection can be created with [chrome.TestAPIConn]. The connection to Tast's test extension should not be closed as it is shared.
 
-[chrome.Conn.Eval]: https://godoc.org/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/go.chromium.org/tast-tests/cros/local/chrome#Conn.Eval
+[chrome.Conn.Eval]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/chrome/internal/driver#Conn.Eval
 
 ### Find the JavaScript path for an element
 In the previous paragraph we took a look at how to evaluate JavaScript expressions in a Tast test, however finding the JavaScript expression you need for a certain test can be difficult.
@@ -224,4 +224,4 @@ func MyTest(ctx context.Context, s *testing.State) {
 In this example we created a small website with two files: `my_test.html` and `my_test.js`, and added the files to the test in the definition of the metadata for the test.
 In the test we start a HTTP server as a `http.FileServer` which serves requests for the files located in the folder given as argument. The used folder, `s.DataFileSystem()`, is the folder where additional files for the test are copied to on the test device, which is where our files for the website end up. Then we open the website in a new Chrome window.
 
-[httptest.NewServer]: https://golang.org/pkg/os/
+[httptest.NewServer]: https://pkg.go.dev/net/http/httptest#NewServer

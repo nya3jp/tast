@@ -99,7 +99,7 @@ like disallowed cross-test dependencies and forbidden imports and function
 calls. `tast-lint` is compiled and executed by [run_lint.sh], which is executed
 by [PRESUBMIT.cfg] when a change is uploaded for review.
 
-[tast-lint]: https://chromium.googlesource.com/chromiumos/platform/tast/+/refs/heads/main/cmd/tast-lint
+[tast-lint]: https://chromium.googlesource.com/chromiumos/platform/tast/+/refs/heads/main/src/go.chromium.org/tast/core/cmd/tast-lint/
 [run_lint.sh]: https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/tools/run_lint.sh
 [PRESUBMIT.cfg]: https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/PRESUBMIT.cfg
 

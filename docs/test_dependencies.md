@@ -226,7 +226,7 @@ The following software features are defined:
 stack-sampled metrics.
 * `storage_wearout_detect` - The ability to measure storage device health.
 * `tablet_form_factor` - The device's primary form factor is tablet
-* `tast_vm` - The test is running in a VM [managed by chromite](https://chromium.googlesource.com/chromiumos/chromite/+/HEAD/lib/cros_test.py#396).
+* `tast_vm` - The test is running in a VM [managed by chromite](https://chromium.googlesource.com/chromiumos/chromite/+/HEAD/lib/cros_test.py#489).
 * `tflite_opencl` - Skips boards which have issues with the OpenCL TFLite
     delegate (b/233851820).
 * `tflite_intel_openvino` - The availability of TFLite OpenVINO Delegate for NPU.
@@ -284,7 +284,7 @@ stack-sampled metrics.
 [hardware overlays]: https://en.wikipedia.org/wiki/Hardware_overlay
 [Intel Dynamic Platform and Thermal Framework]: https://01.org/intel%C2%AE-dynamic-platform-and-thermal-framework-dptf-chromium-os
 [lacros]: https://chromium.googlesource.com/chromium/src.git/+/HEAD/docs/lacros.md
-[sandboxed]: https://chromium.googlesource.com/chromium/src/+/HEAD/docs/linux_sandboxing.md
+[sandboxed]: https://chromium.googlesource.com/chromium/src/+/HEAD/docs/linux/sandboxing.md
 [Memory stats collection daemon]: https://chromium.googlesource.com/chromiumos/platform2/+/main/metrics/memd/
 [OCI]: https://www.opencontainers.org/
 [Optical Character Recognition Service]: https://chromium.googlesource.com/chromiumos/platform2/+/HEAD/ocr/README.md
@@ -292,9 +292,9 @@ stack-sampled metrics.
 [screenshot command]: https://chromium.googlesource.com/chromiumos/platform2/+/main/screen-capture-utils/
 [Trusted Platform Module]: https://en.wikipedia.org/wiki/Trusted_Platform_Module
 [Transparent Hugepage]: https://www.kernel.org/doc/Documentation/vm/transhuge.txt
-[run virtual machines]: https://chromium.googlesource.com/chromiumos/docs/+/main/containers_and_vms.md
+[run virtual machines]: https://www.chromium.org/chromium-os/developer-library/guides/containers/containers-and-vms/
 [Vulkan]: https://www.khronos.org/vulkan/
-[virtual-usb-printer-readme]: https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/third_party/virtual-usb-printer/README.md
+[virtual-usb-printer-readme]: https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/third_party/virtual-usb-printer/virtual_usb_printer/README.md
 [wilco]: https://sites.google.com/corp/google.com/wilco/home
 
 ### New features
@@ -349,7 +349,7 @@ please ask for help on the [tast-users mailing list].
 [make.defaults]: https://chromium.googlesource.com/chromiumos/overlays/board-overlays/+/main/overlay-brya/profiles/base/make.defaults
 [software_defs.go]: https://chromium.googlesource.com/chromiumos/platform/tast/+/main/src/go.chromium.org/tast/core/internal/crosbundle/software_defs.go
 [tast-use-flags]: https://chromium.googlesource.com/chromiumos/overlays/chromiumos-overlay/+/main/chromeos-base/tast-use-flags/
-[Cq-Depend]: https://chromium.googlesource.com/chromiumos/docs/+/main/contributing.md#cq-depend
+[Cq-Depend]: https://www.chromium.org/chromium-os/developer-library/guides/development/contributing/#cl-dependencies
 [tast-users mailing list]: https://groups.google.com/a/chromium.org/g/tast-users
 
 #### Example changes

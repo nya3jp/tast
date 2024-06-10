@@ -48,8 +48,8 @@ In Tast, [uidetection] can be imported like so:
 import "go.chromium.org/tast-tests/cros/local/uidetection"
 ```
 
-[uiauto]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/go.chromium.org/tast-tests/cros/local/chrome/uiauto
-[uidetection]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/go.chromium.org/tast-tests/cros/local/uidetection
+[uiauto]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/chrome/uiauto
+[uidetection]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/uidetection
 
 ## Simple Starter Test
 
@@ -184,7 +184,7 @@ if err := uiauto.Combine("verify detections",
 ```
 
 [Data files in Tast]: https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#Data-files
-[uiauto.Combine]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/go.chromium.org/tast-tests/cros/local/chrome/uiauto#Combine
+[uiauto.Combine]: https://pkg.go.dev/chromium.googlesource.com/chromiumos/platform/tast-tests.git/src/chromiumos/tast/local/chrome/uiauto#Combine
 
 ## Full Code
 

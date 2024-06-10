@@ -131,7 +131,7 @@ reviews.
 *   [Go Code Review Comments]
 *   [Tast: Code Review Comments]
 
-[Go Code Review Comments]: https://github.com/golang/go/wiki/CodeReviewComments
+[Go Code Review Comments]: https://go.dev/wiki/CodeReviewComments
 [Tast: Code Review Comments]: code_review_comments.md
 
 ### Verify Need for Lacros Variant

@@ -68,7 +68,7 @@ func compileGlobs(pats []string) (*Matcher, error) {
 	names := make(map[string]struct{})
 	globs := make(map[string]*regexp.Regexp)
 	for _, pat := range pats {
-		hasWildcard, err := validateGlob(pat)
+		hasWildcard, err := ValidateGlob(pat)
 		if err != nil {
 			return nil, err
 		}
@@ -85,9 +85,9 @@ func compileGlobs(pats []string) (*Matcher, error) {
 	return &Matcher{names: names, globs: globs}, nil
 }
 
-// validateGlob checks if glob is a valid glob. It also returns if pat contains
+// ValidateGlob checks if glob is a valid glob. It also returns if pat contains
 // wildcards.
-func validateGlob(glob string) (hasWildcard bool, err error) {
+func ValidateGlob(glob string) (hasWildcard bool, err error) {
 	for _, ch := range glob {
 		switch {
 		case ch == '*':
@@ -95,14 +95,14 @@ func validateGlob(glob string) (hasWildcard bool, err error) {
 		case unicode.IsLetter(ch), unicode.IsDigit(ch), ch == '.', ch == '_':
 			continue
 		default:
-			return hasWildcard, fmt.Errorf("invalid character %q in pattern %v", ch, glob)
+			return hasWildcard, fmt.Errorf("invalid character %q in pattern %q", ch, glob)
 		}
 	}
 	return hasWildcard, nil
 }
 
 // compileGlob returns a compiled regular expression corresponding to glob.
-// glob must be verified in advance with validateGlob.
+// glob must be verified in advance with ValidateGlob.
 func compileGlob(glob string) (*regexp.Regexp, error) {
 	glob = strings.Replace(glob, ".", "\\.", -1)
 	glob = strings.Replace(glob, "*", ".*", -1)
@@ -115,7 +115,7 @@ func compileGlob(glob string) (*regexp.Regexp, error) {
 //
 // DEPRECATED: Use Matcher instead.
 func NewTestGlobRegexp(glob string) (*regexp.Regexp, error) {
-	if _, err := validateGlob(glob); err != nil {
+	if _, err := ValidateGlob(glob); err != nil {
 		return nil, err
 	}
 	return compileGlob(glob)

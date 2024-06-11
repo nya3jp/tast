@@ -5,6 +5,7 @@
 package testing_test
 
 import (
+	"strings"
 	gotesting "testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -128,6 +129,25 @@ func TestMatcherUnmatchedPatternsNames(t *gotesting.T) {
 		unmatched := m.UnmatchedPatterns(tc.tests)
 		if diff := cmp.Diff(unmatched, tc.want); diff != "" {
 			t.Errorf("UnmatchedPatterns returned unexpected patterns with tests %s, patterns %s (-got +want):\n%s", tc.tests, tc.pats, diff)
+		}
+	}
+}
+
+// TestBadPatternHasIntuitiveMessage checks that bad patterns return an error message
+// in a way that's easy to understand.
+func TestBadPatternHasIntuitiveMessage(t *gotesting.T) {
+	t.Parallel()
+	const badPattern = `badPattern\`
+	const quotedBadPattern = `"badPattern\\"`
+	ok, err := testing.ValidateGlob(badPattern)
+	if ok {
+		t.Errorf("ValidateGlob(%q) should have returned false", badPattern)
+	}
+	if err == nil {
+		t.Errorf("ValidateGlob(%q) should have returned an error", badPattern)
+	} else {
+		if !strings.Contains(err.Error(), quotedBadPattern) {
+			t.Errorf("ValidateGlob(%q) should have returned an error containing %q", badPattern, quotedBadPattern)
 		}
 	}
 }

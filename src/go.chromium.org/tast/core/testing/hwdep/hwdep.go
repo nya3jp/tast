@@ -2185,15 +2185,6 @@ func SupportsV4L2FlatVideoDecoding() Condition {
 		if satisfy, _, err := GPUFamily("rogue").Satisfied(f); err == nil && satisfy {
 			return satisfied()
 		}
-		if satisfy, _, err := GPUFamily("mali-g52").Satisfied(f); err == nil && satisfy {
-			return satisfied()
-		}
-		if satisfy, _, err := GPUFamily("mali-g57").Satisfied(f); err == nil && satisfy {
-			return satisfied()
-		}
-		if satisfy, _, err := GPUFamily("mali-g72").Satisfied(f); err == nil && satisfy {
-			return satisfied()
-		}
 
 		return unsatisfied("SoC does not support V4L2 Flat HW video decoding")
 	}}

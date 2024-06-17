@@ -163,7 +163,7 @@ var softwareFeatureDefs = map[string]string{
 	"landlock_enabled":       `!("kernel-4_14" || "kernel-4_19" || "kernel-5_4")`,
 	"lvm_stateful_partition": "lvm_stateful_partition",
 	"mbo":                    "mbo",
-	"meets_device":           `("board:fizz-cfm" || "board:kalista-cfm" || "board:ambassador" || "board:excelsior" || "board:endeavour")`,
+	"meet_device":            `("board:fizz-cfm" || "board:kalista-cfm" || "board:ambassador" || "board:excelsior" || "board:endeavour")`,
 	// QEMU has implemented memfd_create, but we haven't updated
 	// to a release with the change (https://bugs.launchpad.net/qemu/+bug/1734792).
 	// Remove "|| betty || tast_vm" from list when we upgrade.
@@ -223,7 +223,7 @@ var softwareFeatureDefs = map[string]string{
 	"no_tpm_dynamic":              "!tpm_dynamic",
 	"no_ubsan":                    "!ubsan",
 	"no_vulkan":                   "!vulkan",
-	"non_meets_device":            `!("board:fizz-cfm" || "board:kalista-cfm" || "board:ambassador" || "board:excelsior" || "board:endeavour")`,
+	"non_meet_device":             `!("board:fizz-cfm" || "board:kalista-cfm" || "board:ambassador" || "board:excelsior" || "board:endeavour")`,
 	"nvme":                        "nvme",
 	"oci":                         "containers && !moblab", // run_oci doesn't work on Moblab: https://crbug.com/951691
 	"ocr":                         "ocr",

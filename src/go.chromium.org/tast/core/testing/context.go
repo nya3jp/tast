@@ -94,3 +94,8 @@ func ContextSoftwareDeps(ctx context.Context) ([]string, bool) {
 func ContextEnsurePrivateAttr(ctx context.Context, name string) {
 	testcontext.EnsurePrivateAttr(ctx, name)
 }
+
+// SetLogPrefix sets log prefix for the context.
+func SetLogPrefix(ctx context.Context, prefix string) context.Context {
+	return logging.SetLogPrefix(ctx, prefix)
+}

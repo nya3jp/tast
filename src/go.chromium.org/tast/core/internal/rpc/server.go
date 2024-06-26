@@ -238,13 +238,13 @@ func serverOpts(ls *remoteLoggingServer, logger logging.Logger, calls *sync.Wait
 			var err error
 			outDir, err = os.MkdirTemp("", "rpc-outdir.")
 			if err != nil {
-				return nil, nil, err
+				return nil, nil, errors.Wrap(err, "tempdir failed")
 			}
 
 			// Make the directory world-writable so that tests can create files as other users,
 			// and set the sticky bit to prevent users from deleting other users' files.
 			if err := os.Chmod(outDir, 0777|os.ModeSticky); err != nil {
-				return nil, nil, err
+				return nil, nil, errors.Wrap(err, "chmod failed")
 			}
 
 			ctx = testcontext.WithCurrentEntity(ctx, incomingCurrentContext(md, outDir))
@@ -288,14 +288,16 @@ func serverOpts(ls *remoteLoggingServer, logger logging.Logger, calls *sync.Wait
 			defer func() {
 				if r := recover(); r != nil {
 					err = status.Error(codes.Internal, fmt.Sprintf("panic: %v", r))
-					logging.Info(ctx, "GRPC Panic Stack trace:\n", string(debug.Stack()))
+					logging.Info(ctx, "GRPC panic stack trace:\n", string(debug.Stack()))
+				} else if err != nil {
+					logging.Infof(ctx, "GRPC error stack trace: %+v", err)
 				}
 			}()
 			calls.Add(1)
 			defer calls.Done()
 			ctx, trailer, err := hook(ctx, info.FullMethod)
 			if err != nil {
-				return nil, err
+				return nil, errors.Wrap(err, "hook failed")
 			}
 			defer func() {
 				grpc.SetTrailer(ctx, trailer())
@@ -306,7 +308,9 @@ func serverOpts(ls *remoteLoggingServer, logger logging.Logger, calls *sync.Wait
 			defer func() {
 				if r := recover(); r != nil {
 					err = status.Error(codes.Internal, fmt.Sprintf("panic: %v", r))
-					logging.Info(stream.Context(), "GRPC Panic Stack trace:\n", string(debug.Stack()))
+					logging.Info(stream.Context(), "GRPC panic Stack trace:\n", string(debug.Stack()))
+				} else if err != nil {
+					logging.Infof(stream.Context(), "GRPC error stack trace: %+v", err)
 				}
 			}()
 			calls.Add(1)

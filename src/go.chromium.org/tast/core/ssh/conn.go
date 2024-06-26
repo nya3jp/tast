@@ -222,10 +222,7 @@ func New(ctx context.Context, o *Options) (*Conn, error) {
 		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
 	}
 
-	isCloudbot := false
-	if id, found := os.LookupEnv("SWARMING_BOT_ID"); found && strings.HasPrefix(id, "cloudbots-") {
-		isCloudbot = true
-	}
+	isCloudbot := os.Getenv("CLOUDBOTS_LAB_DOMAIN") != ""
 	for i := 0; i < o.ConnectRetries+1; i++ {
 		start := time.Now()
 		var cl *ssh.Client

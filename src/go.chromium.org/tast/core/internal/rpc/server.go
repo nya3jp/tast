@@ -236,7 +236,7 @@ func serverOpts(ls *remoteLoggingServer, logger logging.Logger, calls *sync.Wait
 			}
 
 			var err error
-			outDir, err = ioutil.TempDir("", "rpc-outdir.")
+			outDir, err = os.MkdirTemp("", "rpc-outdir.")
 			if err != nil {
 				return nil, nil, err
 			}

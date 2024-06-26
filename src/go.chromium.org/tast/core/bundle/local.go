@@ -16,6 +16,18 @@ import (
 // Usually the Main function of a local test bundles should just this function,
 // and pass the returned status code to os.Exit.
 func LocalDefault(d Delegate) int {
+	// Find temp dir if os.TempDir doesn't exist.
+	if _, err := os.Stat(os.TempDir()); err != nil {
+		for _, tempDir := range []string{"/tmp", "/data/local/tmp"} {
+			if _, err := os.Stat(tempDir); err != nil {
+				continue
+			}
+			if err := os.Setenv("TMPDIR", tempDir); err != nil {
+				panic("failed to setenv TMPDIR")
+			}
+			break
+		}
+	}
 	stdin, stdout, stderr := lockStdIO()
 	return bundle.Local(os.Args[1:], stdin, stdout, stderr, testing.GlobalRegistry(), d)
 }

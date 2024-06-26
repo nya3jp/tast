@@ -17,5 +17,17 @@ import (
 )
 
 func main() {
+	// Find temp dir if os.TempDir doesn't exist.
+	if _, err := os.Stat(os.TempDir()); err != nil {
+		for _, tempDir := range []string{"/tmp", "/data/local/tmp"} {
+			if _, err := os.Stat(tempDir); err != nil {
+				continue
+			}
+			if err := os.Setenv("TMPDIR", tempDir); err != nil {
+				panic("failed to setenv TMPDIR")
+			}
+			break
+		}
+	}
 	os.Exit(runner.RunLocal())
 }

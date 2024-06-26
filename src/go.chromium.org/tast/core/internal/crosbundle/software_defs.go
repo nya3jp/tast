@@ -236,6 +236,7 @@ var softwareFeatureDefs = map[string]string{
 	"no_ondevice_image_content_annotation":    "!(ml_service && ondevice_image_content_annotation)",
 	"ondevice_speech":                         "ml_service && ondevice_speech",
 	"ondevice_text_suggestions":               "ml_service && ondevice_text_suggestions",
+	"pidfd_open":                              `!("kernel-4_14" || "kernel-4_19")`,
 	"pinweaver":                               `"ti50_onboard" || "cr50_onboard" || "pinweaver_csme" || ("tpm2_simulator" && "tpm2")`,
 	"play_store":                              `arc && !("board:novato" || "board:novato-arc64" || "board:novato-arcnext")`,
 	"plugin_vm":                               "pita", // boards that can run Plugin VM.

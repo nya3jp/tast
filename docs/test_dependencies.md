@@ -201,6 +201,7 @@ The following software features are defined:
 * `ondevice_text_suggestions` - On-device txt suggestions support in `ml_service`.
 * `pinweaver` - Pinweaver support, either by GSC or Intel CSME.
     This implies `ml_service`.
+* `pidfd_open` - pidfd_open function implemented in the kernel.
 * `play_store` - Boards where Google Play Store is supported.
 * `plugin_vm` - The ability to run Plugin VMs.
 * `proprietary_codecs` - Indicates if Chrome supports proprietary video

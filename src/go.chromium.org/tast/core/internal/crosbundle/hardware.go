@@ -814,7 +814,7 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 			}
 			resComponents := strings.Split(strings.TrimSpace(string(out)), "/")
 			res := resComponents[len(resComponents)-1]
-			if res == "ufshcd" {
+			if strings.Contains(res, "ufshcd") {
 				return true
 			}
 			return false

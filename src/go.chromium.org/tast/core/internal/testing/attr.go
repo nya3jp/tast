@@ -719,6 +719,10 @@ Tests in this group are not used for build verification.
 				Name: "gsc_nightly",
 				Desc: `A set of tests that should run nightly`,
 			},
+			{
+				Name: "gsc_tcg",
+				Desc: `A set of tests that belong to the TCG suite`,
+			},
 		},
 	},
 	{

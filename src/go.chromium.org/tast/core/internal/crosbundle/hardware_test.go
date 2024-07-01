@@ -151,28 +151,35 @@ func TestGetDiskSize(t *testing.T) {
 }
 
 func TestFindIntelSOC(t *testing.T) {
+	lscpu := func(model, modelName string) *lscpuResult {
+		return &lscpuResult{
+			Entries: []lscpuEntry{
+				{Field: "CPU family:", Data: "6"},
+				{Field: "Model:", Data: model},
+				{Field: "Model name:", Data: modelName},
+			},
+		}
+	}
 	testCases := []struct {
-		family    string
-		model     string
-		modelName string
-		soc       protocol.DeprecatedDeviceConfig_SOC
+		input *lscpuResult
+		soc   protocol.DeprecatedDeviceConfig_SOC
 	}{
 		{
-			"6", "142", "Intel(R) Core(TM) m3-8100Y CPU @ 1.10GHz",
+			lscpu("142", "Intel(R) Core(TM) m3-8100Y CPU @ 1.10GHz"),
 			protocol.DeprecatedDeviceConfig_SOC_AMBERLAKE_Y,
 		},
 		{
-			"6", "142", "Intel(R) Core(TM) m3-7Y30 Processor @ 2.60GHz",
+			lscpu("142", "Intel(R) Core(TM) m3-7Y30 Processor @ 2.60GHz"),
 			protocol.DeprecatedDeviceConfig_SOC_KABYLAKE_Y,
 		},
 	}
 	for _, tc := range testCases {
-		r, err := findIntelSOC(tc.family, tc.model, tc.modelName)
+		r, err := findIntelSOC(tc.input)
 		if err != nil {
-			t.Errorf("Failed to find Intel SoC for %+v: %s", tc, err)
+			t.Errorf("Failed to find Intel SoC for %v: %s", *tc.input, err)
 		}
 		if r != tc.soc {
-			t.Errorf("Got %s, want %s: input=%+v", r, tc.soc, tc)
+			t.Errorf("Got %s, want %s: input=%v", r, tc.soc, *tc.input)
 		}
 	}
 }

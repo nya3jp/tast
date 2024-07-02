@@ -26,6 +26,7 @@ const (
 	ModemTypeSC7180 // trogdor
 	ModemTypeSC7280 // herobrine
 	ModemTypeEM060
+	ModemTypeLCUK54
 	ModemTypeRW101
 	ModemTypeRW135
 )
@@ -46,6 +47,8 @@ func (e ModemType) String() string {
 		return "SC7280"
 	case ModemTypeEM060:
 		return "EM060"
+	case ModemTypeLCUK54:
+		return "LCUK54"
 	case ModemTypeRW101:
 		return "RW101"
 	case ModemTypeRW135:
@@ -120,6 +123,7 @@ var (
 		"nivviks_fm101":      {"nivviks_fm101", "nissa", ModemTypeFM101},
 		"pujjo_fm101":        {"pujjo_fm101", "nissa", ModemTypeFM101},
 		"pujjo_em060":        {"pujjo_em060", "nissa", ModemTypeEM060},
+		"pujjoga_lcuk54":     {"pujjoga_lcuk54", "nissa", ModemTypeLCUK54},
 		"pujjoteen5_fm350":   {"pujjoteen5_fm350", "nissa", ModemTypeFM350},
 		"sundance_rw101":     {"sundance_rw101", "nissa", ModemTypeRW101},
 		"quandiso_fm101":     {"quandiso_fm101", "nissa", ModemTypeFM101},

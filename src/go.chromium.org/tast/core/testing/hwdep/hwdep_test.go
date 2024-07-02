@@ -493,6 +493,8 @@ func TestWiFiIntel(t *testing.T) {
 		{hwdep.Realtek8852CPCIE, false},
 		{hwdep.MediaTekMT7921PCIE, false},
 		{hwdep.MediaTekMT7921SDIO, false},
+		{hwdep.MediaTekMT7922PCIE, false},
+		{hwdep.MediaTekMT7925PCIE, false},
 	} {
 		verifyCondition(
 			t, c,
@@ -536,6 +538,8 @@ func Test80211ax(t *testing.T) {
 		{hwdep.Realtek8852CPCIE, true},
 		{hwdep.MediaTekMT7921PCIE, true},
 		{hwdep.MediaTekMT7921SDIO, true},
+		{hwdep.MediaTekMT7922PCIE, true},
+		{hwdep.MediaTekMT7925PCIE, true},
 	} {
 		verifyCondition(
 			t, c,
@@ -579,6 +583,8 @@ func Test80211be(t *testing.T) {
 		{hwdep.Realtek8852CPCIE, false},
 		{hwdep.MediaTekMT7921PCIE, false},
 		{hwdep.MediaTekMT7921SDIO, false},
+		{hwdep.MediaTekMT7922PCIE, false},
+		{hwdep.MediaTekMT7925PCIE, true},
 	} {
 		verifyCondition(
 			t, c,
@@ -617,6 +623,7 @@ func TestWifiGCMP(t *testing.T) {
 		{hwdep.MediaTekMT7921PCIE, true},
 		{hwdep.MediaTekMT7921SDIO, true},
 		{hwdep.MediaTekMT7922PCIE, true},
+		{hwdep.MediaTekMT7925PCIE, true},
 	} {
 		verifyCondition(
 			t, c,
@@ -660,6 +667,8 @@ func TestWiFiNonSelfManaged(t *testing.T) {
 		{hwdep.Realtek8852CPCIE, true},
 		{hwdep.MediaTekMT7921PCIE, true},
 		{hwdep.MediaTekMT7921SDIO, true},
+		{hwdep.MediaTekMT7922PCIE, true},
+		{hwdep.MediaTekMT7925PCIE, true},
 	} {
 		verifyCondition(
 			t, c,

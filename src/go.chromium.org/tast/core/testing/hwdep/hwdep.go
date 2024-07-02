@@ -136,6 +136,7 @@ const (
 	MediaTekMT7921PCIE         = wlan.MediaTekMT7921PCIE
 	MediaTekMT7921SDIO         = wlan.MediaTekMT7921SDIO
 	MediaTekMT7922PCIE         = wlan.MediaTekMT7922PCIE
+	MediaTekMT7925PCIE         = wlan.MediaTekMT7925PCIE
 )
 
 // wifiDeviceListed returns whether a WiFi device given in HardwareFeatures is listed in the given list of names or not.
@@ -1251,6 +1252,7 @@ func Wifi80211ax() Condition {
 		MediaTekMT7921PCIE,
 		MediaTekMT7921SDIO,
 		MediaTekMT7922PCIE,
+		MediaTekMT7925PCIE,
 	)
 }
 
@@ -1262,6 +1264,7 @@ func Wifi80211ax6E() Condition {
 		IntelAX211,
 		IntelBE200,
 		MediaTekMT7922PCIE,
+		MediaTekMT7925PCIE,
 	)
 }
 
@@ -1270,6 +1273,7 @@ func Wifi80211ax6E() Condition {
 func Wifi80211be() Condition {
 	return WifiDevice(
 		IntelBE200,
+		MediaTekMT7925PCIE,
 	)
 }
 

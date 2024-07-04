@@ -2094,6 +2094,23 @@ func SmartAmpBootTimeCalibration() Condition {
 	}}
 }
 
+// SOFAudioDSP returns a hardware dependency condition that is satisfied if and only if the DUT has
+// SOF-backed audio DSP.
+func SOFAudioDSP() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("Did not find hardware features")
+		}
+		if status := hf.GetAudio().GetSofAudioDsp(); status == configpb.HardwareFeatures_PRESENT {
+			return satisfied()
+		} else if status == configpb.HardwareFeatures_PRESENT_UNKNOWN {
+			return unsatisfied("Could not determine if DUT has SOF-backed audio DSP")
+		}
+		return unsatisfied("DUT does not have SOF-backed audio DSP")
+	}}
+}
+
 // formFactorListed returns whether the form factor represented by a configpb.HardwareFeatures
 // is listed in the given list of form factor values.
 func formFactorListed(hf *configpb.HardwareFeatures, ffList ...configpb.HardwareFeatures_FormFactor_FormFactorType) bool {

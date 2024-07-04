@@ -939,6 +939,20 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		features.Audio.SpeakerAmplifier = amp
 	}
 
+	sofAudioDsp, err := func() (configpb.HardwareFeatures_Present, error) {
+		if _, err := os.Stat("/sys/kernel/debug/sof"); err != nil {
+			if os.IsNotExist(err) {
+				return configpb.HardwareFeatures_NOT_PRESENT, nil
+			}
+			return configpb.HardwareFeatures_PRESENT_UNKNOWN, err
+		}
+		return configpb.HardwareFeatures_PRESENT, nil
+	}()
+	if err != nil {
+		logging.Infof(ctx, "Failed to get file stat: %v", err)
+	}
+	features.Audio.SofAudioDsp = sofAudioDsp
+
 	hasPrivacyScreen := func() bool {
 		// Get list of connectors.
 		value, err := exec.Command("modetest", "-c").Output()

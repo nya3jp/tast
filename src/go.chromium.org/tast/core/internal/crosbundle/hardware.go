@@ -679,7 +679,7 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 
 	readSysfsString := func(dev, relPath string) string {
 		path := "/sys/block/" + dev + "/" + relPath
-		out, err := exec.CommandContext(cmdCtx, "cat", path).Output()
+		out, err := exec.CommandContext(ctx, "cat", path).Output()
 		if err != nil {
 			return ""
 		}

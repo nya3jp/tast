@@ -156,7 +156,9 @@ func downloadPrivateBundle(ctx context.Context, cl devserver.Client, archiveURBa
 
 	if err == nil {
 		// Extract the archive, and touch the stamp file.
-		cmd := exec.Command("tar", "xf", tf.Name())
+		cmd := exec.Command("tar", "xf", tf.Name(), "--wildcards",
+			"libexec/tast/bundles/local*",
+			"share/tast/data/go.chromium.org*")
 		cmd.Dir = "/usr/local"
 		if err := cmd.Run(); err != nil {
 			return errors.Errorf("failed to extract %s: %v", strings.Join(cmd.Args, " "), err)

@@ -3017,3 +3017,223 @@ func MiniDiag() Condition {
 		return unsatisfied("DUT does not support minidiag")
 	}}
 }
+
+// intelUarchTable contains intel uarch names.
+var intelUarchTable = map[string]string{
+	"06_0D": "Dothan",
+	"06_0F": "Merom",
+	"06_16": "Merom",
+	"06_17": "Nehalem",
+	"06_1A": "Nehalem",
+	"06_1C": "Atom",
+	"06_1D": "Nehalem",
+	"06_1E": "Nehalem",
+	"06_1F": "Nehalem",
+	"06_25": "Westmere",
+	"06_26": "Atom",
+	"06_27": "Atom",
+	"06_2A": "Sandy Bridge",
+	"06_2C": "Westmere",
+	"06_2D": "Sandy Bridge",
+	"06_2E": "Nehalem",
+	"06_2F": "Westmere",
+	"06_35": "Atom",
+	"06_36": "Atom",
+	"06_37": "Silvermont",
+	"06_3A": "Ivy Bridge",
+	"06_3C": "Haswell",
+	"06_3D": "Broadwell",
+	"06_3E": "Ivy Bridge-E",
+	"06_3F": "Haswell-E",
+	"06_45": "Haswell",
+	"06_46": "Haswell",
+	"06_47": "Broadwell",
+	"06_4A": "Silvermont",
+	"06_4C": "Airmont",
+	"06_4D": "Silvermont",
+	"06_4E": "Skylake",
+	"06_4F": "Broadwell",
+	"06_55": "Skylake",
+	"06_56": "Broadwell",
+	"06_5A": "Silvermont",
+	"06_5C": "Goldmont",
+	"06_5D": "Silvermont",
+	"06_5E": "Skylake",
+	"06_7A": "Goldmont",
+	"06_7D": "Ice Lake",
+	"06_7E": "Ice Lake",
+	"06_86": "Tremont",
+	"06_8C": "Tiger Lake",
+	"06_8D": "Tiger Lake",
+	"06_8E": "Kaby Lake",
+	"06_96": "Tremont",
+	"06_9A": "Alder Lake",
+	"06_9C": "Tremont",
+	"06_9E": "Kaby Lake",
+	"06_A5": "Comet Lake",
+	"06_A6": "Comet Lake",
+	"06_AA": "Meteor Lake",
+	"06_BA": "Raptor Lake",
+	"06_BE": "Alder Lake",
+	"0F_03": "Prescott",
+	"0F_04": "Prescott",
+	"0F_06": "Presler",
+}
+
+// IntelBigCoreOrder is a int representing the intel bigcore order.
+type IntelBigCoreOrder int
+
+// Names for the different intel bigcore uarch.
+const (
+	Prescott IntelBigCoreOrder = iota + 1
+	Presler
+	Dothan
+	Merom
+	Nehalem
+	Westmere
+	SandyBridge
+	IvyBridge
+	IvyBridgeE
+	Haswell
+	HaswellE
+	Broadwell
+	Skylake
+	KabyLake
+	CoffeeLake
+	WhiskeyLake
+	CannonLake
+	CometLake
+	IceLake
+	TigerLake
+	AlderLake
+	RaptorLake
+	MeteorLake
+)
+
+// intelBigcoreToOrderMap contains the intel bigcore orders.
+var intelBigcoreToOrderMap = map[string]IntelBigCoreOrder{
+	"Prescott":     Prescott,
+	"Presler":      Presler,
+	"Dothan":       Dothan,
+	"Merom":        Merom,
+	"Nehalem":      Nehalem,
+	"Westmere":     Westmere,
+	"Sandy Bridge": SandyBridge,
+	"Ivy Bridge":   IvyBridge,
+	"Ivy Bridge-E": IvyBridgeE,
+	"Haswell":      Haswell,
+	"Haswell-E":    HaswellE,
+	"Broadwell":    Broadwell,
+	"Skylake":      Skylake,
+	"Kaby Lake":    KabyLake,
+	"Coffee Lake":  CoffeeLake,
+	"Whiskey Lake": WhiskeyLake,
+	"Cannon Lake":  CannonLake,
+	"Comet Lake":   CometLake,
+	"Ice Lake":     IceLake,
+	"Tiger Lake":   TigerLake,
+	"Alder Lake":   AlderLake,
+	"Raptor Lake":  RaptorLake,
+	"Meteor Lake":  MeteorLake,
+}
+
+// IntelAtomOrder is a int representing the intel atom order.
+type IntelAtomOrder int
+
+// Names for the different intel atom uarch.
+const (
+	Silvermont IntelAtomOrder = iota + 1
+	Airmont
+	Goldmont
+	Tremont
+	Gracemont
+)
+
+// intelAtomToOrderMap contains the intel atom orders.
+var intelAtomToOrderMap = map[string]IntelAtomOrder{
+	"Silvermont": Silvermont,
+	"Airmont":    Airmont,
+	"Goldmont":   Goldmont,
+	"Tremont":    Tremont,
+	"Gracemont":  Gracemont,
+}
+
+// IntelUarchs contains lists of IntelAtomOrder and IntelBigCoreOrder.
+type IntelUarchs struct {
+	IntelAtomOrderList    []IntelAtomOrder
+	IntelBigCoreOrderList []IntelBigCoreOrder
+}
+
+// IsIntelUarchOlderThan returns satisfied if the intel uarch in the DUT is
+// older than one of the given uarchs.
+func IsIntelUarchOlderThan(intelUarchs IntelUarchs) Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("Did not find hardware features")
+		}
+		if x86Satisfied, _, err := X86().Satisfied(f); err == nil && !x86Satisfied {
+			return unsatisfied("DUT's CPU is not x86 compatible and the comparison is not supported")
+		}
+		if intelSatisfied, _, err := CPUSocFamily("intel").Satisfied(f); err == nil && !intelSatisfied {
+			return unsatisfied("DUT does not have an intel CPU and the comparison is not supported")
+		}
+		intelCPUVendorFamilyNum := hf.GetCpuInfo().GetVendorInfo().CpuFamilyNum
+		intelCPUVendorModelNum := hf.GetCpuInfo().GetVendorInfo().CpuModelNum
+		currCPUUarchName := intelUarchTable[fmt.Sprintf("%02X_%02X", intelCPUVendorFamilyNum, intelCPUVendorModelNum)]
+		if currCPUUarchName == "" {
+			return unsatisfied(fmt.Sprintf("Current CPU uarch does not exist in the table: %02X_%02X", intelCPUVendorFamilyNum, intelCPUVendorModelNum))
+		}
+		if intelBigcoreToOrderMap[currCPUUarchName] != 0 && len(intelUarchs.IntelBigCoreOrderList) != 0 {
+			for _, intelBigCore := range intelUarchs.IntelBigCoreOrderList {
+				if intelBigCore != 0 && intelBigCore > intelBigcoreToOrderMap[currCPUUarchName] {
+					return satisfied()
+				}
+			}
+		} else if intelAtomToOrderMap[currCPUUarchName] != 0 && len(intelUarchs.IntelAtomOrderList) != 0 {
+			for _, intelAtom := range intelUarchs.IntelAtomOrderList {
+				if intelAtom != 0 && intelAtom > intelAtomToOrderMap[currCPUUarchName] {
+					return satisfied()
+				}
+			}
+		}
+		return unsatisfied(fmt.Sprintf("Current CPU uarch %s is not older than one of the uarchs in %v", currCPUUarchName, intelUarchs))
+	}}
+}
+
+// IsIntelUarchEqualOrNewerThan returns satisfied if the intel uarch in the
+// DUT is equal to or newer than one of the given uarchs.
+func IsIntelUarchEqualOrNewerThan(intelUarchs IntelUarchs) Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("Did not find hardware features")
+		}
+		if x86Satisfied, _, err := X86().Satisfied(f); err == nil && !x86Satisfied {
+			return unsatisfied("DUT's CPU is not x86 compatible and the comparison is not supported")
+		}
+		if intelSatisfied, _, err := CPUSocFamily("intel").Satisfied(f); err == nil && !intelSatisfied {
+			return unsatisfied("DUT does not have an intel CPU and the comparison is not supported")
+		}
+		intelCPIVendorFamilyNum := hf.GetCpuInfo().GetVendorInfo().CpuFamilyNum
+		intelCPUVendorModelNum := hf.GetCpuInfo().GetVendorInfo().CpuModelNum
+		currCPUUarchName := intelUarchTable[fmt.Sprintf("%02X_%02X", intelCPIVendorFamilyNum, intelCPUVendorModelNum)]
+		if currCPUUarchName == "" {
+			return unsatisfied(fmt.Sprintf("Current CPU uarch does not exist in the table: %02X_%02X", intelCPIVendorFamilyNum, intelCPUVendorModelNum))
+		}
+		if intelBigcoreToOrderMap[currCPUUarchName] != 0 && len(intelUarchs.IntelBigCoreOrderList) != 0 {
+			for _, intelBigCore := range intelUarchs.IntelBigCoreOrderList {
+				if intelBigCore != 0 && intelBigCore <= intelBigcoreToOrderMap[currCPUUarchName] {
+					return satisfied()
+				}
+			}
+		} else if intelAtomToOrderMap[currCPUUarchName] != 0 && len(intelUarchs.IntelAtomOrderList) != 0 {
+			for _, intelAtom := range intelUarchs.IntelAtomOrderList {
+				if intelAtom != 0 && intelAtom <= intelAtomToOrderMap[currCPUUarchName] {
+					return satisfied()
+				}
+			}
+		}
+		return unsatisfied(fmt.Sprintf("Current CPU uarch %s is not equal to or newer than one of the uarchs in %v", currCPUUarchName, intelUarchs))
+	}}
+}

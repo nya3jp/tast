@@ -152,7 +152,27 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		Hdmi:                    &configpb.HardwareFeatures_Hdmi{},
 		InterruptControllerInfo: &configpb.HardwareFeatures_InterruptControllerInfo{},
 		TiledDisplay:            &configpb.HardwareFeatures_TiledDisplay{},
+		CpuInfo:                 &configpb.HardwareFeatures_CpuInfo{},
 	}
+
+	features.CpuInfo.VendorInfo = &configpb.HardwareFeatures_CpuInfo_VendorInfo{}
+
+	cpuFamilyNum, cpuModelNum, err := func() (int64, int64, error) {
+		familyNum, err := strconv.ParseInt(info.vendorDetails.cpuFamilyStr, 10, 64)
+		if err != nil {
+			return 0, 0, errors.Wrapf(err, "failed to parse Intel family: %q", info.vendorDetails.cpuFamilyStr)
+		}
+		modelNum, err := strconv.ParseInt(info.vendorDetails.cpuModelStr, 10, 64)
+		if err != nil {
+			return 0, 0, errors.Wrapf(err, "failed to parse Intel model: %q", info.vendorDetails.cpuModelStr)
+		}
+		return familyNum, modelNum, nil
+	}()
+	if err != nil {
+		logging.Infof(ctx, "Failed to parse Intel CPU vendor info: %v", err)
+	}
+	features.CpuInfo.VendorInfo.CpuFamilyNum = cpuFamilyNum
+	features.CpuInfo.VendorInfo.CpuModelNum = cpuModelNum
 
 	swConfig := &softwarepb.SoftwareConfig{
 		FirmwareInfo: &softwarepb.FirmwareInfo{},
@@ -1320,16 +1340,22 @@ func (r *lscpuResult) find(name string) (data string, ok bool) {
 	return "", false
 }
 
+type vendorInfo struct {
+	cpuFamilyStr string
+	cpuModelStr  string
+}
+
 type cpuConfig struct {
-	cpuArch protocol.DeprecatedDeviceConfig_Architecture
-	soc     protocol.DeprecatedDeviceConfig_SOC
-	flags   []string
+	cpuArch       protocol.DeprecatedDeviceConfig_Architecture
+	soc           protocol.DeprecatedDeviceConfig_SOC
+	flags         []string
+	vendorDetails vendorInfo
 }
 
 // cpuInfo returns a structure containing field data from the "lscpu" command
 // which outputs CPU architecture information from "sysfs" and "/proc/cpuinfo".
 func cpuInfo() (cpuConfig, error) {
-	errInfo := cpuConfig{protocol.DeprecatedDeviceConfig_ARCHITECTURE_UNDEFINED, protocol.DeprecatedDeviceConfig_SOC_UNSPECIFIED, nil}
+	errInfo := cpuConfig{protocol.DeprecatedDeviceConfig_ARCHITECTURE_UNDEFINED, protocol.DeprecatedDeviceConfig_SOC_UNSPECIFIED, nil, vendorInfo{}}
 	b, err := exec.Command("lscpu", "--json").Output()
 	if err != nil {
 		return errInfo, err
@@ -1344,11 +1370,13 @@ func cpuInfo() (cpuConfig, error) {
 	if err != nil {
 		return errInfo, errors.Wrap(err, "failed to find CPU architecture")
 	}
+	family, _ := parsed.find("CPU family:")
+	modelStr, _ := parsed.find("Model:")
 	soc, err := findSOC(parsed)
 	if err != nil {
-		return cpuConfig{arch, protocol.DeprecatedDeviceConfig_SOC_UNSPECIFIED, flags}, errors.Wrap(err, "failed to find SOC")
+		return cpuConfig{arch, protocol.DeprecatedDeviceConfig_SOC_UNSPECIFIED, flags, vendorInfo{family, modelStr}}, errors.Wrap(err, "failed to find SOC")
 	}
-	return cpuConfig{arch, soc, flags}, nil
+	return cpuConfig{arch, soc, flags, vendorInfo{family, modelStr}}, nil
 }
 
 // findArchitecture returns an architecture configuration based from parsed output

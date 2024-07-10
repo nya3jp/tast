@@ -659,12 +659,10 @@ func GSCUART() Condition {
 	return SkipOnModel(
 		"astronaut",
 		"basking",
-		"blacktiplte",
 		"caroline",
 		"celes",
 		"electro",
 		"elm",
-		"eve",
 		"hana",
 		"kefka",
 		"lars",

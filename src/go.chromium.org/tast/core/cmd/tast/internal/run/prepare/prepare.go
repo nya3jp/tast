@@ -503,6 +503,17 @@ func streamLogs(ctx context.Context, cfg *config.Config, drv *driver.Driver) {
 
 		go func() {
 			defer dd.Close(ctx)
+			if dd.SSHConn() == nil {
+				return
+			}
+			conn := dd.SSHConn()
+			// Make sure the file exist so that we can stream the file later.
+			shellCmd := fmt.Sprintf("mkdir -p %s && touch %s", filepath.Dir(src), src)
+			out, err := conn.CommandContext(ctx, "sh", "-c", shellCmd).CombinedOutput()
+			if err != nil {
+				logging.Infof(ctx, "Will not stream %s because %s", src, string(out))
+				return
+			}
 			if err := dd.StreamFile(ctx, src, dest); err != nil {
 				logging.Debugf(ctx, "Fail to stream file %s", src)
 			}

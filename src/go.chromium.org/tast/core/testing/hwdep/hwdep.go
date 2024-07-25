@@ -3233,3 +3233,36 @@ func IsIntelUarchEqualOrNewerThan(intelUarchs IntelUarchs) Condition {
 		return unsatisfied(fmt.Sprintf("Current CPU uarch %s is not equal to or newer than one of the uarchs in %v", currCPUUarchName, intelUarchs))
 	}}
 }
+
+// ECFeatureCbibin returns a hardware dependency condition that is satisfied if and only
+// if the DUT supports `ectool cbibin`.
+func ECFeatureCbibin() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("HardwareFeatures is not given")
+		}
+		rwMajorVersion := hf.GetFwConfig().GetFwRwVersion().MajorVersion
+		rwMinorVersion := hf.GetFwConfig().GetFwRwVersion().MinorVersion
+
+		/*
+			CL:4936551 landed in 15904.0.0 for most of the boards except:
+				- brya:    landed in firmware-brya-14505.B-main 14505.769.0
+				- nissa:   landed in firmware-nissa-15217.B-main 15217.575.0
+				- dedede:  landed in firmware-dedede-13606.B-master 13606.646.0
+				- corsola: landed in firmware-corsola-15194.B-main 15194.207.0
+				- rex:     landed in firmware-rex-15709.B-main 15709.173.0
+				- geralt:  landed in firmware-geralt-15842.B-main 15842.56.0
+		*/
+		if rwMajorVersion >= 15904 ||
+			(rwMajorVersion == 14505 && rwMinorVersion >= 769) ||
+			(rwMajorVersion == 15217 && rwMinorVersion >= 575) ||
+			(rwMajorVersion == 13606 && rwMinorVersion >= 646) ||
+			(rwMajorVersion == 15194 && rwMinorVersion >= 207) ||
+			(rwMajorVersion == 15709 && rwMinorVersion >= 173) ||
+			(rwMajorVersion == 15842 && rwMinorVersion >= 56) {
+			return satisfied()
+		}
+		return unsatisfied("DUT does not support Cbibin")
+	}}
+}

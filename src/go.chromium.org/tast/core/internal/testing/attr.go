@@ -1505,6 +1505,10 @@ Parallels boot-up testing. Otherwise the same as group:crosbolt.`,
 				Desc: `Indicates that this test with USB power charging should be run in a dedicated setup.`,
 			},
 			{
+				Name: "pasit_fwupd",
+				Desc: `Indicates that this test with external docks to test Fwupd should be run in a dedicated setup.`,
+			},
+			{
 				Name: "pasit_informational",
 				Desc: `Indicates that failures can be ignored.`,
 			},

@@ -475,6 +475,37 @@ func ECFeatureMemoryDumpCommands() Condition {
 	}
 }
 
+// ECFeatureBcfgValidJson returns a hardware dependency condition that is satisfied if and only if
+// the DUT supports `ectool bcfg get -j`.
+func ECFeatureBcfgValidJson() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("HardwareFeatures is not given")
+		}
+		rwMajorVersion := hf.GetFwConfig().GetFwRwVersion().MajorVersion
+		rwMinorVersion := hf.GetFwConfig().GetFwRwVersion().MinorVersion
+
+		/*
+			CL:5151449 landed in 15727.0.0 for most of the boards except:
+				- brya:    landed in firmware-brya-14505.B-main 14505.695.0
+				- corsola: landed in firmware-corsola-15194.B-main 15194.154.0
+				- dedede:  landed in firmware-dedede-13606.B-master 13606.620.0
+				- nissa:   landed in firmware-nissa-15217.B-main 15217.433.0
+				- rex:     landed in firmware-rex-15709.B-main 15709.23.0
+		*/
+		if rwMajorVersion >= 15727 ||
+			(rwMajorVersion == 14505 && rwMinorVersion >= 695) ||
+			(rwMajorVersion == 15194 && rwMinorVersion >= 154) ||
+			(rwMajorVersion == 13606 && rwMinorVersion >= 620) ||
+			(rwMajorVersion == 15217 && rwMinorVersion >= 433) ||
+			(rwMajorVersion == 15709 && rwMinorVersion >= 23) {
+			return satisfied()
+		}
+		return unsatisfied("DUT does not support battery config in a valid JSON format")
+	}}
+}
+
 // Cellular returns a hardware dependency condition that
 // is satisfied if and only if the DUT has a cellular modem.
 func Cellular() Condition {

@@ -161,6 +161,7 @@ var softwareFeatureDefs = map[string]string{
 	"lacros_stable":          `!chromeless_tty && !rialto && !("board:veyron_fievel" || "board:veyron_tiger") && !"tast_vm"  && !"board:reven-vmtest" && !"board:amd64-generic"&& !"betty"`,
 	"lacros_unstable":        `!chromeless_tty && !rialto && !("board:veyron_fievel" || "board:veyron_tiger") && ("tast_vm" || "board:reven-vmtest" || "board:amd64-generic"|| "betty")`,
 	"landlock_enabled":       `!("kernel-4_14" || "kernel-4_19" || "kernel-5_4")`,
+	"lldb":                   `"local-lldb"`,
 	"lvm_stateful_partition": "lvm_stateful_partition",
 	"mbo":                    "mbo",
 	"meet_device":            `("board:fizz-cfm" || "board:kalista-cfm" || "board:ambassador" || "board:excelsior" || "board:endeavour" || "board:constitution")`,

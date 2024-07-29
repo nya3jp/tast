@@ -224,6 +224,7 @@ var softwareFeatureDefs = map[string]string{
 	"no_ubsan":                    "!ubsan",
 	"no_vulkan":                   "!vulkan",
 	"non_meet_device":             `!("board:fizz-cfm" || "board:kalista-cfm" || "board:ambassador" || "board:excelsior" || "board:endeavour" || "board:constitution")`,
+	"non_flex_device":             `!"board:reven*"`,
 	"nvme":                        "nvme",
 	"oci":                         "containers && !moblab", // run_oci doesn't work on Moblab: https://crbug.com/951691
 	"ocr":                         "ocr",

@@ -2062,6 +2062,7 @@ func parseKConfigs(ctx context.Context, features *configpb.HardwareFeatures) err
 		"CONFIG_BMP_LOGO":                           &features.FwConfig.BmpLogo,
 		"CONFIG_CHROMEOS_FW_SPLASH_SCREEN":          &features.FwConfig.FwSplashScreen,
 		"CONFIG_SOC_INTEL_CSE_LITE_SYNC_BY_PAYLOAD": &features.FwConfig.LateCseSync,
+		"CONFIG_CHROMEOS_ENABLE_ESOL":               &features.FwConfig.MainboardHasEarlySignOfLife,
 	}
 
 	scanner := bufio.NewScanner(inFile)

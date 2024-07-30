@@ -375,6 +375,22 @@ func TestParseKConfigs(t *testing.T) {
 			"CONFIG_MAINBOARD_HAS_EARLY_LIBGFXINIT=n\n",
 			&configpb.HardwareFeatures_FirmwareConfiguration{},
 		},
+		{
+			"CONFIG_CHROMEOS_ENABLE_ESOL=y\n",
+			&configpb.HardwareFeatures_FirmwareConfiguration{
+				MainboardHasEarlySignOfLife: api.HardwareFeatures_PRESENT,
+			},
+		},
+		{
+			"# CONFIG_CHROMEOS_ENABLE_ESOL is not set\n",
+			&configpb.HardwareFeatures_FirmwareConfiguration{
+				MainboardHasEarlySignOfLife: api.HardwareFeatures_NOT_PRESENT,
+			},
+		},
+		{
+			"CONFIG_CHROMEOS_ENABLE_ESOL=n\n",
+			&configpb.HardwareFeatures_FirmwareConfiguration{},
+		},
 	}
 	for _, tc := range testCases {
 		cbfsToolExtractCmd = func(ctx context.Context, corebootBinName, fileName, outputPath string) error {

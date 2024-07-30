@@ -22,7 +22,6 @@ The following software features are defined:
 * `android_container_r` - `android_container` features that runs in R container.
 * `android_vm` - The ability to [run Android apps] in VM instead of container.
     Any version of Android R+ can be used. Prefer this over `android_vm_r` if possible.
-* `android_vm_r` - `android_vm` feature that runs in R VM.
 * `android_p` - The ability to [run Android apps] that require Android P.
 * `android_r` - The ability to [run Android apps] that require Android R.
 * `arc` - The ability to [run Android apps] in any way, in VM or container,

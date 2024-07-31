@@ -2382,6 +2382,30 @@ func SupportsVP9KSVCHWDecoding() Condition {
 	}}
 }
 
+// SupportsSVCEncoding is satisfied if the SoC supports spacial or temporal
+// HW encoding of the specified codec and mode. Full SVC support is best handled
+// by a stateless encoder. There is limited support using V4L2.
+func SupportsSVCEncoding(codec, mode string) Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		dc := f.GetDeprecatedDeviceConfig()
+		if dc == nil {
+			return withErrorStr("DeprecatedDeviceConfig is not given")
+		}
+
+		if dc.GetCpu() == protocol.DeprecatedDeviceConfig_X86_64 {
+			return satisfied()
+		}
+
+		if dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_SC7180 {
+			if strings.HasPrefix(codec, "h264") && strings.HasPrefix(mode, "l1t2") {
+				return satisfied()
+			}
+		}
+
+		return unsatisfied("SoC does not support HW " + codec + " " + mode + " encoding ")
+	}}
+}
+
 // AssistantKey is satisfied if a model has an assistant key.
 func AssistantKey() Condition {
 	return Model("eve", "nocturne", "atlas")

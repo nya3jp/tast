@@ -252,6 +252,10 @@ message RunConfig {
 
   // WaitUntilReadyTimeout set a timeout for the entire ready.Wait function.
   google.protobuf.Duration wait_until_ready_timeout = 15;
+
+  // PushedFilesInfo stores the source and the destination of files
+  // that Tast push from host to all DUTs in a session.
+  repeated PushedFilesInfoForDUT pushed_files_info = 16;
 }
 
 // RunTargetConfig contains parameters for the primary target bundle to run.
@@ -363,6 +367,18 @@ message DataFileConfig {
   // BuildArtifactsUrl is the URL of Google Cloud Storage directory, ending with
   // a slash, containing build artifacts for the current ChromeOS image.
   string build_artifacts_url = 2;
+}
+
+// PushedFilesInfoForDUT contains information on all source and destination
+// of the files that Tast pushes from the host to a DUT.
+message PushedFilesInfoForDUT {
+  // Role is the role of the DUT. The role for primary DUT is "".
+  // The roles for companion DUTs are cd1, cd2, ..cdN.
+  string role = 1;
+
+  // SrcDstPaths contains information on all source and destination
+  // of the files that Tast pushes from the host to a DUT.
+  map<string, string> src_dst_paths = 2;
 }
 
 // StartFixtureState contains information of a start fixture.

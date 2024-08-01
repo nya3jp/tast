@@ -119,7 +119,7 @@ func TestCheckKnownAttrs(t *testing.T) {
 			attrs: []string{"group:enterprise-reporting-daily"},
 		},
 		{
-			attrs: []string{"group:external-dependency", "external-dependency_exemption"},
+			attrs: []string{"group:external-dependency"},
 		},
 		{
 			attrs: []string{"group:inputs_appcompat_arc_perbuild"},

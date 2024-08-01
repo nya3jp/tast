@@ -64,7 +64,7 @@ func TestDriver_StreamFile(t *testing.T) {
 	})
 
 	t.Logf("TestDriver_StreamFile target %v", cfg.Target())
-	drv, err := driver.New(ctx, cfg, cfg.Target(), "")
+	drv, err := driver.New(ctx, cfg, cfg.Target(), "", nil)
 	if err != nil {
 		t.Errorf("driver.New failed: %v", err)
 	}
@@ -158,7 +158,7 @@ func TestDriver_StreamFileWithInterruption(t *testing.T) {
 	})
 
 	t.Logf("TestDriver_StreamFileWithInterruption target %v", cfg.Target())
-	drv, err := driver.New(ctx, cfg, cfg.Target(), "")
+	drv, err := driver.New(ctx, cfg, cfg.Target(), "", nil)
 	if err != nil {
 		t.Errorf("driver.New failed: %v", err)
 	}

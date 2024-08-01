@@ -21,6 +21,7 @@ func RunLocal() int {
 		GetDUTInfo:              crosbundle.GetDUTInfo,
 		GetSysInfoState:         crosbundle.GetSysInfoState,
 		CollectSysInfo:          crosbundle.CollectSysInfo,
+		BundleType:              runner.Local,
 		PrivateBundlesStampPath: "/usr/local/share/tast/.private-bundles-downloaded",
 		DeprecatedDirectRunDefaults: runner.DeprecatedDirectRunConfig{
 			BundleGlob: "/usr/local/libexec/tast/bundles/local/*",

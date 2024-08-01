@@ -49,15 +49,16 @@ type BundleEntity = drivercore.BundleEntity
 // re-establish a connection to the target device, so you should get a fresh
 // connection object after calling them.
 type Driver struct {
-	cfg           *config.Config
-	cc            *target.ConnCache
-	rawTarget     string
-	role          string
-	servoHostInfo *servo.HostInfo
+	cfg              *config.Config
+	cc               *target.ConnCache
+	rawTarget        string
+	role             string
+	servoHostInfo    *servo.HostInfo
+	remoteDevservers []string
 }
 
 // New establishes a new connection to the target device and returns a Driver.
-func New(ctx context.Context, cfg *config.Config, rawTarget, role string) (*Driver, error) {
+func New(ctx context.Context, cfg *config.Config, rawTarget, role string, remoteDevservers []string) (*Driver, error) {
 	servoHost := target.ServoHost(ctx, role, cfg.TestVars())
 	dutLabConfig := cfg.DUTLabConfig()
 	var dutTopology *api.Dut
@@ -123,17 +124,18 @@ func New(ctx context.Context, cfg *config.Config, rawTarget, role string) (*Driv
 		return nil, errors.Wrap(err, "failed to create a new connection")
 	}
 	return &Driver{
-		cfg:           cfg,
-		cc:            cc,
-		rawTarget:     rawTarget,
-		role:          role,
-		servoHostInfo: servoHostInfo,
+		cfg:              cfg,
+		cc:               cc,
+		rawTarget:        rawTarget,
+		role:             role,
+		servoHostInfo:    servoHostInfo,
+		remoteDevservers: remoteDevservers,
 	}, nil
 }
 
 // Duplicate duplicate a driver.
 func (d *Driver) Duplicate(ctx context.Context) (*Driver, error) {
-	return New(ctx, d.cfg, d.rawTarget, d.role)
+	return New(ctx, d.cfg, d.rawTarget, d.role, d.remoteDevservers)
 }
 
 // Close closes the current connection to the target device.
@@ -242,6 +244,11 @@ func resolveSSHConfig(ctx context.Context, target string) (alternateTarget, prox
 // ConnCacheForTesting returns target.ConnCache the driver owns for testing.
 func (d *Driver) ConnCacheForTesting() *target.ConnCache {
 	return d.cc
+}
+
+// RemoteDevservers returns the remote devservers associated with the driver.
+func (d *Driver) RemoteDevservers() []string {
+	return d.remoteDevservers
 }
 
 // CollectServoLogs collects the sysinfo, considering diff from the given initial

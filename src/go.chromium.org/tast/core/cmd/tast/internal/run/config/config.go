@@ -645,13 +645,10 @@ func (c *MutableConfig) DeriveDefaults() error {
 		setIfEmpty(&c.LocalDataDir, "/usr/local/share/tast/data")
 		setIfEmpty(&c.RemoteRunner, "/usr/bin/remote_test_runner")
 		setIfEmpty(&c.RemoteDataDir, "/usr/share/tast/data")
-
-		// b/334180005: we will no longer include tast remote bundles in the chroot.
-		// We will always build in chroot.
-		if InChroot() {
-			setIfEmpty(&c.RemoteBundleDir, filepath.Join(c.BuildOutDir, build.ArchHost, build.RemoteBundleBuildSubdir))
-		} else {
+		if !InChroot() || c.DownloadPrivateBundles {
 			setIfEmpty(&c.RemoteBundleDir, "/usr/libexec/tast/bundles/remote")
+		} else {
+			setIfEmpty(&c.RemoteBundleDir, filepath.Join(c.BuildOutDir, build.ArchHost, build.RemoteBundleBuildSubdir))
 		}
 
 	}

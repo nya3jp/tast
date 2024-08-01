@@ -73,13 +73,12 @@ func Run(ctx context.Context, cfg *config.Config, state *config.DeprecatedState)
 	if err := prepare.CheckPrivateBundleFlag(ctx, cfg); err != nil {
 		return nil, errors.Wrap(err, "failed in checking downloadprivatebundles flag")
 	}
-
-	drv, err := driver.New(ctx, cfg, cfg.Target(), "")
+	drv, err := driver.New(ctx, cfg, cfg.Target(), "", state.RemoteDevservers)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to connect to target")
 	}
 	defer drv.Close(ctx)
-	dutInfo, pushedFilesInfo, err := prepareDUT(ctx, cfg, drv)
+	dutInfo, pushedFilesInfo, err := prepareEnv(ctx, cfg, drv)
 	if err != nil {
 		return nil, err
 	}
@@ -102,10 +101,13 @@ func Run(ctx context.Context, cfg *config.Config, state *config.DeprecatedState)
 	}
 }
 
-func prepareDUT(ctx context.Context, cfg *config.Config, drv *driver.Driver) (
+func prepareEnv(ctx context.Context, cfg *config.Config, drv *driver.Driver) (
 	map[string]*protocol.DUTInfo, []*protocol.PushedFilesInfoForDUT, error) {
 	var pushedFilesInfo []*protocol.PushedFilesInfoForDUT
 	dutInfo := make(map[string]*protocol.DUTInfo)
+	if err := prepare.SetUpRemotePrivateBundle(ctx, cfg, drv); err != nil {
+		return nil, nil, errors.Wrap(err, "failed to prepare Host")
+	}
 	primaryDutInfo, pushedExecutables, err := prepare.Prepare(ctx, cfg, drv)
 	dutInfo[""] = primaryDutInfo
 	if err != nil {
@@ -114,7 +116,7 @@ func prepareDUT(ctx context.Context, cfg *config.Config, drv *driver.Driver) (
 	pushedFilesInfo = append(pushedFilesInfo, &protocol.PushedFilesInfoForDUT{Role: "", SrcDstPaths: pushedExecutables})
 
 	for role, dut := range cfg.CompanionDUTs() {
-		companionDriver, err := driver.New(ctx, cfg, dut, role)
+		companionDriver, err := driver.New(ctx, cfg, dut, role, nil)
 		if err != nil {
 			return nil, nil, errors.Wrapf(err, "failed to connect to companion DUT %s", dut)
 		}
@@ -171,12 +173,12 @@ func GlobalRuntimeVars(ctx context.Context, cfg *config.Config, state *config.De
 		return nil, errors.Wrap(err, "failed in checking downloadprivatebundles flag")
 	}
 
-	drv, err := driver.New(ctx, cfg, cfg.Target(), "")
+	drv, err := driver.New(ctx, cfg, cfg.Target(), "", cfg.Devservers())
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to connect to target")
 	}
 	defer drv.Close(ctx)
-	_, _, err = prepareDUT(ctx, cfg, drv)
+	_, _, err = prepareEnv(ctx, cfg, drv)
 
 	if err != nil {
 		return nil, err

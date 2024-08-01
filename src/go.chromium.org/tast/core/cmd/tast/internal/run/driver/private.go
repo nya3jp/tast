@@ -13,9 +13,9 @@ import (
 	"go.chromium.org/tast/core/internal/timing"
 )
 
-// DownloadPrivateBundles downloads and installs a private test bundle archive
+// DownloadPrivateLocalBundles downloads and installs a private test bundle archive
 // corresponding to the target version, if one has not been installed yet.
-func (d *Driver) DownloadPrivateBundles(ctx context.Context, dutInfo *protocol.DUTInfo) error {
+func (d *Driver) DownloadPrivateLocalBundles(ctx context.Context, dutInfo *protocol.DUTInfo) error {
 	if !d.cfg.DownloadPrivateBundles() {
 		return nil
 	}
@@ -26,10 +26,10 @@ func (d *Driver) DownloadPrivateBundles(ctx context.Context, dutInfo *protocol.D
 		return nil
 	}
 
-	ctx, st := timing.Start(ctx, "download_private_bundles")
+	ctx, st := timing.Start(ctx, "download_private_local_bundles")
 	defer st.End()
 
-	logging.Debug(ctx, "Downloading private bundles")
+	logging.Debug(ctx, "Downloading private local bundles")
 
 	devservers := append([]string(nil), d.cfg.Devservers()...)
 	if url, ok := d.cc.Conn().Services().EphemeralDevserverURL(); ok {
@@ -67,6 +67,41 @@ func (d *Driver) DownloadPrivateBundles(ctx context.Context, dutInfo *protocol.D
 
 	if err := client.DownloadPrivateBundles(ctx, req); err != nil {
 		return errors.Wrap(err, "failed to download private bundles")
+	}
+	return nil
+}
+
+// DownloadPrivateRemoteBundles downloads and installs the remote private test bundle archive
+// for the specified target version, if it hasn't been previously installed.
+func (d *Driver) DownloadPrivateRemoteBundles(ctx context.Context, dutInfo *protocol.DUTInfo) error {
+
+	client := d.remoteRunnerClient()
+	if client == nil {
+		logging.Info(ctx, "Dont have access to DUT. Not downloading private remote bundles.")
+		return nil
+	}
+
+	ctx, st := timing.Start(ctx, "download_private_remote_bundles")
+	defer st.End()
+
+	logging.Debug(ctx, "Downloading private remote bundles")
+
+	buildArtifactsURL := d.cfg.BuildArtifactsURLOverride()
+	if buildArtifactsURL == "" {
+		buildArtifactsURL = dutInfo.GetDefaultBuildArtifactsUrl()
+	}
+
+	req := &protocol.DownloadPrivateBundlesRequest{
+		ServiceConfig: &protocol.ServiceConfig{
+			Devservers:     d.remoteDevservers,
+			SwarmingTaskID: d.cfg.SwarmingTaskID(),
+			BuildBucketID:  d.cfg.BuildBucketID(),
+		},
+		BuildArtifactUrl: buildArtifactsURL,
+	}
+
+	if err := client.DownloadPrivateBundles(ctx, req); err != nil {
+		return errors.Wrap(err, "failed to download private remote bundles.")
 	}
 	return nil
 }

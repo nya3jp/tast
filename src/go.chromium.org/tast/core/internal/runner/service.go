@@ -86,8 +86,7 @@ func (s *testServer) DownloadPrivateBundles(ctx context.Context, req *protocol.D
 		return nil, errors.New("failed to determine the build artifacts URL (non-official image?)")
 	}
 
-	// If the stamp file exists, private bundles have been already downloaded.
-	if _, err := os.Stat(s.scfg.PrivateBundlesStampPath); err == nil {
+	if !s.needToDownload(ctx, req.GetBuildArtifactUrl()) {
 		return &protocol.DownloadPrivateBundlesResponse{}, nil
 	}
 
@@ -111,20 +110,47 @@ func (s *testServer) DownloadPrivateBundles(ctx context.Context, req *protocol.D
 	}
 
 	for _, b := range privateBundles {
-		if err := downloadPrivateBundle(ctx, cl, req.GetBuildArtifactUrl(), b); err != nil {
+		if err := downloadPrivateBundle(ctx, cl, req.GetBuildArtifactUrl(), b, s.scfg.BundleType); err != nil {
 			return nil, errors.Wrapf(err, "failed to download %s", b)
 		}
 	}
 
-	if err := os.WriteFile(s.scfg.PrivateBundlesStampPath, nil, 0644); err != nil {
-		return nil, err
+	if err := writeStampFile(s.scfg.PrivateBundlesStampPath, req.GetBuildArtifactUrl()); err != nil {
+		return nil, errors.Wrapf(err, "failed to write stamp file %v", s.scfg.PrivateBundlesStampPath)
 	}
 
 	return &protocol.DownloadPrivateBundlesResponse{}, nil
 }
 
+func writeStampFile(path, content string) error {
+	stampfileDir := filepath.Dir(path)
+	if err := os.MkdirAll(stampfileDir, 0755); err != nil {
+		return errors.Wrapf(err, "failed to create directory %v", stampfileDir)
+	}
+	if err := os.WriteFile(path, []byte(content), 0644); err != nil {
+		return err
+	}
+	return nil
+}
+
+// needToDownload check stamp file exists and buildArtifactURL to decided whether bundle need to download
+func (s *testServer) needToDownload(ctx context.Context, buildArtifactURL string) bool {
+	if _, err := os.Stat(s.scfg.PrivateBundlesStampPath); err != nil {
+		return true
+	}
+	content, err := os.ReadFile(s.scfg.PrivateBundlesStampPath)
+	if err != nil {
+		logging.Infof(ctx, "read file %s error: %v", s.scfg.PrivateBundlesStampPath, err)
+		return true
+	}
+	if string(content) == buildArtifactURL {
+		return false
+	}
+	return true
+}
+
 // downloadPrivateBundle downloads a single private bundle.
-func downloadPrivateBundle(ctx context.Context, cl devserver.Client, archiveURBase, bundle string) error {
+func downloadPrivateBundle(ctx context.Context, cl devserver.Client, archiveURBase, bundle string, bundleType BundleType) error {
 	// Download the archive via devserver.
 	archiveURL := archiveURBase + bundle + ".tar.bz2"
 	logging.Infof(ctx, "Downloading private bundle %s", archiveURL)
@@ -155,21 +181,49 @@ func downloadPrivateBundle(ctx context.Context, cl devserver.Client, archiveURBa
 	}
 
 	if err == nil {
-		// Extract the archive, and touch the stamp file.
-		cmd := exec.Command("tar", "xf", tf.Name(), "--wildcards",
-			"libexec/tast/bundles/local*",
-			"share/tast/data/go.chromium.org*")
-		cmd.Dir = "/usr/local"
-		if err := cmd.Run(); err != nil {
-			return errors.Errorf("failed to extract %s: %v", strings.Join(cmd.Args, " "), err)
+		switch bundleType {
+		case Local:
+			return localBundleDownload(ctx, tf)
+		case Remote:
+			return remoteBundleDownload(ctx, tf)
 		}
-		logging.Info(ctx, "Download finished successfully")
 	} else if os.IsNotExist(err) {
 		logging.Info(ctx, "Private bundles not found")
 	} else {
 		return errors.Errorf("failed to copy downloaded archive %s: %v", archiveURL, err)
 	}
 
+	return nil
+}
+
+// localBundleDownload extract the archive when local bundle type
+func localBundleDownload(ctx context.Context, tf *os.File) error {
+	// Extract the archive, and touch the stamp file.
+	cmd := exec.Command("tar", "xf", tf.Name(), "--wildcards",
+		"libexec/tast/bundles/local*",
+		"share/tast/data/go.chromium.org*")
+	cmd.Dir = "/usr/local"
+	if err := cmd.Run(); err != nil {
+		return errors.Errorf("failed to extract %s: %v", strings.Join(cmd.Args, " "), err)
+	}
+	logging.Info(ctx, "Local bundle download finished successfully")
+	return nil
+}
+
+// remoteBundleDownload extract the archive when remote bundle type
+func remoteBundleDownload(ctx context.Context, tf *os.File) error {
+	// Initialize a directory for the remote bundle.
+	if err := os.MkdirAll("/usr/libexec/tast/bundles/remote", 0755); err != nil {
+		return errors.Errorf("failed to create directory: %v", err)
+	}
+	tarCmd := exec.Command("sudo", "tar", "xf", tf.Name(),
+		"broot/usr/libexec/tast/bundles/remote",
+		"--transform", "s,^broot/usr/,,")
+	tarCmd.Dir = "/usr"
+	if err := tarCmd.Run(); err != nil {
+		return errors.Errorf("failed to extract %s: %v", strings.Join(tarCmd.Args, " "), err)
+	}
+	logging.Info(ctx, "Remote bundle download finished successfully")
 	return nil
 }
 

@@ -16,9 +16,11 @@ import (
 
 func main() {
 	scfg := runner.StaticConfig{
-		Type:             runner.RemoteRunner,
-		KillStaleRunners: true,
-		EnableSyslog:     true,
+		Type:                    runner.RemoteRunner,
+		KillStaleRunners:        true,
+		EnableSyslog:            true,
+		BundleType:              runner.Remote,
+		PrivateBundlesStampPath: "/var/tmp/tast/.private-bundles-downloaded",
 		DeprecatedDirectRunDefaults: runner.DeprecatedDirectRunConfig{
 			BundleGlob: "/usr/libexec/tast/bundles/remote/*", // default glob matching test bundles
 			DataDir:    "/usr/share/tast/data",               // default dir containing test data

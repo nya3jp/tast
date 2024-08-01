@@ -18,9 +18,10 @@ import (
 
 // envConfig contains configurations of the testing environment.
 type envConfig struct {
-	OnRunRemoteTestsInit func(init *protocol.RunTestsInit, bcfg *protocol.BundleConfig)
-	LocalBundles         []*testing.Registry
-	RemoteBundles        []*testing.Registry
+	OnRunRemoteTestsInit   func(init *protocol.RunTestsInit, bcfg *protocol.BundleConfig)
+	DownloadPrivateBundles func(req *protocol.DownloadPrivateBundlesRequest) (*protocol.DownloadPrivateBundlesResponse, error)
+	LocalBundles           []*testing.Registry
+	RemoteBundles          []*testing.Registry
 
 	PrimaryDUT    *dutConfig
 	CompanionDUTs map[string]*dutConfig
@@ -89,6 +90,14 @@ func WithGetSysInfoState(f func(req *protocol.GetSysInfoStateRequest) (*protocol
 func WithCollectSysInfo(f func(req *protocol.CollectSysInfoRequest) (*protocol.CollectSysInfoResponse, error)) DUTOption {
 	return func(cfg *dutConfig) {
 		cfg.CollectSysInfo = f
+	}
+}
+
+// WithDownloadPrivateRemoteBundles specifies a function that implements
+// DownloadPrivateBundles handler.
+func WithDownloadPrivateRemoteBundles(f func(req *protocol.DownloadPrivateBundlesRequest) (*protocol.DownloadPrivateBundlesResponse, error)) EnvOption {
+	return func(cfg *envConfig) {
+		cfg.DownloadPrivateBundles = f
 	}
 }
 
@@ -166,6 +175,9 @@ func defaultEnvConfig() *envConfig {
 		RemoteBundles:        []*testing.Registry{remoteReg},
 		PrimaryDUT:           defaultDUTConfig(0),
 		CompanionDUTs:        make(map[string]*dutConfig),
+		DownloadPrivateBundles: func(req *protocol.DownloadPrivateBundlesRequest) (*protocol.DownloadPrivateBundlesResponse, error) {
+			return &protocol.DownloadPrivateBundlesResponse{}, nil
+		},
 	}
 }
 

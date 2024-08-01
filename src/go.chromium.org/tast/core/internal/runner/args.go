@@ -67,7 +67,22 @@ type StaticConfig struct {
 	// always initiated with Tast CLI, in which case default values here are
 	// ignored.
 	DeprecatedDirectRunDefaults DeprecatedDirectRunConfig
+
+	// BundleTypes describes the type of runner being
+	// executed by local_test_runner or remote_test_runner.
+	BundleType BundleType
 }
+
+// BundleType describes the type of bundle being downloaded.
+type BundleType string
+
+const (
+	// Local bundle
+	Local BundleType = "local"
+
+	// Remote bundle
+	Remote BundleType = "remote"
+)
 
 // mode denotes the execution mode of the test runner.
 type mode int

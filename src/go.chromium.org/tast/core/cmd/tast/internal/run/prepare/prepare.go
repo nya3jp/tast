@@ -43,18 +43,42 @@ func CheckPrivateBundleFlag(ctx context.Context, cfg *config.Config) error {
 	return nil
 }
 
+// SetUpRemotePrivateBundle prepares target HOST for Private Bundles.
+func SetUpRemotePrivateBundle(ctx context.Context, cfg *config.Config, driver *driver.Driver) error {
+	if driver == nil {
+		return errors.New("driver is nil")
+	}
+
+	if !cfg.Build() {
+		if cfg.DownloadPrivateBundles() {
+			var dutInfo *protocol.DUTInfo
+			var err error
+			if config.ShouldConnect(cfg.Target()) {
+				dutInfo, err = driver.GetDUTInfo(ctx)
+				if err != nil {
+					return err
+				}
+			}
+			if cfg.BuildArtifactsURLOverride() == "" && dutInfo == nil {
+				return errors.New("missing build artifacts URL configuration")
+			}
+			if err := driver.DownloadPrivateRemoteBundles(ctx, dutInfo); err != nil {
+				return fmt.Errorf("failed downloading Remote private bundles: %v", err)
+			}
+		} else if err := buildAllRemoteBundlesInChroot(ctx, cfg); err != nil {
+			return fmt.Errorf("failed to check and build remote bundles: %v", err)
+		}
+	} else if err := buildRemoteBundles(ctx, cfg); err != nil {
+		// Build all the remote bundles.
+		return err
+	}
+	return nil
+}
+
 // Prepare prepares target DUT for running tests.
 // It returns the DUTInfo for the primary DUT.
 func Prepare(ctx context.Context, cfg *config.Config, driver *driver.Driver) (
 	*protocol.DUTInfo, map[string]string, error) {
-	if !cfg.Build() {
-		if err := buildAllRemoteBundlesInChroot(ctx, cfg); err != nil {
-			return nil, nil, fmt.Errorf("failed to check and build remote bundles: %v", err)
-		}
-	} else if err := buildRemoteBundles(ctx, cfg); err != nil {
-		// Build all the remote bundles.
-		return nil, nil, err
-	}
 
 	// Do not build or push to DUT as we dont have access to it.
 	if !config.ShouldConnect(cfg.Target()) {
@@ -164,7 +188,7 @@ func getDUTInfo(ctx context.Context, cfg *config.Config, drv *driver.Driver) (*p
 	}
 
 	if cfg.DownloadPrivateBundles() {
-		if err := drv.DownloadPrivateBundles(ctx, dutInfo); err != nil {
+		if err := drv.DownloadPrivateLocalBundles(ctx, dutInfo); err != nil {
 			return nil, fmt.Errorf("failed downloading private bundles: %v", err)
 		}
 	}
@@ -180,6 +204,7 @@ func getDUTInfo(ctx context.Context, cfg *config.Config, drv *driver.Driver) (*p
 	return dutInfo, nil
 }
 
+// buildRemoteBundles builds the necessary binaries for remote execution.
 func buildRemoteBundles(ctx context.Context, cfg *config.Config) error {
 	targets := []*build.Target{
 		{

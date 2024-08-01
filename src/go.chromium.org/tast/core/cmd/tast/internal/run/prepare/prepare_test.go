@@ -5,6 +5,7 @@
 package prepare
 
 import (
+	"errors"
 	"io/ioutil"
 	"path/filepath"
 	"regexp"
@@ -121,7 +122,7 @@ func TestPushDataFiles(t *gotesting.T) {
 	}
 
 	// Connect to the target.
-	drv, err := driver.New(ctx, cfg, cfg.Target(), "")
+	drv, err := driver.New(ctx, cfg, cfg.Target(), "", nil)
 	if err != nil {
 		t.Fatalf("driver.New failed: %v", err)
 	}
@@ -202,6 +203,55 @@ func TestPrepare(t *gotesting.T) {
 
 			if diff := cmp.Diff(wantDUTInfo, gotDUTInfo, protocmp.Transform()); diff != "" {
 				t.Errorf("Prepare(): Unwanted diff (-want +want):\n%s", diff)
+			}
+		})
+	}
+}
+
+func TestSetupPrivateBundles(t *gotesting.T) {
+	env := runtest.SetUp(t)
+	ctx := env.Context()
+	tests := []struct {
+		name    string
+		cfg     *config.Config
+		drv     *driver.Driver
+		wantErr error
+	}{
+		{
+			name: "DriverIsNil",
+			cfg: env.Config(func(cfg *config.MutableConfig) {
+				cfg.Target = "-"
+				cfg.Build = false
+			}),
+			drv:     nil,
+			wantErr: errors.New("driver is nil"),
+		},
+		{
+			name: "NoBuildNoDownloadNoChroot",
+			cfg: env.Config(func(cfg *config.MutableConfig) {
+				cfg.Target = "-"
+				cfg.Build = false
+				cfg.DownloadPrivateBundles = false
+			}),
+			drv:     &driver.Driver{},
+			wantErr: nil,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *gotesting.T) {
+			err := SetUpRemotePrivateBundle(ctx, tc.cfg, tc.drv)
+
+			if tc.wantErr != nil {
+				if err == nil {
+					t.Errorf("SetupPrivateBundles() expected an error, but got nil")
+				} else if err.Error() != tc.wantErr.Error() {
+					t.Errorf("SetupPrivateBundles() error mismatch: got %q, want %q", err.Error(), tc.wantErr.Error())
+				}
+			} else {
+				if err != nil {
+					t.Errorf("SetupPrivateBundles() unexpected error: %v", err)
+				}
 			}
 		})
 	}

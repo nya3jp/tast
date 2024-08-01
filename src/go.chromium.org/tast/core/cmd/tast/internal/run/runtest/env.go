@@ -139,7 +139,8 @@ func SetUp(t *gotesting.T, opts ...EnvOrDUTOption) *Env {
 		StaticConfig: &runner.StaticConfig{
 			Type: runner.RemoteRunner,
 		},
-		OnRunTestsInit: cfg.OnRunRemoteTestsInit,
+		OnRunTestsInit:         cfg.OnRunRemoteTestsInit,
+		DownloadPrivateBundles: cfg.DownloadPrivateBundles,
 	})
 	lo, err := remoteTestRunner.Install(filepath.Join(rootDir, remoteTestRunnerPath))
 	if err != nil {

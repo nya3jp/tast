@@ -26,7 +26,7 @@ import (
 	"go.chromium.org/tast/core/internal/protocol"
 )
 
-func TestDriver_DownloadPrivateBundles_Disabled(t *testing.T) {
+func TestDriver_DownloadPrivateLocalBundles_Disabled(t *testing.T) {
 	env := runtest.SetUp(
 		t,
 		runtest.WithDownloadPrivateBundles(func(req *protocol.DownloadPrivateBundlesRequest) (*protocol.DownloadPrivateBundlesResponse, error) {
@@ -42,18 +42,18 @@ func TestDriver_DownloadPrivateBundles_Disabled(t *testing.T) {
 		DefaultBuildArtifactsUrl: "gs://build-artifacts/foo/bar",
 	}
 
-	drv, err := driver.New(ctx, cfg, cfg.Target(), "")
+	drv, err := driver.New(ctx, cfg, cfg.Target(), "", nil)
 	if err != nil {
 		t.Fatalf("driver.New failed: %v", err)
 	}
 	defer drv.Close(ctx)
 
-	if err := drv.DownloadPrivateBundles(ctx, dutInfo); err != nil {
+	if err := drv.DownloadPrivateLocalBundles(ctx, dutInfo); err != nil {
 		t.Fatalf("DownloadPrivateBundles failed: %v", err)
 	}
 }
 
-func TestDriver_DownloadPrivateBundles_Override(t *testing.T) {
+func TestDriver_DownloadPrivateLocalBundles_Override(t *testing.T) {
 	const (
 		buildArtifactsURLDefault  = "gs://build-artifacts/default"
 		buildArtifactsURLOverride = "gs://build-artifacts/override"
@@ -83,13 +83,13 @@ func TestDriver_DownloadPrivateBundles_Override(t *testing.T) {
 		DefaultBuildArtifactsUrl: buildArtifactsURLDefault, // ignored
 	}
 
-	drv, err := driver.New(ctx, cfg, cfg.Target(), "")
+	drv, err := driver.New(ctx, cfg, cfg.Target(), "", nil)
 	if err != nil {
 		t.Fatalf("driver.New failed: %v", err)
 	}
 	defer drv.Close(ctx)
 
-	if err := drv.DownloadPrivateBundles(ctx, dutInfo); err != nil {
+	if err := drv.DownloadPrivateLocalBundles(ctx, dutInfo); err != nil {
 		t.Fatalf("DownloadPrivateBundles failed: %v", err)
 	}
 	if !called {
@@ -97,7 +97,51 @@ func TestDriver_DownloadPrivateBundles_Override(t *testing.T) {
 	}
 }
 
-func TestDriver_DownloadPrivateBundles_Devservers(t *testing.T) {
+func TestDriver_DownloadPrivateRemoteBundles_Override(t *testing.T) {
+	const (
+		buildArtifactsURLDefault  = "gs://build-artifacts/default"
+		buildArtifactsURLOverride = "gs://build-artifacts/override"
+	)
+
+	called := false
+	env := runtest.SetUp(
+		t,
+		runtest.WithDownloadPrivateRemoteBundles(func(req *protocol.DownloadPrivateBundlesRequest) (*protocol.DownloadPrivateBundlesResponse, error) {
+			called = true
+			want := &protocol.DownloadPrivateBundlesRequest{
+				ServiceConfig:    &protocol.ServiceConfig{},
+				BuildArtifactUrl: buildArtifactsURLOverride,
+			}
+			if diff := cmp.Diff(req, want, protocmp.Transform()); diff != "" {
+				t.Errorf("DownloadPrivateBundlesRequest mismatch (-got +want):\n%s", diff)
+			}
+			return &protocol.DownloadPrivateBundlesResponse{}, nil
+		}),
+	)
+	ctx := env.Context()
+	cfg := env.Config(func(cfg *config.MutableConfig) {
+		cfg.DownloadPrivateBundles = true
+		cfg.BuildArtifactsURLOverride = buildArtifactsURLOverride
+	})
+	dutInfo := &protocol.DUTInfo{
+		DefaultBuildArtifactsUrl: buildArtifactsURLDefault, // ignored
+	}
+
+	drv, err := driver.New(ctx, cfg, cfg.Target(), "", nil)
+	if err != nil {
+		t.Fatalf("driver.New failed: %v", err)
+	}
+	defer drv.Close(ctx)
+
+	if err := drv.DownloadPrivateRemoteBundles(ctx, dutInfo); err != nil {
+		t.Fatalf("DownloadPrivateBundles failed: %v", err)
+	}
+	if !called {
+		t.Error("DownloadPrivateBundles not called")
+	}
+}
+
+func TestDriver_DownloadPrivateLocalBundles_Devservers(t *testing.T) {
 	const buildArtifactsURL = "gs://build-artifacts/foo/bar"
 	devservers := []string{"http://example.com:1111", "http://example.com:2222"}
 
@@ -127,13 +171,13 @@ func TestDriver_DownloadPrivateBundles_Devservers(t *testing.T) {
 		DefaultBuildArtifactsUrl: buildArtifactsURL,
 	}
 
-	drv, err := driver.New(ctx, cfg, cfg.Target(), "")
+	drv, err := driver.New(ctx, cfg, cfg.Target(), "", nil)
 	if err != nil {
 		t.Fatalf("driver.New failed: %v", err)
 	}
 	defer drv.Close(ctx)
 
-	if err := drv.DownloadPrivateBundles(ctx, dutInfo); err != nil {
+	if err := drv.DownloadPrivateLocalBundles(ctx, dutInfo); err != nil {
 		t.Fatalf("DownloadPrivateBundles failed: %v", err)
 	}
 	if !called {
@@ -141,7 +185,51 @@ func TestDriver_DownloadPrivateBundles_Devservers(t *testing.T) {
 	}
 }
 
-func TestDriver_DownloadPrivateBundles_EphemeralDevserver(t *testing.T) {
+func TestDriver_DownloadPrivateRemoteBundles_Devservers(t *testing.T) {
+	const buildArtifactsURL = "gs://build-artifacts/foo/bar"
+	devservers := []string{"http://example.com:1111", "http://example.com:2222"}
+
+	called := false
+	env := runtest.SetUp(
+		t,
+		runtest.WithDownloadPrivateRemoteBundles(func(req *protocol.DownloadPrivateBundlesRequest) (*protocol.DownloadPrivateBundlesResponse, error) {
+			called = true
+			want := &protocol.DownloadPrivateBundlesRequest{
+				ServiceConfig: &protocol.ServiceConfig{
+					Devservers: devservers,
+				},
+				BuildArtifactUrl: buildArtifactsURL,
+			}
+			if diff := cmp.Diff(req, want, protocmp.Transform()); diff != "" {
+				t.Errorf("DownloadPrivateBundlesRequest mismatch (-got +want):\n%s", diff)
+			}
+			return &protocol.DownloadPrivateBundlesResponse{}, nil
+		}),
+	)
+	ctx := env.Context()
+	cfg := env.Config(func(cfg *config.MutableConfig) {
+		cfg.DownloadPrivateBundles = true
+		// Pass the devservers to the fake remote runner config
+	})
+	dutInfo := &protocol.DUTInfo{
+		DefaultBuildArtifactsUrl: buildArtifactsURL,
+	}
+
+	drv, err := driver.New(ctx, cfg, cfg.Target(), "", devservers)
+	if err != nil {
+		t.Fatalf("driver.New failed: %v", err)
+	}
+	defer drv.Close(ctx)
+
+	if err := drv.DownloadPrivateRemoteBundles(ctx, dutInfo); err != nil {
+		t.Fatalf("DownloadPrivateRemoteBundles failed: %v", err)
+	}
+	if !called {
+		t.Error("DownloadPrivateBundles not called")
+	}
+}
+
+func TestDriver_DownloadPrivateLocalBundles_EphemeralDevserver(t *testing.T) {
 	const buildArtifactsURL = "gs://build-artifacts/foo/bar"
 
 	called := false
@@ -172,13 +260,13 @@ func TestDriver_DownloadPrivateBundles_EphemeralDevserver(t *testing.T) {
 		DefaultBuildArtifactsUrl: buildArtifactsURL,
 	}
 
-	drv, err := driver.New(ctx, cfg, cfg.Target(), "")
+	drv, err := driver.New(ctx, cfg, cfg.Target(), "", nil)
 	if err != nil {
 		t.Fatalf("driver.New failed: %v", err)
 	}
 	defer drv.Close(ctx)
 
-	if err := drv.DownloadPrivateBundles(ctx, dutInfo); err != nil {
+	if err := drv.DownloadPrivateLocalBundles(ctx, dutInfo); err != nil {
 		t.Fatalf("DownloadPrivateBundles failed: %v", err)
 	}
 	if !called {
@@ -186,7 +274,7 @@ func TestDriver_DownloadPrivateBundles_EphemeralDevserver(t *testing.T) {
 	}
 }
 
-func TestDriver_DownloadPrivateBundles_TLW(t *testing.T) {
+func TestDriver_DownloadPrivateLocalBundles_TLW(t *testing.T) {
 	const (
 		tlwSelfName       = "dutname"
 		buildArtifactsURL = "gs://build-artifacts/foo/bar"
@@ -248,13 +336,13 @@ func TestDriver_DownloadPrivateBundles_TLW(t *testing.T) {
 		DefaultBuildArtifactsUrl: buildArtifactsURL,
 	}
 
-	drv, err := driver.New(ctx, cfg, cfg.Target(), "")
+	drv, err := driver.New(ctx, cfg, cfg.Target(), "", nil)
 	if err != nil {
 		t.Fatalf("driver.New failed: %v", err)
 	}
 	defer drv.Close(ctx)
 
-	if err := drv.DownloadPrivateBundles(ctx, dutInfo); err != nil {
+	if err := drv.DownloadPrivateLocalBundles(ctx, dutInfo); err != nil {
 		t.Fatalf("DownloadPrivateBundles failed: %v", err)
 	}
 	if !called {
@@ -262,7 +350,7 @@ func TestDriver_DownloadPrivateBundles_TLW(t *testing.T) {
 	}
 }
 
-func TestDriver_DownloadPrivateBundles_DUTServer(t *testing.T) {
+func TestDriver_DownloadPrivateLocalBundles_DUTServer(t *testing.T) {
 	const (
 		buildArtifactsURL = "gs://build-artifacts/foo/bar"
 		archiveURL        = "gs://build-artifacts/foo/bar/tast-bundles.zip"
@@ -330,13 +418,13 @@ func TestDriver_DownloadPrivateBundles_DUTServer(t *testing.T) {
 		DefaultBuildArtifactsUrl: buildArtifactsURL,
 	}
 
-	drv, err := driver.New(ctx, cfg, cfg.Target(), "")
+	drv, err := driver.New(ctx, cfg, cfg.Target(), "", nil)
 	if err != nil {
 		t.Fatalf("driver.New failed: %v", err)
 	}
 	defer drv.Close(ctx)
 
-	if err := drv.DownloadPrivateBundles(ctx, dutInfo); err != nil {
+	if err := drv.DownloadPrivateLocalBundles(ctx, dutInfo); err != nil {
 		t.Fatalf("DownloadPrivateBundles failed: %v", err)
 	}
 	if !called {
@@ -352,12 +440,12 @@ func TestPrivateNoHost(t *testing.T) {
 		cfg.Target = "-"
 	})
 
-	drv, err := driver.New(ctx, cfg, cfg.Target(), "")
+	drv, err := driver.New(ctx, cfg, cfg.Target(), "", nil)
 	if err != nil {
 		t.Fatalf("driver.New failed: %v", err)
 	}
 	defer drv.Close(ctx)
-	if err := drv.DownloadPrivateBundles(ctx, nil); err != nil {
+	if err := drv.DownloadPrivateLocalBundles(ctx, nil); err != nil {
 		t.Fatalf("DownloadPrivateBundles failed: %v", err)
 	}
 }

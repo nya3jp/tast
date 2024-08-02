@@ -79,7 +79,7 @@ func Run(ctx context.Context, cfg *config.Config, state *config.DeprecatedState)
 		return nil, errors.Wrap(err, "failed to connect to target")
 	}
 	defer drv.Close(ctx)
-	dutInfo, err := prepareDUT(ctx, cfg, drv)
+	dutInfo, pushedFilesInfo, err := prepareDUT(ctx, cfg, drv)
 	if err != nil {
 		return nil, err
 	}
@@ -92,7 +92,7 @@ func Run(ctx context.Context, cfg *config.Config, state *config.DeprecatedState)
 		}
 		return results, nil
 	case config.RunTestsMode:
-		results, err := runTests(ctx, cfg, state, drv, reportClient, dutInfo)
+		results, err := runTests(ctx, cfg, state, drv, reportClient, dutInfo, pushedFilesInfo)
 		if err != nil {
 			return results, errors.Wrapf(err, "failed to run tests")
 		}
@@ -102,27 +102,31 @@ func Run(ctx context.Context, cfg *config.Config, state *config.DeprecatedState)
 	}
 }
 
-func prepareDUT(ctx context.Context, cfg *config.Config, drv *driver.Driver) (map[string]*protocol.DUTInfo, error) {
+func prepareDUT(ctx context.Context, cfg *config.Config, drv *driver.Driver) (
+	map[string]*protocol.DUTInfo, []*protocol.PushedFilesInfoForDUT, error) {
+	var pushedFilesInfo []*protocol.PushedFilesInfoForDUT
 	dutInfo := make(map[string]*protocol.DUTInfo)
-	primaryDutInfo, err := prepare.Prepare(ctx, cfg, drv)
+	primaryDutInfo, pushedExecutables, err := prepare.Prepare(ctx, cfg, drv)
 	dutInfo[""] = primaryDutInfo
 	if err != nil {
-		return nil, errors.Wrap(err, "failed to build and push primary DUT")
+		return nil, nil, errors.Wrap(err, "failed to build and push primary DUT")
 	}
+	pushedFilesInfo = append(pushedFilesInfo, &protocol.PushedFilesInfoForDUT{Role: "", SrcDstPaths: pushedExecutables})
 
 	for role, dut := range cfg.CompanionDUTs() {
 		companionDriver, err := driver.New(ctx, cfg, dut, role)
 		if err != nil {
-			return nil, errors.Wrapf(err, "failed to connect to companion DUT %s", dut)
+			return nil, nil, errors.Wrapf(err, "failed to connect to companion DUT %s", dut)
 		}
 		defer companionDriver.Close(ctx)
-		dutInfo[role], err = prepare.Prepare(ctx, cfg, companionDriver)
+		dutInfo[role], pushedExecutables, err = prepare.Prepare(ctx, cfg, companionDriver)
 		if err != nil {
-			return nil, errors.Wrapf(err, "failed to build and push companion DUT %s", dut)
+			return nil, nil, errors.Wrapf(err, "failed to build and push companion DUT %s", dut)
 		}
+		pushedFilesInfo = append(pushedFilesInfo, &protocol.PushedFilesInfoForDUT{Role: role, SrcDstPaths: pushedExecutables})
 	}
 
-	return dutInfo, nil
+	return dutInfo, pushedFilesInfo, nil
 }
 
 // startEphemeralDevserverForRemoteTests starts an ephemeral devserver for remote tests.
@@ -172,7 +176,7 @@ func GlobalRuntimeVars(ctx context.Context, cfg *config.Config, state *config.De
 		return nil, errors.Wrap(err, "failed to connect to target")
 	}
 	defer drv.Close(ctx)
-	_, err = prepareDUT(ctx, cfg, drv)
+	_, _, err = prepareDUT(ctx, cfg, drv)
 
 	if err != nil {
 		return nil, err
@@ -256,7 +260,8 @@ func verifyTestNames(patterns []string, tests []*driver.BundleEntity) error {
 func runTests(ctx context.Context, cfg *config.Config,
 	state *config.DeprecatedState,
 	drv *driver.Driver, client *reporting.RPCClient,
-	dutInfos map[string]*protocol.DUTInfo) (results []*resultsjson.Result,
+	dutInfos map[string]*protocol.DUTInfo,
+	pushedFilesInfo []*protocol.PushedFilesInfoForDUT) (results []*resultsjson.Result,
 	retErr error) {
 
 	var roles []string
@@ -396,5 +401,5 @@ func runTests(ctx context.Context, cfg *config.Config,
 		reporting.WriteResultsToLogs(ctx, results, cfg.ResDir(), complete, cmdTimeoutPast)
 	}()
 
-	return drv.RunTests(ctx, shard.Included, dutInfos, client, state.RemoteDevservers)
+	return drv.RunTests(ctx, shard.Included, dutInfos, client, state.RemoteDevservers, pushedFilesInfo)
 }

@@ -103,7 +103,7 @@ func TestDriver_RunTests(t *gotesting.T) {
 		t.Fatalf("ListMatchedTests failed: %v", err)
 	}
 
-	got, err := drv.RunTests(ctx, tests, nil, nil, nil)
+	got, err := drv.RunTests(ctx, tests, nil, nil, nil, nil)
 	if err != nil {
 		t.Errorf("RunTests failed: %v", err)
 	}
@@ -234,7 +234,7 @@ func TestDriver_RunTests_RemoteFixture(t *gotesting.T) {
 		t.Fatalf("ListMatchedTests failed: %v", err)
 	}
 
-	got, err := drv.RunTests(ctx, tests, nil, nil, nil)
+	got, err := drv.RunTests(ctx, tests, nil, nil, nil, nil)
 	if err != nil {
 		t.Errorf("RunTests failed: %v", err)
 	}
@@ -303,7 +303,7 @@ func TestDriver_RunTests_RetryTests(t *gotesting.T) {
 		t.Fatalf("ListMatchedTests failed: %v", err)
 	}
 
-	got, err := drv.RunTests(ctx, tests, nil, nil, nil)
+	got, err := drv.RunTests(ctx, tests, nil, nil, nil, nil)
 	if err != nil {
 		t.Errorf("RunTests failed: %v", err)
 	}
@@ -373,7 +373,7 @@ func TestDriver_RunTests_MaxTestFailures(t *gotesting.T) {
 		t.Fatalf("ListMatchedTests failed: %v", err)
 	}
 
-	got, err := drv.RunTests(ctx, tests, nil, nil, nil)
+	got, err := drv.RunTests(ctx, tests, nil, nil, nil, nil)
 	if err == nil {
 		t.Error("RunTests unexpectedly succeeded")
 	}
@@ -466,7 +466,7 @@ func TestDriver_RunTests_WithRetries(t *gotesting.T) {
 		t.Fatalf("ListMatchedTests failed: %v", err)
 	}
 
-	got, err := drv.RunTests(ctx, tests, nil, nil, nil)
+	got, err := drv.RunTests(ctx, tests, nil, nil, nil, nil)
 	if err != nil {
 		t.Errorf("RunTests failed: %v", err)
 	}
@@ -619,7 +619,7 @@ func TestDriver_RunTests_TempDirs(t *gotesting.T) {
 		t.Fatalf("ListMatchedTests failed: %v", err)
 	}
 
-	if _, err := drv.RunTests(ctx, tests, nil, nil, nil); err != nil {
+	if _, err := drv.RunTests(ctx, tests, nil, nil, nil, nil); err != nil {
 		t.Errorf("RunTests failed: %v", err)
 	}
 }

@@ -45,14 +45,15 @@ func CheckPrivateBundleFlag(ctx context.Context, cfg *config.Config) error {
 
 // Prepare prepares target DUT for running tests.
 // It returns the DUTInfo for the primary DUT.
-func Prepare(ctx context.Context, cfg *config.Config, driver *driver.Driver) (*protocol.DUTInfo, error) {
+func Prepare(ctx context.Context, cfg *config.Config, driver *driver.Driver) (
+	*protocol.DUTInfo, map[string]string, error) {
 	if !cfg.Build() {
 		if err := buildAllRemoteBundlesInChroot(ctx, cfg); err != nil {
-			return nil, fmt.Errorf("failed to check and build remote bundles: %v", err)
+			return nil, nil, fmt.Errorf("failed to check and build remote bundles: %v", err)
 		}
 	} else if err := buildRemoteBundles(ctx, cfg); err != nil {
 		// Build all the remote bundles.
-		return nil, err
+		return nil, nil, err
 	}
 
 	// Do not build or push to DUT as we dont have access to it.
@@ -62,15 +63,15 @@ func Prepare(ctx context.Context, cfg *config.Config, driver *driver.Driver) (*p
 				Software: &fwprotocol.SoftwareFeatures{},
 				Hardware: &fwprotocol.HardwareFeatures{},
 			},
-		}, nil
+		}, nil, nil
 	}
 
-	dutInfo, err := prepareDUT(ctx, cfg, driver)
+	dutInfo, pushedExcutables, err := prepareDUT(ctx, cfg, driver)
 	if err != nil {
-		return nil, fmt.Errorf("failed to prepare DUT %s: %v", cfg.Target(), err)
+		return nil, nil, fmt.Errorf("failed to prepare DUT %s: %v", cfg.Target(), err)
 	}
 
-	return dutInfo, nil
+	return dutInfo, pushedExcutables, nil
 }
 
 // buildAllRemoteBundlesInChroot will build all available remote bundles in
@@ -126,17 +127,20 @@ func buildAllRemoteBundlesInChroot(ctx context.Context, cfg *config.Config) erro
 }
 
 // prepareDUT prepares the DUT for running tests and downloads private test bundles.
-func prepareDUT(ctx context.Context, cfg *config.Config, drv *driver.Driver) (*protocol.DUTInfo, error) {
+func prepareDUT(ctx context.Context, cfg *config.Config, drv *driver.Driver) (
+	*protocol.DUTInfo, map[string]string, error) {
+	var pushedExcutables map[string]string
 	if cfg.Build() {
 		targetArch, err := getTargetArch(ctx, cfg, drv.SSHConn())
 		if err != nil {
-			return nil, fmt.Errorf("failed to get architecture information: %v", err)
+			return nil, nil, fmt.Errorf("failed to get architecture information: %v", err)
 		}
 		if err := buildLocalBundles(ctx, cfg, targetArch); err != nil {
-			return nil, err
+			return nil, nil, err
 		}
-		if err := pushAll(ctx, cfg, drv, targetArch); err != nil {
-			return nil, err
+		pushedExcutables, err = pushAll(ctx, cfg, drv, targetArch)
+		if err != nil {
+			return nil, nil, err
 		}
 	}
 
@@ -145,7 +149,11 @@ func prepareDUT(ctx context.Context, cfg *config.Config, drv *driver.Driver) (*p
 
 	// Now that local_test_runner is prepared, we can retrieve DUTInfo.
 	// It is needed in DownloadPrivateBundles below.
-	return getDUTInfo(ctx, cfg, drv)
+	dutInfo, err := getDUTInfo(ctx, cfg, drv)
+	if err != nil {
+		return nil, nil, err
+	}
+	return dutInfo, pushedExcutables, nil
 }
 
 // getDUTInfo downloads private bundles and returns the DUT info.
@@ -279,35 +287,38 @@ func getTargetArch(ctx context.Context, cfg *config.Config, hst *ssh.Conn) (targ
 // and local test data files to the DUT if necessary. If cfg.mode is
 // ListTestsMode data files are not pushed since they are not needed to build
 // a list of tests.
-func pushAll(ctx context.Context, cfg *config.Config, drv *driver.Driver, targetArch string) error {
+func pushAll(ctx context.Context, cfg *config.Config, drv *driver.Driver, targetArch string) (
+	map[string]string, error) {
 	ctx, st := timing.Start(ctx, "push")
 	defer st.End()
 
 	// Push executables first. New test bundle is needed later to get the list of
 	// data files to push.
-	if err := pushExecutables(ctx, cfg, drv.SSHConn(), targetArch); err != nil {
-		return fmt.Errorf("failed to push local executables: %v", err)
+	pushedExcutables, err := pushExecutables(ctx, cfg, drv.SSHConn(), targetArch)
+	if err != nil {
+		return nil, fmt.Errorf("failed to push local executables: %v", err)
 	}
 
 	if cfg.Mode() != config.RunTestsMode {
-		return nil
+		return nil, nil
 	}
 
 	paths, err := getDataFilePaths(ctx, cfg, drv)
 	if err != nil {
-		return fmt.Errorf("failed to get data file list: %v", err)
+		return nil, fmt.Errorf("failed to get data file list: %v", err)
 	}
 	if len(paths) > 0 {
 		if err := pushDataFiles(ctx, cfg, drv.SSHConn(), cfg.LocalDataDir(), paths); err != nil {
-			return fmt.Errorf("failed to push data files: %v", err)
+			return nil, fmt.Errorf("failed to push data files: %v", err)
 		}
 	}
-	return nil
+	return pushedExcutables, nil
 }
 
 // pushExecutables pushes the freshly built local test runner, local test bundle
 // executable to the DUT if necessary.
-func pushExecutables(ctx context.Context, cfg *config.Config, hst *ssh.Conn, targetArch string) error {
+func pushExecutables(ctx context.Context, cfg *config.Config, hst *ssh.Conn, targetArch string) (
+	map[string]string, error) {
 	srcDir := filepath.Join(cfg.BuildOutDir(), targetArch)
 
 	// local_test_runner is required even if we are running only remote tests,
@@ -324,11 +335,11 @@ func pushExecutables(ctx context.Context, cfg *config.Config, hst *ssh.Conn, tar
 	start := time.Now()
 	bytes, err := linuxssh.PutFiles(ctx, hst, files, linuxssh.DereferenceSymlinks)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	logging.Infof(ctx, "Pushed executables in %v (sent %s)",
 		time.Now().Sub(start).Round(time.Millisecond), formatBytes(bytes))
-	return nil
+	return files, nil
 }
 
 func allNeededFixtures(fixtures, tests []*driver.BundleEntity) []*driver.BundleEntity {

@@ -55,7 +55,8 @@ func (d *Driver) RunTests(ctx context.Context,
 	tests []*BundleEntity,
 	dutInfos map[string]*protocol.DUTInfo,
 	client *reporting.RPCClient,
-	remoteDevservers []string) ([]*resultsjson.Result, error) {
+	remoteDevservers []string,
+	pushedFilesInfo []*protocol.PushedFilesInfoForDUT) ([]*resultsjson.Result, error) {
 	testsPerBundle := make(map[string][]*protocol.ResolvedEntity)
 	for _, t := range tests {
 		testsPerBundle[t.Bundle] = append(testsPerBundle[t.Bundle], t.Resolved)
@@ -67,7 +68,7 @@ func (d *Driver) RunTests(ctx context.Context,
 	sort.Strings(bundles)
 	var results []*resultsjson.Result
 	for _, bundle := range bundles {
-		res, err := d.runTests(ctx, bundle, testsPerBundle[bundle], dutInfos, client, remoteDevservers)
+		res, err := d.runTests(ctx, bundle, testsPerBundle[bundle], dutInfos, client, remoteDevservers, pushedFilesInfo)
 		results = append(results, res...)
 		if err != nil {
 			return results, err
@@ -77,7 +78,10 @@ func (d *Driver) RunTests(ctx context.Context,
 }
 
 // runTests runs specified tests. It can return non-nil results even on errors.
-func (d *Driver) runTests(ctx context.Context, bundle string, tests []*protocol.ResolvedEntity, dutInfos map[string]*protocol.DUTInfo, client *reporting.RPCClient, remoteDevservers []string) ([]*resultsjson.Result, error) {
+func (d *Driver) runTests(ctx context.Context, bundle string,
+	tests []*protocol.ResolvedEntity, dutInfos map[string]*protocol.DUTInfo,
+	client *reporting.RPCClient, remoteDevservers []string,
+	pushedFilesInfo []*protocol.PushedFilesInfoForDUT) ([]*resultsjson.Result, error) {
 
 	args := &runTestsArgs{
 		DUTInfo:          dutInfos,
@@ -102,7 +106,7 @@ func (d *Driver) runTests(ctx context.Context, bundle string, tests []*protocol.
 		for _, t := range remoteTests {
 			remoteTestNames = append(remoteTestNames, t.GetEntity().GetName())
 		}
-		remoteResults, err := d.runRemoteTests(ctx, bundle, remoteTestNames, args)
+		remoteResults, err := d.runRemoteTests(ctx, bundle, remoteTestNames, args, pushedFilesInfo)
 
 		return append(localResults, remoteResults...), err
 	}
@@ -110,7 +114,7 @@ func (d *Driver) runTests(ctx context.Context, bundle string, tests []*protocol.
 	for _, t := range tests {
 		testNames = append(testNames, t.GetEntity().GetName())
 	}
-	return d.runRemoteTests(ctx, bundle, testNames, args)
+	return d.runRemoteTests(ctx, bundle, testNames, args, pushedFilesInfo)
 }
 
 func (d *Driver) runLocalTests(ctx context.Context, bundle string, tests []*protocol.ResolvedEntity, args *runTestsArgs) ([]*resultsjson.Result, error) {
@@ -282,20 +286,22 @@ func (d *Driver) runLocalTestsWithRetry(ctx context.Context, bundle string, test
 	return md.RunLocalTests(ctx, bundle, names, state)
 }
 
-func (d *Driver) runRemoteTests(ctx context.Context, bundle string, tests []string, args *runTestsArgs) ([]*resultsjson.Result, error) {
+func (d *Driver) runRemoteTests(ctx context.Context, bundle string, tests []string,
+	args *runTestsArgs, pushedFilesInfo []*protocol.PushedFilesInfoForDUT) ([]*resultsjson.Result, error) {
 	if len(tests) == 0 {
 		return nil, nil
 	}
 
 	runTestsOnce := func(ctx context.Context, tests []string) ([]*resultsjson.Result, error) {
-		return d.runRemoteTestsOnce(ctx, bundle, tests, args)
+		return d.runRemoteTestsOnce(ctx, bundle, tests, args, pushedFilesInfo)
 	}
 	return minidriver.RunTestsWithRetry(ctx, tests, runTestsOnce, d.cfg.Retries())
 }
 
-func (d *Driver) runRemoteTestsOnce(ctx context.Context, bundle string, tests []string, args *runTestsArgs) ([]*resultsjson.Result, error) {
+func (d *Driver) runRemoteTestsOnce(ctx context.Context, bundle string, tests []string, args *runTestsArgs,
+	pushedFilesInfo []*protocol.PushedFilesInfoForDUT) ([]*resultsjson.Result, error) {
 	bcfg, rcfg, err := d.newConfigsForRemoteTests(ctx, tests, args.DUTInfo, args.RemoteDevservers,
-		args.SwarmingTaskID, args.BuildBucketID)
+		args.SwarmingTaskID, args.BuildBucketID, pushedFilesInfo)
 	if err != nil {
 		return nil, err
 	}
@@ -316,8 +322,11 @@ func (d *Driver) runRemoteTestsOnce(ctx context.Context, bundle string, tests []
 	return proc.Results(), proc.FatalError()
 }
 
-func (d *Driver) newConfigsForRemoteTests(ctx context.Context, tests []string, dutInfos map[string]*protocol.DUTInfo,
-	remoteDevservers []string, swarmingTaskID, buildBucketID string) (*protocol.BundleConfig, *protocol.RunConfig, error) {
+func (d *Driver) newConfigsForRemoteTests(ctx context.Context, tests []string,
+	dutInfos map[string]*protocol.DUTInfo,
+	remoteDevservers []string, swarmingTaskID,
+	buildBucketID string,
+	pushedFilesInfo []*protocol.PushedFilesInfoForDUT) (*protocol.BundleConfig, *protocol.RunConfig, error) {
 	exe, err := os.Executable()
 	if err != nil {
 		return nil, nil, err
@@ -419,6 +428,7 @@ func (d *Driver) newConfigsForRemoteTests(ctx context.Context, tests []string, d
 		WaitUntilReadyTimeout: ptypes.DurationProto(d.cfg.WaitUntilReadyTimeout()),
 		MsgTimeout:            ptypes.DurationProto(d.cfg.MsgTimeout()),
 		MaxSysMsgLogSize:      d.cfg.MaxSysMsgLogSize(),
+		PushedFilesInfo:       pushedFilesInfo,
 		Target: &protocol.RunTargetConfig{
 			Devservers: d.cfg.Devservers(),
 			Dirs: &protocol.RunDirectories{

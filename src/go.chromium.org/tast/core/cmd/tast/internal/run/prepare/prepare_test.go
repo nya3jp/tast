@@ -188,7 +188,7 @@ func TestPrepare(t *gotesting.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *gotesting.T) {
-			gotDUTInfo, err := Prepare(ctx, tc.cfg, tc.drv)
+			gotDUTInfo, _, err := Prepare(ctx, tc.cfg, tc.drv)
 			if err != nil {
 				t.Errorf("Unexpected error in Prepare(): %v", err)
 			}

@@ -21,6 +21,7 @@ import (
 	"go.chromium.org/tast/core/cmd/tast/internal/run/driver"
 	"go.chromium.org/tast/core/cmd/tast/internal/run/runtest"
 	"go.chromium.org/tast/core/errors"
+	"go.chromium.org/tast/core/internal/protocol"
 	"go.chromium.org/tast/core/internal/run/reporting"
 	"go.chromium.org/tast/core/internal/run/resultsjson"
 	"go.chromium.org/tast/core/internal/testing"
@@ -621,5 +622,58 @@ func TestDriver_RunTests_TempDirs(t *gotesting.T) {
 
 	if _, err := drv.RunTests(ctx, tests, nil, nil, nil, nil); err != nil {
 		t.Errorf("RunTests failed: %v", err)
+	}
+}
+
+func TestDriver_RunTests_PushedFilesPaths(t *gotesting.T) {
+	pushedFilesInfo := []*protocol.PushedFilesInfoForDUT{
+		{
+			Role: "",
+			SrcDstPaths: map[string]string{
+				"primary_src_1": "primary_dst_1",
+				"primary_src_2": "primary_dst_2",
+			},
+		},
+	}
+	wanted := map[string]string{
+		"primary_src_1": "primary_dst_1",
+		"primary_src_2": "primary_dst_2",
+	}
+
+	var got map[string]string
+
+	remoteTest := &testing.TestInstance{
+		Name:    "remote.Tmp",
+		Timeout: time.Minute,
+		Func: func(ctx context.Context, s *testing.State) {
+			got = s.PushedFilesToDUT("")
+		},
+	}
+	remoteReg := testing.NewRegistry("bundle")
+	remoteReg.AddTestInstance(remoteTest)
+
+	env := runtest.SetUp(
+		t,
+		runtest.WithRemoteBundles(remoteReg),
+	)
+	ctx := env.Context()
+	cfg := env.Config(nil)
+
+	drv, err := driver.New(ctx, cfg, cfg.Target(), "")
+	if err != nil {
+		t.Fatalf("driver.New failed: %v", err)
+	}
+	defer drv.Close(ctx)
+
+	tests, err := drv.ListMatchedTests(ctx, nil)
+	if err != nil {
+		t.Fatalf("ListMatchedTests failed: %v", err)
+	}
+
+	if _, err := drv.RunTests(ctx, tests, nil, nil, nil, pushedFilesInfo); err != nil {
+		t.Errorf("RunTests failed: %v", err)
+	}
+	if diff := cmp.Diff(got, wanted); diff != "" {
+		t.Errorf("Information for pushed files mismatch (-got +want):\n%s", diff)
 	}
 }

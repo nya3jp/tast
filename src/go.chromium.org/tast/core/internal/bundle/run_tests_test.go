@@ -256,11 +256,12 @@ func TestRunTestsRemoteData(t *gotesting.T) {
 
 	// The test should have access to information related to remote tests.
 	expMeta := &testing.Meta{
-		Target:         hr.BundleInitParams.BundleConfig.PrimaryTarget.DutConfig.SshConfig.ConnectionSpec,
-		TastPath:       hr.BundleInitParams.BundleConfig.MetaTestConfig.TastPath,
-		RunFlags:       hr.BundleInitParams.BundleConfig.MetaTestConfig.RunFlags,
-		ListFlags:      hr.BundleInitParams.BundleConfig.MetaTestConfig.ListFlags,
-		ConnectionSpec: hr.BundleInitParams.BundleConfig.PrimaryTarget.DutConfig.SshConfig.ConnectionSpec,
+		Target:           hr.BundleInitParams.BundleConfig.PrimaryTarget.DutConfig.SshConfig.ConnectionSpec,
+		TastPath:         hr.BundleInitParams.BundleConfig.MetaTestConfig.TastPath,
+		RunFlags:         hr.BundleInitParams.BundleConfig.MetaTestConfig.RunFlags,
+		ListFlags:        hr.BundleInitParams.BundleConfig.MetaTestConfig.ListFlags,
+		ConnectionSpec:   hr.BundleInitParams.BundleConfig.PrimaryTarget.DutConfig.SshConfig.ConnectionSpec,
+		PushedFilesPaths: map[string]map[string]string{},
 	}
 	if diff := cmp.Diff(meta, expMeta); diff != "" {
 		t.Errorf("Meta mismtach; (-got +want)\n%v", diff)
@@ -873,5 +874,89 @@ func TestPrepareTempDir(t *gotesting.T) {
 
 	if _, err := os.Stat(tmpDir); err != nil {
 		t.Error("restore must preserve the temporary directory: ", err)
+	}
+}
+
+// TestRunTestsRemotepushedFilesPaths make sure we can access paths for files
+// pushed to the DUT by Tastjj.
+func TestRunTestsRemotepushedFilesPaths(t *gotesting.T) {
+	const (
+		cmd    = "some_command"
+		output = "fake output"
+	)
+	handler := func(req *sshtest.ExecReq) {
+		if req.Cmd != "exec "+cmd {
+			log.Printf("Unexpected command %q", req.Cmd)
+			req.Start(false)
+		} else {
+			req.Start(true)
+			req.Write([]byte(output))
+			req.End(0)
+		}
+	}
+
+	td := sshtest.NewTestData(handler, handler)
+	defer td.Close()
+
+	primaryPathsExpected := map[string]string{
+		"primary_src_1": "primary_dst_1",
+		"primary_src_2": "primary_dst_2",
+	}
+	companionPathsExpected := map[string]string{
+		"cd1_src_1": "cd1_dst_1",
+		"cd1_src_2": "cd1_dst_2",
+	}
+	var primaryPaths, companionPaths map[string]string
+
+	// Register a test.
+	reg := testing.NewRegistry("bundle")
+	const role = "role"
+	reg.AddTestInstance(&testing.TestInstance{Name: "pkg.Test", Func: func(ctx context.Context, s *testing.State) {
+		primaryPaths = s.PushedFilesToDUT("")
+		companionPaths = s.PushedFilesToDUT("cd1")
+	}})
+
+	cfg := &protocol.RunConfig{
+		PushedFilesInfo: []*protocol.PushedFilesInfoForDUT{
+			{
+				Role: "",
+				SrcDstPaths: map[string]string{
+					"primary_src_1": "primary_dst_1",
+					"primary_src_2": "primary_dst_2",
+				},
+			},
+			{
+				Role: "cd1",
+				SrcDstPaths: map[string]string{
+					"cd1_src_1": "cd1_dst_1",
+					"cd1_src_2": "cd1_dst_2",
+				},
+			},
+		},
+	}
+	hr := &protocol.HandshakeRequest{
+		BundleInitParams: &protocol.BundleInitParams{
+			BundleConfig: &protocol.BundleConfig{
+				PrimaryTarget: &protocol.TargetDevice{
+					DutConfig: &protocol.DUTConfig{
+						SshConfig: &protocol.SSHConfig{
+							ConnectionSpec: td.Srvs[0].Addr().String(),
+							KeyFile:        td.UserKeyFile,
+						},
+					},
+				},
+			},
+		},
+	}
+
+	cl := startTestServer(t, NewStaticConfig(reg, time.Minute, Delegate{}), hr)
+	if _, err := protocoltest.RunTestsForEvents(context.Background(), cl, cfg); err != nil {
+		t.Fatalf("RunTests failed: %v", err)
+	}
+	if diff := cmp.Diff(primaryPaths, primaryPathsExpected); diff != "" {
+		t.Errorf("Primary pushed paths mismatch (-got +want):\n%s", diff)
+	}
+	if diff := cmp.Diff(companionPaths, companionPathsExpected); diff != "" {
+		t.Errorf("Companion pushed pathss mismatch (-got +want):\n%s", diff)
 	}
 }

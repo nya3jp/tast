@@ -373,14 +373,24 @@ func setUpConnection(ctx context.Context, scfg *StaticConfig, cfg *protocol.RunC
 		}()
 		companionDUTs[role] = d
 	}
+	// Copy information on files pushed by Tast to DUTs.
+	var pushedFilesPaths = make(map[string]map[string]string)
+	for _, pathsInfo := range cfg.GetPushedFilesInfo() {
+		srcDsts := make(map[string]string)
+		for src, dst := range pathsInfo.GetSrcDstPaths() {
+			srcDsts[src] = dst
+		}
+		pushedFilesPaths[pathsInfo.Role] = srcDsts
+	}
 	return &connectionEnv{
 		&testing.RemoteData{
 			Meta: &testing.Meta{
-				TastPath:       bcfg.GetMetaTestConfig().GetTastPath(),
-				Target:         sshCfg.GetConnectionSpec(),
-				RunFlags:       bcfg.GetMetaTestConfig().GetRunFlags(),
-				ListFlags:      bcfg.GetMetaTestConfig().GetListFlags(),
-				ConnectionSpec: sshCfg.GetConnectionSpec(),
+				TastPath:         bcfg.GetMetaTestConfig().GetTastPath(),
+				Target:           sshCfg.GetConnectionSpec(),
+				RunFlags:         bcfg.GetMetaTestConfig().GetRunFlags(),
+				ListFlags:        bcfg.GetMetaTestConfig().GetListFlags(),
+				ConnectionSpec:   sshCfg.GetConnectionSpec(),
+				PushedFilesPaths: pushedFilesPaths,
 			},
 			RPCHint:       testing.NewRPCHint(pt.GetBundleDir(), cfg.GetFeatures().GetInfra().GetVars()),
 			DUT:           dt,

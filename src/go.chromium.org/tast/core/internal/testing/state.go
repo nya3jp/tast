@@ -434,6 +434,30 @@ func (s *globalMixin) DevboardDUTLabConfig(role string) (*api.Dut, error) {
 	return dut, nil
 }
 
+// PushedFilesPaths returns information about files pushed by Tast to a DUT.
+// The parameter role is the role of the DUT. The role of primary DUT is "".
+// The value is a map of the source path of a file from the host and destination
+// path of a file on the DUT.
+// Currently, this function will only return executables that were pushed.
+// If there is a need, data files supported will be added upon request.
+func (s *globalMixin) PushedFilesToDUT(role string) map[string]string {
+	if s.entityRoot.cfg.RemoteData == nil ||
+		s.entityRoot.cfg.RemoteData.Meta == nil ||
+		s.entityRoot.cfg.RemoteData.Meta.PushedFilesPaths == nil {
+		return nil
+	}
+	pfp, ok := s.entityRoot.cfg.RemoteData.Meta.PushedFilesPaths[role]
+	if !ok {
+		return nil
+	}
+	pushedFilesPaths := make(map[string]string)
+	for src, dst := range pfp {
+		pushedFilesPaths[src] = dst
+	}
+	return pushedFilesPaths
+
+}
+
 // Log formats its arguments using default formatting and logs them.
 func (s *globalMixin) Log(args ...interface{}) {
 	s.entityRoot.out.Log(logging.LevelInfo, time.Now(), logging.ReplaceInvalidUTF8(fmt.Sprint(args...)))

@@ -75,6 +75,13 @@ type Meta struct {
 	ListFlags []string
 	// ConnectionSpec contains information about the DUT as "[<user>@]host[:<port>]".
 	ConnectionSpec string
+	// PushedFilesPaths contains information about files pushed by Tast to DUTs.
+	// The key of the mapping is the role of the DUT. The role of primary DUT is "".
+	// The value is a map of the source path of a file from the host and destination
+	// path of a file on the DUT.
+	// Currently, this field will only include executables that was pushed.
+	// If there is a need, data files supported will be added upon request
+	PushedFilesPaths map[string]map[string]string
 }
 
 // clone returns a deep copy of m.

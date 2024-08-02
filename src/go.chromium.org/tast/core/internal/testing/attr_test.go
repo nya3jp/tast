@@ -83,6 +83,27 @@ func TestCheckKnownAttrs(t *testing.T) {
 			attrs: []string{"group:arc", "arc_chromeos_vm"},
 		},
 		{
+			attrs: []string{"group:camera", "camera_cca"},
+		},
+		{
+			attrs: []string{"group:camera", "camera_service"},
+		},
+		{
+			attrs: []string{"group:camera", "camera_hal"},
+		},
+		{
+			attrs: []string{"group:camera", "camera_kernel"},
+		},
+		{
+			attrs: []string{"group:camera", "camera_functional"},
+		},
+		{
+			attrs: []string{"group:camera", "camera_pnp"},
+		},
+		{
+			attrs: []string{"group:camera", "camera_config"},
+		},
+		{
 			attrs: []string{"group:cq-minimal"},
 		},
 		{

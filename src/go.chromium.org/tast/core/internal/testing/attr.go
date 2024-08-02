@@ -433,6 +433,41 @@ Tests in this group are not used for build verification.
 		Desc:     `A group of ARC data snapshot tests that run on DUTs.`,
 	},
 	{
+		Name:     "camera",
+		Contacts: []string{"chromeos-camera-eng@google.com"},
+		Desc:     `The group of camera tests that can be run without special setup like camerabox.`,
+		Subattrs: []*attr{
+			{
+				Name: "camera_cca",
+				Desc: `Indicates the target is CCA.`,
+			},
+			{
+				Name: "camera_service",
+				Desc: `Indicates the target is camera service.`,
+			},
+			{
+				Name: "camera_hal",
+				Desc: `Indicates the target is HAL.`,
+			},
+			{
+				Name: "camera_kernel",
+				Desc: `Indicates the target is kernel.`,
+			},
+			{
+				Name: "camera_functional",
+				Desc: `Indicates the focus is functional verification.`,
+			},
+			{
+				Name: "camera_pnp",
+				Desc: `Indicates the focus is power and performance.`,
+			},
+			{
+				Name: "camera_config",
+				Desc: `Indicates the purpose is verification of configuration files.`,
+			},
+		},
+	},
+	{
 		Name:     "camerabox",
 		Contacts: []string{"chromeos-camera-eng@google.com"},
 		Desc:     `The group of camera tests to be run with Camerabox fixture.`,

@@ -2345,11 +2345,6 @@ from other existing groups (or use this group standalone).
 		Desc:     "A group of inputs test on citrix platform for most popular boards.",
 	},
 	{
-		Name:     "testenv_preprod",
-		Contacts: []string{"cros-ufo-testing@google.com"},
-		Desc:     `A group of tests pointing to preprod test environment of services.`,
-	},
-	{
 		Name:     "crostini_cq",
 		Contacts: []string{"clumptini@google.com"},
 		Desc:     "A group of tests for Crostini non-apps tests that run in CQ.",

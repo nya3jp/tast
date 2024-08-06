@@ -878,7 +878,7 @@ func TestPrepareTempDir(t *gotesting.T) {
 }
 
 // TestRunTestsRemotepushedFilesPaths make sure we can access paths for files
-// pushed to the DUT by Tastjj.
+// pushed to the DUT by Tast.
 func TestRunTestsRemotepushedFilesPaths(t *gotesting.T) {
 	const (
 		cmd    = "some_command"

@@ -3268,3 +3268,18 @@ func ECFeatureCbibin() Condition {
 		return unsatisfied("DUT does not support Cbibin")
 	}}
 }
+
+// BackgroundScanning returns a hardware dependency condition that is satisfied if and only
+// if the DUT supports background scanning.
+func BackgroundScanning() Condition {
+	return SkipOnWifiDevice(
+		Intel7260,
+		Intel7265,
+		Marvell88w8897SDIO,
+		Marvell88w8997PCIE,
+		QualcommAtherosQCA6174,
+		QualcommAtherosQCA6174SDIO,
+		Realtek8822CPCIE,
+		Realtek8852CPCIE,
+	)
+}

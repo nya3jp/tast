@@ -1378,30 +1378,6 @@ func WifiNotMarvell() Condition {
 	}
 }
 
-// WifiNotMarvell8997 returns a hardware dependency condition that is satisfied if
-// the DUT is not using Marvell 8997 chipsets.
-func WifiNotMarvell8997() Condition {
-	// TODO(b/187699768): replace this when we have hwdep for WiFi chips.
-	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
-		platformCondition := SkipOnPlatform(
-			"bob", "kevin", "kevin64",
-		)
-		if satisfied, reason, err := platformCondition.Satisfied(f); err != nil || !satisfied {
-			return satisfied, reason, err
-		}
-		modelCondition := SkipOnModel(
-			"bob",
-			"kevin",
-			"kevin64",
-		)
-		if satisfied, reason, err := modelCondition.Satisfied(f); err != nil || !satisfied {
-			return satisfied, reason, err
-		}
-		return satisfied()
-	},
-	}
-}
-
 // WifiMarvell returns a hardware dependency condition that is satisfied if the
 // the DUT is using a Marvell WiFi chip.
 func WifiMarvell() Condition {

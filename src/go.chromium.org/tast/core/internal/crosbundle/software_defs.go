@@ -9,6 +9,8 @@ var softwareFeatureDefs = map[string]string{
 	// This list is documented at docs/test_dependencies.md.
 	// All USE flags referenced here must be listed in IUSE in the tast-use-flags ebuild.
 	// The one exception is tast_vm, which is inserted by VM builders via -extrauseflags.
+	// Another transient exception is lacros_sunset which is used to make CQ skip tests
+	// with dependency on lacros.
 	"amd64":   "amd64",
 	"amd_cpu": "amd_cpu",
 	// ARC USE flags are defined here:
@@ -154,11 +156,13 @@ var softwareFeatureDefs = map[string]string{
 	"known_fixed_ssd": `!("tast_vm" || "board:amd64-generic"|| "board:reven*")`,
 	"kstack_random":   `!("kernel-4_14" || "kernel-4_19" || "kernel-5_4" || "kernel-5_10")`,
 	// Lacros variants.
+	// TODO(b/354842935): Lacros is cancelled. `lacros_sunset` is expected to always be false thus any test with lacros dependency will be skipped.
+	// To force run Lacros tests, pass `-extrauseflags=lacros_sunset`.
 	// veyron does not support rootfs lacros entirely. b/204888294
 	// TODO(crbug.com/1412276): Remove lacros_stable and lacros_unstable eventually.
-	"lacros":                 `!chromeless_tty && !rialto && !("board:veyron_fievel" || "board:veyron_tiger")`,
-	"lacros_stable":          `!chromeless_tty && !rialto && !("board:veyron_fievel" || "board:veyron_tiger") && !"tast_vm"  && !"board:reven-vmtest" && !"board:amd64-generic"&& !"betty"`,
-	"lacros_unstable":        `!chromeless_tty && !rialto && !("board:veyron_fievel" || "board:veyron_tiger") && ("tast_vm" || "board:reven-vmtest" || "board:amd64-generic"|| "betty")`,
+	"lacros":                 `!chromeless_tty && !rialto && !("board:veyron_fievel" || "board:veyron_tiger") && lacros_sunset`,
+	"lacros_stable":          `!chromeless_tty && !rialto && !("board:veyron_fievel" || "board:veyron_tiger") && !"tast_vm"  && !"board:reven-vmtest" && !"board:amd64-generic"&& !"betty" && lacros_sunset`,
+	"lacros_unstable":        `!chromeless_tty && !rialto && !("board:veyron_fievel" || "board:veyron_tiger") && ("tast_vm" || "board:reven-vmtest" || "board:amd64-generic"|| "betty") && lacros_sunset`,
 	"landlock_enabled":       `!("kernel-4_14" || "kernel-4_19" || "kernel-5_4")`,
 	"lldb":                   `"local-lldb"`,
 	"lvm_stateful_partition": "lvm_stateful_partition",

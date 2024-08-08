@@ -246,11 +246,11 @@ func TestTestServerStreamFileNotExist(t *gotesting.T) {
 	cl := startTestServer(t, nil)
 	ctx := context.Background()
 
-	stream, err := cl.StreamFile(ctx, &protocol.StreamFileRequest{Name: "NonExisitngFile.bad"})
+	stream, err := cl.StreamFile(ctx, &protocol.StreamFileRequest{Name: "NonExistngFile.bad"})
 	if err != nil {
 		return
 	}
 	if _, err := stream.Recv(); err == nil {
-		t.Fatal("StreamFile failed tp return error for non-exiting file")
+		t.Fatal("StreamFile failed to return error for non-existing file")
 	}
 }

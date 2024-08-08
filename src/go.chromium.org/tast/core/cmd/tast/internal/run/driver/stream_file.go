@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"go.chromium.org/tast/core/internal/logging"
+	"go.chromium.org/tast/core/internal/testingutil"
 )
 
 // StreamFile stream a file from the source file at target DUT to a destination
@@ -36,7 +37,7 @@ func (d *Driver) StreamFile(ctx context.Context, src, dest string) error {
 			}
 			logging.Debugf(ctx, "Warning: failed to stream %s from DUT to %s: %v", src, dest, err)
 			if strings.Contains(err.Error(), "does not exist on the DUT") {
-				logging.Infof(ctx, "Fail %s does not exist; will not retry streaming", src)
+				logging.Infof(ctx, "%s does not exist; will not retry streaming", src)
 				return nil
 			}
 			nextOffset = offset
@@ -44,8 +45,13 @@ func (d *Driver) StreamFile(ctx context.Context, src, dest string) error {
 		// If the file exist on the server, keep trying.
 		// Sleep for 30 second before retrying.
 		time.Sleep(time.Second * 30)
-		if err := d.ReconnectIfNeeded(ctx, false); err != nil {
-			logging.Infof(ctx, "Failed to reconnect to DUT to stream file %v", err)
+		if err := testingutil.Poll(ctx, func(ctx context.Context) error {
+			if err := d.ReconnectIfNeeded(ctx, false); err != nil {
+				return err
+			}
+			return nil
+		}, &testingutil.PollOptions{Timeout: time.Minute, Interval: time.Second * 15}); err != nil {
+			logging.Infof(ctx, "Warning: failed to reconnect to DUT to stream file")
 			return nil
 		}
 	}

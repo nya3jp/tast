@@ -158,6 +158,11 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 	features.CpuInfo.VendorInfo = &configpb.HardwareFeatures_CpuInfo_VendorInfo{}
 
 	cpuFamilyNum, cpuModelNum, err := func() (int64, int64, error) {
+		// Don't return errors against non-Intel CPUs.
+		if info.vendorDetails.cpuFamilyStr == "" {
+			return 0, 0, nil
+		}
+
 		familyNum, err := strconv.ParseInt(info.vendorDetails.cpuFamilyStr, 10, 64)
 		if err != nil {
 			return 0, 0, errors.Wrapf(err, "failed to parse Intel family: %q", info.vendorDetails.cpuFamilyStr)

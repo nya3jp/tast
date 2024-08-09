@@ -557,6 +557,11 @@ Tests in this group are not used for build verification.
 		Desc:     `A group of tests for the DMServer enrollment.`,
 	},
 	{
+		Name:     "powerwash-daily",
+		Contacts: []string{"mohamedaomar@google.com", "chromeos-ent-test@google.com"},
+		Desc:     `A group of tests that perform powerwash.`,
+	},
+	{
 		Name:     "dmserver-enrollment-live",
 		Contacts: []string{"rzakarian@google.com", "chromeos-ent-test@google.com"},
 		Desc:     `A group of tests for the DMServer live enrollment.`,

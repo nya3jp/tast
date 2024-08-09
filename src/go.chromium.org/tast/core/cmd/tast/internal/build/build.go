@@ -14,8 +14,6 @@ import (
 	"path/filepath"
 	"strings"
 
-	"golang.org/x/sync/errgroup"
-
 	"go.chromium.org/tast/core/internal/logging"
 	"go.chromium.org/tast/core/internal/timing"
 	"go.chromium.org/tast/core/shutil"
@@ -58,18 +56,12 @@ func Build(ctx context.Context, cfg *Config, tgts []*Target) error {
 		}
 	}
 
-	// Compile targets in parallel.
-	g, ctx := errgroup.WithContext(ctx)
 	for _, tgt := range tgts {
-		tgt := tgt // bind to iteration-scoped variable
-		g.Go(func() error {
-			if err := buildOne(ctx, tgt); err != nil {
-				return fmt.Errorf("failed to build %s: %v", tgt.Pkg, err)
-			}
-			return nil
-		})
+		if err := buildOne(ctx, tgt); err != nil {
+			return fmt.Errorf("failed to build %s: %v", tgt.Pkg, err)
+		}
 	}
-	return g.Wait()
+	return nil
 }
 
 // buildOne builds one executable.

@@ -259,6 +259,9 @@ func TestCheckKnownAttrs(t *testing.T) {
 		{
 			attrs: []string{"group:sw_gates_virt", "sw_gates_virt_stress"},
 		},
+		{
+			attrs: []string{"group:video_conference_face_framing_per_build"},
+		},
 
 		// Invalid cases.
 		{

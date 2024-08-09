@@ -2423,6 +2423,11 @@ from other existing groups (or use this group standalone).
 		Contacts: []string{"essential-inputs-team@google.com"},
 		Desc:     "A group of inputs test for gworkspace",
 	},
+	{
+		Name:     "video_conference_face_framing_per_build",
+		Contacts: []string{"essential-inputs-team@google.com"},
+		Desc:     "A group of tests for video conference on face farming device.",
+	},
 }
 
 // validGroupMap is the name-keyed map of validGroups.

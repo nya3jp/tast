@@ -2311,6 +2311,10 @@ from other existing groups (or use this group standalone).
 				Name: "human_motion_robot_linearity",
 				Desc: "A group of tests that focus on linearity",
 			},
+			{
+				Name: "human_motion_robot_latency",
+				Desc: "A group of tests that focus on measuring latency",
+			},
 		},
 	},
 	{

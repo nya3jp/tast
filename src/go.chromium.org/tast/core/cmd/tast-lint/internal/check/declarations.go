@@ -200,7 +200,6 @@ func verifyAddTestCall(fs *token.FileSet, call *ast.CallExpr, path git.CommitFil
 	issues = append(issues, verifyDesc(fs, fields, call, fix)...)
 	issues = append(issues, verifyContacts(fs, fields, call)...)
 	issues = append(issues, verifyBugComponent(fs, fields, call)...)
-	issues = append(issues, verifyLacrosStatus(fs, fields, path, call, fix)...)
 	issues = append(issues, verifyLacrosSoftwareDeps(fs, fields, call)...)
 
 	return issues

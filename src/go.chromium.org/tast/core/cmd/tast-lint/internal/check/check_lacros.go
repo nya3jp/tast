@@ -9,8 +9,6 @@ import (
 	"go/token"
 
 	"golang.org/x/tools/go/ast/astutil"
-
-	"go.chromium.org/tast/core/cmd/tast-lint/internal/git"
 )
 
 const (
@@ -152,49 +150,6 @@ func maybeRewrite(fs *token.FileSet, fields entityFields, call *ast.CallExpr, fi
 	}
 
 	return issues
-}
-
-// verifyLacrosStatus verifies that the LacrosStatus field is set, and that
-// new instances of LacrosVariantUnknown are not added.
-func verifyLacrosStatus(fs *token.FileSet, fields entityFields, path git.CommitFile, call *ast.CallExpr, fix bool) []*Issue {
-	// Check for chrome SoftwareDeps.
-	if !checkAllSoftwareDeps(fields, "chrome") {
-		return nil
-	}
-
-	// For example, extract 'LacrosStatus: testing.LacrosVariantNeeded'.
-	kv, ok := fields["LacrosStatus"]
-	if !ok {
-		return maybeRewrite(fs, fields, call, fix, []*Issue{{
-			Pos:     fs.Position(call.Args[0].Pos()),
-			Msg:     noLacrosStatusMsg,
-			Link:    testRegistrationURL,
-			Fixable: true, // We can only add the field, not decide what the value should be.
-		}})
-	}
-
-	// For example, extract 'testing.LacrosVariantNeeded'.
-	sel, ok := kv.Value.(*ast.SelectorExpr)
-	if !ok {
-		return maybeRewrite(fs, fields, call, fix, []*Issue{{
-			Pos:  fs.Position(kv.Value.Pos()),
-			Msg:  nonLiteralLacrosMetadataMsg,
-			Link: testRegistrationURL,
-		}})
-	}
-
-	// For example, extract 'LacrosVariantUnknown' from 'testing.LacrosVariantNeeded'.
-	// Only disallow LacrosVariantUnknown for new tests, to avoid annoying people
-	// trying to make incidental changes to existing tests.
-	if sel.Sel.Name == "LacrosVariantUnknown" && path.Status == git.Added {
-		return maybeRewrite(fs, fields, call, fix, []*Issue{{
-			Pos:  fs.Position(kv.Value.Pos()),
-			Msg:  noLacrosVariantUnknownMsg,
-			Link: testRegistrationURL,
-		}})
-	}
-
-	return nil
 }
 
 // verifyLacrosSoftwareDeps verifies that the SoftwareDeps 'lacros_{un}stable' should always be

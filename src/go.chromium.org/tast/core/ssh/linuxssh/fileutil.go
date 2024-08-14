@@ -14,7 +14,6 @@ import (
 	"strconv"
 	"strings"
 
-	"go.chromium.org/tast/core/dut"
 	"go.chromium.org/tast/core/errors"
 	"go.chromium.org/tast/core/internal/linuxssh"
 	"go.chromium.org/tast/core/ssh"
@@ -47,23 +46,21 @@ func GetFile(ctx context.Context, s *ssh.Conn, src, dst string, symlinkPolicy Sy
 
 // RemoteFileDelta describes the result from the function NewRemoteFileDelta.
 type RemoteFileDelta struct {
-	d         *dut.DUT
 	src       string
 	dst       string
 	maxsize   int64
 	startline int64
 }
 
-// NewRemoteFileDelta gets startline from LineCount and creates a object rtd
-// with DUT, file source, file destination and file max size.
-func NewRemoteFileDelta(ctx context.Context, d *dut.DUT, src, dst string, maxSize int64) (*RemoteFileDelta, error) {
-
-	wordCountInfo, err := WordCount(ctx, d.Conn(), src)
+// NewRemoteFileDelta gets the starting line of from DUT and then save the
+// source file, destintion file and the starting line to RemoteFileDelta which
+// will be returned to the caller.
+func NewRemoteFileDelta(ctx context.Context, conn *ssh.Conn, src, dst string, maxSize int64) (*RemoteFileDelta, error) {
+	wordCountInfo, err := WordCount(ctx, conn, src)
 	if err != nil {
 		return nil, fmt.Errorf("failed the get line count: %v", err)
 	}
 	rtd := RemoteFileDelta{
-		d:         d,
 		src:       src,
 		dst:       dst,
 		maxsize:   maxSize,
@@ -75,8 +72,8 @@ func NewRemoteFileDelta(ctx context.Context, d *dut.DUT, src, dst string, maxSiz
 
 // Save calls the GetFileTail with struct RemoteFileDelta. The range between
 // beginning of the file and rtd.startline will be truncated.
-func (rtd *RemoteFileDelta) Save(ctx context.Context) error {
-	return GetFileTail(ctx, rtd.d.Conn(), rtd.src, rtd.dst, rtd.startline, rtd.maxsize)
+func (rtd *RemoteFileDelta) Save(ctx context.Context, conn *ssh.Conn) error {
+	return GetFileTail(ctx, conn, rtd.src, rtd.dst, rtd.startline, rtd.maxsize)
 }
 
 // PutFiles copies files on the local machine to the host. files describes

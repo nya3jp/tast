@@ -122,3 +122,26 @@ func TestRunExecFailure(t *gotesting.T) {
 		t.Errorf("runCmd.Execute(%v) logged last line %q; wanted line containing error %q", args, last, msg)
 	}
 }
+
+func TestRunRejectBothRepeatsAndRetriesSet(t *gotesting.T) {
+	// Setting both repeats and retries should be rejected.
+	args := []string{
+		"-retries", "2",
+		"-repeats", "2",
+		"pkg.LocalTest",
+	}
+	wrapper := stubRunWrapper{}
+	logger := loggingtest.NewLogger(t, logging.LevelDebug)
+	if status := executeRunCmd(t, args, &wrapper, logger); status != subcommands.ExitFailure {
+		t.Fatalf("runCmd.Execute(%v) returned status %v; want %v", args, status, subcommands.ExitFailure)
+	}
+
+	// The error message should be in the last line of output.
+	const msg = "-repeats and -retries flag are mutually exclusive (cannot set both at the same time)"
+	lines := logger.Logs()
+	if len(lines) == 0 {
+		t.Errorf("runCmd.Execute(%v) didn't log any output", args)
+	} else if last := lines[len(lines)-1]; !strings.Contains(last, msg) {
+		t.Errorf("runCmd.Execute(%v) logged last line %q; wanted line containing error %q", args, last, msg)
+	}
+}

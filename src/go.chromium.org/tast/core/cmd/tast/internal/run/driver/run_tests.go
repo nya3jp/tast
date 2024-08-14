@@ -67,13 +67,24 @@ func (d *Driver) RunTests(ctx context.Context,
 	}
 	sort.Strings(bundles)
 	var results []*resultsjson.Result
-	for _, bundle := range bundles {
-		res, err := d.runTests(ctx, bundle, testsPerBundle[bundle], dutInfos, client, remoteDevservers, pushedFilesInfo)
-		results = append(results, res...)
-		if err != nil {
-			return results, err
+
+	maxFailureCounter := failfast.NewCounter(d.cfg.MaxTestFailures())
+	totalExecutionCount := d.cfg.Repeats() + 1
+
+	if totalExecutionCount > 1 {
+		logging.Infof(ctx, "Running tests repeatedly for %v times.", totalExecutionCount)
+	}
+
+	for i := 0; i < totalExecutionCount; i++ {
+		for _, bundle := range bundles {
+			res, err := d.runTests(ctx, bundle, testsPerBundle[bundle], dutInfos, client, remoteDevservers, pushedFilesInfo, maxFailureCounter)
+			results = append(results, res...)
+			if err != nil {
+				return results, err
+			}
 		}
 	}
+
 	return results, nil
 }
 
@@ -81,11 +92,11 @@ func (d *Driver) RunTests(ctx context.Context,
 func (d *Driver) runTests(ctx context.Context, bundle string,
 	tests []*protocol.ResolvedEntity, dutInfos map[string]*protocol.DUTInfo,
 	client *reporting.RPCClient, remoteDevservers []string,
-	pushedFilesInfo []*protocol.PushedFilesInfoForDUT) ([]*resultsjson.Result, error) {
+	pushedFilesInfo []*protocol.PushedFilesInfoForDUT, maxFailureCounter *failfast.Counter) ([]*resultsjson.Result, error) {
 
 	args := &runTestsArgs{
 		DUTInfo:          dutInfos,
-		Counter:          failfast.NewCounter(d.cfg.MaxTestFailures()),
+		Counter:          maxFailureCounter,
 		Client:           client,
 		RemoteDevservers: remoteDevservers,
 		SwarmingTaskID:   d.cfg.SwarmingTaskID(),
@@ -110,6 +121,7 @@ func (d *Driver) runTests(ctx context.Context, bundle string,
 
 		return append(localResults, remoteResults...), err
 	}
+
 	var testNames []string
 	for _, t := range tests {
 		testNames = append(testNames, t.GetEntity().GetName())

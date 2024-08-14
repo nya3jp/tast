@@ -164,6 +164,12 @@ func (r *runCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{})
 		logging.Debug(ctx, "Using SSH dir ", r.cfg.KeyDir)
 	}
 	logging.Info(ctx, "Writing results to ", r.cfg.ResDir)
+
+	if r.cfg.Retries > 0 && r.cfg.Repeats > 0 {
+		logging.Infof(ctx, "-repeats and -retries flag are mutually exclusive (cannot set both at the same time)")
+		return subcommands.ExitFailure
+	}
+
 	ctx = telemetry.SetPhase(ctx, "", "", "")
 
 	results, runErr := r.wrapper.run(ctx, r.cfg.Freeze(), &state)

@@ -416,6 +416,215 @@ func unmarshalStreamedResults(b []byte) ([]*resultsjson.Result, error) {
 	return results, nil
 }
 
+func TestDriver_RunTests_WithRepeats(t *gotesting.T) {
+	bundleLocal := testing.NewRegistry("bundle")
+	bundleLocal.AddTestInstance(&testing.TestInstance{
+		Name:    "test.Local",
+		Timeout: time.Minute,
+		Func: func(ctx context.Context, s *testing.State) {
+		},
+	})
+	bundleLocal.AddTestInstance(&testing.TestInstance{
+		Name:    "test.LocalFail",
+		Timeout: time.Minute,
+		Func: func(ctx context.Context, s *testing.State) {
+			s.Fatalf("Failure")
+		},
+	})
+
+	bundleRemote := testing.NewRegistry("bundle")
+	bundleRemote.AddTestInstance(&testing.TestInstance{
+		Name:    "test.Remote",
+		Timeout: time.Minute,
+		Func: func(ctx context.Context, s *testing.State) {
+		},
+	})
+	bundleRemote.AddTestInstance(&testing.TestInstance{
+		Name:    "test.RemoteFail",
+		Timeout: time.Minute,
+		Func: func(ctx context.Context, s *testing.State) {
+			s.Fatalf("Failure")
+		},
+	})
+
+	env := runtest.SetUp(
+		t,
+		runtest.WithLocalBundles(bundleLocal),
+		runtest.WithRemoteBundles(bundleRemote),
+	)
+	ctx := env.Context()
+	cfg := env.Config(func(cfg *config.MutableConfig) {
+		cfg.Repeats = 1
+	})
+
+	drv, err := driver.New(ctx, cfg, cfg.Target(), "")
+	if err != nil {
+		t.Fatalf("driver.New Failed: %v", err)
+	}
+	defer drv.Close(ctx)
+
+	tests, err := drv.ListMatchedTests(ctx, nil)
+	if err != nil {
+		t.Fatalf("driver.ListMatchedTests Failed: %v", err)
+	}
+
+	got, err := drv.RunTests(ctx, tests, nil, nil, nil, nil)
+	if err != nil {
+		t.Fatalf("driver.RunTests failed: %v", err)
+	}
+
+	// Repeats once after initial execution, so one
+	// additional result for each test is expected
+	want := []*resultsjson.Result{
+		{
+			Test: resultsjson.Test{
+				Name:         "test.Local",
+				Bundle:       "bundle",
+				LacrosStatus: "unknown",
+			},
+		},
+		{
+			Test: resultsjson.Test{
+				Name:         "test.LocalFail",
+				Bundle:       "bundle",
+				LacrosStatus: "unknown",
+			},
+			Errors: []resultsjson.Error{{Reason: "Failure"}},
+		},
+		{
+			Test: resultsjson.Test{
+				Name:         "test.Remote",
+				Bundle:       "bundle",
+				LacrosStatus: "unknown",
+			},
+		},
+		{
+			Test: resultsjson.Test{
+				Name:         "test.RemoteFail",
+				Bundle:       "bundle",
+				LacrosStatus: "unknown",
+			},
+			Errors: []resultsjson.Error{{Reason: "Failure"}},
+		},
+		{
+			Test: resultsjson.Test{
+				Name:         "test.Local",
+				Bundle:       "bundle",
+				LacrosStatus: "unknown",
+			},
+		},
+		{
+			Test: resultsjson.Test{
+				Name:         "test.LocalFail",
+				Bundle:       "bundle",
+				LacrosStatus: "unknown",
+			},
+			Errors: []resultsjson.Error{{Reason: "Failure"}},
+		},
+		{
+			Test: resultsjson.Test{
+				Name:         "test.Remote",
+				Bundle:       "bundle",
+				LacrosStatus: "unknown",
+			},
+		},
+		{
+			Test: resultsjson.Test{
+				Name:         "test.RemoteFail",
+				Bundle:       "bundle",
+				LacrosStatus: "unknown",
+			},
+			Errors: []resultsjson.Error{{Reason: "Failure"}},
+		},
+	}
+
+	if diff := cmp.Diff(got, want, resultsCmpOpts...); diff != "" {
+		t.Errorf("Results mismatch (-got +want):\n%s", diff)
+	}
+}
+
+func TestDriver_RunTests_RepeatsWithMaxFailures(t *gotesting.T) {
+	bundleLocal := testing.NewRegistry("bundle")
+	bundleLocal.AddTestInstance(&testing.TestInstance{
+		Name:    "test.LocalFail",
+		Timeout: time.Minute,
+		Func: func(ctx context.Context, s *testing.State) {
+			s.Fatalf("Failure")
+		},
+	})
+
+	bundleRemote := testing.NewRegistry("bundle")
+	bundleRemote.AddTestInstance(&testing.TestInstance{
+		Name:    "test.RemoteFail",
+		Timeout: time.Minute,
+		Func: func(ctx context.Context, s *testing.State) {
+			s.Fatalf("Failure")
+		},
+	})
+
+	env := runtest.SetUp(
+		t,
+		runtest.WithLocalBundles(bundleLocal),
+		runtest.WithRemoteBundles(bundleRemote),
+	)
+	ctx := env.Context()
+	cfg := env.Config(func(cfg *config.MutableConfig) {
+		cfg.Repeats = 1
+		// 2 tests guaranteed to fail, run all tests twice
+		// = should fail during the second repeat step, first execution.
+		cfg.MaxTestFailures = 3
+	})
+
+	drv, err := driver.New(ctx, cfg, cfg.Target(), "")
+	if err != nil {
+		t.Fatalf("driver.New Failed: %v", err)
+	}
+	defer drv.Close(ctx)
+
+	tests, err := drv.ListMatchedTests(ctx, nil)
+	if err != nil {
+		t.Fatalf("driver.ListMatchedTests Failed: %v", err)
+	}
+
+	got, err := drv.RunTests(ctx, tests, nil, nil, nil, nil)
+	// Expects error here.
+	if err == nil {
+		t.Error("RunTests unexpectedly succeeded")
+	}
+
+	// Should stop after 3rd failure as specified in Config.
+	want := []*resultsjson.Result{
+		{
+			Test: resultsjson.Test{
+				Name:         "test.LocalFail",
+				Bundle:       "bundle",
+				LacrosStatus: "unknown",
+			},
+			Errors: []resultsjson.Error{{Reason: "Failure"}},
+		},
+		{
+			Test: resultsjson.Test{
+				Name:         "test.RemoteFail",
+				Bundle:       "bundle",
+				LacrosStatus: "unknown",
+			},
+			Errors: []resultsjson.Error{{Reason: "Failure"}},
+		},
+		{
+			Test: resultsjson.Test{
+				Name:         "test.LocalFail",
+				Bundle:       "bundle",
+				LacrosStatus: "unknown",
+			},
+			Errors: []resultsjson.Error{{Reason: "Failure"}},
+		},
+	}
+
+	if diff := cmp.Diff(got, want, resultsCmpOpts...); diff != "" {
+		t.Errorf("Results mismatch (-got +want):\n%s", diff)
+	}
+}
+
 func TestDriver_RunTests_WithRetries(t *gotesting.T) {
 	bundleLocal := testing.NewRegistry("bundle")
 

@@ -135,6 +135,7 @@ type MutableConfig struct {
 	DebuggerPortForwarding bool
 
 	Retries int
+	Repeats int
 
 	SystemServicesTimeout time.Duration
 	MsgTimeout            time.Duration
@@ -376,6 +377,9 @@ func (c *Config) MaxSysMsgLogSize() int64 { return c.m.MaxSysMsgLogSize }
 // Retries is the number of retries for failing tests
 func (c *Config) Retries() int { return c.m.Retries }
 
+// Repeats is the number of times each subsequent test should execute.
+func (c *Config) Repeats() int { return c.m.Repeats }
+
 // SystemServicesTimeout for waiting for system services to be ready in seconds. (Default: 120 seconds)
 func (c *Config) SystemServicesTimeout() time.Duration {
 	return c.m.SystemServicesTimeout
@@ -589,6 +593,7 @@ func (c *MutableConfig) SetFlags(f *flag.FlagSet) {
 			readLabConfig)
 
 		f.IntVar(&c.Retries, "retries", 0, `number of times to retry a failing test`)
+		f.IntVar(&c.Repeats, "repeats", 0, `number of times to execute a set of tests after the initial execution`)
 	}
 }
 

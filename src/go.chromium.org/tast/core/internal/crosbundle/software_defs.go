@@ -18,7 +18,6 @@ var softwareFeatureDefs = map[string]string{
 	"android_container":   `arc && ("android-container-rvc" || "android-container-pi")`,
 	"android_container_r": `arc && "android-container-rvc"`,
 	"android_p":           `arc && "android-container-pi"`,
-	"android_r":           `arc && "android-container-rvc"`,
 	"android_vm":          `arc && arcvm && !"android-vm-pi"`,
 	"android_vm_t":        `arc && arcvm && "android-vm-tm"`,
 	"arc":                 `arc`,

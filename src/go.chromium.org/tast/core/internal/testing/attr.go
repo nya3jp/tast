@@ -1127,6 +1127,10 @@ third_party/autotest/files/server/site_tests/tast/control.racc-config-installed.
 				Desc: `Identifies Cellular tests that need an active RAK sim.`,
 			},
 			{
+				Name: "cellular_carrier_cbrs",
+				Desc: `Identifies Cellular tests that need an active CBRS sim.`,
+			},
+			{
 				Name: "cellular_stress",
 				Desc: `Identifies Cellular stress tests.`,
 			},

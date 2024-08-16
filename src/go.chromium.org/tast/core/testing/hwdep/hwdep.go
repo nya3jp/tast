@@ -2299,6 +2299,45 @@ func NoInternalKeyboard() Condition {
 	}
 }
 
+// CustomTopRowKeyboard returns a hardware dependency condition that is
+// satisfied if and only if the DUT has a keyboard with a custom top row.
+func CustomTopRowKeyboard() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		// First, ensure the DUT satisfies the Keyboard condition.
+		keyboardSatisfied, reason, err := Keyboard().Satisfied(f)
+		if err != nil {
+			return withError(err)
+		}
+		if !keyboardSatisfied {
+			return unsatisfied(reason)
+		}
+
+		// Next, check if the DUT has a custom top row. Most models
+		// created before June 2020 do not have a custom top row.
+		// TODO(b/5794356): Skip all boards that don't have a custom
+		// top row keyboard, not just boards with some models that
+		// don't have one.
+		skipModelCondition := SkipOnModel(
+			// Hatch models to exclude.
+			"akemi", "dragonair", "helios", "kindred", "kled", "kohaku", "nightfury",
+
+			// Jacuzzi models to exclude.
+			"burnet", "cozmo", "damu", "esche", "fennel", "fennel14",
+
+			// Trogdor models to exclude.
+			"lazor", "limozeen",
+
+			// Volteer models to exclude.
+			"eldrid",
+
+			// Zork models to exclude.
+			"berknip", "dirinboz", "ezkinil", "gumboz", "jelboz360", "vilboz", "vilboz14", "vilboz360",
+		)
+		return skipModelCondition.Satisfied(f)
+	},
+	}
+}
+
 // DisplayPortConverter is satisfied if a DP converter with one of the given names
 // is present.
 func DisplayPortConverter(names ...string) Condition {

@@ -35,13 +35,11 @@ const (
 	noBugComponentMsg  = `BugComponent field should be specified`
 	nonBugComponentMsg = `BugComponent does not match 'b:<component_id>' syntax`
 
-	nonLiteralAttrMsg             = `Test Attr should be an array literal of string literals`
-	nonLiteralVarsMsg             = `Test Vars should be an array literal of string literals or constants, or append(array literal, ConstList...)`
-	nonLiteralSoftwareDepsMsg     = `Test SoftwareDeps should be an array literal of string literals or constants, or append(array literal, ConstList...)`
-	nonLiteralParamsMsg           = `Test Params should be an array literal of Param struct literals`
-	nonLiteralParamNameMsg        = `Name of Param should be a string literal`
-	fwAddPortsNonLiteralParamsMsg = `firmware.AddPDPorts param should be an array literal of Param struct literals`
-	fwAddPortsWrongValMsg         = `AddPDPorts test.Param structs must contain a Val of firmware.PDTestParams struct literal`
+	nonLiteralAttrMsg         = `Test Attr should be an array literal of string literals`
+	nonLiteralVarsMsg         = `Test Vars should be an array literal of string literals or constants, or append(array literal, ConstList...)`
+	nonLiteralSoftwareDepsMsg = `Test SoftwareDeps should be an array literal of string literals or constants, or append(array literal, ConstList...)`
+	nonLiteralParamsMsg       = `Test Params should be an array literal of Param struct literals`
+	nonLiteralParamNameMsg    = `Name of Param should be a string literal`
 
 	testRegistrationURL     = `https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#Test-registration`
 	testParamTestURL        = `https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#Parameterized-test-registration`
@@ -441,95 +439,10 @@ func verifySoftwareDeps(fs *token.FileSet, node ast.Expr) []*Issue {
 	return nil
 }
 
-// verifyParamsAddPDPorts checks if the Params value is a function call to firmware.AddPDPorts().
-// Returns true, issues if this function handled the params, and false if it did not and the caller needs to keep working on it.
-// firmware.AddPDPorts(params, attributes) should only be used with firmware pd tests that use firmware.PDTestParams as the test.Param.Val.
-// params and attributes need to continue to follow the literal expr rules used in normal Test.Params, and Params.ExtraAttr.
-func verifyParamsAddPDPorts(fs *token.FileSet, params ast.Expr) (handled bool, issues []*Issue) {
-	call, ok := params.(*ast.CallExpr)
-	if !ok {
-		return false, nil
-	}
-	fun, ok := call.Fun.(*ast.SelectorExpr)
-	if !ok {
-		return false, nil
-	}
-	x, ok := fun.X.(*ast.Ident)
-	if !ok || x.String() != "firmware" || fun.Sel.String() != "AddPDPorts" {
-		return false, nil
-	}
-	if len(call.Args) < 2 {
-		return false, nil
-	}
-	// First arg is the params
-	elements, ok := call.Args[0].(*ast.CompositeLit)
-	if !ok {
-		issues = append(issues, &Issue{
-			Pos:  fs.Position(call.Args[0].Pos()),
-			Msg:  fwAddPortsNonLiteralParamsMsg,
-			Link: testParamTestURL,
-		})
-	} else {
-		for _, el := range elements.Elts {
-			issues = append(issues, verifyParamElement(fs, el)...)
-			comp, ok := el.(*ast.CompositeLit)
-			if !ok {
-				continue
-			}
-			foundAt := el
-			found := false
-			for _, el := range comp.Elts {
-				kv, ok := el.(*ast.KeyValueExpr)
-				if !ok {
-					continue
-				}
-				ident, ok := kv.Key.(*ast.Ident)
-				if !ok {
-					continue
-				}
-				if ident.Name != "Val" {
-					continue
-				}
-				foundAt = kv.Value
-				val, ok := kv.Value.(*ast.CompositeLit)
-				if !ok {
-					break
-				}
-				valType, ok := val.Type.(*ast.SelectorExpr)
-				if !ok {
-					break
-				}
-				typeX, ok := valType.X.(*ast.Ident)
-				if !ok {
-					break
-				}
-				if typeX.String() == "firmware" && valType.Sel.String() == "PDTestParams" {
-					found = true
-				}
-				break
-			}
-			if !found {
-				issues = append(issues, &Issue{
-					Pos:  fs.Position(foundAt.Pos()),
-					Msg:  fwAddPortsWrongValMsg,
-					Link: testParamTestURL,
-				})
-			}
-		}
-	}
-	// Second arg is the attributes to add
-	issues = append(issues, verifyAttr(fs, call.Args[1])...)
-	return true, issues
-}
-
 func verifyParams(fs *token.FileSet, fields entityFields) []*Issue {
 	kv, ok := fields["Params"]
 	if !ok {
 		return nil
-	}
-
-	if handled, issues := verifyParamsAddPDPorts(fs, kv.Value); handled {
-		return issues
 	}
 
 	comp, ok := kv.Value.(*ast.CompositeLit)

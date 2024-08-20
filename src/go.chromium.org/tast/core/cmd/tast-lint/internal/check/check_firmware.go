@@ -15,14 +15,11 @@ import (
 const (
 	biosTestWithoutLevelMsg   = `All "firmware_bios" tests should also include a "firmware_level" attr.`
 	biosTestMultipleLevelsMsg = `Only one "firmware_level" attr can be used on a test.`
-	biosRequirementMsg        = `All "firmware_bios" tests should also include the requirements "sys-fw-0021-v01" and "sys-fw-0024-v01".`
-	nonBiosRequirementMsg     = `Only "firmware_bios" tests may include the requirements "sys-fw-0021-v01" and "sys-fw-0024-v01".`
-	biosRWRequirementMsg      = `All "firmware_bios" tests without "firmware_ro" should also include the requirement "sys-fw-0025-v01".`
-	nonBiosRWRequirementMsg   = `Only "firmware_bios" tests without "firmware_ro" may include the requirement "sys-fw-0025-v01".`
+	nonBiosRequirementMsg     = `No tests may include the requirements "sys-fw-0021-v01" and "sys-fw-0024-v01".`
+	nonBiosRWRequirementMsg   = `No tests may include the requirement "sys-fw-0025-v01".`
 	biosTestInvalidAttrsMsg   = `The attrs "firmware_level*" and "firmware_ro" can only be used with "firmware_bios".`
-	ecRequirementMsg          = `All "firmware_ec" tests should also include the requirement "sys-fw-0022-v02".`
-	nonECRequirementMsg       = `Only "firmware_ec" tests may include the requirement "sys-fw-0022-v02".`
-	pdRequirementIndirectMsg  = `Don't use attr "firmware_pd" or requirement "sys-fw-0023-v01" directly, but instead use firmware.AddPDPorts().`
+	nonECRequirementMsg       = `No tests may include the requirement "sys-fw-0022-v02".`
+	pdRequirementIndirectMsg  = `No tests may include the requirement "sys-fw-0023-v01".`
 )
 
 // VerifyFirmwareAttrs checks that "group:firmware" related attributes are set correctly.
@@ -68,28 +65,14 @@ func firmwareBiosAttrsChecker(attrs []string, attrPos token.Position, requiremen
 			Link: testAttrDocURL,
 		})
 	}
-	if hasFirmware && hasBios && !slices.Contains(requirements, "sys-fw-0021-v01") && !slices.Contains(requirements, "sys-fw-0024-v01") {
-		issues = append(issues, &Issue{
-			Pos:  requirementPos,
-			Msg:  biosRequirementMsg,
-			Link: testAttrDocURL,
-		})
-	}
-	if !hasBios && (slices.Contains(requirements, "sys-fw-0021-v01") || slices.Contains(requirements, "sys-fw-0024-v01")) {
+	if slices.Contains(requirements, "sys-fw-0021-v01") || slices.Contains(requirements, "sys-fw-0024-v01") {
 		issues = append(issues, &Issue{
 			Pos:  requirementPos,
 			Msg:  nonBiosRequirementMsg,
 			Link: testAttrDocURL,
 		})
 	}
-	if hasFirmware && hasBios && !hasRO && !slices.Contains(requirements, "sys-fw-0025-v01") {
-		issues = append(issues, &Issue{
-			Pos:  requirementPos,
-			Msg:  biosRWRequirementMsg,
-			Link: testAttrDocURL,
-		})
-	}
-	if (!hasBios || hasRO) && slices.Contains(requirements, "sys-fw-0025-v01") {
+	if slices.Contains(requirements, "sys-fw-0025-v01") {
 		issues = append(issues, &Issue{
 			Pos:  requirementPos,
 			Msg:  nonBiosRWRequirementMsg,
@@ -103,17 +86,7 @@ func firmwareBiosAttrsChecker(attrs []string, attrPos token.Position, requiremen
 func firmwareECAttrsChecker(attrs []string, attrPos token.Position, requirements []string, requirementPos token.Position) []*Issue {
 	var issues []*Issue
 
-	hasFirmware := slices.Contains(attrs, "group:firmware")
-	hasEC := slices.Contains(attrs, "firmware_ec")
-
-	if hasFirmware && hasEC && !slices.Contains(requirements, "sys-fw-0022-v02") {
-		issues = append(issues, &Issue{
-			Pos:  requirementPos,
-			Msg:  ecRequirementMsg,
-			Link: testAttrDocURL,
-		})
-	}
-	if !hasEC && slices.Contains(requirements, "sys-fw-0022-v02") {
+	if slices.Contains(requirements, "sys-fw-0022-v02") {
 		issues = append(issues, &Issue{
 			Pos:  requirementPos,
 			Msg:  nonECRequirementMsg,
@@ -130,13 +103,6 @@ func firmwarePDAttrsChecker(attrs []string, attrPos token.Position, requirements
 	if slices.Contains(requirements, "sys-fw-0023-v01") {
 		issues = append(issues, &Issue{
 			Pos:  requirementPos,
-			Msg:  pdRequirementIndirectMsg,
-			Link: testAttrDocURL,
-		})
-	}
-	if slices.Contains(attrs, "firmware_pd") {
-		issues = append(issues, &Issue{
-			Pos:  attrPos,
 			Msg:  pdRequirementIndirectMsg,
 			Link: testAttrDocURL,
 		})

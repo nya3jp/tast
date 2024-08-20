@@ -142,7 +142,7 @@ var softwareFeatureDefs = map[string]string{
 	"houdini":                    "houdini",
 	"houdini64":                  "houdini64",
 	"hps":                        "hps",
-	"hwdrm_stable":               `!("board:brya" || "board:geralt")`, // brya devices have FW corruption issues with HWDRM: b/243456977, geralt is under development
+	"hwdrm_stable":               `!("board:brya" || "board:geralt" || "board:rauru")`, // brya devices have FW corruption issues with HWDRM: b/243456977, geralt is under development
 	"igt":                        `("video_cards_amdgpu" || "video_cards_intel" || "video_cards_mediatek" || "video_cards_msm") && !("kernel-4_14" || "kernel-4_19")`,
 	"iioservice":                 "iioservice",
 	"inference_accuracy_eval":    "inference_accuracy_eval",

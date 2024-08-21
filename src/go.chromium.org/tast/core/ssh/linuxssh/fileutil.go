@@ -13,6 +13,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 
 	"go.chromium.org/tast/core/errors"
 	"go.chromium.org/tast/core/internal/linuxssh"
@@ -142,4 +143,11 @@ func WordCount(ctx context.Context, conn *ssh.Conn, path string) (*WordCountInfo
 		return nil, errors.Wrapf(err, "failed to parse bytes count from string %s", string(output))
 	}
 	return &WordCountInfo{Lines: lc, Words: wc, Bytes: bc}, nil
+}
+
+// WaitUntilFileExists checks if a file exists on an interval until it either
+// exists or the timeout is reached.
+func WaitUntilFileExists(ctx context.Context, conn *ssh.Conn, path string, timeout, interval time.Duration) error {
+	cmd := conn.CommandContext(ctx, "timeout", timeout.String(), "sh", "-c", `while [ ! -e "$0" ]; do sleep $1; done`, path, interval.String())
+	return cmd.Run()
 }

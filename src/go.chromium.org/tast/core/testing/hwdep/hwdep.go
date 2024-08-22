@@ -1441,10 +1441,16 @@ func WifiSAP() Condition {
 // that a device supports P2P.
 func WifiP2P() Condition {
 	return SkipOnWifiDevice(
+		Realtek8822CPCIE,
+		// TODO(b/283689711): Remove when support is added.
 		MediaTekMT7921PCIE,
 		MediaTekMT7921SDIO,
-		Realtek8822CPCIE,
+		// TODO(b/281114070): Remove when support is added.
 		QualcommWCN6855,
+		// We require multi-channel concurrency support, but these device only support single-channel concurrency.
+		Realtek8852APCIE,
+		Realtek8852CPCIE,
+		Realtek8852BPCIE,
 	)
 }
 

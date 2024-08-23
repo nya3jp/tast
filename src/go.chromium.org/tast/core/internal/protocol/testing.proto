@@ -132,6 +132,10 @@ message DownloadPrivateBundlesRequest {
   // a slash, containing build artifacts for the current ChromeOS image.
   // If it is empty, DefaultBuildArtifactsURL in runner.Config is used.
   string build_artifact_url = 2;
+
+  // RemoteBundleDir is directory where packaged remote test bundles are
+  // installed.
+  string remote_bundle_dir = 3;
 }
 
 message DownloadPrivateBundlesResponse {}

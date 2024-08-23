@@ -1114,6 +1114,10 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		logging.Info(ctx, "Failed to parse BIOS kConfig: ", err)
 	}
 
+	if err := hasRecoveryMRCCacheSection(ctx, features); err != nil {
+		logging.Info(ctx, "Failed to determine if the RECOVERY_MRC_CACHE section exists in FMAP: ", err)
+	}
+
 	if err := parseECBuildConfig(ctx, features); err != nil {
 		logging.Info(ctx, "Failed to parse EC Config: ", err)
 	}
@@ -2173,4 +2177,32 @@ func oemName() string {
 	}
 
 	return ""
+}
+
+func hasRecoveryMRCCacheSection(ctx context.Context, features *configpb.HardwareFeatures) error {
+	corebootBin, err := ioutil.TempFile("/var/tmp", "")
+	if err != nil {
+		return errors.Wrap(err, "failed to create temp file")
+	}
+	corebootBin.Close()
+	defer os.Remove(corebootBin.Name())
+
+	readFMAPCmd := exec.CommandContext(ctx, "futility", "read", "--region", "FMAP", corebootBin.Name())
+	if err := readFMAPCmd.Run(); err != nil {
+		return errors.Wrap(err, "failed to extract bios section")
+	}
+
+	futilityCmd := exec.CommandContext(ctx, "futility", "dump_fmap", "-p", corebootBin.Name())
+	out, err := futilityCmd.Output()
+	if err != nil {
+		return errors.Wrap(err, "failed to display FMAP components")
+	}
+
+	if regexp.MustCompile(`(?m)^RECOVERY_MRC_CACHE\s`).Match(out) {
+		features.FwConfig.HasRecoveryMrcCache = configpb.HardwareFeatures_PRESENT
+	} else {
+		features.FwConfig.HasRecoveryMrcCache = configpb.HardwareFeatures_NOT_PRESENT
+	}
+
+	return nil
 }

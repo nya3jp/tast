@@ -3327,3 +3327,19 @@ func BackgroundScanning() Condition {
 		Realtek8852CPCIE,
 	)
 }
+
+// HasRecoveryMRCCacheSection is satisfied if the DUT contains
+// the RECOVERY_MRC_CACHE section in FMAP.
+func HasRecoveryMRCCacheSection() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("HardwareFeatures is not given")
+		}
+		if hf.GetFwConfig().HasRecoveryMrcCache == configpb.HardwareFeatures_PRESENT {
+			return satisfied()
+		}
+
+		return unsatisfied("RECOVERY_MRC_CACHE section not found in FMAP")
+	}}
+}

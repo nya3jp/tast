@@ -276,6 +276,93 @@ Tests in this group are not used for build verification.
 		},
 	},
 	{
+		Name:     "release-health",
+		Contacts: []string{"chromeos-engprod@google.com"},
+		Desc:     `The group of tests to be considered release candidate quality signal.`,
+		Subattrs: []*attr{
+			{
+				Name: "release-health_arc",
+				Desc: "Release candidate ARC tests",
+			},
+			{
+				Name: "release-health_arcappcompat",
+				Desc: "Release candidate arcappcompat tests",
+			},
+			{
+				Name: "release-health_audio",
+				Desc: "Release candidate audio tests",
+			},
+			{
+				Name: "release-health_autoupdate",
+				Desc: "Release candidate autoupdate tests",
+			},
+			{
+				Name: "release-health_borealis",
+				Desc: "Release candidate borealis tests",
+			},
+			{
+				Name: "release-health_bt",
+				Desc: "Release candidate bluetooth tests",
+			},
+			{
+				Name: "release-health_camera",
+				Desc: "Release candidate camera tests",
+			},
+			{
+				Name: "release-health_cellular",
+				Desc: "Release candidate cellular tests",
+			},
+			{
+				Name: "release-health_crashfeed",
+				Desc: "Release candidate crash and feedback tests",
+			},
+			{
+				Name: "release-health_crostini",
+				Desc: "Release candidate crostini tests",
+			},
+			{
+				Name: "release-health_enterprise",
+				Desc: "Release candidate enterprise tests",
+			},
+			{
+				Name: "release-health_fingerprint",
+				Desc: "Release candidate fingerprint tests",
+			},
+			{
+				Name: "release-health_gfx",
+				Desc: "Release candidate graphics tests",
+                        },
+			{
+				Name: "release-health_network",
+				Desc: "Release candidate network tests",
+			},
+			{
+				Name: "release-health_power",
+				Desc: "Release candidate power tests",
+			},
+			{
+				Name: "release-health_rlz",
+				Desc: "Release candidate rlz tests",
+			},
+			{
+				Name: "release-health_touch",
+				Desc: "Release candidate touch tests",
+			},
+			{
+				Name: "release-health_ui",
+				Desc: "Release candidate UI tests",
+			},
+			{
+				Name: "release-health_usb",
+				Desc: "Release candidate usb-peripherals tests",
+                        },
+			{
+				Name: "release-health_wifi",
+				Desc: "Release candidate wifi tests",
+			},
+                },
+	},
+	{
 		Name:     "stress",
 		Contacts: []string{"chromeos-engprod@google.com"},
 		Desc:     `A group of stress tests.`,

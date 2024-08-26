@@ -733,6 +733,8 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 	hasEmmcBridgeStorage := func() bool {
 		const bh799Ven = 0x1217
 		const bh799Dev = 0x0002
+		const rtk1200Ven = 0x10ec
+		const rtk1200Dev = 0x1200
 		var readSysfsHex func(string, string) int64
 		readSysfsHex = func(devPath, relPath string) int64 {
 			pathComponenets := strings.Split(devPath, "/")
@@ -758,6 +760,9 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 			subsysVen := readSysfsHex(dev, "device/device/subsystem_vendor")
 			subsysDev := readSysfsHex(dev, "device/device/subsystem_device")
 			if subsysVen == bh799Ven && subsysDev == bh799Dev {
+				return true
+			}
+			if subsysVen == rtk1200Ven && subsysDev == rtk1200Dev {
 				return true
 			}
 		}

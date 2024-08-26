@@ -96,6 +96,11 @@ promoted to critical tests after stabilization.
 		},
 	},
 	{
+		Name:     "chromeos_internal",
+		Contacts: []string{"tast-core@google.com"},
+		Desc:     `A group of tests that should not be run by public or general partners.`,
+	},
+	{
 		Name:     "criticalstaging",
 		Contacts: []string{"tast-owners@google.com"},
 		Desc: `Inidcates intent to run in critcial CQ & Release.

@@ -2307,6 +2307,8 @@ func NoInternalKeyboard() Condition {
 
 // CustomTopRowKeyboard returns a hardware dependency condition that is
 // satisfied if and only if the DUT has a keyboard with a custom top row.
+// To ignore boards that don't support a custom top row keyboard, the
+// custom_top_row_keyboard software dependency needs to be used.
 func CustomTopRowKeyboard() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		// First, ensure the DUT satisfies the Keyboard condition.
@@ -2320,9 +2322,6 @@ func CustomTopRowKeyboard() Condition {
 
 		// Next, check if the DUT has a custom top row. Most models
 		// created before June 2020 do not have a custom top row.
-		// TODO(b/5794356): Skip all boards that don't have a custom
-		// top row keyboard, not just boards with some models that
-		// don't have one.
 		skipModelCondition := SkipOnModel(
 			// Hatch models to exclude.
 			"akemi", "dragonair", "helios", "kindred", "kled", "kohaku", "nightfury",

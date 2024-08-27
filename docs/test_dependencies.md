@@ -47,7 +47,6 @@ The following software features are defined:
 * `autotest-capability:foo` - An [Autotest capability] named `foo`. See below.
 * `biometrics_daemon` - The ability to process fingerprint authentication.
     This implies the presence of the `biod` package.
-* `bluetooth_floss` - Excludes boards that do not support the floss bluetooth adapter.
 * `boot_perf_info` - Reven (ChromeOS Flex) doesn't support boot performance metrics.
 * `borealis_host` - Boards that can host the Borealis system.
 * `borealis_nvidia` - Boards that use nvidia supported Borealis system.

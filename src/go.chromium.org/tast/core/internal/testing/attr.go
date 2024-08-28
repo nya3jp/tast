@@ -2298,6 +2298,9 @@ from other existing groups (or use this group standalone).
 			{
 				Name: "healthd_perbuild",
 				Desc: `Indicates that this test should run for every ChromeOS build.`,
+			}, {
+				Name: "healthd_weekly",
+				Desc: `Indicates that this test should run weekly.`,
 			},
 		},
 	},

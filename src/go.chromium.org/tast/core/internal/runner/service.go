@@ -6,6 +6,7 @@ package runner
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"os"
 	"os/exec"
@@ -110,7 +111,7 @@ func (s *testServer) DownloadPrivateBundles(ctx context.Context, req *protocol.D
 	}
 
 	for _, b := range privateBundles {
-		if err := downloadPrivateBundle(ctx, cl, req.GetBuildArtifactUrl(), b, s.scfg.BundleType); err != nil {
+		if err := downloadPrivateBundle(ctx, cl, req.GetBuildArtifactUrl(), b, s.scfg.BundleType, req.GetRemoteBundleDir()); err != nil {
 			return nil, errors.Wrapf(err, "failed to download %s", b)
 		}
 	}
@@ -150,7 +151,7 @@ func (s *testServer) needToDownload(ctx context.Context, buildArtifactURL string
 }
 
 // downloadPrivateBundle downloads a single private bundle.
-func downloadPrivateBundle(ctx context.Context, cl devserver.Client, archiveURBase, bundle string, bundleType BundleType) error {
+func downloadPrivateBundle(ctx context.Context, cl devserver.Client, archiveURBase, bundle string, bundleType BundleType, remoteBundleDir string) error {
 	// Download the archive via devserver.
 	archiveURL := archiveURBase + bundle + ".tar.bz2"
 	logging.Infof(ctx, "Downloading private bundle %s", archiveURL)
@@ -185,7 +186,7 @@ func downloadPrivateBundle(ctx context.Context, cl devserver.Client, archiveURBa
 		case Local:
 			return localBundleDownload(ctx, tf)
 		case Remote:
-			return remoteBundleDownload(ctx, tf)
+			return remoteBundleDownload(ctx, tf, remoteBundleDir)
 		}
 	} else if os.IsNotExist(err) {
 		logging.Info(ctx, "Private bundles not found")
@@ -211,15 +212,10 @@ func localBundleDownload(ctx context.Context, tf *os.File) error {
 }
 
 // remoteBundleDownload extract the archive when remote bundle type
-func remoteBundleDownload(ctx context.Context, tf *os.File) error {
-	// Initialize a directory for the remote bundle.
-	if err := os.MkdirAll("/usr/libexec/tast/bundles/remote", 0755); err != nil {
-		return errors.Errorf("failed to create directory: %v", err)
-	}
-	tarCmd := exec.Command("sudo", "tar", "xf", tf.Name(),
+func remoteBundleDownload(ctx context.Context, tf *os.File, remoteBundleDir string) error {
+	tarCmd := exec.Command("tar", "xf", tf.Name(),
 		"broot/usr/libexec/tast/bundles/remote",
-		"--transform", "s,^broot/usr/,,")
-	tarCmd.Dir = "/usr"
+		"--transform", fmt.Sprintf("s,^broot/usr/libexec/tast/bundles/remote,%s,", remoteBundleDir))
 	if err := tarCmd.Run(); err != nil {
 		return errors.Errorf("failed to extract %s: %v", strings.Join(tarCmd.Args, " "), err)
 	}

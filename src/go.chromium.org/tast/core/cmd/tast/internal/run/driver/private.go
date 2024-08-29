@@ -98,6 +98,7 @@ func (d *Driver) DownloadPrivateRemoteBundles(ctx context.Context, dutInfo *prot
 			BuildBucketID:  d.cfg.BuildBucketID(),
 		},
 		BuildArtifactUrl: buildArtifactsURL,
+		RemoteBundleDir:  d.cfg.RemoteBundleDir(),
 	}
 
 	if err := client.DownloadPrivateBundles(ctx, req); err != nil {

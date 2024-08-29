@@ -152,6 +152,7 @@ var (
 		"limozeen":           {"limozeen", "trogdor", ModemTypeSC7180},
 		"pazquel":            {"pazquel", "trogdor", ModemTypeSC7180},
 		"pazquel360":         {"pazquel360", "trogdor", ModemTypeSC7180},
+		"pompom":             {"pompom", "trogdor", ModemTypeSC7180},
 		"skyrim_fm101":       {"skyrim_fm101", "skyrim", ModemTypeFM101},
 		"vilboz":             {"vilboz", "zork", ModemTypeNL668},
 		"vilboz360":          {"vilboz360", "zork", ModemTypeL850},

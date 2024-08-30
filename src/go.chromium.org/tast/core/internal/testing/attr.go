@@ -1817,6 +1817,11 @@ Parallels boot-up testing. Otherwise the same as group:crosbolt.`,
 		},
 	},
 	{
+		Name:     "odml",
+		Contacts: []string{"cros-odml-eng@google.com"},
+		Desc:     `A group of tests related to the odmld daemon.`,
+	},
+	{
 		Name:     "assistant_audiobox",
 		Contacts: []string{"chromeos-sw-engprod@google.com", "assistive-eng@google.com"},
 		Desc:     `A group of Assistant tests that have to be run in audiobox.`,

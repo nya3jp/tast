@@ -336,7 +336,7 @@ Tests in this group are not used for build verification.
 			{
 				Name: "release-health_gfx",
 				Desc: "Release candidate graphics tests",
-                        },
+			},
 			{
 				Name: "release-health_network",
 				Desc: "Release candidate network tests",
@@ -360,12 +360,12 @@ Tests in this group are not used for build verification.
 			{
 				Name: "release-health_usb",
 				Desc: "Release candidate usb-peripherals tests",
-                        },
+			},
 			{
 				Name: "release-health_wifi",
 				Desc: "Release candidate wifi tests",
 			},
-                },
+		},
 	},
 	{
 		Name:     "stress",
@@ -1802,6 +1802,10 @@ Parallels boot-up testing. Otherwise the same as group:crosbolt.`,
 			{
 				Name: "shimless_rma_calibration",
 				Desc: `Shimless RMA tests for calibration.`,
+			},
+			{
+				Name: "shimless_rma_pretest",
+				Desc: `Shimless RMA tests for devices not yet support Shimless RMA.`,
 			},
 		},
 	},

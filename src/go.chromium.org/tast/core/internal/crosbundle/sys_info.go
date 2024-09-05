@@ -15,6 +15,7 @@ import (
 	"time"
 
 	"go.chromium.org/tast/core/errors"
+	"go.chromium.org/tast/core/fsutil"
 	"go.chromium.org/tast/core/internal/crash"
 	"go.chromium.org/tast/core/internal/logging"
 	"go.chromium.org/tast/core/internal/logs"
@@ -227,6 +228,18 @@ func writeSystemInfo(ctx context.Context, dir string) error {
 	// Having an easy way to see info about the system image (e.g. board name and version) is particularly useful.
 	if err := crash.CopySystemInfo(dir); err != nil {
 		errs = append(errs, err.Error())
+	}
+
+	// Copy notable system log files which are not expected to change during the test.
+	staticLogs := []string{
+		"ec_info.txt",
+		"bios_info.txt",
+	}
+	for _, staticLog := range staticLogs {
+		staticLogPath := filepath.Join(systemLogDir, staticLog)
+		if _, err := os.Stat(staticLogPath); !os.IsNotExist(err) {
+			fsutil.CopyFile(staticLogPath, filepath.Join(dir, staticLog))
+		}
 	}
 
 	if len(errs) > 0 {

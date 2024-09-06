@@ -102,7 +102,6 @@ func TestDriver_DownloadPrivateRemoteBundles_Override(t *testing.T) {
 		buildArtifactsURLDefault  = "gs://build-artifacts/default"
 		buildArtifactsURLOverride = "gs://build-artifacts/override"
 	)
-	remotebundledir := "/tmp/TestDriver_DownloadPrivateRemoteBundles_Override/001/bundles/remote"
 
 	called := false
 	env := runtest.SetUp(
@@ -112,7 +111,6 @@ func TestDriver_DownloadPrivateRemoteBundles_Override(t *testing.T) {
 			want := &protocol.DownloadPrivateBundlesRequest{
 				ServiceConfig:    &protocol.ServiceConfig{},
 				BuildArtifactUrl: buildArtifactsURLOverride,
-				RemoteBundleDir:  remotebundledir,
 			}
 			if diff := cmp.Diff(req, want, protocmp.Transform()); diff != "" {
 				t.Errorf("DownloadPrivateBundlesRequest mismatch (-got +want):\n%s", diff)
@@ -124,7 +122,6 @@ func TestDriver_DownloadPrivateRemoteBundles_Override(t *testing.T) {
 	cfg := env.Config(func(cfg *config.MutableConfig) {
 		cfg.DownloadPrivateBundles = true
 		cfg.BuildArtifactsURLOverride = buildArtifactsURLOverride
-		cfg.RemoteBundleDir = remotebundledir
 	})
 	dutInfo := &protocol.DUTInfo{
 		DefaultBuildArtifactsUrl: buildArtifactsURLDefault, // ignored
@@ -191,7 +188,6 @@ func TestDriver_DownloadPrivateLocalBundles_Devservers(t *testing.T) {
 func TestDriver_DownloadPrivateRemoteBundles_Devservers(t *testing.T) {
 	const buildArtifactsURL = "gs://build-artifacts/foo/bar"
 	devservers := []string{"http://example.com:1111", "http://example.com:2222"}
-	remotebundledir := "/tmp/TestDriver_DownloadPrivateRemoteBundles_Devservers/001/bundles/remote"
 
 	called := false
 	env := runtest.SetUp(
@@ -203,7 +199,6 @@ func TestDriver_DownloadPrivateRemoteBundles_Devservers(t *testing.T) {
 					Devservers: devservers,
 				},
 				BuildArtifactUrl: buildArtifactsURL,
-				RemoteBundleDir:  remotebundledir,
 			}
 			if diff := cmp.Diff(req, want, protocmp.Transform()); diff != "" {
 				t.Errorf("DownloadPrivateBundlesRequest mismatch (-got +want):\n%s", diff)
@@ -214,7 +209,6 @@ func TestDriver_DownloadPrivateRemoteBundles_Devservers(t *testing.T) {
 	ctx := env.Context()
 	cfg := env.Config(func(cfg *config.MutableConfig) {
 		cfg.DownloadPrivateBundles = true
-		cfg.RemoteBundleDir = remotebundledir
 		// Pass the devservers to the fake remote runner config
 	})
 	dutInfo := &protocol.DUTInfo{

@@ -1223,6 +1223,18 @@ third_party/autotest/files/server/site_tests/tast/control.racc-config-installed.
 				Desc: `Identifies Cellular tests that need an active CBRS sim.`,
 			},
 			{
+				Name: "cellular_carrier_linemo",
+				Desc: `Identifies Cellular tests that need an active LINEMO sim.`,
+			},
+			{
+				Name: "cellular_carrier_povo",
+				Desc: `Identifies Cellular tests that need an active POVO sim.`,
+			},
+			{
+				Name: "cellular_carrier_hanshin",
+				Desc: `Identifies Cellular tests that need an active HANSHIN sim.`,
+			},
+			{
 				Name: "cellular_stress",
 				Desc: `Identifies Cellular stress tests.`,
 			},

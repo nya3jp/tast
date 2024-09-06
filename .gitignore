@@ -11,6 +11,9 @@
 # Go packages, e.g. when Visual Studio Code is run from the base folder, not src
 /pkg/
 
+# Go checksum requirements can change due to portage rebuilds, so avoid adding to git
+**/go.sum
+
 # Emacs
 *~
 

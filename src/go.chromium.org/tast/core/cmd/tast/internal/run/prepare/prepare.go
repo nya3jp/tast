@@ -54,8 +54,10 @@ func SetUpRemotePrivateBundle(ctx context.Context, cfg *config.Config, driver *d
 			var dutInfo *protocol.DUTInfo
 			var err error
 			if config.ShouldConnect(cfg.Target()) {
+				logging.Infof(ctx, "Connecting to DUT to get DUT info for remote private bundle...")
 				dutInfo, err = driver.GetDUTInfo(ctx)
 				if err != nil {
+					logging.Infof(ctx, "Failed to get DUT info: %v", err)
 					return err
 				}
 			}
@@ -72,6 +74,8 @@ func SetUpRemotePrivateBundle(ctx context.Context, cfg *config.Config, driver *d
 		// Build all the remote bundles.
 		return err
 	}
+
+	logging.Infof(ctx, "SetUpRemotePrivateBundle completed successfully.")
 	return nil
 }
 

@@ -100,6 +100,8 @@ func (d *Driver) DownloadPrivateRemoteBundles(ctx context.Context, dutInfo *prot
 		BuildArtifactUrl: buildArtifactsURL,
 	}
 
+	logging.Debugf(ctx, "Download request details: %+v", req)
+
 	if err := client.DownloadPrivateBundles(ctx, req); err != nil {
 		return errors.Wrap(err, "failed to download private remote bundles.")
 	}

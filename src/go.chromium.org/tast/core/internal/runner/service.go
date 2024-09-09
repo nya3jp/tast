@@ -89,6 +89,7 @@ func (s *testServer) DownloadPrivateBundles(ctx context.Context, req *protocol.D
 	if !s.needToDownload(ctx, req.GetBuildArtifactUrl()) {
 		return &protocol.DownloadPrivateBundlesResponse{}, nil
 	}
+	logging.Infof(ctx, "Creating new devserver client...")
 
 	// Download the archive via devserver.
 	cl, err := devserver.NewClient(
@@ -99,6 +100,8 @@ func (s *testServer) DownloadPrivateBundles(ctx context.Context, req *protocol.D
 		req.GetServiceConfig().GetBuildBucketID(),
 	)
 	if err != nil {
+		logging.Infof(ctx, "Failed to create new client [devservers=%v]",
+			req.GetServiceConfig().GetDevservers())
 		return nil, errors.Wrapf(err, "failed to create new client [devservers=%v, TLWServer=%s]",
 			req.GetServiceConfig().GetDevservers(), req.GetServiceConfig().GetTlwServer())
 	}
@@ -110,6 +113,7 @@ func (s *testServer) DownloadPrivateBundles(ctx context.Context, req *protocol.D
 	}
 
 	for _, b := range privateBundles {
+		logging.Infof(ctx, "Downloading bundle: %s", b)
 		if err := downloadPrivateBundle(ctx, cl, req.GetBuildArtifactUrl(), b, s.scfg.BundleType); err != nil {
 			return nil, errors.Wrapf(err, "failed to download %s", b)
 		}
@@ -144,6 +148,7 @@ func (s *testServer) needToDownload(ctx context.Context, buildArtifactURL string
 		return true
 	}
 	if string(content) == buildArtifactURL {
+		logging.Infof(ctx, "No need to download private bundles, using existing ones.")
 		return false
 	}
 	return true
@@ -170,10 +175,12 @@ func downloadPrivateBundle(ctx context.Context, cl devserver.Client, archiveURBa
 
 	tf, err := os.CreateTemp("", bundle+".")
 	if err != nil {
+		logging.Infof(ctx, "Failed to creating temporary file for bundle %s", bundle)
 		return err
 	}
 	defer os.Remove(tf.Name())
 
+	logging.Infof(ctx, "Copying downloaded archive to temporary file...")
 	_, err = io.Copy(tf, r)
 
 	if cerr := tf.Close(); err == nil {
@@ -181,6 +188,7 @@ func downloadPrivateBundle(ctx context.Context, cl devserver.Client, archiveURBa
 	}
 
 	if err == nil {
+		logging.Infof(ctx, "Downloaded archive copied successfully. Processing bundle type: %v", bundleType)
 		switch bundleType {
 		case Local:
 			return localBundleDownload(ctx, tf)
@@ -190,6 +198,7 @@ func downloadPrivateBundle(ctx context.Context, cl devserver.Client, archiveURBa
 	} else if os.IsNotExist(err) {
 		logging.Info(ctx, "Private bundles not found")
 	} else {
+		logging.Infof(ctx, "Failed to copy downloaded archive %s: %v", archiveURL, err)
 		return errors.Errorf("failed to copy downloaded archive %s: %v", archiveURL, err)
 	}
 
@@ -203,6 +212,8 @@ func localBundleDownload(ctx context.Context, tf *os.File) error {
 		"libexec/tast/bundles/local*",
 		"share/tast/data/go.chromium.org*")
 	cmd.Dir = "/usr/local"
+
+	logging.Debugf(ctx, "Executing tar command for local: %s", strings.Join(cmd.Args, " "))
 	if err := cmd.Run(); err != nil {
 		return errors.Errorf("failed to extract %s: %v", strings.Join(cmd.Args, " "), err)
 	}
@@ -213,6 +224,7 @@ func localBundleDownload(ctx context.Context, tf *os.File) error {
 // remoteBundleDownload extract the archive when remote bundle type
 func remoteBundleDownload(ctx context.Context, tf *os.File) error {
 	// Initialize a directory for the remote bundle.
+	logging.Infof(ctx, "Starting remote bundle download. Temporary file: %s", tf.Name())
 	if err := os.MkdirAll("/usr/libexec/tast/bundles/remote", 0755); err != nil {
 		return errors.Errorf("failed to create directory: %v", err)
 	}
@@ -220,6 +232,8 @@ func remoteBundleDownload(ctx context.Context, tf *os.File) error {
 		"broot/usr/libexec/tast/bundles/remote",
 		"--transform", "s,^broot/usr/,,")
 	tarCmd.Dir = "/usr"
+
+	logging.Debugf(ctx, "Executing tar command for remote: %s", strings.Join(tarCmd.Args, " "))
 	if err := tarCmd.Run(); err != nil {
 		return errors.Errorf("failed to extract %s: %v", strings.Join(tarCmd.Args, " "), err)
 	}

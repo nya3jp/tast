@@ -39,9 +39,12 @@ type Config struct {
 	ServiceConfig *ServiceConfig
 }
 
-func newConn(ctx context.Context, cfg *Config, target, proxyCommand, dutServer string) (conn *Conn, retErr error) {
+func newConn(ctx context.Context, cfg *Config, target, proxyCommand, dutServer string, quiet bool) (conn *Conn, retErr error) {
 	sshConn, err := dialSSH(ctx, cfg.SSHConfig, target, proxyCommand, cfg.Retries)
 	if err != nil {
+		if quiet {
+			return nil, err
+		}
 		msg, diagErr := diagnoseNetwork(ctx, target)
 		if diagErr != nil {
 			logging.Info(ctx, "Failed to run network diagnosis: ", diagErr)
@@ -104,7 +107,7 @@ func (c *Conn) Target() string {
 func dialSSH(ctx context.Context, cfg *protocol.SSHConfig, target, proxyCommand string, retries int) (*ssh.Conn, error) {
 	ctx, st := timing.Start(ctx, "connect")
 	defer st.End()
-	logging.Infof(ctx, "Connecting to %s", target)
+	logging.Debugf(ctx, "Connecting to %s", target)
 
 	opts := &ssh.Options{
 		ConnectTimeout:       sshConnectTimeout,

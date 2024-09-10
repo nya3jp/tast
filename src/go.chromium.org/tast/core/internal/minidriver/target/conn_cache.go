@@ -28,14 +28,14 @@ type ConnCache struct {
 
 // NewConnCache establishes a new connection to target and return a ConnCache.
 // Call Close when it is no longer needed.
-func NewConnCache(ctx context.Context, cfg *Config, target, proxyCommand, role string) (cc *ConnCache, retErr error) {
+func NewConnCache(ctx context.Context, cfg *Config, target, proxyCommand, role string, quiet bool) (cc *ConnCache, retErr error) {
 	helper := newDUTHelper(ctx, cfg.SSHConfig, cfg.TastVars, role)
-	conn, err := newConn(ctx, cfg, target, proxyCommand, helper.dutServer)
+	conn, err := newConn(ctx, cfg, target, proxyCommand, helper.dutServer, quiet)
 	if err != nil {
 		if err := ensureDUTConnection(ctx, cfg.SSHConfig.ConnectionSpec); err != nil {
 			logging.Infof(ctx, "Failed to connect to DUT %s", err)
 		}
-		conn, err = newConn(ctx, cfg, target, proxyCommand, helper.dutServer)
+		conn, err = newConn(ctx, cfg, target, proxyCommand, helper.dutServer, quiet)
 		if err != nil {
 			return nil, err
 		}
@@ -85,14 +85,14 @@ func (cc *ConnCache) Conn() *Conn {
 //
 // Be aware that calling EnsureConn may invalidate a connection previously
 // returned from Conn.
-func (cc *ConnCache) EnsureConn(ctx context.Context, rebootBeforeReconnect bool) error {
+func (cc *ConnCache) EnsureConn(ctx context.Context, rebootBeforeReconnect, quiet bool) error {
 	err := cc.conn.Healthy(ctx)
 	if err == nil {
 		return nil
 	}
 	logging.Debugf(ctx, "Target connection is unhealthy: %v; reconnecting", err)
 
-	newConnection, err := newConn(ctx, cc.cfg, cc.target, cc.proxyCommand, cc.helper.dutServer)
+	newConnection, err := newConn(ctx, cc.cfg, cc.target, cc.proxyCommand, cc.helper.dutServer, quiet)
 	if err != nil {
 		// b/205333029: Move the code for rebooting to somewhere else when we support servod for multiple DUT.
 		if cc.helper != nil && rebootBeforeReconnect {
@@ -104,7 +104,7 @@ func (cc *ConnCache) EnsureConn(ctx context.Context, rebootBeforeReconnect bool)
 			shortCtx, cancel := context.WithTimeout(ctx, time.Minute*3)
 			defer cancel()
 			if err := testingutil.Poll(shortCtx, func(ctx context.Context) error {
-				newConnection, err = newConn(ctx, cc.cfg, cc.target, cc.proxyCommand, cc.helper.dutServer)
+				newConnection, err = newConn(ctx, cc.cfg, cc.target, cc.proxyCommand, cc.helper.dutServer, quiet)
 				return err
 			}, &testingutil.PollOptions{Timeout: cc.DefaultTimeout()}); err != nil {
 				logging.Infof(ctx, "Fail to reconnect after reboot target: %v", err)

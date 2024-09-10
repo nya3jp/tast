@@ -119,7 +119,7 @@ func New(ctx context.Context, cfg *config.Config, rawTarget, role string, remote
 		TastVars:      cfg.TestVars(),
 		ServiceConfig: scfg,
 	}
-	cc, err := target.NewConnCache(ctx, tcfg, resolvedTarget, proxyCommand, role)
+	cc, err := target.NewConnCache(ctx, tcfg, resolvedTarget, proxyCommand, role, false)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create a new connection")
 	}
@@ -193,11 +193,11 @@ func (d *Driver) Services() *Services {
 
 // ReconnectIfNeeded ensures that the current connection is healthy, and
 // otherwise it re-establishes a connection.
-func (d *Driver) ReconnectIfNeeded(ctx context.Context, rebootBeforeReconnect bool) error {
+func (d *Driver) ReconnectIfNeeded(ctx context.Context, rebootBeforeReconnect, quiet bool) error {
 	if d.cc == nil {
 		return nil
 	}
-	return d.cc.EnsureConn(ctx, rebootBeforeReconnect)
+	return d.cc.EnsureConn(ctx, rebootBeforeReconnect, quiet)
 }
 
 // DefaultTimeout returns the default timeout for connection operations.

@@ -46,12 +46,12 @@ func (d *Driver) StreamFile(ctx context.Context, src, dest string) error {
 		// Sleep for 30 second before retrying.
 		time.Sleep(time.Second * 30)
 		if err := testingutil.Poll(ctx, func(ctx context.Context) error {
-			if err := d.ReconnectIfNeeded(ctx, false); err != nil {
+			if err := d.ReconnectIfNeeded(ctx, false, true); err != nil {
 				return err
 			}
 			return nil
 		}, &testingutil.PollOptions{Timeout: time.Minute, Interval: time.Second * 15}); err != nil {
-			logging.Infof(ctx, "Warning: failed to reconnect to DUT to stream file")
+			logging.Debugf(ctx, "Warning: failed to reconnect to DUT to stream file")
 			return nil
 		}
 	}

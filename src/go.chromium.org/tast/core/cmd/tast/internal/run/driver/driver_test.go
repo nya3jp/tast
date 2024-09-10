@@ -120,7 +120,7 @@ func TestDriver_ReconnectIfNeeded(t *testing.T) {
 	}
 
 	// Reconnect to the target device. Now Ping starts to pass.
-	if err := drv.ReconnectIfNeeded(ctx, true); err != nil {
+	if err := drv.ReconnectIfNeeded(ctx, true, false); err != nil {
 		t.Fatalf("ReconnectIfNeeded failed: %v", err)
 	}
 	if err := drv.SSHConn().Ping(ctx, pingTimeout); err != nil {

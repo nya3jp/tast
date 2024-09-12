@@ -76,7 +76,7 @@ package policy
 // Run the following command in CrOS chroot to regenerate protocol buffer bindings:
 //
 // ~/chromiumos/src/platform/tast/tools/go.sh generate go.chromium.org/tast-tests/cros/services/cros/policy
-//go:generate protoc -I . --go_out=plugins=grpc:../../../../.. system_timezone.proto
+//go:generate protoc -I . --go_out=plugins=grpc:../../../../../.. system_timezone.proto
 ```
 
 Then we run

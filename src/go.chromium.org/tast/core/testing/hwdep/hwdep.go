@@ -1523,11 +1523,11 @@ func WifiNonSelfManaged() Condition {
 }
 
 func hasBattery(f *protocol.HardwareFeatures) (bool, error) {
-	dc := f.GetDeprecatedDeviceConfig()
-	if dc == nil {
-		return false, errors.New("DeprecatedDeviceConfig is not given")
+	hf := f.GetHardwareFeatures()
+	if hf == nil {
+		return false, errors.New("hardware features is not available")
 	}
-	return dc.GetPower() == protocol.DeprecatedDeviceConfig_POWER_SUPPLY_BATTERY, nil
+	return !formFactorListed(hf, Chromebase, Chromebox, Chromebit, FormFactorUnknown), nil
 }
 
 // Battery returns a hardware dependency condition that is satisfied if and only if the DUT

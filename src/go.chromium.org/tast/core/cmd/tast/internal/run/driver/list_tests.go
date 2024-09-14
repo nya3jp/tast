@@ -8,6 +8,7 @@ import (
 	"context"
 
 	"go.chromium.org/tast/core/errors"
+	"go.chromium.org/tast/core/internal/logging"
 	"go.chromium.org/tast/core/internal/protocol"
 )
 
@@ -32,9 +33,22 @@ func (d *Driver) ListMatchedLocalTests(ctx context.Context, features *protocol.F
 	}
 	tests, err := d.localRunnerClient().ListTests(ctx, d.cfg.Patterns(), features)
 	if err != nil {
+		if d.healthy(ctx) == false {
+			logging.Infof(ctx, "The connection to DUT %s is not healthy", d.rawTarget)
+		}
 		return nil, errors.Wrap(err, "failed to list local tests")
 	}
 	return tests, nil
+}
+
+func (d *Driver) healthy(ctx context.Context) bool {
+	if d.cc == nil || d.cc.Conn() == nil {
+		return false
+	}
+	if err := d.cc.Conn().Healthy(ctx); err != nil {
+		return false
+	}
+	return true
 }
 
 // ListLocalFixtures enumerates all local fixtures.

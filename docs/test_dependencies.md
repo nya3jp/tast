@@ -29,10 +29,6 @@ The following software features are defined:
     only when ARC is supported on the board.
 * `arc32` - Runs 32-bit Android primary ABI.
 * `arc64` - Runs 64-bit Android primary ABI, may or may not have 32-bit support.
-* `arc_android_data_cros_access` - The ability to access Android's /data directory from ChromeOS.
-    For ARCVM virtio-blk /data devices, this only ensures that we can mount the virtio-blk disk
-    image of Android's /data directory on the host, and does not grant an automatic access to
-    Android's /data directory from the host side.
 * `arc_camera3` - Using [Camera HAL3] interface in Chrome and Android.
 * `arc_launched_32bit` - This platform originally launched with 32-bit Android.
 * `arc_launched_64bit` - This platform originally launched with 64-bit Android.

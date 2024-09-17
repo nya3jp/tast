@@ -228,17 +228,18 @@ func writeError(w http.ResponseWriter, err error) {
 // devserver is allowed to access by default.
 func defaultAllowedBuckets() map[string]struct{} {
 	return map[string]struct{}{
-		"chromeos-image-archive":        {},
-		"chromeos-moblab-intel":         {},
-		"chromeos-releases":             {},
-		"chromeos-test-assets-private":  {},
-		"chromiumos-test-assets-public": {},
-		"cros-containers-staging":       {},
-		"crosvideo":                     {},
-		"perfetto":                      {},
-		"refvm-images":                  {},
-		"termina-component-testing":     {},
-		"pstash_apks":                   {},
+		"chromeos-image-archive":              {},
+		"chromeos-moblab-intel":               {},
+		"chromeos-releases":                   {},
+		"chromeos-test-assets-private":        {},
+		"chromeos-test-assets-partner-shared": {},
+		"chromiumos-test-assets-public":       {},
+		"cros-containers-staging":             {},
+		"crosvideo":                           {},
+		"perfetto":                            {},
+		"refvm-images":                        {},
+		"termina-component-testing":           {},
+		"pstash_apks":                         {},
 	}
 }
 

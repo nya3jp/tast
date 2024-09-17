@@ -455,7 +455,7 @@ func (c *MutableConfig) SetFlags(f *flag.FlagSet) {
 		"batch": int(protocol.DownloadMode_BATCH),
 		"lazy":  int(protocol.DownloadMode_LAZY),
 	}
-	ddf := command.NewEnumFlag(ddfs, func(v int) { c.DownloadMode = protocol.DownloadMode(v) }, "batch")
+	ddf := command.NewEnumFlag(ddfs, func(v int) { c.DownloadMode = protocol.DownloadMode(v) }, "lazy")
 	f.Var(ddf, "downloaddata", fmt.Sprintf("strategy to download external data files (%s; default %q)", ddf.QuotedValues(), ddf.Default()))
 	f.BoolVar(&c.ContinueAfterFailure, "continueafterfailure", true, "try to run remaining tests after bundle/DUT crash or lost SSH connection")
 	f.IntVar(&c.SSHRetries, "sshretries", 0, "number of SSH connect retries")

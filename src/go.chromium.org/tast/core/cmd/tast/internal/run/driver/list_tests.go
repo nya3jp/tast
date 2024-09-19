@@ -35,6 +35,8 @@ func (d *Driver) ListMatchedLocalTests(ctx context.Context, features *protocol.F
 	if err != nil {
 		if d.healthy(ctx) == false {
 			logging.Infof(ctx, "The connection to DUT %s is not healthy", d.rawTarget)
+		} else {
+			logging.Infof(ctx, "The connection to DUT %s is healthy", d.rawTarget)
 		}
 		return nil, errors.Wrap(err, "failed to list local tests")
 	}

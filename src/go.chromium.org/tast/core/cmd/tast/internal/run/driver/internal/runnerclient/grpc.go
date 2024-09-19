@@ -184,7 +184,7 @@ func (c *Client) ListTests(ctx context.Context, patterns []string, features *pro
 	}
 
 	logging.Infof(ctx, "Sending ListEntities Request to test runner (hops=%v)", c.hops)
-	listEntities := func() (*protocol.ListEntitiesResponse, error) {
+	listEntities := func(timeout time.Duration) (*protocol.ListEntitiesResponse, error) {
 		conn, err := c.dial(ctx, &protocol.HandshakeRequest{RunnerInitParams: c.params})
 		if err != nil {
 			return nil, err
@@ -195,15 +195,15 @@ func (c *Client) ListTests(ctx context.Context, patterns []string, features *pro
 		}
 		// It should be less than a minute to list entities.
 		cl := protocol.NewTestServiceClient(conn.Conn())
-		ctxForListEntities, cancel := context.WithTimeout(ctx, time.Minute)
+		ctxForListEntities, cancel := context.WithTimeout(ctx, timeout)
 		defer cancel()
 		return cl.ListEntities(ctxForListEntities, req)
 	}
-	res, err := listEntities()
+	res, err := listEntities(time.Minute)
 	if err != nil {
 		logging.Infof(ctx, "Failed to send ListEntities request: %v", err)
 		logging.Infof(ctx, "Retry sending ListEntities Request to test runner (hops=%v)", c.hops)
-		res, err = listEntities()
+		res, err = listEntities(2 * time.Minute)
 		if err != nil {
 			return nil, err
 		}

@@ -1324,7 +1324,7 @@ third_party/autotest/files/server/site_tests/tast/control.racc-config-installed.
 	},
 	{
 		Name:     "bluetooth",
-		Contacts: []string{"cros-connectivity@google.com"},
+		Contacts: []string{"cros-device-enablement@google.com"},
 		Desc:     "Identifies bluetooth tests.",
 		Subattrs: []*attr{
 			{
@@ -2448,8 +2448,8 @@ from other existing groups (or use this group standalone).
 	},
 	{
 		Name:     "cr_oobe",
-		Contacts: []string{"cros-connectivity@google.com"},
-		Desc:     "A group of tests for OOBE maintained by System Services team",
+		Contacts: []string{"cros-device-enablement@google.com"},
+		Desc:     "A group of tests for OOBE maintained by ChromeOS Device Enablement team",
 		Subattrs: []*attr{
 			{
 				Name: "cr_oobe_chromebox_chromebase",

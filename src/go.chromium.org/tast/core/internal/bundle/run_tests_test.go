@@ -56,31 +56,6 @@ func startTestServer(t *gotesting.T, scfg *StaticConfig, req *protocol.Handshake
 
 var testFunc = func(context.Context, *testing.State) {}
 
-// testPre implements Precondition for unit tests.
-// TODO(derat): This is duplicated from tast/testing/test_test.go. Find a common location.
-type testPre struct {
-	prepareFunc func(context.Context, *testing.PreState) interface{}
-	closeFunc   func(context.Context, *testing.PreState)
-	name        string // name to return from String
-}
-
-func (p *testPre) Prepare(ctx context.Context, s *testing.PreState) interface{} {
-	if p.prepareFunc != nil {
-		return p.prepareFunc(ctx, s)
-	}
-	return nil
-}
-
-func (p *testPre) Close(ctx context.Context, s *testing.PreState) {
-	if p.closeFunc != nil {
-		p.closeFunc(ctx, s)
-	}
-}
-
-func (p *testPre) Timeout() time.Duration { return time.Minute }
-
-func (p *testPre) String() string { return p.name }
-
 func TestRunTests(t *gotesting.T) {
 	const (
 		name1       = "foo.Test1"
@@ -910,7 +885,6 @@ func TestRunTestsRemotepushedFilesPaths(t *gotesting.T) {
 
 	// Register a test.
 	reg := testing.NewRegistry("bundle")
-	const role = "role"
 	reg.AddTestInstance(&testing.TestInstance{Name: "pkg.Test", Func: func(ctx context.Context, s *testing.State) {
 		primaryPaths = s.PushedFilesToDUT("")
 		companionPaths = s.PushedFilesToDUT("cd1")

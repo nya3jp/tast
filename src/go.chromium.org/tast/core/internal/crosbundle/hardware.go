@@ -216,6 +216,9 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		}
 		return out == "true", nil
 	}()
+	if err != nil {
+		logging.Infof(ctx, "Unknown /battery/no-battery-boot-supported: %v", err)
+	}
 	features.Battery.NoBatteryBootSupported = noBatteryBootSupported
 
 	detachableBasePath, err := func() (string, error) {
@@ -735,8 +738,7 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		const bh799Dev = 0x0002
 		const rtk1200Ven = 0x10ec
 		const rtk1200Dev = 0x1200
-		var readSysfsHex func(string, string) int64
-		readSysfsHex = func(devPath, relPath string) int64 {
+		readSysfsHex := func(devPath, relPath string) int64 {
 			pathComponenets := strings.Split(devPath, "/")
 			phyDev := pathComponenets[len(pathComponenets)-1]
 			outStr := readSysfsString(phyDev, relPath)
@@ -818,7 +820,6 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 			if strings.Contains(outStr, "ATA") {
 				return true
 			}
-			return false
 		}
 		return false
 	}()
@@ -847,7 +848,6 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 			if strings.Contains(res, "ufshcd") {
 				return true
 			}
-			return false
 		}
 		return false
 	}()

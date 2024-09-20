@@ -365,30 +365,3 @@ func registerUserServices(ctx context.Context, srv *grpc.Server, logger logging.
 	}
 	return nil
 }
-
-// startServing kicks off the gRPC server listening through the listener
-func startServing(srv *grpc.Server, listener net.Listener) error {
-	// From now on, catch SIGINT/SIGTERM to stop the server gracefully.
-	sigCh := make(chan os.Signal, 1)
-	defer close(sigCh)
-	signal.Notify(sigCh, unix.SIGINT, unix.SIGTERM)
-	defer signal.Stop(sigCh)
-	sigErrCh := make(chan error, 1)
-	go func() {
-		if sig, ok := <-sigCh; ok {
-			sigErrCh <- errors.Errorf("caught signal %d (%s)", sig, sig)
-			srv.Stop()
-		}
-	}()
-
-	if err := srv.Serve(listener); err != nil {
-		// Replace the error if we saw a signal.
-		select {
-		case err := <-sigErrCh:
-			return err
-		default:
-		}
-		return err
-	}
-	return nil
-}

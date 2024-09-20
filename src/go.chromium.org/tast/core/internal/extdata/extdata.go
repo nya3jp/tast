@@ -154,7 +154,7 @@ func NewManager(ctx context.Context, dataDir, artifactsURL string) (*Manager, er
 		all = append(all, destPath)
 		return nil
 	}); err != nil && !os.IsNotExist(err) {
-		return nil, fmt.Errorf("Failed to walk data directory: %v", err)
+		return nil, fmt.Errorf("failed to walk data directory: %v", err)
 	}
 	sort.Strings(all)
 

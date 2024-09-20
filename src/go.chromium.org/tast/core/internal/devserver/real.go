@@ -337,7 +337,7 @@ func (c *RealClient) stage(ctx context.Context, dsURL, bucket, gsPath string) er
 			return err
 		}
 
-		elapsed := time.Now().Sub(start)
+		elapsed := time.Since(start)
 		if remaining := c.stageRetryWaits[i] - elapsed; remaining > 0 {
 			logging.Infof(ctx, "Retry stage in %v: %v", remaining.Round(time.Millisecond), err)
 			select {

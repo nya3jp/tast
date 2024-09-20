@@ -10,6 +10,7 @@ import (
 	"reflect"
 	"testing"
 
+	//lint:ignore ST1019 importing this package with a different name helps readability
 	"go.chromium.org/chromiumos/config/go/api"
 	configpb "go.chromium.org/chromiumos/config/go/api"
 	"google.golang.org/protobuf/proto"

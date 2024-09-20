@@ -375,7 +375,7 @@ func validateFileName(funcName, filename string) error {
 			return fmt.Errorf("name %q doesn't include all of filename %q", funcName, filename)
 		}
 		funcWord := funcName[funcIdx : funcIdx+len(fileWord)]
-		if strings.ToLower(funcWord) != strings.ToLower(fileWord) {
+		if !strings.EqualFold(funcWord, fileWord) {
 			return fmt.Errorf("word %q at %q[%d] doesn't match %q in filename %q", funcWord, funcName, funcIdx, fileWord, filename)
 		}
 
@@ -454,7 +454,7 @@ func validateSearchFlags(searchFlags []*protocol.StringPair) error {
 	validKey := regexp.MustCompile(`^[a-z][a-z0-9_]*(/[a-z][a-z0-9_]*)*$`)
 	for _, searchFlag := range searchFlags {
 		if !validKey.MatchString(searchFlag.Key) {
-			return fmt.Errorf("The key of SearchFlag %v should match %s", searchFlag, validKey)
+			return fmt.Errorf("the key of SearchFlag %v should match %s", searchFlag, validKey)
 		}
 	}
 	return nil
@@ -481,6 +481,7 @@ func validateVars(category, name string, vars []string) error {
 	seen := make(map[string]struct{})
 	for _, v := range vars {
 		if _, ok := seen[v]; ok {
+			//lint:ignore ST1005 "Vars" is a field name and should be capitalized
 			return fmt.Errorf("Vars and VarDeps should not contain the same variable %q twice", v)
 		}
 		seen[v] = struct{}{}

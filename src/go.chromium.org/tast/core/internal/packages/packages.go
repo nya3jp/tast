@@ -8,7 +8,6 @@
 package packages
 
 import (
-	"fmt"
 	"regexp"
 	"strings"
 )
@@ -35,7 +34,7 @@ func Same(x, y string) bool {
 	return Normalize(x) == Normalize(y)
 }
 
-var srcExpr = regexp.MustCompile(fmt.Sprintf(".*/(?P<path>(src/.*))"))
+var srcExpr = regexp.MustCompile(".*/(?P<path>(src/.*))")
 
 // SrcPathInTastRepo extract <repo>/<src> from a full path.
 // Example:

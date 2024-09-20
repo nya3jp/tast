@@ -66,7 +66,7 @@ func TestStreamedResultsHandler(t *testing.T) {
 		t.Fatalf("Failed to read %s: %v", reporting.StreamedResultsFilename, err)
 	}
 
-	got, err := unmarshalStreamedResults(b)
+	got, _ := unmarshalStreamedResults(b)
 	want := []*resultsjson.Result{
 		{
 			Test:   resultsjson.Test{Name: "pkg.Test1", Desc: "This is test 1"},

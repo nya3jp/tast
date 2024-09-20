@@ -252,7 +252,7 @@ func (p *preprocessor) RunEnd(ctx context.Context, runErr error) {
 		if len(p.stack) > 0 {
 			stateTop := p.stateTop()
 			if ctxutil.DeadlineBefore(ctx, time.Now()) {
-				apprRunTime := time.Now().Sub(stateTop.Start).Round(time.Millisecond).Seconds()
+				apprRunTime := time.Since(stateTop.Start).Round(time.Millisecond).Seconds()
 				if t, err := xcontext.GetContextTimeout(ctx); err == nil {
 					msg = fmt.Sprintf("Test did not finish(~%v seconds) due to Tast command timeout(%v seconds)", apprRunTime, t.Seconds())
 				}

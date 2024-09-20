@@ -101,8 +101,8 @@ func TestEnumFlag(t *testing.T) {
 func ExampleEnumFlag() {
 	type enum int
 	const (
-		foo enum = 1
-		bar      = 2
+		foo enum = iota + 1
+		bar
 	)
 
 	var dest enum

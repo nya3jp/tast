@@ -65,7 +65,7 @@ func TestWiringServer_CacheForDut(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to get from download URL (%s): %s", resp.Url, err)
 	}
-	content, err := ioutil.ReadAll(res.Body)
+	content, _ := ioutil.ReadAll(res.Body)
 	expectedContent := "content of foo/bar/baz"
 	if string(content) != expectedContent {
 		t.Errorf("Wrong content: got %q, want %q", content, expectedContent)

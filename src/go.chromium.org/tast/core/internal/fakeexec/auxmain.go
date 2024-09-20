@@ -129,7 +129,7 @@ func NewAuxMain(name string, f interface{}) *AuxMain {
 
 	tf := reflect.TypeOf(f)
 	if ni, no := tf.NumIn(), tf.NumOut(); ni != 1 || no != 0 {
-		panic(fmt.Sprintf("fakeexec.NewAuxMain: f has wrong signature: must be func(T)"))
+		panic("fakeexec.NewAuxMain: f has wrong signature: must be func(T)")
 	}
 	tp := tf.In(0)
 

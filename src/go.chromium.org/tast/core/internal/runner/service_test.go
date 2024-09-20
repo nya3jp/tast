@@ -218,7 +218,6 @@ func TestTestServerStreamFile(t *gotesting.T) {
 			time.Sleep(time.Second * 2)
 		}
 		<-done
-		return
 	}()
 
 	got := ""
@@ -226,7 +225,8 @@ func TestTestServerStreamFile(t *gotesting.T) {
 		for i := range data {
 			msg, err := stream.Recv()
 			if err != nil {
-				t.Fatalf("failed to receive data %q -- data got so far %q: %v", data[i], got, err)
+				t.Errorf("failed to receive data %q -- data got so far %q: %v", data[i], got, err)
+				return
 			}
 			got = got + string(msg.GetData())
 		}

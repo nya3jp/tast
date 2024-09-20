@@ -24,7 +24,6 @@ type dutHelper struct {
 	servoSpec string // servoSpec stores servo spec
 	dutServer string // dutServer stores DUT server information.
 	cfg       *protocol.SSHConfig
-	testVars  map[string]string
 }
 
 // newDUTHelper return a helper that allow users to manipulate DUT.

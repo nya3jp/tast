@@ -43,7 +43,7 @@ func TestKillSession(t *testing.T) {
 
 			if len(matched) == num {
 				return nil
-			} else if time.Now().Sub(start) > maxTime {
+			} else if time.Since(start) > maxTime {
 				return fmt.Errorf("got %v proc(s): %v", len(matched), matched)
 			}
 			time.Sleep(10 * time.Millisecond)

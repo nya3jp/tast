@@ -233,7 +233,7 @@ func TestPreprocessor_TimeoutReached(t *testing.T) {
 	}
 
 	got := string(b)
-	want, _ := regexp.Compile("Test did not finish\\(~[0-9.e\\-+]* seconds\\) due to Tast command timeout\\([0-9.e\\-+]* seconds\\)")
+	want, _ := regexp.Compile(`Test did not finish\(~[0-9.e\-+]* seconds\) due to Tast command timeout\([0-9.e\-+]* seconds\)`)
 	if !want.MatchString(got) {
 		t.Errorf("Log doesn't contain an expected message: got %q, want %q", got, want)
 	}

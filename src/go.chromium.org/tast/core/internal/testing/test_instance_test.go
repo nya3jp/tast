@@ -397,18 +397,18 @@ func TestInstantiateParamsForAllPrimary(t *gotesting.T) {
 		if len(reasons) > 0 {
 			t.Error("Got unexpected HardwareDeps for first test instance: Check returned skip reasons for model1: ", reasons)
 		}
-		reasons, err = got[0].Deps().Check(features([]string{"dep0", "dep1"}, "model2"))
+		reasons, _ = got[0].Deps().Check(features([]string{"dep0", "dep1"}, "model2"))
 		if len(reasons) == 0 {
 			t.Error("Got unexpected HardwareDeps for first test instance: Check returned no skip reason for model2")
 		}
 		if got[1].Func == nil {
 			t.Error("Got nil Func for the second test instance")
 		}
-		reasons, err = got[1].Deps().Check(features([]string{"dep0", "dep2"}, "model2"))
+		reasons, _ = got[1].Deps().Check(features([]string{"dep0", "dep2"}, "model2"))
 		if len(reasons) > 0 {
 			t.Error("Got unexpected HardwareDeps for second test instance: Check returned skip reasons for model2: ", reasons)
 		}
-		reasons, err = got[1].Deps().Check(features([]string{"dep0", "dep2"}, "model1"))
+		reasons, _ = got[1].Deps().Check(features([]string{"dep0", "dep2"}, "model1"))
 		if len(reasons) == 0 {
 			t.Error("Got unexpected HardwareDeps for second test instance: Check returned no skip reason for model1")
 		}
@@ -501,18 +501,18 @@ func TestInstantiateParams(t *gotesting.T) {
 		if len(reasons) > 0 {
 			t.Error("Got unexpected HardwareDeps for first test instance: Check returned skip reasons for model1: ", reasons)
 		}
-		reasons, err = got[0].Deps().Check(features([]string{"dep0", "dep1"}, "model2"))
+		reasons, _ = got[0].Deps().Check(features([]string{"dep0", "dep1"}, "model2"))
 		if len(reasons) == 0 {
 			t.Error("Got unexpected HardwareDeps for first test instance: Check returned no skip reason for model2")
 		}
 		if got[1].Func == nil {
 			t.Error("Got nil Func for the second test instance")
 		}
-		reasons, err = got[1].Deps().Check(features([]string{"dep0", "dep2"}, "model2"))
+		reasons, _ = got[1].Deps().Check(features([]string{"dep0", "dep2"}, "model2"))
 		if len(reasons) > 0 {
 			t.Error("Got unexpected HardwareDeps for second test instance: Check returned skip reasons for model2: ", reasons)
 		}
-		reasons, err = got[1].Deps().Check(features([]string{"dep0", "dep2"}, "model1"))
+		reasons, _ = got[1].Deps().Check(features([]string{"dep0", "dep2"}, "model1"))
 		if len(reasons) == 0 {
 			t.Error("Got unexpected HardwareDeps for second test instance: Check returned no skip reason for model1")
 		}
@@ -618,18 +618,18 @@ func TestInstantiateParamsForAllCompaion(t *gotesting.T) {
 		if len(reasons) > 0 {
 			t.Error("Got unexpected HardwareDeps for first test instance: Check returned skip reasons for model1: ", reasons)
 		}
-		reasons, err = got[0].Deps().Check(features([]string{"dep0", "dep1"}, "model2"))
+		reasons, _ = got[0].Deps().Check(features([]string{"dep0", "dep1"}, "model2"))
 		if len(reasons) == 0 {
 			t.Error("Got unexpected HardwareDeps for first test instance: Check returned no skip reason for model2")
 		}
 		if got[1].Func == nil {
 			t.Error("Got nil Func for the second test instance")
 		}
-		reasons, err = got[1].Deps().Check(features([]string{"dep0", "dep2"}, "model2"))
+		reasons, _ = got[1].Deps().Check(features([]string{"dep0", "dep2"}, "model2"))
 		if len(reasons) > 0 {
 			t.Error("Got unexpected HardwareDeps for second test instance: Check returned skip reasons for model2: ", reasons)
 		}
-		reasons, err = got[1].Deps().Check(features([]string{"dep0", "dep2"}, "model1"))
+		reasons, _ = got[1].Deps().Check(features([]string{"dep0", "dep2"}, "model1"))
 		if len(reasons) == 0 {
 			t.Error("Got unexpected HardwareDeps for second test instance: Check returned no skip reason for model1")
 		}

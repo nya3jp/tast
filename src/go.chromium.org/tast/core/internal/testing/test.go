@@ -254,7 +254,7 @@ func (s LifeCycle) String() string {
 	case LifeCycleOwnerMonitored:
 		return "LIFE_CYCLE_OWNER_MONITORED"
 	default:
-		return fmt.Sprintf("Unknown")
+		return "Unknown"
 	}
 }
 

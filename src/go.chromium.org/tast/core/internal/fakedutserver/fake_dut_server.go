@@ -10,10 +10,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net"
-	"net/url"
 	"os"
 	"path/filepath"
-	"strings"
 	"sync"
 	"testing"
 
@@ -125,20 +123,6 @@ func (s *DutServiceServer) Cache(ctx context.Context, req *api.CacheRequest) (*l
 	}
 
 	return &op, nil
-}
-
-func parseGSURL(gsURL string) (bucket, path string, err error) {
-	parsed, err := url.Parse(gsURL)
-	if err != nil {
-		return "", "", err
-	}
-	if parsed.Scheme != "gs" {
-		return "", "", fmt.Errorf("%s isnot a GS URL", gsURL)
-	}
-
-	bucket = parsed.Host
-	path = strings.TrimPrefix(parsed.Path, "/")
-	return bucket, path, nil
 }
 
 func (s *DutServiceServer) beginOperation(name, srcURL string) {

@@ -170,7 +170,7 @@ func (s *fixtureService) pushAndPop(srv protocol.FixtureService_RunFixtureServer
 		waitConnectCtx, cancel := context.WithTimeout(ctx, 2*time.Minute)
 		defer cancel()
 		if err := dt.WaitConnect(waitConnectCtx); err != nil {
-			return fmt.Errorf("Failed to connect to DUT before running fixture %s: %v", r.Name, err)
+			return fmt.Errorf("failed to connect to DUT before running fixture %s: %v", r.Name, err)
 		}
 	}
 	if err := stack.Push(ctx, f); err != nil {

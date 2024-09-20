@@ -217,7 +217,7 @@ func writeSystemInfo(ctx context.Context, dir string) error {
 	for fn, cmd := range cmds {
 		// Set timeout in case some commands take long time unexpectedly. (crbug.com/1147723)
 		cmdCtx, cancel := context.WithTimeout(ctx, 1*time.Minute)
-		cmd := exec.CommandContext(cmdCtx, cmd[0], cmd[1:len(cmd)]...)
+		cmd := exec.CommandContext(cmdCtx, cmd[0], cmd[1:]...)
 		if err := runCmd(cmd, fn); err != nil {
 			errs = append(errs, fmt.Sprintf("failed running %q: %v", shutil.EscapeSlice(cmd.Args), err))
 		}

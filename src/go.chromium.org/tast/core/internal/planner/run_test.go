@@ -2356,7 +2356,7 @@ func TestRunEnsurePrivateAttr(t *gotesting.T) {
 		{"3", &impl3},
 	} {
 		for _, step := range allFixtureSteps {
-			if called, _ := f.fixt.called[step]; !called {
+			if called := f.fixt.called[step]; !called {
 				t.Errorf("fixture %s step=%s not called", f.name, step)
 			}
 			if msg, panicked := f.fixt.msgs[step]; panicked {

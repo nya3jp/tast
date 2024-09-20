@@ -45,6 +45,7 @@ func getReleaseInfo(data *breakpad.MinidumpReleaseInfo) (*releaseInfo, error) {
 		if data.CrashpadAnnotations["prod"] == "Chrome_Lacros" {
 			info.lacrosVersion = data.CrashpadAnnotations["ver"]
 			if info.lacrosVersion == "" {
+				//lint:ignore ST1005 "Lacros" is a name and should be capitalized
 				return nil, errors.New("Lacros Chrome does not specify the version")
 			}
 		}

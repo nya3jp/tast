@@ -162,7 +162,7 @@ func TestCheckDepsCache(t *testing.T) {
 	if err := cache.update(cachePath, lastMod); err != nil {
 		t.Fatalf("update(%v) failed: ", lastMod)
 	}
-	if cache, checkNeeded, lastMod = createCache(); checkNeeded {
+	if _, checkNeeded, _ = createCache(); checkNeeded {
 		t.Errorf("isCheckNeeded is true after update")
 	}
 
@@ -179,13 +179,13 @@ func TestCheckDepsCache(t *testing.T) {
 	if err := cache.update(cachePath, lastMod); err != nil {
 		t.Fatalf("update(%v) failed: ", lastMod)
 	}
-	if cache, checkNeeded, lastMod = createCache(); checkNeeded {
+	if _, checkNeeded, _ = createCache(); checkNeeded {
 		t.Error("isCheckNeeded is true after second update")
 	}
 
 	// Updating the DB file should also result in a check being needed.
 	setTimes(dbPath, t3)
-	if cache, checkNeeded, lastMod = createCache(); !checkNeeded {
+	if _, checkNeeded, lastMod = createCache(); !checkNeeded {
 		t.Error("isCheckNeeded is false after DB update")
 	} else if !lastMod.Equal(t3) {
 		t.Errorf("isCheckNeeded returned last mod %v after DB update; want %v", lastMod, t3)

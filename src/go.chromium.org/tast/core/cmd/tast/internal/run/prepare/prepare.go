@@ -132,7 +132,7 @@ func buildAllRemoteBundlesInChroot(ctx context.Context, cfg *config.Config) erro
 			continue
 		}
 		logging.Infof(ctx, "Adding remote bundle %q to build list", b.bundle)
-		workspace := append(cfg.CommonWorkspaces())
+		workspace := cfg.CommonWorkspaces()
 		if b.repo != "tast-tests" {
 			workspace = append(workspace,
 				filepath.Join(cfg.TrunkDir(), "src/platform/tast-tests"))
@@ -281,7 +281,7 @@ func buildBundles(ctx context.Context, cfg *config.Config, tgts []*build.Target)
 	if err := build.Build(ctx, cfg.BuildCfg(), tgts); err != nil {
 		return fmt.Errorf("build failed: %v", err)
 	}
-	logging.Infof(ctx, "Built in %v", time.Now().Sub(start).Round(time.Millisecond))
+	logging.Infof(ctx, "Built in %v", time.Since(start).Round(time.Millisecond))
 	return nil
 }
 
@@ -367,7 +367,7 @@ func pushExecutables(ctx context.Context, cfg *config.Config, hst *ssh.Conn, tar
 		return nil, err
 	}
 	logging.Infof(ctx, "Pushed executables in %v (sent %s)",
-		time.Now().Sub(start).Round(time.Millisecond), formatBytes(bytes))
+		time.Since(start).Round(time.Millisecond), formatBytes(bytes))
 	return files, nil
 }
 
@@ -505,7 +505,7 @@ func pushDataFiles(ctx context.Context, cfg *config.Config, hst *ssh.Conn, destD
 		}
 	}
 	logging.Infof(ctx, "Pushed data files in %v (sent %s)",
-		time.Now().Sub(start).Round(time.Millisecond), formatBytes(wsBytes))
+		time.Since(start).Round(time.Millisecond), formatBytes(wsBytes))
 	return nil
 }
 

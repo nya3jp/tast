@@ -145,7 +145,7 @@ func TestDriver_StreamFileWithInterruption(t *testing.T) {
 				t.Errorf("failed to send data %q: %v", data, err)
 			}
 			requestCount++
-			time.Sleep(1)
+			time.Sleep(time.Second)
 			if requestCount < len(endOffsets) {
 				return errors.New("intentional error")
 			}

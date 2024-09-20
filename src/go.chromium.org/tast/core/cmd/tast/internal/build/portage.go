@@ -107,7 +107,7 @@ func parseMissingDeps(stdout []byte) []string {
 	var missing []string
 	for _, ln := range strings.Split(strings.TrimSpace(string(stdout)), "\n") {
 		fields := strings.Fields(ln)
-		if len(fields) < 3 || strings.Index(fields[1], "/") == -1 {
+		if len(fields) < 3 || !strings.Contains(fields[1], "/") {
 			continue
 		}
 		missing = append(missing, fields[1]+"-"+fields[2])
@@ -173,7 +173,7 @@ func newCheckDepsCache(cachePath string, checkPaths []string) (*checkDepsCache, 
 // being up-to-date for pkg. checkNeeded is true if the two timestamps do not exactly match. The filesystem's latest
 // last-modified timestamps is returned and should be passed to update if the dependencies are up-to-date.
 func (c *checkDepsCache) isCheckNeeded(ctx context.Context) (checkNeeded bool, lastMod time.Time) {
-	ctx, st := timing.Start(ctx, "check_cache")
+	_, st := timing.Start(ctx, "check_cache")
 	defer st.End()
 
 	ch := make(chan time.Time, len(c.CheckPaths))

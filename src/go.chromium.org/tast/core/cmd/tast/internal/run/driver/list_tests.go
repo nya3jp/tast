@@ -33,7 +33,7 @@ func (d *Driver) ListMatchedLocalTests(ctx context.Context, features *protocol.F
 	}
 	tests, err := d.localRunnerClient().ListTests(ctx, d.cfg.Patterns(), features)
 	if err != nil {
-		if d.healthy(ctx) == false {
+		if !d.healthy(ctx) {
 			logging.Infof(ctx, "The connection to DUT %s is not healthy", d.rawTarget)
 		} else {
 			logging.Infof(ctx, "The connection to DUT %s is healthy", d.rawTarget)

@@ -917,16 +917,6 @@ func TestRunWithSkippedTests(t *gotesting.T) {
 }
 
 func TestRunGetGlobalRuntimeVars(t *gotesting.T) {
-	const (
-		bundleName = "bundle"
-
-		localTestName   = "pkg.LocalTest"
-		remoteTestName  = "pkg.RemoteTest"
-		skippedTestName = "pkg.SkippedTest"
-
-		missingSoftwareDep = "missing"
-	)
-
 	localReg := testing.NewRegistry("bundle")
 	var1 := testing.NewVarString("var1", "", "description")
 	localReg.AddVar(var1)
@@ -1399,7 +1389,6 @@ func TestRunDisable(t *gotesting.T) {
 		}),
 	)
 	ctx := env.Context()
-	const filterFileName = "filter.txt"
 	const reason1 = "reason1"
 	const reason2 = "reason2"
 	cfg := env.Config(func(cfg *config.MutableConfig) {
@@ -1533,17 +1522,4 @@ func TestRunSSHLessHostRemote(t *gotesting.T) {
 	if _, err := run.Run(ctx, cfg, state); err != nil {
 		t.Errorf("Run failed with err: %v", err)
 	}
-}
-
-type errHander struct {
-	onFatalCalled bool
-	onErrorCalled bool
-}
-
-func (eh *errHander) OnFatal(errMsg string) {
-	eh.onFatalCalled = true
-}
-
-func (eh *errHander) OnError(errMsg string) {
-	eh.onErrorCalled = true
 }

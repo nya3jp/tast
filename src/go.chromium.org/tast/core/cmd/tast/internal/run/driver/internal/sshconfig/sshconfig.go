@@ -433,15 +433,3 @@ func (sc *block) resolveSSHInfo(inputHostName string) resolvedSSHInfo {
 	}
 	return si
 }
-
-// print is for debugging purpose only.
-func (sc *block) print(tab int) {
-	indent := strings.Repeat(" ", tab)
-	fmt.Printf("\n%vblockType  %v\n", indent, sc.blockType)
-	fmt.Printf("%vpatterns   %v\n", indent, sc.patterns)
-	fmt.Printf("%vparameters %v\n", indent, sc.parameters)
-	fmt.Printf("%vsubBlocks\n", indent)
-	for _, sb := range sc.subBlocks {
-		sb.print(tab + 4)
-	}
-}

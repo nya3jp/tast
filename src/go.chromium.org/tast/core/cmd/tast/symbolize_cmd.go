@@ -43,7 +43,7 @@ func (s *symbolizeCmd) SetFlags(f *flag.FlagSet) {
 
 func (s *symbolizeCmd) Execute(ctx context.Context, f *flag.FlagSet, _ ...interface{}) subcommands.ExitStatus {
 	if len(f.Args()) != 1 {
-		fmt.Fprintf(os.Stderr, s.Usage())
+		fmt.Fprint(os.Stderr, s.Usage())
 		return subcommands.ExitUsageError
 	}
 

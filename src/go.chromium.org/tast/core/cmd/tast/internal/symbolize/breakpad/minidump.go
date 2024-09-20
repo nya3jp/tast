@@ -107,10 +107,7 @@ func WriteSymbolFile(binPath, outDir string) (*ModuleInfo, error) {
 
 	// Now copy the line and the rest of the output to the file.
 	// Omit the ".debug" suffix since it probably won't be present in the minidump.
-	name := mi.Name
-	if strings.HasSuffix(name, debugSuffix) {
-		name = name[0 : len(name)-len(debugSuffix)]
-	}
+	name := strings.TrimSuffix(mi.Name, debugSuffix)
 	p := GetSymbolFilePath(outDir, name, mi.ID)
 	if err = os.MkdirAll(filepath.Dir(p), 0755); err != nil {
 		return mi, err

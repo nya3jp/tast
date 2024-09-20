@@ -1419,22 +1419,11 @@ func WifiNotQualcomm() Condition {
 // WifiSAP returns a hardware dependency condition that if satisfied, indicates
 // that a device supports SoftAP.
 func WifiSAP() Condition {
-	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
-		// For QC, SAP is not yet supported.
-		QCCondition := WifiNotQualcomm()
-		if satisfied, reason, err := QCCondition.Satisfied(f); err != nil || !satisfied {
-			return satisfied, reason, err
-		}
-
-		// For MT7921, SAP is not yet supported on kernel 5.4 and 5.10.
-		modelCondition := SkipOnModel(
-			"dojo", "tomato", "pico6", "spherion")
-		if satisfied, reason, err := modelCondition.Satisfied(f); err != nil || !satisfied {
-			return satisfied, reason, err
-		}
-		return satisfied()
-	},
-	}
+	return SkipOnWifiDevice(
+		// TODO(b/283689711): Remove when support is added.
+		MediaTekMT7921PCIE,
+		MediaTekMT7921SDIO,
+	)
 }
 
 // WifiP2P returns a hardware dependency condition that if satisfied, indicates

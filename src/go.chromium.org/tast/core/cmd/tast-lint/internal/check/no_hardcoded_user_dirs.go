@@ -49,7 +49,6 @@ func NoHardcodedUserDirs(fs *token.FileSet, f *ast.File) []*Issue {
 					})
 				}
 			}
-			break
 		case *ast.BasicLit:
 			if mountRegex.MatchString(value.Value) {
 				issues = append(issues, &Issue{
@@ -58,7 +57,6 @@ func NoHardcodedUserDirs(fs *token.FileSet, f *ast.File) []*Issue {
 					Link: docsLink,
 				})
 			}
-			break
 		}
 		return true
 	}, nil)

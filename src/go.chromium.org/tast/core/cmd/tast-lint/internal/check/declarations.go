@@ -508,13 +508,6 @@ func isTestingAddTestCall(node ast.Node) bool {
 	return toQualifiedName(call.Fun) == "testing.AddTest"
 }
 
-func isStringLiteralOrIdent(node ast.Node) bool {
-	if _, ok := toString(node); ok {
-		return true
-	}
-	return toQualifiedName(node) != ""
-}
-
 // toString converts the given node representing a string literal
 // into string value. If the node is not a string literal, returns
 // false for ok.

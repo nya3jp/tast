@@ -158,12 +158,12 @@ func hasIdentErrors(f *ast.File) bool {
 		if hasErrors {
 			return false // no further deep exploration
 		}
-		switch node.(type) {
+		switch t := node.(type) {
 		case *ast.SelectorExpr:
 			// Removes the possibility of <exp>.<sel> with something like errors.New, errors.Wrap etc. Also it prunes the subtree from inspection.
 			return false
 		case *ast.Ident:
-			if id := node.(*ast.Ident); id.Name == "errors" {
+			if t.Name == "errors" {
 				hasErrors = true
 				return false
 			}

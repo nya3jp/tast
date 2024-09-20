@@ -35,22 +35,6 @@ func newCachedParser(g *git.Git) *cachedParser {
 	}
 }
 
-// parseFile parses a Go code and returns its AST.
-// This function also parses other Go files in the same directory and resolves
-// references within the package (but does not resolve imports).
-func (p *cachedParser) parseFile(path string) (*ast.File, error) {
-	pkg, err := p.parsePackage(filepath.Dir(path))
-	if err != nil {
-		return nil, err
-	}
-
-	f := pkg.Files[path]
-	if f == nil {
-		return nil, fmt.Errorf("%s not found", path)
-	}
-	return f, nil
-}
-
 // parsePackage parses a Go package located in dir.
 // This function resolves references within the package, but does not resolve
 // imports.

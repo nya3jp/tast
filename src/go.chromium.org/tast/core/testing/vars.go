@@ -32,7 +32,7 @@ func RegisterVarString(name, defaultValue, desc string) *VarString {
 // registerVarString creates and registers a new VarString
 func registerVarString(reg *testing.Registry, name, defaultValue, desc, callerFunc string) (*VarString, error) {
 	if !checkVarName(callerFunc, name) {
-		return nil, fmt.Errorf("Global runtime variable %q does not follow naming convention <pkg>.<rest_of_name>", name)
+		return nil, fmt.Errorf("global runtime variable %q does not follow naming convention <pkg>.<rest_of_name>", name)
 	}
 	v := testing.NewVarString(name, defaultValue, desc)
 	reg.AddVar(v)

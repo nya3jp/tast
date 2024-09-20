@@ -264,7 +264,7 @@ func New(ctx context.Context, o *Options) (*Conn, error) {
 		var cl *ssh.Client
 		if isCloudbot {
 			if o.WarnFunc != nil {
-				o.WarnFunc(fmt.Sprintf("SSH to client through cloudbot proxy"))
+				o.WarnFunc("SSH to client through cloudbot proxy")
 			}
 			cl, err = connectCloudBotsSSH(ctx, o.Hostname, cfg)
 		} else if strings.HasPrefix(o.Hostname, "adb:") {
@@ -284,7 +284,7 @@ func New(ctx context.Context, o *Options) (*Conn, error) {
 		}
 
 		if i < o.ConnectRetries {
-			elapsed := time.Now().Sub(start)
+			elapsed := time.Since(start)
 			if remaining := o.ConnectRetryInterval - elapsed; remaining > 0 {
 				if o.WarnFunc != nil {
 					o.WarnFunc(fmt.Sprintf("Retrying SSH connection in %v: %v", remaining.Round(time.Millisecond), err))
@@ -343,7 +343,7 @@ func connectADB(ctx context.Context, target string, o *Options) (*gadb.Device, e
 		}
 	}
 	if o.WarnFunc != nil {
-		o.WarnFunc(fmt.Sprintf("Failed to find ADB device"))
+		o.WarnFunc("Failed to find ADB device")
 	}
 	return nil, errors.Errorf("Failed to find ADB device %q in %v", target, devices)
 }

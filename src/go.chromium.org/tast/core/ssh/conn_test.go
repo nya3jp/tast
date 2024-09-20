@@ -111,7 +111,7 @@ func TestGenerateRemoteAddress(t *testing.T) {
 	}
 	defer hst.Close(ctx)
 
-	got, err := hst.GenerateRemoteAddress(2345)
+	got, _ := hst.GenerateRemoteAddress(2345)
 	want := "127.0.0.1:2345"
 	if got != want {
 		t.Fatalf("hst.GenerateRemoteAddress(2345) = %q, want: %q", got, want)

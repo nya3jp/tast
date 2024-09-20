@@ -152,7 +152,7 @@ func (d *DUT) WaitUnreachable(ctx context.Context) error {
 		deadline, ok := ctx.Deadline()
 		if ok && deadline.Before(time.Now().Add(d.sopt.ConnectTimeout)) {
 			// There isn't enough time to connect
-			return errors.Errorf("context timeout too short, need at least %s, got %s", d.sopt.ConnectTimeout, deadline.Sub(time.Now()))
+			return errors.Errorf("context timeout too short, need at least %s, got %s", d.sopt.ConnectTimeout, time.Until(deadline))
 		}
 		if err := d.Connect(ctx); err != nil {
 			// Return the context's error instead of the one returned by Connect:
@@ -167,7 +167,7 @@ func (d *DUT) WaitUnreachable(ctx context.Context) error {
 		deadline, ok := ctx.Deadline()
 		if ok && deadline.Before(time.Now().Add(pingTimeout)) {
 			// There isn't enough time to ping again.
-			return errors.Errorf("DUT still reachable after %s", time.Now().Sub(startTime))
+			return errors.Errorf("DUT still reachable after %s", time.Since(startTime))
 		}
 		if err := d.hst.Ping(ctx, pingTimeout); err != nil {
 			// Return the context's error instead of the one returned by Ping:
@@ -178,7 +178,6 @@ func (d *DUT) WaitUnreachable(ctx context.Context) error {
 
 		select {
 		case <-time.After(pingRetryDelay):
-			break
 		case <-ctx.Done():
 			return ctx.Err()
 		}
@@ -197,7 +196,6 @@ func (d *DUT) WaitConnect(ctx context.Context) error {
 
 		select {
 		case <-time.After(reconnectRetryDelay):
-			break
 		case <-ctx.Done():
 			if err.Error() == ctx.Err().Error() {
 				return err

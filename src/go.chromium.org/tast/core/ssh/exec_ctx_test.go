@@ -19,7 +19,6 @@ import (
 
 	cryptossh "golang.org/x/crypto/ssh"
 
-	"go.chromium.org/tast/core/exec"
 	"go.chromium.org/tast/core/internal/logging"
 	"go.chromium.org/tast/core/internal/sshtest"
 	"go.chromium.org/tast/core/ssh"
@@ -620,23 +619,13 @@ done &'`, n, longx, longy)
 	}
 }
 
-type sshOrLocal interface {
-	Run(opts ...exec.RunOption) error
-	Output(opts ...exec.RunOption) ([]byte, error)
-	CombinedOutput(opts ...exec.RunOption) ([]byte, error)
-	Start() error
-	Wait(opts ...exec.RunOption) error
-	DumpLog(ctx context.Context) error
-}
-
 // TestCast verifies the return value of CommandContext can be assigned to an interface that also works for local Cmd.
 func TestCast(t *testing.T) {
 	t.Parallel()
 	td := sshtest.NewTestDataConn(t)
 	defer td.Close()
 
-	var cmd sshOrLocal
-	cmd = td.Hst.CommandContext(td.Ctx, "true")
+	cmd := td.Hst.CommandContext(td.Ctx, "true")
 	if err := cmd.Run(); err != nil {
 		t.Error("Failed to run true: ", err)
 	}

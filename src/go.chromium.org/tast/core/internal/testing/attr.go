@@ -2309,6 +2309,10 @@ from other existing groups (or use this group standalone).
 				Name: "power_weekly_misc",
 				Desc: `Miscellaneous tests designed to catch regressions and collect experimental data. Ran weekly.`,
 			},
+			{
+				Name: "power_regression_htl",
+				Desc: `Core tests designed to catch regressions in power consumption in HTL lab.`,
+			},
 		},
 	},
 	{

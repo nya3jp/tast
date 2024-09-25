@@ -153,6 +153,7 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		InterruptControllerInfo: &configpb.HardwareFeatures_InterruptControllerInfo{},
 		TiledDisplay:            &configpb.HardwareFeatures_TiledDisplay{},
 		CpuInfo:                 &configpb.HardwareFeatures_CpuInfo{},
+		Pendrive:                &configpb.HardwareFeatures_Pendrive{},
 	}
 
 	features.CpuInfo.VendorInfo = &configpb.HardwareFeatures_CpuInfo_VendorInfo{}
@@ -786,6 +787,21 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 	}()
 	if hasNvmeStorage && !hasEmmcBridgeStorage {
 		features.Storage.StorageType = configpb.Component_Storage_NVME
+	}
+
+	hasUsb3Pendrive := func() bool {
+		lsusb, err := exec.Command("lsusb", "-t").Output()
+		if err != nil {
+			logging.Infof(ctx, "failed to run lsusb -t cmd: %v", err)
+			return false
+		}
+		regex := regexp.MustCompile("Mass Storage.*5000M")
+		return regex.Match(lsusb)
+	}()
+	if hasUsb3Pendrive {
+		features.Pendrive.Present = configpb.HardwareFeatures_PRESENT
+	} else {
+		features.Pendrive.Present = configpb.HardwareFeatures_NOT_PRESENT
 	}
 
 	hasNvmeSelfTestStorage := func() bool {

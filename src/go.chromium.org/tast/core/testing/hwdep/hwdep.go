@@ -3350,3 +3350,18 @@ func HasRecoveryMRCCacheSection() Condition {
 		return unsatisfied("RECOVERY_MRC_CACHE section not found in FMAP")
 	}}
 }
+
+// Usb3Pendrive is satisfied if the DUT contains USB 3.0 Pendrive.
+func Usb3Pendrive() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("DUT HardwareFeatures data is not given")
+		}
+
+		if hf.GetPendrive().GetPresent() != configpb.HardwareFeatures_PRESENT {
+			return unsatisfied("USB3.0 Pendrive is not connected")
+		}
+		return satisfied()
+	}}
+}

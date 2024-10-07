@@ -175,12 +175,14 @@ func TestDriver_StreamFileWithInterruption(t *testing.T) {
 	if err != nil {
 		t.Fatal("Failed to dupliate driver: ", err)
 	}
+	ctxWithCancel, cancel := context.WithCancel(ctx)
 	go func() {
-		defer dd.Close(ctx)
-		if err := dd.StreamFile(ctx, src, dest); err != nil {
+		defer dd.Close(ctxWithCancel)
+		if err := dd.StreamFile(ctxWithCancel, src, dest); err != nil {
 			streamErr = errors.Wrap(err, "failed to stream file")
 		}
 	}()
+	defer cancel()
 
 	if err := testingutil.Poll(ctx, func(ctx context.Context) error {
 		f, err := os.Stat(dest)

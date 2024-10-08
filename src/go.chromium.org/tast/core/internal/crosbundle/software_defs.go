@@ -117,7 +117,7 @@ var softwareFeatureDefs = map[string]string{
 	"fake_hps":              `"board:amd64-generic" || "board:reven-vmtest" || "betty" || "tast_vm"`, // VMs run hpsd with --test (fake software device)
 	"fbpreprocessord":       "fbpreprocessord",
 	// TODO(http://b/271025366): Remove feedback when the bug is resolved.
-	"feedback":                  `!("board:fizz" || "board:puff" || "board:rammus")`,
+	"feedback":                  `!("board:fizz" || "board:puff" || "board:rammus" || "board:betty" || "board:brask")`,
 	"firewall":                  "!moblab",                            // Moblab has relaxed iptables rules
 	"first_class_servo_working": `!("board:brya" || "board:volteer")`, // TODO(b/274634861): remove the first_class_servo_working when fixed.
 	"flashrom":                  `!"board:amd64-generic" && !"board:reven-vmtest" && !"betty" && !"tast_vm"`,

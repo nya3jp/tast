@@ -1212,6 +1212,24 @@ func InternalTouchpad() Condition {
 	}
 }
 
+var modelsWithSplitModifierKeyboard = []string{
+	"kyogre",
+	"lotso",
+	"xol",
+}
+
+// SplitModifierKeyboard returns a hardware dependency condition that is
+// satisfied if and only if the DUT has the split modifier keyboard.
+func SplitModifierKeyboard() Condition {
+	return Model(modelsWithSplitModifierKeyboard...)
+}
+
+// NoSplitModifierKeyboard returns a hardware dependency condition that is
+// satisfied if and only if the DUT does not have the split modifier keyboard.
+func NoSplitModifierKeyboard() Condition {
+	return SkipOnModel(modelsWithSplitModifierKeyboard...)
+}
+
 // WifiWEP returns a hardware dependency condition that is satisfied
 // if the DUT's WiFi module supports WEP.
 // New generation of Qcom chipsets do not support WEP security protocols.

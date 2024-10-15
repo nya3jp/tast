@@ -240,6 +240,7 @@ func defaultAllowedBuckets() map[string]struct{} {
 		"refvm-images":                        {},
 		"termina-component-testing":           {},
 		"pstash_apks":                         {},
+		"sw-perf-meet-experiments":            {},
 	}
 }
 

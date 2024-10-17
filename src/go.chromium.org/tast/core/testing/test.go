@@ -39,8 +39,6 @@ const (
 	LacrosVariantUnknown = testing.LacrosVariantUnknown
 	// LacrosVariantNeeded indicates that a lacros variant for this is needed but hasn't been created yet.
 	LacrosVariantNeeded = testing.LacrosVariantNeeded
-	// LacrosVariantExists indicates that all required lacros variants for this test have been created.
-	LacrosVariantExists = testing.LacrosVariantExists
 	// LacrosVariantUnneeded indicates that lacros variants for this test are not needed.
 	LacrosVariantUnneeded = testing.LacrosVariantUnneeded
 )

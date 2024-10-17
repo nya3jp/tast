@@ -136,14 +136,7 @@ reviews.
 
 ### Verify Need for Lacros Variant
 
-If a test utilizing the 'chrome' software dependency is modified or added the author needs to specify if a Lacros variant of the test is required. If a Lacros variant is needed, the author should add the Lacros variant of the test as part of the same review including the new/modified Ash-chrome test. The Ash-chrome test should then set the 'LacrosStatus' field to 'LacrosVariantExists'.
-
-If it is not possible to add a Lacros variant at review time, the 'LacrosStatus' field should be set to 'LacrosVariantNeeded'.
-
-If no Lacros variant is required, 'LacrosStatus' field should be set to 'LacrosVariantUnneeded'.
-
-New tests should *never* be set to 'LacrosVariantUnknown'. Either the Lacros variant of the test should be added, or value set to 'LacrosVariantUnneeded'.
-
+The field 'LacrosStatus' is deprecated due to Lacros deprecation and will be removed soon.
 
 ## FAQ
 

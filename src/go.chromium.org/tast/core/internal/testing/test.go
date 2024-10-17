@@ -132,6 +132,7 @@ type Test struct {
 	// will access. This field is valid only for remote tests.
 	ServiceDeps []string
 
+	// Deprecated. This field is to be removed soon.
 	// LacrosStatus indicates whether lacros variants have been considered for this test or not.
 	LacrosStatus LacrosMetadata
 
@@ -192,8 +193,6 @@ const (
 	LacrosVariantUnknown = iota
 	// LacrosVariantNeeded indicates that a lacros variant for this is needed but hasn't been created yet.
 	LacrosVariantNeeded
-	// LacrosVariantExists indicates that all required lacros variants for this test have been created.
-	LacrosVariantExists
 	// LacrosVariantUnneeded indicates that lacros variants for this test are not needed.
 	LacrosVariantUnneeded
 )
@@ -204,8 +203,6 @@ func (m LacrosMetadata) String() string {
 		return "unknown"
 	case LacrosVariantNeeded:
 		return "needed"
-	case LacrosVariantExists:
-		return "exists"
 	case LacrosVariantUnneeded:
 		return "unneeded"
 	default:

@@ -360,22 +360,6 @@ func TestParseKConfigs(t *testing.T) {
 			&configpb.HardwareFeatures_FirmwareConfiguration{},
 		},
 		{
-			"CONFIG_MAINBOARD_HAS_EARLY_LIBGFXINIT=y\n",
-			&configpb.HardwareFeatures_FirmwareConfiguration{
-				MainboardHasEarlyLibgfxinit: api.HardwareFeatures_PRESENT,
-			},
-		},
-		{
-			"# CONFIG_MAINBOARD_HAS_EARLY_LIBGFXINIT is not set\n",
-			&configpb.HardwareFeatures_FirmwareConfiguration{
-				MainboardHasEarlyLibgfxinit: api.HardwareFeatures_NOT_PRESENT,
-			},
-		},
-		{
-			"CONFIG_MAINBOARD_HAS_EARLY_LIBGFXINIT=n\n",
-			&configpb.HardwareFeatures_FirmwareConfiguration{},
-		},
-		{
 			"CONFIG_CHROMEOS_ENABLE_ESOL=y\n",
 			&configpb.HardwareFeatures_FirmwareConfiguration{
 				MainboardHasEarlySignOfLife: api.HardwareFeatures_PRESENT,

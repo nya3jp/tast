@@ -2570,34 +2570,6 @@ func ECBuildConfigOptions(optionNames ...string) Condition {
 	}
 }
 
-// MainboardHasEarlyLibgfxinit is satisfied if the BIOS was built with Kconfig CONFIG_MAINBOARD_HAS_EARLY_LIBGFXINIT
-func MainboardHasEarlyLibgfxinit() Condition {
-	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
-		hf := f.GetHardwareFeatures()
-		if hf != nil {
-			fwc := hf.GetFwConfig()
-			if fwc != nil {
-				if fwc.MainboardHasEarlyLibgfxinit == configpb.HardwareFeatures_PRESENT {
-					return satisfied()
-				}
-				if fwc.MainboardHasEarlyLibgfxinit == configpb.HardwareFeatures_NOT_PRESENT {
-					return unsatisfied("MainboardHasEarlyLibgfxinit Kconfig disabled")
-				}
-			}
-		}
-		// Some Brya models default to PRESENT
-		listed, err := modelListed(f.GetDeprecatedDeviceConfig(), "skolas", "brya0", "kano", "agah", "taeko", "crota", "osiris", "gaelen", "lisbon", "gladios", "marasov", "omnigul", "constitution")
-		if err != nil {
-			return withError(err)
-		}
-		if listed {
-			return satisfied()
-		}
-		// The default for this Kconfig is off, so not found is the same as disabled.
-		return unsatisfied("Kconfig not found")
-	}}
-}
-
 // MainboardHasEarlySignOfLife is satisfied if the BIOS was built with Kconfig CHROMEOS_ENABLE_ESOL
 func MainboardHasEarlySignOfLife() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {

@@ -1162,59 +1162,6 @@ func TestFirmwareKconfigFields(t *testing.T) {
 		nil,
 		false)
 
-	// hwdep.MainboardHasEarlyLibgfxinit()
-	for _, tc := range []struct {
-		present         configpb.HardwareFeatures_Present
-		expectSatisfied bool
-	}{
-		{configpb.HardwareFeatures_PRESENT, true},
-		{configpb.HardwareFeatures_NOT_PRESENT, false},
-		{configpb.HardwareFeatures_PRESENT_UNKNOWN, false},
-	} {
-		verifyCondition(
-			t, hwdep.MainboardHasEarlyLibgfxinit(),
-			&frameworkprotocol.DeprecatedDeviceConfig{
-				Id: &frameworkprotocol.DeprecatedConfigId{
-					Model: "non-default",
-				},
-			},
-			&configpb.HardwareFeatures{
-				FwConfig: &configpb.HardwareFeatures_FirmwareConfiguration{
-					MainboardHasEarlyLibgfxinit: tc.present,
-				},
-			},
-			tc.expectSatisfied)
-	}
-	verifyCondition(
-		t, hwdep.MainboardHasEarlyLibgfxinit(),
-		&frameworkprotocol.DeprecatedDeviceConfig{
-			Id: &frameworkprotocol.DeprecatedConfigId{
-				Model: "non-default",
-			},
-		},
-		nil,
-		false)
-	for _, model := range []string{"skolas", "brya0", "kano", "agah"} {
-		verifyCondition(
-			t, hwdep.MainboardHasEarlyLibgfxinit(),
-			&frameworkprotocol.DeprecatedDeviceConfig{
-				Id: &frameworkprotocol.DeprecatedConfigId{
-					Model: model,
-				},
-			},
-			nil,
-			true)
-		verifyCondition(
-			t, hwdep.MainboardHasEarlyLibgfxinit(),
-			&frameworkprotocol.DeprecatedDeviceConfig{
-				Id: &frameworkprotocol.DeprecatedConfigId{
-					Model: model,
-				},
-			},
-			&configpb.HardwareFeatures{},
-			true)
-	}
-
 	// hwdep.MainboardHasEarlySignOfLife()
 	for _, tc := range []struct {
 		present         configpb.HardwareFeatures_Present

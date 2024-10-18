@@ -2057,7 +2057,6 @@ func parseKConfigs(ctx context.Context, features *configpb.HardwareFeatures) err
 	defer inFile.Close()
 
 	importantConfigs := map[string]*configpb.HardwareFeatures_Present{
-		"CONFIG_MAINBOARD_HAS_EARLY_LIBGFXINIT":     &features.FwConfig.MainboardHasEarlyLibgfxinit,
 		"CONFIG_VBOOT_CBFS_INTEGRATION":             &features.FwConfig.VbootCbfsIntegration,
 		"CONFIG_BMP_LOGO":                           &features.FwConfig.BmpLogo,
 		"CONFIG_CHROMEOS_FW_SPLASH_SCREEN":          &features.FwConfig.FwSplashScreen,

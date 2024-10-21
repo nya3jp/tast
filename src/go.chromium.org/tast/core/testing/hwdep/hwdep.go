@@ -2779,6 +2779,38 @@ func SkipCPUSocFamily(families ...string) Condition {
 	}}
 }
 
+// DMIProductName is satisfied if the product_name in the device's DMI information is one of the names specified.
+func DMIProductName(names ...string) Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("DUT HardwareFeatures data is not given")
+		}
+		for _, name := range names {
+			if hf.GetHardwareProbeConfig().GetDmiProductName() == name {
+				return satisfied()
+			}
+		}
+		return unsatisfied("DUT DMI product_name is not met")
+	}}
+}
+
+// SkipDMIProductName is satisfied if the product_name in the device's DMI information is none of the names specified.
+func SkipDMIProductName(names ...string) Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("DUT HardwareFeatures data is not given")
+		}
+		for _, name := range names {
+			if hf.GetHardwareProbeConfig().GetDmiProductName() == name {
+				return unsatisfied("DUT DMI product_name matched with skip list")
+			}
+		}
+		return satisfied()
+	}}
+}
+
 // InternalTrackpoint is satisfied if a model has an internal trackpoint.
 func InternalTrackpoint() Condition {
 	return Model("morphius", "primus")

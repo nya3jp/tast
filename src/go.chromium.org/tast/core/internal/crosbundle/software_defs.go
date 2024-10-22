@@ -173,7 +173,6 @@ var softwareFeatureDefs = map[string]string{
 	// to a release with the change (https://bugs.launchpad.net/qemu/+bug/1734792).
 	// Remove "|| betty || tast_vm" from list when we upgrade.
 	"memfd_create": `!("betty" || "tast_vm")`,
-	"memd":         "memd",
 	// Memfd execution attempts are detected and blocked only on the following kernel versions.
 	"memfd_exec_detection": `!"kernel-4_14"`,
 	// Only official builds are considered to have metrics consent.

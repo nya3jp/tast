@@ -144,7 +144,6 @@ The following software features are defined:
 * `lldb` - The presence of the local `lldb` binary, separate from `lldb-server`.
 * `mbo` - WiFi MBO support.
 * `memfd_create` - memfd_create function implemented in the kernel.
-* `memd` - [Memory stats collection daemon].
 * `microcode` - Platforms that have CPU microcode.
 * `ml_benchmark_drivers` - [ML benchmarking suite](http://go/roadrollerda)
 * `ml_service` - ML Service daemon.
@@ -282,7 +281,6 @@ stack-sampled metrics.
 [Intel Dynamic Platform and Thermal Framework]: https://01.org/intel%C2%AE-dynamic-platform-and-thermal-framework-dptf-chromium-os
 [lacros]: https://chromium.googlesource.com/chromium/src.git/+/HEAD/docs/lacros.md
 [sandboxed]: https://chromium.googlesource.com/chromium/src/+/HEAD/docs/linux/sandboxing.md
-[Memory stats collection daemon]: https://chromium.googlesource.com/chromiumos/platform2/+/main/metrics/memd/
 [OCI]: https://www.opencontainers.org/
 [Optical Character Recognition Service]: https://chromium.googlesource.com/chromiumos/platform2/+/HEAD/ocr/README.md
 [Runtime AVL Compliance Check]: https://chromium.googlesource.com/chromiumos/platform2/+/refs/heads/main/runtime_probe/README.md

@@ -161,6 +161,7 @@ var LookupWLANDev = map[DevInfo]DeviceID{
 	{Vendor: "0x14c3", Device: "0x7922"}:                      MediaTekMT7922PCIE,
 	{Vendor: "0x14c3", Device: "0x0616"}:                      MediaTekMT7922PCIE,
 	{Vendor: "0x14c3", Device: "0x0717"}:                      MediaTekMT7925PCIE,
+	{Vendor: "0x14c3", Device: "0x7925"}:                      MediaTekMT7925PCIE,
 	{Compatible: "qcom,wcn3990-wifi"}:                         QualcommWCN3990,
 	{Compatible: "qcom,wcn6750-wifi"}:                         QualcommWCN6750,
 }

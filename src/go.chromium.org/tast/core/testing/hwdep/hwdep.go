@@ -3365,3 +3365,20 @@ func Usb3Pendrive() Condition {
 		return satisfied()
 	}}
 }
+
+// APFwState is satisfied if the DUT supports the host command EC_CMD_AP_FW_STATE.
+func APFwState() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("HardwareFeatures is not given")
+		}
+		roMajorVersion := hf.GetFwConfig().GetFwRoVersion().MajorVersion
+		// CL:5020949 laned in 15683.0.0
+		if roMajorVersion >= 15683 {
+			return satisfied()
+		}
+
+		return unsatisfied("DUT does not support AP FW state")
+	}}
+}

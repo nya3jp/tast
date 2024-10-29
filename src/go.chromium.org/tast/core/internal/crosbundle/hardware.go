@@ -35,7 +35,7 @@ import (
 type GSCKeyID string
 
 // prodRWGSCKeyIDs is a slice with production keyIDs used to sign the RW GSC image.
-var prodRWGSCKeyIDs = []GSCKeyID{"0x87b73b67", "0xde88588d"}
+var prodRWGSCKeyIDs = []GSCKeyID{"0x87b73b67", "0xde88588d", "0xfba25ca9"}
 
 func crosConfig(path, prop string) (string, error) {
 	cmd := exec.Command("cros_config", path, prop)

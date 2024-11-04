@@ -2786,8 +2786,9 @@ func DMIProductName(names ...string) Condition {
 		if hf == nil {
 			return withErrorStr("DUT HardwareFeatures data is not given")
 		}
+		product := hf.GetHardwareProbeConfig().GetDmiProductName()
 		for _, name := range names {
-			if hf.GetHardwareProbeConfig().GetDmiProductName() == name {
+			if name == product {
 				return satisfied()
 			}
 		}
@@ -2802,8 +2803,9 @@ func SkipDMIProductName(names ...string) Condition {
 		if hf == nil {
 			return withErrorStr("DUT HardwareFeatures data is not given")
 		}
+		product := hf.GetHardwareProbeConfig().GetDmiProductName()
 		for _, name := range names {
-			if hf.GetHardwareProbeConfig().GetDmiProductName() == name {
+			if name == product {
 				return unsatisfied("DUT DMI product_name matched with skip list")
 			}
 		}

@@ -1235,6 +1235,10 @@ third_party/autotest/files/server/site_tests/tast/control.racc-config-installed.
 				Desc: `Identifies Cellular tests that need an active HANSHIN sim.`,
 			},
 			{
+				Name: "cellular_carrier_agnostic",
+				Desc: `Identifies Cellular tests whose functionality is independent of the carrier used.`,
+			},
+			{
 				Name: "cellular_stress",
 				Desc: `Identifies Cellular stress tests.`,
 			},

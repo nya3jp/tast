@@ -1175,13 +1175,13 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 			Family string `json:"Family"`
 			Vendor string `json:"GPUVendor"`
 		}
-		type dmiInfo struct {
+		type dmi struct {
 			ProductName string `json:"ProductName"`
 		}
 		type hardwareProbeResult struct {
 			GPUInfo   []gpuInfo `json:"GPU_Family"`
 			CPUFamily string    `json:"CPU_SOC_Family"`
-			DMIInfo   dmiInfo   `json:"DMIInfo"`
+			DMI       dmi       `json:"DMI"`
 		}
 		b, err := os.ReadFile(outBin.Name())
 		if err != nil {
@@ -1199,7 +1199,7 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 			}
 		}
 		cpuSocFamily = result.CPUFamily
-		dmiProductName = result.DMIInfo.ProductName
+		dmiProductName = result.DMI.ProductName
 		return
 	}()
 	if err != nil {

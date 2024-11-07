@@ -194,6 +194,9 @@ func TestCheckKnownAttrs(t *testing.T) {
 			attrs: []string{"group:racc", "racc_config_installed"},
 		},
 		{
+			attrs: []string{"group:racc", "racc_encrypted_config_installed"},
+		},
+		{
 			attrs: []string{"group:storage-qual"},
 		},
 		{

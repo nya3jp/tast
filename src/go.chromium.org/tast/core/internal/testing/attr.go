@@ -910,6 +910,14 @@ why we add this attribute and run tests of this attribute in a control file at
 third_party/autotest/files/server/site_tests/tast/control.racc-config-installed.
 `,
 			},
+			{
+				Name: "racc_encrypted_config_installed",
+				Desc: `Tests RACC functionality with encrypted probe payload installed.
+
+A same group as racc_config_installed, but only for devices with encrypted probe payload
+installed.
+`,
+			},
 		},
 	},
 	{

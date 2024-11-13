@@ -3438,3 +3438,20 @@ func NoAPFwState() Condition {
 		return unsatisfied("DUT supports AP FW state")
 	}}
 }
+
+// MKBPEvent is satisfied if the DUT supports the host command EC_MKBP_EVENT_DP_ALT_MODE_ENTERED.
+func MKBPEvent() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("HardwareFeatures is not given")
+		}
+		roMajorVersion := hf.GetFwConfig().GetFwRoVersion().MajorVersion
+		// CL:1685787 laned in 12351.0.0
+		if roMajorVersion >= 12351 {
+			return satisfied()
+		}
+
+		return unsatisfied("DUT does not support MKBP event")
+	}}
+}

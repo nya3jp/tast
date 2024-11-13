@@ -575,7 +575,8 @@ Tests sharing the same fixture run consecutively. A fixture implements several
 _lifecycle methods_ that are called by the framework as it executes tests
 associated with the fixture. `SetUp()` of the fixture runs once just before the
 first of them starts, and `TearDown()` is called once just after the last of
-them completes. `Reset()` runs after each but the last test to roll back changes
+them completes unless `s.Fatal` or `s.Error` are called during `SetUp()`.
+`Reset()` runs after each but the last test to roll back changes
 a test made to the environment.
 
 * Fixture `SetUp()`

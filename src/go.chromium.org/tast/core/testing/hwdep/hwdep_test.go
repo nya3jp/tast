@@ -1601,6 +1601,138 @@ func TestHasBaseAccelerometer(t *testing.T) {
 		nil)
 }
 
+func TestHasLidAccelerometer(t *testing.T) {
+	c := hwdep.LidAccelerometer()
+
+	for _, tc := range []struct {
+		lidAccelerometerPresent configpb.HardwareFeatures_Present
+		expectSatisfied         bool
+	}{
+		{configpb.HardwareFeatures_PRESENT_UNKNOWN, false},
+		{configpb.HardwareFeatures_NOT_PRESENT, false},
+		{configpb.HardwareFeatures_PRESENT, true},
+	} {
+		verifyCondition(
+			t, c,
+			nil,
+			&configpb.HardwareFeatures{
+				Accelerometer: &configpb.HardwareFeatures_Accelerometer{
+					LidAccelerometer: tc.lidAccelerometerPresent,
+				},
+			},
+			tc.expectSatisfied)
+	}
+	expectError(
+		t, c,
+		nil,
+		nil)
+}
+
+func TestHasBaseGyroscope(t *testing.T) {
+	c := hwdep.BaseGyroscope()
+
+	for _, tc := range []struct {
+		baseGyroscopePresent configpb.HardwareFeatures_Present
+		expectSatisfied      bool
+	}{
+		{configpb.HardwareFeatures_PRESENT_UNKNOWN, false},
+		{configpb.HardwareFeatures_NOT_PRESENT, false},
+		{configpb.HardwareFeatures_PRESENT, true},
+	} {
+		verifyCondition(
+			t, c,
+			nil,
+			&configpb.HardwareFeatures{
+				Gyroscope: &configpb.HardwareFeatures_Gyroscope{
+					BaseGyroscope: tc.baseGyroscopePresent,
+				},
+			},
+			tc.expectSatisfied)
+	}
+	expectError(
+		t, c,
+		nil,
+		nil)
+}
+
+func TestHasLidGyroscope(t *testing.T) {
+	c := hwdep.LidGyroscope()
+
+	for _, tc := range []struct {
+		lidGyroscopePresent configpb.HardwareFeatures_Present
+		expectSatisfied     bool
+	}{
+		{configpb.HardwareFeatures_PRESENT_UNKNOWN, false},
+		{configpb.HardwareFeatures_NOT_PRESENT, false},
+		{configpb.HardwareFeatures_PRESENT, true},
+	} {
+		verifyCondition(
+			t, c,
+			nil,
+			&configpb.HardwareFeatures{
+				Gyroscope: &configpb.HardwareFeatures_Gyroscope{
+					LidGyroscope: tc.lidGyroscopePresent,
+				},
+			},
+			tc.expectSatisfied)
+	}
+	expectError(
+		t, c,
+		nil,
+		nil)
+}
+
+func TestHasMotionSensor(t *testing.T) {
+	c := hwdep.MotionSensor()
+
+	for _, tc := range []struct {
+		baseAccelerometerPresent configpb.HardwareFeatures_Present
+		lidAccelerometerPresent  configpb.HardwareFeatures_Present
+		baseGyroscopePresent     configpb.HardwareFeatures_Present
+		lidGyroscopePresent      configpb.HardwareFeatures_Present
+		expectSatisfied          bool
+	}{
+		// All unknown
+		{configpb.HardwareFeatures_PRESENT_UNKNOWN, configpb.HardwareFeatures_PRESENT_UNKNOWN, configpb.HardwareFeatures_PRESENT_UNKNOWN, configpb.HardwareFeatures_PRESENT_UNKNOWN, false},
+		// All not present
+		{configpb.HardwareFeatures_NOT_PRESENT, configpb.HardwareFeatures_NOT_PRESENT, configpb.HardwareFeatures_NOT_PRESENT, configpb.HardwareFeatures_NOT_PRESENT, false},
+		// All present
+		{configpb.HardwareFeatures_PRESENT, configpb.HardwareFeatures_PRESENT, configpb.HardwareFeatures_PRESENT, configpb.HardwareFeatures_PRESENT, true},
+		// One present
+		{configpb.HardwareFeatures_PRESENT, configpb.HardwareFeatures_NOT_PRESENT, configpb.HardwareFeatures_NOT_PRESENT, configpb.HardwareFeatures_NOT_PRESENT, true},
+		{configpb.HardwareFeatures_NOT_PRESENT, configpb.HardwareFeatures_PRESENT, configpb.HardwareFeatures_NOT_PRESENT, configpb.HardwareFeatures_NOT_PRESENT, true},
+		{configpb.HardwareFeatures_NOT_PRESENT, configpb.HardwareFeatures_NOT_PRESENT, configpb.HardwareFeatures_PRESENT, configpb.HardwareFeatures_NOT_PRESENT, true},
+		{configpb.HardwareFeatures_NOT_PRESENT, configpb.HardwareFeatures_NOT_PRESENT, configpb.HardwareFeatures_NOT_PRESENT, configpb.HardwareFeatures_PRESENT, true},
+		// Some present
+		{configpb.HardwareFeatures_PRESENT, configpb.HardwareFeatures_NOT_PRESENT, configpb.HardwareFeatures_PRESENT, configpb.HardwareFeatures_NOT_PRESENT, true},
+		// Unknown and not present
+		{configpb.HardwareFeatures_PRESENT_UNKNOWN, configpb.HardwareFeatures_NOT_PRESENT, configpb.HardwareFeatures_PRESENT_UNKNOWN, configpb.HardwareFeatures_NOT_PRESENT, false},
+		// Unknown and present
+		{configpb.HardwareFeatures_PRESENT_UNKNOWN, configpb.HardwareFeatures_PRESENT, configpb.HardwareFeatures_PRESENT, configpb.HardwareFeatures_PRESENT_UNKNOWN, true},
+		// Unknown, not present, and present
+		{configpb.HardwareFeatures_PRESENT_UNKNOWN, configpb.HardwareFeatures_NOT_PRESENT, configpb.HardwareFeatures_PRESENT_UNKNOWN, configpb.HardwareFeatures_PRESENT, true},
+	} {
+		verifyCondition(
+			t, c,
+			nil,
+			&configpb.HardwareFeatures{
+				Accelerometer: &configpb.HardwareFeatures_Accelerometer{
+					BaseAccelerometer: tc.baseAccelerometerPresent,
+					LidAccelerometer:  tc.lidAccelerometerPresent,
+				},
+				Gyroscope: &configpb.HardwareFeatures_Gyroscope{
+					BaseGyroscope: tc.baseGyroscopePresent,
+					LidGyroscope:  tc.lidGyroscopePresent,
+				},
+			},
+			tc.expectSatisfied)
+	}
+	expectError(
+		t, c,
+		nil,
+		nil)
+}
+
 func TestIntelIsh(t *testing.T) {
 	c := hwdep.IntelIsh()
 

@@ -3031,6 +3031,73 @@ func BaseAccelerometer() Condition {
 	}
 }
 
+// LidAccelerometer returns a hardware dependency condition that is satisfied
+// if and only if the DUT has the lid accelerometer sensor.
+func LidAccelerometer() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("Did not find hardware features")
+		}
+		if hf.Accelerometer.GetLidAccelerometer() != configpb.HardwareFeatures_PRESENT {
+			return unsatisfied("DUT does not have lid accelerometer")
+		}
+		return satisfied()
+	},
+	}
+}
+
+// BaseGyroscope returns a hardware dependency condition that is satisfied
+// if and only if the DUT has the base gyroscope sensor.
+func BaseGyroscope() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("Did not find hardware features")
+		}
+		if hf.Gyroscope.GetBaseGyroscope() != configpb.HardwareFeatures_PRESENT {
+			return unsatisfied("DUT does not have base gyroscope")
+		}
+		return satisfied()
+	},
+	}
+}
+
+// LidGyroscope returns a hardware dependency condition that is satisfied
+// if and only if the DUT has the lid gyroscope sensor.
+func LidGyroscope() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("Did not find hardware features")
+		}
+		if hf.Gyroscope.GetLidGyroscope() != configpb.HardwareFeatures_PRESENT {
+			return unsatisfied("DUT does not have lid gyroscope")
+		}
+		return satisfied()
+	},
+	}
+}
+
+// MotionSensor returns a hardware dependency condition that is satisfied
+// if DUT has any motion sensor.
+func MotionSensor() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("Did not find hardware features")
+		}
+		if hf.Accelerometer.GetBaseAccelerometer() != configpb.HardwareFeatures_PRESENT &&
+			hf.Accelerometer.GetLidAccelerometer() != configpb.HardwareFeatures_PRESENT &&
+			hf.Gyroscope.GetLidGyroscope() != configpb.HardwareFeatures_PRESENT &&
+			hf.Gyroscope.GetBaseGyroscope() != configpb.HardwareFeatures_PRESENT {
+			return unsatisfied("DUT does not have any motion sensors")
+		}
+		return satisfied()
+	},
+	}
+}
+
 // IntelIsh is satisfied if Intel Integrated Sensor Hub is present in the `lspci` output on DUT.
 func IntelIsh() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {

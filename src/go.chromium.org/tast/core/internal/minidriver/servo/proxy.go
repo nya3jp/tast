@@ -27,6 +27,7 @@ import (
 	"go.chromium.org/chromiumos/infra/proto/go/satlabrpcserver"
 	"go.chromium.org/tast/core/errors"
 	"go.chromium.org/tast/core/internal/logging"
+	"go.chromium.org/tast/core/internal/xcontext"
 	"go.chromium.org/tast/core/ssh"
 	"go.chromium.org/tast/core/ssh/linuxssh"
 	"go.chromium.org/tast/core/testing"
@@ -220,7 +221,13 @@ type HostInfo struct {
 }
 
 // StartServo start servod and verify every 2 second until it is ready. Add check to avoid repeated attempting.
-func StartServo(ctx context.Context, servoHostPort, keyFile, keyDir string, dutTopology *labapi.Dut) (hostInfo *HostInfo, retErr error) {
+func StartServo(parentCtx context.Context, servoHostPort, keyFile, keyDir string, dutTopology *labapi.Dut) (hostInfo *HostInfo, retErr error) {
+	// Starting servo should not take more than 5 minutes.
+	d := time.Now().Add(time.Minute * 5)
+	ctx, cancel := xcontext.WithDeadline(parentCtx, d,
+		errors.Errorf("%v: timeout for starting servod reached", context.DeadlineExceeded))
+	defer cancel(context.Canceled)
+
 	if servoHostPort == "" {
 		return nil, nil
 	}

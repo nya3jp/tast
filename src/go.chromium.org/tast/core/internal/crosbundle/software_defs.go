@@ -181,7 +181,7 @@ var softwareFeatureDefs = map[string]string{
 	"metrics_consent":      "chrome_internal && !tast_vm",
 	"microcode":            `!"board:amd64-generic" && !"board:reven-vmtest" && !"betty" && !"tast_vm"`,
 	"ml_benchmark_drivers": "ml_benchmark_drivers",
-	"ml_tiered_support":    `("board:brya" || "board:nissa" || "board:skyrim" || "board:guybrush" || "board:rex")`,
+	"ml_tiered_support":    `("board:brya" || "board:nissa" || "board:skyrim" || "board:guybrush" || "board:rex" || "board:rauru")`,
 	"ml_service":           "ml_service",
 	"modemfwd":             "modemfwd",
 	"mosys":                `!no_factory_flow && !"board:amd64-generic" && !"board:reven-vmtest" && !betty && !tast_vm`,

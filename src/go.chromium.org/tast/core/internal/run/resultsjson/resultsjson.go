@@ -36,7 +36,6 @@ type Test struct {
 	TestBedDeps  []string               `json:"testBedDeps,omitempty"`
 	Requirements []string               `json:"requirements,omitempty"`
 	BugComponent string                 `json:"bugComponent,omitempty"`
-	LacrosStatus string                 `json:"lacros_status,omitempty"`
 }
 
 // Error describes an error encountered while running a test.
@@ -101,6 +100,5 @@ func NewTest(e *protocol.Entity) (*Test, error) {
 		TestBedDeps:  e.GetTestBedDeps(),
 		Requirements: e.GetRequirements(),
 		BugComponent: e.GetBugComponent(),
-		LacrosStatus: e.GetLacrosStatus(),
 	}, nil
 }

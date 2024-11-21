@@ -132,10 +132,6 @@ type Test struct {
 	// will access. This field is valid only for remote tests.
 	ServiceDeps []string
 
-	// Deprecated. This field is to be removed soon.
-	// LacrosStatus indicates whether lacros variants have been considered for this test or not.
-	LacrosStatus LacrosMetadata
-
 	// SoftwareDepsForAll lists software features of all DUTs that
 	// are required to run the test.
 	// It is a map of companion roles and software features.
@@ -182,32 +178,6 @@ type Test struct {
 	// needs, which can influence the behavior of the test and its outcome.
 	// Not required for the legacy pipeline.
 	VariantCategory string
-}
-
-// LacrosMetadata indicates whether lacros variants have been considered for this test or not.
-type LacrosMetadata int
-
-const (
-	// LacrosVariantUnknown indicates that this test has not yet been checked as to whether it requires a lacros variant.
-	// New tests should not use this value, i.e. new tests should always consider lacros.
-	LacrosVariantUnknown = iota
-	// LacrosVariantNeeded indicates that a lacros variant for this is needed but hasn't been created yet.
-	LacrosVariantNeeded
-	// LacrosVariantUnneeded indicates that lacros variants for this test are not needed.
-	LacrosVariantUnneeded
-)
-
-func (m LacrosMetadata) String() string {
-	switch m {
-	case LacrosVariantUnknown:
-		return "unknown"
-	case LacrosVariantNeeded:
-		return "needed"
-	case LacrosVariantUnneeded:
-		return "unneeded"
-	default:
-		return fmt.Sprintf("unexpected value (%d)", int(m))
-	}
 }
 
 // LifeCycle aligns with the TestCaseMetadata proto value of LifeCycle.

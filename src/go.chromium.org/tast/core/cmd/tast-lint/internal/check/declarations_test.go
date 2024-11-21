@@ -343,7 +343,6 @@ func TestDeclarationsSoftwareDeps(t *testing.T) {
 	}{{snip: `
 	testing.AddTest(&testing.Test{
 		Func:         DoStuff,
-		LacrosStatus: testing.LacrosVariantUnneeded,
 		Desc:         "This description is fine",
 		Contacts:     []string{"me@chromium.org"},
 		BugComponent: "b:1034625",
@@ -351,7 +350,6 @@ func TestDeclarationsSoftwareDeps(t *testing.T) {
 	})`}, {snip: `
 	testing.AddTest(&testing.Test{
 		Func:         DoStuff,
-		LacrosStatus: testing.LacrosVariantUnneeded,
 		Desc:         "This description is fine",
 		Contacts:     []string{"me@chromium.org"},
 		BugComponent: "b:1034625",
@@ -359,7 +357,6 @@ func TestDeclarationsSoftwareDeps(t *testing.T) {
 	})`}, {snip: `
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
-		LacrosStatus: testing.LacrosVariantUnneeded,
 		Desc:     "This description is fine",
 		Contacts: []string{"me@chromium.org"},
 		BugComponent: "b:1034625",
@@ -367,7 +364,6 @@ func TestDeclarationsSoftwareDeps(t *testing.T) {
 	})`}, {snip: `
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
-		LacrosStatus: testing.LacrosVariantUnneeded,
 		Desc:     "This description is fine",
 		Contacts: []string{"me@chromium.org"},
 		BugComponent: "b:1034625",
@@ -375,7 +371,6 @@ func TestDeclarationsSoftwareDeps(t *testing.T) {
 	})`}, {snip: `
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
-		LacrosStatus: testing.LacrosVariantUnneeded,
 		Desc:     "This description is fine",
 		Contacts: []string{"me@chromium.org"},
 		BugComponent: "b:1034625",
@@ -383,7 +378,6 @@ func TestDeclarationsSoftwareDeps(t *testing.T) {
 	})`}, {snip: `
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
-		LacrosStatus: testing.LacrosVariantUnneeded,
 		Desc:     "This description is fine",
 		Contacts: []string{"me@chromium.org"},
 		BugComponent: "b:1034625",
@@ -391,7 +385,6 @@ func TestDeclarationsSoftwareDeps(t *testing.T) {
 	})`}, {snip: `
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
-		LacrosStatus: testing.LacrosVariantUnneeded,
 		Desc:     "This description is fine",
 		Contacts: []string{"me@chromium.org"},
 		BugComponent: "b:1034625",
@@ -399,7 +392,6 @@ func TestDeclarationsSoftwareDeps(t *testing.T) {
 	})`}, {snip: `
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
-		LacrosStatus: testing.LacrosVariantUnneeded,
 		Desc:     "This description is fine",
 		Contacts: []string{"me@chromium.org"},
 		BugComponent: "b:1034625",
@@ -407,20 +399,18 @@ func TestDeclarationsSoftwareDeps(t *testing.T) {
 	})`}, {`
 	testing.AddTest(&testing.Test{
 		Func:         DoStuff,
-		LacrosStatus: testing.LacrosVariantUnneeded,
 		Desc:         "This description is fine",
 		Contacts:     []string{"me@chromium.org"},
 		BugComponent: "b:1034625",
 		SoftwareDeps: foobar,  // non array literal.
-	})`, declTestPath + ":10:17: " + nonLiteralSoftwareDepsMsg}, {`
+	})`, declTestPath + ":9:17: " + nonLiteralSoftwareDepsMsg}, {`
 	testing.AddTest(&testing.Test{
 		Func:         DoStuff,
-		LacrosStatus: testing.LacrosVariantUnneeded,
 		Desc:         "This description is fine",
 		Contacts:     []string{"me@chromium.org"},
 		BugComponent: "b:1034625",
 		SoftwareDeps: []string{fun()},  // invocation is not allowed.
-	})`, declTestPath + ":10:17: " + nonLiteralSoftwareDepsMsg}} {
+	})`, declTestPath + ":9:17: " + nonLiteralSoftwareDepsMsg}} {
 		code := fmt.Sprintf(initTmpl, tc.snip)
 		f, fs := parse(code, declTestPath)
 		issues := TestDeclarations(fs, f, git.CommitFile{}, false)
@@ -439,7 +429,6 @@ func TestDeclarationsParams(t *testing.T) {
 	}{{snip: `
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
-		LacrosStatus: testing.LacrosVariantUnneeded,
 		Desc:     "This description is fine",
 		Contacts: []string{"me@chromium.org"},
 		BugComponent: "b:1034625",
@@ -453,31 +442,27 @@ func TestDeclarationsParams(t *testing.T) {
 	})`}, {`
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
-		LacrosStatus: testing.LacrosVariantUnneeded,
 		Desc:     "This description is fine",
 		Contacts: []string{"me@chromium.org"},
 		BugComponent: "b:1034625",
 		Params:   variableParams,
-	})`, []string{declTestPath + ":10:13: " + nonLiteralParamsMsg}}, {`
+	})`, []string{declTestPath + ":9:13: " + nonLiteralParamsMsg}}, {`
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
-		LacrosStatus: testing.LacrosVariantUnneeded,
 		Desc:     "This description is fine",
 		Contacts: []string{"me@chromium.org"},
 		BugComponent: "b:1034625",
 		Params:   pkg.FuncParams(),
-	})`, []string{declTestPath + ":10:13: " + nonLiteralParamsMsg}}, {`
+	})`, []string{declTestPath + ":9:13: " + nonLiteralParamsMsg}}, {`
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
-		LacrosStatus: testing.LacrosVariantUnneeded,
 		Desc:     "This description is fine",
 		Contacts: []string{"me@chromium.org"},
 		BugComponent: "b:1034625",
 		Params:   []Param{variableParamStruct},
-	})`, []string{declTestPath + ":10:21: " + nonLiteralParamsMsg}}, {`
+	})`, []string{declTestPath + ":9:21: " + nonLiteralParamsMsg}}, {`
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
-		LacrosStatus: testing.LacrosVariantUnneeded,
 		Desc:     "This description is fine",
 		Contacts: []string{"me@chromium.org"},
 		BugComponent: "b:1034625",
@@ -493,15 +478,14 @@ func TestDeclarationsParams(t *testing.T) {
 			ExtraSoftwareDeps: []string{fun()},
 		}},
 	})`, []string{
-		declTestPath + ":11:10: " + nonLiteralParamNameMsg,
-		declTestPath + ":13:23: " + nonLiteralAttrMsg,
-		declTestPath + ":15:32: " + nonLiteralAttrMsg,
-		declTestPath + ":17:23: " + nonLiteralSoftwareDepsMsg,
-		declTestPath + ":19:23: " + nonLiteralSoftwareDepsMsg,
+		declTestPath + ":10:10: " + nonLiteralParamNameMsg,
+		declTestPath + ":12:23: " + nonLiteralAttrMsg,
+		declTestPath + ":14:32: " + nonLiteralAttrMsg,
+		declTestPath + ":16:23: " + nonLiteralSoftwareDepsMsg,
+		declTestPath + ":18:23: " + nonLiteralSoftwareDepsMsg,
 	}}, {snip: `
 	testing.AddTest(&testing.Test{
 		Func:     DoStuff,
-		LacrosStatus: testing.LacrosVariantUnneeded,
 		Desc:     "This description is fine",
 		Contacts: []string{"me@chromium.org"},
 		BugComponent: "b:1034625",

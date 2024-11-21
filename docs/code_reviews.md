@@ -134,10 +134,6 @@ reviews.
 [Go Code Review Comments]: https://go.dev/wiki/CodeReviewComments
 [Tast: Code Review Comments]: code_review_comments.md
 
-### Verify Need for Lacros Variant
-
-The field 'LacrosStatus' is deprecated due to Lacros deprecation and will be removed soon.
-
 ## FAQ
 
 ### Why are test owner reviews required?

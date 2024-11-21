@@ -176,7 +176,7 @@ message Entity {
   repeated string test_bed_deps = 11;
   repeated string requirements = 12;
   string bug_component = 13;
-  string lacros_status = 14;
+  string lacros_status = 14;  // Deprecated, do not use.
 }
 
 // EntityContacts contains contact information of an entity.

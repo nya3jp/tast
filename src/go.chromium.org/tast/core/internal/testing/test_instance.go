@@ -80,7 +80,6 @@ type TestInstance struct {
 	// implemented, it is needed.
 	HardwareDeps map[string]dep.HardwareDeps
 	ServiceDeps  []string
-	LacrosStatus LacrosMetadata
 	Pre          Precondition
 	Fixture      string
 	Timeout      time.Duration
@@ -276,7 +275,6 @@ func newTestInstance(t *Test, p *Param) (*TestInstance, error) {
 		SoftwareDeps:    swDeps,
 		HardwareDeps:    hwDeps,
 		ServiceDeps:     append([]string(nil), t.ServiceDeps...),
-		LacrosStatus:    t.LacrosStatus,
 		Pre:             pre,
 		Fixture:         fixt,
 		Timeout:         timeout,
@@ -637,7 +635,6 @@ func (t *TestInstance) EntityProto() *protocol.Entity {
 		TestBedDeps:  append([]string(nil), t.TestBedDeps...),
 		Requirements: append([]string(nil), t.Requirements...),
 		BugComponent: t.BugComponent,
-		LacrosStatus: t.LacrosStatus.String(),
 	}
 }
 

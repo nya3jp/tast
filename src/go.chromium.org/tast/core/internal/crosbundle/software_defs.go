@@ -85,7 +85,7 @@ var softwareFeatureDefs = map[string]string{
 	"crostini_geekbench6_supported": `!("board:jacuzzi*" || "board:asurada" || "board:corsola*" || "board:strongbad" || "board:trogdor" || "board:kukui")`,
 	// VMs don't support few crossystem sub-commands: https://crbug.com/974615
 	"crossystem":  `!"betty" && !"tast_vm" && !"board:reven-vmtest" && !"board:amd64-generic"`,
-	"csme_update": `!("board:atlas" || "board:coral" || "board:drallion" || "board:eve" || "board:fizz" || "board:fizz-kernelnext" || "board:hatch" || "board:kalista" || "board:kalista-kernelnext" || "board:nami" || "board:nami-kernelnext" || "board:nautilus" || "board:octopus" || "board:puff" || "board:rammus" || "board:reef" || "board:sand" || "board:sarien")`,
+	"csme_update": `!("board:atlas" || "board:coral" || "board:drallion" || "board:eve" || "board:fizz" || "board:fizz-kernelnext" || "board:hatch" || "board:kalista" || "board:kalista-kernelnext" || "board:nami" || "board:nami-kernelnext" || "board:nautilus" || "board:octopus" || "board:puff" || "board:rammus" || "board:reef" || "board:sand" || "board:sarien" || "board:dedede*" || "board:brask")`,
 	"cups":        "cups",
 	// Boards with all models released before June 2020 do not support custom top
 	// row keyboards. The CustomTopRowKeyboard hwdep should be used to ignore

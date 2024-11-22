@@ -618,6 +618,24 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		}
 	}()
 
+	// Device has a valid ADID if gsc_set_sn_bits -n returns
+	// SN Bits are properly set.
+	// This checks that the sn_bits saved in GSC match the
+	// attested_device_id in the RO_VPD
+	func() {
+		if out, err := exec.Command("gsc_sn_bits", "-n").Output(); err != nil {
+			logging.Infof(ctx, "Failed to exec command to check ADID: %v", err)
+			features.TrustedPlatformModule.ValidAdid = configpb.HardwareFeatures_PRESENT_UNKNOWN
+		} else if validADID, err := findGSCADID(string(out)); err != nil {
+			logging.Infof(ctx, "Invalid ADID: %v", err)
+			features.TrustedPlatformModule.ValidAdid = configpb.HardwareFeatures_PRESENT_UNKNOWN
+		} else if validADID {
+			features.TrustedPlatformModule.ValidAdid = configpb.HardwareFeatures_PRESENT
+		} else {
+			features.TrustedPlatformModule.ValidAdid = configpb.HardwareFeatures_NOT_PRESENT
+		}
+	}()
+
 	// Whether device has TPM enabled can be checked by `tpm_manager_client status`.
 	// If TPM is enabled, we can check the version by `tpm_version`.
 	func() {
@@ -2010,6 +2028,16 @@ func cameraEnumerated() (bool, []string, error) {
 	}()
 
 	return usbCams+mipiCams == count, usbCamIds, nil
+}
+
+// findGSCADID parses a content of "gsc_set_sn_bits -n" and return a required key
+func findGSCADID(str string) (bool, error) {
+	re := regexp.MustCompile(`SN Bits are properly set.`)
+
+	if match := re.FindStringSubmatch(str); match != nil {
+		return false, errors.Errorf("gsc_set_sn_bits error: %s", str)
+	}
+	return true, nil
 }
 
 // findGSCKeyID parses a content of "gsctool -a -f -M" and return a required key

@@ -806,6 +806,25 @@ func HasTpmNvramRollbackSpace() Condition {
 	}
 }
 
+// HasValidADID returns a hardware dependency condition that is satisfied if
+// and only if the DUT has attested_device_id in the RO_VPD that matches the GSC
+// sn bits.
+func HasValidADID() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("Did not find hardware features")
+		}
+		if status := hf.GetTrustedPlatformModule().GetValidAdid(); status == configpb.HardwareFeatures_PRESENT {
+			return satisfied()
+		} else if status == configpb.HardwareFeatures_PRESENT_UNKNOWN {
+			return unsatisfied("Could not determine if the ADID is valid")
+		}
+		return unsatisfied("DUT has a valid ADID")
+	},
+	}
+}
+
 // CPUNotNeedsCoreScheduling returns a hardware dependency condition that is satisfied if and only if the DUT's
 // CPU is does not need to use core scheduling to mitigate hardware vulnerabilities.
 func CPUNotNeedsCoreScheduling() Condition {

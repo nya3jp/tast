@@ -134,6 +134,7 @@ var (
 		"rudriks_rw101":      {"rudriks_rw101", "nissa", ModemTypeRW101},
 		"rynax_rw101":        {"rynax_rw101", "nissa", ModemTypeRW101},
 		"sundance_rw101":     {"sundance_rw101", "nissa", ModemTypeRW101},
+		"teliks_fm101":       {"teliks_fm101", "nissa", ModemTypeFM101},
 		"teliks_rw101":       {"teliks_rw101", "nissa", ModemTypeRW101},
 		"quandiso_fm101":     {"quandiso_fm101", "nissa", ModemTypeFM101},
 		"quandiso360_fm101":  {"quandiso360_fm101", "nissa", ModemTypeFM101},

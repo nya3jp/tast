@@ -5,7 +5,6 @@
 # Tast reviewers can approve changes to software dependency definitions.
 per-file software_defs.go = file:chromiumos/platform/tast-tests:/OWNERS
 
-rohitbm@chromium.org
 seewaifu@google.com
 yichiyan@google.com
 abergman@google.com

@@ -2144,6 +2144,20 @@ func SkipOnFormFactor(ffList ...configpb.HardwareFeatures_FormFactor_FormFactorT
 	}}
 }
 
+// SupportsCrosCodecs returns true if the SoC is currently supported by the cros-codecs project (see platform2/cros-codecs).
+func SupportsCrosCodecs() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		dc := f.GetDeprecatedDeviceConfig()
+		if dc == nil {
+			return withErrorStr("DeprecatedDeviceConfig is not given")
+		}
+		if dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_MT8186 || dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_ALDER_LAKE {
+			return satisfied()
+		}
+		return unsatisfied("SoC is not currently supported by cros-codecs")
+	}}
+}
+
 // socTypeIsV4l2Stateful returns true when stateful API is supported on the given |SocType|
 // or returns false when stateless API is supported.
 func socTypeIsV4l2Stateful(SocType protocol.DeprecatedDeviceConfig_SOC) bool {

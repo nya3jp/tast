@@ -322,10 +322,6 @@ Tests in this group are not used for build verification.
 				Desc: "Release candidate crash and feedback tests",
 			},
 			{
-				Name: "release-health_crostini",
-				Desc: "Release candidate crostini tests",
-			},
-			{
 				Name: "release-health_enterprise",
 				Desc: "Release candidate enterprise tests",
 			},
@@ -360,6 +356,10 @@ Tests in this group are not used for build verification.
 			{
 				Name: "release-health_usb",
 				Desc: "Release candidate usb-peripherals tests",
+			},
+			{
+				Name: "release-health_vc",
+				Desc: "Release candidate video conference tests",
 			},
 			{
 				Name: "release-health_wifi",

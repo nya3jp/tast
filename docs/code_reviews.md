@@ -94,7 +94,7 @@ Refer to [go/chromeos-test-guidance] for more details.
 ### Run repo upload hooks
 
 Tast repositories are configured to run many linters ([gofmt], [goimports],
-[go vet], [golint] and [tast-lint]) as repo upload hooks to find obvious
+[go vet], [staticcheck] and [tast-lint]) as repo upload hooks to find obvious
 mistakes and style guide violations before time-consuming manual code reviews.
 
 Except for WIP changes, always make sure to run repo upload hooks. Changes
@@ -103,7 +103,7 @@ failing to pass lint checks may not be reviewed.
 [gofmt]: https://golang.org/cmd/gofmt/
 [goimports]: https://godoc.org/golang.org/x/tools/cmd/goimports
 [go vet]: https://golang.org/cmd/vet/
-[golint]: https://github.com/golang/lint
+[staticcheck]: https://staticcheck.dev
 [tast-lint]: https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/src/go.chromium.org/tast/core/cmd/tast-lint/
 
 ### Run unit tests

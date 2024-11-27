@@ -184,9 +184,9 @@ register tests.
 
 ## Coding style and best practices
 
-Test code should be formatted by [gofmt] and checked by [go vet], [golint] and
-[tast-lint]. These tools are configured to run as pre-upload hooks, so don't
-skip them.
+Test code should be formatted by [gofmt] and checked by [go vet], [staticcheck]
+and [tast-lint]. These tools are configured to run as pre-upload hooks, so
+don't skip them.
 
 Tast code should also follow Go's established best practices as described by
 these documents:
@@ -199,7 +199,7 @@ Documentation] page.
 
 [gofmt]: https://golang.org/cmd/gofmt/
 [go vet]: https://golang.org/cmd/vet/
-[golint]: https://github.com/golang/lint
+[staticcheck]: https://staticcheck.dev
 [tast-lint]: https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/src/go.chromium.org/tast/core/cmd/tast-lint/
 [Effective Go]: https://golang.org/doc/effective_go.html
 [Go Code Review Comments]: https://go.dev/wiki/CodeReviewComments

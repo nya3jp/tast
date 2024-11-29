@@ -12,7 +12,7 @@ import (
 	"strconv"
 	"strings"
 
-	"golang.org/x/crypto/ssh/terminal"
+	"golang.org/x/term"
 )
 
 // Term is used to control a terminal.
@@ -69,7 +69,7 @@ type termHandle interface {
 type VT100Term struct{}
 
 func (t *VT100Term) check() error {
-	if !terminal.IsTerminal(int(os.Stdin.Fd())) {
+	if !term.IsTerminal(int(os.Stdin.Fd())) {
 		return errors.New("stdin isn't a terminal")
 	}
 	if os.Getenv("TMUX") != "" {
@@ -80,12 +80,12 @@ func (t *VT100Term) check() error {
 
 func (t *VT100Term) newHandle() termHandle {
 	c := &vt100TermHandle{}
-	c.origState, c.rawErr = terminal.MakeRaw(int(os.Stdin.Fd()))
+	c.origState, c.rawErr = term.MakeRaw(int(os.Stdin.Fd()))
 	return c
 }
 
 type vt100TermHandle struct {
-	origState *terminal.State // state before going into raw mode
+	origState *term.State // state before going into raw mode
 	rawErr    error           // error seen when going into raw mode
 	opErr     error           // first error seen from some other operation
 }
@@ -94,7 +94,7 @@ func (th *vt100TermHandle) close() error {
 	if th.rawErr != nil {
 		return th.rawErr
 	}
-	resErr := terminal.Restore(int(os.Stdin.Fd()), th.origState)
+	resErr := term.Restore(int(os.Stdin.Fd()), th.origState)
 	if th.opErr != nil {
 		return th.opErr
 	}

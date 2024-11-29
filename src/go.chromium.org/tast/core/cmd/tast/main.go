@@ -12,7 +12,7 @@ import (
 	"os"
 
 	"github.com/google/subcommands"
-	"golang.org/x/crypto/ssh/terminal"
+	"golang.org/x/term"
 
 	"go.chromium.org/tast/core/internal/command"
 	"go.chromium.org/tast/core/internal/logging"
@@ -34,18 +34,18 @@ func newLogger(verbose, logTime bool) *logging.SinkLogger {
 // cleanup when the process is being terminated by a signal (which prevents
 // deferred functions from running).
 func installSignalHandler(ctx context.Context) {
-	var st *terminal.State
+	var st *term.State
 	fd := int(os.Stdin.Fd())
-	if terminal.IsTerminal(fd) {
+	if term.IsTerminal(fd) {
 		var err error
-		if st, err = terminal.GetState(fd); err != nil {
+		if st, err = term.GetState(fd); err != nil {
 			logging.Info(ctx, "Failed to get terminal state: ", err)
 		}
 	}
 
 	command.InstallSignalHandler(os.Stderr, func(os.Signal) {
 		if st != nil {
-			terminal.Restore(fd, st)
+			term.Restore(fd, st)
 		}
 	})
 }

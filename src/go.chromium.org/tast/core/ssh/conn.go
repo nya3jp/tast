@@ -21,8 +21,8 @@ import (
 	"github.com/electricbubble/gadb"
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/crypto/ssh/agent"
-	"golang.org/x/crypto/ssh/terminal"
 	"golang.org/x/net/proxy"
+	"golang.org/x/term"
 
 	"go.chromium.org/tast/core/errors"
 )
@@ -194,7 +194,7 @@ func getSSHAuthMethods(o *Options, questionPrefix string) ([]ssh.AuthMethod, err
 
 	// Fall back to keyboard-interactive.
 	stdin := int(os.Stdin.Fd())
-	if terminal.IsTerminal(stdin) {
+	if term.IsTerminal(stdin) {
 		methods = append(methods, ssh.KeyboardInteractive(
 			func(user, inst string, qs []string, es []bool) (as []string, err error) {
 				return presentChallenges(stdin, questionPrefix, user, inst, qs, es)
@@ -227,7 +227,7 @@ func presentChallenges(stdin int, prefix, user, inst string, qs []string, es []b
 		// automatically types their own password since they're used to being
 		// prompted by sudo whenever they run a command. :-/
 		os.Stdout.WriteString(prefix + q)
-		b, err := terminal.ReadPassword(stdin)
+		b, err := term.ReadPassword(stdin)
 		os.Stdout.WriteString("\n")
 		if err != nil {
 			return nil, err

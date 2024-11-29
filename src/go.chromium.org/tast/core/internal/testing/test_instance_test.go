@@ -10,12 +10,12 @@ import (
 	gotesting "testing"
 	"time"
 
-	"github.com/golang/protobuf/proto"
-	"github.com/golang/protobuf/ptypes"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"go.chromium.org/chromiumos/config/go/test/api"
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/testing/protocmp"
+	"google.golang.org/protobuf/types/known/durationpb"
 
 	"go.chromium.org/tast/core/testing/hwdep"
 
@@ -1302,7 +1302,7 @@ func TestTestInstanceEntityProto(t *gotesting.T) {
 			Variables:    []string{"var1", "var2"},
 			VariableDeps: []string{"vardep1"},
 			SoftwareDeps: []string{"dep1", "dep2"},
-			Timeout:      ptypes.DurationProto(time.Hour),
+			Timeout:      durationpb.New(time.Hour),
 			Bundle:       "bundle",
 		},
 	}

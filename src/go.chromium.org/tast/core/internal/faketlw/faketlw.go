@@ -15,13 +15,13 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/golang/protobuf/ptypes"
-	"github.com/golang/protobuf/ptypes/empty"
 	"go.chromium.org/chromiumos/config/go/api/test/tls"
 	"go.chromium.org/chromiumos/config/go/api/test/tls/dependencies/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/anypb"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 // NamePort represents a simple name/port pair.
@@ -173,7 +173,7 @@ func (s *WiringServer) finishOperation(name string) (*longrunning.Operation, err
 	if err != nil {
 		return nil, err
 	}
-	m, err := ptypes.MarshalAny(&tls.CacheForDutResponse{Url: cacheURL})
+	m, err := anypb.New(&tls.CacheForDutResponse{Url: cacheURL})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to marshal data: %s", err)
 	}
@@ -187,12 +187,12 @@ func (s *WiringServer) finishOperation(name string) (*longrunning.Operation, err
 }
 
 // CancelOperation implements longrunning.CancelOperation.
-func (s *WiringServer) CancelOperation(ctx context.Context, req *longrunning.CancelOperationRequest) (*empty.Empty, error) {
+func (s *WiringServer) CancelOperation(ctx context.Context, req *longrunning.CancelOperationRequest) (*emptypb.Empty, error) {
 	return nil, status.Error(codes.Unimplemented, "not implemented")
 }
 
 // DeleteOperation implements longrunning.CancelOperation.
-func (s *WiringServer) DeleteOperation(ctx context.Context, req *longrunning.DeleteOperationRequest) (*empty.Empty, error) {
+func (s *WiringServer) DeleteOperation(ctx context.Context, req *longrunning.DeleteOperationRequest) (*emptypb.Empty, error) {
 	return nil, status.Error(codes.Unimplemented, "not implemented")
 }
 

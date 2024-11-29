@@ -9,7 +9,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/golang/protobuf/ptypes"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"go.chromium.org/tast/core/errors"
 	"go.chromium.org/tast/core/internal/logging"
@@ -20,7 +20,7 @@ import (
 )
 
 var epoch = time.Unix(0, 0)
-var epochpb, _ = ptypes.TimestampProto(epoch)
+var epochpb = timestamppb.New(epoch)
 
 // runProcessor runs Processor by feeding events.
 // If Processor returns an error for any event, its RunEnd method is called

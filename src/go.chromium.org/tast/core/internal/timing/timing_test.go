@@ -11,10 +11,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"google.golang.org/protobuf/testing/protocmp"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"go.chromium.org/tast/core/internal/protocol"
 )
@@ -268,18 +268,18 @@ func TestProto(t *testing.T) {
 		Root: &protocol.TimingStage{
 			Children: []*protocol.TimingStage{{
 				Name:      "0",
-				StartTime: &timestamp.Timestamp{Seconds: 0},
-				EndTime:   &timestamp.Timestamp{Seconds: 5},
+				StartTime: &timestamppb.Timestamp{Seconds: 0},
+				EndTime:   &timestamppb.Timestamp{Seconds: 5},
 				Children: []*protocol.TimingStage{
 					{
 						Name:      "1",
-						StartTime: &timestamp.Timestamp{Seconds: 1},
-						EndTime:   &timestamp.Timestamp{Seconds: 2},
+						StartTime: &timestamppb.Timestamp{Seconds: 1},
+						EndTime:   &timestamppb.Timestamp{Seconds: 2},
 					},
 					{
 						Name:      "2",
-						StartTime: &timestamp.Timestamp{Seconds: 3},
-						EndTime:   &timestamp.Timestamp{Seconds: 4},
+						StartTime: &timestamppb.Timestamp{Seconds: 3},
+						EndTime:   &timestamppb.Timestamp{Seconds: 4},
 					},
 				},
 			}},
@@ -295,18 +295,18 @@ func TestLogFromProto(t *testing.T) {
 		Root: &protocol.TimingStage{
 			Children: []*protocol.TimingStage{{
 				Name:      "0",
-				StartTime: &timestamp.Timestamp{Seconds: 0},
-				EndTime:   &timestamp.Timestamp{Seconds: 5},
+				StartTime: &timestamppb.Timestamp{Seconds: 0},
+				EndTime:   &timestamppb.Timestamp{Seconds: 5},
 				Children: []*protocol.TimingStage{
 					{
 						Name:      "1",
-						StartTime: &timestamp.Timestamp{Seconds: 1},
-						EndTime:   &timestamp.Timestamp{Seconds: 2},
+						StartTime: &timestamppb.Timestamp{Seconds: 1},
+						EndTime:   &timestamppb.Timestamp{Seconds: 2},
 					},
 					{
 						Name:      "2",
-						StartTime: &timestamp.Timestamp{Seconds: 3},
-						EndTime:   &timestamp.Timestamp{Seconds: 4},
+						StartTime: &timestamppb.Timestamp{Seconds: 3},
+						EndTime:   &timestamppb.Timestamp{Seconds: 4},
 					},
 				},
 			}},

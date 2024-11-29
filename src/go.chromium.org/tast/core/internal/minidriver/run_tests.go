@@ -10,7 +10,6 @@ import (
 	"errors"
 	"time"
 
-	"github.com/golang/protobuf/ptypes"
 	"google.golang.org/protobuf/types/known/durationpb"
 
 	"go.chromium.org/tast/core/ctxutil"
@@ -228,7 +227,7 @@ func (d *Driver) newConfigsForLocalTests(tests []string, state *protocol.StartFi
 			BuildArtifactsUrl: d.cfg.BuildArtifactsURL,
 		},
 		StartFixtureState:     state,
-		HeartbeatInterval:     ptypes.DurationProto(HeartbeatInterval),
+		HeartbeatInterval:     durationpb.New(HeartbeatInterval),
 		WaitUntilReady:        d.cfg.WaitUntilReady,
 		SystemServicesTimeout: durationpb.New(d.cfg.SystemServicesTimeout),
 		WaitUntilReadyTimeout: durationpb.New(d.cfg.WaitUntilReadyTimeout),

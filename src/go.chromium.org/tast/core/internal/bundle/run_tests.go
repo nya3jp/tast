@@ -14,7 +14,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/golang/protobuf/ptypes"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"go.chromium.org/tast/core/dut"
@@ -148,7 +147,7 @@ func (ew *eventWriter) EntityStart(ei *protocol.Entity, outDir string) error {
 		ew.lg.Info(fmt.Sprintf("%s: ======== start", ei.Name))
 	}
 	return ew.srv.Send(&protocol.RunTestsResponse{Type: &protocol.RunTestsResponse_EntityStart{EntityStart: &protocol.EntityStartEvent{
-		Time:   ptypes.TimestampNow(),
+		Time:   timestamppb.Now(),
 		Entity: ei,
 		OutDir: outDir,
 	}}})
@@ -176,7 +175,7 @@ func (ew *eventWriter) EntityError(ei *protocol.Entity, e *protocol.Error) error
 		ew.lg.Info(fmt.Sprintf("%s: Error at %s:%d: %s", ei.GetName(), filepath.Base(loc.GetFile()), loc.GetLine(), e.GetReason()))
 	}
 	return ew.srv.Send(&protocol.RunTestsResponse{Type: &protocol.RunTestsResponse_EntityError{EntityError: &protocol.EntityErrorEvent{
-		Time:       ptypes.TimestampNow(),
+		Time:       timestamppb.Now(),
 		EntityName: ei.GetName(),
 		Error:      e,
 	}}})
@@ -197,7 +196,7 @@ func (ew *eventWriter) EntityEnd(ei *protocol.Entity, skipReasons []string, timi
 		return err
 	}
 	firstErr := ew.srv.Send(&protocol.RunTestsResponse{Type: &protocol.RunTestsResponse_EntityEnd{EntityEnd: &protocol.EntityEndEvent{
-		Time:       ptypes.TimestampNow(),
+		Time:       timestamppb.Now(),
 		EntityName: ei.GetName(),
 		Skip:       skip,
 		TimingLog:  tlpb,

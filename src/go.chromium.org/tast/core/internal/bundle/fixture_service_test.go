@@ -13,11 +13,11 @@ import (
 	gotesting "testing"
 	"time"
 
-	"github.com/golang/protobuf/ptypes"
-	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/google/go-cmp/cmp"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/testing/protocmp"
+	"google.golang.org/protobuf/types/known/durationpb"
+	"google.golang.org/protobuf/types/known/emptypb"
 
 	"go.chromium.org/tast/core/internal/logging"
 	"go.chromium.org/tast/core/internal/protocol"
@@ -168,10 +168,10 @@ func TestFixtureServiceResponses(t *gotesting.T) {
 				{
 					{Control: &protocol.RunFixtureResponse_Log{Log: "SetUp"}, Level: protocol.LogLevel_INFO},
 					{Control: &protocol.RunFixtureResponse_Log{Log: "SetUp context log"}, Level: protocol.LogLevel_INFO},
-					{Control: &protocol.RunFixtureResponse_RequestDone{RequestDone: &empty.Empty{}}},
+					{Control: &protocol.RunFixtureResponse_RequestDone{RequestDone: &emptypb.Empty{}}},
 				}, {
 					{Control: &protocol.RunFixtureResponse_Log{Log: "TearDown"}, Level: protocol.LogLevel_INFO},
-					{Control: &protocol.RunFixtureResponse_RequestDone{RequestDone: &empty.Empty{}}},
+					{Control: &protocol.RunFixtureResponse_RequestDone{RequestDone: &emptypb.Empty{}}},
 				},
 			},
 		},
@@ -188,10 +188,10 @@ func TestFixtureServiceResponses(t *gotesting.T) {
 			wantResults: [][]*protocol.RunFixtureResponse{
 				{
 					{Control: &protocol.RunFixtureResponse_Error{Error: &protocol.RunFixtureError{Reason: "Panic: SetUp panic"}}},
-					{Control: &protocol.RunFixtureResponse_RequestDone{RequestDone: &empty.Empty{}}},
+					{Control: &protocol.RunFixtureResponse_RequestDone{RequestDone: &emptypb.Empty{}}},
 				},
 				{
-					{Control: &protocol.RunFixtureResponse_RequestDone{RequestDone: &empty.Empty{}}},
+					{Control: &protocol.RunFixtureResponse_RequestDone{RequestDone: &emptypb.Empty{}}},
 				},
 			},
 		},
@@ -497,7 +497,7 @@ func TestFixtureServiceTimeout(t *gotesting.T) {
 					OutDir:            tmpDir,
 					ConnectionSpec:    td.Srvs[0].Addr().String(),
 					KeyFile:           td.UserKeyFile,
-					CustomGracePeriod: ptypes.DurationProto(time.Millisecond),
+					CustomGracePeriod: durationpb.New(time.Millisecond),
 				},
 			},
 		},

@@ -8,7 +8,7 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/golang/protobuf/proto"
+	"google.golang.org/protobuf/proto"
 
 	"go.chromium.org/tast/core/internal/protocol"
 )

@@ -8,7 +8,7 @@ import (
 	"encoding/binary"
 	"io"
 
-	"github.com/golang/protobuf/proto"
+	"google.golang.org/protobuf/proto"
 )
 
 const (

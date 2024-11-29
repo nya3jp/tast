@@ -10,7 +10,6 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/golang/protobuf/ptypes"
 	"go.chromium.org/chromiumos/config/go/longrunning"
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"google.golang.org/grpc"
@@ -69,7 +68,7 @@ func TestDutServiceServer_Cache(t *testing.T) {
 		t.Fatalf("operation did not finish")
 	}
 	resp := &api.CacheResponse{}
-	if err := ptypes.UnmarshalAny(op.GetResponse(), resp); err != nil {
+	if err := op.GetResponse().UnmarshalTo(resp); err != nil {
 		t.Fatalf("Failed to unmarshal response [%v]: %s", resp, err)
 	}
 	content, err := os.ReadFile(destFile)

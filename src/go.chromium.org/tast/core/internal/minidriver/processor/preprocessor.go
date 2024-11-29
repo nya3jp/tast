@@ -11,7 +11,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/golang/protobuf/ptypes"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"go.chromium.org/tast/core/ctxutil"
 	"go.chromium.org/tast/core/errors"
@@ -86,10 +86,11 @@ func (p *preprocessor) EntityStart(ctx context.Context, ev *protocol.EntityStart
 		return errors.Wrapf(err, "processing EntityStart: failed to create an output directory for %s", ev.GetEntity().GetName())
 	}
 
-	ts, err := ptypes.Timestamp(ev.GetTime())
+	err = ev.GetTime().CheckValid()
 	if err != nil {
 		return errors.Wrap(err, "processing EntityStart")
 	}
+	ts := ev.GetTime().AsTime()
 	state := &entityState{
 		Entity:             ev.GetEntity(),
 		Start:              ts,
@@ -133,10 +134,11 @@ func (p *preprocessor) EntityError(ctx context.Context, ev *protocol.EntityError
 		return errors.Wrap(err, "processing EntityError")
 	}
 
-	ts, err := ptypes.Timestamp(ev.GetTime())
+	err = ev.GetTime().CheckValid()
 	if err != nil {
 		return errors.Wrap(err, "processing EntityError")
 	}
+	ts := ev.GetTime().AsTime()
 	e := &errorEntry{Time: ts, Error: ev.GetError()}
 	state.Errors = append(state.Errors, e)
 
@@ -163,10 +165,11 @@ func (p *preprocessor) EntityEnd(ctx context.Context, ev *protocol.EntityEndEven
 	p.stack = p.stack[:len(p.stack)-1]
 	p.copying[ev.GetEntityName()] = state
 
-	ts, err := ptypes.Timestamp(ev.GetTime())
+	err = ev.GetTime().CheckValid()
 	if err != nil {
 		return errors.Wrap(err, "processing EntityEnd")
 	}
+	ts := ev.GetTime().AsTime()
 	ei := state.EntityInfo()
 	result := &entityResult{
 		Start:     state.Start,
@@ -259,7 +262,7 @@ func (p *preprocessor) RunEnd(ctx context.Context, runErr error) {
 			}
 			// Always ignore errors from EntityError since runErr is non-nil.
 			_ = p.EntityError(ctx, &protocol.EntityErrorEvent{
-				Time:       ptypes.TimestampNow(),
+				Time:       timestamppb.Now(),
 				EntityName: stateTop.Entity.GetName(),
 				Error:      &protocol.Error{Reason: msg},
 			})
@@ -272,14 +275,14 @@ func (p *preprocessor) RunEnd(ctx context.Context, runErr error) {
 	for len(p.stack) > 0 {
 		stateTop := p.stateTop()
 		if err := p.EntityError(ctx, &protocol.EntityErrorEvent{
-			Time:       ptypes.TimestampNow(),
+			Time:       timestamppb.Now(),
 			EntityName: stateTop.Entity.GetName(),
 			Error:      &protocol.Error{Reason: "Test did not finish"},
 		}); err != nil && runErr == nil {
 			runErr = err
 		}
 		if err := p.EntityEnd(ctx, &protocol.EntityEndEvent{
-			Time:       ptypes.TimestampNow(),
+			Time:       timestamppb.Now(),
 			EntityName: stateTop.Entity.GetName(),
 		}); err != nil && runErr == nil {
 			runErr = err

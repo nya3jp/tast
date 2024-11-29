@@ -10,7 +10,6 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/golang/protobuf/ptypes"
 	"go.chromium.org/chromiumos/config/go/api/test/tls"
 	"go.chromium.org/chromiumos/config/go/api/test/tls/dependencies/longrunning"
 	"google.golang.org/grpc"
@@ -52,7 +51,7 @@ func TestWiringServer_CacheForDut(t *testing.T) {
 		t.Fatalf("operation did not finish")
 	}
 	resp := &tls.CacheForDutResponse{}
-	if err := ptypes.UnmarshalAny(op.GetResponse(), resp); err != nil {
+	if err := op.GetResponse().UnmarshalTo(resp); err != nil {
 		t.Fatalf("Failed to unmarshal response [%v]: %s", resp, err)
 	}
 

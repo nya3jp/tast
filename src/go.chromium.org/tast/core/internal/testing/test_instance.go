@@ -14,9 +14,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/golang/protobuf/proto"
-	"github.com/golang/protobuf/ptypes"
 	"go.chromium.org/chromiumos/config/go/test/api"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/durationpb"
 
 	"go.chromium.org/tast/core/errors"
 	"go.chromium.org/tast/core/internal/dep"
@@ -626,7 +626,7 @@ func (t *TestInstance) EntityProto() *protocol.Entity {
 			Emails: append([]string(nil), t.Contacts...),
 		},
 		LegacyData: &protocol.EntityLegacyData{
-			Timeout:      ptypes.DurationProto(t.Timeout),
+			Timeout:      durationpb.New(t.Timeout),
 			Variables:    append([]string(nil), t.Vars...),
 			VariableDeps: append([]string(nil), t.VarDeps...),
 			SoftwareDeps: append([]string(nil), t.SoftwareDeps[""]...),

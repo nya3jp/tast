@@ -97,13 +97,13 @@ created services for that test go in the
 
 For the implementation we need to import the respective package we assigned
 our service to as well as the `grpc` package. As we use an empty response
-in our service we also need the `protobuf/ptypes/empty` package.
+in our service we also need the `protobuf/types/known/emptypb` package.
 
 ```go
 import (
 	...
-	"github.com/golang/protobuf/ptypes/empty"
 	"google.golang.org/grpc"
+	"google.golang.org/protobuf/types/known/emptypb"
 
 	pb "go.chromium.org/tast-tests/cros/services/cros/policy"
 	...

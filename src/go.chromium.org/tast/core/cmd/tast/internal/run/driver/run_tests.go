@@ -13,7 +13,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/golang/protobuf/ptypes"
+	"google.golang.org/protobuf/types/known/durationpb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"go.chromium.org/tast/core/cmd/tast/internal/run/config"
 	"go.chromium.org/tast/core/errors"
@@ -214,7 +215,7 @@ func (d *Driver) runLocalTestsWithRemoteFixture(ctx context.Context, bundle stri
 
 	// Send EntityStart/EntityEnd events to the processor.
 	if err := proc.EntityStart(ctx, &protocol.EntityStartEvent{
-		Time:   ptypes.TimestampNow(),
+		Time:   timestamppb.Now(),
 		OutDir: runCfg.OutDir,
 		// HACK: Create a partially crafted Entity since we don't know
 		// full details of the remote fixture. This should be okay since
@@ -231,7 +232,7 @@ func (d *Driver) runLocalTestsWithRemoteFixture(ctx context.Context, bundle stri
 			return
 		}
 		if err := proc.EntityEnd(ctx, &protocol.EntityEndEvent{
-			Time:       ptypes.TimestampNow(),
+			Time:       timestamppb.Now(),
 			EntityName: start,
 			TimingLog:  nil,
 		}); err != nil {
@@ -434,11 +435,11 @@ func (d *Driver) newConfigsForRemoteTests(ctx context.Context, tests []string,
 			DownloadMode:      d.cfg.DownloadMode(),
 			BuildArtifactsUrl: buildArtifactsURL,
 		},
-		HeartbeatInterval:     ptypes.DurationProto(minidriver.HeartbeatInterval),
+		HeartbeatInterval:     durationpb.New(minidriver.HeartbeatInterval),
 		DebugPort:             uint32(d.cfg.DebuggerPorts()[debugger.RemoteBundle]),
-		SystemServicesTimeout: ptypes.DurationProto(d.cfg.SystemServicesTimeout()),
-		WaitUntilReadyTimeout: ptypes.DurationProto(d.cfg.WaitUntilReadyTimeout()),
-		MsgTimeout:            ptypes.DurationProto(d.cfg.MsgTimeout()),
+		SystemServicesTimeout: durationpb.New(d.cfg.SystemServicesTimeout()),
+		WaitUntilReadyTimeout: durationpb.New(d.cfg.WaitUntilReadyTimeout()),
+		MsgTimeout:            durationpb.New(d.cfg.MsgTimeout()),
 		MaxSysMsgLogSize:      d.cfg.MaxSysMsgLogSize(),
 		PushedFilesInfo:       pushedFilesInfo,
 		Target: &protocol.RunTargetConfig{
@@ -453,9 +454,9 @@ func (d *Driver) newConfigsForRemoteTests(ctx context.Context, tests []string,
 			Retries:               int32(d.cfg.Retries()),
 			Proxy:                 d.cfg.Proxy() == config.ProxyEnv,
 			WaitUntilReady:        d.cfg.WaitUntilReady(),
-			MsgTimeout:            ptypes.DurationProto(d.cfg.MsgTimeout()),
-			SystemServicesTimeout: ptypes.DurationProto(d.cfg.SystemServicesTimeout()),
-			WaitUntilReadyTimeout: ptypes.DurationProto(d.cfg.WaitUntilReadyTimeout()),
+			MsgTimeout:            durationpb.New(d.cfg.MsgTimeout()),
+			SystemServicesTimeout: durationpb.New(d.cfg.SystemServicesTimeout()),
+			WaitUntilReadyTimeout: durationpb.New(d.cfg.WaitUntilReadyTimeout()),
 			SwarmingTaskID:        d.cfg.SwarmingTaskID(),
 			BuildBucketID:         d.cfg.BuildBucketID(),
 		},

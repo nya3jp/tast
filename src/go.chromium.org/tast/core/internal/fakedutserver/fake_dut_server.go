@@ -14,13 +14,13 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/golang/protobuf/ptypes"
-	"github.com/golang/protobuf/ptypes/empty"
 	"go.chromium.org/chromiumos/config/go/longrunning"
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/anypb"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 type config struct {
@@ -159,12 +159,12 @@ func (s *DutServiceServer) WaitOperation(ctx context.Context, req *longrunning.W
 }
 
 // CancelOperation implements longrunning.CancelOperation.
-func (s *DutServiceServer) CancelOperation(ctx context.Context, req *longrunning.CancelOperationRequest) (*empty.Empty, error) {
+func (s *DutServiceServer) CancelOperation(ctx context.Context, req *longrunning.CancelOperationRequest) (*emptypb.Empty, error) {
 	return nil, status.Error(codes.Unimplemented, "not implemented")
 }
 
 // DeleteOperation implements longrunning.CancelOperation.
-func (s *DutServiceServer) DeleteOperation(ctx context.Context, req *longrunning.DeleteOperationRequest) (*empty.Empty, error) {
+func (s *DutServiceServer) DeleteOperation(ctx context.Context, req *longrunning.DeleteOperationRequest) (*emptypb.Empty, error) {
 	return nil, status.Error(codes.Unimplemented, "not implemented")
 }
 
@@ -178,7 +178,7 @@ func (s *DutServiceServer) finishOperation(name string) (*longrunning.Operation,
 	if !ok {
 		return nil, status.Errorf(codes.NotFound, "failed to find operation: %s", name)
 	}
-	m, err := ptypes.MarshalAny(&api.CacheResponse{Result: &api.CacheResponse_Success_{}})
+	m, err := anypb.New(&api.CacheResponse{Result: &api.CacheResponse_Success_{}})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to marshal data: %s", err)
 	}

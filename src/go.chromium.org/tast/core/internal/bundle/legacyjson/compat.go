@@ -8,8 +8,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/golang/protobuf/ptypes"
-
 	"go.chromium.org/tast/core/errors"
 
 	"go.chromium.org/tast/core/internal/protocol"
@@ -19,11 +17,11 @@ import (
 func EntityInfoFromProto(e *protocol.Entity) (*EntityInfo, error) {
 	var timeout time.Duration
 	if topb := e.GetLegacyData().GetTimeout(); topb != nil {
-		to, err := ptypes.Duration(topb)
+		err := topb.CheckValid()
 		if err != nil {
 			return nil, errors.Wrap(err, "cannot convert timeout")
 		}
-		timeout = to
+		timeout = topb.AsDuration()
 	}
 
 	return &EntityInfo{

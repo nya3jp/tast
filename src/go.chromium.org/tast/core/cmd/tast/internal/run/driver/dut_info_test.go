@@ -7,9 +7,9 @@ package driver_test
 import (
 	"testing"
 
-	"github.com/golang/protobuf/proto"
 	"github.com/google/go-cmp/cmp"
 	configpb "go.chromium.org/chromiumos/config/go/api"
+	"google.golang.org/protobuf/proto"
 
 	"go.chromium.org/tast/core/cmd/tast/internal/run/config"
 	"go.chromium.org/tast/core/cmd/tast/internal/run/driver"

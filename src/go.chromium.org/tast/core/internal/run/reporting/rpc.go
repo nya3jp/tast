@@ -7,8 +7,9 @@ package reporting
 import (
 	"context"
 
-	"github.com/golang/protobuf/ptypes"
 	"google.golang.org/grpc"
+	"google.golang.org/protobuf/types/known/durationpb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"go.chromium.org/tast/core/errors"
 	"go.chromium.org/tast/core/internal/run/resultsjson"
@@ -125,11 +126,8 @@ func (c *RPCClient) ReportResult(ctx context.Context, r *resultsjson.Result) err
 		return nil
 	}
 
-	startTime, err := ptypes.TimestampProto(r.Start)
-	if err != nil {
-		return err
-	}
-	duration := ptypes.DurationProto(r.End.Sub(r.Start))
+	startTime := timestamppb.New(r.Start)
+	duration := durationpb.New(r.End.Sub(r.Start))
 	req := &frameworkprotocol.ReportResultRequest{
 		Test:       r.Name,
 		SkipReason: r.SkipReason,
@@ -137,10 +135,7 @@ func (c *RPCClient) ReportResult(ctx context.Context, r *resultsjson.Result) err
 		Duration:   duration,
 	}
 	for _, e := range r.Errors {
-		ts, err := ptypes.TimestampProto(e.Time)
-		if err != nil {
-			return err
-		}
+		ts := timestamppb.New(e.Time)
 		req.Errors = append(req.Errors, &frameworkprotocol.ErrorReport{
 			Time:   ts,
 			Reason: e.Reason,

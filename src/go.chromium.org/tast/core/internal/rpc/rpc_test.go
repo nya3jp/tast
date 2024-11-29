@@ -19,11 +19,11 @@ import (
 	gotesting "testing"
 	"time"
 
-	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/google/go-cmp/cmp"
 	"github.com/shirou/gopsutil/v3/process"
 	"golang.org/x/sys/unix"
 	"google.golang.org/grpc"
+	"google.golang.org/protobuf/types/known/emptypb"
 
 	"go.chromium.org/tast/core/errors"
 	"go.chromium.org/tast/core/internal/fakeexec"
@@ -48,22 +48,22 @@ type pingUserServer struct {
 	onPing func(context.Context, *testing.ServiceState) error
 }
 
-func (s *pingUserServer) Ping(ctx context.Context, _ *empty.Empty) (*empty.Empty, error) {
+func (s *pingUserServer) Ping(ctx context.Context, _ *emptypb.Empty) (*emptypb.Empty, error) {
 	if err := s.onPing(ctx, s.s); err != nil {
 		return nil, err
 	}
-	return &empty.Empty{}, nil
+	return &emptypb.Empty{}, nil
 }
 
 type pingCoreServer struct{}
 
-func (s *pingCoreServer) Ping(ctx context.Context, _ *empty.Empty) (*empty.Empty, error) {
-	return &empty.Empty{}, nil
+func (s *pingCoreServer) Ping(ctx context.Context, _ *emptypb.Empty) (*emptypb.Empty, error) {
+	return &emptypb.Empty{}, nil
 }
 
 type pingPanicServer struct{}
 
-func (s *pingPanicServer) Ping(ctx context.Context, _ *empty.Empty) (*empty.Empty, error) {
+func (s *pingPanicServer) Ping(ctx context.Context, _ *emptypb.Empty) (*emptypb.Empty, error) {
 	panic("pingPanicServer.Ping was called")
 }
 
@@ -181,7 +181,7 @@ func TestRPCSuccess(t *gotesting.T) {
 	callCtx := testcontext.WithCurrentEntity(ctx, &testcontext.CurrentEntity{
 		ServiceDeps: []string{pingUserServiceName},
 	})
-	if _, err := pp.UserClient.Ping(callCtx, &empty.Empty{}); err != nil {
+	if _, err := pp.UserClient.Ping(callCtx, &emptypb.Empty{}); err != nil {
 		t.Error("Ping failed: ", err)
 	}
 	if !called {
@@ -205,7 +205,7 @@ func TestRPCFailure(t *gotesting.T) {
 	callCtx := testcontext.WithCurrentEntity(ctx, &testcontext.CurrentEntity{
 		ServiceDeps: []string{pingUserServiceName},
 	})
-	if _, err := pp.UserClient.Ping(callCtx, &empty.Empty{}); err == nil {
+	if _, err := pp.UserClient.Ping(callCtx, &emptypb.Empty{}); err == nil {
 		t.Error("Ping unexpectedly succeeded")
 	}
 	if !called {
@@ -229,7 +229,7 @@ func TestRPCPanic(t *gotesting.T) {
 	callCtx := testcontext.WithCurrentEntity(ctx, &testcontext.CurrentEntity{
 		ServiceDeps: []string{pingUserServiceName},
 	})
-	if _, err := pp.UserClient.Ping(callCtx, &empty.Empty{}); err == nil {
+	if _, err := pp.UserClient.Ping(callCtx, &emptypb.Empty{}); err == nil {
 		t.Error("Ping unexpectedly succeeded")
 	} else if !strings.Contains(err.Error(), "panic: Ping was called") {
 		t.Error("Ping error did not contain panic info: ", err)
@@ -255,7 +255,7 @@ func TestRPCNotRequested(t *gotesting.T) {
 	callCtx := testcontext.WithCurrentEntity(ctx, &testcontext.CurrentEntity{
 		ServiceDeps: []string{pingUserServiceName},
 	})
-	if _, err := pp.UserClient.Ping(callCtx, &empty.Empty{}); err == nil {
+	if _, err := pp.UserClient.Ping(callCtx, &emptypb.Empty{}); err == nil {
 		t.Error("Ping unexpectedly succeeded")
 	}
 	if called {
@@ -276,7 +276,7 @@ func TestRPCNoCurrentEntity(t *gotesting.T) {
 	pp := newPingPair(ctx, t, req, svc)
 	defer pp.Close()
 
-	if _, err := pp.UserClient.Ping(context.Background(), &empty.Empty{}); err == nil {
+	if _, err := pp.UserClient.Ping(context.Background(), &emptypb.Empty{}); err == nil {
 		t.Error("Ping unexpectedly succeeded for a context missing CurrentEntity")
 	}
 	if called {
@@ -294,7 +294,7 @@ func TestRPCRejectUndeclaredServices(t *gotesting.T) {
 	callCtx := testcontext.WithCurrentEntity(ctx, &testcontext.CurrentEntity{
 		ServiceDeps: []string{"foo.Bar"},
 	})
-	if _, err := pp.UserClient.Ping(callCtx, &empty.Empty{}); err == nil {
+	if _, err := pp.UserClient.Ping(callCtx, &emptypb.Empty{}); err == nil {
 		t.Error("Ping unexpectedly succeeded despite undeclared service")
 	}
 }
@@ -317,7 +317,7 @@ func TestRPCForwardCurrentEntity(t *gotesting.T) {
 	pp := newPingPair(ctx, t, req, svc)
 	defer pp.Close()
 
-	if _, err := pp.UserClient.Ping(ctx, &empty.Empty{}); err == nil {
+	if _, err := pp.UserClient.Ping(ctx, &emptypb.Empty{}); err == nil {
 		t.Error("Ping unexpectedly succeeded for a context without CurrentEntity")
 	}
 
@@ -326,7 +326,7 @@ func TestRPCForwardCurrentEntity(t *gotesting.T) {
 		HasSoftwareDeps: true,
 		SoftwareDeps:    expectedDeps,
 	})
-	if _, err := pp.UserClient.Ping(callCtx, &empty.Empty{}); err != nil {
+	if _, err := pp.UserClient.Ping(callCtx, &emptypb.Empty{}); err != nil {
 		t.Error("Ping failed: ", err)
 	}
 	if !called {
@@ -359,7 +359,7 @@ func TestRPCForwardLogs(t *gotesting.T) {
 	callCtx := testcontext.WithCurrentEntity(ctx, &testcontext.CurrentEntity{
 		ServiceDeps: []string{pingUserServiceName},
 	})
-	if _, err := pp.UserClient.Ping(callCtx, &empty.Empty{}); err != nil {
+	if _, err := pp.UserClient.Ping(callCtx, &emptypb.Empty{}); err != nil {
 		t.Error("Ping failed: ", err)
 	}
 	if !called {
@@ -409,7 +409,7 @@ func TestRPCForwardLogsAsyncStress(t *gotesting.T) {
 			callCtx := testcontext.WithCurrentEntity(ctx, &testcontext.CurrentEntity{
 				ServiceDeps: []string{pingUserServiceName},
 			})
-			if _, err := pp.UserClient.Ping(callCtx, &empty.Empty{}); err != nil {
+			if _, err := pp.UserClient.Ping(callCtx, &emptypb.Empty{}); err != nil {
 				t.Error("Ping failed: ", err)
 			}
 		}()
@@ -441,7 +441,7 @@ func TestRPCForwardTiming(t *gotesting.T) {
 	callCtx := testcontext.WithCurrentEntity(ctx, &testcontext.CurrentEntity{
 		ServiceDeps: []string{pingUserServiceName},
 	})
-	if _, err := pp.UserClient.Ping(callCtx, &empty.Empty{}); err != nil {
+	if _, err := pp.UserClient.Ping(callCtx, &emptypb.Empty{}); err != nil {
 		t.Error("Ping failed: ", err)
 	}
 	if !called {
@@ -496,7 +496,7 @@ func TestRPCPullOutDir(t *gotesting.T) {
 		ServiceDeps: []string{pingUserServiceName},
 		OutDir:      outDir,
 	})
-	if _, err := pp.UserClient.Ping(callCtx, &empty.Empty{}); err != nil {
+	if _, err := pp.UserClient.Ping(callCtx, &emptypb.Empty{}); err != nil {
 		t.Error("Ping failed: ", err)
 	}
 
@@ -537,7 +537,7 @@ func TestRPCSetVars(t *gotesting.T) {
 	callCtx := testcontext.WithCurrentEntity(ctx, &testcontext.CurrentEntity{
 		ServiceDeps: []string{pingUserServiceName},
 	})
-	if _, err := pp.UserClient.Ping(callCtx, &empty.Empty{}); err != nil {
+	if _, err := pp.UserClient.Ping(callCtx, &emptypb.Empty{}); err != nil {
 		t.Error("Ping failed: ", err)
 	}
 	if !called {
@@ -569,7 +569,7 @@ func TestRPCServiceScopedContext(t *gotesting.T) {
 	callCtx := testcontext.WithCurrentEntity(ctx, &testcontext.CurrentEntity{
 		ServiceDeps: []string{pingUserServiceName},
 	})
-	if _, err := pp.UserClient.Ping(callCtx, &empty.Empty{}); err != nil {
+	if _, err := pp.UserClient.Ping(callCtx, &emptypb.Empty{}); err != nil {
 		t.Error("Ping failed: ", err)
 	}
 	if !called {
@@ -591,7 +591,7 @@ func TestRPCExtraCoreServices(t *gotesting.T) {
 	pp := newPingPair(ctx, t, req, svc)
 	defer pp.Close()
 
-	if _, err := pp.CoreClient.Ping(ctx, &empty.Empty{}); err != nil {
+	if _, err := pp.CoreClient.Ping(ctx, &emptypb.Empty{}); err != nil {
 		t.Error("Ping failed: ", err)
 	}
 }
@@ -634,7 +634,7 @@ func TestRPCOverExec(t *gotesting.T) {
 	}()
 
 	cl := protocol.NewPingCoreClient(conn.Conn())
-	if _, err := cl.Ping(ctx, &empty.Empty{}); err != nil {
+	if _, err := cl.Ping(ctx, &emptypb.Empty{}); err != nil {
 		t.Error("Ping failed: ", err)
 	}
 }
@@ -677,7 +677,7 @@ func TestPanicOverExec(t *gotesting.T) {
 	}()
 
 	cl := protocol.NewPingCoreClient(conn.Conn())
-	if _, err := cl.Ping(ctx, &empty.Empty{}); err == nil {
+	if _, err := cl.Ping(ctx, &emptypb.Empty{}); err == nil {
 		t.Error("Ping unexpectedly succeeded")
 	} else if !strings.Contains(err.Error(), "panic: pingPanicServer.Ping was called") {
 		t.Error("Ping error did not contain panic info: ", err)
@@ -686,10 +686,10 @@ func TestPanicOverExec(t *gotesting.T) {
 
 type leakingPingServer struct{}
 
-func (s *leakingPingServer) Ping(ctx context.Context, _ *empty.Empty) (*empty.Empty, error) {
+func (s *leakingPingServer) Ping(ctx context.Context, _ *emptypb.Empty) (*emptypb.Empty, error) {
 	// Intentionally leak a subprocess.
 	exec.Command("sleep", "60").Start()
-	return &empty.Empty{}, nil
+	return &emptypb.Empty{}, nil
 }
 
 var leakingMain = fakeexec.NewAuxMain("rpc_new_session_test", func(_ struct{}) {
@@ -729,7 +729,7 @@ func TestRPCOverExecNewSession(t *gotesting.T) {
 
 				// Call Ping. This will leak a subprocess.
 				cl := protocol.NewPingCoreClient(conn.Conn())
-				if _, err := cl.Ping(ctx, &empty.Empty{}); err != nil {
+				if _, err := cl.Ping(ctx, &emptypb.Empty{}); err != nil {
 					t.Error("Ping failed: ", err)
 				}
 
@@ -810,7 +810,7 @@ func TestRPCOverSSH(t *gotesting.T) {
 	}()
 
 	cl := protocol.NewPingCoreClient(conn.Conn())
-	if _, err := cl.Ping(ctx, &empty.Empty{}); err != nil {
+	if _, err := cl.Ping(ctx, &emptypb.Empty{}); err != nil {
 		t.Error("Ping failed: ", err)
 	}
 }
@@ -855,7 +855,7 @@ func TestRPCOverSSHShortContext(t *gotesting.T) {
 	// Should succeed
 	cl := protocol.NewPingCoreClient(conn.Conn())
 	t.Log("Ping")
-	if _, err := cl.Ping(ctx, &empty.Empty{}); err != nil {
+	if _, err := cl.Ping(ctx, &emptypb.Empty{}); err != nil {
 		t.Error("Ping failed: ", err)
 	}
 
@@ -863,7 +863,7 @@ func TestRPCOverSSHShortContext(t *gotesting.T) {
 	shortCancel()
 
 	t.Log("Ping")
-	if _, err := cl.Ping(ctx, &empty.Empty{}); err != nil {
+	if _, err := cl.Ping(ctx, &emptypb.Empty{}); err != nil {
 		t.Error("Ping failed: ", err)
 	}
 	// Should fail
@@ -917,7 +917,7 @@ func TestPanicOverSSH(t *gotesting.T) {
 	}()
 
 	cl := protocol.NewPingCoreClient(conn.Conn())
-	if _, err := cl.Ping(ctx, &empty.Empty{}); err == nil {
+	if _, err := cl.Ping(ctx, &emptypb.Empty{}); err == nil {
 		t.Error("Ping unexpectedly succeeded")
 	} else if !strings.Contains(err.Error(), "panic: pingPanicServer.Ping was called") {
 		t.Error("Ping error did not contain panic info: ", err)
@@ -933,7 +933,7 @@ type subprocessServer struct {
 	path string
 }
 
-func (s *subprocessServer) Ping(ctx context.Context, _ *empty.Empty) (*empty.Empty, error) {
+func (s *subprocessServer) Ping(ctx context.Context, _ *emptypb.Empty) (*emptypb.Empty, error) {
 	if err := ctx.Err(); err != nil {
 		return nil, errors.Wrap(err, "context already canceled on entering method")
 	}
@@ -947,7 +947,7 @@ func (s *subprocessServer) Ping(ctx context.Context, _ *empty.Empty) (*empty.Emp
 	// Notify the parent process that we're finishing the method call.
 	os.WriteFile(s.path, []byte(textFinished), 0666)
 
-	return &empty.Empty{}, nil
+	return &emptypb.Empty{}, nil
 }
 
 var stdioMain = fakeexec.NewAuxMain("rpc_stdio_test", func(path string) {
@@ -1009,7 +1009,7 @@ func runStdioTestServer(t *gotesting.T) (cmd *exec.Cmd, stdin io.WriteCloser, st
 	// Make an RPC call on a goroutine.
 	go func() {
 		cl := protocol.NewPingCoreClient(conn.Conn())
-		cl.Ping(ctx, &empty.Empty{})
+		cl.Ping(ctx, &emptypb.Empty{})
 	}()
 
 	// waitText waits until f's content becomes the specified one.

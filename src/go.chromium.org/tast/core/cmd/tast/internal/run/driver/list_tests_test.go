@@ -8,9 +8,9 @@ import (
 	"context"
 	gotesting "testing"
 
-	"github.com/golang/protobuf/ptypes"
 	"github.com/google/go-cmp/cmp"
 	"google.golang.org/protobuf/testing/protocmp"
+	"google.golang.org/protobuf/types/known/durationpb"
 
 	"go.chromium.org/tast/core/cmd/tast/internal/run/config"
 	"go.chromium.org/tast/core/cmd/tast/internal/run/driver"
@@ -72,7 +72,7 @@ func makeBundleEntityForTest(bundle string, hops int32, name, attr string, varDe
 				Dependencies: &protocol.EntityDependencies{},
 				Contacts:     &protocol.EntityContacts{},
 				LegacyData: &protocol.EntityLegacyData{
-					Timeout:      ptypes.DurationProto(0),
+					Timeout:      durationpb.New(0),
 					Bundle:       bundle,
 					VariableDeps: varDeps,
 				},

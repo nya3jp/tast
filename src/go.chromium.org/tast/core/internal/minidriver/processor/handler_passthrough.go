@@ -8,7 +8,6 @@ import (
 	"context"
 	"sync"
 
-	"github.com/golang/protobuf/ptypes"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"go.chromium.org/tast/core/internal/logging"
@@ -39,10 +38,7 @@ func (h *passThroughHandler) RunStart(ctx context.Context) error {
 }
 
 func (h *passThroughHandler) EntityStart(ctx context.Context, ei *entityInfo) error {
-	ts, err := ptypes.TimestampProto(ei.Start)
-	if err != nil {
-		return err
-	}
+	ts := timestamppb.New(ei.Start)
 	h.mu.Lock()
 	defer h.mu.Unlock()
 	return h.pass(&protocol.RunTestsResponse{
@@ -73,10 +69,7 @@ func (h *passThroughHandler) EntityLog(ctx context.Context, ei *entityInfo, l *l
 }
 
 func (h *passThroughHandler) EntityError(ctx context.Context, ei *entityInfo, e *errorEntry) error {
-	ts, err := ptypes.TimestampProto(e.Time)
-	if err != nil {
-		return err
-	}
+	ts := timestamppb.New(e.Time)
 	h.mu.Lock()
 	defer h.mu.Unlock()
 	return h.pass(&protocol.RunTestsResponse{
@@ -91,10 +84,7 @@ func (h *passThroughHandler) EntityError(ctx context.Context, ei *entityInfo, e 
 }
 
 func (h *passThroughHandler) EntityEnd(ctx context.Context, ei *entityInfo, r *entityResult) error {
-	ts, err := ptypes.TimestampProto(r.End)
-	if err != nil {
-		return err
-	}
+	ts := timestamppb.New(r.End)
 	h.mu.Lock()
 	defer h.mu.Unlock()
 	return h.pass(&protocol.RunTestsResponse{

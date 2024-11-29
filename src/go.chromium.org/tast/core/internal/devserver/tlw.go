@@ -12,7 +12,6 @@ import (
 	"net/url"
 	"os"
 
-	"github.com/golang/protobuf/ptypes"
 	"go.chromium.org/chromiumos/config/go/api/test/tls"
 	"go.chromium.org/chromiumos/config/go/api/test/tls/dependencies/longrunning"
 	"google.golang.org/grpc"
@@ -80,7 +79,7 @@ func (c *TLWClient) Stage(ctx context.Context, gsURL string) (*url.URL, error) {
 	}
 
 	resp := &tls.CacheForDutResponse{}
-	if err := ptypes.UnmarshalAny(op.GetResponse(), resp); err != nil {
+	if err := op.GetResponse().UnmarshalTo(resp); err != nil {
 		return nil, errors.Wrapf(err, "failed to unmarshal response: %v", resp)
 	}
 	return url.Parse(resp.Url)

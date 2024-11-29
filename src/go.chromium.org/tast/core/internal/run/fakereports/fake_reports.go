@@ -12,8 +12,8 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/golang/protobuf/ptypes/empty"
 	"google.golang.org/grpc"
+	"google.golang.org/protobuf/types/known/emptypb"
 
 	"go.chromium.org/tast/core/framework/protocol"
 )
@@ -56,7 +56,7 @@ func (s *Server) LogStream(stream protocol.Reports_LogStreamServer) error {
 	for {
 		req, err := stream.Recv()
 		if err == io.EOF {
-			return stream.SendAndClose(&empty.Empty{})
+			return stream.SendAndClose(&emptypb.Empty{})
 		}
 		if err != nil {
 			return err

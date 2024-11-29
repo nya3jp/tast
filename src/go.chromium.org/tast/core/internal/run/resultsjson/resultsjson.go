@@ -9,8 +9,6 @@ package resultsjson
 import (
 	"time"
 
-	"github.com/golang/protobuf/ptypes"
-
 	"go.chromium.org/tast/core/errors"
 	"go.chromium.org/tast/core/internal/dep"
 	"go.chromium.org/tast/core/internal/protocol"
@@ -76,11 +74,11 @@ func NewTest(e *protocol.Entity) (*Test, error) {
 
 	var timeout time.Duration
 	if topb := e.GetLegacyData().GetTimeout(); topb != nil {
-		to, err := ptypes.Duration(topb)
+		err := topb.CheckValid()
 		if err != nil {
 			return nil, err
 		}
-		timeout = to
+		timeout = topb.AsDuration()
 	}
 	return &Test{
 		Name:         e.GetName(),

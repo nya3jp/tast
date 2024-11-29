@@ -14,8 +14,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/golang/protobuf/ptypes"
-	"github.com/golang/protobuf/ptypes/timestamp"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"go.chromium.org/tast/core/errors"
 	"go.chromium.org/tast/core/internal/protocol"
@@ -227,14 +226,8 @@ func (s *Stage) writePretty(w *bufio.Writer, initialIndent, followIndent string,
 
 // Proto returns a protobuf presentation of Stage.
 func (s *Stage) Proto() (*protocol.TimingStage, error) {
-	start, err := timestampProto(s.StartTime)
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to convert StartTime to protobuf")
-	}
-	end, err := timestampProto(s.EndTime)
-	if err != nil {
-		return nil, errors.Wrap(err, "failed to convert EndTime to protobuf")
-	}
+	start := timestampProto(s.StartTime)
+	end := timestampProto(s.EndTime)
 	var children []*protocol.TimingStage
 	for _, c := range s.Children {
 		child, err := c.Proto()
@@ -251,11 +244,11 @@ func (s *Stage) Proto() (*protocol.TimingStage, error) {
 	}, nil
 }
 
-func timestampProto(t time.Time) (*timestamp.Timestamp, error) {
+func timestampProto(t time.Time) *timestamppb.Timestamp {
 	if t.IsZero() {
-		return nil, nil
+		return nil
 	}
-	return ptypes.TimestampProto(t)
+	return timestamppb.New(t)
 }
 
 // LogFromProto constructs Log from its protocol buffer presentation.
@@ -271,18 +264,16 @@ func LogFromProto(p *protocol.TimingLog) (*Log, error) {
 func StageFromProto(p *protocol.TimingStage) (*Stage, error) {
 	var start, end time.Time
 	if ts := p.GetStartTime(); ts != nil {
-		var err error
-		start, err = ptypes.Timestamp(ts)
-		if err != nil {
+		if err := ts.CheckValid(); err != nil {
 			return nil, err
 		}
+		start = ts.AsTime()
 	}
 	if ts := p.GetEndTime(); ts != nil {
-		var err error
-		end, err = ptypes.Timestamp(ts)
-		if err != nil {
+		if err := ts.CheckValid(); err != nil {
 			return nil, err
 		}
+		end = ts.AsTime()
 	}
 	var children []*Stage
 	for _, c := range p.GetChildren() {

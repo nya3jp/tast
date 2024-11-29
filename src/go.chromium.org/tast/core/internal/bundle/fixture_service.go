@@ -12,9 +12,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/golang/protobuf/ptypes"
-	"github.com/golang/protobuf/ptypes/empty"
 	"google.golang.org/grpc"
+	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"go.chromium.org/tast/core/internal/logging"
@@ -61,9 +60,9 @@ func (s *fixtureService) pushAndPop(srv protocol.FixtureService_RunFixtureServer
 	sendDone := func() error {
 		return srv.Send(&protocol.RunFixtureResponse{
 			Control: &protocol.RunFixtureResponse_RequestDone{
-				RequestDone: &empty.Empty{},
+				RequestDone: &emptypb.Empty{},
 			},
-			Timestamp: ptypes.TimestampNow(),
+			Timestamp: timestamppb.Now(),
 		})
 	}
 
@@ -157,10 +156,10 @@ func (s *fixtureService) pushAndPop(srv protocol.FixtureService_RunFixtureServer
 		},
 	}
 	if r.Config.CustomGracePeriod != nil {
-		d, err := ptypes.Duration(r.Config.CustomGracePeriod)
-		if err != nil {
+		if err := r.Config.CustomGracePeriod.CheckValid(); err != nil {
 			return fmt.Errorf("push %v: invalid CustomGracePeriod: %v", r.Name, err)
 		}
+		d := r.Config.CustomGracePeriod.AsDuration()
 		pcfg.CustomGracePeriod = &d
 	}
 

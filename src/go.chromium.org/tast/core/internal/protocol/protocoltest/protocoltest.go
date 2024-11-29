@@ -10,9 +10,9 @@ import (
 	"context"
 	"io"
 
-	"github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/google/go-cmp/cmp"
 	"google.golang.org/protobuf/testing/protocmp"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"go.chromium.org/tast/core/errors"
 	"go.chromium.org/tast/core/internal/protocol"
@@ -22,7 +22,7 @@ import (
 // protocol.Event slices ignoring non-deterministic fields.
 var EventCmpOpts = []cmp.Option{
 	protocmp.Transform(),
-	protocmp.IgnoreMessages(&timestamp.Timestamp{}),
+	protocmp.IgnoreMessages(&timestamppb.Timestamp{}),
 	protocmp.IgnoreFields(&protocol.EntityStartEvent{}, "out_dir"),
 	protocmp.IgnoreFields(&protocol.EntityEndEvent{}, "timing_log"),
 	protocmp.IgnoreFields(&protocol.Error{}, "location"),

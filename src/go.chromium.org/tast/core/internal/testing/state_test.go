@@ -20,10 +20,10 @@ import (
 	gotesting "testing"
 	"time"
 
-	"github.com/golang/protobuf/proto"
 	"github.com/google/go-cmp/cmp"
 	"go.chromium.org/chromiumos/config/go/api"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/testing/protocmp"
 
 	"go.chromium.org/tast/core/errors"

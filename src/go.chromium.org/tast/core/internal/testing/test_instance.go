@@ -14,6 +14,8 @@ import (
 	"strings"
 	"time"
 
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/durationpb"
@@ -386,7 +388,7 @@ func validateFileName(funcName, filename string) error {
 		// Note that this also permits incorrect filenames like loadurl.go for "LoadURL", but that's not something code can prevent.
 		if !testWordRegexp.MatchString(funcWord) {
 			return fmt.Errorf("word %q at %q[%d] should probably be %q (acronyms also allowed at beginning and end)",
-				funcWord, funcName, funcIdx, strings.Title(strings.ToLower(funcWord)))
+				funcWord, funcName, funcIdx, cases.Title(language.Und).String(strings.ToLower(funcWord)))
 		}
 
 		funcIdx += len(funcWord)

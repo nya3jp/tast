@@ -143,8 +143,7 @@ var _ net.Listener = (*PipeListener)(nil)
 func NewPipeClientConn(ctx context.Context, r io.Reader, w io.Writer, extraOpts ...grpc.DialOption) (*grpc.ClientConn, error) {
 	opts := append([]grpc.DialOption{
 		grpc.WithInsecure(),
-		// TODO(crbug.com/989419): Use grpc.WithContextDialer after updating grpc-go.
-		grpc.WithDialer(func(string, time.Duration) (net.Conn, error) {
+		grpc.WithContextDialer(func(context.Context, string) (net.Conn, error) {
 			return &pipeConn{r: r, w: w}, nil
 		}),
 	}, extraOpts...)

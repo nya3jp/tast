@@ -8,7 +8,7 @@ package diagnose
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"path/filepath"
 	"regexp"
 	"strings"
@@ -86,7 +86,7 @@ func diagnoseReboot(ctx context.Context, cc *target.ConnCache, outDir string) st
 
 	if logs != "" {
 		const fn = "unified-logs.before-reboot.txt"
-		if err := ioutil.WriteFile(filepath.Join(outDir, fn), []byte(logs), 0666); err != nil {
+		if err := os.WriteFile(filepath.Join(outDir, fn), []byte(logs), 0666); err != nil {
 			logging.Infof(ctx, "Failed to save %s: %v", fn, err)
 		}
 	}
@@ -104,7 +104,7 @@ func diagnoseReboot(ctx context.Context, cc *target.ConnCache, outDir string) st
 
 	if ramOops != "" {
 		const fn = "console-ramoops.txt"
-		if err := ioutil.WriteFile(filepath.Join(outDir, fn), []byte(ramOops), 0666); err != nil {
+		if err := os.WriteFile(filepath.Join(outDir, fn), []byte(ramOops), 0666); err != nil {
 			logging.Infof(ctx, "Failed to save %s: %v", fn, err)
 		}
 	}

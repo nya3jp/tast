@@ -6,7 +6,6 @@ package genutil
 
 import (
 	"bufio"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -176,7 +175,7 @@ func writeConstants(groups []group, args tmplArgs, path string) error {
 		groups,
 	}
 
-	f, err := ioutil.TempFile(filepath.Dir(path), "."+filepath.Base(path)+".")
+	f, err := os.CreateTemp(filepath.Dir(path), "."+filepath.Base(path)+".")
 	if err != nil {
 		return err
 	}

@@ -7,7 +7,7 @@ package reporting
 import (
 	"encoding/xml"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"time"
 
 	"go.chromium.org/tast/core/internal/run/resultsjson"
@@ -110,5 +110,5 @@ func WriteJUnitXMLResults(path string, results []*resultsjson.Result) error {
 	if err != nil {
 		return err
 	}
-	return ioutil.WriteFile(path, data, 0644)
+	return os.WriteFile(path, data, 0644)
 }

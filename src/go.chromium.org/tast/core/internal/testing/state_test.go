@@ -8,7 +8,7 @@ import (
 	"context"
 	"fmt"
 	"go/token"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -646,7 +646,7 @@ func TestDataFileServer(t *gotesting.T) {
 		if resp.StatusCode != http.StatusOK {
 			return "", errors.New(resp.Status)
 		}
-		body, err := ioutil.ReadAll(resp.Body)
+		body, err := io.ReadAll(resp.Body)
 		return string(body), err
 	}
 

@@ -7,7 +7,6 @@ package devserver_test
 import (
 	"context"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -34,7 +33,7 @@ func TestPseudoClientOpen(t *testing.T) {
 		t.Error("Open failed: ", err)
 	}
 	defer r.Close()
-	if data, err := ioutil.ReadAll(r); err != nil {
+	if data, err := io.ReadAll(r); err != nil {
 		t.Error("ReadAll failed: ", err)
 	} else if string(data) != expected {
 		t.Errorf("Open returned %q; want %q", string(data), expected)
@@ -73,7 +72,7 @@ func TestPseudoClientStage(t *testing.T) {
 		t.Error("Get failed: ", resp)
 	}
 	defer resp.Body.Close()
-	if data, err := ioutil.ReadAll(resp.Body); err != nil {
+	if data, err := io.ReadAll(resp.Body); err != nil {
 		t.Error("ReadAll failed: ", err)
 	} else if string(data) != expected {
 		t.Errorf("Get returned %q; want %q", string(data), expected)

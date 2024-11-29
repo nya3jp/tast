@@ -5,7 +5,7 @@
 package reporting_test
 
 import (
-	"io/ioutil"
+	"os"
 	"path/filepath"
 	"strings"
 	gotesting "testing"
@@ -75,7 +75,7 @@ func TestWriteJUnitXMLResults(t *gotesting.T) {
 		t.Fatalf("Failed to save to XML: %s", err)
 	}
 
-	x, err := ioutil.ReadFile(path)
+	x, err := os.ReadFile(path)
 	if err != nil {
 		t.Fatalf("Failed to read XML: %v", err)
 	}

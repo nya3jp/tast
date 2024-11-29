@@ -5,7 +5,6 @@
 package git_test
 
 import (
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -77,14 +76,14 @@ func newTestRepo(t *testing.T) string {
 	}
 
 	// Create the first commit.
-	if err := ioutil.WriteFile(filepath.Join(repoDir, staticName), []byte("static"), 0644); err != nil {
+	if err := os.WriteFile(filepath.Join(repoDir, staticName), []byte("static"), 0644); err != nil {
 		t.Fatal("WriteFile failed: ", err)
 	}
 	testPath := filepath.Join(repoDir, testName)
-	if err := ioutil.WriteFile(testPath, nil, 0644); err != nil {
+	if err := os.WriteFile(testPath, nil, 0644); err != nil {
 		t.Fatal("WriteFile failed: ", err)
 	}
-	if err := ioutil.WriteFile(filepath.Join(repoDir, deleteName), nil, 0644); err != nil {
+	if err := os.WriteFile(filepath.Join(repoDir, deleteName), nil, 0644); err != nil {
 		t.Fatal("WriteFile failed: ", err)
 	}
 
@@ -101,10 +100,10 @@ func newTestRepo(t *testing.T) string {
 	}
 
 	// Create the second commit.
-	if err := ioutil.WriteFile(testPath, []byte(headContent), 0644); err != nil {
+	if err := os.WriteFile(testPath, []byte(headContent), 0644); err != nil {
 		t.Fatal("WriteFile failed: ", err)
 	}
-	if err := ioutil.WriteFile(filepath.Join(repoDir, newName), []byte("baz"), 0644); err != nil {
+	if err := os.WriteFile(filepath.Join(repoDir, newName), []byte("baz"), 0644); err != nil {
 		t.Fatal("WriteFile failed: ", err)
 	}
 	if err := os.Symlink(filepath.Join(".", staticName), filepath.Join(repoDir, symlinkName)); err != nil {
@@ -130,10 +129,10 @@ func newTestRepo(t *testing.T) string {
 	}
 
 	// Create the work tree.
-	if err := ioutil.WriteFile(testPath, []byte(workContent), 0644); err != nil {
+	if err := os.WriteFile(testPath, []byte(workContent), 0644); err != nil {
 		t.Fatal("WriteFile failed: ", err)
 	}
-	if err := ioutil.WriteFile(filepath.Join(repoDir, untrackedName), nil, 0644); err != nil {
+	if err := os.WriteFile(filepath.Join(repoDir, untrackedName), nil, 0644); err != nil {
 		t.Fatal("WriteFile failed: ", err)
 	}
 

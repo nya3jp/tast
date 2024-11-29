@@ -6,7 +6,6 @@ package linuxssh_test
 
 import (
 	"context"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
@@ -61,7 +60,7 @@ func TestWriteFile(t *testing.T) {
 	checkFile := func(path, content string, perm os.FileMode) {
 		t.Helper()
 		base := filepath.Base(path)
-		if got, err := ioutil.ReadFile(path); err != nil {
+		if got, err := os.ReadFile(path); err != nil {
 			t.Fatal(err)
 		} else if string(got) != content {
 			t.Errorf("%v; content = %q, want %q", base, got, content)
@@ -74,7 +73,7 @@ func TestWriteFile(t *testing.T) {
 	}
 
 	path1 := filepath.Join(dir, "existing.txt")
-	if err := ioutil.WriteFile(path1, []byte("previous content"), 0644); err != nil {
+	if err := os.WriteFile(path1, []byte("previous content"), 0644); err != nil {
 		t.Fatal(err)
 	}
 	if err := linuxssh.WriteFile(ctx, td.Hst, path1, []byte("new content"), 0755); err != nil {

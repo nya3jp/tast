@@ -7,7 +7,6 @@ package extdata
 import (
 	"bytes"
 	"context"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -583,7 +582,7 @@ func TestRunDownloadsStatic(t *gotesting.T) {
 	RunDownloads(context.Background(), tmpDir, jobs, cl)
 
 	path1 := filepath.Join(tmpDir, file1)
-	if out, err := ioutil.ReadFile(path1); err != nil {
+	if out, err := os.ReadFile(path1); err != nil {
 		t.Error(err)
 	} else if !bytes.Equal(out, []byte(data1)) {
 		t.Errorf("Corrupted data for %s: got %q, want %q", file1, string(out), data1)
@@ -595,7 +594,7 @@ func TestRunDownloadsStatic(t *gotesting.T) {
 	}
 
 	path2 := filepath.Join(tmpDir, file2)
-	if out, err := ioutil.ReadFile(path2); err != nil {
+	if out, err := os.ReadFile(path2); err != nil {
 		t.Error(err)
 	} else if !bytes.Equal(out, []byte(data2)) {
 		t.Errorf("Corrupted data for %s: got %q, want %q", file2, string(out), data2)
@@ -655,7 +654,7 @@ func TestRunDownloadsArtifact(t *gotesting.T) {
 	RunDownloads(context.Background(), tmpDir, jobs, cl)
 
 	path1 := filepath.Join(tmpDir, file1)
-	if out, err := ioutil.ReadFile(path1); err != nil {
+	if out, err := os.ReadFile(path1); err != nil {
 		t.Error(err)
 	} else if !bytes.Equal(out, []byte(data1)) {
 		t.Errorf("Corrupted data for %s: got %q, want %q", file1, string(out), data1)
@@ -667,14 +666,14 @@ func TestRunDownloadsArtifact(t *gotesting.T) {
 	}
 
 	urlRecordFile1 := path1 + testing.ExternalURLSuffix
-	if out, err := ioutil.ReadFile(urlRecordFile1); err != nil {
+	if out, err := os.ReadFile(urlRecordFile1); err != nil {
 		t.Error(err)
 	} else if !bytes.Equal(out, []byte(urlRecordFile1Data)) {
 		t.Errorf("Corrupted data for %s: got %q, want %q", file1, string(out), urlRecordFile1)
 	}
 
 	path2 := filepath.Join(tmpDir, file2)
-	if out, err := ioutil.ReadFile(path2); err != nil {
+	if out, err := os.ReadFile(path2); err != nil {
 		t.Error(err)
 	} else if !bytes.Equal(out, []byte(data2)) {
 		t.Errorf("Corrupted data for %s: got %q, want %q", file2, string(out), data2)
@@ -686,7 +685,7 @@ func TestRunDownloadsArtifact(t *gotesting.T) {
 	}
 
 	urlRecordFile2 := path2 + testing.ExternalURLSuffix
-	if out, err := ioutil.ReadFile(urlRecordFile2); err != nil {
+	if out, err := os.ReadFile(urlRecordFile2); err != nil {
 		t.Error(err)
 	} else if !bytes.Equal(out, []byte(urlRecordFile2Data)) {
 		t.Errorf("Corrupted data for %s: got %q, want %q", file2, string(out), urlRecordFile2)
@@ -747,7 +746,7 @@ func TestRunDownloadsArtifactURLChanged(t *gotesting.T) {
 	RunDownloads(context.Background(), tmpDir, jobs, cl)
 
 	path1 := filepath.Join(tmpDir, file1)
-	if out, err := ioutil.ReadFile(path1); err != nil {
+	if out, err := os.ReadFile(path1); err != nil {
 		t.Error(err)
 	} else if !bytes.Equal(out, []byte(data2)) {
 		t.Errorf("Corrupted data for %s: got %q, want %q", file1, string(out), data2)
@@ -759,14 +758,14 @@ func TestRunDownloadsArtifactURLChanged(t *gotesting.T) {
 	}
 
 	urlRecordFile1 := path1 + testing.ExternalURLSuffix
-	if out, err := ioutil.ReadFile(urlRecordFile1); err != nil {
+	if out, err := os.ReadFile(urlRecordFile1); err != nil {
 		t.Error(err)
 	} else if !bytes.Equal(out, []byte(urlRecordFile2Data)) {
 		t.Errorf("Corrupted data for %s: got %q, want %q", file1, string(out), urlRecordFile1)
 	}
 
 	path2 := filepath.Join(tmpDir, file2)
-	if out, err := ioutil.ReadFile(path2); err != nil {
+	if out, err := os.ReadFile(path2); err != nil {
 		t.Error(err)
 	} else if !bytes.Equal(out, []byte(data2)) {
 		t.Errorf("Corrupted data for %s: got %q, want %q", file2, string(out), data2)
@@ -778,7 +777,7 @@ func TestRunDownloadsArtifactURLChanged(t *gotesting.T) {
 	}
 
 	urlRecordFile2 := path2 + testing.ExternalURLSuffix
-	if out, err := ioutil.ReadFile(urlRecordFile2); err != nil {
+	if out, err := os.ReadFile(urlRecordFile2); err != nil {
 		t.Error(err)
 	} else if !bytes.Equal(out, []byte(urlRecordFile2Data)) {
 		t.Errorf("Corrupted data for %s: got %q, want %q", file2, string(out), urlRecordFile2)

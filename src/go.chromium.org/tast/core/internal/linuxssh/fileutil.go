@@ -11,7 +11,6 @@ import (
 	"encoding/hex"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -65,7 +64,7 @@ func GetFile(ctx context.Context, s *ssh.Conn, src, dst string, symlinkPolicy Sy
 // Caller must call close to remove the temporary directory.
 func getFile(ctx context.Context, s *ssh.Conn, src, dst string, symlinkPolicy SymlinkPolicy) (path string, close func() error, retErr error) {
 	// Create a temporary directory alongside the destination path.
-	td, err := ioutil.TempDir(filepath.Dir(dst), filepath.Base(dst)+".")
+	td, err := os.MkdirTemp(filepath.Dir(dst), filepath.Base(dst)+".")
 	if err != nil {
 		return "", nil, fmt.Errorf("creating local temp dir failed: %v", err)
 	}
@@ -133,7 +132,7 @@ func GetFileTail(ctx context.Context, s *ssh.Conn, src, dst string, startLine, m
 // Caller must call close to remove the temporary directory.
 func getFileTail(ctx context.Context, conn *ssh.Conn, src, dst string, startLine, maxSize int64) (path string, close func() error, retErr error) {
 	// Create a temporary directory alongside the destination path.
-	td, err := ioutil.TempDir(filepath.Dir(dst), filepath.Base(dst)+".")
+	td, err := os.MkdirTemp(filepath.Dir(dst), filepath.Base(dst)+".")
 	if err != nil {
 		return "", nil, fmt.Errorf("creating local temp dir failed: %v", err)
 	}

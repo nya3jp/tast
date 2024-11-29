@@ -7,7 +7,6 @@ package bundle
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
 	"log/syslog"
 	"os"
 	"path/filepath"
@@ -277,12 +276,12 @@ func defaultTempDir() (string, error) {
 	if err := os.MkdirAll(tempBaseDir, 0755); err != nil {
 		return "", err
 	}
-	return ioutil.TempDir(tempBaseDir, "")
+	return os.MkdirTemp(tempBaseDir, "")
 }
 
 // prepareTempDir sets up tempDir to be used for the base temporary directory,
 // and sets the TMPDIR environment variable to tempDir so that subsequent
-// ioutil.TempFile/TempDir calls create temporary files under the directory.
+// os.CreateTemp/MkdirTemp calls create temporary files under the directory.
 // Returned function can be called to restore TMPDIR to the original value.
 func prepareTempDir(tempDir string) (restore func(), err error) {
 	if err := os.MkdirAll(tempDir, 0755); err != nil {

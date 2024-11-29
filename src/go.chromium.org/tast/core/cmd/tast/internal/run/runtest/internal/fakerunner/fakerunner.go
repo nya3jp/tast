@@ -16,7 +16,6 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"io/ioutil"
 
 	"google.golang.org/grpc"
 
@@ -93,7 +92,7 @@ func (r *Runner) RunGRPC(stdin io.Reader, stdout, stderr io.Writer) int {
 	done := make(chan struct{})
 	go func() {
 		defer close(done)
-		runner.Run([]string{"-rpc"}, sr, sw, ioutil.Discard, r.cfg.StaticConfig)
+		runner.Run([]string{"-rpc"}, sr, sw, io.Discard, r.cfg.StaticConfig)
 	}()
 	defer func() {
 		cw.Close()

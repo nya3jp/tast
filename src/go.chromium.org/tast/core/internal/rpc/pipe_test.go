@@ -8,7 +8,6 @@ import (
 	"bytes"
 	"context"
 	"io"
-	"io/ioutil"
 	"testing"
 
 	"google.golang.org/grpc"
@@ -35,7 +34,7 @@ func TestPipeListener(t *testing.T) {
 		}
 		defer conn.Close()
 
-		if b, err := ioutil.ReadAll(conn); err != nil {
+		if b, err := io.ReadAll(conn); err != nil {
 			t.Error("Read failed: ", err)
 		} else if s := string(b); s != readStr {
 			t.Errorf("Read returned %q; want %q", s, readStr)

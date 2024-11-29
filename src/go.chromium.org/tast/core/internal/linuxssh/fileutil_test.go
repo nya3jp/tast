@@ -6,7 +6,6 @@ package linuxssh_test
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -37,7 +36,7 @@ func initFileTest(t *testing.T, files map[string]string) (tmpDir, srcDir string)
 
 // checkFile returns an error if p's contents differ from exp.
 func checkFile(p, exp string) error {
-	if b, err := ioutil.ReadFile(p); err != nil {
+	if b, err := os.ReadFile(p); err != nil {
 		return fmt.Errorf("failed to read %v after copy: %v", p, err)
 	} else if string(b) != exp {
 		return fmt.Errorf("expected content %q after copy, got %v", exp, string(b))
@@ -414,7 +413,7 @@ func TestPutFilesSymlinks(t *testing.T) {
 		mode = 0755
 	)
 	targetPath := filepath.Join(tmpDir, "exe")
-	if err := ioutil.WriteFile(targetPath, []byte(data), mode); err != nil {
+	if err := os.WriteFile(targetPath, []byte(data), mode); err != nil {
 		t.Fatalf("Failed to write %v: %v", targetPath, err)
 	}
 	if err := os.Symlink(targetPath, filepath.Join(srcDir, link)); err != nil {
@@ -455,7 +454,7 @@ func TestPutFilesSymlinks(t *testing.T) {
 		} else if perm := fi.Mode() & os.ModePerm; perm != mode {
 			t.Errorf("%v has perms %#o; want %#o", dstFile, perm, mode)
 		}
-		if b, err := ioutil.ReadFile(dstFile); err != nil {
+		if b, err := os.ReadFile(dstFile); err != nil {
 			t.Errorf("Failed to read %v: %v", dstFile, err)
 		} else if string(b) != data {
 			t.Errorf("%v contains %q; want %q", dstFile, b, data)

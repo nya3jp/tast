@@ -7,7 +7,6 @@ package logs_test
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -26,7 +25,7 @@ import (
 // along with a set containing all copied relative paths (including empty files and broken symlinks).
 func getUpdates(ctx context.Context, dir string, exclude []string, sizes logs.InodeSizes) (
 	updates map[string]string, paths map[string]struct{}, err error) {
-	dest, err := ioutil.TempDir("", "tast_logs.")
+	dest, err := os.MkdirTemp("", "tast_logs.")
 	if err != nil {
 		return nil, nil, err
 	}

@@ -6,7 +6,7 @@ package faketlw_test
 
 import (
 	"context"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"testing"
 
@@ -65,7 +65,7 @@ func TestWiringServer_CacheForDut(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to get from download URL (%s): %s", resp.Url, err)
 	}
-	content, _ := ioutil.ReadAll(res.Body)
+	content, _ := io.ReadAll(res.Body)
 	expectedContent := "content of foo/bar/baz"
 	if string(content) != expectedContent {
 		t.Errorf("Wrong content: got %q, want %q", content, expectedContent)

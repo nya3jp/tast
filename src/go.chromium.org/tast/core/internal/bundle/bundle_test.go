@@ -8,7 +8,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	gotesting "testing"
 
 	"go.chromium.org/tast/core/internal/bundle/legacyjson"
@@ -62,7 +62,7 @@ func TestDumpTestsJSON_RegistrationErrors(t *gotesting.T) {
 	reg.AddTestInstance(&testing.TestInstance{Name: name, Func: testFunc})
 
 	clArgs := []string{"-dumptests"}
-	if status := run(context.Background(), clArgs, &bytes.Buffer{}, ioutil.Discard, ioutil.Discard, NewStaticConfig(reg, 0, Delegate{})); status != statusBadTests {
+	if status := run(context.Background(), clArgs, &bytes.Buffer{}, io.Discard, io.Discard, NewStaticConfig(reg, 0, Delegate{})); status != statusBadTests {
 		t.Errorf("run() with bad test returned status %v; want %v", status, statusBadTests)
 	}
 }

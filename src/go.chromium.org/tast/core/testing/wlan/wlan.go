@@ -6,7 +6,6 @@
 package wlan
 
 import (
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -175,14 +174,14 @@ var wlanRE = regexp.MustCompile("DEVTYPE=wlan")
 func findWlanIface() (string, error) {
 	const baseDir = "/sys/class/net/"
 
-	dirs, err := ioutil.ReadDir(baseDir)
+	dirs, err := os.ReadDir(baseDir)
 	if err != nil {
 		return "", errors.Wrapf(err,
 			"failed to read %s directory", baseDir)
 	}
 	for _, dir := range dirs {
 		path := filepath.Join(baseDir, dir.Name(), "uevent")
-		bs, err := ioutil.ReadFile(path)
+		bs, err := os.ReadFile(path)
 		if err != nil {
 			if os.IsNotExist(err) {
 				// It is perfectly OK if the file does not exist.
@@ -202,7 +201,7 @@ func findWlanIface() (string, error) {
 // DeviceInfo returns a public struct (DevInfo) containing the WLAN device information.
 func DeviceInfo() (*DevInfo, error) {
 	readInfo := func(netIf, x string) (string, error) {
-		bs, err := ioutil.ReadFile(filepath.Join("/sys/class/net/", netIf, "device", x))
+		bs, err := os.ReadFile(filepath.Join("/sys/class/net/", netIf, "device", x))
 		if err != nil {
 			return "", err
 		}

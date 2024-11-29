@@ -6,7 +6,7 @@ package devserver_test
 
 import (
 	"context"
-	"io/ioutil"
+	"io"
 	"os"
 	"testing"
 
@@ -36,7 +36,7 @@ func TestDUTServiceClientOpen(t *testing.T) {
 		t.Fatal("Open failed: ", err)
 	}
 	defer r.Close()
-	if data, err := ioutil.ReadAll(r); err != nil {
+	if data, err := io.ReadAll(r); err != nil {
 		t.Error("ReadAll failed: ", err)
 	} else if string(data) != content {
 		t.Errorf("Open returned %q; want %q", string(data), content)
@@ -77,7 +77,7 @@ func TestDUTServiceClientStage(t *testing.T) {
 		t.Fatalf("Get URL %q failed: %s", fileURL, err)
 	}
 	defer r.Close()
-	if data, err := ioutil.ReadAll(r); err != nil {
+	if data, err := io.ReadAll(r); err != nil {
 		t.Error("ReadAll failed: ", err)
 	} else if string(data) != content {
 		t.Errorf("Open returned %q; want %q", string(data), content)

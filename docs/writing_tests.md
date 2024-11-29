@@ -1308,7 +1308,7 @@ that was used to initiate testing:
 
 ```go
 func WriteOutput(s *testing.State) {
-	if err := ioutil.WriteFile(filepath.Join(s.OutDir(), "my_output.txt"),
+	if err := os.WriteFile(filepath.Join(s.OutDir(), "my_output.txt"),
 		[]byte("Here's my output!"), 0644); err != nil {
 		s.Error(err)
 	}
@@ -1463,7 +1463,7 @@ Later, within the test function, pass the same filename to [testing.State]'s
 `DataPath` function to receive the path to the data file on the DUT:
 
 ```go
-b, err := ioutil.ReadFile(s.DataPath("user_login_data.bin"))
+b, err := os.ReadFile(s.DataPath("user_login_data.bin"))
 ```
 
 See the [example.DataFiles] test for a complete example of using both local and

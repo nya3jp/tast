@@ -9,7 +9,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -304,7 +303,7 @@ func TestRunResults(t *gotesting.T) {
 	}
 
 	// Results in results.json.
-	if b, err := ioutil.ReadFile(filepath.Join(cfg.ResDir(), reporting.LegacyResultsFilename)); err != nil {
+	if b, err := os.ReadFile(filepath.Join(cfg.ResDir(), reporting.LegacyResultsFilename)); err != nil {
 		t.Errorf("Failed to read %s: %v", reporting.LegacyResultsFilename, err)
 	} else if err := json.Unmarshal(b, &results); err != nil {
 		t.Errorf("Failed to parse %s: %v", reporting.LegacyResultsFilename, err)
@@ -313,7 +312,7 @@ func TestRunResults(t *gotesting.T) {
 	}
 
 	// Results in streamed_results.json.
-	if b, err := ioutil.ReadFile(filepath.Join(cfg.ResDir(), reporting.StreamedResultsFilename)); err != nil {
+	if b, err := os.ReadFile(filepath.Join(cfg.ResDir(), reporting.StreamedResultsFilename)); err != nil {
 		t.Errorf("Failed to read %s: %v", reporting.StreamedResultsFilename, err)
 	} else if results, err := unmarshalStreamedResults(b); err != nil {
 		t.Errorf("Failed to parse %s: %v", reporting.StreamedResultsFilename, err)
@@ -465,7 +464,7 @@ func TestRunLogs(t *gotesting.T) {
 		{"tests/remote.Pass/log.txt", "Hello from remote.Pass"},
 		{"tests/remote.Pass/log.txt", "Completed test remote.Pass"},
 	} {
-		b, err := ioutil.ReadFile(filepath.Join(cfg.ResDir(), tc.relPath))
+		b, err := os.ReadFile(filepath.Join(cfg.ResDir(), tc.relPath))
 		if err != nil {
 			t.Errorf("Failed to read %s: %v", tc.relPath, err)
 			continue
@@ -521,7 +520,7 @@ func TestRunOutputFiles(t *gotesting.T) {
 		Name:    "local.Out",
 		Timeout: time.Minute,
 		Func: func(ctx context.Context, s *testing.State) {
-			if err := ioutil.WriteFile(filepath.Join(s.OutDir(), "out.txt"), []byte("Hello from local.Out"), 0644); err != nil {
+			if err := os.WriteFile(filepath.Join(s.OutDir(), "out.txt"), []byte("Hello from local.Out"), 0644); err != nil {
 				t.Errorf("local.Out: failed to write out.txt: %v", err)
 			}
 		},
@@ -533,7 +532,7 @@ func TestRunOutputFiles(t *gotesting.T) {
 		Name:    "remote.Out",
 		Timeout: time.Minute,
 		Func: func(ctx context.Context, s *testing.State) {
-			if err := ioutil.WriteFile(filepath.Join(s.OutDir(), "out.txt"), []byte("Hello from remote.Out"), 0644); err != nil {
+			if err := os.WriteFile(filepath.Join(s.OutDir(), "out.txt"), []byte("Hello from remote.Out"), 0644); err != nil {
 				t.Errorf("remote.Out: failed to write out.txt: %v", err)
 			}
 		},
@@ -561,7 +560,7 @@ func TestRunOutputFiles(t *gotesting.T) {
 		{"tests/local.Out/out.txt", "Hello from local.Out"},
 		{"tests/remote.Out/out.txt", "Hello from remote.Out"},
 	} {
-		b, err := ioutil.ReadFile(filepath.Join(cfg.ResDir(), tc.relPath))
+		b, err := os.ReadFile(filepath.Join(cfg.ResDir(), tc.relPath))
 		if err != nil {
 			t.Errorf("Failed to read %s: %v", tc.relPath, err)
 			continue
@@ -1458,7 +1457,7 @@ func TestRunDisable(t *gotesting.T) {
 	}
 
 	// Results in results.json.
-	if b, err := ioutil.ReadFile(filepath.Join(cfg.ResDir(), reporting.LegacyResultsFilename)); err != nil {
+	if b, err := os.ReadFile(filepath.Join(cfg.ResDir(), reporting.LegacyResultsFilename)); err != nil {
 		t.Errorf("Failed to read %s: %v", reporting.LegacyResultsFilename, err)
 	} else if err := json.Unmarshal(b, &results); err != nil {
 		t.Errorf("Failed to parse %s: %v", reporting.LegacyResultsFilename, err)
@@ -1467,7 +1466,7 @@ func TestRunDisable(t *gotesting.T) {
 	}
 
 	// Results in streamed_results.json.
-	if b, err := ioutil.ReadFile(filepath.Join(cfg.ResDir(), reporting.StreamedResultsFilename)); err != nil {
+	if b, err := os.ReadFile(filepath.Join(cfg.ResDir(), reporting.StreamedResultsFilename)); err != nil {
 		t.Errorf("Failed to read %s: %v", reporting.StreamedResultsFilename, err)
 	} else if results, err := unmarshalStreamedResults(b); err != nil {
 		t.Errorf("Failed to parse %s: %v", reporting.StreamedResultsFilename, err)

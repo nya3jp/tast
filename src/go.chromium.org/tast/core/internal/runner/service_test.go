@@ -7,7 +7,6 @@ package runner
 import (
 	"context"
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	gotesting "testing"
@@ -33,7 +32,7 @@ func startTestServer(t *gotesting.T, params *protocol.RunnerInitParams) protocol
 	done := make(chan struct{})
 	go func() {
 		defer close(done)
-		Run([]string{"-rpc"}, sr, sw, ioutil.Discard, &StaticConfig{})
+		Run([]string{"-rpc"}, sr, sw, io.Discard, &StaticConfig{})
 	}()
 	t.Cleanup(func() {
 		cw.Close()

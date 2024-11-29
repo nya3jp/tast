@@ -5,7 +5,6 @@
 package fsutil_test
 
 import (
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
@@ -22,7 +21,7 @@ import (
 func setUpFile(t *testing.T, data string, mode os.FileMode) (td, fn string) {
 	td = testutil.TempDir(t)
 	fn = filepath.Join(td, "src.txt")
-	if err := ioutil.WriteFile(fn, []byte(data), mode); err != nil {
+	if err := os.WriteFile(fn, []byte(data), mode); err != nil {
 		t.Fatal(err)
 	}
 	if err := os.Chmod(fn, mode); err != nil {
@@ -40,7 +39,7 @@ func checkFile(t *testing.T, path, data string, mode os.FileMode) {
 		t.Errorf("%v has mode 0%o; want 0%o", path, newMode, mode)
 	}
 
-	if b, err := ioutil.ReadFile(path); err != nil {
+	if b, err := os.ReadFile(path); err != nil {
 		t.Errorf("Failed to read %v: %v", path, err)
 	} else if string(b) != data {
 		t.Errorf("%v contains %q; want %q", path, string(b), data)
@@ -120,7 +119,7 @@ func TestMoveFileAcrossFilesystems(t *testing.T) {
 		t.Logf("FS for %v and %v both have ID %v; skipping test", src, srcStat.Fsid, dstStat.Fsid)
 		return
 	}
-	df, err := ioutil.TempFile(dstFS, "dst.txt.")
+	df, err := os.CreateTemp(dstFS, "dst.txt.")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -174,13 +173,13 @@ func TestCopyDir(t *testing.T) {
 		t.Fatal(err)
 	}
 	file1Path := filepath.Join(src, "file1")
-	if err := ioutil.WriteFile(file1Path, []byte("file1"), 0655); err != nil {
+	if err := os.WriteFile(file1Path, []byte("file1"), 0655); err != nil {
 		t.Fatal(err)
 	}
 	if err := os.Mkdir(filepath.Join(src, "subdir"), 0754); err != nil {
 		t.Fatal(err)
 	}
-	if err := ioutil.WriteFile(filepath.Join(src, "subdir", "file2"), []byte("file2"), 0654); err != nil {
+	if err := os.WriteFile(filepath.Join(src, "subdir", "file2"), []byte("file2"), 0654); err != nil {
 		t.Fatal(err)
 	}
 	if err := os.Symlink(file1Path, filepath.Join(src, "subdir", "file3")); err != nil {

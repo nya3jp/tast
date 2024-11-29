@@ -6,7 +6,7 @@ package bundle
 
 import (
 	"encoding/base64"
-	"io/ioutil"
+	"io"
 	"strconv"
 	"testing"
 
@@ -43,7 +43,7 @@ func TestReadArgsRpcTcpServer(t *testing.T) {
 	handshakeBase64 := base64.StdEncoding.EncodeToString(raw)
 	args := []string{"-rpctcp", "-port", strconv.Itoa(port), "-handshake", handshakeBase64}
 
-	got, err := readArgs(args, ioutil.Discard)
+	got, err := readArgs(args, io.Discard)
 	if err != nil {
 		t.Fatal("readArgs failed: ", err)
 	}

@@ -7,7 +7,7 @@ package command_test
 import (
 	"flag"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"reflect"
 	"strconv"
 	"testing"
@@ -31,7 +31,7 @@ func TestDurationFlag(t *testing.T) {
 	} {
 		var d time.Duration
 		fs := flag.NewFlagSet("", flag.ContinueOnError)
-		fs.SetOutput(ioutil.Discard)
+		fs.SetOutput(io.Discard)
 		fs.Var(command.NewDurationFlag(tc.units, &d, tc.def), "flag", "usage")
 
 		if err := fs.Parse(tc.args); err != nil {
@@ -85,7 +85,7 @@ func TestEnumFlag(t *testing.T) {
 		val := testEnum(-1)
 		f := func(v int) { val = testEnum(v) }
 		fs := flag.NewFlagSet("", flag.ContinueOnError)
-		fs.SetOutput(ioutil.Discard)
+		fs.SetOutput(io.Discard)
 		fs.Var(command.NewEnumFlag(valid, f, tc.def), "flag", "usage")
 
 		if err := fs.Parse(tc.args); err != nil && !tc.expErr {
@@ -142,7 +142,7 @@ func TestListFlag(t *testing.T) {
 		var vals []string
 		f := func(v []string) { vals = v }
 		fs := flag.NewFlagSet("", flag.ContinueOnError)
-		fs.SetOutput(ioutil.Discard)
+		fs.SetOutput(io.Discard)
 		fs.Var(command.NewListFlag(tc.sep, f, tc.def), "flag", "usage")
 
 		if err := fs.Parse(tc.args); err != nil {

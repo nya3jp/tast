@@ -8,7 +8,7 @@ import (
 	"bytes"
 	"context"
 	"io"
-	"io/ioutil"
+	"os"
 	"os/exec"
 	"testing"
 
@@ -24,7 +24,7 @@ import (
 func mustCreateLoopback(t *testing.T, proc fakeexec.ProcFunc) (lo *fakeexec.Loopback, path string) {
 	t.Helper()
 
-	f, err := ioutil.TempFile("", "tast-fakeexec.")
+	f, err := os.CreateTemp("", "tast-fakeexec.")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -70,7 +70,7 @@ func TestLoopbackStdin(t *testing.T) {
 	want := bytes.Repeat([]byte{0x01, 0x23, 0x45, 0x67, 0x89, 0xab, 0xcd, 0xef}, 1024)
 
 	lo, path := mustCreateLoopback(t, func(_ []string, stdin io.Reader, _, _ io.WriteCloser) int {
-		got, err := ioutil.ReadAll(stdin)
+		got, err := io.ReadAll(stdin)
 		if err != nil {
 			t.Errorf("Reading stdin: %v", err)
 			return 1

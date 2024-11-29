@@ -9,8 +9,8 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net"
+	"os"
 	"os/exec"
 	"regexp"
 	"runtime"
@@ -47,7 +47,7 @@ var DlvHostEnv = []string{}
 func IsRunningOnDUT() bool {
 	// We want to change the error messages based on whether this is running on the DUT or the host.
 	// We can't necessarily know in the caller because it doesn't distinguish between remote bundles and local bundles.
-	lsb, err := ioutil.ReadFile("/etc/lsb-release")
+	lsb, err := os.ReadFile("/etc/lsb-release")
 	return err == nil && strings.Contains(string(lsb), "CHROMEOS_RELEASE_BOARD")
 }
 

@@ -8,7 +8,6 @@ import (
 	"bytes"
 	"errors"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strings"
@@ -87,7 +86,7 @@ func TestStage(t *testing.T) {
 			t.Fatalf("StatusCode = %d; want 200", res.StatusCode)
 		}
 
-		b, err := ioutil.ReadAll(res.Body)
+		b, err := io.ReadAll(res.Body)
 		if err != nil {
 			t.Fatal("ReadAll: ", err)
 		}
@@ -122,9 +121,9 @@ func TestStage(t *testing.T) {
 
 		switch res.StatusCode {
 		case 200:
-			b, err := ioutil.ReadAll(res.Body)
+			b, err := io.ReadAll(res.Body)
 			if err != nil {
-				t.Fatal("ioutil.ReadAll: ", err)
+				t.Fatal("io.ReadAll: ", err)
 			}
 			return b, true
 		case 404:
@@ -274,7 +273,7 @@ func TestDownloadPartialContent(t *testing.T) {
 	}
 	defer res.Body.Close()
 
-	b, err := ioutil.ReadAll(res.Body)
+	b, err := io.ReadAll(res.Body)
 	if err != nil {
 		t.Error("ReadAll: ", err)
 	}
@@ -315,7 +314,7 @@ func TestAbortDownloadAfter(t *testing.T) {
 	}
 	defer res.Body.Close()
 
-	b, err := ioutil.ReadAll(res.Body)
+	b, err := io.ReadAll(res.Body)
 	if err == nil {
 		t.Error("ReadAll succeeded unexpectedly")
 	} else if err != io.ErrUnexpectedEOF {
@@ -391,9 +390,9 @@ func TestPathEscape(t *testing.T) {
 	if res.StatusCode != 200 {
 		t.Error("/is_staged failed: ", res.Status)
 	} else {
-		b, err := ioutil.ReadAll(res.Body)
+		b, err := io.ReadAll(res.Body)
 		if err != nil {
-			t.Error("ioutil.ReadAll: ", err)
+			t.Error("io.ReadAll: ", err)
 		} else if string(b) != "True" {
 			t.Errorf(`/is_staged returned %q; want "True"`, string(b))
 		}

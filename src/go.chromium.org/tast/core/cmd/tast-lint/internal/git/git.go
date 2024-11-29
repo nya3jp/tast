@@ -9,7 +9,6 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -121,7 +120,7 @@ func (g *Git) IsSymlink(path string) (bool, error) {
 // ReadFile returns the content of a file at the commit.
 func (g *Git) ReadFile(path string) ([]byte, error) {
 	if g.Commit == "" {
-		return ioutil.ReadFile(filepath.Join(g.Dir, path))
+		return os.ReadFile(filepath.Join(g.Dir, path))
 	}
 
 	// "--batch=" == use an empty format. Skip object information, just return the content.
@@ -145,7 +144,7 @@ func (g *Git) ReadFile(path string) ([]byte, error) {
 // ListDir lists files under a directory at the commit.
 func (g *Git) ListDir(dir string) ([]string, error) {
 	if g.Commit == "" {
-		fs, err := ioutil.ReadDir(filepath.Join(g.Dir, dir))
+		fs, err := os.ReadDir(filepath.Join(g.Dir, dir))
 		if err != nil {
 			return nil, err
 		}

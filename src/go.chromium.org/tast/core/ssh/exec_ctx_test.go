@@ -9,7 +9,6 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -304,7 +303,7 @@ func TestStdoutPipeStderrPipeCtx(t *testing.T) {
 	go func() {
 		defer wg.Done()
 
-		if b, err := ioutil.ReadAll(stdout); err != nil {
+		if b, err := io.ReadAll(stdout); err != nil {
 			t.Error("Failed to read stdout: ", err)
 		} else if got, want := string(b), "hello\n"; got != want {
 			t.Errorf("Stdout got %q; want %q", got, want)
@@ -314,7 +313,7 @@ func TestStdoutPipeStderrPipeCtx(t *testing.T) {
 	go func() {
 		defer wg.Done()
 
-		if b, err := ioutil.ReadAll(stderr); err != nil {
+		if b, err := io.ReadAll(stderr); err != nil {
 			t.Error("Failed to read stderr: ", err)
 		} else if got, want := string(b), "world\n"; got != want {
 			t.Errorf("Stderr got %q; want %q", got, want)
@@ -354,8 +353,8 @@ func TestPipesClosedOnWaitCtx(t *testing.T) {
 	ch := make(chan struct{})
 	go func() {
 		// These I/O operations should not block.
-		ioutil.ReadAll(stdout)
-		ioutil.ReadAll(stderr)
+		io.ReadAll(stdout)
+		io.ReadAll(stderr)
 		close(ch)
 	}()
 	select {
@@ -390,8 +389,8 @@ func TestPipesClosedOnAbortCtx(t *testing.T) {
 	ch := make(chan struct{})
 	go func() {
 		// These I/O operations should not block.
-		ioutil.ReadAll(stdout)
-		ioutil.ReadAll(stderr)
+		io.ReadAll(stdout)
+		io.ReadAll(stderr)
 		close(ch)
 	}()
 	select {

@@ -8,7 +8,6 @@ package fsutil
 import (
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"syscall"
@@ -36,7 +35,7 @@ func CopyFile(src, dst string) error {
 	}
 
 	// Copy to a temp file.
-	df, err := ioutil.TempFile(filepath.Dir(dst), "."+filepath.Base(dst)+".")
+	df, err := os.CreateTemp(filepath.Dir(dst), "."+filepath.Base(dst)+".")
 	if err != nil {
 		return errors.Wrap(err, "failed to create tmp file")
 	}
@@ -128,7 +127,7 @@ func CopyDir(srcDir, dstDir string) error {
 	}
 
 	// Copy dir content.
-	entries, err := ioutil.ReadDir(srcDir)
+	entries, err := os.ReadDir(srcDir)
 	if err != nil {
 		return errors.Wrapf(err, "failed to read dir %s", srcDir)
 	}

@@ -5,7 +5,6 @@
 package breakpad
 
 import (
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -34,7 +33,7 @@ func (f *testSymbolFileInfo) write(dir string) error {
 	if err := os.MkdirAll(filepath.Dir(p), 0755); err != nil {
 		return err
 	}
-	return ioutil.WriteFile(p, []byte(f.data), 0644)
+	return os.WriteFile(p, []byte(f.data), 0644)
 }
 
 func TestDownloadSymbols(t *testing.T) {

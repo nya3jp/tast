@@ -6,7 +6,7 @@ package devserver_test
 
 import (
 	"context"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"testing"
 
@@ -37,7 +37,7 @@ func TestTLWClientOpen(t *testing.T) {
 		t.Fatal("Open failed: ", err)
 	}
 	defer r.Close()
-	if data, err := ioutil.ReadAll(r); err != nil {
+	if data, err := io.ReadAll(r); err != nil {
 		t.Error("ReadAll failed: ", err)
 	} else if string(data) != content {
 		t.Errorf("Open returned %q; want %q", string(data), content)
@@ -79,7 +79,7 @@ func TestTLWClientStage(t *testing.T) {
 		t.Error("Get failed: ", resp)
 	}
 	defer resp.Body.Close()
-	if data, err := ioutil.ReadAll(resp.Body); err != nil {
+	if data, err := io.ReadAll(resp.Body); err != nil {
 		t.Error("ReadAll failed: ", err)
 	} else if string(data) != content {
 		t.Errorf("Get returned %q; want %q", string(data), content)

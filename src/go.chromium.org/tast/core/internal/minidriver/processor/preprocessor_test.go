@@ -7,7 +7,6 @@ package processor_test
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -98,7 +97,7 @@ func TestPreprocessor_MissingEntityEnd(t *testing.T) {
 		{"tests/test/log.txt", "something went wrong"},
 		{"tests/test/log.txt", "Completed test test"},
 	} {
-		b, err := ioutil.ReadFile(filepath.Join(resDir, tc.relPath))
+		b, err := os.ReadFile(filepath.Join(resDir, tc.relPath))
 		if err != nil {
 			t.Errorf("Failed to read %s: %v", tc.relPath, err)
 			continue
@@ -137,7 +136,7 @@ func TestPreprocessor_UnmatchedEntityEvent(t *testing.T) {
 				t.Errorf("Processor had a fatal error: %v", err)
 			}
 
-			b, err := ioutil.ReadFile(filepath.Join(resDir, "tests/test1/log.txt"))
+			b, err := os.ReadFile(filepath.Join(resDir, "tests/test1/log.txt"))
 			if err != nil {
 				t.Fatalf("Failed to read log.txt: %v", err)
 			}
@@ -227,7 +226,7 @@ func TestPreprocessor_TimeoutReached(t *testing.T) {
 		t.Errorf("Processor had a fatal error: %v", err)
 	}
 
-	b, err := ioutil.ReadFile(filepath.Join(resDir, "tests/timeout_test/log.txt"))
+	b, err := os.ReadFile(filepath.Join(resDir, "tests/timeout_test/log.txt"))
 	if err != nil {
 		t.Fatalf("Failed to read log.txt: %v", err)
 	}

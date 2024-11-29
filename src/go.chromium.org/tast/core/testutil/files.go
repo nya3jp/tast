@@ -6,7 +6,6 @@
 package testutil
 
 import (
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -20,7 +19,7 @@ func TempDir(t *testing.T) string {
 	// Subtests have slashes in their name.
 	// https://golang.org/pkg/testing/#hdr-Subtests_and_Sub_benchmarks
 	name := strings.Replace(t.Name(), "/", "_", -1)
-	td, err := ioutil.TempDir("", "tast_unittest_"+name+".")
+	td, err := os.MkdirTemp("", "tast_unittest_"+name+".")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -35,7 +34,7 @@ func WriteFiles(dir string, files map[string]string) error {
 		if err := os.MkdirAll(filepath.Dir(p), 0755); err != nil {
 			return err
 		}
-		if err := ioutil.WriteFile(p, []byte(c), 0644); err != nil {
+		if err := os.WriteFile(p, []byte(c), 0644); err != nil {
 			return err
 		}
 	}
@@ -53,7 +52,7 @@ func ReadFiles(dir string) (map[string]string, error) {
 		if !info.Mode().IsRegular() {
 			return nil
 		}
-		b, err := ioutil.ReadFile(p)
+		b, err := os.ReadFile(p)
 		if err != nil {
 			return err
 		}

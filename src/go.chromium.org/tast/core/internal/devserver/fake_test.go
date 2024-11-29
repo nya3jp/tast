@@ -6,7 +6,7 @@ package devserver_test
 
 import (
 	"context"
-	"io/ioutil"
+	"io"
 	"os"
 	"testing"
 
@@ -28,7 +28,7 @@ func TestFakeClient(t *testing.T) {
 		t.Error("Open failed: ", err)
 	}
 	defer r.Close()
-	if data, err := ioutil.ReadAll(r); err != nil {
+	if data, err := io.ReadAll(r); err != nil {
 		t.Error("ReadAll failed: ", err)
 	} else if string(data) != expected {
 		t.Errorf("Open returned %q; want %q", string(data), expected)

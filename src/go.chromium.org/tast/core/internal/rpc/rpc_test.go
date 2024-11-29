@@ -9,7 +9,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -601,7 +600,7 @@ func TestRPCOverExec(t *gotesting.T) {
 	ctx := context.Background()
 
 	// Create a loopback executable providing gRPC server.
-	dir, err := ioutil.TempDir("", "tast-unittest.")
+	dir, err := os.MkdirTemp("", "tast-unittest.")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -644,7 +643,7 @@ func TestPanicOverExec(t *gotesting.T) {
 	ctx := context.Background()
 
 	// Create a loopback executable providing gRPC server.
-	dir, err := ioutil.TempDir("", "tast-unittest.")
+	dir, err := os.MkdirTemp("", "tast-unittest.")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -940,13 +939,13 @@ func (s *subprocessServer) Ping(ctx context.Context, _ *empty.Empty) (*empty.Emp
 	}
 
 	// Notify the parent process that we're in the middle of a method call.
-	ioutil.WriteFile(s.path, []byte(textReady), 0666)
+	os.WriteFile(s.path, []byte(textReady), 0666)
 
 	// Wait for the context to be canceled.
 	<-ctx.Done()
 
 	// Notify the parent process that we're finishing the method call.
-	ioutil.WriteFile(s.path, []byte(textFinished), 0666)
+	os.WriteFile(s.path, []byte(textFinished), 0666)
 
 	return &empty.Empty{}, nil
 }
@@ -965,7 +964,7 @@ func runStdioTestServer(t *gotesting.T) (cmd *exec.Cmd, stdin io.WriteCloser, st
 
 	// Create a temporary file. Is is initially empty, but a subprocess
 	// writes some data to it later.
-	f, err := ioutil.TempFile("", "tast-unittest.")
+	f, err := os.CreateTemp("", "tast-unittest.")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -1016,7 +1015,7 @@ func runStdioTestServer(t *gotesting.T) (cmd *exec.Cmd, stdin io.WriteCloser, st
 	// waitText waits until f's content becomes the specified one.
 	waitText := func(t *gotesting.T, want string) {
 		if err := testingutil.Poll(ctx, func(ctx context.Context) error {
-			b, err := ioutil.ReadFile(f.Name())
+			b, err := os.ReadFile(f.Name())
 			if err != nil {
 				return testingutil.PollBreak(err)
 			}

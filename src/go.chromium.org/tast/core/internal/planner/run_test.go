@@ -10,7 +10,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -1815,7 +1815,7 @@ func TestRunFixtureData(t *gotesting.T) {
 				t.Error(err)
 			}
 			defer resp.Body.Close()
-			if got, err := ioutil.ReadAll(resp.Body); err != nil {
+			if got, err := io.ReadAll(resp.Body); err != nil {
 				t.Error(err)
 			} else if string(got) != "42" {
 				t.Errorf(`Got %v, want "42"`, got)

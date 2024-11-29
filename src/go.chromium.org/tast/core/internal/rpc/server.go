@@ -9,7 +9,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net"
 	"os"
 	"os/signal"
@@ -264,7 +263,7 @@ func serverOpts(ls *remoteLoggingServer, logger logging.Logger, calls *sync.Wait
 				}
 
 				// Send metadataOutDir only if some files were saved in order to avoid extra round-trips.
-				if fis, err := ioutil.ReadDir(outDir); err != nil {
+				if fis, err := os.ReadDir(outDir); err != nil {
 					logging.Info(ctx, "gRPC output directory is corrupted: ", err)
 				} else if len(fis) == 0 {
 					if err := os.RemoveAll(outDir); err != nil {

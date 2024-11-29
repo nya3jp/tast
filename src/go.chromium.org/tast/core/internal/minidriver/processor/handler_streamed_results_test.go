@@ -8,7 +8,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"io/ioutil"
+	"os"
 	"path/filepath"
 	"testing"
 
@@ -61,7 +61,7 @@ func TestStreamedResultsHandler(t *testing.T) {
 		t.Errorf("Processor had a fatal error: %v", err)
 	}
 
-	b, err := ioutil.ReadFile(filepath.Join(resDir, reporting.StreamedResultsFilename))
+	b, err := os.ReadFile(filepath.Join(resDir, reporting.StreamedResultsFilename))
 	if err != nil {
 		t.Fatalf("Failed to read %s: %v", reporting.StreamedResultsFilename, err)
 	}

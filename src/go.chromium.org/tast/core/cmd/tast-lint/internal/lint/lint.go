@@ -12,7 +12,6 @@ import (
 	"go/ast"
 	"go/format"
 	"go/token"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -335,7 +334,7 @@ func checkFile(path git.CommitFile, data []byte, debug bool, fs *token.FileSet, 
 			if hasFmtError(buf.Bytes(), "buffer") {
 				return fmt.Errorf("failed gofmt")
 			}
-			tempfile, err := ioutil.TempFile(filepath.Dir(path.Path), "temp")
+			tempfile, err := os.CreateTemp(filepath.Dir(path.Path), "temp")
 			if err != nil {
 				return err
 			}

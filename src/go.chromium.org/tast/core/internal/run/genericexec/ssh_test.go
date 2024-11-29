@@ -8,7 +8,6 @@ import (
 	"bytes"
 	"context"
 	"io"
-	"io/ioutil"
 	"os"
 	"strings"
 	"sync"
@@ -41,7 +40,7 @@ func TestSSHCmdRun(t *testing.T) {
 
 		req.Start(true)
 
-		b, err := ioutil.ReadAll(req)
+		b, err := io.ReadAll(req)
 		if err != nil {
 			t.Errorf("ReadAll failed for stdin: %v", err)
 		}
@@ -107,7 +106,7 @@ func TestSSHCmdRunFail(t *testing.T) {
 	defer conn.Close(ctx)
 
 	cmd := genericexec.CommandSSH(conn, "executable")
-	err = cmd.Run(context.Background(), []string{"baz"}, &bytes.Buffer{}, ioutil.Discard, ioutil.Discard)
+	err = cmd.Run(context.Background(), []string{"baz"}, &bytes.Buffer{}, io.Discard, io.Discard)
 	if err == nil {
 		t.Error("Run unexpectedly succeeded; want exit status 28")
 	} else if xerr, ok := err.(*cryptossh.ExitError); !ok || xerr.ExitStatus() != 28 {
@@ -194,7 +193,7 @@ func TestSSHCmdInteractCancel(t *testing.T) {
 		// Just block until stdin is closed.
 		close(started)
 		req.Start(true)
-		io.Copy(ioutil.Discard, req)
+		io.Copy(io.Discard, req)
 		req.End(0)
 		close(finished)
 	})
@@ -257,7 +256,7 @@ func TestSSHCmdWaitCancel(t *testing.T) {
 		// Just block until stdin is closed.
 		close(started)
 		req.Start(true)
-		io.Copy(ioutil.Discard, req)
+		io.Copy(io.Discard, req)
 		req.End(0)
 		close(finished)
 	})

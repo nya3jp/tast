@@ -105,7 +105,7 @@ func GetFileTail(ctx context.Context, conn *ssh.Conn, src, dst string, startLine
 // WriteFile writes data to the file on the path. If the file does not exist,
 // WriteFile creates it with permissions perm; otherwise WriteFile truncates it
 // before writing, without changing permissions.
-// Unlike ioutil.WriteFile, it doesn't apply umask on perm.
+// Unlike os.WriteFile, it doesn't apply umask on perm.
 func WriteFile(ctx context.Context, conn *ssh.Conn, path string, data []byte, perm os.FileMode) error {
 	cmd := conn.CommandContext(ctx, "sh", "-c", `test -e "$0"; r=$?; cat > "$0"; if [ $r = 1 ]; then chmod "$1" "$0"; fi`, path, fmt.Sprintf("%o", perm&os.ModePerm))
 	cmd.Stdin = bytes.NewBuffer(data)

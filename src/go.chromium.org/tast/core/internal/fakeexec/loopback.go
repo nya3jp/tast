@@ -7,7 +7,6 @@ package fakeexec
 import (
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net"
 	"os"
 
@@ -86,7 +85,7 @@ func CreateLoopback(path string, proc ProcFunc) (lo *Loopback, retErr error) {
 	if err != nil {
 		return nil, err
 	}
-	if err := ioutil.WriteFile(path, script, 0755); err != nil {
+	if err := os.WriteFile(path, script, 0755); err != nil {
 		return nil, err
 	}
 	defer func() {

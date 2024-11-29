@@ -8,7 +8,6 @@ package fakedutserver
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
 	"net"
 	"os"
 	"path/filepath"
@@ -143,7 +142,7 @@ func fillCache(content []byte, dest string) error {
 	if err := os.MkdirAll(dir, 0755); err != nil {
 		return status.Errorf(codes.Internal, "failed to create directory %s: %v", dir, err)
 	}
-	if err := ioutil.WriteFile(dest, content, 0644); err != nil {
+	if err := os.WriteFile(dest, content, 0644); err != nil {
 		return status.Errorf(codes.Internal, "failed to write file %s: %v", dest, err)
 	}
 	return nil

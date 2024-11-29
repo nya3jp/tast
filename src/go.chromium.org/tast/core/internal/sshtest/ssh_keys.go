@@ -10,7 +10,6 @@ import (
 	"crypto/x509"
 	"encoding/pem"
 	"fmt"
-	"io/ioutil"
 	"os"
 )
 
@@ -36,7 +35,7 @@ func WriteKey(key *rsa.PrivateKey) (path string, err error) {
 		Bytes:   x509.MarshalPKCS1PrivateKey(key),
 	})
 
-	f, err := ioutil.TempFile("", "tast_unittest_ssh_key.")
+	f, err := os.CreateTemp("", "tast_unittest_ssh_key.")
 	if err != nil {
 		return "", err
 	}

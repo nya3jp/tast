@@ -9,7 +9,6 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"fmt"
-	"io/ioutil"
 	"net"
 	"os"
 	"path/filepath"
@@ -208,7 +207,7 @@ func getSSHAuthMethods(o *Options, questionPrefix string) ([]ssh.AuthMethod, err
 // rok is true if the key data was read successfully off disk and false if it wasn't.
 // Note that err may be set while rok is true if the key was malformed or passphrase-protected.
 func readPrivateKey(path string) (s ssh.Signer, rok bool, err error) {
-	k, err := ioutil.ReadFile(path)
+	k, err := os.ReadFile(path)
 	if err != nil {
 		return nil, false, err
 	}

@@ -7,7 +7,7 @@ package testing
 import (
 	"context"
 	"errors"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"os"
 	"testing"
@@ -62,7 +62,7 @@ func TestCloudStorageOpen(t *testing.T) {
 		t.Fatalf("Open failed for %q: %v", fakeURL, err)
 	}
 	defer r.Close()
-	b, err := ioutil.ReadAll(r)
+	b, err := io.ReadAll(r)
 	if err != nil {
 		t.Fatal("ReadAll failed: ", err)
 	}
@@ -92,7 +92,7 @@ func TestCloudStorageOpenRelative(t *testing.T) {
 		t.Fatalf("Open failed for %q: %v", "build-artifact:///c", err)
 	}
 	defer r.Close()
-	b, err := ioutil.ReadAll(r)
+	b, err := io.ReadAll(r)
 	if err != nil {
 		t.Fatal("ReadAll failed: ", err)
 	}
@@ -126,7 +126,7 @@ func TestCloudStorageTLWOpen(t *testing.T) {
 		t.Fatalf("Open failed for %q: %v", fakeURL, err)
 	}
 	defer r.Close()
-	b, err := ioutil.ReadAll(r)
+	b, err := io.ReadAll(r)
 	if err != nil {
 		t.Fatal("ReadAll failed: ", err)
 	}
@@ -167,7 +167,7 @@ func TestCloudStorageTLWStage(t *testing.T) {
 		t.Error("Get failed: ", resp)
 	}
 	defer resp.Body.Close()
-	b, err := ioutil.ReadAll(resp.Body)
+	b, err := io.ReadAll(resp.Body)
 	if err != nil {
 		t.Fatal("ReadAll failed: ", err)
 	}
@@ -201,7 +201,7 @@ func TestCloudStorageDUTServerOpen(t *testing.T) {
 		t.Fatalf("Open failed for %q: %v", fakeURL, err)
 	}
 	defer r.Close()
-	b, err := ioutil.ReadAll(r)
+	b, err := io.ReadAll(r)
 	if err != nil {
 		t.Fatal("ReadAll failed: ", err)
 	}
@@ -242,7 +242,7 @@ func TestCloudStorageDUTServerStage(t *testing.T) {
 		t.Fatal("Open failed: ", err)
 	}
 	defer r.Close()
-	b, err := ioutil.ReadAll(r)
+	b, err := io.ReadAll(r)
 	if err != nil {
 		t.Fatal("ReadAll failed: ", err)
 	}

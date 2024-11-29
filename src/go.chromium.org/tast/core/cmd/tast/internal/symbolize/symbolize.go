@@ -11,7 +11,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -142,7 +141,7 @@ func getMinidumpPath(ctx context.Context, path string) (string, error) {
 	if _, err = f.Seek(int64(dumpOffset), 0); err != nil {
 		return "", err
 	}
-	tf, err := ioutil.TempFile("", "tast_"+filepath.Base(path)+".")
+	tf, err := os.CreateTemp("", "tast_"+filepath.Base(path)+".")
 	if err != nil {
 		return "", err
 	}

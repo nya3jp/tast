@@ -7,7 +7,6 @@ package fakebundle
 
 import (
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	gotesting "testing"
@@ -25,7 +24,7 @@ import (
 func Install(t *gotesting.T, regs ...*testing.Registry) (bundleGlob string) {
 	t.Helper()
 
-	dir, err := ioutil.TempDir("", "tast-fakebundles.")
+	dir, err := os.MkdirTemp("", "tast-fakebundles.")
 	if err != nil {
 		t.Fatal(err)
 	}

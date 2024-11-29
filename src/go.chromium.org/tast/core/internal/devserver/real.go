@@ -10,7 +10,6 @@ import (
 	"fmt"
 	"hash/crc32"
 	"io"
-	"io/ioutil"
 	"math/rand"
 	"net/http"
 	"net/url"
@@ -45,7 +44,7 @@ func checkHealth(ctx context.Context, cl *http.Client, dsURL string) error {
 	}
 	res.Body.Close()
 	if res.StatusCode != http.StatusOK {
-		out, _ := ioutil.ReadAll(res.Body)
+		out, _ := io.ReadAll(res.Body)
 		s := scrapeInternalError(out)
 		return fmt.Errorf("check_health returned %d: %s", res.StatusCode, s)
 	}
@@ -277,7 +276,7 @@ func (c *RealClient) checkStaged(ctx context.Context, dsURL, bucket, gsPath stri
 
 	switch res.StatusCode {
 	case http.StatusOK:
-		b, err := ioutil.ReadAll(res.Body)
+		b, err := io.ReadAll(res.Body)
 		if err != nil {
 			return fmt.Errorf("failed to read response body: %v", err)
 		}
@@ -293,7 +292,7 @@ func (c *RealClient) checkStaged(ctx context.Context, dsURL, bucket, gsPath stri
 			return fmt.Errorf("got response %q", val)
 		}
 	case http.StatusInternalServerError:
-		out, _ := ioutil.ReadAll(res.Body)
+		out, _ := io.ReadAll(res.Body)
 		err := scrapeInternalError(out)
 		return fmt.Errorf("got status %d: %s", res.StatusCode, err)
 	default:
@@ -364,7 +363,7 @@ func (c *RealClient) sendStageRequest(ctx context.Context, req *http.Request) (r
 	case http.StatusOK:
 		return false, nil
 	case http.StatusInternalServerError:
-		out, _ := ioutil.ReadAll(res.Body)
+		out, _ := io.ReadAll(res.Body)
 		s := scrapeInternalError(out)
 		if strings.Contains(s, "Could not find") || strings.Contains(s, "file not found") {
 			return false, os.ErrNotExist
@@ -420,7 +419,7 @@ func (c *RealClient) openStaged(ctx context.Context, staticURL *url.URL) (io.Rea
 			return res.Body, nil
 		case http.StatusInternalServerError:
 			defer res.Body.Close()
-			out, _ := ioutil.ReadAll(res.Body)
+			out, _ := io.ReadAll(res.Body)
 			s := scrapeInternalError(out)
 			return nil, fmt.Errorf("got status %d: %s", res.StatusCode, s)
 		case http.StatusNotFound:

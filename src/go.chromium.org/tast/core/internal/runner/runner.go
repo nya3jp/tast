@@ -7,7 +7,6 @@ package runner
 import (
 	"context"
 	"io"
-	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -216,7 +215,7 @@ func setUpBaseOutDir(rcfg *protocol.RunConfig) (created bool, err error) {
 	}()
 
 	if rcfg.GetDirs().GetOutDir() == "" {
-		if rcfg.GetDirs().OutDir, err = ioutil.TempDir("", "tast_out."); err != nil {
+		if rcfg.GetDirs().OutDir, err = os.MkdirTemp("", "tast_out."); err != nil {
 			return false, err
 		}
 		created = true

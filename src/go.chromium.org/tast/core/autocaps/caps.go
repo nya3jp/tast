@@ -18,7 +18,6 @@ package autocaps
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -90,8 +89,8 @@ func Read(dir string, info *SysInfo) (map[string]State, error) {
 		caps[c] = No
 	}
 
-	// ioutil.ReadDir returns sorted filenames.
-	fis, err := ioutil.ReadDir(dir)
+	// os.ReadDir returns sorted filenames.
+	fis, err := os.ReadDir(dir)
 	if err != nil {
 		return nil, err
 	}

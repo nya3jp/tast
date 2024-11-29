@@ -8,7 +8,6 @@ package run
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
 	"net"
 	"os"
 	"path/filepath"
@@ -281,7 +280,7 @@ func runTests(ctx context.Context, cfg *config.Config,
 			}
 			roleName = role
 		}
-		if err := ioutil.WriteFile(filepath.Join(dir, DUTInfoFile), []byte(proto.MarshalTextString(dutInfos[role])), 0644); err != nil {
+		if err := os.WriteFile(filepath.Join(dir, DUTInfoFile), []byte(proto.MarshalTextString(dutInfos[role])), 0644); err != nil {
 			logging.Debugf(ctx, "Failed to dump DUTInfo: %v", err)
 		}
 

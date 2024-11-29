@@ -8,7 +8,6 @@ import (
 	"context"
 	"errors"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"os"
 	"reflect"
@@ -50,7 +49,7 @@ func TestRealClientSimple(t *testing.T) {
 		t.Error("Open failed: ", err)
 	} else {
 		defer r.Close()
-		if data, err := ioutil.ReadAll(r); err != nil {
+		if data, err := io.ReadAll(r); err != nil {
 			t.Error("ReadAll failed: ", err)
 		} else if string(data) != fakeFileData {
 			t.Errorf("Open returned %q; want %q", string(data), fakeFileData)
@@ -88,7 +87,7 @@ func TestRealClientSimpleStage(t *testing.T) {
 			t.Errorf("Get %q failed: %v", fileURL, resp)
 		}
 		defer resp.Body.Close()
-		if data, err := ioutil.ReadAll(resp.Body); err != nil {
+		if data, err := io.ReadAll(resp.Body); err != nil {
 			t.Error("ReadAll failed: ", err)
 		} else if string(data) != fakeFileData {
 			t.Errorf("ReadAll returned %q; want %q", string(data), fakeFileData)
@@ -312,7 +311,7 @@ func TestRealClientRetryDownload(t *testing.T) {
 	}
 	defer r.Close()
 
-	b, err := ioutil.ReadAll(r)
+	b, err := io.ReadAll(r)
 	if err != nil {
 		t.Error("Error during downloading file: ", err)
 	}
@@ -339,7 +338,7 @@ func TestRealClientRetryDownloadSuccessiveResumableErrors(t *testing.T) {
 	}
 	defer r.Close()
 
-	_, err = ioutil.ReadAll(r)
+	_, err = io.ReadAll(r)
 	if err == nil {
 		t.Error("ReadAll succeeded unexpectedly")
 	} else if err != io.ErrUnexpectedEOF {

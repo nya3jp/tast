@@ -9,7 +9,6 @@ import (
 	"crypto/rsa"
 	"crypto/x509"
 	"encoding/pem"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	gotesting "testing"
@@ -70,7 +69,7 @@ func SetUp(t *gotesting.T, opts ...Option) *Env {
 		Headers: nil,
 		Bytes:   x509.MarshalPKCS1PrivateKey(userKey),
 	})
-	if err := ioutil.WriteFile(filepath.Join(rootDir, keyFile), keyData, 0600); err != nil {
+	if err := os.WriteFile(filepath.Join(rootDir, keyFile), keyData, 0600); err != nil {
 		t.Fatal(err)
 	}
 

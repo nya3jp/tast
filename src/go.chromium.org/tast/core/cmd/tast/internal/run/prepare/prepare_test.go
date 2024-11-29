@@ -6,7 +6,7 @@ package prepare
 
 import (
 	"errors"
-	"io/ioutil"
+	"os"
 	"path/filepath"
 	"regexp"
 	gotesting "testing"
@@ -164,7 +164,7 @@ func TestPushDataFiles(t *gotesting.T) {
 	} else if diff := cmp.Diff(data, expData); diff != "" {
 		t.Fatalf("pushDataFiles() copied files unmatch (-got +want):\n%v", diff)
 	}
-	if _, err := ioutil.ReadFile(filepath.Join(cfg.LocalDataDir(), testing.RelativeDataDir(categoryPkg), extFile1)); err == nil {
+	if _, err := os.ReadFile(filepath.Join(cfg.LocalDataDir(), testing.RelativeDataDir(categoryPkg), extFile1)); err == nil {
 		t.Errorf("pushDataFiles() unexpectedly copied %s", extFile1)
 	}
 }

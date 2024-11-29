@@ -7,7 +7,6 @@ package driver_test
 import (
 	"context"
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
@@ -26,7 +25,7 @@ func loadTestData(t *testing.T, filename string) string {
 	if err != nil {
 		t.Fatal("Getwd failed: ", err)
 	}
-	b, err := ioutil.ReadFile(filepath.Join(wd, "testdata", filename))
+	b, err := os.ReadFile(filepath.Join(wd, "testdata", filename))
 	if err != nil {
 		t.Fatal("ReadFile failed: ", err)
 	}

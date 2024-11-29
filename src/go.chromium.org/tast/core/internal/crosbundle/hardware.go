@@ -10,7 +10,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path"
@@ -309,7 +308,7 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 	checkForConnector := func(connectorRegexp string) bool {
 		const drmSysFS = "/sys/class/drm"
 
-		drmFiles, err := ioutil.ReadDir(drmSysFS)
+		drmFiles, err := os.ReadDir(drmSysFS)
 		if err != nil {
 			return false
 		}
@@ -319,7 +318,7 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 			fileName := file.Name()
 
 			if cardMatch.MatchString(fileName) {
-				if cardConnected, err := ioutil.ReadFile(path.Join(drmSysFS, fileName, "status")); err != nil {
+				if cardConnected, err := os.ReadFile(path.Join(drmSysFS, fileName, "status")); err != nil {
 					if !os.IsNotExist(err) {
 						return false
 					}
@@ -906,21 +905,21 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 			isACPower[s] = true
 		}
 		config.Power = protocol.DeprecatedDeviceConfig_POWER_SUPPLY_UNSPECIFIED
-		files, err := ioutil.ReadDir(sysFsPowerSupplyPath)
+		files, err := os.ReadDir(sysFsPowerSupplyPath)
 		if err != nil {
 			logging.Infof(ctx, "Failed to read %v: %v", sysFsPowerSupplyPath, err)
 			return
 		}
 		for _, file := range files {
 			devPath := path.Join(sysFsPowerSupplyPath, file.Name())
-			supplyTypeBytes, err := ioutil.ReadFile(path.Join(devPath, "type"))
+			supplyTypeBytes, err := os.ReadFile(path.Join(devPath, "type"))
 			supplyType := strings.TrimSuffix(string(supplyTypeBytes), "\n")
 			if err != nil {
 				logging.Infof(ctx, "Failed to read supply type of %v: %v", devPath, err)
 				continue
 			}
 			if strings.HasPrefix(supplyType, "Battery") {
-				supplyScopeBytes, err := ioutil.ReadFile(path.Join(devPath, "scope"))
+				supplyScopeBytes, err := os.ReadFile(path.Join(devPath, "scope"))
 				supplyScope := strings.TrimSuffix(string(supplyScopeBytes), "\n")
 				if err != nil && !os.IsNotExist(err) {
 					// Ignore NotExist error since /sys/class/power_supply/*/scope may not exist
@@ -956,7 +955,7 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 	features.Storage.SizeGb = uint32(storageBytes / 1_000_000_000)
 
 	memoryBytes, err := func() (int64, error) {
-		b, err := ioutil.ReadFile("/proc/meminfo")
+		b, err := os.ReadFile("/proc/meminfo")
 		if err != nil {
 			return 0, err
 		}
@@ -1043,7 +1042,7 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 	cpuSMT, err := func() (bool, error) {
 		// NB: this sysfs API exists only on kernel >=4.19 (b/195061310). But we don't
 		// target SMT-specific tests on earlier kernels.
-		b, err := ioutil.ReadFile("/sys/devices/system/cpu/smt/control")
+		b, err := os.ReadFile("/sys/devices/system/cpu/smt/control")
 		if err != nil {
 			if os.IsNotExist(err) {
 				return false, nil
@@ -1069,7 +1068,7 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 
 	cpuVulnerabilityPresent := func(vulnerability string) (bool, error) {
 		vPath := filepath.Join("/sys/devices/system/cpu/vulnerabilities", vulnerability)
-		b, err := ioutil.ReadFile(vPath)
+		b, err := os.ReadFile(vPath)
 		if err != nil {
 			return false, errors.Wrapf(err, "failed to read vulnerability file %q", vPath)
 		}
@@ -1179,7 +1178,7 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 	}
 
 	gpuFamily, gpuVendor, cpuSocFamily, dmiProductName, err := func() (gpuFamily, gpuVendor, cpuSocFamily, dmiProductName string, fetchErr error) {
-		outBin, err := ioutil.TempFile("/tmp", "hardware_probe")
+		outBin, err := os.CreateTemp("/tmp", "hardware_probe")
 		if err != nil {
 			return "", "", "", "", errors.Wrap(err, "failed to create temp file")
 		}
@@ -1480,10 +1479,10 @@ func findSOC(parsed lscpuResult) (protocol.DeprecatedDeviceConfig_SOC, error) {
 func findARMSOC() (protocol.DeprecatedDeviceConfig_SOC, error) {
 	// Platforms with SMCCC >= 1.2 should implement get_soc functions in firmware
 	const socSysFS = "/sys/bus/soc/devices"
-	socs, err := ioutil.ReadDir(socSysFS)
+	socs, err := os.ReadDir(socSysFS)
 	if err == nil {
 		for _, soc := range socs {
-			c, err := ioutil.ReadFile(path.Join(socSysFS, soc.Name(), "soc_id"))
+			c, err := os.ReadFile(path.Join(socSysFS, soc.Name(), "soc_id"))
 			if err != nil || !strings.HasPrefix(string(c), "jep106:") {
 				continue
 			}
@@ -1517,7 +1516,7 @@ func findARMSOC() (protocol.DeprecatedDeviceConfig_SOC, error) {
 	// For old platforms with SMCCC < 1.2: mt8173, mt8183, rk3288, rk3399,
 	// match with their compatible string. Obtain the string after the last , and trim \x00.
 	// Example: google,krane-sku176\x00google,krane\x00mediatek,mt8183\x00
-	c, err := ioutil.ReadFile("/sys/firmware/devicetree/base/compatible")
+	c, err := os.ReadFile("/sys/firmware/devicetree/base/compatible")
 	if err != nil {
 		return protocol.DeprecatedDeviceConfig_SOC_UNSPECIFIED, errors.Wrap(err, "failed to find ARM model")
 	}
@@ -1877,7 +1876,7 @@ func bootTimeCalibration() (bool, error) {
 		}
 		return false, err
 	}
-	b, err := ioutil.ReadFile(path)
+	b, err := os.ReadFile(path)
 	if err != nil {
 		return false, errors.New("failed to read sound_card_init config")
 	}
@@ -1935,7 +1934,7 @@ func cameraFeatures(model string) ([]string, error) {
 		FeatureSet []map[string]interface{} `json:"feature_set"`
 	}
 	const featureProfilePath = "/etc/camera/feature_profile.json"
-	jsonInput, err := ioutil.ReadFile(featureProfilePath)
+	jsonInput, err := os.ReadFile(featureProfilePath)
 	if err != nil {
 		return nil, errors.Wrap(err, "cannot load feature profile config")
 	}
@@ -2079,14 +2078,14 @@ var configLineRegexp = regexp.MustCompile(`^(# )?(CONFIG\S*)(=(y)| (is not set))
 // parseKConfigs updates the provided HardwareFeatures with the features found
 // by reading reading through the BIOS Kconfigs.
 func parseKConfigs(ctx context.Context, features *configpb.HardwareFeatures) error {
-	corebootBin, err := ioutil.TempFile("/var/tmp", "")
+	corebootBin, err := os.CreateTemp("/var/tmp", "")
 	if err != nil {
 		return errors.Wrap(err, "failed to create temp file")
 	}
 	corebootBin.Close()
 	defer os.Remove(corebootBin.Name())
 
-	fwConfig, err := ioutil.TempFile("/var/tmp", "")
+	fwConfig, err := os.CreateTemp("/var/tmp", "")
 	if err != nil {
 		return errors.Wrap(err, "failed to create temp file")
 	}
@@ -2130,14 +2129,14 @@ func parseKConfigs(ctx context.Context, features *configpb.HardwareFeatures) err
 }
 
 func parseECBuildConfig(ctx context.Context, features *configpb.HardwareFeatures) error {
-	corebootBin, err := ioutil.TempFile("/var/tmp", "")
+	corebootBin, err := os.CreateTemp("/var/tmp", "")
 	if err != nil {
 		return errors.Wrap(err, "failed to create temp file")
 	}
 	corebootBin.Close()
 	defer os.Remove(corebootBin.Name())
 
-	ecConfig, err := ioutil.TempFile("/var/tmp", "")
+	ecConfig, err := os.CreateTemp("/var/tmp", "")
 	if err != nil {
 		return errors.Wrap(err, "failed to create temp file")
 	}
@@ -2229,7 +2228,7 @@ func oemName() string {
 }
 
 func hasRecoveryMRCCacheSection(ctx context.Context, features *configpb.HardwareFeatures) error {
-	corebootBin, err := ioutil.TempFile("/var/tmp", "")
+	corebootBin, err := os.CreateTemp("/var/tmp", "")
 	if err != nil {
 		return errors.Wrap(err, "failed to create temp file")
 	}

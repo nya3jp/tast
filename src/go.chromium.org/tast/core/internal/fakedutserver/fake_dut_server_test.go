@@ -6,7 +6,6 @@ package fakedutserver_test
 
 import (
 	"context"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
@@ -73,7 +72,7 @@ func TestDutServiceServer_Cache(t *testing.T) {
 	if err := ptypes.UnmarshalAny(op.GetResponse(), resp); err != nil {
 		t.Fatalf("Failed to unmarshal response [%v]: %s", resp, err)
 	}
-	content, err := ioutil.ReadFile(destFile)
+	content, err := os.ReadFile(destFile)
 	if err != nil {
 		t.Fatalf("Failed to read file %s: %v", destFile, err)
 	}

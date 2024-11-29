@@ -12,7 +12,7 @@ import (
 	"context"
 	"encoding/xml"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"reflect"
@@ -470,7 +470,7 @@ func (r *XMLRpc) Run(ctx context.Context, cl Call, out ...interface{}) error {
 	defer resp.Body.Close()
 
 	// Read body and unmarshal XML.
-	bodyBytes, _ := ioutil.ReadAll(resp.Body)
+	bodyBytes, _ := io.ReadAll(resp.Body)
 	res := methodResponse{}
 	if err = xml.Unmarshal(bodyBytes, &res); err != nil {
 		return err

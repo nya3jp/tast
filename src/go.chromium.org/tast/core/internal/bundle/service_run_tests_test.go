@@ -8,7 +8,7 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"io/ioutil"
+	"os"
 	"path/filepath"
 	"sync"
 	gotesting "testing"
@@ -51,8 +51,8 @@ func TestTestServiceRunTests(t *gotesting.T) {
 		Data: []string{"data.txt"},
 		Func: func(ctx context.Context, s *testing.State) {
 			s.Log("Local test 1")
-			ioutil.WriteFile(filepath.Join(s.OutDir(), "out.txt"), []byte("local1"), 0644)
-			b, err := ioutil.ReadFile(s.DataPath("data.txt"))
+			os.WriteFile(filepath.Join(s.OutDir(), "out.txt"), []byte("local1"), 0644)
+			b, err := os.ReadFile(s.DataPath("data.txt"))
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -67,7 +67,7 @@ func TestTestServiceRunTests(t *gotesting.T) {
 		Name: "foo.Local2",
 		Func: func(ctx context.Context, s *testing.State) {
 			s.Log("Local test 2")
-			ioutil.WriteFile(filepath.Join(s.OutDir(), "out.txt"), []byte("local2"), 0644)
+			os.WriteFile(filepath.Join(s.OutDir(), "out.txt"), []byte("local2"), 0644)
 		},
 		Fixture: "remoteFixture",
 		Timeout: time.Minute,
@@ -77,7 +77,7 @@ func TestTestServiceRunTests(t *gotesting.T) {
 		Name: "foo.Remote",
 		Func: func(ctx context.Context, s *testing.State) {
 			s.Log("Remote testing")
-			ioutil.WriteFile(filepath.Join(s.OutDir(), "out.txt"), []byte("remote"), 0644)
+			os.WriteFile(filepath.Join(s.OutDir(), "out.txt"), []byte("remote"), 0644)
 		},
 		Timeout: time.Minute,
 	}
@@ -99,33 +99,33 @@ func TestTestServiceRunTests(t *gotesting.T) {
 		Impl: testfixture.New(
 			testfixture.WithSetUp(func(ctx context.Context, s *testing.FixtState) interface{} {
 				s.Log("Remote fixture SetUp")
-				b, err := ioutil.ReadFile(s.DataPath("data.txt"))
+				b, err := os.ReadFile(s.DataPath("data.txt"))
 				if err != nil {
 					t.Fatal(err)
 				}
 				if got, want := string(b), "fixture data"; got != want {
 					t.Errorf("Got %v, want %v", got, want)
 				}
-				if err := ioutil.WriteFile(filepath.Join(s.OutDir(), "set_up.txt"), []byte("set up"), 0644); err != nil {
+				if err := os.WriteFile(filepath.Join(s.OutDir(), "set_up.txt"), []byte("set up"), 0644); err != nil {
 					t.Error(err)
 				}
 				return nil
 			}),
 			testfixture.WithTearDown(func(ctx context.Context, s *testing.FixtState) {
 				s.Log("Remote fixture TearDown")
-				if err := ioutil.WriteFile(filepath.Join(s.OutDir(), "tear_down.txt"), []byte("tear down"), 0644); err != nil {
+				if err := os.WriteFile(filepath.Join(s.OutDir(), "tear_down.txt"), []byte("tear down"), 0644); err != nil {
 					t.Error(err)
 				}
 			}),
 			testfixture.WithPreTest(func(ctx context.Context, s *testing.FixtTestState) {
 				s.Log("Remote fixture PreTest")
-				if err := ioutil.WriteFile(filepath.Join(s.OutDir(), "pre_test.txt"), []byte("pre test"), 0644); err != nil {
+				if err := os.WriteFile(filepath.Join(s.OutDir(), "pre_test.txt"), []byte("pre test"), 0644); err != nil {
 					t.Error(err)
 				}
 			}),
 			testfixture.WithPostTest(func(ctx context.Context, s *testing.FixtTestState) {
 				s.Log("Remote fixture PostTest")
-				if err := ioutil.WriteFile(filepath.Join(s.OutDir(), "post_test.txt"), []byte("post test"), 0644); err != nil {
+				if err := os.WriteFile(filepath.Join(s.OutDir(), "post_test.txt"), []byte("post test"), 0644); err != nil {
 					t.Error(err)
 				}
 			}),
@@ -136,7 +136,7 @@ func TestTestServiceRunTests(t *gotesting.T) {
 				if !ok {
 					t.Error("No OutDir access in Reset")
 				}
-				if err := ioutil.WriteFile(filepath.Join(dir, "reset.txt"), []byte("reset"), 0644); err != nil {
+				if err := os.WriteFile(filepath.Join(dir, "reset.txt"), []byte("reset"), 0644); err != nil {
 					t.Error(err)
 				}
 				return nil

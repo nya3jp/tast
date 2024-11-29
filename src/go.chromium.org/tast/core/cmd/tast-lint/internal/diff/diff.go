@@ -7,7 +7,6 @@ package diff
 
 import (
 	"bytes"
-	"io/ioutil"
 	"os"
 	"os/exec"
 
@@ -17,7 +16,7 @@ import (
 // writeTempFile creates a temp file containing the given s. Returns the name
 // of the created temp file.
 func writeTempFile(s string) (string, error) {
-	f, err := ioutil.TempFile("", "")
+	f, err := os.CreateTemp("", "")
 	if err != nil {
 		return "", err
 	}

@@ -13,7 +13,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -208,7 +207,7 @@ func (m *Manager) PrepareDownloads(ctx context.Context, entities []*protocol.Ent
 			reportErr := func(format string, args ...interface{}) {
 				msg := fmt.Sprintf("failed to prepare downloading %s: %s", name, fmt.Sprintf(format, args...))
 				logging.Info(ctx, strings.ToUpper(msg[:1])+msg[1:])
-				ioutil.WriteFile(errorPath, []byte(msg), 0666)
+				os.WriteFile(errorPath, []byte(msg), 0666)
 				hasErr = true
 			}
 
@@ -377,7 +376,7 @@ func RunDownloads(ctx context.Context, dataDir string, jobs []*DownloadJob, cl d
 				msg := fmt.Sprintf("failed to download %s: %v", res.job.link.ComputedURL, res.err)
 				logging.Info(ctx, strings.ToUpper(msg[:1])+msg[1:])
 				for _, dest := range res.job.dests {
-					ioutil.WriteFile(dest+testing.ExternalErrorSuffix, []byte(msg), 0666)
+					os.WriteFile(dest+testing.ExternalErrorSuffix, []byte(msg), 0666)
 				}
 				hasErr = true
 			} else {
@@ -402,7 +401,7 @@ func RunDownloads(ctx context.Context, dataDir string, jobs []*DownloadJob, cl d
 // runDownload downloads an external data file.
 func runDownload(ctx context.Context, dataDir string, job *DownloadJob, cl devserver.Client) (size int64, retErr error) {
 	// Create the temporary file under dataDir to make use of hard links.
-	f, err := ioutil.TempFile(dataDir, ".external-download.")
+	f, err := os.CreateTemp(dataDir, ".external-download.")
 	if err != nil {
 		return 0, err
 	}

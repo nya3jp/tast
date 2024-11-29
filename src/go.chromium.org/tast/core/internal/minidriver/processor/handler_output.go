@@ -6,7 +6,6 @@ package processor
 
 import (
 	"context"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"sync"
@@ -65,7 +64,7 @@ func (h *copyOutputHandler) RunEnd(ctx context.Context) {
 func moveTestOutputData(pull PullFunc, outDir, dstDir string) error {
 	const testOutputFileRenameExt = ".from_test"
 
-	tmpDir, err := ioutil.TempDir(filepath.Dir(dstDir), "pulltmp.")
+	tmpDir, err := os.MkdirTemp(filepath.Dir(dstDir), "pulltmp.")
 	if err != nil {
 		return err
 	}
@@ -76,7 +75,7 @@ func moveTestOutputData(pull PullFunc, outDir, dstDir string) error {
 		return err
 	}
 
-	files, err := ioutil.ReadDir(srcDir)
+	files, err := os.ReadDir(srcDir)
 	if err != nil {
 		return err
 	}

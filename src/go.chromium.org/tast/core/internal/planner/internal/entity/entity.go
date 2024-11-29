@@ -6,7 +6,6 @@
 package entity
 
 import (
-	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -28,7 +27,7 @@ func PreCheck(data []string, s State) {
 			continue
 		}
 		ep := fp + testing.ExternalErrorSuffix
-		if data, err := ioutil.ReadFile(ep); err == nil {
+		if data, err := os.ReadFile(ep); err == nil {
 			s.Errorf("Required data file %s missing: %s", fn, string(data))
 		} else {
 			s.Errorf("Required data file %s missing", fn)
@@ -52,9 +51,9 @@ func CreateOutDir(baseDir, name string) (string, error) {
 	if err := os.Mkdir(filepath.Join(baseDir, name), 0755); err == nil {
 		outDir = filepath.Join(baseDir, name)
 	} else if os.IsExist(err) {
-		// The directory already exists. Use ioutil.TempDir to create a randomly named one.
+		// The directory already exists. Use os.MkdirTemp to create a randomly named one.
 		var err error
-		outDir, err = ioutil.TempDir(baseDir, name+".")
+		outDir, err = os.MkdirTemp(baseDir, name+".")
 		if err != nil {
 			return "", err
 		}

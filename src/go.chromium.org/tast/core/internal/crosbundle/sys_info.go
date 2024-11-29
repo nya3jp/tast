@@ -7,7 +7,6 @@ package crosbundle
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -249,7 +248,7 @@ func writeSystemInfo(ctx context.Context, dir string) error {
 }
 
 func suspendLogCleanup() error {
-	return ioutil.WriteFile(cleanupLogsPausedPath, nil, 0666)
+	return os.WriteFile(cleanupLogsPausedPath, nil, 0666)
 }
 
 func resumeLogCleanup() error {

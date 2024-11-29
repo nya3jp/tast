@@ -8,7 +8,6 @@ import (
 	"bytes"
 	"context"
 	"io"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -43,7 +42,7 @@ func TestExecCmdRun(t *testing.T) {
 			t.Errorf("Args mismatch: got %q, want %q", gotArgs, wantArgs)
 		}
 
-		b, err := ioutil.ReadAll(stdin)
+		b, err := io.ReadAll(stdin)
 		if err != nil {
 			t.Errorf("ReadAll failed for stdin: %v", err)
 		}
@@ -93,7 +92,7 @@ func TestExecCmdRunFail(t *testing.T) {
 	defer lo.Close()
 
 	cmd := genericexec.CommandExec(path)
-	err = cmd.Run(context.Background(), []string{"baz"}, &bytes.Buffer{}, ioutil.Discard, ioutil.Discard)
+	err = cmd.Run(context.Background(), []string{"baz"}, &bytes.Buffer{}, io.Discard, io.Discard)
 	if err == nil {
 		t.Error("Run unexpectedly succeeded; want exit status 28")
 	} else if xerr, ok := err.(*exec.ExitError); !ok || xerr.ExitCode() != 28 {
@@ -173,7 +172,7 @@ func TestExecCmdInteractCancel(t *testing.T) {
 
 	lo, err := fakeexec.CreateLoopback(path, func(args []string, stdin io.Reader, stdout, stderr io.WriteCloser) int {
 		// Just block until stdin is closed.
-		io.Copy(ioutil.Discard, stdin)
+		io.Copy(io.Discard, stdin)
 		return 0
 	})
 	if err != nil {
@@ -218,7 +217,7 @@ func TestExecCmdWaitCancel(t *testing.T) {
 
 	lo, err := fakeexec.CreateLoopback(path, func(args []string, stdin io.Reader, stdout, stderr io.WriteCloser) int {
 		// Just block until stdin is closed.
-		io.Copy(ioutil.Discard, stdin)
+		io.Copy(io.Discard, stdin)
 		return 0
 	})
 	if err != nil {

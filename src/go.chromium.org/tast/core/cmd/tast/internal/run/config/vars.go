@@ -6,7 +6,6 @@ package config
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 
@@ -30,7 +29,7 @@ func findVarsFiles(dir string) (paths []string, err error) {
 
 // readVarsFile reads a YAML file at path containing key-value pairs.
 func readVarsFile(path string) (map[string]string, error) {
-	b, err := ioutil.ReadFile(path)
+	b, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}

@@ -96,7 +96,7 @@ and the mount point that we use for it:
 ```go
 	// Create a temp dir in /tmp to ensure that we don't leave stale mounts in
 	// Tast's temp dir if we're interrupted.
-	td, err := ioutil.TempDir("/tmp", "tast.kernel.LogMount.")
+	td, err := os.MkdirTemp("/tmp", "tast.kernel.LogMount.")
 	if err != nil {
 		s.Fatal("Failed to create temp dir: ", err)
 	}
@@ -433,7 +433,6 @@ package kernel
 import (
 	"bufio"
 	"context"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -461,7 +460,7 @@ func LogMount(ctx context.Context, s *testing.State) {
 
 	// Create a temp dir in /tmp to ensure that we don't leave stale mounts in
 	// Tast's temp dir if we're interrupted.
-	td, err := ioutil.TempDir("/tmp", "tast.kernel.LogMount.")
+	td, err := os.MkdirTemp("/tmp", "tast.kernel.LogMount.")
 	if err != nil {
 		s.Fatal("Failed to create temp dir: ", err)
 	}

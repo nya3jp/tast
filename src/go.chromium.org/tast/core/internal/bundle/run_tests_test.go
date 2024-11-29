@@ -7,7 +7,6 @@ package bundle
 import (
 	"context"
 	"io"
-	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -41,7 +40,7 @@ func startTestServer(t *gotesting.T, scfg *StaticConfig, req *protocol.Handshake
 		cr.Close()
 	})
 
-	go run(context.Background(), []string{"-rpc"}, sr, sw, ioutil.Discard, scfg)
+	go run(context.Background(), []string{"-rpc"}, sr, sw, io.Discard, scfg)
 
 	conn, err := rpc.NewClient(context.Background(), cr, cw, req)
 	if err != nil {
@@ -86,7 +85,7 @@ func TestRunTests(t *gotesting.T) {
 	if err := os.Mkdir(runTmpDir, 0755); err != nil {
 		t.Fatalf("Failed to create %s: %v", runTmpDir, err)
 	}
-	if err := ioutil.WriteFile(filepath.Join(runTmpDir, "foo.txt"), nil, 0644); err != nil {
+	if err := os.WriteFile(filepath.Join(runTmpDir, "foo.txt"), nil, 0644); err != nil {
 		t.Fatalf("Failed to create foo.txt: %v", err)
 	}
 

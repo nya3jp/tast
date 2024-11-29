@@ -8,7 +8,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	gotesting "testing"
@@ -735,7 +734,7 @@ func TestDriver_RunTests_WithRetries(t *gotesting.T) {
 	}
 
 	// Results in streamed_results.json.
-	if b, err := ioutil.ReadFile(filepath.Join(cfg.ResDir(), reporting.StreamedResultsFilename)); err != nil {
+	if b, err := os.ReadFile(filepath.Join(cfg.ResDir(), reporting.StreamedResultsFilename)); err != nil {
 		t.Errorf("Failed to read %s: %v", reporting.StreamedResultsFilename, err)
 	} else if results, err := unmarshalStreamedResults(b); err != nil {
 		t.Errorf("Failed to parse %s: %v", reporting.StreamedResultsFilename, err)

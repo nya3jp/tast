@@ -8,7 +8,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -205,7 +204,7 @@ func (c *checkDepsCache) update(cachePath string, lastMod time.Time) error {
 	if err := os.MkdirAll(filepath.Dir(cachePath), 0755); err != nil {
 		return err
 	}
-	f, err := ioutil.TempFile(filepath.Dir(cachePath), filepath.Base(cachePath)+".")
+	f, err := os.CreateTemp(filepath.Dir(cachePath), filepath.Base(cachePath)+".")
 	if err != nil {
 		return err
 	}

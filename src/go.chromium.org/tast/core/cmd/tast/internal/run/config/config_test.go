@@ -7,7 +7,6 @@ package config_test
 import (
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -434,7 +433,7 @@ func TestConfigTestFilterFilePass(t *testing.T) {
 	-test1 # comment
 	-test2
 	`
-	if err := ioutil.WriteFile(filterFile, []byte(content), 0644); err != nil {
+	if err := os.WriteFile(filterFile, []byte(content), 0644); err != nil {
 		t.Fatalf("Failed to create filter file %s: %v", filterFile, err)
 	}
 
@@ -469,7 +468,7 @@ func TestConfigTestFilterFileFail(t *testing.T) {
 	-test1 # comment
 	test2
 	`
-	if err := ioutil.WriteFile(filterFile, []byte(content), 0644); err != nil {
+	if err := os.WriteFile(filterFile, []byte(content), 0644); err != nil {
 		t.Fatalf("Failed to create filter file %s: %v", filterFile, err)
 	}
 

@@ -7,7 +7,6 @@ package build
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -71,13 +70,13 @@ func TestGetOverlays(t *testing.T) {
 		t.Fatal("Failed creating symlink: ", err)
 	}
 	file := filepath.Join(td, "file")
-	if err := ioutil.WriteFile(file, []byte{}, 0644); err != nil {
+	if err := os.WriteFile(file, []byte{}, 0644); err != nil {
 		t.Fatal("Failed writing file: ", err)
 	}
 
 	conf := filepath.Join(td, "make.conf")
 	data := fmt.Sprintf(`PORTDIR_OVERLAY="%s"`, strings.Join([]string{overlay, link, broken, file}, " "))
-	if err := ioutil.WriteFile(conf, []byte(data), 0644); err != nil {
+	if err := os.WriteFile(conf, []byte(data), 0644); err != nil {
 		t.Fatal("Failed writing config: ", err)
 	}
 

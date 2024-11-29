@@ -7,7 +7,6 @@ package devserver
 import (
 	"context"
 	"io"
-	"io/ioutil"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -35,7 +34,7 @@ var _ Client = &DUTServiceClient{}
 func NewDUTServiceClient(ctx context.Context, dutServer string) (*DUTServiceClient, error) {
 	logging.Info(ctx, "NewDUTServiceClient using /var/tmp")
 	// TODO (b:238682439), correctly make use of the tast tempdir.
-	destDir, err := ioutil.TempDir("/var/tmp", "dut_service_client_")
+	destDir, err := os.MkdirTemp("/var/tmp", "dut_service_client_")
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed to create temporary directory for downloading file %s", destDir)
 	}

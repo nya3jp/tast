@@ -11,7 +11,6 @@ import (
 	"go/format"
 	"go/parser"
 	"go/token"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -81,7 +80,7 @@ func verifyAutoFix(t *testing.T, lintfunc func(*token.FileSet, *ast.File, bool) 
 			continue
 		}
 
-		bytesread, err := ioutil.ReadFile(path)
+		bytesread, err := os.ReadFile(path)
 		if err != nil {
 			t.Error(err)
 			continue

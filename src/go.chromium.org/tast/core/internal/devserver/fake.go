@@ -8,7 +8,6 @@ import (
 	"bytes"
 	"context"
 	"io"
-	"io/ioutil"
 	"net/url"
 	"os"
 
@@ -38,7 +37,7 @@ func (c *FakeClient) Open(ctx context.Context, gsURL string) (io.ReadCloser, err
 	if !ok {
 		return nil, os.ErrNotExist
 	}
-	return ioutil.NopCloser(bytes.NewReader(data)), nil
+	return io.NopCloser(bytes.NewReader(data)), nil
 }
 
 // Stage simulates a getting a url to Google Cloud Storage.

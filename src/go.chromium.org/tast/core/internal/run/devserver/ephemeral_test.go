@@ -8,7 +8,6 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net"
 	"net/http"
 	"os"
@@ -39,7 +38,7 @@ func (td *testData) Get(path string) (string, error) {
 	}
 	defer res.Body.Close()
 
-	b, err := ioutil.ReadAll(res.Body)
+	b, err := io.ReadAll(res.Body)
 	if err != nil {
 		return "", fmt.Errorf("GET %s returned malformed response: %v", path, err)
 	}
@@ -310,7 +309,7 @@ exit 1
 	if err != nil {
 		t.Fatalf("GET %s failed: %v", url, err)
 	}
-	out, _ := ioutil.ReadAll(res.Body)
+	out, _ := io.ReadAll(res.Body)
 	res.Body.Close()
 	if res.StatusCode != http.StatusInternalServerError {
 		t.Fatalf("GET %s returned %d; want %d", url, res.StatusCode, http.StatusInternalServerError)

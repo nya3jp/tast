@@ -28,7 +28,7 @@ var softwareFeatureDefs = map[string]string{
 	"arc_launched_64bit":  `"!arc-launched-32bit-abi"`,
 	"arc_64bit_only":      `"arc-64bit-only"`,
 	// TODO(b/159325335): Remove these boards from the list when print flakes are resolved.
-	"arc_print_stable":      `!("board:jacuzzi" || "board:*-kernelnext" || "board:nautilus" || "board:dedede")`,
+	"arc_print_stable":      `!("board:jacuzzi" || "board:*-kernelnext" || "board:nautilus" || "board:dedede" || "board:octopus")`,
 	"arcvm_data_migration":  "arcvm_data_migration",
 	"arm":                   `"arm" || "arm64"`,
 	"aslr":                  "!asan", // ASan instrumentation breaks ASLR

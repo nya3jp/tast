@@ -128,6 +128,9 @@ func TestCheckKnownAttrs(t *testing.T) {
 			attrs: []string{"group:powerwash-daily"},
 		},
 		{
+			attrs: []string{"group:meet-powerwash-daily"},
+		},
+		{
 			attrs: []string{"group:dmserver-enrollment-live"},
 		},
 		{

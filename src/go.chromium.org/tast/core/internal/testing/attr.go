@@ -654,6 +654,11 @@ Tests in this group are not used for build verification.
 		Desc:     `A group of tests that perform powerwash.`,
 	},
 	{
+		Name:     "meet-powerwash-daily",
+		Contacts: []string{"joshuapius@google.com", "meet-devices-eng@google.com"},
+		Desc:     `A group of tests that perform powerwash.`,
+	},
+	{
 		Name:     "dmserver-enrollment-live",
 		Contacts: []string{"rzakarian@google.com", "chromeos-ent-test@google.com"},
 		Desc:     `A group of tests for the DMServer live enrollment.`,
@@ -1427,7 +1432,7 @@ installed.
 	},
 	{
 		Name:     "meet",
-		Contacts: []string{"rooms-engprod@google.com"},
+		Contacts: []string{"rooms-engprod@google.com", "meet-devices-eng@google.com"},
 		Desc:     `The group of tests to be run on a Meet CFM board.`,
 		Subattrs: []*attr{
 			{

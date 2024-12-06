@@ -54,6 +54,7 @@ const (
 	Intel22560
 	IntelAX201
 	IntelAX203
+	IntelAX210
 	IntelAX211
 	IntelBE200
 	BroadcomBCM4354SDIO
@@ -88,6 +89,7 @@ var DeviceNames = map[DeviceID]string{
 	Intel22560:                 "Intel 22560",
 	IntelAX201:                 "Intel AX 201",
 	IntelAX203:                 "Intel AX 203",
+	IntelAX210:                 "Intel AX 210",
 	IntelAX211:                 "Intel AX 211",
 	IntelBE200:                 "Intel BE 200",
 	BroadcomBCM4354SDIO:        "Broadcom BCM4354 SDIO",
@@ -140,6 +142,8 @@ var LookupWLANDev = map[DevInfo]DeviceID{
 	{Vendor: "0x8086", Device: "0xa0f0", Subsystem: "0x0070"}: IntelAX201,
 	{Vendor: "0x8086", Device: "0x54f0", Subsystem: "0x0274"}: IntelAX203,
 	{Vendor: "0x8086", Device: "0x54f0", Subsystem: "0x4274"}: IntelAX203,
+	{Vendor: "0x8086", Device: "0x2725", Subsystem: "0x1673"}: IntelAX210,
+	{Vendor: "0x8086", Device: "0x2725", Subsystem: "0x1674"}: IntelAX210,
 	{Vendor: "0x8086", Device: "0x51f0", Subsystem: "0x0090"}: IntelAX211,
 	{Vendor: "0x8086", Device: "0x51f1", Subsystem: "0x0090"}: IntelAX211,
 	{Vendor: "0x8086", Device: "0x51f1", Subsystem: "0x0094"}: IntelAX211,

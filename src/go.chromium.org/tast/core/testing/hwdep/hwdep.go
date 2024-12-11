@@ -1233,10 +1233,13 @@ func InternalTouchpad() Condition {
 }
 
 var modelsWithSplitModifierKeyboard = []string{
+	"awasuki",
 	"kyogre",
 	"jubilant",
+	"jubileum",
 	"lotso",
 	"riven",
+	"rynax",
 	"xol",
 }
 

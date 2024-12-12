@@ -622,7 +622,7 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 	// This checks that the sn_bits saved in GSC match the
 	// attested_device_id in the RO_VPD
 	func() {
-		if out, err := exec.Command("gsc_sn_bits", "-n").Output(); err != nil {
+		if out, err := exec.Command("gsc_set_sn_bits", "-n").Output(); err != nil {
 			logging.Infof(ctx, "Failed to exec command to check ADID: %v", err)
 			features.TrustedPlatformModule.ValidAdid = configpb.HardwareFeatures_PRESENT_UNKNOWN
 		} else if validADID, err := findGSCADID(string(out)); err != nil {

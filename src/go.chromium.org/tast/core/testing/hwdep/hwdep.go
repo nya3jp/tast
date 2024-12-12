@@ -1239,6 +1239,7 @@ var modelsWithSplitModifierKeyboard = []string{
 	"jubileum",
 	"lotso",
 	"riven",
+	"rudriks",
 	"rynax",
 	"xol",
 }

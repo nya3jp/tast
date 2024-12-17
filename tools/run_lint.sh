@@ -11,9 +11,17 @@ readonly tast_lint="go.chromium.org/tast/core/cmd/tast-lint"
 
 export GOBIN="${tast_root}/bin"
 
-if ! "${tast_root}/tools/go.sh" install "${tast_lint}"; then
+pushd "${tast_root}/src/${tast_lint}"
+
+go get go.chromium.org/tast/core/shutil
+go get go.chromium.org/tast/core/cmd/tast-lint/internal/check
+go get go.chromium.org/tast/core/cmd/tast-lint/internal/lint
+
+if ! go install "${tast_lint}"; then
   echo "*** Failed to build and install tast-lint."
   exit 1
 fi
+
+popd
 
 exec "${tast_root}/bin/tast-lint" "$@"

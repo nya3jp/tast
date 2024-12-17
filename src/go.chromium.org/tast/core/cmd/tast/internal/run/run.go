@@ -15,7 +15,7 @@ import (
 	"strings"
 	"time"
 
-	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/encoding/prototext"
 
 	"go.chromium.org/tast/core/ctxutil"
 	"go.chromium.org/tast/core/errors"
@@ -280,12 +280,8 @@ func runTests(ctx context.Context, cfg *config.Config,
 			}
 			roleName = role
 		}
-		if encodedData, err := proto.Marshal(dutInfos[role]); err != nil {
-			logging.Debugf(ctx, "Failed to encode DUTInfo: %v", err)
-		} else {
-			if err := os.WriteFile(filepath.Join(dir, DUTInfoFile), encodedData, 0644); err != nil {
+		if err := os.WriteFile(filepath.Join(dir, DUTInfoFile), []byte(prototext.Format(dutInfos[role])), 0644); err != nil {
 				logging.Debugf(ctx, "Failed to dump DUTInfo: %v", err)
-			}
 		}
 
 		if ver := dutInfos[role].GetOsVersion(); ver == "" {

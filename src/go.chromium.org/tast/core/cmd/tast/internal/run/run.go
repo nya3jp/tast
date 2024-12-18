@@ -281,7 +281,7 @@ func runTests(ctx context.Context, cfg *config.Config,
 			roleName = role
 		}
 		if err := os.WriteFile(filepath.Join(dir, DUTInfoFile), []byte(prototext.Format(dutInfos[role])), 0644); err != nil {
-				logging.Debugf(ctx, "Failed to dump DUTInfo: %v", err)
+			logging.Debugf(ctx, "Failed to dump DUTInfo: %v", err)
 		}
 
 		if ver := dutInfos[role].GetOsVersion(); ver == "" {
@@ -295,6 +295,31 @@ func runTests(ctx context.Context, cfg *config.Config,
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to get initial sysinfo")
 	}
+
+	postCtx := ctx
+	systemLogsSaved := false
+	collectSystemLog := func(ctx context.Context) {
+		if systemLogsSaved {
+			return
+		}
+		// The DUT might have rebooted during tests. Try reconnecting
+		// before proceeding to CollectSysInfo.
+		if err := drv.ReconnectIfNeeded(ctx, true, false); err != nil {
+			logging.Infof(ctx, "Failed to reconnect to DUT: %v", err)
+		}
+
+		// We don't want to bail out before writing test results if sysinfo
+		// collection fails, but we'll still return the error later.
+		if err := drv.CollectSysInfo(ctx, initialSysInfo); err != nil {
+			logging.Infof(ctx, "Failed collecting system info: %v", err)
+			if retErr == nil {
+				retErr = errors.Wrap(err, "failed collecting system info")
+			}
+		}
+		systemLogsSaved = true
+		logging.Info(ctx, "Done collecting system logs")
+	}
+	defer collectSystemLog(postCtx)
 
 	CompanionFeatures := make(map[string]*frameworkprotocol.DUTFeatures)
 	for role, dutInfo := range dutInfos {
@@ -347,7 +372,6 @@ func runTests(ctx context.Context, cfg *config.Config,
 	// Reserve a bit of time to write results and collect system info.
 	// Skip doing this if a very-short timeout was set, since it's confusing
 	// to get an immediate timeout in that case.
-	postCtx := ctx
 	if deadline, ok := ctx.Deadline(); ok {
 		postReserve := maxPostReserve
 		if time.Until(deadline) < 2*postReserve {
@@ -368,20 +392,7 @@ func runTests(ctx context.Context, cfg *config.Config,
 			logging.Infof(ctx, "Failed to run tests: %v", retErr)
 		}
 
-		// The DUT might have rebooted during tests. Try reconnecting
-		// before proceeding to CollectSysInfo.
-		if err := drv.ReconnectIfNeeded(ctx, true, false); err != nil {
-			logging.Infof(ctx, "Failed to reconnect to DUT: %v", err)
-		}
-
-		// We don't want to bail out before writing test results if sysinfo
-		// collection fails, but we'll still return the error later.
-		if err := drv.CollectSysInfo(ctx, initialSysInfo); err != nil {
-			logging.Infof(ctx, "Failed collecting system info: %v", err)
-			if retErr == nil {
-				retErr = errors.Wrap(err, "failed collecting system info")
-			}
-		}
+		collectSystemLog(ctx)
 
 		if err := reporting.WriteLegacyResults(filepath.Join(cfg.ResDir(), reporting.LegacyResultsFilename), results); err != nil {
 			logging.Infof(ctx, "Failed writing %s: %v", reporting.LegacyResultsFilename, err)

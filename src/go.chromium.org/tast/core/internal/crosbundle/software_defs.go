@@ -19,7 +19,7 @@ var softwareFeatureDefs = map[string]string{
 	"android_container_r": `arc && "android-container-rvc"`,
 	"android_p":           `arc && "android-container-pi"`,
 	"android_vm":          `arc && arcvm && !"android-vm-pi" && !"board:reven*"`,
-	"android_vm_t":        `arc && arcvm && "android-vm-tm"`,
+	"android_vm_t":        `arc && arcvm && "android-vm-tm" && !"board:reven*"`,
 	"arc":                 `arc && !"board:reven*"`,
 	"arc32":               `"cheets_user" || "cheets_userdebug"`,
 	"arc64":               `"cheets_user_64" || "cheets_userdebug_64"`,

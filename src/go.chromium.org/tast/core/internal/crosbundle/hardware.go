@@ -625,12 +625,10 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		if out, err := exec.Command("gsc_set_sn_bits", "-n").Output(); err != nil {
 			logging.Infof(ctx, "Failed to exec command to check ADID: %v", err)
 			features.TrustedPlatformModule.ValidAdid = configpb.HardwareFeatures_PRESENT_UNKNOWN
-		} else if validADID, err := findGSCADID(string(out)); err != nil {
-			logging.Infof(ctx, "Invalid ADID: %v", err)
-			features.TrustedPlatformModule.ValidAdid = configpb.HardwareFeatures_PRESENT_UNKNOWN
-		} else if validADID {
+		} else if strings.Contains(string(out), `SN Bits are properly set.`) {
 			features.TrustedPlatformModule.ValidAdid = configpb.HardwareFeatures_PRESENT
 		} else {
+			logging.Infof(ctx, "Invalid ADID: %s", out)
 			features.TrustedPlatformModule.ValidAdid = configpb.HardwareFeatures_NOT_PRESENT
 		}
 	}()
@@ -2027,16 +2025,6 @@ func cameraEnumerated() (bool, []string, error) {
 	}()
 
 	return usbCams+mipiCams == count, usbCamIds, nil
-}
-
-// findGSCADID parses a content of "gsc_set_sn_bits -n" and return a required key
-func findGSCADID(str string) (bool, error) {
-	re := regexp.MustCompile(`SN Bits are properly set.`)
-
-	if match := re.FindStringSubmatch(str); match != nil {
-		return false, errors.Errorf("gsc_set_sn_bits error: %s", str)
-	}
-	return true, nil
 }
 
 // findGSCKeyID parses a content of "gsctool -a -f -M" and return a required key

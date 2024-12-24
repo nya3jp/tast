@@ -203,6 +203,7 @@ var softwareFeatureDefs = map[string]string{
 	"no_arc_64bit_only":           `!"arc-64bit-only"`,
 	"no_arc_userdebug":            "!(cheets_userdebug || cheets_userdebug_64)",
 	"no_arc_x86":                  "!(amd64 && cheets_user)",
+	"no_arcvm_gki":                "!arcvm_gki",
 	"no_arcvm_virtio_blk_data":    "!(arcvm_virtio_blk_data || arcvm_data_migration)",
 	"no_arm":                      "!arm",
 	"no_asan":                     "!asan",

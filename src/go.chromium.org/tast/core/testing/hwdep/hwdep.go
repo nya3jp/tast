@@ -2041,6 +2041,7 @@ var smartAmps = []string{
 	configpb.HardwareFeatures_Audio_MAX98390.String(),
 	configpb.HardwareFeatures_Audio_ALC1011.String(),
 	configpb.HardwareFeatures_Audio_CS35L41.String(),
+	configpb.HardwareFeatures_Audio_TAS2563.String(),
 }
 
 // SuspendToIdle returns a condition that is satisfied if the DUT suspends by default to idle/S0ix.

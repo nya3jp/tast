@@ -332,6 +332,10 @@ func TestFindSpeakerAmplifier(t *testing.T) {
 			"max98390.2-0039",
 			configpb.HardwareFeatures_Audio_MAX98390.String(),
 		},
+		{
+			"tasdev-codec.0-004f",
+			configpb.HardwareFeatures_Audio_TAS2563.String(),
+		},
 	}
 	for _, tc := range testCases {
 		amp, match := matchSpeakerAmplifier(tc.input)

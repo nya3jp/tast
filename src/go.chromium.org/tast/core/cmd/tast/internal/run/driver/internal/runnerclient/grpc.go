@@ -21,6 +21,7 @@ import (
 	"go.chromium.org/tast/core/internal/rpc"
 	"go.chromium.org/tast/core/internal/run/genericexec"
 	"go.chromium.org/tast/core/internal/testing"
+	"go.chromium.org/tast/core/internal/testingutil"
 )
 
 // Client is a GRPC-protocol client to test_runner.
@@ -199,14 +200,16 @@ func (c *Client) ListTests(ctx context.Context, patterns []string, features *pro
 		defer cancel()
 		return cl.ListEntities(ctxForListEntities, req)
 	}
-	res, err := listEntities(time.Minute)
-	if err != nil {
-		logging.Infof(ctx, "Failed to send ListEntities request: %v", err)
-		logging.Infof(ctx, "Retry sending ListEntities Request to test runner (hops=%v)", c.hops)
-		res, err = listEntities(2 * time.Minute)
+
+	var res *protocol.ListEntitiesResponse
+	if err := testingutil.Poll(ctx, func(ctx context.Context) error {
+		res, err = listEntities(time.Minute)
 		if err != nil {
-			return nil, err
+			return err
 		}
+		return nil
+	}, &testingutil.PollOptions{Timeout: 4 * time.Minute, Interval: 5 * time.Second}); err != nil {
+		return nil, errors.Wrap(err, "failed to send ListEntities request after multiple retries")
 	}
 	logging.Info(ctx, "Got ListEntities Response from local test runner")
 

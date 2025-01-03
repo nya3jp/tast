@@ -255,6 +255,22 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		return true
 	}
 
+	// Check for detachable base with USB interface
+	checkUsbBase := func() bool {
+		usbPath, err := crosConfig("/detachable-base", "usb-path")
+		if err != nil || usbPath == "" {
+			return false
+		}
+		_, err = os.Stat(filepath.Join("/sys/bus/usb/devices/", usbPath))
+		if err != nil {
+			if !os.IsNotExist(err) {
+				logging.Infof(ctx, "Failed to get file stat: %v", err)
+			}
+			return false
+		}
+		return true
+	}
+
 	if formFactorEnum, ok := configpb.HardwareFeatures_FormFactor_FormFactorType_value[formFactor]; ok {
 		features.FormFactor.FormFactor = configpb.HardwareFeatures_FormFactor_FormFactorType(formFactorEnum)
 	} else if formFactor == "CHROMEBOOK" {
@@ -279,9 +295,9 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		features.Keyboard.KeyboardType = configpb.HardwareFeatures_Keyboard_INTERNAL
 		features.Touchpad.TouchpadType = configpb.HardwareFeatures_Touchpad_INTERNAL
 	case configpb.HardwareFeatures_FormFactor_DETACHABLE:
-		// When the dut is a detachable, check whether hammer exists
+		// When the dut is a detachable, check whether hammer/roach etc exist
 		// to determine if a removable keyboard is connected.
-		if checkHammer() || checkRoach() {
+		if checkHammer() || checkRoach() || checkUsbBase() {
 			features.Keyboard.KeyboardType = configpb.HardwareFeatures_Keyboard_DETACHABLE
 			features.Touchpad.TouchpadType = configpb.HardwareFeatures_Touchpad_DETACHABLE
 		} else {

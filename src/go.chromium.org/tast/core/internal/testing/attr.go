@@ -834,7 +834,15 @@ Tests in this group are not used for build verification.
 			},
 			{
 				Name: "gsc_ot_shield",
-				Desc: `A set of tests that run on an OpenTitan Shield with Hyperdebug connected.`,
+				Desc: `A set of tests that run on an OpenTitan Teacup Shield with a NuvoTitan NT10 Z1 (engineering silicon) GSC and Hyperdebug connected.`,
+			},
+			{
+				Name: "gsc_nt10_a1_shield",
+				Desc: `A set of tests that run on an OpenTitan Teacup Shield with a NuvoTitan NT10 A1 GSC and Hyperdebug connected.`,
+			},
+			{
+				Name: "gsc_nt11_a1_shield",
+				Desc: `A set of tests that run on a Google Shield with a NuvoTitan NT11 A1 GSC and Hyperdebug connected.`,
 			},
 			{
 				Name: "gsc_h1_shield",

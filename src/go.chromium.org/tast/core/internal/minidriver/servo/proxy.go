@@ -278,6 +278,7 @@ func StartServo(parentCtx context.Context, servoHostPort, keyFile, keyDir string
 		wcInfo, err := linuxssh.WordCount(ctx, hst, "/var/log/messages")
 		if err != nil {
 			logging.Infof(ctx, "Failed to get word count for /var/log/messages of servo host %s: %v", servoHostPort, err)
+			wcInfo = &linuxssh.WordCountInfo{}
 		}
 		msgLineStart = wcInfo.Lines
 		hostInfo = &HostInfo{

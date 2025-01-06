@@ -115,9 +115,9 @@ func WriteFile(ctx context.Context, conn *ssh.Conn, path string, data []byte, pe
 // WordCount get the line, word and byte counts of a remote text file.
 func WordCount(ctx context.Context, conn *ssh.Conn, path string) (*WordCountInfo, error) {
 	cmd := conn.CommandContext(ctx, "wc", path)
-	output, err := cmd.Output()
+	output, err := cmd.CombinedOutput()
 	if err != nil {
-		return nil, errors.Wrapf(err, "failed to call wc for %s", path)
+		return nil, errors.Wrapf(err, "failed to call wc for %s because %s", path, output)
 	}
 	// Output example: "   68201  1105834 14679551 /var/log/messages".
 	strList := strings.Split(string(output), " ")

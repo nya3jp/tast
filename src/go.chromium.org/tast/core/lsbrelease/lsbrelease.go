@@ -101,6 +101,7 @@ var allowedPkgs = []string{
 	"go.chromium.org/tast-tests/cros/remote/bundles/cros/omaha/params",      // To replicate update_engine behavior.
 	"go.chromium.org/tast-tests/cros/remote/firmware",                       // For checking USB images
 	"go.chromium.org/tast-tests/cros/remote/firmware/reporters",             // For Board.
+	"go.chromium.org/tast-tests/cros/remote/sysutil",                        // For Board.
 	"go.chromium.org/tast-tests/cros/local/bundles/cros/wifi",               // For Board.
 	"go.chromium.org/tast-tests-private/crosint/local/bundles/crosint/apps", // For Board.
 }

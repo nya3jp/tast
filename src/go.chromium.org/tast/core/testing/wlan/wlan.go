@@ -57,6 +57,7 @@ const (
 	IntelAX210
 	IntelAX211
 	IntelBE200
+	IntelBE211
 	BroadcomBCM4354SDIO
 	BroadcomBCM4356PCIE
 	BroadcomBCM4371PCIE
@@ -92,6 +93,7 @@ var DeviceNames = map[DeviceID]string{
 	IntelAX210:                 "Intel AX 210",
 	IntelAX211:                 "Intel AX 211",
 	IntelBE200:                 "Intel BE 200",
+	IntelBE211:                 "Intel BE 211",
 	BroadcomBCM4354SDIO:        "Broadcom BCM4354 SDIO",
 	BroadcomBCM4356PCIE:        "Broadcom BCM4356 PCIE",
 	BroadcomBCM4371PCIE:        "Broadcom BCM4371 PCIE",
@@ -156,6 +158,8 @@ var LookupWLANDev = map[DevInfo]DeviceID{
 	{Vendor: "0x8086", Device: "0x7e40", Subsystem: "0x0094"}: IntelAX211,
 	{Vendor: "0x8086", Device: "0x272b"}:                      IntelBE200,
 	{Vendor: "0x1a56", Device: "0x272b"}:                      IntelBE200,
+	{Vendor: "0x8086", Device: "0xe440", Subsystem: "0x0110"}: IntelBE211,
+	{Vendor: "0x8086", Device: "0xe440", Subsystem: "0x0114"}: IntelBE211,
 	{Vendor: "0x14e4", Device: "0x43ec"}:                      BroadcomBCM4356PCIE,
 	{Vendor: "0x10ec", Device: "0xc822"}:                      Realtek8822CPCIE,
 	{Vendor: "0x10ec", Device: "0x8852"}:                      Realtek8852APCIE,

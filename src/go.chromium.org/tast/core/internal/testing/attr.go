@@ -322,8 +322,16 @@ Tests in this group are not used for build verification.
 				Desc: "Release candidate crash and feedback tests",
 			},
 			{
+				Name: "release-health_cross_device",
+				Desc: "Release candidate cross-device tests",
+			},
+			{
 				Name: "release-health_enterprise",
 				Desc: "Release candidate enterprise tests",
+			},
+			{
+				Name: "release-health_essential_inputs",
+				Desc: "Release candidate essential input tests",
 			},
 			{
 				Name: "release-health_fingerprint",

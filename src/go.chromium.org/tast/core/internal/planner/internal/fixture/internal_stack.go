@@ -342,8 +342,19 @@ func (st *InternalStack) top() *statefulFixture {
 }
 
 func (st *InternalStack) newRuntimeConfig(ctx context.Context, outDir string, fixt *testing.FixtureInstance) *testing.RuntimeConfig {
+	dataDir := st.cfg.DataDir
+	if strings.Contains(dataDir, "/src/platform/") &&
+		strings.Contains(dataDir, "private") &&
+		strings.Contains(fixt.Pkg, "go.chromium.org/tast-tests/cros/") {
+		// A test in private bundle is depending on public fixture so we need to
+		// fix the fixture data path to use public repo.
+		pathSegments := strings.Split(dataDir, "/src/platform/")
+		dataDir = filepath.Join(pathSegments[0], "src/platform/tast-tests/src")
+	}
+	testing.RelativeDataDir(fixt.Pkg)
+
 	return &testing.RuntimeConfig{
-		DataDir: filepath.Join(st.cfg.DataDir, testing.RelativeDataDir(fixt.Pkg)),
+		DataDir: filepath.Join(dataDir, testing.RelativeDataDir(fixt.Pkg)),
 		OutDir:  outDir,
 		Vars:    st.cfg.Vars,
 		CloudStorage: testing.NewCloudStorage(

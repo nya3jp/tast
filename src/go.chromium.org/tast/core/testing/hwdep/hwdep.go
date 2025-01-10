@@ -1484,6 +1484,19 @@ func WifiSAP() Condition {
 	)
 }
 
+// WifiSAPHighBand returns a hardware dependency condition that if satisfied, indicates
+// that a device supports SoftAP in high band.
+func WifiSAPHighBand() Condition {
+	return SkipOnWifiDevice(
+		// (b/385358399): Self-managed AC726X marks all high band channels as no_IR.
+		Intel7265,
+		Intel7260,
+		// TODO(b/283689711): Remove when support is added.
+		MediaTekMT7921PCIE,
+		MediaTekMT7921SDIO,
+	)
+}
+
 // WifiP2P returns a hardware dependency condition that if satisfied, indicates
 // that a device supports P2P.
 func WifiP2P() Condition {

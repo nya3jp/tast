@@ -125,8 +125,7 @@ var softwareFeatureDefs = map[string]string{
 	"flex_id":                   "flex_id",        // Enable using flex_id for enrollment
 	"flex_internal":             "flex_internal",  // Enable using flex_internal to pull in data (URLs, API keys, etc.) only needed by official Flex releases
 	// Enable using flex_hwis for hardware data sending.
-	// Ignore reven board as reven board is not a VM and does not have a VPD, and cannot use enroll fixtures.
-	"flex_hwis":                  `flex_internal && "board:reven-vmtest"`,
+	"flex_hwis":                  `flex_internal && "board:reven*"`,
 	"fwupd":                      "fwupd",                                                                     // have sys-apps/fwupd installed.
 	"gaia":                       "chrome_internal",                                                           // same as "chrome_internal"; depends on chrome login through Google account service
 	"ghostscript":                "postscript",                                                                // Ghostscript and dependent packages available

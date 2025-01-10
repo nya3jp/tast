@@ -202,13 +202,15 @@ func (c *Client) ListTests(ctx context.Context, patterns []string, features *pro
 	}
 
 	var res *protocol.ListEntitiesResponse
+	listEntitiesTimeout := time.Minute
 	if err := testingutil.Poll(ctx, func(ctx context.Context) error {
-		res, err = listEntities(time.Minute)
+		res, err = listEntities(listEntitiesTimeout)
 		if err != nil {
+			listEntitiesTimeout += time.Second * 30
 			return err
 		}
 		return nil
-	}, &testingutil.PollOptions{Timeout: 4 * time.Minute, Interval: 5 * time.Second}); err != nil {
+	}, &testingutil.PollOptions{Timeout: 5 * time.Minute, Interval: 5 * time.Second}); err != nil {
 		return nil, errors.Wrap(err, "failed to send ListEntities request after multiple retries")
 	}
 	logging.Info(ctx, "Got ListEntities Response from local test runner")

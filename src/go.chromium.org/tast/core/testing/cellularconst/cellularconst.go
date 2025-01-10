@@ -160,6 +160,7 @@ var (
 		"sarien":             {"sarien", "sarien", ModemTypeL850},
 		"starmie_fm101":      {"starmie_fm101", "staryu", ModemTypeFM101},
 		"wugtrio_rw101":      {"wugtrio_rw101", "staryu", ModemTypeRW101},
+		"wyrdeer_rw101":      {"wyrdeer_rw101", "staryu", ModemTypeRW101},
 		"coachz":             {"coachz", "strongbad", ModemTypeSC7180},
 		"quackingstick":      {"quackingstick", "strongbad", ModemTypeSC7180},
 		"kingoftown":         {"kingoftown", "trogdor", ModemTypeSC7180},

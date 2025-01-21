@@ -112,7 +112,11 @@ func (p *preprocessor) EntityStart(ctx context.Context, ev *protocol.EntityStart
 func (p *preprocessor) EntityLog(ctx context.Context, ev *protocol.EntityLogEvent) error {
 	state, err := p.stateOf(ev.GetEntityName())
 	if err != nil {
-		return errors.Wrap(err, "processing EntityLog")
+		// Address b/389879153: We have seen something we will get EntityLog request from
+		// previous test after connection to DUT is reestablished. Since this function
+		// is only for logging we should not let it to fail the current test.
+		// Therefore, we will not return a fatal error here.
+		return nil
 	}
 
 	ts := ev.GetTime().AsTime()

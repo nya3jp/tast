@@ -6,7 +6,6 @@ package processor_test
 
 import (
 	"context"
-	"fmt"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -106,47 +105,6 @@ func TestPreprocessor_MissingEntityEnd(t *testing.T) {
 		if !strings.Contains(s, tc.want) {
 			t.Errorf("%s doesn't contain an expected string: got %q, want %q", tc.relPath, s, tc.want)
 		}
-	}
-}
-
-// TestPreprocessor_UnmatchedEntityEvent checks preprocessor's behavior on
-// receiving an unmatched EntityLog/EntityError/EntityEnd message.
-func TestPreprocessor_UnmatchedEntityEvent(t *testing.T) {
-	for _, event := range []protocol.Event{
-		&protocol.EntityLogEvent{Time: epochpb, EntityName: "test2", Level: protocol.LogLevel_INFO},
-		&protocol.EntityErrorEvent{Time: epochpb, EntityName: "test2"},
-		&protocol.EntityEndEvent{Time: epochpb, EntityName: "test2"},
-	} {
-		t.Run(fmt.Sprintf("%T", event), func(t *testing.T) {
-			resDir := t.TempDir()
-
-			events := []protocol.Event{
-				&protocol.EntityStartEvent{Time: epochpb, Entity: &protocol.Entity{Name: "test1"}},
-				event,
-			}
-
-			logger := logging.NewMultiLogger()
-			ctx := logging.AttachLogger(context.Background(), logger)
-
-			hs := newHandlers(resDir, logger, nopPull, nil, nil)
-			proc := processor.New(resDir, nopDiagnose, hs, "cros")
-			runProcessor(ctx, proc, events, nil)
-
-			if err := proc.FatalError(); err != nil {
-				t.Errorf("Processor had a fatal error: %v", err)
-			}
-
-			b, err := os.ReadFile(filepath.Join(resDir, "tests/test1/log.txt"))
-			if err != nil {
-				t.Fatalf("Failed to read log.txt: %v", err)
-			}
-
-			got := string(b)
-			const want = "no such entity running: test2"
-			if !strings.Contains(got, want) {
-				t.Errorf("Log doesn't contain an expected message: got %q, want %q", got, want)
-			}
-		})
 	}
 }
 

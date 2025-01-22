@@ -196,6 +196,7 @@ var softwareFeatureDefs = map[string]string{
 	"nnapi_vendor_driver":         `nnapi && !"board:amd64-generic" && !"board:reven-vmtest" && !betty && !tast_vm`,
 	"no_amd_cpu":                  "!amd_cpu",
 	"no_android":                  "!arc",
+	"no_android_container":        `!(arc && ("android-container-rvc" || "android-container-pi"))`,
 	"no_android_p":                `!(arc && ("android-container-pi" || "android-vm-pi"))`,
 	"no_android_r":                `!(arc && "android-container-rvc")`,
 	"no_android_vm_t":             `!(arc && arcvm && "android-vm-tm")`,

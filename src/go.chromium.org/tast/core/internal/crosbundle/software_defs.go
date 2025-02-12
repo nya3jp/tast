@@ -208,6 +208,7 @@ var softwareFeatureDefs = map[string]string{
 	"no_arm":                      "!arm",
 	"no_asan":                     "!asan",
 	"no_borealis_host":            "!borealis_host",
+	"no_brya_kernelnext":          `!("board:brya-kernelnext")`,
 	"no_camera_feature_super_res": "!camera_feature_super_res",
 	"no_chrome_dcheck":            "!chrome_dcheck",
 	"no_downloads_bind_mount":     "!downloads_bind_mount",

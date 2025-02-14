@@ -5,6 +5,7 @@
 package check
 
 import (
+	"fmt"
 	"go/ast"
 	"go/token"
 	"strings"
@@ -20,6 +21,7 @@ const (
 	biosTestInvalidAttrsMsg   = `The attrs "firmware_level*" and "firmware_ro" can only be used with "firmware_bios".`
 	nonECRequirementMsg       = `No tests may include the requirement "sys-fw-0022-v02".`
 	pdRequirementIndirectMsg  = `No tests may include the requirement "sys-fw-0023-v01".`
+	missingGateAttr           = `Tests for %[1]q must include %[2]q also.`
 )
 
 // VerifyFirmwareAttrs checks that "group:firmware" related attributes are set correctly.
@@ -92,6 +94,17 @@ func firmwareECAttrsChecker(attrs []string, attrPos token.Position, requirements
 			Msg:  nonECRequirementMsg,
 			Link: testAttrDocURL,
 		})
+	}
+	// These are ordered from earliest gate -> latest gate.
+	phaseGates := []string{"firmware_ec_enabled", "firmware_ec_meets_kpi", "firmware_ec_stressed"}
+	for i := 0; i < len(phaseGates)-1; i++ {
+		if slices.Contains(attrs, phaseGates[i]) && !slices.Contains(attrs, phaseGates[i+1]) {
+			issues = append(issues, &Issue{
+				Pos:  attrPos,
+				Msg:  fmt.Sprintf(missingGateAttr, phaseGates[i], phaseGates[i+1]),
+				Link: testAttrDocURL,
+			})
+		}
 	}
 
 	return issues

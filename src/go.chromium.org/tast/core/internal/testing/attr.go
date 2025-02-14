@@ -737,6 +737,18 @@ Tests in this group are not used for build verification.
 				Desc: `A group of tests that test the EC firmware. Equivalent to autotest suite:faft_ec & suite:faft_ec_fw_qual.`,
 			},
 			{
+				Name: "firmware_ec_enabled",
+				Desc: `A group of tests that test the EC firmware. These tests must pass 100%% before exiting the Platform Enabled gate.`,
+			},
+			{
+				Name: "firmware_ec_meets_kpi",
+				Desc: `A group of tests that test the EC firmware. These tests must pass 100%% before exiting the Meets KPI gate. This includes all "firmware_ec_enabled" tests.`,
+			},
+			{
+				Name: "firmware_ec_stressed",
+				Desc: `A group of tests that test the EC firmware. These tests must pass 100%% before exiting the Stressed gate. This includes all "firmware_ec_enabled" and "firmware_ec_meet_kpi" tests.`,
+			},
+			{
 				Name: "firmware_experimental",
 				Desc: `Firmware tests that might break the DUTs in the lab.`,
 			},

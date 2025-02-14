@@ -300,7 +300,7 @@ func TouchScreen() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("DUT HardwareFeatures data is not given")
+			return withErrorStr("TouchScreen: DUT HardwareFeatures data is not given")
 		}
 		if hf.GetScreen().GetTouchSupport() == configpb.HardwareFeatures_PRESENT {
 			return satisfied()
@@ -316,7 +316,7 @@ func NoTouchScreen() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("DUT HardwareFeatures data is not given")
+			return withErrorStr("NoTouchScreen: DUT HardwareFeatures data is not given")
 		}
 		if status := hf.GetScreen().GetTouchSupport(); status == configpb.HardwareFeatures_NOT_PRESENT {
 			return satisfied()
@@ -332,7 +332,7 @@ func ChromeEC() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("Did not find hardware features")
+			return withErrorStr("ChromeEC: Did not find hardware features")
 		}
 		ecIsPresent := hf.GetEmbeddedController().GetPresent() == configpb.HardwareFeatures_PRESENT
 		ecIsChrome := hf.GetEmbeddedController().GetEcType() == configpb.HardwareFeatures_EmbeddedController_EC_CHROME
@@ -350,7 +350,7 @@ func ECFeatureTypecCmd() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("Did not find hardware features")
+			return withErrorStr("ECFeatureTypecCmd: Did not find hardware features")
 		}
 		// We only return unsatisfied if we know for sure that the EC doesn't support the feature flag.
 		// In cases where the result is UNKNOWN, we allow the test to continue and fail.
@@ -368,7 +368,7 @@ func ECFeatureCBI() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("Did not find hardware features")
+			return withErrorStr("ECFeatureCBI: Did not find hardware features")
 		}
 		if status := hf.GetEmbeddedController().GetCbi(); status == configpb.HardwareFeatures_NOT_PRESENT {
 			return unsatisfied("DUT does not have cbi")
@@ -386,7 +386,7 @@ func ECFeatureDetachableBase() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("Did not find hardware features")
+			return withErrorStr("ECFeatureDetachableBase: Did not find hardware features")
 		}
 		status := hf.GetEmbeddedController().GetDetachableBase()
 		if status == configpb.HardwareFeatures_NOT_PRESENT {
@@ -407,7 +407,7 @@ func ECFeatureChargeControlV2() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("Did not find hardware features")
+			return withErrorStr("ECFeatureChargeControlV2: Did not find hardware features")
 		}
 		if hf.GetEmbeddedController().GetFeatureChargeControlV2() == configpb.HardwareFeatures_NOT_PRESENT {
 			return unsatisfied("DUT EC does not support EC_CMD_CHARGE_CONTROL version 2")
@@ -423,7 +423,7 @@ func ECFeatureAssertsPanic() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("Did not find hardware features")
+			return withErrorStr("ECFeatureAssertsPanic: Did not find hardware features")
 		}
 		status := hf.GetEmbeddedController().GetFeatureAssertsPanic()
 		if status == configpb.HardwareFeatures_NOT_PRESENT {
@@ -443,7 +443,7 @@ func ECFeatureSystemSafeMode() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("Did not find hardware features")
+			return withErrorStr("ECFeatureSystemSafeMode: Did not find hardware features")
 		}
 		status := hf.GetEmbeddedController().GetFeatureSystemSafeMode()
 		if status == configpb.HardwareFeatures_NOT_PRESENT {
@@ -463,7 +463,7 @@ func ECFeatureMemoryDumpCommands() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("Did not find hardware features")
+			return withErrorStr("ECFeatureMemoryDumpCommands: Did not find hardware features")
 		}
 		status := hf.GetEmbeddedController().GetFeatureMemoryDumpCommands()
 		if status == configpb.HardwareFeatures_NOT_PRESENT {
@@ -483,7 +483,7 @@ func Cellular() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("Did not find hardware features")
+			return withErrorStr("Cellular: Did not find hardware features")
 		}
 		if status := hf.GetCellular().Present; status == configpb.HardwareFeatures_NOT_PRESENT {
 			return unsatisfied("DUT does not have a cellular modem")
@@ -506,7 +506,7 @@ func SkipOnCellularVariant(names ...string) Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("Did not find hardware features")
+			return withErrorStr("SkipOnCellularVariant: Did not find hardware features")
 		}
 		if status := hf.GetCellular().Present; status == configpb.HardwareFeatures_NOT_PRESENT {
 			return unsatisfied("DUT does not have a cellular modem")
@@ -534,7 +534,7 @@ func CellularVariant(names ...string) Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("Did not find hardware features")
+			return withErrorStr("CellularVariant: Did not find hardware features")
 		}
 		if status := hf.GetCellular().Present; status == configpb.HardwareFeatures_NOT_PRESENT {
 			return unsatisfied("DUT does not have a cellular modem")
@@ -557,7 +557,7 @@ func CellularModemType(modemTypes ...cellularconst.ModemType) Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("Did not find hardware features")
+			return withErrorStr("CellularModemType: Did not find hardware features")
 		}
 		if status := hf.GetCellular().Present; status == configpb.HardwareFeatures_NOT_PRESENT {
 			return unsatisfied("DUT does not have a cellular modem")
@@ -584,7 +584,7 @@ func SkipOnCellularModemType(modemTypes ...cellularconst.ModemType) Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("Did not find hardware features")
+			return withErrorStr("SkipOnCellularModemType: Did not find hardware features")
 		}
 		if status := hf.GetCellular().Present; status == configpb.HardwareFeatures_NOT_PRESENT {
 			return unsatisfied("DUT does not have a cellular modem")
@@ -611,7 +611,7 @@ func CellularSoftwareDynamicSar() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("Did not find hardware features")
+			return withErrorStr("CellularSoftwareDynamicSar: Did not find hardware features")
 		}
 		if status := hf.GetCellular().GetDynamicPowerReductionConfig().GetModemManager(); status {
 			return satisfied()
@@ -627,7 +627,7 @@ func NoCellular() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("Did not find hardware features")
+			return withErrorStr("NoCellular: Did not find hardware features")
 		}
 		if status := hf.GetCellular().Present; status == configpb.HardwareFeatures_NOT_PRESENT {
 			return satisfied()
@@ -644,7 +644,7 @@ func NoCellular() Condition {
 func Bluetooth() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		if hf := f.GetHardwareFeatures(); hf == nil {
-			return withErrorStr("Did not find hardware features")
+			return withErrorStr("Bluetooth: Did not find hardware features")
 		} else if status := hf.GetBluetooth().Present; status == configpb.HardwareFeatures_NOT_PRESENT {
 			return unsatisfied("DUT does not have a bluetooth adapter")
 		} else if status == configpb.HardwareFeatures_PRESENT_UNKNOWN {
@@ -683,7 +683,7 @@ func GSCRWKeyIDProd() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("Did not find hardware features")
+			return withErrorStr("GSCRWKeyIDProd: Did not find hardware features")
 		}
 		if status := hf.GetTrustedPlatformModule().GetProductionRwKeyId(); status == configpb.HardwareFeatures_PRESENT {
 			return satisfied()
@@ -701,7 +701,7 @@ func HasNoTpm() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("Did not find hardware features")
+			return withErrorStr("HasNoTpm: Did not find hardware features")
 		}
 		if hf.GetTrustedPlatformModule().GetRuntimeTpmVersion() != configpb.HardwareFeatures_TrustedPlatformModule_TPM_VERSION_DISABLED {
 			return unsatisfied("DUT has an enabled TPM")
@@ -717,7 +717,7 @@ func HasTpm() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("Did not find hardware features")
+			return withErrorStr("HasTpm: Did not find hardware features")
 		}
 		if hf.GetTrustedPlatformModule().GetRuntimeTpmVersion() == configpb.HardwareFeatures_TrustedPlatformModule_TPM_VERSION_DISABLED {
 			return unsatisfied("DUT has no enabled TPM")
@@ -733,7 +733,7 @@ func HasTpm1() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("Did not find hardware features")
+			return withErrorStr("HasTpm1: Did not find hardware features")
 		}
 		if hf.GetTrustedPlatformModule().GetRuntimeTpmVersion() == configpb.HardwareFeatures_TrustedPlatformModule_TPM_VERSION_V1_2 {
 			return satisfied()
@@ -749,7 +749,7 @@ func HasTpm2() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("Did not find hardware features")
+			return withErrorStr("HasTpm2: Did not find hardware features")
 		}
 		if hf.GetTrustedPlatformModule().GetRuntimeTpmVersion() == configpb.HardwareFeatures_TrustedPlatformModule_TPM_VERSION_V2 {
 			return satisfied()
@@ -765,7 +765,7 @@ func HasGSCCr50() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("Did not find hardware features")
+			return withErrorStr("HasGSCCr50: Did not find hardware features")
 		}
 		if hf.GetTrustedPlatformModule().GetGscFwName() == configpb.HardwareFeatures_TrustedPlatformModule_GSC_CR50 {
 			return satisfied()
@@ -781,7 +781,7 @@ func HasGSCTi50() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("Did not find hardware features")
+			return withErrorStr("HasGSCTi50: Did not find hardware features")
 		}
 		if hf.GetTrustedPlatformModule().GetGscFwName() == configpb.HardwareFeatures_TrustedPlatformModule_GSC_TI50 {
 			return satisfied()
@@ -797,7 +797,7 @@ func HasTpmNvramRollbackSpace() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("Did not find hardware features")
+			return withErrorStr("HasTpmNvramRollbackSpace: Did not find hardware features")
 		}
 		if hf.GetTrustedPlatformModule().GetEnterpriseRollbackSpace() == configpb.HardwareFeatures_PRESENT {
 			return satisfied()
@@ -814,7 +814,7 @@ func HasValidADID() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("Did not find hardware features")
+			return withErrorStr("HasValidADID: Did not find hardware features")
 		}
 		if status := hf.GetTrustedPlatformModule().GetValidAdid(); status == configpb.HardwareFeatures_PRESENT {
 			return satisfied()
@@ -856,7 +856,7 @@ func cpuNeedsCoreScheduling(enabled bool) Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("HardwareFeatures is not given")
+			return withErrorStr("cpuNeedsCoreScheduling: HardwareFeatures is not given")
 		}
 		needed, description := needsCoreScheduling(hf)
 		if needed == enabled {
@@ -906,7 +906,7 @@ func CPUSupportsSMT() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("HardwareFeatures is not given")
+			return withErrorStr("CPUSupportsSMT: HardwareFeatures is not given")
 		}
 		for _, f := range hf.GetSoc().Features {
 			if f == configpb.Component_Soc_SMT {
@@ -924,7 +924,7 @@ func CPUSupportsSHANI() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("HardwareFeatures is not given")
+			return withErrorStr("CPUSupportsSHANI: HardwareFeatures is not given")
 		}
 		for _, f := range hf.GetSoc().Features {
 			if f == configpb.Component_Soc_SHA_NI {
@@ -942,7 +942,7 @@ func Fingerprint() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("HardwareFeatures is not given")
+			return withErrorStr("Fingerprint: HardwareFeatures is not given")
 		}
 		if !hf.GetFingerprint().GetPresent() {
 			return unsatisfied("DUT does not have fingerprint sensor")
@@ -958,7 +958,7 @@ func NoFingerprint() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("HardwareFeatures is not given")
+			return withErrorStr("NoFingerprint: HardwareFeatures is not given")
 		}
 		if hf.GetFingerprint().GetPresent() {
 			return unsatisfied("DUT has fingerprint sensor")
@@ -979,7 +979,7 @@ func SkipOnFPMCU(names ...string) Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("HardwareFeatures is not given")
+			return withErrorStr("SkipOnFPMCU: HardwareFeatures is not given")
 		}
 		fingerprintBoard := hf.GetFingerprint().GetBoard()
 		for _, n := range names {
@@ -997,7 +997,7 @@ func FingerprintDiagSupported() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("HardwareFeatures is not given")
+			return withErrorStr("FingerprintDiagSupported: HardwareFeatures is not given")
 		}
 		if !hf.GetFingerprint().GetFingerprintDiag().GetRoutineEnable() {
 			return unsatisfied("DUT does not support fingerprint diagnostic routine")
@@ -1013,7 +1013,7 @@ func VRR() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("HardwareFeatures is not given")
+			return withErrorStr("VRR: HardwareFeatures is not given")
 		}
 		if hf.GetVrr().GetPresent() != configpb.HardwareFeatures_PRESENT {
 			return unsatisfied("DUT does not have VRR")
@@ -1029,7 +1029,7 @@ func TiledDisplay() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("HardwareFeatures is not given")
+			return withErrorStr("TiledDisplay: HardwareFeatures is not given")
 		}
 		if hf.GetTiledDisplay().GetPresent() != configpb.HardwareFeatures_PRESENT {
 			return unsatisfied("DUT is not connected to a tiled display")
@@ -1045,7 +1045,7 @@ func Display() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("HardwareFeatures is not given")
+			return withErrorStr("Display: HardwareFeatures is not given")
 		}
 		display := hf.GetDisplay()
 		if display == nil {
@@ -1065,7 +1065,7 @@ func ExternalDisplay() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("HardwareFeatures is not given")
+			return withErrorStr("ExternalDisplay: HardwareFeatures is not given")
 		}
 		display := hf.GetDisplay()
 		if display == nil {
@@ -1101,7 +1101,7 @@ func HdmiConnected() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("HardwareFeatures is not given")
+			return withErrorStr("HdmiConnected: HardwareFeatures is not given")
 		}
 		if hf.GetHdmi().GetPresent() != configpb.HardwareFeatures_PRESENT {
 			return unsatisfied("DUT does not have HDMI Connected")
@@ -1117,7 +1117,7 @@ func InternalDisplay() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("HardwareFeatures is not given")
+			return withErrorStr("InternalDisplay: HardwareFeatures is not given")
 		}
 		if hf.GetScreen().GetPanelProperties() != nil {
 			return satisfied()
@@ -1134,7 +1134,7 @@ func InternalDisplayWithHeightPx(heightPx int32) Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("HardwareFeatures is not given")
+			return withErrorStr("InternalDisplayWithHeightPx: HardwareFeatures is not given")
 		}
 		if hf.GetScreen().GetPanelProperties().HeightPx == heightPx {
 			return satisfied()
@@ -1150,7 +1150,7 @@ func NoInternalDisplay() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("HardwareFeatures is not given")
+			return withErrorStr("NoInternalDisplay: HardwareFeatures is not given")
 		}
 		if hf.GetScreen().GetPanelProperties() != nil {
 			return unsatisfied("DUT has an internal display")
@@ -1167,7 +1167,7 @@ func Keyboard() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("HardwareFeatures is not given")
+			return withErrorStr("Keyboard: HardwareFeatures is not given")
 		}
 		if hf.GetKeyboard() == nil ||
 			hf.GetKeyboard().KeyboardType == configpb.HardwareFeatures_Keyboard_KEYBOARD_TYPE_UNKNOWN ||
@@ -1185,7 +1185,7 @@ func KeyboardBacklight() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("HardwareFeatures is not given")
+			return withErrorStr("KeyboardBacklight: HardwareFeatures is not given")
 		}
 		if hf.GetKeyboard().GetBacklight() != configpb.HardwareFeatures_PRESENT {
 			return unsatisfied("DUT does not have keyboard backlight")
@@ -1205,7 +1205,7 @@ func Touchpad() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("Did not find hardware features")
+			return withErrorStr("Touchpad: Did not find hardware features")
 		}
 		if hf.GetTouchpad().GetPresent() != configpb.HardwareFeatures_PRESENT {
 			return unsatisfied("DUT does not have a touchpad")
@@ -1221,7 +1221,7 @@ func InternalTouchpad() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("HardwareFeatures is not given")
+			return withErrorStr("InternalTouchpad: HardwareFeatures is not given")
 		}
 		if hf.GetTouchpad() == nil ||
 			hf.GetTouchpad().GetPresent() != configpb.HardwareFeatures_PRESENT ||
@@ -1581,7 +1581,7 @@ func WifiNonSelfManaged() Condition {
 func hasBattery(f *protocol.HardwareFeatures) (bool, error) {
 	hf := f.GetHardwareFeatures()
 	if hf == nil {
-		return false, errors.New("hardware features is not available")
+		return false, errors.New("hasBattery: hardware features is not available")
 	}
 	return !formFactorListed(hf, Chromebase, Chromebox, Chromebit, FormFactorUnknown), nil
 }
@@ -1616,7 +1616,7 @@ func NoBatteryBootSupported() Condition {
 
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("Did not find hardware features")
+			return withErrorStr("NoBatteryBootSupported: Did not find hardware features")
 		}
 		if !hf.GetBattery().GetNoBatteryBootSupported() {
 			return unsatisfied("DUT does not support booting without a battery")
@@ -1633,7 +1633,7 @@ func SupportsHardwareOverlays() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		dc := f.GetDeprecatedDeviceConfig()
 		if dc == nil {
-			return withErrorStr("DeprecatedDeviceConfig is not given")
+			return withErrorStr("SupportsHardwareOverlays: DeprecatedDeviceConfig is not given")
 		}
 
 		if dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_STONEY_RIDGE ||
@@ -1676,7 +1676,7 @@ func SupportsNV12Overlays() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		dc := f.GetDeprecatedDeviceConfig()
 		if dc == nil {
-			return withErrorStr("DeprecatedDeviceConfig is not given")
+			return withErrorStr("SupportsNV12Overlays: DeprecatedDeviceConfig is not given")
 		}
 		if !platformHasNV12Overlays(dc.GetSoc()) {
 			return unsatisfied("SoC does not support NV12 Overlays")
@@ -1696,7 +1696,7 @@ func Supports10BitOverlays() Condition {
 
 		dc := f.GetDeprecatedDeviceConfig()
 		if dc == nil {
-			return withErrorStr("DeprecatedDeviceConfig is not given")
+			return withErrorStr("Supports10BitOverlays: DeprecatedDeviceConfig is not given")
 		}
 
 		// TODO(b/334027497): Switch this logic to use hardware_probe.
@@ -1719,7 +1719,7 @@ func SupportsVideoOverlays() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		dc := f.GetDeprecatedDeviceConfig()
 		if dc == nil {
-			return withErrorStr("DeprecatedDeviceConfig is not given")
+			return withErrorStr("SupportsVideoOverlays: DeprecatedDeviceConfig is not given")
 		}
 
 		var supportsYUY2Overlays = dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_MT8183 ||
@@ -1800,7 +1800,7 @@ func X86() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		dc := f.GetDeprecatedDeviceConfig()
 		if dc == nil {
-			return withErrorStr("DeprecatedDeviceConfig is not given")
+			return withErrorStr("X86: DeprecatedDeviceConfig is not given")
 		}
 		if dc.GetCpu() == protocol.DeprecatedDeviceConfig_X86 || dc.GetCpu() == protocol.DeprecatedDeviceConfig_X86_64 {
 			return satisfied()
@@ -1814,7 +1814,7 @@ func NoX86() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		dc := f.GetDeprecatedDeviceConfig()
 		if dc == nil {
-			return withErrorStr("DeprecatedDeviceConfig is not given")
+			return withErrorStr("NoX86: DeprecatedDeviceConfig is not given")
 		}
 		if dc.GetCpu() != protocol.DeprecatedDeviceConfig_X86 && dc.GetCpu() != protocol.DeprecatedDeviceConfig_X86_64 {
 			return satisfied()
@@ -1829,7 +1829,7 @@ func Emmc() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("Did not find hardware features")
+			return withErrorStr("Emmc: Did not find hardware features")
 		}
 		if hf.GetStorage().GetStorageType() == configpb.Component_Storage_EMMC {
 			return satisfied()
@@ -1844,7 +1844,7 @@ func EmmcOverNvme() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("Did not find hardware features")
+			return withErrorStr("EmmcOverNvme: Did not find hardware features")
 		}
 		if hf.GetStorage().GetStorageType() == configpb.Component_Storage_BRIDGED_EMMC {
 			return satisfied()
@@ -1859,7 +1859,7 @@ func EmmcOrBridge() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("Did not find hardware features")
+			return withErrorStr("EmmcOrBridge: Did not find hardware features")
 		}
 		if hf.GetStorage().GetStorageType() == configpb.Component_Storage_EMMC ||
 			hf.GetStorage().GetStorageType() == configpb.Component_Storage_BRIDGED_EMMC {
@@ -1875,7 +1875,7 @@ func Nvme() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("Did not find hardware features")
+			return withErrorStr("Nvme: Did not find hardware features")
 		}
 		if hf.GetStorage().GetStorageType() == configpb.Component_Storage_NVME {
 			return satisfied()
@@ -1890,7 +1890,7 @@ func NvmeOrBridge() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("Did not find hardware features")
+			return withErrorStr("NvmeOrBridge: Did not find hardware features")
 		}
 		if hf.GetStorage().GetStorageType() == configpb.Component_Storage_NVME ||
 			hf.GetStorage().GetStorageType() == configpb.Component_Storage_BRIDGED_EMMC {
@@ -1905,7 +1905,7 @@ func NvmeSelfTest() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		dc := f.GetDeprecatedDeviceConfig()
 		if dc == nil {
-			return withErrorStr("DeprecatedDeviceConfig is not given")
+			return withErrorStr("NvmeSelfTest: DeprecatedDeviceConfig is not given")
 		}
 		if dc.HasNvmeSelfTest {
 			return satisfied()
@@ -1920,7 +1920,7 @@ func Ufs() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("Did not find hardware features")
+			return withErrorStr("Ufs: Did not find hardware features")
 		}
 		if hf.GetStorage().GetStorageType() == configpb.Component_Storage_UFS {
 			return satisfied()
@@ -1934,7 +1934,7 @@ func MinStorage(reqGigabytes int) Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("Did not find hardware features")
+			return withErrorStr("MinStorage: Did not find hardware features")
 		}
 		if hf.GetStorage() == nil {
 			return withErrorStr("Features.Storage was nil")
@@ -1952,7 +1952,7 @@ func MinMemory(reqMegabytes int) Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("Did not find hardware features")
+			return withErrorStr("MinMemory: Did not find hardware features")
 		}
 		if hf.GetMemory() == nil {
 			return withErrorStr("Features.Memory was nil")
@@ -1974,7 +1974,7 @@ func MaxMemory(reqMegabytes int) Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("Did not find hardware features")
+			return withErrorStr("MaxMemory: Did not find hardware features")
 		}
 		if hf.GetMemory() == nil {
 			return withErrorStr("Features.Memory was nil")
@@ -1995,7 +1995,7 @@ func Speaker() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("Did not find hardware features")
+			return withErrorStr("Speaker: Did not find hardware features")
 		}
 		if hf.GetAudio().GetSpeakerAmplifier() != nil {
 			return satisfied()
@@ -2010,7 +2010,7 @@ func Microphone() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("Did not find hardware features")
+			return withErrorStr("Microphone: Did not find hardware features")
 		}
 		if hf.GetAudio().GetLidMicrophone().GetValue() > 0 || hf.GetAudio().GetBaseMicrophone().GetValue() > 0 {
 			return satisfied()
@@ -2025,7 +2025,7 @@ func PrivacyScreen() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("Did not find hardware features")
+			return withErrorStr("PrivacyScreen: Did not find hardware features")
 		}
 		if hf.GetPrivacyScreen().GetPresent() != configpb.HardwareFeatures_PRESENT {
 			return unsatisfied("DUT does not have privacy screen")
@@ -2041,7 +2041,7 @@ func NoPrivacyScreen() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("Did not find hardware features")
+			return withErrorStr("NoPrivacyScreen: Did not find hardware features")
 		}
 		if status := hf.GetPrivacyScreen().GetPresent(); status == configpb.HardwareFeatures_NOT_PRESENT {
 			return satisfied()
@@ -2064,7 +2064,7 @@ func SuspendToIdle() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("Did not find hardware features")
+			return withErrorStr("SuspendToIdle: Did not find hardware features")
 		}
 		if hf.GetSuspend() != nil {
 			if hf.GetSuspend().GetSuspendToIdle() == configpb.HardwareFeatures_PRESENT {
@@ -2081,7 +2081,7 @@ func SuspendToMem() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("Did not find hardware features")
+			return withErrorStr("SuspendToMem: Did not find hardware features")
 		}
 		if hf.GetSuspend() != nil {
 			if hf.GetSuspend().GetSuspendToMem() == configpb.HardwareFeatures_PRESENT {
@@ -2099,7 +2099,7 @@ func SmartAmp() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("Did not find hardware features")
+			return withErrorStr("SmartAmp: Did not find hardware features")
 		}
 		if hf.GetAudio().GetSpeakerAmplifier() != nil {
 			for _, amp := range smartAmps {
@@ -2118,7 +2118,7 @@ func SmartAmpBootTimeCalibration() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("Did not find hardware features")
+			return withErrorStr("SmartAmpBootTimeCalibration: Did not find hardware features")
 		}
 		if hf.GetAudio().GetSpeakerAmplifier() != nil {
 			for _, feature := range hf.GetAudio().GetSpeakerAmplifier().GetFeatures() {
@@ -2137,7 +2137,7 @@ func SOFAudioDSP() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("Did not find hardware features")
+			return withErrorStr("SOFAudioDSP: Did not find hardware features")
 		}
 		if status := hf.GetAudio().GetSofAudioDsp(); status == configpb.HardwareFeatures_PRESENT {
 			return satisfied()
@@ -2165,7 +2165,7 @@ func FormFactor(ffList ...configpb.HardwareFeatures_FormFactor_FormFactorType) C
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("HardwareFeatures is not given")
+			return withErrorStr("FormFactor: HardwareFeatures is not given")
 		}
 		listed := formFactorListed(hf, ffList...)
 		if !listed {
@@ -2181,7 +2181,7 @@ func SkipOnFormFactor(ffList ...configpb.HardwareFeatures_FormFactor_FormFactorT
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("HardwareFeatures is not given")
+			return withErrorStr("SkipOnFormFactor: HardwareFeatures is not given")
 		}
 		listed := formFactorListed(hf, ffList...)
 		if listed {
@@ -2196,7 +2196,7 @@ func SupportsCrosCodecs() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		dc := f.GetDeprecatedDeviceConfig()
 		if dc == nil {
-			return withErrorStr("DeprecatedDeviceConfig is not given")
+			return withErrorStr("SupportsCrosCodecs: DeprecatedDeviceConfig is not given")
 		}
 		if dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_MT8186 || dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_ALDER_LAKE {
 			return satisfied()
@@ -2235,7 +2235,7 @@ func SupportsV4L2StatefulVideoDecoding() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		dc := f.GetDeprecatedDeviceConfig()
 		if dc == nil {
-			return withErrorStr("DeprecatedDeviceConfig is not given")
+			return withErrorStr("SupportsV4L2StatefulVideoDecoding: DeprecatedDeviceConfig is not given")
 		}
 		if dc.GetCpu() == protocol.DeprecatedDeviceConfig_X86 || dc.GetCpu() == protocol.DeprecatedDeviceConfig_X86_64 {
 			return unsatisfied("DUT's CPU is x86 compatible, which doesn't support V4L2")
@@ -2270,7 +2270,7 @@ func SupportsV4L2StatelessVideoDecoding() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		dc := f.GetDeprecatedDeviceConfig()
 		if dc == nil {
-			return withErrorStr("DeprecatedDeviceConfig is not given")
+			return withErrorStr("SupportsV4L2StatelessVideoDecoding: DeprecatedDeviceConfig is not given")
 		}
 		if dc.GetCpu() == protocol.DeprecatedDeviceConfig_X86 || dc.GetCpu() == protocol.DeprecatedDeviceConfig_X86_64 {
 			return unsatisfied("DUT's CPU is x86 compatible, which doesn't support V4L2")
@@ -2289,7 +2289,7 @@ func SkipOnV4L2StatelessVideoDecoding() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		dc := f.GetDeprecatedDeviceConfig()
 		if dc == nil {
-			return withErrorStr("DeprecatedDeviceConfig is not given")
+			return withErrorStr("SkipOnV4L2StatelessVideoDecoding: DeprecatedDeviceConfig is not given")
 		}
 		if socTypeIsV4l2Stateful(dc.GetSoc()) {
 			return satisfied()
@@ -2322,7 +2322,7 @@ func InternalKeyboard() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("HardwareFeatures is not given")
+			return withErrorStr("InternalKeyboard: HardwareFeatures is not given")
 		}
 		if hf.GetKeyboard() == nil ||
 			hf.GetKeyboard().KeyboardType != configpb.HardwareFeatures_Keyboard_INTERNAL {
@@ -2340,7 +2340,7 @@ func NoInternalKeyboard() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("HardwareFeatures is not given")
+			return withErrorStr("NoInternalKeyboard: HardwareFeatures is not given")
 		}
 		if hf.GetKeyboard() != nil &&
 			hf.GetKeyboard().KeyboardType == configpb.HardwareFeatures_Keyboard_INTERNAL {
@@ -2395,7 +2395,7 @@ func DisplayPortConverter(names ...string) Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("HardwareFeatures is not given")
+			return withErrorStr("DisplayPortConverter: HardwareFeatures is not given")
 		}
 
 		for _, name := range names {
@@ -2414,7 +2414,7 @@ func Vboot2() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		dc := f.GetDeprecatedDeviceConfig()
 		if dc == nil {
-			return withErrorStr("DeprecatedDeviceConfig is not given")
+			return withErrorStr("Vboot2: DeprecatedDeviceConfig is not given")
 		}
 		if dc.HasVboot2 {
 			return satisfied()
@@ -2432,7 +2432,7 @@ func SupportsVP9KSVCHWDecoding() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		dc := f.GetDeprecatedDeviceConfig()
 		if dc == nil {
-			return withErrorStr("DeprecatedDeviceConfig is not given")
+			return withErrorStr("SupportsVP9KSVCHWDecoding: DeprecatedDeviceConfig is not given")
 		}
 
 		if dc.GetCpu() == protocol.DeprecatedDeviceConfig_X86_64 {
@@ -2455,7 +2455,7 @@ func SupportsSVCEncoding(codec, mode string) Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		dc := f.GetDeprecatedDeviceConfig()
 		if dc == nil {
-			return withErrorStr("DeprecatedDeviceConfig is not given")
+			return withErrorStr("SupportsSVCEncoding: DeprecatedDeviceConfig is not given")
 		}
 
 		if dc.GetCpu() == protocol.DeprecatedDeviceConfig_X86_64 {
@@ -2491,7 +2491,7 @@ func HapticTouchpad() Condition {
 func HPS() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		if hf := f.GetHardwareFeatures(); hf == nil {
-			return withErrorStr("Did not find hardware features")
+			return withErrorStr("HPS: Did not find hardware features")
 		} else if status := hf.GetHps().Present; status == configpb.HardwareFeatures_PRESENT {
 			return satisfied()
 		}
@@ -2512,7 +2512,7 @@ func containsCameraFeature(strs []string, feature string) bool {
 func CameraFeature(names ...string) Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		if hf := f.GetHardwareFeatures(); hf == nil {
-			return withErrorStr("Did not find hardware features")
+			return withErrorStr("CameraFeature: Did not find hardware features")
 		} else if features := hf.GetCamera().Features; features != nil {
 			unsatisfiedFeatures := make([]string, 0, 10)
 			for _, n := range names {
@@ -2533,7 +2533,7 @@ func CameraFeature(names ...string) Condition {
 func CameraEnumerated() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		if hf := f.GetHardwareFeatures(); hf == nil {
-			return withErrorStr("Did not find hardware features")
+			return withErrorStr("CameraEnumerated: Did not find hardware features")
 		} else if !hf.GetCamera().Enumerated {
 			return unsatisfied("no camera was enumerated")
 		}
@@ -2556,7 +2556,7 @@ func isAtLeastOneModuleListed(modules, enumerated []string) bool {
 func CameraUSBModule(modules ...string) Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		if hf := f.GetHardwareFeatures(); hf == nil {
-			return withErrorStr("Did not find hardware features")
+			return withErrorStr("CameraUSBModule: Did not find hardware features")
 		} else if enumerated := hf.GetCamera().EnumeratedUsbIds; enumerated != nil {
 			if isAtLeastOneModuleListed(modules, enumerated) {
 				return satisfied()
@@ -2573,7 +2573,7 @@ func CameraUSBModule(modules ...string) Condition {
 func SkipOnCameraUSBModule(modules ...string) Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		if hf := f.GetHardwareFeatures(); hf == nil {
-			return withErrorStr("Did not find hardware features")
+			return withErrorStr("SkipOnCameraUSBModule: Did not find hardware features")
 		} else if enumerated := hf.GetCamera().EnumeratedUsbIds; enumerated != nil {
 			if isAtLeastOneModuleListed(modules, enumerated) {
 				return unsatisfied("matched with skip-on list")
@@ -2591,7 +2591,7 @@ func ECBuildConfigOptions(optionNames ...string) Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("Did not find hardware features")
+			return withErrorStr("ECBuildConfigOptions: Did not find hardware features")
 		}
 		buildConfig := hf.GetEmbeddedController().GetBuildConfig()
 		if buildConfig == nil {
@@ -2676,7 +2676,7 @@ func RuntimeProbeConfig() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("DUT HardwareFeatures data is not given")
+			return withErrorStr("RuntimeProbeConfig: DUT HardwareFeatures data is not given")
 		}
 		if hf.GetRuntimeProbeConfig().GetPresent() != configpb.HardwareFeatures_PRESENT {
 			return unsatisfied("DUT does not have Runtime Probe config")
@@ -2691,7 +2691,7 @@ func RuntimeProbeConfigPrivate(present bool) Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("DUT HardwareFeatures data is not given")
+			return withErrorStr("RuntimeProbeConfigPrivate: DUT HardwareFeatures data is not given")
 		}
 		actualPresent := hf.GetRuntimeProbeConfig().GetEncryptedConfigPresent() == configpb.HardwareFeatures_PRESENT
 		if present != actualPresent {
@@ -2717,7 +2717,7 @@ func GPUFamily(families ...string) Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("DUT HardwareFeatures data is not given")
+			return withErrorStr("GPUFamily: DUT HardwareFeatures data is not given")
 		}
 		for _, family := range families {
 			if hf.GetHardwareProbeConfig().GetGpuFamily() == family {
@@ -2735,7 +2735,7 @@ func SkipGPUFamily(families ...string) Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("DUT HardwareFeatures data is not given")
+			return withErrorStr("SkipGPUFamily: DUT HardwareFeatures data is not given")
 		}
 		for _, family := range families {
 			if hf.GetHardwareProbeConfig().GetGpuFamily() == family {
@@ -2753,7 +2753,7 @@ func GPUVendor(vendors ...string) Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("DUT HardwareFeatures data is not given")
+			return withErrorStr("GPUVendor: DUT HardwareFeatures data is not given")
 		}
 		for _, vendor := range vendors {
 			if hf.GetHardwareProbeConfig().GetGpuVendor() == vendor {
@@ -2771,7 +2771,7 @@ func SkipGPUVendor(vendors ...string) Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("DUT HardwareFeatures data is not given")
+			return withErrorStr("SkipGPUVendor: DUT HardwareFeatures data is not given")
 		}
 		for _, vendor := range vendors {
 			if hf.GetHardwareProbeConfig().GetGpuVendor() == vendor {
@@ -2789,7 +2789,7 @@ func CPUSocFamily(families ...string) Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("DUT HardwareFeatures data is not given")
+			return withErrorStr("CPUSocFamily: DUT HardwareFeatures data is not given")
 		}
 		for _, family := range families {
 			if hf.GetHardwareProbeConfig().GetCpuSocFamily() == family {
@@ -2807,7 +2807,7 @@ func SkipCPUSocFamily(families ...string) Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("DUT HardwareFeatures data is not given")
+			return withErrorStr("SkipCPUSocFamily: DUT HardwareFeatures data is not given")
 		}
 		for _, family := range families {
 			if hf.GetHardwareProbeConfig().GetCpuSocFamily() == family {
@@ -2823,7 +2823,7 @@ func DMIProductName(names ...string) Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("DUT HardwareFeatures data is not given")
+			return withErrorStr("DMIProductName: DUT HardwareFeatures data is not given")
 		}
 		product := hf.GetHardwareProbeConfig().GetDmiProductName()
 		for _, name := range names {
@@ -2840,7 +2840,7 @@ func SkipDMIProductName(names ...string) Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("DUT HardwareFeatures data is not given")
+			return withErrorStr("SkipDMIProductName: DUT HardwareFeatures data is not given")
 		}
 		product := hf.GetHardwareProbeConfig().GetDmiProductName()
 		for _, name := range names {
@@ -2863,7 +2863,7 @@ func FeatureLevel(level uint32) Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("Did not find hardware features")
+			return withErrorStr("FeatureLevel: Did not find hardware features")
 		}
 		if hf.GetFeatureLevel() != level {
 			return unsatisfied(fmt.Sprintf("The DUT has different feature level; got %d, need %d",
@@ -3017,7 +3017,7 @@ func HasSideVolumeButton() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		dc := f.GetDeprecatedDeviceConfig()
 		if dc == nil {
-			return withErrorStr("DeprecatedDeviceConfig is not given")
+			return withErrorStr("HasSideVolumeButton: DeprecatedDeviceConfig is not given")
 		}
 		if dc.HasSideVolumeButton {
 			return satisfied()
@@ -3032,7 +3032,7 @@ func MiniOS() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("HardwareFeatures is not given")
+			return withErrorStr("MiniOS: HardwareFeatures is not given")
 		}
 		major := hf.GetFwConfig().GetFwRoVersion().MajorVersion
 		minor := hf.GetFwConfig().GetFwRoVersion().MinorVersion
@@ -3056,7 +3056,7 @@ func BaseAccelerometer() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("Did not find hardware features")
+			return withErrorStr("BaseAccelerometer: Did not find hardware features")
 		}
 		if hf.Accelerometer.GetBaseAccelerometer() != configpb.HardwareFeatures_PRESENT {
 			return unsatisfied("DUT does not have base accelerometer")
@@ -3072,7 +3072,7 @@ func LidAccelerometer() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("Did not find hardware features")
+			return withErrorStr("LidAccelerometer: Did not find hardware features")
 		}
 		if hf.Accelerometer.GetLidAccelerometer() != configpb.HardwareFeatures_PRESENT {
 			return unsatisfied("DUT does not have lid accelerometer")
@@ -3088,7 +3088,7 @@ func BaseGyroscope() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("Did not find hardware features")
+			return withErrorStr("BaseGyroscope: Did not find hardware features")
 		}
 		if hf.Gyroscope.GetBaseGyroscope() != configpb.HardwareFeatures_PRESENT {
 			return unsatisfied("DUT does not have base gyroscope")
@@ -3104,7 +3104,7 @@ func LidGyroscope() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("Did not find hardware features")
+			return withErrorStr("LidGyroscope: Did not find hardware features")
 		}
 		if hf.Gyroscope.GetLidGyroscope() != configpb.HardwareFeatures_PRESENT {
 			return unsatisfied("DUT does not have lid gyroscope")
@@ -3120,7 +3120,7 @@ func MotionSensor() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("Did not find hardware features")
+			return withErrorStr("MotionSensor: Did not find hardware features")
 		}
 		if hf.Accelerometer.GetBaseAccelerometer() != configpb.HardwareFeatures_PRESENT &&
 			hf.Accelerometer.GetLidAccelerometer() != configpb.HardwareFeatures_PRESENT &&
@@ -3138,7 +3138,7 @@ func IntelIsh() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("Did not find hardware features")
+			return withErrorStr("IntelIsh: Did not find hardware features")
 		}
 		if hf.GetFwConfig().IntelIsh == configpb.HardwareFeatures_PRESENT {
 			return satisfied()
@@ -3170,7 +3170,7 @@ func MiniDiag() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("HardwareFeatures is not given")
+			return withErrorStr("MiniDiag: HardwareFeatures is not given")
 		}
 		roMajorVersion := hf.GetFwConfig().GetFwRoVersion().MajorVersion
 		roMinorVersion := hf.GetFwConfig().GetFwRoVersion().MinorVersion
@@ -3359,7 +3359,7 @@ func IsIntelUarchOlderThan(intelUarchs IntelUarchs) Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("Did not find hardware features")
+			return withErrorStr("IsIntelUarchOlderThan: Did not find hardware features")
 		}
 		if x86Satisfied, _, err := X86().Satisfied(f); err == nil && !x86Satisfied {
 			return unsatisfied("DUT's CPU is not x86 compatible and the comparison is not supported")
@@ -3396,7 +3396,7 @@ func IsIntelUarchEqualOrNewerThan(intelUarchs IntelUarchs) Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("Did not find hardware features")
+			return withErrorStr("IsIntelUarchEqualOrNewerThan: Did not find hardware features")
 		}
 		if x86Satisfied, _, err := X86().Satisfied(f); err == nil && !x86Satisfied {
 			return unsatisfied("DUT's CPU is not x86 compatible and the comparison is not supported")
@@ -3433,7 +3433,7 @@ func ECFeatureCbibin() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("HardwareFeatures is not given")
+			return withErrorStr("ECFeatureCbibin: HardwareFeatures is not given")
 		}
 		rwMajorVersion := hf.GetFwConfig().GetFwRwVersion().MajorVersion
 		rwMinorVersion := hf.GetFwConfig().GetFwRwVersion().MinorVersion
@@ -3481,7 +3481,7 @@ func HasRecoveryMRCCacheSection() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("HardwareFeatures is not given")
+			return withErrorStr("HasRecoveryMRCCacheSection: HardwareFeatures is not given")
 		}
 		if hf.GetFwConfig().HasRecoveryMrcCache == configpb.HardwareFeatures_PRESENT {
 			return satisfied()
@@ -3496,7 +3496,7 @@ func Usb3Pendrive() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("DUT HardwareFeatures data is not given")
+			return withErrorStr("Usb3Pendrive: DUT HardwareFeatures data is not given")
 		}
 
 		if hf.GetPendrive().GetPresent() != configpb.HardwareFeatures_PRESENT {
@@ -3511,7 +3511,7 @@ func MKBPEvent() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
 		if hf == nil {
-			return withErrorStr("HardwareFeatures is not given")
+			return withErrorStr("MKBPEvent: HardwareFeatures is not given")
 		}
 		roMajorVersion := hf.GetFwConfig().GetFwRoVersion().MajorVersion
 		// CL:1685787 laned in 12351.0.0

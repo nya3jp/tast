@@ -2298,43 +2298,17 @@ func SkipOnV4L2StatelessVideoDecoding() Condition {
 	}}
 }
 
-// SupportsHEVCVideoDecodingInChrome says true if the device supports HEVC video
-// decoding in Chrome. Note that this might be dif and only iferent from support at the
-// platform (i.e. drivers, kernel, hardware) level.
-// This function represents a policy: Tast tests using this should still make
-// use of SoftwareDeps "caps.HWDecodeHEVC" (or "caps.HWDecodeHEVC10BPP").
-func SupportsHEVCVideoDecodingInChrome() Condition {
+// HEVCVideoDecodingIsAllowedInChrome says true if Chrome doesn't disable
+// the HEVC video decoding in Chrome. This represents a policy and may be
+// different from the chipset capability. So this must be used together with
+// SoftwareDeps "caps.HWDecodeHEVC" (or "caps.HWDecodeHEVC10BPP").
+func HEVCVideoDecodingIsAllowedInChrome() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		// Disabled on any device where the config is explicitly disabled.
 		if f.GetHardwareFeatures().GetSoc().GetHevcSupport() == configpb.HardwareFeatures_NOT_PRESENT {
 			return unsatisfied("Chrome has HEVC disabled on this device")
 		}
-		// Enabled on any device where the config is explicitly enabled.
-		if f.GetHardwareFeatures().GetSoc().GetHevcSupport() == configpb.HardwareFeatures_PRESENT {
-			return satisfied()
-		}
-		// MT8188G and MT8196 do support it.
-		if f.GetDeprecatedDeviceConfig().GetSoc() == protocol.DeprecatedDeviceConfig_SOC_MT8188G ||
-			f.GetDeprecatedDeviceConfig().GetSoc() == protocol.DeprecatedDeviceConfig_SOC_MT8196 {
-			return satisfied()
-		}
-		// ARM embedders don't support it.
-		if satisfy, _, err := CPUSocFamily("mediatek", "rockchip", "qualcomm").Satisfied(f); err == nil && satisfy {
-			return unsatisfied("Chrome does not support HEVC video decoding on this SoC")
-		}
-		// AMD Zork (Picasso) and before also don't.
-		if satisfy, _, err := GPUFamily("picasso", "stoney").Satisfied(f); err == nil && satisfy {
-			return unsatisfied("Chrome does not support HEVC video decoding on this SoC")
-		}
-		// Other AMD device support it.
-		if satisfy, _, err := CPUSocFamily("amd").Satisfied(f); err == nil && satisfy {
-			return satisfied()
-		}
-		// Any Intel TGL, ADL-P and MTL do support it.
-		if satisfy, _, err := GPUFamily("tigerlake", "alderlake", "meteorlake").Satisfied(f); err == nil && satisfy {
-			return satisfied()
-		}
-		return unsatisfied("Chrome does not support HEVC video decoding on this SoC")
+		return satisfied()
 	}}
 }
 

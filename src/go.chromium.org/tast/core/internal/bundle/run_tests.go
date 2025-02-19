@@ -393,6 +393,8 @@ func setUpConnection(ctx context.Context, scfg *StaticConfig, cfg *protocol.RunC
 			RPCHint:       testing.NewRPCHint(pt.GetBundleDir(), cfg.GetFeatures().GetInfra().GetVars()),
 			DUT:           dt,
 			CompanionDUTs: companionDUTs,
+			KeyFile:       sshCfg.GetKeyFile(),
+			KeyDir:        sshCfg.GetKeyDir(),
 		},
 	}, nil
 }

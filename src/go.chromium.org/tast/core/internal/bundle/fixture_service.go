@@ -139,6 +139,8 @@ func (s *fixtureService) pushAndPop(srv protocol.FixtureService_RunFixtureServer
 		RemoteData: &testing.RemoteData{
 			RPCHint: testing.NewRPCHint(r.Config.LocalBundleDir, r.Config.TestVars),
 			DUT:     dt,
+			KeyFile: r.Config.KeyFile,
+			KeyDir:  r.Config.KeyDir,
 			// TODO(oka): fill Meta field.
 		},
 		Features: &protocol.Features{

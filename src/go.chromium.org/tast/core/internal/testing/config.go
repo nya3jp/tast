@@ -59,6 +59,12 @@ type RemoteData struct {
 	DUT *dut.DUT
 	// CompanionDUTs are other DUTs that can be used in remote test.
 	CompanionDUTs map[string]*dut.DUT
+	// KeyFile is an optional path to an unencrypted SSH private key.
+	KeyFile string
+	// KeyDir is an optional path to a directory (typically $HOME/.ssh) containing standard
+	// SSH keys (id_dsa, id_rsa, etc.) to use if authentication via KeyFile is not accepted.
+	// Only unencrypted keys are used.
+	KeyDir string
 }
 
 // Meta contains information about how the "tast" process used to initiate testing was run.

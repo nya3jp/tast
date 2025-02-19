@@ -358,6 +358,25 @@ func (s *globalMixin) DUT() *dut.DUT {
 	return s.entityRoot.cfg.RemoteData.DUT
 }
 
+// KeyFile returns an optional path to an unencrypted SSH private key.
+// It can only be called by remote entities.
+func (s *globalMixin) KeyFile() string {
+	if s.entityRoot.cfg.RemoteData == nil {
+		panic("KeyFile unavailable (running non-remote?)")
+	}
+	return s.entityRoot.cfg.RemoteData.KeyFile
+}
+
+// KeyDir returns an optional path to a directory containing standard
+// SSH keys to use if authentication via KeyFile is not accepted.
+// It can only be called by remote entities.
+func (s *globalMixin) KeyDir() string {
+	if s.entityRoot.cfg.RemoteData == nil {
+		panic("KeyDir unavailable (running non-remote?)")
+	}
+	return s.entityRoot.cfg.RemoteData.KeyDir
+}
+
 // CompanionDUT returns a shared SSH connection for a companion DUT.
 // It can only be called by remote entities.
 func (s *globalMixin) CompanionDUT(role string) *dut.DUT {

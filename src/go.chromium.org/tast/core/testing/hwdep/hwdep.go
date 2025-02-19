@@ -330,12 +330,12 @@ func NoTouchScreen() Condition {
 // if and only if the DUT has a present EC of the "Chrome EC" type.
 func ChromeEC() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
-		hf := f.GetHardwareFeatures()
-		if hf == nil {
-			return withErrorStr("ChromeEC: Did not find hardware features")
+		ec := f.GetHardwareFeatures().GetEmbeddedController()
+		if ec == nil {
+			return withErrorStr("ChromeEC: No EC info, set -hwdeps=hardware_features<embedded_controller<present:PRESENT ec_type:EC_CHROME>>")
 		}
-		ecIsPresent := hf.GetEmbeddedController().GetPresent() == configpb.HardwareFeatures_PRESENT
-		ecIsChrome := hf.GetEmbeddedController().GetEcType() == configpb.HardwareFeatures_EmbeddedController_EC_CHROME
+		ecIsPresent := ec.GetPresent() == configpb.HardwareFeatures_PRESENT
+		ecIsChrome := ec.GetEcType() == configpb.HardwareFeatures_EmbeddedController_EC_CHROME
 		if ecIsPresent && ecIsChrome {
 			return satisfied()
 		}
@@ -1580,8 +1580,8 @@ func WifiNonSelfManaged() Condition {
 
 func hasBattery(f *protocol.HardwareFeatures) (bool, error) {
 	hf := f.GetHardwareFeatures()
-	if hf == nil {
-		return false, errors.New("hasBattery: hardware features is not available")
+	if hf == nil || hf.GetFormFactor() == nil {
+		return false, errors.New("hasBattery: formfactor is not available, use -hwdeps='form_factor<form_factor:CLAMSHELL>'")
 	}
 	return !formFactorListed(hf, Chromebase, Chromebox, Chromebit, FormFactorUnknown), nil
 }
@@ -2152,7 +2152,7 @@ func SOFAudioDSP() Condition {
 // is listed in the given list of form factor values.
 func formFactorListed(hf *configpb.HardwareFeatures, ffList ...configpb.HardwareFeatures_FormFactor_FormFactorType) bool {
 	for _, ffValue := range ffList {
-		if hf.GetFormFactor().FormFactor == ffValue {
+		if hf.GetFormFactor().GetFormFactor() == ffValue {
 			return true
 		}
 	}
@@ -2164,8 +2164,8 @@ func formFactorListed(hf *configpb.HardwareFeatures, ffList ...configpb.Hardware
 func FormFactor(ffList ...configpb.HardwareFeatures_FormFactor_FormFactorType) Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
 		hf := f.GetHardwareFeatures()
-		if hf == nil {
-			return withErrorStr("FormFactor: HardwareFeatures is not given")
+		if hf == nil || hf.GetFormFactor() == nil {
+			return withErrorStr("FormFactor not found, use -hwdeps=hardware_features<form_factor:CLAMSHELL>")
 		}
 		listed := formFactorListed(hf, ffList...)
 		if !listed {
@@ -2918,7 +2918,7 @@ var legacyMenuUIModels = []string{
 // implemented. If not, it will check the legacyMenuUIModels list for
 // differentiation between LegacyMenuUI and LegacyClamshellUI.
 func fwUIListed(f *protocol.HardwareFeatures, names ...FWUIType) (bool, error) {
-	rwMajorVersion := f.GetHardwareFeatures().GetFwConfig().GetFwRwVersion().MajorVersion
+	rwMajorVersion := f.GetHardwareFeatures().GetFwConfig().GetFwRwVersion().GetMajorVersion()
 	if rwMajorVersion == 0 {
 		return false, errors.New("firmware id has not been passed from the DUT")
 	}
@@ -3034,8 +3034,8 @@ func MiniOS() Condition {
 		if hf == nil {
 			return withErrorStr("MiniOS: HardwareFeatures is not given")
 		}
-		major := hf.GetFwConfig().GetFwRoVersion().MajorVersion
-		minor := hf.GetFwConfig().GetFwRoVersion().MinorVersion
+		major := hf.GetFwConfig().GetFwRoVersion().GetMajorVersion()
+		minor := hf.GetFwConfig().GetFwRoVersion().GetMinorVersion()
 		// miniOS is supported in firmware UI since CL:3249309 (landed in 14315).
 		// For ARM, there's a bug which is fixed in CL:3653659 (landed in 14858).
 		// The fix is cherry-picked to firmware-cherry-14454.B in 14454.34.
@@ -3172,10 +3172,10 @@ func MiniDiag() Condition {
 		if hf == nil {
 			return withErrorStr("MiniDiag: HardwareFeatures is not given")
 		}
-		roMajorVersion := hf.GetFwConfig().GetFwRoVersion().MajorVersion
-		roMinorVersion := hf.GetFwConfig().GetFwRoVersion().MinorVersion
-		rwMajorVersion := hf.GetFwConfig().GetFwRwVersion().MajorVersion
-		rwMinorVersion := hf.GetFwConfig().GetFwRwVersion().MinorVersion
+		roMajorVersion := hf.GetFwConfig().GetFwRoVersion().GetMajorVersion()
+		roMinorVersion := hf.GetFwConfig().GetFwRoVersion().GetMinorVersion()
+		rwMajorVersion := hf.GetFwConfig().GetFwRwVersion().GetMajorVersion()
+		rwMinorVersion := hf.GetFwConfig().GetFwRwVersion().GetMinorVersion()
 		// Dirinboz launch MiniDiag earlier (crrev/c/2525502) than other
 		// zork variants (crrev/c/2677619).
 		isDirinboz, err := modelListed(f.GetDeprecatedDeviceConfig(), "dirinboz")
@@ -3435,8 +3435,8 @@ func ECFeatureCbibin() Condition {
 		if hf == nil {
 			return withErrorStr("ECFeatureCbibin: HardwareFeatures is not given")
 		}
-		rwMajorVersion := hf.GetFwConfig().GetFwRwVersion().MajorVersion
-		rwMinorVersion := hf.GetFwConfig().GetFwRwVersion().MinorVersion
+		rwMajorVersion := hf.GetFwConfig().GetFwRwVersion().GetMajorVersion()
+		rwMinorVersion := hf.GetFwConfig().GetFwRwVersion().GetMinorVersion()
 
 		/*
 			CL:4936551 landed in 15904.0.0 for most of the boards except:
@@ -3483,7 +3483,7 @@ func HasRecoveryMRCCacheSection() Condition {
 		if hf == nil {
 			return withErrorStr("HasRecoveryMRCCacheSection: HardwareFeatures is not given")
 		}
-		if hf.GetFwConfig().HasRecoveryMrcCache == configpb.HardwareFeatures_PRESENT {
+		if hf.GetFwConfig().GetHasRecoveryMrcCache() == configpb.HardwareFeatures_PRESENT {
 			return satisfied()
 		}
 

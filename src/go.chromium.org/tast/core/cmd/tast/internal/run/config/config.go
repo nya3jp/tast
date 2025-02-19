@@ -19,6 +19,7 @@ import (
 	"time"
 
 	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/encoding/prototext"
 
 	"go.chromium.org/tast/core/cmd/tast/internal/build"
 	"go.chromium.org/tast/core/errors"
@@ -149,6 +150,8 @@ type MutableConfig struct {
 	//     -meta.DisabledTest1
 	//     -meta.DisabledTest2
 	ForceSkips map[string]*protocol.ForceSkip
+
+	DefaultHardwareFeatures *frameworkprotocol.HardwareFeatures
 }
 
 // Config contains shared configuration information for running or listing tests.
@@ -395,6 +398,11 @@ func (c *Config) ForceSkips() map[string]*protocol.ForceSkip {
 	return forceSkips
 }
 
+// DefaultHardwareFeatures returns the hardware features to use if ssh is disabled.
+func (c *Config) DefaultHardwareFeatures() *frameworkprotocol.HardwareFeatures {
+	return c.m.DefaultHardwareFeatures
+}
+
 // DeprecatedState hold state attributes which are accumulated over the course
 // of the run.
 //
@@ -548,6 +556,15 @@ func (c *MutableConfig) SetFlags(f *flag.FlagSet) {
 		_, err := regexp.Compile(s)
 		return err
 	}), "maybemissingvars", "Regex matching with variables which may be missing")
+	f.Var(funcValue(func(s string) error {
+		var hwFeatures frameworkprotocol.HardwareFeatures
+		err := prototext.Unmarshal([]byte(s), &hwFeatures)
+		if err != nil {
+			return err
+		}
+		c.DefaultHardwareFeatures = &hwFeatures
+		return nil
+	}), "hwdeps", "Set HardwareFeatures proto for duts without ssh")
 
 	// Some flags are only relevant if we're running tests rather than listing them.
 	if c.Mode == RunTestsMode {

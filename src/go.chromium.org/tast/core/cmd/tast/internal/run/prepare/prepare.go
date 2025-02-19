@@ -86,10 +86,15 @@ func Prepare(ctx context.Context, cfg *config.Config, driver *driver.Driver) (
 
 	// Do not build or push to DUT as we dont have access to it.
 	if !config.ShouldConnect(cfg.Target()) {
+		hwFeat := cfg.DefaultHardwareFeatures()
+		if hwFeat == nil {
+			hwFeat = &fwprotocol.HardwareFeatures{}
+		}
+		logging.Infof(ctx, "Using hwfeat: %s", hwFeat.String())
 		return &protocol.DUTInfo{
 			Features: &fwprotocol.DUTFeatures{
 				Software: &fwprotocol.SoftwareFeatures{},
-				Hardware: &fwprotocol.HardwareFeatures{},
+				Hardware: hwFeat,
 			},
 		}, nil, nil
 	}

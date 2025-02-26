@@ -1652,6 +1652,10 @@ Parallels boot-up testing. Otherwise the same as group:crosbolt.`,
 				Name: "typec_unigraf274",
 				Desc: `Indicates that this test should be run using an Unigraf UTC-274 tester.`,
 			},
+			{
+				Name: "typec_manual",
+				Desc: `Indicates that this test should be run only manually`,
+			},
 		},
 	},
 	{

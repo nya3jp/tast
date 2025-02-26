@@ -1648,6 +1648,10 @@ Parallels boot-up testing. Otherwise the same as group:crosbolt.`,
 				Name: "typec_usb_bringup",
 				Desc: `Indicates that this test should be run for USB-C bringup validation`,
 			},
+			{
+				Name: "typec_unigraf274",
+				Desc: `Indicates that this test should be run using an Unigraf UTC-274 tester.`,
+			},
 		},
 	},
 	{

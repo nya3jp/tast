@@ -9,6 +9,7 @@
 *   [Codelab #4](codelab_4.md) walks you through the creation of a remote test.
 *   [Using Image-based UI Detection](using_uidetection.md) demonstrates the
     usage of the image-based UI detection package.
+*   [Testing IWA](iwa_testing.md) explains how to install and interact with Isolated Web Application in test.
 *   [How-To](howto.md)
 *   [Getting Help](getting_help.md)
 

@@ -2979,6 +2979,30 @@ func HasPDPort(port uint32) Condition {
 	}
 }
 
+// HasPDCChip returns a hardware dependency condition that is satisfied if and only if the DUT has PDC
+func HasPDCChip() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf.GetUsbC().GetPdc() == configpb.HardwareFeatures_PRESENT {
+			return satisfied()
+		}
+		return unsatisfied("Did not find PDC")
+	},
+	}
+}
+
+// HasNoPDCChip returns a hardware dependency condition that is satisfied if and only if the DUT has no PDC
+func HasNoPDCChip() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf.GetUsbC().GetPdc() == configpb.HardwareFeatures_NOT_PRESENT {
+			return satisfied()
+		}
+		return unsatisfied("found PDC")
+	},
+	}
+}
+
 // AlternativeFirmware returns a hardware dependency condition that is satisfied if and only if the DUT has altfw.
 func AlternativeFirmware() Condition {
 	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {

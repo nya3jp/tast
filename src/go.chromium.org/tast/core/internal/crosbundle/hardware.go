@@ -153,6 +153,7 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		TiledDisplay:            &configpb.HardwareFeatures_TiledDisplay{},
 		CpuInfo:                 &configpb.HardwareFeatures_CpuInfo{},
 		Pendrive:                &configpb.HardwareFeatures_Pendrive{},
+		UsbC:                    &configpb.HardwareFeatures_UsbC{},
 	}
 
 	features.CpuInfo.VendorInfo = &configpb.HardwareFeatures_CpuInfo_VendorInfo{}
@@ -615,7 +616,22 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		if err != nil {
 			return nil, errors.Errorf("Failed to parse: %v", string(match[len(match)-1][1]))
 		}
-		features.UsbC = &configpb.HardwareFeatures_UsbC{Count: &configpb.HardwareFeatures_Count{Value: uint32(count + 1)}}
+		features.UsbC.Count = &configpb.HardwareFeatures_Count{Value: uint32(count + 1)}
+	}
+
+	// Find if DUT has a PDC by getting PD info from port 0
+	if out, err := exec.Command("ectool", "pdchipinfo", "0").Output(); err != nil {
+		logging.Infof(ctx, "Could not retrieve port 0 information: %v", err)
+		features.UsbC.Pdc = configpb.HardwareFeatures_PRESENT_UNKNOWN
+	} else {
+		// If the pd control uses a separate driver and not TCPM, it's a PDC
+		re := regexp.MustCompile("driver_name:")
+		match := re.FindAllSubmatch(out, -1)
+		if match != nil {
+			features.UsbC.Pdc = configpb.HardwareFeatures_PRESENT
+		} else {
+			features.UsbC.Pdc = configpb.HardwareFeatures_NOT_PRESENT
+		}
 	}
 
 	// Device has GSC with production RW KeyId if gsctool -a -I -M

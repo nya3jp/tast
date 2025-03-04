@@ -271,6 +271,9 @@ func TestCheckKnownAttrs(t *testing.T) {
 		{
 			attrs: []string{"group:video_conference_face_framing_per_build"},
 		},
+		{
+			attrs: []string{"group:fwupd"},
+		},
 
 		// Invalid cases.
 		{

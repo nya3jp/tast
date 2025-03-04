@@ -2619,6 +2619,11 @@ from other existing groups (or use this group standalone).
 		Contacts: []string{"essential-inputs-team@google.com"},
 		Desc:     "A group of tests for video conference on face farming device.",
 	},
+	{
+		Name:     "fwupd",
+		Contacts: []string{"chromeos-fwupd@google.com", "rishabhagr@google.com"},
+		Desc:     "A group of fwupd related tests to run on builders",
+	},
 }
 
 // validGroupMap is the name-keyed map of validGroups.

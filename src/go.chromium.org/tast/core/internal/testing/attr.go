@@ -869,6 +869,10 @@ Tests in this group are not used for build verification.
 				Desc: `A set of tests that run on the normal ti50 FW image`,
 			},
 			{
+				Name: "gsc_image_ti50a",
+				Desc: `A set of tests that run on the ti50a FW image`,
+			},
+			{
 				Name: "gsc_image_sta",
 				Desc: `A set of tests that run on the system_test_auto FW image`,
 			},

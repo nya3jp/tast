@@ -2011,6 +2011,29 @@ Parallels boot-up testing. Otherwise the same as group:crosbolt.`,
 		Desc:     `A group of tests that test sensor and sensor services.`,
 	},
 	{
+		Name:     "dsp",
+		Contacts: []string{"peress@google.com", "chromeos-sensors@google.com"},
+		Desc:     `A group of tests that are affected by using a DSP (like the ISH).`,
+		Subattrs: []*attr{
+			{
+				Name: "dsp_ish",
+				Desc: `Intel ISH specific tests.`,
+			},
+			{
+				Name: "dsp_small",
+				Desc: `Small tests that take < 10 minutes to run.`,
+			},
+			{
+				Name: "dsp_medium",
+				Desc: `Medium tests that take > 10 minutes but < 2 hours to run.`,
+			},
+			{
+				Name: "dsp_large",
+				Desc: `Large tests that take > 2 hours to run.`,
+			},
+		},
+	},
+	{
 		Name:     "network",
 		Contacts: []string{"cros-networking@google.com"},
 		Desc:     `A group of tests that test general network functions.`,

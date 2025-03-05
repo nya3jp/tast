@@ -344,6 +344,24 @@ func ChromeEC() Condition {
 	}
 }
 
+// ChromeISH returns a hardware dependency condition that is satisfied
+// if and only if the DUT is configured to use the Intel ISH.
+func ChromeISH() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		dsp := f.GetHardwareFeatures().GetDspCore()
+		if dsp == nil {
+			return withErrorStr("ChromeISH: No DSP info")
+		}
+		dspIsPresent := dsp.GetPresent() == configpb.HardwareFeatures_PRESENT
+		dspIsIntel := dsp.GetVendor() == configpb.HardwareFeatures_DspCore_VENDOR_INTEL
+		if dspIsPresent && dspIsIntel {
+			return satisfied()
+		}
+		return unsatisfied("DUT does not have an ISH")
+	},
+	}
+}
+
 // ECFeatureTypecCmd returns a hardware dependency condition that is satisfied
 // if and only if the DUT has an EC which supports the EC_FEATURE_TYPEC_CMD feature flag.
 func ECFeatureTypecCmd() Condition {

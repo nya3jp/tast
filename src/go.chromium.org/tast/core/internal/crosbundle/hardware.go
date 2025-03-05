@@ -154,6 +154,7 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		CpuInfo:                 &configpb.HardwareFeatures_CpuInfo{},
 		Pendrive:                &configpb.HardwareFeatures_Pendrive{},
 		UsbC:                    &configpb.HardwareFeatures_UsbC{},
+		DspCore:                 &configpb.HardwareFeatures_DspCore{},
 	}
 
 	features.CpuInfo.VendorInfo = &configpb.HardwareFeatures_CpuInfo_VendorInfo{}
@@ -554,6 +555,26 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		} else {
 			features.EmbeddedController.FeatureChargeControlV2 = configpb.HardwareFeatures_PRESENT
 		}
+	}
+
+	// Check for a DSP core
+	features.DspCore.Present = configpb.HardwareFeatures_PRESENT_UNKNOWN
+	features.DspCore.Vendor = configpb.HardwareFeatures_DspCore_VENDOR_UNKNOWN
+	currentCrosConfig, err := crosConfigForCurrentDevice(ctx)
+	if err == nil && currentCrosConfig.Firmware != nil {
+		ishName := currentCrosConfig.Firmware.BuildTargets.Ish
+		if ishName != "" {
+			// We possibly have an ISH
+			ishFileName := strings.ReplaceAll(ishName, "-", "_") + ".bin"
+			ishFilePath := filepath.Join("/lib/firmware/intel", ishFileName)
+			if _, err := os.Stat(ishFilePath); err == nil {
+				logging.Infof(ctx, "Found ISH")
+				features.DspCore.Present = configpb.HardwareFeatures_PRESENT
+				features.DspCore.Vendor = configpb.HardwareFeatures_DspCore_VENDOR_INTEL
+			}
+		}
+	} else {
+		logging.Infof(ctx, "Failed to get DUT cros configs: %v", err)
 	}
 
 	// Device has CBI if ectool cbi get doesn't raise error.

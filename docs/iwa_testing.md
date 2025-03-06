@@ -16,7 +16,25 @@ This document provides guidance on how to test Isolated Web Apps (IWAs) within t
 
 ## Setting up the Test Environment
 
-1.  **Test Device:** Prepare a ChromeOS test device with a recent ChromeOS test image.
+1. **Test Device:**
+    *   **Recommended Approach: VM Testing**
+        *   It is highly recommended to start testing with a ChromeOS VM. This allows for faster iteration, easier debugging, and a more controlled environment.
+        *   **VM Setup:**
+            1.  **Linux Chromium Checkout:** Ensure you have a [Linux Chromium checkout](https://chromium.googlesource.com/chromium/src/+/HEAD/docs/linux/build_instructions.md) with `depot_tools` installed.
+            2.  **Virtualization Enabled:** Your system firmware (BIOS) must have virtualization features enabled, and KVM must be enabled in your kernel.
+            3.  **Simple Chrome Setup:** You should have [Simple Chrome](https://www.chromium.org/chromium-os/developer-library/guides/development/simple-chrome-workflow/) set up.
+            4.  **Choose a Board:** Select a suitable board. `betty` is recommended for Googlers, while `amd64-generic-vm` is suitable for open-source contributors. Set the board using `export BOARD=betty`
+            5.  **Launch the VM:** Use `cros vm start` or `cros_vm --board ${BOARD}` to launch the VM.\
+            Refer to the [official ChromeOS VM documentation](https://www.chromium.org/chromium-os/developer-library/guides/containers/cros-vm/) for detailed instructions.
+        *   **Why VM First?** VMs offer a faster, more controlled environment for initial testing and development. They allow for quick modifications and easier debugging before moving to physical hardware.
+
+    *   **Physical Device Testing:**
+        *   While VMs are ideal for initial testing, it's crucial to test on physical devices.
+        *   **Recommended Devices:**
+            *   **Primary Device:** Target the most used device within your customer base. This ensures the IWA functions well on the most common hardware.
+            *   **Low-End Device:** Include a low-end device in your testing to ensure the IWA remains performant even under resource constraints.
+        *   **Why Physical Devices?** Physical devices provide a real-world view of performance, hardware interactions, and user experience.
+
 1. **Update manifest:** The application should be deployed with its update manifest accessible.
 
 ## Steps to Writing Tast Tests for IWAs
@@ -48,7 +66,7 @@ policies := []policy.Policy{
 	},
 }
 ```
-[!NOTE]
+**NOTE:**
 It is recommended to use `PinnedVersion` and the latest ChromeOS to ensure that ChromeOS changes do not impact the IWA's functionality. When testing an unpinned IWA version, use a stable, unchanging ChromeOS version. This will help isolate whether failures are due to changes in the application or in ChromeOS.
 
 ### Add policies and load them
@@ -132,11 +150,12 @@ The full code of the example is available in the [LaunchIWA](https://source.chro
 *   **Version Control:** Test against different versions of the IWA to ensure compatibility.
 *   **Clear Test Descriptions:** Provide descriptive test names and comments to make the tests easier to understand.
 *   **Follow [design principles]** to make your test more robust.
+*   Prioritize **VM testing** for initial development and debugging.
+*   Include testing on the most used and a low-end physical device for optimal coverage.
 
 ### Commercial setup considerations
 *   If a Chrome restart is required (e.g., for auto-starting the IWA), use `fixture.FakeDMS`. Chrome restart needs depend on the type of policies you are trying to apply. For example, the `MultiScreenCaptureAllowedForUrls` policy requires a restart (`Dynamic Policy Refresh: No`).
 *   To launch and manually interact with the IWA, use `fixture.ChromePolicyLoggedIn`.
-
 
 [design principles]: http://go/tast-design
 [MultiScreenCaptureAllowedForUrls]: https://chromeenterprise.google/policies/#MultiScreenCaptureAllowedForUrls

@@ -301,7 +301,7 @@ func getTargetArch(ctx context.Context, cfg *config.Config, hst *ssh.Conn) (targ
 	// Get the userland architecture by inspecting an arbitrary binary on the target.
 	out, err := hst.CommandContext(ctx, "file", "-b", "-L", "/sbin/init").CombinedOutput()
 	if err != nil {
-		return targetArch, fmt.Errorf("file command failed: %v (output: %q)", err, string(out))
+		return targetArch, fmt.Errorf("file command failed: %v (output: %q); please check if the DUT is provisioned with a test image", err, string(out))
 	}
 	s := string(out)
 

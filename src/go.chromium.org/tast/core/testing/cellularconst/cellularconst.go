@@ -128,6 +128,7 @@ var (
 		"nivviks_fm101":      {"nivviks_fm101", "nissa", ModemTypeFM101},
 		"pujjo_fm101":        {"pujjo_fm101", "nissa", ModemTypeFM101},
 		"pujjo_em060":        {"pujjo_em060", "nissa", ModemTypeEM060},
+		"pujjoga_em060":      {"pujjoga_em060", "nissa", ModemTypeEM060},
 		"pujjoga_lcuk54":     {"pujjoga_lcuk54", "nissa", ModemTypeLCUK54},
 		"pujjogatwin_em060":  {"pujjogatwin_em060", "nissa", ModemTypeEM060},
 		"pujjoteen5_fm350":   {"pujjoteen5_fm350", "nissa", ModemTypeFM350},

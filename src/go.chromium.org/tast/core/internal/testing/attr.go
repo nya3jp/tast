@@ -766,7 +766,7 @@ Tests in this group are not used for build verification.
 			},
 			{
 				Name: "firmware_smoke",
-				Desc: `A group of tests that exercise the basic firmware testing libraries. Equivalent to autotest suite:faft_smoke.`,
+				Desc: `A group of tests that exercise the basic firmware testing libraries.`,
 			},
 			{
 				Name: "firmware_unstable",

@@ -718,7 +718,7 @@ Tests in this group are not used for build verification.
 		Subattrs: []*attr{
 			{
 				Name: "firmware_bios",
-				Desc: `A group of tests that test the AP firmware. Equivalent to autotest suite:faft_bios & suite:faft_bios_ro_qual & suite:faft_bios_rw_qual.`,
+				Desc: `A group of tests that test the AP firmware.`,
 			},
 			{
 				Name: "firmware_ccd",

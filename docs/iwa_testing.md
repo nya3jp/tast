@@ -14,6 +14,11 @@
 # Testing Isolated Web Apps in Tast
 This document provides guidance on how to test Isolated Web Apps (IWAs) within the Tast testing framework.
 
+## Testing Pyramid and Lower-Level Testing
+*   Adopt a **testing pyramid** approach, which emphasizes a balance of different test types. Read more about it at [Google Testing Blog](https://testing.googleblog.com/2024/10/smurf-beyond-test-pyramid.html).
+*   There should be a significant number of tests checking the application's code, focusing on individual components and their interactions, including components' integrations. These tests should be prioritized to ensure a robust and reliable application.
+*   Testing the integration of the IWA with the Chrome browser is currently under development (crbug.com/337872319).
+
 ## Setting up the Test Environment
 
 1. **Test Device:**

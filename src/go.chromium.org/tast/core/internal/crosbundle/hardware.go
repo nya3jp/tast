@@ -648,7 +648,7 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		}
 	}
 
-	// Device has GSC with production RW KeyId if gsctool -a -I -M
+	// Device has GSC with production RW KeyId if gsctool -a -f -M
 	// returns RW KeyID with value 0x87b73b67 or 0xde88588d
 	func() {
 		if out, err := exec.Command("gsctool", "-a", "-f", "-M").Output(); err != nil {
@@ -676,6 +676,20 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		} else {
 			logging.Infof(ctx, "Invalid ADID: %s", out)
 			features.TrustedPlatformModule.ValidAdid = configpb.HardwareFeatures_NOT_PRESENT
+		}
+	}()
+
+	// CCD testlab mode is enabled if gsctool -a -I -M returns
+	// CCD_FLAG_TESTLAB_MODE=Y
+	func() {
+		if out, err := exec.Command("gsctool", "-a", "-I", "-M").Output(); err != nil {
+			logging.Infof(ctx, "Failed to get CCD info: %v", err)
+			features.TrustedPlatformModule.CcdTestlabMode = configpb.HardwareFeatures_PRESENT_UNKNOWN
+		} else if strings.Contains(string(out), `CCD_FLAG_TESTLAB_MODE=Y`) {
+			features.TrustedPlatformModule.CcdTestlabMode = configpb.HardwareFeatures_PRESENT
+		} else {
+			logging.Info(ctx, "CCD testlab mode not enabled")
+			features.TrustedPlatformModule.CcdTestlabMode = configpb.HardwareFeatures_NOT_PRESENT
 		}
 	}()
 

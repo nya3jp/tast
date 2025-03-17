@@ -713,6 +713,25 @@ func GSCRWKeyIDProd() Condition {
 	}
 }
 
+// GSCCCDTestlabEnabled returns a hardware dependency condition that is satisfied if
+// and only if the DUT has CCD testlab mode enabled.
+// NOTE: This should only be used in the faft-gsc pool. Do not use this outside of that pool.
+func GSCCCDTestlabEnabled() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("GSCCCDTestlabEnabled: Did not find hardware features")
+		}
+		if status := hf.GetTrustedPlatformModule().GetCcdTestlabMode(); status == configpb.HardwareFeatures_PRESENT {
+			return satisfied()
+		} else if status == configpb.HardwareFeatures_PRESENT_UNKNOWN {
+			return unsatisfied("Could not determine if CCD testlab mode is enabled")
+		}
+		return unsatisfied("GSC CCD testlab mode is enabled")
+	},
+	}
+}
+
 // HasNoTpm returns a hardware dependency condition that is satisfied if and only if the DUT
 // doesn't have an enabled TPM.
 func HasNoTpm() Condition {

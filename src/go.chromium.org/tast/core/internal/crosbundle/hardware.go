@@ -625,9 +625,9 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 		features.UsbC.Pdc = configpb.HardwareFeatures_PRESENT_UNKNOWN
 	} else {
 		// If the pd control uses a separate driver and not TCPM, it's a PDC
-		re := regexp.MustCompile("driver_name:")
+		re := regexp.MustCompile(`driver_name:[\s]*(\S+)\n`)
 		match := re.FindAllSubmatch(out, -1)
-		if match != nil {
+		if match != nil && string(match[0][1]) != "UNSUPPORTED" {
 			features.UsbC.Pdc = configpb.HardwareFeatures_PRESENT
 		} else {
 			features.UsbC.Pdc = configpb.HardwareFeatures_NOT_PRESENT

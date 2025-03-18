@@ -345,7 +345,7 @@ func (p *preprocessor) createOutDir(e *protocol.Entity) (string, error) {
 	const (
 		testLogsDir    = "tests"
 		fixtureLogsDir = "fixtures"
-		maxAttempts    = 20
+		maxAttempts    = 200
 	)
 
 	dirName := testLogsDir

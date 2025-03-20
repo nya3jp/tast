@@ -14,14 +14,15 @@ import (
 )
 
 const (
-	biosTestWithoutLevelMsg   = `All "firmware_bios" tests should also include a "firmware_level" attr.`
-	biosTestMultipleLevelsMsg = `Only one "firmware_level" attr can be used on a test.`
-	nonBiosRequirementMsg     = `No tests may include the requirements "sys-fw-0021-v01" and "sys-fw-0024-v01".`
-	nonBiosRWRequirementMsg   = `No tests may include the requirement "sys-fw-0025-v01".`
-	biosTestInvalidAttrsMsg   = `The attrs "firmware_level*" and "firmware_ro" can only be used with "firmware_bios".`
-	nonECRequirementMsg       = `No tests may include the requirement "sys-fw-0022-v02".`
-	pdRequirementIndirectMsg  = `No tests may include the requirement "sys-fw-0023-v01".`
-	missingGateAttr           = `Tests for %[1]q must include %[2]q also.`
+	biosTestWithoutLevelMsg     = `All "firmware_bios" tests should also include a "firmware_level" attr.`
+	biosTestMultipleLevelsMsg   = `Only one "firmware_level" attr can be used on a test.`
+	nonBiosRequirementMsg       = `No tests may include the requirements "sys-fw-0021-v01" and "sys-fw-0024-v01".`
+	nonBiosRWRequirementMsg     = `No tests may include the requirement "sys-fw-0025-v01".`
+	biosTestInvalidAttrsMsg     = `The attrs "firmware_level*" and "firmware_ro" can only be used with "firmware_bios".`
+	nonECRequirementMsg         = `No tests may include the requirement "sys-fw-0022-v02".`
+	pdRequirementIndirectMsg    = `No tests may include the requirement "sys-fw-0023-v01".`
+	missingGateAttr             = `Tests for %[1]q must include %[2]q also.`
+	gateAttrWithoutRequiredAttr = `Tests that use %[1]q must also include one of firmware_{ec,bios,pd}.`
 )
 
 // VerifyFirmwareAttrs checks that "group:firmware" related attributes are set correctly.
@@ -96,14 +97,32 @@ func firmwareECAttrsChecker(attrs []string, attrPos token.Position, requirements
 		})
 	}
 	// These are ordered from earliest gate -> latest gate.
-	phaseGates := []string{"firmware_ec_enabled", "firmware_ec_meets_kpi", "firmware_ec_stressed"}
+	phaseGates := []string{"firmware_enabled", "firmware_meets_kpi", "firmware_stressed"}
+	// Any use of phase gate attrs must also include one of these
+	requiredAttrs := []string{"firmware_ec", "firmware_bios", "firmware_pd"}
 	for i := 0; i < len(phaseGates)-1; i++ {
-		if slices.Contains(attrs, phaseGates[i]) && !slices.Contains(attrs, phaseGates[i+1]) {
-			issues = append(issues, &Issue{
-				Pos:  attrPos,
-				Msg:  fmt.Sprintf(missingGateAttr, phaseGates[i], phaseGates[i+1]),
-				Link: testAttrDocURL,
-			})
+		if slices.Contains(attrs, phaseGates[i]) {
+			if !slices.Contains(attrs, phaseGates[i+1]) {
+				issues = append(issues, &Issue{
+					Pos:  attrPos,
+					Msg:  fmt.Sprintf(missingGateAttr, phaseGates[i], phaseGates[i+1]),
+					Link: testAttrDocURL,
+				})
+			}
+			hasReq := false
+			for _, req := range requiredAttrs {
+				if slices.Contains(attrs, req) {
+					hasReq = true
+					break
+				}
+			}
+			if !hasReq {
+				issues = append(issues, &Issue{
+					Pos:  attrPos,
+					Msg:  fmt.Sprintf(gateAttrWithoutRequiredAttr, phaseGates[i]),
+					Link: testAttrDocURL,
+				})
+			}
 		}
 	}
 

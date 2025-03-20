@@ -721,10 +721,6 @@ Tests in this group are not used for build verification.
 				Desc: `A group of tests that test the AP firmware.`,
 			},
 			{
-				Name: "firmware_ccd",
-				Desc: `Indicates a test which requires a servo with CCD. I.e. A servo_v4 or equivalent.`,
-			},
-			{
 				Name: "firmware_cr50",
 				Desc: `Indicates that this is a test of the Google Security Chip firmware (Cr50).`,
 			},
@@ -761,20 +757,12 @@ Tests in this group are not used for build verification.
 				Desc: `Firmware PD tests that are not stabilized, but won't break DUTs.`,
 			},
 			{
-				Name: "firmware_slow",
-				Desc: `A group of tests that takes a very long time to run.`,
-			},
-			{
 				Name: "firmware_smoke",
 				Desc: `A group of tests that exercise the basic firmware testing libraries.`,
 			},
 			{
 				Name: "firmware_unstable",
 				Desc: `Firmware tests that are not yet stabilized, but won't break DUTs.`,
-			},
-			{
-				Name: "firmware_usb",
-				Desc: `Indicates a test which requires a working USB stick attached to the servo.`,
 			},
 			{
 				Name: "firmware_bringup",
@@ -815,10 +803,6 @@ Tests in this group are not used for build verification.
 			{
 				Name: "firmware_ro",
 				Desc: `Firmware tests which should only be run during an RO/RW qual, but not during a RW only qual.`,
-			},
-			{
-				Name: "firmware_servo_micro",
-				Desc: `Firmware tests which require a servo with servo_micro.`,
 			},
 		},
 	},

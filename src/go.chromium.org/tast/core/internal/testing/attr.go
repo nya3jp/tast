@@ -730,7 +730,7 @@ Tests in this group are not used for build verification.
 			},
 			{
 				Name: "firmware_ec",
-				Desc: `A group of tests that test the EC firmware. Equivalent to autotest suite:faft_ec & suite:faft_ec_fw_qual.`,
+				Desc: `A group of tests that test the EC firmware.`,
 			},
 			{
 				Name: "firmware_ec_enabled",
@@ -750,7 +750,7 @@ Tests in this group are not used for build verification.
 			},
 			{
 				Name: "firmware_pd",
-				Desc: `A group of tests that test USB-C Power Delivery. Equivalent to autotest suite:faft_pd.`,
+				Desc: `A group of tests that test USB-C Power Delivery.`,
 			},
 			{
 				Name: "firmware_pd_unstable",

@@ -3004,6 +3004,9 @@ func HasPDCChip() Condition {
 		if hf.GetUsbC().GetPdc() == configpb.HardwareFeatures_PRESENT {
 			return satisfied()
 		}
+		if hf.GetUsbC().GetPdc() == configpb.HardwareFeatures_PRESENT_UNKNOWN {
+			return withErrorStr("Could not retrieve PDC information")
+		}
 		return unsatisfied("Did not find PDC")
 	},
 	}
@@ -3015,6 +3018,9 @@ func HasNoPDCChip() Condition {
 		hf := f.GetHardwareFeatures()
 		if hf.GetUsbC().GetPdc() == configpb.HardwareFeatures_NOT_PRESENT {
 			return satisfied()
+		}
+		if hf.GetUsbC().GetPdc() == configpb.HardwareFeatures_PRESENT_UNKNOWN {
+			return withErrorStr("Could not retrieve PDC information")
 		}
 		return unsatisfied("found PDC")
 	},

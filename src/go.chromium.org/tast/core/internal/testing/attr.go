@@ -769,6 +769,26 @@ Tests in this group are not used for build verification.
 				Desc: `Indicates a test is safe to run on a board that doesn't boot to AP. Pass --var noSSH=true also.`,
 			},
 			{
+				Name: "firmware_bios_ro",
+				Desc: `Tests that should be run for a firmware qual of AP RO firmware.`,
+			},
+			{
+				Name: "firmware_bios_rw",
+				Desc: `Tests that should be run for a firmware qual of AP RW firmware.`,
+			},
+			{
+				Name: "firmware_bios_pdc",
+				Desc: `Tests that should be run for a firmware qual of AP RW firmware which includes a new PDC firmware.`,
+			},
+			{
+				Name: "firmware_ec_ro",
+				Desc: `Tests that should be run for a firmware qual of EC RO firmware.`,
+			},
+			{
+				Name: "firmware_ec_rw",
+				Desc: `Tests that should be run for a firmware qual of EC RW firmware.`,
+			},
+			{
 				Name: "firmware_level1",
 				Desc: `A subset of firmware_bios that is expected to pass before the AP firmware is finished.`,
 			},
@@ -798,7 +818,7 @@ Tests in this group are not used for build verification.
 			},
 			{
 				Name: "firmware_ro",
-				Desc: `Firmware tests which should only be run during an RO/RW qual, but not during a RW only qual.`,
+				Desc: `Do not use, please use firmware_bios_ro instead.`,
 			},
 		},
 	},

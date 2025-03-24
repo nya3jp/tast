@@ -32,6 +32,21 @@ func parse(code, filename string) (*ast.File, *token.FileSet) {
 	return f, fs
 }
 
+func verifyIssuesWithIndex(t *testing.T, tcIndex int, issues []*Issue, want []string) {
+	t.Helper()
+
+	SortIssues(issues)
+
+	got := make([]string, len(issues))
+	for i, issue := range issues {
+		got[i] = issue.String()
+	}
+
+	if diff := cmp.Diff(got, want, cmpopts.EquateEmpty()); diff != "" {
+		t.Errorf("[%d]Issues mismatch (-got +want):\n%s", tcIndex, diff)
+	}
+}
+
 func verifyIssues(t *testing.T, issues []*Issue, want []string) {
 	t.Helper()
 

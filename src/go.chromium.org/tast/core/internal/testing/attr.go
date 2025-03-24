@@ -789,26 +789,6 @@ Tests in this group are not used for build verification.
 				Desc: `Tests that should be run for a firmware qual of EC RW firmware.`,
 			},
 			{
-				Name: "firmware_level1",
-				Desc: `A subset of firmware_bios that is expected to pass before the AP firmware is finished.`,
-			},
-			{
-				Name: "firmware_level2",
-				Desc: `A subset of firmware_bios that is expected to pass after firmware_level1.`,
-			},
-			{
-				Name: "firmware_level3",
-				Desc: `A subset of firmware_bios that is expected to pass after firmware_level2.`,
-			},
-			{
-				Name: "firmware_level4",
-				Desc: `A subset of firmware_bios that is expected to pass after firmware_level3.`,
-			},
-			{
-				Name: "firmware_level5",
-				Desc: `A subset of firmware_bios that is expected to pass after firmware_level4.`,
-			},
-			{
 				Name: "firmware_trial",
 				Desc: `Firmware tests that might leave the DUT in a state that will require flashing the AP/EC.`,
 			},

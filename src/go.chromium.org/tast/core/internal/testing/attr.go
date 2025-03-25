@@ -2262,7 +2262,11 @@ from other existing groups (or use this group standalone).
 		Contacts: []string{"kamilszarek@google.com", "chromeos-ent-test@google.com"},
 		Desc:     `A group of VDI tests that should use run on selected devices to limit load on the infrastructure.`,
 	},
-
+	{
+		Name:     "vm_tier",
+		Contacts: []string{"mohamedaomar@google.com", "chromeos-ent-test@google.com"},
+		Desc:     `Suite will run assigned tests on VM only. More info go/cros-duop:proposal`,
+	},
 	{
 		Name:     "golden_tier",
 		Contacts: []string{"kamilszarek@google.com", "chromeos-ent-test@google.com"},

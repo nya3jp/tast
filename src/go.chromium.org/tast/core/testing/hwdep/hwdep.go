@@ -3312,6 +3312,7 @@ var intelUarchTable = map[string]string{
 	"06_AA": "Meteor Lake",
 	"06_BA": "Raptor Lake",
 	"06_BE": "Alder Lake",
+	"06_CC": "Panther Lake",
 	"0F_03": "Prescott",
 	"0F_04": "Prescott",
 	"0F_06": "Presler",
@@ -3345,6 +3346,7 @@ const (
 	AlderLake
 	RaptorLake
 	MeteorLake
+	PantherLake
 )
 
 // intelBigcoreToOrderMap contains the intel bigcore orders.
@@ -3372,6 +3374,7 @@ var intelBigcoreToOrderMap = map[string]IntelBigCoreOrder{
 	"Alder Lake":   AlderLake,
 	"Raptor Lake":  RaptorLake,
 	"Meteor Lake":  MeteorLake,
+	"Panther Lake": PantherLake,
 }
 
 // IntelAtomOrder is a int representing the intel atom order.

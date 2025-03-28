@@ -3423,13 +3423,13 @@ func IsIntelUarchOlderThan(intelUarchs IntelUarchs) Condition {
 		}
 		if intelBigcoreToOrderMap[currCPUUarchName] != 0 && len(intelUarchs.IntelBigCoreOrderList) != 0 {
 			for _, intelBigCore := range intelUarchs.IntelBigCoreOrderList {
-				if intelBigCore != 0 && intelBigCore > intelBigcoreToOrderMap[currCPUUarchName] {
+				if intelBigCore >= intelBigcoreToOrderMap[currCPUUarchName] {
 					return satisfied()
 				}
 			}
 		} else if intelAtomToOrderMap[currCPUUarchName] != 0 && len(intelUarchs.IntelAtomOrderList) != 0 {
 			for _, intelAtom := range intelUarchs.IntelAtomOrderList {
-				if intelAtom != 0 && intelAtom > intelAtomToOrderMap[currCPUUarchName] {
+				if intelAtom >= intelAtomToOrderMap[currCPUUarchName] {
 					return satisfied()
 				}
 			}
@@ -3460,13 +3460,13 @@ func IsIntelUarchEqualOrNewerThan(intelUarchs IntelUarchs) Condition {
 		}
 		if intelBigcoreToOrderMap[currCPUUarchName] != 0 && len(intelUarchs.IntelBigCoreOrderList) != 0 {
 			for _, intelBigCore := range intelUarchs.IntelBigCoreOrderList {
-				if intelBigCore != 0 && intelBigCore <= intelBigcoreToOrderMap[currCPUUarchName] {
+				if intelBigCore <= intelBigcoreToOrderMap[currCPUUarchName] {
 					return satisfied()
 				}
 			}
 		} else if intelAtomToOrderMap[currCPUUarchName] != 0 && len(intelUarchs.IntelAtomOrderList) != 0 {
 			for _, intelAtom := range intelUarchs.IntelAtomOrderList {
-				if intelAtom != 0 && intelAtom <= intelAtomToOrderMap[currCPUUarchName] {
+				if intelAtom <= intelAtomToOrderMap[currCPUUarchName] {
 					return satisfied()
 				}
 			}

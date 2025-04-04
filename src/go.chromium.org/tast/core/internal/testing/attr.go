@@ -156,11 +156,6 @@ Tests in this group are not used for build verification.
 		},
 	},
 	{
-		Name:     "flex_arcvm",
-		Contacts: []string{"chromeos-flex-eng@google.com"},
-		Desc:     `A group of ARCVM tests belonging to the ChromeOS Flex team.`,
-	},
-	{
 		Name:     "graphics",
 		Contacts: []string{"chromeos-gfx@google.com", "chromeos-gfx-video@google.com"},
 		Desc: `The group of graphics tests to be run regularly by the graphics team.

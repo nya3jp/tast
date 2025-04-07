@@ -88,6 +88,7 @@ message DeprecatedDeviceConfig {
     SOC_PHOENIX = 42;
     SOC_METEOR_LAKE = 43;
     SOC_MT8196 = 44;
+    SOC_MT8189 = 45;
   }
   SOC soc = 2;
 

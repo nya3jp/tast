@@ -125,6 +125,7 @@ var (
 		"domiso_fm101":       {"domiso_fm101", "nissa", ModemTypeFM101},
 		"gallida360_rw101":   {"gallida360_rw101", "nissa", ModemTypeRW101},
 		"gothrax_fm101":      {"gothrax_fm101", "nissa", ModemTypeFM101},
+		"guren_rw101":        {"guren_rw101", "nissa", ModemTypeRW101},
 		"nivviks_fm101":      {"nivviks_fm101", "nissa", ModemTypeFM101},
 		"pujjo_fm101":        {"pujjo_fm101", "nissa", ModemTypeFM101},
 		"pujjo_em060":        {"pujjo_em060", "nissa", ModemTypeEM060},

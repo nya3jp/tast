@@ -87,6 +87,10 @@ type RunOption = exec.RunOption
 // (i.e., exited with non-zero status code).
 const DumpLogOnError = exec.DumpLogOnError
 
+// ExitMissingError (RFC4254 section-6.10): SSH session closed or broken prematurely,
+// before a proper response was received.
+type ExitMissingError = ssh.ExitMissingError
+
 // genericSession is the methods in the ssh.Session object that we actually use.
 type genericSession interface {
 	Close() error

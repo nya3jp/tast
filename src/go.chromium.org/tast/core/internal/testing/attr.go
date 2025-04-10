@@ -526,6 +526,28 @@ Tests in this group are not used for build verification.
 		Name:     "arcappmediaperf",
 		Contacts: []string{"chromeos-dev-engprod@google.com"},
 		Desc:     `A group of tests that run ARC++ Media performance tests.`,
+		Subattrs: []*attr{
+			{
+				Name: "arcappmediaperf_0",
+				Desc: `Group 0 of ARC++ Media performance tests.`,
+			},
+			{
+				Name: "arcappmediaperf_1",
+				Desc: `Group 1 of ARC++ Media performance tests.`,
+			},
+			{
+				Name: "arcappmediaperf_2",
+				Desc: `Group 2 of ARC++ Media performance tests.`,
+			},
+			{
+				Name: "arcappmediaperf_3",
+				Desc: `Group 3 of ARC++ Media performance tests.`,
+			},
+			{
+				Name: "arcappmediaperf_4",
+				Desc: `Group 4 of ARC++ Media performance tests.`,
+			},
+		},
 	},
 	{
 		Name:     "arc-data-snapshot",

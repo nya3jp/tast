@@ -1274,6 +1274,10 @@ installed.
 				Desc: `Identifies Cellular tests that need an active CBRS sim.`,
 			},
 			{
+				Name: "cellular_carrier_ahamo",
+				Desc: `Identifies Cellular tests that need an active AHAMO sim.`,
+			},
+			{
 				Name: "cellular_carrier_linemo",
 				Desc: `Identifies Cellular tests that need an active LINEMO sim.`,
 			},

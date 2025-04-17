@@ -3576,3 +3576,20 @@ func MKBPEvent() Condition {
 		return unsatisfied("DUT does not support MKBP event")
 	}}
 }
+
+// TypecStatus is satisfied if the DUT supports the host command EC_CMD_TYPEC_STATUS.
+func TypecStatus() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("TypecStatus: HardwareFeatures is not given")
+		}
+		rwMajorVersion := hf.GetFwConfig().GetFwRwVersion().MajorVersion
+		// CL:2432452 laned in 13513.0.0
+		if rwMajorVersion >= 13513 {
+			return satisfied()
+		}
+
+		return unsatisfied("DUT does not support type-c status discovery")
+	}}
+}

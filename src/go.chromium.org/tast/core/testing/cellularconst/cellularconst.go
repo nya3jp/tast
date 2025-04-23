@@ -29,6 +29,7 @@ const (
 	ModemTypeLCUK54
 	ModemTypeRW101
 	ModemTypeRW135
+	ModemTypeRW350
 )
 
 func (e ModemType) String() string {
@@ -53,6 +54,8 @@ func (e ModemType) String() string {
 		return "RW101"
 	case ModemTypeRW135:
 		return "RW135"
+	case ModemTypeRW350:
+		return "RW350"
 	default:
 		return fmt.Sprintf("%d", int(e))
 	}
@@ -143,6 +146,7 @@ var (
 		"quandiso_fm101":     {"quandiso_fm101", "nissa", ModemTypeFM101},
 		"quandiso360_fm101":  {"quandiso360_fm101", "nissa", ModemTypeFM101},
 		"uldren_fm101":       {"uldren_fm101", "nissa", ModemTypeFM101},
+		"uldrenite_rw350":    {"uldrenite_rw350", "nissa", ModemTypeRW350},
 		"yavijo_fm101":       {"yavijo_fm101", "nissa", ModemTypeFM101},
 		"yavilla_fm101":      {"yavilla_fm101", "nissa", ModemTypeFM101},
 		"yavilly_fm101":      {"yavilly_fm101", "nissa", ModemTypeFM101},

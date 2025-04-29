@@ -3258,6 +3258,25 @@ func MiniDiag() Condition {
 	}}
 }
 
+// DevRecEventlog returns a hardware dependency condition that is satisfied if and
+// only if the DUT writes an event log entry for recovery reason in dev mode.
+func DevRecEventlog() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		hf := f.GetHardwareFeatures()
+		if hf == nil {
+			return withErrorStr("DevRecEventlog: HardwareFeatures is not given")
+		}
+		roMajorVersion := hf.GetFwConfig().GetFwRoVersion().GetMajorVersion()
+		/*
+			RO: CL:364021 landed in 8650.0.0
+		*/
+		if roMajorVersion >= 8650 {
+			return satisfied()
+		}
+		return unsatisfied("DUT does not support recovery reason event logs in dev")
+	}}
+}
+
 // intelUarchTable contains intel uarch names.
 var intelUarchTable = map[string]string{
 	"06_0D": "Dothan",

@@ -2218,7 +2218,7 @@ func SupportsCrosCodecs() Condition {
 		if dc == nil {
 			return withErrorStr("SupportsCrosCodecs: DeprecatedDeviceConfig is not given")
 		}
-		if dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_MT8186 || dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_ALDER_LAKE {
+		if dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_MT8186 || dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_ALDER_LAKE || dc.GetSoc() == protocol.DeprecatedDeviceConfig_SOC_MT8196 {
 			return satisfied()
 		}
 		return unsatisfied("SoC is not currently supported by cros-codecs")

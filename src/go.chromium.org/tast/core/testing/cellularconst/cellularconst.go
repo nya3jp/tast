@@ -138,6 +138,8 @@ var (
 		"pujjogatwin_em060":  {"pujjogatwin_em060", "nissa", ModemTypeEM060},
 		"pujjoteen5_fm350":   {"pujjoteen5_fm350", "nissa", ModemTypeFM350},
 		"epic_rw101":         {"epic_rw101", "nissa", ModemTypeRW101},
+		"pujjocento_rw101":   {"pujjocento_rw101", "nissa", ModemTypeRW101},
+		"pujjolo_rw101":      {"pujjolo_rw101", "nissa", ModemTypeRW101},
 		"riven_rw101":        {"riven_rw101", "nissa", ModemTypeRW101},
 		"rudriks_rw101":      {"rudriks_rw101", "nissa", ModemTypeRW101},
 		"rynax_rw101":        {"rynax_rw101", "nissa", ModemTypeRW101},

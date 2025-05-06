@@ -311,8 +311,8 @@ exit 1
 	}
 	out, _ := io.ReadAll(res.Body)
 	res.Body.Close()
-	if res.StatusCode != http.StatusInternalServerError {
-		t.Fatalf("GET %s returned %d; want %d", url, res.StatusCode, http.StatusInternalServerError)
+	if res.StatusCode != http.StatusNotFound {
+		t.Fatalf("GET %s returned %d; want %d", url, res.StatusCode, http.StatusNotFound)
 	} else if msg := "file not found"; !strings.Contains(string(out), msg) {
 		t.Fatalf("GET %s returned %q; should contain %q", url, out, msg)
 	}

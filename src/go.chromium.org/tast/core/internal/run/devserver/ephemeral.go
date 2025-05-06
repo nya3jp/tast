@@ -115,6 +115,7 @@ func (e *Ephemeral) handleIsStaged(w http.ResponseWriter, r *http.Request) {
 }
 
 // handleStage serves requests to stage (i.e. download and cache) a file.
+// In a real cache server, /stage is actually a no-op.
 func (e *Ephemeral) handleStage(w http.ResponseWriter, r *http.Request) {
 	if err := func() error {
 		q := r.URL.Query()
@@ -148,7 +149,10 @@ func (e *Ephemeral) handleStage(w http.ResponseWriter, r *http.Request) {
 		out, err := cmd.CombinedOutput()
 		if err != nil {
 			if strings.Contains(string(out), "No URLs matched") {
-				return fmt.Errorf("file not found: %s", gsURL)
+				w.Header().Add("Content-Type", "text/html")
+				w.WriteHeader(http.StatusNotFound)
+				fmt.Fprintf(w, "<pre>\n%s\n</pre>", html.EscapeString(fmt.Sprintf("file not found: %s", gsURL)))
+				return nil
 			}
 			return fmt.Errorf("%s failed: %v %s", strings.Join(cmd.Args, " "), err, string(out))
 		}
@@ -185,6 +189,15 @@ func (e *Ephemeral) handleExtract(w http.ResponseWriter, r *http.Request) {
 		// If the file exists, redirect to it.
 		if _, err := os.Stat(extractedFile); err == nil {
 			http.Redirect(w, r, fmt.Sprintf("/static/%s", relPath), http.StatusTemporaryRedirect)
+			return nil
+		} else if !os.IsNotExist(err) {
+			return err
+		}
+		// If the extracted dir exists, then the file isn't in the archive.
+		if _, err := os.Stat(archiveFiles); err == nil {
+			w.Header().Add("Content-Type", "text/html")
+			w.WriteHeader(http.StatusNotFound)
+			fmt.Fprintf(w, "<pre>\n%s\n</pre>", html.EscapeString(fmt.Sprintf("file %q not found in %q", extractFile, archiveFiles)))
 			return nil
 		} else if !os.IsNotExist(err) {
 			return err
@@ -231,16 +244,17 @@ func defaultAllowedBuckets() map[string]struct{} {
 		"chromeos-image-archive":              {},
 		"chromeos-moblab-intel":               {},
 		"chromeos-releases":                   {},
-		"chromeos-test-assets-private":        {},
 		"chromeos-test-assets-partner-shared": {},
+		"chromeos-test-assets-private":        {},
 		"chromiumos-test-assets-public":       {},
 		"cros-containers-staging":             {},
 		"crosvideo":                           {},
+		"firmware-image-archive":              {},
 		"perfetto":                            {},
-		"refvm-images":                        {},
-		"termina-component-testing":           {},
 		"pstash_apks":                         {},
+		"refvm-images":                        {},
 		"sw-perf-meet-experiments":            {},
+		"termina-component-testing":           {},
 	}
 }
 
@@ -255,7 +269,7 @@ func (e *Ephemeral) validateGSURL(gsURL string) (path string, err error) {
 		return "", fmt.Errorf("%q is not a gs:// URL", gsURL)
 	}
 	if _, ok := e.allowedBuckets[p.Host]; !ok {
-		return "", fmt.Errorf("%q doesn't use an allowed bucket", gsURL)
+		return "", fmt.Errorf("%q doesn't use an allowed bucket (%s)", gsURL, p.Host)
 	}
 	if filepath.Clean(p.Path) != p.Path {
 		return "", fmt.Errorf("%q isn't a clean URL", gsURL)

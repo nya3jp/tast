@@ -162,6 +162,7 @@ var (
 		"arcada":             {"arcada", "sarien", ModemTypeL850},
 		"sarien":             {"sarien", "sarien", ModemTypeL850},
 		"starmie_fm101":      {"starmie_fm101", "staryu", ModemTypeFM101},
+		"starmie_rw101":      {"starmie_rw101", "staryu", ModemTypeRW101},
 		"wugtrio_rw101":      {"wugtrio_rw101", "staryu", ModemTypeRW101},
 		"wyrdeer_rw101":      {"wyrdeer_rw101", "staryu", ModemTypeRW101},
 		"coachz":             {"coachz", "strongbad", ModemTypeSC7180},

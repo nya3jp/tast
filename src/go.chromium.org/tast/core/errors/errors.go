@@ -46,6 +46,9 @@ import (
 	"strings"
 
 	"go.chromium.org/tast/core/errors/stack"
+	"google.golang.org/genproto/googleapis/rpc/errdetails"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 // E is the error implementation used by this package.
@@ -96,11 +99,21 @@ func formatChain(err error) string {
 			chain = append(chain, fmt.Sprintf("%s\n%v", msg, stk))
 			err = cause
 		} else {
-			chain = append(chain, fmt.Sprintf("%s\n\tat ???", err.Error()))
+			chain = append(chain, fmt.Sprintf("%+v", err))
 			err = nil
 		}
 	}
 	return strings.Join(chain, "\n")
+}
+
+// GRPCStatus converts the receiver into a grpc Status object.
+func (e *E) GRPCStatus() *status.Status {
+	s := status.New(codes.Unknown, e.Error())
+	s, newErr := s.WithDetails(&errdetails.DebugInfo{Detail: fmt.Sprintf("%+v", e)})
+	if newErr != nil {
+		panic(fmt.Sprintf("withDetails failed: %v", newErr))
+	}
+	return s
 }
 
 // Format implements the fmt.Formatter interface.
@@ -111,6 +124,43 @@ func (e *E) Format(s fmt.State, verb rune) {
 	} else {
 		io.WriteString(s, e.Error())
 	}
+}
+
+// statusE is the an error with a status and detailed stacktrace.
+type statusE struct {
+	error
+}
+
+// FromGRPCError converts an error that came from a grpc call into a error with a stack trace.
+func FromGRPCError(err error) error {
+	if err == nil {
+		return nil
+	}
+	_, ok := status.FromError(err)
+	if ok {
+		return &statusE{err}
+	}
+	return err
+}
+
+// Format implements the fmt.Formatter interface.
+// Writes the detailed debug info (i.e. stack trace).
+func (e *statusE) Format(s fmt.State, verb rune) {
+	if verb == 'v' && s.Flag('+') {
+		status, ok := status.FromError(e.error)
+		if ok {
+			details := status.Details()
+			for _, detail := range details {
+				if di, ok := detail.(*errdetails.DebugInfo); ok {
+					if di.Detail != "" {
+						io.WriteString(s, di.Detail)
+						return
+					}
+				}
+			}
+		}
+	}
+	io.WriteString(s, e.error.Error())
 }
 
 // New creates a new error with the given message.

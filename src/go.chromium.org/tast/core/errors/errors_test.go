@@ -63,8 +63,7 @@ func TestWrapForeignError(t *testing.T) {
 	traceRegexp := regexp.MustCompile(`(?s)^meow
 	at go.chromium.org/tast/core/errors_test\.TestWrapForeignError \(errors_test.go:\d+\)
 .*
-woof
-	at \?\?\?$`)
+woof$`)
 
 	// Use standard errors package to create an error without trace.
 	err := errors.Wrap(stderrors.New("woof"), "meow")

@@ -29,6 +29,7 @@ import (
 	"go.chromium.org/tast/core/internal/testcontext"
 	"go.chromium.org/tast/core/internal/testing"
 	"go.chromium.org/tast/core/internal/timing"
+	"google.golang.org/genproto/googleapis/rpc/errdetails"
 )
 
 // MaxMessageSize is used to tell Tast's GRPC servers and clients the maximum size of messages.
@@ -286,10 +287,14 @@ func serverOpts(ls *remoteLoggingServer, logger logging.Logger, calls *sync.Wait
 		grpc.UnaryInterceptor(func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (res interface{}, err error) {
 			defer func() {
 				if r := recover(); r != nil {
-					err = status.Error(codes.Internal, fmt.Sprintf("panic: %v", r))
-					logging.Info(ctx, "GRPC panic stack trace:\n", string(debug.Stack()))
-				} else if err != nil {
-					logging.Infof(ctx, "GRPC error stack trace: %+v", err)
+					status := status.New(codes.Internal, fmt.Sprintf("panic: %v", r))
+					s, sErr := status.WithDetails(&errdetails.DebugInfo{Detail: fmt.Sprintf("panic: %v\n%v", r, string(debug.Stack()))})
+					if sErr != nil {
+						logging.Info(ctx, "Failed to add stack trace to panic: ", sErr)
+						err = status.Err()
+					} else {
+						err = s.Err()
+					}
 				}
 			}()
 			calls.Add(1)
@@ -306,10 +311,14 @@ func serverOpts(ls *remoteLoggingServer, logger logging.Logger, calls *sync.Wait
 		grpc.StreamInterceptor(func(srv interface{}, stream grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) (err error) {
 			defer func() {
 				if r := recover(); r != nil {
-					err = status.Error(codes.Internal, fmt.Sprintf("panic: %v", r))
-					logging.Info(stream.Context(), "GRPC panic Stack trace:\n", string(debug.Stack()))
-				} else if err != nil {
-					logging.Infof(stream.Context(), "GRPC error stack trace: %+v", err)
+					status := status.New(codes.Internal, fmt.Sprintf("panic: %v", r))
+					s, sErr := status.WithDetails(&errdetails.DebugInfo{Detail: fmt.Sprintf("panic: %v\n%v", r, string(debug.Stack()))})
+					if sErr != nil {
+						logging.Info(stream.Context(), "Failed to add stack trace to panic: ", sErr)
+						err = status.Err()
+					} else {
+						err = s.Err()
+					}
 				}
 			}()
 			calls.Add(1)

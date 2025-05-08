@@ -292,6 +292,7 @@ func clientOpts(lazyLog *lazyRemoteLoggingClient) []grpc.DialOption {
 			var trailer metadata.MD
 			opts = append([]grpc.CallOption{grpc.Trailer(&trailer)}, opts...)
 			retErr := invoker(ctx, method, req, reply, cc, opts...)
+			retErr = errors.FromGRPCError(retErr)
 			if err := after(trailer); err != nil && retErr == nil {
 				retErr = err
 			}
@@ -304,6 +305,7 @@ func clientOpts(lazyLog *lazyRemoteLoggingClient) []grpc.DialOption {
 				return nil, err
 			}
 			stream, err := streamer(ctx, desc, cc, method, opts...)
+			err = errors.FromGRPCError(err)
 			return &clientStreamWithAfter{ClientStream: stream, after: after}, err
 		}),
 		grpc.WithDefaultCallOptions(
@@ -387,14 +389,14 @@ func (s *clientStreamWithAfter) RecvMsg(m interface{}) error {
 	}
 
 	if s.done {
-		return retErr
+		return errors.FromGRPCError(retErr)
 	}
 	s.done = true
 
 	if err := s.after(s.Trailer()); err != nil && retErr == io.EOF {
 		retErr = err
 	}
-	return retErr
+	return errors.FromGRPCError(retErr)
 }
 
 // lazyRemoteLoggingClient wraps remoteLoggingClient for lazy initialization.

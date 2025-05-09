@@ -59,3 +59,8 @@ func checkVarName(funcName, name string) bool {
 	base := pkg[strings.LastIndex(pkg, "/")+1:]
 	return strings.HasPrefix(name, base+".")
 }
+
+// InitializeVarsForUnitTest sets global vars for a unit test. Do not use outside of unit tests.
+func InitializeVarsForUnitTest(values map[string]string) error {
+	return testing.GlobalRegistry().InitializeVars(values)
+}

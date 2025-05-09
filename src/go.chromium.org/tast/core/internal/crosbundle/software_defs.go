@@ -137,7 +137,7 @@ var softwareFeatureDefs = map[string]string{
 	"gsc_can_wake_ec_with_reset": `!("board:grunt" || "board:nami")`,
 	"hammerd":                    "hammerd",
 	"hana":                       "hana",
-	"has_recovery_mrc_cache":     `!("board:asurada*" || "board:cherry*" || "board:corsola*" || "board:elm*" || "board:geralt*" || "board:grunt*" || "board:guybrush*" || "board:hana*" || "board:jacuzzi*" || "board:kukui*" || "board:rauru" || "board:staryu*" || "board:zork*")`,
+	"has_recovery_mrc_cache":     `!("board:asurada*" || "board:cherry*" || "board:corsola*" || "board:elm*" || "board:geralt*" || "board:grunt*" || "board:guybrush*" || "board:hana*" || "board:jacuzzi*" || "board:kukui*" || "board:rauru" || "board:skywalker*" || "board:staryu*" || "board:zork*")`,
 	"hotspot":                    `!("board:*-kernelnext")`,
 	"hostap_hwsim":               "wifi_hostap_test",
 	"houdini":                    "houdini",

@@ -312,6 +312,14 @@ func StartServo(parentCtx context.Context, servoHostPort, keyFile, keyDir string
 		} else if serial := dutTopology.GetDevboard().GetServo().GetSerial(); serial != "" {
 			args = append(args, fmt.Sprintf("SERIAL=%s", serial))
 		}
+		if pools := dutTopology.GetPools(); len(pools) > 0 {
+			for _, p := range pools {
+				if strings.Contains(p, "faft-cr50") {
+					args = append(args, "CONFIG=cr50.xml")
+					break
+				}
+			}
+		}
 		if out, err := hst.CommandContext(ctx, "start", args...).CombinedOutput(); err != nil {
 			// Don't return error so that we can log servod logs later.
 			logging.Infof(ctx, "failed to start servod: %s: %v", string(out), err)

@@ -2660,6 +2660,11 @@ from other existing groups (or use this group standalone).
 		Contacts: []string{"chromeos-fwupd@google.com", "rishabhagr@google.com"},
 		Desc:     "A group of fwupd related tests to run on builders",
 	},
+	{
+		Name:     "demo-mode",
+		Contacts: []string{"cros-demo-mode-eng@google.com", "wanghaifan@google.com"},
+		Desc:     "A group of demo mode related tests to run on builders",
+	},
 }
 
 // validGroupMap is the name-keyed map of validGroups.

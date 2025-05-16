@@ -274,6 +274,9 @@ func TestCheckKnownAttrs(t *testing.T) {
 		{
 			attrs: []string{"group:fwupd"},
 		},
+		{
+			attrs: []string{"group:demo-mode"},
+		},
 
 		// Invalid cases.
 		{

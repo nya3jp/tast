@@ -1499,6 +1499,7 @@ func WifiSAP() Condition {
 		// TODO(b/283689711): Remove when support is added.
 		MediaTekMT7921PCIE,
 		MediaTekMT7921SDIO,
+		QualcommWCN6855,
 	)
 }
 
@@ -1512,6 +1513,7 @@ func WifiSAPHighBand() Condition {
 		// TODO(b/283689711): Remove when support is added.
 		MediaTekMT7921PCIE,
 		MediaTekMT7921SDIO,
+		QualcommWCN6855,
 	)
 }
 

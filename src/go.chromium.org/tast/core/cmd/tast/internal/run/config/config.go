@@ -600,7 +600,10 @@ func (c *MutableConfig) SetFlags(f *flag.FlagSet) {
 			if err != nil {
 				return errors.Wrapf(err, "failed to open lab config fiie %s", filename)
 			}
-			if err := protojson.Unmarshal(data, labConfig); err != nil {
+			unmarshaler := protojson.UnmarshalOptions{
+				DiscardUnknown: true,
+			}
+			if err := unmarshaler.Unmarshal(data, labConfig); err != nil {
 				return errors.Wrapf(err, "failed to unmarshal lab config fiie %s", filename)
 			}
 			c.DUTLabConfig = labConfig

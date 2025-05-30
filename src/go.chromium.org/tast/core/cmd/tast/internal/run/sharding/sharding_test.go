@@ -71,12 +71,22 @@ func TestComputeAlpha(t *gotesting.T) {
 			},
 		},
 		{
+			"uneven2",
+			makeTests("ABCDEFGHI"),
+			[]*sharding.Shard{
+				{Included: makeTests("ABC"), Excluded: makeTests("DEFGHI")},
+				{Included: makeTests("DE"), Excluded: makeTests("ABCFGHI")},
+				{Included: makeTests("FG"), Excluded: makeTests("ABCDEHI")},
+				{Included: makeTests("HI"), Excluded: makeTests("ABCDEFG")},
+			},
+		},
+		{
 			"skips",
 			makeTests("AxByCzD"),
 			[]*sharding.Shard{
 				{Included: makeTests("AxB"), Excluded: makeTests("yCzD")},
-				{Included: makeTests("yCz"), Excluded: makeTests("AxBD")},
-				{Included: makeTests("D"), Excluded: makeTests("AxByCz")},
+				{Included: makeTests("yC"), Excluded: makeTests("AxBzD")},
+				{Included: makeTests("zD"), Excluded: makeTests("AxByC")},
 			},
 		},
 		{

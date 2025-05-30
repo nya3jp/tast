@@ -25,34 +25,26 @@ type Shard struct {
 
 // ComputeAlpha computes a set of tests to include/exclude in the specified shard by lexiographic.
 func ComputeAlpha(tests []*driver.BundleEntity, shardIndex, totalShards int) *Shard {
-	var startIdx, endIdx, shardSpan int
+	shardSpan := len(tests) / totalShards
+	remaining := len(tests) % totalShards
 
-	if len(tests)%totalShards > 0 {
-		// If # of tests is not evenly divisible by totalShards, then
-		// shard span is rounded up.
-		// [Example] Tests: A,B,C,D,E,F,G  || totalShards=3 -> then shardSpan=3.
-		// Shard0=A,B,C; Shard1=D,E,F; Shard2=G
-		shardSpan = (len(tests) / totalShards) + 1
-	} else {
-		shardSpan = (len(tests) / totalShards)
-	}
-
-	startIdx = shardIndex * shardSpan
-	if shardIndex+1 == totalShards {
-		// This is the last index
-		endIdx = len(tests) - 1
-	} else {
-		endIdx = (shardIndex+1)*shardSpan - 1
+	// For remaining, we put 1 additional items from the beginning for
+	// the first remaining shards, rather than +1 for all shards.
+	// For example, if we have 9 tests: [A, B, C, D, E, F, G, H, I], and
+	// totalShards to 4. We should have 3 tests at first shard, and 2
+	// tests at all following 3 shards (3+2+2+2), instead of 3 tests at
+	// all shards (ends up with 3+3+3+0)
+	startIdx := shardIndex*shardSpan + min(shardIndex, remaining)
+	endIdx := startIdx + shardSpan
+	if shardIndex < remaining {
+		endIdx++
 	}
 
 	var includes, excludes []*driver.BundleEntity
-	for i, test := range tests {
-		if i >= startIdx && i <= endIdx {
-			includes = append(includes, test)
-		} else {
-			excludes = append(excludes, test)
-		}
-	}
+	includes = append(includes, tests[startIdx:endIdx]...)
+	excludes = append(
+		append(excludes, tests[:startIdx]...),
+		tests[endIdx:]...)
 
 	return &Shard{Included: includes, Excluded: excludes}
 }

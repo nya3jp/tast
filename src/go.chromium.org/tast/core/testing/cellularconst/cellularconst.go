@@ -150,6 +150,7 @@ var (
 		"teliks_rw101":       {"teliks_rw101", "nissa", ModemTypeRW101},
 		"quandiso_fm101":     {"quandiso_fm101", "nissa", ModemTypeFM101},
 		"quandiso360_fm101":  {"quandiso360_fm101", "nissa", ModemTypeFM101},
+		"quandiso_rw135":     {"quandiso_rw135", "nissa", ModemTypeRW135},
 		"uldren_fm101":       {"uldren_fm101", "nissa", ModemTypeFM101},
 		"uldrenite_rw350":    {"uldrenite_rw350", "nissa", ModemTypeRW350},
 		"yavijo_fm101":       {"yavijo_fm101", "nissa", ModemTypeFM101},

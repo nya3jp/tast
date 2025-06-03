@@ -510,15 +510,43 @@ Tests in this group are not used for build verification.
 		Subattrs: []*attr{
 			{
 				Name: "arcappgameperf_0",
-				Desc: `Group 0 of ARC++ Game performance tests.`,
+				Desc: `Group 0 of ARC++ Game performance tests running on the canary branch.`,
 			},
 			{
 				Name: "arcappgameperf_1",
-				Desc: `Group 1 of ARC++ Game performance tests.`,
+				Desc: `Group 1 of ARC++ Game performance tests running on the canary branch.`,
 			},
 			{
 				Name: "arcappgameperf_2",
-				Desc: `Group 2 of ARC++ Game performance tests.`,
+				Desc: `Group 2 of ARC++ Game performance tests running on the canary branch.`,
+			},
+			{
+				Name: "arcappgameperf_3",
+				Desc: `Group 3 of ARC++ Game performance tests running on the canary branch.`,
+			},
+			{
+				Name: "arcappgameperf_4",
+				Desc: `Group 4 of ARC++ Game performance tests running on the canary branch.`,
+			},
+			{
+				Name: "arcappgameperf_dev_0",
+				Desc: `Group 0 of ARC++ Game performance tests running on dev branch.`,
+			},
+			{
+				Name: "arcappgameperf_dev_1",
+				Desc: `Group 1 of ARC++ Game performance tests running on dev branch.`,
+			},
+			{
+				Name: "arcappgameperf_dev_2",
+				Desc: `Group 2 of ARC++ Game performance tests running on dev branch.`,
+			},
+			{
+				Name: "arcappgameperf_dev_3",
+				Desc: `Group 3 of ARC++ Game performance tests running on dev branch.`,
+			},
+			{
+				Name: "arcappgameperf_dev_4",
+				Desc: `Group 4 of ARC++ Game performance tests running on dev branch.`,
 			},
 		},
 	},

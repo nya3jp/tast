@@ -1040,6 +1040,16 @@ installed.
 		},
 	},
 	{
+		Name:     "wifi_standalone",
+		Contacts: []string{"chromeos-kernel-wifi@google.com"},
+		Desc:     `The group of WiFi tests to be run without any Wificell fixture.`,
+	},
+	{
+		Name:     "wificell_network_cellular",
+		Contacts: []string{"chromeos-connectivity-engprod@google.com"},
+		Desc:     `The group of Network & Cellular tests to be run with Wificell fixture.`,
+	},
+	{
 		Name:     "wificell_cross_device",
 		Contacts: []string{"chromeos-kernel-wifi@google.com"},
 		Desc:     `The group of WiFi tests running on multi-dut testbeds.`,

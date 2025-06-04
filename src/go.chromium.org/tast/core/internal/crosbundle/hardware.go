@@ -767,18 +767,32 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 			DynamicPowerReductionConfig: &configpb.HardwareFeatures_Cellular_DynamicPowerReductionConfig_ModemManager{ModemManager: swDynamicSar}}
 	}
 
-	// bluetoothctl hangs when bluetoothd is not built with asan enabled or
-	// crashes. Set state to PRESENT_UNKNOWN on timeout.
 	const timeout = 3 * time.Second
 	cmdCtx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
-	if out, err := exec.CommandContext(cmdCtx, "bluetoothctl", "list").Output(); err != nil {
+	cmdName := "dbus-send"
+	cmdArgs := []string{
+		"--print-reply",
+		"--system",
+		"--dest=org.chromium.bluetooth.Manager",
+		"/org/chromium/bluetooth/Manager",
+		"org.chromium.bluetooth.Manager.GetAvailableAdapters",
+	}
+	if out, err := exec.CommandContext(cmdCtx, cmdName, cmdArgs...).Output(); err != nil {
 		features.Bluetooth.Present = configpb.HardwareFeatures_PRESENT_UNKNOWN
-	} else if len(string(out)) != 0 {
-		features.Bluetooth.Present = configpb.HardwareFeatures_PRESENT
 	} else {
-		logging.Infof(ctx, "bluetooth controller not found")
-		features.Bluetooth.Present = configpb.HardwareFeatures_NOT_PRESENT
+		outStr := string(out)
+		func() {
+			lines := strings.Split(string(outStr), "\n")
+			for _, line := range lines {
+				if strings.Contains(line, "hci_interface") {
+					features.Bluetooth.Present = configpb.HardwareFeatures_PRESENT
+					return
+				}
+				logging.Infof(ctx, "bluetooth controller not found. GetAvailableAdapters output is %s", outStr)
+				features.Bluetooth.Present = configpb.HardwareFeatures_NOT_PRESENT
+			}
+		}()
 	}
 
 	readSysfsString := func(dev, relPath string) string {

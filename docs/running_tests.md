@@ -274,14 +274,14 @@ You should be able to see the first bot that fails and find a good and bad chrom
 via the BLAMELIST tab of the builder page.
 
 ### Example bisect.sh script
-This script assumes there is a local betty-pi-arc VM running and that tests are
+This script assumes there is a local betty VM running and that tests are
 run from a ChromeOS chroot.
 ```shell
 #!/bin/sh
 set -x
 gclient sync
-autoninja -C out_betty-pi-arc/Release chrome
-third_party/chromite/bin/deploy_chrome --board=betty-pi-arc --build-dir=out_betty-pi-arc/Release --device=ssh://localhost:9222 --verbose --strip-flags=-S --mount
+autoninja -C out_betty/Release chrome
+third_party/chromite/bin/deploy_chrome --board=betty --build-dir=out_betty/Release --device=ssh://localhost:9222 --verbose --strip-flags=-S --mount
 cd ~/chromiumos
 cros_sdk -- tast run -failfortests localhost:9222 terminal.Crosh
 ```
@@ -295,7 +295,7 @@ git bisect run ./bisect.sh
 
 ### Running Tast on a VM
 There are a number of ChromeOS boards designed to run as VMs such as
-`amd64-generic`, and `betty-pi-arc`.  Update `chromium/.gclient` file and add
+`amd64-generic`, and `betty`.  Update `chromium/.gclient` file and add
 `cros_boards` field in `custom_vars`:
 ```shell
 solutions = [
@@ -303,7 +303,7 @@ solutions = [
     ...
     "custom_vars" : {
         ...
-        "cros_boards": "betty-pi-arc", # colon-separated list.
+        "cros_boards": "betty", # colon-separated list.
     },
   },
 ]
@@ -316,7 +316,7 @@ gclient sync
 
 Enter chrome-sdk and download VM:
 ```shell
-cros chrome-sdk --board=betty-pi-arc --download-vm --log-level=info --nogn-gen
+cros chrome-sdk --board=betty --download-vm --log-level=info --nogn-gen
 ```
 
 Start the VM:
@@ -337,8 +337,8 @@ sudo apt install xtightvncviewer
 If you are going to compile and deploy chrome, you may want to update
 `args.gn` with values to match what the bots use.  E.g.:
 ```shell
-$ cat out_betty-pi-arc/Release/args.gn
-import("//build/args/chromeos/betty-pi-arc.gni")
+$ cat out_betty/Release/args.gn
+import("//build/args/chromeos/betty.gni")
 # Place any additional args or overrides below:
 dcheck_always_on = true
 exclude_unwind_tables = false
@@ -348,8 +348,8 @@ use_remoteexec = true
 
 Compile and deploy:
 ```shell
-autoninja -C out_betty-pi-arc/Release chrome
-third_party/chromite/bin/deploy_chrome --board=betty-pi-arc --build-dir=out_betty-pi-arc/Release --device=ssh://localhost:9222 --verbose --strip-flags=-S --mount
+autoninja -C out_betty/Release chrome
+third_party/chromite/bin/deploy_chrome --board=betty --build-dir=out_betty/Release --device=ssh://localhost:9222 --verbose --strip-flags=-S --mount
 ```
 
 Run a test:
@@ -361,12 +361,12 @@ third_party/chromite/bin/cros_run_test --device=localhost:9222 --tast terminal.C
 If you need to use a different VM version than the current
 `//chromeos/CHROMEOS_LKGM` used by chrome-sdk, you can download VMs directly
 from google cloud storage. Open
-https://ci.chromium.org/ui/p/chromeos/builders/postsubmit/betty-pi-arc-snapshot
+https://ci.chromium.org/ui/p/chromeos/builders/postsubmit/betty-snapshot
 , select a green build, and find `gs://` url for image. You can edit the URL and
-replace `betty-pi-arc-snapshot` with any other board name to find the builds for other
+replace `betty-snapshot` with any other board name to find the builds for other
 boards.
 
 ```shell
-cros flash --debug file:///tmp xbuddy://remote/betty-pi-arc-snapshot/R125-15831.0.0-96552-8752561462204607073
-cros vm --start --board=betty-pi-arc --image-path /tmp/chromiumos_test_image.bin
+cros flash --debug file:///tmp xbuddy://remote/betty-snapshot/R139-16318.0.0-110978-8712147517552604849
+cros vm --start --board=betty --image-path /tmp/chromiumos_test_image.bin
 ```

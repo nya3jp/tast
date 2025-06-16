@@ -834,10 +834,6 @@ Tests in this group are not used for build verification.
 				Desc: `Tests that should be run for a firmware qual of EC RW firmware.`,
 			},
 			{
-				Name: "firmware_trial",
-				Desc: `Firmware tests that might leave the DUT in a state that will require flashing the AP/EC.`,
-			},
-			{
 				Name: "firmware_stress",
 				Desc: `Firmware tests which repeat the same scenario many times.`,
 			},

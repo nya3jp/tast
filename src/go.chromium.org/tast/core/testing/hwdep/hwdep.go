@@ -3236,6 +3236,22 @@ func FirmwareSplashScreen() Condition {
 	}}
 }
 
+// IshLoadedFromAP is satisfied if ISH FW is loaded in coreboot. This is true
+// when DRIVER_INTEL_ISH_HAS_MAIN_FW is not enabled.
+func IshLoadedFromAP() Condition {
+	return Condition{Satisfied: func(f *protocol.HardwareFeatures) (bool, string, error) {
+		fwc := f.GetHardwareFeatures().GetFwConfig()
+		if fwc != nil {
+			if fwc.IshHasMainFw == configpb.HardwareFeatures_PRESENT {
+				return unsatisfied("ISH is loaded by kernel so we cannot get the version from coreboot logs")
+			}
+			return satisfied()
+		}
+		// The default for this Kconfig is off, so not found is the same as disabled.
+		return unsatisfied("Kconfig not found")
+	}}
+}
+
 // MiniDiag returns a hardware dependency condition that is satisfied if and
 // only if the DUT supports minidiag.
 func MiniDiag() Condition {

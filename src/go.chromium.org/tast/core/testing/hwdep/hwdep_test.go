@@ -1119,6 +1119,31 @@ func TestHasTpm2(t *testing.T) {
 }
 
 func TestFirmwareKconfigFields(t *testing.T) {
+	// hwdep.IshLoadedFromAP()
+	for _, tc := range []struct {
+		present         configpb.HardwareFeatures_Present
+		expectSatisfied bool
+	}{
+		{configpb.HardwareFeatures_PRESENT, false},
+		{configpb.HardwareFeatures_NOT_PRESENT, true},
+		{configpb.HardwareFeatures_PRESENT_UNKNOWN, true},
+	} {
+		verifyCondition(
+			t, hwdep.IshLoadedFromAP(),
+			&frameworkprotocol.DeprecatedDeviceConfig{},
+			&configpb.HardwareFeatures{
+				FwConfig: &configpb.HardwareFeatures_FirmwareConfiguration{
+					IshHasMainFw: tc.present,
+				},
+			},
+			tc.expectSatisfied)
+	}
+	verifyCondition(
+		t, hwdep.IshLoadedFromAP(),
+		&frameworkprotocol.DeprecatedDeviceConfig{},
+		nil,
+		false)
+
 	// hwdep.FirmwareSplashScreen()
 	for _, tc := range []struct {
 		present         configpb.HardwareFeatures_Present

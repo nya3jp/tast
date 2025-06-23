@@ -2175,6 +2175,7 @@ func parseKConfigs(ctx context.Context, features *configpb.HardwareFeatures) err
 		"CONFIG_CHROMEOS_FW_SPLASH_SCREEN":          &features.FwConfig.FwSplashScreen,
 		"CONFIG_SOC_INTEL_CSE_LITE_SYNC_BY_PAYLOAD": &features.FwConfig.LateCseSync,
 		"CONFIG_CHROMEOS_ENABLE_ESOL":               &features.FwConfig.MainboardHasEarlySignOfLife,
+		"CONFIG_DRIVER_INTEL_ISH_HAS_MAIN_FW":	     &features.FwConfig.IshHasMainFw,
 	}
 
 	scanner := bufio.NewScanner(inFile)

@@ -8,4 +8,3 @@ per-file test_dependencies.md = file:chromiumos/platform/tast-tests:/OWNERS
 seewaifu@google.com
 yichiyan@google.com
 abergman@google.com
-asadrieh@google.com

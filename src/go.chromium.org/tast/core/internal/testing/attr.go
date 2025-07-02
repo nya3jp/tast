@@ -1742,6 +1742,10 @@ Parallels boot-up testing. Otherwise the same as group:crosbolt.`,
 				Desc: `Indicates that this test with external display should be run in a dedicated setup.`,
 			},
 			{
+				Name: "pasit_dock",
+				Desc: `Indicates that this test with a dock should be run in a dedicated setup.`,
+			},
+			{
 				Name: "pasit_hid",
 				Desc: `Indicates that this test with HIDs should be run in a dedicated setup.`,
 			},

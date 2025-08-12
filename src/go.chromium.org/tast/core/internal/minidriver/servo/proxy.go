@@ -14,6 +14,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -28,6 +29,7 @@ import (
 	"go.chromium.org/tast/core/errors"
 	"go.chromium.org/tast/core/internal/logging"
 	"go.chromium.org/tast/core/internal/xcontext"
+	"go.chromium.org/tast/core/shutil"
 	"go.chromium.org/tast/core/ssh"
 	"go.chromium.org/tast/core/ssh/linuxssh"
 	"go.chromium.org/tast/core/testing"
@@ -212,12 +214,13 @@ func NewProxy(ctx context.Context, servoHostPort, keyFile, keyDir string) (newPr
 
 // HostInfo Stores servo related host information.
 type HostInfo struct {
-	Host           string // Host stores the servo host name.
-	Port           int    // Port stores the servo port number.
-	SSHPort        int    // SSHPort stores servo ssh port number.
-	DockerHost     bool   // DockerHost indicates whether the servo host is a docker container.
-	MsgLineStart   int64  // MsgLineStart stores the starting line of /var/log/messages.
-	ServoInitiated bool   // ServoInitiated indicate if servod is started by current process.
+	Host               string // Host stores the servo host name.
+	Port               int    // Port stores the servo port number.
+	SSHPort            int    // SSHPort stores servo ssh port number.
+	DockerHost         bool   // DockerHost indicates whether the servo host is a docker container.
+	MsgLineStart       int64  // MsgLineStart stores the starting line of /var/log/messages.
+	ServoInitiated     bool   // ServoInitiated indicate if servod is started by current process.
+	CurrentLogFileName string // The real log file name for the current servod session.
 }
 
 // StartServo start servod and verify every 2 second until it is ready. Add check to avoid repeated attempting.
@@ -274,6 +277,19 @@ func StartServo(parentCtx context.Context, servoHostPort, keyFile, keyDir string
 			return nil, errors.Wrap(err, "failed to open SSH connection to labstation")
 		}
 		defer hst.Close(ctx)
+
+		defer func() {
+			// This code should only run if the function is returning successfully and servod was started by us.
+			if retErr == nil && hostInfo != nil {
+				logLink := fmt.Sprintf("/var/log/servod_%d/latest.DEBUG", port)
+				if realpath, err := hst.CommandContext(ctx, "realpath", logLink).Output(); err != nil {
+					logging.Infof(ctx, "failed to get realpath for %s: %v", logLink, err)
+					hostInfo.CurrentLogFileName = ""
+				} else {
+					hostInfo.CurrentLogFileName = filepath.Base(strings.TrimSpace(string(realpath)))
+				}
+			}
+		}()
 
 		wcInfo, err := linuxssh.WordCount(ctx, hst, "/var/log/messages")
 		if err != nil {
@@ -423,8 +439,6 @@ func CleanUpAndCollectLogs(ctx context.Context, servoHostInfo *HostInfo, keyFile
 	logging.Info(ctx, "Collecting servo logs from ", servodLogDir)
 	defer logging.Info(ctx, "Done collecting servo logs from ", servodLogDir)
 
-	const maxLogSize = 20 * 1024 * 1024 //20mb
-
 	servoHostDestDir := filepath.Join(dest, fmt.Sprintf("servo_host_%s", sopt.Hostname))
 
 	destDir := filepath.Join(servoHostDestDir, fmt.Sprintf("servod_%d", port))
@@ -433,9 +447,10 @@ func CleanUpAndCollectLogs(ctx context.Context, servoHostInfo *HostInfo, keyFile
 	}
 
 	// Getting servod logs.
-	downloadServodLogs(ctx, hst, servodLogDir, destDir, maxLogSize)
+	downloadServodLogs(ctx, hst, servodLogDir, destDir, servoHostInfo)
 
 	// Getting servo startup log from servo host.
+	const maxLogSize = 20 * 1024 * 1024 //20mb
 	downloadServodStartupLogs(ctx, hst, port, servoHostDestDir, maxLogSize)
 
 	// Getting /var/log/messages from servo host.
@@ -445,7 +460,7 @@ func CleanUpAndCollectLogs(ctx context.Context, servoHostInfo *HostInfo, keyFile
 	downloadServodDMesgLogs(ctx, hst, servoHostDestDir, sopt.Hostname)
 
 	// Extract MCU logs from latest.DEBUG.
-	extractServodMCULogs(ctx, servodLogDir, destDir, maxLogSize)
+	extractServodMCULogs(ctx, destDir)
 
 	// Remove in-use file
 	if servoHostInfo.ServoInitiated {
@@ -455,19 +470,89 @@ func CleanUpAndCollectLogs(ctx context.Context, servoHostInfo *HostInfo, keyFile
 	return nil
 }
 
-func downloadServodLogs(ctx context.Context, hst *ssh.Conn, servodLogDir, destDir string, maxLogSize int64) {
-	links := []string{
-		"latest.DEBUG",
-		"latest.WARNING",
-		"latest.INFO",
-	}
-	for _, l := range links {
-		fl := filepath.Join(servodLogDir, l)
-		dn := filepath.Join(destDir, l)
-		logging.Info(ctx, "Saving servo log ", dn)
-		if err := linuxssh.GetFileTail(ctx, hst, fl, dn, 0, maxLogSize); err != nil {
-			logging.Infof(ctx, "Failed to servod log %s: %v", fl, err)
+func downloadServodLogs(ctx context.Context, hst *ssh.Conn, servodLogDir, destDir string, hostInfo *HostInfo) {
+	if hostInfo == nil || hostInfo.CurrentLogFileName == "" {
+		logging.Info(ctx, "CurrentLogFileName is empty, falling back to downloading latest.DEBUG with GetFileTail")
+		const maxLogSize = 20 * 1024 * 1024 // 20mb
+		src := filepath.Join(servodLogDir, "latest.DEBUG")
+		dest := filepath.Join(destDir, "latest.DEBUG")
+		logging.Info(ctx, "Saving servo log ", dest)
+		if err := linuxssh.GetFileTail(ctx, hst, src, dest, 0, maxLogSize); err != nil {
+			logging.Infof(ctx, "Failed to get servod log %s: %v", src, err)
 		}
+		return
+	}
+
+	// Find all files in the servod log directory.
+	cmd := hst.CommandContext(ctx, "find", servodLogDir, "-maxdepth", "1", "-type", "f", "-printf", "%f\\n")
+	out, err := cmd.Output()
+	if err != nil {
+		logging.Infof(ctx, "Failed to list files in %s: %v", servodLogDir, err)
+		return
+	}
+	allFiles := strings.Split(strings.TrimSpace(string(out)), "\n")
+
+	var filesToDownload []string
+	startFile := hostInfo.CurrentLogFileName
+	// Verify CurrentLogFileName exists on the DUT.
+	found := false
+	for _, f := range allFiles {
+		if f == startFile {
+			found = true
+			break
+		}
+	}
+	if found {
+		filesToDownload = append(filesToDownload, startFile)
+	} else {
+		logging.Infof(ctx, "Initial log file %s not found in %s", startFile, servodLogDir)
+	}
+
+	// Find all newer log files.
+	logPattern := regexp.MustCompile(`^log\.\d{4}-\d{2}-\d{2}--\d{2}-\d{2}-\d{2}\.\d{3}\.DEBUG$`)
+	var newerFiles []string
+	for _, f := range allFiles {
+		if logPattern.MatchString(f) && f > startFile {
+			newerFiles = append(newerFiles, f)
+		}
+	}
+	sort.Strings(newerFiles)
+	filesToDownload = append(filesToDownload, newerFiles...)
+
+	if len(filesToDownload) == 0 {
+		logging.Info(ctx, "No specific log files found to process, falling back to downloading latest.DEBUG")
+		src := filepath.Join(servodLogDir, "latest.DEBUG")
+		dest := filepath.Join(destDir, "latest.DEBUG")
+		if err := linuxssh.GetFile(ctx, hst, src, dest, linuxssh.PreserveSymlinks); err != nil {
+			logging.Infof(ctx, "Failed to get servod log %s: %v", src, err)
+		}
+		return
+	}
+
+	logging.Infof(ctx, "Concatenating the following servo log files: %s", strings.Join(filesToDownload, ", "))
+	var remotePaths []string
+	for _, f := range filesToDownload {
+		remotePaths = append(remotePaths, shutil.Escape(filepath.Join(servodLogDir, f)))
+	}
+
+	remoteTempFile, err := hst.CommandContext(ctx, "mktemp").Output()
+	if err != nil {
+		logging.Infof(ctx, "Failed to create remote temp file: %v", err)
+		return
+	}
+	remoteTempPath := strings.TrimSpace(string(remoteTempFile))
+	defer hst.CommandContext(ctx, "rm", remoteTempPath).Run()
+
+	catCmdStr := fmt.Sprintf("cat %s > %s", strings.Join(remotePaths, " "), shutil.Escape(remoteTempPath))
+	if out, err := hst.CommandContext(ctx, "sh", "-c", catCmdStr).CombinedOutput(); err != nil {
+		// Log error but continue, as some logs might have been concatenated successfully.
+		logging.Infof(ctx, "Concatenating remote log files with command `%s` failed with output %q: %v", catCmdStr, string(out), err)
+	}
+
+	destPath := filepath.Join(destDir, "latest.DEBUG")
+	logging.Info(ctx, "Saving concatenated servo log to ", destPath)
+	if err := linuxssh.GetFile(ctx, hst, remoteTempPath, destPath, linuxssh.PreserveSymlinks); err != nil {
+		logging.Infof(ctx, "Failed to get concatenated servod log from %s: %v", remoteTempPath, err)
 	}
 }
 
@@ -514,7 +599,7 @@ func downloadServodDMesgLogs(ctx context.Context, hst *ssh.Conn,
 }
 
 // extractServodMCULogs extract MCU logs from latest.DEBUG.
-func extractServodMCULogs(ctx context.Context, servodLogDir, destDir string, maxLogSize int64) {
+func extractServodMCULogs(ctx context.Context, destDir string) {
 	var mcuFiles map[string]*os.File = make(map[string]*os.File)
 
 	src := filepath.Join(destDir, "latest.DEBUG")

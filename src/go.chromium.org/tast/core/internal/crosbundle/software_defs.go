@@ -332,6 +332,9 @@ var softwareFeatureDefs = map[string]string{
 	// But we haven't enable this feature on builders. For now, just disable
 	// vm_host feature for VM builds.
 	"vm_host": "kvm_host && !tast_vm",
+	// crosvm's virtio-pmem is only supported on amd64.
+	// TODO(b/358041434): Remove once it's supported on all boards.
+	"vm_pmem": "amd64",
 	// VPD is not available in VMs.
 	"vpd":    `!"board:amd64-generic" && !"board:reven-vmtest" && !"betty" && !"tast_vm"`,
 	"vulkan": "vulkan",

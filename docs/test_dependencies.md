@@ -253,6 +253,7 @@ stack-sampled metrics.
 * `virtual_multidisplay` - The platform supports virtual multi display testing (at the time of writing, only 6.1+ betty boards).  This should be depended on for all multidisplay presubmit tests to run on betty.
 * `virtual_susupend_time_injection` - The platform supports KVM virtual suspend time injection.
 * `vm_host` - The ability to [run virtual machines].
+* `vm_pmem` - The ability to enable [virtio-pmem] device on crosvm.
 * `vpd` - The DUT has a VPD chip.
 * `vulkan` - Whether [Vulkan] libraries are installed on the system image.
 * `vulkan_composite` - Boards that support composition with [Vulkan].
@@ -290,6 +291,7 @@ stack-sampled metrics.
 [Transparent Hugepage]: https://www.kernel.org/doc/Documentation/vm/transhuge.txt
 [run virtual machines]: https://www.chromium.org/chromium-os/developer-library/guides/containers/containers-and-vms/
 [Vulkan]: https://www.khronos.org/vulkan/
+[virtio-pmem]: https://crosvm.dev/book/devices/pmem/index.html
 [virtual-usb-printer-readme]: https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/third_party/virtual-usb-printer/virtual_usb_printer/README.md
 [wilco]: https://sites.google.com/corp/google.com/wilco/home
 

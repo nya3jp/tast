@@ -136,6 +136,7 @@ const (
 	Realtek8852CPCIE           = wlan.Realtek8852CPCIE
 	Realtek8852BPCIE           = wlan.Realtek8852BPCIE
 	Realtek8852BVTPCIE         = wlan.Realtek8852BVTPCIE
+	MediaTekMT7920PCIE         = wlan.MediaTekMT7920PCIE
 	MediaTekMT7921PCIE         = wlan.MediaTekMT7921PCIE
 	MediaTekMT7921SDIO         = wlan.MediaTekMT7921SDIO
 	MediaTekMT7922PCIE         = wlan.MediaTekMT7922PCIE
@@ -1340,6 +1341,7 @@ func Wifi80211ax() Condition {
 		Realtek8852CPCIE,
 		Realtek8852BPCIE,
 		Realtek8852BVTPCIE,
+		MediaTekMT7920PCIE,
 		MediaTekMT7921PCIE,
 		MediaTekMT7921SDIO,
 		MediaTekMT7922PCIE,

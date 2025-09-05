@@ -66,6 +66,7 @@ const (
 	Realtek8852CPCIE
 	Realtek8852BPCIE
 	Realtek8852BVTPCIE
+	MediaTekMT7920PCIE
 	MediaTekMT7921PCIE
 	MediaTekMT7921SDIO
 	MediaTekMT7922PCIE
@@ -102,6 +103,7 @@ var DeviceNames = map[DeviceID]string{
 	Realtek8852CPCIE:           "Realtek 8852C PCIE",
 	Realtek8852BPCIE:           "Realtek 8852B PCIE",
 	Realtek8852BVTPCIE:         "Realtek 8852B-VT PCIE",
+	MediaTekMT7920PCIE:         "MediaTek MT7920 PCIE",
 	MediaTekMT7921PCIE:         "MediaTek MT7921 PCIE",
 	MediaTekMT7921SDIO:         "MediaTek MT7921 SDIO",
 	MediaTekMT7922PCIE:         "MediaTek MT7922 PCIE",
@@ -167,6 +169,8 @@ var LookupWLANDev = map[DevInfo]DeviceID{
 	{Vendor: "0x10ec", Device: "0xc852"}:                      Realtek8852CPCIE,
 	{Vendor: "0x10ec", Device: "0xb852"}:                      Realtek8852BPCIE,
 	{Vendor: "0x10ec", Device: "0xb520"}:                      Realtek8852BVTPCIE,
+	{Vendor: "0x14c3", Device: "0x7920", Subsystem: "0x7920"}: MediaTekMT7920PCIE,
+	{Vendor: "0x14c3", Device: "0x7920", Subsystem: "0x6470"}: MediaTekMT7920PCIE,
 	{Vendor: "0x14c3", Device: "0x7961"}:                      MediaTekMT7921PCIE,
 	{Vendor: "0x037a", Device: "0x7901"}:                      MediaTekMT7921SDIO,
 	{Vendor: "0x14c3", Device: "0x7922"}:                      MediaTekMT7922PCIE,

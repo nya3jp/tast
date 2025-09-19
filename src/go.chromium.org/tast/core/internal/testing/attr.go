@@ -2336,6 +2336,11 @@ from other existing groups (or use this group standalone).
 		Desc:     `Suite will run assigned tests on devices that provide the most reliable results. More info go/cros-duop:proposal`,
 	},
 	{
+		Name:     "golden_tier_secondary",
+		Contacts: []string{"mohamedaomar@google.com", "chromeos-ent-test@google.com"},
+		Desc:     `Suite will run assigned tests on devices that provide the most reliable results. More info go/cros-duop:proposal`,
+	},
+	{
 		Name:     "medium_low_tier",
 		Contacts: []string{"kamilszarek@google.com", "chromeos-ent-test@google.com"},
 		Desc:     `Suite will run assigned tests on medium and low tier devices. More info go/cros-duop:proposal`,

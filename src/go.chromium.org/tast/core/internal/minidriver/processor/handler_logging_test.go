@@ -76,6 +76,15 @@ func TestLoggingHandler(t *testing.T) {
 		t.Errorf("Processor had a fatal error: %v", err)
 	}
 
+	// buildLogRegex converts an expected log string into a regex pattern.
+	// It escapes all special characters and then replaces the "0s" duration
+	// placeholder with a flexible pattern `\S+` to match any duration.
+	buildLogRegex := func(want string) *regexp.Regexp {
+		pattern := regexp.QuoteMeta(want)
+		pattern = strings.ReplaceAll(pattern, "in 0s", `in \S+`)
+		return regexp.MustCompile(pattern)
+	}
+
 	// Everything is logged via ctx.
 	const wantGlobalLogs = `Started fixture fixture
 [00:00:00.000] This is a log from the fixture
@@ -92,8 +101,10 @@ Started test pkg.Test2
 [00:00:00.000] This is a log from the second test
 Completed test pkg.Test2 in 0s with 0 error(s)
 Completed fixture fixture in 0s with 1 error(s)`
-	if diff := cmp.Diff(logger.String(), wantGlobalLogs); diff != "" {
-		t.Errorf("Full logs mismatch (-got +want):\n%s", diff)
+	re := buildLogRegex(wantGlobalLogs)
+	if !re.MatchString(logger.String()) {
+		// On failure, use cmp.Diff against the original string for a readable diff.
+		t.Errorf("Full logs mismatch (-got +want):\n%s", cmp.Diff(logger.String(), wantGlobalLogs))
 	}
 
 	// Ensure that per-entity logs are saved.
@@ -144,8 +155,9 @@ Completed test pkg.Test2 in 0s with 0 error(s)
 		},
 	} {
 		got := stripTimestamps(files[tc.path])
-		if diff := cmp.Diff(got, tc.want); diff != "" {
-			t.Errorf("%s mismatch (-got +want)\n:%s", tc.path, diff)
+		re := buildLogRegex(tc.want)
+		if !re.MatchString(got) {
+			t.Errorf("%s mismatch (-got +want)\n:%s", tc.path, cmp.Diff(got, tc.want))
 		}
 	}
 }

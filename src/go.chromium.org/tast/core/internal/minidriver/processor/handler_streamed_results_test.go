@@ -13,6 +13,7 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 
 	"go.chromium.org/tast/core/internal/logging"
 	"go.chromium.org/tast/core/internal/minidriver/processor"
@@ -70,21 +71,21 @@ func TestStreamedResultsHandler(t *testing.T) {
 	want := []*resultsjson.Result{
 		{
 			Test:   resultsjson.Test{Name: "pkg.Test1", Desc: "This is test 1"},
-			Start:  epoch,
-			End:    epoch,
 			OutDir: filepath.Join(resDir, "tests", "pkg.Test1"),
 			Errors: []resultsjson.Error{
-				{Time: epoch, Reason: "Failed", File: "file.go", Line: 123, Stack: "stacktrace"},
+				{Reason: "Failed", File: "file.go", Line: 123, Stack: "stacktrace"},
 			},
 		},
 		{
 			Test:   resultsjson.Test{Name: "pkg.Test2", Desc: "This is test 2"},
-			Start:  epoch,
-			End:    epoch,
 			OutDir: filepath.Join(resDir, "tests", "pkg.Test2"),
 		},
 	}
-	if diff := cmp.Diff(got, want); diff != "" {
+	opts := []cmp.Option{
+		cmpopts.IgnoreFields(resultsjson.Result{}, "Start", "End"),
+		cmpopts.IgnoreFields(resultsjson.Error{}, "Time"),
+	}
+	if diff := cmp.Diff(got, want, opts...); diff != "" {
 		t.Fatalf("Results mismatch (-got +want):\n%s", diff)
 	}
 }

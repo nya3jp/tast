@@ -90,7 +90,8 @@ func (p *preprocessor) EntityStart(ctx context.Context, ev *protocol.EntityStart
 	if err != nil {
 		return errors.Wrap(err, "processing EntityStart")
 	}
-	ts := ev.GetTime().AsTime()
+	// b/446005118: Sometimes the time in the DUT is not correct. Use host time instead.
+	ts := time.Now()
 	state := &entityState{
 		Entity:             ev.GetEntity(),
 		Start:              ts,
@@ -173,7 +174,8 @@ func (p *preprocessor) EntityEnd(ctx context.Context, ev *protocol.EntityEndEven
 	if err != nil {
 		return errors.Wrap(err, "processing EntityEnd")
 	}
-	ts := ev.GetTime().AsTime()
+	// b/446005118: Sometimes the time in the DUT is not correct. Use host time instead.
+	ts := time.Now()
 	ei := state.EntityInfo()
 	result := &entityResult{
 		Start:     state.Start,

@@ -10,6 +10,7 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 
 	"go.chromium.org/tast/core/internal/logging"
 	"go.chromium.org/tast/core/internal/minidriver/failfast"
@@ -61,27 +62,25 @@ func TestFailFastHandler(t *testing.T) {
 	want := []*resultsjson.Result{
 		{
 			Test:   resultsjson.Test{Name: "pkg.Test1"},
-			Start:  epoch,
-			End:    epoch,
 			OutDir: filepath.Join(resDir, "tests", "pkg.Test1"),
 		},
 		{
 			Test:   resultsjson.Test{Name: "pkg.Test2"},
-			Start:  epoch,
-			End:    epoch,
 			OutDir: filepath.Join(resDir, "tests", "pkg.Test2"),
-			Errors: []resultsjson.Error{{Time: epoch}, {Time: epoch}, {Time: epoch}},
+			Errors: []resultsjson.Error{{}, {}, {}},
 		},
 		{
 			Test:   resultsjson.Test{Name: "pkg.Test3"},
-			Start:  epoch,
-			End:    epoch,
 			OutDir: filepath.Join(resDir, "tests", "pkg.Test3"),
-			Errors: []resultsjson.Error{{Time: epoch}, {Time: epoch}},
+			Errors: []resultsjson.Error{{}, {}},
 		},
 		// Forth test is not reported due to early abort.
 	}
-	if diff := cmp.Diff(got, want); diff != "" {
+	opts := []cmp.Option{
+		cmpopts.IgnoreFields(resultsjson.Result{}, "Start", "End"),
+		cmpopts.IgnoreFields(resultsjson.Error{}, "Time"),
+	}
+	if diff := cmp.Diff(got, want, opts...); diff != "" {
 		t.Fatalf("Results mismatch (-got +want):\n%s", diff)
 	}
 }

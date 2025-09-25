@@ -935,6 +935,11 @@ Tests in this group are not used for build verification.`,
 		Desc:     `A group of HWSec destructive tests that wipe and recreate encstateful in the tests.`,
 	},
 	{
+		Name:     "storage_destructive",
+		Contacts: []string{"chromeos-storage@google.com"},
+		Desc:     `A group of storage destructive tests that powerwash the device.`,
+	},
+	{
 		Name:     "labqual",
 		Contacts: []string{"stagenut@google.com", "teravest@google.com"},
 		Desc:     `A group of tests that must pass reliably prior to lab deployments.`,

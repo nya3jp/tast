@@ -120,6 +120,7 @@ var (
 		"villager_sc7280":    {"villager_sc7280", "herobrine", ModemTypeSC7280},
 		"zoglin_sc7280":      {"zoglin_sc7280", "herobrine", ModemTypeSC7280},
 		"zombie_sc7280":      {"zombie_sc7280", "herobrine", ModemTypeSC7280},
+		"padme_rw101":        {"padme_rw101", "jedi", ModemTypeRW101},
 		"gooey":              {"gooey", "keeby", ModemTypeL850},
 		"nautiluslte":        {"nautiluslte", "nautilus", ModemTypeL850},
 		"anraggar_fm101":     {"anraggar_fm101", "nissa", ModemTypeFM101},

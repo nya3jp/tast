@@ -176,6 +176,7 @@ var (
 		"skywalker_rw101":    {"skywalker_rw101", "skywalker", ModemTypeRW101},
 		"obiwan_rw101":       {"obiwan_rw101", "skywalker", ModemTypeRW101},
 		"quigon_rw101":       {"quigon_rw101", "skywalker", ModemTypeRW101},
+		"yoda_rw101":         {"yoda_rw101", "skywalker", ModemTypeRW101},
 		"skywalker_rw135":    {"skywalker_rw135", "skywalker", ModemTypeRW135},
 		"coachz":             {"coachz", "strongbad", ModemTypeSC7180},
 		"quackingstick":      {"quackingstick", "strongbad", ModemTypeSC7180},

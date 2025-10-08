@@ -200,6 +200,7 @@ The following software features are defined:
 * `pidfd_open` - pidfd_open function implemented in the kernel.
 * `play_store` - Boards where Google Play Store is supported.
 * `plugin_vm` - The ability to run Plugin VMs.
+* `print_brother_ql800_subset` - A subset of boards to test the Brother QL800 printer.
 * `proprietary_codecs` - Indicates if Chrome supports proprietary video
     codecs (e.g. H.264). This is supported by Chrome official builds and Chromium
     builds with the |propietary_codecs| build flag set.

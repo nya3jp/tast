@@ -247,9 +247,11 @@ var softwareFeatureDefs = map[string]string{
 	"pinweaver":                               `"ti50_onboard" || "cr50_onboard" || "pinweaver_csme" || ("tpm2_simulator" && "tpm2")`,
 	"play_store":                              `arc && !("board:novato" || "board:novato-arc64" || "board:novato-arcnext")`,
 	"plugin_vm":                               "pita", // boards that can run Plugin VM.
-	"printscanmgr":                            "printscanmgr",
-	"proprietary_codecs":                      "chrome_internal || chrome_media",
-	"protected_content":                       "cdm_factory_daemon",
+	// A subset of boards used to test certain brother printers:  b/447613108.
+	"print_brother_ql800_subset": `("board:asurada" || "board:skywalker" || "board:trogdor" || "board:guybrush" || "board:skyrim" || "board:zork")`,
+	"printscanmgr":               "printscanmgr",
+	"proprietary_codecs":         "chrome_internal || chrome_media",
+	"protected_content":          "cdm_factory_daemon",
 	// VM boards don't support pstore: https://crbug.com/971899
 	// reven boards don't support pstore: b/234722825
 	"pstore": `!("betty" || "tast_vm" || "board:amd64-generic"|| "board:reven*")`,

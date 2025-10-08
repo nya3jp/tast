@@ -31,8 +31,9 @@ Assuming that you already have a valid ChromeOS repo checked out (see
 
 ```sh
 cd ${CHROMEOS_SRC}
-chromite/bin/cros_sdk    # to enter chroot
-./update_chroot          # makes sure that the latest dependencies are installed
+chromite/bin/cros_sdk --update   # makes sure that the latest dependencies are installed
+chromite/bin/cros_sdk   # to enter chroot
+
 ```
 
 ### IDE

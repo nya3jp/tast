@@ -15,7 +15,7 @@ import (
 )
 
 const (
-	maxDepth = 16 // maximum number of stack frames to record
+	maxDepth = 24 // maximum number of stack frames to record
 
 	ellipsis = "\t..." // trailing marker line added if stack trace is too long
 )

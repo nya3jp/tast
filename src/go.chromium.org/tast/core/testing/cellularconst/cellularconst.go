@@ -81,6 +81,7 @@ var (
 		"redrix_fm350":       {"redrix_fm350", "brya", ModemTypeFM350},
 		"redrix_l850":        {"redrix_l850", "brya", ModemTypeL850},
 		"vell_fm350":         {"vell_fm350", "brya", ModemTypeFM350},
+		"caboc_rw350":        {"caboc_rw350", "brox", ModemTypeRW350},
 		"jubilant_rw101":     {"jubilant_rw101", "brox", ModemTypeRW101},
 		"astronaut":          {"astronaut", "coral", ModemTypeL850},
 		"chinchou_fm101":     {"chinchou_fm101", "corsola", ModemTypeFM101},

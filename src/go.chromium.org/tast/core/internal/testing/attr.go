@@ -913,6 +913,10 @@ Tests in this group are not used for build verification.
 				Name: "gsc_tcg",
 				Desc: `A set of tests that belong to the TCG suite`,
 			},
+			{
+				Name: "gsc_smoke",
+				Desc: `A set of gscdevboard tests for smoke testing`,
+			},
 		},
 	},
 	{

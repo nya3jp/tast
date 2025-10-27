@@ -102,7 +102,8 @@ var softwareFeatureDefs = map[string]string{
 	"drm_atomic":              "drm_atomic",
 	"drm_trace":               `!("kernel-4_14" || "kernel-4_19")`,
 	// ECC is enabled only on x86 boards (b/413292019), but is temporarily disabled on nissa (b/436373634).
-	"ecc": `"amd64" && !"board:nissa"`,
+	// We need to add nirva to this exclusion list since nissa's configuration is also used for nirva (b/454524809).
+	"ecc": `"amd64" && !("board:nissa" || "board:nirva")`,
 	// asuka, banon, caroline, cave, celes, chell, cyan, edgar, kefka, reks, relm, sentry, terra, ultima, and wizpig have buggy EC firmware and cannot capture crash reports. b/172228823
 	// drallion and sarien have do not support the "crash" EC command. crbug.com/1123716
 	// guado, tidus, rikku, veyron_fievel, and veyron_tiger do not have EC firmware. crbug.com/1123716. TODO(crbug.com/1124554) Use an EC hardware dep for these rather than a software dep.

@@ -174,6 +174,8 @@ var (
 		"starmie_rw101":      {"starmie_rw101", "staryu", ModemTypeRW101},
 		"wugtrio_rw101":      {"wugtrio_rw101", "staryu", ModemTypeRW101},
 		"wyrdeer_rw101":      {"wyrdeer_rw101", "staryu", ModemTypeRW101},
+		"anakin_rw101":       {"anakin_rw101", "skywalker", ModemTypeRW101},
+		"anakin360_rw101":    {"anakin360_rw101", "skywalker", ModemTypeRW101},
 		"skywalker_rw101":    {"skywalker_rw101", "skywalker", ModemTypeRW101},
 		"obiwan_rw101":       {"obiwan_rw101", "skywalker", ModemTypeRW101},
 		"quigon_rw101":       {"quigon_rw101", "skywalker", ModemTypeRW101},

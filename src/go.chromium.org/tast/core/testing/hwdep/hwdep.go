@@ -1288,6 +1288,7 @@ var modelsWithSplitModifierKeyboard = []string{
 	"rynax",
 	"uldrenite",
 	"uldrenite360",
+	"uldrino",
 	"xol",
 }
 

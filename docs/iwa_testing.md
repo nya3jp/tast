@@ -236,3 +236,91 @@ A full code example of this is in [this](https://chromium.googlesource.com/chrom
 
 ### Using Secret Variable
 This way can be used by an internal developer, who has access to the `tast-tests-private` package. Learn more about it from [this](https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/writing_tests.md#secret-variables) article.
+
+# Testing IWAs in Kiosk Mode
+The main difference between a regular IWA test and a Kiosk IWA test lies in the setup. Instead of using policies to force-install the IWA, you will configure the device to launch directly into the IWA in a Kiosk session.
+
+## Steps to Writing Tast Tests for IWAs in Kiosk Mode
+
+Here’s a general outline for writing Tast tests for IWAs in Kiosk mode:
+
+1.  **Use the `fixture.FakeDMSEnrolled` fixture** in your test definition to simulate a managed device.
+
+    ```go
+    func init() {
+        testing.AddTest(&testing.Test{
+            // ...
+            Fixture: fixture.FakeDMSEnrolled,
+        })
+    }
+    ```
+
+2.  **Define the application details**, including the update manifest URL and the web bundle ID for your IWA.
+
+    ```go
+    var updateManifestURL string = "https://github.com/chromeos/iwa-sink/releases/latest/download/update.json"
+    var webBundleID string = "aiv4bxauvcu3zvbu6r5yynoh4atkzqqaoeof5mwz54b4zfywcrjuoaacai"
+    ```
+
+3.  **Start Chrome in Kiosk mode** using `kioskmode.New()`. You will need to define a `DeviceLocalAccount` for the IWA and configure it to auto-launch.
+
+    ```go
+    iwaKioskAccountType := policy.AccountTypeKioskIWA
+
+    kiosk, cr, err := kioskmode.New(
+        ctx,
+        fdms,
+        s.RequiredVar("ui.signinProfileTestExtensionManifestKey"),
+        kioskmode.CustomLocalAccounts(
+            &policy.DeviceLocalAccounts{
+                Val: []policy.DeviceLocalAccountInfo{
+                    {
+                        AccountID:   &kioskmode.KioskAppAccountID,
+                        AccountType: &iwaKioskAccountType,
+                        IsolatedWebAppKioskInfo: &policy.IsolatedWebAppKioskInfo{
+                            WebBundleId: &webBundleID,
+                            ManifestUrl: &updateManifestURL,
+                        },
+                    },
+                },
+            },
+        ),
+        kioskmode.AutoLaunch(kioskmode.KioskAppAccountID),
+    )
+    if err != nil {
+        s.Fatal("Failed to start Chrome in Kiosk mode: ", err)
+    }
+    defer kiosk.Close(cleanupContext)
+    ```
+
+4.  **Wait for the Kiosk app to launch** using `kiosk.WaitLaunchLogs()`.
+
+    ```go
+    if err := kiosk.WaitLaunchLogs(ctx); err != nil {
+        s.Fatal("Failed to launch Kiosk: ", err)
+    }
+    ```
+
+5.  **Interact with the application** using the `uiauto` library, just as you would in a regular IWA test. You can create a test API connection, define UI nodes, and perform actions like clicking buttons and typing text.
+
+    ```go
+    tconn, err := cr.TestAPIConn(ctx)
+    if err != nil {
+        s.Fatal("Failed to create test API connection: ", err)
+    }
+
+    ui := uiauto.New(tconn)
+    createSocketConnButton := nodewith.Name("Create new socket connection").Role(role.Button)
+    // ...
+
+    if err := uiauto.Combine("Interact with Kitchen Sink IWA UI",
+        ui.WithTimeout(30*time.Second).WaitUntilExists(createSocketConnButton),
+        // ...
+    )(ctx); err != nil {
+        s.Fatal("Failed to interact with the Kitchen Sink IWA: ", err)
+    }
+    ```
+
+## Example
+
+For a complete example of an IWA test running in Kiosk mode, see the [launch_iwa.go](https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform/tast-tests/src/go.chromium.org/tast-tests/cros/local/bundles/cros/kiosk/launch_iwa.go) test.

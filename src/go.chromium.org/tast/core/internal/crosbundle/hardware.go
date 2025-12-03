@@ -1923,7 +1923,7 @@ var ampsRegexp = map[string]*regexp.Regexp{
 	configpb.HardwareFeatures_Audio_RT1015P.String():  regexp.MustCompile(`^(i2c-)?(rtl?)?(10ec)?1015p(\.\d*)?((:\d*)|([_-]?\d*))?$`),
 	configpb.HardwareFeatures_Audio_ALC1011.String():  regexp.MustCompile(`^(i2c-)?((rtl?)|(10ec))?1011(\.\d*)?((:\d*)|([_-]?\d*))?$`),
 	configpb.HardwareFeatures_Audio_MAX98390.String(): regexp.MustCompile(`^(i2c-)?ma?x98390((:\d*)|(\.\d-\d+)|([_-]?\d*))?$`),
-	configpb.HardwareFeatures_Audio_CS35L41.String():  regexp.MustCompile(`^(i2c-)?csc3541((:\d*)|([_-]?\d*))?$`),
+	configpb.HardwareFeatures_Audio_CS35L41.String():  regexp.MustCompile(`^(i2c-)?(csc3541|cs35l41\.\d*)((:\d*)|([_-]?\d*))?$`),
 	configpb.HardwareFeatures_Audio_TAS2563.String():  regexp.MustCompile(`^tasdev-codec(\.\d*)?((:\d*)|([_-]?\d*))?([a-zA-Z])?$`),
 }
 
@@ -2175,7 +2175,7 @@ func parseKConfigs(ctx context.Context, features *configpb.HardwareFeatures) err
 		"CONFIG_CHROMEOS_FW_SPLASH_SCREEN":          &features.FwConfig.FwSplashScreen,
 		"CONFIG_SOC_INTEL_CSE_LITE_SYNC_BY_PAYLOAD": &features.FwConfig.LateCseSync,
 		"CONFIG_CHROMEOS_ENABLE_ESOL":               &features.FwConfig.MainboardHasEarlySignOfLife,
-		"CONFIG_DRIVER_INTEL_ISH_HAS_MAIN_FW":	     &features.FwConfig.IshHasMainFw,
+		"CONFIG_DRIVER_INTEL_ISH_HAS_MAIN_FW":       &features.FwConfig.IshHasMainFw,
 	}
 
 	scanner := bufio.NewScanner(inFile)

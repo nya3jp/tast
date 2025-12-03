@@ -214,13 +214,14 @@ func NewProxy(ctx context.Context, servoHostPort, keyFile, keyDir string) (newPr
 
 // HostInfo Stores servo related host information.
 type HostInfo struct {
-	Host               string // Host stores the servo host name.
-	Port               int    // Port stores the servo port number.
-	SSHPort            int    // SSHPort stores servo ssh port number.
-	DockerHost         bool   // DockerHost indicates whether the servo host is a docker container.
-	MsgLineStart       int64  // MsgLineStart stores the starting line of /var/log/messages.
-	ServoInitiated     bool   // ServoInitiated indicate if servod is started by current process.
-	CurrentLogFileName string // The real log file name for the current servod session.
+	Host                string // Host stores the servo host name.
+	Port                int    // Port stores the servo port number.
+	SSHPort             int    // SSHPort stores servo ssh port number.
+	DockerHost          bool   // DockerHost indicates whether the servo host is a docker container.
+	MsgLineStart        int64  // MsgLineStart stores the starting line of /var/log/messages.
+	ServoInitiated      bool   // ServoInitiated indicate if servod is started by current process.
+	CurrentLogFileName  string // The real log file name for the current servod session.
+	InitialRotatedCount int    // Number of rotated log files present at start.
 }
 
 // StartServo start servod and verify every 2 second until it is ready. Add check to avoid repeated attempting.
@@ -287,6 +288,19 @@ func StartServo(parentCtx context.Context, servoHostPort, keyFile, keyDir string
 					hostInfo.CurrentLogFileName = ""
 				} else {
 					hostInfo.CurrentLogFileName = filepath.Base(strings.TrimSpace(string(realpath)))
+
+					// Count existing rotated logs to ignore later.
+					hostInfo.InitialRotatedCount = 0
+					servodLogDir := fmt.Sprintf("/var/log/servod_%d", port)
+					// Find files starting with CurrentLogFileName.
+					cmd := hst.CommandContext(ctx, "find", servodLogDir, "-maxdepth", "1", "-name", hostInfo.CurrentLogFileName+".*")
+					if out, err := cmd.Output(); err == nil {
+						for _, f := range strings.Split(strings.TrimSpace(string(out)), "\n") {
+							if f != "" {
+								hostInfo.InitialRotatedCount++
+							}
+						}
+					}
 				}
 			}
 		}()
@@ -492,32 +506,13 @@ func downloadServodLogs(ctx context.Context, hst *ssh.Conn, servodLogDir, destDi
 	}
 	allFiles := strings.Split(strings.TrimSpace(string(out)), "\n")
 
-	var filesToDownload []string
-	startFile := hostInfo.CurrentLogFileName
-	// Verify CurrentLogFileName exists on the DUT.
-	found := false
-	for _, f := range allFiles {
-		if f == startFile {
-			found = true
-			break
-		}
+	// For containerConnector, we don't track InitialRotatedCount yet (can be added if needed later, similar to sshConnector/HostInfo).
+	// Passing 0 for InitialRotatedCount if HostInfo not available (though it should be).
+	initialCount := 0
+	if hostInfo != nil {
+		initialCount = hostInfo.InitialRotatedCount
 	}
-	if found {
-		filesToDownload = append(filesToDownload, startFile)
-	} else {
-		logging.Infof(ctx, "Initial log file %s not found in %s", startFile, servodLogDir)
-	}
-
-	// Find all newer log files.
-	logPattern := regexp.MustCompile(`^log\.\d{4}-\d{2}-\d{2}--\d{2}-\d{2}-\d{2}\.\d{3}\.DEBUG$`)
-	var newerFiles []string
-	for _, f := range allFiles {
-		if logPattern.MatchString(f) && f > startFile {
-			newerFiles = append(newerFiles, f)
-		}
-	}
-	sort.Strings(newerFiles)
-	filesToDownload = append(filesToDownload, newerFiles...)
+	filesToDownload := getRelevantLogs(allFiles, hostInfo.CurrentLogFileName, initialCount)
 
 	if len(filesToDownload) == 0 {
 		logging.Info(ctx, "No specific log files found to process, falling back to downloading latest.DEBUG")
@@ -665,4 +660,67 @@ func cleanupFile(ctx context.Context, hst *ssh.Conn, port int, hostname string) 
 	if out, err := cmd.CombinedOutput(); err != nil {
 		logging.Infof(ctx, "Failed to remove %s from %s: %s: %v", inUseFile, hostname, out, err)
 	}
+}
+
+func getRelevantLogs(allFiles []string, startFile string, initialRotatedCount int) []string {
+	// Regex captures: group 1 is the base filename (log...DEBUG), group 2 is the optional numeric suffix.
+	logPattern := regexp.MustCompile(`^(log\.\d{4}-\d{2}-\d{2}--\d{2}-\d{2}-\d{2}\.\d{3}\.DEBUG)(?:\.(\d+))?$`)
+
+	type logEntry struct {
+		name   string
+		base   string
+		suffix int
+	}
+
+	var relevantLogs []logEntry
+	for _, f := range allFiles {
+		// Filter by base string comparison to startFile.
+		// This includes the startFile itself, and any file that sorts after it (newer timestamps or suffixes).
+		// Note: "log...DEBUG.1" > "log...DEBUG".
+		if f >= startFile {
+			matches := logPattern.FindStringSubmatch(f)
+			if matches != nil {
+				entry := logEntry{
+					name: f,
+					base: matches[1],
+					// Default suffix to -1 for the active file (no numeric suffix),
+					// so it sorts after numbered backups.
+					suffix: -1,
+				}
+				if matches[2] != "" {
+					if val, err := strconv.Atoi(matches[2]); err == nil {
+						entry.suffix = val
+					}
+				}
+				relevantLogs = append(relevantLogs, entry)
+			}
+		}
+	}
+
+	// Sort logs chronologically:
+	// 1. Different base (timestamp): Ascending order (oldest invocation first).
+	// 2. Same base: Descending suffix order (Oldest backup first).
+	//    Example: log.DEBUG.2 (oldest) -> log.DEBUG.1 -> log.DEBUG (newest/current, suffix -1).
+	sort.Slice(relevantLogs, func(i, j int) bool {
+		if relevantLogs[i].base != relevantLogs[j].base {
+			return relevantLogs[i].base < relevantLogs[j].base
+		}
+		return relevantLogs[i].suffix > relevantLogs[j].suffix
+	})
+
+	// Skip the oldest rotated logs that existed before the current session started.
+	// relevantLogs is sorted [Oldest ... Newest]. The first N items are the oldest history.
+	if len(relevantLogs) > initialRotatedCount {
+		relevantLogs = relevantLogs[initialRotatedCount:]
+	} else {
+		// If we have fewer logs than the initial count (files deleted?), return empty or whatever is left?
+		// Safest to return empty to avoid dupes if state is inconsistent, but typically this implies no new data.
+		return nil
+	}
+
+	var files []string
+	for _, l := range relevantLogs {
+		files = append(files, l.name)
+	}
+	return files
 }

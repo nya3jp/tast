@@ -62,6 +62,7 @@ const (
 	BroadcomBCM4356PCIE
 	BroadcomBCM4371PCIE
 	Realtek8822CPCIE
+	Realtek8822CVTPCIE
 	Realtek8852APCIE
 	Realtek8852CPCIE
 	Realtek8852BPCIE
@@ -99,6 +100,7 @@ var DeviceNames = map[DeviceID]string{
 	BroadcomBCM4356PCIE:        "Broadcom BCM4356 PCIE",
 	BroadcomBCM4371PCIE:        "Broadcom BCM4371 PCIE",
 	Realtek8822CPCIE:           "Realtek 8822C PCIE",
+	Realtek8822CVTPCIE:         "Realtek 8822C-VT PCIE",
 	Realtek8852APCIE:           "Realtek 8852A PCIE",
 	Realtek8852CPCIE:           "Realtek 8852C PCIE",
 	Realtek8852BPCIE:           "Realtek 8852B PCIE",
@@ -164,7 +166,8 @@ var LookupWLANDev = map[DevInfo]DeviceID{
 	{Vendor: "0x8086", Device: "0xe440", Subsystem: "0x0110"}: IntelBE211,
 	{Vendor: "0x8086", Device: "0xe440", Subsystem: "0x0114"}: IntelBE211,
 	{Vendor: "0x14e4", Device: "0x43ec"}:                      BroadcomBCM4356PCIE,
-	{Vendor: "0x10ec", Device: "0xc822"}:                      Realtek8822CPCIE,
+	{Vendor: "0x10ec", Device: "0xc822", Subsystem: "0x4210"}: Realtek8822CPCIE,
+	{Vendor: "0x10ec", Device: "0xc822", Subsystem: "0xc822"}: Realtek8822CVTPCIE,
 	{Vendor: "0x10ec", Device: "0x8852"}:                      Realtek8852APCIE,
 	{Vendor: "0x10ec", Device: "0xc852"}:                      Realtek8852CPCIE,
 	{Vendor: "0x10ec", Device: "0xb852"}:                      Realtek8852BPCIE,

@@ -166,7 +166,7 @@ var LookupWLANDev = map[DevInfo]DeviceID{
 	{Vendor: "0x8086", Device: "0xe440", Subsystem: "0x0110"}: IntelBE211,
 	{Vendor: "0x8086", Device: "0xe440", Subsystem: "0x0114"}: IntelBE211,
 	{Vendor: "0x14e4", Device: "0x43ec"}:                      BroadcomBCM4356PCIE,
-	{Vendor: "0x10ec", Device: "0xc822", Subsystem: "0x4210"}: Realtek8822CPCIE,
+	{Vendor: "0x10ec", Device: "0xc822"}:                      Realtek8822CPCIE,
 	{Vendor: "0x10ec", Device: "0xc822", Subsystem: "0xc822"}: Realtek8822CVTPCIE,
 	{Vendor: "0x10ec", Device: "0x8852"}:                      Realtek8852APCIE,
 	{Vendor: "0x10ec", Device: "0xc852"}:                      Realtek8852CPCIE,

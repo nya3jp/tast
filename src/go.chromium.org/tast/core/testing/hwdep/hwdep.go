@@ -1369,7 +1369,8 @@ func Wifi80211be() Condition {
 	return WifiDevice(
 		IntelBE200,
 		IntelBE211,
-		MediaTekMT7925PCIE,
+		// b/471262692, Disable MT7925 as it has interop issue with NuC
+		// MediaTekMT7925PCIE,
 	)
 }
 

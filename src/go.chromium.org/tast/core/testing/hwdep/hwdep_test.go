@@ -592,7 +592,7 @@ func Test80211be(t *testing.T) {
 		{hwdep.MediaTekMT7921PCIE, false},
 		{hwdep.MediaTekMT7921SDIO, false},
 		{hwdep.MediaTekMT7922PCIE, false},
-		{hwdep.MediaTekMT7925PCIE, true},
+		{hwdep.MediaTekMT7925PCIE, false},
 	} {
 		verifyCondition(
 			t, c,

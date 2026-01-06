@@ -44,8 +44,6 @@ The following software features are defined:
 * `biometrics_daemon` - The ability to process fingerprint authentication.
     This implies the presence of the `biod` package.
 * `boot_perf_info` - Reven (ChromeOS Flex) doesn't support boot performance metrics.
-* `borealis_host` - Boards that can host the Borealis system.
-* `borealis_nvidia` - Boards that use nvidia supported Borealis system.
 * `bpf` - Whether the platform (kernel) has the bpf syscall enabled.
 * `breakpad` - Whether the platform supports the breakpad crash handler
     for Chrome.
@@ -159,7 +157,6 @@ The following software features are defined:
     the `android` feature; DUTs will have exactly one of these two features.
 * `no_arm` - The absence of [arm] 32 bit userspace.
 * `no_asan` - Build was not built with Address Sanitizer. Similar to `aslr`.
-* `no_borealis_host` - Boards which is not designed to host borealis.
 * `no_camera_feature_super_res` - Whether single frame super resolution is disabled on this platform.
 * `no_chrome_dcheck` - Chrome/Chromium was not built with dcheck enabld.
 * `no_downloads_bind_mount` - Disable Downloads bind mount and migrate files from ~/Downloads to ~/MyFiles/Downloads.

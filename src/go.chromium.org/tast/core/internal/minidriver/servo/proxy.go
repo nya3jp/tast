@@ -607,7 +607,7 @@ func extractServodMCULogs(ctx context.Context, destDir string) {
 
 	regExpr := `(?P<time>[\d\-]+(( [\d:,]+ )|(T[\d:.+]+ )))` +
 		`- (?P<mcu>[\w/]+) - ` +
-		`EC3PO\.Console[\s\-\w\d:.]+LogConsoleOutput - /dev/pts/\d+ - ` +
+		`EC3PO\.Console[\s\-\w\d:.]+(LogConsoleOutput|log_console_output) - /dev/pts/\d+ - ` +
 		`(?P<line>.+$)`
 
 	re, err := regexp.Compile(regExpr)

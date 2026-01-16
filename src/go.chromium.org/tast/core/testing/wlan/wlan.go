@@ -174,6 +174,7 @@ var LookupWLANDev = map[DevInfo]DeviceID{
 	{Vendor: "0x10ec", Device: "0xb520"}:                      Realtek8852BVTPCIE,
 	{Vendor: "0x14c3", Device: "0x7920", Subsystem: "0x7920"}: MediaTekMT7920PCIE,
 	{Vendor: "0x14c3", Device: "0x7920", Subsystem: "0x6470"}: MediaTekMT7920PCIE,
+	{Vendor: "0x14c3", Device: "0x7920", Subsystem: "0x8dd3"}: MediaTekMT7920PCIE,
 	{Vendor: "0x14c3", Device: "0x7920", Subsystem: "0xe121"}: MediaTekMT7920PCIE,
 	{Vendor: "0x14c3", Device: "0x7961"}:                      MediaTekMT7921PCIE,
 	{Vendor: "0x037a", Device: "0x7901"}:                      MediaTekMT7921SDIO,

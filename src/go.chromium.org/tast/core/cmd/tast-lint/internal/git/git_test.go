@@ -156,7 +156,7 @@ func TestChangedFilesInHistory(t *testing.T) {
 		{git.Added, symlinkName},
 		{git.Modified, testName},
 	}; !reflect.DeepEqual(fns, exp) {
-		t.Errorf("ChangedFiles() = %q; want %q", fns, exp)
+		t.Errorf("ChangedFiles() = %v; want %v", fns, exp)
 	}
 }
 

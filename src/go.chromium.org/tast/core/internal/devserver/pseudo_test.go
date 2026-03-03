@@ -87,6 +87,6 @@ func TestPseudoClientStage(t *testing.T) {
 		t.Error("Get failed: ", err)
 	}
 	if resp.StatusCode != 404 {
-		t.Errorf("Get returned %q; want %q", resp.Status, 404)
+		t.Errorf("Get returned %v; want %v", resp.Status, 404)
 	}
 }

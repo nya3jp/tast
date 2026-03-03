@@ -413,7 +413,7 @@ func TestConfigAttachDebugger(t *testing.T) {
 				t.Fatalf(`Unexpected error in %s: %s`, tc.name, err.Error())
 			}
 			if got := cfg.DebuggerPorts; !reflect.DeepEqual(got, tc.want) {
-				t.Errorf("cfg.DebuggerPorts = %q; want %q", got, tc.want)
+				t.Errorf("cfg.DebuggerPorts = %v; want %v", got, tc.want)
 			}
 		}
 	}

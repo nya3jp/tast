@@ -680,6 +680,10 @@ Tests in this group are not used for build verification.
 				Name: "cuj_loginperf",
 				Desc: `LoginPerf.* that run regularly`,
 			},
+			{
+				Name: "cuj_chargerate",
+				Desc: `ChargeRateCUJ that run regularly`,
+			},
 		},
 	},
 	{

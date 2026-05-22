@@ -1,6 +1,6 @@
 module go.chromium.org/tast
 
-go 1.22.0
+go 1.25.0
 
 require (
 	code.cloudfoundry.org/clock v1.1.0
@@ -11,15 +11,15 @@ require (
 	github.com/shirou/gopsutil/v3 v3.23.5
 	go.chromium.org/chromiumos/config/go v0.0.0-20240117201416-64f45f1e62a6
 	go.chromium.org/chromiumos/infra/proto/go v0.0.0-20231205080657-c32887eb1d72
-	golang.org/x/crypto v0.33.0
+	golang.org/x/crypto v0.51.0
 	golang.org/x/exp v0.0.0-20230817173708-d852ddb80c63
 	golang.org/x/lint v0.0.0-20210508222113-6edffad5e616
-	golang.org/x/net v0.35.0
-	golang.org/x/sync v0.11.0
-	golang.org/x/sys v0.30.0
-	golang.org/x/term v0.29.0
-	golang.org/x/text v0.22.0
-	golang.org/x/tools v0.21.1-0.20240508182429-e35e4ccd0d2d
+	golang.org/x/net v0.54.0
+	golang.org/x/sync v0.20.0
+	golang.org/x/sys v0.44.0
+	golang.org/x/term v0.43.0
+	golang.org/x/text v0.37.0
+	golang.org/x/tools v0.45.0
 	google.golang.org/genproto v0.0.0-20230306155012-7f2fa6fef1f4
 	google.golang.org/grpc v1.71.0
 	google.golang.org/protobuf v1.36.5
@@ -55,7 +55,7 @@ require (
 	go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp v1.35.0 // indirect
 	go.opentelemetry.io/otel/metric v1.35.0 // indirect
 	go.opentelemetry.io/otel/trace v1.35.0 // indirect
-	golang.org/x/mod v0.17.0 // indirect
+	golang.org/x/mod v0.36.0 // indirect
 	golang.org/x/time v0.3.0 // indirect
 	gotest.tools/v3 v3.4.0 // indirect
 )

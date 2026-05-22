@@ -10,8 +10,12 @@ readonly tast_lint="go.chromium.org/tast/core/cmd/tast-lint"
 
 
 export GOBIN="${tast_root}/bin"
+export GO111MODULE=on
 
 pushd "${tast_root}/src/${tast_lint}"
+
+# Add this line to force update x/tools to be compatible with Go 1.23+
+go get golang.org/x/tools@latest
 
 go get go.chromium.org/tast/core/shutil
 go get go.chromium.org/tast/core/cmd/tast-lint/internal/check

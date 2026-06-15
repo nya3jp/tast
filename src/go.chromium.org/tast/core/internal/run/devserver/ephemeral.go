@@ -6,16 +6,20 @@
 package devserver
 
 import (
+	"context"
 	"fmt"
 	"html"
 	"io"
+	"log"
 	"net"
 	"net/http"
 	"net/url"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strconv"
 	"strings"
+	"time"
 )
 
 // Ephemeral is a minimal devserver implementation using local credentials.
@@ -144,8 +148,26 @@ func (e *Ephemeral) handleStage(w http.ResponseWriter, r *http.Request) {
 		tf.Close()
 		defer os.Remove(tf.Name())
 
+		// Determine timeout based on file size.
+		timeout := 20 * time.Minute // default fallback timeout
+		if size, err := getGCSFileSize(r.Context(), gsURL); err == nil {
+			// Calculate timeout assuming minimum download speed of 100 KB/s
+			// timeout = (size / 100,000) seconds + 60 seconds buffer.
+			calcSeconds := size/100000 + 60
+			// Cap the timeout between 1 minute and 6 hours.
+			if calcSeconds < 60 {
+				calcSeconds = 60
+			} else if calcSeconds > 6*3600 {
+				calcSeconds = 6 * 3600
+			}
+			timeout = time.Duration(calcSeconds) * time.Second
+		}
+
 		// Use gsutil command to download a file to use the locally installed credentials.
-		cmd := exec.Command("gsutil", "-m", "cp", gsURL, tf.Name())
+		ctx, cancel := context.WithTimeout(r.Context(), timeout)
+		defer cancel()
+		log.Printf("Downloading %s with timeout %v", gsURL, timeout)
+		cmd := exec.CommandContext(ctx, "gsutil", "-m", "cp", gsURL, tf.Name())
 		out, err := cmd.CombinedOutput()
 		if err != nil {
 			if strings.Contains(string(out), "No URLs matched") {
@@ -275,4 +297,24 @@ func (e *Ephemeral) validateGSURL(gsURL string) (path string, err error) {
 		return "", fmt.Errorf("%q isn't a clean URL", gsURL)
 	}
 	return strings.TrimLeft(p.Path, "/"), nil
+}
+
+// getGCSFileSize queries the size of a GCS object using gsutil stat.
+// It returns the size in bytes, or an error if the query fails or times out.
+func getGCSFileSize(ctx context.Context, gsURL string) (int64, error) {
+	ctx, cancel := context.WithTimeout(ctx, 15*time.Second)
+	defer cancel()
+	cmd := exec.CommandContext(ctx, "gsutil", "stat", gsURL)
+	out, err := cmd.Output()
+	if err != nil {
+		return 0, err
+	}
+	for _, line := range strings.Split(string(out), "\n") {
+		line = strings.TrimSpace(line)
+		if strings.HasPrefix(line, "Content-Length:") {
+			sizeStr := strings.TrimSpace(strings.TrimPrefix(line, "Content-Length:"))
+			return strconv.ParseInt(sizeStr, 10, 64)
+		}
+	}
+	return 0, fmt.Errorf("Content-Length not found in gsutil stat output")
 }

@@ -295,6 +295,12 @@ func SkipOnWifiDevice(devices ...wlan.DeviceID) Condition {
 	}}
 }
 
+// SkipOnMeetOnlyDevice returns a hardware dependency condition that skips
+// Meet-only devices.
+func SkipOnMeetOnlyDevice() Condition {
+	return SkipOnModel("ambassador", "constitution", "endeavour")
+}
+
 // TouchScreen returns a hardware dependency condition that is satisfied
 // if and only if the DUT has touchscreen.
 func TouchScreen() Condition {

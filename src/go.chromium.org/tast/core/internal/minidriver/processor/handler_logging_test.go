@@ -53,12 +53,17 @@ func TestLoggingHandler(t *testing.T) {
 		&protocol.EntityEndEvent{Time: epochpb, EntityName: "pkg.Test1"},
 		// Fixture reports an error.
 		&protocol.EntityErrorEvent{Time: epochpb, EntityName: "fixture", Error: &protocol.Error{Reason: "Failed", Location: &protocol.ErrorLocation{File: "fixture.go", Line: 456, Stack: "stacktrace"}}},
+		// Skipped test runs due to missing dependencies.
+		&protocol.EntityStartEvent{Time: epochpb, Entity: &protocol.Entity{Name: "pkg.Skipped"}},
+		&protocol.EntityEndEvent{Time: epochpb, EntityName: "pkg.Skipped", Skip: &protocol.Skip{Reasons: []string{"missing dep"}}},
 		// Second test runs with no error.
 		&protocol.EntityStartEvent{Time: epochpb, Entity: &protocol.Entity{Name: "pkg.Test2"}},
 		&protocol.EntityLogEvent{Time: epochpb, EntityName: "pkg.Test2", Text: "This is a log from the second test", Level: protocol.LogLevel_INFO},
 		&protocol.EntityEndEvent{Time: epochpb, EntityName: "pkg.Test2"},
 		// Fixture ends.
 		&protocol.EntityEndEvent{Time: epochpb, EntityName: "fixture"},
+		// Run log after fixture ends.
+		&protocol.RunLogEvent{Time: epochpb, Text: "This is a run log after the fixture", Level: protocol.LogLevel_INFO},
 	}
 
 	logger := loggingtest.NewLogger(t, logging.LevelDebug)
@@ -80,7 +85,7 @@ func TestLoggingHandler(t *testing.T) {
 	// It escapes all special characters and then replaces the "0s" duration
 	// placeholder with a flexible pattern `\S+` to match any duration.
 	buildLogRegex := func(want string) *regexp.Regexp {
-		pattern := regexp.QuoteMeta(want)
+		pattern := `^` + regexp.QuoteMeta(want) + `\z`
 		pattern = strings.ReplaceAll(pattern, "in 0s", `in \S+`)
 		return regexp.MustCompile(pattern)
 	}
@@ -97,10 +102,13 @@ Completed test pkg.Test1 in 0s with 1 error(s)
 [00:00:00.000] Error at fixture.go:456: Failed
 [00:00:00.000] Stack trace:
 stacktrace
+Started test pkg.Skipped
+Skipped test pkg.Skipped due to missing dependencies: missing dep
 Started test pkg.Test2
 [00:00:00.000] This is a log from the second test
 Completed test pkg.Test2 in 0s with 0 error(s)
-Completed fixture fixture in 0s with 1 error(s)`
+Completed fixture fixture in 0s with 1 error(s)
+[00:00:00.000] This is a run log after the fixture`
 	re := buildLogRegex(wantGlobalLogs)
 	if !re.MatchString(logger.String()) {
 		// On failure, use cmp.Diff against the original string for a readable diff.
@@ -130,6 +138,8 @@ Completed test pkg.Test1 in 0s with 1 error(s)
 [00:00:00.000] Error at fixture.go:456: Failed
 [00:00:00.000] Stack trace:
 stacktrace
+Started test pkg.Skipped
+Skipped test pkg.Skipped due to missing dependencies: missing dep
 Started test pkg.Test2
 [00:00:00.000] This is a log from the second test
 Completed test pkg.Test2 in 0s with 0 error(s)
@@ -144,6 +154,12 @@ Completed fixture fixture in 0s with 1 error(s)
 [00:00:00.000] Stack trace:
 stacktrace
 Completed test pkg.Test1 in 0s with 1 error(s)
+`,
+		},
+		{
+			path: "tests/pkg.Skipped/log.txt",
+			want: `Started test pkg.Skipped
+Skipped test pkg.Skipped due to missing dependencies: missing dep
 `,
 		},
 		{
@@ -167,12 +183,15 @@ func TestLoggingHandler_RPCLogs(t *testing.T) {
 
 	const (
 		test1Log = "this is a log from the first test"
+		skipMsg  = "Skipped test skipped due to missing dependencies: missing dep"
 		test2Log = "this is a log from the second test"
 	)
 	events := []protocol.Event{
 		&protocol.EntityStartEvent{Time: epochpb, Entity: &protocol.Entity{Name: "test1"}},
 		&protocol.EntityLogEvent{Time: epochpb, EntityName: "test1", Text: test1Log, Level: protocol.LogLevel_INFO},
 		&protocol.EntityEndEvent{Time: epochpb, EntityName: "test1"},
+		&protocol.EntityStartEvent{Time: epochpb, Entity: &protocol.Entity{Name: "skipped"}},
+		&protocol.EntityEndEvent{Time: epochpb, EntityName: "skipped", Skip: &protocol.Skip{Reasons: []string{"missing dep"}}},
 		&protocol.EntityStartEvent{Time: epochpb, Entity: &protocol.Entity{Name: "test2"}},
 		&protocol.EntityLogEvent{Time: epochpb, EntityName: "test2", Text: test2Log, Level: protocol.LogLevel_INFO},
 		&protocol.EntityEndEvent{Time: epochpb, EntityName: "test2"},
@@ -213,11 +232,17 @@ func TestLoggingHandler_RPCLogs(t *testing.T) {
 	if got := string(srv.GetLog("test1", "tests/test1/log.txt")); !strings.Contains(got, test1Log) {
 		t.Errorf("Expected log not received for test 1; got %q; should contain %q", got, test1Log)
 	}
+	if got := string(srv.GetLog("skipped", "tests/skipped/log.txt")); !strings.Contains(got, skipMsg) {
+		t.Errorf("Expected log not received for skipped test; got %q; should contain %q", got, skipMsg)
+	}
 	if got := string(srv.GetLog("test2", "tests/test2/log.txt")); !strings.Contains(got, test2Log) {
 		t.Errorf("Expected log not received for test 2; got %q; should contain %q", got, test2Log)
 	}
 	if got := string(srv.GetLog("test1", "tests/test1/log.txt")); strings.Contains(got, test2Log) {
 		t.Errorf("Unexpected log found in test 1 log; got %q; should not contain %q", got, test2Log)
+	}
+	if got := string(srv.GetLog("skipped", "tests/skipped/log.txt")); strings.Contains(got, test2Log) {
+		t.Errorf("Unexpected log found in skipped test log; got %q; should not contain %q", got, test2Log)
 	}
 	if got := string(srv.GetLog("test2", "tests/test2/log.txt")); strings.Contains(got, test1Log) {
 		t.Errorf("Unexpected log found in test 2 log; got %q; should not contain %q", got, test1Log)

@@ -116,20 +116,20 @@ func (h *loggingHandler) EntityEnd(ctx context.Context, ei *entityInfo, r *entit
 	if reasons := r.Skip.GetReasons(); len(reasons) > 0 {
 		logging.Debugf(ctx, "Skipped test %s due to missing dependencies: %s", ei.Entity.GetName(), strings.Join(reasons, ", "))
 		fmt.Printf("%v%v Skipped test %s%v due to missing dependencies: %s\n", timeStr, BLUE, ei.Entity.GetName(), RESET, strings.Join(reasons, ", "))
-		return nil
+	} else {
+		logging.Debugf(ctx,
+			"Completed %s %s in %v with %d error(s)",
+			entityTypeName(ei.Entity.GetType()),
+			ei.Entity.GetName(),
+			r.End.Sub(r.Start).Round(time.Millisecond),
+			len(r.Errors))
+		fmt.Printf("%v%v Completed %s %s %v in %v with %d error(s)\n",
+			timeStr, BLUE,
+			entityTypeName(ei.Entity.GetType()),
+			ei.Entity.GetName(), RESET,
+			r.End.Sub(r.Start).Round(time.Millisecond),
+			len(r.Errors))
 	}
-	logging.Debugf(ctx,
-		"Completed %s %s in %v with %d error(s)",
-		entityTypeName(ei.Entity.GetType()),
-		ei.Entity.GetName(),
-		r.End.Sub(r.Start).Round(time.Millisecond),
-		len(r.Errors))
-	fmt.Printf("%v%v Completed %s %s %v in %v with %d error(s)\n",
-		timeStr, BLUE,
-		entityTypeName(ei.Entity.GetType()),
-		ei.Entity.GetName(), RESET,
-		r.End.Sub(r.Start).Round(time.Millisecond),
-		len(r.Errors))
 
 	logger := h.loggers[len(h.loggers)-1]
 	h.multiplexer.RemoveLogger(logger.Logger)

@@ -920,8 +920,9 @@ type CollectSysInfoResponse struct {
 	// LogDir is the directory which log files were copied to. The caller should
 	// delete it.
 	LogDir string `protobuf:"bytes,1,opt,name=log_dir,json=logDir,proto3" json:"log_dir,omitempty"`
-	// CrashDir is the directory which minidump crash files were copied to. The
-	// caller should delete it.
+	// CrashDir is the directory which minidump crash files were copied to, or
+	// empty if no crash file was copied. If non-empty, the caller should delete
+	// it.
 	CrashDir string `protobuf:"bytes,2,opt,name=crash_dir,json=crashDir,proto3" json:"crash_dir,omitempty"`
 }
 

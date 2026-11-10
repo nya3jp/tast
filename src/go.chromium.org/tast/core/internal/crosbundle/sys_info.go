@@ -100,15 +100,10 @@ func CollectSysInfo(ctx context.Context, req *protocol.CollectSysInfoRequest) (*
 	if err != nil {
 		return nil, errors.Wrap(err, "failed getCrashFilePaths")
 	}
-	crashDir, err := os.MkdirTemp("", "tast_crashes.")
+	crashDir, err := collectCrashFiles(ctx, dumps, initialState.GetCrashFilePaths())
 	if err != nil {
-		return nil, errors.Wrap(err, "failed making tast_crashes temp dir")
+		return nil, err
 	}
-	if err := crash.CopyNewFiles(ctx, crashDir, dumps, initialState.GetCrashFilePaths()); err != nil {
-		return nil, errors.Wrap(err, "failed CopyNewFiles to tast_crashes")
-	}
-	// TODO(derat): Decide if it's worthwhile to call crash.CopySystemInfo here to get /etc/lsb-release.
-	// Doing so makes it harder to exercise this code in unit tests.
 
 	if err := resumeLogCleanup(); err != nil {
 		logging.Infof(ctx, "Failed to resume log cleanup: %v", err)
@@ -118,6 +113,29 @@ func CollectSysInfo(ctx context.Context, req *protocol.CollectSysInfoRequest) (*
 		LogDir:   logDir,
 		CrashDir: crashDir,
 	}, nil
+}
+
+// collectCrashFiles copies new crash files from dumps (excluding those in
+// initialCrashFiles) into a new temporary directory and returns its path.
+// If no file is copied, it removes the empty directory and returns "".
+func collectCrashFiles(ctx context.Context, dumps, initialCrashFiles []string) (string, error) {
+	crashDir, err := os.MkdirTemp("", "tast_crashes.")
+	if err != nil {
+		return "", errors.Wrap(err, "failed making tast_crashes temp dir")
+	}
+	if err := crash.CopyNewFiles(ctx, crashDir, dumps, initialCrashFiles); err != nil {
+		return "", errors.Wrap(err, "failed CopyNewFiles to tast_crashes")
+	}
+	// TODO(derat): Decide if it's worthwhile to call crash.CopySystemInfo here to get /etc/lsb-release.
+	// Doing so makes it harder to exercise this code in unit tests.
+
+	// Omit the crash directory when no crash was copied, so that the host can
+	// skip an SSH round trip to download the empty directory. os.Remove fails
+	// on non-empty directories.
+	if err := os.Remove(crashDir); err == nil {
+		return "", nil
+	}
+	return crashDir, nil
 }
 
 // getCrashFilePaths returns the paths of all minidump files, meta files

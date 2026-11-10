@@ -121,8 +121,9 @@ message CollectSysInfoResponse {
   // delete it.
   string log_dir = 1;
 
-  // CrashDir is the directory which minidump crash files were copied to. The
-  // caller should delete it.
+  // CrashDir is the directory which minidump crash files were copied to, or
+  // empty if no crash file was copied. If non-empty, the caller should delete
+  // it.
   string crash_dir = 2;
 }
 

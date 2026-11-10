@@ -5,7 +5,9 @@
 package driver_test
 
 import (
+	"os"
 	"path/filepath"
+	"sync/atomic"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -89,6 +91,53 @@ func TestDriver_CollectSysInfo(t *testing.T) {
 	}
 	if diff := cmp.Diff(gotCrashes, fakeCrashes); diff != "" {
 		t.Errorf("Crash dumps mismatch (-got +want):\n%s", diff)
+	}
+}
+
+func TestDriver_CollectSysInfoNoCrashDir(t *testing.T) {
+	fakeLogs := map[string]string{
+		"messages": "this is syslog",
+	}
+	logDir := t.TempDir()
+	if err := testutil.WriteFiles(logDir, fakeLogs); err != nil {
+		t.Fatalf("Failed to write fake logs: %v", err)
+	}
+
+	var called atomic.Bool
+	env := runtest.SetUp(t,
+		runtest.WithCollectSysInfo(func(req *protocol.CollectSysInfoRequest) (*protocol.CollectSysInfoResponse, error) {
+			called.Store(true)
+			// The DUT omits CrashDir when there is no new crash.
+			return &protocol.CollectSysInfoResponse{LogDir: logDir}, nil
+		}),
+	)
+	ctx := env.Context()
+	cfg := env.Config(nil)
+
+	drv, err := driver.New(ctx, cfg, cfg.Target(), "", nil)
+	if err != nil {
+		t.Fatalf("driver.New failed: %v", err)
+	}
+	defer drv.Close(ctx)
+
+	if err := drv.CollectSysInfo(ctx, &protocol.SysInfoState{}); err != nil {
+		t.Fatalf("CollectSysInfo failed: %v", err)
+	}
+	if !called.Load() {
+		t.Fatal("CollectSysInfo was not called on the DUT")
+	}
+
+	gotLogs, err := testutil.ReadFiles(filepath.Join(cfg.ResDir(), driver.SystemLogsDir))
+	if err != nil {
+		t.Fatalf("Failed to read log dir: %v", err)
+	}
+	if diff := cmp.Diff(gotLogs, fakeLogs); diff != "" {
+		t.Errorf("Logs mismatch (-got +want):\n%s", diff)
+	}
+
+	crashDir := filepath.Join(cfg.ResDir(), driver.CrashesDir)
+	if _, err := os.Stat(crashDir); !os.IsNotExist(err) {
+		t.Errorf("os.Stat(%q) error = %v, want %v", crashDir, err, os.ErrNotExist)
 	}
 }
 

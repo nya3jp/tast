@@ -10,11 +10,14 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/google/go-cmp/cmp"
 	//lint:ignore ST1019 importing this package with a different name helps readability
 	"go.chromium.org/chromiumos/config/go/api"
 	configpb "go.chromium.org/chromiumos/config/go/api"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/testing/protocmp"
 
+	"go.chromium.org/tast/core/errors"
 	"go.chromium.org/tast/core/framework/protocol"
 )
 
@@ -350,9 +353,10 @@ func TestFindSpeakerAmplifier(t *testing.T) {
 }
 
 func TestParseKConfigs(t *testing.T) {
-	flashromExtractCoreBootCmd = func(ctx context.Context, corebootBinName string) error {
-		return nil
-	}
+	origCBFSTool := cbfsToolExtractCmd
+	defer func() {
+		cbfsToolExtractCmd = origCBFSTool
+	}()
 	testCases := []struct {
 		input  string
 		expect *configpb.HardwareFeatures_FirmwareConfiguration
@@ -393,7 +397,7 @@ func TestParseKConfigs(t *testing.T) {
 		features := api.HardwareFeatures{
 			FwConfig: &configpb.HardwareFeatures_FirmwareConfiguration{},
 		}
-		if err := parseKConfigs(context.Background(), &features); err != nil {
+		if err := parseKConfigs(context.Background(), "coreboot.bin", &features); err != nil {
 			t.Error("parseKConfigs returned error: ", err)
 		}
 		if !proto.Equal(features.GetFwConfig(), tc.expect) {
@@ -403,9 +407,10 @@ func TestParseKConfigs(t *testing.T) {
 }
 
 func TestParseECBuildConfig(t *testing.T) {
-	flashromExtractCoreBootCmd = func(ctx context.Context, corebootBinName string) error {
-		return nil
-	}
+	origCBFSTool := cbfsToolExtractCmd
+	defer func() {
+		cbfsToolExtractCmd = origCBFSTool
+	}()
 	testCases := []struct {
 		input  string
 		expect map[string]configpb.HardwareFeatures_Present
@@ -432,11 +437,124 @@ func TestParseECBuildConfig(t *testing.T) {
 		features := api.HardwareFeatures{
 			EmbeddedController: &configpb.HardwareFeatures_EmbeddedController{},
 		}
-		if err := parseECBuildConfig(context.Background(), &features); err != nil {
+		if err := parseECBuildConfig(context.Background(), "coreboot.bin", &features); err != nil {
 			t.Error("parseKConfigs returned error: ", err)
 		}
 		if !reflect.DeepEqual(features.EmbeddedController.BuildConfig, tc.expect) {
 			t.Errorf("Got %+v, expect %+v: input=%s", features.EmbeddedController.BuildConfig, tc.expect, tc.input)
 		}
+	}
+}
+
+func TestParseFirmwareConfigs(t *testing.T) {
+	origFlashrom, origCBFSTool := flashromExtractCoreBootCmd, cbfsToolExtractCmd
+	defer func() {
+		flashromExtractCoreBootCmd, cbfsToolExtractCmd = origFlashrom, origCBFSTool
+	}()
+
+	cbfsFiles := map[string]string{
+		"config":      "CONFIG_CHROMEOS_ENABLE_ESOL=y\n",
+		"ecrw.config": "CONFIG_A=y\n",
+	}
+
+	for _, tc := range []struct {
+		name              string
+		flashromErr       error
+		cbfsErrs          map[string]error
+		wantCBFSToolCalls []string
+		wantFeatures      *configpb.HardwareFeatures
+	}{
+		{
+			name:              "success",
+			wantCBFSToolCalls: []string{"config", "ecrw.config"},
+			wantFeatures: &configpb.HardwareFeatures{
+				FwConfig: &configpb.HardwareFeatures_FirmwareConfiguration{
+					MainboardHasEarlySignOfLife: configpb.HardwareFeatures_PRESENT,
+				},
+				EmbeddedController: &configpb.HardwareFeatures_EmbeddedController{
+					BuildConfig: map[string]configpb.HardwareFeatures_Present{
+						"CONFIG_A": configpb.HardwareFeatures_PRESENT,
+					},
+				},
+			},
+		},
+		{
+			name:        "flashrom_failure",
+			flashromErr: errors.New("flashrom failed"),
+			wantFeatures: &configpb.HardwareFeatures{
+				FwConfig:           &configpb.HardwareFeatures_FirmwareConfiguration{},
+				EmbeddedController: &configpb.HardwareFeatures_EmbeddedController{},
+			},
+		},
+		{
+			name:              "kconfig_failure",
+			cbfsErrs:          map[string]error{"config": errors.New("config missing")},
+			wantCBFSToolCalls: []string{"config", "ecrw.config"},
+			wantFeatures: &configpb.HardwareFeatures{
+				FwConfig: &configpb.HardwareFeatures_FirmwareConfiguration{},
+				EmbeddedController: &configpb.HardwareFeatures_EmbeddedController{
+					BuildConfig: map[string]configpb.HardwareFeatures_Present{
+						"CONFIG_A": configpb.HardwareFeatures_PRESENT,
+					},
+				},
+			},
+		},
+		{
+			name:              "ec_config_failure",
+			cbfsErrs:          map[string]error{"ecrw.config": errors.New("ecrw.config missing")},
+			wantCBFSToolCalls: []string{"config", "ecrw.config"},
+			wantFeatures: &configpb.HardwareFeatures{
+				FwConfig: &configpb.HardwareFeatures_FirmwareConfiguration{
+					MainboardHasEarlySignOfLife: configpb.HardwareFeatures_PRESENT,
+				},
+				EmbeddedController: &configpb.HardwareFeatures_EmbeddedController{},
+			},
+		},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			var flashromCalls int
+			var flashromOut string
+			flashromExtractCoreBootCmd = func(ctx context.Context, corebootBinName string) error {
+				flashromCalls++
+				flashromOut = corebootBinName
+				return tc.flashromErr
+			}
+			var cbfsToolCalls []string
+			cbfsToolExtractCmd = func(ctx context.Context, corebootBinName, fileName, outputPath string) error {
+				cbfsToolCalls = append(cbfsToolCalls, fileName)
+				if corebootBinName != flashromOut {
+					t.Errorf("cbfstool read %q; want %q written by flashrom", corebootBinName, flashromOut)
+				}
+				if err := tc.cbfsErrs[fileName]; err != nil {
+					return err
+				}
+				content, ok := cbfsFiles[fileName]
+				if !ok {
+					return errors.Errorf("unexpected CBFS file %q", fileName)
+				}
+				return os.WriteFile(outputPath, []byte(content), 0644)
+			}
+
+			features := &configpb.HardwareFeatures{
+				FwConfig:           &configpb.HardwareFeatures_FirmwareConfiguration{},
+				EmbeddedController: &configpb.HardwareFeatures_EmbeddedController{},
+			}
+			parseFirmwareConfigs(t.Context(), features)
+
+			if flashromCalls != 1 {
+				t.Errorf("parseFirmwareConfigs() called flashrom %d times; want 1", flashromCalls)
+			}
+			if flashromOut != "" {
+				if _, err := os.Stat(flashromOut); !os.IsNotExist(err) {
+					t.Errorf("temp file %q was not removed (stat err=%v)", flashromOut, err)
+				}
+			}
+			if diff := cmp.Diff(tc.wantCBFSToolCalls, cbfsToolCalls); diff != "" {
+				t.Errorf("parseFirmwareConfigs() cbfstool calls diff (-want +got):\n%s", diff)
+			}
+			if diff := cmp.Diff(tc.wantFeatures, features, protocmp.Transform()); diff != "" {
+				t.Errorf("parseFirmwareConfigs() features diff (-want +got):\n%s", diff)
+			}
+		})
 	}
 }

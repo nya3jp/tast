@@ -1215,16 +1215,10 @@ func detectHardwareFeatures(ctx context.Context) (*protocol.HardwareFeatures, er
 	features.Camera.Enumerated = camEnumerated
 	features.Camera.EnumeratedUsbIds = camEnumeratedUsbIds
 
-	if err := parseKConfigs(ctx, features); err != nil {
-		logging.Info(ctx, "Failed to parse BIOS kConfig: ", err)
-	}
+	parseFirmwareConfigs(ctx, features)
 
 	if err := hasRecoveryMRCCacheSection(ctx, features); err != nil {
 		logging.Info(ctx, "Failed to determine if the RECOVERY_MRC_CACHE section exists in FMAP: ", err)
-	}
-
-	if err := parseECBuildConfig(ctx, features); err != nil {
-		logging.Info(ctx, "Failed to parse EC Config: ", err)
 	}
 
 	rpConfigPresent, err := hasRuntimeProbeConfig(model, false)
@@ -2140,16 +2134,35 @@ var cbfsToolExtractCmd = func(ctx context.Context, corebootBinName, fileName, ou
 
 var configLineRegexp = regexp.MustCompile(`^(# )?(CONFIG\S*)(=(y)| (is not set))`)
 
-// parseKConfigs updates the provided HardwareFeatures with the features found
-// by reading reading through the BIOS Kconfigs.
-func parseKConfigs(ctx context.Context, features *configpb.HardwareFeatures) error {
+// parseFirmwareConfigs updates the provided HardwareFeatures with the BIOS
+// Kconfigs and the EC build config, both of which are read from FW_MAIN_A.
+func parseFirmwareConfigs(ctx context.Context, features *configpb.HardwareFeatures) {
 	corebootBin, err := os.CreateTemp("/var/tmp", "")
 	if err != nil {
-		return errors.Wrap(err, "failed to create temp file")
+		logging.Info(ctx, "Failed to create temp file for FW_MAIN_A: ", err)
+		return
 	}
 	corebootBin.Close()
 	defer os.Remove(corebootBin.Name())
 
+	// Read the SPI flash only once for both parsers since every flashrom read
+	// takes a few seconds on low-end DUTs.
+	if err := flashromExtractCoreBootCmd(ctx, corebootBin.Name()); err != nil {
+		logging.Info(ctx, "Failed to extract FW_MAIN_A bios section: ", err)
+		return
+	}
+	if err := parseKConfigs(ctx, corebootBin.Name(), features); err != nil {
+		logging.Info(ctx, "Failed to parse BIOS kConfig: ", err)
+	}
+	if err := parseECBuildConfig(ctx, corebootBin.Name(), features); err != nil {
+		logging.Info(ctx, "Failed to parse EC Config: ", err)
+	}
+}
+
+// parseKConfigs updates the provided HardwareFeatures with the features found
+// by reading through the BIOS Kconfigs in corebootBinName, which contains the
+// FW_MAIN_A section.
+func parseKConfigs(ctx context.Context, corebootBinName string, features *configpb.HardwareFeatures) error {
 	fwConfig, err := os.CreateTemp("/var/tmp", "")
 	if err != nil {
 		return errors.Wrap(err, "failed to create temp file")
@@ -2157,10 +2170,7 @@ func parseKConfigs(ctx context.Context, features *configpb.HardwareFeatures) err
 	fwConfig.Close()
 	defer os.Remove(fwConfig.Name())
 
-	if err := flashromExtractCoreBootCmd(ctx, corebootBin.Name()); err != nil {
-		return errors.Wrap(err, "failed to extract FW_MAIN_A bios section")
-	}
-	if err := cbfsToolExtractCmd(ctx, corebootBin.Name(), "config", fwConfig.Name()); err != nil {
+	if err := cbfsToolExtractCmd(ctx, corebootBinName, "config", fwConfig.Name()); err != nil {
 		return errors.Wrap(err, "failed to extract bios Kconfig file")
 	}
 	inFile, err := os.Open(fwConfig.Name())
@@ -2194,14 +2204,9 @@ func parseKConfigs(ctx context.Context, features *configpb.HardwareFeatures) err
 	return nil
 }
 
-func parseECBuildConfig(ctx context.Context, features *configpb.HardwareFeatures) error {
-	corebootBin, err := os.CreateTemp("/var/tmp", "")
-	if err != nil {
-		return errors.Wrap(err, "failed to create temp file")
-	}
-	corebootBin.Close()
-	defer os.Remove(corebootBin.Name())
-
+// parseECBuildConfig updates the provided HardwareFeatures with the EC build
+// config found in corebootBinName, which contains the FW_MAIN_A section.
+func parseECBuildConfig(ctx context.Context, corebootBinName string, features *configpb.HardwareFeatures) error {
 	ecConfig, err := os.CreateTemp("/var/tmp", "")
 	if err != nil {
 		return errors.Wrap(err, "failed to create temp file")
@@ -2209,10 +2214,7 @@ func parseECBuildConfig(ctx context.Context, features *configpb.HardwareFeatures
 	ecConfig.Close()
 	defer os.Remove(ecConfig.Name())
 
-	if err := flashromExtractCoreBootCmd(ctx, corebootBin.Name()); err != nil {
-		return errors.Wrap(err, "failed to extract FW_MAIN_A bios section")
-	}
-	if err := cbfsToolExtractCmd(ctx, corebootBin.Name(), "ecrw.config", ecConfig.Name()); err != nil {
+	if err := cbfsToolExtractCmd(ctx, corebootBinName, "ecrw.config", ecConfig.Name()); err != nil {
 		return errors.Wrap(err, "failed to extract ec config file")
 	}
 	inFile, err := os.Open(ecConfig.Name())

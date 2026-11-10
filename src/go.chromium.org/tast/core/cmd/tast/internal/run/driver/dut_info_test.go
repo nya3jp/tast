@@ -5,6 +5,7 @@
 package driver_test
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -127,6 +128,39 @@ func TestDriver_GetDUTInfo_NoTestDepsForList(t *testing.T) {
 
 	if _, err := drv.GetDUTInfo(ctx); err != nil {
 		t.Fatalf("GetDUTInfo failed: %v", err)
+	}
+}
+
+func TestDriver_GetDUTInfo_AllowCache(t *testing.T) {
+	for _, dutInfoCache := range []bool{false, true} {
+		t.Run(fmt.Sprintf("dutinfocache=%t", dutInfoCache), func(t *testing.T) {
+			called := false
+			env := runtest.SetUp(t, runtest.WithGetDUTInfo(func(req *protocol.GetDUTInfoRequest) (*protocol.GetDUTInfoResponse, error) {
+				called = true
+				if req.GetAllowCache() != dutInfoCache {
+					t.Errorf("AllowCache = %v; want %v", req.GetAllowCache(), dutInfoCache)
+				}
+				return &protocol.GetDUTInfoResponse{}, nil
+			}))
+			ctx := env.Context()
+			cfg := env.Config(func(cfg *config.MutableConfig) {
+				cfg.CheckTestDeps = true
+				cfg.DUTInfoCache = dutInfoCache
+			})
+
+			drv, err := driver.New(ctx, cfg, cfg.Target(), "", nil)
+			if err != nil {
+				t.Fatalf("driver.New failed: %v", err)
+			}
+			defer drv.Close(ctx)
+
+			if _, err := drv.GetDUTInfo(ctx); err != nil {
+				t.Fatalf("GetDUTInfo failed: %v", err)
+			}
+			if !called {
+				t.Error("GetDUTInfo was not called on the DUT")
+			}
+		})
 	}
 }
 

@@ -32,6 +32,7 @@ func (d *Driver) GetDUTInfo(ctx context.Context) (*protocol.DUTInfo, error) {
 	req := &protocol.GetDUTInfoRequest{
 		ExtraUseFlags: d.cfg.ExtraUSEFlags(),
 		Features:      needFeatures,
+		AllowCache:    d.cfg.DUTInfoCache(),
 	}
 	res, err := client.GetDUTInfo(ctx, req)
 	if err != nil {

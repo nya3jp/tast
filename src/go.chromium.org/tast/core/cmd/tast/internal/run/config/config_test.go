@@ -476,3 +476,26 @@ func TestConfigTestFilterFileFail(t *testing.T) {
 		t.Fatal("Failed to identify error in filter file ", filterFile)
 	}
 }
+
+func TestConfigDUTInfoCache(t *testing.T) {
+	cfg := config.NewMutableConfig(config.RunTestsMode, "", "")
+	flags := flag.NewFlagSet("", flag.ContinueOnError)
+	cfg.SetFlags(flags)
+
+	if got := cfg.Freeze().DUTInfoCache(); got {
+		t.Errorf("Config.DUTInfoCache() default = %t, want false", got)
+	}
+	if err := flags.Parse([]string{"-dutinfocache"}); err != nil {
+		t.Fatalf("flags.Parse(-dutinfocache) failed: %v", err)
+	}
+	if got := cfg.Freeze().DUTInfoCache(); !got {
+		t.Errorf("Config.DUTInfoCache() after -dutinfocache = %t, want true", got)
+	}
+
+	listCfg := config.NewMutableConfig(config.ListTestsMode, "", "")
+	listFlags := flag.NewFlagSet("", flag.ContinueOnError)
+	listCfg.SetFlags(listFlags)
+	if f := listFlags.Lookup("dutinfocache"); f != nil {
+		t.Errorf("ListTestsMode registered unexpected -dutinfocache flag: %v", f)
+	}
+}

@@ -122,6 +122,7 @@ type MutableConfig struct {
 	WaitUntilReady       bool
 	SkipRemoteBundle     bool
 	ExtraUSEFlags        []string
+	DUTInfoCache         bool
 	Proxy                ProxyMode
 	CollectSysInfo       bool
 	MaxTestFailures      int
@@ -348,6 +349,10 @@ func (c *Config) DebuggerPortForwarding() bool { return c.m.DebuggerPortForwardi
 
 // ExtraUSEFlags is additional USE flags to inject when determining features.
 func (c *Config) ExtraUSEFlags() []string { return append([]string(nil), c.m.ExtraUSEFlags...) }
+
+// DUTInfoCache is whether the DUT may reuse features detected earlier in the
+// same boot.
+func (c *Config) DUTInfoCache() bool { return c.m.DUTInfoCache }
 
 // Proxy is how proxies should be used.
 func (c *Config) Proxy() ProxyMode { return c.m.Proxy }
@@ -582,6 +587,8 @@ func (c *MutableConfig) SetFlags(f *flag.FlagSet) {
 
 		f.Var(command.NewListFlag(",", func(v []string) { c.ExtraUSEFlags = v }, nil), "extrauseflags",
 			"comma-separated list of additional USE flags to inject when checking test dependencies")
+		f.BoolVar(&c.DUTInfoCache, "dutinfocache", false,
+			"reuse DUT features detected earlier in the same boot (faster, but misses changes made without a reboot)")
 
 		vals := map[string]int{
 			"env":  int(ProxyEnv),

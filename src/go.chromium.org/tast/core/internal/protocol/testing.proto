@@ -96,6 +96,9 @@ message GetDUTInfoRequest {
   repeated string extra_use_flags = 1;
   // Features specifies whether to get software/hardware features of the DUT.
   bool features = 2;
+  // AllowCache allows the DUT to return the features detected for the same
+  // request earlier in the same boot, instead of detecting them again.
+  bool allow_cache = 3;
 }
 
 message GetDUTInfoResponse { DUTInfo dut_info = 1; }

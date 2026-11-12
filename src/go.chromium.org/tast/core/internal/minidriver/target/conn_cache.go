@@ -28,7 +28,7 @@ type ConnCache struct {
 
 // NewConnCache establishes a new connection to target and return a ConnCache.
 // Call Close when it is no longer needed.
-func NewConnCache(ctx context.Context, cfg *Config, target, proxyCommand, role string, quiet bool) (cc *ConnCache, retErr error) {
+func NewConnCache(ctx context.Context, cfg *Config, target, proxyCommand, role string, quiet bool) (*ConnCache, error) {
 	helper := newDUTHelper(ctx, cfg.SSHConfig, cfg.TastVars, role)
 	conn, err := newConn(ctx, cfg, target, proxyCommand, helper.dutServer, quiet)
 	if err != nil {
@@ -40,14 +40,15 @@ func NewConnCache(ctx context.Context, cfg *Config, target, proxyCommand, role s
 			return nil, err
 		}
 	}
-	defer func() {
-		if retErr != nil {
-			conn.close(ctx)
-		}
-	}()
+	return newConnCache(ctx, cfg, target, proxyCommand, helper, conn)
+}
 
+// newConnCache returns a ConnCache that starts with conn. conn is closed on
+// errors.
+func newConnCache(ctx context.Context, cfg *Config, target, proxyCommand string, helper *dutHelper, conn *Conn) (*ConnCache, error) {
 	bootID, err := linuxssh.ReadBootID(ctx, conn.SSHConn())
 	if err != nil {
+		conn.close(ctx)
 		return nil, errors.Wrap(err, "failed to read boot id")
 	}
 
@@ -66,6 +67,27 @@ func (cc *ConnCache) Close(ctx context.Context) error {
 	err := cc.conn.close(ctx)
 	cc.conn = nil
 	return err
+}
+
+// Duplicate returns a new ConnCache to access the target from another
+// goroutine, since ConnCache is not goroutine-safe. The new ConnCache starts
+// with the current SSH connection of cc instead of establishing a new one,
+// which can take seconds through a proxy command. The connection is closed
+// when no ConnCache uses it anymore.
+// Call Close when it is no longer needed.
+func (cc *ConnCache) Duplicate(ctx context.Context) (*ConnCache, error) {
+	if cc.conn == nil {
+		return nil, errors.New("connection is already closed")
+	}
+	if cc.conn.sshConnRef == nil {
+		// Count the reference of cc.
+		cc.conn.sshConnRef = &sshConnRef{refs: 1}
+	}
+	conn, err := newSharedConn(ctx, cc.cfg, cc.target, cc.conn.sshConn, cc.conn.sshConnRef, cc.helper.dutServer)
+	if err != nil {
+		return nil, err
+	}
+	return newConnCache(ctx, cc.cfg, cc.target, cc.proxyCommand, cc.helper, conn)
 }
 
 // Conn returns a cached connection to the target.

@@ -133,9 +133,27 @@ func New(ctx context.Context, cfg *config.Config, rawTarget, role string, remote
 	}, nil
 }
 
-// Duplicate duplicate a driver.
+// Duplicate returns a new Driver to use from another goroutine. It shares the
+// SSH connection of d, if any, and does not start servo again, as only d uses
+// it. Call Close when it is no longer needed.
 func (d *Driver) Duplicate(ctx context.Context) (*Driver, error) {
-	return New(ctx, d.cfg, d.rawTarget, d.role, d.remoteDevservers)
+	dup := &Driver{
+		cfg:              d.cfg,
+		rawTarget:        d.rawTarget,
+		role:             d.role,
+		remoteDevservers: d.remoteDevservers,
+	}
+	if d.cc == nil {
+		return dup, nil
+	}
+	// Share the SSH connection since establishing a new one can take seconds
+	// through a proxy command.
+	cc, err := d.cc.Duplicate(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to duplicate the connection")
+	}
+	dup.cc = cc
+	return dup, nil
 }
 
 // Close closes the current connection to the target device.

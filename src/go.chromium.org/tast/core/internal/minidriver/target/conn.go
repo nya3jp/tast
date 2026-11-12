@@ -6,6 +6,7 @@ package target
 
 import (
 	"context"
+	"sync"
 	"time"
 
 	"go.chromium.org/tast/core/errors"
@@ -27,8 +28,33 @@ const (
 // objects whose lifetime is tied to the connection such as SSH port forwards.
 type Conn struct {
 	sshConn *ssh.Conn
-	svcs    *Services
-	target  string
+	// sshConnRef is non-nil if sshConn is shared, in which case close closes
+	// sshConn only when releasing the last reference to it.
+	sshConnRef *sshConnRef
+	svcs       *Services
+	target     string
+}
+
+// sshConnRef counts references to an SSH connection shared by multiple
+// owners.
+type sshConnRef struct {
+	mu   sync.Mutex
+	refs int
+}
+
+// acquire adds a reference.
+func (r *sshConnRef) acquire() {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	r.refs++
+}
+
+// release removes a reference and reports whether it was the last one.
+func (r *sshConnRef) release() bool {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	r.refs--
+	return r.refs == 0
 }
 
 // Config contains configs for creating connection.
@@ -72,13 +98,31 @@ func newConn(ctx context.Context, cfg *Config, target, proxyCommand, dutServer s
 	}, nil
 }
 
+// newSharedConn returns a Conn on sshConn, an existing SSH connection to
+// target whose references are counted by ref, and starts services on it.
+func newSharedConn(ctx context.Context, cfg *Config, target string, sshConn *ssh.Conn, ref *sshConnRef, dutServer string) (*Conn, error) {
+	svcs, err := startServices(ctx, cfg.ServiceConfig, sshConn, dutServer)
+	if err != nil {
+		return nil, err
+	}
+	ref.acquire()
+	return &Conn{
+		sshConn:    sshConn,
+		sshConnRef: ref,
+		svcs:       svcs,
+		target:     target,
+	}, nil
+}
+
 func (c *Conn) close(ctx context.Context) error {
 	var firstErr error
 	if err := c.svcs.close(); err != nil && firstErr == nil {
 		firstErr = err
 	}
-	if err := c.sshConn.Close(ctx); err != nil {
-		firstErr = err
+	if c.sshConnRef == nil || c.sshConnRef.release() {
+		if err := c.sshConn.Close(ctx); err != nil && firstErr == nil {
+			firstErr = err
+		}
 	}
 	return firstErr
 }

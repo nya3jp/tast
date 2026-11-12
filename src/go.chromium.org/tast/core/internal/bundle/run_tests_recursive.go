@@ -65,15 +65,28 @@ func runTestsRecursive(ctx context.Context, srv protocol.TestService_RunTestsSer
 
 	ctx = logging.AttachLoggerNoPropagation(ctx, logging.NewFuncLogger(ew.RunLog))
 
+	connEnv, err := setUpConnection(ctx, scfg, rcfg, bcfg)
+	if err != nil {
+		return errors.Wrap(err, "failed in setup connection with dut")
+	}
+	defer connEnv.close(ctx)
+
 	es, err := func() (es []*protocol.ResolvedEntity, retErr error) {
 		var cl *bundleclient.Client
 		if target := bcfg.GetPrimaryTarget(); target != nil {
-			var err error
-			cl, err = bundleclient.New(ctx, bcfg.GetPrimaryTarget(), scfg.registry.Name(), &protocol.HandshakeRequest{
+			hr := &protocol.HandshakeRequest{
 				BundleInitParams: &protocol.BundleInitParams{
 					Vars: bundleParams.Vars,
 				},
-			})
+			}
+			var err error
+			if hst := connEnv.rd.DUT.Conn(); hst != nil {
+				// Reuse the DUT connection since establishing a new one can
+				// take seconds through a proxy command.
+				cl, err = bundleclient.NewWithSSHConn(ctx, hst, target, scfg.registry.Name(), hr)
+			} else {
+				cl, err = bundleclient.New(ctx, target, scfg.registry.Name(), hr)
+			}
 			if err != nil {
 				return nil, errors.Wrap(err, "failed to create bundle client")
 			}
@@ -93,12 +106,6 @@ func runTestsRecursive(ctx context.Context, srv protocol.TestService_RunTestsSer
 		return err
 	}
 	testEntities := testEntitiesToRun(es, rcfg.GetTests())
-
-	connEnv, err := setUpConnection(ctx, scfg, rcfg, bcfg)
-	if err != nil {
-		return errors.Wrap(err, "failed in setup connection with dut")
-	}
-	defer connEnv.close(ctx)
 
 	// Set up environment and create pcfg early so that we can run remote
 	// fixtures for local tests.

@@ -21,10 +21,14 @@ const defaultConnectRetries = 3
 // Client is a bundle client.
 type Client struct {
 	hst *ssh.Conn
-	cl  *rpc.SSHClient
+	// sharedHst is true if hst is owned by someone else, in which case Close
+	// leaves it open.
+	sharedHst bool
+	cl        *rpc.SSHClient
 }
 
-// Close closes the underlying connections.
+// Close closes the RPC client and, unless the client was created by
+// NewWithSSHConn, the underlying SSH connection.
 func (c *Client) Close(ctx context.Context) error {
 	var err, err2 error
 	if c.cl != nil {
@@ -32,7 +36,9 @@ func (c *Client) Close(ctx context.Context) error {
 		c.cl = nil
 	}
 	if c.hst != nil {
-		err2 = c.hst.Close(ctx)
+		if !c.sharedHst {
+			err2 = c.hst.Close(ctx)
+		}
 		c.hst = nil
 	}
 	if err != nil {
@@ -92,5 +98,16 @@ func New(ctx context.Context, target *protocol.TargetDevice, name string, hr *pr
 		}
 	}()
 
-	return &Client{hst, cl}, nil
+	return &Client{hst: hst, cl: cl}, nil
+}
+
+// NewWithSSHConn is similar to New, but uses hst, an existing SSH connection
+// to target, instead of establishing a new one. Close leaves hst open.
+func NewWithSSHConn(ctx context.Context, hst *ssh.Conn, target *protocol.TargetDevice, name string, hr *protocol.HandshakeRequest) (*Client, error) {
+	path := filepath.Join(target.GetBundleDir(), name)
+	cl, err := rpc.DialSSH(ctx, hst, path, hr, true)
+	if err != nil {
+		return nil, err
+	}
+	return &Client{hst: hst, sharedHst: true, cl: cl}, nil
 }

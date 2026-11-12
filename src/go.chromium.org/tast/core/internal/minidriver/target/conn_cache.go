@@ -12,6 +12,7 @@ import (
 	"go.chromium.org/tast/core/internal/linuxssh"
 	"go.chromium.org/tast/core/internal/logging"
 	"go.chromium.org/tast/core/internal/testingutil"
+	"go.chromium.org/tast/core/ssh"
 )
 
 // ConnCache manages a cached connection to the target.
@@ -39,6 +40,23 @@ func NewConnCache(ctx context.Context, cfg *Config, target, proxyCommand, role s
 		if err != nil {
 			return nil, err
 		}
+	}
+	return newConnCache(ctx, cfg, target, proxyCommand, helper, conn)
+}
+
+// NewConnCacheWithSSHConn returns a ConnCache that starts with sshConn, an
+// existing SSH connection to target owned by the caller, instead of
+// establishing a new one, which can take seconds through a proxy command.
+// The ConnCache never closes sshConn, and if sshConn breaks, EnsureConn
+// establishes a new connection owned by the ConnCache.
+// Call Close when it is no longer needed.
+func NewConnCacheWithSSHConn(ctx context.Context, cfg *Config, target, proxyCommand, role string, sshConn *ssh.Conn) (*ConnCache, error) {
+	helper := newDUTHelper(ctx, cfg.SSHConfig, cfg.TastVars, role)
+	// Count the caller's reference, which is never released here.
+	callerRef := &sshConnRef{refs: 1}
+	conn, err := newSharedConn(ctx, cfg, target, sshConn, callerRef, helper.dutServer)
+	if err != nil {
+		return nil, err
 	}
 	return newConnCache(ctx, cfg, target, proxyCommand, helper, conn)
 }

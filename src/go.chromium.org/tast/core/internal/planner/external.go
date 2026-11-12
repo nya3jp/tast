@@ -7,6 +7,7 @@ package planner
 import (
 	"context"
 
+	"go.chromium.org/tast/core/internal/logging"
 	"go.chromium.org/tast/core/internal/minidriver"
 	"go.chromium.org/tast/core/internal/minidriver/failfast"
 	"go.chromium.org/tast/core/internal/minidriver/target"
@@ -48,10 +49,17 @@ func runExternalTests(ctx context.Context, names []string, stack *fixture.Combin
 		TastVars:      pcfg.Features.GetInfra().GetVars(),
 		ServiceConfig: scfg,
 	}
-	cc, err := target.NewConnCache(ctx, tcfg, pcfg.ExternalTarget.Device.GetDutConfig().GetSshConfig().GetConnectionSpec(), pcfg.ExternalTarget.Device.GetDutConfig().GetSshConfig().GetProxyCommand(), "", false)
+	cc, err := newExternalConnCache(ctx, tcfg, pcfg.RemoteData)
 	if err != nil {
 		return nil, err
 	}
+	// Close cc so that its services do not pile up on the DUT connection it
+	// may share.
+	defer func() {
+		if err := cc.Close(ctx); err != nil {
+			logging.Infof(ctx, "Failed to close target connection cache: %v", err)
+		}
+	}()
 
 	fixtureServer := fixture.NewStackServer(&fixture.StackServerConfig{
 		Out:    out,
@@ -134,4 +142,27 @@ func runExternalTests(ctx context.Context, names []string, stack *fixture.Combin
 		}
 	}
 	return unstarted, nil
+}
+
+// newExternalConnCache returns a ConnCache for the external target in
+// tcfg.SSHConfig. It shares the DUT connection of rd if possible since
+// establishing a new one can take seconds through a proxy command.
+//
+// Caveat: remote fixtures run Reset, PreTest and PostTest while local tests
+// use the shared connection, and DUT.Connect (also called by WaitConnect)
+// closes the current connection first. So a remote fixture parenting local
+// tests that reconnects there without checking Connected kills the running
+// local bundle.
+func newExternalConnCache(ctx context.Context, tcfg *target.Config, rd *testing.RemoteData) (*target.ConnCache, error) {
+	spec := tcfg.SSHConfig.GetConnectionSpec()
+	proxyCommand := tcfg.SSHConfig.GetProxyCommand()
+	// Connected pings the DUT so that a stale connection is not shared.
+	if rd != nil && rd.Meta != nil && rd.Meta.ConnectionSpec == spec && rd.DUT.Connected(ctx) {
+		cc, err := target.NewConnCacheWithSSHConn(ctx, tcfg, spec, proxyCommand, "", rd.DUT.Conn())
+		if err == nil {
+			return cc, nil
+		}
+		logging.Infof(ctx, "Failed to share DUT connection: %v", err)
+	}
+	return target.NewConnCache(ctx, tcfg, spec, proxyCommand, "", false)
 }

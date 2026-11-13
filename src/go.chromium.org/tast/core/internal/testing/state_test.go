@@ -1260,3 +1260,46 @@ func TestOnFatalForFatalf(t *gotesting.T) {
 		t.Errorf("Failed to get onFatal callback when s.Fatalf is called")
 	}
 }
+
+func TestTestHookStatePurgeableNil(t *gotesting.T) {
+	var out outputSink
+	root := testing.NewTestEntityRoot(&testing.TestInstance{Timeout: time.Minute}, &testing.RuntimeConfig{}, &out, testing.NewEntityCondition())
+	s := root.NewTestHookState()
+	if got := s.Purgeable(); got != nil {
+		t.Errorf("Purgeable() = %v, want nil", got)
+	}
+}
+
+func TestTestHookStatePurgeable(t *gotesting.T) {
+	var out outputSink
+	calls := 0
+	results := [][]string{
+		{"/tmp/a", "/tmp/b"},
+		{"/tmp/b"},
+	}
+	cfg := &testing.RuntimeConfig{
+		Purgeable: func() []string {
+			idx := calls
+			calls++
+			if idx >= len(results) {
+				return nil
+			}
+			return results[idx]
+		},
+	}
+	root := testing.NewTestEntityRoot(&testing.TestInstance{Timeout: time.Minute}, cfg, &out, testing.NewEntityCondition())
+	s := root.NewTestHookState()
+
+	if calls != 0 {
+		t.Errorf("Purgeable callback invoked %d time(s) before Purgeable() call, want 0", calls)
+	}
+	for i, want := range results {
+		got := s.Purgeable()
+		if diff := cmp.Diff(got, want); diff != "" {
+			t.Errorf("Purgeable() call %d mismatch (-got +want):\n%s", i+1, diff)
+		}
+	}
+	if calls != len(results) {
+		t.Errorf("Purgeable callback called %d time(s), want %d", calls, len(results))
+	}
+}

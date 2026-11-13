@@ -534,6 +534,69 @@ func TestPrepareDownloadsPurgeable(t *gotesting.T) {
 	}
 }
 
+// PurgeableFunc decides files in use when called, and checks existence later.
+func TestPurgeableFunc(t *gotesting.T) {
+	const (
+		pkg     = "cat"
+		extLink = `{"url": "urlA", "size": 5, "sha256sum": "7e45b6647a5f7c34a572ca8a585c5c0703ab40152fbf9158e30bff7f339d64ac"}`
+	)
+
+	dataDir := testutil.TempDir(t)
+	defer os.RemoveAll(dataDir)
+	dataSubdir := filepath.Join(dataDir, pkg, "data")
+	if err := testutil.WriteFiles(dataSubdir, map[string]string{
+		"ext_file1.txt":          "dataA", // used
+		"ext_file1.txt.external": extLink,
+		"ext_file2.txt":          "dataA", // unused
+		"ext_file2.txt.external": extLink,
+		"ext_file3.txt":          "dataA", // unused, removed later
+		"ext_file3.txt.external": extLink,
+		"ext_file4.txt.external": extLink, // unused, created later
+	}); err != nil {
+		t.Fatal(err)
+	}
+
+	ctx := context.Background()
+	m, err := NewManager(ctx, dataDir, fakeArtifactURL)
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, release := m.PrepareDownloads(ctx, []*protocol.Entity{{
+		Package:      pkg,
+		Dependencies: &protocol.EntityDependencies{DataFiles: []string{"ext_file1.txt"}},
+	}})
+
+	purgeable := m.PurgeableFunc()
+
+	// Releasing ext_file1.txt must not affect purgeable because in-use files
+	// were captured at PurgeableFunc call time, whereas removing ext_file3.txt
+	// and creating ext_file4.txt must be reflected when purgeable is called.
+	release()
+	if err := os.Remove(filepath.Join(dataSubdir, "ext_file3.txt")); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(dataSubdir, "ext_file4.txt"), []byte("dataA"), 0644); err != nil {
+		t.Fatal(err)
+	}
+
+	if diff := cmp.Diff(purgeable(), []string{
+		filepath.Join(dataSubdir, "ext_file2.txt"),
+		filepath.Join(dataSubdir, "ext_file4.txt"),
+	}); diff != "" {
+		t.Error("PurgeableFunc mismatch (-got +want):\n", diff)
+	}
+
+	// Repeated invocations must re-stat candidates rather than returning stale results.
+	if err := os.Remove(filepath.Join(dataSubdir, "ext_file2.txt")); err != nil {
+		t.Fatal(err)
+	}
+	if diff := cmp.Diff(purgeable(), []string{
+		filepath.Join(dataSubdir, "ext_file4.txt"),
+	}); diff != "" {
+		t.Error("PurgeableFunc mismatch after removal (-got +want):\n", diff)
+	}
+}
+
 // Static external data files are successfully downloaded.
 func TestRunDownloadsStatic(t *gotesting.T) {
 	const (

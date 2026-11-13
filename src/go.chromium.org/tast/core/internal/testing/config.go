@@ -40,9 +40,9 @@ type RuntimeConfig struct {
 	// PreCtx is the context that lives as long as the precondition.
 	// It can be accessed only from testing.PreState.
 	PreCtx context.Context
-	// Purgeable is a list of file paths which are not used for now and thus
-	// can be deleted if the disk space is low.
-	Purgeable []string
+	// Purgeable returns a list of file paths which are not used for now and
+	// thus can be deleted if the disk space is low. It may be nil.
+	Purgeable func() []string
 	// MaxSysMsgLogSize is a size of flag for truncate log file.
 	MaxSysMsgLogSize int64
 	// DUTLabConfig is the lab configuration for all DUTs.

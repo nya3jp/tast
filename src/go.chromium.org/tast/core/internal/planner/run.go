@@ -730,9 +730,9 @@ func runTest(ctx context.Context, t *testing.TestInstance, tout *output.EntitySt
 		test:    t,
 		outDir:  outDir,
 		fixtCtx: fixtCtx,
-		// TODO(crbug.com/1106218): Make sure this approach is scalable.
-		// Recomputing purgeable on each test costs O(|purgeable| * |tests|) overall.
-		purgeable: dl.m.Purgeable(),
+		// Stat-ing every external data file takes hundreds of milliseconds
+		// on low-end DUTs, so defer it until a test hook asks for the list.
+		purgeable: dl.m.PurgeableFunc(),
 	}
 	if err := runTestWithConfig(ctx, tcfg, pcfg, stack, precfg, tout); err != nil {
 		// If runTestWithRoot reported that the test didn't finish, print diagnostic messages.
@@ -749,7 +749,7 @@ type testConfig struct {
 	test      *testing.TestInstance
 	outDir    string
 	fixtCtx   context.Context
-	purgeable []string
+	purgeable func() []string
 }
 
 // runTestWithConfig runs a test on the given configs.

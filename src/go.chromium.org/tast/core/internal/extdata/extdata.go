@@ -168,16 +168,29 @@ func NewManager(ctx context.Context, dataDir, artifactsURL string) (*Manager, er
 // Purgeable returns a list of external data file paths not needed by the
 // currently running entities. They can be deleted if the disk space is low.
 func (m *Manager) Purgeable() []string {
-	var res []string
+	return m.PurgeableFunc()()
+}
+
+// PurgeableFunc is similar to Purgeable, but returns a function computing the
+// list. Files needed by the currently running entities are excluded at the time
+// of the call to PurgeableFunc, while the existence of files is checked when
+// the returned function is called.
+func (m *Manager) PurgeableFunc() func() []string {
+	candidates := make([]string, 0, len(m.all))
 	for _, p := range m.all {
-		if m.inuse[p] > 0 {
-			continue
-		}
-		if _, err := os.Stat(p); err == nil {
-			res = append(res, p)
+		if m.inuse[p] == 0 {
+			candidates = append(candidates, p)
 		}
 	}
-	return res
+	return func() []string {
+		var res []string
+		for _, p := range candidates {
+			if _, err := os.Stat(p); err == nil {
+				res = append(res, p)
+			}
+		}
+		return res
+	}
 }
 
 // PrepareDownloads computes a list of external data files that need to be

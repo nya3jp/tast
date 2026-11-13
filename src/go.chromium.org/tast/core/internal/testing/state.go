@@ -911,8 +911,13 @@ type TestHookState struct {
 // Some files might be already removed, so test hooks should ignore "file not
 // found" errors. Some files might have hard links, so test hooks should not
 // assume that deleting an 1GB file frees 1GB space.
+// The list is computed on every call, which can take hundreds of milliseconds
+// on low-end DUTs, so test hooks should call this only when they need it.
 func (s *TestHookState) Purgeable() []string {
-	return append([]string(nil), s.testRoot.entityRoot.cfg.Purgeable...)
+	if f := s.testRoot.entityRoot.cfg.Purgeable; f != nil {
+		return f()
+	}
+	return nil
 }
 
 // MaxSysMsgLogSize return the flag size of truncate log file.
